@@ -11,10 +11,10 @@ for test in log_usage                           \
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
-  ./$test --gras-log="root.thres=info"
+  ./$test --gras-log="root.thres=info" 2>&1
   if [ $? != 0 ] ; then
     echo "## failed. Rerun $test with full details."
-  ./$test --gras-log="root.thres=debug"
+    ./$test --gras-log="root.thres=debug" 2>&1
     failed_nb=`expr $failed_nb + 1`
     failed="$failed $test"
   else
