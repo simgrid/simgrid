@@ -602,19 +602,33 @@ static surf_action_t execute_KCCFLN05(void *cpu, double size)
 
 static void cpu_KCCFLN05_action_suspend(surf_action_t action)
 {
-  lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
-			     ((surf_action_cpu_KCCFLN05_t) action)->variable, 0.0);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    lmm_update_variable_weight(maxmin_system_network_KCCFLN05,
+			       ((surf_action_network_KCCFLN05_t) action)->variable, 0.0);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
+			       ((surf_action_cpu_KCCFLN05_t) action)->variable, 0.0);
+  else DIE_IMPOSSIBLE;
 }
 
 static void cpu_KCCFLN05_action_resume(surf_action_t action)
 {
-  lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
-			     ((surf_action_cpu_KCCFLN05_t) action)->variable, 1.0);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    lmm_update_variable_weight(maxmin_system_network_KCCFLN05,
+			       ((surf_action_network_KCCFLN05_t) action)->variable, 1.0);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
+			       ((surf_action_cpu_KCCFLN05_t) action)->variable, 1.0);
+  else DIE_IMPOSSIBLE;
 }
 
 static int cpu_KCCFLN05_action_is_suspended(surf_action_t action)
 {
-  return (lmm_get_variable_weight(((surf_action_cpu_KCCFLN05_t) action)->variable) == 0.0);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    return (lmm_get_variable_weight(((surf_action_cpu_KCCFLN05_t) action)->variable) == 0.0);
+  if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    return (lmm_get_variable_weight(((surf_action_network_KCCFLN05_t) action)->variable) == 0.0);
+  DIE_IMPOSSIBLE;
 }
 
 /************* workstation ************/

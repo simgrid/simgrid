@@ -275,7 +275,7 @@ static void update_actions_state(double now, double delta)
 	deltap -= action->latency;
 	action->latency = 0.0;
       }
-      if (action->latency == 0.0) 
+      if ((action->latency == 0.0) && !(action->suspended)) 
 	lmm_update_variable_weight(maxmin_system, action->variable, 1.0);
     }
     action->generic_action.remains -=
@@ -400,6 +400,25 @@ static surf_action_t communicate(void *src, void *dst, double size)
   return (surf_action_t) action;
 }
 
+static void action_suspend(surf_action_t action)
+{
+  ((surf_action_network_t) action)->suspended = 1;
+  lmm_update_variable_weight(maxmin_system,
+			     ((surf_action_network_t) action)->variable, 0.0);
+}
+
+static void action_resume(surf_action_t action)
+{
+  lmm_update_variable_weight(maxmin_system,
+			     ((surf_action_network_t) action)->variable, 1.0);
+  ((surf_action_network_t) action)->suspended = 0;
+}
+
+static int action_is_suspended(surf_action_t action)
+{
+  return ((surf_action_network_t) action)->suspended;
+}
+
 static void finalize(void)
 {
   int i,j;
@@ -475,6 +494,9 @@ static void surf_network_resource_init_internal(void)
   surf_network_resource->common_private->finalize = finalize;
 
   surf_network_resource->extension_public->communicate = communicate;
+  surf_network_resource->extension_public->suspend = action_suspend;
+  surf_network_resource->extension_public->resume = action_resume;
+  surf_network_resource->extension_public->is_suspended = action_is_suspended;
 
   network_link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();

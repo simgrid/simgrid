@@ -115,6 +115,9 @@ typedef struct surf_network_resource_extension_private
 *surf_network_resource_extension_private_t;
 typedef struct surf_network_resource_extension_public {
   surf_action_t(*communicate) (void *src, void *dst, double size);
+  void (*suspend) (surf_action_t action);
+  void (*resume) (surf_action_t action);
+  int (*is_suspended) (surf_action_t action);
 } s_surf_network_resource_extension_public_t,
     *surf_network_resource_extension_public_t;
 

@@ -127,24 +127,26 @@ static surf_action_t action_sleep(void *workstation, double duration)
 
 static void action_suspend(surf_action_t action)
 {
-  xbt_assert0(action->resource_type ==
-	      ((surf_resource_t) surf_cpu_resource),
-	      "Resource type mismatch");
-  surf_cpu_resource->extension_public->suspend(action);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->extension_public->suspend(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->extension_public->suspend(action);
+  else DIE_IMPOSSIBLE;
 }
 
 static void action_resume(surf_action_t action)
 {
-  xbt_assert0(action->resource_type ==
-	      ((surf_resource_t) surf_cpu_resource),
-	      "Resource type mismatch");
-  surf_cpu_resource->extension_public->resume(action);
+  if(action->resource_type==(surf_resource_t)surf_network_resource)
+    surf_network_resource->extension_public->resume(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource)
+    surf_cpu_resource->extension_public->resume(action);
+  else DIE_IMPOSSIBLE;
 }
 
 static int action_is_suspended(surf_action_t action)
 {
   if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    return 0;
+    return surf_network_resource->extension_public->is_suspended(action);
   if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
     return surf_cpu_resource->extension_public->is_suspended(action);
   DIE_IMPOSSIBLE;
