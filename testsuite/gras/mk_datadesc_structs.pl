@@ -30,8 +30,11 @@ print "xbt_error_t write_read(gras_datadesc_type_t type,void *src, void *dst, gr
 
 my ($i,$j,$k,$l);
 my $max=scalar @types;
-my $maxl=0; # set it to "$max-1" to do 2401 tests (takes for ever to compile)
-for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl) {
+my $max_i=$max-1; # set it to "$max-1" to do 2401 tests (takes for ever to compile)
+my $max_j=0;      # set it to "$max-1" to do 2401 tests (takes for ever to compile)
+my $max_k=$max-1; # set it to "$max-1" to do 2401 tests (takes for ever to compile)
+my $max_l=0;      # set it to "$max-1" to do 2401 tests (takes for ever to compile)
+for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     print "GRAS_DEFINE_TYPE(".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l].",".
       "struct ".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l]." { ".
         $types[$i]." a; ".
@@ -47,7 +50,7 @@ for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl)
 print "\nxbt_error_t test_structures(gras_socket_t *sock, int direction);\n";
 print "\nxbt_error_t test_structures(gras_socket_t *sock, int direction) {\n";
 print "  xbt_error_t errcode;\n";
-for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl) {
+for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  struct $struct my_$struct = {".$val[$i]."+(".$types[$i].")1,"
                                            .$val[$j]."+(".$types[$j].")2,"
@@ -55,8 +58,8 @@ for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl)
                                            .$val[$l]."+(".$types[$l].")4}, my_${struct}2;\n";
 }}}}
 
-print "  INFO0(\"---- Test on all possible struct having 3 fields (".($max*$max*$max*($maxl+1))." structs) ----\");\n";
-for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl) {
+print "  INFO0(\"---- Test on all possible struct having 3 fields (".($max_i*$max_j*$max_k*($max_l+1))." structs) ----\");\n";
+for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  TRY(write_read(gras_datadesc_by_symbol($struct), &my_$struct, &my_${struct}2, sock,direction));\n";
     print "  if (direction == READ || direction == RW) {\n";
