@@ -1,12 +1,12 @@
 <SECTION>
-<FILE>core_err</FILE>
+<FILE>tbx_err</FILE>
 <TITLE>Errors</TITLE>
 gras_error_t
 gras_error_name
 </SECTION>
 
 <SECTION>
-<FILE>core_log</FILE>
+<FILE>tbx_log</FILE>
 <TITLE>logging</TITLE>
 gras_log_priority_t
 
@@ -134,12 +134,10 @@ CRITICAL3
 CRITICAL4
 CRITICAL5
 
-GRAS_LOG_MAYDAY
-	       
 </SECTION>
 
 <SECTION>
-<FILE>core_dynar</FILE>
+<FILE>tbx_dynar</FILE>
 gras_dynar_new
 gras_dynar_free
 gras_dynar_free_container
@@ -156,28 +154,66 @@ gras_dynar_pop
 gras_dynar_shift
 gras_dynar_unshift
 gras_dynar_foreach
+gras_dynar_cursor_rm
+
+gras_dynar_cursor_first
+gras_dynar_cursor_get
+gras_dynar_cursor_step
 </SECTION>
 
 <SECTION>
-<FILE>core_dico</FILE>
+<FILE>tbx_dico</FILE>
 gras_dict_new
 gras_dict_free
 gras_dict_insert
+gras_dict_insert_ext
 gras_dict_retrieve
+gras_dict_retrieve_ext
 gras_dict_remove
+gras_dict_remove_ext
 gras_dict_dump
 gras_dict_print
 gras_dict_prints
-gras_dict_cursor_new
-gras_dict_cursor_free
-gras_dict_cursor_next
-gras_dict_cursor_rewind
 gras_dict_cursor_get_data
 gras_dict_cursor_get_key
+gras_dict_foreach
+
+gras_dict_cursor_new
+gras_dict_cursor_free
+gras_dict_cursor_rewind
+
+<SUBSECTION Standard>
+gras_dictelm_remove_ext
+gras_dictelm_insert_ext
+gras_dictelm_remove
+gras_dictelm_print_fct
+gras_dictelm_insert
+gras_dictelm_free
+gras_dictelm_retrieve
+gras_dictelm_dump
+gras_dictelm_retrieve_ext
 </SECTION>
 
 <SECTION>
-<FILE>core_cfg</FILE>
+<FILE>tbx_set</FILE>
+gras_set_new
+gras_set_free
+
+gras_set_add
+gras_set_get_by_name
+gras_set_get_by_name_ext
+gras_set_get_by_id
+
+gras_set_foreach
+
+<SUBSECTION Standard>
+gras_set_cursor_step
+gras_set_cursor_get_or_free
+gras_set_cursor_first
+</SECTION>
+
+<SECTION>
+<FILE>tbx_cfg</FILE>
 gras_cfg_new
 gras_cfg_cpy
 gras_cfg_free
@@ -219,30 +255,90 @@ gras_cfg_get_type
 
 
 
-
-
-
 <SECTION>
-<FILE>DataDesc</FILE>
-<TITLE>DataDescriptor</TITLE>
-DataTypes
-SIMPLE_DATA
-SIMPLE_MEMBER
-PAD_BYTES
+<FILE>comm_datadesc</FILE>
+<TITLE>Data description</TITLE>
+gras_datadesc_from_nws
+gras_datadesc_parse
+gras_datadesc_copy_data
+
+gras_datadesc_declare_array
+gras_datadesc_declare_array_dyn
+gras_datadesc_declare_ref
+gras_datadesc_declare_ref_disc
+gras_datadesc_declare_struct
+gras_datadesc_declare_struct_add_code
+gras_datadesc_declare_struct_add_name
+gras_datadesc_declare_union
+gras_datadesc_declare_union_add_code
+gras_datadesc_declare_union_add_name
 </SECTION>
 
 <SECTION>
-<FILE>Socks</FILE>
+<FILE>comm_datadesc_expert</FILE>
+<TITLE>Advanced Data description</TITLE>
+gras_datadesc_declare_array_cb
+gras_datadesc_declare_ref_cb
+gras_datadesc_declare_struct_add_code_cb
+gras_datadesc_declare_struct_add_name_cb
+gras_datadesc_declare_struct_cb
+gras_datadesc_declare_union_add_code_cb
+gras_datadesc_declare_union_add_name_cb
+gras_datadesc_declare_union_cb
+
+
+gras_dd_cbps_block_begin
+gras_dd_cbps_block_end
+gras_dd_cbps_get
+gras_dd_cbps_pop
+gras_dd_cbps_push
+gras_dd_cbps_set
+</SECTION>
+
+<SECTION>
+<FILE>dd_internal</FILE>
+<TITLE>Implementation of data description</TITLE>
+gras_ddt_free
+gras_ddt_get_by_code
+gras_ddt_get_by_name
+gras_ddt_new_array
+gras_ddt_new_from_nws
+gras_ddt_new_ignored
+gras_ddt_new_parse
+gras_ddt_new_ref
+gras_ddt_new_scalar
+gras_ddt_new_struct
+gras_ddt_new_struct_append
+gras_ddt_new_union
+gras_ddt_new_union_append
+gras_ddt_register
+</SECTION>
+
+<SECTION>
+<FILE>comm_socks</FILE>
 <TITLE>Sockets</TITLE>
-gras_sock_client_open
-gras_sock_server_open
-gras_sock_close
-gras_sock_get_peer_name
-gras_sock_get_peer_addr
+gras_socket_client
+gras_socket_server
+gras_socket_close
+gras_socket_peer_name
+gras_socket_peer_addr
 </SECTION>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 <SECTION>
-<FILE>Messages</FILE>
+<FILE>comm_messages</FILE>
 <TITLE>Messages</TITLE>
 gras_msgtype_register
 gras_cb_t
@@ -255,12 +351,27 @@ gras_msg_wait
 </SECTION>
 
 <SECTION>
-<FILE>Globals</FILE>
+<FILE>virtu_globals</FILE>
 <TITLE>Globals</TITLE>
 gras_userdata_get
 gras_userdata_set
 gras_userdata_new
 </SECTION>
+
+<SECTION>
+<FILE>virtu_syscall</FILE>
+<TITLE>System calls abstraction layer</TITLE>
+gras_time
+gras_sleep
+</SECTION>
+
+<SECTION>
+<FILE>virtu_fs</FILE>
+<TITLE>File system</TITLE>
+gras_fs_fopen
+</SECTION>
+
+
 
 <SECTION>
 <FILE>gras_private</FILE>

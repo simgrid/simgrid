@@ -1,14 +1,21 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
-<!ENTITY gras-DataDesc SYSTEM "sgml/DataDesc.sgml">
-<!ENTITY gras-Globals SYSTEM "sgml/Globals.sgml">
-<!ENTITY gras-Messages SYSTEM "sgml/Messages.sgml">
-<!ENTITY gras-Socks SYSTEM "sgml/Socks.sgml">
 
-<!ENTITY gras-err SYSTEM "sgml/core_err.sgml">
-<!ENTITY gras-log SYSTEM "sgml/core_log.sgml">
-<!ENTITY gras-dynar SYSTEM "sgml/core_dynar.sgml">
-<!ENTITY gras-dico SYSTEM "sgml/core_dico.sgml">
-<!ENTITY gras-cfg SYSTEM "sgml/core_cfg.sgml">
+<!ENTITY comm-socks SYSTEM "sgml/comm_socks.sgml">
+<!ENTITY comm-datadesc SYSTEM "sgml/comm_datadesc.sgml">
+<!ENTITY comm-dd-expert SYSTEM "sgml/comm_datadesc_expert.sgml">
+<!ENTITY comm-messages SYSTEM "sgml/comm_messages.sgml">
+
+<!ENTITY virtu-globals SYSTEM "sgml/virtu_globals.sgml">
+<!ENTITY virtu-syscall SYSTEM "sgml/virtu_syscall.sgml">
+<!ENTITY virtu-fs      SYSTEM "sgml/virtu_fs.sgml">
+
+
+<!ENTITY tbx-err SYSTEM "sgml/tbx_err.sgml">
+<!ENTITY tbx-log SYSTEM "sgml/tbx_log.sgml">
+<!ENTITY tbx-dynar SYSTEM "sgml/tbx_dynar.sgml">
+<!ENTITY tbx-dico SYSTEM "sgml/tbx_dico.sgml">
+<!ENTITY tbx-set SYSTEM "sgml/tbx_set.sgml">
+<!ENTITY tbx-cfg SYSTEM "sgml/tbx_cfg.sgml">
 
 <!ENTITY gras-gras SYSTEM "sgml/gras.sgml">
 <!ENTITY gras-gras-private SYSTEM "sgml/gras_private.sgml">
@@ -23,14 +30,24 @@
   </bookinfo>
 
   <chapter>
-    <title>GRAS user manual</title>
+    <title>GRAS overview</title>
     &overview;
+  </chapter>
 
-    &gras-DataDesc;
-    &gras-Socks;
-    &gras-Messages;
-    &gras-Globals;
-
+  <chapter>
+   <title>Communication facilities</title>
+    &comm-datadesc;
+    &comm-dd-expert;
+    &comm-socks;
+    &comm-messages;
+  </chapter>
+  
+  <chapter>
+   <title>Virtualization</title>
+    &virtu-globals;
+    &virtu-syscall;
+    &virtu-fs;
+  </chapter>
 
 <!--
 =head2 Sending (or receiving) dynamic sized arrays
@@ -283,17 +300,20 @@ Write examples.
 
   <chapter>
    <title>GRAS toolbox</title>
-   &gras-err;
-   &gras-log;
-   &gras-dynar;
-   &gras-dico;
-   &gras-cfg;
+   &tbx-err;
+   &tbx-log;
+   &tbx-dynar;
+   &tbx-dico;
+   &tbx-set;
+   &tbx-cfg;
   </chapter>
 
+<!--
   <chapter>
     <title>GRAS implementation</title>
     &gras-gras-private;
     &gras-gras-rl;
     &gras-gras-sg;
   </chapter>
+-->
 </book>
