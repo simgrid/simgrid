@@ -118,27 +118,31 @@ gras_error_t gras_multidict_remove_ext(gras_dict_t *head,
 /*###########################################################################*/
 typedef struct gras_dict_cursor_ gras_dict_cursor_t;
 /* creator/destructor */
-gras_error_t gras_dict_cursor_new(gras_dict_t *head,
+gras_error_t gras_dict_cursor_new(const gras_dict_t *head,
 				  /*OUT*/gras_dict_cursor_t **cursor);
 void         gras_dict_cursor_free(gras_dict_cursor_t *cursor);
 
-/* next element. Returns true if ok, and false on last entry */
-gras_error_t gras_dict_cursor_next(gras_dict_cursor_t *cursor);
 /* back to first element 
    it is not enough to reinit the cache after an add/remove in cache*/
 gras_error_t gras_dict_cursor_rewind(gras_dict_cursor_t *cursor);
 
-/* Get current element. The key will be overwriten over calls */
-gras_error_t gras_dict_cursor_get_key(gras_dict_cursor_t *cursor,
-				      /*OUT*/char **key);
-gras_error_t gras_dict_cursor_get_data(gras_dict_cursor_t *cursor,
-				       /*OUT*/void **data);
 
-#define gras_dict_foreach(dict,cursor) \
-  for (cursor = NULL; \
-       ( cursor || gras_dict_cursor_new((dict),&(cursor)) == no_error )         && \
-       ( gras_dict_cursor_next(cursor) || (gras_dict_cursor_free(cursor), 0) ) ; \
-      )
+gras_error_t gras_dict_cursor_get_key     (gras_dict_cursor_t *cursor,
+					   /*OUT*/char **key);
+gras_error_t gras_dict_cursor_get_data    (gras_dict_cursor_t *cursor,
+					   /*OUT*/void **data);
+
+
+void         gras_dict_cursor_first       (const gras_dict_t   *dict,
+					   gras_dict_cursor_t **cursor);
+void         gras_dict_cursor_step        (gras_dict_cursor_t  *cursor);
+int          gras_dict_cursor_get_or_free (gras_dict_cursor_t **cursor,
+					   char               **key,
+					   void               **data);
+#define gras_dict_foreach(dict,cursor,key,data)                \
+  for (gras_dict_cursor_first((dict),&(cursor)) ;              \
+       gras_dict_cursor_get_or_free(&(cursor),&(key),(void**)(&data)); \
+       gras_dict_cursor_step(cursor) )
 
 #ifdef  __cplusplus
 }
