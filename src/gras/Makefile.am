@@ -25,10 +25,7 @@ COMMON_S=\
   \
   Core/config.c                               \
   \
-  Transport/transport.c    Transport/transport_private.h      \
-  Transport/transport_plugin_file.c            \
-  Transport/transport_plugin_tcp.c            \
-  Transport/transport_plugin_sg.c             \
+  Transport/transport.c          Transport/transport_private.h  \
   \
   DataDesc/ddt_create.c          \
   DataDesc/ddt_convert.c         DataDesc/ddt_exchange.c     \
@@ -41,29 +38,15 @@ COMMON_S=\
 
 # DataDesc/ddt_declare.c 
 
-#  DataDesc/datadesc.c                               \
-#  DataDesc/tools.c                                  \
-#  DataDesc/categories.h                             \
-#  DataDesc/connection.h                             \
-#  DataDesc/sequence.h                               \
-#  DataDesc/net_driver.c      DataDesc/net_driver.h        \
-#  DataDesc/net_driver_fd.c   DataDesc/net_interface_fd.h  \
-#  DataDesc/type_driver_rl.c  DataDesc/type_interface_rl.h \
-#  DataDesc/type_driver.c     DataDesc/type_driver.h       \
-#  DataDesc/message.c         DataDesc/message.h           \
-#  DataDesc/type.c            DataDesc/type.h              \
-#  DataDesc/parse.c           DataDesc/parse.yy.h             DataDesc/parse.yy.c \
-#  DataDesc/vars.c
-
 DataDesc/parse.yy.c: DataDesc/parse.yy.l
 	flex -o$@ -Pgras_ddt_ $^
 
 libgrasrl_a_SOURCES= $(COMMON_S) \
-  Transport/rl_transport.c       \
-  Virtu/rl_process.c       Virtu/rl_time.c     Virtu/rl_conditional.c
+  Transport/rl_transport.c  Transport/transport_plugin_tcp.c  Transport/transport_plugin_file.c      \
+  \
+  Virtu/rl_process.c        Virtu/rl_time.c                   Virtu/rl_conditional.c
 
 libgrassg_a_SOURCES= $(COMMON_S) \
-  Transport/sg_transport.c       \
-  Virtu/sg_process.c       Virtu/sg_time.c     Virtu/sg_conditional.c
-
-# RL/gras_rl.c RL/gras_rl.h FIXME
+  Transport/sg_transport.c  Transport/transport_plugin_sg.c             \
+  \
+  Virtu/sg_process.c        Virtu/sg_time.c                   Virtu/sg_conditional.c
