@@ -145,6 +145,16 @@ typedef enum {
 
 #define gras_abort abort
 
+#ifdef NDEBUG
+#define gras_assert(cond)
+#define gras_assert0(cond,msg)
+#define gras_assert1(cond,msg,a)
+#define gras_assert2(cond,msg,a,b)
+#define gras_assert3(cond,msg,a,b,c)
+#define gras_assert4(cond,msg,a,b,c,d)
+#define gras_assert5(cond,msg,a,b,c,d,e)
+#define gras_assert6(cond,msg,a,b,c,d,e,f)
+#else
 #define gras_assert(cond)                  if (!(cond)) { CRITICAL1("Assertion %s failed", #cond); gras_abort(); }
 #define gras_assert0(cond,msg)             if (!(cond)) { CRITICAL0(msg); gras_abort(); }
 #define gras_assert1(cond,msg,a)           if (!(cond)) { CRITICAL1(msg,a); gras_abort(); }
@@ -153,7 +163,7 @@ typedef enum {
 #define gras_assert4(cond,msg,a,b,c,d)     if (!(cond)) { CRITICAL4(msg,a,b,c,d); gras_abort(); }
 #define gras_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) { CRITICAL5(msg,a,b,c,d,e); gras_abort(); }
 #define gras_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); gras_abort(); }
-
+#endif
 END_DECL
 
 #endif /* GRAS_ERROR_H */
