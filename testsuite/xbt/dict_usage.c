@@ -103,7 +103,7 @@ int main(int argc,char **argv) {
   gras_dict_t *head=NULL;
   char *data;
 
-  parse_log_opt(argc,argv,"dict.thresh=debug");
+  parse_log_opt(argc,argv,"dict.thresh=verbose");
    
   printf("\nGeneric dictionnary: USAGE test:\n");
 
@@ -112,6 +112,8 @@ int main(int argc,char **argv) {
 
   TRYFAIL(fill(&head));
   printf(" Free the dictionnary\n");
+  gras_dict_free(&head);
+  printf(" Free the dictionnary again\n");
   gras_dict_free(&head);
 
   TRYFAIL(fill(&head));
@@ -177,8 +179,10 @@ int main(int argc,char **argv) {
   TRYFAIL(debuged_remove(head,"123"));    TRYFAIL(traverse(head));
   TRYEXPECT(debuged_remove(head,"12346"),mismatch_error);  TRYFAIL(traverse(head));
   
+  printf(" - Free the dictionnary twice\n");
   gras_dict_free(&head);
   gras_dict_free(&head);
-
+  printf("Done\n");
+  fflush(stdout);
   return 0;
 }
