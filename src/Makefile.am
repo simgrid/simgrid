@@ -114,6 +114,7 @@ COMMON_S=\
   msg/m_process.c  \
   msg/gos.c  \
   msg/global.c  \
+  msg/environment.c  \
   \
   gras/gras.c \
   \
