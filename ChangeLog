@@ -1,25 +1,93 @@
-2005-02-11 Martin
-  - Documentation overhault.
+SimGrid (2.91) unstable; urgency=low
 
-2005-02-08 Martin
-  - Doxygenification of all GRAS. gtk-doc-tools is dead in SimGrid now.
-  - Automatically extract all existing logging categories, and add the list
-    to the documentation (long standing one, to say the less)
-  - Cleanup the known architecture table. Reorder the entries to group what
-    should be, and use a more consistant naming scheme.
-    (some of the test dataset are still to be regenerated)
+  Alpha 2 on the path to SimGrid 3
+  
+  [Arnaud]
+  (surf)
+   - Bug fix in the lmm_solver.
+  (msg)
+   - Interface to Paje (see http://www-id.imag.fr/Logiciels/paje/) through the function 
+     MSG_paje_output.
+   - Introducing two new functions MSG_process_kill() and MSG_process_killall().
+   - It is possible to bound the rate of a communication in MSG with 
+     MSG_task_put_bounded() (was already in the previous version but I had forgotten 
+     to write it in the changelog).
+   - Bug fix to let GRAS run on top of MSG until we move it directly on top
+     of the SURF.
+    
+  [Martin]
+  (infrastructure)
+   - Various cleanups to the autotools stuff
+   - Begin to move Gras examples to examples/gras/
+   - Let make distcheck work again (yeah!)
+  (documentation)
+   - documentation overhault using doxygen. 
+     gtk-doc-tools is dead in SimGrid now.
+   - Automatically extract all existing logging categories, and add the list
+     to the documentation (long standing one, to say the less)
+  (gras)
+   - Cleanup the known architecture table. Reorder the entries to group what
+     should be, and use a more consistant naming scheme.
+     (some of the test dataset are still to be regenerated)
+   - Allow library to register globals on each process just as userdata does.
+      This is implemented using a xbt_dict and not a xbt_set, so we loose the
+       lookup time (for now).
+      Use it in msg and trp.
+      This cleans a lot the internals and helps enforcing privacy of the
+       headers between the gras components.
+   - Reenable GRAS
 
-2005-02-07 Arnaud
-  - Bug fix in the lmm_solver.
-  - Interface to Paje (see http://www-id.imag.fr/Logiciels/paje/) through
-    the function MSG_paje_output.
-  - Introducing two new functions MSG_process_kill() and MSG_process_killall().
+ --
 
-2005-02-04 Martin
-  - Reenable GRAS/RL; keep GRAS/SG disabled for now
-  - Various cleanups to the autotools stuff
-  - Begin to move Gras examples to examples/gras/
-  - Let make distcheck work again (yeah!)
+SimGrid (2.90) unstable; urgency=low
+
+  Alpha 1 on the path to SimGrid 3
+
+  * It is a long time since the last release of SimGrid. I'm sorry about
+    that but as I had told you, I was rewriting a lot of things. I apologize 
+    to those who had been reporting bugs to me and that I had not answered. 
+    If your bug is still in the new version, please tell me. Here is a 
+    summary of the main changes.
+
+  * REVOLUTION 1: The SimGrid project has merged with the GRAS project
+    lead by Martin Quinson. As a consequence SimGrid gains a lot in
+    portability, speed, and a lot more but you'll figure it out later. 
+    SimGrid now comprises 3 different projects : MSG, GRAS and SMPI. 
+    I wanted to release the new MSG as soon as possible and I have 
+    broken GRAS, which is the reason why, for now, only MSG is fully 
+    functionnal. A laconic description of these projects is available 
+    in the documentation.
+  
+  * REVOLUTION 2: I have removed SG and I am now using a new simulation
+    kernel optimized for our needs (called SURF but only the developers
+    should use it). Hence, MSG is now roughly 30 times faster and I think
+    that by rewriting a little bit MSG, I could event speed it up a little
+    bit more. Beside the gain in speed, it is also much easier to encode a
+    new platform model with SURF than it was with SG. More to come...
+  
+  * REVOLUTION 3: I have tried to change a little as possible the API of
+    MSG but a few things really had to disappear. The main differences
+    with the previous version are :
+       1) no more m_links_t and the corresponding functions. Platforms are
+         directly read from a XML description and cannot be hard-coded
+         anymore. The same format is used for application deployment
+         description. The new format is described in the documentation. 
+         Have a look in tools/platform_generation. There is a tiny script 
+         that converts from the old platform format to the new one. Concerning
+         the application deployment format, parsing the old one is tricky.  
+         I think most of you should hower be able to convert your files.  If 
+         it is really an issue, I can write a C code that does the conversion. 
+         Let me know.
+       2) the toolbox tbx does not exist anymore. We now have a library
+          with much more data-structures but without the hash-tables (we have 
+          dictionaries that are much faster).
+
+ -- Arnaud Legrand <Arnaud.Legrand@imag.fr>  Mon, 31 Jan 2005 10:45:53 -0800
+
+*****************************************************************************
+* Follows the old GRAS changelog. It does not follow the same syntax, but I *
+* dont feel like converting the oldies. (Mt)                                *
+*****************************************************************************
 
 2005-01-31 Arnaud
   Version 2.90: "the long awaited one"
