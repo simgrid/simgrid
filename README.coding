@@ -3,9 +3,9 @@
 **
 ******************************************************
 
-There is 4 projects in the tree:
+There is at least 4 projects in the tree:
 
- - GROS: no fancy name yet (low-level toolbox: logging, datatypes).
+ - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
  - GRAS: Grid Reality And Simulation (message passing API with two
          implementations allowing to compile programs on top of the
          simulator or for the real life without code modification)
@@ -20,7 +20,7 @@ GRAS (that's the only cycle here, we're not *that* vicious).
 
 The tree is not splited on projects, but on file finality:
  include/            -> all *public* headers
- include/gros/*.h    -> one file per module
+ include/xbt/*.h     -> one file per module
  include/gros.h      -> file including all modules headers
   (same for gras, surf and amok instead of gros)
   
@@ -39,7 +39,10 @@ The tree is not splited on projects, but on file finality:
    So, the modules have 3 levels of publicity for their interface. 
    Private, internal to GRAS, public. Of course, I try to keep as much stuff
    private as possible.
-  
+
+ src/include -> another location for protected headers. Used by SURF, and
+                other should be converted, since this is the Right Thing.
+
  testsuite/ -> The more test the better. 
                Same organization than src/ and include/
                Tests are allowed to load some headers of the module they test.
@@ -90,12 +93,11 @@ bug. Please report it (or fix it yourself if you can).
 *****************************************************
 
 MALLOC:
- You must cast the result of malloc on AIX. 
- It's even better to use gras_new when possible.
+ Don't use it, or you'll have to check the result (and do some dirty stuff
+ on AIX). Use xbt_malloc (or even better, xbt_new) instead.
 
 SIZE_T
  If possible, avoid size_t and use unsigned long instead. If not,
-
  #include <sys/types.h> in all files manipulating size_t
  do cast it to unsigned long before printing (and use %lu)
  
@@ -104,65 +106,27 @@ PRINTF pointer difference
   
 
 **		
-** Commenting the source
+** Commenting the source: doxygen
 **
 ****************************************************
 
-Le format pour cela est :
+The global structure of the documentation is in doc/modules.doc 
 
-/**                              (très important, la deuxieme étoile)
- * nomDeFonction:                (faut les deux points)
- * @param1: blabla               (faut le @ et les deux points, et ca peut
- *                                courir sur plusieurs lignes)
- * @param2: blabla
- *                               (fin des paramètres: ligne vide)
- * blabla sur la fonction        (autant de lignes que tu veux)
- */
+The structure of each module (xbt, gras, etc) is in doc/module-<module>.doc
 
-Si tu met () apres un nom de fonction, il essaye d'ajouter un lien
-automatiquement, il me semble.
+The structure of a module is in its public header. This way, you're sure to
+see all the public interface (and only it). The different parts of the
+interface are grouped using the @name construct, even if it's buggy. Since
+parts often get reordered, it's better to add numbers to the parts (so that
+users can see the intended order).
 
+The documentation of each type and macro are also in the public header since
+this is were they live.
 
-Ensuite, quand tu fais "make -C doc", il ne se passe rien de particulier ;)
-Avant que ca marche, il faut créer une nouvelle section dans
-doc/gras-sections.txt Attention, on dirait du xml, mais le parseur est
-stupide. Je me suis arraché les cheveux plusieurs heures pour un "<SECTION<"
+The documentation of each function must be in the C file were it lives. 
 
-Tout ce qui n'est pas dans une section se trouve listé dans gras-unused.txt
-Pour éviter que ca ne soit le cas sans pour autant les documenter, place les
-symboles après <SUBSECTION Standard> (regarde tbx_log dans le fichier pour
-un exemple).
+Any public element (function, type and macro) must have a @brief part.
 
-Une fois la section crée, un "make -C doc" crée un bout de doc, mais ne
-l'inclue pas dans la documentation finale. Pour cela, il faut éditer le
-fichier gras-docs.sgml (qui est un fichier xml de bon aloi, malgré son
-nom). Il te faut ajouter une entité système dans le prologue (avant "]>")
-style: <!ENTITY tbx-cfg SYSTEM "xml/tbx_cfg.xml">
-Ensuite dans le corps du document, tu colles: &tbx-cfg; et t'es arrivé. Au
-milleu du gras-docs.sgml, y'a un bout de code mort en commentaire. Autant le
-laisser, je nettoyerais un jour, peut etre.
-
-
-Il te faut maintenant mettre un titre long et une description de module.
-Pour cela, édite le fichier "tmpl/<nom_de_section>.sgml". Juste en haut, les
-parties "SECTION Title", "SECTION Short_Description", "SECTION
-Long_Description" et "SECTION See_Also". Pr les deux premiers, faut mettre
-une seule ligne et pas de tags. Pour les autres, il faut faire des
-paragraphes. Donc, tout ce que t'as le droit de mettre dans un <para> passe.
-
-Attention, les fichiers dans doc/xml sont les morceaux prêts à être intégrés
-par gras-doc.sgml. Ils sont donc générés et écrasés à tout bout de champ.
-Mais les fichiers de doc/tmpl (templates) sont aussi partiellement générés.
-Les doc de fonction extraites du code y sont placées, et les modification
-que t'y a fait (titre, desc_courte/longue, voir_aussi) sont préservées,
-normalement.
-
-
-Voila, une fois ceci fait, la doc devrait être bonne. Comme tu peux le voir,
-gtk-doc est bien plus bordelique à utiliser que doxygen (j'utilise souvent
-"make clean all" car il semble manquer des dépendances). Mais je préfere car
-on peut faire exactement ce qu'on veut. Et pis rose bonbon, c'est plus joli
-que bleu triste.
 
 **		
 ** Using the logs
