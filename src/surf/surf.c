@@ -103,6 +103,12 @@ void surf_action_change_state(surf_action_t action,
     xbt_swag_insert(action, action->state_set);
 }
 
+void surf_action_set_data(surf_action_t action,
+			  void *data)
+{
+  action->data=data;
+}
+
 void surf_init(int *argc, char **argv)
 {
   xbt_init(argc, argv);

@@ -195,6 +195,7 @@ static void surf_workstation_resource_init_internal(void)
       action_recycle;
   surf_workstation_resource->common_public->action_change_state =
       action_change_state;
+  surf_workstation_resource->common_public->action_set_data = surf_action_set_data;
   surf_workstation_resource->common_public->name = "Workstation";
 
   surf_workstation_resource->common_private->resource_used = resource_used;

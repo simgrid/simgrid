@@ -416,7 +416,6 @@ static surf_action_t communicate(void *src, void *dst, double size)
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = -1.0;
   action->generic_action.finish = -1.0;
-  action->generic_action.callback = NULL;
   action->generic_action.resource_type =
       (surf_resource_t) surf_network_resource;
 
@@ -493,6 +492,7 @@ static void surf_network_resource_init_internal(void)
   surf_network_resource->common_public->action_recycle = action_recycle;
   surf_network_resource->common_public->action_change_state =
       action_change_state;
+  surf_network_resource->common_public->action_set_data = surf_action_set_data;
   surf_network_resource->common_public->name = "network";
 
   surf_network_resource->common_private->resource_used = resource_used;

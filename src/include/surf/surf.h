@@ -47,7 +47,7 @@ typedef struct surf_action {
   double start;			/* start time  */
   double finish;		/* finish time : this is modified during the run
 				 * and fluctuates until the task is completed */
-  void *callback;		/* for your convenience */
+  void *data;			/* for your convenience */
   surf_resource_t resource_type;
 } s_surf_action_t;
 
@@ -67,6 +67,8 @@ typedef struct surf_resource_public {
   void (*action_recycle) (surf_action_t action);
   void (*action_change_state) (surf_action_t action,
 			       e_surf_action_state_t state);
+  void (*action_set_data) (surf_action_t action,
+			   void *data);
   const char *name;
 } s_surf_resource_public_t, *surf_resource_public_t;
 
