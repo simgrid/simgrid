@@ -13,7 +13,6 @@ Simplifier le déploiement RL
  - renomer gras-remote-worker en graspe-qqch
 XMLeries
    - Versionner le surfxml
-   - Tester si flexml passe avec flex-old
 Pb des contextes     
    - gras aura besoin des pthreads un jour 
      => KISS et on oublie pth. A la place, on fait du context over pthread
@@ -25,7 +24,10 @@ Changements à ce jour
 
   Alpha 4 on the path to SimGrid 3
 
-  (nothing yet)
+  [Martin]
+  (infrastructure)
+   - fix detection of older flex version and the reaction, since we do
+     depend on modern ones (we use lex_destroy) 
 
  -- SimGrid team <simgrid2-users@listes.ens-lyon.fr> NOT RELEASED YET
 
