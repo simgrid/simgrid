@@ -58,7 +58,7 @@ gras_ignored="gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32
 # we split tests on ';' so that they can contain spaces (test=accumulator)
 test=""
 
-for testpart in $xbt_TESTS $msg_TESTS $gras_TESTS # $surf_TESTS 
+for testpart in $xbt_TESTS $msg_TESTS $gras_TESTS $surf_TESTS # 
 do
   test="$test $testpart"
   if echo $test | grep ';' ; then
