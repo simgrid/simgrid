@@ -33,9 +33,9 @@ gras_procdata_init() {
   gras_error_t errcode;
   gras_procdata_t *pd=gras_procdata_get();
   pd->userdata = NULL;
-  TRY(gras_dynar_new(  &(pd->msg_queue), sizeof(gras_msg_t),      NULL  ));
-  TRY(gras_dynar_new(  &(pd->cbl_list),  sizeof(gras_cblist_t *), NULL  ));
-  TRY(gras_dynar_new(  &(pd->sockets),   sizeof(gras_socket_t*),  NULL));
+  TRY(gras_dynar_new(&(pd->msg_queue), sizeof(gras_msg_t),     NULL));
+  TRY(gras_dynar_new(&(pd->cbl_list),  sizeof(gras_cblist_t *),gras_cbl_free));
+  TRY(gras_dynar_new(&(pd->sockets),   sizeof(gras_socket_t*), NULL));
   return no_error;
 }
 

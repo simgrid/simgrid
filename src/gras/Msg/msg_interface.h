@@ -32,5 +32,5 @@ gras_error_t gras_msg_send_namev(gras_socket_t *sock,
 #define GRAS_PROTOCOL_VERSION '\0';
 
 typedef struct s_gras_cblist gras_cblist_t;
-
+void gras_cbl_free(void *); /* virtu use that to free the memory at the end */
 #endif  /* GRAS_MSG_INTERFACE_H */

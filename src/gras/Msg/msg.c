@@ -400,6 +400,15 @@ gras_msg_handle(double timeOut) {
   return mismatch_error;
 }
 
+void
+gras_cbl_free(void *data){
+  gras_cblist_t *list=*(void**)data;
+  if (list) {
+    gras_dynar_free(list->cbs);
+    free(list);
+  }
+}
+
 gras_error_t
 gras_cb_register(gras_msgtype_t *msgtype,
 		 gras_cb_t cb) {
