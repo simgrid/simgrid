@@ -54,7 +54,6 @@ typedef struct simdata_process {
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   xbt_fifo_t host;
-  xbt_fifo_t link;
   xbt_fifo_t process_to_run;
   xbt_fifo_t process_list;
   int max_channel;

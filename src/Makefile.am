@@ -113,6 +113,7 @@ COMMON_S=\
   msg/host.c  \
   msg/m_process.c  \
   msg/gos.c  \
+  msg/global.c  \
   \
   gras/gras.c \
   \
