@@ -57,10 +57,10 @@ DIE=0
   }
 }
 
-(automake-1.7 --version) < /dev/null > /dev/null 2>&1 || {
+(automake-1.8 --version) < /dev/null > /dev/null 2>&1 || {
   echo
-  echo "**Error**: You must have \`automake' 1.7 installed to compile $PKG_NAME."
-  echo "Get ftp://ftp.gnu.org/pub/gnu/automake-1.7.tar.gz"
+  echo "**Error**: You must have \`automake' 1.8 installed to compile $PKG_NAME."
+  echo "Get ftp://ftp.gnu.org/pub/gnu/automake-1.8.tar.gz"
   echo "(or a newer version if it is available)"
   DIE=1
   NO_AUTOMAKE=yes
@@ -137,15 +137,15 @@ do
 	libtoolize --force --copy || exit 1
       fi
     fi
-    echo "Running aclocal-1.7 $aclocalinclude..."
-    aclocal-1.7 $aclocalinclude 
+    echo "Running aclocal-1.8 $aclocalinclude..."
+    aclocal-1.8 $aclocalinclude 
     if grep "^AM_CONFIG_HEADER" $configfile >/dev/null; then
       echo "Running autoheader in "`pwd`"..."
       autoheader || exit 1
     fi
     if grep "^AM_INIT_AUTOMAKE" $configfile >/dev/null; then
-      echo "Running automake-1.7 --gnu --add-missing $am_opt ..."
-      automake-1.7 --gnu --add-missing $am_opt || exit 1
+      echo "Running automake-1.8 --gnu --add-missing $am_opt ..."
+      automake-1.8 --gnu --add-missing $am_opt || exit 1
     fi
     echo "Running autoconf..."
     autoconf || exit 1
