@@ -313,6 +313,11 @@ static void action_resume(surf_action_t action)
 			     ((surf_action_cpu_t) action)->variable, 1.0);
 }
 
+static int action_is_suspended(surf_action_t action)
+{
+  return (lmm_get_variable_weight(maxmin_system, ((surf_action_cpu_t) action)->variable) == 0.0);
+}
+
 static e_surf_cpu_state_t get_state(void *cpu)
 {
   return ((cpu_t) cpu)->state_current;
@@ -380,6 +385,7 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->extension_public->sleep = action_sleep;
   surf_cpu_resource->extension_public->suspend = action_suspend;
   surf_cpu_resource->extension_public->resume = action_resume;
+  surf_cpu_resource->extension_public->is_suspended = action_is_suspended;
 
   surf_cpu_resource->extension_public->get_state = get_state;
 

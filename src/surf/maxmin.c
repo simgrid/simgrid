@@ -347,11 +347,10 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
   var->bound = bound;
 }
 
-void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
-				double weight)
+double lmm_get_variable_weight(lmm_system_t sys, lmm_variable_t var)
+				  
 {
-  sys->modified = 1;
-  var->weight = weight;
+  return var->weight;
 }
 
 void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,

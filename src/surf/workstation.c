@@ -135,6 +135,14 @@ static void action_resume(surf_action_t action)
   surf_cpu_resource->extension_public->resume(action);
 }
 
+static int action_is_suspended(surf_action_t action)
+{
+  xbt_assert0(action->resource_type ==
+	      ((surf_resource_t) surf_cpu_resource),
+	      "Resource type mismatch");
+  return surf_cpu_resource->extension_public->is_suspended(action);
+}
+
 static surf_action_t communicate(void *workstation_src,
 				 void *workstation_dst, double size)
 {
@@ -202,6 +210,7 @@ static void surf_workstation_resource_init_internal(void)
   surf_workstation_resource->extension_public->sleep = action_sleep;
   surf_workstation_resource->extension_public->suspend = action_suspend;
   surf_workstation_resource->extension_public->resume = action_resume;
+  surf_workstation_resource->extension_public->is_suspended = action_is_suspended;
   surf_workstation_resource->extension_public->get_state = get_state;
   surf_workstation_resource->extension_public->communicate = communicate;
 
