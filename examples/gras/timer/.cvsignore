@@ -2,3 +2,6 @@
 test_sg
 test_rl
 timer.Makefile.am
+timer.Makefile.local
+timer.Makefile.remote
+timer.deploy.sh
