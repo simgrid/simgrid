@@ -54,6 +54,38 @@ XBT_LOG_NEW_SUBCATEGORY(xbt,XBT_LOG_ROOT_CAT,"All XBT categories (gras toolbox)"
 XBT_LOG_NEW_SUBCATEGORY(surf,XBT_LOG_ROOT_CAT,"All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
 
+void xbt_log_init(int *argc,char **argv, const char *defaultlog) {
+  int i,j;
+  char *opt;
+  int found=0;
+
+  /** Set logs and init log submodule */
+  for (i=1; i<*argc; i++) {
+    if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log="))) {
+      found = 1;
+      opt=strchr(argv[i],'=');
+      opt++;
+      xbt_log_control_set(opt);
+      DEBUG1("Did apply '%s' as log setting",opt);
+      /*remove this from argv*/
+      for (j=i+1; j<*argc; j++) {
+	argv[j-1] = argv[j];
+      } 
+      argv[j-1] = NULL;
+      (*argc)--;
+      i--; /* compensate effect of next loop incrementation */
+    }
+  }
+  if (!found && defaultlog) {
+     xbt_log_control_set(defaultlog);
+  }
+}
+
+void xbt_log_exit(void) {
+  VERB0("Exiting log");
+  xbt_dynar_free(&xbt_log_settings);
+  VERB0("Exited log");
+}
 
 static void _apply_control(xbt_log_category_t cat) {
   int cursor;
@@ -363,8 +395,3 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
   cat->appender = app;
 }
 
-void xbt_log_exit(void) {
-  VERB0("Exiting log");
-  xbt_dynar_free(&xbt_log_settings);
-  VERB0("Exited log");
-}

@@ -49,32 +49,9 @@ xbt_init(int *argc, char **argv) {
  */
 void
 xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
-  int i,j;
-  char *opt;
-  int found=0;
-
   INFO0("Initialize GRAS");
   
-  /** Set logs and init log submodule */
-  for (i=1; i<*argc; i++) {
-    if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log="))) {
-      found = 1;
-      opt=strchr(argv[i],'=');
-      opt++;
-      xbt_log_control_set(opt);
-      DEBUG1("Did apply '%s' as log setting",opt);
-      /*remove this from argv*/
-      for (j=i+1; j<*argc; j++) {
-	argv[j-1] = argv[j];
-      } 
-      argv[j-1] = NULL;
-      (*argc)--;
-      i--; /* compensate effect of next loop incrementation */
-    }
-  }
-  if (!found && defaultlog) {
-     xbt_log_control_set(defaultlog);
-  }
+  xbt_log_init(argc,argv,defaultlog);
    
   gras_process_init(); /* calls procdata_init, which calls dynar_new */
   /** init other submodules */
