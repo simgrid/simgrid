@@ -151,6 +151,7 @@ gras_trp_buf_socket_accept(gras_socket_t  sock,
   TRY(super->socket_accept(sock,dst));
   (*dst)->plugin = sock->plugin;
   gras_trp_buf_init_sock(*dst);
+  XBT_OUT;
   return no_error;
 }
 
