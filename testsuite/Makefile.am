@@ -17,6 +17,7 @@ xbt_tests =                                                      \
 	xbt/set_usage                                            \
 	xbt/log_usage                                            \
 	xbt/heap_bench                                           \
+	xbt/swag_usage                                           \
 	xbt/config_usage
 # xbt/multidict_crash 
 
@@ -25,7 +26,8 @@ RL_tests =                                              \
 	gras/trp_file_client  gras/trp_file_server      \
 	gras/datadesc_usage
 
-SG_tests =
+SG_tests =                                              \
+	surf/maxmin_usage
 
 check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
@@ -51,11 +53,13 @@ xbt_dict_crash_LDADD=         $(LDADD_UTILS)
 #xbt_multidict_crash_LDADD=    $(LDADD_UTILS)
 
 xbt_set_usage_LDADD=          $(LDADD_UTILS)
+xbt_swag_usage_LDADD=         $(LDADD_UTILS)
 
 xbt_config_usage_LDADD=       $(LDADD_UTILS)
 
 xbt_heap_bench_LDADD=         $(LDADD_UTILS)
 
+surf_maxmin_usage_LDADD=         $(LDADD_UTILS)
 
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)

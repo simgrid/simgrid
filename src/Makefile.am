@@ -86,6 +86,7 @@ COMMON_S=\
   xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \
   xbt/heap.c                                                                    \
   xbt/fifo.c                                                                    \
+  xbt/swag.c                                                                   \
   xbt/set.c                                                                    \
   xbt/module.c                                                                 \
   xbt/config.c                                                                 \

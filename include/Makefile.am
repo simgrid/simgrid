@@ -7,6 +7,7 @@ nobase_include_HEADERS = \
 	xbt/dynar.h xbt/dict.h xbt/set.h \
 	xbt/heap.h \
 	xbt/fifo.h \
+	xbt/swag.h \
 	xbt/config.h \
 	\
 	surf/maxmin.h \
