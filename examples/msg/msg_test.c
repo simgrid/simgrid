@@ -225,6 +225,7 @@ int forwarder(int argc, char *argv[])
 void test_all(const char *platform_file,const char *application_file)
 {
   {				/*  Simulation setting */
+    MSG_paje_output("msg_test.trace");
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_create_environment(platform_file);
   }
@@ -234,7 +235,6 @@ void test_all(const char *platform_file,const char *application_file)
     MSG_function_register("forwarder", forwarder);
     MSG_launch_application(application_file);
   }
-  MSG_paje_output("msg_test.trace");
   MSG_main();
   printf("Simulation time %g\n",MSG_getClock());
 }

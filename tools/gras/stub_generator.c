@@ -67,21 +67,22 @@ const char *SIM_PREEMBULE =
 "  return retcode;\n" \
 "}\n"
 
-const char* SIM_MAIN_PREEMBULE =
-"int main (int argc,char *argv[]) {\n"
-"  int i,j;\n"
-"\n"
-"  /*  Simulation setup */\n"
-"  MSG_global_init_args(&argc,argv);\n"
-"  if (argc != 3) {\n"
-"    fprintf(stderr, \"Usage: %s platform_file application_description.txt [--gras-log=...]\\n\",argv[0]);\n"
-"    exit(1);\n"
-"  }\n"
-"\n"
-"  MSG_set_channel_number(10); // GRAS_MAX_CHANNEL hardcoded since Alvin killed its definition\n"
-"  MSG_create_environment(argv[1]);\n"
-"\n"
-"  /*  Application deployment */\n";
+#define SIM_MAIN_PREEMBULE \
+"int main (int argc,char *argv[]) {\n" \
+"  int i,j;\n" \
+"\n" \
+"  /*  Simulation setup */\n" \
+"  MSG_global_init_args(&argc,argv);\n" \
+"  if (argc != 3) {\n" \
+"    fprintf(stderr, \"Usage: %%s platform_file application_description.txt [--gras-log=...]\\n\",argv[0]);\n" \
+"    exit(1);\n" \
+"  }\n" \
+"\n" \
+"  MSG_paje_output(\"%s.trace\");\n" \
+"  MSG_set_channel_number(10); // GRAS_MAX_CHANNEL hardcoded since Alvin killed its definition\n" \
+"  MSG_create_environment(argv[1]);\n" \
+"\n" \
+"  /*  Application deployment */\n"
 
 const char *SIM_MAIN_POSTEMBULE = "\n"
 "\n"
@@ -180,7 +181,7 @@ static void generate_sim(char *project)
   }
   fprintf(OUT, "\n%s\n",warning);
 
-  fprintf(OUT, "%s", SIM_MAIN_PREEMBULE);
+  fprintf(OUT, SIM_MAIN_PREEMBULE, project);
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT,"  MSG_function_register(\"%s\", launch_%s);\n",key,key);
   }
