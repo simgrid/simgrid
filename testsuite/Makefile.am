@@ -4,7 +4,8 @@ AM_CFLAGS=-g
 CLEANFILES = *~ test a.out *.o
 DISTCLEANFILES=Makefile.in *~
 EXTRA_DIST=run_tests.in \
-  datadesc.little32 datadesc.little64 datadesc.big32 datadesc.big64
+  datadesc.little32 datadesc.little64 datadesc.big32 datadesc.big64 \
+  mk_datadesc_structs.pl
 
 # Test stuff
 
@@ -55,5 +56,8 @@ trp_tcp_server_LDADD=     $(LDADD_RL)
 trp_file_client_LDADD=    $(LDADD_RL)
 trp_file_server_LDADD=    $(LDADD_RL)
 
+datadesc_usage_SOURCES= datadesc_usage.c datadesc_structs.c
 datadesc_usage_LDADD=     $(LDADD_RL)
 
+datadesc_structs.c: mk_datadesc_structs.pl
+	perl mk_datadesc_structs.pl > datadesc_structs.c
