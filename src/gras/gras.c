@@ -23,6 +23,8 @@ static int gras_running_process = 0;
 void gras_init(int *argc,char **argv, const char *defaultlog) {
 
   INFO0("Initialize GRAS");
+  CRITICAL0("Go Away ! Work in progress  ");
+  xbt_assert0(0, "GO TO HELL! ]:)"); 
   xbt_init_defaultlog(argc,argv,defaultlog);
   gras_process_init(); /* calls procdata_init, which calls dynar_new */
   /** init other submodules */
