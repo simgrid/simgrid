@@ -125,6 +125,7 @@ int server (int argc,char *argv[]) {
     gras_sleep(5,0);
   INFO0("SERVER: Done.");
   gras_socket_close(g->sock);
+  free(g);
   return no_error;
 }
 
@@ -201,6 +202,7 @@ int client(int argc,char *argv[]) {
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
   gras_socket_close(g->sock);
+  free(g);
   INFO0("Client: Done.");
   return 0;
 }
