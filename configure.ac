@@ -3,7 +3,7 @@ AC_PREREQ(2.59)
 # We need a recent ACI
 # A CI_PREREQ(2003.01.16)
 
-AC_INIT([simgrid],[2.92-cvs],[simgrid2-users@listes.ens-lyon.fr])
+AC_INIT([simgrid],[2.92],[simgrid2-users@listes.ens-lyon.fr])
 AC_CONFIG_SRCDIR([include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 
