@@ -51,6 +51,7 @@ typedef struct lmm_variable {
 } s_lmm_variable_t;
 
 typedef struct lmm_system {
+  int modified;
   s_xbt_swag_t variable_set;	/* a list of lmm_variable_t */
   s_xbt_swag_t constraint_set;	/* a list of lmm_constraint_t */
 

@@ -6,9 +6,7 @@
 #ifndef _SURF_MAXMIN_H
 #define _SURF_MAXMIN_H
 
-typedef long double xbt_maxmin_float_t;
-#define XBT_MAXMIN_FLOAT_T "%Lg"	/* for printing purposes */
-
+#include "xbt/misc.h"
 typedef struct lmm_variable *lmm_variable_t;
 typedef struct lmm_constraint *lmm_constraint_t;
 typedef struct lmm_system *lmm_system_t;
@@ -40,11 +38,11 @@ void *lmm_variable_id(lmm_variable_t var);
 
 void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, xbt_maxmin_float_t value);
-void lmm_update_variable_bound(lmm_variable_t var,
+void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 			       xbt_maxmin_float_t bound);
-void lmm_update_variable_weight(lmm_variable_t var,
+void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 				xbt_maxmin_float_t weight);
-void lmm_update_constraint_bound(lmm_constraint_t cnst,
+void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
 				 xbt_maxmin_float_t bound);
 
 int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
