@@ -9,7 +9,7 @@ PKG_NAME="GRAS"
 # a list of all dirs containing possibly some macros
 acmacrodirs="${HOME}/share/aclocal ${PWD}/acmacro /usr/share/aclocal/gnome2-macros"
 
-amver=1.7
+amver=1.8
 
 ######
 ###### End of conf part
