@@ -59,6 +59,10 @@ void *xbt_swag_extract(void *obj, xbt_swag_t swag)
 
   if (!obj)
     return NULL;
+  if(!xbt_swag_belongs(obj, swag)) /* Trying to remove an object that
+				      was not in this swag */
+      return NULL;
+
   if (swag->head == swag->tail) {	/* special case */
     if (swag->head != obj)	/* Trying to remove an object that was not in this swag */
       return NULL;
