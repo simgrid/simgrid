@@ -247,7 +247,7 @@ gras_msg_recv(gras_socket_t   *sock,
   TRY(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
   TRY(gras_set_get_by_name(_gras_msgtype_set,
 			   msg_name,(gras_set_elm_t**)msgtype));
-
+  free(msg_name);
 
   *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
   gras_assert2(*payload_size > 0,
