@@ -1,4 +1,4 @@
-SUBDIRS= . # amok
+SUBDIRS= . amok
 
 AM_CFLAGS= -g
 #AM_CFLAGS= -DNDEBUG 
