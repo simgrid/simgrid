@@ -1,3 +1,6 @@
+2004-12-16 Martin
+  - Finish the port to windows (using mingw32 for cross-compile)
+
 2004-11-28 Arnaud
   - Main loop and datastructures of SURF. A cpu resource object is
     functionnal. Surf can thus be used to create cpu's with variable
