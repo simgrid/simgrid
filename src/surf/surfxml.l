@@ -39,7 +39,7 @@ const char rcs_flexml[] =
 
 /* Generated definitions. */
 #define FLEXML_yylineno
-#define FLEXML_BUFFERSTACKSIZE 10000000
+#define FLEXML_BUFFERSTACKSIZE 1000000
 
 /* XML processor api. */
 #include "surf/surfxml.h"
@@ -215,7 +215,8 @@ const char* *statenames=NULL;
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
   /* FleXML_init */
-  if(!statenames) statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
+  next = bufferstack;
+  if(!statenames) {statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
   statenames[PROLOG] = NULL;
   statenames[DOCTYPE] = NULL;
   statenames[EPILOG] = NULL;
@@ -260,7 +261,7 @@ const char* *statenames=NULL;
   statenames[ROOT_argument] = NULL;
   statenames[AL_argument] = NULL;
   statenames[E_argument] = "argument";
-
+  }
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
 <ROOT_platform_description,AL_platform_description,S_platform_description,S_platform_description_1,S_platform_description_2,E_platform_description,ROOT_include,AL_include,S_include,S_include_1,S_include_2,E_include,ROOT_cpu,AL_cpu,E_cpu,ROOT_network_link,AL_network_link,E_network_link,ROOT_route,AL_route,S_route,S_route_1,S_route_2,E_route,ROOT_route_element,AL_route_element,E_route_element,ROOT_process,AL_process,S_process,S_process_1,S_process_2,E_process,ROOT_argument,AL_argument,E_argument,PROLOG,DOCTYPE,EPILOG>{
