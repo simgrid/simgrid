@@ -299,7 +299,12 @@ MSG_error_t MSG_clean(void)
 {
   xbt_fifo_item_t i = NULL;
   m_host_t h = NULL;
+  m_process_t p = NULL;
 
+
+  while((p=xbt_fifo_shift(msg_global->process_list))) {
+    MSG_process_free(p);
+  }
   xbt_context_exit();
 
   xbt_fifo_foreach(msg_global->host,i,h,m_host_t) {

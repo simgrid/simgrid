@@ -51,7 +51,6 @@ static void MSG_process_cleanup(void *arg)
   xbt_free(arg);
 }
 
-
 m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,
 					      m_host_t host, int argc, char **argv)
@@ -97,6 +96,13 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   xbt_fifo_push(msg_global->process_to_run, process);
 
   return process;
+}
+
+void MSG_process_free(m_process_t process)
+{
+  xbt_fifo_remove(msg_global->process_list,process);
+  xbt_context_free(process->simdata->context);
+  MSG_process_cleanup(process);
 }
 
 /** \ingroup m_process_management
