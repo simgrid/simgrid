@@ -109,13 +109,6 @@ COMMON_S=\
   surf/surf_parse.c                                                          \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   \
-  msg/task.c  \
-  msg/host.c  \
-  msg/m_process.c  \
-  msg/gos.c  \
-  msg/global.c  \
-  msg/environment.c  \
-  msg/deployment.c  \
   \
   gras/gras.c \
   \
@@ -130,6 +123,14 @@ COMMON_S=\
   gras/Msg/msg.c                      gras/Msg/msg_interface.h             gras/Msg/msg_private.h \
   \
   gras/Virtu/process.c
+
+#   msg/task.c  \
+#   msg/host.c  \
+#   msg/m_process.c  \
+#   msg/gos.c  \
+#   msg/global.c  \
+#   msg/environment.c  \
+#   msg/deployment.c  
 
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 	@LEX@ -o$@ -Pgras_ddt_parse_ $^
