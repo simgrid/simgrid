@@ -1,3 +1,13 @@
+SimGrid (2.92) unstable; urgency=low
+
+  Alpha 3 on the path to SimGrid 3
+
+  [Martin]
+  (xbt)
+   - Bugfix: let dicts work with NULL content (_foreach didn't) and cleanups
+
+ -- Martin Quinson <mquinson@debian.org>  Wed, 23 Feb 2005 00:45:40 +0100
+
 SimGrid (2.91) unstable; urgency=low
 
   Alpha 2 on the path to SimGrid 3
