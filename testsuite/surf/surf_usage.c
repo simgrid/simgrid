@@ -91,20 +91,20 @@ void test(void)
     now = surf_get_clock();
     printf("Next Event : " XBT_HEAP_FLOAT_T "\n", now);
     printf("\t CPU actions\n");
-    while(action=xbt_swag_extract(surf_cpu_resource->common_public->states.failed_action_set)) {
+    while((action=xbt_swag_extract(surf_cpu_resource->common_public->states.failed_action_set))) {
       printf("\t * Failed : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
-    while(action=xbt_swag_extract(surf_cpu_resource->common_public->states.done_action_set)) {
+    while((action=xbt_swag_extract(surf_cpu_resource->common_public->states.done_action_set))) {
       printf("\t * Done : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
     printf("\t Network actions\n");
-    while(action=xbt_swag_extract(surf_network_resource->common_public->states.failed_action_set)) {
+    while((action=xbt_swag_extract(surf_network_resource->common_public->states.failed_action_set))) {
       printf("\t * Failed : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
-    while(action=xbt_swag_extract(surf_network_resource->common_public->states.done_action_set)) {
+    while((action=xbt_swag_extract(surf_network_resource->common_public->states.done_action_set))) {
       printf("\t * Done : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
