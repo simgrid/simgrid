@@ -270,7 +270,7 @@ _dict_child_cmp(gras_dictelm_t *p_dict,
   int           o       = *p_offset;
   int           m       = *p_match;
 
-  gras_dynar_get(p_dict->sub, pos, &p_child);
+  p_child = gras_dynar_get_as(p_dict->sub, pos, gras_dictelm_t*);
 
   /* Compute the length of the prefix
      and if the searched key is before or after cur */
@@ -458,7 +458,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
     {
       gras_dictelm_t *p_child = NULL;
 
-      gras_dynar_get(p_head->sub, pos, &p_child);
+      p_child = gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
       CDEBUG1(dict_add, "-> Change the value of the child %p", (void*)p_child);
       _gras_dictelm_change_value(p_child, data, free_ctn);
 
@@ -471,7 +471,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
     {
       gras_dictelm_t *p_child = NULL;
 
-      gras_dynar_get(p_head->sub, pos, &p_child);
+      p_child=gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
       CDEBUG2(dict_add,"-> Recurse on %p (offset=%d)", (void*)p_child, offset);
 
       _gras_dictelm_set_rec(p_child, key, key_len, 
@@ -484,7 +484,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
       gras_dictelm_t *p_new   = NULL;
       gras_dictelm_t *p_child = NULL;
 
-      gras_dynar_get(p_head->sub, pos, &p_child);
+      p_child=gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
       _gras_dictelm_alloc(key, key_len, old_offset, data, free_ctn, &p_new);
 
       CDEBUG2(dict_add, "-> The child %p become child of new dict (%p)",
@@ -506,7 +506,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
       int          anc_key_len = offset;
 
       _gras_dictelm_alloc(key, key_len, offset, data, free_ctn, &p_new);
-      gras_dynar_get(p_head->sub, pos, &p_child);
+      p_child=gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
 
       anc_key = gras_memdup(key, anc_key_len);
 
@@ -646,7 +646,7 @@ _gras_dictelm_get_rec(gras_dictelm_t *p_head,
       {
         gras_dictelm_t *p_child = NULL;
 
-        gras_dynar_get(p_head->sub, pos, &p_child);
+        p_child = gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
         *data = p_child->content;
 
         return no_error;
@@ -656,7 +656,7 @@ _gras_dictelm_get_rec(gras_dictelm_t *p_head,
       {
         gras_dictelm_t *p_child = NULL;
 
-        gras_dynar_get(p_head->sub, pos, &p_child);
+        p_child = gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
 
         return _gras_dictelm_get_rec(p_child, key, key_len, offset, data);
       }
@@ -726,7 +726,7 @@ _collapse_if_need(gras_dictelm_t *p_head,
 
   if (pos >= 0) {
     /* Remove the child if |it's key| == 0 (meaning it's dead) */
-    gras_dynar_get(p_head->sub, pos, &p_child);
+    p_child = gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
 
     if (offset >= p_child->key_len) {
 
@@ -749,7 +749,7 @@ _collapse_if_need(gras_dictelm_t *p_head,
     return; /* cannot collapse */
   }
 
-  gras_dynar_get(p_head->sub, 0, &p_child);
+  p_child = gras_dynar_get_as(p_head->sub, 0, gras_dictelm_t*);
 
   /* Get the child's key as new key */
   CDEBUG2(dict_collapse,
@@ -820,7 +820,7 @@ _gras_dictelm_remove_rec(gras_dictelm_t *p_head,
       {
         gras_dictelm_t *p_child = NULL;
 
-        gras_dynar_get(p_head->sub, pos, &p_child);
+        p_child = gras_dynar_get_as(p_head->sub, pos, gras_dictelm_t*);
         /*DEBUG5("Recurse on child %d of %p to remove %.*s (prefix=%d)",
           pos, (void*)p_child, key+offset, key_len-offset,offset);*/
         TRY(_gras_dictelm_remove_rec(p_child, key, key_len, offset));

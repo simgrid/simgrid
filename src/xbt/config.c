@@ -122,7 +122,7 @@ gras_cfg_dump(const char *name,const char *indent,gras_cfg_t *cfg) {
   int ival;
   char *sval;
   double dval;
-  gras_host_t hval;
+  gras_host_t *hval;
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n",indent,name);
@@ -139,29 +139,29 @@ gras_cfg_dump(const char *name,const char *indent,gras_cfg_t *cfg) {
        
     case gras_cfgelm_int:
       for (i=0; i<size; i++) {
-	gras_dynar_get(cell->content,i,&ival);
+	ival = gras_dynar_get_as(cell->content,i,int);
 	printf ("%s    %d\n",indent,ival);
       }
       break;
 
     case gras_cfgelm_double:
       for (i=0; i<size; i++) {
-	gras_dynar_get(cell->content,i,&dval);
+	dval = gras_dynar_get_as(cell->content,i,double);
 	printf ("%s    %f\n",indent,dval);
       }
       break;
 
     case gras_cfgelm_string:
       for (i=0; i<size; i++) {
-	gras_dynar_get(cell->content,i,&sval);
+	sval = gras_dynar_get_as(cell->content,i,char*);
 	printf ("%s    %s\n",indent,sval);
       }
       break;
 
     case gras_cfgelm_host:
       for (i=0; i<size; i++) {
-	gras_dynar_get(cell->content,i,&hval);
-	printf ("%s    %s:%d\n",indent,hval.name,hval.port);
+	hval = gras_dynar_get_as(cell->content,i,gras_host_t*);
+	printf ("%s    %s:%d\n",indent,hval->name,hval->port);
       }
       break;
 
@@ -967,7 +967,7 @@ gras_cfg_get_int   (gras_cfg_t  *cfg,
 	     name, gras_dynar_length(cell->content));
   }
 
-  gras_dynar_get(cell->content, 0, (void*)val);
+  *val = gras_dynar_get_as(cell->content, 0, int);
   return no_error;
 }
 
@@ -998,7 +998,7 @@ gras_cfg_get_double(gras_cfg_t *cfg,
 	     name, gras_dynar_length(cell->content));
   }
 
-  gras_dynar_get(cell->content, 0, (void*)val);
+  *val = gras_dynar_get_as(cell->content, 0, double);
   return no_error;
 }
 
@@ -1031,7 +1031,7 @@ gras_error_t gras_cfg_get_string(gras_cfg_t *cfg,
 	     name, gras_dynar_length(cell->content));
   }
 
-  gras_dynar_get(cell->content, 0, (void*)val);
+  *val = gras_dynar_get_as(cell->content, 0, char *);
   return no_error;
 }
 
@@ -1065,7 +1065,7 @@ gras_error_t gras_cfg_get_host  (gras_cfg_t *cfg,
 	     name, gras_dynar_length(cell->content));
   }
 
-  gras_dynar_get(cell->content, 0, (void*)val);
+  val = gras_dynar_get_as(cell->content, 0, gras_host_t*);
   *host=val->name;
   *port=val->port;
   

@@ -27,7 +27,12 @@ void          gras_dynar_reset(gras_dynar_t *dynar);
 
 
 /* regular array functions */
-void gras_dynar_get(const gras_dynar_t *dynar, int idx, void *const dst);
+void gras_dynar_get_cpy(const gras_dynar_t *dynar, int idx, void *const dst);
+void *gras_dynar_get_ptr(const gras_dynar_t * const dynar,
+			 const int                  idx);
+
+#define gras_dynar_get_as(dynar,idx,type) *(type*)gras_dynar_get_ptr(dynar,idx)
+  
 void gras_dynar_set(gras_dynar_t *dynar, int  idx, const void *src);
 void gras_dynar_remplace(gras_dynar_t *dynar,
 			 int idx, const void *object);

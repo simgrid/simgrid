@@ -1,3 +1,24 @@
+2004-11-07 Martin Quinson
+  - Speed up dynar lookup operation a bit.
+  
+    gras_dynar_get is dead. 
+    
+    Now, you can choose between gras_dynar_get_cpy (the old gras_dynar_get
+    but should be avoided for efficiency reasons) and gras_dynar_get_ptr
+    (which gives you the address of the stored data).
+    
+    gras_dynar_get_as is an helpful macro which allows you to retrieve a
+    copy of the data using an affectation to do the job and not a memcpy.
+    
+    int toto = gras_dynar_get_as(dyn,0,int); rewrites itself to
+    int toto = *(int*)gras_dynar_get_ptr(dyn,0);
+    
+    It does not really speedup the dynar test because they are
+    setting elements all the time (and look them seldom). But the dict does
+    far more lookup than setting.
+
+    So, this brings the dict_crash test from ~33s to ~25s (200000 elms).
+
 2004-11-04 Martin Quinson
   - Allow to (en/dis)able the cycle detection at run time.
   

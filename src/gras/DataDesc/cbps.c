@@ -149,7 +149,7 @@ gras_cbps_v_pop (gras_cbps_t        *ps,
     while (l--) {
       char *_name = NULL;
                                                                                 
-      gras_dynar_get(frame, l, &_name);
+      _name = gras_dynar_get_as(frame, l, char*);
       if (!strcmp(name, _name)) {
 	gras_dynar_remove_at(frame, l, &_name);
 	gras_free(_name);

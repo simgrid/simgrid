@@ -228,7 +228,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     }
     gras_dynar_foreach(d1->category.struct_data.fields, cpt, field1) {
       
-      gras_dynar_get(d2->category.struct_data.fields, cpt, &field2);
+      field2 = gras_dynar_get_as(d2->category.struct_data.fields, cpt, gras_dd_cat_field_t *);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
@@ -254,7 +254,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     
     gras_dynar_foreach(d1->category.union_data.fields, cpt, field1) {
       
-      gras_dynar_get(d2->category.union_data.fields, cpt, field2);
+      field2 = gras_dynar_get_as(d2->category.union_data.fields, cpt, gras_dd_cat_field_t *);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
@@ -387,7 +387,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     TRY(gras_dd_send_int(sock, field_num));
     
     /* Send the content */
-    gras_dynar_get(union_data.fields, field_num, field);
+    field = gras_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t *);
     sub_type = field->type;
     
     if (field->pre)
@@ -606,7 +606,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	     type->name, field_num, gras_dynar_length(union_data.fields));
     
     /* Recv the content */
-    gras_dynar_get(union_data.fields, field_num, field);
+    field = gras_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t *);
     sub_type = field->type;
     
     TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,

@@ -17,12 +17,12 @@ for test in xbt/log_usage                                          \
 	    xbt/config_usage                                       \
 	    \
 	    gras/trp_tcp_usage      gras/trp_file_usage             \
-	    gras/datadesc_usage                                     
-#	    "gras/datadesc_usage --read @srcdir@/datadesc.little32" \
-#	    "gras/datadesc_usage --read @srcdir@/datadesc.big32"    \
-#	    "gras/datadesc_usage --read @srcdir@/datadesc.big64" 
-
-#	    "gras/datadesc_usage --read @srcdir@/datadesc.little64" \
+	    gras/datadesc_usage                                     \
+	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.little32" \
+	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.little64" \
+	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.big32"    \
+	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.big64"    \
+	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.aix"
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"

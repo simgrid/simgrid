@@ -90,7 +90,7 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
 static _GRAS_INLINE
 void *
 _gras_dynar_elm(const gras_dynar_t * const dynar,
-                const unsigned long               idx) {
+		   const unsigned long        idx) {
   char * const data    = dynar->data;
   const unsigned long elmsize = dynar->elmsize;
 
@@ -218,6 +218,26 @@ gras_dynar_length(const gras_dynar_t * const dynar) {
 }
 
 /**
+ * gras_dynar_get_cpy:
+ * @dynar: information dealer
+ * @idx: index of the slot we want to retrive
+ * @dst: where to pu the result to.
+ *
+ * Retrieve a copy of the Nth element of a dynar.
+ */
+void
+gras_dynar_get_cpy(const gras_dynar_t * const dynar,
+		   const int                  idx,
+		   void               * const dst) {
+
+  __sanity_check_dynar(dynar);
+  __sanity_check_idx(idx);
+  __check_inbound_idx(dynar, idx);
+
+  _gras_dynar_get_elm(dst, dynar, idx);
+}
+
+/**
  * gras_dynar_get:
  * @dynar: information dealer
  * @idx: index of the slot we want to retrive
@@ -226,16 +246,15 @@ gras_dynar_length(const gras_dynar_t * const dynar) {
  * Retrieve the Nth element of a dynar. Warning, the returned value is the actual content of 
  * the dynar. Make a copy before fooling with it.
  */
-void
-gras_dynar_get(const gras_dynar_t * const dynar,
-               const int                  idx,
-               void               * const dst) {
+void*
+gras_dynar_get_ptr(const gras_dynar_t * const dynar,
+		   const int                  idx) {
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
   __check_inbound_idx(dynar, idx);
 
-  _gras_dynar_get_elm(dst, dynar, idx);
+  return _gras_dynar_elm(dynar, idx);
 }
 
 /**

@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NB_ELM 20000
+#define NB_ELM 200000
 #define SIZEOFKEY 1024
 
 static void print_str(void *str);

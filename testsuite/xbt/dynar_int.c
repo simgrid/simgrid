@@ -18,6 +18,7 @@ int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
    int i,cpt,cursor;
+   int *iptr;
    
    gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
 
@@ -36,8 +37,8 @@ int main(int argc,char *argv[]) {
      DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
    }
    for (cursor=0; cursor< NB_ELEM; cursor++) {
-     gras_dynar_get(d,cursor,&cpt);
-     gras_assert2(cursor == cpt,
+     iptr=gras_dynar_get_ptr(d,cursor);
+     gras_assert2(cursor == *iptr,
 		  "The retrieved value is not the same than the injected one (%d!=%d)",
 		  cursor,cpt);
    }
