@@ -68,7 +68,33 @@ dnl A C_CHECK_FUNCS([memset strchr strerror usleep])
 # does not induce extra lib dependency
 AC_PROG_LEX
 if test "$LEX" != flex; then
-  LEX="$SHELL $missing_dir/missing flex"
+  AC_MSG_NOTICE([Will not rebuild the parsers. I want flex.])
+  LEX="$SHELL $missing_dir/missing flex";
+else
+changequote(<<, >>)dnl because of the regexp [[:blank:]]  
+  FLEX_VERSION=`flex --version`;
+  FLEX_VER_MAJ=`echo $FLEX_VERSION | sed 's/[^0-9\.]*//g' | sed 's/\..*//g'`;
+  FLEX_VER_MED=`echo $FLEX_VERSION | sed 's/[^0-9\.]*//g' | sed 's/[0-9]*\.\([0-9]*\)\.[0-9]*/\1/g'`;
+  FLEX_VER_MIN=`echo $FLEX_VERSION | sed 's/[^0-9\.]*//g' | sed 's/.*\.//g'`;
+changequote([, ])dnl back to normality, there is no regexp afterward
+  if test $FLEX_VER_MAJ -lt 2 ; then
+    AC_MSG_NOTICE([Will not rebuild the parsers. Your flex is too old.])
+    LEX="$SHELL $missing_dir/missing flex";
+  else
+    if test $FLEX_VER_MAJ -eq 2 ; then
+      if test $FLEX_VER_MED -lt 5 ; then
+        AC_MSG_NOTICE([Will not rebuild the parsers. Your flex is too old.])
+        LEX="$SHELL $missing_dir/missing flex";
+      else
+        if test $FLEX_VER_MED -eq 5 ; then
+          if test $FLEX_VER_MIN -lt 31 ; then
+             AC_MSG_NOTICE([Will not rebuild the parsers. Your flex is too old.])
+             LEX="$SHELL $missing_dir/missing flex";
+          fi;
+        fi;
+      fi;
+    fi;
+  fi;
 fi
 		
 # Can we rebuild the xml-lexers from the XML specification?
