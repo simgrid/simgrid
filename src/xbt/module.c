@@ -50,6 +50,7 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
       opt=strchr(argv[i],'=');
       opt++;
       TRYFAIL(gras_log_control_set(opt));
+      DEBUG1("Did apply '%s' as log setting",opt);
       /*remove this from argv*/
       for (j=i+1; j<*argc; j++) {
 	argv[j-1] = argv[j];
