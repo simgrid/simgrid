@@ -33,7 +33,7 @@ debian: dist
 	make -C ~/CVSIMPORT/pkg-grid/gras deb check
 	dput local *.changes
 
-publish: dist
+publish-old: dist
 	 @echo "----[ Put the documentation on the local filesystem ]----"
 	 rm -rf ~/public_html/gras/doc
 	 mkdir ~/public_html/gras/doc
@@ -42,6 +42,17 @@ publish: dist
 	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/gras/dl
 	 @echo "----[ Sync remote host ]----"
 	 make -C public_html publish
+
+publish: dist
+	 @echo "----[ Put the tarball @VERSION@ on gcl ]----"
+	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
+	 scp -r doc/html/* gcl.ucsd.edu:/home/www/simgrid/
+#	 scp ChangeLog gcl.ucsd.edu:/home/www/simgrid/dl/ChangeLog
+	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
+	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/simgrid2
+	 cp -r doc/html ~/public_html/simgrid2/doc/
+#	 cp ChangeLog ~/public_html/simgrid2/
+	 make -C ~/public_html
 
 mail:
 	 @ver=`dpkg-parsechangelog -lChangeLog.debian| egrep '^Version: ' | sed 's/Version: //'`;\
