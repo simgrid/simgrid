@@ -11,6 +11,9 @@
 #include <stdio.h>
 #include <gras.h>
 
+/* NB_ELEM HAS to be a multiple of 5 */
+#define NB_ELEM 5000
+
 void free_string(void *d);
 
 void free_string(void *d){
@@ -37,29 +40,29 @@ int main(int argc,char *argv[]) {
    }
    gras_dynar_free(d);
 
-   fprintf(stderr,"==== Push 5000 strings, set them again 3 times, shift them\n");
+   fprintf(stderr,"==== Push %d strings, set them again 3 times, shift them\n",NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(char*),&free_string));
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_push(d,&s1));
    }
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_remplace(d,cpt,&s1));
    }
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_remplace(d,cpt,&s1));
    }
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_remplace(d,cpt,&s1));
    }
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      gras_dynar_shift(d,&s2);
      if (strcmp(buf,s2)) {
@@ -73,14 +76,14 @@ int main(int argc,char *argv[]) {
    gras_dynar_free(d);
 
 
-   fprintf(stderr,"==== Unshift/pop 5000 strings\n");
+   fprintf(stderr,"==== Unshift/pop %d strings\n",NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(char**),&free_string));
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_unshift(d,&s1));
    }
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      gras_dynar_pop(d,&s2);
      if (strcmp(buf,s2)) {
@@ -95,20 +98,20 @@ int main(int argc,char *argv[]) {
 
 
 
-   fprintf(stderr,"==== Push 5000 strings, insert 1000 strings in the middle, shift everything\n");
+   fprintf(stderr,"==== Push %d strings, insert %d strings in the middle, shift everything\n",NB_ELEM,NB_ELEM/5);
    TRYFAIL(gras_dynar_new(&d,sizeof(char*),&free_string));
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_push(d,&s1));
    }
-   for (cpt=0; cpt< 1000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM/5; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
-     TRYFAIL(gras_dynar_insert_at(d,2500,&s1));
+     TRYFAIL(gras_dynar_insert_at(d,NB_ELEM/2,&s1));
    }
 
-   for (cpt=0; cpt< 2500; cpt++) {
+   for (cpt=0; cpt< NB_ELEM/2; cpt++) {
      sprintf(buf,"%d",cpt);
      gras_dynar_shift(d,&s2);
      if (strcmp(buf,s2)) {
@@ -119,7 +122,7 @@ int main(int argc,char *argv[]) {
      }
      free(s2);
    }
-   for (cpt=999; cpt>=0; cpt--) {
+   for (cpt=(NB_ELEM/5)-1; cpt>=0; cpt--) {
      sprintf(buf,"%d",cpt);
      gras_dynar_shift(d,&s2);
      if (strcmp(buf,s2)) {
@@ -130,7 +133,7 @@ int main(int argc,char *argv[]) {
      }
      free(s2);
    }
-   for (cpt=2500; cpt< 5000; cpt++) {
+   for (cpt=NB_ELEM/2; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      gras_dynar_shift(d,&s2);
      if (strcmp(buf,s2)) {
@@ -144,16 +147,16 @@ int main(int argc,char *argv[]) {
    gras_dynar_free(d);
 
 
-   fprintf(stderr,"==== Push 5000 strings, remove 2000-4000. free the rest\n");
+   fprintf(stderr,"==== Push %d strings, remove %d-%d. free the rest\n",NB_ELEM,2*(NB_ELEM/5),4*(NB_ELEM/5));
    TRYFAIL(gras_dynar_new(&d,sizeof(char*),&free_string));
-   for (cpt=0; cpt< 5000; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_push(d,&s1));
    }
-   for (cpt=2000; cpt< 4000; cpt++) {
+   for (cpt=2*(NB_ELEM/5); cpt< 4*(NB_ELEM/5); cpt++) {
      sprintf(buf,"%d",cpt);
-     gras_dynar_remove_at(d,2000,&s2);
+     gras_dynar_remove_at(d,2*(NB_ELEM/5),&s2);
      if (strcmp(buf,s2)) {
        fprintf(stderr,
            "Remove a bad value. Got %s, expected %s\n",
