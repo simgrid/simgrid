@@ -14,6 +14,7 @@
 <!ATTLIST cpu interference_send CDATA "1.0">
 <!ATTLIST cpu interference_recv CDATA "1.0">
 <!ATTLIST cpu interference_send_recv CDATA "1.0">
+<!ATTLIST cpu max_outgoing_rate CDATA "-1.0">
 
 <!ELEMENT network_link EMPTY>
 <!ATTLIST network_link name CDATA #REQUIRED>

@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/01/09 15:25:17.
+ * Generated 2005/01/24 16:35:24.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -55,6 +55,7 @@ AT_process_host A_process_host;
 AT_route_impact_on_src A_route_impact_on_src;
 AT_route_src A_route_src;
 AT_network_link_latency_file A_network_link_latency_file;
+AT_cpu_max_outgoing_rate A_cpu_max_outgoing_rate;
 AT_route_impact_on_dst_with_other_send A_route_impact_on_dst_with_other_send;
 AT_cpu_interference_send_recv A_cpu_interference_send_recv;
 AT_cpu_availability A_cpu_availability;
@@ -392,6 +393,7 @@ const char* *statenames=NULL;
   A_cpu_interference_send = "1.0";
   A_cpu_interference_recv = "1.0";
   A_cpu_interference_send_recv = "1.0";
+  A_cpu_max_outgoing_rate = "-1.0";
   ENTER(AL_cpu);
   }
 
@@ -424,6 +426,9 @@ const char* *statenames=NULL;
 
  "interference_send_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(A_cpu_interference_send_recv);
  "interference_send_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(A_cpu_interference_send_recv);
+
+ "max_outgoing_rate"{Eq}\' ENTER(VALUE1); BUFFERSET(A_cpu_max_outgoing_rate);
+ "max_outgoing_rate"{Eq}\" ENTER(VALUE2); BUFFERSET(A_cpu_max_outgoing_rate);
 
  ">" {
   if (!A_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");

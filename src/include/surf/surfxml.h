@@ -1,5 +1,5 @@
 /* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2005/01/09 15:25:15.
+ * Generated 2005/01/24 16:35:22.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -60,6 +60,8 @@ typedef const char* AT_route_src;
 #define AU_route_src NULL
 typedef const char* AT_network_link_latency_file;
 #define AU_network_link_latency_file NULL
+typedef const char* AT_cpu_max_outgoing_rate;
+#define AU_cpu_max_outgoing_rate NULL
 typedef const char* AT_route_impact_on_dst_with_other_send;
 #define AU_route_impact_on_dst_with_other_send NULL
 typedef const char* AT_cpu_interference_send_recv;
@@ -107,6 +109,7 @@ extern AT_process_host A_process_host;
 extern AT_route_impact_on_src A_route_impact_on_src;
 extern AT_route_src A_route_src;
 extern AT_network_link_latency_file A_network_link_latency_file;
+extern AT_cpu_max_outgoing_rate A_cpu_max_outgoing_rate;
 extern AT_route_impact_on_dst_with_other_send A_route_impact_on_dst_with_other_send;
 extern AT_cpu_interference_send_recv A_cpu_interference_send_recv;
 extern AT_cpu_availability A_cpu_availability;
