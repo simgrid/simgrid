@@ -22,6 +22,7 @@ typedef struct xbt_dictelm_ {
   char           *key;
   int             key_len;
   int             offset; /* offset on the key */
+  int             internal; /* true if it's only an internal node */
   void           *content;
   void_f_pvoid_t *free_f; /*pointer to the function to call to free this ctn*/
 
