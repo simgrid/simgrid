@@ -10,7 +10,7 @@ DISTCLEANFILES=Makefile.in *~
 TESTS_PROGS=                                  \
 	dynar_int dynar_double dynar_string   \
 	dict_usage dict_crash                 \
-	test_log                              \
+	log_usage                             \
 	config_usage                          
 
 # multidict_crash 
@@ -29,7 +29,7 @@ multidict_crash_LDADD=    $(top_srcdir)/src/base/libgrasutils.a
 
 config_usage_LDADD=       $(top_srcdir)/src/base/libgrasutils.a
 
-test_log_LDADD=           $(top_srcdir)/src/base/libgrasutils.a
+log_usage_LDADD=           $(top_srcdir)/src/base/libgrasutils.a
 
 gs_example_send_LDADD=    $(top_srcdir)/src/base/libgrasutils.a
 gs_example_receive_LDADD= $(top_srcdir)/src/base/libgrasutils.a
