@@ -9,9 +9,9 @@
 
 /* This type should be added to a type that is to be used in such a swag */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "swag.h"
+#include "xbt/sysdep.h"
+#include "xbt/error.h"
+#include "xbt/swag.h"
 
 #define PREV(obj,offset) xbt_swag_getPrev(obj,offset)
 #define NEXT(obj,offset) xbt_swag_getNext(obj,offset)
@@ -22,11 +22,16 @@
 
 xbt_swag_t xbt_swag_new(size_t offset)
 {
-  xbt_swag_t swag = calloc(1, sizeof(s_xbt_swag_t));
+  xbt_swag_t swag = xbt_new0(s_xbt_swag_t,1);
 
   swag->offset = offset;
 
   return swag;
+}
+
+void xbt_swag_init(xbt_swag_t swag, size_t offset)
+{
+  swag->offset = offset;
 }
 
 void xbt_swag_insert(void *obj, xbt_swag_t swag)
@@ -41,29 +46,20 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
   PREV(obj, swag->offset) = swag->tail;
   NEXT(PREV(obj, swag->offset), swag->offset) = obj;
 
-/*   new->prev = l->tail; */
-/*   new->prev->next = new; */
-
   swag->tail = obj;
 }
 
-void xbt_swag_extract(void *obj, xbt_swag_t swag)
+void *xbt_swag_extract(void *obj, xbt_swag_t swag)
 {
   size_t offset = swag->offset;
 
+  if (!obj) return NULL;
   if (swag->head == swag->tail) {	/* special case */
-    if (swag->head != obj) {
-      fprintf(stderr,
-	      "Tried to remove an object that was not in this swag\n");
-      abort();
-    }
+    if (swag->head != obj) /* Trying to remove an object that was not in this swag */
+      return NULL;
     swag->head = NULL;
     swag->tail = NULL;
-    (swag->count)--;
-    return;
-  }
-
-  if (obj == swag->head) {	/* It's the head */
+  } else if (obj == swag->head) {	/* It's the head */
     swag->head = NEXT(obj, offset);
     PREV(swag->head, offset) = NULL;
     NEXT(obj, offset) = NULL;
@@ -77,6 +73,7 @@ void xbt_swag_extract(void *obj, xbt_swag_t swag)
     PREV(obj, offset) = NEXT(obj, offset) = NULL;
   }
   (swag->count)--;
+  return obj;
 }
 
 int xbt_swag_size(xbt_swag_t swag)
