@@ -160,8 +160,15 @@ void gras_trp_buf_socket_close(gras_socket_t sock){
   gras_trp_bufdata_t *data=sock->bufdata;
 
   XBT_IN;
-  if (data->in.size || data->out.size)
+  if (data->in.size!=data->in.pos) {
+     WARN1("Socket closed, but %d bytes were unread",data->in.size - data->in.pos);
+  }
+   
+  if (data->out.size!=data->out.pos) {
+    DEBUG2("Flush the socket before closing (in=%d,out=%d)",data->in.size, data->out.size);
     gras_trp_buf_flush(sock);
+  }
+   
   if (data->in.data)
     free(data->in.data);
   if (data->out.data)
@@ -277,8 +284,13 @@ gras_trp_buf_flush(gras_socket_t sock) {
   gras_trp_bufdata_t *data=sock->bufdata;
 
   XBT_IN;
-  size = (int)htonl(data->out.size);
-  DEBUG1("Send the size (=%d)",data->out.size);
+  if (! (data->out.size-data->out.pos) ) {
+     DEBUG0("Nothing to flush");
+     return no_error;
+  }
+   
+  size = (int)htonl(data->out.size-data->out.pos);
+  DEBUG1("Send the size (=%d)",data->out.size-data->out.pos);
   TRY(super->chunk_send(sock,(char*) &size, 4));
 
   DEBUG1("Send the chunk (size=%d)",data->out.size);
