@@ -12,10 +12,11 @@ EXTRA_DIST=run_tests.in \
 # Test stuff
 
 xbt_tests =                                                      \
-	xbt/dynar_int    xbt/dynar_double   xbt/dynar_string   \
-	xbt/dict_usage   xbt/dict_crash                         \
+	xbt/dynar_int    xbt/dynar_double   xbt/dynar_string     \
+	xbt/dict_usage   xbt/dict_crash                          \
 	xbt/set_usage                                            \
 	xbt/log_usage                                            \
+	xbt/heap_bench                                           \
 	xbt/config_usage
 # xbt/multidict_crash 
 
