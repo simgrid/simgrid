@@ -7,9 +7,8 @@ EXTRA_DIST= ./gras_private.h    \
 	Transport/transport_interface.h \
 	Virtu/virtu_interface.h \
 	Virtu/virtu_rl.h \
-	Virtu/virtu_sg.h
-#	DataDesc/parse.yy.l      
-
+	Virtu/virtu_sg.h \
+	DataDesc/ddt_parse.yy.l DataDesc/ddt_parse.yy.c
 
 if HAVE_SG
  lib_LIBRARIES= libgrasrl.a libgrassg.a
@@ -33,6 +32,7 @@ COMMON_S=\
   DataDesc/ddt_convert.c         DataDesc/ddt_exchange.c     \
   DataDesc/cbps.c                DataDesc/datadesc.c         \
   DataDesc/datadesc_interface.h  DataDesc/datadesc_private.h \
+  DataDesc/ddt_parse.c  DataDesc/ddt_parse.yy.c DataDesc/ddt_parse.yy.h \
   \
   Msg/msg.c   Msg/msg_interface.h   Msg/msg_private.h \
   \
@@ -40,8 +40,8 @@ COMMON_S=\
 
 # DataDesc/ddt_declare.c 
 
-DataDesc/parse.yy.c: DataDesc/parse.yy.l
-	flex -o$@ -Pgras_ddt_ $^
+DataDesc/ddt_parse.yy.c: DataDesc/ddt_parse.yy.l
+	@LEX@ -o$@ -Pgras_ddt_parse_ $^
 
 libgrasrl_a_SOURCES= $(COMMON_S) \
   Transport/rl_transport.c  Transport/transport_plugin_tcp.c  Transport/transport_plugin_file.c      \
