@@ -83,10 +83,6 @@ gras_error_t gras_datadesc_parse(const char       *def,
 gras_error_t gras_datadesc_from_nws(const DataDescriptor *desc,
 				    size_t                howmany,
 				    gras_datadesc_t     **dst);
-gras_error_t gras_datadesc_eq(const gras_datadesc_t *d1,
-			      const gras_datadesc_t *d2);
-gras_error_t gras_datadesc_cpy(gras_datadesc_t  *src,
-			       gras_datadesc_t **dst);
 gras_error_t gras_datadesc_sizeof_host(gras_datadesc_t *desc,
 				       size_t          *dst);
 gras_error_t gras_datadesc_sizeof_network(gras_datadesc_t *desc,
@@ -184,6 +180,17 @@ gras_datadesc_declare_array_cb(const char                      *name,
 			       gras_datadesc_type_cb_int_t      dynamic_size,
 			       gras_datadesc_type_cb_void_t     post,
 			       long int                        *code);
+
+
+/* Use the datadescriptions */
+int
+gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
+		       const gras_datadesc_type_t *d2);
+
+
+gras_error_t 
+gras_datadesc_cpy(gras_datadesc_type_t *type, void *src, void **dst);
+
 
 END_DECL
 
