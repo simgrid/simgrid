@@ -32,7 +32,7 @@ BEGIN_DECL
 			    :(NULL))
 #define xbt_malloc(n)   (malloc(n) ?: (xbt_die("memory allocation error"),NULL))
 #define xbt_malloc0(n)  (calloc( (n),1 ) ?: (xbt_die("memory allocation error"),NULL))
-#define xbt_realloc(p,s) (s? (p? (realloc(p,s)?:xbt_die("memory allocation error"),NULL) \
+#define xbt_realloc(p,s) (s? (p? (realloc(p,s)?:(xbt_die("memory allocation error"),NULL)) \
 				: xbt_malloc(s)) \
 			    : (p? (free(p),NULL) \
 			        : NULL))
