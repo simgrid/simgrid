@@ -7,12 +7,117 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/sysdep.h"
+#include "xbt/dict.h"
 #include "gras/chrono.h"
+#include "msg/msg.h"
+#include "portable.h"
 
-void gras_bench_always_begin(const char *location)
-{
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(chrono,gras,"Benchmarking used code");
+
+static double sys_time(void) {
+#ifdef HAVE_GETTIMEOFDAY
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+
+  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
+#else
+  /* Poor resolution */
+  return (double)(time(NULL)); 
+#endif /* HAVE_GETTIMEOFDAY? */ 
+	
 }
 
-void gras_bench_always_end(void)
+static double timer = 0.0;
+static int benchmarking = 0;
+static xbt_dict_t benchmark_set = NULL;
+static double reference = .01019;
+static double duration = 0.0;
+static const char* __location__ = NULL;
+
+static void store_in_dict(xbt_dict_t dict, const char *key, double value)
 {
+  double *ir = NULL;
+
+  xbt_dict_get(dict, key, (void *) &ir);
+  if (!ir) {
+    ir = calloc(1, sizeof(double));
+    xbt_dict_set(dict, key, ir, free);
+  }
+  *ir = value;
+}
+
+static double get_from_dict(xbt_dict_t dict, const char *key)
+{
+  double *ir = NULL;
+
+  xbt_dict_get(dict, key, (void *) &ir);
+
+  return *ir;
+}
+
+int gras_bench_always_begin(const char *location, int line)
+{
+  xbt_assert0(!benchmarking,"Already benchmarking");
+  benchmarking = 1;
+
+  timer = sys_time();
+  return 0;
+}
+
+int gras_bench_always_end(void)
+{
+  m_task_t task = NULL;
+  
+  xbt_assert0(benchmarking,"Not benchmarking yet");
+  benchmarking = 0;
+  duration = sys_time()-timer;
+  task = MSG_task_create("task", (duration)/reference, 0 , NULL);
+  MSG_task_execute(task);
+  /*   printf("---> %lg <--- \n", sys_time()-timer); */
+  MSG_task_destroy(task);
+  return 0;
+}
+
+int gras_bench_once_begin(const char *location, int line)
+{
+  double *ir = NULL;
+  xbt_assert0(!benchmarking,"Already benchmarking");
+  benchmarking = 1;
+
+  __location__=location;
+  xbt_dict_get(benchmark_set, __location__, (void *) &ir);
+  if(!ir) {
+/*     printf("%s:%d\n",location,line); */
+    duration = sys_time();
+    return 1;
+  } else {
+    duration = -1.0;
+    return 0;
+  }
+}
+
+int gras_bench_once_end(void)
+{
+  m_task_t task = NULL;
+
+  xbt_assert0(benchmarking,"Not benchmarking yet");
+  benchmarking = 0;
+  if(duration>0) {
+    duration = sys_time()-duration;
+    store_in_dict(benchmark_set, __location__, duration);
+  } else {
+    duration = get_from_dict(benchmark_set,__location__);
+  }
+  task = MSG_task_create("task", (duration)/reference, 0 , NULL);
+  MSG_task_execute(task);
+  MSG_task_destroy(task);
+  return 0;
+}
+
+void gras_chrono_init(void)
+{
+  if(!benchmark_set)
+    benchmark_set = xbt_dict_new();
 }

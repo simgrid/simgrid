@@ -12,25 +12,36 @@
 #define GRAS_CHRONO_H
 
 #include "xbt/misc.h"
+#include "gras/cond.h"
 
 BEGIN_DECL()
 
-void gras_bench_always_begin(const char *location);
-void gras_bench_always_end(void);
+void gras_chrono_init(void);
+int gras_bench_always_begin(const char *location, int line);
+int gras_bench_always_end(void);
+int gras_bench_once_begin(const char *location, int line);
+int gras_bench_once_end(void);
 
 /** \brief Start benchmark this part of the code
     \hideinitializer */
-#define GRAS_BENCH_ALWAYS_BEGIN gras_bench_always_begin(__FILE__ __LINE__ __FUNCTION__)
+#define GRAS_BENCH_ALWAYS_BEGIN()  do { if(gras_if_SG()) gras_bench_always_begin(__FILE__, __LINE__); } while(0)
 /** \brief Stop benchmark this part of the code
     \hideinitializer */
-#define GRAS_BENCH_ALWAYS_END gras_bench_always_end()
+#define GRAS_BENCH_ALWAYS_END() do { if(gras_if_SG()) gras_bench_always_end(); } while(0)
 
 /** \brief Start benchmark this part of the code if it has never been benchmarked before
     \hideinitializer */
-#define GRAS_BENCH_ONCE_BEGIN
+#define GRAS_BENCH_ONCE_RUN_ALWAYS_BEGIN()  do { if(gras_if_SG()) gras_bench_once_begin(__FILE__, __LINE__); } while(0)
 /** \brief Stop benchmarking this part of the code
     \hideinitializer */
-#define GRAS_BENCH_ONCE_END
+#define GRAS_BENCH_ONCE_RUN_ALWAYS_END()    do { if(gras_if_SG()) gras_bench_once_end(); } while(0)
+
+/** \brief Start benchmark this part of the code if it has never been benchmarked before
+    \hideinitializer */
+#define GRAS_BENCH_ONCE_RUN_ONCE_BEGIN()  if((gras_if_SG()&&(gras_bench_once_begin(__FILE__, __LINE__)))||(gras_if_RL())) { 
+/** \brief Stop benchmarking this part of the code
+    \hideinitializer */
+#define GRAS_BENCH_ONCE_RUN_ONCE_END()    } GRAS_BENCH_ONCE_RUN_ALWAYS_END();
 
 END_DECL()
 
