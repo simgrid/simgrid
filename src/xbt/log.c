@@ -2,7 +2,7 @@
 
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,8 +49,7 @@ s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   NULL, 0
 };
 
-XBT_LOG_NEW_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories");
-XBT_LOG_NEW_SUBCATEGORY(xbt,XBT_LOG_ROOT_CAT,"All XBT categories (gras toolbox)");
+XBT_LOG_NEW_SUBCATEGORY(xbt,XBT_LOG_ROOT_CAT,"All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_SUBCATEGORY(surf,XBT_LOG_ROOT_CAT,"All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
 

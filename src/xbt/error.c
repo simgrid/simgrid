@@ -34,8 +34,8 @@ const char *xbt_error_name(xbt_error_t errcode)  {
    }
 }
 
-XBT_LOG_EXTERNAL_CATEGORY(gras);
-XBT_LOG_DEFAULT_CATEGORY(gras);
+XBT_LOG_EXTERNAL_CATEGORY(xbt);
+XBT_LOG_DEFAULT_CATEGORY(xbt);
   
 void xbt_die (const char *msg) {
    CRITICAL1("%s",msg);
