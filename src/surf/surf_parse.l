@@ -16,8 +16,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(parse, surf ,"Logging specific to the SURF  modu
   FILE *surf_file_to_parse;
 
   int surf_line_pos = 1;
-  int surf_char_pos = 0;
+  int surf_char_pos = -1;
   int surf_tok_num = 0;
+  char string_buf[MAX_STR_CONST];
+  char *string_buf_ptr = NULL;
 %}
 
 %x comment foo str
@@ -28,8 +30,6 @@ digit           [0-9]
 %%
         int comment_caller=0;
 
-        char string_buf[MAX_STR_CONST];
-        char *string_buf_ptr = NULL;
 
 "//"[^\n]*
 "/*"         {
@@ -104,13 +104,13 @@ digit           [0-9]
           surf_char_pos++;
         }
 
-({letter}|{digit})*     { surf_char_pos+= strlen(surf_parse_text); return(TOKEN_WORD);}
+({letter}|{digit})*     { return(TOKEN_WORD);} /* surf_char_pos+= strlen(surf_parse_text);  */
 "("                     { surf_char_pos++; return(TOKEN_LP);}
 ")"                     { surf_char_pos++;return(TOKEN_RP);}
 "</"                    { surf_char_pos+=2; return(TOKEN_END_SECTION);}
 "<"                     { surf_char_pos++; return(TOKEN_BEGIN_SECTION);}
 ">"                     { surf_char_pos++;return(TOKEN_CLOSURE);}
-"\n"                    { surf_line_pos++; surf_char_pos=0; return(TOKEN_NEWLINE);}
+"\n"                    { surf_line_pos++; surf_char_pos=-1; return(TOKEN_NEWLINE);}
 . { surf_char_pos++;}
 %%
 /* {space}+                { return(TOKEN_SPACE);} */
@@ -127,17 +127,15 @@ static void __print_val(void) {
   case TOKEN_EMPTY : {printf("TOKEN_EMPTY\n");return;}
   default             : {printf("Unknown token %d\n", surf_tok_num);return;}
   }
-/*   if(strcmp(surf_parse_text,"")!=0) */
-    printf("-->%s<-- [line %d, pos %d]\n",surf_parse_text,surf_line_pos,surf_char_pos);
-/*   else */
-/*     printf("--><-- [line %d, pos %d]\n",surf_line_pos,surf_char_pos); */
+
+  printf("-->%s<-- [line %d, pos %d]\n",surf_parse_text,surf_line_pos,surf_char_pos);
 
   return;
 }
 
 e_surf_token_t surf_parse(void) {
   surf_tok_num = surf_parse_lex();
-/*   __print_val(); */
+  __print_val();
   surf_char_pos += strlen(surf_parse_text);
   return(surf_tok_num);
 }
