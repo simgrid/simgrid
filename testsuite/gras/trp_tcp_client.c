@@ -20,6 +20,9 @@ int main(int argc,char *argv[]) {
   char data_send[256];
   char data_recv[256];
 
+  memset(data_send, 0, sizeof(data_send));
+  memset(data_recv, 0, sizeof(data_recv));
+
   gras_init_defaultlog(&argc,argv,"trp.thresh=debug");
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");

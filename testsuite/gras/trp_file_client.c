@@ -19,6 +19,7 @@ int main(int argc,char *argv[]) {
   gras_error_t errcode;
   char data_send[256];
 
+  memset(data_send,0,sizeof(data_send));
   gras_init_defaultlog(&argc,argv,"trp.thresh=debug");
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");
