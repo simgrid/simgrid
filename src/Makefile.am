@@ -23,6 +23,8 @@ EXTRA_DIST= \
         \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \
+	surf/surf_private.h \
+	surf/cpu_private.h \
 	\
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
@@ -92,8 +94,10 @@ COMMON_S=\
   xbt/module.c                                                                 \
   xbt/config.c                                                                 \
   \
-  surf/maxmin.c                                                                \
-  surf/trace_mgr.c                                                             \
+  surf/maxmin.c                                                              \
+  surf/trace_mgr.c                                                           \
+  surf/surf.c                                                                \
+  surf/cpu.c                                                                 \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
   \

@@ -47,8 +47,13 @@ typedef struct surf_action {
 typedef struct surf_resource {
   void (*parse_file)(const char *file);
   void *(*name_service)(const char *name);
+  const char *(*get_resource_name)(void *resource_id);
 
-  surf_action_t (*action_new)(void *callback);
+  /*   surf_action_t (*action_new)(void *callback);  */
+  /* Not defined here. Actions have to be created by actually
+     performing it and prototype may therefore vary with the resource
+     implementation */
+
   e_surf_action_state_t (*action_get_state)(surf_action_t action);
   void (*action_free)(surf_action_t * action);	/* Call it when you're done with this action */
   void (*action_cancel)(surf_action_t action); /* remove the variables from the linear system if needed */
@@ -65,32 +70,30 @@ typedef struct surf_resource {
 /**************************************/
 /* Implementations of resource object */
 /**************************************/
-/* Host resource */
+/* Cpu resource */
 typedef enum {
-  SURF_HOST_ON = 1,		/* Ready        */
-  SURF_HOST_OFF = 0,		/* Running      */
-} e_surf_host_state_t;
+  SURF_CPU_ON = 1,		/* Ready        */
+  SURF_CPU_OFF = 0,		/* Running      */
+} e_surf_cpu_state_t;
 
-typedef struct surf_host_resource {
+typedef struct surf_cpu_resource {
   s_surf_resource_t resource;
-  void (*execute)(void *host, xbt_maxmin_float_t size, surf_action_t action);
-  e_surf_host_state_t (*get_state)(void *host);
-} s_surf_host_resource_t, *surf_host_resource_t;
-extern surf_host_resource_t surf_host_resource;
+  surf_action_t (*execute)(void *cpu, xbt_maxmin_float_t size);
+  e_surf_cpu_state_t (*get_state)(void *cpu);
+} s_surf_cpu_resource_t, *surf_cpu_resource_t;
+extern surf_cpu_resource_t surf_cpu_resource;
 
 /* Network resource */
 typedef struct surf_network_resource {
   s_surf_resource_t resource;
-  surf_action_t (*communicate)(void *src, void *dst, xbt_maxmin_float_t size,
-			       surf_action_t action);
+  surf_action_t (*communicate)(void *src, void *dst, xbt_maxmin_float_t size);
 } s_surf_network_resource_t, surf_network_resource_t;
 extern surf_network_resource_t surf_network_resource;
 
 /* Timer resource */
 typedef struct surf_timer_resource {
   s_surf_resource_t resource;
-  surf_action_t (*wait)(void *host, void *dst, xbt_maxmin_float_t size,
-			surf_action_t surf);
+  surf_action_t (*wait)(void *cpu, void *dst, xbt_maxmin_float_t size);
 } s_surf_timer_resource_t, surf_timer_resource_t;
 extern surf_timer_resource_t surf_timer_resource;
 

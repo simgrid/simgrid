@@ -4,7 +4,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
-#include "host_private.h"
+#include "cpu_private.h"
 
 s_surf_global_t surf_global;
 
@@ -46,7 +46,7 @@ void surf_action_change_state(surf_action_t action, e_surf_action_state_t state)
 
 void surf_init(void)
 {
-  surf_host_resource = surf_host_resource_init();
+  surf_cpu_resource = surf_cpu_resource_init();
 }
 
 /* xbt_heap_float_t surf_solve(void) */

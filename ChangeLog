@@ -4,8 +4,8 @@
     to 'make check' overthere yet.
 
 2004-11-15 Arnaud Legrand
-  - Trace manager now written. It uses a heap structure and is therfore
-    expected to be efficient. It may however be speed up (particularly
+  - Trace manager now written. It uses a heap structure and is therefore
+    expected to be efficient. It may however be speeded up (particularly
     when many events occur at the same date) by using red and black
     trees. One day maybe... 
   - Max-min linear system solver written. It uses a sparse matrix

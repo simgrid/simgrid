@@ -9,7 +9,7 @@
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
-#include "host_private.h"
+#include "cpu_private.h"
 
 /* Generic functions common to all ressources */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
