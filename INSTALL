@@ -1,3 +1,41 @@
+ ---------------------------
+(Some notes specific to GRAS)
+ ---------------------------
+
+CROSS-COMPILING
+===============
+
+In order to cross-compile the package to windows from linux, you need to
+install mingw32 (minimalist gnu win32). On Debian, you can do so by
+installing the packages mingw32 (compiler), mingw32-binutils (linker and
+so), mingw32-runtime. 
+
+You can use the VPATH support of configure to compile at the same time for
+linux and windows without dupplicating the source nor cleaning the tree
+between each. Just run bootstrap (if you use the CVS) to run the autotools.
+Then, create a linux and a win directories. Then, type:
+  cd linux; ../configure --srcdir=.. <usual configure flags>; cd ..
+  cd win;  ../configure --srcdir=.. --host=i586-mingw32msvc <flags>; cd ..
+After that, you can run all make target from both directories, and test
+easily that what you change for one arch does not break the other one.
+
+Of course, for the test, you can use wine. 
+For that, do not forget to put the mingw32.dll where wine expects it. 
+  cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
+  gunzip ~/.wine/c/windows/system/mingwm10.dll
+
+Please note that as long as we don't export the symbols the dll way, libtool
+only build a static library. So, the programs cross-compiled do only need
+the mingwm10.dll around (either in the same directory, or in c:\windows).
+
+If you're really curious, check /usr/include/png.h and
+/usr/include/pngconf.h to see how to export the symbols the proper way.
+Search for 'dll' in the libtool info file, too.
+
+ --------------------------------
+(The regular INSTALL file follows)
+ --------------------------------
+
 Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002 Free Software
 Foundation, Inc.
 
