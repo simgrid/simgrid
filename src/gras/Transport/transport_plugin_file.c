@@ -25,11 +25,11 @@ void         gras_trp_file_close(gras_socket_t *sd);
   
 gras_error_t gras_trp_file_chunk_send(gras_socket_t *sd,
 				      char *data,
-				      size_t size);
+				      long int size);
 
 gras_error_t gras_trp_file_chunk_recv(gras_socket_t *sd,
 				      char *data,
-				      size_t size);
+				      long int size);
 
 
 /***
@@ -186,7 +186,7 @@ void gras_trp_file_close(gras_socket_t *sock){
 gras_error_t 
 gras_trp_file_chunk_send(gras_socket_t *sock,
 			 char *data,
-			 size_t size) {
+			 long int size) {
   
   gras_assert0(sock->outgoing, "Cannot write on client file socket");
   gras_assert0(size >= 0, "Cannot send a negative amount of data");
@@ -194,8 +194,8 @@ gras_trp_file_chunk_send(gras_socket_t *sock,
   while (size) {
     int status = 0;
     
-    DEBUG3("write(%d, %p, %ld);", sock->sd, data, (size_t)size);
-    status = write(sock->sd, data, (size_t)size);
+    DEBUG3("write(%d, %p, %ld);", sock->sd, data, (long int)size);
+    status = write(sock->sd, data, (long int)size);
     
     if (status == -1) {
       RAISE4(system_error,"write(%d,%p,%d) failed: %s",
@@ -221,7 +221,7 @@ gras_trp_file_chunk_send(gras_socket_t *sock,
 gras_error_t 
 gras_trp_file_chunk_recv(gras_socket_t *sock,
 			char *data,
-			size_t size) {
+			long int size) {
 
   gras_assert0(sock, "Cannot recv on an NULL socket");
   gras_assert0(sock->incoming, "Cannot recv on client file socket");
@@ -230,7 +230,7 @@ gras_trp_file_chunk_recv(gras_socket_t *sock,
   while (size) {
     int status = 0;
     
-    status = read(sock->sd, data, (size_t)size);
+    status = read(sock->sd, data, (long int)size);
     DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
     
     if (status == -1) {

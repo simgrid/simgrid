@@ -40,11 +40,11 @@ void         gras_trp_sg_socket_close(gras_socket_t *sd);
 
 gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sd,
 				    char *data,
-				    size_t size);
+				    long int size);
 
 gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sd,
 				    char *data,
-				    size_t size);
+				    long int size);
 
 /* FIXME
   gras_error_t gras_trp_sg_flush(gras_socket_t *sd);
@@ -208,7 +208,7 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 
   INFO6("'%s' (%d) ears on %s:%d%s (%p)",
     MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
-    host,port,sock->raw? " (mode RAW)":"",*sock);
+    host,port,sock->raw? " (mode RAW)":"",sock);
 
   return no_error;
 }
@@ -245,7 +245,7 @@ typedef struct {
 
 gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
 				    char *data,
-				    size_t size) {
+				    long int size) {
   m_task_t task=NULL;
   static unsigned int count=0;
   char name[256];
@@ -277,7 +277,7 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
 
 gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
 				    char *data,
-				    size_t size){
+				    long int size){
   gras_procdata_t *pd=gras_procdata_get();
 
   m_task_t task=NULL;
@@ -292,7 +292,7 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
 
   task_data = MSG_task_get_data(task);
   gras_assert2(task_data->size == size,
-	       "Got %d bytes when %d where expected",
+	       "Got %d bytes when %ld where expected",
 	       task_data->size, size);
   memcpy(data,task_data->data,size);
   free(task_data->data);

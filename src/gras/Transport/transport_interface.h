@@ -18,10 +18,10 @@
  ***/
 gras_error_t gras_trp_chunk_send(gras_socket_t *sd,
 				 char *data,
-				 size_t size);
+				 long int size);
 gras_error_t gras_trp_chunk_recv(gras_socket_t *sd,
 				 char *data,
-				 size_t size);
+				 long int size);
 
 /* Find which socket needs to be read next */
 gras_error_t 
@@ -66,10 +66,10 @@ struct gras_trp_plugin_ {
     
   gras_error_t (*chunk_send)(gras_socket_t *sd,
 			     char *data,
-			     size_t size);
+			     long int size);
   gras_error_t (*chunk_recv)(gras_socket_t *sd,
 			     char *Data,
-			     size_t size);
+			     long int size);
 
   void          *data;
  

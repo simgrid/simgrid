@@ -43,11 +43,11 @@ void         gras_trp_tcp_socket_close(gras_socket_t *sd);
   
 gras_error_t gras_trp_tcp_chunk_send(gras_socket_t *sd,
 				     char *data,
-				     size_t size);
+				     long int size);
 
 gras_error_t gras_trp_tcp_chunk_recv(gras_socket_t *sd,
 				     char *data,
-				     size_t size);
+				     long int size);
 
 void gras_trp_tcp_exit(gras_trp_plugin_t *plug);
 
@@ -308,8 +308,8 @@ void gras_trp_tcp_socket_close(gras_socket_t *sock){
  */
 gras_error_t 
 gras_trp_tcp_chunk_send(gras_socket_t *sock,
-		    char *data,
-		    size_t size) {
+			char *data,
+			long int size) {
   
   /* TCP sockets are in duplex mode, don't check direction */
   gras_assert0(size >= 0, "Cannot send a negative amount of data");
@@ -321,8 +321,8 @@ gras_trp_tcp_chunk_send(gras_socket_t *sock,
     DEBUG3("write(%d, %p, %ld);", sock->sd, data, size);
     
     if (status == -1) {
-      RAISE4(system_error,"write(%d,%p,%d) failed: %s",
-	     sock->sd, data, (int)size,
+      RAISE4(system_error,"write(%d,%p,%ld) failed: %s",
+	     sock->sd, data, size,
 	     strerror(errno));
     }
     
@@ -344,7 +344,7 @@ gras_trp_tcp_chunk_send(gras_socket_t *sock,
 gras_error_t 
 gras_trp_tcp_chunk_recv(gras_socket_t *sock,
 			char *data,
-			size_t size) {
+			long int size) {
 
   /* TCP sockets are in duplex mode, don't check direction */
   gras_assert0(sock, "Cannot recv on an NULL socket");

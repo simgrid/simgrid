@@ -44,7 +44,7 @@ gras_trp_select(double timeout,
   int r_pid;
   gras_hostdata_t *remote_hd;
 
-  DEBUG3("select on %s@%s with timeout=%d",
+  DEBUG3("select on %s@%s with timeout=%f",
 	 MSG_process_get_name(MSG_process_self()),
 	 MSG_host_get_name(MSG_host_self()),
 	 timeout);

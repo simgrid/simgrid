@@ -250,7 +250,7 @@ void gras_socket_close(gras_socket_t *sock) {
 gras_error_t
 gras_trp_chunk_send(gras_socket_t *sd,
 		    char *data,
-		    size_t size) {
+		    long int size) {
   gras_assert1(sd->outgoing,
 	       "Socket not suited for data send (outgoing=%c)",
 	       sd->outgoing?'y':'n');
@@ -267,7 +267,7 @@ gras_trp_chunk_send(gras_socket_t *sd,
 gras_error_t 
 gras_trp_chunk_recv(gras_socket_t *sd,
 		    char *data,
-		    size_t size) {
+		    long int size) {
   gras_assert0(sd->incoming,
 	       "Socket not suited for data receive");
   gras_assert1(sd->plugin->chunk_recv,
