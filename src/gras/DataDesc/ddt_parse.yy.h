@@ -6,18 +6,21 @@
 
 typedef enum {
   GRAS_DDT_PARSE_TOKEN_EMPTY = 0,
-  GRAS_DDT_PARSE_TOKEN_LP = 512, /* { */
-  GRAS_DDT_PARSE_TOKEN_RP,       /* } */
+  GRAS_DDT_PARSE_TOKEN_LA = 512, /* { 'A' for the french "accolade" since there is a name conflict in english (braket/brace) */
+  GRAS_DDT_PARSE_TOKEN_RA,       /* } */
   GRAS_DDT_PARSE_TOKEN_LB,       /* [ */
   GRAS_DDT_PARSE_TOKEN_RB,       /* ] */
+  GRAS_DDT_PARSE_TOKEN_LP,       /* ( */
+  GRAS_DDT_PARSE_TOKEN_RP,       /* ) */
   GRAS_DDT_PARSE_TOKEN_WORD,
   GRAS_DDT_PARSE_TOKEN_SPACE,
-  GRAS_DDT_PARSE_TOKEN_QUOTE,
   GRAS_DDT_PARSE_TOKEN_COMMENT,
+  GRAS_DDT_PARSE_TOKEN_ANNOTATE,
   GRAS_DDT_PARSE_TOKEN_NEWLINE,
   GRAS_DDT_PARSE_TOKEN_STAR,
   GRAS_DDT_PARSE_TOKEN_SEMI_COLON,
-  GRAS_DDT_PARSE_TOKEN_COLON,
+  GRAS_DDT_PARSE_TOKEN_COLON, /* impossible since the macro think that it's a arg separator. 
+				 But handle anyway for the *vicious* calling gras_ddt_parse manually */
   GRAS_DDT_PARSE_TOKEN_ERROR
 } gras_ddt_parse_token_t;
 
@@ -48,3 +51,16 @@ void gras_ddt_parse_set_out (FILE *  out_str );
 int gras_ddt_parse_get_debug  (void);
 void gras_ddt_parse_set_debug (int  bdebug );
 int gras_ddt_parse_lex_destroy  (void);
+
+#define PARSE_ERROR_PRE do {
+#define PARSE_ERROR_POST gras_abort();} while (0)
+
+#define PARSE_ERROR0(fmt)     PARSE_ERROR_PRE \
+                              ERROR3(fmt " at %d:%d of :\n%s", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
+                              PARSE_ERROR_POST
+#define PARSE_ERROR1(fmt,a)   PARSE_ERROR_PRE \
+                              ERROR4(fmt " at %d:%d of :\n%s",a, gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
+                              PARSE_ERROR_POST
+#define PARSE_ERROR2(fmt,a,b) PARSE_ERROR_PRE \
+                              ERROR5(fmt " at %d:%d of :\n%s",a,b, gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,definition);\
+                              PARSE_ERROR_POST

@@ -1,3 +1,8 @@
+2004-08-11 Martin Quinson
+  Version 0.6 (protocol not changed; ABI expended)
+  - The parsing macro can deal with the references, provided that you add
+    the relevant annotations (using GRAS_ANNOTE(size,field_name))
+
 2004-08-09 Martin Quinson
   Version 0.5 (protocol not changed; ABI changed)
   - Allow to off turn the cycle detection code in data exchange at

@@ -634,7 +634,7 @@ gras_datadesc_import_nws(const char           *name,
 /**
  * gras_datadesc_cb_send:
  *
- * Add a pre-send callback to this datadexc.
+ * Add a pre-send callback to this datadesc.
  * (useful to push the sizes of the upcoming arrays, for example)
  */
 void gras_datadesc_cb_send (gras_datadesc_type_t         *type,
@@ -651,12 +651,94 @@ void gras_datadesc_cb_recv(gras_datadesc_type_t         *type,
 			   gras_datadesc_type_cb_void_t  recv) {
   type->recv = recv;
 }
+/**
+ * gras_dd_find_field:
+ * 
+ * Returns the type descriptor of the given field. Abort on error.
+ */
+static gras_datadesc_type_t *
+  gras_dd_find_field(gras_datadesc_type_t         *type,
+		     const char                   *field_name) {
+   gras_datadesc_type_t *sub_type=NULL;
+   gras_dynar_t         *field_array;
+   
+   gras_dd_cat_field_t  *field=NULL;
+   int                   field_num;
+   
+   if (type->category_code == e_gras_datadesc_type_cat_union) {
+      field_array = type->category.union_data.fields;
+   } else if (type->category_code == e_gras_datadesc_type_cat_struct) {
+      field_array = type->category.struct_data.fields;
+   } else {
+      ERROR2("%s (%p) is not a struct nor an union. There is no field.", type->name,type);
+      gras_abort();
+   }
+   gras_dynar_foreach(field_array,field_num,field) {
+      if (!strcmp(field_name,field->name)) {
+	 return field->type;
+      }
+   }
+   ERROR2("No field nammed %s in %s",field_name,type->name);
+   gras_abort();
+
+}
+				  
+/**
+ * gras_datadesc_cb_field_send:
+ *
+ * Add a pre-send callback to the given field of the datadesc (which must be a struct or union).
+ * (useful to push the sizes of the upcoming arrays, for example)
+ */
+void gras_datadesc_cb_field_send (gras_datadesc_type_t         *type,
+				  const char                   *field_name,
+				  gras_datadesc_type_cb_void_t  send) {
+   
+   gras_datadesc_type_t *sub_type=gras_dd_find_field(type,field_name);   
+   sub_type->send = send;
+}
 
 /**
- * gras_datadesc_unref:
+ * gras_datadesc_cb_field_push:
  *
- * Removes a reference to the datastruct. 
- * ddt will be freed only when the refcount becomes 0.
+ * Add a pre-send callback to the given field resulting in its value to be pushed to
+ * the stack of sizes. It must be a int, unsigned int, long int or unsigned long int.
+ */
+void gras_datadesc_cb_field_push (gras_datadesc_type_t         *type,
+				  const char                   *field_name) {
+   
+   gras_datadesc_type_t *sub_type=gras_dd_find_field(type,field_name);
+   if (!strcmp("int",sub_type->name)) {
+      sub_type->send = gras_datadesc_cb_push_int;
+   } else if (!strcmp("unsigned int",sub_type->name)) {
+      sub_type->send = gras_datadesc_cb_push_uint;
+   } else if (!strcmp("long int",sub_type->name)) {
+      sub_type->send = gras_datadesc_cb_push_lint;
+   } else if (!strcmp("unsigned long int",sub_type->name)) {
+      sub_type->send = gras_datadesc_cb_push_ulint;
+   } else {
+      ERROR1("Field %s is not an int, unsigned int, long int neither unsigned long int",
+	     sub_type->name);
+      gras_abort();
+   }
+}
+/**
+ * gras_datadesc_cb_field_recv:
+ *
+ * Add a post-receive callback to the given field of the datadesc (which must be a struct or union).
+ * (useful to put the function pointers to the right value, for example)
+ */
+void gras_datadesc_cb_field_recv(gras_datadesc_type_t         *type,
+				 const char                   *field_name,
+				 gras_datadesc_type_cb_void_t  recv) {
+   
+   gras_datadesc_type_t *sub_type=gras_dd_find_field(type,field_name);   
+   sub_type->recv = recv;
+}
+
+/**
+ * gras_datadesc_free:
+ *
+ * Free a datadesc. Should only be called at gras_exit. 
  */
 void gras_datadesc_free(gras_datadesc_type_t *type) {
 

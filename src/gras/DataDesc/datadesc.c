@@ -197,9 +197,9 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
   for (cpt=0; cpt<gras_arch_count; cpt++) {
     printf("%s%s%ld%s",
 	   cpt>0?", ":"",
-	   cpt == GRAS_THISARCH ? "*":"",
+	   cpt == GRAS_THISARCH ? ">":"",
 	   ddt->size[cpt],
-	   cpt == GRAS_THISARCH ? "*":"");
+	   cpt == GRAS_THISARCH ? "<":"");
   }
   printf ("]\n");
 
@@ -207,9 +207,9 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
   for (cpt=0; cpt<gras_arch_count; cpt++) {
     printf("%s%s%ld%s",
 	   cpt>0?", ":"",
-	   cpt == GRAS_THISARCH ? "*":"",
+	   cpt == GRAS_THISARCH ? ">":"",
 	   ddt->alignment[cpt],
-	   cpt == GRAS_THISARCH ? "*":"");
+	   cpt == GRAS_THISARCH ? "<":"");
   }
   printf ("]\n");
 
@@ -217,9 +217,9 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
   for (cpt=0; cpt<gras_arch_count; cpt++) {
     printf("%s%s%ld%s",
 	   cpt>0?", ":"",
-	   cpt == GRAS_THISARCH ? "*":"",
+	   cpt == GRAS_THISARCH ? ">":"",
 	   ddt->aligned_size[cpt],
-	   cpt == GRAS_THISARCH ? "*":"");
+	   cpt == GRAS_THISARCH ? "<":"");
   }
   printf ("]\n");
   if (ddt->category_code == e_gras_datadesc_type_cat_struct) {

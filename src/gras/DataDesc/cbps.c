@@ -331,10 +331,49 @@ gras_cbps_i_pop(gras_cbps_t        *ps) {
 }
 
 /**
- * gras_dd_cb_pop:
+ * gras_datadesc_cb_pop:
  *
  * Generic cb returning the lastly pushed value
  */
 int gras_datadesc_cb_pop(gras_cbps_t *vars, void *data) {
   return gras_cbps_i_pop(vars);
+}
+
+/**
+ * gras_datadesc_cb_push_int:
+ * 
+ * Cb to push an integer. Must be attached to the field you want to push
+ */
+void gras_datadesc_cb_push_int(gras_cbps_t *vars, void *data) {
+   int *i = (int*)data;
+   gras_cbps_i_push(vars, (int) *i);
+}
+
+/**
+ * gras_datadesc_cb_push_uint:
+ * 
+ * Cb to push an unsigned integer. Must be attached to the field you want to push
+ */
+void gras_datadesc_cb_push_uint(gras_cbps_t *vars, void *data) {
+   unsigned int *i = (unsigned int*)data;
+   gras_cbps_i_push(vars, (int) *i);
+}
+
+/**
+ * gras_datadesc_cb_push_lint:
+ * 
+ * Cb to push an long integer. Must be attached to the field you want to push
+ */
+void gras_datadesc_cb_push_lint(gras_cbps_t *vars, void *data) {
+   long int *i = (long int*)data;
+   gras_cbps_i_push(vars, (int) *i);
+}
+/**
+ * gras_datadesc_cb_push_ulint:
+ * 
+ * Cb to push an long integer. Must be attached to the field you want to push
+ */
+void gras_datadesc_cb_push_ulint(gras_cbps_t *vars, void *data) {
+   unsigned long int *i = (unsigned long int*)data;
+   gras_cbps_i_push(vars, (int) *i);
 }

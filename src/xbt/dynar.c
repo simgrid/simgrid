@@ -36,8 +36,8 @@ struct gras_dynar_s {
 			"dynar is not that long. You asked %d, but it's only %d long", \
 			idx, dynar->used)
 #define __check_populated_dynar(dynar)            \
-           gras_assert0(dynar->used,              \
-			"dynar contains nothing")
+           gras_assert1(dynar->used,              \
+			"dynar %p contains nothing",dynar)
 
 
 static inline
@@ -183,6 +183,7 @@ gras_dynar_reset(gras_dynar_t * const dynar) {
 
   __sanity_check_dynar(dynar);
 
+  DEBUG1("Reset the dynar %p",dynar);
   if (dynar->free) {
     gras_dynar_map(dynar, dynar->free);
   }
@@ -418,6 +419,7 @@ gras_dynar_pop(gras_dynar_t * const dynar,
                void         * const dst) {
   __sanity_check_dynar(dynar);
   __check_populated_dynar(dynar);
+  DEBUG1("Pop %p",dynar);
   gras_dynar_remove_at(dynar, dynar->used-1, dst);
 }
 

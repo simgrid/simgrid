@@ -520,16 +520,12 @@ gras_error_t test_pbio(gras_socket_t *sock, int direction) {
   return no_error;
 }
 
-typedef struct {
-   int num_lits; /* size of next array */
-   int* literals;
-} Clause;
-
-void Clause_pre_cb  (gras_cbps_t *vars,void *data);
-
-void Clause_pre_cb(gras_cbps_t *vars, void *data) {
-  gras_cbps_i_push(vars, (long int) ((Clause*)data)->num_lits);
-}
+GRAS_DEFINE_TYPE(s_clause,
+struct s_clause {
+   int num_lits;
+   int *literals GRAS_ANNOTE(size,num_lits); /* Tells GRAS where to find the size */
+};)
+typedef struct s_clause Clause;
 
 gras_error_t test_clause(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
@@ -552,16 +548,9 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
   DEBUG1("created count=%d",i->num_lits);
 
   /* create the damn type descriptor */
-  TRYFAIL(gras_datadesc_struct("Clause",&ddt));
+  ddt = gras_datadesc_by_symbol(s_clause);
+//  gras_datadesc_type_dump(ddt);
 
-  gras_datadesc_cb_send(ddt,Clause_pre_cb); /* push the size of the arrray */
-  
-  TRYFAIL(gras_datadesc_struct_append(ddt,"num_lits", 
-				      gras_datadesc_by_name("int")));
-
-  TRYFAIL(gras_datadesc_ref_pop_arr(gras_datadesc_by_name("int"), &array_t));
-  TRYFAIL(gras_datadesc_struct_append(ddt,"literals",array_t));
-  gras_datadesc_struct_close(ddt);
   TRYFAIL(gras_datadesc_ref("Clause*",ddt,&ddt));
 
   TRY(write_read(ddt, &i,&j, sock,direction));
@@ -620,7 +609,7 @@ int main(int argc,char *argv[]) {
   
   TRYFAIL(test_string(sock,direction)); 
 
-  TRYFAIL(test_structures(sock,direction));
+// TRYFAIL(test_structures(sock,direction));
 
   TRYFAIL(test_homostruct(sock,direction));
   TRYFAIL(test_hetestruct(sock,direction));

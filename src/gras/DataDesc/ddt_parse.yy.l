@@ -20,142 +20,103 @@
   int gras_ddt_parse_col_pos = 0;
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
-  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,parse);
-#define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen %s", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
+  const char *definition;
+  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse);
+#define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
 %}
 
-%x comment foo str
+%x annotate comment foo
 space           [ \t]
 letter          [A-Za-z._-]
 digit           [0-9]
 
 %%
-        int comment_caller=0;
+   int comment_caller=0;
+   int annotate_caller=0;
 
-        char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
-        char *string_buf_ptr = NULL;
+   char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
+   char *string_buf_ptr = NULL;
 
 "//"[^\n]*
-"/*"         {
-             comment_caller = INITIAL;
-             BEGIN(comment);
-             }
 
-<foo>"/*"    {
-             comment_caller = foo;
-             BEGIN(comment);
-             }
+"/*g"{space}* { /****************** ANNOTATION ************************/
+  DEBUG0("Begin annotation");
+  annotate_caller = INITIAL;
+  gras_ddt_parse_char_pos+= strlen(yytext);
+  gras_ddt_parse_col_pos+= strlen(yytext);
+  BEGIN(annotate);
+}
+<foo>"/*g"{space}* { /* trim annotation */
+  DEBUG0("Begin annotation");
+  annotate_caller = foo;
+  gras_ddt_parse_char_pos+= strlen(yytext);
+  gras_ddt_parse_col_pos+= strlen(yytext);
+  BEGIN(annotate);
+}
 
-<comment>[^*\n]*        /* eat anything that's not a '*' */
-<comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
+<annotate>{space}*"g*/" {
+  DEBUG0("End annotation");
+  gras_ddt_parse_char_pos+= strlen(yytext);
+  gras_ddt_parse_col_pos+= strlen(yytext);
+  BEGIN(annotate_caller);
+}
+
+<annotate>"*/" {
+  PARSE_ERROR0("``/*g'' construct closed by a regular ``*/''");
+}
+<annotate>\n  {
+  PARSE_ERROR0("Type annotation cannot spread over several lines");
+}
+
+<annotate>.* { /* eat the rest */
+  gras_ddt_parse_char_pos+= strlen(yytext);
+  gras_ddt_parse_col_pos+= strlen(yytext);
+  return GRAS_DDT_PARSE_TOKEN_ANNOTATE;
+}
+
+"/*[^g]"   { /****************** COMMENTS ************************/
+	 // constructs like /*g [string] g*/ are not comments but size annotations
+  comment_caller = INITIAL;
+  BEGIN(comment);
+}
+
+<foo>"/*[^g]"    {
+  comment_caller = foo;
+  BEGIN(comment);
+}
+
+<comment>[^*\n]*      { /* eat anything that's not a '*' */
+}
+<comment>"*"+[^*/\n]* { /* eat up '*'s not followed by '/'s */
+}
 <comment>\n             {
   ++gras_ddt_parse_line_pos;
   gras_ddt_parse_col_pos=0;
   gras_ddt_parse_char_pos++;
 }
-<comment>"*"+"/"        BEGIN(comment_caller);
-
-\"      string_buf_ptr = string_buf; gras_ddt_parse_char_pos++;gras_ddt_parse_col_pos++; BEGIN(str);
-
-<str>\"        { /* saw closing quote - all done */
-        BEGIN(INITIAL);
-        *string_buf_ptr = '\0';
-	yytext=string_buf;
-	gras_ddt_parse_char_pos++;
-	gras_ddt_parse_col_pos++;
-	return GRAS_DDT_PARSE_TOKEN_WORD;
-        /* return string constant token type and
-         * value to parser
-         */
-        }
-
-<str>\n        {
-        /* error - unterminated string constant */
-        /* generate error message */
-        }
-
-<str>\\[0-7]{1,3} {
-        /* octal escape sequence */
-        int result;
-
-        (void) sscanf( yytext + 1, "%o", &result );
-
-        if ( result > 0xff )
-                /* error, constant is out-of-bounds */
-
-        *string_buf_ptr++ = result;
-	gras_ddt_parse_char_pos++;
-	gras_ddt_parse_col_pos++;
-        }
-
-<str>\\[0-9]+ {
-        /* generate error - bad escape sequence; something
-         * like '\48' or '\0777777'
-         */
-        }
-
-<str>\\n  {
-  *string_buf_ptr++ = '\n';
-  gras_ddt_parse_char_pos++;
-  gras_ddt_parse_col_pos++;
-}
-<str>\\t  {
-  *string_buf_ptr++ = '\t';	
-  gras_ddt_parse_char_pos++;
-  gras_ddt_parse_col_pos++;
-}
-<str>\\r  {
-  *string_buf_ptr++ = '\r';	
-  gras_ddt_parse_char_pos++;
-  gras_ddt_parse_col_pos++;
-}
-<str>\\b  {
-  *string_buf_ptr++ = '\b';	
-  gras_ddt_parse_char_pos++;
-  gras_ddt_parse_col_pos++;
-}
-<str>\\f  {
-  *string_buf_ptr++ = '\f';
-  gras_ddt_parse_char_pos++;
-  gras_ddt_parse_col_pos++;
-}
-
-<str>\\(.|\n)  {
-  *string_buf_ptr++ = yytext[1]; 	
-  if(yytext[1]=='\n') {
-    ++gras_ddt_parse_line_pos;
-    gras_ddt_parse_col_pos=0;
-  } else {
-    gras_ddt_parse_col_pos++;
-  }
-  gras_ddt_parse_char_pos++;
-}
-
-<str>[^\\\n\"]+  {
-  char *yptr = yytext;
-  
-  while ( *yptr )
-    *string_buf_ptr++ = *yptr++;
-  gras_ddt_parse_char_pos++;
-  gras_ddt_parse_col_pos++;
-}
-
-({letter}|{digit})* { 
+<comment>"*"+"/" {
   gras_ddt_parse_char_pos+= strlen(yytext);
   gras_ddt_parse_col_pos+= strlen(yytext);
+  BEGIN(comment_caller);
+}
+
+({letter}|{digit})* {  /****************** STATEMENTS ************************/
+  gras_ddt_parse_char_pos += strlen(yytext);
+  gras_ddt_parse_col_pos += strlen(yytext);
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_WORD);
 }
 "{"  { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
   SHOW_WHERE;
-  return(GRAS_DDT_PARSE_TOKEN_LP);
+  return(GRAS_DDT_PARSE_TOKEN_LA);
 }
 "}" {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
   SHOW_WHERE;
-  return(GRAS_DDT_PARSE_TOKEN_RP);
+  return(GRAS_DDT_PARSE_TOKEN_RA);
 }
 "["  { 
   gras_ddt_parse_char_pos++; 
@@ -168,6 +129,18 @@ digit           [0-9]
   gras_ddt_parse_col_pos++;
   SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_RB);
+}
+"("  { 
+  gras_ddt_parse_char_pos++; 
+  gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_LP);
+}
+")" {
+  gras_ddt_parse_char_pos++;
+  gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
+  return(GRAS_DDT_PARSE_TOKEN_RP);
 }
 "*" {
   gras_ddt_parse_char_pos++;
@@ -203,8 +176,8 @@ digit           [0-9]
 
 void gras_ddt_parse_dump(void) {
   switch(gras_ddt_parse_tok_num) {
-  case GRAS_DDT_PARSE_TOKEN_LP      : {printf("TOKEN_LP ");break;}
-  case GRAS_DDT_PARSE_TOKEN_RP      : {printf("TOKEN_RP ");break;}
+  case GRAS_DDT_PARSE_TOKEN_LA      : {printf("TOKEN_LA ");break;}
+  case GRAS_DDT_PARSE_TOKEN_RA      : {printf("TOKEN_RA ");break;}
   case GRAS_DDT_PARSE_TOKEN_WORD    : {printf("TOKEN_WORD ");break;}
     //  case GRAS_DDT_PARSE_TOKEN_SPACE   : {printf("TOKEN_SPACE ");break;}
     //  case GRAS_DDT_PARSE_TOKEN_COMMENT : {printf("TOKEN_COMMENT ");break;}
@@ -245,6 +218,7 @@ void  gras_ddt_parse_pointer_close(void) {
 
 void  gras_ddt_parse_pointer_string_init(const char *string_to_parse) {
   input_buffer = yy_scan_string (string_to_parse);
+  definition = string_to_parse;
   yy_switch_to_buffer(input_buffer);
 
   gras_ddt_parse_line_pos = 1;
