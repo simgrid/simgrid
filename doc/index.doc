@@ -157,9 +157,9 @@ The authors of SimGrid are:
 
 \section publications Selected publications
 
-When citing SimGrid, the prefered reference paper is still <i>SimGrid: A
-Toolkit for the Simulation of Application Scheduling</i> by Henri Casanova,
-even if it's a bit old now. We are activly working on improving this.
+When citing SimGrid, the prefered reference paper is <i>Scheduling
+Distributed Applications: the SimGrid Simulation Framework</i>, even if it's
+a bit old now. We are actively working on improving this.
 
 \subsection simulation About simulation
 
