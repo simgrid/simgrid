@@ -161,7 +161,10 @@ void xbt_log_init(int *argc,char **argv, const char *defaultlog) {
 
   /** Set logs and init log submodule */
   for (i=1; i<*argc; i++) {
-    if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log="))) {
+    if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
+	!strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
+	!strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
+	!strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))) {
       found = 1;
       opt=strchr(argv[i],'=');
       opt++;
