@@ -9,6 +9,7 @@ nobase_include_HEADERS = \
 	xbt/fifo.h \
 	xbt/swag.h \
 	xbt/config.h \
+	xbt/context.h \
 	\
 	surf/maxmin.h \
 	surf/trace_mgr.h \

@@ -22,6 +22,7 @@ EXTRA_DIST= \
         xbt/dict_private.h \
         xbt/heap_private.h \
         xbt/fifo_private.h \
+        xbt/context_private.h \
         \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \
@@ -98,6 +99,7 @@ COMMON_S=\
   xbt/set.c                                                                    \
   xbt/module.c                                                                 \
   xbt/config.c                                                                 \
+  xbt/context.c                                                                \
   \
   surf/maxmin.c                                                              \
   surf/trace_mgr.c                                                           \

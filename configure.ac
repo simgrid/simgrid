@@ -92,6 +92,11 @@ AM_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
 dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
 AC_CHECK_LIB(nsl, gethostbyname, [LIBS="$LIBS -lnsl"])
 AC_CHECK_LIB(socket, connect,    [LIBS="$LIBS -lsocket"])
+
+AC_CHECK_LIB(c,swapcontext,
+  [AC_DEFINE([USE_CONTEXT],1,[Define if GNU contexts available and you wish to use them])],
+  [AC_MSG_ERROR([[Cannot find context in your libc, go away !]])])
+
 	
 dnl ####[ maint mode ]#######################################################
 AM_MAINTAINER_MODE
