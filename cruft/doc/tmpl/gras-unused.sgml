@@ -2377,6 +2377,14 @@ Sockets
 @Varargs: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_sleep ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@Param2: 
+
 <!-- ##### FUNCTION gras_sock_client_open ##### -->
 <para>
 
@@ -2419,6 +2427,13 @@ Sockets
 @Param1: 
 @Param2: 
 @sock: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_time ##### -->
+<para>
+
+</para>
+
 @Returns: 
 
 <!-- ##### FUNCTION gras_unlock ##### -->

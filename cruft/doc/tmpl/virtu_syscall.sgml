@@ -14,7 +14,7 @@ System call abstraction layer.
 
 </para>
 
-<!-- ##### FUNCTION gras_time ##### -->
+<!-- ##### FUNCTION gras_os_time ##### -->
 <para>
 
 </para>
@@ -22,7 +22,7 @@ System call abstraction layer.
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_sleep ##### -->
+<!-- ##### FUNCTION gras_os_sleep ##### -->
 <para>
 
 </para>
