@@ -109,6 +109,7 @@ gras_error_t gras_trp_socket_new(int incoming,
 
   if (! (sock=malloc(sizeof(gras_socket_t))) )
     RAISE_MALLOC;
+  DEBUG1("Create a new socket (%p)", sock);
 
   sock->plugin = NULL;
   sock->sd     = -1;
@@ -190,6 +191,7 @@ gras_socket_client(const char *host,
   TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg",
 				  &trp));
 
+  DEBUG1("Create a client socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
   /* defaults settings */
   TRY(gras_trp_socket_new(0,&sock));
   sock->plugin= trp;
