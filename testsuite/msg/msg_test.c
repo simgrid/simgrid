@@ -1,6 +1,6 @@
 /* 	$Id$	 */
 
-/* Copyright (c) 2002,2004,2004 Arnaud Legrand. All rights reserved.        */
+/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -134,30 +134,37 @@ int unix_receiver(int argc, char *argv[])
 
 int unix_forwarder(int argc, char *argv[])
 {
-  int todo_count = 0;
-  m_task_t *todo = (m_task_t *) calloc(NB_TASK, sizeof(m_task_t));
+  m_host_t slave=NULL;
   int i;
 
   print_args(argc,argv);
 
+  if(argc<2) 
+    DIE("Need somebody to which I can send my work! ");
+
+  slave = MSG_get_host_by_name(argv[1]);
+
+  if(slave==NULL) {
+    PRINT_MESSAGE("Unknown host %s. Stopping Now! \n", argv[1]);
+    abort();
+  }
+
   for (i = 0; i < NB_TASK;) {
+    m_task_t task = NULL;
     int a;
     PRINT_MESSAGE("Awaiting Task %d \n", i);
-    a = MSG_task_get(&(todo[i]), PORT_22);
+    a = MSG_task_get(&task, PORT_22);
     if (a == MSG_OK) {
-      todo_count++;
-      PRINT_MESSAGE("Received \"%s\" \n", todo[i]->name);
-      PRINT_MESSAGE("Processing \"%s\" \n", todo[i]->name);
-      MSG_task_execute(todo[i]);
-      PRINT_MESSAGE("\"%s\" done \n", todo[i]->name);
-      MSG_task_destroy(todo[i]);
+      PRINT_MESSAGE("Received \"%s\" \n", task->name);
+      PRINT_MESSAGE("Sending to somebody else \"%s\" \n", task->name);
+      MSG_task_put(task,slave,PORT_22);
       i++;
     } else {
       PRINT_MESSAGE("Hey ?! What's up ? \n");
       DIE("Unexpected behaviour");
     }
   }
-  free(todo);
+
   PRINT_MESSAGE("I'm done. See you!\n");
   return 0;
 }
@@ -172,6 +179,7 @@ void test_all(const char *platform_file,const char *application_file)
   {                            /*   Application deployment */
     MSG_function_register("master", unix_emitter);
     MSG_function_register("slave", unix_receiver);
+    MSG_function_register("forwarder", unix_forwarder);
     MSG_launch_application(application_file);
   }
   MSG_main();

@@ -1,4 +1,9 @@
-/**** MSG_LICENCE DO NOT REMOVE ****/
+/* 	$Id$	 */
+
+/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef MESSAGES_H
 #define MESSAGES_H
