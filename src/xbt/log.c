@@ -28,7 +28,7 @@ static void _free_setting(void *s) {
   gras_log_setting_t *set=(gras_log_setting_t*)s;
   if (set) {
     free(set->catname);
-    free(set);
+//    free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log
   }
 }
 
