@@ -46,7 +46,7 @@ $warn
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <msg.h>
+#include "msg/msg.h"
 #include <gras.h>
 
 char *gras_log=NULL;
