@@ -22,6 +22,7 @@
 <!ENTITY gras-gras-sg SYSTEM "sgml/gras_sg.sgml">
 
 <!ENTITY overview SYSTEM "overview.sgml">
+<!ENTITY faq SYSTEM "faq.sgml">
 ]>
 <book id="index">
   <bookinfo>
@@ -31,6 +32,7 @@
   <chapter>
     <title>GRAS overview</title>
     &overview;
+    &faq;
   </chapter>
 
   <chapter>

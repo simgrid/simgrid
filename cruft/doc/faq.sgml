@@ -1,0 +1,48 @@
+<refentry id="gras-faq">
+<refmeta>
+<refentrytitle>GRAS frequently asked questions</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GRAS Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>FAQ</refname><refpurpose>FAQ on the GRAS library</refpurpose>
+</refnamediv>
+
+<refsect1>
+<title>Introduction</title>
+<para>This document contains random bits about the most beloved traps of
+GRAS users, and (hopefully) a way to escape them..</para> 
+
+<refsect2>
+<title>My code segfault in the communication process</title>
+
+<para>Remember that GRAS expect the passed variable to match exactly the
+passed type description. The most often issue is that you pass a structure
+description, and you pass the address of a pointer to such a structure. If
+you want to handle pointer to structures (as most of us do), please use
+gras_datadesc_declare_ref() to construct the correct type description.
+</para>
+</refsect2>
+
+<!-- Well, there is no offset, in fact. Isn't that great?
+<refsect2>
+<title>I use GRAS logging facility, and it warns me about non matching
+format argument, but it does not refere to the right argument number.</title>
+
+<para>Most probably, you are using one of the DEBUG, VERB, INFO, WARN or
+ERROR macro to do so. They rewrite themselves into their CDEBUG, CVERB, ...
+with the channel into which the logging must be done as first argument. The
+apparent offset comes from here<footnote><para>Well in fact, that's not exactly
+true since CDEBUG and friends are also macro rewritting themselves to macros
+(CLOG), which rewrite themselves to the actual code. But this vision of the
+reality match this fact, and is far easier to understand. This whole point
+may disappear in the future as the macro familly gets rewritten to avoid
+this pain. But it promises to be not trivial to achieve...</para></footnote>.</para>
+
+</refsect2>
+-->
+
+</refsect1>
+
+</refentry>
