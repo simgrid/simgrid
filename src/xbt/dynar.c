@@ -14,6 +14,11 @@
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
+/** \defgroup XBT_dynar A generic dynamic array
+  *  \brief This section describes the API to generic dynamic array (vector).
+  */
+
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
 
 typedef struct xbt_dynar_s {

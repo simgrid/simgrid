@@ -14,6 +14,13 @@
 #include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "gras_config.h"
+
+ /** \defgroup XBT_context User-level context library
+  *  \brief This section describes how to use high-level functions 
+  *  (as opposed to <tt>setjump/longjmp</tt>) to schedule non-preemptible 
+  *  threads.
+  */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 
 /* #define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\ */

@@ -8,6 +8,10 @@
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
 
+/** \defgroup m_datatypes_management MSG Data Types 
+    \brief This section describes the different datatypes provided by MSG.
+*/
+
 /********************************* Host **************************************/
 
 /** @name Host datatype  

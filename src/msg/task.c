@@ -13,6 +13,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(task, msg,
 
 static char sprint_buffer[64];
 
+/** \defgroup m_task_management Managing functions of Tasks
+ *  \brief This section describes the task structure of MSG
+ *  (#m_task_t) and the functions for managing it.
+ *
+ *  Since most scheduling algorithms rely on a concept of task
+ *  that can be either <em>computed</em> locally or
+ *  <em>transferred</em> on another processor, it seems to be the
+ *  right level of abstraction for our purposes. A <em>task</em>
+ *  may then be defined by a <em>computing amount</em>, a
+ *  <em>message size</em> and some <em>private data</em>.
+ */
+
 /********************************* Task **************************************/
 /** \ingroup m_task_management
  * \brief Creates a new #m_task_t.

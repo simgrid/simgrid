@@ -10,6 +10,12 @@
 #include "xbt/sysdep.h"
 #include "xbt/error.h"
 #include "heap_private.h"
+
+
+/** \defgroup XBT_heap A generic heap data structure
+ *  \brief This section describes the API to generic heap with O(log(n)) access.
+ */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap, xbt, "Heap");
 
 /** \name Functions 

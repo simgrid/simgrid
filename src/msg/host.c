@@ -11,6 +11,19 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host, msg,
 				"Logging specific to MSG (host)");
 
+/** \defgroup m_host_management Management functions of Hosts
+ *  \brief This section describes the host structure of MSG
+ * (#m_host_t) and the functions for managing it.
+ *  
+ *  A <em>location</em> (or <em>host</em>) is any possible place where
+ *  a process may run. Thus it may be represented as a
+ *  <em>physical resource with computing capabilities</em>, some
+ *  <em>mailboxes</em> to enable running process to communicate with
+ *  remote ones, and some <em>private data</em> that can be only
+ *  accessed by local process.
+ *  \see m_host_t
+ */
+
 /********************************* Host **************************************/
 m_host_t __MSG_host_create(const char *name,
 			 void *workstation,

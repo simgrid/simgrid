@@ -14,6 +14,12 @@
 
 #include <stdio.h>
 
+/** \defgroup XBT_dict A generic dictionnary 
+ *  \brief This section describes the API to a dictionnary structure
+ *  that associates as string to a void* key. It is not a hash table
+ *  and the internal data-structure rather looks like a tree.
+ */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
 /*####[ Private prototypes ]#################################################*/

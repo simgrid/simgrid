@@ -11,6 +11,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO");
 
+/** \defgroup XBT_fifo A generic workqueue
+  *  \brief This section describes the API to generic workqueue. These functions
+  *   provide the same kind of functionnality as dynamic arrays but in time O(1). 
+  *   However these functions use malloc/free a way too much often.
+  */
+
 /** \name Functions 
  *  \ingroup XBT_fifo
  */

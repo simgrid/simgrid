@@ -16,6 +16,12 @@ MSG_Global_t msg_global = NULL;
 /* static void MarkAsFailed(m_task_t t, TBX_HashTable_t failedProcessList); */
 /* static xbt_fifo_t MSG_buildFailedHostList(long double a, long double b); */
 
+/** \defgroup msg_simulation   MSG simulation Functions
+ *  \brief This section describes the functions you need to know to
+ *  set up a simulation. You should have a look at \ref MSG_examples 
+ *  to have an overview of their usage.
+ */
+
 /********************************* MSG **************************************/
 
 /** \ingroup msg_simulation
@@ -224,6 +230,17 @@ void MSG_set_verbosity(MSG_outputmode_t mode)
 {
   CRITICAL0("MSG_set_verbosity : Not implemented yet.");
 }
+
+/** \defgroup m_channel_management    Understanding channels
+ *  \brief This section briefly describes the channel notion of MSG
+ *  (#m_channel_t).
+ *
+ *  For convenience, the simulator provides the notion of channel
+ *  that is close to the tag notion in MPI. A channel is not a
+ *  socket. It doesn't need to be opened neither closed. It rather
+ *  corresponds to the ports opened on the different machines.
+ */
+
 
 /** \ingroup m_channel_management
  * \brief Set the number of channel in the simulation.

@@ -11,6 +11,11 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gos, msg,
 				"Logging specific to MSG (gos)");
 
+/** \defgroup msg_gos_functions MSG Operating System Functions
+ *  \brief This section describes the functions that can be used
+ *  by an agent for handling some task.
+ */
+
 /** \ingroup msg_gos_functions
  * \brief This function is now deprecated and useless. Please stop using it.
  */

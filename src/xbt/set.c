@@ -16,6 +16,10 @@
 
 #include "xbt/set.h"
 
+/** \defgroup XBT_set A generic set datatype
+  *  \brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
+  */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,"data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/

@@ -15,6 +15,11 @@
 
 #include <stdlib.h>
 
+/** \defgroup XBT_sysdep All system dependency
+  *  \brief This section describes many macros/functions that can serve as
+  *  an OS abstraction.
+  */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");
 
 /****

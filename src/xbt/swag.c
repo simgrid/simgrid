@@ -15,6 +15,16 @@
 #include "xbt/error.h"
 #include "xbt/swag.h"
 
+/** \defgroup XBT_swag A specific set datatype
+ *  \brief a O(1) set based on linked lists
+ *
+ *  Warning, this module is done to be efficient and performs tons of
+ *  cast and dirty things. So avoid using it unless you really know
+ *  what you are doing. It is basically a fifo but with restrictions so that 
+ *  it can be used as a set. Any operation (add, remove, belongs) is O(1) and 
+ *  no call to malloc/free is done.
+ */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(swag,xbt,"Swag : O(1) set library");
 
 #define PREV(obj,offset) xbt_swag_getPrev(obj,offset)

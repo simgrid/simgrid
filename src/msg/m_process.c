@@ -11,6 +11,17 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(m_process, msg,
 				"Logging specific to MSG (process)");
 
+/** \defgroup m_process_management Management Functions of Agents
+ *  \brief This section describes the agent structure of MSG
+ *  (#m_process_t) and the functions for managing it.
+ *
+ *  We need to simulate many independent scheduling decisions, so
+ *  the concept of <em>process</em> is at the heart of the
+ *  simulator. A process may be defined as a <em>code</em>, with
+ *  some <em>private data</em>, executing in a <em>location</em>.
+ *  \see m_process_t
+ */
+
 /******************************** Process ************************************/
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.

@@ -19,6 +19,198 @@
 #include "xbt/dynar.h"
 
 
+/** \defgroup XBT_log Logging support.
+ *  \brief A generic logging facility in the spirit of log4j
+ *
+ *  This section describes the API to the log functions used 
+ *  everywhere in this project.
+     
+<h3>Overview</h3>
+     
+This is an adaptation of the log4c project, which is dead upstream, and
+which I was given the permission to fork under the LGPL licence by the
+authors. log4c itself was loosely based on the Apache project's Log4J,
+Log4CC, etc. project. Because C is not object oriented, a lot had to change.
+    
+There is 3 main concepts: category, priority and appender. These three
+concepts work together to enable developers to log messages according to
+message type and priority, and to control at runtime how these messages are
+formatted and where they are reported.
+
+<h3>Category hierarchy</h3>
+
+The first and foremost advantage of any logging API over plain printf()
+resides in its ability to disable certain log statements while allowing
+others to print unhindered. This capability assumes that the logging space,
+that is, the space of all possible logging statements, is categorized
+according to some developer-chosen criteria. 
+	  
+This observation led to choosing category as the central concept of the
+system. Every category is declared by providing a name and an optional
+parent. If no parent is explicitly named, the root category, LOG_ROOT_CAT is
+the category's parent. 
+      
+A category is created by a macro call at the top level of a file.  A
+category can be created with any one of the following macros:
+
+ - \ref XBT_LOG_NEW_CATEGORY(MyCat); Create a new root
+ - \ref XBT_LOG_NEW_SUBCATEGORY(MyCat, ParentCat);
+    Create a new category being child of the category ParentCat
+ - \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat);
+    Like XBT_LOG_NEW_CATEGORY, but the new category is the default one
+      in this file
+ -  \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, ParentCat);
+    Like XBT_LOG_NEW_SUBCATEGORY, but the new category is the default one
+      in this file
+	    
+The parent cat can be defined in the same file or in another file (in
+which case you want to use the \ref XBT_LOG_EXTERNAL_CATEGORY macro to make
+it visible in the current file), but each category may have only one
+definition.
+      
+Typically, there will be a Category for each module and sub-module, so you
+can independently control logging for each module.
+
+<h3>Priority</h3>
+
+A category may be assigned a threshold priorty. The set of priorites are
+defined by the \ref e_xbt_log_priority_t enum. All logging request under
+this priority will be discarded.
+	  
+If a given category is not assigned a threshold priority, then it inherits
+one from its closest ancestor with an assigned threshold. To ensure that all
+categories can eventually inherit a threshold, the root category always has
+an assigned threshold priority.
+
+Logging requests are made by invoking a logging macro on a category.  All of
+the macros have a printf-style format string followed by arguments. If you
+compile with the -Wall option, gcc will warn you for unmatched arguments, ie
+when you pass a pointer to a string where an integer was specified by the
+format. This is usualy a good idea.
+
+Because most C compilers do not support vararg macros, there is a version of
+the macro for any number of arguments from 0 to 6. The macro name ends with
+the total number of arguments.
+	
+Here is an example of the most basic type of macro. This is a logging
+request with priority <i>warning</i>.
+
+<code>CLOG5(MyCat, gras_log_priority_warning, "Values are: %d and '%s'", 5,
+"oops");</code>
+
+A logging request is said to be enabled if its priority is higher than or
+equal to the threshold priority of its category. Otherwise, the request is
+said to be disabled. A category without an assigned priority will inherit
+one from the hierarchy. 
+      
+It is possible to use any non-negative integer as a priority. If, as in the
+example, one of the standard priorites is used, then there is a convenience
+macro that is typically used instead. For example, the above example is
+equivalent to the shorter:
+
+<code>CWARN4(MyCat, "Values are: %d and '%s'", 5, "oops");</code>
+
+<h3>Default category</h3>
+  
+If \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, Parent) or
+\ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat) is used to create the
+category, then the even shorter form can be used:
+
+<code>WARN3("Values are: %d and '%s'", 5, "oops");</code>
+
+Only one default category can be created per file, though multiple
+non-defaults can be created and used.
+
+<h3>Example</h3>
+
+Here is a more complete example:
+
+\verbatim
+#include "xbt/log.h"
+
+/ * create a category and a default subcategory * /
+XBT_LOG_NEW_CATEGORY(VSS);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(SA, VSS);
+
+int main() {
+       / * Now set the parent's priority.  (the string would typcially be a runtime option) * /
+       xbt_log_control_set("SA.thresh=3");
+
+       / * This request is enabled, because WARNING &gt;= INFO. * /
+       CWARN2(VSS, "Low fuel level.");
+
+       / * This request is disabled, because DEBUG &lt; INFO. * /
+       CDEBUG2(VSS, "Starting search for nearest gas station.");
+
+       / * The default category SA inherits its priority from VSS. Thus,
+          the following request is enabled because INFO &gt;= INFO.  * /
+       INFO1("Located nearest gas station.");
+
+       / * This request is disabled, because DEBUG &lt; INFO. * /
+       DEBUG1("Exiting gas station search"); 
+}
+\endverbatim
+
+<h3>Configuration</h3>
+Configuration is typically done during program initialization by invoking
+the xbt_log_control_set() method. The control string passed to it typically
+comes from the command line. Look at the documentation for that function for
+the format of the control string.
+
+Any SimGrid program can furthermore be configured at run time by passing a
+--xbt-log argument on the command line (--gras-log, --msg-log and
+--surf-log are synonyms). You can provide several of those arguments to
+change the setting of several categories.
+
+<h3>Performance</h3>
+
+Clever design insures efficiency. Except for the first invocation, a
+disabled logging request requires an a single comparison of a static
+variable to a constant.
+
+There is also compile time constant, \ref XBT_LOG_STATIC_THRESHOLD, which
+causes all logging requests with a lower priority to be optimized to 0 cost
+by the compiler. By setting it to gras_log_priority_infinite, all logging
+requests are statically disabled and cost nothing. Released executables
+might be compiled with
+\verbatim-DXBT_LOG_STATIC_THRESHOLD=gras_log_priority_infinite\endverbatim
+    
+<h3>Appenders</h3>
+
+Each category has an optional appender. An appender is a pointer to a
+structure which starts with a pointer to a doAppend() function. DoAppend()
+prints a message to a log.
+
+When a category is passed a message by one of the logging macros, the
+category performs the following actions:
+
+  - if the category has an appender, the message is passed to the
+    appender's doAppend() function,
+  - if 'willLogToParent' is true for the category, the message is passed
+    to the category's parent.
+    
+By default, only the root category have an appender, and 'willLogToParent'
+is true for any other category. This situation causes all messages to be
+logged by the root category's appender.
+
+The default appender function currently prints to stderr, and no other one
+exist, even if more would be needed, like the one able to send the logs to a
+remote dedicated server, or other ones offering different output formats.
+This is on our TODO list for quite a while now, but your help would be
+welcome here.
+
+<h3>Misc and Caveats</h3>
+
+Do not use any of the macros that start with '_'.
+
+Log4J has a 'rolling file appender' which you can select with a run-time
+option and specify the max file size. This would be a nice default for
+non-kernel applications.
+
+Careful, category names are global variables.
+
+*/
+
 /*
 FAIRE DES ZOLIS LOGS
 --------------------

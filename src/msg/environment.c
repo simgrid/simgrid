@@ -11,6 +11,12 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(environment, msg,
 				"Logging specific to MSG (environment)");
 
+/** \defgroup msg_easier_life      Platform and Application management
+ *  \brief This section describes functions to manage the platform creation
+ *  and the application deployment. You should also have a look at 
+ *  \ref MSG_examples  to have an overview of their usage.
+ */
+
 /********************************* MSG **************************************/
 
 /** \ingroup msg_easier_life
@@ -55,8 +61,8 @@ void MSG_create_environment(const char *file) {
   char *name = NULL;
   void *workstation = NULL;
 
-  surf_workstation_resource_init_CLM03(file);
-/*   surf_workstation_resource_init_KCCFLN05(file); */
+/*   surf_workstation_resource_init_CLM03(file); */
+  surf_workstation_resource_init_KCCFLN05(file);
 
   xbt_dict_foreach(workstation_set, cursor, name, workstation) {
     __MSG_host_create(name, workstation, NULL);
