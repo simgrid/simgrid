@@ -30,6 +30,7 @@
   gras_datadesc_import_nws
 
 - rawsock
+  Verifier que les messages vont pas sur des sock raw
 
 - Documentation (en particulier DD et Msg)
 
