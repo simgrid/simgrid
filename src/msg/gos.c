@@ -64,7 +64,7 @@ MSG_error_t MSG_task_get(m_task_t * task,
 
   DEBUG2("Waiting for a task on channel %d (%s)", channel,h->name);
 
-  while ((t = xbt_fifo_pop(h_simdata->mbox[channel])) == NULL) {
+  while ((t = xbt_fifo_shift(h_simdata->mbox[channel])) == NULL) {
     xbt_assert2(!(h_simdata->sleeping[channel]),
 		"A process (%s(%d)) is already blocked on this channel",
 		h_simdata->sleeping[channel]->name,
