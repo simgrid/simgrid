@@ -60,7 +60,7 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
                                            .$val[$l]."+(".$types[$l].")4}, my_${struct}2;\n";
 }}}}
 
-print "  INFO0(\"---- Test on all possible struct having 3 fields (".($max_i*$max_j*$max_k*($max_l+1))." structs) ----\");\n";
+print "  INFO0(\"---- Test on all possible struct having 3 fields (".(($max_i+1)*($max_j+1)*($max_k+1)*($max_l+1))." structs) ----\");\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  TRY(write_read(gras_datadesc_by_symbol($struct), &my_$struct, &my_${struct}2, sock,direction));\n";
