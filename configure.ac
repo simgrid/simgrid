@@ -41,11 +41,9 @@ GRAS_CHECK_STRUCT_COMPACTION
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
-AC_CHECK_HEADERS([sys/socket.h winsock.h winsock2.h \
+AC_CHECK_HEADERS([sys/socket.h \
                   sys/stat.h \
-		  ucontext.h \
-		  pthread.h \
-		  windows.h \
+		  windows.h winsock.h winsock2.h \
 		  sys/time.h \
 		  errno.h unistd.h ])
 AC_CHECK_FUNCS([gettimeofday usleep \
@@ -57,6 +55,7 @@ AC_ARG_ENABLE(context,
   enable_context=pthread)
 AC_MSG_CHECKING(on top of what can we build the contexts)
 if test "x$enable_context" = "xucontext"; then
+  AC_CHECK_HEADERS([ucontext.h])
   ac_header=ucontext.h
   as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
   if test `eval echo '${'$as_ac_Header'}'` = yes; then
@@ -72,6 +71,7 @@ if test "x$enable_context" = "xucontext"; then
     fi
   fi
 else if test "x$enable_context" = "xpthread"; then
+  AC_CHECK_HEADERS([pthread.h])
   AC_CHECK_LIB(pthread,pthread_create,,
     [AC_MSG_ERROR([[Cannot find pthreads, no way (try --enable-context=ucontext if you haven't already tried).]])])
   AC_DEFINE([USE_PTHREADS],1,[Define if we USE pthreads or not])
@@ -108,7 +108,7 @@ AC_CHECK_LIB(socket, connect,    [GRAS_DEP="$GRAS_DEP -lsocket"])
 
 AC_MSG_CHECKING(for extra dependencies of libgras)
 case $host_os in
-  *mingw* ) GRAS_DEP=-lws2_32;;
+  *mingw* ) GRAS_DEP="$GRAS_DEP -lws2_32" ; SIMGRID_DEP="$SIMGRID_DEP -lws2_32" ;;
 esac
 	   
 if test "x$GRAS_DEP" = x; then 
