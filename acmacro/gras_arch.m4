@@ -114,7 +114,7 @@ AC_DEFUN([GRAS_STRUCT_BOUNDARY],
  AC_MSG_CHECKING(for the minimal structure boundary of $1)
 
  AC_CACHE_VAL(GRAS_STRUCT_BOUNDARY_RES, 
- [for ac_size in 1 2 4 8 16 32 64 ; do # List sizes in rough order of prevalence. 
+ [for ac_size in 1 2 4 8 16 32 64 3 ; do # List sizes in rough order of prevalence. 
    AC_COMPILE_IFELSE(AC_LANG_PROGRAM([#include "confdefs.h" 
      #include <sys/types.h> 
      struct s { char c; $1 i; };
