@@ -20,14 +20,22 @@ lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
-				      size_t offset)
+				       size_t offset)
+{
+  return  generic_maxmin_share_resources2(running_actions, offset,
+					  maxmin_system);
+}
+
+double generic_maxmin_share_resources2(xbt_swag_t running_actions,
+				       size_t offset,
+				       lmm_system_t sys)
 {
   surf_action_t action = NULL;
   double min = -1;
   double value = -1;
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
-  lmm_solve(maxmin_system);
+  lmm_solve(sys);
 
   xbt_swag_foreach(action, running_actions) {
     value = lmm_variable_getvalue(VARIABLE(action));
