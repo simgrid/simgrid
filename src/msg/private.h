@@ -23,29 +23,28 @@ typedef enum {
   HOST_ALIVE = 1
 } m_host_state_t;
 
-typedef struct sim_data_host {
+typedef struct simdata_host {
   void *host;			/* SURF modeling */
   xbt_fifo_t *mbox;		/* array of FIFOs used as a mailboxes  */
   m_process_t *sleeping;	/* array of process used to know whether a local process is
 				   waiting for a communication on a channel */
   m_host_state_t state;
-  s_xbt_swag_t process_list;
-} s_sim_data_host_t;
+  xbt_fifo_t process_list;
+} s_simdata_host_t;
 
 /********************************* Task **************************************/
 
-typedef struct sim_data_task {
+typedef struct simdata_task {
   surf_action_t compute;	/* SURF modeling of computation  */
   surf_action_t comm;	        /* SURF modeling of communication  */
   double message_size;		/* Data size  */
   double computation_amount;	/* Computation size  */
   xbt_dynar_t sleeping;		/* process to wake-up */
-} s_sim_data_task_t;
+} s_simdata_task_t;
 
 /******************************* Process *************************************/
 
-typedef struct sim_data_process {
-  s_xbt_swag_hookup_t host_hookup; /* link to other process running on the same location */
+typedef struct simdata_process {
   m_host_t host;                /* the host on which the process is running */
   xbt_context_t context;	        /* the context that executes the scheduler fonction */
   int PID;			/* used for debugging purposes */
@@ -56,7 +55,7 @@ typedef struct sim_data_process {
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
-} s_sim_data_process_t;
+} s_simdata_process_t;
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
@@ -73,12 +72,12 @@ extern MSG_Global_t msg_global;
 
 /*************************************************************/
 
-#define PROCESS_SET_ERRNO(val) (((sim_data_process_t)(MSG_process_self()->simdata))->last_errno=val)
-#define PROCESS_GET_ERRNO() (((sim_data_process_t)(MSG_process_self()->simdata))->last_errno)
+#define PROCESS_SET_ERRNO(val) (((simdata_process_t)(MSG_process_self()->simdata))->last_errno=val)
+#define PROCESS_GET_ERRNO() (((simdata_process_t)(MSG_process_self()->simdata))->last_errno)
 #define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
-#define CHECK_HOST()  ASSERT((((sim_data_host_t) MSG_host_self()->simdata)->state==HOST_ALIVE),"Host failed, you cannot call this function.")
+#define CHECK_HOST()  ASSERT((((simdata_host_t) MSG_host_self()->simdata)->state==HOST_ALIVE),"Host failed, you cannot call this function.")
 
 m_host_t __MSG_host_create(const char *name, void *workstation,
 			   void *data);

@@ -10,10 +10,10 @@
 
 /********************************* Host **************************************/
 
-typedef struct sim_data_host *sim_data_host_t;
+typedef struct simdata_host *simdata_host_t;
 typedef struct m_host {
   char *name;			/* host name if any */
-  sim_data_host_t simdata;	/* simulator data */
+  simdata_host_t simdata;	/* simulator data */
   void *data;			/* user data */
 } s_m_host_t;
 /** \brief Host datatype  
@@ -32,10 +32,10 @@ typedef s_m_host_t *m_host_t;
 
 /********************************* Task **************************************/
 
-typedef struct sim_data_task *sim_data_task_t;
+typedef struct simdata_task *simdata_task_t;
 typedef struct m_task {
   char *name;			/* host name if any */
-  sim_data_task_t simdata;	/* simulator data */
+  simdata_task_t simdata;	/* simulator data */
   void *data;			/* user data */
 } s_m_task_t;
 
@@ -55,10 +55,10 @@ typedef s_m_task_t *m_task_t;
 #define MSG_TASK_UNINITIALIZED NULL
 
 /******************************* Process *************************************/
-typedef struct sim_data_process *sim_data_process_t;
+typedef struct simdata_process *simdata_process_t;
 typedef struct m_process {
   char *name;			/* process name if any */
-  sim_data_process_t simdata;	/* simulator data */
+  simdata_process_t simdata;	/* simulator data */
   void *data;			/* user data */
 } s_m_process_t;
 /** \brief Agent datatype  

@@ -36,18 +36,18 @@ static char sprint_buffer[64];
 m_task_t MSG_task_create(const char *name, long double compute_duration,
 			 long double message_size, void *data)
 {
-  sim_data_task_t sim_data = xbt_new0(s_sim_data_task_t,1);
+  simdata_task_t simdata = xbt_new0(s_simdata_task_t,1);
   m_task_t task = xbt_new0(s_m_task_t,1);
   
   /* Task structure */
   task->name = xbt_strdup(name);
-  task->simdata = sim_data;
+  task->simdata = simdata;
   task->data = data;
 
   /* Simulator Data */
-  sim_data->sleeping = xbt_dynar_new(sizeof(m_process_t),NULL);
-  sim_data->computation_amount = compute_duration;
-  sim_data->message_size = message_size;
+  simdata->sleeping = xbt_dynar_new(sizeof(m_process_t),NULL);
+  simdata->computation_amount = compute_duration;
+  simdata->message_size = message_size;
 
   return task;
 }
@@ -73,7 +73,7 @@ void *MSG_task_get_data(m_task_t task)
  */
 MSG_error_t MSG_task_destroy(m_task_t task)
 {
-  sim_data_task_t sim_data = NULL;
+  simdata_task_t simdata = NULL;
   surf_action_t action = NULL;
   int i;
 
@@ -99,26 +99,26 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 
 /* static MSG_error_t __MSG_task_check(m_task_t task) */
 /* { */
-/*   sim_data_task_t sim_data = NULL; */
+/*   simdata_task_t simdata = NULL; */
 /*   int warning = 0; */
 
 /*   if (task == NULL) {		/\* Fatal *\/ */
 /*     WARNING("Task uninitialized"); */
 /*     return MSG_FATAL; */
 /*   } */
-/*   sim_data = task->simdata; */
+/*   simdata = task->simdata; */
 
-/*   if (sim_data == NULL) {	/\* Fatal *\/ */
+/*   if (simdata == NULL) {	/\* Fatal *\/ */
 /*     WARNING("Simulator Data uninitialized"); */
 /*     return MSG_FATAL; */
 /*   } */
 
-/*   if (sim_data->compute == NULL) {	/\* Fatal if execute ... *\/ */
+/*   if (simdata->compute == NULL) {	/\* Fatal if execute ... *\/ */
 /*     WARNING("No duration set for this task"); */
 /*     warning++; */
 /*   } */
 
-/*   if (sim_data->message_size == 0) {	/\* Fatal if transfered ... *\/ */
+/*   if (simdata->message_size == 0) {	/\* Fatal if transfered ... *\/ */
 /*     WARNING("No message_size set for this task"); */
 /*     warning++; */
 /*   } */
@@ -136,13 +136,13 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 /* static m_task_t __MSG_task_copy(m_task_t src) */
 /* { */
 /*   m_task_t copy = NULL; */
-/*   sim_data_task_t sim_data = NULL; */
+/*   simdata_task_t simdata = NULL; */
 
 /*   __MSG_task_check(src); */
 
-/*   sim_data = src->simdata; */
-/*   copy = MSG_task_create(src->name, SG_getTaskCost(sim_data->compute), */
-/* 			 sim_data->message_size, MSG_task_get_data(src)); */
+/*   simdata = src->simdata; */
+/*   copy = MSG_task_create(src->name, SG_getTaskCost(simdata->compute), */
+/* 			 simdata->message_size, MSG_task_get_data(src)); */
 
 /*   return (copy); */
 /* } */

@@ -16,21 +16,22 @@ m_host_t __MSG_host_create(const char *name,
 			 void *workstation,
 			 void *data)
 {
-  sim_data_host_t sim_data = xbt_new0(s_sim_data_host_t,1);
+  simdata_host_t simdata = xbt_new0(s_simdata_host_t,1);
   m_host_t host = xbt_new0(s_m_host_t,1);
   int i;
 
   /* Host structure */
   host->name = xbt_strdup(name);
-  host->simdata = sim_data;
+  host->simdata = simdata;
   host->data = data;
 
-  sim_data->host = workstation;
+  simdata->host = workstation;
 
-  sim_data->mbox = xbt_new0(xbt_fifo_t, msg_global->max_channel);
+  simdata->mbox = xbt_new0(xbt_fifo_t, msg_global->max_channel);
   for (i = 0; i < msg_global->max_channel; i++)
-    sim_data->mbox[i] = xbt_fifo_new();
-  sim_data->sleeping = xbt_new0(m_process_t, msg_global->max_channel);
+    simdata->mbox[i] = xbt_fifo_new();
+  simdata->sleeping = xbt_new0(m_process_t, msg_global->max_channel);
+  simdata->process_list = xbt_fifo_new();
   /* Update global variables */
 
   xbt_fifo_push(msg_global->host, host);
@@ -104,22 +105,22 @@ m_host_t MSG_host_self(void)
  */
 void __MSG_host_destroy(m_host_t host)
 {
-  sim_data_host_t sim_data = NULL;
+  simdata_host_t simdata = NULL;
   int i = 0;
 
   xbt_assert0((host != NULL), "Invalid parameters");
 
   /* Clean Simulator data */
-  sim_data = (host)->simdata;
+  simdata = (host)->simdata;
 
   for (i = 0; i < msg_global->max_channel; i++)
-    xbt_fifo_free(sim_data->mbox[i]);
-  xbt_free(sim_data->mbox);
-  xbt_free(sim_data->sleeping);
-  xbt_assert0((xbt_swag_size(&(sim_data->process_list))==0),
+    xbt_fifo_free(simdata->mbox[i]);
+  xbt_free(simdata->mbox);
+  xbt_free(simdata->sleeping);
+  xbt_assert0((xbt_fifo_size(simdata->process_list)==0),
 	      "Some process are still running on this host");
 
-  xbt_free(sim_data);
+  xbt_free(simdata);
 
   /* Clean host structure */
   xbt_free(host->name);
