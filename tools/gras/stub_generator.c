@@ -68,7 +68,7 @@ const char* SIM_MAIN_PREEMBULE =
 "  /*  Simulation setup */\n"
 "  MSG_global_init_args(&argc,argv);\n"
 "  if (argc != 3) {\n"
-"    fprintf(stderr, \"Usage: %%s platform_file application_description.txt [--gras-log=...]\\n\",argv[0]);\n"
+"    fprintf(stderr, \"Usage: %s platform_file application_description.txt [--gras-log=...]\\n\",argv[0]);\n"
 "    exit(1);\n"
 "  }\n"
 "\n"
