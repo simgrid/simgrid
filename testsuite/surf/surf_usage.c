@@ -76,7 +76,7 @@ void test(void)
   printf("%s : %p\n", surf_network_resource->common_public->get_resource_name(cardB), cardB);
 
   /* Let's do something on it */
-  commAB = surf_network_resource->extension_public->communicate(cardA, cardB, 132.0);
+  commAB = surf_network_resource->extension_public->communicate(cardA, cardB, 150.0);
 
   surf_solve(); /* Takes traces into account. Returns 0.0 */
   do {

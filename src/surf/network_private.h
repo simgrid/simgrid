@@ -37,6 +37,7 @@ typedef struct network_card {
 typedef struct surf_action_network {
   s_surf_action_t generic_action;
   xbt_heap_float_t latency;
+  xbt_heap_float_t lat_current;
   lmm_variable_t variable;
   network_card_t src;
   network_card_t dst;

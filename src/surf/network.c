@@ -6,6 +6,8 @@
 #include "network_private.h"
 #include "xbt/dict.h"
 
+#define SG_TCP_CTE_GAMMA 20000.0
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(network, surf,
 				"Logging specific to the SURF network module");
 
@@ -383,7 +385,17 @@ static void update_resource_state(void *id,
     lmm_update_constraint_bound(maxmin_system, nw_link->constraint,
 				nw_link->bw_current);
   } else if (event_type == nw_link->lat_event) {
+    xbt_maxmin_float_t delta = value - nw_link->lat_current;
+    lmm_variable_t var = NULL;
+    surf_action_network_t action = NULL;
+
     nw_link->lat_current = value;
+    while(lmm_get_var_from_cnst(maxmin_system, nw_link->constraint, &var)) {
+      action  = lmm_variable_id(var);
+      action->lat_current+=delta;
+      lmm_update_variable_bound(maxmin_system, var, 
+				1/(action->lat_current));
+    }
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
       nw_link->state_current = SURF_NETWORK_LINK_ON;
@@ -431,6 +443,9 @@ static surf_action_t communicate(void *src, void *dst,
   action->latency = 0.0;
   for(i=0; i<route_size; i++)
     action->latency += route[i]->lat_current;
+  action->lat_current = action->latency;
+  lmm_update_variable_bound(maxmin_system, action->variable, 
+			    SG_TCP_CTE_GAMMA/action->lat_current);
 
   return (surf_action_t) action;
 }
