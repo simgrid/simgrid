@@ -78,9 +78,8 @@ faq.
 
 \section documentation API Documentation
 
-The API of all different modules is described in \ref SimGrid_API.
-
-See \ref SimGrid_examples for an introduction on the way to use these modules.
+The API of all different modules is described <a href="API/html/modules.html">here</a>.
+See <a href="examples/html/modules.html">here</a> for an introduction on the way to use these modules.
 
 \section users_contributers Users / Contributers
 
