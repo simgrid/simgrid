@@ -159,6 +159,7 @@ AC_CONFIG_FILES([
   src/amok/Makefile
   examples/Makefile 
     examples/msg/Makefile 
+    examples/gras/ping/Makefile      examples/gras/ping/test_sg     examples/gras/ping/test_rl
   doc/Makefile
     doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
   tools/compile-remote-worker
@@ -171,18 +172,18 @@ AC_CONFIG_FILES([
      test -e testsuite/gras/trp_tcp_usage && chmod +x testsuite/gras/trp_tcp_usage;
      test -e testsuite/gras/trp_file_usage&& chmod +x testsuite/gras/trp_file_usage;
      test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
-     test -e examples/ping/test_sg        && chmod +x examples/ping/test_sg;
-     test -e examples/ping/test_rl        && chmod +x examples/ping/test_rl;
-#     test -e examples/bandwidth/test_sg   && chmod +x examples/bandwidth/test_sg;
-     test -e examples/pastry/test_sg      && chmod +x examples/pastry/test_sg;
+     test -e examples/gras/ping/test_sg   && chmod +x examples/gras/ping/test_sg;
+     test -e examples/gras/ping/test_rl   && chmod +x examples/gras/ping/test_rl;
+#     test -e examples/gras/bandwidth/test_sg   && chmod +x examples/gras/bandwidth/test_sg;
+     test -e examples/gras/pastry/test_sg && chmod +x examples/gras/pastry/test_sg;
      chmod +x $srcdir/tools/gras-check-arch;
 ])
 
-#    examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
 
 
-#    examples/saturate/Makefile  examples/saturate/test_sg
-#    examples/alnem/Makefile     examples/alnem/test_sg
+
+#    examples/gras/saturate/Makefile  examples/gras/saturate/test_sg
+#    examples/gras/alnem/Makefile     examples/gras/alnem/test_sg
 
 
 
