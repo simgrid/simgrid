@@ -1,0 +1,88 @@
+<!-- ##### SECTION Title ##### -->
+Data set
+
+<!-- ##### SECTION Short_Description ##### -->
+Data storage for very quick retrieve
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_set_new ##### -->
+<para>
+
+</para>
+
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_set_free ##### -->
+<para>
+
+</para>
+
+@set: 
+
+
+<!-- ##### FUNCTION gras_set_add ##### -->
+<para>
+
+</para>
+
+@set: 
+@elm: 
+@free_func: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_set_get_by_name ##### -->
+<para>
+
+</para>
+
+@set: 
+@key: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_set_get_by_name_ext ##### -->
+<para>
+
+</para>
+
+@set: 
+@name: 
+@name_len: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_set_get_by_id ##### -->
+<para>
+
+</para>
+
+@set: 
+@id: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### MACRO gras_set_foreach ##### -->
+<para>
+
+</para>
+
+@set: 
+@cursor: 
+@elm: 
+
+

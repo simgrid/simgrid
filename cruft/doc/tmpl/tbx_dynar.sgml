@@ -196,3 +196,41 @@ This module provide the quite usual dynamic array facility.
 @_whereto: 
 
 
+<!-- ##### FUNCTION gras_dynar_cursor_rm ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+
+<!-- ##### FUNCTION gras_dynar_cursor_first ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+
+<!-- ##### FUNCTION gras_dynar_cursor_get ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+@whereto: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_cursor_step ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+

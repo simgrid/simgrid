@@ -45,6 +45,19 @@ Data container associating data to a string key.
 @Returns: 
 
 
+<!-- ##### FUNCTION gras_dict_insert_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
+@free_ctn: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gras_dict_retrieve ##### -->
 <para>
 
@@ -56,6 +69,18 @@ Data container associating data to a string key.
 @Returns: 
 
 
+<!-- ##### FUNCTION gras_dict_retrieve_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gras_dict_remove ##### -->
 <para>
 
@@ -63,6 +88,17 @@ Data container associating data to a string key.
 
 @head: 
 @key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_remove_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
 @Returns: 
 
 
@@ -92,6 +128,37 @@ Data container associating data to a string key.
 @data: 
 
 
+<!-- ##### FUNCTION gras_dict_cursor_get_data ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_cursor_get_key ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@key: 
+@Returns: 
+
+
+<!-- ##### MACRO gras_dict_foreach ##### -->
+<para>
+
+</para>
+
+@dict: 
+@cursor: 
+@key: 
+@data: 
+
+
 <!-- ##### FUNCTION gras_dict_cursor_new ##### -->
 <para>
 
@@ -118,26 +185,6 @@ Data container associating data to a string key.
 </para>
 
 @cursor: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gras_dict_cursor_get_data ##### -->
-<para>
-
-</para>
-
-@cursor: 
-@data: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gras_dict_cursor_get_key ##### -->
-<para>
-
-</para>
-
-@cursor: 
-@key: 
 @Returns: 
 
 
