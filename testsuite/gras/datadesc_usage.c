@@ -66,6 +66,11 @@ gras_error_t test_graph(gras_socket_t *sock, int direction);
 
 gras_error_t test_pbio(gras_socket_t *sock, int direction);
 
+/* defined in datadesc_structures.c, which in perl generated */
+gras_error_t test_structures(gras_socket_t *sock, int direction); 
+
+
+
 gras_error_t test_int(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
   int i=5,j;
@@ -193,6 +198,7 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
 					  gras_datadesc_by_name("int")));
   TRY(gras_datadesc_declare_struct_append(my_type,"d",
 					  gras_datadesc_by_name("int")));
+  gras_datadesc_declare_struct_close(my_type);
   TRY(gras_datadesc_declare_ref("homostruct*",
 				gras_datadesc_by_name("homostruct"),
 				&my_type));
@@ -240,6 +246,7 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
 					  gras_datadesc_by_name("unsigned char")));
   TRY(gras_datadesc_declare_struct_append(my_type,"l2",
 					  gras_datadesc_by_name("unsigned long int")));
+  gras_datadesc_declare_struct_close(my_type);
   TRY(gras_datadesc_declare_ref("hetestruct*",
 				gras_datadesc_by_name("hetestruct"),
 				&my_type));
@@ -282,6 +289,7 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
 					  gras_datadesc_by_name("hetestruct")));
   TRY(gras_datadesc_declare_struct_append(my_type,"homo",
 					  gras_datadesc_by_name("homostruct")));
+  gras_datadesc_declare_struct_close(my_type);
   TRY(gras_datadesc_declare_ref("nestedstruct*",
 				gras_datadesc_by_name("nestedstruct"),
 				&my_type));
@@ -333,6 +341,7 @@ gras_error_t declare_chained_list_type(void) {
   TRY(gras_datadesc_declare_struct_append(my_type,"v",
 					  gras_datadesc_by_name("int")));
   TRY(gras_datadesc_declare_struct_append(my_type,"l",ref_my_type));
+  gras_datadesc_declare_struct_close(my_type);
 
   return no_error;
 }
@@ -432,12 +441,10 @@ struct s_pbio{ /* structure presented in the IEEE article */
   double Cdtime;
   double Ctime[2];
   int Cntens;
-  /*
   double Cdfgrd0[373][3];
   double Cdfgrd1[3][3];
   double Cstress[106];
   double Cddsdde[106][106];
-  */
 };
 		 )
 typedef struct s_pbio pbio_t;
@@ -446,14 +453,12 @@ gras_error_t test_pbio(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
   pbio_t i,j;
   int cpt;
-  //  int cpt2;
+  int cpt2;
   gras_datadesc_type_t *pbio_type;
 
   INFO0("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
   pbio_type = gras_datadesc_by_symbol(s_pbio);
-  INFO1("sizof(s_pbio)=%d",sizeof(struct s_pbio));
-  gras_datadesc_type_dump(gras_datadesc_by_name("double[373]"));
-  gras_datadesc_type_dump(pbio_type);
+
   /* Fill in that damn struct */
   i.Cnstatv = 325115;
   for (cpt=0; cpt<12; cpt++) 
@@ -469,7 +474,7 @@ gras_error_t test_pbio(gras_socket_t *sock, int direction) {
   i.Ctime[0] = 332523.226;
   i.Ctime[1] = -26216.113;
   i.Cntens = 235211411;
-  /*
+  
   for (cpt=0; cpt<3; cpt++) {
     for (cpt2=0; cpt2<373; cpt2++)
       i.Cdfgrd0[cpt2][cpt] = ((double)cpt) * ((double)cpt2);
@@ -480,7 +485,7 @@ gras_error_t test_pbio(gras_socket_t *sock, int direction) {
     i.Cstress[cpt]=(double)cpt * 22.113;
     for (cpt2=0; cpt2<106; cpt2++) 
       i.Cddsdde[cpt][cpt2] = ((double)cpt) * ((double)cpt2);
-      }*/
+  }
   TRY(write_read(gras_datadesc_by_symbol(s_pbio),
 		 &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
@@ -499,7 +504,6 @@ gras_error_t test_pbio(gras_socket_t *sock, int direction) {
     gras_assert(i.Ctime[0] == j.Ctime[0]);
     gras_assert(i.Ctime[1] == j.Ctime[1]);
     gras_assert(i.Cntens == j.Cntens);
-    /*
     for (cpt=0; cpt<3; cpt++) {
       for (cpt2=0; cpt2<373; cpt2++)
 	gras_assert(i.Cdfgrd0[cpt2][cpt] == j.Cdfgrd0[cpt2][cpt]);
@@ -512,7 +516,7 @@ gras_error_t test_pbio(gras_socket_t *sock, int direction) {
 	gras_assert4(i.Cddsdde[cpt][cpt2] == j.Cddsdde[cpt][cpt2],
 		     "%f=i.Cddsdde[%d][%d] != j.Cddsdde[cpt][cpt2]=%f",
 		     i.Cddsdde[cpt][cpt2],cpt,cpt2,j.Cddsdde[cpt][cpt2]);
-		     }*/
+    }
   }
 
   return no_error;
@@ -560,6 +564,8 @@ int main(int argc,char *argv[]) {
   TRYFAIL(test_intref(sock,direction)); 
   
   TRYFAIL(test_string(sock,direction)); 
+
+  TRYFAIL(test_structures(sock,direction));
 
   TRYFAIL(test_homostruct(sock,direction));
   TRYFAIL(test_hetestruct(sock,direction));
