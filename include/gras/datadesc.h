@@ -24,6 +24,14 @@ BEGIN_DECL()
  * 
  * There is several possible interfaces for this, ranging from the really completely automatic parsing to 
  * completely manual. Let's study each of them from the simplest to the more advanced.
+ * 
+ * \warning At least, I would like to present those sections in the right order, but doxygen prevents me 
+ * from doing so. There is a weird bug I fail to circumvent here. The right order is naturally:
+ *   - a) basic operations
+ *   - b) Automatic parsing
+ *   - c) Simple manual definitions
+ *   - d) Callback Persistant State: Simple push/pop mecanism
+ *   - e) Callback Persistant State: Full featured mecanism
  */
   
 /** @name a) basic operations
@@ -264,7 +272,7 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
 /*@}*/
 
-/** @name Callback Persistant State: Simple push/pop mecanism
+/** @name d) Callback Persistant State: Simple push/pop mecanism
  *  @ingroup GRAS_dd
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
@@ -302,7 +310,7 @@ void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 
 /*@}*/
 
-/** @name Callback Persistant State: Full featured mecanism
+/** @name e) Callback Persistant State: Full featured mecanism
  *  @ingroup GRAS_dd
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mecanism
