@@ -1,1 +1,2 @@
-SUBDIRS=ping bandwidth saturate alnem
+SUBDIRS=ping 
+#bandwidth saturate alnem
