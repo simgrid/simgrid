@@ -33,8 +33,7 @@ xbt_tests =                                                      \
 RL_tests =                                              \
 	gras/trp_tcp_client   gras/trp_tcp_server       \
 	gras/trp_file_client  gras/trp_file_server      \
-	gras/datadesc_usage                             \
-	gras/timer_usage
+	gras/datadesc_usage                             
 
 SG_tests =                                              \
 	surf/maxmin_usage surf/maxmin_bench \
@@ -84,7 +83,6 @@ gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)
 gras_trp_file_client_LDADD=    $(LDADD_RL)
 gras_trp_file_server_LDADD=    $(LDADD_RL)
-gras_timer_usage_LDADD=        $(LDADD_RL)
 
 gras_datadesc_usage_SOURCES=   gras/datadesc_usage.c gras/datadesc_structs.c
 gras_datadesc_usage_LDADD=     $(LDADD_RL)
