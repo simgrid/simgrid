@@ -71,6 +71,9 @@ gras_trp_init(void){
   TRY(gras_trp_plugin_new("file",gras_trp_file_setup));
   TRY(gras_trp_plugin_new("sg",gras_trp_sg_setup));
 
+  /* buf is composed, so it must come after the others */
+  TRY(gras_trp_plugin_new("buf", gras_trp_buf_setup));
+
   return no_error;
 }
 
@@ -147,8 +150,7 @@ gras_socket_server(unsigned short port,
   *dst = NULL;
 
   DEBUG1("Create a server socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
-  TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg",
-				  &trp));
+  TRY(gras_trp_plugin_get_by_name("buf",&trp));
 
   /* defaults settings */
   TRY(gras_trp_socket_new(1,&sock));
@@ -189,8 +191,7 @@ gras_socket_client(const char *host,
 
   *dst = NULL;
 
-  TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg",
-				  &trp));
+  TRY(gras_trp_plugin_get_by_name("buf",&trp));
 
   DEBUG1("Create a client socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
   /* defaults settings */
@@ -200,9 +201,9 @@ gras_socket_client(const char *host,
   sock->peer_name = strdup(host?host:"localhost");
 
   /* plugin-specific */
-  errcode= (* trp->socket_client)(trp, 
-				  host ? host : "localhost", port,
-				  sock);
+  errcode= (*trp->socket_client)(trp, 
+				 host ? host : "localhost", port,
+				 sock);
   DEBUG3("in=%c out=%c accept=%c",
 	 sock->incoming?'y':'n', 
 	 sock->outgoing?'y':'n',
@@ -276,6 +277,15 @@ gras_trp_chunk_recv(gras_socket_t *sd,
   return (sd->plugin->chunk_recv)(sd,data,size);
 }
 
+/**
+ * gras_trp_flush:
+ *
+ * Make sure all pending communications are done
+ */
+gras_error_t 
+gras_trp_flush(gras_socket_t *sd) {
+  return (sd->plugin->flush)(sd);
+}
 
 gras_error_t
 gras_trp_plugin_get_by_name(const char *name,
