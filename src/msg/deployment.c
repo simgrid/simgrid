@@ -15,70 +15,53 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(deployment, msg,
 extern char *yytext;
 
 
+static int parse_argc = -1 ;
+static char **parse_argv = NULL;
+static m_process_code_t parse_code = NULL;
+static m_host_t parse_host = NULL;
+
+static void parse_process_init(void)
+{
+  parse_host = MSG_get_host_by_name(A_process_host);
+  xbt_assert1(parse_host, "Unknown host %s",A_process_host);
+  parse_code = MSG_get_registered_function(A_process_function);
+  xbt_assert1(parse_code, "Unknown function %s",A_process_function);
+  parse_argc = 0 ;
+  parse_argv = NULL;
+  parse_argc++;
+  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_process_function);
+}
+
+static void parse_argument(void)
+{
+  parse_argc++;
+  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_argument_value);
+}
+
+static void parse_process_finalize(void)
+{
+  MSG_process_create_with_arguments(parse_argv[0], parse_code, NULL, parse_host,
+				    parse_argc,parse_argv);
+}
+
 /** \ingroup msg_easier_life
  * \brief An application deployer.
  *
  * Creates the process described in \a file.
- * @param file a file containing a simple description of the application.
- * The format of each line is the following : host_name function_name arguments
- * You can use C-style comments and C-style strings.
- * Here is a simple exemple
- * 
- \verbatim
-<DEPLOYMENT>
- // Here is the master
- the-doors.ens-lyon.fr  master "moby.cri2000.ens-lyon.fr" canaria.ens-lyon.fr popc.ens-lyon.fr
- // And here are the slaves
- moby.cri2000.ens-lyon.fr slave
- canaria.ens-lyon.fr slave
- popc.ens-lyon.fr slave 
-</DEPLOYMENT>
-\endverbatim
+ * @param file a file containing an XML description of the application.
  */
 void MSG_launch_application(const char *file) 
 {
-  char *host_name = NULL;
-  int argc = -1 ;
-  char **argv = NULL;
-  m_process_t process = NULL ;
-  m_host_t host = NULL;
-  m_process_code_t code = NULL;
-  e_surf_token_t token;
-
   MSG_global_init();
-  
-  find_section(file, "DEPLOYMENT");
-
-  while(1) {
-    token = surf_parse();
-
-    if (token == TOKEN_END_SECTION)
-      break;
-    if (token == TOKEN_NEWLINE)
-      continue;
-
-    if (token == TOKEN_WORD) {
-      surf_parse_deployment_line(&host_name,&argc,&argv);
-      xbt_assert0(argc,"No function to execute");
-
-      code = MSG_get_registered_function(argv[0]);
-      xbt_assert1(code, "Unknown function %s",argv[0]);
-
-      host = MSG_get_host_by_name(host_name);
-      xbt_assert1(host, "Unknown host %s",host_name);
-
-      process = MSG_process_create_with_arguments(argv[0], code, NULL, host,argc,argv);
-      argc=-1;
-      argv=NULL;
-      xbt_free(host_name); 
-    }
-    else {
-      CRITICAL1("Parse error line %d\n", surf_line_pos);
-      xbt_abort();
-    }
-  }
-
-  close_section("DEPLOYMENT");
+  surf_parse_reset_parser();
+  STag_process_fun = parse_process_init;
+  ETag_argument_fun = parse_argument;
+  ETag_process_fun = parse_process_finalize;
+  surf_parse_open(file);
+  surf_parse_lex();
+  surf_parse_close();
 }
 
 /** \ingroup msg_easier_life

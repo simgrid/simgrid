@@ -10,37 +10,31 @@
 
 #include "xbt/misc.h"
 #include "surf/trace_mgr.h"
+#include "surfxml.h"
 
-typedef enum {
-  TOKEN_EMPTY = 0,
-  TOKEN_LP = 512,
-  TOKEN_RP,
-  TOKEN_BEGIN_SECTION,
-  TOKEN_END_SECTION,
-  TOKEN_CLOSURE,
-  TOKEN_WORD,
-  TOKEN_NEWLINE,
-  TOKEN_ERROR
-} e_surf_token_t;
+typedef   void (*void_f_void_t)(void);
 
-#define MAX_STR_CONST 1024
-
-extern char *surf_parse_text;
-extern int surf_line_pos;
-extern int surf_char_pos;
-extern int surf_tok_num;
-
-e_surf_token_t surf_parse(void);
-void find_section(const char *file, const char *section_name);
-void close_section(const char *section_name);
-void surf_parse_double(double *value);
-void surf_parse_trace(tmgr_trace_t * trace);
-void surf_parse_deployment_line(char **host, int *argc, char ***argv);
+extern void_f_void_t STag_platform_description_fun;
+extern void_f_void_t ETag_platform_description_fun;
+extern void_f_void_t STag_cpu_fun;
+extern void_f_void_t ETag_cpu_fun;
+extern void_f_void_t STag_network_link_fun;
+extern void_f_void_t ETag_network_link_fun;
+extern void_f_void_t STag_route_fun;
+extern void_f_void_t ETag_route_fun;
+extern void_f_void_t STag_route_element_fun;
+extern void_f_void_t ETag_route_element_fun;
+extern void_f_void_t STag_process_fun;
+extern void_f_void_t ETag_process_fun;
+extern void_f_void_t STag_argument_fun;
+extern void_f_void_t ETag_argument_fun;
 
 
-/* Should not be called if you use the previous "section" functions */
-void surf_parse_open(const char *file);
-void surf_parse_close(void);
+void  surf_parse_open(const char *file);
+void  surf_parse_close(void);
+void  surf_parse_reset_parser(void);
+void surf_parse_get_double(double *value,const char *string);
+void surf_parse_get_trace(tmgr_trace_t *trace, const char *string);
 
 /* Prototypes of the functions offered by flex */
 int surf_parse_lex(void);
@@ -55,6 +49,5 @@ void surf_parse_set_out(FILE * out_str);
 int surf_parse_get_debug(void);
 void surf_parse_set_debug(int bdebug);
 int surf_parse_lex_destroy(void);
-
 
 #endif

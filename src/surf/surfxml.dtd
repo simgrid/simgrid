@@ -1,0 +1,33 @@
+<!-- Small DTD for SURF based tools. -->
+<!ELEMENT platform_description ((cpu|network_link|route|process)*)>
+
+<!ELEMENT cpu EMPTY>
+<!ATTLIST cpu name CDATA #REQUIRED>
+<!ATTLIST cpu power CDATA #REQUIRED>
+<!ATTLIST cpu availability CDATA "1.0">
+<!ATTLIST cpu availability_file CDATA "">
+<!ATTLIST cpu state (ON|OFF) "ON">
+<!ATTLIST cpu state_file CDATA "">
+
+<!ELEMENT network_link EMPTY>
+<!ATTLIST network_link name CDATA #REQUIRED>
+<!ATTLIST network_link bandwidth CDATA  #REQUIRED>
+<!ATTLIST network_link bandwidth_file CDATA "">
+<!ATTLIST network_link latency CDATA "0.001">
+<!ATTLIST network_link latency_file CDATA "">
+<!ATTLIST network_link state (ON|OFF) "ON">
+<!ATTLIST network_link state_file CDATA "">
+
+<!ELEMENT route (route_element*)>
+<!ATTLIST route src CDATA #REQUIRED>
+<!ATTLIST route dst CDATA #REQUIRED>
+
+<!ELEMENT route_element EMPTY>
+<!ATTLIST route_element name CDATA #REQUIRED>
+
+<!ELEMENT process (argument*)>
+<!ATTLIST process host CDATA #REQUIRED>
+<!ATTLIST process function CDATA #REQUIRED>
+
+<!ELEMENT argument EMPTY>
+<!ATTLIST argument value CDATA #REQUIRED>

@@ -77,7 +77,7 @@ static void network_card_free(void *nw_card)
   xbt_free(nw_card);
 }
 
-static int network_card_new(char *card_name)
+static int network_card_new(const char *card_name)
 {
   network_card_t card = NULL;
 
@@ -106,148 +106,86 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
   xbt_free(links);
 }
 
-/*  
-   Semantic:  name       initial   bandwidth   initial   latency    initial     state
-                        bandwidth    trace     latency    trace      state      trace
-   
-   Token:   TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD
-   Type:     string      double      string    double     string     ON/OFF     string
-*/
 static void parse_network_link(void)
 {
-  e_surf_token_t token;
   char *name;
   double bw_initial;
   tmgr_trace_t bw_trace;
   double lat_initial;
   tmgr_trace_t lat_trace;
-  e_surf_network_link_state_t state_initial;
+  e_surf_network_link_state_t state_initial = SURF_NETWORK_LINK_ON;
   tmgr_trace_t state_trace;
 
-  name = xbt_strdup(surf_parse_text);
+  name = xbt_strdup(A_network_link_name);
+  surf_parse_get_double(&bw_initial,A_network_link_bandwidth);
+  surf_parse_get_trace(&bw_trace, A_network_link_bandwidth_file);
+  surf_parse_get_double(&lat_initial,A_network_link_latency);
+  surf_parse_get_trace(&lat_trace, A_network_link_latency_file);
 
-  surf_parse_double(&bw_initial);
-  surf_parse_trace(&bw_trace);
-  surf_parse_double(&lat_initial);
-  surf_parse_trace(&lat_trace);
-
-  token = surf_parse();		/* state_initial */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", surf_line_pos);
-  if (strcmp(surf_parse_text, "ON") == 0)
+  xbt_assert0((A_network_link_state==A_network_link_state_ON)||
+	      (A_network_link_state==A_network_link_state_OFF),
+	      "Invalid state")
+  if (A_network_link_state==A_network_link_state_ON) 
     state_initial = SURF_NETWORK_LINK_ON;
-  else if (strcmp(surf_parse_text, "OFF") == 0)
+  if (A_network_link_state==A_network_link_state_OFF) 
     state_initial = SURF_NETWORK_LINK_OFF;
-  else {
-    CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n", surf_line_pos,
-	      surf_parse_text);
-    xbt_abort();
-  }
-
-  surf_parse_trace(&state_trace);
+  surf_parse_get_trace(&state_trace,A_network_link_state_file);
 
   network_link_new(name, bw_initial, bw_trace,
 		   lat_initial, lat_trace, state_initial, state_trace);
 }
 
-/*  
-   Semantic:  source   destination           network
-                                              links
-   
-   Token:   TOKEN_WORD TOKEN_WORD TOKEN_LP TOKEN_WORD* TOKEN_RP
-   Type:     string       string             string
-*/
-static void parse_route(int fake)
+static int nb_link = 0;
+static char **link_name = NULL;
+static int src_id = -1;
+static int dst_id = -1;
+
+static void parse_route_set_endpoints(void)
 {
-  int src_id = -1;
-  int dst_id = -1;
-  int nb_link = 0;
-  char **link_name = NULL;
-  e_surf_token_t token;
+  src_id = network_card_new(A_route_src);
+  dst_id = network_card_new(A_route_dst);
+  nb_link = 0;
+  link_name = NULL;
+}
 
-  src_id = network_card_new(surf_parse_text);
+static void parse_route_elem(void)
+{
+  nb_link++;
+  link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
+  link_name[(nb_link) - 1] = xbt_strdup(A_route_element_name);
+}
 
-  token = surf_parse();
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", surf_line_pos);
-  dst_id = network_card_new(surf_parse_text);
-
-  token = surf_parse();
-  xbt_assert1((token == TOKEN_LP), "Parse error line %d", surf_line_pos);
-
-  while ((token = surf_parse()) == TOKEN_WORD) {
-    if (!fake) {
-      nb_link++;
-      link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
-      link_name[(nb_link) - 1] = xbt_strdup(surf_parse_text);
-    }
-  }
-  xbt_assert1((token == TOKEN_RP), "Parse error line %d", surf_line_pos);
-
-  if (!fake)
-    route_new(src_id, dst_id, link_name, nb_link);
+static void parse_route_set_route(void)
+{
+  route_new(src_id, dst_id, link_name, nb_link);
 }
 
 static void parse_file(const char *file)
 {
-  e_surf_token_t token;
-
-  /* Figuring out the network links in the system */
-  find_section(file, "NETWORK");
-  while (1) {
-    token = surf_parse();
-
-    if (token == TOKEN_END_SECTION)
-      break;
-    if (token == TOKEN_NEWLINE)
-      continue;
-
-    if (token == TOKEN_WORD)
-      parse_network_link();
-    else {
-      CRITICAL1("Parse error line %d\n", surf_line_pos);
-      xbt_abort();
-    }
-  }
-  close_section("NETWORK");
+  /* Figuring out the network links */
+  surf_parse_reset_parser();
+  ETag_network_link_fun=parse_network_link;
+  surf_parse_open(file);
+  surf_parse_lex();
+  surf_parse_close();
 
   /* Figuring out the network cards used */
-  find_section(file, "ROUTE");
-  while (1) {
-    token = surf_parse();
-
-    if (token == TOKEN_END_SECTION)
-      break;
-    if (token == TOKEN_NEWLINE)
-      continue;
-
-    if (token == TOKEN_WORD)
-      parse_route(1);
-    else {
-      CRITICAL1("Parse error line %d\n", surf_line_pos);
-      xbt_abort();
-    }
-  }
-  close_section("ROUTE");
+  surf_parse_reset_parser();
+  STag_route_fun=parse_route_set_endpoints;
+  surf_parse_open(file);
+  surf_parse_lex();
+  surf_parse_close();
 
   create_routing_table();
 
   /* Building the routes */
-  find_section(file, "ROUTE");
-  while (1) {
-    token = surf_parse();
-
-    if (token == TOKEN_END_SECTION)
-      break;
-    if (token == TOKEN_NEWLINE)
-      continue;
-
-    if (token == TOKEN_WORD)
-      parse_route(0);
-    else {
-      CRITICAL1("Parse error line %d\n", surf_line_pos);
-      xbt_abort();
-    }
-  }
-  close_section("ROUTE");
+  surf_parse_reset_parser();
+  STag_route_fun=parse_route_set_endpoints;
+  ETag_route_element_fun=parse_route_elem;
+  ETag_route_fun=parse_route_set_route;
+  surf_parse_open(file);
+  surf_parse_lex();
+  surf_parse_close();
 }
 
 static void *name_service(const char *name)

@@ -28,7 +28,9 @@ EXTRA_DIST= \
 	surf/surf_private.h \
 	surf/cpu_private.h \
 	surf/workstation_private.h \
-	surf/surf_parse.l \
+	surf/surf_parse.c \
+	surf/surfxml.l \
+	surf/surfxml.c \
 	surf/network_private.h \
 	\
 	msg/private.h \
@@ -122,8 +124,13 @@ COMMON_S=\
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 	@LEX@ -o$@ -Pgras_ddt_parse_ $^
 
-surf/surf_parse.c: surf/surf_parse.l
+surf/surf_parse.c: surf/surfxml.c
+
+surf/surfxml.c: surf/surfxml.l
 	@LEX@ -o$@ -Psurf_parse_ $^
+
+surf/surfxml.l: surf/surfxml.dtd
+	cd surf; flexml -S surfxml.dtd
 
 libgras_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \

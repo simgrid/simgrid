@@ -190,7 +190,7 @@ void test_all(const char *platform_file,const char *application_file, double sha
 
 int main(int argc, char *argv[])
 {
-  test_all("msg_platform.txt","msg_deployment.txt",-.1);
+  test_all("msg_platform.xml","msg_deployment.xml",-.1);
 /*   test_all("msg_platform.txt","msg_deployment.txt",.1); */
   return (0);
 }

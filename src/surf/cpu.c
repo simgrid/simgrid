@@ -68,7 +68,6 @@ static cpu_t cpu_new(char *name, double power_scale,
 
 static void parse_cpu(void)
 {
-  e_surf_token_t token;
   char *name = NULL;
   double power_scale = 0.0;
   double power_initial = 0.0;
@@ -76,25 +75,16 @@ static void parse_cpu(void)
   e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
   tmgr_trace_t state_trace = NULL;
 
-  name = xbt_strdup(surf_parse_text);
+  name = xbt_strdup(A_cpu_name);
+  surf_parse_get_double(&power_scale,A_cpu_power);
+  surf_parse_get_double(&power_initial,A_cpu_availability);
+  surf_parse_get_trace(&power_trace,A_cpu_availability_file);
 
-  surf_parse_double(&power_scale);
-  surf_parse_double(&power_initial);
-  surf_parse_trace(&power_trace);
-
-  token = surf_parse();		/* state_initial */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", surf_line_pos);
-  if (strcmp(surf_parse_text, "ON") == 0)
-    state_initial = SURF_CPU_ON;
-  else if (strcmp(surf_parse_text, "OFF") == 0)
-    state_initial = SURF_CPU_OFF;
-  else {
-    CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n", surf_line_pos,
-	      surf_parse_text);
-    xbt_abort();
-  }
-
-  surf_parse_trace(&state_trace);
+  xbt_assert0((A_cpu_state==A_cpu_state_ON)||(A_cpu_state==A_cpu_state_OFF),
+	      "Invalid state")
+  if (A_cpu_state==A_cpu_state_ON) state_initial = SURF_CPU_ON;
+  if (A_cpu_state==A_cpu_state_OFF) state_initial = SURF_CPU_OFF;
+  surf_parse_get_trace(&state_trace,A_cpu_state_file);
 
   cpu_new(name, power_scale, power_initial, power_trace, state_initial,
 	  state_trace);
@@ -102,27 +92,11 @@ static void parse_cpu(void)
 
 static void parse_file(const char *file)
 {
-  e_surf_token_t token;
-
-  find_section(file, "CPU");
-
-  while (1) {
-    token = surf_parse();
-
-    if (token == TOKEN_END_SECTION)
-      break;
-    if (token == TOKEN_NEWLINE)
-      continue;
-
-    if (token == TOKEN_WORD)
-      parse_cpu();
-    else {
-      CRITICAL1("Parse error line %d\n", surf_line_pos);
-      xbt_abort();
-    }
-  }
-
-  close_section("CPU");
+  surf_parse_reset_parser();
+  ETag_cpu_fun=parse_cpu;
+  surf_parse_open(file);
+  surf_parse_lex();
+  surf_parse_close();
 }
 
 static void *name_service(const char *name)
