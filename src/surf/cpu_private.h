@@ -6,7 +6,7 @@
 #ifndef _SURF_CPU_PRIVATE_H
 #define _SURF_CPU_PRIVATE_H
 
-#include "surf/surf_private.h"
+#include "surf_private.h"
 
 typedef struct surf_action_cpu {
   s_surf_action_t generic_action;

@@ -27,8 +27,12 @@ static void *new_cpu(const char *name, xbt_maxmin_float_t power_scale,
   cpu->power_scale = power_scale;
   cpu->current_power = initial_power;
   cpu->power_trace = power_trace;
+  if(power_trace) tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
+
   cpu->current_state = initial_state;
   cpu->state_trace = state_trace;
+  if(state_trace) tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
+
   cpu->constraint = lmm_constraint_new(sys, cpu, cpu->current_power * cpu->power_scale);
 
   xbt_dict_set(cpu_set, name, cpu, NULL);
@@ -38,8 +42,11 @@ static void *new_cpu(const char *name, xbt_maxmin_float_t power_scale,
 
 static void parse_file(const char *file)
 {
-  new_cpu("Cpu A", 20.0, 1.0, NULL, SURF_CPU_ON, NULL);
-  new_cpu("Cpu B", 120.0, 1.0, NULL, SURF_CPU_ON, NULL);
+  tmgr_trace_t trace_A = tmgr_trace_new("trace_A.txt");
+  tmgr_trace_t trace_B = tmgr_trace_new("trace_B.txt");
+
+  new_cpu("Cpu A", 20.0, 1.0, trace_A, SURF_CPU_ON, NULL);
+  new_cpu("Cpu B", 120.0, 1.0, trace_B, SURF_CPU_ON, NULL);
 }
 
 static void *name_service(const char *name)
@@ -106,7 +113,6 @@ static xbt_heap_float_t share_resources()
   min = action->generic_action.remains / value ;
 
   xbt_swag_foreach(action,running_actions) {
-    /* If everything is stable... */
     value = action->generic_action.remains / 
       lmm_variable_getvalue(action->variable);
     if(value<min) min=value;

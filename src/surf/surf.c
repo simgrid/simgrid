@@ -68,6 +68,16 @@ xbt_heap_float_t surf_solve(void)
   surf_resource_t resource = NULL;
   int i;
 
+  while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
+    if(next_event_date > NOW) break;
+    while (tmgr_history_get_next_event_leq(history, next_event_date,
+					   &value, (void **) &resource)) {
+      if(surf_cpu_resource->resource.resource_used(resource)) {
+	min = next_event_date-NOW;
+      }
+    }
+  }
+
   xbt_dynar_foreach (resource_list,i,resource) {
     resource_next_action_end = resource->share_resources(NOW);
     if((min<0) || (resource_next_action_end<min)) 

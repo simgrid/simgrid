@@ -101,8 +101,8 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
     last_event = xbt_dynar_get_ptr(trace->event_list,
 				   xbt_dynar_length(trace->event_list) -
 				   1);
-    printf(XBT_HEAP_FLOAT_T " " XBT_MAXMIN_FLOAT_T "\n", event.delta,
-	   event.value);
+/*     printf(XBT_HEAP_FLOAT_T " " XBT_MAXMIN_FLOAT_T "\n", event.delta, */
+/* 	   event.value); */
   }
 
   if (periodicity > 0) {
