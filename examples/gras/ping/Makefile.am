@@ -22,7 +22,7 @@ MAINTAINERCLEANFILES = _ping_simulator.c _ping_client.c _ping_server.c
 NAME=ping
 PROCESSES= client server
 
-$(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _ping_simulator.c: $(srcdir)/ping_deployment.xml $(top_srcdir)/tools/gras/gras_stub_generator
-	$(top_srcdir)/tools/gras/gras_stub_generator ping ping_deployment.xml >/dev/null
+$(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _ping_simulator.c: $(srcdir)/ping_deployment.xml ../../../tools/gras/gras_stub_generator
+	../../../tools/gras/gras_stub_generator ping $(srcdir)/ping_deployment.xml >/dev/null
 
 include $(top_srcdir)/acmacro/dist-files.mk
