@@ -1,0 +1,33 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description>
+  <process host="Jacquelin" function="master">
+     <argument value="20"/>
+     <argument value="50000"/>
+     <argument value="10"/>
+     <argument value="iRMX"/>
+     <argument value="Casavant"/>
+     <argument value="Bousquet"/>
+     <argument value="Soucy"/>
+     <argument value="Jackson"/>
+  </process>
+  <process host="Jackson" function="forwarder">
+     <argument value="Kuenning"/>
+     <argument value="Browne"/> 
+     <argument value="Stephen"/>
+ </process>
+  <process host="Casavant" function="forwarder">
+     <argument value="Robert"/>
+     <argument value="Sirois"/> 
+     <argument value="Monique"/>
+ </process>
+  <process host="iRMX" function="slave"/>
+  <process host="Bousquet" function="slave"/>
+  <process host="Soucy" function="slave"/>
+  <process host="Kuenning" function="slave"/>
+  <process host="Browne" function="slave"/>
+  <process host="Stephen" function="slave"/>
+  <process host="Robert" function="slave"/>
+  <process host="Sirois" function="slave"/>
+  <process host="Monique" function="slave"/>
+</platform_description>
