@@ -87,7 +87,11 @@ const char *gras_wsa_err2string(int errcode);
 #include <fcntl.h>
 
 #ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
+#  include <sys/stat.h>
+#endif
+
+#ifndef O_BINARY
+#  define O_BINARY 0
 #endif
 
 /****
