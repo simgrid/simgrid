@@ -51,7 +51,7 @@ gras_ddt_new_scalar(const char                       *name,
     long int sz   = size;
     long int mask = sz;
 
-    /* just in case you wonder, x>>1 == x/2 on all architecture when x>=0 */
+    /* just in case you wonder, x>>1 == x/2 on all architectures when x>=0 */
 
     /* make sure mask have all the bits under the biggest one of size set to 1
        Example: size=000100101 => mask=0000111111 */
