@@ -1,8 +1,9 @@
 /* $Id$ */
 
-/* gras_rl.h - private interface for GRAS when on real life                 */
+/* gras_rl.h - private interface for legacy GRAS when on real life          */
+/* This file should be KILLED whenever the raw sockets work in the new gras */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2003 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
