@@ -24,6 +24,7 @@ html: $(DOCSOURCES) Doxyfile.API Doxyfile.Examples Doxyfile.main logcategories.d
 	doxygen Doxyfile.Examples >/dev/null
 	@top_srcdir@/tools/doxygen/index_create.pl html/API/API.tag api_index.doc
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
+	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
 	doxygen Doxyfile.API >/dev/null
 	doxygen Doxyfile.Examples >/dev/null
 	doxygen Doxyfile.main >/dev/null

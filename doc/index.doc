@@ -17,8 +17,10 @@ Grids.
 
 \subsection quick_dl Getting and installing the software
 
-The SimGrid software package can be downloaded from 
-<a href="http://gcl.ucsd.edu/simgrid/dl/">here</a>.
+  - The official webpage is <a href="http://simgrid.gforge.inria.fr/">simgrid.gforge.inria.fr</a>. 
+  - The development webpage is <a href="https://gforge.inria.fr/projects/simgrid//">gforge.inria.fr/projects/simgrid</a>. 
+  - The user mailing list is <simgrid-user@lists.gforge.inria.fr>
+  - The SimGrid software package can be downloaded from <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>. 
 
 To compile and install it, simply type the following. If you are not
 familiar with compiling C files under UNIX and using libraries, please check
@@ -147,7 +149,7 @@ The authors of SimGrid are:
    bandwidth-sharing.
  - Julien Lerouge : wrote a XML parser for ENV descriptions and helped for
    the general design during a 4 month period (march-june 2002) 
-   in the <LIP.
+   in the LIP.
  - Clément Menier and Marc Perache : wrote a first prototype of the MSG
    interface during a project at ENS-Lyon (jan 2002). 
  - Dmitrii Zagorodnov : wrote some parts of the first version of SimGrid
