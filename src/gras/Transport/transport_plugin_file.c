@@ -108,7 +108,7 @@ gras_socket_client_from_file(const char*path,
 	 (*dst)->outgoing?'y':'n',
 	 (*dst)->accepting?'y':'n');
   /* register socket */
-  errcode = gras_dynar_push(_gras_trp_sockets,dst);
+  errcode = gras_dynar_push(gras_socketset_get(),dst);
   if (errcode != no_error) {
     free(*dst);
     *dst = NULL;
@@ -159,7 +159,7 @@ gras_socket_server_from_file(const char*path,
 	 (*dst)->accepting?'y':'n');
 
   /* register socket */
-  errcode = gras_dynar_push(_gras_trp_sockets,dst);
+  errcode = gras_dynar_push(gras_socketset_get(),dst);
   if (errcode != no_error) {
     free(*dst);
     *dst = NULL;

@@ -16,8 +16,6 @@
 #include "gras_private.h"
 #include "Transport/transport_interface.h"
 
-extern gras_dynar_t *_gras_trp_sockets; /* all existing sockets */
-
 /**
  * s_gras_socket:
  * 
