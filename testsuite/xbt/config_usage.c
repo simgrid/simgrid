@@ -10,11 +10,8 @@
 #include <stdio.h>
 #include "gras.h"
 
-/*====[ Prototypes ]=========================================================*/
-xbt_cfg_t make_set(void); /* build a minimal set */
-
 /*====[ Code ]===============================================================*/
-xbt_cfg_t make_set(){
+static xbt_cfg_t make_set(){
   xbt_cfg_t set=NULL; 
   xbt_error_t errcode;
 
@@ -23,38 +20,28 @@ xbt_cfg_t make_set(){
   TRYFAIL(xbt_cfg_register_str(set,"hostname:1_to_1_string"));
   TRYFAIL(xbt_cfg_register_str(set,"user:1_to_10_string"));
 
-  TRYFAIL(xbt_cfg_set_parse(set, "hostname:veloce "
-			     "user:mquinson\nuser:oaumage\tuser:alegrand"));
   return set;
-}
+} /* end_of_make_set */
  
 int main(int argc, char **argv) {
   xbt_error_t errcode;
   xbt_cfg_t set;
 
-  xbt_dynar_t dyn;
   char *str;
-  int ival;
   
   xbt_init_defaultlog(&argc,argv,"config.thresh=debug root.thresh=info");
 
   fprintf(stderr,"==== Alloc and free a config set.\n");
   set=make_set();
+  TRYFAIL(xbt_cfg_set_parse(set, "hostname:veloce user:mquinson\nuser:oaumage\tuser:alegrand"));
   xbt_cfg_dump("test set","",set);
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
 
-
-  fprintf(stderr,"==== Try to use an unregistered option. (ERROR EXPECTED: 'color' not registered)\n");
-  set=make_set();
-  TRYEXPECT(mismatch_error,xbt_cfg_set_parse(set,"color:blue"));
-  xbt_cfg_free(&set);
-  xbt_cfg_free(&set);
-
-
   fprintf(stderr,
 	  "==== Validation test. (ERROR EXPECTED: not enough values of 'speed')\n");
   set=make_set();
+  xbt_cfg_set_parse(set, "hostname:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
   xbt_cfg_check(set);
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
@@ -68,26 +55,46 @@ int main(int argc, char **argv) {
   xbt_cfg_free(&set);
 
   fprintf(stderr,"==== Get single value (Expected: 'speed value: 42')\n");
-  set=make_set();
-  xbt_cfg_set_parse(set,"hostname:toto:42 speed:42");
-  xbt_cfg_get_int(set,"speed",&ival);
-  fprintf(stderr,"speed value: %d\n",ival); 
-  xbt_cfg_free(&set);
-  xbt_cfg_free(&set);
-
+  {	
+  /* get_single_value */
+  int ival;
+  xbt_cfg_t myset=make_set();
+     
+  xbt_cfg_set_parse(myset,"hostname:toto:42 speed:42");
+  xbt_cfg_get_int(myset,"speed",&ival); 
+  fprintf(stderr,"speed value: %d\n",ival); /* Prints: "speed value: 42" */
+  xbt_cfg_free(&myset);
+  }
+   
   fprintf(stderr,"==== Get multiple values (Expected: 'Count: 3; Options: mquinson;ecaron;alegrand;')\n");
-  set=make_set();
-  xbt_cfg_set_parse(set,"speed:42");
-  xbt_cfg_check(set);
-  xbt_cfg_get_dynar(set,"user",&dyn);
+  {	
+  /* get_multiple_value */
+  xbt_dynar_t dyn; 
+  int ival;
+  xbt_cfg_t myset=make_set();
+     
+  xbt_cfg_set_parse(myset, "hostname:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
+  xbt_cfg_set_parse(myset,"speed:42");
+  xbt_cfg_check(myset); 
+  xbt_cfg_get_dynar(myset,"user",&dyn);
   fprintf(stderr,"Count: %lu; Options: ",xbt_dynar_length(dyn));
   xbt_dynar_foreach(dyn,ival,str) {
-    fprintf(stderr,"%s;",str);
+    fprintf(stderr,"%s;",str); 
   }
   fprintf(stderr,"\n");
-  xbt_cfg_free(&set);
-  xbt_cfg_free(&set);
+  /* This prints: "Count: 3; Options: mquinson;ecaron;alegrand;" */
+  xbt_cfg_free(&myset);
+  }
+   
+  fprintf(stderr,"==== Try to use an unregistered option. (ERROR EXPECTED: 'color' not registered)\n");
+  {
+  xbt_cfg_t myset=make_set();
+  TRYEXPECT(mismatch_error,xbt_cfg_set_parse(myset,"color:blue"));
+  /* This spits an error: 'color' not registered */
+  xbt_cfg_free(&myset);
+  }
 
+  fprintf(stderr,"==== Success\n");
   xbt_exit();
   return 0;
 }

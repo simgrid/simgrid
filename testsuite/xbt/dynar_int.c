@@ -13,6 +13,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
 int main(int argc,char *argv[]) {
+   /* Vars_decl [doxygen cruft] */
    xbt_dynar_t d;
    xbt_error_t errcode;
    int i,cpt,cursor;
@@ -30,22 +31,31 @@ int main(int argc,char *argv[]) {
 
    INFO1("==== Push %d int, set them again 3 times, traverse them, shift them",
 	NB_ELEM);
+   /* Populate_ints [doxygen cruft] */
+   /* 1. Populate the dynar */
    d=xbt_dynar_new(sizeof(int),NULL);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
-     xbt_dynar_push_as(d,int,cpt);
+     xbt_dynar_push_as(d,int,cpt); /* This is faster (and possible only with scalars) */
+     /* xbt_dynar_push(d,&cpt);       This would also work */
      DEBUG2("Push %d, length=%lu",cpt, xbt_dynar_length(d));
    }
+   
+   /* 2. Traverse manually the dynar */
    for (cursor=0; cursor< NB_ELEM; cursor++) {
      iptr=xbt_dynar_get_ptr(d,cursor);
      xbt_assert2(cursor == *iptr,
-		  "The retrieved value is not the same than the injected one (%d!=%d)",
-		  cursor,cpt);
+		 "The retrieved value is not the same than the injected one (%d!=%d)",
+		 cursor,cpt);
    }
+   
+   /* 3. Traverse the dynar using the neat macro to that extend */
    xbt_dynar_foreach(d,cursor,cpt){
      xbt_assert2(cursor == cpt,
-     		  "The retrieved value is not the same than the injected one (%d!=%d)",
-     		  cursor,cpt);
+		 "The retrieved value is not the same than the injected one (%d!=%d)",
+		 cursor,cpt);
    }
+   /* end_of_traversal */
+   
    for (cpt=0; cpt< NB_ELEM; cpt++)
      *(int*)xbt_dynar_get_ptr(d,cpt) = cpt;
 
@@ -67,6 +77,8 @@ int main(int argc,char *argv[]) {
 		"Cannot retrieve my %d values. Last got one is %d",
 		NB_ELEM, cpt);
 
+   /* shifting [doxygen cruft] */
+   /* 4. Shift all the values */
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      xbt_dynar_shift(d,&i);
      xbt_assert2(i == cpt,
@@ -74,6 +86,8 @@ int main(int argc,char *argv[]) {
 	       i,cpt);
      DEBUG2("Pop %d, length=%lu",cpt, xbt_dynar_length(d));
    }
+   
+   /* 5. Free the resources */
    xbt_dynar_free(&d);
    xbt_dynar_free(&d);
 

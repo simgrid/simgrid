@@ -14,9 +14,10 @@
 #define NB_ELEM 5000
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
-void free_string(void *d);
+/* doxygen_first_cruft*/
 
-void free_string(void *d){
+/* The function we will use to free the data */
+static void free_string(void *d){
   free(*(void**)d);
 }
 
@@ -40,6 +41,8 @@ int main(int argc,char *argv[]) {
 
    INFO1("==== Push %d strings, set them again 3 times, shift them",NB_ELEM);
    d=xbt_dynar_new(sizeof(char*),&free_string);
+   /* Populate_str [doxygen cruft] */
+   /* 1. Populate the dynar */
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
@@ -79,12 +82,14 @@ int main(int argc,char *argv[]) {
      s1=strdup(buf);
      xbt_dynar_unshift(d,&s1);
    }
+   /* 2. Traverse the dynar with the macro */
    xbt_dynar_foreach(d,cpt,s1) {
      sprintf(buf,"%d",NB_ELEM - cpt -1);
      xbt_assert2 (!strcmp(buf,s1),
            "The retrieved value is not the same than the injected one (%s!=%s)",
 	       buf,s1);
    }
+   /* 3. Traverse the dynar with the macro */
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      xbt_dynar_pop(d,&s2);
@@ -93,6 +98,7 @@ int main(int argc,char *argv[]) {
 	       buf,s2);
      free(s2);
    }
+   /* 4. Free the resources */
    xbt_dynar_free(&d);
    xbt_dynar_free(&d);
 
