@@ -449,7 +449,8 @@ EXCLUDE_PATTERNS       =
 # the \include command).
 
 EXAMPLE_PATH           = @top_srcdir@/src/surf/ \
-                         @top_srcdir@/examples
+                         @top_srcdir@/examples \
+                         @top_srcdir@/testsuite
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

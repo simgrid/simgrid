@@ -1,0 +1,91 @@
+/** @addtogroup XBT_API
+ *
+ *   - Grounding features
+ *     - \ref XBT_log
+ *     - \ref XBT_error
+ *     - \ref XBT_config
+ *   - Data structures
+ *     - \ref XBT_dynar 
+ *     - \ref XBT_dict
+ *     - \ref XBT_set 
+ *       Data are associated to both an ID (0(1) search) and a name
+ *     - \ref XBT_fifo
+ *     - \ref XBT_swag
+ *     - \ref XBT_heap
+ *   - Portability support. The targeted audiance of this portability support
+ *     is merly the programming environments (\ref MSG_API, \ref GRAS_API and
+ *     \ref SMPI_API), not the user code which should get its portability from 
+ *     the used programming environment. 
+ *     - \ref XBT_context
+ *
+ *  @{
+ */
+
+/* ************* *
+ * * GROUNDING * *
+ * ************* */
+    /** @defgroup XBT_log Logging support
+     *  @brief A generic logging facility in the spirit of log4j (grounding feature)
+     *  @{
+     */
+
+	/** \defgroup XBT_log_cats Existing log categories
+	 *  \ingroup XBT_log
+	 *  \brief (automatically extracted) 
+	 *     
+	 *  This is the list of all existing log categories in SimGrid.
+         *  This list was automatically extracted from the source code by
+         *  the src/xbt_log_extract_hierarchy utility.
+	 *     
+         *  You can thus be certain that it is uptodate, but it may somehow
+         *  lack a final manual touch.
+	 *  Anyway, nothing's perfect ;)
+	 */
+
+    /** @} */
+
+
+    /** @defgroup XBT_error Error tracking support
+     *  @brief A set of macros easing the handling of errors (grounding feature)
+     */
+
+    /** @defgroup XBT_config Configuration support
+     *  @brief Changing the configuration of SimGrid components (grounding feature)
+     */
+
+/* **************** *
+ * * DATA STRUCTS * *
+ * **************** */
+    /** @defgroup XBT_dynar A generic dynamic array
+     *  @brief DynArr are dynamically sized vector which may contain any type of variables.
+     */
+
+    /** @defgroup XBT_dict A generic dictionnary
+     *  @brief The dictionnary data structure (comparable to hash tables)
+     */
+    
+    /** \defgroup XBT_set A generic set datatype
+     * \brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
+     */
+    
+/**       \addtogroup XBT_fifo
+          \ingroup XBT_API */
+/**        \addtogroup XBT_swag
+          \ingroup XBT_API */
+/**       \addtogroup XBT_heap
+          \ingroup XBT_API */
+
+/* *************** *
+ * * PORTABILITY * *
+ * *************** */
+
+ /** \defgroup XBT_context Portable context implementation
+  *  \brief Contexts are a higher level system than <tt>setjump/longjmp</tt> 
+  *  for non-preemptible threads.
+  *
+  *  You shouldn't use it directly since it is merly intended to ease the 
+  *  implementation of the serveral programmation environment of the 
+  *  SimGrid toolkit (nammely, \ref MSG_API, \ref GRAS_API and \ref SMPI_API).
+  *
+  *  You should use those mecanism instead.
+  */
