@@ -168,3 +168,7 @@ gras_trp_select(double timeout,
 
   return timeout_error;
 }
+
+gras_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug) {
+  return mismatch_error;
+}
