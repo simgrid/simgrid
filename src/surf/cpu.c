@@ -48,8 +48,9 @@ static void parse_file(const char *file)
 {
   tmgr_trace_t trace_A = tmgr_trace_new("trace_A.txt");
   tmgr_trace_t trace_B = tmgr_trace_new("trace_B.txt");
+  tmgr_trace_t trace_A_failure = tmgr_trace_new("trace_A_failure.txt");
 
-  new_cpu("Cpu A", 20.0, 1.0, trace_A, SURF_CPU_ON, NULL);
+  new_cpu("Cpu A", 100.0, 1.0, trace_A, SURF_CPU_ON, trace_A_failure);
   new_cpu("Cpu B", 100.0, 1.0, trace_B, SURF_CPU_ON, NULL);
 }
 
@@ -131,6 +132,7 @@ static void update_actions_state(xbt_heap_float_t now,
   surf_action_cpu_t action = NULL;
   surf_action_cpu_t next_action = NULL;
   xbt_swag_t running_actions= surf_cpu_resource->common_public->states.running_action_set;
+  xbt_swag_t failed_actions= surf_cpu_resource->common_public->states.failed_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     action->generic_action.remains -= 
@@ -138,7 +140,24 @@ static void update_actions_state(xbt_heap_float_t now,
 /*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
     if(action->generic_action.remains<=0) {
       action_change_state((surf_action_t)action, SURF_ACTION_DONE);
-    } /* else if(host_failed..) */
+    } else { /* Need to check that none of the resource has failed*/
+      lmm_constraint_t cnst = NULL;
+      int tab_size =  lmm_get_number_of_cnst_from_var(sys, action->variable);
+      int i=0;
+      cpu_t cpu = NULL;
+
+      while((cnst=lmm_get_cnst_from_var(sys, action->variable, i++))) {
+	cpu = lmm_constraint_id(cnst);
+	if(cpu->current_state==SURF_CPU_OFF) {
+ 	  action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
+	  break;
+	}
+      }
+    }
+  }
+
+  xbt_swag_foreach_safe(action, next_action, failed_actions) {
+    lmm_variable_disable(sys, action->variable);
   }
 
   return;
@@ -150,8 +169,8 @@ static void update_resource_state(void *id,
 {
   cpu_t cpu = id;
   
-  printf("Asking to update \"%s\" with value " XBT_MAXMIN_FLOAT_T " for event %p\n",
-	 cpu->name, value, event_type);
+  printf("[" XBT_HEAP_FLOAT_T "] Asking to update \"%s\" with value " XBT_MAXMIN_FLOAT_T " for event %p\n",
+	 surf_get_clock(), cpu->name, value, event_type);
   
   if(event_type==cpu->power_event) {
     cpu->current_power = value;
@@ -168,7 +187,8 @@ static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
 {
   lmm_variable_t var;
   surf_action_cpu_t action = NULL;
-
+  cpu_t CPU = cpu;
+  
   action=xbt_new0(s_surf_action_cpu_t,1);
 
   action->generic_action.cost=size;
@@ -178,7 +198,10 @@ static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
   action->generic_action.callback=cpu;
   action->generic_action.resource_type=(surf_resource_t)surf_cpu_resource;
 
-  action->generic_action.state_set=surf_cpu_resource->common_public->states.running_action_set;
+  if(CPU->current_state==SURF_CPU_ON) 
+    action->generic_action.state_set=surf_cpu_resource->common_public->states.running_action_set;
+  else 
+    action->generic_action.state_set=surf_cpu_resource->common_public->states.failed_action_set;
   xbt_swag_insert(action,action->generic_action.state_set);
 
   action->variable = lmm_variable_new(sys, action, 1.0, -1.0, 1);

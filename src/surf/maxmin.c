@@ -57,7 +57,7 @@ void lmm_system_free(lmm_system_t sys)
   xbt_free(sys);
 }
 
-static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
+void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
 {
   int i;
   lmm_element_t elem = NULL;
@@ -68,6 +68,14 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
     if (xbt_swag_size(&(elem->constraint->element_set)))
       make_constraint_inactive(sys, elem->constraint);
   }
+  var->cnsts_number = 0;
+}
+
+static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
+{
+
+  lmm_variable_disable(sys, var);
+
   xbt_free(var->cnsts);
   xbt_free(var);
 }
@@ -154,6 +162,27 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
   insert_elem_in_constraint(elem);
 
   make_constraint_active(sys, cnst);
+}
+
+lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, int num)
+{
+  if(num<var->cnsts_number) return(var->cnsts[num].constraint);
+  else return NULL;
+}
+
+int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var)
+{
+  return(var->cnsts_number);
+}
+
+void *lmm_constraint_id(lmm_constraint_t cnst)
+{
+  return cnst->id;
+}
+
+void *lmm_variable_id(lmm_variable_t var)
+{
+  return var->id;
 }
 
 static void saturated_constraints_update(lmm_system_t sys,

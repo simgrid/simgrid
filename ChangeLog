@@ -1,3 +1,8 @@
+2004-11-28 Arnaud
+  - Main loop and datastructures of SURF. A cpu resource object is
+    functionnal. Surf can thus be used to create cpu's with variable
+    performance on which you can execute some actions.
+	
 2004-11-15 Martin Quinson
   - Port to ARM. Simply added the alignment and size descriptions. Should
     work, but the ARM machines are so slow that I didn't had the opportunity

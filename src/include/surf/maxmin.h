@@ -15,6 +15,7 @@ typedef struct lmm_system *lmm_system_t;
 
 lmm_system_t lmm_system_new(void);
 void lmm_system_free(lmm_system_t sys);
+void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var);
 
 lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
 				    xbt_maxmin_float_t bound_value);
@@ -30,6 +31,12 @@ xbt_maxmin_float_t lmm_variable_getvalue(lmm_variable_t var);
 
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, xbt_maxmin_float_t value);
+
+lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, int num);
+int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
+
+void *lmm_constraint_id(lmm_constraint_t cnst);
+void *lmm_variable_id(lmm_variable_t var);
 
 void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, xbt_maxmin_float_t value);
