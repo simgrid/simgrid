@@ -61,7 +61,7 @@ static int server_cb_ping_handler(gras_socket_t  expeditor,
     return 1;
   }
 
-  INFO0("SERVER: >>>>>>>> Answed with PONG(4321) <<<<<<<<");
+  INFO0("SERVER: >>>>>>>> Answered with PONG(4321) <<<<<<<<");
    
   /* 7. Set the endcondition boolean to true (and make sure the server stops after receiving it). */
   globals->endcondition = 1;
