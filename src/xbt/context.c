@@ -104,6 +104,9 @@ static void *__context_wrapper(void *c)
 
 /*   msg_global->current_process = process; */
 
+  if(context->startup_func)
+    context->startup_func(context->startup_arg);
+
   /*  WARNING("Calling the main function"); */
   /*   xbt_context_yield(context); */
   (context->code) (context->argc,context->argv);
@@ -112,11 +115,14 @@ static void *__context_wrapper(void *c)
     if(context->argv[i]) xbt_free(context->argv[i]);
   if(context->argv) xbt_free(context->argv);
 
+  if(context->cleanup_func)
+    context->cleanup_func(context->cleanup_arg);
+
   xbt_swag_remove(context, context_living);
   xbt_swag_insert(context, context_to_destroy);
 
   __xbt_context_yield(context);
-
+  xbt_assert0(0,"You're cannot be here!");
   return NULL;
 }
 
@@ -130,8 +136,10 @@ void xbt_context_start(xbt_context_t context)
   return;
 }
 
-xbt_context_t xbt_context_new(xbt_context_function_t code,
-			 int argc, char *argv[])
+xbt_context_t xbt_context_new(xbt_context_function_t code, 
+			      void_f_pvoid_t startup_func, void *startup_arg,
+			      void_f_pvoid_t cleanup_func, void *cleanup_arg,
+			      int argc, char *argv[])
 {
   xbt_context_t res = NULL;
 
@@ -149,6 +157,10 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
      this feature. */
   res->uc.uc_stack.ss_sp = res->stack;
   res->uc.uc_stack.ss_size = STACK_SIZE;
+  res->startup_func = startup_func;
+  res->startup_arg = startup_arg;
+  res->cleanup_func = cleanup_func;
+  res->cleanup_arg = cleanup_arg;
 
   xbt_swag_insert(res, context_living);
 

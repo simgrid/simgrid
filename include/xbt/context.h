@@ -8,13 +8,18 @@
 #ifndef _XBT_CONTEXT_H
 #define _XBT_CONTEXT_H
 
+#include "xbt/misc.h"
+
 typedef struct s_xbt_context *xbt_context_t;
 typedef int(*xbt_context_function_t)(int argc, char *argv[]);
 
 void xbt_context_init(void);
 void xbt_context_exit(void);
 void xbt_context_empty_trash(void);
-xbt_context_t xbt_context_new(xbt_context_function_t code, int argc, char *argv[]);
+xbt_context_t xbt_context_new(xbt_context_function_t code, 
+			      void_f_pvoid_t startup_func, void *startup_arg,
+			      void_f_pvoid_t cleanup_func, void *cleanup_arg,
+			      int argc, char *argv[]);
 void xbt_context_start(xbt_context_t context);
 void xbt_context_yield(void);
 void xbt_context_schedule(xbt_context_t context);

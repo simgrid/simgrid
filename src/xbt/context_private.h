@@ -23,6 +23,10 @@ typedef struct s_xbt_context {
   int argc;
   char **argv;
   struct s_xbt_context *save;
+  void_f_pvoid_t *startup_func;
+  void *startup_arg;
+  void_f_pvoid_t *cleanup_func;
+  void *cleanup_arg;
 } s_xbt_context_t;
 
 #endif              /* _XBT_CONTEXT_PRIVATE_H */
