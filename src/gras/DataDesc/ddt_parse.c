@@ -277,9 +277,9 @@ static gras_error_t parse_statement(char		*definition,
 
 	  if (end == gras_ddt_parse_text ||
 	      *end != '\0') {
-	    ERROR3("Unparsable size of array at %d:%d of %s",
+	    ERROR4("Unparsable size of array at %d:%d of %s. Found '%c', expected '\\0'",
 		   gras_ddt_parse_line_pos,gras_ddt_parse_char_pos,
-		   definition);
+		   definition,*end);
 	    gras_abort();
 	  }
 	  /* replace the previously pushed type to an array of it */
