@@ -60,12 +60,18 @@ print OUT "\n$warn\n";
 foreach (keys %process) {
     print OUT<<EOF
 int launch_$_(int argc, char **argv) {
-
+  char **myargv=argv;
+  int i;
+    
   if (gras_log) {
-      argv=realloc(argv,++argc * sizeof(char**));
-      argv[argc-1] = gras_log;
+    myargv=malloc((argc+1) * sizeof(char**));
+    for (i=0; i<argc; i++)
+      myargv[i] = argv[i];
+    myargv[argc++] = gras_log;
   }
   $_(argc,argv);
+  if (myargv != argv)
+    free(myargv);
   return 0;
 }
 
