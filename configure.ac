@@ -3,7 +3,7 @@ AC_PREREQ(2.57)
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.0.040129],[martin.quinson@ens-lyon.fr])
+AC_INIT([GRAS],[0.0.040205],[martin.quinson@ens-lyon.fr])
 AC_CONFIG_SRCDIR([src/include/gras.h])
 AC_REVISION($Revision$)
 AC_CONFIG_SUBDIRS(src/nws_portability)
