@@ -166,7 +166,7 @@ include/surf/surfxml.h: surf/surfxml.dtd
 endif
 
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC)
-libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@
+libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@ -lm
 
 libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC)
-libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@
+libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@ -lm
