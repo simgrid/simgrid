@@ -41,7 +41,7 @@ static const char* xbt_logappender_verbose_information(void) {
 
   if(strlen(gras_os_myname()))
     sprintf(buffer,"%s:%s:(%d) %g", gras_os_myname(),
-	    xbt_procname(),gras_process_getpid(),gras_os_time());
+	    xbt_procname(),gras_os_getpid(),gras_os_time());
   else 
     buffer[0]=0;
   

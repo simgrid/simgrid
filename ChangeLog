@@ -20,7 +20,7 @@ DONE
 ----
   [Arnaud]
   (gras)
-  * Add a gras_process_getpid function.
+  * Add a gras_os_getpid function.
 
   (msg)
   * Add MSG_task_get_compute_duration() and MSG_task_get_data_size()

@@ -44,7 +44,7 @@ gras_os_myname(void);
  * Returns the process ID of the current process.  (This is often used
    by routines that generate unique temporary file names.)
  */
-int gras_process_getpid(void);
+int gras_os_getpid(void);
 
 /** @} */
 END_DECL()

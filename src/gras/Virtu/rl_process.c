@@ -34,7 +34,7 @@ const char *xbt_procname(void) {
   else return "(null)";
 }
 
-int gras_process_getpid(void) {
+int gras_os_getpid(void) {
   return getpid();
 }
 
