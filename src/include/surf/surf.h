@@ -82,7 +82,7 @@ typedef struct surf_resource_object {
 /* Cpu resource */
 typedef enum {
   SURF_CPU_ON = 1,		/* Ready        */
-  SURF_CPU_OFF = 0,		/* Running      */
+  SURF_CPU_OFF = 0		/* Running      */
 } e_surf_cpu_state_t;
 
 typedef struct surf_cpu_resource_extension_private *surf_cpu_resource_extension_private_t;
