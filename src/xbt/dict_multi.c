@@ -95,9 +95,9 @@ gras_multidict_set(gras_dictelm_t    **pp_head,
   }
 
   TRYCLEAN(gras_multidict_set_ext(pp_head, keycount, key, key_len, data, free_ctn),
-           free(key_len));
+           gras_free(key_len));
 
-  free(key_len);
+  gras_free(key_len);
 
   return errcode;
 }
@@ -182,8 +182,8 @@ gras_multidict_get(gras_dictelm_t    *p_head,
   }
 
   TRYCLEAN(gras_multidict_get_ext(p_head, keycount, key, key_len, data),
-           free(key_len));
-  free(key_len);
+           gras_free(key_len));
+  gras_free(key_len);
 
   return errcode;
 }
@@ -241,8 +241,8 @@ gras_multidict_remove(gras_dictelm_t  *p_head,
   }
 
   TRYCLEAN(gras_multidict_remove_ext(p_head, keycount, key, key_len),
-           free(key_len));
-  free(key_len);
+           gras_free(key_len));
+  gras_free(key_len);
 
   return errcode;
 }

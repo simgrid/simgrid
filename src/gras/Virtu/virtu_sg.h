@@ -27,7 +27,7 @@ typedef struct {
   int proc[GRAS_MAX_CHANNEL]; /* PID of who's connected to each channel */
                               /* If =0, then free */
 
-  gras_dynar_t *ports;
+  gras_dynar_t ports;
 
 } gras_hostdata_t;
 

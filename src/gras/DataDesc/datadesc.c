@@ -12,12 +12,12 @@
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,gras,"Data description");
 /* FIXME: make this host-dependent using a trick such as UserData*/
-gras_set_t *gras_datadesc_set_local=NULL;
+gras_set_t gras_datadesc_set_local=NULL;
 
 
 /* callback for array size when sending strings */
 static int
-_strlen_cb(gras_cbps_t *vars, void *data) {
+_strlen_cb(gras_cbps_t vars, void *data) {
 
   return 1+(long int)strlen(data);
 }
@@ -33,7 +33,7 @@ _strlen_cb(gras_cbps_t *vars, void *data) {
 void
 gras_datadesc_init(void) {
   gras_error_t errcode;
-  gras_datadesc_type_t *ddt; /* What to add */
+  gras_datadesc_type_t ddt; /* What to add */
 
   /* only initialize once */
   if (gras_datadesc_set_local != NULL)
@@ -123,7 +123,6 @@ void
 gras_datadesc_exit(void) {
   VERB0("Exiting DataDesc");
   gras_set_free(&gras_datadesc_set_local);
-  gras_datadesc_set_local = NULL;
   DEBUG0("Exited DataDesc");
 }
 
@@ -133,7 +132,7 @@ gras_datadesc_exit(void) {
  * Returns the name of a datadescription (to ease the debug)
  */
 char *
-gras_datadesc_get_name(gras_datadesc_type_t *ddt) {
+gras_datadesc_get_name(gras_datadesc_type_t ddt) {
   return ddt->name;
 }
 /**
@@ -142,7 +141,7 @@ gras_datadesc_get_name(gras_datadesc_type_t *ddt) {
  * Returns the name of a datadescription (to ease the debug)
  */
 int
-gras_datadesc_get_id(gras_datadesc_type_t *ddt) {
+gras_datadesc_get_id(gras_datadesc_type_t ddt) {
   return ddt->code;
 }
 
@@ -152,7 +151,7 @@ gras_datadesc_get_id(gras_datadesc_type_t *ddt) {
  * Returns the size occuped by data of this type (on the current arch).
  *
  */
-int gras_datadesc_size(gras_datadesc_type_t *type) {
+int gras_datadesc_size(gras_datadesc_type_t type) {
   return type->size[GRAS_THISARCH];
 }
 
@@ -161,7 +160,7 @@ int gras_datadesc_size(gras_datadesc_type_t *type) {
  *
  * For debugging purpose
  */
-void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
+void gras_datadesc_type_dump(const gras_datadesc_type_t ddt){
   int cpt;
 
   printf("DataDesc dump:");
@@ -202,8 +201,8 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
   }
   printf ("]\n");
   if (ddt->category_code == e_gras_datadesc_type_cat_struct) {
-    gras_dd_cat_struct_t  struct_data;
-    gras_dd_cat_field_t  *field;
+    gras_dd_cat_struct_t struct_data;
+    gras_dd_cat_field_t  field;
 
     struct_data = ddt->category.struct_data;
     gras_dynar_foreach(struct_data.fields, cpt, field) {

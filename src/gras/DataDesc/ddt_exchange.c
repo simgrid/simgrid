@@ -18,13 +18,13 @@ const char *gras_datadesc_cat_names[9] = {
   "scalar", "struct", "union", "ref", "array", "ignored",
   "invalid"};
 
-static gras_datadesc_type_t *int_type = NULL;
-static gras_datadesc_type_t *pointer_type = NULL;    
-static _GRAS_INLINE gras_error_t gras_dd_send_int(gras_socket_t *sock,             int  i);
-static _GRAS_INLINE gras_error_t gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i);
+static gras_datadesc_type_t int_type = NULL;
+static gras_datadesc_type_t pointer_type = NULL;    
+static _GRAS_INLINE gras_error_t gras_dd_send_int(gras_socket_t sock,             int  i);
+static _GRAS_INLINE gras_error_t gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i);
 
 static _GRAS_INLINE gras_error_t
-gras_dd_alloc_ref(gras_dict_t *refs,  long int     size,
+gras_dd_alloc_ref(gras_dict_t  refs,  long int     size,
 		  char       **r_ref, long int     r_len,
 		  char	     **l_ref, int detect_cycle);
 
@@ -32,17 +32,17 @@ static _GRAS_INLINE int
 gras_dd_is_r_null(char **r_ptr, long int length);
 
 static gras_error_t 
-gras_datadesc_send_rec(gras_socket_t        *sock,
-		       gras_cbps_t       *state,
-		       gras_dict_t          *refs,
-		       gras_datadesc_type_t *type, 
+gras_datadesc_send_rec(gras_socket_t         sock,
+		       gras_cbps_t           state,
+		       gras_dict_t           refs,
+		       gras_datadesc_type_t  type, 
 		       char                 *data, 
 		       int                   detect_cycle);
 static gras_error_t
-gras_datadesc_recv_rec(gras_socket_t        *sock, 
-		       gras_cbps_t       *state,
-		       gras_dict_t          *refs,
-		       gras_datadesc_type_t *type,
+gras_datadesc_recv_rec(gras_socket_t         sock, 
+		       gras_cbps_t           state,
+		       gras_dict_t           refs,
+		       gras_datadesc_type_t  type,
 		       int                   r_arch,
 		       char                **r_data,
 		       long int              r_lgr,
@@ -52,7 +52,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
 
 static _GRAS_INLINE gras_error_t
-gras_dd_send_int(gras_socket_t *sock,int i) {
+gras_dd_send_int(gras_socket_t sock,int i) {
 
   if (!int_type) {
     int_type = gras_datadesc_by_name("int");
@@ -64,7 +64,7 @@ gras_dd_send_int(gras_socket_t *sock,int i) {
 }
 
 static _GRAS_INLINE gras_error_t
-gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
+gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i) {
   gras_error_t errcode;
 
   if (!int_type) {
@@ -108,7 +108,7 @@ gras_dd_is_r_null(char **r_ptr, long int length) {
 }
 
 static _GRAS_INLINE gras_error_t
-gras_dd_alloc_ref(gras_dict_t *refs,
+gras_dd_alloc_ref(gras_dict_t  refs,
 		  long int     size,
 		  char       **r_ref,
 		  long int     r_len, /* pointer_type->size[r_arch] */
@@ -128,12 +128,13 @@ gras_dd_alloc_ref(gras_dict_t *refs,
     gras_error_t errcode;
     void *ptr = gras_malloc(sizeof(void *));
 
+    CRITICAL0("detect_cycle");
     memcpy(ptr,l_ref, sizeof(void *));
 
     DEBUG2("Insert %p under %p",*(void**)ptr, *(void**)r_ref);
 
     if (detect_cycle)
-       gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, gras_free);
+       gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, gras_free_fct);
   }
   return no_error;
 }
@@ -146,11 +147,11 @@ gras_dd_alloc_ref(gras_dict_t *refs,
  * This comparison does not take the set headers into account (name and ID), 
  * but only the payload (actual type description).
  */
-int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
-			   const gras_datadesc_type_t *d2) {
+int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
+			   const gras_datadesc_type_t d2) {
   int ret,cpt;
-  gras_dd_cat_field_t *field1,*field2;
-  gras_datadesc_type_t *field_desc_1,*field_desc_2;
+  gras_dd_cat_field_t field1,field2;
+  gras_datadesc_type_t field_desc_1,field_desc_2;
 
   if (d1 == d2) return 0; /* easy optimization */
 
@@ -228,7 +229,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     }
     gras_dynar_foreach(d1->category.struct_data.fields, cpt, field1) {
       
-      field2 = gras_dynar_get_as(d2->category.struct_data.fields, cpt, gras_dd_cat_field_t *);
+      field2 = gras_dynar_get_as(d2->category.struct_data.fields, cpt, gras_dd_cat_field_t);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
@@ -254,7 +255,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     
     gras_dynar_foreach(d1->category.union_data.fields, cpt, field1) {
       
-      field2 = gras_dynar_get_as(d2->category.union_data.fields, cpt, gras_dd_cat_field_t *);
+      field2 = gras_dynar_get_as(d2->category.union_data.fields, cpt, gras_dd_cat_field_t);
       field_desc_1 = field1->type;
       field_desc_2 = field2->type;
       ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
@@ -302,23 +303,23 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
  * to a new location, and store a pointer to it in dst.
  *
  */
-gras_error_t gras_datadesc_cpy(gras_datadesc_type_t *type, 
+gras_error_t gras_datadesc_cpy(gras_datadesc_type_t type, 
 			       void *src, 
 			       void **dst) {
   RAISE_UNIMPLEMENTED;
 }
 
 static gras_error_t 
-gras_datadesc_send_rec(gras_socket_t        *sock,
-		       gras_cbps_t       *state,
-		       gras_dict_t          *refs,
-		       gras_datadesc_type_t *type, 
+gras_datadesc_send_rec(gras_socket_t         sock,
+		       gras_cbps_t           state,
+		       gras_dict_t           refs,
+		       gras_datadesc_type_t  type, 
 		       char                 *data,
 		       int                   detect_cycle) {
 
-  gras_error_t          errcode;
-  int                   cpt;
-  gras_datadesc_type_t *sub_type; /* type on which we recurse */
+  gras_error_t         errcode;
+  int                  cpt;
+  gras_datadesc_type_t sub_type; /* type on which we recurse */
   
   VERB2("Send a %s (%s)", 
 	type->name, gras_datadesc_cat_names[type->category_code]);
@@ -333,9 +334,9 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     break;
 
   case e_gras_datadesc_type_cat_struct: {
-    gras_dd_cat_struct_t  struct_data;
-    gras_dd_cat_field_t  *field;
-    char                 *field_data;
+    gras_dd_cat_struct_t struct_data;
+    gras_dd_cat_field_t  field;
+    char                *field_data;
     
     struct_data = type->category.struct_data;
     gras_assert1(struct_data.closed,
@@ -363,9 +364,9 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
   }
 
   case e_gras_datadesc_type_cat_union: {
-    gras_dd_cat_union_t    union_data;
-    gras_dd_cat_field_t   *field=NULL;
-    int                    field_num;
+    gras_dd_cat_union_t union_data;
+    gras_dd_cat_field_t field=NULL;
+    int                 field_num;
     
     union_data = type->category.union_data;
     
@@ -387,7 +388,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     TRY(gras_dd_send_int(sock, field_num));
     
     /* Send the content */
-    field = gras_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t *);
+    field = gras_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
     sub_type = field->type;
     
     if (field->pre)
@@ -472,6 +473,15 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
       VERB1("Array of %ld scalars, send it in one shot",count);
       TRY(gras_trp_chunk_send(sock, data, 
 			      sub_type->aligned_size[GRAS_THISARCH] * count));
+    } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
+	       sub_type->category.array_data.fixed_size > 0 &&
+	       sub_type->category.array_data.type->category_code == e_gras_datadesc_type_cat_scalar) {
+       
+      VERB1("Array of %ld fixed array of scalars, send it in one shot",count);
+      TRY(gras_trp_chunk_send(sock, data, 
+			      sub_type->category.array_data.type->aligned_size[GRAS_THISARCH] 
+			         * count * sub_type->category.array_data.fixed_size));
+       
     } else {
       for (cpt=0; cpt<count; cpt++) {
 	TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, ptr, detect_cycle || sub_type->cycle));
@@ -494,17 +504,17 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
  * Copy the data pointed by src and described by type to the socket
  *
  */
-gras_error_t gras_datadesc_send(gras_socket_t *sock, 
-				gras_datadesc_type_t *type, 
+gras_error_t gras_datadesc_send(gras_socket_t        sock, 
+				gras_datadesc_type_t type, 
 				void *src) {
 
   gras_error_t errcode;
-  gras_cbps_t *state = NULL;
-  gras_dict_t    *refs; /* all references already sent */
+  gras_cbps_t  state;
+  gras_dict_t  refs; /* all references already sent */
  
   refs = gras_dict_new();
   state = gras_cbps_new();
-
+   
   errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src, type->cycle);
 
   gras_dict_free(&refs);
@@ -526,10 +536,10 @@ gras_error_t gras_datadesc_send(gras_socket_t *sock,
  * hack, but I was told that working code is sometimes better than neat one ;)
  */
 gras_error_t
-gras_datadesc_recv_rec(gras_socket_t        *sock, 
-		       gras_cbps_t          *state,
-		       gras_dict_t          *refs,
-		       gras_datadesc_type_t *type,
+gras_datadesc_recv_rec(gras_socket_t         sock, 
+		       gras_cbps_t           state,
+		       gras_dict_t           refs,
+		       gras_datadesc_type_t  type,
 		       int                   r_arch,
 		       char                **r_data,
 		       long int              r_lgr,
@@ -537,9 +547,9 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       int                   subsize,
 		       int                   detect_cycle) {
 
-  gras_error_t          errcode;
-  int                   cpt;
-  gras_datadesc_type_t *sub_type;
+  gras_error_t         errcode;
+  int                  cpt;
+  gras_datadesc_type_t sub_type;
 
   VERB2("Recv a %s @%p", type->name, (void*)l_data);
   gras_assert(l_data);
@@ -561,8 +571,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     break;
 
   case e_gras_datadesc_type_cat_struct: {
-    gras_dd_cat_struct_t   struct_data;
-    gras_dd_cat_field_t   *field;
+    gras_dd_cat_struct_t struct_data;
+    gras_dd_cat_field_t  field;
 
     struct_data = type->category.struct_data;
 
@@ -586,9 +596,9 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
   }
 
   case e_gras_datadesc_type_cat_union: {
-    gras_dd_cat_union_t    union_data;
-    gras_dd_cat_field_t   *field=NULL;
-    int                    field_num;
+    gras_dd_cat_union_t union_data;
+    gras_dd_cat_field_t field=NULL;
+    int                 field_num;
 
     union_data = type->category.union_data;
 
@@ -606,7 +616,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	     type->name, field_num, gras_dynar_length(union_data.fields));
     
     /* Recv the content */
-    field = gras_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t *);
+    field = gras_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
     sub_type = field->type;
     
     TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
@@ -667,7 +677,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	/* Damn. Reference to a dynamic array. Allocating the size for it 
 	   is more complicated */
 	gras_dd_cat_array_t array_data = sub_type->category.array_data;
-	gras_datadesc_type_t *subsub_type;
+	gras_datadesc_type_t subsub_type;
 
 	subsubcount = array_data.fixed_size;
 	if (subsubcount == 0)
@@ -745,6 +755,31 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	  TRY(gras_dd_convert_elm(sub_type,count,r_arch, ptr,l_data));
 	gras_free(ptr);
       }
+    } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
+	       sub_type->category.array_data.fixed_size > 0 &&
+	       sub_type->category.array_data.type->category_code == e_gras_datadesc_type_cat_scalar) {
+      array_data = sub_type->category.array_data;
+      gras_datadesc_type_t subsub_type = array_data.type;
+       
+      VERB1("Array of %d fixed array of scalars, get it in one shot",count);
+      if (subsub_type->aligned_size[GRAS_THISARCH] >= 
+	  subsub_type->aligned_size[r_arch]) {
+	TRY(gras_trp_chunk_recv(sock, (char*)l_data, 
+				subsub_type->aligned_size[r_arch] * count * 
+				  array_data.fixed_size));
+	if (r_arch != GRAS_THISARCH)
+	  TRY(gras_dd_convert_elm(subsub_type,count*array_data.fixed_size,r_arch, l_data,l_data));
+      } else {
+	ptr = gras_malloc(subsub_type->aligned_size[r_arch] * count*array_data.fixed_size);
+
+	TRY(gras_trp_chunk_recv(sock, (char*)ptr, 
+				subsub_type->size[r_arch] * count*array_data.fixed_size));
+	if (r_arch != GRAS_THISARCH)
+	  TRY(gras_dd_convert_elm(subsub_type,count*array_data.fixed_size,r_arch, ptr,l_data));
+	gras_free(ptr);
+      }
+      
+       
     } else {
       /* not scalar content, get it recursively (may contain pointers) */
       elm_size = sub_type->aligned_size[GRAS_THISARCH];
@@ -779,14 +814,14 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
  *
  */
 gras_error_t
-gras_datadesc_recv(gras_socket_t *sock, 
-		   gras_datadesc_type_t *type, 
-		   int r_arch,
-		   void *dst) {
+gras_datadesc_recv(gras_socket_t         sock, 
+		   gras_datadesc_type_t  type,
+		   int                   r_arch,
+		   void                 *dst) {
 
   gras_error_t errcode;
-  gras_cbps_t *state = NULL; /* callback persistent state */
-  gras_dict_t    *refs;         /* all references already sent */
+  gras_cbps_t  state; /* callback persistent state */
+  gras_dict_t  refs;  /* all references already sent */
 
   refs = gras_dict_new();
   state = gras_cbps_new();

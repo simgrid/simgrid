@@ -69,7 +69,7 @@ gras_dd_reverse_bytes(void *to,
  * Both pointers may be the same location if no resizing is needed.
  */
 gras_error_t
-gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
+gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 		    int r_arch, 
 		    void *src, void *dst) {
   gras_dd_cat_scalar_t scal = type->category.scalar_data;

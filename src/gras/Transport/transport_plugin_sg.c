@@ -29,16 +29,16 @@ static gras_error_t find_port(gras_hostdata_t *hd, int port,
 
 
 gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
-				       /* OUT */ gras_socket_t *sock);
+				       /* OUT */ gras_socket_t sock);
 gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
-				       /* OUT */ gras_socket_t *sock);
-void         gras_trp_sg_socket_close(gras_socket_t *sd);
+				       /* OUT */ gras_socket_t sock);
+void         gras_trp_sg_socket_close(gras_socket_t sd);
 
-gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sd,
+gras_error_t gras_trp_sg_chunk_send(gras_socket_t sd,
 				    const char *data,
 				    long int size);
 
-gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sd,
+gras_error_t gras_trp_sg_chunk_recv(gras_socket_t sd,
 				    char *data,
 				    long int size);
 
@@ -90,7 +90,7 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
 }
 
 gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
-				       /* OUT */ gras_socket_t *sock){
+				       /* OUT */ gras_socket_t sock){
 
   gras_error_t errcode;
 
@@ -149,7 +149,7 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 }
 
 gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
-				       gras_socket_t *sock){
+				       gras_socket_t sock){
 
   gras_error_t errcode;
 
@@ -170,12 +170,14 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
     RAISE2(mismatch_error,
 	   "can't listen on address %s:%d: port already in use\n.",
 	   host,sock->port);
+    break;
 
   case mismatch_error: /* Port not used so far. Do it */
     pr.tochan = sock->raw ? pd->rawChan : pd->chan;
     pr.port   = sock->port;
     pr.raw    = sock->raw;
     gras_dynar_push(hd->ports,&pr);
+    break;
     
   default:
     return errcode;
@@ -190,14 +192,14 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
   
   sock->data = data;
 
-  INFO6("'%s' (%d) ears on %s:%d%s (%p)",
+  VERB6("'%s' (%d) ears on %s:%d%s (%p)",
     MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
     host,sock->port,sock->raw? " (mode RAW)":"",sock);
 
   return no_error;
 }
 
-void gras_trp_sg_socket_close(gras_socket_t *sock){
+void gras_trp_sg_socket_close(gras_socket_t sock){
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   int cpt;
   
@@ -227,7 +229,7 @@ typedef struct {
   void *data;
 } sg_task_data_t;
 
-gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
+gras_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
 				    const char *data,
 				    long int size) {
   m_task_t task=NULL;
@@ -255,7 +257,7 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
   return no_error;
 }
 
-gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
+gras_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
 				    char *data,
 				    long int size){
   gras_procdata_t *pd=gras_procdata_get();
@@ -290,7 +292,7 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
 }
 
 /* Data exchange over raw sockets */
-gras_error_t gras_socket_raw_exchange(gras_socket_t *peer,
+gras_error_t gras_socket_raw_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int expSize,

@@ -20,10 +20,10 @@
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,"data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/
-struct gras_set_ {
-  gras_dict_t  *dict;  /* data stored by name */
-  gras_dynar_t *dynar; /* data stored by ID   */
-};
+typedef struct gras_set_ {
+  gras_dict_t  dict;  /* data stored by name */
+  gras_dynar_t dynar; /* data stored by ID   */
+} s_gras_set_t;
 
 /*####[ Memory  ]############################################################*/
 /**
@@ -32,8 +32,8 @@ struct gras_set_ {
  *
  * Creates a new set.
  */
-gras_set_t *gras_set_new (void) {
-  gras_set_t *res=gras_new(gras_set_t,1);
+gras_set_t gras_set_new (void) {
+  gras_set_t res=gras_new(s_gras_set_t,1);
   gras_error_t errcode;
 
   res->dict=gras_dict_new ();
@@ -48,12 +48,12 @@ gras_set_t *gras_set_new (void) {
  *
  * Frees a set.
  */
-void         gras_set_free(gras_set_t **set) {
+void  gras_set_free(gras_set_t *set) {
   if (*set) {
     gras_dict_free ( &( (*set)->dict  ) );
-    gras_dynar_free(    (*set)->dynar  );
+    gras_dynar_free( &( (*set)->dynar ) );
     gras_free(*set);
-    *set=NULL;
+    *set = NULL;
   }
 }
 
@@ -69,12 +69,12 @@ void         gras_set_free(gras_set_t **set) {
  * elm->name_len is used as is unless it's <= 0 (in which case it's recomputed);
  * elm->ID is attributed automatically.
  */
-void gras_set_add    (gras_set_t     *set,
-		      gras_set_elm_t *elm,
+void gras_set_add    (gras_set_t      set,
+		      gras_set_elm_t  elm,
 		      void_f_pvoid_t *free_func) {
 
-  gras_error_t    errcode;
-  gras_set_elm_t *found_in_dict;
+  gras_error_t   errcode;
+  gras_set_elm_t found_in_dict;
 
   if (elm->name_len <= 0) {
     elm->name_len = strlen(elm->name);
@@ -114,9 +114,9 @@ void gras_set_add    (gras_set_t     *set,
  *
  * get a data stored in the cell by providing its name.
  */
-gras_error_t gras_set_get_by_name    (gras_set_t     *set,
+gras_error_t gras_set_get_by_name    (gras_set_t     set,
 				      const char     *name,
-				      /* OUT */gras_set_elm_t **dst) {
+				      /* OUT */gras_set_elm_t *dst) {
   gras_error_t errcode;
   errcode = gras_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
   DEBUG2("Lookup key %s: %s",name,gras_error_name(errcode));
@@ -133,10 +133,10 @@ gras_error_t gras_set_get_by_name    (gras_set_t     *set,
  * of the name, when strlen cannot be trusted because you don't use a char*
  * as name, you weird guy).
  */
-gras_error_t gras_set_get_by_name_ext(gras_set_t     *set,
+gras_error_t gras_set_get_by_name_ext(gras_set_t      set,
 				      const char     *name,
 				      int             name_len,
-				      /* OUT */gras_set_elm_t **dst) {
+				      /* OUT */gras_set_elm_t *dst) {
 
   return gras_dict_get_ext (set->dict, name, name_len, (void**)dst);
 }
@@ -150,13 +150,13 @@ gras_error_t gras_set_get_by_name_ext(gras_set_t     *set,
  * get a data stored in the cell by providing its id. 
  * @warning, if the ID does not exists, you're getting into trouble
  */
-gras_error_t gras_set_get_by_id      (gras_set_t     *set,
+gras_error_t gras_set_get_by_id      (gras_set_t      set,
 				      int             id,
-				      /* OUT */gras_set_elm_t **dst) {
+				      /* OUT */gras_set_elm_t *dst) {
 
   /* Don't bother checking the bounds, the dynar does so */
 
-  *dst = gras_dynar_get_as(set->dynar,id,gras_set_elm_t *);
+  *dst = gras_dynar_get_as(set->dynar,id,gras_set_elm_t);
   DEBUG3("Lookup type of id %d (of %lu): %s", 
 	 id, gras_dynar_length(set->dynar), (*dst)->name);
   
@@ -166,10 +166,10 @@ gras_error_t gras_set_get_by_id      (gras_set_t     *set,
 /***
  *** Cursors
  ***/
-struct gras_set_cursor_ {
-  gras_set_t *set;
+typedef struct gras_set_cursor_ {
+  gras_set_t set;
   int val;
-};
+} s_gras_set_cursor_t;
 
 /**
  * gras_set_cursor_first:
@@ -178,13 +178,13 @@ struct gras_set_cursor_ {
  *
  * Create the cursor if it does not exists. Rewind it in any case.
  */
-void         gras_set_cursor_first       (gras_set_t   *set,
-					  gras_set_cursor_t **cursor) {
+void         gras_set_cursor_first       (gras_set_t         set,
+					  gras_set_cursor_t *cursor) {
 
   if (set != NULL) {
     if (!*cursor) {
       DEBUG0("Create the cursor on first use");
-      *cursor = gras_new(gras_set_cursor_t,1);
+      *cursor = gras_new(s_gras_set_cursor_t,1);
       gras_assert0(*cursor,
 		   "Malloc error during the creation of the cursor");
     }
@@ -201,7 +201,7 @@ void         gras_set_cursor_first       (gras_set_t   *set,
  *
  * Move to the next element. 
  */
-void         gras_set_cursor_step        (gras_set_cursor_t  *cursor) {
+void         gras_set_cursor_step        (gras_set_cursor_t cursor) {
   gras_dynar_cursor_step(cursor->set->dynar, &( cursor->val ) );
 }
 
@@ -212,9 +212,9 @@ void         gras_set_cursor_step        (gras_set_cursor_t  *cursor) {
  *
  * Get current data
  */
-int          gras_set_cursor_get_or_free (gras_set_cursor_t **curs,
-					  gras_set_elm_t    **elm) {
-  gras_set_cursor_t *cursor;
+int          gras_set_cursor_get_or_free (gras_set_cursor_t *curs,
+					  gras_set_elm_t    *elm) {
+  gras_set_cursor_t cursor;
 
   if (!curs || !(*curs))
     return FALSE;

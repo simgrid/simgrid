@@ -26,19 +26,19 @@ typedef struct s_type_modifier{
   short is_enum;
 
   short is_ref;
-} type_modifier_t;
+} s_type_modifier_t,*type_modifier_t;
 
 typedef struct s_field {
-  gras_datadesc_type_t *type;
+  gras_datadesc_type_t type;
   char *type_name;
   char *name;
-  type_modifier_t tm;
-} identifier_t;
+  s_type_modifier_t tm;
+} s_identifier_t;
  
 extern char *gras_ddt_parse_text; /* text being considered in the parser */
 
 /* local functions */
-static void parse_type_modifier(type_modifier_t 	*type_modifier)  {
+static void parse_type_modifier(type_modifier_t type_modifier)  {
   GRAS_IN;
   do {
     if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
@@ -88,7 +88,7 @@ static void parse_type_modifier(type_modifier_t 	*type_modifier)  {
   GRAS_OUT;
 }
 
-static void print_type_modifier(type_modifier_t tm) {
+static void print_type_modifier(s_type_modifier_t tm) {
   int i;
 
   GRAS_IN;
@@ -104,8 +104,8 @@ static void print_type_modifier(type_modifier_t tm) {
   GRAS_OUT;
 }
 
-static void change_to_fixed_array(gras_dynar_t *dynar, long int size) {
-  identifier_t former,array;
+static void change_to_fixed_array(gras_dynar_t dynar, long int size) {
+  s_identifier_t former,array;
   memset(&array,0,sizeof(array));
 
   GRAS_IN;
@@ -122,8 +122,8 @@ static void change_to_fixed_array(gras_dynar_t *dynar, long int size) {
   gras_dynar_push(dynar,&array);
   GRAS_OUT;
 }
-static void change_to_ref(gras_dynar_t *dynar) {
-  identifier_t former,ref;
+static void change_to_ref(gras_dynar_t dynar) {
+  s_identifier_t former,ref;
   memset(&ref,0,sizeof(ref));
 
   GRAS_IN;
@@ -140,8 +140,8 @@ static void change_to_ref(gras_dynar_t *dynar) {
   GRAS_OUT;
 }
 
-static void change_to_ref_pop_array(gras_dynar_t *dynar) {
-  identifier_t former,ref;
+static void change_to_ref_pop_array(gras_dynar_t dynar) {
+  s_identifier_t former,ref;
   memset(&ref,0,sizeof(ref));
 
   GRAS_IN;
@@ -157,12 +157,12 @@ static void change_to_ref_pop_array(gras_dynar_t *dynar) {
 }
 
 static gras_error_t parse_statement(char	 *definition,
-				    gras_dynar_t *identifiers,
-				    gras_dynar_t *fields_to_push) {
+				    gras_dynar_t  identifiers,
+				    gras_dynar_t  fields_to_push) {
   gras_error_t errcode;
   char buffname[512];
 
-  identifier_t identifier;
+  s_identifier_t identifier;
 
   int expect_id_separator = 0;
 
@@ -328,7 +328,7 @@ static gras_error_t parse_statement(char	 *definition,
 
       } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
 	/* Handle annotation */
-	identifier_t array;
+	s_identifier_t array;
 	char *keyname = NULL;
 	char *keyval  = NULL;
 	memset(&array,0,sizeof(array));
@@ -431,23 +431,23 @@ static gras_error_t parse_statement(char	 *definition,
   return no_error;
 }
 
-static gras_datadesc_type_t *parse_struct(char *definition) {
+static gras_datadesc_type_t parse_struct(char *definition) {
 
   gras_error_t errcode;
   char buffname[32];
   static int anonymous_struct=0;
 
-  gras_dynar_t *identifiers;
-  identifier_t field;
+  gras_dynar_t identifiers;
+  s_identifier_t field;
   int i;
 
-  gras_dynar_t *fields_to_push;
+  gras_dynar_t fields_to_push;
   char *name;
 
-  gras_datadesc_type_t *struct_type;
+  gras_datadesc_type_t struct_type;
 
   GRAS_IN;
-  identifiers = gras_dynar_new(sizeof(identifier_t),NULL);
+  identifiers = gras_dynar_new(sizeof(s_identifier_t),NULL);
   fields_to_push = gras_dynar_new(sizeof(char*),NULL);
 
   /* Create the struct descriptor */
@@ -508,18 +508,18 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
 
   gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
 
-  gras_dynar_free(identifiers);
-  gras_dynar_free(fields_to_push);
+  gras_dynar_free(&identifiers);
+  gras_dynar_free(&fields_to_push);
   GRAS_OUT;
   return struct_type;
 }
 
-static gras_datadesc_type_t * parse_typedef(char *definition) {
+static gras_datadesc_type_t parse_typedef(char *definition) {
 
-  type_modifier_t tm;
+  s_type_modifier_t tm;
 
-  gras_datadesc_type_t *struct_desc=NULL;
-  gras_datadesc_type_t *typedef_desc=NULL;
+  gras_datadesc_type_t struct_desc=NULL;
+  gras_datadesc_type_t typedef_desc=NULL;
 
   GRAS_IN;
   memset(&tm,0,sizeof(tm));
@@ -554,11 +554,11 @@ static gras_datadesc_type_t * parse_typedef(char *definition) {
  *
  * Create a datadescription from the result of parsing the C type description
  */
-gras_datadesc_type_t *
+gras_datadesc_type_t 
 gras_datadesc_parse(const char            *name,
 		    const char            *C_statement) {
 
-  gras_datadesc_type_t * res=NULL;
+  gras_datadesc_type_t res=NULL;
   char *definition;
   int semicolon_count=0;
   int def_count,C_count;

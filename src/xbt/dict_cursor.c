@@ -23,16 +23,16 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict_cursor,dict,"To traverse dictionaries");
 /*###########################################################################*/
 struct gras_dict_cursor_ {
   /* we store all level encountered until here, to backtrack on next() */
-  gras_dynar_t *keys;
-  gras_dynar_t *key_lens;
-  int           pos;
-  int           pos_len;
-  gras_dictelm_t  *head;
+  gras_dynar_t   keys;
+  gras_dynar_t   key_lens;
+  int            pos;
+  int            pos_len;
+  gras_dictelm_t head;
 };
 
 static _GRAS_INLINE void
-_cursor_push_keys(gras_dict_cursor_t *p_cursor,
-                  gras_dictelm_t        *p_elm);
+_cursor_push_keys(gras_dict_cursor_t p_cursor,
+                  gras_dictelm_t     p_elm);
 
 #undef gras_dict_CURSOR_DEBUG
 /*#define gras_dict_CURSOR_DEBUG 1*/
@@ -45,17 +45,17 @@ _cursor_push_keys(gras_dict_cursor_t *p_cursor,
  *
  * Structure creator
  */
-gras_dict_cursor_t *
-gras_dict_cursor_new(const gras_dict_t          *p_head) {
+gras_dict_cursor_t 
+gras_dict_cursor_new(const gras_dict_t head) {
   gras_error_t        errcode  = no_error;
-  gras_dict_cursor_t *res = NULL;
+  gras_dict_cursor_t res = NULL;
 
-  res = gras_new(gras_dict_cursor_t,1);
+  res = gras_new(s_gras_dict_cursor_t,1);
   res->keys     = gras_dynar_new(sizeof(char **), NULL);
   res->key_lens = gras_dynar_new(sizeof(int  *),  NULL);
   res->pos      = 0;
   res->pos_len  = 0;
-  res->head     = p_head ? p_head->head : NULL;
+  res->head     = head ? head->head : NULL;
 
   gras_dict_cursor_rewind(res);
 
@@ -70,12 +70,12 @@ gras_dict_cursor_new(const gras_dict_t          *p_head) {
  * Structure destructor
  */
 void
-gras_dict_cursor_free(gras_dict_cursor_t *p_cursor) {
-  if (p_cursor) {
-    gras_dynar_free(p_cursor->keys);
-    gras_dynar_free(p_cursor->key_lens);
-    memset(p_cursor, 0, sizeof(gras_dict_cursor_t));
-    gras_free(p_cursor);
+gras_dict_cursor_free(gras_dict_cursor_t *cursor) {
+  if (*cursor) {
+    gras_dynar_free(&((*cursor)->keys));
+    gras_dynar_free(&((*cursor)->key_lens));
+    gras_free(*cursor);
+    *cursor = NULL;
   }
 }
 
@@ -86,11 +86,11 @@ gras_dict_cursor_free(gras_dict_cursor_t *p_cursor) {
  */
 static _GRAS_INLINE
 gras_error_t
-__cursor_not_null(gras_dict_cursor_t *p_cursor) {
+__cursor_not_null(gras_dict_cursor_t cursor) {
 
-  gras_assert0(p_cursor, "Null cursor");
+  gras_assert0(cursor, "Null cursor");
 
-  if (!p_cursor->head) {
+  if (!cursor->head) {
     return mismatch_error;
   }
 
@@ -100,24 +100,24 @@ __cursor_not_null(gras_dict_cursor_t *p_cursor) {
 
 static _GRAS_INLINE
 void
-_cursor_push_keys(gras_dict_cursor_t *p_cursor,
-                  gras_dictelm_t        *p_elm) {
+_cursor_push_keys(gras_dict_cursor_t cursor,
+                  gras_dictelm_t     elm) {
   gras_error_t         errcode = no_error;
-  gras_dictelm_t      *p_child = NULL;
+  gras_dictelm_t       child = NULL;
   int                  i       = 0;
   static volatile int  count   = 0; /* ??? */
 
-  CDEBUG1(dict_cursor, "Push childs of %p in the cursor", (void*)p_elm);
+  CDEBUG1(dict_cursor, "Push childs of %p in the cursor", (void*)elm);
 
-  if (p_elm->content) {
-    gras_dynar_push(p_cursor->keys,     &p_elm->key    );
-    gras_dynar_push(p_cursor->key_lens, &p_elm->key_len);
+  if (elm->content) {
+    gras_dynar_push(cursor->keys,     &elm->key    );
+    gras_dynar_push(cursor->key_lens, &elm->key_len);
     count++;
   }
 
-  gras_dynar_foreach(p_elm->sub, i, p_child) {
-    if (p_child)
-      _cursor_push_keys(p_cursor, p_child);
+  gras_dynar_foreach(elm->sub, i, child) {
+    if (child)
+      _cursor_push_keys(cursor, child);
   }
 
   CDEBUG1(dict_cursor, "Count = %d", count);
@@ -131,22 +131,22 @@ _cursor_push_keys(gras_dict_cursor_t *p_cursor,
  * back to the first element
  */
 void
-gras_dict_cursor_rewind(gras_dict_cursor_t *p_cursor) {
+gras_dict_cursor_rewind(gras_dict_cursor_t cursor) {
   gras_error_t errcode = no_error;
 
   CDEBUG0(dict_cursor, "gras_dict_cursor_rewind");
-  gras_assert(p_cursor);
+  gras_assert(cursor);
 
-  gras_dynar_reset(p_cursor->keys);
-  gras_dynar_reset(p_cursor->key_lens);
+  gras_dynar_reset(cursor->keys);
+  gras_dynar_reset(cursor->key_lens);
 
-  if (!p_cursor->head)
+  if (!cursor->head)
     return ;
 
-  _cursor_push_keys(p_cursor, p_cursor->head);
+  _cursor_push_keys(cursor, cursor->head);
 
-  gras_dynar_cursor_first(p_cursor->keys,     &p_cursor->pos    );
-  gras_dynar_cursor_first(p_cursor->key_lens, &p_cursor->pos_len);
+  gras_dynar_cursor_first(cursor->keys,     &cursor->pos    );
+  gras_dynar_cursor_first(cursor->key_lens, &cursor->pos_len);
 
 }
 
@@ -157,8 +157,8 @@ gras_dict_cursor_rewind(gras_dict_cursor_t *p_cursor) {
  *
  * Create the cursor if it does not exists. Rewind it in any case.
  */
-void gras_dict_cursor_first (const gras_dict_t   *dict,
-			     gras_dict_cursor_t **cursor){
+void gras_dict_cursor_first (const gras_dict_t   dict,
+			     gras_dict_cursor_t *cursor){
 
   if (!*cursor) {
     DEBUG0("Create the cursor on first use");
@@ -176,11 +176,11 @@ void gras_dict_cursor_first (const gras_dict_t   *dict,
  * Move to the next element. 
  */
 void
-gras_dict_cursor_step(gras_dict_cursor_t *p_cursor) {
-  gras_assert(p_cursor);
+gras_dict_cursor_step(gras_dict_cursor_t cursor) {
+  gras_assert(cursor);
 
-  gras_dynar_cursor_step(p_cursor->keys,     &p_cursor->pos);
-  gras_dynar_cursor_step(p_cursor->key_lens, &p_cursor->pos_len);
+  gras_dynar_cursor_step(cursor->keys,     &cursor->pos);
+  gras_dynar_cursor_step(cursor->key_lens, &cursor->pos_len);
 }
 
 /**
@@ -191,7 +191,7 @@ gras_dict_cursor_step(gras_dict_cursor_t *p_cursor) {
  * Get current data
  */
 int
-gras_dict_cursor_get_or_free(gras_dict_cursor_t **cursor,
+gras_dict_cursor_get_or_free(gras_dict_cursor_t  *cursor,
 			     char               **key,
 			     void               **data) {
   gras_error_t  errcode = no_error;
@@ -201,8 +201,7 @@ gras_dict_cursor_get_or_free(gras_dict_cursor_t **cursor,
     return FALSE;
 
   if (gras_dynar_length((*cursor)->keys) <= (*cursor)->pos) {
-    gras_dict_cursor_free(*cursor);
-    *cursor=NULL;
+    gras_dict_cursor_free(cursor);
     return FALSE;
   }
     
@@ -211,8 +210,7 @@ gras_dict_cursor_get_or_free(gras_dict_cursor_t **cursor,
 
   errcode = gras_dictelm_get_ext((*cursor)->head, *key, key_len, data);
   if (errcode == mismatch_error) {
-    gras_dict_cursor_free(*cursor);
-    *cursor=NULL;
+    gras_dict_cursor_free(cursor);
     return FALSE;
   }
 
@@ -232,13 +230,13 @@ gras_dict_cursor_get_or_free(gras_dict_cursor_t **cursor,
  * Get current key
  */
 gras_error_t
-gras_dict_cursor_get_key(gras_dict_cursor_t  *p_cursor,
+gras_dict_cursor_get_key(gras_dict_cursor_t   cursor,
                          /*OUT*/char        **key) {
   gras_error_t errcode = no_error;
 
-  TRY(__cursor_not_null(p_cursor));
+  TRY(__cursor_not_null(cursor));
 
-  *key = gras_dynar_get_as(p_cursor->keys, p_cursor->pos - 1, char*);
+  *key = gras_dynar_get_as(cursor->keys, cursor->pos - 1, char*);
 
   return errcode;
 }
@@ -250,18 +248,18 @@ gras_dict_cursor_get_key(gras_dict_cursor_t  *p_cursor,
  * Get current data
  */
 gras_error_t
-gras_dict_cursor_get_data(gras_dict_cursor_t  *p_cursor,
+gras_dict_cursor_get_data(gras_dict_cursor_t   cursor,
                           /*OUT*/void        **data) {
   gras_error_t  errcode = no_error;
   char         *key     = NULL;
   int           key_len = 0;
 
-  TRY(__cursor_not_null(p_cursor));
+  TRY(__cursor_not_null(cursor));
 
-  key     = gras_dynar_get_as(p_cursor->keys,     p_cursor->pos-1,  char *);
-  key_len = gras_dynar_get_as(p_cursor->key_lens, p_cursor->pos_len-1, int);
+  key     = gras_dynar_get_as(cursor->keys,     cursor->pos-1,  char *);
+  key_len = gras_dynar_get_as(cursor->key_lens, cursor->pos_len-1, int);
 
-  TRY(gras_dictelm_get_ext(p_cursor->head, key, key_len, data));
+  TRY(gras_dictelm_get_ext(cursor->head, key, key_len, data));
 
   return errcode;
 }

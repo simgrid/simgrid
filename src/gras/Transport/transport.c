@@ -11,8 +11,9 @@
 #include "gras/Transport/transport_private.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(transport,gras,"Conveying bytes over the network");
+GRAS_LOG_NEW_SUBCATEGORY(raw_trp,transport,"Conveying bytes over the network without formating");
 
-static gras_dict_t  *_gras_trp_plugins;     /* All registered plugins */
+static gras_dict_t _gras_trp_plugins;      /* All registered plugins */
 static void gras_trp_plugin_free(void *p); /* free one of the plugins */
 
 static void gras_trp_socket_free(void *s); /* free one socket */
@@ -89,9 +90,9 @@ void gras_trp_plugin_free(void *p) {
  * Malloc a new socket, and initialize it with defaults
  */
 void gras_trp_socket_new(int incoming,
-			 gras_socket_t **dst) {
+			 gras_socket_t *dst) {
 
-  gras_socket_t *sock=gras_new(gras_socket_t,1);
+  gras_socket_t sock=gras_new0(s_gras_socket_t,1);
 
   DEBUG1("Create a new socket (%p)", (void*)sock);
 
@@ -126,15 +127,17 @@ gras_socket_server_ext(unsigned short port,
 		       unsigned long int bufSize,
 		       int raw,
 		       
-		       /* OUT */ gras_socket_t **dst) {
+		       /* OUT */ gras_socket_t *dst) {
  
   gras_error_t errcode;
   gras_trp_plugin_t *trp;
-  gras_socket_t *sock;
+  gras_socket_t sock;
 
   *dst = NULL;
 
-  DEBUG1("Create a server socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
+  DEBUG2("Create a server socket from plugin %s on port %d",
+	 gras_if_RL() ? "tcp" : "sg",
+	 port);
   TRY(gras_trp_plugin_get_by_name("buf",&trp));
 
   /* defaults settings */
@@ -174,11 +177,11 @@ gras_socket_client_ext(const char *host,
 		       unsigned long int bufSize,
 		       int raw,
 		       
-		       /* OUT */ gras_socket_t **dst) {
+		       /* OUT */ gras_socket_t *dst) {
  
   gras_error_t errcode;
   gras_trp_plugin_t *trp;
-  gras_socket_t *sock;
+  gras_socket_t sock;
 
   *dst = NULL;
 
@@ -218,7 +221,7 @@ gras_socket_client_ext(const char *host,
  */
 gras_error_t
 gras_socket_server(unsigned short port,
-		   /* OUT */ gras_socket_t **dst) {
+		   /* OUT */ gras_socket_t *dst) {
    return gras_socket_server_ext(port,32,0,dst);
 }
 
@@ -231,14 +234,14 @@ gras_socket_server(unsigned short port,
 gras_error_t
 gras_socket_client(const char *host,
 		   unsigned short port,
-		   /* OUT */ gras_socket_t **dst) {
+		   /* OUT */ gras_socket_t *dst) {
    return gras_socket_client_ext(host,port,32,0,dst);
 }
 
 
-void gras_socket_close(gras_socket_t *sock) {
-  gras_dynar_t *sockets = gras_socketset_get();
-  gras_socket_t *sock_iter;
+void gras_socket_close(gras_socket_t sock) {
+  gras_dynar_t sockets = gras_socketset_get();
+  gras_socket_t sock_iter;
   int cursor;
 
   /* FIXME: Issue an event when the socket is closed */
@@ -266,7 +269,7 @@ void gras_socket_close(gras_socket_t *sock) {
  * Send a bunch of bytes from on socket
  */
 gras_error_t
-gras_trp_chunk_send(gras_socket_t *sd,
+gras_trp_chunk_send(gras_socket_t sd,
 		    char *data,
 		    long int size) {
   gras_assert1(sd->outgoing,
@@ -283,7 +286,7 @@ gras_trp_chunk_send(gras_socket_t *sd,
  * Receive a bunch of bytes from a socket
  */
 gras_error_t 
-gras_trp_chunk_recv(gras_socket_t *sd,
+gras_trp_chunk_recv(gras_socket_t sd,
 		    char *data,
 		    long int size) {
   gras_assert0(sd->incoming,
@@ -300,7 +303,7 @@ gras_trp_chunk_recv(gras_socket_t *sd,
  * Make sure all pending communications are done
  */
 gras_error_t 
-gras_trp_flush(gras_socket_t *sd) {
+gras_trp_flush(gras_socket_t sd) {
   return (sd->plugin->flush)(sd);
 }
 
@@ -311,17 +314,17 @@ gras_trp_plugin_get_by_name(const char *name,
   return gras_dict_get(_gras_trp_plugins,name,(void**)dst);
 }
 
-int   gras_socket_my_port  (gras_socket_t *sock) {
+int   gras_socket_my_port  (gras_socket_t sock) {
   return sock->port;
 }
-int   gras_socket_peer_port(gras_socket_t *sock) {
+int   gras_socket_peer_port(gras_socket_t sock) {
   return sock->peer_port;
 }
-char *gras_socket_peer_name(gras_socket_t *sock) {
+char *gras_socket_peer_name(gras_socket_t sock) {
   return sock->peer_name;
 }
 
-gras_error_t gras_socket_raw_send(gras_socket_t *peer, 
+gras_error_t gras_socket_raw_send(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int exp_size, 
 				  unsigned long int msg_size) {
@@ -329,16 +332,22 @@ gras_error_t gras_socket_raw_send(gras_socket_t *peer,
   char *chunk = gras_malloc(msg_size);
   int exp_sofar;
    
-  gras_assert0(peer->raw,"Asked to send raw data on a regular socket\n");
+  gras_assert0(peer->raw,"Asked to send raw data on a regular socket");
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
+     CDEBUG5(raw_trp,"Sent %d of %lu (msg_size=%ld) to %s:%d",
+	     exp_sofar,exp_size,msg_size,
+	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
      TRY(gras_trp_chunk_send(peer,chunk,msg_size));
   }
+  CDEBUG5(raw_trp,"Sent %d of %lu (msg_size=%ld) to %s:%d",
+	  exp_sofar,exp_size,msg_size,
+	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 	     
   gras_free(chunk);
   return no_error;//gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);   
 }
 
-gras_error_t gras_socket_raw_recv(gras_socket_t *peer, 
+gras_error_t gras_socket_raw_recv(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int exp_size, 
 				  unsigned long int msg_size){
@@ -349,8 +358,14 @@ gras_error_t gras_socket_raw_recv(gras_socket_t *peer,
 
   gras_assert0(peer->raw,"Asked to recveive raw data on a regular socket\n");
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
-     TRY(gras_trp_chunk_send(peer,chunk,msg_size));
+     CDEBUG5(raw_trp,"Recvd %d of %lu (msg_size=%ld) from %s:%d",
+	     exp_sofar,exp_size,msg_size,
+	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
+     TRY(gras_trp_chunk_recv(peer,chunk,msg_size));
   }
+  CDEBUG5(raw_trp,"Recvd %d of %lu (msg_size=%ld) from %s:%d",
+	  exp_sofar,exp_size,msg_size,
+	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
   gras_free(chunk);
   return no_error;//gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);   

@@ -29,19 +29,19 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport,"TCP transport");
  *** Prototypes 
  ***/
 gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock);
+					gras_socket_t sock);
 gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock);
-gras_error_t gras_trp_tcp_socket_accept(gras_socket_t  *sock,
-					gras_socket_t **dst);
+					gras_socket_t sock);
+gras_error_t gras_trp_tcp_socket_accept(gras_socket_t  sock,
+					gras_socket_t *dst);
 
-void         gras_trp_tcp_socket_close(gras_socket_t *sd);
+void         gras_trp_tcp_socket_close(gras_socket_t sd);
   
-gras_error_t gras_trp_tcp_chunk_send(gras_socket_t *sd,
+gras_error_t gras_trp_tcp_chunk_send(gras_socket_t sd,
 				     const char *data,
 				     long int size);
 
-gras_error_t gras_trp_tcp_chunk_recv(gras_socket_t *sd,
+gras_error_t gras_trp_tcp_chunk_recv(gras_socket_t sd,
 				     char *data,
 				     long int size);
 
@@ -95,11 +95,11 @@ gras_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
 void gras_trp_tcp_exit(gras_trp_plugin_t *plug) {
   DEBUG1("Exit plugin TCP (free %p)", plug->data);
-  free(plug->data);
+  gras_free(plug->data);
 }
 
 gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock){
+					gras_socket_t sock){
   
   struct sockaddr_in addr;
   struct hostent *he;
@@ -152,7 +152,7 @@ gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
  * Open a socket used to receive messages.
  */
 gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock){
+					/* OUT */ gras_socket_t sock){
   int size = sock->bufSize * 1024; 
   int on = 1;
   struct sockaddr_in server;
@@ -200,9 +200,9 @@ gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
 }
 
 gras_error_t
-gras_trp_tcp_socket_accept(gras_socket_t  *sock,
-			   gras_socket_t **dst) {
-  gras_socket_t *res;
+gras_trp_tcp_socket_accept(gras_socket_t  sock,
+			   gras_socket_t *dst) {
+  gras_socket_t res;
   gras_error_t errcode;
   
   struct sockaddr_in peer_in;
@@ -272,7 +272,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  *sock,
   }
 }
 
-void gras_trp_tcp_socket_close(gras_socket_t *sock){
+void gras_trp_tcp_socket_close(gras_socket_t sock){
   gras_trp_tcp_plug_data_t *tcp;
   
   if (!sock) return; /* close only once */
@@ -313,7 +313,7 @@ void gras_trp_tcp_socket_close(gras_socket_t *sock){
  * Send data on a TCP socket
  */
 gras_error_t 
-gras_trp_tcp_chunk_send(gras_socket_t *sock,
+gras_trp_tcp_chunk_send(gras_socket_t sock,
 			const char *data,
 			long int size) {
   
@@ -348,7 +348,7 @@ gras_trp_tcp_chunk_send(gras_socket_t *sock,
  * Receive data on a TCP socket.
  */
 gras_error_t 
-gras_trp_tcp_chunk_recv(gras_socket_t *sock,
+gras_trp_tcp_chunk_recv(gras_socket_t sock,
 			char *data,
 			long int size) {
 
@@ -403,7 +403,7 @@ static int TcpProtoNumber(void) {
    But I fail to find a good internal organization for now. We may want to split 
    raw and regular sockets more efficiently.
 */
-gras_error_t gras_socket_raw_exchange(gras_socket_t *peer,
+gras_error_t gras_socket_raw_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int exp_size,

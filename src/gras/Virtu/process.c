@@ -47,12 +47,12 @@ void
 gras_procdata_exit() {
   gras_procdata_t *pd=gras_procdata_get();
 
-  gras_dynar_free(pd->msg_queue);
-  gras_dynar_free(pd->cbl_list);
-  gras_dynar_free(pd->sockets);
+  gras_dynar_free(&( pd->msg_queue ));
+  gras_dynar_free(&( pd->cbl_list ));
+  gras_dynar_free(&( pd->sockets ));
 }
 
-gras_dynar_t *
+gras_dynar_t 
 gras_socketset_get(void) {
    return gras_procdata_get()->sockets;
 }

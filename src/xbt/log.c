@@ -21,15 +21,15 @@
 
 typedef struct {
   char *catname;
-  gras_log_priority_t thresh;
-} gras_log_setting_t;
+  e_gras_log_priority_t thresh;
+} s_gras_log_setting_t,*gras_log_setting_t;
 
-static gras_dynar_t *gras_log_settings=NULL;
+static gras_dynar_t gras_log_settings=NULL;
 static void _free_setting(void *s) {
-  gras_log_setting_t *set=(gras_log_setting_t*)s;
+  gras_log_setting_t set=(gras_log_setting_t)s;
   if (set) {
     gras_free(set->catname);
-/*    free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
+/*    gras_free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
   }
 }
 
@@ -44,7 +44,7 @@ const char *gras_log_priority_names[8] = {
   "CRITICAL"
 };
 
-gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT) = {
+s_gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT) = {
   0, 0, 0,
   "root", gras_log_priority_uninitialized, 0,
   NULL, 0
@@ -55,9 +55,9 @@ GRAS_LOG_NEW_SUBCATEGORY(xbt,GRAS_LOG_ROOT_CAT,"All XBT categories (gras toolbox
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
 
 
-static void _apply_control(gras_log_category_t* cat) {
+static void _apply_control(gras_log_category_t cat) {
   int cursor;
-  gras_log_setting_t *setting=NULL;
+  gras_log_setting_t setting=NULL;
   int found = 0;
 
   if (!gras_log_settings)
@@ -77,8 +77,8 @@ static void _apply_control(gras_log_category_t* cat) {
       gras_dynar_cursor_rm(gras_log_settings,&cursor);
 
       if (cat->threshold <= gras_log_priority_verbose) {
-	gras_log_event_t _log_ev = 
-	  {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__};
+	s_gras_log_event_t _log_ev = 
+	  {cat,gras_log_priority_verbose,__FILE__,_GRAS_GNUC_FUNCTION,__LINE__};
 	_gras_log_event_log(&_log_ev,
 	         "Apply settings for category '%s': set threshold to %s (=%d)",
 		 cat->name, 
@@ -87,8 +87,8 @@ static void _apply_control(gras_log_category_t* cat) {
     }
   }
   if (!found && cat->threshold <= gras_log_priority_verbose) {
-    gras_log_event_t _log_ev = 
-      {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__};
+    s_gras_log_event_t _log_ev = 
+      {cat,gras_log_priority_verbose,__FILE__,_GRAS_GNUC_FUNCTION,__LINE__};
     _gras_log_event_log(&_log_ev,
 			"Category '%s': inherited threshold = %s (=%d)",
 			cat->name,
@@ -97,11 +97,11 @@ static void _apply_control(gras_log_category_t* cat) {
 
 }
 
-void _gras_log_event_log( gras_log_event_t* ev, const char *fmt, ...) {
-  gras_log_category_t* cat = ev->cat;
+void _gras_log_event_log( gras_log_event_t ev, const char *fmt, ...) {
+  gras_log_category_t cat = ev->cat;
   va_start(ev->ap, fmt);
   while(1) {
-    gras_log_appender_t* appender = cat->appender;
+    gras_log_appender_t appender = cat->appender;
     if (appender != NULL) {
       appender->do_append(appender, ev, fmt);
     }
@@ -113,7 +113,7 @@ void _gras_log_event_log( gras_log_event_t* ev, const char *fmt, ...) {
   va_end(ev->ap);
 }
 
-static void _cat_init(gras_log_category_t* category) {
+static void _cat_init(gras_log_category_t category) {
   if (category == &_GRAS_LOGV(GRAS_LOG_ROOT_CAT)) {
     category->threshold = gras_log_priority_info;
     category->appender = gras_log_default_appender;
@@ -128,23 +128,23 @@ static void _cat_init(gras_log_category_t* category) {
  * initialization. 
  * Also resets threshold to inherited!
  */
-int _gras_log_cat_init(gras_log_priority_t priority,
-		       gras_log_category_t* category) {
+int _gras_log_cat_init(e_gras_log_priority_t priority,
+		       gras_log_category_t   category) {
     
   _cat_init(category);
         
   return priority >= category->threshold;
 }
 
-void gras_log_parent_set(gras_log_category_t* cat,
-			 gras_log_category_t* parent) {
+void gras_log_parent_set(gras_log_category_t cat,
+			 gras_log_category_t parent) {
 
   gras_assert0(cat,"NULL category to be given a parent");
   gras_assert1(parent,"The parent category of %s is NULL",cat->name);
 
   /* unlink from current parent */
   if (cat->threshold != gras_log_priority_uninitialized) {
-    gras_log_category_t** cpp = &parent->firstChild;
+    gras_log_category_t* cpp = &parent->firstChild;
     while(*cpp != cat && *cpp != NULL) {
       cpp = &(*cpp)->nextSibling;
     }
@@ -167,8 +167,8 @@ void gras_log_parent_set(gras_log_category_t* cat,
   cat->isThreshInherited = 1;
 } /* log_setParent */
 
-static void _set_inherited_thresholds(gras_log_category_t* cat) {
-  gras_log_category_t* child = cat->firstChild;
+static void _set_inherited_thresholds(gras_log_category_t cat) {
+  gras_log_category_t child = cat->firstChild;
   for( ; child != NULL; child = child->nextSibling) {
     if (child->isThreshInherited) {
       if (cat != &_GRAS_LOGV(log))
@@ -180,15 +180,15 @@ static void _set_inherited_thresholds(gras_log_category_t* cat) {
   }
 }
 
-void gras_log_threshold_set(gras_log_category_t* cat, 
-			    gras_log_priority_t threshold) {
+void gras_log_threshold_set(gras_log_category_t   cat,
+			    e_gras_log_priority_t threshold) {
   cat->threshold = threshold;
   cat->isThreshInherited = 0;
   _set_inherited_thresholds(cat);
 }
 
-static void _gras_log_parse_setting(const char* control_string,
-				    gras_log_setting_t *set) {
+static void _gras_log_parse_setting(const char*        control_string,
+				    gras_log_setting_t set) {
   const char *name, *dot, *eq;
   
   set->catname=NULL;
@@ -243,9 +243,10 @@ static void _gras_log_parse_setting(const char* control_string,
   DEBUG1("This is for cat '%s'", set->catname);
 }
 
-static gras_error_t _gras_log_cat_searchsub(gras_log_category_t *cat,char *name,gras_log_category_t**whereto) {
+static gras_error_t _gras_log_cat_searchsub(gras_log_category_t cat,char *name,
+					    /*OUT*/gras_log_category_t*whereto) {
   gras_error_t errcode;
-  gras_log_category_t *child;
+  gras_log_category_t child;
   
   if (!strcmp(cat->name,name)) {
     *whereto=cat;
@@ -311,7 +312,7 @@ static void _cleanup_double_spaces(char *s) {
  */
 void gras_log_control_set(const char* control_string) {
   gras_error_t errcode;
-  gras_log_setting_t *set;
+  gras_log_setting_t set;
   char *cs;
   char *p;
   int done = 0;
@@ -320,16 +321,16 @@ void gras_log_control_set(const char* control_string) {
   if (control_string == NULL)
     return;
   if (gras_log_settings == NULL)
-    gras_log_settings = gras_dynar_new(sizeof(gras_log_setting_t*),
+    gras_log_settings = gras_dynar_new(sizeof(gras_log_setting_t),
 				       _free_setting);
 
-  set = gras_new(gras_log_setting_t,1);
+  set = gras_new(s_gras_log_setting_t,1);
   cs=gras_strdup(control_string);
 
   _cleanup_double_spaces(cs);
 
   while (!done) {
-    gras_log_category_t *cat;
+    gras_log_category_t cat;
     
     p=strrchr(cs,' ');
     if (p) {
@@ -347,7 +348,7 @@ void gras_log_control_set(const char* control_string) {
       DEBUG1("push %p to the settings",(void*)set);
       gras_dynar_push(gras_log_settings,&set);
       /* malloc in advance the next slot */
-      set = gras_new(gras_log_setting_t,1);
+      set = gras_new(s_gras_log_setting_t,1);
     } else {
       DEBUG0("Apply directly");
       gras_free(set->catname);
@@ -358,12 +359,12 @@ void gras_log_control_set(const char* control_string) {
   gras_free(cs);
 } 
 
-void gras_log_appender_set(gras_log_category_t* cat, gras_log_appender_t* app) {
+void gras_log_appender_set(gras_log_category_t cat, gras_log_appender_t app) {
   cat->appender = app;
 }
 
 void gras_log_exit(void) {
   VERB0("Exiting log");
-  gras_dynar_free(gras_log_settings);
+  gras_dynar_free(&gras_log_settings);
   VERB0("Exited log");
 }

@@ -32,10 +32,10 @@ GRAS_LOG_DEFAULT_CATEGORY(transport);
  */
 gras_error_t 
 gras_trp_select(double timeout,
-		gras_socket_t **dst) {
+		gras_socket_t *dst) {
 
   gras_error_t errcode;
-  gras_dynar_t *sockets= gras_socketset_get();
+  gras_dynar_t sockets= gras_socketset_get();
   int done = -1;
   double wakeup = gras_os_time() + 1000000*timeout;
   double now = 0;
@@ -47,8 +47,8 @@ gras_trp_select(double timeout,
   fd_set FDS;
   int ready; /* return of select: number of socket ready to be serviced */
 
-  gras_socket_t *sock_iter; /* iterating over all sockets */
-  int cursor;               /* iterating over all sockets */
+  gras_socket_t sock_iter; /* iterating over all sockets */
+  int cursor;              /* iterating over all sockets */
 
   *dst=NULL;
   while (done == -1) {
@@ -128,7 +128,7 @@ gras_trp_select(double timeout,
        if (   sock_iter->accepting
 	   && sock_iter->plugin->socket_accept) { 
 	 /* not a socket but an ear. accept on it and serve next socket */
-	 gras_socket_t *accepted;
+	 gras_socket_t accepted;
 
 	 TRY(sock_iter->plugin->socket_accept(sock_iter,&accepted));
 	 accepted->raw = sock_iter->raw;

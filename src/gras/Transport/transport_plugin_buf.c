@@ -22,22 +22,22 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
  *** Prototypes 
  ***/
 gras_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock);
+					gras_socket_t sock);
 gras_error_t gras_trp_buf_socket_server(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock);
-gras_error_t gras_trp_buf_socket_accept(gras_socket_t  *sock,
-					gras_socket_t **dst);
+					gras_socket_t sock);
+gras_error_t gras_trp_buf_socket_accept(gras_socket_t sock,
+					gras_socket_t *dst);
 
-void         gras_trp_buf_socket_close(gras_socket_t *sd);
+void         gras_trp_buf_socket_close(gras_socket_t sd);
   
-gras_error_t gras_trp_buf_chunk_send(gras_socket_t *sd,
+gras_error_t gras_trp_buf_chunk_send(gras_socket_t sd,
 				     const char *data,
 				     long int size);
 
-gras_error_t gras_trp_buf_chunk_recv(gras_socket_t *sd,
+gras_error_t gras_trp_buf_chunk_recv(gras_socket_t sd,
 				     char *data,
 				     long int size);
-gras_error_t gras_trp_buf_flush(gras_socket_t  *sock);
+gras_error_t gras_trp_buf_flush(gras_socket_t sock);
 
 
 /***
@@ -64,7 +64,7 @@ struct gras_trp_bufdata_{
   int buffsize;
 };
 
-void gras_trp_buf_init_sock(gras_socket_t *sock) {
+void gras_trp_buf_init_sock(gras_socket_t sock) {
   gras_trp_bufdata_t *data=gras_new(gras_trp_bufdata_t,1);
   
   GRAS_IN;
@@ -112,7 +112,7 @@ gras_trp_buf_setup(gras_trp_plugin_t *plug) {
 }
 
 gras_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock){
+					/* OUT */ gras_socket_t sock){
   gras_error_t errcode;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)self->data)->super;
 
@@ -130,7 +130,7 @@ gras_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
  * Open a socket used to receive messages.
  */
 gras_error_t gras_trp_buf_socket_server(gras_trp_plugin_t *self,
-					/* OUT */ gras_socket_t *sock){
+					/* OUT */ gras_socket_t sock){
   gras_error_t errcode;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)self->data)->super;
 
@@ -142,8 +142,8 @@ gras_error_t gras_trp_buf_socket_server(gras_trp_plugin_t *self,
 }
 
 gras_error_t
-gras_trp_buf_socket_accept(gras_socket_t  *sock,
-			   gras_socket_t **dst) {
+gras_trp_buf_socket_accept(gras_socket_t  sock,
+			   gras_socket_t *dst) {
   gras_error_t errcode;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)sock->plugin->data)->super;
       
@@ -154,7 +154,7 @@ gras_trp_buf_socket_accept(gras_socket_t  *sock,
   return no_error;
 }
 
-void gras_trp_buf_socket_close(gras_socket_t *sock){
+void gras_trp_buf_socket_close(gras_socket_t sock){
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)sock->plugin->data)->super;
   gras_trp_bufdata_t *data=sock->bufdata;
 
@@ -162,10 +162,10 @@ void gras_trp_buf_socket_close(gras_socket_t *sock){
   if (data->in.size || data->out.size)
     gras_trp_buf_flush(sock);
   if (data->in.data)
-    free(data->in.data);
+    gras_free(data->in.data);
   if (data->out.data)
-    free(data->out.data);
-  free(data);
+    gras_free(data->out.data);
+  gras_free(data);
 
   super->socket_close(sock);
 }
@@ -176,7 +176,7 @@ void gras_trp_buf_socket_close(gras_socket_t *sock){
  * Send data on a TCP socket
  */
 gras_error_t 
-gras_trp_buf_chunk_send(gras_socket_t *sock,
+gras_trp_buf_chunk_send(gras_socket_t sock,
 			const char *chunk,
 			long int size) {
 
@@ -217,7 +217,7 @@ gras_trp_buf_chunk_send(gras_socket_t *sock,
  * Receive data on a TCP socket.
  */
 gras_error_t 
-gras_trp_buf_chunk_recv(gras_socket_t *sock,
+gras_trp_buf_chunk_recv(gras_socket_t sock,
 			char *chunk,
 			long int size) {
 
@@ -269,7 +269,7 @@ gras_trp_buf_chunk_recv(gras_socket_t *sock,
  * Make sure the data is sent
  */
 gras_error_t 
-gras_trp_buf_flush(gras_socket_t *sock) {
+gras_trp_buf_flush(gras_socket_t sock) {
   gras_error_t errcode;
   uint32_t size;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)sock->plugin->data)->super;

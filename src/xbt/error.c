@@ -34,3 +34,11 @@ const char *gras_error_name(gras_error_t errcode)  {
    }
 }
 
+GRAS_LOG_EXTERNAL_CATEGORY(gras);
+GRAS_LOG_DEFAULT_CATEGORY(gras);
+  
+void gras_die (const char *msg) {
+   CRITICAL1("%s",msg);
+   gras_abort();
+}
+

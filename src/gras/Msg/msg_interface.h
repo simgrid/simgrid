@@ -15,13 +15,13 @@
 
 /* gras_msg_t is dereferenced to be stored in procdata, living in Virtu */
 typedef struct {
-  gras_socket_t  *expeditor;
-  gras_msgtype_t *type;
+  gras_socket_t   expeditor;
+  gras_msgtype_t  type;
   void           *payload;
   int             payload_size;
 } gras_msg_t;
 
-gras_error_t gras_msg_send_namev(gras_socket_t *sock, 
+gras_error_t gras_msg_send_namev(gras_socket_t  sock, 
 				 const char    *namev, 
 				 void          *payload);
 

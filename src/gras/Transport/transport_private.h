@@ -34,7 +34,7 @@
  */
 typedef struct gras_trp_bufdata_ gras_trp_bufdata_t;
 
-struct s_gras_socket  {
+typedef struct s_gras_socket  {
   gras_trp_plugin_t *plugin;
     
   int incoming :1; /* true if we can read from this sock */
@@ -53,10 +53,10 @@ struct s_gras_socket  {
 
   /* buffer plugin specific data. Yeah, C is not OO, so I got to trick */
   gras_trp_bufdata_t *bufdata; 
-};
+}s_gras_socket_t;
 	
 void gras_trp_socket_new(int incomming,
-			 gras_socket_t **dst);
+			 gras_socket_t *dst);
 
 /* The drivers */
 typedef gras_error_t (*gras_trp_setup_t)(gras_trp_plugin_t *dst);
@@ -84,11 +84,11 @@ gras_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
 
 */
 
-void gras_trp_buf_init_sock(gras_socket_t *sock);
+void gras_trp_buf_init_sock(gras_socket_t sock);
 
 
 /* Data exchange over raw sockets */
-gras_error_t gras_socket_raw_exchange(gras_socket_t *peer,
+gras_error_t gras_socket_raw_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int expSize,

@@ -28,7 +28,7 @@ GRAS_LOG_DEFAULT_CATEGORY(transport);
  */
 gras_error_t 
 gras_trp_select(double timeout, 
-		gras_socket_t **dst) {
+		gras_socket_t *dst) {
 
   gras_error_t errcode;
   double startTime=gras_os_time();
@@ -36,7 +36,7 @@ gras_trp_select(double timeout,
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t *trp;
 
-  gras_socket_t *sock_iter; /* iterating over all sockets */
+  gras_socket_t sock_iter; /* iterating over all sockets */
   int cursor,cpt;
 
   gras_sg_portrec_t pr;     /* iterating to find the chanel of expeditor */

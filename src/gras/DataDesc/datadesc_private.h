@@ -36,7 +36,7 @@
  */
 #define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
-extern gras_set_t *gras_datadesc_set_local;
+extern gras_set_t gras_datadesc_set_local;
 void gras_ddt_freev(void *ddt);
 /*******************************************
  * Descriptions of all known architectures *
@@ -108,12 +108,12 @@ typedef struct s_gras_dd_cat_field {
 
   char 	   *name;
   long int  offset[gras_arch_count];
-  gras_datadesc_type_t *type;
+  gras_datadesc_type_t type;
   
   gras_datadesc_type_cb_void_t pre;
   gras_datadesc_type_cb_void_t post;
 
-} gras_dd_cat_field_t;
+} s_gras_dd_cat_field_t,*gras_dd_cat_field_t;
 
 void gras_dd_cat_field_free(void *f);
 
@@ -142,7 +142,7 @@ typedef struct s_gras_dd_cat_scalar {
  * Specific fields of a struct
  */
 typedef struct s_gras_dd_cat_struct {
-  gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
+  gras_dynar_t fields; /* elm type = gras_dd_cat_field_t */
   int closed; /* gras_datadesc_declare_struct_close() was called */
 } gras_dd_cat_struct_t;
 
@@ -153,7 +153,7 @@ typedef struct s_gras_dd_cat_struct {
  */
 typedef struct s_gras_dd_cat_union {
   gras_datadesc_type_cb_int_t selector;
-  gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
+  gras_dynar_t fields; /* elm type = gras_dd_cat_field_t */
   int closed; /* gras_datadesc_declare_union_close() was called */
 } gras_dd_cat_union_t;
 
@@ -163,7 +163,7 @@ typedef struct s_gras_dd_cat_union {
  * Specific fields of a reference
  */
 typedef struct s_gras_dd_cat_ref {
-  gras_datadesc_type_t     *type;
+  gras_datadesc_type_t      type;
 
   /* callback used to return the referenced type number  */
   gras_datadesc_selector_t  selector;
@@ -176,7 +176,7 @@ typedef struct s_gras_dd_cat_ref {
  * Specific fields of an array
  */
 typedef struct s_gras_dd_cat_array {
-  gras_datadesc_type_t *type;
+  gras_datadesc_type_t  type;
 
   /* element_count == 0 means dynamically defined */
   unsigned long int           fixed_size;
@@ -221,7 +221,7 @@ union u_gras_datadesc_category {
  *
  * Type descriptor.
  */
-struct s_gras_datadesc_type {
+typedef struct s_gras_datadesc_type {
   /* headers for the data set */
   unsigned int                         code;
   char                                *name;
@@ -240,14 +240,14 @@ struct s_gras_datadesc_type {
   gras_datadesc_type_cb_void_t         recv;
    
   int                                  cycle; /* true if the datatype may contain cycle */
-};
+} s_gras_datadesc_type_t;
 
 /***************************
  * constructor/desctructor *
  ***************************/
 void gras_datadesc_free(gras_datadesc_type_t *type);
 
-gras_datadesc_type_t *
+gras_datadesc_type_t 
   gras_datadesc_scalar(const char                       *name,
 		       gras_ddt_scalar_type_t           type,
 		       enum e_gras_dd_scalar_encoding   encoding);
@@ -255,14 +255,14 @@ gras_datadesc_type_t *
 /****************************************************
  * Callback persistant state constructor/destructor *
  ****************************************************/
-gras_cbps_t *gras_cbps_new(void);
-void gras_cbps_free(gras_cbps_t **state);
+gras_cbps_t gras_cbps_new(void);
+void gras_cbps_free(gras_cbps_t *state);
 
 /***************
  * Convertions *
  ***************/
 gras_error_t
-gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
+gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 		    int r_arch, 
 		    void *src, void *dst);
 

@@ -23,13 +23,13 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
 /***
  *** Prototypes 
  ***/
-void         gras_trp_file_close(gras_socket_t *sd);
+void         gras_trp_file_close(gras_socket_t sd);
   
-gras_error_t gras_trp_file_chunk_send(gras_socket_t *sd,
+gras_error_t gras_trp_file_chunk_send(gras_socket_t sd,
 				      const char *data,
 				      long int size);
 
-gras_error_t gras_trp_file_chunk_recv(gras_socket_t *sd,
+gras_error_t gras_trp_file_chunk_recv(gras_socket_t sd,
 				      char *data,
 				      long int size);
 
@@ -75,7 +75,7 @@ gras_trp_file_setup(gras_trp_plugin_t *plug) {
  */
 gras_error_t
 gras_socket_client_from_file(const char*path,
-			     /* OUT */ gras_socket_t **dst) {
+			     /* OUT */ gras_socket_t *dst) {
   gras_error_t errcode;
   gras_trp_plugin_t *trp;
 
@@ -118,7 +118,7 @@ gras_socket_client_from_file(const char*path,
  */
 gras_error_t
 gras_socket_server_from_file(const char*path,
-			     /* OUT */ gras_socket_t **dst) {
+			     /* OUT */ gras_socket_t *dst) {
   gras_error_t errcode;
   gras_trp_plugin_t *trp;
 
@@ -152,7 +152,7 @@ gras_socket_server_from_file(const char*path,
   return no_error;
 }
 
-void gras_trp_file_close(gras_socket_t *sock){
+void gras_trp_file_close(gras_socket_t sock){
   gras_trp_file_plug_data_t *data;
   
   if (!sock) return; /* close only once */
@@ -182,7 +182,7 @@ void gras_trp_file_close(gras_socket_t *sock){
  * Send data on a file pseudo-socket
  */
 gras_error_t 
-gras_trp_file_chunk_send(gras_socket_t *sock,
+gras_trp_file_chunk_send(gras_socket_t sock,
 			 const char *data,
 			 long int size) {
   
@@ -217,7 +217,7 @@ gras_trp_file_chunk_send(gras_socket_t *sock,
  * Receive data on a file pseudo-socket.
  */
 gras_error_t 
-gras_trp_file_chunk_recv(gras_socket_t *sock,
+gras_trp_file_chunk_recv(gras_socket_t sock,
 			char *data,
 			long int size) {
 

@@ -16,18 +16,18 @@
 /***
  *** Main user functions
  ***/
-gras_error_t gras_trp_chunk_send(gras_socket_t *sd,
+gras_error_t gras_trp_chunk_send(gras_socket_t sd,
 				 char *data,
 				 long int size);
-gras_error_t gras_trp_chunk_recv(gras_socket_t *sd,
+gras_error_t gras_trp_chunk_recv(gras_socket_t sd,
 				 char *data,
 				 long int size);
-gras_error_t gras_trp_flush(gras_socket_t *sd);
+gras_error_t gras_trp_flush(gras_socket_t sd);
 
 /* Find which socket needs to be read next */
 gras_error_t 
 gras_trp_select(double timeout,
-		gras_socket_t **dst);
+		gras_socket_t *dst);
 
 
 /***
@@ -45,27 +45,27 @@ struct gras_trp_plugin_ {
      before call to socket_client/server. 
      Retrive the info you need from there. */
   gras_error_t (*socket_client)(gras_trp_plugin_t *self,
-				/* OUT */ gras_socket_t *dst);
+				gras_socket_t      dst);
   gras_error_t (*socket_server)(gras_trp_plugin_t *self,
-				/* OUT */ gras_socket_t *dst);
+				gras_socket_t      dst);
    
-  gras_error_t (*socket_accept)(gras_socket_t  *sock,
-				/* OUT */gras_socket_t **dst);
+  gras_error_t (*socket_accept)(gras_socket_t  sock,
+				gras_socket_t *dst);
    
    
    /* socket_close() is responsible of telling the OS that the socket is over,
     but should not free the socket itself (beside the specific part) */
-  void         (*socket_close)(gras_socket_t *sd);
+  void         (*socket_close)(gras_socket_t sd);
     
-  gras_error_t (*chunk_send)(gras_socket_t *sd,
+  gras_error_t (*chunk_send)(gras_socket_t sd,
 			     const char *data,
 			     long int size);
-  gras_error_t (*chunk_recv)(gras_socket_t *sd,
-			     char *Data,
+  gras_error_t (*chunk_recv)(gras_socket_t sd,
+			     char *data,
 			     long int size);
 
   /* flush has to make sure that the pending communications are achieved */
-  gras_error_t (*flush)(gras_socket_t *sd);
+  gras_error_t (*flush)(gras_socket_t sd);
 
   void          *data; /* plugin-specific data */
  

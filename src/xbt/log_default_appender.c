@@ -21,7 +21,7 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log_app,log,"default logging handler");
 
 extern const char *gras_log_priority_names[7];
 
-static void append_file(gras_log_appender_t* this, gras_log_event_t* ev,
+static void append_file(gras_log_appender_t this, gras_log_event_t ev,
 			const char *fmt);
 
 /*
@@ -31,13 +31,13 @@ struct gras_log_appender_file_s {
 };
 */
 
-static gras_log_appender_t gras_log_appender_file = { append_file, NULL } ;
+static s_gras_log_appender_t gras_log_appender_file = { append_file, NULL } ;
 /* appender_data=FILE* */
 
-gras_log_appender_t* gras_log_default_appender  = &gras_log_appender_file;
+gras_log_appender_t gras_log_default_appender  = &gras_log_appender_file;
 
-static void append_file(gras_log_appender_t* this, 
-			gras_log_event_t* ev, 
+static void append_file(gras_log_appender_t this,
+			gras_log_event_t ev, 
 			const char *fmt) {
 
   /* TODO: define a format field in struct for timestamp, etc.
