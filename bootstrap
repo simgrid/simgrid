@@ -38,10 +38,15 @@ else
 fi
 
 echo "************"
-echo "* Running ./configure $configure_args..."
+echo "* And now:"
 echo "************"
-./configure $configure_args || exit 1
 
-echo Now type \`make\' to compile the package
+echo " To configure it as a maintainer, run:"
+echo "   ./configure $configure_args"
+
+#echo "************"
+#echo ./configure $configure_args 
+
+#echo Now type \`make\' to compile the package
 
 
