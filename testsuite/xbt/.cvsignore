@@ -10,3 +10,4 @@ trp_tcp_client trp_tcp_server trp_tcp_usage
 datadesc_usage
 datadesc_structs.c
 datadesc_usage.out
+.dirstamp
