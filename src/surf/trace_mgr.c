@@ -52,8 +52,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   }
 
   if ((f = fopen(filename, "r")) == NULL) {
-    CRITICAL1("Cannot open file '%s'\n", filename);
-    xbt_abort();
+    xbt_assert1(0,"Cannot open file '%s'", filename);
   }
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
@@ -67,9 +66,8 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
     if (sscanf(line, "PERIODICITY " XBT_HEAP_FLOAT_T "\n", &(periodicity))
 	== 1) {
       if (periodicity <= 0) {
-	CRITICAL2("%s,%d: Syntax error. Periodicity has to be positive\n",
-		  filename, linecount);
-	xbt_abort();
+	xbt_assert2(0,"%s,%d: Syntax error. Periodicity has to be positive",
+		    filename, linecount);
       }
       continue;
     }
@@ -77,23 +75,19 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
     if (sscanf
 	(line, XBT_HEAP_FLOAT_T " " XBT_MAXMIN_FLOAT_T "\n", &event.delta,
 	 &event.value) != 2) {
-      CRITICAL2("%s,%d: Syntax error\n", filename, linecount);
-      xbt_abort();
+      xbt_assert2(0,"%s,%d: Syntax error", filename, linecount);
     }
 
     if (last_event) {
       if ((last_event->delta = event.delta - last_event->delta) <= 0) {
-	CRITICAL2("%s,%d: Invalid trace value, events have to be sorted\n",
-		  filename, linecount);
-	xbt_abort();
+	xbt_assert2(0,"%s,%d: Invalid trace value, events have to be sorted",
+		    filename, linecount);
       }
     }
     xbt_dynar_push(trace->event_list, &event);
     last_event = xbt_dynar_get_ptr(trace->event_list,
 				   xbt_dynar_length(trace->event_list) -
 				   1);
-/*     printf(XBT_HEAP_FLOAT_T " " XBT_MAXMIN_FLOAT_T "\n", event.delta, */
-/* 	   event.value); */
   }
 
   if (periodicity > 0) {
@@ -132,8 +126,8 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t t
   trace_event->idx = offset;
   trace_event->resource = resource;
 
-  if (trace_event->idx >= xbt_dynar_length(trace->event_list))
-    xbt_abort();
+  xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
+	      "You're refering an event that does not exist!");
 
   xbt_heap_push(history->heap, trace_event, start_time);
 
