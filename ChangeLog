@@ -3,6 +3,8 @@
   - Some documentation cleanups
   - remove the useless last argument of msgtype_declare
   - rename the Virtu functions to fit into the 'os' namespace
+  - move headers src/include -> src/include/gras/ and stop fooling with 
+    gras -> . symbolic link
 
 2004-07-19 Martin Quinson
   Version 0.1.1

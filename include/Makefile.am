@@ -1,14 +1,15 @@
 SUBDIRS=modules
-EXTRA_DIST=    \
-	gras.h \
-	log.h error.h \
-	module.h \
-	dynar.h dict.h set.h \
-	config.h \
+include_HEADERS = gras.h
+nobase_include_HEADERS = \
+	gras/log.h gras/error.h \
+	gras/module.h \
+	gras/dynar.h gras/dict.h gras/set.h \
+	gras/config.h \
 	\
-	datadesc.h transport.h virtu.h cond.h process.h \
+	gras/datadesc.h gras/transport.h \
+	gras/virtu.h gras/cond.h gras/process.h \
 	\
-	messages.h \
+	gras/messages.h \
 	\
-	core.h
-DISTCLEANFILES = gras
+	gras/core.h
+
