@@ -103,44 +103,9 @@ gras_datadesc_type_t
   res = gras_ddt_new(name);
 
   for (arch = 0; arch < gras_arch_count; arch ++) {
-#if 0
-    long int sz;
-    long int mask;
-#endif
     res->size[arch]         = gras_arches[arch].sizeofs[type];
     res->alignment[arch]    = gras_arches[arch].boundaries[type];
     res->aligned_size[arch] = aligned(res->size[arch], res->alignment[arch]);
-/* FIXME: kill the following after discution with Oli */
-#if 0
-    sz = res->size[arch];
-    mask = sz;
-    
-    /* just in case you wonder, x>>1 == x/2 on all architectures when x>=0
-       and a size is always>=0 */
-    
-    /* make sure mask have all the bits under the biggest one of size set to 1
-       Example: size=000100101 => mask=0000111111 */
-    while ((sz >>= 1)) {
-      mask |= sz;
-    } 
-    
-    if (res->size[arch] & (mask >> 1)) { /* if size have bits to one beside its biggest */
-      /* size is not a power of 2 */
-      /* alignment= next power of 2 after size */
-      res->alignment[arch] = (res->size[arch] & ~(mask >> 1)) << 1;
-      xbt_assert0(res->alignment[arch] != 0,
-		   "scalar type too large");
-      
-      res->aligned_size[arch] = aligned(res->size[arch], res->alignment[arch]);
-      xbt_assert0 (res->aligned_size[arch] >= 0,
-		    "scalar type too large");
-      
-    } else {
-      /* size is a power of 2, life is great */
-      res->alignment[arch]       = res->size[arch];
-      res->aligned_size[arch]    = res->size[arch];
-    }
-#endif     
   }
 
   res->category_code                 = e_gras_datadesc_type_cat_scalar;
