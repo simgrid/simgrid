@@ -11,6 +11,7 @@ nobase_include_HEADERS = \
 	xbt/config.h \
 	\
 	surf/maxmin.h \
+	surf/trace_mgr.h \
 	\
 	gras/core.h \
 	gras/datadesc.h gras/transport.h \

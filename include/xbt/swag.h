@@ -8,7 +8,8 @@
    what you are doing. */
 
 /* This type should be added to a type that is to be used in such a swag */
-/* Whenever a new object with this struct is created, all fields have to be swag to NULL */
+/* Whenever a new object with this struct is created, all fields have
+   to be set to NULL */
 
 typedef struct xbt_swag_hookup {
   void *next;
@@ -40,6 +41,6 @@ static __inline__ void *xbt_swag_getFirst(xbt_swag_t swag)
 #define xbt_swag_offset(var,field) ((char *)&( (var).field ) - (char *)&(var))
 
 #define xbt_swag_foreach(obj,swag)                            \
-   for((obj)=xbt_swag_getFirst((swag));                           \
+   for((obj)=xbt_swag_getFirst((swag));                       \
        (obj)!=NULL;                                           \
        (obj)=xbt_swag_getNext((obj),(swag)->offset))

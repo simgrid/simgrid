@@ -36,11 +36,22 @@ void xbt_heap_free(xbt_heap_t H)
 {
   int i;
   if (H->free)
-    for (i = 0; i < H->size; i++)
+    for (i = 0; i < H->count; i++)
       H->free(H->items[i].content);
   xbt_free(H->items);
   xbt_free(H);
   return;
+}
+
+/**
+ * xbt_heap_size:
+ * @H: the heap we're working on
+ *
+ * returns the number of elements in the heap
+ */
+int xbt_heap_size(xbt_heap_t H)
+{
+  return (H->count);
 }
 
 /**
@@ -80,7 +91,12 @@ void xbt_heap_push(xbt_heap_t H, void *content, xbt_heap_float_t key)
  */
 void *xbt_heap_pop(xbt_heap_t H)
 {
-  void *max = CONTENT(H, 0);
+  void *max ;
+
+  if(H->count==0) return NULL;
+
+  max = CONTENT(H, 0);
+
   H->items[0] = H->items[(H->count) - 1];
   (H->count)--;
   xbt_heap_maxHeapify(H);
@@ -101,6 +117,7 @@ void *xbt_heap_pop(xbt_heap_t H)
  */
 xbt_heap_float_t xbt_heap_maxkey(xbt_heap_t H)
 {
+  if(H->count==0) abort();
   return KEY(H, 0);
 }
 
@@ -113,6 +130,7 @@ xbt_heap_float_t xbt_heap_maxkey(xbt_heap_t H)
  */
 void *xbt_heap_maxcontent(xbt_heap_t H)
 {
+  if(H->count==0) abort();
   return CONTENT(H, 0);
 }
 

@@ -7,7 +7,9 @@ MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little64 gras/datadesc.big32 gras/datadesc.big64 \
   gras/datadesc.aix \
-  gras/mk_datadesc_structs.pl
+  gras/mk_datadesc_structs.pl \
+  surf/trace_A.txt surf/trace_B.txt
+
 
 # Test stuff
 
@@ -27,7 +29,7 @@ RL_tests =                                              \
 	gras/datadesc_usage
 
 SG_tests =                                              \
-	surf/maxmin_usage
+	surf/maxmin_usage surf/trace_usage
 
 check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
@@ -59,7 +61,8 @@ xbt_config_usage_LDADD=       $(LDADD_UTILS)
 
 xbt_heap_bench_LDADD=         $(LDADD_UTILS)
 
-surf_maxmin_usage_LDADD=         $(LDADD_UTILS)
+surf_maxmin_usage_LDADD=      $(LDADD_UTILS)
+surf_trace_usage_LDADD=       $(LDADD_UTILS)
 
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)

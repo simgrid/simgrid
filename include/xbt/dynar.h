@@ -17,10 +17,6 @@ BEGIN_DECL
 
 typedef struct xbt_dynar_s *xbt_dynar_t;
 
-/* pointer to a function freeing something */
-typedef   void (void_f_ppvoid_t)(void**);
-typedef   void (void_f_pvoid_t) (void*);
-
 xbt_dynar_t  xbt_dynar_new(unsigned long elm_size, 
 			     void_f_pvoid_t *free_func);
 void          xbt_dynar_free(xbt_dynar_t *dynar);

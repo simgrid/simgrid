@@ -1,0 +1,32 @@
+/* Authors: Arnaud Legrand                                                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+   under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef _SURF_TMGR_PRIVATE_H
+#define _SURF_TMGR_PRIVATE_H
+
+#include "xbt/swag.h"
+#include "xbt/heap.h"
+#include "surf/trace_mgr.h"
+
+typedef struct tmgr_event {
+  xbt_heap_float_t delta;
+  xbt_maxmin_float_t value;
+} s_tmgr_event_t, *tmgr_event_t;
+
+typedef struct tmgr_trace {
+  xbt_dynar_t event_list;
+} s_tmgr_trace_t;
+
+typedef struct tmgr_trace_event {
+  tmgr_trace_t trace;
+  int idx;
+  void *resource;
+} s_tmgr_trace_event_t, *tmgr_trace_event_t;
+
+typedef struct tmgr_history {
+  xbt_heap_t heap;
+} s_tmgr_history_t;
+
+#endif				/* _SURF_TMGR_PRIVATE_H */

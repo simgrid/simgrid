@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef _SURF_MAXMIN_PRIVATE_H
+#define _SURF_MAXMIN_PRIVATE_H
+
 #include "surf/maxmin.h"
 #include "xbt/swag.h"
 
@@ -72,5 +75,4 @@ typedef struct lmm_system {
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
 static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst);
 
-/* #define UNDEFINED_VALUE -1.0 */
-#define UNUSED_CONSTRAINT -2.0
+#endif				/* _SURF_MAXMIN_PRIVATE_H */

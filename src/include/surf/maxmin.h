@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef _SURF_MAXMIN_H
+#define _SURF_MAXMIN_H
+
 typedef long double xbt_maxmin_float_t;
 #define XBT_MAXMIN_FLOAT_T "%Lg"	/* for printing purposes */
 
@@ -38,3 +41,4 @@ void lmm_update_constraint_bound(lmm_constraint_t cnst,
 				 xbt_maxmin_float_t bound);
 
 void lmm_solve(lmm_system_t sys);
+#endif				/* _SURF_MAXMIN_H */

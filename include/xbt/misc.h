@@ -44,6 +44,10 @@ typedef struct {
    int port;
 } xbt_host_t;
 
+/* pointer to a function freeing something */
+typedef   void (void_f_ppvoid_t)(void**);
+typedef   void (void_f_pvoid_t) (void*);
+
 END_DECL
 
 #endif /* XBT_MISC_H */
