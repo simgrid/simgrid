@@ -30,15 +30,15 @@ dynar_string_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
 dict_usage_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 dict_crash_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-multidict_crash_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+#multidict_crash_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
 set_usage_LDADD=          $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
 config_usage_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
 
-gs_example_send_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-gs_example_receive_LDADD= $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+#gs_example_send_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+#gs_example_receive_LDADD= $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
 TESTS=run_tests
 
