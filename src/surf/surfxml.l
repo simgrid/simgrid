@@ -1,8 +1,8 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/01/27 07:41:02.
+ * Generated 2005/02/10 12:28:10.
  *
  * This program was generated with the FleXML XML processor generator,
- * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
+ * (Id: flexml.pl,v 1.38 2005/02/10 11:13:51 mquinson Exp).
  * Copyright © 1999 Kristoffer Rose.  All rights reserved.
  *
  * You can redistribute and/or modify this program provided the following
@@ -25,9 +25,9 @@
 
 /* Version strings. */
 const char rcs_flexml_skeleton[] =
- "$" "Id: skel,v 1.19 2005/01/05 18:49:27 legranda Exp $";
+ "$" "Id: skel,v 1.22 2005/02/10 11:18:26 mquinson Exp $";
 const char rcs_flexml[] =
- "$" "Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp $";
+ "$" "Id: flexml.pl,v 1.38 2005/02/10 11:13:51 mquinson Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -39,11 +39,9 @@ const char rcs_flexml[] =
 
 /* Generated definitions. */
 #define FLEXML_yylineno
-#define FLEXML_BUFFERSTACKSIZE 10000000
+#define FLEXML_BUFFERSTACKSIZE 100000
 
 /* XML processor api. */
-#include "surf/surfxml.h"
-
 /* FleXML-provided data. */
 const char* pcdata;
 AT_network_link_bandwidth A_network_link_bandwidth;
@@ -95,12 +93,13 @@ AT_network_link_bandwidth_file A_network_link_bandwidth_file;
 
 #define FAIL	return fail
 static int fail(const char*, ...);
+const char * parse_err_msg(void);
 
 /* Text buffer stack handling. */
 char bufferstack[FLEXML_BUFFERSTACKSIZE];
 char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
-  struct BufferLast_s *old; char* saved; char new[1];
+  struct BufferLast_s *old; char* saved; char new1[1];
 } BufferLast;
 BufferLast* last = (BufferLast*)0;
 char* next = bufferstack;
@@ -117,7 +116,7 @@ static void bufferliteral(char c, const char** pp, char* text)
   while (++s<e) {
     if (isspace(*s)) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
     else BUFFERPUTC(*s);
-  } 
+  }
   BUFFERDONE;
 }
 
@@ -128,7 +127,7 @@ static void pushbuffer(char* p)
   assert(next < limit);
   l->old = last;
   l->saved = p;
-  next = l->new;
+  next = l->new1;
   last = l;
 }
 
@@ -212,9 +211,9 @@ const char* *statenames=NULL;
 %%
 
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
- SET(PROLOG); 
+ SET(PROLOG);
   /* FleXML_init */
-  if(!statenames) statenames=calloc(IMPOSSIBLE,sizeof(char*));
+  if(!statenames) statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
   statenames[PROLOG] = NULL;
   statenames[DOCTYPE] = NULL;
   statenames[EPILOG] = NULL;
@@ -287,7 +286,7 @@ const char* *statenames=NULL;
  /* PROLOG: determine root element and process it. */
 
 <PROLOG>{
- "<?xml"({S}version{Eq}(\'{VersionNum}\'|\"{VersionNum}\"))?"?>" SET(DOCTYPE);
+ "<?xml"({S}version{Eq}(\'{VersionNum}\'|\"{VersionNum}\"))?({S}encoding{Eq}(\'[^']*\'|\"[^"]*\"))?"?>" SET(DOCTYPE); 
  "<?xml"[^>]*">" FAIL("Bad declaration %s.",yytext);
 }
 
@@ -730,7 +729,7 @@ const char* *statenames=NULL;
  /* EPILOG: after the root element. */
 
 <EPILOG>{
- . 		FAIL("Unexpected character `%c' after document.", yytext[0]);
+ . {SET(PROLOG); yyless(0); return -1;}
  <<EOF>> 	SUCCEED;
 }
 
@@ -778,15 +777,16 @@ const char* *statenames=NULL;
 
 <CDATA>{
  "]""]>"		LEAVE;
- "]""]"		BUFFERPUTC(yytext[0]); BUFFERPUTC(yytext[1]);
+ /* "]""]"		BUFFERPUTC(yytext[0]); BUFFERPUTC(yytext[1]); */
  .		BUFFERPUTC(yytext[0]);
  <<EOF>>	FAIL("EOF in CDATA section.");
 }
 
  /* Impossible rules to avoid warnings from flex(1). */
-
-<INITIAL,IMPOSSIBLE>{
- .|[\n] FAIL("The Impossible Happened: INITIAL or IMPOSSIBLE state entered?");
+ /* Ideally, this should be replaced by code in flexml.pl that
+    generates just the states not covered by other rules. */
+<*>{
+ .|[\n] FAIL("Syntax error on character `%c'.", yytext[0]);
 }
 
 %%
@@ -826,17 +826,42 @@ static void debug_set(int state, const char* statename) {
 }
 #endif
 
+enum {flexml_max_err_msg_size = 512};
+
+static char flexml_err_msg[flexml_max_err_msg_size];
+const char * parse_err_msg()
+{
+    return flexml_err_msg;
+}
+
+static void reset_parse_err_msg()
+{
+    flexml_err_msg[0] = '\0';
+}
+
 
 static int fail(const char* fmt, ...)
 {
-  va_list ap; va_start(ap, fmt);
+    int chars_left, used;
+    va_list ap; va_start(ap, fmt);
 #ifdef FLEXML_yylineno
-  fprintf(stderr, "Invalid XML (XML input line %d, state %d): ", yylineno, YY_START);
+    used = sprintf(flexml_err_msg,
+		   "Invalid XML (XML input line %d, state %d): ",
+		   yylineno, YY_START);
 #else
-  fprintf(stderr, "Invalid XML (state %d): ",YY_START);
+    used = sprintf(flexml_err_msg,
+		   "Invalid XML (state %d): ",
+		   YY_START);
 #endif
-  vfprintf(stderr, fmt, ap);
-  fprintf(stderr, "\n");
-  va_end(ap);
-  return 1;
+    chars_left = flexml_max_err_msg_size - used - 1;
+    vsnprintf(flexml_err_msg + used, chars_left, fmt, ap);
+    va_end(ap);
+
+#ifndef FLEXML_quiet_parser
+    /* print directly to sdterr */
+    fprintf(stderr, "%s", flexml_err_msg);
+    flexml_err_msg[0] = '\0';
+#endif
+   
+    return 1;
 }
