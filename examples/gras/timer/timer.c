@@ -66,7 +66,7 @@ int client(int argc,char *argv[]) {
   gras_timer_delay(REPEAT_INTERVAL,delayed_action);
 
   INFO1("[%.0f] Have a rest", gras_os_time());  
-  gras_os_sleep(DELAY_INTERVAL / 2.0, 0);
+  gras_os_sleep(DELAY_INTERVAL / 2.0);
    
   INFO1("[%.0f] Canceling the delayed_action.",gras_os_time());
   gras_timer_cancel_delay(REPEAT_INTERVAL,delayed_action);
