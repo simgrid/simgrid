@@ -13,8 +13,7 @@ AM_CFLAGS= -g
 
 
 MAINTAINERCLEANFILES=Makefile.in
-INCLUDES= -I$(top_srcdir)/include \
-          @CFLAGS_SimGrid@
+INCLUDES= -I$(top_srcdir)/include 
 EXTRA_DIST= \
         \
 	portable.h \
@@ -36,9 +35,8 @@ EXTRA_DIST= \
 	\
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
-	gras/Virtu/virtu_rl.h \
-	gras/Virtu/virtu_sg.h \
-	gras/DataDesc/ddt_parse.yy.l gras/DataDesc/ddt_parse.yy.c
+	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
+	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c
 
 #        gras_private.h
 
@@ -80,12 +78,7 @@ VERSION_INFO= -release 20040722 -version-info 0:0:0
 #  It modifies the library name, and you thus cannot say that a library
 #   using this trick is ready for a "stable" release (say, in Debian).
 
-if HAVE_SG
- lib_LTLIBRARIES= libgrasrl.la libgrassg.la
-else
- lib_LTLIBRARIES= libgrasrl.la
-endif
-
+lib_LTLIBRARIES= libgrasrl.la libgrassg.la
 
 COMMON_S=\
   \
@@ -109,13 +102,8 @@ COMMON_S=\
   surf/surf_parse.c                                                          \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   \
-  msg/task.c  \
-  msg/host.c  \
-  msg/m_process.c  \
-  msg/gos.c  \
-  msg/global.c  \
-  msg/environment.c  \
-  msg/deployment.c  \
+  msg/task.c msg/host.c msg/m_process.c msg/gos.c \
+  msg/global.c msg/environment.c msg/deployment.c  \
   \
   gras/gras.c \
   \
@@ -143,10 +131,8 @@ libgrasrl_la_SOURCES= $(COMMON_S) \
   gras/Virtu/rl_process.c        gras/Virtu/rl_time.c                   gras/Virtu/rl_conditional.c
 libgrasrl_la_LDFLAGS = $(VERSION_INFO) @GRAS_RL_DEP@
 
-if HAVE_SG
-  libgrassg_la_SOURCES= $(COMMON_S) \
-    gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
-    \
-    gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c
-  libgrassg_la_LDFLAGS = $(VERSION_INFO) @GRAS_SG_DEP@
-endif
+libgrassg_la_SOURCES= $(COMMON_S) \
+  gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
+  \
+  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c
+libgrassg_la_LDFLAGS = $(VERSION_INFO) @GRAS_SG_DEP@
