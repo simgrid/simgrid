@@ -50,34 +50,35 @@ valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests valgrind
 
 # LDADD_UTILS is still a separate var to distinguish core tester from RL tester
-LDADD_UTILS=$(top_builddir)/src/libgras.la 
-LDADD_RL=   $(top_builddir)/src/libgras.la   
+LDADD_SG=$(top_builddir)/src/libsimgrid.la 
+LDADD_RL=$(top_builddir)/src/libgras.la   
 
-xbt_log_usage_LDADD=          $(LDADD_UTILS)
+xbt_log_usage_LDADD=          $(LDADD_RL)
 
-xbt_dynar_int_LDADD=          $(LDADD_UTILS)
-xbt_dynar_double_LDADD=       $(LDADD_UTILS)
-xbt_dynar_string_LDADD=       $(LDADD_UTILS)
+xbt_dynar_int_LDADD=          $(LDADD_RL)
+xbt_dynar_double_LDADD=       $(LDADD_RL)
+xbt_dynar_string_LDADD=       $(LDADD_RL)
 
-xbt_dict_usage_LDADD=         $(LDADD_UTILS)
-xbt_dict_crash_LDADD=         $(LDADD_UTILS)
-#xbt_multidict_crash_LDADD=    $(LDADD_UTILS)
+xbt_dict_usage_LDADD=         $(LDADD_RL)
+xbt_dict_crash_LDADD=         $(LDADD_RL)
+#xbt_multidict_crash_LDADD=    $(LDADD_RL)
 
-xbt_set_usage_LDADD=          $(LDADD_UTILS)
-xbt_swag_usage_LDADD=         $(LDADD_UTILS)
+xbt_set_usage_LDADD=          $(LDADD_RL)
+xbt_swag_usage_LDADD=         $(LDADD_RL)
 
-xbt_config_usage_LDADD=       $(LDADD_UTILS)
+xbt_config_usage_LDADD=       $(LDADD_RL)
 
-xbt_heap_bench_LDADD=         $(LDADD_UTILS)
-xbt_context_usage_LDADD=      $(LDADD_UTILS)
+xbt_heap_bench_LDADD=         $(LDADD_RL)
 
-surf_maxmin_usage_LDADD=      $(LDADD_UTILS)
-surf_maxmin_bench_LDADD=      $(LDADD_UTILS)
-surf_trace_usage_LDADD=       $(LDADD_UTILS)
-surf_surf_usage_LDADD=        $(LDADD_UTILS)
-surf_surf_usage2_LDADD=       $(LDADD_UTILS)
+xbt_context_usage_LDADD=      $(LDADD_SG)
 
-msg_msg_test_LDADD=           $(LDADD_UTILS)
+surf_maxmin_usage_LDADD=      $(LDADD_SG)
+surf_maxmin_bench_LDADD=      $(LDADD_SG)
+surf_trace_usage_LDADD=       $(LDADD_SG)
+surf_surf_usage_LDADD=        $(LDADD_SG)
+surf_surf_usage2_LDADD=       $(LDADD_SG)
+
+msg_msg_test_LDADD=           $(LDADD_SG)
 
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)
