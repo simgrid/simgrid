@@ -95,7 +95,6 @@ MSG_error_t __MSG_process_block(void);
 MSG_error_t __MSG_process_unblock(m_process_t process);
 int __MSG_process_isBlocked(m_process_t process);
 
-#define ALVIN_SPECIAL_LOGING
 #ifdef ALVIN_SPECIAL_LOGING
 #define PAJE_PROCESS_STATE(process,state)\
   if(msg_global->paje_output) \
