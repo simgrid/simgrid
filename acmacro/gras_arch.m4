@@ -5,7 +5,7 @@ dnl  2: extra include lines
 dnl  3: extra sizes to test
 dnl ("adapted" from openldap)
 dnl
-AC_DEFUN(GRAS_DO_CHECK_SIZEOF,
+AC_DEFUN([GRAS_DO_CHECK_SIZEOF],
 [changequote(<<, >>)dnl 
  dnl The cache variable name (and of the result). 
  define(<<GRAS_CHECK_SIZEOF_RES>>, translit(ac_cv_sizeof_$1, [ *()], [_pLR]))dnl
@@ -28,7 +28,7 @@ dnl  2: extra include lines
 dnl  3: extra sizes to test
 dnl ("adapted" from openldap)
 dnl
-AC_DEFUN(GRAS_CHECK_SIZEOF,
+AC_DEFUN([GRAS_CHECK_SIZEOF],
 [AC_MSG_CHECKING(size of $1) 
 GRAS_DO_CHECK_SIZEOF($1,$2)
 if test x$GRAS_CHECK_SIZEOF_RES = x ; then 
@@ -48,7 +48,7 @@ dnl
 dnl GRAS_SIGNED_SIZEOF: Get the size of the datatype, and make sure that
 dnl signed, unsigned and unspecified have the same size
 dnl
-AC_DEFUN(GRAS_SIGNED_SIZEOF,
+AC_DEFUN([GRAS_SIGNED_SIZEOF],
 [AC_MSG_CHECKING(size of $1)
 GRAS_DO_CHECK_SIZEOF($1,$2)
 unspecif=$GRAS_CHECK_SIZEOF_RES
@@ -90,7 +90,7 @@ dnl
 dnl CHECK_IEEE_FP: determines if floating points are IEEE754 compliant
 dnl (inspired from NWS code)
 dnl
-AC_DEFUN(CHECK_IEEE_FP,
+AC_DEFUN([CHECK_IEEE_FP],
 [AC_MSG_CHECKING(if floating point datatypes are IEEE 754 compliant) 
 AC_TRY_COMPILE([#include "confdefs.h"
 union {
@@ -130,7 +130,7 @@ AC_MSG_RESULT($IEEE_FP)
 
 dnl *************************8
 dnl 
-AC_DEFUN(GRAS_ARCH,
+AC_DEFUN([GRAS_ARCH],
 [
 # Check for the architecture
 AC_C_BIGENDIAN(endian=1,endian=0,AC_MSG_ERROR([GRAS works only for little or big endian systems (yet)]))
