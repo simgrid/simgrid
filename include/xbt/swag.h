@@ -13,6 +13,7 @@
 #define _XBT_SWAG_H
 
 #include "xbt/sysdep.h"
+#include "gras_config.h" /* inline */
 
 /* This type should be added to a type that is to be used in such a swag */
 /* Whenever a new object with this struct is created, all fields have
@@ -77,7 +78,7 @@ void *xbt_swag_extract(xbt_swag_t swag);
 int xbt_swag_size(xbt_swag_t swag);
 int xbt_swag_belongs(void *obj, xbt_swag_t swag);
 
-static __inline__ void *xbt_swag_getFirst(xbt_swag_t swag)
+static inline void *xbt_swag_getFirst(xbt_swag_t swag)
 {
   return (swag->head);
 }
