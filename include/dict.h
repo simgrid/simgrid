@@ -139,8 +139,8 @@ void         gras_dict_cursor_step        (gras_dict_cursor_t  *cursor);
 int          gras_dict_cursor_get_or_free (gras_dict_cursor_t **cursor,
 					   char               **key,
 					   void               **data);
-#define gras_dict_foreach(dict,cursor,key,data)                \
-  for (gras_dict_cursor_first((dict),&(cursor)) ;              \
+#define gras_dict_foreach(dict,cursor,key,data)                        \
+  for (cursor=NULL, gras_dict_cursor_first((dict),&(cursor)) ;         \
        gras_dict_cursor_get_or_free(&(cursor),&(key),(void**)(&data)); \
        gras_dict_cursor_step(cursor) )
 
