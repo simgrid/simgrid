@@ -1,11 +1,16 @@
 <CPU>
 
   "Cpu A" 100.00 1.0 trace_A.txt ON trace_A_failure.txt
-  "Cpu B" 100.00 1.0 trace_B.txt ON  ""
+  "Cpu B" 100.00 1.0 trace_B.txt ON    ""
        
 </CPU>
 
 
 
-  <NETWORK>  /* The network section */
+<NETWORK>  /* The network section */
+  LinkA 10.0 "" 0.01 "" ON ""
 </NETWORK>
+
+<ROUTE>  /* The route section */
+  "Cpu A" "Cpu B" (LinkA    )
+</ROUTE>
