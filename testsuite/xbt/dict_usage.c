@@ -166,9 +166,11 @@ int main(int argc,char **argv) {
 
   gras_dict_free(&head);
 
+  printf(" - Remove data from the NULL dict (error message expected)\n");
   TRYCATCH(debuged_remove(head,"12345"),mismatch_error);
-  TRYFAIL(traverse(head));
 
+  printf(" - Remove each data manually (traversing the resulting dictionnary each time)\n");
+  TRYFAIL(fill(&head));
   TRYFAIL(debuged_remove(head,"12a"));    TRYFAIL(traverse(head));
   TRYFAIL(debuged_remove(head,"12b"));    TRYFAIL(traverse(head));
   TRYFAIL(debuged_remove(head,"12"));     TRYFAIL(traverse(head));
