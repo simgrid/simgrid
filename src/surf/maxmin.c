@@ -8,15 +8,15 @@
 #include "maxmin_private.h"
 #include <stdlib.h>
 
-extern lmm_system_t Sys;
-extern lmm_constraint_t L1;
-extern lmm_constraint_t L2;
-extern lmm_constraint_t L3;
+/* extern lmm_system_t Sys; */
+/* extern lmm_constraint_t L1; */
+/* extern lmm_constraint_t L2; */
+/* extern lmm_constraint_t L3; */
 
-extern lmm_variable_t R_1_2_3;
-extern lmm_variable_t R_1;
-extern lmm_variable_t R_2;
-extern lmm_variable_t R_3;
+/* extern lmm_variable_t R_1_2_3; */
+/* extern lmm_variable_t R_1; */
+/* extern lmm_variable_t R_2; */
+/* extern lmm_variable_t R_3; */
 
 
 lmm_system_t lmm_system_new(void)
