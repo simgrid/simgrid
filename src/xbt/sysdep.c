@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* sysdep.h -- all system dependency                                        */
+/* sysdep.c -- all system dependency                                        */
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
 
@@ -12,13 +12,26 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/error.h"
-
-#include <stdlib.h>
+#include "portable.h"
 
 /* \defgroup XBT_sysdep All system dependency
  * \brief This section describes many macros/functions that can serve as
  *  an OS abstraction.
  */
+
+double xbt_os_time(void) {
+#ifdef HAVE_GETTIMEOFDAY
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+
+  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
+#else
+  /* Poor resolution */
+  return (double)(time(NULL)); 
+#endif /* HAVE_GETTIMEOFDAY? */ 	
+}
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");
 
