@@ -77,10 +77,6 @@ fi
 AC_CHECK_PROG(FLEXML,flexml,,NOTFOUND)
 AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != NOTFOUND)
 
-# Can we rebuild the documentation?
-GTK_DOC_CHECK()
-AC_SUBST([htmldir],         ['${datadir}/doc/gras/html'])dnl
-
 dnl ####[ Search libs ]#######################################################
 dnl A CI_PACKAGE([S imGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
 dnl A M_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
@@ -136,13 +132,14 @@ AC_CONFIG_FILES([
   src/Makefile
   src/amok/Makefile
   examples/Makefile 
-    examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
+  examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
+  examples/msg/Makefile 
   doc/Makefile
   tools/compile-remote-worker
   testsuite/Makefile
-    testsuite/run_tests    
-    testsuite/gras/trp_tcp_usage
-    testsuite/gras/trp_file_usage
+  testsuite/run_tests    
+  testsuite/gras/trp_tcp_usage
+  testsuite/gras/trp_file_usage
 ],[
      test -e testsuite/run_tests          && chmod +x testsuite/run_tests;
      test -e testsuite/gras/trp_tcp_usage && chmod +x testsuite/gras/trp_tcp_usage;

@@ -1,0 +1,13 @@
+/** \defgroup SimGrid_examples  Examples of SimGrid Usage */
+/** \defgroup SURF_examples  Examples for SURF
+    \ingroup SimGrid_examples
+*/
+/** \defgroup MSG_examples Examples for MSG
+    \ingroup SimGrid_examples
+*/
+/** \defgroup GRAS_examples  Examples for GRAS
+    \ingroup SimGrid_examples
+*/
+/** \defgroup SMPI_examples  Examples for SMPI
+    \ingroup SimGrid_examples
+*/
