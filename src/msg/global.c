@@ -539,8 +539,16 @@ MSG_error_t MSG_clean(void)
 
 /** \ingroup msg_easier_life
  * \brief A clock (in second).
+ * \deprecated Use MSG_get_clock
  */
 double MSG_getClock(void) {
+  return surf_get_clock();
+}
+
+/** \ingroup msg_easier_life
+ * \brief A clock (in second).
+ */
+double MSG_get_clock(void) {
   return surf_get_clock();
 }
 

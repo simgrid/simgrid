@@ -29,6 +29,7 @@ void MSG_launch_application(const char *file);
 void MSG_paje_output(const char *filename);
 
 double MSG_getClock(void);
+double MSG_get_clock(void);
 
 /************************** Host handling ***********************************/
 MSG_error_t MSG_host_set_data(m_host_t host, void *data);
