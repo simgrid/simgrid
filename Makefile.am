@@ -72,8 +72,11 @@ mail:
 	       simgrid2-users@listes.ens-lyon.fr
 
 splint:
-	splint `find src -name '*.c' | grep -v RL | grep -v SG` +matchanyintegral -warnposix +boolint -Inws_portability/Include/ -Isrc/include -Isrc/base -Isrc
-
+	splint `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
+	       +matchanyintegral -warnposix +boolint \
+	       +show-summary +stats\
+	       -Iinclude -Isrc/include -Isrc/base -Isrc
+.PHONY: splint
 ##
 ## Cruft for remote compilation
 ##
@@ -131,3 +134,5 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	exit $$failed
 
 endif
+
+include $(top_srcdir)/acmacro/dist-files.mk
