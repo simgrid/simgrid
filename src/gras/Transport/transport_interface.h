@@ -51,11 +51,9 @@ struct gras_trp_plugin_ {
   gras_error_t (*socket_client)(gras_trp_plugin_t *self,
 				const char *host,
 				unsigned short port,
-				int raw,
 				/* OUT */ gras_socket_t *dst);
   gras_error_t (*socket_server)(gras_trp_plugin_t *self,
 				unsigned short port,
-				int raw,
 				/* OUT */ gras_socket_t *dst);
    
   gras_error_t (*socket_accept)(gras_socket_t  *sock,
@@ -73,8 +71,11 @@ struct gras_trp_plugin_ {
 			     char *Data,
 			     size_t size);
 
-  void          *specific;
-  void         (*free_specific)(void *);
+  void          *data;
+ 
+   /* exit is responsible for freeing data and telling the OS this plugin goes */
+   /* if it's NULL, data gets freed. (ie exit needed only when data contains pointers) */
+  void         (*exit)(gras_trp_plugin_t *);
 };
 
 gras_error_t

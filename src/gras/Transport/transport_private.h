@@ -18,7 +18,6 @@
 
 extern gras_dynar_t *_gras_trp_sockets; /* all existing sockets */
 
-
 /**
  * s_gras_socket:
  * 
@@ -31,6 +30,7 @@ struct s_gras_socket  {
   int incoming :1; /* true if we can read from this sock */
   int outgoing :1; /* true if we can write on this sock */
   int accepting :1; /* true if master incoming sock in tcp */
+  int raw :1; /* true if this is an experiment socket instead of messaging */
    
   int  sd; 
   int  port; /* port on this side */
@@ -44,10 +44,10 @@ gras_error_t gras_trp_socket_new(int incomming,
 				 gras_socket_t **dst);
 
 /* The drivers */
-gras_error_t gras_trp_tcp_init(gras_trp_plugin_t **dst);
-gras_error_t gras_trp_file_init(gras_trp_plugin_t **dst);
-gras_error_t gras_trp_sg_init (gras_trp_plugin_t **dst);
+typedef gras_error_t (*gras_trp_setup_t)(gras_trp_plugin_t *dst);
 
-
+gras_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug);
+gras_error_t gras_trp_file_setup(gras_trp_plugin_t *plug);
+gras_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug);
 
 #endif /* GRAS_TRP_PRIVATE_H */
