@@ -5,18 +5,7 @@ ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
 AUTOMAKE_OPTIONS = gnu
 
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README TODO AUTHORS \
-	acmacro/aci.m4
-#	Cflags.Makefile.am                      \
-#	doc/FAQ.txt                             \
-#	doc/footer.html                         \
-#	doc/html                                \
-#	doc/index.doc                           \
-#	doc/Makefile.Example.am                 \
-#	doc/Makefile.Example.in                 \
-#	tools/colorize.pl                       \
-#	tools/index_create.pl                   \
-#	tools/acmacro
-
+	acmacro/aci.m4 acmacro/gras-check-arch
 
 TAGS: 
 	etags `find . -name "*.[ch]"`
