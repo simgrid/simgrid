@@ -20,11 +20,11 @@ typedef   void (void_f_pvoid_t) (void*);
 gras_error_t gras_dynar_new(gras_dynar_t **whereto, 
 			    size_t elm_size, 
 			    void_f_pvoid_t *free_func);
-void         gras_dynar_free(gras_dynar_t *dynar);
-void         gras_dynar_free_container(gras_dynar_t *dynar);
+void          gras_dynar_free(gras_dynar_t *dynar);
+void          gras_dynar_free_container(gras_dynar_t *dynar);
 
-size_t       gras_dynar_length(const gras_dynar_t *dynar);
-void         gras_dynar_reset(gras_dynar_t *dynar);
+unsigned long gras_dynar_length(const gras_dynar_t *dynar);
+void          gras_dynar_reset(gras_dynar_t *dynar);
 
 
 /* regular array functions */
