@@ -21,8 +21,11 @@ Open/close sockets, and get info on peer.
 
 @host: 
 @Param2: 
-@sock: 
+@bufSize: 
+@dst: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@sock: 
 
 
 <!-- ##### FUNCTION gras_socket_server ##### -->
@@ -41,16 +44,9 @@ Open/close sockets, and get info on peer.
 
 </para>
 
-@sock: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gras_socket_peer_name ##### -->
-<para>
-
-</para>
-
 @sd: 
+<!-- # Unused Parameters # -->
+@sock: 
 @Returns: 
 
 

@@ -40,16 +40,14 @@
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(Test, Top);
 GRAS_LOG_NEW_CATEGORY(Top);
 
-void parse_log_opt(int argc, char **argv,const char *deft);
-
 int main(int argc, char **argv) {
-  parse_log_opt(argc,argv,"root.thresh=debug log.thresh=debug");
+  gras_init_defaultlog(argc,argv,"root.thresh=debug log.thresh=debug");
 
   DEBUG1("val=%d", 1);
   WARNING1("val=%d", 2);
   CDEBUG2(Top, "val=%d%s", 3, "!");
   CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");
   
-  gras_finalize();
+  gras_exit();
   return 0;
 }

@@ -13,8 +13,6 @@
 #ifndef GRAS_TRP_INTERFACE_H
 #define GRAS_TRP_INTERFACE_H
 
-#include "gras_private.h"
-
 /***
  *** Main user functions
  ***/
@@ -60,15 +58,16 @@ typedef enum e_gras_trp_plugin {
 struct gras_trp_plugin_ {
   char          *name;
  
+  /* dst pointers are created and initialized with default values 
+     before call to socket_client/server*/
   gras_error_t (*socket_client)(gras_trp_plugin_t *self,
 				const char *host,
 				unsigned short port,
-				unsigned int bufSize,
-				/* OUT */ gras_socket_t **dst);
+				/* OUT */ gras_socket_t *dst);
   gras_error_t (*socket_server)(gras_trp_plugin_t *self,
 				unsigned short port,
-				unsigned int bufSize,
-				/* OUT */ gras_socket_t **dst);
+				/* OUT */ gras_socket_t *dst);
+   
   gras_error_t (*socket_accept)(gras_socket_t  *sock,
 				/* OUT */gras_socket_t **dst);
    

@@ -17,12 +17,17 @@ typedef struct s_gras_socket gras_socket_t;
 
 gras_error_t gras_socket_client(const char *host,
 				unsigned short port,
-				unsigned int bufSize,
 				/* OUT */ gras_socket_t **dst);
 gras_error_t gras_socket_server(unsigned short port,
-				unsigned int bufSize,
 				/* OUT */ gras_socket_t **dst);
-void         gras_socket_close(gras_socket_t *sd);
- 
+void         gras_socket_close(gras_socket_t **sd);
+
+
+/* debuging functions */
+gras_error_t gras_socket_client_from_file(const char*path,
+					  /* OUT */ gras_socket_t **dst);
+gras_error_t gras_socket_server_from_file(const char*path,
+					  /* OUT */ gras_socket_t **dst);
+					  
    
 #endif /* GRAS_TRANSPORT_H */

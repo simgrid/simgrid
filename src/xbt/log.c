@@ -8,6 +8,7 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "Core/core_interface.h"
 #include "gras_private.h"
 #include <stdarg.h>
 #include <assert.h>
@@ -366,7 +367,6 @@ void gras_log_appender_set(gras_log_category_t* cat, gras_log_appender_t* app) {
   cat->appender = app;
 }
 
-void gras_log_finalize(void);
-void gras_log_finalize(void) {
+void gras_log_exit(void) {
   gras_dynar_free(gras_log_settings);
 }

@@ -23,21 +23,6 @@ gras_private
 @size: 
 
 
-<!-- ##### FUNCTION gras_datadesc_cmp ##### -->
-<para>
-
-</para>
-
-@d1: 
-@d2: 
-@Returns: 
-<!-- # Unused Parameters # -->
-@dd1: 
-@c1: 
-@dd2: 
-@c2: 
-
-
 <!-- ##### MACRO SIMPLE_TYPE_COUNT ##### -->
 <para>
 

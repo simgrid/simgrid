@@ -12,7 +12,7 @@
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(module,GRAS);
 
-extern void gras_log_finalize(void);
+extern void gras_log_exit(void);
 
 struct gras_module_ {
   gras_dynar_t *deps;
@@ -22,38 +22,53 @@ struct gras_module_ {
   gras_module_finalize_fct_t finalize;
 };
 
+void 
+gras_init(int argc, char **argv) {
+   gras_init_defaultlog(argc, argv, NULL);
+}
 
 /**
- * gras_init:
+ * gras_init_defaultlog:
  * @argc:
  * @argv:
  *
  * Initialize the gras mecanisms.
  */
 void
-gras_init(int argc,char **argv) {
+gras_init_defaultlog(int argc,char **argv, const char *defaultlog) {
   int i;
   char *opt;
   gras_error_t errcode;
+  int found=0;
 
   INFO0("Initialize GRAS");
+  
+  /** Set logs and init log submodule */
   for (i=1; i<argc; i++) {
     if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log="))) {
+      found = 1;
       opt=strchr(argv[i],'=');
       opt++;
       TRYFAIL(gras_log_control_set(opt));
     }
   }
+  if (!found && defaultlog) {
+     TRYFAIL(gras_log_control_set(defaultlog));
+  }
+   
+  /** init other submodules */
+  gras_trp_init();
 }
 
 /**
- * gras_finalize:
+ * gras_exit:
  * @argc:
  * @argv:
  *
  * Finalize the gras mecanisms.
  */
 void 
-gras_finalize(){
-  gras_log_finalize();
+gras_exit(){
+  gras_trp_exit();
+  gras_log_exit();
 }

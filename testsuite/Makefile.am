@@ -1,6 +1,5 @@
 INCLUDES = -I$(top_srcdir)/src/include
 AM_CFLAGS=-g -Wno-unused-function 
-AM_LDFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o
 DISTCLEANFILES=Makefile.in *~
@@ -8,39 +7,52 @@ EXTRA_DIST=test_utils.c run_tests.in
 
 # Test stuff
 
-noinst_PROGRAMS =                             \
+core_tests =                                  \
 	dynar_int dynar_double dynar_string   \
 	dict_usage dict_crash                 \
 	set_usage                             \
 	log_usage                             \
-	config_usage                          
-	
-#	gs_example_send gs_example_receive
-	
+	config_usage
 # multidict_crash 
 
+RL_tests =                                    \
+	trp_tcp_client   trp_tcp_server       \
+	trp_file_client  trp_file_server
+#	gs_example_send gs_example_receive
 
-noinst_SCRIPTS = run_tests gs_example
+SG_tests =
 
-log_usage_LDADD=          $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-
-dynar_int_LDADD=          $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-dynar_double_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-dynar_string_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-
-dict_usage_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-dict_crash_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-#multidict_crash_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-
-set_usage_LDADD=          $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-
-config_usage_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-
-
-#gs_example_send_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-#gs_example_receive_LDADD= $(top_srcdir)/src/base/libgrasutils.a test_utils.o
-
+noinst_PROGRAMS = $(core_tests) $(RL_tests) $(SG_tests)
+noinst_SCRIPTS = run_tests gs_example trp_tcp_usage
 TESTS=run_tests
 
-test: $(noinst_PROGRAMS)
+test: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests
+
+
+# LDADD_UTILS is still a separate var to distinguish core tester from RL tester
+LDADD_UTILS=$(top_srcdir)/src/base/libgrasrl.a 
+LDADD_RL=   $(top_srcdir)/src/base/libgrasrl.a   
+
+log_usage_LDADD=          $(LDADD_UTILS)
+
+dynar_int_LDADD=          $(LDADD_UTILS)
+dynar_double_LDADD=       $(LDADD_UTILS)
+dynar_string_LDADD=       $(LDADD_UTILS)
+
+dict_usage_LDADD=         $(LDADD_UTILS)
+dict_crash_LDADD=         $(LDADD_UTILS)
+#multidict_crash_LDADD=    $(LDADD_UTILS)
+
+set_usage_LDADD=          $(LDADD_UTILS)
+
+config_usage_LDADD=       $(LDADD_UTILS)
+
+trp_tcp_client_LDADD=     $(LDADD_RL)
+trp_tcp_server_LDADD=     $(LDADD_RL)
+trp_file_client_LDADD=    $(LDADD_RL)
+trp_file_server_LDADD=    $(LDADD_RL)
+
+#gs_example_send_LDADD=    $(LDADD_UTILS)
+#gs_example_receive_LDADD= $(LDADD_UTILS)
+

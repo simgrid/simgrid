@@ -1,0 +1,4 @@
+#! @BASH@ -e
+
+./trp_file_client $@ | ./trp_file_server $@ 
+

@@ -1563,6 +1563,19 @@ Sockets
 
 @ud: 
 
+<!-- ##### FUNCTION gras_datadesc_cmp ##### -->
+<para>
+
+</para>
+
+@d1: 
+@d2: 
+@Returns: 
+@dd1: 
+@c1: 
+@dd2: 
+@c2: 
+
 <!-- ##### FUNCTION gras_datadesc_copy_data ##### -->
 <para>
 
@@ -1664,6 +1677,14 @@ Sockets
 @Param1: 
 @Param2: 
 @sock: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_socket_peer_name ##### -->
+<para>
+
+</para>
+
+@sd: 
 @Returns: 
 
 <!-- ##### FUNCTION gras_unlock ##### -->

@@ -79,8 +79,10 @@ AC_CONFIG_FILES([
       src/include/modules/Makefile
     src/base/Makefile
       src/base/Tests/Makefile
-      src/base/Tests/gs_example
       src/base/Tests/run_tests
+        src/base/Tests/gs_example
+        src/base/Tests/trp_tcp_usage
+        src/base/Tests/trp_file_usage
     src/modules/Makefile
     src/examples/Makefile 
       src/examples/ping/Makefile 
@@ -88,8 +90,10 @@ AC_CONFIG_FILES([
       src/examples/alnem/Makefile 
   doc/Makefile
 ],[( cd src/include ; test -e gras || ln -s . gras )
-     test -e src/base/Tests/gs_example && chmod +x src/base/Tests/gs_example;
-     test -e src/base/Tests/run_tests && chmod +x src/base/Tests/run_tests])
+     test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
+     test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
+     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
+     test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests])
 
 AC_OUTPUT
 

@@ -26,11 +26,9 @@ void         gras_trp_sg_exit(gras_trp_plugin_t *plugin);
 gras_error_t gras_trp_sg_socket_client(const char *host,
 				       unsigned short port,
 				       int raw, 
-				       unsigned int bufSize, 
 				       /* OUT */ gras_socket_t **dst);
 gras_error_t gras_trp_sg_socket_server(unsigned short port,
 				       int raw, 
-				       unsigned int bufSize, 
 				       /* OUT */ gras_socket_t **dst);
 void         gras_trp_sg_socket_close(gras_socket_t **sd);
 gras_error_t gras_trp_sg_select(double timeOut,
@@ -81,14 +79,12 @@ gras_trp_sg_exit(gras_trp_plugin_t *plugin) {
 gras_error_t gras_trp_sg_socket_client(const char *host,
 				       unsigned short port,
 				       int raw, 
-				       unsigned int bufSize, 
 				       /* OUT */ gras_socket_t **dst){
   RAISE_UNIMPLEMENTED;
 }
 
 gras_error_t gras_trp_sg_socket_server(unsigned short port,
 				       int raw, 
-				       unsigned int bufSize, 
 				       /* OUT */ gras_socket_t **dst){
   RAISE_UNIMPLEMENTED;
 }

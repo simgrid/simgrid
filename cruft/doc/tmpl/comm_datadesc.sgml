@@ -19,13 +19,13 @@ Simple ways to describe data to exchange
 
 </para>
 
+@name: 
 @desc: 
 @howmany: 
-@dst: 
+@code: 
 @Returns: 
 <!-- # Unused Parameters # -->
-@name: 
-@code: 
+@dst: 
 
 
 <!-- ##### FUNCTION gras_datadesc_parse ##### -->
@@ -33,13 +33,13 @@ Simple ways to describe data to exchange
 
 </para>
 
-@def: 
-@dst: 
-@Returns: 
-<!-- # Unused Parameters # -->
 @name: 
 @Cdefinition: 
 @code: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@def: 
+@dst: 
 
 
 <!-- ##### MACRO gras_datadesc_declare_array ##### -->

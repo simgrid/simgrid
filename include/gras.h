@@ -28,8 +28,10 @@
 
 #include <gras/config.h>
 
-#include <gras/core.h>
+#include <gras/core.h> /* FIXME: killme */
 #include <gras/process.h>
+#include <gras/virtu.h>
+#include <gras/cond.h>
 
 
 #include <gras/transport.h>

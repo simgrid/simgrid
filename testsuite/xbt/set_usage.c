@@ -161,14 +161,12 @@ static gras_error_t traverse(gras_set_t *set) {
   return no_error;
 }
 
-void parse_log_opt(int argc, char **argv,const char *deft);
-
 int main(int argc,char **argv) {
   gras_error_t errcode;
   gras_set_t *set=NULL;
   my_elem_t *elm;
 
-  parse_log_opt(argc,argv,"set.thresh=verbose");
+  gras_init_defaultlog(argc,argv,"set.thresh=verbose");
    
   printf("\nData set: USAGE test:\n");
 

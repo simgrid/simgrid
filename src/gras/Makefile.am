@@ -10,8 +10,6 @@ EXTRA_DIST=                 \
 
 lib_LIBRARIES= libgrasrl.a libgrassg.a
 
-noinst_LIBRARIES=libgrasutils.a
-
 #                     Core/dict_multi.c
 #  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
 #   Messaging/messaging.c                       
@@ -20,7 +18,7 @@ noinst_LIBRARIES=libgrasutils.a
 
 COMMON_S=\
   \
-  Core/module.c                                                                 \
+  Core/module.c      Core/core_interface.h                                      \
   Core/log.c         Core/log_default_appender.c   Core/error.c                 \
   Core/dynar.c                                                                  \
   Core/dict.c        Core/dict_elm.c               Core/dict_cursor.c           \
@@ -29,15 +27,15 @@ COMMON_S=\
   Core/config.c                               \
   \
   Transport/transport.c    Transport/transport_private.h      \
-  Transport/transport_plugin_tcp.c          \
-  Transport/transport_plugin_sg.c          \
-  \
+  Transport/transport_plugin_file.c            \
+  Transport/transport_plugin_tcp.c            \
+  Transport/transport_plugin_sg.c             \
   \
   DataDesc/ddt_create.c          DataDesc/ddt_declare.c \
   DataDesc/ddt_remote.c          DataDesc/ddt_use.c     \
   DataDesc/cbps.c                DataDesc/datadesc.c    \
   DataDesc/datadesc_interface.h  DataDesc/datadesc_private.h
-  
+
 #  DataDesc/datadesc.c                               \
 #  DataDesc/tools.c                                  \
 #  DataDesc/categories.h                             \
@@ -55,23 +53,12 @@ COMMON_S=\
 DataDesc/parse.yy.c: DataDesc/parse.yy.l
 	flex -o$@ -Pgras_ddt_ $^
 
-libgrasutils_a_SOURCES = $(COMMON_S) 
-#Tests/gras_dummy.c
-
 libgrasrl_a_SOURCES= $(COMMON_S) \
   Transport/rl_transport.c       \
-  Virtu/rl_process.c       Virtu/rl_time.c
+  Virtu/rl_process.c       Virtu/rl_time.c     Virtu/rl_conditional.c
 
 libgrassg_a_SOURCES= $(COMMON_S) \
   Transport/sg_transport.c       \
-  Virtu/sg_process.c Virtu/sg_time.c
+  Virtu/sg_process.c       Virtu/sg_time.c     Virtu/sg_conditional.c
 
 # RL/gras_rl.c RL/gras_rl.h FIXME
-
-# $(foreach file,\
-#  exp_smooth forc median mse_forc protocol \
-#  dnsutil fbuff forecast_api last_value run_mean timeouts, \
-#  $(top_srcdir)/src/nws_portability/build-@host@/obj/$(file).o) 
-
-
-	

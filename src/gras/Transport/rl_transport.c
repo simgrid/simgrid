@@ -17,43 +17,6 @@ GRAS_LOG_EXTERNAL_CATEGORY(transport);
 GRAS_LOG_DEFAULT_CATEGORY(transport);
 
 
-gras_error_t
-gras_socket_server(unsigned short port,
-		   unsigned int bufSize, 
-		   /* OUT */ gras_socket_t **dst) {
- 
-  gras_error_t errcode;
-  gras_trp_plugin_t *tcp;
-
-  TRY(gras_trp_plugin_get_by_name("TCP",&tcp));
-  TRY( tcp->socket_server(tcp, port, bufSize, dst));
-
-  (*dst)->incoming  = 1;
-  (*dst)->accepting = 1;
-
-  TRY(gras_dynar_push(_gras_trp_sockets,dst));
-
-  return no_error;
-}
-
-gras_error_t
-gras_socket_client(const char *host,
-		   unsigned short port,
-		   unsigned int bufSize, 
-		   /* OUT */ gras_socket_t **dst) {
- 
-  gras_error_t errcode;
-  gras_trp_plugin_t *tcp;
-
-  TRY(gras_trp_plugin_get_by_name("TCP",&tcp));
-  TRY( (*tcp->socket_client)(tcp, host, port, bufSize, dst));
-
-  (*dst)->incoming  = 0;
-  (*dst)->accepting = 0;
-
-  return no_error;
-}
-
 
 /**
  * gras_trp_select:
@@ -98,9 +61,13 @@ gras_trp_select(double timeout,
     /* construct the set of socket to ear from */
     FD_ZERO(&FDS);
     gras_dynar_foreach(_gras_trp_sockets,cursor,sock_iter) {
-      if (max_fds < sock_iter->sd)
-	max_fds = sock_iter->sd;
-      FD_SET(sock_iter->sd, &FDS);
+      if (sock_iter->incoming) {
+	if (max_fds < sock_iter->sd)
+	  max_fds = sock_iter->sd;
+	FD_SET(sock_iter->sd, &FDS);
+      } else {
+	DEBUG1("Not considering socket %d for select",sock_iter->sd);
+      }
     }
 
     /* we cannot have more than FD_SETSIZE sockets */
@@ -127,6 +94,7 @@ gras_trp_select(double timeout,
       p_tout = NULL;
     }
 
+    DEBUG1("Selecting over %d socket(s)", max_fds-1);
     ready = select(max_fds, &FDS, NULL, NULL, p_tout);
     if (ready == -1) {
       switch (errno) {
@@ -163,6 +131,8 @@ gras_trp_select(double timeout,
 	 TRY(sock_iter->plugin->socket_accept(sock_iter,&accepted));
 	 TRY(gras_dynar_push(_gras_trp_sockets,&accepted));
        } else {
+#if 0 
+       FIXME: this fails of files. quite logical
 	 /* Make sure the socket is still alive by reading the first byte */
 	 char lookahead;
 	 int recvd;
@@ -171,18 +141,21 @@ gras_trp_select(double timeout,
 	 if (recvd < 0) {
 	   WARNING2("socket %d failed: %s", sock_iter->sd, strerror(errno));
 	   /* done with this socket */
-	   gras_socket_close(sock_iter);
+	   gras_socket_close(&sock_iter);
 	   cursor--;
 	 } else if (recvd == 0) {
 	   /* Connection reset (=closed) by peer. */
 	   DEBUG1("Connection %d reset by peer", sock_iter->sd);
-	   gras_socket_close(sock_iter); 
+	   gras_socket_close(&sock_iter); 
 	   cursor--; 
 	 } else { 
+#endif
 	   /* Got a suited socket ! */
 	   *dst = sock_iter;
 	   return no_error;
+#if 0
 	 }
+#endif
        }
 
        

@@ -1,0 +1,6 @@
+#! @BASH@ -e
+
+./trp_tcp_server $@ &
+sleep 1
+./trp_tcp_client $@ 
+

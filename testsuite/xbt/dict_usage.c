@@ -96,14 +96,12 @@ static gras_error_t traverse(gras_dict_t *head) {
   return no_error;
 }
 
-void parse_log_opt(int argc, char **argv,const char *deft);
-
 int main(int argc,char **argv) {
   gras_error_t errcode;
   gras_dict_t *head=NULL;
   char *data;
 
-  parse_log_opt(argc,argv,"dict.thresh=verbose");
+  gras_init_defaultlog(argc,argv,"dict.thresh=verbose");
    
   printf("\nGeneric dictionnary: USAGE test:\n");
 
@@ -167,8 +165,6 @@ int main(int argc,char **argv) {
   TRYFAIL(traverse(head));
 
   gras_dict_free(&head);
-  gras_finalize();
-  return 0;
 
   TRYCATCH(debuged_remove(head,"12345"),mismatch_error);
   TRYFAIL(traverse(head));
@@ -186,5 +182,6 @@ int main(int argc,char **argv) {
   printf(" - Free the dictionnary twice\n");
   gras_dict_free(&head);
   gras_dict_free(&head);
+  gras_exit();
   return 0;
 }

@@ -34,6 +34,8 @@
 
 #include "gras/core.h"
 #include "gras/process.h"
+#include "gras/virtu.h"
+#include "gras/cond.h"
 
 #include "gras/transport.h"
 #include "Transport/transport_interface.h"

@@ -1,1 +1,2 @@
-.deps .libs Makefile Makefile.in dict_usage dict_crash dynar_int dynar_double dynar_string
+.deps .libs Makefile Makefile.in
+cscope.files cscope.out

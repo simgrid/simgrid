@@ -27,11 +27,12 @@ extern gras_dynar_t *_gras_trp_sockets; /* all existing sockets */
 
 struct s_gras_socket  {
   gras_trp_plugin_t *plugin;
+    
+  int incoming :1; /* true if we can read from this sock */
+  int outgoing :1; /* true if we can write on this sock */
+  int accepting :1; /* true if master incoming sock in tcp */
    
-  int incoming; /* true if incoming (server) sock, false if client sock */
-  int accepting; /* true if master incoming sock in tcp */
-   
-  int  sd;
+  int  sd; 
   int  port; /* port on this side */
   int  peer_port; /* port on the other side */
   char *peer_name; /* hostname of the other side */
@@ -39,11 +40,12 @@ struct s_gras_socket  {
   void *specific; /* plugin specific data */
 };
 	
+gras_error_t gras_trp_socket_new(int incomming,
+				 gras_socket_t **dst);
 
-/* TCP driver */
+/* The drivers */
 gras_error_t gras_trp_tcp_init(gras_trp_plugin_t **dst);
-
-/* SG driver */
+gras_error_t gras_trp_file_init(gras_trp_plugin_t **dst);
 gras_error_t gras_trp_sg_init (gras_trp_plugin_t **dst);
 
 
