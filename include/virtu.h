@@ -39,18 +39,19 @@ BEGIN_DECL
 
 /**
  * gras_os_time:
- * 
- * Get the time in number of second since the Epoch.
+ * @Returns: number of second since the Epoch.
  * (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
+ * 
+ * Get the current time.
  */
 double gras_os_time(void);
 
 /**
  * gras_os_sleep:
- * @sec: number of seconds to sleep
- * @usec: number of microseconds to sleep
+ * @Param1: number of seconds to sleep
+ * @Param2: number of microseconds to sleep
  * 
- * sleeps for the given amount of seconds plus the given amount of microseconds.
+ * sleeps for the given amount of time.
  */
 void gras_os_sleep(unsigned long sec, unsigned long usec);
 
