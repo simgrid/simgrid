@@ -131,5 +131,16 @@ const char *gras_wsa_err2string(int errcode);
 #  include "xbt/context_win32.h" /* Manual reimplementation for prehistoric platforms */
 #endif
 
+/**
+ ** What is needed to protect solaris's printf from ever seing NULL associated to a %s format
+ ** (without adding an extra check on linux :)
+ **/
+
+#ifdef PRINTF_NULL_WORKING
+#  define PRINTF_STR(a) (a)
+#else
+#  define PRINTF_STR(a) (a)?:"(null)"
+#endif
+  
 
 #endif /* GRAS_PORTABLE_H */
