@@ -90,11 +90,10 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
 	  r_data = (char *)r_data + r_size,
 	  l_data = (char *)l_data + l_size) {
 
-      DEBUG3("Resize elm %d from %p to %p",cpt,r_data, l_data);
+      DEBUG5("Resize elm %d from %d @%p to %d @%p",cpt, r_size,r_data, l_size,l_data);
       gras_dd_resize_int(r_data, r_size, l_data, l_size,
 			 scal.encoding == e_gras_dd_scalar_encoding_sint,
-			 gras_arches[GRAS_THISARCH].endian);
-      /*      && 
+			 gras_arches[r_arch].endian && 
 			 gras_arches[r_arch].endian 
 			 != gras_arches[GRAS_THISARCH].endian);*/
 
@@ -155,50 +154,53 @@ gras_dd_reverse_bytes(void *to,
  * It should be thread safe (operates on local variables and calls mem*)
  */
 static void
-gras_dd_resize_int(const void *source,
-		   size_t sourceSize,
+gras_dd_resize_int(const void *r_data,
+		   size_t r_size,
 		   void *destination,
-		   size_t destinationSize,
+		   size_t l_size,
 		   int signedType,
 		   int lowOrderFirst) {
 
   unsigned char *destinationSign;
   int padding;
-  int sizeChange = destinationSize - sourceSize;
-  unsigned char *sourceSign;
+  int sizeChange = l_size - r_size;
+  unsigned char *r_dataSign;
   
-  if(sizeChange == 0) {
-    memcpy(destination, source, destinationSize);
-  } else if(sizeChange < 0) {
+  gras_assert0(sizeChange, "Nothing to resize");
+
+  if(sizeChange < 0) {
+    DEBUG1("Truncate %d bytes", -sizeChange);
     /* Truncate high-order bytes. */
     memcpy(destination, 
-	   lowOrderFirst?source:((char*)source-sizeChange),
-	   destinationSize);
+	   lowOrderFirst?r_data:((char*)r_data-sizeChange),
+	   l_size);
     if(signedType) {
-      /* Make sure the high order bit of source and
+      DEBUG0("This is signed");
+      /* Make sure the high order bit of r_data and
        * destination are the same */
-      destinationSign = lowOrderFirst ? ((unsigned char*)destination + destinationSize - 1) : (unsigned char*)destination;
-      sourceSign = lowOrderFirst ? ((unsigned char*)source + sourceSize - 1) : (unsigned char*)source;
-      if((*sourceSign > 127) != (*destinationSign > 127)) {
-	if(*sourceSign > 127)
+      destinationSign = lowOrderFirst ? ((unsigned char*)destination + l_size - 1) : (unsigned char*)destination;
+      r_dataSign = lowOrderFirst ? ((unsigned char*)r_data + r_size - 1) : (unsigned char*)r_data;
+      if((*r_dataSign > 127) != (*destinationSign > 127)) {
+	if(*r_dataSign > 127)
 	  *destinationSign += 128;
 	else
 	  *destinationSign -= 128;
       }
     }
   } else {
+    DEBUG1("Extend %d bytes", sizeChange);
     /* Pad with zeros or extend sign, as appropriate. */
     if(!signedType)
       padding = 0;
     else {
-      sourceSign = lowOrderFirst ? ((unsigned char*)source + sourceSize - 1)
-	                         : (unsigned char*)source;
-      padding = (*sourceSign > 127) ? 0xff : 0;
+      r_dataSign = lowOrderFirst ? ((unsigned char*)r_data + r_size - 1)
+	                         : (unsigned char*)r_data;
+      padding = (*r_dataSign > 127) ? 0xff : 0;
     }
-    memset(destination, padding, destinationSize);
+    memset(destination, padding, l_size);
     memcpy(lowOrderFirst ? destination 
                          : ((char *)destination + sizeChange),
-	   source, sourceSize);
+	   r_data, r_size);
   }
 }
 
