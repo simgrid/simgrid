@@ -211,7 +211,9 @@ gras_dictelm_free(gras_dictelm_t **pp_elm)  {
 static
 void
 _dictelm_wrapper_free(void *pp_elm) {
-  DEBUG2("Free dictelm %p (*=%p)", pp_elm, *(void**)pp_elm);
+  DEBUG3("Free dictelm '%.*s' %p", 
+	 (*(gras_dictelm_t**)pp_elm)->key_len, (*(gras_dictelm_t**)pp_elm)->key,
+	 *(void**)pp_elm);
   gras_dictelm_free((gras_dictelm_t**)pp_elm);
 }
 
