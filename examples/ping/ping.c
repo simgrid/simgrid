@@ -87,11 +87,14 @@ int server_cb_ping_handler(gras_socket_t        *expeditor,
 
 int server (int argc,char *argv[]) {
   gras_error_t errcode;
-  server_data_t *g=gras_userdata_new(server_data_t);  
+  server_data_t *g;
   gras_msgtype_t *ping_msg=NULL;
 
   int port = 4000;
   
+  gras_init(&argc,argv);
+  g=gras_userdata_new(server_data_t);
+   
   if (argc == 2) {
     port=atoi(argv[1]);
   }
@@ -126,6 +129,7 @@ int server (int argc,char *argv[]) {
   INFO0("SERVER: Done.");
   gras_socket_close(g->sock);
   free(g);
+  gras_exit();
   return no_error;
 }
 
@@ -143,16 +147,17 @@ int client (int argc,char *argv[]);
 
 int client(int argc,char *argv[]) {
   gras_error_t errcode;
-  client_data_t *g=gras_userdata_new(client_data_t);
+  client_data_t *g;
 
   gras_socket_t  *from;
   int ping, pong;
-  gras_msgtype_t *msg_ping_type, *msg_pong_type;
+  gras_msgtype_t *msg_ping_type=NULL, *msg_pong_type=NULL;
 
   const char *host = "127.0.0.1";
         int   port = 4000;
 
-  msg_ping_type = msg_pong_type = NULL;
+  gras_init(&argc, argv);
+  g=gras_userdata_new(client_data_t);
    
   if (argc == 3) {
     host=argv[1];

@@ -76,9 +76,6 @@ int main (int argc,char *argv[]) {
     exit(1);
   }
 
-  /* GRAS setup */
-  gras_init(&argc, argv);
-
   /*  Simulation setup */
   MSG_global_init();
   MSG_set_verbosity(MSG_SILENT);
@@ -124,9 +121,7 @@ $warn
 int main(int argc, char *argv[]){
   int errcode;
 
-  gras_init(&argc,argv);
   errcode=$pname(argc,argv);
-  gras_exit();
  
   return errcode;
 }
