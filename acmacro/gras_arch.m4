@@ -135,12 +135,14 @@ AC_DEFUN([GRAS_ARCH],
 # Check for the architecture
 AC_C_BIGENDIAN(endian=1,endian=0,AC_MSG_ERROR([GRAS works only for little or big endian systems (yet)]))
 AC_DEFINE_UNQUOTED(GRAS_BIGENDIAN,$endian,[define if big endian])
-                                                                  
-GRAS_SIGNED_SIZEOF(char)
-GRAS_SIGNED_SIZEOF(short int)
-GRAS_SIGNED_SIZEOF(int)
-GRAS_SIGNED_SIZEOF(long int)
-GRAS_SIGNED_SIZEOF(long long int)
+          
+dnl FIXME: Use SIGNED instead of CHECK to make sure signed and unsigned type
+dnl have same size	  
+GRAS_CHECK_SIZEOF(char)
+GRAS_CHECK_SIZEOF(short int)
+GRAS_CHECK_SIZEOF(int)
+GRAS_CHECK_SIZEOF(long int)
+GRAS_CHECK_SIZEOF(long long int)
                                                                   
 
 GRAS_CHECK_SIZEOF(void *)
@@ -164,6 +166,7 @@ trace="${trace}:${ac_cv_sizeof_float}.${ac_cv_sizeof_double}"
 case $trace in
   l:1.2.4.4.8:4.4:4.8) gras_arch=0; gras_arch_name=i386;;
   B:1.2.4.4.8:4.4:4.8) gras_arch=1; gras_arch_name=ppc;;
+  B:1.2.4.8.8:8.8:4.8) gras_arch=2; gras_arch_name=sparc;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
