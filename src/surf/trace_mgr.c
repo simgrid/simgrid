@@ -55,6 +55,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 
   if ((f = fopen(filename, "r")) == NULL) {
     CRITICAL1("Cannot open file '%s'\n", filename);
+    xbt_abort();
   }
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
@@ -68,13 +69,9 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
     if (sscanf(line, "PERIODICITY " XBT_HEAP_FLOAT_T "\n", &(periodicity))
 	== 1) {
       if (periodicity <= 0) {
-	fprintf(stderr,
-		"%s,%d: Syntax error. Periodicity has to be positive\n",
-		filename, linecount);
-	abort();
-/* 	xbt_dynar_free(&(trace->event_list)); */
-/* 	xbt_free(trace);	 */
-/* 	return NULL; */
+	CRITICAL2("%s,%d: Syntax error. Periodicity has to be positive\n",
+		  filename, linecount);
+	xbt_abort();
       }
       continue;
     }
@@ -82,8 +79,8 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
     if (sscanf
 	(line, XBT_HEAP_FLOAT_T " " XBT_MAXMIN_FLOAT_T "\n", &event.delta,
 	 &event.value) != 2) {
-      fprintf(stderr, "%s,%d: Syntax error\n", filename, linecount);
-      abort();
+      CRITICAL2("%s,%d: Syntax error\n", filename, linecount);
+      xbt_abort();
 /*       xbt_dynar_free(&(trace->event_list)); */
 /*       xbt_free(trace);	 */
 /*       return NULL; */
@@ -91,10 +88,9 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 
     if (last_event) {
       if ((last_event->delta = event.delta - last_event->delta) <= 0) {
-	fprintf(stderr,
-		"%s,%d: Invalid trace value, events have to be sorted\n",
-		filename, linecount);
-	abort();
+	CRITICAL2("%s,%d: Invalid trace value, events have to be sorted\n",
+		  filename, linecount);
+	xbt_abort();
       }
     }
     xbt_dynar_push(trace->event_list, &event);
@@ -142,7 +138,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t t
   trace_event->resource = resource;
 
   if (trace_event->idx >= xbt_dynar_length(trace->event_list))
-    abort();
+    xbt_abort();
 
   xbt_heap_push(history->heap, trace_event, start_time);
 
