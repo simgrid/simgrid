@@ -126,7 +126,8 @@ AC_CONFIG_FILES([
   src/amok/Makefile
   examples/Makefile 
     examples/msg/Makefile 
-    examples/gras/ping/Makefile      examples/gras/ping/test_sg     examples/gras/ping/test_rl
+    examples/gras/Makefile 
+      examples/gras/ping/Makefile  examples/gras/ping/test_sg  examples/gras/ping/test_rl
   doc/Makefile
     doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
   tools/compile-remote-worker
