@@ -56,7 +56,7 @@ int master(int argc, char *argv[])
   {                  /*  Task creation */
     char sprintf_buffer[64];
 
-    todo = calloc(number_of_tasks, sizeof(m_task_t));
+    todo = xbt_new0(m_task_t,number_of_tasks);
 
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
