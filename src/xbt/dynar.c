@@ -551,7 +551,21 @@ void gras_dynar_cursor_rm(gras_dynar_t * dynar,
 			  int          * const cursor) {
   void *dst;
 
-  gras_dynar_remove_at(dynar,(*cursor)--,&dst);
-  if (dynar->free)
-    (dynar->free)(dst);
+  if (dynar->elmsize > sizeof(void*)) {
+    DEBUG0("Elements too big to fit into a pointer");
+    if (dynar->free) {
+      dst=malloc(dynar->elmsize);
+      gras_dynar_remove_at(dynar,(*cursor)--,dst);
+      (dynar->free)(dst);
+      free(dst);
+    } else {
+      DEBUG0("Ok, we dont care about the element when no free function");
+      gras_dynar_remove_at(dynar,(*cursor)--,NULL);
+    }
+      
+  } else {
+    gras_dynar_remove_at(dynar,(*cursor)--,&dst);
+    if (dynar->free)
+      (dynar->free)(dst);
+  }
 }
