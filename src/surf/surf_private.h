@@ -16,6 +16,11 @@
 
 #define NO_MAX_DURATION -1.0
 
+typedef enum {
+  SURF_NETWORK_LINK_ON = 1,	/* Ready        */
+  SURF_NETWORK_LINK_OFF = 0	/* Running      */
+} e_surf_network_link_state_t;
+
 typedef struct surf_resource_private {
   int (*resource_used) (void *resource_id);
   /* Share the resources to the actions and return in hom much time

@@ -10,12 +10,12 @@
 
 #include "surf_private.h"
 
-typedef struct workstation {
+typedef struct workstation_CLM03 {
   surf_resource_t resource;	/* Any such object, added in a trace
 				   should start by this field!!! */
   char *name;
   void *cpu;
   void *network_card;
-} s_workstation_t, *workstation_t;
+} s_workstation_CLM03_t, *workstation_CLM03_t;
 
 #endif				/* _SURF_WORKSTATION_PRIVATE_H */

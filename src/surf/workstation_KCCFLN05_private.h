@@ -9,7 +9,6 @@
 #define _SURF_WORKSTATION_KCCFLN05_PRIVATE_H
 
 #include "surf_private.h"
-#include "network_private.h"
 
 /**************************************/
 /********* workstation object *********/

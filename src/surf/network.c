@@ -18,7 +18,7 @@ static xbt_dict_t network_link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
 static int card_number = 0;
-static network_link_t **routing_table = NULL;
+static network_link_CM02_t **routing_table = NULL;
 static int *routing_table_size = NULL;
 
 #define ROUTE(i,j) routing_table[(i)+(j)*card_number]
@@ -26,17 +26,17 @@ static int *routing_table_size = NULL;
 
 static void create_routing_table(void)
 {
-  routing_table = xbt_new0(network_link_t *, card_number * card_number);
+  routing_table = xbt_new0(network_link_CM02_t *, card_number * card_number);
   routing_table_size = xbt_new0(int, card_number * card_number);
 }
 
 static void network_link_free(void *nw_link)
 {
-  xbt_free(((network_link_t)nw_link)->name);
+  xbt_free(((network_link_CM02_t)nw_link)->name);
   xbt_free(nw_link);
 }
 
-static network_link_t network_link_new(char *name,
+static network_link_CM02_t network_link_new(char *name,
 				       double bw_initial,
 				       tmgr_trace_t bw_trace,
 				       double lat_initial,
@@ -45,7 +45,7 @@ static network_link_t network_link_new(char *name,
 				       state_initial,
 				       tmgr_trace_t state_trace)
 {
-  network_link_t nw_link = xbt_new0(s_network_link_t, 1);
+  network_link_CM02_t nw_link = xbt_new0(s_network_link_CM02_t, 1);
 
 
   nw_link->resource = (surf_resource_t) surf_network_resource;
@@ -73,18 +73,18 @@ static network_link_t network_link_new(char *name,
 
 static void network_card_free(void *nw_card)
 {
-  xbt_free(((network_card_t)nw_card)->name);
+  xbt_free(((network_card_CM02_t)nw_card)->name);
   xbt_free(nw_card);
 }
 
 static int network_card_new(const char *card_name)
 {
-  network_card_t card = NULL;
+  network_card_CM02_t card = NULL;
 
   xbt_dict_get(network_card_set, card_name, (void *) &card);
 
   if (!card) {
-    card = xbt_new0(s_network_card_t, 1);
+    card = xbt_new0(s_network_card_CM02_t, 1);
     card->name = xbt_strdup(card_name);
     card->id = card_number++;
     xbt_dict_set(network_card_set, card_name, card, network_card_free);
@@ -94,11 +94,11 @@ static int network_card_new(const char *card_name)
 
 static void route_new(int src_id, int dst_id, char **links, int nb_link)
 {
-  network_link_t *link_list = NULL;
+  network_link_CM02_t *link_list = NULL;
   int i;
 
   ROUTE_SIZE(src_id, dst_id) = nb_link;
-  link_list = (ROUTE(src_id, dst_id) = xbt_new0(network_link_t, nb_link));
+  link_list = (ROUTE(src_id, dst_id) = xbt_new0(network_link_CM02_t, nb_link));
   for (i = 0; i < nb_link; i++) {
     xbt_dict_get(network_link_set, links[i], (void *) &(link_list[i]));
     xbt_free(links[i]);
@@ -190,7 +190,7 @@ static void parse_file(const char *file)
 
 static void *name_service(const char *name)
 {
-  network_card_t card = NULL;
+  network_card_CM02_t card = NULL;
 
   xbt_dict_get(network_card_set, name, (void *) &card);
 
@@ -199,20 +199,20 @@ static void *name_service(const char *name)
 
 static const char *get_resource_name(void *resource_id)
 {
-  return ((network_card_t) resource_id)->name;
+  return ((network_card_CM02_t) resource_id)->name;
 }
 
 static int resource_used(void *resource_id)
 {
   return lmm_constraint_used(maxmin_system,
-			     ((network_link_t) resource_id)->constraint);
+			     ((network_link_CM02_t) resource_id)->constraint);
 }
 
 static void action_free(surf_action_t action)
 {
   xbt_swag_remove(action, action->state_set);
-  if(((surf_action_network_t)action)->variable)
-    lmm_variable_free(maxmin_system, ((surf_action_network_t)action)->variable);
+  if(((surf_action_network_CM02_t)action)->variable)
+    lmm_variable_free(maxmin_system, ((surf_action_network_CM02_t)action)->variable);
   xbt_free(action);
 
   return;
@@ -232,9 +232,9 @@ static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
-    if(((surf_action_network_t)action)->variable) {
-      lmm_variable_disable(maxmin_system, ((surf_action_network_t)action)->variable);
-      ((surf_action_network_t)action)->variable = NULL;
+    if(((surf_action_network_CM02_t)action)->variable) {
+      lmm_variable_disable(maxmin_system, ((surf_action_network_CM02_t)action)->variable);
+      ((surf_action_network_CM02_t)action)->variable = NULL;
     }
 
   surf_action_change_state(action, state);
@@ -243,8 +243,8 @@ static void action_change_state(surf_action_t action,
 
 static double share_resources(double now)
 {
-  s_surf_action_network_t s_action;
-  surf_action_network_t action = NULL;
+  s_surf_action_network_CM02_t s_action;
+  surf_action_network_CM02_t action = NULL;
   xbt_swag_t running_actions = surf_network_resource->common_public->states.running_action_set;
   double min = generic_maxmin_share_resources(running_actions,
 					      xbt_swag_offset(s_action, variable));
@@ -259,12 +259,11 @@ static double share_resources(double now)
   return min;
 }
 
-
 static void update_actions_state(double now, double delta)
 {
   double deltap = 0.0;
-  surf_action_network_t action = NULL;
-  surf_action_network_t next_action = NULL;
+  surf_action_network_CM02_t action = NULL;
+  surf_action_network_CM02_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_resource->common_public->states.running_action_set;
   xbt_swag_t failed_actions =
@@ -300,7 +299,7 @@ static void update_actions_state(double now, double delta)
     } else {			/* Need to check that none of the resource has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
-      network_link_t nw_link = NULL;
+      network_link_CM02_t nw_link = NULL;
 
       while ((cnst =
 	      lmm_get_cnst_from_var(maxmin_system, action->variable,
@@ -322,7 +321,7 @@ static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
-  network_link_t nw_link = id;
+  network_link_CM02_t nw_link = id;
   /*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */
   /* 	 "%lg" " for event %p\n", surf_get_clock(), nw_link->name, */
   /* 	 value, event_type); */
@@ -334,7 +333,7 @@ static void update_resource_state(void *id,
   } else if (event_type == nw_link->lat_event) {
     double delta = value - nw_link->lat_current;
     lmm_variable_t var = NULL;
-    surf_action_network_t action = NULL;
+    surf_action_network_CM02_t action = NULL;
 
     nw_link->lat_current = value;
     while (lmm_get_var_from_cnst(maxmin_system, nw_link->constraint, &var)) {
@@ -362,14 +361,14 @@ static void update_resource_state(void *id,
 
 static surf_action_t communicate(void *src, void *dst, double size, double rate)
 {
-  surf_action_network_t action = NULL;
-  network_card_t card_src = src;
-  network_card_t card_dst = dst;
+  surf_action_network_CM02_t action = NULL;
+  network_card_CM02_t card_src = src;
+  network_card_CM02_t card_dst = dst;
   int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
-  network_link_t *route = ROUTE(card_src->id, card_dst->id);
+  network_link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
   int i;
 
-  action = xbt_new0(s_surf_action_network_t, 1);
+  action = xbt_new0(s_surf_action_network_CM02_t, 1);
 
   action->generic_action.cost = size;
   action->generic_action.remains = size;
@@ -416,21 +415,21 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
 
 static void action_suspend(surf_action_t action)
 {
-  ((surf_action_network_t) action)->suspended = 1;
+  ((surf_action_network_CM02_t) action)->suspended = 1;
   lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_network_t) action)->variable, 0.0);
+			     ((surf_action_network_CM02_t) action)->variable, 0.0);
 }
 
 static void action_resume(surf_action_t action)
 {
   lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_network_t) action)->variable, 1.0);
-  ((surf_action_network_t) action)->suspended = 0;
+			     ((surf_action_network_CM02_t) action)->variable, 1.0);
+  ((surf_action_network_CM02_t) action)->suspended = 0;
 }
 
 static int action_is_suspended(surf_action_t action)
 {
-  return ((surf_action_network_t) action)->suspended;
+  return ((surf_action_network_CM02_t) action)->suspended;
 }
 
 static void finalize(void)

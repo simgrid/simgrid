@@ -11,12 +11,7 @@
 #include "surf_private.h"
 #include "xbt/dict.h"
 
-typedef enum {
-  SURF_NETWORK_LINK_ON = 1,	/* Ready        */
-  SURF_NETWORK_LINK_OFF = 0	/* Running      */
-} e_surf_network_link_state_t;
-
-typedef struct network_link {
+typedef struct network_link_CM02 {
   surf_resource_t resource;	/* Any such object, added in a trace
 				   should start by this field!!! */
   /* Using this object with the public part of
@@ -29,24 +24,24 @@ typedef struct network_link {
   e_surf_network_link_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
-} s_network_link_t, *network_link_t;
+} s_network_link_CM02_t, *network_link_CM02_t;
 
 
-typedef struct network_card {
+typedef struct network_card_CM02 {
   char *name;
   int id;
-} s_network_card_t, *network_card_t;
+} s_network_card_CM02_t, *network_card_CM02_t;
 
-typedef struct surf_action_network {
+typedef struct surf_action_network_CM02 {
   s_surf_action_t generic_action;
   double latency;
   double lat_current;
   lmm_variable_t variable;
   double rate;
   int suspended;
-  network_card_t src;
-  network_card_t dst;
-} s_surf_action_network_t, *surf_action_network_t;
+  network_card_CM02_t src;
+  network_card_CM02_t dst;
+} s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
 extern xbt_dict_t network_card_set;
 

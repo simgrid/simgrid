@@ -11,12 +11,12 @@
 #include "surf_private.h"
 #include "xbt/dict.h"
 
-typedef struct surf_action_cpu {
+typedef struct surf_action_cpu_Cas01 {
   s_surf_action_t generic_action;
   lmm_variable_t variable;
-} s_surf_action_cpu_t, *surf_action_cpu_t;
+} s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
-typedef struct cpu {
+typedef struct cpu_Cas01 {
   surf_resource_t resource;	/* Any such object, added in a trace
 				   should start by this field!!! */
   char *name;
@@ -26,7 +26,7 @@ typedef struct cpu {
   e_surf_cpu_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
-} s_cpu_t, *cpu_t;
+} s_cpu_Cas01_t, *cpu_Cas01_t;
 
 extern xbt_dict_t cpu_set;
 

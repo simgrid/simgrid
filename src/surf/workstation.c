@@ -17,10 +17,10 @@ surf_workstation_resource_t surf_workstation_resource = NULL;
 
 xbt_dict_t workstation_set = NULL;
 
-static workstation_t workstation_new(const char *name,
+static workstation_CLM03_t workstation_new(const char *name,
 				     void *cpu, void *card)
 {
-  workstation_t workstation = xbt_new0(s_workstation_t, 1);
+  workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
 
   workstation->resource = (surf_resource_t) surf_workstation_resource;
   workstation->name = xbt_strdup(name);
@@ -32,7 +32,7 @@ static workstation_t workstation_new(const char *name,
 
 static void workstation_free(void *workstation)
 {
-  xbt_free(((workstation_t)workstation)->name);
+  xbt_free(((workstation_CLM03_t)workstation)->name);
   xbt_free(workstation);
 }
 
@@ -63,7 +63,7 @@ static void *name_service(const char *name)
 
 static const char *get_resource_name(void *resource_id)
 {
-  return ((workstation_t) resource_id)->name;
+  return ((workstation_CLM03_t) resource_id)->name;
 }
 
 static int resource_used(void *resource_id)
@@ -125,13 +125,13 @@ static void update_resource_state(void *id,
 static surf_action_t execute(void *workstation, double size)
 {
   return surf_cpu_resource->extension_public->
-      execute(((workstation_t) workstation)->cpu, size);
+      execute(((workstation_CLM03_t) workstation)->cpu, size);
 }
 
 static surf_action_t action_sleep(void *workstation, double duration)
 {
   return surf_cpu_resource->extension_public->
-      sleep(((workstation_t) workstation)->cpu, duration);
+      sleep(((workstation_CLM03_t) workstation)->cpu, duration);
 }
 
 static void action_suspend(surf_action_t action)
@@ -166,14 +166,14 @@ static surf_action_t communicate(void *workstation_src,
 				 double rate)
 {
   return surf_network_resource->extension_public->
-      communicate(((workstation_t) workstation_src)->network_card,
-		  ((workstation_t) workstation_dst)->network_card, size, rate);
+      communicate(((workstation_CLM03_t) workstation_src)->network_card,
+		  ((workstation_CLM03_t) workstation_dst)->network_card, size, rate);
 }
 
 static e_surf_cpu_state_t get_state(void *workstation)
 {
   return surf_cpu_resource->extension_public->
-      get_state(((workstation_t) workstation)->cpu);
+      get_state(((workstation_CLM03_t) workstation)->cpu);
 }
 
 static void finalize(void)
