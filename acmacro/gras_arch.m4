@@ -1,3 +1,4 @@
+# BEGIN OF GRAS ARCH CHECK
 dnl
 dnl GRAS_DO_CHECK_SIZEOF: Get the size of a datatype (even in cross-compile)
 dnl  1: type tested
@@ -165,8 +166,9 @@ trace="${trace}:${ac_cv_sizeof_void_p}.${ac_cv_sizeof_void_LpR_LvoidR}"
 trace="${trace}:${ac_cv_sizeof_float}.${ac_cv_sizeof_double}"
 case $trace in
   l:1.2.4.4.8:4.4:4.8) gras_arch=0; gras_arch_name=i386;;
-  B:1.2.4.4.8:4.4:4.8) gras_arch=1; gras_arch_name=powerpc;;
-  B:1.2.4.8.8:8.8:4.8) gras_arch=2; gras_arch_name=sparc;;
+  l:1.2.4.8.8:8.8:4.8) gras_arch=1; gras_arch_name=alpha;;
+  B:1.2.4.4.8:4.4:4.8) gras_arch=2; gras_arch_name=powerpc;;
+  B:1.2.4.8.8:8.8:4.8) gras_arch=3; gras_arch_name=sparc;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
@@ -178,3 +180,4 @@ AC_DEFINE_UNQUOTED(GRAS_THISARCH_NAME,"$gras_arch_name",[defines the GRAS archit
 AC_DEFINE_UNQUOTED(GRAS_THISARCH,$gras_arch,[defines the GRAS architecture signature of this machine])
 AC_MSG_RESULT($gras_arch ($gras_arch_name))
 ])
+# END OF GRAS ARCH CHECK
