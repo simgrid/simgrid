@@ -77,13 +77,13 @@ gras_error_t gras_set_add    (gras_set_t     *set,
     elm->name_len = strlen(elm->name);
   }
 
-  errcode = gras_dict_retrieve_ext (set->dict, 
+  errcode = gras_dict_get_ext (set->dict, 
 				    elm->name, elm->name_len,
 				    (void**) &found_in_dict);
   if (errcode == no_error) {
     elm->ID=found_in_dict->ID;
     DEBUG2("Reinsertion of key %s (id %d)", elm->name, elm->ID);
-    TRY(gras_dict_insert_ext(set->dict, elm->name, elm->name_len, elm, free_func));
+    TRY(gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func));
     TRY(gras_dynar_set(set->dynar, elm->ID, &elm));
     return no_error;
 
@@ -92,7 +92,7 @@ gras_error_t gras_set_add    (gras_set_t     *set,
   }
 
   elm->ID = gras_dynar_length( set->dynar );
-  TRY(gras_dict_insert_ext(set->dict, elm->name, elm->name_len, elm, free_func));
+  TRY(gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func));
   TRY(gras_dynar_set(set->dynar, elm->ID, &elm));
   DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
 
@@ -105,13 +105,13 @@ gras_error_t gras_set_add    (gras_set_t     *set,
  * @name: Name of the searched cell
  * @dst: where to put the found data into
  *
- * Retrieve a data stored in the cell by providing its name.
+ * get a data stored in the cell by providing its name.
  */
 gras_error_t gras_set_get_by_name    (gras_set_t     *set,
 				      const char     *name,
 				      /* OUT */gras_set_elm_t **dst) {
 
-  return gras_dict_retrieve_ext(set->dict, name, strlen(name), (void**) dst);
+  return gras_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
 }
 /**
  * gras_set_get_by_name_ext:
@@ -120,7 +120,7 @@ gras_error_t gras_set_get_by_name    (gras_set_t     *set,
  * @name_len: length of the name, when strlen cannot be trusted
  * @dst: where to put the found data into
  *
- * Retrieve a data stored in the cell by providing its name (and the length
+ * get a data stored in the cell by providing its name (and the length
  * of the name, when strlen cannot be trusted because you don't use a char*
  * as name, you weird guy).
  */
@@ -129,7 +129,7 @@ gras_error_t gras_set_get_by_name_ext(gras_set_t     *set,
 				      int             name_len,
 				      /* OUT */gras_set_elm_t **dst) {
 
-  return gras_dict_retrieve_ext (set->dict, name, name_len, (void**)dst);
+  return gras_dict_get_ext (set->dict, name, name_len, (void**)dst);
 }
 
 /**
@@ -139,7 +139,7 @@ gras_error_t gras_set_get_by_name_ext(gras_set_t     *set,
  * @name_len: length of the name, when strlen cannot be trusted
  * @dst: where to put the found data into
  *
- * Retrieve a data stored in the cell by providing its name (and the length
+ * get a data stored in the cell by providing its name (and the length
  * of the name, when strlen cannot be trusted because you don't use a char*
  * as name, you weird guy).
  */

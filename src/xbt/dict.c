@@ -63,18 +63,18 @@ gras_dict_free(gras_dict_t **dict)  {
 }
 
 /**
- * gras_dict_insert_ext:
+ * gras_dict_set_ext:
  *
  * @p_dict: the container
- * @key: the key to insert the new data
+ * @key: the key to set the new data
  * @data: the data to add in the dict
  * @Returns: a gras_error
  *
- * Insert the @data in the structure under the @key, which can be any kind 
+ * set the @data in the structure under the @key, which can be any kind 
  * of data, as long as its length is provided in @key_len.
  */
 gras_error_t
-gras_dict_insert_ext(gras_dict_t     *p_dict,
+gras_dict_set_ext(gras_dict_t     *p_dict,
 		     const char      *key,
 		     int              key_len,
 		     void            *data,
@@ -82,34 +82,34 @@ gras_dict_insert_ext(gras_dict_t     *p_dict,
 
   gras_assert(p_dict);
 
-  return gras_dictelm_insert_ext(&(p_dict->head),
+  return gras_dictelm_set_ext(&(p_dict->head),
 				 key, key_len, data, free_ctn);
 }
 
 /**
- * gras_dict_insert:
+ * gras_dict_set:
  *
  * @head: the head of the dict
- * @key: the key to insert the new data
+ * @key: the key to set the new data
  * @data: the data to add in the dict
  * @Returns: a gras_error
  *
- * Insert the @data in the structure under the @key, which is a 
+ * set the @data in the structure under the @key, which is a 
  * null terminated string.
  */
 gras_error_t
-gras_dict_insert(gras_dict_t    *p_dict,
+gras_dict_set(gras_dict_t    *p_dict,
 		 const char     *key,
 		 void           *data,
 		 void_f_pvoid_t *free_ctn) {
 
   gras_assert(p_dict);
   
-  return gras_dictelm_insert(&(p_dict->head), key, data, free_ctn);
+  return gras_dictelm_set(&(p_dict->head), key, data, free_ctn);
 }
 
 /**
- * gras_dict_retrieve_ext:
+ * gras_dict_get_ext:
  *
  * @dict: the dealer of data
  * @key: the key to find data
@@ -119,18 +119,18 @@ gras_dict_insert(gras_dict_t    *p_dict,
  * Search the given @key. mismatch_error when not found.
  */
 gras_error_t
-gras_dict_retrieve_ext(gras_dict_t    *dict,
+gras_dict_get_ext(gras_dict_t    *dict,
 		       const char     *key,
 		       int             key_len,
 		       /* OUT */void **data) {
 
   gras_assert(dict);
 
-  return gras_dictelm_retrieve_ext(dict->head, key, key_len, data);
+  return gras_dictelm_get_ext(dict->head, key, key_len, data);
 }
 
 /**
- * gras_dict_retrieve:
+ * gras_dict_get:
  *
  * @dict: the dealer of data
  * @key: the key to find data
@@ -140,12 +140,12 @@ gras_dict_retrieve_ext(gras_dict_t    *dict,
  * Search the given @key. mismatch_error when not found.
  */
 gras_error_t
-gras_dict_retrieve(gras_dict_t    *dict,
+gras_dict_get(gras_dict_t    *dict,
                    const char     *key,
                    /* OUT */void **data) {
   gras_assert(dict);
 
-  return gras_dictelm_retrieve(dict->head, key, data);
+  return gras_dictelm_get(dict->head, key, data);
 }
 
 

@@ -124,7 +124,7 @@ gras_dd_alloc_ref(gras_dict_t *refs,
 
     DEBUG2("Insert %p under %p",*(void**)ptr, *(void**)r_ref);
     /* FIXME: Leaking on the ptr. Do I really need to copy it? */
-    TRY(gras_dict_insert_ext(refs,(const char *) r_ref, r_len, ptr, NULL));
+    TRY(gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, NULL));
   }
   return no_error;
 }
@@ -366,10 +366,10 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
       VERB0("Not sending NULL referenced data");
       break;
     }
-    errcode = gras_dict_retrieve_ext(refs,(char*)ref, sizeof(void*), &dummy);
+    errcode = gras_dict_get_ext(refs,(char*)ref, sizeof(void*), &dummy);
     if (errcode == mismatch_error) {
       VERB1("Sending data referenced at %p", *ref);
-      TRY(gras_dict_insert_ext(refs, (char*)ref, sizeof(void*), ref, NULL));
+      TRY(gras_dict_set_ext(refs, (char*)ref, sizeof(void*), ref, NULL));
       TRY(gras_datadesc_by_id(ref_code, &sub_type));
       TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, *ref));
       
@@ -578,9 +578,9 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       *(void**)l_data = NULL;
       break;
     }
-    errcode = gras_dict_retrieve_ext(refs,
-				     (char*)r_ref, pointer_type->size[r_arch],
-				     (void**)&l_ref);
+    errcode = gras_dict_get_ext(refs,
+				(char*)r_ref, pointer_type->size[r_arch],
+				(void**)&l_ref);
 
 
     if (errcode == mismatch_error) {

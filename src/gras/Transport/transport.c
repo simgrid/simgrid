@@ -40,13 +40,13 @@ gras_trp_init(void){
 
   /* TCP */
   TRY(gras_trp_tcp_init(&plug));
-  TRY(gras_dict_insert(_gras_trp_plugins, 
-		       plug->name, plug, gras_trp_plugin_free));
+  TRY(gras_dict_set(_gras_trp_plugins, 
+		    plug->name, plug, gras_trp_plugin_free));
 
   /* FILE */
   TRY(gras_trp_file_init(&plug));
-  TRY(gras_dict_insert(_gras_trp_plugins, 
-		       plug->name, plug, gras_trp_plugin_free));
+  TRY(gras_dict_set(_gras_trp_plugins, 
+		    plug->name, plug, gras_trp_plugin_free));
 
   return no_error;
 }
@@ -255,7 +255,7 @@ gras_error_t
 gras_trp_plugin_get_by_name(const char *name,
 			    gras_trp_plugin_t **dst){
 
-  return gras_dict_retrieve(_gras_trp_plugins,name,(void**)dst);
+  return gras_dict_get(_gras_trp_plugins,name,(void**)dst);
 }
 
 int   gras_socket_my_port  (gras_socket_t *sock) {

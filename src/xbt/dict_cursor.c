@@ -226,7 +226,7 @@ gras_dict_cursor_get_or_free(gras_dict_cursor_t **cursor,
   gras_dynar_get((*cursor)->keys,     (*cursor)->pos,     key    );
   gras_dynar_get((*cursor)->key_lens, (*cursor)->pos_len, &key_len);
 
-  errcode = gras_dictelm_retrieve_ext((*cursor)->head, *key, key_len, data);
+  errcode = gras_dictelm_get_ext((*cursor)->head, *key, key_len, data);
   if (errcode == mismatch_error) {
     gras_dict_cursor_free(*cursor);
     *cursor=NULL;
@@ -278,7 +278,7 @@ gras_dict_cursor_get_data(gras_dict_cursor_t  *p_cursor,
   gras_dynar_get(p_cursor->keys,     p_cursor->pos-1,     &key    );
   gras_dynar_get(p_cursor->key_lens, p_cursor->pos_len-1, &key_len);
 
-  TRY(gras_dictelm_retrieve_ext(p_cursor->head, key, key_len, data));
+  TRY(gras_dictelm_get_ext(p_cursor->head, key, key_len, data));
 
   return errcode;
 }

@@ -16,19 +16,19 @@
 /*####[ Multi dict functions ]##############################################*/
 /*###############################"##########################################*/
 /**
- * gras_mutidict_insert:
+ * gras_mutidict_set:
  *
  * @head: the head of dict
  * @keycount: the number of the key
  * @key: the key
- * @data: the data to insert
+ * @data: the data to set
  * @Returns: gras_error_t
  *
- * Insert the data in the structure under the @keycount @key.
+ * set the data in the structure under the @keycount @key.
  */
 
 gras_error_t
-gras_multidict_insert_ext(gras_dict_t    **pp_head,
+gras_multidict_set_ext(gras_dict_t    **pp_head,
                           int              keycount,
                           char           **key,
                           int             *key_len,
@@ -39,7 +39,7 @@ gras_multidict_insert_ext(gras_dict_t    **pp_head,
   gras_dictelm_t  *p_subdict =     NULL;
   int           i         =        0;
 
-  CDEBUG2(dict_multi, "fast_multidict_insert(%p,%d). Keys:", *pp_head, keycount);
+  CDEBUG2(dict_multi, "fast_multidict_set(%p,%d). Keys:", *pp_head, keycount);
 
   /*
   for (i = 0; i < keycount; i++) {
@@ -47,10 +47,10 @@ gras_multidict_insert_ext(gras_dict_t    **pp_head,
   }
   */
 
-  gras_assert0(keycount >= 1, "Can't insert less than one key in a multidict");
+  gras_assert0(keycount >= 1, "Can't set less than one key in a multidict");
 
   if (keycount == 1)
-    return gras_dict_insert_ext(pp_head, key[0], key_len[0], data, free_ctn);
+    return gras_dict_set_ext(pp_head, key[0], key_len[0], data, free_ctn);
 
   if (!*pp_head) {
     TRY(_gras_dict_alloc(NULL, 0, 0, NULL, NULL, pp_head));
@@ -61,23 +61,23 @@ gras_multidict_insert_ext(gras_dict_t    **pp_head,
   for (i = 0; i < keycount-1; i++) {
 
     /* search the dict of next level */
-    TRYCATCH(gras_dict_retrieve(p_elm, key[i], (void*)&p_subdict), mismatch_error);
+    TRYCATCH(gras_dict_get(p_elm, key[i], (void*)&p_subdict), mismatch_error);
 
     /* make sure the dict of next level exists */
     if (errcode == mismatch_error) {
       TRY(_gras_dict_alloc(NULL, 0, 0, NULL, NULL, &p_subdict));
-      TRY(gras_dict_insert_ext(&p_elm, key[i], key_len[i], &p_subdict,
+      TRY(gras_dict_set_ext(&p_elm, key[i], key_len[i], &p_subdict,
                                _free_dict));
     }
 
     p_elm = p_subdict;
   }
 
-  return gras_dict_insert_ext(&p_elm, key[i], key_len[i], data, free_ctn);
+  return gras_dict_set_ext(&p_elm, key[i], key_len[i], data, free_ctn);
 }
 
 gras_error_t
-gras_multidict_insert(gras_dictelm_t    **pp_head,
+gras_multidict_set(gras_dictelm_t    **pp_head,
                       int              keycount,
                       char           **key,
                       void            *data,
@@ -94,7 +94,7 @@ gras_multidict_insert(gras_dictelm_t    **pp_head,
     key_len[i] = 1+strlen(key[i]);
   }
 
-  TRYCLEAN(gras_multidict_insert_ext(pp_head, keycount, key, key_len, data, free_ctn),
+  TRYCLEAN(gras_multidict_set_ext(pp_head, keycount, key, key_len, data, free_ctn),
            free(key_len));
 
   free(key_len);
@@ -103,12 +103,12 @@ gras_multidict_insert(gras_dictelm_t    **pp_head,
 }
 
 /**
- * gras_mutidict_retrieve:
+ * gras_mutidict_get:
  *
  * @head: the head of dict
  * @keycount: the number of the key
  * @key: the key
- * @data: where to put the data retrieved
+ * @data: where to put the got data
  * @Returns: gras_error_t
  *
  * Search the given @key. data=NULL when not found
@@ -116,7 +116,7 @@ gras_multidict_insert(gras_dictelm_t    **pp_head,
 
 
 gras_error_t
-gras_multidict_retrieve_ext(gras_dictelm_t    *p_head,
+gras_multidict_get_ext(gras_dictelm_t    *p_head,
                             int             keycount,
                             const char    **key,
                             int            *key_len,
@@ -125,7 +125,7 @@ gras_multidict_retrieve_ext(gras_dictelm_t    *p_head,
   gras_dictelm_t  *p_elm  =   p_head;
   int           i       =        0;
 
-  CDEBUG2(dict_multi, "fast_multidict_retrieve(%p, %d). Keys:", p_head, keycount);
+  CDEBUG2(dict_multi, "fast_multidict_get(%p, %d). Keys:", p_head, keycount);
 
   /*
   for (i = 0; i < keycount; i++) {
@@ -137,7 +137,7 @@ gras_multidict_retrieve_ext(gras_dictelm_t    *p_head,
 
   while (p_elm && i < keycount-1) {
 
-    TRY(gras_dict_retrieve_ext(p_elm, key[i], key_len[i], (void**)p_elm));
+    TRY(gras_dict_get_ext(p_elm, key[i], key_len[i], (void**)p_elm));
 
     /*
     if (p_elm) {
@@ -153,7 +153,7 @@ gras_multidict_retrieve_ext(gras_dictelm_t    *p_head,
   if (p_elm) { // Found all dicts to the data
 
     //    gras_dict_dump(dict,&gras_dict_prints);
-    return gras_dict_retrieve_ext(p_elm, key[i], key_len[i], data);
+    return gras_dict_get_ext(p_elm, key[i], key_len[i], data);
 
   } else {
 
@@ -165,7 +165,7 @@ gras_multidict_retrieve_ext(gras_dictelm_t    *p_head,
 }
 
 gras_error_t
-gras_multidict_retrieve(gras_dictelm_t    *p_head,
+gras_multidict_get(gras_dictelm_t    *p_head,
                         int             keycount,
                         const char    **key,
                         /* OUT */void **data) {
@@ -181,7 +181,7 @@ gras_multidict_retrieve(gras_dictelm_t    *p_head,
     key_len[i] = 1+strlen(key[i]);
   }
 
-  TRYCLEAN(gras_multidict_retrieve_ext(p_head, keycount, key, key_len, data),
+  TRYCLEAN(gras_multidict_get_ext(p_head, keycount, key, key_len, data),
            free(key_len));
   free(key_len);
 
@@ -210,7 +210,7 @@ gras_multidict_remove_ext(gras_dictelm_t  *p_head,
   int          i      =      0;
 
   while (p_elm && i < keycount-1) {
-    if (!gras_dict_retrieve_ext(p_elm, key[i], key_len[i], (void**)&p_elm)) {
+    if (!gras_dict_get_ext(p_elm, key[i], key_len[i], (void**)&p_elm)) {
       return 0;
     }
   }

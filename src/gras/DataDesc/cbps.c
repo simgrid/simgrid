@@ -65,11 +65,11 @@ gras_dd_cbps_push(gras_dd_cbps_t        *ps,
   gras_dynar_t            *p_dynar        = NULL;
   gras_dd_cbps_elm_t      *p_var          = NULL;
  
-  gras_dict_retrieve(ps->space, name, (void **)&p_dynar);
+  gras_dict_get(ps->space, name, (void **)&p_dynar);
  
   if (!p_dynar) {
     gras_dynar_new(&p_dynar, sizeof (gras_dd_cbps_elm_t *), NULL);
-    gras_dict_insert(ps->space, name, (void **)p_dynar, NULL);
+    gras_dict_set(ps->space, name, (void **)p_dynar, NULL);
     /* FIXME: leaking on dynar. Insert in dict with a way to free it */
   }
  
@@ -100,7 +100,7 @@ gras_dd_cbps_pop (gras_dd_cbps_t        *ps,
   void                    *data           = NULL;
 
   /* FIXME: Error handling */
-  gras_dict_retrieve(ps->space, name, (void **)&p_dynar);
+  gras_dict_get(ps->space, name, (void **)&p_dynar);
   gras_dynar_pop(p_dynar, &p_elm);
   
   if (!gras_dynar_length(p_dynar)) {
@@ -158,11 +158,11 @@ gras_dd_cbps_set (gras_dd_cbps_t        *ps,
   gras_dynar_t            *p_dynar        = NULL;
   gras_dd_cbps_elm_t      *p_elm          = NULL;
   
-  gras_dict_retrieve(ps->space, name, (void **)&p_dynar);
+  gras_dict_get(ps->space, name, (void **)&p_dynar);
   
   if (!p_dynar) {
     gras_dynar_new(&p_dynar, sizeof (gras_dd_cbps_elm_t *), NULL);
-    gras_dict_insert(ps->space, name, (void **)p_dynar, NULL);
+    gras_dict_set(ps->space, name, (void **)p_dynar, NULL);
     
     p_elm   = calloc(1, sizeof(gras_dd_cbps_elm_t));
     gras_dynar_push(ps->globals, &name);
@@ -196,7 +196,7 @@ gras_dd_cbps_get (gras_dd_cbps_t        *ps,
   gras_dd_cbps_elm_t      *p_elm          = NULL;
   
   /* FIXME: Error handling */
-  gras_dict_retrieve(ps->space, name, (void **)&p_dynar);
+  gras_dict_get(ps->space, name, (void **)&p_dynar);
   gras_dynar_pop(p_dynar, &p_elm);
   gras_dynar_push(p_dynar, &p_elm);
   
@@ -250,7 +250,7 @@ gras_dd_cbps_block_end(gras_dd_cbps_t *ps) {
     gras_dynar_t            *p_dynar_elm    = NULL;
     gras_dd_cbps_elm_t      *p_elm          = NULL;
  
-    gras_dict_retrieve(ps->space, name, (void **)&p_dynar_elm);
+    gras_dict_get(ps->space, name, (void **)&p_dynar_elm);
     gras_dynar_pop(p_dynar_elm, &p_elm);
  
     if (!gras_dynar_length(p_dynar_elm)) {

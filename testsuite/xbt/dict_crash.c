@@ -77,7 +77,7 @@ int main(int argc,char **argv) {
 	key[k]=rand() % ('z' - 'a') + 'a';
       key[k]='\0';
       //      printf("[%d %s]\n",j,key);
-      TRYFAIL(gras_dict_insert(head,key,key,&free));
+      TRYFAIL(gras_dict_set(head,key,key,&free));
     }
     nb=0;
     //    gras_dict_dump(head,(void (*)(void*))&printf);
@@ -105,7 +105,7 @@ int main(int argc,char **argv) {
     }
     
     sprintf(key,"%d",j);
-    TRYFAIL(gras_dict_insert(head,key,key,&free));
+    TRYFAIL(gras_dict_set(head,key,key,&free));
   }
 
   printf("\n Count the elements (retrieving the key and data for each): \n");
@@ -122,7 +122,7 @@ int main(int argc,char **argv) {
     for (j=0;j<NB_ELM;j++) {
       
       sprintf(key,"%d",j);
-      TRYFAIL(gras_dict_retrieve(head,key,&data));
+      TRYFAIL(gras_dict_get(head,key,&data));
       if (strcmp(key,(char*)data)) {
 	printf("key=%s != data=%s\n",key,(char*)data);
 	abort();

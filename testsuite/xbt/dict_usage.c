@@ -50,7 +50,7 @@ static gras_error_t debuged_add(gras_dict_t *head,const char*key)
   char *data=strdup(key);
 
   printf("   - Add %s\n",key);
-  errcode=gras_dict_insert(head,key,data,&free);
+  errcode=gras_dict_set(head,key,data,&free);
   if (GRAS_LOG_ISENABLED(dict,gras_log_priority_debug)) {
     gras_dict_dump(head,(void (*)(void*))&printf);
     fflush(stdout);
@@ -63,7 +63,7 @@ static gras_error_t search(gras_dict_t *head,const char*key) {
   gras_error_t errcode;
 
   
-  errcode=gras_dict_retrieve(head,key,&data);
+  errcode=gras_dict_get(head,key,&data);
   printf("   - Search %s. Found %s\n",key,data?(char*)data:"(null)");fflush(stdout);
   if (strcmp((char*)data,key)) 
     return mismatch_error;
@@ -118,26 +118,26 @@ int main(int argc,char **argv) {
 
   printf(" - Change some values\n");
   printf("   - Change 123 to 'Changed 123'\n");
-  TRYFAIL(gras_dict_insert(head,"123",strdup("Changed 123"),&free));
+  TRYFAIL(gras_dict_set(head,"123",strdup("Changed 123"),&free));
   printf("   - Change 123 back to '123'\n");
-  TRYFAIL(gras_dict_insert(head,"123",strdup("123"),&free));
+  TRYFAIL(gras_dict_set(head,"123",strdup("123"),&free));
   printf("   - Change 12a to 'Dummy 12a'\n");
-  TRYFAIL(gras_dict_insert(head,"12a",strdup("Dummy 12a"),&free));
+  TRYFAIL(gras_dict_set(head,"12a",strdup("Dummy 12a"),&free));
   printf("   - Change 12a to '12a'\n");
-  TRYFAIL(gras_dict_insert(head,"12a",strdup("12a"),&free));
+  TRYFAIL(gras_dict_set(head,"12a",strdup("12a"),&free));
 
   //  gras_dict_dump(head,(void (*)(void*))&printf);
   printf(" - Traverse the resulting dictionnary\n");
   TRYFAIL(traverse(head));
 
   printf(" - Retrive values\n");
-  TRYFAIL(gras_dict_retrieve(head,"123",(void**)&data));
+  TRYFAIL(gras_dict_get(head,"123",(void**)&data));
   assert(data);
   TRYFAIL(strcmp("123",data));
 
-  TRYEXPECT(gras_dict_retrieve(head,"Can't be found",(void**)&data),mismatch_error);
-  TRYEXPECT(gras_dict_retrieve(head,"123 Can't be found",(void**)&data),mismatch_error);
-  TRYEXPECT(gras_dict_retrieve(head,"12345678 NOT",(void**)&data),mismatch_error);
+  TRYEXPECT(gras_dict_get(head,"Can't be found",(void**)&data),mismatch_error);
+  TRYEXPECT(gras_dict_get(head,"123 Can't be found",(void**)&data),mismatch_error);
+  TRYEXPECT(gras_dict_get(head,"12345678 NOT",(void**)&data),mismatch_error);
 
   TRYFAIL(search(head,"12a"));
   TRYFAIL(search(head,"12b"));

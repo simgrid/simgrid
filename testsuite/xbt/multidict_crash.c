@@ -54,12 +54,12 @@ static gras_error_t test1() {
 	key[l]=val[l];//  NOWADAYS, no need to strdup the key.
       }
       if (verbose) printf("in multitree %p.\n",head);
-      TRYFAIL(gras_multidict_insert(&head,MULTICACHE_DEPTH,key,
-				    strdup(val[0]),&free));
+      TRYFAIL(gras_multidict_set(&head,MULTICACHE_DEPTH,key,
+				 strdup(val[0]),&free));
 
-      TRYFAIL(gras_multidict_retrieve(head,
-				      MULTICACHE_DEPTH,(const char **)val,
-				      &data));
+      TRYFAIL(gras_multidict_get(head,
+				 MULTICACHE_DEPTH,(const char **)val,
+				 &data));
       if (!data || strcmp((char*)data,val[0])) {
 	fprintf(stderr,"Retrieved value (%s) does not match the entrered one (%s)\n",
 		(char*)data,val[0]);

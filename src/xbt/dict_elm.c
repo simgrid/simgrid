@@ -50,13 +50,13 @@ static gras_error_t _gras_dictelm_dump_rec(gras_dictelm_t *head,
 
 
 
-static gras_error_t _gras_dictelm_insert_rec(gras_dictelm_t *head,
+static gras_error_t _gras_dictelm_set_rec(gras_dictelm_t *head,
 					     char           *key,
 					     int             key_len,
 					     int             offset,
 					     void           *data,
 					     void_f_pvoid_t *free_ctn);
-static gras_error_t _gras_dictelm_retrieve_rec(gras_dictelm_t *head,
+static gras_error_t _gras_dictelm_get_rec(gras_dictelm_t *head,
 					       const char     *key,
 					       int             key_len,
 					       int             offset,
@@ -413,22 +413,22 @@ _gras_dictelm_change_value(gras_dictelm_t    *p_elm,
 }
 
 /**
- * _gras_dictelm_insert_rec:
+ * _gras_dictelm_set_rec:
  *
  * @head: the head of the dict
- * @key: the key to insert the new data
+ * @key: the key to set the new data
  * @offset: offset on key.
  * @data: the data to add in the dict
  * @Returns: a gras_error
  *
- * Insert the @data in the structure under the @key. The @key is destroyed
+ * set the @data in the structure under the @key. The @key is destroyed
  * in the process. Think to strdup it before.
  *
- * This is a helper function to gras_dict_insert which locks the struct and
+ * This is a helper function to gras_dict_set which locks the struct and
  * strdup the key before action. 
  */
 gras_error_t
-_gras_dictelm_insert_rec(gras_dictelm_t     *p_head,
+_gras_dictelm_set_rec(gras_dictelm_t     *p_head,
 			 char            *key,
 			 int              key_len,
 			 int              offset,
@@ -495,7 +495,7 @@ _gras_dictelm_insert_rec(gras_dictelm_t     *p_head,
       gras_dynar_get(p_head->sub, pos, &p_child);
       CDEBUG2(dict_add,"-> Recurse on %p (offset=%d)", p_child, offset);
 
-      return _gras_dictelm_insert_rec(p_child, key, key_len, 
+      return _gras_dictelm_set_rec(p_child, key, key_len, 
 				      offset, data, free_ctn);
     }
 
@@ -557,18 +557,18 @@ _gras_dictelm_insert_rec(gras_dictelm_t     *p_head,
 }
 
 /**
- * gras_dictelm_insert_ext:
+ * gras_dictelm_set_ext:
  *
  * @head: the head of the dict
- * @key: the key to insert the new data
+ * @key: the key to set the new data
  * @data: the data to add in the dict
  * @Returns: a gras_error
  *
- * Insert the @data in the structure under the @key, which can be any kind 
+ * set the @data in the structure under the @key, which can be any kind 
  * of data, as long as its length is provided in @key_len.
  */
 gras_error_t
-gras_dictelm_insert_ext(gras_dictelm_t **pp_head,
+gras_dictelm_set_ext(gras_dictelm_t **pp_head,
 			const char      *_key,
 			int              key_len,
 			void            *data,
@@ -598,31 +598,31 @@ gras_dictelm_insert_ext(gras_dictelm_t **pp_head,
     return errcode;
   }
 
-  return _gras_dictelm_insert_rec(p_head, key, key_len, 0, data, free_ctn);
+  return _gras_dictelm_set_rec(p_head, key, key_len, 0, data, free_ctn);
 }
 
 /**
- * gras_dictelm_insert:
+ * gras_dictelm_set:
  *
  * @head: the head of the dict
- * @key: the key to insert the new data
+ * @key: the key to set the new data
  * @data: the data to add in the dict
  * @Returns: a gras_error
  *
- * Insert the @data in the structure under the @key, which is a 
+ * set the @data in the structure under the @key, which is a 
  * null terminated string.
  */
 gras_error_t
-gras_dictelm_insert(gras_dictelm_t **pp_head,
+gras_dictelm_set(gras_dictelm_t **pp_head,
 		    const char      *_key,
 		    void            *data,
 		    void_f_pvoid_t  *free_ctn) {
 
-  return gras_dictelm_insert_ext(pp_head, _key, 1+strlen(_key), data, free_ctn);
+  return gras_dictelm_set_ext(pp_head, _key, 1+strlen(_key), data, free_ctn);
 }
 
 /**
- * _gras_dict_retrieve_rec:
+ * _gras_dict_get_rec:
  *
  * @head: the head of the dict
  * @key: the key to find data
@@ -634,7 +634,7 @@ gras_dictelm_insert(gras_dictelm_t **pp_head,
  */
 static 
 gras_error_t
-_gras_dictelm_retrieve_rec(gras_dictelm_t *p_head,
+_gras_dictelm_get_rec(gras_dictelm_t *p_head,
 			   const char     *key,
 			   int             key_len,
 			   int             offset,
@@ -683,7 +683,7 @@ _gras_dictelm_retrieve_rec(gras_dictelm_t *p_head,
 
         gras_dynar_get(p_head->sub, pos, &p_child);
 
-        return _gras_dictelm_retrieve_rec(p_child, key, key_len, offset, data);
+        return _gras_dictelm_get_rec(p_child, key, key_len, offset, data);
       }
 
     case 3: /* The key is a prefix of the child => not found */
@@ -699,7 +699,7 @@ _gras_dictelm_retrieve_rec(gras_dictelm_t *p_head,
 }
 
 /**
- * gras_dictelm_retrieve_ext:
+ * gras_dictelm_get_ext:
  *
  * @head: the head of the dict
  * @key: the key to find data
@@ -709,7 +709,7 @@ _gras_dictelm_retrieve_rec(gras_dictelm_t *p_head,
  * Search the given @key. mismatch_error when not found.
  */
 gras_error_t
-gras_dictelm_retrieve_ext(gras_dictelm_t *p_head,
+gras_dictelm_get_ext(gras_dictelm_t *p_head,
 			  const char     *key,
 			  int             key_len,
 			  /* OUT */void **data) {
@@ -718,11 +718,11 @@ gras_dictelm_retrieve_ext(gras_dictelm_t *p_head,
     return mismatch_error;
   }
 
-  return _gras_dictelm_retrieve_rec(p_head, key, key_len, 0, data);
+  return _gras_dictelm_get_rec(p_head, key, key_len, 0, data);
 }
 
 /**
- * gras_dictelm_retrieve:
+ * gras_dictelm_get:
  *
  * @head: the head of the dict
  * @key: the key to find data
@@ -732,11 +732,11 @@ gras_dictelm_retrieve_ext(gras_dictelm_t *p_head,
  * Search the given @key. mismatch_error when not found.
  */
 gras_error_t
-gras_dictelm_retrieve(gras_dictelm_t    *p_head,
+gras_dictelm_get(gras_dictelm_t    *p_head,
                    const char     *key,
                    /* OUT */void **data) {
 
-  return gras_dictelm_retrieve_ext(p_head, key, 1+strlen(key), data);
+  return gras_dictelm_get_ext(p_head, key, 1+strlen(key), data);
 }
 
 /*----[ _gras_dict_collapse ]------------------------------------------------*/

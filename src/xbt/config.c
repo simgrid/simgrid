@@ -218,7 +218,7 @@ gras_cfg_register(gras_cfg_t *cfg,
   gras_cfgelm_t *res;
   gras_error_t errcode;
 
-  TRYCATCH(mismatch_error,gras_dict_retrieve((gras_dict_t*)cfg,name,(void**)&res));
+  TRYCATCH(mismatch_error,gras_dict_get((gras_dict_t*)cfg,name,(void**)&res));
 
   if (errcode != mismatch_error) {
     WARN1("Config elem %s registered twice.",name);
@@ -254,7 +254,7 @@ gras_cfg_register(gras_cfg_t *cfg,
     ERROR1("%d is an invalide type code",type);
   }
     
-  return gras_dict_insert((gras_dict_t*)cfg,name,res,&gras_cfgelm_free);
+  return gras_dict_set((gras_dict_t*)cfg,name,res,&gras_cfgelm_free);
 }
 
 /**
@@ -398,7 +398,7 @@ static gras_error_t gras_cfgelm_get(gras_cfg_t *cfg,
 				    /* OUT */ gras_cfgelm_t **whereto){
   gras_error_t errcode;
 
-  TRYCATCH(mismatch_error,gras_dict_retrieve((gras_dict_t*)cfg,name,(void**)whereto));
+  TRYCATCH(mismatch_error,gras_dict_get((gras_dict_t*)cfg,name,(void**)whereto));
 
   if (errcode == mismatch_error) {
     ERROR1("No registered cell %s in this config set",
@@ -432,7 +432,7 @@ gras_cfg_get_type(gras_cfg_t *cfg, const char *name,
   gras_cfgelm_t *cell;
   gras_error_t errcode;
 
-  TRYCATCH(mismatch_error,gras_dict_retrieve((gras_dict_t*)cfg,name,(void**)&cell));
+  TRYCATCH(mismatch_error,gras_dict_get((gras_dict_t*)cfg,name,(void**)&cell));
 
   if (errcode == mismatch_error) {
     ERROR1("Can't get the type of '%s' since this cell does not exist",
@@ -596,7 +596,7 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
 
     DEBUG2("name='%s';val='%s'",name,val);
 
-    errcode=gras_dict_retrieve((gras_dict_t*)cfg,name,(void**)&cell);
+    errcode=gras_dict_get((gras_dict_t*)cfg,name,(void**)&cell);
     switch (errcode) {
     case no_error:
       break;
@@ -919,7 +919,7 @@ gras_cfg_empty(gras_cfg_t *cfg,const char*name) {
   gras_error_t errcode;
 
   TRYCATCH(mismatch_error,
-	   gras_dict_retrieve((gras_dict_t*)cfg,name,(void**)&cell));
+	   gras_dict_get((gras_dict_t*)cfg,name,(void**)&cell));
   if (errcode == mismatch_error) {
     ERROR1("Can't empty  '%s' since this config element does not exist",
 	   name);
