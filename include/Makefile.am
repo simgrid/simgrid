@@ -11,3 +11,4 @@ EXTRA_DIST=    \
 	messages.h \
 	\
 	core.h
+DISTCLEANFILES = gras
