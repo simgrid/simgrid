@@ -20,7 +20,7 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
     if test "x$enable_compile_warnings" = "xyes"; then
       warnCFLAGS="$warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
  -finline-functions  -Wshadow -Wpointer-arith -Wchar-subscripts -Wcomment \
- -Wformat=2 -Wno-unused-variable -Wno-unused-function -Wwrite-strings \
+ -Wformat=2 -Wno-unused-variable -Wno-unused-function -Wno-unused-label -Wwrite-strings \
  -Werror -O0"
     fi
   fi
