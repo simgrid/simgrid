@@ -20,9 +20,11 @@ static xbt_error_t search(xbt_dict_t head,const char*key);
 static xbt_error_t debuged_remove(xbt_dict_t head,const char*key);
 static xbt_error_t traverse(xbt_dict_t head);
 
+#define STRING(str) (str)?:"(null)"
+
 static void print_str(void *str);
 static void print_str(void *str) {
-  printf("%s",(char*)str);
+  printf("%s",(char*)STRING(str));
 }
 
 static void fill(xbt_dict_t *head) {
@@ -45,7 +47,7 @@ static void debuged_add(xbt_dict_t head,const char*key)
 {
   char *data=xbt_strdup(key);
 
-  printf("   - Add %s\n",key);
+  printf("   - Add %s\n",STRING(key));
   xbt_dict_set(head,key,data,&free);
   if (XBT_LOG_ISENABLED(dict,xbt_log_priority_debug)) {
     xbt_dict_dump(head,(void (*)(void*))&printf);
@@ -59,7 +61,7 @@ static xbt_error_t search(xbt_dict_t head,const char*key) {
 
   
   errcode=xbt_dict_get(head,key,&data);
-  printf("   - Search %s. Found %s\n",key,data?(char*)data:"NULL");fflush(stdout);
+  printf("   - Search %s. Found %s\n",STRING(key),(char*) STRING(data));fflush(stdout);
   if (!data)
      return errcode;
   if (strcmp((char*)data,key)) 
@@ -71,7 +73,7 @@ static xbt_error_t debuged_remove(xbt_dict_t head,const char*key)
 {
   xbt_error_t errcode;
 
-  printf("   Remove '%s'\n",key);fflush(stdout);
+  printf("   Remove '%s'\n",STRING(key));fflush(stdout);
   errcode=xbt_dict_remove(head,key);
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
   return errcode;
@@ -84,7 +86,7 @@ static xbt_error_t traverse(xbt_dict_t head) {
   char *data;
 
   xbt_dict_foreach(head,cursor,key,data) {
-    printf("   - Seen:  %s->%s\n",key,data);
+    printf("   - Seen:  %s->%s\n",STRING(key),STRING(data));
     xbt_assert2(!data || !strcmp(key,data),
 		 "Key(%s) != value(%s). Abording\n",key,data);
   }
@@ -123,7 +125,7 @@ int main(int argc,char **argv) {
      int found=0;
      
      xbt_dict_foreach(head,cursor,key,data) {
-	printf("   - Seen:  %s->%s\n",key,data);fflush(stdout);
+	printf("   - Seen:  %s->%s\n",STRING(key),STRING(data));fflush(stdout);
 	if (!strcmp(key,"null"))
 	  found = 1;
      }
