@@ -46,7 +46,7 @@
    <title>Virtualization</title>
     &virtu-globals;
     &virtu-syscall;
-    &virtu-fs;
+<!--    &virtu-fs;-->
   </chapter>
 
 <!--
