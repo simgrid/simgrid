@@ -10,10 +10,23 @@
 
 #include "Virtu/virtu_sg.h"
 
-double gras_time() {
+/**
+ * gras_time:
+ * @Returns: The current time
+ * 
+ * The epoch since when the time is given is not specified. It is thus only usefull to compute intervals
+ */
+double gras_os_time() {
   return MSG_getClock();
 }
- 
-void gras_sleep(unsigned long sec,unsigned long usec) {
+
+/**
+ * gras_sleep:
+ * @sec: amount of sec to sleep
+ * @usec: amount of micro second to sleep
+ * 
+ * Freeze the process for the specified amount of time
+ */
+void gras_os_sleep(unsigned long sec,unsigned long usec) {
   MSG_process_sleep((double)sec + ((double)usec)/1000000);
 }

@@ -91,9 +91,8 @@ static char *make_namev(const char *name, short int ver) {
  */
 gras_error_t
 gras_msgtype_declare(const char            *name,
-		     gras_datadesc_type_t  *payload,
-		     gras_msgtype_t       **dst) {
-  return gras_msgtype_declare_v(name, 0, payload, dst);
+		     gras_datadesc_type_t  *payload) {
+  return gras_msgtype_declare_v(name, 0, payload);
 }
 
 /**
@@ -111,8 +110,7 @@ gras_msgtype_declare(const char            *name,
 gras_error_t
 gras_msgtype_declare_v(const char            *name,
 		       short int              version,
-		       gras_datadesc_type_t  *payload,
-		       gras_msgtype_t       **dst) {
+		       gras_datadesc_type_t  *payload) {
  
   gras_error_t    errcode;
   gras_msgtype_t *msgtype;
@@ -151,7 +149,7 @@ gras_msgtype_declare_v(const char            *name,
 
   TRY(gras_set_add(_gras_msgtype_set, (gras_set_elm_t*)msgtype,
 		   &gras_msgtype_free));
-
+   
   return no_error;
 }
 
@@ -293,7 +291,7 @@ gras_msg_wait(double                 timeout,
 
   VERB1("Waiting for message %s",msgt_want->name);
 
-  start = now = gras_time();
+  start = now = gras_os_time();
 
   gras_dynar_foreach(pd->msg_queue,cpt,msg){
     if (msg.type->code == msgt_want->code) {
@@ -323,7 +321,7 @@ gras_msg_wait(double                 timeout,
     msg.payload_size = payload_size_got;
     TRY(gras_dynar_push(pd->msg_queue,&msg));
     
-    now=gras_time();
+    now=gras_os_time();
     if (now - start + 0.001 < timeout) {
       RAISE1(timeout_error,"Timeout while waiting for msg %s",msgt_want->name);
     }

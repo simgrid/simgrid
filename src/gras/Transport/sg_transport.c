@@ -31,7 +31,7 @@ gras_trp_select(double timeout,
 		gras_socket_t **dst) {
 
   gras_error_t errcode;
-  double startTime=gras_time();
+  double startTime=gras_os_time();
   gras_procdata_t *pd=gras_procdata_get();
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t *trp;
@@ -138,7 +138,7 @@ gras_trp_select(double timeout,
       // MSG_process_sleep(1);
       MSG_process_sleep(0.01);
     }
-  } while (gras_time()-startTime < timeout
+  } while (gras_os_time()-startTime < timeout
 	   || MSG_task_Iprobe((m_channel_t) pd->chan));
 
   return timeout_error;

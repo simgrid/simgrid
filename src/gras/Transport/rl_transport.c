@@ -36,7 +36,7 @@ gras_trp_select(double timeout,
   gras_error_t errcode;
   gras_dynar_t *sockets= gras_socketset_get();
   int done = -1;
-  double wakeup = gras_time() + 1000000*timeout;
+  double wakeup = gras_os_time() + 1000000*timeout;
   double now = 0;
   /* nextToService used to make sure socket with high number do not starve */
   //  static int nextToService = 0;
@@ -52,7 +52,7 @@ gras_trp_select(double timeout,
   *dst=NULL;
   while (done == -1) {
     if (timeout > 0) { /* did we timeout already? */
-      now = gras_time();
+      now = gras_os_time();
       if (now == -1 || now >= wakeup) {
 	done = 0;	/* didn't find anything */
 	break;

@@ -11,7 +11,7 @@
 #include "gras_private.h"
 #include <sys/time.h>   /* gettimeofday() */
 
-double gras_time() {
+double gras_os_time() {
   struct timeval tv;
 
   gettimeofday(&tv, NULL);
@@ -19,7 +19,7 @@ double gras_time() {
   return (double)(tv.tv_sec * 1000000 + tv.tv_usec);
 }
  
-void gras_sleep(unsigned long sec,unsigned long usec) {
+void gras_os_sleep(unsigned long sec,unsigned long usec) {
   sleep(sec);
   if (usec/1000000) sleep(usec/1000000);
 

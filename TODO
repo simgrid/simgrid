@@ -11,10 +11,7 @@
 ### Avant 1.0
 ###
 
-- renomages     
-  gras_os_time
-  gras_os_sleep
-  gras_os_getload
+- gras_os_getload
 
 - gras_datadesc_import_nws
 

@@ -38,21 +38,21 @@
 BEGIN_DECL
 
 /**
- * gras_time:
+ * gras_os_time:
  * 
  * Get the time in number of second since the Epoch.
  * (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
  */
-double gras_time(void);
+double gras_os_time(void);
 
 /**
- * gras_sleep:
+ * gras_os_sleep:
  * @sec: number of seconds to sleep
  * @usec: number of microseconds to sleep
  * 
  * sleeps for the given amount of seconds plus the given amount of microseconds.
  */
-void gras_sleep(unsigned long sec, unsigned long usec);
+void gras_os_sleep(unsigned long sec, unsigned long usec);
 
 END_DECL
 
