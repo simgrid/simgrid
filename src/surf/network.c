@@ -403,6 +403,10 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
     lmm_update_variable_bound(maxmin_system, action->variable,
 			      min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
 
+  if(route_size == 0) {
+    surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+  }
+
   for (i = 0; i < route_size; i++)
     lmm_expand(maxmin_system, route[i]->constraint, action->variable, 1.0);
 
