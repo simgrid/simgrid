@@ -41,6 +41,8 @@ EXTRA_DIST= \
 	include/surf/surf.h \
 	include/surf/surf_parse.h \
 	\
+	include/xbt/context.h \
+	\
 	msg/private.h \
 	\
 	gras/Transport/transport_interface.h \

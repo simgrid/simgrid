@@ -32,6 +32,8 @@ BEGIN_DECL()
  *  timer, the associated code gets executed before any incomming connexion 
  *  are checked. 
  *
+ *  The section \ref GRAS_ex_timer constitutes a perfect example of these features.
+ * 
  *  @{
  */
 
