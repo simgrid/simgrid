@@ -115,7 +115,7 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	   fi;\
 	   \
 	   echo "-- Copy the data over"; \
-	   scp @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker \
+	   scp @srcdir@/@PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker \
 	       $$machine:$(REMOTE_PREFIX)/src;\
 	   \
 	   echo "-- Compiling... (the output gets into buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; \
