@@ -466,7 +466,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBOBJS HTML_DIR PKG_CONFIG ENABLE_GTK_DOC_TRUE ENABLE_GTK_DOC_FALSE GTK_DOC_USE_LIBTOOL_TRUE GTK_DOC_USE_LIBTOOL_FALSE ACI_CACHE_PROG aci_module_desc_XML aci_pkg_config_XML HAVE_XML CFLAGS_XML LIBS_XML aci_module_desc_SimGrid aci_pkg_prefix_SimGrid aci_pkg_inc_SimGrid aci_pkg_lib_SimGrid aci_pkg_extra_SimGrid HAVE_SimGrid CFLAGS_SimGrid LIBS_SimGrid MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT cflags_set BASH WARNING LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBOBJS HTML_DIR PKG_CONFIG ENABLE_GTK_DOC_TRUE ENABLE_GTK_DOC_FALSE GTK_DOC_USE_LIBTOOL_TRUE GTK_DOC_USE_LIBTOOL_FALSE ACI_CACHE_PROG aci_module_desc_XML aci_pkg_config_XML HAVE_XML CFLAGS_XML LIBS_XML aci_module_desc_SimGrid aci_pkg_prefix_SimGrid aci_pkg_inc_SimGrid aci_pkg_lib_SimGrid aci_pkg_extra_SimGrid HAVE_SimGrid CFLAGS_SimGrid LIBS_SimGrid HAVE_SG_TRUE HAVE_SG_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT cflags_set BASH WARNING LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1035,12 +1035,12 @@ Optional Features:
                           build static libraries [default=yes]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
-  --disable-dependency-tracking Speeds up one-time builds
-  --enable-dependency-tracking  Do not reject slow dependency extractors
+  --disable-dependency-tracking  speeds up one-time build
+  --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-gtk-doc        use gtk-doc to build documentation default=no
-  --enable-maintainer-mode enable make rules and dependencies not useful
-                          (and sometimes confusing) to the casual installer
+  --enable-maintainer-mode  enable make rules and dependencies not useful
+			  (and sometimes confusing) to the casual installer
   --enable-compile-warnings=no/minimum/yes       Turn on compiler warnings.
   --enable-iso-c          Try to warn if code is not ISO C
 
@@ -1645,7 +1645,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
           ac_config_headers="$ac_config_headers src/gras_config.h"
 
-am__api_version="1.7"
+am__api_version="1.8"
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
 # incompatible versions:
@@ -1783,7 +1783,6 @@ _ACEOF
 program_transform_name=`echo $program_transform_name | sed -f conftest.sed`
 rm conftest.sed
 
-
 # expand $ac_aux_dir to an absolute path
 am_aux_dir=`cd $ac_aux_dir && pwd`
 
@@ -1795,6 +1794,31 @@ else
   am_missing_run=
   { echo "$as_me:$LINENO: WARNING: \`missing' script is too old or missing" >&5
 echo "$as_me: WARNING: \`missing' script is too old or missing" >&2;}
+fi
+
+if mkdir -p --version . >/dev/null 2>&1 && test ! -d ./--version; then
+  # Keeping the `.' argument allows $(mkdir_p) to be used without
+  # argument.  Indeed, we sometimes output rules like
+  #   $(mkdir_p) $(somedir)
+  # where $(somedir) is conditionally defined.
+  # (`test -n '$(somedir)' && $(mkdir_p) $(somedir)' is a more
+  # expensive solution, as it forces Make to start a sub-shell.)
+  mkdir_p='mkdir -p -- .'
+else
+  # On NextStep and OpenStep, the `mkdir' command does not
+  # recognize any option.  It will interpret all options as
+  # directories to create, and then abort because `.' already
+  # exists.
+  for d in ./-p ./--version;
+  do
+    test -d $d && rmdir $d
+  done
+  # $(mkinstalldirs) is defined by Automake if mkinstalldirs exists.
+  if test -f "$ac_aux_dir/mkinstalldirs"; then
+    mkdir_p='$(mkinstalldirs)'
+  else
+    mkdir_p='$(install_sh) -d'
+  fi
 fi
 
 for ac_prog in gawk mawk nawk awk
@@ -1875,7 +1899,7 @@ else
 fi
 rmdir .tst 2>/dev/null
 
- # test to see if srcdir already configured
+# test to see if srcdir already configured
 if test "`cd $srcdir && pwd`" != "`pwd`" &&
    test -f $srcdir/config.status; then
   { { echo "$as_me:$LINENO: error: source directory already configured; run \"make distclean\" there first" >&5
@@ -3124,7 +3148,9 @@ else
     : > sub/conftest.c
     for i in 1 2 3 4 5 6; do
       echo '#include "conftst'$i'.h"' >> sub/conftest.c
-      : > sub/conftst$i.h
+      # Using `: > sub/conftst$i.h' creates only sub/conftst1.h with
+      # Solaris 8's {/usr,}/bin/sh.
+      touch sub/conftst$i.h
     done
     echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
 
@@ -3152,9 +3178,14 @@ else
        grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
-      # (even with -Werror).  So we grep stderr for any message
-      # that says an option was ignored.
-      if grep 'ignoring option' conftest.err >/dev/null 2>&1; then :; else
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
         am_cv_CC_dependencies_compiler_type=$depmode
         break
       fi
@@ -3658,7 +3689,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 3661 "configure"' > conftest.$ac_ext
+  echo '#line 3692 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -4831,7 +4862,9 @@ else
     : > sub/conftest.c
     for i in 1 2 3 4 5 6; do
       echo '#include "conftst'$i'.h"' >> sub/conftest.c
-      : > sub/conftst$i.h
+      # Using `: > sub/conftst$i.h' creates only sub/conftst1.h with
+      # Solaris 8's {/usr,}/bin/sh.
+      touch sub/conftst$i.h
     done
     echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
 
@@ -4859,9 +4892,14 @@ else
        grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
-      # (even with -Werror).  So we grep stderr for any message
-      # that says an option was ignored.
-      if grep 'ignoring option' conftest.err >/dev/null 2>&1; then :; else
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
         am_cv_CXX_dependencies_compiler_type=$depmode
         break
       fi
@@ -5215,7 +5253,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5218:" \
+echo "$as_me:5256:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6247,11 +6285,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6250: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6288: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6254: \$? = $ac_status" >&5
+   echo "$as_me:6292: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6480,11 +6518,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6483: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6521: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6487: \$? = $ac_status" >&5
+   echo "$as_me:6525: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6540,11 +6578,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6543: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6581: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6547: \$? = $ac_status" >&5
+   echo "$as_me:6585: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8716,7 +8754,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8719 "configure"
+#line 8757 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8814,7 +8852,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8817 "configure"
+#line 8855 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10991,11 +11029,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10994: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11032: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10998: \$? = $ac_status" >&5
+   echo "$as_me:11036: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11051,11 +11089,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11054: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11092: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11058: \$? = $ac_status" >&5
+   echo "$as_me:11096: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12408,7 +12446,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12411 "configure"
+#line 12449 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12506,7 +12544,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12509 "configure"
+#line 12547 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13333,11 +13371,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13336: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13374: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13340: \$? = $ac_status" >&5
+   echo "$as_me:13378: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13393,11 +13431,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13396: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13434: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13400: \$? = $ac_status" >&5
+   echo "$as_me:13438: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15426,11 +15464,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15429: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15467: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15433: \$? = $ac_status" >&5
+   echo "$as_me:15471: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15659,11 +15697,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15662: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15700: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15666: \$? = $ac_status" >&5
+   echo "$as_me:15704: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15719,11 +15757,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15722: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15760: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15726: \$? = $ac_status" >&5
+   echo "$as_me:15764: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17895,7 +17933,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17898 "configure"
+#line 17936 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17993,7 +18031,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17996 "configure"
+#line 18034 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -19778,7 +19816,9 @@ else
     : > sub/conftest.c
     for i in 1 2 3 4 5 6; do
       echo '#include "conftst'$i'.h"' >> sub/conftest.c
-      : > sub/conftst$i.h
+      # Using `: > sub/conftst$i.h' creates only sub/conftst1.h with
+      # Solaris 8's {/usr,}/bin/sh.
+      touch sub/conftst$i.h
     done
     echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
 
@@ -19806,9 +19846,14 @@ else
        grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
-      # (even with -Werror).  So we grep stderr for any message
-      # that says an option was ignored.
-      if grep 'ignoring option' conftest.err >/dev/null 2>&1; then :; else
+      # or remarks (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored or not supported.
+      # When given -MP, icc 7.0 and 7.1 complain thusly:
+      #   icc: Command line warning: ignoring option '-M'; no argument required
+      # The diagnosis changed in icc 8.0:
+      #   icc: Command line remark: option '-MP' not supported
+      if (grep 'ignoring option' conftest.err ||
+          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
         am_cv_CC_dependencies_compiler_type=$depmode
         break
       fi
@@ -23148,9 +23193,7 @@ fi
 
 	fi
 	if test "x$aci_found" = "xno" ; then
-	                	   { { echo "$as_me:$LINENO: error: Can't find the package SimGrid. Please install it, or if it is installed, tell me where with the --with-SimGrid argument (see ./configure --help=short)." >&5
-echo "$as_me: error: Can't find the package SimGrid. Please install it, or if it is installed, tell me where with the --with-SimGrid argument (see ./configure --help=short)." >&2;}
-   { (exit 1); exit 1; }; }
+	                	   :
 	else
 	      		HAVE_SimGrid="yes"
 	        echo >/dev/null
@@ -23167,6 +23210,16 @@ echo "$as_me: error: Can't find the package SimGrid. Please install it, or if it
         	LDFLAGS=$OLDLDFLAGS
 	CPPFLAGS=$OLDCPPFLAGS
 	CFLAGS=$OLDCFLAGS
+
+
+
+if test x$HAVE_SimGrid = xyes; then
+  HAVE_SG_TRUE=
+  HAVE_SG_FALSE='#'
+else
+  HAVE_SG_TRUE='#'
+  HAVE_SG_FALSE=
+fi
 
 
 
@@ -23441,6 +23494,13 @@ if test -z "${GTK_DOC_USE_LIBTOOL_TRUE}" && test -z "${GTK_DOC_USE_LIBTOOL_FALSE
   { { echo "$as_me:$LINENO: error: conditional \"GTK_DOC_USE_LIBTOOL\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"GTK_DOC_USE_LIBTOOL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${HAVE_SG_TRUE}" && test -z "${HAVE_SG_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"HAVE_SG\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"HAVE_SG\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -24026,6 +24086,7 @@ s,@install_sh@,$install_sh,;t t
 s,@STRIP@,$STRIP,;t t
 s,@ac_ct_STRIP@,$ac_ct_STRIP,;t t
 s,@INSTALL_STRIP_PROGRAM@,$INSTALL_STRIP_PROGRAM,;t t
+s,@mkdir_p@,$mkdir_p,;t t
 s,@AWK@,$AWK,;t t
 s,@SET_MAKE@,$SET_MAKE,;t t
 s,@am__leading_dot@,$am__leading_dot,;t t
@@ -24085,6 +24146,8 @@ s,@aci_pkg_extra_SimGrid@,$aci_pkg_extra_SimGrid,;t t
 s,@HAVE_SimGrid@,$HAVE_SimGrid,;t t
 s,@CFLAGS_SimGrid@,$CFLAGS_SimGrid,;t t
 s,@LIBS_SimGrid@,$LIBS_SimGrid,;t t
+s,@HAVE_SG_TRUE@,$HAVE_SG_TRUE,;t t
+s,@HAVE_SG_FALSE@,$HAVE_SG_FALSE,;t t
 s,@MAINTAINER_MODE_TRUE@,$MAINTAINER_MODE_TRUE,;t t
 s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t
@@ -24801,14 +24864,14 @@ echo X"$mf" |
   grep '^DEP_FILES *= *[^ #]' < "$mf" > /dev/null || continue
   # Extract the definition of DEP_FILES from the Makefile without
   # running `make'.
-  DEPDIR=`sed -n -e '/^DEPDIR = / s///p' < "$mf"`
+  DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
   test -z "$DEPDIR" && continue
   # When using ansi2knr, U may be empty or an underscore; expand it
-  U=`sed -n -e '/^U = / s///p' < "$mf"`
+  U=`sed -n 's/^U = //p' < "$mf"`
   test -d "$dirpart/$DEPDIR" || mkdir "$dirpart/$DEPDIR"
   # We invoke sed twice because it is the simplest approach to
   # changing $(DEPDIR) to its actual value in the expansion.
-  for file in `sed -n -e '
+  for file in `sed -n '
     /^DEP_FILES = .*\\\\$/ {
       s/^DEP_FILES = //
       :loop

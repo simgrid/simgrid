@@ -51,7 +51,8 @@ GNOME_GTKDOC_CHECK
 
 dnl ####[ Search libs ]#######################################################
 ACI_PACKAGE_SAVED(XML,[XML library (version XML2)],xml2-config,,,:)
-ACI_PACKAGE([SimGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h])
+ACI_PACKAGE([SimGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
+AM_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
 
 dnl A C_CHECK_LIB(pthread, pthread_mutex_lock)
 	

@@ -8,12 +8,11 @@ EXTRA_DIST=                 \
 #	DataDesc/parse.yy.l      
 
 
-lib_LIBRARIES= libgrasrl.a libgrassg.a
-
-#                     Core/dict_multi.c
-#  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
-#   Messaging/datadesc_simple.c                 
-#   Transport/transport_sg.c 
+if HAVE_SG
+ lib_LIBRARIES= libgrasrl.a libgrassg.a
+else
+ lib_LIBRARIES= libgrasrl.a
+endif
 
 COMMON_S=\
   \
@@ -46,7 +45,9 @@ libgrasrl_a_SOURCES= $(COMMON_S) \
   \
   Virtu/rl_process.c        Virtu/rl_time.c                   Virtu/rl_conditional.c
 
-libgrassg_a_SOURCES= $(COMMON_S) \
-  Transport/sg_transport.c  Transport/transport_plugin_sg.c             \
-  \
-  Virtu/sg_process.c        Virtu/sg_time.c                   Virtu/sg_conditional.c
+if HAVE_SG
+  libgrassg_a_SOURCES= $(COMMON_S) \
+    Transport/sg_transport.c  Transport/transport_plugin_sg.c             \
+    \
+    Virtu/sg_process.c        Virtu/sg_time.c                   Virtu/sg_conditional.c
+endif
