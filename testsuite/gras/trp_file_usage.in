@@ -1,10 +1,16 @@
 #! @BASH@ -e
 
-if test -e gras/trp_tcp_server ; then
+if test -e gras/trp_file_server@EXEEXT@ ; then
   base=gras
 else 
   base=.
 fi
 
-$base/trp_file_client $@ | $base/trp_file_server $@ 
+if [ x@EXEEXT@ = x ] ; then 
+  wine=
+else
+  wine=wine
+fi
+
+$wine $base/trp_file_client@EXEEXT@ $@ | $wine $base/trp_file_server@EXEEXT@ $@ 
 
