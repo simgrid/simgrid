@@ -48,6 +48,7 @@ publish: dist
 	 @echo "----[ Put the tarball @VERSION@ on gcl ]----"
 	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
 	 scp -r doc/html/* gcl.ucsd.edu:/home/www/simgrid/
+	 scp -r doc/html/* scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	 scp ChangeLog gcl.ucsd.edu:/home/www/simgrid/dl/ChangeLog
 	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
 	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/simgrid2
