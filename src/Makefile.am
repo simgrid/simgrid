@@ -22,7 +22,7 @@ EXTRA_DIST= \
         xbt/dict_private.h \
         xbt/heap_private.h \
         xbt/fifo_private.h \
-        xbt/context_private.h \
+        xbt/context_private.h xbt/context_win32.h xbt/context_win32.c\
         \
 	surf/maxmin_private.h \
 	surf/trace_mgr_private.h \
