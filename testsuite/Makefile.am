@@ -2,13 +2,14 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src
 AM_CFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out
-DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/*
+DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/*
 MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little64 gras/datadesc.big32 gras/datadesc.big64 \
   gras/datadesc.aix gras/datadesc.win32 gras/datadesc.g5 \
   gras/mk_datadesc_structs.pl \
-  surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt
+  surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.txt \
+  msg/platform.txt
 
 
 # Test stuff
@@ -20,6 +21,7 @@ xbt_tests =                                                      \
 	xbt/log_usage                                            \
 	xbt/heap_bench                                           \
 	xbt/swag_usage                                           \
+	xbt/context_usage                                        \
 	xbt/config_usage
 # xbt/multidict_crash 
 
@@ -30,7 +32,8 @@ RL_tests =                                              \
 
 SG_tests =                                              \
 	surf/maxmin_usage surf/maxmin_bench \
-	surf/trace_usage surf/surf_usage surf/surf_usage2
+	surf/trace_usage surf/surf_usage surf/surf_usage2 \
+	msg/msg_test
 
 check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
@@ -61,12 +64,15 @@ xbt_swag_usage_LDADD=         $(LDADD_UTILS)
 xbt_config_usage_LDADD=       $(LDADD_UTILS)
 
 xbt_heap_bench_LDADD=         $(LDADD_UTILS)
+xbt_context_usage_LDADD=      $(LDADD_UTILS)
 
 surf_maxmin_usage_LDADD=      $(LDADD_UTILS)
 surf_maxmin_bench_LDADD=      $(LDADD_UTILS)
 surf_trace_usage_LDADD=       $(LDADD_UTILS)
 surf_surf_usage_LDADD=        $(LDADD_UTILS)
 surf_surf_usage2_LDADD=       $(LDADD_UTILS)
+
+msg_msg_test_LDADD=           $(LDADD_UTILS)
 
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)

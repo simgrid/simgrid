@@ -16,7 +16,7 @@ void xbt_context_exit(void);
 void xbt_context_empty_trash(void);
 xbt_context_t xbt_context_new(xbt_context_function_t code, int argc, char *argv[]);
 void xbt_context_start(xbt_context_t context);
-void xbt_context_yield(xbt_context_t context);
-int xbt_context_get_id(xbt_context_t context);
+void xbt_context_yield(void);
+void xbt_context_schedule(xbt_context_t context);
 
 #endif				/* _XBT_CONTEXT_H */

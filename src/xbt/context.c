@@ -32,6 +32,46 @@ static xbt_context_t init_context = NULL;
 static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
 
+static void __xbt_context_yield(xbt_context_t context)
+{
+  int return_value = 0;
+
+  xbt_assert0(current_context,"You have to call context_init() first.");
+  
+/*   WARNING("--------- current_context (%p) is yielding to context(%p) ---------",current_context,context); */
+/*   VOIRP(current_context); */
+/*   if(current_context) VOIRP(current_context->save); */
+/*   VOIRP(context); */
+/*   if(context) VOIRP(context->save); */
+
+  if (context) {
+    if(context->save==NULL) {
+/*       WARNING("**** Yielding to somebody else ****"); */
+/*       WARNING("Saving current_context value (%p) to context(%p)->save",current_context,context); */
+      context->save = current_context ;
+/*       WARNING("current_context becomes  context(%p) ",context); */
+      current_context = context ;
+/*       WARNING("Current position memorized (context->save). Jumping to context (%p)",context); */
+      return_value = swapcontext (&(context->save->uc), &(context->uc));
+      xbt_assert0((return_value==0),"Context swapping failure");
+/*       WARNING("I am (%p). Coming back\n",context); */
+    } else {
+      xbt_context_t old_context = context->save ;
+/*       WARNING("**** Back ! ****"); */
+/*       WARNING("Setting current_context (%p) to context(%p)->save",current_context,context); */
+      current_context = context->save ;
+/*       WARNING("Setting context(%p)->save to NULL",context); */
+      context->save = NULL ;
+/*       WARNING("Current position memorized (%p). Jumping to context (%p)",context,old_context); */
+      return_value = swapcontext (&(context->uc), &(old_context->uc));
+      xbt_assert0((return_value==0),"Context swapping failure");
+/*       WARNING("I am (%p). Coming back\n",context); */
+    }
+  }
+
+  return;
+}
+
 static void xbt_context_destroy(xbt_context_t context)
 {
   xbt_free(context);
@@ -75,7 +115,7 @@ static void *__context_wrapper(void *c)
   xbt_swag_remove(context, context_living);
   xbt_swag_insert(context, context_to_destroy);
 
-  xbt_context_yield(context);
+  __xbt_context_yield(context);
 
   return NULL;
 }
@@ -113,44 +153,17 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
   return res;
 }
 
-void xbt_context_yield(xbt_context_t context)
+
+void xbt_context_yield(void)
 {
-  int return_value = 0;
+  __xbt_context_yield(current_context);
+}
 
-  xbt_assert0(current_context,"You have to call context_init() first.");
-  
-/*   WARNING("--------- current_context (%p) is yielding to context(%p) ---------",current_context,context); */
-/*   VOIRP(current_context); */
-/*   if(current_context) VOIRP(current_context->save); */
-/*   VOIRP(context); */
-/*   if(context) VOIRP(context->save); */
-
-  if (context) {
-    if(context->save==NULL) {
-/*       WARNING("**** Yielding to somebody else ****"); */
-/*       WARNING("Saving current_context value (%p) to context(%p)->save",current_context,context); */
-      context->save = current_context ;
-/*       WARNING("current_context becomes  context(%p) ",context); */
-      current_context = context ;
-/*       WARNING("Current position memorized (context->save). Jumping to context (%p)",context); */
-      return_value = swapcontext (&(context->save->uc), &(context->uc));
-      xbt_assert0((return_value==0),"Context swapping failure");
-/*       WARNING("I am (%p). Coming back\n",context); */
-    } else {
-      xbt_context_t old_context = context->save ;
-/*       WARNING("**** Back ! ****"); */
-/*       WARNING("Setting current_context (%p) to context(%p)->save",current_context,context); */
-      current_context = context->save ;
-/*       WARNING("Setting context(%p)->save to NULL",context); */
-      context->save = NULL ;
-/*       WARNING("Current position memorized (%p). Jumping to context (%p)",context,old_context); */
-      return_value = swapcontext (&(context->uc), &(old_context->uc));
-      xbt_assert0((return_value==0),"Context swapping failure");
-/*       WARNING("I am (%p). Coming back\n",context); */
-    }
-  }
-
-  return;
+void xbt_context_schedule(xbt_context_t context)
+{
+  xbt_assert0((current_context==init_context),
+	      "You are not supposed to run this function here!");
+  __xbt_context_yield(context);
 }
 
 void xbt_context_exit(void) {
