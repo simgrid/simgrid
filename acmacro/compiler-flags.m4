@@ -1,73 +1,82 @@
 
 
-dnl GNOME_COMPILE_WARNINGS
+dnl SG_COMPILE_FLAGS
 dnl Turn on many useful compiler warnings
-dnl For now, only works on GCC
-AC_DEFUN([GNOME_COMPILE_WARNINGS],[
-  AC_ARG_ENABLE(compile-warnings, 
-    [  --enable-compile-warnings=[no/minimum/yes]       Turn on compiler warnings.],,enable_compile_warnings=yes)
+dnl For now, only sets extra flags on GCC
 
-  AC_MSG_CHECKING(the warning flags for this compiler)
-  warnCFLAGS=
-  if test "x$GCC" = "xyes"; then
-    case " $CFLAGS " in
-    *-Wall*) ;;
-    *) warnCFLAGS="-g -Wall -Wunused" ;;
-    esac
+AC_DEFUN([SG_COMPILE_FLAGS],[
+  AC_ARG_ENABLE(compile-warnings,
+    AS_HELP_STRING([--enable-compile-warnings], [use compiler warnings (default=no)]),
+    enable_compile_warnings=$withval,enable_compile_warnings=no)
 
-    ## -W is not all that useful.  And it cannot be controlled
-    ## with individual -Wno-xxx flags, unlike -Wall
-    if test "x$enable_compile_warnings" = "xyes"; then
-      warnCFLAGS="$warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
- -finline-functions  -Wshadow -Wpointer-arith -Wchar-subscripts -Wcomment \
- -Wformat=2 -Wno-unused-variable -Wno-unused-function -Wno-unused-label -Wwrite-strings \
- -Werror -O0"
-    fi
-  fi
+  AC_ARG_ENABLE(compile-optimizations,
+    AS_HELP_STRING([--enable-compile-optimizations], [use compiler optimizations (default=yes, unless if CFLAGS is explicitly set)]),
+    enable_compile_optimizations=$enableval,enable_compile_optimizations=auto)
 
-  AC_MSG_RESULT($warnCFLAGS)
-
-  AC_ARG_ENABLE(iso-c,
-    [  --enable-iso-c          Try to warn if code is not ISO C ],,
-    enable_iso_c=no)
-
-  AC_MSG_CHECKING(the language compliance flags for this compiler)
-  complCFLAGS=
-  if test "x$GCC" = "xyes"; then
-    case " $CFLAGS " in
-    *-ansi*) ;;
-    *) complCFLAGS="$complCFLAGS -ansi" ;;
-    esac
-
-    case " $CFLAGS " in
-    *-pedantic*) ;;
-    *) complCFLAGS="$complCFLAGS -pedantic" ;;
-    esac
-  fi
-  AC_MSG_RESULT($complCFLAGS)
-  
-  
-  AC_MSG_CHECKING(the optimization flags for this compiler)
-  optCFLAGS=
-  if test "x$GCC" = "xyes" ; then
-      optCFLAGS="-ffast-math -funroll-loops -fno-strict-aliasing"
-      case " $CFLAGS " in
-      *-O*) ;;
-      *) optCFLAGS="$optCFLAGS -O3" ;;
-      esac
-  fi
-  AC_MSG_RESULT($optCFLAGS)
-
-  # Take the right flags
-  if test "x$cflags_set" != "xyes" ; then  
-    if test "x$enable_iso_c" != "xno"; then
-      CFLAGS="$CFLAGS $complCFLAGS $optCFLAGS"
-    fi
-    if test "x$enable_compile_warnings" != "xno" ; then
-      CFLAGS="$CFLAGS $warnCFLAGS $optCFLAGS"
-    fi  
+  if test "x$cflags_set" != "xyes" ; then 
+    # if user didn't specify CFLAGS explicitely
     
-    cflags_set=yes
-    AC_SUBST(cflags_set)
+    # AC PROG CC tests whether -g is accepted. 
+    # Cool, but it also tries to set -O2. I don't want it with gcc
+    saveCFLAGS="$CFLAGS"
+    CFLAGS=
+    case " $saveCFLAGS " in
+    *-g*) CFLAGS="-g" ;; 
+    esac
+    case " $saveCFLAGS " in
+    *-O2*) test "x$CC" = xgcc || CFLAGS="$CFLAGS -O2" ;; 
+    esac
+    
+    # damn AC PROG CC, why did you set -O??
+    CFLAGS="-g"
   fi
+
+  if test "x$enable_compile_warnings" = "xyes" ; then
+    AC_MSG_CHECKING(the warning flags for this compiler)
+    warnCFLAGS=
+    if test "x$CC" = "xgcc" || test "x$GCC" = "xyes" ; then
+      case " $CFLAGS " in
+      *-Wall*) ;;
+      *) warnCFLAGS="-Wall -Wunused" ;;
+      esac
+
+      ## -W is not all that useful.  And it cannot be controlled
+      ## with individual -Wno-xxx flags, unlike -Wall
+      if test "x$enable_compile_warnings" = "xyes"; then
+        warnCFLAGS=`echo $warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
+        -Wshadow -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat=2 -Wwrite-strings \
+	-Wno-unused-variable -Wno-unused-function -Wno-unused-label \
+        -Werror \
+	| sed 's/ +/ /g'`
+      fi
+    fi
+    AC_MSG_RESULT($warnCFLAGS)
+    # placed before since gcc remembers the last one on conflict
+    CFLAGS="$warnCFLAGS $CFLAGS"
+  fi
+  
+  if test "x$enable_compile_optimizations" = "xyes" ||
+     test "x$enable_compile_optimizations" = "xauto" ; then
+    AC_MSG_CHECKING(the optimization flags for this compiler)
+    optCFLAGS=
+    if test "x$CC" = "xgcc" || test "x$GCC" = "xyes" ; then
+        case " $CFLAGS " in
+        *-O*) ;;
+        *) optCFLAGS="$optCFLAGS -O3" ;;
+        esac
+        optCFLAGS="$optCFLAGS -finline-functions -ffast-math -funroll-loops -fno-strict-aliasing"
+      
+        if test "x$target_cpu" = "xpowerpc" ; then
+          # avoid gcc bug #12828, which is fixed in 3.4.0, but this version
+          # isn't propagated enough to desserve an extra check
+          optCFLAGS="$optCFLAGS -fno-loop-optimize"
+        fi
+    fi
+    AC_MSG_RESULT($optCFLAGS)
+    # Take it only if CFLAGS not explicitly set. Unless the flag was explicitly given
+    if test "x$cflags_set" != "xyes" ; then  
+      CFLAGS="$optCFLAGS $CFLAGS"
+    fi
+  fi
+  
 ])
