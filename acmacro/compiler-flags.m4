@@ -21,7 +21,7 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
       warnCFLAGS="$warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
  -finline-functions  -Wshadow -Wpointer-arith -Wchar-subscripts -Wcomment \
  -Wformat=2 -Wno-unused-variable -Wno-unused-function -Wwrite-strings \
- -Werror"
+ -Werror -O0"
     fi
   fi
 
