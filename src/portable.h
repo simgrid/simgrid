@@ -94,7 +94,7 @@ const char *gras_wsa_err2string(int errcode);
  **** Time handling
  ****/
 
-#if TIME_WITH_SYS_TIME
+#ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
@@ -109,5 +109,14 @@ const char *gras_wsa_err2string(int errcode);
 #define sleep _sleep /* else defined in stdlib.h */
 #endif
 
+/****
+ **** Contexts
+ ****/
+
+#ifdef HAVE_UCONTEXT_H
+#  include <ucontext.h>
+#else
+#  include "xbt/context_win32.h" /* Manual reimplementation for prehistoric platforms */
+#endif
 
 #endif /* GRAS_PORTABLE_H */
