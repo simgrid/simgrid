@@ -31,6 +31,9 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   gras_error_t errcode;
 
   gras_trp_plugin_t *plug = malloc(sizeof(gras_trp_plugin_t));
+  
+  DEBUG1("Create plugin %s",name);
+
   if (!plug) 
     RAISE_MALLOC;
 
@@ -40,10 +43,22 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   if (!plug->name)
     RAISE_MALLOC;
 
-  TRY(setup(plug));
-  TRY(gras_dict_set(_gras_trp_plugins, 
-		    plug->name, plug, gras_trp_plugin_free));
+  errcode = setup(plug);
+  switch (setup(plug)) {
+  case mismatch_error:
+    /* SG plugin return mismatch when in RL mode (and vice versa) */
+    free(plug);
+    break;
 
+  case no_error:
+    TRY(gras_dict_set(_gras_trp_plugins, 
+		      name, plug, gras_trp_plugin_free));
+    break;
+
+  default:
+    free(plug);
+    return errcode;
+  }
   return no_error;
 }
 
@@ -106,13 +121,9 @@ gras_error_t gras_trp_socket_new(int incoming,
   sock->plugin = NULL;
   sock->sd     = -1;
 
-  sock->incoming  = incoming? 1:0;
-  sock->outgoing  = incoming? 0:1;
-  sock->accepting = incoming? 1:0;
-  DEBUG3("in=%c out=%c accept=%c",
-	 sock->incoming?'y':'n', 
-	 sock->outgoing?'y':'n',
-	 sock->accepting?'y':'n');
+  sock->incoming  = incoming ? 1:0;
+  sock->outgoing  = incoming ? 0:1;
+  sock->accepting = incoming ? 1:0;
 
   sock->port      = -1;
   sock->peer_port = -1;
@@ -140,7 +151,8 @@ gras_socket_server(unsigned short port,
 
   *dst = NULL;
 
-  TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "TCP" : "SG",
+  DEBUG1("Create a server socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
+  TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg",
 				  &trp));
 
   /* defaults settings */
@@ -150,6 +162,11 @@ gras_socket_server(unsigned short port,
 
   /* Call plugin socket creation function */
   errcode = trp->socket_server(trp, port, sock);
+  DEBUG3("in=%c out=%c accept=%c",
+	 sock->incoming?'y':'n', 
+	 sock->outgoing?'y':'n',
+	 sock->accepting?'y':'n');
+
   if (errcode != no_error) {
     free(sock);
     return errcode;
@@ -184,7 +201,7 @@ gras_socket_client(const char *host,
 
   *dst = NULL;
 
-  TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "TCP" : "SG",
+  TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg",
 				  &trp));
 
   /* defaults settings */
@@ -197,6 +214,11 @@ gras_socket_client(const char *host,
   errcode= (* trp->socket_client)(trp, 
 				  host ? host : "localhost", port,
 				  sock);
+  DEBUG3("in=%c out=%c accept=%c",
+	 sock->incoming?'y':'n', 
+	 sock->outgoing?'y':'n',
+	 sock->accepting?'y':'n');
+
   if (errcode != no_error) {
     free(sock);
     return errcode;
