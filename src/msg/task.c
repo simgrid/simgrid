@@ -140,6 +140,32 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   return MSG_OK;
 }
 
+/** \ingroup m_task_management
+ * \brief Returns the computation amount needed to process a task #m_task_t.
+ *
+ */
+double MSG_task_get_compute_duration(m_task_t task)
+{
+  simdata_task_t simdata = NULL;
+
+  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+
+  return task->simdata->computation_amount;
+}
+
+/** \ingroup m_task_management
+ * \brief Returns the size of the data attached to a task #m_task_t.
+ *
+ */
+double MSG_task_get_data_size(m_task_t task)
+{
+  simdata_task_t simdata = NULL;
+
+  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+
+  return task->simdata->message_size;
+}
+
 /* static MSG_error_t __MSG_task_check(m_task_t task) */
 /* { */
 /*   simdata_task_t simdata = NULL; */

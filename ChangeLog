@@ -18,6 +18,9 @@ Plutot finaliser ce qui est commencé et finir le Grand Nettoyage:
 ----
 DONE
 ----
+  [Arnaud]
+  (msg)
+  * Add MSG_task_get_compute_duration() and MSG_task_get_data_size()
 
   [Martin]
   * Cleanups in configury with regard to compile optimization/warning flags.

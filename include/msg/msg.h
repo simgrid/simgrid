@@ -97,6 +97,9 @@ int MSG_task_probe_from(m_channel_t channel);
 MSG_error_t MSG_process_sleep(double nb_sec);
 MSG_error_t MSG_get_errno(void);
 
+double MSG_task_get_compute_duration(m_task_t task);
+double MSG_task_get_data_size(m_task_t task);
+
 /************************** Deprecated ***************************************/
 /* MSG_error_t MSG_routing_table_init(void); */
 /* MSG_error_t MSG_routing_table_set(m_host_t host1, m_host_t host2, */
