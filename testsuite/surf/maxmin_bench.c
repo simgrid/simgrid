@@ -10,20 +10,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "surf/maxmin.h"
-#include <sys/time.h>
+#include "gras/virtu.h" /* time manipulation for benchmarking */
 
-long date;
-
-/* Pour le bench */
-long us_time(void);
-long us_time(void)
-{
-  struct timeval start;
-  gettimeofday(&start, NULL);
-
-  return (start.tv_sec * 1000000 + start.tv_usec);
-}
-
+double date;
 
 xbt_maxmin_float_t float_random(xbt_maxmin_float_t max);
 xbt_maxmin_float_t float_random(xbt_maxmin_float_t max)
@@ -67,9 +56,9 @@ void test(int nb_cnst, int nb_var, int nb_elem)
     }
   }
 
-  date = us_time();
+  date = gras_os_time();
   lmm_solve(Sys);
-  date = us_time() - date;
+  date = gras_os_time() - date;
 
   lmm_system_free(Sys);
   free(cnst);
@@ -83,10 +72,10 @@ int main(int argc, char **argv)
   int nb_cnst = 2000;
   int nb_var = 2000;
   int nb_elem = 20;
-  date = us_time();
+  date = gras_os_time();
   test(nb_cnst, nb_var, nb_elem);
   printf("One shot execution time for a total of %d constraints, "
-	 "%d variables with %d active constraint each : %ld microsecondes \n",
+	 "%d variables with %d active constraint each : %f secondes \n",
 	 nb_cnst, nb_var, nb_elem, date);
   return 0;
 }
