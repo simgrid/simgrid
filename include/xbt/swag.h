@@ -40,6 +40,6 @@ static __inline__ void *xbt_swag_getFirst(xbt_swag_t swag)
 #define xbt_swag_offset(var,field) ((char *)&( (var).field ) - (char *)&(var)) 
 
 #define xbt_swag_foreach(obj,swag)                            \
-   for(obj=xbt_swag_getFirst(swag);                           \
-       obj!=NULL;                                           \
-       obj=xbt_swag_getNext(obj,swag->offset))
+   for((obj)=xbt_swag_getFirst((swag));                           \
+       (obj)!=NULL;                                           \
+       (obj)=xbt_swag_getNext((obj),(swag)->offset))
