@@ -9,6 +9,7 @@
 #include "xbt/error.h"
 #include "xbt/dict.h"
 #include "trace_mgr_private.h"
+#include "surf_private.h"
 #include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trace, surf,
@@ -22,19 +23,19 @@ static void _tmgr_trace_free(void *trace)
 
 tmgr_history_t tmgr_history_new(void)
 {
-  tmgr_history_t history;
+  tmgr_history_t h;
 
-  history = xbt_new0(s_tmgr_history_t, 1);
+  h = xbt_new0(s_tmgr_history_t, 1);
 
-  history->heap = xbt_heap_new(8, xbt_free);	/* Why 8 ? Well, why not... */
+  h->heap = xbt_heap_new(8, xbt_free);	/* Why 8 ? Well, why not... */
 
-  return history;
+  return h;
 }
 
-void tmgr_history_free(tmgr_history_t history)
+void tmgr_history_free(tmgr_history_t h)
 {
-  xbt_heap_free(history->heap);
-  xbt_free(history);
+  xbt_heap_free(h->heap);
+  xbt_free(h);
 }
 
 tmgr_trace_t tmgr_trace_new(const char *filename)
@@ -53,7 +54,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
       return trace;
   }
 
-  if ((f = fopen(filename, "r")) == NULL) {
+  if ((f = surf_fopen(filename, "r")) == NULL) {
     xbt_assert1(0, "Cannot open file '%s'", filename);
   }
 
@@ -117,7 +118,7 @@ void tmgr_trace_free(tmgr_trace_t trace)
   xbt_free(trace);
 }
 
-tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history,
+tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
 					  tmgr_trace_t trace,
 					  double start_time, int offset,
 					  void *resource)
@@ -133,25 +134,25 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history,
   xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
 	      "You're refering to an event that does not exist!");
 
-  xbt_heap_push(history->heap, trace_event, start_time);
+  xbt_heap_push(h->heap, trace_event, start_time);
 
   return trace_event;
 }
 
-double tmgr_history_next_date(tmgr_history_t history)
+double tmgr_history_next_date(tmgr_history_t h)
 {
-  if (xbt_heap_size(history->heap))
-    return (xbt_heap_maxkey(history->heap));
+  if (xbt_heap_size(h->heap))
+    return (xbt_heap_maxkey(h->heap));
   else
     return -1.0;
 }
 
-tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t history,
+tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
 						   double date,
 						   double *value,
 						   void **resource)
 {
-  double event_date = xbt_heap_maxkey(history->heap);
+  double event_date = xbt_heap_maxkey(h->heap);
   tmgr_trace_event_t trace_event = NULL;
   tmgr_event_t event = NULL;
   tmgr_trace_t trace = NULL;
@@ -159,7 +160,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t history,
   if (event_date > date)
     return NULL;
 
-  if (!(trace_event = xbt_heap_pop(history->heap)))
+  if (!(trace_event = xbt_heap_pop(h->heap)))
     return NULL;
 
   trace = trace_event->trace;
@@ -170,10 +171,10 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t history,
   *resource = trace_event->resource;
 
   if (trace_event->idx < xbt_dynar_length(trace->event_list) - 1) {
-    xbt_heap_push(history->heap, trace_event, event_date + event->delta);
+    xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx++;
   } else if (event->delta > 0) {	/* Last element, checking for periodicity */
-    xbt_heap_push(history->heap, trace_event, event_date + event->delta);
+    xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx = 0;
   } else {			/* We don't need this trace_event anymore */
     xbt_free(trace_event);

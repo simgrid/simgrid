@@ -95,7 +95,7 @@ static void parse_file(const char *file)
   surf_parse_reset_parser();
   ETag_cpu_fun=parse_cpu;
   surf_parse_open(file);
-  surf_parse_lex();
+  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
   surf_parse_close();
 }
 

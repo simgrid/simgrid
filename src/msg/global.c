@@ -23,13 +23,20 @@ MSG_Global_t msg_global = NULL;
  */
 void MSG_global_init(void)
 {
-  if (!msg_global) {
-    int argc=0;
-    char **argv=NULL;
+  int argc=0;
+  char **argv=NULL;
 
+  CRITICAL0("Please stop using this function. Use MSG_global_init_args instead.");
+  DIE_IMPOSSIBLE;
+  MSG_global_init_args(&argc,argv);
+}
+
+void MSG_global_init_args(int *argc, char **argv)
+{
+  if (!msg_global) {
     msg_global = xbt_new0(s_MSG_Global_t,1);
 
-    surf_init(&argc, argv);	/* Initialize some common structures */
+    surf_init(argc, argv);	/* Initialize some common structures */
     xbt_context_init();
     msg_global->host = xbt_fifo_new();
     msg_global->process_to_run = xbt_fifo_new();
@@ -60,9 +67,7 @@ void MSG_set_verbosity(MSG_outputmode_t mode)
  */
 MSG_error_t MSG_set_channel_number(int number)
 {
-  MSG_global_init();
-
-  xbt_assert0((msg_global->max_channel == 0), "Channel number already set!");
+  xbt_assert0((msg_global) && (msg_global->max_channel == 0), "Channel number already set!");
 
   msg_global->max_channel = number;
 
@@ -98,9 +103,7 @@ MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, long double param)
  */
 int MSG_get_channel_number(void)
 {
-  MSG_global_init();
-
-  xbt_assert0((msg_global->max_channel != 0), "Channel number not set yet!");
+  xbt_assert0((msg_global)&&(msg_global->max_channel != 0), "Channel number not set yet!");
 
   return msg_global->max_channel;
 }

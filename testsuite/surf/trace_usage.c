@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "surf/trace_mgr.h"
+#include "surf/surf.h"
 
 void test(void);
 void test(void)
@@ -47,6 +48,7 @@ void test(void)
 
 int main(int argc, char **argv)
 {
+  surf_init(&argc,argv);
   test();
   return 0;
 }

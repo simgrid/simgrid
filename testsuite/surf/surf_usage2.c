@@ -99,7 +99,7 @@ void test(char *platform)
 	resource->common_public->action_free(action);
       }
     }
-  } while (surf_solve());
+  } while (surf_solve()>=0.0);
 
   printf("Simulation Terminated\n");
 

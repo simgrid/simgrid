@@ -166,14 +166,14 @@ static void parse_file(const char *file)
   surf_parse_reset_parser();
   ETag_network_link_fun=parse_network_link;
   surf_parse_open(file);
-  surf_parse_lex();
+  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
   surf_parse_close();
 
   /* Figuring out the network cards used */
   surf_parse_reset_parser();
   STag_route_fun=parse_route_set_endpoints;
   surf_parse_open(file);
-  surf_parse_lex();
+  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
   surf_parse_close();
 
   create_routing_table();
@@ -184,7 +184,7 @@ static void parse_file(const char *file)
   ETag_route_element_fun=parse_route_elem;
   ETag_route_fun=parse_route_set_route;
   surf_parse_open(file);
-  surf_parse_lex();
+  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
   surf_parse_close();
 }
 

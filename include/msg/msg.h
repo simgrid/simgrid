@@ -12,6 +12,7 @@
 
 /************************** Global ******************************************/
 void MSG_global_init(void);
+void MSG_global_init_args(int *argc, char **argv);
 void MSG_set_verbosity(MSG_outputmode_t mode);
 MSG_error_t MSG_set_channel_number(int number);
 MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, long double param);

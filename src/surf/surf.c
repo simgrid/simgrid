@@ -8,11 +8,16 @@
 #include "surf_private.h"
 #include "xbt/module.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_global, surf,
+				"Logging specific to the SURF global module");
+
+
 static double NOW = 0;
 
 xbt_dynar_t resource_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
+xbt_dynar_t surf_path = NULL;
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				      size_t offset)
@@ -111,13 +116,58 @@ void surf_action_set_data(surf_action_t action,
 
 void surf_init(int *argc, char **argv)
 {
+  int i,j;
+  char *opt;
+
   xbt_init(argc, argv);
+  if (!surf_path) {
+    const char *initial_path = "./";
+    surf_path = xbt_dynar_new(sizeof(char*), NULL);
+    xbt_dynar_push(surf_path,&initial_path);
+
+    for (i=1; i<*argc; i++) {
+      if (!strncmp(argv[i],"--surf-path=",strlen("--surf-path="))) {
+	opt=strchr(argv[i],'=');
+	opt++;
+	xbt_dynar_push(surf_path,&opt);
+	/*remove this from argv*/
+	for (j=i+1; j<*argc; j++) {
+	  argv[j-1] = argv[j];
+	} 
+	argv[j-1] = NULL;
+	(*argc)--;
+	i--; /* compensate effect of next loop incrementation */
+      }
+    }
+  }
   if (!resource_list)
     resource_list = xbt_dynar_new(sizeof(surf_resource_private_t), NULL);
   if (!history)
     history = tmgr_history_new();
   if (!maxmin_system)
     maxmin_system = lmm_system_new();
+}
+
+FILE *surf_fopen(const char *name, const char *mode)
+{
+  int i; 
+  char* path = NULL;
+  FILE *file = NULL;
+  static char* path_name = NULL;
+
+  xbt_assert0(surf_path,"surf_init has to be called before using surf_fopen");
+  if(!path_name) path_name=xbt_new0(char,strlen(name)+1);
+
+  xbt_dynar_foreach(surf_path,i,path) {
+    if(strlen(path_name)<strlen(path)+strlen(name)+2) 
+      path_name=xbt_realloc(path_name,strlen(path)+strlen(name)+2);
+    strcpy(path_name, path);
+    strcat(path_name,"/");
+    strcat(path_name,name);
+    file = fopen(path_name,mode);
+    if(file) return file;
+  }
+  return file;
 }
 
 void surf_finalize(void)

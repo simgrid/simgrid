@@ -54,13 +54,12 @@ static void parse_process_finalize(void)
  */
 void MSG_launch_application(const char *file) 
 {
-  MSG_global_init();
-  surf_parse_reset_parser();
+  xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_launch_application.");
   STag_process_fun = parse_process_init;
   ETag_argument_fun = parse_argument;
   ETag_process_fun = parse_process_finalize;
   surf_parse_open(file);
-  surf_parse_lex();
+  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
   surf_parse_close();
 }
 
@@ -74,7 +73,7 @@ void MSG_launch_application(const char *file)
  */
 void MSG_function_register(const char *name,m_process_code_t code)
 {
-  MSG_global_init();
+  xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_function_register.");
 
   xbt_dict_set(msg_global->registered_functions,name,code,NULL);
 }
@@ -90,7 +89,7 @@ m_process_code_t MSG_get_registered_function(const char *name)
 {
   m_process_code_t code = NULL;
 
-  MSG_global_init();
+  xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_get_registered_function.");
  
   xbt_dict_get(msg_global->registered_functions,name,(void **) &code);
 

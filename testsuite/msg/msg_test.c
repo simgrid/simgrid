@@ -18,7 +18,7 @@
 int unix_emitter(int argc, char *argv[]);
 int unix_receiver(int argc, char *argv[]);
 int unix_forwarder(int argc, char *argv[]);
-void test_all(const char *platform_file, const char *application_file, double sharing);
+void test_all(const char *platform_file, const char *application_file);
 
 
 /** The names of the channels we will use in this simulation. There is
@@ -49,7 +49,7 @@ int unix_emitter(int argc, char *argv[])
   m_task_t *todo = NULL;
 
   int i;
-  PRINT_MESSAGE("Hello !");
+
   print_args(argc,argv);
 
   {                  /* Process organisation */
@@ -107,7 +107,6 @@ int unix_receiver(int argc, char *argv[])
   m_task_t *todo = (m_task_t *) calloc(NB_TASK, sizeof(m_task_t));
   int i;
 
-  PRINT_MESSAGE("Hello !");
   print_args(argc,argv);
 
   for (i = 0; i < NB_TASK;) {
@@ -139,7 +138,6 @@ int unix_forwarder(int argc, char *argv[])
   m_task_t *todo = (m_task_t *) calloc(NB_TASK, sizeof(m_task_t));
   int i;
 
-  PRINT_MESSAGE("Hello !");
   print_args(argc,argv);
 
   for (i = 0; i < NB_TASK;) {
@@ -165,17 +163,10 @@ int unix_forwarder(int argc, char *argv[])
 }
 
 
-void test_all(const char *platform_file,const char *application_file, double sharing)
+void test_all(const char *platform_file,const char *application_file)
 {
   {				/*  Simulation setting */
-    MSG_global_init();
-    MSG_set_verbosity(MSG_SILENT);
     MSG_set_channel_number(MAX_CHANNEL);
-    if(sharing<=0) {
-      MSG_set_sharing_policy(MSG_TCP,.1);
-    } else {
-      MSG_set_sharing_policy(MSG_STORE_AND_FORWARD,sharing);
-    }
     MSG_create_environment(platform_file);
   }
   {                            /*   Application deployment */
@@ -185,12 +176,12 @@ void test_all(const char *platform_file,const char *application_file, double sha
   }
   MSG_main();
   printf("Simulation time %Lg\n",MSG_getClock());
-  MSG_clean();
 }
 
 int main(int argc, char *argv[])
 {
-  test_all("msg_platform.xml","msg_deployment.xml",-.1);
-/*   test_all("msg_platform.txt","msg_deployment.txt",.1); */
+  MSG_global_init_args(&argc,argv);
+  test_all("msg_platform.xml","msg_deployment.xml");
+  MSG_clean();
   return (0);
 }
