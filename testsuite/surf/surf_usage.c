@@ -30,8 +30,8 @@ const char *string_action(e_surf_action_state_t state)
 }
 
 
-void test(void);
-void test(void)
+void test(char *platform);
+void test(char *platform)
 {
   void *cpuA = NULL;
   void *cpuB = NULL;
@@ -46,8 +46,8 @@ void test(void)
   e_surf_action_state_t stateActionC;
   double now = -1.0;
 
-  surf_cpu_resource_init("platform.txt");	/* Now it is possible to use CPUs */
-  surf_network_resource_init("platform.txt");	/* Now it is possible to use eth0 */
+  surf_cpu_resource_init(platform);	/* Now it is possible to use CPUs */
+  surf_network_resource_init(platform);	/* Now it is possible to use eth0 */
 
   /*********************** CPU ***********************************/
   printf("%p \n", surf_cpu_resource);
@@ -132,10 +132,13 @@ void test(void)
   surf_finalize();
 }
 
-
 int main(int argc, char **argv)
 {
   surf_init(&argc, argv);	/* Initialize some common structures */
-  test();
+  if(argc==1) {
+     fprintf(stderr,"Usage : %s platform.txt\n",argv[0]);
+     return 1;
+  }
+  test(argv[1]);
   return 0;
 }

@@ -29,7 +29,7 @@ for test in xbt/log_usage@EXEEXT@                                 \
 	    \
 	    surf/maxmin_usage@EXEEXT@       surf/maxmin_bench@EXEEXT@               \
 	    surf/trace_usage@EXEEXT@                                        \
-	    surf/surf_usage@EXEEXT@                                         
+	    "surf/surf_usage@EXEEXT@ platform.txt" "surf/surf_usage2@EXEEXT@ platform.txt"                                        
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
