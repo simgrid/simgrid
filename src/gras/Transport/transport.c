@@ -21,8 +21,6 @@ static void gras_trp_plugin_free(void *p); /* free one of the plugins */
 gras_dynar_t *_gras_trp_sockets; /* all existing sockets */
 static void gras_trp_socket_free(void *s); /* free one socket */
 
-static fd_set FDread;
-
 gras_error_t
 gras_trp_plugin_new(const char *name, gras_trp_setup_t setup);
 
@@ -70,9 +68,6 @@ gras_trp_init(void){
   /* make room for all socket ownership descriptions */
   TRY(gras_dynar_new(&_gras_trp_sockets, sizeof(gras_socket_t*), NULL));
 
-  /* We do not ear for any socket for now */
-  FD_ZERO(&FDread);
-  
   /* make room for all plugins */
   TRY(gras_dict_new(&_gras_trp_plugins));
 
