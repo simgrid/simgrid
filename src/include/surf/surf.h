@@ -108,7 +108,7 @@ typedef struct surf_cpu_resource {
   surf_cpu_resource_extension_public_t extension_public;
 } s_surf_cpu_resource_t, *surf_cpu_resource_t;
 extern surf_cpu_resource_t surf_cpu_resource;
-void surf_cpu_resource_init(const char *filename);
+void surf_cpu_resource_init_Cas01(const char *filename);
 
 /* Network resource */
 typedef struct surf_network_resource_extension_private
@@ -125,7 +125,7 @@ typedef struct surf_network_resource {
 } s_surf_network_resource_t, *surf_network_resource_t;
 
 extern surf_network_resource_t surf_network_resource;
-void surf_network_resource_init(const char *filename);
+void surf_network_resource_init_CM02(const char *filename);
 
 /* Workstation resource */
 typedef struct surf_workstation_resource_extension_private
@@ -149,7 +149,8 @@ typedef struct surf_workstation_resource {
 } s_surf_workstation_resource_t, *surf_workstation_resource_t;
 
 extern surf_workstation_resource_t surf_workstation_resource;
-void surf_workstation_resource_init(const char *filename);
+void surf_workstation_resource_init_CLM03(const char *filename);
+void surf_workstation_resource_init_resource_init_KCCFLN05(const char *filename);
 extern xbt_dict_t workstation_set;
 
 /*******************************************/

@@ -44,7 +44,7 @@ void test(char *platform)
   e_surf_action_state_t stateActionC;
   double now = -1.0;
 
-  surf_workstation_resource_init(platform);
+  surf_workstation_resource_init_CLM03(platform);
 
   /*********************** WORKSTATION ***********************************/
   workstationA =

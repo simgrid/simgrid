@@ -95,7 +95,7 @@ static void parse_file(const char *file)
   surf_parse_reset_parser();
   ETag_cpu_fun=parse_cpu;
   surf_parse_open(file);
-  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
 }
 
@@ -365,7 +365,22 @@ static void surf_cpu_resource_init_internal(void)
   xbt_assert0(maxmin_system, "surf_init has to be called first!");
 }
 
-void surf_cpu_resource_init(const char *filename)
+/*********************************************************************/
+/* Basic sharing model for CPU: that is all this started... ;)       */
+/*********************************************************************/
+/* @InProceedings{casanova01simgrid, */
+/*   author =       "H. Casanova", */
+/*   booktitle =    "Proceedings of the IEEE Symposium on Cluster Computing */
+/*                  and the Grid (CCGrid'01)", */
+/*   publisher =    "IEEE Computer Society", */
+/*   title =        "Simgrid: {A} Toolkit for the Simulation of Application */
+/*                  Scheduling", */
+/*   year =         "2001", */
+/*   month =        may, */
+/*   note =         "Available at */
+/*                  \url{http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz}." */
+/* } */
+void surf_cpu_resource_init_Cas01(const char *filename)
 {
   if (surf_cpu_resource)
     return;

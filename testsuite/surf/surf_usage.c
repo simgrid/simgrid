@@ -46,8 +46,8 @@ void test(char *platform)
   e_surf_action_state_t stateActionC;
   double now = -1.0;
 
-  surf_cpu_resource_init(platform);	/* Now it is possible to use CPUs */
-  surf_network_resource_init(platform);	/* Now it is possible to use eth0 */
+  surf_cpu_resource_init_Cas01(platform);	/* Now it is possible to use CPUs */
+  surf_network_resource_init_CM02(platform);	/* Now it is possible to use eth0 */
 
   /*********************** CPU ***********************************/
   printf("%p \n", surf_cpu_resource);

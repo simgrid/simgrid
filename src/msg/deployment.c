@@ -59,7 +59,7 @@ void MSG_launch_application(const char *file)
   ETag_argument_fun = parse_argument;
   ETag_process_fun = parse_process_finalize;
   surf_parse_open(file);
-  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
 }
 

@@ -166,14 +166,14 @@ static void parse_file(const char *file)
   surf_parse_reset_parser();
   ETag_network_link_fun=parse_network_link;
   surf_parse_open(file);
-  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
 
   /* Figuring out the network cards used */
   surf_parse_reset_parser();
   STag_route_fun=parse_route_set_endpoints;
   surf_parse_open(file);
-  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
 
   create_routing_table();
@@ -184,7 +184,7 @@ static void parse_file(const char *file)
   ETag_route_element_fun=parse_route_elem;
   ETag_route_fun=parse_route_set_route;
   surf_parse_open(file);
-  xbt_assert1((!surf_parse_lex()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
 }
 
@@ -283,7 +283,7 @@ static void update_actions_state(double now, double delta)
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       action->generic_action.max_duration -= delta;
 
-/*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
+    /*   if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
 
     if (action->generic_action.remains <= 0) {
       action->generic_action.finish = surf_get_clock();
@@ -322,10 +322,9 @@ static void update_resource_state(void *id,
 				  double value)
 {
   network_link_t nw_link = id;
-
-/*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */
-/* 	 "%lg" " for event %p\n", surf_get_clock(), nw_link->name, */
-/* 	 value, event_type); */
+  /*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */
+  /* 	 "%lg" " for event %p\n", surf_get_clock(), nw_link->name, */
+  /* 	 value, event_type); */
 
   if (event_type == nw_link->bw_event) {
     nw_link->bw_current = value;
@@ -442,7 +441,6 @@ static void surf_network_resource_init_internal(void)
       xbt_new0(s_surf_resource_private_t, 1);
   surf_network_resource->common_public =
       xbt_new0(s_surf_resource_public_t, 1);
-/*   surf_network_resource->extension_private = xbt_new0(s_surf_network_resource_extension_private_t,1); */
   surf_network_resource->extension_public =
       xbt_new0(s_surf_network_resource_extension_public_t, 1);
 
@@ -484,7 +482,18 @@ static void surf_network_resource_init_internal(void)
   xbt_assert0(maxmin_system, "surf_init has to be called first!");
 }
 
-void surf_network_resource_init(const char *filename)
+/***************************************************************************/
+/* The nice TCP sharing model designed by Loris Marchal and Henri Casanova */
+/***************************************************************************/
+/* @TechReport{      rr-lip2002-40, */
+/*   author        = {Henri Casanova and Loris Marchal}, */
+/*   institution   = {LIP}, */
+/*   title         = {A Network Model for Simulation of Grid Application}, */
+/*   number        = {2002-40}, */
+/*   month         = {oct}, */
+/*   year          = {2002} */
+/* } */
+void surf_network_resource_init_CM02(const char *filename)
 {
   if (surf_network_resource)
     return;

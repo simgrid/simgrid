@@ -241,14 +241,25 @@ static void surf_workstation_resource_init_internal(void)
   xbt_assert0(maxmin_system, "surf_init has to be called first!");
 }
 
-void surf_workstation_resource_init(const char *filename)
+/********************************************************************/
+/* The model used in MSG and presented at CCGrid03                  */
+/********************************************************************/
+/* @InProceedings{Casanova.CLM_03, */
+/*   author = {Henri Casanova and Arnaud Legrand and Loris Marchal}, */
+/*   title = {Scheduling Distributed Applications: the SimGrid Simulation Framework}, */
+/*   booktitle = {Proceedings of the third IEEE International Symposium on Cluster Computing and the Grid (CCGrid'03)}, */
+/*   publisher = {"IEEE Computer Society Press"}, */
+/*   month = {may}, */
+/*   year = {2003} */
+/* } */
+void surf_workstation_resource_init_CLM03(const char *filename)
 {
 /*   int i ; */
 /*   surf_resource_t resource =  NULL; */
 
   surf_workstation_resource_init_internal();
-  surf_cpu_resource_init(filename);
-  surf_network_resource_init(filename);
+  surf_cpu_resource_init_Cas01(filename);
+  surf_network_resource_init_CM02(filename);
   create_workstations();
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 /*   xbt_dynar_foreach(resource_list, i, resource) { */
