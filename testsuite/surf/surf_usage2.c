@@ -73,7 +73,7 @@ void test(char *platform)
 
   commAB =
       surf_workstation_resource->extension_public->
-      communicate(workstationA, workstationB, 150.0);
+      communicate(workstationA, workstationB, 150.0, -1.0);
 
   surf_solve();			/* Takes traces into account. Returns 0.0 */
   do {
