@@ -16,6 +16,7 @@
 
 #include "gras_private.h"
 #include "transport_private.h"
+#include "Virtu/virtu_sg.h"
 
 GRAS_LOG_EXTERNAL_CATEGORY(transport);
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport);
@@ -23,6 +24,11 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport);
 /***
  *** Prototypes 
  ***/
+/* retrieve the port record associated to a numerical port on an host */
+static gras_error_t find_port(gras_hostdata_t *hd, int port,
+			      gras_sg_portrec_t *hpd);
+
+
 gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 				       const char *host,
 				       unsigned short port,
@@ -49,7 +55,7 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sd,
  ***/
 typedef struct {
   int placeholder; /* nothing plugin specific so far */
-} gras_trp_sg_plug_specific_t;
+} gras_trp_sg_plug_data_t;
 
 /***
  *** Specific socket part
@@ -60,19 +66,39 @@ typedef struct {
 
   m_host_t to_host;   /* Who's on other side */
   m_channel_t to_chan;/* Channel on which the other side is earing */
-} gras_trp_sg_sock_specific_t;
+} gras_trp_sg_sock_data_t;
+
 
 
 /***
  *** Code
  ***/
+static gras_error_t find_port(gras_hostdata_t *hd, int port,
+			      gras_sg_portrec_t *hpd) {
+  int cpt;
+  gras_sg_portrec_t pd;
+
+  gras_assert0(hd,"Please run gras_process_init on each process");
+  
+  gras_dynar_foreach(hd->ports, cpt, pd) {
+    if (pd.port == port) {
+      memcpy(hpd,&pd,sizeof(gras_sg_portrec_t));
+      return no_error;
+    }
+  }
+  return mismatch_error;
+}
+
 
 gras_error_t
 gras_trp_sg_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_sg_plug_specific_t *sg=malloc(sizeof(gras_trp_sg_plug_specific_t));
-  if (!sg)
+  gras_trp_sg_plug_data_t *data=malloc(sizeof(gras_trp_sg_plug_data_t));
+
+  if (!data)
     RAISE_MALLOC;
+
+  plug->data      = data; 
 
   plug->socket_client = gras_trp_sg_socket_client;
   plug->socket_server = gras_trp_sg_socket_server;
@@ -81,7 +107,6 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
   plug->chunk_send    = gras_trp_sg_chunk_send;
   plug->chunk_recv    = gras_trp_sg_chunk_recv;
 
-  plug->data      = sg; 
 
   return no_error;
 }
@@ -89,11 +114,14 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
 gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 				       const char *host,
 				       unsigned short port,
-				       /* OUT */ gras_socket_t *dst){
+				       /* OUT */ gras_socket_t *sock){
+
+  gras_error_t errcode;
 
   m_host_t peer;
   gras_hostdata_t *hd;
-  int i;
+  gras_trp_sg_sock_data_t *data;
+  gras_sg_portrec_t pr;
 
   /* make sure this socket will reach someone */
   if (!(peer=MSG_get_host_by_name(host))) {
@@ -101,180 +129,197 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
       return mismatch_error;
   }
   if (!(hd=(gras_hostdata_t *)MSG_host_get_data(peer))) {
-      fprintf(stderr,"GRAS: can't connect to %s: no process on this host.\n",host);
-      return mismatch_error;
+    RAISE1(mismatch_error,
+	   "can't connect to %s: no process on this host",
+	   host);
   }
-  for (i=0; i<hd->portLen && port != hd->port[i]; i++);
-  if (i == hd->portLen) {
-    fprintf(stderr,"GRAS: can't connect to %s:%d, no process listen on this port.\n",host,port);
-    return mismatch_error;
+  errcode = find_port(hd,port,&pr);
+  if (errcode != no_error && errcode != mismatch_error) 
+    return errcode;
+
+  if (errcode == mismatch_error) {
+    RAISE2(mismatch_error,
+	   "can't connect to %s:%d, no process listen on this port",
+	   host,port);
   } 
 
-  if (hd->raw[i] && !raw) {
-    fprintf(stderr,"GRAS: can't connect to %s:%d in regular mode, the process listen in raw mode on this port.\n",host,port);
-    return mismatch_error;
+  if (pr.raw && !sock->raw) {
+    RAISE2(mismatch_error,
+	   "can't connect to %s:%d in regular mode, the process listen "
+	   "in raw mode on this port",host,port);
   }
-  if (!hd->raw[i] && raw) {
-    fprintf(stderr,"GRAS: can't connect to %s:%d in raw mode, the process listen in regular mode on this port.\n",host,port);
-    return mismatch_error;
+  if (!pr.raw && sock->raw) {
+    RAISE2(mismatch_error,
+	   "can't connect to %s:%d in raw mode, the process listen "
+	   "in regular mode on this port",host,port);
   }
-    
 
-  /* Create the socket */
-  if (!(*sock=(gras_sock_t*)malloc(sizeof(gras_sock_t)))) {
-      fprintf(stderr,"GRAS: openClientSocket: out of memory\n");
-      return malloc_error;
-  }    
+  /* create the socket */
+  if (!(data = malloc(sizeof(gras_trp_sg_sock_data_t))))
+    RAISE_MALLOC;
+  
+  data->from_PID     = MSG_process_self_PID();
+  data->to_PID       = hd->proc[ pr.tochan ];
+  data->to_host      = peer;
+  data->to_chan      = pr.tochan;
+  
+  sock->data = data;
 
-  (*sock)->server_sock  = 0;
-  (*sock)->raw_sock     = raw;
-  (*sock)->from_PID     = MSG_process_self_PID();
-  (*sock)->to_PID       = hd->proc[ hd->port2chan[i] ];
-  (*sock)->to_host      = peer;
-  (*sock)->to_port      = port;  
-  (*sock)->to_chan      = hd->port2chan[i];
-
-  /*
-  fprintf(stderr,"GRAS: %s (PID %d) connects in %s mode to %s:%d (to_PID=%d).\n",
+  DEBUG6("%s (PID %d) connects in %s mode to %s:%d (to_PID=%d)",
 	  MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
-	  raw?"RAW":"regular",host,port,(*sock)->to_PID);
-  */
+	  sock->raw?"RAW":"regular",host,port,data->to_PID);
+
+  return no_error;
 }
 
 gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 				       unsigned short port,
-				       /* OUT */ gras_socket_t *dst){
+				       gras_socket_t *sock){
+
+  gras_error_t errcode;
 
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_procdata_t *pd=(gras_procdata_t *)MSG_process_get_data(MSG_process_self());
-  int port,i;
+  gras_procdata_t *pd=gras_procdata_get();
+  gras_sg_portrec_t pr;
+  gras_trp_sg_sock_data_t *data;
+  
   const char *host=MSG_host_get_name(MSG_host_self());
 
   gras_assert0(hd,"Please run gras_process_init on each process");
-  gras_assert0(pd,"Please run gras_process_init on each process");
 
-  for (port=startingPort ; port <= endingPort ; port++) {
-    for (i=0; i<hd->portLen && hd->port[i] != port; i++);
-    if (i<hd->portLen && hd->port[i] == port)
-      continue;
+  sock->accepting = 0; /* no such nuisance in SG */
 
-    /* port not used so far. Do it */
-    if (i == hd->portLen) {
-      /* need to enlarge the tables */
-      if (hd->portLen++) {
-	hd->port2chan=(int*)realloc(hd->port2chan,hd->portLen*sizeof(int));
-	hd->port     =(int*)realloc(hd->port     ,hd->portLen*sizeof(int));
-	hd->raw      =(int*)realloc(hd->raw      ,hd->portLen*sizeof(int));
-      } else {
-	hd->port2chan=(int*)malloc(hd->portLen*sizeof(int));
-	hd->port     =(int*)malloc(hd->portLen*sizeof(int));
-	hd->raw      =(int*)malloc(hd->portLen*sizeof(int));
-      }
-      if (!hd->port2chan || !hd->port || !hd->raw) {
-	fprintf(stderr,"GRAS: PANIC: A malloc error did lose all ports attribution on this host\n");
-	hd->portLen = 0;
-	return malloc_error;
-      }
-    }
-    hd->port2chan[ i ]=raw ? pd->rawChan : pd->chan;
-    hd->port[ i ]=port;
-    hd->raw[ i ]=raw;
+  errcode = find_port(hd,port,&pr);
+  switch (errcode) {
+  case no_error: /* Port already used... */
+    RAISE2(mismatch_error,
+	   "can't listen on address %s:%d: port already in use\n.",
+	   host,port);
 
-    /* Create the socket */
-    if (!(*sock=(gras_sock_t*)malloc(sizeof(gras_sock_t)))) {
-      fprintf(stderr,"GRAS: openServerSocket: out of memory\n");
-      return malloc_error;
-    }    
+  case mismatch_error: /* Port not used so far. Do it */
+    pr.tochan = sock->raw ? pd->rawChan : pd->chan;
+    pr.port   = port;
+    pr.raw    = sock->raw;
+    TRY(gras_dynar_push(hd->ports,&pr));
     
-    (*sock)->server_sock  = 1;
-    (*sock)->raw_sock     = raw;
-    (*sock)->from_PID     = -1;
-    (*sock)->to_PID       = MSG_process_self_PID();
-    (*sock)->to_host      = MSG_host_self();
-    (*sock)->to_port      = port;  
-    (*sock)->to_chan      = pd->chan;
+    if (sock->raw) {
+      if (pd->rawSock) 
+	WARN1("asked to open two raw server sockets on %s, first one lost",
+	      MSG_host_get_name(MSG_host_self()));
+      pd->rawSock = sock;
+    } else {
+      if (pd->sock) 
+	WARN1("asked to open two server sockets on %s, first one lost",
+	      MSG_host_get_name(MSG_host_self()));
+      pd->sock = sock;
+    }
 
-    /*
-    fprintf(stderr,"GRAS: '%s' (%d) ears on %s:%d%s (%p).\n",
-	    MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
-	    host,port,raw? " (mode RAW)":"",*sock);
-    */
-    return no_error;
+  default:
+    return errcode;
   }
-  /* if we go out of the previous for loop, that's that we didn't find any
-     suited port number */
+  
+  /* Create the socket */
+  if (!(data = malloc(sizeof(gras_trp_sg_sock_data_t))))
+    RAISE_MALLOC;
+  
+  data->from_PID     = -1;
+  data->to_PID       = MSG_process_self_PID();
+  data->to_host      = MSG_host_self();
+  data->to_chan      = pd->chan;
+  
+  sock->data = data;
 
-  fprintf(stderr,
-	  "GRAS: can't find an empty port between %d and %d to open a socket on host %s\n.",
-	  startingPort,endingPort,host);
-  return mismatch_error;
+  INFO6("'%s' (%d) ears on %s:%d%s (%p)",
+    MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
+    host,port,sock->raw? " (mode RAW)":"",*sock);
+
+  return no_error;
 }
 
-void gras_trp_sg_socket_close(gras_socket_t *sd){
+void gras_trp_sg_socket_close(gras_socket_t *sock){
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  int i;
+  gras_procdata_t *pd=gras_procdata_get();
+  int cpt;
+  gras_sg_portrec_t *pr;
 
-  if (!sd) return;
+  if (!sock) return;
   gras_assert0(hd,"Please run gras_process_init on each process");
 
-  if (raw && !sd->raw_sock) {
-      fprintf(stderr,"GRAS: gras_rawsock_close: Was passed a regular socket. Please use gras_sock_close()\n");
-  }
-  if (!raw && sd->raw_sock) {
-      fprintf(stderr,"GRAS: grasSockClose: Was passed a raw socket. Please use gras_rawsock_close()\n");
-  }
-  if (sd->server_sock) {
-    /* server mode socket. Un register it from 'OS' tables */
-    for (i=0; 
-	 i<hd->portLen && sd->to_port != hd->port[i]; 
-	 i++);
+  free(sock->data);
 
-    if (i==hd->portLen) {
-      fprintf(stderr,"GRAS: closeSocket: The host does not know this server socket.\n");
-    } else {
-      memmove(&(hd->port[i]),      &(hd->port[i+1]),      (hd->portLen -i -1) * sizeof(int));
-      memmove(&(hd->raw[i]),       &(hd->raw[i+1]),       (hd->portLen -i -1) * sizeof(int));
-      memmove(&(hd->port2chan[i]), &(hd->port2chan[i+1]), (hd->portLen -i -1) * sizeof(int));
-      hd->portLen--;
+  if (sock->incoming) {
+    /* server mode socket. Un register it from 'OS' tables */
+    gras_dynar_foreach(hd->ports, cpt, pr) {
+      if (pr->port == sock->port) {
+	gras_dynar_cursor_rm(hd->ports, &cpt);
+
+	if (sock->raw) {
+	  pd->rawSock = NULL;
+	} else {
+	  pd->sock = NULL;
+	}
+	return;
+      }
     }
-  } 
-  free(sd);
+    WARN0("socket_close called on an unknown socket");
+  }
 }
 
-gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sd,
+typedef struct {
+  int size;
+  void *data;
+} sg_task_data_t;
+
+gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
 				    char *data,
 				    size_t size) {
   m_task_t task=NULL;
   static unsigned int count=0;
   char name[256];
+  gras_trp_sg_sock_data_t *sock_data;
+  sg_task_data_t *task_data;
   
-  sprintf(name,"Chunk[%d]",count++);
-  task=MSG_task_create(name,0,((double)size)/(1024.0*1024.0),NULL);
+  sock_data = (gras_trp_sg_sock_data_t *)sock->data;
 
-  if (MSG_task_put(task, sock->to_host,sock->to_chan) != MSG_OK) {
-    RAISE(system_error,"Problem during the MSG_task_put");
+  sprintf(name,"Chunk[%d]",count++);
+
+  if (!(task_data=malloc(sizeof(sg_task_data_t)))) 
+    RAISE_MALLOC;
+  if (!(task_data->data=malloc(size)))
+    RAISE_MALLOC;
+  task_data->size = size;
+  memcpy(task_data->data,data,size);
+
+  task=MSG_task_create(name,0,((double)size)/(1024.0*1024.0),task_data);
+
+  if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) {
+    RAISE0(system_error,"Problem during the MSG_task_put");
   }
 
   return no_error;
 }
 
-gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sd,
+gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
 				    char *data,
 				    size_t size){
-  gras_procdata_t *pd=
-    (gras_procdata_t*)MSG_process_get_data(MSG_process_self());
+  gras_procdata_t *pd=gras_procdata_get();
 
-  unsigned int bytesTotal=0;
   m_task_t task=NULL;
+  sg_task_data_t *task_data;
 
-  if (MSG_task_get(&task, (m_channel_t) pd->rawChan) != MSG_OK) {
-    fprintf(stderr,"GRAS: Error in MSG_task_get()\n");
-    return unknown_error;
-  }
-  if (MSG_task_destroy(task) != MSG_OK) {
-    fprintf(stderr,"GRAS: Error in MSG_task_destroy()\n");
-    return unknown_error;
-  }
+  if (MSG_task_get(&task, (sock->raw ? pd->rawChan : pd->chan)) != MSG_OK)
+    RAISE0(unknown_error,"Error in MSG_task_get()");
+
+  task_data = MSG_task_get_data(task);
+  gras_assert2(task_data->size == size,
+	       "Got %d bytes when %d where expected",
+	       task_data->size, size);
+  memcpy(data,task_data->data,size);
+  free(task_data->data);
+  free(task_data);
+
+  if (MSG_task_destroy(task) != MSG_OK)
+    RAISE0(unknown_error,"Error in MSG_task_destroy()");
 
   return no_error;
 }
