@@ -30,9 +30,11 @@ EXTRA_DIST= \
 	surf/workstation_private.h \
 	surf/surf_parse.c \
 	surf/surfxml.l \
+	surf/surfxml.h \
 	surf/surfxml.c \
+	surf/surfxml.dtd \
 	surf/network_private.h \
-	surf/workstation_private_KCCFLN05.h \
+	surf/workstation_KCCFLN05_private.h \
 	\
 	msg/private.h \
 	\
