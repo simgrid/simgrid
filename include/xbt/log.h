@@ -561,5 +561,6 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define XBT_IN3(fmt,a,b,c)   LOG4(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_GNUC_FUNCTION, a,b,c)
 #define XBT_IN4(fmt,a,b,c,d) LOG5(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_GNUC_FUNCTION, a,b,c,d)
 #define XBT_OUT              LOG1(xbt_log_priority_trace, "<< end of %s",       _XBT_GNUC_FUNCTION)
+#define XBT_HERE             LOG0(xbt_log_priority_trace, "-- was here")
 
 #endif /* ! _XBT_LOG_H_ */
