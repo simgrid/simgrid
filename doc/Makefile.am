@@ -7,7 +7,7 @@ html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
 	@doxygen Doxyfile.main
 	@doxygen Doxyfile.API
 	@doxygen Doxyfile.Examples
-	@@top_srcdir@/tools/doxygen/index_create.pl html/API/API.tag @top_srcdir@/doc/api_index.doc
+	@@top_srcdir@/tools/doxygen/index_create.pl html/API/API.tag doc/api_index.doc
 	@cp simgrid_logo.png simgrid_modules.jpg html/
 	@doxygen Doxyfile.API
 	@doxygen Doxyfile.Examples
