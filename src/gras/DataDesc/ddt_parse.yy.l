@@ -1,4 +1,12 @@
-/**** MSG_LICENCE DO NOT REMOVE ****/
+/* $Id$ */
+
+/* DataDesc/ddt_parse -- automatic parsing of data structures */
+
+/* Authors: Arnaud Legrand, Martin Quinson            */
+/* Copyright (C) 2003, 2004 Martin Quinson.                                 */
+
+/* This program is free software; you can redistribute it and/or modify it
+   under the terms of the license (GNU LGPL) which comes with this package. */
 
 %option noyywrap
 %{
@@ -12,6 +20,8 @@
   int gras_ddt_parse_col_pos = 0;
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
+  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,parse);
+#define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen %s", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
 %}
 
 %x comment foo str
@@ -138,46 +148,55 @@ digit           [0-9]
 "{"  { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_LP);
 }
 "}" {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_RP);
 }
 "["  { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_LB);
 }
 "]" {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_RB);
 }
 "*" {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_STAR);
 }
 ";" {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_SEMI_COLON);
 }
 "," { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_COLON);
 }
 "\n" {
  gras_ddt_parse_line_pos++; 
- gras_ddt_parse_char_pos=0;
- gras_ddt_parse_col_pos++;
+ gras_ddt_parse_char_pos++;
+ gras_ddt_parse_col_pos=0;
+  SHOW_WHERE;
 }
 . { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
 }
 %%
 /* {space}+                { return(TOKEN_SPACE);} */

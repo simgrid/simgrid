@@ -483,8 +483,13 @@ int gras_ddt_parse__flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *gras_ddt_parse_text;
 #line 1 "DataDesc/ddt_parse.yy.l"
-/**** MSG_LICENCE DO NOT REMOVE ****/
-#line 5 "DataDesc/ddt_parse.yy.l"
+/* $Id$ */
+/* DataDesc/ddt_parse -- automatic parsing of data structures */
+/* Authors: Arnaud Legrand, Martin Quinson            */
+/* Copyright (C) 2003, 2004 Martin Quinson.                                 */
+/* This program is free software; you can redistribute it and/or modify it
+   under the terms of the license (GNU LGPL) which comes with this package. */
+#line 13 "DataDesc/ddt_parse.yy.l"
 #include"DataDesc/datadesc_private.h"
 #include"DataDesc/ddt_parse.yy.h"
 #include <string.h>
@@ -495,8 +500,10 @@ char *gras_ddt_parse_text;
   int gras_ddt_parse_col_pos = 0;
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
+  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,parse);
+#define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen %s", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,gras_ddt_parse_text)
 
-#line 500 "DataDesc/ddt_parse.yy.c"
+#line 507 "DataDesc/ddt_parse.yy.c"
 
 #define INITIAL 0
 #define comment 1
@@ -650,14 +657,14 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 22 "DataDesc/ddt_parse.yy.l"
+#line 32 "DataDesc/ddt_parse.yy.l"
 
         int comment_caller=0;
 
         char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
         char *string_buf_ptr = NULL;
 
-#line 661 "DataDesc/ddt_parse.yy.c"
+#line 668 "DataDesc/ddt_parse.yy.c"
 
 	if ( (yy_init) )
 		{
@@ -742,12 +749,12 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 28 "DataDesc/ddt_parse.yy.l"
+#line 38 "DataDesc/ddt_parse.yy.l"
 
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 29 "DataDesc/ddt_parse.yy.l"
+#line 39 "DataDesc/ddt_parse.yy.l"
 {
              comment_caller = INITIAL;
              BEGIN(comment);
@@ -755,7 +762,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "DataDesc/ddt_parse.yy.l"
+#line 44 "DataDesc/ddt_parse.yy.l"
 {
              comment_caller = foo;
              BEGIN(comment);
@@ -763,18 +770,18 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 39 "DataDesc/ddt_parse.yy.l"
+#line 49 "DataDesc/ddt_parse.yy.l"
 /* eat anything that's not a '*' */
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 40 "DataDesc/ddt_parse.yy.l"
+#line 50 "DataDesc/ddt_parse.yy.l"
 /* eat up '*'s not followed by '/'s */
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 41 "DataDesc/ddt_parse.yy.l"
+#line 51 "DataDesc/ddt_parse.yy.l"
 {
   ++gras_ddt_parse_line_pos;
   gras_ddt_parse_col_pos=0;
@@ -783,17 +790,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 46 "DataDesc/ddt_parse.yy.l"
+#line 56 "DataDesc/ddt_parse.yy.l"
 BEGIN(comment_caller);
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 48 "DataDesc/ddt_parse.yy.l"
+#line 58 "DataDesc/ddt_parse.yy.l"
 string_buf_ptr = string_buf; gras_ddt_parse_char_pos++;gras_ddt_parse_col_pos++; BEGIN(str);
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 50 "DataDesc/ddt_parse.yy.l"
+#line 60 "DataDesc/ddt_parse.yy.l"
 { /* saw closing quote - all done */
         BEGIN(INITIAL);
         *string_buf_ptr = '\0';
@@ -809,7 +816,7 @@ YY_RULE_SETUP
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 62 "DataDesc/ddt_parse.yy.l"
+#line 72 "DataDesc/ddt_parse.yy.l"
 {
         /* error - unterminated string constant */
         /* generate error message */
@@ -817,7 +824,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 67 "DataDesc/ddt_parse.yy.l"
+#line 77 "DataDesc/ddt_parse.yy.l"
 {
         /* octal escape sequence */
         int result;
@@ -834,7 +841,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 81 "DataDesc/ddt_parse.yy.l"
+#line 91 "DataDesc/ddt_parse.yy.l"
 {
         /* generate error - bad escape sequence; something
          * like '\48' or '\0777777'
@@ -843,7 +850,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 87 "DataDesc/ddt_parse.yy.l"
+#line 97 "DataDesc/ddt_parse.yy.l"
 {
   *string_buf_ptr++ = '\n';
   gras_ddt_parse_char_pos++;
@@ -852,7 +859,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 92 "DataDesc/ddt_parse.yy.l"
+#line 102 "DataDesc/ddt_parse.yy.l"
 {
   *string_buf_ptr++ = '\t';	
   gras_ddt_parse_char_pos++;
@@ -861,7 +868,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 97 "DataDesc/ddt_parse.yy.l"
+#line 107 "DataDesc/ddt_parse.yy.l"
 {
   *string_buf_ptr++ = '\r';	
   gras_ddt_parse_char_pos++;
@@ -870,7 +877,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 102 "DataDesc/ddt_parse.yy.l"
+#line 112 "DataDesc/ddt_parse.yy.l"
 {
   *string_buf_ptr++ = '\b';	
   gras_ddt_parse_char_pos++;
@@ -879,7 +886,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 107 "DataDesc/ddt_parse.yy.l"
+#line 117 "DataDesc/ddt_parse.yy.l"
 {
   *string_buf_ptr++ = '\f';
   gras_ddt_parse_char_pos++;
@@ -889,7 +896,7 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 113 "DataDesc/ddt_parse.yy.l"
+#line 123 "DataDesc/ddt_parse.yy.l"
 {
   *string_buf_ptr++ = gras_ddt_parse_text[1]; 	
   if(gras_ddt_parse_text[1]=='\n') {
@@ -903,7 +910,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 124 "DataDesc/ddt_parse.yy.l"
+#line 134 "DataDesc/ddt_parse.yy.l"
 {
   char *yptr = gras_ddt_parse_text;
   
@@ -915,7 +922,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 133 "DataDesc/ddt_parse.yy.l"
+#line 143 "DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
   gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
@@ -924,91 +931,100 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 138 "DataDesc/ddt_parse.yy.l"
+#line 148 "DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_LP);
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 143 "DataDesc/ddt_parse.yy.l"
+#line 154 "DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_RP);
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 148 "DataDesc/ddt_parse.yy.l"
+#line 160 "DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_LB);
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 153 "DataDesc/ddt_parse.yy.l"
+#line 166 "DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_RB);
 }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 158 "DataDesc/ddt_parse.yy.l"
+#line 172 "DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_STAR);
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 163 "DataDesc/ddt_parse.yy.l"
+#line 178 "DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_SEMI_COLON);
 }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 168 "DataDesc/ddt_parse.yy.l"
+#line 184 "DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
   return(GRAS_DDT_PARSE_TOKEN_COLON);
 }
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 173 "DataDesc/ddt_parse.yy.l"
+#line 190 "DataDesc/ddt_parse.yy.l"
 {
  gras_ddt_parse_line_pos++; 
- gras_ddt_parse_char_pos=0;
- gras_ddt_parse_col_pos++;
+ gras_ddt_parse_char_pos++;
+ gras_ddt_parse_col_pos=0;
+  SHOW_WHERE;
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 178 "DataDesc/ddt_parse.yy.l"
+#line 196 "DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
+  SHOW_WHERE;
 }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 182 "DataDesc/ddt_parse.yy.l"
+#line 201 "DataDesc/ddt_parse.yy.l"
 ECHO;
 	YY_BREAK
-#line 1012 "DataDesc/ddt_parse.yy.c"
+#line 1028 "DataDesc/ddt_parse.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(comment):
 case YY_STATE_EOF(foo):
@@ -1977,7 +1993,7 @@ void gras_ddt_parse_free (void * ptr )
 #undef YY_DECL_IS_OURS
 #undef YY_DECL
 #endif
-#line 182 "DataDesc/ddt_parse.yy.l"
+#line 201 "DataDesc/ddt_parse.yy.l"
 
 
 /* {space}+                { return(TOKEN_SPACE);} */

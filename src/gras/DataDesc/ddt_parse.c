@@ -128,9 +128,10 @@ static gras_error_t parse_statement(char		*definition,
 	 definition[colon_pos] != ';';
 	 colon_pos++);
     definition[colon_pos] = '\0';
-    DEBUG2("Parse the statement \"%s%s;\"",
+    DEBUG3("Parse the statement \"%s%s;\" (col_pos=%d)",
 	   gras_ddt_parse_text,
-	   definition+gras_ddt_parse_col_pos);
+	   definition+gras_ddt_parse_col_pos,
+	   gras_ddt_parse_col_pos);
     definition[colon_pos] = ';';
   }
 
@@ -489,7 +490,7 @@ gras_datadesc_parse(const char            *name,
   definition[def_count] = '\0';
 
   /* init */ 
-  VERB1("_gras_ddt_type_parse(%s)",definition);
+  VERB2("_gras_ddt_type_parse(%s) -> %d chars",definition, def_count);
   gras_ddt_parse_pointer_string_init(definition);
 
   /* Do I have a typedef, or a raw struct ?*/
