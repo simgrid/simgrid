@@ -1,6 +1,12 @@
 #! @BASH@ -e
 
-./trp_tcp_server $@ &
+if test -e gras/trp_tcp_server ; then
+  base=gras
+else 
+  base=.
+fi
+
+$base/trp_tcp_server $@ &
 sleep 1
-./trp_tcp_client $@ 
+$base/trp_tcp_client $@ 
 
