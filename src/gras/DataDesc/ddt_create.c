@@ -767,3 +767,160 @@ void gras_datadesc_free(gras_datadesc_type_t *type) {
   xbt_free(*type);
   type=NULL;
 }
+
+/**
+ * gras_datadesc_type_cmp:
+ *
+ * Compares two datadesc types with the same semantic than strcmp.
+ *
+ * This comparison does not take the set headers into account (name and ID), 
+ * but only the payload (actual type description).
+ */
+int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
+			   const gras_datadesc_type_t d2) {
+  int ret,cpt;
+  gras_dd_cat_field_t field1,field2;
+  gras_datadesc_type_t field_desc_1,field_desc_2;
+
+  if (d1 == d2) return 0; /* easy optimization */
+
+  if (!d1 && d2) {
+    DEBUG0("ddt_cmp: !d1 && d2 => 1");
+    return 1;
+  }
+  if (!d1 && !d2) {
+    DEBUG0("ddt_cmp: !d1 && !d2 => 0");
+    return 0;
+  }
+  if ( d1 && !d2) {
+    DEBUG0("ddt_cmp: d1 && !d2 => -1");
+    return -1;
+  }
+
+  for (cpt=0; cpt<gras_arch_count; cpt++) {
+    if (d1->size[cpt] != d2->size[cpt]) {
+      DEBUG5("ddt_cmp: %s->size=%ld  !=  %s->size=%ld (on %s)",
+	     d1->name,d1->size[cpt],d2->name,d2->size[cpt],
+	     gras_arches[cpt].name);
+      return d1->size[cpt] >  d2->size[cpt] ? 1 : -1;
+    }
+
+    if (d1->alignment[cpt] != d2->alignment[cpt]) {
+      DEBUG5("ddt_cmp: %s->alignment=%ld  !=  %s->alignment=%ld (on %s)",
+	     d1->name,d1->alignment[cpt],d2->name,d2->alignment[cpt],
+	     gras_arches[cpt].name);
+      return d1->alignment[cpt] > d2->alignment[cpt] ? 1 : -1;
+    }
+
+    if (d1->aligned_size[cpt] != d2->aligned_size[cpt]) {
+      DEBUG5("ddt_cmp: %s->aligned_size=%ld  !=  %s->aligned_size=%ld (on %s)",
+	     d1->name,d1->aligned_size[cpt],d2->name,d2->aligned_size[cpt],
+	     gras_arches[cpt].name);
+      return d1->aligned_size[cpt] > d2->aligned_size[cpt] ? 1 : -1;
+    }
+  }
+
+  if (d1->category_code != d2->category_code) {
+    DEBUG4("ddt_cmp: %s->cat=%s  !=  %s->cat=%s",
+	   d1->name,gras_datadesc_cat_names[d1->category_code],
+	   d2->name,gras_datadesc_cat_names[d2->category_code]);
+    return d1->category_code > d2->category_code ? 1 : -1;
+  }
+
+  if (d1->send != d2->send) {
+    DEBUG4("ddt_cmp: %s->send=%p  !=  %s->send=%p",
+	   d1->name,(void*)d1->send, d2->name,(void*)d2->send);
+    return 1; /* ISO C forbids ordered comparisons of pointers to functions */
+  }
+
+  if (d1->recv != d2->recv) {
+    DEBUG4("ddt_cmp: %s->recv=%p  !=  %s->recv=%p",
+	   d1->name,(void*)d1->recv, d2->name,(void*)d2->recv);
+    return 1; /* ISO C forbids ordered comparisons of pointers to functions */
+  }
+
+  switch (d1->category_code) {
+  case e_gras_datadesc_type_cat_scalar:
+    if (d1->category.scalar_data.encoding != d2->category.scalar_data.encoding)
+      return d1->category.scalar_data.encoding > d2->category.scalar_data.encoding ? 1 : -1 ;
+    break;
+    
+  case e_gras_datadesc_type_cat_struct:    
+    if (xbt_dynar_length(d1->category.struct_data.fields) != 
+	xbt_dynar_length(d2->category.struct_data.fields)) {
+      DEBUG4("ddt_cmp: %s (having %lu fields) !=  %s (having %lu fields)",
+	     d1->name, xbt_dynar_length(d1->category.struct_data.fields),
+	     d2->name, xbt_dynar_length(d2->category.struct_data.fields));
+      
+      return xbt_dynar_length(d1->category.struct_data.fields) >
+	xbt_dynar_length(d2->category.struct_data.fields) ?
+	1 : -1;
+    }
+    xbt_dynar_foreach(d1->category.struct_data.fields, cpt, field1) {
+      
+      field2 = xbt_dynar_get_as(d2->category.struct_data.fields, cpt, gras_dd_cat_field_t);
+      field_desc_1 = field1->type;
+      field_desc_2 = field2->type;
+      ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
+      if (ret) {
+	DEBUG6("%s->field[%d]=%s != %s->field[%d]=%s",
+	       d1->name,cpt,field1->name, 	       
+	       d2->name,cpt,field2->name);
+	return ret;
+      }
+      
+    }
+    break;
+    
+  case e_gras_datadesc_type_cat_union:
+    if (d1->category.union_data.selector != d2->category.union_data.selector) 
+      return 1;  /* ISO C forbids ordered comparisons of pointers to functions */
+    
+    if (xbt_dynar_length(d1->category.union_data.fields) != 
+	xbt_dynar_length(d2->category.union_data.fields))
+      return xbt_dynar_length(d1->category.union_data.fields) >
+	     xbt_dynar_length(d2->category.union_data.fields) ?
+	1 : -1;
+    
+    xbt_dynar_foreach(d1->category.union_data.fields, cpt, field1) {
+      
+      field2 = xbt_dynar_get_as(d2->category.union_data.fields, cpt, gras_dd_cat_field_t);
+      field_desc_1 = field1->type;
+      field_desc_2 = field2->type;
+      ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
+      if (ret)
+	return ret;
+      
+    }
+    break;
+    
+    
+  case e_gras_datadesc_type_cat_ref:
+    if (d1->category.ref_data.selector != d2->category.ref_data.selector) 
+      return 1; /* ISO C forbids ordered comparisons of pointers to functions */
+    
+    if (d1->category.ref_data.type != d2->category.ref_data.type) 
+      return d1->category.ref_data.type > d2->category.ref_data.type ? 1 : -1;
+    break;
+    
+  case e_gras_datadesc_type_cat_array:
+    if (d1->category.array_data.type != d2->category.array_data.type) 
+      return d1->category.array_data.type > d2->category.array_data.type ? 1 : -1;
+    
+    if (d1->category.array_data.fixed_size != d2->category.array_data.fixed_size) 
+      return d1->category.array_data.fixed_size > d2->category.array_data.fixed_size ? 1 : -1;
+    
+    if (d1->category.array_data.dynamic_size != d2->category.array_data.dynamic_size) 
+      return 1; /* ISO C forbids ordered comparisons of pointers to functions */
+    
+    break;
+    
+  case e_gras_datadesc_type_cat_ignored:
+    /* That's ignored... */
+  default:
+    /* two stupidly created ddt are equally stupid ;) */
+    break;
+  }
+  return 0;
+  
+}
