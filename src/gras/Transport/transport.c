@@ -12,7 +12,6 @@
 
 #include "Transport/transport_private.h"
 
-
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(transport,GRAS);
 
 static gras_dict_t  *_gras_trp_plugins;     /* All registered plugins */
@@ -24,10 +23,33 @@ static void gras_trp_socket_free(void *s); /* free one socket */
 
 static fd_set FDread;
 
+gras_error_t
+gras_trp_plugin_new(const char *name, gras_trp_setup_t setup);
+
+gras_error_t
+gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
+  gras_error_t errcode;
+
+  gras_trp_plugin_t *plug = malloc(sizeof(gras_trp_plugin_t));
+  if (!plug) 
+    RAISE_MALLOC;
+
+  memset(plug,0,sizeof(gras_trp_plugin_t));
+
+  plug->name=strdup(name);
+  if (!plug->name)
+    RAISE_MALLOC;
+
+  TRY(setup(plug));
+  TRY(gras_dict_set(_gras_trp_plugins, 
+		    plug->name, plug, gras_trp_plugin_free));
+
+  return no_error;
+}
+
 gras_error_t 
 gras_trp_init(void){
   gras_error_t errcode;
-  gras_trp_plugin_t *plug;
   
   /* make room for all socket ownership descriptions */
   TRY(gras_dynar_new(&_gras_trp_sockets, sizeof(gras_socket_t*), NULL));
@@ -38,15 +60,10 @@ gras_trp_init(void){
   /* make room for all plugins */
   TRY(gras_dict_new(&_gras_trp_plugins));
 
-  /* TCP */
-  TRY(gras_trp_tcp_init(&plug));
-  TRY(gras_dict_set(_gras_trp_plugins, 
-		    plug->name, plug, gras_trp_plugin_free));
-
-  /* FILE */
-  TRY(gras_trp_file_init(&plug));
-  TRY(gras_dict_set(_gras_trp_plugins, 
-		    plug->name, plug, gras_trp_plugin_free));
+  /* Add them */
+  TRY(gras_trp_plugin_new("tcp", gras_trp_tcp_setup));
+  TRY(gras_trp_plugin_new("file",gras_trp_file_setup));
+  TRY(gras_trp_plugin_new("sg",gras_trp_sg_setup));
 
   return no_error;
 }
@@ -62,8 +79,10 @@ void gras_trp_plugin_free(void *p) {
   gras_trp_plugin_t *plug = p;
 
   if (plug) {
-    if (plug->free_specific && plug->specific)
-      plug->free_specific(plug->specific);
+    if (plug->exit)
+      plug->exit(plug);
+    else if (plug->data) 
+      free(plug->data);
 
     free(plug->name);
     free(plug);
@@ -98,6 +117,7 @@ gras_error_t gras_trp_socket_new(int incoming,
   sock->port      = -1;
   sock->peer_port = -1;
   sock->peer_name = NULL;
+  sock->raw = 0;
 
   *dst = sock;
   return no_error;
@@ -129,7 +149,7 @@ gras_socket_server(unsigned short port,
   sock->port=port;
 
   /* Call plugin socket creation function */
-  errcode = trp->socket_server(trp, port, 0/* not raw */, sock);
+  errcode = trp->socket_server(trp, port, sock);
   if (errcode != no_error) {
     free(sock);
     return errcode;
@@ -176,7 +196,6 @@ gras_socket_client(const char *host,
   /* plugin-specific */
   errcode= (* trp->socket_client)(trp, 
 				  host ? host : "localhost", port,
-				  0 /* not raw */,
 				  sock);
   if (errcode != no_error) {
     free(sock);
