@@ -15,6 +15,9 @@
        - \ref GRAS_globals: The use of globals is forbidden since the
          "processes" are threads in simulation mode. \n
 	 This is how to let GRAS handle your globals properly.
+       - \ref GRAS_main_generation: Since processes are threads in
+          simulation mode and regular processes in the real world, GRAS does
+          generate your main functions for you.
        - \ref GRAS_cond: How to declare specific code for the simulation mode
           or for the real mode.
        - \ref GRAS_virtu: You naturally don't want to call the
@@ -30,20 +33,8 @@
     nothing, isn't it?
     
        - \ref GRAS_ex_ping 
-	  
-    \section GRAS_todo TODO
-     Documentation related:
-       - Add an example to the \ref GRAS_msg section, at least
-       - Document examples/gras/gras_stub_generator utility and how to deal
-         with the fact that programs must have a main in RL and not in SG.
-       - Document example/gras/ping as it uses almost all of the GRAS
-         features.
-     
-     Code related: too long to be written here. See the TODO file
-     
-    @{
-*/     
-
+	       
+    @{ */     
        /** \defgroup GRAS_dd      Data description      */       
        /** \defgroup GRAS_sock    Sockets               */           
        /** \defgroup GRAS_msg     Messages              */               
@@ -54,7 +45,161 @@
 
 /** @} */
 
+/** \page GRAS_main_generation main() and GRAS
+
+    <center>[\ref GRAS_API]</center>
+
+    \section GRAS_maingen_intro What's the matter with main() functions in GRAS?
+
+    In simulation mode, all processes are run as thread of the same process
+    while they are real processes in the real life. Unfortunately, the main
+    function of a real process must be called <tt>main</tt> while this
+    function must not use this name for threads.
+    
+    To deal with this, you should call the main function of your processes
+    with another name (usually, the process function such as client, server,
+    or such). Then GRAS can generate the wrapper functions adapted to the
+    real and simulated modes.
+
+    \section GRAS_maingen_script Generating the main()s manually with
+    
+    This is done by the gras_stub_generator script, which lives for now in
+    the examples/gras/ directory. Here is the calling syntax:
+    \verbatim gras_stub_generator <project_name> <deployment_file>\endverbatim
+    
+    It parses the deployment file, searching for all the kind of processes
+    you have in your project. It then generates the following C files:
+     - a file _<project_name>_<process_kind>.c for each process kind you
+       have\n
+       They are used to launch your project in real life. They
+       contain a main() in charge of initializing the GRAS infrastructure and
+       launching your code afterward.
+     - a file _<project_name>_simulator.c.\n
+       This file is suited to the simulation mode. It contains a main()
+       function initializing the simulator and launching your project within.
+    
+    For this to work, the name of process described in your deployment file
+    should match the name of a function in your code, which prototype is for
+    example: \verbatim int client(int argc,char *argv[]);\endverbatim
+    
+    Unfortunately, all this is still partially documented. I guess I ought
+    to improve this situation somehow. In the meanwhile, check the script
+    source code, and the generated code, sorry.
+    
+    \warning All this is about the old description file from SimGrid2 and
+    should be updated to the new SimGrid3 format. We have to change both the
+    code and this documentation.
+    
+    \section GRAS_maingen_make Integration within your Makefile 
+    
+    The easiest to set it up is to add the following chunk at the end of
+    your Makefile (or Makefile.am), putting the right values into NAME and
+    PROCESSES.
+\verbatim NAME=your_project_name
+ PROCESSES=list of processes type in your project
+
+ $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(NAME).c $(NAME)_deployment.txt
+        path/to/gras_stub_generator $(NAME) $(NAME)_deployment.txt >/dev/null
+\endverbatim
+
+    Of course, your personal millage may vary. For the \ref GRAS_ex_ping, may read:
+\verbatim _ping_client.c _ping_server.c _ping_simulator.c: ping.c ping_deployment.txt 
+        $(srcdir)/../gras_stub_generator ping ping_deployment.txt >/dev/null
+\endverbatim	
+
+     */
+
 /** \page GRAS_ex_ping The classical Ping-Pong in GRAS
-    \include gras/ping/ping.c
+
+    <center>[\ref GRAS_API]</center>
+
+    This example implements the very classical ping-pong in GRAS. It
+    involves a client (initiating the ping-pong) and a server (answering to 
+    client's requests).
+
+    It works the following way:
+     - Both the client and the server register all needed messages
+     - The server registers a callback to the ping message, which sends pong
+       to the expeditor
+     - The client sends the ping message to the server, and waits for the
+       pong message as an answer.
+ 
+    This example resides in the <b>examples/gras/ping/ping.c</b> file. Yes, both
+    the code of the client and of the server is placed in the same file. See
+    the \ref GRAS_main_generation section if wondering.
+
+    \section GRAS_ex_ping_over Overview
+      - \ref GRAS_ex_ping_common
+        - \ref GRAS_ex_ping_initial
+        - \ref GRAS_ex_ping_register
+      - \ref GRAS_ex_ping_server
+        - \ref GRAS_ex_ping_serdata
+	- \ref GRAS_ex_ping_sercb
+	- \ref GRAS_ex_ping_sermain
+      - \ref GRAS_ex_ping_client
+	- \ref GRAS_ex_ping_climain
+	
+    <hr>
+
+    \dontinclude gras/ping/ping.c
+    
+    \section GRAS_ex_ping_common 1) Common code to the client and the server 
+    
+    \subsection GRAS_ex_ping_initial 1.a) Initial settings
+    
+    Let's first load the gras header and declare a logging category (see
+    \ref XBT_log for more info on logging).
+    
+    \skip include
+    \until XBT_LOG
+
+    \subsection GRAS_ex_ping_register 1.b) Register the messages
+    
+    This function, called by both the client and the server is in charge of
+    declaring the existing messages to GRAS. Since the payload does not
+    involve any newly created types but only int, this is quite easy. 
+    (to exchange more complicated types, see \ref GRAS_dd)
+    
+    \skip register_messages
+    \until }
+
+    \section GRAS_ex_ping_server 2) Server's code
+    
+    \subsection GRAS_ex_ping_serdata 2.a) The server's globals
+
+    In order to ensure the communication between the "main" and the callback
+    of the server, we need to declare some globals. We have to put them in a
+    struct definition so that they can be handled properly in GRAS (see the
+    \ref GRAS_globals for more info).
+
+    \skip typedef struct
+    \until }
+    
+    \subsection GRAS_ex_ping_sercb 2.b) The callback to the ping message
+
+    Here is the callback run when the server receives any ping message (this
+    will be registered later by the server).
+    
+    \skip server_cb_ping_handler
+    \until end_of_server_cb_ping_handler
+
+    \subsection GRAS_ex_ping_sermain 2.c) The "main" of the server
+    
+    This is the "main" of the server. As explained in the \ref
+    GRAS_main_generation, you don't have to (and shouldn't) write any main()
+    function yourself. Instead, you just have to write a regular function
+    like this one which will act as a main.
+    
+    \skip server
+    \until end_of_server
+    
+    \section GRAS_ex_ping_client 3) Client's code
+    
+    \subsection GRAS_ex_ping_climain 3.a) Client's "main" function
+    
+    \skip client
+    \until end_of_client
+    
+
   */
 
