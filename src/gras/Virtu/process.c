@@ -10,7 +10,7 @@
 
 #include "gras_private.h"
 #include "Virtu/virtu_interface.h"
-
+#include "Msg/msg_interface.h" /* FIXME: Get rid of this cyclic */
 
 /* **************************************************************************
  * Process data

@@ -12,6 +12,7 @@
 #define VIRTU_SG_H
 
 #include "gras_private.h"
+#include "Virtu/virtu_interface.h"
 #include <msg.h> /* SimGrid header */
 
 #define GRAS_MAX_CHANNEL 10
