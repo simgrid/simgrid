@@ -28,11 +28,17 @@ gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
 
 /* Access function */
 int  gras_datadesc_size(gras_datadesc_type_t type);
-/* Described data exchanges */
+/* Described data exchanges: direct use */
 xbt_error_t gras_datadesc_cpy(gras_datadesc_type_t type, void *src, void **dst);
 xbt_error_t gras_datadesc_send(gras_socket_t sock, gras_datadesc_type_t type, void *src);
 xbt_error_t gras_datadesc_recv(gras_socket_t sock, gras_datadesc_type_t type,
 				int r_arch, void *dst);
+
+/* Described data exchanges: IDL compilation */
+xbt_error_t gras_datadesc_gen_cpy(gras_datadesc_type_t type, void *src, void **dst);
+xbt_error_t gras_datadesc_gen_send(gras_socket_t sock, gras_datadesc_type_t type, void *src);
+xbt_error_t gras_datadesc_gen_recv(gras_socket_t sock, gras_datadesc_type_t type,
+				   int r_arch, void *dst);
 
    
 #endif /* GRAS_DATADESC_INTERFACE_H */
