@@ -16,7 +16,8 @@ for test in gros/log_usage                                          \
  	    gros/dict_usage gros/dict_crash                         \
 	    gros/config_usage                                       \
 	    \
-	    gras/datadesc_usage                       
+	    gras/trp_tcp_usage      gras/trp_file_usage             \
+	    gras/datadesc_usage                                     
 #	    "gras/datadesc_usage --read @srcdir@/datadesc.little32" \
 #	    "gras/datadesc_usage --read @srcdir@/datadesc.big32"    \
 #	    "gras/datadesc_usage --read @srcdir@/datadesc.big64" 
