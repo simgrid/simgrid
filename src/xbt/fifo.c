@@ -58,8 +58,8 @@ void *xbt_fifo_pop(xbt_fifo_t l)
   xbt_fifo_item_t item;
   void *content;
 
-  item = xbt_fifo_pop_item(l);
-  if(item==NULL) return NULL;
+  if(l==NULL) return NULL;
+  if(!(item = xbt_fifo_pop_item(l))) return NULL;
 
   content = item->content;
   xbt_fifo_freeitem(item);
@@ -89,9 +89,9 @@ void *xbt_fifo_shift(xbt_fifo_t l)
   xbt_fifo_item_t item;
   void *content;
 
-  item = xbt_fifo_shift_item(l);
   if(l==NULL) return NULL;
-
+  if(!(item = xbt_fifo_shift_item(l))) return NULL;
+  
   content = item->content;
   xbt_fifo_freeitem(item);
   return content;
