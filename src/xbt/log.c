@@ -8,6 +8,7 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+
 #include "Core/core_interface.h"
 #include "gras_private.h"
 #include <stdarg.h>
@@ -75,30 +76,30 @@ static void _apply_control(gras_log_category_t* cat) {
 
       if (cat->threshold <= gras_log_priority_verbose) {
 	gras_log_event_t _log_ev = 
-	  {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__,
-	   "Apply settings for category '%s': set threshold to %s (=%d)",};
-	_gras_log_event_log(&_log_ev, cat->name,
-			    gras_log_priority_names[cat->threshold], cat->threshold);
+	  {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__};
+	_gras_log_event_log(&_log_ev, cat->name, 
+		   "Apply settings for category '%s': set threshold to %s (=%d)",
+		   gras_log_priority_names[cat->threshold], cat->threshold);
       }
     }
   }
   if (!found && cat->threshold <= gras_log_priority_verbose) {
     gras_log_event_t _log_ev = 
-      {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__,
-       "Category '%s': inherited threshold = %s (=%d)",};
+      {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__};
     _gras_log_event_log(&_log_ev, cat->name,
+			"Category '%s': inherited threshold = %s (=%d)",
 			gras_log_priority_names[cat->threshold], cat->threshold);
   }
 
 }
 
-void _gras_log_event_log( gras_log_event_t* ev, ...) {
+void _gras_log_event_log( gras_log_event_t* ev, const char *fmt, ...) {
   gras_log_category_t* cat = ev->cat;
-  va_start(ev->ap, ev);
+  va_start(ev->ap, fmt);
   while(1) {
     gras_log_appender_t* appender = cat->appender;
     if (appender != NULL) {
-      appender->do_append(appender, ev);
+      appender->do_append(appender, ev, fmt);
     }
     if (!cat->willLogToParent)
       break;
