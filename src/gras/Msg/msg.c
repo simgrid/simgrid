@@ -9,6 +9,9 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "Msg/msg_private.h"
+#include "DataDesc/datadesc_interface.h"
+#include "Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
+#include "Virtu/virtu_interface.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(msg,GRAS);
 
@@ -207,6 +210,7 @@ gras_msg_send(gras_socket_t  *sock,
 
   TRY(gras_datadesc_send(sock, string_type,   &msgtype->name));
   TRY(gras_datadesc_send(sock, msgtype->ctn_type, payload));
+  TRY(gras_trp_flush(sock));
 
   return no_error;
 }
@@ -245,8 +249,13 @@ gras_msg_recv(gras_socket_t   *sock,
 	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
   TRY(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
-  TRY(gras_set_get_by_name(_gras_msgtype_set,
-			   msg_name,(gras_set_elm_t**)msgtype));
+  errcode = gras_set_get_by_name(_gras_msgtype_set,
+				 msg_name,(gras_set_elm_t**)msgtype);
+  if (errcode != no_error)
+    RAISE2(errcode,
+	   "Got error %s while retrieving the type associated to messages '%s'",
+	   gras_error_name(errcode),msg_name);
+  /* FIXME: Survive unknown messages */
   free(msg_name);
 
   *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
