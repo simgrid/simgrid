@@ -166,5 +166,5 @@ endif
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC)
 libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@
 
-libsimgrid_la_SOURCES= $(COMMON_S) $(SG_SRC)
+libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC)
 libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@
