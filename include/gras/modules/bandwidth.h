@@ -2,11 +2,10 @@
 
 /* gras_bandwidth - GRAS mecanism to do Bandwidth tests between to hosts    */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003 the OURAGAN project.                                  */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef GRAS_BANDWIDTH_H
 #define GRAS_BANDWIDTH_H

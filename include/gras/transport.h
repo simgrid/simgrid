@@ -1,14 +1,12 @@
 /* $Id$ */
 
 /* transport - low level communication (send/receive bunches of bytes)      */
-
 /* module's public interface exported to end user.                          */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2004 Martin Quinson.                                       */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef GRAS_TRANSPORT_H
 #define GRAS_TRANSPORT_H

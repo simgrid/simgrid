@@ -2,11 +2,10 @@
 
 /* dict_usage - A test of normal usage of a dictionnary                     */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003 the OURAGAN project.                                  */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
 #include <assert.h>

@@ -2,11 +2,10 @@
 
 /* gras/virtu.h - public interface to virtualization (cross-OS portability) */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003,2004 da GRAS posse.                                   */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef GRAS_VIRTU_H
 #define GRAS_VIRTU_H

@@ -1,7 +1,9 @@
-/* Authors: Arnaud Legrand                                                  */
+/* 	$Id$	 */
+
+/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
 #include "xbt/error.h"
@@ -127,7 +129,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t t
   trace_event->resource = resource;
 
   xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
-	      "You're refering an event that does not exist!");
+	      "You're refering to an event that does not exist!");
 
   xbt_heap_push(history->heap, trace_event, start_time);
 

@@ -135,7 +135,7 @@ un exemple).
 
 Une fois la section crée, un "make -C doc" crée un bout de doc, mais ne
 l'inclue pas dans la documentation finale. Pour cela, il faut éditer le
-fichier gras-docs.sgml (qui est un fichier xml de bon aloi, malgrès son
+fichier gras-docs.sgml (qui est un fichier xml de bon aloi, malgré son
 nom). Il te faut ajouter une entité système dans le prologue (avant "]>")
 style: <!ENTITY tbx-cfg SYSTEM "xml/tbx_cfg.xml">
 Ensuite dans le corps du document, tu colles: &tbx-cfg; et t'es arrivé. Au

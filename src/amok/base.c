@@ -2,11 +2,10 @@
 
 /* base - several addons to do specific stuff not in GRAS itself     */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003 the OURAGAN project.                                  */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/error.h"
 #include "gras/datadesc.h"

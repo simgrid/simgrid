@@ -6,11 +6,10 @@
 /*  exchange in SG realm is implemented directly without mimicing real life */
 /*  This would be terribly unefficient.                                     */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2004 Martin Quinson.                                       */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <msg.h>
 

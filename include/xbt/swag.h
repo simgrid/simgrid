@@ -1,18 +1,19 @@
-/* Authors: Arnaud Legrand                                                  */
+/* 	$Id$	 */
+
+/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* Warning, this module is done to be efficient and performs tons of
    cast and dirty things. So avoid using it unless you really know
    what you are doing. */
 
+#include "xbt/sysdep.h"
+
 /* This type should be added to a type that is to be used in such a swag */
 /* Whenever a new object with this struct is created, all fields have
    to be set to NULL */
-
-#include "xbt/sysdep.h"
-
 typedef struct xbt_swag_hookup {
   void *next;
   void *prev;

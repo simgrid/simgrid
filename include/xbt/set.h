@@ -2,12 +2,10 @@
 
 /* xbt/set.h -- api to a generic dictionary                                 */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2004 the OURAGAN project.                                  */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
-
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef _XBT_SET_H
 #define _XBT_SET_H

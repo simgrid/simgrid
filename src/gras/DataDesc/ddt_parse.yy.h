@@ -2,7 +2,10 @@
 
 /* gs/parse.h -- automatic parsing of data structures */
 
-/* Authors: Arnaud Legrand, Martin Quinson            */
+/* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 typedef enum {
   GRAS_DDT_PARSE_TOKEN_EMPTY = 0,

@@ -1,9 +1,11 @@
+/* 	$Id$	 */
+
 /* A few tests for the trace library                                       */
 
-/* Authors: Arnaud Legrand                                                  */
+/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -4,11 +4,11 @@
 
 /* module's private interface masked even to other parts of AMOK.           */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003, 2004 the OURAGAN project.                            */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 
 #ifndef AMOK_BANDWIDTH_PRIVATE_H
 #define AMOK_BANDWIDTH_PRIVATE_H

@@ -3,11 +3,10 @@
 /* dict_elm - elements of generic dictionnaries                             */
 /* This file is not to be loaded from anywhere but dict.c                   */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003,2004 Martin Quinson.                                  */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef _XBT_DICT_ELM_T_
 #define _XBT_DICT_ELM_T_

@@ -2,11 +2,10 @@
 
 /* ddt_exchange - send/recv data described                                  */
 
-/* Authors: Olivier Aumage, Martin Quinson                                  */
-/* Copyright (C) 2003, 2004 the GRAS posse.                                 */
+/* Copyright (c) 2004 Olivier Aumage, Martin Quinson. All rights reserved.  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */

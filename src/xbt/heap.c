@@ -1,9 +1,11 @@
+/* 	$Id$	 */
+
 /* a generic and efficient heap                                             */
 
-/* Authors: Arnaud Legrand                                                  */
+/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
 #include "xbt/error.h"
@@ -13,7 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap,xbt,"Heap");
 /**
  * xbt_heap_new:
  * @init_size: initial size of the heap
- * @free_func: function to call on each element when you want to free the whole heap (or NULL if nothing to do).
+ * @free_func: function to call on each element when you want to free
+ *             the whole heap (or NULL if nothing to do).
  *
  * Creates a new heap.
  */

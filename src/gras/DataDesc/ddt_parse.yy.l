@@ -2,11 +2,10 @@
 
 /* DataDesc/ddt_parse -- automatic parsing of data structures */
 
-/* Authors: Arnaud Legrand, Martin Quinson            */
-/* Copyright (C) 2003, 2004 Martin Quinson.                                 */
+/* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 %option noyywrap
 %{
@@ -21,7 +20,7 @@
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
   const char *definition;
-  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
+  XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
 %}
 

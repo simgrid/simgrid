@@ -1,7 +1,9 @@
-/* Authors: Arnaud Legrand                                                  */
+/* 	$Id$	 */
+
+/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef _SURF_TMGR_H
 #define _SURF_TMGR_H

@@ -1,3 +1,12 @@
+/* 	$Id$	 */
+
+/* A simple example to demonstrate the use of swags */
+
+/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "xbt/swag.h"

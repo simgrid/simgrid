@@ -2,11 +2,10 @@
 
 /* ddt_remote - Stuff needed to get datadescs about remote hosts            */
 
-/* Authors: Olivier Aumage, Martin Quinson                                  */
-/* Copyright (C) 2003, 2004 the GRAS posse.                                 */
+/* Copyright (c) 2004 Olivier Aumage, Martin Quinson. All rights reserved.  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /************************************************************************/
 /* C combines the power of assembler with the portability of assembler. */

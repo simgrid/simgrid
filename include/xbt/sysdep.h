@@ -4,12 +4,10 @@
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
 
-/* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2004 the OURAGAN project.                                  */
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
-   under the terms of the license (GNU LGPL) which comes with this package. */
-
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef _XBT_SYSDEP_H
 #define _XBT_SYSDEP_H
