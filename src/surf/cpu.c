@@ -13,27 +13,25 @@ surf_cpu_resource_t surf_cpu_resource = NULL;
 
 static xbt_dict_t cpu_set = NULL;
 
+static void cpu_free(void *CPU)
+{
+/*   cpu_t cpu = CPU; */
+/* lmm_constraint_free(maxmin_system,cpu->constraint); */
+/* Clean somewhere else ! */
+
+  xbt_free(CPU);
+}
+
 /* power_scale is the basic power of the cpu when the cpu is
-   completely available. initial_power is therefore expected to be
+   completely available. power_initial is therefore expected to be
    comprised between 0.0 and 1.0, just as the values of power_trace.
    state_trace values mean SURF_CPU_ON if >0 and SURF_CPU_OFF
    otherwise.
 */
-
-static void cpu_free(void *CPU)
-{
-  cpu_t cpu = CPU;
-
-/* lmm_constraint_free(maxmin_system,cpu->constraint); */
-/* Clean somewhere else ! */
-
-  xbt_free(cpu);
-}
-
 static cpu_t cpu_new(const char *name, xbt_maxmin_float_t power_scale,
-		     xbt_maxmin_float_t initial_power,
+		     xbt_maxmin_float_t power_initial,
 		     tmgr_trace_t power_trace,
-		     e_surf_cpu_state_t initial_state,
+		     e_surf_cpu_state_t state_initial,
 		     tmgr_trace_t state_trace)
 {
   cpu_t cpu = xbt_new0(s_cpu_t, 1);
@@ -41,13 +39,13 @@ static cpu_t cpu_new(const char *name, xbt_maxmin_float_t power_scale,
   cpu->resource = (surf_resource_t) surf_cpu_resource;
   cpu->name = name;
   cpu->power_scale = power_scale;
-  cpu->power_current = initial_power;
+  cpu->power_current = power_initial;
 /*   cpu->power_trace = power_trace; */
   if (power_trace)
     cpu->power_event =
 	tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
 
-  cpu->state_current = initial_state;
+  cpu->state_current = state_initial;
 /*   cpu->state_trace = state_trace; */
   if (state_trace)
     cpu->state_event =
@@ -70,57 +68,37 @@ static cpu_t cpu_new(const char *name, xbt_maxmin_float_t power_scale,
    Type:     string      float      float      string     ON/OFF     string
 */
 
-static void parse_host(void)
+static void parse_cpu(void)
 {
   e_surf_token_t token;
   char *name = NULL;
   xbt_maxmin_float_t power_scale = 0.0;
-  xbt_maxmin_float_t initial_power = 0.0;
+  xbt_maxmin_float_t power_initial = 0.0;
   tmgr_trace_t power_trace = NULL;;
-  e_surf_cpu_state_t initial_state = SURF_CPU_OFF;
+  e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
   tmgr_trace_t state_trace = NULL;
 
   name = xbt_strdup(surf_parse_text);
 
-  token = surf_parse();		/* power_scale */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
-  xbt_assert2((sscanf(surf_parse_text, XBT_MAXMIN_FLOAT_T, &power_scale) ==
-	       1), "Parse error line %d : %s not a number", line_pos,
-	      surf_parse_text);
+  surf_parse_float(&power_scale);
+  surf_parse_float(&power_initial);
+  surf_parse_trace(&power_trace);
 
-  token = surf_parse();		/* initial_power */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
-  xbt_assert2((sscanf(surf_parse_text, XBT_MAXMIN_FLOAT_T, &initial_power)
-	       == 1), "Parse error line %d : %s not a number", line_pos,
-	      surf_parse_text);
-
-  token = surf_parse();		/* power_trace */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
-  if (strcmp(surf_parse_text, "") == 0)
-    power_trace = NULL;
-  else
-    power_trace = tmgr_trace_new(surf_parse_text);
-
-  token = surf_parse();		/* initial_state */
+  token = surf_parse();		/* state_initial */
   xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
   if (strcmp(surf_parse_text, "ON") == 0)
-    initial_state = SURF_CPU_ON;
+    state_initial = SURF_CPU_ON;
   else if (strcmp(surf_parse_text, "OFF") == 0)
-    initial_state = SURF_CPU_OFF;
+    state_initial = SURF_CPU_OFF;
   else {
     CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n", line_pos,
 	      surf_parse_text);
     xbt_abort();
   }
 
-  token = surf_parse();		/* state_trace */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
-  if (strcmp(surf_parse_text, "") == 0)
-    state_trace = NULL;
-  else
-    state_trace = tmgr_trace_new(surf_parse_text);
+  surf_parse_trace(&state_trace);
 
-  cpu_new(name, power_scale, initial_power, power_trace, initial_state,
+  cpu_new(name, power_scale, power_initial, power_trace, state_initial,
 	  state_trace);
 }
 
@@ -139,7 +117,7 @@ static void parse_file(const char *file)
       continue;
 
     if (token == TOKEN_WORD)
-      parse_host();
+      parse_cpu();
     else {
       CRITICAL1("Parse error line %d\n", line_pos);
       xbt_abort();
@@ -208,7 +186,7 @@ static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 
   action = xbt_swag_getFirst(running_actions);
   if (!action)
-    return 0.0;
+    return -1.0;
   value = lmm_variable_getvalue(action->variable);
   min = action->generic_action.remains / value;
 
@@ -268,13 +246,13 @@ static void update_resource_state(void *id,
 {
   cpu_t cpu = id;
 
-  printf("[" XBT_HEAP_FLOAT_T "] Asking to update \"%s\" with value "
-	 XBT_MAXMIN_FLOAT_T " for event %p\n", surf_get_clock(), cpu->name,
-	 value, event_type);
+/*   printf("[" XBT_HEAP_FLOAT_T "] Asking to update CPU \"%s\" with value " */
+/* 	 XBT_MAXMIN_FLOAT_T " for event %p\n", surf_get_clock(), cpu->name, */
+/* 	 value, event_type); */
 
   if (event_type == cpu->power_event) {
     cpu->power_current = value;
-    lmm_update_constraint_bound(cpu->constraint,
+    lmm_update_constraint_bound(maxmin_system,cpu->constraint,
 				cpu->power_current * cpu->power_scale);
   } else if (event_type == cpu->state_event) {
     if (value > 0)
@@ -300,7 +278,8 @@ static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
   action->generic_action.remains = size;
   action->generic_action.start = -1.0;
   action->generic_action.finish = -1.0;
-  action->generic_action.callback = cpu;
+/*   action->generic_action.callback = cpu; */
+  action->generic_action.callback = NULL;
   action->generic_action.resource_type =
       (surf_resource_t) surf_cpu_resource;
 
@@ -365,7 +344,6 @@ static void surf_cpu_resource_init_internal(void)
 
   surf_cpu_resource->common_public->name_service = name_service;
   surf_cpu_resource->common_public->get_resource_name = get_resource_name;
-  surf_cpu_resource->common_public->resource_used = resource_used;
   surf_cpu_resource->common_public->action_get_state =
       surf_action_get_state;
   surf_cpu_resource->common_public->action_free = action_free;
@@ -374,6 +352,7 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->common_public->action_change_state =
       action_change_state;
 
+  surf_cpu_resource->common_private->resource_used = resource_used;
   surf_cpu_resource->common_private->share_resources = share_resources;
   surf_cpu_resource->common_private->update_actions_state =
       update_actions_state;
