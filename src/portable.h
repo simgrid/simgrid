@@ -33,6 +33,9 @@
 #ifdef HAVE_WINSOCK2_H
 #  include <winsock2.h>
 #  include <ws2tcpip.h>  /* socklen_t, but doubtful */
+#  ifndef HAVE_WINSOCK_H
+#    define HAVE_WINSOCK_H
+#  endif
 #elif HAVE_WINSOCK_H
 #  include <winsock.h>
 #endif
@@ -56,10 +59,10 @@
 
 #       undef  sock_errno
 #       undef  sock_errstr
-#       define sock_errno()    WSAGetLastError()
-#       define sock_errstr(e)  ber_pvt_wsa_err2string(e)
+#       define sock_errno      WSAGetLastError()
+#       define sock_errstr     gras_wsa_err2string(WSAGetLastError())
 
-char *ber_pvt_wsa_err2string(int errcode);
+const char *gras_wsa_err2string(int errcode);
 
 #       define S_IRGRP 0
 #       define S_IWGRP 0
@@ -67,6 +70,8 @@ char *ber_pvt_wsa_err2string(int errcode);
 #else
 #       define tcp_read( s, buf, len)   read( s, buf, len )
 #       define tcp_write( s, buf, len)  write( s, buf, len )
+#       define sock_errno      errno
+#       define sock_errstr     strerror(errno)
 
 #       ifdef SHUT_RDWR
 #               define tcp_close( s )   (shutdown( s, SHUT_RDWR ), close( s ))
