@@ -55,16 +55,16 @@ typedef struct surf_action {
 
 typedef struct surf_resource_private *surf_resource_private_t;
 typedef struct surf_resource_public {
-  s_surf_action_state_t states; /* Any living action on this resource */
-  void *(*name_service)(const char *name);
-  const char *(*get_resource_name)(void *resource_id);
+  s_surf_action_state_t states;	/* Any living action on this resource */
+  void *(*name_service) (const char *name);
+  const char *(*get_resource_name) (void *resource_id);
 
-  e_surf_action_state_t (*action_get_state)(surf_action_t action);
-  void (*action_free)(surf_action_t action);
-  void (*action_cancel)(surf_action_t action);
-  void (*action_recycle)(surf_action_t action);	
-  void (*action_change_state)(surf_action_t action,
-			      e_surf_action_state_t state);
+   e_surf_action_state_t(*action_get_state) (surf_action_t action);
+  void (*action_free) (surf_action_t action);
+  void (*action_cancel) (surf_action_t action);
+  void (*action_recycle) (surf_action_t action);
+  void (*action_change_state) (surf_action_t action,
+			       e_surf_action_state_t state);
 } s_surf_resource_public_t, *surf_resource_public_t;
 
 typedef struct surf_resource {
@@ -85,38 +85,62 @@ typedef enum {
   SURF_CPU_OFF = 0		/* Running      */
 } e_surf_cpu_state_t;
 
-typedef struct surf_cpu_resource_extension_private *surf_cpu_resource_extension_private_t;
+typedef struct surf_cpu_resource_extension_private
+    *surf_cpu_resource_extension_private_t;
 typedef struct surf_cpu_resource_extension_public {
   surf_action_t(*execute) (void *cpu, xbt_maxmin_float_t size);
   surf_action_t(*wait) (void *cpu, xbt_maxmin_float_t size);
   e_surf_cpu_state_t(*get_state) (void *cpu);
-} s_surf_cpu_resource_extension_public_t, *surf_cpu_resource_extension_public_t;
+} s_surf_cpu_resource_extension_public_t,
+    *surf_cpu_resource_extension_public_t;
 
 typedef struct surf_cpu_resource {
   surf_resource_private_t common_private;
   surf_resource_public_t common_public;
-/*   surf_cpu_resource_extension_private_t extension_private; */
   surf_cpu_resource_extension_public_t extension_public;
 } s_surf_cpu_resource_t, *surf_cpu_resource_t;
 extern surf_cpu_resource_t surf_cpu_resource;
 void surf_cpu_resource_init(const char *filename);
 
 /* Network resource */
-typedef struct surf_network_resource_extension_private *surf_network_resource_extension_private_t;
+typedef struct surf_network_resource_extension_private
+    *surf_network_resource_extension_private_t;
 typedef struct surf_network_resource_extension_public {
   surf_action_t(*communicate) (void *src, void *dst,
 			       xbt_maxmin_float_t size);
-} s_surf_network_resource_extension_public_t, *surf_network_resource_extension_public_t;
+} s_surf_network_resource_extension_public_t,
+    *surf_network_resource_extension_public_t;
 
 typedef struct surf_network_resource {
   surf_resource_private_t common_private;
   surf_resource_public_t common_public;
-/*   surf_network_resource_extension_private_t extension_private; */
   surf_network_resource_extension_public_t extension_public;
 } s_surf_network_resource_t, *surf_network_resource_t;
 
 extern surf_network_resource_t surf_network_resource;
 void surf_network_resource_init(const char *filename);
+
+/* Workstation resource */
+typedef struct surf_workstation_resource_extension_private
+    *surf_workstation_resource_extension_private_t;
+typedef struct surf_workstation_resource_extension_public {
+  surf_action_t(*execute) (void *workstation, xbt_maxmin_float_t size);
+  surf_action_t(*wait) (void *workstation, xbt_maxmin_float_t size);
+  e_surf_cpu_state_t(*get_state) (void *workstation);
+  surf_action_t(*communicate) (void *workstation_src,
+			       void *workstation_dst,
+			       xbt_maxmin_float_t size);
+} s_surf_workstation_resource_extension_public_t,
+    *surf_workstation_resource_extension_public_t;
+
+typedef struct surf_workstation_resource {
+  surf_resource_private_t common_private;
+  surf_resource_public_t common_public;
+  surf_workstation_resource_extension_public_t extension_public;
+} s_surf_workstation_resource_t, *surf_workstation_resource_t;
+
+extern surf_workstation_resource_t surf_workstation_resource;
+void surf_workstation_resource_init(const char *filename);
 
 /*******************************************/
 /*** SURF Globals **************************/
@@ -127,6 +151,6 @@ xbt_heap_float_t surf_solve(void);	/*  update all states and returns
 					   the time elapsed since last
 					   event */
 xbt_heap_float_t surf_get_clock(void);
-void surf_finalize(void);		/* clean everything */
+void surf_finalize(void);	/* clean everything */
 
 #endif				/* _SURF_SURF_H */

@@ -25,6 +25,7 @@ EXTRA_DIST= \
 	surf/trace_mgr_private.h \
 	surf/surf_private.h \
 	surf/cpu_private.h \
+	surf/workstation_private.h \
 	surf/surf_parse.l surf/surf_parse.h \
 	surf/network_private.h \
 	\
@@ -100,7 +101,7 @@ COMMON_S=\
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
   surf/surf_parse.c                                                          \
-  surf/cpu.c   surf/network.c                                                \
+  surf/cpu.c   surf/network.c   surf/workstation.c                           \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
   \

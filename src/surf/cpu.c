@@ -302,7 +302,7 @@ static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
 
 static e_surf_cpu_state_t get_state(void *cpu)
 {
-  return SURF_CPU_OFF;
+  return ((cpu_t) cpu)->state_current;
 }
 
 static void finalize(void)
