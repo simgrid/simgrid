@@ -15,7 +15,6 @@ AM_CONFIG_HEADER(src/gras_config.h)
 AM_INIT_AUTOMAKE
 
 AM_PROG_LIBTOOL
-GNOME_GTKDOC_CHECK
 
 # declare the modules (no optional module)
 
@@ -27,10 +26,11 @@ ACLOCAL="$ACLOCAL -I acmacro"
 
 
 AC_PROG_CC
-AC_PROG_F77
-AC_F77_LIBRARY_LDFLAGS
 AM_SANITY_CHECK
 AC_PROG_MAKE_SET
+
+# Check architecture signature
+GRAS_ARCH
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -44,7 +44,10 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
-AC_CHECK_FUNCS([memset strchr strerror])
+AC_CHECK_FUNCS([memset strchr strerror usleep])
+
+# Can we rebuild the documentation?
+GNOME_GTKDOC_CHECK
 
 dnl ####[ Search libs ]#######################################################
 ACI_PACKAGE_SAVED(XML,[XML library (version XML2)],xml2-config,,,:)
