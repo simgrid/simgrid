@@ -92,6 +92,17 @@ m_process_t MSG_task_get_sender(m_task_t task)
    return ((simdata_task_t) task->simdata)->sender;
 }
 
+/** \ingroup m_task_management
+ * \brief Return the name of a #m_task_t.
+ *
+ * This functions returns the name of a #m_task_t as specified on creation
+ */
+const char *MSG_task_get_name(m_task_t task)
+{
+   xbt_assert0(task, "Invalid parameters");
+   return task->name;
+}
+
 
 /** \ingroup m_task_management
  * \brief Destroy a #m_task_t.
