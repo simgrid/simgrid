@@ -209,7 +209,7 @@ gras_datadesc_declare_struct_append(gras_datadesc_type_t  *struct_type,
   field->name   = strdup(name);
 
   DEBUG0("----------------");
-  DEBUG4("PRE s={size=%d,align=%d,asize=%d} struct_boundary=%d",
+  DEBUG4("PRE s={size=%ld,align=%ld,asize=%ld} struct_boundary=%d",
 	 struct_type->size[GRAS_THISARCH], 
 	 struct_type->alignment[GRAS_THISARCH], 
 	 struct_type->aligned_size[GRAS_THISARCH],
@@ -233,13 +233,13 @@ gras_datadesc_declare_struct_append(gras_datadesc_type_t  *struct_type,
   
   TRY(gras_dynar_push(struct_type->category.struct_data.fields, &field));
 
-  DEBUG3("Push a %s into %s at offset %d.",
+  DEBUG3("Push a %s into %s at offset %ld.",
 	 field_type->name, struct_type->name,field->offset[GRAS_THISARCH]);
-  DEBUG3("  f={size=%d,align=%d,asize=%d}",
+  DEBUG3("  f={size=%ld,align=%ld,asize=%ld}",
 	 field_type->size[GRAS_THISARCH], 
 	 field_type->alignment[GRAS_THISARCH], 
 	 field_type->aligned_size[GRAS_THISARCH]);
-  DEBUG3("  s={size=%d,align=%d,asize=%d}",
+  DEBUG3("  s={size=%ld,align=%ld,asize=%ld}",
 	 struct_type->size[GRAS_THISARCH], 
 	 struct_type->alignment[GRAS_THISARCH], 
 	 struct_type->aligned_size[GRAS_THISARCH]);

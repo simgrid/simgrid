@@ -306,7 +306,7 @@ static gras_error_t parse_statement(char		*definition,
 		   definition);
 	    gras_abort();
 	  }
-	DEBUG1("Fixed size array, size=%d",size);
+	DEBUG1("Fixed size array, size=%ld",size);
 	continue;
 	} else {
 	  ERROR3("Unparsable size of array at %d:%d of %s",

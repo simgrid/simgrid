@@ -110,14 +110,14 @@ gras_dd_alloc_ref(gras_dict_t *refs,
   char *l_data = NULL;
   gras_error_t errcode;
 
-  gras_assert1(size>0,"Cannot allocate %d bytes!", size);
+  gras_assert1(size>0,"Cannot allocate %ld bytes!", size);
   if (! (l_data = malloc((size_t)size)) )
     RAISE_MALLOC;
 
   *l_ref = l_data;
   DEBUG2("l_data=%p, &l_data=%p",l_data,&l_data);
 
-  DEBUG3("alloc_ref: r_ref=%p; *r_ref=%p, r_len=%d",
+  DEBUG3("alloc_ref: r_ref=%p; *r_ref=%p, r_len=%ld",
 	 r_ref, r_ref?*r_ref:NULL, r_len);
   if (r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
     void *ptr = malloc(sizeof(void *));
@@ -164,21 +164,21 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
 
   for (cpt=0; cpt<gras_arch_count; cpt++) {
     if (d1->size[cpt] != d2->size[cpt]) {
-      DEBUG5("ddt_cmp: %s->size=%d  !=  %s->size=%d (on %s)",
+      DEBUG5("ddt_cmp: %s->size=%ld  !=  %s->size=%ld (on %s)",
 	     d1->name,d1->size[cpt],d2->name,d2->size[cpt],
 	     gras_arches[cpt].name);
       return d1->size[cpt] >  d2->size[cpt] ? 1 : -1;
     }
 
     if (d1->alignment[cpt] != d2->alignment[cpt]) {
-      DEBUG5("ddt_cmp: %s->alignment=%d  !=  %s->alignment=%d (on %s)",
+      DEBUG5("ddt_cmp: %s->alignment=%ld  !=  %s->alignment=%ld (on %s)",
 	     d1->name,d1->alignment[cpt],d2->name,d2->alignment[cpt],
 	     gras_arches[cpt].name);
       return d1->alignment[cpt] > d2->alignment[cpt] ? 1 : -1;
     }
 
     if (d1->aligned_size[cpt] != d2->aligned_size[cpt]) {
-      DEBUG5("ddt_cmp: %s->aligned_size=%d  !=  %s->aligned_size=%d (on %s)",
+      DEBUG5("ddt_cmp: %s->aligned_size=%ld  !=  %s->aligned_size=%ld (on %s)",
 	     d1->name,d1->aligned_size[cpt],d2->name,d2->aligned_size[cpt],
 	     gras_arches[cpt].name);
       return d1->aligned_size[cpt] > d2->aligned_size[cpt] ? 1 : -1;
@@ -466,7 +466,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     TRY(gras_datadesc_by_id(array_data.code, &sub_type));
     elm_size = sub_type->aligned_size[GRAS_THISARCH];
     if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
-      VERB1("Array of %d scalars, send it in one shoot",count);
+      VERB1("Array of %ld scalars, send it in one shot",count);
       TRY(gras_trp_chunk_send(sock, data, 
 			      sub_type->aligned_size[GRAS_THISARCH] * count));
     } else {
