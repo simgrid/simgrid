@@ -97,11 +97,11 @@ MACHINES ?= valnure.cs.ucsb.edu sperm.cs.ucsb.edu     basalt.cs.ucsb.edu \
 # default value:
 ACTION ?= clean untar config compile check
 
-REMOTE_PREFIX ?='${HOME}/gras'
+REMOTE_PREFIX ?='${HOME}/simgrid'
 
 remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	@echo;echo "----[ Recompile the package on remote hosts ]----"
-	@test -e buildlogs/@PACKAGE@-@VERSION@ || mkdir -p buildlogs/@PACKAGE@-@VERSION@
+	@test -e @srcdir@/buildlogs/@PACKAGE@-@VERSION@ || mkdir -p @srcdir@/buildlogs/@PACKAGE@-@VERSION@
 	@failed=0;\
 	 for site in $(MACHINES) ; do \
 	   machine=`echo $$site |sed 's/^\([^%]*\)%.*$$/\1/'`;\
@@ -118,16 +118,16 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	   scp @srcdir@/@PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker \
 	       $$machine:$(REMOTE_PREFIX)/src;\
 	   \
-	   echo "-- Compiling... (the output gets into buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; \
+	   echo "-- Compiling... (the output gets into @srcdir@/buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; \
 	   if echo $$site | grep  '%' >/dev/null ; then \
-	     if ssh $$machine "env REMOTE_PREFIX=$(REMOTE_PREFIX) ssh -A $$machine2 $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log;\
-	     then echo "Sucessful"; else failed=1;echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
+	     if ssh $$machine "env REMOTE_PREFIX=$(REMOTE_PREFIX) ssh -A $$machine2 $$cmd" 2>&1 > @srcdir@/buildlogs/@PACKAGE@-@VERSION@/$$site.log;\
+	     then echo "Sucessful"; else failed=1;echo "Failed (check @srcdir@/buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
 	   else \
-	     if ssh $$machine "eval $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log ;\
-	     then echo "Sucessful"; else failed=1;echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
+	     if ssh $$machine "eval $$cmd" 2>&1 > @srcdir@/buildlogs/@PACKAGE@-@VERSION@/$$site.log ;\
+	     then echo "Sucessful"; else failed=1;echo "Failed (check @srcdir@/buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
 	   fi;\
 	done;\
-	tools/compile-stats;\
+	@srcdir@/tools/compile-stats;\
 	exit $$failed
 
 endif
