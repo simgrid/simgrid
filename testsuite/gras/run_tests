@@ -1,0 +1,37 @@
+#! /bin/bash
+failed_nb=0
+success_nb=0
+tests_nb=0
+for test in log_usage                           \
+            dynar_int dynar_double dynar_string \
+ 	    dict_usage dict_crash               \
+	    config_usage                        \
+	    \
+	    gs_example
+do		    
+  tests_nb=`expr $tests_nb + 1`
+  echo "#### Test $test"
+  ./$test --gras-log="root.thres=info"
+  if [ $? != 0 ] ; then
+    echo "## failed. Rerun $test with full details."
+  ./$test --gras-log="root.thres=debug"
+    failed_nb=`expr $failed_nb + 1`
+    failed="$failed $test"
+  else
+    echo "## Success"
+    success_nb=`expr $success_nb + 1`
+    success="$success $test"
+  fi
+done
+failed=`echo $failed|sed 's|^ ||'`
+success=`echo $success|sed 's|^ ||'`
+echo
+echo "#### Summary"
+echo "$success_nb tests of $tests_nb successfull ($success)"
+if [ $failed_nb != 0 ] ; then
+  echo "$failed_nb tests of $tests_nb failed ($failed)"
+  echo "Rerun the tests using the following command: script -c 'make test'"
+  echo " and send the file typescript it will produce to martin.quinson@ens-lyon.fr"
+  echo " along with a short description of the target platform (arch, OS, distrib, compiler)."
+fi
+exit $failed_nb

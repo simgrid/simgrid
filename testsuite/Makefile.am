@@ -7,17 +7,18 @@ DISTCLEANFILES=Makefile.in *~
 
 # Test stuff
 
-TESTS_PROGS=                                  \
+noinst_PROGRAMS =                             \
 	dynar_int dynar_double dynar_string   \
 	dict_usage dict_crash                 \
 	log_usage                             \
 	config_usage                          
-
+	\
+	gs_example_send gs_example_receive
+	
 # multidict_crash 
 
 
-noinst_PROGRAMS = $(TESTS_PROGS) gs_example_send gs_example_receive
-noinst_SCRIPTS = gs_example
+noinst_SCRIPTS = run_tests gs_example
 
 dynar_int_LDADD=          $(top_srcdir)/src/base/libgrasutils.a
 dynar_double_LDADD=       $(top_srcdir)/src/base/libgrasutils.a
@@ -34,4 +35,7 @@ log_usage_LDADD=           $(top_srcdir)/src/base/libgrasutils.a
 gs_example_send_LDADD=    $(top_srcdir)/src/base/libgrasutils.a
 gs_example_receive_LDADD= $(top_srcdir)/src/base/libgrasutils.a
 
-TESTS=$(TESTS_PROGS) #gs_example
+TESTS=run_tests
+
+test: $(noinst_PROGRAMS)
+	./run_tests
