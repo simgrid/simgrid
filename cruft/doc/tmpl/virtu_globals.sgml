@@ -1,8 +1,8 @@
 <!-- ##### SECTION Title ##### -->
-Globals API
+Globals
 
 <!-- ##### SECTION Short_Description ##### -->
-Handling globals
+Handling global variables so that it works on simulator
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>In GRAS, using globals is forbidden since the daemons will        

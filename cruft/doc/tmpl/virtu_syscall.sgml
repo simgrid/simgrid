@@ -1,0 +1,33 @@
+<!-- ##### SECTION Title ##### -->
+System Calls
+
+<!-- ##### SECTION Short_Description ##### -->
+System call abstraction layer.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_time ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_sleep ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@Param2: 
+
+
