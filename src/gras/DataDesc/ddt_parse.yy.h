@@ -35,3 +35,16 @@ void  gras_ddt_parse_pointer_init(const char *file);
 void  gras_ddt_parse_pointer_close(void);
 void  gras_ddt_parse_pointer_string_init(const char *string_to_parse);
 void  gras_ddt_parse_pointer_string_close(void);
+
+/* prototypes of the functions offered by flex */
+int gras_ddt_parse_get_lineno  (void);
+FILE *gras_ddt_parse_get_in  (void);
+FILE *gras_ddt_parse_get_out  (void);
+int gras_ddt_parse_get_leng  (void);
+char *gras_ddt_parse_get_text  (void);
+void gras_ddt_parse_set_lineno (int  line_number );
+void gras_ddt_parse_set_in (FILE *  in_str );
+void gras_ddt_parse_set_out (FILE *  out_str );
+int gras_ddt_parse_get_debug  (void);
+void gras_ddt_parse_set_debug (int  bdebug );
+int gras_ddt_parse_lex_destroy  (void);
