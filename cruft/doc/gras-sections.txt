@@ -1,30 +1,30 @@
 <SECTION>
-<FILE>tbx_err</FILE>
-<TITLE>Errors</TITLE>
-gras_error_t
-gras_error_name
+<FILE>xbt_error</FILE>
+<TITLE>errors</TITLE>
+xbt_error_t
+xbt_error_name
 </SECTION>
 
 <SECTION>
-<FILE>tbx_log</FILE>
+<FILE>xbt_log</FILE>
 <TITLE>logging</TITLE>
-gras_log_priority_t
+xbt_log_priority_t
 
-gras_log_control_set
+xbt_log_control_set
 
-GRAS_LOG_NEW_CATEGORY
-GRAS_LOG_NEW_SUBCATEGORY
-GRAS_LOG_NEW_DEFAULT_CATEGORY
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY
+XBT_LOG_NEW_CATEGORY
+XBT_LOG_NEW_SUBCATEGORY
+XBT_LOG_NEW_DEFAULT_CATEGORY
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY
 
-GRAS_LOG_DEFAULT_CATEGORY
-GRAS_LOG_EXTERNAL_CATEGORY
+XBT_LOG_DEFAULT_CATEGORY
+XBT_LOG_EXTERNAL_CATEGORY
 
-GRAS_LOG_ISENABLED
-GRAS_LOG_STATIC_THRESHOLD
+XBT_LOG_ISENABLED
+XBT_LOG_STATIC_THRESHOLD
 
-gras_log_appender_set
-gras_log_default_appender
+xbt_log_appender_set
+xbt_log_default_appender
 
 CDEBUG6
 CVERB6
@@ -42,9 +42,9 @@ ERROR6
 CRITICAL6
 
 <SUBSECTION Standard>
-GRAS_LOG_ROOT_CAT
-gras_log_parent_set
-gras_log_threshold_set
+XBT_LOG_ROOT_CAT
+xbt_log_parent_set
+xbt_log_threshold_set
 
 CLOG0
 CLOG1
@@ -132,121 +132,191 @@ CRITICAL1
 CRITICAL2
 CRITICAL3
 CRITICAL4
-CRITICAL5
-
+CRITICAL5    
 </SECTION>
 
 <SECTION>
-<FILE>tbx_dynar</FILE>
-gras_dynar_new
-gras_dynar_free
-gras_dynar_free_container
-gras_dynar_length
-gras_dynar_reset
-gras_dynar_get
-gras_dynar_set
-gras_dynar_replace
-gras_dynar_insert_at
-gras_dynar_remove_at
-gras_dynar_map
-gras_dynar_push
-gras_dynar_pop
-gras_dynar_shift
-gras_dynar_unshift
-gras_dynar_foreach
-gras_dynar_cursor_rm
+<FILE>xbt_dynar</FILE>
+<TITLE>dynamic arrays</TITLE>
+xbt_dynar_new
+xbt_dynar_free
+xbt_dynar_free_container
+xbt_dynar_length
+xbt_dynar_reset
+xbt_dynar_get
+xbt_dynar_set
+xbt_dynar_replace
+xbt_dynar_insert_at
+xbt_dynar_remove_at
+xbt_dynar_map
+xbt_dynar_push
+xbt_dynar_pop
+xbt_dynar_shift
+xbt_dynar_unshift
+xbt_dynar_foreach
+xbt_dynar_cursor_rm
 
-gras_dynar_cursor_first
-gras_dynar_cursor_get
-gras_dynar_cursor_step
+xbt_dynar_cursor_first
+xbt_dynar_cursor_get
+xbt_dynar_cursor_step
 </SECTION>
 
 <SECTION>
-<FILE>tbx_dico</FILE>
-gras_dict_new
-gras_dict_free
-gras_dict_set
-gras_dict_set_ext
-gras_dict_get
-gras_dict_get_ext
-gras_dict_remove
-gras_dict_remove_ext
-gras_dict_dump
-gras_dict_print
-gras_dict_prints
-gras_dict_cursor_get_data
-gras_dict_cursor_get_key
-gras_dict_foreach
+<FILE>xbt_dict</FILE>
+<TITLE>dictionaries</TITLE>
+xbt_dict_new
+xbt_dict_free
+xbt_dict_set
+xbt_dict_set_ext
+xbt_dict_get
+xbt_dict_get_ext
+xbt_dict_remove
+xbt_dict_remove_ext
+xbt_dict_dump
+xbt_dict_print
+xbt_dict_prints
+xbt_dict_cursor_get_data
+xbt_dict_cursor_get_key
+xbt_dict_foreach
 
-gras_dict_cursor_new
-gras_dict_cursor_free
-gras_dict_cursor_rewind
+xbt_dict_cursor_new
+xbt_dict_cursor_free
+xbt_dict_cursor_rewind
 
 <SUBSECTION Standard>
-gras_dictelm_remove_ext
-gras_dictelm_insert_ext
-gras_dictelm_remove
-gras_dictelm_print_fct
-gras_dictelm_insert
-gras_dictelm_free
-gras_dictelm_retrieve
-gras_dictelm_dump
-gras_dictelm_retrieve_ext
+xbt_dictelm_remove_ext
+xbt_dictelm_insert_ext
+xbt_dictelm_remove
+xbt_dictelm_print_fct
+xbt_dictelm_insert
+xbt_dictelm_free
+xbt_dictelm_retrieve
+xbt_dictelm_dump
+xbt_dictelm_retrieve_ext
 </SECTION>
 
 <SECTION>
-<FILE>tbx_set</FILE>
-gras_set_new
-gras_set_free
+<FILE>xbt_set</FILE>
+<TITLE>xbt-set</TITLE>
+xbt_set_new
+xbt_set_free
 
-gras_set_add
-gras_set_get_by_name
-gras_set_get_by_name_ext
-gras_set_get_by_id
+xbt_set_add
+xbt_set_get_by_name
+xbt_set_get_by_name_ext
+xbt_set_get_by_id
 
-gras_set_foreach
+xbt_set_foreach
 
 <SUBSECTION Standard>
-gras_set_cursor_step
-gras_set_cursor_get_or_free
-gras_set_cursor_first
+xbt_set_cursor_step
+xbt_set_cursor_get_or_free
+xbt_set_cursor_first
 </SECTION>
 
 <SECTION>
-<FILE>tbx_cfg</FILE>
-gras_cfg_new
-gras_cfg_cpy
-gras_cfg_free
-gras_cfg_dump
+<FILE>xbt_swag</FILE>
+<TITLE>xbt-swag</TITLE>
+xbt_swag_new
+xbt_swag_free
+xbt_swag_init
+xbt_swag_insert
+xbt_swag_remove
+xbt_swag_extract
+xbt_swag_size
+xbt_swag_belongs
 
-gras_cfg_register
-gras_cfg_register_str
-gras_cfg_check
+xbt_swag_foreach
+xbt_swag_foreach_safe
+xbt_swag_offset
+<SUBSECTION Standard>
+xbt_swag_getFirst
+xbt_swag_getNext
+xbt_swag_getPrev
+</SECTION>
 
-gras_cfg_set_parse
-gras_cfg_set
-gras_cfg_set_vargs
+<SECTION>
+<FILE>xbt_heap</FILE>
+<TITLE>xbt-heap</TITLE>
+xbt_swag_hookup
+xbt_swag
 
-gras_cfg_set_int
-gras_cfg_set_double
-gras_cfg_set_string
-gras_cfg_set_host
+xbt_heap_new
+xbt_heap_free
+xbt_heap_size
 
-gras_cfg_rm_int
-gras_cfg_rm_double
-gras_cfg_rm_string
-gras_cfg_rm_host
-gras_cfg_empty
+xbt_heap_push
+xbt_heap_pop
 
-gras_cfg_get_int
-gras_cfg_get_double
-gras_cfg_get_string
-gras_cfg_get_host
-gras_cfg_get_dynar
+xbt_heap_maxkey
+xbt_heap_maxcontent
+</SECTION>
+
+<SECTION>
+<FILE>surf_maxmin</FILE>
+<TITLE>surf-maxmin</TITLE>
+lmm_variable_t
+lmm_constraint_t
+lmm_system_t
+lmm_system_new
+lmm_system_free
+lmm_variable_disable
+lmm_constraint_new
+lmm_constraint_free
+lmm_variable_new
+lmm_variable_free
+lmm_variable_getvalue
+lmm_expand
+lmm_get_cnst_from_var
+lmm_get_number_of_cnst_from_var
+lmm_get_var_from_cnst
+lmm_constraint_id
+lmm_variable_id
+lmm_update
+lmm_update_variable_bound
+lmm_update_variable_weight
+lmm_update_constraint_bound
+lmm_constraint_used
+lmm_solve
+</SECTION>
+
+
+<SECTION>
+<TITLE>Configuration management</TITLE>
+<FILE>xbt_config</FILE>
+xbt_cfg_new
+xbt_cfg_cpy
+xbt_cfg_free
+xbt_cfg_dump
+
+xbt_cfg_register
+xbt_cfg_register_str
+xbt_cfg_check
+
+xbt_cfg_set_parse
+xbt_cfg_set
+xbt_cfg_set_vargs
+
+xbt_cfg_set_int
+xbt_cfg_set_double
+xbt_cfg_set_string
+xbt_cfg_set_host
+
+xbt_cfg_rm_int
+xbt_cfg_rm_double
+xbt_cfg_rm_string
+xbt_cfg_rm_host
+xbt_cfg_empty
+
+xbt_cfg_get_int
+xbt_cfg_get_double
+xbt_cfg_get_string
+xbt_cfg_get_host
+xbt_cfg_get_dynar
 
 <SUBSECTION Standard>
-gras_cfgelm_type_t
-gras_cfg_get_type
+xbt_cfgelm_type_t
+xbt_cfg_get_type
 </SECTION>
 
 <SECTION>

@@ -1,0 +1,180 @@
+<!-- ##### SECTION Title ##### -->
+xbt_dico
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION xbt_dict_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_dict_free ##### -->
+<para>
+
+</para>
+
+@dict: 
+
+
+<!-- ##### FUNCTION xbt_dict_set ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@free_ctn: 
+
+
+<!-- ##### FUNCTION xbt_dict_set_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
+@free_ctn: 
+
+
+<!-- ##### FUNCTION xbt_dict_get ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_dict_get_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_dict_remove ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_dict_remove_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_dict_dump ##### -->
+<para>
+
+</para>
+
+@head: 
+@output: 
+
+
+<!-- ##### FUNCTION xbt_dict_print ##### -->
+<para>
+
+</para>
+
+@data: 
+
+
+<!-- ##### FUNCTION xbt_dict_prints ##### -->
+<para>
+
+</para>
+
+@data: 
+
+
+<!-- ##### FUNCTION xbt_dict_cursor_get_data ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_dict_cursor_get_key ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@key: 
+@Returns: 
+
+
+<!-- ##### MACRO xbt_dict_foreach ##### -->
+<para>
+
+</para>
+
+@dict: 
+@cursor: 
+@key: 
+@data: 
+
+
+<!-- ##### FUNCTION xbt_dict_cursor_new ##### -->
+<para>
+
+</para>
+
+@head: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_dict_cursor_free ##### -->
+<para>
+
+</para>
+
+@cursor: 
+
+
+<!-- ##### FUNCTION xbt_dict_cursor_rewind ##### -->
+<para>
+
+</para>
+
+@cursor: 
+
+

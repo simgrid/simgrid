@@ -5,7 +5,7 @@ Logging facilities
 An easy-to-use, fast and flexible message logging architecture.
 
 <!-- ##### SECTION Long_Description ##### -->
-<para> 
+<para>
   This is an adaptation of the log4c project, which is dead upstream, and which
   I was given the permission to fork under the LGPL licence by the authors. log4c
   itself was loosely based on the Apache project's Log4J, Log4CC,
@@ -289,6 +289,99 @@ An easy-to-use, fast and flexible message logging architecture.
 <para>
 
 </para>
+
+<!-- ##### FUNCTION xbt_log_control_set ##### -->
+<para>
+
+</para>
+
+@cs: 
+
+
+<!-- ##### MACRO XBT_LOG_NEW_CATEGORY ##### -->
+<para>
+
+</para>
+
+@catName: 
+@desc: 
+
+
+<!-- ##### MACRO XBT_LOG_NEW_SUBCATEGORY ##### -->
+<para>
+
+</para>
+
+@catName: 
+@parent: 
+@desc: 
+
+
+<!-- ##### MACRO XBT_LOG_NEW_DEFAULT_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+@desc: 
+
+
+<!-- ##### MACRO XBT_LOG_NEW_DEFAULT_SUBCATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+@parent: 
+@desc: 
+
+
+<!-- ##### MACRO XBT_LOG_DEFAULT_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+
+
+<!-- ##### MACRO XBT_LOG_EXTERNAL_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+
+
+<!-- ##### MACRO XBT_LOG_ISENABLED ##### -->
+<para>
+
+</para>
+
+@catName: 
+@priority: 
+
+
+<!-- ##### MACRO XBT_LOG_STATIC_THRESHOLD ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION xbt_log_appender_set ##### -->
+<para>
+
+</para>
+
+@cat: 
+@app: 
+
+
+<!-- ##### VARIABLE xbt_log_default_appender ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### MACRO CDEBUG6 ##### -->
 <para>

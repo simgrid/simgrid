@@ -136,6 +136,26 @@ Describing the data
 DataDescriptor API
 
 
+<!-- ##### SECTION ./tmpl/Dynamic_arrays.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/Dynamic_arrays.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/Dynamic_arrays.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/Dynamic_arrays.sgml:Title ##### -->
+Dynamic arrays
+
+
 <!-- ##### SECTION ./tmpl/ErrLog.sgml:Long_Description ##### -->
 <para>
 
@@ -428,6 +448,286 @@ Overview of the GRAS library
 Overview
 
 
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml.sgml:Title ##### -->
+./gras-sections.txt.sgml
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras-sections.txt.sgml:Title ##### -->
+./gras-sections.txt
+
+
 <!-- ##### SECTION ./tmpl/gras.sgml:Long_Description ##### -->
 <para>
 
@@ -587,6 +887,402 @@ SG
 nws_comm
 
 
+<!-- ##### SECTION ./tmpl/tbx_cfg.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_cfg.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_cfg.sgml:Short_Description ##### -->
+Configuration facilities.
+
+
+<!-- ##### SECTION ./tmpl/tbx_cfg.sgml:Title ##### -->
+Config
+
+
+<!-- ##### SECTION ./tmpl/tbx_dico.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_dico.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_dico.sgml:Short_Description ##### -->
+Data container associating data to a string key.
+
+
+<!-- ##### SECTION ./tmpl/tbx_dico.sgml:Title ##### -->
+Dictionnary
+
+
+<!-- ##### SECTION ./tmpl/tbx_dynar.sgml:Long_Description ##### -->
+<para>
+This module provide the quite usual dynamic array facility.
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_dynar.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_dynar.sgml:Short_Description ##### -->
+Use arrays, forget about malloc
+
+
+<!-- ##### SECTION ./tmpl/tbx_dynar.sgml:Title ##### -->
+Dynamic array
+
+
+<!-- ##### SECTION ./tmpl/tbx_err.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_err.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_err.sgml:Short_Description ##### -->
+Error reporting
+
+
+<!-- ##### SECTION ./tmpl/tbx_err.sgml:Title ##### -->
+Errors handling
+
+
+<!-- ##### SECTION ./tmpl/tbx_log.sgml:Long_Description ##### -->
+<para> 
+  This is an adaptation of the log4c project, which is dead upstream, and which
+  I was given the permission to fork under the LGPL licence by the authors. log4c
+  itself was loosely based on the Apache project's Log4J, Log4CC,
+  etc. project. Because C is not object oriented, a lot had to change.
+</para>
+
+<refsect2>
+  <title>Overview</title>
+
+  <para>
+    There is 3 main concepts: category, priority and appender. These three
+    concepts work together to enable developers to log messages according to
+    message type and priority, and to control at runtime how these messages are
+    formatted and where they are reported.
+  </para>
+</refsect2>
+
+<refsect2>
+ <title>Category hierarchy</title>
+
+  <para>
+    The first and foremost advantage of any logging API over plain printf()
+    resides in its ability to disable certain log statements while allowing
+    others to print unhindered. This capability assumes that the logging space,
+    that is, the space of all possible logging statements, is categorized
+    according to some developer-chosen criteria.
+  </para>
+
+  <para>
+    This observation led to choosing category as the central concept of the
+    system. Every category is declared by providing a name and an optional
+    parent. If no parent is explicitly named, the root category, LOG_ROOT_CAT
+    is the category's parent.
+  </para>
+
+  <para>
+    A category is created by a macro call at the top level of a file.  A
+    category can be created with any one of the following macros:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+     <para>@GRAS_LOG_NEW_CATEGORY(MyCat);</para>
+     <para>create a new root</para>
+    </listitem>
+
+    <listitem>
+      <para>@GRAS_LOG_NEW_SUBCATEGORY(MyCat, ParentCat);</para>
+      <para>Create a new category being child of the category ParentCat</para>
+    </listitem>
+
+    <listitem>
+      <para>@GRAS_LOG_NEW_DEFAULT_CATEGORY(MyCat);</para>
+      <para>Like GRAS_LOG_NEW_CATEGORY, but the new category is the default one
+      in this file</para>
+    </listitem>
+
+    <listitem>
+      <para>@GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, ParentCat);</para>
+      <para>Like GRAS_LOG_NEW_SUBCATEGORY, but the new category is the default one
+      in this file</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    The parent cat can be defined in the same file or in another file, but each
+    category may have only one definition.
+  </para>
+
+  <para>
+    Typically, there will be a Category for each module and sub-module, so you
+    can independently control logging for each module.
+  </para>
+</refsect2>
+
+<refsect2>
+  <title>Priority</title>
+
+  <para>
+    A category may be assigned a threshold priorty. The set of priorites are
+    defined by the @gras_log_priority_t enum. Their values are DEBUG, VERBOSE,
+    INFO, WARNING, ERROR and CRITICAL.
+  </para>
+
+  <para>
+    If a given category is not assigned a threshold priority, then it inherits
+    one from its closest ancestor with an assigned threshold.
+  </para>
+ 
+  <para>
+    To ensure that all categories can eventually inherit a threshold, the root
+    category always has an assigned threshold priority.
+  </para>
+
+  <para>
+    Logging requests are made by invoking a logging macro on a category.  All
+    of the macros have a printf-style format string followed by arguments.
+    Because most C compilers do not support vararg macros, there is a version
+    of the macro for any number of arguments from 0 to 6. The macro name ends
+    with the total number of arguments.
+  </para>
+
+  <para>
+    Here is an example of the most basic type of macro:
+  </para>
+  
+  <programlisting>CLOG5(MyCat, gras_log_priority_warning, "Values are: %d and '%s'", 5, "oops");</programlisting>
+  
+  <para>This is a logging request with priority WARN.</para>
+
+  <para>
+    A logging request is said to be enabled if its priority is higher than or
+    equal to the threshold priority of its category. Otherwise, the request is
+    said to be disabled. A category without an assigned priority will inherit
+    one from the hierarchy.
+  </para>
+
+  <para>
+    It is possible to use any non-negative integer as a priority. If, as in the
+    example, one of the standard priorites is used, then there is a convenience
+    macro that is typically used instead. For example, the above example is
+    equivalent to the shorter:
+  </para>
+
+  <programlisting>CWARN4(MyCat, "Values are: %d and '%s'", 5, "oops");</programlisting>
+</refsect2>
+
+<refsect2>
+  <title>Default category</title>
+
+  <para>
+    If @GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, Parent) or
+    @GRAS_LOG_NEW_DEFAULT_CATEGORY(MyCat) is used to create the category, then
+    the even shorter form can be used:
+  </para>
+
+  <programlisting>WARN3("Values are: %d and '%s'", 5, "oops");</programlisting>
+
+  <para>
+   Only one default category can be created per file, though multiple
+   non-defaults can be created and used.
+  </para>
+</refsect2>
+
+<refsect2>
+  <title>Example</title>
+
+  <para>Here is a more complete example:</para>
+
+  <programlisting>
+     #include "gras.h"
+
+     /* create a category and a default subcategory */
+     GRAS_LOG_NEW_CATEGORY(VSS);
+     GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(SA, VSS);
+
+     main() {
+            /* Now set the parent's priority.
+               (the string would typcially be a runtime option) */
+            gras_log_control_set("SA.thresh=3");
+
+            /* This request is enabled, because WARNING &gt;= INFO. */
+            CWARN2(VSS, "Low fuel level.");
+
+            /* This request is disabled, because DEBUG &lt; INFO. */
+            CDEBUG2(VSS, "Starting search for nearest gas station."); 
+
+            /* The default category SA inherits its priority from VSS. Thus,
+               the following request is enabled because INFO &gt;= INFO.  */
+            INFO1("Located nearest gas station.");
+
+            /* This request is disabled, because DEBUG &lt; INFO. */
+            DEBUG1("Exiting gas station search");
+      }</programlisting>
+</refsect2>
+
+<refsect2>
+  <title>Configuration</title>
+
+  <para>
+    Configuration is typically done during program initialization by invoking
+    the gras_log_control_set() method. The control string passed to it
+    typically comes from the command line. Look at the doucmentation for that
+    function for the format of the control string.
+  </para>
+</refsect2>
+
+<refsect2>
+  <title>Performance</title>
+
+  <para>
+    Clever design insures efficiency. Except for the first invocation, a
+    disabled logging request requires an a single comparison of a static
+    variable to a constant.
+  </para>
+
+  <para>
+    There is also compile time constant, @GRAS_LOG_STATIC_THRESHOLD, which
+    causes all logging requests with a lower priority to be optimized to 0 cost
+    by the compiler. By setting it to gras_log_priority_infinite, all logging
+    requests are statically disabled and cost nothing. Released executables
+    might typically be compiled with
+    "-DGRAS_LOG_STATIC_THRESHOLD=gras_log_priority_infinite".
+  </para>
+</refsect2>
+
+<refsect2>
+  <title>Appenders</title>
+
+  <para>
+    Each category has an optional appender. An appender is a pointer to a
+    structure whcih starts with a pointer to a doAppend() function. DoAppend()
+    prints a message to a log.
+  </para>
+
+  <para>
+    WHen a category is passed a message by one of the logging macros, the
+    category performs the following actions:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+       <para>
+         if the category has an appender, the message is passed to the
+         appender's doAppend() function,
+       </para>
+    </listitem>
+
+    <listitem>
+       <para>
+         if 'willLogToParent' is true for the category, the message is passed
+         to the category's parent.
+      </para>
+
+      <para>
+         By default, all categories except root have no appender and
+         'willLogToParent' is true. This situation causes all messages to be
+         logged by the root category's appender.
+      </para>
+
+      <para>
+         Typically, you would only change the root category's appender when you
+         wanted, say, a different output format. Copying defaultLogAppender.c
+         would be a good start.
+      </para>
+
+      <para>
+         The default appender function currently prints to stderr, but more
+         would be needed, like the one able to send the logs to a remote
+         dedicated server.
+      </para>
+    </listitem>
+  </itemizedlist>
+</refsect2>
+
+<refsect2>
+  <title>Misc and Caveats</title>
+
+  <para>
+    Do not use any of the macros that start with '_'.
+  </para>
+
+  <para>
+    The current set of macros force each file to use categories declared in
+    that file. This is intentional. Make the category a child of the file's
+    module category.
+  </para>
+
+  <para>
+    Log4J has a 'rolling file appender' which you can select with a run-time
+    option and specify the max file size. This would be a nice default for
+    non-kernel applications.
+  </para>
+
+  <para>
+    Careful, category names are global variables.
+  </para>
+</refsect2>
+
+
+<!-- ##### SECTION ./tmpl/tbx_log.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_log.sgml:Short_Description ##### -->
+An easy-to-use, fast and flexible message logging architecture.
+
+
+<!-- ##### SECTION ./tmpl/tbx_log.sgml:Title ##### -->
+Logging facilities
+
+
+<!-- ##### SECTION ./tmpl/tbx_set.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_set.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/tbx_set.sgml:Short_Description ##### -->
+Data storage for very quick retrieve
+
+
+<!-- ##### SECTION ./tmpl/tbx_set.sgml:Title ##### -->
+Data set
+
+
 <!-- ##### SECTION ./tmpl/trp_socks.sgml:Long_Description ##### -->
 <para>
 
@@ -605,6 +1301,226 @@ nws_comm
 
 <!-- ##### SECTION ./tmpl/trp_socks.sgml:Title ##### -->
 Sockets
+
+
+<!-- ##### SECTION ./tmpl/xbt_cfg.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_cfg.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_cfg.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_cfg.sgml:Title ##### -->
+xbt_cfg
+
+
+<!-- ##### SECTION ./tmpl/xbt_dico.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_dico.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_dico.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_dico.sgml:Title ##### -->
+xbt_dico
+
+
+<!-- ##### SECTION ./tmpl/xbt_err.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_err.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_err.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_err.sgml:Title ##### -->
+Errors
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+xbt_swag.sgml.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml.sgml:Title ##### -->
+xbt_swag.sgml.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml.sgml:Title ##### -->
+xbt_swag.sgml.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml.sgml:Title ##### -->
+xbt_swag.sgml.sgml
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/xbt_swag.sgml.sgml:Title ##### -->
+xbt_swag.sgml
 
 
 <!-- ##### MACRO BEGIN_DECL ##### -->

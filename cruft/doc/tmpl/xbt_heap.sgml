@@ -1,0 +1,78 @@
+<!-- ##### SECTION Title ##### -->
+Heap
+
+<!-- ##### SECTION Short_Description ##### -->
+A simple heap with O(log(n)) access.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION xbt_heap_new ##### -->
+<para>
+
+</para>
+
+@num: 
+@free_func: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_heap_free ##### -->
+<para>
+
+</para>
+
+@H: 
+
+
+<!-- ##### FUNCTION xbt_heap_size ##### -->
+<para>
+
+</para>
+
+@H: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_heap_push ##### -->
+<para>
+
+</para>
+
+@H: 
+@content: 
+@key: 
+
+
+<!-- ##### FUNCTION xbt_heap_pop ##### -->
+<para>
+
+</para>
+
+@H: 
+
+
+<!-- ##### FUNCTION xbt_heap_maxkey ##### -->
+<para>
+
+</para>
+
+@H: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_heap_maxcontent ##### -->
+<para>
+
+</para>
+
+@H: 
+
+

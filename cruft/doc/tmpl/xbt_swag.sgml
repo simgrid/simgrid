@@ -1,0 +1,117 @@
+<!-- ##### SECTION Title ##### -->
+Swag
+
+<!-- ##### SECTION Short_Description ##### -->
+valuable goods : a O(1) set based on linked lists
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Warning, this module is done to be efficient and performs tons of cast
+and dirty things. So avoid using it unless you really know what you
+are doing.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION xbt_swag_new ##### -->
+<para>
+
+</para>
+
+@offset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_swag_free ##### -->
+<para>
+
+</para>
+
+@swag: 
+
+
+<!-- ##### FUNCTION xbt_swag_init ##### -->
+<para>
+
+</para>
+
+@swag: 
+@offset: 
+
+
+<!-- ##### FUNCTION xbt_swag_insert ##### -->
+<para>
+
+</para>
+
+@obj: 
+@swag: 
+
+
+<!-- ##### FUNCTION xbt_swag_remove ##### -->
+<para>
+
+</para>
+
+@obj: 
+@swag: 
+
+
+<!-- ##### FUNCTION xbt_swag_extract ##### -->
+<para>
+
+</para>
+
+@swag: 
+
+
+<!-- ##### FUNCTION xbt_swag_size ##### -->
+<para>
+
+</para>
+
+@swag: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xbt_swag_belongs ##### -->
+<para>
+
+</para>
+
+@obj: 
+@swag: 
+@Returns: 
+
+
+<!-- ##### MACRO xbt_swag_foreach ##### -->
+<para>
+
+</para>
+
+@obj: 
+@swag: 
+
+
+<!-- ##### MACRO xbt_swag_foreach_safe ##### -->
+<para>
+
+</para>
+
+@obj: 
+@obj_next: 
+@swag: 
+
+
+<!-- ##### MACRO xbt_swag_offset ##### -->
+<para>
+
+</para>
+
+@var: 
+@field: 
+
+

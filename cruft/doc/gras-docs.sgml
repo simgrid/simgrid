@@ -11,12 +11,16 @@
 <!ENTITY virtu-fs      SYSTEM "xml/virtu_fs.xml">
 
 
-<!ENTITY tbx-err SYSTEM "xml/tbx_err.xml">
-<!ENTITY tbx-log SYSTEM "xml/tbx_log.xml">
-<!ENTITY tbx-dynar SYSTEM "xml/tbx_dynar.xml">
-<!ENTITY tbx-dico SYSTEM "xml/tbx_dico.xml">
-<!ENTITY tbx-set SYSTEM "xml/tbx_set.xml">
-<!ENTITY tbx-cfg SYSTEM "xml/tbx_cfg.xml">
+<!ENTITY xbt-error SYSTEM "xml/xbt_error.xml">
+<!ENTITY xbt-log SYSTEM "xml/xbt_log.xml">
+<!ENTITY xbt-dynar SYSTEM "xml/xbt_dynar.xml">
+<!ENTITY xbt-dict SYSTEM "xml/xbt_dict.xml">
+<!ENTITY xbt-set SYSTEM "xml/xbt_set.xml">
+<!ENTITY xbt-swag SYSTEM "xml/xbt_swag.xml">
+<!ENTITY xbt-heap SYSTEM "xml/xbt_heap.xml">
+<!ENTITY xbt-config SYSTEM "xml/xbt_config.xml">
+
+<!ENTITY surf-maxmin SYSTEM "xml/surf_maxmin.xml">
 
 <!ENTITY gras-gras SYSTEM "xml/gras.xml">
 <!ENTITY gras-gras-private SYSTEM "xml/gras_private.xml">
@@ -302,12 +306,19 @@ Write examples.
 
   <chapter>
    <title>GRAS toolbox</title>
-   &tbx-err;
-   &tbx-log;
-   &tbx-dynar;
-   &tbx-dico;
-   &tbx-set;
-   &tbx-cfg;
+   &xbt-error;
+   &xbt-log;
+   &xbt-dynar;
+   &xbt-dict;
+   &xbt-set;
+   &xbt-swag;
+   &xbt-heap;
+   &xbt-config;
+  </chapter>
+
+  <chapter>
+   <title>SURF</title>
+   &surf-maxmin;
   </chapter>
 
 <!--
