@@ -30,10 +30,12 @@ print "xbt_error_t write_read(gras_datadesc_type_t type,void *src, void *dst, gr
 
 my ($i,$j,$k,$l);
 my $max=scalar @types;
-my $max_i=$max-1; # set it to "$max-1" to do 2401 tests (takes for ever to compile)
-my $max_j=0;      # set it to "$max-1" to do 2401 tests (takes for ever to compile)
-my $max_k=$max-1; # set it to "$max-1" to do 2401 tests (takes for ever to compile)
-my $max_l=0;      # set it to "$max-1" to do 2401 tests (takes for ever to compile)
+# Those max variables can be used to tune how much test you are ready to do.
+# But WARNING! changing them naturally invalidate any existing data file.
+my $max_i=$max-1;
+my $max_j=0;     
+my $max_k=$max-1;
+my $max_l=0;     
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     print "GRAS_DEFINE_TYPE(".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l].",".
       "struct ".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l]." { ".
