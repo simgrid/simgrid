@@ -78,16 +78,6 @@ fi
 ###
 # Real script
 ###
-if [ "x$CC" = x ] ; then
-  echo "CC not set. Search for xlC"
-  xlC=`which xlC`
-  if [ "x$xlC" != x ] ; then
-    echo "Found (in $xlC)"
-    CONFIGURE_ARGS="$CONFIGURE_ARGS CC=xlC"
-  else
-    echo "Not found. Stick to the defaults"
-  fi
-fi
 
 # expend the path for solaris
 PATH="$PATH:/usr/xpg4/bin"
