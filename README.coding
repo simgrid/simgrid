@@ -1,18 +1,75 @@
 **
+** Source tree organization
+**
+******************************************************
+
+There is 4 projects in the tree:
+
+ - GROS: no fancy name yet (low-level toolbox: logging, datatypes).
+ - GRAS: Grid Reality And Simulation (message passing API with two
+         implementations allowing to compile programs on top of the
+         simulator or for the real life without code modification)
+ - SURF: Server for the Use of Resource Fictions (the simulator used 
+         in GRAS and more)
+ - AMOK: Advanced Metacomputing Overlay Kit (high level toolbox; Grid
+         application elements such as distributed database, topology
+         discovery service, and so on)
+
+They are all in the same tree because GRAS depends on SURF which depends on
+GRAS (that's the only cycle here, we're not *that* vicious).
+
+The tree is not splited on projects, but on file finality:
+ include/            -> all *public* headers
+ include/gros/*.h    -> one file per module
+ include/gros.h      -> file including all modules headers
+  (same for gras, surf and amok instead of gros)
+  
+ src/Makefile.am     -> main makefile. All projects should fit in only one
+                        library (I mean 2, RL+SG), which is compiled here.
+			
+			Since all object.o files are placed here, you should
+                        choose the name of c files carfully to avoid
+                        conflict. 
+			
+ src/gras/DataDesc                      -> typical project module
+ src/gras/DataDesc/datadesc_interface.h -> visible to any GRAS modules;
+                                           masked to the user and GROS/AMOK/SURF
+ src/gras/DataDesc/datadesc_private.h   -> visible only from this module					   
+  
+   So, the modules have 3 levels of publicity for their interface. 
+   Private, internal to GRAS, public. Of course, I try to keep as much stuff
+   private as possible.
+  
+ testsuite/ -> The more test the better. 
+               Same organization than src/ and include/
+               Tests are allowed to load some headers of the module they test.
+	       All tests should be listed in run_test.in so that they get
+                  run on 'make check'. 
+	       They are not listed directly in the check_PROGRAMS part of
+                  the makefile because run_test knows about the gras logging
+                  features and relaunch with full details the failed tests.
+		  
+ examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
+                avoid any kind of trick. In particular, do only include the
+                public headers here.
+		
+**
 ** Random bits about coding standards and portability
+**
+*****************************************************
 
 MALLOC:
  You must cast the result of malloc on AIX. 
  It's even better to use gras_new when possible.
 
 SIZE_T
- If possible, avoid size_t and use unsigned long instead.
+ If possible, avoid size_t and use unsigned long instead. If not,
 
  #include <sys/types.h> in all files manipulating size_t
  do cast it to unsigned long before printing (and use %lu)
  
-
-
 PRINTF pointer difference
  printf ("diff = %ld\n", (long) (pointer2 - pointer1));
   
+
+		
