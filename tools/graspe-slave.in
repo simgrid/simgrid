@@ -26,7 +26,7 @@ CONFIGURE_ENV=""
 CONFIGURE_ARGS="--prefix=$PREFIX/@PACKAGE@"
 
 # make target
-MAKE_ALL="clean all"
+MAKE_ALL="all"
 MAKE_INSTALL=install
 MAKE_CHECK="-k check"
 
