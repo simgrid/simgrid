@@ -129,6 +129,7 @@ AC_CONFIG_FILES([
     examples/gras/Makefile 
       examples/gras/ping/Makefile  examples/gras/ping/test_sg  examples/gras/ping/test_rl
       examples/gras/timer/Makefile examples/gras/timer/test_sg examples/gras/timer/test_rl
+      examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
   doc/Makefile
     doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
   tools/compile-remote-worker tools/Makefile
@@ -145,6 +146,7 @@ AC_CONFIG_FILES([
      examples/msg/run_msg_test                                  \
      examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
      examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
+     examples/gras/chrono/test_sg  examples/gras/chrono/test_rl \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
