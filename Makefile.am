@@ -1,4 +1,4 @@
-SUBDIRS= include src examples testsuite doc
+SUBDIRS= include src tools examples testsuite doc
 DISTCLEANFILES =  *~  
 
 ACLOCAL = aclocal-1.9 -I acmacro

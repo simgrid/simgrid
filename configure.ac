@@ -130,7 +130,8 @@ AC_CONFIG_FILES([
       examples/gras/ping/Makefile  examples/gras/ping/test_sg  examples/gras/ping/test_rl
   doc/Makefile
     doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
-  tools/compile-remote-worker
+  tools/compile-remote-worker tools/Makefile
+    tools/gras/Makefile
   testsuite/Makefile
   testsuite/run_tests    
   testsuite/gras/trp_tcp_usage
