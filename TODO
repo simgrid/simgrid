@@ -1,17 +1,60 @@
-* Use of data on the stack as argument to MsgNew does not work
-* Warn when using a server socket to write, or a client one to poll
+[sorry for the parts in french :]
+
+###
+### Avant 0.5
+###
+
+- tcp->incoming_socks
+  sock specific tcp (buffsize) inutile
+
+###
+### Avant 1.0
+###
+
+- renomages     
+  gras_os_time
+  gras_os_sleep
+  gras_os_getload
+
+- gras_datadesc_import_nws
+
+- rawsock
+  Verifier que les messages vont pas sur des sock raw
+
+- Documentation (en particulier DD et Msg)
+
+- gras_datadesc_cpy -> donne la taille prise pour donner un poids aux messages
+
+- callback en reception ?? (remettre les pointeurs sur fonction etc)
+
+- Virer cat ignored
+  gras_ddt_new_ignored : Pas portable (taille) => virer cat?
+  Necessaire aux pointeurs sur fonction? Renomer 'void'
+
+###
+### Apres
+### 
+
+- Adaptative timeout
+- datadesc_set_cste: Donne la valeur par defaut en reception
+  plus de transfert, ce qui est utile pour les pointeurs sur fct
+
+============================================================================
 
 * while (1) { fork; exec the child, wait in father }
 * message forwarding
+
+ - core ok (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
+ - virtualize (linux, solaris, SG) & conditions
+ - binary representation: any type, SNWF (Sender Native Wire Format)
+ - modules (logs, manage, token ring, bw)
+ - cleanups, documentation
 
 [autoconf]
   Check in autoconf that no datatype is bigger than 64, or dynar_map will
     get into trouble...
 
 [portability layer]
-  Make a script to test how the padding bytes are on the current arch, and
-   constitute a bestiary.
-  Use Arnaud's structure parser in a macro
   Dynar of type, such as ref of type
   Generate convertors in assembler ?
   Mallocators
@@ -19,12 +62,8 @@
 [Messaging]
   Message forwarding
   Message priority
-  Messages in a tree manner
+  Message declarations in a tree manner
   
-[network drivers]
-  Interface: open_server, open_client, read, write, flush, close
-  Implementations: TCP, SG (more after my PhD).
-
 [errors]
   Better split casual errors from programing errors.
     The first ones should be repported to the user, the second should kill
@@ -36,14 +75,12 @@
    - libgpg-error
 
 [logs]
-  Parse argv (check leonie and tbx_arg_iterator in tbx_parameter.h)
   Several appenders; fix the setting stuff to change the appender
   Hijack message from a given category to another for a while (to mask
-    initializations)
+    initializations, and more)
+  Allow each process in simulation to have its own setting
 
 [dict]
-  Make a real container for the dict, so that the free function may be given
-    only once for the whole tree (would help to send dicts).
   dichotomie in search
   speed up the cursors, for example using the contexts when available
   fix multi levels dicts
@@ -55,18 +92,6 @@
 *********
 * GRAS1 * Integrer grassouillet a gras; multiplexage XML; module de comm
 *********
-[type_bag SG]
- un peu comme les type_bag RL, mais sans tenir compte d'incoming ni
-   outcoming.
- La finesse est de simuler la taille des envois sans les faire
- On peut aussi imaginer une version faisant ces envois effectivement, qui
-   serait un peu plus lente, mais permettant de debugger cette partie de
-   grassouillet
-   
-[pilotes reseaux de sous grassouillet]
- TCP: utilise le fd. rien a faire.
- SG: Le send fait le boulot de malloc du recv de fd, et les rempli comme le
-   send de fd.
 
 [simuler le select sur les sockets avec des threads]
   Le plan, c'est qu'a l'ouverture d'une socket server, on cree un thread
@@ -197,8 +222,6 @@
  gs_type_dump, nardin, comment voir ce qui se passe sinon ??
  
 [Autres]
- Simplifier l'API pour virer les sequences
- Faire le parseur automatique de structures
  Faire toutes les modifs aux Utils listees plus haut
  Simplifier l'envoi de dynar et dico
  Mettre les mutex et semaphores dans les dynar directement
