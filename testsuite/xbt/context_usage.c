@@ -71,9 +71,9 @@ int main(int argc, char** argv)
 
   xbt_context_init();
 
-  cA = xbt_context_new(fA, 0, NULL);
-  cB = xbt_context_new(fB, 0, NULL);
-  cC = xbt_context_new(fC, 0, NULL);
+  cA = xbt_context_new(fA, NULL, NULL, NULL, NULL, 0, NULL);
+  cB = xbt_context_new(fB, NULL, NULL, NULL, NULL, 0, NULL);
+  cC = xbt_context_new(fC, NULL, NULL, NULL, NULL, 0, NULL);
 
   fifo = xbt_fifo_new();
 
