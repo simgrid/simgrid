@@ -51,7 +51,7 @@ static gras_error_t test1() {
 	}
 	val[l][k]='\0';
 	if (verbose) printf("%s ; ",val[l]);
-	key[l]=val[l];//  NOWADAYS, no need to strdup the key.
+	key[l]=val[l];/*  NOWADAYS, no need to strdup the key. */
       }
       if (verbose) printf("in multitree %p.\n",head);
       TRYFAIL(gras_multidict_set(&head,MULTICACHE_DEPTH,key,

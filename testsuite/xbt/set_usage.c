@@ -86,9 +86,9 @@ static gras_error_t fill(gras_set_t **set) {
   TRY(debuged_add(*set,"12b"));
   TRY(debuged_add(*set,"123"));
   TRY(debuged_add(*set,"123456"));
-  // Child becomes child of what to add
+  /* Child becomes child of what to add */
   TRY(debuged_add(*set,"1234"));
-  // Need of common ancestor
+  /* Need of common ancestor */
   TRY(debuged_add(*set,"123457"));
 
   return no_error;
@@ -190,7 +190,7 @@ int main(int argc,char **argv) {
   printf("   - Change 12a to '12a'\n");
   TRYFAIL(debuged_add_with_data(set,"12a","12a"));
 
-  //  gras_dict_dump(head,(void (*)(void*))&printf);
+  /*  gras_dict_dump(head,(void (*)(void*))&printf); */
   printf(" - Traverse the resulting data set\n");
   TRYFAIL(traverse(set));
 
@@ -225,7 +225,7 @@ int main(int argc,char **argv) {
   printf(" - Traverse the resulting data set\n");
   TRYFAIL(traverse(set));
 
-  //  gras_dict_dump(head,(void (*)(void*))&printf);
+  /*  gras_dict_dump(head,(void (*)(void*))&printf); */
 
   printf(" Free the data set (twice)\n");
   gras_set_free(&set);

@@ -12,7 +12,7 @@
 #include <gras.h>
 #include "gras/Transport/transport_interface.h"
 
-//GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
+/* GRAS_LOG_NEW_DEFAULT_CATEGORY(test); */
 
 int main(int argc,char *argv[]) {
   gras_socket_t *sock;

@@ -1,5 +1,7 @@
 SUBDIRS=.  
 # amok not ported to GRAS NG yet
+
+AM_CFLAGS= -g
 #AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.

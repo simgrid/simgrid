@@ -40,7 +40,7 @@ gras_trp_select(double timeout,
   double wakeup = gras_os_time() + 1000000*timeout;
   double now = 0;
   /* nextToService used to make sure socket with high number do not starve */
-  //  static int nextToService = 0;
+  /*  static int nextToService = 0; */
   struct timeval tout, *p_tout;
 
   int max_fds=0; /* first arg of select: number of existing sockets */

@@ -29,7 +29,7 @@ static gras_error_t traverse(gras_dict_t *head) {
   char *data;
 
   gras_dict_foreach(head,cursor,key,data) {
-    //    printf("   Seen:  %s=%s\n",key,data);
+    /*    printf("   Seen:  %s=%s\n",key,data); */
     gras_assert2 (!strcmp(key,data),
       "Key(%s) != value(%s). Abording\n",key,data);
   }
@@ -76,11 +76,11 @@ int main(int argc,char **argv) {
       for (k=0;k<SIZEOFKEY-1;k++)
 	key[k]=rand() % ('z' - 'a') + 'a';
       key[k]='\0';
-      //      printf("[%d %s]\n",j,key);
+      /*      printf("[%d %s]\n",j,key); */
       TRYFAIL(gras_dict_set(head,key,key,&free));
     }
     nb=0;
-    //    gras_dict_dump(head,(void (*)(void*))&printf);
+    /*    gras_dict_dump(head,(void (*)(void*))&printf); */
     TRYFAIL(countelems(head,&nb));
     if (nb != 1000) {
        printf ("\nI found %d elements, and not 1000\n",nb);

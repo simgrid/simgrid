@@ -156,7 +156,7 @@ gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
 gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
 					unsigned short port,
 					/* OUT */ gras_socket_t *sock){
-//  int size = bufSize * 1024;
+/*  int size = bufSize * 1024; */
   int on = 1;
   struct sockaddr_in server;
 

@@ -549,7 +549,7 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
 
   /* create the damn type descriptor */
   ddt = gras_datadesc_by_symbol(s_clause);
-//  gras_datadesc_type_dump(ddt);
+/*  gras_datadesc_type_dump(ddt); */
 
   TRYFAIL(gras_datadesc_ref("Clause*",ddt,&ddt));
 
@@ -617,7 +617,7 @@ int main(int argc,char *argv[]) {
 
   TRYFAIL(declare_chained_list_type());
   TRYFAIL(test_chain_list(sock,direction));
-  //  TRYFAIL(test_graph(sock,direction));
+  /*  TRYFAIL(test_graph(sock,direction)); */
 
   TRYFAIL(test_pbio(sock,direction));
 

@@ -150,9 +150,9 @@ gras_multidict_get_ext(gras_dictelm_t    *p_head,
     i++;
   }
 
-  if (p_elm) { // Found all dicts to the data
+  if (p_elm) { /* Found all dicts to the data */
 
-    //    gras_dict_dump(dict,&gras_dict_prints);
+    /*    gras_dict_dump(dict,&gras_dict_prints); */
     return gras_dict_get_ext(p_elm, key[i], key_len[i], data);
 
   } else {
@@ -216,7 +216,7 @@ gras_multidict_remove_ext(gras_dictelm_t  *p_head,
   }
 
   if (p_elm) {
-    // Found all dicts to the data
+    /* Found all dicts to the data */
     return gras_dict_remove_ext(p_elm, key[i], key_len[i]);
   } else {
     return 1;

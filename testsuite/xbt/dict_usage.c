@@ -37,9 +37,9 @@ static gras_error_t fill(gras_dict_t **head) {
   TRY(debuged_add(*head,"12b"));
   TRY(debuged_add(*head,"123"));
   TRY(debuged_add(*head,"123456"));
-  // Child becomes child of what to add
+  /* Child becomes child of what to add */
   TRY(debuged_add(*head,"1234"));
-  // Need of common ancestor
+  /* Need of common ancestor */
   TRY(debuged_add(*head,"123457"));
 
   return no_error;
@@ -77,7 +77,7 @@ static gras_error_t debuged_remove(gras_dict_t *head,const char*key)
 
   printf("   Remove '%s'\n",key);fflush(stdout);
   errcode=gras_dict_remove(head,key);
-  //  gras_dict_dump(head,(void (*)(void*))&printf);
+  /*  gras_dict_dump(head,(void (*)(void*))&printf); */
   return errcode;
 }
 
@@ -125,7 +125,7 @@ int main(int argc,char **argv) {
   printf("   - Change 12a to '12a'\n");
   TRYFAIL(gras_dict_set(head,"12a",strdup("12a"),&gras_free));
 
-  //  gras_dict_dump(head,(void (*)(void*))&printf);
+  /*  gras_dict_dump(head,(void (*)(void*))&printf); */
   printf(" - Traverse the resulting dictionnary\n");
   TRYFAIL(traverse(head));
 
@@ -148,7 +148,7 @@ int main(int argc,char **argv) {
   printf(" - Traverse the resulting dictionnary\n");
   TRYFAIL(traverse(head));
 
-  //  gras_dict_dump(head,(void (*)(void*))&printf);
+  /*  gras_dict_dump(head,(void (*)(void*))&printf); */
 
   printf(" Free the dictionnary (twice)\n");
   gras_dict_free(&head);

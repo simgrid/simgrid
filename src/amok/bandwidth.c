@@ -222,8 +222,8 @@ int grasbw_cbBWHandshake(gras_msg_t *msg) {
   ans->expSize=gras_msg_ctn(msg,0,0,BwExp_t).expSize;
   ans->msgSize=gras_msg_ctn(msg,0,0,BwExp_t).msgSize;
   ans->port=gras_rawsock_get_peer_port(rawIn);
-  //  fprintf(stderr,"grasbw_cbHandshake. bufSize=%d expSize=%d msgSize=%d port=%d\n",
-  //	  ans->bufSize,ans->expSize,ans->msgSize,ans->port);
+  /*  fprintf(stderr,"grasbw_cbHandshake. bufSize=%d expSize=%d msgSize=%d port=%d\n",
+  	  ans->bufSize,ans->expSize,ans->msgSize,ans->port);*/
 
   if ((errcode=gras_msg_new_and_send(msg->sock,GRASMSG_BW_HANDSHAKED, 1,
 			      ans, 1))) {
@@ -305,7 +305,7 @@ gras_error_t grasbw_request(const char* from_name,unsigned int from_port,
     return errcode;
   }
 
-  //  fprintf(stderr,"sec=%p",gras_msg_ctn(answer,1,0,msgResult_t));
+  /*  fprintf(stderr,"sec=%p",gras_msg_ctn(answer,1,0,msgResult_t)); */
   *sec=gras_msg_ctn(answer,1,0,msgResult_t).value;
   *bw=gras_msg_ctn(answer,1,1,msgResult_t).value;
 

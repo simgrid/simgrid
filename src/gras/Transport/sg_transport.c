@@ -136,7 +136,7 @@ gras_trp_select(double timeout,
 	     MSG_process_get_name(MSG_process_self()),
 	     MSG_host_get_name(MSG_host_self()));
       */
-      // MSG_process_sleep(1);
+      /* MSG_process_sleep(1); */
       MSG_process_sleep(0.01);
     }
   } while (gras_os_time()-startTime < timeout
