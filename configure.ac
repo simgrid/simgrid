@@ -78,29 +78,29 @@ dnl ####[ Search libs ]#######################################################
 dnl A CI_PACKAGE([S imGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
 dnl A M_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
 dnl if test x$HAVE_SimGrid = xyes; then
-dnl   GRAS_SG_DEP="-lsimgrid"
+dnl   SIMGRID_DEP="-lsimgrid"
 dnl else
-  GRAS_SG_DEP=""
+  SIMGRID_DEP=""
 dnl fi
-AC_SUBST([GRAS_SG_DEP])
+AC_SUBST([SIMGRID_DEP])
 
 
 dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
-GRAS_RL_DEP=""
-AC_CHECK_LIB(nsl, gethostbyname, [GRAS_RL_DEP="$GRAS_RL_DEP -lnsl"])
-AC_CHECK_LIB(socket, connect,    [GRAS_RL_DEP="$GRAS_RL_DEP -lsocket"])
+GRAS_DEP=""
+AC_CHECK_LIB(nsl, gethostbyname, [GRAS_DEP="$GRAS_DEP -lnsl"])
+AC_CHECK_LIB(socket, connect,    [GRAS_DEP="$GRAS_DEP -lsocket"])
 
-AC_MSG_CHECKING(for extra dependencies of libgrasrl)
+AC_MSG_CHECKING(for extra dependencies of libgras)
 case $host_os in
-  *mingw* ) GRAS_RL_DEP=-lws2_32;;
+  *mingw* ) GRAS_DEP=-lws2_32;;
 esac
 	   
-if test "x$GRAS_RL_DEP" = x; then 
+if test "x$GRAS_DEP" = x; then 
    AC_MSG_RESULT(none)
 else
-   AC_MSG_RESULT($GRAS_RL_DEP)
+   AC_MSG_RESULT($GRAS_DEP)
 fi
-AC_SUBST([GRAS_RL_DEP])
+AC_SUBST([GRAS_DEP])
 
 dnl ####[ maint mode ]#######################################################
 AM_MAINTAINER_MODE

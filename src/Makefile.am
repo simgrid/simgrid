@@ -78,7 +78,7 @@ VERSION_INFO= -release 20040722 -version-info 0:0:0
 #  It modifies the library name, and you thus cannot say that a library
 #   using this trick is ready for a "stable" release (say, in Debian).
 
-lib_LTLIBRARIES= libgrasrl.la libgrassg.la
+lib_LTLIBRARIES= libsimgrid.la libgras.la
 
 COMMON_S=\
   \
@@ -125,14 +125,14 @@ gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 surf/surf_parse.c: surf/surf_parse.l
 	@LEX@ -o$@ -Psurf_parse_ $^
 
-libgrasrl_la_SOURCES= $(COMMON_S) \
+libgras_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \
   \
   gras/Virtu/rl_process.c        gras/Virtu/rl_time.c                   gras/Virtu/rl_conditional.c
-libgrasrl_la_LDFLAGS = $(VERSION_INFO) @GRAS_RL_DEP@
+libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@
 
-libgrassg_la_SOURCES= $(COMMON_S) \
+libsimgrid_la_SOURCES= $(COMMON_S) \
   gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
   \
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c
-libgrassg_la_LDFLAGS = $(VERSION_INFO) @GRAS_SG_DEP@
+libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@
