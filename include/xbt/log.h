@@ -131,7 +131,7 @@ typedef enum {
  * (used by macros that don't explicitly specify a category).
  */
 #define GRAS_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
-    GRAS_LOG_NEW_CATEGORY(cname,desc)                    \
+    GRAS_LOG_NEW_CATEGORY(cname,desc);                   \
     GRAS_LOG_DEFAULT_CATEGORY(cname)
 
 /**
