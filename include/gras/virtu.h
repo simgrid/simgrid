@@ -27,9 +27,8 @@ double gras_os_time(void);
 
 /** @brief sleeps for the given amount of time.
  *  @param sec: number of seconds to sleep
- *  @param usec: number of microseconds to sleep
  */
-void gras_os_sleep(unsigned long sec, unsigned long usec);
+void gras_os_sleep(double sec);
 
 /** @brief get the fully-qualified name of the current host
  *

@@ -7,11 +7,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "math.h" /* floor */
+
 #include "portable.h"
 
 #include "xbt/sysdep.h"
 #include "gras/virtu.h"
 
+XBT_LOG_EXTERNAL_CATEGORY(virtu);
+XBT_LOG_DEFAULT_CATEGORY(virtu);
 
 double gras_os_time() {
 #ifdef HAVE_GETTIMEOFDAY
@@ -27,11 +31,16 @@ double gras_os_time() {
 	
 }
  
-void gras_os_sleep(unsigned long sec,unsigned long usec) {
+void gras_os_sleep(double sec) {
+  DEBUG1("Do sleep %d sec", (int)sec);
   sleep(sec);
-  if (usec/1000000) sleep(usec/1000000);
 
 #ifdef HAVE_USLEEP
-  (void)usleep(usec % 1000000);
+  DEBUG1("Do sleep %d usec", (int) ((sec - floor(sec)) * 1000000 ));
+  (void)usleep( (sec - floor(sec)) * 1000000);
+#else
+  if ( ((int) sec) == 0) {
+     WARN0("This platform does not implement usleep. Cannot sleep less than one second");
+  }
 #endif /* ! HAVE_USLEEP */
 }

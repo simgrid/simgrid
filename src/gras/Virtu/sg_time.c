@@ -19,6 +19,6 @@ double gras_os_time() {
 /*
  * Freeze the process for the specified amount of time
  */
-void gras_os_sleep(unsigned long sec,unsigned long usec) {
-  MSG_process_sleep((double)sec + ((double)usec)/1000000);
+void gras_os_sleep(double sec) {
+  MSG_process_sleep(sec);
 }

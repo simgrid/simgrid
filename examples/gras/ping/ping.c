@@ -119,7 +119,7 @@ int server (int argc,char *argv[]) {
   
   /* 8. Sleep one second, but only in real life, not in simulation */
   if (!gras_if_RL())
-    gras_os_sleep(1, 0);
+    gras_os_sleep(1);
 
   /* 9. Free the allocated resources, and shut GRAS down */
   gras_socket_close(globals->sock);
@@ -158,7 +158,7 @@ int client(int argc,char *argv[]) {
   INFO2("Launch client (server on %s:%d)",host,port);
    
   /* 3. Wait for the server startup */
-  gras_os_sleep(1,0);
+  gras_os_sleep(1);
    
   /* 4. Create a socket to speak to the server */
   if ((errcode=gras_socket_client(host,port,&toserver))) {
