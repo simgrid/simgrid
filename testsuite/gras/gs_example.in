@@ -1,4 +1,4 @@
 #! @BASH@ -e
 
-./gs_example_send | ./gs_example_receive
+./gs_example_send $@ | ./gs_example_receive $@
 
