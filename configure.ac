@@ -45,11 +45,11 @@ GRAS_CHECK_STRUCT_COMPACTION
 AC_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS([sys/socket.h winsock.h winsock2.h \
-                  sys/stat.h\
+                  sys/stat.h \
+		  ucontext.h \
 		  sys/time.h ])
 AC_CHECK_FUNCS([gettimeofday \
                 getdtablesize \
-		swapcontext \
                 sysconf])
 
 AC_MSG_CHECKING(how to link against winsock)
