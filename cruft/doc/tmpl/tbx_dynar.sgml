@@ -14,3 +14,213 @@ This module provide the quite usual dynamic array facility.
 
 </para>
 
+<!-- ##### FUNCTION gras_dynar_new ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@free_func: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@whereto: 
+@elm_size: 
+
+
+<!-- ##### FUNCTION gras_dynar_free ##### -->
+<para>
+
+</para>
+
+@dynar: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_free_container ##### -->
+<para>
+
+</para>
+
+@dynar: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_length ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_reset ##### -->
+<para>
+
+</para>
+
+@dynar: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_set ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@src: 
+<!-- # Unused Parameters # -->
+@Returns: 
+@object: 
+
+
+<!-- ##### FUNCTION gras_dynar_remplace ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@object: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_insert_at ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@src: 
+<!-- # Unused Parameters # -->
+@Returns: 
+@object: 
+
+
+<!-- ##### FUNCTION gras_dynar_remove_at ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@object: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_map ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@operator: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_push ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@src: 
+<!-- # Unused Parameters # -->
+@Returns: 
+@object: 
+
+
+<!-- ##### FUNCTION gras_dynar_pop ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@dst: 
+<!-- # Unused Parameters # -->
+@whereto: 
+
+
+<!-- ##### FUNCTION gras_dynar_shift ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@dst: 
+<!-- # Unused Parameters # -->
+@whereto: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_unshift ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@src: 
+<!-- # Unused Parameters # -->
+@Returns: 
+@object: 
+
+
+<!-- ##### MACRO gras_dynar_foreach ##### -->
+<para>
+
+</para>
+
+@_dynar: 
+@_cursor: 
+@_data: 
+<!-- # Unused Parameters # -->
+@_whereto: 
+
+
+<!-- ##### FUNCTION gras_dynar_cursor_rm ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+
+<!-- ##### FUNCTION gras_dynar_cursor_first ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+
+<!-- ##### FUNCTION gras_dynar_cursor_get ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+@whereto: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dynar_cursor_step ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+

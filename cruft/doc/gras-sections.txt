@@ -294,6 +294,10 @@ gras_arch_selfid
 <TITLE>Sockets</TITLE>
 gras_socket_client
 gras_socket_server
+gras_socket_client_ext
+gras_socket_server_ext
+gras_socket_client_from_file
+gras_socket_server_from_file
 gras_socket_close
 gras_socket_peer_name
 gras_socket_peer_port

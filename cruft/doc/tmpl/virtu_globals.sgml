@@ -18,3 +18,26 @@ retrive a reference to it.</para>
 
 </para>
 
+<!-- ##### FUNCTION gras_userdata_get ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gras_userdata_set ##### -->
+<para>
+
+</para>
+
+@ud: 
+
+
+<!-- ##### MACRO gras_userdata_new ##### -->
+<para>
+
+</para>
+
+@type: 
+
+

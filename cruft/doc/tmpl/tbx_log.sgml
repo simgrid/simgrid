@@ -290,3 +290,272 @@ An easy-to-use, fast and flexible message logging architecture.
 
 </para>
 
+<!-- ##### FUNCTION gras_log_control_set ##### -->
+<para>
+
+</para>
+
+@cs: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### MACRO GRAS_LOG_NEW_CATEGORY ##### -->
+<para>
+
+</para>
+
+@catName: 
+@desc: 
+
+
+<!-- ##### MACRO GRAS_LOG_NEW_SUBCATEGORY ##### -->
+<para>
+
+</para>
+
+@catName: 
+@parent: 
+@desc: 
+
+
+<!-- ##### MACRO GRAS_LOG_NEW_DEFAULT_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+@desc: 
+
+
+<!-- ##### MACRO GRAS_LOG_NEW_DEFAULT_SUBCATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+@parent: 
+@desc: 
+
+
+<!-- ##### MACRO GRAS_LOG_DEFAULT_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+
+
+<!-- ##### MACRO GRAS_LOG_EXTERNAL_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+
+
+<!-- ##### MACRO GRAS_LOG_ISENABLED ##### -->
+<para>
+
+</para>
+
+@catName: 
+@priority: 
+
+
+<!-- ##### MACRO GRAS_LOG_STATIC_THRESHOLD ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gras_log_appender_set ##### -->
+<para>
+
+</para>
+
+@cat: 
+@app: 
+
+
+<!-- ##### VARIABLE gras_log_default_appender ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO CDEBUG6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO CVERB6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO CINFO6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO CWARN6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO CERROR6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO CCRITICAL6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO DEBUG6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO VERB6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO INFO6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO WARN6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO ERROR6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+
+<!-- ##### MACRO CRITICAL6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+

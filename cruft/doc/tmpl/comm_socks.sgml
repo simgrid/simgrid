@@ -14,3 +14,114 @@ Open/close sockets, and get info on peer.
 
 </para>
 
+<!-- ##### FUNCTION gras_socket_client ##### -->
+<para>
+
+</para>
+
+@host: 
+@Param2: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@bufSize: 
+@sock: 
+
+
+<!-- ##### FUNCTION gras_socket_server ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@bufSize: 
+
+
+<!-- ##### FUNCTION gras_socket_client_ext ##### -->
+<para>
+
+</para>
+
+@host: 
+@Param2: 
+@bufSize: 
+@raw: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_socket_server_ext ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@bufSize: 
+@raw: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_socket_client_from_file ##### -->
+<para>
+
+</para>
+
+@path: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_socket_server_from_file ##### -->
+<para>
+
+</para>
+
+@path: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_socket_close ##### -->
+<para>
+
+</para>
+
+@sd: 
+<!-- # Unused Parameters # -->
+@sock: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_socket_peer_name ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@sd: 
+
+
+<!-- ##### FUNCTION gras_socket_peer_port ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_socket_my_port ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+

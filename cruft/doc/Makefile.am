@@ -15,7 +15,8 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.sgml
 # The directory containing the source code. Relative to $(srcdir).
 # gtk-doc will search all .c & .h files beneath here for inline comments
 # documenting functions and macros.
-DOC_SOURCE_DIR=../src
+DOC_SOURCE_DIR=.. 
+#/src
 
 # Extra options to pass to gtkdoc-scanobj or gtkdoc-scangobj.
 SCANOBJ_OPTIONS=
