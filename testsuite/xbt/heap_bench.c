@@ -66,20 +66,20 @@ void test_heap_mean_operation(int size)
   double date = 0;
   int i, j;
 
-  date = gras_os_time();
+  date = gras_os_time() * 1000000;
   for (i = 0; i < size; i++)
     xbt_heap_push(heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
-  date = gras_os_time() - date;
-  printf("Creation time  %d size heap : %f\n", size, 0.0 + date);
+  date = gras_os_time() * 1000000 - date;
+  printf("Creation time  %d size heap : %g\n", size, date);
 
-  date = gras_os_time();
+  date = gras_os_time() * 1000000;
   for (j = 0; j < MAX_TEST; j++) {
     val = xbt_heap_maxkey(heap);
     xbt_heap_pop(heap);
     xbt_heap_push(heap, NULL, 3.0 * val);
   }
-  date = gras_os_time() - date;
-  printf("Mean access time for a %d size heap : %f\n", size,
+  date = gras_os_time() * 1000000 - date;
+  printf("Mean access time for a %d size heap : %g\n", size,
 	 date * 1.0 / (MAX_TEST + 0.0));
 
   xbt_heap_free(heap);
