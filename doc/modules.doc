@@ -1,7 +1,7 @@
 /** 
   \defgroup SimGrid_API  API of SimGrid */
 
-/** \defgroup XBT_API      XBT (eXtended Bundle of tools)
+/** \defgroup XBT_API      XBT
        \ingroup SimGrid_API
        \brief The core toolbox of SimGrid, containing usefull datatypes,
        portability support and so on.
@@ -48,7 +48,7 @@
 /**       \addtogroup XBT_sysdep
           \ingroup XBT_port    */
 
-/** \defgroup SURF_API       SURF (simulator kernel)
+/** \defgroup SURF_API       SURF
     \ingroup SimGrid_API
     \brief Kernel of all the simulators used in SimGrid, and associated models.
  
