@@ -142,6 +142,7 @@ MSG_error_t MSG_main(void)
 /*       fprintf(stderr, "No change in time\n"); */
 /*     } */
     if (elapsed_time<0.0) {
+/*       fprintf(stderr, "We're done %lg\n",elapsed_time); */
       break;
     }
 
@@ -157,8 +158,12 @@ MSG_error_t MSG_main(void)
 	  task = action->data;
 	  if(task) {
 	    int _cursor;
+	    DEBUG1("** %s failed **",task->name);
 /* 	    fprintf(stderr,"** %s **\n",task->name); */
 	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
+	      DEBUG3("\t preparing to wake up %s(%d) on %s",	     
+		     process->name,process->simdata->PID,
+		     process->simdata->host->name);
 	      xbt_fifo_unshift(msg_global->process_to_run, process);
 	    }
 	    process=NULL;
@@ -170,8 +175,12 @@ MSG_error_t MSG_main(void)
 	  task = action->data;
 	  if(task) {
 	    int _cursor;
+	    DEBUG1("** %s done **",task->name);
 /* 	    fprintf(stderr,"** %s **\n",task->name); */
 	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
+	      DEBUG3("\t preparing to wake up %s(%d) on %s",	     
+		     process->name,process->simdata->PID,
+		     process->simdata->host->name);
 	      xbt_fifo_unshift(msg_global->process_to_run, process);
 	    }
 	    process=NULL;
@@ -213,24 +222,29 @@ MSG_error_t MSG_main(void)
       }
       if (i==msg_global->max_channel) {
 	if(p_simdata->waiting_task) {
-	  if(p_simdata->waiting_task->simdata->compute)
-	    fprintf(stderr,"Waiting for %s to finish.\n",p_simdata->waiting_task->name);
-	  else if (p_simdata->waiting_task->simdata->comm)
+	  if(p_simdata->waiting_task->simdata->compute) {
+	    if(p_simdata->put_host) 
+	      fprintf(stderr,"Trying to send a task on Host %s, channel %d.\n",
+		      p_simdata->put_host->name, p_simdata->put_channel);
+	    else 
+	      fprintf(stderr,"Waiting for %s to finish.\n",p_simdata->waiting_task->name);
+	  } else if (p_simdata->waiting_task->simdata->comm)
 	    fprintf(stderr,"Waiting for %s to be finished transfered.\n",
 		    p_simdata->waiting_task->name);
 	  else
 	    fprintf(stderr,"UNKNOWN STATUS. Please report this bug.\n");
 	}
 	else { /* Must be trying to put a task somewhere */
-	  if(p_simdata->put_host) {
-	    fprintf(stderr,"Trying to send a task on Host %s, channel %d.\n",
-		    p_simdata->put_host->name, p_simdata->put_channel);
-	  } else {
-	    fprintf(stderr,"UNKNOWN STATUS. Please report this bug.\n");
-	  }
-	}	
+	  fprintf(stderr,"UNKNOWN STATUS. Please report this bug.\n");
+	}
       } 
     }
+    if(XBT_LOG_ISENABLED(msg, xbt_log_priority_debug) ||
+       XBT_LOG_ISENABLED(global, xbt_log_priority_debug)) {
+      DEBUG0("Aborting!");
+      xbt_abort();
+    }
+
     return MSG_WARNING;
   }
 }
