@@ -9,6 +9,8 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "Transport/transport_private.h"
+#include <msg.h>
+
 //GRAS_LOG_EXTERNAL_CATEGORY(transport);
 //GRAS_LOG_DEFAULT_CATEGORY(transport);
 
@@ -27,5 +29,30 @@ gras_error_t
 gras_trp_select(double timeout,
 		gras_socket_t **dst) {
 
-  RAISE_UNIMPLEMENTED;
+  double startTime=gras_time();
+  gras_procdata_t *pd=gras_procdata_get();
+ 
+  do {
+    if (MSG_task_Iprobe((m_channel_t) pd->chan)) {
+      *dst = pd->sock;
+
+      return no_error;
+    } else {
+      MSG_process_sleep(0.001);
+    }
+  } while (gras_time()-startTime < timeout
+	   || MSG_task_Iprobe((m_channel_t) pd->chan));
+
+  return timeout_error;
+
+}
+
+
+/* dummy implementations of the functions used in RL mode */
+
+gras_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
+  return mismatch_error;
+}
+gras_error_t gras_trp_file_setup(gras_trp_plugin_t *plug) {
+  return mismatch_error;
 }
