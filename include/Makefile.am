@@ -17,6 +17,6 @@ nobase_include_HEADERS = \
 	\
 	gras/messages.h \
 	\
-	gras/modules/base.h \
-	gras/modules/bandwidth.h
+	amok/base.h \
+	amok/bandwidth.h
 
