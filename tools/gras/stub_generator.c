@@ -315,7 +315,8 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "SIMGRID_INSTALL_PATH?= $(shell echo \"\\\"<<<< SIMGRID_INSTALL_PATH undefined !!! >>>>\\\"\")\n"
 	  "CFLAGS = -O3 -w\n"
 	  "INCLUDES = -I$(SIMGRID_INSTALL_PATH)/include\n"
-	  "LIBS = -lm  -L$(SIMGRID_INSTALL_PATH)/lib/ -lsimgrid\n"
+	  "LIBS_SIM = -lm  -L$(SIMGRID_INSTALL_PATH)/lib/ -lsimgrid\n"
+	  "LIBS_RL = -lm  -L$(SIMGRID_INSTALL_PATH)/lib/ -lgras\n"
 	  "\n");
 
   fprintf(OUT, "C_FILES = ");
@@ -340,8 +341,10 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "all: $(BIN_FILES)\n"
 	  "\n");
   fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " %s.o\n",project, project, project);
+  fprintf(OUT, "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_SIM) $(LDADD) -o $@ \n");
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " %s.o\n", project, key, project, key, project);
+    fprintf(OUT, "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_RL) $(LDADD) -o $@ \n");
   }
   fprintf(OUT, 
 	  "\n"
@@ -442,7 +445,7 @@ static void generate_makefile_remote(char *project, char *deployment)
 	  "INSTALL_PATH ?= $(shell pwd)\n"
 	  "\n"
 	  "compile-simgrid:\n"
-	  "\tretrieved=`LANG=C;wget -N $(SIMGRID_URL)/simgrid-$(SIMGRID_VERSION).tar.gz 2>&1 | grep retrieving | sed 's/.*retrieving.*/yes/'`; \\\n"
+	  "\tretrieved=`LANG=C;wget -N $(SIMGRID_URL)/simgrid-$(SIMGRID_VERSION).tar.gz 2>&1 | grep newer | sed 's/.*no newer.*/yes/'`; \\\n"
 	  "\techo $$retrieved; \\\n"
 	  "\tif test \"x$$retrieved\" = x; then \\\n"
 	  "\t  tar zxf simgrid-$(SIMGRID_VERSION).tar.gz ; \\\n"
@@ -451,10 +454,10 @@ static void generate_makefile_remote(char *project, char *deployment)
 	  "\t  make all install ;\\\n"
            "\tfi\n"
 	  "\n"
-	  "compile-gras:\n"
-	  "\tretrieved=`LANG=C;wget -N $(GRAS_PROJECT_URL)/gras-$(GRAS_PROJECT).tar.gz 2>&1 | grep retrieving | sed 's/.*retrieving.*/yes/'`; \\\n"
-	  "\techo $$retrieved; \\\n"
-	  "\tif test \"x$$retrieved\" = x; then \\\n"
+	  "compile-gras: compile-simgrid\n"
+	  "\tnot_retrieved=`LANG=C;wget -N $(GRAS_PROJECT_URL)/gras-$(GRAS_PROJECT).tar.gz 2>&1 | grep newer | sed 's/.*no newer.*/yes/'`; \\\n"
+	  "\techo $$not_retrieved; \\\n"
+	  "\tif test \"x$$not_retrieved\" != xyes; then \\\n"
 	  "\t  tar zxf gras-$(GRAS_PROJECT).tar.gz ; \\\n"
 	  "\t  make -C gras-$(GRAS_PROJECT)/ -f $(GRAS_PROJECT).Makefile.local all ; \\\n"
 	  "\tfi\n"
@@ -480,6 +483,9 @@ static void generate_deployment(char *project, char *deployment)
   char *filename = NULL;
   FILE *OUT = NULL;
 
+  int cpt,i;
+  s_process_t proc;
+
   filename = xbt_new(char,strlen(project) + strlen(DEPLOYMENT));
   sprintf(filename,DEPLOYMENT, project);
   
@@ -488,6 +494,50 @@ static void generate_deployment(char *project, char *deployment)
 
   fprintf(OUT, "#!/bin/sh\n");
   fprintf(OUT, "############ DEPLOYMENT FILE #########\n");
+  fprintf(OUT,
+	  "if test \"${MACHINES+set}\" != set; then \n"
+	  "    export MACHINES='");
+  xbt_dict_foreach(machine_set,cursor,key,data) {
+    fprintf(OUT, "%s ",key);
+  }
+  fprintf(OUT,  
+	  "';\n"
+	  "fi\n"
+	  "if test \"${INSTALL_PATH+set}\" != set; then \n"
+	  "    export INSTALL_PATH='`echo $HOME`/tmp/src'\n"
+	  "fi\n"
+	  "if test \"${SRCDIR+set}\" != set; then \n"
+	  "    export SRCDIR=./\n"
+	  "fi\n"
+	  "if test \"${SIMGRID_URL+set}\" != set; then \n"
+	  "    export SIMGRID_URL=http://gcl.ucsd.edu/simgrid/dl/\n"
+	  "fi\n"
+	  "if test \"${SIMGRID_VERSION+set}\" != set; then \n"
+	  "    export SIMGRID_VERSION=2.91\n"
+	  "fi\n"
+	  "if test \"${GRAS_PROJECT+set}\" != set; then \n"
+	  "    export GRAS_PROJECT=%s\n"
+	  "fi\n"
+	  "if test \"${GRAS_PROJECT_URL+set}\" != set; then \n"
+	  "    export GRAS_PROJECT_URL=http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/gras_test/\n"
+	  "fi\n"
+	  "\n"
+	  "test -e runlogs/ || mkdir -p runlogs/\n",
+	  project);
+
+  fprintf(OUT,  
+	  "cmd_prolog=\"env INSTALL_PATH=$INSTALL_PATH SIMGRID_INSTALL_PATH=$INSTALL_PATH \\\n"
+	  "                 SIMGRID_URL=$SIMGRID_URL SIMGRID_VERSION=$SIMGRID_VERSION GRAS_PROJECT=$GRAS_PROJECT \\\n"
+	  "                 GRAS_PROJECT_URL=$GRAS_PROJECT_URL LD_LIBRARY_PATH=$SIMGRID_INSTALL_PATH/lib/ sh -c \";\n");
+
+  xbt_dynar_foreach (process_list,cpt,proc) {
+    fprintf(OUT,"cmd=\"\\$INSTALL_PATH/gras-%s/"RL_BINARYNAME" ",project,project,proc.argv[0]);
+    for(i=1;i<proc.argc;i++) {
+      fprintf(OUT,"%s ",proc.argv[i]);
+    }
+    fprintf(OUT,"\";\n");
+    fprintf(OUT,"ssh %s \"$cmd_prolog 'export LD_LIBRARY_PATH=\\$INSTALL_PATH/lib:\\$LD_LIBRARY_PATH; echo \\\"$cmd\\\" ; $cmd 2>&1'\" > runlogs/%s_%d.log\n",proc.host,proc.host,cpt);
+  }
 
   fclose(OUT);
 }
