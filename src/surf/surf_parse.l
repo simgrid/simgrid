@@ -184,7 +184,7 @@ void close_section(const char* section_name)
 
 void  surf_parse_open(const char *file) {
   file_to_parse = fopen(file,"r");
-  xbt_assert1((file_to_parse), "Unable to open \"%s\"\n",file)
+  xbt_assert1((file_to_parse), "Unable to open \"%s\"\n",file);
   input_buffer = surf_parse__create_buffer( file_to_parse, 10 );
   surf_parse__switch_to_buffer(input_buffer);
 
@@ -202,14 +202,14 @@ void  surf_parse_close(void) {
   tok_num = 0;
 }
 
-void surf_parse_float(xbt_maxmin_float_t *value)
+void surf_parse_double(double *value)
 { 
   e_surf_token_t token;
   int ret = 0;
 
   token = surf_parse();		/* power_scale */
   xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
-  ret = sscanf(surf_parse_text, XBT_MAXMIN_FLOAT_T, value);
+  ret = sscanf(surf_parse_text, "%lg", value);
   xbt_assert2((ret==1), "Parse error line %d : %s not a number", line_pos,
 	      surf_parse_text);
 }

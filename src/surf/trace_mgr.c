@@ -43,7 +43,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   FILE *f = NULL;
   int linecount = 0;
   char line[256];
-  xbt_heap_float_t periodicity = -1.0;	/* No periodicity by default */
+  double periodicity = -1.0;	/* No periodicity by default */
   s_tmgr_event_t event;
   tmgr_event_t last_event = NULL;
 
@@ -54,7 +54,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   }
 
   if ((f = fopen(filename, "r")) == NULL) {
-    xbt_assert1(0,"Cannot open file '%s'", filename);
+    xbt_assert1(0, "Cannot open file '%s'", filename);
   }
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
@@ -65,24 +65,25 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
     if ((line[0] == '#') || (line[0] == '\n') || (line[0] == '%'))
       continue;
 
-    if (sscanf(line, "PERIODICITY " XBT_HEAP_FLOAT_T "\n", &(periodicity))
+    if (sscanf(line, "PERIODICITY " "%lg" "\n", &(periodicity))
 	== 1) {
       if (periodicity <= 0) {
-	xbt_assert2(0,"%s,%d: Syntax error. Periodicity has to be positive",
+	xbt_assert2(0,
+		    "%s,%d: Syntax error. Periodicity has to be positive",
 		    filename, linecount);
       }
       continue;
     }
 
     if (sscanf
-	(line, XBT_HEAP_FLOAT_T " " XBT_MAXMIN_FLOAT_T "\n", &event.delta,
-	 &event.value) != 2) {
-      xbt_assert2(0,"%s,%d: Syntax error", filename, linecount);
+	(line, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2) {
+      xbt_assert2(0, "%s,%d: Syntax error", filename, linecount);
     }
 
     if (last_event) {
       if ((last_event->delta = event.delta - last_event->delta) <= 0) {
-	xbt_assert2(0,"%s,%d: Invalid trace value, events have to be sorted",
+	xbt_assert2(0,
+		    "%s,%d: Invalid trace value, events have to be sorted",
 		    filename, linecount);
       }
     }
@@ -116,8 +117,9 @@ void tmgr_trace_free(tmgr_trace_t trace)
   xbt_free(trace);
 }
 
-tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t trace,
-					  xbt_heap_float_t start_time, int offset,
+tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history,
+					  tmgr_trace_t trace,
+					  double start_time, int offset,
 					  void *resource)
 {
   tmgr_trace_event_t trace_event = NULL;
@@ -136,7 +138,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t t
   return trace_event;
 }
 
-xbt_heap_float_t tmgr_history_next_date(tmgr_history_t history)
+double tmgr_history_next_date(tmgr_history_t history)
 {
   if (xbt_heap_size(history->heap))
     return (xbt_heap_maxkey(history->heap));
@@ -145,11 +147,11 @@ xbt_heap_float_t tmgr_history_next_date(tmgr_history_t history)
 }
 
 tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t history,
-						   xbt_heap_float_t date,
-						   xbt_maxmin_float_t * value,
+						   double date,
+						   double *value,
 						   void **resource)
 {
-  xbt_heap_float_t event_date = xbt_heap_maxkey(history->heap);
+  double event_date = xbt_heap_maxkey(history->heap);
   tmgr_trace_event_t trace_event = NULL;
   tmgr_event_t event = NULL;
   tmgr_trace_t trace = NULL;

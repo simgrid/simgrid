@@ -36,9 +36,9 @@ static void network_link_free(void *nw_link)
 }
 
 static network_link_t network_link_new(const char *name,
-				       xbt_maxmin_float_t bw_initial,
+				       double bw_initial,
 				       tmgr_trace_t bw_trace,
-				       xbt_maxmin_float_t lat_initial,
+				       double lat_initial,
 				       tmgr_trace_t lat_trace,
 				       e_surf_network_link_state_t
 				       state_initial,
@@ -104,24 +104,24 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
                         bandwidth    trace     latency    trace      state      trace
    
    Token:   TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD
-   Type:     string       float      string    float      string     ON/OFF     string
+   Type:     string      double      string    double     string     ON/OFF     string
 */
 static void parse_network_link(void)
 {
   e_surf_token_t token;
   char *name;
-  xbt_maxmin_float_t bw_initial;
+  double bw_initial;
   tmgr_trace_t bw_trace;
-  xbt_maxmin_float_t lat_initial;
+  double lat_initial;
   tmgr_trace_t lat_trace;
   e_surf_network_link_state_t state_initial;
   tmgr_trace_t state_trace;
 
   name = xbt_strdup(surf_parse_text);
 
-  surf_parse_float(&bw_initial);
+  surf_parse_double(&bw_initial);
   surf_parse_trace(&bw_trace);
-  surf_parse_float(&lat_initial);
+  surf_parse_double(&lat_initial);
   surf_parse_trace(&lat_trace);
 
   token = surf_parse();		/* state_initial */
@@ -291,7 +291,7 @@ static void action_change_state(surf_action_t action,
   return;
 }
 
-static xbt_heap_float_t share_resources(xbt_heap_float_t now)
+static double share_resources(double now)
 {
   s_surf_action_network_t action;
   return generic_maxmin_share_resources(surf_network_resource->
@@ -301,10 +301,9 @@ static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 }
 
 
-static void update_actions_state(xbt_heap_float_t now,
-				 xbt_heap_float_t delta)
+static void update_actions_state(double now, double delta)
 {
-  xbt_heap_float_t deltap = 0.0;
+  double deltap = 0.0;
   surf_action_network_t action = NULL;
   surf_action_network_t next_action = NULL;
   xbt_swag_t running_actions =
@@ -364,12 +363,12 @@ static void update_actions_state(xbt_heap_float_t now,
 
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  xbt_maxmin_float_t value)
+				  double value)
 {
   network_link_t nw_link = id;
 
-/*   printf("[" XBT_HEAP_FLOAT_T "] Asking to update network card \"%s\" with value " */
-/* 	 XBT_MAXMIN_FLOAT_T " for event %p\n", surf_get_clock(), nw_link->name, */
+/*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */
+/* 	 "%lg" " for event %p\n", surf_get_clock(), nw_link->name, */
 /* 	 value, event_type); */
 
   if (event_type == nw_link->bw_event) {
@@ -377,7 +376,7 @@ static void update_resource_state(void *id,
     lmm_update_constraint_bound(maxmin_system, nw_link->constraint,
 				nw_link->bw_current);
   } else if (event_type == nw_link->lat_event) {
-    xbt_maxmin_float_t delta = value - nw_link->lat_current;
+    double delta = value - nw_link->lat_current;
     lmm_variable_t var = NULL;
     surf_action_network_t action = NULL;
 
@@ -401,8 +400,7 @@ static void update_resource_state(void *id,
   return;
 }
 
-static surf_action_t communicate(void *src, void *dst,
-				 xbt_maxmin_float_t size)
+static surf_action_t communicate(void *src, void *dst, double size)
 {
   surf_action_network_t action = NULL;
   network_card_t card_src = src;

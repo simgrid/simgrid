@@ -12,19 +12,19 @@
 #include "xbt/dict.h"
 
 typedef enum {
-  SURF_NETWORK_LINK_ON = 1,		/* Ready        */
-  SURF_NETWORK_LINK_OFF = 0		/* Running      */
+  SURF_NETWORK_LINK_ON = 1,	/* Ready        */
+  SURF_NETWORK_LINK_OFF = 0	/* Running      */
 } e_surf_network_link_state_t;
 
 typedef struct network_link {
-  surf_resource_t resource;   /* Any such object, added in a trace
-				 should start by this field!!! */
-                              /* Using this object with the public part of
-				 resource does not make sense */
+  surf_resource_t resource;	/* Any such object, added in a trace
+				   should start by this field!!! */
+  /* Using this object with the public part of
+     resource does not make sense */
   const char *name;
-  xbt_maxmin_float_t bw_current;
+  double bw_current;
   tmgr_trace_event_t bw_event;
-  xbt_maxmin_float_t lat_current;
+  double lat_current;
   tmgr_trace_event_t lat_event;
   e_surf_network_link_state_t state_current;
   tmgr_trace_event_t state_event;
@@ -39,8 +39,8 @@ typedef struct network_card {
 
 typedef struct surf_action_network {
   s_surf_action_t generic_action;
-  xbt_heap_float_t latency;
-  xbt_heap_float_t lat_current;
+  double latency;
+  double lat_current;
   lmm_variable_t variable;
   network_card_t src;
   network_card_t dst;

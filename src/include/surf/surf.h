@@ -38,13 +38,13 @@ typedef struct surf_action_state {
 typedef struct surf_action {
   s_xbt_swag_hookup_t state_hookup;
   xbt_swag_t state_set;
-  xbt_maxmin_float_t cost;	/* cost        */
-  xbt_maxmin_float_t max_duration;	/* max_duration (may fluctuate until
-					   the task is completed) */
-  xbt_maxmin_float_t remains;	/* How much of that cost remains to
+  double cost;			/* cost        */
+  double max_duration;		/* max_duration (may fluctuate until
+				   the task is completed) */
+  double remains;		/* How much of that cost remains to
 				 * be done in the currently running task */
-  xbt_heap_float_t start;	/* start time  */
-  xbt_heap_float_t finish;	/* finish time : this is modified during the run
+  double start;			/* start time  */
+  double finish;		/* finish time : this is modified during the run
 				 * and fluctuates until the task is completed */
   void *callback;		/* for your convenience */
   surf_resource_t resource_type;
@@ -90,8 +90,8 @@ typedef enum {
 typedef struct surf_cpu_resource_extension_private
 *surf_cpu_resource_extension_private_t;
 typedef struct surf_cpu_resource_extension_public {
-  surf_action_t(*execute) (void *cpu, xbt_maxmin_float_t size);
-  surf_action_t(*sleep) (void *cpu, xbt_maxmin_float_t duration);
+  surf_action_t(*execute) (void *cpu, double size);
+  surf_action_t(*sleep) (void *cpu, double duration);
   void (*suspend) (surf_action_t action);
   void (*resume) (surf_action_t action);
    e_surf_cpu_state_t(*get_state) (void *cpu);
@@ -110,8 +110,7 @@ void surf_cpu_resource_init(const char *filename);
 typedef struct surf_network_resource_extension_private
 *surf_network_resource_extension_private_t;
 typedef struct surf_network_resource_extension_public {
-  surf_action_t(*communicate) (void *src, void *dst,
-			       xbt_maxmin_float_t size);
+  surf_action_t(*communicate) (void *src, void *dst, double size);
 } s_surf_network_resource_extension_public_t,
     *surf_network_resource_extension_public_t;
 
@@ -128,14 +127,13 @@ void surf_network_resource_init(const char *filename);
 typedef struct surf_workstation_resource_extension_private
 *surf_workstation_resource_extension_private_t;
 typedef struct surf_workstation_resource_extension_public {
-  surf_action_t(*execute) (void *workstation, xbt_maxmin_float_t size);
-  surf_action_t(*sleep) (void *workstation, xbt_maxmin_float_t duration);
+  surf_action_t(*execute) (void *workstation, double size);
+  surf_action_t(*sleep) (void *workstation, double duration);
   void (*suspend) (surf_action_t action);
   void (*resume) (surf_action_t action);
    e_surf_cpu_state_t(*get_state) (void *workstation);
    surf_action_t(*communicate) (void *workstation_src,
-				void *workstation_dst,
-				xbt_maxmin_float_t size);
+				void *workstation_dst, double size);
 } s_surf_workstation_resource_extension_public_t,
     *surf_workstation_resource_extension_public_t;
 
@@ -156,10 +154,10 @@ void surf_init(int *argc, char **argv);	/* initialize common structures */
 
 extern xbt_dynar_t resource_list;	/* list of initialized resources */
 
-xbt_heap_float_t surf_solve(void);	/*  update all states and returns
-					   the time elapsed since last
-					   event */
-xbt_heap_float_t surf_get_clock(void);
+double surf_solve(void);	/*  update all states and returns
+				   the time elapsed since last
+				   event */
+double surf_get_clock(void);
 void surf_finalize(void);	/* clean everything */
 
 #endif				/* _SURF_SURF_H */

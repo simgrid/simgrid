@@ -89,33 +89,31 @@ static void action_change_state(surf_action_t action,
   return;
 }
 
-static xbt_heap_float_t share_resources(xbt_heap_float_t now)
+static double share_resources(double now)
 {
   return -1.0;
 }
 
 
-static void update_actions_state(xbt_heap_float_t now,
-				 xbt_heap_float_t delta)
+static void update_actions_state(double now, double delta)
 {
   return;
 }
 
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  xbt_maxmin_float_t value)
+				  double value)
 {
   return;
 }
 
-static surf_action_t execute(void *workstation, xbt_maxmin_float_t size)
+static surf_action_t execute(void *workstation, double size)
 {
   return surf_cpu_resource->extension_public->
       execute(((workstation_t) workstation)->cpu, size);
 }
 
-static surf_action_t action_sleep(void *workstation,
-				  xbt_maxmin_float_t duration)
+static surf_action_t action_sleep(void *workstation, double duration)
 {
   return surf_cpu_resource->extension_public->
       sleep(((workstation_t) workstation)->cpu, duration);
@@ -138,8 +136,7 @@ static void action_resume(surf_action_t action)
 }
 
 static surf_action_t communicate(void *workstation_src,
-				 void *workstation_dst,
-				 xbt_maxmin_float_t size)
+				 void *workstation_dst, double size)
 {
   return surf_network_resource->extension_public->
       communicate(((workstation_t) workstation_src)->network_card,

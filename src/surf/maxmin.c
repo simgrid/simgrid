@@ -84,7 +84,7 @@ static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
 }
 
 lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
-				    xbt_maxmin_float_t bound_value)
+				    double bound_value)
 {
   lmm_constraint_t cnst = NULL;
   s_lmm_element_t elem;
@@ -110,9 +110,8 @@ void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst)
 }
 
 lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
-				xbt_maxmin_float_t weight,
-				xbt_maxmin_float_t bound,
-				int number_of_constraints)
+				double weight,
+				double bound, int number_of_constraints)
 {
   lmm_variable_t var = NULL;
 
@@ -135,13 +134,13 @@ void lmm_variable_free(lmm_system_t sys, lmm_variable_t var)
   lmm_var_free(sys, var);
 }
 
-xbt_maxmin_float_t lmm_variable_getvalue(lmm_variable_t var)
+double lmm_variable_getvalue(lmm_variable_t var)
 {
   return (var->value);
 }
 
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
-		lmm_variable_t var, xbt_maxmin_float_t value)
+		lmm_variable_t var, double value)
 {
   lmm_element_t elem = NULL;
 
@@ -161,22 +160,28 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
   make_constraint_active(sys, cnst);
 }
 
-lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, int num)
+lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
+				       lmm_variable_t var, int num)
 {
-  if(num<var->cnsts_number) return(var->cnsts[num].constraint);
-  else return NULL;
+  if (num < var->cnsts_number)
+    return (var->cnsts[num].constraint);
+  else
+    return NULL;
 }
 
 int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var)
 {
-  return(var->cnsts_number);
+  return (var->cnsts_number);
 }
 
-lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys, lmm_constraint_t cnst, 
-				     lmm_variable_t *var)
+lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
+				     lmm_constraint_t cnst,
+				     lmm_variable_t * var)
 {
-  if(!(*var)) xbt_swag_getFirst(&(cnst->element_set));
-  else *var=xbt_swag_getNext(*var,cnst->element_set.offset);
+  if (!(*var))
+    xbt_swag_getFirst(&(cnst->element_set));
+  else
+    *var = xbt_swag_getNext(*var, cnst->element_set.offset);
   return *var;
 }
 
@@ -191,17 +196,20 @@ void *lmm_variable_id(lmm_variable_t var)
 }
 
 static void saturated_constraint_set_update(lmm_system_t sys,
-					 lmm_constraint_t cnst,
-					 xbt_maxmin_float_t * min_usage)
+					    lmm_constraint_t cnst,
+					    double *min_usage)
 {
   lmm_constraint_t useless_cnst = NULL;
 
-  if(cnst->usage <=0) return;
-  if (cnst->remaining <= 0) return;
+  if (cnst->usage <= 0)
+    return;
+  if (cnst->remaining <= 0)
+    return;
   if ((*min_usage < 0) || (*min_usage > cnst->remaining / cnst->usage)) {
     *min_usage = cnst->remaining / cnst->usage;
 
-    while ((useless_cnst = xbt_swag_getFirst(&(sys->saturated_constraint_set))))
+    while ((useless_cnst =
+	    xbt_swag_getFirst(&(sys->saturated_constraint_set))))
       xbt_swag_remove(useless_cnst, &(sys->saturated_constraint_set));
 
     xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
@@ -221,8 +229,8 @@ static void saturated_variable_set_update(lmm_system_t sys)
   while ((cnst = xbt_swag_getFirst(cnst_list))) {
     elem_list = &(cnst->active_element_set);
     xbt_swag_foreach(elem, elem_list)
-      if((elem->value>0) && (elem->variable->weight>0))
-	xbt_swag_insert(elem->variable, &(sys->saturated_variable_set));
+	if ((elem->value > 0) && (elem->variable->weight > 0))
+      xbt_swag_insert(elem->variable, &(sys->saturated_variable_set));
     xbt_swag_remove(cnst, cnst_list);
   }
 
@@ -236,9 +244,10 @@ void lmm_solve(lmm_system_t sys)
   xbt_swag_t cnst_list = NULL;
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
-  xbt_maxmin_float_t min_usage = -1;
+  double min_usage = -1;
 
-  if(!(sys->modified)) return;
+  if (!(sys->modified))
+    return;
 
   /* Init */
   var_list = &(sys->variable_set);
@@ -256,7 +265,7 @@ void lmm_solve(lmm_system_t sys)
     cnst->remaining = cnst->bound;
     cnst->usage = 0;
     xbt_swag_foreach(elem, elem_list) {
-      if((elem->value>0) && (elem->variable->weight>0)) {
+      if ((elem->value > 0) && (elem->variable->weight > 0)) {
 	cnst->usage += elem->value / elem->variable->weight;
 	insert_active_elem_in_constraint(elem);
       }
@@ -317,7 +326,7 @@ void lmm_solve(lmm_system_t sys)
 /* Not a O(1) function */
 
 void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
-		lmm_variable_t var, xbt_maxmin_float_t value)
+		lmm_variable_t var, double value)
 {
   int i;
 
@@ -330,21 +339,21 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 }
 
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
-			       xbt_maxmin_float_t bound)
+			       double bound)
 {
   sys->modified = 1;
   var->bound = bound;
 }
 
 void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
-				xbt_maxmin_float_t weight)
+				double weight)
 {
   sys->modified = 1;
   var->weight = weight;
 }
 
 void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
-				 xbt_maxmin_float_t bound)
+				 double bound)
 {
   sys->modified = 1;
   cnst->bound = bound;
@@ -352,7 +361,7 @@ void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
 
 int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst)
 {
-  return xbt_swag_belongs(cnst,&(sys->active_constraint_set));
+  return xbt_swag_belongs(cnst, &(sys->active_constraint_set));
 }
 
 

@@ -20,8 +20,8 @@ typedef struct cpu {
   surf_resource_t resource;	/* Any such object, added in a trace
 				   should start by this field!!! */
   const char *name;
-  xbt_maxmin_float_t power_scale;
-  xbt_maxmin_float_t power_current;
+  double power_scale;
+  double power_current;
   tmgr_trace_event_t power_event;
   e_surf_cpu_state_t state_current;
   tmgr_trace_event_t state_event;

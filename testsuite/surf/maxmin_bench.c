@@ -10,12 +10,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "surf/maxmin.h"
-#include "gras/virtu.h" /* time manipulation for benchmarking */
+#include "gras/virtu.h"		/* time manipulation for benchmarking */
 
 double date;
 
-xbt_maxmin_float_t float_random(xbt_maxmin_float_t max);
-xbt_maxmin_float_t float_random(xbt_maxmin_float_t max)
+double float_random(double max);
+double float_random(double max)
 {
   return ((max * rand()) / (RAND_MAX + 1.0));
 }

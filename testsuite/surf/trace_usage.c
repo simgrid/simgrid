@@ -18,8 +18,8 @@ void test(void)
   tmgr_history_t history = tmgr_history_new();
   tmgr_trace_t trace_A = tmgr_trace_new("trace_A.txt");
   tmgr_trace_t trace_B = tmgr_trace_new("trace_B.txt");
-  xbt_heap_float_t next_event_date = -1.0;
-  xbt_maxmin_float_t value = -1.0;
+  double next_event_date = -1.0;
+  double value = -1.0;
   char *resource = NULL;
   char *host_A = strdup("Host A");
   char *host_B = strdup("Host B");
@@ -28,10 +28,10 @@ void test(void)
   tmgr_history_add_trace(history, trace_B, 0.0, 0, host_B);
 
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
-    printf(XBT_HEAP_FLOAT_T " : \n", next_event_date);
+    printf("%lg" " : \n", next_event_date);
     while (tmgr_history_get_next_event_leq(history, next_event_date,
 					   &value, (void **) &resource)) {
-      printf("\t %s : " XBT_MAXMIN_FLOAT_T "\n", resource, value);
+      printf("\t %s : " "%lg" "\n", resource, value);
     }
     if (next_event_date > 1000)
       break;

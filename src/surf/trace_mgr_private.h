@@ -13,8 +13,8 @@
 #include "surf/trace_mgr.h"
 
 typedef struct tmgr_event {
-  xbt_heap_float_t delta;
-  xbt_maxmin_float_t value;
+  double delta;
+  double value;
 } s_tmgr_event_t, *tmgr_event_t;
 
 typedef struct tmgr_trace {

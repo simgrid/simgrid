@@ -53,15 +53,6 @@ typedef struct {
 typedef   void (void_f_ppvoid_t)(void**);
 typedef   void (void_f_pvoid_t) (void*);
 
-/* The following two definitions concern the type of the keys used for
-   the heaps. That should be handled via configure (FIXME). */
-typedef long double xbt_heap_float_t;
-#define XBT_HEAP_FLOAT_T "%Lg"	/* for printing purposes */
-
-typedef long double xbt_maxmin_float_t;
-#define XBT_MAXMIN_FLOAT_T "%Lg"	/* for printing purposes */
-
-
 END_DECL
 
 #endif /* XBT_MISC_H */

@@ -44,10 +44,10 @@ void test(void)
   e_surf_action_state_t stateActionA;
   e_surf_action_state_t stateActionB;
   e_surf_action_state_t stateActionC;
-  xbt_maxmin_float_t now = -1.0;
+  double now = -1.0;
 
-  surf_cpu_resource_init("platform.txt"); /* Now it is possible to use CPUs */
-  surf_network_resource_init("platform.txt"); /* Now it is possible to use eth0 */
+  surf_cpu_resource_init("platform.txt");	/* Now it is possible to use CPUs */
+  surf_network_resource_init("platform.txt");	/* Now it is possible to use eth0 */
 
   /*********************** CPU ***********************************/
   printf("%p \n", surf_cpu_resource);
@@ -55,8 +55,10 @@ void test(void)
   cpuB = surf_cpu_resource->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  printf("%s : %p\n", surf_cpu_resource->common_public->get_resource_name(cpuA), cpuA);
-  printf("%s : %p\n", surf_cpu_resource->common_public->get_resource_name(cpuB), cpuB);
+  printf("%s : %p\n",
+	 surf_cpu_resource->common_public->get_resource_name(cpuA), cpuA);
+  printf("%s : %p\n",
+	 surf_cpu_resource->common_public->get_resource_name(cpuB), cpuB);
 
   /* Let's do something on it */
   actionA = surf_cpu_resource->extension_public->execute(cpuA, 1000.0);
@@ -79,37 +81,51 @@ void test(void)
   cardB = surf_network_resource->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  printf("%s : %p\n", surf_network_resource->common_public->get_resource_name(cardA), cardA);
-  printf("%s : %p\n", surf_network_resource->common_public->get_resource_name(cardB), cardB);
+  printf("%s : %p\n",
+	 surf_network_resource->common_public->get_resource_name(cardA),
+	 cardA);
+  printf("%s : %p\n",
+	 surf_network_resource->common_public->get_resource_name(cardB),
+	 cardB);
 
   /* Let's do something on it */
-  commAB = surf_network_resource->extension_public->communicate(cardA, cardB, 150.0);
+  commAB =
+      surf_network_resource->extension_public->communicate(cardA, cardB,
+							   150.0);
 
-  surf_solve(); /* Takes traces into account. Returns 0.0 */
+  surf_solve();			/* Takes traces into account. Returns 0.0 */
   do {
-    surf_action_t action = NULL;    
+    surf_action_t action = NULL;
     now = surf_get_clock();
-    printf("Next Event : " XBT_HEAP_FLOAT_T "\n", now);
+    printf("Next Event : " "%lg" "\n", now);
     printf("\t CPU actions\n");
-    while((action=xbt_swag_extract(surf_cpu_resource->common_public->states.failed_action_set))) {
+    while ((action =
+	    xbt_swag_extract(surf_cpu_resource->common_public->states.
+			     failed_action_set))) {
       printf("\t * Failed : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
-    while((action=xbt_swag_extract(surf_cpu_resource->common_public->states.done_action_set))) {
+    while ((action =
+	    xbt_swag_extract(surf_cpu_resource->common_public->states.
+			     done_action_set))) {
       printf("\t * Done : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
     printf("\t Network actions\n");
-    while((action=xbt_swag_extract(surf_network_resource->common_public->states.failed_action_set))) {
+    while ((action =
+	    xbt_swag_extract(surf_network_resource->common_public->states.
+			     failed_action_set))) {
       printf("\t * Failed : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
-    while((action=xbt_swag_extract(surf_network_resource->common_public->states.done_action_set))) {
+    while ((action =
+	    xbt_swag_extract(surf_network_resource->common_public->states.
+			     done_action_set))) {
       printf("\t * Done : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
 
-  } while(surf_solve());
+  } while (surf_solve());
 
   printf("Simulation Terminated\n");
 
@@ -119,7 +135,7 @@ void test(void)
 
 int main(int argc, char **argv)
 {
-  surf_init(&argc, argv); /* Initialize some common structures */
+  surf_init(&argc, argv);	/* Initialize some common structures */
   test();
   return 0;
 }

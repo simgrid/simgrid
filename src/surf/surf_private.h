@@ -17,25 +17,27 @@
 #define NO_MAX_DURATION -1.0
 
 typedef struct surf_resource_private {
-  int (*resource_used)(void *resource_id);
+  int (*resource_used) (void *resource_id);
   /* Share the resources to the actions and return in hom much time
-      the next action may terminate */
-  xbt_heap_float_t(*share_resources) (xbt_heap_float_t now);	
+     the next action may terminate */
+  double (*share_resources) (double now);
   /* Update the actions' state */
-  void (*update_actions_state) (xbt_heap_float_t now, xbt_heap_float_t delta);
-  void (*update_resource_state) (void *id,tmgr_trace_event_t event_type, xbt_maxmin_float_t value);
-  void (*finalize)(void);
+  void (*update_actions_state) (double now, double delta);
+  void (*update_resource_state) (void *id, tmgr_trace_event_t event_type,
+				 double value);
+  void (*finalize) (void);
 } s_surf_resource_private_t;
 
 /* #define pub2priv(r) ((surf_resource_private_t) ((char *)(r) -(sizeof(struct surf_resource_private_part)))) */
 /* #define priv2pub(r) ((void *) ((char *)(r) +(sizeof(struct surf_resource_private_part)))) */
 
-xbt_heap_float_t generic_maxmin_share_resources(xbt_swag_t running_actions,
-						size_t offset);
+double generic_maxmin_share_resources(xbt_swag_t running_actions,
+				      size_t offset);
 /* Generic functions common to all ressources */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
 void surf_action_free(surf_action_t * action);
-void surf_action_change_state(surf_action_t action, e_surf_action_state_t state);
+void surf_action_change_state(surf_action_t action,
+			      e_surf_action_state_t state);
 
 extern lmm_system_t maxmin_system;
 extern tmgr_history_t history;

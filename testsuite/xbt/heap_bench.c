@@ -11,20 +11,20 @@
 #include <stdio.h>
 
 #include "xbt/heap.h"
-#include "gras/virtu.h" /* time manipulation in bench */
+#include "gras/virtu.h"		/* time manipulation in bench */
 
 #define MAX_TEST 1000000
 
-int compare_xbt_heap_float_t(const void *a, const void *b);
+int compare_double(const void *a, const void *b);
 void test_heap_validity(int size);
 void test_heap_mean_operation(int size);
 
-int compare_xbt_heap_float_t(const void *a, const void *b)
+int compare_double(const void *a, const void *b)
 {
-  xbt_heap_float_t pa, pb;
+  double pa, pb;
 
-  pa = *((xbt_heap_float_t *) a);
-  pb = *((xbt_heap_float_t *) b);
+  pa = *((double *) a);
+  pb = *((double *) b);
 
   if (pa > pb)
     return 1;
@@ -36,7 +36,7 @@ int compare_xbt_heap_float_t(const void *a, const void *b)
 void test_heap_validity(int size)
 {
   xbt_heap_t heap = xbt_heap_new(size, NULL);
-  xbt_heap_float_t *tab = calloc(size, sizeof(xbt_heap_float_t));
+  double *tab = calloc(size, sizeof(double));
   int i;
 
   for (i = 0; i < size; i++) {
@@ -44,10 +44,10 @@ void test_heap_validity(int size)
     xbt_heap_push(heap, NULL, tab[i]);
   }
 
-  qsort(tab, size, sizeof(xbt_heap_float_t), compare_xbt_heap_float_t);
+  qsort(tab, size, sizeof(double), compare_double);
 
   for (i = 0; i < size; i++) {
-    /*     printf(XBT_HEAP_FLOAT_T " ", xbt_heap_maxkey(heap)); */
+    /*     printf("%lg" " ", xbt_heap_maxkey(heap)); */
     if (xbt_heap_maxkey(heap) != tab[i]) {
       fprintf(stderr, "Problem !\n");
       exit(1);
@@ -62,7 +62,7 @@ void test_heap_validity(int size)
 void test_heap_mean_operation(int size)
 {
   xbt_heap_t heap = xbt_heap_new(size, NULL);
-  xbt_heap_float_t val;
+  double val;
   double date = 0;
   int i, j;
 

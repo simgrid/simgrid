@@ -10,7 +10,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/error.h"
 #include "heap_private.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap,xbt,"Heap");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap, xbt, "Heap");
 
 /**
  * xbt_heap_new:
@@ -67,7 +67,7 @@ int xbt_heap_size(xbt_heap_t H)
  * Add an element int the heap. The element with the smallest key is
  * automatically moved at the top of the heap.
  */
-void xbt_heap_push(xbt_heap_t H, void *content, xbt_heap_float_t key)
+void xbt_heap_push(xbt_heap_t H, void *content, double key)
 {
   int count = ++(H->count);
   int size = H->size;
@@ -95,9 +95,10 @@ void xbt_heap_push(xbt_heap_t H, void *content, xbt_heap_float_t key)
  */
 void *xbt_heap_pop(xbt_heap_t H)
 {
-  void *max ;
+  void *max;
 
-  if(H->count==0) return NULL;
+  if (H->count == 0)
+    return NULL;
 
   max = CONTENT(H, 0);
 
@@ -119,9 +120,10 @@ void *xbt_heap_pop(xbt_heap_t H)
  *
  * Returns the smallest key in the heap without modifying the heap.
  */
-xbt_heap_float_t xbt_heap_maxkey(xbt_heap_t H)
+double xbt_heap_maxkey(xbt_heap_t H)
 {
-  if(H->count==0) abort();
+  if (H->count == 0)
+    abort();
   return KEY(H, 0);
 }
 
@@ -134,7 +136,8 @@ xbt_heap_float_t xbt_heap_maxkey(xbt_heap_t H)
  */
 void *xbt_heap_maxcontent(xbt_heap_t H)
 {
-  if(H->count==0) abort();
+  if (H->count == 0)
+    abort();
   return CONTENT(H, 0);
 }
 

@@ -29,8 +29,8 @@ static void cpu_free(void *CPU)
    state_trace values mean SURF_CPU_ON if >0 and SURF_CPU_OFF
    otherwise.
 */
-static cpu_t cpu_new(const char *name, xbt_maxmin_float_t power_scale,
-		     xbt_maxmin_float_t power_initial,
+static cpu_t cpu_new(const char *name, double power_scale,
+		     double power_initial,
 		     tmgr_trace_t power_trace,
 		     e_surf_cpu_state_t state_initial,
 		     tmgr_trace_t state_trace)
@@ -66,23 +66,23 @@ static cpu_t cpu_new(const char *name, xbt_maxmin_float_t power_scale,
                                     power      trace      state      trace
    
    Token:   TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD
-   Type:     string      float      float      string     ON/OFF     string
+   Type:     string      double     double     string     ON/OFF     string
 */
 
 static void parse_cpu(void)
 {
   e_surf_token_t token;
   char *name = NULL;
-  xbt_maxmin_float_t power_scale = 0.0;
-  xbt_maxmin_float_t power_initial = 0.0;
+  double power_scale = 0.0;
+  double power_initial = 0.0;
   tmgr_trace_t power_trace = NULL;;
   e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
   tmgr_trace_t state_trace = NULL;
 
   name = xbt_strdup(surf_parse_text);
 
-  surf_parse_float(&power_scale);
-  surf_parse_float(&power_initial);
+  surf_parse_double(&power_scale);
+  surf_parse_double(&power_initial);
   surf_parse_trace(&power_trace);
 
   token = surf_parse();		/* state_initial */
@@ -176,7 +176,7 @@ static void action_change_state(surf_action_t action,
   return;
 }
 
-static xbt_heap_float_t share_resources(xbt_heap_float_t now)
+static double share_resources(double now)
 {
   s_surf_action_cpu_t action;
   return generic_maxmin_share_resources(surf_cpu_resource->common_public->
@@ -184,8 +184,7 @@ static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 					xbt_swag_offset(action, variable));
 }
 
-static void update_actions_state(xbt_heap_float_t now,
-				 xbt_heap_float_t delta)
+static void update_actions_state(double now, double delta)
 {
   surf_action_cpu_t action = NULL;
   surf_action_cpu_t next_action = NULL;
@@ -234,12 +233,12 @@ static void update_actions_state(xbt_heap_float_t now,
 
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
-				  xbt_maxmin_float_t value)
+				  double value)
 {
   cpu_t cpu = id;
 
-/*   printf("[" XBT_HEAP_FLOAT_T "] Asking to update CPU \"%s\" with value " */
-/* 	 XBT_MAXMIN_FLOAT_T " for event %p\n", surf_get_clock(), cpu->name, */
+/*   printf("[" "%lg" "] Asking to update CPU \"%s\" with value " */
+/* 	 "%lg" " for event %p\n", surf_get_clock(), cpu->name, */
 /* 	 value, event_type); */
 
   if (event_type == cpu->power_event) {
@@ -259,7 +258,7 @@ static void update_resource_state(void *id,
   return;
 }
 
-static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
+static surf_action_t execute(void *cpu, double size)
 {
   surf_action_cpu_t action = NULL;
   cpu_t CPU = cpu;
@@ -291,7 +290,7 @@ static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
   return (surf_action_t) action;
 }
 
-static surf_action_t action_sleep(void *cpu, xbt_maxmin_float_t duration)
+static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_cpu_t action = NULL;
 

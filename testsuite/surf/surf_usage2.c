@@ -42,7 +42,7 @@ void test(void)
   e_surf_action_state_t stateActionA;
   e_surf_action_state_t stateActionB;
   e_surf_action_state_t stateActionC;
-  xbt_maxmin_float_t now = -1.0;
+  double now = -1.0;
 
   surf_workstation_resource_init("platform.txt");
 
@@ -82,9 +82,9 @@ void test(void)
     surf_resource_t resource = NULL;
 
     now = surf_get_clock();
-    printf("Next Event : " XBT_HEAP_FLOAT_T "\n", now);
-    
-    xbt_dynar_foreach (resource_list,i,resource) {
+    printf("Next Event : " "%lg" "\n", now);
+
+    xbt_dynar_foreach(resource_list, i, resource) {
       printf("\t %s actions\n", resource->common_public->name);
       while (action =
 	     xbt_swag_extract(resource->common_public->states.

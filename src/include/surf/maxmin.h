@@ -18,36 +18,37 @@ void lmm_system_free(lmm_system_t sys);
 void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var);
 
 lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
-				    xbt_maxmin_float_t bound_value);
+				    double bound_value);
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
 
 lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
-				xbt_maxmin_float_t weight_value,
-				xbt_maxmin_float_t bound,
-				int number_of_constraints);
+				double weight_value,
+				double bound, int number_of_constraints);
 void lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
-xbt_maxmin_float_t lmm_variable_getvalue(lmm_variable_t var);
+double lmm_variable_getvalue(lmm_variable_t var);
 
 
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
-		lmm_variable_t var, xbt_maxmin_float_t value);
+		lmm_variable_t var, double value);
 
-lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, int num);
+lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
+				       lmm_variable_t var, int num);
 int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
-lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys, lmm_constraint_t cnst, 
-				     lmm_variable_t *var);
+lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
+				     lmm_constraint_t cnst,
+				     lmm_variable_t * var);
 
 void *lmm_constraint_id(lmm_constraint_t cnst);
 void *lmm_variable_id(lmm_variable_t var);
 
 void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
-		lmm_variable_t var, xbt_maxmin_float_t value);
+		lmm_variable_t var, double value);
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
-			       xbt_maxmin_float_t bound);
+			       double bound);
 void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
-				xbt_maxmin_float_t weight);
+				double weight);
 void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
-				 xbt_maxmin_float_t bound);
+				 double bound);
 
 int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
 
