@@ -46,6 +46,8 @@ typedef struct simdata_process {
   int PID;			/* used for debugging purposes */
   int PPID;			/* The parent PID */
   m_task_t waiting_task;        
+  int blocked;
+  int suspended;
   m_host_t put_host;		/* used for debugging purposes */
   m_channel_t put_channel;	/* used for debugging purposes */
   int argc;                     /* arguments number if any */
@@ -82,5 +84,9 @@ void __MSG_host_destroy(m_host_t host);
 void __MSG_task_execute(m_process_t process, m_task_t task);
 MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task);
 MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task);
+
+MSG_error_t __MSG_process_block();
+MSG_error_t __MSG_process_unblock(m_process_t process);
+int __MSG_process_isBlocked(m_process_t process);
 
 #endif

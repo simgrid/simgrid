@@ -280,6 +280,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
     xbt_assert0(((simdata_task->compute)||(simdata_task->comm))&&
 		!((simdata_task->comm)&&(simdata_task->comm)),
 		"Got a problem in deciding which action to choose !");
+    simdata->suspended = 1;
     if(simdata_task->compute) 
       surf_workstation_resource->extension_public->suspend(simdata_task->compute);
     else
@@ -288,9 +289,11 @@ MSG_error_t MSG_process_suspend(m_process_t process)
     m_task_t dummy = MSG_TASK_UNINITIALIZED;
     dummy = MSG_task_create("suspended", 0.0, 0, NULL);
 
+    simdata->suspended = 1;
     __MSG_task_execute(process,dummy);
     surf_workstation_resource->extension_public->suspend(dummy->simdata->compute);
     __MSG_wait_for_computation(process,dummy);
+    simdata->suspended = 0;
 
     MSG_task_destroy(dummy);
   }
@@ -313,11 +316,18 @@ MSG_error_t MSG_process_resume(m_process_t process)
   CHECK_HOST();
 
   simdata = process->simdata;
+
+  if(simdata->blocked) {
+    simdata->suspended = 0; /* He'll wake up by itself */
+    MSG_RETURN(MSG_OK);
+  }
+
   if(!(simdata->waiting_task)) {
     xbt_assert0(0,"Process not waiting for anything else. Weird !");
     return MSG_WARNING;
   }
   simdata_task = simdata->waiting_task->simdata;
+
 
   if(simdata_task->compute) 
     surf_workstation_resource->extension_public->resume(simdata_task->compute);
@@ -335,22 +345,62 @@ MSG_error_t MSG_process_resume(m_process_t process)
  */
 int MSG_process_isSuspended(m_process_t process)
 {
+  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+
+  return (process->simdata->suspended);
+}
+
+
+
+
+
+MSG_error_t __MSG_process_block()
+{
+  m_process_t process = MSG_process_self();
+
+  m_task_t dummy = MSG_TASK_UNINITIALIZED;
+  dummy = MSG_task_create("blocked", 0.0, 0, NULL);
+  
+  process->simdata->blocked=1;
+  __MSG_task_execute(process,dummy);
+  surf_workstation_resource->extension_public->suspend(dummy->simdata->compute);
+  __MSG_wait_for_computation(process,dummy);
+  process->simdata->blocked=0;
+
+  if(process->simdata->suspended)
+    MSG_process_suspend(process);
+  
+  MSG_task_destroy(dummy);
+
+  return MSG_OK;
+}
+
+MSG_error_t __MSG_process_unblock(m_process_t process)
+{
   simdata_process_t simdata = NULL;
   simdata_task_t simdata_task = NULL;
   int i;
-  
+
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+  CHECK_HOST();
 
   simdata = process->simdata;
   if(!(simdata->waiting_task)) {
     xbt_assert0(0,"Process not waiting for anything else. Weird !");
-    return 0;
+    return MSG_WARNING;
   }
-
   simdata_task = simdata->waiting_task->simdata;
 
-  if(simdata_task->compute) 
-    return surf_workstation_resource->extension_public->is_suspended(simdata_task->compute);
-  else 
-    return surf_workstation_resource->extension_public->is_suspended(simdata_task->comm);
+  xbt_assert0(simdata->blocked,"Process not blocked");
+
+  surf_workstation_resource->extension_public->resume(simdata_task->compute);
+
+  MSG_RETURN(MSG_OK);
+}
+
+int __MSG_process_isBlocked(m_process_t process)
+{
+  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+
+  return (process->simdata->blocked);
 }

@@ -61,7 +61,7 @@ MSG_error_t MSG_task_get(m_task_t * task,
     xbt_assert0(!(h_simdata->sleeping[channel]),
 		"A process is already blocked on this channel");
     h_simdata->sleeping[channel] = process; /* I'm waiting. Wake me up when you're ready */
-    MSG_process_suspend(process);
+    __MSG_process_block();
     if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
        == SURF_CPU_OFF)
       MSG_RETURN(MSG_HOST_FAILURE);
@@ -80,8 +80,8 @@ MSG_error_t MSG_task_get(m_task_t * task,
 		h->simdata->host, t_simdata->message_size);
   surf_workstation_resource->common_public->action_set_data(t_simdata->comm,t);
 
-  if(MSG_process_isSuspended(t_simdata->sender)) 
-    MSG_process_resume(t_simdata->sender);
+  if(__MSG_process_isBlocked(t_simdata->sender)) 
+    __MSG_process_unblock(t_simdata->sender);
 
   do {
     __MSG_task_wait_event(process, t);
@@ -188,12 +188,12 @@ MSG_error_t MSG_task_put(m_task_t task,
 		mbox[channel], task);
     
   if(remote_host->simdata->sleeping[channel]) 
-    MSG_process_resume(remote_host->simdata->sleeping[channel]);
+    __MSG_process_unblock(remote_host->simdata->sleeping[channel]);
   else {
     process->simdata->put_host = dest;
     process->simdata->put_channel = channel;
     while(!(task_simdata->comm)) 
-      MSG_process_suspend(process);
+      __MSG_process_block();
     process->simdata->put_host = NULL;
     process->simdata->put_channel = -1;
   }
@@ -302,8 +302,8 @@ MSG_error_t MSG_process_sleep(long double nb_sec)
        == SURF_CPU_OFF)
       MSG_RETURN(MSG_HOST_FAILURE);
 
-    if(MSG_process_isSuspended(process)) {
-      MSG_process_suspend(MSG_process_self());
+    if(__MSG_process_isBlocked(process)) {
+      __MSG_process_unblock(MSG_process_self());
     }
     if(surf_workstation_resource->extension_public->
        get_state(MSG_process_get_host(process)->simdata->host) 
