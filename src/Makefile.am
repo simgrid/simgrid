@@ -94,7 +94,7 @@ VERSION_INFO= -release 20050131 -version-info 0:0:0
 
 lib_LTLIBRARIES= libsimgrid.la libgras.la
 
-COMMON_S=\
+COMMON_SRC=\
   \
   xbt_modinter.h    gras_modinter.h                                            \
   \
@@ -135,6 +135,16 @@ COMMON_S=\
   \
   gras/Virtu/process.c
 
+RL_SRC= \
+  gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c  \
+  \
+  gras/Virtu/rl_process.c        gras/Virtu/rl_time.c                   gras/Virtu/rl_conditional.c
+
+SG_SRC=  \
+  gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
+  \
+  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c 
+
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 	@LEX@ -o$@ -Pgras_ddt_parse_ $^
 
@@ -153,14 +163,8 @@ include/surf/surfxml.h: surf/surfxml.dtd
 	cd include/surf; flexml -H -L ../../surf/surfxml.dtd
 endif
 
-libgras_la_SOURCES= $(COMMON_S) \
-  gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \
-  \
-  gras/Virtu/rl_process.c        gras/Virtu/rl_time.c                   gras/Virtu/rl_conditional.c
+libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC)
 libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@
 
-libsimgrid_la_SOURCES= $(COMMON_S) \
-  gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
-  \
-  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c
+libsimgrid_la_SOURCES= $(COMMON_S) $(SG_SRC)
 libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@
