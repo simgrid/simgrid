@@ -148,12 +148,12 @@ void surf_init(int *argc, char **argv)
     maxmin_system = lmm_system_new();
 }
 
+static char* path_name = NULL;
 FILE *surf_fopen(const char *name, const char *mode)
 {
   int i; 
   char* path = NULL;
   FILE *file = NULL;
-  static char* path_name = NULL;
 
   xbt_assert0(surf_path,"surf_init has to be called before using surf_fopen");
   if(!path_name) path_name=xbt_new0(char,strlen(name)+1);
@@ -190,8 +190,15 @@ void surf_finalize(void)
   if (resource_list)
     xbt_dynar_free(&resource_list);
 
+  if(surf_path) 
+    xbt_dynar_free(&surf_path);
+
   tmgr_finalize();
   surf_parse_lex_destroy();
+  if(path_name) {
+    xbt_free(path_name);
+    path_name = NULL;
+  }
 }
 
 double surf_solve(void)

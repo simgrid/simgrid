@@ -162,6 +162,11 @@ void  surf_parse_open(const char *file) {
 }
 
 void  surf_parse_close(void) {
+  if(surf_input_buffer_stack) 
+    xbt_dynar_free(&surf_input_buffer_stack);
+  if(surf_file_to_parse_stack) 
+    xbt_dynar_free(&surf_file_to_parse_stack);
+
   surf_parse__delete_buffer(surf_input_buffer);
   fclose(surf_file_to_parse);
 }
