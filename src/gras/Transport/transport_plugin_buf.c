@@ -73,6 +73,9 @@ gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
   if (!data)
     RAISE_MALLOC;
   data->in.size  = 0;
+  //  data->buffsize = 32 * 1024 - 4; /* default socket buffsize (32k) - headers */ 
+  data->buffsize = 100 * 1024 ; /* 100k */ 
+
   if (!(data->in.data = malloc(data->buffsize)))
     RAISE_MALLOC;
   data->in.pos   = 0; /* useless, indeed, since size==pos */
@@ -80,8 +83,6 @@ gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
   if (!(data->out.data = malloc(data->buffsize)))
     RAISE_MALLOC;
   data->out.pos  = 0;
-  //  data->buffsize = 32 * 1024 - 4; /* default socket buffsize (32k) - headers */ 
-  data->buffsize = 100 * 1024 ; /* 100k */ 
   sock->bufdata = data;
   return no_error;
 }
