@@ -11,8 +11,9 @@ EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS Chan
 	tools/MSG_visualization tools/platform_generation \
         tools/doxygen/index_create.pl
 
-TAGS: 
-	etags `find . -name "*.[ch]"`
+SOURCE_FILES = $(shell find . -name "*.[ch]")
+TAGS: $(SOURCE_FILES)
+	@etags $(SOURCE_FILES)
 
 tags: TAGS
 
