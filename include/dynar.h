@@ -73,9 +73,9 @@ int  gras_dynar_cursor_get      (const gras_dynar_t *dynar,
  * }</programlisting>
  */
 #define gras_dynar_foreach(_dynar,_cursor,_data) \
-       for (gras_dynar_cursor_first(_dynar,&_cursor)      ; \
-	    gras_dynar_cursor_get(_dynar,&_cursor,&_data) ; \
-            gras_dynar_cursor_step(_dynar,&_cursor)         )
+       for (gras_dynar_cursor_first(_dynar,&(_cursor))      ; \
+	    gras_dynar_cursor_get(_dynar,&(_cursor),&_data) ; \
+            gras_dynar_cursor_step(_dynar,&(_cursor))         )
 /*
        for (gras_dynar_length(_dynar) && (_gras_dynar_cursor_first(_dynar,&_cursor),      \
 					  1);     \
