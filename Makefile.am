@@ -65,7 +65,7 @@ mail:
            echo;echo; \
 	   echo "It is available from the official website:";\
 	   echo "  http://grail.sdsc.edu/simgrid/";\
-	   echo;echo "Cheers, Arnaud.") | \
+	   echo;echo "Cheers, the SimGrid team.") | \
           mail -e \
 	       -a "From: Arnaud.Legrand@imag.fr" \
 	       -s "New version of GRAS ($$ver)" \
