@@ -9,8 +9,7 @@ EXTRA_DIST=run_tests.in \
   gras/datadesc.little64\
   gras/datadesc.big32 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
   gras/mk_datadesc_structs.pl \
-  surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml \
-  msg/messages.h
+  surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml
 
 # Data sets still to regenerate:
 # gras/datadesc.big64 
@@ -37,8 +36,7 @@ RL_tests =                                              \
 
 SG_tests =                                              \
 	surf/maxmin_usage surf/maxmin_bench \
-	surf/trace_usage surf/surf_usage surf/surf_usage2 \
-	msg/msg_test
+	surf/trace_usage surf/surf_usage surf/surf_usage2
 
 noinst_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
@@ -77,8 +75,6 @@ surf_maxmin_bench_LDADD=      $(LDADD_SG)
 surf_trace_usage_LDADD=       $(LDADD_SG)
 surf_surf_usage_LDADD=        $(LDADD_SG)
 surf_surf_usage2_LDADD=       $(LDADD_SG)
-
-msg_msg_test_LDADD=           $(LDADD_SG)
 
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)
