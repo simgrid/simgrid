@@ -546,10 +546,13 @@ gras_dynar_cursor_get(const gras_dynar_t * const dynar,
  * @dynar:
  * @cursor:
  *
- * Remove the entry pointed by the cursor, for use in the middle of a foreach
+ * Remove (free) the entry pointed by the cursor, for use in the middle of a foreach
  */
 void gras_dynar_cursor_rm(gras_dynar_t * dynar,
 			  int          * const cursor) {
-  
-  gras_dynar_remove_at(dynar,(*cursor)--,NULL);
+  void *dst;
+
+  gras_dynar_remove_at(dynar,(*cursor)--,&dst);
+  if (dynar->free)
+    (dynar->free)(dst);
 }
