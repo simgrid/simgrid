@@ -1,28 +1,30 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 
-<!ENTITY comm-socks SYSTEM "sgml/comm_socks.sgml">
-<!ENTITY comm-datadesc SYSTEM "sgml/comm_datadesc.sgml">
-<!ENTITY comm-messages SYSTEM "sgml/comm_messages.sgml">
+<!ENTITY comm-socks SYSTEM "xml/comm_socks.xml">
+<!ENTITY comm-datadesc SYSTEM "xml/comm_datadesc.xml">
+<!ENTITY comm-messages SYSTEM "xml/comm_messages.xml">
 
-<!ENTITY virtu-globals SYSTEM "sgml/virtu_globals.sgml">
-<!ENTITY virtu-syscall SYSTEM "sgml/virtu_syscall.sgml">
-<!ENTITY virtu-fs      SYSTEM "sgml/virtu_fs.sgml">
+<!ENTITY virtu-globals SYSTEM "xml/virtu_globals.xml">
+<!ENTITY virtu-syscall SYSTEM "xml/virtu_syscall.xml">
+<!ENTITY virtu-fs      SYSTEM "xml/virtu_fs.xml">
 
 
-<!ENTITY tbx-err SYSTEM "sgml/tbx_err.sgml">
-<!ENTITY tbx-log SYSTEM "sgml/tbx_log.sgml">
-<!ENTITY tbx-dynar SYSTEM "sgml/tbx_dynar.sgml">
-<!ENTITY tbx-dico SYSTEM "sgml/tbx_dico.sgml">
-<!ENTITY tbx-set SYSTEM "sgml/tbx_set.sgml">
-<!ENTITY tbx-cfg SYSTEM "sgml/tbx_cfg.sgml">
+<!ENTITY tbx-err SYSTEM "xml/tbx_err.xml">
+<!ENTITY tbx-log SYSTEM "xml/tbx_log.xml">
+<!ENTITY tbx-dynar SYSTEM "xml/tbx_dynar.xml">
+<!ENTITY tbx-dico SYSTEM "xml/tbx_dico.xml">
+<!ENTITY tbx-set SYSTEM "xml/tbx_set.xml">
+<!ENTITY tbx-cfg SYSTEM "xml/tbx_cfg.xml">
 
-<!ENTITY gras-gras SYSTEM "sgml/gras.sgml">
-<!ENTITY gras-gras-private SYSTEM "sgml/gras_private.sgml">
-<!ENTITY gras-gras-rl SYSTEM "sgml/gras_rl.sgml">
-<!ENTITY gras-gras-sg SYSTEM "sgml/gras_sg.sgml">
+<!ENTITY gras-gras SYSTEM "xml/gras.xml">
+<!ENTITY gras-gras-private SYSTEM "xml/gras_private.xml">
+<!ENTITY gras-gras-rl SYSTEM "xml/gras_rl.xml">
+<!ENTITY gras-gras-sg SYSTEM "xml/gras_sg.xml">
 
-<!ENTITY overview SYSTEM "overview.sgml">
-<!ENTITY faq SYSTEM "faq.sgml">
+<!ENTITY overview SYSTEM "overview.xml">
+<!ENTITY faq SYSTEM "faq.xml">
 ]>
 <book id="index">
   <bookinfo>
