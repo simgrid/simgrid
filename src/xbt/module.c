@@ -65,6 +65,7 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
      TRYFAIL(gras_log_control_set(defaultlog));
   }
    
+  gras_process_init(); /* calls procdata_init, which calls dynar_new */
   /** init other submodules */
   gras_msg_init();
   gras_trp_init();
@@ -79,6 +80,7 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
 void 
 gras_exit(){
   INFO0("Exiting GRAS");
+  gras_process_exit();
   gras_msg_exit();
   gras_trp_exit();
   gras_datadesc_exit();

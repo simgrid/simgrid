@@ -59,10 +59,7 @@ foreach (keys %process) {
     print OUT<<EOF
 int launch_$_(int argc, char *argv[]) {
     
-  if (gras_process_init()) exit(1);
   $_(argc,argv);
-  if (gras_process_exit()) exit(1);
-
   return 0;
 }
 
@@ -128,9 +125,7 @@ int main(int argc, char *argv[]){
   int errcode;
 
   gras_init(&argc,argv);
-  gras_process_init();
   errcode=$pname(argc,argv);
-  gras_process_exit();
   gras_exit();
  
   return errcode;
