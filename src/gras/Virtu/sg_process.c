@@ -21,25 +21,20 @@ gras_process_init() {
   gras_sg_portrec_t prraw,pr;
   int i;
   
-  if (!(pd=gras_new(gras_procdata_t,1))) 
-    RAISE_MALLOC;
+  pd=gras_new(gras_procdata_t,1);
 
-  if (MSG_process_set_data(MSG_process_self(),(void*)pd) != MSG_OK) {
+  if (MSG_process_set_data(MSG_process_self(),(void*)pd) != MSG_OK)
     return unknown_error;
-  }
-  TRY(gras_procdata_init());
+  gras_procdata_init();
 
   if (!hd) {
-    if (!(hd=gras_new(gras_hostdata_t,1)))
-      RAISE_MALLOC;
-
-    TRY(gras_dynar_new(&(hd->ports),sizeof(gras_sg_portrec_t),NULL));
+    hd=gras_new(gras_hostdata_t,1);
+    gras_dynar_new(&(hd->ports),sizeof(gras_sg_portrec_t),NULL);
 
     memset(hd->proc, 0, sizeof(hd->proc[0]) * GRAS_MAX_CHANNEL); 
 
-    if (MSG_host_set_data(MSG_host_self(),(void*)hd) != MSG_OK) {
+    if (MSG_host_set_data(MSG_host_self(),(void*)hd) != MSG_OK)
       return unknown_error;
-    }
   }
   
   /* take a free channel for this process */
@@ -56,7 +51,7 @@ gras_process_init() {
   pr.port = -1;
   pr.tochan = i;
   pr.raw = 0;
-  TRY(gras_dynar_push(hd->ports,&pr));
+  gras_dynar_push(hd->ports,&pr);
 
   /* take a free RAW channel for this process */
   for (i=0; i<GRAS_MAX_CHANNEL && hd->proc[i]; i++);
@@ -73,7 +68,7 @@ gras_process_init() {
   prraw.port = -1;
   prraw.tochan = i;
   prraw.raw = 1;
-  TRY(gras_dynar_push(hd->ports,&prraw));
+  gras_dynar_push(hd->ports,&prraw);
 
   VERB2("Creating process '%s' (%d)",
 	   MSG_process_get_name(MSG_process_self()),

@@ -9,7 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 
-#include "gros_interface.h"
+#include "xbt_interface.h"
 #include "gras_private.h"
 #include <stdarg.h>
 #include <assert.h>
@@ -183,13 +183,13 @@ void gras_log_threshold_set(gras_log_category_t* cat,
   _set_inherited_thresholds(cat);
 }
 
-static gras_error_t _gras_log_parse_setting(const char* control_string,
-					    gras_log_setting_t *set) {
+static void _gras_log_parse_setting(const char* control_string,
+				    gras_log_setting_t *set) {
   const char *name, *dot, *eq;
   
   set->catname=NULL;
   if (!*control_string) 
-    return no_error;
+    return;
   DEBUG1("Parse log setting '%s'",control_string);
 
   control_string += strspn(control_string, " ");
@@ -205,7 +205,7 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
 
   if (!strncmp(dot + 1, "thresh", min(eq - dot - 1,strlen("thresh")))) {
     int i;
-    char *neweq=(char*)strdup(eq+1);
+    char *neweq=gras_strdup(eq+1);
     char *p=neweq-1;
     
     while (*(++p) != '\0') {
@@ -232,13 +232,11 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
     snprintf(buff,min(512,eq - dot - 1),"%s",dot+1);
     gras_assert1(FALSE,"Unknown setting of the log category: %s",buff);
   }
-  if (!(set->catname=(char*)gras_malloc(dot - name+1)))
-    RAISE_MALLOC;
+  set->catname=(char*)gras_malloc(dot - name+1);
     
   strncpy(set->catname,name,dot-name);
   set->catname[dot-name]='\0'; /* Just in case */
   DEBUG1("This is for cat '%s'", set->catname);
-  return no_error;
 }
 
 static gras_error_t _gras_log_cat_searchsub(gras_log_category_t *cat,char *name,gras_log_category_t**whereto) {
@@ -292,7 +290,6 @@ static void _cleanup_double_spaces(char *s) {
 /**
  * gras_log_control_set:
  * @cs: What to parse
- * @Returns: malloc_error or no_error
  *
  * Typically passed a command-line argument. The string has the syntax:
  *
@@ -308,7 +305,7 @@ static void _cleanup_double_spaces(char *s) {
  * This routine may only be called once and that must be before any other
  * logging command! Typically, this is done from main().
  */
-gras_error_t gras_log_control_set(const char* control_string) {
+void gras_log_control_set(const char* control_string) {
   gras_error_t errcode;
   gras_log_setting_t *set;
   char *cs;
@@ -317,16 +314,14 @@ gras_error_t gras_log_control_set(const char* control_string) {
   
   DEBUG1("Parse log settings '%s'",control_string);
   if (control_string == NULL)
-    return no_error;
+    return;
   if (gras_log_settings == NULL)
-    TRY(gras_dynar_new(&gras_log_settings,sizeof(gras_log_setting_t*),
-		       _free_setting));
+    gras_dynar_new(&gras_log_settings,sizeof(gras_log_setting_t*),
+		   _free_setting);
 
-  if (! (set = gras_new(gras_log_setting_t,1)) )
-    RAISE_MALLOC;
+  set = gras_new(gras_log_setting_t,1);
+  cs=gras_strdup(control_string);
 
-  if (!(cs=(char*)strdup(control_string)))
-    RAISE_MALLOC;
   _cleanup_double_spaces(cs);
 
   while (!done) {
@@ -340,23 +335,15 @@ gras_error_t gras_log_control_set(const char* control_string) {
       p=cs;
       done = 1;
     }
-    errcode = _gras_log_parse_setting(p,set);
-    if (errcode != no_error) {
-      gras_free(set);
-      gras_free(cs);
-    }
+    _gras_log_parse_setting(p,set);
     
-    TRYCATCH(_gras_log_cat_searchsub(&_GRAS_LOGV(root),set->catname,&cat),
-	     mismatch_error);
+    errcode = _gras_log_cat_searchsub(&_GRAS_LOGV(root),set->catname,&cat);
     if (errcode == mismatch_error) {
       DEBUG0("Store for further application");
       DEBUG1("push %p to the settings",(void*)set);
-      TRY(gras_dynar_push(gras_log_settings,&set));
+      gras_dynar_push(gras_log_settings,&set);
       /* malloc in advance the next slot */
-      if (!(set = gras_new(gras_log_setting_t,1))) { 
-	gras_free(cs);
-	RAISE_MALLOC;
-      }
+      set = gras_new(gras_log_setting_t,1);
     } else {
       DEBUG0("Apply directly");
       gras_free(set->catname);
@@ -365,7 +352,6 @@ gras_error_t gras_log_control_set(const char* control_string) {
   }
   gras_free(set);
   gras_free(cs);
-  return no_error;
 } 
 
 void gras_log_appender_set(gras_log_category_t* cat, gras_log_appender_t* app) {

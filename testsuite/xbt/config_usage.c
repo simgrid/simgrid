@@ -13,7 +13,7 @@ gras_cfg_t *make_set(){
   gras_cfg_t *set=NULL; 
   gras_error_t errcode;
 
-  TRYFAIL(gras_cfg_new(&set));
+  gras_cfg_new(&set);
   TRYFAIL(gras_cfg_register_str(set,"speed:1_to_2_int"));
   TRYFAIL(gras_cfg_register_str(set,"hostname:1_to_1_string"));
   TRYFAIL(gras_cfg_register_str(set,"user:1_to_10_string"));

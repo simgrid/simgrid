@@ -26,11 +26,11 @@ typedef struct  {
   char         *data;
 }my_elem_t;
 
-static gras_error_t fill(gras_set_t **set);
-static gras_error_t debuged_add(gras_set_t *set,const char*key);
-static gras_error_t debuged_add_with_data(gras_set_t *set,
-					  const char *name,
-					  const char *data);
+static void fill(gras_set_t **set);
+static void debuged_add(gras_set_t *set,const char*key);
+static void debuged_add_with_data(gras_set_t *set,
+				  const char *name,
+				  const char *data);
 static gras_error_t search_name(gras_set_t *set,const char*key);
 static gras_error_t search_id(gras_set_t *head,
 			      int id,
@@ -47,51 +47,45 @@ static void my_elem_free(void *e) {
   }
 }
 
-static gras_error_t debuged_add_with_data(gras_set_t *set,
-					  const char *name,
-					  const char *data) {
+static void debuged_add_with_data(gras_set_t *set,
+				  const char *name,
+				  const char *data) {
 
-  gras_error_t  errcode;
   my_elem_t    *elm;
 
   elm = gras_new(my_elem_t,1);
-  elm->name=strdup(name);
+  elm->name=gras_strdup(name);
   elm->name_len=0;
 
-  elm->data=strdup(data);
+  elm->data=gras_strdup(data);
 
   printf("   - Add %s ",name);
   if (strcmp(name,data)) {
     printf("(->%s)",data);
   }
   printf("\n");
-  errcode=gras_set_add(set,
-		       (gras_set_elm_t*)elm,
-		       &my_elem_free);
-  return errcode;
+  gras_set_add(set, (gras_set_elm_t*)elm,
+	       &my_elem_free);
 }
 
-static gras_error_t debuged_add(gras_set_t *set,
-				const char *name) {
-  return debuged_add_with_data(set, name, name);
+static void debuged_add(gras_set_t *set,
+			const char *name) {
+  debuged_add_with_data(set, name, name);
 }
 
-static gras_error_t fill(gras_set_t **set) {
-  gras_error_t errcode;
+static void fill(gras_set_t **set) {
   printf("\n Fill in the data set\n");
 
-  TRY(gras_set_new(set));
-  TRY(debuged_add(*set,"12"));
-  TRY(debuged_add(*set,"12a"));
-  TRY(debuged_add(*set,"12b"));
-  TRY(debuged_add(*set,"123"));
-  TRY(debuged_add(*set,"123456"));
+  gras_set_new(set);
+  debuged_add(*set,"12");
+  debuged_add(*set,"12a");
+  debuged_add(*set,"12b");
+  debuged_add(*set,"123");
+  debuged_add(*set,"123456");
   /* Child becomes child of what to add */
-  TRY(debuged_add(*set,"1234"));
+  debuged_add(*set,"1234");
   /* Need of common ancestor */
-  TRY(debuged_add(*set,"123457"));
-
-  return no_error;
+  debuged_add(*set,"123457");
 }
 
 static gras_error_t search_name(gras_set_t *head,const char*key) {
@@ -172,30 +166,30 @@ int main(int argc,char **argv) {
   printf(" Traverse the empty set\n");
   TRYFAIL(traverse(set));
 
-  TRYFAIL(fill(&set));
+  fill(&set);
   printf(" Free the data set\n");
   gras_set_free(&set);
   printf(" Free the data set again\n");
   gras_set_free(&set);
   
-  TRYFAIL(fill(&set));
+  fill(&set);
 
   printf(" - Change some values\n");
   printf("   - Change 123 to 'Changed 123'\n");
-  TRYFAIL(debuged_add_with_data(set,"123","Changed 123"));
+  debuged_add_with_data(set,"123","Changed 123");
   printf("   - Change 123 back to '123'\n");
-  TRYFAIL(debuged_add_with_data(set,"123","123"));
+  debuged_add_with_data(set,"123","123");
   printf("   - Change 12a to 'Dummy 12a'\n");
-  TRYFAIL(debuged_add_with_data(set,"12a","Dummy 12a"));
+  debuged_add_with_data(set,"12a","Dummy 12a");
   printf("   - Change 12a to '12a'\n");
-  TRYFAIL(debuged_add_with_data(set,"12a","12a"));
+  debuged_add_with_data(set,"12a","12a");
 
   /*  gras_dict_dump(head,(void (*)(void*))&printf); */
   printf(" - Traverse the resulting data set\n");
   TRYFAIL(traverse(set));
 
   printf(" - Retrive values\n");
-  TRYFAIL(gras_set_get_by_name(set,"123",(gras_set_elm_t**)&elm));
+  gras_set_get_by_name(set,"123",(gras_set_elm_t**)&elm);
   assert(elm);
   TRYFAIL(strcmp("123",elm->data));
 

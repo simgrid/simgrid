@@ -21,19 +21,19 @@ typedef struct gras_dict_ gras_dict_t;
 
 /*####[ Simple dict  functions ]#############################################*/
 
-gras_error_t gras_dict_new(gras_dict_t **dict);
-void         gras_dict_free(gras_dict_t **dict);
+void gras_dict_new(gras_dict_t **dict);
+void gras_dict_free(gras_dict_t **dict);
 
 
-gras_error_t gras_dict_set    (gras_dict_t    *head,
-			       const char     *key,
-			       void           *data,
-			       void_f_pvoid_t *free_ctn);
-gras_error_t gras_dict_set_ext(gras_dict_t    *head,
-			       const char     *key,
-			       int             key_len,
-			       void           *data,
-			       void_f_pvoid_t *free_ctn);
+void gras_dict_set    (gras_dict_t    *head,
+		       const char     *key,
+		       void           *data,
+		       void_f_pvoid_t *free_ctn);
+void gras_dict_set_ext(gras_dict_t    *head,
+		       const char     *key,
+		       int             key_len,
+		       void           *data,
+		       void_f_pvoid_t *free_ctn);
 
 /*----[ gras_dict_get ]------------------------------------------------------*/
 /* Search the given #key#. data=NULL when not found.                         */
@@ -56,10 +56,9 @@ gras_error_t gras_dict_remove_ext(gras_dict_t *head,const char *key,
 /*----[ gras_dict_dump ]-----------------------------------------------------*/
 /* Outputs the content of the structure. (for debuging purpose)              */
 /* #output# is a function to output the data.If NULL, data won't be displayed*/
-/* Returns if it was ok or not                                               */
 /*---------------------------------------------------------------------------*/
-gras_error_t gras_dict_dump(gras_dict_t *head,
-			    void (*output)(void*));
+void gras_dict_dump(gras_dict_t *head,
+		    void (*output)(void*));
 /*----[ gras_dict_print ]----------------------------------------------------*/
 /* To dump multicache, this function dump a cache                            */
 /*---------------------------------------------------------------------------*/
@@ -118,13 +117,13 @@ gras_error_t gras_multidict_remove_ext(gras_dict_t *head,
 /*###########################################################################*/
 typedef struct gras_dict_cursor_ gras_dict_cursor_t;
 /* creator/destructor */
-gras_error_t gras_dict_cursor_new(const gras_dict_t *head,
-				  /*OUT*/gras_dict_cursor_t **cursor);
+void gras_dict_cursor_new(const gras_dict_t *head,
+			  /*OUT*/gras_dict_cursor_t **cursor);
 void         gras_dict_cursor_free(gras_dict_cursor_t *cursor);
 
 /* back to first element 
    it is not enough to reinit the cache after an add/remove in cache*/
-gras_error_t gras_dict_cursor_rewind(gras_dict_cursor_t *cursor);
+void gras_dict_cursor_rewind(gras_dict_cursor_t *cursor);
 
 
 gras_error_t gras_dict_cursor_get_key     (gras_dict_cursor_t *cursor,

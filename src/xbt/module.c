@@ -50,7 +50,7 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
       found = 1;
       opt=strchr(argv[i],'=');
       opt++;
-      TRYFAIL(gras_log_control_set(opt));
+      gras_log_control_set(opt);
       DEBUG1("Did apply '%s' as log setting",opt);
       /*remove this from argv*/
       for (j=i+1; j<*argc; j++) {
@@ -62,7 +62,7 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
     }
   }
   if (!found && defaultlog) {
-     TRYFAIL(gras_log_control_set(defaultlog));
+     gras_log_control_set(defaultlog);
   }
    
   gras_process_init(); /* calls procdata_init, which calls dynar_new */

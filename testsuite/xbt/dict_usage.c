@@ -16,8 +16,8 @@
 GRAS_LOG_EXTERNAL_CATEGORY(dict);
 GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
-static gras_error_t fill(gras_dict_t **head);
-static gras_error_t debuged_add(gras_dict_t *head,const char*key);
+static void fill(gras_dict_t **head);
+static void debuged_add(gras_dict_t *head,const char*key);
 static gras_error_t search(gras_dict_t *head,const char*key);
 static gras_error_t debuged_remove(gras_dict_t *head,const char*key);
 static gras_error_t traverse(gras_dict_t *head);
@@ -27,36 +27,32 @@ static void print_str(void *str) {
   printf("%s",(char*)str);
 }
 
-static gras_error_t fill(gras_dict_t **head) {
-  gras_error_t errcode;
+static void fill(gras_dict_t **head) {
   printf("\n Fill in the dictionnary\n");
 
-  TRY(gras_dict_new(head));
-  TRY(debuged_add(*head,"12"));
-  TRY(debuged_add(*head,"12a"));
-  TRY(debuged_add(*head,"12b"));
-  TRY(debuged_add(*head,"123"));
-  TRY(debuged_add(*head,"123456"));
+  gras_dict_new(head);
+  debuged_add(*head,"12");
+  debuged_add(*head,"12a");
+  debuged_add(*head,"12b");
+  debuged_add(*head,"123");
+  debuged_add(*head,"123456");
   /* Child becomes child of what to add */
-  TRY(debuged_add(*head,"1234"));
+  debuged_add(*head,"1234");
   /* Need of common ancestor */
-  TRY(debuged_add(*head,"123457"));
+  debuged_add(*head,"123457");
 
-  return no_error;
 }
 
-static gras_error_t debuged_add(gras_dict_t *head,const char*key)
+static void debuged_add(gras_dict_t *head,const char*key)
 {
-  gras_error_t errcode;
-  char *data=strdup(key);
+  char *data=gras_strdup(key);
 
   printf("   - Add %s\n",key);
-  errcode=gras_dict_set(head,key,data,&gras_free);
+  gras_dict_set(head,key,data,&gras_free);
   if (GRAS_LOG_ISENABLED(dict,gras_log_priority_debug)) {
     gras_dict_dump(head,(void (*)(void*))&printf);
     fflush(stdout);
   }
-  return errcode;
 }
 
 static gras_error_t search(gras_dict_t *head,const char*key) {
@@ -107,23 +103,23 @@ int main(int argc,char **argv) {
   printf(" Traverse the empty dictionnary\n");
   TRYFAIL(traverse(head));
 
-  TRYFAIL(fill(&head));
+  fill(&head);
   printf(" Free the dictionnary\n");
   gras_dict_free(&head);
   printf(" Free the dictionnary again\n");
   gras_dict_free(&head);
   
-  TRYFAIL(fill(&head));
+  fill(&head);
 
   printf(" - Change some values\n");
   printf("   - Change 123 to 'Changed 123'\n");
-  TRYFAIL(gras_dict_set(head,"123",strdup("Changed 123"),&gras_free));
+  gras_dict_set(head,"123",strdup("Changed 123"),&gras_free);
   printf("   - Change 123 back to '123'\n");
-  TRYFAIL(gras_dict_set(head,"123",strdup("123"),&gras_free));
+  gras_dict_set(head,"123",strdup("123"),&gras_free);
   printf("   - Change 12a to 'Dummy 12a'\n");
-  TRYFAIL(gras_dict_set(head,"12a",strdup("Dummy 12a"),&gras_free));
+  gras_dict_set(head,"12a",strdup("Dummy 12a"),&gras_free);
   printf("   - Change 12a to '12a'\n");
-  TRYFAIL(gras_dict_set(head,"12a",strdup("12a"),&gras_free));
+  gras_dict_set(head,"12a",strdup("12a"),&gras_free);
 
   /*  gras_dict_dump(head,(void (*)(void*))&printf); */
   printf(" - Traverse the resulting dictionnary\n");
@@ -158,7 +154,7 @@ int main(int argc,char **argv) {
   TRYFAIL(traverse(head));
 
   printf("\n");
-  TRYFAIL(fill(&head));
+  fill(&head);
   printf(" - Remove the data (traversing the resulting dictionnary each time)\n");
   TRYEXPECT(debuged_remove(head,"Does not exist"),mismatch_error);
   TRYFAIL(traverse(head));
@@ -169,7 +165,7 @@ int main(int argc,char **argv) {
   TRYCATCH(debuged_remove(head,"12345"),mismatch_error);
 
   printf(" - Remove each data manually (traversing the resulting dictionnary each time)\n");
-  TRYFAIL(fill(&head));
+  fill(&head);
   TRYFAIL(debuged_remove(head,"12a"));    TRYFAIL(traverse(head));
   TRYFAIL(debuged_remove(head,"12b"));    TRYFAIL(traverse(head));
   TRYFAIL(debuged_remove(head,"12"));     TRYFAIL(traverse(head));

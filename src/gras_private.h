@@ -43,8 +43,8 @@
 /* modules initialization functions */
 void gras_msg_init(void);
 void gras_msg_exit(void);
-gras_error_t gras_trp_init(void); /* FIXME */
-void         gras_trp_exit(void);
+void gras_trp_init(void);
+void gras_trp_exit(void);
 void gras_datadesc_init(void);
 void gras_datadesc_exit(void);
 

@@ -64,24 +64,21 @@ struct gras_trp_bufdata_{
   int buffsize;
 };
 
-gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
+void gras_trp_buf_init_sock(gras_socket_t *sock) {
   gras_trp_bufdata_t *data=gras_new(gras_trp_bufdata_t,1);
   
   GRAS_IN;
-  if (!data)
-    RAISE_MALLOC;
-  data->in.size  = 0;
   data->buffsize = 100 * 1024 ; /* 100k */ 
 
-  if (!(data->in.data = (char*)gras_malloc(data->buffsize)))
-    RAISE_MALLOC;
+  data->in.size  = 0;
+  data->in.data  = gras_malloc(data->buffsize);
   data->in.pos   = 0; /* useless, indeed, since size==pos */
+   
   data->out.size = 0;
-  if (!(data->out.data = (char*)gras_malloc(data->buffsize)))
-    RAISE_MALLOC;
+  data->out.data = gras_malloc(data->buffsize);
   data->out.pos  = 0;
+   
   sock->bufdata = data;
-  return no_error;
 }
 
 
@@ -92,8 +89,6 @@ gras_error_t
 gras_trp_buf_setup(gras_trp_plugin_t *plug) {
   gras_error_t errcode;
   gras_trp_buf_plug_data_t *data =gras_new(gras_trp_buf_plug_data_t,1);
-  if (!data)
-    RAISE_MALLOC;
 
   GRAS_IN;
   TRY(gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg",
@@ -124,7 +119,7 @@ gras_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
   GRAS_IN;
   TRY(super->socket_client(super,sock));
   sock->plugin = self;
-  TRY(gras_trp_buf_init_sock(sock));
+  gras_trp_buf_init_sock(sock);
     
   return no_error;
 }
@@ -142,7 +137,7 @@ gras_error_t gras_trp_buf_socket_server(gras_trp_plugin_t *self,
   GRAS_IN;
   TRY(super->socket_server(super,sock));
   sock->plugin = self;
-  TRY(gras_trp_buf_init_sock(sock));
+  gras_trp_buf_init_sock(sock);
   return no_error;
 }
 
@@ -155,7 +150,7 @@ gras_trp_buf_socket_accept(gras_socket_t  *sock,
   GRAS_IN;
   TRY(super->socket_accept(sock,dst));
   (*dst)->plugin = sock->plugin;
-  TRY(gras_trp_buf_init_sock(*dst));
+  gras_trp_buf_init_sock(*dst);
   return no_error;
 }
 

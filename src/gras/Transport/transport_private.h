@@ -45,8 +45,8 @@ struct s_gras_socket  {
   gras_trp_bufdata_t *bufdata; 
 };
 	
-gras_error_t gras_trp_socket_new(int incomming,
-				 gras_socket_t **dst);
+void gras_trp_socket_new(int incomming,
+			 gras_socket_t **dst);
 
 /* The drivers */
 typedef gras_error_t (*gras_trp_setup_t)(gras_trp_plugin_t *dst);
@@ -74,7 +74,7 @@ gras_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
 
 */
 
-gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock);
+void gras_trp_buf_init_sock(gras_socket_t *sock);
 
 
 /* Data exchange over raw sockets */

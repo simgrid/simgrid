@@ -160,7 +160,7 @@ typedef enum {
 
 /* Functions you may call */
 
-extern gras_error_t gras_log_control_set(const char* cs);
+extern void gras_log_control_set(const char* cs);
 
 /* Forward declarations */
 typedef struct gras_log_appender_s gras_log_appender_t;

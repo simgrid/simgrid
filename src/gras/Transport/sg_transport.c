@@ -70,7 +70,7 @@ gras_trp_select(double timeout,
 
       TRY(gras_trp_plugin_get_by_name("buf",&trp));
 
-      TRY(gras_trp_socket_new(1,dst));
+      gras_trp_socket_new(1,dst);
       (*dst)->plugin   = trp;
 
       (*dst)->incoming  = 1;
@@ -80,9 +80,7 @@ gras_trp_select(double timeout,
 
       (*dst)->port      = -1;
 
-      if (!(sockdata = gras_new(gras_trp_sg_sock_data_t,1)))
-	RAISE_MALLOC;
-
+      sockdata = gras_new(gras_trp_sg_sock_data_t,1);
       sockdata->from_PID = MSG_process_self_PID();
       sockdata->to_PID   = r_pid;
       sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));

@@ -23,6 +23,7 @@
 extern "C" 
 #endif
 
+char* gras_strdup  (const char *str);
 void* gras_malloc  (long int bytes);
 void* gras_malloc0 (long int bytes);
 void* gras_realloc (void  *memory, long int bytes);

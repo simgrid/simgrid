@@ -25,7 +25,7 @@ void gras_ddt_freev(void *ddt) {
   }
 }
 
-static gras_error_t
+static void
 gras_ddt_new(const char            *name,
 	     gras_datadesc_type_t **dst) {
   gras_error_t errcode;
@@ -33,17 +33,14 @@ gras_ddt_new(const char            *name,
 
   GRAS_IN1("(%s)",name);
   res=gras_new0(gras_datadesc_type_t,1);
-  if (!res) 
-    RAISE_MALLOC;
 
   res->name = (char*)strdup(name);
   res->name_len = strlen(name);
       
   *dst=res;
-  TRY(gras_set_add(gras_datadesc_set_local,
-		   (gras_set_elm_t*)res,&gras_ddt_freev));
+  gras_set_add(gras_datadesc_set_local,
+	       (gras_set_elm_t*)res,&gras_ddt_freev);
   GRAS_OUT;
-  return no_error;
 }
 
 /**
@@ -83,13 +80,11 @@ gras_error_t gras_datadesc_by_id(long int               code,
  *
  * Create a new scalar and give a pointer to it 
  */
-gras_error_t 
-gras_datadesc_scalar(const char                      *name,
-		     gras_ddt_scalar_type_t           type,
-		     enum e_gras_dd_scalar_encoding   encoding,
-		     gras_datadesc_type_t           **dst) {
+gras_datadesc_type_t *
+  gras_datadesc_scalar(const char                      *name,
+		       gras_ddt_scalar_type_t           type,
+		       enum e_gras_dd_scalar_encoding   encoding) {
 
-  gras_error_t errcode;
   gras_datadesc_type_t *res;
   long int arch;
 
@@ -103,11 +98,9 @@ gras_datadesc_scalar(const char                      *name,
     gras_assert1(res->category.scalar_data.type == type,
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
-    *dst=res;
-    return no_error;
+    return res;
   }
-  TRY(gras_ddt_new(name,dst));
-  res=*dst;
+  gras_ddt_new(name,&res);
 
   for (arch = 0; arch < gras_arch_count; arch ++) {
     long int sz;
@@ -115,6 +108,7 @@ gras_datadesc_scalar(const char                      *name,
     res->size[arch]         = gras_arches[arch].sizeofs[type];
     res->alignment[arch]    = gras_arches[arch].boundaries[type];
     res->aligned_size[arch] = aligned(res->size[arch], res->alignment[arch]);
+/* FIXME: kill the following after discution with Oli */
 #if 0
     sz = res->size[arch];
     mask = sz;
@@ -151,7 +145,8 @@ gras_datadesc_scalar(const char                      *name,
   res->category.scalar_data.encoding = encoding;
   res->category.scalar_data.type     = type;
   GRAS_OUT;
-  return no_error;
+  
+  return res;
 }
 
 
@@ -176,9 +171,8 @@ void gras_dd_cat_field_free(void *f) {
  *
  * Create a new struct and give a pointer to it 
  */
-gras_error_t 
-gras_datadesc_struct(const char            *name,
-		     gras_datadesc_type_t **dst) {
+gras_datadesc_type_t *
+  gras_datadesc_struct(const char            *name) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -191,11 +185,9 @@ gras_datadesc_struct(const char            *name,
     gras_assert1(res->category_code == e_gras_datadesc_type_cat_struct,
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
-    *dst=res;
-    return no_error;
+    return res;
   }
-  TRY(gras_ddt_new(name,dst));
-  res=*dst;
+  gras_ddt_new(name,&res);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch] = 0;
@@ -203,12 +195,12 @@ gras_datadesc_struct(const char            *name,
     res->aligned_size[arch] = 0;
   }
   res->category_code = e_gras_datadesc_type_cat_struct;
-  TRY(gras_dynar_new(&(res->category.struct_data.fields),
-		     sizeof(gras_dd_cat_field_t*),
-		     &gras_dd_cat_field_free));
+  gras_dynar_new(&(res->category.struct_data.fields),
+		 sizeof(gras_dd_cat_field_t*),
+		 &gras_dd_cat_field_free);
 
   GRAS_OUT;
-  return no_error;
+  return res;
 }
 
 /**
@@ -216,7 +208,7 @@ gras_datadesc_struct(const char            *name,
  *
  * Append a field to the struct
  */
-gras_error_t 
+void
 gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
 			    const char            *name,
 			    gras_datadesc_type_t  *field_type) {
@@ -229,7 +221,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
   if (struct_type->category.struct_data.closed) {
     VERB1("Ignoring request to add field to struct %s (closed. Redefinition?)",
 	  struct_type->name);
-    return no_error;
+    return;
   }
 
   gras_assert1(field_type->size != 0,
@@ -237,9 +229,6 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
 	       struct_type->name);
     
   field=gras_new(gras_dd_cat_field_t,1);
-  if (!field)
-    RAISE_MALLOC;
-
   field->name   = (char*)strdup(name);
 
   DEBUG0("----------------");
@@ -263,7 +252,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
   field->pre    = NULL;
   field->post   = NULL;
   
-  TRY(gras_dynar_push(struct_type->category.struct_data.fields, &field));
+  gras_dynar_push(struct_type->category.struct_data.fields, &field);
 
   DEBUG3("Push a %s into %s at offset %ld.",
 	 field_type->name, struct_type->name,field->offset[GRAS_THISARCH]);
@@ -276,8 +265,8 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
 	 struct_type->alignment[GRAS_THISARCH], 
 	 struct_type->aligned_size[GRAS_THISARCH]);
   GRAS_OUT;
-  return no_error;
 }
+
 void
 gras_datadesc_struct_close(gras_datadesc_type_t  *struct_type) {
   GRAS_IN;
@@ -289,10 +278,9 @@ gras_datadesc_struct_close(gras_datadesc_type_t  *struct_type) {
  *
  * Create a new union and give a pointer to it 
  */
-gras_error_t 
+gras_datadesc_type_t *
 gras_datadesc_union(const char                   *name,
-		    gras_datadesc_type_cb_int_t   selector,
-		    gras_datadesc_type_t        **dst) {
+		    gras_datadesc_type_cb_int_t   selector) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -310,12 +298,10 @@ gras_datadesc_union(const char                   *name,
     gras_assert1(res->category.union_data.selector == selector,
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
-    *dst=res;
-    return no_error;
+    return res;
   }
 
-  TRY(gras_ddt_new(name,dst));
-  res=*dst;
+  gras_ddt_new(name,&res);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
      res->size[arch] = 0;
@@ -324,12 +310,12 @@ gras_datadesc_union(const char                   *name,
   }
 
   res->category_code		= e_gras_datadesc_type_cat_union;
-  TRY(gras_dynar_new(&(res->category.union_data.fields),
-		     sizeof(gras_dd_cat_field_t*),
-		     &gras_dd_cat_field_free));
+  gras_dynar_new(&(res->category.union_data.fields),
+		 sizeof(gras_dd_cat_field_t*),
+		 &gras_dd_cat_field_free);
   res->category.union_data.selector = selector;
 
-  return no_error;
+  return res;
 }
 
 /**
@@ -337,12 +323,11 @@ gras_datadesc_union(const char                   *name,
  *
  * Append a field to the union
  */
-gras_error_t 
+void
 gras_datadesc_union_append(gras_datadesc_type_t  *union_type,
 			   const char            *name,
 			   gras_datadesc_type_t  *field_type) {
 
-  gras_error_t errcode;
   gras_dd_cat_field_t *field;
   int arch;
 
@@ -354,18 +339,16 @@ gras_datadesc_union_append(gras_datadesc_type_t  *union_type,
   if (union_type->category.union_data.closed) {
     VERB1("Ignoring request to add field to union %s (closed)",
 	   union_type->name);
-    return no_error;
+    return;
   }
     
   field=gras_new0(gras_dd_cat_field_t,1);
-  if (!field)
-    RAISE_MALLOC;
 
   field->name   = (char*)strdup(name);
   field->type   = field_type;
   /* All offset are left to 0 in an union */
   
-  TRY(gras_dynar_push(union_type->category.union_data.fields, &field));
+  gras_dynar_push(union_type->category.union_data.fields, &field);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
     union_type->size[arch] = max(union_type->size[arch],
@@ -375,7 +358,6 @@ gras_datadesc_union_append(gras_datadesc_type_t  *union_type,
     union_type->aligned_size[arch] = aligned(union_type->size[arch],
 					     union_type->alignment[arch]);
   }
-  return no_error;
 }
 
 void
@@ -387,10 +369,9 @@ gras_datadesc_union_close(gras_datadesc_type_t  *union_type) {
  *
  * Create a new ref to a fixed type and give a pointer to it 
  */
-gras_error_t 
-gras_datadesc_ref(const char             *name,
-		  gras_datadesc_type_t   *referenced_type,
-		  gras_datadesc_type_t  **dst) {
+gras_datadesc_type_t *
+  gras_datadesc_ref(const char             *name,
+		    gras_datadesc_type_t   *referenced_type) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -407,12 +388,10 @@ gras_datadesc_ref(const char             *name,
     gras_assert1(res->category.ref_data.selector == NULL,
 		 "Redefinition of %s does not match",name);
     VERB1("Discarding redefinition of %s",name);
-    *dst=res;
-    return no_error;
+    return res;
   }
 
-  TRY(gras_ddt_new(name,dst));
-  res=*dst;
+  gras_ddt_new(name,&res);
 
   gras_assert0(pointer_type, "Cannot get the description of data pointer");
       
@@ -426,19 +405,17 @@ gras_datadesc_ref(const char             *name,
   res->category.ref_data.type     = referenced_type;
   res->category.ref_data.selector = NULL;
 
-  return no_error;
+  return res;
 }
 /**
  * gras_datadesc_ref_generic:
  *
  * Create a new ref to a type given at use time, and give a pointer to it 
  */
-gras_error_t 
-gras_datadesc_ref_generic(const char                *name,
-			  gras_datadesc_selector_t   selector,
-			  gras_datadesc_type_t     **dst) {
+gras_datadesc_type_t *
+  gras_datadesc_ref_generic(const char                *name,
+			    gras_datadesc_selector_t   selector) {
 
-  gras_error_t errcode;
   gras_datadesc_type_t *res;
   gras_datadesc_type_t *pointer_type = gras_datadesc_by_name("data pointer");
   int arch;
@@ -453,11 +430,9 @@ gras_datadesc_ref_generic(const char                *name,
     gras_assert1(res->category.ref_data.selector == selector,
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
-    *dst=res;
-    return no_error;
+    return res;
   }
-  TRY(gras_ddt_new(name,dst));
-  res=*dst;
+  gras_ddt_new(name,&res);
 
   gras_assert0(pointer_type, "Cannot get the description of data pointer");
       
@@ -472,7 +447,7 @@ gras_datadesc_ref_generic(const char                *name,
   res->category.ref_data.type     = NULL;
   res->category.ref_data.selector = selector;
 
-  return no_error;
+  return res;
 }
 
 /**
@@ -480,13 +455,11 @@ gras_datadesc_ref_generic(const char                *name,
  *
  * Create a new array and give a pointer to it 
  */
-gras_error_t 
-gras_datadesc_array_fixed(const char              *name,
-			  gras_datadesc_type_t    *element_type,
-			  long int                 fixed_size,
-			  gras_datadesc_type_t   **dst) {
+gras_datadesc_type_t *
+  gras_datadesc_array_fixed(const char              *name,
+			    gras_datadesc_type_t    *element_type,
+			    long int                 fixed_size) {
 
-  gras_error_t errcode;
   gras_datadesc_type_t *res;
   int arch;
 
@@ -503,11 +476,9 @@ gras_datadesc_array_fixed(const char              *name,
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
 
-    *dst=res;
-    return no_error;
+    return res;
   }
-  TRY(gras_ddt_new(name,dst));
-  res=*dst;
+  gras_ddt_new(name,&res);
 
   gras_assert1(fixed_size > 0, "'%s' is a array of null fixed size",name);
   for (arch=0; arch<gras_arch_count; arch ++) {
@@ -522,20 +493,18 @@ gras_datadesc_array_fixed(const char              *name,
   res->category.array_data.fixed_size   = fixed_size;
   res->category.array_data.dynamic_size = NULL;
 
-  return no_error;
+  return res;
 }
 /**
  * gras_datadesc_array_dyn:
  *
  * Create a new array and give a pointer to it 
  */
-gras_error_t 
-gras_datadesc_array_dyn(const char                      *name,
-			gras_datadesc_type_t            *element_type,
-			gras_datadesc_type_cb_int_t      dynamic_size,
-			gras_datadesc_type_t           **dst) {
+gras_datadesc_type_t *
+  gras_datadesc_array_dyn(const char                      *name,
+			  gras_datadesc_type_t            *element_type,
+			  gras_datadesc_type_cb_int_t      dynamic_size) {
 
-  gras_error_t errcode;
   gras_datadesc_type_t *res;
   int arch;
 
@@ -556,12 +525,10 @@ gras_datadesc_array_dyn(const char                      *name,
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
 
-    *dst=res;
-    return no_error;
+    return res;
   }
 
-  TRY(gras_ddt_new(name,dst));
-  res=*dst;
+  gras_ddt_new(name,&res);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch] = 0; /* make sure it indicates "dynamic" */
@@ -575,7 +542,7 @@ gras_datadesc_array_dyn(const char                      *name,
   res->category.array_data.fixed_size   = 0;
   res->category.array_data.dynamic_size = dynamic_size;
 
-  return no_error;
+  return res;
 }
 
 /**
@@ -601,23 +568,23 @@ gras_datadesc_array_dyn(const char                      *name,
  * list when the first field gets transfered.
  *
  */
-gras_error_t 
-gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type,
-			  gras_datadesc_type_t **dst) {
-  gras_error_t errcode;
+gras_datadesc_type_t *
+  gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type) {
+
+  gras_datadesc_type_t *res;
   char *name=(char*)gras_malloc(strlen(element_type->name) + 4);
 
   sprintf(name,"%s[]",element_type->name);
 
-  TRY(gras_datadesc_array_dyn(name,element_type,
-				      gras_datadesc_cb_pop, dst));
+  res = gras_datadesc_array_dyn(name,element_type,
+				gras_datadesc_cb_pop);
 
   sprintf(name,"%s[]*",element_type->name);
-  TRY(gras_datadesc_ref(name,*dst,dst));
+  res = gras_datadesc_ref(name,res);
 
   gras_free(name);
 
-  return no_error;
+  return res;
 }
 gras_error_t
 gras_datadesc_import_nws(const char           *name,

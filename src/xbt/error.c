@@ -23,7 +23,6 @@ const char *gras_error_name(gras_error_t errcode)  {
    switch (errcode) {
       
     case no_error: return "success";
-    case malloc_error: return "malloc";
     case mismatch_error: return "mismatch";
     case system_error: return "system";
     case network_error: return "network";

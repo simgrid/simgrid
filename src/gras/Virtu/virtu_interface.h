@@ -39,6 +39,6 @@ gras_dynar_t * gras_socketset_get(void);
 
 /* FIXME: mv to _private? */
 gras_procdata_t *gras_procdata_get(void);
-gras_error_t gras_procdata_init(void);
+void gras_procdata_init(void);
 void gras_procdata_exit(void);
 #endif  /* GRAS_VIRTU_INTERFACE_H */

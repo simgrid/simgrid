@@ -17,10 +17,7 @@ static void gras_trp_plugin_free(void *p); /* free one of the plugins */
 
 static void gras_trp_socket_free(void *s); /* free one socket */
 
-gras_error_t
-gras_trp_plugin_new(const char *name, gras_trp_setup_t setup);
-
-gras_error_t
+static void
 gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   gras_error_t errcode;
 
@@ -28,12 +25,7 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   
   DEBUG1("Create plugin %s",name);
 
-  if (!plug) 
-    RAISE_MALLOC;
-
-  plug->name=(char*)strdup(name);
-  if (!plug->name)
-    RAISE_MALLOC;
+  plug->name=gras_strdup(name);
 
   errcode = setup(plug);
   switch (errcode) {
@@ -44,33 +36,30 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
     break;
 
   case no_error:
-    TRY(gras_dict_set(_gras_trp_plugins, 
-		      name, plug, gras_trp_plugin_free));
+    gras_dict_set(_gras_trp_plugins,
+		  name, plug, gras_trp_plugin_free);
     break;
 
   default:
-    gras_free(plug);
-    return errcode;
+    DIE_IMPOSSIBLE;
   }
-  return no_error;
+
 }
 
-gras_error_t 
+void
 gras_trp_init(void){
-  gras_error_t errcode;
   
   /* make room for all plugins */
-  TRY(gras_dict_new(&_gras_trp_plugins));
+  gras_dict_new(&_gras_trp_plugins);
 
   /* Add them */
-  TRY(gras_trp_plugin_new("tcp", gras_trp_tcp_setup));
-  TRY(gras_trp_plugin_new("file",gras_trp_file_setup));
-  TRY(gras_trp_plugin_new("sg",gras_trp_sg_setup));
+  gras_trp_plugin_new("tcp", gras_trp_tcp_setup);
+  gras_trp_plugin_new("file",gras_trp_file_setup);
+  gras_trp_plugin_new("sg",gras_trp_sg_setup);
 
   /* buf is composed, so it must come after the others */
-  TRY(gras_trp_plugin_new("buf", gras_trp_buf_setup));
+  gras_trp_plugin_new("buf", gras_trp_buf_setup);
 
-  return no_error;
 }
 
 void
@@ -101,13 +90,11 @@ void gras_trp_plugin_free(void *p) {
  *
  * Malloc a new socket, and initialize it with defaults
  */
-gras_error_t gras_trp_socket_new(int incoming,
-				 gras_socket_t **dst) {
+void gras_trp_socket_new(int incoming,
+			 gras_socket_t **dst) {
 
-  gras_socket_t *sock;
+  gras_socket_t *sock=gras_new(gras_socket_t,1);
 
-  if (! (sock=gras_new(gras_socket_t,1)) )
-    RAISE_MALLOC;
   DEBUG1("Create a new socket (%p)", (void*)sock);
 
   sock->plugin = NULL;
@@ -125,7 +112,7 @@ gras_error_t gras_trp_socket_new(int incoming,
 
   *dst = sock;
 
-  return gras_dynar_push(gras_socketset_get(),dst);
+  gras_dynar_push(gras_socketset_get(),dst);
 }
 
 
@@ -153,7 +140,7 @@ gras_socket_server_ext(unsigned short port,
   TRY(gras_trp_plugin_get_by_name("buf",&trp));
 
   /* defaults settings */
-  TRY(gras_trp_socket_new(1,&sock));
+  gras_trp_socket_new(1,&sock);
   sock->plugin= trp;
   sock->port=port;
   sock->bufSize = bufSize;
@@ -201,7 +188,7 @@ gras_socket_client_ext(const char *host,
 
   DEBUG1("Create a client socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
   /* defaults settings */
-  TRY(gras_trp_socket_new(0,&sock));
+  gras_trp_socket_new(0,&sock);
   sock->plugin= trp;
   sock->peer_port = port;
   sock->peer_name = (char*)strdup(host?host:"localhost");

@@ -232,19 +232,16 @@ struct s_gras_datadesc_type {
  ***************************/
 void gras_datadesc_free(gras_datadesc_type_t *type);
 
-gras_error_t 
-gras_datadesc_scalar(const char                       *name,
-		     gras_ddt_scalar_type_t           type,
-		     enum e_gras_dd_scalar_encoding   encoding,
-		     gras_datadesc_type_t           **dst);
+gras_datadesc_type_t *
+  gras_datadesc_scalar(const char                       *name,
+		       gras_ddt_scalar_type_t           type,
+		       enum e_gras_dd_scalar_encoding   encoding);
 
 /****************************************************
  * Callback persistant state constructor/destructor *
  ****************************************************/
-gras_error_t
-gras_cbps_new(gras_cbps_t **dst);
-void
-gras_cbps_free(gras_cbps_t **state);
+gras_cbps_t *gras_cbps_new(void);
+void gras_cbps_free(gras_cbps_t **state);
 
 /***************
  * Convertions *

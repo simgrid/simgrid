@@ -31,28 +31,24 @@ static void free_string(void *d){
   gras_free(*(void**)d);
 }
 
-gras_error_t
-gras_cbps_new(gras_cbps_t **dst) {
+gras_cbps_t * gras_cbps_new(void) {
   gras_error_t errcode;
   gras_cbps_t *res;
 
-  if (!(res=gras_new(gras_cbps_t,1)))
-    RAISE_MALLOC;
+  res=gras_new(gras_cbps_t,1);
 
-  TRY(gras_dynar_new(&(res->lints), sizeof(int), NULL));
-
-  TRY(gras_dict_new(&(res->space)));
+  gras_dynar_new(&(res->lints), sizeof(int), NULL);
+  gras_dict_new(&(res->space));
   /* no leak, the content is freed manually on block_end */
-  TRY(gras_dynar_new(&(res->frames), sizeof(gras_dynar_t*), NULL));
-  TRY(gras_dynar_new(&(res->globals), sizeof(char*), NULL));
+  gras_dynar_new(&(res->frames), sizeof(gras_dynar_t*), NULL);
+  gras_dynar_new(&(res->globals), sizeof(char*), NULL);
 
   gras_cbps_block_begin(res);
-  *dst = res;
-  return no_error;
+
+  return res;
 }
 
-void
-gras_cbps_free(gras_cbps_t **state) {
+void gras_cbps_free(gras_cbps_t **state) {
 
   gras_dynar_free(    (*state)->lints   );
 
@@ -74,9 +70,9 @@ gras_cbps_free(gras_cbps_t **state) {
  */
 gras_error_t
 gras_cbps_v_push(gras_cbps_t        *ps,
-		    const char            *name,
-		    void                  *data,
-		    gras_datadesc_type_t  *ddt) {
+		 const char            *name,
+		 void                  *data,
+		 gras_datadesc_type_t  *ddt) {
 
   gras_dynar_t            *varstack,*frame;
   gras_cbps_elm_t      *p_var;
@@ -312,7 +308,7 @@ gras_cbps_i_push(gras_cbps_t        *ps,
 		 int val) {
   gras_error_t errcode;
   DEBUG1("push %d as a size",val);
-  TRYFAIL(gras_dynar_push(ps->lints,&val));
+  gras_dynar_push(ps->lints,&val);
 }
 /**
  * gras_cbps_i_pop:

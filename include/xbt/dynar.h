@@ -17,7 +17,7 @@ typedef struct gras_dynar_s gras_dynar_t;
 typedef   void (void_f_ppvoid_t)(void**);
 typedef   void (void_f_pvoid_t) (void*);
 
-gras_error_t gras_dynar_new(gras_dynar_t **whereto, 
+void          gras_dynar_new(gras_dynar_t **whereto, 
 			    size_t elm_size, 
 			    void_f_pvoid_t *free_func);
 void          gras_dynar_free(gras_dynar_t *dynar);
@@ -28,30 +28,30 @@ void          gras_dynar_reset(gras_dynar_t *dynar);
 
 
 /* regular array functions */
-void         gras_dynar_get(const gras_dynar_t *dynar,
-			     int idx, void *dst);
-gras_error_t gras_dynar_set(gras_dynar_t *dynar,
-			     int  idx, const void *src);
-gras_error_t gras_dynar_remplace(gras_dynar_t *dynar,
-				 int  idx, const void *object);
+void gras_dynar_get(const gras_dynar_t *dynar,
+		    int idx, void *dst);
+void gras_dynar_set(gras_dynar_t *dynar,
+		    int  idx, const void *src);
+void gras_dynar_remplace(gras_dynar_t *dynar,
+			 int  idx, const void *object);
 
 /* perl array function */
-gras_error_t gras_dynar_insert_at(gras_dynar_t *dynar,
-				  int  idx, const void *src);
-void         gras_dynar_remove_at(gras_dynar_t *dynar,
-				  int  idx, void *object);
-gras_error_t gras_dynar_push      (gras_dynar_t *dynar, const void *src);
-void         gras_dynar_pop       (gras_dynar_t *dynar, void *dst);
-gras_error_t gras_dynar_unshift   (gras_dynar_t *dynar, const void *src);
-void         gras_dynar_shift     (gras_dynar_t *dynar, void *dst);
-void         gras_dynar_map(const gras_dynar_t *dynar, void_f_pvoid_t *operator);
+void gras_dynar_insert_at(gras_dynar_t *dynar,
+			  int  idx, const void *src);
+void gras_dynar_remove_at(gras_dynar_t *dynar,
+			  int  idx, void *object);
+void gras_dynar_push     (gras_dynar_t *dynar, const void *src);
+void gras_dynar_pop      (gras_dynar_t *dynar, void *dst);
+void gras_dynar_unshift  (gras_dynar_t *dynar, const void *src);
+void gras_dynar_shift    (gras_dynar_t *dynar, void *dst);
+void gras_dynar_map      (const gras_dynar_t *dynar, void_f_pvoid_t *operator);
 
 /* cursor functions */
-void gras_dynar_cursor_first    (const gras_dynar_t *dynar, int *cursor);
-void gras_dynar_cursor_step     (const gras_dynar_t *dynar,
-				 int  *cursor);
-int  gras_dynar_cursor_get      (const gras_dynar_t *dynar,
-				 int  *cursor, void *whereto);
+void gras_dynar_cursor_first (const gras_dynar_t *dynar, int *cursor);
+void gras_dynar_cursor_step  (const gras_dynar_t *dynar,
+			      int  *cursor);
+int  gras_dynar_cursor_get   (const gras_dynar_t *dynar,
+			      int  *cursor, void *whereto);
 
 /**
  * gras_dynar_foreach:

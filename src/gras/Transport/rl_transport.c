@@ -107,7 +107,7 @@ gras_trp_select(double timeout,
 	RAISE3(system_error,"invalid select: nb fds: %d, timeout: %d.%d",
 	       max_fds, (int)tout.tv_sec,(int) tout.tv_usec);
       case ENOMEM: 
-	RAISE_MALLOC;
+	gras_assert0(0,"Malloc error during the select");
       default:
 	RAISE2(system_error,"Error during select: %s (%d)",
 	       strerror(errno),errno);

@@ -45,7 +45,7 @@ BEGIN_DECL
 
 typedef enum {
   no_error=0,     /* succes */
-  malloc_error,   /* Well known error */
+//  malloc_error,   /* Well known error */
   mismatch_error, /* The provided ID does not match */
   system_error,   /* a syscall did fail */
   network_error,  /* error while sending/receiving data */
@@ -142,7 +142,7 @@ typedef enum {
           __FILE__,__LINE__,__FUNCTION__,a1,a2,a3,a4,a5,a6); \
   _GRAS_ERR_POST(code)
 
-#define RAISE_MALLOC     RAISE0(malloc_error,"Malloc error")
+//#define RAISE_MALLOC     RAISE0(malloc_error,"Malloc error")
 #define RAISE_IMPOSSIBLE RAISE0(unknown_error,"The Impossible did happen")
 #define RAISE_UNIMPLEMENTED RAISE1(unknown_error,"Function %s unimplemented",__FUNCTION__)
 
@@ -165,6 +165,10 @@ typedef enum {
 #define gras_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) { CRITICAL5(msg,a,b,c,d,e); gras_abort(); }
 #define gras_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); gras_abort(); }
 #endif
+
+#define DIE_IMPOSSIBLE gras_assert0(0,"The Impossible did happen (yet again)")
+#define gras_assert_error(a) gras_assert1(errcode == (a), "Error %s unexpected",gras_error_name(errcode))
+
 END_DECL
 
 #endif /* GRAS_ERROR_H */

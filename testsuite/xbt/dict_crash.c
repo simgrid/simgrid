@@ -64,7 +64,7 @@ int main(int argc,char **argv) {
   printf(" (a point is a test)\n");
 
   for (i=0;i<20;i++) {
-    TRYFAIL(gras_dict_new(&head));
+    gras_dict_new(&head);
     if (i%10) printf("."); else printf("%d",i/10); fflush(stdout);
     nb=0;
     for (j=0;j<1000;j++) {
@@ -77,7 +77,7 @@ int main(int argc,char **argv) {
 	key[k]=rand() % ('z' - 'a') + 'a';
       key[k]='\0';
       /*      printf("[%d %s]\n",j,key); */
-      TRYFAIL(gras_dict_set(head,key,key,&free));
+      gras_dict_set(head,key,key,&free);
     }
     nb=0;
     /*    gras_dict_dump(head,(void (*)(void*))&printf); */
@@ -91,7 +91,7 @@ int main(int argc,char **argv) {
   }
 
 
-  TRYFAIL(gras_dict_new(&head));
+  gras_dict_new(&head);
   printf("\n Fill 20 000 elements, with keys being the number of element\n");
   printf("  (a point is 1 000 elements)\n");
   for (j=0;j<NB_ELM;j++) {
@@ -105,7 +105,7 @@ int main(int argc,char **argv) {
     }
     
     sprintf(key,"%d",j);
-    TRYFAIL(gras_dict_set(head,key,key,&free));
+    gras_dict_set(head,key,key,&free);
   }
 
   printf("\n Count the elements (retrieving the key and data for each): \n");

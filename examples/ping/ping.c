@@ -25,16 +25,13 @@ typedef struct {
 } msg_ping_t;
 
 /* Function prototypes */
-gras_error_t register_messages(void);
+void register_messages(void);
 
 /* Code */
-gras_error_t register_messages(void) {
-  gras_error_t errcode;
+void register_messages(void) {
 
-  TRY(gras_msgtype_declare("ping", gras_datadesc_by_name("int")));
-  TRY(gras_msgtype_declare("pong", gras_datadesc_by_name("int")));
-
-  return no_error;
+  gras_msgtype_declare("ping", gras_datadesc_by_name("int"));
+  gras_msgtype_declare("pong", gras_datadesc_by_name("int"));
 }
 
 /* **********************************************************************
@@ -105,9 +102,9 @@ int server (int argc,char *argv[]) {
     return 1;
   }
 
-  TRYFAIL(register_messages());
-  TRYFAIL(register_messages());
-  TRYFAIL(gras_cb_register(gras_msgtype_by_name("ping"),&server_cb_ping_handler));
+  register_messages();
+  register_messages();
+  gras_cb_register(gras_msgtype_by_name("ping"),&server_cb_ping_handler);
 
   INFO1("SERVER: >>>>>>>> Listening on port %d <<<<<<<<",
 	gras_socket_my_port(g->sock));
@@ -167,7 +164,7 @@ int client(int argc,char *argv[]) {
   INFO2("Client: Connected to %s:%d.",host,port);    
 
 
-  TRY(register_messages());
+  register_messages();
 
   INFO2("Client: >>>>>>>> Connected to server which is on %s:%d <<<<<<<<", 
 	gras_socket_peer_name(g->sock),gras_socket_peer_port(g->sock));

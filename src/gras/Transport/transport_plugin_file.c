@@ -56,16 +56,12 @@ gras_error_t
 gras_trp_file_setup(gras_trp_plugin_t *plug) {
 
   gras_trp_file_plug_data_t *file = gras_new(gras_trp_file_plug_data_t,1);
-  if (!file)
-    RAISE_MALLOC;
 
   FD_ZERO(&(file->incoming_socks));
 
   plug->socket_close = gras_trp_file_close;
-
   plug->chunk_send   = gras_trp_file_chunk_send;
   plug->chunk_recv   = gras_trp_file_chunk_recv;
-
   plug->data         = (void*)file;
 
   return no_error;
@@ -87,7 +83,7 @@ gras_socket_client_from_file(const char*path,
   gras_assert0(gras_if_RL(),
 	       "Cannot use file as socket in the simulator");
 
-  TRY(gras_trp_socket_new(0,dst));
+  gras_trp_socket_new(0,dst);
 
   TRY(gras_trp_plugin_get_by_name("file",&trp));
   (*dst)->plugin=trp;
@@ -130,7 +126,7 @@ gras_socket_server_from_file(const char*path,
   gras_assert0(gras_if_RL(),
 	       "Cannot use file as socket in the simulator");
 
-  TRY(gras_trp_socket_new(1,dst));
+  gras_trp_socket_new(1,dst);
 
   TRY(gras_trp_plugin_get_by_name("file",&trp));
   (*dst)->plugin=trp;

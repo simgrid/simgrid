@@ -83,8 +83,7 @@ gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
       TRY(gras_dd_convert_elm(int_type,1,r_arch, i,i));
   } else {
     void *ptr = gras_malloc(int_type->size[r_arch]);
-    if (!ptr)
-       RAISE_MALLOC;
+
     TRY(gras_trp_chunk_recv(sock, (char*)ptr, int_type->size[r_arch]));
     if (r_arch != GRAS_THISARCH)
       TRY(gras_dd_convert_elm(int_type,1,r_arch, ptr,i));
@@ -122,8 +121,7 @@ gras_dd_alloc_ref(gras_dict_t *refs,
   char *l_data = NULL;
 
   gras_assert1(size>0,"Cannot allocate %ld bytes!", size);
-  if (! (l_data = gras_malloc((size_t)size)) )
-    RAISE_MALLOC;
+  l_data = gras_malloc((size_t)size);
 
   *l_ref = l_data;
   DEBUG2("l_data=%p, &l_data=%p",(void*)l_data,(void*)&l_data);
@@ -134,8 +132,6 @@ gras_dd_alloc_ref(gras_dict_t *refs,
   if (r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
     gras_error_t errcode;
     void *ptr = gras_malloc(sizeof(void *));
-    if (!ptr)
-      RAISE_MALLOC;
 
     memcpy(ptr,l_ref, sizeof(void *));
 
@@ -509,8 +505,8 @@ gras_error_t gras_datadesc_send(gras_socket_t *sock,
   gras_cbps_t *state = NULL;
   gras_dict_t    *refs; /* all references already sent */
  
-  TRY(gras_dict_new(&refs));
-  TRY(gras_cbps_new(&state));
+  gras_dict_new(&refs);
+  state = gras_cbps_new();
 
   errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src);
 
@@ -558,8 +554,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	TRY(gras_dd_convert_elm(type,1,r_arch, l_data,l_data));
     } else {
       void *ptr = gras_malloc(type->size[r_arch]);
-      if (!ptr)
-	 RAISE_MALLOC;
+
       TRY(gras_trp_chunk_recv(sock, (char*)ptr, type->size[r_arch]));
       if (r_arch != GRAS_THISARCH)
 	TRY(gras_dd_convert_elm(type,1,r_arch, ptr,l_data));
@@ -642,8 +637,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       gras_assert(pointer_type);
     }
 
-    if (! (r_ref = gras_malloc(pointer_type->size[r_arch])) )
-      RAISE_MALLOC;
+    r_ref = gras_malloc(pointer_type->size[r_arch]);
+
     TRY(gras_trp_chunk_recv(sock, (char*)r_ref,
 			    pointer_type->size[r_arch]));
 
@@ -738,8 +733,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	  TRY(gras_dd_convert_elm(sub_type,count,r_arch, l_data,l_data));
       } else {
 	ptr = gras_malloc(sub_type->aligned_size[r_arch] * count);
-	if (!ptr)
-	   RAISE_MALLOC;
+
 	TRY(gras_trp_chunk_recv(sock, (char*)ptr, 
 				sub_type->size[r_arch] * count));
 	if (r_arch != GRAS_THISARCH)
@@ -788,8 +782,8 @@ gras_datadesc_recv(gras_socket_t *sock,
   gras_cbps_t *state = NULL; /* callback persistent state */
   gras_dict_t    *refs;         /* all references already sent */
 
-  TRY(gras_dict_new(&refs));
-  TRY(gras_cbps_new(&state));
+  gras_dict_new(&refs);
+  state = gras_cbps_new();
 
   errcode = gras_datadesc_recv_rec(sock, state, refs, type, 
 				   r_arch, NULL, 0,

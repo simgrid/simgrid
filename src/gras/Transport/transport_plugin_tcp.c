@@ -71,12 +71,9 @@ typedef struct {
 /***
  *** Code
  ***/
-gras_error_t
-gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
+gras_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
   gras_trp_tcp_plug_data_t *data = gras_new(gras_trp_tcp_plug_data_t,1);
-  if (!data)
-    RAISE_MALLOC;
 
   FD_ZERO(&(data->msg_socks));
   FD_ZERO(&(data->raw_socks));
@@ -216,7 +213,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  *sock,
   int tmp_errno;
   int size;
 			
-  TRY(gras_trp_socket_new(1,&res));
+  gras_trp_socket_new(1,&res);
 
   sd = accept(sock->sd, (struct sockaddr *)&peer_in, &peer_in_len);
   tmp_errno = errno;
@@ -420,8 +417,7 @@ gras_error_t gras_socket_raw_exchange(gras_socket_t *peer,
    
    struct timeval timeOut;
    
-   if (!(chunk = (char *)gras_malloc(msg_size)))
-     RAISE_MALLOC;
+   chunk = gras_malloc(msg_size);
    
    for   (exp_sofar=0; exp_sofar < exp_size; exp_size += msg_sofar) {
       for(msg_sofar=0; msg_sofar < msg_size; msg_size += res_last) {

@@ -65,8 +65,8 @@ void gras_cfg_host_free(void *d){
  */
 
 
-gras_error_t gras_cfg_new(gras_cfg_t **whereto) {
-  return gras_dict_new((gras_dict_t**)whereto);
+void gras_cfg_new(gras_cfg_t **whereto) {
+  gras_dict_new((gras_dict_t**)whereto);
 }
 
 /**
@@ -77,26 +77,18 @@ gras_error_t gras_cfg_new(gras_cfg_t **whereto) {
  *
  */
 
-gras_error_t
+void
 gras_cfg_cpy(gras_cfg_t **whereto, gras_cfg_t *tocopy) {
   gras_dict_cursor_t *cursor=NULL; 
   gras_cfgelm_t *cell=NULL;
   char *name=NULL;
-  int errcode=no_error;
   
   *whereto=NULL;
   gras_assert0(tocopy,"cannot copy NULL config");
 
   gras_dict_foreach((gras_dict_t*)tocopy,cursor,name,cell) {
-    if ((errcode=gras_cfg_register(*whereto, name, cell->type, 
-				   cell->min, cell->max))         != no_error) {
-      if (cursor)   gras_dict_cursor_free(cursor);
-      if (*whereto) gras_cfg_free(whereto);
-      return errcode;
-    }
+    gras_cfg_register(*whereto, name, cell->type, cell->min, cell->max);
   }
-
-  return errcode;
 }
 
 void gras_cfg_free(gras_cfg_t **cfg) {
@@ -207,7 +199,7 @@ void gras_cfgelm_free(void *data) {
  * register an element within a config set
  */
 
-gras_error_t
+void
 gras_cfg_register(gras_cfg_t *cfg,
 		  const char *name, gras_cfgelm_type_t type,
 		  int min, int max){
@@ -215,16 +207,15 @@ gras_cfg_register(gras_cfg_t *cfg,
   gras_error_t errcode;
 
   DEBUG4("Register cfg elm %s (%d to %d %s)",name,min,max,gras_cfgelm_type_name[type]);
-  TRYCATCH(mismatch_error,gras_dict_get((gras_dict_t*)cfg,name,(void**)&res));
+  errcode = gras_dict_get((gras_dict_t*)cfg,name,(void**)&res);
 
-  if (errcode != mismatch_error) {
+  if (errcode == no_error) {
     WARN1("Config elem %s registered twice.",name);
     /* Will be removed by the insertion of the new one */
   } 
+  gras_assert_error(mismatch_error);
 
   res=gras_new(gras_cfgelm_t,1);
-  if (!res)
-    RAISE_MALLOC;
 
   res->type=type;
   res->min=min;
@@ -232,26 +223,26 @@ gras_cfg_register(gras_cfg_t *cfg,
 
   switch (type) {
   case gras_cfgelm_int:
-    TRY(gras_dynar_new(&(res->content), sizeof(int), NULL));
+    gras_dynar_new(&(res->content), sizeof(int), NULL);
     break;
 
   case gras_cfgelm_double:
-    TRY(gras_dynar_new(&(res->content), sizeof(double), NULL));
+    gras_dynar_new(&(res->content), sizeof(double), NULL);
     break;
 
   case gras_cfgelm_string:
-   TRY(gras_dynar_new(&(res->content),sizeof(char*),&gras_cfg_str_free));
+   gras_dynar_new(&(res->content),sizeof(char*),&gras_cfg_str_free);
    break;
 
   case gras_cfgelm_host:
-   TRY(gras_dynar_new(&(res->content),sizeof(gras_host_t*),&gras_cfg_host_free));
+   gras_dynar_new(&(res->content),sizeof(gras_host_t*),&gras_cfg_host_free);
    break;
 
   default:
     ERROR1("%d is an invalide type code",type);
   }
     
-  return gras_dict_set((gras_dict_t*)cfg,name,res,&gras_cfgelm_free);
+  gras_dict_set((gras_dict_t*)cfg,name,res,&gras_cfgelm_free);
 }
 
 /**
@@ -280,13 +271,11 @@ gras_cfg_unregister(gras_cfg_t *cfg,const char *name) {
 
 gras_error_t
 gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
-  char *entrycpy=(char*)strdup(entry);
+  char *entrycpy=gras_strdup(entry);
   char *tok;
 
   int min,max;
   gras_cfgelm_type_t type;
-
-  gras_error_t errcode;
 
   tok=strchr(entrycpy, ':');
   if (!tok) {
@@ -340,8 +329,7 @@ gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
     gras_abort();
   }
 
-  TRYCLEAN(gras_cfg_register(cfg,entrycpy,type,min,max),
-	   gras_free(entrycpy));
+  gras_cfg_register(cfg,entrycpy,type,min,max);
 
   gras_free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
   return no_error;
@@ -548,7 +536,7 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
   if (!options || !strlen(options)) { /* nothing to do */
     return no_error;
   }
-  optionlist_cpy=(char*)strdup(options);
+  optionlist_cpy=gras_strdup(options);
 
   DEBUG1("List to parse and set:'%s'",options);
   option=optionlist_cpy;
@@ -697,10 +685,11 @@ gras_cfg_set_int(gras_cfg_t *cfg,const char*name, int val) {
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
 
   if (cell->max > 1) {
-    return gras_dynar_push(cell->content,&val);
+    gras_dynar_push(cell->content,&val);
   } else {
-    return gras_dynar_set(cell->content,0,&val);
+    gras_dynar_set(cell->content,0,&val);
   }
+  return no_error;
 }
 
 /**
@@ -721,10 +710,11 @@ gras_cfg_set_double(gras_cfg_t *cfg,const char*name, double val) {
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_double,&cell));
 
   if (cell->max > 1) {
-    return gras_dynar_push(cell->content,&val);
+    gras_dynar_push(cell->content,&val);
   } else {
-    return gras_dynar_set(cell->content,0,&val);
+    gras_dynar_set(cell->content,0,&val);
   }
+  return no_error;
 }
 
 /**
@@ -741,16 +731,17 @@ gras_error_t
 gras_cfg_set_string(gras_cfg_t *cfg,const char*name, const char*val) { 
   gras_cfgelm_t *cell;
   gras_error_t errcode;
-  char *newval = (char*)strdup(val);
+  char *newval = gras_strdup(val);
 
   VERB2("Configuration setting: %s=%s",name,val);
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
 
   if (cell->max > 1) {
-    return gras_dynar_push(cell->content,&newval);
+    gras_dynar_push(cell->content,&newval);
   } else {
-    return gras_dynar_set(cell->content,0,&newval);
+    gras_dynar_set(cell->content,0,&newval);
   }
+  return no_error;
 }
 
 /**
@@ -773,18 +764,18 @@ gras_cfg_set_host(gras_cfg_t *cfg,const char*name,
   gras_host_t *val=gras_new(gras_host_t,1);
 
   VERB3("Configuration setting: %s=%s:%d",name,host,port);
-  if (!val)
-    RAISE_MALLOC;
-  val->name = (char*)strdup(name);
+
+  val->name = gras_strdup(name);
   val->port = port;
 
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));
 
   if (cell->max > 1) {
-    return gras_dynar_push(cell->content,&val);
+    gras_dynar_push(cell->content,&val);
   } else {
-    return gras_dynar_set(cell->content,0,&val);
+    gras_dynar_set(cell->content,0,&val);
   }
+  return no_error;
 }
 
 /* ---- [ Removing ] ---- */

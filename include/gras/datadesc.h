@@ -61,46 +61,44 @@ gras_datadesc_type_t *gras_datadesc_by_name(const char *name);
  **** Declare datadescription yourself ****
  ******************************************/
 
-gras_error_t 
-gras_datadesc_struct(const char            *name,
-		     gras_datadesc_type_t **dst);
-gras_error_t 
-gras_datadesc_struct_append(gras_datadesc_type_t          *struct_type,
-			    const char                    *name,
-			    gras_datadesc_type_t          *field_type);
+gras_datadesc_type_t *
+  gras_datadesc_struct(const char *name);
+
 void
-gras_datadesc_struct_close(gras_datadesc_type_t          *struct_type);
-gras_error_t 
-gras_datadesc_union(const char                      *name,
-		    gras_datadesc_type_cb_int_t      selector,
-		    gras_datadesc_type_t           **dst);
-gras_error_t 
-gras_datadesc_union_append(gras_datadesc_type_t          *union_type,
-			   const char                    *name,
-			   gras_datadesc_type_t          *field_type);
+  gras_datadesc_struct_append(gras_datadesc_type_t    *struct_type,
+			      const char              *name,
+			      gras_datadesc_type_t    *field_type);
 void
-gras_datadesc_union_close(gras_datadesc_type_t          *union_type);
-gras_error_t 
-gras_datadesc_ref(const char                      *name,
-		  gras_datadesc_type_t            *referenced_type,
-		  gras_datadesc_type_t           **dst);
-gras_error_t
-gras_datadesc_ref_generic(const char                *name,
-			  gras_datadesc_selector_t   selector,
-			  gras_datadesc_type_t     **dst);
-gras_error_t 
-gras_datadesc_array_fixed(const char                    *name,
-			  gras_datadesc_type_t          *element_type,
-			  long int                       fixed_size,
-			  gras_datadesc_type_t         **dst);
-gras_error_t 
-gras_datadesc_array_dyn(const char                      *name,
-			gras_datadesc_type_t            *element_type,
-			gras_datadesc_type_cb_int_t      dynamic_size,
-			gras_datadesc_type_t           **dst);
-gras_error_t 
-gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type,
-			  gras_datadesc_type_t **dst);
+  gras_datadesc_struct_close(gras_datadesc_type_t     *struct_type);
+
+gras_datadesc_type_t *
+  gras_datadesc_union(const char                      *name,
+		      gras_datadesc_type_cb_int_t      selector);
+void
+  gras_datadesc_union_append(gras_datadesc_type_t     *union_type,
+			     const char               *name,
+			     gras_datadesc_type_t     *field_type);
+void
+  gras_datadesc_union_close(gras_datadesc_type_t      *union_type);
+
+gras_datadesc_type_t *
+  gras_datadesc_ref(const char                      *name,
+		    gras_datadesc_type_t            *referenced_type);
+gras_datadesc_type_t *
+  gras_datadesc_ref_generic(const char                *name,
+			    gras_datadesc_selector_t   selector);
+
+gras_datadesc_type_t *
+  gras_datadesc_array_fixed(const char                    *name,
+			    gras_datadesc_type_t          *element_type,
+			    long int                       fixed_size);
+gras_datadesc_type_t *
+  gras_datadesc_array_dyn(const char                      *name,
+			  gras_datadesc_type_t            *element_type,
+			  gras_datadesc_type_cb_int_t      dynamic_size);
+
+gras_datadesc_type_t *
+  gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type);
 
 /*********************************
  * Change stuff within datadescs *

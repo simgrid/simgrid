@@ -118,9 +118,9 @@ gras_error_t test_array(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on fixed array ----");
 
-  TRY(gras_datadesc_array_fixed("fixed int array", 
-				gras_datadesc_by_name("int"),
-				SIZE, &my_type));
+  my_type=gras_datadesc_array_fixed("fixed int array", 
+				    gras_datadesc_by_name("int"),
+				    SIZE);
 
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
@@ -137,13 +137,12 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
   gras_datadesc_type_t *my_type;
   int *i,*j;
   
-  if (! (i=gras_new(int,1)) )
-    RAISE_MALLOC;
+  i=gras_new(int,1);
   *i=12345;
 
   INFO1("---- Test on a reference to an integer (%p) ----",i);
 
-  TRY(gras_datadesc_ref("int*",gras_datadesc_by_name("int"),&my_type));
+  my_type = gras_datadesc_ref("int*",gras_datadesc_by_name("int"));
 
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
@@ -159,7 +158,7 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
  ***/ 
 gras_error_t test_string(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
-  char *i=strdup("Some data"), *j=NULL;
+  char *i=gras_strdup("Some data"), *j=NULL;
   int cpt;
   
   INFO0("---- Test on string (ref to dynamic array) ----");
@@ -190,23 +189,21 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on homogeneous structure ----");
   /* create descriptor */
-  TRY(gras_datadesc_struct("homostruct",&my_type));
-  TRY(gras_datadesc_struct_append(my_type,"a",
-				  gras_datadesc_by_name("signed int")));
-  TRY(gras_datadesc_struct_append(my_type,"b",
-				  gras_datadesc_by_name("int")));
-  TRY(gras_datadesc_struct_append(my_type,"c",
-				  gras_datadesc_by_name("int")));
-  TRY(gras_datadesc_struct_append(my_type,"d",
-				  gras_datadesc_by_name("int")));
+  my_type=gras_datadesc_struct("homostruct");
+  gras_datadesc_struct_append(my_type,"a",
+			      gras_datadesc_by_name("signed int"));
+  gras_datadesc_struct_append(my_type,"b",
+			      gras_datadesc_by_name("int"));
+  gras_datadesc_struct_append(my_type,"c",
+			      gras_datadesc_by_name("int"));
+  gras_datadesc_struct_append(my_type,"d",
+			      gras_datadesc_by_name("int"));
   gras_datadesc_struct_close(my_type);
-  TRY(gras_datadesc_ref("homostruct*",
-			gras_datadesc_by_name("homostruct"),
-			&my_type));
+  my_type=gras_datadesc_ref("homostruct*",
+			    gras_datadesc_by_name("homostruct"));
 
   /* init a value, exchange it and check its validity*/
-  if (! (i=gras_new(homostruct,1)) )
-    RAISE_MALLOC;
+  i=gras_new(homostruct,1);
   i->a = 2235;    i->b = 433425;
   i->c = -23423;  i->d = -235235;
 
@@ -238,22 +235,21 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on heterogeneous structure ----");
   /* create descriptor */
-  TRY(gras_datadesc_struct("hetestruct",&my_type));
-  TRY(gras_datadesc_struct_append(my_type,"c1",
-				  gras_datadesc_by_name("unsigned char")));
-  TRY(gras_datadesc_struct_append(my_type,"l1",
-				  gras_datadesc_by_name("unsigned long int")));
-  TRY(gras_datadesc_struct_append(my_type,"c2",
-				  gras_datadesc_by_name("unsigned char")));
-  TRY(gras_datadesc_struct_append(my_type,"l2",
-				  gras_datadesc_by_name("unsigned long int")));
+  my_type=gras_datadesc_struct("hetestruct");
+  gras_datadesc_struct_append(my_type,"c1",
+			      gras_datadesc_by_name("unsigned char"));
+  gras_datadesc_struct_append(my_type,"l1",
+			      gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_append(my_type,"c2",
+			      gras_datadesc_by_name("unsigned char"));
+  gras_datadesc_struct_append(my_type,"l2",
+			      gras_datadesc_by_name("unsigned long int"));
   gras_datadesc_struct_close(my_type);
-  TRY(gras_datadesc_ref("hetestruct*", gras_datadesc_by_name("hetestruct"),
-			&my_type));
+  my_type=gras_datadesc_ref("hetestruct*", gras_datadesc_by_name("hetestruct"));
+
 
   /* init a value, exchange it and check its validity*/
-  if (! (i=gras_new(hetestruct,1)) )
-    RAISE_MALLOC;
+  i=gras_new(hetestruct,1);
   i->c1 = 's'; i->l1 = 123455;
   i->c2 = 'e'; i->l2 = 774531;
 
@@ -283,19 +279,17 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on nested structures ----");
   /* create descriptor */
-  TRY(gras_datadesc_struct("nestedstruct",&my_type));
+  my_type=gras_datadesc_struct("nestedstruct");
 
-  TRY(gras_datadesc_struct_append(my_type,"hete",
-				  gras_datadesc_by_name("hetestruct")));
-  TRY(gras_datadesc_struct_append(my_type,"homo",
-				  gras_datadesc_by_name("homostruct")));
+  gras_datadesc_struct_append(my_type,"hete",
+			      gras_datadesc_by_name("hetestruct"));
+  gras_datadesc_struct_append(my_type,"homo",
+			      gras_datadesc_by_name("homostruct"));
   gras_datadesc_struct_close(my_type);
-  TRY(gras_datadesc_ref("nestedstruct*", gras_datadesc_by_name("nestedstruct"),
-			&my_type));
+  my_type=gras_datadesc_ref("nestedstruct*", gras_datadesc_by_name("nestedstruct"));
 
   /* init a value, exchange it and check its validity*/
-  if (! (i=gras_new(nestedstruct,1)) )
-    RAISE_MALLOC;
+  i=gras_new(nestedstruct,1);
   i->homo.a = 235231;  i->homo.b = -124151;
   i->homo.c = 211551;  i->homo.d = -664222;
   i->hete.c1 = 's'; i->hete.l1 = 123455;
@@ -334,11 +328,11 @@ gras_error_t declare_chained_list_type(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *my_type,*ref_my_type;
 
-  TRY(gras_datadesc_struct("chained_list_t",&my_type));
-  TRY(gras_datadesc_ref("chained_list_t*",my_type,&ref_my_type));
+  my_type=gras_datadesc_struct("chained_list_t");
+  ref_my_type=gras_datadesc_ref("chained_list_t*",my_type);
 
-  TRY(gras_datadesc_struct_append(my_type,"v", gras_datadesc_by_name("int")));
-  TRY(gras_datadesc_struct_append(my_type,"l", ref_my_type));
+  gras_datadesc_struct_append(my_type,"v", gras_datadesc_by_name("int"));
+  gras_datadesc_struct_append(my_type,"l", ref_my_type);
   gras_datadesc_struct_close(my_type);
 
   return no_error;
@@ -536,12 +530,10 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
   INFO0("---- Test on struct containing dynamic array and its size (cbps test) ----");
 
   /* create and fill the struct */
-  if (! (i=gras_new(Clause,1)) )
-    RAISE_MALLOC;
+  i=gras_new(Clause,1);
 
   i->num_lits = 5432;
-  if (! (i->literals = gras_new(int, i->num_lits)) )
-    RAISE_MALLOC;
+  i->literals = gras_new(int, i->num_lits);
   for (cpt=0; cpt<i->num_lits; cpt++)
     i->literals[cpt] = cpt * cpt - ((cpt * cpt) / 2);
   DEBUG3("created data=%p (within %p @%p)",&(i->num_lits),i,&i);
@@ -551,7 +543,7 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
   ddt = gras_datadesc_by_symbol(s_clause);
 /*  gras_datadesc_type_dump(ddt); */
 
-  TRYFAIL(gras_datadesc_ref("Clause*",ddt,&ddt));
+  ddt=gras_datadesc_ref("Clause*",ddt);
 
   TRY(write_read(ddt, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {

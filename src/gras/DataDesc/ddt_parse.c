@@ -104,8 +104,7 @@ static void print_type_modifier(type_modifier_t tm) {
   GRAS_OUT;
 }
 
-static gras_error_t change_to_fixed_array(gras_dynar_t *dynar, long int size) {
-  gras_error_t errcode;
+static void change_to_fixed_array(gras_dynar_t *dynar, long int size) {
   identifier_t former,array;
   memset(&array,0,sizeof(array));
 
@@ -117,16 +116,13 @@ static gras_error_t change_to_fixed_array(gras_dynar_t *dynar, long int size) {
   sprintf(array.type_name,"%s[%ld]",former.type_name,size);
   gras_free(former.type_name);
 
-  TRY(gras_datadesc_array_fixed(array.type_name, former.type, size, &array.type)); /* redeclaration are ignored */
-
+  array.type = gras_datadesc_array_fixed(array.type_name, former.type, size); /* redeclaration are ignored */
   array.name = former.name;
 
-  TRY(gras_dynar_push(dynar,&array));
+  gras_dynar_push(dynar,&array);
   GRAS_OUT;
-  return no_error;
 }
-static gras_error_t change_to_ref(gras_dynar_t *dynar) {
-  gras_error_t errcode;
+static void change_to_ref(gras_dynar_t *dynar) {
   identifier_t former,ref;
   memset(&ref,0,sizeof(ref));
 
@@ -137,31 +133,27 @@ static gras_error_t change_to_ref(gras_dynar_t *dynar) {
   sprintf(ref.type_name,"%s*",former.type_name);
   gras_free(former.type_name);
 
-  TRY(gras_datadesc_ref(ref.type_name, former.type, &ref.type)); /* redeclaration are ignored */
-
+  ref.type = gras_datadesc_ref(ref.type_name, former.type); /* redeclaration are ignored */
   ref.name = former.name;
 
-  TRY(gras_dynar_push(dynar,&ref));
+  gras_dynar_push(dynar,&ref);
   GRAS_OUT;
-  return no_error;
 }
 
-static gras_error_t change_to_ref_pop_array(gras_dynar_t *dynar) {
-  gras_error_t errcode;
+static void change_to_ref_pop_array(gras_dynar_t *dynar) {
   identifier_t former,ref;
   memset(&ref,0,sizeof(ref));
 
   GRAS_IN;
   gras_dynar_pop(dynar,&former);
-  TRY(gras_datadesc_ref_pop_arr(former.type,&ref.type)); /* redeclaration are ignored */
+  ref.type = gras_datadesc_ref_pop_arr(former.type); /* redeclaration are ignored */
   ref.type_name = (char*)strdup(ref.type->name);
   ref.name = former.name;
 
   gras_free(former.type_name);
 
-  TRY(gras_dynar_push(dynar,&ref));
+  gras_dynar_push(dynar,&ref);
   GRAS_OUT;
-  return no_error;
 }
 
 static gras_error_t parse_statement(char	 *definition,
@@ -237,7 +229,7 @@ static gras_error_t parse_statement(char	 *definition,
 
   } else if (identifier.tm.is_struct) {
     sprintf(buffname,"struct %s",identifier.type_name);
-    TRY(gras_datadesc_struct(buffname,&identifier.type)); /* Get created when does not exist */
+    identifier.type = gras_datadesc_struct(buffname); /* Get created when does not exist */
 
   } else if (identifier.tm.is_unsigned) {
     if (!strcmp(identifier.type_name,"int")) {
@@ -321,7 +313,7 @@ static gras_error_t parse_statement(char	 *definition,
 	    PARSE_ERROR1("Unparsable size of array (found '%c', expected number)",*end);
 
 	  /* replace the previously pushed type to an array of it */
-	  TRY(change_to_fixed_array(identifiers,size));
+	  change_to_fixed_array(identifiers,size);
 
 	  /* eat the closing bracket */
 	  gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
@@ -379,7 +371,7 @@ static gras_error_t parse_statement(char	 *definition,
 	  identifier.tm.is_ref--;
 
 	  if (!strcmp(keyval,"1")) {
-	    TRY(change_to_ref(identifiers));
+	    change_to_ref(identifiers);
 	    gras_free(keyval);
 	    continue;
 	  } else {
@@ -389,14 +381,14 @@ static gras_error_t parse_statement(char	 *definition,
 	      if (! isdigit(*p) )
 		fixed = 0;
 	    if (fixed) {
-	      TRY(change_to_fixed_array(identifiers,atoi(keyval)));
-	      TRY(change_to_ref(identifiers));
+	      change_to_fixed_array(identifiers,atoi(keyval));
+	      change_to_ref(identifiers);
 	      gras_free(keyval);
 	      continue;
 
 	    } else {
-	      TRY(change_to_ref_pop_array(identifiers));
-	      TRY(gras_dynar_push(fields_to_push,&keyval));
+	      change_to_ref_pop_array(identifiers);
+	      gras_dynar_push(fields_to_push,&keyval);
 	      continue;
 	    }
 	  }
@@ -426,7 +418,7 @@ static gras_error_t parse_statement(char	 *definition,
       identifier.name=(char*)strdup(gras_ddt_parse_text);
       DEBUG1("Found the identifier \"%s\"",identifier.name);
       
-      TRY(gras_dynar_push(identifiers, &identifier));
+      gras_dynar_push(identifiers, &identifier);
       DEBUG1("Dynar_len=%lu",gras_dynar_length(identifiers));
       expect_id_separator = 1;
       continue;
@@ -455,22 +447,18 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
   gras_datadesc_type_t *struct_type;
 
   GRAS_IN;
-  errcode=gras_dynar_new(&identifiers,sizeof(identifier_t),NULL);
-  errcode=gras_dynar_new(&fields_to_push,sizeof(char*),NULL);
-  if (errcode != no_error) {
-    GRAS_OUT;
-    return NULL;
-  }
+  gras_dynar_new(&identifiers,sizeof(identifier_t),NULL);
+  gras_dynar_new(&fields_to_push,sizeof(char*),NULL);
 
   /* Create the struct descriptor */
   if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
-    TRYFAIL(gras_datadesc_struct(gras_ddt_parse_text,&struct_type));
+    struct_type = gras_datadesc_struct(gras_ddt_parse_text);
     VERB1("Parse the struct '%s'", gras_ddt_parse_text);
     gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   } else {
     sprintf(buffname,"anonymous struct %d",anonymous_struct++); 
     VERB1("Parse the anonymous struct nb %d", anonymous_struct);
-    TRYFAIL(gras_datadesc_struct(buffname,&struct_type));
+    struct_type = gras_datadesc_struct(buffname);
   }
 
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_LA)
@@ -490,7 +478,7 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
 		     field.name,field.tm.is_ref);
 
       VERB2("Append field '%s' to %p",field.name, (void*)struct_type);      
-      TRYFAIL(gras_datadesc_struct_append(struct_type, field.name, field.type));
+      gras_datadesc_struct_append(struct_type, field.name, field.type);
       gras_free(field.name);
       gras_free(field.type_name);
 

@@ -38,11 +38,11 @@ BEGIN_DECL
 /* msgtype declaration and retrival */
 typedef struct s_gras_msgtype gras_msgtype_t;
 
-gras_error_t gras_msgtype_declare  (const char            *name,
-				    gras_datadesc_type_t  *payload);
-gras_error_t gras_msgtype_declare_v(const char            *name,
-				    short int              version,
-				    gras_datadesc_type_t  *payload);
+void gras_msgtype_declare  (const char            *name,
+			    gras_datadesc_type_t  *payload);
+void gras_msgtype_declare_v(const char            *name,
+			    short int              version,
+			    gras_datadesc_type_t  *payload);
 
 gras_msgtype_t *gras_msgtype_by_name (const char     *name);
 gras_msgtype_t *gras_msgtype_by_namev(const char      *name,
@@ -61,10 +61,10 @@ gras_msgtype_t *gras_msgtype_by_namev(const char      *name,
  */
 typedef int (*gras_cb_t)(gras_socket_t        *expeditor,
 			 void                 *payload);
-gras_error_t gras_cb_register  (gras_msgtype_t *msgtype,
-			        gras_cb_t       cb);
-void         gras_cb_unregister(gras_msgtype_t *msgtype,
-				gras_cb_t     cb);
+void gras_cb_register  (gras_msgtype_t *msgtype,
+			gras_cb_t       cb);
+void gras_cb_unregister(gras_msgtype_t *msgtype,
+			gras_cb_t     cb);
 
 gras_error_t gras_msg_send(gras_socket_t  *sock,
 			   gras_msgtype_t *msgtype,

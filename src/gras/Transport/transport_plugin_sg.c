@@ -76,9 +76,6 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
 
   gras_trp_sg_plug_data_t *data=gras_new(gras_trp_sg_plug_data_t,1);
 
-  if (!data)
-    RAISE_MALLOC;
-
   plug->data      = data; 
 
   plug->socket_client = gras_trp_sg_socket_client;
@@ -135,9 +132,7 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
   }
 
   /* create the socket */
-  if (!(data = gras_new(gras_trp_sg_sock_data_t,1)))
-    RAISE_MALLOC;
-  
+  data = gras_new(gras_trp_sg_sock_data_t,1);
   data->from_PID     = MSG_process_self_PID();
   data->to_PID       = hd->proc[ pr.tochan ];
   data->to_host      = peer;
@@ -181,16 +176,14 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
     pr.tochan = sock->raw ? pd->rawChan : pd->chan;
     pr.port   = sock->port;
     pr.raw    = sock->raw;
-    TRY(gras_dynar_push(hd->ports,&pr));
+    gras_dynar_push(hd->ports,&pr);
     
   default:
     return errcode;
   }
   
   /* Create the socket */
-  if (!(data = gras_new(gras_trp_sg_sock_data_t,1)))
-    RAISE_MALLOC;
-  
+  data = gras_new(gras_trp_sg_sock_data_t,1);
   data->from_PID     = -1;
   data->to_PID       = MSG_process_self_PID();
   data->to_host      = MSG_host_self();
@@ -246,10 +239,8 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
   
   sprintf(name,"Chunk[%d]",count++);
 
-  if (!(task_data=gras_new(sg_task_data_t,1)))
-    RAISE_MALLOC;
-  if (!(task_data->data=(void*)gras_malloc(size)))
-    RAISE_MALLOC;
+  task_data=gras_new(sg_task_data_t,1);
+  task_data->data=(void*)gras_malloc(size);
   task_data->size = size;
   memcpy(task_data->data,data,size);
 

@@ -32,18 +32,12 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,gros,
  *
  * Creates and initialize a new dictionnary
  */
-gras_error_t
+void
 gras_dict_new(gras_dict_t **whereto) {
-  gras_dict_t *dict;
 
-  if (!(dict = calloc(1, sizeof(gras_dict_t))))
-    RAISE_MALLOC;
+  (*whereto) = gras_new(gras_dict_t,1);
+  (*whereto)->head=NULL;
 
-  dict->head=NULL;
-
-  *whereto = dict;
-  
-  return no_error;
 }
 /**
  * gras_dict_free:
@@ -74,17 +68,17 @@ gras_dict_free(gras_dict_t **dict)  {
  * set the @data in the structure under the @key, which can be any kind 
  * of data, as long as its length is provided in @key_len.
  */
-gras_error_t
+void
 gras_dict_set_ext(gras_dict_t     *p_dict,
-		     const char      *key,
-		     int              key_len,
-		     void            *data,
-		     void_f_pvoid_t  *free_ctn) {
+		  const char      *key,
+		  int              key_len,
+		  void            *data,
+		  void_f_pvoid_t  *free_ctn) {
 
   gras_assert(p_dict);
 
-  return gras_dictelm_set_ext(&(p_dict->head),
-				 key, key_len, data, free_ctn);
+  gras_dictelm_set_ext(&(p_dict->head),
+		       key, key_len, data, free_ctn);
 }
 
 /**
@@ -98,7 +92,7 @@ gras_dict_set_ext(gras_dict_t     *p_dict,
  * set the @data in the structure under the @key, which is a 
  * null terminated string.
  */
-gras_error_t
+void
 gras_dict_set(gras_dict_t    *p_dict,
 		 const char     *key,
 		 void           *data,
@@ -106,7 +100,7 @@ gras_dict_set(gras_dict_t    *p_dict,
 
   gras_assert(p_dict);
   
-  return gras_dictelm_set(&(p_dict->head), key, data, free_ctn);
+  gras_dictelm_set(&(p_dict->head), key, data, free_ctn);
 }
 
 /**
@@ -198,11 +192,11 @@ gras_dict_remove(gras_dict_t *dict,
  * function to output the data. If NULL, data won't be displayed.
  */
 
-gras_error_t
+void
 gras_dict_dump(gras_dict_t    *dict,
                void_f_pvoid_t *output) {
 
   printf("Dict %p:\n", (void*)dict);
-  return gras_dictelm_dump(dict ? dict->head: NULL, output);
+  gras_dictelm_dump(dict ? dict->head: NULL, output);
 }
 

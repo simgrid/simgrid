@@ -67,8 +67,6 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
     char * const new_data    = gras_malloc0(elmsize*new_size);
 
     DEBUG3("expend %p from %lu to %d elements", (void*)dynar, (unsigned long)old_size, nb);
-    if (!new_data)
-      RAISE_MALLOC;
 
     if (old_data) {
       memcpy(new_data, old_data, used_length);
@@ -122,21 +120,17 @@ _gras_dynar_put_elm(const gras_dynar_t * const dynar,
  * @whereto: pointer to where the dynar should be created
  * @elm_size: size of each element in the dynar
  * @free_func: function to call each time we want to get rid of an element (or NULL if nothing to do).
- * @Returns: malloc_error or no_error
  *
  * Creates a new dynar. If a free_func is provided, the elements have to be
  * pointer of pointer. That is to say that dynars can contain either base
  * types (int, char, double, etc) or pointer of pointers (struct **).
  */
-gras_error_t
+void
 gras_dynar_new(gras_dynar_t   ** const p_dynar,
                const size_t            elmsize,
                void_f_pvoid_t  * const free_func) {
-  gras_error_t  errcode = no_error;
-  gras_dynar_t *dynar   = NULL;
-
-  if (!(dynar = gras_new0(gras_dynar_t,1)))
-    RAISE_MALLOC;
+   
+  gras_dynar_t *dynar = gras_new0(gras_dynar_t,1);
 
   dynar->size    = 0;
   dynar->used    = 0;
@@ -145,8 +139,6 @@ gras_dynar_new(gras_dynar_t   ** const p_dynar,
   dynar->free    = free_func;
 
   *p_dynar = dynar;
-
-  return errcode;
 }
 
 /**
@@ -249,30 +241,26 @@ gras_dynar_get(const gras_dynar_t * const dynar,
  * @dynar:
  * @idx:
  * @src: What will be feeded to the dynar
- * @Returns: malloc_error or no_error
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, BUT NOT freeing
  * the previous value at this position. If you want to free the previous content,
  * use gras_dynar_remplace().
  */
-gras_error_t
+void
 gras_dynar_set(gras_dynar_t * const dynar,
                const int            idx,
                const void   * const src) {
-  gras_error_t errcode = no_error;
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
 
-  TRY(_gras_dynar_expand(dynar, idx+1));
+  _gras_dynar_expand(dynar, idx+1);
 
   if (idx >= dynar->used) {
     dynar->used = idx+1;
   }
 
   _gras_dynar_put_elm(dynar, idx, src);
-
-  return errcode;
 }
 
 /**
@@ -280,17 +268,15 @@ gras_dynar_set(gras_dynar_t * const dynar,
  * @dynar:
  * @idx:
  * @object:
- * @Returns: malloc_error or no_error
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, AND DO
  * free the previous value at this position. If you don't want to free the
  * previous content, use gras_dynar_set().
  */
-gras_error_t
+void
 gras_dynar_remplace(gras_dynar_t * const dynar,
                     const int            idx,
                     const void   * const object) {
-  gras_error_t errcode = no_error;
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
@@ -301,9 +287,7 @@ gras_dynar_remplace(gras_dynar_t * const dynar,
     dynar->free(old_object);
   }
 
-  errcode = gras_dynar_set(dynar, idx, object);
-
-  return errcode;
+  gras_dynar_set(dynar, idx, object);
 }
 
 /**
@@ -311,17 +295,15 @@ gras_dynar_remplace(gras_dynar_t * const dynar,
  * @dynar:
  * @idx:
  * @src: What will be feeded to the dynar
- * @Returns: malloc_error or no_error
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, and
  * moving the previously existing value and all subsequent ones to one
  * position right in the dynar.
  */
-gras_error_t
+void
 gras_dynar_insert_at(gras_dynar_t * const dynar,
                      const int            idx,
                      const void   * const src) {
-  gras_error_t errcode = no_error;
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
@@ -331,7 +313,7 @@ gras_dynar_insert_at(gras_dynar_t * const dynar,
     const size_t old_used = dynar->used;
     const size_t new_used = old_used + 1;
 
-    TRY(_gras_dynar_expand(dynar, new_used));
+    _gras_dynar_expand(dynar, new_used);
 
     {
       const size_t nb_shift =  old_used - idx;
@@ -348,8 +330,6 @@ gras_dynar_insert_at(gras_dynar_t * const dynar,
     _gras_dynar_put_elm(dynar, idx, src);
     dynar->used = new_used;
   }
-
-  return errcode;
 }
 
 /**
@@ -395,15 +375,14 @@ gras_dynar_remove_at(gras_dynar_t * const dynar,
  * gras_dynar_push:
  * @dynar:
  * @src:
- * @Returns: malloc_error or no_error
  *
  * Add an element at the end of the dynar
  */
-gras_error_t
+void
 gras_dynar_push(gras_dynar_t * const dynar,
                 const void   * const src) {
   __sanity_check_dynar(dynar);
-  return gras_dynar_insert_at(dynar, dynar->used, src);
+  gras_dynar_insert_at(dynar, dynar->used, src);
 }
 
 /**
@@ -426,16 +405,15 @@ gras_dynar_pop(gras_dynar_t * const dynar,
  * gras_dynar_unshift:
  * @dynar:
  * @src:
- * @Returns: malloc_error or no_error
  *
  * Add an element at the begining of the dynar (rather long, Use
  * gras_dynar_push() when possible)
  */
-gras_error_t
+void
 gras_dynar_unshift(gras_dynar_t * const dynar,
                    const void   * const src) {
   __sanity_check_dynar(dynar);
-  return gras_dynar_insert_at(dynar, 0, src);
+  gras_dynar_insert_at(dynar, 0, src);
 }
 
 /**

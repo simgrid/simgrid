@@ -676,6 +676,20 @@ Sockets
 @a4: 
 @a5: 
 
+<!-- ##### MACRO CCRITICAL6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
 <!-- ##### MACRO CDEBUG0 ##### -->
 <para>
 
@@ -738,6 +752,20 @@ Sockets
 @a3: 
 @a4: 
 @a5: 
+
+<!-- ##### MACRO CDEBUG6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
 
 <!-- ##### MACRO CERROR0 ##### -->
 <para>
@@ -802,6 +830,20 @@ Sockets
 @a4: 
 @a5: 
 
+<!-- ##### MACRO CERROR6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
 <!-- ##### MACRO CINFO0 ##### -->
 <para>
 
@@ -864,6 +906,20 @@ Sockets
 @a3: 
 @a4: 
 @a5: 
+
+<!-- ##### MACRO CINFO6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
 
 <!-- ##### MACRO CLOG0 ##### -->
 <para>
@@ -1006,6 +1062,47 @@ Sockets
 @a4: 
 @a5: 
 
+<!-- ##### MACRO CRITICAL6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+<!-- ##### MACRO CVERB6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+<!-- ##### MACRO CWARN6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
 <!-- ##### MACRO CWARNING6 ##### -->
 <para>
 
@@ -1060,6 +1157,19 @@ Sockets
 @parentToChild: 
 @childToParent: 
 @Returns: 
+
+<!-- ##### MACRO DEBUG6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
 
 <!-- ##### FUNCTION DROP_SOCKET ##### -->
 <para>
@@ -1131,6 +1241,19 @@ Sockets
 </para>
 
 
+<!-- ##### MACRO ERROR6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
 <!-- ##### FUNCTION EstablishAnEar ##### -->
 <para>
 
@@ -1150,13 +1273,79 @@ Sockets
 @HOST_FORMAT: 
 @NETWORK_FORMAT: 
 
+<!-- ##### MACRO GRAS_DEFINE_TYPE ##### -->
+<para>
+
+</para>
+
+@name: 
+@def: 
+
+<!-- ##### MACRO GRAS_LOG_DEFAULT_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+
+<!-- ##### MACRO GRAS_LOG_EXTERNAL_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+
+<!-- ##### MACRO GRAS_LOG_ISENABLED ##### -->
+<para>
+
+</para>
+
+@catName: 
+@priority: 
+
 <!-- ##### MACRO GRAS_LOG_MAYDAY ##### -->
 <para>
 
 </para>
 
 
+<!-- ##### MACRO GRAS_LOG_NEW_CATEGORY ##### -->
+<para>
+
+</para>
+
+@catName: 
+
+<!-- ##### MACRO GRAS_LOG_NEW_DEFAULT_CATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+
+<!-- ##### MACRO GRAS_LOG_NEW_DEFAULT_SUBCATEGORY ##### -->
+<para>
+
+</para>
+
+@cname: 
+@parent: 
+
+<!-- ##### MACRO GRAS_LOG_NEW_SUBCATEGORY ##### -->
+<para>
+
+</para>
+
+@catName: 
+@parent: 
+
 <!-- ##### MACRO GRAS_LOG_ROOT_CAT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GRAS_LOG_STATIC_THRESHOLD ##### -->
 <para>
 
 </para>
@@ -1248,6 +1437,19 @@ Sockets
 @repetitions: 
 @format: 
 @Returns: 
+
+<!-- ##### MACRO INFO6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
 
 <!-- ##### TYPEDEF IPAddress ##### -->
 <para>
@@ -1548,11 +1750,37 @@ Sockets
 @sd: 
 @Returns: 
 
+<!-- ##### MACRO VERB6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
 <!-- ##### MACRO VERSION ##### -->
 <para>
 
 </para>
 
+
+<!-- ##### MACRO WARN6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
 
 <!-- ##### MACRO WARNING6 ##### -->
 <para>
@@ -1870,6 +2098,400 @@ Sockets
 </para>
 
 @ud: 
+
+<!-- ##### FUNCTION gras_arch_selfid ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION gras_cb_register ##### -->
+<para>
+
+</para>
+
+@msgtype: 
+@cb: 
+@Returns: 
+@message: 
+@TTL: 
+
+<!-- ##### USER_FUNCTION gras_cb_t ##### -->
+<para>
+
+</para>
+
+@expeditor: 
+@payload: 
+@Returns: 
+@payload_type: 
+@payload_data: 
+@msg: 
+
+<!-- ##### FUNCTION gras_cb_unregister ##### -->
+<para>
+
+</para>
+
+@msgtype: 
+@cb: 
+
+<!-- ##### FUNCTION gras_cbps_block_begin ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+<!-- ##### FUNCTION gras_cbps_block_end ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+<!-- ##### FUNCTION gras_cbps_i_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cbps_i_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@val: 
+
+<!-- ##### FUNCTION gras_cbps_v_get ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+<!-- ##### FUNCTION gras_cbps_v_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+@res: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cbps_v_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cbps_v_set ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+<!-- ##### FUNCTION gras_cfg_check ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_cpy ##### -->
+<para>
+
+</para>
+
+@whereto: 
+@tocopy: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_dump ##### -->
+<para>
+
+</para>
+
+@name: 
+@indent: 
+@cfg: 
+
+<!-- ##### FUNCTION gras_cfg_empty ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_free ##### -->
+<para>
+
+</para>
+
+@cfg: 
+
+<!-- ##### FUNCTION gras_cfg_get_double ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_get_dynar ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@dynar: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_get_host ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@host: 
+@port: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_get_int ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_get_string ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_new ##### -->
+<para>
+
+</para>
+
+@whereto: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_register ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@type: 
+@min: 
+@max: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_register_str ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@entry: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_rm_double ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_rm_host ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@host: 
+@port: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_rm_int ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_rm_string ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_set ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@Varargs: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_set_double ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_set_host ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@host: 
+@port: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_set_int ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_set_parse ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@options: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_set_string ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_cfg_set_vargs ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@pa: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_array_dyn ##### -->
+<para>
+
+</para>
+
+@name: 
+@element_type: 
+@dynamic_size: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_array_fixed ##### -->
+<para>
+
+</para>
+
+@name: 
+@element_type: 
+@fixed_size: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_by_name ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+@type: 
+
+<!-- ##### MACRO gras_datadesc_by_symbol ##### -->
+<para>
+
+</para>
+
+@name: 
+
+<!-- ##### FUNCTION gras_datadesc_cb_recv ##### -->
+<para>
+
+</para>
+
+@type: 
+@post: 
+
+<!-- ##### FUNCTION gras_datadesc_cb_send ##### -->
+<para>
+
+</para>
+
+@type: 
+@pre: 
 
 <!-- ##### FUNCTION gras_datadesc_cb_set_post ##### -->
 <para>
@@ -2215,6 +2837,108 @@ Sockets
 @code: 
 @def: 
 
+<!-- ##### FUNCTION gras_datadesc_ref ##### -->
+<para>
+
+</para>
+
+@name: 
+@referenced_type: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_ref_generic ##### -->
+<para>
+
+</para>
+
+@name: 
+@selector: 
+@dst: 
+@Returns: 
+@discriminant: 
+
+<!-- ##### FUNCTION gras_datadesc_ref_pop_arr ##### -->
+<para>
+
+</para>
+
+@element_type: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_struct ##### -->
+<para>
+
+</para>
+
+@name: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_struct_append ##### -->
+<para>
+
+</para>
+
+@struct_type: 
+@name: 
+@field_type: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_struct_close ##### -->
+<para>
+
+</para>
+
+@struct_type: 
+
+<!-- ##### USER_FUNCTION gras_datadesc_type_cb_int_t ##### -->
+<para>
+
+</para>
+
+@vars: 
+@data: 
+@Returns: 
+@p_type: 
+
+<!-- ##### USER_FUNCTION gras_datadesc_type_cb_void_t ##### -->
+<para>
+
+</para>
+
+@vars: 
+@data: 
+@p_type: 
+
+<!-- ##### FUNCTION gras_datadesc_union ##### -->
+<para>
+
+</para>
+
+@name: 
+@selector: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_union_append ##### -->
+<para>
+
+</para>
+
+@union_type: 
+@name: 
+@field_type: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_union_close ##### -->
+<para>
+
+</para>
+
+@union_type: 
+
 <!-- ##### FUNCTION gras_dd_cbps_block_begin ##### -->
 <para>
 
@@ -2415,12 +3139,103 @@ Sockets
 @type: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_dict_cursor_free ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_cursor_get_data ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@data: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_cursor_get_key ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_cursor_new ##### -->
+<para>
+
+</para>
+
+@head: 
+@cursor: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_dict_cursor_next ##### -->
 <para>
 
 </para>
 
 @cursor: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_cursor_rewind ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_dump ##### -->
+<para>
+
+</para>
+
+@head: 
+@output: 
+@Returns: 
+
+<!-- ##### MACRO gras_dict_foreach ##### -->
+<para>
+
+</para>
+
+@dict: 
+@cursor: 
+@key: 
+@data: 
+
+<!-- ##### FUNCTION gras_dict_free ##### -->
+<para>
+
+</para>
+
+@dict: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_get ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_get_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
 @Returns: 
 
 <!-- ##### FUNCTION gras_dict_insert ##### -->
@@ -2446,6 +3261,47 @@ Sockets
 @free_ctn: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_dict_new ##### -->
+<para>
+
+</para>
+
+@dict: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_print ##### -->
+<para>
+
+</para>
+
+@data: 
+
+<!-- ##### FUNCTION gras_dict_prints ##### -->
+<para>
+
+</para>
+
+@data: 
+
+<!-- ##### FUNCTION gras_dict_remove ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_remove_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_dict_retrieve ##### -->
 <para>
 
@@ -2467,6 +3323,63 @@ Sockets
 @data: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_dict_set ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@free_ctn: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_set_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
+@free_ctn: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_cursor_first ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+<!-- ##### FUNCTION gras_dynar_cursor_get ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+@whereto: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_cursor_rm ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
+<!-- ##### FUNCTION gras_dynar_cursor_step ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+
 <!-- ##### FUNCTION gras_dynar_first ##### -->
 <para>
 
@@ -2474,6 +3387,81 @@ Sockets
 
 @dynar: 
 @cursor: 
+@Returns: 
+
+<!-- ##### MACRO gras_dynar_foreach ##### -->
+<para>
+
+</para>
+
+@_dynar: 
+@_cursor: 
+@_data: 
+@_whereto: 
+
+<!-- ##### FUNCTION gras_dynar_free ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_free_container ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_get ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@dst: 
+@whereto: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_insert_at ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@src: 
+@Returns: 
+@object: 
+
+<!-- ##### FUNCTION gras_dynar_length ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_map ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@operator: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_new ##### -->
+<para>
+
+</para>
+
+@whereto: 
+@elm_size: 
+@free_func: 
 @Returns: 
 
 <!-- ##### FUNCTION gras_dynar_next ##### -->
@@ -2486,12 +3474,126 @@ Sockets
 @whereto: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_dynar_pop ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@dst: 
+@whereto: 
+
+<!-- ##### FUNCTION gras_dynar_push ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@src: 
+@Returns: 
+@object: 
+
+<!-- ##### FUNCTION gras_dynar_remove_at ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@object: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_remplace ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@object: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_reset ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_set ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@idx: 
+@src: 
+@Returns: 
+@object: 
+
+<!-- ##### FUNCTION gras_dynar_shift ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@dst: 
+@whereto: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_unshift ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@src: 
+@Returns: 
+@object: 
+
+<!-- ##### ENUM gras_error_t ##### -->
+<para>
+
+</para>
+
+@no_error: no error
+@malloc_error: Well known error
+@mismatch_error: Not found
+@system_error: a syscall did fail
+@network_error: error while sending/receiving data
+@timeout_error: not quick enough, dude
+@thread_error: error while [un]locking
+@unknown_error: no idea
+
 <!-- ##### FUNCTION gras_lock ##### -->
 <para>
 
 </para>
 
 @Returns: 
+
+<!-- ##### FUNCTION gras_log_appender_set ##### -->
+<para>
+
+</para>
+
+@cat: 
+@app: 
+
+<!-- ##### FUNCTION gras_log_control_set ##### -->
+<para>
+
+</para>
+
+@cs: 
+@Returns: 
+
+<!-- ##### VARIABLE gras_log_default_appender ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### FUNCTION gras_log_parent_set ##### -->
 <para>
@@ -2500,6 +3602,22 @@ Sockets
 
 @cat: 
 @parent: 
+
+<!-- ##### ENUM gras_log_priority_t ##### -->
+<para>
+
+</para>
+
+@gras_log_priority_none: 
+@gras_log_priority_trace: 
+@gras_log_priority_debug: 
+@gras_log_priority_verbose: 
+@gras_log_priority_info: 
+@gras_log_priority_warning: 
+@gras_log_priority_error: 
+@gras_log_priority_critical: 
+@gras_log_priority_infinite: 
+@gras_log_priority_uninitialized: 
 
 <!-- ##### FUNCTION gras_log_threshold_set ##### -->
 <para>
@@ -2524,6 +3642,14 @@ Sockets
 
 @msg: 
 
+<!-- ##### FUNCTION gras_msg_handle ##### -->
+<para>
+
+</para>
+
+@timeOut: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_msg_new ##### -->
 <para>
 
@@ -2535,6 +3661,72 @@ Sockets
 @Varargs: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_msg_send ##### -->
+<para>
+
+</para>
+
+@sock: 
+@msgtype: 
+@payload: 
+@Returns: 
+@sd: 
+@msg: 
+@freeDirective: 
+
+<!-- ##### FUNCTION gras_msg_wait ##### -->
+<para>
+
+</para>
+
+@timeout: 
+@msgt_want: 
+@expeditor: 
+@payload: 
+@Returns: 
+@id: 
+@message: 
+
+<!-- ##### FUNCTION gras_msgtype_by_name ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+@dst: 
+
+<!-- ##### FUNCTION gras_msgtype_by_namev ##### -->
+<para>
+
+</para>
+
+@name: 
+@version: 
+@Returns: 
+@dst: 
+
+<!-- ##### FUNCTION gras_msgtype_declare ##### -->
+<para>
+
+</para>
+
+@name: 
+@payload: 
+@Returns: 
+@dst: 
+
+<!-- ##### FUNCTION gras_msgtype_declare_v ##### -->
+<para>
+
+</para>
+
+@name: 
+@version: 
+@payload: 
+@Returns: 
+@dst: 
+
 <!-- ##### FUNCTION gras_msgtype_register ##### -->
 <para>
 
@@ -2544,6 +3736,86 @@ Sockets
 @name: 
 @sequence_count: 
 @Varargs: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_os_sleep ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@Param2: 
+
+<!-- ##### FUNCTION gras_os_time ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION gras_set_add ##### -->
+<para>
+
+</para>
+
+@set: 
+@elm: 
+@free_func: 
+@Returns: 
+
+<!-- ##### MACRO gras_set_foreach ##### -->
+<para>
+
+</para>
+
+@set: 
+@cursor: 
+@elm: 
+
+<!-- ##### FUNCTION gras_set_free ##### -->
+<para>
+
+</para>
+
+@set: 
+
+<!-- ##### FUNCTION gras_set_get_by_id ##### -->
+<para>
+
+</para>
+
+@set: 
+@id: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_set_get_by_name ##### -->
+<para>
+
+</para>
+
+@set: 
+@key: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_set_get_by_name_ext ##### -->
+<para>
+
+</para>
+
+@set: 
+@name: 
+@name_len: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_set_new ##### -->
+<para>
+
+</para>
+
+@dst: 
 @Returns: 
 
 <!-- ##### FUNCTION gras_sleep ##### -->
@@ -2598,6 +3870,62 @@ Sockets
 @sock: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_socket_client ##### -->
+<para>
+
+</para>
+
+@host: 
+@Param2: 
+@dst: 
+@Returns: 
+@bufSize: 
+@sock: 
+
+<!-- ##### FUNCTION gras_socket_close ##### -->
+<para>
+
+</para>
+
+@sd: 
+@sock: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_socket_my_port ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_socket_peer_name ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+@sd: 
+
+<!-- ##### FUNCTION gras_socket_peer_port ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_socket_server ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@dst: 
+@Returns: 
+@bufSize: 
+
 <!-- ##### FUNCTION gras_time ##### -->
 <para>
 
@@ -2611,4 +3939,24 @@ Sockets
 </para>
 
 @Returns: 
+
+<!-- ##### FUNCTION gras_userdata_get ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO gras_userdata_new ##### -->
+<para>
+
+</para>
+
+@type: 
+
+<!-- ##### FUNCTION gras_userdata_set ##### -->
+<para>
+
+</para>
+
+@ud: 
 

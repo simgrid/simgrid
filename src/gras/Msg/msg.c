@@ -33,7 +33,7 @@ void gras_msg_init(void) {
 
   VERB0("Initializing Msg");
   
-  TRYFAIL(gras_set_new(&_gras_msgtype_set));
+  gras_set_new(&_gras_msgtype_set);
 
   memcpy(GRAS_header,"GRAS", 4);
   GRAS_header[4]=GRAS_PROTOCOL_VERSION;
@@ -79,9 +79,9 @@ static char *make_namev(const char *name, short int ver) {
 
   namev = (char*)gras_malloc(strlen(name)+2+3+1);
 
-  if (namev) {
+  if (namev)
       sprintf(namev,"%s_v%d",name,ver);
-  }
+
   return namev;
 }
 
@@ -92,10 +92,9 @@ static char *make_namev(const char *name, short int ver) {
  *
  * Registers a message to the GRAS mecanism.
  */
-gras_error_t
-gras_msgtype_declare(const char            *name,
-		     gras_datadesc_type_t  *payload) {
-  return gras_msgtype_declare_v(name, 0, payload);
+void gras_msgtype_declare(const char            *name,
+			  gras_datadesc_type_t  *payload) {
+   gras_msgtype_declare_v(name, 0, payload);
 }
 
 /**
@@ -110,7 +109,7 @@ gras_msgtype_declare(const char            *name,
  * will be handled as an independent message type, so you can register 
  * differents for each of them.
  */
-gras_error_t
+void
 gras_msgtype_declare_v(const char            *name,
 		       short int              version,
 		       gras_datadesc_type_t  *payload) {
@@ -119,9 +118,6 @@ gras_msgtype_declare_v(const char            *name,
   gras_msgtype_t *msgtype;
   char *namev=make_namev(name,version);
   
-  if (!namev)
-    RAISE_MALLOC;
-
   errcode = gras_set_get_by_name(_gras_msgtype_set,
 				 namev,(gras_set_elm_t**)&msgtype);
 
@@ -133,27 +129,21 @@ gras_msgtype_declare_v(const char            *name,
 		 namev,gras_datadesc_get_name(payload),
 		 gras_datadesc_get_name(msgtype->ctn_type));
 
-    return no_error; /* do really ignore it */
+    return ; /* do really ignore it */
 
-  } else if (errcode == mismatch_error) {
-    INFO3("Register version %d of message '%s' (payload: %s).", 
-	   version, name, gras_datadesc_get_name(payload));    
-  } else {
-    return errcode; /* Was expecting for mismatch_error */
   }
+  gras_assert_error(mismatch_error); /* expect this error */
+  INFO3("Register version %d of message '%s' (payload: %s).", 
+	version, name, gras_datadesc_get_name(payload));    
 
-  if (! (msgtype = gras_new(gras_msgtype_t,1)) ) 
-    RAISE_MALLOC;
-
+  msgtype = gras_new(gras_msgtype_t,1);
   msgtype->name = (namev == name ? strdup(name) : namev);
   msgtype->name_len = strlen(namev);
   msgtype->version = version;
   msgtype->ctn_type = payload;
 
-  TRY(gras_set_add(_gras_msgtype_set, (gras_set_elm_t*)msgtype,
-		   &gras_msgtype_free));
-   
-  return no_error;
+  gras_set_add(_gras_msgtype_set, (gras_set_elm_t*)msgtype,
+	       &gras_msgtype_free);
 }
 
 /**
@@ -336,7 +326,7 @@ gras_msg_wait(double                 timeout,
     msg.type      =  msgt_got;
     msg.payload   =  payload;
     msg.payload_size = payload_size_got;
-    TRY(gras_dynar_push(pd->msg_queue,&msg));
+    gras_dynar_push(pd->msg_queue,&msg);
     
     now=gras_os_time();
     if (now - start + 0.001 < timeout) {
@@ -426,10 +416,9 @@ gras_cbl_free(void *data){
   }
 }
 
-gras_error_t
+void
 gras_cb_register(gras_msgtype_t *msgtype,
 		 gras_cb_t cb) {
-  gras_error_t errcode;
   gras_procdata_t *pd=gras_procdata_get();
   gras_cblist_t *list=NULL;
   int cpt;
@@ -447,18 +436,13 @@ gras_cb_register(gras_msgtype_t *msgtype,
   if (!list) {
     /* First cb? Create room */
     list = gras_new(gras_cblist_t,1);
-    if (!list)
-      RAISE_MALLOC;
-
     list->id = msgtype->code;
-    TRY(gras_dynar_new(&(list->cbs), sizeof(gras_cb_t), NULL));
-    TRY(gras_dynar_push(pd->cbl_list,&list));
+    gras_dynar_new(&(list->cbs), sizeof(gras_cb_t), NULL);
+    gras_dynar_push(pd->cbl_list,&list);
   }
 
   /* Insert the new one into the set */
-  TRY(gras_dynar_insert_at(list->cbs,0,&cb));
-
-  return no_error;
+  gras_dynar_insert_at(list->cbs,0,&cb);
 }
 
 void

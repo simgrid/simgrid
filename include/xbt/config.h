@@ -29,16 +29,16 @@ typedef enum {
 } gras_cfgelm_type_t;
 
 /*----[ Memory management ]-----------------------------------------------*/
-gras_error_t gras_cfg_new (gras_cfg_t **whereto); /* (whereto == NULL) is ok */
-gras_error_t gras_cfg_cpy(gras_cfg_t **whereto, gras_cfg_t *tocopy);
+void gras_cfg_new (gras_cfg_t **whereto); /* (whereto == NULL) is ok */
+void gras_cfg_cpy(gras_cfg_t **whereto, gras_cfg_t *tocopy);
 void gras_cfg_free(gras_cfg_t **cfg);
 void gras_cfg_dump(const char *name,const char*indent,gras_cfg_t *cfg);
 
 /*----[ Registering stuff ]-----------------------------------------------*/
 /* Register a possible cell */
-gras_error_t gras_cfg_register(gras_cfg_t *cfg,
-			       const char *name, gras_cfgelm_type_t type,
-			       int min, int max);
+void gras_cfg_register(gras_cfg_t *cfg,
+		       const char *name, gras_cfgelm_type_t type,
+		       int min, int max);
 /* Unregister a possible cell */
 gras_error_t gras_cfg_unregister(gras_cfg_t *cfg, const char *name);
 

@@ -26,13 +26,13 @@ typedef struct gras_set_elm_ {
 
 /*####[ Functions ]##########################################################*/
 
-gras_error_t gras_set_new (gras_set_t **dst);
-void         gras_set_free(gras_set_t **set);
+void gras_set_new (gras_set_t **dst);
+void gras_set_free(gras_set_t **set);
 
 
-gras_error_t gras_set_add    (gras_set_t     *set,
-			      gras_set_elm_t *elm,
-			      void_f_pvoid_t *free_func);
+void gras_set_add (gras_set_t     *set,
+		   gras_set_elm_t *elm,
+		   void_f_pvoid_t *free_func);
 
 /*----[ gras_set_retrieve ]-------------------------------------------------*/
 /* Search the given #key#. data=NULL when not found.                         */

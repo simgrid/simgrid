@@ -17,12 +17,8 @@ GRAS_LOG_DEFAULT_CATEGORY(process);
 static gras_procdata_t *_gras_procdata = NULL;
 
 gras_error_t gras_process_init() {
-  gras_error_t errcode;
-
-  if (!(_gras_procdata=gras_new(gras_procdata_t,1)))
-    RAISE_MALLOC;
-
-  TRY(gras_procdata_init());
+  _gras_procdata=gras_new(gras_procdata_t,1);
+  gras_procdata_init();
   return no_error;
 }
 gras_error_t gras_process_exit() {

@@ -11,7 +11,6 @@
 #include "gras_private.h"
 #include "dict_private.h"
 
-#include <stdlib.h> /* malloc() */
 #include <string.h> /* strlen() */
 
 GRAS_LOG_EXTERNAL_CATEGORY(dict);
@@ -31,8 +30,7 @@ struct gras_dict_cursor_ {
   gras_dictelm_t  *head;
 };
 
-static _GRAS_INLINE
-gras_error_t
+static _GRAS_INLINE void
 _cursor_push_keys(gras_dict_cursor_t *p_cursor,
                   gras_dictelm_t        *p_elm);
 
@@ -47,28 +45,25 @@ _cursor_push_keys(gras_dict_cursor_t *p_cursor,
  *
  * Structure creator
  */
-gras_error_t
+void
 gras_dict_cursor_new(const gras_dict_t          *p_head,
                      /*OUT*/gras_dict_cursor_t **pp_cursor) {
   gras_error_t        errcode  = no_error;
   gras_dict_cursor_t *p_cursor = NULL;
 
-  p_cursor = malloc(sizeof(gras_dict_cursor_t));
-  if (!p_cursor)
-    RAISE_MALLOC;
+  p_cursor = gras_new(gras_dict_cursor_t,1);
 
-  TRY(gras_dynar_new(&p_cursor->keys,     sizeof(char **), NULL));
-  TRY(gras_dynar_new(&p_cursor->key_lens, sizeof(int  *),  NULL));
+  gras_dynar_new(&p_cursor->keys,     sizeof(char **), NULL);
+  gras_dynar_new(&p_cursor->key_lens, sizeof(int  *),  NULL);
 
   p_cursor->pos     = 0;
   p_cursor->pos_len = 0;
   p_cursor->head    = p_head ? p_head->head : NULL;
 
-  TRY(gras_dict_cursor_rewind(p_cursor));
+  gras_dict_cursor_rewind(p_cursor);
 
   *pp_cursor = p_cursor;
 
-  return errcode;
 }
 
 /**
@@ -84,7 +79,7 @@ gras_dict_cursor_free(gras_dict_cursor_t *p_cursor) {
     gras_dynar_free(p_cursor->keys);
     gras_dynar_free(p_cursor->key_lens);
     memset(p_cursor, 0, sizeof(gras_dict_cursor_t));
-    free(p_cursor);
+    gras_free(p_cursor);
   }
 }
 
@@ -108,7 +103,7 @@ __cursor_not_null(gras_dict_cursor_t *p_cursor) {
 
 
 static _GRAS_INLINE
-gras_error_t
+void
 _cursor_push_keys(gras_dict_cursor_t *p_cursor,
                   gras_dictelm_t        *p_elm) {
   gras_error_t         errcode = no_error;
@@ -119,19 +114,17 @@ _cursor_push_keys(gras_dict_cursor_t *p_cursor,
   CDEBUG1(dict_cursor, "Push childs of %p in the cursor", (void*)p_elm);
 
   if (p_elm->content) {
-    TRY(gras_dynar_push(p_cursor->keys,     &p_elm->key    ));
-    TRY(gras_dynar_push(p_cursor->key_lens, &p_elm->key_len));
+    gras_dynar_push(p_cursor->keys,     &p_elm->key    );
+    gras_dynar_push(p_cursor->key_lens, &p_elm->key_len);
     count++;
   }
 
   gras_dynar_foreach(p_elm->sub, i, p_child) {
     if (p_child)
-      TRY(_cursor_push_keys(p_cursor, p_child));
+      _cursor_push_keys(p_cursor, p_child);
   }
 
   CDEBUG1(dict_cursor, "Count = %d", count);
-
-  return errcode;
 }
 
 /**
@@ -141,7 +134,7 @@ _cursor_push_keys(gras_dict_cursor_t *p_cursor,
  *
  * back to the first element
  */
-gras_error_t
+void
 gras_dict_cursor_rewind(gras_dict_cursor_t *p_cursor) {
   gras_error_t errcode = no_error;
 
@@ -152,14 +145,13 @@ gras_dict_cursor_rewind(gras_dict_cursor_t *p_cursor) {
   gras_dynar_reset(p_cursor->key_lens);
 
   if (!p_cursor->head)
-    return no_error;
+    return ;
 
-  TRY(_cursor_push_keys(p_cursor, p_cursor->head));
+  _cursor_push_keys(p_cursor, p_cursor->head);
 
   gras_dynar_cursor_first(p_cursor->keys,     &p_cursor->pos    );
   gras_dynar_cursor_first(p_cursor->key_lens, &p_cursor->pos_len);
 
-  return errcode;
 }
 
 /**
@@ -171,18 +163,13 @@ gras_dict_cursor_rewind(gras_dict_cursor_t *p_cursor) {
  */
 void         gras_dict_cursor_first    (const gras_dict_t   *dict,
 					gras_dict_cursor_t **cursor){
-  gras_error_t errcode;
 
   if (!*cursor) {
     DEBUG0("Create the cursor on first use");
-    errcode = gras_dict_cursor_new(dict,cursor);
-    gras_assert1(errcode == no_error, "Unable to create the cursor, got error %s",
-		 gras_error_name(errcode));
+    gras_dict_cursor_new(dict,cursor);
   }
 
-  errcode = gras_dict_cursor_rewind(*cursor);
-  gras_assert1(errcode == no_error, "Unable to rewind the cursor before use, got error %s",
-	       gras_error_name(errcode));
+  gras_dict_cursor_rewind(*cursor);
 }
 
 

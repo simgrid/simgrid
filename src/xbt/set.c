@@ -25,18 +25,14 @@ struct gras_set_ {
  *
  * Creates a new set.
  */
-gras_error_t gras_set_new (gras_set_t **dst) {
+void gras_set_new (gras_set_t **dst) {
   gras_set_t *res=gras_new(gras_set_t,1);
   gras_error_t errcode;
 
-  if (!res)
-    RAISE_MALLOC;
-
-  TRY(gras_dict_new (&(res->dict)));
-  TRY(gras_dynar_new(&(res->dynar), sizeof(void*),NULL));
+  gras_dict_new (&(res->dict));
+  gras_dynar_new(&(res->dynar), sizeof(void*),NULL);
 
   *dst=res;
-  return no_error;
 }
 
 /**
@@ -66,9 +62,9 @@ void         gras_set_free(gras_set_t **set) {
  * elm->name_len is used as is unless it's <= 0 (in which case it's recomputed);
  * elm->ID is attributed automatically.
  */
-gras_error_t gras_set_add    (gras_set_t     *set,
-			      gras_set_elm_t *elm,
-			      void_f_pvoid_t *free_func) {
+void gras_set_add    (gras_set_t     *set,
+		      gras_set_elm_t *elm,
+		      void_f_pvoid_t *free_func) {
 
   gras_error_t    errcode;
   gras_set_elm_t *found_in_dict;
@@ -84,24 +80,23 @@ gras_error_t gras_set_add    (gras_set_t     *set,
     if (elm == found_in_dict) {
       DEBUG2("Ignoring request to insert the same element twice (key %s ; id %d)",
 	     elm->name, elm->ID);
-      return no_error;
+      return;
     } else {
       elm->ID=found_in_dict->ID;
       DEBUG2("Reinsertion of key %s (id %d)", elm->name, elm->ID);
-      TRY(gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func));
-      TRY(gras_dynar_set(set->dynar, elm->ID, &elm));
-      return no_error;
+      gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
+      gras_dynar_set(set->dynar, elm->ID, &elm);
+      return;
     }
-  } else if (errcode != mismatch_error) {
-    return errcode; /* I expected mismatch_error */
+  } else {
+    gras_assert_error(mismatch_error);
   }
 
   elm->ID = gras_dynar_length( set->dynar );
-  TRY(gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func));
-  TRY(gras_dynar_set(set->dynar, elm->ID, &elm));
+  gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
+  gras_dynar_set(set->dynar, elm->ID, &elm);
   DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
 
-  return no_error;
 }
 
 /**

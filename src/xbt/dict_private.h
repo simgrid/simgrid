@@ -28,17 +28,17 @@ struct gras_dict_ {
 };
 
 /*####[ Function prototypes ]################################################*/
-void         gras_dictelm_free      (gras_dictelm_t **pp_elm);
+void gras_dictelm_free      (gras_dictelm_t **pp_elm);
 
-gras_error_t gras_dictelm_set       (gras_dictelm_t **pp_head,
-				     const char      *_key,
-				     void            *data,
-				     void_f_pvoid_t  *free_ctn);
-gras_error_t gras_dictelm_set_ext   (gras_dictelm_t **pp_head,
-				     const char      *_key,
-				     int              key_len,
-				     void            *data,
-				     void_f_pvoid_t  *free_ctn);
+void gras_dictelm_set       (gras_dictelm_t **pp_head,
+			     const char      *_key,
+			     void            *data,
+			     void_f_pvoid_t  *free_ctn);
+void gras_dictelm_set_ext   (gras_dictelm_t **pp_head,
+			     const char      *_key,
+			     int              key_len,
+			     void            *data,
+			     void_f_pvoid_t  *free_ctn);
 
 gras_error_t gras_dictelm_get       (gras_dictelm_t *p_head,
 				     const char     *key,
@@ -54,7 +54,7 @@ gras_error_t gras_dictelm_remove_ext(gras_dictelm_t *p_head,
 				       const char  *key,
 				       int          key_len);
 
-gras_error_t gras_dictelm_dump      (gras_dictelm_t *p_head,
+void         gras_dictelm_dump      (gras_dictelm_t *p_head,
 				     void_f_pvoid_t *output);
 
 void         gras_dictelm_print_fct (void *data);

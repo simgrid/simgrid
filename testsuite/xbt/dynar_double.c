@@ -22,7 +22,7 @@ int main(int argc,char *argv[]) {
    gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
 
    INFO0("==== Traverse the empty dynar");
-   TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
+   gras_dynar_new(&d,sizeof(int),NULL);
    gras_dynar_foreach(d,cursor,cpt){
      gras_assert0(FALSE,
 	     "Damnit, there is something in the empty dynar");
@@ -30,10 +30,10 @@ int main(int argc,char *argv[]) {
    gras_dynar_free(d);
 
    INFO0("==== Push/shift 5000 doubles");
-   TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
+   gras_dynar_new(&d,sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
-     TRYFAIL(gras_dynar_push(d,&d1));
+     gras_dynar_push(d,&d1);
    }
    gras_dynar_foreach(d,cursor,d2){
      d1=(double)cursor;
@@ -52,10 +52,10 @@ int main(int argc,char *argv[]) {
 
 
    INFO0("==== Unshift/pop 5000 doubles");
-   TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
+   gras_dynar_new(&d,sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
-     TRYFAIL(gras_dynar_unshift(d,&d1));
+     gras_dynar_unshift(d,&d1);
    }
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
@@ -69,14 +69,14 @@ int main(int argc,char *argv[]) {
 
 
    INFO0("==== Push 5000 doubles, insert 1000 doubles in the middle, shift everything");
-   TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
+   gras_dynar_new(&d,sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
-     TRYFAIL(gras_dynar_push(d,&d1));
+     gras_dynar_push(d,&d1);
    }
    for (cpt=0; cpt< 1000; cpt++) {
      d1=(double)cpt;
-     TRYFAIL(gras_dynar_insert_at(d,2500,&d1));
+     gras_dynar_insert_at(d,2500,&d1);
    }
 
    for (cpt=0; cpt< 2500; cpt++) {
@@ -105,10 +105,10 @@ int main(int argc,char *argv[]) {
 
 
    INFO0("==== Push 5000 double, remove 2000-4000. free the rest");
-   TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
+   gras_dynar_new(&d,sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
-     TRYFAIL(gras_dynar_push(d,&d1));
+     gras_dynar_push(d,&d1);
    }
    for (cpt=2000; cpt< 4000; cpt++) {
      d1=(double)cpt;
