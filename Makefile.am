@@ -26,7 +26,8 @@ release: distcheck remote debian publish
 
 debian: dist
 	make -C ~/CVSIMPORT/pkg-grid/gras maintainerclean
-	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras
+	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras/
+	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras/@PACKAGE@_@VERSION@.orig.tar.gz
 	make -C ~/CVSIMPORT/pkg-grid/gras deb check
 	dput local *.changes
 
