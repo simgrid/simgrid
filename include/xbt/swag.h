@@ -9,6 +9,9 @@
    cast and dirty things. So avoid using it unless you really know
    what you are doing. */
 
+#ifndef _XBT_SWAG_H
+#define _XBT_SWAG_H
+
 #include "xbt/sysdep.h"
 
 /* This type should be added to a type that is to be used in such a swag */
@@ -58,3 +61,5 @@ static __inline__ void *xbt_swag_getFirst(xbt_swag_t swag)
        (obj)=obj_next,                                            \
        ((obj)?(obj_next=xbt_swag_getNext((obj),(swag)->offset)):  \
                  (obj_next=NULL))     )
+
+#endif    /* _XBT_SWAG_H */
