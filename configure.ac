@@ -1,42 +1,31 @@
+
+######################
+## Setup the autotools
+##
+
 AC_PREREQ(2.59)
-
-# We need a recent ACI
-# A CI_PREREQ(2003.01.16)
-
 AC_INIT([simgrid],[2.93-cvs],[simgrid2-users@listes.ens-lyon.fr])
 AC_CONFIG_SRCDIR([include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
+# A CI_PREREQ(2003.01.16) # We need a recent ACI when having sub-modules
 
 AC_REVISION($Revision$)
 AC_CANONICAL_TARGET
 AC_LANG([C])
 
 AM_INIT_AUTOMAKE(gnu)
-# MACRO_DIR should tell aclocal to search for my macro. That's the autoconf
-# maintainer plan, but automake does not implement this yet (as in 1.8)
 AC_CONFIG_MACRO_DIR(acmacro) 
-# It seems to be called ACLOCAL_INCLUDE...
-# A M_ACLOCAL_INCLUDE(acmacro)
-
+ACLOCAL="$ACLOCAL -I acmacro"
 AC_PROG_LIBTOOL
 
-# declare the modules (no optional module)
-
-dnl
-dnl Load anything under acmacro/*.m4
-dnl
-dnl test -n "$ACLOCAL_FLAGS" && ACLOCAL="$ACLOCAL $ACLOCAL_FLAGS"
-ACLOCAL="$ACLOCAL -I acmacro"
-
+###############
+## Basic checks
+##
 
 AC_PROG_CC
 AM_SANITY_CHECK
 AC_PROG_MAKE_SET
-
-# Check architecture signature begin
-GRAS_ARCH
-# Check architecture signature end
-GRAS_CHECK_STRUCT_COMPACTION
+AC_CHECK_PRINTF_NULL
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -49,6 +38,20 @@ AC_CHECK_HEADERS([sys/socket.h \
 AC_CHECK_FUNCS([gettimeofday usleep \
                 getdtablesize \
                 sysconf])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_SIZE_T
+
+###################################
+## SimGrid and GRAS specific checks
+##
+
+# Check architecture signature begin
+GRAS_ARCH
+# Check architecture signature end
+GRAS_CHECK_STRUCT_COMPACTION
 
 AC_ARG_ENABLE(context,
   [  --enable-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=ucontext]].],,
@@ -72,6 +75,7 @@ if test "x$enable_context" = "xucontext"; then
   fi
 else if test "x$enable_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
+dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
   AC_CHECK_LIB(pthread,pthread_create,,
     [AC_MSG_ERROR([[Cannot find pthreads, no way (try --enable-context=ucontext if you haven't already tried).]])])
   AC_DEFINE([USE_PTHREADS],1,[Define if we USE pthreads or not])
@@ -80,28 +84,13 @@ else
   AC_MSG_ERROR("--enable-context must be either ucontext or pthread")
 fi fi
 
+#########################################
+## Check for libraries extra-dependencies
+##
 
-# Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_SIZE_T
-
-# Checks for library functions.
-dnl A C_FUNC_MEMCMP
-dnl A C_CHECK_FUNCS([memset strchr strerror usleep])
-
-dnl ####[ Search libs ]#######################################################
-dnl A CI_PACKAGE([S imGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
-dnl A M_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
-dnl if test x$HAVE_SimGrid = xyes; then
-dnl   SIMGRID_DEP="-lsimgrid"
-dnl else
-  SIMGRID_DEP=""
-dnl fi
+SIMGRID_DEP=""
 AC_SUBST([SIMGRID_DEP])
 
-
-dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
 GRAS_DEP=""
 AC_CHECK_LIB(nsl, gethostbyname, [GRAS_DEP="$GRAS_DEP -lnsl"])
 AC_CHECK_LIB(socket, connect,    [GRAS_DEP="$GRAS_DEP -lsocket"])
@@ -118,11 +107,14 @@ else
 fi
 AC_SUBST([GRAS_DEP])
 
-dnl ####[ maint mode ]#######################################################
+##############################################
+## Enhance maintainer mode and SUBST variables
+## (must be placed after any compilation tests since our overprotective flags
+##  let some tests fail)
+
 AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
 then
-#   enable_iso_c=yes             # Let's go funky
    GNOME_COMPILE_WARNINGS(yes)
 fi
 
@@ -130,7 +122,10 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
-dnl ####[ check for some programms ]###########################################
+#####################
+## Check for programs
+##
+
 AC_CHECK_PROG(BASH, bash, `which bash`, /bin/sh)
 WARNING="This file is generated, do not edit"
 AC_SUBST(WARNING)
@@ -146,7 +141,11 @@ AC_PROG_FLEX(2.5.30)
 AC_CHECK_PROG(FLEXML,flexml,,NOTFOUND)
 AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != NOTFOUND)
 
-dnl ####[ Makes the output ]###################################################
+###################
+## Makes the output
+##
+
+
 #    examples/bandwidth/Makefile examples/bandwidth/test_sg
 #    examples/pastry/Makefile    examples/pastry/test_sg
 
