@@ -1,5 +1,5 @@
 SUBDIRS=. Tests
-DISTCLEANFILES=Makefile.in
+MAINTAINERCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include \
           @CFLAGS_SimGrid@
 EXTRA_DIST= ./gras_private.h    \
