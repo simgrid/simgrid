@@ -18,7 +18,7 @@
 #include "gras/cond.h"    /* gras_if_RL() => FIXME: killme when gras/sg works */
 #include "gras/process.h" /* FIXME: killme and put process_init in modinter */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(gras,"All GRAS categories");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories (cf. section \ref GRAS_API)");
 static int gras_running_process = 0;
 
 void gras_init(int *argc,char **argv, const char *defaultlog) {
