@@ -122,8 +122,7 @@ void *xbt_heap_pop(xbt_heap_t H)
  */
 double xbt_heap_maxkey(xbt_heap_t H)
 {
-  if (H->count == 0)
-    abort();
+  xbt_assert0(H->count != 0,"Empty heap");
   return KEY(H, 0);
 }
 
@@ -136,8 +135,7 @@ double xbt_heap_maxkey(xbt_heap_t H)
  */
 void *xbt_heap_maxcontent(xbt_heap_t H)
 {
-  if (H->count == 0)
-    abort();
+  xbt_assert0(H->count != 0,"Empty heap");
   return CONTENT(H, 0);
 }
 
