@@ -154,7 +154,7 @@ static gras_error_t change_to_ref_pop_array(gras_dynar_t *dynar) {
   GRAS_IN;
   gras_dynar_pop(dynar,&former);
   TRY(gras_datadesc_ref_pop_arr(former.type,&ref.type)); /* redeclaration are ignored */
-  ref.type_name = strdup(ref.type->name);
+  ref.type_name = (char*)strdup(ref.type->name);
   ref.name = former.name;
 
   gras_free(former.type_name);
@@ -220,10 +220,10 @@ static gras_error_t parse_statement(char	 *definition,
       strcmp(gras_ddt_parse_text,"int") ) {
 
     /* bastard user, they omited "int" ! */
-    identifier.type_name=strdup("int");
+    identifier.type_name=(char*)strdup("int");
     DEBUG0("the base type is 'int', which were omited (you vicious user)");
   } else {
-    identifier.type_name=strdup(gras_ddt_parse_text);
+    identifier.type_name=(char*)strdup(gras_ddt_parse_text);
     DEBUG1("the base type is '%s'",identifier.type_name);
     gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump(); 
   }
@@ -297,7 +297,7 @@ static gras_error_t parse_statement(char	 *definition,
   /**** look for the symbols of this type ****/
   for(expect_id_separator = 0;
 
-      (//(gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_EMPTY) && FIXME
+      (/*(gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_EMPTY) && FIXME*/
        (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_SEMI_COLON)) ; 
 
       gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump()          ) {   
@@ -351,7 +351,7 @@ static gras_error_t parse_statement(char	 *definition,
 
 	if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD) 
 	  PARSE_ERROR1("Unparsable annotation: Expected key name, got '%s'",gras_ddt_parse_text);
-	keyname = strdup(gras_ddt_parse_text);
+	keyname = (char*)strdup(gras_ddt_parse_text);
 
 	while ( (gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump()) == GRAS_DDT_PARSE_TOKEN_EMPTY );
 
@@ -362,7 +362,7 @@ static gras_error_t parse_statement(char	 *definition,
 
 	if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD) 
 	  PARSE_ERROR1("Unparsable annotation: Expected key value, got '%s'",gras_ddt_parse_text);
-	keyval = strdup(gras_ddt_parse_text);
+	keyval = (char*)strdup(gras_ddt_parse_text);
 
 	while ( (gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump()) == GRAS_DDT_PARSE_TOKEN_EMPTY );
 
@@ -423,7 +423,7 @@ static gras_error_t parse_statement(char	 *definition,
     /* found a symbol name. Build the type and push it to dynar */
     if(gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
 
-      identifier.name=strdup(gras_ddt_parse_text);
+      identifier.name=(char*)strdup(gras_ddt_parse_text);
       DEBUG1("Found the identifier \"%s\"",identifier.name);
       
       TRY(gras_dynar_push(identifiers, &identifier));
@@ -489,19 +489,19 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
 	PARSE_ERROR2("Not enough GRAS_ANNOTATE to deal with all dereferencing levels of %s (%d '*' left)",
 		     field.name,field.tm.is_ref);
 
-      VERB2("Append field '%s' to %p",field.name, struct_type);      
+      VERB2("Append field '%s' to %p",field.name, (void*)struct_type);      
       TRYFAIL(gras_datadesc_struct_append(struct_type, field.name, field.type));
       gras_free(field.name);
       gras_free(field.type_name);
 
     }
     gras_dynar_reset(identifiers);
-    DEBUG1("struct_type=%p",struct_type);
+    DEBUG1("struct_type=%p",(void*)struct_type);
     
     /* Make sure that all fields declaring a size push it into the cbps */
     gras_dynar_foreach(fields_to_push,i, name) {
-      DEBUG1("struct_type=%p",struct_type);
-      VERB2("Push field '%s' into size stack of %p", name, struct_type);
+      DEBUG1("struct_type=%p",(void*)struct_type);
+      VERB2("Push field '%s' into size stack of %p", name, (void*)struct_type);
       gras_datadesc_cb_field_push(struct_type, name);
       gras_free(name);
     }

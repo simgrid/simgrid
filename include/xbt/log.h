@@ -11,7 +11,7 @@
 /* GRAS_LOG_MAYDAY: define this to replace the logging facilities with basic
    printf function. Useful to debug the logging facilities themselves */
 #undef GRAS_LOG_MAYDAY
-//#define GRAS_LOG_MAYDAY
+/*#define GRAS_LOG_MAYDAY*/
 
 
 #ifndef _GRAS_LOG_H_
@@ -97,7 +97,7 @@ typedef enum {
         &_GRAS_LOGV(parent), 0, 0,                    \
         #catName, gras_log_priority_uninitialized, 1, \
         0, 1                                          \
-    };
+    }
 
 /**
  * GRAS_LOG_NEW_CATEGORY:
@@ -144,7 +144,7 @@ typedef enum {
  * (used by macros that don't explicitly specify a category).
  */
 #define GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(cname, parent, desc) \
-    GRAS_LOG_NEW_SUBCATEGORY(cname, parent, desc)             \
+    GRAS_LOG_NEW_SUBCATEGORY(cname, parent, desc);            \
     GRAS_LOG_DEFAULT_CATEGORY(cname)
 
 /**
@@ -158,11 +158,11 @@ typedef enum {
 #define GRAS_LOG_EXTERNAL_CATEGORY(cname) \
    extern gras_log_category_t _GRAS_LOGV(cname)
 
-// Functions you may call
+/* Functions you may call */
 
 extern gras_error_t gras_log_control_set(const char* cs);
 
-// Forward declarations
+/* Forward declarations */
 typedef struct gras_log_appender_s gras_log_appender_t;
 typedef struct gras_log_event_s    gras_log_event_t;
 typedef struct gras_log_category_s gras_log_category_t;
@@ -179,7 +179,7 @@ struct gras_log_category_s {
             int isThreshInherited;
 /*@null@*/  gras_log_appender_t *appender;
             int willLogToParent;
-  // TODO: Formats?
+  /* TODO: Formats? */
 };
 
 struct gras_log_appender_s {
@@ -227,14 +227,10 @@ extern void gras_log_parent_set(gras_log_category_t* cat,
 extern void gras_log_appender_set(gras_log_category_t* cat,
 				  gras_log_appender_t* app);
 
-// Functions that you shouldn't call. 
+/* Functions that you shouldn't call. */
 extern void _gras_log_event_log(gras_log_event_t*ev,
 				const char *fmt,
-				...)
-#ifdef __GNUC__
-     __attribute__ ((format (printf, 2, 3)))
-#endif
-;
+				...) _GRAS_GNUC_PRINTF(2,3);
 
 extern int _gras_log_cat_init(gras_log_priority_t priority, 
 			      gras_log_category_t* category);
@@ -286,7 +282,7 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define _GRAS_LOG_PRE(catv, priority) do {                              \
      if (_GRAS_LOG_ISENABLEDV(catv, priority)) {                        \
          gras_log_event_t _log_ev =                                     \
-             {&(catv),priority,__FILE__,__FUNCTION__,__LINE__};         \
+             {&(catv),priority,__FILE__,_GRAS_GNUC_FUNCTION,__LINE__};         \
          _gras_log_event_log(&_log_ev
 
 #define _GRAS_LOG_POST                          \
@@ -559,21 +555,11 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define CRITICAL5(f,a1,a2,a3,a4,a5)    LOG5(gras_log_priority_critical, f,a1,a2,a3,a4,a5)
 #define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
 
-#ifdef __GNUC__
-#define GRAS_IN               LOG1(gras_log_priority_trace, ">> begin of %s",     __FUNCTION__)
-#define GRAS_IN1(fmt,a)       LOG2(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a)
-#define GRAS_IN2(fmt,a,b)     LOG3(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a,b)
-#define GRAS_IN3(fmt,a,b,c)   LOG4(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a,b,c)
-#define GRAS_IN4(fmt,a,b,c,d) LOG5(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a,b,c,d)
-#define GRAS_OUT              LOG1(gras_log_priority_trace, "<< end of %s",       __FUNCTION__)
-#else /* if fool enough to compile without gcc */
-#define GRAS_IN               LOG0(gras_log_priority_trace, ">> begin of function")
-#define GRAS_IN1(fmt,a)       LOG2(gras_log_priority_trace, ">> begin of function " fmt, a)
-#define GRAS_IN2(fmt,a,b)     LOG3(gras_log_priority_trace, ">> begin of function " fmt, a,b)
-#define GRAS_IN3(fmt,a,b,c)   LOG4(gras_log_priority_trace, ">> begin of function " fmt, a,b,c)
-#define GRAS_IN4(fmt,a,b,c,d) LOG5(gras_log_priority_trace, ">> begin of function " fmt, a,b,c,d)
-
-#define GRAS_OUT(fmt,a) LOG0(gras_log_priority_trace, "<< end of function")
-#endif /* end of foolness for non-gcc */
+#define GRAS_IN               LOG1(gras_log_priority_trace, ">> begin of %s",     _GRAS_GNUC_FUNCTION)
+#define GRAS_IN1(fmt,a)       LOG2(gras_log_priority_trace, ">> begin of %s" fmt, _GRAS_GNUC_FUNCTION, a)
+#define GRAS_IN2(fmt,a,b)     LOG3(gras_log_priority_trace, ">> begin of %s" fmt, _GRAS_GNUC_FUNCTION, a,b)
+#define GRAS_IN3(fmt,a,b,c)   LOG4(gras_log_priority_trace, ">> begin of %s" fmt, _GRAS_GNUC_FUNCTION, a,b,c)
+#define GRAS_IN4(fmt,a,b,c,d) LOG5(gras_log_priority_trace, ">> begin of %s" fmt, _GRAS_GNUC_FUNCTION, a,b,c,d)
+#define GRAS_OUT              LOG1(gras_log_priority_trace, "<< end of %s",       _GRAS_GNUC_FUNCTION)
 
 #endif /* ! _GRAS_LOG_H_ */

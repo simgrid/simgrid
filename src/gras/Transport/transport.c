@@ -31,7 +31,7 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   if (!plug) 
     RAISE_MALLOC;
 
-  plug->name=strdup(name);
+  plug->name=(char*)strdup(name);
   if (!plug->name)
     RAISE_MALLOC;
 
@@ -108,7 +108,7 @@ gras_error_t gras_trp_socket_new(int incoming,
 
   if (! (sock=gras_new(gras_socket_t,1)) )
     RAISE_MALLOC;
-  DEBUG1("Create a new socket (%p)", sock);
+  DEBUG1("Create a new socket (%p)", (void*)sock);
 
   sock->plugin = NULL;
   sock->sd     = -1;
@@ -194,7 +194,7 @@ gras_socket_client(const char *host,
   TRY(gras_trp_socket_new(0,&sock));
   sock->plugin= trp;
   sock->peer_port = port;
-  sock->peer_name = strdup(host?host:"localhost");
+  sock->peer_name = (char*)strdup(host?host:"localhost");
 
   /* plugin-specific */
   errcode= (*trp->socket_client)(trp, 

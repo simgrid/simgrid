@@ -280,7 +280,7 @@ gras_cfg_unregister(gras_cfg_t *cfg,const char *name) {
 
 gras_error_t
 gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
-  char *entrycpy=strdup(entry);
+  char *entrycpy=(char*)strdup(entry);
   char *tok;
 
   int min,max;
@@ -548,7 +548,7 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
   if (!options || !strlen(options)) { /* nothing to do */
     return no_error;
   }
-  optionlist_cpy=strdup(options);
+  optionlist_cpy=(char*)strdup(options);
 
   DEBUG1("List to parse and set:'%s'",options);
   option=optionlist_cpy;
@@ -563,20 +563,20 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
 
     /* Pass the value */
     while (option-name<=(len-1) && *option != ' ' && *option != '\n' && *option != '\t') {
-      //fprintf(stderr,"Take %c.\n",*option);
+      /*fprintf(stderr,"Take %c.\n",*option);*/
       option++;
     }
     if (option-name == len) {
-      //fprintf(stderr,"Boundary=EOL\n");
+      /*fprintf(stderr,"Boundary=EOL\n");*/
       option=NULL; /* don't do next iteration */
 
     } else {
-      //fprintf(stderr,"Boundary on '%c'. len=%d;option-name=%d\n",*option,len,option-name);
+      /*fprintf(stderr,"Boundary on '%c'. len=%d;option-name=%d\n",*option,len,option-name);*/
 
       /* Pass the following blank chars */
       *(option++)='\0';
       while (option-name<(len-1) && (*option == ' ' || *option == '\n' || *option == '\t')) {
-	//      fprintf(stderr,"Ignore a blank char.\n");
+	/*      fprintf(stderr,"Ignore a blank char.\n");*/
 	option++;
       }
       if (option-name == len-1)
@@ -741,7 +741,7 @@ gras_error_t
 gras_cfg_set_string(gras_cfg_t *cfg,const char*name, const char*val) { 
   gras_cfgelm_t *cell;
   gras_error_t errcode;
-   char *newval = strdup(val);
+  char *newval = (char*)strdup(val);
 
   VERB2("Configuration setting: %s=%s",name,val);
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
@@ -775,7 +775,7 @@ gras_cfg_set_host(gras_cfg_t *cfg,const char*name,
   VERB3("Configuration setting: %s=%s:%d",name,host,port);
   if (!val)
     RAISE_MALLOC;
-  val->name = strdup(name);
+  val->name = (char*)strdup(name);
   val->port = port;
 
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));

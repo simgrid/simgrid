@@ -28,7 +28,7 @@ GRAS_LOG_NEW_SUBCATEGORY(dict_multi,dict,"Dictionaries internals: dictionaries o
 
 /*####[ Private prototypes ]#################################################*/
 
-static inline gras_error_t _gras_dictelm_alloc(char                *key,
+static _GRAS_INLINE gras_error_t _gras_dictelm_alloc(char                *key,
 					       int                  offset,
 					       int                  key_len,
 					       void                *data,
@@ -36,7 +36,7 @@ static inline gras_error_t _gras_dictelm_alloc(char                *key,
 					       /*OUT*/gras_dictelm_t **where);
 static void         _dictelm_wrapper_free(void*);
 
-static inline void  _str_prefix_lgr(const char *key1,
+static _GRAS_INLINE void  _str_prefix_lgr(const char *key1,
 				    int         key_len1,
 				    const char *key2,
 				    int         key_len2,
@@ -66,7 +66,7 @@ static gras_error_t _gras_dictelm_remove_rec(gras_dictelm_t *head,
 					     int             key_len,
 					     int             offset);
 
-static inline
+static _GRAS_INLINE
 void
 _collapse_if_need(gras_dictelm_t *p_head,
 		  int             pos,
@@ -74,7 +74,7 @@ _collapse_if_need(gras_dictelm_t *p_head,
 
 /* ---- */
 
-static inline
+static _GRAS_INLINE
 void *
 memdup(const void * const ptr,
        const size_t       length) {
@@ -95,7 +95,7 @@ memdup(const void * const ptr,
  * Change any byte to a printable char
  */
 
-static inline
+static _GRAS_INLINE
 char
 _gras_nibble_to_char(unsigned char c) {
   c &= 0x0f;
@@ -108,7 +108,7 @@ _gras_nibble_to_char(unsigned char c) {
  * Change any byte array to a printable string
  * The length of string_container should at least be data_len*2+1 
  */
-static inline
+static _GRAS_INLINE
 char *
 _gras_bytes_to_string(char * const ptr,
                       int          data_len,
@@ -134,7 +134,7 @@ _gras_bytes_to_string(char * const ptr,
  * Alloc a dict element with no child.
  */
 static 
-inline
+_GRAS_INLINE
 gras_error_t
 _gras_dictelm_alloc(char                *key,
 		    int                  key_len,
@@ -225,7 +225,7 @@ _dictelm_wrapper_free(void *pp_elm) {
  * Returns the length of the common prefix of @str1 and @str2.
  * Do make sure the strings are not null
  */
-static inline
+static _GRAS_INLINE
 void
 _str_prefix_lgr(const char *key1,
 		int         key_len1,
@@ -283,7 +283,7 @@ _str_prefix_lgr(const char *key1,
  * Compares two dictelm keys and return their matching (using the same 
  * convention than @_gras_dict_child_search() )
  */
-static inline
+static _GRAS_INLINE
 void
 _dict_child_cmp(gras_dictelm_t *p_dict,
                 int          pos,
@@ -348,7 +348,7 @@ _dict_child_cmp(gras_dictelm_t *p_dict,
  *  handled by previous levels of recursion. In output, that the one counting
  *  also this level.                                                         
  */
-static inline
+static _GRAS_INLINE
 void
 _gras_dictelm_child_search(gras_dictelm_t *p_elm,
 			   const char  *key,
@@ -403,7 +403,7 @@ _gras_dictelm_child_search(gras_dictelm_t *p_elm,
  *
  * Change the value of the dictelm, making sure to free the old one, if any.
  */
-static inline
+static _GRAS_INLINE
 void
 _gras_dictelm_change_value(gras_dictelm_t    *p_elm,
 			   void           *data,
@@ -448,7 +448,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
 	  key_len, key, 
 	  ((p_head && p_head->key) ? p_head->key_len : 6),
 	  ((p_head && p_head->key) ? p_head->key : "(head)"), 
-	  offset, p_head);
+	  offset, (void*)p_head);
 
   /*** The trivial cases first ***/
 
@@ -476,7 +476,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
       gras_dictelm_t *p_child = NULL;
 
       TRY(_gras_dictelm_alloc(key, key_len, offset, data, free_ctn, &p_child));
-      CDEBUG1(dict_add, "-> Add a child %p", p_child);
+      CDEBUG1(dict_add, "-> Add a child %p", (void*)p_child);
       TRY(gras_dynar_insert_at(p_head->sub, pos, &p_child));
 
       return errcode;
@@ -487,7 +487,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
       gras_dictelm_t *p_child = NULL;
 
       gras_dynar_get(p_head->sub, pos, &p_child);
-      CDEBUG1(dict_add, "-> Change the value of the child %p", p_child);
+      CDEBUG1(dict_add, "-> Change the value of the child %p", (void*)p_child);
       _gras_dictelm_change_value(p_child, data, free_ctn);
 
       free(key);
@@ -500,7 +500,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
       gras_dictelm_t *p_child = NULL;
 
       gras_dynar_get(p_head->sub, pos, &p_child);
-      CDEBUG2(dict_add,"-> Recurse on %p (offset=%d)", p_child, offset);
+      CDEBUG2(dict_add,"-> Recurse on %p (offset=%d)", (void*)p_child, offset);
 
       return _gras_dictelm_set_rec(p_child, key, key_len, 
 				      offset, data, free_ctn);
@@ -515,7 +515,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
       TRY(_gras_dictelm_alloc(key, key_len, old_offset, data, free_ctn, &p_new));
 
       CDEBUG2(dict_add, "-> The child %p become child of new dict (%p)",
-              p_child, p_new);
+              (void*)p_child, (void*)p_new);
 
       TRY(gras_dynar_push(p_new->sub, &p_child));
       p_child->offset = offset;
@@ -541,7 +541,7 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
 			      NULL, NULL, &p_anc));
 
       CDEBUG3(dict_add, "-> Make a common ancestor %p (%.*s)",
-	      p_anc, anc_key_len, anc_key);
+	      (void*)p_anc, anc_key_len, anc_key);
 
       if (key[offset] < p_child->key[offset]) {
         TRY(gras_dynar_push(p_anc->sub, &p_new));
@@ -649,7 +649,7 @@ _gras_dictelm_get_rec(gras_dictelm_t *p_head,
 		      void **data) {
   void *res;
 
-  CDEBUG3(dict_search, "Search %.*s in %p", key_len, key, p_head); 
+  CDEBUG3(dict_search, "Search %.*s in %p", key_len, key, (void*)p_head); 
 
   /*** The trivial case first ***/
 
@@ -664,7 +664,7 @@ _gras_dictelm_get_rec(gras_dictelm_t *p_head,
     int match = 0;
     int pos   = 0;
 
-    *data = NULL; // Make it ready to answer 'not found' in one operation
+    *data = NULL; /* Make it ready to answer 'not found' in one operation */
 
     /*** Search where is the good child, and how good it is ***/
     _gras_dictelm_child_search(p_head, key, key_len, &pos, &offset, &match);
@@ -747,14 +747,14 @@ gras_dictelm_get(gras_dictelm_t    *p_head,
 }
 
 /*----[ _gras_dict_collapse ]------------------------------------------------*/
-static inline
+static _GRAS_INLINE
 void
 _collapse_if_need(gras_dictelm_t *p_head,
 		  int             pos,
 		  int             offset) {
   gras_dictelm_t  *p_child = NULL;
 
-  CDEBUG2(dict_collapse, "Collapse %d of %p... ", pos, p_head); fflush(stdout);
+  CDEBUG2(dict_collapse, "Collapse %d of %p... ", pos, (void*)p_head);
 
   if (pos >= 0) {
     /* Remove the child if |it's key| == 0 (meaning it's dead) */
@@ -765,7 +765,7 @@ _collapse_if_need(gras_dictelm_t *p_head,
       gras_assert0(gras_dynar_length(p_child->sub) == 0,
 		   "Found a dead child with grand childs. Internal error");
 
-      CDEBUG1(dict_collapse, "Remove dead child %p.... ", p_child);
+      CDEBUG1(dict_collapse, "Remove dead child %p.... ", (void*)p_child);
       gras_dynar_remove_at(p_head->sub, pos, &p_child);
     }
   }
@@ -854,7 +854,7 @@ _gras_dictelm_remove_rec(gras_dictelm_t *p_head,
 
         gras_dynar_get(p_head->sub, pos, &p_child);
         /*DEBUG5("Recurse on child %d of %p to remove %.*s (prefix=%d)",
-          pos, p_child, key+offset, key_len-offset,offset);*/
+          pos, (void*)p_child, key+offset, key_len-offset,offset);*/
         TRY(_gras_dictelm_remove_rec(p_child, key, key_len, offset));
 
         _collapse_if_need(p_head, pos, old_offset);
@@ -929,7 +929,7 @@ _gras_dictelm_dump_rec(gras_dictelm_t *p_head,
   if (!p_head)
     return no_error;
 
-  printf("[%p] ", p_head);
+  printf("[%p] ", (void*)p_head);
 
   key     = p_head->key;
   key_len = p_head->key_len;
@@ -1013,6 +1013,6 @@ gras_dictelm_dump(gras_dictelm_t *p_head,
 
 void
 gras_dictelm_print_fct(void *data) {
-  printf("tree %p", data);
+  printf("tree %p", (void*)data);
 }
 

@@ -31,13 +31,13 @@ struct gras_dict_cursor_ {
   gras_dictelm_t  *head;
 };
 
-static inline
+static _GRAS_INLINE
 gras_error_t
 _cursor_push_keys(gras_dict_cursor_t *p_cursor,
                   gras_dictelm_t        *p_elm);
 
 #undef gras_dict_CURSOR_DEBUG
-//#define gras_dict_CURSOR_DEBUG 1
+/*#define gras_dict_CURSOR_DEBUG 1*/
 
 /**
  * gras_dict_cursor_new:
@@ -93,7 +93,7 @@ gras_dict_cursor_free(gras_dict_cursor_t *p_cursor) {
  *
  * Sanity check to see if the head contains something
  */
-static inline
+static _GRAS_INLINE
 gras_error_t
 __cursor_not_null(gras_dict_cursor_t *p_cursor) {
 
@@ -107,7 +107,7 @@ __cursor_not_null(gras_dict_cursor_t *p_cursor) {
 }
 
 
-static inline
+static _GRAS_INLINE
 gras_error_t
 _cursor_push_keys(gras_dict_cursor_t *p_cursor,
                   gras_dictelm_t        *p_elm) {
@@ -116,7 +116,7 @@ _cursor_push_keys(gras_dict_cursor_t *p_cursor,
   int                  i       = 0;
   static volatile int  count   = 0; /* ??? */
 
-  CDEBUG1(dict_cursor, "Push childs of %p in the cursor", p_elm);
+  CDEBUG1(dict_cursor, "Push childs of %p in the cursor", (void*)p_elm);
 
   if (p_elm->content) {
     TRY(gras_dynar_push(p_cursor->keys,     &p_elm->key    ));

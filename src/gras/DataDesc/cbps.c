@@ -81,9 +81,9 @@ gras_cbps_v_push(gras_cbps_t        *ps,
   gras_dynar_t            *varstack,*frame;
   gras_cbps_elm_t      *p_var;
   gras_error_t errcode;
-  char *varname = strdup(name);
+  char *varname = (char*)strdup(name);
 
-  DEBUG2("push(%s,%p)",name,data);
+  DEBUG2("push(%s,%p)",name,(void*)data);
   errcode = gras_dict_get(ps->space, name, (void **)&varstack);
  
   if (errcode == mismatch_error) {
@@ -102,7 +102,7 @@ gras_cbps_v_push(gras_cbps_t        *ps,
   gras_dynar_push(varstack, &p_var);
   
   gras_dynar_pop(ps->frames, &frame);
-  DEBUG4("Push %s (%p @%p) into frame %p",varname,varname,&varname,frame);
+  DEBUG4("Push %s (%p @%p) into frame %p",varname,(void*)varname,(void*)&varname,(void*)frame);
   gras_dynar_push(frame, &varname);
   gras_dynar_push(ps->frames, &frame); 
   return no_error;
@@ -284,7 +284,7 @@ gras_cbps_block_end(gras_cbps_t *ps) {
     gras_dynar_t            *varstack    = NULL;
     gras_cbps_elm_t      *var         = NULL;
  
-    DEBUG2("Get ride of %s (%p)",name,name);
+    DEBUG2("Get ride of %s (%p)",name,(void*)name);
     gras_dict_get(ps->space, name, (void **)&varstack);
     gras_dynar_pop(varstack, &var);
  

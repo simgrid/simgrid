@@ -25,7 +25,7 @@ static void _free_setting(void *s) {
   gras_log_setting_t *set=(gras_log_setting_t*)s;
   if (set) {
     gras_free(set->catname);
-//    free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log
+/*    free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
   }
 }
 
@@ -45,6 +45,7 @@ gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT) = {
   "root", gras_log_priority_uninitialized, 0,
   NULL, 0
 };
+
 GRAS_LOG_NEW_SUBCATEGORY(gras,GRAS_LOG_ROOT_CAT,"All GRAS categories");
 GRAS_LOG_NEW_SUBCATEGORY(gros,GRAS_LOG_ROOT_CAT,"All GROS categories (gras toolbox)");
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,gros,"Loggings from the logging mecanism itself");
@@ -63,7 +64,7 @@ static void _apply_control(gras_log_category_t* cat) {
 
   gras_dynar_foreach(gras_log_settings,cursor,setting) {
     gras_assert0(setting,"Damnit, NULL cat in the list");
-    gras_assert1(setting->catname,"NULL setting(=%p)->catname",setting);
+    gras_assert1(setting->catname,"NULL setting(=%p)->catname",(void*)setting);
 
     if (!strcmp(setting->catname,cat->name)) {
       found = 1;
@@ -137,7 +138,7 @@ void gras_log_parent_set(gras_log_category_t* cat,
   gras_assert0(cat,"NULL category to be given a parent");
   gras_assert1(parent,"The parent category of %s is NULL",cat->name);
 
-  // unlink from current parent
+  /* unlink from current parent */
   if (cat->threshold != gras_log_priority_uninitialized) {
     gras_log_category_t** cpp = &parent->firstChild;
     while(*cpp != cat && *cpp != NULL) {
@@ -147,20 +148,20 @@ void gras_log_parent_set(gras_log_category_t* cat,
     *cpp = cat->nextSibling;
   }
 
-  // Set new parent
+  /* Set new parent */
   cat->parent = parent;
   cat->nextSibling = parent->firstChild;
   parent->firstChild = cat;
 
-  // Make sure parent is initialized
+  /* Make sure parent is initialized */
   if (parent->threshold == gras_log_priority_uninitialized) {
     _cat_init(parent);
   }
     
-  // Reset priority
+  /* Reset priority */
   cat->threshold = parent->threshold;
   cat->isThreshInherited = 1;
-} // log_setParent
+} /* log_setParent */
 
 static void _set_inherited_thresholds(gras_log_category_t* cat) {
   gras_log_category_t* child = cat->firstChild;
@@ -204,7 +205,7 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
 
   if (!strncmp(dot + 1, "thresh", min(eq - dot - 1,strlen("thresh")))) {
     int i;
-    char *neweq=strdup(eq+1);
+    char *neweq=(char*)strdup(eq+1);
     char *p=neweq-1;
     
     while (*(++p) != '\0') {
@@ -324,7 +325,7 @@ gras_error_t gras_log_control_set(const char* control_string) {
   if (! (set = gras_new(gras_log_setting_t,1)) )
     RAISE_MALLOC;
 
-  if (!(cs=strdup(control_string)))
+  if (!(cs=(char*)strdup(control_string)))
     RAISE_MALLOC;
   _cleanup_double_spaces(cs);
 
@@ -349,7 +350,7 @@ gras_error_t gras_log_control_set(const char* control_string) {
 	     mismatch_error);
     if (errcode == mismatch_error) {
       DEBUG0("Store for further application");
-      DEBUG1("push %p to the settings",set);
+      DEBUG1("push %p to the settings",(void*)set);
       TRY(gras_dynar_push(gras_log_settings,&set));
       /* malloc in advance the next slot */
       if (!(set = gras_new(gras_log_setting_t,1))) { 

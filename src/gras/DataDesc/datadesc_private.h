@@ -165,8 +165,8 @@ typedef struct s_gras_dd_cat_ref {
 typedef struct s_gras_dd_cat_array {
   gras_datadesc_type_t *type;
 
-  /* element_count < 0 means dynamically defined */
-  long int                  	  fixed_size;
+  /* element_count == 0 means dynamically defined */
+  unsigned long int           fixed_size;
 
   /* callback used to return the dynamic length */
   gras_datadesc_type_cb_int_t dynamic_size;
@@ -215,10 +215,10 @@ struct s_gras_datadesc_type {
   unsigned int                         name_len;
         
   /* payload */
-  long int                             size[gras_arch_count];
+  unsigned long int                    size[gras_arch_count];
   
-  long int                             alignment[gras_arch_count];  
-  long int                             aligned_size[gras_arch_count];
+  unsigned long int                    alignment[gras_arch_count];  
+  unsigned long int                    aligned_size[gras_arch_count];
   
   enum  e_gras_datadesc_type_category  category_code;
   union u_gras_datadesc_category       category;

@@ -38,17 +38,15 @@ struct gras_dynar_s {
 			(int) (idx), (unsigned long) dynar->used)
 #define __check_populated_dynar(dynar)            \
            gras_assert1(dynar->used,              \
-			"dynar %p contains nothing",dynar)
+			"dynar %p contains nothing",(void*)dynar)
 
-
-static inline
-void
-_gras_clear_mem(void * const ptr,
-                const size_t length) {
+static _GRAS_INLINE 
+void _gras_clear_mem(void * const ptr,
+		     const size_t length) {
   memset(ptr, 0, length);
 }
 
-static inline
+static _GRAS_INLINE
 gras_error_t
 _gras_dynar_expand(gras_dynar_t * const dynar,
                    const int            nb) {
@@ -68,7 +66,7 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
     const size_t new_length  = new_size*elmsize;
     char * const new_data    = gras_malloc0(elmsize*new_size);
 
-    DEBUG3("expend %p from %lu to %d elements", dynar, (unsigned long)old_size, nb);
+    DEBUG3("expend %p from %lu to %d elements", (void*)dynar, (unsigned long)old_size, nb);
     if (!new_data)
       RAISE_MALLOC;
 
@@ -87,7 +85,7 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
   return errcode;
 }
 
-static inline
+static _GRAS_INLINE
 void *
 _gras_dynar_elm(const gras_dynar_t * const dynar,
                 const size_t               idx) {
@@ -97,7 +95,7 @@ _gras_dynar_elm(const gras_dynar_t * const dynar,
   return data + idx*elmsize;
 }
 
-static inline
+static _GRAS_INLINE
 void
 _gras_dynar_get_elm(void               * const dst,
                     const gras_dynar_t * const dynar,
@@ -108,7 +106,7 @@ _gras_dynar_get_elm(void               * const dst,
   memcpy(dst, elm, elmsize);
 }
 
-static inline
+static _GRAS_INLINE
 void
 _gras_dynar_put_elm(const gras_dynar_t * const dynar,
                     const size_t               idx,
@@ -184,7 +182,7 @@ gras_dynar_reset(gras_dynar_t * const dynar) {
 
   __sanity_check_dynar(dynar);
 
-  DEBUG1("Reset the dynar %p",dynar);
+  DEBUG1("Reset the dynar %p",(void*)dynar);
   if (dynar->free) {
     gras_dynar_map(dynar, dynar->free);
   }
@@ -420,7 +418,7 @@ gras_dynar_pop(gras_dynar_t * const dynar,
                void         * const dst) {
   __sanity_check_dynar(dynar);
   __check_populated_dynar(dynar);
-  DEBUG1("Pop %p",dynar);
+  DEBUG1("Pop %p",(void*)dynar);
   gras_dynar_remove_at(dynar, dynar->used-1, dst);
 }
 
@@ -499,7 +497,7 @@ gras_dynar_cursor_first(const gras_dynar_t * const dynar,
 			int                * const cursor) {
 
   __sanity_check_dynar(dynar);
-  DEBUG1("Set cursor on %p to the first position",dynar);
+  DEBUG1("Set cursor on %p to the first position",(void*)dynar);
   *cursor = 0;
 }
 
@@ -532,10 +530,10 @@ gras_dynar_cursor_get(const gras_dynar_t * const dynar,
     const int idx = *cursor;
 
     if (idx >= dynar->used) {
-      DEBUG1("Cursor on %p already on last elem",dynar);
+      DEBUG1("Cursor on %p already on last elem",(void*)dynar);
       return FALSE;
     }
-    DEBUG2("Cash out cursor on %p at %d",dynar,idx);
+    DEBUG2("Cash out cursor on %p at %d",(void*)dynar,idx);
 
     _gras_dynar_get_elm(dst, dynar, idx);
   }

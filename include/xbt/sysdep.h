@@ -31,21 +31,36 @@ void  gras_free    (void  *memory);
 #define gras_new(type, count)  ((type*)gras_malloc (sizeof (type) * (count)))
 #define gras_new0(type, count) ((type*)gras_malloc0 (sizeof (type) * (count)))
 
+/* Attributes are only in recent versions of GCC */
+
 #if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-#define _GRAS_GNUC_PRINTF( format_idx, arg_idx )    \
+# define _GRAS_GNUC_PRINTF( format_idx, arg_idx )    \
 	   __attribute__((__format__ (__printf__, format_idx, arg_idx)))
-#define _GRAS_GNUC_SCANF( format_idx, arg_idx )     \
+# define _GRAS_GNUC_SCANF( format_idx, arg_idx )     \
 	       __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
-#define _GRAS_GNUC_FORMAT( arg_idx )                \
+# define _GRAS_GNUC_FORMAT( arg_idx )                \
 		   __attribute__((__format_arg__ (arg_idx)))
-#define _GRAS_GNUC_NORETURN                         \
-     __attribute__((__noreturn__))
+# define _GRAS_GNUC_NORETURN __attribute__((__noreturn__))
+
 #else   /* !__GNUC__ */
-#define _GRAS_GNUC_PRINTF( format_idx, arg_idx )
-#define _GRAS_GNUC_SCANF( format_idx, arg_idx )
-#define _GRAS_GNUC_FORMAT( arg_idx )
-#define _GRAS_GNUC_NORETURN
+# define _GRAS_GNUC_PRINTF( format_idx, arg_idx )
+# define _GRAS_GNUC_SCANF( format_idx, arg_idx )
+# define _GRAS_GNUC_FORMAT( arg_idx )
+# define _GRAS_GNUC_NORETURN
+
 #endif  /* !__GNUC__ */
+
+/* inline and __FUNCTION__ are only in GCC when -ansi is of */
+
+#if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
+
+# define _GRAS_GNUC_FUNCTION __FUNCTION__
+# define _GRAS_INLINE inline
+#else
+# define _GRAS_GNUC_FUNCTION "function"
+# define _GRAS_INLINE 
+#endif
+
 
 void gras_abort(void) _GRAS_GNUC_NORETURN;
 

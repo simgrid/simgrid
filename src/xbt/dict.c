@@ -202,7 +202,7 @@ gras_error_t
 gras_dict_dump(gras_dict_t    *dict,
                void_f_pvoid_t *output) {
 
-  printf("Dict %p:\n", dict);
+  printf("Dict %p:\n", (void*)dict);
   return gras_dictelm_dump(dict ? dict->head: NULL, output);
 }
 

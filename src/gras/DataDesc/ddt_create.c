@@ -36,7 +36,7 @@ gras_ddt_new(const char            *name,
   if (!res) 
     RAISE_MALLOC;
 
-  res->name = strdup(name);
+  res->name = (char*)strdup(name);
   res->name_len = strlen(name);
       
   *dst=res;
@@ -232,7 +232,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
     return no_error;
   }
 
-  gras_assert1(field_type->size >= 0,
+  gras_assert1(field_type->size != 0,
 	       "Cannot add a dynamically sized field in structure %s",
 	       struct_type->name);
     
@@ -240,7 +240,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
   if (!field)
     RAISE_MALLOC;
 
-  field->name   = strdup(name);
+  field->name   = (char*)strdup(name);
 
   DEBUG0("----------------");
   DEBUG3("PRE s={size=%ld,align=%ld,asize=%ld}",
@@ -347,7 +347,7 @@ gras_datadesc_union_append(gras_datadesc_type_t  *union_type,
   int arch;
 
   GRAS_IN3("(%s %s.%s;)",field_type->name,union_type->name,name);
-  gras_assert1(field_type->size >= 0,
+  gras_assert1(field_type->size != 0,
 	       "Cannot add a dynamically sized field in union %s",
 	       union_type->name);
 
@@ -361,7 +361,7 @@ gras_datadesc_union_append(gras_datadesc_type_t  *union_type,
   if (!field)
     RAISE_MALLOC;
 
-  field->name   = strdup(name);
+  field->name   = (char*)strdup(name);
   field->type   = field_type;
   /* All offset are left to 0 in an union */
   
@@ -509,7 +509,7 @@ gras_datadesc_array_fixed(const char              *name,
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  gras_assert1(fixed_size > 0, "'%s' is a array of negative fixed size",name);
+  gras_assert1(fixed_size > 0, "'%s' is a array of null fixed size",name);
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch] = fixed_size * element_type->aligned_size[arch];
     res->alignment[arch] = element_type->alignment[arch];
@@ -550,7 +550,7 @@ gras_datadesc_array_dyn(const char                      *name,
 		 "Redefinition of type %s does not match", name);
     gras_assert1(res->category.array_data.type == element_type,
 		 "Redefinition of type %s does not match", name);
-    gras_assert1(res->category.array_data.fixed_size == -1,
+    gras_assert1(res->category.array_data.fixed_size == 0,
 		 "Redefinition of type %s does not match", name);
     gras_assert1(res->category.array_data.dynamic_size == dynamic_size,
 		 "Redefinition of type %s does not match", name);
@@ -564,15 +564,15 @@ gras_datadesc_array_dyn(const char                      *name,
   res=*dst;
 
   for (arch=0; arch<gras_arch_count; arch ++) {
-    res->size[arch] = -1; /* make sure it indicates "dynamic" */
+    res->size[arch] = 0; /* make sure it indicates "dynamic" */
     res->alignment[arch] = element_type->alignment[arch];
-    res->aligned_size[arch] = -1; /*FIXME: That was so in GS, but looks stupid*/
+    res->aligned_size[arch] = 0; /*FIXME: That was so in GS, but looks stupid*/
   }
 
   res->category_code		= e_gras_datadesc_type_cat_array;
 
   res->category.array_data.type         = element_type;
-  res->category.array_data.fixed_size   = -1;
+  res->category.array_data.fixed_size   = 0;
   res->category.array_data.dynamic_size = dynamic_size;
 
   return no_error;
@@ -666,7 +666,7 @@ static gras_datadesc_type_t *
    } else if (type->category_code == e_gras_datadesc_type_cat_struct) {
       field_array = type->category.struct_data.fields;
    } else {
-      ERROR2("%s (%p) is not a struct nor an union. There is no field.", type->name,type);
+      ERROR2("%s (%p) is not a struct nor an union. There is no field.", type->name,(void*)type);
       gras_abort();
    }
    gras_dynar_foreach(field_array,field_num,field) {

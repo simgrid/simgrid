@@ -441,7 +441,7 @@ char *yytext;
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
   const char *definition;
-  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_lexer,ddt_parse,"Lexer of the parsing");
+  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
 #define annotate 1
 #define comment 2
@@ -764,14 +764,16 @@ case 8:
 YY_RULE_SETUP
 #line 77 "gras/DataDesc/ddt_parse.yy.l"
 { /****************** COMMENTS ************************/
-	 // constructs like /*g [string] g*/ are not comments but size annotations
+  /* constructs like : */
+    /*g [string] g*/ 
+  /* are not comments but size annotations */
   comment_caller = INITIAL;
   BEGIN(comment);
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 83 "gras/DataDesc/ddt_parse.yy.l"
+#line 85 "gras/DataDesc/ddt_parse.yy.l"
 {
   comment_caller = foo;
   BEGIN(comment);
@@ -779,19 +781,19 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 88 "gras/DataDesc/ddt_parse.yy.l"
+#line 90 "gras/DataDesc/ddt_parse.yy.l"
 { /* eat anything that's not a '*' */
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 90 "gras/DataDesc/ddt_parse.yy.l"
+#line 92 "gras/DataDesc/ddt_parse.yy.l"
 { /* eat up '*'s not followed by '/'s */
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 92 "gras/DataDesc/ddt_parse.yy.l"
+#line 94 "gras/DataDesc/ddt_parse.yy.l"
 {
   ++gras_ddt_parse_line_pos;
   gras_ddt_parse_col_pos=0;
@@ -800,7 +802,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 97 "gras/DataDesc/ddt_parse.yy.l"
+#line 99 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos+= strlen(yytext);
   gras_ddt_parse_col_pos+= strlen(yytext);
@@ -809,7 +811,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 103 "gras/DataDesc/ddt_parse.yy.l"
+#line 105 "gras/DataDesc/ddt_parse.yy.l"
 {  /****************** STATEMENTS ************************/
   gras_ddt_parse_char_pos += strlen(yytext);
   gras_ddt_parse_col_pos += strlen(yytext);
@@ -819,7 +821,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 109 "gras/DataDesc/ddt_parse.yy.l"
+#line 111 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
@@ -829,7 +831,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 115 "gras/DataDesc/ddt_parse.yy.l"
+#line 117 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -839,7 +841,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 121 "gras/DataDesc/ddt_parse.yy.l"
+#line 123 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
@@ -849,7 +851,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 127 "gras/DataDesc/ddt_parse.yy.l"
+#line 129 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -859,7 +861,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 133 "gras/DataDesc/ddt_parse.yy.l"
+#line 135 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
@@ -869,7 +871,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 139 "gras/DataDesc/ddt_parse.yy.l"
+#line 141 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -879,7 +881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 145 "gras/DataDesc/ddt_parse.yy.l"
+#line 147 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -889,7 +891,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 151 "gras/DataDesc/ddt_parse.yy.l"
+#line 153 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -899,7 +901,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 157 "gras/DataDesc/ddt_parse.yy.l"
+#line 159 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -909,7 +911,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 163 "gras/DataDesc/ddt_parse.yy.l"
+#line 165 "gras/DataDesc/ddt_parse.yy.l"
 {
  gras_ddt_parse_line_pos++; 
  gras_ddt_parse_char_pos++;
@@ -919,7 +921,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 169 "gras/DataDesc/ddt_parse.yy.l"
+#line 171 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -928,10 +930,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 174 "gras/DataDesc/ddt_parse.yy.l"
+#line 176 "gras/DataDesc/ddt_parse.yy.l"
 ECHO;
 	YY_BREAK
-#line 935 "gras/DataDesc/ddt_parse.yy.c"
+#line 937 "gras/DataDesc/ddt_parse.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(annotate):
 case YY_STATE_EOF(comment):
@@ -1824,7 +1826,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 174 "gras/DataDesc/ddt_parse.yy.l"
+#line 176 "gras/DataDesc/ddt_parse.yy.l"
 
 /* {space}+                { return(TOKEN_SPACE);} */
 
@@ -1833,8 +1835,8 @@ void gras_ddt_parse_dump(void) {
   case GRAS_DDT_PARSE_TOKEN_LA      : {printf("TOKEN_LA ");break;}
   case GRAS_DDT_PARSE_TOKEN_RA      : {printf("TOKEN_RA ");break;}
   case GRAS_DDT_PARSE_TOKEN_WORD    : {printf("TOKEN_WORD ");break;}
-    //  case GRAS_DDT_PARSE_TOKEN_SPACE   : {printf("TOKEN_SPACE ");break;}
-    //  case GRAS_DDT_PARSE_TOKEN_COMMENT : {printf("TOKEN_COMMENT ");break;}
+    /*  case GRAS_DDT_PARSE_TOKEN_SPACE   : {printf("TOKEN_SPACE ");break;}*/
+    /*  case GRAS_DDT_PARSE_TOKEN_COMMENT : {printf("TOKEN_COMMENT ");break;}*/
   case GRAS_DDT_PARSE_TOKEN_NEWLINE : {printf("TOKEN_NEWLINE\n");return;}
   case GRAS_DDT_PARSE_TOKEN_EMPTY : {printf("TOKEN_EMPTY\n");return;}
   default             : {printf("Unknown token %d\n", gras_ddt_parse_tok_num);return;}
@@ -1845,7 +1847,7 @@ void gras_ddt_parse_dump(void) {
 
 int gras_ddt_parse_lex_n_dump(void) {
   gras_ddt_parse_tok_num = gras_ddt_parse_lex();
-  //  gras_ddt_parse_char_pos += strlen(yytext);
+  /*  gras_ddt_parse_char_pos += strlen(yytext);*/
   return(gras_ddt_parse_tok_num);
 }
 
@@ -1888,6 +1890,6 @@ void  gras_ddt_parse_pointer_string_close(void) {
   gras_ddt_parse_tok_num = 0;
 }
 
-// Local variables:
-// mode: c
-// End:
+/* Local variables:*/
+/* mode: c */
+/* End: */

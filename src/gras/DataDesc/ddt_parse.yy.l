@@ -21,7 +21,7 @@
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
   const char *definition;
-  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse);
+  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
 %}
 
@@ -75,7 +75,9 @@ digit           [0-9]
 }
 
 "/*[^g]"   { /****************** COMMENTS ************************/
-	 // constructs like /*g [string] g*/ are not comments but size annotations
+  /* constructs like : */
+    /*g [string] g*/ 
+  /* are not comments but size annotations */
   comment_caller = INITIAL;
   BEGIN(comment);
 }
@@ -179,8 +181,8 @@ void gras_ddt_parse_dump(void) {
   case GRAS_DDT_PARSE_TOKEN_LA      : {printf("TOKEN_LA ");break;}
   case GRAS_DDT_PARSE_TOKEN_RA      : {printf("TOKEN_RA ");break;}
   case GRAS_DDT_PARSE_TOKEN_WORD    : {printf("TOKEN_WORD ");break;}
-    //  case GRAS_DDT_PARSE_TOKEN_SPACE   : {printf("TOKEN_SPACE ");break;}
-    //  case GRAS_DDT_PARSE_TOKEN_COMMENT : {printf("TOKEN_COMMENT ");break;}
+    /*  case GRAS_DDT_PARSE_TOKEN_SPACE   : {printf("TOKEN_SPACE ");break;}*/
+    /*  case GRAS_DDT_PARSE_TOKEN_COMMENT : {printf("TOKEN_COMMENT ");break;}*/
   case GRAS_DDT_PARSE_TOKEN_NEWLINE : {printf("TOKEN_NEWLINE\n");return;}
   case GRAS_DDT_PARSE_TOKEN_EMPTY : {printf("TOKEN_EMPTY\n");return;}
   default             : {printf("Unknown token %d\n", gras_ddt_parse_tok_num);return;}
@@ -191,7 +193,7 @@ void gras_ddt_parse_dump(void) {
 
 int gras_ddt_parse_lex_n_dump(void) {
   gras_ddt_parse_tok_num = gras_ddt_parse_lex();
-  //  gras_ddt_parse_char_pos += strlen(yytext);
+  /*  gras_ddt_parse_char_pos += strlen(yytext);*/
   return(gras_ddt_parse_tok_num);
 }
 
@@ -234,6 +236,6 @@ void  gras_ddt_parse_pointer_string_close(void) {
   gras_ddt_parse_tok_num = 0;
 }
 
-// Local variables:
-// mode: c
-// End:
+/* Local variables:*/
+/* mode: c */
+/* End: */

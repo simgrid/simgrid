@@ -28,14 +28,14 @@ const char *gras_datadesc_cat_names[9] = {
 
 static gras_datadesc_type_t *int_type = NULL;
 static gras_datadesc_type_t *pointer_type = NULL;    
-static inline gras_error_t gras_dd_send_int(gras_socket_t *sock,             int  i);
-static inline gras_error_t gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i);
+static _GRAS_INLINE gras_error_t gras_dd_send_int(gras_socket_t *sock,             int  i);
+static _GRAS_INLINE gras_error_t gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i);
 
-static inline gras_error_t
+static _GRAS_INLINE gras_error_t
 gras_dd_alloc_ref(gras_dict_t *refs,  long int     size,
 		  char       **r_ref, long int     r_len,
 		  char	     **l_ref);
-static inline int 
+static _GRAS_INLINE int 
 gras_dd_is_r_null(char **r_ptr, long int length);
 
 static gras_error_t 
@@ -56,7 +56,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       int                   subsize);
 
 
-static inline gras_error_t
+static _GRAS_INLINE gras_error_t
 gras_dd_send_int(gras_socket_t *sock,int i) {
 
   if (!int_type) {
@@ -68,7 +68,7 @@ gras_dd_send_int(gras_socket_t *sock,int i) {
   return gras_trp_chunk_send(sock, (char*)&i, int_type->size[GRAS_THISARCH]);
 }
 
-static inline gras_error_t
+static _GRAS_INLINE gras_error_t
 gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
   gras_error_t errcode;
 
@@ -100,7 +100,7 @@ gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
  *       of 'length' bytes set to 0.
  * FIXME: Check in configure?
  */
-static inline int 
+static _GRAS_INLINE int 
 gras_dd_is_r_null(char **r_ptr, long int length) {
   int i;
 
@@ -113,7 +113,7 @@ gras_dd_is_r_null(char **r_ptr, long int length) {
   return 1;
 }
 
-static inline gras_error_t
+static _GRAS_INLINE gras_error_t
 gras_dd_alloc_ref(gras_dict_t *refs,
 		  long int     size,
 		  char       **r_ref,
@@ -126,10 +126,10 @@ gras_dd_alloc_ref(gras_dict_t *refs,
     RAISE_MALLOC;
 
   *l_ref = l_data;
-  DEBUG2("l_data=%p, &l_data=%p",l_data,&l_data);
+  DEBUG2("l_data=%p, &l_data=%p",(void*)l_data,(void*)&l_data);
 
   DEBUG3("alloc_ref: r_ref=%p; *r_ref=%p, r_len=%ld",
-	 r_ref, r_ref?*r_ref:NULL, r_len);
+	 (void*)r_ref, (void*)(r_ref?*r_ref:NULL), r_len);
 #ifdef DETECT_CYCLE
   if (r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
     gras_error_t errcode;
@@ -208,14 +208,14 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
 
   if (d1->send != d2->send) {
     DEBUG4("ddt_cmp: %s->send=%p  !=  %s->send=%p",
-	   d1->name,d1->send, d2->name,d2->send);
-    return d1->send > d2->send ? 1 : -1;
+	   d1->name,(void*)d1->send, d2->name,(void*)d2->send);
+    return 1; /* ISO C forbids ordered comparisons of pointers to functions */
   }
 
   if (d1->recv != d2->recv) {
     DEBUG4("ddt_cmp: %s->recv=%p  !=  %s->recv=%p",
-	   d1->name,d1->recv, d2->name,d2->recv);
-    return d1->recv > d2->recv ? 1 : -1;
+	   d1->name,(void*)d1->recv, d2->name,(void*)d2->recv);
+    return 1; /* ISO C forbids ordered comparisons of pointers to functions */
   }
 
   switch (d1->category_code) {
@@ -253,7 +253,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     
   case e_gras_datadesc_type_cat_union:
     if (d1->category.union_data.selector != d2->category.union_data.selector) 
-      return d1->category.union_data.selector > d2->category.union_data.selector ? 1 : -1;
+      return 1;  /* ISO C forbids ordered comparisons of pointers to functions */
     
     if (gras_dynar_length(d1->category.union_data.fields) != 
 	gras_dynar_length(d2->category.union_data.fields))
@@ -276,7 +276,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     
   case e_gras_datadesc_type_cat_ref:
     if (d1->category.ref_data.selector != d2->category.ref_data.selector) 
-      return d1->category.ref_data.selector > d2->category.ref_data.selector ? 1 : -1;
+      return 1; /* ISO C forbids ordered comparisons of pointers to functions */
     
     if (d1->category.ref_data.type != d2->category.ref_data.type) 
       return d1->category.ref_data.type > d2->category.ref_data.type ? 1 : -1;
@@ -290,7 +290,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
       return d1->category.array_data.fixed_size > d2->category.array_data.fixed_size ? 1 : -1;
     
     if (d1->category.array_data.dynamic_size != d2->category.array_data.dynamic_size) 
-      return d1->category.array_data.dynamic_size > d2->category.array_data.dynamic_size ? 1 : -1;
+      return 1; /* ISO C forbids ordered comparisons of pointers to functions */
     
     break;
     
@@ -442,12 +442,12 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     }
     errcode = gras_dict_get_ext(refs,(char*)ref, sizeof(void*), &dummy);
     if (errcode == mismatch_error) {
-      VERB1("Sending data referenced at %p", *ref);
+      VERB1("Sending data referenced at %p", (void*)*ref);
       TRY(gras_dict_set_ext(refs, (char*)ref, sizeof(void*), ref, NULL));
       TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, *ref));
       
     } else if (errcode == no_error) {
-      VERB1("Not sending data referenced at %p (already done)", *ref);
+      VERB1("Not sending data referenced at %p (already done)", (void*)*ref);
     } else {
       return errcode;
     }
@@ -465,7 +465,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     
     /* determine and send the element count */
     count = array_data.fixed_size;
-    if (count <= 0) {
+    if (count == 0) {
       count = array_data.dynamic_size(state,data);
       gras_assert1(count >=0,
 		   "Invalid (negative) array size for type %s",type->name);
@@ -547,7 +547,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
   int                   cpt;
   gras_datadesc_type_t *sub_type;
 
-  VERB2("Recv a %s @%p", type->name, l_data);
+  VERB2("Recv a %s @%p", type->name, (void*)l_data);
   gras_assert(l_data);
 
   switch (type->category_code) {
@@ -661,7 +661,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
 
     if (errcode == mismatch_error) {
-      int subsubcount = -1;
+      int subsubcount = 0;
       void *l_referenced=NULL;
 
       VERB2("Receiving a ref to '%s', remotely @%p",
@@ -673,7 +673,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	gras_datadesc_type_t *subsub_type;
 
 	subsubcount = array_data.fixed_size;
-	if (subsubcount < 0)
+	if (subsubcount == 0)
 	  TRY(gras_dd_recv_int(sock, r_arch, &subsubcount));
 
 	subsub_type = array_data.type;
@@ -718,13 +718,13 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     array_data = type->category.array_data;
     /* determine element count locally, or from caller, or from peer */
     count = array_data.fixed_size;
-    if (count <= 0)
+    if (count == 0)
       count = subsize;
-    if (count < 0)
+    if (count == 0)
       TRY(gras_dd_recv_int(sock, r_arch, &count));
-    if (count < 0)
+    if (count == 0)
       RAISE1(mismatch_error,
-	     "Invalid (negative) array size for type %s",type->name);
+	     "Invalid (=0) array size for type %s",type->name);
 
     /* receive the content */
     sub_type = array_data.type;

@@ -38,8 +38,8 @@ static void append_file(gras_log_appender_t* this,
 			gras_log_event_t* ev, 
 			const char *fmt) {
 
-    // TODO: define a format field in struct for timestamp, etc.
-    //    struct DefaultLogAppender* this = (struct DefaultLogAppender*)this0;
+  /* TODO: define a format field in struct for timestamp, etc.
+     struct DefaultLogAppender* this = (struct DefaultLogAppender*)this0;*/
     
     if ((FILE*)(this->appender_data) == NULL)
       this->appender_data = (void*)stderr;
