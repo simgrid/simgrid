@@ -15,8 +15,9 @@
 #include <stddef.h>    /* offsetof() */
 #include <sys/types.h>  /* size_t */
 #include <stdarg.h>
+#ifdef HAVE_EXECINFO_H
 #include <execinfo.h>  /* to print the backtrace */
-
+#endif
 
 /* C++ users need love */
 #ifndef BEGIN_DECL
@@ -88,7 +89,7 @@ typedef enum {
   }                                                            \
 } while(0)
 
-#if 0
+#if 0 /* FIXME: We don't use backtrace. Drop it? */
 #define _GRAS_ERR_PRE do {                                     \
  void *_gs_array[30];                                          \
   size_t _gs_size= backtrace (_gs_array, 30);                  \
