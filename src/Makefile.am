@@ -18,6 +18,8 @@ INCLUDES= -I$(top_srcdir)/include \
 EXTRA_DIST= \
         \
         xbt/dict_private.h \
+        xbt/heap_private.h \
+        xbt/fifo_private.h \
         \
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
@@ -80,6 +82,8 @@ COMMON_S=\
   xbt/log.c         xbt/log_default_appender.c   xbt/error.c                 \
   xbt/dynar.c                                                                  \
   xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \
+  xbt/heap.c                                                                    \
+  xbt/fifo.c                                                                    \
   xbt/set.c                                                                    \
   xbt/module.c                                                                 \
   xbt/config.c                                                                 \

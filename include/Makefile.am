@@ -5,6 +5,8 @@ nobase_include_HEADERS = \
 	xbt/log.h xbt/error.h \
 	xbt/module.h \
 	xbt/dynar.h xbt/dict.h xbt/set.h \
+	xbt/heap.h \
+	xbt/fifo.h \
 	xbt/config.h \
 	\
 	gras/datadesc.h gras/transport.h \

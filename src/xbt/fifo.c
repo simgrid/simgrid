@@ -4,7 +4,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
-#include "xbt_fifo_private.h"
+#include "fifo_private.h"
 
 /*
  * xbt_fifo_new()

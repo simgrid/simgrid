@@ -7,7 +7,7 @@
 #define _XBT_HEAP_PRIVATE_H
 
 #include <stdlib.h>
-#include "xbt_heap.h"
+#include "xbt/heap.h"
 
 typedef struct xbt_heapItem {
   void *content;

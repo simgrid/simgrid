@@ -5,7 +5,7 @@
 
 #ifndef _XBT_FIFO_PRIVATE_H
 #define _XBT_FIFO_PRIVATE_H
-#include "xbt_fifo.h"
+#include "xbt/fifo.h"
 
 /* Bucket structure */
 typedef struct xbt_fifo_item {
