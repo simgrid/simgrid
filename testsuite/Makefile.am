@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include 
+INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
 AM_CFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out
