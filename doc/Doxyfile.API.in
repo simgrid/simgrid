@@ -407,7 +407,8 @@ INPUT                  = @top_srcdir@/include/ \
                          @top_srcdir@/src/gras/Virtu \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/src/modules.doc \
-                         ./api_index.doc
+                         ./api_index.doc \
+                         ./logcategories.doc
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

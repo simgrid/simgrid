@@ -7,7 +7,7 @@ DISTCLEANFILES = api_index.doc
 MAINTAINERCLEANFILES = html
 
 if MAINTAINER_MODE
-html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
+html: $(DOCSOURCES) Doxyfile.API Doxyfile.Examples Doxyfile.main logcategories.doc
 	touch api_index.doc
 	doxygen Doxyfile.main >/dev/null
 	doxygen Doxyfile.API >/dev/null
@@ -21,6 +21,14 @@ html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
 #	@rm -rf html/API html/examples
 #	for i in `find doc/html -name "*.html" -exec grep -l "group_[^_]"  {} \;` ; do tools/fix_doxygen.pl $$i; rm $$i.bak; done
 endif
+
+logcategories.doc: $(DOCSOURCES)
+	pwd=`pwd`; rm $$pwd/logcategories.doc; set -e; \
+	echo "/* Generated file, do not edit */"          > $$pwd/logcategories.doc; \
+	echo "/** \addtogroup XBT_log_cats"              >> $$pwd/logcategories.doc; \
+	echo "    @{"                                    >> $$pwd/logcategories.doc; \
+	cd @top_srcdir@/src; ./xbt_log_extract_hierarchy >> $$pwd/logcategories.doc; \
+	echo "@}*/"                                      >> $$pwd/logcategories.doc;
 
 install-data-local: 
 	@for file in `find html/ -type d` ; do \
