@@ -3,8 +3,6 @@ AM_CFLAGS=-g
 TESTS= test_rl # test_sg
 EXTRA_DIST=ping_deployment.txt $(TESTS)
 
-# check_SCRIPTS=$(TESTS)
-
 # AUTOMAKE variable definition
 check_PROGRAMS=ping_client ping_server 
 # ping_simulator
