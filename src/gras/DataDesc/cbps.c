@@ -9,6 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "DataDesc/datadesc_private.h"
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(cbps,datadesc);
 
 typedef struct {
   gras_datadesc_type_t *type;
@@ -16,10 +17,17 @@ typedef struct {
 } gras_dd_cbps_elm_t;
 
 struct s_gras_dd_cbps {
-  gras_dict_t  *space;
-  gras_dynar_t *stack;
+  gras_dict_t  *space; /* varname x dynar of gras_dd_cbps_elm_t */
+  gras_dynar_t *frames; /* of dynar of names defined within this frame
+			   (and to pop when we leave it) */
   gras_dynar_t *globals;
 };
+
+static void free_string(void *d);
+
+static void free_string(void *d){
+  free(*(void**)d);
+}
 
 gras_error_t
 gras_dd_cbps_new(gras_dd_cbps_t **dst) {
@@ -30,8 +38,8 @@ gras_dd_cbps_new(gras_dd_cbps_t **dst) {
     RAISE_MALLOC;
 
   TRY(gras_dict_new(&(res->space)));
-  /* FIXME:leaking on content of dynars*/
-  TRY(gras_dynar_new(&(res->stack), sizeof(gras_dynar_t*), NULL));
+  /* no leak, the content is freed manually on block_end */
+  TRY(gras_dynar_new(&(res->frames), sizeof(gras_dynar_t*), NULL));
   TRY(gras_dynar_new(&(res->globals), sizeof(char*), NULL));
 
   gras_dd_cbps_block_begin(res);
@@ -44,7 +52,7 @@ gras_dd_cbps_free(gras_dd_cbps_t **state) {
 
   gras_dd_cbps_block_end(*state);
   gras_dict_free ( &( (*state)->space   ) );
-  gras_dynar_free(    (*state)->stack     );
+  gras_dynar_free(    (*state)->frames    );
   gras_dynar_free(    (*state)->globals   );
 
   free(*state);
@@ -58,32 +66,40 @@ gras_dd_cbps_free(gras_dd_cbps_t **state) {
  * name already exists, it is masked by the one given here, and will be 
  * seeable again only after a pop to remove the value this push adds.
  */
-void
+gras_error_t
 gras_dd_cbps_push(gras_dd_cbps_t        *ps,
 		  const char            *name,
 		  void                  *data,
 		  gras_datadesc_type_t  *ddt) {
 
-  gras_dynar_t            *p_dynar        = NULL;
-  gras_dd_cbps_elm_t      *p_var          = NULL;
+  gras_dynar_t            *varstack,*frame;
+  gras_dd_cbps_elm_t      *p_var;
+  gras_error_t errcode;
+  char *varname = strdup(name);
+
+  DEBUG2("push(%s,%p)",name,data);
+  errcode = gras_dict_get(ps->space, name, (void **)&varstack);
  
-  gras_dict_get(ps->space, name, (void **)&p_dynar);
- 
-  if (!p_dynar) {
-    gras_dynar_new(&p_dynar, sizeof (gras_dd_cbps_elm_t *), NULL);
-    gras_dict_set(ps->space, name, (void **)p_dynar, NULL);
-    /* FIXME: leaking on dynar. Insert in dict with a way to free it */
+  if (errcode == mismatch_error) {
+    DEBUG1("Create a new variable stack for '%s' into the space",name);
+    gras_dynar_new(&varstack, sizeof (gras_dd_cbps_elm_t *), NULL);
+    gras_dict_set(ps->space, varname, (void **)varstack, NULL);
+    /* leaking, you think? only if you do not close all the openned blocks ;)*/
+  } else if (errcode != no_error) {
+    return errcode;
   }
  
   p_var       = calloc(1, sizeof(gras_dd_cbps_elm_t));
   p_var->type = ddt;
   p_var->data = data;
   
-  gras_dynar_push(p_dynar, &p_var);
+  gras_dynar_push(varstack, &p_var);
   
-  gras_dynar_pop(ps->stack, &p_dynar);
-  gras_dynar_push(p_dynar, strdup(name));
-  gras_dynar_push(ps->stack, &p_dynar); 
+  gras_dynar_pop(ps->frames, &frame);
+  DEBUG4("Push %s (%p @%p) into frame %p",varname,varname,&varname,frame);
+  gras_dynar_push(frame, &varname);
+  gras_dynar_push(ps->frames, &frame); 
+  return no_error;
 }
 
 /**
@@ -93,50 +109,56 @@ gras_dd_cbps_push(gras_dd_cbps_t        *ps,
  * present in the current block, it will fail (with abort) and not search
  * in upper blocks since this denotes a programmation error.
  */
-void *
+gras_error_t
 gras_dd_cbps_pop (gras_dd_cbps_t        *ps, 
 		  const char            *name,
-		  gras_datadesc_type_t **ddt) {
-  gras_dynar_t            *p_dynar        = NULL;
-  gras_dd_cbps_elm_t      *p_elm          = NULL;
+		  gras_datadesc_type_t **ddt,
+		  void                 **res) {
+  gras_dynar_t            *varstack,*frame;
+  gras_dd_cbps_elm_t      *var          = NULL;
   void                    *data           = NULL;
+  gras_error_t errcode;
 
+  DEBUG1("pop(%s)",name);
   /* FIXME: Error handling */
-  gras_dict_get(ps->space, name, (void **)&p_dynar);
-  gras_dynar_pop(p_dynar, &p_elm);
+  errcode = gras_dict_get(ps->space, name, (void **)&varstack);
+  if (errcode == mismatch_error) {
+    RAISE1(mismatch_error,"Asked to pop the non-existant %s",
+	   name);
+  }
+  gras_dynar_pop(varstack, &var);
   
-  if (!gras_dynar_length(p_dynar)) {
+  if (!gras_dynar_length(varstack)) {
+    DEBUG1("Last incarnation of %s poped. Kill it",name);
     gras_dict_remove(ps->space, name);
-                gras_dynar_free_container(p_dynar);
+    gras_dynar_free(varstack);
   }
   
-  if (ddt) {
-    *ddt = p_elm->type;
-  }
+  if (ddt)
+    *ddt = var->type;  
+  data    = var->data;
   
-  data    = p_elm->data;
+  free(var);
   
-  free(p_elm);
-  
-  gras_dynar_pop(ps->stack, &p_dynar);
+  gras_dynar_pop(ps->frames, &frame);
   {
-    int l = gras_dynar_length(p_dynar);
+    int l = gras_dynar_length(frame);
     
     while (l--) {
       char *_name = NULL;
                                                                                 
-      gras_dynar_get(p_dynar, l, &_name);
+      gras_dynar_get(frame, l, &_name);
       if (!strcmp(name, _name)) {
-	gras_dynar_remove_at(p_dynar, l, &_name);
+	gras_dynar_remove_at(frame, l, &_name);
 	free(_name);
 	break;
       }
     }
   }
-  gras_dynar_push(ps->stack, &p_dynar);
+  gras_dynar_push(ps->frames, &frame);
   
-  
-  return data;
+  *res = data;
+  return no_error;
 }
 
 /**
@@ -144,8 +166,7 @@ gras_dd_cbps_pop (gras_dd_cbps_t        *ps,
  *
  * Change the value of an element in the PS.  
  * If it's not present in the current block, look in the upper ones.
- * If it's not present in any of them, look in the globals
- *   (FIXME: which no function of this API allows to set). 
+ * If it's not present in any of them, modify in the globals
  * If not present there neither, the code may segfault (Oli?).
  *
  * Once a reference to an element of that name is found somewhere in the PS,
@@ -159,10 +180,12 @@ gras_dd_cbps_set (gras_dd_cbps_t        *ps,
 
   gras_dynar_t            *p_dynar        = NULL;
   gras_dd_cbps_elm_t      *p_elm          = NULL;
+  gras_error_t errcode;
   
-  gras_dict_get(ps->space, name, (void **)&p_dynar);
+  DEBUG1("set(%s)",name);
+  errcode = gras_dict_get(ps->space, name, (void **)&p_dynar);
   
-  if (!p_dynar) {
+  if (errcode == mismatch_error) {
     gras_dynar_new(&p_dynar, sizeof (gras_dd_cbps_elm_t *), NULL);
     gras_dict_set(ps->space, name, (void **)p_dynar, NULL);
     
@@ -186,7 +209,6 @@ gras_dd_cbps_set (gras_dd_cbps_t        *ps,
  * (note that you get the content of the data struct and not a copy to it)
  * If it's not present in the current block, look in the upper ones.
  * If it's not present in any of them, look in the globals
- *   (FIXME: which no function of this API allows to set). 
  * If not present there neither, the code may segfault (Oli?).
  */
 void *
@@ -197,6 +219,7 @@ gras_dd_cbps_get (gras_dd_cbps_t        *ps,
   gras_dynar_t            *p_dynar        = NULL;
   gras_dd_cbps_elm_t      *p_elm          = NULL;
   
+  DEBUG1("get(%s)",name);
   /* FIXME: Error handling */
   gras_dict_get(ps->space, name, (void **)&p_dynar);
   gras_dynar_pop(p_dynar, &p_elm);
@@ -228,9 +251,10 @@ void
 gras_dd_cbps_block_begin(gras_dd_cbps_t *ps) {
 
   gras_dynar_t            *p_dynar        = NULL;
-  
+
+  DEBUG0(">>> Block begin");
   gras_dynar_new(&p_dynar, sizeof (char *), NULL);
-  gras_dynar_push(ps->stack, &p_dynar);
+  gras_dynar_push(ps->frames, &p_dynar);
 }
 
 /**
@@ -241,30 +265,34 @@ gras_dd_cbps_block_begin(gras_dd_cbps_t *ps) {
 void
 gras_dd_cbps_block_end(gras_dd_cbps_t *ps) {
 
-  gras_dynar_t            *p_dynar        = NULL;
+  gras_dynar_t            *frame        = NULL;
   int                      cursor         =    0;
   char                    *name           = NULL;
-  
-  gras_dynar_pop(ps->stack, &p_dynar);
-  
-  gras_dynar_foreach(p_dynar, cursor, name) {
 
-    gras_dynar_t            *p_dynar_elm    = NULL;
-    gras_dd_cbps_elm_t      *p_elm          = NULL;
+  gras_assert0(gras_dynar_length(ps->frames),
+	       "More block_end than block_begin");
+  gras_dynar_pop(ps->frames, &frame);
+  
+  gras_dynar_foreach(frame, cursor, name) {
+
+    gras_dynar_t            *varstack    = NULL;
+    gras_dd_cbps_elm_t      *var         = NULL;
  
-    gras_dict_get(ps->space, name, (void **)&p_dynar_elm);
-    gras_dynar_pop(p_dynar_elm, &p_elm);
+    DEBUG2("Get ride of %s (%p)",name,name);
+    gras_dict_get(ps->space, name, (void **)&varstack);
+    gras_dynar_pop(varstack, &var);
  
-    if (!gras_dynar_length(p_dynar_elm)) {
+    if (!gras_dynar_length(varstack)) {
       gras_dict_remove(ps->space, name);
-      gras_dynar_free_container(p_dynar_elm);
+      gras_dynar_free_container(varstack); /*already empty, save a test ;) */
     }
     
-    free(p_elm);
+    if (var->data) free(var->data);
+    free(var);
     free(name);
   }
-  
-  gras_dynar_free_container(p_dynar);
+  gras_dynar_free_container(frame);/* we just emptied it */
+  DEBUG0("<<< Block end");
 }
 
 
