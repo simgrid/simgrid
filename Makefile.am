@@ -1,7 +1,7 @@
 SUBDIRS= include src examples testsuite doc
 DISTCLEANFILES =  *~  
 
-ACLOCAL = aclocal -I acmacro
+ACLOCAL = aclocal-1.9 -I acmacro
 AUTOMAKE_OPTIONS = gnu
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
