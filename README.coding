@@ -6,7 +6,13 @@ MALLOC:
  It's even better to use gras_new when possible.
 
 SIZE_T
+ If possible, avoid size_t and use unsigned long instead.
+
  #include <sys/types.h> in all files manipulating size_t
  do cast it to unsigned long before printing (and use %lu)
  
+
+
+PRINTF pointer difference
+ printf ("diff = %ld\n", (long) (pointer2 - pointer1));
   
