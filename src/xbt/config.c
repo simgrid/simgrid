@@ -609,8 +609,11 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
     switch (cell->type) {
     case xbt_cfgelm_string:
-      TRYCLEAN(xbt_cfg_set_string(cfg, name, val),
-	       xbt_free(optionlist_cpy));
+      errcode = xbt_cfg_set_string(cfg, name, val);
+      if (errcode != no_error) {
+	 xbt_free(optionlist_cpy);
+         return errcode;
+      }
       break;
 
     case xbt_cfgelm_int:
@@ -622,8 +625,11 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 		     name);
       }
 
-      TRYCLEAN(xbt_cfg_set_int(cfg,name,i),
-	       xbt_free(optionlist_cpy));
+      errcode = xbt_cfg_set_int(cfg,name,i);
+      if (errcode != no_error) {
+	 xbt_free(optionlist_cpy);
+	 return errcode;
+      }
       break;
 
     case xbt_cfgelm_double:
@@ -635,8 +641,11 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 	       name);
       }
 
-      TRYCLEAN(xbt_cfg_set_double(cfg,name,d),
-	       xbt_free(optionlist_cpy));
+      errcode = xbt_cfg_set_double(cfg,name,d);
+      if (errcode != no_error) {
+	 xbt_free(optionlist_cpy);
+	 return errcode;
+      }
       break;
 
     case xbt_cfgelm_host:
@@ -658,8 +667,11 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 	       name);
       }
 
-      TRYCLEAN(xbt_cfg_set_host(cfg,name,str,i),
-	       xbt_free(optionlist_cpy));
+      errcode = xbt_cfg_set_host(cfg,name,str,i);
+      if (errcode != no_error) {
+	 xbt_free(optionlist_cpy);
+	 return errcode;
+      }
       break;      
 
     default: 
