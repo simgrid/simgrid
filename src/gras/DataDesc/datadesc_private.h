@@ -24,7 +24,7 @@
 #define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
 extern gras_set_t *gras_datadesc_set_local;
-
+void gras_ddt_freev(void *ddt);
 /*******************************************
  * Descriptions of all known architectures *
  *******************************************/
@@ -92,9 +92,9 @@ typedef enum e_gras_datadesc_type_category {
  */
 typedef struct s_gras_dd_cat_field {
 
-  char 			      *name;
-  long int		       offset[gras_arch_count]; /* only for struct */
-  int                          code;
+  char 	   *name;
+  long int  offset[gras_arch_count];
+  int       code;
   
   gras_datadesc_type_cb_void_t pre;
   gras_datadesc_type_cb_void_t post;
@@ -128,6 +128,8 @@ typedef struct s_gras_dd_cat_scalar {
  */
 typedef struct s_gras_dd_cat_struct {
   gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
+  int remaining; /**/
+  int closed; /* gras_datadesc_declare_struct_close() was called */
 } gras_dd_cat_struct_t;
 
 /**
@@ -138,6 +140,7 @@ typedef struct s_gras_dd_cat_struct {
 typedef struct s_gras_dd_cat_union {
   gras_datadesc_type_cb_int_t selector;
   gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
+  int closed; /* gras_datadesc_declare_union_close() was called */
 } gras_dd_cat_union_t;
 
 /**
@@ -166,6 +169,7 @@ typedef struct s_gras_dd_cat_array {
 
   /* callback used to return the dynamic length */
   gras_datadesc_type_cb_int_t dynamic_size;
+
 } gras_dd_cat_array_t;
 
 /**
@@ -214,7 +218,7 @@ struct s_gras_datadesc_type {
   /* payload */
   long int                             size[gras_arch_count];
   
-  long int                             alignment[gras_arch_count];
+  long int                             alignment[gras_arch_count];  
   long int                             aligned_size[gras_arch_count];
   
   enum  e_gras_datadesc_type_category  category_code;
