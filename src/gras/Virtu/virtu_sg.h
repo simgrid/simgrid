@@ -1,0 +1,31 @@
+/* $Id$ */
+
+/* virtu_sg - specific GRAS implementation for simulator                    */
+
+/* Authors: Martin Quinson                                                  */
+/* Copyright (C) 2003,2004 da GRAS posse.                                   */
+
+/* This program is free software; you can redistribute it and/or modify it
+   under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef VIRTU_SG_H
+#define VIRTU_SG_H
+
+#include "gras_private.h"
+#include <msg.h> /* SimGrid header */
+
+#define GRAS_MAX_CHANNEL 10
+
+/* Data for each host */
+typedef struct {
+  int proc[GRAS_MAX_CHANNEL]; /* who's connected to each channel (its PID). If =0, then free */
+
+  int portLen;
+  int *port;             /* list of ports used by a server socket */
+  int *port2chan;        /* the channel it points to */
+  int *raw;              /* (boolean) the channel is in raw mode or for formatted messages */
+
+} gras_hostdata_t;
+
+
+#endif /* VIRTU_SG_H */
