@@ -186,7 +186,7 @@ int forwarder(int argc, char *argv[])
     }
   }
 
-
+  i=0;
   while(1) {
     m_task_t task = NULL;
     int a;
