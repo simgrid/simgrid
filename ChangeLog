@@ -12,9 +12,8 @@ Simplifier le déploiement RL
        pour l'instant)
  - renomer gras-remote-worker en graspe-qqch
 Pb des contextes     
-   - gras aura besoin des pthreads un jour 
-     => KISS et on oublie pth. A la place, on fait du context over pthread
-	quand les contextes locaux sont cassés
+ - Maintenant que les pthreads sont dans l'archive, améliorer le test pour
+   voir si les contexts sont cassés ou non.
 
 ---------------------
 Changements à ce jour
@@ -22,7 +21,13 @@ Changements à ce jour
 
   Alpha 4 on the path to SimGrid 3
 
+  [Arnaud]
+   - Add an implementation of the contexts using pthread
+
   [Martin]
+  (misc)
+   - Add xbt_procname(): returns the name of the current process.
+     Use it to show the current process's name in all logging.
   (infrastructure)
    - fix detection of older flex version and the reaction, since we do
      depend on modern ones (we use lex_destroy)
@@ -30,6 +35,9 @@ Changements à ce jour
      from libgras. As a result, this lib is now only 200k when stripped.
      Some of the xbt modules may also be dupplicated (two sets and such) and
      should be cleaned/killed before SG3.
+  (msg)
+   - Add MSG_task_get_name. The task names are mainly for debugging purpose,
+     but anyway.
 
  -- SimGrid team <simgrid2-users@listes.ens-lyon.fr> NOT RELEASED YET
 
