@@ -46,6 +46,15 @@ Describing data to be exchanged
 @type: 
 
 
+<!-- ##### MACRO GRAS_DEFINE_TYPE ##### -->
+<para>
+
+</para>
+
+@name: 
+@def: 
+
+
 <!-- ##### MACRO gras_datadesc_by_symbol ##### -->
 <para>
 

@@ -1,3 +1,4 @@
-Makefile Makefile.in aclocal.m4 autom4te.cache config.status grenier libtool gras-*.tar.gz
+Makefile Makefile.in aclocal.m4 autom4te.cache config.status grenier libtool 
+gras-*.tar.gz gras-*
 configure
 buildlogs

@@ -1,8 +1,8 @@
 INCLUDES = -I$(top_srcdir)/src/include
 AM_CFLAGS=-g
 
-CLEANFILES = *~ test a.out *.o
-MAINTAINERCLEANFILES=Makefile.in *~
+CLEANFILES = *~ test a.out *.o datadesc_usage.out
+MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
   datadesc.little32 datadesc.little64 datadesc.big32 datadesc.big64 \
   mk_datadesc_structs.pl
@@ -34,8 +34,8 @@ valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests valgrind
 
 # LDADD_UTILS is still a separate var to distinguish core tester from RL tester
-LDADD_UTILS=$(top_srcdir)/src/base/libgrasrl.la 
-LDADD_RL=   $(top_srcdir)/src/base/libgrasrl.la   
+LDADD_UTILS=$(top_builddir)/src/base/libgrasrl.la 
+LDADD_RL=   $(top_builddir)/src/base/libgrasrl.la   
 
 log_usage_LDADD=          $(LDADD_UTILS)
 

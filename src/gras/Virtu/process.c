@@ -20,12 +20,10 @@ void *gras_userdata_get(void) {
   return pd->userdata;
 }
 
-void *gras_userdata_set(void *ud) {
+void gras_userdata_set(void *ud) {
   gras_procdata_t *pd=gras_procdata_get();
 
   pd->userdata = ud;
-
-  return pd->userdata;
 }
 
 gras_error_t

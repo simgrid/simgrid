@@ -1,4 +1,4 @@
-SUBDIRS= doc src 
+SUBDIRS= src doc
 DISTCLEANFILES =  *~  
 
 ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
@@ -17,18 +17,22 @@ tags: TAGS
 
 if MAINTAINER_MODE
 ##
-## The following is only interesting for me, I guess
+## The following is only interesting for me, I guess. 
+## Some of the targets will only work on my machine ;)
 ##
 
+release: distcheck remote debian publish
+
+debian: dist
+	make -C ~/CVSIMPORT/pkg-grid/gras maintainerclean
+	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras
+	make -C ~/CVSIMPORT/pkg-grid/gras deb check
+	dput local *.changes
+
 publish: dist
-	 @echo "----[ Put the tarball @VERSION@ on gcl ]----"
-	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
-	 scp -r doc/html/* gcl.ucsd.edu:/home/www/simgrid/
-	 scp ChangeLog gcl.ucsd.edu:/home/www/simgrid/dl/
 	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
-	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/simgrid2
-	 cp -r doc/html ~/public_html/simgrid2/doc/
-	 cp ChangeLog ~/public_html/simgrid2/
+	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/gras/dl
+	 make -C public_html publish
 
 mail:
 	 @ver=`dpkg-parsechangelog -lChangeLog| egrep '^Version: ' | sed 's/Version: //'`;\

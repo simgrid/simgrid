@@ -65,6 +65,7 @@ fi
 								  
 # Can we rebuild the documentation?
 GTK_DOC_CHECK()
+AC_SUBST([htmldir],         ['${datadir}/doc/gras/html'])dnl
 
 dnl ####[ Search libs ]#######################################################
 ACI_PACKAGE([SimGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
@@ -102,15 +103,17 @@ AC_CONFIG_FILES([
         src/base/Tests/trp_file_usage
     src/examples/Makefile 
       src/examples/ping/Makefile 
+      src/examples/ping/test_sg
   doc/Makefile
   tools/compile-remote-worker
 ],[
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
-     test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
+     test -e src/base/Tests/trp_file_usage&& chmod +x src/base/Tests/trp_file_usage;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests;
      test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
-     chmod +x tools/gras-check-arch;
-     chmod +x src/examples/ping/test_rl; chmod +x src/examples/ping/test_sg])
+     test -e src/examples/ping/test_sg    && chmod +x src/examples/ping/test_sg;
+     chmod +x $srcdir/tools/gras-check-arch;
+     chmod +x $srcdir/src/examples/ping/test_rl])
 
 #      src/examples/pastry/Makefile
 #    src/modules/Makefile
