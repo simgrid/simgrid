@@ -2,7 +2,7 @@ INCLUDES = -I$(top_srcdir)/src/include
 AM_CFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o
-DISTCLEANFILES=Makefile.in *~
+MAINTAINERCLEANFILES=Makefile.in *~
 EXTRA_DIST=run_tests.in \
   datadesc.little32 datadesc.little64 datadesc.big32 datadesc.big64 \
   mk_datadesc_structs.pl
@@ -24,8 +24,8 @@ RL_tests =                                    \
 
 SG_tests =
 
-noinst_PROGRAMS = $(core_tests) $(RL_tests) $(SG_tests)
-noinst_SCRIPTS = run_tests trp_tcp_usage
+check_PROGRAMS = $(core_tests) $(RL_tests) $(SG_tests)
+check_SCRIPTS = run_tests trp_tcp_usage
 TESTS=run_tests
 
 test: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
