@@ -100,53 +100,32 @@ dnl
 dnl End of CHECK_SIGNED_SIZEOF
 dnl
 
-dnl CHECK_IEEE_FP: determines if floating points are IEEE754 compliant
-dnl (inspired from NWS code)
-dnl
-AC_DEFUN([CHECK_IEEE_FP],
-[AC_MSG_CHECKING(if floating point datatypes are IEEE 754 compliant) 
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h"
-union {
-        double testFP;
-        unsigned char bytes[sizeof(double)];
-} doubleTester;
-union {
-        float testFP;
-        unsigned char bytes[sizeof(float)];
-} floatTester;
-]],[[
-if (sizeof(double) != 8 || sizeof(float) != 4)
-   return 1;
+# GRAS_STRUCT_BOUNDARY(): Check the minimal alignment boundary of $1 in structures
+# ---------------------
+# (using integer, I hope no arch let it change with the content)
+AC_DEFUN([GRAS_STRUCT_BOUNDARY],
+[changequote(<<, >>)dnl 
+ dnl The cache variable name (and of the result). 
+ define(<<GRAS_STRUCT_BOUNDARY_RES>>, translit(ac_cv_struct_boundary_$1, [ *()], [_pLR]))dnl
+ changequote([, ])dnl 
+ AC_MSG_CHECKING(for the minimal structure boundary of $1)
 
-memset(&doubleTester, 0, sizeof(doubleTester));
-memset(&floatTester, 0, sizeof(floatTester));
+ AC_CACHE_VAL(GRAS_STRUCT_BOUNDARY_RES, 
+ [for ac_size in 1 2 4 8 16 32 64 ; do # List sizes in rough order of prevalence. 
+   AC_COMPILE_IFELSE(AC_LANG_PROGRAM([#include "confdefs.h" 
+     #include <sys/types.h> 
+     struct s { char c; $1 i; };
+     ],[switch (0) case 0: case (sizeof (struct s) == $ac_size+sizeof($1)):;]), GRAS_STRUCT_BOUNDARY_RES=$ac_size)
+   if test x$GRAS_STRUCT_BOUNDARY_RES != x ; then break; fi 
+  done 
+ ])
+ AC_MSG_RESULT($GRAS_STRUCT_BOUNDARY_RES)
+])
 
-doubleTester.bytes[GRAS_BIGENDIAN ? sizeof(double) - 1 : 0]=192;
-doubleTester.bytes[GRAS_BIGENDIAN ? sizeof(double) - 2 : 1] =
-  (sizeof(double) == 4)  ? 128 :
-  (sizeof(double) == 8)  ? 16 :
-  (sizeof(double) == 16) ? 1 : 0;
-if (doubleTester.testFP != -4.0) return 1;
-
-floatTester.bytes[GRAS_BIGENDIAN ? sizeof(float) - 1 : 0]=192;
-floatTester.bytes[GRAS_BIGENDIAN ? sizeof(float) - 2 : 1] =
-  (sizeof(float) == 4)  ? 128 :
-  (sizeof(float) == 8)  ? 16 :
-  (sizeof(float) == 16) ? 1 : 0;
-if (floatTester.testFP != -4.0) return 1;]])],[IEEE_FP=yes],[IEEE_FP=no])
-AC_MSG_RESULT($IEEE_FP)
-
-if test x$IEEE_FP != xyes ; then
-   AC_MSG_ERROR([GRAS works only on IEEE754 compliant systems (yet)])
-else
-   AC_DEFINE(IEEE_FP,1,[defines if this architecture floating point types are IEEE754 compliant])
-fi
-])dnl end of CHECK_IEEE_FP
-
-
-
-dnl *************************8
-dnl 
+# GRAS_ARCH(): check the gras_architecture of this plateform
+# -----------
+# The different cases here must be syncronized with the array in src/base/DataDesc/ddt_convert.c
+#
 AC_DEFUN([GRAS_ARCH],
 [
 # Check for the architecture
@@ -155,19 +134,17 @@ dnl Make sure we don't run on a non-two-compliment arch, since we dunno convert 
 GRAS_TWO_COMPLIMENT(int)
 AC_DEFINE_UNQUOTED(GRAS_BIGENDIAN,$endian,[define if big endian])
           
-GRAS_SIGNED_SIZEOF(char)
-GRAS_SIGNED_SIZEOF(short int)
-GRAS_SIGNED_SIZEOF(int)
-GRAS_SIGNED_SIZEOF(long int)
-GRAS_SIGNED_SIZEOF(long long int)
-                                                                  
+GRAS_SIGNED_SIZEOF(char)              GRAS_STRUCT_BOUNDARY(char)
+GRAS_SIGNED_SIZEOF(short int)         GRAS_STRUCT_BOUNDARY(short int)
+GRAS_SIGNED_SIZEOF(int)               GRAS_STRUCT_BOUNDARY(int)
+GRAS_SIGNED_SIZEOF(long int)          GRAS_STRUCT_BOUNDARY(long int)
+GRAS_SIGNED_SIZEOF(long long int)     GRAS_STRUCT_BOUNDARY(long long int)
 
-GRAS_CHECK_SIZEOF(void *)
-GRAS_CHECK_SIZEOF(void (*) (void))
+GRAS_STRUCT_BOUNDARY(float)           GRAS_STRUCT_BOUNDARY(double)
+
+GRAS_CHECK_SIZEOF(void *)             GRAS_STRUCT_BOUNDARY(void *)
+GRAS_CHECK_SIZEOF(void (*) (void))    
                                                                   
-GRAS_CHECK_SIZEOF(float)
-GRAS_CHECK_SIZEOF(double)
-CHECK_IEEE_FP
 
 AC_MSG_CHECKING(the GRAS signature of this architecture)
 if test x$endian = x1 ; then
@@ -177,14 +154,26 @@ else
 fi
 gras_arch=unknown
 trace="$trace_endian"
-trace="${trace}:${ac_cv_sizeof_char}.${ac_cv_sizeof_short_int}.${ac_cv_sizeof_int}.${ac_cv_sizeof_long_int}.${ac_cv_sizeof_long_long_int}"
-trace="${trace}:${ac_cv_sizeof_void_p}.${ac_cv_sizeof_void_LpR_LvoidR}"
-trace="${trace}:${ac_cv_sizeof_float}.${ac_cv_sizeof_double}"
+
+trace="${trace}_C:${ac_cv_sizeof_char}/${ac_cv_struct_boundary_char}:"
+
+trace="${trace}_I:${ac_cv_sizeof_short_int}/${ac_cv_struct_boundary_short_int}"
+trace="${trace}:${ac_cv_sizeof_int}/${ac_cv_struct_boundary_int}"
+trace="${trace}:${ac_cv_sizeof_long_int}/${ac_cv_struct_boundary_long_int}"
+trace="${trace}:${ac_cv_sizeof_long_long_int}/${ac_cv_struct_boundary_long_long_int}:"
+
+trace="${trace}_P:${ac_cv_sizeof_void_p}/${ac_cv_struct_boundary_void_p}"
+trace="${trace}:${ac_cv_sizeof_void_LpR_LvoidR}/${ac_cv_struct_boundary_void_p}:"
+
+trace="${trace}_D:4/${ac_cv_struct_boundary_float}:8/${ac_cv_struct_boundary_double}:"
+
+# sizeof float/double are not tested since IEEE 754 is assumed.
+# Check README.IEEE for rational.
 case $trace in
-  l:1.2.4.4.8:4.4:4.8) gras_arch=0; gras_arch_name=little32;;
-  l:1.2.4.8.8:8.8:4.8) gras_arch=1; gras_arch_name=little64;;
-  B:1.2.4.4.8:4.4:4.8) gras_arch=2; gras_arch_name=big32;;
-  B:1.2.4.8.8:8.8:4.8) gras_arch=3; gras_arch_name=big64;;
+  l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=0; gras_arch_name=little32;;
+  l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=1; gras_arch_name=little64;;
+  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=2; gras_arch_name=big32;;
+  B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=3; gras_arch_name=big64;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
@@ -206,10 +195,10 @@ AC_DEFUN([GRAS_CHECK_STRUCT_COMPACTION],
        ]],[[switch (0) 
         case 0: 
         case (sizeof(struct s) == sizeof(double)+sizeof(char)):;
-       ]])],[gras_struct_packed=yes],[gras_struct_packed="no (good)"])
+       ]])],[gras_struct_packed=yes],[gras_struct_packed=no"])
      
    AC_MSG_RESULT($gras_struct_packed)
-   if test x$gras_struct_packed = xyes ; then
+   if test x$gras_struct_packed = "xyes" ; then
      AC_MSG_ERROR([GRAS does not support packed structures since it leads to nasty misalignments])
    fi
    
@@ -225,62 +214,49 @@ AC_DEFUN([GRAS_CHECK_STRUCT_COMPACTION],
      
    AC_MSG_RESULT($gras_struct_compact)
    
-   if test x$gras_struct_compact = xyes ; then
-     AC_DEFINE_UNQUOTED(GRAS_STRUCT_COMPACT, 1,
-          [Defined if structures are compacted when possible.
+   if test x$gras_struct_compact != xyes ; then
+     AC_MSG_ERROR(GRAS works only on structure compacting architectures (yet))
+   fi
+   AC_DEFINE_UNQUOTED(GRAS_STRUCT_COMPACT, 1,
+      [Defined if structures are compacted when possible.
 	  
-	  Consider this structure: struct s {double d; int i; char c;}; 
+       Consider this structure: struct s {double d; int i; char c;}; 
 	  
-	  If it is allowed, the char is placed just after the int. If not,
-          it has to be on the 8 bytes boundary imposed by the double.
-	  ])
-     AC_MSG_CHECKING(whether arrays in struct can straddle struct alignment boundaries)
+       If it is allowed, the char is placed just after the int. If not,
+       it has to be on the 8 bytes boundary imposed by the double.
+       
+       For now, GRAS requires the structures to be compacted.
+      ])
+   AC_MSG_CHECKING(whether arrays can straddle struct alignment boundaries)
 
-     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h" 
-        #include <sys/types.h>
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h" 
+      #include <sys/types.h>
 	#include <stddef.h> /* offsetof() */
 	struct s { double d; int i; char c[6]; };
-       ]],[[switch (0) 
-        case 0: 
-        case (offsetof(struct s,c) == sizeof(double)+sizeof(int)):;
-       ]])],[gras_array_straddle_struct=yes],[gras_array_straddle_struct=no])
-       
-     AC_MSG_RESULT($gras_array_straddle_struct)
-
-     if test x$gras_array_straddle_struct = xyes ; then
-       AC_DEFINE_UNQUOTED(GRAS_ARRAY_STRADDLE_STRUCT, 1,
-            [Defined if arrays in struct can straddle struct alignment boundaries])
-     else
-       AC_MSG_ERROR([GRAS can only work on either architecture not compacting structures, or allowing array fields to straddle alignment boundaries (yet)])
-     fi
-  fi
-  
-  AC_MSG_CHECKING(for changing alignment boundary structures)
-   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h" 
-        #include <sys/types.h>
-
-	struct s {int i;double d;};
-       ]],[[switch (0) 
-        case 0: 
-        case (sizeof(struct s) == sizeof(double)+sizeof(int)):;
-       ]])],[gras_struct_changing=yes],[gras_struct_changing=no])
+     ]],[[switch (0) 
+      case 0: 
+      case (offsetof(struct s,c) == sizeof(double)+sizeof(int)):;
+     ]])],[gras_array_straddle_struct=yes],[gras_array_straddle_struct=no])
      
-   AC_MSG_RESULT($gras_struct_changing)
-   
-   if test x$gras_struct_changing = xyes ; then
-     AC_DEFINE_UNQUOTED(GRAS_STRUCT_CHANGING, 1,
-          [Defined if the alignment of structures can vary over fields.
-	  
-	   Consider the following structure:
-	     struct s {
-	       int i;
-	       double d;
-	     };
-	     
-	   On Solaris, sizeof(struct s)=16, ie all fields get aligned to the
-	   biggest boundary (and this will not be defined). On Linux,
-           sizeof(struct s)=12 (and this will be defined).
-	  ])
+   AC_MSG_RESULT($gras_array_straddle_struct)
+
+   if test x$gras_array_straddle_struct = xyes ; then
+     AC_DEFINE_UNQUOTED(GRAS_ARRAY_STRADDLE_STRUCT, 1,
+        [Defined if arrays in struct can straddle struct alignment boundaries.
+	
+	 This is like than the structure compaction above, but this time,
+         the argument to be compacted is an array whom each element would be
+         normally compacted. Exemple:
+	 
+	 struct s { double d; int i; char c[6]; };
+	 
+	 Arrays can straddle if c is allowed to come just after i.
+	 
+	 Note that GRAS only support architecture presenting this
+         caracteristic so far.
+	])
+   else
+     AC_MSG_ERROR([GRAS can only work on architectures allowing array fields to straddle alignment boundaries (yet)])
    fi
 ])
 # END OF GRAS CHECK STRUCT COMPACTION
@@ -304,3 +280,4 @@ AC_DEFUN([GRAS_C_COMPACT_STRUCT],
    fi	  
 ])
 # END OF GRAS COMPACT STRUCT
+
