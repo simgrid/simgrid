@@ -3,7 +3,7 @@ DOCSOURCES = $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.[chl]")
 EXTRA_DIST = html Doxyfile.API Doxyfile.Examples  Doxyfile.main
 
 html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
-	@touch @top_srcdir@/doc/api_index.doc
+	@touch doc/api_index.doc
 	@doxygen Doxyfile.main
 	@doxygen Doxyfile.API
 	@doxygen Doxyfile.Examples
