@@ -18,12 +18,12 @@
 /***
  *** Main user functions
  ***/
-gras_error_t gras_trp_bloc_send(gras_socket_t *sd,
-				void *data,
-				size_t size);
-gras_error_t gras_trp_bloc_recv(gras_socket_t *sd,
-				void *data,
-				size_t size);
+gras_error_t gras_trp_chunk_send(gras_socket_t *sd,
+				 char *data,
+				 size_t size);
+gras_error_t gras_trp_chunk_recv(gras_socket_t *sd,
+				 char *data,
+				 size_t size);
 
 /* Find which socket needs to be read next */
 gras_error_t 
@@ -76,15 +76,14 @@ struct gras_trp_plugin_ {
    /* socket_close() is responsible of telling the OS that the socket is over,
     but should not free the socket itself (beside the specific part) */
   void         (*socket_close)(gras_socket_t *sd);
- 
-   
-  gras_error_t (*bloc_send)(gras_socket_t *sd,
-                            char *data,
-                            size_t size);
-  gras_error_t (*bloc_recv)(gras_socket_t *sd,
-                            char *Data,
-                            size_t size);
- 
+    
+  gras_error_t (*chunk_send)(gras_socket_t *sd,
+			     char *data,
+			     size_t size);
+  gras_error_t (*chunk_recv)(gras_socket_t *sd,
+			     char *Data,
+			     size_t size);
+
   void          *specific;
   void         (*free_specific)(void *);
 };
