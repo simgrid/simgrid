@@ -538,7 +538,12 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define CRITICAL5(f,a1,a2,a3,a4,a5)    LOG5(gras_log_priority_critical, f,a1,a2,a3,a4,a5)
 #define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
 
+#ifdef __GNUC__
+#define GRAS_IN  DEBUG1(">> begin of %s",__FUNCTION__)
+#define GRAS_OUT DEBUG1("<< end of %s",__FUNCTION__)
+#else
 #define GRAS_IN  DEBUG0(">> begin of function")
 #define GRAS_OUT DEBUG0("<< end of function")
+#endif
 
 #endif /* ! _GRAS_LOG_H_ */
