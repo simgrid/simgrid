@@ -13,7 +13,7 @@ AM_CFLAGS= -g
 
 
 MAINTAINERCLEANFILES=Makefile.in
-INCLUDES= -I$(top_srcdir)/include 
+INCLUDES= -I$(top_srcdir)/include -I$(top_srcdir)/src/include 
 EXTRA_DIST= \
         \
 	portable.h \
@@ -34,6 +34,12 @@ EXTRA_DIST= \
 	surf/surfxml.dtd \
 	surf/network_private.h \
 	surf/workstation_KCCFLN05_private.h \
+	\
+	include/maxmin.h \
+	include/trace_mgr.h \
+	include/surf.h \
+	include/surf_parse.h \
+	include/surfxml.h \
 	\
 	msg/private.h \
 	\
@@ -140,6 +146,8 @@ surf/surfxml.l: surf/surfxml.dtd
 	mv surfxml.l surfxml.l.bak ; \
 	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
 
+include/surf/surfxml.h: src/surf/surfxml.dtd
+	cd include/surf; flexml -H -L ../../src/surf/surfxml.dtd
 
 libgras_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \

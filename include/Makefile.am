@@ -11,12 +11,6 @@ nobase_include_HEADERS = \
 	xbt/config.h \
 	xbt/context.h \
 	\
-	surf/maxmin.h \
-	surf/trace_mgr.h \
-	surf/surf.h \
-	surf/surf_parse.h \
-	surf/surfxml.h \
-	\
 	msg/msg.h \
 	msg/datatypes.h \
 	\
@@ -28,6 +22,3 @@ nobase_include_HEADERS = \
 	\
 	amok/base.h \
 	amok/bandwidth.h
-
-surf/surfxml.h: ../src/surf/surfxml.dtd
-	cd surf; flexml -H -L ../../src/surf/surfxml.dtd
