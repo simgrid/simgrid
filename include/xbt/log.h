@@ -40,17 +40,17 @@ typedef enum {
 } e_xbt_log_priority_t;
 	      
 
-/**
- * \define NLOG
- *
- * \note All logging facilities are disabled at compilation time
+/*
+ * define NLOG to disable at compilation time any logging request
+ * define NDEBUG to disable at compilation time any logging request of priority below INFO
  */
 
 
 /**
- * XBT_LOG_STATIC_THRESHOLD:
+ * \def XBT_LOG_STATIC_THRESHOLD:
+ * \ingroup XBT_log
  *
- * All logging with priority < XBT_LOG_STATIC_THRESHOLD is disabled at
+ * All logging requests with priority < XBT_LOG_STATIC_THRESHOLD are disabled at
  * compile time, i.e., compiled out.
  */
 #ifdef NLOG
@@ -158,7 +158,7 @@ typedef struct xbt_log_appender_s s_xbt_log_appender_t,*xbt_log_appender_t;
 typedef struct xbt_log_event_s    s_xbt_log_event_t,   *xbt_log_event_t;
 typedef struct xbt_log_category_s s_xbt_log_category_t,*xbt_log_category_t;
 
-/**
+/*
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
 struct xbt_log_category_s {
@@ -189,7 +189,7 @@ struct xbt_log_event_s {
 };
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log_implem
  * \param cat the category (not only its name, but the variable)
  * \param thresholdPriority the priority
  *
@@ -199,7 +199,7 @@ extern void xbt_log_threshold_set(xbt_log_category_t cat,
 				   e_xbt_log_priority_t thresholdPriority);
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log_implem  
  * \param cat the category (not only its name, but the variable)
  * \param parent the parent cat
  *
@@ -209,7 +209,7 @@ extern void xbt_log_parent_set(xbt_log_category_t cat,
 				xbt_log_category_t parent);
 
 /**
- * \ingroup XBT_log  
+ * \ingroup XBT_log_implem  
  * \param cat the category (not only its name, but the variable)
  * \param app the appender
  *
