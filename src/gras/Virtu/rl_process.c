@@ -22,6 +22,7 @@ xbt_error_t gras_process_init() {
 }
 xbt_error_t gras_process_exit() {
   gras_procdata_exit();
+  free(_gras_procdata);
   return no_error;
 }
 
