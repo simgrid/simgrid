@@ -77,17 +77,19 @@ static void _apply_control(gras_log_category_t* cat) {
       if (cat->threshold <= gras_log_priority_verbose) {
 	gras_log_event_t _log_ev = 
 	  {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__};
-	_gras_log_event_log(&_log_ev, cat->name, 
-		   "Apply settings for category '%s': set threshold to %s (=%d)",
-		   gras_log_priority_names[cat->threshold], cat->threshold);
+	_gras_log_event_log(&_log_ev,
+	         "Apply settings for category '%s': set threshold to %s (=%d)",
+		 cat->name, 
+	         gras_log_priority_names[cat->threshold], cat->threshold);
       }
     }
   }
   if (!found && cat->threshold <= gras_log_priority_verbose) {
     gras_log_event_t _log_ev = 
       {cat,gras_log_priority_verbose,__FILE__,__FUNCTION__,__LINE__};
-    _gras_log_event_log(&_log_ev, cat->name,
+    _gras_log_event_log(&_log_ev,
 			"Category '%s': inherited threshold = %s (=%d)",
+			cat->name,
 			gras_log_priority_names[cat->threshold], cat->threshold);
   }
 
