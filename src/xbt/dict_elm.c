@@ -363,7 +363,7 @@ _gras_dictelm_child_search(gras_dictelm_t *p_elm,
   int          len     = 0;
 
   
-  CDEBUG5(dict_search, "search child [%.*s] under [%.*s] (len=%d)",
+  CDEBUG5(dict_search, "search child [%.*s] under [%.*s] (len=%lu)",
 	  key_len, key,
           p_elm?p_elm->key_len:6, p_elm?p_elm->key:"(head)",
   	  (p_elm&&p_elm->sub)?gras_dynar_length(p_elm->sub):0);
@@ -978,7 +978,7 @@ _gras_dictelm_dump_rec(gras_dictelm_t *p_head,
     printf("(null)");
   }
 
-  printf("    \t\t\t[ %d child(s) ]\n", gras_dynar_length(p_head->sub));
+  printf("    \t\t\t[ %lu child(s) ]\n", gras_dynar_length(p_head->sub));
 
   gras_dynar_foreach(p_head->sub, i, p_child) 
     TRY(_gras_dictelm_dump_rec(p_child, p_child->offset, output));

@@ -9,6 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras_private.h"
+#include <sys/types.h>
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,gros,"Dynamic arrays");
 
@@ -26,15 +27,15 @@ struct gras_dynar_s {
 #define __sanity_check_idx(idx)                \
            gras_assert1(idx >= 0,             \
 			"dynar idx(=%d) < 0", \
-			idx)
+			(int) (idx))
 #define __check_inbound_idx(dynar, idx)                                                \
            gras_assert2(idx < dynar->used,                                             \
-			"dynar is not that long. You asked %d, but it's only %d long", \
-			idx, dynar->used)
+			"dynar is not that long. You asked %d, but it's only %lu long", \
+			(int) (idx), (unsigned long) dynar->used)
 #define __check_sloppy_inbound_idx(dynar, idx)                                         \
            gras_assert2(idx <= dynar->used,                                            \
-			"dynar is not that long. You asked %d, but it's only %d long", \
-			idx, dynar->used)
+			"dynar is not that long. You asked %d, but it's only %lu long", \
+			(int) (idx), (unsigned long) dynar->used)
 #define __check_populated_dynar(dynar)            \
            gras_assert1(dynar->used,              \
 			"dynar %p contains nothing",dynar)
@@ -67,7 +68,7 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
     const size_t new_length  = new_size*elmsize;
     char * const new_data    = gras_malloc0(elmsize*new_size);
 
-    DEBUG3("expend %p from %d to %d elements", dynar, old_size, nb);
+    DEBUG3("expend %p from %lu to %d elements", dynar, (unsigned long)old_size, nb);
     if (!new_data)
       RAISE_MALLOC;
 
@@ -219,9 +220,9 @@ gras_dynar_free(gras_dynar_t * const dynar) {
  *
  * Returns the count of elements in a dynar
  */
-size_t
+unsigned long
 gras_dynar_length(const gras_dynar_t * const dynar) {
-  return (dynar ? dynar->used : (size_t)0);
+  return (dynar ? (unsigned long) dynar->used : (unsigned long)0);
 }
 
 /**

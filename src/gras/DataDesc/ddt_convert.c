@@ -76,7 +76,7 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
   int cpt;
   const void *r_data;
   void *l_data;
-  size_t r_size, l_size;
+  unsigned long r_size, l_size;
   /* Hexadecimal displayer
   union {
     char c[sizeof(int)];
@@ -89,7 +89,7 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
   
   r_size = type->size[r_arch];
   l_size = type->size[GRAS_THISARCH];
-  DEBUG4("r_size=%d l_size=%d,    src=%p dst=%p",
+  DEBUG4("r_size=%lu l_size=%lu,    src=%p dst=%p",
 	 r_size,l_size,src,dst);
 
   DEBUG2("remote=%c local=%c", gras_arches[r_arch].endian?'B':'l',
@@ -120,7 +120,7 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
       int lowOrderFirst = !gras_arches[r_arch].endian ||
 	gras_arches[r_arch].endian == gras_arches[GRAS_THISARCH].endian; 
 
-      DEBUG5("Resize integer %d from %d @%p to %d @%p",
+      DEBUG5("Resize integer %d from %lu @%p to %lu @%p",
 	     cpt, r_size,r_data, l_size,l_data);
       gras_assert0(r_data != l_data, "Impossible to resize in place");
 

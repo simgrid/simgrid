@@ -33,7 +33,7 @@ int main(int argc,char *argv[]) {
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_push(d,&cpt));
-     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
    }
    for (cursor=0; cursor< NB_ELEM; cursor++) {
      gras_dynar_get(d,cursor,&cpt);
@@ -71,7 +71,7 @@ int main(int argc,char *argv[]) {
      gras_assert2(i == cpt,
            "The retrieved value is not the same than the injected one (%d!=%d)",
 	       i,cpt);
-     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Pop %d, length=%lu",cpt, gras_dynar_length(d));
    }
    gras_dynar_free(d);
 
@@ -80,14 +80,14 @@ int main(int argc,char *argv[]) {
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_unshift(d,&cpt));
-     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
    }
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      gras_dynar_pop(d,&i);
      gras_assert2(i == cpt,
            "The retrieved value is not the same than the injected one (%d!=%d)",
 		 i,cpt);
-     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Pop %d, length=%lu",cpt, gras_dynar_length(d));
    }
    gras_dynar_free(d);
 
@@ -97,11 +97,11 @@ int main(int argc,char *argv[]) {
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_push(d,&cpt));
-     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
    }
    for (cpt=0; cpt< 1000; cpt++) {
      TRYFAIL(gras_dynar_insert_at(d,2500,&cpt));
-     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
    }
 
    for (cpt=0; cpt< 2500; cpt++) {
@@ -109,7 +109,7 @@ int main(int argc,char *argv[]) {
      gras_assert2(i == cpt,
            "The retrieved value is not the same than the injected one at the begining (%d!=%d)",
 	       i,cpt);
-     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Pop %d, length=%lu",cpt, gras_dynar_length(d));
    }
    for (cpt=999; cpt>=0; cpt--) {
      gras_dynar_shift(d,&i);
@@ -136,7 +136,7 @@ int main(int argc,char *argv[]) {
      gras_assert2(i == cpt,
 		  "Remove a bad value. Got %d, expected %d",
 		  i,cpt);
-     DEBUG2("remove %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("remove %d, length=%lu",cpt, gras_dynar_length(d));
    }
    gras_dynar_free(d);
 

@@ -427,7 +427,7 @@ static gras_error_t parse_statement(char	 *definition,
       DEBUG1("Found the identifier \"%s\"",identifier.name);
       
       TRY(gras_dynar_push(identifiers, &identifier));
-      DEBUG1("Dynar_len=%d",gras_dynar_length(identifiers));
+      DEBUG1("Dynar_len=%lu",gras_dynar_length(identifiers));
       expect_id_separator = 1;
       continue;
     }
@@ -482,7 +482,7 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
        errcode == no_error                            ;
        errcode=parse_statement(definition,identifiers,fields_to_push)) {
     
-    DEBUG1("This statement contained %d identifiers",gras_dynar_length(identifiers));
+    DEBUG1("This statement contained %lu identifiers",gras_dynar_length(identifiers));
     /* append the identifiers we've found */
     gras_dynar_foreach(identifiers,i, field) {
       if (field.tm.is_ref)

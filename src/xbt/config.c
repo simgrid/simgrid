@@ -558,7 +558,8 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
       break;
     name=option;
     len=strlen(name);
-    DEBUG3("Still to parse and set: '%s'. len=%d; option-name=%d",name,len,option-name);
+    DEBUG3("Still to parse and set: '%s'. len=%d; option-name=%ld",
+	   name,len,(long)(option-name));
 
     /* Pass the value */
     while (option-name<=(len-1) && *option != ' ' && *option != '\n' && *option != '\t') {
@@ -964,7 +965,7 @@ gras_cfg_get_int   (gras_cfg_t  *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARN2("You asked for the first value of the config element '%s', but there is %d values",
+    WARN2("You asked for the first value of the config element '%s', but there is %lu values",
 	     name, gras_dynar_length(cell->content));
   }
 
@@ -995,7 +996,7 @@ gras_cfg_get_double(gras_cfg_t *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_double,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
 	     name, gras_dynar_length(cell->content));
   }
 
@@ -1028,7 +1029,7 @@ gras_error_t gras_cfg_get_string(gras_cfg_t *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
 	     name, gras_dynar_length(cell->content));
   }
 
@@ -1062,7 +1063,7 @@ gras_error_t gras_cfg_get_host  (gras_cfg_t *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
 	     name, gras_dynar_length(cell->content));
   }
 

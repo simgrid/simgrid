@@ -85,7 +85,7 @@ int main(int argc,char *argv[]) {
      gras_assert2(d1 == d2,
            "The retrieved value is not the same than the injected one at the begining (%f!=%f)",
 		  d1,d2);
-     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
+     DEBUG2("Pop %d, length=%lu",cpt, gras_dynar_length(d));
    }
    for (cpt=999; cpt>=0; cpt--) {
      d1=(double)cpt;

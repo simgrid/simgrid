@@ -155,7 +155,7 @@ gras_error_t gras_set_get_by_id      (gras_set_t     *set,
   /* Don't bother checking the bounds, the dynar does so */
 
   gras_dynar_get(set->dynar,id,dst);
-  DEBUG3("Lookup type of id %d (of %d): %s", 
+  DEBUG3("Lookup type of id %d (of %lu): %s", 
 	 id, gras_dynar_length(set->dynar), (*dst)->name);
   
   return no_error;

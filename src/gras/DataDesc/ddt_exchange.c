@@ -227,7 +227,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
   case e_gras_datadesc_type_cat_struct:    
     if (gras_dynar_length(d1->category.struct_data.fields) != 
 	gras_dynar_length(d2->category.struct_data.fields)) {
-      DEBUG4("ddt_cmp: %s (having %d fields) !=  %s (having %d fields)",
+      DEBUG4("ddt_cmp: %s (having %lu fields) !=  %s (having %lu fields)",
 	     d1->name, gras_dynar_length(d1->category.struct_data.fields),
 	     d2->name, gras_dynar_length(d2->category.struct_data.fields));
       
@@ -388,7 +388,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
 		 type->name);
     
     gras_assert3(field_num < gras_dynar_length(union_data.fields),
-	 "union field selector of %s returned %d but there is only %d fields", 
+	 "union field selector of %s returned %d but there is only %lu fields",
 		 type->name, field_num, gras_dynar_length(union_data.fields));
 
     /* Send the field number */
@@ -608,7 +608,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	     "Received union field for %s is negative", type->name);
     if (field_num < gras_dynar_length(union_data.fields)) 
       RAISE3(mismatch_error,
-	     "Received union field for %s is %d but there is only %d fields", 
+	     "Received union field for %s is %d but there is only %lu fields",
 	     type->name, field_num, gras_dynar_length(union_data.fields));
     
     /* Recv the content */

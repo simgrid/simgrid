@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
   gras_cfg_set_parse(set,"speed:42");
   gras_cfg_check(set);
   gras_cfg_get_dynar(set,"user",&dyn);
-  fprintf(stderr,"Count: %d; Options: ",gras_dynar_length(dyn));
+  fprintf(stderr,"Count: %lu; Options: ",gras_dynar_length(dyn));
   gras_dynar_foreach(dyn,ival,str) {
     fprintf(stderr,"%s;",str);
   }
