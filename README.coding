@@ -1,0 +1,12 @@
+**
+** Random bits about coding standards and portability
+
+MALLOC:
+ You must cast the result of malloc on AIX. 
+ It's even better to use gras_new when possible.
+
+SIZE_T
+ #include <sys/types.h> in all files manipulating size_t
+ do cast it to unsigned long before printing (and use %lu)
+ 
+  
