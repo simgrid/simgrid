@@ -21,7 +21,7 @@ static void gras_ddt_freev(void *ddt) {
   gras_datadesc_type_t *type= (gras_datadesc_type_t *)ddt;
   
   if (type) {
-    gras_ddt_free(&type);
+    gras_datadesc_unref(type);
   }
 }
 
@@ -30,17 +30,20 @@ gras_ddt_new(const char            *name,
 	     gras_datadesc_type_t **dst) {
 
   gras_error_t errcode;
-  gras_datadesc_type_t *res=malloc(sizeof(gras_datadesc_type_t));
+  gras_datadesc_type_t *res;
+
+  res=malloc(sizeof(gras_datadesc_type_t));
   if (!res) 
     RAISE_MALLOC;
 
   memset(res, 0, sizeof(gras_datadesc_type_t));
   res->name = strdup(name);
   res->name_len = strlen(name);
+  res->refcounter = 1;
   
   TRY(gras_set_add(gras_datadesc_set_local,
 		   (gras_set_elm_t*)res,&gras_ddt_freev));
-
+    
   *dst=res;
   return no_error;
 }
@@ -96,7 +99,7 @@ gras_datadesc_declare_scalar(const char                      *name,
     long int sz;
     long int mask;
 
-    res->size[arch] = gras_arch_sizes[arch].sizeof_scalars[type];
+    res->size[arch] = gras_arches[arch].sizeof_scalars[type];
     
     sz = res->size[arch];
     mask = sz;
@@ -148,7 +151,7 @@ gras_datadesc_declare_scalar(const char                      *name,
  * Frees one struct or union field
  */
 void gras_dd_cat_field_free(void *f) {
-  gras_dd_cat_field_t *field = (gras_dd_cat_field_t *)f;
+  gras_dd_cat_field_t *field = *(gras_dd_cat_field_t **)f;
   if (field) {
     if (field->name) 
       free(field->name);
@@ -457,46 +460,6 @@ gras_datadesc_import_nws(const char           *name,
 }
 
 /**
- * gras_ddt_free:
- *
- * Frees a datadescription.
- */
-void gras_ddt_free(gras_datadesc_type_t **type) {
-  gras_datadesc_type_t *t;
-
-  if (type && *type) {
-    t=*type;
-
-    free(t->name);
-    switch (t->category_code) {
-    case e_gras_datadesc_type_cat_scalar:
-    case e_gras_datadesc_type_cat_ref:
-    case e_gras_datadesc_type_cat_array:
-      /* nothing to free in there */
-      break;
-
-    case e_gras_datadesc_type_cat_ignored:
-      if (t->category.ignored_data.free_func) {
-	t->category.ignored_data.free_func(t->category.ignored_data.default_value);
-      }
-      break;
-
-    case e_gras_datadesc_type_cat_struct:
-      gras_dynar_free(t->category.struct_data.fields);
-      break;
-
-    case e_gras_datadesc_type_cat_union:
-      gras_dynar_free(t->category.union_data.fields);
-      break;
-      
-    default:
-      /* datadesc was invalid. Killing it is like euthanasy, I guess */
-      break;
-    }
-  }
-}
-
-/**
  * gras_datadesc_cb_set_pre:
  *
  * Add a pre-send callback to this datadexc
@@ -513,4 +476,57 @@ void gras_datadesc_cb_set_pre (gras_datadesc_type_t         *type,
 void gras_datadesc_cb_set_post(gras_datadesc_type_t         *type,
 			       gras_datadesc_type_cb_void_t  post) {
   type->post = post;
+}
+
+/**
+ * gras_datadesc_ref:
+ *
+ * Adds a reference to the datastruct. 
+ * ddt will be freed only when the refcount becomes 0.
+ */
+void gras_datadesc_ref(gras_datadesc_type_t *type) {
+  type->refcounter ++;
+}
+
+/**
+ * gras_datadesc_unref:
+ *
+ * Adds a reference to the datastruct. 
+ * ddt will be freed only when the refcount becomes 0.
+ */
+void gras_datadesc_unref(gras_datadesc_type_t *type) {
+  type->refcounter--;
+  if (!type->refcounter) {
+    /* even the set of ddt released that type. Let's free it */
+    DEBUG1("Let's free ddt %s",type->name);
+
+    free(type->name);
+    switch (type->category_code) {
+    case e_gras_datadesc_type_cat_scalar:
+    case e_gras_datadesc_type_cat_ref:
+    case e_gras_datadesc_type_cat_array:
+      /* nothing to free in there */
+      break;
+
+    case e_gras_datadesc_type_cat_ignored:
+      if (type->category.ignored_data.free_func) {
+	type->category.ignored_data.free_func
+	  (type->category.ignored_data.default_value);
+      }
+      break;
+
+    case e_gras_datadesc_type_cat_struct:
+      gras_dynar_free(type->category.struct_data.fields);
+      break;
+
+    case e_gras_datadesc_type_cat_union:
+      gras_dynar_free(type->category.union_data.fields);
+      break;
+      
+    default:
+      /* datadesc was invalid. Killing it is like euthanasy, I guess */
+      break;
+    }
+    free(type);
+  }
 }
