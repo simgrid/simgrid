@@ -9,6 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <errno.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
