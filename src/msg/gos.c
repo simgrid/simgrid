@@ -192,18 +192,19 @@ MSG_error_t MSG_task_put(m_task_t task,
   if(remote_host->simdata->sleeping[channel]) 
     __MSG_process_unblock(remote_host->simdata->sleeping[channel]);
 /*   else { */
-    process->simdata->put_host = dest;
-    process->simdata->put_channel = channel;
-    while(!(task_simdata->comm)) 
-      __MSG_process_block();
-    process->simdata->put_host = NULL;
-    process->simdata->put_channel = -1;
+  process->simdata->put_host = dest;
+  process->simdata->put_channel = channel;
+  while(!(task_simdata->comm)) 
+    __MSG_process_block();
+  process->simdata->put_host = NULL;
+  process->simdata->put_channel = -1;
 /*   } */
 
-  do {
+  state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
+  while (state==SURF_ACTION_RUNNING) {
     __MSG_task_wait_event(process, task);
     state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
-  } while (state==SURF_ACTION_RUNNING);
+  }
     
   MSG_task_destroy(task);
 
