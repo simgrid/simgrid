@@ -54,6 +54,9 @@ xbt_set_usage_LDADD=          $(LDADD_UTILS)
 
 xbt_config_usage_LDADD=       $(LDADD_UTILS)
 
+xbt_heap_bench_LDADD=         $(LDADD_UTILS)
+
+
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)
 gras_trp_file_client_LDADD=    $(LDADD_RL)

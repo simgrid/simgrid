@@ -1,3 +1,8 @@
+2004-11-03 Arnaud Legrand
+  - Rename every gras_* function that was in xbt/ to its xbt_
+    counterpart.
+  - Add a heap and a doubly-linked list to xbt
+
 2004-10-29 Martin Quinson
   - Introduction of the remote errors. 
     They are the result of a RMI/RPC on the remote machine.
