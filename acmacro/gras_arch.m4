@@ -45,15 +45,18 @@ dnl
 AC_DEFUN([GRAS_TWO_COMPLEMENT],
 [
 AC_MSG_CHECKING(whether $1 is two-complement)
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h"
 union {
    signed $1 testInt;
    unsigned char bytes[sizeof($1)];
 } intTester;
 ]],[[
    intTester.testInt = -2;
-   return ((unsigned int)intTester.bytes[0] +
-	   (unsigned int)intTester.bytes[sizeof($1) - 1]) - 509; /* should be 0 */
+   switch (0) {
+    case 0:
+    case (((unsigned int)intTester.bytes[0] +
+	   (unsigned int)intTester.bytes[sizeof($1) - 1]) - 509) == 0:
+   }
 ]])], dnl end of AC LANG PROGRAM
 [two_complement=yes],[two_complement=no] )dnl end of AC COMPILE IFELSE
 
@@ -134,7 +137,8 @@ AC_DEFUN([GRAS_ARCH],
 # Check for the architecture
 AC_C_BIGENDIAN(endian=1,endian=0,AC_MSG_ERROR([GRAS works only for little or big endian systems (yet)]))
 dnl Make sure we don't run on a non-two-complement arch, since we dunno convert them
-GRAS_TWO_COMPLEMENT(int)
+dnl G RAS_TWO_COMPLEMENT(int) don't do this, it breaks cross-compile and all
+dnl archs conform to this
 AC_DEFINE_UNQUOTED(GRAS_BIGENDIAN,$endian,[define if big endian])
           
 GRAS_SIGNED_SIZEOF(char)              GRAS_STRUCT_BOUNDARY(char)
@@ -179,6 +183,7 @@ case $trace in
   B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=3; gras_arch_name=big64;;
   B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=4; gras_arch_name=aix;;
   B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:) gras_arch=5; gras_arch_name=arm;;
+  l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=6; gras_arch_name=win32;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
