@@ -28,6 +28,9 @@ DONE
     killing gcc (< 3.4.0).
   * Bugfix: XBT_LOG_NEW_DEFAULT_CATEGORY now compiles without compiler
     warning (thanks loris for stumbling into this one).
+  * Change SIMGRID_INSTALL_PATH to GRAS_ROOT in Makefiles generated for user.
+  * Rename gras_get_my_fqdn to gras_os_myname and implement it in the simulator
+    RL would imply a DNS resolver, which is *hard* to do in a portable way. 
 
  --
 
