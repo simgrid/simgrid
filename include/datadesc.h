@@ -3,7 +3,7 @@
 /* gras/datadesc.h - Describing the data you want to exchange               */
 
 /* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003 the OURAGAN project.                                  */
+/* Copyright (C) 2003, 2004 Martin Quinson.                                 */
 
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
@@ -65,6 +65,8 @@ gras_error_t
 gras_datadesc_declare_struct_append(gras_datadesc_type_t          *struct_type,
 				    const char                    *name,
 				    gras_datadesc_type_t          *field_type);
+void
+gras_datadesc_declare_struct_close(gras_datadesc_type_t          *struct_type);
 gras_error_t 
 gras_datadesc_declare_union(const char                      *name,
 			    gras_datadesc_type_cb_int_t      selector,
@@ -73,6 +75,8 @@ gras_error_t
 gras_datadesc_declare_union_append(gras_datadesc_type_t          *union_type,
 				   const char                    *name,
 				   gras_datadesc_type_t          *field_type);
+void
+gras_datadesc_declare_union_close(gras_datadesc_type_t          *union_type);
 gras_error_t 
 gras_datadesc_declare_ref(const char                      *name,
 			  gras_datadesc_type_t            *referenced_type,
@@ -148,20 +152,17 @@ int gras_arch_selfid(void); /* ID of this arch */
 /****************************
  **** Parse C statements ****
  ****************************/
-gras_error_t
+gras_datadesc_type_t *
 gras_datadesc_parse(const char *name,
-		    const char *Cdefinition,
-		    gras_datadesc_type_t **dst);
+		    const char *Cdefinition);
 #define GRAS_DEFINE_TYPE(name,def) \
   static const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
  
-/*#define gras_type_symbol_parse(name)                                  \
- _gras_datadesc_parse(_gras_this_datadesc_type_symbol_does_not_exist__##name)
-*/ 
-#define gras_datadesc_by_symbol(name)                    \
-  (bag->bag_ops->get_type_by_name(bag, NULL, #name) ?    \
-     bag->bag_ops->get_type_by_name(bag, NULL, #name) :  \
-     gras_datadesc_parse(name)                           \
+#define gras_datadesc_by_symbol(name)  \
+  (gras_datadesc_by_name(#name) ?      \
+   gras_datadesc_by_name(#name) :      \
+     gras_datadesc_parse(#name,        \
+			 _gras_this_type_symbol_does_not_exist__##name) \
   )
 
 /*****************************
