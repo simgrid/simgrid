@@ -11,7 +11,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <msg.h>
+#include "msg/msg.h"
 
 #include "transport_private.h"
 #include "gras/Virtu/virtu_sg.h"

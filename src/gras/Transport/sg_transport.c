@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/Transport/transport_private.h"
-#include <msg.h>
+#include "msg/msg.h"
 #include "gras/Virtu/virtu_sg.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(transport);
