@@ -63,9 +63,9 @@
 
     \section GRAS_maingen_script Generating the main()s manually with
     
-    This is done by the gras_stub_generator script, which lives for now in
-    the examples/gras/ directory. Here is the calling syntax:
-    \verbatim gras_stub_generator <project_name> <deployment_file>\endverbatim
+    This is done by the stub_generator binary, which lives in
+    the tools/gras/ directory. Here is the calling syntax:
+    \verbatim stub_generator <project_name> <deployment_file>\endverbatim
     
     It parses the deployment file, searching for all the kind of processes
     you have in your project. It then generates the following C files:
@@ -83,13 +83,9 @@
     example: \verbatim int client(int argc,char *argv[]);\endverbatim
     
     Unfortunately, all this is still partially documented. I guess I ought
-    to improve this situation somehow. In the meanwhile, check the script
-    source code, and the generated code, sorry.
-    
-    \warning All this is about the old description file from SimGrid2 and
-    should be updated to the new SimGrid3 format. We have to change both the
-    code and this documentation.
-    
+    to improve this situation somehow. In the meanwhile, check the generated 
+    code, sorry. 
+        
     \section GRAS_maingen_make Integration within your Makefile 
     
     The easiest to set it up is to add the following chunk at the end of
@@ -98,14 +94,14 @@
 \verbatim NAME=your_project_name
  PROCESSES=list of processes type in your project
 
- $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(NAME).c $(NAME)_deployment.txt
-        path/to/gras_stub_generator $(NAME) $(NAME)_deployment.txt >/dev/null
+ $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(NAME).c $(NAME)_deployment.xml
+        path/to/stub_generator $(NAME) $(NAME)_deployment.xml >/dev/null
 \endverbatim
 
     Of course, your personal millage may vary. For the \ref GRAS_ex_ping, may read:
-\verbatim _ping_client.c _ping_server.c _ping_simulator.c: ping.c ping_deployment.txt 
-        $(srcdir)/../gras_stub_generator ping ping_deployment.txt >/dev/null
-\endverbatim	
+\verbatim _ping_client.c _ping_server.c _ping_simulator.c: ping.c ping_deployment.xml 
+        $(top_srcdir)/tools/gras//stub_generator ping ping_deployment.xml >/dev/null
+\endverbatim
 
      */
 
