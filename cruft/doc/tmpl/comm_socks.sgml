@@ -1,8 +1,8 @@
 <!-- ##### SECTION Title ##### -->
-Sockets API
+Sockets
 
 <!-- ##### SECTION Short_Description ##### -->
-Handling sockets
+Open/close sockets, and get info on peer.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -14,7 +14,7 @@ Handling sockets
 
 </para>
 
-<!-- ##### FUNCTION gras_sock_client_open ##### -->
+<!-- ##### FUNCTION gras_socket_client ##### -->
 <para>
 
 </para>
@@ -25,18 +25,18 @@ Handling sockets
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_sock_server_open ##### -->
+<!-- ##### FUNCTION gras_socket_server ##### -->
 <para>
 
 </para>
 
 @Param1: 
-@Param2: 
-@sock: 
+@bufSize: 
+@dst: 
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_sock_close ##### -->
+<!-- ##### FUNCTION gras_socket_close ##### -->
 <para>
 
 </para>
@@ -45,16 +45,7 @@ Handling sockets
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_sock_get_peer_name ##### -->
-<para>
-
-</para>
-
-@sd: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gras_sock_get_peer_addr ##### -->
+<!-- ##### FUNCTION gras_socket_peer_name ##### -->
 <para>
 
 </para>

@@ -1,8 +1,8 @@
 <!-- ##### SECTION Title ##### -->
-Messages API
+Messages
 
 <!-- ##### SECTION Short_Description ##### -->
-High level messages
+Defining messages and callbacks, and sending/receiving messages.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
