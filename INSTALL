@@ -22,15 +22,15 @@ easily that what you change for one arch does not break the other one.
 Of course, for the test, you can use wine. 
 For that, do not forget to put the mingw32.dll where wine expects it. 
   cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
-  gunzip ~/.wine/c/windows/system/mingwm10.dll
+  gunzip ~/.wine/c/windows/system/mingwm10.dll.gz
 
 Please note that as long as we don't export the symbols the dll way, libtool
 only build a static library. So, the programs cross-compiled do only need
 the mingwm10.dll around (either in the same directory, or in c:\windows).
 
 If you're really curious, check /usr/include/png.h and
-/usr/include/pngconf.h to see how to export the symbols the proper way.
-Search for 'dll' in the libtool info file, too.
+/usr/include/pngconf.h (pkg libpng12-dev) to see how to export the symbols
+the proper way. Search for 'dll' in the libtool info file, too.
 
  --------------------------------
 (The regular INSTALL file follows)
