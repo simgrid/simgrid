@@ -163,10 +163,10 @@ void gras_trp_buf_socket_close(gras_socket_t sock){
   if (data->in.size || data->out.size)
     gras_trp_buf_flush(sock);
   if (data->in.data)
-    xbt_free(data->in.data);
+    free(data->in.data);
   if (data->out.data)
-    xbt_free(data->out.data);
-  xbt_free(data);
+    free(data->out.data);
+  free(data);
 
   super->socket_close(sock);
 }

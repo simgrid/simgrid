@@ -41,8 +41,8 @@ amok_remoterr_t amok_remoterr_new_va(xbt_error_t param_errcode,
 
 void amok_remoterr_free(amok_remoterr_t *err) {
    if (err && *err) {
-      if ((*err)->msg) xbt_free((*err)->msg);
-      xbt_free(*err);
+      if ((*err)->msg) free((*err)->msg);
+      free(*err);
       err=NULL;
    }
 }

@@ -29,7 +29,7 @@ typedef struct s_gras_cbps {
 static void free_string(void *d);
 
 static void free_string(void *d){
-  xbt_free(*(void**)d);
+  free(*(void**)d);
 }
 
 gras_cbps_t gras_cbps_new(void) {
@@ -57,7 +57,7 @@ void gras_cbps_free(gras_cbps_t *state) {
   xbt_dynar_free( &( (*state)->frames  ) );
   xbt_dynar_free( &( (*state)->globals ) );
 
-  xbt_free(*state);
+  free(*state);
   *state = NULL;
 }
 
@@ -138,7 +138,7 @@ gras_cbps_v_pop (gras_cbps_t            ps,
     *ddt = var->type;  
   data    = var->data;
   
-  xbt_free(var);
+  free(var);
   
   xbt_dynar_pop(ps->frames, &frame);
   {
@@ -150,7 +150,7 @@ gras_cbps_v_pop (gras_cbps_t            ps,
       _name = xbt_dynar_get_as(frame, l, char*);
       if (!strcmp(name, _name)) {
 	xbt_dynar_remove_at(frame, l, &_name);
-	xbt_free(_name);
+	free(_name);
 	break;
       }
     }
@@ -276,9 +276,9 @@ gras_cbps_block_end(gras_cbps_t ps) {
       xbt_dynar_free_container(&varstack); /*already empty, save a test ;) */
     }
     
-    if (var->data) xbt_free(var->data);
-    xbt_free(var);
-    xbt_free(name);
+    if (var->data) free(var->data);
+    free(var);
+    free(name);
   }
   xbt_dynar_free_container(&frame);/* we just emptied it */
   DEBUG0("<<< Block end");

@@ -64,7 +64,7 @@ xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
   if (*cursor) {
     xbt_dynar_free(&((*cursor)->keys));
     xbt_dynar_free(&((*cursor)->key_lens));
-    xbt_free(*cursor);
+    free(*cursor);
     *cursor = NULL;
   }
 }

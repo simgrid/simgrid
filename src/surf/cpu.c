@@ -16,8 +16,8 @@ xbt_dict_t cpu_set = NULL;
 
 static void cpu_free(void *cpu)
 {
-  xbt_free(((cpu_Cas01_t)cpu)->name);
-  xbt_free(cpu);
+  free(((cpu_Cas01_t)cpu)->name);
+  free(cpu);
 }
 
 static cpu_Cas01_t cpu_new(char *name, double power_scale,
@@ -109,7 +109,7 @@ static void action_free(surf_action_t action)
   xbt_swag_remove(action, action->state_set);
   if(((surf_action_cpu_Cas01_t)action)->variable)
     lmm_variable_free(maxmin_system, ((surf_action_cpu_Cas01_t)action)->variable);
-  xbt_free(action);
+  free(action);
 
   return;
 }
@@ -283,11 +283,11 @@ static void finalize(void)
   xbt_swag_free(surf_cpu_resource->common_public->states.
 		failed_action_set);
   xbt_swag_free(surf_cpu_resource->common_public->states.done_action_set);
-  xbt_free(surf_cpu_resource->common_public);
-  xbt_free(surf_cpu_resource->common_private);
-  xbt_free(surf_cpu_resource->extension_public);
+  free(surf_cpu_resource->common_public);
+  free(surf_cpu_resource->common_private);
+  free(surf_cpu_resource->extension_public);
 
-  xbt_free(surf_cpu_resource);
+  free(surf_cpu_resource);
   surf_cpu_resource = NULL;
 }
 

@@ -27,7 +27,7 @@ tmgr_history_t tmgr_history_new(void)
 
   h = xbt_new0(s_tmgr_history_t, 1);
 
-  h->heap = xbt_heap_new(8, xbt_free);	/* Why 8 ? Well, why not... */
+  h->heap = xbt_heap_new(8, free);	/* Why 8 ? Well, why not... */
 
   return h;
 }
@@ -35,7 +35,7 @@ tmgr_history_t tmgr_history_new(void)
 void tmgr_history_free(tmgr_history_t h)
 {
   xbt_heap_free(h->heap);
-  xbt_free(h);
+  free(h);
 }
 
 tmgr_trace_t tmgr_trace_new(const char *filename)
@@ -115,7 +115,7 @@ void tmgr_trace_free(tmgr_trace_t trace)
   if (!trace)
     return;
   xbt_dynar_free(&(trace->event_list));
-  xbt_free(trace);
+  free(trace);
 }
 
 tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
@@ -177,7 +177,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
     xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx = 0;
   } else {			/* We don't need this trace_event anymore */
-    xbt_free(trace_event);
+    free(trace_event);
   }
 
   return trace_event;

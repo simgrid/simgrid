@@ -132,17 +132,17 @@ void __MSG_host_destroy(m_host_t host)
 
   for (i = 0; i < msg_global->max_channel; i++)
     xbt_fifo_free(simdata->mbox[i]);
-  xbt_free(simdata->mbox);
-  xbt_free(simdata->sleeping);
+  free(simdata->mbox);
+  free(simdata->sleeping);
   xbt_assert0((xbt_fifo_size(simdata->process_list)==0),
 	      "Some process are still running on this host");
   xbt_fifo_free(simdata->process_list);
 
-  xbt_free(simdata);
+  free(simdata);
 
   /* Clean host structure */
-  xbt_free(host->name);
-  xbt_free(host);
+  free(host->name);
+  free(host);
 
   return;
 }

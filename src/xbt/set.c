@@ -41,7 +41,7 @@ void  xbt_set_free(xbt_set_t *set) {
   if (*set) {
     xbt_dict_free ( &( (*set)->dict  ) );
     xbt_dynar_free( &( (*set)->dynar ) );
-    xbt_free(*set);
+    free(*set);
     *set = NULL;
   }
 }
@@ -192,7 +192,7 @@ int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *curs,
   cursor=*curs;
 
   if (! xbt_dynar_cursor_get( cursor->set->dynar,&(cursor->val),elm) ) {
-    xbt_free(cursor);
+    free(cursor);
     *curs=NULL;
     return FALSE;    
   } 

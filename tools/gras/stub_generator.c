@@ -156,7 +156,7 @@ static void generate_sim(char *project)
   }
   fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
   fclose(OUT);
-  xbt_free(filename);
+  free(filename);
 }
 
 static void generate_rl(char *project)
@@ -178,7 +178,7 @@ static void generate_rl(char *project)
     fprintf(OUT, RL_CODE, key,key);
     fprintf(OUT, "\n%s\n",warning);
     fclose(OUT);
-    xbt_free(filename);
+    free(filename);
   }
 }
 
@@ -271,6 +271,6 @@ int main(int argc, char *argv[])
   generate_rl(project_name);
   generate_makefile(project_name, deployment_file);
 
-  xbt_free(warning);
+  free(warning);
   return 0;
 }

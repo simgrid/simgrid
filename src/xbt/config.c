@@ -50,13 +50,13 @@ void xbt_cfg_str_free(void *d);
 void xbt_cfg_host_free(void *d);
 
 void xbt_cfg_str_free(void *d){
-  xbt_free(*(void**)d);
+  free(*(void**)d);
 }
 void xbt_cfg_host_free(void *d){
   xbt_host_t *h=(xbt_host_t*) *(void**)d; 
   if (h) {
-    if (h->name) xbt_free(h->name);
-    xbt_free(h);
+    if (h->name) free(h->name);
+    free(h);
   }
 }
 
@@ -180,7 +180,7 @@ void xbt_cfgelm_free(void *data) {
 
   if (!c) return;
   xbt_dynar_free(&(c->content));
-  xbt_free(c);
+  free(c);
 }
 
 /*----[ Registering stuff ]-----------------------------------------------*/
@@ -276,7 +276,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    xbt_free(entrycpy);
+    free(entrycpy);
     xbt_abort();
   }
   *(tok++)='\0';
@@ -284,7 +284,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
   min=strtol(tok, &tok, 10);
   if (!tok) {
     ERROR1("Invalid minimum in config element descriptor %s",entry);
-    xbt_free(entrycpy);
+    free(entrycpy);
     xbt_abort();
   }
 
@@ -292,7 +292,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    xbt_free(entrycpy);
+    free(entrycpy);
     xbt_abort();
   }
   tok += strlen("_to_");
@@ -300,7 +300,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
   max=strtol(tok, &tok, 10);
   if (!tok) {
     ERROR1("Invalid maximum in config element descriptor %s",entry);
-    xbt_free(entrycpy);
+    free(entrycpy);
     xbt_abort();
   }
 
@@ -308,7 +308,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    xbt_free(entrycpy);
+    free(entrycpy);
     xbt_abort();
   }
 
@@ -319,13 +319,13 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid type in config element descriptor: ",entry,
 	  "; Should be one of 'string', 'int', 'host' or 'double'.");
-    xbt_free(entrycpy);
+    free(entrycpy);
     xbt_abort();
   }
 
   xbt_cfg_register(cfg,entrycpy,type,min,max);
 
-  xbt_free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
+  free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
   return no_error;
 }
 
@@ -566,7 +566,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     
     val=strchr(name,':');
     if (!val) {
-      xbt_free(optionlist_cpy);
+      free(optionlist_cpy);
       xbt_assert1(FALSE,
 	     "Malformated option: '%s'; Should be of the form 'name:value'",
 		  name);
@@ -581,11 +581,11 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       break;
     case mismatch_error:
       ERROR1("No registrated variable corresponding to '%s'.",name);
-      xbt_free(optionlist_cpy);
+      free(optionlist_cpy);
       return mismatch_error;
       break;
     default:
-      xbt_free(optionlist_cpy);
+      free(optionlist_cpy);
       return errcode;
     }
 
@@ -593,7 +593,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     case xbt_cfgelm_string:
       errcode = xbt_cfg_set_string(cfg, name, val);
       if (errcode != no_error) {
-	 xbt_free(optionlist_cpy);
+	 free(optionlist_cpy);
          return errcode;
       }
       break;
@@ -601,7 +601,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     case xbt_cfgelm_int:
       i=strtol(val, &val, 0);
       if (val==NULL) {
-	xbt_free(optionlist_cpy);	
+	free(optionlist_cpy);	
 	xbt_assert1(FALSE,
 		     "Value of option %s not valid. Should be an integer",
 		     name);
@@ -609,7 +609,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
       errcode = xbt_cfg_set_int(cfg,name,i);
       if (errcode != no_error) {
-	 xbt_free(optionlist_cpy);
+	 free(optionlist_cpy);
 	 return errcode;
       }
       break;
@@ -617,7 +617,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     case xbt_cfgelm_double:
       d=strtod(val, &val);
       if (val==NULL) {
-	xbt_free(optionlist_cpy);	
+	free(optionlist_cpy);	
 	xbt_assert1(FALSE,
 	       "Value of option %s not valid. Should be a double",
 	       name);
@@ -625,7 +625,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
       errcode = xbt_cfg_set_double(cfg,name,d);
       if (errcode != no_error) {
-	 xbt_free(optionlist_cpy);
+	 free(optionlist_cpy);
 	 return errcode;
       }
       break;
@@ -634,7 +634,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       str=val;
       val=strchr(val,':');
       if (!val) {
-	xbt_free(optionlist_cpy);	
+	free(optionlist_cpy);	
 	xbt_assert1(FALSE,
 	    "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
@@ -643,7 +643,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       *(val++)='\0';
       i=strtol(val, &val, 0);
       if (val==NULL) {
-	xbt_free(optionlist_cpy);	
+	free(optionlist_cpy);	
 	xbt_assert1(FALSE,
 	    "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
@@ -651,18 +651,18 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
       errcode = xbt_cfg_set_host(cfg,name,str,i);
       if (errcode != no_error) {
-	 xbt_free(optionlist_cpy);
+	 free(optionlist_cpy);
 	 return errcode;
       }
       break;      
 
     default: 
-      xbt_free(optionlist_cpy);
+      free(optionlist_cpy);
       RAISE1(unknown_error,"Type of config element %s is not valid.",name);
     }
     
   }
-  xbt_free(optionlist_cpy);
+  free(optionlist_cpy);
   return no_error;
 }
 

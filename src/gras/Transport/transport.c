@@ -31,8 +31,8 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   switch (errcode) {
   case mismatch_error:
     /* SG plugin return mismatch when in RL mode (and vice versa) */
-    xbt_free(plug->name);
-    xbt_free(plug);
+    free(plug->name);
+    free(plug);
     break;
 
   case no_error:
@@ -121,11 +121,11 @@ void gras_trp_plugin_free(void *p) {
       plug->exit(plug);
     } else if (plug->data) {
       DEBUG1("Plugin %s lacks exit(). Free data anyway.",plug->name);
-      xbt_free(plug->data);
+      free(plug->data);
     }
 
-    xbt_free(plug->name);
-    xbt_free(plug);
+    free(plug->name);
+    free(plug);
   }
 }
 
@@ -203,7 +203,7 @@ gras_socket_server_ext(unsigned short port,
 	 sock->accepting?'y':'n');
 
   if (errcode != no_error) {
-    xbt_free(sock);
+    free(sock);
     return errcode;
   }
 
@@ -252,7 +252,7 @@ gras_socket_client_ext(const char *host,
 	 sock->accepting?'y':'n');
 
   if (errcode != no_error) {
-    xbt_free(sock);
+    free(sock);
     return errcode;
   }
 
@@ -302,8 +302,8 @@ void gras_socket_close(gras_socket_t sock) {
 
 	/* free the memory */
 	if (sock->peer_name)
-	  xbt_free(sock->peer_name);
-	xbt_free(sock);
+	  free(sock->peer_name);
+	free(sock);
 	return;
       }
     }
@@ -391,7 +391,7 @@ xbt_error_t gras_socket_raw_send(gras_socket_t peer,
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 	     
-  xbt_free(chunk);
+  free(chunk);
   return no_error;/* gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);    */
 }
 
@@ -415,7 +415,7 @@ xbt_error_t gras_socket_raw_recv(gras_socket_t peer,
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
-  xbt_free(chunk);
+  free(chunk);
   return no_error;/* gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);    */
 }
 

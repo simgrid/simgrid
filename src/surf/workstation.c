@@ -32,8 +32,8 @@ static workstation_CLM03_t workstation_new(const char *name,
 
 static void workstation_free(void *workstation)
 {
-  xbt_free(((workstation_CLM03_t)workstation)->name);
-  xbt_free(workstation);
+  free(((workstation_CLM03_t)workstation)->name);
+  free(workstation);
 }
 
 static void create_workstations(void)
@@ -186,11 +186,11 @@ static void finalize(void)
 		failed_action_set);
   xbt_swag_free(surf_workstation_resource->common_public->states.done_action_set);
 
-  xbt_free(surf_workstation_resource->common_public);
-  xbt_free(surf_workstation_resource->common_private);
-  xbt_free(surf_workstation_resource->extension_public);
+  free(surf_workstation_resource->common_public);
+  free(surf_workstation_resource->common_private);
+  free(surf_workstation_resource->extension_public);
 
-  xbt_free(surf_workstation_resource);
+  free(surf_workstation_resource);
   surf_workstation_resource = NULL;
 }
 

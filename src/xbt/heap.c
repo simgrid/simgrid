@@ -50,8 +50,8 @@ void xbt_heap_free(xbt_heap_t H)
   if (H->free)
     for (i = 0; i < H->count; i++)
       H->free(H->items[i].content);
-  xbt_free(H->items);
-  xbt_free(H);
+  free(H->items);
+  free(H);
   return;
 }
 

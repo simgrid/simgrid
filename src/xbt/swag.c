@@ -58,7 +58,7 @@ xbt_swag_t xbt_swag_new(size_t offset)
  */
 void xbt_swag_free(xbt_swag_t swag)
 {
-  xbt_free(swag);
+  free(swag);
 }
 
 /** Creates a new swag.

@@ -89,7 +89,7 @@ xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
 void gras_trp_tcp_exit(gras_trp_plugin_t *plug) {
   DEBUG1("Exit plugin TCP (free %p)", plug->data);
-  xbt_free(plug->data);
+  free(plug->data);
 }
 
 xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
@@ -436,13 +436,13 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
 	 }
 	 if (res_last == 0) {
 	   /* No progress done, bail out */
-	   xbt_free(chunk);
+	   free(chunk);
 	   RAISE0(unknown_error,"Not exchanged a single byte, bailing out");
 	 }
       }
    }
    
-   xbt_free(chunk);
+   free(chunk);
    return no_error;
 }
 

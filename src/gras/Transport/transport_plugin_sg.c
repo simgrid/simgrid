@@ -208,7 +208,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
   xbt_assert0(hd,"Please run gras_process_init on each process");
 
   if (sock->data)
-    xbt_free(sock->data);
+    free(sock->data);
 
   if (sock->incoming) {
     /* server mode socket. Un register it from 'OS' tables */
@@ -280,8 +280,8 @@ xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
 	   MSG_host_get_name(sock_data->to_host),
 	   MSG_host_get_name(MSG_host_self()), sock_data->to_chan);
   memcpy(data,task_data->data,size);
-  xbt_free(task_data->data);
-  xbt_free(task_data);
+  free(task_data->data);
+  free(task_data);
 
   if (MSG_task_destroy(task) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_destroy()");

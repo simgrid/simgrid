@@ -115,7 +115,7 @@ static void change_to_fixed_array(xbt_dynar_t dynar, long int size) {
   DEBUG2("Array specification (size=%ld, elm='%s'), change pushed type",
 	 size,former.type_name);
   sprintf(array.type_name,"%s[%ld]",former.type_name,size);
-  xbt_free(former.type_name);
+  free(former.type_name);
 
   array.type = gras_datadesc_array_fixed(array.type_name, former.type, size); /* redeclaration are ignored */
   array.name = former.name;
@@ -132,7 +132,7 @@ static void change_to_ref(xbt_dynar_t dynar) {
   ref.type_name=(char*)xbt_malloc(strlen(former.type->name)+2);
   DEBUG1("Ref specification (elm='%s'), change pushed type", former.type_name);
   sprintf(ref.type_name,"%s*",former.type_name);
-  xbt_free(former.type_name);
+  free(former.type_name);
 
   ref.type = gras_datadesc_ref(ref.type_name, former.type); /* redeclaration are ignored */
   ref.name = former.name;
@@ -151,7 +151,7 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar) {
   ref.type_name = (char*)strdup(ref.type->name);
   ref.name = former.name;
 
-  xbt_free(former.type_name);
+  free(former.type_name);
 
   xbt_dynar_push(dynar,&ref);
   XBT_OUT;
@@ -365,14 +365,14 @@ static xbt_error_t parse_statement(char	 *definition,
 
 	DEBUG2("Anotation: %s=%s",keyname,keyval);
 	if (!strcmp(keyname,"size")) {
-	  xbt_free(keyname);
+	  free(keyname);
 	  if (!identifier.tm.is_ref)
 	    PARSE_ERROR0("Size annotation for a field not being a reference");
 	  identifier.tm.is_ref--;
 
 	  if (!strcmp(keyval,"1")) {
 	    change_to_ref(identifiers);
-	    xbt_free(keyval);
+	    free(keyval);
 	    continue;
 	  } else {
 	    char *p;
@@ -383,7 +383,7 @@ static xbt_error_t parse_statement(char	 *definition,
 	    if (fixed) {
 	      change_to_fixed_array(identifiers,atoi(keyval));
 	      change_to_ref(identifiers);
-	      xbt_free(keyval);
+	      free(keyval);
 	      continue;
 
 	    } else {
@@ -479,8 +479,8 @@ static gras_datadesc_type_t parse_struct(char *definition) {
 
       VERB2("Append field '%s' to %p",field.name, (void*)struct_type);      
       gras_datadesc_struct_append(struct_type, field.name, field.type);
-      xbt_free(field.name);
-      xbt_free(field.type_name);
+      free(field.name);
+      free(field.type_name);
 
     }
     xbt_dynar_reset(identifiers);
@@ -491,7 +491,7 @@ static gras_datadesc_type_t parse_struct(char *definition) {
       DEBUG1("struct_type=%p",(void*)struct_type);
       VERB2("Push field '%s' into size stack of %p", name, (void*)struct_type);
       gras_datadesc_cb_field_push(struct_type, name);
-      xbt_free(name);
+      free(name);
     }
     xbt_dynar_reset(fields_to_push);
   }
@@ -599,7 +599,7 @@ gras_datadesc_parse(const char            *name,
 
   gras_ddt_parse_pointer_string_close();
   VERB0("end of _gras_ddt_type_parse()");
-  xbt_free(definition);
+  free(definition);
   /* register it under the name provided as symbol */
   if (strcmp(res->name,name)) {
     ERROR2("In GRAS_DEFINE_TYPE, the provided symbol (here %s) must be the C type name (here %s)",

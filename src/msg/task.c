@@ -113,7 +113,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   xbt_assert0((xbt_dynar_length(task->simdata->sleeping)==0), 
 	      "Task still used. There is a problem. Cannot destroy it now!");
 
-  if(task->name) xbt_free(task->name);
+  if(task->name) free(task->name);
 
   xbt_dynar_free(&(task->simdata->sleeping));
 
@@ -123,8 +123,8 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   if(action) action->resource_type->common_public->action_free(action);
 
 
-  xbt_free(task->simdata);
-  xbt_free(task);
+  free(task->simdata);
+  free(task);
 
   return MSG_OK;
 }

@@ -89,7 +89,7 @@ e_surf_action_state_t surf_action_get_state(surf_action_t action)
 void surf_action_free(surf_action_t * action)
 {
   (*action)->resource_type->common_public->action_cancel(*action);
-  xbt_free(*action);
+  free(*action);
   *action = NULL;
 }
 
@@ -206,7 +206,7 @@ void surf_finalize(void)
   tmgr_finalize();
   surf_parse_lex_destroy();
   if(path_name) {
-    xbt_free(path_name);
+    free(path_name);
     path_name = NULL;
   }
 }

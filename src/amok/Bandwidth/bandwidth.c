@@ -149,7 +149,7 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 	    xbt_error_name(errcode),gras_socket_peer_name(peer),request_ack->host.port);
     return errcode;
   }
-  xbt_free(request_ack);
+  free(request_ack);
   INFO0("Got ACK");
 
   *sec=gras_os_time();

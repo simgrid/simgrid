@@ -63,7 +63,7 @@ gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i) {
     TRY(gras_trp_chunk_recv(sock, (char*)ptr, int_type->size[r_arch]));
     if (r_arch != GRAS_THISARCH)
       TRY(gras_dd_convert_elm(int_type,1,r_arch, ptr,i));
-    xbt_free(ptr);
+    free(ptr);
   }
   DEBUG1("recv_int(%d)",*i);
 
@@ -114,7 +114,7 @@ gras_dd_alloc_ref(xbt_dict_t  refs,
     DEBUG2("Insert %p under %p",*(void**)ptr, *(void**)r_ref);
 
     if (detect_cycle)
-       xbt_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, xbt_free_fct);
+       xbt_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, free);
   }
   return no_error;
 }
@@ -393,7 +393,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       TRY(gras_trp_chunk_recv(sock, (char*)ptr, type->size[r_arch]));
       if (r_arch != GRAS_THISARCH)
 	TRY(gras_dd_convert_elm(type,1,r_arch, ptr,l_data));
-      xbt_free(ptr);
+      free(ptr);
     }
     break;
 
@@ -484,7 +484,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       VERB1("Not receiving data remotely referenced @%p since it's NULL",
 	    *(void **)r_ref);
       *(void**)l_data = NULL;
-      xbt_free(r_ref);
+      free(r_ref);
       break;
     }
          
@@ -542,7 +542,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
     } else {
       return errcode;
     }
-    xbt_free(r_ref);
+    free(r_ref);
     break;
   }
 
@@ -580,7 +580,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 				sub_type->size[r_arch] * count));
 	if (r_arch != GRAS_THISARCH)
 	  TRY(gras_dd_convert_elm(sub_type,count,r_arch, ptr,l_data));
-	xbt_free(ptr);
+	free(ptr);
       }
     } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
 	       sub_type->category.array_data.fixed_size > 0 &&
@@ -604,7 +604,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 				subsub_type->size[r_arch] * count*array_data.fixed_size));
 	if (r_arch != GRAS_THISARCH)
 	  TRY(gras_dd_convert_elm(subsub_type,count*array_data.fixed_size,r_arch, ptr,l_data));
-	xbt_free(ptr);
+	free(ptr);
       }
       
        
@@ -932,7 +932,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
       TRY(gras_trp_chunk_recv(sock, (char*)ptr, type->size[r_arch]));
       if (r_arch != GRAS_THISARCH)
 	TRY(gras_dd_convert_elm(type,1,r_arch, ptr,l_data));
-      xbt_free(ptr);
+      free(ptr);
     }
     break;
 
@@ -1023,7 +1023,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
       VERB1("Not receiving data remotely referenced @%p since it's NULL",
 	    *(void **)r_ref);
       *(void**)l_data = NULL;
-      xbt_free(r_ref);
+      free(r_ref);
       break;
     }
          
@@ -1081,7 +1081,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
     } else {
       return errcode;
     }
-    xbt_free(r_ref);
+    free(r_ref);
     break;
   }
 
@@ -1119,7 +1119,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
 				sub_type->size[r_arch] * count));
 	if (r_arch != GRAS_THISARCH)
 	  TRY(gras_dd_convert_elm(sub_type,count,r_arch, ptr,l_data));
-	xbt_free(ptr);
+	free(ptr);
       }
     } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
 	       sub_type->category.array_data.fixed_size > 0 &&
@@ -1143,7 +1143,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
 				subsub_type->size[r_arch] * count*array_data.fixed_size));
 	if (r_arch != GRAS_THISARCH)
 	  TRY(gras_dd_convert_elm(subsub_type,count*array_data.fixed_size,r_arch, ptr,l_data));
-	xbt_free(ptr);
+	free(ptr);
       }
       
        

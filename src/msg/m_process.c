@@ -49,9 +49,9 @@ static void MSG_process_cleanup(void *arg)
   xbt_fifo_remove(msg_global->process_list, arg);
   xbt_fifo_remove(msg_global->process_to_run, arg);
   xbt_fifo_remove(((m_process_t) arg)->simdata->host->simdata->process_list, arg);
-  xbt_free(((m_process_t) arg)->name);
-  xbt_free(((m_process_t) arg)->simdata);
-  xbt_free(arg);
+  free(((m_process_t) arg)->name);
+  free(((m_process_t) arg)->simdata);
+  free(arg);
 }
 
 /** \ingroup m_process_management

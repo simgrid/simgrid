@@ -76,7 +76,7 @@ _xbt_dynar_expand(xbt_dynar_t const dynar,
     if (old_data) {
       memcpy(new_data, old_data, used_length);
       _xbt_clear_mem(old_data, old_length);
-      xbt_free(old_data);
+      free(old_data);
     }
 
     _xbt_clear_mem(new_data + used_length, new_length - used_length);
@@ -157,12 +157,12 @@ xbt_dynar_free_container(xbt_dynar_t *dynar) {
 
     if ((*dynar)->data) {
       _xbt_clear_mem((*dynar)->data, (*dynar)->size);
-      xbt_free((*dynar)->data);
+      free((*dynar)->data);
     }
 
     _xbt_clear_mem(*dynar, sizeof(s_xbt_dynar_t));
 
-    xbt_free(*dynar);
+    free(*dynar);
     *dynar=NULL;
   }
 }
@@ -182,7 +182,7 @@ xbt_dynar_reset(xbt_dynar_t const dynar) {
   }
 
   if (dynar->data)
-    xbt_free(dynar->data);
+    free(dynar->data);
 
   dynar->size = 0;
   dynar->used = 0;
@@ -535,7 +535,7 @@ void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
       dst=xbt_malloc(dynar->elmsize);
       xbt_dynar_remove_at(dynar,(*cursor)--,dst);
       (dynar->free_f)(dst);
-      xbt_free(dst);
+      free(dst);
     } else {
       DEBUG0("Ok, we dont care about the element without free function");
       xbt_dynar_remove_at(dynar,(*cursor)--,NULL);

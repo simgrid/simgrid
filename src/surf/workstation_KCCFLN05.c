@@ -26,10 +26,10 @@ s_route_KCCFLN05_t *routing_table = NULL;
 /************ workstation creation *********/
 static void workstation_free(void *workstation)
 {
-  xbt_free(((workstation_KCCFLN05_t)workstation)->name);
+  free(((workstation_KCCFLN05_t)workstation)->name);
   xbt_dynar_free(&(((workstation_KCCFLN05_t)workstation)->incomming_communications));
   xbt_dynar_free(&(((workstation_KCCFLN05_t)workstation)->outgoing_communications));
-  xbt_free(workstation);
+  free(workstation);
 }
 
 static workstation_KCCFLN05_t workstation_new(const char *name,
@@ -185,8 +185,8 @@ static void create_routing_table(void)
 
 static void network_link_free(void *nw_link)
 {
-  xbt_free(((network_link_KCCFLN05_t)nw_link)->name);
-  xbt_free(nw_link);
+  free(((network_link_KCCFLN05_t)nw_link)->name);
+  free(nw_link);
 }
 
 static network_link_KCCFLN05_t network_link_new(char *name,
@@ -255,9 +255,9 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link,
   link_list = route->links = xbt_new0(network_link_KCCFLN05_t, nb_link);
   for (i = 0; i < nb_link; i++) {
     xbt_dict_get(network_link_set, links[i], (void *) &(link_list[i]));
-    xbt_free(links[i]);
+    free(links[i]);
   }
-  xbt_free(links);
+  free(links);
   route->impact_on_src=impact_on_src;
   route->impact_on_dst=impact_on_src;
   route->impact_on_src_with_other_recv=impact_on_src_with_other_recv; 
@@ -380,7 +380,7 @@ static void action_network_KCCFLN05_free(surf_action_t action)
     }
   }
 
-  xbt_free(action);
+  free(action);
 }
 
 static double share_network_KCCFLN05_resources(double now)
@@ -525,7 +525,7 @@ static void action_cpu_KCCFLN05_free(surf_action_t action)
   xbt_swag_remove(action, action->state_set);
   if(((surf_action_cpu_KCCFLN05_t)action)->variable)
     lmm_variable_free(maxmin_system_cpu_KCCFLN05, ((surf_action_cpu_KCCFLN05_t)action)->variable);
-  xbt_free(action);
+  free(action);
 }
 
 static void action_cpu_KCCFLN05_change_state(surf_action_t action,
@@ -794,11 +794,11 @@ static void cpu_KCCFLN05_finalize(void)
   xbt_swag_free(surf_cpu_resource->common_public->states.
 		failed_action_set);
   xbt_swag_free(surf_cpu_resource->common_public->states.done_action_set);
-  xbt_free(surf_cpu_resource->common_public);
-  xbt_free(surf_cpu_resource->common_private);
-  xbt_free(surf_cpu_resource->extension_public);
+  free(surf_cpu_resource->common_public);
+  free(surf_cpu_resource->common_private);
+  free(surf_cpu_resource->extension_public);
 
-  xbt_free(surf_cpu_resource);
+  free(surf_cpu_resource);
   surf_cpu_resource = NULL;
 
   if (maxmin_system_cpu_KCCFLN05) {
@@ -876,17 +876,17 @@ static void network_KCCFLN05_finalize(void)
 		failed_action_set);
   xbt_swag_free(surf_network_resource->common_public->states.
 		done_action_set);
-  xbt_free(surf_network_resource->common_public);
-  xbt_free(surf_network_resource->common_private);
-  xbt_free(surf_network_resource->extension_public);
+  free(surf_network_resource->common_public);
+  free(surf_network_resource->common_private);
+  free(surf_network_resource->extension_public);
 
-  xbt_free(surf_network_resource);
+  free(surf_network_resource);
   surf_network_resource = NULL;
 
   for (i = 0; i < nb_workstation; i++) 
     for (j = 0; j < nb_workstation; j++) 
-      xbt_free(ROUTE(i,j).links);
-  xbt_free(routing_table);
+      free(ROUTE(i,j).links);
+  free(routing_table);
   routing_table = NULL;
   nb_workstation = 0;
 
@@ -956,11 +956,11 @@ static void workstation_KCCFLN05_finalize(void)
   xbt_swag_free(surf_workstation_resource->common_public->states.failed_action_set);
   xbt_swag_free(surf_workstation_resource->common_public->states.done_action_set);
 
-  xbt_free(surf_workstation_resource->common_public);
-  xbt_free(surf_workstation_resource->common_private);
-  xbt_free(surf_workstation_resource->extension_public);
+  free(surf_workstation_resource->common_public);
+  free(surf_workstation_resource->common_private);
+  free(surf_workstation_resource->extension_public);
 
-  xbt_free(surf_workstation_resource);
+  free(surf_workstation_resource);
   surf_workstation_resource = NULL;
 }
 

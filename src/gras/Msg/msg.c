@@ -84,8 +84,8 @@ gras_msg_exit(void) {
 void gras_msgtype_free(void *t) {
   gras_msgtype_t msgtype=(gras_msgtype_t)t;
   if (msgtype) {
-    xbt_free(msgtype->name);
-    xbt_free(msgtype);
+    free(msgtype->name);
+    free(msgtype);
   }
 }
 
@@ -188,7 +188,7 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
   if (!res) 
      WARN1("msgtype_by_name(%s) returns NULL",namev);
   if (name != namev) 
-    xbt_free(namev);
+    free(namev);
   
   return res;
 }
@@ -262,7 +262,7 @@ gras_msg_recv(gras_socket_t    sock,
 	   "Got error %s while retrieving the type associated to messages '%s'",
 	   xbt_error_name(errcode),msg_name);
   /* FIXME: Survive unknown messages */
-  xbt_free(msg_name);
+  free(msg_name);
 
   *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
   xbt_assert2(*payload_size > 0,
@@ -316,7 +316,7 @@ gras_msg_wait(double           timeout,
     if (msg.type->code == msgt_want->code) {
       *expeditor = msg.expeditor;
       memcpy(payload, msg.payload, msg.payload_size);
-      xbt_free(msg.payload);
+      free(msg.payload);
       xbt_dynar_cursor_rm(pd->msg_queue, &cpt);
       VERB0("The waited message was queued");
       return no_error;
@@ -328,7 +328,7 @@ gras_msg_wait(double           timeout,
     TRY(gras_msg_recv(*expeditor, &msgt_got, &payload_got, &payload_size_got));
     if (msgt_got->code == msgt_want->code) {
       memcpy(payload, payload_got, payload_size_got);
-      xbt_free(payload_got);
+      free(payload_got);
       VERB0("Got waited message");
       return no_error;
     }
@@ -430,7 +430,7 @@ gras_msg_handle(double timeOut) {
           cpt+1,cb,msgtype->name);
     if ((*cb)(expeditor,payload)) {
       /* cb handled the message */
-      xbt_free(payload);
+      free(payload);
       return no_error;
     }
   }
@@ -445,7 +445,7 @@ gras_cbl_free(void *data){
   gras_cblist_t *list=*(void**)data;
   if (list) {
     xbt_dynar_free(&( list->cbs ));
-    xbt_free(list);
+    free(list);
   }
 }
 

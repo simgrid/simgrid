@@ -32,8 +32,8 @@ static void create_routing_table(void)
 
 static void network_link_free(void *nw_link)
 {
-  xbt_free(((network_link_CM02_t)nw_link)->name);
-  xbt_free(nw_link);
+  free(((network_link_CM02_t)nw_link)->name);
+  free(nw_link);
 }
 
 static network_link_CM02_t network_link_new(char *name,
@@ -73,8 +73,8 @@ static network_link_CM02_t network_link_new(char *name,
 
 static void network_card_free(void *nw_card)
 {
-  xbt_free(((network_card_CM02_t)nw_card)->name);
-  xbt_free(nw_card);
+  free(((network_card_CM02_t)nw_card)->name);
+  free(nw_card);
 }
 
 static int network_card_new(const char *card_name)
@@ -101,9 +101,9 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
   link_list = (ROUTE(src_id, dst_id) = xbt_new0(network_link_CM02_t, nb_link));
   for (i = 0; i < nb_link; i++) {
     xbt_dict_get(network_link_set, links[i], (void *) &(link_list[i]));
-    xbt_free(links[i]);
+    free(links[i]);
   }
-  xbt_free(links);
+  free(links);
 }
 
 static void parse_network_link(void)
@@ -213,7 +213,7 @@ static void action_free(surf_action_t action)
   xbt_swag_remove(action, action->state_set);
   if(((surf_action_network_CM02_t)action)->variable)
     lmm_variable_free(maxmin_system, ((surf_action_network_CM02_t)action)->variable);
-  xbt_free(action);
+  free(action);
 
   return;
 }
@@ -446,19 +446,19 @@ static void finalize(void)
 		failed_action_set);
   xbt_swag_free(surf_network_resource->common_public->states.
 		done_action_set);
-  xbt_free(surf_network_resource->common_public);
-  xbt_free(surf_network_resource->common_private);
-  xbt_free(surf_network_resource->extension_public);
+  free(surf_network_resource->common_public);
+  free(surf_network_resource->common_private);
+  free(surf_network_resource->extension_public);
 
-  xbt_free(surf_network_resource);
+  free(surf_network_resource);
   surf_network_resource = NULL;
 
   for (i = 0; i < card_number; i++) 
     for (j = 0; j < card_number; j++) 
-      xbt_free(ROUTE(i,j));
-  xbt_free(routing_table);
+      free(ROUTE(i,j));
+  free(routing_table);
   routing_table = NULL;
-  xbt_free(routing_table_size);
+  free(routing_table_size);
   routing_table_size = NULL;
   card_number = 0;
 }

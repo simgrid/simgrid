@@ -77,7 +77,7 @@ static void __xbt_context_yield(xbt_context_t context)
 
 static void xbt_context_destroy(xbt_context_t context)
 {
-  xbt_free(context);
+  free(context);
 
   return;
 }
@@ -128,8 +128,8 @@ static void *__context_wrapper(void *c)
   (context->code) (context->argc,context->argv);
 
   for(i=0;i<context->argc; i++) 
-    if(context->argv[i]) xbt_free(context->argv[i]);
-  if(context->argv) xbt_free(context->argv);
+    if(context->argv[i]) free(context->argv[i]);
+  if(context->argv) free(context->argv);
 
   if(context->cleanup_func)
     context->cleanup_func(context->cleanup_arg);
@@ -256,8 +256,8 @@ void xbt_context_free(xbt_context_t context)
 
   xbt_swag_remove(context, context_living);  
   for(i=0;i<context->argc; i++) 
-    if(context->argv[i]) xbt_free(context->argv[i]);
-  if(context->argv) xbt_free(context->argv);
+    if(context->argv[i]) free(context->argv[i]);
+  if(context->argv) free(context->argv);
   
   if(context->cleanup_func)
     context->cleanup_func(context->cleanup_arg);

@@ -49,7 +49,7 @@ void lmm_system_free(lmm_system_t sys)
   while ((cnst = extract_constraint(sys)))
     lmm_cnst_free(sys, cnst);
 
-  xbt_free(sys);
+  free(sys);
 }
 
 void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
@@ -74,8 +74,8 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 
   lmm_variable_disable(sys, var);
   memset(var->cnsts,0,var->cnsts_size*sizeof(s_lmm_element_t));
-  xbt_free(var->cnsts);
-  xbt_free(var);
+  free(var->cnsts);
+  free(var);
 }
 
 static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
@@ -83,7 +83,7 @@ static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
 /*   xbt_assert0(xbt_swag_size(&(cnst->element_set)), */
 /* 	      "This list should be empty!"); */
   remove_active_constraint(sys, cnst);
-  xbt_free(cnst);
+  free(cnst);
 }
 
 lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,

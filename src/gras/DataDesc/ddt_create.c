@@ -117,8 +117,8 @@ void gras_dd_cat_field_free(void *f) {
   XBT_IN;
   if (field) {
     if (field->name) 
-      xbt_free(field->name);
-    xbt_free(field);
+      free(field->name);
+    free(field);
   }
   XBT_OUT;
 }
@@ -550,7 +550,7 @@ gras_datadesc_type_t
   sprintf(name,"%s[]*",element_type->name);
   res = gras_datadesc_ref(name,res);
 
-  xbt_free(name);
+  free(name);
 
   return res;
 }
@@ -687,8 +687,8 @@ void gras_datadesc_free(gras_datadesc_type_t *type) {
     /* datadesc was invalid. Killing it is like euthanasy, I guess */
     break;
   }
-  xbt_free((*type)->name);
-  xbt_free(*type);
+  free((*type)->name);
+  free(*type);
   type=NULL;
 }
 

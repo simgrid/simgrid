@@ -531,7 +531,7 @@ MSG_error_t MSG_clean(void)
     fclose(msg_global->paje_output);
     msg_global->paje_output = NULL;
   }
-  xbt_free(msg_global);
+  free(msg_global);
   surf_finalize();
 
   return MSG_OK;

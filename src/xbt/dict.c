@@ -46,7 +46,7 @@ xbt_dict_free(xbt_dict_t *dict)  {
       xbt_dictelm_free( &( (*dict)->head ) );
       (*dict)->head = NULL;
     }
-    xbt_free(*dict);
+    free(*dict);
     *dict=NULL;
   }
 }

@@ -322,8 +322,8 @@ static xbt_dynar_t xbt_log_settings=NULL;
 static void _free_setting(void *s) {
   xbt_log_setting_t set=(xbt_log_setting_t)s;
   if (set) {
-    xbt_free(set->catname);
-/*    xbt_free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
+    free(set->catname);
+/*    free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
   }
 }
 
@@ -560,7 +560,7 @@ static void _xbt_log_parse_setting(const char*        control_string,
     } else {
       xbt_assert1(FALSE,"Unknown priority name: %s",eq+1);
     }
-    xbt_free(neweq);
+    free(neweq);
   } else {
     char buff[512];
     snprintf(buff,min(512,eq - dot - 1),"%s",dot+1);
@@ -681,12 +681,12 @@ void xbt_log_control_set(const char* control_string) {
       set = xbt_new(s_xbt_log_setting_t,1);
     } else {
       DEBUG0("Apply directly");
-      xbt_free(set->catname);
+      free(set->catname);
       xbt_log_threshold_set(cat,set->thresh);
     }
   }
-  xbt_free(set);
-  xbt_free(cs);
+  free(set);
+  free(cs);
 } 
 
 void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {

@@ -160,14 +160,14 @@ xbt_dictelm_free(s_xbt_dictelm_t **pp_elm)  {
     xbt_dynar_free(&(p_elm->sub));
 
     if (p_elm->key) {
-      xbt_free(p_elm->key);
+      free(p_elm->key);
     }
 
     if (p_elm->free_f && p_elm->content) {
       p_elm->free_f(p_elm->content);
     }
 
-    xbt_free(p_elm);
+    free(p_elm);
     *pp_elm = NULL;
   }
 }
@@ -468,7 +468,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
     CDEBUG0(dict_add, "--> Change the value of head");
 
     _xbt_dictelm_change_value(p_head, data, free_f);
-    xbt_free(key); /* Keep the key used in the tree */
+    free(key); /* Keep the key used in the tree */
 
     return;
   }
@@ -500,7 +500,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       CDEBUG1(dict_add, "-> Change the value of the child %p", (void*)p_child);
       _xbt_dictelm_change_value(p_child, data, free_f);
 
-      xbt_free(key);
+      free(key);
 
       return;
     }
@@ -793,14 +793,14 @@ _collapse_if_need(xbt_dictelm_t head,
 
   head->content  = child->content;
   head->free_f = child->free_f;
-  xbt_free(head->key);
+  free(head->key);
   head->key      = child->key;
   head->key_len  = child->key_len;
 
   xbt_dynar_free_container(&(head->sub)) ;
 
   head->sub = child->sub;
-  xbt_free(child);
+  free(child);
 }
 
 /**
@@ -957,7 +957,7 @@ _xbt_dictelm_dump_rec(xbt_dictelm_t  head,
 
       printf("%.*s|(%d)", key_len-offset, key_string + offset, offset);
 
-      xbt_free(key_string);
+      free(key_string);
     }
 
   }
