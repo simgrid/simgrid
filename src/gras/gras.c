@@ -24,7 +24,7 @@ static int gras_running_process = 0;
 void gras_init(int *argc,char **argv, const char *defaultlog) {
 
   INFO0("Initialize GRAS");
-  xbt_assert0(gras_if_RL(),"Work in progress. Forget about GRAS simulation for now.");
+/*   xbt_assert0(gras_if_RL(),"Work in progress. Forget about GRAS simulation for now."); */
   xbt_init_defaultlog(argc,argv,defaultlog);
   gras_process_init(); /* calls procdata_init, which calls dynar_new */
   /** init other submodules */
