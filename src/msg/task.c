@@ -9,7 +9,7 @@
 #include"xbt/sysdep.h"
 #include "xbt/error.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(task, msg,
-				"Logging specific to MSG module (task)");
+				"Logging specific to MSG (task)");
 
 static char sprint_buffer[64];
 
