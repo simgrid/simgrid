@@ -7,18 +7,23 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <unistd.h>       /* close() pipe() read() write() */
-#include <signal.h>       /* close() pipe() read() write() */
-#include <netinet/in.h>   /* sometimes required for #include <arpa/inet.h> */
-#include <netinet/tcp.h>  /* TCP_NODELAY */
-#include <arpa/inet.h>    /* inet_ntoa() */
-#include <netdb.h>        /* getprotobyname() */
-#include <sys/time.h>     /* struct timeval */
-#include <errno.h>        /* errno */
-#include <sys/wait.h>     /* waitpid() */
-#include <sys/socket.h>   /* getpeername() socket() */
-#include <stdlib.h>
-#include <string.h>       /* memset */
+#include "portable.h"
+
+#if 0
+#  include <unistd.h>       /* close() pipe() read() write() */
+#  include <signal.h>       /* close() pipe() read() write() */
+#  include <netinet/in.h>   /* sometimes required for #include <arpa/inet.h> */
+#  include <netinet/tcp.h>  /* TCP_NODELAY */
+#  include <arpa/inet.h>    /* inet_ntoa() */
+#  include <netdb.h>        /* getprotobyname() */
+#  include <sys/time.h>     /* struct timeval */
+#  include <errno.h>        /* errno */
+#  include <sys/wait.h>     /* waitpid() */
+#  include <sys/socket.h>   /* getpeername() socket() */
+#  include <stdlib.h>
+#  include <string.h>       /* memset */
+#endif
+
 
 #include "transport_private.h"
 

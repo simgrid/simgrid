@@ -7,11 +7,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <netinet/in.h>   /* htonl/ntohl */
 #include <stdlib.h>
 #include <string.h>       /* memset */
 
+#include "portable.h"
 #include "xbt/misc.h"
+#include "xbt/sysdep.h"
 #include "transport_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
@@ -52,7 +53,7 @@ typedef struct {
  ***/
 
 typedef struct {
-  uint32_t size;
+  int size;
   char *data;
   int pos; /* for receive; not exchanged over the net */
 } gras_trp_buf_t;
@@ -236,10 +237,10 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
     long int thissize;
 
     if (data->in.size == data->in.pos) { /* out of data. Get more */
-      uint32_t nextsize;
+      int nextsize;
       DEBUG0("Recv the size");
       TRY(super->chunk_recv(sock,(char*)&nextsize, 4));
-      data->in.size = ntohl(nextsize);
+      data->in.size = (int)ntohl(nextsize);
 
       VERB1("Recv the chunk (size=%d)",data->in.size);
       TRY(super->chunk_recv(sock, data->in.data, data->in.size));
@@ -270,12 +271,12 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
 xbt_error_t 
 gras_trp_buf_flush(gras_socket_t sock) {
   xbt_error_t errcode;
-  uint32_t size;
+  int size;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)sock->plugin->data)->super;
   gras_trp_bufdata_t *data=sock->bufdata;
 
   XBT_IN;
-  size = htonl(data->out.size);
+  size = (int)htonl(data->out.size);
   DEBUG1("Send the size (=%d)",data->out.size);
   TRY(super->chunk_send(sock,(char*) &size, 4));
 

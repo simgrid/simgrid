@@ -7,14 +7,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <errno.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
+#include "portable.h"
 #include "transport_private.h"
+
+#if 0
+#  include <errno.h>
+#  include <sys/time.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <fcntl.h>
+#  include <unistd.h>
+#endif 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
 	"Pseudo-transport to write to/read from a file");
