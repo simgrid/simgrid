@@ -334,7 +334,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   
   CDEBUG5(dict_search, "search child [%.*s] under [%.*s] (len=%lu)",
 	  key_len, key,
-          p_elm?p_elm->key_len:6, p_elm?p_elm->key:"(head)",
+          p_elm?(p_elm->key_len?p_elm->key_len:6):6, p_elm?(p_elm->key?p_elm->key:"(null)"):"(head)",
   	  (p_elm&&p_elm->sub)?xbt_dynar_length(p_elm->sub):0);
   
 
@@ -400,7 +400,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   *p_match  = m;
   CDEBUG5(dict_search, "search [%.*s] in [%.*s] => %s",
 	  key_len, key,
-          p_elm?p_elm->key_len:6, p_elm?p_elm->key:"(head)",
+          p_elm?(p_elm->key_len?p_elm->key_len:6):6, p_elm?(p_elm->key?p_elm->key:"(null)"):"(head)",
 	  ( m == 0 ? "no child have a common prefix" :
 	    ( m == 1 ? "selected child have exactly this key" :
 	      ( m == 2 ? "selected child constitutes a prefix" :
