@@ -15,7 +15,7 @@ void MSG_global_init(void);
 void MSG_global_init_args(int *argc, char **argv);
 void MSG_set_verbosity(MSG_outputmode_t mode);
 MSG_error_t MSG_set_channel_number(int number);
-MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, long double param);
+MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, double param);
 int MSG_get_channel_number(void);
 MSG_error_t MSG_main(void);
 MSG_error_t MSG_clean(void);
@@ -24,7 +24,7 @@ m_process_code_t MSG_get_registered_function(const char *name);
 void MSG_launch_application(const char *file);
 void MSG_paje_output(const char *filename);
 
-long double MSG_getClock(void);
+double MSG_getClock(void);
 
 /************************** Host handling ***********************************/
 MSG_error_t MSG_host_set_data(m_host_t host, void *data);
@@ -73,8 +73,8 @@ MSG_error_t MSG_process_start(m_process_t process);
 
 /************************** Task handling ************************************/
 
-m_task_t MSG_task_create(const char *name, long double compute_duration,
-			 long double message_size, void *data);
+m_task_t MSG_task_create(const char *name, double compute_duration,
+			 double message_size, void *data);
 void *MSG_task_get_data(m_task_t task);
 m_process_t MSG_task_get_sender(m_task_t task);
 MSG_error_t MSG_task_destroy(m_task_t task);
@@ -84,11 +84,11 @@ MSG_error_t MSG_task_put(m_task_t task, m_host_t dest,
 			 m_channel_t channel);
 MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 m_host_t dest, m_channel_t channel,
-				 long double max_rate);
+				 double max_rate);
 MSG_error_t MSG_task_execute(m_task_t task);
 int MSG_task_Iprobe(m_channel_t channel);
 int MSG_task_probe_from(m_channel_t channel);
-MSG_error_t MSG_process_sleep(long double nb_sec);
+MSG_error_t MSG_process_sleep(double nb_sec);
 MSG_error_t MSG_get_errno(void);
 
 /************************** Deprecated ***************************************/

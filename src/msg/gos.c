@@ -245,7 +245,7 @@ MSG_error_t MSG_task_put(m_task_t task,
  */
 MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 m_host_t dest, m_channel_t channel,
-				 long double max_rate)
+				 double max_rate)
 {
   task->simdata->rate=max_rate;
   return(MSG_task_put(task, dest, channel));
@@ -316,7 +316,7 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
  *
  * \param nb_sec a number of second
  */
-MSG_error_t MSG_process_sleep(long double nb_sec)
+MSG_error_t MSG_process_sleep(double nb_sec)
 {
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
   m_process_t process = MSG_process_self();

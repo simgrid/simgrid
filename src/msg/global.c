@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(global, msg,
 MSG_Global_t msg_global = NULL;
 
 /* static void MarkAsFailed(m_task_t t, TBX_HashTable_t failedProcessList); */
-/* static xbt_fifo_t MSG_buildFailedHostList(long double a, long double b); */
+/* static xbt_fifo_t MSG_buildFailedHostList(double a, double b); */
 
 /** \defgroup msg_simulation   MSG simulation Functions
  *  \brief This section describes the functions you need to know to
@@ -274,7 +274,7 @@ MSG_error_t MSG_set_channel_number(int number)
    currently used only for the MSG_STORE_AND_FORWARD flavor and represents the
    granularity of the communications (i.e. the packet size).
  */
-MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, long double param)
+MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, double param)
 {
   CRITICAL0("MSG_set_sharing_policy: this function is now deprecated and useless. Store and forward does not exist anymore. Please stop using it.");
   
@@ -321,11 +321,11 @@ MSG_error_t MSG_main(void)
       xbt_context_schedule(process->simdata->context);
       msg_global->current_process = NULL;
     }
-    DEBUG1("%Lg : Calling surf_solve",MSG_getClock());
+    DEBUG1("%lg : Calling surf_solve",MSG_getClock());
     elapsed_time = surf_solve();
     DEBUG1("Elapsed_time %lg",elapsed_time);
 
-/*     fprintf(stderr, "====== %Lg =====\n",Now); */
+/*     fprintf(stderr, "====== %lg =====\n",Now); */
 /*     if (elapsed_time==0.0) { */
 /*       fprintf(stderr, "No change in time\n"); */
 /*     } */
@@ -465,7 +465,7 @@ MSG_error_t MSG_main(void)
   
 /* } */
 
-/* static xbt_fifo_t MSG_buildFailedHostList(long double begin, long double end) */
+/* static xbt_fifo_t MSG_buildFailedHostList(double begin, double end) */
 /* { */
 /*   xbt_fifo_t failedHostList = xbt_fifo_new(); */
 /*   m_host_t host = NULL; */
@@ -542,7 +542,7 @@ MSG_error_t MSG_clean(void)
 /** \ingroup msg_easier_life
  * \brief A clock (in second).
  */
-long double MSG_getClock(void) {
+double MSG_getClock(void) {
   return surf_get_clock();
 }
 

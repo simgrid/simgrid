@@ -45,8 +45,8 @@ static char sprint_buffer[64];
  * \see m_task_t
  * \return The new corresponding object.
  */
-m_task_t MSG_task_create(const char *name, long double compute_duration,
-			 long double message_size, void *data)
+m_task_t MSG_task_create(const char *name, double compute_duration,
+			 double message_size, void *data)
 {
   simdata_task_t simdata = xbt_new0(s_simdata_task_t,1);
   m_task_t task = xbt_new0(s_m_task_t,1);
