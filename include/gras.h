@@ -16,6 +16,7 @@
 #include <gras/process.h>
 #include <gras/virtu.h>
 #include <gras/cond.h>
+#include <gras/chrono.h>
 
 #include <gras/transport.h>
 #include <gras/datadesc.h>

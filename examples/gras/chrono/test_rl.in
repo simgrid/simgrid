@@ -1,0 +1,10 @@
+#! @BASH@ -e
+if [ x@EXEEXT@ = x ] ; then 
+  wine=
+else
+  wine=wine
+fi
+    
+$wine ./chrono_server@EXEEXT@ $@ &
+sleep 1
+$wine ./chrono_client@EXEEXT@ $@

@@ -122,6 +122,7 @@ COMMON_SRC=\
   msg/global.c msg/environment.c msg/deployment.c  \
   \
   gras/gras.c \
+  gras/chrono.c \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
   \

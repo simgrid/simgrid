@@ -29,7 +29,7 @@ BEGIN_DECL()
  char buff[512];
 
  sprintf(buff,"some very precious data");
- xbt_dict_set(mydict,"my data", strdump(buff), free); 
+ xbt_dict_set(mydict,"my data", strdup(buff), free); 
 
  sprintf(buff,"another good stuff");
  xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add \endverbatim

@@ -1,0 +1,5 @@
+#! @BASH@
+if test -x ./chrono_simulator ; then
+  exec ./chrono_simulator @top_srcdir@/examples/msg/small_platform.xml @srcdir@/chrono_deployment.xml
+fi
+exit 77
