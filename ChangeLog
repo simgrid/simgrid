@@ -1,4 +1,4 @@
-SimGrid (2.93-cvs) NOT RELEASED YET; urgency=low
+SimGrid (2.93) unstable; urgency=low
 
   Alpha 4 on the path to SimGrid 3 (aka the "neuf-trois" version)
 
@@ -29,7 +29,7 @@ SimGrid (2.93-cvs) NOT RELEASED YET; urgency=low
    - Add MSG_task_get_name. The task names are mainly for debugging purpose,
      but anyway.
 
- -- SimGrid team <simgrid2-users@listes.ens-lyon.fr> NOT RELEASED YET
+ -- SimGrid team <simgrid2-users@listes.ens-lyon.fr>  Fri,  4 Mar 2005 14:32:37 -0800
 
 SimGrid (2.92) unstable; urgency=low
 
