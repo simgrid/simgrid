@@ -4,6 +4,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
+#include "xbt/module.h"
 
 static xbt_heap_float_t NOW=0;
 
@@ -52,9 +53,9 @@ void surf_action_change_state(surf_action_t action, e_surf_action_state_t state)
   if(action->state_set) xbt_swag_insert(action, action->state_set);
 }
 
-void surf_init(void)
+void surf_init(int *argc, char **argv)
 {
-  xbt_init();
+  xbt_init(argc, argv);
   if(!resource_list) resource_list = xbt_dynar_new(sizeof(surf_resource_private_t), NULL);
   if(!history) history = tmgr_history_new();
   if(!maxmin_system) maxmin_system = lmm_system_new();

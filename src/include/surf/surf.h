@@ -121,7 +121,7 @@ void surf_network_resource_init(const char *filename);
 /*** SURF Globals **************************/
 /*******************************************/
 
-void surf_init(void);		/* initialize common structures */
+void surf_init(int *argc, char **argv);	/* initialize common structures */
 xbt_heap_float_t surf_solve(void);	/*  update all states and returns
 					   the time elapsed since last
 					   event */

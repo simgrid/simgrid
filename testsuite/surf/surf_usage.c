@@ -42,7 +42,6 @@ void test(void)
   e_surf_action_state_t stateActionB;
   xbt_maxmin_float_t now = -1.0;
 
-  surf_init(); /* Initialize some common structures */
   surf_cpu_resource_init("platform.txt"); /* Now it is possible to use CPUs */
   surf_network_resource_init("platform.txt"); /* Now it is possible to use eth0 */
 
@@ -77,7 +76,7 @@ void test(void)
   printf("%s : %p\n", surf_network_resource->common_public->get_resource_name(cardB), cardB);
 
   /* Let's do something on it */
-  commAB = surf_network_rescpource->extension_public->communicate(cardA, cardB, 132.0);
+  commAB = surf_network_resource->extension_public->communicate(cardA, cardB, 132.0);
 
   surf_solve(); /* Takes traces into account. Returns 0.0 */
   do {
@@ -113,6 +112,7 @@ void test(void)
 
 int main(int argc, char **argv)
 {
+  surf_init(&argc, argv); /* Initialize some common structures */
   test();
   return 0;
 }
