@@ -190,7 +190,7 @@ void         gras_dict_cursor_first    (const gras_dict_t   *dict,
  * gras_dict_cursor_step:
  * @cursor: the cursor
  *
- * Move to the next element. Returns mismatch_error if no next element.
+ * Move to the next element. 
  */
 void
 gras_dict_cursor_step(gras_dict_cursor_t *p_cursor) {
