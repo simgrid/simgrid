@@ -4,3 +4,8 @@
   "Cpu B" 100.00 1.0 trace_B.txt ON  ""
        
 </CPU>
+
+
+
+  <NETWORK>  /* The network section */
+</NETWORK>
