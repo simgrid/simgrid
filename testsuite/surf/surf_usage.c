@@ -39,9 +39,11 @@ void test(void)
   void *cardB = NULL;
   surf_action_t actionA = NULL;
   surf_action_t actionB = NULL;
+  surf_action_t actionC = NULL;
   surf_action_t commAB = NULL;
   e_surf_action_state_t stateActionA;
   e_surf_action_state_t stateActionB;
+  e_surf_action_state_t stateActionC;
   xbt_maxmin_float_t now = -1.0;
 
   surf_cpu_resource_init("platform.txt"); /* Now it is possible to use CPUs */
@@ -59,14 +61,17 @@ void test(void)
   /* Let's do something on it */
   actionA = surf_cpu_resource->extension_public->execute(cpuA, 1000.0);
   actionB = surf_cpu_resource->extension_public->execute(cpuB, 1000.0);
+  actionC = surf_cpu_resource->extension_public->sleep(cpuB, 7.32);
 
   /* Use whatever calling style you want... */
   stateActionA = surf_cpu_resource->common_public->action_get_state(actionA);	/* When you know actionA resource type */
   stateActionB = actionB->resource_type->common_public->action_get_state(actionB);	/* If you're unsure about it's resource type */
+  stateActionC = surf_cpu_resource->common_public->action_get_state(actionC);	/* When you know actionA resource type */
 
-  /* And just look at the stat of these tasks */
+  /* And just look at the state of these tasks */
   printf("actionA : %p (%s)\n", actionA, string_action(stateActionA));
   printf("actionB : %p (%s)\n", actionB, string_action(stateActionB));
+  printf("actionC : %p (%s)\n", actionB, string_action(stateActionC));
 
   /*********************** Network *******************************/
   printf("%p \n", surf_network_resource);

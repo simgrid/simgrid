@@ -14,6 +14,48 @@ xbt_dynar_t resource_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 
+xbt_heap_float_t generic_maxmin_share_resources(xbt_swag_t running_actions,
+						size_t offset)
+{
+  surf_action_t action = NULL;
+  xbt_maxmin_float_t min = -1;
+  xbt_maxmin_float_t value = -1;
+#define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
+
+ lmm_solve(maxmin_system);
+
+  xbt_swag_foreach(action, running_actions) {
+    value = lmm_variable_getvalue(VARIABLE(action));
+    if((value>0) || (action->max_duration>=0)) break;
+  }
+  
+  if (!action)
+    return -1.0;
+
+  if(value>0) {
+    min = value = action->remains / value;
+    if((action->max_duration>=0) && 
+       (action->max_duration<min))
+      min = action->max_duration;
+  }  else min = action->max_duration;
+
+  
+  for(action=xbt_swag_getNext(action,running_actions->offset);
+      action;
+      action=xbt_swag_getNext(action,running_actions->offset)) {
+    value = lmm_variable_getvalue(VARIABLE(action));
+    if(value>0) {
+      value = action->remains / value;
+      if (value < min) min = value;
+    }
+    if((action->max_duration>=0) && 
+       (action->max_duration<min))
+      min = action->max_duration;
+  }
+#undef VARIABLE
+  return min;
+}
+
 e_surf_action_state_t surf_action_get_state(surf_action_t action)
 {
   surf_action_state_t action_state = &(action->resource_type->common_public->states); 

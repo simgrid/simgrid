@@ -9,8 +9,6 @@
 #define _SURF_SURF_H
 
 #include "xbt/swag.h"
-#include "xbt/heap.h"		/* for xbt_heap_float_t only */
-#include "surf/maxmin.h"	/* for xbt_maxmin_float_t only  */
 
 /* Actions and resources are higly connected structures... */
 typedef struct surf_action *surf_action_t;
@@ -40,6 +38,8 @@ typedef struct surf_action {
   s_xbt_swag_hookup_t state_hookup;
   xbt_swag_t state_set;
   xbt_maxmin_float_t cost;	/* cost        */
+  xbt_maxmin_float_t max_duration;/* max_duration (may fluctuate until
+				     the task is completed) */
   xbt_maxmin_float_t remains;	/* How much of that cost remains to
 				 * be done in the currently running task */
   xbt_heap_float_t start;	/* start time  */
@@ -89,7 +89,9 @@ typedef struct surf_cpu_resource_extension_private
     *surf_cpu_resource_extension_private_t;
 typedef struct surf_cpu_resource_extension_public {
   surf_action_t(*execute) (void *cpu, xbt_maxmin_float_t size);
-  surf_action_t(*wait) (void *cpu, xbt_maxmin_float_t size);
+  surf_action_t(*sleep) (void *cpu, xbt_maxmin_float_t duration);
+  void (*suspend) (surf_action_t action);
+  void (*resume) (surf_action_t action);
   e_surf_cpu_state_t(*get_state) (void *cpu);
 } s_surf_cpu_resource_extension_public_t,
     *surf_cpu_resource_extension_public_t;
@@ -125,7 +127,7 @@ typedef struct surf_workstation_resource_extension_private
     *surf_workstation_resource_extension_private_t;
 typedef struct surf_workstation_resource_extension_public {
   surf_action_t(*execute) (void *workstation, xbt_maxmin_float_t size);
-  surf_action_t(*wait) (void *workstation, xbt_maxmin_float_t size);
+  surf_action_t(*sleep) (void *workstation, xbt_maxmin_float_t duration);
   e_surf_cpu_state_t(*get_state) (void *workstation);
   surf_action_t(*communicate) (void *workstation_src,
 			       void *workstation_dst,

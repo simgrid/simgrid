@@ -179,27 +179,9 @@ static void action_change_state(surf_action_t action,
 
 static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 {
-  surf_action_cpu_t action = NULL;
-  xbt_swag_t running_actions =
-      surf_cpu_resource->common_public->states.running_action_set;
-  xbt_maxmin_float_t min = -1;
-  xbt_maxmin_float_t value = -1;
-  lmm_solve(maxmin_system);
-
-  action = xbt_swag_getFirst(running_actions);
-  if (!action)
-    return -1.0;
-  value = lmm_variable_getvalue(action->variable);
-  min = action->generic_action.remains / value;
-
-  xbt_swag_foreach(action, running_actions) {
-    value = action->generic_action.remains /
-	lmm_variable_getvalue(action->variable);
-    if (value < min)
-      min = value;
-  }
-
-  return min;
+  s_surf_action_cpu_t action;
+  return generic_maxmin_share_resources(surf_cpu_resource->common_public->states.running_action_set,
+					xbt_swag_offset(action,variable));
 }
 
 static void update_actions_state(xbt_heap_float_t now,
@@ -215,9 +197,16 @@ static void update_actions_state(xbt_heap_float_t now,
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     action->generic_action.remains -=
 	lmm_variable_getvalue(action->variable) * delta;
+    if(action->generic_action.max_duration!=NO_MAX_DURATION)
+      action->generic_action.max_duration -= delta;
 /*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
     if (action->generic_action.remains <= 0) {
+      action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+    } else if((action->generic_action.max_duration!=NO_MAX_DURATION) && 
+	      (action->generic_action.max_duration<=0)) {
+      action->generic_action.finish = surf_get_clock();
+      action_change_state((surf_action_t) action, SURF_ACTION_DONE);    
     } else {			/* Need to check that none of the resource has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
@@ -228,6 +217,7 @@ static void update_actions_state(xbt_heap_float_t now,
 				    i++))) {
 	cpu = lmm_constraint_id(cnst);
 	if (cpu->state_current == SURF_CPU_OFF) {
+	  action->generic_action.finish = surf_get_clock();
 	  action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
 	  break;
 	}
@@ -278,7 +268,8 @@ static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
 
   action->generic_action.cost = size;
   action->generic_action.remains = size;
-  action->generic_action.start = -1.0;
+  action->generic_action.max_duration = NO_MAX_DURATION;
+  action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
 /*   action->generic_action.callback = cpu; */
   action->generic_action.callback = NULL;
@@ -298,6 +289,27 @@ static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
 	     1.0);
 
   return (surf_action_t) action;
+}
+
+static surf_action_t action_sleep(void *cpu, xbt_maxmin_float_t duration)
+{
+  surf_action_cpu_t action = NULL;
+
+  action = (surf_action_cpu_t) execute(cpu, 1.0);
+  action->generic_action.max_duration = duration;
+  lmm_update_variable_weight(maxmin_system, action->variable, 0.0);
+
+  return (surf_action_t) action;
+}
+
+static void action_suspend(surf_action_t action)
+{
+  lmm_update_variable_weight(maxmin_system, ((surf_action_cpu_t) action)->variable, 0.0);
+}
+
+static void action_resume(surf_action_t action)
+{
+  lmm_update_variable_weight(maxmin_system, ((surf_action_cpu_t) action)->variable, 1.0);
 }
 
 static e_surf_cpu_state_t get_state(void *cpu)
@@ -331,7 +343,7 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->common_private =
       xbt_new0(s_surf_resource_private_t, 1);
   surf_cpu_resource->common_public = xbt_new0(s_surf_resource_public_t, 1);
-/*   surf_cpu_resource->extension_private = xbt_new0(s_surf_cpu_resource_extension_private_t,1); */
+
   surf_cpu_resource->extension_public =
       xbt_new0(s_surf_cpu_resource_extension_public_t, 1);
 
@@ -363,6 +375,10 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->common_private->finalize = finalize;
 
   surf_cpu_resource->extension_public->execute = execute;
+  surf_cpu_resource->extension_public->sleep = action_sleep;
+  surf_cpu_resource->extension_public->suspend = action_suspend;
+  surf_cpu_resource->extension_public->resume = action_resume;
+
   surf_cpu_resource->extension_public->get_state = get_state;
 
   cpu_set = xbt_dict_new();

@@ -14,6 +14,8 @@
 #include "xbt/log.h"
 #include "surf/surf_parse.h"
 
+#define NO_MAX_DURATION -1.0
+
 typedef struct surf_resource_private {
   int (*resource_used)(void *resource_id);
   /* Share the resources to the actions and return in hom much time
@@ -28,6 +30,8 @@ typedef struct surf_resource_private {
 /* #define pub2priv(r) ((surf_resource_private_t) ((char *)(r) -(sizeof(struct surf_resource_private_part)))) */
 /* #define priv2pub(r) ((void *) ((char *)(r) +(sizeof(struct surf_resource_private_part)))) */
 
+xbt_heap_float_t generic_maxmin_share_resources(xbt_swag_t running_actions,
+						size_t offset);
 /* Generic functions common to all ressources */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
 void surf_action_free(surf_action_t * action);
