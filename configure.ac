@@ -1,23 +1,25 @@
- AC_PREREQ(2.59)
+AC_PREREQ(2.59)
 
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
 AC_INIT([GRAS],[0.1],[martin.quinson@ens-lyon.fr])
-
-
 AC_CONFIG_SRCDIR([src/include/gras.h])
-# MACRO_DIR should tell aclocal to search for my macro. That's the autoconf
-# maintainer plan, but automake does not implement this yet (as in 1.8)
-AC_CONFIG_MACRO_DIR(acmacro) 
+AC_CONFIG_HEADERS([src/gras_config.h])
 
 AC_REVISION($Revision$)
-
 AC_CANONICAL_TARGET
 AC_LANG([C])
 
-AC_CONFIG_HEADERS([src/gras_config.h])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(gnu)
+# MACRO_DIR should tell aclocal to search for my macro. That's the autoconf
+# maintainer plan, but automake does not implement this yet (as in 1.8)
+AC_CONFIG_MACRO_DIR(acmacro) 
+# It seems to be called ACLOCAL_INCLUDE...
+# A M_ACLOCAL_INCLUDE(acmacro)
+
+
+
 
 AC_PROG_LIBTOOL
 
@@ -26,7 +28,7 @@ AC_PROG_LIBTOOL
 dnl
 dnl Load anything under acmacro/*.m4
 dnl
-test -n "$ACLOCAL_FLAGS" && ACLOCAL="$ACLOCAL $ACLOCAL_FLAGS"
+dnl test -n "$ACLOCAL_FLAGS" && ACLOCAL="$ACLOCAL $ACLOCAL_FLAGS"
 ACLOCAL="$ACLOCAL -I acmacro"
 
 
