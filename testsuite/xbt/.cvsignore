@@ -11,3 +11,4 @@ datadesc_usage
 datadesc_structs.c
 datadesc_usage.out
 .dirstamp
+heap_bench swag_usage
