@@ -11,34 +11,55 @@ if [ xvalgrind = "x$1" ] ; then
 else
   valgrind=
 fi
-for test in xbt/log_usage                                         \
-            xbt/dynar_int xbt/dynar_double xbt/dynar_string       \
- 	    xbt/dict_usage xbt/dict_crash                         \
-	    xbt/config_usage                                      \
-	    xbt/heap_bench \
+for test in xbt/log_usage@EXEEXT@                                 \
+            xbt/dynar_int@EXEEXT@ xbt/dynar_double@EXEEXT@ xbt/dynar_string@EXEEXT@       \
+ 	    xbt/dict_usage@EXEEXT@ xbt/dict_crash@EXEEXT@                         \
+	    xbt/config_usage@EXEEXT@                                      \
+	    xbt/heap_bench@EXEEXT@ \
 	    \
-	    gras/trp_tcp_usage      gras/trp_file_usage             \
-	    gras/datadesc_usage                                     \
-	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.little32" \
-	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.little64" \
-	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.big32"    \
-	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.big64"    \
-	    "gras/datadesc_usage --read @srcdir@/gras/datadesc.aix"
+	    gras/trp_tcp_usage@EXEEXT@      gras/trp_file_usage@EXEEXT@             \
+	    gras/datadesc_usage@EXEEXT@                                     \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.little32" \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.little64" \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.big32"    \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.big64"    \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.aix" \
+	    \
+	    surf/maxmin_usage@EXEEXT@       surf/maxmin_bench@EXEEXT@               \
+	    surf/trace_usage@EXEEXT@                                        \
+	    surf/surf_usage@EXEEXT@                                         
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
-  if [ "x$test" = "xdict_crash" ] ; then
-    ./$test --gras-log="root.thres=info" 2>&1
-  else 
-    $valgrind ./$test --gras-log="root.thres=info" 2>&1
+  dir=`echo $test |sed 's|\([^/]*\)/\(.*\)|\1|'`
+  cmd=`echo $test |sed 's|\([^/]*\)/\(.*\)|\2|'`
+  if [ x@EXEEXT@ = x ] ; then 
+    wine=
+  else
+    wine=wine
   fi
-  retval=$?
+  if [ "x$test" = "xdict_crash" ] ; then
+    cd $dir
+    $wine ./$cmd --gras-log="root.thres=info" 2>&1
+    retval=$?
+    cd ..
+  else 
+    cd $dir
+    # if the user defines walgrind while cross-compiling, too bad
+    $wine $valgrind ./$cmd --gras-log="root.thres=info" 2>&1
+    retval=$?
+    cd ..
+  fi
   if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
     echo "## failed. Rerun $test with full details."
     if [ "x$test" = "xdict_crash" ] ; then
-      ./$test --gras-log="root.thres=debug" 2>&1
+      cd $dir
+      $wine ./$cmd --gras-log="root.thres=debug" 2>&1
+      cd ..
     else 
-      $valgrind ./$test --gras-log="root.thres=debug" 2>&1
+      cd $dir
+      $wine $valgrind ./$cmd --gras-log="root.thres=debug" 2>&1
+      cd ..
     fi
     failed_nb=`expr $failed_nb + 1`
     echo "  $test (returned $retval)" >> test.failed
