@@ -120,7 +120,7 @@ gras_msgtype_declare_v(const char            *name,
     RAISE_MALLOC;
 
   errcode = gras_set_get_by_name(_gras_msgtype_set,
-				 namev,(gras_set_elm_t**)msgtype);
+				 namev,(gras_set_elm_t**)&msgtype);
   if (errcode == mismatch_error) {
     /* create type */
     if (! (msgtype = malloc(sizeof(gras_msgtype_t))) ) 
@@ -335,7 +335,7 @@ gras_msg_handle(double timeOut) {
 
 
 
-  VERB1("Handling message within the next %.2s",timeOut);
+  VERB1("Handling message within the next %d",timeOut);
   
   /* get a message (from the queue or from the net) */
   if (gras_dynar_length(pd->msg_queue)) {
