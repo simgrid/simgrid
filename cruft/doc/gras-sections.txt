@@ -165,10 +165,10 @@ gras_dynar_cursor_step
 <FILE>tbx_dico</FILE>
 gras_dict_new
 gras_dict_free
-gras_dict_insert
-gras_dict_insert_ext
-gras_dict_retrieve
-gras_dict_retrieve_ext
+gras_dict_set
+gras_dict_set_ext
+gras_dict_get
+gras_dict_get_ext
 gras_dict_remove
 gras_dict_remove_ext
 gras_dict_dump
