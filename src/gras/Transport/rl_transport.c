@@ -15,7 +15,7 @@ XBT_LOG_DEFAULT_CATEGORY(transport);
 /**
  * gras_trp_select:
  *
- * Returns the next socket to service having a message awaiting.
+ * Returns the next socket to service because it receives a message.
  *
  * if timeout<0, we ought to implement the adaptative timeout (FIXME)
  *
@@ -30,7 +30,7 @@ gras_trp_select(double timeout,
   xbt_error_t errcode;
   xbt_dynar_t sockets= gras_socketset_get();
   int done = -1;
-  double wakeup = gras_os_time() + 1000000*timeout;
+  double wakeup = gras_os_time() + timeout;
   double now = 0;
   /* nextToService used to make sure socket with high number do not starve */
   /*  static int nextToService = 0; */
@@ -86,8 +86,8 @@ gras_trp_select(double timeout,
 
     if (max_fds == -1) {
        if (timeout > 0) {
-	  DEBUG0("No socket to select onto. Sleep instead.");
-	  gras_os_sleep(timeout,0);
+	  DEBUG1("No socket to select onto. Sleep %f sec instead.",timeout);
+	  gras_os_sleep(timeout);
 	  return timeout_error;
        } else {
 	  DEBUG0("No socket to select onto. Return directly.");
