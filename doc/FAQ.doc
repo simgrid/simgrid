@@ -8,7 +8,8 @@ Many people have been asking me questions on how to use SimGrid. Quite
 often, the questions were not really about SimGrid but on the
 installation process. This section is intended to help people that are
 not familiar with compiling C files under UNIX. If you follow these
-instructions and still have some troubles, drop me an e-mail.
+instructions and still have some troubles, drop an e-mail to
+<simgrid2-users@listes.ens-lyon.fr>.
 
 \subsection faq_compiling Compiling SimGrid
 
