@@ -1,3 +1,15 @@
+SimGrid (2.91) unstable; urgency=low
+
+  * Bug fix in the lmm_solver.
+  * Interface to Paje (see http://www-id.imag.fr/Logiciels/paje/) through the function 
+    MSG_paje_output.
+  * Introducing two new functions MSG_process_kill() and MSG_process_killall().
+  * It is possible to bound the rate of a communication in MSG with 
+    MSG_task_put_bounded() (was already in the previous version but I had forgotten 
+    to write it in the changelog). 
+
+ --
+
 SimGrid (2.90) unstable; urgency=low
 
   * It is a long time since the last release of SimGrid. I'm sorry about
