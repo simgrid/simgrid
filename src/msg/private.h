@@ -1,4 +1,9 @@
-/**** MSG_LICENCE DO NOT REMOVE ****/
+/* 	$Id$	 */
+
+/* Copyright (c) 2002,2004,2004 Arnaud Legrand. All rights reserved.        */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
@@ -21,7 +26,7 @@ typedef enum {
 typedef struct sim_data_host {
   void *host;			/* SURF modeling */
   xbt_fifo_t *mbox;		/* array of FIFOs used as a mailboxes  */
-  xbt_context_t *sleeping;	/* array of context used to know whether a process is
+  m_process_t *sleeping;	/* array of process used to know whether a local process is
 				   waiting for a communication on a channel */
   m_host_state_t state;
   s_xbt_swag_t process_list;
@@ -75,10 +80,9 @@ extern MSG_Global_t msg_global;
 
 #define CHECK_HOST()  ASSERT((((sim_data_host_t) MSG_host_self()->simdata)->state==HOST_ALIVE),"Host failed, you cannot call this function.")
 
-m_task_t __MSG_task_copy(m_task_t task);
+m_host_t __MSG_host_create(const char *name, void *workstation,
+			   void *data);
+void __MSG_host_destroy(m_host_t host);
 MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task);
-
-MSG_error_t __MSG_task_check(m_task_t task);
-
 
 #endif
