@@ -8,9 +8,10 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "Virtu/virtu_sg.h"
+#include "gras/Virtu/virtu_sg.h"
 
 GRAS_LOG_EXTERNAL_CATEGORY(process);
+GRAS_LOG_DEFAULT_CATEGORY(process);
 
 gras_error_t
 gras_process_init() {
@@ -20,7 +21,7 @@ gras_process_init() {
   gras_sg_portrec_t prraw,pr;
   int i;
   
-  if (!(pd=(gras_procdata_t *)malloc(sizeof(gras_procdata_t)))) 
+  if (!(pd=gras_new(gras_procdata_t,1))) 
     RAISE_MALLOC;
 
   if (MSG_process_set_data(MSG_process_self(),(void*)pd) != MSG_OK) {
@@ -29,7 +30,7 @@ gras_process_init() {
   TRY(gras_procdata_init());
 
   if (!hd) {
-    if (!(hd=(gras_hostdata_t *)malloc(sizeof(gras_hostdata_t)))) 
+    if (!(hd=gras_new(gras_hostdata_t,1)))
       RAISE_MALLOC;
 
     TRY(gras_dynar_new(&(hd->ports),sizeof(gras_sg_portrec_t),NULL));

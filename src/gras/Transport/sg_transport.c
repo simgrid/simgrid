@@ -8,9 +8,9 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "Transport/transport_private.h"
+#include "gras/Transport/transport_private.h"
 #include <msg.h>
-#include "Virtu/virtu_sg.h"
+#include "gras/Virtu/virtu_sg.h"
 
 GRAS_LOG_EXTERNAL_CATEGORY(transport);
 GRAS_LOG_DEFAULT_CATEGORY(transport);
@@ -80,7 +80,7 @@ gras_trp_select(double timeout,
 
       (*dst)->port      = -1;
 
-      if (!(sockdata = malloc(sizeof(gras_trp_sg_sock_data_t))))
+      if (!(sockdata = gras_new(gras_trp_sg_sock_data_t,1)))
 	RAISE_MALLOC;
 
       sockdata->from_PID = MSG_process_self_PID();

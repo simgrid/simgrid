@@ -10,7 +10,7 @@ if HAVE_SG
  check_PROGRAMS=ping_simulator ping_client ping_server 
 
  ping_simulator_SOURCES=_ping_simulator.c ping.c
- ping_simulator_LDADD=	$(top_builddir)/libgrassg.la @LIBS_SimGrid@
+ ping_simulator_LDADD=	$(top_builddir)/src/libgrassg.la @LIBS_SimGrid@
 else
  check_PROGRAMS=ping_client ping_server
 endif

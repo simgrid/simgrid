@@ -16,7 +16,7 @@
 
 #include "gras_private.h"
 #include "transport_private.h"
-#include "Virtu/virtu_sg.h"
+#include "gras/Virtu/virtu_sg.h"
 
 GRAS_LOG_EXTERNAL_CATEGORY(transport);
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
@@ -77,7 +77,7 @@ static gras_error_t find_port(gras_hostdata_t *hd, int port,
 gras_error_t
 gras_trp_sg_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_sg_plug_data_t *data=malloc(sizeof(gras_trp_sg_plug_data_t));
+  gras_trp_sg_plug_data_t *data=gras_new(gras_trp_sg_plug_data_t,1);
 
   if (!data)
     RAISE_MALLOC;
@@ -140,7 +140,7 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
   }
 
   /* create the socket */
-  if (!(data = malloc(sizeof(gras_trp_sg_sock_data_t))))
+  if (!(data = gras_new(gras_trp_sg_sock_data_t,1)))
     RAISE_MALLOC;
   
   data->from_PID     = MSG_process_self_PID();
@@ -193,7 +193,7 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
   }
   
   /* Create the socket */
-  if (!(data = malloc(sizeof(gras_trp_sg_sock_data_t))))
+  if (!(data = gras_new(gras_trp_sg_sock_data_t,1)))
     RAISE_MALLOC;
   
   data->from_PID     = -1;
@@ -220,12 +220,12 @@ void gras_trp_sg_socket_close(gras_socket_t *sock){
   gras_assert0(hd,"Please run gras_process_init on each process");
 
   if (sock->data)
-    free(sock->data);
+    gras_free(sock->data);
 
   if (sock->incoming) {
     /* server mode socket. Un register it from 'OS' tables */
     gras_dynar_foreach(hd->ports, cpt, pr) {
-      DEBUG2("Check pr %d of %d", cpt, gras_dynar_length(hd->ports));
+      DEBUG2("Check pr %d of %lu", cpt, gras_dynar_length(hd->ports));
       if (pr.port == sock->port) {
 	gras_dynar_cursor_rm(hd->ports, &cpt);
 	return;
@@ -253,9 +253,9 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
 
   sprintf(name,"Chunk[%d]",count++);
 
-  if (!(task_data=malloc(sizeof(sg_task_data_t)))) 
+  if (!(task_data=gras_new(sg_task_data_t,1)))
     RAISE_MALLOC;
-  if (!(task_data->data=malloc(size)))
+  if (!(task_data->data=(void*)gras_malloc(size)))
     RAISE_MALLOC;
   task_data->size = size;
   memcpy(task_data->data,data,size);
@@ -296,8 +296,8 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
 	   MSG_host_get_name(sock_data->to_host),
 	   MSG_host_get_name(MSG_host_self()), sock_data->to_chan);
   memcpy(data,task_data->data,size);
-  free(task_data->data);
-  free(task_data);
+  gras_free(task_data->data);
+  gras_free(task_data);
 
   if (MSG_task_destroy(task) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_destroy()");
