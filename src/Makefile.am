@@ -30,7 +30,6 @@ EXTRA_DIST= \
 	surf/workstation_private.h \
 	surf/surf_parse.c \
 	surf/surfxml.l \
-	surf/surfxml.h \
 	surf/surfxml.c \
 	surf/surfxml.dtd \
 	surf/network_private.h \
@@ -136,8 +135,8 @@ surf/surfxml.c: surf/surfxml.l
 
 surf/surfxml.l: surf/surfxml.dtd
 	cd surf; flexml -b 10000000 -S -L surfxml.dtd ; \
-	mv surfxml.h surfxml.h.bak ; \
-	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.h.bak > surfxml.h
+	mv surfxml.l surfxml.l.bak ; \
+	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
 
 
 libgras_la_SOURCES= $(COMMON_S) \

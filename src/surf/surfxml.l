@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/01/24 16:35:24.
+ * Generated 2005/01/27 07:41:02.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -42,7 +42,7 @@ const char rcs_flexml[] =
 #define FLEXML_BUFFERSTACKSIZE 10000000
 
 /* XML processor api. */
-#include "surfxml.h"
+#include "surf/surfxml.h"
 
 /* FleXML-provided data. */
 const char* pcdata;
