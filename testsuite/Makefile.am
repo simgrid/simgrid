@@ -11,10 +11,11 @@ EXTRA_DIST=test_utils.c run_tests.in
 noinst_PROGRAMS =                             \
 	dynar_int dynar_double dynar_string   \
 	dict_usage dict_crash                 \
+	set_usage                             \
 	log_usage                             \
-	config_usage                          \
-	\
-	gs_example_send gs_example_receive
+	config_usage                          
+	
+#	gs_example_send gs_example_receive
 	
 # multidict_crash 
 
@@ -30,6 +31,8 @@ dynar_string_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 dict_usage_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 dict_crash_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 multidict_crash_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+
+set_usage_LDADD=          $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
 config_usage_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
