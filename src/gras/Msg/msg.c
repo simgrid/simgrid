@@ -13,7 +13,7 @@
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Virtu/virtu_interface.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg,gras,"High level messaging");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg,gras,"High level messaging");
 
 xbt_set_t _gras_msgtype_set = NULL;
 static char GRAS_header[6];
