@@ -11,11 +11,16 @@
 #define GRAS_MODINTER_H
 
 /* modules initialization functions */
+void gras_msg_register(void);
 void gras_msg_init(void);
 void gras_msg_exit(void);
+void gras_trp_register(void);
 void gras_trp_init(void);
 void gras_trp_exit(void);
 void gras_datadesc_init(void);
 void gras_datadesc_exit(void);
+
+void gras_procdata_init(void);
+void gras_procdata_exit(void);
 
 #endif /* GRAS_MODINTER_H */
