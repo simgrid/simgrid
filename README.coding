@@ -52,7 +52,38 @@ The tree is not splited on projects, but on file finality:
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
                 avoid any kind of trick. In particular, do only include the
                 public headers here.
-		
+
+**
+** Type naming standard
+**
+*****************************************************
+
+It may sound strange, but the type naming convention was source of intense
+discution between da GRAS posse members. The convention we came to may not
+be the best solution, but it has the merit to exist and leave everyone work.
+So please stick to it.
+
+  - ???_t is a valid type (builded with typedef)
+  - s_toto_t is a structure (access to fields with .)
+  - s_toto   is a structure needing 'struct' keyword to be used
+  - e_toto_t is an enum
+  - u_toto_t is an union
+  - u_toto   is an union needing 'union' keyword to be used
+  -   toto_t is an 'object' (struct*)
+  
+Please to not call toto_t something else than an 'object' (ie, something you
+have to call _new and _free on it).
+
+Exemple:
+  typedef struct s_toto {} s_toto_t, *toto_t;
+  typedef enum {} e_toto_t;
+  
+Moreover, only toto_t (and e_toto_t) are public. The rest (mainly s_toto_t)
+is private.
+
+If you see any part of the code not following this convention, this is a
+bug. Please report it (or fix it yourself if you can).
+
 **
 ** Random bits about coding standards and portability
 **
