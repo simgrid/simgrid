@@ -76,6 +76,8 @@ BEGIN_DECL
 
 
 void xbt_abort(void) _XBT_GNUC_NORETURN;
+
+END_DECL
    
 #include "xbt/error.h" /* needed for xbt_die */
 
