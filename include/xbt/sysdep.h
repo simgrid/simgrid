@@ -1,5 +1,4 @@
 /* $Id$ */
-
 /*  xbt/sysdep.h -- all system dependency                                   */
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
@@ -16,30 +15,60 @@
 #include <stdlib.h> 
    
 #include "xbt/misc.h"
+#include "xbt/error.h"
+  
 BEGIN_DECL()
-
 /** @addtogroup XBT_syscall
  *  @{
  */
 
-/** @brief like strdup, but xbt_die() on error 
-    @hideinitializer */
-#define xbt_strdup(s)  ((s)?(strdup(s)?:(xbt_die("memory allocation error"),NULL))\
-			    :(NULL))
+/** @brief like strdup, but xbt_die() on error */
+static __inline__ char *xbt_strdup(const char *s) {
+  char *res = NULL;
+  if (s) {
+    res=strdup(s);
+    if (!res) 
+      xbt_die("memory allocation error");
+  } 
+  return res;
+}
 /** @brief like malloc, but xbt_die() on error 
     @hideinitializer */
-#define xbt_malloc(n)   (malloc(n) ?: (xbt_die("memory allocation error"),NULL))
+static __inline__ void *xbt_malloc(int n){
+  void *res=malloc(n);
+  if (!res)
+     xbt_die("Memory allocation failed");
+  return res;
+}
 
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
-#define xbt_malloc0(n)  (calloc( (n),1 ) ?: (xbt_die("memory allocation error"),NULL))
+static __inline__ void *xbt_malloc0(int n) {
+  void *res=calloc(n,1);
+  if (!res)
+     xbt_die("Memory callocation failed");
+  return res;
+}
   
 /** @brief like realloc, but xbt_die() on error 
     @hideinitializer */
-#define xbt_realloc(p,s) (s? (p? (realloc(p,s)?:(xbt_die("memory allocation error"),NULL)) \
-				: xbt_malloc(s)) \
-			    : (p? (free(p),NULL) \
-			        : NULL))
+static __inline__ void *xbt_realloc(void*p,int s){
+  void *res=res;
+  if (s) {
+    if (p) {
+      res=realloc(p,s);
+      if (!res) 
+	xbt_die("memory allocation error");
+    } else {
+      res=xbt_malloc(s);
+    }
+  } else {
+    if (p) {
+      free(p);
+    }
+  }
+  return res;
+}
 /** @brief like free
     @hideinitializer */
 #define xbt_free free /*nothing specific to do here. A poor valgrind replacement?*/
@@ -52,39 +81,8 @@ BEGIN_DECL()
     @hideinitializer */
 #define xbt_new0(type, count) ((type*)xbt_malloc0 (sizeof (type) * (count)))
 
-/** @} */
-  
-/* Attributes are only in recent versions of GCC */
-#if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-# define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
-	   __attribute__((__format__ (__printf__, format_idx, arg_idx)))
-# define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
-	       __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
-# define _XBT_GNUC_FORMAT( arg_idx )                \
-		   __attribute__((__format_arg__ (arg_idx)))
-# define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
-
-#else   /* !__GNUC__ */
-# define _XBT_GNUC_PRINTF( format_idx, arg_idx )
-# define _XBT_GNUC_SCANF( format_idx, arg_idx )
-# define _XBT_GNUC_FORMAT( arg_idx )
-# define _XBT_GNUC_NORETURN
-
-#endif  /* !__GNUC__ */
-
-/* inline and __FUNCTION__ are only in GCC when -ansi is off */
-
-#if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
-
-# define _XBT_GNUC_FUNCTION __FUNCTION__
-# define _XBT_INLINE inline
-#else
-# define _XBT_GNUC_FUNCTION "function"
-# define _XBT_INLINE 
-#endif
+/** @} */  
 
 END_DECL()
-   
-#include "xbt/error.h" /* needed for xbt_die */
 
 #endif /* _XBT_SYSDEP_H */
