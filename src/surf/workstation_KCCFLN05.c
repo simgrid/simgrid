@@ -396,7 +396,7 @@ static void action_network_KCCFLN05_change_state(surf_action_t action,
 {
   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
     if(((surf_action_network_KCCFLN05_t)action)->variable) {
-      lmm_variable_free(maxmin_system, ((surf_action_network_KCCFLN05_t)action)->variable);
+      lmm_variable_disable(maxmin_system, ((surf_action_network_KCCFLN05_t)action)->variable);
       ((surf_action_network_KCCFLN05_t)action)->variable = NULL;
     }
   surf_action_change_state(action, state);
@@ -430,9 +430,9 @@ static void update_actions_network_KCCFLN05_state(double now, double delta)
     }
   }
 
-  xbt_swag_foreach_safe(action, next_action, failed_actions) {
-    lmm_variable_disable(maxmin_system_network_KCCFLN05, action->variable);
-  }
+/*   xbt_swag_foreach_safe(action, next_action, failed_actions) { */
+/*     lmm_variable_disable(maxmin_system_network_KCCFLN05, action->variable); */
+/*   } */
 
   return;
 }
@@ -515,7 +515,7 @@ static void action_cpu_KCCFLN05_change_state(surf_action_t action,
 {
   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
     if(((surf_action_cpu_KCCFLN05_t)action)->variable) {
-      lmm_variable_free(maxmin_system, ((surf_action_cpu_KCCFLN05_t)action)->variable);
+      lmm_variable_disable(maxmin_system, ((surf_action_cpu_KCCFLN05_t)action)->variable);
       ((surf_action_cpu_KCCFLN05_t)action)->variable = NULL;
     }
 
@@ -635,9 +635,9 @@ static void update_actions_cpu_KCCFLN05_state(double now, double delta)
     }
   }
 
-  xbt_swag_foreach_safe(action, next_action, failed_actions) {
-    lmm_variable_disable(maxmin_system_cpu_KCCFLN05, action->variable);
-  }
+/*   xbt_swag_foreach_safe(action, next_action, failed_actions) { */
+/*     lmm_variable_disable(maxmin_system_cpu_KCCFLN05, action->variable); */
+/*   } */
 
   return;
 }

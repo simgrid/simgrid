@@ -129,7 +129,7 @@ static void action_change_state(surf_action_t action,
 {
   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
     if(((surf_action_cpu_t)action)->variable) {
-      lmm_variable_free(maxmin_system, ((surf_action_cpu_t)action)->variable);
+      lmm_variable_disable(maxmin_system, ((surf_action_cpu_t)action)->variable);
       ((surf_action_cpu_t)action)->variable = NULL;
     }
 
@@ -185,9 +185,9 @@ static void update_actions_state(double now, double delta)
     }
   }
 
-  xbt_swag_foreach_safe(action, next_action, failed_actions) {
-    lmm_variable_disable(maxmin_system, action->variable);
-  }
+/*   xbt_swag_foreach_safe(action, next_action, failed_actions) { */
+/*     lmm_variable_disable(maxmin_system, action->variable); */
+/*   } */
 
   return;
 }
