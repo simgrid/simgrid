@@ -13,8 +13,21 @@
 #ifndef GRAS_DATADESC_PRIVATE_H
 #define GRAS_DATADESC_PRIVATE_H
 
-#include "gras_private.h"
-#include "gras/DataDesc/datadesc_interface.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "xbt/dict.h"
+#include "xbt/set.h"
+
+#include "gras_config.h" /* GRAS_THISARCH */
+
+#include "gras/transport.h"  /* socket handling */
+
+#include "gras_modinter.h"   /* module init/exit */
+#include "gras/datadesc.h"   /* rest of module public interface */
+
+#include "gras/DataDesc/datadesc_interface.h" /* semi-public API */
 
 /**
  * aligned:
@@ -225,6 +238,8 @@ struct s_gras_datadesc_type {
   
   gras_datadesc_type_cb_void_t         send;
   gras_datadesc_type_cb_void_t         recv;
+   
+  int                                  cycle; /* true if the datatype may contain cycle */
 };
 
 /***************************

@@ -10,9 +10,16 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h" /* prototypes of this module */
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "xbt/dict.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(config,gros,"configuration support");
+#include "xbt/config.h" /* prototypes of this module */
+
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(config,xbt,"configuration support");
 
 /* gras_cfgelm_t: the typedef corresponding to a config cell. 
 
@@ -65,8 +72,8 @@ void gras_cfg_host_free(void *d){
  */
 
 
-void gras_cfg_new(gras_cfg_t **whereto) {
-  gras_dict_new((gras_dict_t**)whereto);
+gras_cfg_t *gras_cfg_new(void) {
+  return (gras_cfg_t *)gras_dict_new();
 }
 
 /**
@@ -223,19 +230,19 @@ gras_cfg_register(gras_cfg_t *cfg,
 
   switch (type) {
   case gras_cfgelm_int:
-    gras_dynar_new(&(res->content), sizeof(int), NULL);
+    res->content = gras_dynar_new(sizeof(int), NULL);
     break;
 
   case gras_cfgelm_double:
-    gras_dynar_new(&(res->content), sizeof(double), NULL);
+    res->content = gras_dynar_new(sizeof(double), NULL);
     break;
 
   case gras_cfgelm_string:
-   gras_dynar_new(&(res->content),sizeof(char*),&gras_cfg_str_free);
+   res->content = gras_dynar_new(sizeof(char*),&gras_cfg_str_free);
    break;
 
   case gras_cfgelm_host:
-   gras_dynar_new(&(res->content),sizeof(gras_host_t*),&gras_cfg_host_free);
+   res->content = gras_dynar_new(sizeof(gras_host_t*),&gras_cfg_host_free);
    break;
 
   default:

@@ -12,6 +12,12 @@
 #ifndef _GRAS_DICT_ELM_T_
 #define _GRAS_DICT_ELM_T_
 
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "xbt/dict.h"
+
 /*####[ Type definition ]####################################################*/
 typedef struct gras_dictelm_ {
   char           *key;

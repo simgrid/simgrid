@@ -97,8 +97,7 @@ AC_CONFIG_FILES([
   include/Makefile
   src/Makefile
   examples/Makefile 
-    examples/ping/Makefile 
-    examples/ping/test_sg
+    examples/ping/Makefile      examples/ping/test_sg
   doc/Makefile
   tools/compile-remote-worker
   testsuite/Makefile
@@ -115,19 +114,13 @@ AC_CONFIG_FILES([
      chmod +x $srcdir/examples/ping/test_rl
 ])
 
-#    src/gros/Makefile
-#    src/gras/Makefile
-
-#      testsuite/gras/Makefile
-#
-#        testsuite/gras/trp_tcp_usage
-#        testsuite/gras/trp_file_usage
-
-
-#      src/examples/pastry/Makefile
 #    src/amok/Makefile
-#      src/examples/bandwidth/Makefile src/examples/saturate/Makefile
-#      src/examples/alnem/Makefile 
+
+#    examples/bandwidth/Makefile examples/bandwidth/test_sg
+#    examples/saturate/Makefile  examples/saturate/test_sg
+#    examples/alnem/Makefile     examples/alnem/test_sg
+
+#    examples/pastry/Makefile    examples/pastry/test_sg
 
 AC_OUTPUT
 

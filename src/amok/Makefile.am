@@ -1,9 +1,11 @@
 DISTCLEANFILES=Makefile.in
-INCLUDES= -I$(top_srcdir)/src/include @CFLAGS_SimGrid@
+INCLUDES= -I$(top_srcdir)/src -I$(top_srcdir)/include @CFLAGS_SimGrid@
 
-lib_LIBRARIES= libgrasmodules.a
+lib_LTLIBRARIES= libamok.la
 
-libgrasmodules_a_SOURCES= \
+libamok_la_SOURCES= \
 	base.c bandwidth.c
+
+VERSION_INFO= -release 20040722 -version-info 0:0:0
 
 

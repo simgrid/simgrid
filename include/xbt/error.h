@@ -18,6 +18,8 @@
 
 #include <stdio.h> /* FIXME: Get rid of it */
 
+#include "xbt/log.h"
+
 #ifdef HAVE_EXECINFO_H
 #include <execinfo.h>  /* to print the backtrace */
 #endif

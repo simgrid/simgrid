@@ -13,6 +13,13 @@
 #ifndef GRAS_VIRTU_INTERFACE_H
 #define GRAS_VIRTU_INTERFACE_H
 
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "gras/virtu.h"
+#include "gras/process.h"
+
 /**
  * gras_process_data_t:
  *

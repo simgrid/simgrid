@@ -14,7 +14,6 @@
 
 #include <msg.h>
 
-#include "gras_private.h"
 #include "transport_private.h"
 #include "gras/Virtu/virtu_sg.h"
 

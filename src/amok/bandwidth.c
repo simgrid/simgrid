@@ -1,9 +1,9 @@
 /* $Id$ */
 
-/* gras_bandwidth - GRAS mecanism to do Bandwidth tests between to hosts    */
+/* amok_bandwidth - Bandwidth tests facilities    */
 
 /* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003 the OURAGAN project.                                  */
+/* Copyright (C) 2003, 2004 the OURAGAN project.                            */
 
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,149 +12,156 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <gras.h>
+#include "gras/messages.h"
+#include "amok/bandwidth.h"
 
 /**
- * BwExp_t:
+ * bw_request_t:
  *
- * Description of a BW experiment (payload when asking an host to do a BW experiment with us)
+ * Request for a BW experiment.
+ * If host==NULL, it should be between the sender and the receiver.
+ * If not, it should be between between the receiver and @host (3-tiers).
  */
 typedef struct {
-  unsigned int bufSize;
-  unsigned int expSize;
-  unsigned int msgSize;
-  unsigned int port;    /* raw socket to use */
-} BwExp_t;
-
-static const DataDescriptor BwExp_Desc[] = 
- { SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(BwExp_t,bufSize)),
-   SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(BwExp_t,expSize)),
-   SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(BwExp_t,msgSize)),
-   SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(BwExp_t,port))};
-#define BwExp_Len 4
+  gras_host_t host; /* host+raw socket to use */
+  unsigned int buf_size;
+  unsigned int exp_size;
+  unsigned int msg_size;
+} bw_request_t;
 
 /**
- * SatExp_t:
+ * bw_res_t:
  *
- * Description of a BW experiment (payload when asking an host to do a BW experiment with us)
+ * Result of a BW experiment (payload when answering).
+ * if err.msg != NULL, it wasn't sucessful. Check err.msg and err.code to see why.
+ * else
  */
 typedef struct {
-  unsigned int msgSize;
+  amok_remoterr_t err;
+  unsigned int timestamp;
+  double seconds;
+  double bw;
+} bw_res_t;
+
+
+/**
+ * sat_request_t:
+ *
+ * Description of a saturation experiment (payload asking some host to collaborate for that)
+ */
+typedef struct {
+  gras_host_t host; /* host+raw socket to use */
+  unsigned int msg_size;
   unsigned int timeout;
-  unsigned int port;    /* raw socket to use */
-} SatExp_t;
-
-static const DataDescriptor SatExp_Desc[] = 
- { SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(SatExp_t,msgSize)),
-   SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(SatExp_t,timeout)),
-   SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(SatExp_t,port))};
-#define SatExp_Len 3
-
+} sat_request_t;
 
 /* Prototypes of local callbacks */
-int grasbw_cbBWHandshake(gras_msg_t *msg);
-int grasbw_cbBWRequest(gras_msg_t *msg);
+int amok_bw_cb_bw_handshake(gras_socket_t *expeditor,
+			    void          *payload);
+int amok_bw_cb_bw_request(gras_socket_t   *expeditor,
+			  void            *payload);
 
-int grasbw_cbSatStart(gras_msg_t *msg);
-int grasbw_cbSatBegin(gras_msg_t *msg);
+int amok_bw_cb_sat_start(gras_socket_t    *expeditor,
+			 void             *payload);
+int amok_bw_cb_sat_begin(gras_socket_t    *expeditor,
+			 void             *payload);
 
 /**** code ****/
-gras_error_t grasbw_register_messages(void) {
+void amok_bw_init(void) {
   gras_error_t errcode;
+  gras_datadesc_type_t *bw_request_desc, *bw_res_desc, *sat_request_desc;
 
-  
-  if ( /* Bandwidth */
-      (errcode=gras_msgtype_register(GRASMSG_BW_REQUEST,"BW request",2,
-			       msgHostDesc,msgHostLen,
-			       BwExp_Desc,BwExp_Len)) ||
-      (errcode=gras_msgtype_register(GRASMSG_BW_RESULT, "BW result",2,
-			       msgErrorDesc,msgErrorLen,
-			       msgResultDesc,msgResultLen /* first=seconds, second=bw */)) ||
-      
-      (errcode=gras_msgtype_register(GRASMSG_BW_HANDSHAKE, "BW handshake",1,
-			       BwExp_Desc,BwExp_Len))  || 
-      (errcode=gras_msgtype_register(GRASMSG_BW_HANDSHAKED, "BW handshake ACK",1,
-			       BwExp_Desc,BwExp_Len)) ||
-      
-      /* Saturation */
-      (errcode=gras_msgtype_register(GRASMSG_SAT_START,"SAT_START",2,
-			       msgHostDesc,msgHostLen,
-			       SatExp_Desc,SatExp_Len)) ||
-      (errcode=gras_msgtype_register(GRASMSG_SAT_STARTED, "SAT_STARTED",1,
-			       msgErrorDesc,msgErrorLen)) ||
-      
-      (errcode=gras_msgtype_register(GRASMSG_SAT_BEGIN,"SAT_BEGIN",1,
-			       SatExp_Desc,SatExp_Len)) ||
-      (errcode=gras_msgtype_register(GRASMSG_SAT_BEGUN, "SAT_BEGUN",2,
-			       msgErrorDesc,msgErrorLen,
-			       SatExp_Desc,SatExp_Len)) ||
-      
-      (errcode=gras_msgtype_register(GRASMSG_SAT_END,"SAT_END",0)) ||
-      (errcode=gras_msgtype_register(GRASMSG_SAT_ENDED, "SAT_ENDED",1,
-			       msgErrorDesc,msgErrorLen)) ||
-      
-      (errcode=gras_msgtype_register(GRASMSG_SAT_STOP,"SAT_STOP",0)) ||
-      (errcode=gras_msgtype_register(GRASMSG_SAT_STOPPED, "SAT_STOPPED",1,
-			       msgErrorDesc,msgErrorLen)) ) 
-    {
+  amok_base_init();
+   
+  /* Build the datatype descriptions */ 
+  bw_request_desc = gras_datadesc_struct("bw_request_t");
+  gras_datadesc_struct_append(bw_request_desc,"host",gras_datadesc_by_name("gras_host_t*"));
+  gras_datadesc_struct_append(bw_request_desc,"buf_size",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_append(bw_request_desc,"exp_size",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_append(bw_request_desc,"msg_size",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_close(bw_request_desc);
+  bw_request_desc = gras_datadesc_ref("bw_request_t*",bw_request_desc);
 
-      fprintf(stderr,"GRASBW: Unable register the messages (got error %s)\n",
-	      gras_error_name(errcode));
-      return errcode;
-    }
+  bw_res_desc = gras_datadesc_struct("bw_res_t");
+  gras_datadesc_struct_append(bw_res_desc,"err",gras_datadesc_by_name("amok_remoterr_t"));
+  gras_datadesc_struct_append(bw_res_desc,"timestamp",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_append(bw_res_desc,"seconds",gras_datadesc_by_name("double"));
+  gras_datadesc_struct_append(bw_res_desc,"bw",gras_datadesc_by_name("double"));
+  gras_datadesc_struct_close(bw_res_desc);
+  bw_res_desc = gras_datadesc_ref("bw_res_t*",bw_res_desc);
 
-  if ((errcode=gras_cb_register(GRASMSG_BW_HANDSHAKE,-1,&grasbw_cbBWHandshake)) ||
-      (errcode=gras_cb_register(GRASMSG_BW_REQUEST,-1,&grasbw_cbBWRequest))  ||
+  sat_request_desc = gras_datadesc_struct("sat_request_desc");
+  gras_datadesc_struct_append(sat_request_desc,"host",gras_datadesc_by_name("gras_host_t"));
+  gras_datadesc_struct_append(sat_request_desc,"msg_size",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_append(sat_request_desc,"timeout",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_close(sat_request_desc);
+  sat_request_desc = gras_datadesc_ref("sat_request_t*",sat_request_desc);
+   
+  /* Register the bandwidth messages */
+  gras_msgtype_declare("BW request",       bw_request_desc);
+  gras_msgtype_declare("BW result",        bw_res_desc);
+  gras_msgtype_declare("BW handshake",     bw_request_desc);
+  gras_msgtype_declare("BW handshake ACK", bw_request_desc);
 
-      (errcode=gras_cb_register(GRASMSG_SAT_START,-1,&grasbw_cbSatStart))  ||
-      (errcode=gras_cb_register(GRASMSG_SAT_BEGIN,-1,&grasbw_cbSatBegin)) ) {
+  /* Register the saturation messages */
+  gras_msgtype_declare("SAT start",   sat_request_desc);
+  gras_msgtype_declare("SAT started", gras_datadesc_by_name("amok_remoterr_t"));
+  gras_msgtype_declare("SAT begin",   sat_request_desc);
+  gras_msgtype_declare("SAT begun",   gras_datadesc_by_name("amok_remoterr_t"));
+  gras_msgtype_declare("SAT end",     NULL);
+  gras_msgtype_declare("SAT ended",   gras_datadesc_by_name("amok_remoterr_t"));
+  gras_msgtype_declare("SAT stop",    NULL);
+  gras_msgtype_declare("SAT stopped", gras_datadesc_by_name("amok_remoterr_t"));
 
-    fprintf(stderr,"GRASBW: Unable register the callbacks (got error %s)\n",
-	    gras_error_name(errcode));
-    return errcode;
-  }
+  /* Register the callbacks */
+  gras_cb_register(gras_msgtype_by_name("BW request"),
+		   &amok_bw_cb_bw_request);
+  gras_cb_register(gras_msgtype_by_name("BW handshake"),
+		   &amok_bw_cb_bw_handshake);
 
-  return no_error;
+  gras_cb_register(gras_msgtype_by_name("SAT start"),
+		   &amok_bw_cb_sat_start);
+  gras_cb_register(gras_msgtype_by_name("SAT begin"),
+		   &amok_bw_cb_sat_begin);
 }
 
 /* ***************************************************************************
  * Bandwidth tests
  * ***************************************************************************/
 /* Function to do a test from local to given host */
-gras_error_t grasbw_test(const char*to_name,unsigned int to_port,
-			unsigned int bufSize,unsigned int expSize,unsigned int msgSize,
-			/*OUT*/ double *sec, double *bw) {
-  gras_rawsock_t *rawIn,*rawOut;
-  gras_sock_t *sock;
+/**
+ * amok_bw_test:
+ * 
+ * Conduct a test between the local host and @peer, and 
+ * report the result in last args
+ */
+gras_error_t amok_bw_test(gras_socket_t *peer,
+			  unsigned int bufSize,unsigned int expSize,unsigned int msgSize,
+			  /*OUT*/ double *sec, double *bw) {
+  gras_socket_t *rawIn,*rawOut;
+  int port;
   gras_error_t errcode;
-  BwExp_t *request;
+  bw_request_t *request;
   gras_msg_t *answer;
   
-  if((errcode=gras_sock_client_open(to_name,to_port,&sock))) {
-    fprintf(stderr,"grasbw_test(): Error %s encountered while contacting peer\n",
-	    gras_error_name(errcode));
-    return errcode;
-  }
-  if ((errcode=gras_rawsock_server_open(6666,8000,bufSize,&rawIn))) { 
-    fprintf(stderr,"grasbw_test(): Error %s encountered while opening a raw socket\n",
-	    gras_error_name(errcode));
+  for (port = 5000, errcode = system_error;
+       errcode == system_error;
+       errcode = gras_socket_server_ext(++port,bufSize,1,&rawIn));
+  if (errcode != no_error) {
+    ERROR1("Error %s encountered while opening a raw socket\n",
+	   gras_error_name(errcode));
     return errcode;
   }
 
-  if (!(request=(BwExp_t *)malloc(sizeof(BwExp_t)))) {
-    fprintf(stderr,"grasbw_test(): Malloc error\n");
-    gras_sock_close(sock);
-    return malloc_error;    
-  }
+  request=gras_new(bw_request_t);
   request->bufSize=bufSize;
   request->expSize=expSize;
   request->msgSize=msgSize;
-  request->port=gras_rawsock_get_peer_port(rawIn);
+  request->host.name = NULL;
+  request->host.port = gras_socket_peer_port(rawIn);
 
-  if ((errcode=gras_msg_new_and_send(sock,GRASMSG_BW_HANDSHAKE, 1, 
-			      request,1))) {
-    fprintf(stderr,"grasbw_test(): Error %s encountered while sending the request.\n",
-	    gras_error_name(errcode));
+  if ((errcode=gras_send(peer,gras_msgtype_by_name("BW handshake"),request))) {
+    ERROR1("Error %s encountered while sending the request.", gras_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
@@ -189,6 +196,9 @@ gras_error_t grasbw_test(const char*to_name,unsigned int to_port,
   gras_msg_free(answer);
   return no_error;
 }
+
+#if 0
+
 
 /* Callback to the GRASMSG_BW_HANDSHAKE message: 
    opens a server raw socket,
@@ -685,3 +695,4 @@ gras_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
 
   return no_error;
 }
+#endif

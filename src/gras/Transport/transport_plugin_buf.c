@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>       /* memset */
 
-#include "gras_private.h"
+#include "xbt/misc.h"
 #include "transport_private.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,

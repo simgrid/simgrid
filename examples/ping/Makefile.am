@@ -28,7 +28,3 @@ MAINTAINERCLEANFILES = _ping_simulator.c _ping_client.c _ping_server.c
 _ping_client.c _ping_server.c _ping_simulator.c: ping_deployment.txt $(top_srcdir)/examples/gras_stub_generator
 	$(top_srcdir)/examples/gras_stub_generator ping ping_deployment.txt >/dev/null
 
-
-# support vpath build
-#test_rl test_sg: 
-#	cp $(srcdir)/$@ . && chmod +x $@ 

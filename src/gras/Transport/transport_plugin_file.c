@@ -15,7 +15,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "gras_private.h"
 #include "transport_private.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,

@@ -22,7 +22,7 @@ int main(int argc,char *argv[]) {
    gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
 
    INFO0("==== Traverse the empty dynar");
-   gras_dynar_new(&d,sizeof(int),NULL);
+   d=gras_dynar_new(sizeof(int),NULL);
    gras_dynar_foreach(d,cursor,i){
      gras_assert0(0,"Damnit, there is something in the empty dynar");
    }
@@ -30,7 +30,7 @@ int main(int argc,char *argv[]) {
 
    INFO1("==== Push %d int, set them again 3 times, traverse them, shift them",
 	NB_ELEM);
-   gras_dynar_new(&d,sizeof(int),NULL);
+   d=gras_dynar_new(sizeof(int),NULL);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      gras_dynar_push(d,&cpt);
      DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
@@ -77,7 +77,7 @@ int main(int argc,char *argv[]) {
 
    
    INFO1("==== Unshift/pop %d int",NB_ELEM);
-   gras_dynar_new(&d,sizeof(int),NULL);
+   d=gras_dynar_new(sizeof(int),NULL);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      gras_dynar_unshift(d,&cpt);
      DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
@@ -94,7 +94,7 @@ int main(int argc,char *argv[]) {
 
    
    INFO1("==== Push %d int, insert 1000 int in the middle, shift everything",NB_ELEM);
-   gras_dynar_new(&d,sizeof(int),NULL);
+   d=gras_dynar_new(sizeof(int),NULL);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      gras_dynar_push(d,&cpt);
      DEBUG2("Push %d, length=%lu",cpt, gras_dynar_length(d));
@@ -127,7 +127,7 @@ int main(int argc,char *argv[]) {
 
 
    INFO1("==== Push %d int, remove 2000-4000. free the rest",NB_ELEM);
-   gras_dynar_new(&d,sizeof(int),NULL);
+   d=gras_dynar_new(sizeof(int),NULL);
    for (cpt=0; cpt< NB_ELEM; cpt++) 
      gras_dynar_push(d,&cpt);
    

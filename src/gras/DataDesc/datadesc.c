@@ -41,7 +41,7 @@ gras_datadesc_init(void) {
   
   VERB0("Initializing DataDesc");
   
-  gras_set_new(&gras_datadesc_set_local);
+  gras_datadesc_set_local = gras_set_new();
   
   ddt = gras_datadesc_scalar("signed char", 
 			     gras_ddt_scalar_char, 

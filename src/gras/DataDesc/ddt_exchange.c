@@ -13,14 +13,6 @@
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_exchange,datadesc,
 				 "Sending data over the network");
-
-#undef DETECT_CYCLE
-/* CRUDE HACK to turn all cycle detection of */
-#ifndef DETECT_CYCLE
-#define gras_dict_get_ext(a,b,c,d) mismatch_error
-#define gras_dict_set_ext(a,b,c,d,e) no_error
-#endif
-
 const char *gras_datadesc_cat_names[9] = { 
   "undefined", 
   "scalar", "struct", "union", "ref", "array", "ignored",
@@ -34,8 +26,9 @@ static _GRAS_INLINE gras_error_t gras_dd_recv_int(gras_socket_t *sock, int r_arc
 static _GRAS_INLINE gras_error_t
 gras_dd_alloc_ref(gras_dict_t *refs,  long int     size,
 		  char       **r_ref, long int     r_len,
-		  char	     **l_ref);
-static _GRAS_INLINE int 
+		  char	     **l_ref, int detect_cycle);
+
+static _GRAS_INLINE int
 gras_dd_is_r_null(char **r_ptr, long int length);
 
 static gras_error_t 
@@ -43,7 +36,8 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
 		       gras_cbps_t       *state,
 		       gras_dict_t          *refs,
 		       gras_datadesc_type_t *type, 
-		       char                 *data);
+		       char                 *data, 
+		       int                   detect_cycle);
 static gras_error_t
 gras_datadesc_recv_rec(gras_socket_t        *sock, 
 		       gras_cbps_t       *state,
@@ -53,7 +47,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       char                **r_data,
 		       long int              r_lgr,
 		       char                 *dst,
-		       int                   subsize);
+		       int                   subsize, 
+		       int                   detect_cycle);
 
 
 static _GRAS_INLINE gras_error_t
@@ -117,7 +112,8 @@ gras_dd_alloc_ref(gras_dict_t *refs,
 		  long int     size,
 		  char       **r_ref,
 		  long int     r_len, /* pointer_type->size[r_arch] */
-		  char	     **l_ref) {
+		  char	     **l_ref,
+		  int          detect_cycle) {
   char *l_data = NULL;
 
   gras_assert1(size>0,"Cannot allocate %ld bytes!", size);
@@ -128,8 +124,7 @@ gras_dd_alloc_ref(gras_dict_t *refs,
 
   DEBUG3("alloc_ref: r_ref=%p; *r_ref=%p, r_len=%ld",
 	 (void*)r_ref, (void*)(r_ref?*r_ref:NULL), r_len);
-#ifdef DETECT_CYCLE
-  if (r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
+  if (detect_cycle && r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
     gras_error_t errcode;
     void *ptr = gras_malloc(sizeof(void *));
 
@@ -137,9 +132,9 @@ gras_dd_alloc_ref(gras_dict_t *refs,
 
     DEBUG2("Insert %p under %p",*(void**)ptr, *(void**)r_ref);
 
-    TRY(gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, gras_free));
+    if (detect_cycle)
+       gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, gras_free);
   }
-#endif
   return no_error;
 }
 
@@ -318,7 +313,8 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
 		       gras_cbps_t       *state,
 		       gras_dict_t          *refs,
 		       gras_datadesc_type_t *type, 
-		       char                 *data) {
+		       char                 *data,
+		       int                   detect_cycle) {
 
   gras_error_t          errcode;
   int                   cpt;
@@ -356,7 +352,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
 	field->pre(state,field_data);
       
       VERB1("Send field %s",field->name);
-      TRY(gras_datadesc_send_rec(sock,state,refs,sub_type, field_data));
+      TRY(gras_datadesc_send_rec(sock,state,refs,sub_type, field_data, detect_cycle || sub_type->cycle));
       
       if (field->post)
 	field->post(state,field_data);
@@ -397,7 +393,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     if (field->pre)
       field->pre(state,data);
     
-    TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, data));
+    TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, data, detect_cycle || sub_type->cycle));
       
     if (field->post)
       field->post(state,data);
@@ -409,9 +405,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     gras_dd_cat_ref_t      ref_data;
 
     void                 **ref=(void**)data;
-#ifdef DETECT_CYCLE
     void *dummy;
-#endif
     
     ref_data = type->category.ref_data;
     
@@ -436,16 +430,19 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
       VERB0("Not sending NULL referenced data");
       break;
     }
-    errcode = gras_dict_get_ext(refs,(char*)ref, sizeof(void*), &dummy);
+    errcode = detect_cycle 
+            ? gras_dict_get_ext(refs,(char*)ref, sizeof(void*), &dummy)
+            : mismatch_error;
     if (errcode == mismatch_error) {
-      VERB1("Sending data referenced at %p", (void*)*ref);
-      TRY(gras_dict_set_ext(refs, (char*)ref, sizeof(void*), ref, NULL));
-      TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, *ref));
-      
+       VERB1("Sending data referenced at %p", (void*)*ref);
+       if (detect_cycle)
+	 gras_dict_set_ext(refs, (char*)ref, sizeof(void*), ref, NULL);
+       TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, *ref, detect_cycle || sub_type->cycle));
+	  
     } else if (errcode == no_error) {
-      VERB1("Not sending data referenced at %p (already done)", (void*)*ref);
+       VERB1("Not sending data referenced at %p (already done)", (void*)*ref);
     } else {
-      return errcode;
+       return errcode;
     }
     
     break;
@@ -477,7 +474,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
 			      sub_type->aligned_size[GRAS_THISARCH] * count));
     } else {
       for (cpt=0; cpt<count; cpt++) {
-	TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, ptr));
+	TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, ptr, detect_cycle || sub_type->cycle));
 	ptr += elm_size;
       }
     }
@@ -505,10 +502,10 @@ gras_error_t gras_datadesc_send(gras_socket_t *sock,
   gras_cbps_t *state = NULL;
   gras_dict_t    *refs; /* all references already sent */
  
-  gras_dict_new(&refs);
+  refs = gras_dict_new();
   state = gras_cbps_new();
 
-  errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src);
+  errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src, type->cycle);
 
   gras_dict_free(&refs);
   gras_cbps_free(&state);
@@ -537,7 +534,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       char                **r_data,
 		       long int              r_lgr,
 		       char                 *l_data,
-		       int                   subsize) {
+		       int                   subsize,
+		       int                   detect_cycle) {
 
   gras_error_t          errcode;
   int                   cpt;
@@ -579,7 +577,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,NULL,0,
-				 field_data,-1));
+				 field_data,-1, 
+				 detect_cycle || sub_type->cycle));
     }
     VERB1("<< Received all fields of the structure %s", type->name);
     
@@ -612,7 +611,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     
     TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 			       r_arch,NULL,0,
-			       l_data,-1));
+			       l_data,-1, 
+			       detect_cycle || sub_type->cycle));
     break;
   }
 
@@ -650,10 +650,12 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       gras_free(r_ref);
       break;
     }
-    errcode = gras_dict_get_ext(refs,
+         
+    errcode = detect_cycle
+            ? gras_dict_get_ext(refs,
 				(char*)r_ref, pointer_type->size[r_arch],
-				(void**)&l_ref);
-
+				(void**)&l_ref)
+            : mismatch_error;
 
     if (errcode == mismatch_error) {
       int subsubcount = 0;
@@ -677,16 +679,19 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	TRY(gras_dd_alloc_ref(refs,
 			      subsub_type->size[GRAS_THISARCH] * subsubcount, 
 			      r_ref,pointer_type->size[r_arch], 
-			      (char**)&l_referenced));
+			      (char**)&l_referenced,
+			      detect_cycle));
       } else {
 	TRY(gras_dd_alloc_ref(refs,sub_type->size[GRAS_THISARCH], 
 			      r_ref,pointer_type->size[r_arch], 
-			      (char**)&l_referenced));
+			      (char**)&l_referenced,
+			      detect_cycle));
       }
 
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,r_ref,pointer_type->size[r_arch],
-				 (char*)l_referenced, subsubcount));
+				 (char*)l_referenced, subsubcount, 
+				 detect_cycle || sub_type->cycle));
       *(void**)l_data=l_referenced;
       VERB3("'%s' remotely referenced at %p locally at %p",
 	    sub_type->name, *(void**)r_ref, l_referenced);
@@ -748,7 +753,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       ptr = l_data;
       for (cpt=0; cpt<count; cpt++) {
 	TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
-				   r_arch, NULL, 0, ptr,-1));
+				   r_arch, NULL, 0, ptr,-1,
+				   detect_cycle || sub_type->cycle));
 	ptr += elm_size;
       }
     }
@@ -782,12 +788,13 @@ gras_datadesc_recv(gras_socket_t *sock,
   gras_cbps_t *state = NULL; /* callback persistent state */
   gras_dict_t    *refs;         /* all references already sent */
 
-  gras_dict_new(&refs);
+  refs = gras_dict_new();
   state = gras_cbps_new();
 
   errcode = gras_datadesc_recv_rec(sock, state, refs, type, 
 				   r_arch, NULL, 0,
-				   (char *) dst,-1);
+				   (char *) dst,-1, 
+				   type->cycle);
 
   gras_dict_free(&refs);
   gras_cbps_free(&state);

@@ -13,11 +13,12 @@
 #undef GRAS_LOG_MAYDAY
 /*#define GRAS_LOG_MAYDAY*/
 
-
 #ifndef _GRAS_LOG_H_
 #define _GRAS_LOG_H_
 
 #include <stdarg.h>
+
+#include "xbt/sysdep.h"
 
 /**
  * gras_log_priority_t:

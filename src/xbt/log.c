@@ -8,12 +8,16 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-
-#include "xbt_interface.h"
-#include "gras_private.h"
 #include <stdarg.h>
-#include <assert.h>
 #include <ctype.h>
+
+#include "xbt_modinter.h"
+
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
 
 typedef struct {
   char *catname;
@@ -47,8 +51,8 @@ gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT) = {
 };
 
 GRAS_LOG_NEW_SUBCATEGORY(gras,GRAS_LOG_ROOT_CAT,"All GRAS categories");
-GRAS_LOG_NEW_SUBCATEGORY(gros,GRAS_LOG_ROOT_CAT,"All GROS categories (gras toolbox)");
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,gros,"Loggings from the logging mecanism itself");
+GRAS_LOG_NEW_SUBCATEGORY(xbt,GRAS_LOG_ROOT_CAT,"All XBT categories (gras toolbox)");
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
 
 
 static void _apply_control(gras_log_category_t* cat) {
@@ -144,7 +148,7 @@ void gras_log_parent_set(gras_log_category_t* cat,
     while(*cpp != cat && *cpp != NULL) {
       cpp = &(*cpp)->nextSibling;
     }
-    assert(*cpp == cat);
+    gras_assert(*cpp == cat);
     *cpp = cat->nextSibling;
   }
 
@@ -316,8 +320,8 @@ void gras_log_control_set(const char* control_string) {
   if (control_string == NULL)
     return;
   if (gras_log_settings == NULL)
-    gras_dynar_new(&gras_log_settings,sizeof(gras_log_setting_t*),
-		   _free_setting);
+    gras_log_settings = gras_dynar_new(sizeof(gras_log_setting_t*),
+				       _free_setting);
 
   set = gras_new(gras_log_setting_t,1);
   cs=gras_strdup(control_string);

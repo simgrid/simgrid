@@ -22,7 +22,7 @@ int main(int argc,char *argv[]) {
    gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
 
    INFO0("==== Traverse the empty dynar");
-   gras_dynar_new(&d,sizeof(int),NULL);
+   d=gras_dynar_new(sizeof(int),NULL);
    gras_dynar_foreach(d,cursor,cpt){
      gras_assert0(FALSE,
 	     "Damnit, there is something in the empty dynar");
@@ -30,7 +30,7 @@ int main(int argc,char *argv[]) {
    gras_dynar_free(d);
 
    INFO0("==== Push/shift 5000 doubles");
-   gras_dynar_new(&d,sizeof(double),NULL);
+   d=gras_dynar_new(sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
      gras_dynar_push(d,&d1);
@@ -52,7 +52,7 @@ int main(int argc,char *argv[]) {
 
 
    INFO0("==== Unshift/pop 5000 doubles");
-   gras_dynar_new(&d,sizeof(double),NULL);
+   d=gras_dynar_new(sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
      gras_dynar_unshift(d,&d1);
@@ -69,7 +69,7 @@ int main(int argc,char *argv[]) {
 
 
    INFO0("==== Push 5000 doubles, insert 1000 doubles in the middle, shift everything");
-   gras_dynar_new(&d,sizeof(double),NULL);
+   d=gras_dynar_new(sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
      gras_dynar_push(d,&d1);
@@ -105,7 +105,7 @@ int main(int argc,char *argv[]) {
 
 
    INFO0("==== Push 5000 double, remove 2000-4000. free the rest");
-   gras_dynar_new(&d,sizeof(double),NULL);
+   d=gras_dynar_new(sizeof(double),NULL);
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
      gras_dynar_push(d,&d1);

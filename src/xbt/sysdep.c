@@ -10,11 +10,13 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
 
 #include <stdlib.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, gros, "System dependency");
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");
 
 /****
  **** Memory management

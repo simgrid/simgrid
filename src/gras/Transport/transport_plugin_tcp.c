@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <string.h>       /* memset */
 
-#include "gras_private.h"
 #include "transport_private.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport,"TCP transport");
@@ -418,9 +417,9 @@ gras_error_t gras_socket_raw_exchange(gras_socket_t *peer,
    struct timeval timeOut;
    
    chunk = gras_malloc(msg_size);
-   
-   for   (exp_sofar=0; exp_sofar < exp_size; exp_size += msg_sofar) {
-      for(msg_sofar=0; msg_sofar < msg_size; msg_size += res_last) {
+
+   for   (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
+      for(msg_sofar=0; msg_sofar < msg_size; msg_sofar += res_last) {
 	 
 	 if(sender) {
 	    res_last = send(peer->sd, chunk, msg_size - msg_sofar, 0);

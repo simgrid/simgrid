@@ -37,11 +37,11 @@ gras_cbps_t * gras_cbps_new(void) {
 
   res=gras_new(gras_cbps_t,1);
 
-  gras_dynar_new(&(res->lints), sizeof(int), NULL);
-  gras_dict_new(&(res->space));
+  res->lints = gras_dynar_new(sizeof(int), NULL);
+  res->space = gras_dict_new();
   /* no leak, the content is freed manually on block_end */
-  gras_dynar_new(&(res->frames), sizeof(gras_dynar_t*), NULL);
-  gras_dynar_new(&(res->globals), sizeof(char*), NULL);
+  res->frames = gras_dynar_new(sizeof(gras_dynar_t*), NULL);
+  res->globals = gras_dynar_new(sizeof(char*), NULL);
 
   gras_cbps_block_begin(res);
 
@@ -84,7 +84,7 @@ gras_cbps_v_push(gras_cbps_t        *ps,
  
   if (errcode == mismatch_error) {
     DEBUG1("Create a new variable stack for '%s' into the space",name);
-    gras_dynar_new(&varstack, sizeof (gras_cbps_elm_t *), NULL);
+    varstack = gras_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
     gras_dict_set(ps->space, varname, (void **)varstack, NULL);
     /* leaking, you think? only if you do not close all the openned blocks ;)*/
   } else if (errcode != no_error) {
@@ -188,7 +188,7 @@ gras_cbps_v_set (gras_cbps_t        *ps,
   errcode = gras_dict_get(ps->space, name, (void **)&p_dynar);
   
   if (errcode == mismatch_error) {
-    gras_dynar_new(&p_dynar, sizeof (gras_cbps_elm_t *), NULL);
+    p_dynar = gras_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
     gras_dict_set(ps->space, name, (void **)p_dynar, NULL);
     
     p_elm   = gras_new0(gras_cbps_elm_t,1);
@@ -255,7 +255,7 @@ gras_cbps_block_begin(gras_cbps_t *ps) {
   gras_dynar_t            *p_dynar        = NULL;
 
   DEBUG0(">>> Block begin");
-  gras_dynar_new(&p_dynar, sizeof (char *), NULL);
+  p_dynar = gras_dynar_new(sizeof (char *), NULL);
   gras_dynar_push(ps->frames, &p_dynar);
 }
 

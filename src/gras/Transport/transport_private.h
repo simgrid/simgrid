@@ -13,8 +13,18 @@
 #ifndef GRAS_TRP_PRIVATE_H
 #define GRAS_TRP_PRIVATE_H
 
-#include "gras_private.h"
-#include "gras/Transport/transport_interface.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "xbt/dict.h"
+
+#include "gras/cond.h"       /* gras_if_RL() */
+
+#include "gras_modinter.h"   /* module init/exit */
+#include "gras/transport.h"  /* rest of module interface */
+
+#include "gras/Transport/transport_interface.h" /* semi-public API */
 #include "gras/Virtu/virtu_interface.h" /* socketset_get() */
 
 /**

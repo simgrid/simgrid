@@ -64,7 +64,7 @@ int main(int argc,char **argv) {
   printf(" (a point is a test)\n");
 
   for (i=0;i<20;i++) {
-    gras_dict_new(&head);
+    head=gras_dict_new();
     if (i%10) printf("."); else printf("%d",i/10); fflush(stdout);
     nb=0;
     for (j=0;j<1000;j++) {
@@ -91,7 +91,7 @@ int main(int argc,char **argv) {
   }
 
 
-  gras_dict_new(&head);
+  head=gras_dict_new();
   printf("\n Fill 20 000 elements, with keys being the number of element\n");
   printf("  (a point is 1 000 elements)\n");
   for (j=0;j<NB_ELM;j++) {

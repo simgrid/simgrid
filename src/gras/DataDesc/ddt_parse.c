@@ -447,8 +447,8 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
   gras_datadesc_type_t *struct_type;
 
   GRAS_IN;
-  gras_dynar_new(&identifiers,sizeof(identifier_t),NULL);
-  gras_dynar_new(&fields_to_push,sizeof(char*),NULL);
+  identifiers = gras_dynar_new(sizeof(identifier_t),NULL);
+  fields_to_push = gras_dynar_new(sizeof(char*),NULL);
 
   /* Create the struct descriptor */
   if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {

@@ -8,9 +8,16 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h"
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "xbt/dict.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,gros,"data container consisting in dict+dynar");
+#include "xbt/set.h"
+
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,"data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/
 struct gras_set_ {
@@ -25,14 +32,14 @@ struct gras_set_ {
  *
  * Creates a new set.
  */
-void gras_set_new (gras_set_t **dst) {
+gras_set_t *gras_set_new (void) {
   gras_set_t *res=gras_new(gras_set_t,1);
   gras_error_t errcode;
 
-  gras_dict_new (&(res->dict));
-  gras_dynar_new(&(res->dynar), sizeof(void*),NULL);
+  res->dict=gras_dict_new ();
+  res->dynar=gras_dynar_new(sizeof(void*),NULL);
 
-  *dst=res;
+  return res;
 }
 
 /**

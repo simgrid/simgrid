@@ -8,15 +8,19 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h"
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
 #include <sys/types.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,gros,"Dynamic arrays");
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
 
 struct gras_dynar_s {
-  size_t          size;
-  size_t          used;
-  size_t          elmsize;
+  unsigned long          size;
+  unsigned long          used;
+  unsigned long          elmsize;
   void           *data;
   void_f_pvoid_t *free;
 };
@@ -42,7 +46,7 @@ struct gras_dynar_s {
 
 static _GRAS_INLINE 
 void _gras_clear_mem(void * const ptr,
-		     const size_t length) {
+		     const unsigned long length) {
   memset(ptr, 0, length);
 }
 
@@ -51,19 +55,19 @@ gras_error_t
 _gras_dynar_expand(gras_dynar_t * const dynar,
                    const int            nb) {
   gras_error_t errcode     = no_error;
-  const size_t old_size    = dynar->size;
+  const unsigned long old_size    = dynar->size;
 
   if (nb > old_size) {
     char * const old_data    = dynar->data;
 
-    const size_t elmsize     = dynar->elmsize;
-    const size_t old_length  = old_size*elmsize;
+    const unsigned long elmsize     = dynar->elmsize;
+    const unsigned long old_length  = old_size*elmsize;
 
-    const size_t used        = dynar->used;
-    const size_t used_length = used*elmsize;
+    const unsigned long used        = dynar->used;
+    const unsigned long used_length = used*elmsize;
 
-    const size_t new_size    = nb > (2*(old_size+1)) ? nb : (2*(old_size+1));
-    const size_t new_length  = new_size*elmsize;
+    const unsigned long new_size    = nb > (2*(old_size+1)) ? nb : (2*(old_size+1));
+    const unsigned long new_length  = new_size*elmsize;
     char * const new_data    = gras_malloc0(elmsize*new_size);
 
     DEBUG3("expend %p from %lu to %d elements", (void*)dynar, (unsigned long)old_size, nb);
@@ -86,9 +90,9 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
 static _GRAS_INLINE
 void *
 _gras_dynar_elm(const gras_dynar_t * const dynar,
-                const size_t               idx) {
+                const unsigned long               idx) {
   char * const data    = dynar->data;
-  const size_t elmsize = dynar->elmsize;
+  const unsigned long elmsize = dynar->elmsize;
 
   return data + idx*elmsize;
 }
@@ -97,9 +101,9 @@ static _GRAS_INLINE
 void
 _gras_dynar_get_elm(void               * const dst,
                     const gras_dynar_t * const dynar,
-                    const size_t               idx) {
+                    const unsigned long               idx) {
   void * const elm     = _gras_dynar_elm(dynar, idx);
-  const size_t elmsize = dynar->elmsize;
+  const unsigned long elmsize = dynar->elmsize;
 
   memcpy(dst, elm, elmsize);
 }
@@ -107,17 +111,16 @@ _gras_dynar_get_elm(void               * const dst,
 static _GRAS_INLINE
 void
 _gras_dynar_put_elm(const gras_dynar_t * const dynar,
-                    const size_t               idx,
+                    const unsigned long               idx,
                     const void         * const src) {
   void * const elm     = _gras_dynar_elm(dynar, idx);
-  const size_t elmsize = dynar->elmsize;
+  const unsigned long elmsize = dynar->elmsize;
 
   memcpy(elm, src, elmsize);
 }
 
 /**
  * gras_dynar_new:
- * @whereto: pointer to where the dynar should be created
  * @elm_size: size of each element in the dynar
  * @free_func: function to call each time we want to get rid of an element (or NULL if nothing to do).
  *
@@ -125,10 +128,9 @@ _gras_dynar_put_elm(const gras_dynar_t * const dynar,
  * pointer of pointer. That is to say that dynars can contain either base
  * types (int, char, double, etc) or pointer of pointers (struct **).
  */
-void
-gras_dynar_new(gras_dynar_t   ** const p_dynar,
-               const size_t            elmsize,
-               void_f_pvoid_t  * const free_func) {
+gras_dynar_t *
+gras_dynar_new(const unsigned long           elmsize,
+               void_f_pvoid_t * const free_func) {
    
   gras_dynar_t *dynar = gras_new0(gras_dynar_t,1);
 
@@ -138,7 +140,7 @@ gras_dynar_new(gras_dynar_t   ** const p_dynar,
   dynar->data    = NULL;
   dynar->free    = free_func;
 
-  *p_dynar = dynar;
+  return dynar;
 }
 
 /**
@@ -310,16 +312,16 @@ gras_dynar_insert_at(gras_dynar_t * const dynar,
   __check_sloppy_inbound_idx(dynar, idx);
 
   {
-    const size_t old_used = dynar->used;
-    const size_t new_used = old_used + 1;
+    const unsigned long old_used = dynar->used;
+    const unsigned long new_used = old_used + 1;
 
     _gras_dynar_expand(dynar, new_used);
 
     {
-      const size_t nb_shift =  old_used - idx;
-      const size_t elmsize  =  dynar->elmsize;
+      const unsigned long nb_shift =  old_used - idx;
+      const unsigned long elmsize  =  dynar->elmsize;
 
-      const size_t offset   =  nb_shift*elmsize;
+      const unsigned long offset   =  nb_shift*elmsize;
 
       void * const elm_src  = _gras_dynar_elm(dynar, idx);
       void * const elm_dst  = _gras_dynar_elm(dynar, idx+1);
@@ -354,13 +356,13 @@ gras_dynar_remove_at(gras_dynar_t * const dynar,
     _gras_dynar_get_elm(object, dynar, idx);
 
   {
-    const size_t old_used = dynar->used;
-    const size_t new_used = old_used - 1;
+    const unsigned long old_used = dynar->used;
+    const unsigned long new_used = old_used - 1;
 
-    const size_t nb_shift =  old_used-1 - idx;
-    const size_t elmsize  =  dynar->elmsize;
+    const unsigned long nb_shift =  old_used-1 - idx;
+    const unsigned long elmsize  =  dynar->elmsize;
 
-    const size_t offset   =  nb_shift*elmsize;
+    const unsigned long offset   =  nb_shift*elmsize;
 
     void * const elm_src  = _gras_dynar_elm(dynar, idx+1);
     void * const elm_dst  = _gras_dynar_elm(dynar, idx);
@@ -449,8 +451,8 @@ gras_dynar_map(const gras_dynar_t * const dynar,
 
   {
     char         elm[64];
-    const size_t used = dynar->used;
-    size_t       i    = 0;
+    const unsigned long used = dynar->used;
+    unsigned long       i    = 0;
 
     for (i = 0; i < used; i++) {
       _gras_dynar_get_elm(elm, dynar, i);

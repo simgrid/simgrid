@@ -13,6 +13,8 @@
 #ifndef GRAS_TRANSPORT_H
 #define GRAS_TRANSPORT_H
 
+#include "xbt/error.h"
+
 typedef struct s_gras_socket gras_socket_t;
 
 gras_error_t gras_socket_client(const char *host,

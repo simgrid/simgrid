@@ -8,7 +8,13 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "gras/transport.h"
+#include "gras/datadesc.h"
+#include "gras/messages.h"
+
 #include "gras/Virtu/virtu_interface.h"
 #include "gras/Msg/msg_interface.h" /* FIXME: Get rid of this cyclic */
 
@@ -31,10 +37,10 @@ void gras_userdata_set(void *ud) {
 void
 gras_procdata_init() {
   gras_procdata_t *pd=gras_procdata_get();
-  pd->userdata = NULL;
-  gras_dynar_new(&(pd->msg_queue), sizeof(gras_msg_t),     NULL);
-  gras_dynar_new(&(pd->cbl_list),  sizeof(gras_cblist_t *),gras_cbl_free);
-  gras_dynar_new(&(pd->sockets),   sizeof(gras_socket_t*), NULL);
+  pd->userdata  = NULL;
+  pd->msg_queue = gras_dynar_new(sizeof(gras_msg_t),     NULL);
+  pd->cbl_list  = gras_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
+  pd->sockets   = gras_dynar_new(sizeof(gras_socket_t*), NULL);
 }
 
 void

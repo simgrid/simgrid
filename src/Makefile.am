@@ -1,5 +1,4 @@
-SUBDIRS=.  
-# amok not ported to GRAS NG yet
+SUBDIRS= . # amok
 
 AM_CFLAGS= -g
 #AM_CFLAGS= -DNDEBUG 
@@ -17,7 +16,6 @@ MAINTAINERCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/include \
           @CFLAGS_SimGrid@
 EXTRA_DIST= \
-        gras_private.h\
         \
         xbt/dict_private.h \
         \
@@ -26,6 +24,8 @@ EXTRA_DIST= \
 	gras/Virtu/virtu_rl.h \
 	gras/Virtu/virtu_sg.h \
 	gras/DataDesc/ddt_parse.yy.l gras/DataDesc/ddt_parse.yy.c
+
+#        gras_private.h
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -74,7 +74,8 @@ endif
 
 COMMON_S=\
   \
-  xbt/xbt_interface.h                                                         \
+  xbt_modinter.h    gras_modinter.h                                            \
+  \
   xbt/sysdep.c                                                                 \
   xbt/log.c         xbt/log_default_appender.c   xbt/error.c                 \
   xbt/dynar.c                                                                  \

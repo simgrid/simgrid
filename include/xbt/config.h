@@ -13,11 +13,6 @@
 #ifndef _GRAS_CONFIG_H_
 #define _GRAS_CONFIG_H_
 
-typedef struct {
-  char *name;
-  int port;
-} gras_host_t;
-
 /* For now, a config is only a special dynar. But don't rely on it, */
 /* it may change in the future. */
 typedef gras_dynar_t gras_cfg_t;
@@ -29,7 +24,7 @@ typedef enum {
 } gras_cfgelm_type_t;
 
 /*----[ Memory management ]-----------------------------------------------*/
-void gras_cfg_new (gras_cfg_t **whereto); /* (whereto == NULL) is ok */
+gras_cfg_t *gras_cfg_new (void);
 void gras_cfg_cpy(gras_cfg_t **whereto, gras_cfg_t *tocopy);
 void gras_cfg_free(gras_cfg_t **cfg);
 void gras_cfg_dump(const char *name,const char*indent,gras_cfg_t *cfg);

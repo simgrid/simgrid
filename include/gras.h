@@ -22,9 +22,4 @@
 #include <gras/datadesc.h>
 #include <gras/messages.h>
 
-/* FIXME: This is amok */
-
-#include <gras/modules/base.h>
-#include <gras/modules/bandwidth.h>
-
 #endif /* GRAS_H */

@@ -13,7 +13,20 @@
 #ifndef GRAS_MESSAGE_PRIVATE_H
 #define GRAS_MESSAGE_PRIVATE_H
 
-#include "gras_private.h"
+#include "gras_config.h"
+
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "xbt/set.h"
+#include "gras/transport.h"
+#include "gras/datadesc.h"
+#include "gras/virtu.h"
+
+#include "gras/messages.h"
+#include "gras_modinter.h"
+
 #include "gras/Msg/msg_interface.h"
 
 /**

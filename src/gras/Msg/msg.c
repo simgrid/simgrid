@@ -33,7 +33,7 @@ void gras_msg_init(void) {
 
   VERB0("Initializing Msg");
   
-  gras_set_new(&_gras_msgtype_set);
+  _gras_msgtype_set = gras_set_new();
 
   memcpy(GRAS_header,"GRAS", 4);
   GRAS_header[4]=GRAS_PROTOCOL_VERSION;
@@ -437,7 +437,7 @@ gras_cb_register(gras_msgtype_t *msgtype,
     /* First cb? Create room */
     list = gras_new(gras_cblist_t,1);
     list->id = msgtype->code;
-    gras_dynar_new(&(list->cbs), sizeof(gras_cb_t), NULL);
+    list->cbs = gras_dynar_new(sizeof(gras_cb_t), NULL);
     gras_dynar_push(pd->cbl_list,&list);
   }
 

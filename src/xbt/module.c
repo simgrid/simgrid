@@ -8,11 +8,21 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/error.h"
+#include "xbt/dynar.h"
+#include "xbt/config.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(module,gros, "module handling");
+#include "gras/process.h" /* FIXME: bad loop */
 
-extern void gras_log_exit(void);
+#include "xbt/module.h" /* this module */
+
+#include "xbt_modinter.h"  /* prototype of other module's init/exit in XBT */
+#include "gras_modinter.h" /* same in GRAS */
+
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(module,xbt, "module handling");
+
 static int gras_running_process = 0;
 
 struct gras_module_ {

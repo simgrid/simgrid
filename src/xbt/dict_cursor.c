@@ -8,7 +8,7 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h"
+#include "xbt/misc.h"
 #include "dict_private.h"
 
 #include <string.h> /* strlen() */
@@ -45,25 +45,21 @@ _cursor_push_keys(gras_dict_cursor_t *p_cursor,
  *
  * Structure creator
  */
-void
-gras_dict_cursor_new(const gras_dict_t          *p_head,
-                     /*OUT*/gras_dict_cursor_t **pp_cursor) {
+gras_dict_cursor_t *
+gras_dict_cursor_new(const gras_dict_t          *p_head) {
   gras_error_t        errcode  = no_error;
-  gras_dict_cursor_t *p_cursor = NULL;
+  gras_dict_cursor_t *res = NULL;
 
-  p_cursor = gras_new(gras_dict_cursor_t,1);
+  res = gras_new(gras_dict_cursor_t,1);
+  res->keys     = gras_dynar_new(sizeof(char **), NULL);
+  res->key_lens = gras_dynar_new(sizeof(int  *),  NULL);
+  res->pos      = 0;
+  res->pos_len  = 0;
+  res->head     = p_head ? p_head->head : NULL;
 
-  gras_dynar_new(&p_cursor->keys,     sizeof(char **), NULL);
-  gras_dynar_new(&p_cursor->key_lens, sizeof(int  *),  NULL);
+  gras_dict_cursor_rewind(res);
 
-  p_cursor->pos     = 0;
-  p_cursor->pos_len = 0;
-  p_cursor->head    = p_head ? p_head->head : NULL;
-
-  gras_dict_cursor_rewind(p_cursor);
-
-  *pp_cursor = p_cursor;
-
+  return res;
 }
 
 /**
@@ -161,12 +157,12 @@ gras_dict_cursor_rewind(gras_dict_cursor_t *p_cursor) {
  *
  * Create the cursor if it does not exists. Rewind it in any case.
  */
-void         gras_dict_cursor_first    (const gras_dict_t   *dict,
-					gras_dict_cursor_t **cursor){
+void gras_dict_cursor_first (const gras_dict_t   *dict,
+			     gras_dict_cursor_t **cursor){
 
   if (!*cursor) {
     DEBUG0("Create the cursor on first use");
-    gras_dict_cursor_new(dict,cursor);
+    *cursor=gras_dict_cursor_new(dict);
   }
 
   gras_dict_cursor_rewind(*cursor);

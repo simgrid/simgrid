@@ -31,7 +31,7 @@ int main(int argc,char *argv[]) {
    gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
    
    INFO0("==== Traverse the empty dynar");
-   gras_dynar_new(&d,sizeof(char *),&free_string);
+   d=gras_dynar_new(sizeof(char *),&free_string);
    gras_dynar_foreach(d,cpt,s1){
      gras_assert0(FALSE,
 		  "Damnit, there is something in the empty dynar");
@@ -39,7 +39,7 @@ int main(int argc,char *argv[]) {
    gras_dynar_free(d);
 
    INFO1("==== Push %d strings, set them again 3 times, shift them",NB_ELEM);
-   gras_dynar_new(&d,sizeof(char*),&free_string);
+   d=gras_dynar_new(sizeof(char*),&free_string);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
@@ -72,7 +72,7 @@ int main(int argc,char *argv[]) {
 
 
    INFO1("==== Unshift, traverse and pop %d strings",NB_ELEM);
-   gras_dynar_new(&d,sizeof(char**),&free_string);
+   d=gras_dynar_new(sizeof(char**),&free_string);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
@@ -96,7 +96,7 @@ int main(int argc,char *argv[]) {
 
 
    INFO2("==== Push %d strings, insert %d strings in the middle, shift everything",NB_ELEM,NB_ELEM/5);
-   gras_dynar_new(&d,sizeof(char*),&free_string);
+   d=gras_dynar_new(sizeof(char*),&free_string);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
@@ -136,7 +136,7 @@ int main(int argc,char *argv[]) {
 
 
    INFO3("==== Push %d strings, remove %d-%d. free the rest",NB_ELEM,2*(NB_ELEM/5),4*(NB_ELEM/5));
-   gras_dynar_new(&d,sizeof(char*),&free_string);
+   d=gras_dynar_new(sizeof(char*),&free_string);
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);

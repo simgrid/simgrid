@@ -26,7 +26,7 @@ typedef struct gras_set_elm_ {
 
 /*####[ Functions ]##########################################################*/
 
-void gras_set_new (gras_set_t **dst);
+gras_set_t *gras_set_new (void);
 void gras_set_free(gras_set_t **set);
 
 
@@ -61,7 +61,7 @@ int          gras_set_cursor_get_or_free (gras_set_cursor_t **cursor,
 					  gras_set_elm_t    **elm);
 
 #define gras_set_foreach(set,cursor,elm)                       \
-  for (cursor=NULL, gras_set_cursor_first((set),&(cursor)) ;   \
+  for ((cursor) = NULL, gras_set_cursor_first((set),&(cursor)) ;   \
        gras_set_cursor_get_or_free(&(cursor),(gras_set_elm_t**)&(elm));          \
        gras_set_cursor_step(cursor) )
 

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* gras_addons - several addons to do specific stuff not in GRAS itself     */
+/* base - several addons to do specific stuff not in GRAS itself     */
 
 /* Authors: Martin Quinson                                                  */
 /* Copyright (C) 2003 the OURAGAN project.                                  */
@@ -10,29 +10,88 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <strings.h>
 
-#include <gras.h>
+#include "xbt/error.h"
+#include "gras/datadesc.h"
+#include "amok/base.h"
+
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(amok,GRAS_LOG_ROOT_CAT,"All AMOK categories");
+
+amok_remoterr_t *amok_remoterr_new(gras_error_t param_errcode, 
+				  const char* format,...) {
+   
+  amok_remoterr_t *res;
+   
+  va_list ap;
+  va_start(ap,format);
+  res = amok_remoterr_new_va(param_errcode,format,ap);
+  va_end(ap);
+  return res;
+}
+
+amok_remoterr_t *amok_remoterr_new_va(gras_error_t param_errcode, 
+				      const char* format,va_list ap) {
+  amok_remoterr_t *res=gras_new(amok_remoterr_t,1);
+  res->code=param_errcode;
+  if (format) {
+     res->msg=(char*)gras_malloc(1024);
+     vsnprintf(res->msg,1024,format,ap);
+  } else {
+     res->msg = NULL;
+  }
+   
+  return res;   
+}
+
+void amok_remoterr_free(amok_remoterr_t*err) {
+   if (err) {
+      if (err->msg) gras_free(err->msg);
+      gras_free(err);
+   }
+}
+
 
 void
-grasRepportError (gras_sock_t *sock, gras_msgid_t id, int SeqCount,
-		  const char *severeError,
-		  gras_error_t errcode, const char* format,...) {
-  msgError_t *error;
+amok_repport_error (gras_socket_t *sock, gras_msgtype_t *msgtype,
+		    gras_error_t param_errcode, const char* format,...) {
+  amok_remoterr_t *error;
+  gras_error_t errcode;
   va_list ap;
 
-  if (!(error=(msgError_t*)malloc(sizeof(msgError_t)))) {
-    fprintf(stderr,severeError);
-    return;
-  }
-
-  error->errcode=errcode;
+  error=gras_new(amok_remoterr_t,1);
+  error->code=param_errcode;
+  error->msg=(char*)gras_malloc(1024); /* FIXME */
   va_start(ap,format);
-  vsprintf(error->errmsg,format,ap);
+  vsnprintf(error->msg,1024,format,ap);
   va_end(ap);
 
-  /* FIXME: If message id have more than 17 sequences, the following won't work */
-  if (gras_msg_new_and_send(sock,id,SeqCount,   error,1,NULL,0,NULL,0,NULL,0,NULL,0,NULL,0,NULL,0,
-		     NULL,0,NULL,0,NULL,0,NULL,0,NULL,0,NULL,0,NULL,0,NULL,0,NULL,0,NULL,0)) {
-    fprintf(stderr,severeError);
+  errcode = gras_msg_send(sock,msgtype,error);
+  if (errcode != no_error) {
+     CRITICAL4("Error '%s' while reporting error '%s' to %s:%d",
+	       gras_error_name(errcode),error->msg,
+	       gras_socket_peer_name(sock),gras_socket_peer_port(sock) );
   }
 }
+
+void amok_base_init(void) {
+  gras_datadesc_type_t *host_desc, *remoterr_desc;
+     
+  /* Build the datatype descriptions */
+  host_desc = gras_datadesc_struct("gras_host_t");
+  gras_datadesc_struct_append(host_desc,"name",gras_datadesc_by_name("string"));
+  gras_datadesc_struct_append(host_desc,"exp_size",gras_datadesc_by_name("int"));
+  gras_datadesc_struct_close(host_desc);
+  host_desc = gras_datadesc_ref("gras_host_t*",host_desc);
+   
+  remoterr_desc = gras_datadesc_struct("amok_remoterr_t");
+  gras_datadesc_struct_append(remoterr_desc,"msg",gras_datadesc_by_name("string"));
+  gras_datadesc_struct_append(remoterr_desc,"code",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_close(remoterr_desc);
+  remoterr_desc = gras_datadesc_ref("amok_remoterr_t*",remoterr_desc);
+}
+
+void amok_base_exit(void) {
+   /* No real module mecanism in GRAS so far, nothing to do. */
+}
+

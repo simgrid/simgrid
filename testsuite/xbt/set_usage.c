@@ -76,7 +76,7 @@ static void debuged_add(gras_set_t *set,
 static void fill(gras_set_t **set) {
   printf("\n Fill in the data set\n");
 
-  gras_set_new(set);
+  *set=gras_set_new();
   debuged_add(*set,"12");
   debuged_add(*set,"12a");
   debuged_add(*set,"12b");

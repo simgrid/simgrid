@@ -30,7 +30,7 @@ static void print_str(void *str) {
 static void fill(gras_dict_t **head) {
   printf("\n Fill in the dictionnary\n");
 
-  gras_dict_new(head);
+  *head = gras_dict_new();
   debuged_add(*head,"12");
   debuged_add(*head,"12a");
   debuged_add(*head,"12b");

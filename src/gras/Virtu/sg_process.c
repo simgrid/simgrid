@@ -29,7 +29,7 @@ gras_process_init() {
 
   if (!hd) {
     hd=gras_new(gras_hostdata_t,1);
-    gras_dynar_new(&(hd->ports),sizeof(gras_sg_portrec_t),NULL);
+    hd->ports = gras_dynar_new(sizeof(gras_sg_portrec_t),NULL);
 
     memset(hd->proc, 0, sizeof(hd->proc[0]) * GRAS_MAX_CHANNEL); 
 

@@ -8,6 +8,7 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/misc.h" /* min()/max() */
 #include "gras/DataDesc/datadesc_private.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_create,datadesc,"Creating new datadescriptions");
@@ -25,9 +26,7 @@ void gras_ddt_freev(void *ddt) {
   }
 }
 
-static void
-gras_ddt_new(const char            *name,
-	     gras_datadesc_type_t **dst) {
+static gras_datadesc_type_t *gras_ddt_new(const char *name) {
   gras_error_t errcode;
   gras_datadesc_type_t *res;
 
@@ -36,11 +35,12 @@ gras_ddt_new(const char            *name,
 
   res->name = (char*)strdup(name);
   res->name_len = strlen(name);
+  res->cycle = 0;
       
-  *dst=res;
   gras_set_add(gras_datadesc_set_local,
 	       (gras_set_elm_t*)res,&gras_ddt_freev);
   GRAS_OUT;
+  return res;
 }
 
 /**
@@ -100,7 +100,7 @@ gras_datadesc_type_t *
     VERB1("Discarding redefinition of %s",name);
     return res;
   }
-  gras_ddt_new(name,&res);
+  res = gras_ddt_new(name);
 
   for (arch = 0; arch < gras_arch_count; arch ++) {
     long int sz;
@@ -187,7 +187,7 @@ gras_datadesc_type_t *
     VERB1("Discarding redefinition of %s",name);
     return res;
   }
-  gras_ddt_new(name,&res);
+  res = gras_ddt_new(name);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch] = 0;
@@ -195,9 +195,9 @@ gras_datadesc_type_t *
     res->aligned_size[arch] = 0;
   }
   res->category_code = e_gras_datadesc_type_cat_struct;
-  gras_dynar_new(&(res->category.struct_data.fields),
-		 sizeof(gras_dd_cat_field_t*),
-		 &gras_dd_cat_field_free);
+  res->category.struct_data.fields = 
+       gras_dynar_new(sizeof(gras_dd_cat_field_t*),
+		      &gras_dd_cat_field_free);
 
   GRAS_OUT;
   return res;
@@ -274,6 +274,31 @@ gras_datadesc_struct_close(gras_datadesc_type_t  *struct_type) {
 }
 
 /**
+ * gras_datadesc_cycle_set:
+ * 
+ * Tell GRAS that the pointers of the type described by @ddt may present
+ * some loop, and that the cycle detection mecanism is needed.
+ *
+ * Note that setting this option when not needed have a rather bad effect 
+ * on the performance (several times slower on big data).
+ */
+void
+gras_datadesc_cycle_set(gras_datadesc_type_t  *ddt) {
+  ddt->cycle = 1;
+}
+/**
+ * gras_datadesc_cycle_unset:
+ * 
+ * Tell GRAS that the pointers of the type described by @ddt do not present
+ * any loop and that cycle detection mecanism are not needed.
+ * (default)
+ */
+void
+gras_datadesc_cycle_unset(gras_datadesc_type_t *ddt) {
+  ddt->cycle = 0;
+}
+
+/**
  * gras_datadesc_union:
  *
  * Create a new union and give a pointer to it 
@@ -301,7 +326,7 @@ gras_datadesc_union(const char                   *name,
     return res;
   }
 
-  gras_ddt_new(name,&res);
+  res = gras_ddt_new(name);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
      res->size[arch] = 0;
@@ -310,9 +335,9 @@ gras_datadesc_union(const char                   *name,
   }
 
   res->category_code		= e_gras_datadesc_type_cat_union;
-  gras_dynar_new(&(res->category.union_data.fields),
-		 sizeof(gras_dd_cat_field_t*),
-		 &gras_dd_cat_field_free);
+  res->category.union_data.fields =
+     gras_dynar_new(sizeof(gras_dd_cat_field_t*),
+		    &gras_dd_cat_field_free);
   res->category.union_data.selector = selector;
 
   return res;
@@ -391,7 +416,7 @@ gras_datadesc_type_t *
     return res;
   }
 
-  gras_ddt_new(name,&res);
+  res = gras_ddt_new(name);
 
   gras_assert0(pointer_type, "Cannot get the description of data pointer");
       
@@ -432,7 +457,7 @@ gras_datadesc_type_t *
     VERB1("Discarding redefinition of %s",name);
     return res;
   }
-  gras_ddt_new(name,&res);
+  res = gras_ddt_new(name);
 
   gras_assert0(pointer_type, "Cannot get the description of data pointer");
       
@@ -478,7 +503,7 @@ gras_datadesc_type_t *
 
     return res;
   }
-  gras_ddt_new(name,&res);
+  res = gras_ddt_new(name);
 
   gras_assert1(fixed_size > 0, "'%s' is a array of null fixed size",name);
   for (arch=0; arch<gras_arch_count; arch ++) {
@@ -528,7 +553,7 @@ gras_datadesc_type_t *
     return res;
   }
 
-  gras_ddt_new(name,&res);
+  res = gras_ddt_new(name);
 
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch] = 0; /* make sure it indicates "dynamic" */

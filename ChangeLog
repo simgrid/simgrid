@@ -1,16 +1,47 @@
+2004-11-04 Martin Quinson
+  - Allow to (en/dis)able the cycle detection at run time.
+  
+    Whether we should check for cycle or not is now a property of each
+    datatype. When you think there may be some cycle, use datadesc_cycle_set.
+    datadesc_cycle_unset allow to remove this property when previously set.
+    
+    Note that the cycle detection is off by default since it impacts the 
+    performance. Watch the data you feed GRAS with ;)
+    
+    This property is hereditary. Any element embeeded in a structure having it
+    set have it set for the time of this data exchange.
+    
+    You should set it both on sender and receiver side. If you don't set it on
+    sender side, it will enter an endless loop. If you forget on receiver
+    side, the cycles won't be recreated after communication.
+    
+  - Header reorganization.
+    Kill gras_private.h, each submodule must load the headers it needs.
+
+2004-10-04 Martin Quinson
+  - Interface revolution: do not try to survive to malloc failure.
+  
+    Now, gras_malloc and friends call gras_abort() on failure.
+    As a conclusion, malloc_error is not a valid error anymore, and all
+      functions for which it was the only gras_error_t return value are
+      changed. They now return void, or there result directly. 
+    This simplify the API a lot.
+
 2004-09-29 Martin Quinson
   - Re-enable raw sockets.
     Created by gras_socket_{client,server}_ext;
     Used with gras_raw_{send,recv}
+    No select possible.
     
-    It should allow to kill the last bits of gras first version.
+    It should allow to kill the last bits of gras first version soon.
   
     This is not completely satisfactory yet (dupplicate code with
      chunk_{send,recv}; a bit out of the plugin mecanism), but it should
      work. 
 
-  - Simplify transport plugin interface by not passing any argument to
-    _server and _client, but embeeding them in the socket struct directly. 
+  - Simplify transport plugin (internal) interface by not passing any
+    argument to _server and _client, but embeeding them in the socket
+    struct directly. 
 
 2004-09-28 Martin Quinson
   - Finish the port to AIX.
@@ -28,7 +59,7 @@
 
 2004-09-07 Martin Quinson
   - Source code reorganization to allow Arnaud to surf all over there.
-  - Allow to document the logging categories
+  - Allow to document the logging categories.
   - Remove all uppercase from logging categories and useless cleanup in names.
 
 2004-08-18 Martin Quinson
@@ -52,7 +83,7 @@
   Version 0.5 (protocol not changed; ABI changed)
   - Allow to off turn the cycle detection code in data exchange at
     compilation time. It should be at run time, but I'm short of time (and
-    the config stuff is still broken). That way, we keep dict of of the
+    the config stuff is still broken). That way, we keep dict out of the
     critical path, which is good because the performance is poor:
      - search not dichotomial yet
      - dynar give no way to access their content and memcpy everytime
@@ -61,7 +92,7 @@
     of the critical path, which is good since they rely on dynar and
     dictionnaries. The only loose of that is that we cannot detect the
     redeclaration of a structure/union with another content (but I'm not sure 
-    the code detected this error well before anyway). We still can detect
+    the code detected well this error before anyway). We still can detect
     the redefinition discrepancy for the other types.
   - Use a whole bunch of optimisation flags (plus -fno-strict-aliasing since
     it breaks the code because of type-punning used all over the place).

@@ -8,8 +8,6 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-
-#include "gras_private.h"
 #include "dict_private.h"
 
 #include <stdlib.h> /* malloc() */
@@ -17,7 +15,7 @@
 
 #include <stdio.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,gros,
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
 
 /*####[ Private prototypes ]#################################################*/
@@ -32,12 +30,11 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,gros,
  *
  * Creates and initialize a new dictionnary
  */
-void
-gras_dict_new(gras_dict_t **whereto) {
-
-  (*whereto) = gras_new(gras_dict_t,1);
-  (*whereto)->head=NULL;
-
+gras_dict_t *
+gras_dict_new(void) {
+  gras_dict_t *res= gras_new(gras_dict_t,1);
+  res->head=NULL;
+  return res;
 }
 /**
  * gras_dict_free:

@@ -15,13 +15,15 @@
 
 #include <gras.h>
 
+GRAS_LOG_NEW_DEFAULT_CATEGORY(saturate,"Messages specific to this example");
+
 /* **********************************************************************
  * Sensor code
  * **********************************************************************/
 
 /* Global private data */
 typedef struct {
-  gras_sock_t *sock;
+  gras_socket_t *sock;
 } sensor_data_t;
 
 /* Function prototypes */
@@ -31,25 +33,27 @@ int sensor (int argc,char *argv[]) {
   gras_error_t errcode;
   sensor_data_t *g=gras_userdata_new(sensor_data_t);  
 
-  if ((errcode=gras_sock_server_open(4000,4000,&(g->sock)))) { 
-    fprintf(stderr,"Sensor: Error %s encountered while opening the server socket\n",gras_error_name(errcode));
+  if ((errcode=gras_socket_server(4000,&(g->sock)))) {
+    CRITICAL1("Sensor: Error %s encountered while opening the server socket",gras_error_name(errcode));
     return 1;
   }
 
   if (grasbw_register_messages()) {
-    gras_sock_close(g->sock);
+    gras_socket_close(g->sock);
     return 1;
   }
 
   while (1) {
-    if ((errcode=gras_msg_handle(60.0)) && errcode != timeout_error) {
-      fprintf(stderr,"Sensor: Error '%s' while handling message\n",
+    if ((errcode=gras_msg_handle(60.0)) && errcode != timeout_error) { 
+       CRITICAL1("Sensor: Error '%s' while handling message",
 	      gras_error_name(errcode));
     }
   }
 
-  gras_sleep(5,0);
-  return gras_sock_close(g->sock);
+  gras_os_sleep(5,0);
+  gras_socket_close(g->sock);
+   
+  return 0;
 }
 
 /* **********************************************************************
@@ -58,7 +62,7 @@ int sensor (int argc,char *argv[]) {
 
 /* Global private data */
 typedef struct {
-  gras_sock_t *sock;
+  gras_socket_t *sock;
 } maestro_data_t;
 
 /* Function prototypes */
@@ -85,7 +89,7 @@ double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2) 
 	    gras_error_name(errcode));
     return -1;
   }
-  gras_sleep(1,0);
+  gras_os_sleep(1,0);
   if ((errcode=grasbw_request(bw1,4000,bw2,4000,bufSize,expSize,msgSize,&sec_sat,&bw_sat))) {
     fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",gras_error_name(errcode));
     return -1;
@@ -129,18 +133,18 @@ int maestro(int argc,char *argv[]) {
 
   int a,b,c,d,begin;
 
-  if ((errcode=gras_sock_server_open(4000,5000,&(g->sock)))) { 
+  if ((errcode=gras_socket_server(4000,&(g->sock)))) { 
     fprintf(stderr,"MAESTRO: Error %s encountered while opening the server socket\n",gras_error_name(errcode));
     return 1;
   }
 
   if (grasbw_register_messages()) {
-    gras_sock_close(g->sock);
+    gras_socket_close(g->sock);
     return 1;
   }
 
   begin=time(NULL);
-  beginSim=gras_time();
+  beginSim=gras_os_time();
   for (a=0; a<MAXHOSTS; a++) {
     for (b=0; b<MAXHOSTS; b++) {
       if (a==b) continue;
@@ -154,7 +158,7 @@ int maestro(int argc,char *argv[]) {
     }
   }
   fprintf(stderr,"Did all BW tests in %ld sec (%.2f simulated sec)\n",
-	  time(NULL)-begin,gras_time()-beginSim);
+	  time(NULL)-begin,gras_os_time()-beginSim);
       
   for (a=0; a<MAXHOSTS; a++) {
     for (b=0; b<MAXHOSTS; b++) {
@@ -165,10 +169,10 @@ int maestro(int argc,char *argv[]) {
 		gras_error_name(errcode));
 	return -1;
       }
-      gras_sleep(1,0);
+      gras_os_sleep(1,0);
 
       begin=time(NULL);
-      beginSim=gras_time();
+      beginSim=gras_os_time();
       for (c=0 ;c<MAXHOSTS; c++) {
 	if (a==c) continue;
 	if (b==c) continue;
@@ -184,7 +188,7 @@ int maestro(int argc,char *argv[]) {
 	    return 1;
 	  }
 	  fprintf(stderr, "MAESTRO[%.2f sec]: SATURATED BW XP(%s %s // %s %s) => %f (%f vs %f)%s\n",
-		  gras_time(),
+		  gras_os_time(),
 		  hosts[c],hosts[d],hosts[a],hosts[b],
 		  bw_sat[c][d]/bw[c][d],bw[c][d],bw_sat[c][d],
 
@@ -200,11 +204,11 @@ int maestro(int argc,char *argv[]) {
 	return -1;
       }
       fprintf(stderr,"Did an iteration on saturation pair in %ld sec (%.2f simulated sec)\n",
-	      time(NULL)-begin, gras_time()-beginSim);
+	      time(NULL)-begin, gras_os_time()-beginSim);
     }
   }
 
-  gras_sleep(5,0);
+  gras_os_sleep(5,0);
   exit(0);
 #if 0
   return 0;
@@ -216,7 +220,7 @@ int maestro(int argc,char *argv[]) {
     return 1;
   }
   fprintf(stderr,"MAESTRO: Saturation started\n");
-  gras_sleep(5,0);
+  gras_os_sleep(5,0);
 
   /* test with saturation */
   if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
@@ -247,7 +251,9 @@ int maestro(int argc,char *argv[]) {
 	  expSize/1024,msgSize/1024,
 	  sec,bw);
 
-  gras_sleep(5,0);
+  gras_os_sleep(5,0);
 #endif
-  return gras_sock_close(g->sock);
+  gras_socket_close(g->sock);
+   
+  return 0;
 }

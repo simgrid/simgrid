@@ -1,5 +1,6 @@
 include_HEADERS = gras.h xbt.h
 nobase_include_HEADERS = \
+	xbt/misc.h \
 	xbt/sysdep.h \
 	xbt/log.h xbt/error.h \
 	xbt/module.h \

@@ -8,8 +8,6 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-
-#include "gras_private.h"
 #include "dict_private.h"  /* prototypes of this module */
 
 GRAS_LOG_EXTERNAL_CATEGORY(dict);
@@ -143,8 +141,7 @@ _gras_dictelm_alloc(char                *key,
   p_elm->offset   = offset;
   p_elm->content  = data;
   p_elm->free_ctn = free_ctn;
-
-  gras_dynar_new(&(p_elm->sub), sizeof(gras_dictelm_t*), _dictelm_wrapper_free);
+  p_elm->sub      = gras_dynar_new(sizeof(gras_dictelm_t*), _dictelm_wrapper_free);
 
   *pp_elm = p_elm;
 

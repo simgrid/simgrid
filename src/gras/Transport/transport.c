@@ -46,11 +46,9 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
 
 }
 
-void
-gras_trp_init(void){
-  
+void gras_trp_init(void){
   /* make room for all plugins */
-  gras_dict_new(&_gras_trp_plugins);
+  _gras_trp_plugins=gras_dict_new();
 
   /* Add them */
   gras_trp_plugin_new("tcp", gras_trp_tcp_setup);
@@ -325,18 +323,35 @@ char *gras_socket_peer_name(gras_socket_t *sock) {
 
 gras_error_t gras_socket_raw_send(gras_socket_t *peer, 
 				  unsigned int timeout,
-				  unsigned long int expSize, 
-				  unsigned long int msgSize) {
-  
+				  unsigned long int exp_size, 
+				  unsigned long int msg_size) {
+  gras_error_t errcode;
+  char *chunk = gras_malloc(msg_size);
+  int exp_sofar;
+   
   gras_assert0(peer->raw,"Asked to send raw data on a regular socket\n");
-  return gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);   
+  for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
+     TRY(gras_trp_chunk_send(peer,chunk,msg_size));
+  }
+	     
+  gras_free(chunk);
+  return no_error;//gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);   
 }
 
 gras_error_t gras_socket_raw_recv(gras_socket_t *peer, 
 				  unsigned int timeout,
-				  unsigned long int expSize, 
-				  unsigned long int msgSize){
+				  unsigned long int exp_size, 
+				  unsigned long int msg_size){
   
+  gras_error_t errcode;
+  char *chunk = gras_malloc(msg_size);
+  int exp_sofar;
+
   gras_assert0(peer->raw,"Asked to recveive raw data on a regular socket\n");
-  return gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);   
+  for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
+     TRY(gras_trp_chunk_send(peer,chunk,msg_size));
+  }
+
+  gras_free(chunk);
+  return no_error;//gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);   
 }

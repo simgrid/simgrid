@@ -392,6 +392,7 @@ gras_error_t test_graph(gras_socket_t *sock, int direction) {
   i->l->l->l = i;
   j = NULL;
 
+  gras_datadesc_cycle_set(gras_datadesc_by_name("chained_list_t*"));
   TRY(write_read(gras_datadesc_by_name("chained_list_t*"),
 		 &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
@@ -609,7 +610,7 @@ int main(int argc,char *argv[]) {
 
   TRYFAIL(declare_chained_list_type());
   TRYFAIL(test_chain_list(sock,direction));
-  /*  TRYFAIL(test_graph(sock,direction)); */
+  TRYFAIL(test_graph(sock,direction)); 
 
   TRYFAIL(test_pbio(sock,direction));
 

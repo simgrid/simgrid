@@ -8,6 +8,7 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "gras/cond.h"
 #include "gras/Virtu/virtu_rl.h"
 
 int gras_if_RL(void) {

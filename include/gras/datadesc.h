@@ -15,28 +15,9 @@
 #include <sys/types.h>  /* size_t */
 #include <stdarg.h>
 
-
-/*! C++ users need love */
-#ifndef BEGIN_DECL
-# ifdef __cplusplus
-#  define BEGIN_DECL extern "C" {
-# else
-#  define BEGIN_DECL 
-# endif
-#endif
-
-/*! C++ users need love */
-#ifndef END_DECL
-# ifdef __cplusplus
-#  define END_DECL }
-# else
-#  define END_DECL 
-# endif
-#endif
-/* End of cruft for C++ */
+#include "xbt/misc.h" /* BEGIN_DECL */
 
 BEGIN_DECL
-
 
 /**
  * gras_datadesc_type_t:
@@ -103,6 +84,9 @@ gras_datadesc_type_t *
 /*********************************
  * Change stuff within datadescs *
  *********************************/
+
+void gras_datadesc_cycle_set(gras_datadesc_type_t *type);
+void gras_datadesc_cycle_unset(gras_datadesc_type_t *type);
 
 void gras_datadesc_cb_send (gras_datadesc_type_t    *type,
 			    gras_datadesc_type_cb_void_t  pre);
