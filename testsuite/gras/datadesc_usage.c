@@ -447,8 +447,8 @@ int main(int argc,char *argv[]) {
     TRYFAIL(gras_socket_server_from_file(filename,&sock));
     TRY(gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
 			   gras_arch_selfid(), &r_arch_char));
-    INFO1("This datafile was generated on %s", 
-	  gras_datadesc_arch_name(r_arch_char));
+    INFO2("This datafile was generated on %s (%d)",
+	  gras_datadesc_arch_name(r_arch_char),(int)r_arch_char);
   }
   r_arch = (int)r_arch_char;
   
