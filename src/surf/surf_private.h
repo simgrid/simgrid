@@ -9,13 +9,14 @@
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
-#include "cpu_private.h"
 
 /* Generic functions common to all ressources */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
 void surf_action_free(surf_action_t * action);
 void surf_action_change_state(surf_action_t action, e_surf_action_state_t state);
 
-
+extern xbt_dynar_t resource_list;
+extern lmm_system_t maxmin_system;
+extern tmgr_history_t history;
 
 #endif				/* _SURF_SURF_PRIVATE_H */

@@ -26,6 +26,13 @@ typedef enum {
   SURF_ACTION_NOT_IN_THE_SYSTEM		/* Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
+typedef struct surf_action_state {
+  xbt_swag_t ready_action_set;
+  xbt_swag_t running_action_set;
+  xbt_swag_t failed_action_set;
+  xbt_swag_t done_action_set;
+} s_surf_action_state_t, *surf_action_state_t;
+
 /* Never create s_surf_action_t by yourself !!!! */
 /* Use action_new from the corresponding resource */
 typedef struct surf_action {
@@ -44,15 +51,21 @@ typedef struct surf_action {
 /***************************/
 /* Generic resource object */
 /***************************/
+
 typedef struct surf_resource {
-  void (*parse_file)(const char *file);
+  s_surf_action_state_t states; /* Any living action on this resource */
+
+  /* Moved to the initialization function */
+  /*   void (*parse_file)(const char *filename); */ 
+
   void *(*name_service)(const char *name);
   const char *(*get_resource_name)(void *resource_id);
+  int (*resource_used)(void *resource_id);
 
   /*   surf_action_t (*action_new)(void *callback);  */
   /* Not defined here. Actions have to be created by actually
      performing it and prototype may therefore vary with the resource
-     implementation */
+     implementationx */
 
   e_surf_action_state_t (*action_get_state)(surf_action_t action);
   void (*action_free)(surf_action_t * action);	/* Call it when you're done with this action */
@@ -60,11 +73,12 @@ typedef struct surf_resource {
   void (*action_recycle)(surf_action_t action);	/* More efficient than free/new */
   void (*action_change_state)(surf_action_t action, e_surf_action_state_t state);
 
-  xbt_heap_float_t (*share_resources)(void); /* Share the resources to the 
-						actions and return the potential 
-						next action termination */
-  void (*solve)(xbt_heap_float_t date); /* Advance time to "date" and update
-					   the actions' state*/
+  xbt_heap_float_t (*share_resources)(xbt_heap_float_t now); /* Share the resources to the 
+						actions and return in hom much time 
+						the next action may terminate */
+  void (*update_state)(xbt_heap_float_t now,
+		       xbt_heap_float_t delta); /* Update the actions' state*/
+
 } s_surf_resource_t;
 
 /**************************************/
@@ -82,6 +96,7 @@ typedef struct surf_cpu_resource {
   e_surf_cpu_state_t (*get_state)(void *cpu);
 } s_surf_cpu_resource_t, *surf_cpu_resource_t;
 extern surf_cpu_resource_t surf_cpu_resource;
+void surf_cpu_resource_init(const char* filename);
 
 /* Network resource */
 typedef struct surf_network_resource {
@@ -89,6 +104,7 @@ typedef struct surf_network_resource {
   surf_action_t (*communicate)(void *src, void *dst, xbt_maxmin_float_t size);
 } s_surf_network_resource_t, surf_network_resource_t;
 extern surf_network_resource_t surf_network_resource;
+void surf_network_resource_init(const char* filename);
 
 /* Timer resource */
 typedef struct surf_timer_resource {
@@ -96,20 +112,16 @@ typedef struct surf_timer_resource {
   surf_action_t (*wait)(void *cpu, void *dst, xbt_maxmin_float_t size);
 } s_surf_timer_resource_t, surf_timer_resource_t;
 extern surf_timer_resource_t surf_timer_resource;
+void surf_timer_resource_init(const char* filename);
 
 /*******************************************/
 /*** SURF Globals **************************/
 /*******************************************/
-typedef struct surf_global {
-  xbt_swag_t ready_action_set;
-  xbt_swag_t running_action_set;
-  xbt_swag_t failed_action_set;
-  xbt_swag_t done_action_set;
-} s_surf_global_t;
-/* The main function */
-extern s_surf_global_t surf_global;
 
-void surf_init(void); /* initialize all resource objects */
-xbt_heap_float_t surf_solve(void); /* returns the next date */
+void surf_init(void); /* initialize common structures */
+xbt_heap_float_t surf_solve(void); /*  update all states and returns
+				       the time elapsed since last
+				       event */
+xbt_heap_float_t surf_get_clock(void);
 
 #endif				/* _SURF_SURF_H */

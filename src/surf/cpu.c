@@ -10,16 +10,6 @@ surf_cpu_resource_t surf_cpu_resource = NULL;
 static xbt_dict_t cpu_set = NULL;
 static lmm_system_t sys = NULL;
 
-typedef struct cpu {
-  const char *name;
-  xbt_maxmin_float_t power_scale;
-  xbt_maxmin_float_t current_power;
-  tmgr_trace_t power_trace;
-  e_surf_action_state_t current_state;
-  tmgr_trace_t state_trace;
-  lmm_constraint_t constraint;
-} s_cpu_t, *cpu_t;
-
 /* power_scale is the basic power of the cpu when the cpu is
    completely available. initial_power is therefore expected to be
    comprised between 0.0 and 1.0, just as the values of power_trace.
@@ -39,7 +29,7 @@ static void *new_cpu(const char *name, xbt_maxmin_float_t power_scale,
   cpu->power_trace = power_trace;
   cpu->current_state = initial_state;
   cpu->state_trace = state_trace;
-  cpu->constraint = lmm_constraint_new(sys, cpu, cpu->current_power);
+  cpu->constraint = lmm_constraint_new(sys, cpu, cpu->current_power * cpu->power_scale);
 
   xbt_dict_set(cpu_set, name, cpu, NULL);
 
@@ -48,8 +38,8 @@ static void *new_cpu(const char *name, xbt_maxmin_float_t power_scale,
 
 static void parse_file(const char *file)
 {
-  new_cpu("Cpu A", 200.0, 1.0, NULL, SURF_CPU_ON, NULL);
-  new_cpu("Cpu B", 100.0, 1.0, NULL, SURF_CPU_ON, NULL);
+  new_cpu("Cpu A", 20.0, 1.0, NULL, SURF_CPU_ON, NULL);
+  new_cpu("Cpu B", 120.0, 1.0, NULL, SURF_CPU_ON, NULL);
 }
 
 static void *name_service(const char *name)
@@ -64,6 +54,11 @@ static void *name_service(const char *name)
 static const char *get_resource_name(void *resource_id)
 {
   return ((cpu_t) resource_id)->name;
+}
+
+static int resource_used(void *resource_id)
+{
+  return lmm_constraint_used(sys, ((cpu_t)resource_id)->constraint);
 }
 
 static surf_action_t action_new(void *callback)
@@ -97,19 +92,69 @@ static void action_change_state(surf_action_t action, e_surf_action_state_t stat
   return;
 }
 
-static xbt_heap_float_t share_resources(void)
+static xbt_heap_float_t share_resources()
 {
-  return -1.0;
+  surf_action_cpu_t action = NULL;
+  xbt_swag_t running_actions= surf_cpu_resource->resource.states.running_action_set;
+  xbt_maxmin_float_t min = -1;
+  xbt_maxmin_float_t value = -1;
+  lmm_solve(sys);  
+
+  action = xbt_swag_getFirst(running_actions);
+  if(!action) return 0.0;
+  value = lmm_variable_getvalue(action->variable);
+  min = action->generic_action.remains / value ;
+
+  xbt_swag_foreach(action,running_actions) {
+    /* If everything is stable... */
+    value = action->generic_action.remains / 
+      lmm_variable_getvalue(action->variable);
+    if(value<min) min=value;
+  }
+
+  return min;
 }
 
-static void solve(xbt_heap_float_t date)
+static void update_state(xbt_heap_float_t now,
+			 xbt_heap_float_t delta)
 {
+  surf_action_cpu_t action = NULL;
+  surf_action_cpu_t next_action = NULL;
+  xbt_swag_t running_actions= surf_cpu_resource->resource.states.running_action_set;
+
+  xbt_swag_foreach_safe(action, next_action, running_actions) {
+    action->generic_action.remains -= 
+      lmm_variable_getvalue(action->variable)*delta;
+/*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
+    if(action->generic_action.remains<=0) {
+      action_change_state((surf_action_t)action, SURF_ACTION_DONE);
+    } /* else if(host_failed..) */
+  }
+
   return;
 }
 
 static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
 {
-  return NULL;
+  lmm_variable_t var;
+  surf_action_cpu_t action = NULL;
+
+  action=xbt_new0(s_surf_action_cpu_t,1);
+
+  action->generic_action.cost=size;
+  action->generic_action.remains=size;  
+  action->generic_action.start=-1.0;
+  action->generic_action.finish=-1.0;
+  action->generic_action.callback=cpu;
+  action->generic_action.resource_type=(surf_resource_t)surf_cpu_resource;
+
+  action->generic_action.state_set=surf_cpu_resource->resource.states.running_action_set;
+  xbt_swag_insert(action,action->generic_action.state_set);
+
+  action->variable = lmm_variable_new(sys, action, 1.0, -1.0, 1);
+  lmm_expand(sys, ((cpu_t)cpu)->constraint, action->variable, 1.0);
+
+  return (surf_action_t) action;
 }
 
 static e_surf_cpu_state_t get_state(void *cpu)
@@ -117,21 +162,31 @@ static e_surf_cpu_state_t get_state(void *cpu)
   return SURF_CPU_OFF;
 }
 
-
-surf_cpu_resource_t surf_cpu_resource_init(void)
+static surf_cpu_resource_t surf_cpu_resource_init_internal(void)
 {
+  s_surf_action_t action;
+
   surf_cpu_resource = xbt_new0(s_surf_cpu_resource_t,1);
 
-  surf_cpu_resource->resource.parse_file = parse_file;
+  surf_cpu_resource->resource.states.ready_action_set=
+    xbt_swag_new(xbt_swag_offset(action,state_hookup));
+  surf_cpu_resource->resource.states.running_action_set=
+    xbt_swag_new(xbt_swag_offset(action,state_hookup));
+  surf_cpu_resource->resource.states.failed_action_set=
+    xbt_swag_new(xbt_swag_offset(action,state_hookup));
+  surf_cpu_resource->resource.states.done_action_set=
+    xbt_swag_new(xbt_swag_offset(action,state_hookup));
+
   surf_cpu_resource->resource.name_service = name_service;
   surf_cpu_resource->resource.get_resource_name = get_resource_name;
+  surf_cpu_resource->resource.resource_used = resource_used;
   surf_cpu_resource->resource.action_get_state=surf_action_get_state;
   surf_cpu_resource->resource.action_free = action_free;
   surf_cpu_resource->resource.action_cancel = action_cancel;
   surf_cpu_resource->resource.action_recycle = action_recycle;
   surf_cpu_resource->resource.action_change_state = action_change_state;
   surf_cpu_resource->resource.share_resources = share_resources;
-  surf_cpu_resource->resource.solve = solve;
+  surf_cpu_resource->resource.update_state = update_state;
 
   surf_cpu_resource->execute = execute;
   surf_cpu_resource->get_state = get_state;
@@ -141,4 +196,14 @@ surf_cpu_resource_t surf_cpu_resource_init(void)
   sys = lmm_system_new();
 
   return surf_cpu_resource;
+}
+
+void surf_cpu_resource_init(const char* filename)
+{
+  surf_resource_t CPU = NULL;
+
+  surf_cpu_resource=surf_cpu_resource_init_internal();
+  parse_file(filename);
+  CPU = &(surf_cpu_resource->resource); /* to make short */
+  xbt_dynar_push(resource_list, &CPU);
 }

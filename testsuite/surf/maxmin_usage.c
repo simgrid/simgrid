@@ -9,12 +9,17 @@
 #include <stdio.h>
 #include "surf/maxmin.h"
 
+#define PRINT_VAR(var) printf(#var " = %Lg\n",lmm_variable_getvalue(var));
+
 /*                               */
 /*        ______                 */
 /*  ==l1==  L2  ==L3==           */
 /*        ------                 */
 /*                               */
 
+void test(void);
+void test(void)
+{
   lmm_system_t Sys = NULL ;
   lmm_constraint_t L1 = NULL;
   lmm_constraint_t L2 = NULL;
@@ -24,10 +29,6 @@
   lmm_variable_t R_1 = NULL;
   lmm_variable_t R_2 = NULL;
   lmm_variable_t R_3 = NULL;
-
-void test(void);
-void test(void)
-{
 
   Sys = lmm_system_new();
   L1 = lmm_constraint_new(Sys, (void *) "L1", 1.0);
@@ -49,30 +50,62 @@ void test(void)
 
   lmm_expand(Sys, L3, R_3, 1.0);
 
-#define AFFICHE(var) printf(#var " = %Lg\n",lmm_variable_getvalue(var));
-  AFFICHE(R_1_2_3);
-  AFFICHE(R_1);
-  AFFICHE(R_2);
-  AFFICHE(R_3);
+  PRINT_VAR(R_1_2_3);
+  PRINT_VAR(R_1);
+  PRINT_VAR(R_2);
+  PRINT_VAR(R_3);
 
   printf("\n");
   lmm_solve(Sys);
 
-  AFFICHE(R_1_2_3);
-  AFFICHE(R_1);
-  AFFICHE(R_2);
-  AFFICHE(R_3);
+  PRINT_VAR(R_1_2_3);
+  PRINT_VAR(R_1);
+  PRINT_VAR(R_2);
+  PRINT_VAR(R_3);
   printf("\n");
 
 
   lmm_update_variable_weight(R_1_2_3,.5);
   lmm_solve(Sys);
 
-  AFFICHE(R_1_2_3);
-  AFFICHE(R_1);
-  AFFICHE(R_2);
-  AFFICHE(R_3);
-#undef AFFICHE
+  PRINT_VAR(R_1_2_3);
+  PRINT_VAR(R_1);
+  PRINT_VAR(R_2);
+  PRINT_VAR(R_3);
+
+  lmm_system_free(Sys);
+} 
+
+void test2(void);
+void test2(void)
+{
+  lmm_system_t Sys = NULL ;
+  lmm_constraint_t CPU1 = NULL;
+  lmm_constraint_t CPU2 = NULL;
+
+  lmm_variable_t T1 = NULL;
+  lmm_variable_t T2 = NULL;
+
+  Sys = lmm_system_new();
+  CPU1 = lmm_constraint_new(Sys, (void *) "CPU1", 200.0);
+  CPU2 = lmm_constraint_new(Sys, (void *) "CPU2", 100.0);
+
+  T1 = lmm_variable_new(Sys, (void *) "T1", 1.0 , -1.0 , 1);
+  T2 = lmm_variable_new(Sys, (void *) "T2", 1.0 , -1.0 , 1);
+
+  lmm_expand(Sys, CPU1, T1, 1.0);
+  lmm_expand(Sys, CPU2, T2, 1.0);
+
+  PRINT_VAR(T1);
+  PRINT_VAR(T2);
+
+  printf("\n");
+  lmm_solve(Sys);
+
+  PRINT_VAR(T1);
+  PRINT_VAR(T2);
+
+  printf("\n");
 
   lmm_system_free(Sys);
 } 
@@ -81,5 +114,6 @@ void test(void)
 int main(int argc, char **argv)
 {
   test();
+  test2();
   return 0;
 }

@@ -6,7 +6,6 @@
 #ifndef _SURF_CPU_PRIVATE_H
 #define _SURF_CPU_PRIVATE_H
 
-#include "surf/surf.h"
 #include "surf/surf_private.h"
 
 typedef struct surf_action_cpu {
@@ -14,6 +13,15 @@ typedef struct surf_action_cpu {
   lmm_variable_t variable;
 } s_surf_action_cpu_t, *surf_action_cpu_t;
 
-surf_cpu_resource_t surf_cpu_resource_init(void);
+typedef struct cpu {
+  const char *name;
+  xbt_maxmin_float_t power_scale;
+  xbt_maxmin_float_t current_power;
+  tmgr_trace_t power_trace;
+  e_surf_action_state_t current_state;
+  tmgr_trace_t state_trace;
+  lmm_constraint_t constraint;
+} s_cpu_t, *cpu_t;
+
 
 #endif				/* _SURF_SURF_PRIVATE_H */
