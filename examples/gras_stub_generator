@@ -15,7 +15,7 @@ eval qq{
 
 sub usage {
     my ($msg)=@_;
-    fail ($msg? "gras_stub_generator: $msg\n":"").
+    die ($msg? "gras_stub_generator: $msg\n":"").
 	 "gras_stub_generator: USAGE\n".
 	 "  gras_stub_generator project_name deployment_file\n"
 }
