@@ -204,6 +204,8 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
   
   gras_sg_portrec_t pr;
 
+  XBT_IN1(" (sock=%p)",sock);
+   
   if (!sock) return;
   xbt_assert0(hd,"Please run gras_process_init on each process");
 
@@ -216,11 +218,13 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
       DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
       if (pr.port == sock->port) {
 	xbt_dynar_cursor_rm(hd->ports, &cpt);
-	return;
+	XBT_OUT;
+        return;
       }
     }
     WARN0("socket_close called on an unknown socket");
   }
+  XBT_OUT;
 }
 
 typedef struct {
@@ -271,6 +275,7 @@ xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
 	 MSG_host_get_name(MSG_host_self()), sock_data->to_chan, size);
   if (MSG_task_get(&task, (sock->raw ? pd->rawChan : pd->chan)) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_get()");
+  DEBUG1("Got chuck %s",MSG_task_get_name(task));
 
   task_data = MSG_task_get_data(task);
   if (task_data->size != size)
