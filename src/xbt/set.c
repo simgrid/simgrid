@@ -74,7 +74,7 @@ gras_error_t gras_set_add    (gras_set_t     *set,
   gras_set_elm_t *found_in_dict;
 
   if (elm->name_len <= 0) {
-    elm->name_len = strlen(elm->name)+1;
+    elm->name_len = strlen(elm->name);
   }
 
   errcode = gras_dict_get_ext (set->dict, 
@@ -111,7 +111,7 @@ gras_error_t gras_set_get_by_name    (gras_set_t     *set,
 				      const char     *name,
 				      /* OUT */gras_set_elm_t **dst) {
 
-  return gras_dict_get_ext(set->dict, name, strlen(name)+1, (void**) dst);
+  return gras_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
 }
 /**
  * gras_set_get_by_name_ext:
