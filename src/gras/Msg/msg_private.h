@@ -24,6 +24,7 @@
 #include "gras/virtu.h"
 
 #include "gras/messages.h"
+#include "gras/timer.h"
 #include "gras_modinter.h"
 
 #include "gras/Msg/msg_interface.h"
@@ -35,7 +36,7 @@ typedef struct {
   gras_msgtype_t  type;
   void           *payload;
   int             payload_size;
-} gras_msg_t;
+} s_gras_msg_t, *gras_msg_t;
 
 /**
  * gras_msgtype_t:
@@ -80,16 +81,15 @@ void gras_cblist_free(void *cbl);
 /* ********* *
  * * TIMER * *
  * ********* */
-typedef void (*void_f_void_t)(void);
-  
 typedef struct {
   double expiry;
   double period;
   void_f_void_t action;
   int repeat;
-} *gras_timer_t;
+} s_gras_timer_t, *gras_timer_t;
 
-extern xbt_dynar_t _gras_timers;
+/* returns 0 if it handled a timer, or the delay until next timer, or -1 if no armed timer */
+double gras_msg_timer_handle(void);
 
 
 #endif  /* GRAS_MESSAGE_PRIVATE_H */

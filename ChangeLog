@@ -29,14 +29,18 @@ SimGrid (2.91) unstable; urgency=low
    - Cleanup the known architecture table. Reorder the entries to group what
      should be, and use a more consistant naming scheme.
      (some of the test dataset are still to be regenerated)
-   - Allow library to register globals on each process just as userdata does.
+   - New! Allow library to register globals on each process just as userdata
+     does. 
       This is implemented using a xbt_dict and not a xbt_set, so we loose the
        lookup time (for now).
       Use it in msg and trp.
       This cleans a lot the internals and helps enforcing privacy of the
        headers between the gras components.
+   - New! Add a timer mecanism, not unlike cron(8) and at(1). 
    - Bugfix: gras_os_time was delirious in RL.
-   - Reenable GRAS
+   - Bugfix: gras_trp_select/RL don't run into the wall when asked to select
+     onto 0 sockets.
+   - Reenable GRAS now that it works.
 
  --
 

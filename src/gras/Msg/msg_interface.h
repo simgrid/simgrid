@@ -21,10 +21,13 @@
  */
 typedef struct {
   /*queue of msgs storing the ones got while msg_wait'ing for something else */
-  xbt_dynar_t msg_queue; /* elm type: gras_msg_t */
+  xbt_dynar_t msg_queue; /* elm type: s_gras_msg_t */
 
   /* registered callbacks for each message */
   xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
+   
+  /* registered timers */
+  xbt_dynar_t timers; /* elm type: s_gras_timer_t */
 
 } s_gras_msg_procdata_t,*gras_msg_procdata_t;
 
