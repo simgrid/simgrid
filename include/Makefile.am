@@ -1,4 +1,3 @@
-SUBDIRS=modules
 include_HEADERS = gras.h
 nobase_include_HEADERS = \
 	gras/log.h gras/error.h \
@@ -11,5 +10,8 @@ nobase_include_HEADERS = \
 	\
 	gras/messages.h \
 	\
-	gras/core.h
+	gras/core.h\
+	\
+	gras/modules/base.h \
+	gras/modules/bandwidth.h
 

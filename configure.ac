@@ -95,7 +95,6 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
     src/include/Makefile
-      src/include/modules/Makefile
     src/base/Makefile
       src/base/Tests/Makefile
       src/base/Tests/run_tests
