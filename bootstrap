@@ -8,7 +8,10 @@ amver=1.8
 # AUTOPOINT=
 # LIBTOOLIZE=
 
-ACLOCAL="aclocal-$amver -I acmacro -I /usr/share/aclocal/gnome2-macros" \
+# Add the following to ACLOCAL to use the installed m4 macro about gtk-doc-tools instead of ours
+# -I /usr/share/aclocal/gnome2-macros
+
+ACLOCAL="aclocal-$amver -I acmacro" \
 AUTOMAKE="automake-$amver" \
   autoreconf -v || exit 1
 
