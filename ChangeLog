@@ -1,3 +1,7 @@
+2004-08-17 Martin Quinson
+  Version 0.6.1 (protocol not changed; ABI not changed)
+  - prealloc some buffers to speed things up
+
 2004-08-11 Martin Quinson
   Version 0.6 (protocol not changed; ABI expended)
   - The parsing macro can deal with the references, provided that you add
