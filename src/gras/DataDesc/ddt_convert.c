@@ -50,7 +50,10 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
                     {1,2,2,2,2,   2,2,   2,2}},
 
   {"win32",    0,   {1,2,4,4,8,   4,4,   4,8}, 
-                    {1,2,4,4,8,   4,4,   4,8}}
+                    {1,2,4,4,8,   4,4,   4,8}},
+   
+  {"g5",       1,   {1,2,4,4,8,   4,4,   4,8}, 
+                    {1,2,4,4,4,   4,4,   4,4}}
 };
 
 const char *gras_datadesc_arch_name(int code) {
