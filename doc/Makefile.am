@@ -1,19 +1,25 @@
 DOCSOURCES = $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.doc")
 
 EXTRA_DIST = html Doxyfile.API Doxyfile.Examples Doxyfile.main \
- modules.doc FAQ.doc index.doc footer.html simgrid_logo.png simgrid_modules.jpg
+ modules.doc FAQ.doc index.doc footer.html simgrid_logo.png simgrid_modules.png
 
 DISTCLEANFILES = api_index.doc
 MAINTAINERCLEANFILES = html
 
 if MAINTAINER_MODE
-html: $(DOCSOURCES) Doxyfile.API Doxyfile.Examples Doxyfile.main logcategories.doc
+simgrid_modules.map: simgrid_modules.fig
+	fig2dev -Lmap simgrid_modules.fig | sed 's/imagemap/simgrid_modules/g' | sed 's/\.gif/.png/' | grep -e IMG -e MAP -e AREA > simgrid_modules.map
+
+simgrid_modules.png: simgrid_modules.fig
+	fig2dev -Lpng simgrid_modules.fig > simgrid_modules.png
+
+html: $(DOCSOURCES) Doxyfile.API Doxyfile.Examples Doxyfile.main logcategories.doc simgrid_modules.map simgrid_modules.png
 	touch api_index.doc
 	doxygen Doxyfile.main >/dev/null
 	doxygen Doxyfile.API >/dev/null
 	doxygen Doxyfile.Examples >/dev/null
 	@top_srcdir@/tools/doxygen/index_create.pl html/API/API.tag api_index.doc
-	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.jpg html/
+	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	doxygen Doxyfile.API >/dev/null
 	doxygen Doxyfile.Examples >/dev/null
 	doxygen Doxyfile.main >/dev/null

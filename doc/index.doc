@@ -52,9 +52,13 @@ this page. It is organized as follow:
 As depicted by the following schema, the SimGrid toolkit is basically
 three-layered.
 
+
 \htmlonly
-<center><img align=center src="simgrid_modules.jpg" alt="SimGrid"><br>
-<b>Relationships between the SimGrid components</b>
+<center>
+\endhtmlonly
+\htmlinclude simgrid_modules.map
+\htmlonly
+<br><b>Relationships between the SimGrid components</b>
 </center>
 \endhtmlonly
 
