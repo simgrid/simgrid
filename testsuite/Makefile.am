@@ -4,7 +4,7 @@ AM_CFLAGS=-g
 CLEANFILES = *~ test a.out *.o
 DISTCLEANFILES=Makefile.in *~
 EXTRA_DIST=run_tests.in \
-  datadesc.i386 datadesc.ppc datadesc.sparc
+  datadesc.little32 datadesc.big32 datadesc.big64
 
 # Test stuff
 
