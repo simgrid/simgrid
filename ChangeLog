@@ -1,6 +1,7 @@
-SimGrid (2.92) NOT RELEASED YET; urgency=low
+SimGrid (2.92) unstable; urgency=low
 
   Alpha 3 on the path to SimGrid 3
+  
   [Arnaud]
   (gras)
    - New! First try of benchmarking macros.
@@ -20,7 +21,7 @@ SimGrid (2.92) NOT RELEASED YET; urgency=low
      seconds were coded as such. It leaded to damn rounding errors.
    - Bugfix: Hard to belive that timers ever worked before this.
 
- -- 
+ -- SimGrid team <simgrid2-users@listes.ens-lyon.fr> Wed, 23 Feb 2005 22:09:21 +0100
 
 SimGrid (2.91) unstable; urgency=low
 
