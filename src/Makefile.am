@@ -29,7 +29,7 @@ EXTRA_DIST= \
 	surf/surf_private.h \
 	surf/cpu_private.h \
 	surf/workstation_private.h \
-	surf/surf_parse.l surf/surf_parse.h \
+	surf/surf_parse.l \
 	surf/network_private.h \
 	\
 	msg/private.h \
@@ -115,6 +115,7 @@ COMMON_S=\
   msg/gos.c  \
   msg/global.c  \
   msg/environment.c  \
+  msg/deployment.c  \
   \
   gras/gras.c \
   \

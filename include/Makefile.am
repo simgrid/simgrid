@@ -14,6 +14,7 @@ nobase_include_HEADERS = \
 	surf/maxmin.h \
 	surf/trace_mgr.h \
 	surf/surf.h \
+	surf/surf_parse.h \
 	\
 	msg/msg.h \
 	msg/datatypes.h \
