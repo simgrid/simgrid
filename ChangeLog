@@ -1,10 +1,25 @@
-2004-07-21 Martin Quinson
+2004-07-23 Martin Quinson
   Version 0.2
+  - add some testing for cpbs in the test cases, and fix some more bugs.
+    This invalidate again the little64 data file, since I cannot regenerate
+    it myself.
+  - remove an awfull optimization in the logging stuff, allowing me to:
+    - understand it again
+    - learn gcc how to check that the argument match the provided format
+    - fix all errors revealed by gcc after that
+  - internal keys of dict are not \0 terminated. Deal with it properly in
+    loggings instead of segfaulting when the user want to see the logs :-/
+
+2004-07-22 Martin Quinson
+  - Fix some stupid bug preventing cbps (callback postit) from working
+
+2004-07-21 Martin Quinson
   - Some documentation cleanups
   - remove the useless last argument of msgtype_declare
   - rename the Virtu functions to fit into the 'os' namespace
   - move headers src/include -> src/include/gras/ and stop fooling with 
     gras -> . symbolic link
+  - make distcheck is now successful
 
 2004-07-19 Martin Quinson
   Version 0.1.1
