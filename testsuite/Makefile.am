@@ -12,7 +12,7 @@ noinst_PROGRAMS =                             \
 	dynar_int dynar_double dynar_string   \
 	dict_usage dict_crash                 \
 	log_usage                             \
-	config_usage                          
+	config_usage                          \
 	\
 	gs_example_send gs_example_receive
 	
