@@ -1,3 +1,8 @@
+2005-02-08 Martin
+  - Doxygenification of all GRAS. gtk-doc-tools is dead in SG now.
+  - Automatically extract all existing logging categories, and add the list
+    to the documentation (long standing one, to say the less)
+
 2005-02-04 Martin
   - Reenable GRAS/RL; keep GRAS/SG disabled for now
   - Various cleanups to the autotools stuff
@@ -5,8 +10,9 @@
   - Let make distcheck work again (yeah!)
 
 2005-01-31 Arnaud
+  Version 2.90: "the long awaited one"
   - Finished rewriting and debugging MSG. Rewrote the documentation.
-    Preparing to release.
+  - disable GRAS for now since it needs to be ported to the newest SG
 
 2004-12-16 Martin
   - Finish the port to windows (using mingw32 for cross-compile)
@@ -39,6 +45,9 @@
   - Added a dichotomy to the dictionnaries. make check works as well before
     so I assume that the patch is correct. I do not know however if things
     run effectively faster than before now. :)
+
+  Inclusion of the SimGrid tree in the GRAS one. The archive is renamed to
+  SimGrid, and the version number is bumped to 2.x
 
 2004-10-29 Martin Quinson
   - Introduction of the remote errors. 
