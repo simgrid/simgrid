@@ -6,7 +6,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_private.h"
-#include "xbt/dict.h"
 
 #define SG_TCP_CTE_GAMMA 20000.0
 
@@ -16,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(network, surf,
 surf_network_resource_t surf_network_resource = NULL;
 
 static xbt_dict_t network_link_set = NULL;
-static xbt_dict_t network_card_set = NULL;
+xbt_dict_t network_card_set = NULL;
 
 static int card_number = 0;
 static network_link_t **routing_table = NULL;
@@ -27,8 +26,8 @@ static int *routing_table_size = NULL;
 
 static void create_routing_table(void)
 {
-  routing_table = xbt_new0(network_link_t *,card_number*card_number);
-  routing_table_size = xbt_new0(int,card_number*card_number);
+  routing_table = xbt_new0(network_link_t *, card_number * card_number);
+  routing_table_size = xbt_new0(int, card_number * card_number);
 }
 
 static void network_link_free(void *nw_link)
@@ -41,12 +40,13 @@ static network_link_t network_link_new(const char *name,
 				       tmgr_trace_t bw_trace,
 				       xbt_maxmin_float_t lat_initial,
 				       tmgr_trace_t lat_trace,
-				       e_surf_network_link_state_t state_initial,
+				       e_surf_network_link_state_t
+				       state_initial,
 				       tmgr_trace_t state_trace)
 {
   network_link_t nw_link = xbt_new0(s_network_link_t, 1);
 
-  
+
   nw_link->resource = (surf_resource_t) surf_network_resource;
   nw_link->name = name;
   nw_link->bw_current = bw_initial;
@@ -63,8 +63,7 @@ static network_link_t network_link_new(const char *name,
 	tmgr_history_add_trace(history, state_trace, 0.0, 0, nw_link);
 
   nw_link->constraint =
-      lmm_constraint_new(maxmin_system, nw_link,
-			 nw_link->bw_current);
+      lmm_constraint_new(maxmin_system, nw_link, nw_link->bw_current);
 
   xbt_dict_set(network_link_set, name, nw_link, network_link_free);
 
@@ -77,28 +76,27 @@ static int network_card_new(const char *card_name)
 
   xbt_dict_get(network_card_set, card_name, (void *) &card);
 
-  if(!card) {
-    card = xbt_new0(s_network_card_t,1);
-    card->name=xbt_strdup(card_name);
-    card->id=card_number++;
+  if (!card) {
+    card = xbt_new0(s_network_card_t, 1);
+    card->name = xbt_strdup(card_name);
+    card->id = card_number++;
     xbt_dict_set(network_card_set, card_name, card, NULL);
-  } 
+  }
   return card->id;
 }
 
-static void route_new(int src_id, int dst_id,
-		      char* *links, int nb_link)
+static void route_new(int src_id, int dst_id, char **links, int nb_link)
 {
   network_link_t *link_list = NULL;
-  int i ; 
+  int i;
 
-  ROUTE_SIZE(src_id,dst_id) = nb_link;
-  link_list = (ROUTE(src_id,dst_id) = xbt_new0(network_link_t,nb_link));
-  for(i=0; i < nb_link; i++) {
-    xbt_dict_get(network_link_set,links[i], (void *) &(link_list[i]));
+  ROUTE_SIZE(src_id, dst_id) = nb_link;
+  link_list = (ROUTE(src_id, dst_id) = xbt_new0(network_link_t, nb_link));
+  for (i = 0; i < nb_link; i++) {
+    xbt_dict_get(network_link_set, links[i], (void *) &(link_list[i]));
     xbt_free(links[i]);
   }
-  xbt_free(links);  
+  xbt_free(links);
 }
 
 /*  
@@ -140,9 +138,8 @@ static void parse_network_link(void)
 
   surf_parse_trace(&state_trace);
 
-  network_link_new(name, bw_initial, bw_trace, 
-		   lat_initial, lat_trace,
-		   state_initial, state_trace);  
+  network_link_new(name, bw_initial, bw_trace,
+		   lat_initial, lat_trace, state_initial, state_trace);
 }
 
 /*  
@@ -163,22 +160,23 @@ static void parse_route(int fake)
   src_id = network_card_new(surf_parse_text);
 
   token = surf_parse();
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);  
+  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
   dst_id = network_card_new(surf_parse_text);
 
   token = surf_parse();
-  xbt_assert1((token == TOKEN_LP), "Parse error line %d", line_pos);  
-  
-  while((token = surf_parse())==TOKEN_WORD) {
-    if(!fake) {
+  xbt_assert1((token == TOKEN_LP), "Parse error line %d", line_pos);
+
+  while ((token = surf_parse()) == TOKEN_WORD) {
+    if (!fake) {
       nb_link++;
-      link_name=xbt_realloc(link_name, (nb_link) * sizeof(char*));
-      link_name[(nb_link)-1]=xbt_strdup(surf_parse_text);
+      link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
+      link_name[(nb_link) - 1] = xbt_strdup(surf_parse_text);
     }
   }
-  xbt_assert1((token == TOKEN_RP), "Parse error line %d", line_pos);  
+  xbt_assert1((token == TOKEN_RP), "Parse error line %d", line_pos);
 
-  if(!fake) route_new(src_id,dst_id,link_name, nb_link);
+  if (!fake)
+    route_new(src_id, dst_id, link_name, nb_link);
 }
 
 static void parse_file(const char *file)
@@ -296,8 +294,10 @@ static void action_change_state(surf_action_t action,
 static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 {
   s_surf_action_network_t action;
-  return generic_maxmin_share_resources(surf_network_resource->common_public->states.running_action_set,
-					xbt_swag_offset(action,variable));
+  return generic_maxmin_share_resources(surf_network_resource->
+					common_public->states.
+					running_action_set,
+					xbt_swag_offset(action, variable));
 }
 
 
@@ -314,9 +314,9 @@ static void update_actions_state(xbt_heap_float_t now,
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     deltap = delta;
-    if(action->latency>0) {
-      if(action->latency>deltap) {
-	action->latency-=deltap;
+    if (action->latency > 0) {
+      if (action->latency > deltap) {
+	action->latency -= deltap;
 	deltap = 0.0;
       } else {
 	deltap -= action->latency;
@@ -324,8 +324,8 @@ static void update_actions_state(xbt_heap_float_t now,
       }
     }
     action->generic_action.remains -=
-      lmm_variable_getvalue(action->variable) * deltap;
-    if(action->generic_action.max_duration!=NO_MAX_DURATION)
+	lmm_variable_getvalue(action->variable) * deltap;
+    if (action->generic_action.max_duration != NO_MAX_DURATION)
       action->generic_action.max_duration -= delta;
 
 /*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
@@ -333,10 +333,10 @@ static void update_actions_state(xbt_heap_float_t now,
     if (action->generic_action.remains <= 0) {
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else if((action->generic_action.max_duration!=NO_MAX_DURATION) && 
-	      (action->generic_action.max_duration<=0)) {
+    } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
+	       (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
-      action_change_state((surf_action_t) action, SURF_ACTION_DONE);    
+      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else {			/* Need to check that none of the resource has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
@@ -382,11 +382,11 @@ static void update_resource_state(void *id,
     surf_action_network_t action = NULL;
 
     nw_link->lat_current = value;
-    while(lmm_get_var_from_cnst(maxmin_system, nw_link->constraint, &var)) {
-      action  = lmm_variable_id(var);
-      action->lat_current+=delta;
-      lmm_update_variable_bound(maxmin_system, var, 
-				1/(action->lat_current));
+    while (lmm_get_var_from_cnst(maxmin_system, nw_link->constraint, &var)) {
+      action = lmm_variable_id(var);
+      action->lat_current += delta;
+      lmm_update_variable_bound(maxmin_system, var,
+				1 / (action->lat_current));
     }
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
@@ -407,8 +407,8 @@ static surf_action_t communicate(void *src, void *dst,
   surf_action_network_t action = NULL;
   network_card_t card_src = src;
   network_card_t card_dst = dst;
-  int route_size = ROUTE_SIZE(card_src->id,card_dst->id);
-  network_link_t *route = ROUTE(card_src->id,card_dst->id);
+  int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
+  network_link_t *route = ROUTE(card_src->id, card_dst->id);
   int i;
 
   action = xbt_new0(s_surf_action_network_t, 1);
@@ -423,22 +423,21 @@ static surf_action_t communicate(void *src, void *dst,
       (surf_resource_t) surf_network_resource;
 
   action->generic_action.state_set =
-    surf_network_resource->common_public->states.running_action_set;
+      surf_network_resource->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0, 
+  action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
 				      route_size);
-  for(i=0; i<route_size; i++)
-    lmm_expand(maxmin_system, route[i]->constraint, action->variable,
-	       1.0);
+  for (i = 0; i < route_size; i++)
+    lmm_expand(maxmin_system, route[i]->constraint, action->variable, 1.0);
 
   action->latency = 0.0;
-  for(i=0; i<route_size; i++)
+  for (i = 0; i < route_size; i++)
     action->latency += route[i]->lat_current;
   action->lat_current = action->latency;
-  lmm_update_variable_bound(maxmin_system, action->variable, 
-			    SG_TCP_CTE_GAMMA/action->lat_current);
+  lmm_update_variable_bound(maxmin_system, action->variable,
+			    SG_TCP_CTE_GAMMA / action->lat_current);
 
   return (surf_action_t) action;
 }
@@ -447,12 +446,14 @@ static void finalize(void)
 {
   xbt_dict_free(&network_card_set);
   xbt_dict_free(&network_link_set);
-  xbt_swag_free(surf_network_resource->common_public->states.ready_action_set);
+  xbt_swag_free(surf_network_resource->common_public->states.
+		ready_action_set);
   xbt_swag_free(surf_network_resource->common_public->states.
 		running_action_set);
   xbt_swag_free(surf_network_resource->common_public->states.
 		failed_action_set);
-  xbt_swag_free(surf_network_resource->common_public->states.done_action_set);
+  xbt_swag_free(surf_network_resource->common_public->states.
+		done_action_set);
   xbt_free(surf_network_resource->common_public);
   xbt_free(surf_network_resource->common_private);
   xbt_free(surf_network_resource->extension_public);
@@ -494,6 +495,7 @@ static void surf_network_resource_init_internal(void)
   surf_network_resource->common_public->action_recycle = action_recycle;
   surf_network_resource->common_public->action_change_state =
       action_change_state;
+  surf_network_resource->common_public->name = "network";
 
   surf_network_resource->common_private->resource_used = resource_used;
   surf_network_resource->common_private->share_resources = share_resources;
@@ -513,6 +515,8 @@ static void surf_network_resource_init_internal(void)
 
 void surf_network_resource_init(const char *filename)
 {
+  if (surf_network_resource)
+    return;
   surf_network_resource_init_internal();
   parse_file(filename);
   xbt_dynar_push(resource_list, &surf_network_resource);

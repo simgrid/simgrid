@@ -9,6 +9,7 @@
 #define _SURF_SURF_H
 
 #include "xbt/swag.h"
+#include "xbt/dynar.h"
 
 /* Actions and resources are higly connected structures... */
 typedef struct surf_action *surf_action_t;
@@ -38,8 +39,8 @@ typedef struct surf_action {
   s_xbt_swag_hookup_t state_hookup;
   xbt_swag_t state_set;
   xbt_maxmin_float_t cost;	/* cost        */
-  xbt_maxmin_float_t max_duration;/* max_duration (may fluctuate until
-				     the task is completed) */
+  xbt_maxmin_float_t max_duration;	/* max_duration (may fluctuate until
+					   the task is completed) */
   xbt_maxmin_float_t remains;	/* How much of that cost remains to
 				 * be done in the currently running task */
   xbt_heap_float_t start;	/* start time  */
@@ -65,6 +66,7 @@ typedef struct surf_resource_public {
   void (*action_recycle) (surf_action_t action);
   void (*action_change_state) (surf_action_t action,
 			       e_surf_action_state_t state);
+  const char *name;
 } s_surf_resource_public_t, *surf_resource_public_t;
 
 typedef struct surf_resource {
@@ -86,13 +88,13 @@ typedef enum {
 } e_surf_cpu_state_t;
 
 typedef struct surf_cpu_resource_extension_private
-    *surf_cpu_resource_extension_private_t;
+*surf_cpu_resource_extension_private_t;
 typedef struct surf_cpu_resource_extension_public {
   surf_action_t(*execute) (void *cpu, xbt_maxmin_float_t size);
   surf_action_t(*sleep) (void *cpu, xbt_maxmin_float_t duration);
   void (*suspend) (surf_action_t action);
   void (*resume) (surf_action_t action);
-  e_surf_cpu_state_t(*get_state) (void *cpu);
+   e_surf_cpu_state_t(*get_state) (void *cpu);
 } s_surf_cpu_resource_extension_public_t,
     *surf_cpu_resource_extension_public_t;
 
@@ -106,7 +108,7 @@ void surf_cpu_resource_init(const char *filename);
 
 /* Network resource */
 typedef struct surf_network_resource_extension_private
-    *surf_network_resource_extension_private_t;
+*surf_network_resource_extension_private_t;
 typedef struct surf_network_resource_extension_public {
   surf_action_t(*communicate) (void *src, void *dst,
 			       xbt_maxmin_float_t size);
@@ -124,14 +126,16 @@ void surf_network_resource_init(const char *filename);
 
 /* Workstation resource */
 typedef struct surf_workstation_resource_extension_private
-    *surf_workstation_resource_extension_private_t;
+*surf_workstation_resource_extension_private_t;
 typedef struct surf_workstation_resource_extension_public {
   surf_action_t(*execute) (void *workstation, xbt_maxmin_float_t size);
   surf_action_t(*sleep) (void *workstation, xbt_maxmin_float_t duration);
-  e_surf_cpu_state_t(*get_state) (void *workstation);
-  surf_action_t(*communicate) (void *workstation_src,
-			       void *workstation_dst,
-			       xbt_maxmin_float_t size);
+  void (*suspend) (surf_action_t action);
+  void (*resume) (surf_action_t action);
+   e_surf_cpu_state_t(*get_state) (void *workstation);
+   surf_action_t(*communicate) (void *workstation_src,
+				void *workstation_dst,
+				xbt_maxmin_float_t size);
 } s_surf_workstation_resource_extension_public_t,
     *surf_workstation_resource_extension_public_t;
 
@@ -149,6 +153,9 @@ void surf_workstation_resource_init(const char *filename);
 /*******************************************/
 
 void surf_init(int *argc, char **argv);	/* initialize common structures */
+
+extern xbt_dynar_t resource_list;	/* list of initialized resources */
+
 xbt_heap_float_t surf_solve(void);	/*  update all states and returns
 					   the time elapsed since last
 					   event */

@@ -37,7 +37,6 @@ e_surf_action_state_t surf_action_get_state(surf_action_t action);
 void surf_action_free(surf_action_t * action);
 void surf_action_change_state(surf_action_t action, e_surf_action_state_t state);
 
-extern xbt_dynar_t resource_list;
 extern lmm_system_t maxmin_system;
 extern tmgr_history_t history;
 

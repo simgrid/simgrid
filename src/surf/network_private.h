@@ -9,6 +9,7 @@
 #define _SURF_NETWORK_PRIVATE_H
 
 #include "surf_private.h"
+#include "xbt/dict.h"
 
 typedef enum {
   SURF_NETWORK_LINK_ON = 1,		/* Ready        */
@@ -44,5 +45,7 @@ typedef struct surf_action_network {
   network_card_t src;
   network_card_t dst;
 } s_surf_action_network_t, *surf_action_network_t;
+
+extern xbt_dict_t network_card_set;
 
 #endif				/* _SURF_NETWORK_PRIVATE_H */

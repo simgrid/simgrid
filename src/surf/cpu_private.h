@@ -9,6 +9,7 @@
 #define _SURF_CPU_PRIVATE_H
 
 #include "surf_private.h"
+#include "xbt/dict.h"
 
 typedef struct surf_action_cpu {
   s_surf_action_t generic_action;
@@ -26,5 +27,7 @@ typedef struct cpu {
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
 } s_cpu_t, *cpu_t;
+
+extern xbt_dict_t cpu_set;
 
 #endif				/* _SURF_CPU_PRIVATE_H */

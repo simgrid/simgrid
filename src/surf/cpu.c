@@ -6,14 +6,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_private.h"
-#include "xbt/dict.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu, surf,
 				"Logging specific to the SURF CPU module");
 
 surf_cpu_resource_t surf_cpu_resource = NULL;
 
-static xbt_dict_t cpu_set = NULL;
+xbt_dict_t cpu_set = NULL;
 
 static void cpu_free(void *CPU)
 {
@@ -180,8 +179,9 @@ static void action_change_state(surf_action_t action,
 static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 {
   s_surf_action_cpu_t action;
-  return generic_maxmin_share_resources(surf_cpu_resource->common_public->states.running_action_set,
-					xbt_swag_offset(action,variable));
+  return generic_maxmin_share_resources(surf_cpu_resource->common_public->
+					states.running_action_set,
+					xbt_swag_offset(action, variable));
 }
 
 static void update_actions_state(xbt_heap_float_t now,
@@ -197,16 +197,16 @@ static void update_actions_state(xbt_heap_float_t now,
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     action->generic_action.remains -=
 	lmm_variable_getvalue(action->variable) * delta;
-    if(action->generic_action.max_duration!=NO_MAX_DURATION)
+    if (action->generic_action.max_duration != NO_MAX_DURATION)
       action->generic_action.max_duration -= delta;
 /*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
     if (action->generic_action.remains <= 0) {
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else if((action->generic_action.max_duration!=NO_MAX_DURATION) && 
-	      (action->generic_action.max_duration<=0)) {
+    } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
+	       (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
-      action_change_state((surf_action_t) action, SURF_ACTION_DONE);    
+      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else {			/* Need to check that none of the resource has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
@@ -244,7 +244,7 @@ static void update_resource_state(void *id,
 
   if (event_type == cpu->power_event) {
     cpu->power_current = value;
-    lmm_update_constraint_bound(maxmin_system,cpu->constraint,
+    lmm_update_constraint_bound(maxmin_system, cpu->constraint,
 				cpu->power_current * cpu->power_scale);
   } else if (event_type == cpu->state_event) {
     if (value > 0)
@@ -304,12 +304,14 @@ static surf_action_t action_sleep(void *cpu, xbt_maxmin_float_t duration)
 
 static void action_suspend(surf_action_t action)
 {
-  lmm_update_variable_weight(maxmin_system, ((surf_action_cpu_t) action)->variable, 0.0);
+  lmm_update_variable_weight(maxmin_system,
+			     ((surf_action_cpu_t) action)->variable, 0.0);
 }
 
 static void action_resume(surf_action_t action)
 {
-  lmm_update_variable_weight(maxmin_system, ((surf_action_cpu_t) action)->variable, 1.0);
+  lmm_update_variable_weight(maxmin_system,
+			     ((surf_action_cpu_t) action)->variable, 1.0);
 }
 
 static e_surf_cpu_state_t get_state(void *cpu)
@@ -365,6 +367,7 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->common_public->action_recycle = action_recycle;
   surf_cpu_resource->common_public->action_change_state =
       action_change_state;
+  surf_cpu_resource->common_public->name = "CPU";
 
   surf_cpu_resource->common_private->resource_used = resource_used;
   surf_cpu_resource->common_private->share_resources = share_resources;
@@ -388,6 +391,8 @@ static void surf_cpu_resource_init_internal(void)
 
 void surf_cpu_resource_init(const char *filename)
 {
+  if (surf_cpu_resource)
+    return;
   surf_cpu_resource_init_internal();
   parse_file(filename);
   xbt_dynar_push(resource_list, &surf_cpu_resource);

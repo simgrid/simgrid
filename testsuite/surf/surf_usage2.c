@@ -1,0 +1,115 @@
+/* 	$Id$	 */
+
+/* A few basic tests for the surf library                                   */
+
+/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <stdio.h>
+#include "surf/surf.h"
+
+const char *string_action(e_surf_action_state_t state);
+const char *string_action(e_surf_action_state_t state)
+{
+  switch (state) {
+  case (SURF_ACTION_READY):
+    return "SURF_ACTION_READY";
+  case (SURF_ACTION_RUNNING):
+    return "SURF_ACTION_RUNNING";
+  case (SURF_ACTION_FAILED):
+    return "SURF_ACTION_FAILED";
+  case (SURF_ACTION_DONE):
+    return "SURF_ACTION_DONE";
+  case (SURF_ACTION_NOT_IN_THE_SYSTEM):
+    return "SURF_ACTION_NOT_IN_THE_SYSTEM";
+  default:
+    return "INVALID STATE";
+  }
+}
+
+
+void test(void);
+void test(void)
+{
+  void *workstationA = NULL;
+  void *workstationB = NULL;
+  surf_action_t actionA = NULL;
+  surf_action_t actionB = NULL;
+  surf_action_t actionC = NULL;
+  surf_action_t commAB = NULL;
+  e_surf_action_state_t stateActionA;
+  e_surf_action_state_t stateActionB;
+  e_surf_action_state_t stateActionC;
+  xbt_maxmin_float_t now = -1.0;
+
+  surf_workstation_resource_init("platform.txt");
+
+  /*********************** WORKSTATION ***********************************/
+  workstationA =
+      surf_workstation_resource->common_public->name_service("Cpu A");
+  workstationB =
+      surf_workstation_resource->common_public->name_service("Cpu B");
+
+  /* Let's check that those two processors exist */
+  printf("%s : %p\n",
+	 surf_workstation_resource->common_public->
+	 get_resource_name(workstationA), workstationA);
+  printf("%s : %p\n",
+	 surf_workstation_resource->common_public->
+	 get_resource_name(workstationB), workstationB);
+
+  /* Let's do something on it */
+  actionA =
+      surf_workstation_resource->extension_public->execute(workstationA,
+							   1000.0);
+  actionB =
+      surf_workstation_resource->extension_public->execute(workstationB,
+							   1000.0);
+  actionC =
+      surf_workstation_resource->extension_public->sleep(workstationB,
+							 7.32);
+
+  commAB =
+      surf_workstation_resource->extension_public->
+      communicate(workstationA, workstationB, 150.0);
+
+  surf_solve();			/* Takes traces into account. Returns 0.0 */
+  do {
+    surf_action_t action = NULL;
+    int i;
+    surf_resource_t resource = NULL;
+
+    now = surf_get_clock();
+    printf("Next Event : " XBT_HEAP_FLOAT_T "\n", now);
+    
+    xbt_dynar_foreach (resource_list,i,resource) {
+      printf("\t %s actions\n", resource->common_public->name);
+      while (action =
+	     xbt_swag_extract(resource->common_public->states.
+			      failed_action_set)) {
+	printf("\t * Failed : %p\n", action);
+	resource->common_public->action_free(action);
+      }
+      while (action =
+	     xbt_swag_extract(resource->common_public->states.
+			      done_action_set)) {
+	printf("\t * Done : %p\n", action);
+	resource->common_public->action_free(action);
+      }
+    }
+  } while (surf_solve());
+
+  printf("Simulation Terminated\n");
+
+  surf_finalize();
+}
+
+
+int main(int argc, char **argv)
+{
+  surf_init(&argc, argv);	/* Initialize some common structures */
+  test();
+  return 0;
+}

@@ -10,11 +10,9 @@
 
 #include "surf_private.h"
 
-typedef struct workstation_link {
-  surf_resource_t resource;   /* Any such object, added in a trace
-				 should start by this field!!! */
-                              /* Using this object with the public part of
-				 resource does not make sense */
+typedef struct workstation {
+  surf_resource_t resource;	/* Any such object, added in a trace
+				   should start by this field!!! */
   const char *name;
   void *cpu;
   void *network_card;
