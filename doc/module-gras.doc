@@ -10,6 +10,9 @@
        - \ref GRAS_msg: communications are message oriented. You have to
          describe all possible messages and their payload beforehand, and
          can then attach callbacks to the arrival of a given kind of message. 
+       - \ref GRAS_timer: this is how to program repetitive and delayed
+         tasks, not unlike cron(8) and at(1). This cannot be used to timeout
+         a function (like setitimer(2) or signal(2) games could do).
      - <b>Virtualization</b>: Running both on top of the simulator and on
        top of real platforms, and portability support.
        - \ref GRAS_globals: The use of globals is forbidden since the
@@ -33,11 +36,13 @@
     nothing, isn't it?
     
        - \ref GRAS_ex_ping 
+       - \ref GRAS_ex_timer
 	       
     @{ */     
        /** \defgroup GRAS_dd      Data description      */       
        /** \defgroup GRAS_sock    Sockets               */           
        /** \defgroup GRAS_msg     Messages              */               
+       /** \defgroup GRAS_timer   Timers                */               
 	 
        /** \defgroup GRAS_globals Globals               */ 
        /** \defgroup GRAS_cond    Conditional execution */ 
@@ -196,7 +201,57 @@
     
     \skip client
     \until end_of_client
-    
-
   */
 
+/** \page GRAS_ex_timer Some timer games
+
+    <center>[\ref GRAS_API]</center>
+
+    This example fools around with the GRAS timers (\ref GRAS_timer). It is
+    mainly a regression test, since it uses almost all timer features.
+    
+    The main program registers a repetititive task and a delayed one, and
+    then loops until the <tt>still_to_do</tt> variables of its globals reach
+    0. The delayed task set it to 5, and the repetititive one decrease it
+    each time. Here is an example of output:
+\verbatim Initialize GRAS
+ Initialize XBT
+ [1108335471] Programming the repetitive_action with a frequency of 1.000000 sec
+ [1108335471] Programming the delayed_action for after 2.000000 sec
+ [1108335471] Have a rest
+ [1108335472] Canceling the delayed_action.
+ [1108335472] Re-programming the delayed_action for after 2.000000 sec
+ [1108335472] Repetitive_action has nothing to do yet
+ [1108335473] Repetitive_action has nothing to do yet
+ [1108335473] delayed_action setting globals->still_to_do to 5
+ [1108335474] repetitive_action decrementing globals->still_to_do. New value: 4
+ [1108335475] repetitive_action decrementing globals->still_to_do. New value: 3
+ [1108335476] repetitive_action decrementing globals->still_to_do. New value: 2
+ [1108335477] repetitive_action decrementing globals->still_to_do. New value: 1
+ [1108335478] repetitive_action decrementing globals->still_to_do. New value: 0
+ Exiting GRAS\endverbatim
+
+    Source code:
+     - \ref GRAS_ex_timer_decl
+     - \ref GRAS_ex_timer_delay
+     - \ref GRAS_ex_timer_repeat
+     - \ref GRAS_ex_timer_main
+
+    \dontinclude timer.c
+    
+    \section GRAS_ex_timer_decl   1. Declarations and headers
+    \skip include
+    \until my_globals
+    
+    \section GRAS_ex_timer_delay  2. Source code of the delayed action
+    \skip repetitive_action
+    \until end_of_repetitive_action
+    
+    \section GRAS_ex_timer_repeat 3. Source code of the repetitive action
+    \skip delayed_action
+    \until end_of_delayed_action
+    
+    \section GRAS_ex_timer_main   4. Source code of main function
+    \skip client
+    \until end_of_client
+*/
