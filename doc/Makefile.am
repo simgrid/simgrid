@@ -9,14 +9,14 @@ MAINTAINERCLEANFILES = html
 if MAINTAINER_MODE
 html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
 	touch api_index.doc
-	doxygen Doxyfile.main
-	doxygen Doxyfile.API
-	doxygen Doxyfile.Examples
+	doxygen Doxyfile.main >/dev/null
+	doxygen Doxyfile.API >/dev/null
+	doxygen Doxyfile.Examples >/dev/null
 	@top_srcdir@/tools/doxygen/index_create.pl html/API/API.tag api_index.doc
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.jpg html/
-	doxygen Doxyfile.API
-	doxygen Doxyfile.Examples
-	doxygen Doxyfile.main
+	doxygen Doxyfile.API >/dev/null
+	doxygen Doxyfile.Examples >/dev/null
+	doxygen Doxyfile.main >/dev/null
 #	@cd html ; @top_srcdir@/tools/fix_doxygen2.pl `find . -name '*.html'`
 #	@rm -rf html/API html/examples
 #	for i in `find doc/html -name "*.html" -exec grep -l "group_[^_]"  {} \;` ; do tools/fix_doxygen.pl $$i; rm $$i.bak; done
