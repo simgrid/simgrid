@@ -2,6 +2,9 @@
   - Rename every gras_* function that was in xbt/ to its xbt_
     counterpart.
   - Add a heap and a doubly-linked list to xbt
+  - Added a dichotomy to the dictionnaries. make check works as well before
+    so I assume that the patch is correct. I do not know however if things
+    run effectively faster than before now. :)
 
 2004-10-29 Martin Quinson
   - Introduction of the remote errors. 

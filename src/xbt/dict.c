@@ -57,7 +57,7 @@ xbt_dict_free(xbt_dict_t *dict)  {
 /**
  * xbt_dict_set_ext:
  *
- * @p_dict: the container
+ * @dict: the container
  * @key: the key to set the new data
  * @data: the data to add in the dict
  *
