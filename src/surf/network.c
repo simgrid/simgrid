@@ -269,19 +269,19 @@ static void update_actions_state(double now, double delta)
     deltap = delta;
     if (action->latency > 0) {
       if (action->latency > deltap) {
-	action->latency -= deltap;
+	surf_double_update(&(action->latency),deltap);
 	deltap = 0.0;
       } else {
-	deltap -= action->latency;
+	surf_double_update(&(deltap), action->latency);
 	action->latency = 0.0;
       }
       if ((action->latency == 0.0) && !(action->suspended)) 
 	lmm_update_variable_weight(maxmin_system, action->variable, 1.0);
     }
-    action->generic_action.remains -=
-	lmm_variable_getvalue(action->variable) * deltap;
+    surf_double_update(&(action->generic_action.remains),
+	lmm_variable_getvalue(action->variable) * deltap);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
-      action->generic_action.max_duration -= delta;
+      surf_double_update(&(action->generic_action.max_duration), delta);
 
     /*   if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
 

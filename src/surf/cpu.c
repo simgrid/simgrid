@@ -149,10 +149,10 @@ static void update_actions_state(double now, double delta)
       surf_cpu_resource->common_public->states.failed_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
-    action->generic_action.remains -=
-	lmm_variable_getvalue(action->variable) * delta;
+    surf_double_update(&(action->generic_action.remains),
+	lmm_variable_getvalue(action->variable) * delta);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
-      action->generic_action.max_duration -= delta;
+      surf_double_update(&(action->generic_action.max_duration), delta);
     if ((action->generic_action.remains <= 0) && 
 	(lmm_get_variable_weight(action->variable)>0)) {
       action->generic_action.finish = surf_get_clock();
