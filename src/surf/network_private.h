@@ -42,6 +42,7 @@ typedef struct surf_action_network {
   double latency;
   double lat_current;
   lmm_variable_t variable;
+  double rate;
   int suspended;
   network_card_t src;
   network_card_t dst;

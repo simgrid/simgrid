@@ -331,11 +331,12 @@ static void surf_cpu_resource_init_internal(void)
       update_resource_state;
   surf_cpu_resource->common_private->finalize = finalize;
 
+  surf_cpu_resource->common_public->suspend = action_suspend;
+  surf_cpu_resource->common_public->resume = action_resume;
+  surf_cpu_resource->common_public->is_suspended = action_is_suspended;
+
   surf_cpu_resource->extension_public->execute = execute;
   surf_cpu_resource->extension_public->sleep = action_sleep;
-  surf_cpu_resource->extension_public->suspend = action_suspend;
-  surf_cpu_resource->extension_public->resume = action_resume;
-  surf_cpu_resource->extension_public->is_suspended = action_is_suspended;
 
   surf_cpu_resource->extension_public->get_state = get_state;
 

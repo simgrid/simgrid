@@ -423,7 +423,8 @@ static void update_actions_network_KCCFLN05_state(double now, double delta)
   return;
 }
 
-static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size)
+static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size,
+					  double rate)
 {
   surf_action_network_KCCFLN05_t action = NULL;
   workstation_KCCFLN05_t card_src = src;
@@ -446,8 +447,12 @@ static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size)
 
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->variable = lmm_variable_new(maxmin_system_network_KCCFLN05, action, 1.0, -1.0,
-				      route->size);
+  if(rate>0)
+    action->variable = lmm_variable_new(maxmin_system_network_KCCFLN05, action, 1.0, rate,
+					route->size);
+  else
+    action->variable = lmm_variable_new(maxmin_system_network_KCCFLN05, action, 1.0, -1.0,
+					route->size);
 
   for (i = 0; i < route->size; i++)
     lmm_expand(maxmin_system_network_KCCFLN05, route->links[i]->constraint, 
@@ -460,6 +465,23 @@ static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size)
   xbt_dynar_push(card_dst->incomming_communications,&action);
 
   return (surf_action_t) action;
+}
+
+static void network_KCCFLN05_action_suspend(surf_action_t action)
+{
+  lmm_update_variable_weight(maxmin_system_network_KCCFLN05,
+			     ((surf_action_network_KCCFLN05_t) action)->variable, 0.0);
+}
+
+static void network_KCCFLN05_action_resume(surf_action_t action)
+{
+  lmm_update_variable_weight(maxmin_system_network_KCCFLN05,
+			     ((surf_action_network_KCCFLN05_t) action)->variable, 1.0);
+}
+
+static int network_KCCFLN05_action_is_suspended(surf_action_t action)
+{
+  return (lmm_get_variable_weight(((surf_action_network_KCCFLN05_t) action)->variable) == 0.0);
 }
 
 /***************** CPU ****************/
@@ -618,33 +640,19 @@ static surf_action_t execute_KCCFLN05(void *cpu, double size)
 
 static void cpu_KCCFLN05_action_suspend(surf_action_t action)
 {
-  if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    lmm_update_variable_weight(maxmin_system_network_KCCFLN05,
-			       ((surf_action_network_KCCFLN05_t) action)->variable, 0.0);
-  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
-			       ((surf_action_cpu_KCCFLN05_t) action)->variable, 0.0);
-  else DIE_IMPOSSIBLE;
+  lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
+			     ((surf_action_cpu_KCCFLN05_t) action)->variable, 0.0);
 }
 
 static void cpu_KCCFLN05_action_resume(surf_action_t action)
 {
-  if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    lmm_update_variable_weight(maxmin_system_network_KCCFLN05,
-			       ((surf_action_network_KCCFLN05_t) action)->variable, 1.0);
-  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
-			       ((surf_action_cpu_KCCFLN05_t) action)->variable, 1.0);
-  else DIE_IMPOSSIBLE;
+  lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
+			     ((surf_action_cpu_KCCFLN05_t) action)->variable, 1.0);
 }
 
 static int cpu_KCCFLN05_action_is_suspended(surf_action_t action)
 {
-  if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    return (lmm_get_variable_weight(((surf_action_cpu_KCCFLN05_t) action)->variable) == 0.0);
-  if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    return (lmm_get_variable_weight(((surf_action_network_KCCFLN05_t) action)->variable) == 0.0);
-  DIE_IMPOSSIBLE;
+  return (lmm_get_variable_weight(((surf_action_cpu_KCCFLN05_t) action)->variable) == 0.0);
 }
 
 /************* workstation ************/
@@ -688,29 +696,30 @@ static void update_resource_state(void *id,
 
 static void action_suspend(surf_action_t action)
 {
-  xbt_assert0(action->resource_type ==
-	      ((surf_resource_t) surf_cpu_resource),
-	      "Resource type mismatch");
-  surf_cpu_resource->extension_public->suspend(action);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->common_public->suspend(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->suspend(action);
+  else DIE_IMPOSSIBLE;
 }
 
 static void action_resume(surf_action_t action)
 {
-  xbt_assert0(action->resource_type ==
-	      ((surf_resource_t) surf_cpu_resource),
-	      "Resource type mismatch");
-  surf_cpu_resource->extension_public->resume(action);
+  if(action->resource_type==(surf_resource_t)surf_network_resource)
+    surf_network_resource->common_public->resume(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource)
+    surf_cpu_resource->common_public->resume(action);
+  else DIE_IMPOSSIBLE;
 }
 
 static int action_is_suspended(surf_action_t action)
 {
   if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    return 0;
+    return surf_network_resource->common_public->is_suspended(action);
   if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    return surf_cpu_resource->extension_public->is_suspended(action);
+    return surf_cpu_resource->common_public->is_suspended(action);
   DIE_IMPOSSIBLE;
 }
-
 
 /**************************************/
 /********* Module  creation ***********/
@@ -781,9 +790,10 @@ static void cpu_KCCFLN05_resource_init_internal(void)
 
   surf_cpu_resource->extension_public->execute = execute_KCCFLN05;
 /*FIXME*//*   surf_cpu_resource->extension_public->sleep = action_sleep; */
-  surf_cpu_resource->extension_public->suspend = cpu_KCCFLN05_action_suspend;
-  surf_cpu_resource->extension_public->resume = cpu_KCCFLN05_action_resume;
-  surf_cpu_resource->extension_public->is_suspended = cpu_KCCFLN05_action_is_suspended;
+
+  surf_cpu_resource->common_public->suspend = cpu_KCCFLN05_action_suspend;
+  surf_cpu_resource->common_public->resume = cpu_KCCFLN05_action_resume;
+  surf_cpu_resource->common_public->is_suspended = cpu_KCCFLN05_action_is_suspended;
 
   surf_cpu_resource->extension_public->get_state = get_state;
 
@@ -866,7 +876,11 @@ static void network_KCCFLN05_resource_init_internal(void)
     update_network_KCCFLN05_state;
   surf_network_resource->common_private->finalize = network_KCCFLN05_finalize;
 
- surf_network_resource->extension_public->communicate = communicate_KCCFLN05;
+  surf_network_resource->common_public->suspend = network_KCCFLN05_action_suspend;
+  surf_network_resource->common_public->resume = network_KCCFLN05_action_resume;
+  surf_network_resource->common_public->is_suspended = network_KCCFLN05_action_is_suspended;
+
+  surf_network_resource->extension_public->communicate = communicate_KCCFLN05;
 
   network_link_set = xbt_dict_new();
 
@@ -929,11 +943,13 @@ static void workstation_KCCFLN05_resource_init_internal(void)
   surf_workstation_resource->common_private->update_resource_state = update_resource_state;
   surf_workstation_resource->common_private->finalize = workstation_KCCFLN05_finalize;
 
+
+  surf_workstation_resource->common_public->suspend = action_suspend;
+  surf_workstation_resource->common_public->resume = action_resume;
+  surf_workstation_resource->common_public->is_suspended = action_is_suspended;
+
   surf_workstation_resource->extension_public->execute = execute_KCCFLN05;
 /*FIXME*//*  surf_workstation_resource->extension_public->sleep = action_sleep; */
-  surf_workstation_resource->extension_public->suspend = action_suspend;
-  surf_workstation_resource->extension_public->resume = action_resume;
-  surf_workstation_resource->extension_public->is_suspended = action_is_suspended;
   surf_workstation_resource->extension_public->get_state = get_state;
   surf_workstation_resource->extension_public->communicate = communicate_KCCFLN05;
 }

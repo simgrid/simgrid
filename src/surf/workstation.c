@@ -128,36 +128,37 @@ static surf_action_t action_sleep(void *workstation, double duration)
 static void action_suspend(surf_action_t action)
 {
   if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    surf_network_resource->extension_public->suspend(action);
+    surf_network_resource->common_public->suspend(action);
   else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    surf_cpu_resource->extension_public->suspend(action);
+    surf_cpu_resource->common_public->suspend(action);
   else DIE_IMPOSSIBLE;
 }
 
 static void action_resume(surf_action_t action)
 {
   if(action->resource_type==(surf_resource_t)surf_network_resource)
-    surf_network_resource->extension_public->resume(action);
+    surf_network_resource->common_public->resume(action);
   else if(action->resource_type==(surf_resource_t)surf_cpu_resource)
-    surf_cpu_resource->extension_public->resume(action);
+    surf_cpu_resource->common_public->resume(action);
   else DIE_IMPOSSIBLE;
 }
 
 static int action_is_suspended(surf_action_t action)
 {
   if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    return surf_network_resource->extension_public->is_suspended(action);
+    return surf_network_resource->common_public->is_suspended(action);
   if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    return surf_cpu_resource->extension_public->is_suspended(action);
+    return surf_cpu_resource->common_public->is_suspended(action);
   DIE_IMPOSSIBLE;
 }
 
 static surf_action_t communicate(void *workstation_src,
-				 void *workstation_dst, double size)
+				 void *workstation_dst, double size,
+				 double rate)
 {
   return surf_network_resource->extension_public->
       communicate(((workstation_t) workstation_src)->network_card,
-		  ((workstation_t) workstation_dst)->network_card, size);
+		  ((workstation_t) workstation_dst)->network_card, size, rate);
 }
 
 static e_surf_cpu_state_t get_state(void *workstation)
@@ -230,11 +231,12 @@ static void surf_workstation_resource_init_internal(void)
       update_resource_state;
   surf_workstation_resource->common_private->finalize = finalize;
 
+  surf_workstation_resource->common_public->suspend = action_suspend;
+  surf_workstation_resource->common_public->resume = action_resume;
+  surf_workstation_resource->common_public->is_suspended = action_is_suspended;
+
   surf_workstation_resource->extension_public->execute = execute;
   surf_workstation_resource->extension_public->sleep = action_sleep;
-  surf_workstation_resource->extension_public->suspend = action_suspend;
-  surf_workstation_resource->extension_public->resume = action_resume;
-  surf_workstation_resource->extension_public->is_suspended = action_is_suspended;
   surf_workstation_resource->extension_public->get_state = get_state;
   surf_workstation_resource->extension_public->communicate = communicate;
 

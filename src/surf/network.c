@@ -339,8 +339,12 @@ static void update_resource_state(void *id,
     while (lmm_get_var_from_cnst(maxmin_system, nw_link->constraint, &var)) {
       action = lmm_variable_id(var);
       action->lat_current += delta;
-      lmm_update_variable_bound(maxmin_system, var,
-				1 / (action->lat_current));
+      if(action->rate<0)
+	lmm_update_variable_bound(maxmin_system, action->variable,
+				  SG_TCP_CTE_GAMMA / action->lat_current);
+      else 
+	lmm_update_variable_bound(maxmin_system, action->variable,
+				  min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
     }
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
@@ -355,7 +359,7 @@ static void update_resource_state(void *id,
   return;
 }
 
-static surf_action_t communicate(void *src, void *dst, double size)
+static surf_action_t communicate(void *src, void *dst, double size, double rate)
 {
   surf_action_network_t action = NULL;
   network_card_t card_src = src;
@@ -378,6 +382,7 @@ static surf_action_t communicate(void *src, void *dst, double size)
       surf_network_resource->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
+  action->rate = rate;
 
   action->latency = 0.0;
   for (i = 0; i < route_size; i++)
@@ -391,8 +396,12 @@ static surf_action_t communicate(void *src, void *dst, double size)
     action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
 					route_size);
 
-  lmm_update_variable_bound(maxmin_system, action->variable,
-			    SG_TCP_CTE_GAMMA / action->lat_current);
+  if(action->rate<0)
+    lmm_update_variable_bound(maxmin_system, action->variable,
+			      SG_TCP_CTE_GAMMA / action->lat_current);
+  else 
+    lmm_update_variable_bound(maxmin_system, action->variable,
+			      min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
 
   for (i = 0; i < route_size; i++)
     lmm_expand(maxmin_system, route[i]->constraint, action->variable, 1.0);
@@ -493,10 +502,11 @@ static void surf_network_resource_init_internal(void)
       update_resource_state;
   surf_network_resource->common_private->finalize = finalize;
 
+  surf_network_resource->common_public->suspend = action_suspend;
+  surf_network_resource->common_public->resume = action_resume;
+  surf_network_resource->common_public->is_suspended = action_is_suspended;
+
   surf_network_resource->extension_public->communicate = communicate;
-  surf_network_resource->extension_public->suspend = action_suspend;
-  surf_network_resource->extension_public->resume = action_resume;
-  surf_network_resource->extension_public->is_suspended = action_is_suspended;
 
   network_link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();
