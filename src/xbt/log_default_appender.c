@@ -39,8 +39,12 @@ xbt_log_appender_t xbt_log_default_appender  = &xbt_log_appender_file;
 static const char* xbt_logappender_verbose_information(void) {
   static char buffer[256];
 
-  sprintf(buffer,"%s:%s:(%d) %g", gras_os_myname(),
-	  xbt_procname(),gras_process_getpid(),gras_os_time());
+  if(strlen(gras_os_myname()))
+    sprintf(buffer,"%s:%s:(%d) %g", gras_os_myname(),
+	    xbt_procname(),gras_process_getpid(),gras_os_time());
+  else 
+    buffer[0]=0;
+  
   return buffer;
 }
 
