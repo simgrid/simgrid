@@ -265,7 +265,7 @@ gras_dynar_get_ptr(const gras_dynar_t * const dynar,
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, BUT NOT freeing
  * the previous value at this position. If you want to free the previous content,
- * use gras_dynar_remplace().
+ * use gras_dynar_replace().
  */
 void
 gras_dynar_set(gras_dynar_t * const dynar,

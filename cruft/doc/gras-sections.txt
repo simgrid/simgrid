@@ -145,7 +145,7 @@ gras_dynar_length
 gras_dynar_reset
 gras_dynar_get
 gras_dynar_set
-gras_dynar_remplace
+gras_dynar_replace
 gras_dynar_insert_at
 gras_dynar_remove_at
 gras_dynar_map

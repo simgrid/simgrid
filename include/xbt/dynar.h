@@ -34,8 +34,8 @@ void *gras_dynar_get_ptr(const gras_dynar_t * const dynar,
 #define gras_dynar_get_as(dynar,idx,type) *(type*)gras_dynar_get_ptr(dynar,idx)
   
 void gras_dynar_set(gras_dynar_t *dynar, int  idx, const void *src);
-void gras_dynar_remplace(gras_dynar_t *dynar,
-			 int idx, const void *object);
+void gras_dynar_replace(gras_dynar_t *dynar,
+			int idx, const void *object);
 
 /* perl array function */
 void gras_dynar_insert_at(gras_dynar_t *dynar,

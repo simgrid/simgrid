@@ -3503,7 +3503,7 @@ Sockets
 @object: 
 @Returns: 
 
-<!-- ##### FUNCTION gras_dynar_remplace ##### -->
+<!-- ##### FUNCTION gras_dynar_replace ##### -->
 <para>
 
 </para>

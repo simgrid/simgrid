@@ -48,17 +48,17 @@ int main(int argc,char *argv[]) {
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
-     gras_dynar_remplace(d,cpt,&s1);
+     gras_dynar_replace(d,cpt,&s1);
    }
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
-     gras_dynar_remplace(d,cpt,&s1);
+     gras_dynar_replace(d,cpt,&s1);
    }
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
-     gras_dynar_remplace(d,cpt,&s1);
+     gras_dynar_replace(d,cpt,&s1);
    }
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
