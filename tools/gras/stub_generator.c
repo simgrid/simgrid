@@ -16,16 +16,16 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 
-const char *WARN = "/***********\n * DO NOT EDIT! THIS FILE WERE AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n";
-const char *SIM_FILENAME = "_%s_simulator.c";
-const char *SIM_BINARYNAME = "%s_simulator";
-const char *SIM_FILENAME_LDADD = "%s_simulator_LDADD";
-const char *SIM_FILENAME_SOURCES = "%s_simulator_SOURCES";
-const char *RL_FILENAME = "_%s_%s.c";
-const char *RL_BINARYNAME = "%s_%s";
-const char *RL_FILENAME_LDADD = "%s_%s_LDADD";
-const char *RL_FILENAME_SOURCES = "%s_%s_SOURCES";
-const char *MAKEFILE_FILENAME = "%s.Makefile.am";
+#define WARN "/***********\n * DO NOT EDIT! THIS FILE WERE AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
+#define SIM_FILENAME  "_%s_simulator.c"
+#define SIM_BINARYNAME  "%s_simulator"
+#define SIM_FILENAME_LDADD  "%s_simulator_LDADD"
+#define SIM_FILENAME_SOURCES  "%s_simulator_SOURCES"
+#define RL_FILENAME  "_%s_%s.c"
+#define RL_BINARYNAME  "%s_%s"
+#define RL_FILENAME_LDADD  "%s_%s_LDADD"
+#define RL_FILENAME_SOURCES  "%s_%s_SOURCES"
+#define MAKEFILE_FILENAME  "%s.Makefile.am"
 
 char *warning = NULL;
 
@@ -42,24 +42,24 @@ const char *SIM_PREEMBULE =
 "char *gras_log=NULL;\n";
 
 
-const char *SIM_LAUNCH_FUNC =
-"int launch_%s(int argc, char **argv) {\n"
-"  char **myargv=argv;\n"
-"  int myargc=argc;\n"
-"  int i;\n"
-"  int retcode;\n"
-"    \n"
-"  if (gras_log) {\n"
-"    myargv=malloc((argc+1) * sizeof(char**));\n"
-"    for (i=0; i<argc; i++)\n"
-"      myargv[i] = argv[i];\n"
-"    myargv[myargc++] = gras_log;\n"
-"  }\n"
-"  retcode = %s(myargc,myargv);\n"
-"  if (myargv != argv)\n"
-"    free(myargv);\n"
-"  return retcode;\n"
-"}\n";
+#define SIM_LAUNCH_FUNC  \
+"int launch_%s(int argc, char **argv) {\n" \
+"  char **myargv=argv;\n" \
+"  int myargc=argc;\n" \
+"  int i;\n" \
+"  int retcode;\n"\
+"    \n"\
+"  if (gras_log) {\n"\
+"    myargv=malloc((argc+1) * sizeof(char**));\n" \
+"    for (i=0; i<argc; i++)\n" \
+"      myargv[i] = argv[i];\n" \
+"    myargv[myargc++] = gras_log;\n" \
+"  }\n" \
+"  retcode = %s(myargc,myargv);\n" \
+"  if (myargv != argv)\n" \
+"    free(myargv);\n" \
+"  return retcode;\n" \
+"}\n"
 
 const char* SIM_MAIN_PREEMBULE =
 "int main (int argc,char *argv[]) {\n"
@@ -95,21 +95,21 @@ const char *SIM_MAIN_POSTEMBULE = "\n"
 /**** Generate the file for the real life *****/
 /**********************************************/
 
-const char *RL_CODE =
-"#include <stdio.h>\n"
-"#include <signal.h>\n"
-"#include <gras.h>\n"
-"\n"
-"/* user code */\n"
-"int %s(int argc, char *argv[]);\n"
-"\n"
-"int main(int argc, char *argv[]){\n"
-"  int errcode;\n"
-"\n"
-"  errcode=%s(argc,argv);\n"
-" \n"
-"  return errcode;\n"
-"}\n";
+#define RL_CODE \
+"#include <stdio.h>\n" \
+"#include <signal.h>\n" \
+"#include <gras.h>\n" \
+"\n" \
+"/* user code */\n" \
+"int %s(int argc, char *argv[]);\n" \
+"\n" \
+"int main(int argc, char *argv[]){\n" \
+"  int errcode;\n" \
+"\n" \
+"  errcode=%s(argc,argv);\n"\
+" \n" \
+"  return errcode;\n"\
+"}\n"
 
 /**********************************************/
 /********* Parse XML deployment file **********/
@@ -136,7 +136,7 @@ static void generate_sim(char *project)
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
 
   fprintf(OUT, "%s\n",warning);
-  fprintf(OUT, SIM_PREEMBULE);
+  fprintf(OUT, "%s", SIM_PREEMBULE);
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT,"int %s(int argc,char *argv[]);\n",key);
   }
@@ -150,11 +150,11 @@ static void generate_sim(char *project)
   }
   fprintf(OUT, "\n%s\n",warning);
 
-  fprintf(OUT, SIM_MAIN_PREEMBULE);
+  fprintf(OUT, "%s", SIM_MAIN_PREEMBULE);
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT,"  MSG_function_register(\"%s\", launch_%s);\n",key,key);
   }
-  fprintf(OUT, SIM_MAIN_POSTEMBULE);
+  fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
   fclose(OUT);
   xbt_free(filename);
 }
