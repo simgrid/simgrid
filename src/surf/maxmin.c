@@ -123,7 +123,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   /* var->cnsts_number = 0; *//* Useless because of the calloc  */
   var->weight = weight;
   var->bound = bound;
-  var->value = -1;
+  var->value = 0.0;
   insert_variable(sys, var);
 
   return var;
@@ -196,10 +196,8 @@ static void saturated_constraint_set_update(lmm_system_t sys,
 {
   lmm_constraint_t useless_cnst = NULL;
 
-  sys->modified = 1;
-
-  if (cnst->remaining <= 0)
-    return;
+  if(cnst->usage <=0) return;
+  if (cnst->remaining <= 0) return;
   if ((*min_usage < 0) || (*min_usage > cnst->remaining / cnst->usage)) {
     *min_usage = cnst->remaining / cnst->usage;
 
@@ -221,9 +219,9 @@ static void saturated_variable_set_update(lmm_system_t sys)
 
   cnst_list = &(sys->saturated_constraint_set);
   while ((cnst = xbt_swag_getFirst(cnst_list))) {
-/*   xbt_swag_foreach(cnst, cnst_list) { */
     elem_list = &(cnst->active_element_set);
     xbt_swag_foreach(elem, elem_list)
+      if((elem->value>0) && (elem->variable->weight>0))
 	xbt_swag_insert(elem->variable, &(sys->saturated_variable_set));
     xbt_swag_remove(cnst, cnst_list);
   }
@@ -245,7 +243,7 @@ void lmm_solve(lmm_system_t sys)
   /* Init */
   var_list = &(sys->variable_set);
   xbt_swag_foreach(var, var_list) {
-    var->value = -1;
+    var->value = 0.0;
   }
 
 
@@ -258,8 +256,10 @@ void lmm_solve(lmm_system_t sys)
     cnst->remaining = cnst->bound;
     cnst->usage = 0;
     xbt_swag_foreach(elem, elem_list) {
-      cnst->usage += elem->value / elem->variable->weight;
-      insert_active_elem_in_constraint(elem);
+      if((elem->value>0) && (elem->variable->weight>0)) {
+	cnst->usage += elem->value / elem->variable->weight;
+	insert_active_elem_in_constraint(elem);
+      }
     }
 
     /* Saturated constraints update */
@@ -320,12 +320,11 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, xbt_maxmin_float_t value)
 {
   int i;
-  lmm_element_t elem = NULL;
 
   sys->modified = 1;
   for (i = 0; i < var->cnsts_number; i++)
     if (var->cnsts[i].constraint == cnst) {
-      elem->value = value;
+      var->cnsts[i].value = value;
       return;
     }
 }
