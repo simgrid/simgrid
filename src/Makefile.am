@@ -153,7 +153,7 @@ surf/surfxml.c: surf/surfxml.l
 	@LEX@ -o$@ -Psurf_parse_ $^
 
 surf/surfxml.l: surf/surfxml.dtd
-	cd surf; flexml -b 10000000 -S -L surfxml.dtd ; \
+	cd surf; flexml -S -L surfxml.dtd ; \
 	mv surfxml.l surfxml.l.bak ; \
 	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
 
