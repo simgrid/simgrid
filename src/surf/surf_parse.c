@@ -159,6 +159,7 @@ void  surf_parse_open(const char *file) {
   xbt_assert1((surf_file_to_parse), "Unable to open \"%s\"\n",file);
   surf_input_buffer = surf_parse__create_buffer( surf_file_to_parse, 10);
   surf_parse__switch_to_buffer(surf_input_buffer);
+  surf_parse_lineno = 1;
 }
 
 void  surf_parse_close(void) {
