@@ -277,8 +277,11 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 
     simdata_task = simdata->waiting_task->simdata;
 
+    simdata->suspended = 1;
+    if(simdata->blocked) return MSG_OK;
+
     xbt_assert0(((simdata_task->compute)||(simdata_task->comm))&&
-		!((simdata_task->comm)&&(simdata_task->comm)),
+		!((simdata_task->compute)&&(simdata_task->comm)),
 		"Got a problem in deciding which action to choose !");
     simdata->suspended = 1;
     if(simdata_task->compute) 
@@ -289,6 +292,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
     m_task_t dummy = MSG_TASK_UNINITIALIZED;
     dummy = MSG_task_create("suspended", 0.0, 0, NULL);
 
+    simdata = process->simdata;
     simdata->suspended = 1;
     __MSG_task_execute(process,dummy);
     surf_workstation_resource->extension_public->suspend(dummy->simdata->compute);
@@ -354,7 +358,7 @@ int MSG_process_isSuspended(m_process_t process)
 
 
 
-MSG_error_t __MSG_process_block()
+MSG_error_t __MSG_process_block(void)
 {
   m_process_t process = MSG_process_self();
 

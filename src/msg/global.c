@@ -195,9 +195,16 @@ MSG_error_t MSG_main(void)
       simdata_process_t p_simdata = (simdata_process_t) process->simdata;
       simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
       
+
       fprintf(stderr,"MSG:  %s(%d) on %s: ",
 	     process->name,p_simdata->PID,
 	     p_simdata->host->name);
+
+      if (process->simdata->blocked) 	  
+	fprintf(stderr,"[blocked] ");
+      if (process->simdata->suspended) 	  
+	fprintf(stderr,"[suspended] ");
+
       for (i=0; i<msg_global->max_channel; i++) {
 	if (h_simdata->sleeping[i] == process) {
 	  fprintf(stderr,"Listening on channel %d.\n",i);
