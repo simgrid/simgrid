@@ -163,6 +163,7 @@ trace="${trace}:${ac_cv_sizeof_void_p}.${ac_cv_sizeof_void_LpR_LvoidR}"
 trace="${trace}:${ac_cv_sizeof_float}.${ac_cv_sizeof_double}"
 case $trace in
   l:1.2.4.4.8:4.4:4.8) gras_arch=0; gras_arch_name=i386;;
+  B:1.2.4.4.8:4.4:4.8) gras_arch=1; gras_arch_name=ppc;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
