@@ -7,29 +7,44 @@
 #include "xbt/swag.h"
 
 typedef struct lmm_element {
+  /* hookup to constraint */
   s_xbt_swag_hookup_t element_set_hookup;
+  s_xbt_swag_hookup_t active_element_set_hookup;
+
   lmm_constraint_t constraint;
-  FLOAT value;
+  lmm_variable_t variable;
+  FLOAT value;  
 } s_lmm_element_t, *lmm_element_t;
 #define insert_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->element_set))
+#define insert_active_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->active_element_set))
+#define remove_active_elem_in_constraint(elem) xbt_swag_extract(elem,&(elem->constraint->active_element_set))
 
 typedef struct lmm_constraint {
+  /* hookup to system */
   s_xbt_swag_hookup_t constraint_set_hookup;
-  /*   void *id; */
+  s_xbt_swag_hookup_t active_constraint_set_hookup;
+  s_xbt_swag_hookup_t saturated_constraint_set_hookup;
+
   s_xbt_swag_t element_set;	/* a list of lmm_mat_element_t */
+  s_xbt_swag_t active_element_set;	/* a list of lmm_mat_element_t */
   FLOAT bound;
+  FLOAT remaining;
   FLOAT usage;
+  char *id;
 } s_lmm_constraint_t;
 
 typedef struct lmm_variable {
+  /* hookup to system */
   s_xbt_swag_hookup_t variable_set_hookup;
-  /*   void *id; */
+  s_xbt_swag_hookup_t saturated_variable_set_hookup;
+
   s_lmm_element_t *cnsts;
   int cnsts_size;
   int cnsts_number;
-  FLOAT weight_value;
+  FLOAT weight;
   FLOAT bound;
   FLOAT value;
+  char *id;
 } s_lmm_variable_t;
 
 typedef struct lmm_system {
@@ -37,17 +52,25 @@ typedef struct lmm_system {
   s_xbt_swag_t constraint_set;	/* a list of lmm_constraint_t */
 
   s_xbt_swag_t active_constraint_set;	/* a list of lmm_constraint_t */
+
+  s_xbt_swag_t saturated_variable_set;	/* a list of lmm_variable_t */
+  s_xbt_swag_t saturated_constraint_set;/* a list of lmm_constraint_t_t */
 } s_lmm_system_t;
 
 #define extract_variable(sys) xbt_swag_extract(xbt_swag_getFirst(&(sys->variable_set)),&(sys->variable_set))
 #define extract_constraint(sys) xbt_swag_extract(xbt_swag_getFirst(&(sys->constraint_set)),&(sys->constraint_set))
 #define insert_variable(sys,var) xbt_swag_insert(var,&(sys->variable_set))
 #define insert_constraint(sys,cnst) xbt_swag_insert(cnst,&(sys->constraint_set))
-#define remove_variable(sys,var) xbt_swag_extract(var,&(sys->variable_set))
-#define remove_constraint(sys,cnst) xbt_swag_extract(cnst,&(sys->constraint_set))
+#define remove_variable(sys,var) do {xbt_swag_extract(var,&(sys->variable_set));\
+                                 xbt_swag_extract(var,&(sys->saturated_variable_set));} while(0)
+#define remove_constraint(sys,cnst) do {xbt_swag_extract(cnst,&(sys->constraint_set));\
+                                        xbt_swag_extract(cnst,&(sys->saturated_constraint_set));} while(0)
+#define remove_active_constraint(sys,cnst) xbt_swag_extract(cnst,&(sys->active_constraint_set))
+#define make_constraint_active(sys,cnst) xbt_swag_insert(cnst,&(sys->active_constraint_set))
+#define make_constraint_inactive(sys,cnst) remove_active_constraint(sys,cnst)
 
-static void lmm_var_free(lmm_variable_t e);
-static void lmm_cnst_free(lmm_constraint_t cnst);
+static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
+static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst);
 
 /* #define UNDEFINED_VALUE -1.0 */
 #define UNUSED_CONSTRAINT -2.0

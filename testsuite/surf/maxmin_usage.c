@@ -11,46 +11,70 @@
 
 /*                               */
 /*        ______                 */
-/*  ==l1==  l2  ==l3==           */
+/*  ==l1==  L2  ==L3==           */
 /*        ------                 */
 /*                               */
+
+  lmm_system_t Sys = NULL ;
+  lmm_constraint_t L1 = NULL;
+  lmm_constraint_t L2 = NULL;
+  lmm_constraint_t L3 = NULL;
+
+  lmm_variable_t R_1_2_3 = NULL;
+  lmm_variable_t R_1 = NULL;
+  lmm_variable_t R_2 = NULL;
+  lmm_variable_t R_3 = NULL;
 
 void test(void);
 void test(void)
 {
-  lmm_system_t sys = NULL ;
-  lmm_constraint_t l1 = NULL;
-  lmm_constraint_t l2 = NULL;
-  lmm_constraint_t l3 = NULL;
 
-  lmm_variable_t r_1_2_3 = NULL;
-  lmm_variable_t r_1 = NULL;
-  lmm_variable_t r_2 = NULL;
-  lmm_variable_t r_3 = NULL;
+  Sys = lmm_system_new();
+  L1 = lmm_constraint_new(Sys, (void *) "L1", 1.0);
+  L2 = lmm_constraint_new(Sys, (void *) "L2", 10.0);
+  L3 = lmm_constraint_new(Sys, (void *) "L3", 1.0);
+
+  R_1_2_3 = lmm_variable_new(Sys, (void *) "R 1->2->3", 1.0 , -1.0 , 3);
+  R_1 = lmm_variable_new(Sys, (void *) "R 1", 1.0 , -1.0 , 1);
+  R_2 = lmm_variable_new(Sys, (void *) "R 2", 1.0 , -1.0 , 1);
+  R_3 = lmm_variable_new(Sys, (void *) "R 3", 1.0 , -1.0 , 1);
+
+  lmm_expand(Sys, L1, R_1_2_3, 1.0);
+  lmm_expand(Sys, L2, R_1_2_3, 1.0);
+  lmm_expand(Sys, L3, R_1_2_3, 1.0);
+
+  lmm_expand(Sys, L1, R_1, 1.0);
+
+  lmm_expand(Sys, L2, R_2, 1.0);
+
+  lmm_expand(Sys, L3, R_3, 1.0);
+
+#define AFFICHE(var) printf(#var " = %Lg\n",lmm_variable_getvalue(var));
+  AFFICHE(R_1_2_3);
+  AFFICHE(R_1);
+  AFFICHE(R_2);
+  AFFICHE(R_3);
+
+  printf("\n");
+  lmm_solve(Sys);
+
+  AFFICHE(R_1_2_3);
+  AFFICHE(R_1);
+  AFFICHE(R_2);
+  AFFICHE(R_3);
+  printf("\n");
 
 
+  lmm_update_variable_weight(R_1_2_3,.5);
+  lmm_solve(Sys);
 
-  sys = lmm_system_new();
-  l1 = lmm_constraint_new(sys, /* (void *) "L1", */ 1.0);
-  l2 = lmm_constraint_new(sys, /* (void *) "L2", */ 10.0);
-  l3 = lmm_constraint_new(sys, /* (void *) "L3", */ 1.0);
+  AFFICHE(R_1_2_3);
+  AFFICHE(R_1);
+  AFFICHE(R_2);
+  AFFICHE(R_3);
+#undef AFFICHE
 
-  r_1_2_3 = lmm_variable_new(sys, /* (void *) "R 1->2->3", */ 1.0 , 1.0 , 3);
-  r_1 = lmm_variable_new(sys, /* (void *) "R 1", */ 1.0 , 1.0 , 1);
-  r_2 = lmm_variable_new(sys, /* (void *) "R 2", */ 1.0 , 1.0 , 1);
-  r_3 = lmm_variable_new(sys, /* (void *) "R 3", */ 1.0 , 1.0 , 1);
-
-  lmm_add_constraint(sys, l1, r_1_2_3, 1.0);
-  lmm_add_constraint(sys, l2, r_1_2_3, 1.0);
-  lmm_add_constraint(sys, l3, r_1_2_3, 1.0);
-
-  lmm_add_constraint(sys, l1, r_1, 1.0);
-
-  lmm_add_constraint(sys, l2, r_2, 1.0);
-
-  lmm_add_constraint(sys, l3, r_3, 1.0);
-
-  lmm_system_free(sys);
+  lmm_system_free(Sys);
 } 
 
 

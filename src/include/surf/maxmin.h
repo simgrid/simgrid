@@ -12,15 +12,24 @@ typedef struct lmm_system *lmm_system_t;
 lmm_system_t lmm_system_new(void);
 void lmm_system_free(lmm_system_t sys);
 
-lmm_constraint_t lmm_constraint_new(lmm_system_t sys,	/* void *id, */
+lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id, 
 				    FLOAT bound_value);
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
 
-lmm_variable_t lmm_variable_new(lmm_system_t sys,	/* void *id, */
+lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id, 
 				FLOAT weight_value, FLOAT bound,
 				int number_of_constraints);
 void lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
-void lmm_add_constraint(lmm_system_t sys, lmm_constraint_t cnst,
-			lmm_variable_t var, FLOAT value);
+FLOAT lmm_variable_getvalue(lmm_variable_t var);
+
+
+void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
+		lmm_variable_t var, FLOAT value);
+
+void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
+		lmm_variable_t var, FLOAT value);
+void lmm_update_variable_bound(lmm_variable_t var, FLOAT bound);
+void lmm_update_variable_weight(lmm_variable_t var, FLOAT weight);
+void lmm_update_constraint_bound(lmm_constraint_t cnst, FLOAT bound);
 
 void lmm_solve(lmm_system_t sys);
