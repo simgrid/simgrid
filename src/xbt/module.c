@@ -35,7 +35,7 @@ struct xbt_module_ {
 
 void 
 xbt_init(int *argc, char **argv) {
-  static int first_run = 1;
+  static short int first_run = 1;
   if(first_run)
     xbt_init_defaultlog(argc, argv, NULL);
   first_run = 0;
