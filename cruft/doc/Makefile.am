@@ -65,7 +65,7 @@ DOC_OVERRIDES =
 # Everything below here is generic and you shouldn't need to change it.
 ###########################################################################
 
-TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
+TARGET_DIR=$(HTML_DIR)
 
 EXTRA_DIST = 				\
 	$(content_files)		\
