@@ -24,7 +24,7 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport);
 void         gras_trp_file_close(gras_socket_t *sd);
   
 gras_error_t gras_trp_file_chunk_send(gras_socket_t *sd,
-				      char *data,
+				      const char *data,
 				      long int size);
 
 gras_error_t gras_trp_file_chunk_recv(gras_socket_t *sd,
@@ -185,7 +185,7 @@ void gras_trp_file_close(gras_socket_t *sock){
  */
 gras_error_t 
 gras_trp_file_chunk_send(gras_socket_t *sock,
-			 char *data,
+			 const char *data,
 			 long int size) {
   
   gras_assert0(sock->outgoing, "Cannot write on client file socket");
