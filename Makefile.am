@@ -8,7 +8,8 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog\
 	acmacro/aci.m4 \
 	tools/gras-check-arch	tools/compile-remote-worker.in \
-	tools/MSG_visualization tools/platform_generation
+	tools/MSG_visualization tools/platform_generation \
+        tools/doxygen/index_create.pl
 
 TAGS: 
 	etags `find . -name "*.[ch]"`
