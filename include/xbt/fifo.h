@@ -8,10 +8,14 @@
 #ifndef _XBT_FIFO_H
 #define _XBT_FIFO_H
 
-/* Bucket structure */
+/** \brief  Bucket structure 
+ *  \ingroup XBT_fifo
+*/
 typedef struct xbt_fifo_item *xbt_fifo_item_t;
 
-/* FIFO structure */
+/** \brief  FIFO structure
+ *  \ingroup XBT_fifo
+*/
 typedef struct xbt_fifo *xbt_fifo_t;
 
 /* API */
@@ -47,7 +51,17 @@ xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l);
 xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
 xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
 
-
+/** 
+ * \brief List iterator
+ * \ingroup XBT_fifo
+ * asserts and stuff
+ * \param f a list (#xbt_fifo_t)
+ * \param i a bucket (#xbt_fifo_item_t)
+ * \param type a type
+ * \param n an object of type \a type.
+ *
+ * Iterates over the whole list. 
+ */
 #define xbt_fifo_foreach(f,i,n,type)                  \
    for(i=xbt_fifo_getFirstItem(f);                    \
      ((i)?(n=(type)(xbt_fifo_get_item_content(i))):(NULL));             \

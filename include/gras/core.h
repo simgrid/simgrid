@@ -13,28 +13,29 @@
 #include <stddef.h>    /* offsetof() */
 #include <sys/types.h>  /* size_t */
 #include <stdarg.h>
+#include "xbt/misc.h"
 
 
-/*! C++ users need love */
-#ifndef BEGIN_DECL
-# ifdef __cplusplus
-#  define BEGIN_DECL extern "C" {
-# else
-#  define BEGIN_DECL 
-# endif
-#endif
+/* /\*! C++ users need love *\/ */
+/* #ifndef BEGIN_DECL */
+/* # ifdef __cplusplus */
+/* #  define BEGIN_DECL() extern "C" { */
+/* # else */
+/* #  define BEGIN_DECL()  */
+/* # endif */
+/* #endif */
 
-/*! C++ users need love */
-#ifndef END_DECL
-# ifdef __cplusplus
-#  define END_DECL }
-# else
-#  define END_DECL 
-# endif
-#endif
-/* End of cruft for C++ */
+/* /\*! C++ users need love *\/ */
+/* #ifndef END_DECL */
+/* # ifdef __cplusplus */
+/* #  define END_DECL() } */
+/* # else */
+/* #  define END_DECL()  */
+/* # endif */
+/* #endif */
+/* /\* End of cruft for C++ *\/ */
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /* **************************************************************************
  * Garbage collection support
@@ -59,7 +60,7 @@ gras_get_my_fqdn(void);
 void gras_init(int *argc,char **argv, const char *defaultlog);
 void gras_exit(void);
 
-END_DECL
+END_DECL()
 
 #endif /* GRAS_CORE_H */
 

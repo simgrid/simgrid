@@ -39,25 +39,16 @@ m_host_t MSG_get_host_by_name(const char *name)
  *
  * Creates a new platform, including hosts, links and the
  * routing_table. 
- * \param file a filename of a description of a platform. This file is a simple text 
- * file in which you can use C-style comments and C-style strings.
- * Here is a simple description of the format:
- \verbatim
-<CPU>
-host_name "power in MFlops" "availability" "availability file" ON/OFF "failure file"
-host_name "power in MFlops" "availability" "availability file" ON/OFF "failure file"
-...
-</LINKS>
-link_name "bandwidth in Mbytes" "bandwidth file" "latency in ms" "latency file"
-link_name "bandwidth in Mbytes" "bandwidth file" "latency in ms" "latency file"
-...
-ROUTES
-src_name dst_name (link_name link_name link_name ... )
-src_name dst_name (link_name link_name link_name ... )
-...
-\endverbatim
- * Have a look in the directory examples/msg/ to have a better idea of what
- * it looks like.
+ * \param file a filename of a xml description of a platform. This file 
+ * follows this DTD :
+ *
+ *     \include surfxml.dtd
+ *
+ * Here is a small example of such a platform 
+ *
+ *     \include small_platform.xml
+ *
+ * Have a look in the directory examples/msg/ to have a big example.
  */
 void MSG_create_environment(const char *file) {
   xbt_dict_cursor_t cursor = NULL;

@@ -12,10 +12,13 @@
 #include "heap_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap, xbt, "Heap");
 
+/** \name Functions 
+ *  \ingroup XBT_heap
+ */
+/*@{*/
 /**
- * xbt_heap_new:
- * @init_size: initial size of the heap
- * @free_func: function to call on each element when you want to free
+ * \param init_size initial size of the heap
+ * \param free_func function to call on each element when you want to free
  *             the whole heap (or NULL if nothing to do).
  *
  * Creates a new heap.
@@ -31,8 +34,7 @@ xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t * const free_func)
 }
 
 /**
- * xbt_heap_free:
- * @H: poor victim
+ * \param H poor victim
  *
  * kilkil a heap and its content
  */
@@ -48,10 +50,8 @@ void xbt_heap_free(xbt_heap_t H)
 }
 
 /**
- * xbt_heap_size:
- * @H: the heap we're working on
- *
- * returns the number of elements in the heap
+ * \param H the heap we're working on
+ * \return the number of elements in the heap
  */
 int xbt_heap_size(xbt_heap_t H)
 {
@@ -59,10 +59,9 @@ int xbt_heap_size(xbt_heap_t H)
 }
 
 /**
- * xbt_heap_push:
- * @H: the heap we're working on
- * @content: the object you want to add to the heap
- * @key: the key associated to this object
+ * \param H the heap we're working on
+ * \param content the object you want to add to the heap
+ * \param key the key associated to this object
  *
  * Add an element int the heap. The element with the smallest key is
  * automatically moved at the top of the heap.
@@ -86,8 +85,8 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
 }
 
 /**
- * xbt_heap_pop:
- * @H: the heap we're working on
+ * \param H the heap we're working on
+ * \return the element with the smallest key
  *
  * Extracts from the heap and returns the element with the smallest
  * key. The element with the next smallest key is automatically moved
@@ -115,10 +114,9 @@ void *xbt_heap_pop(xbt_heap_t H)
 }
 
 /**
- * xbt_heap_maxkey:
- * @H: the heap we're working on
+ * \param H the heap we're working on
  *
- * Returns the smallest key in the heap without modifying the heap.
+ * \return the smallest key in the heap without modifying the heap.
  */
 double xbt_heap_maxkey(xbt_heap_t H)
 {
@@ -127,10 +125,9 @@ double xbt_heap_maxkey(xbt_heap_t H)
 }
 
 /**
- * xbt_heap_maxcontent:
- * @H: the heap we're working on
+ * \param H the heap we're working on
  *
- * Returns the value associated to the smallest key in the heap
+ * \return the value associated to the smallest key in the heap
  * without modifying the heap.
  */
 void *xbt_heap_maxcontent(xbt_heap_t H)
@@ -139,9 +136,8 @@ void *xbt_heap_maxcontent(xbt_heap_t H)
   return CONTENT(H, 0);
 }
 
-/**
- * xbt_heap_maxcontent:
- * @H: the heap we're working on
+/* <<<< private >>>>
+ * \param H the heap we're working on
  * 
  * Restores the heap property once an element has been deleted.
  */
@@ -167,10 +163,9 @@ static void xbt_heap_maxHeapify(xbt_heap_t H)
   }
 }
 
-/**
- * xbt_heap_maxcontent:
- * @H: the heap we're working on
- * @i: an item position in the heap
+/* <<<< private >>>>
+ * \param H the heap we're working on
+ * \param i an item position in the heap
  * 
  * Moves up an item at position i to its correct position. Works only
  * when called from xbt_heap_push. Do not use otherwise.
@@ -185,3 +180,4 @@ static void xbt_heap_increaseKey(xbt_heap_t H, int i)
   }
   return;
 }
+/*@}*/

@@ -14,7 +14,7 @@
 
 #include "xbt/dynar.h"
 
-BEGIN_DECL
+BEGIN_DECL()
   
 /* For now, a config is only a special dynar. But don't rely on it, */
 /* it may change in the future. */
@@ -118,6 +118,6 @@ xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t    cfg,
 				 const char   *name,
 		       /* OUT */ xbt_dynar_t *dynar);
 
-END_DECL
+END_DECL()
   
 #endif /* _XBT_CONFIG_H_ */

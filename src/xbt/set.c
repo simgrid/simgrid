@@ -26,8 +26,8 @@ typedef struct xbt_set_ {
 
 /*####[ Memory  ]############################################################*/
 /**
- * xbt_set_new:
- * @dst: where to
+ * \ingroup XBT_set 
+ * \return a new set
  *
  * Creates a new set.
  */
@@ -41,8 +41,8 @@ xbt_set_t xbt_set_new (void) {
 }
 
 /**
- * xbt_set_free:
- * @set:
+ * \ingroup XBT_set 
+ * \param set
  *
  * Frees a set.
  */
@@ -56,10 +56,10 @@ void  xbt_set_free(xbt_set_t *set) {
 }
 
 /**
- * xbt_set_add:
- * @set: set to populate
- * @elm: element to add. 
- * @free_ctn: How to add the data 
+ * \ingroup XBT_set 
+ * \param set set to populate
+ * \param elm element to add. 
+ * \param free_func How to add the data 
  *
  * Add an element to a set. 
  *
@@ -105,10 +105,10 @@ void xbt_set_add    (xbt_set_t      set,
 }
 
 /**
- * xbt_set_get_by_name:
- * @set:
- * @name: Name of the searched cell
- * @dst: where to put the found data into
+ * \ingroup XBT_set 
+ * \param set
+ * \param name Name of the searched cell
+ * \param dst where to put the found data into
  *
  * get a data stored in the cell by providing its name.
  */
@@ -121,11 +121,11 @@ xbt_error_t xbt_set_get_by_name    (xbt_set_t     set,
   return errcode;
 }
 /**
- * xbt_set_get_by_name_ext:
- * @set:
- * @name: Name of the searched cell
- * @name_len: length of the name, when strlen cannot be trusted
- * @dst: where to put the found data into
+ * \ingroup XBT_set 
+ * \param set
+ * \param name Name of the searched cell
+ * \param name_len length of the name, when strlen cannot be trusted
+ * \param dst where to put the found data into
  *
  * get a data stored in the cell by providing its name (and the length
  * of the name, when strlen cannot be trusted because you don't use a char*
@@ -140,10 +140,10 @@ xbt_error_t xbt_set_get_by_name_ext(xbt_set_t      set,
 }
 
 /**
- * xbt_set_get_by_code:
- * @set:
- * @id: what you're looking for
- * @dst: where to put the found data into
+ * \ingroup XBT_set 
+ * \param set
+ * \param id what you're looking for
+ * \param dst where to put the found data into
  *
  * get a data stored in the cell by providing its id. 
  * @warning, if the ID does not exists, you're getting into trouble
@@ -170,9 +170,9 @@ typedef struct xbt_set_cursor_ {
 } s_xbt_set_cursor_t;
 
 /**
- * xbt_set_cursor_first:
- * @set: on what to let the cursor iterate
- * @cursor: dest address
+ * \ingroup XBT_set 
+ * \param set on what to let the cursor iterate
+ * \param cursor dest address
  *
  * Create the cursor if it does not exists. Rewind it in any case.
  */
@@ -194,8 +194,8 @@ void         xbt_set_cursor_first       (xbt_set_t         set,
 }
 
 /**
- * xbt_set_cursor_step:
- * @cursor: the cursor
+ * \ingroup XBT_set 
+ * \param cursor the cursor
  *
  * Move to the next element. 
  */
@@ -204,9 +204,10 @@ void         xbt_set_cursor_step        (xbt_set_cursor_t cursor) {
 }
 
 /**
- * xbt_set_cursor_get_or_free:
- * @cursor: the cursor
- * @Returns: true if it's ok, false if there is no more data
+ * \ingroup XBT_set 
+ * \param curs the cursor
+ * \param elm an element
+ * \return true if it's ok, false if there is no more data
  *
  * Get current data
  */

@@ -12,7 +12,7 @@
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /* **************************************************************************
  * Initializing the processes
@@ -56,7 +56,7 @@ void gras_userdata_set(void *ud);
 
 #define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
 
-END_DECL
+END_DECL()
 
 #endif /* GRAS_PROCESS_H */
 

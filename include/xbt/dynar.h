@@ -12,8 +12,11 @@
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 
-BEGIN_DECL
+BEGIN_DECL()
 
+/** \brief Dictionnary data type 
+    \ingroup XBT_dynar
+*/
 typedef struct xbt_dynar_s *xbt_dynar_t;
 
 xbt_dynar_t  xbt_dynar_new(unsigned long elm_size, 
@@ -64,21 +67,25 @@ void xbt_dynar_cursor_first (const xbt_dynar_t dynar, int *cursor);
 void xbt_dynar_cursor_step  (const xbt_dynar_t dynar, int *cursor);
 int  xbt_dynar_cursor_get   (const xbt_dynar_t dynar, int *cursor, void *whereto);
 
+
 /**
+ \brief Dynar iterator
+ \ingroup XBT_dynar
  * xbt_dynar_foreach:
- * @_dynar: what to iterate over
- * @_cursor: an integer used as cursor
- * @_data:
+ * \param _dynar what to iterate over
+ * \param _cursor an integer used as cursor
+ * \param _data
  *
- * Iterates over the whole dynar. Example:
- *
- * <programlisting>
- * xbt_dynar_t dyn;
- * int cpt;
- * string *str;
- * xbt_dynar_foreach (dyn,cpt,str) {
- *   printf("Seen %s\n",str);
- * }</programlisting>
+ * Iterates over the whole dynar. 
+ * \note An example of usage:
+ * \code
+xbt_dynar_t dyn;
+int cpt;
+string *str;
+xbt_dynar_foreach (dyn,cpt,str) {
+  printf("Seen %s\n",str);
+}
+\endcode
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
        for (xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \
@@ -93,5 +100,5 @@ int  xbt_dynar_cursor_get   (const xbt_dynar_t dynar, int *cursor, void *whereto
 void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 			  int          *const cursor);
 
-END_DECL
+END_DECL()
 #endif /* _XBT_DYNAR_H */

@@ -11,13 +11,12 @@
 #include "xbt/error.h"
 
 /**
- * xbt_error_name:
- * @errcode: 
- * @Returns: the printable name of an error code
+ * \brief Usefull to do nice error repporting messages.
+ * \ingroup XBT_error
+ * \param errcode 
+ * \return the printable name of an error code
  *
- * usefull to do nice error repporting messages
  */
-
 const char *xbt_error_name(xbt_error_t errcode)  {
 
    switch (errcode) {
@@ -37,6 +36,12 @@ const char *xbt_error_name(xbt_error_t errcode)  {
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_DEFAULT_CATEGORY(xbt);
   
+/**
+ * \ingroup XBT_error
+ * \param msg 
+ *
+ * Things are so messed up that the only thing to do now, is to stop the program.
+ */
 void xbt_die (const char *msg) {
    CRITICAL1("%s",msg);
    xbt_abort();

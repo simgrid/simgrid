@@ -10,8 +10,15 @@
 
 #include "xbt/misc.h"
 
+/** \name Context types
+ *  \ingroup XBT_context
+*/
+/*@{*/
 typedef struct s_xbt_context *xbt_context_t;
+/**< A context */
 typedef int(*xbt_context_function_t)(int argc, char *argv[]);
+/**< A context function */
+/*@}*/
 
 void xbt_context_init(void);
 void xbt_context_exit(void);

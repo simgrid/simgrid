@@ -12,15 +12,20 @@
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /*####[ Type definition ]####################################################*/
-typedef struct xbt_set_ *xbt_set_t;
+/** \name Set and set elements
+    \ingroup XBT_set
+    generic dictionary
+*/
+/*@{*/
+typedef struct xbt_set_ *xbt_set_t; /**< Set */
 typedef struct xbt_set_elm_ {
   unsigned int ID;
   char        *name;
   unsigned int name_len;
-} s_xbt_set_elm_t,*xbt_set_elm_t;
+} s_xbt_set_elm_t,*xbt_set_elm_t;   /**< Set element */
 
 /*####[ Functions ]##########################################################*/
 
@@ -50,7 +55,8 @@ xbt_error_t xbt_set_get_by_id      (xbt_set_t      set,
 /* To traverse (simple) caches                                               */
 /* Don't add or remove entries to the cache while traversing !!!             */
 /*###########################################################################*/
-typedef struct xbt_set_cursor_ *xbt_set_cursor_t;
+typedef struct xbt_set_cursor_ *xbt_set_cursor_t;  /**< Set cursor */
+/*@}*/
 
 void         xbt_set_cursor_first       (xbt_set_t         set,
 					  xbt_set_cursor_t *cursor);
@@ -58,11 +64,20 @@ void         xbt_set_cursor_step        (xbt_set_cursor_t  cursor);
 int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *cursor,
 					  xbt_set_elm_t    *elm);
 
+/**
+ \brief Set iterator
+ \ingroup XBT_set
+ * \param set what to iterate over
+ * \param cursor a #xbt_set_cursor_t used as cursor
+ * \param elm  a #xbt_set_elm_t
+ *
+ * Iterates over the whole set. 
+ */
 #define xbt_set_foreach(set,cursor,elm)                       \
   for ((cursor) = NULL, xbt_set_cursor_first((set),&(cursor)) ;   \
        xbt_set_cursor_get_or_free(&(cursor),(xbt_set_elm_t*)&(elm));          \
        xbt_set_cursor_step(cursor) )
 
-END_DECL
+END_DECL()
 
 #endif /* _XBT_SET_H */

@@ -14,9 +14,12 @@
 #include "xbt/misc.h" /* BEGIN_DECL */
 #include "xbt/error.h"
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /*####[ Type definition ]####################################################*/
+/** \brief Dictionnary data type 
+    \ingroup XBT_dict
+*/
 typedef struct xbt_dict_ *xbt_dict_t;
 
 /*####[ Simple dict  functions ]#############################################*/
@@ -141,6 +144,6 @@ int          xbt_dict_cursor_get_or_free (xbt_dict_cursor_t *cursor,
        xbt_dict_cursor_get_or_free(&(cursor),&(key),(void**)(&data));\
        xbt_dict_cursor_step(cursor) )
 
-END_DECL
+END_DECL()
 
 #endif /* _XBT_DICT_H */

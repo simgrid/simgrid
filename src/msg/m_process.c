@@ -14,25 +14,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(m_process, msg,
 /******************************** Process ************************************/
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.
-
- * A constructor for #m_process_t taking four arguments and returning the 
- * corresponding object. The structure (and the corresponding thread) is
- * created, and put in the list of ready process.
- * \param name a name for the object. It is for user-level information
-   and can be NULL.
- * \param code is a function describing the behavior of the agent. It
-   should then only use functions described in \ref
-   m_process_management (to create a new #m_process_t for example),
-   in \ref m_host_management (only the read-only functions i.e. whose
-   name contains the word get), in \ref m_task_management (to create
-   or destroy some #m_task_t for example) and in \ref
-   msg_gos_functions (to handle file transfers and task processing).
- * \param data a pointer to any data may want to attach to the new
-   object.  It is for user-level information and can be NULL. It can
-   be retrieved with the function \ref MSG_process_get_data.
- * \param host the location where the new agent is executed.
- * \see m_process_t
- * \return The new corresponding object.
+ *
+ * Does exactly the same as #MSG_process_create_with_arguments but without 
+   providing standard arguments (\a argc, \a argv).
+ * \sa MSG_process_create_with_arguments
  */
 m_process_t MSG_process_create(const char *name,
 			       m_process_code_t code, void *data,
@@ -51,6 +36,30 @@ static void MSG_process_cleanup(void *arg)
   xbt_free(arg);
 }
 
+/** \ingroup m_process_management
+ * \brief Creates and runs a new #m_process_t.
+
+ * A constructor for #m_process_t taking four arguments and returning the 
+ * corresponding object. The structure (and the corresponding thread) is
+ * created, and put in the list of ready process.
+ * \param name a name for the object. It is for user-level information
+   and can be NULL.
+ * \param code is a function describing the behavior of the agent. It
+   should then only use functions described in \ref
+   m_process_management (to create a new #m_process_t for example),
+   in \ref m_host_management (only the read-only functions i.e. whose
+   name contains the word get), in \ref m_task_management (to create
+   or destroy some #m_task_t for example) and in \ref
+   msg_gos_functions (to handle file transfers and task processing).
+ * \param data a pointer to any data may want to attach to the new
+   object.  It is for user-level information and can be NULL. It can
+   be retrieved with the function \ref MSG_process_get_data.
+ * \param host the location where the new agent is executed.
+ * \param argc first argument passed to \a code
+ * \param argv second argument passed to \a code
+ * \see m_process_t
+ * \return The new corresponding object.
+ */
 m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,
 					      m_host_t host, int argc, char **argv)
@@ -98,7 +107,12 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   return process;
 }
 
-void MSG_process_free(m_process_t process)
+/** \ingroup m_process_management
+ * \param process poor victim
+ *
+ * This function simply kills a \a process... scarry isn't it ? :)
+ */
+void MSG_process_kill(m_process_t process)
 {
   xbt_fifo_remove(msg_global->process_list,process);
   xbt_context_free(process->simdata->context);
@@ -202,7 +216,6 @@ int MSG_process_get_PID(m_process_t process)
 
   return (((simdata_process_t) process->simdata)->PID);
 }
-
 
 /** \ingroup m_process_management
  * \brief Returns the process ID of the parent of \a process.
@@ -359,10 +372,6 @@ int MSG_process_isSuspended(m_process_t process)
 
   return (process->simdata->suspended);
 }
-
-
-
-
 
 MSG_error_t __MSG_process_block(void)
 {

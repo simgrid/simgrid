@@ -15,7 +15,7 @@
 #include "gras/transport.h"
 #include "gras/datadesc.h"
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /* msgtype declaration and retrival */
 typedef struct s_gras_msgtype *gras_msgtype_t;
@@ -58,7 +58,7 @@ xbt_error_t gras_msg_wait(double          timeout,
 xbt_error_t gras_msg_handle(double timeOut);
 
 
-END_DECL
+END_DECL()
 
 #endif /* GRAS_MSG_H */
 

@@ -50,6 +50,8 @@ static workstation_KCCFLN05_t workstation_new(const char *name,
   workstation->id = nb_workstation++;
 
   workstation->power_scale = power_scale;
+  xbt_assert0(workstation->power_scale>0,"Power has to be >0");
+
   workstation->power_current = power_initial;
   if (power_trace)
     workstation->power_event =

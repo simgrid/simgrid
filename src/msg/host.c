@@ -98,7 +98,7 @@ m_host_t MSG_host_self(void)
   return MSG_process_get_host(MSG_process_self());
 }
 
-/**
+/*
  * Real function for destroy a host.
  * MSG_host_destroy is just  a front_end that also removes it from 
  * msg_global->host

@@ -65,7 +65,7 @@ void xbt_cfg_host_free(void *d){
 /**
  * xbt_cfg_new:
  *
- * @whereto: 
+ * \return
  *
  * Initialise an config set
  */
@@ -78,8 +78,8 @@ xbt_cfg_t xbt_cfg_new(void) {
 /**
  * xbt_cfg_cpy:
  *
- * @whereto: the config set to be created
- * @tocopy: the source data
+ * \arg whereto the config set to be created
+ * \arg tocopy the source data
  *
  */
 
@@ -103,9 +103,9 @@ void xbt_cfg_free(xbt_cfg_t *cfg) {
 
 /**
  * xbt_cfg_dump:
- * @name: The name to give to this config set
- * @indent: what to write at the begining of each line (right number of spaces)
- * @cfg: the config set
+ * \arg name The name to give to this config set
+ * \arg indent what to write at the begining of each line (right number of spaces)
+ * \arg cfg the config set
  *
  * Dumps a config set for debuging purpose
  */
@@ -179,7 +179,7 @@ xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
 /**
  * xbt_cfgelm_free:
  *
- * @data: the data to be freed (typed as void* to be usable as free funct in dict)
+ * \arg data the data to be freed (typed as void* to be usable as free funct in dict)
  *
  * free an config element
  */
@@ -196,10 +196,10 @@ void xbt_cfgelm_free(void *data) {
 
 /**
  * xbt_cfg_register:
- * @cfg: the config set
- * @type: the type of the config element
- * @min: the minimum
- * @max: the maximum
+ * \arg cfg the config set
+ * \arg type the type of the config element
+ * \arg min the minimum
+ * \arg max the maximum
  *
  * register an element within a config set
  */
@@ -253,8 +253,8 @@ xbt_cfg_register(xbt_cfg_t cfg,
 /**
  * xbt_cfg_unregister:
  * 
- * @cfg: the config set
- * @name: the name of the elem to be freed
+ * \arg cfg the config set
+ * \arg name the name of the elem to be freed
  * 
  * unregister an element from a config set. 
  * Note that it removes both the DTD and the actual content.
@@ -268,8 +268,8 @@ xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
 /**
  * xbt_cfg_register_str:
  *
- * @cfg: the config set
- * @entry: a string describing the element to register
+ * \arg cfg the config set
+ * \arg entry a string describing the element to register
  *
  * Parse a string and register the stuff described.
  */
@@ -343,7 +343,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
 /**
  * xbt_cfg_check:
  *
- * @cfg: the config set
+ * \arg cfg the config set
  * 
  * Check the config set
  */
@@ -413,9 +413,9 @@ static xbt_error_t xbt_cfgelm_get(xbt_cfg_t  cfg,
 /**
  * xbt_cfg_get_type:
  *
- * @cfg: the config set
- * @name: the name of the element 
- * @type: the result
+ * \arg cfg the config set
+ * \arg name the name of the element 
+ * \arg type the result
  *
  * Give the type of the config element
  */
@@ -443,11 +443,11 @@ xbt_cfg_get_type(xbt_cfg_t cfg, const char *name,
 /*----[ Setting ]---------------------------------------------------------*/
 /** 
  * xbt_cfg_set_vargs(): 
- * @cfg: config set to fill
- * @varargs: NULL-terminated list of pairs {(const char*)key, value}
+ * \arg cfg config set to fill
+ * \arg varargs NULL-terminated list of pairs {(const char*)key, value}
  *
  * Add some values to the config set.
- * @warning: if the list isn't NULL terminated, it will segfault. 
+ * \warning if the list isn't NULL terminated, it will segfault. 
  */
 xbt_error_t
 xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa) {
@@ -496,11 +496,11 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa) {
 
 /** 
  * xbt_cfg_set():
- * @cfg: config set to fill
- * @varargs: NULL-terminated list of pairs {(const char*)key, value}
+ * \arg cfg config set to fill
+ * \arg varargs NULL-terminated list of pairs {(const char*)key, value}
  *
  * Add some values to the config set.
- * @warning: if the list isn't NULL terminated, it will segfault. 
+ * \warning if the list isn't NULL terminated, it will segfault. 
  */
 xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...) {
   va_list pa;
@@ -514,8 +514,8 @@ xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...) {
 
 /**
  * xbt_cfg_set_parse():
- * @cfg: config set to fill
- * @options: a string containing the content to add to the config set. This
+ * \arg cfg config set to fill
+ * \arg options a string containing the content to add to the config set. This
  * is a '\t',' ' or '\n' separated list of cells. Each individual cell is
  * like "[name]:[value]" where [name] is the name of an already registred 
  * cell, and [value] conforms to the data type under which this cell was
@@ -675,11 +675,11 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 /**
  * xbt_cfg_set_int:
  *
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the value of the cell
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the value of the cell
  *
- * Set the value of the cell @name in @cfg with the provided value.
+ * Set the value of the cell #name in #cfg with the provided value.
  */ 
 xbt_error_t
 xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
@@ -699,11 +699,11 @@ xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
 
 /**
  * xbt_cfg_set_double:
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the doule to set
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the doule to set
  * 
- * Set the value of the cell @name in @cfg with the provided value.
+ * Set the value of the cell #name in #cfg with the provided value.
  */ 
 
 xbt_error_t
@@ -725,11 +725,11 @@ xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
 /**
  * xbt_cfg_set_string:
  * 
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the value to be added
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the value to be added
  *
- * Set the value of the cell @name in @cfg with the provided value.
+ * Set the value of the cell #name in #cfg with the provided value.
  */ 
 
 xbt_error_t
@@ -752,13 +752,13 @@ xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) {
 /**
  * xbt_cfg_set_host:
  * 
- * @cfg: the config set
- * @name: the name of the cell
- * @host: the host
- * @port: the port number
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg host the host
+ * \arg port the port number
  *
- * Set the value of the cell @name in @cfg with the provided value 
- * on the given @host to the given @port
+ * Set the value of the cell #name in #cfg with the provided value 
+ * on the given #host to the given #port
  */ 
 
 xbt_error_t 
@@ -788,11 +788,11 @@ xbt_cfg_set_host(xbt_cfg_t cfg,const char*name,
 /**
  * xbt_cfg_rm_int:
  *
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the value to be removed
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the value to be removed
  *
- * Remove the provided @val from the cell @name in @cfg.
+ * Remove the provided #val from the cell #name in #cfg.
  */
 xbt_error_t xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
 
@@ -817,11 +817,11 @@ xbt_error_t xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
 /**
  * xbt_cfg_rm_double:
  *
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the value to be removed
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the value to be removed
  *
- * Remove the provided @val from the cell @name in @cfg.
+ * Remove the provided #val from the cell #name in #cfg.
  */
 
 xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
@@ -847,11 +847,11 @@ xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
 /**
  * xbt_cfg_rm_string:
  *
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the value of the string which will be removed
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the value of the string which will be removed
  *
- * Remove the provided @val from the cell @name in @cfg.
+ * Remove the provided #val from the cell #name in #cfg.
  */
 xbt_error_t
 xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
@@ -877,12 +877,12 @@ xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
 /**
  * xbt_cfg_rm_host:
  * 
- * @cfg: the config set
- * @name: the name of the cell
- * @host: the hostname
- * @port: the port number
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg host the hostname
+ * \arg port the port number
  *
- * Remove the provided @host:@port from the cell @name in @cfg.
+ * Remove the provided #host:#port from the cell #name in #cfg.
  */
 
 xbt_error_t
@@ -911,8 +911,8 @@ xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
 /**
  * xbt_cfg_empty:
  * 
- * @cfg: the config set
- * @name: the name of the cell
+ * \arg cfg the config set
+ * \arg name the name of the cell
  *
  * rm evenything
  */
@@ -941,15 +941,15 @@ xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
 
 /**
  * xbt_cfg_get_int:
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the wanted value
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
- * @warning the returned value is the actual content of the config set
+ * \warning the returned value is the actual content of the config set
  */
 xbt_error_t
 xbt_cfg_get_int   (xbt_cfg_t  cfg,
@@ -971,15 +971,15 @@ xbt_cfg_get_int   (xbt_cfg_t  cfg,
 
 /**
  * xbt_cfg_get_double:
- * @cfg: the config set
- * @name: the name of the cell
- * @val: the wanted value
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
- * @warning the returned value is the actual content of the config set
+ * \warning the returned value is the actual content of the config set
  */
 
 xbt_error_t
@@ -1003,15 +1003,15 @@ xbt_cfg_get_double(xbt_cfg_t  cfg,
 /**
  * xbt_cfg_get_string:
  *
- * @th: the config set
- * @name: the name of the cell
- * @val: the wanted value
+ * \arg th the config set
+ * \arg name the name of the cell
+ * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
- * @warning the returned value is the actual content of the config set
+ * \warning the returned value is the actual content of the config set
  */
 
 xbt_error_t xbt_cfg_get_string(xbt_cfg_t  cfg,
@@ -1036,16 +1036,16 @@ xbt_error_t xbt_cfg_get_string(xbt_cfg_t  cfg,
 /**
  * xbt_cfg_get_host:
  *
- * @cfg: the config set
- * @name: the name of the cell
- * @host: the host
- * @port: the port number
+ * \arg cfg the config set
+ * \arg name the name of the cell
+ * \arg host the host
+ * \arg port the port number
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
- * @warning the returned value is the actual content of the config set
+ * \warning the returned value is the actual content of the config set
  */
 
 xbt_error_t xbt_cfg_get_host  (xbt_cfg_t  cfg,
@@ -1072,13 +1072,13 @@ xbt_error_t xbt_cfg_get_host  (xbt_cfg_t  cfg,
 
 /**
  * xbt_cfg_get_dynar:
- * @cfg: where to search in
- * @name: what to search for
- * @dynar: result
+ * \arg cfg where to search in
+ * \arg name what to search for
+ * \arg dynar result
  *
  * Get the data stored in the config bag. 
  *
- * @warning the returned value is the actual content of the config set
+ * \warning the returned value is the actual content of the config set
  */
 xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t    cfg,
 				 const char   *name,

@@ -303,7 +303,7 @@ MSG_error_t MSG_clean(void)
 
 
   while((p=xbt_fifo_shift(msg_global->process_list))) {
-    MSG_process_free(p);
+    MSG_process_kill(p);
   }
   xbt_context_exit();
 

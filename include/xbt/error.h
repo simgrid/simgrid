@@ -19,18 +19,21 @@
 #include <execinfo.h>  /* to print the backtrace */
 #endif
 
-BEGIN_DECL
+BEGIN_DECL()
 
 void xbt_abort(void) _XBT_GNUC_NORETURN;
   
+/**\brief Error types
+   \ingroup XBT_error
+*/
 typedef enum {
-  no_error=0,       /* succes */
-  mismatch_error=1, /* The provided ID does not match */
-  system_error=2,   /* a syscall did fail */
-  network_error=3,  /* error while sending/receiving data */
-  timeout_error=4,  /* not quick enough, dude */
-  thread_error=5,   /* error while [un]locking */
-  unknown_error=6,
+  no_error=0,       /**< succes */
+  mismatch_error=1, /**< The provided ID does not match */
+  system_error=2,   /**< a syscall did fail */
+  network_error=3,  /**< error while sending/receiving data */
+  timeout_error=4,  /**< not quick enough, dude */
+  thread_error=5,   /**< error while [un]locking */
+  unknown_error=6,  /**< unknown error */
      
   /* remote errors: result of a RMI/RPC.
      no_error(=0) is the same for both */   
@@ -42,7 +45,7 @@ typedef enum {
   remote_unknown_error
 } xbt_error_t;
 
-/*@observer@*/ const char *xbt_error_name(xbt_error_t errcode);
+const char *xbt_error_name(xbt_error_t errcode);
 
 #define TRY(a) do {                                     \
   if ((errcode=a) != no_error) {                        \
@@ -134,6 +137,12 @@ typedef enum {
 #define RAISE_IMPOSSIBLE RAISE0(unknown_error,"The Impossible did happen")
 #define RAISE_UNIMPLEMENTED RAISE1(unknown_error,"Function %s unimplemented",__FUNCTION__)
 
+/** 
+ * \name Asserts
+ * \ingroup XBT_error
+ * asserts and stuff
+ */
+/*@{*/
 #ifdef NDEBUG
 #define xbt_assert(cond)
 #define xbt_assert0(cond,msg)
@@ -153,13 +162,17 @@ typedef enum {
 #define xbt_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) { CRITICAL5(msg,a,b,c,d,e); xbt_abort(); }
 #define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); xbt_abort(); }
 #endif
+/*@}*/
 
+/** 
+ * \brief How to abort with an error message
+ * \ingroup XBT_error
+ */
 void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 #define DIE_IMPOSSIBLE xbt_assert0(0,"The Impossible did happen (yet again)")
 #define xbt_assert_error(a) xbt_assert1(errcode == (a), "Error %s unexpected",xbt_error_name(errcode))
 
-END_DECL
+END_DECL()
 
 #endif /* XBT_ERROR_H */
-

@@ -20,10 +20,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(swag,xbt,"Swag : O(1) set library");
 #define PREV(obj,offset) xbt_swag_getPrev(obj,offset)
 #define NEXT(obj,offset) xbt_swag_getNext(obj,offset)
 
-/*
-  Usage : xbt_swag_new(&obj.setA-&obj);
+/** \name Functions 
+ *  \ingroup XBT_swag
  */
+/*@{*/
 
+/** Creates a new swag.
+ * \param offset where the hookup is located in the structure
+ * \see xbt_swag_offset
+ *
+ * Usage : xbt_swag_new(&obj.setA-&obj); 
+ */
 xbt_swag_t xbt_swag_new(size_t offset)
 {
   xbt_swag_t swag = xbt_new0(s_xbt_swag_t, 1);
@@ -33,17 +40,36 @@ xbt_swag_t xbt_swag_new(size_t offset)
   return swag;
 }
 
-
+/** 
+ * \param swag poor victim
+ * 
+ * kilkil a swag but not it's content. If you do not understand why
+ * xbt_swag_free should not free its content, don't use swags.
+ */
 void xbt_swag_free(xbt_swag_t swag)
 {
   xbt_free(swag);
 }
 
+/** Creates a new swag.
+ * \param swag the swag to initialize
+ * \param offset where the hookup is located in the structure
+ * \see xbt_swag_offset
+ *
+ * Usage : xbt_swag_init(swag,&obj.setA-&obj); 
+ */
 void xbt_swag_init(xbt_swag_t swag, size_t offset)
 {
   swag->offset = offset;
 }
 
+
+/** 
+ * \param obj the objet to insert in the swag
+ * \param swag a swag
+ *
+ * insert \a obj in \a swag
+ */
 void xbt_swag_insert(void *obj, xbt_swag_t swag)
 {
 
@@ -64,6 +90,13 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
   swag->tail = obj;
 }
 
+/** 
+ * \param obj the objet to insert in the swag
+ * \param swag a swag
+ *
+ * insert (at the head... you probably had a very good reason to do
+ * that, I hope you know what you're doing) \a obj in \a swag
+ */
 void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
 {
 
@@ -84,6 +117,13 @@ void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
   swag->head = obj;
 }
 
+/** 
+ * \param obj the objet to insert in the swag
+ * \param swag a swag
+ *
+ * insert (at the tail... you probably had a very good reason to do
+ * that, I hope you know what you're doing) \a obj in \a swag
+ */
 void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
 {
 
@@ -104,6 +144,13 @@ void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
   swag->tail = obj;
 }
 
+/** 
+ * \param obj the objet to remove from the swag
+ * \param swag a swag
+ * \return \a obj if it was in the \a swag and NULL otherwise
+ *
+ * removes \a obj from \a swag
+ */
 void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 {
   size_t offset = swag->offset;
@@ -137,6 +184,10 @@ void *xbt_swag_remove(void *obj, xbt_swag_t swag)
   return obj;
 }
 
+/** 
+ * \param swag a swag
+ * \return an object from the \a swag
+ */
 void *xbt_swag_extract(xbt_swag_t swag)
 {
   size_t offset = swag->offset;
@@ -159,14 +210,23 @@ void *xbt_swag_extract(xbt_swag_t swag)
 
   return obj;
 }
-
+/** 
+ * \param swag a swag
+ * \return the number of objects in \a swag
+ */
 int xbt_swag_size(xbt_swag_t swag)
 {
   return (swag->count);
 }
 
+/** 
+ * \param obj an object
+ * \param swag a swag
+ * \return 1 if \a obj is in the \a swag and 0 otherwise
+ */
 int xbt_swag_belongs(void *obj, xbt_swag_t swag)
 {
   return ((NEXT(obj, swag->offset)) || (PREV(obj, swag->offset))
 	  || (swag->head == obj));
 }
+/*@}*/

@@ -14,7 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gos, msg,
 /** \ingroup msg_gos_functions
  * \brief This function is now deprecated and useless. Please stop using it.
  */
-
 MSG_error_t MSG_process_start(m_process_t process)
 {
   xbt_assert0(0,"This function is now deprecated and useless. Please stop using it.");
@@ -220,6 +219,12 @@ MSG_error_t MSG_task_put(m_task_t task,
   else MSG_RETURN(MSG_TRANSFER_FAILURE);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Does exactly the same as MSG_task_put but with a bounded transmition 
+ * rate.
+ *
+ * \sa MSG_task_put
+ */
 MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 m_host_t dest, m_channel_t channel,
 				 long double max_rate)
@@ -351,4 +356,3 @@ MSG_error_t MSG_get_errno(void)
 {
   return PROCESS_GET_ERRNO();
 }
-

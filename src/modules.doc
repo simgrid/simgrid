@@ -6,7 +6,7 @@
     /** \defgroup XBT_context User-level context library
      *  \ingroup XBT_API
      *  \brief This section describes how to use high-level functions 
-     *  (as opposed to <c>setjump/longjmp</c>) to schedule non-preemptible 
+     *  (as opposed to <tt>setjump/longjmp</tt>) to schedule non-preemptible 
      *  threads.
      */
     /** \defgroup XBT_dict A generic dictionnary
@@ -28,6 +28,10 @@
      *  \brief This section describes the API to generic workqueue. These functions
      *   provide the same kind of functionnality as dynamic arrays but in time O(1). 
      *   However these functions use malloc/free a way too much often.
+     */
+    /** \defgroup XBT_set A generic set datatype
+     *  \ingroup XBT_API
+     *  \brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
      */
     /** \defgroup XBT_swag A specific set datatype
      *  \ingroup XBT_API
@@ -55,8 +59,20 @@
 
 /** \defgroup SURF_API       API of SURF
  *  \ingroup SimGrid_API
+ *  \brief (Not documented yet).
+ *
+ 
+ * SURF provides the core functionnalities to simulate a virtual
+ * platform. It is very low-level and is not intended to be used as
+ * such but rather to serve as a basis for higher-level simulators.
+ * We're still working on it and the structure is a little bit complex. 
+ * So we'll document it only when we'll be completely satisfied of 
+ * the way it is organized.
+ *
+ * It is where platform models are encoded. If you need a model that is not 
+ * encoded yet, please tell me (<arnaud.legrand@imag.fr>) and we'll see if
+ * it is feasible or not (hopefully it should be but who knows).
  */
-
 
 /** \defgroup MSG_API      API of MSG 
  *  \ingroup SimGrid_API

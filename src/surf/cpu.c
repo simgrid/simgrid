@@ -31,6 +31,7 @@ static cpu_t cpu_new(char *name, double power_scale,
   cpu->resource = (surf_resource_t) surf_cpu_resource;
   cpu->name = name;
   cpu->power_scale = power_scale;
+  xbt_assert0(cpu->power_scale>0,"Power has to be >0");
   cpu->power_current = power_initial;
   if (power_trace)
     cpu->power_event =

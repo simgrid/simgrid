@@ -12,7 +12,7 @@
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /**
  * gras_datadesc_type_t:
@@ -220,6 +220,6 @@ gras_datadesc_import_nws(const char           *name,
 			 unsigned long         howmany,
 	       /* OUT */ gras_datadesc_type_t *dst);
 
-END_DECL
+END_DECL()
 
 #endif /* GRAS_DATADESC_H */

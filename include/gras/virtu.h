@@ -12,7 +12,7 @@
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /**
  * gras_os_time:
@@ -42,7 +42,7 @@ void gras_os_sleep(unsigned long sec, unsigned long usec);
 const char *
 gras_get_my_fqdn(void);
 
-END_DECL
+END_DECL()
 
 #endif /* GRAS_VIRTU_H */
 

@@ -12,9 +12,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(deployment, msg,
 				"Logging specific to MSG (environment)");
 
-extern char *yytext;
-
-
 static int parse_argc = -1 ;
 static char **parse_argv = NULL;
 static m_process_code_t parse_code = NULL;
@@ -64,10 +61,10 @@ void MSG_launch_application(const char *file)
 }
 
 /** \ingroup msg_easier_life
- * \brief Registers a ::m_process_code_t code in a global table.
+ * \brief Registers a #m_process_code_t code in a global table.
  *
  * Registers a code function in a global table. 
- * This table is then used by ::MSG_launch_application. 
+ * This table is then used by #MSG_launch_application. 
  * \param name the reference name of the function.
  * \param code the function
  */
@@ -79,10 +76,10 @@ void MSG_function_register(const char *name,m_process_code_t code)
 }
 
 /** \ingroup msg_easier_life
- * \brief Registers a ::m_process_t code in a global table.
+ * \brief Registers a #m_process_t code in a global table.
  *
  * Registers a code function in a global table. 
- * This table is then used by ::MSG_launch_application. 
+ * This table is then used by #MSG_launch_application. 
  * \param name the reference name of the function.
  */
 m_process_code_t MSG_get_registered_function(const char *name)
@@ -98,10 +95,10 @@ m_process_code_t MSG_get_registered_function(const char *name)
 
 /** \ingroup msg_easier_life
  * \brief Get the arguments of the current process.
- * \deprecated{Not useful since m_process_code_t is int (*)(int argc, char *argv[])}
+ * \deprecated{Not useful since #m_process_code_t is int (*)(int argc, char *argv[])}
  *
  * This functions returns the values set for the current process 
- * using ::MSG_set_arguments or ::MSG_launch_application.
+ * using #MSG_set_arguments or #MSG_launch_application.
  * \param argc the number of arguments
  * \param argv the arguments table
  */

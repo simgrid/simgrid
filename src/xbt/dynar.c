@@ -119,9 +119,9 @@ _xbt_dynar_put_elm(const xbt_dynar_t  dynar,
 }
 
 /**
- * xbt_dynar_new:
- * @elm_size: size of each element in the dynar
- * @free_func: function to call each time we want to get rid of an element (or NULL if nothing to do).
+ * \ingroup XBT_dynar
+ * \param elmsize size of each element in the dynar
+ * \param free_f function to call each time we want to get rid of an element (or NULL if nothing to do).
  *
  * Creates a new dynar. If a free_func is provided, the elements have to be
  * pointer of pointer. That is to say that dynars can contain either base
@@ -143,8 +143,8 @@ xbt_dynar_new(const unsigned long           elmsize,
 }
 
 /**
- * xbt_dynar_free_container:
- * @dynar: poor victim
+ * \ingroup XBT_dynar
+ * \param dynar poor victim
  *
  * kilkil a dynar BUT NOT its content. Ie, the array is freed, but not what
  * its contain points to.
@@ -166,8 +166,8 @@ xbt_dynar_free_container(xbt_dynar_t *dynar) {
 }
 
 /**
- * xbt_dynar_reset:
- * @dynar: who to squeeze
+ * \ingroup XBT_dynar
+ * \param dynar who to squeeze
  *
  * Frees the content and set the size to 0
  */
@@ -190,8 +190,8 @@ xbt_dynar_reset(xbt_dynar_t const dynar) {
 }
 
 /**
- * xbt_dynar_free:
- * @dynar: poor victim
+ * \ingroup XBT_dynar
+ * \param dynar poor victim
  *
  * kilkil a dynar and its content
  */
@@ -205,8 +205,8 @@ xbt_dynar_free(xbt_dynar_t * dynar) {
 }
 
 /**
- * xbt_dynar_length:
- * @dynar: the dynar we want to mesure
+ * \ingroup XBT_dynar
+ * \param dynar the dynar we want to mesure
  *
  * Returns the count of elements in a dynar
  */
@@ -216,10 +216,10 @@ xbt_dynar_length(const xbt_dynar_t dynar) {
 }
 
 /**
- * xbt_dynar_get_cpy:
- * @dynar: information dealer
- * @idx: index of the slot we want to retrive
- * @dst: where to pu the result to.
+ * \ingroup XBT_dynar
+ * \param dynar information dealer
+ * \param idx index of the slot we want to retrive
+ * \param[out] dst where to put the result to.
  *
  * Retrieve a copy of the Nth element of a dynar.
  */
@@ -236,10 +236,10 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
 }
 
 /**
- * xbt_dynar_get_ptr:
- * @dynar: information dealer
- * @idx: index of the slot we want to retrive
- * @dst: where to pu the result to.
+ * \ingroup XBT_dynar
+ * \param dynar information dealer
+ * \param idx index of the slot we want to retrieve
+ * \return the #idx-th element of #dynar.
  *
  * Retrieve the Nth element of a dynar. Warning, the returned value is the actual content of 
  * the dynar. Make a copy before fooling with it.
@@ -256,10 +256,10 @@ xbt_dynar_get_ptr(const xbt_dynar_t dynar,
 }
 
 /**
- * xbt_dynar_set:
- * @dynar:
- * @idx:
- * @src: What will be feeded to the dynar
+ * \ingroup XBT_dynar
+ * \param dynar information dealer
+ * \param idx index of the slot we want to modify
+ * \param src What will be feeded to the dynar
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, BUT NOT freeing
  * the previous value at this position. If you want to free the previous content,
@@ -283,10 +283,10 @@ xbt_dynar_set(xbt_dynar_t         dynar,
 }
 
 /**
- * xbt_dynar_replace:
- * @dynar:
- * @idx:
- * @object:
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param idx
+ * \param object
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, AND DO
  * free the previous value at this position. If you don't want to free the
@@ -310,7 +310,7 @@ xbt_dynar_replace(xbt_dynar_t         dynar,
 }
 
 /**
- * xbt_dynar_insert_at_ptr:
+ * \ingroup XBT_dynar
  * 
  * Make room for a new element in the dynar, and return a pointer to
  * its position. You can then use regular affectation to set its value
@@ -345,10 +345,10 @@ xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
 }
 
 /**
- * xbt_dynar_insert_at:
- * @dynar:
- * @idx:
- * @src: What will be feeded to the dynar
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param idx
+ * \param src What will be feeded to the dynar
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, and
  * moving the previously existing value and all subsequent ones to one
@@ -366,10 +366,10 @@ xbt_dynar_insert_at(xbt_dynar_t  const dynar,
 }
 
 /**
- * xbt_dynar_remove_at:
- * @dynar: 
- * @idx:
- * @object:
+ * \ingroup XBT_dynar
+ * \param dynar 
+ * \param idx
+ * \param object
  *
  * Get the Nth element of a dynar, removing it from the dynar and moving
  * all subsequent values to one position left in the dynar.
@@ -405,7 +405,7 @@ xbt_dynar_remove_at(xbt_dynar_t  const dynar,
 }
 
 /**
- * xbt_dynar_push_ptr:
+ * \ingroup XBT_dynar
  * 
  * Make room at the end of the dynar for a new element, and return a pointer to it
  */
@@ -415,9 +415,9 @@ xbt_dynar_push_ptr(xbt_dynar_t  const dynar) {
 }
 
 /**
- * xbt_dynar_push:
- * @dynar:
- * @src:
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param src
  *
  * Add an element at the end of the dynar
  */
@@ -429,9 +429,8 @@ xbt_dynar_push(xbt_dynar_t  const dynar,
 }
 
 /**
- * xbt_dynar_pop_ptr:
- * @dynar:
- * @dst:
+ * \param dynar
+ * \param dst
  *
  * Make the last element of the dynar as unused and return a pointer to it.
  */
@@ -445,9 +444,9 @@ xbt_dynar_pop_ptr(xbt_dynar_t  const dynar) {
 }
 
 /**
- * xbt_dynar_pop:
- * @dynar:
- * @dst:
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param[out] dst
  *
  * Get and remove the last element of the dynar
  */
@@ -461,9 +460,9 @@ xbt_dynar_pop(xbt_dynar_t  const dynar,
 }
 
 /**
- * xbt_dynar_unshift:
- * @dynar:
- * @src:
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param src
  *
  * Add an element at the begining of the dynar (rather long, Use
  * xbt_dynar_push() when possible)
@@ -477,9 +476,9 @@ xbt_dynar_unshift(xbt_dynar_t  const dynar,
 }
 
 /**
- * xbt_dynar_shift:
- * @dynar:
- * @dst:
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param[out] dst
  *
  * Get and remove the first element of the dynar (rather long, Use
  * xbt_dynar_pop() when possible)
@@ -493,9 +492,9 @@ xbt_dynar_shift(xbt_dynar_t  const dynar,
 }
 
 /**
- * xbt_dynar_map:
- * @dynar:
- * @operator:
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param operator
  *
  * Apply a function to each member of a dynar (this function may change the
  * value of the element itself, but should not mess with the dynar).
@@ -519,7 +518,7 @@ xbt_dynar_map(const xbt_dynar_t  dynar,
 }
 
 /**
- * xbt_dynar_cursor_first:
+ * \ingroup XBT_dynar
  *
  * Put the cursor at the begining of the dynar. (actually, one step before
  * the begining, so that you can iterate over the dynar with a for loop).
@@ -538,7 +537,7 @@ xbt_dynar_cursor_first(const xbt_dynar_t dynar,
 }
 
 /**
- * xbt_dynar_cursor_step:
+ * \ingroup XBT_dynar
  *
  * Move the cursor to the next value (and return true), or return false.
  */
@@ -550,7 +549,7 @@ xbt_dynar_cursor_step(const xbt_dynar_t dynar,
 }
 
 /**
- * xbt_dynar_cursor_get:
+ * \ingroup XBT_dynar
  *
  * Get the current value of the cursor
  */
@@ -577,9 +576,9 @@ xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 }
 
 /**
- * xbt_dynar_cursor_rm:
- * @dynar:
- * @cursor:
+ * \ingroup XBT_dynar
+ * \param dynar
+ * \param cursor
  *
  * Remove (free) the entry pointed by the cursor, for use in the middle of a foreach
  */

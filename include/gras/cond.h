@@ -13,7 +13,7 @@
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 
-BEGIN_DECL
+BEGIN_DECL()
 
 /**
  * gras_if_RL:
@@ -29,7 +29,7 @@ int gras_if_RL(void);
  */
 int gras_if_SG(void);
 
-END_DECL
+END_DECL()
 
 #endif /* GRAS_COND_H */
 

@@ -79,6 +79,14 @@ static void xbt_context_destroy(xbt_context_t context)
   return;
 }
 
+/** \name Functions 
+ *  \ingroup XBT_context
+ */
+/*@{*/
+/** Context module initialization
+ *
+ * \warning It has to be called before using any other function of this module.
+ */
 void xbt_context_init(void)
 {
   if(!current_context) {
@@ -89,6 +97,11 @@ void xbt_context_init(void)
   }
 }
 
+/** Garbage collection
+ *
+ * Should be called some time to time to free the memory allocated for contexts
+ * that have finished executing their main functions.
+ */
 void xbt_context_empty_trash(void)
 {
   xbt_context_t context=NULL;
@@ -126,6 +139,12 @@ static void *__context_wrapper(void *c)
   return NULL;
 }
 
+/** 
+ * \param context the context to start
+ * 
+ * Calling this function prepares \a context to be run. It will 
+   however run effectively only when calling #xbt_context_schedule
+ */
 void xbt_context_start(xbt_context_t context) 
 {
 /*   xbt_fifo_insert(msg_global->process, process); */
@@ -136,6 +155,17 @@ void xbt_context_start(xbt_context_t context)
   return;
 }
 
+/** 
+ * \param code a main function
+ * \param startup_func a function to call when running the context for
+ *      the first time and just before the main function \a code
+ * \param startup_arg the argument passed to the previous function (\a startup_func)
+ * \param cleanup_func a function to call when running the context, just after 
+        the termination of the main function \a code
+ * \param cleanup_arg the argument passed to the previous function (\a cleanup_func)
+ * \param argc first argument of function \a code
+ * \param argv seconde argument of function \a code
+ */
 xbt_context_t xbt_context_new(xbt_context_function_t code, 
 			      void_f_pvoid_t startup_func, void *startup_arg,
 			      void_f_pvoid_t cleanup_func, void *cleanup_arg,
@@ -168,11 +198,24 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 }
 
 
+/** 
+ * Calling this function makes the current context yield. The context
+ * that scheduled it returns from xbt_context_schedule as if nothing
+ * had happened.
+ */
 void xbt_context_yield(void)
 {
   __xbt_context_yield(current_context);
 }
 
+
+/** 
+ * \param context the winner
+ *
+ * Calling this function blocks the current context and schedule \a context.  
+ * When \a context will call xbt_context_yield, it will return
+ * to this function as if nothing had happened.
+ */
 void xbt_context_schedule(xbt_context_t context)
 {
   xbt_assert0((current_context==init_context),
@@ -180,6 +223,10 @@ void xbt_context_schedule(xbt_context_t context)
   __xbt_context_yield(context);
 }
 
+/** 
+ * This function kill all existing context and free all the memory
+ * that has been allocated in this module.
+ */
 void xbt_context_exit(void) {
   xbt_context_t context=NULL;
 
@@ -194,6 +241,11 @@ void xbt_context_exit(void) {
   init_context = current_context = NULL ;
 }
 
+/** 
+ * \param context poor victim
+ *
+ * This function simply kills \a context... scarry isn't it ?
+ */
 void xbt_context_free(xbt_context_t context)
 {
   int i ;
@@ -209,3 +261,4 @@ void xbt_context_free(xbt_context_t context)
 
   return;
 }
+/*@}*/

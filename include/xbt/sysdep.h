@@ -16,7 +16,7 @@
 #include <stdlib.h> 
    
 #include "xbt/misc.h"
-BEGIN_DECL
+BEGIN_DECL()
 #if 0
 #define __CALLOC_OP(n, s)  calloc((n), (s))
   #define __REALLOC_OP(n, s)  realloc((n), (s))
@@ -69,7 +69,7 @@ BEGIN_DECL
 # define _XBT_INLINE 
 #endif
 
-END_DECL
+END_DECL()
    
 #include "xbt/error.h" /* needed for xbt_die */
 

@@ -26,33 +26,38 @@
 /*! C++ users need love */
 #ifndef BEGIN_DECL
 # ifdef __cplusplus
-#  define BEGIN_DECL extern "C" {
+#  define BEGIN_DECL() extern "C" {
 # else
-#  define BEGIN_DECL 
+#  define BEGIN_DECL() 
 # endif
 #endif
 
 /*! C++ users need love */
 #ifndef END_DECL
 # ifdef __cplusplus
-#  define END_DECL }
+#  define END_DECL() }
 # else
-#  define END_DECL 
+#  define END_DECL() 
 # endif
 #endif
 /* End of cruft for C++ */
 
-BEGIN_DECL
+BEGIN_DECL()
 /* Dunno where to place this: needed by config and amok */
 typedef struct {  
    char *name;
    int port;
 } xbt_host_t;
 
-/* pointer to a function freeing something */
-typedef   void (void_f_ppvoid_t)(void**);
-typedef   void (void_f_pvoid_t) (void*);
+/** \name Free functions
+ *  \ingroup XBT_dynar
+ * Pointer to a function freeing something
+*/
+/*@{*/
+typedef   void (void_f_ppvoid_t)(void**); /**< Pointer to a function freeing something */
+typedef   void (void_f_pvoid_t) (void*);  /**< Pointer to a function freeing something */
+/*@}*/
 
-END_DECL
+END_DECL()
 
 #endif /* XBT_MISC_H */

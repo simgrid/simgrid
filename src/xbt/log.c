@@ -324,8 +324,8 @@ static void _cleanup_double_spaces(char *s) {
 }
 
 /**
- * xbt_log_control_set:
- * @cs: What to parse
+ * \ingroup XBT_log  
+ * \param control_string What to parse
  *
  * Typically passed a command-line argument. The string has the syntax:
  *
@@ -337,7 +337,7 @@ static void _cleanup_double_spaces(char *s) {
  *      thresh  	value is an integer priority level. Sets the category's
  *                        threshold priority.
  *
- * @warning
+ * \warning
  * This routine may only be called once and that must be before any other
  * logging command! Typically, this is done from main().
  */

@@ -10,6 +10,9 @@
 
 #include "xbt/misc.h"
 
+/** \brief Heap data type 
+    \ingroup XBT_heap
+*/
 typedef struct xbt_heap *xbt_heap_t;
 
 xbt_heap_t xbt_heap_new(int num, void_f_pvoid_t free_func);
