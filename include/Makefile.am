@@ -8,7 +8,7 @@ EXTRA_DIST=    \
 	dict.h \
 	config.h \
 	\
-	datadesc.h \
+	datadesc_simple.h \
 	data_description.h dd_type_bag.h \
 	\
 	socket.h messages.h \

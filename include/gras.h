@@ -40,7 +40,9 @@
 #include <gras/config.h>
 
 #include <gras/core.h>
-#include <gras/datadesc.h>
+
+#include <gras/transport.h>
+#include <gras/datadesc_simple.h>
 #include <gras/socket.h>
 #include <gras/messages.h>
 

@@ -160,6 +160,7 @@ gras_dynar_foreach
 
 <SECTION>
 <FILE>core_dico</FILE>
+gras_dict_new
 gras_dict_free
 gras_dict_insert
 gras_dict_retrieve

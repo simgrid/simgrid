@@ -15,6 +15,7 @@ noinst_LIBRARIES=libgrasutils.a
 
 #                     Core/dict_multi.c
 #  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
+#   Messaging/messaging.c                       
 
 COMMON_S=\
   \
@@ -24,6 +25,11 @@ COMMON_S=\
   Core/dict.c        Core/dict_elm.c               Core/dict_cursor.c           \
   \
   Core/config.c                               \
+  \
+  Messaging/transport.c    Messaging/transport.h \
+  Messaging/transport_sg.c Messaging/transport_tcp.c   \
+  \
+  Messaging/datadesc_simple.c                 \
   \
   gs/datadesc.c                               \
   gs/tools.c                                  \
@@ -51,7 +57,9 @@ libgrasutils_a_SOURCES = $(COMMON_S) Tests/gras_dummy.c
 libgrasutils_a_LIBADD = $(COMMON_L)
 
 
-libgrasrl_a_SOURCES= $(COMMON_S) RL/gras_rl.c RL/gras_rl.h
+
+# RL/gras_rl.c RL/gras_rl.h FIXME
+libgrasrl_a_SOURCES= $(COMMON_S) Messaging/messaging_rl.c
 libgrasrl_a_LIBADD= \
  $(foreach file,\
   exp_smooth forc median mse_forc protocol \
@@ -60,7 +68,8 @@ libgrasrl_a_LIBADD= \
  $(COMMON_L)
 
 	
-libgrassg_a_SOURCES= $(COMMON_S) SG/gras_sg.c SG/gras_sg.h
+# SG/gras_sg.c SG/gras_sg.h FIXME	
+libgrassg_a_SOURCES= $(COMMON_S) Messaging/messaging_sg.c
 libgrassg_a_LIBADD= \
  $(COMMON_L)
 

@@ -8,8 +8,8 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef GRAS_DATADESC_H
-#define GRAS_DATADESC_H
+#ifndef GRAS_DATADESC_SIMPLE_H
+#define GRAS_DATADESC_SIMPLE_H
 
 #include <stddef.h>    /* offsetof() */
 #include <sys/types.h>  /* size_t */
@@ -37,64 +37,74 @@
 
 BEGIN_DECL
 
-/**
- * Basic types we can embeed in DataDescriptors.
- */
+/****
+ **** The NWS type and constructors 
+ ****/
+
 typedef enum
   {CHAR_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INT_TYPE, LONG_TYPE, SHORT_TYPE,
    UNSIGNED_INT_TYPE, UNSIGNED_LONG_TYPE, UNSIGNED_SHORT_TYPE, STRUCT_TYPE}
   DataTypes;
 #define SIMPLE_TYPE_COUNT 9
 
-/*!  \brief Describe a collection of data.
- * 
-** A description of a collection of #type# data.  #repetitions# is used only
-** for arrays; it contains the number of elements.  #offset# is used only for
-** struct members in host format; it contains the offset of the member from the
-** beginning of the struct, taking into account internal padding added by the
-** compiler for alignment purposes.  #members#, #length#, and #tailPadding# are
-** used only for STRUCT_TYPE data; the #length#-long array #members# describes
-** the members of the nested struct, and #tailPadding# indicates how many
-** padding bytes the compiler adds to the end of the structure.
-*/
-
 typedef struct DataDescriptorStruct {
   DataTypes type;
   size_t repetitions;
   size_t offset;
-  /*@null@*/ struct DataDescriptorStruct *members;
+  struct DataDescriptorStruct *members;
   size_t length;
   size_t tailPadding;
 } DataDescriptor;
-/** DataDescriptor for an array */
-#define SIMPLE_DATA(type,repetitions) \
-  {type, repetitions, 0, NULL, 0, 0}
-/** DataDescriptor for an structure member */
+#ifndef NULL
+#define NULL 0
+#endif
+#define SIMPLE_DATA(type,repetitions) {type, repetitions, 0, NULL, 0, 0}
 #define SIMPLE_MEMBER(type,repetitions,offset) \
   {type, repetitions, offset, NULL, 0, 0}
-/** DataDescriptor for padding bytes */
 #define PAD_BYTES(structType,lastMember,memberType,repetitions) \
   sizeof(structType) - offsetof(structType, lastMember) - \
   sizeof(memberType) * repetitions
 
+/****
+ **** Gras (opaque) type, constructors and functions
+ ****/
 
+typedef struct gras_datadesc_ gras_datadesc_t;
+
+/* constructors, memory management */
 gras_error_t gras_datadesc_parse(const char       *def,
 				 gras_datadesc_t **dst);
 gras_error_t gras_datadesc_from_nws(const DataDescriptor *desc,
 				    size_t                howmany,
 				    gras_datadesc_t     **dst);
-gras_error_t gras_datadesc_eq(const gras_datadesc_t *d1,
-			      const gras_datadesc_t *d2);
+
 gras_error_t gras_datadesc_cpy(gras_datadesc_t  *src,
 			       gras_datadesc_t **dst);
+void         gras_datadesc_free(gras_datadesc_t **dd);
+
+/* basic functionnalities */
+int          gras_datadesc_cmp(const gras_datadesc_t *d1,
+			       const gras_datadesc_t *d2);
+
 gras_error_t gras_datadesc_sizeof_host(gras_datadesc_t *desc,
 				       size_t          *dst);
 gras_error_t gras_datadesc_sizeof_network(gras_datadesc_t *desc,
 					  size_t          *dst);
 
+/* high level function needed in SG */
+gras_error_t gras_datadesc_data_cpy(const gras_datadesc_t *dd,
+				    const void *src,
+				    void **dst);
 
+/* high level functions needed in RL */
+gras_error_t gras_datadesc_convert_recv(const gras_datadesc_t *dd,
+					gras_trp_plugin_t *trp,
+					void **dst);
+gras_error_t gras_datadesc_convert_send(const gras_datadesc_t *dd,
+					gras_trp_plugin_t *trp,
+					void *src);
 
 END_DECL
 
-#endif /* GRAS_DATADESC_H */
+#endif /* GRAS_DATADESC_SIMPLE_H */
 

@@ -44,7 +44,8 @@
 #include "gras/dd_type_bag.h"
 
 #include "gras/core.h"
-#include "gras/datadesc.h"
+#include "gras/transport.h"
+#include "gras/datadesc_simple.h"
 #include "gras/socket.h"
 #include "gras/messages.h"
 
@@ -250,6 +251,8 @@ void grasSockFree(gras_sock_t *s);
 /* **************************************************************************
  * Handling DataDescriptors
  * **************************************************************************/
+#if 0
+FIXME: Kill it
 typedef enum {HOST_FORMAT, NETWORK_FORMAT} FormatTypes;
 size_t DataSize(const DataDescriptor *description,
 		size_t length,
@@ -258,5 +261,5 @@ void *gras_datadesc_copy_data(const DataDescriptor *dd, unsigned int c, void *da
 int gras_datadesc_cmp(/*@null@*/const DataDescriptor *dd1, unsigned int c1,
 		      /*@null@*/const DataDescriptor *dd2, unsigned int c2);
 void gras_datadesc_dump(/*@null@*/const DataDescriptor *dd, unsigned int c);
-
+#endif
 #endif /* GRAS_PRIVATE_H */

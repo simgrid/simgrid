@@ -125,6 +125,7 @@ typedef enum {
 
 #define RAISE_MALLOC     RAISE0(malloc_error,"Malloc error")
 #define RAISE_IMPOSSIBLE RAISE0(unknown_error,"The Impossible did happen")
+#define RAISE_UNIMPLEMENTED RAISE1(unknown_error,"Function %s unimplemented",__FUNCTION__)
 
 #define gras_abort abort
 
