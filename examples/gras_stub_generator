@@ -48,6 +48,8 @@ $warn
 #include <msg.h>
 #include <gras.h>
 
+char *gras_log=NULL;
+    
 EOF
  ;
 foreach (keys %process) { print OUT "int $_(int argc,char *argv[]);\n";        }
@@ -57,8 +59,12 @@ print OUT "\n$warn\n";
 
 foreach (keys %process) {
     print OUT<<EOF
-int launch_$_(int argc, char *argv[]) {
-    
+int launch_$_(int argc, char **argv) {
+
+  if (gras_log) {
+      argv=realloc(argv,++argc * sizeof(char**));
+      argv[argc-1] = gras_log;
+  }
   $_(argc,argv);
   return 0;
 }
@@ -70,9 +76,23 @@ print OUT "\n$warn\n";
 
 print OUT <<EOF
 int main (int argc,char *argv[]) {
-    
-  if (argc < 3) {
-    fprintf(stderr, "Usage: %s platform_file application_description.txt [extra args]\\n",argv[0]);
+  int i,j;
+
+  /** Save the gras-log argument */
+  for (i=1; i<argc; i++) {
+    if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log="))) {
+      gras_log = argv[i];
+      for (j=i+1; j<argc; j++) {
+	argv[j-1] = argv[j];
+      } 
+      argv[j-1] = NULL;
+      argc--;
+      i--; /* compensate effect of next loop incrementation */
+    }
+  }
+
+  if (argc != 3) {
+    fprintf(stderr, "Usage: %s platform_file application_description.txt [--gras-log=...]\\n",argv[0]);
     exit(1);
   }
 
