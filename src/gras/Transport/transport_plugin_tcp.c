@@ -258,7 +258,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  *sock,
       }
     }
 
-    VERB3("accepted socket %d to %s:%d\n", sd, res->peer_name,res->peer_port);
+    VERB3("accepted socket %d to %s:%d", sd, res->peer_name,res->peer_port);
     
     *dst = res;
 
