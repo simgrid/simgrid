@@ -4,7 +4,7 @@ TESTS= test_rl test_sg
 EXTRA_DIST=ping_deployment.xml $(TESTS)
 
 # AUTOMAKE variable definition
-check_PROGRAMS=ping_client ping_server ping_simulator
+noinst_PROGRAMS=ping_client ping_server ping_simulator
 
 ping_simulator_SOURCES=	_ping_simulator.c ping.c
 ping_simulator_LDADD=	$(top_builddir)/src/libsimgrid.la
