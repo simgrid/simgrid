@@ -62,15 +62,16 @@ foreach (keys %process) {
     print OUT<<EOF
 int launch_$_(int argc, char **argv) {
   char **myargv=argv;
+  int myargc=argc;
   int i;
     
   if (gras_log) {
     myargv=malloc((argc+1) * sizeof(char**));
     for (i=0; i<argc; i++)
       myargv[i] = argv[i];
-    myargv[argc++] = gras_log;
+    myargv[myargc++] = gras_log;
   }
-  $_(argc,argv);
+  $_(myargc,myargv);
   if (myargv != argv)
     free(myargv);
   return 0;
@@ -85,10 +86,17 @@ print OUT <<EOF
 int main (int argc,char *argv[]) {
   int i,j;
 
-  /** Save the gras-log argument */
+  /* Save the gras-log argument of real command line to pass it to all processes */
   for (i=1; i<argc; i++) {
     if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log="))) {
-      gras_log = argv[i];
+      if (gras_log) {
+	 char *tmp=malloc(strlen(gras_log)+strlen(argv[i])+2);
+	 sprintf(tmp,"%s %s",gras_log, argv[i]);
+	 free(gras_log);
+	 gras_log=tmp;
+      } else {
+         gras_log = strdup(argv[i]);
+      }
       for (j=i+1; j<argc; j++) {
 	argv[j-1] = argv[j];
       } 
@@ -122,6 +130,8 @@ print OUT <<EOF
   /*  Run the simulation */
   MSG_main();
 
+  if (gras_log)
+    free(gras_log);
   return 0;
 }
 $warn
