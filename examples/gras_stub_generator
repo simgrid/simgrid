@@ -64,6 +64,7 @@ int launch_$_(int argc, char **argv) {
   char **myargv=argv;
   int myargc=argc;
   int i;
+  int retcode;
     
   if (gras_log) {
     myargv=malloc((argc+1) * sizeof(char**));
@@ -71,10 +72,10 @@ int launch_$_(int argc, char **argv) {
       myargv[i] = argv[i];
     myargv[myargc++] = gras_log;
   }
-  $_(myargc,myargv);
+  retcode = $_(myargc,myargv);
   if (myargv != argv)
     free(myargv);
-  return 0;
+  return retcode;
 }
 
 EOF
@@ -130,6 +131,8 @@ print OUT <<EOF
   /*  Run the simulation */
   MSG_main();
 
+  /* cleanup the place */
+  MSG_clean();
   if (gras_log)
     free(gras_log);
   return 0;
