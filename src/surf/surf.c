@@ -114,7 +114,7 @@ xbt_heap_float_t surf_solve(void)
 
   xbt_dynar_foreach (resource_list,i,resource) {
     resource_next_action_end = resource->common_private->share_resources(NOW);
-    if((min<0) || (resource_next_action_end<min)) 
+    if(((min<0.0) || (resource_next_action_end<min)) && (resource_next_action_end>=0.0))
       min = resource_next_action_end;
   }
 
