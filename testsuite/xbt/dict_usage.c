@@ -59,7 +59,7 @@ static xbt_error_t search(xbt_dict_t head,const char*key) {
 
   
   errcode=xbt_dict_get(head,key,&data);
-  printf("   - Search %s. Found %s\n",key,data?(char*)data:"(null)");fflush(stdout);
+  printf("   - Search %s. Found %s\n",key,data?(char*)data:"NULL");fflush(stdout);
   if (!data)
      return errcode;
   if (strcmp((char*)data,key)) 
@@ -85,7 +85,7 @@ static xbt_error_t traverse(xbt_dict_t head) {
 
   xbt_dict_foreach(head,cursor,key,data) {
     printf("   - Seen:  %s->%s\n",key,data);
-    xbt_assert2(!strcmp(key,data),
+    xbt_assert2(!data || !strcmp(key,data),
 		 "Key(%s) != value(%s). Abording\n",key,data);
   }
   return no_error;
@@ -110,10 +110,25 @@ int main(int argc,char **argv) {
   
   fill(&head);
 
+  /* xbt_dict_dump(head,(void (*)(void*))&printf);*/
   printf(" - Test that it works with NULL data\n");
-  printf("   - Store NULL under 'null'\n");
+  printf("   - Store NULL under 'null'\n");fflush(stdout);
   xbt_dict_set(head,"null",NULL,NULL);
   TRYFAIL(search(head,"null"));
+  /* xbt_dict_dump(head,(void (*)(void*))&printf); */
+  printf("   Check whether I see it while traversing\n");fflush(stdout);
+  {
+     xbt_dict_cursor_t cursor=NULL;
+     char *key;
+     int found=0;
+     
+     xbt_dict_foreach(head,cursor,key,data) {
+	printf("   - Seen:  %s->%s\n",key,data);fflush(stdout);
+	if (!strcmp(key,"null"))
+	  found = 1;
+     }
+     xbt_assert0(found,"the key 'null', associated to NULL is not found");
+  }
    
   printf(" - Change some values\n");
   printf("   - Change 123 to 'Changed 123'\n");
