@@ -118,11 +118,13 @@ xbt_heap_float_t surf_solve(void)
       min = resource_next_action_end;
   }
 
+  if(min<0.0) return 0.0;
+
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if(next_event_date > NOW+min) break;
     while ((event=tmgr_history_get_next_event_leq(history, next_event_date,
 						  &value, (void **) &resource_obj))) {
-      if(resource_obj->resource->common_public->resource_used(resource_obj)) {
+      if(resource_obj->resource->common_private->resource_used(resource_obj)) {
 	min = next_event_date-NOW;
       }
       /* update state of resource_obj according to new value. Does not touch lmm.
@@ -131,6 +133,7 @@ xbt_heap_float_t surf_solve(void)
 								    event, value);
     }
   }
+
 
   xbt_dynar_foreach (resource_list,i,resource) {
     resource->common_private->update_actions_state(NOW, min);

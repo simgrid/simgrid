@@ -13,6 +13,7 @@
 #include "surf/surf_parse.h"
 
 typedef struct surf_resource_private {
+  int (*resource_used)(void *resource_id);
   /* Share the resources to the actions and return in hom much time
       the next action may terminate */
   xbt_heap_float_t(*share_resources) (xbt_heap_float_t now);	

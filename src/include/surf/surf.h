@@ -57,7 +57,6 @@ typedef struct surf_resource_public {
   s_surf_action_state_t states; /* Any living action on this resource */
   void *(*name_service)(const char *name);
   const char *(*get_resource_name)(void *resource_id);
-  int (*resource_used)(void *resource_id);
 
   e_surf_action_state_t (*action_get_state)(surf_action_t action);
   void (*action_free)(surf_action_t action);
