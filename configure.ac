@@ -125,7 +125,7 @@ AC_CONFIG_FILES([
   src/Makefile
   src/amok/Makefile
   examples/Makefile 
-    examples/msg/Makefile 
+    examples/msg/Makefile          examples/msg/run_msg_test
     examples/gras/Makefile 
       examples/gras/ping/Makefile  examples/gras/ping/test_sg  examples/gras/ping/test_rl
   doc/Makefile
@@ -140,6 +140,7 @@ AC_CONFIG_FILES([
      test -e testsuite/gras/trp_tcp_usage && chmod +x testsuite/gras/trp_tcp_usage;
      test -e testsuite/gras/trp_file_usage&& chmod +x testsuite/gras/trp_file_usage;
      test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
+     test -e examples/msg/run_msg_test    && chmod +x examples/msg/run_msg_test;
      test -e examples/gras/ping/test_sg   && chmod +x examples/gras/ping/test_sg;
      test -e examples/gras/ping/test_rl   && chmod +x examples/gras/ping/test_rl;
 #     test -e examples/gras/bandwidth/test_sg   && chmod +x examples/gras/bandwidth/test_sg;
