@@ -5,8 +5,8 @@ INCLUDES= -I$(top_srcdir)/src/include -I../nws_portability/Include  \
 EXTRA_DIST=                 \
 	gras_private.h      \
 	Core/dict_private.h \
-	gs/gs_private.h     \
-	gs/parse.yy.l      
+	DataDesc/gs_private.h     \
+	DataDesc/parse.yy.l      
 
 
 lib_LIBRARIES= libgrasrl.a libgrassg.a
@@ -31,21 +31,21 @@ COMMON_S=\
   \
   Messaging/datadesc_simple.c                 \
   \
-  gs/datadesc.c                               \
-  gs/tools.c                                  \
-  gs/categories.h                             \
-  gs/connection.h                             \
-  gs/sequence.h                               \
-  gs/net_driver.c      gs/net_driver.h        \
-  gs/net_driver_fd.c   gs/net_interface_fd.h  \
-  gs/type_driver_rl.c  gs/type_interface_rl.h \
-  gs/type_driver.c     gs/type_driver.h       \
-  gs/message.c         gs/message.h           \
-  gs/type.c            gs/type.h              \
-  gs/parse.c           gs/parse.yy.h             gs/parse.yy.c \
-  gs/vars.c
+  DataDesc/datadesc.c                               \
+  DataDesc/tools.c                                  \
+  DataDesc/categories.h                             \
+  DataDesc/connection.h                             \
+  DataDesc/sequence.h                               \
+  DataDesc/net_driver.c      DataDesc/net_driver.h        \
+  DataDesc/net_driver_fd.c   DataDesc/net_interface_fd.h  \
+  DataDesc/type_driver_rl.c  DataDesc/type_interface_rl.h \
+  DataDesc/type_driver.c     DataDesc/type_driver.h       \
+  DataDesc/message.c         DataDesc/message.h           \
+  DataDesc/type.c            DataDesc/type.h              \
+  DataDesc/parse.c           DataDesc/parse.yy.h             DataDesc/parse.yy.c \
+  DataDesc/vars.c
 
-gs/parse.yy.c: gs/parse.yy.l
+DataDesc/parse.yy.c: DataDesc/parse.yy.l
 	flex -o$@ -Pgs_parse_ $^
 
 COMMON_L=\
