@@ -10,7 +10,7 @@
 
 #include "DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(DataDesc,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,GRAS);
 /* FIXME: make this host-dependent using a trick such as UserData*/
 gras_set_t *gras_datadesc_set_local=NULL;
 
@@ -124,7 +124,7 @@ gras_datadesc_init(void) {
 				       e_gras_dd_scalar_encoding_float, 
 				       NULL, &ddt));
   TRYFAIL(gras_datadesc_declare_scalar("double", 
-				       gras_ddt_scalar_float, 
+				       gras_ddt_scalar_double, 
 				       e_gras_dd_scalar_encoding_float, 
 				       NULL,&ddt));
 
@@ -185,7 +185,8 @@ int gras_datadesc_size(gras_datadesc_type_t *type) {
  * For debugging purpose
  */
 void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
-  int i;
+  int cpt;
+  gras_error_t errcode;
 
   printf("DataDesc dump:");
   if(!ddt) {
@@ -197,33 +198,52 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
   printf ("  category: %s\n",gras_datadesc_cat_names[ddt->category_code]);
 
   printf ("  size[");
-  for (i=0; i<gras_arch_count; i++) {
+  for (cpt=0; cpt<gras_arch_count; cpt++) {
     printf("%s%s%ld%s",
-	   i>0?", ":"",
-	   i == GRAS_THISARCH ? "*":"",
-	   ddt->size[i],
-	   i == GRAS_THISARCH ? "*":"");
+	   cpt>0?", ":"",
+	   cpt == GRAS_THISARCH ? "*":"",
+	   ddt->size[cpt],
+	   cpt == GRAS_THISARCH ? "*":"");
   }
   printf ("]\n");
 
   printf ("  alignment[");
-  for (i=0; i<gras_arch_count; i++) {
+  for (cpt=0; cpt<gras_arch_count; cpt++) {
     printf("%s%s%ld%s",
-	   i>0?", ":"",
-	   i == GRAS_THISARCH ? "*":"",
-	   ddt->alignment[i],
-	   i == GRAS_THISARCH ? "*":"");
+	   cpt>0?", ":"",
+	   cpt == GRAS_THISARCH ? "*":"",
+	   ddt->alignment[cpt],
+	   cpt == GRAS_THISARCH ? "*":"");
   }
   printf ("]\n");
 
   printf ("  aligned_size[");
-  for (i=0; i<gras_arch_count; i++) {
+  for (cpt=0; cpt<gras_arch_count; cpt++) {
     printf("%s%s%ld%s",
-	   i>0?", ":"",
-	   i == GRAS_THISARCH ? "*":"",
-	   ddt->aligned_size[i],
-	   i == GRAS_THISARCH ? "*":"");
+	   cpt>0?", ":"",
+	   cpt == GRAS_THISARCH ? "*":"",
+	   ddt->aligned_size[cpt],
+	   cpt == GRAS_THISARCH ? "*":"");
   }
   printf ("]\n");
-  
+  if (ddt->category_code == e_gras_datadesc_type_cat_struct) {
+    gras_dd_cat_struct_t  struct_data;
+    gras_dd_cat_field_t  *field;
+    gras_datadesc_type_t *sub_type;
+
+    struct_data = ddt->category.struct_data;
+    gras_dynar_foreach(struct_data.fields, cpt, field) {
+    printf(">>> Dump field #%d (%s) (offset=%ld)\n",
+	   cpt,field->name,field->offset[GRAS_THISARCH]);
+    errcode=gras_datadesc_by_id(field->code, &sub_type);
+    if (errcode != no_error) {
+      ERROR4("Got %s while searching for the sub type %d, #%d of %s",
+	     gras_error_name(errcode),field->code,cpt,ddt->name);
+      gras_abort();
+    }
+    gras_datadesc_type_dump(sub_type);
+    printf("<<< end dump field #%d (%s)\n",cpt,field->name);
+    }
+ }
+  fflush(stdout);
 }
