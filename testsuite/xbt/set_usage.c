@@ -8,9 +8,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <assert.h>
 
-#include <gras.h>
+#include "gras.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 XBT_LOG_EXTERNAL_CATEGORY(set);
@@ -189,7 +188,7 @@ int main(int argc,char **argv) {
 
   printf(" - Retrive values\n");
   xbt_set_get_by_name(set,"123",(xbt_set_elm_t*)&elm);
-  assert(elm);
+  xbt_assert(elm);
   TRYFAIL(strcmp("123",elm->data));
 
   TRYEXPECT(xbt_set_get_by_name(set,"Can't be found",(xbt_set_elm_t*)&elm),

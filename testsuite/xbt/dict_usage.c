@@ -2,15 +2,14 @@
 
 /* dict_usage - A test of normal usage of a dictionnary                     */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2003,2004 Martin Quinson. All rights reserved.             */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <assert.h>
 
-#include <gras.h>
+#include "gras.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(dict);
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
@@ -125,7 +124,7 @@ int main(int argc,char **argv) {
 
   printf(" - Retrive values\n");
   TRYFAIL(xbt_dict_get(head,"123",(void**)&data));
-  assert(data);
+  xbt_assert(data);
   TRYFAIL(strcmp("123",data));
 
   TRYEXPECT(xbt_dict_get(head,"Can't be found",(void**)&data),mismatch_error);

@@ -2,13 +2,13 @@
 
 /* dynar_string: A test case for the dynar using strings as content         */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <gras.h>
+#include <stdio.h> /* sprintf */
+#include "gras.h"
 
 /* NB_ELEM HAS to be a multiple of 5 */
 #define NB_ELEM 5000
