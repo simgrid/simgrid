@@ -67,8 +67,7 @@ typedef struct surf_resource_public {
   void (*action_recycle) (surf_action_t action);
   void (*action_change_state) (surf_action_t action,
 			       e_surf_action_state_t state);
-  void (*action_set_data) (surf_action_t action,
-			   void *data);
+  void (*action_set_data) (surf_action_t action, void *data);
   void (*suspend) (surf_action_t action);
   void (*resume) (surf_action_t action);
   int (*is_suspended) (surf_action_t action);
@@ -98,7 +97,7 @@ typedef struct surf_cpu_resource_extension_private
 typedef struct surf_cpu_resource_extension_public {
   surf_action_t(*execute) (void *cpu, double size);
   surf_action_t(*sleep) (void *cpu, double duration);
-   e_surf_cpu_state_t(*get_state) (void *cpu);
+  e_surf_cpu_state_t(*get_state) (void *cpu);
 } s_surf_cpu_resource_extension_public_t,
     *surf_cpu_resource_extension_public_t;
 
@@ -114,7 +113,7 @@ void surf_cpu_resource_init_Cas01(const char *filename);
 typedef struct surf_network_resource_extension_private
 *surf_network_resource_extension_private_t;
 typedef struct surf_network_resource_extension_public {
-  surf_action_t(*communicate) (void *src, void *dst, double size, 
+  surf_action_t(*communicate) (void *src, void *dst, double size,
 			       double max_rate);
 } s_surf_network_resource_extension_public_t,
     *surf_network_resource_extension_public_t;
@@ -136,7 +135,7 @@ typedef struct surf_workstation_resource_extension_public {
   surf_action_t(*sleep) (void *workstation, double duration);
   e_surf_cpu_state_t(*get_state) (void *workstation);
   surf_action_t(*communicate) (void *workstation_src,
-			       void *workstation_dst, double size, 
+			       void *workstation_dst, double size,
 			       double max_rate);
 } s_surf_workstation_resource_extension_public_t,
     *surf_workstation_resource_extension_public_t;
