@@ -72,7 +72,7 @@ void xbt_context_start(xbt_context_t context)
   return;
 }
 
-xbt_context_t xbt_context_create(xbt_context_function_t code,
+xbt_context_t xbt_context_new(xbt_context_function_t code,
 			 int argc, char *argv[])
 {
   xbt_context_t res = NULL;
