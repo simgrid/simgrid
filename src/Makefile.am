@@ -35,11 +35,11 @@ EXTRA_DIST= \
 	surf/network_private.h \
 	surf/workstation_KCCFLN05_private.h \
 	\
-	include/maxmin.h \
-	include/trace_mgr.h \
-	include/surf.h \
-	include/surf_parse.h \
-	include/surfxml.h \
+	include/surf/maxmin.h \
+	include/surf/trace_mgr.h \
+	include/surf/surf.h \
+	include/surf/surf_parse.h \
+	include/surf/surfxml.h \
 	\
 	msg/private.h \
 	\
@@ -146,8 +146,8 @@ surf/surfxml.l: surf/surfxml.dtd
 	mv surfxml.l surfxml.l.bak ; \
 	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
 
-include/surf/surfxml.h: src/surf/surfxml.dtd
-	cd include/surf; flexml -H -L ../../src/surf/surfxml.dtd
+include/surf/surfxml.h: surf/surfxml.dtd
+	cd include/surf; flexml -H -L ../../surf/surfxml.dtd
 
 libgras_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \
