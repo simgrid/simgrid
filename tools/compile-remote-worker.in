@@ -131,6 +131,7 @@ if echo $@ | grep check >/dev/null ; then
   do_cmd "make $MAKE_CHECK 2>&1" || fail "Cannot make check"
 fi
 
+cat config.log
 echo
 echo
 echo Remote compilation sucessful.
