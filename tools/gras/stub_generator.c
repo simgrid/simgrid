@@ -10,6 +10,7 @@
 
 #include"xbt/sysdep.h"
 #include"xbt/dict.h"
+#include"xbt/dynar.h"
 #include"xbt/error.h"
 #include "surf/surf_parse.h"
 #include "surf/surf.h"
@@ -30,6 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 #define MAKEFILE_FILENAME_AM  "%s.Makefile.am"
 #define MAKEFILE_FILENAME_LOCAL  "%s.Makefile.local"
 #define MAKEFILE_FILENAME_REMOTE  "%s.Makefile.remote"
+#define DEPLOYMENT  "%s.deploy.sh"
 
 char *warning = NULL;
 
@@ -119,11 +121,53 @@ const char *SIM_MAIN_POSTEMBULE = "\n"
 /********* Parse XML deployment file **********/
 /**********************************************/
 xbt_dict_t process_function_set = NULL;
+xbt_dynar_t process_list = NULL;
+xbt_dict_t machine_set = NULL;
+
+typedef struct s_process_t {
+  int argc;
+  char **argv;
+  char *host;
+} s_process_t;
+
+static void s_process_free(void *process)
+{
+  int i;
+  for(i=0;i<((s_process_t*)process)->argc; i++)
+    free(((s_process_t*)process)->argv[i]);
+  free(((s_process_t*)process)->host);
+}
+
+static int parse_argc = -1 ;
+static char **parse_argv = NULL;
 
 static void parse_process_init(void)
-{ 
+{
+  parse_argc = 0 ;
+  parse_argv = NULL;
+  parse_argc++;
+  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_process_function);
+}
+
+static void parse_argument(void)
+{
+  parse_argc++;
+  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_argument_value);
+}
+
+static void parse_process_finalize(void)
+{
+  s_process_t process;
   void *p = (void *) 1234;
+
   xbt_dict_set(process_function_set, A_process_function, p, NULL);
+  xbt_dict_set(machine_set, A_process_host, p, NULL);
+  process.argc=parse_argc;
+  process.argv=parse_argv;
+  process.host=strdup(A_process_host);
+  xbt_dynar_push(process_list,&process);
 }
 
 static void generate_sim(char *project)
@@ -250,7 +294,6 @@ static void generate_makefile_am(char *project, char *deployment)
   fclose(OUT);
 }
 
-
 static void generate_makefile_local(char *project, char *deployment)
 {
   xbt_dict_cursor_t cursor=NULL;
@@ -296,9 +339,9 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "\n"
 	  "all: $(BIN_FILES)\n"
 	  "\n");
-  fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " %s.c\n",project, project, project);
+  fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " %s.o\n",project, project, project);
   xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " %s.c\n", project, key, project, key, project);
+    fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " %s.o\n", project, key, project, key, project);
   }
   fprintf(OUT, 
 	  "\n"
@@ -327,9 +370,16 @@ static void generate_makefile_local(char *project, char *deployment)
 
   fprintf(OUT, "############ REMOTE COMPILING #########\n");
   fprintf(OUT, 
-	  "MACHINES ?= varekai.ucsd.edu sideshow.ucsd.edu dralion.ucsd.edu\n"
+	  "MACHINES ?= ");
+  xbt_dict_foreach(machine_set,cursor,key,data) {
+    fprintf(OUT, "%s ",key);
+  }
+  fprintf(OUT,"\n");
+
+  fprintf(OUT, 
 	  "INSTALL_PATH ?='$$HOME/tmp/src' ### Has to be an absolute path !!! \n"
 	  "SRCDIR ?= ./\n"
+	  "SIMGRID_URL ?=http://gcl.ucsd.edu/simgrid/dl/\n"
 	  "SIMGRID_VERSION ?=2.91\n"
 	  "GRAS_PROJECT ?= %s\n"
 	  "GRAS_PROJECT_URL ?= http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/gras_test/\n"
@@ -341,10 +391,10 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "\t   machine=`echo $$site |sed 's/^\\([^%%]*\\)%%.*$$/\\1/'`;\\\n"
 	  "\t   machine2=`echo $$site |sed 's/^\\([^%%]*\\)%%\\(.*\\)$$/\\2/'`;\\\n"
 	  "\t   cmd_mkdir=\"\\\"sh -c 'env INSTALL_PATH=$(INSTALL_PATH) SIMGRID_INSTALL_PATH=$(INSTALL_PATH) \\\n"
-	  "\t                        SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \\\n"
+	  "\t                        SIMGRID_URL=$(SIMGRID_URL) SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \\\n"
 	  "\t                        GRAS_PROJECT_URL=$(GRAS_PROJECT_URL)  mkdir -p $(INSTALL_PATH) 2>&1'\\\"\";\\\n"
 	  "\t   cmd_make=\"\\\"sh -c 'env INSTALL_PATH=$(INSTALL_PATH) SIMGRID_INSTALL_PATH=$(INSTALL_PATH) \\\n"
-	  "\t                        SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \\\n"
+	  "\t                        SIMGRID_URL=$(SIMGRID_URL) SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \\\n"
 	  "\t                        GRAS_PROJECT_URL=$(GRAS_PROJECT_URL)  make -C $(INSTALL_PATH) -f "MAKEFILE_FILENAME_REMOTE" $(ACTION) 2>&1'\\\"\";\\\n"
 	  "\t   if echo $$site | grep  '%%' >/dev/null ; then \\\n"
 	  "\t     echo \"----[ Compile on $$machine2 (behind $$machine) ]----\";\\\n"
@@ -391,21 +441,23 @@ static void generate_makefile_remote(char *project, char *deployment)
   fprintf(OUT, 
 	  "INSTALL_PATH ?= $(shell pwd)\n"
 	  "\n"
-	  "simgrid-$(SIMGRID_VERSION).tar.gz:\n"
-	  "\twget -N http://gcl.ucsd.edu/simgrid/dl/simgrid-$(SIMGRID_VERSION).tar.gz\n"
-	  "simgrid-$(SIMGRID_VERSION)/: simgrid-$(SIMGRID_VERSION).tar.gz\n"
-	  "\ttar zxf $<\n"
-	  "\tcd simgrid-$(SIMGRID_VERSION)/; \\\n"
-	  "\t   ./configure --prefix=$(INSTALL_PATH) ; \\\n"
-	  "\t   make all install\n"
-	  "compile-simgrid: simgrid-$(SIMGRID_VERSION)\n"
+	  "compile-simgrid:\n"
+	  "\tretrieved=`LANG=C;wget -N $(SIMGRID_URL)/simgrid-$(SIMGRID_VERSION).tar.gz 2>&1 | grep retrieving | sed 's/.*retrieving.*/yes/'`; \\\n"
+	  "\techo $$retrieved; \\\n"
+	  "\tif test \"x$$retrieved\" = x; then \\\n"
+	  "\t  tar zxf simgrid-$(SIMGRID_VERSION).tar.gz ; \\\n"
+	  "\t  cd simgrid-$(SIMGRID_VERSION)/; \\\n"
+	  "\t  ./configure --prefix=$(INSTALL_PATH) ; \\\n"
+	  "\t  make all install ;\\\n"
+           "\tfi\n"
 	  "\n"
-	  "gras-$(GRAS_PROJECT).tar.gz:\n"
-	  "\twget -N $(GRAS_PROJECT_URL)/gras-$(GRAS_PROJECT).tar.gz\n"
-	  "gras-$(GRAS_PROJECT)/: gras-$(GRAS_PROJECT).tar.gz\n"
-	  "\ttar zxf $<\n"
-	  "\tmake -C gras-$(GRAS_PROJECT)/ -f $(GRAS_PROJECT).Makefile.local all\n"
-	  "compile-gras compile-gras-$(GRAS_PROJECT): gras-$(GRAS_PROJECT) compile-simgrid\n"
+	  "compile-gras:\n"
+	  "\tretrieved=`LANG=C;wget -N $(GRAS_PROJECT_URL)/gras-$(GRAS_PROJECT).tar.gz 2>&1 | grep retrieving | sed 's/.*retrieving.*/yes/'`; \\\n"
+	  "\techo $$retrieved; \\\n"
+	  "\tif test \"x$$retrieved\" = x; then \\\n"
+	  "\t  tar zxf gras-$(GRAS_PROJECT).tar.gz ; \\\n"
+	  "\t  make -C gras-$(GRAS_PROJECT)/ -f $(GRAS_PROJECT).Makefile.local all ; \\\n"
+	  "\tfi\n"
 	  "\n"
 	  "clean-simgrid:\n"
 	  "\trm -rf simgrid-$(SIMGRID_VERSION)*\n"
@@ -413,8 +465,30 @@ static void generate_makefile_remote(char *project, char *deployment)
 	  "\trm -rf gras-$(GRAS_PROJECT)*\n"
 	  "clean: clean-simgrid clean-gras-$(GRAS_PROJECT)\n"
 	  "\n"
-	  ".PHONY: clean clean-simgrid clean-gras-$(GRAS_PROJECT) compile-simgrid compile-gras-$(GRAS_PROJECT)\n"
-	  "\n");
+	  ".PHONY: clean clean-simgrid clean-gras clean-gras-$(GRAS_PROJECT) \\\n"
+	  "        compile-simgrid compile-gras\n"
+	  );
+  fclose(OUT);
+}
+
+
+static void generate_deployment(char *project, char *deployment)
+{
+  xbt_dict_cursor_t cursor=NULL;
+  char *key = NULL;
+  void *data = NULL;
+  char *filename = NULL;
+  FILE *OUT = NULL;
+
+  filename = xbt_new(char,strlen(project) + strlen(DEPLOYMENT));
+  sprintf(filename,DEPLOYMENT, project);
+  
+  OUT=fopen(filename,"w");
+  xbt_assert1(OUT, "Unable to open %s for writing",filename);
+
+  fprintf(OUT, "#!/bin/sh\n");
+  fprintf(OUT, "############ DEPLOYMENT FILE #########\n");
+
   fclose(OUT);
 }
 
@@ -436,8 +510,12 @@ int main(int argc, char *argv[])
   deployment_file = argv[2];
 
   process_function_set = xbt_dict_new();
+  process_list = xbt_dynar_new(sizeof(s_process_t),s_process_free);
+  machine_set = xbt_dict_new();
 
   STag_process_fun = parse_process_init;
+  ETag_argument_fun = parse_argument;
+  ETag_process_fun = parse_process_finalize;
   surf_parse_open(deployment_file);
   if(surf_parse()) xbt_assert1(0,"Parse error in %s",deployment_file);
   surf_parse_close();
@@ -463,6 +541,7 @@ int main(int argc, char *argv[])
   generate_rl(project_name);
   generate_makefile_local(project_name, deployment_file);
   generate_makefile_remote(project_name, deployment_file);
+  generate_deployment(project_name, deployment_file);
 
   free(warning);
   return 0;
