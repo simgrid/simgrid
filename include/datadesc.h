@@ -102,6 +102,12 @@ void gras_datadesc_cb_set_pre (gras_datadesc_type_t    *type,
 void gras_datadesc_cb_set_post(gras_datadesc_type_t    *type,
 			       gras_datadesc_type_cb_void_t  post);
 
+/******************************
+ * Get stuff within datadescs *
+ ******************************/
+char * gras_datadesc_get_name(gras_datadesc_type_t *ddt);
+int gras_datadesc_get_id(gras_datadesc_type_t *ddt);
+
 /********************************************************
  * Advanced data describing: callback persistent states *
  ********************************************************/
