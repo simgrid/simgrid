@@ -92,13 +92,11 @@ gras_error_t test_array(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
   gras_datadesc_type_t *my_type;
   
-  array i,j;
+  array i = { 35212,-6226,74337,11414,7733};
+  array j;
   int cpt;
 
   INFO0("==== Test on fixed array ====");
-  for (cpt=0; cpt<SIZE; cpt++) {
-    i[cpt] = rand();
-  }
 
   TRY(gras_datadesc_declare_array_fixed("fixed int array", 
 					gras_datadesc_by_name("int"),
@@ -188,8 +186,8 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(homostruct))) )
     RAISE_MALLOC;
-  i->a = rand();  i->b = rand();
-  i->c = rand();  i->d = rand();
+  i->a = 2235;    i->b = 433425;
+  i->c = -23423;  i->d = -235235;
 
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
@@ -277,8 +275,8 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(nestedstruct))) )
     RAISE_MALLOC;
-  i->homo.a = rand();  i->homo.b = rand();
-  i->homo.c = rand();  i->homo.d = rand();
+  i->homo.a = 235231;  i->homo.b = -124151;
+  i->homo.c = 211551;  i->homo.d = -664222;
   i->hete.c1 = 's'; i->hete.l1 = 123455;
   i->hete.c2 = 'e'; i->hete.l2 = 774531;
 
@@ -352,7 +350,7 @@ gras_error_t test_chain_list(gras_socket_t *sock, int direction) {
   INFO0("==== Test on chained list ====");
 
   /* init a value, exchange it and check its validity*/
-  i = cons( rand(), cons( rand() , cons( rand(), NULL)));
+  i = cons( 12355, cons( 246264 , cons( 23263, NULL)));
   j = NULL;
 
   TRY(write_read(gras_datadesc_by_name("chained_list_t*"),
@@ -375,7 +373,7 @@ gras_error_t test_graph(gras_socket_t *sock, int direction) {
 
   INFO0("==== Test on graph (cyclique chained list) ====");
   /* init a value, exchange it and check its validity*/
-  i = cons( rand(), cons( rand() , cons( rand(), NULL)));
+  i = cons( 1151515, cons( -232362 , cons( 222552, NULL)));
   i->l->l->l = i;
   j = NULL;
 
@@ -447,8 +445,9 @@ int main(int argc,char *argv[]) {
     TRYFAIL(gras_socket_server_from_file(filename,&sock));
     TRY(gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
 			   gras_arch_selfid(), &r_arch_char));
-    INFO2("This datafile was generated on %s (%d)",
-	  gras_datadesc_arch_name(r_arch_char),(int)r_arch_char);
+    INFO3("This datafile was generated on %s (%d), I'm %s.",
+	  gras_datadesc_arch_name(r_arch_char),(int)r_arch_char,
+	  gras_datadesc_arch_name(gras_arch_selfid()));
   }
   r_arch = (int)r_arch_char;
   
