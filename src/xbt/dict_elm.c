@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "portable.h" /* PRINTF_STR */
 #include "dict_private.h"  /* prototypes of this module */
 
 XBT_LOG_EXTERNAL_CATEGORY(dict);
@@ -344,7 +345,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   CDEBUG6(dict_search, "search child [%.*s] under [%.*s]=%p (len=%lu)",
 	  key_len, key,
           p_elm ? (p_elm->key_len?p_elm->key_len:6) : 6, 
-	  p_elm ? (p_elm->key?p_elm->key:"(NULL)") : "(head)",
+	  p_elm ? PRINTF_STR(p_elm->key) : "(head)",
 	  p_elm,
   	  (p_elm&&p_elm->sub) ? xbt_dynar_length(p_elm->sub) : 0);
   
@@ -399,7 +400,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   *p_match  = m;
   CDEBUG6(dict_search, "search [%.*s] in [%.*s]=%p => %s",
 	  key_len, key,
-          p_elm?(p_elm->key_len?p_elm->key_len:6):6, p_elm?(p_elm->key?p_elm->key:"(null)"):"(head)",
+          p_elm?(p_elm->key_len?p_elm->key_len:6):6, p_elm?PRINTF_STR(p_elm->key):"(head)",
 	  p_elm,
 	  ( m == 0 ? "no child have a common prefix" :
 	    ( m == 1 ? "selected child have exactly this key" :
