@@ -121,9 +121,11 @@ MSG_error_t MSG_main(void)
   fflush(stderr);
 
   surf_solve(); /* Takes traces into account. Returns 0.0 */
-  while (xbt_fifo_size(msg_global->process_to_run)) {
+/* xbt_fifo_size(msg_global->process_to_run) */
+  while (1) {
+    xbt_context_empty_trash();
     while ((process = xbt_fifo_pop(msg_global->process_to_run))) {
-      fprintf(stderr,"-> %s (%d)\n",process->name, process->simdata->PID);
+/*       fprintf(stderr,"-> %s (%d)\n",process->name, process->simdata->PID); */
       msg_global->current_process = process;
       xbt_context_schedule(process->simdata->context);
       msg_global->current_process = NULL;
@@ -131,66 +133,14 @@ MSG_error_t MSG_main(void)
     Before = MSG_getClock();
     elapsed_time = surf_solve();
     Now = MSG_getClock();
-    fprintf(stderr, "====== %Lg =====\n",Now);
 
-    if (elapsed_time==0.0) {
-      fprintf(stderr, "No change in time\n");
-/*       break; */
-    }
-/*     /\* Handle Failures *\/ */
-/*     { */
-/*       xbt_fifo_t failedHostList = MSG_buildFailedHostList(Before,Now); */
-/*       m_host_t host = NULL; */
-/*       TBX_HashTable_Bucket_t b; */
-/*       TBX_HashTable_t failedProcessList = TBX_HashTable_newList(); */
-      
-/*       while((host=xbt_fifo_pop(failedHostList))) { */
-/* 	simdata_host_t h_simdata= host->simdata; */
-/* 	TBX_HashTable_t process_list= h_simdata->process; */
-	
-/* 	h_simdata->state = HOST_DOWN; */
-	
-/* 	for (b=TBX_HashTable_getFirstBucket(process_list);b; */
-/* 	     b=TBX_HashTable_getNextBucket(process_list,b)) { */
-/* 	  m_process_t p = b->content; */
-/* 	  simdata_process_t p_simdata = p->simdata; */
-	  
-/* 	  if(!TBX_HashTable_isInList(failedProcessList,p,TBX_basicHash))  */
-/* 	    TBX_HashTable_insert(failedProcessList,p,TBX_basicHash); */
-	  
-/* 	  fprintf(stderr,"MSG:  %s(%d) on %s(%d): Has died while ", */
-/* 		  p->name,p_simdata->PID, */
-/* 		  p_simdata->host->name,h_simdata->PID); */
-/* 	  for (i=0; i<msg_global->max_channel; i++) { */
-/* 	    if (h_simdata->sleeping[i] == p_simdata->context) { */
-/* 	      fprintf(stderr,"listening on channel %d.\n",i); */
-/* 	      break; */
-/* 	    } */
-/* 	  } */
-/* 	  if (i==msg_global->max_channel) { */
-/* 	    if(p_simdata->waiting_task) {	       */
-/* 	      fprintf(stderr,"waiting for %s to finish.\n",p_simdata->waiting_task->name); */
-/* 	      MarkAsFailed(p_simdata->waiting_task,failedProcessList); */
-/* 	    } else { /\* Must be trying to put a task somewhere *\/ */
-/* 	      if(p_simdata->put_host) { */
-/* 		fprintf(stderr,"trying to send a task on Host %s, channel %d.\n", */
-/* 			p_simdata->put_host->name, p_simdata->put_channel); */
-/* 	      } else { */
-/* 		fprintf(stderr,"... WTF! UNKNOWN STATUS. Please report this bug.\n"); */
-/* 	      } */
-/* 	    }	 */
-/* 	  }  */
-/* 	} */
-/*       } */
-/*       xbt_fifo_freeFIFO(failedHostList); */
-/*       for (b=TBX_HashTable_getFirstBucket(failedProcessList);b; */
-/* 	   b=TBX_HashTable_getNextBucket(failedProcessList,b)) { */
-/* 	m_process_t p = b->content; */
-/* 	xbt_fifo_insert(msg_global->process_to_run, p); /\* Brutal... *\/ */
-/*       } */
-/*       TBX_HashTable_freeList(failedProcessList,NULL); */
+/*     fprintf(stderr, "====== %Lg =====\n",Now); */
+/*     if (elapsed_time==0.0) { */
+/*       fprintf(stderr, "No change in time\n"); */
 /*     } */
-
+    if (elapsed_time<0.0) {
+      break;
+    }
 
     {
       surf_action_t action = NULL;
@@ -204,7 +154,7 @@ MSG_error_t MSG_main(void)
 	  task = action->data;
 	  if(task) {
 	    int _cursor;
-	    fprintf(stderr,"** %s **\n",task->name);
+/* 	    fprintf(stderr,"** %s **\n",task->name); */
 	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
 	      xbt_fifo_unshift(msg_global->process_to_run, process);
 	    }
@@ -217,7 +167,7 @@ MSG_error_t MSG_main(void)
 	  task = action->data;
 	  if(task) {
 	    int _cursor;
-	    fprintf(stderr,"** %s **\n",task->name);
+/* 	    fprintf(stderr,"** %s **\n",task->name); */
 	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
 	      xbt_fifo_unshift(msg_global->process_to_run, process);
 	    }
@@ -325,6 +275,8 @@ MSG_error_t MSG_clean(void)
 {
   xbt_fifo_item_t i = NULL;
   m_host_t h = NULL;
+
+  xbt_context_exit();
 
   xbt_fifo_foreach(msg_global->host,i,h,m_host_t) {
     __MSG_host_destroy(h);

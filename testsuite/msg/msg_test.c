@@ -17,6 +17,7 @@
 
 int unix_emitter(int argc, char *argv[]);
 int unix_receiver(int argc, char *argv[]);
+int unix_forwarder(int argc, char *argv[]);
 void test_all(const char *platform_file, const char *application_file, double sharing);
 
 
@@ -132,6 +133,38 @@ int unix_receiver(int argc, char *argv[])
 }
 
 
+int unix_forwarder(int argc, char *argv[])
+{
+  int todo_count = 0;
+  m_task_t *todo = (m_task_t *) calloc(NB_TASK, sizeof(m_task_t));
+  int i;
+
+  PRINT_MESSAGE("Hello !");
+  print_args(argc,argv);
+
+  for (i = 0; i < NB_TASK;) {
+    int a;
+    PRINT_MESSAGE("Awaiting Task %d \n", i);
+    a = MSG_task_get(&(todo[i]), PORT_22);
+    if (a == MSG_OK) {
+      todo_count++;
+      PRINT_MESSAGE("Received \"%s\" \n", todo[i]->name);
+      PRINT_MESSAGE("Processing \"%s\" \n", todo[i]->name);
+      MSG_task_execute(todo[i]);
+      PRINT_MESSAGE("\"%s\" done \n", todo[i]->name);
+      MSG_task_destroy(todo[i]);
+      i++;
+    } else {
+      PRINT_MESSAGE("Hey ?! What's up ? \n");
+      DIE("Unexpected behaviour");
+    }
+  }
+  free(todo);
+  PRINT_MESSAGE("I'm done. See you!\n");
+  return 0;
+}
+
+
 void test_all(const char *platform_file,const char *application_file, double sharing)
 {
   {				/*  Simulation setting */
@@ -152,7 +185,7 @@ void test_all(const char *platform_file,const char *application_file, double sha
   }
   MSG_main();
   printf("Simulation time %Lg\n",MSG_getClock());
-/*   MSG_clean(); */
+  MSG_clean();
 }
 
 int main(int argc, char *argv[])

@@ -45,7 +45,12 @@ static void MSG_process_cleanup(void *arg)
 {
   xbt_fifo_remove(msg_global->process_list, arg);
   xbt_fifo_remove(msg_global->process_to_run, arg);
+  xbt_fifo_remove(((m_process_t) arg)->simdata->host->simdata->process_list, arg);
+  xbt_free(((m_process_t) arg)->name);
+  xbt_free(((m_process_t) arg)->simdata);
+  xbt_free(arg);
 }
+
 
 m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,

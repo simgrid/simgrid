@@ -80,6 +80,9 @@ MSG_error_t MSG_task_get(m_task_t * task,
 		h->simdata->host, t_simdata->message_size);
   surf_workstation_resource->common_public->action_set_data(t_simdata->comm,t);
 
+  if(MSG_process_isSuspended(t_simdata->sender)) 
+    MSG_process_resume(t_simdata->sender);
+
   do {
     __MSG_task_wait_event(process, t);
     state=surf_workstation_resource->common_public->action_get_state(t_simdata->comm);
@@ -148,7 +151,8 @@ MSG_error_t MSG_task_put(m_task_t task,
 
   task_simdata = task->simdata;
   task_simdata->sender = process;
-
+  xbt_assert0(task_simdata->using==1,"Gargl!");
+  task_simdata->comm = NULL;
   
   local_host = ((simdata_process_t) process->simdata)->host;
   remote_host = dest;
@@ -161,7 +165,8 @@ MSG_error_t MSG_task_put(m_task_t task,
   else {
     process->simdata->put_host = dest;
     process->simdata->put_channel = channel;
-    MSG_process_suspend(process);
+    while(!(task_simdata->comm)) 
+      MSG_process_suspend(process);
     process->simdata->put_host = NULL;
     process->simdata->put_channel = -1;
   }

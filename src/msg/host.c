@@ -119,6 +119,7 @@ void __MSG_host_destroy(m_host_t host)
   xbt_free(simdata->sleeping);
   xbt_assert0((xbt_fifo_size(simdata->process_list)==0),
 	      "Some process are still running on this host");
+  xbt_fifo_free(simdata->process_list);
 
   xbt_free(simdata);
 
