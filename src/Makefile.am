@@ -138,6 +138,7 @@ gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 
 surf/surf_parse.c: surf/surfxml.c
 
+if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
 	@LEX@ -o$@ -Psurf_parse_ $^
 
@@ -148,6 +149,7 @@ surf/surfxml.l: surf/surfxml.dtd
 
 include/surf/surfxml.h: surf/surfxml.dtd
 	cd include/surf; flexml -H -L ../../surf/surfxml.dtd
+endif
 
 libgras_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \
