@@ -22,8 +22,8 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
 };
 
 const char *gras_datadesc_arch_name(int code) {
-   if (code < 0 || code > gras_arch_count)
-     return "[arch code out of bound]";
+   if (code < 0 || code >= gras_arch_count)
+     return "[unknown arch]";
    return gras_arches[code].name;
 }
 
