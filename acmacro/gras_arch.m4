@@ -178,6 +178,7 @@ case $trace in
   B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=2; gras_arch_name=big32;;
   B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=3; gras_arch_name=big64;;
   B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=4; gras_arch_name=aix;;
+  B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:) gras_arch=5; gras_arch_name=arm;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
