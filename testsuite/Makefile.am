@@ -8,7 +8,7 @@ EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little64 gras/datadesc.big32 gras/datadesc.big64 \
   gras/datadesc.aix \
   gras/mk_datadesc_structs.pl \
-  surf/trace_A.txt surf/trace_B.txt
+  surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt
 
 
 # Test stuff

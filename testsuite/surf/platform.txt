@@ -1,0 +1,6 @@
+<CPU>
+
+  "Cpu A" 100.00 1.0 trace_A.txt ON trace_A_failure.txt
+  "Cpu B" 100.00 1.0 trace_B.txt ON  ""
+       
+</CPU>
