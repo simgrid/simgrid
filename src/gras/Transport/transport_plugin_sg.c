@@ -30,11 +30,8 @@ static gras_error_t find_port(gras_hostdata_t *hd, int port,
 
 
 gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
-				       const char *host,
-				       unsigned short port,
 				       /* OUT */ gras_socket_t *sock);
 gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
-				       unsigned short port,
 				       /* OUT */ gras_socket_t *sock);
 void         gras_trp_sg_socket_close(gras_socket_t *sd);
 
@@ -97,8 +94,6 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
 }
 
 gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
-				       const char *host,
-				       unsigned short port,
 				       /* OUT */ gras_socket_t *sock){
 
   gras_error_t errcode;
@@ -109,34 +104,34 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
   gras_sg_portrec_t pr;
 
   /* make sure this socket will reach someone */
-  if (!(peer=MSG_get_host_by_name(host))) {
-      fprintf(stderr,"GRAS: can't connect to %s: no such host.\n",host);
+  if (!(peer=MSG_get_host_by_name(sock->peer_name))) {
+      fprintf(stderr,"GRAS: can't connect to %s: no such host.\n",sock->peer_name);
       return mismatch_error;
   }
   if (!(hd=(gras_hostdata_t *)MSG_host_get_data(peer))) {
     RAISE1(mismatch_error,
 	   "can't connect to %s: no process on this host",
-	   host);
+	   sock->peer_name);
   }
-  errcode = find_port(hd,port,&pr);
+  errcode = find_port(hd,sock->peer_port,&pr);
   if (errcode != no_error && errcode != mismatch_error) 
     return errcode;
 
   if (errcode == mismatch_error) {
     RAISE2(mismatch_error,
 	   "can't connect to %s:%d, no process listen on this port",
-	   host,port);
+	   sock->peer_name,sock->peer_port);
   } 
 
   if (pr.raw && !sock->raw) {
     RAISE2(mismatch_error,
 	   "can't connect to %s:%d in regular mode, the process listen "
-	   "in raw mode on this port",host,port);
+	   "in raw mode on this port",sock->peer_name,sock->peer_port);
   }
   if (!pr.raw && sock->raw) {
     RAISE2(mismatch_error,
 	   "can't connect to %s:%d in raw mode, the process listen "
-	   "in regular mode on this port",host,port);
+	   "in regular mode on this port",sock->peer_name,sock->peer_port);
   }
 
   /* create the socket */
@@ -153,13 +148,13 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 
   DEBUG6("%s (PID %d) connects in %s mode to %s:%d (to_PID=%d)",
 	  MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
-	  sock->raw?"RAW":"regular",host,port,data->to_PID);
+	  sock->raw?"RAW":"regular",
+	 sock->peer_name,sock->peer_port,data->to_PID);
 
   return no_error;
 }
 
 gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
-				       unsigned short port,
 				       gras_socket_t *sock){
 
   gras_error_t errcode;
@@ -175,16 +170,16 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 
   sock->accepting = 0; /* no such nuisance in SG */
 
-  errcode = find_port(hd,port,&pr);
+  errcode = find_port(hd,sock->port,&pr);
   switch (errcode) {
   case no_error: /* Port already used... */
     RAISE2(mismatch_error,
 	   "can't listen on address %s:%d: port already in use\n.",
-	   host,port);
+	   host,sock->port);
 
   case mismatch_error: /* Port not used so far. Do it */
     pr.tochan = sock->raw ? pd->rawChan : pd->chan;
-    pr.port   = port;
+    pr.port   = sock->port;
     pr.raw    = sock->raw;
     TRY(gras_dynar_push(hd->ports,&pr));
     
@@ -205,7 +200,7 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 
   INFO6("'%s' (%d) ears on %s:%d%s (%p)",
     MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
-    host,port,sock->raw? " (mode RAW)":"",sock);
+    host,sock->port,sock->raw? " (mode RAW)":"",sock);
 
   return no_error;
 }
@@ -246,11 +241,9 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
   m_task_t task=NULL;
   static unsigned int count=0;
   char name[256];
-  gras_trp_sg_sock_data_t *sock_data;
+  gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *)sock->data;
   sg_task_data_t *task_data;
   
-  sock_data = (gras_trp_sg_sock_data_t *)sock->data;
-
   sprintf(name,"Chunk[%d]",count++);
 
   if (!(task_data=gras_new(sg_task_data_t,1)))
@@ -303,5 +296,77 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
     RAISE0(unknown_error,"Error in MSG_task_destroy()");
 
   GRAS_OUT;
+  return no_error;
+}
+
+/* Data exchange over raw sockets */
+gras_error_t gras_socket_raw_exchange(gras_socket_t *peer,
+				      int sender,
+				      unsigned int timeout,
+				      unsigned long int expSize,
+				      unsigned long int msgSize) {
+  unsigned int bytesTotal;
+  static unsigned int count=0;
+  m_task_t task=NULL;
+  char name[256];
+  gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *)peer->data;
+  
+  gras_procdata_t *pd=gras_procdata_get();
+  double startTime;
+  
+  startTime=gras_os_time(); /* used only in sender mode */
+
+  for(bytesTotal = 0;  bytesTotal < expSize;  bytesTotal += msgSize) {
+
+    if (sender) {
+    
+      sprintf(name,"Raw data[%d]",count++);
+      
+      task=MSG_task_create(name,0,((double)msgSize)/(1024.0*1024.0),NULL);
+
+      DEBUG5("%f:%s: gras_socket_raw_send(%f %s -> %s) BEGIN",
+	     gras_os_time(), MSG_process_get_name(MSG_process_self()),
+	     ((double)msgSize)/(1024.0*1024.0),
+	     MSG_host_get_name( MSG_host_self()), peer->peer_name);
+
+      if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK)
+	RAISE0(system_error,"Problem during the MSG_task_put()");
+	       
+      DEBUG5("%f:%s: gras_socket_raw_send(%f %s -> %s) END",
+	     gras_os_time(), MSG_process_get_name(MSG_process_self()),
+	     ((double)msgSize)/(1024.0*1024.0),
+	     MSG_host_get_name( MSG_host_self()), peer->peer_name);
+	           
+    } else { /* we are receiver, simulate a select */
+      
+      task=NULL;
+      DEBUG2("%f:%s: gras_socket_raw_recv() BEGIN\n",
+	     gras_os_time(), MSG_process_get_name(MSG_process_self()));
+      do {
+	if (MSG_task_Iprobe((m_channel_t) pd->rawChan)) {
+	  if (MSG_task_get(&task, (m_channel_t) pd->rawChan) != MSG_OK) {
+	    fprintf(stderr,"GRAS: Error in MSG_task_get()\n");
+	    return unknown_error;
+	  }
+	  
+	  if (MSG_task_destroy(task) != MSG_OK) {
+	    fprintf(stderr,"GRAS: Error in MSG_task_destroy()\n");
+	    return unknown_error;
+	  }
+	  
+	  DEBUG2("%f:%s: gras_socket_raw_recv() END\n",
+		 gras_os_time(), MSG_process_get_name(MSG_process_self()));
+	  break;
+	} else {
+	  MSG_process_sleep(0.0001);
+	}
+	
+      } while (gras_os_time() - startTime < timeout);
+      
+      if (gras_os_time() - startTime > timeout)
+	return timeout_error;
+    } /* receiver part */
+  } /* foreach msg */
+
   return no_error;
 }

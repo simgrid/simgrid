@@ -22,11 +22,8 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
  *** Prototypes 
  ***/
 gras_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
-					const char *host,
-					unsigned short port,
 					/* OUT */ gras_socket_t *sock);
 gras_error_t gras_trp_buf_socket_server(gras_trp_plugin_t *self,
-					unsigned short port,
 					/* OUT */ gras_socket_t *sock);
 gras_error_t gras_trp_buf_socket_accept(gras_socket_t  *sock,
 					gras_socket_t **dst);
@@ -120,14 +117,12 @@ gras_trp_buf_setup(gras_trp_plugin_t *plug) {
 }
 
 gras_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
-					const char *host,
-					unsigned short port,
 					/* OUT */ gras_socket_t *sock){
   gras_error_t errcode;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)self->data)->super;
 
   GRAS_IN;
-  TRY(super->socket_client(super,host,port,sock));
+  TRY(super->socket_client(super,sock));
   sock->plugin = self;
   TRY(gras_trp_buf_init_sock(sock));
     
@@ -140,13 +135,12 @@ gras_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
  * Open a socket used to receive messages.
  */
 gras_error_t gras_trp_buf_socket_server(gras_trp_plugin_t *self,
-					unsigned short port,
 					/* OUT */ gras_socket_t *sock){
   gras_error_t errcode;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)self->data)->super;
 
   GRAS_IN;
-  TRY(super->socket_server(super,port,sock));
+  TRY(super->socket_server(super,sock));
   sock->plugin = self;
   TRY(gras_trp_buf_init_sock(sock));
   return no_error;

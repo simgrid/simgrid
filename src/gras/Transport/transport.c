@@ -130,14 +130,18 @@ gras_error_t gras_trp_socket_new(int incoming,
 
 
 /**
- * gras_socket_server:
+ * gras_socket_server_ext:
  *
  * Opens a server socket and make it ready to be listened to.
  * In real life, you'll get a TCP socket.
  */
 gras_error_t
-gras_socket_server(unsigned short port,
-		   /* OUT */ gras_socket_t **dst) {
+gras_socket_server_ext(unsigned short port,
+		       
+		       unsigned long int bufSize,
+		       int raw,
+		       
+		       /* OUT */ gras_socket_t **dst) {
  
   gras_error_t errcode;
   gras_trp_plugin_t *trp;
@@ -152,9 +156,60 @@ gras_socket_server(unsigned short port,
   TRY(gras_trp_socket_new(1,&sock));
   sock->plugin= trp;
   sock->port=port;
+  sock->bufSize = bufSize;
+  sock->raw = raw;
 
   /* Call plugin socket creation function */
-  errcode = trp->socket_server(trp, port, sock);
+  errcode = trp->socket_server(trp, sock);
+  DEBUG3("in=%c out=%c accept=%c",
+	 sock->incoming?'y':'n', 
+	 sock->outgoing?'y':'n',
+	 sock->accepting?'y':'n');
+
+  if (errcode != no_error) {
+    gras_free(sock);
+    return errcode;
+  }
+
+  *dst = sock;
+
+  return no_error;
+}
+   
+/**
+ * gras_socket_client_ext:
+ *
+ * Opens a client socket to a remote host.
+ * In real life, you'll get a TCP socket.
+ */
+gras_error_t
+gras_socket_client_ext(const char *host,
+		       unsigned short port,
+		       
+		       unsigned long int bufSize,
+		       int raw,
+		       
+		       /* OUT */ gras_socket_t **dst) {
+ 
+  gras_error_t errcode;
+  gras_trp_plugin_t *trp;
+  gras_socket_t *sock;
+
+  *dst = NULL;
+
+  TRY(gras_trp_plugin_get_by_name("buf",&trp));
+
+  DEBUG1("Create a client socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
+  /* defaults settings */
+  TRY(gras_trp_socket_new(0,&sock));
+  sock->plugin= trp;
+  sock->peer_port = port;
+  sock->peer_name = (char*)strdup(host?host:"localhost");
+  sock->bufSize = bufSize;
+  sock->raw = raw;
+
+  /* plugin-specific */
+  errcode= (*trp->socket_client)(trp, sock);
   DEBUG3("in=%c out=%c accept=%c",
 	 sock->incoming?'y':'n', 
 	 sock->outgoing?'y':'n',
@@ -171,6 +226,18 @@ gras_socket_server(unsigned short port,
 }
 
 /**
+ * gras_socket_server:
+ *
+ * Opens a server socket and make it ready to be listened to.
+ * In real life, you'll get a TCP socket.
+ */
+gras_error_t
+gras_socket_server(unsigned short port,
+		   /* OUT */ gras_socket_t **dst) {
+   return gras_socket_server_ext(port,32,0,dst);
+}
+
+/**
  * gras_socket_client:
  *
  * Opens a client socket to a remote host.
@@ -180,40 +247,9 @@ gras_error_t
 gras_socket_client(const char *host,
 		   unsigned short port,
 		   /* OUT */ gras_socket_t **dst) {
- 
-  gras_error_t errcode;
-  gras_trp_plugin_t *trp;
-  gras_socket_t *sock;
-
-  *dst = NULL;
-
-  TRY(gras_trp_plugin_get_by_name("buf",&trp));
-
-  DEBUG1("Create a client socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
-  /* defaults settings */
-  TRY(gras_trp_socket_new(0,&sock));
-  sock->plugin= trp;
-  sock->peer_port = port;
-  sock->peer_name = (char*)strdup(host?host:"localhost");
-
-  /* plugin-specific */
-  errcode= (*trp->socket_client)(trp, 
-				 host ? host : "localhost", port,
-				 sock);
-  DEBUG3("in=%c out=%c accept=%c",
-	 sock->incoming?'y':'n', 
-	 sock->outgoing?'y':'n',
-	 sock->accepting?'y':'n');
-
-  if (errcode != no_error) {
-    gras_free(sock);
-    return errcode;
-  }
-
-  *dst = sock;
-
-  return no_error;
+   return gras_socket_client_ext(host,port,32,0,dst);
 }
+
 
 void gras_socket_close(gras_socket_t *sock) {
   gras_dynar_t *sockets = gras_socketset_get();
@@ -298,4 +334,22 @@ int   gras_socket_peer_port(gras_socket_t *sock) {
 }
 char *gras_socket_peer_name(gras_socket_t *sock) {
   return sock->peer_name;
+}
+
+gras_error_t gras_socket_raw_send(gras_socket_t *peer, 
+				  unsigned int timeout,
+				  unsigned long int expSize, 
+				  unsigned long int msgSize) {
+  
+  gras_assert0(peer->raw,"Asked to send raw data on a regular socket\n");
+  return gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);   
+}
+
+gras_error_t gras_socket_raw_recv(gras_socket_t *peer, 
+				  unsigned int timeout,
+				  unsigned long int expSize, 
+				  unsigned long int msgSize){
+  
+  gras_assert0(peer->raw,"Asked to recveive raw data on a regular socket\n");
+  return gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);   
 }

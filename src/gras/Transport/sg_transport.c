@@ -137,7 +137,7 @@ gras_trp_select(double timeout,
 	     MSG_host_get_name(MSG_host_self()));
       */
       /* MSG_process_sleep(1); */
-      MSG_process_sleep(0.01);
+      MSG_process_sleep(0.001);
     }
   } while (gras_os_time()-startTime < timeout
 	   || MSG_task_Iprobe((m_channel_t) pd->chan));
@@ -155,3 +155,6 @@ gras_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 gras_error_t gras_trp_file_setup(gras_trp_plugin_t *plug) {
   return mismatch_error;
 }
+
+
+   

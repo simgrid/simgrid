@@ -41,14 +41,12 @@ typedef struct gras_trp_plugin_ gras_trp_plugin_t;
 struct gras_trp_plugin_ {
   char          *name;
  
-  /* dst pointers are created and initialized with default values 
-     before call to socket_client/server*/
+  /* dst pointers are created and initialized with default values
+     before call to socket_client/server. 
+     Retrive the info you need from there. */
   gras_error_t (*socket_client)(gras_trp_plugin_t *self,
-				const char *host,
-				unsigned short port,
 				/* OUT */ gras_socket_t *dst);
   gras_error_t (*socket_server)(gras_trp_plugin_t *self,
-				unsigned short port,
 				/* OUT */ gras_socket_t *dst);
    
   gras_error_t (*socket_accept)(gras_socket_t  *sock,

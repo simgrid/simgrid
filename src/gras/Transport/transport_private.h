@@ -31,6 +31,8 @@ struct s_gras_socket  {
   int outgoing :1; /* true if we can write on this sock */
   int accepting :1; /* true if master incoming sock in tcp */
   int raw :1; /* true if this is an experiment socket instead of messaging */
+
+  unsigned long int bufSize; /* what to say to the OS. field here to remember it when accepting */
    
   int  sd; 
   int  port; /* port on this side */
@@ -74,5 +76,12 @@ gras_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
 
 gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock);
 
+
+/* Data exchange over raw sockets */
+gras_error_t gras_socket_raw_exchange(gras_socket_t *peer,
+				      int sender,
+				      unsigned int timeout,
+				      unsigned long int expSize,
+				      unsigned long int msgSize);
 
 #endif /* GRAS_TRP_PRIVATE_H */
