@@ -60,7 +60,6 @@ xbt_dict_free(xbt_dict_t *dict)  {
  * @p_dict: the container
  * @key: the key to set the new data
  * @data: the data to add in the dict
- * @Returns: a gras_error
  *
  * set the @data in the structure under the @key, which can be any kind 
  * of data, as long as its length is provided in @key_len.
@@ -84,7 +83,6 @@ xbt_dict_set_ext(xbt_dict_t      dict,
  * @head: the head of the dict
  * @key: the key to set the new data
  * @data: the data to add in the dict
- * @Returns: a gras_error
  *
  * set the @data in the structure under the @key, which is a 
  * null terminated string.
@@ -106,7 +104,7 @@ xbt_dict_set(xbt_dict_t     dict,
  * @dict: the dealer of data
  * @key: the key to find data
  * @data: the data that we are looking for
- * @Returns: gras_error
+ * @Returns: xbt_error
  *
  * Search the given @key. mismatch_error when not found.
  */
@@ -127,7 +125,7 @@ xbt_dict_get_ext(xbt_dict_t     dict,
  * @dict: the dealer of data
  * @key: the key to find data
  * @data: the data that we are looking for
- * @Returns: gras_error
+ * @Returns: xbt_error
  *
  * Search the given @key. mismatch_error when not found.
  */

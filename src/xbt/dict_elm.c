@@ -395,7 +395,6 @@ _xbt_dictelm_change_value(s_xbt_dictelm_t    *p_elm,
  * @key: the key to set the new data
  * @offset: offset on key.
  * @data: the data to add in the dict
- * @Returns: a gras_error
  *
  * set the @data in the structure under the @key. The @key is destroyed
  * in the process. Think to strdup it before.
@@ -539,7 +538,6 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
  * @head: the head of the dict
  * @key: the key to set the new data
  * @data: the data to add in the dict
- * @Returns: a gras_error
  *
  * set the @data in the structure under the @key, which can be any kind 
  * of data, as long as its length is provided in @key_len.
@@ -581,7 +579,6 @@ xbt_dictelm_set_ext(s_xbt_dictelm_t **pp_head,
  * @head: the head of the dict
  * @key: the key to set the new data
  * @data: the data to add in the dict
- * @Returns: a gras_error
  *
  * set the @data in the structure under the @key, which is a 
  * null terminated string.
@@ -602,7 +599,7 @@ xbt_dictelm_set(s_xbt_dictelm_t **pp_head,
  * @key: the key to find data
  * @offset: offset on the key
  * @data: the data that we are looking for
- * @Returns: gras_error
+ * @Returns: xbt_error
  *
  * Search the given @key. mismatch_error when not found.
  */
@@ -677,7 +674,7 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
  * @head: the head of the dict
  * @key: the key to find data
  * @data: the data that we are looking for
- * @Returns: gras_error
+ * @Returns: xbt_error
  *
  * Search the given @key. mismatch_error when not found.
  */
@@ -700,7 +697,7 @@ xbt_dictelm_get_ext(s_xbt_dictelm_t *p_head,
  * @head: the head of the dict
  * @key: the key to find data
  * @data: the data that we are looking for
- * @Returns: gras_error
+ * @Returns: xbt_error
  *
  * Search the given @key. mismatch_error when not found.
  */
