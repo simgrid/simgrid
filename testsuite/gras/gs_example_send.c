@@ -5,7 +5,7 @@
 #include <string.h>
 #include <gras.h>
 
-//#define PARSING
+#undef PARSING
 
 /* structs */
 struct list {
@@ -61,6 +61,8 @@ string_size_callback(void		*vars,
         return 1+(long int)strlen(data);
 }
 
+void parse_log_opt(int argc, char **argv,const char *deft);
+
 /* main */
 int
 main(int argc, char **argv) {
@@ -72,12 +74,12 @@ main(int argc, char **argv) {
                 {
                         11, 12, 13, 14, 15,
                 };
-   
+	/*
         struct s_mixed                mixed =
                 {
 	                'a',1.0,'b',2.0
 		};
-
+	*/
         struct s_gs_type_driver		*t_driver     = NULL;
         struct s_gs_net_driver		*n_driver     = NULL;
         struct s_gs_type_bag		*bag          = NULL;
@@ -108,6 +110,7 @@ main(int argc, char **argv) {
         struct s_gs_message_instance	*mi           = NULL;
 
 
+	parse_log_opt(argc,argv,"datadesc.thresh=debug");
         gs_init(argc, argv);
         gs_purge_cmd_line(&argc, argv);
 	gras_log_control_set("NDR.thresh=debug");
@@ -188,9 +191,10 @@ main(int argc, char **argv) {
         gs_message_send_next_sequence(mi, &pair);
         fprintf(stderr, "\nsending sequence 4\n----------------\n");
         gs_message_send_next_sequence(mi, (void*)"Hello, World");
+	/*
         fprintf(stderr, "\nsending sequence 5\n----------------\n");
         gs_message_send_next_sequence(mi, (void*)&mixed);
-
+	*/
         gs_exit();
 
         return 0;

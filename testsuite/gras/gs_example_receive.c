@@ -53,7 +53,7 @@ main(int argc, char **argv) {
         int 				 *array		= NULL;
         struct s_pair                    *p_pair        = NULL;
         char				 *str		= NULL;
-        struct s_mixed                   *mixed         = NULL;
+	//        struct s_mixed                   *mixed         = NULL;
 
         struct s_gs_type_driver		 *t_driver      = NULL;
         struct s_gs_net_driver		 *n_driver      = NULL;
@@ -156,11 +156,12 @@ main(int argc, char **argv) {
         str = gs_message_receive_next_sequence(mi);
         printf("str = %s\n", str);
 
+	/*
         fprintf(stderr, "\nreceiving sequence 5\n----------------\n");
         mixed = gs_message_receive_next_sequence(mi);
         printf("c1=%c c2=%c; l1=%ld l2=%ld\n", 
 	       mixed->c1, mixed->c2, mixed->l1, mixed->l2);
-
+	*/
         gs_exit();
 
         return 0;
