@@ -41,4 +41,19 @@ void surf_parse_trace(tmgr_trace_t *trace);
 void  surf_parse_open(const char *file);
 void  surf_parse_close(void);
 
+/* Prototypes of the functions offered by flex */
+int surf_parse_lex(void);
+int surf_parse_get_lineno  (void);
+FILE *surf_parse_get_in  (void);
+FILE *surf_parse_get_out  (void);
+int surf_parse_get_leng  (void);
+char *surf_parse_get_text  (void);
+void surf_parse_set_lineno (int  line_number );
+void surf_parse_set_in (FILE *  in_str );
+void surf_parse_set_out (FILE *  out_str );
+int surf_parse_get_debug  (void);
+void surf_parse_set_debug (int  bdebug );
+int surf_parse_lex_destroy  (void);
+
+
 #endif
