@@ -8,20 +8,16 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <strings.h>
-
 #include "xbt/error.h"
 #include "gras/datadesc.h"
 #include "amok/base.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(amok,GRAS_LOG_ROOT_CAT,"All AMOK categories");
 
-amok_remoterr_t *amok_remoterr_new(gras_error_t param_errcode, 
+amok_remoterr_t amok_remoterr_new(gras_error_t param_errcode, 
 				  const char* format,...) {
    
-  amok_remoterr_t *res;
+  amok_remoterr_t res;
    
   va_list ap;
   va_start(ap,format);
@@ -30,9 +26,9 @@ amok_remoterr_t *amok_remoterr_new(gras_error_t param_errcode,
   return res;
 }
 
-amok_remoterr_t *amok_remoterr_new_va(gras_error_t param_errcode, 
-				      const char* format,va_list ap) {
-  amok_remoterr_t *res=gras_new(amok_remoterr_t,1);
+amok_remoterr_t amok_remoterr_new_va(gras_error_t param_errcode, 
+				     const char* format,va_list ap) {
+  amok_remoterr_t res=gras_new(s_amok_remoterr_t,1);
   res->code=param_errcode;
   if (format) {
      res->msg=(char*)gras_malloc(1024);
@@ -44,22 +40,23 @@ amok_remoterr_t *amok_remoterr_new_va(gras_error_t param_errcode,
   return res;   
 }
 
-void amok_remoterr_free(amok_remoterr_t*err) {
-   if (err) {
-      if (err->msg) gras_free(err->msg);
-      gras_free(err);
+void amok_remoterr_free(amok_remoterr_t *err) {
+   if (err && *err) {
+      if ((*err)->msg) gras_free((*err)->msg);
+      gras_free(*err);
+      err=NULL;
    }
 }
 
 
 void
-amok_repport_error (gras_socket_t *sock, gras_msgtype_t *msgtype,
+amok_repport_error (gras_socket_t sock, gras_msgtype_t msgtype,
 		    gras_error_t param_errcode, const char* format,...) {
-  amok_remoterr_t *error;
+  amok_remoterr_t error;
   gras_error_t errcode;
   va_list ap;
 
-  error=gras_new(amok_remoterr_t,1);
+  error=gras_new(s_amok_remoterr_t,1);
   error->code=param_errcode;
   error->msg=(char*)gras_malloc(1024); /* FIXME */
   va_start(ap,format);
@@ -75,7 +72,7 @@ amok_repport_error (gras_socket_t *sock, gras_msgtype_t *msgtype,
 }
 
 void amok_base_init(void) {
-  gras_datadesc_type_t *host_desc, *remoterr_desc;
+  gras_datadesc_type_t host_desc, remoterr_desc;
      
   /* Build the datatype descriptions */
   host_desc = gras_datadesc_struct("gras_host_t");
@@ -84,11 +81,11 @@ void amok_base_init(void) {
   gras_datadesc_struct_close(host_desc);
   host_desc = gras_datadesc_ref("gras_host_t*",host_desc);
    
-  remoterr_desc = gras_datadesc_struct("amok_remoterr_t");
+  remoterr_desc = gras_datadesc_struct("s_amok_remoterr_t");
   gras_datadesc_struct_append(remoterr_desc,"msg",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(remoterr_desc,"code",gras_datadesc_by_name("unsigned int"));
   gras_datadesc_struct_close(remoterr_desc);
-  remoterr_desc = gras_datadesc_ref("amok_remoterr_t*",remoterr_desc);
+  remoterr_desc = gras_datadesc_ref("amok_remoterr_t",remoterr_desc);
 }
 
 void amok_base_exit(void) {
