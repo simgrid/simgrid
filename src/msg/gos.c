@@ -86,7 +86,6 @@ MSG_error_t MSG_task_get(m_task_t * task,
   if(__MSG_process_isBlocked(t_simdata->sender)) 
     __MSG_process_unblock(t_simdata->sender);
 
-  //  PAJE_PROCESS_STATE(process,"C");  
   PAJE_PROCESS_PUSH_STATE(process,"C");  
 
   do {
@@ -205,16 +204,15 @@ MSG_error_t MSG_task_put(m_task_t task,
     
   if(remote_host->simdata->sleeping[channel]) 
     __MSG_process_unblock(remote_host->simdata->sleeping[channel]);
-/*   else { */
+
   process->simdata->put_host = dest;
   process->simdata->put_channel = channel;
   while(!(task_simdata->comm)) 
     __MSG_process_block();
   process->simdata->put_host = NULL;
   process->simdata->put_channel = -1;
-/*   } */
 
-  // PAJE_PROCESS_STATE(process,"C");  
+
   PAJE_PROCESS_PUSH_STATE(process,"C");  
 
   state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
@@ -265,7 +263,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
   MSG_error_t res;
   __MSG_task_execute(process, task);
 
-  //  PAJE_PROCESS_STATE(process,"E");  
   PAJE_PROCESS_PUSH_STATE(process,"E");  
   res = __MSG_wait_for_computation(process,task);
   PAJE_PROCESS_POP_STATE(process);

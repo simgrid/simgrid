@@ -320,7 +320,6 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 
   xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
 
-  //  PAJE_PROCESS_STATE(process,"S");
   PAJE_PROCESS_PUSH_STATE(process,"S");
 
   if(process!=MSG_process_self()) {
@@ -376,7 +375,6 @@ MSG_error_t MSG_process_resume(m_process_t process)
 
 
   if(simdata->blocked) {
-    //    PAJE_PROCESS_STATE(process,"B");
     PAJE_PROCESS_POP_STATE(process);
 
     simdata->suspended = 0; /* He'll wake up by itself */
@@ -393,10 +391,8 @@ MSG_error_t MSG_process_resume(m_process_t process)
   if(simdata_task->compute) {
     surf_workstation_resource->common_public->resume(simdata_task->compute);
     PAJE_PROCESS_POP_STATE(process);
-    //    PAJE_PROCESS_STATE(process,"E");
   }
   else {
-    //    PAJE_PROCESS_STATE(process,"C");
     PAJE_PROCESS_POP_STATE(process);
     surf_workstation_resource->common_public->resume(simdata_task->comm);
   }
@@ -424,7 +420,6 @@ MSG_error_t __MSG_process_block(void)
   m_task_t dummy = MSG_TASK_UNINITIALIZED;
   dummy = MSG_task_create("blocked", 0.0, 0, NULL);
   
-  //  PAJE_PROCESS_STATE(process,"B");
   PAJE_PROCESS_PUSH_STATE(process,"B");
 
   process->simdata->blocked=1;
