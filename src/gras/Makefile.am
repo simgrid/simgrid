@@ -2,24 +2,28 @@ SUBDIRS=. Tests
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include -I../nws_portability/Include  \
           @CFLAGS_XML@ @CFLAGS_SimGrid@
-EXTRA_DIST=gs/parse.yy.l
+EXTRA_DIST=                 \
+	gras_private.h      \
+	Core/dict_private.h \
+	gs/gs_private.h     \
+	gs/parse.yy.l      
 
 
 lib_LIBRARIES= libgrasrl.a libgrassg.a
 
 noinst_LIBRARIES=libgrasutils.a
 
-#                     core/dict_multi.c
+#                     Core/dict_multi.c
 #  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
 
 COMMON_S=\
   \
-  core/module.c                                                                 \
-  core/log.c         core/log_default_appender.c   core/error.c                 \
-  core/dynar.c                                                                  \
-  core/dict.c        core/dict_elm.c               core/dict_cursor.c           \
+  Core/module.c                                                                 \
+  Core/log.c         Core/log_default_appender.c   Core/error.c                 \
+  Core/dynar.c                                                                  \
+  Core/dict.c        Core/dict_elm.c               Core/dict_cursor.c           \
   \
-  core/config.c                               \
+  Core/config.c                               \
   \
   gs/datadesc.c                               \
   gs/tools.c                                  \
@@ -32,7 +36,7 @@ COMMON_S=\
   gs/type_driver.c     gs/type_driver.h       \
   gs/message.c         gs/message.h           \
   gs/type.c            gs/type.h              \
-  gs/parse.c           gs/parse.h             gs/parse.yy.c \
+  gs/parse.c           gs/parse.yy.h             gs/parse.yy.c \
   gs/vars.c
 
 gs/parse.yy.c: gs/parse.yy.l

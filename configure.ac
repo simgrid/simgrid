@@ -3,7 +3,7 @@ AC_PREREQ(2.57)
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.1],[martin.quinson@ens-lyon.fr])
+AC_INIT([GRAS],[0.0.040129],[martin.quinson@ens-lyon.fr])
 AC_CONFIG_SRCDIR([src/include/gras.h])
 AC_REVISION($Revision$)
 AC_CONFIG_SUBDIRS(src/nws_portability)
@@ -72,9 +72,12 @@ dnl ####[ Makes the output ]###################################################
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+    src/include/Makefile
+      src/include/modules/Makefile
     src/base/Makefile
       src/base/Tests/Makefile
       src/base/Tests/gs_example
+      src/base/Tests/run_tests
     src/modules/Makefile
     src/examples/Makefile 
       src/examples/ping/Makefile 
@@ -82,7 +85,8 @@ AC_CONFIG_FILES([
       src/examples/alnem/Makefile 
   doc/Makefile
 ],[( cd src/include ; test -e gras || ln -s . gras )
-     test -e src/base/Tests/gs_example && chmod +x src/base/Tests/gs_example])
+     test -e src/base/Tests/gs_example && chmod +x src/base/Tests/gs_example;
+     test -e src/base/Tests/run_tests && chmod +x src/base/Tests/run_tests])
 
 AC_OUTPUT
 

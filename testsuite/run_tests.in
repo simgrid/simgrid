@@ -1,4 +1,4 @@
-#! /bin/bash
+#! @BASH@
 failed_nb=0
 success_nb=0
 tests_nb=0

@@ -7,9 +7,9 @@
 configured	= @host@
 
 # Distribution variables
-TOP		= @TOP@
+TOP		= @TOP@/../../
 DIST_NAME	= portability.tar
-DIST_ROOT	= $(TOP)/Portability
+DIST_ROOT	= $(TOP)/gras-0.0.040129/src/nws_portability
 
 # System-dependent values determined by the configuration script.
 AR		= @AR@

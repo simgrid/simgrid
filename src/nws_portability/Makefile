@@ -50,15 +50,12 @@ distclean: confclean
 	@echo "Removing build directories ..."
 	@$(RM) -rf $(builddir) $(DIST_NAME)
 
-dist: 
-	@$(RM) -rf $(DIST_ROOT) $(DIST_NAME)
-	@$(INSTALL) -d $(DIST_ROOT)
-	@for subdir in $(SUBDIRS); do \
+distdir:
+	$(INSTALL) -d $(DIST_ROOT)
+	for subdir in $(SUBDIRS); do \
 		(cd $$subdir && $(MAKE) dist) || exit $$? ; done
-	@$(CP)  $(DIST_FILES) $(DIST_ROOT)
-	@$(CP) *.c $(DIST_ROOT)
-	@$(TAR) cf $(TOP)/$(DIST_NAME) Portability
-	@$(RM) -rf $(DIST_ROOT)
+	$(CP)  $(DIST_FILES) $(DIST_ROOT)
+	$(CP) *.c $(DIST_ROOT)
 
 .PHONY: install
 install: all 

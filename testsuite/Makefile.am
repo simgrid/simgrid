@@ -4,6 +4,7 @@ AM_LDFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o
 DISTCLEANFILES=Makefile.in *~
+EXTRA_DIST=test_utils.c run_tests.in
 
 # Test stuff
 

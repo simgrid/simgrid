@@ -1,10 +1,11 @@
 SUBDIRS= doc src 
 DISTCLEANFILES =  *~  
 
-ACLOCAL = aclocal -I tools/acmacro -I /usr/share/aclocal/gnome2-macros
+ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
 AUTOMAKE_OPTIONS = gnu
 
-EXTRA_DIST = bootstrap COPYING INSTALL NEWS README TODO AUTHORS                        
+EXTRA_DIST = bootstrap COPYING INSTALL NEWS README TODO AUTHORS \
+	acmacro/aci.m4
 #	Cflags.Makefile.am                      \
 #	doc/FAQ.txt                             \
 #	doc/footer.html                         \

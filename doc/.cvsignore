@@ -2,3 +2,5 @@ Makefile *.stamp html *.new gras-unused.txt gras.args gras.hierarchy gras.interf
 gras-decl-list.txt
 gras-decl.txt
 sgml
+Makefile.in
+gras-undocumented.txt
