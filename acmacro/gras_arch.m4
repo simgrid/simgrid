@@ -195,7 +195,7 @@ AC_DEFUN([GRAS_CHECK_STRUCT_COMPACTION],
        ]],[[switch (0) 
         case 0: 
         case (sizeof(struct s) == sizeof(double)+sizeof(char)):;
-       ]])],[gras_struct_packed=yes],[gras_struct_packed=no"])
+       ]])],[gras_struct_packed=yes],[gras_struct_packed=no])
      
    AC_MSG_RESULT($gras_struct_packed)
    if test x$gras_struct_packed = "xyes" ; then
@@ -215,7 +215,7 @@ AC_DEFUN([GRAS_CHECK_STRUCT_COMPACTION],
    AC_MSG_RESULT($gras_struct_compact)
    
    if test x$gras_struct_compact != xyes ; then
-     AC_MSG_ERROR(GRAS works only on structure compacting architectures (yet))
+     AC_MSG_ERROR([GRAS works only on structure compacting architectures (yet)])
    fi
    AC_DEFINE_UNQUOTED(GRAS_STRUCT_COMPACT, 1,
       [Defined if structures are compacted when possible.
