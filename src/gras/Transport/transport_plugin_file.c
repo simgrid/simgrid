@@ -18,10 +18,6 @@
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport);
 
-typedef struct {
-  int buffsize;
-} gras_trp_tcp_sock_specific_t;
-
 /***
  *** Prototypes 
  ***/
@@ -35,7 +31,6 @@ gras_error_t gras_trp_file_chunk_recv(gras_socket_t *sd,
 				      char *data,
 				      size_t size);
 
-void         gras_trp_file_free_specific(void *s);
 
 /***
  *** Specific plugin part
@@ -43,45 +38,34 @@ void         gras_trp_file_free_specific(void *s);
 
 typedef struct {
   fd_set incoming_socks;
-} gras_trp_file_specific_t;
+} gras_trp_file_plug_data_t;
 
 /***
  *** Specific socket part
  ***/
 
 
+
 /***
  *** Code
  ***/
 gras_error_t
-gras_trp_file_init(gras_trp_plugin_t **dst) {
+gras_trp_file_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_plugin_t *res=malloc(sizeof(gras_trp_plugin_t));
-  gras_trp_file_specific_t *specif = malloc(sizeof(gras_trp_file_specific_t));
-  if (!res || !specif)
+  gras_trp_file_plug_data_t *file = malloc(sizeof(gras_trp_file_plug_data_t));
+  if (!file)
     RAISE_MALLOC;
 
-  FD_ZERO(&(specif->incoming_socks));
+  FD_ZERO(&(file->incoming_socks));
 
-  res->name = strdup("file");
-  res->socket_client = NULL;
-  res->socket_server = NULL;
-  res->socket_accept = NULL;
-  res->socket_close  = gras_trp_file_close;
+  plug->socket_close = gras_trp_file_close;
 
-  res->chunk_send    = gras_trp_file_chunk_send;
-  res->chunk_recv    = gras_trp_file_chunk_recv;
+  plug->chunk_send   = gras_trp_file_chunk_send;
+  plug->chunk_recv   = gras_trp_file_chunk_recv;
 
-  res->specific      = (void*)specif;
-  res->free_specific = gras_trp_file_free_specific;
+  plug->data         = (void*)file;
 
-  *dst = res;
   return no_error;
-}
-
-void gras_trp_file_free_specific(void *s) {
-  gras_trp_file_specific_t *specific = s;
-  free(specific);
 }
 
 /**
@@ -186,10 +170,10 @@ gras_socket_server_from_file(const char*path,
 }
 
 void gras_trp_file_close(gras_socket_t *sock){
-  gras_trp_file_specific_t *specific;
+  gras_trp_file_plug_data_t *data;
   
   if (!sock) return; /* close only once */
-  specific=sock->plugin->specific;
+  data=sock->plugin->data;
 
   if (sock->sd == 0) {
     DEBUG0("Do not close stdin");
@@ -199,7 +183,7 @@ void gras_trp_file_close(gras_socket_t *sock){
     DEBUG1("close file connection %d", sock->sd);
 
     /* forget about the socket */
-    FD_CLR(sock->sd, &(specific->incoming_socks));
+    FD_CLR(sock->sd, &(data->incoming_socks));
 
     /* close the socket */
     if(close(sock->sd) < 0) {
@@ -219,6 +203,7 @@ gras_trp_file_chunk_send(gras_socket_t *sock,
 			 char *data,
 			 size_t size) {
   
+  gras_assert0(sock->outgoing, "Cannot write on client file socket");
   gras_assert0(size >= 0, "Cannot send a negative amount of data");
 
   while (size) {
@@ -253,8 +238,8 @@ gras_trp_file_chunk_recv(gras_socket_t *sock,
 			char *data,
 			size_t size) {
 
-  /* TCP sockets are in duplex mode, don't check direction */
   gras_assert0(sock, "Cannot recv on an NULL socket");
+  gras_assert0(sock->incoming, "Cannot recv on client file socket");
   gras_assert0(size >= 0, "Cannot receive a negative amount of data");
   
   while (size) {

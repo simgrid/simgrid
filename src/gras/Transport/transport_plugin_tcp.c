@@ -26,21 +26,15 @@
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport);
 
-typedef struct {
-  int buffsize;
-} gras_trp_tcp_sock_specific_t;
-
 /***
  *** Prototypes 
  ***/
 gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
 					const char *host,
 					unsigned short port,
-					int raw,
 					/* OUT */ gras_socket_t *sock);
 gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
 					unsigned short port,
-					int raw,
 					/* OUT */ gras_socket_t *sock);
 gras_error_t gras_trp_tcp_socket_accept(gras_socket_t  *sock,
 					gras_socket_t **dst);
@@ -64,60 +58,54 @@ static int TcpProtoNumber(void);
  ***/
 
 typedef struct {
-  fd_set incoming_socks;
-} gras_trp_tcp_specific_t;
+  fd_set msg_socks;
+  fd_set raw_socks;
+} gras_trp_tcp_plug_data_t;
 
 /***
  *** Specific socket part
  ***/
+
+typedef struct {
+  int buffsize;
+} gras_trp_tcp_sock_data_t;
 
 
 /***
  *** Code
  ***/
 gras_error_t
-gras_trp_tcp_init(gras_trp_plugin_t **dst) {
+gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_plugin_t *res=malloc(sizeof(gras_trp_plugin_t));
-  gras_trp_tcp_specific_t *tcp = malloc(sizeof(gras_trp_tcp_specific_t));
-  if (!res || !tcp)
+  gras_trp_tcp_plug_data_t *tcp = malloc(sizeof(gras_trp_tcp_plug_data_t));
+  if (!tcp)
     RAISE_MALLOC;
 
-  FD_ZERO(&(tcp->incoming_socks));
+  FD_ZERO(&(tcp->msg_socks));
+  FD_ZERO(&(tcp->raw_socks));
 
-  res->name = strdup("TCP");
-  res->socket_client = gras_trp_tcp_socket_client;
-  res->socket_server = gras_trp_tcp_socket_server;
-  res->socket_accept = gras_trp_tcp_socket_accept;
-  res->socket_close  = gras_trp_tcp_socket_close;
+  plug->socket_client = gras_trp_tcp_socket_client;
+  plug->socket_server = gras_trp_tcp_socket_server;
+  plug->socket_accept = gras_trp_tcp_socket_accept;
+  plug->socket_close  = gras_trp_tcp_socket_close;
 
-  res->chunk_send    = gras_trp_tcp_chunk_send;
-  res->chunk_recv    = gras_trp_tcp_chunk_recv;
+  plug->chunk_send    = gras_trp_tcp_chunk_send;
+  plug->chunk_recv    = gras_trp_tcp_chunk_recv;
 
-  res->specific      = (void*)tcp;
-  res->free_specific = gras_trp_tcp_free_specific;
+  plug->data      = (void*)tcp;
 
-  *dst = res;
   return no_error;
-}
-
-void gras_trp_tcp_free_specific(void *s) {
-  gras_trp_tcp_specific_t *specific = s;
-  free(specific);
 }
 
 gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
 					const char *host,
 					unsigned short port,
-					int raw,
 					/* OUT */ gras_socket_t *sock){
   
   struct sockaddr_in addr;
   struct hostent *he;
   struct in_addr *haddr;
 
-  gras_assert0(!raw,"Raw TCP sockets not implemented yet");
-   
   sock->incoming = 1; /* TCP sockets are duplex'ed */
 
   sock->sd = socket (AF_INET, SOCK_STREAM, 0);
@@ -159,15 +147,12 @@ gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
  */
 gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
 					unsigned short port,
-					int raw,
 					/* OUT */ gras_socket_t *sock){
 //  int size = bufSize * 1024;
   int on = 1;
   struct sockaddr_in server;
 
-  gras_assert0(!raw,"Raw TCP sockets not implemented yet");
-
-   gras_trp_tcp_specific_t *data=(gras_trp_tcp_specific_t*)self -> specific;
+  gras_trp_tcp_plug_data_t *tcp=(gras_trp_tcp_plug_data_t*)self->data;
  
   sock->outgoing  = 1; /* TCP => duplex mode */
 
@@ -194,7 +179,10 @@ gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
     RAISE2(system_error,"Cannot listen to port %d: %s",port,strerror(errno));
   }
 
-  FD_SET(sock->sd, &(data->incoming_socks));
+  if (sock->raw)
+    FD_SET(sock->sd, &(tcp->raw_socks));
+  else
+    FD_SET(sock->sd, &(tcp->msg_socks));
 
   DEBUG2("Openned a server socket on port %d (sock %d)",port,sock->sd);
   
@@ -274,10 +262,10 @@ gras_trp_tcp_socket_accept(gras_socket_t  *sock,
 }
 
 void gras_trp_tcp_socket_close(gras_socket_t *sock){
-  gras_trp_tcp_specific_t *tcp;
+  gras_trp_tcp_plug_data_t *tcp;
   
   if (!sock) return; /* close only once */
-  tcp=sock->plugin->specific;
+  tcp=sock->plugin->data;
 
   DEBUG1("close tcp connection %d\n", sock->sd);
 
@@ -296,7 +284,10 @@ void gras_trp_tcp_socket_close(gras_socket_t *sock){
   } */
 
   /* forget about the socket */
-  FD_CLR(sock->sd, &(tcp->incoming_socks));
+  if (sock->raw)
+    FD_CLR(sock->sd, &(tcp->raw_socks));
+  else
+    FD_CLR(sock->sd, &(tcp->msg_socks));
 
   /* close the socket */
   if(close(sock->sd) < 0) {
