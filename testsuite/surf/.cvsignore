@@ -1,2 +1,3 @@
 .dirstamp .libs 
 maxmin_usage
+maxmin_bench surf_usage trace_usage
