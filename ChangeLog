@@ -1,3 +1,7 @@
+2004-01-31 Arnaud
+  - Finished rewriting and debugging MSG. Rewrote the documentation.
+    Preparing to release.
+
 2004-12-16 Martin
   - Finish the port to windows (using mingw32 for cross-compile)
 
