@@ -73,13 +73,3 @@ sgml-local-ecat-files:nil
 End:
 -->
 
-<!-- ##### FUNCTION CloseSocket ##### -->
-<para>
-
-</para>
-
-@sock: 
-@waitForPeer: 
-@Returns: 
-
-

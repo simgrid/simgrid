@@ -14,22 +14,6 @@ gras_private
 
 </para>
 
-<!-- ##### FUNCTION gras_lock ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-
-<!-- ##### FUNCTION gras_unlock ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-
 <!-- ##### FUNCTION gras_msg_discard ##### -->
 <para>
 
@@ -39,24 +23,19 @@ gras_private
 @size: 
 
 
-<!-- ##### ENUM FormatTypes ##### -->
-<para>
-
-</para>
-
-@HOST_FORMAT: 
-@NETWORK_FORMAT: 
-
 <!-- ##### FUNCTION gras_datadesc_cmp ##### -->
 <para>
 
 </para>
 
+@d1: 
+@d2: 
+@Returns: 
+<!-- # Unused Parameters # -->
 @dd1: 
 @c1: 
 @dd2: 
 @c2: 
-@Returns: 
 
 
 <!-- ##### MACRO SIMPLE_TYPE_COUNT ##### -->
