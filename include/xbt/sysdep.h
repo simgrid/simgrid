@@ -12,12 +12,9 @@
 #ifndef _XBT_SYSDEP_H
 #define _XBT_SYSDEP_H
 
-#include <string.h> /* Included directly for speed */
-
-#include <time.h> /* FIXME: remove */
-#include <unistd.h> /* FIXME: remove */
+#include <string.h>
 #include <stdlib.h> 
-
+   
 #include "xbt/misc.h"
 BEGIN_DECL
 #if 0
@@ -61,7 +58,7 @@ BEGIN_DECL
 
 #endif  /* !__GNUC__ */
 
-/* inline and __FUNCTION__ are only in GCC when -ansi is of */
+/* inline and __FUNCTION__ are only in GCC when -ansi is off */
 
 #if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
 
