@@ -6,7 +6,7 @@
 \endhtmlonly
 </center>
 
-\section overview Overview
+\section quick Quick start
 
 SimGrid is a toolkit that provides core functionalities for the simulation
 of distributed applications in heterogeneous distributed environments.
@@ -15,93 +15,148 @@ distributed and parallel application scheduling on distributed computing
 platforms ranging from simple network of workstations to Computational
 Grids.
 
+\subsection quick_dl Getting and installing the software
+
+The SimGrid software package can be downloaded from 
+<a href="http://gcl.ucsd.edu/simgrid/dl/">here</a>.
+
+To compile and install it, simply type the following. If you are not
+familiar with compiling C files under UNIX and using libraries, please check
+the \ref faq. SimGrid also works under Windows, but we do not distribute any
+pre-compiled binaries [yet].
+
+\verbatim $ ./configure
+ $ make all
+ [become root]
+ # make install\endverbatim
+ 
+\subsection quick_more More information
+
+The API is described <a href="API/html/modules.html">here</a> while 
+<a href="examples/html/modules.html">this page</a> presents some example of
+use.
+
+For more information about the SimGrid toolkit, please simply keep reading
+this page. It is organized as follow:
+
+  - \ref overview: Presentation of the toolkit, of each of its components
+    and of their interactions.
+  - \ref people: Who is behind this project.
+  - \ref publications: Some articles providing more details about the
+    SimGrid toolkit or using and validating it.
+
+<hr>
+
+\section overview Overview of the toolkit components
+
+As depicted by the following schema, the SimGrid toolkit is basically
+three-layered.
+
+\htmlonly
+<center><img align=center src="simgrid_modules.jpg" alt="SimGrid"><br>
+<b>Relationships between the SimGrid components</b>
+</center>
+\endhtmlonly
+
+\subsection overview_fondation Basement layer
+
+The basement of the whole toolkit is constituted by the <b>\ref XBT_API
+(eXtended Bundle of Tools)</b>.
+
+It is a portable library providing some grounding features such as \ref
+XBT_log and \ref XBT_error. XBT also encompass the following convenient
+datastructures: \ref XBT_dynar, \ref XBT_fifo, \ref XBT_dict, \ref XBT_heap,
+\ref XBT_set and \ref XBT_swag.
+
+See the \ref XBT_API section for more details.
+
+\subsection overview_kernel Simulation kernel layer
+
+The core functionnalities to simulate a virtual platform are provided by a
+module called <b>\ref SURF_API</b> ("that's historical, my friend").  It is
+very low-level and is not intended to be used as such by end-users. Instead,
+it serve as a basis for the higher level layer.
+
+SURF main features are a fast max-min linear solver and the ability to
+change transparently the model used to describe the platform. This greatly
+eases the comparison of the several models existing in the litterature.
+
+See the \ref SURF_API section for more details.
+
+\subsection overview_envs Programmation environments layer
+
+This simulation kernel is used to build several programmation environments.
+Each of them target a specific audiance and constitute a different paradigm.
+To choose which of them you want to use, you have to think about what you
+want to do and what would be the result of your work. 
+
+ - If you want to study a theoritical problem and compare several
+   heuristics, you probably want to try <b>\ref MSG_API</b> (yet another
+   historical name). It was designed exactly to that extend and should allow
+   you to build easily rather realistic multi-agents simulation. Yet,
+   realism is not the main goal of this environment and the most annoying
+   technical issues of real platforms are masked here. Check the \ref
+   MSG_API section for more information.
+
+ - If you want to study the behaviour of a MPI application using emulation
+   technics, you should have a look at the <b>\ref SMPI_API</b> (Simulated
+   MPI) programming environment. Unfortunately, this work is still underway.
+   Check the \ref SMPI_API section for more information. 
+   
+ - If you want to develop a real distributed application, then you may find
+   <b>\ref GRAS_API</b> (Grid Reality And Simulation) useful. This is an API
+   for the realization of distributed applications. 
+   \n\n
+   Moreover, there is two implementations of this API: one on top of the
+   SURF (allowing to develop and test your application within the comfort of
+   the simulator) and another suited for deployment on real platforms
+   (allowing the resulting application to be highly portable and extremely
+   efficient).
+   \n\n
+   Even if you do not plan to run your code for real, you may want to switch
+   to GRAS if you intend to use MSG in a very intensive way (e.g. for
+   simulating a peer-to-peer environment).
+   \n\n
+   See the \ref GRAS_API section for more details.
+
+If your favorite programming environment/model is not there (BSP,
+components, etc.) is not represented in the SimGrid toolkit yet, you may
+consider adding it. You should contact us first, though.
+
+Any question, remark or suggestion are welcome on the 
+<a href=https://listes.ens-lyon.fr/wws/info/simgrid2-users>SimGrid users
+mailing list</a>.
+
+<hr>
+
 \section people People
 
 The authors of SimGrid are:
 
-\author Henri Casanova <casanova@cs.ucsd.edu>
-\author Arnaud Legrand <arnaud.legrand@imag.fr>
-\author Martin Quinson <martin.quinson@tuxfamily.org>
+ - Henri Casanova <casanova#cs.ucsd.edu>
+ - Arnaud Legrand <arnaud.legrand#imag.fr>
+ - Martin Quinson <mquinson#debian.org>
 
-\section intro Available Softwares
+\subsection contributers Contributers and alumni project members
 
-The SimGrid toolkit is composed of different modules :
+ - Loris Marchal: wrote the new algorithm for simulation TCP
+   bandwidth-sharing.
+ - Julien Lerouge : wrote a XML parser for ENV descriptions and helped for
+   the general design during a 4 month period (march-june 2002) 
+   in the <LIP.
+ - Clément Menier and Marc Perache : wrote a first prototype of the MSG
+   interface during a project at ENS-Lyon (jan 2002). 
+ - Dmitrii Zagorodnov : wrote some parts of the first version of SimGrid
+   (1999). 
 
-\li XBT (eXtensive Bundle of Tools) is a portable library with many
-    convenient portable datastructures (vectors, hashtables, heap,
-    contexts ...). Most other SimGrid modules rely on it.
+<hr>
 
-\li SURF provides the core functionnalities to simulate a virtual
-    platform. It is very low-level and is not intended to be used as
-    such but rather to serve as a basis for higher-level simulators
-    (like MSG, GRAS, SMPI, ...). It relies on a fast max min linear
-    solver.
+\section publications Selected publications
 
-\li MSG is a simulator built using the previous modules. It aims at
-    being realistic and is application-oriented. It is the software layer
-    of choice for building simulation with multiple scheduling agents. 
+When citing SimGrid, the prefered reference paper is still <i>SimGrid: A
+Toolkit for the Simulation of Application Scheduling</i> by Henri Casanova,
+even if it's a bit old now. We are activly working on improving this.
 
-\li GRAS (<em>not functionnal yet</em>) is an ongoing project to emulate virtual 
-    virtual platforms through SURF. As a consequence a code developped using the GRAS
-    framework is able to run as well in the real-world as in the
-    simulator. The resulting code is very portable and highly interoperable while 
-    remaining very efficient. Even if you do not plan to run your code for real, 
-    you may want to switch to GRAS if you intend to use MSG in a very intensive way
-    (e.g. for simulating a peer-to-peer environment).
-
-\li SMPI (<em>not functionnal yet</em>) is an ongoing project to enable MPI code
-    to run on top of a virtual platform through SURF. It follows the same principle as
-    the ones used in GRAS but is specific to MPI applications.
-
-Here is a figure the depicts the relation between those different modules.
-<center>
-\htmlonly
-<img align=center src="simgrid_modules.jpg" alt="SimGrid"><br>
-\endhtmlonly
-</center>
-
-The section \ref publications contains links to papers that provide
-additional details on the project as well as validation and
-experimental results.
-
-The software can be downloaded from <a href="http://gcl.ucsd.edu/simgrid/dl/">here</a>.
-
-\section install Installation
-
-Simply type
-      \li <tt>./configure</tt>
-      \li <tt>make all install</tt>
-
-If you are not familiar with compiling C files under UNIX and using
-libraries, you will find some more informations in Section \ref
-faq.
-
-\section documentation API Documentation
-
-The API of all different modules is described <a href="API/html/modules.html">here</a>.
-See <a href="examples/html/modules.html">here</a> for an introduction on the way to use these modules.
-
-\section users_contributers Users / Contributers
-
-\subsection contributers Contributers
-
-      \li Loris Marchal: wrote the new algorithm for simulation TCP
-          bandwidth-sharing.
-      \li Julien Lerouge : wrote a XML parser for ENV descriptions and 
-          helped for the general design during a  4 month period (march-june 2002)
-          in the LIP.
-      \li Clément Menier and Marc Perache : wrote a first prototype of
-          the MSG interface during a project at ENS-Lyon (jan 2002).
-      \li Dmitrii Zagorodnov : wrote some parts of the first version 
-          of SimGrid (1999).
-
-\subsection mailinglist User Mailing List
-
-   We have a <a href=https://listes.ens-lyon.fr/wws/info/simgrid2-users> mailing list for
-   SimGrid users</a>.<p>
-
-\section publications Publications
- 
 \subsection simulation About simulation
 
 \li <b>Scheduling Distributed Applications: the
