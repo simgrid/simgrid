@@ -32,7 +32,7 @@ int main(int argc,char *argv[]) {
   fprintf(stderr,"===[SERVER]=== Got '%s'.\n", data_recv);
 
   fprintf(stderr,"===[SERVER]=== Exiting successfully\n");
-  gras_socket_close(&sock);
+  gras_socket_close(sock);
 
   gras_exit();
   return 0;

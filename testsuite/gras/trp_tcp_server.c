@@ -31,10 +31,10 @@ int main(int argc,char *argv[]) {
   TRYFAIL(gras_trp_chunk_recv(conn,data_recv, sizeof(data_recv)));
   fprintf(stderr,"===[SERVER]=== Got '%s'. Send it back.\n", data_recv);
   TRYFAIL(gras_trp_chunk_send(conn,data_recv, sizeof(data_recv)));
-  gras_socket_close(&conn);
+  gras_socket_close(conn);
 
   fprintf(stderr,"===[SERVER]=== Exiting successfully\n");
-  gras_socket_close(&sock);
+  gras_socket_close(sock);
 
   gras_exit();
   return 0;

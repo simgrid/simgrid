@@ -38,7 +38,7 @@ int main(int argc,char *argv[]) {
   fprintf(stderr,"===[CLIENT]=== Got a valid ACK\n");
   
   fprintf(stderr,"===[CLIENT]=== Exiting successfully\n");
-  gras_socket_close(&sock);
+  gras_socket_close(sock);
    
   gras_exit();
   return 0;

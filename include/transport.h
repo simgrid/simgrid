@@ -20,7 +20,7 @@ gras_error_t gras_socket_client(const char *host,
 				/* OUT */ gras_socket_t **dst);
 gras_error_t gras_socket_server(unsigned short port,
 				/* OUT */ gras_socket_t **dst);
-void         gras_socket_close(gras_socket_t **sd);
+void         gras_socket_close(gras_socket_t *sd);
 
 /* get information about socket */
 int   gras_socket_my_port  (gras_socket_t *sock);

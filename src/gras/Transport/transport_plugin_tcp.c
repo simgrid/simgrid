@@ -214,7 +214,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  *sock,
   tmp_errno = errno;
 
   if(sd == -1) {
-    gras_socket_close(&sock);
+    gras_socket_close(sock);
     RAISE1(system_error,
 	   "Accept failed (%s). Droping server socket.", strerror(tmp_errno));
   } else {

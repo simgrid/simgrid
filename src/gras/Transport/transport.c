@@ -239,21 +239,20 @@ gras_socket_client(const char *host,
   return no_error;
 }
 
-void gras_socket_close(gras_socket_t **sock) {
+void gras_socket_close(gras_socket_t *sock) {
   gras_socket_t *sock_iter;
   int cursor;
 
   /* FIXME: Issue an event when the socket is closed */
-  if (sock && *sock) {
+  if (sock) {
     gras_dynar_foreach(_gras_trp_sockets,cursor,sock_iter) {
-      if (*sock == sock_iter) {
+      if (sock == sock_iter) {
 	gras_dynar_cursor_rm(_gras_trp_sockets,&cursor);
-	if ( (*sock)->plugin->socket_close) 
-	  (* (*sock)->plugin->socket_close)(*sock);
+	if ( sock->plugin->socket_close) 
+	  (* sock->plugin->socket_close)(sock);
 
 	/* free the memory */
-	free(*sock);
-	*sock=NULL;
+	free(sock);
 	return;
       }
     }

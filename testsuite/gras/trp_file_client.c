@@ -15,7 +15,7 @@
 //GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
 
 int main(int argc,char *argv[]) {
-  gras_socket_t * sock;
+  gras_socket_t *sock;
   gras_error_t errcode;
   char data_send[256];
 
@@ -29,7 +29,7 @@ int main(int argc,char *argv[]) {
   TRYFAIL(gras_trp_chunk_send(sock,data_send, sizeof(data_send)));
   
   fprintf(stderr,"===[CLIENT]=== Exiting successfully\n");
-  gras_socket_close(&sock);
+  gras_socket_close(sock);
    
   gras_exit();
   return 0;

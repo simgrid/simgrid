@@ -3,6 +3,10 @@
     them all up in one shot)
  [DataDesc]
   - Fix the ugly case of reference to dynamic array.
+ [Transport]
+  - gras_socket_close now expect the socket to close (and not its address to
+    put NULL in it after it). This is because the socket passed to handlers
+    is one of their argument (=> not writable).
 
 2004-06-21
  [Transport]
