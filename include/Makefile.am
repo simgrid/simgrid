@@ -13,4 +13,6 @@ EXTRA_DIST=    \
 	\
 	socket.h messages.h \
 	\
+	transport.h \
+	\
 	core.h

@@ -26,8 +26,8 @@ COMMON_S=\
   \
   Core/config.c                               \
   \
-  Messaging/transport.c    Messaging/transport.h \
-  Messaging/transport_sg.c Messaging/transport_tcp.c   \
+  Messaging/transport.c    Messaging/transport_private.h      \
+  Messaging/transport_sg.c Messaging/transport_tcp.c          \
   \
   Messaging/datadesc_simple.c                 \
   \
