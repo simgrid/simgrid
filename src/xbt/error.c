@@ -9,13 +9,10 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/error.h"
-/** \defgroup  XBT_error Error tracking support
- *  \brief This section describes a set of macros used to handle errors easily.
- */
 
 /**
  * \brief Usefull to do nice error repporting messages.
- * \ingroup XBT_error
+ *
  * \param errcode 
  * \return the printable name of an error code
  *
@@ -40,7 +37,7 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_DEFAULT_CATEGORY(xbt);
   
 /**
- * \ingroup XBT_error
+ * @brief Kill the prog
  * \param msg 
  *
  * Things are so messed up that the only thing to do now, is to stop the program.
@@ -49,4 +46,3 @@ void xbt_die (const char *msg) {
    CRITICAL1("%s",msg);
    xbt_abort();
 }
-

@@ -408,6 +408,7 @@ INPUT                  = @top_srcdir@/include/ \
                          @top_srcdir@/src/xbt/ \
                          @srcdir@/modules.doc \
                          @srcdir@/module-gras.doc \
+                         @srcdir@/module-xbt.doc \
                          ./api_index.doc \
                          ./logcategories.doc
 

@@ -14,11 +14,6 @@
 
 #include <stdio.h>
 
-/** \defgroup XBT_dict A generic dictionnary 
- *  \brief This section describes the API to a dictionnary structure
- *  that associates as string to a void* key. It is not a hash table
- *  and the internal data-structure rather looks like a tree.
- */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
@@ -27,9 +22,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
 /*####[ Code ]###############################################################*/
 
 /**
- * \ingroup XBT_dict
- *
- * \return pointer to the destination
+ * @brief Constructor
+ * @return pointer to the destination
  *
  * Creates and initialize a new dictionnary
  */
@@ -40,8 +34,8 @@ xbt_dict_new(void) {
   return res;
 }
 /**
- * \ingroup XBT_dict
- * \param dict the dictionnary to be freed
+ * @brief Destructor
+ * @param dict the dictionnary to be freed
  *
  * Frees a cache structure with all its childs.
  */
@@ -58,17 +52,16 @@ xbt_dict_free(xbt_dict_t *dict)  {
 }
 
 /**
- * \ingroup XBT_dict
- *
+ * \brief Add data to the dict (arbitrary key)
  * \param dict the container
  * \param key the key to set the new data
- * \param key_len the size of the #key
+ * \param key_len the size of the \a key
  * \param data the data to add in the dict
- * \param free_ctn function to call with (#key as argument) when 
- *        #key is removed from the dictionnary
+ * \param free_ctn function to call with (\a key as argument) when 
+ *        \a key is removed from the dictionnary
  *
- * set the #data in the structure under the #key, which can be any kind 
- * of data, as long as its length is provided in #key_len.
+ * set the \a data in the structure under the \a key, which can be any kind 
+ * of data, as long as its length is provided in \a key_len.
  */
 void
 xbt_dict_set_ext(xbt_dict_t      dict,
@@ -84,15 +77,15 @@ xbt_dict_set_ext(xbt_dict_t      dict,
 }
 
 /**
- * \ingroup XBT_dict
+ * \brief Add data to the dict (null-terminated key)
  *
  * \param dict the head of the dict
  * \param key the key to set the new data
  * \param data the data to add in the dict
- * \param free_ctn function to call with (#key as argument) when 
- *        #key is removed from the dictionnary
+ * \param free_ctn function to call with (\a key as argument) when 
+ *        \a key is removed from the dictionnary
  *
- * set the #data in the structure under the #key, which is a 
+ * set the \a data in the structure under the \a key, which is a 
  * null terminated string.
  */
 void
@@ -107,15 +100,15 @@ xbt_dict_set(xbt_dict_t     dict,
 }
 
 /**
- * \ingroup XBT_dict
+ * \brief Retrieve data from the dict (arbitrary key)
  *
  * \param dict the dealer of data
  * \param key the key to find data
- * \param key_len the size of the #key
+ * \param key_len the size of the \a key
  * \param data the data that we are looking for
  * \return xbt_error
  *
- * Search the given #key. mismatch_error when not found.
+ * Search the given \a key. mismatch_error when not found.
  */
 xbt_error_t
 xbt_dict_get_ext(xbt_dict_t     dict,
@@ -129,14 +122,14 @@ xbt_dict_get_ext(xbt_dict_t     dict,
 }
 
 /**
- * \ingroup XBT_dict
+ * \brief Retrieve data from the dict (null-terminated key) 
  *
  * \param dict the dealer of data
  * \param key the key to find data
  * \param data the data that we are looking for
  * \return xbt_error
  *
- * Search the given #key. mismatch_error when not found.
+ * Search the given \a key. mismatch_error when not found.
  */
 xbt_error_t
 xbt_dict_get(xbt_dict_t     dict,
@@ -149,14 +142,14 @@ xbt_dict_get(xbt_dict_t     dict,
 
 
 /**
- * \ingroup XBT_dict
+ * \brief Remove data from the dict (arbitrary key)
  *
  * \param dict the trash can
  * \param key the key of the data to be removed
- * \param key_len the size of the #key
+ * \param key_len the size of the \a key
  * \return xbt_error_t
  *
- * Remove the entry associated with the given #key
+ * Remove the entry associated with the given \a key
  */
 xbt_error_t
 xbt_dict_remove_ext(xbt_dict_t  dict,
@@ -168,13 +161,12 @@ xbt_dict_remove_ext(xbt_dict_t  dict,
 }
 
 /**
- * \ingroup XBT_dict
+ * \brief Remove data from the dict (null-terminated key)
  *
  * \param dict the head of the dict
  * \param key the key of the data to be removed
- * \return xbt_error_t
  *
- * Remove the entry associated with the given #key
+ * Remove the entry associated with the given \a key
  */
 xbt_error_t
 xbt_dict_remove(xbt_dict_t  dict,
@@ -187,14 +179,13 @@ xbt_dict_remove(xbt_dict_t  dict,
 
 
 /**
- * \ingroup XBT_dict
+ * \brief Outputs the content of the structure (debuging purpose) 
  *
  * \param dict the exibitionist
  * \param output a function to dump each data in the tree
- * \return xbt_error_t
  *
- * Ouputs the content of the structure. (for debuging purpose). #ouput is a
- * function to output the data. If NULL, data won't be displayed.
+ * Ouputs the content of the structure. (for debuging purpose). \a ouput is a
+ * function to output the data. If NULL, data won't be displayed, just the tree structure.
  */
 
 void

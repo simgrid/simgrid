@@ -36,13 +36,8 @@ _cursor_push_keys(xbt_dict_cursor_t p_cursor,
 #undef xbt_dict_CURSOR_DEBUG
 /*#define xbt_dict_CURSOR_DEBUG 1*/
 
-/**
- * xbt_dict_cursor_new:
- *
- * @head: the head of the dict
- * @cursor: the curent position in the dict
- *
- * Structure creator
+/** @brief Creator 
+ *  @param head   the dict
  */
 xbt_dict_cursor_t 
 xbt_dict_cursor_new(const xbt_dict_t head) {
@@ -61,11 +56,8 @@ xbt_dict_cursor_new(const xbt_dict_t head) {
 }
 
 /**
- * xbt_dict_cursor_free:
- *
- * @cursor: poor victim
- *
- * Structure destructor
+ * @brief Destructor
+ * @param cursor poor victim
  */
 void
 xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
@@ -77,9 +69,7 @@ xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
   }
 }
 
-/**
- * __cursor_not_null:
- *
+/*
  * Sanity check to see if the head contains something
  */
 static _XBT_INLINE
@@ -120,13 +110,7 @@ _cursor_push_keys(xbt_dict_cursor_t cursor,
   CDEBUG1(dict_cursor, "Count = %d", count);
 }
 
-/**
- * xbt_dict_cursor_rewind:
- * @cursor: the cursor
- * @Returns: xbt_error_t
- *
- * back to the first element
- */
+/** @brief Reinitialize the cursor. Mandatory after removal or add in dict. */
 void
 xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
 
@@ -147,11 +131,10 @@ xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
 }
 
 /**
- * xbt_dict_cursor_first:
- * @dict: on what to let the cursor iterate
- * @cursor: dest address
+ * @brief Create the cursor if it does not exists. Rewind it in any case.
  *
- * Create the cursor if it does not exists. Rewind it in any case.
+ * @param      dict   on what to let the cursor iterate
+ * @param[out] cursor dest address
  */
 void xbt_dict_cursor_first (const xbt_dict_t   dict,
 			     xbt_dict_cursor_t *cursor){
@@ -166,10 +149,7 @@ void xbt_dict_cursor_first (const xbt_dict_t   dict,
 
 
 /**
- * xbt_dict_cursor_step:
- * @cursor: the cursor
- *
- * Move to the next element. 
+ * \brief Move to the next element. 
  */
 void
 xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
@@ -180,11 +160,9 @@ xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
 }
 
 /**
- * xbt_dict_cursor_get_or_free:
- * @cursor: the cursor
- * @Returns: true if it's ok, false if there is no more data
+ * @brief Get current data, or free the cursor if there is no data left
  *
- * Get current data
+ * @returns true if it's ok, false if there is no more data
  */
 int
 xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
@@ -218,12 +196,9 @@ xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
 }
 
 /**
- * xbt_dict_cursor_get_key:
- * @cursor: the cursor
- * @key: the current element
- * @Returns: xbt_error_t
- *
- * Get current key
+ * @brief Get current key
+ * @param cursor: the cursor
+ * @param key where to put the key
  */
 xbt_error_t
 xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor,
@@ -238,10 +213,9 @@ xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor,
 }
 
 /**
- * xbt_dict_cursor_get_data:
- * @cursor: the cursor
- *
- * Get current data
+ * @brief Get current data
+ * @param cursor the cursor
+ * @param data where to put the data
  */
 xbt_error_t
 xbt_dict_cursor_get_data(xbt_dict_cursor_t   cursor,

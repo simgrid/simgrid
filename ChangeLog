@@ -1,3 +1,6 @@
+2005-02-11 Martin
+  - Documentation overhault.
+
 2005-02-08 Martin
   - Doxygenification of all GRAS. gtk-doc-tools is dead in SimGrid now.
   - Automatically extract all existing logging categories, and add the list

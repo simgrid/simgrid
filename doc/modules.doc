@@ -6,47 +6,6 @@
        \brief The core toolbox of SimGrid, containing usefull datatypes,
        portability support and so on.
 */
-/**    \defgroup XBT_ground Grounding features of the XBT (logging and error reporting)
-       \ingroup XBT_API        */
-       /** \addtogroup  XBT_log
-           \ingroup XBT_ground  */
-	   /** \defgroup XBT_log_cats Existing log categories
-	       \ingroup XBT_log
-	       \brief (automatically extracted) 
-	       
-	       This is the list of all existing log categories in SimGrid.
-               This list was automatically extracted from the source code by
-               the src/xbt_log_extract_hierarchy utility.
-	       
-               You can thus be certain that it is uptodate, but it may somehow
-               lack a final manual touch.
-	       Anyway, nothing's perfect ;)
-	       */
-       /** \addtogroup  XBT_error
-           \ingroup XBT_ground  */
-
-/**    \defgroup XBT_structs  Datatypes defined in the XBT
-       \ingroup XBT_API        */
-/**       \addtogroup XBT_dict
-          \ingroup XBT_structs */
-/**       \addtogroup XBT_dynar
-          \ingroup XBT_structs */
-/**       \addtogroup XBT_fifo
-          \ingroup XBT_structs */
-/**       \addtogroup XBT_set
-          \ingroup XBT_structs */
-/**        \addtogroup XBT_swag
-          \ingroup XBT_structs */
-/**       \addtogroup XBT_heap
-          \ingroup XBT_structs */
-     
-/**    \defgroup XBT_port     Portability support defined in the XBT 
-                              (you shouldn't use it directly) 
-       \ingroup XBT_API        */
-/**       \addtogroup XBT_context 
-          \ingroup XBT_port    */
-/**       \addtogroup XBT_sysdep
-          \ingroup XBT_port    */
 
 /** \defgroup SURF_API       SURF
     \ingroup SimGrid_API
