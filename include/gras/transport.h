@@ -20,7 +20,7 @@
 /** \name Socket creation functions
  *  \ingroup GRAS_sock
  */
-/*@{*/
+/* @{*/
 /** \brief Opaque type describing a socket */
 typedef struct s_gras_socket *gras_socket_t;
 
@@ -45,13 +45,13 @@ xbt_error_t gras_socket_server_ext(unsigned short port,
 				    unsigned long int bufSize,
 				    int raw,
 				    /* OUT */ gras_socket_t *dst);
-/*@}*/
+/* @}*/
 /** \name Retrieving data about sockets and peers 
  *  \ingroup GRAS_sock
  * 
  * Who are you talking to?
  */
-/*@{*/
+/* @{*/
 
 /** Get the port number on which this socket is connected on my side */
 int   gras_socket_my_port  (gras_socket_t sock);
@@ -59,7 +59,7 @@ int   gras_socket_my_port  (gras_socket_t sock);
 int   gras_socket_peer_port(gras_socket_t sock);
 /** Get the host name of the remote side */
 char *gras_socket_peer_name(gras_socket_t sock);
-/*@}*/
+/* @}*/
 
 /** \name Using raw sockets
  *  \ingroup GRAS_sock
@@ -71,7 +71,7 @@ char *gras_socket_peer_name(gras_socket_t sock);
  * 
  * \bug Raw sockets are not fully functionnal yet.
  */
-/*@{*/
+/* @{*/
 
 xbt_error_t gras_socket_raw_send(gras_socket_t peer, 
 				  unsigned int timeout,
@@ -82,7 +82,7 @@ xbt_error_t gras_socket_raw_recv(gras_socket_t peer,
 				  unsigned long int expSize, 
 				  unsigned long int msgSize);
 
-/*@}*/
+/* @}*/
 
 /** \name Using files as sockets
  *  \ingroup GRAS_sock
@@ -93,13 +93,13 @@ xbt_error_t gras_socket_raw_recv(gras_socket_t peer,
  * 
  * \bug Don't use '-' on windows. this file represents stdin or stdout, but I failed to deal with it on windows.
  */
-/*@{*/
+/* @{*/
 /* debuging functions */
 xbt_error_t gras_socket_client_from_file(const char*path,
 					  /* OUT */ gras_socket_t *dst);
 xbt_error_t gras_socket_server_from_file(const char*path,
 					  /* OUT */ gras_socket_t *dst);
 					  
-/*@}*/
+/* @} */
    
 #endif /* GRAS_TRANSPORT_H */

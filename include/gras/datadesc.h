@@ -33,7 +33,7 @@ BEGIN_DECL()
  *   -# Callback Persistant State: Simple push/pop mechanism
  *   -# Callback Persistant State: Full featured mechanism
  */
-/*@{*/
+/* @{*/
 
 /** @name 1. basic operations
  *
@@ -125,7 +125,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  */
 #define GRAS_ANNOTE(key,val)
 
-/*@}*/
+/* @} */
 
 gras_datadesc_type_t 
 gras_datadesc_parse(const char *name, const char *C_statement);
@@ -164,7 +164,7 @@ gras_datadesc_parse(const char *name, const char *C_statement);
   
   [Use my_type to send pointers to mystruct data]\endverbatim
  */
-/*@{*/
+/* @{ */
 
 
 /** \brief Opaque type describing a type description callback persistant state. */
@@ -250,7 +250,7 @@ char * gras_datadesc_get_name(gras_datadesc_type_t ddt);
 /** \brief Returns the identifier of a datadescription */
 int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
-/*@}*/
+/* @} */
 
 /** @name 4. Callback Persistant State: Simple push/pop mechanism
  * 
@@ -273,7 +273,7 @@ gras_datadesc_struct_close(my_type);
 \endverbatim
 
  */
-/*@{*/
+/* @{ */
 
 void
 gras_cbps_i_push(gras_cbps_t ps, int val);
@@ -287,7 +287,7 @@ void gras_datadesc_cb_push_lint(gras_cbps_t vars, void *data);
 void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 
 
-/*@}*/
+/* @} */
 
 /** @name 5. Callback Persistant State: Full featured mechanism
  * 
@@ -295,7 +295,7 @@ void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
  * introduced in previous section isn't enough, you can always use this full featured one.
  */
 
-/*@{*/
+/* @{ */
 
 xbt_error_t
   gras_cbps_v_pop (gras_cbps_t            ps, 
@@ -324,7 +324,7 @@ void
 gras_cbps_block_end(gras_cbps_t ps);
 
 /* @} */
-/*@}*/
+/* @} */
 
 
 /*******************************

@@ -10,7 +10,8 @@
 #ifndef GRAS_PROCESS_H
 #define GRAS_PROCESS_H
 
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h"  /* BEGIN_DECL */
+#include "xbt/error.h" /* xbt_error_t */
 
 BEGIN_DECL()
 
@@ -47,7 +48,7 @@ xbt_error_t gras_process_exit(void);
  * and use \ref gras_userdata_set yourself), and \ref gras_userdata_get to
  * retrive a reference to it. 
  */
-/*@{*/
+/* @{ */
 
 /**
  * \brief Get the data associated with the current process.
@@ -63,7 +64,7 @@ void gras_userdata_set(void *ud);
 
 /** \brief Malloc and set the data associated with the current process. */
 #define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
-/*@}*/
+/* @} */
 
 END_DECL()
 

@@ -112,7 +112,7 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 			    void           *payload);
   xbt_error_t gras_msg_handle(double timeOut);
 
-/*@}*/
+/* @} */
 
 END_DECL()
 
