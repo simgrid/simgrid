@@ -14,14 +14,32 @@
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
-   int cpt;
+   int cpt,cursor;
    double d1,d2;
    
+   fprintf(stderr,"==== Traverse the empty dynar\n");
+   TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
+   gras_dynar_foreach(d,cursor,cpt){
+     fprintf(stderr,
+	     "Damnit, there is something in the empty dynar\n");
+     abort();
+   }
+   gras_dynar_free(d);
+
    fprintf(stderr,"==== Push/shift 5000 doubles\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
      TRYFAIL(gras_dynar_push(d,&d1));
+   }
+   gras_dynar_foreach(d,cursor,d2){
+     d1=(double)cursor;
+     if (d1 != d2) {
+       fprintf(stderr,
+           "The retrieved value is not the same than the injected one (%f!=%f)\n",
+	       d1,d2);
+       abort();
+     }
    }
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;

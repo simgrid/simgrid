@@ -20,10 +20,19 @@ void free_string(void *d){
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
-   int cpt;
+   int cpt,i;
    char buf[1024];
    char *s1,*s2;
    
+   fprintf(stderr,"==== Traverse the empty dynar\n");
+   TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
+   gras_dynar_foreach(d,cpt,i){
+     fprintf(stderr,
+	     "Damnit, there is something in the empty dynar\n");
+     abort();
+   }
+   gras_dynar_free(d);
+
    fprintf(stderr,"==== Push 5000 strings, set them again 3 times, shift them\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(char*),&free_string));
    for (cpt=0; cpt< 5000; cpt++) {

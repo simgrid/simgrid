@@ -12,6 +12,7 @@
 #include <gras.h>
 
 #define NB_ELEM 5000
+GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
 
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
@@ -19,12 +20,34 @@ int main(int argc,char *argv[]) {
    int i,cpt,cursor;
    
    //   TRYFAIL(gras_log_control_set("root.thresh=debug dynar.thresh=info"));
-   TRYFAIL(gras_log_control_set("root.thresh=info"));
-   fprintf(stderr,"==== Push %d int, set them again 3 times, traverse them, shift them\n",NB_ELEM);
+   TRYFAIL(gras_log_control_set("dynar.thresh=debug root.thresh=info"));
+   fprintf(stderr,"==== Traverse the empty dynar\n");
+   TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
+   gras_dynar_foreach(d,cursor,i){
+     fprintf(stderr,
+	     "Damnit, there is something in the empty dynar\n");
+     abort();
+   }
+   gras_dynar_free(d);
+
+   fprintf(stderr,
+	   "==== Push %d int, set them again 3 times, traverse them, shift them\n",
+	   NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_push(d,&cpt));
-     //     fprintf (stderr,"Push %d, length=%d \n",cpt, gras_dynar_length(d));
+     //fprintf (stderr,"Push %d, length=%d \n",cpt, gras_dynar_length(d));
+   }
+   for (cursor=0; cursor< NB_ELEM; cursor++) {
+     gras_dynar_get(d,cursor,&cpt);
+     gras_assert2(cursor == cpt,
+		  "The retrieved value is not the same than the injected one (%d!=%d)",
+		  cursor,cpt);
+   }
+   gras_dynar_foreach(d,cursor,cpt){
+     gras_assert2(cursor == cpt,
+     		  "The retrieved value is not the same than the injected one (%d!=%d)",
+     		  cursor,cpt);
    }
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_set(d,cpt,&cpt));
