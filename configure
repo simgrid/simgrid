@@ -23331,7 +23331,7 @@ fi
 WARNING="This file is generated, do not edit"
 
 
-                                                                                                                                                                          ac_config_files="$ac_config_files Makefile src/Makefile src/include/Makefile src/include/modules/Makefile src/base/Makefile src/base/Tests/Makefile src/base/Tests/run_tests src/base/Tests/gs_example src/base/Tests/trp_tcp_usage src/base/Tests/trp_file_usage src/modules/Makefile src/examples/Makefile src/examples/ping/Makefile src/examples/bandwidth/Makefile src/examples/saturate/Makefile src/examples/alnem/Makefile doc/Makefile"
+                                                                                                                                                                ac_config_files="$ac_config_files Makefile src/Makefile src/include/Makefile src/include/modules/Makefile src/base/Makefile src/base/Tests/Makefile src/base/Tests/run_tests src/base/Tests/trp_tcp_usage src/base/Tests/trp_file_usage src/modules/Makefile src/examples/Makefile src/examples/ping/Makefile src/examples/bandwidth/Makefile src/examples/saturate/Makefile src/examples/alnem/Makefile doc/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -23925,7 +23925,6 @@ do
   "src/base/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/base/Makefile" ;;
   "src/base/Tests/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/base/Tests/Makefile" ;;
   "src/base/Tests/run_tests" ) CONFIG_FILES="$CONFIG_FILES src/base/Tests/run_tests" ;;
-  "src/base/Tests/gs_example" ) CONFIG_FILES="$CONFIG_FILES src/base/Tests/gs_example" ;;
   "src/base/Tests/trp_tcp_usage" ) CONFIG_FILES="$CONFIG_FILES src/base/Tests/trp_tcp_usage" ;;
   "src/base/Tests/trp_file_usage" ) CONFIG_FILES="$CONFIG_FILES src/base/Tests/trp_file_usage" ;;
   "src/modules/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/modules/Makefile" ;;
@@ -24359,87 +24358,66 @@ s,@INSTALL@,$ac_INSTALL,;t t
     Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/include/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/include/modules/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/base/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/base/Tests/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/base/Tests/run_tests ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
-     test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
-    src/base/Tests/gs_example ) ( cd src/include ; test -e gras || ln -s . gras )
-     test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
-     test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/base/Tests/trp_tcp_usage ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/base/Tests/trp_file_usage ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/modules/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/examples/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/examples/ping/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/examples/bandwidth/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/examples/saturate/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     src/examples/alnem/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
     doc/Makefile ) ( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/gs_example    && chmod +x src/base/Tests/gs_example;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests ;;
   esac
 done
