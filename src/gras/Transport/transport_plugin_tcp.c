@@ -42,7 +42,7 @@ gras_error_t gras_trp_tcp_socket_accept(gras_socket_t  *sock,
 void         gras_trp_tcp_socket_close(gras_socket_t *sd);
   
 gras_error_t gras_trp_tcp_chunk_send(gras_socket_t *sd,
-				     char *data,
+				     const char *data,
 				     long int size);
 
 gras_error_t gras_trp_tcp_chunk_recv(gras_socket_t *sd,
@@ -91,6 +91,8 @@ gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
   plug->chunk_send    = gras_trp_tcp_chunk_send;
   plug->chunk_recv    = gras_trp_tcp_chunk_recv;
+
+  plug->flush = NULL; /* nothing's cached */
 
   plug->data = (void*)data;
   plug->exit = gras_trp_tcp_exit;
@@ -308,7 +310,7 @@ void gras_trp_tcp_socket_close(gras_socket_t *sock){
  */
 gras_error_t 
 gras_trp_tcp_chunk_send(gras_socket_t *sock,
-			char *data,
+			const char *data,
 			long int size) {
   
   /* TCP sockets are in duplex mode, don't check direction */
