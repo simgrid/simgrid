@@ -28,8 +28,11 @@ typedef struct {
 
   /* The channel we are listening to in SG for formated messages */
   int chan;
+  gras_socket_t *sock; /* the corresponding socket (SG only) */
+   
   /* The channel we are listening to in SG for raw send/recv */
   int rawChan; 
+  gras_socket_t *rawSock;/* the corresponding socket (SG only) */
 
   /* globals of the process */
   void *userdata;               
