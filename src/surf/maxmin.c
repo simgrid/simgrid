@@ -381,6 +381,16 @@ int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst)
   return xbt_swag_belongs(cnst, &(sys->active_constraint_set));
 }
 
+lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys)
+{
+  return xbt_swag_getFirst(&(sys->active_constraint_set));
+}
+
+lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst)
+{
+  return xbt_swag_getNext(cnst,(sys->active_constraint_set).offset);
+}
+
 
 /* void lmm_print(lmm_system_t sys) */
 /* { */

@@ -38,6 +38,9 @@ lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
 				     lmm_constraint_t cnst,
 				     lmm_variable_t * var);
 
+lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys);
+lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst);
+
 void *lmm_constraint_id(lmm_constraint_t cnst);
 void *lmm_variable_id(lmm_variable_t var);
 
