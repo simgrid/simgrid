@@ -3,7 +3,7 @@
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.0.1b],[martin.quinson@ens-lyon.fr])
+AC_INIT([GRAS],[0.0.2],[martin.quinson@ens-lyon.fr])
 AC_CONFIG_SRCDIR([src/include/gras.h])
 AC_REVISION($Revision$)
 dnl A C_CONFIG_SUBDIRS(src/nws_portability)
@@ -75,6 +75,8 @@ AC_CHECK_PROG(BASH, bash, `which bash`, /bin/sh)
 WARNING="This file is generated, do not edit"
 AC_SUBST(WARNING)
 
+AC_SUBST(SED)
+
 dnl ####[ Makes the output ]###################################################
 AC_CONFIG_FILES([
   Makefile
@@ -103,7 +105,7 @@ AC_OUTPUT
 
 echo "
 
-Configuration of package \`${PACKAGE}':
+Configuration of package \`${PACKAGE}' on $gras_arch_name (=$gras_arch):
 
 	Compiler:	${CC}
 
