@@ -441,10 +441,10 @@ struct s_pbio{ /* structure presented in the IEEE article */
 };
 		 )
 typedef struct s_pbio pbio_t;
+pbio_t pbio_i, pbio_j;
 
 xbt_error_t test_pbio(gras_socket_t sock, int direction) {
   xbt_error_t errcode;
-  pbio_t i,j;
   int cpt;
   int cpt2;
   gras_datadesc_type_t pbio_type;
@@ -453,64 +453,64 @@ xbt_error_t test_pbio(gras_socket_t sock, int direction) {
   pbio_type = gras_datadesc_by_symbol(s_pbio);
 
   /* Fill in that damn struct */
-  i.Cnstatv = 325115;
+  pbio_i.Cnstatv = 325115;
   for (cpt=0; cpt<12; cpt++) 
-    i.Cstatev[cpt] = ((double) cpt) * -2361.11;
-  i.Cnprops = -37373;
+    pbio_i.Cstatev[cpt] = ((double) cpt) * -2361.11;
+  pbio_i.Cnprops = -37373;
   for (cpt=0; cpt<110; cpt++)
-    i.Cprops[cpt] = cpt * 100.0;
+    pbio_i.Cprops[cpt] = cpt * 100.0;
   for (cpt=0; cpt<4; cpt++)
-    i.Cndi[cpt] = cpt * 23262;
-  i.Cnshr = -4634;
-  i.Cnpt = 114142;
-  i.Cdtime = -11515.662;
-  i.Ctime[0] = 332523.226;
-  i.Ctime[1] = -26216.113;
-  i.Cntens = 235211411;
+    pbio_i.Cndi[cpt] = cpt * 23262;
+  pbio_i.Cnshr = -4634;
+  pbio_i.Cnpt = 114142;
+  pbio_i.Cdtime = -11515.662;
+  pbio_i.Ctime[0] = 332523.226;
+  pbio_i.Ctime[1] = -26216.113;
+  pbio_i.Cntens = 235211411;
   
   for (cpt=0; cpt<3; cpt++) {
     for (cpt2=0; cpt2<373; cpt2++)
-      i.Cdfgrd0[cpt2][cpt] = ((double)cpt) * ((double)cpt2);
+      pbio_i.Cdfgrd0[cpt2][cpt] = ((double)cpt) * ((double)cpt2);
     for (cpt2=0; cpt2<3; cpt2++)
-      i.Cdfgrd1[cpt][cpt2] = -((double)cpt) * ((double)cpt2);
+      pbio_i.Cdfgrd1[cpt][cpt2] = -((double)cpt) * ((double)cpt2);
   }
   for (cpt=0; cpt<106; cpt++) {
-    i.Cstress[cpt]=(double)cpt * 22.113;
+    pbio_i.Cstress[cpt]=(double)cpt * 22.113;
     for (cpt2=0; cpt2<106; cpt2++) 
-      i.Cddsdde[cpt][cpt2] = ((double)cpt) * ((double)cpt2);
+      pbio_i.Cddsdde[cpt][cpt2] = ((double)cpt) * ((double)cpt2);
   }
   TRY(write_read(gras_datadesc_by_symbol(s_pbio),
-		 &i,&j, sock,direction));
+		 &pbio_i,&pbio_j, sock,direction));
   if (direction == READ || direction == RW) {
     /* Check that the data match */
-    xbt_assert(i.Cnstatv == j.Cnstatv);
+    xbt_assert(pbio_i.Cnstatv == pbio_j.Cnstatv);
     for (cpt=0; cpt<12; cpt++)
-      xbt_assert4(i.Cstatev[cpt] == j.Cstatev[cpt],
+      xbt_assert4(pbio_i.Cstatev[cpt] == pbio_j.Cstatev[cpt],
 		  "i.Cstatev[%d] (=%f) != j.Cstatev[%d] (=%f)",
-		  cpt,i.Cstatev[cpt],cpt,j.Cstatev[cpt]);
-    xbt_assert(i.Cnprops == j.Cnprops);
+		  cpt,pbio_i.Cstatev[cpt],cpt,pbio_j.Cstatev[cpt]);
+    xbt_assert(pbio_i.Cnprops == pbio_j.Cnprops);
     for (cpt=0; cpt<110; cpt++)
-      xbt_assert(i.Cprops[cpt] == j.Cprops[cpt]);
+      xbt_assert(pbio_i.Cprops[cpt] == pbio_j.Cprops[cpt]);
     for (cpt=0; cpt<4; cpt++) 
-      xbt_assert(i.Cndi[cpt] == j.Cndi[cpt]);
-    xbt_assert(i.Cnshr == j.Cnshr);
-    xbt_assert(i.Cnpt == j.Cnpt);
-    xbt_assert(i.Cdtime == j.Cdtime);
-    xbt_assert(i.Ctime[0] == j.Ctime[0]);
-    xbt_assert(i.Ctime[1] == j.Ctime[1]);
-    xbt_assert(i.Cntens == j.Cntens);
+      xbt_assert(pbio_i.Cndi[cpt] == pbio_j.Cndi[cpt]);
+    xbt_assert(pbio_i.Cnshr == pbio_j.Cnshr);
+    xbt_assert(pbio_i.Cnpt == pbio_j.Cnpt);
+    xbt_assert(pbio_i.Cdtime == pbio_j.Cdtime);
+    xbt_assert(pbio_i.Ctime[0] == pbio_j.Ctime[0]);
+    xbt_assert(pbio_i.Ctime[1] == pbio_j.Ctime[1]);
+    xbt_assert(pbio_i.Cntens == pbio_j.Cntens);
     for (cpt=0; cpt<3; cpt++) {
       for (cpt2=0; cpt2<373; cpt2++)
-	xbt_assert(i.Cdfgrd0[cpt2][cpt] == j.Cdfgrd0[cpt2][cpt]);
+	xbt_assert(pbio_i.Cdfgrd0[cpt2][cpt] == pbio_j.Cdfgrd0[cpt2][cpt]);
       for (cpt2=0; cpt2<3; cpt2++)
-	xbt_assert(i.Cdfgrd1[cpt][cpt2] == j.Cdfgrd1[cpt][cpt2]);
+	xbt_assert(pbio_i.Cdfgrd1[cpt][cpt2] == pbio_j.Cdfgrd1[cpt][cpt2]);
     }
     for (cpt=0; cpt<106; cpt++) {
-      xbt_assert(i.Cstress[cpt] == j.Cstress[cpt]);
+      xbt_assert(pbio_i.Cstress[cpt] == pbio_j.Cstress[cpt]);
       for (cpt2=0; cpt2<106; cpt2++) 
-	xbt_assert4(i.Cddsdde[cpt][cpt2] == j.Cddsdde[cpt][cpt2],
+	xbt_assert4(pbio_i.Cddsdde[cpt][cpt2] == pbio_j.Cddsdde[cpt][cpt2],
 		     "%f=i.Cddsdde[%d][%d] != j.Cddsdde[cpt][cpt2]=%f",
-		     i.Cddsdde[cpt][cpt2],cpt,cpt2,j.Cddsdde[cpt][cpt2]);
+		     pbio_i.Cddsdde[cpt][cpt2],cpt,cpt2,pbio_j.Cddsdde[cpt][cpt2]);
     }
   }
 
