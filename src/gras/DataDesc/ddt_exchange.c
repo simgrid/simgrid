@@ -9,6 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "DataDesc/datadesc_private.h"
+#include "Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(exchange,datadesc);
 
@@ -19,14 +20,14 @@ const char *gras_datadesc_cat_names[9] = {
 
 static gras_datadesc_type_t *int_type = NULL;
 static gras_datadesc_type_t *pointer_type = NULL;    
-static gras_error_t gras_dd_send_int(gras_socket_t *sock,             int  i);
-static gras_error_t gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i);
+static inline gras_error_t gras_dd_send_int(gras_socket_t *sock,             int  i);
+static inline gras_error_t gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i);
 
-static gras_error_t
+static inline gras_error_t
 gras_dd_alloc_ref(gras_dict_t *refs,  long int     size,
 		  char       **r_ref, long int     r_len,
 		  char	     **l_ref);
-static int 
+static inline int 
 gras_dd_is_r_null(char **r_ptr, long int length);
 
 static gras_error_t 
@@ -47,7 +48,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       int                   subsize);
 
 
-static gras_error_t
+static inline gras_error_t
 gras_dd_send_int(gras_socket_t *sock,int i) {
 
   if (!int_type) {
@@ -59,7 +60,7 @@ gras_dd_send_int(gras_socket_t *sock,int i) {
   return gras_trp_chunk_send(sock, (char*)&i, int_type->size[GRAS_THISARCH]);
 }
 
-static gras_error_t
+static inline gras_error_t
 gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
   gras_error_t errcode;
 
@@ -88,7 +89,7 @@ gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
  *       of 'length' bytes set to 0.
  * FIXME: Check in configure?
  */
-static int 
+static inline int 
 gras_dd_is_r_null(char **r_ptr, long int length) {
   int i;
 
@@ -101,7 +102,7 @@ gras_dd_is_r_null(char **r_ptr, long int length) {
   return 1;
 }
 
-static gras_error_t
+static inline gras_error_t
 gras_dd_alloc_ref(gras_dict_t *refs,
 		  long int     size,
 		  char       **r_ref,
