@@ -80,6 +80,8 @@ typedef struct {
    int port;
 } xbt_host_t;
 
+const char *xbt_procname(void);
+
 END_DECL()
 
 #endif /* XBT_MISC_H */

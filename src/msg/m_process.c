@@ -318,7 +318,7 @@ int MSG_process_self_PPID(void)
  */
 m_process_t MSG_process_self(void)
 {
-  return msg_global->current_process;
+  return msg_global ? msg_global->current_process : NULL;
 }
 
 /** \ingroup m_process_management
@@ -481,4 +481,13 @@ int __MSG_process_isBlocked(m_process_t process)
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
 
   return (process->simdata->blocked);
+}
+
+
+const char* xbt_procname(void) {
+  m_process_t process = MSG_process_self();
+  if ((process != NULL) && (process->simdata))
+    return MSG_process_get_name(process);
+  else
+    return "";
 }

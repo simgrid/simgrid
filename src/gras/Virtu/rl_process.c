@@ -15,6 +15,7 @@ XBT_LOG_DEFAULT_CATEGORY(process);
 
 /* globals */
 static gras_procdata_t *_gras_procdata = NULL;
+char const *_gras_procname = NULL;
 
 xbt_error_t gras_process_init() {
   _gras_procdata=xbt_new(gras_procdata_t,1);
@@ -25,6 +26,10 @@ xbt_error_t gras_process_exit() {
   gras_procdata_exit();
   free(_gras_procdata);
   return no_error;
+}
+
+const char *xbt_procname(void) {
+   return _gras_procname;
 }
 
 /* **************************************************************************
