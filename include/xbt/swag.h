@@ -11,6 +11,8 @@
 /* Whenever a new object with this struct is created, all fields have
    to be set to NULL */
 
+#include "xbt/sysdep.h"
+
 typedef struct xbt_swag_hookup {
   void *next;
   void *prev;

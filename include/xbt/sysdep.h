@@ -84,5 +84,6 @@ double strtod(const char *nptr, char **endptr);
 int atoi(const char *nptr);
 
 END_DECL   
+#include "xbt/error.h" /* needed for xbt_die */
 
 #endif /* _XBT_SYSDEP_H */
