@@ -62,6 +62,7 @@ void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
   for (i = 0; i < var->cnsts_number; i++) {
     elem = &var->cnsts[i];
     xbt_swag_remove(elem, &(elem->constraint->element_set));
+    xbt_swag_remove(elem, &(elem->constraint->active_element_set));
     if (!xbt_swag_size(&(elem->constraint->element_set)))
       make_constraint_inactive(sys, elem->constraint);
   }
@@ -72,7 +73,7 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 {
 
   lmm_variable_disable(sys, var);
-
+  memset(var->cnsts,0,var->cnsts_size*sizeof(s_lmm_element_t));
   xbt_free(var->cnsts);
   xbt_free(var);
 }
@@ -274,7 +275,7 @@ void lmm_solve(lmm_system_t sys)
       if(elem->variable->weight <=0) break;
       if ((elem->value > 0)) {
 	cnst->usage += elem->value / elem->variable->weight;
-	insert_active_elem_in_constraint(elem);
+	make_elem_active(elem);
       }
     }
 
@@ -312,7 +313,7 @@ void lmm_solve(lmm_system_t sys)
 	cnst = elem->constraint;
 	cnst->remaining -= elem->value * var->value;
 	cnst->usage -= elem->value / var->weight;
-	remove_active_elem_in_constraint(elem);
+	make_elem_inactive(elem);
       }
       xbt_swag_remove(var, var_list);
     }
