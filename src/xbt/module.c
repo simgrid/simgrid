@@ -59,7 +59,6 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
       argv[j-1] = NULL;
       (*argc)--;
       i--; /* compensate effect of next loop incrementation */
-      WARN1("argc %d",*argc);
     }
   }
   if (!found && defaultlog) {
