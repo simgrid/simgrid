@@ -395,16 +395,11 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = @top_srcdir@/include/ \
+                         @top_srcdir@/include/surf \
+                         @top_srcdir@/include/msg \
+                         @top_srcdir@/include/xbt \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
-                         @top_srcdir@/src/msg/deployment.c \
-                         @top_srcdir@/src/msg/environment.c \
-                         @top_srcdir@/src/msg/global.c \
-                         @top_srcdir@/src/msg/gos.c \
-                         @top_srcdir@/src/msg/host.c \
-                         @top_srcdir@/src/msg/m_process.c \
-                         @top_srcdir@/src/msg/private.h \
-                         @top_srcdir@/src/msg/task.c \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/src/modules.doc \
                          ./api_index.doc
@@ -445,7 +440,7 @@ EXCLUDE_PATTERNS       =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = 
+EXAMPLE_PATH           = @top_srcdir@/src/surf/ @top_srcdir@/examples/msg/
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -898,13 +893,13 @@ ENABLE_PREPROCESSING   = YES
 # compilation will be performed. Macro expansion can be done in a controlled 
 # way by setting EXPAND_ONLY_PREDEF to YES.
 
-MACRO_EXPANSION        = NO
+MACRO_EXPANSION        = YES
 
 # If the EXPAND_ONLY_PREDEF and MACRO_EXPANSION tags are both set to YES 
 # then the macro expansion is limited to the macros specified with the 
 # PREDEFINED and EXPAND_AS_PREDEFINED tags.
 
-EXPAND_ONLY_PREDEF     = NO
+EXPAND_ONLY_PREDEF     = YES
 
 # If the SEARCH_INCLUDES tag is set to YES (the default) the includes files 
 # in the INCLUDE_PATH (see below) will be search if a #include is found.
@@ -930,7 +925,7 @@ INCLUDE_FILE_PATTERNS  =
 # or name=definition (no spaces). If the definition and the = are 
 # omitted =1 is assumed.
 
-PREDEFINED             = HAVE_GRIDML=1
+PREDEFINED             = 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then 
 # this tag can be used to specify a list of macro names that should be expanded. 
