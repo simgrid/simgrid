@@ -15,6 +15,9 @@ nobase_include_HEADERS = \
 	surf/trace_mgr.h \
 	surf/surf.h \
 	\
+	msg/msg.h \
+	msg/datatypes.h \
+	\
 	gras/core.h \
 	gras/datadesc.h gras/transport.h \
 	gras/virtu.h gras/cond.h gras/process.h \
