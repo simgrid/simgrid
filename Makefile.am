@@ -94,7 +94,7 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	   machine2=`echo $$site |sed 's/^\([^%]*\)%\(.*\)$$/\2/'`;\
 	   cmd="\"sh -c 'env REMOTE_PREFIX=$(REMOTE_PREFIX) $(REMOTE_PREFIX)/src/compile-remote-worker $(ACTION) 2>&1'\"";\
 	   if echo $$site | grep  '%' >/dev/null ; then \
-	     echo "----[ Compile on $$machine2 (behide $$machine) ]----";\
+	     echo "----[ Compile on $$machine2 (behind $$machine) ]----";\
 	   else \
 	     machine=$$site;\
 	     echo "----[ Compile on $$machine ]----";\
