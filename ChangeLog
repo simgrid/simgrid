@@ -1,6 +1,30 @@
-SimGrid (2.94-cvs) unstable; urgency=low
+SimGrid (2.94-cvs) UNRELEASED
 
-  * 
+----
+TODO
+----
+
+- Faire descendre gras de msg?
+- Compilation de data_send/recv?
+Je pense que c'est plutot post SG3, tout ca.
+
+Plutot finaliser ce qui est commencé et finir le Grand Nettoyage:
+  - virer le test msg soit de examples/ soit de testsuite/
+  - déplacer les exemples msg pour faire une seule passe doxygen
+  - regarder ce qu'on peut couper de la xbt
+  - diffusion "pull" dans graspe
+  - certains tests n'utilisent pas les loggeries, et/ou sont trop bavards
+
+----
+DONE
+----
+
+  [Martin]
+  * Cleanups in configury with regard to compile optimization/warning flags.
+    Also add -fno-loop-optimize to any powerpc since it's the optimization
+    killing gcc (< 3.4.0).
+  * Bugfix: XBT_LOG_NEW_DEFAULT_CATEGORY now compiles without compiler
+    warning (thanks loris for stumbling into this one).
 
  --
 
