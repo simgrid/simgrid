@@ -19,9 +19,7 @@ xbt_set_t _gras_msgtype_set = NULL;
 static char GRAS_header[6];
 static char *make_namev(const char *name, short int ver);
 
-/**
- * gras_msg_init:
- *
+/*
  * Initialize this submodule.
  */
 void gras_msg_init(void) {
@@ -38,20 +36,16 @@ void gras_msg_init(void) {
   GRAS_header[5]=(char)GRAS_THISARCH;
 }
 
-/**
- * gras_msg_exit:
- *
+/*
  * Finalize the msg module
- **/
+ */
 void
 gras_msg_exit(void) {
   VERB0("Exiting Msg");
   xbt_set_free(&_gras_msgtype_set);
 }
 
-/**
- * gras_msgtype_free:
- *
+/*
  * Reclamed memory
  */
 void gras_msgtype_free(void *t) {
@@ -83,11 +77,8 @@ static char *make_namev(const char *name, short int ver) {
 }
 
 /**
- * gras_msgtype_declare:
- * @name: name as it should be used for logging messages (must be uniq)
- * @payload: datadescription of the payload
- *
- * Registers a message to the GRAS mecanism.
+ * @param name: name as it should be used for logging messages (must be uniq)
+ * @param payload: datadescription of the payload
  */
 void gras_msgtype_declare(const char           *name,
 			  gras_datadesc_type_t  payload) {
@@ -95,10 +86,9 @@ void gras_msgtype_declare(const char           *name,
 }
 
 /**
- * gras_msgtype_declare_v:
- * @name: name as it should be used for logging messages (must be uniq)
- * @version: something like versionning symbol
- * @payload: datadescription of the payload
+ * @param name: name as it should be used for logging messages (must be uniq)
+ * @param version: something like versionning symbol
+ * @param payload: datadescription of the payload
  *
  * Registers a message to the GRAS mecanism. Use this version instead of 
  * gras_msgtype_declare when you change the semantic or syntax of a message and
@@ -143,18 +133,14 @@ gras_msgtype_declare_v(const char           *name,
 	       &gras_msgtype_free);
 }
 
-/**
- * gras_msgtype_by_name:
- *
- * Retrieve a datatype description from its name
+/*
+ * Retrieve a msgtype description from its name
  */
 gras_msgtype_t gras_msgtype_by_name (const char *name) {
   return gras_msgtype_by_namev(name,0);
 }
-/**
- * gras_msgtype_by_namev:
- *
- * Retrieve a datatype description from its name and version
+/*
+ * Retrieve a msgtype description from its name and version
  */
 gras_msgtype_t gras_msgtype_by_namev(const char      *name,
 				     short int        version) {
@@ -175,9 +161,7 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
   return res;
 }
 
-/**
- * gras_msg_send:
- *
+/*
  * Send the given message on the given socket 
  */
 xbt_error_t
@@ -207,9 +191,7 @@ gras_msg_send(gras_socket_t   sock,
 
   return no_error;
 }
-/**
- * gras_msg_recv:
- *
+/*
  * receive the next message on the given socket.  
  */
 xbt_error_t
@@ -263,12 +245,11 @@ gras_msg_recv(gras_socket_t    sock,
 }
 
 /**
- * gras_msg_wait:
- * @timeout: How long should we wait for this message.
- * @id: id of awaited msg
- * @Returns: the error code (or no_error).
- *
- * Waits for a message to come in over a given socket.
+ * @param timeout: How long should we wait for this message.
+ * @param msgt_want: type of awaited msg
+ * @param[out] expeditor: where to create a socket to answer the incomming message
+ * @param[out] payload: where to write the payload of the incomming message
+ * @return the error code (or no_error).
  *
  * Every message of another type received before the one waited will be queued
  * and used by subsequent call to this function or MsgHandle().
@@ -337,12 +318,11 @@ gras_msg_wait(double           timeout,
 }
 
 /**
- * gras_msg_handle:
- * @timeOut: How long to wait for incoming messages
- * @Returns: the error code (or no_error).
+ * @param timeOut: How long to wait for incoming messages
+ * @return the error code (or no_error).
  *
- * Waits up to #timeOut# seconds to see if a message comes in; if so, calls the
- * registered listener for that message (see RegisterCallback()).
+ * Waits up to \a timeOut seconds to see if a message comes in; if so, calls the
+ * registered listener for that message (see \ref gras_cb_register()).
  */
 xbt_error_t 
 gras_msg_handle(double timeOut) {

@@ -14,26 +14,24 @@
 
 BEGIN_DECL()
 
-/**
- * gras_os_time:
- * @Returns: number of second since the Epoch.
- * (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
- * 
- * Get the current time.
+/** @addtogroup GRAS_virtu  
+ *  @brief System call abstraction layer (Virtualization).
+ *  @{
+ */
+
+/** @brief Get the current time
+ *  @return number of second since the Epoch.
+ *  (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
  */
 double gras_os_time(void);
 
-/**
- * gras_os_sleep:
- * @Param1: number of seconds to sleep
- * @Param2: number of microseconds to sleep
- * 
- * sleeps for the given amount of time.
+/** @brief sleeps for the given amount of time.
+ *  @param sec: number of seconds to sleep
+ *  @param usec: number of microseconds to sleep
  */
 void gras_os_sleep(unsigned long sec, unsigned long usec);
 
-/**
- * gras_get_my_fqdn:
+/** @brief get the fully-qualified name of the current host
  *
  * Returns the fully-qualified name of the host machine, or NULL if the name
  * cannot be determined.  Always returns the same value, so multiple calls
@@ -42,6 +40,7 @@ void gras_os_sleep(unsigned long sec, unsigned long usec);
 const char *
 gras_get_my_fqdn(void);
 
+/** @} */
 END_DECL()
 
 #endif /* GRAS_VIRTU_H */

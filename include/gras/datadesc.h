@@ -14,7 +14,7 @@
 
 BEGIN_DECL()
 
-/** @defgroup GRAS_dd Data description
+/** @addtogroup GRAS_dd Data description
  *  @brief Describing data to be exchanged (Communication facility)
  *
  * @section Overview
@@ -33,9 +33,9 @@ BEGIN_DECL()
  *   - d) Callback Persistant State: Simple push/pop mecanism
  *   - e) Callback Persistant State: Full featured mecanism
  */
-  
+/*@{*/
+
 /** @name a) basic operations
- *  @ingroup GRAS_dd
  *
  * If you only want to send pre-existing types, simply retrieve the pre-defined description with 
  * the \ref gras_datadesc_by_name function. Existing types entail:
@@ -59,7 +59,6 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 /* @} */
     
 /** @name b) Automatic parsing
- *  @ingroup GRAS_dd
  * 
  *  If you need to declare a new datatype, this is the simplest way to describe it to GRAS. Simply
  *  enclose its type definition  into a \ref GRAS_DEFINE_TYPE macro call, and you're set. Here is 
@@ -132,7 +131,6 @@ gras_datadesc_type_t
 gras_datadesc_parse(const char *name, const char *C_statement);
 
 /** @name c) Simple manual definitions
- *  @ingroup GRAS_dd
  * 
  * Here are the functions to use if you want to declare your description manually. 
  * The function names should be self-explanatory in most cases.
@@ -273,7 +271,6 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 /*@}*/
 
 /** @name d) Callback Persistant State: Simple push/pop mecanism
- *  @ingroup GRAS_dd
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
  * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
@@ -311,7 +308,6 @@ void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 /*@}*/
 
 /** @name e) Callback Persistant State: Full featured mecanism
- *  @ingroup GRAS_dd
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mecanism
  * introduced in previous section isn't enough, you can always use this full featured one.
@@ -346,6 +342,7 @@ void
 gras_cbps_block_end(gras_cbps_t ps);
 
 /* @} */
+/*@}*/
 
 
 /*******************************

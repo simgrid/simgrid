@@ -62,6 +62,8 @@
       MSG was the first distributed programming environment provided within
       SimGrid. While almost realistic, it remains quite simple (simplistic?).
 
+      \section MSG_who Who should use this (and who shouldn't)
+      
       You should use this model if you want to study some heuristics for a
       given problem you don't really want to implement. If you want to get a
       real implementation of your solution, have a look at the \ref GRAS_API 
@@ -104,6 +106,8 @@
     encompassing both developer helping tools (the simulator and associated
     tools) and an efficient while portable execution runtime.
   
+    \section GRAS_who Who should use this (and who shouldn't)
+    
     You should use this programming environment if you want to develop real
     applications, ie if the final result of your work is a program which 
     may eventually be distributed. 
@@ -116,42 +120,42 @@
     consider implementing your own directly on top of \ref SURF_API (but you
     probably want to contact us before).
   
-    The user visibile features tend to offer several kind of functionnalities:
+    \section GRAS_funct Offered functionnalities
      - <b>Communication facilities</b>: Exchanging messages between peers
+       - \ref GRAS_dd: any data which may transit on the network must be
+         described beforehand so that GRAS can handle the platform
+         heterogeneity and convert them if needed.
+       - \ref GRAS_sock: this is how to open a communication channel to
+         other processes, and retrive information about them.
+       - \ref GRAS_msg: communications are message oriented. You have to
+         describe all possible messages and their payload beforehand, and
+         can then attach callbacks to the arrival of a given kind of message. 
      - <b>Virtualization</b>: Running both on top of the simulator and on
        top of real platforms, and portability support.
+       - \ref GRAS_globals: The use of globals is forbidden since the
+         "processes" are threads in simulation mode. \n
+	 This is how to let GRAS handle your globals properly.
+       - \ref GRAS_cond: How to declare specific code for the simulation mode
+          or for the real mode.
+       - \ref GRAS_virtu: You naturally don't want to call the
+          gettimeofday(2) function in simulation mode since it would give
+          you the time on the host running the simulation, not the time in
+          the simulated world (you are belonging to).\n
+	  This a system call virtualization layer, which also acts as a
+          portability layer.
+	  
+    @{
 */     
-/**    \addtogroup GRAS_implem
-       \ingroup GRAS_API
-       
-       Internals of GRAS (forget it) */
-/**    \addtogroup GRAS_dd
-       \ingroup GRAS_API */
-/**    \addtogroup GRAS_dd_implem 
-       \ingroup GRAS_implem */
-/**    \defgroup GRAS_sock   Sockets
-       \ingroup GRAS_API
-       \brief Open/close sockets, and get info on peer (Communication facility). */
-/**    \defgroup GRAS_msg    Messages
-       \ingroup GRAS_API
-       \brief Defining messages and callbacks, and sending/receiving messages (Communication facility).
-                                 */
-/**    \defgroup GRAS_globals Globals
-       \ingroup GRAS_API
-       \brief Handling global variables so that it works on simulator (Virtualization).
-     
-       In GRAS, using globals is forbidden since the "processes" will
-       sometimes run as a thread inside the same process (namely, in
-       simulation mode). So, you have to put all globals in a structure, and
-       let GRAS handle it.
-       
-       Use the \ref gras_userdata_new macro to create a new user data (or malloc it
-       and use \ref gras_userdata_set yourself), and \ref gras_userdata_get to
-       retrive a reference to it. */
 
-/**    \defgroup GRAS_virtu Syscalls
-       \ingroup GRAS_API
-       \brief System call abstraction layer (Virtualization). */
+       /** \defgroup GRAS_dd      Data description      */       
+       /** \defgroup GRAS_sock    Sockets               */           
+       /** \defgroup GRAS_msg     Messages              */               
+	 
+       /** \defgroup GRAS_globals Globals               */ 
+       /** \defgroup GRAS_cond    Conditional execution */ 
+       /** \defgroup GRAS_virtu   Syscalls              */ 
+
+/** @} */ 
 
 /** \defgroup SMPI_API      SMPI
     \ingroup SimGrid_API
@@ -161,6 +165,8 @@
     within the simulator any MPI application without having to modify them
     for that. In other words, it will constitute an emulation solution for
     parallel codes.
+    
+    \section SMPI_who Who should use this (and who shouldn't)
     
     You should use this programming environment of the SimGrid suite if you
     want to study existing MPI applications.

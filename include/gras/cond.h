@@ -15,19 +15,22 @@
 
 BEGIN_DECL()
 
-/**
- * gras_if_RL:
+/** @addtogroup GRAS_cond
+ *  @brief Handling code specific to the simulation or to the reality (Virtualization).
  * 
- * Returns true only if the program runs on real life
+ *  Please note that those are real functions and not pre-processor defines. This is to ensure
+ *  that the same object code can be linked against the SG library or the RL one without recompilation.
+ * 
+ *  @{
  */
+  
+/** \brief Returns true only if the program runs on real life */
 int gras_if_RL(void);
 
-/**
- * gras_if_SG:
- * 
- * Returns true only if the program runs within the simulator
- */
+/** \brief Returns true only if the program runs within the simulator */
 int gras_if_SG(void);
+
+/** @} */
 
 END_DECL()
 

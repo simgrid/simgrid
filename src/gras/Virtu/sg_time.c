@@ -9,21 +9,14 @@
 
 #include "gras/Virtu/virtu_sg.h"
 
-/**
- * gras_time:
- * @Returns: The current time
- * 
- * The epoch since when the time is given is not specified. It is thus only usefull to compute intervals
+/* 
+ * Time elapsed since the begining of the simulation.
  */
 double gras_os_time() {
   return MSG_getClock();
 }
 
-/**
- * gras_sleep:
- * @sec: amount of sec to sleep
- * @usec: amount of micro second to sleep
- * 
+/*
  * Freeze the process for the specified amount of time
  */
 void gras_os_sleep(unsigned long sec,unsigned long usec) {
