@@ -25,25 +25,25 @@ gras_error_t gras_dict_new(gras_dict_t **dict);
 void         gras_dict_free(gras_dict_t **dict);
 
 
-gras_error_t gras_dict_insert    (gras_dict_t    *head,
-				  const char     *key,
-				  void           *data,
-			          void_f_pvoid_t *free_ctn);
-gras_error_t gras_dict_insert_ext(gras_dict_t    *head,
-                                  const char     *key,
-                                  int             key_len,
-                                  void           *data,
-				  void_f_pvoid_t *free_ctn);
+gras_error_t gras_dict_set    (gras_dict_t    *head,
+			       const char     *key,
+			       void           *data,
+			       void_f_pvoid_t *free_ctn);
+gras_error_t gras_dict_set_ext(gras_dict_t    *head,
+			       const char     *key,
+			       int             key_len,
+			       void           *data,
+			       void_f_pvoid_t *free_ctn);
 
-/*----[ gras_dict_retrieve ]-------------------------------------------------*/
+/*----[ gras_dict_get ]------------------------------------------------------*/
 /* Search the given #key#. data=NULL when not found.                         */
 /* Returns true if anything went ok, and false on internal error.            */
 /*---------------------------------------------------------------------------*/
-gras_error_t gras_dict_retrieve(gras_dict_t *head,const char *key,
-		       /* OUT */void **data);
-gras_error_t gras_dict_retrieve_ext(gras_dict_t *head,const char *key,
-                                    int key_len,
-                                    /* OUT */void **data);
+gras_error_t gras_dict_get(gras_dict_t *head,const char *key,
+			   /* OUT */void **data);
+gras_error_t gras_dict_get_ext(gras_dict_t *head,const char *key,
+			       int key_len,
+			       /* OUT */void **data);
 /*----[ gras_dict_remove ]---------------------------------------------------*/
 /* Remove the entry associated with the given #key#.                         */
 /* Returns if ok. Removing a non-existant key is ok.                         */
@@ -77,30 +77,30 @@ void gras_dict_prints(void *data);
 /* This function does not exist. Use gras_dict_free instead.                 */
 /*---------------------------------------------------------------------------*/
 
-/*----[ gras_multidict_insert ]----------------------------------------------*/
+/*----[ gras_multidict_set ]-------------------------------------------------*/
 /* Insert the data in the structure under the #keycount# #key#s.             */
 /* The key are destroyed in the process. Think to strdup it before.          */
 /* Returns if it was ok or not                                               */
 /*---------------------------------------------------------------------------*/
-gras_error_t gras_multidict_insert(gras_dict_t **head,
-				   int keycount,char **key,
-				   void *data,void (*free_ctn)(void*));
+gras_error_t gras_multidict_set(gras_dict_t **head,
+				int keycount,char **key,
+				void *data,void (*free_ctn)(void*));
 
-gras_error_t gras_multidict_insert_ext(gras_dict_t **head,
-                                       int keycount,char **key,int *key_len,
-                                       void *data,void_f_pvoid_t *free_ctn);
+gras_error_t gras_multidict_set_ext(gras_dict_t **head,
+				    int keycount,char **key,int *key_len,
+				    void *data,void_f_pvoid_t *free_ctn);
 
-/*----[ gras_multidict_retrieve ]--------------------------------------------*/
+/*----[ gras_multidict_get ]-------------------------------------------------*/
 /* Search the given #key#. data=NULL when not found.                         */
 /* Returns true if anything went ok, and false on internal error.            */
 /*---------------------------------------------------------------------------*/
-gras_error_t gras_multidict_retrieve(gras_dict_t *head,
-				     int keycount,const char **key,
-				     /* OUT */void **data);
+gras_error_t gras_multidict_get(gras_dict_t *head,
+				int keycount,const char **key,
+				/* OUT */void **data);
 
-gras_error_t gras_multidict_retrieve_ext(gras_dict_t *head,
-                                         int keycount,const char **key,int *key_len,
-                                         /* OUT */void **data);
+gras_error_t gras_multidict_get_ext(gras_dict_t *head,
+				    int keycount,const char **key,int *key_len,
+				    /* OUT */void **data);
 
 /*----[ gras_multidict_remove ]----------------------------------------------*/
 /* Remove the entry associated with the given #key#.                         */
