@@ -26,6 +26,10 @@ extern int char_pos;
 extern int tok_num;
 
 e_surf_token_t surf_parse(void);
+void find_section(const char* file, const char* section_name);
+void close_section(const char* section_name);
+
+/* Should not be called if you use the previous "section" functions */
 void  surf_parse_open(const char *file);
 void  surf_parse_close(void);
 

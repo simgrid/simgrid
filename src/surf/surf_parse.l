@@ -140,6 +140,46 @@ e_surf_token_t surf_parse(void) {
   return(tok_num);
 }
 
+void find_section(const char* file, const char* section_name)
+{
+  e_surf_token_t token;
+  int found = 0;
+
+  surf_parse_open(file);
+
+  while((token=surf_parse())) {
+    if(token!=TOKEN_BEGIN_SECTION) continue;
+
+    token=surf_parse();
+    xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+    if(strcmp(surf_parse_text,section_name)==0) found=1;
+
+    token=surf_parse();
+    xbt_assert1((token==TOKEN_CLOSURE),"Parse error line %d",line_pos);
+
+    if(found) return;
+  }
+
+  CRITICAL2("Could not find %s section in %s\n",section_name,file);
+  xbt_abort();
+}
+
+void close_section(const char* section_name)
+{
+  e_surf_token_t token;
+
+  token=surf_parse();
+  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+  xbt_assert1((strcmp(surf_parse_text,section_name)==0), 
+	      "Closing section does not match the opening one (%s).", 
+	      section_name);
+  
+  token=surf_parse();
+  xbt_assert1((token==TOKEN_CLOSURE),"Parse error line %d",line_pos);
+
+  surf_parse_close();
+}
+
 void  surf_parse_open(const char *file) {
   file_to_parse = fopen(file,"r");
   xbt_assert1((file_to_parse), "Unable to open \"%s\"\n",file)
@@ -159,6 +199,7 @@ void  surf_parse_close(void) {
   char_pos = 0;
   tok_num = 0;
 }
+
 
 /*  Local variables: */
 /*  mode: c */

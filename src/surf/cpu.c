@@ -54,45 +54,6 @@ static void *cpu_new(const char *name, xbt_maxmin_float_t power_scale,
   return cpu;
 }
 
-static void find_section(const char* file, const char* section_name)
-{
-  e_surf_token_t token;
-  int found = 0;
-
-  surf_parse_open(file);
-
-  while((token=surf_parse())) {
-    if(token!=TOKEN_BEGIN_SECTION) continue;
-
-    token=surf_parse();
-    xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
-    if(strcmp(surf_parse_text,section_name)==0) found=1;
-
-    token=surf_parse();
-    xbt_assert1((token==TOKEN_CLOSURE),"Parse error line %d",line_pos);
-
-    if(found) return;
-  }
-
-  CRITICAL2("Could not find %s section in %s\n",section_name,file);
-}
-
-static void close_section(const char* section_name)
-{
-  e_surf_token_t token;
-
-  token=surf_parse();
-  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
-  xbt_assert1((strcmp(surf_parse_text,"CPU")==0), 
-	      "Closing section does not match the opening one (%s).", 
-	      section_name);
-  
-  token=surf_parse();
-  xbt_assert1((token==TOKEN_CLOSURE),"Parse error line %d",line_pos);
-
-  surf_parse_close();
-}
-
 /*  
    Semantic:  name       scale     initial     power     initial     state
                                     power      trace      state      trace
@@ -132,8 +93,11 @@ static void parse_host(void)
   xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
   if(strcmp(surf_parse_text,"ON")==0) initial_state = SURF_CPU_ON;
   else if(strcmp(surf_parse_text,"OFF")==0) initial_state = SURF_CPU_OFF;
-  else CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n",line_pos, 
-		 surf_parse_text);
+  else {
+    CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n",line_pos, 
+	      surf_parse_text);
+    xbt_abort();
+  }
 
   token=surf_parse(); /* state_trace */
   xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
@@ -156,7 +120,10 @@ static void parse_file(const char *file)
     if(token==TOKEN_NEWLINE) continue;
     
     if(token==TOKEN_WORD) parse_host();
-    else CRITICAL1("Parse error line %d\n",line_pos);
+    else {
+      CRITICAL1("Parse error line %d\n",line_pos);
+      xbt_abort();
+    }
   }
 
   close_section("CPU");  
@@ -281,7 +248,7 @@ static void update_resource_state(void *id,
   } else if (event_type==cpu->state_event) {
     if(value>0) cpu->current_state = SURF_CPU_ON;
     else cpu->current_state = SURF_CPU_OFF;
-  } else abort();
+  } else {CRITICAL0("Unknown event ! \n");xbt_abort();}
 
   return;
 }
