@@ -134,3 +134,11 @@ const char* xbt_procname(void) {
   else
     return "";
 }
+
+int gras_process_getpid(void) {
+  m_process_t process = MSG_process_self();
+  if ((process != NULL) && (process->simdata))
+    return MSG_process_get_PID(MSG_process_self());
+  else
+    return 0;
+}

@@ -9,6 +9,7 @@
 
 #include "gras_modinter.h" /* module initialization interface */
 #include "gras/Virtu/virtu_rl.h"
+#include "portable.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(process);
 XBT_LOG_DEFAULT_CATEGORY(process);
@@ -31,6 +32,10 @@ xbt_error_t gras_process_exit() {
 const char *xbt_procname(void) {
   if(_gras_procname) return _gras_procname;
   else return "(null)";
+}
+
+int gras_process_getpid(void) {
+  return getpid();
 }
 
 /* **************************************************************************

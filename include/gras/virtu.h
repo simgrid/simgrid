@@ -39,6 +39,13 @@ void gras_os_sleep(double sec);
 const char *
 gras_os_myname(void);
 
+/** @brief get process identification
+ *
+ * Returns the process ID of the current process.  (This is often used
+   by routines that generate unique temporary file names.)
+ */
+int gras_process_getpid(void);
+
 /** @} */
 END_DECL()
 
