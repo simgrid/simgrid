@@ -90,7 +90,7 @@ gras_socket_client_from_file(const char*path,
   (*dst)->plugin=trp;
 
   if (strcmp("-", path)) {
-    (*dst)->sd = open(path, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP );
+    (*dst)->sd = open(path, O_WRONLY|O_CREAT | O_BINARY, S_IRUSR|S_IWUSR|S_IRGRP );
     
     if ( (*dst)->sd < 0) {
       RAISE2(system_error,
@@ -134,7 +134,7 @@ gras_socket_server_from_file(const char*path,
 
 
   if (strcmp("-", path)) {
-    (*dst)->sd = open(path, O_RDONLY );
+    (*dst)->sd = open(path, O_RDONLY | O_BINARY);
 
     if ( (*dst)->sd < 0) {
       RAISE2(system_error,
