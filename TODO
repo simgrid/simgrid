@@ -6,38 +6,45 @@
 [sorry for the parts in french :]
 
 ###
-### Avant 0.5
+### Very soon
 ###
 
 - tcp->incoming_socks
   sock specific tcp (buffsize) inutile
 
 ###
-### Avant 1.0
+### Soon
 ###
 
 - gras_os_getload
 
-- gras_datadesc_import_nws
+- gras_datadesc_import_nws?
 
 - rawsock
-  Verifier que les messages vont pas sur des sock raw
+  Check that messages don't go on raw socks
+  Rename to meassock or whatever to show that they're not intended for 
+  out of band communication, but for socket operation measurements.
 
-- gras_datadesc_cpy -> donne la taille prise pour donner un poids aux messages
+- Implement gras_datadesc_cpy to speedup things in the simulator
+  For now, we mimick closely the RL when on simulator, which is not needed.
+  (this was easier to do).
+  gras_datadesc_cpy needs to provide the size of the corresponding messages, so
+  that we can report it into the simulator.
 
-- callback en reception ?? (remettre les pointeurs sur fonction etc)
+- callback on reception ?? (to put functions pointer back in place, etc)
 
-- Virer cat ignored
-  gras_ddt_new_ignored : Pas portable (taille) => virer cat?
-  Necessaire aux pointeurs sur fonction? Renomer 'void'
+- category "ignored" should be dropped, since it's not portable (what's its 
+  size on remote site?). But function's pointer may benefit from it.
+  We could change it to an attribute just as the "cycle"  one. That way, it 
+  would get malloced, but not transfered.
 
 ###
-### Apres
+### A bit later
 ### 
 
 - Adaptative timeout
-- datadesc_set_cste: Donne la valeur par defaut en reception
-  plus de transfert, ce qui est utile pour les pointeurs sur fct
+- datadesc_set_cste: give the value by default when receiving. 
+  It's not transfered anymore, which is good for functions pointer.
 
 ============================================================================
 
@@ -52,6 +59,8 @@
 [autoconf]
   Check in autoconf that no datatype is bigger than 64, or dynar_map will
     get into trouble...
+  Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
+    but versions above 3.4.0 should be ok.
 
 [portability layer]
   Dynar of type, such as ref of type
@@ -60,7 +69,7 @@
 [Messaging]
   Message forwarding
   Message priority
-  Message declarations in a tree manner
+  Message declarations in a tree manner (such as log channels)
   
 [errors]
   Better split casual errors from programing errors.
@@ -172,45 +181,42 @@
       selects sur un pool {leur socket x un pipe fait pour}
       Quand qqch arrive sur le pipe, c'est le signal du suicide.
       
-[Conversions inter-architectures]
+[Inter-arch conversions]
  Convert in the same buffer when size increase
- Exchange structures in one shoot.
+ Exchange (on net) structures in one shoot when possible.
  Port to really exotic platforms (Cray is not IEEE ;)
 
 [XML]
- Do what is written in the paper
+ Do what is written in the paper (multiplex on incoming HTTP)
 
-[Macro parseuse]
- Gerer les typedefs (necessite de l'aide de grassouillet)
- Gerer les unions => specifier des annotations
- Gerer les enum
- Gerer les long long
- Gerer les types struct, union et enum anonymes au milieu d'un autre bloc de
-  donnees.
- Verifier que "char"="signed char" sur toutes les archis
+[DataDesc and Parsing macro]
+ Handle typedefs (needs love from DataDesc/)
+ Handle unions with annotate
+ Handle enum
+ Handle long long and long double
+ Forbid "char", allow "signed char" and "unsigned char", or user code won't be
+   portable to ARM, at least.
+ Handle struct/union/enum embeeded within another container 
+   (needs modifications in DataDesc, too)
  
- Renomer gs_parse_tok_num en gs_parse_token
  Check short a, b;
  Check short ***
  Check struct { struct { int a } b; }
  
-[Grassouillet]
- Gerer les typedefs pour aliaser un type sur un autre
- Merger gs_type_union_append_field et gs_type_struc_append_field si possible.
+ Factorise code in union/struct field adding
  
-[Autres]
- Faire toutes les modifs aux Utils listees plus haut
- Simplifier l'envoi de dynar et dico
- Mettre les mutex et semaphores dans les dynar directement
+[Other]
+ Allow [homogeneous] dynar and dico to be sent
+ Make GRAS thread safe by mutexing what needs to be
  
 
 ************
 * La suite *
 ************
 GRAS double (ou encore "GRAS too" ou "too GRAS"):
- - Priorite des messages
- - Outils de visu pour ce qui se passe dans le simulo
- - Outils de visu/deployement/management pour RL
+ - Message prioritization
+ - Visualisation tool to see what happens in the simulator (Paje ?)
+ - Tool to visualize/deploy and manage in RL
    
 GRAS (très):
  - outils mathematiques pour dire des choses sur la validite du protocole
