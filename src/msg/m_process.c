@@ -31,6 +31,10 @@ static void MSG_process_cleanup(void *arg)
 
   PAJE_PROCESS_FREE(arg);
 
+  while(((m_process_t)arg)->simdata->paje_state) {
+    PAJE_PROCESS_POP_STATE((m_process_t)arg);
+  }
+
   xbt_fifo_remove(msg_global->process_list, arg);
   xbt_fifo_remove(msg_global->process_to_run, arg);
   xbt_fifo_remove(((m_process_t) arg)->simdata->host->simdata->process_list, arg);
