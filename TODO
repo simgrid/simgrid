@@ -52,7 +52,6 @@
 
 [portability layer]
   Dynar of type, such as ref of type
-  Generate convertors in assembler ?
   Mallocators
   
 [Messaging]
@@ -84,6 +83,9 @@
 [datadesc]
   Error handling in cbps
   Regression tests of cbps
+
+[testsuite]
+  use logging, not printf
 
 *********
 * GRAS1 * Integrer grassouillet a gras; multiplexage XML; module de comm
@@ -172,15 +174,13 @@
  Convert in the same buffer when size increase
  Exchange structures in one shoot.
  Port to really exotic platforms (Cray is not IEEE ;)
- Generate the convertion functions in assembly, since we have a plenty of
-   time to waste.
 
 [XML]
  Do what is written in the paper
 
 [Macro parseuse]
  Gerer les typedefs (necessite de l'aide de grassouillet)
- Gerer les unions => specifier des annotations, mais j'y crois pas
+ Gerer les unions => specifier des annotations
  Gerer les enum
  Gerer les long long
  Gerer les types struct, union et enum anonymes au milieu d'un autre bloc de
@@ -200,7 +200,6 @@
  Faire toutes les modifs aux Utils listees plus haut
  Simplifier l'envoi de dynar et dico
  Mettre les mutex et semaphores dans les dynar directement
- Tenter (politiquement) le passage a GPL, pour voler du code.
  
 
 ************
