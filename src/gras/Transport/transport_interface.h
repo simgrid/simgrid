@@ -72,7 +72,7 @@ struct gras_trp_plugin_ {
   void          *data; /* plugin-specific data */
  
    /* exit is responsible for freeing data and telling the OS this plugin goes */
-   /* if it's NULL, data gets freed. (ie exit needed only when data contains pointers) */
+   /* exit=NULL, data gets freed. (ie exit function needed only when data contains pointers) */
   void         (*exit)(gras_trp_plugin_t *);
 };
 
