@@ -25,18 +25,17 @@ typedef struct {
   /* registered callbacks for each message */
   gras_dynar_t *cbl_list; /* elm type: gras_cblist_t */
    
-
-  /* The channel we are listening to in SG for formated messages */
-  int chan;
-  gras_socket_t *sock; /* the corresponding socket (SG only) */
-   
-  /* The channel we are listening to in SG for raw send/recv */
-  int rawChan; 
-  gras_socket_t *rawSock;/* the corresponding socket (SG only) */
+  /* SG only elements. In RL, they are part of the OS ;) */
+  int chan;    /* Formated messages channel */
+  int rawChan; /* Unformated echange channel */
+  gras_dynar_t *sockets; /* all sockets known to this process */
 
   /* globals of the process */
   void *userdata;               
 } gras_procdata_t;
+
+/* Access */
+gras_dynar_t * gras_socketset_get(void);
 
 /* FIXME: mv to _private? */
 gras_procdata_t *gras_procdata_get(void);

@@ -35,6 +35,7 @@ gras_procdata_init() {
   pd->userdata = NULL;
   TRY(gras_dynar_new(  &(pd->msg_queue), sizeof(gras_msg_t),      NULL  ));
   TRY(gras_dynar_new(  &(pd->cbl_list),  sizeof(gras_cblist_t *), NULL  ));
+  TRY(gras_dynar_new(  &(pd->sockets),   sizeof(gras_socket_t*),  NULL));
   return no_error;
 }
 
@@ -44,5 +45,10 @@ gras_procdata_exit() {
 
   gras_dynar_free(pd->msg_queue);
   gras_dynar_free(pd->cbl_list);
+  gras_dynar_free(pd->sockets);
 }
 
+gras_dynar_t *
+gras_socketset_get(void) {
+   return gras_procdata_get()->sockets;
+}
