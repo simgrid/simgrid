@@ -116,13 +116,10 @@ int server (int argc,char *argv[]) {
 	gras_socket_my_port(g->sock));
   g->endcondition=0;
 
-  while (1) {
-    errcode = gras_msg_handle(10.0);
-    if (errcode != no_error && errcode != timeout_error) 
-      return errcode;
-    if (g->endcondition)
-      break;
-  }
+  errcode = gras_msg_handle(600.0);
+  if (errcode != no_error)
+    return errcode;
+  if (g->endcondition)
   
   if (!gras_if_RL())
     gras_sleep(5,0);
