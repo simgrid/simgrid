@@ -404,7 +404,7 @@ INPUT                  = ../include/ \
                          ../src/msg/task.c \
                          ../src/xbt/ \
                          ../src/modules.doc \
-                         ../src/api_index.doc
+                         ../doc/api_index.doc
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
