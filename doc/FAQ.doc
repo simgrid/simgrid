@@ -150,28 +150,11 @@ MSG_examples.
 
 \subsection faq_generic Building a generic simulator
 
-Please read carefully the \ref MSG_examples.
-
-   \li Start by reading \ref masterslave1.c. It is the most
-       complicated example since all the platform and all the
-       deployment are done directly in the code. 
-
-   \li As you may notice, building a big platform with functions like
-       MSG_host_create() and MSG_link_create() is quite boring. That
-       is why it is possible to import a complex platform with
-       MSG_create_environment(). Have a look at \ref masterslave2.c
-       and look at the differences with the previous version.
-
-   \li Now, deploying your application on an extern platform is not
-       really convenient either. Having an external way of specifying
-       which agents should be run on which machine would be much more
-       convenient. That is why MSG_launch_application() has been
-       designed for. Have a look at \ref masterslave3.c and look at
-       the differences with the previous versions. Much more clean and
-       simple, isnt'it ? In fact, all the complexity of the deployment
-       that was in the test_all function of \ref masterslave1.c has
-       been moved to more generic functions : unix_emitter() and
-       unix_receiver(). 
+Please read carefully the \ref MSG_examples. You'll find in \ref
+msg_test.c a very simple consisting of a master (that owns a bunch of
+tasks and distributes them) , some slaves (that process tasks whenever
+they receive one) and some forwarder agents (that simply pass the
+tasks they receive to some slaves).
 
 \subsection faq_examples I want some more complex examples !
 
