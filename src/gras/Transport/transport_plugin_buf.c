@@ -73,10 +73,12 @@ gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
   if (!data)
     RAISE_MALLOC;
   data->in.size  = 0;
-  data->in.data  = NULL;
+  if (!(data->in.data = malloc(data->buffsize)))
+    RAISE_MALLOC;
   data->in.pos   = 0; /* useless, indeed, since size==pos */
   data->out.size = 0;
-  data->out.data = NULL;
+  if (!(data->out.data = malloc(data->buffsize)))
+    RAISE_MALLOC;
   data->out.pos  = 0;
   //  data->buffsize = 32 * 1024 - 4; /* default socket buffsize (32k) - headers */ 
   data->buffsize = 100 * 1024 ; /* 100k */ 
@@ -196,9 +198,6 @@ gras_trp_buf_chunk_send(gras_socket_t *sock,
   /* Let underneath plugin check for direction, we work even in duplex */
   gras_assert0(size >= 0, "Cannot send a negative amount of data");
 
-  if (!data->out.data && !(data->out.data = malloc(data->buffsize)))
-    RAISE_MALLOC;
-
   while (chunk_pos < size) {
     /* size of the chunck to receive in that shot */
     long int thissize = min(size-chunk_pos,data->buffsize - data->out.size);
@@ -242,8 +241,6 @@ gras_trp_buf_chunk_recv(gras_socket_t *sock,
   gras_assert0(size >= 0, "Cannot receive a negative amount of data");
   
   GRAS_IN;
-  if (!data->in.data && !(data->in.data = malloc(data->buffsize)))
-    RAISE_MALLOC;
 
   while (chunck_pos < size) {
     /* size of the chunck to receive in that shot */
