@@ -68,7 +68,7 @@ gras_trp_select(double timeout,
       /* Socket to expeditor not created yet */
       DEBUG0("Create a socket to the expeditor");
 
-      TRY(gras_trp_plugin_get_by_name("sg",&trp));
+      TRY(gras_trp_plugin_get_by_name("buf",&trp));
 
       TRY(gras_trp_socket_new(1,dst));
       (*dst)->plugin   = trp;
@@ -87,6 +87,7 @@ gras_trp_select(double timeout,
       sockdata->to_PID   = r_pid;
       sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));
       (*dst)->data = sockdata;
+      gras_trp_buf_init_sock(*dst);
 
       (*dst)->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
 
