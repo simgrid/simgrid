@@ -1,5 +1,37 @@
+2004-07-11 Martin Quinson
+  version 0.0.4
+  - Get it working with any kind of structure (we can compute the padding
+    bytes remotely for all the architectures I have access to)
+  - Implement the structure parsing macro (still not quite robust/complete)
+  - Improvement to the remote testing toysuite
+  
+2004-07-10 Martin Quinson
+ [autoconf mecanism]
+  - get ride of a bunch of deprecated macros
+  - actually run the test for two-compliment, not only compile it :-/
+  - test whether the structures get packed (and bail out if yes. Damn.
+    Alignment is a serious matter)
+  - test whether the structures get compacted (but respecting the alignment
+    constraints of each types)
+  - test whether the array fields of structures can straddle alignment boundaries
+ [base]
+  - Damnit, double are bigger than float (typo in creation of 'double' datadesc)
+    (took me 2 hours to find that bug, looking at the wrong place)
+  - Add gras_datadesc_declare_{union,struct}_close(). They must be used
+    before sending/receiving and are used to compute the offsets of fields
+  - Given that padding size depend even on compiler options, keep track of
+    alignment and aligned_size only for the current architecture. Not a big
+    deal since we send structure fields one after the other (seems
+    reasonable).    
+  - Add the datastructure used for IEEE paper by the PBIO guys to the test
+    program, let it work on linux/gcc/little32. portability todo.
+
+2004-07-08 Martin Quinson
+  - import and improve remote compilation support from FAST
+  - make sure make check works on half a dozen of machines out there
+
 2004-07-07 Martin Quinson
- Let's say it's version 0.0.2 ;)
+ Let's say it's version 0.0.3 ;)
   - Implement conversions (yuhu!)
   - Let it work on solaris (beside conversion, of course)
   - Stupid me, using rand() to generate the conversion datatests in not wise.
