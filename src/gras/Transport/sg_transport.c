@@ -128,17 +128,20 @@ gras_trp_select(double timeout,
 
       return no_error;
     } else {
-      /*
-      DEBUG2("Select on %s@%s did not find anything yet",
+ 
+      DEBUG5("Select on %s@%s did not find anything yet at %f (waited %f of %f sec)",
 	     MSG_process_get_name(MSG_process_self()),
-	     MSG_host_get_name(MSG_host_self()));
-      */
+	     MSG_host_get_name(MSG_host_self()),
+	     gras_os_time(),
+	     gras_os_time()-startTime , timeout);
+ 
       /* MSG_process_sleep(1); */
       MSG_process_sleep(0.001);
     }
   } while (gras_os_time()-startTime < timeout
 	   || MSG_task_Iprobe((m_channel_t) pd->chan));
 
+  DEBUG0("TIMEOUT");
   return timeout_error;
 
 }
