@@ -174,7 +174,11 @@ by the compiler. By setting it to gras_log_priority_infinite, all logging
 requests are statically disabled and cost nothing. Released executables
 might be compiled with
 \verbatim-DXBT_LOG_STATIC_THRESHOLD=gras_log_priority_infinite\endverbatim
-    
+
+Compiling with the \verbatim-DNLOG\endverbatim option disables all logging 
+requests at compilation time while the \verbatim-DNDEBUG\endverbatim disables 
+the requests of priority below INFO.
+ 
 <h3>Appenders</h3>
 
 Each category has an optional appender. An appender is a pointer to a
@@ -201,13 +205,11 @@ welcome here.
 
 <h3>Misc and Caveats</h3>
 
-Do not use any of the macros that start with '_'.
-
-Log4J has a 'rolling file appender' which you can select with a run-time
-option and specify the max file size. This would be a nice default for
-non-kernel applications.
-
-Careful, category names are global variables.
+  - Do not use any of the macros that start with '_'.
+  - Log4J has a 'rolling file appender' which you can select with a run-time
+    option and specify the max file size. This would be a nice default for
+    non-kernel applications.
+  - Careful, category names are global variables.
 
 */
 
@@ -351,7 +353,7 @@ void xbt_log_init(int *argc,char **argv, const char *defaultlog) {
   char *opt;
   int found=0;
 
-  /** Set logs and init log submodule */
+  /* Set logs and init log submodule */
   for (i=1; i<*argc; i++) {
     if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
 	!strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
