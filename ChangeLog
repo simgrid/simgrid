@@ -1,4 +1,7 @@
-  Version 0.7 (protocol not changed; API changed)
+Version 0.7 (protocol not changed; API changed)
+2004-09-16 Martin Quinson
+  - Fix some size_t madness on 64bit architectures.
+  
 2004-09-08 Martin Quinson
   - Reduce the number of system headers loaded, overload some more system
     calls (such as malloc to cast the result of the system one, and work
