@@ -114,8 +114,9 @@ xlc )
   am_opt=--include-deps;;
 esac
 
-for coin in  `find $srcdir -name configure.ac -print `\
-             `find $srcdir -name configure.in -print`
+#for coin in  `find $srcdir -name configure.ac -print `\
+#             `find $srcdir -name configure.in -print`
+for coin in  `ls $srcdir/configure.ac $srcdir/configure.in 2>/dev/null`
 do 
   dr=`dirname $coin`
   if test -f $dr/NO-AUTO-GEN; then
@@ -144,7 +145,10 @@ do
     if grep "^AM_CONFIG_HEADER" $configfile >/dev/null; then
       echo "Running autoheader in "`pwd`"..."
       autoheader || exit 1
-    fi
+    else if grep "^AC_CONFIG_HEADERS" $configfile >/dev/null; then
+      echo "Running autoheader in "`pwd`"..."
+      autoheader || exit 1
+    fi fi
     if grep "^AM_INIT_AUTOMAKE" $configfile >/dev/null; then
       echo "Running automake-$amver --gnu --add-missing $am_opt ..."
       automake-$amver --gnu --add-missing $am_opt || exit 1
