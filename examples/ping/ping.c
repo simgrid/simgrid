@@ -69,8 +69,7 @@ int server_cb_ping_handler(gras_socket_t        *expeditor,
 	gras_socket_peer_port(expeditor));
   
   msg = 4321;
-  TRY(gras_msgtype_by_name("pong",&pong_t));
-  errcode = gras_msg_send(expeditor, pong_t, &msg);
+  errcode = gras_msg_send(expeditor, gras_msgtype_by_name("pong"), &msg);
 
   if (errcode != no_error) {
     ERROR1("SERVER: Unable answer with PONG: %s\n", gras_error_name(errcode));
@@ -108,8 +107,7 @@ int server (int argc,char *argv[]) {
 
   TRYFAIL(register_messages());
   TRYFAIL(register_messages());
-  TRYFAIL(gras_msgtype_by_name("ping",&ping_msg));
-  TRYFAIL(gras_cb_register(ping_msg,&server_cb_ping_handler));
+  TRYFAIL(gras_cb_register(gras_msgtype_by_name("ping"),&server_cb_ping_handler));
 
   INFO1("SERVER: >>>>>>>> Listening on port %d <<<<<<<<",
 	gras_socket_my_port(g->sock));
@@ -147,7 +145,6 @@ int client(int argc,char *argv[]) {
 
   gras_socket_t  *from;
   int ping, pong;
-  gras_msgtype_t *msg_ping_type=NULL, *msg_pong_type=NULL;
 
   const char *host = "127.0.0.1";
         int   port = 4000;
@@ -171,14 +168,12 @@ int client(int argc,char *argv[]) {
 
 
   TRY(register_messages());
-  TRY(gras_msgtype_by_name("ping",&msg_ping_type));
-  TRY(gras_msgtype_by_name("pong",&msg_pong_type));
 
   INFO2("Client: >>>>>>>> Connected to server which is on %s:%d <<<<<<<<", 
 	gras_socket_peer_name(g->sock),gras_socket_peer_port(g->sock));
 
   ping = 1234;
-  errcode = gras_msg_send(g->sock, msg_ping_type, &ping);
+  errcode = gras_msg_send(g->sock, gras_msgtype_by_name("ping"), &ping);
   if (errcode != no_error) {
     fprintf(stderr, "Client: Unable send PING to server (%s)\n",
 	    gras_error_name(errcode));
@@ -189,8 +184,8 @@ int client(int argc,char *argv[]) {
 	ping,
 	gras_socket_peer_name(g->sock),gras_socket_peer_port(g->sock));
 
-  if ((errcode=gras_msg_wait(6000,
-			     msg_pong_type,&from,&pong))) {
+  if ((errcode=gras_msg_wait(6000,gras_msgtype_by_name("pong"),
+			     &from,&pong))) {
     ERROR1("Client: Why can't I get my PONG message like everyone else (%s)?",
 	   gras_error_name(errcode));
     gras_socket_close(g->sock);
