@@ -16,18 +16,18 @@
 GRAS_LOG_EXTERNAL_CATEGORY(dict);
 GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
-static void fill(gras_dict_t **head);
-static void debuged_add(gras_dict_t *head,const char*key);
-static gras_error_t search(gras_dict_t *head,const char*key);
-static gras_error_t debuged_remove(gras_dict_t *head,const char*key);
-static gras_error_t traverse(gras_dict_t *head);
+static void fill(gras_dict_t *head);
+static void debuged_add(gras_dict_t head,const char*key);
+static gras_error_t search(gras_dict_t head,const char*key);
+static gras_error_t debuged_remove(gras_dict_t head,const char*key);
+static gras_error_t traverse(gras_dict_t head);
 
 static void print_str(void *str);
 static void print_str(void *str) {
   printf("%s",(char*)str);
 }
 
-static void fill(gras_dict_t **head) {
+static void fill(gras_dict_t *head) {
   printf("\n Fill in the dictionnary\n");
 
   *head = gras_dict_new();
@@ -43,19 +43,19 @@ static void fill(gras_dict_t **head) {
 
 }
 
-static void debuged_add(gras_dict_t *head,const char*key)
+static void debuged_add(gras_dict_t head,const char*key)
 {
   char *data=gras_strdup(key);
 
   printf("   - Add %s\n",key);
-  gras_dict_set(head,key,data,&gras_free);
+  gras_dict_set(head,key,data,&free);
   if (GRAS_LOG_ISENABLED(dict,gras_log_priority_debug)) {
     gras_dict_dump(head,(void (*)(void*))&printf);
     fflush(stdout);
   }
 }
 
-static gras_error_t search(gras_dict_t *head,const char*key) {
+static gras_error_t search(gras_dict_t head,const char*key) {
   void *data;
   gras_error_t errcode;
 
@@ -67,7 +67,7 @@ static gras_error_t search(gras_dict_t *head,const char*key) {
   return errcode;
 }
 
-static gras_error_t debuged_remove(gras_dict_t *head,const char*key)
+static gras_error_t debuged_remove(gras_dict_t head,const char*key)
 {
   gras_error_t errcode;
 
@@ -78,8 +78,8 @@ static gras_error_t debuged_remove(gras_dict_t *head,const char*key)
 }
 
 
-static gras_error_t traverse(gras_dict_t *head) {
-  gras_dict_cursor_t *cursor=NULL;
+static gras_error_t traverse(gras_dict_t head) {
+  gras_dict_cursor_t cursor=NULL;
   char *key;
   char *data;
 
@@ -93,7 +93,7 @@ static gras_error_t traverse(gras_dict_t *head) {
 
 int main(int argc,char **argv) {
   gras_error_t errcode;
-  gras_dict_t *head=NULL;
+  gras_dict_t head=NULL;
   char *data;
 
   gras_init_defaultlog(&argc,argv,"dict.thresh=verbose");
@@ -104,22 +104,21 @@ int main(int argc,char **argv) {
   TRYFAIL(traverse(head));
 
   fill(&head);
-  printf(" Free the dictionnary\n");
+  printf(" Free the dictionnary (twice)\n");
   gras_dict_free(&head);
-  printf(" Free the dictionnary again\n");
   gras_dict_free(&head);
   
   fill(&head);
 
   printf(" - Change some values\n");
   printf("   - Change 123 to 'Changed 123'\n");
-  gras_dict_set(head,"123",strdup("Changed 123"),&gras_free);
+  gras_dict_set(head,"123",strdup("Changed 123"),&free);
   printf("   - Change 123 back to '123'\n");
-  gras_dict_set(head,"123",strdup("123"),&gras_free);
+  gras_dict_set(head,"123",strdup("123"),&free);
   printf("   - Change 12a to 'Dummy 12a'\n");
-  gras_dict_set(head,"12a",strdup("Dummy 12a"),&gras_free);
+  gras_dict_set(head,"12a",strdup("Dummy 12a"),&free);
   printf("   - Change 12a to '12a'\n");
-  gras_dict_set(head,"12a",strdup("12a"),&gras_free);
+  gras_dict_set(head,"12a",strdup("12a"),&free);
 
   /*  gras_dict_dump(head,(void (*)(void*))&printf); */
   printf(" - Traverse the resulting dictionnary\n");
@@ -146,7 +145,7 @@ int main(int argc,char **argv) {
 
   /*  gras_dict_dump(head,(void (*)(void*))&printf); */
 
-  printf(" Free the dictionnary (twice)\n");
+  printf(" Free the dictionnary twice\n");
   gras_dict_free(&head);
   gras_dict_free(&head);
 

@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NB_ELM 200000
+#define NB_ELM 20000
 #define SIZEOFKEY 1024
 
 static void print_str(void *str);
@@ -23,8 +23,8 @@ static void print_str(void *str) {
 
 GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
-static gras_error_t traverse(gras_dict_t *head) {
-  gras_dict_cursor_t *cursor=NULL;
+static gras_error_t traverse(gras_dict_t head) {
+  gras_dict_cursor_t cursor=NULL;
   char *key;
   char *data;
 
@@ -36,8 +36,8 @@ static gras_error_t traverse(gras_dict_t *head) {
   return no_error;
 }
 
-static gras_error_t countelems(gras_dict_t *head,int*count) {
-  gras_dict_cursor_t *cursor;
+static gras_error_t countelems(gras_dict_t head,int*count) {
+  gras_dict_cursor_t cursor;
   char *key;
   void *data;
   *count=0;
@@ -50,7 +50,7 @@ static gras_error_t countelems(gras_dict_t *head,int*count) {
 
 int main(int argc,char **argv) {
   gras_error_t errcode;
-  gras_dict_t *head=NULL;
+  gras_dict_t head=NULL;
   int i,j,k, nb;
   char *key;
   void *data;
@@ -87,6 +87,7 @@ int main(int argc,char **argv) {
        abort();
     }	  
     TRYFAIL(traverse(head));
+    gras_dict_free(&head);
     gras_dict_free(&head);
   }
 

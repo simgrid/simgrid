@@ -15,7 +15,7 @@
 /* GRAS_LOG_NEW_DEFAULT_CATEGORY(test); */
 
 int main(int argc,char *argv[]) {
-  gras_socket_t *sock;
+  gras_socket_t sock;
   gras_error_t errcode;
   char data_send[256];
 

@@ -7,7 +7,7 @@ tests_nb=0
 rm -f test.failed test.success test.ignored
 
 if [ xvalgrind = "x$1" ] ; then
-  valgrind="libtool --mode=execute valgrind"
+  valgrind="libtool --mode=execute valgrind --show-reachable=yes"
 else
   valgrind=
 fi

@@ -18,11 +18,11 @@ GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 void free_string(void *d);
 
 void free_string(void *d){
-  gras_free(*(void**)d);
+  free(*(void**)d);
 }
 
 int main(int argc,char *argv[]) {
-   gras_dynar_t *d;
+   gras_dynar_t d;
    gras_error_t errcode;
    int cpt;
    char buf[1024];
@@ -36,7 +36,8 @@ int main(int argc,char *argv[]) {
      gras_assert0(FALSE,
 		  "Damnit, there is something in the empty dynar");
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
    INFO1("==== Push %d strings, set them again 3 times, shift them",NB_ELEM);
    d=gras_dynar_new(sizeof(char*),&free_string);
@@ -66,9 +67,10 @@ int main(int argc,char *argv[]) {
      gras_assert2 (!strcmp(buf,s2),
 	    "The retrieved value is not the same than the injected one (%s!=%s)",
 		   buf,s2);
-     gras_free(s2);
+     free(s2);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
 
    INFO1("==== Unshift, traverse and pop %d strings",NB_ELEM);
@@ -90,9 +92,10 @@ int main(int argc,char *argv[]) {
      gras_assert2 (!strcmp(buf,s2),
            "The retrieved value is not the same than the injected one (%s!=%s)",
 	       buf,s2);
-     gras_free(s2);
+     free(s2);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
 
    INFO2("==== Push %d strings, insert %d strings in the middle, shift everything",NB_ELEM,NB_ELEM/5);
@@ -114,7 +117,7 @@ int main(int argc,char *argv[]) {
      gras_assert2(!strcmp(buf,s2),
            "The retrieved value is not the same than the injected one at the begining (%s!=%s)",
 	       buf,s2);
-      gras_free(s2);
+      free(s2);
    }
    for (cpt=(NB_ELEM/5)-1; cpt>=0; cpt--) {
      sprintf(buf,"%d",cpt);
@@ -122,7 +125,7 @@ int main(int argc,char *argv[]) {
      gras_assert2 (!strcmp(buf,s2),
            "The retrieved value is not the same than the injected one in the middle (%s!=%s)",
 	       buf,s2);
-     gras_free(s2);
+     free(s2);
    }
    for (cpt=NB_ELEM/2; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
@@ -130,9 +133,10 @@ int main(int argc,char *argv[]) {
      gras_assert2 (!strcmp(buf,s2),
            "The retrieved value is not the same than the injected one at the end (%s!=%s)",
 	       buf,s2);
-     gras_free(s2);
+     free(s2);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
 
    INFO3("==== Push %d strings, remove %d-%d. free the rest",NB_ELEM,2*(NB_ELEM/5),4*(NB_ELEM/5));
@@ -148,9 +152,10 @@ int main(int argc,char *argv[]) {
      gras_assert2(!strcmp(buf,s2),
 		  "Remove a bad value. Got %s, expected %s",
 		  s2,buf);
-      gras_free(s2);
+      free(s2);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
    gras_exit();
    return 0;

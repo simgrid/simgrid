@@ -27,11 +27,12 @@ print "GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic s
 print "#define READ  0\n#define WRITE 1\n#define RW    2\n\n";
   
 
-print "gras_error_t write_read(gras_datadesc_type_t *type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
+print "gras_error_t write_read(gras_datadesc_type_t type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
 
 my ($i,$j,$k,$l);
 my $max=scalar @types;
-for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) {my $l=0;
+my $maxl=0; # set it to "$max-1" to do 2401 tests (takes for ever to compile)
+for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl) {
     print "GRAS_DEFINE_TYPE(".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l].",".
       "struct ".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l]." { ".
         $types[$i]." a; ".
@@ -39,7 +40,7 @@ for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) {my $l=0;
         $types[$k]." c;".
         $types[$l]." d;".
       "};)\n";
-}}}
+}}}}
 
 # print "\n#define test(a) do {if (!(a)) { failed = 1; ERROR1(\"%s failed\",#a);}} while (0)\n";
  print "\n#define test(a) gras_assert(a)\n";
@@ -47,16 +48,16 @@ for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) {my $l=0;
 print "\ngras_error_t test_structures(gras_socket_t *sock, int direction);\n";
 print "\ngras_error_t test_structures(gras_socket_t *sock, int direction) {\n";
 print "  gras_error_t errcode;\n";
-for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) {my $l=0;
+for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  struct $struct my_$struct = {".$val[$i]."+(".$types[$i].")1,"
                                            .$val[$j]."+(".$types[$j].")2,"
                                            .$val[$k]."+(".$types[$k].")3,"
                                            .$val[$l]."+(".$types[$l].")4}, my_${struct}2;\n";
-}}}
+}}}}
 
-print "  INFO0(\"---- Test on all possible struct having 3 fields (".($max*$max*$max)." structs) ----\");\n";
-for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { my $l=0;
+print "  INFO0(\"---- Test on all possible struct having 3 fields (".($max*$max*$max*($maxl+1))." structs) ----\");\n";
+for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  TRY(write_read(gras_datadesc_by_symbol($struct), &my_$struct, &my_${struct}2, sock,direction));\n";
     print "  if (direction == READ || direction == RW) {\n";
@@ -67,7 +68,7 @@ for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { my $l=0;
     print "     test(my_$struct.d == my_${struct}2.d);\n";
     print "     if (!failed) VERB0(\"Passed $struct\");\n";
     print "  }\n";
-}}}
+}}}}
     print "  return no_error;\n";
     print "}\n";
-		  ;
+    ;

@@ -22,12 +22,12 @@ int r_arch;
 const char *filename = "datadesc_usage.out";  
 
 gras_error_t
-write_read(gras_datadesc_type_t *type,void *src, void *dst, 
-	   gras_socket_t *sock, int direction);
+write_read(gras_datadesc_type_t type,void *src, void *dst, 
+	   gras_socket_t sock, int direction);
 
 gras_error_t
-write_read(gras_datadesc_type_t *type,void *src, void *dst, 
-	   gras_socket_t *sock, int direction) {
+write_read(gras_datadesc_type_t type,void *src, void *dst, 
+	   gras_socket_t sock, int direction) {
   gras_error_t errcode;
    
   /* write */
@@ -51,28 +51,28 @@ write_read(gras_datadesc_type_t *type,void *src, void *dst,
   return no_error;
 }
 
-gras_error_t test_int(gras_socket_t *sock, int direction);
-gras_error_t test_float(gras_socket_t *sock, int direction);
-gras_error_t test_double(gras_socket_t *sock, int direction);
-gras_error_t test_array(gras_socket_t *sock, int direction);
-gras_error_t test_intref(gras_socket_t *sock, int direction);
-gras_error_t test_string(gras_socket_t *sock, int direction);
+gras_error_t test_int(gras_socket_t sock, int direction);
+gras_error_t test_float(gras_socket_t sock, int direction);
+gras_error_t test_double(gras_socket_t sock, int direction);
+gras_error_t test_array(gras_socket_t sock, int direction);
+gras_error_t test_intref(gras_socket_t sock, int direction);
+gras_error_t test_string(gras_socket_t sock, int direction);
 
-gras_error_t test_homostruct(gras_socket_t *sock, int direction);
-gras_error_t test_hetestruct(gras_socket_t *sock, int direction);
-gras_error_t test_nestedstruct(gras_socket_t *sock, int direction);
-gras_error_t test_chain_list(gras_socket_t *sock, int direction);
-gras_error_t test_graph(gras_socket_t *sock, int direction);
+gras_error_t test_homostruct(gras_socket_t sock, int direction);
+gras_error_t test_hetestruct(gras_socket_t sock, int direction);
+gras_error_t test_nestedstruct(gras_socket_t sock, int direction);
+gras_error_t test_chain_list(gras_socket_t sock, int direction);
+gras_error_t test_graph(gras_socket_t sock, int direction);
 
-gras_error_t test_pbio(gras_socket_t *sock, int direction);
-gras_error_t test_clause(gras_socket_t *sock, int direction);
+gras_error_t test_pbio(gras_socket_t sock, int direction);
+gras_error_t test_clause(gras_socket_t sock, int direction);
 
 /* defined in datadesc_structures.c, which in perl generated */
-gras_error_t test_structures(gras_socket_t *sock, int direction); 
+gras_error_t test_structures(gras_socket_t sock, int direction); 
 
 
 
-gras_error_t test_int(gras_socket_t *sock, int direction) {
+gras_error_t test_int(gras_socket_t sock, int direction) {
   gras_error_t errcode;
   int i=5,j;
   
@@ -83,7 +83,7 @@ gras_error_t test_int(gras_socket_t *sock, int direction) {
   }
   return no_error;
 }
-gras_error_t test_float(gras_socket_t *sock, int direction) {
+gras_error_t test_float(gras_socket_t sock, int direction) {
   gras_error_t errcode;
   float i=5.0,j;
   
@@ -94,7 +94,7 @@ gras_error_t test_float(gras_socket_t *sock, int direction) {
   }
   return no_error;
 }
-gras_error_t test_double(gras_socket_t *sock, int direction) {
+gras_error_t test_double(gras_socket_t sock, int direction) {
   gras_error_t errcode;
   double i=-3252355.1234,j;
   
@@ -108,9 +108,9 @@ gras_error_t test_double(gras_socket_t *sock, int direction) {
 
 #define SIZE 5
 typedef int array[SIZE];
-gras_error_t test_array(gras_socket_t *sock, int direction) {
+gras_error_t test_array(gras_socket_t sock, int direction) {
   gras_error_t errcode;
-  gras_datadesc_type_t *my_type;
+  gras_datadesc_type_t my_type;
   
   array i = { 35212,-6226,74337,11414,7733};
   array j;
@@ -132,9 +132,9 @@ gras_error_t test_array(gras_socket_t *sock, int direction) {
   }
   return no_error;
 }
-gras_error_t test_intref(gras_socket_t *sock, int direction) {
+gras_error_t test_intref(gras_socket_t sock, int direction) {
   gras_error_t errcode;
-  gras_datadesc_type_t *my_type;
+  gras_datadesc_type_t my_type;
   int *i,*j;
   
   i=gras_new(int,1);
@@ -147,16 +147,16 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     gras_assert(*i == *j);
-    gras_free(j);
+    free(j);
   }
-  gras_free(i);
+  free(i);
   return no_error;
 }
 
 /***
  *** string (dynamic array)
  ***/ 
-gras_error_t test_string(gras_socket_t *sock, int direction) {
+gras_error_t test_string(gras_socket_t sock, int direction) {
   gras_error_t errcode;
   char *i=gras_strdup("Some data"), *j=NULL;
   int cpt;
@@ -169,9 +169,9 @@ gras_error_t test_string(gras_socket_t *sock, int direction) {
       gras_assert4(i[cpt] == j[cpt],"i[%d]=%c  !=  j[%d]=%c",
 		   cpt,i[cpt],cpt,j[cpt]);
     } 
-    gras_free(j);
+    free(j);
   }
-  gras_free(i);
+  free(i);
   return no_error;
 }
 
@@ -182,9 +182,9 @@ gras_error_t test_string(gras_socket_t *sock, int direction) {
 typedef struct {
   int a,b,c,d;
 } homostruct;
-gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
+gras_error_t test_homostruct(gras_socket_t sock, int direction) {
   gras_error_t errcode;
-  gras_datadesc_type_t *my_type;
+  gras_datadesc_type_t my_type;
   homostruct *i, *j; 
 
   INFO0("---- Test on homogeneous structure ----");
@@ -209,13 +209,13 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
 
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
-    gras_assert(i->a == j->a);
+    gras_assert2(i->a == j->a,"i->a=%d != j->a=%d",i->a,j->a);
     gras_assert(i->b == j->b);
     gras_assert(i->c == j->c);
     gras_assert(i->d == j->d);
-    gras_free(j);
+    free(j);
   }
-  gras_free(i);
+  free(i);
   return no_error;
 }
 
@@ -228,9 +228,9 @@ typedef struct {
   unsigned char c2;
   unsigned long int l2;
 } hetestruct;
-gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
+gras_error_t test_hetestruct(gras_socket_t sock, int direction) {
   gras_error_t errcode;
-  gras_datadesc_type_t *my_type;
+  gras_datadesc_type_t my_type;
   hetestruct *i, *j; 
 
   INFO0("---- Test on heterogeneous structure ----");
@@ -259,9 +259,9 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
     gras_assert(i->c2 == j->c2);
     gras_assert2(i->l1 == j->l1,"i->l1(=%ld)  !=  j->l1(=%ld)",i->l1,j->l1);
     gras_assert(i->l2 == j->l2);
-    gras_free(j);
+    free(j);
   }
-  gras_free(i);
+  free(i);
   return no_error;
 }
 
@@ -272,9 +272,9 @@ typedef struct {
   hetestruct hete;
   homostruct homo;
 } nestedstruct;
-gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
+gras_error_t test_nestedstruct(gras_socket_t sock, int direction) {
   gras_error_t errcode;
-  gras_datadesc_type_t *my_type;
+  gras_datadesc_type_t my_type;
   nestedstruct *i, *j; 
 
   INFO0("---- Test on nested structures ----");
@@ -305,9 +305,9 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
     gras_assert(i->hete.c2 == j->hete.c2);
     gras_assert(i->hete.l1 == j->hete.l1);
     gras_assert(i->hete.l2 == j->hete.l2);
-    gras_free(j);
+    free(j);
   }
-  gras_free(i);
+  free(i);
   return no_error;
 }
 
@@ -326,7 +326,7 @@ int list_eq(chained_list_t*i,chained_list_t*j);
 
 gras_error_t declare_chained_list_type(void) {
   gras_error_t errcode;
-  gras_datadesc_type_t *my_type,*ref_my_type;
+  gras_datadesc_type_t my_type,ref_my_type;
 
   my_type=gras_datadesc_struct("chained_list_t");
   ref_my_type=gras_datadesc_ref("chained_list_t*",my_type);
@@ -349,7 +349,7 @@ chained_list_t * cons(int v, chained_list_t *l) {
 void list_free(chained_list_t*l) {
   if (l) {
     list_free(l->l);
-    gras_free(l);
+    free(l);
   }
 }
 int list_eq(chained_list_t*i,chained_list_t*j) {
@@ -358,7 +358,7 @@ int list_eq(chained_list_t*i,chained_list_t*j) {
     return 0;
   return list_eq(i->l, j->l); 
 }
-gras_error_t test_chain_list(gras_socket_t *sock, int direction) {
+gras_error_t test_chain_list(gras_socket_t sock, int direction) {
   gras_error_t errcode;
   chained_list_t *i, *j; 
 
@@ -382,7 +382,7 @@ gras_error_t test_chain_list(gras_socket_t *sock, int direction) {
 /***
  *** graph
  ***/
-gras_error_t test_graph(gras_socket_t *sock, int direction) {
+gras_error_t test_graph(gras_socket_t sock, int direction) {
   gras_error_t errcode;
   chained_list_t *i, *j; 
 
@@ -442,12 +442,12 @@ struct s_pbio{ /* structure presented in the IEEE article */
 		 )
 typedef struct s_pbio pbio_t;
 
-gras_error_t test_pbio(gras_socket_t *sock, int direction) {
+gras_error_t test_pbio(gras_socket_t sock, int direction) {
   gras_error_t errcode;
   pbio_t i,j;
   int cpt;
   int cpt2;
-  gras_datadesc_type_t *pbio_type;
+  gras_datadesc_type_t pbio_type;
 
   INFO0("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
   pbio_type = gras_datadesc_by_symbol(s_pbio);
@@ -522,9 +522,9 @@ struct s_clause {
 };)
 typedef struct s_clause Clause;
 
-gras_error_t test_clause(gras_socket_t *sock, int direction) {
+gras_error_t test_clause(gras_socket_t sock, int direction) {
   gras_error_t errcode;
-  gras_datadesc_type_t *ddt,*array_t;
+  gras_datadesc_type_t ddt,array_t;
   Clause *i,*j;
   int cpt;
   
@@ -552,17 +552,17 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
     for (cpt=0; cpt<i->num_lits; cpt++)
       gras_assert(i->literals[cpt] == j->literals[cpt]);
     
-    gras_free(j->literals);
-    gras_free(j);
+    free(j->literals);
+    free(j);
   }
-  gras_free(i->literals);
-  gras_free(i);
+  free(i->literals);
+  free(i);
   return no_error;
 }
 
 int main(int argc,char *argv[]) {
   gras_error_t errcode;
-  gras_socket_t *sock;
+  gras_socket_t sock;
   int direction = RW;
   int cpt;
   char r_arch_char = gras_arch_selfid();
@@ -602,7 +602,7 @@ int main(int argc,char *argv[]) {
   
   TRYFAIL(test_string(sock,direction)); 
 
-  TRYFAIL(test_structures(sock,direction));
+     TRYFAIL(test_structures(sock,direction));
 
   TRYFAIL(test_homostruct(sock,direction));
   TRYFAIL(test_hetestruct(sock,direction));

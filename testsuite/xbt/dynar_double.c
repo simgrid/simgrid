@@ -14,7 +14,7 @@
 GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
 int main(int argc,char *argv[]) {
-   gras_dynar_t *d;
+   gras_dynar_t d;
    gras_error_t errcode;
    int cpt,cursor;
    double d1,d2;
@@ -27,7 +27,8 @@ int main(int argc,char *argv[]) {
      gras_assert0(FALSE,
 	     "Damnit, there is something in the empty dynar");
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
    INFO0("==== Push/shift 5000 doubles");
    d=gras_dynar_new(sizeof(double),NULL);
@@ -48,7 +49,8 @@ int main(int argc,char *argv[]) {
            "The retrieved value is not the same than the injected one (%f!=%f)",
 		  d1,d2);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
 
    INFO0("==== Unshift/pop 5000 doubles");
@@ -64,7 +66,8 @@ int main(int argc,char *argv[]) {
            "The retrieved value is not the same than the injected one (%f!=%f)",
 		   d1,d2);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
 
 
@@ -101,7 +104,8 @@ int main(int argc,char *argv[]) {
            "The retrieved value is not the same than the injected one at the end (%f!=%f)",
 		   d1,d2);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
 
    INFO0("==== Push 5000 double, remove 2000-4000. free the rest");
@@ -117,7 +121,8 @@ int main(int argc,char *argv[]) {
            "Remove a bad value. Got %f, expected %f",
 	       d2,d1);
    }
-   gras_dynar_free(d);
+   gras_dynar_free(&d);
+   gras_dynar_free(&d);
 
    gras_exit();
    return 0;

@@ -24,36 +24,36 @@ typedef struct  {
 
   /* payload */
   char         *data;
-}my_elem_t;
+} s_my_elem_t,*my_elem_t;
 
-static void fill(gras_set_t **set);
-static void debuged_add(gras_set_t *set,const char*key);
-static void debuged_add_with_data(gras_set_t *set,
+static void fill(gras_set_t *set);
+static void debuged_add(gras_set_t set,const char*key);
+static void debuged_add_with_data(gras_set_t  set,
 				  const char *name,
 				  const char *data);
-static gras_error_t search_name(gras_set_t *set,const char*key);
-static gras_error_t search_id(gras_set_t *head,
+static gras_error_t search_name(gras_set_t set,const char*key);
+static gras_error_t search_id(gras_set_t head,
 			      int id,
 			      const char*expected_key);
-static gras_error_t traverse(gras_set_t *set);
+static gras_error_t traverse(gras_set_t set);
 
 static void my_elem_free(void *e) {
-  my_elem_t *elm=(my_elem_t*)e;
+  my_elem_t elm=(my_elem_t)e;
 
   if (elm) {
-    gras_free(elm->name);
-    gras_free(elm->data);
-    gras_free(elm);
+    free(elm->name);
+    free(elm->data);
+    free(elm);
   }
 }
 
-static void debuged_add_with_data(gras_set_t *set,
+static void debuged_add_with_data(gras_set_t  set,
 				  const char *name,
 				  const char *data) {
 
-  my_elem_t    *elm;
+  my_elem_t    elm;
 
-  elm = gras_new(my_elem_t,1);
+  elm = gras_new(s_my_elem_t,1);
   elm->name=gras_strdup(name);
   elm->name_len=0;
 
@@ -64,16 +64,16 @@ static void debuged_add_with_data(gras_set_t *set,
     printf("(->%s)",data);
   }
   printf("\n");
-  gras_set_add(set, (gras_set_elm_t*)elm,
+  gras_set_add(set, (gras_set_elm_t)elm,
 	       &my_elem_free);
 }
 
-static void debuged_add(gras_set_t *set,
+static void debuged_add(gras_set_t  set,
 			const char *name) {
   debuged_add_with_data(set, name, name);
 }
 
-static void fill(gras_set_t **set) {
+static void fill(gras_set_t *set) {
   printf("\n Fill in the data set\n");
 
   *set=gras_set_new();
@@ -88,11 +88,11 @@ static void fill(gras_set_t **set) {
   debuged_add(*set,"123457");
 }
 
-static gras_error_t search_name(gras_set_t *head,const char*key) {
+static gras_error_t search_name(gras_set_t head,const char*key) {
   gras_error_t    errcode;
-  my_elem_t      *elm;
+  my_elem_t       elm;
   
-  errcode=gras_set_get_by_name(head,key,(gras_set_elm_t**)&elm);
+  errcode=gras_set_get_by_name(head,key,(gras_set_elm_t*)&elm);
   printf("   - Search by name %s. Found %s (under ID %d)\n",
 	 key, 
 	 elm? elm->data:"(null)",
@@ -111,11 +111,11 @@ static gras_error_t search_name(gras_set_t *head,const char*key) {
   return errcode;
 }
 
-static gras_error_t search_id(gras_set_t *head,int id,const char*key) {
-  gras_error_t    errcode;
-  my_elem_t      *elm;
+static gras_error_t search_id(gras_set_t head,int id,const char*key) {
+  gras_error_t errcode;
+  my_elem_t    elm;
   
-  errcode=gras_set_get_by_id(head,id,(gras_set_elm_t**)&elm);
+  errcode=gras_set_get_by_id(head,id,(gras_set_elm_t*)&elm);
   printf("   - Search by id %d. Found %s (data %s)\n",
 	 id, 
 	 elm? elm->name:"(null)",
@@ -140,9 +140,9 @@ static gras_error_t search_id(gras_set_t *head,int id,const char*key) {
 }
 
 
-static gras_error_t traverse(gras_set_t *set) {
-  gras_set_cursor_t *cursor=NULL;
-  my_elem_t *elm=NULL;
+static gras_error_t traverse(gras_set_t set) {
+  gras_set_cursor_t cursor=NULL;
+  my_elem_t         elm=NULL;
 
   gras_set_foreach(set,cursor,elm) {
     gras_assert0(elm,"Dude ! Got a null elm during traversal!");
@@ -156,8 +156,8 @@ static gras_error_t traverse(gras_set_t *set) {
 
 int main(int argc,char **argv) {
   gras_error_t errcode;
-  gras_set_t *set=NULL;
-  my_elem_t *elm;
+  gras_set_t set=NULL;
+  my_elem_t  elm;
 
   gras_init_defaultlog(&argc,argv,"set.thresh=verbose");
    
@@ -189,15 +189,15 @@ int main(int argc,char **argv) {
   TRYFAIL(traverse(set));
 
   printf(" - Retrive values\n");
-  gras_set_get_by_name(set,"123",(gras_set_elm_t**)&elm);
+  gras_set_get_by_name(set,"123",(gras_set_elm_t*)&elm);
   assert(elm);
   TRYFAIL(strcmp("123",elm->data));
 
-  TRYEXPECT(gras_set_get_by_name(set,"Can't be found",(gras_set_elm_t**)&elm),
+  TRYEXPECT(gras_set_get_by_name(set,"Can't be found",(gras_set_elm_t*)&elm),
 	    mismatch_error);
-  TRYEXPECT(gras_set_get_by_name(set,"123 Can't be found",(gras_set_elm_t**)&elm),
+  TRYEXPECT(gras_set_get_by_name(set,"123 Can't be found",(gras_set_elm_t*)&elm),
 	    mismatch_error);
-  TRYEXPECT(gras_set_get_by_name(set,"12345678 NOT",(gras_set_elm_t**)&elm),
+  TRYEXPECT(gras_set_get_by_name(set,"12345678 NOT",(gras_set_elm_t*)&elm),
 	    mismatch_error);
 
   TRYFAIL(search_name(set,"12"));
