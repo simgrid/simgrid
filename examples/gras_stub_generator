@@ -58,6 +58,7 @@ print OUT "\n$warn\n";
 foreach (keys %process) {
     print OUT<<EOF
 int launch_$_(int argc, char *argv[]) {
+    
   if (gras_process_init()) exit(1);
   $_(argc,argv);
   if (gras_process_exit()) exit(1);
@@ -72,13 +73,16 @@ print OUT "\n$warn\n";
 
 print OUT <<EOF
 int main (int argc,char *argv[]) {
-
-  if (argc != 3) {
-    fprintf(stderr, "Usage: %s platform_file application_description.txt\\n",argv[0]);
+    
+  if (argc < 3) {
+    fprintf(stderr, "Usage: %s platform_file application_description.txt [extra args]\\n",argv[0]);
     exit(1);
   }
 
-  /*  Simulation setting */
+  /* GRAS setup */
+  gras_init(&argc, argv);
+
+  /*  Simulation setup */
   MSG_global_init();
   MSG_set_verbosity(MSG_SILENT);
   MSG_set_channel_number(GRAS_MAX_CHANNEL);
