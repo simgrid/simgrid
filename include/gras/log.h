@@ -35,14 +35,15 @@
  */
 typedef enum {
   gras_log_priority_none          = 0, 
-  gras_log_priority_debug         = 1, 
-  gras_log_priority_verbose       = 2, 
-  gras_log_priority_info          = 3, 
-  gras_log_priority_warning       = 4, 
-  gras_log_priority_error         = 5, 
-  gras_log_priority_critical      = 6, 
+  gras_log_priority_trace         = 1, 
+  gras_log_priority_debug         = 2, 
+  gras_log_priority_verbose       = 3, 
+  gras_log_priority_info          = 4, 
+  gras_log_priority_warning       = 5, 
+  gras_log_priority_error         = 6, 
+  gras_log_priority_critical      = 7, 
 
-  gras_log_priority_infinite      = 7, 
+  gras_log_priority_infinite      = 8, 
 
   gras_log_priority_uninitialized = -1 
 } gras_log_priority_t;
@@ -539,11 +540,11 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
 
 #ifdef __GNUC__
-#define GRAS_IN  DEBUG1(">> begin of %s",__FUNCTION__)
-#define GRAS_OUT DEBUG1("<< end of %s",__FUNCTION__)
+#define GRAS_IN  LOG1(gras_log_priority_trace, ">> begin of %s", __FUNCTION__)
+#define GRAS_OUT LOG1(gras_log_priority_trace, "<< end of %s", __FUNCTION__)
 #else
-#define GRAS_IN  DEBUG0(">> begin of function")
-#define GRAS_OUT DEBUG0("<< end of function")
+#define GRAS_IN  LOG0(gras_log_priority_trace, ">> begin of function")
+#define GRAS_OUT LOG0(gras_log_priority_trace, "<< end of function")
 #endif
 
 #endif /* ! _GRAS_LOG_H_ */

@@ -35,6 +35,7 @@ static void _free_setting(void *s) {
 
 const char *gras_log_priority_names[8] = {
   "NONE",
+  "TRACE",
   "DEBUG",
   "VERBOSE",
   "INFO",
@@ -217,13 +218,13 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
     }
     
     DEBUG1("New priority name = %s",neweq);
-    for (i=0; i<6; i++) {
+    for (i=0; i<gras_log_priority_infinite-1; i++) {
       if (!strncmp(gras_log_priority_names[i],neweq,p-eq)) {
 	DEBUG1("This is priority %d",i);
 	break;
       }
     }
-    if (i<6) {
+    if (i<gras_log_priority_infinite-1) {
       set->thresh=i;
     } else {
       gras_assert1(FALSE,"Unknown priority name: %s",eq+1);
