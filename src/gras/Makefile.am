@@ -1,5 +1,7 @@
 SUBDIRS=. Tests
-AM_CFLAGS=-g
+AM_CFLAGS=-p -g -finline-functions -ffast-math -funroll-loops\
+ -funroll-all-loops -fexpensive-optimizations -O3 -fno-omit-frame-pointer\
+ -DGRAS_LOG_STATIC_THRESHOLD=gras_log_priority_infinite -DNDEBUG
 MAINTAINERCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include \
           @CFLAGS_SimGrid@
@@ -52,7 +54,7 @@ COMMON_S=\
   \
   Core/config.c                               \
   \
-  Transport/transport.c          Transport/transport_private.h  \
+  Transport/transport.c          Transport/transport_private.h   Transport/transport_plugin_buf.c  \
   \
   DataDesc/ddt_create.c          \
   DataDesc/ddt_convert.c         DataDesc/ddt_exchange.c     \
