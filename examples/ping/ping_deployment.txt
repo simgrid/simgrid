@@ -1,2 +1,4 @@
-125 server 4000
-165 client 125 4000
+<DEPLOYMENT>
+  Bellemare server 4000
+  Gaston client Bellemare 4000
+</DEPLOYMENT>
