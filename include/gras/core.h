@@ -42,21 +42,6 @@ BEGIN_DECL()
  * **************************************************************************/
 typedef enum { free_after_use, free_never } e_xbt_free_directive_t;
 
-
-/* **************************************************************************
- * Wrappers over OS functions
- * **************************************************************************/
-
-/**
- * gras_get_my_fqdn:
- *
- * Returns the fully-qualified name of the host machine, or NULL if the name
- * cannot be determined.  Always returns the same value, so multiple calls
- * cause no problems.
- */
-const char *
-gras_get_my_fqdn(void);
-
 void gras_init(int *argc,char **argv, const char *defaultlog);
 void gras_exit(void);
 
