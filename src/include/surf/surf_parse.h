@@ -26,9 +26,9 @@ typedef enum {
 #define MAX_STR_CONST 1024
 
 extern char *surf_parse_text;
-extern int line_pos;
-extern int char_pos;
-extern int tok_num;
+extern int surf_line_pos;
+extern int surf_char_pos;
+extern int surf_tok_num;
 
 e_surf_token_t surf_parse(void);
 void find_section(const char *file, const char *section_name);

@@ -86,13 +86,13 @@ static void parse_cpu(void)
   surf_parse_trace(&power_trace);
 
   token = surf_parse();		/* state_initial */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
+  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", surf_line_pos);
   if (strcmp(surf_parse_text, "ON") == 0)
     state_initial = SURF_CPU_ON;
   else if (strcmp(surf_parse_text, "OFF") == 0)
     state_initial = SURF_CPU_OFF;
   else {
-    CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n", line_pos,
+    CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n", surf_line_pos,
 	      surf_parse_text);
     xbt_abort();
   }
@@ -120,7 +120,7 @@ static void parse_file(const char *file)
     if (token == TOKEN_WORD)
       parse_cpu();
     else {
-      CRITICAL1("Parse error line %d\n", line_pos);
+      CRITICAL1("Parse error line %d\n", surf_line_pos);
       xbt_abort();
     }
   }

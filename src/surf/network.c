@@ -125,13 +125,13 @@ static void parse_network_link(void)
   surf_parse_trace(&lat_trace);
 
   token = surf_parse();		/* state_initial */
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
+  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", surf_line_pos);
   if (strcmp(surf_parse_text, "ON") == 0)
     state_initial = SURF_NETWORK_LINK_ON;
   else if (strcmp(surf_parse_text, "OFF") == 0)
     state_initial = SURF_NETWORK_LINK_OFF;
   else {
-    CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n", line_pos,
+    CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n", surf_line_pos,
 	      surf_parse_text);
     xbt_abort();
   }
@@ -160,11 +160,11 @@ static void parse_route(int fake)
   src_id = network_card_new(surf_parse_text);
 
   token = surf_parse();
-  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
+  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", surf_line_pos);
   dst_id = network_card_new(surf_parse_text);
 
   token = surf_parse();
-  xbt_assert1((token == TOKEN_LP), "Parse error line %d", line_pos);
+  xbt_assert1((token == TOKEN_LP), "Parse error line %d", surf_line_pos);
 
   while ((token = surf_parse()) == TOKEN_WORD) {
     if (!fake) {
@@ -173,7 +173,7 @@ static void parse_route(int fake)
       link_name[(nb_link) - 1] = xbt_strdup(surf_parse_text);
     }
   }
-  xbt_assert1((token == TOKEN_RP), "Parse error line %d", line_pos);
+  xbt_assert1((token == TOKEN_RP), "Parse error line %d", surf_line_pos);
 
   if (!fake)
     route_new(src_id, dst_id, link_name, nb_link);
@@ -196,7 +196,7 @@ static void parse_file(const char *file)
     if (token == TOKEN_WORD)
       parse_network_link();
     else {
-      CRITICAL1("Parse error line %d\n", line_pos);
+      CRITICAL1("Parse error line %d\n", surf_line_pos);
       xbt_abort();
     }
   }
@@ -215,7 +215,7 @@ static void parse_file(const char *file)
     if (token == TOKEN_WORD)
       parse_route(1);
     else {
-      CRITICAL1("Parse error line %d\n", line_pos);
+      CRITICAL1("Parse error line %d\n", surf_line_pos);
       xbt_abort();
     }
   }
@@ -236,7 +236,7 @@ static void parse_file(const char *file)
     if (token == TOKEN_WORD)
       parse_route(0);
     else {
-      CRITICAL1("Parse error line %d\n", line_pos);
+      CRITICAL1("Parse error line %d\n", surf_line_pos);
       xbt_abort();
     }
   }
