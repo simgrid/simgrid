@@ -43,7 +43,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       int                   r_arch,
 		       char                **r_data,
 		       long int              r_lgr,
-		       char                 *dst);
+		       char                 *dst,
+		       int                   subsize);
 
 
 static gras_error_t
@@ -500,6 +501,13 @@ gras_error_t gras_datadesc_send(gras_socket_t *sock,
  * gras_datadesc_recv_rec:
  *
  * Do the data reception job recursively.
+ *
+ * subsize used only to deal with vicious case of reference to dynamic array.
+ *  This size is needed at the reference reception level (to allocate enough 
+ * space) and at the array reception level (to fill enough room). 
+ * 
+ * Having this size passed as an argument of the recursive function is a crude
+ * hack, but I was told that working code is sometimes better than neat one ;)
  */
 gras_error_t
 gras_datadesc_recv_rec(gras_socket_t        *sock, 
@@ -509,7 +517,8 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       int                   r_arch,
 		       char                **r_data,
 		       long int              r_lgr,
-		       char                 *l_data) {
+		       char                 *l_data,
+		       int                   subsize) {
 
   gras_error_t          errcode;
   int                   cpt;
@@ -546,7 +555,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,NULL,0,
-				 field_data));
+				 field_data,-1));
     }
     VERB1("<< Received all fields of the structure %s", type->name);
     
@@ -576,7 +585,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     
     TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 			       r_arch,NULL,0,
-			       l_data));
+			       l_data,-1));
     break;
   }
 
@@ -618,27 +627,45 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
 
     if (errcode == mismatch_error) {
+      int subsubcount = -1;
       void *l_referenced=NULL;
 
       TRY(gras_datadesc_by_id(ref_code, &sub_type));
       
-      VERB1("Receiving '%s' ",sub_type->name);
-      TRY(gras_dd_alloc_ref(refs,sub_type->size[GRAS_THISARCH], 
-			    r_ref,pointer_type->size[r_arch], (char**)&l_referenced));
-
-      VERB2("Receiving '%s' remotely referenced at %p",
+      VERB2("Receiving a ref to '%s', remotely @%p",
 	    sub_type->name, *(void**)r_ref);
+      if (sub_type->category_code == e_gras_datadesc_type_cat_array) {
+	/* Damn. Reference to a dynamic array. Allocating the size for it 
+	   is more complicated */
+	gras_dd_cat_array_t array_data = sub_type->category.array_data;
+	gras_datadesc_type_t *subsub_type;
 
-      //      DEBUG2("l_ref= %p; &l_ref=%p",l_referenced,&l_referenced);
+	subsubcount = array_data.fixed_size;
+	if (subsubcount < 0)
+	  TRY(gras_dd_recv_int(sock, r_arch, &subsubcount));
+
+	TRY(gras_datadesc_by_id(array_data.code, &subsub_type));
+
+
+	TRY(gras_dd_alloc_ref(refs,
+			      subsub_type->size[GRAS_THISARCH] * subsubcount, 
+			      r_ref,pointer_type->size[r_arch], 
+			      (char**)&l_referenced));
+      } else {
+	TRY(gras_dd_alloc_ref(refs,sub_type->size[GRAS_THISARCH], 
+			      r_ref,pointer_type->size[r_arch], 
+			      (char**)&l_referenced));
+      }
+
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,r_ref,pointer_type->size[r_arch],
-				 (char*)l_referenced));
+				 (char*)l_referenced, subsubcount));
       *(void**)l_data=l_referenced;
       VERB3("'%s' remotely referenced at %p locally at %p",
 	    sub_type->name, *(void**)r_ref, l_referenced);
       
     } else if (errcode == no_error) {
-      VERB2("NOT receiving data remotely referenced @%p (already done, locally @%p). ",
+      VERB2("NOT receiving data remotely referenced @%p (already done, @%p here)",
 	    *(void**)r_ref, *(void**)l_ref);
 
       *(void**)l_data=*l_ref;
@@ -657,8 +684,10 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     long int  elm_size;
 
     array_data = type->category.array_data;
-    /* determine element count locally or from peer */
+    /* determine element count locally, or from caller, or from peer */
     count = array_data.fixed_size;
+    if (count <= 0)
+      count = subsize;
     if (count <= 0)
       TRY(gras_dd_recv_int(sock, r_arch, &count));
     if (count < 0)
@@ -670,14 +699,10 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     elm_size = sub_type->aligned_size[GRAS_THISARCH];
     VERB2("Receive a %d-long array of %s",count, sub_type->name);
 
-    if (!l_data) {
-      TRY(gras_dd_alloc_ref(refs,elm_size*count,r_data,r_lgr, &l_data));
-    } 
-
     ptr = l_data;
     for (cpt=0; cpt<count; cpt++) {
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
-				 r_arch, NULL, 0, ptr));
+				 r_arch, NULL, 0, ptr,-1));
       ptr += elm_size;
     }
     break;
@@ -709,12 +734,10 @@ gras_datadesc_recv(gras_socket_t *sock,
 
   TRY(gras_dict_new(&refs));
   TRY(gras_dd_cbps_new(&state));
-  //  if (dst) FIXME
-  //    VERB0("'dst' not NULL in datadesc_recv. Data to be copied there without malloc");
 
   errcode = gras_datadesc_recv_rec(sock, state, refs, type, 
 				   r_arch, NULL, 0,
-				   (char *) dst);
+				   (char *) dst,-1);
 
   gras_dict_free(&refs);
   gras_dd_cbps_free(&state);

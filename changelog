@@ -1,6 +1,8 @@
 2004-07-03
- - Create a new log channel tbx containing dict, set, log, dynar (to shut
-   them all up in one shot)
+  - Create a new log channel tbx containing dict, set, log, dynar (to shut
+    them all up in one shot)
+ [DataDesc]
+  - Fix the ugly case of reference to dynamic array.
 
 2004-06-21
  [Transport]

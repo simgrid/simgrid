@@ -136,20 +136,14 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
  ***/ 
 gras_error_t test_string(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
-  gras_datadesc_type_t *my_type;
   char *i=strdup("Some data"), *j=NULL;
   int cpt;
   
-  INFO0("==== Test on string (dynamic array) ====");
-  TRY(gras_datadesc_declare_ref("string*",
-				gras_datadesc_by_name("string"),
-				&my_type));
-
-  TRY(write_read(gras_datadesc_by_name("string*"), &i,&j,
+  INFO0("==== Test on string (ref to dynamic array) ====");
+  TRY(write_read(gras_datadesc_by_name("string"), &i,&j,
 		 sock,direction));
   if (direction == READ || direction == RW) {
     for (cpt=0; cpt<strlen(i); cpt++) {
-      fprintf(stderr,"%d ", cpt);
       gras_assert4(i[cpt] == j[cpt],"i[%d]=%c  !=  j[%d]=%c",
 		   cpt,i[cpt],cpt,j[cpt]);
     } 
@@ -440,12 +434,12 @@ int main(int argc,char *argv[]) {
     TRYFAIL(gras_socket_client_from_file("datadesc_usage.out",&sock));
   if (direction == READ) 
     TRYFAIL(gras_socket_server_from_file("datadesc_usage.out",&sock));
-
+  
   TRYFAIL(test_int(sock,direction));    
   TRYFAIL(test_float(sock,direction));  
   TRYFAIL(test_array(sock,direction));  
   TRYFAIL(test_intref(sock,direction)); 
-
+  
   TRYFAIL(test_string(sock,direction)); 
 
   TRYFAIL(test_homostruct(sock,direction));
