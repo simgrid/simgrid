@@ -44,7 +44,7 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
     RAISE_MALLOC;
 
   errcode = setup(plug);
-  switch (setup(plug)) {
+  switch (errcode) {
   case mismatch_error:
     /* SG plugin return mismatch when in RL mode (and vice versa) */
     free(plug);
@@ -94,10 +94,12 @@ void gras_trp_plugin_free(void *p) {
   gras_trp_plugin_t *plug = p;
 
   if (plug) {
-    if (plug->exit)
+    if (plug->exit) {
       plug->exit(plug);
-    else if (plug->data) 
+    } else if (plug->data) {
+      DEBUG1("Plugin %s lacks exit(). Free data anyway.",plug->name);
       free(plug->data);
+    }
 
     free(plug->name);
     free(plug);
