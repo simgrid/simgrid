@@ -10,7 +10,22 @@ EXTRA_DIST= ./gras_private.h    \
 	Virtu/virtu_sg.h \
 	DataDesc/ddt_parse.yy.l DataDesc/ddt_parse.yy.c
 
-VERSION_INFO=-version-info 0:1:0
+VERSION_INFO= -version-info 1:0:0
+# from `info libtool "Updating version info"`
+#
+# - Begin with C:R:A = 0:0:0
+# - Do not update it before public release (keep numbers small)
+#
+# ----------------------------------------------------------------------+
+# +   Interface     |  code of existing  | Interface | New version info |
+# | removal/change? | interface changed? | addition? |                  |
+# +-----------------+--------------------+-----------+------------------+
+# |      yes        |   must be yes ;)   |           |  C++ : 0   : 0   |
+# |      no         |        yes         |    yes    |  C   : R++ : A++ |
+# |      no         |        yes         |    no     |  C   : R++ : A   |
+# |      no         |        no          |    yes    |  C   : R   : A++ |
+# |      no         |        no          |    no     |  C   : R   : A   |
+# +-----------------+--------------------+-----------+------------------+
 
 if HAVE_SG
  lib_LTLIBRARIES= libgrasrl.la libgrassg.la
