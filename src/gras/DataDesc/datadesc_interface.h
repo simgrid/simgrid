@@ -13,9 +13,6 @@
 #ifndef GRAS_DATADESC_INTERFACE_H
 #define GRAS_DATADESC_INTERFACE_H
 
-void gras_datadesc_init(void);
-void gras_datadesc_exit(void);
-
 gras_error_t gras_datadesc_by_id  (long int code,
 				   gras_datadesc_type_t **type);
 

@@ -13,10 +13,6 @@
 #ifndef GRAS_MSG_INTERFACE_H
 #define GRAS_MSG_INTERFACE_H
 
-void gras_msg_init(void);
-void gras_msg_exit(void);
-
-
 /* gras_msg_t is dereferenced to be stored in procdata, living in Virtu */
 typedef struct {
   gras_socket_t  *expeditor;
