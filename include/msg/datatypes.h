@@ -29,14 +29,14 @@ BEGIN_DECL()
 
     \see m_host_management
 */
-/*@{*/
+/* @{ */
 typedef struct simdata_host *simdata_host_t;
 typedef struct m_host {
   char *name;			/**< host name if any */
   simdata_host_t simdata;	/**< simulator data */
   void *data;			/**< user data */
 } s_m_host_t, *m_host_t;
-/*@}*/
+/* @} */
 /********************************* Task **************************************/
 
 /** @name Task datatype  
@@ -47,7 +47,7 @@ typedef struct m_host {
     data</em>.
     \see m_task_management
 */
-/*@{*/
+/* @{ */
 typedef struct simdata_task *simdata_task_t;
 typedef struct m_task {
   char *name;			/* host name if any */
@@ -60,7 +60,7 @@ typedef struct m_task {
 */
 #define MSG_TASK_UNINITIALIZED NULL
 
-/*@}*/
+/* @} */
 
 /******************************* Process *************************************/
 
@@ -71,7 +71,7 @@ typedef struct m_task {
     data</em>, executing in a <em>location</em>.
     \see m_process_management
 */
-/*@{*/
+/* @{ */
 typedef struct simdata_process *simdata_process_t;
 typedef struct m_process {
   /** A name */
@@ -87,7 +87,7 @@ typedef struct m_process {
     \see m_process_management
 */
 typedef int(*m_process_code_t)(int argc,char *argv[]) ;
-/*@}*/
+/* @} */
 
 /********************************** Channel **********************************/
 /** @name Channel datatype  
@@ -97,9 +97,9 @@ typedef int(*m_process_code_t)(int argc,char *argv[]) ;
     port number does).
     \see m_channel_management
 */
-/*@{*/
+/* @{ */
 typedef int m_channel_t;
-/*@}*/
+/* @} */
 
 /****************************** Error handling *******************************/
 /** \brief Error handling

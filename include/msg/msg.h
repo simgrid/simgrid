@@ -9,6 +9,7 @@
 #define MSG_H
 
 #include "xbt/misc.h"
+#include "xbt/sysdep.h"
 
 BEGIN_DECL()
 #include "msg/datatypes.h"
@@ -80,6 +81,8 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
 			 double message_size, void *data);
 void *MSG_task_get_data(m_task_t task);
 m_process_t MSG_task_get_sender(m_task_t task);
+const char *MSG_task_get_name(m_task_t task);
+
 MSG_error_t MSG_task_destroy(m_task_t task);
 
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel);
