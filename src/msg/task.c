@@ -48,6 +48,8 @@ m_task_t MSG_task_create(const char *name, long double compute_duration,
   simdata->sleeping = xbt_dynar_new(sizeof(m_process_t),NULL);
   simdata->computation_amount = compute_duration;
   simdata->message_size = message_size;
+  simdata->using = 1;
+  simdata->sender = NULL;
 
   return task;
 }
@@ -80,6 +82,9 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   xbt_assert0((task != NULL), "Invalid parameter");
   xbt_assert0((xbt_dynar_length(task->simdata->sleeping)==0), 
 	      "Task still used. Cannot destroy it now!");
+
+  task->simdata->using--;
+  if(task->simdata->using>0) return MSG_OK;
 
   if(task->name) xbt_free(task->name);
 

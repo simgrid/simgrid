@@ -49,8 +49,6 @@ m_process_t MSG_process_create(const char *name,
   simdata->PID = PID++;
   simdata->host = host;
   simdata->waiting_task = NULL;
-  simdata->put_host = NULL;
-  simdata->put_channel = -1;
   simdata->argc = -1;
   simdata->argv = NULL;
   simdata->context = xbt_context_new(code, simdata->argc, simdata->argv);

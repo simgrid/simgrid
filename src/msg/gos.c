@@ -9,7 +9,7 @@
 #include"xbt/sysdep.h"
 #include "xbt/error.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gos, msg,
-				"Logging specific to MSG (process)");
+				"Logging specific to MSG (gos)");
 
 /** \ingroup msg_gos_functions
  * \brief This function is now deprecated and useless. Please stop using it.

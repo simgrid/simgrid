@@ -18,17 +18,11 @@
 
 /**************** datatypes **********************************/
 
-typedef enum {
-  HOST_DOWN = 0,
-  HOST_ALIVE = 1
-} m_host_state_t;
-
 typedef struct simdata_host {
   void *host;			/* SURF modeling */
   xbt_fifo_t *mbox;		/* array of FIFOs used as a mailboxes  */
   m_process_t *sleeping;	/* array of process used to know whether a local process is
 				   waiting for a communication on a channel */
-  m_host_state_t state;
   xbt_fifo_t process_list;
 } s_simdata_host_t;
 
@@ -40,6 +34,8 @@ typedef struct simdata_task {
   double message_size;		/* Data size  */
   double computation_amount;	/* Computation size  */
   xbt_dynar_t sleeping;		/* process to wake-up */
+  m_process_t sender;
+  int using;
 } s_simdata_task_t;
 
 /******************************* Process *************************************/
@@ -50,8 +46,6 @@ typedef struct simdata_process {
   int PID;			/* used for debugging purposes */
   int PPID;			/* The parent PID */
   m_task_t waiting_task;        
-  m_host_t put_host;            /* used for debugging purposes */
-  int put_channel;              /* used for debugging purposes */
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
@@ -66,7 +60,7 @@ typedef struct MSG_Global {
   int max_channel;
   m_process_t current_process;
   xbt_dict_t registered_functions;
-} s_MSG_global_t, *MSG_Global_t;
+} s_MSG_Global_t, *MSG_Global_t;
 
 extern MSG_Global_t msg_global;
 
@@ -77,7 +71,9 @@ extern MSG_Global_t msg_global;
 #define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
-#define CHECK_HOST()  xbt_assert0((MSG_host_self()->simdata->state==HOST_ALIVE),"Host failed, you cannot call this function.")
+#define CHECK_HOST()  xbt_assert0(surf_workstation_resource->extension_public-> \
+				  get_state(MSG_host_self()->simdata->host)==SURF_CPU_ON,\
+                                  "Host failed, you cannot call this function.")
 
 m_host_t __MSG_host_create(const char *name, void *workstation,
 			   void *data);
