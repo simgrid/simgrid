@@ -51,9 +51,8 @@ AC_C_INLINE
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
-AC_FUNC_MALLOC
-AC_FUNC_MEMCMP
-AC_CHECK_FUNCS([memset strchr strerror usleep])
+dnl A C_FUNC_MEMCMP
+dnl A C_CHECK_FUNCS([memset strchr strerror usleep])
 
 # Can we rebuild the parsers?
 # We really want flex and refuse other lex. So, the parser is portable and
@@ -79,7 +78,7 @@ dnl ####[ maint mode ]#######################################################
 AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
 then
-#   enable_iso_c=yes                 Ouais, un autre jour
+#   enable_iso_c=yes             # Let's go funky
    GNOME_COMPILE_WARNINGS(yes)
 fi
 
