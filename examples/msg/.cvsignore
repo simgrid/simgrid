@@ -1,2 +1,3 @@
 .deps .libs .dirstamp Makefile Makefile.in
 msg_test
+run_msg_test
