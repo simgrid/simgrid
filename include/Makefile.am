@@ -1,18 +1,13 @@
 SUBDIRS=modules
 EXTRA_DIST=    \
 	gras.h \
-	log.h  \
-	error.h \
+	log.h error.h \
 	module.h \
-	dynar.h \
-	dict.h \
+	dynar.h dict.h set.h \
 	config.h \
 	\
-	datadesc_simple.h \
-	data_description.h dd_type_bag.h \
+	datadesc.h transport.h virtu.h cond.h process.h \
 	\
-	socket.h messages.h \
-	\
-	transport.h \
+	messages.h \
 	\
 	core.h
