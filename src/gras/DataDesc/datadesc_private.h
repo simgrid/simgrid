@@ -4,7 +4,9 @@
 
 /* module's private interface masked even to other parts of GRAS.           */
 
-/* Copyright (c) 2004 Olivier Aumage, Martin Quinson. All rights reserved.  */
+/* Copyright (c) 2003 Olivier Aumage.                                       */
+/* Copyright (c) 2003, 2004 Martin Quinson.                                 */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,7 +43,7 @@ void gras_ddt_freev(void *ddt);
  * Descriptions of all known architectures *
  *******************************************/
 
-#define gras_arch_count 6
+#define gras_arch_count 7
 typedef enum {
   gras_ddt_scalar_char      = 0,
   gras_ddt_scalar_short     = 1,

@@ -2,7 +2,9 @@
 
 /* ddt_remote - Stuff needed to get datadescs about remote hosts            */
 
-/* Copyright (c) 2004 Olivier Aumage, Martin Quinson. All rights reserved.  */
+/* Copyright (c) 2003 Olivier Aumage.                                       */
+/* Copyright (c) 2003, 2004 Martin Quinson.                                 */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,6 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_convert,datadesc,
  ***  B C<1/1> I<2/2:4/8:8/8:8/8> P<4/4:4/4> D<4/4:8/4>
  ***  B C:1/1: I:2/2:4/4:4/4:8/8: P:4/4:4/4: D:4/4:8/4: AIX
  ***  B C:1/1: I:2/2:4/2:4/2:8/2: P:4/2:4/2: D:4/2:8/2: ARM
+ ***  l C<1/1> I<2/2:4/4:4/4:8/8> P<4/4:4/4> D<4/4:8/8> win32 
  ***/
 
 const gras_arch_desc_t gras_arches[gras_arch_count] = {
@@ -44,8 +47,10 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
                     {1,2,4,4,8,   4,4,   4,4}},
 
   {"arm",      1,   {1,2,4,4,8,   4,4,   4,8}, 
-                    {1,2,2,2,2,   2,2,   2,2}}
+                    {1,2,2,2,2,   2,2,   2,2}},
 
+  {"win32",    0,   {1,2,4,4,8,   4,4,   4,8}, 
+                    {1,2,4,4,8,   4,4,   4,8}}
 };
 
 const char *gras_datadesc_arch_name(int code) {
@@ -54,6 +59,7 @@ const char *gras_datadesc_arch_name(int code) {
    return gras_arches[code].name;
 }
 
+
 /**
  * Local function doing the grunt work
  */
@@ -61,7 +67,6 @@ static void
 gras_dd_reverse_bytes(void *to,
 		      const void *from,
 		      size_t length);
-
 
 /**
  * gras_dd_convert_elm:
