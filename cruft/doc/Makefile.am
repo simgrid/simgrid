@@ -88,7 +88,7 @@ SCANOBJ_FILES = 		 \
 if ENABLE_GTK_DOC
 all-local: html-build.stamp
 
-TOOL_ROOT=$(shell if [ -e tools/gtkdoc-scan ] ; then echo "tools/"; else echo "" fi)
+TOOL_ROOT=$(shell if [ -e tools/gtkdoc-scan ] ; then echo "tools/"; else echo ""; fi)
 #### scan ####
 
 scan-build.stamp: $(HFILE_GLOB)
