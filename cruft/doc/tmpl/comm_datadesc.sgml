@@ -180,6 +180,103 @@ Describing data to be exchanged
 @Returns: 
 
 
+<!-- ##### FUNCTION gras_datadesc_cb_send ##### -->
+<para>
+
+</para>
+
+@type: 
+@pre: 
+
+
+<!-- ##### FUNCTION gras_datadesc_cb_recv ##### -->
+<para>
+
+</para>
+
+@type: 
+@post: 
+
+
+<!-- ##### FUNCTION gras_cbps_i_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cbps_i_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@val: 
+
+
+<!-- ##### FUNCTION gras_cbps_v_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+@res: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cbps_v_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cbps_v_set ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_cbps_v_get ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_cbps_block_begin ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
+<!-- ##### FUNCTION gras_cbps_block_end ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
 <!-- ##### FUNCTION gras_arch_selfid ##### -->
 <para>
 

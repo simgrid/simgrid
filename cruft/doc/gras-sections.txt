@@ -273,15 +273,18 @@ gras_datadesc_union_append
 gras_datadesc_union_close
 gras_datadesc_ref_pop_arr
 
-gras_datadesc_cb_set_pre
-gras_datadesc_cb_set_post
+gras_datadesc_cb_send
+gras_datadesc_cb_recv
 
-gras_dd_cbps_pop
-gras_dd_cbps_push
-gras_dd_cbps_set
-gras_dd_cbps_get
-gras_dd_cbps_block_begin
-gras_dd_cbps_block_end
+gras_cbps_i_pop
+gras_cbps_i_push
+
+gras_cbps_v_pop
+gras_cbps_v_push
+gras_cbps_v_set
+gras_cbps_v_get
+gras_cbps_block_begin
+gras_cbps_block_end
 
 gras_arch_selfid
 </SECTION>

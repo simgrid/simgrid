@@ -167,17 +167,17 @@ An easy-to-use, fast and flexible message logging architecture.
                (the string would typcially be a runtime option) */
             gras_log_control_set("SA.thresh=3");
 
-            /* This request is enabled, because WARNING >= INFO. */
+            /* This request is enabled, because WARNING &gt;= INFO. */
             CWARN2(VSS, "Low fuel level.");
 
-            /* This request is disabled, because DEBUG < INFO. */
+            /* This request is disabled, because DEBUG &lt; INFO. */
             CDEBUG2(VSS, "Starting search for nearest gas station."); 
 
             /* The default category SA inherits its priority from VSS. Thus,
-               the following request is enabled because INFO >= INFO.  */
+               the following request is enabled because INFO &gt;= INFO.  */
             INFO1("Located nearest gas station.");
 
-            /* This request is disabled, because DEBUG < INFO. */
+            /* This request is disabled, because DEBUG &lt; INFO. */
             DEBUG1("Exiting gas station search");
       }</programlisting>
 </refsect2>
@@ -276,7 +276,7 @@ An easy-to-use, fast and flexible message logging architecture.
 
   <para>
     Log4J has a 'rolling file appender' which you can select with a run-time
-    option & specify the max file size. This would be a nice default for
+    option and specify the max file size. This would be a nice default for
     non-kernel applications.
   </para>
 
