@@ -112,10 +112,12 @@ void test2(void)
   lmm_system_free(Sys);
 } 
 
-
 int main(int argc, char **argv)
 {
+  printf("***** Test 1 ***** \n");
   test();
+  printf("***** Test 2 ***** \n");
   test2();
+
   return 0;
 }
