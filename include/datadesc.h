@@ -45,6 +45,12 @@ typedef struct s_gras_datadesc_type gras_datadesc_type_t;
  ***********************************************/
 long int gras_datadesc_get_id_from_name(const char *name);
 
+gras_error_t gras_datadesc_by_name(const char *name,
+				   gras_datadesc_type_t **type);
+gras_error_t gras_datadesc_by_id  (long int code,
+				   gras_datadesc_type_t **type);
+#define gras_datadesc_by_code(a,b) gras_datadesc_by_id(a,b)
+
 /*********************************************
  **** DataDesc callback persistent states ****
  *********************************************/
@@ -169,6 +175,11 @@ gras_datadesc_declare_array_cb(const char                      *name,
 			       gras_datadesc_type_cb_int_t      dynamic_size,
 			       gras_datadesc_type_cb_void_t     post,
 			       long int                        *code);
+
+/*******************************
+ **** About data convertion ****
+ *******************************/
+int gras_arch_selfid(void); /* ID of this arch */
 
 /****************************
  **** Parse C statements ****

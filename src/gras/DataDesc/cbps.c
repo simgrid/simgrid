@@ -19,15 +19,42 @@ struct s_gras_dd_cbps {
   gras_dict_t  *space;
   gras_dynar_t *stack;
   gras_dynar_t *globals;
-
 };
+
+gras_error_t
+gras_dd_cbps_new(gras_dd_cbps_t **dst) {
+  gras_error_t errcode;
+  gras_dd_cbps_t *res;
+
+  if (!(res=malloc(sizeof(gras_dd_cbps_t))))
+    RAISE_MALLOC;
+
+  TRY(gras_dict_new(&(res->space)));
+  /* FIXME:leaking on content of dynars*/
+  TRY(gras_dynar_new(&(res->stack), sizeof(gras_dynar_t*), NULL));
+  TRY(gras_dynar_new(&(res->globals), sizeof(char*), NULL));
+
+  *dst = res;
+  return no_error;
+}
+
+void
+gras_dd_cbps_free(gras_dd_cbps_t **state) {
+
+  gras_dict_free ( &( (*state)->space   ) );
+  gras_dynar_free(    (*state)->stack     );
+  gras_dynar_free(    (*state)->globals   );
+
+  free(*state);
+  *state = NULL;
+}
 
 /**
  * gras_dd_cbps_push:
  *
- * Declare a new element in the PS, and give it a value. If an element of that name already exists, 
- * it becomes masked by the one given here, and will be seable again only after a pop to remove the 
- * value this push adds.
+ * Declare a new element in the PS, and give it a value. If an element of that
+ * name already exists, it is masked by the one given here, and will be 
+ * seeable again only after a pop to remove the value this push adds.
  */
 void
 gras_dd_cbps_push(gras_dd_cbps_t        *ps,
@@ -60,8 +87,9 @@ gras_dd_cbps_push(gras_dd_cbps_t        *ps,
 /**
  * gras_dd_cbps_pop:
  *
- * Retrieve an element from the PS, and remove it from the PS. If it's not present in the current block,
- * it will fail (with abort) and not search in upper blocks since this denotes a programmation error.
+ * Retrieve an element from the PS, and remove it from the PS. If it's not
+ * present in the current block, it will fail (with abort) and not search
+ * in upper blocks since this denotes a programmation error.
  */
 void *
 gras_dd_cbps_pop (gras_dd_cbps_t        *ps, 
@@ -112,11 +140,14 @@ gras_dd_cbps_pop (gras_dd_cbps_t        *ps,
 /**
  * gras_dd_cbps_set:
  *
- * Change the value of an element in the PS.  If it's not present in the current block, look in the upper ones.
- * If it's not present in any of them, look in the globals (FIXME: which no function of this API allows to set). 
+ * Change the value of an element in the PS.  
+ * If it's not present in the current block, look in the upper ones.
+ * If it's not present in any of them, look in the globals
+ *   (FIXME: which no function of this API allows to set). 
  * If not present there neither, the code may segfault (Oli?).
  *
- * Once a reference to an element of that name is found somewhere in the PS, its value is changed.
+ * Once a reference to an element of that name is found somewhere in the PS,
+ *   its value is changed.
  */
 void
 gras_dd_cbps_set (gras_dd_cbps_t        *ps,
@@ -149,9 +180,11 @@ gras_dd_cbps_set (gras_dd_cbps_t        *ps,
 /**
  * gras_dd_cbps_get:
  *
- * Get the value of an element in the PS without modifying it.
+ * Get the value of an element in the PS without modifying it. 
+ * (note that you get the content of the data struct and not a copy to it)
  * If it's not present in the current block, look in the upper ones.
- * If it's not present in any of them, look in the globals (FIXME: which no function of this API allows to set). 
+ * If it's not present in any of them, look in the globals
+ *   (FIXME: which no function of this API allows to set). 
  * If not present there neither, the code may segfault (Oli?).
  */
 void *
@@ -180,11 +213,13 @@ gras_dd_cbps_get (gras_dd_cbps_t        *ps,
  *
  * Begins a new block. 
  *
- * Blocks are usefull to remove a whole set of declarations you don't even know. 
+ * Blocks are usefull to remove a whole set of declarations you don't even know
  *
- * For example, they constitute a very elegent solution to recursive data structures. 
- * push/pop may be used in some cases for that, but if your recursive data struct contains 
- * other structs needing themselves callbacks, you have to use block_{begin,end} to do the trick.
+ * E.g., they constitute an elegent solution to recursive data structures. 
+ *
+ * push/pop may be used in some cases for that, but if your recursive data 
+ * struct contains other structs needing themselves callbacks, you have to
+ * use block_{begin,end} to do the trick.
  */
 
 void
@@ -211,7 +246,6 @@ gras_dd_cbps_block_end(gras_dd_cbps_t *ps) {
   gras_dynar_pop(ps->stack, &p_dynar);
   
   gras_dynar_foreach(p_dynar, cursor, name) {
-    /*  inline the code of  _gs_vars_pop(p_vars, name), which was used only once */
 
     gras_dynar_t            *p_dynar_elm    = NULL;
     gras_dd_cbps_elm_t      *p_elm          = NULL;
@@ -227,7 +261,7 @@ gras_dd_cbps_block_end(gras_dd_cbps_t *ps) {
     free(p_elm);
     free(name);
   }
-                                                                                
+  
   gras_dynar_free_container(p_dynar);
 }
 

@@ -28,7 +28,9 @@ _strlen_cb(void			*vars,
 /**
  * gras_datadesc_init:
  *
- * Initialize the datadesc module
+ * Initialize the datadesc module.
+ * FIXME: We assume that when neither signed nor unsigned is given, 
+ *    that means signed. To be checked by configure.
  **/
 void
 gras_datadesc_init(void) {
@@ -36,88 +38,129 @@ gras_datadesc_init(void) {
   gras_datadesc_type_t *ddt; /* What to add */
   gras_datadesc_type_t *elm; /* element of ddt when needed */
 
+  /* only initialize once */
+  if (gras_datadesc_set_local != NULL)
+    return;
+
   VERB0("Initializing DataDesc");
 
   TRYFAIL(gras_set_new(&gras_datadesc_set_local));
 
   TRYFAIL(gras_ddt_new_scalar("signed char", 
-			      gras_ddt_scalar_char, e_gras_dd_scalar_encoding_sint, 
+			      gras_ddt_scalar_char, 
+			      e_gras_dd_scalar_encoding_sint, 
+			      NULL, &ddt));
+  TRYFAIL(gras_ddt_new_scalar("char", 
+			      gras_ddt_scalar_char, 
+			      e_gras_dd_scalar_encoding_sint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
   TRYFAIL(gras_ddt_new_scalar("unsigned char", 
-			      gras_ddt_scalar_char, e_gras_dd_scalar_encoding_uint, 
+			      gras_ddt_scalar_char, 
+			      e_gras_dd_scalar_encoding_uint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
 
   TRYFAIL(gras_ddt_new_scalar("signed short int", 
-			      gras_ddt_scalar_short, e_gras_dd_scalar_encoding_sint, 
+			      gras_ddt_scalar_short, 
+			      e_gras_dd_scalar_encoding_sint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
-
+  TRYFAIL(gras_ddt_new_scalar("short int", 
+			      gras_ddt_scalar_short, 
+			      e_gras_dd_scalar_encoding_sint, 
+			      NULL, &ddt));
+  TRYFAIL(gras_ddt_register(ddt));
   TRYFAIL(gras_ddt_new_scalar("unsigned short int", 
-			      gras_ddt_scalar_short, e_gras_dd_scalar_encoding_uint, 
+			      gras_ddt_scalar_short, 
+			      e_gras_dd_scalar_encoding_uint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
 
   TRYFAIL(gras_ddt_new_scalar("signed int", 
-			      gras_ddt_scalar_int, e_gras_dd_scalar_encoding_sint, 
+			      gras_ddt_scalar_int, 
+			      e_gras_dd_scalar_encoding_sint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
-
+  TRYFAIL(gras_ddt_new_scalar("int", 
+			      gras_ddt_scalar_int, 
+			      e_gras_dd_scalar_encoding_sint, 
+			      NULL, &ddt));
+  TRYFAIL(gras_ddt_register(ddt));
   TRYFAIL(gras_ddt_new_scalar("unsigned int", 
-			      gras_ddt_scalar_int, e_gras_dd_scalar_encoding_uint, 
+			      gras_ddt_scalar_int, 
+			      e_gras_dd_scalar_encoding_uint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
 
   TRYFAIL(gras_ddt_new_scalar("signed long int", 
-			      gras_ddt_scalar_long, e_gras_dd_scalar_encoding_sint, 
+			      gras_ddt_scalar_long, 
+			      e_gras_dd_scalar_encoding_sint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
-
+  TRYFAIL(gras_ddt_new_scalar("long int", 
+			      gras_ddt_scalar_long, 
+			      e_gras_dd_scalar_encoding_sint, 
+			      NULL, &ddt));
+  TRYFAIL(gras_ddt_register(ddt));
   TRYFAIL(gras_ddt_new_scalar("unsigned long int", 
-			      gras_ddt_scalar_long, e_gras_dd_scalar_encoding_uint, 
+			      gras_ddt_scalar_long, 
+			      e_gras_dd_scalar_encoding_uint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
 
   TRYFAIL(gras_ddt_new_scalar("signed long long int", 
-			      gras_ddt_scalar_long_long, e_gras_dd_scalar_encoding_sint, 
+			      gras_ddt_scalar_long_long, 
+			      e_gras_dd_scalar_encoding_sint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
-
+  TRYFAIL(gras_ddt_new_scalar("long long int", 
+			      gras_ddt_scalar_long_long, 
+			      e_gras_dd_scalar_encoding_sint, 
+			      NULL, &ddt));
+  TRYFAIL(gras_ddt_register(ddt));
   TRYFAIL(gras_ddt_new_scalar("unsigned long long int", 
-			      gras_ddt_scalar_long_long, e_gras_dd_scalar_encoding_uint, 
+			      gras_ddt_scalar_long_long, 
+			      e_gras_dd_scalar_encoding_uint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
 
   TRYFAIL(gras_ddt_new_scalar("data pointer", 
-			      gras_ddt_scalar_pdata, e_gras_dd_scalar_encoding_uint, 
+			      gras_ddt_scalar_pdata, 
+			      e_gras_dd_scalar_encoding_uint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
-
   TRYFAIL(gras_ddt_new_scalar("function pointer", 
-			      gras_ddt_scalar_pfunc, e_gras_dd_scalar_encoding_uint, 
+			      gras_ddt_scalar_pfunc, 
+			      e_gras_dd_scalar_encoding_uint, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
 
   TRYFAIL(gras_ddt_new_scalar("float", 
-			      gras_ddt_scalar_float, e_gras_dd_scalar_encoding_float, 
+			      gras_ddt_scalar_float, 
+			      e_gras_dd_scalar_encoding_float, 
 			      NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
   TRYFAIL(gras_ddt_new_scalar("double", 
-			      gras_ddt_scalar_float, e_gras_dd_scalar_encoding_float, 
+			      gras_ddt_scalar_float, 
+			      e_gras_dd_scalar_encoding_float, 
 			      NULL,&ddt));
   TRYFAIL(gras_ddt_register(ddt));
 
-  TRYFAIL(gras_ddt_get_by_name("unsigned char",&elm));
-  TRYFAIL(gras_ddt_new_array("string", elm, 0, _strlen_cb, NULL, &ddt));
+  TRYFAIL(gras_datadesc_by_name("char",&elm));
+  TRYFAIL(gras_ddt_new_array("char array", elm, -1, _strlen_cb, NULL, &ddt));
+  TRYFAIL(gras_ddt_register(ddt));
+
+  elm=ddt;
+  TRYFAIL(gras_ddt_new_ref("string", elm, NULL, NULL, &ddt));
   TRYFAIL(gras_ddt_register(ddt));
 }
 
@@ -130,9 +173,7 @@ void
 gras_datadesc_exit(void) {
   VERB0("Exiting DataDesc");
   gras_set_free(&gras_datadesc_set_local);
+  gras_datadesc_set_local = NULL;
 }
 
 
-/***
- *** BOOTSTRAPING FUNCTIONS: known within GRAS only
- ***/

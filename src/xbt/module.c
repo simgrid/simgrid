@@ -58,17 +58,17 @@ gras_init_defaultlog(int argc,char **argv, const char *defaultlog) {
    
   /** init other submodules */
   gras_trp_init();
+  gras_datadesc_init();
 }
 
 /**
  * gras_exit:
- * @argc:
- * @argv:
  *
  * Finalize the gras mecanisms.
  */
 void 
 gras_exit(){
   gras_trp_exit();
+  gras_datadesc_exit();
   gras_log_exit();
 }

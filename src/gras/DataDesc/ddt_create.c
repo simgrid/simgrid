@@ -22,6 +22,9 @@ gras_ddt_new(const char            *name,
 
   memset(res, 0, sizeof(res));
   res->name = strdup(name);
+  res->name_len = strlen(name);
+  res->pre = NULL;
+  res->post = NULL;
   
   *dst=res;
   return no_error;
@@ -175,7 +178,7 @@ gras_ddt_new_struct_append(gras_datadesc_type_t            *struct_type,
   field->pre    = pre;
   field->post   = post;
   
-  TRY(gras_dynar_push(struct_type->category.struct_data.fields, field));
+  TRY(gras_dynar_push(struct_type->category.struct_data.fields, &field));
 
   for (arch=0; arch<gras_arch_count; arch ++) {
     struct_type->size[arch] 		= field->offset[arch] + field_type->size[arch];
@@ -193,7 +196,7 @@ gras_ddt_new_struct_append(gras_datadesc_type_t            *struct_type,
  */
 gras_error_t 
 gras_ddt_new_union(const char                      *name,
-		   gras_datadesc_type_cb_int_t      field_count,
+		   gras_datadesc_type_cb_int_t      selector,
 		   gras_datadesc_type_cb_void_t     post,
 		   gras_datadesc_type_t           **dst) {
 
@@ -201,7 +204,7 @@ gras_ddt_new_union(const char                      *name,
   gras_datadesc_type_t *res;
   int arch;
 
-  gras_assert0(field_count,
+  gras_assert0(selector,
 	       "Attempt to creat an union without field_count function");
 
   TRY(gras_ddt_new(name,dst));
@@ -216,7 +219,7 @@ gras_ddt_new_union(const char                      *name,
   TRY(gras_dynar_new(&(res->category.union_data.fields),
 		     sizeof(gras_dd_cat_field_t*),
 		     &gras_dd_cat_field_free));
-  res->category.union_data.field_count = field_count;
+  res->category.union_data.selector = selector;
   res->pre			= NULL;
   res->post			= post;
 
@@ -254,7 +257,7 @@ gras_ddt_new_union_append(gras_datadesc_type_t            *union_type,
   field->pre    = pre;
   field->post   = post;
   
-  TRY(gras_dynar_push(union_type->category.union_data.fields, field));
+  TRY(gras_dynar_push(union_type->category.union_data.fields, &field));
 
   for (arch=0; arch<gras_arch_count; arch ++) {
     union_type->size[arch] 	   = max(union_type->size[arch], field_type->size[arch]);
@@ -273,31 +276,33 @@ gras_ddt_new_union_append(gras_datadesc_type_t            *union_type,
 gras_error_t 
 gras_ddt_new_ref(const char                      *name,
 		 gras_datadesc_type_t            *referenced_type,
-		 gras_datadesc_type_cb_int_t      discriminant,
+		 gras_datadesc_type_cb_int_t      selector,
 		 gras_datadesc_type_cb_void_t     post,
 		 gras_datadesc_type_t           **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
+  gras_datadesc_type_t *pointer_type;
   int arch;
 
-  gras_assert0(discriminant || referenced_type,
-	       "Attempt to create a generic reference without discriminant");
+  gras_assert0(selector || referenced_type,
+	       "Attempt to create a generic reference without selector");
 
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  /* FIXME: Size from bootstraping */
+  TRY(gras_datadesc_by_name("data pointer", &pointer_type));
+      
   for (arch=0; arch<gras_arch_count; arch ++) {
-    res->size[arch]			= 0;
-    res->alignment[arch]		= 0;
-    res->aligned_size[arch]		= 0;
+    res->size[arch]			= pointer_type->size[arch];
+    res->alignment[arch]		= pointer_type->alignment[arch];
+    res->aligned_size[arch]		= pointer_type->aligned_size[arch];
   }
 
   res->category_code		= e_gras_datadesc_type_cat_ref;
 
   res->category.ref_data.code         = referenced_type ? referenced_type->code : -1;
-  res->category.ref_data.discriminant = discriminant;
+  res->category.ref_data.selector = selector;
   res->pre			= NULL;
   res->post			= post;
 

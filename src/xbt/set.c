@@ -94,7 +94,7 @@ gras_error_t gras_set_add    (gras_set_t     *set,
   elm->ID = gras_dynar_length( set->dynar );
   TRY(gras_dict_insert_ext(set->dict, elm->name, elm->name_len, elm, free_func));
   TRY(gras_dynar_set(set->dynar, elm->ID, &elm));
-  DEBUG2("Insertion of key %s (id %d)", elm->name, elm->ID);
+  DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
 
   return no_error;
 }
@@ -146,10 +146,14 @@ gras_error_t gras_set_get_by_name_ext(gras_set_t     *set,
 gras_error_t gras_set_get_by_id      (gras_set_t     *set,
 				      int             id,
 				      /* OUT */gras_set_elm_t **dst) {
+  DEBUG2("Lookup type of id %d (of %d)", 
+	 id, gras_dynar_length(set->dynar));
   if (id < gras_dynar_length(set->dynar) &&
       id >= 0) {
     gras_dynar_get(set->dynar,id,dst);
-    
+    DEBUG3("Lookup type of id %d (of %d): %s", 
+	   id, gras_dynar_length(set->dynar), (*dst)->name);
+  
   } else {
     DEBUG1("Cannot get ID %d: out of bound", id);
     return mismatch_error;

@@ -45,21 +45,51 @@ gras_error_t gras_ddt_register(gras_datadesc_type_t *type) {
 }
 
 /**
- * gras_ddt_get_by_name:
+ * gras_datadesc_by_name:
  *
  * Retrieve a type from its name
  */
-gras_error_t gras_ddt_get_by_name(const char            *name,
-				  gras_datadesc_type_t **type) {
-  return gras_set_get_by_name(gras_datadesc_set_local,name,(gras_set_elm_t**)type);
+gras_error_t gras_datadesc_by_name(const char            *name,
+				   gras_datadesc_type_t **type) {
+  return gras_set_get_by_name(gras_datadesc_set_local,
+			      name,(gras_set_elm_t**)type);
 }
 
 /**
- * gras_ddt_get_by_code:
+ * gras_datadesc_by_id:
  *
- * Retrieve a type from its name
+ * Retrieve a type from its code
  */
-gras_error_t gras_ddt_get_by_code(int                    code,
-				  gras_datadesc_type_t **type) {
-  return gras_set_get_by_id(gras_datadesc_set_local,code,(gras_set_elm_t**)type);
+gras_error_t gras_datadesc_by_id(long int               code,
+				 gras_datadesc_type_t **type) {
+  return gras_set_get_by_id(gras_datadesc_set_local,
+			    code,(gras_set_elm_t**)type);
+}
+
+/**
+ * gras_dd_convert_elm:
+ *
+ * Convert the element described by @type comming from architecture @r_arch.
+ * The data to be converted is stored in @src, and is to be stored in @dst.
+ * Both pointers may be the same location if no resizing is needed.
+ */
+gras_error_t
+gras_dd_convert_elm(gras_datadesc_type_t *type,
+		    int r_arch, 
+		    void *src, void *dst) {
+
+  if (r_arch != GRAS_THISARCH) 
+    RAISE_UNIMPLEMENTED;
+
+  return no_error;
+}
+
+/**
+ * gras_arch_selfid:
+ *
+ * returns the ID of the architecture the process is running on
+ */
+int
+gras_arch_selfid(void) {
+  return GRAS_THISARCH;
 }

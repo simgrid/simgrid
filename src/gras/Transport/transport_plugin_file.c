@@ -105,13 +105,8 @@ gras_socket_client_from_file(const char*path,
   TRY(gras_trp_plugin_get_by_name("file",&trp));
   (*dst)->plugin=trp;
 
-  DEBUG3("in=%c out=%c accept=%c",
-	(*dst)->incoming?'y':'n', 
-	(*dst)->outgoing?'y':'n',
-	(*dst)->accepting?'y':'n');
-
   if (strcmp("-", path)) {
-    (*dst)->sd = open(path, O_RDONLY );
+    (*dst)->sd = open(path, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP );
     
     if ( (*dst)->sd < 0) {
       RAISE2(system_error,
@@ -122,11 +117,12 @@ gras_socket_client_from_file(const char*path,
     (*dst)->sd = 1; /* stdout */
   }
 
-  DEBUG4("sd=%d in=%c out=%c accept=%c",
-	(*dst)->sd,
-	(*dst)->incoming?'y':'n', 
-	(*dst)->outgoing?'y':'n',
-	(*dst)->accepting?'y':'n');
+  DEBUG5("sock_client_from_file(%s): sd=%d in=%c out=%c accept=%c",
+	 path,
+	 (*dst)->sd,
+	 (*dst)->incoming?'y':'n', 
+	 (*dst)->outgoing?'y':'n',
+	 (*dst)->accepting?'y':'n');
   /* register socket */
   errcode = gras_dynar_push(_gras_trp_sockets,dst);
   if (errcode != no_error) {
@@ -161,7 +157,7 @@ gras_socket_server_from_file(const char*path,
 
 
   if (strcmp("-", path)) {
-    (*dst)->sd = open(path, O_WRONLY );
+    (*dst)->sd = open(path, O_RDONLY );
 
     if ( (*dst)->sd < 0) {
       RAISE2(system_error,
@@ -200,14 +196,14 @@ void gras_trp_file_close(gras_socket_t *sock){
   } else if (sock->sd == 1) {
     DEBUG0("Do not close stdout");
   } else {
-    DEBUG1("close file connection %d\n", sock->sd);
+    DEBUG1("close file connection %d", sock->sd);
 
     /* forget about the socket */
     FD_CLR(sock->sd, &(specific->incoming_socks));
 
     /* close the socket */
     if(close(sock->sd) < 0) {
-      WARNING2("error while closing file %d: %s\n", 
+      WARNING2("error while closing file %d: %s", 
 	       sock->sd, strerror(errno));
     }
   }
@@ -228,8 +224,8 @@ gras_trp_file_chunk_send(gras_socket_t *sock,
   while (size) {
     int status = 0;
     
+    DEBUG3("write(%d, %p, %ld);", sock->sd, data, (size_t)size);
     status = write(sock->sd, data, (size_t)size);
-    DEBUG3("write(%d, %p, %ld);\n", sock->sd, data, size);
     
     if (status == -1) {
       RAISE4(system_error,"write(%d,%p,%d) failed: %s",
@@ -265,7 +261,7 @@ gras_trp_file_chunk_recv(gras_socket_t *sock,
     int status = 0;
     
     status = read(sock->sd, data, (size_t)size);
-    DEBUG3("read(%d, %p, %ld);\n", sock->sd, data, size);
+    DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
     
     if (status == -1) {
       RAISE4(system_error,"read(%d,%p,%d) failed: %s",

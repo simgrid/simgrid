@@ -34,10 +34,8 @@ gras_datadesc_declare_struct_add_name_cb(long int    struct_code,
   gras_datadesc_type_t *struct_type;
   gras_datadesc_type_t *field_type;
   
-  TRY(gras_set_get_by_id(gras_datadesc_set_local,struct_code,
-			 (gras_set_elm_t**)struct_type));
-  TRY(gras_set_get_by_name(gras_datadesc_set_local,field_type_name,
-			 (gras_set_elm_t**)field_type));
+  TRY(gras_datadesc_by_id(struct_code,&struct_type));
+  TRY(gras_datadesc_by_name(field_type_name,&field_type));
 
   TRY(gras_ddt_new_struct_append(struct_type,
 				 field_name,  field_type,
@@ -55,10 +53,8 @@ gras_datadesc_declare_struct_add_code_cb(long int    struct_code,
   gras_datadesc_type_t *struct_type;
   gras_datadesc_type_t *field_type;
   
-  TRY(gras_set_get_by_id(gras_datadesc_set_local,struct_code,
-			 (gras_set_elm_t**)struct_type));
-  TRY(gras_set_get_by_id(gras_datadesc_set_local,field_code,
-			 (gras_set_elm_t**)field_type));
+  TRY(gras_datadesc_by_id(struct_code,&struct_type));
+  TRY(gras_datadesc_by_id(field_code, &field_type));
 
   TRY(gras_ddt_new_struct_append(struct_type,
 				 field_name,  field_type,
@@ -90,10 +86,8 @@ gras_datadesc_declare_union_add_name_cb(long int                      union_code
   gras_datadesc_type_t *union_type;
   gras_datadesc_type_t *field_type;
   
-  TRY(gras_set_get_by_id(gras_datadesc_set_local,union_code,
-			 (gras_set_elm_t**)union_type));
-  TRY(gras_set_get_by_name(gras_datadesc_set_local,field_type_name,
-			 (gras_set_elm_t**)field_type));
+  TRY(gras_datadesc_by_id  (union_code,      &union_type));
+  TRY(gras_datadesc_by_name(field_type_name, &field_type));
 
   TRY(gras_ddt_new_union_append(union_type,
 				field_name,  field_type,
@@ -111,10 +105,8 @@ gras_datadesc_declare_union_add_code_cb(long int                      union_code
   gras_datadesc_type_t *union_type;
   gras_datadesc_type_t *field_type;
   
-  TRY(gras_set_get_by_id(gras_datadesc_set_local,union_code,
-			 (gras_set_elm_t**)union_type));
-  TRY(gras_set_get_by_id(gras_datadesc_set_local,field_code,
-			 (gras_set_elm_t**)field_type));
+  TRY(gras_datadesc_by_id(union_code, &union_type));
+  TRY(gras_datadesc_by_id(field_code, &field_type));
 
   TRY(gras_ddt_new_union_append(union_type,
 				field_name,  field_type,

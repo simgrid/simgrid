@@ -1,0 +1,42 @@
+2004-04-19 Martin Quinson  <martin.quinson@tuxfamily.org>
+ [Data description]
+   - register init/exit functions within gras module mecanism   
+   - send/receive function. 
+   Convertion is not implemented, but short-cutted if not needed.
+   struct/array elements are sent one by one (instead of block-wise), but
+     nobody really cares (yet). Get a prototype before optimizing.
+   - tests (using a file socket) for DD send/receive on:
+     - base types: int, float
+     - array: fixed size, string (ie ref to dynamic string)
+     - structure: homogeneous, heterogeneous
+     - chained list, graph with cycle
+   Believe it or not, valgrind is not too unhappy with the results. The
+    cycle happily segfaults, but the others are ok. And I'm sick of pointers
+    for now.
+ [Transport]
+   [File plugin] 
+     - Bugfix when using a filename explicitely (instead of '-')
+   [SG plugin]   
+     - Porting to new standards.
+   [SG select]   
+     - Porting to new standards.
+
+2004-04-09 Martin Quinson  <martin.quinson@tuxfamily.org>
+ [Transport plugins]
+   - factorize more code between RL and SG in socket creation
+   - Complete the implementation and tests of:
+     o TCP
+     o file (only in RL, and mainly for debugging)
+     
+     I lost 3 days to design a portable address resolver, and then decided
+       that the prototype mainly have to run on my box.
+     Addressing portability too early may be like optimizing too early :-/
+ [Tests]
+   - use gras_init in the Tests instead of the crappy parse_log_opt 
+     (the latter function is removed)
+ [Conditional execution]
+   - New functions: gras_if_RL/gras_if_SG (basic support for this)
+ [Code reorganisation]
+  - Get rid of libgrasutils.a since it makes more trouble than it solves.
+    Build examples against the RL library, since there is no way to disable
+    its creation for now.

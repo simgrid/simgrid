@@ -1,0 +1,26 @@
+- gras_dd_convert_elm  		  
+  gras_datadesc_cpy
+
+- callback en reception ??
+
+- Virer cat ignored
+
+gras_ddt_new_ignored : Pas portable (taille) => virer cat?
+
+gras_ddt_new_parse
+gras_ddt_new_from_nws
+
+
+
+gras_trp_select [SG]
+
+gras_trp_sg_socket_client
+gras_trp_sg_socket_server
+gras_trp_sg_socket_close
+gras_trp_sg_select
+gras_trp_sg_bloc_send
+gras_trp_sg_bloc_recv
+gras_trp_sg_flush
+
+tcp->incoming_socks
+sock specific tcp (buffsize) inutile

@@ -13,8 +13,6 @@
 #ifndef GRAS_DATADESC_INTERFACE_H
 #define GRAS_DATADESC_INTERFACE_H
 
-#include "gras_private.h"
-
 void gras_datadesc_init(void);
 void gras_datadesc_exit(void);
 
@@ -35,7 +33,8 @@ gras_datadesc_send(gras_socket_t *sock, gras_datadesc_type_t *type, void *src);
 
 /* Receive (and convert) stuff */
 gras_error_t
-gras_datadesc_recv(gras_socket_t *sock, gras_datadesc_type_t *type, void **dst);
+gras_datadesc_recv(gras_socket_t *sock, gras_datadesc_type_t *type, 
+		   int r_arch, void **dst);
 
 
 /* -- */

@@ -21,10 +21,10 @@ Open/close sockets, and get info on peer.
 
 @host: 
 @Param2: 
-@bufSize: 
 @dst: 
 @Returns: 
 <!-- # Unused Parameters # -->
+@bufSize: 
 @sock: 
 
 
@@ -34,9 +34,10 @@ Open/close sockets, and get info on peer.
 </para>
 
 @Param1: 
-@bufSize: 
 @dst: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@bufSize: 
 
 
 <!-- ##### FUNCTION gras_socket_close ##### -->

@@ -69,14 +69,14 @@ extern const gras_arch_sizes_t gras_arch_sizes[gras_arch_count];
 typedef enum e_gras_datadesc_type_category {
         e_gras_datadesc_type_cat_undefined = 0,
 
-        e_gras_datadesc_type_cat_scalar,
-        e_gras_datadesc_type_cat_struct,
-        e_gras_datadesc_type_cat_union,
-        e_gras_datadesc_type_cat_ref,       /* ref to an uniq element */
-        e_gras_datadesc_type_cat_array,
-        e_gras_datadesc_type_cat_ignored,
+        e_gras_datadesc_type_cat_scalar = 1,
+        e_gras_datadesc_type_cat_struct = 2,
+        e_gras_datadesc_type_cat_union = 3,
+        e_gras_datadesc_type_cat_ref = 4,       /* ref to an uniq element */
+        e_gras_datadesc_type_cat_array = 5,
+        e_gras_datadesc_type_cat_ignored = 6,
 
-        e_gras_datadesc_type_cat_invalid
+        e_gras_datadesc_type_cat_invalid = 7
 } gras_datadesc_type_category_t;
 
 
@@ -134,7 +134,7 @@ typedef struct s_gras_dd_cat_struct {
  * Specific fields of a union
  */
 typedef struct s_gras_dd_cat_union {
-  gras_datadesc_type_cb_int_t field_count;
+  gras_datadesc_type_cb_int_t selector;
   gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
 } gras_dd_cat_union_t;
 
@@ -147,7 +147,7 @@ typedef struct s_gras_dd_cat_ref {
   int	 	 		code;
 
   /* callback used to return the referenced type number  */
-  gras_datadesc_type_cb_int_t   discriminant;
+  gras_datadesc_type_cb_int_t   selector;
 } gras_dd_cat_ref_t;
 
 
@@ -284,5 +284,20 @@ gras_ddt_new_from_nws(const char           *name,
 		      size_t                howmany,
 		      gras_datadesc_type_t **dst);
 
+/****************************************************
+ * Callback persistant state constructor/destructor *
+ ****************************************************/
+gras_error_t
+gras_dd_cbps_new(gras_dd_cbps_t **dst);
+void
+gras_dd_cbps_free(gras_dd_cbps_t **state);
+
+/***************
+ * Convertions *
+ ***************/
+gras_error_t
+gras_dd_convert_elm(gras_datadesc_type_t *type,
+		    int r_arch, 
+		    void *src, void *dst);
 
 #endif /* GRAS_DATADESC_PRIVATE_H */

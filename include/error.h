@@ -52,11 +52,19 @@ typedef enum {
 
 /*@observer@*/ const char *gras_error_name(gras_error_t errcode);
 
-#define TRY(a) if ((errcode=a) != no_error) return errcode
+#define TRY(a) do {                                     \
+  if ((errcode=a) != no_error) {                        \
+     fprintf (stderr, "%s:%d: '%s' error raising...\n", \
+	     __FILE__,__LINE__,                         \
+             gras_error_name(errcode));                 \
+     return errcode;                                    \
+  } } while (0)
+   
 #define TRYCATCH(a,b) if ((errcode=a) != no_error && errcode !=b) return errcode
 #define TRYFAIL(a) do {                                        \
   if ((errcode=a) != no_error) {                               \
-     fprintf(stderr,"Got '%s' error !\n",                      \
+     fprintf(stderr,"%s:%d: Got '%s' error !\n",               \
+	     __FILE__,__LINE__,                                \
              gras_error_name(errcode));                        \
      fflush(stdout);                                           \
      abort();                                                  \

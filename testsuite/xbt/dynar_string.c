@@ -23,7 +23,7 @@ void free_string(void *d){
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
-   int cpt,i;
+   int cpt;
    char buf[1024];
    char *s1,*s2;
    
@@ -31,7 +31,7 @@ int main(int argc,char *argv[]) {
    
    fprintf(stderr,"==== Traverse the empty dynar\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(char *),&free_string));
-   gras_dynar_foreach(d,cpt,i){
+   gras_dynar_foreach(d,cpt,s1){
      fprintf(stderr,
 	     "Damnit, there is something in the empty dynar\n");
      abort();
@@ -74,12 +74,21 @@ int main(int argc,char *argv[]) {
    gras_dynar_free(d);
 
 
-   fprintf(stderr,"==== Unshift/pop %d strings\n",NB_ELEM);
+   fprintf(stderr,"==== Unshift, traverse and pop %d strings\n",NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(char**),&free_string));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
      s1=strdup(buf);
      TRYFAIL(gras_dynar_unshift(d,&s1));
+   }
+   gras_dynar_foreach(d,cpt,s1) {
+     sprintf(buf,"%d",NB_ELEM - cpt -1);
+     if (strcmp(buf,s1)) {
+       fprintf(stderr,
+           "The retrieved value is not the same than the injected one (%s!=%s)\n",
+	       buf,s1);
+       abort();
+     }
    }
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);

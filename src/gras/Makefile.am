@@ -34,7 +34,8 @@ COMMON_S=\
   DataDesc/ddt_create.c          DataDesc/ddt_declare.c \
   DataDesc/ddt_remote.c          DataDesc/ddt_use.c     \
   DataDesc/cbps.c                DataDesc/datadesc.c    \
-  DataDesc/datadesc_interface.h  DataDesc/datadesc_private.h
+  DataDesc/datadesc_interface.h  DataDesc/datadesc_private.h 
+
 
 #  DataDesc/datadesc.c                               \
 #  DataDesc/tools.c                                  \

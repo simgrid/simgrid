@@ -17,7 +17,8 @@ core_tests =                                  \
 
 RL_tests =                                    \
 	trp_tcp_client   trp_tcp_server       \
-	trp_file_client  trp_file_server
+	trp_file_client  trp_file_server      \
+	datadesc_usage
 #	gs_example_send gs_example_receive
 
 SG_tests =
@@ -52,6 +53,8 @@ trp_tcp_client_LDADD=     $(LDADD_RL)
 trp_tcp_server_LDADD=     $(LDADD_RL)
 trp_file_client_LDADD=    $(LDADD_RL)
 trp_file_server_LDADD=    $(LDADD_RL)
+
+datadesc_usage_LDADD=     $(LDADD_RL)
 
 #gs_example_send_LDADD=    $(LDADD_UTILS)
 #gs_example_receive_LDADD= $(LDADD_UTILS)
