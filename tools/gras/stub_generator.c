@@ -251,7 +251,7 @@ static void generate_makefile_am(char *project, char *deployment)
 }
 
 
-static void generate_makefile(char *project, char *deployment)
+static void generate_makefile_local(char *project, char *deployment)
 {
   xbt_dict_cursor_t cursor=NULL;
   char *key = NULL;
@@ -265,6 +265,7 @@ static void generate_makefile(char *project, char *deployment)
   OUT=fopen(filename,"w");
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
 
+  fprintf(OUT, "############ PROJECT COMPILING AND ARCHIVING #########\n");
   fprintf(OUT, "PROJECT_NAME=%s\n",project);
   fprintf(OUT, 
 	  "DISTDIR=gras-$(PROJECT_NAME)\n\n"
@@ -272,9 +273,26 @@ static void generate_makefile(char *project, char *deployment)
 	  "CFLAGS = -O3 -w\n"
 	  "INCLUDES = -I$(SIMGRID_INSTALL_PATH)/include\n"
 	  "LIBS = -lm  -L$(SIMGRID_INSTALL_PATH)/lib/ -lsimgrid\n"
-	  "\n"
-	  "C_FILES = _chrono_multiplier.c _chrono_simulator.c chrono.c\n"
-	  "BIN_FILES = chrono_multiplier chrono_simulator\n"
+	  "\n");
+
+  fprintf(OUT, "C_FILES = ");
+  fprintf(OUT, SIM_SOURCENAME" ",project);
+  xbt_dict_foreach(process_function_set,cursor,key,data) {
+    fprintf(OUT, RL_SOURCENAME " ",project, key);
+  }
+  fprintf(OUT, "%s.c\n", project);
+
+  fprintf(OUT,"OBJ_FILES = \n");
+
+  fprintf(OUT, "BIN_FILES = ");
+
+  fprintf(OUT, SIM_BINARYNAME " ",project);
+  xbt_dict_foreach(process_function_set,cursor,key,data) {
+    fprintf(OUT, RL_BINARYNAME " ", project, key);
+  }
+  fprintf(OUT, "\n");
+
+  fprintf(OUT,
 	  "\n"
 	  "all: $(BIN_FILES)\n"
 	  "\n");
@@ -290,7 +308,8 @@ static void generate_makefile(char *project, char *deployment)
 	  "%%.o: %%.c\n"
 	  "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<\n"
 	  "\n"
-	  "distdir: $(C_FILES) $(PROJECT_NAME).Makefile\n"
+	  "DIST_FILES= $(C_FILES) "MAKEFILE_FILENAME_LOCAL" "MAKEFILE_FILENAME_REMOTE"\n"
+	  "distdir: $(DIST_FILES)\n"
 	  "\trm -rf $(DISTDIR)\n"
 	  "\tmkdir -p $(DISTDIR)\n"
 	  "\tcp $^ $(DISTDIR)\n"
@@ -299,11 +318,103 @@ static void generate_makefile(char *project, char *deployment)
 	  "\ttar c $(DISTDIR) | gzip -c > $(DISTDIR).tar.gz\n"
 	  "\n"
 	  "clean:\n"
-	  "\trm -f $(BIN_FILES) *.o *~\n"
+	  "\trm -f $(BIN_FILES) $(OBJ_FILES) *~\n"
 	  "\trm -rf $(DISTDIR)\n"
 	  "\n"
 	  ".SUFFIXES:\n"
-	  ".PHONY : clean\n");
+	  ".PHONY : clean\n"
+	  "\n", project, project);
+
+  fprintf(OUT, "############ REMOTE COMPILING #########\n");
+  fprintf(OUT, 
+	  "MACHINES ?= varekai.ucsd.edu sideshow.ucsd.edu dralion.ucsd.edu\n"
+	  "INSTALL_PATH ?='$$HOME/tmp/src' ### Has to be an absolute path !!! \n"
+	  "SRCDIR ?= ./\n"
+	  "SIMGRID_VERSION ?=2.91\n"
+	  "GRAS_PROJECT ?= %s\n"
+	  "GRAS_PROJECT_URL ?= http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/gras_test/\n"
+	  "\n"
+	  "remote:\n"
+	  "\t@echo;echo \"----[ Compile the package on remote hosts ]----\"\n"
+	  "\t@test -e $(SRCDIR)/buildlogs/ || mkdir -p $(SRCDIR)/buildlogs/\n"
+	  "\t for site in $(MACHINES) ; do \\\n"
+	  "\t   machine=`echo $$site |sed 's/^\\([^%%]*\\)%%.*$$/\\1/'`;\\\n"
+	  "\t   machine2=`echo $$site |sed 's/^\\([^%%]*\\)%%\\(.*\\)$$/\\2/'`;\\\n"
+	  "\t   cmd_mkdir=\"\\\"sh -c 'env INSTALL_PATH=$(INSTALL_PATH) SIMGRID_INSTALL_PATH=$(INSTALL_PATH) \\\n"
+	  "\t                        SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \\\n"
+	  "\t                        GRAS_PROJECT_URL=$(GRAS_PROJECT_URL)  mkdir -p $(INSTALL_PATH) 2>&1'\\\"\";\\\n"
+	  "\t   cmd_make=\"\\\"sh -c 'env INSTALL_PATH=$(INSTALL_PATH) SIMGRID_INSTALL_PATH=$(INSTALL_PATH) \\\n"
+	  "\t                        SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \\\n"
+	  "\t                        GRAS_PROJECT_URL=$(GRAS_PROJECT_URL)  make -C $(INSTALL_PATH) -f "MAKEFILE_FILENAME_REMOTE" $(ACTION) 2>&1'\\\"\";\\\n"
+	  "\t   if echo $$site | grep  '%%' >/dev/null ; then \\\n"
+	  "\t     echo \"----[ Compile on $$machine2 (behind $$machine) ]----\";\\\n"
+	  "\t   else \\\n"
+	  "\t     machine=$$site;\\\n"
+	  "\t     echo \"----[ Compile on $$machine ]----\";\\\n"
+	  "\t   fi;\\\n"
+	  "\t   if echo $$site | grep  '%%' >/dev/null ; then \\\n"
+	  "\t     if ssh $$machine \"ssh -A $$machine2 $$cmd_mkdir\" 2>&1 > $(SRCDIR)/buildlogs/$$site.log;\\\n"
+	  "\t     then true; else failed=1;echo \"Failed (check $(SRCDIR)/buildlogs/$$site.log)\"; fi;\\\n"
+	  "\t   else \\\n"
+	  "\t     if ssh $$machine \"eval $$cmd_mkdir\" 2>&1 > $(SRCDIR)/buildlogs/$$site.log ;\\\n"
+	  "\t     then true; else failed=1;echo \"Failed (check $(SRCDIR)/buildlogs/$$site.log)\"; fi; \\\n"
+	  "\t   fi;\\\n"
+	  "\t   echo \"-- Copy the data over\"; \\\n"
+	  "\t   scp "MAKEFILE_FILENAME_REMOTE" $$site:$(INSTALL_PATH) ;\\\n"
+	  "\t   echo \"-- Compiling... (the output gets into $(SRCDIR)/buildlogs/$$site.log)\"; \\\n"
+	  "\t   if echo $$site | grep  '%%' >/dev/null ; then \\\n"
+	  "\t     if ssh $$machine \"ssh -A $$machine2 $$cmd_make\" 2>&1 >> $(SRCDIR)/buildlogs/$$site.log;\\\n"
+	  "\t     then echo \"Sucessful\"; else failed=1;echo \"Failed (check $(SRCDIR)/buildlogs/$$site.log)\"; fi;echo; \\\n"
+	  "\t   else \\\n"
+	  "\t     if ssh $$machine \"eval $$cmd_make\" 2>&1 >> $(SRCDIR)/buildlogs/$$site.log ;\\\n"
+	  "\t     then echo \"Sucessful\"; else failed=1;echo \"Failed (check $(SRCDIR)/buildlogs/$$site.log)\"; fi;echo; \\\n"
+	  "\t   fi;\\\n"
+	  "\t done;\n",project,project,project);
+
+  fclose(OUT);
+}
+
+static void generate_makefile_remote(char *project, char *deployment)
+{
+  xbt_dict_cursor_t cursor=NULL;
+  char *key = NULL;
+  void *data = NULL;
+  char *filename = NULL;
+  FILE *OUT = NULL;
+
+  filename = xbt_new(char,strlen(project) + strlen(MAKEFILE_FILENAME_REMOTE));
+  sprintf(filename,MAKEFILE_FILENAME_REMOTE, project);
+  
+  OUT=fopen(filename,"w");
+  xbt_assert1(OUT, "Unable to open %s for writing",filename);
+
+  fprintf(OUT, 
+	  "INSTALL_PATH ?= $(shell pwd)\n"
+	  "\n"
+	  "simgrid-$(SIMGRID_VERSION).tar.gz:\n"
+	  "\twget -N http://gcl.ucsd.edu/simgrid/dl/simgrid-$(SIMGRID_VERSION).tar.gz\n"
+	  "simgrid-$(SIMGRID_VERSION)/: simgrid-$(SIMGRID_VERSION).tar.gz\n"
+	  "\ttar zxf $<\n"
+	  "\tcd simgrid-$(SIMGRID_VERSION)/; \\\n"
+	  "\t   ./configure --prefix=$(INSTALL_PATH) ; \\\n"
+	  "\t   make all install\n"
+	  "compile-simgrid: simgrid-$(SIMGRID_VERSION)\n"
+	  "\n"
+	  "gras-$(GRAS_PROJECT).tar.gz:\n"
+	  "\twget -N $(GRAS_PROJECT_URL)/gras-$(GRAS_PROJECT).tar.gz\n"
+	  "gras-$(GRAS_PROJECT)/: gras-$(GRAS_PROJECT).tar.gz\n"
+	  "\ttar zxf $<\n"
+	  "\tmake -C gras-$(GRAS_PROJECT)/ -f $(GRAS_PROJECT).Makefile.local all\n"
+	  "compile-gras compile-gras-$(GRAS_PROJECT): gras-$(GRAS_PROJECT) compile-simgrid\n"
+	  "\n"
+	  "clean-simgrid:\n"
+	  "\trm -rf simgrid-$(SIMGRID_VERSION)*\n"
+	  "clean-gras clean-gras-$(GRAS_PROJECT):\n"
+	  "\trm -rf gras-$(GRAS_PROJECT)*\n"
+	  "clean: clean-simgrid clean-gras-$(GRAS_PROJECT)\n"
+	  "\n"
+	  ".PHONY: clean clean-simgrid clean-gras-$(GRAS_PROJECT) compile-simgrid compile-gras-$(GRAS_PROJECT)\n"
+	  "\n");
   fclose(OUT);
 }
 
@@ -350,8 +461,8 @@ int main(int argc, char *argv[])
 
   generate_sim(project_name);
   generate_rl(project_name);
-  generate_makefile_am(project_name, deployment_file);
   generate_makefile_local(project_name, deployment_file);
+  generate_makefile_remote(project_name, deployment_file);
 
   free(warning);
   return 0;
