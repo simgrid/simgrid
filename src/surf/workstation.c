@@ -46,7 +46,7 @@ static void create_workstations(void)
   xbt_dict_foreach(cpu_set, cursor, name, cpu) {
     nw_card = NULL;
     xbt_dict_get(network_card_set, name, (void *) &nw_card);
-    xbt_assert0(nw_card, "No corresponding card found");
+    xbt_assert1(nw_card, "No corresponding card found for %s",name);
     xbt_dict_set(workstation_set, name,
 		 workstation_new(name, cpu, nw_card), workstation_free);
   }
