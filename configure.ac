@@ -132,9 +132,10 @@ AC_CONFIG_FILES([
   src/Makefile
   src/amok/Makefile
   examples/Makefile 
-  examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
-  examples/msg/Makefile 
+    examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
+    examples/msg/Makefile 
   doc/Makefile
+    doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
   tools/compile-remote-worker
   testsuite/Makefile
   testsuite/run_tests    
