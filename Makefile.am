@@ -44,12 +44,12 @@ publish: dist
 	 make -C public_html publish
 
 mail:
-	 @ver=`dpkg-parsechangelog -lChangeLog| egrep '^Version: ' | sed 's/Version: //'`;\
+	 @ver=`dpkg-parsechangelog -lChangeLog.debian| egrep '^Version: ' | sed 's/Version: //'`;\
 	  (echo "Hello," ; \
 	   echo; \
            echo "A new version of GRAS is available. Here is the changelog:";\
 	   echo;echo;\
-           dpkg-parsechangelog -lChangeLog ;\
+           dpkg-parsechangelog -lChangeLog.debian ;\
            echo;echo; \
 	   echo "It is available from the official website:";\
 	   echo "  http://grail.sdsc.edu/simgrid/";\
