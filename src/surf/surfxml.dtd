@@ -1,5 +1,8 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform_description ((cpu|network_link|route|process)*)>
+<!ELEMENT platform_description ((include|cpu|network_link|route|process)*)>
+
+<!ELEMENT include ((include|cpu|network_link|route|process)*)>
+<!ATTLIST include file CDATA #REQUIRED>
 
 <!ELEMENT cpu EMPTY>
 <!ATTLIST cpu name CDATA #REQUIRED>
@@ -21,6 +24,7 @@
 <!ELEMENT route (route_element*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
+<!ATTLIST route impact_on_computation CDATA>
 
 <!ELEMENT route_element EMPTY>
 <!ATTLIST route_element name CDATA #REQUIRED>

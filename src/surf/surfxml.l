@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/01/05 14:22:05.
+ * Generated 2005/01/05 17:50:49.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -46,6 +46,7 @@ const char rcs_flexml[] =
 
 /* FleXML-provided data. */
 const char* pcdata;
+AT_route_impact_on_computation A_route_impact_on_computation;
 AT_network_link_bandwidth A_network_link_bandwidth;
 AT_cpu_name A_cpu_name;
 AT_network_link_state A_network_link_state;
@@ -58,6 +59,7 @@ AT_cpu_availability A_cpu_availability;
 AT_network_link_name A_network_link_name;
 AT_route_element_name A_route_element_name;
 AT_cpu_power A_cpu_power;
+AT_include_file A_include_file;
 AT_process_function A_process_function;
 AT_cpu_state A_cpu_state;
 AT_route_dst A_route_dst;
@@ -186,6 +188,7 @@ Literal		\'[^'']*\'|\"[^""]*\"
  */
 %x PROLOG DOCTYPE EPILOG INCOMMENT INPI VALUE1 VALUE2 CDATA
 %x ROOT_platform_description AL_platform_description S_platform_description S_platform_description_1 S_platform_description_2 E_platform_description
+%x ROOT_include AL_include S_include S_include_1 S_include_2 E_include
 %x ROOT_cpu AL_cpu E_cpu
 %x ROOT_network_link AL_network_link E_network_link
 %x ROOT_route AL_route S_route S_route_1 S_route_2 E_route
@@ -219,6 +222,12 @@ const char* *statenames=NULL;
   statenames[S_platform_description_1] = "platform_description";
   statenames[S_platform_description_2] = "platform_description";
   statenames[E_platform_description] = "platform_description";
+  statenames[ROOT_include] = NULL;
+  statenames[AL_include] = NULL;
+  statenames[S_include] = "include";
+  statenames[S_include_1] = "include";
+  statenames[S_include_2] = "include";
+  statenames[E_include] = "include";
   statenames[ROOT_cpu] = NULL;
   statenames[AL_cpu] = NULL;
   statenames[E_cpu] = "cpu";
@@ -246,7 +255,7 @@ const char* *statenames=NULL;
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-<ROOT_platform_description,AL_platform_description,S_platform_description,S_platform_description_1,S_platform_description_2,E_platform_description,ROOT_cpu,AL_cpu,E_cpu,ROOT_network_link,AL_network_link,E_network_link,ROOT_route,AL_route,S_route,S_route_1,S_route_2,E_route,ROOT_route_element,AL_route_element,E_route_element,ROOT_process,AL_process,S_process,S_process_1,S_process_2,E_process,ROOT_argument,AL_argument,E_argument,PROLOG,DOCTYPE,EPILOG>{
+<ROOT_platform_description,AL_platform_description,S_platform_description,S_platform_description_1,S_platform_description_2,E_platform_description,ROOT_include,AL_include,S_include,S_include_1,S_include_2,E_include,ROOT_cpu,AL_cpu,E_cpu,ROOT_network_link,AL_network_link,E_network_link,ROOT_route,AL_route,S_route,S_route_1,S_route_2,E_route,ROOT_route_element,AL_route_element,E_route_element,ROOT_process,AL_process,S_process,S_process_1,S_process_2,E_process,ROOT_argument,AL_argument,E_argument,PROLOG,DOCTYPE,EPILOG>{
  "<!--" ENTER(INCOMMENT);
  "<?" ENTER(INPI);
 }
@@ -266,7 +275,7 @@ const char* *statenames=NULL;
 
  /* SPACES: skipped uniformly */
 
-<ROOT_platform_description,AL_platform_description,S_platform_description,S_platform_description_1,S_platform_description_2,E_platform_description,ROOT_cpu,AL_cpu,E_cpu,ROOT_network_link,AL_network_link,E_network_link,ROOT_route,AL_route,S_route,S_route_1,S_route_2,E_route,ROOT_route_element,AL_route_element,E_route_element,ROOT_process,AL_process,S_process,S_process_1,S_process_2,E_process,ROOT_argument,AL_argument,E_argument,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
+<ROOT_platform_description,AL_platform_description,S_platform_description,S_platform_description_1,S_platform_description_2,E_platform_description,ROOT_include,AL_include,S_include,S_include_1,S_include_2,E_include,ROOT_cpu,AL_cpu,E_cpu,ROOT_network_link,AL_network_link,E_network_link,ROOT_route,AL_route,S_route,S_route_1,S_route_2,E_route,ROOT_route_element,AL_route_element,E_route_element,ROOT_process,AL_process,S_process,S_process_1,S_process_2,E_process,ROOT_argument,AL_argument,E_argument,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
 
  /* PROLOG: determine root element and process it. */
 
@@ -279,6 +288,7 @@ const char* *statenames=NULL;
  "<!DOCTYPE"{S}"argument"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_argument);
  "<!DOCTYPE"{S}"route_element"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_route_element);
  "<!DOCTYPE"{S}"cpu"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_cpu);
+ "<!DOCTYPE"{S}"include"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_include);
  "<!DOCTYPE"{S}"route"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_route);
  "<!DOCTYPE"{S}"platform_description"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_platform_description);
  "<!DOCTYPE"{S}"network_link"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_network_link);
@@ -324,7 +334,49 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</platform_description>' expected.");
 }
 
-<ROOT_cpu,S_platform_description_2,S_platform_description_1,S_platform_description>"<cpu"{s} {
+<ROOT_include,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<include"{s} {
+  A_include_file = NULL;
+  ENTER(AL_include);
+  }
+
+<AL_include>{
+ "file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_include_file);
+ "file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_include_file);
+
+ ">" {
+  if (!A_include_file) FAIL("Required attribute `file' not set for `include' element.");
+  LEAVE; STag_include();pcdata = NULL; ENTER(S_include);
+ }
+ "/>" {
+  if (!A_include_file) FAIL("Required attribute `file' not set for `include' element.");
+  LEAVE; STag_include(); pcdata = NULL; ETag_include();
+  switch (YY_START) {
+   case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
+   case ROOT_include: SET(EPILOG); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of include element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `include' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `include' element.");
+}
+
+<E_include,S_include,S_include_2>{
+ "</include"{s}">" {
+  LEAVE;
+  ETag_include();
+  switch (YY_START) {
+   case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
+   case ROOT_include: SET(EPILOG); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</include>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</include>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</include>' expected.");
+}
+
+<ROOT_cpu,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<cpu"{s} {
   A_cpu_name = NULL;
   A_cpu_power = NULL;
   A_cpu_availability = "1.0";
@@ -366,6 +418,7 @@ const char* *statenames=NULL;
   LEAVE; STag_cpu(); pcdata = NULL; ETag_cpu();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_cpu: SET(EPILOG); break;
   }
  }
@@ -380,6 +433,7 @@ const char* *statenames=NULL;
   ETag_cpu();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_cpu: SET(EPILOG); break;
   }
  }
@@ -388,7 +442,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</cpu>' expected.");
 }
 
-<ROOT_network_link,S_platform_description_2,S_platform_description_1,S_platform_description>"<network_link"{s} {
+<ROOT_network_link,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<network_link"{s} {
   A_network_link_name = NULL;
   A_network_link_bandwidth = NULL;
   A_network_link_bandwidth_file = NULL;
@@ -434,6 +488,7 @@ const char* *statenames=NULL;
   LEAVE; STag_network_link(); pcdata = NULL; ETag_network_link();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_network_link: SET(EPILOG); break;
   }
  }
@@ -448,6 +503,7 @@ const char* *statenames=NULL;
   ETag_network_link();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_network_link: SET(EPILOG); break;
   }
  }
@@ -456,9 +512,10 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</network_link>' expected.");
 }
 
-<ROOT_route,S_platform_description_2,S_platform_description_1,S_platform_description>"<route"{s} {
+<ROOT_route,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<route"{s} {
   A_route_src = NULL;
   A_route_dst = NULL;
+  A_route_impact_on_computation = NULL;
   ENTER(AL_route);
   }
 
@@ -468,6 +525,9 @@ const char* *statenames=NULL;
 
  "dst"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_dst);
  "dst"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_dst);
+
+ "impact_on_computation"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_impact_on_computation);
+ "impact_on_computation"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_impact_on_computation);
 
  ">" {
   if (!A_route_src) FAIL("Required attribute `src' not set for `route' element.");
@@ -480,6 +540,7 @@ const char* *statenames=NULL;
   LEAVE; STag_route(); pcdata = NULL; ETag_route();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_route: SET(EPILOG); break;
   }
  }
@@ -494,6 +555,7 @@ const char* *statenames=NULL;
   ETag_route();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_route: SET(EPILOG); break;
   }
  }
@@ -542,7 +604,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</route_element>' expected.");
 }
 
-<ROOT_process,S_platform_description_2,S_platform_description_1,S_platform_description>"<process"{s} {
+<ROOT_process,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<process"{s} {
   A_process_host = NULL;
   A_process_function = NULL;
   ENTER(AL_process);
@@ -566,6 +628,7 @@ const char* *statenames=NULL;
   LEAVE; STag_process(); pcdata = NULL; ETag_process();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_process: SET(EPILOG); break;
   }
  }
@@ -580,6 +643,7 @@ const char* *statenames=NULL;
   ETag_process();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
+   case S_include: case S_include_2: case S_include_1: SET(S_include_2); break;
    case ROOT_process: SET(EPILOG); break;
   }
  }

@@ -1,5 +1,5 @@
 /* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2005/01/05 14:22:02.
+ * Generated 2005/01/05 17:50:46.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -27,6 +27,8 @@
 /* XML application entry points. */
 extern void STag_platform_description(void);
 extern void ETag_platform_description(void);
+extern void STag_include(void);
+extern void ETag_include(void);
 extern void STag_cpu(void);
 extern void ETag_cpu(void);
 extern void STag_network_link(void);
@@ -41,6 +43,8 @@ extern void STag_argument(void);
 extern void ETag_argument(void);
 
 /* XML application data. */
+typedef const char* AT_route_impact_on_computation;
+#define AU_route_impact_on_computation NULL
 typedef const char* AT_network_link_bandwidth;
 #define AU_network_link_bandwidth NULL
 typedef const char* AT_cpu_name;
@@ -64,6 +68,8 @@ typedef const char* AT_route_element_name;
 #define AU_route_element_name NULL
 typedef const char* AT_cpu_power;
 #define AU_cpu_power NULL
+typedef const char* AT_include_file;
+#define AU_include_file NULL
 typedef const char* AT_process_function;
 #define AU_process_function NULL
 typedef enum { AU_cpu_state, A_cpu_state_ON,A_cpu_state_OFF } AT_cpu_state;
@@ -80,6 +86,7 @@ typedef const char* AT_network_link_bandwidth_file;
 
 /* FleXML-provided data. */
 extern const char* pcdata;
+extern AT_route_impact_on_computation A_route_impact_on_computation;
 extern AT_network_link_bandwidth A_network_link_bandwidth;
 extern AT_cpu_name A_cpu_name;
 extern AT_network_link_state A_network_link_state;
@@ -92,6 +99,7 @@ extern AT_cpu_availability A_cpu_availability;
 extern AT_network_link_name A_network_link_name;
 extern AT_route_element_name A_route_element_name;
 extern AT_cpu_power A_cpu_power;
+extern AT_include_file A_include_file;
 extern AT_process_function A_process_function;
 extern AT_cpu_state A_cpu_state;
 extern AT_route_dst A_route_dst;
