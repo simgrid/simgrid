@@ -117,5 +117,5 @@ int gras_datadesc_type_cmp(const gras_datadesc_t *d1,
 }
 
 gras_error_t gras_datadesc_cpy(gras_datadesc_t *type, void *src, void **dst) {
-
+  
 }

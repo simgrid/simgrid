@@ -16,7 +16,7 @@ gras_error_t gras_process_init() {
   return unknown_error;
 }
 
-gras_error_t gras_process_finalize() {
+gras_error_t gras_process_exit() {
   return unknown_error;
 }
 
@@ -82,7 +82,7 @@ gras_error_t
 gras_rawsock_send(gras_rawsock_t *sd, unsigned int expSize, unsigned int msgSize){
   return unknown_error;
 }
-grasProcessData_t *grasProcessDataGet() {
+gras_process_data_t *gras_process_data_get() {
   return NULL;
 }
 
