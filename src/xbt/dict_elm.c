@@ -351,11 +351,11 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
 
   len = xbt_dynar_length(p_elm->sub);
 
-  if(1) { /* FIXME: Arnaud, did you leave dead code here? */
+  {
     int p_min = 0;
     int p_max = len-1;
     int cmp = 0;
-
+    
     p = p_min;
     if(len==0) {
       p=0;
@@ -391,18 +391,6 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
 	  } 
 	}
       }
-    }
-  } else {
-    for (p = 0; p < len; p++) {
-      int          cmp     = 0;
-      
-      _dict_child_cmp(p_elm, p, key, key_len, &o, &m, &cmp);
-      
-      if (m)
-	break;
-      
-      o = *p_offset;
-      m = 0;
     }
   }
 
