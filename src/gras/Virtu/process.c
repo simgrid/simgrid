@@ -37,3 +37,12 @@ gras_procdata_init() {
   TRY(gras_dynar_new(  &(pd->cbl_list),  sizeof(gras_cblist_t *), NULL  ));
   return no_error;
 }
+
+void
+gras_procdata_exit() {
+  gras_procdata_t *pd=gras_procdata_get();
+
+  gras_dynar_free(pd->msg_queue);
+  gras_dynar_free(pd->cbl_list);
+}
+
