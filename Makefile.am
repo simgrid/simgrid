@@ -87,6 +87,7 @@ MACHINES ?= graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
 
 # ACTIONS: What to do there
 # possible values:
+#  - scp:     copy a tarball over
 #  - clean:   erase any previously existing source tree and 
 #             open the new open
 #  - untar:   open the tarball which was just copied
@@ -98,7 +99,7 @@ MACHINES ?= graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
 #  - check:   run 'make check'
 #
 # default value:
-ACTIONS ?= clean untar config compile check
+ACTIONS ?= scp clean untar config compile check
 
 REMOTE_PREFIX ?='simgrid'
 
@@ -117,9 +118,11 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	     echo "----[ Compile on $$machine ]----";\
 	   fi;\
 	   \
-	   echo "-- Copy the data over"; \
-	   scp @srcdir@/@PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker \
+	   if echo $(ACTIONS) |grep -q scp ; then \
+ 	     echo "-- Copy the data over"; \
+	     scp @srcdir@/@PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker \
 	       $$machine:$(REMOTE_PREFIX)/src;\
+	   fi; \
 	   \
 	   echo "-- Compiling... (the output gets into @srcdir@/buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; \
 	   if echo $$site | grep  '%' >/dev/null ; then \
