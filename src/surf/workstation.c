@@ -75,6 +75,11 @@ static int resource_used(void *resource_id)
 
 static void action_free(surf_action_t action)
 {
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->common_public->action_free(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->action_free(action);
+  else DIE_IMPOSSIBLE;
   return;
 }
 
@@ -91,7 +96,11 @@ static void action_recycle(surf_action_t action)
 static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
-  surf_action_change_state(action, state);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->common_public->action_change_state(action,state);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->action_change_state(action,state);
+  else DIE_IMPOSSIBLE;
   return;
 }
 

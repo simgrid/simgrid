@@ -210,10 +210,9 @@ static int resource_used(void *resource_id)
 
 static void action_free(surf_action_t action)
 {
-  surf_action_network_t Action = (surf_action_network_t) action;
-
   xbt_swag_remove(action, action->state_set);
-  lmm_variable_free(maxmin_system, Action->variable);
+  if(((surf_action_network_t)action)->variable)
+    lmm_variable_free(maxmin_system, ((surf_action_network_t)action)->variable);
   xbt_free(action);
 
   return;
@@ -232,6 +231,12 @@ static void action_recycle(surf_action_t action)
 static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
+  if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
+    if(((surf_action_network_t)action)->variable) {
+      lmm_variable_free(maxmin_system, ((surf_action_network_t)action)->variable);
+      ((surf_action_network_t)action)->variable = NULL;
+    }
+
   surf_action_change_state(action, state);
   return;
 }
@@ -404,7 +409,7 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
 			      min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
 
   if(route_size == 0) {
-    surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+    action_change_state((surf_action_t) action, SURF_ACTION_DONE);
   }
 
   for (i = 0; i < route_size; i++)

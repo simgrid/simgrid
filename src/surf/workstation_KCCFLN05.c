@@ -394,6 +394,11 @@ static double share_network_KCCFLN05_resources(double now)
 static void action_network_KCCFLN05_change_state(surf_action_t action,
 						 e_surf_action_state_t state)
 {
+  if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
+    if(((surf_action_network_KCCFLN05_t)action)->variable) {
+      lmm_variable_free(maxmin_system, ((surf_action_network_KCCFLN05_t)action)->variable);
+      ((surf_action_network_KCCFLN05_t)action)->variable = NULL;
+    }
   surf_action_change_state(action, state);
   return;
 }
@@ -505,6 +510,19 @@ static void action_cpu_KCCFLN05_free(surf_action_t action)
   xbt_free(action);
 }
 
+static void action_cpu_KCCFLN05_change_state(surf_action_t action,
+				e_surf_action_state_t state)
+{
+  if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
+    if(((surf_action_cpu_KCCFLN05_t)action)->variable) {
+      lmm_variable_free(maxmin_system, ((surf_action_cpu_KCCFLN05_t)action)->variable);
+      ((surf_action_cpu_KCCFLN05_t)action)->variable = NULL;
+    }
+
+  surf_action_change_state(action, state);
+  return;
+}
+
 /* #define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\ */
 /*                               fprintf(stderr, format, ## __VA_ARGS__), \ */
 /*                               fprintf(stderr, "\n")) */
@@ -594,11 +612,11 @@ static void update_actions_cpu_KCCFLN05_state(double now, double delta)
     if ((action->generic_action.remains <= 0) && 
 	(lmm_get_variable_weight(action->variable)>0)) {
       action->generic_action.finish = surf_get_clock();
-      surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+      action_cpu_KCCFLN05_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
 	       (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
-      surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+      action_cpu_KCCFLN05_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else {			/* Need to check that none of the resource has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
@@ -610,7 +628,7 @@ static void update_actions_cpu_KCCFLN05_state(double now, double delta)
 	cpu = lmm_constraint_id(cnst);
 	if (cpu->state_current == SURF_CPU_OFF) {
 	  action->generic_action.finish = surf_get_clock();
-	  surf_action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
+	  action_cpu_KCCFLN05_change_state((surf_action_t) action, SURF_ACTION_FAILED);
 	  break;
 	}
       }
@@ -675,8 +693,11 @@ static int cpu_KCCFLN05_action_is_suspended(surf_action_t action)
 static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
-  xbt_assert0(0, "Workstation is a virtual resource. I should not be there!");
-  surf_action_change_state(action, state);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->common_public->action_change_state(action,state);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->action_change_state(action,state);
+  else DIE_IMPOSSIBLE;
   return;
 }
 
@@ -796,7 +817,7 @@ static void cpu_KCCFLN05_resource_init_internal(void)
   surf_cpu_resource->common_public->action_free = action_cpu_KCCFLN05_free;
   surf_cpu_resource->common_public->action_cancel = NULL;
   surf_cpu_resource->common_public->action_recycle = NULL;
-  surf_cpu_resource->common_public->action_change_state = surf_action_change_state;
+  surf_cpu_resource->common_public->action_change_state = action_cpu_KCCFLN05_change_state;
   surf_cpu_resource->common_public->action_set_data = surf_action_set_data;
   surf_cpu_resource->common_public->name = "CPU KCCFLN05";
 
