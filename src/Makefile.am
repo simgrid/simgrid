@@ -129,9 +129,12 @@ COMMON_SRC=\
   gras/DataDesc/datadesc_interface.h  gras/DataDesc/datadesc_private.h \
   gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h \
   \
-  gras/Msg/msg.c                      gras/Msg/msg_interface.h             gras/Msg/msg_private.h \
+  gras/Msg/msg.c                      \
+  gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
   \
   gras/Virtu/process.c
+
+#gras/Msg/timer.c                 
 
 RL_SRC= \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c  \
@@ -153,7 +156,7 @@ surf/surfxml.c: surf/surfxml.l
 	@LEX@ -o$@ -Psurf_parse_ $^
 
 surf/surfxml.l: surf/surfxml.dtd
-	cd surf; flexml -S -L surfxml.dtd ; \
+	cd surf; flexml -b 1000000 -S -L surfxml.dtd ; \
 	mv surfxml.l surfxml.l.bak ; \
 	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
 
