@@ -118,9 +118,9 @@ gras_error_t test_array(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on fixed array ----");
 
-  TRY(gras_datadesc_declare_array_fixed("fixed int array", 
-					gras_datadesc_by_name("int"),
-					SIZE, &my_type));
+  TRY(gras_datadesc_array_fixed("fixed int array", 
+				gras_datadesc_by_name("int"),
+				SIZE, &my_type));
 
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
@@ -143,7 +143,7 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
 
   INFO1("---- Test on a reference to an integer (%p) ----",i);
 
-  TRY(gras_datadesc_declare_ref("int*",gras_datadesc_by_name("int"),&my_type));
+  TRY(gras_datadesc_ref("int*",gras_datadesc_by_name("int"),&my_type));
 
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
@@ -190,19 +190,19 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on homogeneous structure ----");
   /* create descriptor */
-  TRY(gras_datadesc_declare_struct("homostruct",&my_type));
-  TRY(gras_datadesc_declare_struct_append(my_type,"a",
-					  gras_datadesc_by_name("signed int")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"b",
-					  gras_datadesc_by_name("int")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"c",
-					  gras_datadesc_by_name("int")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"d",
-					  gras_datadesc_by_name("int")));
-  gras_datadesc_declare_struct_close(my_type);
-  TRY(gras_datadesc_declare_ref("homostruct*",
-				gras_datadesc_by_name("homostruct"),
-				&my_type));
+  TRY(gras_datadesc_struct("homostruct",&my_type));
+  TRY(gras_datadesc_struct_append(my_type,"a",
+				  gras_datadesc_by_name("signed int")));
+  TRY(gras_datadesc_struct_append(my_type,"b",
+				  gras_datadesc_by_name("int")));
+  TRY(gras_datadesc_struct_append(my_type,"c",
+				  gras_datadesc_by_name("int")));
+  TRY(gras_datadesc_struct_append(my_type,"d",
+				  gras_datadesc_by_name("int")));
+  gras_datadesc_struct_close(my_type);
+  TRY(gras_datadesc_ref("homostruct*",
+			gras_datadesc_by_name("homostruct"),
+			&my_type));
 
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(homostruct))) )
@@ -238,19 +238,18 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on heterogeneous structure ----");
   /* create descriptor */
-  TRY(gras_datadesc_declare_struct("hetestruct",&my_type));
-  TRY(gras_datadesc_declare_struct_append(my_type,"c1",
-					  gras_datadesc_by_name("unsigned char")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"l1",
-					  gras_datadesc_by_name("unsigned long int")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"c2",
-					  gras_datadesc_by_name("unsigned char")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"l2",
-					  gras_datadesc_by_name("unsigned long int")));
-  gras_datadesc_declare_struct_close(my_type);
-  TRY(gras_datadesc_declare_ref("hetestruct*",
-				gras_datadesc_by_name("hetestruct"),
-				&my_type));
+  TRY(gras_datadesc_struct("hetestruct",&my_type));
+  TRY(gras_datadesc_struct_append(my_type,"c1",
+				  gras_datadesc_by_name("unsigned char")));
+  TRY(gras_datadesc_struct_append(my_type,"l1",
+				  gras_datadesc_by_name("unsigned long int")));
+  TRY(gras_datadesc_struct_append(my_type,"c2",
+				  gras_datadesc_by_name("unsigned char")));
+  TRY(gras_datadesc_struct_append(my_type,"l2",
+				  gras_datadesc_by_name("unsigned long int")));
+  gras_datadesc_struct_close(my_type);
+  TRY(gras_datadesc_ref("hetestruct*", gras_datadesc_by_name("hetestruct"),
+			&my_type));
 
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(hetestruct))) )
@@ -284,16 +283,15 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
 
   INFO0("---- Test on nested structures ----");
   /* create descriptor */
-  TRY(gras_datadesc_declare_struct("nestedstruct",&my_type));
+  TRY(gras_datadesc_struct("nestedstruct",&my_type));
 
-  TRY(gras_datadesc_declare_struct_append(my_type,"hete",
-					  gras_datadesc_by_name("hetestruct")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"homo",
-					  gras_datadesc_by_name("homostruct")));
-  gras_datadesc_declare_struct_close(my_type);
-  TRY(gras_datadesc_declare_ref("nestedstruct*",
-				gras_datadesc_by_name("nestedstruct"),
-				&my_type));
+  TRY(gras_datadesc_struct_append(my_type,"hete",
+				  gras_datadesc_by_name("hetestruct")));
+  TRY(gras_datadesc_struct_append(my_type,"homo",
+				  gras_datadesc_by_name("homostruct")));
+  gras_datadesc_struct_close(my_type);
+  TRY(gras_datadesc_ref("nestedstruct*", gras_datadesc_by_name("nestedstruct"),
+			&my_type));
 
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(nestedstruct))) )
@@ -336,13 +334,12 @@ gras_error_t declare_chained_list_type(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *my_type,*ref_my_type;
 
-  TRY(gras_datadesc_declare_struct("chained_list_t",&my_type));
-  TRY(gras_datadesc_declare_ref("chained_list_t*",my_type,&ref_my_type));
+  TRY(gras_datadesc_struct("chained_list_t",&my_type));
+  TRY(gras_datadesc_ref("chained_list_t*",my_type,&ref_my_type));
 
-  TRY(gras_datadesc_declare_struct_append(my_type,"v",
-					  gras_datadesc_by_name("int")));
-  TRY(gras_datadesc_declare_struct_append(my_type,"l",ref_my_type));
-  gras_datadesc_declare_struct_close(my_type);
+  TRY(gras_datadesc_struct_append(my_type,"v", gras_datadesc_by_name("int")));
+  TRY(gras_datadesc_struct_append(my_type,"l", ref_my_type));
+  gras_datadesc_struct_close(my_type);
 
   return no_error;
 }
@@ -528,31 +525,10 @@ typedef struct {
    int* literals;
 } Clause;
 
-void Clause_pre_cb  (void *vars,gras_datadesc_type_t *p_type,void *data);
-int  Clause_num_lits(void *vars,gras_datadesc_type_t *p_type,void *data);
+void Clause_pre_cb  (gras_cbps_t *vars,void *data);
 
-void Clause_pre_cb(void *vars,
-		   gras_datadesc_type_t *p_type,
-		   void *data) {
-  Clause c=*(Clause*)data;
-  int *count=malloc(sizeof(int));
-  *count=c.num_lits;
-
-  gras_dd_cbps_push(vars,"num_lits",count,
-		    gras_datadesc_by_name("int"));
-  DEBUG2("writen data=%p (got %p)",count,data);
-  DEBUG1("writen count=%d",*count);
-}
-
-int Clause_num_lits(void *vars,
-		    gras_datadesc_type_t *p_type,
-		    void *data) {
-  //  int *res;
-  gras_datadesc_type_t *ddt;
-  void *d = gras_dd_cbps_get (vars,"num_lits",&ddt);
-  DEBUG1("read data=%p",d);
-  DEBUG1("read count=%d",*(int*)d);
-  return *(int*)d;
+void Clause_pre_cb(gras_cbps_t *vars, void *data) {
+  gras_cbps_i_push(vars, (long int) ((Clause*)data)->num_lits);
 }
 
 gras_error_t test_clause(gras_socket_t *sock, int direction) {
@@ -576,20 +552,17 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
   DEBUG1("created count=%d",i->num_lits);
 
   /* create the damn type descriptor */
-  TRYFAIL(gras_datadesc_declare_struct("Clause",&ddt));
-  gras_datadesc_cb_set_pre(ddt,Clause_pre_cb);
-  
-  TRYFAIL(gras_datadesc_declare_struct_append(ddt,"num_lits",
-					      gras_datadesc_by_name("int")));
+  TRYFAIL(gras_datadesc_struct("Clause",&ddt));
 
-  TRYFAIL(gras_datadesc_declare_array_dyn("Clause{int[]}",
-					  gras_datadesc_by_name("int"),
-					  Clause_num_lits,
-					  &array_t));
-  TRYFAIL(gras_datadesc_declare_ref("Clause{int[]}*",array_t,&array_t));
-  TRYFAIL(gras_datadesc_declare_struct_append(ddt,"literals",array_t));
-  gras_datadesc_declare_struct_close(ddt);
-  TRYFAIL(gras_datadesc_declare_ref("Clause*",ddt,&ddt));
+  gras_datadesc_cb_send(ddt,Clause_pre_cb); /* push the size of the arrray */
+  
+  TRYFAIL(gras_datadesc_struct_append(ddt,"num_lits", 
+				      gras_datadesc_by_name("int")));
+
+  TRYFAIL(gras_datadesc_ref_pop_arr(gras_datadesc_by_name("int"), &array_t));
+  TRYFAIL(gras_datadesc_struct_append(ddt,"literals",array_t));
+  gras_datadesc_struct_close(ddt);
+  TRYFAIL(gras_datadesc_ref("Clause*",ddt,&ddt));
 
   TRY(write_read(ddt, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {

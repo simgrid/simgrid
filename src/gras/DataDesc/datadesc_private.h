@@ -225,27 +225,26 @@ struct s_gras_datadesc_type {
   enum  e_gras_datadesc_type_category  category_code;
   union u_gras_datadesc_category       category;
   
-  gras_datadesc_type_cb_void_t         pre;
-  gras_datadesc_type_cb_void_t         post;
+  gras_datadesc_type_cb_void_t         send;
+  gras_datadesc_type_cb_void_t         recv;
 };
 
 /***************************
  * Type creation functions *
  ***************************/
 gras_error_t 
-gras_datadesc_declare_scalar(const char                       *name,
-			     gras_ddt_scalar_type_t           type,
-			     enum e_gras_dd_scalar_encoding   encoding,
-			     gras_datadesc_type_cb_void_t     cb,
-			     gras_datadesc_type_t           **dst);
+gras_datadesc_scalar(const char                       *name,
+		     gras_ddt_scalar_type_t           type,
+		     enum e_gras_dd_scalar_encoding   encoding,
+		     gras_datadesc_type_t           **dst);
 
 /****************************************************
  * Callback persistant state constructor/destructor *
  ****************************************************/
 gras_error_t
-gras_dd_cbps_new(gras_dd_cbps_t **dst);
+gras_cbps_new(gras_cbps_t **dst);
 void
-gras_dd_cbps_free(gras_dd_cbps_t **state);
+gras_cbps_free(gras_cbps_t **state);
 
 /***************
  * Convertions *

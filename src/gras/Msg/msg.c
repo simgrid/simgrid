@@ -145,7 +145,7 @@ gras_msgtype_declare_v(const char            *name,
   msgtype->name_len = strlen(namev);
   msgtype->version = version;
   msgtype->ctn_type = payload;
-  gras_datadesc_ref(payload);
+  gras_datadesc_addref(payload);
 
   TRY(gras_set_add(_gras_msgtype_set, (gras_set_elm_t*)msgtype,
 		   &gras_msgtype_free));
@@ -201,7 +201,7 @@ gras_msg_send(gras_socket_t  *sock,
     gras_assert(string_type);
   }
 
-  DEBUG3("send %s to %s:%d", msgtype->name, 
+  DEBUG3("send '%s' to %s:%d", msgtype->name, 
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
   TRY(gras_trp_chunk_send(sock, GRAS_header, 6));
 

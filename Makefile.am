@@ -3,6 +3,7 @@ DISTCLEANFILES =  *~
 
 ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
 AUTOMAKE_OPTIONS = gnu
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog\
 	acmacro/aci.m4 \

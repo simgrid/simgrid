@@ -45,13 +45,11 @@ BEGIN_DECL
  */
 typedef struct s_gras_datadesc_type gras_datadesc_type_t;
 
+typedef struct s_gras_cbps gras_cbps_t;
+
 /* callbacks prototypes */
-typedef void (*gras_datadesc_type_cb_void_t)(void                 *vars,
-					     gras_datadesc_type_t *p_type,
-					     void                 *data);
-typedef int (*gras_datadesc_type_cb_int_t)(void                 *vars,
-					   gras_datadesc_type_t *p_type,
-					   void                 *data);
+typedef void (*gras_datadesc_type_cb_void_t)(gras_cbps_t *vars, void *data);
+typedef int (*gras_datadesc_type_cb_int_t)(gras_cbps_t *vars, void *data);
 
 /***********************************************
  **** Search and retrieve declared datatype ****
@@ -63,52 +61,54 @@ gras_datadesc_type_t *gras_datadesc_by_name(const char *name);
  ******************************************/
 
 gras_error_t 
-gras_datadesc_declare_struct(const char            *name,
+gras_datadesc_struct(const char            *name,
 			     gras_datadesc_type_t **dst);
 gras_error_t 
-gras_datadesc_declare_struct_append(gras_datadesc_type_t          *struct_type,
+gras_datadesc_struct_append(gras_datadesc_type_t          *struct_type,
 				    const char                    *name,
 				    gras_datadesc_type_t          *field_type);
 void
-gras_datadesc_declare_struct_close(gras_datadesc_type_t          *struct_type);
+gras_datadesc_struct_close(gras_datadesc_type_t          *struct_type);
 gras_error_t 
-gras_datadesc_declare_union(const char                      *name,
+gras_datadesc_union(const char                      *name,
 			    gras_datadesc_type_cb_int_t      selector,
 			    gras_datadesc_type_t           **dst);
 gras_error_t 
-gras_datadesc_declare_union_append(gras_datadesc_type_t          *union_type,
+gras_datadesc_union_append(gras_datadesc_type_t          *union_type,
 				   const char                    *name,
 				   gras_datadesc_type_t          *field_type);
 void
-gras_datadesc_declare_union_close(gras_datadesc_type_t          *union_type);
+gras_datadesc_union_close(gras_datadesc_type_t          *union_type);
 gras_error_t 
-gras_datadesc_declare_ref(const char                      *name,
+gras_datadesc_ref(const char                      *name,
 			  gras_datadesc_type_t            *referenced_type,
 			  gras_datadesc_type_t           **dst);
 gras_error_t
-gras_datadesc_declare_ref_generic(const char                   *name,
+gras_datadesc_ref_generic(const char                   *name,
 				  gras_datadesc_type_cb_int_t   discriminant,
 				  gras_datadesc_type_t        **dst);
 gras_error_t 
-gras_datadesc_declare_array_fixed(const char                    *name,
+gras_datadesc_array_fixed(const char                    *name,
 				  gras_datadesc_type_t          *element_type,
 				  long int                       fixed_size,
 				  gras_datadesc_type_t         **dst);
 gras_error_t 
-gras_datadesc_declare_array_dyn(const char                      *name,
+gras_datadesc_array_dyn(const char                      *name,
 				gras_datadesc_type_t            *element_type,
 				gras_datadesc_type_cb_int_t      dynamic_size,
 				gras_datadesc_type_t           **dst);
+gras_error_t 
+gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type,
+				  gras_datadesc_type_t **dst);
 
 /*********************************
  * Change stuff within datadescs *
  *********************************/
 
-typedef struct s_gras_dd_cbps gras_dd_cbps_t;
-void gras_datadesc_cb_set_pre (gras_datadesc_type_t    *type,
-			       gras_datadesc_type_cb_void_t  pre);
-void gras_datadesc_cb_set_post(gras_datadesc_type_t    *type,
-			       gras_datadesc_type_cb_void_t  post);
+void gras_datadesc_cb_send (gras_datadesc_type_t    *type,
+			    gras_datadesc_type_cb_void_t  pre);
+void gras_datadesc_cb_recv(gras_datadesc_type_t    *type,
+			   gras_datadesc_type_cb_void_t  post);
 
 /******************************
  * Get stuff within datadescs *
@@ -119,32 +119,39 @@ int gras_datadesc_get_id(gras_datadesc_type_t *ddt);
 /********************************************************
  * Advanced data describing: callback persistent states *
  ********************************************************/
+/* simple one: push/pop sizes of arrays */
+void
+gras_cbps_i_push(gras_cbps_t *ps, int val);
+int 
+gras_cbps_i_pop(gras_cbps_t *ps);
+int gras_datadesc_cb_pop(gras_cbps_t *vars, void *data);
 
+/* complex one: complete variable environment support */
 gras_error_t
-gras_dd_cbps_pop (gras_dd_cbps_t        *ps, 
-		  const char            *name,
-		  gras_datadesc_type_t **ddt,
+gras_cbps_v_pop (gras_cbps_t        *ps, 
+		    const char            *name,
+		    gras_datadesc_type_t **ddt,
 		  void                 **res);
 gras_error_t
-gras_dd_cbps_push(gras_dd_cbps_t        *ps,
-		  const char            *name,
-		  void                  *data,
-		  gras_datadesc_type_t  *ddt);
+gras_cbps_v_push(gras_cbps_t        *ps,
+		    const char            *name,
+		    void                  *data,
+		    gras_datadesc_type_t  *ddt);
 void
-gras_dd_cbps_set (gras_dd_cbps_t        *ps,
-		  const char            *name,
-		  void                  *data,
-		  gras_datadesc_type_t  *ddt);
+gras_cbps_v_set (gras_cbps_t        *ps,
+		    const char            *name,
+		    void                  *data,
+		    gras_datadesc_type_t  *ddt);
 
 void *
-gras_dd_cbps_get (gras_dd_cbps_t        *ps, 
-		  const char            *name,
-		  gras_datadesc_type_t **ddt);
+gras_cbps_v_get (gras_cbps_t        *ps, 
+		    const char            *name,
+		    gras_datadesc_type_t **ddt);
 
 void
-gras_dd_cbps_block_begin(gras_dd_cbps_t *ps);
+gras_cbps_block_begin(gras_cbps_t *ps);
 void
-gras_dd_cbps_block_end(gras_dd_cbps_t *ps);
+gras_cbps_block_end(gras_cbps_t *ps);
 
 
 

@@ -31,13 +31,13 @@ gras_dd_is_r_null(char **r_ptr, long int length);
 
 static gras_error_t 
 gras_datadesc_send_rec(gras_socket_t        *sock,
-		       gras_dd_cbps_t       *state,
+		       gras_cbps_t       *state,
 		       gras_dict_t          *refs,
 		       gras_datadesc_type_t *type, 
 		       char                 *data);
 static gras_error_t
 gras_datadesc_recv_rec(gras_socket_t        *sock, 
-		       gras_dd_cbps_t       *state,
+		       gras_cbps_t       *state,
 		       gras_dict_t          *refs,
 		       gras_datadesc_type_t *type,
 		       int                   r_arch,
@@ -192,16 +192,16 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     return d1->category_code > d2->category_code ? 1 : -1;
   }
 
-  if (d1->pre != d2->pre) {
-    DEBUG4("ddt_cmp: %s->pre=%p  !=  %s->pre=%p",
-	   d1->name,d1->pre, d2->name,d2->pre);
-    return d1->pre > d2->pre ? 1 : -1;
+  if (d1->send != d2->send) {
+    DEBUG4("ddt_cmp: %s->send=%p  !=  %s->send=%p",
+	   d1->name,d1->send, d2->name,d2->send);
+    return d1->send > d2->send ? 1 : -1;
   }
 
-  if (d1->post != d2->post) {
-    DEBUG4("ddt_cmp: %s->post=%p  !=  %s->post=%p",
-	   d1->name,d1->post, d2->name,d2->post);
-    return d1->post > d2->post ? 1 : -1;
+  if (d1->recv != d2->recv) {
+    DEBUG4("ddt_cmp: %s->recv=%p  !=  %s->recv=%p",
+	   d1->name,d1->recv, d2->name,d2->recv);
+    return d1->recv > d2->recv ? 1 : -1;
   }
 
   switch (d1->category_code) {
@@ -305,7 +305,7 @@ gras_error_t gras_datadesc_cpy(gras_datadesc_type_t *type,
 
 static gras_error_t 
 gras_datadesc_send_rec(gras_socket_t        *sock,
-		       gras_dd_cbps_t       *state,
+		       gras_cbps_t       *state,
 		       gras_dict_t          *refs,
 		       gras_datadesc_type_t *type, 
 		       char                 *data) {
@@ -317,8 +317,8 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
   VERB2("Send a %s (%s)", 
 	type->name, gras_datadesc_cat_names[type->category_code]);
 
-  if (type->pre) {
-    type->pre(state,type,data);
+  if (type->send) {
+    type->send(state,data);
   }
 
   switch (type->category_code) {
@@ -347,13 +347,13 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
 	       gras_error_name(errcode),field->code,cpt,type->name);
       
       if (field->pre)
-	field->pre(state,sub_type,field_data);
+	field->pre(state,field_data);
       
       VERB1("Send field %s",field->name);
       TRY(gras_datadesc_send_rec(sock,state,refs,sub_type, field_data));
       
       if (field->post)
-	field->post(state,sub_type,field_data);
+	field->post(state,field_data);
     }
     VERB1("<< Sent all fields of the structure %s", type->name);
     
@@ -371,7 +371,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
 		"Please call gras_datadesc_declare_union_close on %s before sending it",
 		type->name);
     /* retrieve the field number */
-    field_num = union_data.selector(state, type, data);
+    field_num = union_data.selector(state, data);
     
     gras_assert1(field_num > 0,
 		 "union field selector of %s gave a negative value", 
@@ -389,12 +389,12 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     TRY(gras_datadesc_by_id(field->code, &sub_type));
     
     if (field->pre)
-      field->pre(state,sub_type,data);
+      field->pre(state,data);
     
     TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, data));
       
     if (field->post)
-      field->post(state,sub_type,data);
+      field->post(state,data);
     
     break;
   }
@@ -411,7 +411,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     /* Detect the referenced type and send it to peer if needed */
     ref_code = ref_data.code;
     if (ref_code < 0) {
-      ref_code = ref_data.selector(state,type,data);
+      ref_code = ref_data.selector(state,data);
       TRY(gras_dd_send_int(sock, ref_code));
     }
     
@@ -456,7 +456,7 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     /* determine and send the element count */
     count = array_data.fixed_size;
     if (count <= 0) {
-      count = array_data.dynamic_size(state,type,data);
+      count = array_data.dynamic_size(state,data);
       gras_assert1(count >=0,
 		   "Invalid (negative) array size for type %s",type->name);
       TRY(gras_dd_send_int(sock, count));
@@ -482,10 +482,6 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     gras_assert0(0, "Invalid type");
   }
 
-  if (type->post) {
-    type->post(state,type,data);
-  }
-
   return no_error;
 }
 
@@ -500,16 +496,16 @@ gras_error_t gras_datadesc_send(gras_socket_t *sock,
 				void *src) {
 
   gras_error_t errcode;
-  gras_dd_cbps_t *state = NULL;
+  gras_cbps_t *state = NULL;
   gras_dict_t    *refs; /* all references already sent */
  
   TRY(gras_dict_new(&refs));
-  TRY(gras_dd_cbps_new(&state));
+  TRY(gras_cbps_new(&state));
 
   errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src);
 
   gras_dict_free(&refs);
-  gras_dd_cbps_free(&state);
+  gras_cbps_free(&state);
 
   return errcode;
 }
@@ -528,7 +524,7 @@ gras_error_t gras_datadesc_send(gras_socket_t *sock,
  */
 gras_error_t
 gras_datadesc_recv_rec(gras_socket_t        *sock, 
-		       gras_dd_cbps_t       *state,
+		       gras_cbps_t          *state,
 		       gras_dict_t          *refs,
 		       gras_datadesc_type_t *type,
 		       int                   r_arch,
@@ -752,6 +748,9 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     gras_assert0(0, "Invalid type");
   }
   
+  if (type->recv)
+    type->recv(state,l_data);
+
   return no_error;
 }
 
@@ -769,18 +768,18 @@ gras_datadesc_recv(gras_socket_t *sock,
 		   void *dst) {
 
   gras_error_t errcode;
-  gras_dd_cbps_t *state = NULL; /* callback persistent state */
+  gras_cbps_t *state = NULL; /* callback persistent state */
   gras_dict_t    *refs;         /* all references already sent */
 
   TRY(gras_dict_new(&refs));
-  TRY(gras_dd_cbps_new(&state));
+  TRY(gras_cbps_new(&state));
 
   errcode = gras_datadesc_recv_rec(sock, state, refs, type, 
 				   r_arch, NULL, 0,
 				   (char *) dst,-1);
 
   gras_dict_free(&refs);
-  gras_dd_cbps_free(&state);
+  gras_cbps_free(&state);
 
   return errcode;
 }

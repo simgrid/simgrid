@@ -1,5 +1,9 @@
 This is a shortened version of the changelog.
 
+0.2 (2004-07-24)
+ - Bug fixes, API and build process polishing, documentation improvement
+ - build shared libs
+
 0.1 (2004-07-13)
  - No major issue discovered, time to change the versionning schema
 

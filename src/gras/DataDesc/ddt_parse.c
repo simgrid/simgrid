@@ -187,7 +187,7 @@ static gras_error_t parse_statement(char		*definition,
     sprintf(buffname,"struct %s",identifier.type_name);
     identifier.type = gras_datadesc_by_name(buffname);
     if (!identifier.type) {
-      TRY(gras_datadesc_declare_struct(buffname,&identifier.type));
+      TRY(gras_datadesc_struct(buffname,&identifier.type));
     }
 
   } else if (tm.is_unsigned) {
@@ -292,9 +292,8 @@ static gras_error_t parse_statement(char		*definition,
 	  free(identifier.type_name);
 	  array.type = gras_datadesc_by_name(array.type_name);
 	  if (array.type==NULL) {
-	    TRY(gras_datadesc_declare_array_fixed(array.type_name,
-						  identifier.type,
-						  size, &array.type));
+	    TRY(gras_datadesc_array_fixed(array.type_name, identifier.type,
+					  size, &array.type));
 	  }
 	  array.name = identifier.name;
 	  TRY(gras_dynar_push(*dynar,&array));
@@ -376,13 +375,13 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
 
   /* Create the struct descriptor */
   if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
-    TRYFAIL(gras_datadesc_declare_struct(gras_ddt_parse_text,&struct_type));
+    TRYFAIL(gras_datadesc_struct(gras_ddt_parse_text,&struct_type));
     DEBUG1("Parse the struct '%s'", gras_ddt_parse_text);
     gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   } else {
     sprintf(buffname,"anonymous struct %d",anonymous_struct++); 
     DEBUG1("Parse the anonymous struct nb %d", anonymous_struct);
-    TRYFAIL(gras_datadesc_declare_struct(buffname,&struct_type));
+    TRYFAIL(gras_datadesc_struct(buffname,&struct_type));
   }
 
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_LP) {
@@ -399,13 +398,12 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
     DEBUG1("This statement contained %d fields",gras_dynar_length(fields));
     gras_dynar_foreach(fields,i, field) {
       DEBUG1("Append field %s",field.name);      
-      TRYFAIL(gras_datadesc_declare_struct_append(struct_type,field.name,
-						  field.type));
+      TRYFAIL(gras_datadesc_struct_append(struct_type, field.name, field.type));
       free(field.name);
       free(field.type_name);
     }
   }
-  gras_datadesc_declare_struct_close(struct_type);
+  gras_datadesc_struct_close(struct_type);
   if (errcode != mismatch_error)
     return NULL; /* FIXME: LEAK! */
 
@@ -464,7 +462,7 @@ static gras_datadesc_type_t * parse_typedef(char *definition) {
 
 
 /**
- * gras_datadesc_declare_parse:
+ * gras_datadesc_parse:
  *
  * Create a datadescription from the result of parsing the C type description
  */

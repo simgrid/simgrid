@@ -1871,6 +1871,22 @@ Sockets
 
 @ud: 
 
+<!-- ##### FUNCTION gras_datadesc_cb_set_post ##### -->
+<para>
+
+</para>
+
+@type: 
+@post: 
+
+<!-- ##### FUNCTION gras_datadesc_cb_set_pre ##### -->
+<para>
+
+</para>
+
+@type: 
+@pre: 
+
 <!-- ##### FUNCTION gras_datadesc_cmp ##### -->
 <para>
 
@@ -1916,6 +1932,42 @@ Sockets
 @code: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_datadesc_declare_array_dyn ##### -->
+<para>
+
+</para>
+
+@name: 
+@element_type: 
+@dynamic_size: 
+@dst: 
+@Returns: 
+@elm_type: 
+@code: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_array_fixed ##### -->
+<para>
+
+</para>
+
+@name: 
+@element_type: 
+@fixed_size: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_ref ##### -->
+<para>
+
+</para>
+
+@name: 
+@referenced_type: 
+@dst: 
+@Returns: 
+@ref_type: 
+@code: 
+
 <!-- ##### FUNCTION gras_datadesc_declare_ref_cb ##### -->
 <para>
 
@@ -1935,6 +1987,26 @@ Sockets
 
 @name: 
 @discriminant: 
+@code: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_ref_generic ##### -->
+<para>
+
+</para>
+
+@name: 
+@discriminant: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct ##### -->
+<para>
+
+</para>
+
+@name: 
+@dst: 
+@Returns: 
 @code: 
 
 <!-- ##### MACRO gras_datadesc_declare_struct_add_code ##### -->
@@ -1979,6 +2051,16 @@ Sockets
 @post_cb: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_datadesc_declare_struct_append ##### -->
+<para>
+
+</para>
+
+@struct_type: 
+@name: 
+@field_type: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_datadesc_declare_struct_append_name ##### -->
 <para>
 
@@ -1999,6 +2081,24 @@ Sockets
 @post_cb: 
 @code: 
 @Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_close ##### -->
+<para>
+
+</para>
+
+@struct_type: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_union ##### -->
+<para>
+
+</para>
+
+@name: 
+@selector: 
+@dst: 
+@Returns: 
+@code: 
 
 <!-- ##### MACRO gras_datadesc_declare_union_add_code ##### -->
 <para>
@@ -2042,6 +2142,16 @@ Sockets
 @post_cb: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_datadesc_declare_union_append ##### -->
+<para>
+
+</para>
+
+@union_type: 
+@name: 
+@field_type: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_datadesc_declare_union_append_name ##### -->
 <para>
 
@@ -2062,6 +2172,13 @@ Sockets
 @post: 
 @code: 
 @Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_close ##### -->
+<para>
+
+</para>
+
+@union_type: 
 
 <!-- ##### FUNCTION gras_datadesc_from_nws ##### -->
 <para>
@@ -2097,6 +2214,58 @@ Sockets
 @Returns: 
 @code: 
 @def: 
+
+<!-- ##### FUNCTION gras_dd_cbps_block_begin ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+<!-- ##### FUNCTION gras_dd_cbps_block_end ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+<!-- ##### FUNCTION gras_dd_cbps_get ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+<!-- ##### FUNCTION gras_dd_cbps_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+<!-- ##### FUNCTION gras_dd_cbps_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+<!-- ##### FUNCTION gras_dd_cbps_set ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
 
 <!-- ##### FUNCTION gras_ddt_free ##### -->
 <para>

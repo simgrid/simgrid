@@ -1,5 +1,18 @@
+2004-07-26 Martin Quinson
+  Version 0.3 (protocol not changed; ABI changed)
+  - Major overhault of the datadesc interface to simplify it:
+    - shorted the function names:
+      s/gras_datadesc_declare_struct/gras_datadesc_struct/ and so on
+    - add a trivial way to push/pop integers into the cbps without malloc.
+      This allows to make really generic sub_type description, which simply
+        pop their size of the stack.
+    - add a function gras_datadesc_ref_pop_arr() which does what users want
+      most of the time: Declare a dynamic array (which pops its size of the
+      stack) and declare a reference to it. Poor name, but anyway.
+    - kill the post-send callback, add a post-receive one
+    
 2004-07-23 Martin Quinson
-  Version 0.2
+  Version 0.2 (protocol changed; ABI changed)
   - add some testing for cpbs in the test cases, and fix some more bugs.
     This invalidate again the little64 data file, since I cannot regenerate
     it myself.

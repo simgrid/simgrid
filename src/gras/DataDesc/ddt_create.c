@@ -77,16 +77,15 @@ gras_error_t gras_datadesc_by_id(long int               code,
 }
 
 /**
- * gras_datadesc_declare_scalar:
+ * gras_datadesc_scalar:
  *
  * Create a new scalar and give a pointer to it 
  */
 gras_error_t 
-gras_datadesc_declare_scalar(const char                      *name,
-			gras_ddt_scalar_type_t           type,
-			enum e_gras_dd_scalar_encoding   encoding,
-			gras_datadesc_type_cb_void_t     cb,
-			gras_datadesc_type_t           **dst) {
+gras_datadesc_scalar(const char                      *name,
+		     gras_ddt_scalar_type_t           type,
+		     enum e_gras_dd_scalar_encoding   encoding,
+		     gras_datadesc_type_t           **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -133,7 +132,6 @@ gras_datadesc_declare_scalar(const char                      *name,
   res->category_code                 = e_gras_datadesc_type_cat_scalar;
   res->category.scalar_data.encoding = encoding;
 
-  res->pre = cb;
   return no_error;
 }
 
@@ -153,13 +151,13 @@ void gras_dd_cat_field_free(void *f) {
 }
 
 /**
- * gras_datadesc_declare_struct:
+ * gras_datadesc_struct:
  *
  * Create a new struct and give a pointer to it 
  */
 gras_error_t 
-gras_datadesc_declare_struct(const char                      *name,
-			gras_datadesc_type_t           **dst) {
+gras_datadesc_struct(const char            *name,
+		     gras_datadesc_type_t **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -182,14 +180,14 @@ gras_datadesc_declare_struct(const char                      *name,
 }
 
 /**
- * gras_datadesc_declare_struct_append:
+ * gras_datadesc_struct_append:
  *
  * Append a field to the struct
  */
 gras_error_t 
-gras_datadesc_declare_struct_append(gras_datadesc_type_t  *struct_type,
-				    const char            *name,
-				    gras_datadesc_type_t  *field_type) {
+gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
+			    const char            *name,
+			    gras_datadesc_type_t  *field_type) {
 
   gras_error_t errcode;
   gras_dd_cat_field_t *field;
@@ -246,20 +244,20 @@ gras_datadesc_declare_struct_append(gras_datadesc_type_t  *struct_type,
   return no_error;
 }
 void
-gras_datadesc_declare_struct_close(gras_datadesc_type_t  *struct_type) {
+gras_datadesc_struct_close(gras_datadesc_type_t  *struct_type) {
    struct_type->category.struct_data.closed = 1;
-   //   INFO0("FIXME: Do something in gras_datadesc_declare_struct_close");
+   //   INFO0("FIXME: Do something in gras_datadesc_struct_close");
 }
 
 /**
- * gras_datadesc_declare_union:
+ * gras_datadesc_union:
  *
  * Create a new union and give a pointer to it 
  */
 gras_error_t 
-gras_datadesc_declare_union(const char                   *name,
-			    gras_datadesc_type_cb_int_t   selector,
-			    gras_datadesc_type_t        **dst) {
+gras_datadesc_union(const char                   *name,
+		    gras_datadesc_type_cb_int_t   selector,
+		    gras_datadesc_type_t        **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -287,14 +285,14 @@ gras_datadesc_declare_union(const char                   *name,
 }
 
 /**
- * gras_datadesc_declare_union_append:
+ * gras_datadesc_union_append:
  *
  * Append a field to the union
  */
 gras_error_t 
-gras_datadesc_declare_union_append(gras_datadesc_type_t  *union_type,
-				   const char            *name,
-				   gras_datadesc_type_t  *field_type) {
+gras_datadesc_union_append(gras_datadesc_type_t  *union_type,
+			   const char            *name,
+			   gras_datadesc_type_t  *field_type) {
 
   gras_error_t errcode;
   gras_dd_cat_field_t *field;
@@ -333,19 +331,19 @@ gras_datadesc_declare_union_append(gras_datadesc_type_t  *union_type,
 }
 
 void
-gras_datadesc_declare_union_close(gras_datadesc_type_t  *union_type) {
+gras_datadesc_union_close(gras_datadesc_type_t  *union_type) {
    union_type->category.union_data.closed = 1;
-   //   INFO0("FIXME: Do something in gras_datadesc_declare_union_close");
+   //   INFO0("FIXME: Do something in gras_datadesc_union_close");
 }
 /**
- * gras_datadesc_declare_ref:
+ * gras_datadesc_ref:
  *
  * Create a new ref to a fixed type and give a pointer to it 
  */
 gras_error_t 
-gras_datadesc_declare_ref(const char             *name,
-			  gras_datadesc_type_t   *referenced_type,
-			  gras_datadesc_type_t  **dst) {
+gras_datadesc_ref(const char             *name,
+		  gras_datadesc_type_t   *referenced_type,
+		  gras_datadesc_type_t  **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -371,14 +369,14 @@ gras_datadesc_declare_ref(const char             *name,
   return no_error;
 }
 /**
- * gras_datadesc_declare_ref_generic:
+ * gras_datadesc_ref_generic:
  *
  * Create a new ref to a type given at use time, and give a pointer to it 
  */
 gras_error_t 
-gras_datadesc_declare_ref_generic(const char                      *name,
-			 gras_datadesc_type_cb_int_t      selector,
-			 gras_datadesc_type_t           **dst) {
+gras_datadesc_ref_generic(const char                      *name,
+			  gras_datadesc_type_cb_int_t      selector,
+			  gras_datadesc_type_t           **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -405,15 +403,15 @@ gras_datadesc_declare_ref_generic(const char                      *name,
 }
 
 /**
- * gras_datadesc_declare_array_fixed:
+ * gras_datadesc_array_fixed:
  *
  * Create a new array and give a pointer to it 
  */
 gras_error_t 
-gras_datadesc_declare_array_fixed(const char              *name,
-				  gras_datadesc_type_t    *element_type,
-				  long int                 fixed_size,
-				  gras_datadesc_type_t   **dst) {
+gras_datadesc_array_fixed(const char              *name,
+			  gras_datadesc_type_t    *element_type,
+			  long int                 fixed_size,
+			  gras_datadesc_type_t   **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -438,15 +436,15 @@ gras_datadesc_declare_array_fixed(const char              *name,
   return no_error;
 }
 /**
- * gras_datadesc_declare_array_dyn:
+ * gras_datadesc_array_dyn:
  *
  * Create a new array and give a pointer to it 
  */
 gras_error_t 
-gras_datadesc_declare_array_dyn(const char                      *name,
-		       gras_datadesc_type_t            *element_type,
-		       gras_datadesc_type_cb_int_t      dynamic_size,
-		       gras_datadesc_type_t           **dst) {
+gras_datadesc_array_dyn(const char                      *name,
+			gras_datadesc_type_t            *element_type,
+			gras_datadesc_type_cb_int_t      dynamic_size,
+			gras_datadesc_type_t           **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
@@ -474,6 +472,47 @@ gras_datadesc_declare_array_dyn(const char                      *name,
   return no_error;
 }
 
+/**
+ * gras_datadesc_ref_pop_arr:
+ *
+ * Most of the time, you want to include a reference in your structure which
+ * is a pointer to a dynamic array whose size is fixed by another field of 
+ * your structure.
+ *
+ * This case pops up so often that this function was created to take care of
+ * this case. It creates a dynamic array type whose size is poped from the 
+ * current cbps, and then create a reference to it.
+ *
+ * The name of the created datatype will be the name of the element type, with
+ * '[]*' appended to it.
+ *
+ * Then to use it, you just have to make sure that your structure pre-callback
+ * does push the size of the array in the cbps (using #gras_cbps_i_push), and 
+ * you are set. 
+ *
+ * But be remember that this is a stack. If you have two different pop_arr, you
+ * should push the second one first, so that the first one is on the top of the 
+ * list when the first field gets transfered.
+ *
+ */
+gras_error_t 
+gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type,
+			  gras_datadesc_type_t **dst) {
+  gras_error_t errcode;
+  char *name=malloc(strlen(element_type->name) + 4);
+
+  sprintf(name,"%s[]",element_type->name);
+
+  TRY(gras_datadesc_array_dyn(name,element_type,
+				      gras_datadesc_cb_pop, dst));
+
+  sprintf(name,"%s[]*",element_type->name);
+  TRY(gras_datadesc_ref(name,*dst,dst));
+
+  free(name);
+
+  return no_error;
+}
 gras_error_t
 gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
@@ -483,38 +522,40 @@ gras_datadesc_import_nws(const char           *name,
 }
 
 /**
- * gras_datadesc_cb_set_pre:
+ * gras_datadesc_cb_send:
  *
- * Add a pre-send callback to this datadexc
+ * Add a pre-send callback to this datadexc.
+ * (useful to push the sizes of the upcoming arrays, for example)
  */
-void gras_datadesc_cb_set_pre (gras_datadesc_type_t         *type,
-			       gras_datadesc_type_cb_void_t  pre) {
-  type->pre = pre;
+void gras_datadesc_cb_send (gras_datadesc_type_t         *type,
+			    gras_datadesc_type_cb_void_t  send) {
+  type->send = send;
 }
 /**
- * gras_datadesc_cb_set_post:
+ * gras_datadesc_cb_recv:
  *
- * Add a post-send callback to this datadexc
+ * Add a post-receive callback to this datadesc.
+ * (useful to put the function pointers to the rigth value, for example)
  */
-void gras_datadesc_cb_set_post(gras_datadesc_type_t         *type,
-			       gras_datadesc_type_cb_void_t  post) {
-  type->post = post;
+void gras_datadesc_cb_recv(gras_datadesc_type_t         *type,
+			   gras_datadesc_type_cb_void_t  recv) {
+  type->recv = recv;
 }
 
 /**
- * gras_datadesc_ref:
+ * gras_datadesc_addref:
  *
  * Adds a reference to the datastruct. 
  * ddt will be freed only when the refcount becomes 0.
  */
-void gras_datadesc_ref(gras_datadesc_type_t *type) {
+void gras_datadesc_addref(gras_datadesc_type_t *type) {
   type->refcounter ++;
 }
 
 /**
  * gras_datadesc_unref:
  *
- * Adds a reference to the datastruct. 
+ * Removes a reference to the datastruct. 
  * ddt will be freed only when the refcount becomes 0.
  */
 void gras_datadesc_unref(gras_datadesc_type_t *type) {
