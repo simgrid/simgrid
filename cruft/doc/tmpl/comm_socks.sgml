@@ -51,3 +51,32 @@ Open/close sockets, and get info on peer.
 @Returns: 
 
 
+<!-- ##### FUNCTION gras_socket_peer_name ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@sd: 
+
+
+<!-- ##### FUNCTION gras_socket_peer_port ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_socket_my_port ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+

@@ -440,7 +440,7 @@ An easy-to-use, fast and flexible message logging architecture.
 @a6: 
 
 
-<!-- ##### MACRO CWARNING6 ##### -->
+<!-- ##### MACRO CWARN6 ##### -->
 <para>
 
 </para>
@@ -527,7 +527,7 @@ An easy-to-use, fast and flexible message logging architecture.
 @a6: 
 
 
-<!-- ##### MACRO WARNING6 ##### -->
+<!-- ##### MACRO WARN6 ##### -->
 <para>
 
 </para>

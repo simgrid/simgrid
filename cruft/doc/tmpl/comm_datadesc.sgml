@@ -2,7 +2,7 @@
 Data description
 
 <!-- ##### SECTION Short_Description ##### -->
-Simple ways to describe data to exchange
+Describing data to be exchanged
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -14,7 +14,25 @@ Simple ways to describe data to exchange
 
 </para>
 
-<!-- ##### FUNCTION gras_datadesc_from_nws ##### -->
+<!-- ##### FUNCTION gras_datadesc_by_name ##### -->
+<para>
+
+</para>
+
+@name: 
+@type: 
+@Returns: 
+
+
+<!-- ##### MACRO gras_datadesc_by_symbol ##### -->
+<para>
+
+</para>
+
+@name: 
+
+
+<!-- ##### FUNCTION gras_datadesc_import_nws ##### -->
 <para>
 
 </para>
@@ -22,123 +40,167 @@ Simple ways to describe data to exchange
 @name: 
 @desc: 
 @howmany: 
-@code: 
-@Returns: 
-<!-- # Unused Parameters # -->
 @dst: 
-
-
-<!-- ##### FUNCTION gras_datadesc_parse ##### -->
-<para>
-
-</para>
-
-@name: 
-@Cdefinition: 
-@code: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@def: 
-@dst: 
 
 
-<!-- ##### MACRO gras_datadesc_declare_array ##### -->
+<!-- ##### FUNCTION gras_datadesc_declare_array_dyn ##### -->
 <para>
 
 </para>
 
 @name: 
-@elm_type: 
-@size: 
-@code: 
-
-
-<!-- ##### MACRO gras_datadesc_declare_array_dyn ##### -->
-<para>
-
-</para>
-
-@name: 
-@elm_type: 
+@element_type: 
 @dynamic_size: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@elm_type: 
 @code: 
 
 
-<!-- ##### MACRO gras_datadesc_declare_ref ##### -->
+<!-- ##### FUNCTION gras_datadesc_declare_ref ##### -->
 <para>
 
 </para>
 
 @name: 
+@referenced_type: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
 @ref_type: 
 @code: 
 
 
-<!-- ##### MACRO gras_datadesc_declare_ref_disc ##### -->
+<!-- ##### FUNCTION gras_datadesc_declare_struct ##### -->
 <para>
 
 </para>
 
 @name: 
-@discriminant: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
 @code: 
 
 
-<!-- ##### MACRO gras_datadesc_declare_struct ##### -->
+<!-- ##### FUNCTION gras_datadesc_declare_struct_append_name ##### -->
 <para>
 
 </para>
 
+@struct_type: 
 @name: 
-@code: 
-
-
-<!-- ##### MACRO gras_datadesc_declare_struct_add_code ##### -->
-<para>
-
-</para>
-
-@struct_code: 
-@field_name: 
-@field_type_code: 
-
-
-<!-- ##### MACRO gras_datadesc_declare_struct_add_name ##### -->
-<para>
-
-</para>
-
-@struct_code: 
-@field_name: 
 @field_type_name: 
+@Returns: 
 
 
-<!-- ##### MACRO gras_datadesc_declare_union ##### -->
+<!-- ##### FUNCTION gras_datadesc_declare_union ##### -->
 <para>
 
 </para>
 
 @name: 
+@selector: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
 @code: 
 
 
-<!-- ##### MACRO gras_datadesc_declare_union_add_code ##### -->
+<!-- ##### FUNCTION gras_datadesc_declare_union_append_name ##### -->
 <para>
 
 </para>
 
-@union_code: 
-@field_name: 
-@field_type_code: 
-
-
-<!-- ##### MACRO gras_datadesc_declare_union_add_name ##### -->
-<para>
-
-</para>
-
-@union_code: 
-@field_name: 
+@union_type: 
+@name: 
 @field_type_name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_cb_set_pre ##### -->
+<para>
+
+</para>
+
+@type: 
+@pre: 
+
+
+<!-- ##### FUNCTION gras_datadesc_cb_set_post ##### -->
+<para>
+
+</para>
+
+@type: 
+@post: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_set ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_get ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_block_begin ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_block_end ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
+<!-- ##### FUNCTION gras_arch_selfid ##### -->
+<para>
+
+</para>
+
+@Returns: 
 
 

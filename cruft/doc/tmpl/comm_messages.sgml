@@ -14,15 +14,47 @@ Defining messages and callbacks, and sending/receiving messages.
 
 </para>
 
-<!-- ##### FUNCTION gras_msgtype_register ##### -->
+<!-- ##### FUNCTION gras_msgtype_declare ##### -->
 <para>
 
 </para>
 
-@msgId: 
 @name: 
-@sequence_count: 
-@Varargs: 
+@payload: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msgtype_declare_v ##### -->
+<para>
+
+</para>
+
+@name: 
+@version: 
+@payload: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msgtype_by_name ##### -->
+<para>
+
+</para>
+
+@name: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msgtype_by_namev ##### -->
+<para>
+
+</para>
+
+@name: 
+@version: 
+@dst: 
 @Returns: 
 
 
@@ -31,8 +63,12 @@ Defining messages and callbacks, and sending/receiving messages.
 
 </para>
 
-@msg: 
+@expeditor: 
+@payload_type: 
+@payload_data: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@msg: 
 
 
 <!-- ##### FUNCTION gras_cb_register ##### -->
@@ -40,39 +76,21 @@ Defining messages and callbacks, and sending/receiving messages.
 
 </para>
 
-@message: 
-@TTL: 
+@msgtype: 
 @cb: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@message: 
+@TTL: 
 
 
-<!-- ##### FUNCTION gras_msg_new ##### -->
+<!-- ##### FUNCTION gras_cb_unregister ##### -->
 <para>
 
 </para>
 
-@msgId: 
-@free_data_on_free: 
-@seqCount: 
-@Varargs: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gras_msg_free ##### -->
-<para>
-
-</para>
-
-@msg: 
-
-
-<!-- ##### FUNCTION gras_msg_handle ##### -->
-<para>
-
-</para>
-
-@timeOut: 
-@Returns: 
+@msgtype: 
+@cb: 
 
 
 <!-- ##### FUNCTION gras_msg_send ##### -->
@@ -80,10 +98,14 @@ Defining messages and callbacks, and sending/receiving messages.
 
 </para>
 
+@sock: 
+@msgtype: 
+@payload: 
+@Returns: 
+<!-- # Unused Parameters # -->
 @sd: 
 @msg: 
 @freeDirective: 
-@Returns: 
 
 
 <!-- ##### FUNCTION gras_msg_wait ##### -->
@@ -92,8 +114,21 @@ Defining messages and callbacks, and sending/receiving messages.
 </para>
 
 @timeout: 
+@msgt_want: 
+@expeditor: 
+@payload: 
+@Returns: 
+<!-- # Unused Parameters # -->
 @id: 
 @message: 
+
+
+<!-- ##### FUNCTION gras_msg_handle ##### -->
+<para>
+
+</para>
+
+@timeOut: 
 @Returns: 
 
 

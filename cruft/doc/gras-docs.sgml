@@ -2,7 +2,6 @@
 
 <!ENTITY comm-socks SYSTEM "sgml/comm_socks.sgml">
 <!ENTITY comm-datadesc SYSTEM "sgml/comm_datadesc.sgml">
-<!ENTITY comm-dd-expert SYSTEM "sgml/comm_datadesc_expert.sgml">
 <!ENTITY comm-messages SYSTEM "sgml/comm_messages.sgml">
 
 <!ENTITY virtu-globals SYSTEM "sgml/virtu_globals.sgml">
@@ -37,7 +36,6 @@
   <chapter>
    <title>Communication facilities</title>
     &comm-datadesc;
-    &comm-dd-expert;
     &comm-socks;
     &comm-messages;
   </chapter>
@@ -295,8 +293,8 @@ In SG, it shouldn't be that difficult either ;)
 =item
 
 Write examples.
--->
   </chapter>
+-->
 
   <chapter>
    <title>GRAS toolbox</title>

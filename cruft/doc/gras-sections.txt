@@ -29,7 +29,7 @@ gras_log_default_appender
 CDEBUG6
 CVERB6
 CINFO6
-CWARNING6
+CWARN6
 CERROR6
 CCRITICAL6
 
@@ -37,7 +37,7 @@ CCRITICAL6
 DEBUG6
 VERB6
 INFO6
-WARNING6
+WARN6
 ERROR6
 CRITICAL6
 
@@ -71,12 +71,12 @@ CINFO2
 CINFO3
 CINFO4
 CINFO5
-CWARNING0
-CWARNING1
-CWARNING2
-CWARNING3
-CWARNING4
-CWARNING5
+CWARN0
+CWARN1
+CWARN2
+CWARN3
+CWARN4
+CWARN5
 CERROR0
 CERROR1
 CERROR2
@@ -115,12 +115,12 @@ INFO2
 INFO3
 INFO4
 INFO5
-WARNING0
-WARNING1
-WARNING2
-WARNING3
-WARNING4
-WARNING5
+WARN0
+WARN1
+WARN2
+WARN3
+WARN4
+WARN5
 ERROR0
 ERROR1
 ERROR2
@@ -249,69 +249,33 @@ gras_cfgelm_type_t
 gras_cfg_get_type
 </SECTION>
 
-
-
-
-
-
-
 <SECTION>
 <FILE>comm_datadesc</FILE>
 <TITLE>Data description</TITLE>
-gras_datadesc_from_nws
-gras_datadesc_parse
-gras_datadesc_copy_data
+gras_datadesc_by_name
+gras_datadesc_by_symbol
+gras_datadesc_import_nws
 
 gras_datadesc_declare_array
 gras_datadesc_declare_array_dyn
 gras_datadesc_declare_ref
 gras_datadesc_declare_ref_disc
 gras_datadesc_declare_struct
-gras_datadesc_declare_struct_add_code
-gras_datadesc_declare_struct_add_name
+gras_datadesc_declare_struct_append_name
 gras_datadesc_declare_union
-gras_datadesc_declare_union_add_code
-gras_datadesc_declare_union_add_name
-</SECTION>
+gras_datadesc_declare_union_append_name
 
-<SECTION>
-<FILE>comm_datadesc_expert</FILE>
-<TITLE>Advanced Data description</TITLE>
-gras_datadesc_declare_array_cb
-gras_datadesc_declare_ref_cb
-gras_datadesc_declare_struct_add_code_cb
-gras_datadesc_declare_struct_add_name_cb
-gras_datadesc_declare_struct_cb
-gras_datadesc_declare_union_add_code_cb
-gras_datadesc_declare_union_add_name_cb
-gras_datadesc_declare_union_cb
+gras_datadesc_cb_set_pre
+gras_datadesc_cb_set_post
 
-
-gras_dd_cbps_block_begin
-gras_dd_cbps_block_end
-gras_dd_cbps_get
 gras_dd_cbps_pop
 gras_dd_cbps_push
 gras_dd_cbps_set
-</SECTION>
+gras_dd_cbps_get
+gras_dd_cbps_block_begin
+gras_dd_cbps_block_end
 
-<SECTION>
-<FILE>dd_internal</FILE>
-<TITLE>Implementation of data description</TITLE>
-gras_ddt_free
-gras_ddt_get_by_code
-gras_ddt_get_by_name
-gras_ddt_new_array
-gras_ddt_new_from_nws
-gras_ddt_new_ignored
-gras_ddt_new_parse
-gras_ddt_new_ref
-gras_ddt_new_scalar
-gras_ddt_new_struct
-gras_ddt_new_struct_append
-gras_ddt_new_union
-gras_ddt_new_union_append
-gras_ddt_register
+gras_arch_selfid
 </SECTION>
 
 <SECTION>
@@ -321,33 +285,30 @@ gras_socket_client
 gras_socket_server
 gras_socket_close
 gras_socket_peer_name
-gras_socket_peer_addr
+gras_socket_peer_port
+gras_socket_my_port
 </SECTION>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <SECTION>
 <FILE>comm_messages</FILE>
 <TITLE>Messages</TITLE>
-gras_msgtype_register
+gras_msgtype_declare
+gras_msgtype_declare_v
+gras_msgtype_by_name
+gras_msgtype_by_namev
+
 gras_cb_t
 gras_cb_register
-gras_msg_new
-gras_msg_free
-gras_msg_handle
+gras_cb_unregister
+
 gras_msg_send
 gras_msg_wait
+gras_msg_handle
+
+<SUBSECTION Standard>
+gras_msg_recv
+gras_msg_init
+gras_msg_exit
 </SECTION>
 
 <SECTION>
@@ -370,45 +331,6 @@ gras_sleep
 <TITLE>File system</TITLE>
 gras_fs_fopen
 </SECTION>
-
-
-
-<SECTION>
-<FILE>gras_private</FILE>
-gras_lock
-gras_unlock
-gras_msg_discard
-FormatTypes
-gras_datadesc_cmp
-SIMPLE_TYPE_COUNT
-</SECTION>
-
-<SECTION>
-<FILE>gras_rl</FILE>
-<TITLE>Real life specific stuff</TITLE>
-grasMsgRecv
-ConvertData
-DataSize
-DifferentFormat
-DifferentOrder
-DifferentSize
-HomogenousConvertData
-HomogenousDataSize
-ReverseData
-<SUBSECTION Standard>
-headerDescriptorCount
-countDescriptorCount
-PEER_NAME_LEN
-</SECTION>
-
-<SECTION>
-<FILE>gras_sg</FILE>
-CloseSocket
-</SECTION>
-
-
-
-
 
 <SECTION>
 <FILE>cruft</FILE>

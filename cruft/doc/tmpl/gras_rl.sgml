@@ -14,18 +14,6 @@ Implementation of GRAS suited for real life.
 
 </para>
 
-<!-- ##### FUNCTION grasMsgRecv ##### -->
-<para>
-
-</para>
-
-@msg: 
-@timeout: 
-@Returns: 
-<!-- # Unused Parameters # -->
-@sd: 
-
-
 <!-- ##### FUNCTION ConvertData ##### -->
 <para>
 

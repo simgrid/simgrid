@@ -176,6 +176,66 @@ Handling sockets
 Sockets API
 
 
+<!-- ##### SECTION ./tmpl/comm_callbacks.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/comm_callbacks.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/comm_callbacks.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/comm_callbacks.sgml:Title ##### -->
+comm_callbacks
+
+
+<!-- ##### SECTION ./tmpl/comm_cb.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/comm_cb.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/comm_cb.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/comm_cb.sgml:Title ##### -->
+comm_cb
+
+
+<!-- ##### SECTION ./tmpl/comm_datadesc_expert.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/comm_datadesc_expert.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/comm_datadesc_expert.sgml:Short_Description ##### -->
+Advanced ways to describe data (for experts)
+
+
+<!-- ##### SECTION ./tmpl/comm_datadesc_expert.sgml:Title ##### -->
+Advanced Data description
+
+
 <!-- ##### SECTION ./tmpl/comm_dd_cbps.sgml:Long_Description ##### -->
 <para>
 
@@ -234,6 +294,26 @@ config
 
 <!-- ##### SECTION ./tmpl/dd_cbps.sgml:Title ##### -->
 Data description callbacks persistant state
+
+
+<!-- ##### SECTION ./tmpl/dd_internal.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/dd_internal.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/dd_internal.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/dd_internal.sgml:Title ##### -->
+Implementation of data description
 
 
 <!-- ##### SECTION ./tmpl/dico.sgml:Long_Description ##### -->
@@ -366,6 +446,125 @@ Overview
 
 <!-- ##### SECTION ./tmpl/gras.sgml:Title ##### -->
 gras
+
+
+<!-- ##### SECTION ./tmpl/gras_private.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras_private.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras_private.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras_private.sgml:Title ##### -->
+gras_private
+
+
+<!-- ##### SECTION ./tmpl/gras_rl.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras_rl.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras_rl.sgml:Short_Description ##### -->
+Implementation of GRAS suited for real life.
+
+
+<!-- ##### SECTION ./tmpl/gras_rl.sgml:Title ##### -->
+RL
+
+
+<!-- ##### SECTION ./tmpl/gras_sg.sgml:Long_Description ##### -->
+<para>
+  SimGrid was designed to ease the comparison of algorithms and
+  heuristics. That way, a lot of complicated notion from the system layer
+  were volontary left off. For example, migrating a process from an host to
+  another is as easy as: MSG_process_change_host(process, new_host).
+</para>
+
+<para>
+  No need to tell that performing this operation on real platform is really
+  harder. This simplification is a very good thing when you want to rapidly
+  prototype code, but makes things somehow more complicated in GRAS since
+  we want to have a realistic API, since it have to be implemented in
+  reality also.
+</para>
+
+<para>
+  The best example of complexity in GRAS_SG induced by simplicity in
+  SimGrid is the sockets handling. There is no "socket" in SG, but only
+  m_channel_t. In contrary to sockets from RL, no special treatment is
+  needed for a process before writing or reading on/from a channel. So, a
+  given channel can be pooled by more than one process. Likewise, you can
+  send data to a channel that nobody is actually listening to.
+</para>
+
+<para>
+  The SG implementation of GRAS repport as an error the fact that nobody is
+  listening to the socket when trying to open a socket, or send stuff using
+  a previously openned socket. That way, the SG version can be used to
+  debug all syncronization issues. For that, we store mainly the PID of
+  both the sender and the receiver in the socket structure, and then
+  resolve PID->process at the lastest moment. This search is a bit
+  expensive, but as long as there is no real garbage collection in SG, with
+  the information "dead process" within the structure, it's the only
+  solution to make sure that we won't dereference pointers to an old freed
+  structure when the process on the other side of the structure did finish
+  since the creation of the socket.
+</para>
+
+<para>
+  As said in the overview, the processes can declare to hear on several
+  sockets, but all incoming messages are handled by the same loop. So, we
+  can use only one channel per process, and use a table on each host to
+  determine to which process a message should be delivered depending on the
+  socket number provided by the sender.
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras_sg.sgml:See_Also ##### -->
+<para>
+RL, the implementation suited for real life.
+</para>
+
+<!--
+Local variables:
+sgml-parent-document:\.\./gras-docs\.sgml
+sgml-omittag:t
+sgml-shorttag:t
+sgml-namecase-general:t
+sgml-general-insert-case:lower
+sgml-minimize-attributes:nil
+sgml-always-quote-attributes:t
+sgml-indent-step:2
+sgml-indent-data:nil
+sgml-exposed-tags:nil
+sgml-local-catalogs:nil
+sgml-local-ecat-files:nil
+End:
+-->
+
+
+<!-- ##### SECTION ./tmpl/gras_sg.sgml:Short_Description ##### -->
+Implementation of GRAS on top of the simulator.
+
+
+<!-- ##### SECTION ./tmpl/gras_sg.sgml:Title ##### -->
+SG
 
 
 <!-- ##### SECTION ./tmpl/nws_comm.sgml:Long_Description ##### -->
@@ -807,6 +1006,20 @@ Sockets
 @a4: 
 @a5: 
 
+<!-- ##### MACRO CWARNING6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
 <!-- ##### FUNCTION CallAddr ##### -->
 <para>
 
@@ -826,6 +1039,17 @@ Sockets
 @sock: 
 @waitForPeer: 
 @Returns: 
+
+<!-- ##### FUNCTION ConvertData ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@description: 
+@length: 
+@sourceFormat: 
 
 <!-- ##### FUNCTION CreateLocalChild ##### -->
 <para>
@@ -871,6 +1095,29 @@ Sockets
 @UNSIGNED_SHORT_TYPE: 
 @STRUCT_TYPE: 
 @LAST_TYPE: 
+
+<!-- ##### FUNCTION DifferentFormat ##### -->
+<para>
+
+</para>
+
+@whatType: 
+@Returns: 
+
+<!-- ##### FUNCTION DifferentOrder ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION DifferentSize ##### -->
+<para>
+
+</para>
+
+@whatType: 
+@Returns: 
 
 <!-- ##### MACRO END_DECL ##### -->
 <para>
@@ -980,6 +1227,27 @@ Sockets
 
 </para>
 
+
+<!-- ##### FUNCTION HomogenousConvertData ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@whatType: 
+@repetitions: 
+@sourceFormat: 
+
+<!-- ##### FUNCTION HomogenousDataSize ##### -->
+<para>
+
+</para>
+
+@whatType: 
+@repetitions: 
+@format: 
+@Returns: 
 
 <!-- ##### TYPEDEF IPAddress ##### -->
 <para>
@@ -1204,6 +1472,17 @@ Sockets
 @sd: 
 @Returns: 
 
+<!-- ##### FUNCTION ReverseData ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@whatType: 
+@repetitions: 
+@format: 
+
 <!-- ##### MACRO SIMPLE_DATA ##### -->
 <para>
 
@@ -1220,6 +1499,12 @@ Sockets
 @type: 
 @repetitions: 
 @offset: 
+
+<!-- ##### MACRO SIMPLE_TYPE_COUNT ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### MACRO STDC_HEADERS ##### -->
 <para>
@@ -1268,6 +1553,19 @@ Sockets
 
 </para>
 
+
+<!-- ##### MACRO WARNING6 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
 
 <!-- ##### USER_FUNCTION grasCallbackFunction ##### -->
 <para>
@@ -1423,6 +1721,16 @@ Sockets
 @seqCount: 
 @Varargs: 
 @Returns: 
+
+<!-- ##### FUNCTION grasMsgRecv ##### -->
+<para>
+
+</para>
+
+@msg: 
+@timeout: 
+@Returns: 
+@sd: 
 
 <!-- ##### FUNCTION grasMsgRegister ##### -->
 <para>
@@ -1585,6 +1893,328 @@ Sockets
 @c: 
 @data: 
 
+<!-- ##### MACRO gras_datadesc_declare_array ##### -->
+<para>
+
+</para>
+
+@name: 
+@elm_type: 
+@size: 
+@code: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_array_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@element_type: 
+@fixed_size: 
+@dynamic_size: 
+@post: 
+@code: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_ref_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@referenced_type: 
+@discriminant: 
+@post: 
+@code: 
+@Returns: 
+
+<!-- ##### MACRO gras_datadesc_declare_ref_disc ##### -->
+<para>
+
+</para>
+
+@name: 
+@discriminant: 
+@code: 
+
+<!-- ##### MACRO gras_datadesc_declare_struct_add_code ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_type_code: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_add_code_cb ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_code: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+<!-- ##### MACRO gras_datadesc_declare_struct_add_name ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_type_name: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_add_name_cb ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_type_name: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@pre_cb: 
+@post_cb: 
+@code: 
+@Returns: 
+
+<!-- ##### MACRO gras_datadesc_declare_union_add_code ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_type_code: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_add_code_cb ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_code: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+<!-- ##### MACRO gras_datadesc_declare_union_add_name ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_type_name: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_add_name_cb ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_type_name: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@field_count: 
+@post: 
+@code: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_from_nws ##### -->
+<para>
+
+</para>
+
+@name: 
+@desc: 
+@howmany: 
+@code: 
+@Returns: 
+@dst: 
+
+<!-- ##### FUNCTION gras_datadesc_parse ##### -->
+<para>
+
+</para>
+
+@name: 
+@Cdefinition: 
+@dst: 
+@Returns: 
+@code: 
+@def: 
+
+<!-- ##### FUNCTION gras_ddt_free ##### -->
+<para>
+
+</para>
+
+@type: 
+
+<!-- ##### FUNCTION gras_ddt_get_by_code ##### -->
+<para>
+
+</para>
+
+@code: 
+@type: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_get_by_name ##### -->
+<para>
+
+</para>
+
+@name: 
+@type: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_array ##### -->
+<para>
+
+</para>
+
+@name: 
+@element_type: 
+@fixed_size: 
+@dynamic_size: 
+@post: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_from_nws ##### -->
+<para>
+
+</para>
+
+@name: 
+@desc: 
+@howmany: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_ignored ##### -->
+<para>
+
+</para>
+
+@name: 
+@default_value: 
+@free_func: 
+@size: 
+@alignment: 
+@post: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_parse ##### -->
+<para>
+
+</para>
+
+@name: 
+@C_definition: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_ref ##### -->
+<para>
+
+</para>
+
+@name: 
+@referenced_type: 
+@discriminant: 
+@post: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_scalar ##### -->
+<para>
+
+</para>
+
+@name: 
+@type: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_struct ##### -->
+<para>
+
+</para>
+
+@name: 
+@pre: 
+@post: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_struct_append ##### -->
+<para>
+
+</para>
+
+@struct_type: 
+@name: 
+@field_type: 
+@pre: 
+@post: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_union ##### -->
+<para>
+
+</para>
+
+@name: 
+@field_count: 
+@post: 
+@dst: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_new_union_append ##### -->
+<para>
+
+</para>
+
+@union_type: 
+@name: 
+@field_type: 
+@pre: 
+@post: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_ddt_register ##### -->
+<para>
+
+</para>
+
+@type: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_dict_cursor_next ##### -->
 <para>
 
@@ -1635,6 +2265,43 @@ Sockets
 @cat: 
 @thresholdPriority: 
 
+<!-- ##### FUNCTION gras_msg_discard ##### -->
+<para>
+
+</para>
+
+@sd: 
+@size: 
+
+<!-- ##### FUNCTION gras_msg_free ##### -->
+<para>
+
+</para>
+
+@msg: 
+
+<!-- ##### FUNCTION gras_msg_new ##### -->
+<para>
+
+</para>
+
+@msgId: 
+@free_data_on_free: 
+@seqCount: 
+@Varargs: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_msgtype_register ##### -->
+<para>
+
+</para>
+
+@msgId: 
+@name: 
+@sequence_count: 
+@Varargs: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_sock_client_open ##### -->
 <para>
 
@@ -1677,14 +2344,6 @@ Sockets
 @Param1: 
 @Param2: 
 @sock: 
-@Returns: 
-
-<!-- ##### FUNCTION gras_socket_peer_name ##### -->
-<para>
-
-</para>
-
-@sd: 
 @Returns: 
 
 <!-- ##### FUNCTION gras_unlock ##### -->
