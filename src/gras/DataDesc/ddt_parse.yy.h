@@ -1,8 +1,10 @@
 /* $Id$ */
 
-/* gs/parse.h -- automatic parsing of data structures */
+/* ddt_parse.h -- automatic parsing of data structures                      */
 
-/* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */
+/* Copyright (c) 2003 Arnaud Legrand.                                       */
+/* Copyright (c) 2003, 2004 Martin Quinson.                                 */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -35,7 +37,6 @@ extern int gras_ddt_parse_char_pos;
 extern int gras_ddt_parse_tok_num;
 
 void gras_ddt_parse_dump(void);
-int gras_ddt_parse_lex(void);
 int gras_ddt_parse_lex_n_dump(void);
 void  gras_ddt_parse_pointer_init(const char *file);
 void  gras_ddt_parse_pointer_close(void);
@@ -43,6 +44,7 @@ void  gras_ddt_parse_pointer_string_init(const char *string_to_parse);
 void  gras_ddt_parse_pointer_string_close(void);
 
 /* prototypes of the functions offered by flex */
+int gras_ddt_parse_lex(void);
 int gras_ddt_parse_get_lineno  (void);
 FILE *gras_ddt_parse_get_in  (void);
 FILE *gras_ddt_parse_get_out  (void);

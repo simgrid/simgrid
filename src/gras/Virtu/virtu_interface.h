@@ -2,7 +2,7 @@
 
 /* virtu[alization] - speciafic parts for each OS and for SG                */
 
-/* module's public interface  exported within GRAS, but not to end user.    */
+/* module's public interface exported within GRAS, but not to end user.     */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
