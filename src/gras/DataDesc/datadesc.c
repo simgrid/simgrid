@@ -132,8 +132,6 @@ gras_datadesc_init(void) {
 					  gras_datadesc_by_name("char"), 
 					  _strlen_cb,&ddt));
 
-  //  elm=ddt;
-  //  TRYFAIL(gras_datadesc_declare_ref("string", elm, &ddt));
 }
 
 /**
@@ -146,6 +144,73 @@ gras_datadesc_exit(void) {
   VERB0("Exiting DataDesc");
   gras_set_free(&gras_datadesc_set_local);
   gras_datadesc_set_local = NULL;
+  DEBUG0("Exited DataDesc");
 }
 
+/**
+ * gras_datadesc_get_name:
+ *
+ * Returns the name of a datadescription (to ease the debug)
+ */
+char *
+gras_datadesc_get_name(gras_datadesc_type_t *ddt) {
+  return ddt->name;
+}
+/**
+ * gras_datadesc_get_id:
+ *
+ * Returns the name of a datadescription (to ease the debug)
+ */
+int
+gras_datadesc_get_id(gras_datadesc_type_t *ddt) {
+  return ddt->code;
+}
 
+/**
+ * gras_datadesc_type_dump:
+ *
+ * For debugging purpose
+ */
+void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
+  int i;
+
+  printf("DataDesc dump:");
+  if(!ddt) {
+    printf("(null)\n");
+    return;
+  }
+  printf ("%s (ID:%d)\n",ddt->name,ddt->code);
+  printf ("  refcounter=%d\n",ddt->refcounter);
+  printf ("  category: %s\n",gras_datadesc_cat_names[ddt->category_code]);
+
+  printf ("  size[");
+  for (i=0; i<gras_arch_count; i++) {
+    printf("%s%s%ld%s",
+	   i>0?", ":"",
+	   i == GRAS_THISARCH ? "*":"",
+	   ddt->size[i],
+	   i == GRAS_THISARCH ? "*":"");
+  }
+  printf ("]\n");
+
+  printf ("  alignment[");
+  for (i=0; i<gras_arch_count; i++) {
+    printf("%s%s%ld%s",
+	   i>0?", ":"",
+	   i == GRAS_THISARCH ? "*":"",
+	   ddt->alignment[i],
+	   i == GRAS_THISARCH ? "*":"");
+  }
+  printf ("]\n");
+
+  printf ("  aligned_size[");
+  for (i=0; i<gras_arch_count; i++) {
+    printf("%s%s%ld%s",
+	   i>0?", ":"",
+	   i == GRAS_THISARCH ? "*":"",
+	   ddt->aligned_size[i],
+	   i == GRAS_THISARCH ? "*":"");
+  }
+  printf ("]\n");
+  
+}
