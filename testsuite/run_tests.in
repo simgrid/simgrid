@@ -17,7 +17,7 @@ for test in xbt/log_usage@EXEEXT@                                 \
 	    xbt/config_usage@EXEEXT@                                      \
 	    xbt/heap_bench@EXEEXT@ \
 	    \
-	    gras/trp_tcp_usage@EXEEXT@      gras/trp_file_usage@EXEEXT@             \
+	    gras/trp_tcp_usage      gras/trp_file_usage             \
 	    gras/datadesc_usage@EXEEXT@                                     \
 	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.little32" \
 	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.little64" \
@@ -38,29 +38,37 @@ do
   else
     wine=wine
   fi
-  if [ "x$test" = "xdict_crash" ] ; then
+  if [ "x$test" = "xdict_crash@EXEEXT@" ] ; then
     cd $dir
     $wine ./$cmd --gras-log="root.thres=info" 2>&1
     retval=$?
     cd ..
   else 
     cd $dir
-    # if the user defines walgrind while cross-compiling, too bad
-    $wine $valgrind ./$cmd --gras-log="root.thres=info" 2>&1
-    retval=$?
+    winesave=$wine
+    if [ x@EXEEXT@ != x ] ; then 
+      if echo ${cmd} | grep @EXEEXT@ >/dev/null ; then : ; else
+        echo "This is not a win32 binary, don't use wine"
+        wine=""
+      fi
+    fi
+      # if the user defines valgrind while cross-compiling, too bad
+      $wine $valgrind ./$cmd --gras-log="root.thres=info" 2>&1
+      retval=$?
+    wine=$winesave
     cd ..
   fi
   if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
     echo "## failed. Rerun $test with full details."
-    if [ "x$test" = "xdict_crash" ] ; then
-      cd $dir
-      $wine ./$cmd --gras-log="root.thres=debug" 2>&1
-      cd ..
-    else 
-      cd $dir
-      $wine $valgrind ./$cmd --gras-log="root.thres=debug" 2>&1
-      cd ..
-    fi
+#    if [ "x$test" = "xdict_crash" ] ; then
+#      cd $dir
+#      $wine ./$cmd --gras-log="root.thres=debug" 2>&1
+#      cd ..
+#    else 
+#      cd $dir
+#      $wine $valgrind ./$cmd --gras-log="root.thres=debug" 2>&1
+#      cd ..
+#    fi
     failed_nb=`expr $failed_nb + 1`
     echo "  $test (returned $retval)" >> test.failed
   else # retval == 77
