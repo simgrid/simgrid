@@ -32,7 +32,9 @@ COMMON_S=\
   Transport/transport_sg.c Transport/transport_tcp.c          \
   \
   \
-  DataDesc/datadesc.c DataDesc/datadesc_interface.h \
+  DataDesc/ddt_create.c        DataDesc/ddt_declare.c \
+  DataDesc/ddt_remote.c \
+  DataDesc/datadesc.c          DataDesc/datadesc_interface.h \
   DataDesc/datadesc_private.h
   
 #  DataDesc/datadesc.c                               \

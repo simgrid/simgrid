@@ -16,7 +16,7 @@
 
 #define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
-
+extern gras_set_t *gras_datadesc_set_local;
 
 /**********************************************************/
 /* Actual definitions of the stuff in the type descriptor */
@@ -132,7 +132,8 @@ typedef struct s_gras_dd_cat_array {
  * Specific fields of an ignored field
  */
 typedef struct s_gras_dd_cat_ignored {
-        void	 	 		*default_value;
+  void	 	 		*default_value;
+  void_f_pvoid_t                *free_func;
 } gras_dd_cat_ignored_t;
 
 
@@ -223,6 +224,14 @@ gras_ddt_new_array(const char                      *name,
 		   gras_datadesc_type_cb_int_t      dynamic_size,
 		   gras_datadesc_type_cb_void_t     post,
 		   gras_datadesc_type_t           **dst);
+gras_error_t 
+gras_ddt_new_ignored(const char       *name,
+		     void             *default_value,
+		     void_f_pvoid_t   *free_func,
+		     long int                       size,
+		     long int                       alignment,
+		     gras_datadesc_type_cb_void_t     post,
+		     gras_datadesc_type_t           **dst);
 
 
 

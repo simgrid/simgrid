@@ -17,6 +17,9 @@ void gras_datadesc_init(void);
 void gras_datadesc_exit(void);
 
 
+/* free a given ddt */
+void gras_ddt_free(gras_datadesc_type_t **type);
+
 /* declare in the given set */
 gras_error_t gras_ddt_register(gras_set_t           *set,
 			       gras_datadesc_type_t *type);
