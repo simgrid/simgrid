@@ -1,0 +1,84 @@
+/**** MSG_LICENCE DO NOT REMOVE ****/
+
+#ifndef METASIMGRID_PRIVATE_H
+#define METASIMGRID_PRIVATE_H
+
+#include "msg/msg.h"
+#include "surf/surf.h"
+#include "xbt/fifo.h"
+#include "xbt/dynar.h"
+#include "xbt/swag.h"
+#include "xbt/dict.h"
+#include "xbt/context.h"
+
+/**************** datatypes **********************************/
+
+typedef enum {
+  HOST_DOWN = 0,
+  HOST_ALIVE = 1
+} m_host_state_t;
+
+typedef struct sim_data_host {
+  void *host;			/* SURF modeling */
+  xbt_fifo_t *mbox;		/* array of FIFOs used as a mailboxes  */
+  xbt_context_t *sleeping;	/* array of context used to know whether a process is
+				   waiting for a communication on a channel */
+  m_host_state_t state;
+  s_xbt_swag_t process_list;
+} s_sim_data_host_t;
+
+/********************************* Task **************************************/
+
+typedef struct sim_data_task {
+  surf_action_t compute;	/* SURF modeling of computation  */
+  surf_action_t comm;	        /* SURF modeling of communication  */
+  double message_size;		/* Data size  */
+  double computation_amount;	/* Computation size  */
+  xbt_dynar_t sleeping;		/* process to wake-up */
+} s_sim_data_task_t;
+
+/******************************* Process *************************************/
+
+typedef struct sim_data_process {
+  s_xbt_swag_hookup_t host_hookup; /* link to other process running on the same location */
+  m_host_t host;                /* the host on which the process is running */
+  xbt_context_t context;	        /* the context that executes the scheduler fonction */
+  int PID;			/* used for debugging purposes */
+  int PPID;			/* The parent PID */
+  m_task_t waiting_task;        /* used for debugging purposes */
+  m_host_t put_host;            /* used for debugging purposes */
+  int put_channel;              /* used for debugging purposes */
+  int argc;                     /* arguments number if any */
+  char **argv;                  /* arguments table if any */
+  MSG_error_t last_errno;       /* the last value returned by a MSG_function */
+} s_sim_data_process_t;
+
+/************************** Global variables ********************************/
+typedef struct MSG_Global {
+  xbt_fifo_t host;
+  xbt_fifo_t link;
+  xbt_fifo_t process_to_run;
+  xbt_fifo_t process;
+  int max_channel;
+  m_process_t current_process;
+  xbt_dict_t registered_functions;
+} s_MSG_global_t, *MSG_Global_t;
+
+extern MSG_Global_t msg_global;
+
+/*************************************************************/
+
+#define PROCESS_SET_ERRNO(val) (((sim_data_process_t)(MSG_process_self()->simdata))->last_errno=val)
+#define PROCESS_GET_ERRNO() (((sim_data_process_t)(MSG_process_self()->simdata))->last_errno)
+#define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
+/* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
+
+#define CHECK_HOST()  ASSERT((((sim_data_host_t) MSG_host_self()->simdata)->state==HOST_ALIVE),"Host failed, you cannot call this function.")
+
+m_task_t __MSG_task_copy(m_task_t task);
+MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task);
+
+MSG_error_t __MSG_task_check(m_task_t task);
+
+
+#endif

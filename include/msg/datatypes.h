@@ -10,11 +10,12 @@
 
 /********************************* Host **************************************/
 
-struct s_m_host {
+typedef struct sim_data_host *sim_data_host_t;
+typedef struct m_host {
   char *name;			/* host name if any */
-  void *simdata;		/* simulator data */
+  sim_data_host_t simdata;	/* simulator data */
   void *data;			/* user data */
-};
+} s_m_host_t;
 /** \brief Host datatype  
     \ingroup m_datatypes_management
 
@@ -27,15 +28,17 @@ struct s_m_host {
 
     \see m_host_management
 */
-typedef struct s_m_host *m_host_t;
+typedef s_m_host_t *m_host_t;
 
 /********************************* Task **************************************/
 
-struct s_m_task {
+typedef struct sim_data_task *sim_data_task_t;
+typedef struct m_task {
   char *name;			/* host name if any */
-  void *simdata;		/* simulator data */
+  sim_data_task_t simdata;	/* simulator data */
   void *data;			/* user data */
-};
+} s_m_task_t;
+
 /** \brief Task datatype  
     \ingroup m_datatypes_management 
 
@@ -44,26 +47,27 @@ struct s_m_task {
     data</em>.
     \see m_task_management
 */
-typedef struct s_m_task *m_task_t;
+typedef s_m_task_t *m_task_t;
 
 /** \brief Default value for an uninitialized #m_task_t.
     \ingroup m_datatypes_management 
 */
 #define MSG_TASK_UNINITIALIZED NULL
-/******************************* Process *************************************/
 
-struct s_m_process {
+/******************************* Process *************************************/
+typedef struct sim_data_process *sim_data_process_t;
+typedef struct m_process {
   char *name;			/* process name if any */
-  void *simdata;		/* simulator data */
+  sim_data_process_t simdata;	/* simulator data */
   void *data;			/* user data */
-};
+} s_m_process_t;
 /** \brief Agent datatype  
     \ingroup m_datatypes_management 
     An agent may be defined as a <em>code</em>, with some <em>private
     data</em>, executing in a <em>location</em>.
     \see m_process_management
 */
-typedef struct s_m_process *m_process_t;
+typedef s_m_process_t *m_process_t;
 /** \brief Agent code datatype  
     \ingroup m_datatypes_management 
     The code of an agent is a m_process_code_t, i.e. a function with no arguments 

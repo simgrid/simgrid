@@ -32,6 +32,8 @@ EXTRA_DIST= \
 	surf/surf_parse.l surf/surf_parse.h \
 	surf/network_private.h \
 	\
+	msg/private.h \
+	\
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
 	gras/Virtu/virtu_rl.h \
@@ -106,6 +108,8 @@ COMMON_S=\
   surf/surf.c                                                                \
   surf/surf_parse.c                                                          \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
+  \
+  msg/task.c  \
   \
   gras/gras.c \
   \
