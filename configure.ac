@@ -47,7 +47,9 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS([sys/socket.h winsock.h winsock2.h \
                   sys/stat.h\
 		  sys/time.h ])
-AC_CHECK_FUNCS([gettimeofday ])
+AC_CHECK_FUNCS([gettimeofday \
+                getdtablesize \
+                sysconf])
 
 
 AC_MSG_CHECKING(how to link against winsock)
@@ -125,7 +127,7 @@ AC_CONFIG_FILES([
   src/Makefile
   src/amok/Makefile
   examples/Makefile 
-    examples/ping/Makefile      examples/ping/test_sg
+    examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
   doc/Makefile
   tools/compile-remote-worker
   testsuite/Makefile
@@ -138,10 +140,10 @@ AC_CONFIG_FILES([
      test -e testsuite/gras/trp_file_usage&& chmod +x testsuite/gras/trp_file_usage;
      test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
      test -e examples/ping/test_sg        && chmod +x examples/ping/test_sg;
+     test -e examples/ping/test_rl        && chmod +x examples/ping/test_rl;
 #     test -e examples/bandwidth/test_sg   && chmod +x examples/bandwidth/test_sg;
      test -e examples/pastry/test_sg      && chmod +x examples/pastry/test_sg;
      chmod +x $srcdir/tools/gras-check-arch;
-     chmod +x $srcdir/examples/ping/test_rl
 ])
 
 
