@@ -53,7 +53,7 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
       optCFLAGS="-ffast-math -funroll-loops -fno-strict-aliasing"
       case " $CFLAGS " in
       *-O*) ;;
-      *) optCFLAGS="$optCFLAGS -03" ;;
+      *) optCFLAGS="$optCFLAGS -O3" ;;
       esac
   fi
   AC_MSG_RESULT($optCFLAGS)
