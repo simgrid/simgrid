@@ -17,10 +17,11 @@
 xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t * const free_func)
 {
   xbt_heap_t H = calloc(1, sizeof(struct xbt_heap));
-  H->size  = init_size;
+  H->size = init_size;
   H->count = 0;
-  H->items = (xbt_heapItem_t) calloc(init_size, sizeof(struct xbt_heapItem));
-  H->free  = free;
+  H->items =
+      (xbt_heapItem_t) calloc(init_size, sizeof(struct xbt_heapItem));
+  H->free = free;
   return H;
 }
 
@@ -32,9 +33,9 @@ xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t * const free_func)
  */
 void xbt_heap_free(xbt_heap_t H)
 {
-  int i ;
-  if(H->free)
-    for(i=0;i < H->size;i++) 
+  int i;
+  if (H->free)
+    for (i = 0; i < H->size; i++)
       H->free(H->items[i].content);
   free(H->items);
   free(H);
@@ -122,8 +123,8 @@ void *xbt_heap_maxcontent(xbt_heap_t H)
  */
 void xbt_heap_maxHeapify(xbt_heap_t H)
 {
-  int i=0;
-  while(1) {
+  int i = 0;
+  while (1) {
     int greatest = i;
     int l = LEFT(i);
     int r = RIGHT(i);
@@ -136,8 +137,9 @@ void xbt_heap_maxHeapify(xbt_heap_t H)
       struct xbt_heapItem tmp = H->items[i];
       H->items[i] = H->items[greatest];
       H->items[greatest] = tmp;
-      i=greatest;
-    } else return;
+      i = greatest;
+    } else
+      return;
   }
 }
 

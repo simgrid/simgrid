@@ -3,13 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef _XBT_HEAP_PRIVATE_H
+#define _XBT_HEAP_PRIVATE_H
+
 #include <stdlib.h>
 #include "xbt_heap.h"
 
 typedef struct xbt_heapItem {
   void *content;
   xbt_heap_float_t key;
-} s_xbt_heapItem_t ,*xbt_heapItem_t;
+} s_xbt_heapItem_t, *xbt_heapItem_t;
 
 typedef struct xbt_heap {
   int size;
@@ -27,3 +30,5 @@ typedef struct xbt_heap {
 
 void xbt_heap_maxHeapify(xbt_heap_t H);
 void xbt_heap_increaseKey(xbt_heap_t H, int i);
+
+#endif				/* _XBT_HEAP_PRIVATE_H */
