@@ -97,25 +97,7 @@ const char *SIM_MAIN_POSTEMBULE = "\n"
 "  return 0;\n"
 "}\n";
 
-/**********************************************/
-/**** Generate the file for the real life *****/
-/**********************************************/
 
-#define RL_CODE \
-"#include <stdio.h>\n" \
-"#include <signal.h>\n" \
-"#include <gras.h>\n" \
-"\n" \
-"/* user code */\n" \
-"int %s(int argc, char *argv[]);\n" \
-"\n" \
-"int main(int argc, char *argv[]){\n" \
-"  int errcode;\n" \
-"\n" \
-"  errcode=%s(argc,argv);\n"\
-" \n" \
-"  return errcode;\n"\
-"}\n"
 
 /**********************************************/
 /********* Parse XML deployment file **********/
@@ -207,6 +189,9 @@ static void generate_sim(char *project)
   free(filename);
 }
 
+/**********************************************/
+/**** Generate the file for the real life *****/
+/**********************************************/
 static void generate_rl(char *project)
 {
   xbt_dict_cursor_t cursor=NULL;
@@ -223,7 +208,23 @@ static void generate_rl(char *project)
     xbt_assert1(OUT, "Unable to open %s for writing",filename);
 
     fprintf(OUT, "\n%s\n",warning);
-    fprintf(OUT, RL_CODE, key,key);
+    fprintf(OUT, "#include <stdio.h>\n" \
+                 "#include <signal.h>\n" \
+                 "#include <gras.h>\n" \
+                 "\n" \
+                 "extern const char *_gras_procname;\n" \
+                 "/* user code */\n" \
+                 "int %s(int argc, char *argv[]);\n" \
+                 "\n" \
+                 "int main(int argc, char *argv[]){\n" \
+                 "  int errcode;\n" \
+                 "\n" \
+                 "  _gras_procname = \"%s\";\n" \
+                 "  errcode=%s(argc,argv);\n"\
+                 " \n" \
+                 "  return errcode;\n"\
+                 "}\n",
+	    key,key,key);
     fprintf(OUT, "\n%s\n",warning);
     fclose(OUT);
     free(filename);
@@ -307,7 +308,8 @@ static void generate_makefile_local(char *project, char *deployment)
   
   OUT=fopen(filename,"w");
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
-
+  free(filename);
+   
   fprintf(OUT, "############ PROJECT COMPILING AND ARCHIVING #########\n");
   fprintf(OUT, "PROJECT_NAME=%s\n",project);
   fprintf(OUT, 
@@ -600,5 +602,6 @@ int main(int argc, char *argv[])
   generate_deployment(project_name, deployment_file);
 
   free(warning);
+  surf_finalize();
   return 0;
 }
