@@ -34,43 +34,33 @@ for test in xbt/log_usage@EXEEXT@                                 \
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
-  dir=`echo $test |sed 's|\([^/]*\)/\(.*\)|\1|'`
-  cmd=`echo $test |sed 's|\([^/]*\)/\(.*\)|\2|'`
   if [ x@EXEEXT@ = x ] ; then 
     wine=
   else
     wine=wine
   fi
   if [ "x$test" = "xdict_crash@EXEEXT@" ] ; then
-    cd $dir
-    $wine ./$cmd --gras-log="root.thres=info" 2>&1
+    $wine ./$test --gras-log="root.thres=info" 2>&1
     retval=$?
-    cd ..
   else 
-    cd $dir
     winesave=$wine
     if [ x@EXEEXT@ != x ] ; then 
-      if echo ${cmd} | grep @EXEEXT@ >/dev/null ; then : ; else
+      if echo ${test} | grep @EXEEXT@ >/dev/null ; then : ; else
         echo "This is not a win32 binary, don't use wine"
         wine=""
       fi
     fi
       # if the user defines valgrind while cross-compiling, too bad
-      $wine $valgrind ./$cmd --gras-log="root.thres=info" 2>&1
+      $wine $valgrind ./$test --gras-log="root.thres=info" 2>&1
       retval=$?
     wine=$winesave
-    cd ..
   fi
   if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
     echo "## failed. Rerun $test with full details."
 #    if [ "x$test" = "xdict_crash" ] ; then
-#      cd $dir
-#      $wine ./$cmd --gras-log="root.thres=debug" 2>&1
-#      cd ..
+#      $wine ./$test --gras-log="root.thres=debug" 2>&1
 #    else 
-#      cd $dir
-#      $wine $valgrind ./$cmd --gras-log="root.thres=debug" 2>&1
-#      cd ..
+#      $wine $valgrind ./$test --gras-log="root.thres=debug" 2>&1
 #    fi
     failed_nb=`expr $failed_nb + 1`
     echo "  $test (returned $retval)" >> test.failed
