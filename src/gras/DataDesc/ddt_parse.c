@@ -282,8 +282,11 @@ static gras_error_t parse_statement(char	 *definition,
     } else if (!strcmp(identifier.type_name, "char")) {
       identifier.type = gras_datadesc_by_name("char");
 
-    } else { /* impossible */
-      PARSE_ERROR0("The Impossible Did Happen (once again)");
+    } else { 
+      DEBUG1("Base type is a constructed one (%s)",identifier.type_name);
+      identifier.type = gras_datadesc_by_name(identifier.type_name);
+      if (!identifier.type)
+	PARSE_ERROR1("Unknown base type '%s'",identifier.type_name);
     }
   } 
   /* Now identifier.type and identifier.name speak about the base type.
