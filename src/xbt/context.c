@@ -187,9 +187,25 @@ void xbt_context_exit(void) {
   xbt_swag_free(context_to_destroy);
 
   while((context=xbt_swag_extract(context_living)))
-    xbt_context_destroy(context);
+    xbt_context_free(context);
 
   xbt_swag_free(context_living);
 
   init_context = current_context = NULL ;
+}
+
+void xbt_context_free(xbt_context_t context)
+{
+  int i ;
+
+  xbt_swag_remove(context, context_living);  
+  for(i=0;i<context->argc; i++) 
+    if(context->argv[i]) xbt_free(context->argv[i]);
+  if(context->argv) xbt_free(context->argv);
+  
+  if(context->cleanup_func)
+    context->cleanup_func(context->cleanup_arg);
+  xbt_context_destroy(context);
+
+  return;
 }
