@@ -1,0 +1,73 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+my @types;
+my @abrev;
+my @val;
+
+push @types,"char";          push @abrev, "c"; push @val, "'w'";
+push @types,"short int";     push @abrev, "s"; push @val, '134';
+push @types,"int";           push @abrev, "i"; push @val, '-11249';
+push @types,"long int";      push @abrev, "l"; push @val, '31319919';
+push @types,"long long int"; push @abrev, "L"; push @val, '-232130010';
+push @types,"float";         push @abrev, "f"; push @val, '-11313.1135';
+push @types,"double";        push @abrev, "d"; push @val, '1424420.11331';
+
+die 'scalar @types != scalar @abrev' unless (scalar @types == scalar @abrev);
+
+print "/* This file is perl-generated, of course */\n\n";
+
+print "#include <stdio.h>\n";
+print "#include <gras.h>\n\n";
+
+print "GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test);\n\n";
+
+print "#define READ  0\n#define WRITE 1\n#define RW    2\n\n";
+  
+
+print "gras_error_t write_read(gras_datadesc_type_t *type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
+
+my ($i,$j,$k,$l);
+my $max=scalar @types;
+for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) {my $l=0;
+    print "GRAS_DEFINE_TYPE(".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l].",".
+      "struct ".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l]." { ".
+        $types[$i]." a; ".
+        $types[$j]." b; ".
+        $types[$k]." c;".
+        $types[$l]." d;".
+      "};)\n";
+}}}
+
+# print "\n#define test(a) do {if (!(a)) { failed = 1; ERROR1(\"%s failed\",#a);}} while (0)\n";
+ print "\n#define test(a) gras_assert(a)\n";
+
+print "\ngras_error_t test_structures(gras_socket_t *sock, int direction);\n";
+print "\ngras_error_t test_structures(gras_socket_t *sock, int direction) {\n";
+print "  gras_error_t errcode;\n";
+for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) {my $l=0;
+    my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
+    print "  struct $struct my_$struct = {".$val[$i]."+(".$types[$i].")1,"
+                                           .$val[$j]."+(".$types[$j].")2,"
+                                           .$val[$k]."+(".$types[$k].")3,"
+                                           .$val[$l]."+(".$types[$l].")4}, my_${struct}2;\n";
+}}}
+
+print "  INFO0(\"---- Test on all possible struct having 3 fields (".($max*$max*$max)." structs) ----\");\n";
+for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { my $l=0;
+    my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
+    print "  TRY(write_read(gras_datadesc_by_symbol($struct), &my_$struct, &my_${struct}2, sock,direction));\n";
+    print "  if (direction == READ || direction == RW) {\n";
+    print "     int failed = 0;\n";
+    print "     test(my_$struct.a == my_${struct}2.a);\n";
+    print "     test(my_$struct.b == my_${struct}2.b);\n";
+    print "     test(my_$struct.c == my_${struct}2.c);\n";
+    print "     test(my_$struct.d == my_${struct}2.d);\n";
+    print "     if (!failed) VERB0(\"Passed $struct\");\n";
+    print "  }\n";
+}}}
+    print "  return no_error;\n";
+    print "}\n";
+		  ;

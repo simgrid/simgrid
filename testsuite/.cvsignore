@@ -8,3 +8,5 @@ gs_example gs_example_receive gs_example_send
 trp_file_client trp_file_server trp_file_usage
 trp_tcp_client trp_tcp_server trp_tcp_usage
 datadesc_usage
+datadesc_structs.c
+datadesc_usage.out
