@@ -94,9 +94,9 @@ _cursor_push_keys(xbt_dict_cursor_t cursor,
   int                  i       = 0;
   static volatile int  count   = 0; /* ??? */
 
-  CDEBUG1(dict_cursor, "Push childs of %p in the cursor", (void*)elm);
+  CDEBUG3(dict_cursor, "Push childs of %p (%.*s) in the cursor", (void*)elm, elm->key_len, elm->key);
 
-  if (elm->content) {
+  if (!elm->internal) {
     xbt_dynar_push(cursor->keys,     &elm->key    );
     xbt_dynar_push(cursor->key_lens, &elm->key_len);
     count++;
@@ -155,6 +155,9 @@ void
 xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
   xbt_assert(cursor);
 
+  DEBUG2("step cursor. Current=%.*s",
+	 xbt_dynar_get_as(cursor->key_lens,cursor->pos_len,int),
+	 xbt_dynar_get_as(cursor->keys,cursor->pos,char *));
   xbt_dynar_cursor_step(cursor->keys,     &cursor->pos);
   xbt_dynar_cursor_step(cursor->key_lens, &cursor->pos_len);
 }
@@ -166,8 +169,8 @@ xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
  */
 int
 xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
-			     char               **key,
-			     void               **data) {
+			    char               **key,
+			    void               **data) {
   xbt_error_t  errcode = no_error;
   int           key_len = 0;
   
