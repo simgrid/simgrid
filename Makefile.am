@@ -59,7 +59,7 @@ mail:
 	 @ver=`dpkg-parsechangelog -lChangeLog | egrep '^Version: ' | sed 's/Version: //'`;\
 	  (echo "Hello," ; \
 	   echo; \
-           echo "A new version of GRAS is available. Here is the changelog:";\
+           echo "A new version of SimGrid is available. Here is the changelog:";\
 	   echo;echo;\
            dpkg-parsechangelog -lChangeLog ;\
            echo;echo; \
