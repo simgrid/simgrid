@@ -1,6 +1,6 @@
 /* gs_rl_type_driver.c */
 
-#include "gs/gs_private.h"
+#include "DataDesc/gs_private.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(NDR_tdriver_rl,NDR);
 /*

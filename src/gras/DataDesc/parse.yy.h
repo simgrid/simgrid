@@ -5,30 +5,30 @@
 /* Authors: Arnaud Legrand, Martin Quinson            */
 
 typedef enum {
-  GS_PARSE_TOKEN_EMPTY = 0,
-  GS_PARSE_TOKEN_LP = 512,
-  GS_PARSE_TOKEN_RP,
-  GS_PARSE_TOKEN_WORD,
-  GS_PARSE_TOKEN_SPACE,
-  GS_PARSE_TOKEN_QUOTE,
-  GS_PARSE_TOKEN_COMMENT,
-  GS_PARSE_TOKEN_NEWLINE,
-  GS_PARSE_TOKEN_STAR,
-  GS_PARSE_TOKEN_SEMI_COLON,
-  GS_PARSE_TOKEN_COLON,
-  GS_PARSE_TOKEN_ERROR
-} gs_parse_token_t;
+  GRAS_DATADESC_PARSE_TOKEN_EMPTY = 0,
+  GRAS_DATADESC_PARSE_TOKEN_LP = 512,
+  GRAS_DATADESC_PARSE_TOKEN_RP,
+  GRAS_DATADESC_PARSE_TOKEN_WORD,
+  GRAS_DATADESC_PARSE_TOKEN_SPACE,
+  GRAS_DATADESC_PARSE_TOKEN_QUOTE,
+  GRAS_DATADESC_PARSE_TOKEN_COMMENT,
+  GRAS_DATADESC_PARSE_TOKEN_NEWLINE,
+  GRAS_DATADESC_PARSE_TOKEN_STAR,
+  GRAS_DATADESC_PARSE_TOKEN_SEMI_COLON,
+  GRAS_DATADESC_PARSE_TOKEN_COLON,
+  GRAS_DATADESC_PARSE_TOKEN_ERROR
+} gras_datadesc_parse_token_t;
 
-#define GS_PARSE_MAX_STR_CONST 4048
+#define GRAS_DATADESC_PARSE_MAX_STR_CONST 4048
 
-extern int gs_parse_line_pos;
-extern int gs_parse_char_pos;
-extern int gs_parse_tok_num;
+extern int gras_datadesc_parse_line_pos;
+extern int gras_datadesc_parse_char_pos;
+extern int gras_datadesc_parse_tok_num;
 
-void gs_parse_dump(void);
-int gs_parse_lex(void);
-int gs_parse_lex_n_dump(void);
-void  gs_parse_pointer_init(const char *file);
-void  gs_parse_pointer_close(void);
-void  gs_parse_pointer_string_init(const char *string_to_parse);
-void  gs_parse_pointer_string_close(void);
+void gras_datadesc_parse_dump(void);
+int gras_datadesc_parse_lex(void);
+int gras_datadesc_parse_lex_n_dump(void);
+void  gras_datadesc_parse_pointer_init(const char *file);
+void  gras_datadesc_parse_pointer_close(void);
+void  gras_datadesc_parse_pointer_string_init(const char *string_to_parse);
+void  gras_datadesc_parse_pointer_string_close(void);

@@ -1,6 +1,6 @@
 /* gs_net_driver.c */
 
-#include "gs/gs_private.h"
+#include "DataDesc/gs_private.h"
 
 //GRAS_LOG_NEW_DEFAULT_CATEGORY(FIXME_net_driver);
 

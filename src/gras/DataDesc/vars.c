@@ -1,6 +1,6 @@
 /* gs_vars.c */
 
-#include "gs/gs_private.h"
+#include "DataDesc/gs_private.h"
 
 struct s_gs_var {
         struct s_gs_type	*p_type;

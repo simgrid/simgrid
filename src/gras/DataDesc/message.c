@@ -1,6 +1,6 @@
 /* gs_message.c */
 
-#include "gs/gs_private.h"
+#include "DataDesc/gs_private.h"
 
 /*
  * Sequences

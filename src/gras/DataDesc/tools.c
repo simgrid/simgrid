@@ -1,6 +1,6 @@
 /* gs_tools.c */
 
-#include "gs/gs_private.h"
+#include "DataDesc/gs_private.h"
 
 void *
 gs_memdup(const void * const ptr,

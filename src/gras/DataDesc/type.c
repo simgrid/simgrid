@@ -1,6 +1,6 @@
 /* gs_type.c */
 
-#include "gs/gs_private.h"
+#include "DataDesc/gs_private.h"
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(NDR_type_creation,NDR);
 
 /*......................................................................

@@ -1,6 +1,6 @@
 /* gs_type_driver.c */
 
-#include "gs/gs_private.h"
+#include "DataDesc/gs_private.h"
 
 static
 gras_dict_t *p_type_driver_dict = NULL;
