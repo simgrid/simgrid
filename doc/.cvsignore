@@ -4,3 +4,7 @@ gras-decl.txt
 sgml xml
 Makefile.in
 gras-undocumented.txt
+Doxyfile.API
+Doxyfile.Examples
+Doxyfile.main
+api_index.doc
