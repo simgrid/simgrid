@@ -3,16 +3,15 @@
 /* bandwidth - bandwidth test demo of GRAS features                         */
 
 /* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003 the OURAGAN project.                                  */
+/* Copyright (C) 2003,2004 da GRAS posse.                                   */
 
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
+#include "gras.h"
+#include "amok/bandwidth.h"
 
-#include <gras.h>
+GRAS_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,"Messages specific to this example");
 
 /* **********************************************************************
  * Sensor code
@@ -20,38 +19,35 @@
 
 /* Global private data */
 typedef struct {
-  gras_sock_t *sock;
-} sensor_data_t;
+  gras_socket_t sock;
+} s_sensor_data_t,*sensor_data_t;
 
 /* Function prototypes */
 int sensor (int argc,char *argv[]);
 
 int sensor (int argc,char *argv[]) {
   gras_error_t errcode;
-  sensor_data_t *g=gras_userdata_new(sensor_data_t);  
+  sensor_data_t g;
 
-  if ((errcode=gras_sock_server_open(4000,4000,&(g->sock)))) { 
-    fprintf(stderr,"Sensor: Error %s encountered while opening the server socket\n",gras_error_name(errcode));
+  gras_init(&argc,argv);
+  g=gras_userdata_new(s_sensor_data_t);  
+
+  amok_bw_init();
+   
+  if ((errcode=gras_socket_server(atoi(argv[1]),&(g->sock)))) { 
+    ERROR1("Sensor: Error %s encountered while opening the server socket",gras_error_name(errcode));
     return 1;
   }
 
-  if (grasbw_register_messages()) {
-    gras_sock_close(g->sock);
-    return 1;
+  errcode=gras_msg_handle(60.0);
+  if (errcode != no_error) {
+     ERROR1("Sensor: Error '%s' while handling message",gras_error_name(errcode));
+     gras_socket_close(g->sock);
+     return errcode;
   }
 
-  while (1) {
-    if ((errcode=gras_msg_handle(60.0)) && errcode != timeout_error) {
-      fprintf(stderr,"Sensor: Error '%s' while handling message\n",gras_error_name(errcode));
-      gras_sock_close(g->sock);
-      return errcode;
-    }
-    if (errcode==no_error)
-       break;
-  }
-
-  gras_sleep(5,0);
-  return gras_sock_close(g->sock);
+  gras_socket_close(g->sock);
+  return 0;
 }
 
 /* **********************************************************************
@@ -60,45 +56,56 @@ int sensor (int argc,char *argv[]) {
 
 /* Global private data */
 typedef struct {
-  gras_sock_t *sock;
-} maestro_data_t;
+  gras_socket_t sock;
+} s_maestro_data_t,*maestro_data_t;
 
 /* Function prototypes */
 int maestro (int argc,char *argv[]);
 
 int maestro(int argc,char *argv[]) {
   gras_error_t errcode;
-  maestro_data_t *g=gras_userdata_new(maestro_data_t);
+  maestro_data_t g;
   double sec, bw;
-  int bufSize=32 * 1024;
-  int expSize=64 * 1024;
-  int msgSize=64 * 1024;
+  int buf_size=32;
+  int exp_size=64;
+  int msg_size=64;
+  gras_socket_t peer;
 
-  if ((errcode=gras_sock_server_open(4000,5000,&(g->sock)))) { 
-    fprintf(stderr,"Maestro: Error %s encountered while opening the server socket\n",gras_error_name(errcode));
+  gras_init(&argc,argv);
+  g=gras_userdata_new(s_maestro_data_t);
+  amok_bw_init();
+  gras_os_sleep(1,0);
+   
+  if ((errcode=gras_socket_server(6000,&(g->sock)))) { 
+    ERROR1("Maestro: Error %s encountered while opening the server socket",gras_error_name(errcode));
     return 1;
   }
-
-  if (grasbw_register_messages()) {
-    gras_sock_close(g->sock);
-    return 1;
-  }
-
+      
+   
   if (argc != 5) {
-     fprintf(stderr,"Usage: maestro host port host port\n");
+     ERROR0("Usage: maestro host port host port\n");
      return 1;
   }
-     
-  if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-			      bufSize,expSize,msgSize,&sec,&bw))) {
-    fprintf(stderr,"maestro: Error %s encountered while doing the test\n",gras_error_name(errcode));
+
+  if ((errcode=gras_socket_client(argv[1],atoi(argv[2]),&peer))) {
+     ERROR3("Client: Unable to connect to my peer on %s:%s. Got %s",
+	    argv[1],argv[2],gras_error_name(errcode));
+     return 1;
+  }
+
+/*  if ((errcode=amok_bw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
+			       buf_size,exp_size,msg_size,&sec,&bw))) {*/
+  
+  if ((errcode=amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw))) {
+    ERROR1("maestro: Error %s encountered while doing the test",gras_error_name(errcode));
     return 1;
   }
    
-  fprintf(stderr,"maestro: Experience (%d ko in msgs of %d ko) took %f sec, achieving %f Mb/s\n",
-	  expSize/1024,msgSize/1024,
-	  sec,bw);
+  INFO6("maestro: Experience between me and %s:%d (%d ko in msgs of %d ko) took %f sec, achieving %f Mb/s",
+	argv[1],atoi(argv[2]),
+	exp_size,msg_size,
+	sec,bw);
 
-  gras_sleep(5,0);
-  return gras_sock_close(g->sock);
+  gras_socket_close(g->sock);
+  return 0;
 }
