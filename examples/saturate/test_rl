@@ -1,0 +1,3 @@
+#! /bin/sh
+./saturate_server 4000 $@&
+./saturate_client 127.0.0.1 4000 $@

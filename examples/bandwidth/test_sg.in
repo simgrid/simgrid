@@ -1,0 +1,5 @@
+#! @BASH@
+if test -x ./bandwidth_simulator ; then
+  exec ./bandwidth_simulator @srcdir@/../WAN_3.platform.txt @srcdir@/bandwidth_deployment.txt
+fi
+exit 77
