@@ -13,6 +13,7 @@
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(module,GRAS);
 
 extern void gras_log_exit(void);
+static int gras_running_process = 0;
 
 struct gras_module_ {
   gras_dynar_t *deps;
@@ -67,9 +68,11 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
    
   gras_process_init(); /* calls procdata_init, which calls dynar_new */
   /** init other submodules */
-  gras_msg_init();
-  gras_trp_init();
-  gras_datadesc_init();
+  if (gras_running_process++ == 0) {
+    gras_msg_init();
+    gras_trp_init();
+    gras_datadesc_init();
+  }
 }
 
 /**
@@ -81,9 +84,11 @@ void
 gras_exit(){
   INFO0("Exiting GRAS");
   gras_process_exit();
-  gras_msg_exit();
-  gras_trp_exit();
-  gras_datadesc_exit();
+  if (--gras_running_process == 0) {
+    gras_msg_exit();
+    gras_trp_exit();
+    gras_datadesc_exit();
+  }
   gras_log_exit();
   DEBUG0("Exited GRAS");
 }
