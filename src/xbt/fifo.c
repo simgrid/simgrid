@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
+#include "xbt/sysdep.h"
 #include "fifo_private.h"
 
 /*
@@ -12,7 +12,7 @@
 xbt_fifo_t xbt_fifo_new(void)
 {
   xbt_fifo_t fifo;
-  fifo = (xbt_fifo_t) calloc(1, sizeof(struct xbt_fifo));
+  fifo = xbt_new0(struct xbt_fifo,1);
   return fifo;
 }
 
@@ -202,7 +202,7 @@ void **xbt_fifo_to_array(xbt_fifo_t f)
   if (f->count == 0)
     return NULL;
   else
-    array = (void **) calloc(f->count, sizeof(void *));
+    array = xbt_new0(void *, f->count);
 
   for (i = 0, b = xbt_fifo_getFirstitem(f); b; i++, b = b->next) {
     array[i] = b->content;
@@ -231,7 +231,7 @@ xbt_fifo_t xbt_fifo_copy(xbt_fifo_t f)
  */
 xbt_fifo_item_t xbt_fifo_newitem(void)
 {
-  return (xbt_fifo_item_t) calloc(1, sizeof(struct xbt_fifo_item));
+  return xbt_new0(struct xbt_fifo_item,1);
 }
 
 void xbt_fifo_set_item_content(xbt_fifo_item_t i , void *v)

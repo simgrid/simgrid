@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/sysdep.h"
 #include "heap_private.h"
 
 /**
@@ -16,12 +17,12 @@
  */
 xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t * const free_func)
 {
-  xbt_heap_t H = calloc(1, sizeof(struct xbt_heap));
+  xbt_heap_t H = xbt_new0(struct xbt_heap, 1);
   H->size = init_size;
   H->count = 0;
   H->items =
-      (xbt_heapItem_t) calloc(init_size, sizeof(struct xbt_heapItem));
-  H->free = free;
+      (xbt_heapItem_t) xbt_new0(struct xbt_heapItem, init_size);
+  H->free = free_func;
   return H;
 }
 
@@ -37,8 +38,8 @@ void xbt_heap_free(xbt_heap_t H)
   if (H->free)
     for (i = 0; i < H->size; i++)
       H->free(H->items[i].content);
-  free(H->items);
-  free(H);
+  xbt_free(H->items);
+  xbt_free(H);
   return;
 }
 
