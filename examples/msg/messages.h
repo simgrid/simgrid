@@ -32,7 +32,7 @@ static void ASSERT(int value, const char *fmt, ...)
   if(!value) {
     va_start(ap, fmt);
     if (self)
-      fprintf(stderr, "[%Lg] P%d | ", MSG_getClock(),
+      fprintf(stderr, "[%g] P%d | ", MSG_getClock(),
 	      MSG_process_get_PID(self));
     vfprintf(stderr, fmt, ap);
     va_end(ap);
@@ -53,7 +53,7 @@ static void DIE(const char *fmt, ...)
 
   va_start(ap, fmt);
   if (self)
-    fprintf(stderr, "[%Lg] P%d | ", MSG_getClock(),
+    fprintf(stderr, "[%g] P%d | ", MSG_getClock(),
 	    MSG_process_get_PID(self));
   vfprintf(stderr, fmt, ap);
   va_end(ap);
@@ -74,7 +74,7 @@ static void PRINT_MESSAGE(const char *fmt, ...)
 
   va_start(ap, fmt);
   if (self)
-    fprintf(stderr, "[%Lg] P%d | (%s:%s) ", MSG_getClock(),
+    fprintf(stderr, "[%g] P%d | (%s:%s) ", MSG_getClock(),
 	    MSG_process_get_PID(self), MSG_host_self()->name, self->name);
   vfprintf(stderr, fmt, ap);
   va_end(ap);
@@ -93,7 +93,7 @@ static void PRINT_DEBUG_MESSAGE(const char *fmt, ...)
 
   va_start(ap, fmt);
   if (self)
-    fprintf(stderr, "DEBUG [%Lg] P%d | (%s) ", MSG_getClock(),
+    fprintf(stderr, "DEBUG [%g] P%d | (%s) ", MSG_getClock(),
 	    MSG_process_get_PID(self), MSG_host_self()->name);
   vfprintf(stderr, fmt, ap);
   va_end(ap);
