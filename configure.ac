@@ -180,11 +180,11 @@ AC_CONFIG_FILES([
     for file in                                                 \
      testsuite/run_tests                                        \
      testsuite/gras/trp_tcp_usage testsuite/gras/trp_file_usage \
-     tools/graspe-slave                                         \
+     tools/graspe-slave           tools/graspe-master           \
      examples/msg/run_msg_test                                  \
      examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
      examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
-     examples/gras/chrono/test_sg  examples/gras/chrono/test_rl \
+     examples/gras/chrono/test_sg examples/gras/chrono/test_rl  \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
