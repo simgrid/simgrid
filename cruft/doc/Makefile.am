@@ -24,18 +24,18 @@ SCANOBJ_OPTIONS=
 SCAN_OPTIONS=
 
 # Extra options to supply to gtkdoc-mkdb.
-MKDB_OPTIONS=--sgml-mode --ignore-files="nws_portability include/gras/gras"
+MKDB_OPTIONS=--sgml-mode --ignore-files="ddt_parse.yy.c"
 
 # Extra options to supply to gtkdoc-fixref.
 FIXXREF_OPTIONS=
 
 # Used for dependencies.
 HFILE_GLOB=$(shell find $(top_srcdir)/src -name "*.h")
-CFILE_GLOB=$(shell find $(top_srcdir)/src -name "*.c")
+CFILE_GLOB=$(shell find $(top_srcdir)/src -name "*.c"|grep -v ddt_parse.yy.c)
 #CFILE_GLOB=$(top_srcdir)/src/core/*.c
 
 # Header files to ignore when scanning.
-IGNORE_HFILES=
+IGNORE_HFILES=ddt_parse.yy.h
 
 # Images to copy into HTML directory.
 HTML_IMAGES =
@@ -88,12 +88,13 @@ SCANOBJ_FILES = 		 \
 if ENABLE_GTK_DOC
 all-local: html-build.stamp
 
+TOOL_ROOT=$(shell if [ -e tools/gtkdoc-scan ] ; then echo "tools/"; else echo "" fi)
 #### scan ####
 
 scan-build.stamp: $(HFILE_GLOB)
 	@echo '*** Scanning header files ***'
 	cd $(srcdir) && \
-	  gtkdoc-scan --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --ignore-headers="$(IGNORE_HFILES)" $(SCAN_OPTIONS) $(EXTRA_HFILES)
+	  $(TOOL_ROOT)gtkdoc-scan --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --ignore-headers="$(IGNORE_HFILES)" $(SCAN_OPTIONS) $(EXTRA_HFILES)
 	touch scan-build.stamp
 
 $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES): scan-build.stamp
@@ -114,7 +115,7 @@ tmpl.stamp: tmpl-build.stamp
 sgml-build.stamp: tmpl.stamp $(CFILE_GLOB) $(srcdir)/tmpl/*.sgml
 	@echo '*** Building SGML ***'
 	cd $(srcdir) && \
-	gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --main-sgml-file=$(DOC_MAIN_SGML_FILE) $(MKDB_OPTIONS)
+	$(TOOL_ROOT)gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --main-sgml-file=$(DOC_MAIN_SGML_FILE) $(MKDB_OPTIONS)
 	touch sgml-build.stamp
 
 sgml.stamp: sgml-build.stamp
