@@ -17,15 +17,19 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 
 #define WARN "/***********\n * DO NOT EDIT! THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
-#define SIM_FILENAME  "_%s_simulator.c"
+#define SIM_SOURCENAME  "_%s_simulator.c"
+#define SIM_OBJNAME  "_%s_simulator.o"
 #define SIM_BINARYNAME  "%s_simulator"
-#define SIM_FILENAME_LDADD  "%s_simulator_LDADD"
-#define SIM_FILENAME_SOURCES  "%s_simulator_SOURCES"
-#define RL_FILENAME  "_%s_%s.c"
+#define SIM_SOURCENAME_LDADD  "%s_simulator_LDADD"
+#define SIM_SOURCENAME_SOURCES  "%s_simulator_SOURCES"
+#define RL_SOURCENAME  "_%s_%s.c"
+#define RL_OBJNAME  "_%s_%s.o"
 #define RL_BINARYNAME  "%s_%s"
-#define RL_FILENAME_LDADD  "%s_%s_LDADD"
-#define RL_FILENAME_SOURCES  "%s_%s_SOURCES"
-#define MAKEFILE_FILENAME  "%s.Makefile.am"
+#define RL_SOURCENAME_LDADD  "%s_%s_LDADD"
+#define RL_SOURCENAME_SOURCES  "%s_%s_SOURCES"
+#define MAKEFILE_FILENAME_AM  "%s.Makefile.am"
+#define MAKEFILE_FILENAME_LOCAL  "%s.Makefile.local"
+#define MAKEFILE_FILENAME_REMOTE  "%s.Makefile.remote"
 
 char *warning = NULL;
 
@@ -129,8 +133,8 @@ static void generate_sim(char *project)
   void *data = NULL;
   char *filename = NULL;
   FILE *OUT = NULL;
-  filename = xbt_new(char,strlen(project) + strlen(SIM_FILENAME));
-  sprintf(filename,SIM_FILENAME,project);
+  filename = xbt_new(char,strlen(project) + strlen(SIM_SOURCENAME));
+  sprintf(filename,SIM_SOURCENAME,project);
   
   OUT=fopen(filename,"w");
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
@@ -168,8 +172,8 @@ static void generate_rl(char *project)
   FILE *OUT = NULL;
 
   xbt_dict_foreach(process_function_set,cursor,key,data) {
-    filename = xbt_new(char,strlen(project) + strlen(RL_FILENAME) + strlen(key));
-    sprintf(filename,RL_FILENAME,project,key);
+    filename = xbt_new(char,strlen(project) + strlen(RL_SOURCENAME) + strlen(key));
+    sprintf(filename,RL_SOURCENAME,project,key);
   
     OUT=fopen(filename,"w");
     xbt_assert1(OUT, "Unable to open %s for writing",filename);
@@ -182,7 +186,7 @@ static void generate_rl(char *project)
   }
 }
 
-static void generate_makefile(char *project, char *deployment)
+static void generate_makefile_am(char *project, char *deployment)
 {
   xbt_dict_cursor_t cursor=NULL;
   char *key = NULL;
@@ -190,8 +194,8 @@ static void generate_makefile(char *project, char *deployment)
   char *filename = NULL;
   FILE *OUT = NULL;
 
-  filename = xbt_new(char,strlen(project) + strlen(MAKEFILE_FILENAME));
-  sprintf(filename,MAKEFILE_FILENAME, project);
+  filename = xbt_new(char,strlen(project) + strlen(MAKEFILE_FILENAME_AM));
+  sprintf(filename,MAKEFILE_FILENAME_AM, project);
   
   OUT=fopen(filename,"w");
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
@@ -207,29 +211,29 @@ static void generate_makefile(char *project, char *deployment)
   }
 
   fprintf(OUT, "\n\n");
-  fprintf(OUT, SIM_FILENAME_SOURCES,project);
+  fprintf(OUT, SIM_SOURCENAME_SOURCES,project);
   fprintf(OUT, "=\t");
-  fprintf(OUT, SIM_FILENAME,project);
+  fprintf(OUT, SIM_SOURCENAME,project);
   fprintf(OUT, " %s.c\n", project);
-  fprintf(OUT, SIM_FILENAME_LDADD, project);
+  fprintf(OUT, SIM_SOURCENAME_LDADD, project);
   fprintf(OUT, "=\tpath/to/libsimgrid.a\n\n");
 
   xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT, RL_FILENAME_SOURCES, project,key);
+    fprintf(OUT, RL_SOURCENAME_SOURCES, project,key);
     fprintf(OUT, "=\t");
-    fprintf(OUT, RL_FILENAME, project,key);
+    fprintf(OUT, RL_SOURCENAME, project,key);
     fprintf(OUT, " %s.c\n", project);
-    fprintf(OUT, RL_FILENAME_LDADD, project, key);
+    fprintf(OUT, RL_SOURCENAME_LDADD, project, key);
     fprintf(OUT, "=\tpath/to/libgras.a\n\n");
   }
 
   fprintf(OUT, "\n# cleanup temps\n");
   fprintf(OUT, "CLEANFILES= ");
-  fprintf(OUT, SIM_FILENAME, project);
+  fprintf(OUT, SIM_SOURCENAME, project);
   
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT, " ");
-    fprintf(OUT, RL_FILENAME, project,key);
+    fprintf(OUT, RL_SOURCENAME, project,key);
   }
   fprintf(OUT, "\n");
 
@@ -237,12 +241,70 @@ static void generate_makefile(char *project, char *deployment)
   fprintf(OUT, "\n# A rule to generate the source file each time the deployment file changes\n");
 
   xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT, RL_FILENAME, project,key);
+    fprintf(OUT, RL_SOURCENAME, project,key);
     fprintf(OUT, " ");
   }
-  fprintf(OUT, SIM_FILENAME, project);
+  fprintf(OUT, SIM_SOURCENAME, project);
   fprintf(OUT, ": %s\n", deployment);
   fprintf(OUT, "\tstub_generator %s %s >/dev/null\n", project, deployment);
+  fclose(OUT);
+}
+
+
+static void generate_makefile(char *project, char *deployment)
+{
+  xbt_dict_cursor_t cursor=NULL;
+  char *key = NULL;
+  void *data = NULL;
+  char *filename = NULL;
+  FILE *OUT = NULL;
+
+  filename = xbt_new(char,strlen(project) + strlen(MAKEFILE_FILENAME_LOCAL));
+  sprintf(filename,MAKEFILE_FILENAME_LOCAL, project);
+  
+  OUT=fopen(filename,"w");
+  xbt_assert1(OUT, "Unable to open %s for writing",filename);
+
+  fprintf(OUT, "PROJECT_NAME=%s\n",project);
+  fprintf(OUT, 
+	  "DISTDIR=gras-$(PROJECT_NAME)\n\n"
+	  "SIMGRID_INSTALL_PATH?= $(shell echo \"\\\"<<<< SIMGRID_INSTALL_PATH undefined !!! >>>>\\\"\")\n"
+	  "CFLAGS = -O3 -w\n"
+	  "INCLUDES = -I$(SIMGRID_INSTALL_PATH)/include\n"
+	  "LIBS = -lm  -L$(SIMGRID_INSTALL_PATH)/lib/ -lsimgrid\n"
+	  "\n"
+	  "C_FILES = _chrono_multiplier.c _chrono_simulator.c chrono.c\n"
+	  "BIN_FILES = chrono_multiplier chrono_simulator\n"
+	  "\n"
+	  "all: $(BIN_FILES)\n"
+	  "\n");
+  fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " %s.c\n",project, project, project);
+  xbt_dict_foreach(process_function_set,cursor,key,data) {
+    fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " %s.c\n", project, key, project, key, project);
+  }
+  fprintf(OUT, 
+	  "\n"
+	  "%%: %%.o\n"
+	  "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) $(LDADD) -o $@ \n"
+	  "\n"
+	  "%%.o: %%.c\n"
+	  "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<\n"
+	  "\n"
+	  "distdir: $(C_FILES) $(PROJECT_NAME).Makefile\n"
+	  "\trm -rf $(DISTDIR)\n"
+	  "\tmkdir -p $(DISTDIR)\n"
+	  "\tcp $^ $(DISTDIR)\n"
+	  "\n"
+	  "dist: clean distdir\n"
+	  "\ttar c $(DISTDIR) | gzip -c > $(DISTDIR).tar.gz\n"
+	  "\n"
+	  "clean:\n"
+	  "\trm -f $(BIN_FILES) *.o *~\n"
+	  "\trm -rf $(DISTDIR)\n"
+	  "\n"
+	  ".SUFFIXES:\n"
+	  ".PHONY : clean\n");
+  fclose(OUT);
 }
 
 static void print(void *p)
@@ -288,7 +350,8 @@ int main(int argc, char *argv[])
 
   generate_sim(project_name);
   generate_rl(project_name);
-  generate_makefile(project_name, deployment_file);
+  generate_makefile_am(project_name, deployment_file);
+  generate_makefile_local(project_name, deployment_file);
 
   free(warning);
   return 0;
