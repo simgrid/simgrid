@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <gras.h>
+#include "gras.h"
 
 #include "gras/DataDesc/datadesc_interface.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
@@ -484,7 +484,9 @@ xbt_error_t test_pbio(gras_socket_t sock, int direction) {
     /* Check that the data match */
     xbt_assert(i.Cnstatv == j.Cnstatv);
     for (cpt=0; cpt<12; cpt++)
-      xbt_assert(i.Cstatev[cpt] == j.Cstatev[cpt]);
+      xbt_assert4(i.Cstatev[cpt] == j.Cstatev[cpt],
+		  "i.Cstatev[%d] (=%f) != j.Cstatev[%d] (=%f)",
+		  cpt,i.Cstatev[cpt],cpt,j.Cstatev[cpt]);
     xbt_assert(i.Cnprops == j.Cnprops);
     for (cpt=0; cpt<110; cpt++)
       xbt_assert(i.Cprops[cpt] == j.Cprops[cpt]);
@@ -566,7 +568,7 @@ int main(int argc,char *argv[]) {
   int cpt;
   char r_arch_char = gras_arch_selfid();
 
-  xbt_init_defaultlog(&argc,argv,NULL);
+  gras_init(&argc,argv,NULL);
 
   for (cpt=1; cpt<argc; cpt++) {
     if (!strcmp(argv[cpt], "--read")) {
