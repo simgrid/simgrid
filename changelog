@@ -1,10 +1,35 @@
 TODO:
-   [SG plugin]   
-     - Porting to new standards.
-   [SG select]   
-     - Porting to new standards.
 
-2004-04-21 Martin Quinson  <martin.quinson@tuxfamily.org>
+2004-06-21
+ [Transport]
+   - porting SG plugin and SG select to new standards (works almost).
+   - plug memleaks and fix bugs around.
+   
+ [DataDesc] 
+   - cleanup the prototype of data recv and force users to specify when they 
+     want to handle references to objects. Test case working even for cycles.
+   - plug memleaks. Valgrind is perfectly ok with this.
+
+2004-06-12
+ [Transport] 
+   - cleanup the separation between plugin and main code in plugin creation 
+
+2004-06-11
+ [Transport]
+   - Reput hook for raw sockets, needed for BW experiments
+   - kill a few lines of dead code
+ [Data description] Interface cleanup
+   - gras_datadesc_by_name returns the searched type or NULL.
+     That way, no variable is needed to use a type desc once, which makes
+      the code clearer.
+   - gras_datadesc_declare_[struct|union]_append_name is removed. The last
+      two parameters were strings (field name, type name), leading to
+      common errors.
+ [Dicos] Interface cleanup
+   - gras_dico_retrieve -> gras_dico_get ; gras_dico_insert -> gras_dico_set 
+     This is consistant with the dynar API.
+
+2004-04-21 Martin Quinson
  [Messaging]
    - Porting to new standards.
  [Data description]
@@ -25,7 +50,7 @@ TODO:
  [Logging]
    - rename WARNINGn macros to WARNn since it prooved error-prone
      
-2004-04-19 Martin Quinson  <martin.quinson@tuxfamily.org>
+2004-04-19 Martin Quinson
  [Data description]
    - register init/exit functions within gras module mecanism   
    - send/receive function. 
@@ -44,7 +69,7 @@ TODO:
    [File plugin] 
      - Bugfix when using a filename explicitely (instead of '-')
 
-2004-04-09 Martin Quinson  <martin.quinson@tuxfamily.org>
+2004-04-09 Martin Quinson
  [Transport plugins]
    - factorize more code between RL and SG in socket creation
    - Complete the implementation and tests of:
