@@ -112,6 +112,7 @@ void *xbt_swag_extract(xbt_swag_t swag)
     PREV(swag->head, offset) = NULL;
     NEXT(obj, offset) = NULL;
   }
+  (swag->count)--;
 
   return obj;
 }
