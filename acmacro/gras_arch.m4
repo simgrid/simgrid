@@ -120,6 +120,9 @@ AC_DEFUN([GRAS_STRUCT_BOUNDARY],
   done 
  ])
  AC_MSG_RESULT($GRAS_STRUCT_BOUNDARY_RES)
+ if test x$GRAS_STRUCT_BOUNDARY_RES = x ; then
+   AC_MSG_ERROR([Cannot determine the minimal alignment boundary of $1 in structures])
+ fi
 ])
 
 # GRAS_ARCH(): check the gras_architecture of this plateform
