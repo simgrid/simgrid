@@ -1,9 +1,9 @@
-include_HEADERS = gras.h
+include_HEADERS = gras.h gros.h
 nobase_include_HEADERS = \
-	gras/log.h gras/error.h \
-	gras/module.h \
-	gras/dynar.h gras/dict.h gras/set.h \
-	gras/config.h \
+	gros/log.h gros/error.h \
+	gros/module.h \
+	gros/dynar.h gros/dict.h gros/set.h \
+	gros/config.h \
 	\
 	gras/datadesc.h gras/transport.h \
 	gras/virtu.h gras/cond.h gras/process.h \

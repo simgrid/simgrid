@@ -11,24 +11,7 @@
 #ifndef GRAS_H
 #define GRAS_H
 
-#define max(a, b) (((a) > (b))?(a):(b))
-#define min(a, b) (((a) < (b))?(a):(b))
-
-#define TRUE  1
-#define FALSE 0
-
-#define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
-
-#include <gras/error.h>
-#include <gras/log.h>
-
-#include <gras/module.h>
-
-#include <gras/dynar.h>
-#include <gras/dict.h>
-#include <gras/set.h>
-
-#include <gras/config.h>
+#include <gros.h> /* our toolbox */
 
 #include <gras/core.h> /* FIXME: killme */
 #include <gras/process.h>
@@ -38,6 +21,8 @@
 #include <gras/transport.h>
 #include <gras/datadesc.h>
 #include <gras/messages.h>
+
+/* FIXME: This is amok */
 
 #include <gras/modules/base.h>
 #include <gras/modules/bandwidth.h>
