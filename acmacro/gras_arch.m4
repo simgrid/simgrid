@@ -103,6 +103,9 @@ union {
         unsigned char bytes[sizeof(float)];
 } floatTester;
 ],[
+if (sizeof(double) != 8 || sizeof(float) != 4)
+   return 1;
+
 memset(&doubleTester, 0, sizeof(doubleTester));
 memset(&floatTester, 0, sizeof(floatTester));
 
