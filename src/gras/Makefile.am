@@ -16,6 +16,7 @@ noinst_LIBRARIES=libgrasutils.a
 #                     Core/dict_multi.c
 #  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
 #   Messaging/messaging.c                       
+#   Messaging/datadesc_simple.c                 
 
 COMMON_S=\
   \
@@ -23,30 +24,33 @@ COMMON_S=\
   Core/log.c         Core/log_default_appender.c   Core/error.c                 \
   Core/dynar.c                                                                  \
   Core/dict.c        Core/dict_elm.c               Core/dict_cursor.c           \
+  Core/set.c                                                                    \
   \
   Core/config.c                               \
   \
-  Messaging/transport.c    Messaging/transport_private.h      \
-  Messaging/transport_sg.c Messaging/transport_tcp.c          \
+  Transport/transport.c    Transport/transport_private.h      \
+  Transport/transport_sg.c Transport/transport_tcp.c          \
   \
-  Messaging/datadesc_simple.c                 \
   \
-  DataDesc/datadesc.c                               \
-  DataDesc/tools.c                                  \
-  DataDesc/categories.h                             \
-  DataDesc/connection.h                             \
-  DataDesc/sequence.h                               \
-  DataDesc/net_driver.c      DataDesc/net_driver.h        \
-  DataDesc/net_driver_fd.c   DataDesc/net_interface_fd.h  \
-  DataDesc/type_driver_rl.c  DataDesc/type_interface_rl.h \
-  DataDesc/type_driver.c     DataDesc/type_driver.h       \
-  DataDesc/message.c         DataDesc/message.h           \
-  DataDesc/type.c            DataDesc/type.h              \
-  DataDesc/parse.c           DataDesc/parse.yy.h             DataDesc/parse.yy.c \
-  DataDesc/vars.c
+  DataDesc/datadesc.c DataDesc/datadesc_interface.h \
+  DataDesc/datadesc_private.h
+  
+#  DataDesc/datadesc.c                               \
+#  DataDesc/tools.c                                  \
+#  DataDesc/categories.h                             \
+#  DataDesc/connection.h                             \
+#  DataDesc/sequence.h                               \
+#  DataDesc/net_driver.c      DataDesc/net_driver.h        \
+#  DataDesc/net_driver_fd.c   DataDesc/net_interface_fd.h  \
+#  DataDesc/type_driver_rl.c  DataDesc/type_interface_rl.h \
+#  DataDesc/type_driver.c     DataDesc/type_driver.h       \
+#  DataDesc/message.c         DataDesc/message.h           \
+#  DataDesc/type.c            DataDesc/type.h              \
+#  DataDesc/parse.c           DataDesc/parse.yy.h             DataDesc/parse.yy.c \
+#  DataDesc/vars.c
 
 DataDesc/parse.yy.c: DataDesc/parse.yy.l
-	flex -o$@ -Pgs_parse_ $^
+	flex -o$@ -Pgras_datadesc_parse_ $^
 
 COMMON_L=\
  $(foreach file,\
