@@ -15,6 +15,7 @@
 #include "xbt_modinter.h"   /* module init/exit */
 
 #include "gras/core.h"
+#include "gras/cond.h"    /* gras_if_RL() => FIXME: killme when gras/sg works */
 #include "gras/process.h" /* FIXME: killme and put process_init in modinter */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(gras,"All GRAS categories");
