@@ -355,13 +355,22 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 				double weight)
 {
+  int i ;
+  lmm_element_t elem;
+
   sys->modified = 1;
   var->weight = weight;
   xbt_swag_remove(var,&(sys->variable_set));
   if(weight) xbt_swag_insert_at_head(var,&(sys->variable_set));
   else xbt_swag_insert_at_tail(var,&(sys->variable_set));
-}
 
+  for (i = 0; i < var->cnsts_number; i++) {
+    elem = &var->cnsts[i];
+    xbt_swag_remove(elem, &(elem->constraint->element_set));
+    if(weight) xbt_swag_insert_at_head(elem, &(elem->constraint->element_set));
+    else xbt_swag_insert_at_tail(elem, &(elem->constraint->element_set));
+  }
+}
 
 double lmm_get_variable_weight(lmm_variable_t var)
 				  
