@@ -11,10 +11,12 @@ AC_DEFUN([_AC_PROG_FLEX_HELPER_TOO_OLD],[
 
 AC_DEFUN([AC_PROG_FLEX],
  [
-  AC_PROG_LEX
+AC_PREREQ(2.50)dnl
+AC_REQUIRE([AM_MISSING_HAS_RUN])dnl
+AC_REQUIRE([AC_PROG_LEX])dnl
   if test "$LEX" != flex; then
     AC_MSG_NOTICE([Flex not found. Parsers won't get updated.])
-    LEX="$SHELL $missing_dir/missing flex";
+    LEX=${am_missing_run}flex
     AC_SUBST(LEXLIB, '')
   else
     if test "x$1" != "x" ; then
@@ -38,7 +40,7 @@ AC_DEFUN([AC_PROG_FLEX],
          test "$FLEX_VER_MAJ" -eq "$WANT_VER_MAJ" -a "$FLEX_VER_MED" -eq "$WANT_VER_MED" -a "$FLEX_VER_MIN" -lt "$WANT_VER_MIN" ;
       then
         AC_MSG_NOTICE([Found flex is too old. Parsers won't get updated (Found v$FLEX_VERSION < v$1)])
-        LEX="$SHELL $missing_dir/missing flex";
+        LEX=${am_missing_run}flex
         AC_SUBST(LEXLIB, '')
       fi
     fi
