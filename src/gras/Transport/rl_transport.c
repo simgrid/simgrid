@@ -131,7 +131,6 @@ gras_trp_select(double timeout,
 
 	 TRY(sock_iter->plugin->socket_accept(sock_iter,&accepted));
 	 accepted->raw = sock_iter->raw;
-	 TRY(gras_dynar_push(sockets,&accepted));
        } else {
 #if 0 
        FIXME: this fails of files. quite logical

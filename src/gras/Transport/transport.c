@@ -123,7 +123,8 @@ gras_error_t gras_trp_socket_new(int incoming,
   sock->raw = 0;
 
   *dst = sock;
-  return no_error;
+
+  return gras_dynar_push(gras_socketset_get(),dst);
 }
 
 
@@ -165,13 +166,6 @@ gras_socket_server(unsigned short port,
   }
 
   *dst = sock;
-  /* Register this socket */
-  errcode = gras_dynar_push(gras_socketset_get(),dst);
-  if (errcode != no_error) {
-    free(sock);
-    *dst = NULL;
-    return errcode;
-  }
 
   return no_error;
 }
@@ -216,14 +210,7 @@ gras_socket_client(const char *host,
     return errcode;
   }
 
-  /* register socket */
   *dst = sock;
-  errcode = gras_dynar_push(gras_socketset_get(),dst);
-  if (errcode != no_error) {
-    free(sock);
-    *dst = NULL;
-    return errcode;
-  }
 
   return no_error;
 }
