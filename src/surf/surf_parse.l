@@ -225,6 +225,30 @@ void surf_parse_trace(tmgr_trace_t *trace)
   else
     *trace = tmgr_trace_new(surf_parse_text);
 }
+
+void surf_parse_deployment_line(char **host, int *argc, char ***argv)
+{
+  e_surf_token_t token;
+
+
+  /* Parse Host name */
+  *host = xbt_strdup(surf_parse_text);  
+
+  *argc = 0;
+  *argv = NULL;
+
+  /* Parse command line */
+  while((token = surf_parse())) {
+    if(token == TOKEN_NEWLINE) return; 
+    xbt_assert1((token == TOKEN_WORD), "Parse error line %d", surf_line_pos);
+
+    (*argc)++;
+    *argv=xbt_realloc (*argv, (*argc) * sizeof(char*));
+    (*argv)[(*argc)-1]=xbt_strdup(surf_parse_text);
+  }
+}
+
+
 /*  Local variables: */
 /*  mode: c */
 /*  End: */

@@ -35,6 +35,7 @@ void find_section(const char *file, const char *section_name);
 void close_section(const char *section_name);
 void surf_parse_double(double *value);
 void surf_parse_trace(tmgr_trace_t * trace);
+void surf_parse_deployment_line(char **host, int *argc, char ***argv);
 
 
 /* Should not be called if you use the previous "section" functions */
