@@ -25,4 +25,7 @@ PROCESSES= client server
 $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _ping_simulator.c: $(srcdir)/ping_deployment.xml ../../../tools/gras/gras_stub_generator@EXEEXT@
 	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv ../../../tools/gras/gras_stub_generator@EXEEXT@ ping $(srcdir)/ping_deployment.xml >/dev/null
 
+../../../tools/gras/gras_stub_generator@EXEEXT@:
+	make -C   ../../../tools/gras/ gras_stub_generator@EXEEXT@
+
 include $(top_srcdir)/acmacro/dist-files.mk

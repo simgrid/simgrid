@@ -23,4 +23,7 @@ MAINTAINERCLEANFILES = _$(NAME)_simulator.c _$(NAME)_client.c _$(NAME)_server.c
 $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(srcdir)/$(NAME)_deployment.xml ../../../tools/gras/gras_stub_generator@EXEEXT@
 	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv ../../../tools/gras/gras_stub_generator $(NAME) $(srcdir)/$(NAME)_deployment.xml >/dev/null
 
+../../../tools/gras/gras_stub_generator@EXEEXT@:
+	make -C   ../../../tools/gras/ gras_stub_generator@EXEEXT@
+
 include $(top_srcdir)/acmacro/dist-files.mk
