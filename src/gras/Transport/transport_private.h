@@ -37,7 +37,7 @@ struct s_gras_socket  {
   int  peer_port; /* port on the other side */
   char *peer_name; /* hostname of the other side */
 
-  void *specific; /* plugin specific data */
+  void *data; /* plugin specific data */
 };
 	
 gras_error_t gras_trp_socket_new(int incomming,
