@@ -213,3 +213,59 @@ Configuration facilities.
 @Returns: 
 
 
+<!-- ##### FUNCTION gras_cfg_get_int ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cfg_get_double ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cfg_get_string ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@val: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cfg_get_host ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@host: 
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cfg_get_dynar ##### -->
+<para>
+
+</para>
+
+@cfg: 
+@name: 
+@dynar: 
+@Returns: 
+
+

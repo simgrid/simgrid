@@ -103,15 +103,6 @@ Data container associating data to a string key.
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_dict_cursor_next ##### -->
-<para>
-
-</para>
-
-@cursor: 
-@Returns: 
-
-
 <!-- ##### FUNCTION gras_dict_cursor_rewind ##### -->
 <para>
 
