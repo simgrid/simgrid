@@ -27,15 +27,15 @@ BEGIN_DECL()
  * 
  * \warning At least, I would like to present those sections in the right order, but doxygen prevents me 
  * from doing so. There is a weird bug I fail to circumvent here. The right order is naturally:
- *   - a) basic operations
- *   - b) Automatic parsing
- *   - c) Simple manual definitions
- *   - d) Callback Persistant State: Simple push/pop mecanism
- *   - e) Callback Persistant State: Full featured mecanism
+ *   -# basic operations
+ *   -# Automatic parsing
+ *   -# Simple manual definitions
+ *   -# Callback Persistant State: Simple push/pop mecanism
+ *   -# Callback Persistant State: Full featured mecanism
  */
 /*@{*/
 
-/** @name a) basic operations
+/** @name 1. basic operations
  *
  * If you only want to send pre-existing types, simply retrieve the pre-defined description with 
  * the \ref gras_datadesc_by_name function. Existing types entail:
@@ -58,7 +58,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 
 /* @} */
     
-/** @name b) Automatic parsing
+/** @name 2. Automatic parsing
  * 
  *  If you need to declare a new datatype, this is the simplest way to describe it to GRAS. Simply
  *  enclose its type definition  into a \ref GRAS_DEFINE_TYPE macro call, and you're set. Here is 
@@ -130,7 +130,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 gras_datadesc_type_t 
 gras_datadesc_parse(const char *name, const char *C_statement);
 
-/** @name c) Simple manual definitions
+/** @name 3. Simple manual definitions
  * 
  * Here are the functions to use if you want to declare your description manually. 
  * The function names should be self-explanatory in most cases.
@@ -183,54 +183,36 @@ typedef gras_datadesc_type_t (*gras_datadesc_selector_t)(gras_cbps_t vars, void 
  **** Declare datadescription yourself ****
  ******************************************/
 
-/** \brief Declare a new structure description */
 gras_datadesc_type_t gras_datadesc_struct(const char *name);
+void gras_datadesc_struct_append(gras_datadesc_type_t  struct_type,
+				 const char           *name,
+				 gras_datadesc_type_t  field_type);
+void gras_datadesc_struct_close(gras_datadesc_type_t   struct_type);
 
-/** \brief Append a new field to a structure description */
-void
-  gras_datadesc_struct_append(gras_datadesc_type_t  struct_type,
-			      const char           *name,
-			      gras_datadesc_type_t  field_type);
-/** \brief Close a structure description */
-void
-  gras_datadesc_struct_close(gras_datadesc_type_t   struct_type);
 
-/** \brief Declare a new union description */
+gras_datadesc_type_t gras_datadesc_union(const char                 *name,
+					 gras_datadesc_type_cb_int_t selector);
+void gras_datadesc_union_append(gras_datadesc_type_t   union_type,
+				const char            *name,
+				gras_datadesc_type_t   field_type);
+void gras_datadesc_union_close(gras_datadesc_type_t    union_type);
+
+
 gras_datadesc_type_t 
-  gras_datadesc_union(const char                   *name,
-		      gras_datadesc_type_cb_int_t   selector);
-/** \brief Append a new field to an union description */
-void
-  gras_datadesc_union_append(gras_datadesc_type_t   union_type,
-			     const char            *name,
-			     gras_datadesc_type_t   field_type);
-/** \brief Close an union description */
-void
-  gras_datadesc_union_close(gras_datadesc_type_t    union_type);
-
-
-/** \brief Declare a new type being a reference to the one passed in arg */
+  gras_datadesc_ref(const char          *name,
+		    gras_datadesc_type_t referenced_type);
 gras_datadesc_type_t 
-  gras_datadesc_ref(const char                     *name,
-		    gras_datadesc_type_t            referenced_type);
-/** \brief Declare a new type being a generic reference. */
-gras_datadesc_type_t 
-  gras_datadesc_ref_generic(const char                *name,
-			    gras_datadesc_selector_t   selector);
+  gras_datadesc_ref_generic(const char              *name,
+			    gras_datadesc_selector_t selector);
 
-/** \brief Declare a new type being an array of fixed size and content */
 gras_datadesc_type_t 
-  gras_datadesc_array_fixed(const char             *name,
-			    gras_datadesc_type_t    element_type,
-			    long int                fixed_size);
-
-/** \brief Declare a new type being an array of fixed size, but accepting several content types. */
+  gras_datadesc_array_fixed(const char          *name,
+			    gras_datadesc_type_t element_type,
+			    long int             fixed_size);
 gras_datadesc_type_t 
   gras_datadesc_array_dyn(const char                 *name,
 			  gras_datadesc_type_t        element_type,
 			  gras_datadesc_type_cb_int_t dynamic_size);
-
-/** \brief Declare a new type being an array which size can be found with \ref gras_cbps_i_pop */
 gras_datadesc_type_t 
   gras_datadesc_ref_pop_arr(gras_datadesc_type_t  element_type);
 
@@ -270,7 +252,7 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
 /*@}*/
 
-/** @name d) Callback Persistant State: Simple push/pop mecanism
+/** @name 4. Callback Persistant State: Simple push/pop mecanism
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
  * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
@@ -307,7 +289,7 @@ void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 
 /*@}*/
 
-/** @name e) Callback Persistant State: Full featured mecanism
+/** @name 5. Callback Persistant State: Full featured mecanism
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mecanism
  * introduced in previous section isn't enough, you can always use this full featured one.
