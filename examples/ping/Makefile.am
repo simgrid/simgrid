@@ -1,5 +1,5 @@
-INCLUDES= -I$(top_srcdir)/src/include -g
-
+INCLUDES= -I$(top_srcdir)/src/include
+AM_CFLAGS=-g
 TESTS=test_rl test_sg
 EXTRA_DIST=ping_deployment.txt $(TESTS)
 

@@ -1,7 +1,8 @@
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include
+AM_CFLAGS=-g
 
-noinst_PROGRAMS=bandwidth_simulator bandwidth_maestro bandwidth_sensor
+check_PROGRAMS=bandwidth_simulator bandwidth_maestro bandwidth_sensor
 
 bandwidth_simulator_SOURCES=	_bandwidth_simulator.c bandwidth.c
 bandwidth_maestro_SOURCES=	_bandwidth_maestro.c bandwidth.c

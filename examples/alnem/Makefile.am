@@ -1,8 +1,9 @@
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include
 #-I../../src -I../../nws_portability/Include @CFLAGS_SimGrid@
+AM_CFLAGS=-g
 
-noinst_PROGRAMS=alnem_simulator alnem_sensor alnem_maestro 
+check_PROGRAMS=alnem_simulator alnem_sensor alnem_maestro 
 
 alnem_simulator_SOURCES=      _alnem_simulator.c alnem.c
 alnem_sensor_SOURCES=         _alnem_sensor.c    alnem.c

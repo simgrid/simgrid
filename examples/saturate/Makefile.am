@@ -1,7 +1,8 @@
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include
+AM_CFLAGS=-g
 
-noinst_PROGRAMS=saturate_simulator saturate_sensor saturate_maestro 
+check_PROGRAMS=saturate_simulator saturate_sensor saturate_maestro 
 
 saturate_simulator_SOURCES=	  _saturate_simulator.c saturate.c
 saturate_sensor_SOURCES=          _saturate_sensor.c saturate.c
