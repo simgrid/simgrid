@@ -125,7 +125,9 @@ const char *gras_wsa_err2string(int errcode);
 # ifndef S_SPLINT_S /* This header drives splint into the wall */
 #   include <ucontext.h>
 # endif 
-#else
+#endif
+
+#ifdef _WIN32
 #  include "xbt/context_win32.h" /* Manual reimplementation for prehistoric platforms */
 #endif
 
