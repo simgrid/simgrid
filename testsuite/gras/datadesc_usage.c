@@ -34,6 +34,7 @@ write_read(gras_datadesc_type_t type,void *src, void *dst,
     TRY(gras_socket_client_from_file(filename,&sock));
   if (direction == WRITE || direction == RW)
     TRY(gras_datadesc_send(sock, type, src));
+//  TRY(gras_datadesc_gen_send(sock, type, src));
   if (direction == RW) 
     gras_socket_close(sock);
    
