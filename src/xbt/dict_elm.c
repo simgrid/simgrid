@@ -237,7 +237,8 @@ _str_prefix_lgr(const char *key1,
 
   m = 0;
 
-  /*CDEBUG3(dict_search, "%s: [%s] <=> [%s]", __FUNCTION__, s1, s2);*/
+  /*CDEBUG5(dict_search, "%s: [%*s] <=> [%*s]", __FUNCTION__, 
+            key1,key_len1,key2,key_len2);*/
 
   if (o < key_len1  &&  o < key_len2) {
 
@@ -312,8 +313,10 @@ _dict_child_cmp(gras_dictelm_t *p_dict,
     cmp =  1;
   }
 
-  CDEBUG3(dict_search, "Cmp %s and %s => %d", p_child->key + *p_offset,
-	  key + *p_offset, cmp);
+  CDEBUG5(dict_search, "Cmp %*s and %*s => %d", 
+	  p_child->key_len - *p_offset, p_child->key + *p_offset,
+	  p_child->key_len - *p_offset, key + *p_offset, 
+	  cmp);
 
  end:
   *p_offset = o;
@@ -358,9 +361,9 @@ _gras_dictelm_child_search(gras_dictelm_t *p_elm,
   int          len     = 0;
 
   
-  CDEBUG3(dict_search, "search child [%s] under [%s] (len=%d)",
-	  key,
-          p_elm?p_elm->key:"(head)",
+  CDEBUG5(dict_search, "search child [%*s] under [%*s] (len=%d)",
+	  key_len, key,
+          p_elm?p_elm->key_len:6, p_elm?p_elm->key:"(head)",
   	  (p_elm&&p_elm->sub)?gras_dynar_length(p_elm->sub):0);
   
 
@@ -381,9 +384,9 @@ _gras_dictelm_child_search(gras_dictelm_t *p_elm,
   *p_offset = o;
   *p_pos    = p;
   *p_match  = m;
-  CDEBUG3(dict_search, "search [%s] in [%s] => %s",
-	  key,
-          p_elm?p_elm->key:"(head)",
+  CDEBUG5(dict_search, "search [%*s] in [%*s] => %s",
+	  key_len, key,
+          p_elm?p_elm->key_len:6, p_elm?p_elm->key:"(head)",
 	  ( m == 0 ? "no child have a common prefix" :
 	    ( m == 1 ? "selected child have exactly this key" :
 	      ( m == 2 ? "selected child constitutes a prefix" :
@@ -439,9 +442,11 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
   int          pos        = 0;
   const int    old_offset = offset;
 
-  CDEBUG4(dict_add, "--> Insert '%s' after '%s' (offset=%d) in tree %p",
-	  key, ((p_head && p_head->key) ? p_head->key : "(head)"), offset,
-	  p_head);
+  CDEBUG6(dict_add, "--> Insert '%*s' after '%*s' (offset=%d) in tree %p",
+	  key_len, key, 
+	  ((p_head && p_head->key) ? p_head->key_len : 6),
+	  ((p_head && p_head->key) ? p_head->key : "(head)"), 
+	  offset, p_head);
 
   /*** The trivial cases first ***/
 
@@ -533,7 +538,8 @@ _gras_dictelm_set_rec(gras_dictelm_t     *p_head,
       TRY(_gras_dictelm_alloc(anc_key, anc_key_len, old_offset, 
 			      NULL, NULL, &p_anc));
 
-      CDEBUG2(dict_add, "-> Make a common ancestor %p (%s)", p_anc, anc_key);
+      CDEBUG3(dict_add, "-> Make a common ancestor %p (%*s)",
+	      p_anc, anc_key_len, anc_key);
 
       if (key[offset] < p_child->key[offset]) {
         TRY(gras_dynar_push(p_anc->sub, &p_new));
@@ -642,7 +648,7 @@ _gras_dictelm_get_rec(gras_dictelm_t *p_head,
 
   gras_error_t errcode = no_error;
 
-  CDEBUG2(dict_search, "Search %s in %p", key, p_head); 
+  CDEBUG3(dict_search, "Search %*s in %p", key_len, key, p_head); 
 
   /*** The trivial case first ***/
 
@@ -777,7 +783,8 @@ _collapse_if_need(gras_dictelm_t *p_head,
   gras_dynar_get(p_head->sub, 0, &p_child);
 
   /* Get the child's key as new key */
-  CDEBUG1(dict_collapse, "Do collapse with only child %s", p_child->key); 
+  CDEBUG2(dict_collapse,
+	  "Do collapse with only child %*s", p_child->key_len, p_child->key);
 
   p_head->content  = p_child->content;
   p_head->free_ctn = p_child->free_ctn;
@@ -845,8 +852,8 @@ _gras_dictelm_remove_rec(gras_dictelm_t *p_head,
         gras_dictelm_t *p_child = NULL;
 
         gras_dynar_get(p_head->sub, pos, &p_child);
-        /*DEBUG4("Recurse on child %d of %p to remove %s (prefix=%d)",
-          pos, p_child, key+offset, offset);*/
+        /*DEBUG5("Recurse on child %d of %p to remove %*s (prefix=%d)",
+          pos, p_child, key+offset, key_len-offset,offset);*/
         TRY(_gras_dictelm_remove_rec(p_child, key, key_len, offset));
 
         _collapse_if_need(p_head, pos, old_offset);
@@ -949,7 +956,7 @@ _gras_dictelm_dump_rec(gras_dictelm_t *p_head,
 
       _gras_bytes_to_string(key, key_len, key_string);
 
-      printf("%s|(%d)", key_string + offset, offset);
+      printf("%*s|(%d)", key_len-offset, key_string + offset, offset);
 
       free(key_string);
     }
