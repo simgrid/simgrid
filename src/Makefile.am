@@ -110,6 +110,9 @@ COMMON_S=\
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   \
   msg/task.c  \
+  msg/host.c  \
+  msg/m_process.c  \
+  msg/gos.c  \
   \
   gras/gras.c \
   \
