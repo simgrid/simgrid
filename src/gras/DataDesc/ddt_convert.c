@@ -24,8 +24,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_convert,datadesc,
  ***  l C<1/1> I<2/2:4/4:8/8:8/8> P<4/4:4/4> D<4/4:8/8>
  ***  B C<1/1> I<2/2:4/4:4/8:8/8> P<4/4:4/4> D<4/4:8/4>
  ***  B C<1/1> I<2/2:4/8:8/8:8/8> P<4/4:4/4> D<4/4:8/4>
- ***  B C:1/1: I:2/2:4/4:4/4:8/8: P:4/4:4/4: D:4/4:8/4:
- ***
+ ***  B C:1/1: I:2/2:4/4:4/4:8/8: P:4/4:4/4: D:4/4:8/4: AIX
+ ***  B C:1/1: I:2/2:4/2:4/2:8/2: P:4/2:4/2: D:4/2:8/2: ARM
  ***/
 
 const gras_arch_desc_t gras_arches[gras_arch_count] = {
@@ -42,8 +42,11 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
                     {1,2,4,8,8,   8,8,   4,8}},
 
   {"aix",      1,   {1,2,4,4,8,   4,4,   4,8}, 
-                    {1,2,4,4,8,   4,4,   4,4}}
-   
+                    {1,2,4,4,8,   4,4,   4,4}},
+
+  {"arm",      1,   {1,2,4,4,8,   4,4,   4,8}, 
+                    {1,2,2,2,2,   2,2,   2,2}}
+
 };
 
 const char *gras_datadesc_arch_name(int code) {

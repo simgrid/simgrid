@@ -1,3 +1,8 @@
+2004-11-15 Martin Quinson
+  - Port to ARM. Simply added the alignment and size descriptions. Should
+    work, but the ARM machines are so slow that I didn't had the opportunity
+    to 'make check' overthere yet.
+
 2004-11-15 Arnaud Legrand
   - Trace manager now written. It uses a heap structure and is therfore
     expected to be efficient. It may however be speed up (particularly
