@@ -13,7 +13,7 @@ typedef struct lmm_element {
 
   lmm_constraint_t constraint;
   lmm_variable_t variable;
-  FLOAT value;  
+  xbt_maxmin_float_t value;
 } s_lmm_element_t, *lmm_element_t;
 #define insert_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->element_set))
 #define insert_active_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->active_element_set))
@@ -27,9 +27,9 @@ typedef struct lmm_constraint {
 
   s_xbt_swag_t element_set;	/* a list of lmm_mat_element_t */
   s_xbt_swag_t active_element_set;	/* a list of lmm_mat_element_t */
-  FLOAT bound;
-  FLOAT remaining;
-  FLOAT usage;
+  xbt_maxmin_float_t bound;
+  xbt_maxmin_float_t remaining;
+  xbt_maxmin_float_t usage;
   char *id;
 } s_lmm_constraint_t;
 
@@ -41,9 +41,9 @@ typedef struct lmm_variable {
   s_lmm_element_t *cnsts;
   int cnsts_size;
   int cnsts_number;
-  FLOAT weight;
-  FLOAT bound;
-  FLOAT value;
+  xbt_maxmin_float_t weight;
+  xbt_maxmin_float_t bound;
+  xbt_maxmin_float_t value;
   char *id;
 } s_lmm_variable_t;
 
@@ -54,7 +54,7 @@ typedef struct lmm_system {
   s_xbt_swag_t active_constraint_set;	/* a list of lmm_constraint_t */
 
   s_xbt_swag_t saturated_variable_set;	/* a list of lmm_variable_t */
-  s_xbt_swag_t saturated_constraint_set;/* a list of lmm_constraint_t_t */
+  s_xbt_swag_t saturated_constraint_set;	/* a list of lmm_constraint_t_t */
 } s_lmm_system_t;
 
 #define extract_variable(sys) xbt_swag_extract(xbt_swag_getFirst(&(sys->variable_set)),&(sys->variable_set))

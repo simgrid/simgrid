@@ -21,8 +21,7 @@ xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t * const free_func)
   xbt_heap_t H = xbt_new0(struct xbt_heap, 1);
   H->size = init_size;
   H->count = 0;
-  H->items =
-      (xbt_heapItem_t) xbt_new0(struct xbt_heapItem, init_size);
+  H->items = (xbt_heapItem_t) xbt_new0(struct xbt_heapItem, init_size);
   H->free = free_func;
   return H;
 }

@@ -13,7 +13,6 @@ typedef struct xbt_heap *xbt_heap_t;
 typedef long double xbt_heap_float_t;
 #define XBT_HEAP_FLOAT_T "%Lg"	/* for printing purposes */
 
-
 /* pointer to a function freeing something (should be common to all .h : FIXME) */
 typedef void (void_f_pvoid_t) (void *);
 
