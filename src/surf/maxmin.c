@@ -180,6 +180,14 @@ int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var)
   return(var->cnsts_number);
 }
 
+lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys, lmm_constraint_t cnst, 
+				     lmm_variable_t *var)
+{
+  if(!(*var)) xbt_swag_getFirst(&(cnst->element_set));
+  else *var=xbt_swag_getNext(*var,cnst->element_set.offset);
+  return *var;
+}
+
 void *lmm_constraint_id(lmm_constraint_t cnst)
 {
   return cnst->id;

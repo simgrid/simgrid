@@ -32,6 +32,8 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 
 lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, int num);
 int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
+lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys, lmm_constraint_t cnst, 
+				     lmm_variable_t *var);
 
 void *lmm_constraint_id(lmm_constraint_t cnst);
 void *lmm_variable_id(lmm_variable_t var);
