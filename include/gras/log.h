@@ -162,7 +162,7 @@ struct gras_log_category_s {
 
 struct gras_log_appender_s {
   void (*do_append) (gras_log_appender_t* thisLogAppender,
-		    gras_log_event_t* event);
+		    gras_log_event_t* event, const char *fmt);
   void *appender_data;
 };
 
@@ -172,7 +172,6 @@ struct gras_log_event_s {
   const char* fileName;
   const char* functionName;
   int lineNum;
-  const char* fmt;
   va_list ap;
 };
 
@@ -208,7 +207,13 @@ extern void gras_log_appender_set(gras_log_category_t* cat,
 
 // Functions that you shouldn't call. 
 extern void _gras_log_event_log(gras_log_event_t*ev,
-				...);
+				const char *fmt,
+				...)
+#ifdef __GNUC__
+     __attribute__ ((format (printf, 2, 3)))
+#endif
+;
+
 extern int _gras_log_cat_init(gras_log_priority_t priority, 
 			      gras_log_category_t* category);
 
@@ -256,11 +261,12 @@ extern gras_log_appender_t *gras_log_default_appender;
  * Setting the LogEvent's valist member is done inside _log_logEvent.
  */
 
-#define _GRAS_LOG_PRE(catv, priority, fmt) do {                         \
+#define _GRAS_LOG_PRE(catv, priority) do {                              \
      if (_GRAS_LOG_ISENABLEDV(catv, priority)) {                        \
          gras_log_event_t _log_ev =                                     \
-             {&(catv),priority,__FILE__,__FUNCTION__,__LINE__,fmt};         \
+             {&(catv),priority,__FILE__,__FUNCTION__,__LINE__};         \
          _gras_log_event_log(&_log_ev
+
 #define _GRAS_LOG_POST                          \
                         );                      \
      } } while(0)
@@ -279,15 +285,15 @@ extern gras_log_appender_t *gras_log_default_appender;
 # define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
 # define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
 #else
-# define CLOG0(c, p, f)                   _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) _GRAS_LOG_POST		   
-# define CLOG1(c, p, f,a1)                _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1 _GRAS_LOG_POST		   
-# define CLOG2(c, p, f,a1,a2)             _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2 _GRAS_LOG_POST
-# define CLOG3(c, p, f,a1,a2,a3)          _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3 _GRAS_LOG_POST
-# define CLOG4(c, p, f,a1,a2,a3,a4)       _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4 _GRAS_LOG_POST
-# define CLOG5(c, p, f,a1,a2,a3,a4,a5)    _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5 _GRAS_LOG_POST
-# define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5,a6 _GRAS_LOG_POST
-# define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5,a6,a7 _GRAS_LOG_POST
-# define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5,a6,a7,a8 _GRAS_LOG_POST
+# define CLOG0(c, p, f)                   _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f _GRAS_LOG_POST		   
+# define CLOG1(c, p, f,a1)                _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1 _GRAS_LOG_POST		   
+# define CLOG2(c, p, f,a1,a2)             _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1,a2 _GRAS_LOG_POST
+# define CLOG3(c, p, f,a1,a2,a3)          _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1,a2,a3 _GRAS_LOG_POST
+# define CLOG4(c, p, f,a1,a2,a3,a4)       _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1,a2,a3,a4 _GRAS_LOG_POST
+# define CLOG5(c, p, f,a1,a2,a3,a4,a5)    _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1,a2,a3,a4,a5 _GRAS_LOG_POST
+# define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6 _GRAS_LOG_POST
+# define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7 _GRAS_LOG_POST
+# define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) _GRAS_LOG_PRE(_GRAS_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8 _GRAS_LOG_POST
 #endif
 
 #define CDEBUG0(c, f)                   CLOG0(c, gras_log_priority_debug, f)
@@ -369,15 +375,15 @@ extern gras_log_appender_t *gras_log_default_appender;
 # define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
 # define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
 #else
-# define LOG0(p, f)                   _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) _GRAS_LOG_POST
-# define LOG1(p, f,a1)                _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1 _GRAS_LOG_POST
-# define LOG2(p, f,a1,a2)             _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2 _GRAS_LOG_POST
-# define LOG3(p, f,a1,a2,a3)          _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3 _GRAS_LOG_POST
-# define LOG4(p, f,a1,a2,a3,a4)       _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4 _GRAS_LOG_POST
-# define LOG5(p, f,a1,a2,a3,a4,a5)    _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5 _GRAS_LOG_POST
-# define LOG6(p, f,a1,a2,a3,a4,a5,a6) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5,a6 _GRAS_LOG_POST
-# define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5,a6,a7 _GRAS_LOG_POST
-# define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5,a6,a7,a8 _GRAS_LOG_POST
+# define LOG0(p, f)                   _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f _GRAS_LOG_POST
+# define LOG1(p, f,a1)                _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1 _GRAS_LOG_POST
+# define LOG2(p, f,a1,a2)             _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1,a2 _GRAS_LOG_POST
+# define LOG3(p, f,a1,a2,a3)          _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1,a2,a3 _GRAS_LOG_POST
+# define LOG4(p, f,a1,a2,a3,a4)       _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1,a2,a3,a4 _GRAS_LOG_POST
+# define LOG5(p, f,a1,a2,a3,a4,a5)    _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1,a2,a3,a4,a5 _GRAS_LOG_POST
+# define LOG6(p, f,a1,a2,a3,a4,a5,a6) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6 _GRAS_LOG_POST
+# define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7 _GRAS_LOG_POST
+# define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8 _GRAS_LOG_POST
 #endif
 
 /**
