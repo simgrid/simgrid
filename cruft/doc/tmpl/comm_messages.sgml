@@ -64,10 +64,11 @@ Defining messages and callbacks, and sending/receiving messages.
 </para>
 
 @expeditor: 
-@payload_type: 
-@payload_data: 
+@payload: 
 @Returns: 
 <!-- # Unused Parameters # -->
+@payload_type: 
+@payload_data: 
 @msg: 
 
 
