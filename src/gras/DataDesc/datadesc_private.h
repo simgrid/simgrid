@@ -37,7 +37,7 @@
  */
 #define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
-extern xbt_set_t gras_datadesc_set_local;
+/*@null@*/extern xbt_set_t gras_datadesc_set_local;
 void gras_ddt_freev(void *ddt);
 /*******************************************
  * Descriptions of all known architectures *

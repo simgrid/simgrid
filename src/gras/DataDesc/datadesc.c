@@ -13,14 +13,14 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,gras,"Data description");
 /* FIXME: make this host-dependent using a trick such as UserData*/
-xbt_set_t gras_datadesc_set_local=NULL;
+/*@null@*/xbt_set_t gras_datadesc_set_local=NULL;
 
 
 /* callback for array size when sending strings */
 static int
-_strlen_cb(gras_cbps_t vars, void *data) {
+_strlen_cb(/*@unused@*/gras_cbps_t vars, void *data) {
 
-  return 1+(long int)strlen(data);
+  return 1+(int)strlen(data);
 }
 
 
