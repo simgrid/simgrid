@@ -21,11 +21,12 @@ XBT_LOG_NEW_SUBCATEGORY(dict_multi,dict,"Dictionaries internals: dictionaries of
 /*####[ Private prototypes ]#################################################*/
 
 static _XBT_INLINE void _xbt_dictelm_alloc(char                *key,
-					     int                  offset,
-					     int                  key_len,
-					     void                *data,
-					     void_f_pvoid_t      *free_f,
-					     /*OUT*/s_xbt_dictelm_t **where);
+					   int                  offset,
+					   int                  key_len,
+					   int                  internal,
+					   void                *data,
+					   void_f_pvoid_t      *free_f,
+					   /*OUT*/s_xbt_dictelm_t **where);
 static void         _dictelm_wrapper_free(void*);
 
 static _XBT_INLINE void  _str_prefix_lgr(const char *key1,
@@ -125,10 +126,11 @@ _xbt_bytes_to_string(char * const ptr,
 static _XBT_INLINE
 void
 _xbt_dictelm_alloc(char                *key,
-		    int                  key_len,
-		    int                  offset,
-		    void                *data,
-		    void_f_pvoid_t      *free_f,
+		   int                  key_len,
+		   int                  offset,
+		   int                  internal,
+		   void                *data,
+		   void_f_pvoid_t      *free_f,
                  /*OUT*/s_xbt_dictelm_t **pp_elm) {
   s_xbt_dictelm_t *p_elm  = NULL;
 
@@ -137,6 +139,7 @@ _xbt_dictelm_alloc(char                *key,
   p_elm->key      = key;
   p_elm->key_len  = key_len;
   p_elm->offset   = offset;
+  p_elm->internal   = internal;  
   p_elm->content  = data;
   p_elm->free_f = free_f;
   p_elm->sub      = xbt_dynar_new(sizeof(s_xbt_dictelm_t*), _dictelm_wrapper_free);
@@ -192,7 +195,7 @@ _dictelm_wrapper_free(void *pp_elm) {
  *
  *
  * Returns the length of the common prefix of @str1 and @str2.
- * Do make sure the strings are not null
+ * Do make sure the strings are not null, this function don't
  */
 static _XBT_INLINE
 void
@@ -229,15 +232,21 @@ _str_prefix_lgr(const char *key1,
     if (o >= key_len1) {
 
       if (o >= key_len2) {
-        m = 1;
+        m = 1; /* exact match */
       } else {
-        m = 2;
+        m = 2; /* child is prefix */
       }
 
     } else if (o >= key_len2) {
-      m = 3;
-    } else {
-      m = 4;
+      m = 3; /* key prefix of child */
+    } else { 
+      DEBUG7("Common prefix. o=%d; key1=%.*s; key_len1=%d; key2=%.*s; key_len2=%d", 
+	     o, 
+	     key_len1, key1, 
+	     key_len1, 
+	     key_len2, key2, 
+	     key_len2);
+      m = 4; /* Common prefix (=> common ancestor) */
     }
   }
 
@@ -320,11 +329,11 @@ _dict_child_cmp(s_xbt_dictelm_t *p_dict,
 static _XBT_INLINE
 void
 _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
-			   const char  *key,
-			   int          key_len,
-			   int         *p_pos,
-			   int         *p_offset,
-			   int         *p_match) {
+			  const char  *key,
+			  int          key_len,
+			  int         *p_pos,
+			  int         *p_offset,
+			  int         *p_match) {
 
   int          p       = 0;
   int          o       = *p_offset;
@@ -332,15 +341,17 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   int          len     = 0;
 
   
-  CDEBUG5(dict_search, "search child [%.*s] under [%.*s] (len=%lu)",
+  CDEBUG6(dict_search, "search child [%.*s] under [%.*s]=%p (len=%lu)",
 	  key_len, key,
-          p_elm?(p_elm->key_len?p_elm->key_len:6):6, p_elm?(p_elm->key?p_elm->key:"(null)"):"(head)",
-  	  (p_elm&&p_elm->sub)?xbt_dynar_length(p_elm->sub):0);
+          p_elm ? (p_elm->key_len?p_elm->key_len:6) : 6, 
+	  p_elm ? (p_elm->key?p_elm->key:"(NULL)") : "(head)",
+	  p_elm,
+  	  (p_elm&&p_elm->sub) ? xbt_dynar_length(p_elm->sub) : 0);
   
 
   len = xbt_dynar_length(p_elm->sub);
 
-  if(1) {
+  if(1) { /* FIXME: Arnaud, did you leave dead code here? */
     int p_min = 0;
     int p_max = len-1;
     int cmp = 0;
@@ -354,7 +365,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
 	o = *p_offset;
 	if (cmp<0) { /* Insert at the very beginning */
 	  p=0;
-	} else if (p_max<=0) { /* No way. It is not there. Insert à the very end */
+	} else if (p_max<=0) { /* No way. It is not there. Insert at the very end */
 	  p=p_max+1;
 	  m = 0;
 	} else { 
@@ -398,9 +409,10 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   *p_offset = o;
   *p_pos    = p;
   *p_match  = m;
-  CDEBUG5(dict_search, "search [%.*s] in [%.*s] => %s",
+  CDEBUG6(dict_search, "search [%.*s] in [%.*s]=%p => %s",
 	  key_len, key,
           p_elm?(p_elm->key_len?p_elm->key_len:6):6, p_elm?(p_elm->key?p_elm->key:"(null)"):"(head)",
+	  p_elm,
 	  ( m == 0 ? "no child have a common prefix" :
 	    ( m == 1 ? "selected child have exactly this key" :
 	      ( m == 2 ? "selected child constitutes a prefix" :
@@ -413,7 +425,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
 /**
  * _xbt_dictelm_change_value:
  *
- * Change the value of the dictelm, making sure to free the old one, if any.
+ * Change the value of the dictelm, making sure to free the old one, if any. The node also become a non-internal one.
  */
 static _XBT_INLINE
 void
@@ -427,6 +439,7 @@ _xbt_dictelm_change_value(s_xbt_dictelm_t    *p_elm,
 
   p_elm->free_f = free_f;
   p_elm->content  = data;
+  p_elm->internal = FALSE;
 }
 
 /**
@@ -485,7 +498,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
     {
       s_xbt_dictelm_t *p_child = NULL;
 
-      _xbt_dictelm_alloc(key, key_len, offset, data, free_f, &p_child);
+      _xbt_dictelm_alloc(key, key_len, offset, FALSE, data, free_f, &p_child);
       CDEBUG1(dict_add, "-> Add a child %p", (void*)p_child);
       xbt_dynar_insert_at(p_head->sub, pos, &p_child);
 
@@ -523,7 +536,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       s_xbt_dictelm_t *p_child = NULL;
 
       p_child=xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
-      _xbt_dictelm_alloc(key, key_len, old_offset, data, free_f, &p_new);
+      _xbt_dictelm_alloc(key, key_len, old_offset, FALSE, data, free_f, &p_new);
 
       CDEBUG2(dict_add, "-> The child %p become child of new dict (%p)",
               (void*)p_child, (void*)p_new);
@@ -543,12 +556,12 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       char        *anc_key     = NULL;
       int          anc_key_len = offset;
 
-      _xbt_dictelm_alloc(key, key_len, offset, data, free_f, &p_new);
+      _xbt_dictelm_alloc(key, key_len, offset, FALSE, data, free_f, &p_new);
       p_child=xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
 
       anc_key = xbt_memdup(key, anc_key_len);
 
-      _xbt_dictelm_alloc(anc_key, anc_key_len, old_offset, NULL, NULL, &p_anc);
+      _xbt_dictelm_alloc(anc_key, anc_key_len, old_offset, TRUE, NULL, NULL, &p_anc);
 
       CDEBUG3(dict_add, "-> Make a common ancestor %p (%.*s)",
 	      (void*)p_anc, anc_key_len, anc_key);
@@ -592,7 +605,7 @@ xbt_dictelm_set_ext(s_xbt_dictelm_t **pp_head,
   s_xbt_dictelm_t  *p_head  = *pp_head;
   char         *key     =  NULL;
 
-  key = xbt_memdup(_key, key_len);
+  key = xbt_memdup(_key, key_len+1);
 
   /* there is no head, create it */
   if (!p_head) {
@@ -601,9 +614,10 @@ xbt_dictelm_set_ext(s_xbt_dictelm_t **pp_head,
     CDEBUG0(dict_add, "Create an head");
 
     /* The head is priviledged by being the only one with a NULL key */
-    _xbt_dictelm_alloc(NULL, 0, 0, NULL, NULL, &p_head);
+    _xbt_dictelm_alloc(NULL, 0, 0, TRUE, NULL, NULL, &p_head);
 
-    _xbt_dictelm_alloc(key, key_len, 0, data, free_f, &p_child);
+    CDEBUG2(dict_add, "Push %.*s as child of this head",key_len,key);
+    _xbt_dictelm_alloc(key, key_len, 0, FALSE, data, free_f, &p_child);
     xbt_dynar_insert_at(p_head->sub, 0, &p_child);
 
     *pp_head = p_head;
@@ -630,7 +644,7 @@ xbt_dictelm_set(s_xbt_dictelm_t **pp_head,
 		    void            *data,
 		    void_f_pvoid_t  *free_f) {
 
-  xbt_dictelm_set_ext(pp_head, _key, 1+strlen(_key), data, free_f);
+  xbt_dictelm_set_ext(pp_head, _key, strlen(_key), data, free_f);
 }
 
 /**
@@ -667,7 +681,7 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
     int match = 0;
     int pos   = 0;
 
-    *data = NULL; /* Make it ready to answer 'not found' in one operation */
+    *data = NULL; /* Let's be clean */
 
     /*** Search where is the good child, and how good it is ***/
     _xbt_dictelm_child_search(p_head, key, key_len, &pos, &offset, &match);
@@ -746,7 +760,7 @@ xbt_dictelm_get(s_xbt_dictelm_t    *p_head,
                    const char     *key,
                    /* OUT */void **data) {
 
-  return xbt_dictelm_get_ext(p_head, key, 1+strlen(key), data);
+  return xbt_dictelm_get_ext(p_head, key, strlen(key), data);
 }
 
 /*----[ _xbt_dict_collapse ]------------------------------------------------*/
@@ -913,7 +927,7 @@ xbt_dictelm_remove_ext(xbt_dictelm_t head,
 xbt_error_t
 xbt_dictelm_remove(xbt_dictelm_t head,
 		    const char     *key) {
-  return _xbt_dictelm_remove_rec(head, key, 1+strlen(key),0);
+  return _xbt_dictelm_remove_rec(head, key, strlen(key),0);
 }
 
 /*----[ _xbt_dict_dump_rec ]------------------------------------------------*/
@@ -922,8 +936,8 @@ xbt_dictelm_remove(xbt_dictelm_t head,
 static
 void
 _xbt_dictelm_dump_rec(xbt_dictelm_t  head,
-		       int             offset,
-		       void_f_pvoid_t *output) {
+		      int             offset,
+		      void_f_pvoid_t *output) {
   xbt_dictelm_t child   =     NULL;
   char          *key     =     NULL;
   int            key_len =        0;
@@ -946,20 +960,21 @@ _xbt_dictelm_dump_rec(xbt_dictelm_t  head,
   fflush(stdout);
 
   if (key) {
-
-    if (!key_len) {
-      printf ("HEAD");
-    } else {
-      char *key_string = NULL;
-
-      key_string = xbt_malloc(key_len*2+1);
-      _xbt_bytes_to_string(key, key_len, key_string);
-
-      printf("%.*s|(%d)", key_len-offset, key_string + offset, offset);
-
-      free(key_string);
-    }
-
+     
+     if (!key_len) {
+	printf ("HEAD");
+     } else if (key[key_len] != '\0') {
+	char *key_string = NULL;
+	
+	key_string = xbt_malloc(key_len*2+1);
+	_xbt_bytes_to_string(key, key_len, key_string);
+	
+	printf("%.*s|(%d)", key_len-2*offset, key_string + 2*offset, offset);
+	
+	free(key_string);
+     } else {
+	printf("%.*s|(%d)", key_len-offset, key + offset , offset);
+     }
   }
 
   printf(" -> ");
@@ -972,6 +987,8 @@ _xbt_dictelm_dump_rec(xbt_dictelm_t  head,
       printf("(data)");
     }
 
+  } else if (head->internal) {
+    printf("(internal node)");
   } else {
     printf("(null)");
   }
