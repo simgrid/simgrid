@@ -19,7 +19,7 @@ double gras_os_time() {
 
   gettimeofday(&tv, NULL);
 
-  return (double)(tv.tv_sec + tv.tv_usec / 1000000);
+  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
 #else
   /* Poor resolution */
   return (double)(time(NULL)); 
