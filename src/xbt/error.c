@@ -9,7 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/error.h"
-/** \defgroup  XBT_error Error tracking support.
+/** \defgroup  XBT_error Error tracking support
  *  \brief This section describes a set of macros used to handle errors easily.
  */
 

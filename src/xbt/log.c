@@ -18,8 +18,7 @@
 #include "xbt/error.h"
 #include "xbt/dynar.h"
 
-
-/** \defgroup XBT_log Logging support.
+/** \defgroup XBT_log Logging support
  *  \brief A generic logging facility in the spirit of log4j
  *
  *  This section describes the API to the log functions used 
