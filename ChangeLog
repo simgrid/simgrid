@@ -1,3 +1,14 @@
+2004-11-15 Arnaud Legrand
+  - Trace manager now written. It uses a heap structure and is therfore
+    expected to be efficient. It may however be speed up (particularly
+    when many events occur at the same date) by using red and black
+    trees. One day maybe... 
+  - Max-min linear system solver written. It uses a sparse matrix
+    structure taking advantage of its expected use. Most operations are
+    O(1) and free/calloc are called as few as possible. The computation of
+    the minimum could however be improved by using a red and black tree
+    (again ! ;).
+
 2004-11-03 Arnaud Legrand
   - Rename every gras_* function that was in xbt/ to its xbt_
     counterpart.
