@@ -276,6 +276,8 @@ extern gras_log_appender_t *gras_log_default_appender;
 # define CLOG4(c, p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)      
 # define CLOG5(c, p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)   
 # define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
+# define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
+# define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
 #else
 # define CLOG0(c, p, f)                   _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) _GRAS_LOG_POST		   
 # define CLOG1(c, p, f,a1)                _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1 _GRAS_LOG_POST		   
@@ -284,6 +286,8 @@ extern gras_log_appender_t *gras_log_default_appender;
 # define CLOG4(c, p, f,a1,a2,a3,a4)       _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4 _GRAS_LOG_POST
 # define CLOG5(c, p, f,a1,a2,a3,a4,a5)    _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5 _GRAS_LOG_POST
 # define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5,a6 _GRAS_LOG_POST
+# define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5,a6,a7 _GRAS_LOG_POST
+# define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) _GRAS_LOG_PRE(_GRAS_LOGV(c),p,f) ,a1,a2,a3,a4,a5,a6,a7,a8 _GRAS_LOG_POST
 #endif
 
 #define CDEBUG0(c, f)                   CLOG0(c, gras_log_priority_debug, f)
@@ -293,6 +297,8 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define CDEBUG4(c, f,a1,a2,a3,a4)       CLOG4(c, gras_log_priority_debug, f,a1,a2,a3,a4)
 #define CDEBUG5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, gras_log_priority_debug, f,a1,a2,a3,a4,a5)
 #define CDEBUG6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, gras_log_priority_debug, f,a1,a2,a3,a4,a5,a6)
+#define CDEBUG7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, gras_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
+#define CDEBUG8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, gras_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
 
 #define CVERB0(c, f)                   CLOG0(c, gras_log_priority_verbose, f)
 #define CVERB1(c, f,a1)                CLOG1(c, gras_log_priority_verbose, f,a1)
@@ -360,6 +366,8 @@ extern gras_log_appender_t *gras_log_default_appender;
 # define LOG4(p, f,a1,a2,a3,a4)       fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4)      
 # define LOG5(p, f,a1,a2,a3,a4,a5)    fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5)   
 # define LOG6(p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
+# define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
+# define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
 #else
 # define LOG0(p, f)                   _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) _GRAS_LOG_POST
 # define LOG1(p, f,a1)                _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1 _GRAS_LOG_POST
@@ -368,6 +376,8 @@ extern gras_log_appender_t *gras_log_default_appender;
 # define LOG4(p, f,a1,a2,a3,a4)       _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4 _GRAS_LOG_POST
 # define LOG5(p, f,a1,a2,a3,a4,a5)    _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5 _GRAS_LOG_POST
 # define LOG6(p, f,a1,a2,a3,a4,a5,a6) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5,a6 _GRAS_LOG_POST
+# define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5,a6,a7 _GRAS_LOG_POST
+# define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) _GRAS_LOG_PRE((*_GRAS_LOGV(default)),p,f) ,a1,a2,a3,a4,a5,a6,a7,a8 _GRAS_LOG_POST
 #endif
 
 /**
@@ -394,6 +404,8 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define DEBUG4(f,a1,a2,a3,a4)       LOG4(gras_log_priority_debug, f,a1,a2,a3,a4)
 #define DEBUG5(f,a1,a2,a3,a4,a5)    LOG5(gras_log_priority_debug, f,a1,a2,a3,a4,a5)
 #define DEBUG6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_debug, f,a1,a2,a3,a4,a5,a6)
+#define DEBUG7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(gras_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
+#define DEBUG8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(gras_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
 
 /**
  * VERB6:
