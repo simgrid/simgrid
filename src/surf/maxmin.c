@@ -190,7 +190,7 @@ void *lmm_variable_id(lmm_variable_t var)
   return var->id;
 }
 
-static void saturated_constraints_update(lmm_system_t sys,
+static void saturated_constraint_set_update(lmm_system_t sys,
 					 lmm_constraint_t cnst,
 					 xbt_maxmin_float_t * min_usage)
 {
@@ -212,14 +212,12 @@ static void saturated_constraints_update(lmm_system_t sys,
   }
 }
 
-static void saturated_variables_update(lmm_system_t sys)
+static void saturated_variable_set_update(lmm_system_t sys)
 {
   lmm_constraint_t cnst = NULL;
   xbt_swag_t cnst_list = NULL;
   lmm_element_t elem = NULL;
   xbt_swag_t elem_list = NULL;
-
-  sys->modified = 1;
 
   cnst_list = &(sys->saturated_constraint_set);
   while ((cnst = xbt_swag_getFirst(cnst_list))) {
@@ -265,10 +263,10 @@ void lmm_solve(lmm_system_t sys)
     }
 
     /* Saturated constraints update */
-    saturated_constraints_update(sys, cnst, &min_usage);
+    saturated_constraint_set_update(sys, cnst, &min_usage);
   }
 
-  saturated_variables_update(sys);
+  saturated_variable_set_update(sys);
 
   /* Saturated variables update */
 
@@ -307,9 +305,9 @@ void lmm_solve(lmm_system_t sys)
     cnst_list = &(sys->active_constraint_set);
     min_usage = -1;
     xbt_swag_foreach(cnst, cnst_list) {
-      saturated_constraints_update(sys, cnst, &min_usage);
+      saturated_constraint_set_update(sys, cnst, &min_usage);
     }
-    saturated_variables_update(sys);
+    saturated_variable_set_update(sys);
 
   } while (xbt_swag_size(&(sys->saturated_variable_set)));
 
