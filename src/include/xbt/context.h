@@ -29,7 +29,7 @@
   /** @brief A context function */
   typedef int(*xbt_context_function_t)(int argc, char *argv[]);
 
-/*@}*/
+/* @}*/
 
 void xbt_context_init(void);
 void xbt_context_exit(void);
@@ -42,5 +42,5 @@ void xbt_context_free(xbt_context_t context);
 void xbt_context_start(xbt_context_t context);
 void xbt_context_yield(void);
 void xbt_context_schedule(xbt_context_t context);
-/*@} */
+/* @} */
 #endif				/* _XBT_CONTEXT_H */
