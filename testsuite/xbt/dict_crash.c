@@ -92,10 +92,10 @@ int main(int argc,char **argv) {
 
 
   TRYFAIL(gras_dict_new(&head));
-  printf("\n Fill 200 000 elements, with keys being the number of element\n");
-  printf("  (a point is 10 000 elements)\n");
+  printf("\n Fill 20 000 elements, with keys being the number of element\n");
+  printf("  (a point is 1 000 elements)\n");
   for (j=0;j<NB_ELM;j++) {
-    if (!(j%10000)) {
+    if (!(j%1000)) {
       printf("."); 
       fflush(stdout);
     }
@@ -112,7 +112,7 @@ int main(int argc,char **argv) {
   TRYFAIL(countelems(head,&i));
 
   printf(" There is %d elements\n",i);
-  printf("\n Search my 200 000 elements 20 times. (a point is a test)\n");
+  printf("\n Search my 20 000 elements 20 times. (a point is a test)\n");
   if (!(key=malloc(10))) {
     fprintf(stderr,"Out of memory\n");
     abort();
@@ -131,7 +131,7 @@ int main(int argc,char **argv) {
   }
   free(key);
 
-  printf("\n Remove my 200 000 elements. (a point is 10 000 elements)\n");
+  printf("\n Remove my 20 000 elements. (a point is 10 000 elements)\n");
   if (!(key=malloc(10))) {
     fprintf(stderr,"Out of memory\n");
     abort();
