@@ -7,8 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/error.h"
-#include "gras/datadesc.h"
+#include "gras.h"
 #include "amok/base.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
