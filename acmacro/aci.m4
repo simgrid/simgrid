@@ -80,8 +80,7 @@ AC_DEFUN([ACI_PACKAGE],[
 	dnl Specify the options
         dnl
 	AC_ARG_WITH([$1],
-          AC_HELP_STRING([--with-$1=DIR],
-	    [root directory of aci_help installation]),
+          AS_HELP_STRING(--with-$1=DIR,root directory of aci_help installation),
 	  [with_$1=$withval
 	   good=yes
 	   if test "$withval" = yes ; then good=no; fi
@@ -95,21 +94,18 @@ AC_DEFUN([ACI_PACKAGE],[
 	  ])
 	
 	AC_ARG_WITH([$1-includes],
-          AC_HELP_STRING([--with-$1-includes=DIR],
-            [specify exact include dir for aci_help headers]),
+          AS_HELP_STRING(--with-$1-includes=DIR,specify exact include dir for aci_help headers),
           [CFLAGS_$1="-I$withval $CFLAGS_$1"
 	   aci_pkg_inc_$1="$withval"
 	  ])
 	
 	AC_ARG_WITH([$1-libraries],
-          AC_HELP_STRING([--with-$1-libraries=DIR],
-	     [specify exact library dir for aci_help library]
+          AS_HELP_STRING(--with-$1-libraries=DIR,specify exact library dir for aci_help library
           ),[LIBS_$1="-L$withval $LIBS_$1"
 	     aci_pkg_lib_$1="$withval"])
 
 	AC_ARG_WITH([$1-extra],
-          AC_HELP_STRING([--with-$1-extra=ARG],
-	     [specify extra args to pass to the linker to get the aci_help library (with no space. A sed to change "!" to " " is run)]
+          AS_HELP_STRING(--with-$1-extra=ARG,specify extra args to pass to the linker to get the aci_help library (with no space. A sed to change "!" to " " is run)
           ),[LIBS_$1=`echo $withval|sed 's/!/ /g'`" $LIBS_$1"
  	     aci_pkg_extra_$1="$withval"])
 	
@@ -264,8 +260,7 @@ AC_DEFUN([ACI_MODULE],[
   AC_SUBST(DIST_SUBMODULES_$1)
   
   AC_ARG_ENABLE($1,
-         AC_HELP_STRING([--enable-$1],
-           [Enable the module $1, $2.]))
+         AS_HELP_STRING(--enable-$1,Enable the module $1, $2.))
 
   ifelse(ifelse([$5], ,[yes],[$5]),[yes],
          dnl what to do if module is enabled by default
