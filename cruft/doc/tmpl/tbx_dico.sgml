@@ -33,7 +33,7 @@ Data container associating data to a string key.
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_dict_insert ##### -->
+<!-- ##### FUNCTION gras_dict_set ##### -->
 <para>
 
 </para>
@@ -45,7 +45,7 @@ Data container associating data to a string key.
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_dict_insert_ext ##### -->
+<!-- ##### FUNCTION gras_dict_set_ext ##### -->
 <para>
 
 </para>
@@ -58,7 +58,7 @@ Data container associating data to a string key.
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_dict_retrieve ##### -->
+<!-- ##### FUNCTION gras_dict_get ##### -->
 <para>
 
 </para>
@@ -69,7 +69,7 @@ Data container associating data to a string key.
 @Returns: 
 
 
-<!-- ##### FUNCTION gras_dict_retrieve_ext ##### -->
+<!-- ##### FUNCTION gras_dict_get_ext ##### -->
 <para>
 
 </para>

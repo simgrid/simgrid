@@ -20,8 +20,9 @@ Describing data to be exchanged
 </para>
 
 @name: 
-@type: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@type: 
 
 
 <!-- ##### MACRO gras_datadesc_by_symbol ##### -->
@@ -85,17 +86,6 @@ Describing data to be exchanged
 @code: 
 
 
-<!-- ##### FUNCTION gras_datadesc_declare_struct_append_name ##### -->
-<para>
-
-</para>
-
-@struct_type: 
-@name: 
-@field_type_name: 
-@Returns: 
-
-
 <!-- ##### FUNCTION gras_datadesc_declare_union ##### -->
 <para>
 
@@ -107,17 +97,6 @@ Describing data to be exchanged
 @Returns: 
 <!-- # Unused Parameters # -->
 @code: 
-
-
-<!-- ##### FUNCTION gras_datadesc_declare_union_append_name ##### -->
-<para>
-
-</para>
-
-@union_type: 
-@name: 
-@field_type_name: 
-@Returns: 
 
 
 <!-- ##### FUNCTION gras_datadesc_cb_set_pre ##### -->

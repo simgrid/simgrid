@@ -1979,6 +1979,16 @@ Sockets
 @post_cb: 
 @Returns: 
 
+<!-- ##### FUNCTION gras_datadesc_declare_struct_append_name ##### -->
+<para>
+
+</para>
+
+@struct_type: 
+@name: 
+@field_type_name: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_datadesc_declare_struct_cb ##### -->
 <para>
 
@@ -2030,6 +2040,16 @@ Sockets
 @field_type_name: 
 @pre_cb: 
 @post_cb: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_append_name ##### -->
+<para>
+
+</para>
+
+@union_type: 
+@name: 
+@field_type_name: 
 @Returns: 
 
 <!-- ##### FUNCTION gras_datadesc_declare_union_cb ##### -->
@@ -2221,6 +2241,50 @@ Sockets
 </para>
 
 @cursor: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_insert ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@free_ctn: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_insert_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
+@free_ctn: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_retrieve ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dict_retrieve_ext ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@key_len: 
+@data: 
 @Returns: 
 
 <!-- ##### FUNCTION gras_dynar_first ##### -->
