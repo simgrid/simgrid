@@ -13,9 +13,13 @@
 
 #include "gras_config.h"
 
-#include <errno.h>
-#include <sys/time.h> /* struct timeval */
-#include <sys/types.h>
+#ifdef HAVE_ERRNO_H
+#  include <errno.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 
 /****
  **** Networking 
@@ -122,5 +126,6 @@ const char *gras_wsa_err2string(int errcode);
 #else
 #  include "xbt/context_win32.h" /* Manual reimplementation for prehistoric platforms */
 #endif
+
 
 #endif /* GRAS_PORTABLE_H */
