@@ -2,7 +2,7 @@
 
 /* xbt/error.h - Error tracking support                                     */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,6 +21,8 @@
 
 BEGIN_DECL
 
+void xbt_abort(void) _XBT_GNUC_NORETURN;
+  
 typedef enum {
   no_error=0,       /* succes */
   mismatch_error=1, /* The provided ID does not match */

@@ -1,8 +1,10 @@
 /* $Id$ */
 
-/* xbt.h - Public interface to the xbt (gras's toolbox)                   */
+/* xbt.h - Public interface to the xbt (gras's toolbox)                     */
 
-/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
+/* Copyright (c) 2004 Martin Quinson.                                       */
+/* Copyright (c) 2004 Arnaud Legrand.                                       */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,8 +12,12 @@
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
-#define max(a, b) (((a) > (b))?(a):(b))
-#define min(a, b) (((a) < (b))?(a):(b))
+#ifndef max
+#  define max(a, b) (((a) > (b))?(a):(b))
+#endif
+#ifndef min
+#  define min(a, b) (((a) < (b))?(a):(b))
+#endif
 
 #define TRUE  1
 #define FALSE 0
