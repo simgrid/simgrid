@@ -202,7 +202,9 @@ gras_msg_send(gras_socket_t  *sock,
     string_type = gras_datadesc_by_name("string");
     gras_assert(string_type);
   }
-  
+
+  DEBUG3("send %s to %s:%d", msgtype->name, 
+	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
   TRY(gras_trp_chunk_send(sock, GRAS_header, 6));
 
   TRY(gras_datadesc_send(sock, string_type,   &msgtype->name));
@@ -241,7 +243,7 @@ gras_msg_recv(gras_socket_t   *sock,
     RAISE2(mismatch_error,"GRAS protocol mismatch (got %d, use %d)",
 	   (int)header[4], (int)GRAS_header[4]);
   r_arch = (int)header[5];
-  DEBUG2("Handle an incoming message using protocol %d from arch %s",
+  DEBUG2("Handle an incoming message using protocol %d (remote is %s)",
 	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
   TRY(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
