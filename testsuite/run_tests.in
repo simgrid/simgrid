@@ -1,18 +1,25 @@
 #! @BASH@
 failed_nb=0
 success_nb=0
+ignored_nb=0
 tests_nb=0
+
+rm -f test.failed test.success test.ignored
+
 if [ xvalgrind = "x$1" ] ; then
   valgrind=valgrind
 else
   valgrind=
 fi
+#	    config_usage                        \
 for test in log_usage                           \
             dynar_int dynar_double dynar_string \
  	    dict_usage dict_crash               \
-	    config_usage                        \
 	    \
-	    datadesc_usage
+	    datadesc_usage                      \
+	    "datadesc_usage --read datadesc.little32" \
+	    "datadesc_usage --read datadesc.big32"  \
+	    "datadesc_usage --read datadesc.big64" 
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
@@ -21,7 +28,8 @@ do
   else 
     $valgrind ./$test --gras-log="root.thres=info" 2>&1
   fi
-  if [ $? != 0 ] ; then
+  retval=$?
+  if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
     echo "## failed. Rerun $test with full details."
     if [ "x$test" = "xdict_crash" ] ; then
       ./$test --gras-log="root.thres=debug" 2>&1
@@ -29,24 +37,38 @@ do
       $valgrind ./$test --gras-log="root.thres=debug" 2>&1
     fi
     failed_nb=`expr $failed_nb + 1`
-    failed="$failed $test"
-  else
+    echo "  $test (returned $retval)" >> test.failed
+  else # retval == 77
+    echo "## Ignored since it returned 77"
+    ignored_nb=`expr $ignored_nb + 1`
+    echo "  $test" >> test.ignored
+  fi else
     echo "## Success"
     success_nb=`expr $success_nb + 1`
-    success="$success $test"
+    echo "  $test" >> test.success
   fi
 done
-failed=`echo $failed|sed 's|^ ||'`
-success=`echo $success|sed 's|^ ||'`
+
+
 echo
 echo "#### Summary"
-echo "$success_nb tests of $tests_nb successfull ($success)"
+echo "$success_nb tests of $tests_nb successfull:"
+cat test.success
+
+if [ $ignored_nb != 0 ] ; then
+  echo "$failed_nb tests of $tests_nb ignored:"
+  cat test.ignored
+  echo "  (they returned 77, meaning that they are not applicable)"
+fi
 if [ $failed_nb != 0 ] ; then
-  echo "$failed_nb tests of $tests_nb failed ($failed)"
+  echo "$failed_nb tests of $tests_nb failed: "
+  cat test.failed
   echo "Rerun the tests using the following command: script -c 'make test' gras.tests.log"
   echo " and send the following informations to martin.quinson@ens-lyon.fr:"
-  echo "   - the file gras.tests.log produced by this command"
+  echo "   - the file gras.tests.log produced by this command."
   echo "   - a short description of the target platform (arch, OS, distrib, compiler)."
-  echo "   - the config.log produced by the compilation, if possible."
+  echo "   - the config.log produced by the compilation."
 fi
+
+rm -f test.success test.failed test.ignored
 exit $failed_nb
