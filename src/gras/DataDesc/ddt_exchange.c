@@ -70,12 +70,12 @@ gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
 
   if (int_type->size[GRAS_THISARCH] >= int_type->size[r_arch]) {
     TRY(gras_trp_chunk_recv(sock, (char*)i, int_type->size[r_arch]));
-    TRY(gras_dd_convert_elm(int_type,r_arch, i,i));
+    TRY(gras_dd_convert_elm(int_type,1,r_arch, i,i));
   } else {
     void *ptr = NULL;
     ptr = malloc((size_t)int_type->size[r_arch]);
     TRY(gras_trp_chunk_recv(sock, (char*)ptr, int_type->size[r_arch]));
-    TRY(gras_dd_convert_elm(int_type,r_arch, ptr,i));
+    TRY(gras_dd_convert_elm(int_type,1,r_arch, ptr,i));
     free(ptr);
   }
   DEBUG1("recv_int(%d)",*i);
@@ -454,9 +454,15 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     /* send the content */
     TRY(gras_datadesc_by_id(array_data.code, &sub_type));
     elm_size = sub_type->aligned_size[GRAS_THISARCH];
-    for (cpt=0; cpt<count; cpt++) {
-      TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, ptr));
-      ptr += elm_size;
+    if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
+      VERB1("Array of %d scalars, send it in one shoot",count);
+      TRY(gras_trp_chunk_send(sock, data, 
+			      sub_type->aligned_size[GRAS_THISARCH] * count));
+    } else {
+      for (cpt=0; cpt<count; cpt++) {
+	TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, ptr));
+	ptr += elm_size;
+      }
     }
     break;
   }
@@ -531,12 +537,12 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
   case e_gras_datadesc_type_cat_scalar:
     if (type->size[GRAS_THISARCH] >= type->size[r_arch]) {
       TRY(gras_trp_chunk_recv(sock, (char*)l_data, type->size[r_arch]));
-      TRY(gras_dd_convert_elm(type,r_arch, l_data,l_data));
+      TRY(gras_dd_convert_elm(type,1,r_arch, l_data,l_data));
     } else {
       void *ptr = NULL;
       ptr = malloc((size_t)type->size[r_arch]);
       TRY(gras_trp_chunk_recv(sock, (char*)ptr, type->size[r_arch]));
-      TRY(gras_dd_convert_elm(type,r_arch, ptr,l_data));
+      TRY(gras_dd_convert_elm(type,1,r_arch, ptr,l_data));
       free(ptr);
     }
     break;
@@ -688,7 +694,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     count = array_data.fixed_size;
     if (count <= 0)
       count = subsize;
-    if (count <= 0)
+    if (count < 0)
       TRY(gras_dd_recv_int(sock, r_arch, &count));
     if (count < 0)
       RAISE1(mismatch_error,
@@ -696,14 +702,31 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
     /* receive the content */
     TRY(gras_datadesc_by_id(array_data.code, &sub_type));
-    elm_size = sub_type->aligned_size[GRAS_THISARCH];
-    VERB2("Receive a %d-long array of %s",count, sub_type->name);
+    if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
+      VERB1("Array of %d scalars, get it in one shoot", count);
+      if (sub_type->aligned_size[GRAS_THISARCH] >= 
+	  sub_type->aligned_size[r_arch]) {
+	TRY(gras_trp_chunk_recv(sock, (char*)l_data, 
+				sub_type->aligned_size[r_arch] * count));
+	TRY(gras_dd_convert_elm(sub_type,count,r_arch, l_data,l_data));
+      } else {
+	ptr = malloc((size_t)sub_type->aligned_size[r_arch] * count);
+	TRY(gras_trp_chunk_recv(sock, (char*)ptr, 
+				sub_type->size[r_arch] * count));
+	TRY(gras_dd_convert_elm(sub_type,count,r_arch, ptr,l_data));
+	free(ptr);
+      }
+    } else {
+      /* not scalar content, get it recursively (may contain pointers) */
+      elm_size = sub_type->aligned_size[GRAS_THISARCH];
+      VERB2("Receive a %d-long array of %s",count, sub_type->name);
 
-    ptr = l_data;
-    for (cpt=0; cpt<count; cpt++) {
-      TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
-				 r_arch, NULL, 0, ptr,-1));
-      ptr += elm_size;
+      ptr = l_data;
+      for (cpt=0; cpt<count; cpt++) {
+	TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
+				   r_arch, NULL, 0, ptr,-1));
+	ptr += elm_size;
+      }
     }
     break;
   }

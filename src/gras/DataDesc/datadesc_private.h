@@ -246,7 +246,7 @@ gras_dd_cbps_free(gras_dd_cbps_t **state);
  * Convertions *
  ***************/
 gras_error_t
-gras_dd_convert_elm(gras_datadesc_type_t *type,
+gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
 		    int r_arch, 
 		    void *src, void *dst);
 
