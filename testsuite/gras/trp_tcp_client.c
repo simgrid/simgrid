@@ -43,6 +43,6 @@ int main(int argc,char *argv[]) {
   fprintf(stderr,"===[CLIENT]=== Exiting successfully\n");
   gras_socket_close(sock);
    
-  xbt_exit();
+  gras_exit();
   return 0;
 }

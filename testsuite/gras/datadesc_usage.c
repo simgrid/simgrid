@@ -620,7 +620,7 @@ int main(int argc,char *argv[]) {
 
   if (direction != RW) 
     gras_socket_close(sock);
-  xbt_exit();
+  gras_exit();
   return 0;
 }
 
