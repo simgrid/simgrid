@@ -1,3 +1,19 @@
+2004-07-07 Martin Quinson
+ Let's say it's version 0.0.2 ;)
+  - Implement conversions (yuhu!)
+  - Let it work on solaris (beside conversion, of course)
+  - Stupid me, using rand() to generate the conversion datatests in not wise.
+
+2004-07-06 Martin Quinson
+  - Let make dist work, since I'm gonna need it to compile on remote hosts
+  - Let Tests/datadesc_usage write the architecture on which the file was
+    generated as first byte.
+  - Add PowerPC (being also IRIX64), SPARC (also power4) and ALPHA
+    architecture descriptions. 
+  - Add datadesc_usage.{i386,ppc,sparc} files being the result of execution
+    on those architectures.
+  - Optimization: send/recv array of scalar in one shoot
+
 2004-07-05 Martin Quinson
   - YEAH! GRAS/SG and GRAS/RL are both able to run the ping example !
   
