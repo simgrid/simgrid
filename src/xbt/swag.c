@@ -15,7 +15,7 @@
 #include "xbt/error.h"
 #include "xbt/swag.h"
 
-/** \defgroup XBT_swag A specific set datatype
+/** \defgroup XBT_swag A O(1) set datatype
  *  \brief a O(1) set based on linked lists
  *
  *  Warning, this module is done to be efficient and performs tons of
