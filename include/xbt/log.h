@@ -74,6 +74,16 @@ typedef enum {
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
 
+/* XBT_LOG_NEW_SUBCATEGORY_helper:
+ * Implementation of XBT_LOG_NEW_SUBCATEGORY, which must declare "extern parent" in addition
+ * to avoid an extra declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by
+ * XBT_LOG_NEW_CATEGORY */
+#define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
+    s_xbt_log_category_t _XBT_LOGV(catName) = {       \
+        &_XBT_LOGV(parent), 0, 0,                    \
+        #catName, xbt_log_priority_uninitialized, 1, \
+        0, 1                                          \
+    }
 /**
  * \ingroup XBT_log
  * \param catName name of new category
@@ -82,13 +92,9 @@ typedef enum {
  *
  * Defines a new subcategory of the parent. 
  */
-#define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc) \
-    extern s_xbt_log_category_t _XBT_LOGV(parent);    \
-    s_xbt_log_category_t _XBT_LOGV(catName) = {       \
-        &_XBT_LOGV(parent), 0, 0,                    \
-        #catName, xbt_log_priority_uninitialized, 1, \
-        0, 1                                          \
-    }
+#define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
+    extern s_xbt_log_category_t _XBT_LOGV(parent);        \
+    XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
 
 /**
  * \ingroup XBT_log  
@@ -97,7 +103,7 @@ typedef enum {
  *
  * Creates a new subcategory of the root category.
  */
-#define XBT_LOG_NEW_CATEGORY(catName,desc)  XBT_LOG_NEW_SUBCATEGORY(catName, XBT_LOG_ROOT_CAT, desc)
+#define XBT_LOG_NEW_CATEGORY(catName,desc)  XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)
 
 /**
  * \ingroup XBT_log  
