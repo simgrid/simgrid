@@ -200,7 +200,7 @@ int client(int argc,char *argv[]) {
   }
 
   /* 9. Keep the user informed of what's going on, again */
-  INFO3("Client: >>>>>>>> Got PONG(%d) got from %s:%d <<<<<<<<", 
+  INFO3("Client: >>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<", 
 	pong,
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
