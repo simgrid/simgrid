@@ -53,7 +53,7 @@ AC_CHECK_FUNCS([gettimeofday usleep \
                 sysconf])
 
 AC_ARG_ENABLE(context,
-  [  --enable-context=[ucontext/pthreads]   Use either (System V) swapcontext or pthread [[default=ucontext]].],,
+  [  --enable-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=ucontext]].],,
   enable_context=ucontext)
 AC_MSG_CHECKING(on top of what can we build the contexts)
 if test "x$enable_context" = "xucontext"; then
@@ -71,13 +71,14 @@ if test "x$enable_context" = "xucontext"; then
       enable_context=pthreads
     fi
   fi
-fi
-if test "x$enable_context" = "xpthreads"; then
+else if test "x$enable_context" = "xpthread"; then
   AC_CHECK_LIB(pthread,pthread_create,,
     [AC_MSG_ERROR([[Cannot find pthreads, no way (try --enable-context=ucontext if you haven't already tried).]])])
   AC_DEFINE([USE_PTHREADS],1,[Define if we USE pthreads or not])
   AC_MSG_RESULT(You have pthreads. Let's use them.)
-fi
+else 
+  AC_MSG_ERROR("--enable-context must be either ucontext or pthread")
+fi fi
 
 
 # Checks for typedefs, structures, and compiler characteristics.
