@@ -9,8 +9,9 @@
 # under the terms of the license (GNU LGPL) which comes with this package.
   
 use strict;
-use warnings;
-
+eval qq{
+  use warnings;
+}; # warnings not defined in 5.00503/sun4-solaris
 
 sub usage {
     my ($msg)=@_;
