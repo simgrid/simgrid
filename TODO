@@ -48,6 +48,10 @@
   speed up the cursors, for example using the contexts when available
   fix multi levels dicts
 
+[datadesc]
+  Error handling in cbps
+  Regression tests of cbps
+
 *********
 * GRAS1 * Integrer grassouillet a gras; multiplexage XML; module de comm
 *********
@@ -63,12 +67,6 @@
  TCP: utilise le fd. rien a faire.
  SG: Le send fait le boulot de malloc du recv de fd, et les rempli comme le
    send de fd.
- BLOC: Un nouveau truc, qui envoi des trames les unes derriere les autres,
-   un write copie dans un buffer qui, quand il est plein, part sur la socket
-   avec sa taille devant, et son CRC derriere.
-  C'est le prix a payer pour ne plus mourrir si vite en cas de transmission
-   pourrie (mais ca resoud tjs pas le pb du code malicieux)
-  Possibilite de compresser les buffers avant l'envoi..
 
 [simuler le select sur les sockets avec des threads]
   Le plan, c'est qu'a l'ouverture d'une socket server, on cree un thread
