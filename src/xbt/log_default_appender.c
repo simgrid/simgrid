@@ -11,6 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/error.h"
 #include <stdio.h>
+#include "gras/virtu.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log_app,log,"default logging handler");
 
@@ -35,6 +36,14 @@ static s_xbt_log_appender_t xbt_log_appender_file = { append_file, NULL } ;
 
 xbt_log_appender_t xbt_log_default_appender  = &xbt_log_appender_file;
 
+static const char* xbt_logappender_verbose_information(void) {
+  static char buffer[256];
+
+  sprintf(buffer,"%s:%s:(%d) %g", gras_os_myname(),
+	  xbt_procname(),gras_process_getpid(),gras_os_time());
+  return buffer;
+}
+
 static void append_file(xbt_log_appender_t this,
 			xbt_log_event_t ev, 
 			const char *fmt) {
@@ -42,7 +51,7 @@ static void append_file(xbt_log_appender_t this,
   /* TODO: define a format field in struct for timestamp, etc.
      struct DefaultLogAppender* this = (struct DefaultLogAppender*)this0;*/
 
-  char *procname = (char*)xbt_procname();
+  char *procname = (char*)xbt_logappender_verbose_information();
   if (!procname) 
      procname = (char*)"";
    
