@@ -16,7 +16,10 @@ ping_server_SOURCES=	_ping_server.c ping.c
 ping_server_LDADD=	$(top_builddir)/src/libgras.la
 
 # cleanup temps
-MAINTAINERCLEANFILES = _ping_simulator.c _ping_client.c _ping_server.c 
+CLEANFILES = _ping_simulator.c _ping_client.c _ping_server.c \
+             ping.Makefile.local ping.Makefile.remote ping.deploy.sh 
+
+MOSTLYCLEANFILES = ping.trace
 
 # generate temps
 NAME=ping

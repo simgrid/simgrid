@@ -16,7 +16,10 @@ timer_client_SOURCES=	_timer_client.c timer.c
 timer_client_LDADD=	$(top_builddir)/src/libgras.la
 
 # cleanup temps
-MAINTAINERCLEANFILES = _$(NAME)_simulator.c _$(NAME)_client.c _$(NAME)_server.c 
+CLEANFILES = _$(NAME)_simulator.c _$(NAME)_client.c _$(NAME)_server.c \
+             $(NAME).Makefile.local $(NAME).Makefile.remote $(NAME).deploy.sh 
+
+MOSTLYCLEANFILES = $(NAME).trace
 
 # generate temps
 

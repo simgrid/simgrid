@@ -14,7 +14,10 @@ chrono_multiplier_LDADD=	$(top_builddir)/src/libgras.la
 
 
 # cleanup temps
-CLEANFILES= _chrono_simulator.c _chrono_multiplier.c
+CLEANFILES = _chrono_simulator.c _chrono_multiplier.c \
+             chrono.Makefile.local chrono.Makefile.remote chrono.deploy.sh 
+
+MOSTLYCLEANFILES = chrono.trace
 
 # generate temps
 
