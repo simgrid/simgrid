@@ -121,7 +121,7 @@ void *xbt_heap_maxcontent(xbt_heap_t H)
  * 
  * Restores the heap property once an element has been deleted.
  */
-void xbt_heap_maxHeapify(xbt_heap_t H)
+static void xbt_heap_maxHeapify(xbt_heap_t H)
 {
   int i = 0;
   while (1) {
@@ -151,7 +151,7 @@ void xbt_heap_maxHeapify(xbt_heap_t H)
  * Moves up an item at position i to its correct position. Works only
  * when called from xbt_heap_push. Do not use otherwise.
  */
-void xbt_heap_increaseKey(xbt_heap_t H, int i)
+static void xbt_heap_increaseKey(xbt_heap_t H, int i)
 {
   while (i > 0 && KEY(H, PARENT(i)) > KEY(H, i)) {
     struct xbt_heapItem tmp = H->items[i];

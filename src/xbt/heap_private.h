@@ -28,7 +28,7 @@ typedef struct xbt_heap {
 #define KEY(H,i)     ((H->items)[i]).key
 #define CONTENT(H,i) ((H->items)[i]).content
 
-void xbt_heap_maxHeapify(xbt_heap_t H);
-void xbt_heap_increaseKey(xbt_heap_t H, int i);
+static void xbt_heap_maxHeapify(xbt_heap_t H);
+static void xbt_heap_increaseKey(xbt_heap_t H, int i);
 
 #endif				/* _XBT_HEAP_PRIVATE_H */
