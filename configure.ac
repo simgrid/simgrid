@@ -158,7 +158,6 @@ AC_CONFIG_FILES([
   src/Makefile
   src/amok/Makefile
   examples/Makefile 
-    examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
     examples/msg/Makefile 
   doc/Makefile
     doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
@@ -179,6 +178,7 @@ AC_CONFIG_FILES([
      chmod +x $srcdir/tools/gras-check-arch;
 ])
 
+#    examples/ping/Makefile      examples/ping/test_sg     examples/ping/test_rl
 
 
 #    examples/saturate/Makefile  examples/saturate/test_sg
