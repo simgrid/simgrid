@@ -15,6 +15,36 @@
 
 #include "gras_private.h"
 
+/***
+ *** Main user functions
+ ***/
+gras_error_t gras_trp_bloc_send(gras_socket_t *sd,
+				void *data,
+				size_t size);
+gras_error_t gras_trp_bloc_recv(gras_socket_t *sd,
+				void *data,
+				size_t size);
+
+/* Find which socket needs to be read next */
+gras_error_t 
+gras_trp_select(double timeout,
+		gras_socket_t **dst);
+
+
+/***
+ *** Module declaration 
+ ***/
+gras_error_t gras_trp_init(void);
+void         gras_trp_exit(void);
+
+/***
+ *** Plugin mecanism 
+ ***/
+
+/* A plugin type */
+typedef struct gras_trp_plugin_ gras_trp_plugin_t;
+
+
 /**
  * e_gras_trp_plugin:
  * 
@@ -25,16 +55,6 @@ typedef enum e_gras_trp_plugin {
      
      e_gras_trp_plugin_tcp
 } gras_trp_plugin_type_t;
-
-
-/* Find which socket needs to be read next */
-gras_error_t 
-gras_trp_select(double timeout,
-		gras_socket_t **dst);
-
-/*
-gras_error_t gras_trp_NNN_init(gras_trp_plugin_t **dst);
-*/
 
 /* A plugin type */
 struct gras_trp_plugin_ {

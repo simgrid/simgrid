@@ -1,9 +1,8 @@
 /* $Id$ */
 
-/* trp (transport) - send/receive a bunch of bytes                          */
+/* transport - low level communication (send/receive bunches of bytes)      */
 
-/* This file implements the public interface of this module, exported to the*/
-/*  other modules of GRAS, but not to the end user.                         */
+/* module's public interface exported to end user.                          */
 
 /* Authors: Martin Quinson                                                  */
 /* Copyright (C) 2004 Martin Quinson.                                       */
@@ -16,14 +15,6 @@
 
 typedef struct s_gras_socket gras_socket_t;
 
-/* A plugin type */
-typedef struct gras_trp_plugin_ gras_trp_plugin_t;
-
-/* Module, and get plugin by name */
-gras_error_t gras_trp_init(void);
-
-void         gras_trp_exit(void);
-
 gras_error_t gras_socket_client(const char *host,
 				unsigned short port,
 				unsigned int bufSize,
@@ -34,11 +25,4 @@ gras_error_t gras_socket_server(unsigned short port,
 void         gras_socket_close(gras_socket_t *sd);
  
    
-gras_error_t gras_trp_bloc_send(gras_socket_t *sd,
-				void *data,
-				size_t size);
-gras_error_t gras_trp_bloc_recv(gras_socket_t *sd,
-				void *data,
-				size_t size);
-
 #endif /* GRAS_TRANSPORT_H */
