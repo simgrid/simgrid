@@ -116,9 +116,10 @@ int server (int argc,char *argv[]) {
   
   if (!gras_if_RL())
     gras_os_sleep(1,0);
+
   gras_socket_close(g->sock);
   free(g);
-  xbt_exit();
+  gras_exit();
   INFO0("SERVER: Done.");
   return no_error;
 }
@@ -194,7 +195,7 @@ int client(int argc,char *argv[]) {
 
   gras_socket_close(g->sock);
   free(g);
-  xbt_exit();
+  gras_exit();
   INFO0("Client: Done.");
   return 0;
 }
