@@ -14,9 +14,9 @@
 /** Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "msg/msg.h"
 
-/** This flag enable the debugging messages from #PRINT_DEBUG_MESSAGE() */
-#define VERBOSE
-#include "messages.h"
+/** This includes creates a log channel for to have nice outputs. */
+#include "xbt/log.h"
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
@@ -72,11 +72,11 @@ int master(int argc, char *argv[])
 
   print_args(argc,argv);
 
-  ASSERT(sscanf(argv[1],"%d", &number_of_tasks),
+  xbt_assert1(sscanf(argv[1],"%d", &number_of_tasks),
 	 "Invalid argument %s\n",argv[1]);
-  ASSERT(sscanf(argv[2],"%lg", &task_comp_size),
+  xbt_assert1(sscanf(argv[2],"%lg", &task_comp_size),
 	 "Invalid argument %s\n",argv[2]);
-  ASSERT(sscanf(argv[3],"%lg", &task_comm_size),
+  xbt_assert1(sscanf(argv[3],"%lg", &task_comm_size),
 	 "Invalid argument %s\n",argv[3]);
 
   {                  /*  Task creation */
@@ -97,31 +97,31 @@ int master(int argc, char *argv[])
     for (i = 4; i < argc; i++) {
       slaves[i-4] = MSG_get_host_by_name(argv[i]);
       if(slaves[i-4]==NULL) {
-	PRINT_MESSAGE("Unknown host %s. Stopping Now! \n", argv[i]);
+	INFO1("Unknown host %s. Stopping Now! ", argv[i]);
 	abort();
       }
     }
   }
 
-  PRINT_MESSAGE("Got %d slave(s) :\n", slaves_count);
+  INFO1("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    PRINT_MESSAGE("\t %s\n", slaves[i]->name);
+    INFO1("\t %s", slaves[i]->name);
 
-  PRINT_MESSAGE("Got %d task to process :\n", number_of_tasks);
+  INFO1("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++)
-    PRINT_MESSAGE("\t\"%s\"\n", todo[i]->name);
+    INFO1("\t\"%s\"", todo[i]->name);
 
   for (i = 0; i < number_of_tasks; i++) {
-    PRINT_MESSAGE("Sending \"%s\" to \"%s\"\n",
+    INFO2("Sending \"%s\" to \"%s\"",
                   todo[i]->name,
                   slaves[i % slaves_count]->name);
     MSG_task_put(todo[i], slaves[i % slaves_count],
                  PORT_22);
-    PRINT_MESSAGE("Send completed\n");
+    INFO0("Send completed");
   }
   
-  PRINT_MESSAGE("All tasks have been dispatched. Bye!\n");
+  INFO0("All tasks have been dispatched. Bye!");
   free(slaves);
   free(todo);
   return 0;
@@ -142,17 +142,17 @@ int slave(int argc, char *argv[])
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      PRINT_MESSAGE("Received \"%s\" \n", task->name);
-      PRINT_MESSAGE("Processing \"%s\" \n", task->name);
+      INFO1("Received \"%s\" ", task->name);
+      INFO1("Processing \"%s\" ", task->name);
       MSG_task_execute(task);
-      PRINT_MESSAGE("\"%s\" done \n", task->name);
+      INFO1("\"%s\" done ", task->name);
       MSG_task_destroy(task);
     } else {
-      PRINT_MESSAGE("Hey ?! What's up ? \n");
-      DIE("Unexpected behaviour");
+      INFO0("Hey ?! What's up ? ");
+      xbt_assert0(0,"Unexpected behaviour");
     }
   }
-  PRINT_MESSAGE("I'm done. See you!\n");
+  INFO0("I'm done. See you!");
   return 0;
 }
 
@@ -180,7 +180,7 @@ int forwarder(int argc, char *argv[])
     for (i = 1; i < argc; i++) {
       slaves[i-1] = MSG_get_host_by_name(argv[i]);
       if(slaves[i-1]==NULL) {
-	PRINT_MESSAGE("Unknown host %s. Stopping Now! \n", argv[i]);
+	INFO1("Unknown host %s. Stopping Now! ", argv[i]);
 	abort();
       }
     }
@@ -192,19 +192,19 @@ int forwarder(int argc, char *argv[])
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      PRINT_MESSAGE("Received \"%s\" \n", task->name);
-      PRINT_MESSAGE("Sending \"%s\" to \"%s\"\n",
+      INFO1("Received \"%s\" ", task->name);
+      INFO2("Sending \"%s\" to \"%s\"",
 		    task->name,
 		    slaves[i % slaves_count]->name);
       MSG_task_put(task, slaves[i % slaves_count],
 		   PORT_22);
     } else {
-      PRINT_MESSAGE("Hey ?! What's up ? \n");
-      DIE("Unexpected behaviour");
+      INFO0("Hey ?! What's up ? ");
+      xbt_assert0(0,"Unexpected behaviour");
     }
   }
 
-  PRINT_MESSAGE("I'm done. See you!\n");
+  INFO0("I'm done. See you!");
   return 0;
 }
 
@@ -236,7 +236,8 @@ void test_all(const char *platform_file,const char *application_file)
     MSG_launch_application(application_file);
   }
   MSG_main();
-  printf("Simulation time %g\n",MSG_getClock());
+  
+  INFO1("Simulation time %g",MSG_getClock());
 }
 
 
