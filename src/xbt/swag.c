@@ -63,6 +63,44 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
   swag->tail = obj;
 }
 
+void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
+{
+
+  if (xbt_swag_belongs(obj, swag))
+    return;
+
+  (swag->count)++;
+  if (swag->head == NULL) {
+    swag->head = obj;
+    swag->tail = obj;
+    return;
+  }
+
+  NEXT(obj, swag->offset) = swag->head;
+  PREV(NEXT(obj, swag->offset), swag->offset) = obj;
+
+  swag->head = obj;
+}
+
+void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
+{
+
+  if (xbt_swag_belongs(obj, swag))
+    return;
+
+  (swag->count)++;
+  if (swag->head == NULL) {
+    swag->head = obj;
+    swag->tail = obj;
+    return;
+  }
+
+  PREV(obj, swag->offset) = swag->tail;
+  NEXT(PREV(obj, swag->offset), swag->offset) = obj;
+
+  swag->tail = obj;
+}
+
 void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 {
   size_t offset = swag->offset;
