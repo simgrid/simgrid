@@ -44,6 +44,22 @@ AC_DEFINE_UNQUOTED(TYPE_NAME, $GRAS_CHECK_SIZEOF_RES, [The number of bytes in ty
 undefine([TYPE_NAME])dnl 
 ])
 
+dnl
+dnl GRAS_TWO_COMPLIMENT: Make sure the type is two-compliment
+dnl
+AC_DEFUN([GRAS_TWO_COMPLIMENT],
+[
+AC_TRY_COMPILE([#include "confdefs.h"
+union {
+   signed $1 testInt;
+   unsigned char bytes[sizeof($1)];
+} intTester;
+],[
+   intTester.testInt = -2;
+   return ((unsigned int)intTester.bytes[0] +
+	   (unsigned int)intTester.bytes[sizeof($1) - 1]) != 509;
+],[],[AC_MSG_ERROR([GRAS works only two-compliment integers (yet)])])dnl end of AC_TRY_COMPILE
+])
 
 dnl
 dnl GRAS_SIGNED_SIZEOF: Get the size of the datatype, and make sure that
@@ -74,6 +90,10 @@ fi
 if test x$unsigned != x$signed ; then
   AC_MSG_ERROR(['signed $1' and 'unsigned $1' have different sizes ! ($signed != $unsigned)]) 
 fi 
+
+dnl Make sure we don't run on a non-two-compliment arch, since we dunno
+dnl convert them
+GRAS_TWO_COMPLIMENT($1)
 
 AC_MSG_RESULT($GRAS_CHECK_SIZEOF_RES) 
 changequote(<<, >>)dnl 
@@ -140,13 +160,11 @@ AC_DEFUN([GRAS_ARCH],
 AC_C_BIGENDIAN(endian=1,endian=0,AC_MSG_ERROR([GRAS works only for little or big endian systems (yet)]))
 AC_DEFINE_UNQUOTED(GRAS_BIGENDIAN,$endian,[define if big endian])
           
-dnl FIXME: Use SIGNED instead of CHECK to make sure signed and unsigned type
-dnl have same size	  
-GRAS_CHECK_SIZEOF(char)
-GRAS_CHECK_SIZEOF(short int)
-GRAS_CHECK_SIZEOF(int)
-GRAS_CHECK_SIZEOF(long int)
-GRAS_CHECK_SIZEOF(long long int)
+GRAS_SIGNED_SIZEOF(char)
+GRAS_SIGNED_SIZEOF(short int)
+GRAS_SIGNED_SIZEOF(int)
+GRAS_SIGNED_SIZEOF(long int)
+GRAS_SIGNED_SIZEOF(long long int)
                                                                   
 
 GRAS_CHECK_SIZEOF(void *)
@@ -168,10 +186,10 @@ trace="${trace}:${ac_cv_sizeof_char}.${ac_cv_sizeof_short_int}.${ac_cv_sizeof_in
 trace="${trace}:${ac_cv_sizeof_void_p}.${ac_cv_sizeof_void_LpR_LvoidR}"
 trace="${trace}:${ac_cv_sizeof_float}.${ac_cv_sizeof_double}"
 case $trace in
-  l:1.2.4.4.8:4.4:4.8) gras_arch=0; gras_arch_name=i386;;
-  l:1.2.4.8.8:8.8:4.8) gras_arch=1; gras_arch_name=alpha;;
-  B:1.2.4.4.8:4.4:4.8) gras_arch=2; gras_arch_name=powerpc;;
-  B:1.2.4.8.8:8.8:4.8) gras_arch=3; gras_arch_name=sparc;;
+  l:1.2.4.4.8:4.4:4.8) gras_arch=0; gras_arch_name=little32;;
+  l:1.2.4.8.8:8.8:4.8) gras_arch=1; gras_arch_name=little64;;
+  B:1.2.4.4.8:4.4:4.8) gras_arch=2; gras_arch_name=big32;;
+  B:1.2.4.8.8:8.8:4.8) gras_arch=3; gras_arch_name=big64;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
