@@ -15,20 +15,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(chrono,gras,"Benchmarking used code");
 
-static double sys_time(void) {
-#ifdef HAVE_GETTIMEOFDAY
-  struct timeval tv;
-
-  gettimeofday(&tv, NULL);
-
-  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
-#else
-  /* Poor resolution */
-  return (double)(time(NULL)); 
-#endif /* HAVE_GETTIMEOFDAY? */ 
-	
-}
-
 static double timer = 0.0;
 static int benchmarking = 0;
 static xbt_dict_t benchmark_set = NULL;
@@ -62,7 +48,7 @@ int gras_bench_always_begin(const char *location, int line)
   xbt_assert0(!benchmarking,"Already benchmarking");
   benchmarking = 1;
 
-  timer = sys_time();
+  timer = xbt_os_time();
   return 0;
 }
 
@@ -72,10 +58,10 @@ int gras_bench_always_end(void)
   
   xbt_assert0(benchmarking,"Not benchmarking yet");
   benchmarking = 0;
-  duration = sys_time()-timer;
+  duration = xbt_os_time()-timer;
   task = MSG_task_create("task", (duration)/reference, 0 , NULL);
   MSG_task_execute(task);
-  /*   printf("---> %lg <--- \n", sys_time()-timer); */
+  /*   printf("---> %lg <--- \n", xbt_os_time()-timer); */
   MSG_task_destroy(task);
   return 0;
 }
@@ -90,7 +76,7 @@ int gras_bench_once_begin(const char *location, int line)
   xbt_dict_get(benchmark_set, __location__, (void *) &ir);
   if(!ir) {
 /*     printf("%s:%d\n",location,line); */
-    duration = sys_time();
+    duration = xbt_os_time();
     return 1;
   } else {
     duration = -1.0;
@@ -105,7 +91,7 @@ int gras_bench_once_end(void)
   xbt_assert0(benchmarking,"Not benchmarking yet");
   benchmarking = 0;
   if(duration>0) {
-    duration = sys_time()-duration;
+    duration = xbt_os_time()-duration;
     store_in_dict(benchmark_set, __location__, duration);
   } else {
     duration = get_from_dict(benchmark_set,__location__);
