@@ -11,7 +11,7 @@
 #include "maxmin_private.h"
 #include <stdlib.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(maxmin, surf,
-				"Logging specific to the SURF maxminmodule");
+				"Logging specific to the SURF maxmin module");
 
 lmm_system_t lmm_system_new(void)
 {
