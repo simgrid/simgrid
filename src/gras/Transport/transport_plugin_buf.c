@@ -68,7 +68,7 @@ struct gras_trp_bufdata_{
 };
 
 gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
-  gras_trp_bufdata_t *data=malloc(sizeof(gras_trp_bufdata_t));
+  gras_trp_bufdata_t *data=gras_new(gras_trp_bufdata_t,1);
   
   GRAS_IN;
   if (!data)
@@ -77,11 +77,11 @@ gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
   //  data->buffsize = 32 * 1024 - 4; /* default socket buffsize (32k) - headers */ 
   data->buffsize = 100 * 1024 ; /* 100k */ 
 
-  if (!(data->in.data = malloc(data->buffsize)))
+  if (!(data->in.data = (char*)gras_malloc(data->buffsize)))
     RAISE_MALLOC;
   data->in.pos   = 0; /* useless, indeed, since size==pos */
   data->out.size = 0;
-  if (!(data->out.data = malloc(data->buffsize)))
+  if (!(data->out.data = (char*)gras_malloc(data->buffsize)))
     RAISE_MALLOC;
   data->out.pos  = 0;
   sock->bufdata = data;
@@ -95,7 +95,7 @@ gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
 gras_error_t
 gras_trp_buf_setup(gras_trp_plugin_t *plug) {
   gras_error_t errcode;
-  gras_trp_buf_plug_data_t *data =malloc(sizeof(gras_trp_buf_plug_data_t));
+  gras_trp_buf_plug_data_t *data =gras_new(gras_trp_buf_plug_data_t,1);
   if (!data)
     RAISE_MALLOC;
 
