@@ -56,9 +56,9 @@ void test(int nb_cnst, int nb_var, int nb_elem)
     }
   }
 
-  date = gras_os_time();
+  date = gras_os_time() * 1000000;
   lmm_solve(Sys);
-  date = gras_os_time() - date;
+  date = gras_os_time() * 1000000 - date;
 
   lmm_system_free(Sys);
   free(cnst);
@@ -72,10 +72,10 @@ int main(int argc, char **argv)
   int nb_cnst = 2000;
   int nb_var = 2000;
   int nb_elem = 20;
-  date = gras_os_time();
+  date = gras_os_time() * 1000000;
   test(nb_cnst, nb_var, nb_elem);
   printf("One shot execution time for a total of %d constraints, "
-	 "%d variables with %d active constraint each : %f secondes \n",
+	 "%d variables with %d active constraint each : %f microsecondes \n",
 	 nb_cnst, nb_var, nb_elem, date);
   return 0;
 }
