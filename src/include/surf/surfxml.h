@@ -1,8 +1,8 @@
-/* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2005/01/27 07:41:00.
+/* XML processor/application API for ../../surf/surfxml.dtd.
+ * Generated 2005/02/13 20:09:12.
  *
  * This program was generated with the FleXML XML processor generator,
- * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
+ * (Id: flexml.pl,v 1.39 2005/02/13 18:12:19 legranda Exp).
  * Copyright © 1999 Kristoffer Rose.  All rights reserved.
  *
  * You can redistribute and/or modify this program provided the following
@@ -135,4 +135,6 @@ extern int element_context(int);
 /* XML processor entry point. */
 extern int yylex(void);
 
+/* Flexml error handling function (useful only when -q flag passed to flexml) */
+const char * parse_err_msg(void);
 #endif

@@ -1,8 +1,8 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/02/10 12:28:10.
+ * Generated 2005/02/13 20:04:21.
  *
  * This program was generated with the FleXML XML processor generator,
- * (Id: flexml.pl,v 1.38 2005/02/10 11:13:51 mquinson Exp).
+ * (Id: flexml.pl,v 1.39 2005/02/13 18:12:19 legranda Exp).
  * Copyright © 1999 Kristoffer Rose.  All rights reserved.
  *
  * You can redistribute and/or modify this program provided the following
@@ -25,9 +25,9 @@
 
 /* Version strings. */
 const char rcs_flexml_skeleton[] =
- "$" "Id: skel,v 1.22 2005/02/10 11:18:26 mquinson Exp $";
+ "$" "Id: skel,v 1.24 2005/02/10 11:42:39 mquinson Exp $";
 const char rcs_flexml[] =
- "$" "Id: flexml.pl,v 1.38 2005/02/10 11:13:51 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.39 2005/02/13 18:12:19 legranda Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -39,9 +39,11 @@ const char rcs_flexml[] =
 
 /* Generated definitions. */
 #define FLEXML_yylineno
-#define FLEXML_BUFFERSTACKSIZE 100000
+#define FLEXML_BUFFERSTACKSIZE 10000000
 
 /* XML processor api. */
+#include "surf/surfxml.h"
+
 /* FleXML-provided data. */
 const char* pcdata;
 AT_network_link_bandwidth A_network_link_bandwidth;
@@ -859,7 +861,7 @@ static int fail(const char* fmt, ...)
 
 #ifndef FLEXML_quiet_parser
     /* print directly to sdterr */
-    fprintf(stderr, "%s", flexml_err_msg);
+    fprintf(stderr, "%s\n", flexml_err_msg);
     flexml_err_msg[0] = '\0';
 #endif
    
