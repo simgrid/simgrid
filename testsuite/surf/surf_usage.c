@@ -69,13 +69,17 @@ void test(void)
     printf("Next Event : " XBT_HEAP_FLOAT_T "\n", now);
     while(action=xbt_swag_extract(surf_cpu_resource->common_public->states.failed_action_set)) {
       printf("\tFailed : %p\n", action);
+      action->resource_type->common_public->action_free(action);
     }
     while(action=xbt_swag_extract(surf_cpu_resource->common_public->states.done_action_set)) {
       printf("\tDone : %p\n", action);
+      action->resource_type->common_public->action_free(action);
     }
   } while(surf_solve());
 
   printf("Simulation Terminated\n");
+
+  surf_finalize();
 }
 
 

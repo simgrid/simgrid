@@ -13,11 +13,13 @@
 #include "xbt/error.h"
 #include "xbt/swag.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(swag,xbt,"Swag : O(1) set library");
+
 #define PREV(obj,offset) xbt_swag_getPrev(obj,offset)
 #define NEXT(obj,offset) xbt_swag_getNext(obj,offset)
 
 /*
-  Usage : xbt_swag_new(&obj.setA-&obj.setA);
+  Usage : xbt_swag_new(&obj.setA-&obj);
  */
 
 xbt_swag_t xbt_swag_new(size_t offset)
@@ -27,6 +29,12 @@ xbt_swag_t xbt_swag_new(size_t offset)
   swag->offset = offset;
 
   return swag;
+}
+
+
+void xbt_swag_free(xbt_swag_t swag)
+{
+  xbt_free(swag);
 }
 
 void xbt_swag_init(xbt_swag_t swag, size_t offset)

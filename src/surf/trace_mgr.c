@@ -192,3 +192,8 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t history,
 
   return trace_event;
 }
+
+void tmgr_finalize(void)
+{
+  xbt_dict_free(&trace_list);
+}

@@ -7,6 +7,8 @@
 #include "xbt/error.h"
 #include "fifo_private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO");
+
 /*
  * xbt_fifo_new()
  */

@@ -52,6 +52,7 @@ s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
 
 XBT_LOG_NEW_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories");
 XBT_LOG_NEW_SUBCATEGORY(xbt,XBT_LOG_ROOT_CAT,"All XBT categories (gras toolbox)");
+XBT_LOG_NEW_SUBCATEGORY(surf,XBT_LOG_ROOT_CAT,"All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
 
 

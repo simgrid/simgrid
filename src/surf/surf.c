@@ -59,6 +59,28 @@ void surf_init(void)
   if(!maxmin_system) maxmin_system = lmm_system_new();
 }
 
+void surf_finalize(void)
+{ 
+  int i;
+  surf_resource_t resource = NULL;
+
+  xbt_dynar_foreach (resource_list,i,resource) {
+    resource->common_private->finalize();
+  }
+
+  if(maxmin_system) {
+    lmm_system_free(maxmin_system);
+    maxmin_system = NULL;
+  }
+  if(history) {
+    tmgr_history_free(history);
+    history = NULL;
+  }
+  if(resource_list) xbt_dynar_free(&resource_list);
+
+  tmgr_finalize();
+}
+
 xbt_heap_float_t surf_solve(void)
 {
   static int first_run = 1;

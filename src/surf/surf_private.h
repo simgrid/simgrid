@@ -9,6 +9,7 @@
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
+#include "xbt/log.h"
 
 typedef struct surf_resource_private {
   /* Share the resources to the actions and return in hom much time
@@ -17,6 +18,7 @@ typedef struct surf_resource_private {
   /* Update the actions' state */
   void (*update_actions_state) (xbt_heap_float_t now, xbt_heap_float_t delta);
   void (*update_resource_state) (void *id,tmgr_trace_event_t event_type, xbt_maxmin_float_t value);
+  void (*finalize)(void);
 } s_surf_resource_private_t;
 
 /* #define pub2priv(r) ((surf_resource_private_t) ((char *)(r) -(sizeof(struct surf_resource_private_part)))) */

@@ -26,6 +26,7 @@ typedef struct xbt_swag {
 } s_xbt_swag_t, *xbt_swag_t;
 
 xbt_swag_t xbt_swag_new(size_t offset);
+void xbt_swag_free(xbt_swag_t swag);
 void xbt_swag_init(xbt_swag_t swag, size_t offset);
 void xbt_swag_insert(void *obj, xbt_swag_t swag);
 void *xbt_swag_remove(void *obj, xbt_swag_t swag);

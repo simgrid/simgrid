@@ -32,4 +32,6 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t history,
 						 xbt_maxmin_float_t * value,
 						 void **resource);
 
+void tmgr_finalize(void);
+
 #endif				/* _SURF_TMGR_H */

@@ -60,7 +60,7 @@ typedef struct surf_resource_public {
   int (*resource_used)(void *resource_id);
 
   e_surf_action_state_t (*action_get_state)(surf_action_t action);
-  void (*action_free)(surf_action_t * action);
+  void (*action_free)(surf_action_t action);
   void (*action_cancel)(surf_action_t action);
   void (*action_recycle)(surf_action_t action);	
   void (*action_change_state)(surf_action_t action,
@@ -127,5 +127,6 @@ xbt_heap_float_t surf_solve(void);	/*  update all states and returns
 					   the time elapsed since last
 					   event */
 xbt_heap_float_t surf_get_clock(void);
+void surf_finalize(void);		/* clean everything */
 
 #endif				/* _SURF_SURF_H */

@@ -8,6 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/error.h"
 #include "heap_private.h"
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap,xbt,"Heap");
 
 /**
  * xbt_heap_new:
