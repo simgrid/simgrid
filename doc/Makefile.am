@@ -6,6 +6,7 @@ EXTRA_DIST = html Doxyfile.API Doxyfile.Examples Doxyfile.main \
 DISTCLEANFILES = api_index.doc
 MAINTAINERCLEANFILES = html
 
+if MAINTAINER_MODE
 html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
 	touch api_index.doc
 	doxygen Doxyfile.main
@@ -19,5 +20,22 @@ html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
 #	@cd html ; @top_srcdir@/tools/fix_doxygen2.pl `find . -name '*.html'`
 #	@rm -rf html/API html/examples
 #	for i in `find doc/html -name "*.html" -exec grep -l "group_[^_]"  {} \;` ; do tools/fix_doxygen.pl $$i; rm $$i.bak; done
+endif
+
+install-data-local: 
+	@for file in `find html/ -type d` ; do \
+	   echo "test -z \"$(prefix)/doc/simgrid/$$file\" || $(mkdir_p) \"$(prefix)/doc/simgrid/$$file\"";\
+	   test -z "$(prefix)/doc/simgrid/$$file" || $(mkdir_p) "$(prefix)/doc/simgrid/$$file";\
+	done
+	@for file in `find html/ -type f` ; do \
+	   echo " $(INSTALL_DATA) '$$file' '$(prefix)/doc/simgrid/$$file'";\
+	   $(INSTALL_DATA) $$file $(prefix)/doc/simgrid/$$file ;\
+	done
+
+uninstall-local:
+	for file in `find html/ -type f` ; do \
+	   echo " rm -f '$(prefix)/doc/simgrid/$$file'";\
+	   rm -f $(prefix)/doc/simgrid/$$file ;\
+	done
 
 .PHONY: html
