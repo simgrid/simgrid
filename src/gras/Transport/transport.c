@@ -47,6 +47,7 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   switch (errcode) {
   case mismatch_error:
     /* SG plugin return mismatch when in RL mode (and vice versa) */
+    free(plug->name);
     free(plug);
     break;
 
