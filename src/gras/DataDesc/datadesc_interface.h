@@ -28,7 +28,8 @@ int
 gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
 		       const gras_datadesc_type_t *d2);
 
-
+/* Access function */
+int  gras_datadesc_size(gras_datadesc_type_t *type);
 /* Described data exchanges */
 gras_error_t 
 gras_datadesc_cpy(gras_datadesc_type_t *type, void *src, void **dst);
