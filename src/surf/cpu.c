@@ -20,12 +20,6 @@ static void cpu_free(void *cpu)
   xbt_free(cpu);
 }
 
-/* power_scale is the basic power of the cpu when the cpu is
-   completely available. power_initial is therefore expected to be
-   comprised between 0.0 and 1.0, just as the values of power_trace.
-   state_trace values mean SURF_CPU_ON if >0 and SURF_CPU_OFF
-   otherwise.
-*/
 static cpu_t cpu_new(char *name, double power_scale,
 		     double power_initial,
 		     tmgr_trace_t power_trace,
@@ -38,13 +32,11 @@ static cpu_t cpu_new(char *name, double power_scale,
   cpu->name = name;
   cpu->power_scale = power_scale;
   cpu->power_current = power_initial;
-/*   cpu->power_trace = power_trace; */
   if (power_trace)
     cpu->power_event =
 	tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
 
   cpu->state_current = state_initial;
-/*   cpu->state_trace = state_trace; */
   if (state_trace)
     cpu->state_event =
 	tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
@@ -57,14 +49,6 @@ static cpu_t cpu_new(char *name, double power_scale,
 
   return cpu;
 }
-
-/*  
-   Semantic:  name       scale     initial     power     initial     state
-                                    power      trace      state      trace
-   
-   Token:   TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD
-   Type:     string      double     double     string     ON/OFF     string
-*/
 
 static void parse_cpu(void)
 {
@@ -169,7 +153,6 @@ static void update_actions_state(double now, double delta)
 	lmm_variable_getvalue(action->variable) * delta;
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       action->generic_action.max_duration -= delta;
-/*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
     if ((action->generic_action.remains <= 0) && 
 	(lmm_get_variable_weight(action->variable)>0)) {
       action->generic_action.finish = surf_get_clock();
@@ -208,10 +191,6 @@ static void update_resource_state(void *id,
 				  double value)
 {
   cpu_t cpu = id;
-
-/*   printf("[" "%lg" "] Asking to update CPU \"%s\" with value " */
-/* 	 "%lg" " for event %p\n", surf_get_clock(), cpu->name, */
-/* 	 value, event_type); */
 
   if (event_type == cpu->power_event) {
     cpu->power_current = value;
@@ -254,7 +233,7 @@ static surf_action_t execute(void *cpu, double size)
   xbt_swag_insert(action, action->generic_action.state_set);
 
   action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0, 1);
-  lmm_expand(maxmin_system, ((cpu_t) cpu)->constraint, action->variable,
+  lmm_expand(maxmin_system, CPU->constraint, action->variable,
 	     1.0);
 
   return (surf_action_t) action;
@@ -366,7 +345,7 @@ static void surf_cpu_resource_init_internal(void)
 }
 
 /*********************************************************************/
-/* Basic sharing model for CPU: that is all this started... ;)       */
+/* Basic sharing model for CPU: that is where all this started... ;) */
 /*********************************************************************/
 /* @InProceedings{casanova01simgrid, */
 /*   author =       "H. Casanova", */
