@@ -1,9 +1,5 @@
-Makefile *.stamp html *.new gras-unused.txt gras.args gras.hierarchy gras.interfaces gras.prerequisites gras.signals
-gras-decl-list.txt
-gras-decl.txt
-sgml xml
-Makefile.in
-gras-undocumented.txt
+Makefile Makefile.in
+html sgml xml
 Doxyfile.API
 Doxyfile.Examples
 Doxyfile.main
