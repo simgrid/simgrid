@@ -1,4 +1,4 @@
-Here are some elements of specification of the GRAS protocol. It is not
+Here are some elements of specification of the GRAS protocol. It is not 
 supposed to have several implementations, but once version 1 will be out,
 all versions of GRAS are supposed to be able to communicate with previous
 ones.
