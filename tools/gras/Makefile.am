@@ -8,4 +8,4 @@ LDADD_UTILS=$(top_builddir)/src/libgras.la
 LDADD_RL=   $(top_builddir)/src/libgras.la   
 
 gras_stub_generator_SOURCES = stub_generator.c
-graa_stub_generator_LDADD = $(LDADD_UTILS)
+gras_stub_generator_LDADD = $(LDADD_UTILS)
