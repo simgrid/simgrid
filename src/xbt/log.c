@@ -18,6 +18,107 @@
 #include "xbt/error.h"
 #include "xbt/dynar.h"
 
+
+/*
+FAIRE DES ZOLIS LOGS
+--------------------
+Dans gras, tu ne te contente pas d'écrire des choses à l'écran, mais tu
+écris sur un sujet particulier (notion de canal) des choses d'une gravité
+particulière. Il y a 7 niveaux de gravité.
+ trace: tracer les entrées dans une fonction, retour de fonction
+        (famille de macros XBT_IN/XBT_OUT)
+ debug: pour t'aider à mettre au point le module, potentiellement tres bavard
+ verbose: quelques infos succintes sur les internals du module
+ info: niveau normal, ton de la conversation
+ warning: problème potentiel, mais auquel on a su faire face
+ error: problème qui t'as empêché de faire ton job
+ critical: juste avant de mourir
+
+Quand on compile avec -DNDEBUG (par défaut dans le paquet Debian), tout ce
+qui est '>= verbose' est supprimé au moment de la compilation. Retiré du
+binaire, killé.
+
+Ensuite, tu écris dans un canal particulier. Tous les canaux sont rangés en
+arbre. Il faudrait faire un ptit script qui fouille les sources à la
+recherche des macros XBT_LOG_NEW_* utilisées pour créer des canaux. Le
+dernier argument de ces macros est ignoré dans le source. Il est destiné à
+être la documentation de la chose en une ligne. En gros, ca fait:
+root
+ +--xbt
+ |   +--config
+ |   +--dict
+ |   |   +--dict_cursor
+ |   |   +--dict_elm
+ |   |   ...
+ |   +--dynar
+ |   +--set
+ |   +--log
+ |   +--module
+ +--gras
+     +--datadesc
+     |   +--ddt_cbps
+     |   +--ddt_convert
+     |   +--ddt_exchange
+     |   +--ddt_parse
+     |       +--lexer
+     +--msg
+     +--transport
+         +--raw_trp (Je devrais tuer ce module, un jour)
+         +--trp_buf
+         +--trp_sg
+         +--trp_file
+         +--trp_tcp
+         
+Et ensuite les utilisateurs peuvent choisir le niveau de gravité qui les
+interresse sur tel ou tel sujet.
+
+Toute la mécanique de logging repose sur des variables statiques dont le nom
+dépend du nom du canal.
+ => attention aux conflits de nom de canal
+ => il faut une macro XBT_LOG dans chaque fichier où tu fais des logs.
+ 
+XBT_LOG_NEW_CATEGORY: nouveau canal sous "root". Rare, donc.
+XBT_LOG_NEW_SUBCATEGORY: nouveau canal dont on précise le père.
+XBT_LOG_DEFAULT_CATEGORY: indique quel est le canal par défaut dans ce fichier
+XBT_LOG_NEW_DEFAULT_CATEGORY: Crèe un canal et l'utilise par défaut
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY: devine
+XBT_LOG_EXTERNAL_CATEGORY: quand tu veux utiliser par défaut un canal créé
+                           dans un autre fichier.
+
+Une fois que ton canal est créé, tu l'utilise avec les macros LOG, DEBUG,
+VERB, WARN, ERROR et CRITICAL. Il faut que tu donne le nombre d'arguments
+après le nom de macro. Exemple: LOG2("My name is %s %s","Martin","Quinson")
+Si tu veux préciser explicitement le canal où écrire, ajoute un C devant le
+nom de la macro. Exemple: CCRITICAL0(module, "Cannot initialize GRAS")
+
+Toutes ces macros (enfin, ce en quoi elles se réécrivent) vérifient leurs
+arguments comme printf le fait lorsqu'on compile avec gcc. 
+LOG1("name: %d","toto"); donne un warning, et donc une erreur en mode
+mainteneur.
+
+Enfin, tu peux tester si un canal est ouvert à une priorité donnée (pour
+préparer plus de débug, par exemple. Dans le parseur, je fais du pretty
+printing sur ce qu'il faut parser dans ce cas).
+XBT_LOG_ISENABLED(catName, priority) Le second argument doit être une valeur
+de e_xbt_log_priority_t (log.h). Par exemple: xbt_log_priority_verbose
+
+Voila sur comment mettre des logs dans ton code. N'hesite pas à faire pleins
+de canaux différents pour des aspects différents de ton code. En
+particulier, dans les dict, j'ai un canal pour l'ajout, le retrait, le
+netoyage du code après suppression et ainsi de suite. De cette façon, je
+peux choisir qui m'interresse.
+
+
+Pour utiliser les logs, tu déjà faire, non ? Tu colle sur la ligne de
+commande un ou plusieurs arguments de la forme
+  --gras-log="<réglage> [<reglage>+]" (ou sans " si t'as pas d'espace)
+chaque réglage étant de la forme:
+  <canal>.thres=<priorité>
+Les différents réglages sont lus de gauche à droite.
+"root.thres=debug root.thres=critical" ferme tout, normalement.
+
+*/
+
 typedef struct {
   char *catname;
   e_xbt_log_priority_t thresh;
