@@ -91,7 +91,8 @@ AC_CONFIG_FILES([
 ],[( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests])
+     test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests;
+     chmod +x src/examples/ping/test_rl; chmod +x src/examples/ping/test_sg])
 
 AC_OUTPUT
 
