@@ -40,7 +40,7 @@ BEGIN_DECL()
  gras_datadesc_type_t uc = gras_datadesc_by_name("unsigned char");
  gras_datadesc_type_t str = gras_datadesc_by_name("string");\endverbatim
  */
-/** @{ */
+/* @{ */
   
 /** @brief Opaque type describing a type description. */
 typedef struct s_gras_datadesc_type *gras_datadesc_type_t;
@@ -48,15 +48,8 @@ typedef struct s_gras_datadesc_type *gras_datadesc_type_t;
 /** \brief Search a type description from its name */
 gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 
-
-/** @} */
-  
-/** @fn gras_datadesc_type_t gras_datadesc_parse(const char *name, const char *C_statement) 
- *  @ingroup GRAS_dd_implem 
- *
- *  Helper function doing the crude job of type parsing.
- */
-  
+/* @} */
+    
 /** @name b) Automatic parsing
  *  @ingroup GRAS_dd
  * 
@@ -279,6 +272,22 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
  * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
+ * 
+ * Here is an example:\verbatim
+struct s_array {
+  int length;
+  int *data;
+}
+[...]
+my_type=gras_datadesc_struct("s_array");
+gras_datadesc_struct_append(my_type,"length", gras_datadesc_by_name("int"));
+gras_datadesc_cb_field_send (my_type, "length", gras_datadesc_cb_push_int);
+
+gras_datadesc_struct_append(my_type,"data",
+                            gras_datadesc_array_dyn ("s_array::data",gras_datadesc_by_name("int"), gras_datadesc_cb_pop));
+gras_datadesc_struct_close(my_type);
+\endverbatim
+
  */
 /*@{*/
 

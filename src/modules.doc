@@ -124,7 +124,7 @@
 /**    \addtogroup GRAS_implem
        \ingroup GRAS_API
        
-       Internals of GRAS */
+       Internals of GRAS (forget it) */
 /**    \addtogroup GRAS_dd
        \ingroup GRAS_API */
 /**    \addtogroup GRAS_dd_implem 

@@ -61,10 +61,9 @@ void gras_cbps_free(gras_cbps_t *state) {
   *state = NULL;
 }
 
-/**
- * gras_cbps_v_push:
+/** \brief Declare a new element in the PS, and give it a value.
  *
- * Declare a new element in the PS, and give it a value. If an element of that
+ * If an element of that
  * name already exists, it is masked by the one given here, and will be 
  * seeable again only after a pop to remove the value this push adds.
  */
@@ -104,10 +103,9 @@ gras_cbps_v_push(gras_cbps_t          ps,
   return no_error;
 }
 
-/**
- * gras_cbps_v_pop:
+/** \brief Retrieve an element from the PS, and remove it from the PS.
  *
- * Retrieve an element from the PS, and remove it from the PS. If it's not
+ * If it's not
  * present in the current block, it will fail (with abort) and not search
  * in upper blocks since this denotes a programmation error.
  */
@@ -163,10 +161,8 @@ gras_cbps_v_pop (gras_cbps_t            ps,
   return no_error;
 }
 
-/**
- * gras_cbps_v_set:
- *
- * Change the value of an element in the PS.  
+/** \brief Change the value of an element in the PS.
+ * 
  * If it's not present in the current block, look in the upper ones.
  * If it's not present in any of them, modify in the globals
  * If not present there neither, the code may segfault (Oli?).
@@ -204,10 +200,8 @@ gras_cbps_v_set (gras_cbps_t          ps,
 
 }
 
-/**
- * gras_cbps_v_get:
- *
- * Get the value of an element in the PS without modifying it. 
+/** \brief Get the value of an element in the PS without modifying it.
+ * 
  * (note that you get the content of the data struct and not a copy to it)
  * If it's not present in the current block, look in the upper ones.
  * If it's not present in any of them, look in the globals
@@ -235,10 +229,7 @@ gras_cbps_v_get (gras_cbps_t           ps,
 
 }
 
-/**
- * gras_cbps_block_begin:
- *
- * Begins a new block. 
+/** \brief Begins a new block. 
  *
  * Blocks are usefull to remove a whole set of declarations you don't even know
  *
@@ -259,11 +250,7 @@ gras_cbps_block_begin(gras_cbps_t ps) {
   xbt_dynar_push(ps->frames, &dynar);
 }
 
-/**
- * gras_cbps_block_end:
- *
- * End the current block, and go back to the upper one.
- */
+/** \brief End the current block, and go back to the upper one. */
 void
 gras_cbps_block_end(gras_cbps_t ps) {
 
@@ -298,22 +285,14 @@ gras_cbps_block_end(gras_cbps_t ps) {
 }
 
 
-/**
- * gras_cbps_i_push:
- *
- * Push a new long integer value into the cbps.
- */
+/** \brief Push a new integer value into the cbps. */
 void
 gras_cbps_i_push(gras_cbps_t ps,
 		 int val) {
   DEBUG1("push %d as a size",val);
   xbt_dynar_push_as(ps->lints,int,val);
 }
-/**
- * gras_cbps_i_pop:
- *
- * Pop the lastly pushed long integer value from the cbps.
- */
+/** \brief Pop the lastly pushed integer value from the cbps. */
 int
 gras_cbps_i_pop(gras_cbps_t ps) {
   int ret;
@@ -325,48 +304,33 @@ gras_cbps_i_pop(gras_cbps_t ps) {
   return ret;
 }
 
-/**
- * gras_datadesc_cb_pop:
- *
- * Generic cb returning the lastly pushed value
+/** \brief Generic cb returning the lastly pushed value
+ * 
+ * Used by \ref gras_datadesc_ref_pop_arr
  */
 int gras_datadesc_cb_pop(gras_cbps_t vars, void *data) {
   return gras_cbps_i_pop(vars);
 }
 
-/**
- * gras_datadesc_cb_push_int:
- * 
- * Cb to push an integer. Must be attached to the field you want to push
- */
+/** \brief Cb to push an integer. Must be attached to the field you want to push */
 void gras_datadesc_cb_push_int(gras_cbps_t vars, void *data) {
    int *i = (int*)data;
    gras_cbps_i_push(vars, (int) *i);
 }
 
-/**
- * gras_datadesc_cb_push_uint:
- * 
- * Cb to push an unsigned integer. Must be attached to the field you want to push
- */
+/** \brief Cb to push an unsigned integer. Must be attached to the field you want to push */
 void gras_datadesc_cb_push_uint(gras_cbps_t vars, void *data) {
    unsigned int *i = (unsigned int*)data;
    gras_cbps_i_push(vars, (int) *i);
 }
 
-/**
- * gras_datadesc_cb_push_lint:
- * 
- * Cb to push an long integer. Must be attached to the field you want to push
+/** \brief Cb to push an long integer. Must be attached to the field you want to push
  */
 void gras_datadesc_cb_push_lint(gras_cbps_t vars, void *data) {
    long int *i = (long int*)data;
    gras_cbps_i_push(vars, (int) *i);
 }
-/**
- * gras_datadesc_cb_push_ulint:
- * 
- * Cb to push an long integer. Must be attached to the field you want to push
+/** \brief Cb to push an long integer. Must be attached to the field you want to push
  */
 void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data) {
    unsigned long int *i = (unsigned long int*)data;
