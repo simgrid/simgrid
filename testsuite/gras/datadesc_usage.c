@@ -81,7 +81,7 @@ gras_error_t test_float(gras_socket_t *sock, int direction) {
   INFO0("==== Test on float ====");
   TRY(write_read(gras_datadesc_by_name("float"), &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
-    gras_assert(i == j);
+    gras_assert2(i == j,"%f != %f",i,j);
   }
   return no_error;
 }
@@ -240,7 +240,7 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
   if (direction == READ || direction == RW) {
     gras_assert(i->c1 == j->c1);
     gras_assert(i->c2 == j->c2);
-    gras_assert(i->l1 == j->l1);
+    gras_assert2(i->l1 == j->l1,"i->l1(=%d)  !=  j->l1(=%d)",i->l1,j->l1);
     gras_assert(i->l2 == j->l2);
     free(j);
   }
