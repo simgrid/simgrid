@@ -1,4 +1,4 @@
-SUBDIRS= include src examples doc testsuite
+SUBDIRS= include src examples doc testsuite doc
 DISTCLEANFILES =  *~  
 
 ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
@@ -7,7 +7,8 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog\
 	acmacro/aci.m4 \
-	tools/gras-check-arch	tools/compile-remote-worker.in
+	tools/gras-check-arch	tools/compile-remote-worker.in \
+	tools/MSG_visualization tools/platform_generation
 
 TAGS: 
 	etags `find . -name "*.[ch]"`
