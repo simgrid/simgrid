@@ -1,0 +1,3 @@
+Makefile Makefile.in
+config.h config.h.in stamp-h1
+gras_config.h gras_config.h.in

@@ -1,0 +1,68 @@
+<!-- ##### SECTION Title ##### -->
+gras_private
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_lock ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_unlock ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msg_discard ##### -->
+<para>
+
+</para>
+
+@sd: 
+@size: 
+
+
+<!-- ##### ENUM FormatTypes ##### -->
+<para>
+
+</para>
+
+@HOST_FORMAT: 
+@NETWORK_FORMAT: 
+
+<!-- ##### FUNCTION gras_datadesc_cmp ##### -->
+<para>
+
+</para>
+
+@dd1: 
+@c1: 
+@dd2: 
+@c2: 
+@Returns: 
+
+
+<!-- ##### MACRO SIMPLE_TYPE_COUNT ##### -->
+<para>
+
+</para>
+
+
+

@@ -1,0 +1,186 @@
+#
+# configure.in for the Portability library used mainly in NWS
+#
+# $Id$
+#
+
+# Process this file with autoconf to produce a configure script.
+AC_INIT(protocol.c)
+AC_CONFIG_HEADER([Include/config_portability.h:Include/config_portability.h.in])
+
+# Checks the host we are running on.
+AC_CANONICAL_HOST
+
+# Set paths and common variables and NWS top directory (if compiling with
+# NWS)
+if test -n "$TOP"; then
+	NWS_TOP="${TOP}"
+else 
+	NWS_TOP=`pwd`
+fi
+TOP=`pwd`
+INCLUDES="-I${TOP}/Include"
+ARFLAGS="cr"
+test_debug="no"
+test_thread="no"
+use_alarm_signal="no"
+
+# Set default for CFLAGS
+CFLAGS="-DHAVE_CONFIG_H"
+
+# test for command line options
+AC_ARG_ENABLE(debug,
+	[  --enable-debug         include debugging info when compiling],
+		[if test "${withval}" != "yes"; then
+			test_debug="yes"
+		fi])
+
+AC_ARG_ENABLE(threads,
+	[  --enable-threads        test for threads support],
+		[if test "${enableval}" != "no"; then
+			test_thread="yes"
+		fi])
+
+AC_ARG_ENABLE(sigalarm,
+	[  --disable-sigalarm        don't use SIGALRM],
+		[if test "${enableval}" != "no"; then
+			use_alarm_signal="yes"
+			AC_DEFINE(USE_ALARM_SIGNAL)
+		fi],
+	[AC_DEFINE(USE_ALARM_SIGNAL)
+	 use_alarm_signal="yes"])
+
+# Checks for programs.
+AC_PATH_PROG(AR, ar)
+AC_PROG_CC
+# Setting up debug options
+if test "${test_debug}" = "yes"; then
+	CFLAGS="${CFLAGS} -g "
+else 
+	CFLAGS="${CFLAGS} -O2"
+	if test "${GCC}" = "yes" ; then
+		CFLAGS="${CFLAGS} -finline-functions"
+	fi
+fi
+
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+AC_PATH_PROG(RM, rm)
+AC_PATH_PROG(CP, cp)
+AC_PATH_PROG(TAR, tar)
+AC_PATH_PROG(CTAGS, ctags)
+
+# Set compiler and linker switches 
+if test "${CC}" = "gcc"; then
+	# Adding all annoying warning compilers message
+	CFLAGS="${CFLAGS} -Wall -pedantic -Wshadow -Wpointer-arith -Wwrite-strings"
+	AC_PATH_PROG(PROFILE, gprof)
+else
+	AC_PATH_PROG(PROFILE, prof)
+fi
+
+# Checks for libraries.
+dnl LDFLAGS="${LDFLAGS} -lm"
+AC_CHECK_LIB(nsl, inet_ntoa)
+AC_CHECK_LIB(socket, socket)
+if test "${test_thread}" = "yes"; then
+	AC_CHECK_LIB(pthread, pthread_mutex_lock)
+fi
+
+# Checks for header files and symbols declared in headers.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([arpa/inet.h errno.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h math.h inttypes.h])
+if test "${test_thread}" = "yes"; then
+	AC_CHECK_HEADERS(pthread.h)
+fi
+dnl TYPES is only for autoconf2.50 and 2.13 has a broken TYPE: cheap workaround
+dnl AC_CHECK_TYPES(uint32_t)
+AC_CHECK_TYPE(uint32_t, unsigned long)
+
+dnl IPADDRESS="unsigned int"
+dnl if test "${SIZEOF_LONG}" = "4" ; then
+dnl 	IPADDRESS="unsigned long"
+dnl fi
+
+dnl end workaround
+
+
+
+# The third parameter to getpeername() is a pointer to socklen_t, size_t, or
+# int on various systems.  Worse yet, some systems define socklen_t but use a
+# different type in the getpeername() prototype, and Solaris Intel defines
+# Psocklen_t, which is a pointer to either socklen_t or void.  We use SOCKLEN_T
+# in the NWS code, defining it the proper type for the system.
+AC_TRY_COMPILE(
+  [#include <sys/types.h>
+   #include <sys/socket.h>],
+  [extern int getpeername(int socket, struct sockaddr *addr, socklen_t *len);],
+  SOCKLEN_T=socklen_t,
+  AC_TRY_COMPILE(
+    [#include <sys/types.h>
+     #include <sys/socket.h>],
+    [extern int getpeername(int socket, struct sockaddr *addr, size_t *len);],
+    SOCKLEN_T=size_t,
+    AC_TRY_COMPILE(
+      [#include <sys/types.h>
+       #include <sys/socket.h>],
+      [socklen_t len; Psocklen_t lenP = &len;
+       (void)getpeername(0, 0, lenP);],
+       SOCKLEN_T=socklen_t,
+       SOCKLEN_T=int
+    )
+  )
+)
+
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_MODE_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+# Checks for library functions.
+dnl AC_FUNC_FORK
+dnl AC_FUNC_MALLOC
+dnl AC_FUNC_STAT
+AC_TYPE_SIGNAL
+AC_FUNC_VPRINTF
+
+if test "$use_alarm_signal" != "no"; then
+	AC_CHECK_FUNC(alarm, AC_DEFINE(HAVE_ALARM), AC_MSG_ERROR([Can't do without alarm!! Try to configure with --disable-sigalarm]))
+fi
+
+AC_CHECK_FUNCS([endpwent ftruncate gethostbyaddr gethostbyaddr_r gethostbyname gethostname uname gettimeofday inet_aton inet_ntoa memset mkdir select socket strcasecmp strchr strdup strerror sysconf getrusage siginterrupt sighold sigrelse strnlen fileno sqrt])
+
+# Substitute these variables.
+AC_SUBST(AR)
+AC_SUBST(ARFLAGS)
+AC_SUBST(INCLUDES)
+AC_SUBST(PREFIX_DIR)
+# the following should be automatically substitute by autoconf but for
+# consistency we put them here
+AC_SUBST(CC)
+AC_SUBST(CFLAGS)
+AC_SUBST(LDFLAGS)
+AC_SUBST(RM)
+AC_SUBST(TAR)
+AC_SUBST(CP)
+AC_SUBST(CTAGS)
+AC_SUBST(TOP)
+AC_SUBST(NWS_TOP)
+AC_SUBST(uint32_t)
+
+# Define new variables to substitute.
+AC_DEFINE_UNQUOTED(SOCKLEN_T, ${SOCKLEN_T})
+AC_SUBST(SOCKLEN_T)
+
+dnl AC_DEFINE_UNQUOTED(IPADDRESS, ${IPADDRESS})
+dnl AC_SUBST(IPADDRESS)
+
+AC_DEFINE_UNQUOTED(TOP, "$TOP")
+
+
+AC_OUTPUT([Makedefs])

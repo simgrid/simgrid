@@ -1,0 +1,35 @@
+Dossiers: 2 days
+
+----[ GRAS ]---------------------------------------
+
+Milestone 0: 3 days (01/25)
+ - core ok (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
+
+Milestone 1: 1 week (02/01)
+ - base API ok (dispatch, type parsing macro)
+ - binary representation: fixed types (from NWS)
+ - transport: TCP (from NWS), SG, File
+ - virtualize (linux, solaris, SG) & conditions
+ 
+ Possible paper: 1.5 weeks
+ - implement some NAS benchmarks on top of GRAS, and validate GRAS (plus
+   SimGrid) by showing that the simulator leads to the same behaviours
+ 
+Milestone 2: 2 weeks (02/15)
+ - binary representation: any type, SNWF (Sender Native Wire Format)
+ - convertions between linux/i32, linux/alpha, solaris/sparc
+
+ Possible paper: 1.5 weeks
+ - benchmark GRAS, TCP (NWS), globus, MPI, CORBA, and show the benefit of
+   SNWF
+
+Milestone 3 (GRAS 1): 2 weeks (end Feb)
+ - modules (logs, manage, token ring, bw)
+ - cleanups, documentation
+ 
+----[ NWS ]----------------------------------------
+
+Milestone 1: 3 days
+ - wrapper over GRAS replacing the portability lib
+ 
+ - 

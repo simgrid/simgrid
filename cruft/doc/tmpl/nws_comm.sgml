@@ -1,0 +1,85 @@
+<!-- ##### SECTION Title ##### -->
+nws_comm
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### MACRO BEGIN_DECL ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO END_DECL ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### ENUM DataTypes ##### -->
+<para>
+
+</para>
+
+@CHAR_TYPE: 
+@DOUBLE_TYPE: 
+@FLOAT_TYPE: 
+@INT_TYPE: 
+@LONG_TYPE: 
+@SHORT_TYPE: 
+@UNSIGNED_INT_TYPE: 
+@UNSIGNED_LONG_TYPE: 
+@UNSIGNED_SHORT_TYPE: 
+@STRUCT_TYPE: 
+@LAST_TYPE: 
+
+<!-- ##### ENUM FormatTypes ##### -->
+<para>
+
+</para>
+
+@HOST_FORMAT: 
+@NETWORK_FORMAT: 
+
+<!-- ##### MACRO SIMPLE_DATA ##### -->
+<para>
+
+</para>
+
+@type: 
+@repetitions: 
+
+
+<!-- ##### MACRO SIMPLE_MEMBER ##### -->
+<para>
+
+</para>
+
+@type: 
+@repetitions: 
+@offset: 
+
+
+<!-- ##### MACRO PAD_BYTES ##### -->
+<para>
+
+</para>
+
+@structType: 
+@lastMember: 
+@memberType: 
+@repetitions: 
+
+

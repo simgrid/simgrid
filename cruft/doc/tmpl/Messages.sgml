@@ -1,0 +1,99 @@
+<!-- ##### SECTION Title ##### -->
+Messages API
+
+<!-- ##### SECTION Short_Description ##### -->
+High level messages
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_msgtype_register ##### -->
+<para>
+
+</para>
+
+@msgId: 
+@name: 
+@sequence_count: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION gras_cb_t ##### -->
+<para>
+
+</para>
+
+@msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_cb_register ##### -->
+<para>
+
+</para>
+
+@message: 
+@TTL: 
+@cb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msg_new ##### -->
+<para>
+
+</para>
+
+@msgId: 
+@free_data_on_free: 
+@seqCount: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msg_free ##### -->
+<para>
+
+</para>
+
+@msg: 
+
+
+<!-- ##### FUNCTION gras_msg_handle ##### -->
+<para>
+
+</para>
+
+@timeOut: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msg_send ##### -->
+<para>
+
+</para>
+
+@sd: 
+@msg: 
+@freeDirective: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_msg_wait ##### -->
+<para>
+
+</para>
+
+@timeout: 
+@id: 
+@message: 
+@Returns: 
+
+

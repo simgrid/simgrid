@@ -1,0 +1,121 @@
+<!-- ##### SECTION Title ##### -->
+Overview
+
+<!-- ##### SECTION Short_Description ##### -->
+Overview of the GRAS library
+
+<!-- ##### SECTION Long_Description ##### -->
+    <para>This document introduce the GRAS library (<emphasis>Grid Reality
+    And Simulation</emphasis>, or according to my english dictionary,
+    <emphasis>Generally Recognized As Safe</emphasis> ;).</para>
+    
+    <refsect2>
+      <title>Overview</title>
+      <para>The purpose of the GRAS is to allow the developpement of
+      distributed programs which will work with as few as possible
+      modification both on the SimGrid simulator (SG), and in the Real Life
+      (RL).</para>
+
+      <para>Here are the problems when you want to do so:
+        <itemizedlist>
+	  <listitem>
+	    <para>Communication in SG is done by passing tasks, while in
+	    RL, you have to deal with sockets (or any wrapper to it).</para>
+	  </listitem>
+	  <listitem><para>In RL, each process should provide a main()
+	    function, and it's obviously not the case in SG.</para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>Application class target</title>
+      <para>If you want to run your code both in RL and in SG, you won't be
+      able to use the full set of features offered by any of those two
+      worlds. GRAS tries to provide a suffisent set of features to develop
+      your application, and implement them in both worlds.</para>
+
+      <para>GRAS uses the paradigm of <emphasis>event-driven 
+      programming</emphasis>, which is an extension to the message-passing
+      one. Any process of a typical event-driven application declares
+      callback to incoming events, which can be messages from other
+      processes, timers or others.</para>
+
+      <para>All messages have an header, specifying its type, and attached
+      data, represented as one or several C structures. In order to send
+      the data over the network in RL, a type-description mecanism is
+      provided, and the RL version of GRAS implements CDR
+      functionnalities. That is to say that the data are sent in the native
+      format of the sender host, and converted on the destination host only
+      if needed.</para>
+
+      <para>In order to not reimplement the wheel, GRAS use existing code,
+      and adapt them to make them work together. The SG version naturally
+      use the SimGrid toolkit, while the RL version is based over the
+      communication library used in NWS (note that this library was somehow
+      modified, since the previous version use XDR, ie both the sender and
+      the receiver convert the data from/to a so called network
+      format). That's why some basic knowledge about how NWS work is
+      supposed in this document. But don't worry, you only have to know the
+      basics about NWS, the internals needed to understand the document
+      will be presented when needed.</para>
+    </refsect2>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### ENUM DataTypes ##### -->
+<para>
+
+</para>
+
+@CHAR_TYPE: 
+@DOUBLE_TYPE: 
+@FLOAT_TYPE: 
+@INT_TYPE: 
+@LONG_TYPE: 
+@SHORT_TYPE: 
+@UNSIGNED_INT_TYPE: 
+@UNSIGNED_LONG_TYPE: 
+@UNSIGNED_SHORT_TYPE: 
+@STRUCT_TYPE: 
+
+<!-- ##### MACRO SIMPLE_DATA ##### -->
+<para>
+
+</para>
+
+@type: 
+@repetitions: 
+
+
+<!-- ##### MACRO SIMPLE_MEMBER ##### -->
+<para>
+
+</para>
+
+@type: 
+@repetitions: 
+@offset: 
+
+
+<!-- ##### MACRO PAD_BYTES ##### -->
+<para>
+
+</para>
+
+@structType: 
+@lastMember: 
+@memberType: 
+@repetitions: 
+
+
+<!-- ##### MACRO EODD ##### -->
+<para>
+
+</para>
+
+
+

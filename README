@@ -1,0 +1,5 @@
+This is the GRAS (Grid Reality And Simulation) library.
+
+This is a communication wrapper so that the same code can run at the same
+time in the reality using sockets and in the SimGrid simulator. See
+doc/GRAS.design for more info.

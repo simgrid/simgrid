@@ -1,0 +1,65 @@
+<!-- ##### SECTION Title ##### -->
+Sockets API
+
+<!-- ##### SECTION Short_Description ##### -->
+Handling sockets
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_sock_client_open ##### -->
+<para>
+
+</para>
+
+@host: 
+@Param2: 
+@sock: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_sock_server_open ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@Param2: 
+@sock: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_sock_close ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_sock_get_peer_name ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_sock_get_peer_addr ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+

@@ -1,0 +1,164 @@
+/* $Id$ */
+
+#ifndef CONFIG_PORTABILITY_H
+#define CONFIG_PORTABILITY_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef NULL
+#  define NULL 0
+#endif
+
+/* Have standard C headers. */
+#undef STDC_HEADERS
+
+/* Preserve 2.0 interface with this definition */
+#undef NWS_API_COMPAT
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define if you have the alarm function.  */
+#undef HAVE_ALARM
+
+/* Define if you have inet_ntoa */
+#undef HAVE_INET_ATON
+
+/* Define if you have inet_ntoa */
+#undef HAVE_INET_NTOA
+
+/* Define if you have gettimeofday */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define if you have gethostname. Some OSes doesn't have the definition
+ * in the include: define it here to avoid warning message. */
+#undef HAVE_GETHOSTNAME
+#ifdef HAVE_GETHOSTNAME
+int
+gethostname();  
+#endif
+
+/* Define if you have uname */
+#undef HAVE_UNAME
+
+/* Define if you have gethostbyname */
+#undef HAVE_GETHOSTBYNAME
+
+/* Define if you have gethostbyaddr */
+#undef HAVE_GETHOSTBYADDR
+
+/* Define if you have gethostbyaddr */
+#undef HAVE_GETHOSTBYADDR_R
+
+/* Define if you have the getrusage function.  */
+#undef HAVE_GETRUSAGE
+
+/* Define if you have the sqrt function.  */
+#undef HAVE_SQRT
+
+/* Define if we are going to use SIGALRM for our purposes */
+#undef USE_ALARM_SIGNAL
+
+/* Define if you have the sighold function.  */
+#undef HAVE_SIGHOLD
+
+/* Define if you have the sigrelse function.  */
+#undef HAVE_SIGRELSE
+
+/* Define if you have the siginterrupt function.  */
+#undef HAVE_SIGINTERRUPT
+
+/* Define if you have the statvfs function.  */
+#undef HAVE_STATVFS
+
+/* Define if you have the sys/vfs.h header.  */
+#undef HAVE_SYS_VFS_H
+
+/* Define if you have the math.h header.  */
+#undef HAVE_MATH_H
+
+/* Define if you have the inttypes.h header.  */
+#undef HAVE_INTTYPES_H
+
+/* Define if you have the declaration of uint32_t.  */
+#undef HAVE_UINT32_T
+/* I would love to use UINT32_T but not with autoconf 2.13 */
+/*#ifdef HAVE_UINT32_T
+* #	ifdef HAVE_INTTYPES_H
+* #		include <inttypes.h>
+* #	endif
+* typedef uint32_t IPAddress;
+* #else
+* typedef unsigned long IPAddress;
+* #endif */
+/* kludge to be sure we have uint32_t */
+#ifdef HAVE_INTTYPES_H
+#	include <inttypes.h>
+#endif
+#ifndef uint32_t
+#undef uint32_t
+#endif
+/* end kludge*/
+
+/* Define if you have the sysconf function.  */
+#undef HAVE_SYSCONF
+
+/* Define if you have the strnlen function.  */
+#undef HAVE_STRNLEN
+
+/* Define if you have the fileno function.  */
+#undef HAVE_FILENO
+
+/* Define to the type pointed to by the third parameter of getpeername(). */
+#undef SOCKLEN_T
+
+/* Define to the (char *) version of the NWS sources. */
+#undef VERSION
+
+/* Define as the path to the `uptime' program. */
+#undef UPTIME_PATH
+
+/* Define as the path to the `vmstat' program. */
+#undef VMSTAT_PATH
+
+/* in some realloc()s, realloc(ptr, 0) != free(ptr) */
+#undef REALLOC_NOT_POSIX
+
+/* do we have the pthread header? (and hopefully pthread support) */
+#undef HAVE_PTHREAD_H
+#ifdef HAVE_PTHREAD_H
+#define _REENTRANT
+#endif
+
+#undef PS
+
+#undef AWK
+
+#undef WITH_NETLOGGER
+
+#undef WITH_LDAP
+
+
+#define MALLOC(size) malloc ((size)==0?1:(size))
+
+#define FREE(ptr) \
+        if (ptr != NULL) { \
+		free(ptr); \
+		ptr = NULL; \
+	}
+
+
+#ifdef REALLOC_NOT_POSIX
+#define REALLOC(ptr,size) (((size > 0)?((ptr == NULL)?malloc(size):\
+	realloc(ptr,size)):((ptr == NULL)?NULL:(free(ptr),NULL))))
+#else
+#define REALLOC(ptr,size) realloc(ptr,size)
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* CONFIG_PORTABILITY_H */

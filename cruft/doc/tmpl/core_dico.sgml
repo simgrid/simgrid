@@ -1,0 +1,143 @@
+<!-- ##### SECTION Title ##### -->
+Dictionnary
+
+<!-- ##### SECTION Short_Description ##### -->
+Data container associating data to a string key.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_dict_free ##### -->
+<para>
+
+</para>
+
+@dict: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_insert ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@free_ctn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_retrieve ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_remove ##### -->
+<para>
+
+</para>
+
+@head: 
+@key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_dump ##### -->
+<para>
+
+</para>
+
+@head: 
+@output: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_print ##### -->
+<para>
+
+</para>
+
+@data: 
+
+
+<!-- ##### FUNCTION gras_dict_prints ##### -->
+<para>
+
+</para>
+
+@data: 
+
+
+<!-- ##### FUNCTION gras_dict_cursor_new ##### -->
+<para>
+
+</para>
+
+@head: 
+@cursor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_cursor_free ##### -->
+<para>
+
+</para>
+
+@cursor: 
+<!-- # Unused Parameters # -->
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_cursor_next ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_cursor_rewind ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_cursor_get_data ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dict_cursor_get_key ##### -->
+<para>
+
+</para>
+
+@cursor: 
+@key: 
+@Returns: 
+
+

@@ -1,0 +1,40 @@
+$Id$
+
+Portability
+-----------
+
+Portability is a library used by the Network Weather System (NWS). It
+aims to be portable and to mask sockets, threads and other low level,
+system dependent calls. It can be used independetly from the NWS, but
+documentation is quite scarse: the header files will be your best
+friends. 
+
+Compiling and installing
+------------------------
+
+To compile Portability run
+	./configure 
+	make all
+and you will find a library libNwsPortability.a and the needed file in
+the ./build-<your-architecture>/{lib,include}. You can install them with
+	make install
+
+You can configure where to install library and includes using --prefix
+etc ... (./configure --help for the options).
+
+You can configure Portability to be used with threads (--enable-threads)
+and to disable sigalarm (--disable-sigalarm).
+
+
+
+Adaptive Timeouts
+-----------------
+
+Some of Portability's functions take a timeout as argument. Portability
+provides a way to use adaptive timeouts: look at timeouts.h for the
+interface. In short you can use GetTimeOut to get a timeout estimate that
+is more accurate the more information you give Portability through
+SetTimeOut. If you call the Send{MessageAnd}Data with a timeout of -1
+you'll get the adaptive timeouts without having to tinker with Get/Set
+TimeOut.
+

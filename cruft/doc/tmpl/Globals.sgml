@@ -1,0 +1,43 @@
+<!-- ##### SECTION Title ##### -->
+Globals API
+
+<!-- ##### SECTION Short_Description ##### -->
+Handling globals
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>In GRAS, using globals is forbidden since the daemons will        
+sometimes run as a thread inside the same process. So, you have to put 
+all globals in a structure, and tell GRAS that it's your globals.</para>
+
+<para>Use the grasUserdataNew() macro to create a new user data (or malloc it
+yourself and use grasUserdataSet yourself), and grasUserdataGet() to
+retrive a reference to it.</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_userdata_get ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gras_userdata_set ##### -->
+<para>
+
+</para>
+
+@ud: 
+
+
+<!-- ##### MACRO gras_userdata_new ##### -->
+<para>
+
+</para>
+
+@type: 
+
+

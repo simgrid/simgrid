@@ -1,0 +1,112 @@
+<!-- ##### SECTION Title ##### -->
+RL
+
+<!-- ##### SECTION Short_Description ##### -->
+Implementation of GRAS suited for real life.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION grasMsgRecv ##### -->
+<para>
+
+</para>
+
+@msg: 
+@timeout: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@sd: 
+
+
+<!-- ##### FUNCTION ConvertData ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@description: 
+@length: 
+@sourceFormat: 
+
+
+<!-- ##### FUNCTION DataSize ##### -->
+<para>
+
+</para>
+
+@description: 
+@length: 
+@format: 
+@Returns: 
+
+
+<!-- ##### FUNCTION DifferentFormat ##### -->
+<para>
+
+</para>
+
+@whatType: 
+@Returns: 
+
+
+<!-- ##### FUNCTION DifferentOrder ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION DifferentSize ##### -->
+<para>
+
+</para>
+
+@whatType: 
+@Returns: 
+
+
+<!-- ##### FUNCTION HomogenousConvertData ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@whatType: 
+@repetitions: 
+@sourceFormat: 
+
+
+<!-- ##### FUNCTION HomogenousDataSize ##### -->
+<para>
+
+</para>
+
+@whatType: 
+@repetitions: 
+@format: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ReverseData ##### -->
+<para>
+
+</para>
+
+@destination: 
+@source: 
+@whatType: 
+@repetitions: 
+@format: 
+
+

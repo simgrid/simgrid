@@ -1,0 +1,180 @@
+<!-- ##### SECTION Title ##### -->
+DataDescriptor API
+
+<!-- ##### SECTION Short_Description ##### -->
+Describing the data
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>In order to allow GRAS to send data over the network (or simply to
+dupplicate it in SG), you have to describe the structure of data attached
+with each message. This mecanism is stolen from NWS message passing
+interface.</para>
+
+<para>For each message, you have to declare a structure representing the
+data to send as payload with the message.</para>
+
+<refsect2>
+  <title>Sending (or receiving) simple structures</title>
+  <para>Let's imagin you want to declare a <command>STORE_STATE</command>
+  message, which will send some data to the memory server for inclusion in
+  the database. Here is the structure we want to send:</para>
+
+<literallayout>
+ struct state {
+  char id[STATE_NAME_SIZE];
+  int rec_size;
+  int rec_count;
+  double seq_no;
+  double time_out;
+ };
+</literallayout>
+
+  <para>And here is the structure description GRAS needs to be able to send
+  this over the network:</para>
+
+<literallayout>
+ const static DataDescriptor stateDescriptor[] =
+  {SIMPLE_MEMBER(CHAR_TYPE, STATE_NAME_SIZE, offsetof(struct state, id)),
+   SIMPLE_MEMBER(INT_TYPE, 1, offsetof(struct state, rec_size)),
+   SIMPLE_MEMBER(INT_TYPE, 1, offsetof(struct state, rec_count)),
+   SIMPLE_MEMBER(DOUBLE_TYPE, 1, offsetof(struct state, seq_no)),
+   SIMPLE_MEMBER(DOUBLE_TYPE, 1, offsetof(struct state, time_out))};
+</literallayout>
+
+  <para>Contrary to what one could think when you first see it, it's pretty
+  easy. A structure descriptor is a list of descriptions, describing each
+  field of the structure. For example, for the first field, you say that
+  the base type is <command>CHAR_TYPE</command>, that there is
+  <command>STATE_NAME_SIZE</command> element of this type and that it's
+  position in the structure is computed by <command>offsetof(struct state,
+  id)</command>. This leads to two remarks:</para> 
+
+  <itemizedlist>
+    <listitem>
+      <para>it's impossible to send dynamic sized strings that way. It's a
+      known limitation, but I think we can live with it.</para>
+    </listitem>
+    <listitem>
+      <para>Yes, the <command>offsetof(struct state, id)</command>
+      construction is C ANSI and is portable.</para>
+    </listitem>
+  </itemizedlist>
+</refsect2>
+
+<refsect2>
+  <title>Sending (or receiving) complex structure</title>
+  <para>How to send non-flat structures, do you ask? It's not harder. Let's
+  imagin you want to send the following structure:</para>
+
+<literallayout>
+ typedef struct {
+   unsigned long address;
+   unsigned long port;
+ } CliqueMember;
+
+ typedef struct {
+   char name[MAX_CLIQUE_NAME_SIZE];
+   double whenGenerated;
+   double instance;
+   char skill[MAX_SKILL_SIZE];
+   char options[MAX_OPTIONS_SIZE];
+   double period;
+   double timeOut;
+   CliqueMember members[MAX_MEMBERS];
+   unsigned int count;
+   unsigned int leader;
+ } Clique;
+</literallayout>
+
+  <para>As you can see, this structure contains an array of another user
+  defined structure. To be able to send <command>struct Clique</command>,
+  you have to describe each structures that way:</para>
+
+<literallayout>
+ static const DataDescriptor cliqueMemberDescriptor[] =
+   {SIMPLE_MEMBER(UNSIGNED_LONG_TYPE, 1, offsetof(CliqueMember, address)),
+    SIMPLE_MEMBER(UNSIGNED_LONG_TYPE, 1, offsetof(CliqueMember, port))};
+
+ static const DataDescriptor cliqueDescriptor[] =
+   {SIMPLE_MEMBER(CHAR_TYPE, MAX_CLIQUE_NAME_SIZE, offsetof(Clique, name)),
+    SIMPLE_MEMBER(DOUBLE_TYPE, 1, offsetof(Clique, whenGenerated)),
+    SIMPLE_MEMBER(DOUBLE_TYPE, 1, offsetof(Clique, instance)),
+    SIMPLE_MEMBER(CHAR_TYPE, MAX_SKILL_SIZE, offsetof(Clique, skill)),
+    SIMPLE_MEMBER(CHAR_TYPE, MAX_OPTIONS_SIZE, offsetof(Clique, options)),
+    SIMPLE_MEMBER(DOUBLE_TYPE, 1, offsetof(Clique, period)),
+    SIMPLE_MEMBER(DOUBLE_TYPE, 1, offsetof(Clique, timeOut)),
+    {STRUCT_TYPE, MAX_MEMBERS, offsetof(Clique, members),
+     (DataDescriptor *)&amp;cliqueMemberDescriptor, cliqueMemberDescriptorLength,
+     PAD_BYTES(CliqueMember, port, unsigned long, 1)},
+    SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(Clique, count)),
+    SIMPLE_MEMBER(UNSIGNED_INT_TYPE, 1, offsetof(Clique, leader))};
+</literallayout>
+
+  <para>So, even if less natural, it is possible to send structures 
+  containing structures with these tools.</para>
+
+  <para>You can see that it's not only impossible to send dynamic-sized
+  strings, it impossible to send dynamic-sized arrays. Here,
+  <command>MAX_MEMBERS</command> is the maximum of members a clique can
+  contain. In NWS, this value is defined to 100.  <warning><para>I'm not
+  sure, but I think that all the 100 values are sent each time, even if
+  there is only 3 non-null members. Yes, that's
+  bad.</para></warning></para>
+
+  <warning><para>The DataDescriptor_t MUST be const. Malloc'ing them and
+  then casting them on argument passing IS NOT OK. This is because we get
+  the number of elements in the array with the sizeof(dd)/sizeof(dd[0]).
+  </para></warning>
+</refsect2>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### ENUM DataTypes ##### -->
+<para>
+
+</para>
+
+@CHAR_TYPE: 
+@DOUBLE_TYPE: 
+@FLOAT_TYPE: 
+@INT_TYPE: 
+@LONG_TYPE: 
+@SHORT_TYPE: 
+@UNSIGNED_INT_TYPE: 
+@UNSIGNED_LONG_TYPE: 
+@UNSIGNED_SHORT_TYPE: 
+@STRUCT_TYPE: 
+
+<!-- ##### MACRO SIMPLE_DATA ##### -->
+<para>
+
+</para>
+
+@type: 
+@repetitions: 
+
+
+<!-- ##### MACRO SIMPLE_MEMBER ##### -->
+<para>
+
+</para>
+
+@type: 
+@repetitions: 
+@offset: 
+
+
+<!-- ##### MACRO PAD_BYTES ##### -->
+<para>
+
+</para>
+
+@structType: 
+@lastMember: 
+@memberType: 
+@repetitions: 
+
+

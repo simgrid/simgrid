@@ -1,0 +1,220 @@
+* Use of data on the stack as argument to MsgNew does not work
+* Warn when using a server socket to write, or a client one to poll
+
+* while (1) { fork; exec the child, wait in father }
+* message forwarding
+
+[autoconf]
+  Check in autoconf that no datatype is bigger than 64, or dynar_map will
+    get into trouble...
+
+[portability layer]
+  Make a script to test how the padding bytes are on the current arch, and
+   constitute a bestiary.
+  Use Arnaud's structure parser in a macro
+  Dynar of type, such as ref of type
+  Generate convertors in assembler ?
+  Mallocators
+  
+[Messaging]
+  Message forwarding
+  Message priority
+  Messages in a tree manner
+  
+[network drivers]
+  Interface: open_server, open_client, read, write, flush, close
+  Implementations: TCP, SG (more after my PhD).
+
+[errors]
+  Better split casual errors from programing errors.
+    The first ones should be repported to the user, the second should kill
+    the program (or, yet better, only the msg handler)
+  Allows the use of an error handler depending on the current module (ie,
+   the same philosophy than log4c using GSL's error functions)
+  Rethink the error codes. Source of inspirations are:
+   - comerr (common error reporting from ext2)
+   - libgpg-error
+
+[logs]
+  Parse argv (check leonie and tbx_arg_iterator in tbx_parameter.h)
+  Several appenders; fix the setting stuff to change the appender
+  Hijack message from a given category to another for a while (to mask
+    initializations)
+
+[dict]
+  Make a real container for the dict, so that the free function may be given
+    only once for the whole tree (would help to send dicts).
+  dichotomie in search
+  speed up the cursors, for example using the contexts when available
+  fix multi levels dicts
+
+*********
+* GRAS1 * Integrer grassouillet a gras; multiplexage XML; module de comm
+*********
+[type_bag SG]
+ un peu comme les type_bag RL, mais sans tenir compte d'incoming ni
+   outcoming.
+ La finesse est de simuler la taille des envois sans les faire
+ On peut aussi imaginer une version faisant ces envois effectivement, qui
+   serait un peu plus lente, mais permettant de debugger cette partie de
+   grassouillet
+   
+[pilotes reseaux de sous grassouillet]
+ TCP: utilise le fd. rien a faire.
+ SG: Le send fait le boulot de malloc du recv de fd, et les rempli comme le
+   send de fd.
+ BLOC: Un nouveau truc, qui envoi des trames les unes derriere les autres,
+   un write copie dans un buffer qui, quand il est plein, part sur la socket
+   avec sa taille devant, et son CRC derriere.
+  C'est le prix a payer pour ne plus mourrir si vite en cas de transmission
+   pourrie (mais ca resoud tjs pas le pb du code malicieux)
+  Possibilite de compresser les buffers avant l'envoi..
+
+[simuler le select sur les sockets avec des threads]
+  Le plan, c'est qu'a l'ouverture d'une socket server, on cree un thread
+    charge de faire du pool blocant dessus, et des que ce thread se debloque
+    car il commence a lire qqch, il passe la main a un thread de
+    communication charge de faire la lecture. 
+  Quand la lecture est finie, le thread de comm passe la main aux threads
+    d'execution (un par couleur).
+    
+  Voici comment faire le coeur du truc [dixit Olivier]:
+    Une liste est utilisee pour stocker ce que le thread de comm a le droit
+      de lire. Elle est protegee par mutex pour eviter les acces concurents.
+      c'est la "liste de lecture"
+    Une semaphore "de lecture" est utilisee pour permettre aux threads
+      servants des sockets de prevenir le thread de comm qu'ils ont qqch
+      pour lui
+    Dans la liste de lecture, on place les messages en cours de creation, et
+      un ptit mutex pour que le thread de comm dise aux threads servants de
+      retourner ecouter la socket car il a fini
+    Chaque couleur a sa file de callback a appeller, proteger par semaphore
+      et un mutex comme pour la file de lecture
+    
+    Init:
+     initialisation de toutes les semaphore a 0
+     comm: sem_P(semaphore lecture)
+     couleur: sem_P(semaphore de la couleur correspondante)
+     servant: read (1) sur la socket
+     
+    Arrive d'un message
+     servant:
+     1) le read debloque (c'est la version de gras, utilisee pour multiplexe
+        sur le XML, ou sur les differentes versions de gras/de pilote reseau)
+     2) Allocation du message vide pour contenir ce qui s'annonce
+     3) initialisation du mutex du message_instance a 0 (verrouille)
+     4) placement du message instance dans la file (prise de mutex,
+        placement, lachage de mutex)
+     5) sem_V(sempahore)
+     6) mutex_lock sur le mutex_verrouille
+     sleep
+     7) quand on revient, on rebloque un read(1), et on recommence
+     
+     comm:
+     1) on se reveille quand la semaphore se libere (etape 6 des servants)
+     2) prise d'une tache dans la file (protegee par semaphore)
+     3) lecture de l'instance de message
+     4) lache le mutex dans l'instance pour liberer le servant
+     5) pose le message pret dans la file de la couleur correpondant au
+        premier callback de la pile pour ces {messageID x version} et
+        augmente le semaphore correspondant.
+     6) se rebloque sur le semaphore de lecture et recommence
+     
+     couleur:
+     1) on se reveille quand quelqu'un a pose qqch dans sa file des messages
+        prets
+     2) on le retire de la file
+     3) on acquiere le mutex d'execution de sa couleur (pour les callbacks
+        cameleon)
+     4) on execute le callback qu'il faut
+     5) on lache le mutex de sa couleur
+     Si le callback annonce avoir mange le message
+       a) on libere le message (le payload doit avoir ete libere par 
+          l'utilisateur)
+       b) on decremente le TTL du callback, et on le vire si c'etait pas un
+          callback infini et qu'il arrive en fin de vie
+     Sinon
+       a) on place le message dans la liste des messages de la couleur du
+          suivant dans la pile des callback
+     6) On se rendort sur le semaphore de sa couleur et recommence
+     
+    Emission d'un message:
+     A faire. Le thread de comm peut faire ceci, ou on peut faire un nouveau
+      thread de comm pour cela.
+     
+    Fermeture d'une socket client:
+     Probleme: faut tuer le thread servant.
+     Solution pour l'instant: fermer la socket depuis ailleurs.
+     Solution si ca marche pas (ou pas partout): Les servants font des
+      selects sur un pool {leur socket x un pipe fait pour}
+      Quand qqch arrive sur le pipe, c'est le signal du suicide.
+      
+[Conversions inter-architectures]
+ Marquer les padding bytes explicitement aux structures (juste le sizeof
+   doit suffire)
+ Marquer les offsetof des fields explicitement a l'ajout.
+ Prevoir tous les encoding pour les types elementaires 
+   [taille, sexe, signess[non, a un, a deux]] 
+   plus les flotants, justifiant un traitement a part
+ Tester avec autoconf les encodings sur l'archi courante
+ Trouver un moyen de convertir un encoding en un autre (si possible par
+   blocs)
+ Generer ces convertors en assembleur a chaud, puisqu'on a rien de mieux a
+   foutre de notre temps
+
+[XML]
+ Tout comme c'est dit dans les articles
+
+[Macro parseuse]
+ Gerer les typedefs (necessite de l'aide de grassouillet)
+ Gerer les pointeurs. 
+   Faut des annotations pour dire si c'est :
+    - un AZT
+    - un tableau dont la longueur est ailleurs dans la struct
+    - une ref
+   Ca peut se faire soit avec des commentaires, soit avec des macros se
+     reecrivant a rien dans la vraie vie, et parsee. Mais le risque est que
+     ces macros soient reecrites avant d'etre passee a mon bordel, selon les
+     cpp. 
+ Gerer les unions => specifier des annotations, mais j'y crois pas
+ Gerer les enum
+ Gerer les long long
+ Gerer les types struct, union et enum anonymes au milieu d'un autre bloc de
+  donnees.
+ Verifier que "char"="signed char" sur toutes les archis
+ 
+ Renomer gs_parse_tok_num en gs_parse_token
+ Check short a, b;
+ Check short ***
+ Check struct { struct { int a } b; }
+ 
+[Grassouillet]
+ Gerer les typedefs pour aliaser un type sur un autre
+ Merger gs_type_union_append_field et gs_type_struc_append_field si possible.
+ Gerer les enum ?
+ gs_type_copy/gs_type_free
+ A quoi sert le champ name de gs_type_struct_append_field ?
+ Ca plante bizarement si on met une structure n'existant pas dans le
+   message (a l'usage)
+ gs_type_dump, nardin, comment voir ce qui se passe sinon ??
+ 
+[Autres]
+ Simplifier l'API pour virer les sequences
+ Faire le parseur automatique de structures
+ Faire toutes les modifs aux Utils listees plus haut
+ Simplifier l'envoi de dynar et dico
+ Mettre les mutex et semaphores dans les dynar directement
+ Tenter (politiquement) le passage a GPL, pour voler du code.
+ 
+
+************
+* La suite *
+************
+GRAS double (ou encore "GRAS too" ou "too GRAS"):
+ - Priorite des messages
+ - Outils de visu pour ce qui se passe dans le simulo
+ - Outils de visu/deployement/management pour RL
+   
+GRAS (très):
+ - outils mathematiques pour dire des choses sur la validite du protocole
+    

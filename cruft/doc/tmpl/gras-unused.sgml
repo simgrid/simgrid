@@ -1,0 +1,1311 @@
+<!-- ##### SECTION ./tmpl/ErrLog.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/ErrLog.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/ErrLog.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/ErrLog.sgml:Title ##### -->
+ErrLog
+
+
+<!-- ##### SECTION ./tmpl/config.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/config.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/config.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/config.sgml:Title ##### -->
+config
+
+
+<!-- ##### SECTION ./tmpl/dico.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/dico.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/dico.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/dico.sgml:Title ##### -->
+dico
+
+
+<!-- ##### SECTION ./tmpl/dynar.sgml:Long_Description ##### -->
+<para>
+This module provide the quite usual dynamic array facility.
+</para>
+
+
+<!-- ##### SECTION ./tmpl/dynar.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/dynar.sgml:Short_Description ##### -->
+Dynamic array
+
+
+<!-- ##### SECTION ./tmpl/dynar.sgml:Title ##### -->
+dynar
+
+
+<!-- ##### SECTION ./tmpl/gras-overview.sgml:Long_Description ##### -->
+    <para>This document introduce the GRAS library (<emphasis>Grid Reality
+    And Simulation</emphasis>, or according to my english dictionary,
+    <emphasis>Generally Recognized As Safe</emphasis> ;).</para>
+    
+    <refsect2>
+      <title>Overview</title>
+      <para>The purpose of the GRAS is to allow the developpement of
+      distributed programs which will work with as few as possible
+      modification both on the SimGrid simulator (SG), and in the Real Life
+      (RL).</para>
+
+      <para>Here are the problems when you want to do so:
+        <itemizedlist>
+	  <listitem>
+	    <para>Communication in SG is done by passing tasks, while in
+	    RL, you have to deal with sockets (or any wrapper to it).</para>
+	  </listitem>
+	  <listitem><para>In RL, each process should provide a main()
+	    function, and it's obviously not the case in SG.</para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>Application class target</title>
+      <para>If you want to run your code both in RL and in SG, you won't be
+      able to use the full set of features offered by any of those two
+      worlds. GRAS tries to provide a suffisent set of features to develop
+      your application, and implement them in both worlds.</para>
+
+      <para>GRAS uses the paradigm of <emphasis>event-driven 
+      programming</emphasis>, which is an extension to the message-passing
+      one. Any process of a typical event-driven application declares
+      callback to incoming events, which can be messages from other
+      processes, timers or others.</para>
+
+      <para>All messages have an header, specifying its type, and attached
+      data, represented as one or several C structures. In order to send
+      the data over the network in RL, a type-description mecanism is
+      provided, and the RL version of GRAS implements CDR
+      functionnalities. That is to say that the data are sent in the native
+      format of the sender host, and converted on the destination host only
+      if needed.</para>
+
+      <para>In order to not reimplement the wheel, GRAS use existing code,
+      and adapt them to make them work together. The SG version naturally
+      use the SimGrid toolkit, while the RL version is based over the
+      communication library used in NWS (note that this library was somehow
+      modified, since the previous version use XDR, ie both the sender and
+      the receiver convert the data from/to a so called network
+      format). That's why some basic knowledge about how NWS work is
+      supposed in this document. But don't worry, you only have to know the
+      basics about NWS, the internals needed to understand the document
+      will be presented when needed.</para>
+    </refsect2>
+
+
+<!-- ##### SECTION ./tmpl/gras-overview.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras-overview.sgml:Short_Description ##### -->
+Overview of the GRAS library
+
+
+<!-- ##### SECTION ./tmpl/gras-overview.sgml:Title ##### -->
+Overview
+
+
+<!-- ##### SECTION ./tmpl/gras.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gras.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gras.sgml:Title ##### -->
+gras
+
+
+<!-- ##### SECTION ./tmpl/nws_comm.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/nws_comm.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/nws_comm.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/nws_comm.sgml:Title ##### -->
+nws_comm
+
+
+<!-- ##### MACRO BEGIN_DECL ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO CCRITICAL0 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+
+<!-- ##### MACRO CCRITICAL1 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+
+<!-- ##### MACRO CCRITICAL2 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+
+<!-- ##### MACRO CCRITICAL3 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+
+<!-- ##### MACRO CCRITICAL4 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+
+<!-- ##### MACRO CCRITICAL5 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+
+<!-- ##### MACRO CDEBUG0 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+
+<!-- ##### MACRO CDEBUG1 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+
+<!-- ##### MACRO CDEBUG2 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+
+<!-- ##### MACRO CDEBUG3 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+
+<!-- ##### MACRO CDEBUG4 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+
+<!-- ##### MACRO CDEBUG5 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+
+<!-- ##### MACRO CERROR0 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+
+<!-- ##### MACRO CERROR1 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+
+<!-- ##### MACRO CERROR2 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+
+<!-- ##### MACRO CERROR3 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+
+<!-- ##### MACRO CERROR4 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+
+<!-- ##### MACRO CERROR5 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+
+<!-- ##### MACRO CINFO0 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+
+<!-- ##### MACRO CINFO1 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+
+<!-- ##### MACRO CINFO2 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+
+<!-- ##### MACRO CINFO3 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+
+<!-- ##### MACRO CINFO4 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+
+<!-- ##### MACRO CINFO5 ##### -->
+<para>
+
+</para>
+
+@c: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+
+<!-- ##### MACRO CLOG0 ##### -->
+<para>
+
+</para>
+
+@c: 
+@p: 
+@f: 
+
+<!-- ##### MACRO CLOG1 ##### -->
+<para>
+
+</para>
+
+@c: 
+@p: 
+@f: 
+@a1: 
+
+<!-- ##### MACRO CLOG2 ##### -->
+<para>
+
+</para>
+
+@c: 
+@p: 
+@f: 
+@a1: 
+@a2: 
+
+<!-- ##### MACRO CLOG3 ##### -->
+<para>
+
+</para>
+
+@c: 
+@p: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+
+<!-- ##### MACRO CLOG4 ##### -->
+<para>
+
+</para>
+
+@c: 
+@p: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+
+<!-- ##### MACRO CLOG5 ##### -->
+<para>
+
+</para>
+
+@c: 
+@p: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+
+<!-- ##### MACRO CLOG6 ##### -->
+<para>
+
+</para>
+
+@c: 
+@p: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+<!-- ##### MACRO CRITICAL0 ##### -->
+<para>
+
+</para>
+
+@f: 
+
+<!-- ##### MACRO CRITICAL1 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+
+<!-- ##### MACRO CRITICAL2 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+
+<!-- ##### MACRO CRITICAL3 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+
+<!-- ##### MACRO CRITICAL4 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+
+<!-- ##### MACRO CRITICAL5 ##### -->
+<para>
+
+</para>
+
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+
+<!-- ##### FUNCTION CallAddr ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Param2: 
+@sock: 
+@timeOut: 
+@Returns: 
+
+<!-- ##### FUNCTION CreateLocalChild ##### -->
+<para>
+
+</para>
+
+@pid: 
+@parentToChild: 
+@childToParent: 
+@Returns: 
+
+<!-- ##### FUNCTION DROP_SOCKET ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+<!-- ##### MACRO END_DECL ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO EODD ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION EstablishAnEar ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@Param2: 
+@ear: 
+@earPort: 
+@Returns: 
+
+<!-- ##### MACRO GRAS_LOG_MAYDAY ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GRAS_LOG_ROOT_CAT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_DLFCN_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_INTTYPES_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_LIBPTHREAD ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_MEMORY_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_STDINT_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_STDLIB_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_STRINGS_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_STRING_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_SYS_STAT_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_SYS_TYPES_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO HAVE_UNISTD_H ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF IPAddress ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION IPAddressImage ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Returns: 
+
+<!-- ##### FUNCTION IPAddressImage_r ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Returns: 
+
+<!-- ##### FUNCTION IPAddressMachine ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Returns: 
+
+<!-- ##### FUNCTION IPAddressMachine_r ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Returns: 
+
+<!-- ##### MACRO IPAddressValue ##### -->
+<para>
+
+</para>
+
+@machineOrAddress: 
+@address: 
+
+<!-- ##### FUNCTION IPAddressValues ##### -->
+<para>
+
+</para>
+
+@machineOrAddress: 
+@addressList: 
+@atMost: 
+@Returns: 
+
+<!-- ##### FUNCTION IncomingRequest ##### -->
+<para>
+
+</para>
+
+@timeOut: 
+@sd: 
+@ldap: 
+@Returns: 
+
+<!-- ##### FUNCTION IsOkay ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### FUNCTION IsPipe ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### MACRO IsValidIP ##### -->
+<para>
+
+</para>
+
+@machineOrAddress: 
+
+<!-- ##### MACRO LOG6 ##### -->
+<para>
+
+</para>
+
+@p: 
+@f: 
+@a1: 
+@a2: 
+@a3: 
+@a4: 
+@a5: 
+@a6: 
+
+<!-- ##### FUNCTION MyMachineName ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### MACRO NO_SOCKET ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION NotifyOnDisconnection ##### -->
+<para>
+
+</para>
+
+@notifyFn: 
+
+<!-- ##### FUNCTION OpenClientSocket ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Param2: 
+@sock: 
+@Returns: 
+
+<!-- ##### FUNCTION OpenServerSocket ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@Param2: 
+@ear: 
+@earPort: 
+@Returns: 
+
+<!-- ##### MACRO PACKAGE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PACKAGE_BUGREPORT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PACKAGE_NAME ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PACKAGE_STRING ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PACKAGE_TARNAME ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PACKAGE_VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION PassSocket ##### -->
+<para>
+
+</para>
+
+@sock: 
+@child: 
+@Returns: 
+
+<!-- ##### FUNCTION Peer ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### FUNCTION PeerName ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### FUNCTION PeerName_r ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### MACRO STDC_HEADERS ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF Socket ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION SocketFailure ##### -->
+<para>
+
+</para>
+
+@sig: 
+
+<!-- ##### USER_FUNCTION SocketFunction ##### -->
+<para>
+
+</para>
+
+@Param1: 
+
+<!-- ##### FUNCTION SocketInUse ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### FUNCTION SocketIsAvailable ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### MACRO VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION grasCallbackFunction ##### -->
+<para>
+
+</para>
+
+@sd: 
+@msgType: 
+@vdata: 
+
+<!-- ##### FUNCTION grasCloseSocket ##### -->
+<para>
+
+</para>
+
+@sock: 
+@Returns: 
+
+<!-- ##### FUNCTION grasDataDescCmp ##### -->
+<para>
+
+</para>
+
+@dd1: 
+@c1: 
+@dd2: 
+@c2: 
+@Returns: 
+@description: 
+
+<!-- ##### FUNCTION grasDataDescCount ##### -->
+<para>
+
+</para>
+
+@description: 
+@Returns: 
+
+<!-- ##### FUNCTION grasDataRecv ##### -->
+<para>
+
+</para>
+
+@sd: 
+@data: 
+@description: 
+@description_length: 
+@repetition: 
+@Returns: 
+
+<!-- ##### FUNCTION grasDataSend ##### -->
+<para>
+
+</para>
+
+@sd: 
+@data: 
+@description: 
+@description_length: 
+@repetition: 
+@Returns: 
+
+<!-- ##### FUNCTION grasDataSize ##### -->
+<para>
+
+</para>
+
+@description: 
+@ft: 
+@Returns: 
+
+<!-- ##### ENUM grasError_t ##### -->
+<para>
+
+</para>
+
+@no_error: 
+@malloc_error: 
+@mismatch_error: 
+@sanity_error: 
+@system_error: 
+@network_error: 
+@timeout_error: 
+@thread_error: 
+@unknown_error: 
+
+<!-- ##### FUNCTION grasLock ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### TYPEDEF grasMessageType_t ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION grasMsgDiscard ##### -->
+<para>
+
+</para>
+
+@sd: 
+@size: 
+
+<!-- ##### FUNCTION grasMsgEntryGet ##### -->
+<para>
+
+</para>
+
+@id: 
+@Returns: 
+
+<!-- ##### TYPEDEF grasMsgEntry_t ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION grasMsgFree ##### -->
+<para>
+
+</para>
+
+@msg: 
+
+<!-- ##### FUNCTION grasMsgHandle ##### -->
+<para>
+
+</para>
+
+@timeOut: 
+
+<!-- ##### FUNCTION grasMsgHeaderNew ##### -->
+<para>
+
+</para>
+
+@msgId: 
+@dataSize: 
+@seqCount: 
+@Returns: 
+
+<!-- ##### FUNCTION grasMsgNew ##### -->
+<para>
+
+</para>
+
+@msgId: 
+@free_data_on_free: 
+@seqCount: 
+@Varargs: 
+@Returns: 
+
+<!-- ##### FUNCTION grasMsgRegister ##### -->
+<para>
+
+</para>
+
+@message: 
+@name: 
+@sequence_count: 
+@Varargs: 
+@Returns: 
+
+<!-- ##### FUNCTION grasMsgSend ##### -->
+<para>
+
+</para>
+
+@sd: 
+@message: 
+@sequence_count: 
+@Varargs: 
+@Returns: 
+
+<!-- ##### FUNCTION grasMsgWait ##### -->
+<para>
+
+</para>
+
+@sd: 
+@timeout: 
+@message: 
+@sequence_count: 
+@Varargs: 
+@Returns: 
+
+<!-- ##### FUNCTION grasMyMachineName ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION grasOpenClientSocket ##### -->
+<para>
+
+</para>
+
+@host: 
+@Param2: 
+@sock: 
+@Returns: 
+
+<!-- ##### FUNCTION grasOpenServerSocket ##### -->
+<para>
+
+</para>
+
+@Param1: 
+@Param2: 
+@sock: 
+@Returns: 
+
+<!-- ##### MACRO grasPROTOCOL ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION grasPeerGetAddress ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### FUNCTION grasPeerGetName ##### -->
+<para>
+
+</para>
+
+@sd: 
+@Returns: 
+
+<!-- ##### FUNCTION grasRecvData ##### -->
+<para>
+
+</para>
+
+@sd: 
+@data: 
+@description: 
+@Returns: 
+
+<!-- ##### FUNCTION grasRegisterCallback ##### -->
+<para>
+
+</para>
+
+@message: 
+@TTL: 
+@cb: 
+
+<!-- ##### FUNCTION grasSendData ##### -->
+<para>
+
+</para>
+
+@sd: 
+@data: 
+@description: 
+@Returns: 
+
+<!-- ##### FUNCTION grasUnlock ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION grasUserdataGet ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO grasUserdataNew ##### -->
+<para>
+
+</para>
+
+@type: 
+
+<!-- ##### FUNCTION grasUserdataSet ##### -->
+<para>
+
+</para>
+
+@ud: 
+
+<!-- ##### FUNCTION gras_dynar_first ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_dynar_next ##### -->
+<para>
+
+</para>
+
+@dynar: 
+@cursor: 
+@whereto: 
+@Returns: 
+
+<!-- ##### FUNCTION gras_log_parent_set ##### -->
+<para>
+
+</para>
+
+@cat: 
+@parent: 
+
+<!-- ##### FUNCTION gras_log_threshold_set ##### -->
+<para>
+
+</para>
+
+@cat: 
+@thresholdPriority: 
+
