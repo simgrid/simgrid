@@ -33,6 +33,7 @@ EXTRA_DIST= \
 	surf/surfxml.c \
 	surf/surfxml.dtd \
 	surf/network_private.h \
+	surf/network_dassf_private.h \
 	surf/workstation_KCCFLN05_private.h \
 	\
 	include/surf/maxmin.h \
@@ -114,6 +115,7 @@ COMMON_S=\
   surf/surf.c                                                                \
   surf/surf_parse.c                                                          \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
+  surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c  \
   \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
