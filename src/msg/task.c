@@ -68,6 +68,18 @@ void *MSG_task_get_data(m_task_t task)
 }
 
 /** \ingroup m_task_management
+ * \brief Return the sender of a #m_task_t.
+ *
+ * This functions returns the #m_process_t which sent this task
+ */
+m_process_t MSG_task_get_sender(m_task_t task)
+{
+   xbt_assert0(task, "Invalid parameters");
+   return ((simdata_task_t) task->simdata)->sender;
+}
+
+
+/** \ingroup m_task_management
  * \brief Destroy a #m_task_t.
  *
  * Destructor for #m_task_t. Note that you should free user data, if any, \b 

@@ -116,6 +116,33 @@ int MSG_task_Iprobe(m_channel_t channel)
 }
 
 /** \ingroup msg_gos_functions
+ * \brief Test whether there is a pending communication on a channel, and who sent it.
+ *
+ * It takes one parameter.
+ * \param channel the channel on which the agent should be
+   listening. This value has to be >=0 and < than the maximal
+   number of channels fixed with MSG_set_channel_number().
+ * \return -1 if there is no pending communication and the PID of the process who sent it otherwise
+ */
+int MSG_task_probe_from(m_channel_t channel)
+{
+  m_host_t h = NULL;
+  simdata_host_t h_simdata = NULL;
+  xbt_fifo_item_t item;
+  m_task_t t;
+
+  CHECK_HOST();
+  h = MSG_host_self();
+  h_simdata = h->simdata;
+   
+  item = xbt_fifo_getFirstItem(((simdata_host_t)h->simdata)->mbox[channel]);
+  if (!item || !(t = xbt_fifo_get_item_content(item)) || (simdata_task_t)t->simdata)
+    return -1;
+   
+  return MSG_process_get_PID(((simdata_task_t)t->simdata)->sender);
+}
+
+/** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
  *
