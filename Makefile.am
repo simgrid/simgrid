@@ -48,28 +48,28 @@ publish: dist
 	 @echo "----[ Put the tarball @VERSION@ on gcl ]----"
 	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
 	 scp -r doc/html/* gcl.ucsd.edu:/home/www/simgrid/
-#	 scp ChangeLog gcl.ucsd.edu:/home/www/simgrid/dl/ChangeLog
+	 scp ChangeLog gcl.ucsd.edu:/home/www/simgrid/dl/ChangeLog
 	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
 	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/simgrid2
 	 cp -r doc/html ~/public_html/simgrid2/doc/
-#	 cp ChangeLog ~/public_html/simgrid2/
+	 cp ChangeLog ~/public_html/simgrid2/
 	 make -C ~/public_html
 
 mail:
-	 @ver=`dpkg-parsechangelog -lChangeLog.debian| egrep '^Version: ' | sed 's/Version: //'`;\
+	 @ver=`dpkg-parsechangelog -lChangeLog | egrep '^Version: ' | sed 's/Version: //'`;\
 	  (echo "Hello," ; \
 	   echo; \
            echo "A new version of GRAS is available. Here is the changelog:";\
 	   echo;echo;\
-           dpkg-parsechangelog -lChangeLog.debian ;\
+           dpkg-parsechangelog -lChangeLog ;\
            echo;echo; \
 	   echo "It is available from the official website:";\
 	   echo "  http://grail.sdsc.edu/simgrid/";\
-	   echo;echo "Cheers, Mt.") | \
+	   echo;echo "Cheers, Arnaud.") | \
           mail -e \
-	       -a "From: Martin.Quinson@ens-lyon.fr" \
+	       -a "From: Arnaud.Legrand@imag.fr" \
 	       -s "New version of GRAS ($$ver)" \
-	       martin.quinson@ens-lyon.fr,arnaud.legrand@ens-lyon.fr
+	       martin.quinson@imag.fr,arnaud.legrand@imag.fr
 
 
 splint:
