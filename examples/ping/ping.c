@@ -30,10 +30,9 @@ gras_error_t register_messages(void);
 /* Code */
 gras_error_t register_messages(void) {
   gras_error_t errcode;
-  gras_msgtype_t *msg_t; /* FIXME: not needed */
 
-  TRY(gras_msgtype_declare("ping", gras_datadesc_by_name("int"), &msg_t));
-  TRY(gras_msgtype_declare("pong", gras_datadesc_by_name("int"), &msg_t));
+  TRY(gras_msgtype_declare("ping", gras_datadesc_by_name("int")));
+  TRY(gras_msgtype_declare("pong", gras_datadesc_by_name("int")));
 
   return no_error;
 }

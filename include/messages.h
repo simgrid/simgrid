@@ -39,12 +39,10 @@ BEGIN_DECL
 typedef struct s_gras_msgtype gras_msgtype_t;
 
 gras_error_t gras_msgtype_declare  (const char            *name,
-				    gras_datadesc_type_t  *payload,
-				    gras_msgtype_t       **dst);
+				    gras_datadesc_type_t  *payload);
 gras_error_t gras_msgtype_declare_v(const char            *name,
 				    short int              version,
-				    gras_datadesc_type_t  *payload,
-				    gras_msgtype_t       **dst);
+				    gras_datadesc_type_t  *payload);
 
 gras_error_t gras_msgtype_by_name (const char     *name,
 				   gras_msgtype_t **dst);
