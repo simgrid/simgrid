@@ -107,22 +107,8 @@ COMMON_SRC=\
   xbt/set.c                                                                    \
   xbt/module.c                                                                 \
   xbt/config.c                                                                 \
-  xbt/context.c                                                                \
-  \
-  surf/maxmin.c                                                              \
-  surf/trace_mgr.c                                                           \
-  surf/surf.c                                                                \
-  surf/surf_parse.c                                                          \
-  surf/cpu.c   surf/network.c   surf/workstation.c                           \
-  surf/network_dassf.c                                                       \
-  surf/workstation_KCCFLN05.c  \
-  include/surf/surfxml.h \
-  \
-  msg/task.c msg/host.c msg/m_process.c msg/gos.c \
-  msg/global.c msg/environment.c msg/deployment.c  \
   \
   gras/gras.c \
-  gras/chrono.c \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
   \
@@ -143,6 +129,22 @@ RL_SRC= \
   gras/Virtu/rl_process.c        gras/Virtu/rl_time.c                   gras/Virtu/rl_conditional.c
 
 SG_SRC=  \
+  xbt/context.c                                                                \
+  \
+  surf/maxmin.c                                                              \
+  surf/trace_mgr.c                                                           \
+  surf/surf.c                                                                \
+  surf/surf_parse.c                                                          \
+  surf/cpu.c   surf/network.c   surf/workstation.c                           \
+  surf/network_dassf.c                                                       \
+  surf/workstation_KCCFLN05.c  \
+  include/surf/surfxml.h \
+  \
+  msg/task.c msg/host.c msg/m_process.c msg/gos.c \
+  msg/global.c msg/environment.c msg/deployment.c  \
+  \
+  gras/chrono.c \
+  \
   gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
   \
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c 
