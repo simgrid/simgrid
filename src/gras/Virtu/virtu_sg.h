@@ -16,14 +16,18 @@
 
 #define GRAS_MAX_CHANNEL 10
 
+typedef struct {
+  int port;  /* list of ports used by a server socket */
+  int tochan; /* the channel it points to */
+  int raw;   /* (boolean) the channel is in raw mode or for messages */
+} gras_sg_portrec_t;
+
 /* Data for each host */
 typedef struct {
-  int proc[GRAS_MAX_CHANNEL]; /* who's connected to each channel (its PID). If =0, then free */
+  int proc[GRAS_MAX_CHANNEL]; /* PID of who's connected to each channel */
+                              /* If =0, then free */
 
-  int portLen;
-  int *port;             /* list of ports used by a server socket */
-  int *port2chan;        /* the channel it points to */
-  int *raw;              /* (boolean) the channel is in raw mode or for formatted messages */
+  gras_dynar_t *ports;
 
 } gras_hostdata_t;
 
