@@ -39,10 +39,10 @@ AC_MSG_RESULT($GRAS_CHECK_SIZEOF_RES)
 ])
 
 dnl
-dnl GRAS_TWO_COMPLIMENT([type]): Make sure the type is two-compliment
+dnl GRAS_TWO_COMPLEMENT([type]): Make sure the type is two-complement
 dnl warning, this does not work with char (quite logical)
 dnl
-AC_DEFUN([GRAS_TWO_COMPLIMENT],
+AC_DEFUN([GRAS_TWO_COMPLEMENT],
 [
 AC_MSG_CHECKING(whether $1 is two-compliment)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h"
@@ -134,7 +134,7 @@ AC_DEFUN([GRAS_ARCH],
 # Check for the architecture
 AC_C_BIGENDIAN(endian=1,endian=0,AC_MSG_ERROR([GRAS works only for little or big endian systems (yet)]))
 dnl Make sure we don't run on a non-two-compliment arch, since we dunno convert them
-GRAS_TWO_COMPLIMENT(int)
+GRAS_TWO_COMPLEMENT(int)
 AC_DEFINE_UNQUOTED(GRAS_BIGENDIAN,$endian,[define if big endian])
           
 GRAS_SIGNED_SIZEOF(char)              GRAS_STRUCT_BOUNDARY(char)
