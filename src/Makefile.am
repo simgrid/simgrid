@@ -40,12 +40,11 @@ EXTRA_DIST= \
 	include/surf/trace_mgr.h \
 	include/surf/surf.h \
 	include/surf/surf_parse.h \
-	include/surf/surfxml.h \
 	\
 	msg/private.h \
 	\
 	gras/Transport/transport_interface.h \
-	gras/Virtu/virtu_interface.h \
+	gras/Virtu/virtu_interface.h          gras/Virtu/virtu_private.h\
 	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
 	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c
 
@@ -115,6 +114,7 @@ COMMON_SRC=\
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c  \
+  include/surf/surfxml.h \
   \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
   msg/global.c msg/environment.c msg/deployment.c  \
@@ -156,7 +156,7 @@ surf/surfxml.c: surf/surfxml.l
 	@LEX@ -o$@ -Psurf_parse_ $^
 
 surf/surfxml.l: surf/surfxml.dtd
-	cd surf; flexml -b 10000000 -S -H -L surfxml.dtd ; \
+	cd surf; flexml -b 10000000 -S -L surfxml.dtd ; \
 	mv surfxml.l surfxml.l.bak ; \
 	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
 
