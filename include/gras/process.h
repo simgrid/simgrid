@@ -55,7 +55,7 @@ void gras_userdata_set(void *ud);
  * Malloc and set the data associated with the current process.
  */
 
-#define gras_userdata_new(type) (gras_userdata_set(gras_new0(type,1)),gras_userdata_get())
+#define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
 
 END_DECL
 
