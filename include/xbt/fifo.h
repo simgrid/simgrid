@@ -43,10 +43,15 @@ void xbt_fifo_freeitem(xbt_fifo_item_t);
 
 int xbt_fifo_size(xbt_fifo_t);
 
-/* #define xbt_fifo_foreach(f,i,n,type)                  \ */
-/*    for(i=xbt_fifo_getFirstitem(f);                    \ */
-/*      ((i)?(n=(type)(i->content)):(NULL));             \ */
-/*        i=xbt_fifo_getNextitem(i)) */
+xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l);
+xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
+xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
+
+
+#define xbt_fifo_foreach(f,i,n,type)                  \
+   for(i=xbt_fifo_getFirstItem(f);                    \
+     ((i)?(n=(type)(xbt_fifo_get_item_content(i))):(NULL));             \
+       i=xbt_fifo_getNextItem(i))
 
 
 #endif				/* _XBT_FIFO_H */

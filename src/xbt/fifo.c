@@ -308,4 +308,21 @@ int xbt_fifo_size(xbt_fifo_t f)
   return f->count;
 }
 
+xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
+{
+  return l->head;
+}
+
+xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i)
+{
+  if(i) return i->next;
+  return NULL;
+}
+
+xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
+{
+  if(i) return i->prev;
+  return NULL;
+}
+
 
