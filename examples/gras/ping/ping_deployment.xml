@@ -5,6 +5,7 @@
      <argument value="4000"/>       <!-- port number -->
   </process>
   <process host="Fafard" function="client">
+     <argument value="Tremblay"/>   <!-- server host -->
      <argument value="4000"/>       <!-- port number -->
   </process>
 </platform_description>
