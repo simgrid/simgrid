@@ -102,6 +102,7 @@ static void *__context_wrapper(void *c)
   int i;
 
 #ifdef USE_PTHREADS
+  pthread_mutex_lock(&(context->mutex));
   pthread_cond_wait(&(context->cond), &(context->mutex));
   pthread_mutex_unlock(&(context->mutex));
 #endif
@@ -167,8 +168,6 @@ void xbt_context_empty_trash(void)
 void xbt_context_start(xbt_context_t context) 
 {
 #ifdef USE_PTHREADS
-  pthread_mutex_lock(&(context->mutex));
-
   /* Launch the thread */
   xbt_assert0(!pthread_create(context->thread, NULL, __context_wrapper, context),
 	      "Unable to create a thread.");
