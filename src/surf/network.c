@@ -305,8 +305,8 @@ static xbt_heap_float_t share_resources(xbt_heap_float_t now)
   min = action->generic_action.remains / value;
 
   xbt_swag_foreach(action, running_actions) {
-    value = action->generic_action.remains /
-	lmm_variable_getvalue(action->variable);
+    value = action->latency + (action->generic_action.remains /
+	lmm_variable_getvalue(action->variable));
     if (value < min)
       min = value;
   }
@@ -318,6 +318,7 @@ static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 static void update_actions_state(xbt_heap_float_t now,
 				 xbt_heap_float_t delta)
 {
+  xbt_heap_float_t deltap = 0.0;
   surf_action_network_t action = NULL;
   surf_action_network_t next_action = NULL;
   xbt_swag_t running_actions =
@@ -326,8 +327,19 @@ static void update_actions_state(xbt_heap_float_t now,
       surf_network_resource->common_public->states.failed_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
+    deltap = delta;
+    if(action->latency>0) {
+      if(action->latency>deltap) {
+	action->latency-=deltap;
+	deltap = 0.0;
+      } else {
+	deltap -= action->latency;
+	action->latency = 0.0;
+      }
+    }
     action->generic_action.remains -=
-      lmm_variable_getvalue(action->variable) * delta;
+      lmm_variable_getvalue(action->variable) * deltap;
+
 /*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
 
     if (action->generic_action.remains <= 0) {
@@ -415,6 +427,10 @@ static surf_action_t communicate(void *src, void *dst,
   for(i=0; i<route_size; i++)
     lmm_expand(maxmin_system, route[i]->constraint, action->variable,
 	       1.0);
+
+  action->latency = 0.0;
+  for(i=0; i<route_size; i++)
+    action->latency += route[i]->lat_current;
 
   return (surf_action_t) action;
 }
