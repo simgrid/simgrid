@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 
-#define WARN "/***********\n * DO NOT EDIT! THIS FILE WERE AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
+#define WARN "/***********\n * DO NOT EDIT! THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
 #define SIM_FILENAME  "_%s_simulator.c"
 #define SIM_BINARYNAME  "%s_simulator"
 #define SIM_FILENAME_LDADD  "%s_simulator_LDADD"
@@ -118,7 +118,7 @@ xbt_dict_t process_function_set = NULL;
 
 static void parse_process_init(void)
 { 
-  void *p = (void *) 1231;
+  void *p = (void *) 1234;
   xbt_dict_set(process_function_set, A_process_function, p, NULL);
 }
 
@@ -242,7 +242,12 @@ static void generate_makefile(char *project, char *deployment)
   }
   fprintf(OUT, SIM_FILENAME, project);
   fprintf(OUT, ": %s\n", deployment);
-  fprintf(OUT, "\tstub_generator %s %s >/dev/null\n", project, filename);
+  fprintf(OUT, "\tstub_generator %s %s >/dev/null\n", project, deployment);
+}
+
+static void print(void *p)
+{
+  printf("%p",p);
 }
 
 int main(int argc, char *argv[])
@@ -266,6 +271,20 @@ int main(int argc, char *argv[])
 
   warning = xbt_new(char,strlen(WARN)+strlen(deployment_file)+10);
   sprintf(warning,WARN,deployment_file);
+
+  if(XBT_LOG_ISENABLED(stubgen, xbt_log_priority_debug)) {
+    xbt_dict_cursor_t cursor=NULL;
+    char *key = NULL;
+    void *data = NULL;
+
+    for (cursor=NULL, xbt_dict_cursor_first((process_function_set),&(cursor)) ;
+	 xbt_dict_cursor_get_or_free(&(cursor),&(key),(void**)(&data));
+	 xbt_dict_cursor_step(cursor) ) {
+      DEBUG1("Function %s", key);      
+    }
+    
+    xbt_dict_dump(process_function_set,print);
+  }
 
   generate_sim(project_name);
   generate_rl(project_name);
