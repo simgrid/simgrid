@@ -49,7 +49,7 @@ typedef struct simdata_process {
   xbt_context_t context;	        /* the context that executes the scheduler fonction */
   int PID;			/* used for debugging purposes */
   int PPID;			/* The parent PID */
-  m_task_t waiting_task;        /* used for debugging purposes */
+  m_task_t waiting_task;        
   m_host_t put_host;            /* used for debugging purposes */
   int put_channel;              /* used for debugging purposes */
   int argc;                     /* arguments number if any */
@@ -62,7 +62,7 @@ typedef struct MSG_Global {
   xbt_fifo_t host;
   xbt_fifo_t link;
   xbt_fifo_t process_to_run;
-  xbt_fifo_t process;
+  xbt_fifo_t process_list;
   int max_channel;
   m_process_t current_process;
   xbt_dict_t registered_functions;
@@ -72,16 +72,18 @@ extern MSG_Global_t msg_global;
 
 /*************************************************************/
 
-#define PROCESS_SET_ERRNO(val) (((simdata_process_t)(MSG_process_self()->simdata))->last_errno=val)
-#define PROCESS_GET_ERRNO() (((simdata_process_t)(MSG_process_self()->simdata))->last_errno)
+#define PROCESS_SET_ERRNO(val) (MSG_process_self()->simdata->last_errno=val)
+#define PROCESS_GET_ERRNO() (MSG_process_self()->simdata->last_errno)
 #define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
-#define CHECK_HOST()  ASSERT((((simdata_host_t) MSG_host_self()->simdata)->state==HOST_ALIVE),"Host failed, you cannot call this function.")
+#define CHECK_HOST()  xbt_assert0((MSG_host_self()->simdata->state==HOST_ALIVE),"Host failed, you cannot call this function.")
 
 m_host_t __MSG_host_create(const char *name, void *workstation,
 			   void *data);
 void __MSG_host_destroy(m_host_t host);
+void __MSG_task_execute(m_process_t process, m_task_t task);
+MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task);
 MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task);
 
 #endif
