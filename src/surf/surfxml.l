@@ -1,8 +1,8 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/01/04 14:37:23.
+ * Generated 2005/01/05 14:22:05.
  *
  * This program was generated with the FleXML XML processor generator,
- * (Id: flexml.pl,v 1.29 2005/01/04 09:30:15 alegrand Exp).
+ * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
  * Copyright © 1999 Kristoffer Rose.  All rights reserved.
  *
  * You can redistribute and/or modify this program provided the following
@@ -25,9 +25,9 @@
 
 /* Version strings. */
 const char rcs_flexml_skeleton[] =
- "$" "Id: skel,v 1.16 1999/12/09 04:01:51 krisrose Exp $";
+ "$" "Id: skel,v 1.19 2005/01/05 18:49:27 legranda Exp $";
 const char rcs_flexml[] =
- "$" "Id: flexml.pl,v 1.29 2005/01/04 09:30:15 alegrand Exp $";
+ "$" "Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -38,10 +38,11 @@ const char rcs_flexml[] =
 #include <ctype.h>
 
 /* Generated definitions. */
+#define FLEXML_yylineno
 #define FLEXML_BUFFERSTACKSIZE 10000000
 
 /* XML processor api. */
-#include "surf/surfxml.h"
+#include "surfxml.h"
 
 /* FleXML-provided data. */
 const char* pcdata;
@@ -100,7 +101,7 @@ char* next = bufferstack;
 #define BUFFERDONE    (BUFFERPUTC('\0'))
 
 #define BUFFERLITERAL(C,P) bufferliteral(C,&(P),yytext)
-static void bufferliteral(char c, char** pp, char* text)
+static void bufferliteral(char c, const char** pp, char* text)
 {
   char *s = strchr(text,c), *e = strrchr(text,c);
   assert(s <= e); BUFFERSET(*pp);
@@ -147,6 +148,7 @@ static char* popbuffer(void)
 %option noyywrap
 
 /* Flex user-requested options. */
+%option yylineno
 %option nounput
 
 /* XML character classes (currently restricted to ASCII). */
@@ -200,7 +202,7 @@ const char* *statenames=NULL;
 %%
 
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
- SET(PROLOG);
+ SET(PROLOG); 
   /* FleXML_init */
   if(!statenames) statenames=calloc(IMPOSSIBLE,sizeof(char*));
   statenames[PROLOG] = NULL;
@@ -253,13 +255,13 @@ const char* *statenames=NULL;
  "--"		|
  .		|
  \n		SKIP;
- <<EOF>>	fail("EOF in comment.");
+ <<EOF>>	FAIL("EOF in comment.");
 }
 <INPI>{
  "?>"		LEAVE;
  .		|
  \n		SKIP;
- <<EOF>>	fail("EOF in PI (processing instruction).");
+ <<EOF>>	FAIL("EOF in PI (processing instruction).");
 }
 
  /* SPACES: skipped uniformly */
@@ -270,7 +272,7 @@ const char* *statenames=NULL;
 
 <PROLOG>{
  "<?xml"({S}version{Eq}(\'{VersionNum}\'|\"{VersionNum}\"))?"?>" SET(DOCTYPE);
- "<?xml"[^>]*">" fail("Bad declaration %s.",yytext);
+ "<?xml"[^>]*">" FAIL("Bad declaration %s.",yytext);
 }
 
 <PROLOG,DOCTYPE>{
@@ -281,9 +283,9 @@ const char* *statenames=NULL;
  "<!DOCTYPE"{S}"platform_description"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_platform_description);
  "<!DOCTYPE"{S}"network_link"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_network_link);
  "<!DOCTYPE"{S}"process"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_process);
- "<!"[^>-][^>]*">" fail("Bad declaration %s.",yytext);
- . 		fail("Unexpected character `%c' in prolog.", yytext[0]);
- <<EOF>> 	fail("EOF in prolog.");
+ "<!"[^>-][^>]*">" FAIL("Bad declaration %s.",yytext);
+ . 		FAIL("Unexpected character `%c' in prolog.", yytext[0]);
+ <<EOF>> 	FAIL("EOF in prolog.");
 }
 
  /* RULES DERIVED FROM DTD. */
@@ -304,9 +306,9 @@ const char* *statenames=NULL;
    case ROOT_platform_description: SET(EPILOG); break;
   }
  }
- .       fail("Unexpected character `%c' in attribute list of platform_description element.", yytext[0]);
- {Name} fail("Bad attribute `%s' in `platform_description' element start tag.",yytext);
- <<EOF>> fail("EOF in attribute list of `platform_description' element.");
+ .       FAIL("Unexpected character `%c' in attribute list of platform_description element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `platform_description' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `platform_description' element.");
 }
 
 <E_platform_description,S_platform_description_2,S_platform_description>{
@@ -317,9 +319,9 @@ const char* *statenames=NULL;
    case ROOT_platform_description: SET(EPILOG); break;
   }
  }
- "</"{Name}{s}">" fail("Unexpected end-tag `%s': `</platform_description>' expected.",yytext);
- .       fail("Unexpected character `%c': `</platform_description>' expected.",yytext[0]);
- <<EOF>> fail("Premature EOF: `</platform_description>' expected.");
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</platform_description>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</platform_description>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</platform_description>' expected.");
 }
 
 <ROOT_cpu,S_platform_description_2,S_platform_description_1,S_platform_description>"<cpu"{s} {
@@ -354,22 +356,22 @@ const char* *statenames=NULL;
  "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_cpu_state_file);
 
  ">" {
-  if (!A_cpu_name) fail("Required attribute `name' not set for `cpu' element.");
-  if (!A_cpu_power) fail("Required attribute `power' not set for `cpu' element.");
+  if (!A_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
+  if (!A_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
   LEAVE; STag_cpu();pcdata = NULL; ENTER(E_cpu);
  }
  "/>" {
-  if (!A_cpu_name) fail("Required attribute `name' not set for `cpu' element.");
-  if (!A_cpu_power) fail("Required attribute `power' not set for `cpu' element.");
+  if (!A_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
+  if (!A_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
   LEAVE; STag_cpu(); pcdata = NULL; ETag_cpu();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
    case ROOT_cpu: SET(EPILOG); break;
   }
  }
- .       fail("Unexpected character `%c' in attribute list of cpu element.", yytext[0]);
- {Name} fail("Bad attribute `%s' in `cpu' element start tag.",yytext);
- <<EOF>> fail("EOF in attribute list of `cpu' element.");
+ .       FAIL("Unexpected character `%c' in attribute list of cpu element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `cpu' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `cpu' element.");
 }
 
 <E_cpu>{
@@ -381,9 +383,9 @@ const char* *statenames=NULL;
    case ROOT_cpu: SET(EPILOG); break;
   }
  }
- "</"{Name}{s}">" fail("Unexpected end-tag `%s': `</cpu>' expected.",yytext);
- .       fail("Unexpected character `%c': `</cpu>' expected.",yytext[0]);
- <<EOF>> fail("Premature EOF: `</cpu>' expected.");
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</cpu>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</cpu>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</cpu>' expected.");
 }
 
 <ROOT_network_link,S_platform_description_2,S_platform_description_1,S_platform_description>"<network_link"{s} {
@@ -422,22 +424,22 @@ const char* *statenames=NULL;
  "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_network_link_state_file);
 
  ">" {
-  if (!A_network_link_name) fail("Required attribute `name' not set for `network_link' element.");
-  if (!A_network_link_bandwidth) fail("Required attribute `bandwidth' not set for `network_link' element.");
+  if (!A_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
+  if (!A_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
   LEAVE; STag_network_link();pcdata = NULL; ENTER(E_network_link);
  }
  "/>" {
-  if (!A_network_link_name) fail("Required attribute `name' not set for `network_link' element.");
-  if (!A_network_link_bandwidth) fail("Required attribute `bandwidth' not set for `network_link' element.");
+  if (!A_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
+  if (!A_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
   LEAVE; STag_network_link(); pcdata = NULL; ETag_network_link();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
    case ROOT_network_link: SET(EPILOG); break;
   }
  }
- .       fail("Unexpected character `%c' in attribute list of network_link element.", yytext[0]);
- {Name} fail("Bad attribute `%s' in `network_link' element start tag.",yytext);
- <<EOF>> fail("EOF in attribute list of `network_link' element.");
+ .       FAIL("Unexpected character `%c' in attribute list of network_link element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `network_link' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `network_link' element.");
 }
 
 <E_network_link>{
@@ -449,9 +451,9 @@ const char* *statenames=NULL;
    case ROOT_network_link: SET(EPILOG); break;
   }
  }
- "</"{Name}{s}">" fail("Unexpected end-tag `%s': `</network_link>' expected.",yytext);
- .       fail("Unexpected character `%c': `</network_link>' expected.",yytext[0]);
- <<EOF>> fail("Premature EOF: `</network_link>' expected.");
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</network_link>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</network_link>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</network_link>' expected.");
 }
 
 <ROOT_route,S_platform_description_2,S_platform_description_1,S_platform_description>"<route"{s} {
@@ -468,22 +470,22 @@ const char* *statenames=NULL;
  "dst"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_dst);
 
  ">" {
-  if (!A_route_src) fail("Required attribute `src' not set for `route' element.");
-  if (!A_route_dst) fail("Required attribute `dst' not set for `route' element.");
+  if (!A_route_src) FAIL("Required attribute `src' not set for `route' element.");
+  if (!A_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
   LEAVE; STag_route();pcdata = NULL; ENTER(S_route);
  }
  "/>" {
-  if (!A_route_src) fail("Required attribute `src' not set for `route' element.");
-  if (!A_route_dst) fail("Required attribute `dst' not set for `route' element.");
+  if (!A_route_src) FAIL("Required attribute `src' not set for `route' element.");
+  if (!A_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
   LEAVE; STag_route(); pcdata = NULL; ETag_route();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
    case ROOT_route: SET(EPILOG); break;
   }
  }
- .       fail("Unexpected character `%c' in attribute list of route element.", yytext[0]);
- {Name} fail("Bad attribute `%s' in `route' element start tag.",yytext);
- <<EOF>> fail("EOF in attribute list of `route' element.");
+ .       FAIL("Unexpected character `%c' in attribute list of route element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `route' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `route' element.");
 }
 
 <S_route,S_route_2,E_route>{
@@ -495,9 +497,9 @@ const char* *statenames=NULL;
    case ROOT_route: SET(EPILOG); break;
   }
  }
- "</"{Name}{s}">" fail("Unexpected end-tag `%s': `</route>' expected.",yytext);
- .       fail("Unexpected character `%c': `</route>' expected.",yytext[0]);
- <<EOF>> fail("Premature EOF: `</route>' expected.");
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</route>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</route>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</route>' expected.");
 }
 
 <ROOT_route_element,S_route_1,S_route,S_route_2>"<route_element"{s} {
@@ -510,20 +512,20 @@ const char* *statenames=NULL;
  "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_element_name);
 
  ">" {
-  if (!A_route_element_name) fail("Required attribute `name' not set for `route_element' element.");
+  if (!A_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
   LEAVE; STag_route_element();pcdata = NULL; ENTER(E_route_element);
  }
  "/>" {
-  if (!A_route_element_name) fail("Required attribute `name' not set for `route_element' element.");
+  if (!A_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
   LEAVE; STag_route_element(); pcdata = NULL; ETag_route_element();
   switch (YY_START) {
    case S_route_1: case S_route: case S_route_2: SET(S_route_2); break;
    case ROOT_route_element: SET(EPILOG); break;
   }
  }
- .       fail("Unexpected character `%c' in attribute list of route_element element.", yytext[0]);
- {Name} fail("Bad attribute `%s' in `route_element' element start tag.",yytext);
- <<EOF>> fail("EOF in attribute list of `route_element' element.");
+ .       FAIL("Unexpected character `%c' in attribute list of route_element element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `route_element' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `route_element' element.");
 }
 
 <E_route_element>{
@@ -535,9 +537,9 @@ const char* *statenames=NULL;
    case ROOT_route_element: SET(EPILOG); break;
   }
  }
- "</"{Name}{s}">" fail("Unexpected end-tag `%s': `</route_element>' expected.",yytext);
- .       fail("Unexpected character `%c': `</route_element>' expected.",yytext[0]);
- <<EOF>> fail("Premature EOF: `</route_element>' expected.");
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</route_element>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</route_element>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</route_element>' expected.");
 }
 
 <ROOT_process,S_platform_description_2,S_platform_description_1,S_platform_description>"<process"{s} {
@@ -554,22 +556,22 @@ const char* *statenames=NULL;
  "function"{Eq}\" ENTER(VALUE2); BUFFERSET(A_process_function);
 
  ">" {
-  if (!A_process_host) fail("Required attribute `host' not set for `process' element.");
-  if (!A_process_function) fail("Required attribute `function' not set for `process' element.");
+  if (!A_process_host) FAIL("Required attribute `host' not set for `process' element.");
+  if (!A_process_function) FAIL("Required attribute `function' not set for `process' element.");
   LEAVE; STag_process();pcdata = NULL; ENTER(S_process);
  }
  "/>" {
-  if (!A_process_host) fail("Required attribute `host' not set for `process' element.");
-  if (!A_process_function) fail("Required attribute `function' not set for `process' element.");
+  if (!A_process_host) FAIL("Required attribute `host' not set for `process' element.");
+  if (!A_process_function) FAIL("Required attribute `function' not set for `process' element.");
   LEAVE; STag_process(); pcdata = NULL; ETag_process();
   switch (YY_START) {
    case S_platform_description_2: case S_platform_description_1: case S_platform_description: SET(S_platform_description_2); break;
    case ROOT_process: SET(EPILOG); break;
   }
  }
- .       fail("Unexpected character `%c' in attribute list of process element.", yytext[0]);
- {Name} fail("Bad attribute `%s' in `process' element start tag.",yytext);
- <<EOF>> fail("EOF in attribute list of `process' element.");
+ .       FAIL("Unexpected character `%c' in attribute list of process element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `process' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `process' element.");
 }
 
 <S_process,E_process,S_process_2>{
@@ -581,9 +583,9 @@ const char* *statenames=NULL;
    case ROOT_process: SET(EPILOG); break;
   }
  }
- "</"{Name}{s}">" fail("Unexpected end-tag `%s': `</process>' expected.",yytext);
- .       fail("Unexpected character `%c': `</process>' expected.",yytext[0]);
- <<EOF>> fail("Premature EOF: `</process>' expected.");
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</process>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</process>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</process>' expected.");
 }
 
 <ROOT_argument,S_process_1,S_process,S_process_2>"<argument"{s} {
@@ -596,20 +598,20 @@ const char* *statenames=NULL;
  "value"{Eq}\" ENTER(VALUE2); BUFFERSET(A_argument_value);
 
  ">" {
-  if (!A_argument_value) fail("Required attribute `value' not set for `argument' element.");
+  if (!A_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
   LEAVE; STag_argument();pcdata = NULL; ENTER(E_argument);
  }
  "/>" {
-  if (!A_argument_value) fail("Required attribute `value' not set for `argument' element.");
+  if (!A_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
   LEAVE; STag_argument(); pcdata = NULL; ETag_argument();
   switch (YY_START) {
    case ROOT_argument: SET(EPILOG); break;
    case S_process_1: case S_process: case S_process_2: SET(S_process_2); break;
   }
  }
- .       fail("Unexpected character `%c' in attribute list of argument element.", yytext[0]);
- {Name} fail("Bad attribute `%s' in `argument' element start tag.",yytext);
- <<EOF>> fail("EOF in attribute list of `argument' element.");
+ .       FAIL("Unexpected character `%c' in attribute list of argument element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `argument' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `argument' element.");
 }
 
 <E_argument>{
@@ -621,15 +623,15 @@ const char* *statenames=NULL;
    case S_process_1: case S_process: case S_process_2: SET(S_process_2); break;
   }
  }
- "</"{Name}{s}">" fail("Unexpected end-tag `%s': `</argument>' expected.",yytext);
- .       fail("Unexpected character `%c': `</argument>' expected.",yytext[0]);
- <<EOF>> fail("Premature EOF: `</argument>' expected.");
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</argument>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</argument>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</argument>' expected.");
 }
 
  /* EPILOG: after the root element. */
 
 <EPILOG>{
- . 		fail("Unexpected character `%c' after document.", yytext[0]);
+ . 		FAIL("Unexpected character `%c' after document.", yytext[0]);
  <<EOF>> 	SUCCEED;
 }
 
@@ -657,35 +659,35 @@ const char* *statenames=NULL;
 
 <IMPOSSIBLE>{
  "<![CDATA["	ENTER(CDATA);
- "]""]>"		fail("Unexpected `]""]>' in character data.");
+ "]""]>"		FAIL("Unexpected `]""]>' in character data.");
 }
 
 <VALUE1>{
  \'		BUFFERDONE; LEAVE;
- <<EOF>>	fail("EOF in literal (\"'\" expected).");
+ <<EOF>>	FAIL("EOF in literal (\"'\" expected).");
 }
 
 <VALUE2>{
  \"		BUFFERDONE; LEAVE;
- <<EOF>>	fail("EOF in literal (`\"' expected).");
+ <<EOF>>	FAIL("EOF in literal (`\"' expected).");
 }
 
 <IMPOSSIBLE,VALUE1,VALUE2>{
  [^<&]		BUFFERPUTC(yytext[0]);
- [<&]		fail("Spurious `%c' in character data.",yytext[0]);
+ [<&]		FAIL("Spurious `%c' in character data.",yytext[0]);
 }
 
 <CDATA>{
  "]""]>"		LEAVE;
  "]""]"		BUFFERPUTC(yytext[0]); BUFFERPUTC(yytext[1]);
  .		BUFFERPUTC(yytext[0]);
- <<EOF>>	fail("EOF in CDATA section.");
+ <<EOF>>	FAIL("EOF in CDATA section.");
 }
 
  /* Impossible rules to avoid warnings from flex(1). */
 
 <INITIAL,IMPOSSIBLE>{
- .|[\n] fail("The Impossible Happened: INITIAL or IMPOSSIBLE state entered?");
+ .|[\n] FAIL("The Impossible Happened: INITIAL or IMPOSSIBLE state entered?");
 }
 
 %%

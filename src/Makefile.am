@@ -130,7 +130,10 @@ surf/surfxml.c: surf/surfxml.l
 	@LEX@ -o$@ -Psurf_parse_ $^
 
 surf/surfxml.l: surf/surfxml.dtd
-	cd surf; flexml -S surfxml.dtd
+	cd surf; flexml -b 10000000 -S -L surfxml.dtd ; \
+	mv surfxml.h surfxml.h.bak ; \
+	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.h.bak > surfxml.h
+
 
 libgras_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \

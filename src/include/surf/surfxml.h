@@ -1,8 +1,8 @@
 /* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2005/01/04 14:37:22.
+ * Generated 2005/01/05 14:22:02.
  *
  * This program was generated with the FleXML XML processor generator,
- * (Id: flexml.pl,v 1.29 2005/01/04 09:30:15 alegrand Exp).
+ * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
  * Copyright © 1999 Kristoffer Rose.  All rights reserved.
  *
  * You can redistribute and/or modify this program provided the following

@@ -30,4 +30,4 @@ nobase_include_HEADERS = \
 	amok/bandwidth.h
 
 surf/surfxml.h: ../src/surf/surfxml.dtd
-	cd surf; flexml -H ../../src/surf/surfxml.dtd
+	cd surf; flexml -H -L ../../src/surf/surfxml.dtd
