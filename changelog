@@ -1,11 +1,12 @@
-2004-07-05
+2004-07-05 Martin Quinson
+  - YEAH! GRAS/SG and GRAS/RL are both able to run the ping example !
+  
   - Plug a whole bunch of memleaks
   - each process now have to call gras_{init,exit}. One day, their log
     settings will be separated
- [Transport]
-  - Continue the code factorisation between SG, RL and common
+  - Continue the code factorisation between SG, RL and common in Transport.
 
-2004-07-04
+2004-07-04 Martin Quinson
  [Transport]
   - Redistribution between SG and RL. 
     We wanna have to accept in SG, so move accepted related parts of RL in
@@ -15,7 +16,7 @@
  [gras_stub_generator]
   - Bug fix: Do call gras_process_init from gras_init (wasnt called in RL).
 
-2004-07-03
+2004-07-03 Martin Quinson
   - Create a new log channel tbx containing dict, set, log, dynar (to shut
     them all up in one shot)
  [DataDesc]
@@ -36,7 +37,7 @@
  [examples/ping]
   - Let it work in RL (yuhu)
 
-2004-06-21
+2004-06-21 Martin Quinson
  [Transport]
    - porting SG plugin and SG select to new standards (works almost).
    - plug memleaks and fix bugs around.
@@ -46,11 +47,11 @@
      want to handle references to objects. Test case working even for cycles.
    - plug memleaks. Valgrind is perfectly ok with this.
 
-2004-06-12
+2004-06-12 Martin Quinson
  [Transport] 
    - cleanup the separation between plugin and main code in plugin creation 
 
-2004-06-11
+2004-06-11 Martin Quinson
  [Transport]
    - Reput hook for raw sockets, needed for BW experiments
    - kill a few lines of dead code
