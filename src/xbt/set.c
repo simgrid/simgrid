@@ -81,12 +81,17 @@ gras_error_t gras_set_add    (gras_set_t     *set,
 				    elm->name, elm->name_len,
 				    (void**) &found_in_dict);
   if (errcode == no_error) {
-    elm->ID=found_in_dict->ID;
-    DEBUG2("Reinsertion of key %s (id %d)", elm->name, elm->ID);
-    TRY(gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func));
-    TRY(gras_dynar_set(set->dynar, elm->ID, &elm));
-    return no_error;
-
+    if (elm == found_in_dict) {
+      DEBUG2("Ignoring request to insert the same element twice (key %s ; id %d)",
+	     elm->name, elm->ID);
+      return no_error;
+    } else {
+      elm->ID=found_in_dict->ID;
+      DEBUG2("Reinsertion of key %s (id %d)", elm->name, elm->ID);
+      TRY(gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func));
+      TRY(gras_dynar_set(set->dynar, elm->ID, &elm));
+      return no_error;
+    }
   } else if (errcode != mismatch_error) {
     return errcode; /* I expected mismatch_error */
   }
@@ -110,8 +115,10 @@ gras_error_t gras_set_add    (gras_set_t     *set,
 gras_error_t gras_set_get_by_name    (gras_set_t     *set,
 				      const char     *name,
 				      /* OUT */gras_set_elm_t **dst) {
-
-  return gras_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
+  gras_error_t errcode;
+  errcode = gras_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
+  DEBUG2("Lookup key %s: %s",name,gras_error_name(errcode));
+  return errcode;
 }
 /**
  * gras_set_get_by_name_ext:
@@ -146,8 +153,6 @@ gras_error_t gras_set_get_by_name_ext(gras_set_t     *set,
 gras_error_t gras_set_get_by_id      (gras_set_t     *set,
 				      int             id,
 				      /* OUT */gras_set_elm_t **dst) {
-  DEBUG2("Lookup type of id %d (of %d)", 
-	 id, gras_dynar_length(set->dynar));
   if (id < gras_dynar_length(set->dynar) &&
       id >= 0) {
     gras_dynar_get(set->dynar,id,dst);
