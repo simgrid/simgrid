@@ -18,6 +18,9 @@ GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
 #define WRITE 1
 #define RW    2
 
+int r_arch;
+  
+
 gras_error_t
 write_read(gras_datadesc_type_t *type,void *src, void *dst, 
 	   gras_socket_t *sock, int direction);
@@ -40,7 +43,7 @@ write_read(gras_datadesc_type_t *type,void *src, void *dst,
     TRY(gras_socket_server_from_file("datadesc_usage.out",&sock));
 
   if (direction == READ || direction == RW)
-    TRY(gras_datadesc_recv(sock, type, gras_arch_selfid(), dst));
+    TRY(gras_datadesc_recv(sock, type, r_arch, dst));
 
   if (direction == RW) 
     gras_socket_close(sock);
@@ -391,12 +394,13 @@ gras_error_t test_graph(gras_socket_t *sock, int direction) {
 		 "j=%p; &j=%p",
 		 j,j->l->l->l, 
 		 j ,&j);
-    i->l->l->l = NULL;
     j->l->l->l = NULL;
+    i->l->l->l = NULL;
     gras_assert(list_eq(i,j));
 
     list_free(j);
   }
+  i->l->l->l = NULL; /* do this even in READ mode */
   list_free(i);
   return no_error;
 }
@@ -416,7 +420,8 @@ typedef struct { /* structure presented in the IEEE article */
 int main(int argc,char *argv[]) {
   gras_error_t errcode;
   gras_socket_t *sock;
-  int direction = RW; // READ; // WRITE
+  int direction = RW;
+  char r_arch_char = gras_arch_selfid();
 
   gras_init_defaultlog(&argc,argv,
 		       "DataDesc.thresh=verbose"
@@ -430,10 +435,19 @@ int main(int argc,char *argv[]) {
       direction = WRITE;
   }
     
-  if (direction == WRITE) 
+  if (direction == WRITE) {
     TRYFAIL(gras_socket_client_from_file("datadesc_usage.out",&sock));
-  if (direction == READ) 
+    TRY(gras_datadesc_send(sock, gras_datadesc_by_name("char"),
+			   &r_arch_char));
+  }
+  if (direction == READ) {
     TRYFAIL(gras_socket_server_from_file("datadesc_usage.out",&sock));
+    TRY(gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
+			   gras_arch_selfid(), &r_arch_char));
+    INFO1("This datafile was generated on %s", 
+	  gras_datadesc_arch_name(r_arch_char));
+  }
+  r_arch = (int)r_arch_char;
   
   TRYFAIL(test_int(sock,direction));    
   TRYFAIL(test_float(sock,direction));  
@@ -455,3 +469,4 @@ int main(int argc,char *argv[]) {
   gras_exit();
   return 0;
 }
+
