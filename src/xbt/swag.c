@@ -36,6 +36,9 @@ void xbt_swag_init(xbt_swag_t swag, size_t offset)
 
 void xbt_swag_insert(void *obj, xbt_swag_t swag)
 {
+
+  if(xbt_swag_belongs(obj, swag)) return;
+  
   (swag->count)++;
   if (swag->head == NULL) {
     swag->head = obj;
