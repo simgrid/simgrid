@@ -14,7 +14,7 @@
 #define GRAS_MESSAGE_PRIVATE_H
 
 #include "gras_private.h"
-#include "Msg/msg_interface.h"
+#include "gras/Msg/msg_interface.h"
 
 /**
  * gras_msgtype_t:

@@ -14,7 +14,7 @@
 #define GRAS_DATADESC_PRIVATE_H
 
 #include "gras_private.h"
-#include "DataDesc/datadesc_interface.h"
+#include "gras/DataDesc/datadesc_interface.h"
 
 /**
  * aligned:

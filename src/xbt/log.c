@@ -9,15 +9,11 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 
-#include "Core/core_interface.h"
+#include "gros_interface.h"
 #include "gras_private.h"
 #include <stdarg.h>
 #include <assert.h>
 #include <ctype.h>
-
-#ifndef MIN
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-#endif
 
 typedef struct {
   char *catname;
@@ -206,7 +202,7 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
   gras_assert1(*dot == '.' && *eq == '=',
 	       "Invalid control string '%s'",control_string);
 
-  if (!strncmp(dot + 1, "thresh", MIN(eq - dot - 1,strlen("thresh")))) {
+  if (!strncmp(dot + 1, "thresh", min(eq - dot - 1,strlen("thresh")))) {
     int i;
     char *neweq=strdup(eq+1);
     char *p=neweq-1;
@@ -232,7 +228,7 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
     free(neweq);
   } else {
     char buff[512];
-    snprintf(buff,MIN(512,eq - dot - 1),"%s",dot+1);
+    snprintf(buff,min(512,eq - dot - 1),"%s",dot+1);
     gras_assert1(FALSE,"Unknown setting of the log category: %s",buff);
   }
   if (!(set->catname=malloc(dot - name+1)))

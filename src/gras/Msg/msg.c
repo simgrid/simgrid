@@ -8,10 +8,10 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "Msg/msg_private.h"
-#include "DataDesc/datadesc_interface.h"
-#include "Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
-#include "Virtu/virtu_interface.h"
+#include "gras/Msg/msg_private.h"
+#include "gras/DataDesc/datadesc_interface.h"
+#include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
+#include "gras/Virtu/virtu_interface.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(msg,GRAS);
 

@@ -10,8 +10,8 @@
 
 #include <ctype.h> /* isdigit */
 
-#include "DataDesc/datadesc_private.h"
-#include "DataDesc/ddt_parse.yy.h"
+#include "gras/DataDesc/datadesc_private.h"
+#include "gras/DataDesc/ddt_parse.yy.h"
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_parse,datadesc);
 

@@ -9,8 +9,8 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras_private.h"
-#include "Virtu/virtu_interface.h"
-#include "Msg/msg_interface.h" /* FIXME: Get rid of this cyclic */
+#include "gras/Virtu/virtu_interface.h"
+#include "gras/Msg/msg_interface.h" /* FIXME: Get rid of this cyclic */
 
 /* **************************************************************************
  * Process data

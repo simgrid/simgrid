@@ -14,8 +14,8 @@
 #define GRAS_TRP_PRIVATE_H
 
 #include "gras_private.h"
-#include "Transport/transport_interface.h"
-#include "Virtu/virtu_interface.h" /* socketset_get() */
+#include "gras/Transport/transport_interface.h"
+#include "gras/Virtu/virtu_interface.h" /* socketset_get() */
 
 /**
  * s_gras_socket:

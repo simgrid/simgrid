@@ -10,8 +10,8 @@
 
 %option noyywrap
 %{
-#include"DataDesc/datadesc_private.h"
-#include"DataDesc/ddt_parse.yy.h"
+#include "gras/DataDesc/datadesc_private.h"
+#include "gras/DataDesc/ddt_parse.yy.h"
 #include <string.h>
   YY_BUFFER_STATE input_buffer;
   FILE *file_to_parse;
