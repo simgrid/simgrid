@@ -79,7 +79,6 @@ static workstation_KCCFLN05_t workstation_new(const char *name,
 
 static void parse_workstation(void)
 {
-  char *name = NULL;
   double power_scale = 0.0;
   double power_initial = 0.0;
   tmgr_trace_t power_trace = NULL;
@@ -89,7 +88,6 @@ static void parse_workstation(void)
   double interference_recv = 0.0;
   double interference_send_recv = 0.0;
      
-  name = xbt_strdup(A_cpu_name);
   surf_parse_get_double(&power_scale,A_cpu_power);
   surf_parse_get_double(&power_initial,A_cpu_availability);
   surf_parse_get_trace(&power_trace,A_cpu_availability_file);
@@ -105,7 +103,7 @@ static void parse_workstation(void)
   surf_parse_get_double(&interference_recv,A_cpu_interference_recv);
   surf_parse_get_double(&interference_send_recv,A_cpu_interference_send_recv);
 
-  workstation_new(name, power_scale, power_initial, power_trace, state_initial,
+  workstation_new(A_cpu_name, power_scale, power_initial, power_trace, state_initial,
 		  state_trace, interference_send, interference_recv,
 		  interference_send_recv);
 }
@@ -128,7 +126,7 @@ static const char *get_resource_name(void *resource_id)
 
 static int cpu_used(void *resource_id)
 {
-  return lmm_constraint_used(maxmin_system,
+  return lmm_constraint_used(maxmin_system_cpu_KCCFLN05,
 			     ((workstation_KCCFLN05_t) resource_id)->constraint);
 }
 
@@ -355,14 +353,14 @@ static void action_network_KCCFLN05_free(surf_action_t action)
 
   xbt_dynar_foreach (src->outgoing_communications,cpt,act) {
     if(act==action) {
-      xbt_dynar_remove_at(src->outgoing_communications, cpt, act);
+      xbt_dynar_remove_at(src->outgoing_communications, cpt, &act);
       break;
     }
   }
 
   xbt_dynar_foreach (dst->incomming_communications,cpt,act) {
     if(act==action) {
-      xbt_dynar_remove_at(dst->incomming_communications, cpt, act);
+      xbt_dynar_remove_at(dst->incomming_communications, cpt, &act);
       break;
     }
   }
@@ -450,8 +448,11 @@ static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size)
     lmm_expand(maxmin_system_network_KCCFLN05, route->links[i]->constraint, 
 	       action->variable, 1.0);
 
-  xbt_dynar_push(card_src->outgoing_communications,action);
-  xbt_dynar_push(card_dst->incomming_communications,action);
+  action->src=src;
+  action->dst=dst;
+
+  xbt_dynar_push(card_src->outgoing_communications,&action);
+  xbt_dynar_push(card_dst->incomming_communications,&action);
 
   return (surf_action_t) action;
 }
@@ -469,7 +470,6 @@ static double share_cpu_KCCFLN05_resources(double now)
   s_surf_action_cpu_KCCFLN05_t s_cpu_action;
   lmm_constraint_t cnst = NULL;
   workstation_KCCFLN05_t workstation = NULL;
-  double value = share_network_KCCFLN05_resources(now);
   double W=0.0;
   double scale=0.0;
   int cpt;
@@ -593,8 +593,8 @@ static surf_action_t execute_KCCFLN05(void *cpu, double size)
 	surf_cpu_resource->common_public->states.failed_action_set;
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0, 1);
-  lmm_expand(maxmin_system, CPU->constraint, action->variable,
+  action->variable = lmm_variable_new(maxmin_system_cpu_KCCFLN05, action, 1.0, -1.0, 1);
+  lmm_expand(maxmin_system_cpu_KCCFLN05, CPU->constraint, action->variable,
 	     1.0);
 
   return (surf_action_t) action;
@@ -602,13 +602,13 @@ static surf_action_t execute_KCCFLN05(void *cpu, double size)
 
 static void cpu_KCCFLN05_action_suspend(surf_action_t action)
 {
-  lmm_update_variable_weight(maxmin_system,
+  lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
 			     ((surf_action_cpu_KCCFLN05_t) action)->variable, 0.0);
 }
 
 static void cpu_KCCFLN05_action_resume(surf_action_t action)
 {
-  lmm_update_variable_weight(maxmin_system,
+  lmm_update_variable_weight(maxmin_system_cpu_KCCFLN05,
 			     ((surf_action_cpu_KCCFLN05_t) action)->variable, 1.0);
 }
 
@@ -924,4 +924,9 @@ void surf_workstation_resource_init_KCCFLN05(const char *filename)
   xbt_dynar_push(resource_list, &surf_network_resource);
   xbt_dynar_push(resource_list, &surf_cpu_resource);
   xbt_dynar_push(resource_list, &surf_workstation_resource);
+
+  if (maxmin_system) { /* To avoid using this useless system */
+    lmm_system_free(maxmin_system);
+    maxmin_system = NULL;
+  }
 }
