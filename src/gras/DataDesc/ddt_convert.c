@@ -48,7 +48,6 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
   {"big32",      1, {1,2,4,4,8,   4,4,   4,8}, 
                     {1,2,4,4,8,   4,4,   4,8}},
 
-
   {"big32_8_4",  1, {1,2,4,4,8,   4,4,   4,8}, /* AIX */
                     {1,2,4,4,8,   4,4,   4,4}},
 
@@ -59,7 +58,10 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
                     {1,2,2,2,2,   2,2,   2,2}},
 
   {"big64",      1, {1,2,4,8,8,   8,8,   4,8}, /* sparc */
-                    {1,2,4,8,8,   8,8,   4,8}}
+                    {1,2,4,8,8,   8,8,   4,8}},
+   
+  {"big64_8_4",  1, {1,2,4,8,8,   8,8,   4,8}, /* aix with -maix64 */
+                    {1,2,4,8,8,   8,8,   4,4}}
 };
 
 const char *gras_datadesc_arch_name(int code) {
