@@ -41,7 +41,7 @@ IGNORE_HFILES=ddt_parse.yy.h
 HTML_IMAGES =
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE).
-content_files = overview.sgml
+content_files = overview.sgml faq.sgml
 
 # Other files to distribute.
 extra_files =
