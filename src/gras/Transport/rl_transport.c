@@ -70,7 +70,7 @@ gras_trp_select(double timeout,
 
     /* construct the set of socket to ear from */
     FD_ZERO(&FDS);
-    max_fds = 0;
+    max_fds = -1;
     xbt_dynar_foreach(sockets,cursor,sock_iter) {
       if (sock_iter->incoming) {
 	DEBUG1("Considering socket %d for select",sock_iter->sd);
@@ -84,7 +84,7 @@ gras_trp_select(double timeout,
       }
     }
 
-    if (max_fds == 0) {
+    if (max_fds == -1) {
        if (timeout > 0) {
 	  DEBUG0("No socket to select onto. Sleep instead.");
 	  gras_os_sleep(timeout,0);
