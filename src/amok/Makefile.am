@@ -1,5 +1,6 @@
 
-INCLUDES= -I$(top_srcdir)/src -I$(top_srcdir)/include @CFLAGS_SimGrid@
+INCLUDES= -I$(top_srcdir)/src -I$(top_srcdir)/include
+#@CFLAGS_SimGrid@
 
 EXTRA_DIST = \
 	Bandwidth/bandwidth_private.h
