@@ -11,13 +11,13 @@
 #include "amok/Bandwidth/bandwidth_private.h"
 #include "gras/messages.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(bw,amok,"Bandwidth testing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(bw,amok,"Bandwidth testing");
 
 static short _amok_bw_initialized = 0;
 
 /**** code ****/
 void amok_bw_init(void) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   gras_datadesc_type_t bw_request_desc, bw_res_desc, sat_request_desc;
 
   if (_amok_bw_initialized)
@@ -27,7 +27,7 @@ void amok_bw_init(void) {
    
   /* Build the datatype descriptions */ 
   bw_request_desc = gras_datadesc_struct("s_bw_request_t");
-  gras_datadesc_struct_append(bw_request_desc,"host",gras_datadesc_by_name("gras_host_t"));
+  gras_datadesc_struct_append(bw_request_desc,"host",gras_datadesc_by_name("xbt_host_t"));
   gras_datadesc_struct_append(bw_request_desc,"buf_size",gras_datadesc_by_name("unsigned int"));
   gras_datadesc_struct_append(bw_request_desc,"exp_size",gras_datadesc_by_name("unsigned int"));
   gras_datadesc_struct_append(bw_request_desc,"msg_size",gras_datadesc_by_name("unsigned int"));
@@ -43,7 +43,7 @@ void amok_bw_init(void) {
   bw_res_desc = gras_datadesc_ref("bw_res_t",bw_res_desc);
 
   sat_request_desc = gras_datadesc_struct("s_sat_request_desc_t");
-  gras_datadesc_struct_append(sat_request_desc,"host",gras_datadesc_by_name("gras_host_t"));
+  gras_datadesc_struct_append(sat_request_desc,"host",gras_datadesc_by_name("xbt_host_t"));
   gras_datadesc_struct_append(sat_request_desc,"msg_size",gras_datadesc_by_name("unsigned int"));
   gras_datadesc_struct_append(sat_request_desc,"timeout",gras_datadesc_by_name("unsigned int"));
   gras_datadesc_struct_close(sat_request_desc);
@@ -108,13 +108,13 @@ void amok_bw_exit(void) {
  * Conduct a test between the local host and @peer, and 
  * report the result in last args
  */
-gras_error_t amok_bw_test(gras_socket_t peer,
+xbt_error_t amok_bw_test(gras_socket_t peer,
 			  unsigned int buf_size,unsigned int exp_size,unsigned int msg_size,
 			  /*OUT*/ double *sec, double *bw) {
   gras_socket_t rawIn,rawOut; /* raw sockets for the experiments */
   gras_socket_t sock_dummy; /* ignored arg to msg_wait */
   int port;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   bw_request_t request,request_ack;
   
   for (port = 5000, errcode = system_error;
@@ -122,11 +122,11 @@ gras_error_t amok_bw_test(gras_socket_t peer,
        errcode = gras_socket_server_ext(++port,buf_size,1,&rawIn));
   if (errcode != no_error) {
     ERROR1("Error %s encountered while opening a raw socket",
-	   gras_error_name(errcode));
+	   xbt_error_name(errcode));
     return errcode;
   }
 	
-  request=gras_new0(s_bw_request_t,1);
+  request=xbt_new0(s_bw_request_t,1);
   request->buf_size=buf_size;
   request->exp_size=exp_size;
   request->msg_size=msg_size;
@@ -135,12 +135,12 @@ gras_error_t amok_bw_test(gras_socket_t peer,
   INFO1("Send an handshake to get the dude connect to port %d on me", request->host.port);
 
   if ((errcode=gras_msg_send(peer,gras_msgtype_by_name("BW handshake"),&request))) {
-    ERROR1("Error %s encountered while sending the BW request.", gras_error_name(errcode));
+    ERROR1("Error %s encountered while sending the BW request.", xbt_error_name(errcode));
     return errcode;
   }
   if ((errcode=gras_msg_wait(60,gras_msgtype_by_name("BW handshake ACK"),&sock_dummy,&request_ack))) {
     ERROR1("Error %s encountered while waiting for the answer to BW request.\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return errcode;
   }
    
@@ -148,17 +148,17 @@ gras_error_t amok_bw_test(gras_socket_t peer,
    
   if((errcode=gras_socket_client_ext(gras_socket_peer_name(peer),request_ack->host.port, buf_size,1,&rawOut))) {
     ERROR3("Error %s encountered while opening the raw socket to %s:%d for BW test\n",
-	    gras_error_name(errcode),gras_socket_peer_name(peer),request_ack->host.port);
+	    xbt_error_name(errcode),gras_socket_peer_name(peer),request_ack->host.port);
     return errcode;
   }
-  gras_free(request_ack);
+  xbt_free(request_ack);
   INFO0("Got ACK");
 
   *sec=gras_os_time();
   if ((errcode=gras_socket_raw_send(rawOut,120,exp_size,msg_size)) ||
       (errcode=gras_socket_raw_recv(rawIn,120,1,1))) {
     ERROR1("Error %s encountered while sending the BW experiment.",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_socket_close(rawOut);
     gras_socket_close(rawIn);
     return errcode;
@@ -184,19 +184,19 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
   gras_socket_t rawIn,rawOut;
   bw_request_t request=*(bw_request_t*)payload;
   bw_request_t answer;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   int port;
   
   INFO2("Got an handshake to connect to %s:%d",
 	request->host.name,request->host.port);
      
-  answer = gras_new0(s_bw_request_t,1);
+  answer = xbt_new0(s_bw_request_t,1);
   
   for (port = 5000, errcode = system_error;
        errcode == system_error;
        errcode = gras_socket_server_ext(++port,request->buf_size,1,&rawIn));
   if (errcode != no_error) {
-    ERROR1("Error %s encountered while opening a raw socket", gras_error_name(errcode));
+    ERROR1("Error %s encountered while opening a raw socket", xbt_error_name(errcode));
     /* FIXME: tell error to remote */
     return 1;
   }
@@ -204,7 +204,7 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
   if ((errcode=gras_socket_client_ext(gras_socket_peer_name(expeditor),request->host.port,
 				      request->buf_size,1,&rawOut))) { 
     ERROR3("Error '%s' encountered while opening a raw socket to %s:%d", 
-	   gras_error_name(errcode),gras_socket_peer_name(expeditor),request->host.port);
+	   xbt_error_name(errcode),gras_socket_peer_name(expeditor),request->host.port);
     /* FIXME: tell error to remote */
     return 1;
   }
@@ -216,7 +216,7 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
 
   if ((errcode=gras_msg_send(expeditor,gras_msgtype_by_name("BW handshake ACK"),&answer))) {
     ERROR1("Error %s encountered while sending the answer.",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_socket_close(rawIn);
     gras_socket_close(rawOut);
     /* FIXME: tell error to remote */
@@ -228,7 +228,7 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
   if ((errcode=gras_socket_raw_recv(rawIn, 120,request->exp_size,request->msg_size)) ||
       (errcode=gras_socket_raw_send(rawOut,120,1,1))) {
     ERROR1("Error %s encountered while receiving the experiment.",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_socket_close(rawIn);
     gras_socket_close(rawOut);
     /* FIXME: tell error to remote ? */
@@ -249,21 +249,21 @@ int amok_bw_cb_sat_begin(gras_socket_t     expeditor,
 
 #if 0
 /* function to request a BW test between two external hosts */
-gras_error_t grasbw_request(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_request(const char* from_name,unsigned int from_port,
 			   const char* to_name,unsigned int to_port,
 			   unsigned int bufSize,unsigned int expSize,unsigned int msgSize,
 			   /*OUT*/ double *sec, double*bw) {
   
   gras_sock_t *sock;
   gras_msg_t *answer;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   /* The request */
   BwExp_t *request;
   msgHost_t *target;
 
   if((errcode=gras_sock_client_open(from_name,from_port,&sock))) {
     fprintf(stderr,"grasbw_request(): Error %s encountered while contacting the actuator\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return errcode;
   }
   if (!(request=(BwExp_t *)malloc(sizeof(BwExp_t))) ||
@@ -283,20 +283,20 @@ gras_error_t grasbw_request(const char* from_name,unsigned int from_port,
 			      target,1,
 			      request,1))) {
     fprintf(stderr,"grasbw_request(): Error %s encountered while sending the request.\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
   if ((errcode=gras_msg_wait(240,GRASMSG_BW_RESULT,&answer))) {
     fprintf(stderr,"grasbw_request(): Error %s encountered while waiting for the answer.\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
 
   if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
     fprintf(stderr,"grasbw_request(): Peer reported error %s (%s).\n",
-	    gras_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
+	    xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
     gras_msg_free(answer);
     gras_sock_close(sock);
     return errcode;
@@ -333,7 +333,7 @@ int grasbw_cbBWRequest(gras_msg_t *msg) {
 				  &(res[0].value),&(res[1].value) ))) {
     fprintf(stderr,
 	    "%s:%d:grasbw_cbRequest: Error %s encountered while doing the test\n",
-	    __FILE__,__LINE__,gras_error_name(error->errcode));
+	    __FILE__,__LINE__,xbt_error_name(error->errcode));
     strncpy(error->errmsg,"Error within grasbw_test",ERRMSG_LEN);
     gras_msg_new_and_send(msg->sock,GRASMSG_BW_RESULT,2,
 		   error,1,
@@ -353,11 +353,11 @@ int grasbw_cbBWRequest(gras_msg_t *msg) {
  * Link saturation
  * ***************************************************************************/
 
-gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 				  const char* to_name,unsigned int to_port,
 				  unsigned int msgSize, unsigned int timeout) {
   gras_sock_t *sock;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   /* The request */
   SatExp_t *request;
   msgHost_t *target;
@@ -366,7 +366,7 @@ gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 
   if((errcode=gras_sock_client_open(from_name,from_port,&sock))) {
     fprintf(stderr,"%s:%d:saturate_start(): Error %s encountered while contacting peer\n",
-	    __FILE__,__LINE__,gras_error_name(errcode));
+	    __FILE__,__LINE__,xbt_error_name(errcode));
     return errcode;
   }
   if (!(request=(SatExp_t *)malloc(sizeof(SatExp_t))) ||
@@ -386,20 +386,20 @@ gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 			      target,1,
 			      request,1))) {
     fprintf(stderr,"%s:%d:saturate_start(): Error %s encountered while sending the request.\n",
-	    __FILE__,__LINE__,gras_error_name(errcode));
+	    __FILE__,__LINE__,xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
   if ((errcode=gras_msg_wait(120,GRASMSG_SAT_STARTED,&answer))) {
     fprintf(stderr,"%s:%d:saturate_start(): Error %s encountered while waiting for the ACK.\n",
-	    __FILE__,__LINE__,gras_error_name(errcode));
+	    __FILE__,__LINE__,xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
 
   if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
     fprintf(stderr,"%s:%d:saturate_start(): Peer reported error %s (%s).\n",
-	    __FILE__,__LINE__,gras_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
+	    __FILE__,__LINE__,xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
     gras_msg_free(answer);
     gras_sock_close(sock);
     return errcode;
@@ -413,7 +413,7 @@ gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 int grasbw_cbSatStart(gras_msg_t *msg) {
   gras_rawsock_t *raw;
   gras_sock_t *sock;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   double start; /* time to timeout */
 
   /* specification of the test to run */
@@ -439,7 +439,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
   /* Negociate the saturation with the peer */
   if((errcode=gras_sock_client_open(to_name,to_port,&sock))) {
     fprintf(stderr,"cbSatStart(): Error %s encountered while contacting peer\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot contact peer.\n");
@@ -460,7 +460,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
   if ((errcode=gras_msg_new_and_send(sock,GRASMSG_SAT_BEGIN, 1, 
 			      request,1))) {
     fprintf(stderr,"cbSatStart(): Error %s encountered while sending the request.\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot send request.\n");
@@ -470,7 +470,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   if ((errcode=gras_msg_wait(120,GRASMSG_SAT_BEGUN,&answer))) {
     fprintf(stderr,"cbSatStart(): Error %s encountered while waiting for the ACK.\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
 
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
@@ -482,7 +482,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
     fprintf(stderr,"cbSatStart(): Peer reported error %s (%s).\n",
-	    gras_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
+	    xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
 
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
@@ -497,7 +497,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   if ((errcode=gras_rawsock_client_open(to_name,raw_port,msgSize,&raw))) {
     fprintf(stderr,"cbSatStart(): Error %s while opening raw socket to %s:%d.\n",
-	    gras_error_name(errcode),to_name,gras_msg_ctn(answer,1,0,SatExp_t).port);
+	    xbt_error_name(errcode),to_name,gras_msg_ctn(answer,1,0,SatExp_t).port);
 
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
@@ -508,7 +508,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   /* send a train of data before repporting that XP is started */
   if ((errcode=gras_rawsock_send(raw,msgSize,msgSize))) {
-    fprintf(stderr,"cbSatStart: Failure %s during raw send\n",gras_error_name(errcode));
+    fprintf(stderr,"cbSatStart: Failure %s during raw send\n",xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot raw send.\n");
@@ -528,7 +528,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
   while (gras_msg_wait(0,GRASMSG_SAT_STOP,&msg)==timeout_error && 
 	 gras_time()-start < timeout) {
     if ((errcode=gras_rawsock_send(raw,msgSize,msgSize))) {
-      fprintf(stderr,"cbSatStart: Failure %s during raw send\n",gras_error_name(errcode));
+      fprintf(stderr,"cbSatStart: Failure %s during raw send\n",xbt_error_name(errcode));
       /* our error message do not interess anyone. SAT_STOP will do nothing. */
       gras_sock_close(sock);
       gras_rawsock_close(raw);
@@ -579,7 +579,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
 int grasbw_cbSatBegin(gras_msg_t *msg) {
   gras_rawsock_t *raw;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   double start; /* timer */
   /* request */
   unsigned int msgSize=gras_msg_ctn(msg,0,0,SatExp_t).msgSize;
@@ -599,7 +599,7 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
 
   if ((errcode=gras_rawsock_server_open(6666,8000,msgSize,&raw))) { 
     fprintf(stderr,"cbSatBegin(): Error %s encountered while opening a raw socket\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_BEGUN,2,
 		     "cbSatBegin: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot open raw socket");
@@ -613,7 +613,7 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
 			      error,1,
 			      request,1))) {
     fprintf(stderr,"cbSatBegin(): Error %s encountered while send ACK to peer\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return 1;
   }
   gras_msg_free(msg);
@@ -623,7 +623,7 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
 	 gras_time() - start < timeout) {
     errcode=gras_rawsock_recv(raw,msgSize,msgSize,1);
     if (errcode != timeout_error && errcode != no_error) {
-      fprintf(stderr,"cbSatBegin: Failure %s during raw receive\n",gras_error_name(errcode));
+      fprintf(stderr,"cbSatBegin: Failure %s during raw receive\n",xbt_error_name(errcode));
       /* our error message do not interess anyone. SAT_END will do nothing. */
       /* (if timeout'ed, it may be because the sender stopped emission. so survive it) */
       return 1;
@@ -643,35 +643,35 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
   return 1;
 }
 
-gras_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
 				 const char* to_name,unsigned int to_port) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   gras_sock_t *sock;
   gras_msg_t *answer;
 
   if((errcode=gras_sock_client_open(from_name,from_port,&sock))) {
     fprintf(stderr,"saturate_stop(): Error %s encountered while contacting peer\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return errcode;
   }
 
   if ((errcode=gras_msg_new_and_send(sock,GRASMSG_SAT_STOP,0))) {
     fprintf(stderr,"saturate_stop(): Error %s encountered while sending request\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
 
   if ((errcode=gras_msg_wait(120,GRASMSG_SAT_STOPPED,&answer))) {
     fprintf(stderr,"saturate_stop(): Error %s encountered while receiving ACK\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
 
   if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
     fprintf(stderr,"saturate_stop(): Peer reported error %s (%s).\n",
-	    gras_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
+	    xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
     gras_msg_free(answer);
     gras_sock_close(sock);
     return errcode;

@@ -40,7 +40,7 @@ BEGIN_DECL
 /* **************************************************************************
  * Garbage collection support
  * **************************************************************************/
-typedef enum { free_after_use, free_never } e_gras_free_directive_t;
+typedef enum { free_after_use, free_never } e_xbt_free_directive_t;
 
 
 /* **************************************************************************

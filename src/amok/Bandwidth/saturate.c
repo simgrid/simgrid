@@ -10,19 +10,19 @@
 
 #include "amok/Bandwidth/bandwidth_private.h"
 
-GRAS_LOG_EXTERNAL_CATEGORY(bw);
-GRAS_LOG_DEFAULT_CATEGORY(bw);
+XBT_LOG_EXTERNAL_CATEGORY(bw);
+XBT_LOG_DEFAULT_CATEGORY(bw);
 
 #if 0
 /* ***************************************************************************
  * Link saturation
  * ***************************************************************************/
 
-gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 				   const char* to_name,unsigned int to_port,
 				   unsigned int msgSize, unsigned int timeout) {
   gras_sock_t *sock;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   /* The request */
   SatExp_t *request;
   msgHost_t *target;
@@ -31,7 +31,7 @@ gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 
   if((errcode=gras_sock_client_open(from_name,from_port,&sock))) {
     fprintf(stderr,"%s:%d:saturate_start(): Error %s encountered while contacting peer\n",
-	    __FILE__,__LINE__,gras_error_name(errcode));
+	    __FILE__,__LINE__,xbt_error_name(errcode));
     return errcode;
   }
   if (!(request=(SatExp_t *)malloc(sizeof(SatExp_t))) ||
@@ -51,20 +51,20 @@ gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 			      target,1,
 			      request,1))) {
     fprintf(stderr,"%s:%d:saturate_start(): Error %s encountered while sending the request.\n",
-	    __FILE__,__LINE__,gras_error_name(errcode));
+	    __FILE__,__LINE__,xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
   if ((errcode=gras_msg_wait(120,GRASMSG_SAT_STARTED,&answer))) {
     fprintf(stderr,"%s:%d:saturate_start(): Error %s encountered while waiting for the ACK.\n",
-	    __FILE__,__LINE__,gras_error_name(errcode));
+	    __FILE__,__LINE__,xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
 
   if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
     fprintf(stderr,"%s:%d:saturate_start(): Peer reported error %s (%s).\n",
-	    __FILE__,__LINE__,gras_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
+	    __FILE__,__LINE__,xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
     gras_msg_free(answer);
     gras_sock_close(sock);
     return errcode;
@@ -78,7 +78,7 @@ gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 int grasbw_cbSatStart(gras_msg_t *msg) {
   gras_rawsock_t *raw;
   gras_sock_t *sock;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   double start; /* time to timeout */
 
   /* specification of the test to run */
@@ -104,7 +104,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
   /* Negociate the saturation with the peer */
   if((errcode=gras_sock_client_open(to_name,to_port,&sock))) {
     fprintf(stderr,"cbSatStart(): Error %s encountered while contacting peer\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot contact peer.\n");
@@ -125,7 +125,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
   if ((errcode=gras_msg_new_and_send(sock,GRASMSG_SAT_BEGIN, 1, 
 			      request,1))) {
     fprintf(stderr,"cbSatStart(): Error %s encountered while sending the request.\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot send request.\n");
@@ -135,7 +135,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   if ((errcode=gras_msg_wait(120,GRASMSG_SAT_BEGUN,&answer))) {
     fprintf(stderr,"cbSatStart(): Error %s encountered while waiting for the ACK.\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
 
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
@@ -147,7 +147,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
     fprintf(stderr,"cbSatStart(): Peer reported error %s (%s).\n",
-	    gras_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
+	    xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
 
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
@@ -162,7 +162,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   if ((errcode=gras_rawsock_client_open(to_name,raw_port,msgSize,&raw))) {
     fprintf(stderr,"cbSatStart(): Error %s while opening raw socket to %s:%d.\n",
-	    gras_error_name(errcode),to_name,gras_msg_ctn(answer,1,0,SatExp_t).port);
+	    xbt_error_name(errcode),to_name,gras_msg_ctn(answer,1,0,SatExp_t).port);
 
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
@@ -173,7 +173,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
   /* send a train of data before repporting that XP is started */
   if ((errcode=gras_rawsock_send(raw,msgSize,msgSize))) {
-    fprintf(stderr,"cbSatStart: Failure %s during raw send\n",gras_error_name(errcode));
+    fprintf(stderr,"cbSatStart: Failure %s during raw send\n",xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_STARTED,1,
 		     "cbSatStart: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot raw send.\n");
@@ -193,7 +193,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
   while (gras_msg_wait(0,GRASMSG_SAT_STOP,&msg)==timeout_error && 
 	 gras_time()-start < timeout) {
     if ((errcode=gras_rawsock_send(raw,msgSize,msgSize))) {
-      fprintf(stderr,"cbSatStart: Failure %s during raw send\n",gras_error_name(errcode));
+      fprintf(stderr,"cbSatStart: Failure %s during raw send\n",xbt_error_name(errcode));
       /* our error message do not interess anyone. SAT_STOP will do nothing. */
       gras_sock_close(sock);
       gras_rawsock_close(raw);
@@ -244,7 +244,7 @@ int grasbw_cbSatStart(gras_msg_t *msg) {
 
 int grasbw_cbSatBegin(gras_msg_t *msg) {
   gras_rawsock_t *raw;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   double start; /* timer */
   /* request */
   unsigned int msgSize=gras_msg_ctn(msg,0,0,SatExp_t).msgSize;
@@ -264,7 +264,7 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
 
   if ((errcode=gras_rawsock_server_open(6666,8000,msgSize,&raw))) { 
     fprintf(stderr,"cbSatBegin(): Error %s encountered while opening a raw socket\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     grasRepportError(msg->sock,GRASMSG_SAT_BEGUN,2,
 		     "cbSatBegin: Severe error: Cannot send error status to requester!!\n",
 		     errcode,"Cannot open raw socket");
@@ -278,7 +278,7 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
 			      error,1,
 			      request,1))) {
     fprintf(stderr,"cbSatBegin(): Error %s encountered while send ACK to peer\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return 1;
   }
   gras_msg_free(msg);
@@ -288,7 +288,7 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
 	 gras_time() - start < timeout) {
     errcode=gras_rawsock_recv(raw,msgSize,msgSize,1);
     if (errcode != timeout_error && errcode != no_error) {
-      fprintf(stderr,"cbSatBegin: Failure %s during raw receive\n",gras_error_name(errcode));
+      fprintf(stderr,"cbSatBegin: Failure %s during raw receive\n",xbt_error_name(errcode));
       /* our error message do not interess anyone. SAT_END will do nothing. */
       /* (if timeout'ed, it may be because the sender stopped emission. so survive it) */
       return 1;
@@ -308,35 +308,35 @@ int grasbw_cbSatBegin(gras_msg_t *msg) {
   return 1;
 }
 
-gras_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
 				 const char* to_name,unsigned int to_port) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   gras_sock_t *sock;
   gras_msg_t *answer;
 
   if((errcode=gras_sock_client_open(from_name,from_port,&sock))) {
     fprintf(stderr,"saturate_stop(): Error %s encountered while contacting peer\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return errcode;
   }
 
   if ((errcode=gras_msg_new_and_send(sock,GRASMSG_SAT_STOP,0))) {
     fprintf(stderr,"saturate_stop(): Error %s encountered while sending request\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
 
   if ((errcode=gras_msg_wait(120,GRASMSG_SAT_STOPPED,&answer))) {
     fprintf(stderr,"saturate_stop(): Error %s encountered while receiving ACK\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_sock_close(sock);
     return errcode;
   }
 
   if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
     fprintf(stderr,"saturate_stop(): Peer reported error %s (%s).\n",
-	    gras_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
+	    xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
     gras_msg_free(answer);
     gras_sock_close(sock);
     return errcode;

@@ -17,7 +17,7 @@
 #define TRUE  1
 #define FALSE 0
 
-#define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
+#define XBT_MAX_CHANNEL 10 /* FIXME: killme */
 /*! C++ users need love */
 #ifndef BEGIN_DECL
 # ifdef __cplusplus
@@ -42,7 +42,7 @@ BEGIN_DECL
 typedef struct {  
    char *name;
    int port;
-} gras_host_t;
+} xbt_host_t;
 
 END_DECL
 

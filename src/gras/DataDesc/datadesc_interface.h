@@ -13,7 +13,7 @@
 #ifndef GRAS_DATADESC_INTERFACE_H
 #define GRAS_DATADESC_INTERFACE_H
 
-gras_error_t gras_datadesc_by_id  (long int code,
+xbt_error_t gras_datadesc_by_id  (long int code,
 				   gras_datadesc_type_t *type);
 
 /* to debug */
@@ -28,9 +28,9 @@ gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
 /* Access function */
 int  gras_datadesc_size(gras_datadesc_type_t type);
 /* Described data exchanges */
-gras_error_t gras_datadesc_cpy(gras_datadesc_type_t type, void *src, void **dst);
-gras_error_t gras_datadesc_send(gras_socket_t sock, gras_datadesc_type_t type, void *src);
-gras_error_t gras_datadesc_recv(gras_socket_t sock, gras_datadesc_type_t type,
+xbt_error_t gras_datadesc_cpy(gras_datadesc_type_t type, void *src, void **dst);
+xbt_error_t gras_datadesc_send(gras_socket_t sock, gras_datadesc_type_t type, void *src);
+xbt_error_t gras_datadesc_recv(gras_socket_t sock, gras_datadesc_type_t type,
 				int r_arch, void *dst);
 
    

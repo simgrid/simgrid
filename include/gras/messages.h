@@ -51,14 +51,14 @@ void gras_cb_register  (gras_msgtype_t msgtype,
 void gras_cb_unregister(gras_msgtype_t msgtype,
 			gras_cb_t      cb);
 
-gras_error_t gras_msg_send(gras_socket_t   sock,
+xbt_error_t gras_msg_send(gras_socket_t   sock,
 			   gras_msgtype_t  msgtype,
 			   void           *payload);
-gras_error_t gras_msg_wait(double          timeout,    
+xbt_error_t gras_msg_wait(double          timeout,    
 			   gras_msgtype_t  msgt_want,
 			   gras_socket_t  *expeditor,
 			   void           *payload);
-gras_error_t gras_msg_handle(double timeOut);
+xbt_error_t gras_msg_handle(double timeOut);
 
 
 END_DECL

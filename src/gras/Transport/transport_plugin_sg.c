@@ -17,28 +17,28 @@
 #include "transport_private.h"
 #include "gras/Virtu/virtu_sg.h"
 
-GRAS_LOG_EXTERNAL_CATEGORY(transport);
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
+XBT_LOG_EXTERNAL_CATEGORY(transport);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
 
 /***
  *** Prototypes 
  ***/
 /* retrieve the port record associated to a numerical port on an host */
-static gras_error_t find_port(gras_hostdata_t *hd, int port,
+static xbt_error_t find_port(gras_hostdata_t *hd, int port,
 			      gras_sg_portrec_t *hpd);
 
 
-gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 				       /* OUT */ gras_socket_t sock);
-gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 				       /* OUT */ gras_socket_t sock);
 void         gras_trp_sg_socket_close(gras_socket_t sd);
 
-gras_error_t gras_trp_sg_chunk_send(gras_socket_t sd,
+xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sd,
 				    const char *data,
 				    long int size);
 
-gras_error_t gras_trp_sg_chunk_recv(gras_socket_t sd,
+xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sd,
 				    char *data,
 				    long int size);
 
@@ -53,14 +53,14 @@ typedef struct {
 /***
  *** Code
  ***/
-static gras_error_t find_port(gras_hostdata_t *hd, int port,
+static xbt_error_t find_port(gras_hostdata_t *hd, int port,
 			      gras_sg_portrec_t *hpd) {
   int cpt;
   gras_sg_portrec_t pr;
 
-  gras_assert0(hd,"Please run gras_process_init on each process");
+  xbt_assert0(hd,"Please run gras_process_init on each process");
   
-  gras_dynar_foreach(hd->ports, cpt, pr) {
+  xbt_dynar_foreach(hd->ports, cpt, pr) {
     if (pr.port == port) {
       memcpy(hpd,&pr,sizeof(gras_sg_portrec_t));
       return no_error;
@@ -70,10 +70,10 @@ static gras_error_t find_port(gras_hostdata_t *hd, int port,
 }
 
 
-gras_error_t
+xbt_error_t
 gras_trp_sg_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_sg_plug_data_t *data=gras_new(gras_trp_sg_plug_data_t,1);
+  gras_trp_sg_plug_data_t *data=xbt_new(gras_trp_sg_plug_data_t,1);
 
   plug->data      = data; 
 
@@ -89,10 +89,10 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
   return no_error;
 }
 
-gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 				       /* OUT */ gras_socket_t sock){
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
   m_host_t peer;
   gras_hostdata_t *hd;
@@ -131,7 +131,7 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
   }
 
   /* create the socket */
-  data = gras_new(gras_trp_sg_sock_data_t,1);
+  data = xbt_new(gras_trp_sg_sock_data_t,1);
   data->from_PID     = MSG_process_self_PID();
   data->to_PID       = hd->proc[ pr.tochan ];
   data->to_host      = peer;
@@ -148,10 +148,10 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
   return no_error;
 }
 
-gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 				       gras_socket_t sock){
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   gras_procdata_t *pd=gras_procdata_get();
@@ -160,7 +160,7 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
   
   const char *host=MSG_host_get_name(MSG_host_self());
 
-  gras_assert0(hd,"Please run gras_process_init on each process");
+  xbt_assert0(hd,"Please run gras_process_init on each process");
 
   sock->accepting = 0; /* no such nuisance in SG */
 
@@ -176,7 +176,7 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
     pr.tochan = sock->raw ? pd->rawChan : pd->chan;
     pr.port   = sock->port;
     pr.raw    = sock->raw;
-    gras_dynar_push(hd->ports,&pr);
+    xbt_dynar_push(hd->ports,&pr);
     break;
     
   default:
@@ -184,7 +184,7 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
   }
   
   /* Create the socket */
-  data = gras_new(gras_trp_sg_sock_data_t,1);
+  data = xbt_new(gras_trp_sg_sock_data_t,1);
   data->from_PID     = -1;
   data->to_PID       = MSG_process_self_PID();
   data->to_host      = MSG_host_self();
@@ -206,17 +206,17 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
   gras_sg_portrec_t pr;
 
   if (!sock) return;
-  gras_assert0(hd,"Please run gras_process_init on each process");
+  xbt_assert0(hd,"Please run gras_process_init on each process");
 
   if (sock->data)
-    gras_free(sock->data);
+    xbt_free(sock->data);
 
   if (sock->incoming) {
     /* server mode socket. Un register it from 'OS' tables */
-    gras_dynar_foreach(hd->ports, cpt, pr) {
-      DEBUG2("Check pr %d of %lu", cpt, gras_dynar_length(hd->ports));
+    xbt_dynar_foreach(hd->ports, cpt, pr) {
+      DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
       if (pr.port == sock->port) {
-	gras_dynar_cursor_rm(hd->ports, &cpt);
+	xbt_dynar_cursor_rm(hd->ports, &cpt);
 	return;
       }
     }
@@ -229,7 +229,7 @@ typedef struct {
   void *data;
 } sg_task_data_t;
 
-gras_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
+xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
 				    const char *data,
 				    long int size) {
   m_task_t task=NULL;
@@ -240,8 +240,8 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
   
   sprintf(name,"Chunk[%d]",count++);
 
-  task_data=gras_new(sg_task_data_t,1);
-  task_data->data=(void*)gras_malloc(size);
+  task_data=xbt_new(sg_task_data_t,1);
+  task_data->data=(void*)xbt_malloc(size);
   task_data->size = size;
   memcpy(task_data->data,data,size);
 
@@ -257,7 +257,7 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
   return no_error;
 }
 
-gras_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
+xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
 				    char *data,
 				    long int size){
   gras_procdata_t *pd=gras_procdata_get();
@@ -266,7 +266,7 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
   sg_task_data_t *task_data;
   gras_trp_sg_sock_data_t *sock_data = sock->data;
 
-  GRAS_IN;
+  XBT_IN;
   DEBUG4("recv chunk on %s ->  %s:%d (size=%ld)",
 	 MSG_host_get_name(sock_data->to_host),
 	 MSG_host_get_name(MSG_host_self()), sock_data->to_chan, size);
@@ -281,18 +281,18 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
 	   MSG_host_get_name(sock_data->to_host),
 	   MSG_host_get_name(MSG_host_self()), sock_data->to_chan);
   memcpy(data,task_data->data,size);
-  gras_free(task_data->data);
-  gras_free(task_data);
+  xbt_free(task_data->data);
+  xbt_free(task_data);
 
   if (MSG_task_destroy(task) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_destroy()");
 
-  GRAS_OUT;
+  XBT_OUT;
   return no_error;
 }
 
 /* Data exchange over raw sockets */
-gras_error_t gras_socket_raw_exchange(gras_socket_t peer,
+xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int expSize,

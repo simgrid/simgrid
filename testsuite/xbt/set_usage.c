@@ -13,8 +13,8 @@
 
 #include <gras.h>
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
-GRAS_LOG_EXTERNAL_CATEGORY(set);
+XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
+XBT_LOG_EXTERNAL_CATEGORY(set);
 
 typedef struct  {
   /* headers */
@@ -26,16 +26,16 @@ typedef struct  {
   char         *data;
 } s_my_elem_t,*my_elem_t;
 
-static void fill(gras_set_t *set);
-static void debuged_add(gras_set_t set,const char*key);
-static void debuged_add_with_data(gras_set_t  set,
+static void fill(xbt_set_t *set);
+static void debuged_add(xbt_set_t set,const char*key);
+static void debuged_add_with_data(xbt_set_t  set,
 				  const char *name,
 				  const char *data);
-static gras_error_t search_name(gras_set_t set,const char*key);
-static gras_error_t search_id(gras_set_t head,
+static xbt_error_t search_name(xbt_set_t set,const char*key);
+static xbt_error_t search_id(xbt_set_t head,
 			      int id,
 			      const char*expected_key);
-static gras_error_t traverse(gras_set_t set);
+static xbt_error_t traverse(xbt_set_t set);
 
 static void my_elem_free(void *e) {
   my_elem_t elm=(my_elem_t)e;
@@ -47,36 +47,36 @@ static void my_elem_free(void *e) {
   }
 }
 
-static void debuged_add_with_data(gras_set_t  set,
+static void debuged_add_with_data(xbt_set_t  set,
 				  const char *name,
 				  const char *data) {
 
   my_elem_t    elm;
 
-  elm = gras_new(s_my_elem_t,1);
-  elm->name=gras_strdup(name);
+  elm = xbt_new(s_my_elem_t,1);
+  elm->name=xbt_strdup(name);
   elm->name_len=0;
 
-  elm->data=gras_strdup(data);
+  elm->data=xbt_strdup(data);
 
   printf("   - Add %s ",name);
   if (strcmp(name,data)) {
     printf("(->%s)",data);
   }
   printf("\n");
-  gras_set_add(set, (gras_set_elm_t)elm,
+  xbt_set_add(set, (xbt_set_elm_t)elm,
 	       &my_elem_free);
 }
 
-static void debuged_add(gras_set_t  set,
+static void debuged_add(xbt_set_t  set,
 			const char *name) {
   debuged_add_with_data(set, name, name);
 }
 
-static void fill(gras_set_t *set) {
+static void fill(xbt_set_t *set) {
   printf("\n Fill in the data set\n");
 
-  *set=gras_set_new();
+  *set=xbt_set_new();
   debuged_add(*set,"12");
   debuged_add(*set,"12a");
   debuged_add(*set,"12b");
@@ -88,11 +88,11 @@ static void fill(gras_set_t *set) {
   debuged_add(*set,"123457");
 }
 
-static gras_error_t search_name(gras_set_t head,const char*key) {
-  gras_error_t    errcode;
+static xbt_error_t search_name(xbt_set_t head,const char*key) {
+  xbt_error_t    errcode;
   my_elem_t       elm;
   
-  errcode=gras_set_get_by_name(head,key,(gras_set_elm_t*)&elm);
+  errcode=xbt_set_get_by_name(head,key,(xbt_set_elm_t*)&elm);
   printf("   - Search by name %s. Found %s (under ID %d)\n",
 	 key, 
 	 elm? elm->data:"(null)",
@@ -111,11 +111,11 @@ static gras_error_t search_name(gras_set_t head,const char*key) {
   return errcode;
 }
 
-static gras_error_t search_id(gras_set_t head,int id,const char*key) {
-  gras_error_t errcode;
+static xbt_error_t search_id(xbt_set_t head,int id,const char*key) {
+  xbt_error_t errcode;
   my_elem_t    elm;
   
-  errcode=gras_set_get_by_id(head,id,(gras_set_elm_t*)&elm);
+  errcode=xbt_set_get_by_id(head,id,(xbt_set_elm_t*)&elm);
   printf("   - Search by id %d. Found %s (data %s)\n",
 	 id, 
 	 elm? elm->name:"(null)",
@@ -140,14 +140,14 @@ static gras_error_t search_id(gras_set_t head,int id,const char*key) {
 }
 
 
-static gras_error_t traverse(gras_set_t set) {
-  gras_set_cursor_t cursor=NULL;
+static xbt_error_t traverse(xbt_set_t set) {
+  xbt_set_cursor_t cursor=NULL;
   my_elem_t         elm=NULL;
 
-  gras_set_foreach(set,cursor,elm) {
-    gras_assert0(elm,"Dude ! Got a null elm during traversal!");
+  xbt_set_foreach(set,cursor,elm) {
+    xbt_assert0(elm,"Dude ! Got a null elm during traversal!");
     printf("   - Id(%d):  %s->%s\n",elm->ID,elm->name,elm->data);
-    gras_assert2(!strcmp(elm->name,elm->data),
+    xbt_assert2(!strcmp(elm->name,elm->data),
 		 "Key(%s) != value(%s). Abording",
 		 elm->name,elm->data);
   }
@@ -155,11 +155,11 @@ static gras_error_t traverse(gras_set_t set) {
 }
 
 int main(int argc,char **argv) {
-  gras_error_t errcode;
-  gras_set_t set=NULL;
+  xbt_error_t errcode;
+  xbt_set_t set=NULL;
   my_elem_t  elm;
 
-  gras_init_defaultlog(&argc,argv,"set.thresh=verbose");
+  xbt_init_defaultlog(&argc,argv,"set.thresh=verbose");
    
   printf("\nData set: USAGE test:\n");
 
@@ -168,9 +168,9 @@ int main(int argc,char **argv) {
 
   fill(&set);
   printf(" Free the data set\n");
-  gras_set_free(&set);
+  xbt_set_free(&set);
   printf(" Free the data set again\n");
-  gras_set_free(&set);
+  xbt_set_free(&set);
   
   fill(&set);
 
@@ -184,20 +184,20 @@ int main(int argc,char **argv) {
   printf("   - Change 12a to '12a'\n");
   debuged_add_with_data(set,"12a","12a");
 
-  /*  gras_dict_dump(head,(void (*)(void*))&printf); */
+  /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
   printf(" - Traverse the resulting data set\n");
   TRYFAIL(traverse(set));
 
   printf(" - Retrive values\n");
-  gras_set_get_by_name(set,"123",(gras_set_elm_t*)&elm);
+  xbt_set_get_by_name(set,"123",(xbt_set_elm_t*)&elm);
   assert(elm);
   TRYFAIL(strcmp("123",elm->data));
 
-  TRYEXPECT(gras_set_get_by_name(set,"Can't be found",(gras_set_elm_t*)&elm),
+  TRYEXPECT(xbt_set_get_by_name(set,"Can't be found",(xbt_set_elm_t*)&elm),
 	    mismatch_error);
-  TRYEXPECT(gras_set_get_by_name(set,"123 Can't be found",(gras_set_elm_t*)&elm),
+  TRYEXPECT(xbt_set_get_by_name(set,"123 Can't be found",(xbt_set_elm_t*)&elm),
 	    mismatch_error);
-  TRYEXPECT(gras_set_get_by_name(set,"12345678 NOT",(gras_set_elm_t*)&elm),
+  TRYEXPECT(xbt_set_get_by_name(set,"12345678 NOT",(xbt_set_elm_t*)&elm),
 	    mismatch_error);
 
   TRYFAIL(search_name(set,"12"));
@@ -219,15 +219,15 @@ int main(int argc,char **argv) {
   printf(" - Traverse the resulting data set\n");
   TRYFAIL(traverse(set));
 
-  /*  gras_dict_dump(head,(void (*)(void*))&printf); */
+  /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 
   printf(" Free the data set (twice)\n");
-  gras_set_free(&set);
-  gras_set_free(&set);
+  xbt_set_free(&set);
+  xbt_set_free(&set);
 
   printf(" - Traverse the resulting data set\n");
   TRYFAIL(traverse(set));
 
-  gras_exit();
+  xbt_exit();
   return 0;
 }

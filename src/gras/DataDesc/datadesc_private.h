@@ -36,7 +36,7 @@
  */
 #define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
-extern gras_set_t gras_datadesc_set_local;
+extern xbt_set_t gras_datadesc_set_local;
 void gras_ddt_freev(void *ddt);
 /*******************************************
  * Descriptions of all known architectures *
@@ -142,7 +142,7 @@ typedef struct s_gras_dd_cat_scalar {
  * Specific fields of a struct
  */
 typedef struct s_gras_dd_cat_struct {
-  gras_dynar_t fields; /* elm type = gras_dd_cat_field_t */
+  xbt_dynar_t fields; /* elm type = gras_dd_cat_field_t */
   int closed; /* gras_datadesc_declare_struct_close() was called */
 } gras_dd_cat_struct_t;
 
@@ -153,7 +153,7 @@ typedef struct s_gras_dd_cat_struct {
  */
 typedef struct s_gras_dd_cat_union {
   gras_datadesc_type_cb_int_t selector;
-  gras_dynar_t fields; /* elm type = gras_dd_cat_field_t */
+  xbt_dynar_t fields; /* elm type = gras_dd_cat_field_t */
   int closed; /* gras_datadesc_declare_union_close() was called */
 } gras_dd_cat_union_t;
 
@@ -261,7 +261,7 @@ void gras_cbps_free(gras_cbps_t *state);
 /***************
  * Convertions *
  ***************/
-gras_error_t
+xbt_error_t
 gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 		    int r_arch, 
 		    void *src, void *dst);

@@ -16,12 +16,12 @@
 
 #include <stdlib.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");
 
 /****
  **** Misc
  ****/
 
-void gras_abort(void) {
+void xbt_abort(void) {
    abort();
 }

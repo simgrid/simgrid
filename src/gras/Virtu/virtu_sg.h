@@ -14,7 +14,7 @@
 #include "gras/Virtu/virtu_interface.h"
 #include <msg.h> /* SimGrid header */
 
-#define GRAS_MAX_CHANNEL 10
+#define XBT_MAX_CHANNEL 10
 
 typedef struct {
   int port;  /* list of ports used by a server socket */
@@ -24,10 +24,10 @@ typedef struct {
 
 /* Data for each host */
 typedef struct {
-  int proc[GRAS_MAX_CHANNEL]; /* PID of who's connected to each channel */
+  int proc[XBT_MAX_CHANNEL]; /* PID of who's connected to each channel */
                               /* If =0, then free */
 
-  gras_dynar_t ports;
+  xbt_dynar_t ports;
 
 } gras_hostdata_t;
 

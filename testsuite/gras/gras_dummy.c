@@ -12,28 +12,28 @@
 
 #include "gras_private.h"
 
-gras_error_t gras_process_init() {
+xbt_error_t gras_process_init() {
   return unknown_error;
 }
 
-gras_error_t gras_process_exit() {
+xbt_error_t gras_process_exit() {
   return unknown_error;
 }
 
-gras_error_t gras_sock_client_open(const char *host, short port, 
+xbt_error_t gras_sock_client_open(const char *host, short port, 
 				   /* OUT */ gras_sock_t **sock) {
   return unknown_error;
 }
 
 
-gras_error_t gras_sock_server_open(unsigned short startingPort, 
+xbt_error_t gras_sock_server_open(unsigned short startingPort, 
 				   unsigned short endingPort,
 				   /* OUT */ gras_sock_t **sock) {
 
   return unknown_error;
 }
 
-gras_error_t gras_sock_close(gras_sock_t *sock) {
+xbt_error_t gras_sock_close(gras_sock_t *sock) {
   return unknown_error;
 }
 
@@ -49,36 +49,36 @@ char * gras_sock_get_peer_name(gras_sock_t *sd) {
   return NULL;
 }
 
-gras_error_t grasMsgRecv(gras_msg_t **msg,
+xbt_error_t grasMsgRecv(gras_msg_t **msg,
 			 double timeOut) {
   return unknown_error;
 }
-gras_error_t gras_msg_send(gras_sock_t *sd,
+xbt_error_t gras_msg_send(gras_sock_t *sd,
 			   gras_msg_t *msg,
-			   e_gras_free_directive_t freeDirective) {
+			   e_xbt_free_directive_t freeDirective) {
   return unknown_error;
 }
-gras_error_t gras_rawsock_server_open(unsigned short startingPort, 
+xbt_error_t gras_rawsock_server_open(unsigned short startingPort, 
                                   unsigned short endingPort,
                                   unsigned int bufSize, gras_rawsock_t **sock) {
   return unknown_error;
 }
-gras_error_t gras_rawsock_client_open(const char *host, short port, 
+xbt_error_t gras_rawsock_client_open(const char *host, short port, 
                                   unsigned int bufSize, gras_rawsock_t **sock) {
   return unknown_error;
 }
-gras_error_t gras_rawsock_close(gras_rawsock_t *sd) {
+xbt_error_t gras_rawsock_close(gras_rawsock_t *sd) {
   return unknown_error;
 }
 unsigned short gras_rawsock_get_peer_port(gras_rawsock_t *sd) {
   return -1;
 }
-gras_error_t
+xbt_error_t
 gras_rawsock_recv(gras_rawsock_t *sd, unsigned int expSize, unsigned int msgSize, 
 		  unsigned int timeout) {
   return unknown_error;
 }
-gras_error_t
+xbt_error_t
 gras_rawsock_send(gras_rawsock_t *sd, unsigned int expSize, unsigned int msgSize){
   return unknown_error;
 }

@@ -13,13 +13,13 @@
 
 #include "gras_sg.h"
 
-GRAS_LOG_DEFAULT_CATEGORY(GRAS);
+XBT_LOG_DEFAULT_CATEGORY(GRAS);
 
 /* **************************************************************************
  * Openning/Maintaining/Closing connexions (private functions for both raw
  * and regular sockets)
  * **************************************************************************/
-gras_error_t
+xbt_error_t
 _gras_sock_server_open(unsigned short startingPort, unsigned short endingPort,
 		      int raw, unsigned int bufSize, /* OUT */ gras_sock_t **sock) {
 
@@ -28,8 +28,8 @@ _gras_sock_server_open(unsigned short startingPort, unsigned short endingPort,
   int port,i;
   const char *host=MSG_host_get_name(MSG_host_self());
 
-  gras_assert0(hd,"HostData=NULL !! Please run grasInit on each process\n");
-  gras_assert0(pd,"ProcessData=NULL !! Please run grasInit on each process\n");
+  xbt_assert0(hd,"HostData=NULL !! Please run grasInit on each process\n");
+  xbt_assert0(pd,"ProcessData=NULL !! Please run grasInit on each process\n");
 
   for (port=startingPort ; port <= endingPort ; port++) {
     for (i=0; i<hd->portLen && hd->port[i] != port; i++);
@@ -88,7 +88,7 @@ _gras_sock_server_open(unsigned short startingPort, unsigned short endingPort,
   return mismatch_error;
 }
 
-gras_error_t
+xbt_error_t
 _gras_sock_client_open(const char *host, short port, int raw, unsigned int bufSize,
 		     /* OUT */ gras_sock_t **sock) {
   m_host_t peer;
@@ -142,11 +142,11 @@ _gras_sock_client_open(const char *host, short port, int raw, unsigned int bufSi
   return no_error;
 }
 
-gras_error_t _gras_sock_close(int raw, gras_sock_t *sd) {
+xbt_error_t _gras_sock_close(int raw, gras_sock_t *sd) {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   int i;
 
-  gras_assert0(hd,"HostData=NULL !! Please run grasInit on each process\n");
+  xbt_assert0(hd,"HostData=NULL !! Please run grasInit on each process\n");
 
   if (!sd) return no_error;
   if (raw && !sd->raw_sock) {
@@ -177,19 +177,19 @@ gras_error_t _gras_sock_close(int raw, gras_sock_t *sd) {
 /* **************************************************************************
  * Creating/Using regular sockets
  * **************************************************************************/
-gras_error_t
+xbt_error_t
 gras_sock_server_open(unsigned short startingPort, unsigned short endingPort,
 		     /* OUT */ gras_sock_t **sock) {
   return _gras_sock_server_open(startingPort,endingPort,0,0,sock);
 }
 
-gras_error_t
+xbt_error_t
 gras_sock_client_open(const char *host, short port,
 		     /* OUT */ gras_sock_t **sock) {
   return _gras_sock_client_open(host,port,0,0,sock);
 }
 
-gras_error_t gras_sock_close(gras_sock_t *sd) {
+xbt_error_t gras_sock_close(gras_sock_t *sd) {
   return _gras_sock_close(0,sd);
 }
 
@@ -220,17 +220,17 @@ gras_sock_get_peer_name(gras_sock_t *sd) {
 /* **************************************************************************
  * Creating/Using raw sockets
  * **************************************************************************/
-gras_error_t gras_rawsock_server_open(unsigned short startingPort, unsigned short endingPort,
+xbt_error_t gras_rawsock_server_open(unsigned short startingPort, unsigned short endingPort,
 				  unsigned int bufSize, gras_rawsock_t **sock) {
   return _gras_sock_server_open(startingPort,endingPort,1,bufSize,(gras_sock_t**)sock);
 }
 
-gras_error_t gras_rawsock_client_open(const char *host, short port, 
+xbt_error_t gras_rawsock_client_open(const char *host, short port, 
 				  unsigned int bufSize, gras_rawsock_t **sock) {
   return _gras_sock_client_open(host,port,1,bufSize,(gras_sock_t**)sock);
 }
 
-gras_error_t gras_rawsock_close(gras_rawsock_t *sd) {
+xbt_error_t gras_rawsock_close(gras_rawsock_t *sd) {
   return _gras_sock_close(1,(gras_sock_t*)sd);
 }
 
@@ -240,14 +240,14 @@ gras_rawsock_get_peer_port(gras_rawsock_t *sd) {
   return sd->to_port;
 }
 
-gras_error_t
+xbt_error_t
 gras_rawsock_send(gras_rawsock_t *sock, unsigned int expSize, unsigned int msgSize) {
   unsigned int bytesTotal;
   static unsigned int count=0;
   m_task_t task=NULL;
   char name[256];
 
-  gras_assert0(sock->raw_sock,"Asked to send raw data on a regular socket\n");
+  xbt_assert0(sock->raw_sock,"Asked to send raw data on a regular socket\n");
 
   for(bytesTotal = 0;
       bytesTotal < expSize;
@@ -277,7 +277,7 @@ gras_rawsock_send(gras_rawsock_t *sock, unsigned int expSize, unsigned int msgSi
   return no_error;
 }
 
-gras_error_t
+xbt_error_t
 gras_rawsock_recv(gras_rawsock_t *sock, unsigned int expSize, unsigned int msgSize,
 		unsigned int timeout) {
   grasProcessData_t *pd=(grasProcessData_t *)MSG_process_get_data(MSG_process_self());
@@ -285,7 +285,7 @@ gras_rawsock_recv(gras_rawsock_t *sock, unsigned int expSize, unsigned int msgSi
   m_task_t task=NULL;
   double startTime;
 
-  gras_assert0(sock->raw_sock,"Asked to receive raw data on a regular socket\n");
+  xbt_assert0(sock->raw_sock,"Asked to receive raw data on a regular socket\n");
 
   startTime=gras_time();
   for(bytesTotal = 0;
@@ -330,7 +330,7 @@ gras_rawsock_recv(gras_rawsock_t *sock, unsigned int expSize, unsigned int msgSi
  * Actually exchanging messages
  * **************************************************************************/
 
-gras_error_t
+xbt_error_t
 grasMsgRecv(gras_msg_t **msg,
 	    double timeOut) {
 
@@ -378,10 +378,10 @@ grasMsgRecv(gras_msg_t **msg,
   return timeout_error;
 }
 
-gras_error_t
+xbt_error_t
 gras_msg_send(gras_sock_t *sd,
 	    gras_msg_t *_msg,
-	    e_gras_free_directive_t freeDirective) {
+	    e_xbt_free_directive_t freeDirective) {
   
   grasProcessData_t *pd=grasProcessDataGet();
   m_task_t task;
@@ -391,8 +391,8 @@ gras_msg_send(gras_sock_t *sd,
   gras_sock_t *answer;
 
   /* arg validity checks */
-  gras_assert0(msg,"Trying to send NULL message");
-  gras_assert0(sd ,"Trying to send over a NULL socket");
+  xbt_assert0(msg,"Trying to send NULL message");
+  xbt_assert0(sd ,"Trying to send over a NULL socket");
   
   if (!(answer=(gras_sock_t*)malloc(sizeof(gras_sock_t)))) {
     RAISE_MALLOC;

@@ -8,15 +8,15 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _GRAS_MODULE_H
-#define _GRAS_MODULE_H
+#ifndef _XBT_MODULE_H
+#define _XBT_MODULE_H
 
-typedef struct gras_module_ gras_module_t;
+typedef struct xbt_module_ xbt_module_t;
 
-typedef gras_module_t (*gras_module_new_fct_t)(int argc, char **argv);
-typedef int (*gras_module_finalize_fct_t)(void);
+typedef xbt_module_t (*xbt_module_new_fct_t)(int argc, char **argv);
+typedef int (*xbt_module_finalize_fct_t)(void);
 
-void gras_init(int *argc,char **argv);
-void gras_init_defaultlog(int *argc,char **argv, const char *defaultlog);
-void gras_exit(void);
-#endif /* _GRAS_MODULE_H */
+void xbt_init(int *argc,char **argv);
+void xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog);
+void xbt_exit(void);
+#endif /* _XBT_MODULE_H */

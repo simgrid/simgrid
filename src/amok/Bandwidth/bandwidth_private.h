@@ -24,7 +24,7 @@
  * If not, it should be between between the receiver and @host (3-tiers).
  */
 typedef struct {
-  gras_host_t host; /* host+raw socket to use */
+  xbt_host_t host; /* host+raw socket to use */
   unsigned int buf_size;
   unsigned int exp_size;
   unsigned int msg_size;
@@ -51,7 +51,7 @@ typedef struct {
  * Description of a saturation experiment (payload asking some host to collaborate for that)
  */
 typedef struct {
-  gras_host_t host; /* host+raw socket to use */
+  xbt_host_t host; /* host+raw socket to use */
   unsigned int msg_size;
   unsigned int timeout;
 } s_sat_request_t,*sat_request_t;

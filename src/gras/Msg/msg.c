@@ -13,9 +13,9 @@
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Virtu/virtu_interface.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(msg,gras,"High level messaging");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg,gras,"High level messaging");
 
-gras_set_t _gras_msgtype_set = NULL;
+xbt_set_t _gras_msgtype_set = NULL;
 static char GRAS_header[6];
 static char *make_namev(const char *name, short int ver);
 
@@ -25,7 +25,7 @@ static char *make_namev(const char *name, short int ver);
  * Initialize this submodule.
  */
 void gras_msg_init(void) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   
   /* only initialize once */
   if (_gras_msgtype_set != NULL)
@@ -33,7 +33,7 @@ void gras_msg_init(void) {
 
   VERB0("Initializing Msg");
   
-  _gras_msgtype_set = gras_set_new();
+  _gras_msgtype_set = xbt_set_new();
 
   memcpy(GRAS_header,"GRAS", 4);
   GRAS_header[4]=GRAS_PROTOCOL_VERSION;
@@ -48,7 +48,7 @@ void gras_msg_init(void) {
 void
 gras_msg_exit(void) {
   VERB0("Exiting Msg");
-  gras_set_free(&_gras_msgtype_set);
+  xbt_set_free(&_gras_msgtype_set);
 }
 
 /**
@@ -59,8 +59,8 @@ gras_msg_exit(void) {
 void gras_msgtype_free(void *t) {
   gras_msgtype_t msgtype=(gras_msgtype_t)t;
   if (msgtype) {
-    gras_free(msgtype->name);
-    gras_free(msgtype);
+    xbt_free(msgtype->name);
+    xbt_free(msgtype);
   }
 }
 
@@ -76,7 +76,7 @@ static char *make_namev(const char *name, short int ver) {
   if (!ver)
     return (char *)name;
 
-  namev = (char*)gras_malloc(strlen(name)+2+3+1);
+  namev = (char*)xbt_malloc(strlen(name)+2+3+1);
 
   if (namev)
       sprintf(namev,"%s_v%d",name,ver);
@@ -113,17 +113,17 @@ gras_msgtype_declare_v(const char           *name,
 		       short int             version,
 		       gras_datadesc_type_t  payload) {
  
-  gras_error_t   errcode;
+  xbt_error_t   errcode;
   gras_msgtype_t msgtype;
   char *namev=make_namev(name,version);
   
-  errcode = gras_set_get_by_name(_gras_msgtype_set,
-				 namev,(gras_set_elm_t*)&msgtype);
+  errcode = xbt_set_get_by_name(_gras_msgtype_set,
+				 namev,(xbt_set_elm_t*)&msgtype);
 
   if (errcode == no_error) {
     VERB2("Re-register version %d of message '%s' (same payload, ignored).",
 	  version, name);
-    gras_assert3(!gras_datadesc_type_cmp(msgtype->ctn_type, payload),
+    xbt_assert3(!gras_datadesc_type_cmp(msgtype->ctn_type, payload),
 		 "Message %s re-registred with another payload (%s was %s)",
 		 namev,gras_datadesc_get_name(payload),
 		 gras_datadesc_get_name(msgtype->ctn_type));
@@ -131,17 +131,17 @@ gras_msgtype_declare_v(const char           *name,
     return ; /* do really ignore it */
 
   }
-  gras_assert_error(mismatch_error); /* expect this error */
+  xbt_assert_error(mismatch_error); /* expect this error */
   VERB3("Register version %d of message '%s' (payload: %s).", 
 	version, name, gras_datadesc_get_name(payload));    
 
-  msgtype = gras_new(s_gras_msgtype_t,1);
+  msgtype = xbt_new(s_gras_msgtype_t,1);
   msgtype->name = (namev == name ? strdup(name) : namev);
   msgtype->name_len = strlen(namev);
   msgtype->version = version;
   msgtype->ctn_type = payload;
 
-  gras_set_add(_gras_msgtype_set, (gras_set_elm_t)msgtype,
+  xbt_set_add(_gras_msgtype_set, (xbt_set_elm_t)msgtype,
 	       &gras_msgtype_free);
 }
 
@@ -162,17 +162,17 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
 				     short int        version) {
   gras_msgtype_t res;
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
   char *namev = make_namev(name,version); 
 
-  errcode = gras_set_get_by_name(_gras_msgtype_set, namev,
-				 (gras_set_elm_t*)&res);
+  errcode = xbt_set_get_by_name(_gras_msgtype_set, namev,
+				 (xbt_set_elm_t*)&res);
   if (errcode != no_error)
     res = NULL;
   if (!res) 
      WARN1("msgtype_by_name(%s) returns NULL",namev);
   if (name != namev) 
-    gras_free(namev);
+    xbt_free(namev);
   
   return res;
 }
@@ -182,12 +182,12 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
  *
  * Send the given message on the given socket 
  */
-gras_error_t
+xbt_error_t
 gras_msg_send(gras_socket_t   sock,
 	      gras_msgtype_t  msgtype,
 	      void           *payload) {
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
   static gras_datadesc_type_t string_type=NULL;
 
   if (!msgtype)
@@ -196,7 +196,7 @@ gras_msg_send(gras_socket_t   sock,
 
   if (!string_type) {
     string_type = gras_datadesc_by_name("string");
-    gras_assert(string_type);
+    xbt_assert(string_type);
   }
 
   DEBUG3("send '%s' to %s:%d", msgtype->name, 
@@ -214,13 +214,13 @@ gras_msg_send(gras_socket_t   sock,
  *
  * receive the next message on the given socket.  
  */
-gras_error_t
+xbt_error_t
 gras_msg_recv(gras_socket_t    sock,
 	      gras_msgtype_t  *msgtype,
 	      void           **payload,
 	      int             *payload_size) {
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
   static gras_datadesc_type_t string_type=NULL;
   char header[6];
   int cpt;
@@ -229,7 +229,7 @@ gras_msg_recv(gras_socket_t    sock,
 
   if (!string_type) {
     string_type=gras_datadesc_by_name("string");
-    gras_assert(string_type);
+    xbt_assert(string_type);
   }
   
   TRY(gras_trp_chunk_recv(sock, header, 6));
@@ -244,21 +244,21 @@ gras_msg_recv(gras_socket_t    sock,
 	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
   TRY(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
-  errcode = gras_set_get_by_name(_gras_msgtype_set,
-				 msg_name,(gras_set_elm_t*)msgtype);
+  errcode = xbt_set_get_by_name(_gras_msgtype_set,
+				 msg_name,(xbt_set_elm_t*)msgtype);
   if (errcode != no_error)
     RAISE2(errcode,
 	   "Got error %s while retrieving the type associated to messages '%s'",
-	   gras_error_name(errcode),msg_name);
+	   xbt_error_name(errcode),msg_name);
   /* FIXME: Survive unknown messages */
-  gras_free(msg_name);
+  xbt_free(msg_name);
 
   *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
-  gras_assert2(*payload_size > 0,
+  xbt_assert2(*payload_size > 0,
 	       "%s %s",
 	       "Dynamic array as payload is forbided for now (FIXME?).",
 	       "Reference to dynamic array is allowed.");
-  *payload = gras_malloc(*payload_size);
+  *payload = xbt_malloc(*payload_size);
   TRY(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
 
   return no_error;
@@ -275,7 +275,7 @@ gras_msg_recv(gras_socket_t    sock,
  * Every message of another type received before the one waited will be queued
  * and used by subsequent call to this function or MsgHandle().
  */
-gras_error_t
+xbt_error_t
 gras_msg_wait(double           timeout,    
 	      gras_msgtype_t   msgt_want,
 	      gras_socket_t   *expeditor,
@@ -284,7 +284,7 @@ gras_msg_wait(double           timeout,
   gras_msgtype_t msgt_got;
   void *payload_got;
   int payload_size_got;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   double start, now;
   gras_procdata_t *pd=gras_procdata_get();
   int cpt;
@@ -301,12 +301,12 @@ gras_msg_wait(double           timeout,
 
   start = now = gras_os_time();
 
-  gras_dynar_foreach(pd->msg_queue,cpt,msg){
+  xbt_dynar_foreach(pd->msg_queue,cpt,msg){
     if (msg.type->code == msgt_want->code) {
       *expeditor = msg.expeditor;
       memcpy(payload, msg.payload, msg.payload_size);
-      gras_free(msg.payload);
-      gras_dynar_cursor_rm(pd->msg_queue, &cpt);
+      xbt_free(msg.payload);
+      xbt_dynar_cursor_rm(pd->msg_queue, &cpt);
       VERB0("The waited message was queued");
       return no_error;
     }
@@ -317,7 +317,7 @@ gras_msg_wait(double           timeout,
     TRY(gras_msg_recv(*expeditor, &msgt_got, &payload_got, &payload_size_got));
     if (msgt_got->code == msgt_want->code) {
       memcpy(payload, payload_got, payload_size_got);
-      gras_free(payload_got);
+      xbt_free(payload_got);
       VERB0("Got waited message");
       return no_error;
     }
@@ -327,7 +327,7 @@ gras_msg_wait(double           timeout,
     msg.type      =  msgt_got;
     msg.payload   =  payload;
     msg.payload_size = payload_size_got;
-    gras_dynar_push(pd->msg_queue,&msg);
+    xbt_dynar_push(pd->msg_queue,&msg);
     
     now=gras_os_time();
     if (now - start + 0.001 < timeout) {
@@ -346,10 +346,10 @@ gras_msg_wait(double           timeout,
  * Waits up to #timeOut# seconds to see if a message comes in; if so, calls the
  * registered listener for that message (see RegisterCallback()).
  */
-gras_error_t 
+xbt_error_t 
 gras_msg_handle(double timeOut) {
   
-  gras_error_t    errcode;
+  xbt_error_t    errcode;
   int             cpt;
 
   gras_msg_t      msg;
@@ -367,8 +367,8 @@ gras_msg_handle(double timeOut) {
   VERB1("Handling message within the next %.2fs",timeOut);
   
   /* get a message (from the queue or from the net) */
-  if (gras_dynar_length(pd->msg_queue)) {
-    gras_dynar_shift(pd->msg_queue,&msg);
+  if (xbt_dynar_length(pd->msg_queue)) {
+    xbt_dynar_shift(pd->msg_queue,&msg);
     expeditor = msg.expeditor;
     msgtype   = msg.type;
     payload   = msg.payload;
@@ -379,7 +379,7 @@ gras_msg_handle(double timeOut) {
   }
       
   /* handle it */
-  gras_dynar_foreach(pd->cbl_list,cpt,list) {
+  xbt_dynar_foreach(pd->cbl_list,cpt,list) {
     if (list->id == msgtype->code) {
       break;
     } else {
@@ -393,12 +393,12 @@ gras_msg_handle(double timeOut) {
     return no_error;
   }
   
-  gras_dynar_foreach(list->cbs,cpt,cb) { 
+  xbt_dynar_foreach(list->cbs,cpt,cb) { 
     INFO3("Use the callback #%d (@%p) for incomming msg %s",
 	  cpt+1,cb,msgtype->name);
     if ((*cb)(expeditor,payload)) {
       /* cb handled the message */
-      gras_free(payload);
+      xbt_free(payload);
       return no_error;
     }
   }
@@ -412,8 +412,8 @@ void
 gras_cbl_free(void *data){
   gras_cblist_t *list=*(void**)data;
   if (list) {
-    gras_dynar_free(&( list->cbs ));
-    gras_free(list);
+    xbt_dynar_free(&( list->cbs ));
+    xbt_free(list);
   }
 }
 
@@ -427,7 +427,7 @@ gras_cb_register(gras_msgtype_t msgtype,
   DEBUG2("Register %p as callback to %s",cb,msgtype->name);
 
   /* search the list of cb for this message on this host (creating if NULL) */
-  gras_dynar_foreach(pd->cbl_list,cpt,list) {
+  xbt_dynar_foreach(pd->cbl_list,cpt,list) {
     if (list->id == msgtype->code) {
       break;
     } else {
@@ -436,14 +436,14 @@ gras_cb_register(gras_msgtype_t msgtype,
   }
   if (!list) {
     /* First cb? Create room */
-    list = gras_new(gras_cblist_t,1);
+    list = xbt_new(gras_cblist_t,1);
     list->id = msgtype->code;
-    list->cbs = gras_dynar_new(sizeof(gras_cb_t), NULL);
-    gras_dynar_push(pd->cbl_list,&list);
+    list->cbs = xbt_dynar_new(sizeof(gras_cb_t), NULL);
+    xbt_dynar_push(pd->cbl_list,&list);
   }
 
   /* Insert the new one into the set */
-  gras_dynar_insert_at(list->cbs,0,&cb);
+  xbt_dynar_insert_at(list->cbs,0,&cb);
 }
 
 void
@@ -457,7 +457,7 @@ gras_cb_unregister(gras_msgtype_t msgtype,
   int found = 0;
 
   /* search the list of cb for this message on this host */
-  gras_dynar_foreach(pd->cbl_list,cpt,list) {
+  xbt_dynar_foreach(pd->cbl_list,cpt,list) {
     if (list->id == msgtype->code) {
       break;
     } else {
@@ -467,9 +467,9 @@ gras_cb_unregister(gras_msgtype_t msgtype,
 
   /* Remove it from the set */
   if (list) {
-    gras_dynar_foreach(list->cbs,cpt,cb_cpt) {
+    xbt_dynar_foreach(list->cbs,cpt,cb_cpt) {
       if (cb == cb_cpt) {
-	gras_dynar_cursor_rm(list->cbs, &cpt);
+	xbt_dynar_cursor_rm(list->cbs, &cpt);
 	found = 1;
       }
     }

@@ -120,12 +120,12 @@ void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 
 
 /* complex one: complete variable environment support */
-gras_error_t
+xbt_error_t
   gras_cbps_v_pop (gras_cbps_t            ps, 
 		   const char            *name,
       	 /* OUT */ gras_datadesc_type_t  *ddt,
 	 /* OUT */ void                 **res);
-gras_error_t
+xbt_error_t
 gras_cbps_v_push(gras_cbps_t            ps,
 		 const char            *name,
 		 void                  *data,
@@ -215,7 +215,7 @@ typedef struct DataDescriptorStruct {
   sizeof(structType) - offsetof(structType, lastMember) - \
   sizeof(memberType) * repetitions
 
-gras_error_t
+xbt_error_t
 gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
 			 unsigned long         howmany,

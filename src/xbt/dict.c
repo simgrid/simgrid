@@ -15,7 +15,7 @@
 
 #include <stdio.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
 
 /*####[ Private prototypes ]#################################################*/
@@ -24,38 +24,38 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
 /*####[ Code ]###############################################################*/
 
 /**
- * gras_dict_new:
+ * xbt_dict_new:
  *
  * @whereto: pointer to the destination
  *
  * Creates and initialize a new dictionnary
  */
-gras_dict_t 
-gras_dict_new(void) {
-  gras_dict_t res= gras_new(s_gras_dict_t,1);
+xbt_dict_t 
+xbt_dict_new(void) {
+  xbt_dict_t res= xbt_new(s_xbt_dict_t,1);
   res->head=NULL;
   return res;
 }
 /**
- * gras_dict_free:
+ * xbt_dict_free:
  * @dict: the dictionnary to be freed
  *
  * Frees a cache structure with all its childs.
  */
 void
-gras_dict_free(gras_dict_t *dict)  {
+xbt_dict_free(xbt_dict_t *dict)  {
   if (dict && *dict) {
     if ((*dict)->head) {
-      gras_dictelm_free( &( (*dict)->head ) );
+      xbt_dictelm_free( &( (*dict)->head ) );
       (*dict)->head = NULL;
     }
-    gras_free(*dict);
+    xbt_free(*dict);
     *dict=NULL;
   }
 }
 
 /**
- * gras_dict_set_ext:
+ * xbt_dict_set_ext:
  *
  * @p_dict: the container
  * @key: the key to set the new data
@@ -66,20 +66,20 @@ gras_dict_free(gras_dict_t *dict)  {
  * of data, as long as its length is provided in @key_len.
  */
 void
-gras_dict_set_ext(gras_dict_t      dict,
+xbt_dict_set_ext(xbt_dict_t      dict,
 		  const char      *key,
 		  int              key_len,
 		  void            *data,
 		  void_f_pvoid_t  *free_ctn) {
 
-  gras_assert(dict);
+  xbt_assert(dict);
 
-  gras_dictelm_set_ext(&(dict->head),
+  xbt_dictelm_set_ext(&(dict->head),
 		       key, key_len, data, free_ctn);
 }
 
 /**
- * gras_dict_set:
+ * xbt_dict_set:
  *
  * @head: the head of the dict
  * @key: the key to set the new data
@@ -90,18 +90,18 @@ gras_dict_set_ext(gras_dict_t      dict,
  * null terminated string.
  */
 void
-gras_dict_set(gras_dict_t     dict,
+xbt_dict_set(xbt_dict_t     dict,
 	      const char     *key,
 	      void           *data,
 	      void_f_pvoid_t *free_ctn) {
 
-  gras_assert(dict);
+  xbt_assert(dict);
   
-  gras_dictelm_set(&(dict->head), key, data, free_ctn);
+  xbt_dictelm_set(&(dict->head), key, data, free_ctn);
 }
 
 /**
- * gras_dict_get_ext:
+ * xbt_dict_get_ext:
  *
  * @dict: the dealer of data
  * @key: the key to find data
@@ -110,19 +110,19 @@ gras_dict_set(gras_dict_t     dict,
  *
  * Search the given @key. mismatch_error when not found.
  */
-gras_error_t
-gras_dict_get_ext(gras_dict_t     dict,
+xbt_error_t
+xbt_dict_get_ext(xbt_dict_t     dict,
 		  const char     *key,
 		  int             key_len,
 		  /* OUT */void **data) {
 
-  gras_assert(dict);
+  xbt_assert(dict);
 
-  return gras_dictelm_get_ext(dict->head, key, key_len, data);
+  return xbt_dictelm_get_ext(dict->head, key, key_len, data);
 }
 
 /**
- * gras_dict_get:
+ * xbt_dict_get:
  *
  * @dict: the dealer of data
  * @key: the key to find data
@@ -131,69 +131,69 @@ gras_dict_get_ext(gras_dict_t     dict,
  *
  * Search the given @key. mismatch_error when not found.
  */
-gras_error_t
-gras_dict_get(gras_dict_t     dict,
+xbt_error_t
+xbt_dict_get(xbt_dict_t     dict,
 	      const char     *key,
 	      /* OUT */void **data) {
-  gras_assert(dict);
+  xbt_assert(dict);
 
-  return gras_dictelm_get(dict->head, key, data);
+  return xbt_dictelm_get(dict->head, key, data);
 }
 
 
 /**
- * gras_dict_remove_ext:
+ * xbt_dict_remove_ext:
  *
  * @dict: the trash can
  * @key: the key of the data to be removed
- * @Returns: gras_error_t
+ * @Returns: xbt_error_t
  *
  * Remove the entry associated with the given @key
  */
-gras_error_t
-gras_dict_remove_ext(gras_dict_t  dict,
+xbt_error_t
+xbt_dict_remove_ext(xbt_dict_t  dict,
                      const char  *key,
                      int          key_len) {
-  gras_assert(dict);
+  xbt_assert(dict);
   
-  return gras_dictelm_remove_ext(dict->head, key, key_len);
+  return xbt_dictelm_remove_ext(dict->head, key, key_len);
 }
 
 /**
- * gras_dict_remove:
+ * xbt_dict_remove:
  *
  * @head: the head of the dict
  * @key: the key of the data to be removed
- * @Returns: gras_error_t
+ * @Returns: xbt_error_t
  *
  * Remove the entry associated with the given @key
  */
-gras_error_t
-gras_dict_remove(gras_dict_t  dict,
+xbt_error_t
+xbt_dict_remove(xbt_dict_t  dict,
 		 const char  *key) {
   if (!dict) 
      RAISE1(mismatch_error,"Asked to remove key %s from NULL dict",key);
 
-  return gras_dictelm_remove(dict->head, key);
+  return xbt_dictelm_remove(dict->head, key);
 }
 
 
 /**
- * gras_dict_dump:
+ * xbt_dict_dump:
  *
  * @dict: the exibitionist
  * @output: a function to dump each data in the tree
- * @Returns: gras_error_t
+ * @Returns: xbt_error_t
  *
  * Ouputs the content of the structure. (for debuging purpose). @ouput is a
  * function to output the data. If NULL, data won't be displayed.
  */
 
 void
-gras_dict_dump(gras_dict_t     dict,
+xbt_dict_dump(xbt_dict_t     dict,
                void_f_pvoid_t *output) {
 
   printf("Dict %p:\n", (void*)dict);
-  gras_dictelm_dump(dict ? dict->head: NULL, output);
+  xbt_dictelm_dump(dict ? dict->head: NULL, output);
 }
 

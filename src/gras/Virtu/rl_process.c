@@ -10,18 +10,18 @@
 
 #include "gras/Virtu/virtu_rl.h"
 
-GRAS_LOG_EXTERNAL_CATEGORY(process);
-GRAS_LOG_DEFAULT_CATEGORY(process);
+XBT_LOG_EXTERNAL_CATEGORY(process);
+XBT_LOG_DEFAULT_CATEGORY(process);
 
 /* globals */
 static gras_procdata_t *_gras_procdata = NULL;
 
-gras_error_t gras_process_init() {
-  _gras_procdata=gras_new(gras_procdata_t,1);
+xbt_error_t gras_process_init() {
+  _gras_procdata=xbt_new(gras_procdata_t,1);
   gras_procdata_init();
   return no_error;
 }
-gras_error_t gras_process_exit() {
+xbt_error_t gras_process_exit() {
   gras_procdata_exit();
   return no_error;
 }
@@ -31,7 +31,7 @@ gras_error_t gras_process_exit() {
  * **************************************************************************/
 
 gras_procdata_t *gras_procdata_get(void) {
-  gras_assert0(_gras_procdata,"Run gras_process_init!");
+  xbt_assert0(_gras_procdata,"Run gras_process_init!");
 
   return _gras_procdata;
 }

@@ -14,7 +14,7 @@
 
 #include "gras.h"
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(Ping,"Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(Ping,"Messages specific to this example");
 
 /* **********************************************************************
  * Comon code
@@ -53,7 +53,7 @@ int server (int argc,char *argv[]);
 int server_cb_ping_handler(gras_socket_t  expeditor,
 			   void          *payload_data) {
 			     
-  gras_error_t errcode;
+  xbt_error_t errcode;
   int msg=*(int*)payload_data;
   gras_msgtype_t *pong_t=NULL;
 
@@ -69,7 +69,7 @@ int server_cb_ping_handler(gras_socket_t  expeditor,
   errcode = gras_msg_send(expeditor, gras_msgtype_by_name("pong"), &msg);
 
   if (errcode != no_error) {
-    ERROR1("SERVER: Unable answer with PONG: %s\n", gras_error_name(errcode));
+    ERROR1("SERVER: Unable answer with PONG: %s\n", xbt_error_name(errcode));
     gras_socket_close(g->sock);
     return 1;
   }
@@ -81,13 +81,13 @@ int server_cb_ping_handler(gras_socket_t  expeditor,
 }
 
 int server (int argc,char *argv[]) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   server_data_t *g;
   gras_msgtype_t *ping_msg=NULL;
 
   int port = 4000;
   
-  gras_init(&argc,argv);
+  xbt_init(&argc,argv);
   g=gras_userdata_new(server_data_t);
    
   if (argc == 2) {
@@ -98,7 +98,7 @@ int server (int argc,char *argv[]) {
 
   if ((errcode=gras_socket_server(port,&(g->sock)))) { 
     CRITICAL1("Error %s encountered while opening the server socket",
-	      gras_error_name(errcode));
+	      xbt_error_name(errcode));
     return 1;
   }
 
@@ -119,7 +119,7 @@ int server (int argc,char *argv[]) {
     gras_os_sleep(1,0);
   gras_socket_close(g->sock);
   free(g);
-  gras_exit();
+  xbt_exit();
   INFO0("SERVER: Done.");
   return no_error;
 }
@@ -137,7 +137,7 @@ typedef struct {
 int client (int argc,char *argv[]);
 
 int client(int argc,char *argv[]) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   client_data_t *g;
 
   gras_socket_t from;
@@ -146,7 +146,7 @@ int client(int argc,char *argv[]) {
   const char *host = "127.0.0.1";
         int   port = 4000;
 
-  gras_init(&argc, argv);
+  xbt_init(&argc, argv);
   g=gras_userdata_new(client_data_t);
    
   if (argc == 3) {
@@ -158,7 +158,7 @@ int client(int argc,char *argv[]) {
   gras_os_sleep(1,0); /* Wait for the server startup */
   if ((errcode=gras_socket_client(host,port,&(g->sock)))) {
     ERROR1("Client: Unable to connect to the server. Got %s",
-	   gras_error_name(errcode));
+	   xbt_error_name(errcode));
     return 1;
   }
   INFO2("Client: Connected to %s:%d.",host,port);    
@@ -173,7 +173,7 @@ int client(int argc,char *argv[]) {
   errcode = gras_msg_send(g->sock, gras_msgtype_by_name("ping"), &ping);
   if (errcode != no_error) {
     fprintf(stderr, "Client: Unable send PING to server (%s)\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     gras_socket_close(g->sock);
     return 1;
   }
@@ -184,7 +184,7 @@ int client(int argc,char *argv[]) {
   if ((errcode=gras_msg_wait(6000,gras_msgtype_by_name("pong"),
 			     &from,&pong))) {
     ERROR1("Client: Why can't I get my PONG message like everyone else (%s)?",
-	   gras_error_name(errcode));
+	   xbt_error_name(errcode));
     gras_socket_close(g->sock);
     return 1;
   }
@@ -195,7 +195,7 @@ int client(int argc,char *argv[]) {
 
   gras_socket_close(g->sock);
   free(g);
-  gras_exit();
+  xbt_exit();
   INFO0("Client: Done.");
   return 0;
 }

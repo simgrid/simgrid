@@ -441,7 +441,7 @@ char *yytext;
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
   const char *definition;
-  GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
+  XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,yytext)
 #define annotate 1
 #define comment 2

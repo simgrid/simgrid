@@ -27,22 +27,22 @@
  */
 typedef struct {
   /*queue of msgs storing the ones got while msg_wait'ing for something else */
-  gras_dynar_t msg_queue; /* elm type: gras_msg_t */
+  xbt_dynar_t msg_queue; /* elm type: gras_msg_t */
 
   /* registered callbacks for each message */
-  gras_dynar_t cbl_list; /* elm type: gras_cblist_t */
+  xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
    
   /* SG only elements. In RL, they are part of the OS ;) */
   int chan;    /* Formated messages channel */
   int rawChan; /* Unformated echange channel */
-  gras_dynar_t sockets; /* all sockets known to this process */
+  xbt_dynar_t sockets; /* all sockets known to this process */
 
   /* globals of the process */
   void *userdata;               
 } gras_procdata_t;
 
 /* Access */
-gras_dynar_t gras_socketset_get(void);
+xbt_dynar_t gras_socketset_get(void);
 
 /* FIXME: mv to _private? */
 gras_procdata_t *gras_procdata_get(void);

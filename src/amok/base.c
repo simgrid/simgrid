@@ -12,9 +12,9 @@
 #include "gras/datadesc.h"
 #include "amok/base.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(amok,GRAS_LOG_ROOT_CAT,"All AMOK categories");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
 
-amok_remoterr_t amok_remoterr_new(gras_error_t param_errcode, 
+amok_remoterr_t amok_remoterr_new(xbt_error_t param_errcode, 
 				  const char* format,...) {
    
   amok_remoterr_t res;
@@ -26,12 +26,12 @@ amok_remoterr_t amok_remoterr_new(gras_error_t param_errcode,
   return res;
 }
 
-amok_remoterr_t amok_remoterr_new_va(gras_error_t param_errcode, 
+amok_remoterr_t amok_remoterr_new_va(xbt_error_t param_errcode, 
 				     const char* format,va_list ap) {
-  amok_remoterr_t res=gras_new(s_amok_remoterr_t,1);
+  amok_remoterr_t res=xbt_new(s_amok_remoterr_t,1);
   res->code=param_errcode;
   if (format) {
-     res->msg=(char*)gras_malloc(1024);
+     res->msg=(char*)xbt_malloc(1024);
      vsnprintf(res->msg,1024,format,ap);
   } else {
      res->msg = NULL;
@@ -42,8 +42,8 @@ amok_remoterr_t amok_remoterr_new_va(gras_error_t param_errcode,
 
 void amok_remoterr_free(amok_remoterr_t *err) {
    if (err && *err) {
-      if ((*err)->msg) gras_free((*err)->msg);
-      gras_free(*err);
+      if ((*err)->msg) xbt_free((*err)->msg);
+      xbt_free(*err);
       err=NULL;
    }
 }
@@ -51,14 +51,14 @@ void amok_remoterr_free(amok_remoterr_t *err) {
 
 void
 amok_repport_error (gras_socket_t sock, gras_msgtype_t msgtype,
-		    gras_error_t param_errcode, const char* format,...) {
+		    xbt_error_t param_errcode, const char* format,...) {
   amok_remoterr_t error;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   va_list ap;
 
-  error=gras_new(s_amok_remoterr_t,1);
+  error=xbt_new(s_amok_remoterr_t,1);
   error->code=param_errcode;
-  error->msg=(char*)gras_malloc(1024); /* FIXME */
+  error->msg=(char*)xbt_malloc(1024); /* FIXME */
   va_start(ap,format);
   vsnprintf(error->msg,1024,format,ap);
   va_end(ap);
@@ -66,7 +66,7 @@ amok_repport_error (gras_socket_t sock, gras_msgtype_t msgtype,
   errcode = gras_msg_send(sock,msgtype,error);
   if (errcode != no_error) {
      CRITICAL4("Error '%s' while reporting error '%s' to %s:%d",
-	       gras_error_name(errcode),error->msg,
+	       xbt_error_name(errcode),error->msg,
 	       gras_socket_peer_name(sock),gras_socket_peer_port(sock) );
   }
 }
@@ -75,11 +75,11 @@ void amok_base_init(void) {
   gras_datadesc_type_t host_desc, remoterr_desc;
      
   /* Build the datatype descriptions */
-  host_desc = gras_datadesc_struct("gras_host_t");
+  host_desc = gras_datadesc_struct("xbt_host_t");
   gras_datadesc_struct_append(host_desc,"name",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(host_desc,"exp_size",gras_datadesc_by_name("int"));
   gras_datadesc_struct_close(host_desc);
-  host_desc = gras_datadesc_ref("gras_host_t*",host_desc);
+  host_desc = gras_datadesc_ref("xbt_host_t*",host_desc);
    
   remoterr_desc = gras_datadesc_struct("s_amok_remoterr_t");
   gras_datadesc_struct_append(remoterr_desc,"msg",gras_datadesc_by_name("string"));

@@ -16,16 +16,16 @@
 /***
  *** Main user functions
  ***/
-gras_error_t gras_trp_chunk_send(gras_socket_t sd,
+xbt_error_t gras_trp_chunk_send(gras_socket_t sd,
 				 char *data,
 				 long int size);
-gras_error_t gras_trp_chunk_recv(gras_socket_t sd,
+xbt_error_t gras_trp_chunk_recv(gras_socket_t sd,
 				 char *data,
 				 long int size);
-gras_error_t gras_trp_flush(gras_socket_t sd);
+xbt_error_t gras_trp_flush(gras_socket_t sd);
 
 /* Find which socket needs to be read next */
-gras_error_t 
+xbt_error_t 
 gras_trp_select(double timeout,
 		gras_socket_t *dst);
 
@@ -44,12 +44,12 @@ struct gras_trp_plugin_ {
   /* dst pointers are created and initialized with default values
      before call to socket_client/server. 
      Retrive the info you need from there. */
-  gras_error_t (*socket_client)(gras_trp_plugin_t *self,
+  xbt_error_t (*socket_client)(gras_trp_plugin_t *self,
 				gras_socket_t      dst);
-  gras_error_t (*socket_server)(gras_trp_plugin_t *self,
+  xbt_error_t (*socket_server)(gras_trp_plugin_t *self,
 				gras_socket_t      dst);
    
-  gras_error_t (*socket_accept)(gras_socket_t  sock,
+  xbt_error_t (*socket_accept)(gras_socket_t  sock,
 				gras_socket_t *dst);
    
    
@@ -57,15 +57,15 @@ struct gras_trp_plugin_ {
     but should not free the socket itself (beside the specific part) */
   void         (*socket_close)(gras_socket_t sd);
     
-  gras_error_t (*chunk_send)(gras_socket_t sd,
+  xbt_error_t (*chunk_send)(gras_socket_t sd,
 			     const char *data,
 			     long int size);
-  gras_error_t (*chunk_recv)(gras_socket_t sd,
+  xbt_error_t (*chunk_recv)(gras_socket_t sd,
 			     char *data,
 			     long int size);
 
   /* flush has to make sure that the pending communications are achieved */
-  gras_error_t (*flush)(gras_socket_t sd);
+  xbt_error_t (*flush)(gras_socket_t sd);
 
   void          *data; /* plugin-specific data */
  
@@ -74,7 +74,7 @@ struct gras_trp_plugin_ {
   void         (*exit)(gras_trp_plugin_t *);
 };
 
-gras_error_t
+xbt_error_t
 gras_trp_plugin_get_by_name(const char *name,
 			    gras_trp_plugin_t **dst);
 

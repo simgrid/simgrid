@@ -9,7 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/DataDesc/datadesc_private.h"
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_cbps,datadesc,"callback persistant state");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_cbps,datadesc,"callback persistant state");
 
 typedef struct {
   gras_datadesc_type_t  type;
@@ -17,31 +17,31 @@ typedef struct {
 } s_gras_cbps_elm_t, *gras_cbps_elm_t;
 
 typedef struct s_gras_cbps {
-  gras_dynar_t lints; /* simple stack of long integers (easy interface) */
+  xbt_dynar_t lints; /* simple stack of long integers (easy interface) */
 
-  gras_dict_t  space; /* varname x dynar of gras_cbps_elm_t */
-  gras_dynar_t frames; /* of dynar of names defined within this frame
+  xbt_dict_t  space; /* varname x dynar of gras_cbps_elm_t */
+  xbt_dynar_t frames; /* of dynar of names defined within this frame
 			   (and to pop when we leave it) */
-  gras_dynar_t globals;
+  xbt_dynar_t globals;
 } s_gras_cbps_t;
 
 static void free_string(void *d);
 
 static void free_string(void *d){
-  gras_free(*(void**)d);
+  xbt_free(*(void**)d);
 }
 
 gras_cbps_t gras_cbps_new(void) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   gras_cbps_t  res;
 
-  res=gras_new(s_gras_cbps_t,1);
+  res=xbt_new(s_gras_cbps_t,1);
 
-  res->lints = gras_dynar_new(sizeof(int), NULL);
-  res->space = gras_dict_new();
+  res->lints = xbt_dynar_new(sizeof(int), NULL);
+  res->space = xbt_dict_new();
   /* no leak, the content is freed manually on block_end */
-  res->frames = gras_dynar_new(sizeof(gras_dynar_t), NULL);
-  res->globals = gras_dynar_new(sizeof(char*), NULL);
+  res->frames = xbt_dynar_new(sizeof(xbt_dynar_t), NULL);
+  res->globals = xbt_dynar_new(sizeof(char*), NULL);
 
   gras_cbps_block_begin(res);
 
@@ -50,14 +50,14 @@ gras_cbps_t gras_cbps_new(void) {
 
 void gras_cbps_free(gras_cbps_t *state) {
 
-  gras_dynar_free( &( (*state)->lints   ) );
+  xbt_dynar_free( &( (*state)->lints   ) );
 
   gras_cbps_block_end(*state);
-  gras_dict_free ( &( (*state)->space   ) );
-  gras_dynar_free( &( (*state)->frames  ) );
-  gras_dynar_free( &( (*state)->globals ) );
+  xbt_dict_free ( &( (*state)->space   ) );
+  xbt_dynar_free( &( (*state)->frames  ) );
+  xbt_dynar_free( &( (*state)->globals ) );
 
-  gras_free(*state);
+  xbt_free(*state);
   *state = NULL;
 }
 
@@ -68,39 +68,39 @@ void gras_cbps_free(gras_cbps_t *state) {
  * name already exists, it is masked by the one given here, and will be 
  * seeable again only after a pop to remove the value this push adds.
  */
-gras_error_t
+xbt_error_t
 gras_cbps_v_push(gras_cbps_t          ps,
 		 const char          *name,
 		 void                *data,
 		 gras_datadesc_type_t ddt) {
 
-  gras_dynar_t          varstack,frame;
+  xbt_dynar_t          varstack,frame;
   gras_cbps_elm_t       var;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   char *varname = (char*)strdup(name);
 
   DEBUG2("push(%s,%p)",name,(void*)data);
-  errcode = gras_dict_get(ps->space, name, (void **)&varstack);
+  errcode = xbt_dict_get(ps->space, name, (void **)&varstack);
  
   if (errcode == mismatch_error) {
     DEBUG1("Create a new variable stack for '%s' into the space",name);
-    varstack = gras_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
-    gras_dict_set(ps->space, varname, (void **)varstack, NULL);
+    varstack = xbt_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
+    xbt_dict_set(ps->space, varname, (void **)varstack, NULL);
     /* leaking, you think? only if you do not close all the openned blocks ;)*/
   } else if (errcode != no_error) {
     return errcode;
   }
  
-  var       = gras_new0(s_gras_cbps_elm_t,1);
+  var       = xbt_new0(s_gras_cbps_elm_t,1);
   var->type = ddt;
   var->data = data;
   
-  gras_dynar_push(varstack, &var);
+  xbt_dynar_push(varstack, &var);
   
-  gras_dynar_pop(ps->frames, &frame);
+  xbt_dynar_pop(ps->frames, &frame);
   DEBUG4("Push %s (%p @%p) into frame %p",varname,(void*)varname,(void*)&varname,(void*)frame);
-  gras_dynar_push(frame, &varname);
-  gras_dynar_push(ps->frames, &frame); 
+  xbt_dynar_push(frame, &varname);
+  xbt_dynar_push(ps->frames, &frame); 
   return no_error;
 }
 
@@ -111,53 +111,53 @@ gras_cbps_v_push(gras_cbps_t          ps,
  * present in the current block, it will fail (with abort) and not search
  * in upper blocks since this denotes a programmation error.
  */
-gras_error_t
+xbt_error_t
 gras_cbps_v_pop (gras_cbps_t            ps, 
 		 const char            *name,
 		 gras_datadesc_type_t  *ddt,
 		 void                 **res) {
-  gras_dynar_t          varstack,frame;
+  xbt_dynar_t          varstack,frame;
   gras_cbps_elm_t       var            = NULL;
   void                 *data           = NULL;
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
   DEBUG1("pop(%s)",name);
   /* FIXME: Error handling */
-  errcode = gras_dict_get(ps->space, name, (void **)&varstack);
+  errcode = xbt_dict_get(ps->space, name, (void **)&varstack);
   if (errcode == mismatch_error) {
     RAISE1(mismatch_error,"Asked to pop the non-existant %s",
 	   name);
   }
-  gras_dynar_pop(varstack, &var);
+  xbt_dynar_pop(varstack, &var);
   
-  if (!gras_dynar_length(varstack)) {
+  if (!xbt_dynar_length(varstack)) {
     DEBUG1("Last incarnation of %s poped. Kill it",name);
-    gras_dict_remove(ps->space, name);
-    gras_dynar_free(&varstack);
+    xbt_dict_remove(ps->space, name);
+    xbt_dynar_free(&varstack);
   }
   
   if (ddt)
     *ddt = var->type;  
   data    = var->data;
   
-  gras_free(var);
+  xbt_free(var);
   
-  gras_dynar_pop(ps->frames, &frame);
+  xbt_dynar_pop(ps->frames, &frame);
   {
-    int l = gras_dynar_length(frame);
+    int l = xbt_dynar_length(frame);
     
     while (l--) {
       char *_name = NULL;
                                                                                 
-      _name = gras_dynar_get_as(frame, l, char*);
+      _name = xbt_dynar_get_as(frame, l, char*);
       if (!strcmp(name, _name)) {
-	gras_dynar_remove_at(frame, l, &_name);
-	gras_free(_name);
+	xbt_dynar_remove_at(frame, l, &_name);
+	xbt_free(_name);
 	break;
       }
     }
   }
-  gras_dynar_push(ps->frames, &frame);
+  xbt_dynar_push(ps->frames, &frame);
   
   *res = data;
   return no_error;
@@ -180,27 +180,27 @@ gras_cbps_v_set (gras_cbps_t          ps,
 		 void                *data,
 		 gras_datadesc_type_t ddt) {
 
-  gras_dynar_t    dynar        = NULL;
+  xbt_dynar_t    dynar        = NULL;
   gras_cbps_elm_t elm          = NULL;
-  gras_error_t    errcode;
+  xbt_error_t    errcode;
   
   DEBUG1("set(%s)",name);
-  errcode = gras_dict_get(ps->space, name, (void **)&dynar);
+  errcode = xbt_dict_get(ps->space, name, (void **)&dynar);
   
   if (errcode == mismatch_error) {
-    dynar = gras_dynar_new(sizeof (gras_cbps_elm_t), NULL);
-    gras_dict_set(ps->space, name, (void **)dynar, NULL);
+    dynar = xbt_dynar_new(sizeof (gras_cbps_elm_t), NULL);
+    xbt_dict_set(ps->space, name, (void **)dynar, NULL);
     
-    elm   = gras_new0(s_gras_cbps_elm_t,1);
-    gras_dynar_push(ps->globals, &name);
+    elm   = xbt_new0(s_gras_cbps_elm_t,1);
+    xbt_dynar_push(ps->globals, &name);
   } else {
-    gras_dynar_pop(dynar, &elm);
+    xbt_dynar_pop(dynar, &elm);
   }
   
   elm->type   = ddt;
   elm->data   = data;
  
-  gras_dynar_push(dynar, &elm);
+  xbt_dynar_push(dynar, &elm);
 
 }
 
@@ -218,14 +218,14 @@ gras_cbps_v_get (gras_cbps_t           ps,
 		 const char           *name,
 		 /* OUT */gras_datadesc_type_t *ddt) {
   
-  gras_dynar_t    dynar = NULL;
+  xbt_dynar_t    dynar = NULL;
   gras_cbps_elm_t elm   = NULL;
   
   DEBUG1("get(%s)",name);
   /* FIXME: Error handling */
-  gras_dict_get(ps->space, name, (void **)&dynar);
-  gras_dynar_pop(dynar, &elm);
-  gras_dynar_push(dynar, &elm);
+  xbt_dict_get(ps->space, name, (void **)&dynar);
+  xbt_dynar_pop(dynar, &elm);
+  xbt_dynar_push(dynar, &elm);
   
   if (ddt) {
     *ddt = elm->type;
@@ -252,11 +252,11 @@ gras_cbps_v_get (gras_cbps_t           ps,
 void
 gras_cbps_block_begin(gras_cbps_t ps) {
 
-  gras_dynar_t dynar = NULL;
+  xbt_dynar_t dynar = NULL;
 
   DEBUG0(">>> Block begin");
-  dynar = gras_dynar_new(sizeof (char *), NULL);
-  gras_dynar_push(ps->frames, &dynar);
+  dynar = xbt_dynar_new(sizeof (char *), NULL);
+  xbt_dynar_push(ps->frames, &dynar);
 }
 
 /**
@@ -267,33 +267,33 @@ gras_cbps_block_begin(gras_cbps_t ps) {
 void
 gras_cbps_block_end(gras_cbps_t ps) {
 
-  gras_dynar_t  frame        = NULL;
+  xbt_dynar_t  frame        = NULL;
   int           cursor       =    0;
   char         *name         = NULL;
 
-  gras_assert0(gras_dynar_length(ps->frames),
+  xbt_assert0(xbt_dynar_length(ps->frames),
 	       "More block_end than block_begin");
-  gras_dynar_pop(ps->frames, &frame);
+  xbt_dynar_pop(ps->frames, &frame);
   
-  gras_dynar_foreach(frame, cursor, name) {
+  xbt_dynar_foreach(frame, cursor, name) {
 
-    gras_dynar_t    varstack    = NULL;
+    xbt_dynar_t    varstack    = NULL;
     gras_cbps_elm_t var         = NULL;
  
     DEBUG2("Get ride of %s (%p)",name,(void*)name);
-    gras_dict_get(ps->space, name, (void **)&varstack);
-    gras_dynar_pop(varstack, &var);
+    xbt_dict_get(ps->space, name, (void **)&varstack);
+    xbt_dynar_pop(varstack, &var);
  
-    if (!gras_dynar_length(varstack)) {
-      gras_dict_remove(ps->space, name);
-      gras_dynar_free_container(&varstack); /*already empty, save a test ;) */
+    if (!xbt_dynar_length(varstack)) {
+      xbt_dict_remove(ps->space, name);
+      xbt_dynar_free_container(&varstack); /*already empty, save a test ;) */
     }
     
-    if (var->data) gras_free(var->data);
-    gras_free(var);
-    gras_free(name);
+    if (var->data) xbt_free(var->data);
+    xbt_free(var);
+    xbt_free(name);
   }
-  gras_dynar_free_container(&frame);/* we just emptied it */
+  xbt_dynar_free_container(&frame);/* we just emptied it */
   DEBUG0("<<< Block end");
 }
 
@@ -306,9 +306,9 @@ gras_cbps_block_end(gras_cbps_t ps) {
 void
 gras_cbps_i_push(gras_cbps_t ps,
 		 int val) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   DEBUG1("push %d as a size",val);
-  gras_dynar_push_as(ps->lints,int,val);
+  xbt_dynar_push_as(ps->lints,int,val);
 }
 /**
  * gras_cbps_i_pop:
@@ -319,9 +319,9 @@ int
 gras_cbps_i_pop(gras_cbps_t ps) {
   int ret;
 
-  gras_assert0(gras_dynar_length(ps->lints) > 0,
+  xbt_assert0(xbt_dynar_length(ps->lints) > 0,
 	       "gras_cbps_i_pop: no value to pop");
-  ret = gras_dynar_pop_as(ps->lints,int);
+  ret = xbt_dynar_pop_as(ps->lints,int);
   DEBUG1("pop %d as a size",ret);
   return ret;
 }

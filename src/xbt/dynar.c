@@ -15,46 +15,46 @@
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
 
-typedef struct gras_dynar_s {
+typedef struct xbt_dynar_s {
   unsigned long          size;
   unsigned long          used;
   unsigned long          elmsize;
   void           *data;
   void_f_pvoid_t *free_f;
-} s_gras_dynar_t;
+} s_xbt_dynar_t;
 
 #define __sanity_check_dynar(dynar)       \
-           gras_assert0(dynar,           \
+           xbt_assert0(dynar,           \
 			"dynar is NULL")
 #define __sanity_check_idx(idx)                \
-           gras_assert1(idx >= 0,             \
+           xbt_assert1(idx >= 0,             \
 			"dynar idx(=%d) < 0", \
 			(int) (idx))
 #define __check_inbound_idx(dynar, idx)                                                \
-           gras_assert2(idx < dynar->used,                                             \
+           xbt_assert2(idx < dynar->used,                                             \
 			"dynar is not that long. You asked %d, but it's only %lu long", \
 			(int) (idx), (unsigned long) dynar->used)
 #define __check_sloppy_inbound_idx(dynar, idx)                                         \
-           gras_assert2(idx <= dynar->used,                                            \
+           xbt_assert2(idx <= dynar->used,                                            \
 			"dynar is not that long. You asked %d, but it's only %lu long", \
 			(int) (idx), (unsigned long) dynar->used)
 #define __check_populated_dynar(dynar)            \
-           gras_assert1(dynar->used,              \
+           xbt_assert1(dynar->used,              \
 			"dynar %p contains nothing",(void*)dynar)
 
-static _GRAS_INLINE 
-void _gras_clear_mem(void * const ptr,
+static _XBT_INLINE 
+void _xbt_clear_mem(void * const ptr,
 		     const unsigned long length) {
   memset(ptr, 0, length);
 }
 
-static _GRAS_INLINE
-gras_error_t
-_gras_dynar_expand(gras_dynar_t const dynar,
+static _XBT_INLINE
+xbt_error_t
+_xbt_dynar_expand(xbt_dynar_t const dynar,
                    const int          nb) {
-  gras_error_t errcode     = no_error;
+  xbt_error_t errcode     = no_error;
   const unsigned long old_size    = dynar->size;
 
   if (nb > old_size) {
@@ -68,17 +68,17 @@ _gras_dynar_expand(gras_dynar_t const dynar,
 
     const unsigned long new_size    = nb > (2*(old_size+1)) ? nb : (2*(old_size+1));
     const unsigned long new_length  = new_size*elmsize;
-    char * const new_data    = gras_malloc0(elmsize*new_size);
+    char * const new_data    = xbt_malloc0(elmsize*new_size);
 
     DEBUG3("expend %p from %lu to %d elements", (void*)dynar, (unsigned long)old_size, nb);
 
     if (old_data) {
       memcpy(new_data, old_data, used_length);
-      _gras_clear_mem(old_data, old_length);
-      gras_free(old_data);
+      _xbt_clear_mem(old_data, old_length);
+      xbt_free(old_data);
     }
 
-    _gras_clear_mem(new_data + used_length, new_length - used_length);
+    _xbt_clear_mem(new_data + used_length, new_length - used_length);
 
     dynar->size = new_size;
     dynar->data = new_data;
@@ -87,9 +87,9 @@ _gras_dynar_expand(gras_dynar_t const dynar,
   return errcode;
 }
 
-static _GRAS_INLINE
+static _XBT_INLINE
 void *
-_gras_dynar_elm(const gras_dynar_t  dynar,
+_xbt_dynar_elm(const xbt_dynar_t  dynar,
 		const unsigned long idx) {
   char * const data    = dynar->data;
   const unsigned long elmsize = dynar->elmsize;
@@ -97,30 +97,30 @@ _gras_dynar_elm(const gras_dynar_t  dynar,
   return data + idx*elmsize;
 }
 
-static _GRAS_INLINE
+static _XBT_INLINE
 void
-_gras_dynar_get_elm(void  * const       dst,
-                    const gras_dynar_t  dynar,
+_xbt_dynar_get_elm(void  * const       dst,
+                    const xbt_dynar_t  dynar,
                     const unsigned long idx) {
-  void * const elm     = _gras_dynar_elm(dynar, idx);
+  void * const elm     = _xbt_dynar_elm(dynar, idx);
   const unsigned long elmsize = dynar->elmsize;
 
   memcpy(dst, elm, elmsize);
 }
 
-static _GRAS_INLINE
+static _XBT_INLINE
 void
-_gras_dynar_put_elm(const gras_dynar_t  dynar,
+_xbt_dynar_put_elm(const xbt_dynar_t  dynar,
                     const unsigned long idx,
                     const void * const  src) {
-  void * const elm     = _gras_dynar_elm(dynar, idx);
+  void * const elm     = _xbt_dynar_elm(dynar, idx);
   const unsigned long elmsize = dynar->elmsize;
 
   memcpy(elm, src, elmsize);
 }
 
 /**
- * gras_dynar_new:
+ * xbt_dynar_new:
  * @elm_size: size of each element in the dynar
  * @free_func: function to call each time we want to get rid of an element (or NULL if nothing to do).
  *
@@ -128,11 +128,11 @@ _gras_dynar_put_elm(const gras_dynar_t  dynar,
  * pointer of pointer. That is to say that dynars can contain either base
  * types (int, char, double, etc) or pointer of pointers (struct **).
  */
-gras_dynar_t 
-gras_dynar_new(const unsigned long           elmsize,
+xbt_dynar_t 
+xbt_dynar_new(const unsigned long           elmsize,
                void_f_pvoid_t * const free_f) {
    
-  gras_dynar_t dynar = gras_new0(s_gras_dynar_t,1);
+  xbt_dynar_t dynar = xbt_new0(s_xbt_dynar_t,1);
 
   dynar->size    = 0;
   dynar->used    = 0;
@@ -144,46 +144,46 @@ gras_dynar_new(const unsigned long           elmsize,
 }
 
 /**
- * gras_dynar_free_container:
+ * xbt_dynar_free_container:
  * @dynar: poor victim
  *
  * kilkil a dynar BUT NOT its content. Ie, the array is freed, but not what
  * its contain points to.
  */
 void
-gras_dynar_free_container(gras_dynar_t *dynar) {
+xbt_dynar_free_container(xbt_dynar_t *dynar) {
   if (dynar && *dynar) {
 
     if ((*dynar)->data) {
-      _gras_clear_mem((*dynar)->data, (*dynar)->size);
-      gras_free((*dynar)->data);
+      _xbt_clear_mem((*dynar)->data, (*dynar)->size);
+      xbt_free((*dynar)->data);
     }
 
-    _gras_clear_mem(*dynar, sizeof(s_gras_dynar_t));
+    _xbt_clear_mem(*dynar, sizeof(s_xbt_dynar_t));
 
-    gras_free(*dynar);
+    xbt_free(*dynar);
     *dynar=NULL;
   }
 }
 
 /**
- * gras_dynar_reset:
+ * xbt_dynar_reset:
  * @dynar: who to squeeze
  *
  * Frees the content and set the size to 0
  */
 void
-gras_dynar_reset(gras_dynar_t const dynar) {
+xbt_dynar_reset(xbt_dynar_t const dynar) {
 
   __sanity_check_dynar(dynar);
 
   DEBUG1("Reset the dynar %p",(void*)dynar);
   if (dynar->free_f) {
-    gras_dynar_map(dynar, dynar->free_f);
+    xbt_dynar_map(dynar, dynar->free_f);
   }
 
   if (dynar->data)
-    gras_free(dynar->data);
+    xbt_free(dynar->data);
 
   dynar->size = 0;
   dynar->used = 0;
@@ -191,33 +191,33 @@ gras_dynar_reset(gras_dynar_t const dynar) {
 }
 
 /**
- * gras_dynar_free:
+ * xbt_dynar_free:
  * @dynar: poor victim
  *
  * kilkil a dynar and its content
  */
 
 void
-gras_dynar_free(gras_dynar_t * dynar) {
+xbt_dynar_free(xbt_dynar_t * dynar) {
   if (dynar && *dynar) {
-    gras_dynar_reset(*dynar);
-    gras_dynar_free_container(dynar);
+    xbt_dynar_reset(*dynar);
+    xbt_dynar_free_container(dynar);
   }
 }
 
 /**
- * gras_dynar_length:
+ * xbt_dynar_length:
  * @dynar: the dynar we want to mesure
  *
  * Returns the count of elements in a dynar
  */
 unsigned long
-gras_dynar_length(const gras_dynar_t dynar) {
+xbt_dynar_length(const xbt_dynar_t dynar) {
   return (dynar ? (unsigned long) dynar->used : (unsigned long)0);
 }
 
 /**
- * gras_dynar_get_cpy:
+ * xbt_dynar_get_cpy:
  * @dynar: information dealer
  * @idx: index of the slot we want to retrive
  * @dst: where to pu the result to.
@@ -225,7 +225,7 @@ gras_dynar_length(const gras_dynar_t dynar) {
  * Retrieve a copy of the Nth element of a dynar.
  */
 void
-gras_dynar_get_cpy(const gras_dynar_t dynar,
+xbt_dynar_get_cpy(const xbt_dynar_t dynar,
 		   const int          idx,
 		   void       * const dst) {
 
@@ -233,11 +233,11 @@ gras_dynar_get_cpy(const gras_dynar_t dynar,
   __sanity_check_idx(idx);
   __check_inbound_idx(dynar, idx);
 
-  _gras_dynar_get_elm(dst, dynar, idx);
+  _xbt_dynar_get_elm(dst, dynar, idx);
 }
 
 /**
- * gras_dynar_get:
+ * xbt_dynar_get_ptr:
  * @dynar: information dealer
  * @idx: index of the slot we want to retrive
  * @dst: where to pu the result to.
@@ -246,55 +246,55 @@ gras_dynar_get_cpy(const gras_dynar_t dynar,
  * the dynar. Make a copy before fooling with it.
  */
 void*
-gras_dynar_get_ptr(const gras_dynar_t dynar,
+xbt_dynar_get_ptr(const xbt_dynar_t dynar,
 		   const int          idx) {
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
   __check_inbound_idx(dynar, idx);
 
-  return _gras_dynar_elm(dynar, idx);
+  return _xbt_dynar_elm(dynar, idx);
 }
 
 /**
- * gras_dynar_set:
+ * xbt_dynar_set:
  * @dynar:
  * @idx:
  * @src: What will be feeded to the dynar
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, BUT NOT freeing
  * the previous value at this position. If you want to free the previous content,
- * use gras_dynar_replace().
+ * use xbt_dynar_replace().
  */
 void
-gras_dynar_set(gras_dynar_t         dynar,
+xbt_dynar_set(xbt_dynar_t         dynar,
                const int            idx,
                const void   * const src) {
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
 
-  _gras_dynar_expand(dynar, idx+1);
+  _xbt_dynar_expand(dynar, idx+1);
 
   if (idx >= dynar->used) {
     dynar->used = idx+1;
   }
 
-  _gras_dynar_put_elm(dynar, idx, src);
+  _xbt_dynar_put_elm(dynar, idx, src);
 }
 
 /**
- * gras_dynar_replace:
+ * xbt_dynar_replace:
  * @dynar:
  * @idx:
  * @object:
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, AND DO
  * free the previous value at this position. If you don't want to free the
- * previous content, use gras_dynar_set().
+ * previous content, use xbt_dynar_set().
  */
 void
-gras_dynar_replace(gras_dynar_t         dynar,
+xbt_dynar_replace(xbt_dynar_t         dynar,
 		   const int            idx,
 		   const void   * const object) {
 
@@ -302,23 +302,23 @@ gras_dynar_replace(gras_dynar_t         dynar,
   __sanity_check_idx(idx);
 
   if (idx < dynar->used && dynar->free_f) {
-    void * const old_object = _gras_dynar_elm(dynar, idx);
+    void * const old_object = _xbt_dynar_elm(dynar, idx);
 
     dynar->free_f(old_object);
   }
 
-  gras_dynar_set(dynar, idx, object);
+  xbt_dynar_set(dynar, idx, object);
 }
 
 /**
- * gras_dynar_insert_at_ptr:
+ * xbt_dynar_insert_at_ptr:
  * 
  * Make room for a new element in the dynar, and return a pointer to
  * its position. You can then use regular affectation to set its value
  * instead of relying on the slow memcpy
  */
 void *
-gras_dynar_insert_at_ptr(gras_dynar_t const dynar,
+xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
 			 const int            idx) {
    
   __sanity_check_dynar(dynar);
@@ -329,24 +329,24 @@ gras_dynar_insert_at_ptr(gras_dynar_t const dynar,
     const unsigned long old_used = dynar->used;
     const unsigned long new_used = old_used + 1;
 
-    _gras_dynar_expand(dynar, new_used);
+    _xbt_dynar_expand(dynar, new_used);
 
     {
       const unsigned long nb_shift =  old_used - idx;
 
       if (nb_shift)
-	 memmove(_gras_dynar_elm(dynar, idx+1), 
-		 _gras_dynar_elm(dynar, idx), 
+	 memmove(_xbt_dynar_elm(dynar, idx+1), 
+		 _xbt_dynar_elm(dynar, idx), 
 		 nb_shift * dynar->elmsize);
     }
 
     dynar->used = new_used;
-    return _gras_dynar_elm(dynar,idx);
+    return _xbt_dynar_elm(dynar,idx);
   }
 }
 
 /**
- * gras_dynar_insert_at:
+ * xbt_dynar_insert_at:
  * @dynar:
  * @idx:
  * @src: What will be feeded to the dynar
@@ -356,18 +356,18 @@ gras_dynar_insert_at_ptr(gras_dynar_t const dynar,
  * position right in the dynar.
  */
 void
-gras_dynar_insert_at(gras_dynar_t  const dynar,
+xbt_dynar_insert_at(xbt_dynar_t  const dynar,
                      const int            idx,
                      const void   * const src) {
 
-  /* checks done in gras_dynar_insert_at_ptr */
-  memcpy(gras_dynar_insert_at_ptr(dynar,idx),
+  /* checks done in xbt_dynar_insert_at_ptr */
+  memcpy(xbt_dynar_insert_at_ptr(dynar,idx),
 	 src,
 	 dynar->elmsize);
 }
 
 /**
- * gras_dynar_remove_at:
+ * xbt_dynar_remove_at:
  * @dynar: 
  * @idx:
  * @object:
@@ -376,7 +376,7 @@ gras_dynar_insert_at(gras_dynar_t  const dynar,
  * all subsequent values to one position left in the dynar.
  */
 void
-gras_dynar_remove_at(gras_dynar_t  const dynar,
+xbt_dynar_remove_at(xbt_dynar_t  const dynar,
                      const int            idx,
                      void         * const object) {
 
@@ -385,7 +385,7 @@ gras_dynar_remove_at(gras_dynar_t  const dynar,
   __check_inbound_idx(dynar, idx);
 
   if (object)
-    _gras_dynar_get_elm(object, dynar, idx);
+    _xbt_dynar_get_elm(object, dynar, idx);
 
   {
     const unsigned long old_used = dynar->used;
@@ -396,8 +396,8 @@ gras_dynar_remove_at(gras_dynar_t  const dynar,
 
     const unsigned long offset   =  nb_shift*elmsize;
 
-    void * const elm_src  = _gras_dynar_elm(dynar, idx+1);
-    void * const elm_dst  = _gras_dynar_elm(dynar, idx);
+    void * const elm_src  = _xbt_dynar_elm(dynar, idx+1);
+    void * const elm_dst  = _xbt_dynar_elm(dynar, idx);
 
     memmove(elm_dst, elm_src, offset);
 
@@ -406,95 +406,95 @@ gras_dynar_remove_at(gras_dynar_t  const dynar,
 }
 
 /**
- * gras_dynar_push_ptr:
+ * xbt_dynar_push_ptr:
  * 
  * Make room at the end of the dynar for a new element, and return a pointer to it
  */
 void *
-gras_dynar_push_ptr(gras_dynar_t  const dynar) {
-  return gras_dynar_insert_at_ptr(dynar, dynar->used);    
+xbt_dynar_push_ptr(xbt_dynar_t  const dynar) {
+  return xbt_dynar_insert_at_ptr(dynar, dynar->used);    
 }
 
 /**
- * gras_dynar_push:
+ * xbt_dynar_push:
  * @dynar:
  * @src:
  *
  * Add an element at the end of the dynar
  */
 void
-gras_dynar_push(gras_dynar_t  const dynar,
+xbt_dynar_push(xbt_dynar_t  const dynar,
                 const void   * const src) {
   /* sanity checks done by insert_at */
-  gras_dynar_insert_at(dynar, dynar->used, src); 
+  xbt_dynar_insert_at(dynar, dynar->used, src); 
 }
 
 /**
- * gras_dynar_pop_ptr:
+ * xbt_dynar_pop_ptr:
  * @dynar:
  * @dst:
  *
  * Make the last element of the dynar as unused and return a pointer to it.
  */
 void *
-gras_dynar_pop_ptr(gras_dynar_t  const dynar) {
+xbt_dynar_pop_ptr(xbt_dynar_t  const dynar) {
 
   __check_populated_dynar(dynar);
   DEBUG1("Pop %p",(void*)dynar);
   dynar->used--;
-  return _gras_dynar_elm(dynar,dynar->used);
+  return _xbt_dynar_elm(dynar,dynar->used);
 }
 
 /**
- * gras_dynar_pop:
+ * xbt_dynar_pop:
  * @dynar:
  * @dst:
  *
  * Get and remove the last element of the dynar
  */
 void
-gras_dynar_pop(gras_dynar_t  const dynar,
+xbt_dynar_pop(xbt_dynar_t  const dynar,
                void         * const dst) {
 
   /* sanity checks done by remove_at */
   DEBUG1("Pop %p",(void*)dynar);
-  gras_dynar_remove_at(dynar, dynar->used-1, dst);
+  xbt_dynar_remove_at(dynar, dynar->used-1, dst);
 }
 
 /**
- * gras_dynar_unshift:
+ * xbt_dynar_unshift:
  * @dynar:
  * @src:
  *
  * Add an element at the begining of the dynar (rather long, Use
- * gras_dynar_push() when possible)
+ * xbt_dynar_push() when possible)
  */
 void
-gras_dynar_unshift(gras_dynar_t  const dynar,
+xbt_dynar_unshift(xbt_dynar_t  const dynar,
                    const void   * const src) {
   
   /* sanity checks done by insert_at */
-  gras_dynar_insert_at(dynar, 0, src);
+  xbt_dynar_insert_at(dynar, 0, src);
 }
 
 /**
- * gras_dynar_shift:
+ * xbt_dynar_shift:
  * @dynar:
  * @dst:
  *
  * Get and remove the first element of the dynar (rather long, Use
- * gras_dynar_pop() when possible)
+ * xbt_dynar_pop() when possible)
  */
 void
-gras_dynar_shift(gras_dynar_t  const dynar,
+xbt_dynar_shift(xbt_dynar_t  const dynar,
                  void         * const dst) {
 
   /* sanity checks done by remove_at */
-  gras_dynar_remove_at(dynar, 0, dst);
+  xbt_dynar_remove_at(dynar, 0, dst);
 }
 
 /**
- * gras_dynar_map:
+ * xbt_dynar_map:
  * @dynar:
  * @operator:
  *
@@ -502,7 +502,7 @@ gras_dynar_shift(gras_dynar_t  const dynar,
  * value of the element itself, but should not mess with the dynar).
  */
 void
-gras_dynar_map(const gras_dynar_t  dynar,
+xbt_dynar_map(const xbt_dynar_t  dynar,
                void_f_pvoid_t     * const operator) {
 
   __sanity_check_dynar(dynar);
@@ -513,14 +513,14 @@ gras_dynar_map(const gras_dynar_t  dynar,
     unsigned long       i    = 0;
 
     for (i = 0; i < used; i++) {
-      _gras_dynar_get_elm(elm, dynar, i);
+      _xbt_dynar_get_elm(elm, dynar, i);
       operator(elm);
     }
   }
 }
 
 /**
- * gras_dynar_first:
+ * xbt_dynar_cursor_first:
  *
  * Put the cursor at the begining of the dynar. (actually, one step before
  * the begining, so that you can iterate over the dynar with a for loop).
@@ -531,7 +531,7 @@ gras_dynar_map(const gras_dynar_t  dynar,
  *
  */
 void
-gras_dynar_cursor_first(const gras_dynar_t dynar,
+xbt_dynar_cursor_first(const xbt_dynar_t dynar,
 			int        * const cursor) {
 
   DEBUG1("Set cursor on %p to the first position",(void*)dynar);
@@ -539,24 +539,24 @@ gras_dynar_cursor_first(const gras_dynar_t dynar,
 }
 
 /**
- * gras_dynar_cursor_step:
+ * xbt_dynar_cursor_step:
  *
  * Move the cursor to the next value (and return true), or return false.
  */
 void
-gras_dynar_cursor_step(const gras_dynar_t dynar,
+xbt_dynar_cursor_step(const xbt_dynar_t dynar,
 		       int        * const cursor) {
   
   (*cursor)++;
 }
 
 /**
- * gras_dynar_cursor_get:
+ * xbt_dynar_cursor_get:
  *
  * Get the current value of the cursor
  */
 int
-gras_dynar_cursor_get(const gras_dynar_t dynar,
+xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 		      int                * const cursor,
 		      void               * const dst) {
 
@@ -571,37 +571,37 @@ gras_dynar_cursor_get(const gras_dynar_t dynar,
     }
     DEBUG2("Cash out cursor on %p at %d",(void*)dynar,idx);
 
-    _gras_dynar_get_elm(dst, dynar, idx);
+    _xbt_dynar_get_elm(dst, dynar, idx);
   }
   return TRUE;
 
 }
 
 /**
- * gras_dynar_cursor_rm:
+ * xbt_dynar_cursor_rm:
  * @dynar:
  * @cursor:
  *
  * Remove (free) the entry pointed by the cursor, for use in the middle of a foreach
  */
-void gras_dynar_cursor_rm(gras_dynar_t dynar,
+void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 			  int          * const cursor) {
   void *dst;
 
   if (dynar->elmsize > sizeof(void*)) {
     DEBUG0("Elements too big to fit into a pointer");
     if (dynar->free_f) {
-      dst=gras_malloc(dynar->elmsize);
-      gras_dynar_remove_at(dynar,(*cursor)--,dst);
+      dst=xbt_malloc(dynar->elmsize);
+      xbt_dynar_remove_at(dynar,(*cursor)--,dst);
       (dynar->free_f)(dst);
-      gras_free(dst);
+      xbt_free(dst);
     } else {
       DEBUG0("Ok, we dont care about the element without free function");
-      gras_dynar_remove_at(dynar,(*cursor)--,NULL);
+      xbt_dynar_remove_at(dynar,(*cursor)--,NULL);
     }
       
   } else {
-    gras_dynar_remove_at(dynar,(*cursor)--,&dst);
+    xbt_dynar_remove_at(dynar,(*cursor)--,&dst);
     if (dynar->free_f)
       (dynar->free_f)(dst);
   }

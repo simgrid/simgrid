@@ -113,7 +113,7 @@ grasDataRecv( gras_sock_t *sd,
  *
  * Send a sequence of data across the network
  */
-gras_error_t
+xbt_error_t
 grasDataSend(gras_sock_t *sd,
 	     const void *data,
 	     const DataDescriptor *description,

@@ -28,9 +28,9 @@ typedef struct {
   unsigned int code;
 } s_amok_remoterr_t,*amok_remoterr_t;
 
-amok_remoterr_t amok_remoterr_new(gras_error_t errcode, 
+amok_remoterr_t amok_remoterr_new(xbt_error_t errcode, 
 				  const char* format, ...);
-amok_remoterr_t amok_remoterr_new_va(gras_error_t param_errcode, 
+amok_remoterr_t amok_remoterr_new_va(xbt_error_t param_errcode, 
 				     const char* format,va_list ap);
 void amok_remoterr_free(amok_remoterr_t *err);
 
@@ -62,7 +62,7 @@ typedef struct {
  */
 void
 amok_repport_error (gras_socket_t sock, gras_msgtype_t msgtype,
-		    gras_error_t errcode, const char* format,...);
+		    xbt_error_t errcode, const char* format,...);
 
 
 void amok_base_init(void);

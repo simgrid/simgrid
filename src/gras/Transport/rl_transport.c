@@ -14,8 +14,8 @@
 #include <sys/socket.h>
 
 #include "gras/Transport/transport_private.h"
-GRAS_LOG_EXTERNAL_CATEGORY(transport);
-GRAS_LOG_DEFAULT_CATEGORY(transport);
+XBT_LOG_EXTERNAL_CATEGORY(transport);
+XBT_LOG_DEFAULT_CATEGORY(transport);
 
 
 
@@ -30,12 +30,12 @@ GRAS_LOG_DEFAULT_CATEGORY(transport);
  *
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */
-gras_error_t 
+xbt_error_t 
 gras_trp_select(double timeout,
 		gras_socket_t *dst) {
 
-  gras_error_t errcode;
-  gras_dynar_t sockets= gras_socketset_get();
+  xbt_error_t errcode;
+  xbt_dynar_t sockets= gras_socketset_get();
   int done = -1;
   double wakeup = gras_os_time() + 1000000*timeout;
   double now = 0;
@@ -62,7 +62,7 @@ gras_trp_select(double timeout,
 
     /* construct the set of socket to ear from */
     FD_ZERO(&FDS);
-    gras_dynar_foreach(sockets,cursor,sock_iter) {
+    xbt_dynar_foreach(sockets,cursor,sock_iter) {
       if (sock_iter->incoming) {
 	if (max_fds < sock_iter->sd)
 	  max_fds = sock_iter->sd;
@@ -107,7 +107,7 @@ gras_trp_select(double timeout,
 	RAISE3(system_error,"invalid select: nb fds: %d, timeout: %d.%d",
 	       max_fds, (int)tout.tv_sec,(int) tout.tv_usec);
       case ENOMEM: 
-	gras_assert0(0,"Malloc error during the select");
+	xbt_assert0(0,"Malloc error during the select");
       default:
 	RAISE2(system_error,"Error during select: %s (%d)",
 	       strerror(errno),errno);
@@ -117,7 +117,7 @@ gras_trp_select(double timeout,
       continue;	 /* this was a timeout */
     }
 
-    gras_dynar_foreach(sockets,cursor,sock_iter) { 
+    xbt_dynar_foreach(sockets,cursor,sock_iter) { 
        if(!FD_ISSET(sock_iter->sd, &FDS)) { /* this socket is not ready */
 	continue;
        }
@@ -171,6 +171,6 @@ gras_trp_select(double timeout,
   return timeout_error;
 }
 
-gras_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug) {
+xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug) {
   return mismatch_error;
 }

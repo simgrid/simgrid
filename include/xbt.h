@@ -17,7 +17,7 @@
 #define TRUE  1
 #define FALSE 0
 
-#define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
+#define XBT_MAX_CHANNEL 10 /* FIXME: killme */
 
 #include <xbt/sysdep.h>
 

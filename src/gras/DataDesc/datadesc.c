@@ -10,9 +10,9 @@
 
 #include "gras/DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,gras,"Data description");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,gras,"Data description");
 /* FIXME: make this host-dependent using a trick such as UserData*/
-gras_set_t gras_datadesc_set_local=NULL;
+xbt_set_t gras_datadesc_set_local=NULL;
 
 
 /* callback for array size when sending strings */
@@ -32,7 +32,7 @@ _strlen_cb(gras_cbps_t vars, void *data) {
  **/
 void
 gras_datadesc_init(void) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   gras_datadesc_type_t ddt; /* What to add */
 
   /* only initialize once */
@@ -41,7 +41,7 @@ gras_datadesc_init(void) {
   
   VERB0("Initializing DataDesc");
   
-  gras_datadesc_set_local = gras_set_new();
+  gras_datadesc_set_local = xbt_set_new();
   
   ddt = gras_datadesc_scalar("signed char", 
 			     gras_ddt_scalar_char, 
@@ -122,7 +122,7 @@ gras_datadesc_init(void) {
 void
 gras_datadesc_exit(void) {
   VERB0("Exiting DataDesc");
-  gras_set_free(&gras_datadesc_set_local);
+  xbt_set_free(&gras_datadesc_set_local);
   DEBUG0("Exited DataDesc");
 }
 
@@ -205,7 +205,7 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t ddt){
     gras_dd_cat_field_t  field;
 
     struct_data = ddt->category.struct_data;
-    gras_dynar_foreach(struct_data.fields, cpt, field) {
+    xbt_dynar_foreach(struct_data.fields, cpt, field) {
     printf(">>> Dump field #%d (%s) (offset=%ld)\n",
 	   cpt,field->name,field->offset[GRAS_THISARCH]);
     gras_datadesc_type_dump(field->type);

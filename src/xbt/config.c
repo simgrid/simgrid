@@ -19,52 +19,52 @@
 
 #include "xbt/config.h" /* prototypes of this module */
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(config,xbt,"configuration support");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(config,xbt,"configuration support");
 
-/* gras_cfgelm_t: the typedef corresponding to a config cell. 
+/* xbt_cfgelm_t: the typedef corresponding to a config cell. 
 
    Both data and DTD are mixed, but fixing it now would prevent me to ever
    defend my thesis. */
 
 typedef struct {
   /* Allowed type of the cell */
-  e_gras_cfgelm_type_t type;
+  e_xbt_cfgelm_type_t type;
   int min,max;
 
   /* actual content 
      (cannot be an union because type host uses both str and i) */
-  gras_dynar_t content;
-} s_gras_cfgelm_t,*gras_cfgelm_t;
+  xbt_dynar_t content;
+} s_xbt_cfgelm_t,*xbt_cfgelm_t;
 
-static const char *gras_cfgelm_type_name[gras_cfgelm_type_count]=
+static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count]=
   {"int","double","string","host"};
 
 /* Internal stuff used in cache to free a cell */
-static void gras_cfgelm_free(void *data);
+static void xbt_cfgelm_free(void *data);
 
 /* Retrieve the cell we'll modify */
-static gras_error_t gras_cfgelm_get(gras_cfg_t cfg, const char *name,
-				    e_gras_cfgelm_type_t type,
-				    /* OUT */ gras_cfgelm_t *whereto);
+static xbt_error_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
+				    e_xbt_cfgelm_type_t type,
+				    /* OUT */ xbt_cfgelm_t *whereto);
 
-void gras_cfg_str_free(void *d);
-void gras_cfg_host_free(void *d);
+void xbt_cfg_str_free(void *d);
+void xbt_cfg_host_free(void *d);
 
-void gras_cfg_str_free(void *d){
-  gras_free(*(void**)d);
+void xbt_cfg_str_free(void *d){
+  xbt_free(*(void**)d);
 }
-void gras_cfg_host_free(void *d){
-  gras_host_t *h=(gras_host_t*) *(void**)d; 
+void xbt_cfg_host_free(void *d){
+  xbt_host_t *h=(xbt_host_t*) *(void**)d; 
   if (h) {
-    if (h->name) gras_free(h->name);
-    gras_free(h);
+    if (h->name) xbt_free(h->name);
+    xbt_free(h);
   }
 }
 
 /*----[ Memory management ]-----------------------------------------------*/
 
 /**
- * gras_cfg_new:
+ * xbt_cfg_new:
  *
  * @whereto: 
  *
@@ -72,12 +72,12 @@ void gras_cfg_host_free(void *d){
  */
 
 
-gras_cfg_t gras_cfg_new(void) {
-  return (gras_cfg_t)gras_dict_new();
+xbt_cfg_t xbt_cfg_new(void) {
+  return (xbt_cfg_t)xbt_dict_new();
 }
 
 /**
- * gras_cfg_cpy:
+ * xbt_cfg_cpy:
  *
  * @whereto: the config set to be created
  * @tocopy: the source data
@@ -85,25 +85,25 @@ gras_cfg_t gras_cfg_new(void) {
  */
 
 void
-gras_cfg_cpy(gras_cfg_t tocopy,gras_cfg_t *whereto) {
-  gras_dict_cursor_t cursor=NULL; 
-  gras_cfgelm_t cell=NULL;
+xbt_cfg_cpy(xbt_cfg_t tocopy,xbt_cfg_t *whereto) {
+  xbt_dict_cursor_t cursor=NULL; 
+  xbt_cfgelm_t cell=NULL;
   char *name=NULL;
   
   *whereto=NULL;
-  gras_assert0(tocopy,"cannot copy NULL config");
+  xbt_assert0(tocopy,"cannot copy NULL config");
 
-  gras_dict_foreach((gras_dict_t)tocopy,cursor,name,cell) {
-    gras_cfg_register(*whereto, name, cell->type, cell->min, cell->max);
+  xbt_dict_foreach((xbt_dict_t)tocopy,cursor,name,cell) {
+    xbt_cfg_register(*whereto, name, cell->type, cell->min, cell->max);
   }
 }
 
-void gras_cfg_free(gras_cfg_t *cfg) {
-  gras_dict_free((gras_dict_t*)cfg);
+void xbt_cfg_free(xbt_cfg_t *cfg) {
+  xbt_dict_free((xbt_dict_t*)cfg);
 }
 
 /**
- * gras_cfg_dump:
+ * xbt_cfg_dump:
  * @name: The name to give to this config set
  * @indent: what to write at the begining of each line (right number of spaces)
  * @cfg: the config set
@@ -111,56 +111,56 @@ void gras_cfg_free(gras_cfg_t *cfg) {
  * Dumps a config set for debuging purpose
  */
 void
-gras_cfg_dump(const char *name,const char *indent,gras_cfg_t cfg) {
-  gras_dict_t dict = (gras_dict_t) cfg;
-  gras_dict_cursor_t cursor=NULL; 
-  gras_cfgelm_t cell=NULL;
+xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
+  xbt_dict_t dict = (xbt_dict_t) cfg;
+  xbt_dict_cursor_t cursor=NULL; 
+  xbt_cfgelm_t cell=NULL;
   char *key=NULL;
   int i; 
-  gras_error_t errcode;
+  xbt_error_t errcode;
   int size;
   int ival;
   char *sval;
   double dval;
-  gras_host_t *hval;
+  xbt_host_t *hval;
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n",indent,name);
-  gras_dict_foreach(dict,cursor,key,cell) {
+  xbt_dict_foreach(dict,cursor,key,cell) {
 
     printf("%s  %s:",indent,key);
 
-    size = gras_dynar_length(cell->content);
+    size = xbt_dynar_length(cell->content);
     printf("%d_to_%d_%s. Actual size=%d. List of values:\n",
-	   cell->min,cell->max,gras_cfgelm_type_name[cell->type],
+	   cell->min,cell->max,xbt_cfgelm_type_name[cell->type],
 	   size);
 
     switch (cell->type) {
        
-    case gras_cfgelm_int:
+    case xbt_cfgelm_int:
       for (i=0; i<size; i++) {
-	ival = gras_dynar_get_as(cell->content,i,int);
+	ival = xbt_dynar_get_as(cell->content,i,int);
 	printf ("%s    %d\n",indent,ival);
       }
       break;
 
-    case gras_cfgelm_double:
+    case xbt_cfgelm_double:
       for (i=0; i<size; i++) {
-	dval = gras_dynar_get_as(cell->content,i,double);
+	dval = xbt_dynar_get_as(cell->content,i,double);
 	printf ("%s    %f\n",indent,dval);
       }
       break;
 
-    case gras_cfgelm_string:
+    case xbt_cfgelm_string:
       for (i=0; i<size; i++) {
-	sval = gras_dynar_get_as(cell->content,i,char*);
+	sval = xbt_dynar_get_as(cell->content,i,char*);
 	printf ("%s    %s\n",indent,sval);
       }
       break;
 
-    case gras_cfgelm_host:
+    case xbt_cfgelm_host:
       for (i=0; i<size; i++) {
-	hval = gras_dynar_get_as(cell->content,i,gras_host_t*);
+	hval = xbt_dynar_get_as(cell->content,i,xbt_host_t*);
 	printf ("%s    %s:%d\n",indent,hval->name,hval->port);
       }
       break;
@@ -174,30 +174,30 @@ gras_cfg_dump(const char *name,const char *indent,gras_cfg_t cfg) {
   if (name) printf("%s<< End of the config set '%s'\n",indent,name);
   fflush(stdout);
 
-  gras_dict_cursor_free(&cursor);
+  xbt_dict_cursor_free(&cursor);
   return;
 }
 
 /**
- * gras_cfgelm_free:
+ * xbt_cfgelm_free:
  *
  * @data: the data to be freed (typed as void* to be usable as free funct in dict)
  *
  * free an config element
  */
 
-void gras_cfgelm_free(void *data) {
-  gras_cfgelm_t c=(gras_cfgelm_t)data;
+void xbt_cfgelm_free(void *data) {
+  xbt_cfgelm_t c=(xbt_cfgelm_t)data;
 
   if (!c) return;
-  gras_dynar_free(&(c->content));
-  gras_free(c);
+  xbt_dynar_free(&(c->content));
+  xbt_free(c);
 }
 
 /*----[ Registering stuff ]-----------------------------------------------*/
 
 /**
- * gras_cfg_register:
+ * xbt_cfg_register:
  * @cfg: the config set
  * @type: the type of the config element
  * @min: the minimum
@@ -207,53 +207,53 @@ void gras_cfgelm_free(void *data) {
  */
 
 void
-gras_cfg_register(gras_cfg_t cfg,
-		  const char *name, e_gras_cfgelm_type_t type,
+xbt_cfg_register(xbt_cfg_t cfg,
+		  const char *name, e_xbt_cfgelm_type_t type,
 		  int min, int max){
-  gras_cfgelm_t res;
-  gras_error_t errcode;
+  xbt_cfgelm_t res;
+  xbt_error_t errcode;
 
-  DEBUG4("Register cfg elm %s (%d to %d %s)",name,min,max,gras_cfgelm_type_name[type]);
-  errcode = gras_dict_get((gras_dict_t)cfg,name,(void**)&res);
+  DEBUG4("Register cfg elm %s (%d to %d %s)",name,min,max,xbt_cfgelm_type_name[type]);
+  errcode = xbt_dict_get((xbt_dict_t)cfg,name,(void**)&res);
 
   if (errcode == no_error) {
     WARN1("Config elem %s registered twice.",name);
     /* Will be removed by the insertion of the new one */
   } 
-  gras_assert_error(mismatch_error);
+  xbt_assert_error(mismatch_error);
 
-  res=gras_new(s_gras_cfgelm_t,1);
+  res=xbt_new(s_xbt_cfgelm_t,1);
 
   res->type=type;
   res->min=min;
   res->max=max;
 
   switch (type) {
-  case gras_cfgelm_int:
-    res->content = gras_dynar_new(sizeof(int), NULL);
+  case xbt_cfgelm_int:
+    res->content = xbt_dynar_new(sizeof(int), NULL);
     break;
 
-  case gras_cfgelm_double:
-    res->content = gras_dynar_new(sizeof(double), NULL);
+  case xbt_cfgelm_double:
+    res->content = xbt_dynar_new(sizeof(double), NULL);
     break;
 
-  case gras_cfgelm_string:
-   res->content = gras_dynar_new(sizeof(char*),&gras_cfg_str_free);
+  case xbt_cfgelm_string:
+   res->content = xbt_dynar_new(sizeof(char*),&xbt_cfg_str_free);
    break;
 
-  case gras_cfgelm_host:
-   res->content = gras_dynar_new(sizeof(gras_host_t*),&gras_cfg_host_free);
+  case xbt_cfgelm_host:
+   res->content = xbt_dynar_new(sizeof(xbt_host_t*),&xbt_cfg_host_free);
    break;
 
   default:
     ERROR1("%d is an invalide type code",type);
   }
     
-  gras_dict_set((gras_dict_t)cfg,name,res,&gras_cfgelm_free);
+  xbt_dict_set((xbt_dict_t)cfg,name,res,&xbt_cfgelm_free);
 }
 
 /**
- * gras_cfg_unregister:
+ * xbt_cfg_unregister:
  * 
  * @cfg: the config set
  * @name: the name of the elem to be freed
@@ -262,13 +262,13 @@ gras_cfg_register(gras_cfg_t cfg,
  * Note that it removes both the DTD and the actual content.
  */
 
-gras_error_t
-gras_cfg_unregister(gras_cfg_t cfg,const char *name) {
-  return gras_dict_remove((gras_dict_t)cfg,name);
+xbt_error_t
+xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
+  return xbt_dict_remove((xbt_dict_t)cfg,name);
 }
 
 /**
- * gras_cfg_register_str:
+ * xbt_cfg_register_str:
  *
  * @cfg: the config set
  * @entry: a string describing the element to register
@@ -276,98 +276,98 @@ gras_cfg_unregister(gras_cfg_t cfg,const char *name) {
  * Parse a string and register the stuff described.
  */
 
-gras_error_t
-gras_cfg_register_str(gras_cfg_t cfg,const char *entry) {
-  char *entrycpy=gras_strdup(entry);
+xbt_error_t
+xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
+  char *entrycpy=xbt_strdup(entry);
   char *tok;
 
   int min,max;
-  e_gras_cfgelm_type_t type;
+  e_xbt_cfgelm_type_t type;
 
   tok=strchr(entrycpy, ':');
   if (!tok) {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    gras_free(entrycpy);
-    gras_abort();
+    xbt_free(entrycpy);
+    xbt_abort();
   }
   *(tok++)='\0';
 
   min=strtol(tok, &tok, 10);
   if (!tok) {
     ERROR1("Invalid minimum in config element descriptor %s",entry);
-    gras_free(entrycpy);
-    gras_abort();
+    xbt_free(entrycpy);
+    xbt_abort();
   }
 
   if (!strcmp(tok,"_to_")){
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    gras_free(entrycpy);
-    gras_abort();
+    xbt_free(entrycpy);
+    xbt_abort();
   }
   tok += strlen("_to_");
 
   max=strtol(tok, &tok, 10);
   if (!tok) {
     ERROR1("Invalid maximum in config element descriptor %s",entry);
-    gras_free(entrycpy);
-    gras_abort();
+    xbt_free(entrycpy);
+    xbt_abort();
   }
 
   if (*(tok++)!='_') {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    gras_free(entrycpy);
-    gras_abort();
+    xbt_free(entrycpy);
+    xbt_abort();
   }
 
   for (type=0; 
-       type<gras_cfgelm_type_count && strcmp(tok,gras_cfgelm_type_name[type]); 
+       type<xbt_cfgelm_type_count && strcmp(tok,xbt_cfgelm_type_name[type]); 
        type++);
-  if (type == gras_cfgelm_type_count) {
+  if (type == xbt_cfgelm_type_count) {
     ERROR3("%s%s%s",
 	  "Invalid type in config element descriptor: ",entry,
 	  "; Should be one of 'string', 'int', 'host' or 'double'.");
-    gras_free(entrycpy);
-    gras_abort();
+    xbt_free(entrycpy);
+    xbt_abort();
   }
 
-  gras_cfg_register(cfg,entrycpy,type,min,max);
+  xbt_cfg_register(cfg,entrycpy,type,min,max);
 
-  gras_free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
+  xbt_free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
   return no_error;
 }
 
 /**
- * gras_cfg_check:
+ * xbt_cfg_check:
  *
  * @cfg: the config set
  * 
  * Check the config set
  */
 
-gras_error_t
-gras_cfg_check(gras_cfg_t cfg) {
-  gras_dict_cursor_t cursor; 
-  gras_cfgelm_t cell;
+xbt_error_t
+xbt_cfg_check(xbt_cfg_t cfg) {
+  xbt_dict_cursor_t cursor; 
+  xbt_cfgelm_t cell;
   char *name;
   int size;
 
-  gras_assert0(cfg,"NULL config set.");
+  xbt_assert0(cfg,"NULL config set.");
 
-  gras_dict_foreach((gras_dict_t)cfg,cursor,name,cell) {
-    size = gras_dynar_length(cell->content);
+  xbt_dict_foreach((xbt_dict_t)cfg,cursor,name,cell) {
+    size = xbt_dynar_length(cell->content);
     if (cell->min > size) { 
       ERROR4("Config elem %s needs at least %d %s, but there is only %d values.",
 	     name,
 	     cell->min,
-	     gras_cfgelm_type_name[cell->type],
+	     xbt_cfgelm_type_name[cell->type],
 	     size); 
-      gras_dict_cursor_free(&cursor);
+      xbt_dict_cursor_free(&cursor);
       return mismatch_error;
     }
 
@@ -375,24 +375,24 @@ gras_cfg_check(gras_cfg_t cfg) {
       ERROR4("Config elem %s accepts at most %d %s, but there is %d values.",
 	     name,
 	     cell->max,
-	     gras_cfgelm_type_name[cell->type],
+	     xbt_cfgelm_type_name[cell->type],
 	     size);
-      gras_dict_cursor_free(&cursor);
+      xbt_dict_cursor_free(&cursor);
       return mismatch_error;
     }
 
   }
 
-  gras_dict_cursor_free(&cursor);
+  xbt_dict_cursor_free(&cursor);
   return no_error;
 }
 
-static gras_error_t gras_cfgelm_get(gras_cfg_t  cfg,
+static xbt_error_t xbt_cfgelm_get(xbt_cfg_t  cfg,
 				    const char *name,
-				    e_gras_cfgelm_type_t type,
-				    /* OUT */ gras_cfgelm_t *whereto){
+				    e_xbt_cfgelm_type_t type,
+				    /* OUT */ xbt_cfgelm_t *whereto){
    
-  gras_error_t errcode = gras_dict_get((gras_dict_t)cfg,name,
+  xbt_error_t errcode = xbt_dict_get((xbt_dict_t)cfg,name,
 				       (void**)whereto);
 
   if (errcode == mismatch_error) {
@@ -403,17 +403,17 @@ static gras_error_t gras_cfgelm_get(gras_cfg_t  cfg,
   if (errcode != no_error)
      return errcode;
 
-  gras_assert3((*whereto)->type == type,
+  xbt_assert3((*whereto)->type == type,
 	       "You tried to access to the config element %s as an %s, but its type is %s.",
 	       name,
-	       gras_cfgelm_type_name[type],
-	       gras_cfgelm_type_name[(*whereto)->type]);
+	       xbt_cfgelm_type_name[type],
+	       xbt_cfgelm_type_name[(*whereto)->type]);
 
   return no_error;
 }
 
 /**
- * gras_cfg_get_type:
+ * xbt_cfg_get_type:
  *
  * @cfg: the config set
  * @name: the name of the element 
@@ -422,14 +422,14 @@ static gras_error_t gras_cfgelm_get(gras_cfg_t  cfg,
  * Give the type of the config element
  */
 
-gras_error_t
-gras_cfg_get_type(gras_cfg_t cfg, const char *name, 
-		      /* OUT */e_gras_cfgelm_type_t *type) {
+xbt_error_t
+xbt_cfg_get_type(xbt_cfg_t cfg, const char *name, 
+		      /* OUT */e_xbt_cfgelm_type_t *type) {
 
-  gras_cfgelm_t cell;
-  gras_error_t errcode;
+  xbt_cfgelm_t cell;
+  xbt_error_t errcode;
 
-  TRYCATCH(mismatch_error,gras_dict_get((gras_dict_t)cfg,name,(void**)&cell));
+  TRYCATCH(mismatch_error,xbt_dict_get((xbt_dict_t)cfg,name,(void**)&cell));
 
   if (errcode == mismatch_error) {
     ERROR1("Can't get the type of '%s' since this cell does not exist",
@@ -444,49 +444,49 @@ gras_cfg_get_type(gras_cfg_t cfg, const char *name,
 
 /*----[ Setting ]---------------------------------------------------------*/
 /** 
- * gras_cfg_set_vargs(): 
+ * xbt_cfg_set_vargs(): 
  * @cfg: config set to fill
  * @varargs: NULL-terminated list of pairs {(const char*)key, value}
  *
  * Add some values to the config set.
  * @warning: if the list isn't NULL terminated, it will segfault. 
  */
-gras_error_t
-gras_cfg_set_vargs(gras_cfg_t cfg, va_list pa) {
+xbt_error_t
+xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa) {
   char *str,*name;
   int i;
   double d;
-  e_gras_cfgelm_type_t type;
+  e_xbt_cfgelm_type_t type;
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
   
   while ((name=va_arg(pa,char *))) {
 
-    if (!gras_cfg_get_type(cfg,name,&type)) {
+    if (!xbt_cfg_get_type(cfg,name,&type)) {
       ERROR1("Can't set the property '%s' since it's not registered",name);
       return mismatch_error;
     }
 
     switch (type) {
-    case gras_cfgelm_host:
+    case xbt_cfgelm_host:
       str = va_arg(pa, char *);
       i=va_arg(pa,int);
-      TRY(gras_cfg_set_host(cfg,name,str,i));
+      TRY(xbt_cfg_set_host(cfg,name,str,i));
       break;
       
-    case gras_cfgelm_string:
+    case xbt_cfgelm_string:
       str=va_arg(pa, char *);
-      TRY(gras_cfg_set_string(cfg, name, str));
+      TRY(xbt_cfg_set_string(cfg, name, str));
       break;
 
-    case gras_cfgelm_int:
+    case xbt_cfgelm_int:
       i=va_arg(pa,int);
-      TRY(gras_cfg_set_int(cfg,name,i));
+      TRY(xbt_cfg_set_int(cfg,name,i));
       break;
 
-    case gras_cfgelm_double:
+    case xbt_cfgelm_double:
       d=va_arg(pa,double);
-      TRY(gras_cfg_set_double(cfg,name,d));
+      TRY(xbt_cfg_set_double(cfg,name,d));
       break;
 
     default: 
@@ -497,25 +497,25 @@ gras_cfg_set_vargs(gras_cfg_t cfg, va_list pa) {
 }
 
 /** 
- * gras_cfg_set():
+ * xbt_cfg_set():
  * @cfg: config set to fill
  * @varargs: NULL-terminated list of pairs {(const char*)key, value}
  *
  * Add some values to the config set.
  * @warning: if the list isn't NULL terminated, it will segfault. 
  */
-gras_error_t gras_cfg_set(gras_cfg_t cfg, ...) {
+xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...) {
   va_list pa;
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
   va_start(pa,cfg);
-  errcode=gras_cfg_set_vargs(cfg,pa);
+  errcode=xbt_cfg_set_vargs(cfg,pa);
   va_end(pa);
   return errcode;
 }
 
 /**
- * gras_cfg_set_parse():
+ * xbt_cfg_set_parse():
  * @cfg: config set to fill
  * @options: a string containing the content to add to the config set. This
  * is a '\t',' ' or '\n' separated list of cells. Each individual cell is
@@ -526,24 +526,24 @@ gras_error_t gras_cfg_set(gras_cfg_t cfg, ...) {
  * Add the cells described in a string to a config set.
  */
 
-gras_error_t
-gras_cfg_set_parse(gras_cfg_t cfg, const char *options) {
+xbt_error_t
+xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
   int i;
   double d;
   char *str;
 
-  gras_cfgelm_t cell;
+  xbt_cfgelm_t cell;
   char *optionlist_cpy;
   char *option,  *name,*val;
 
   int len;
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
-  GRAS_IN;
+  XBT_IN;
   if (!options || !strlen(options)) { /* nothing to do */
     return no_error;
   }
-  optionlist_cpy=gras_strdup(options);
+  optionlist_cpy=xbt_strdup(options);
 
   DEBUG1("List to parse and set:'%s'",options);
   option=optionlist_cpy;
@@ -586,8 +586,8 @@ gras_cfg_set_parse(gras_cfg_t cfg, const char *options) {
     
     val=strchr(name,':');
     if (!val) {
-      gras_free(optionlist_cpy);
-      gras_assert1(FALSE,
+      xbt_free(optionlist_cpy);
+      xbt_assert1(FALSE,
 		   "Malformated option: '%s'; Should be of the form 'name:value'",
 		   name);
     }
@@ -595,58 +595,58 @@ gras_cfg_set_parse(gras_cfg_t cfg, const char *options) {
 
     DEBUG2("name='%s';val='%s'",name,val);
 
-    errcode=gras_dict_get((gras_dict_t)cfg,name,(void**)&cell);
+    errcode=xbt_dict_get((xbt_dict_t)cfg,name,(void**)&cell);
     switch (errcode) {
     case no_error:
       break;
     case mismatch_error:
       ERROR1("No registrated cell corresponding to '%s'.",name);
-      gras_free(optionlist_cpy);
+      xbt_free(optionlist_cpy);
       return mismatch_error;
       break;
     default:
-      gras_free(optionlist_cpy);
+      xbt_free(optionlist_cpy);
       return errcode;
     }
 
     switch (cell->type) {
-    case gras_cfgelm_string:
-      TRYCLEAN(gras_cfg_set_string(cfg, name, val),
-	       gras_free(optionlist_cpy));
+    case xbt_cfgelm_string:
+      TRYCLEAN(xbt_cfg_set_string(cfg, name, val),
+	       xbt_free(optionlist_cpy));
       break;
 
-    case gras_cfgelm_int:
+    case xbt_cfgelm_int:
       i=strtol(val, &val, 0);
       if (val==NULL) {
-	gras_free(optionlist_cpy);	
-	gras_assert1(FALSE,
+	xbt_free(optionlist_cpy);	
+	xbt_assert1(FALSE,
 		     "Value of option %s not valid. Should be an integer",
 		     name);
       }
 
-      TRYCLEAN(gras_cfg_set_int(cfg,name,i),
-	       gras_free(optionlist_cpy));
+      TRYCLEAN(xbt_cfg_set_int(cfg,name,i),
+	       xbt_free(optionlist_cpy));
       break;
 
-    case gras_cfgelm_double:
+    case xbt_cfgelm_double:
       d=strtod(val, &val);
       if (val==NULL) {
-	gras_free(optionlist_cpy);	
-	gras_assert1(FALSE,
+	xbt_free(optionlist_cpy);	
+	xbt_assert1(FALSE,
 	       "Value of option %s not valid. Should be a double",
 	       name);
       }
 
-      TRYCLEAN(gras_cfg_set_double(cfg,name,d),
-	       gras_free(optionlist_cpy));
+      TRYCLEAN(xbt_cfg_set_double(cfg,name,d),
+	       xbt_free(optionlist_cpy));
       break;
 
-    case gras_cfgelm_host:
+    case xbt_cfgelm_host:
       str=val;
       val=strchr(val,':');
       if (!val) {
-	gras_free(optionlist_cpy);	
-	gras_assert1(FALSE,
+	xbt_free(optionlist_cpy);	
+	xbt_assert1(FALSE,
 	       "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
       }
@@ -654,28 +654,28 @@ gras_cfg_set_parse(gras_cfg_t cfg, const char *options) {
       *(val++)='\0';
       i=strtol(val, &val, 0);
       if (val==NULL) {
-	gras_free(optionlist_cpy);	
-	gras_assert1(FALSE,
+	xbt_free(optionlist_cpy);	
+	xbt_assert1(FALSE,
 	       "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
       }
 
-      TRYCLEAN(gras_cfg_set_host(cfg,name,str,i),
-	       gras_free(optionlist_cpy));
+      TRYCLEAN(xbt_cfg_set_host(cfg,name,str,i),
+	       xbt_free(optionlist_cpy));
       break;      
 
     default: 
-      gras_free(optionlist_cpy);
+      xbt_free(optionlist_cpy);
       RAISE1(unknown_error,"Type of config element %s is not valid.",name);
     }
     
   }
-  gras_free(optionlist_cpy);
+  xbt_free(optionlist_cpy);
   return no_error;
 }
 
 /**
- * gras_cfg_set_int:
+ * xbt_cfg_set_int:
  *
  * @cfg: the config set
  * @name: the name of the cell
@@ -683,24 +683,24 @@ gras_cfg_set_parse(gras_cfg_t cfg, const char *options) {
  *
  * Set the value of the cell @name in @cfg with the provided value.
  */ 
-gras_error_t
-gras_cfg_set_int(gras_cfg_t cfg,const char*name, int val) {
-  gras_cfgelm_t cell;
-  gras_error_t errcode;
+xbt_error_t
+xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
+  xbt_cfgelm_t cell;
+  xbt_error_t errcode;
 
   VERB2("Configuration setting: %s=%d",name,val);
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&cell));
 
   if (cell->max > 1) {
-    gras_dynar_push(cell->content,&val);
+    xbt_dynar_push(cell->content,&val);
   } else {
-    gras_dynar_set(cell->content,0,&val);
+    xbt_dynar_set(cell->content,0,&val);
   }
   return no_error;
 }
 
 /**
- * gras_cfg_set_double:
+ * xbt_cfg_set_double:
  * @cfg: the config set
  * @name: the name of the cell
  * @val: the doule to set
@@ -708,24 +708,24 @@ gras_cfg_set_int(gras_cfg_t cfg,const char*name, int val) {
  * Set the value of the cell @name in @cfg with the provided value.
  */ 
 
-gras_error_t
-gras_cfg_set_double(gras_cfg_t cfg,const char*name, double val) {
-  gras_cfgelm_t cell;
-  gras_error_t errcode;
+xbt_error_t
+xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
+  xbt_cfgelm_t cell;
+  xbt_error_t errcode;
 
   VERB2("Configuration setting: %s=%f",name,val);
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_double,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&cell));
 
   if (cell->max > 1) {
-    gras_dynar_push(cell->content,&val);
+    xbt_dynar_push(cell->content,&val);
   } else {
-    gras_dynar_set(cell->content,0,&val);
+    xbt_dynar_set(cell->content,0,&val);
   }
   return no_error;
 }
 
 /**
- * gras_cfg_set_string:
+ * xbt_cfg_set_string:
  * 
  * @cfg: the config set
  * @name: the name of the cell
@@ -734,25 +734,25 @@ gras_cfg_set_double(gras_cfg_t cfg,const char*name, double val) {
  * Set the value of the cell @name in @cfg with the provided value.
  */ 
 
-gras_error_t
-gras_cfg_set_string(gras_cfg_t cfg,const char*name, const char*val) { 
-  gras_cfgelm_t cell;
-  gras_error_t errcode;
-  char *newval = gras_strdup(val);
+xbt_error_t
+xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) { 
+  xbt_cfgelm_t cell;
+  xbt_error_t errcode;
+  char *newval = xbt_strdup(val);
 
   VERB2("Configuration setting: %s=%s",name,val);
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&cell));
 
   if (cell->max > 1) {
-    gras_dynar_push(cell->content,&newval);
+    xbt_dynar_push(cell->content,&newval);
   } else {
-    gras_dynar_set(cell->content,0,&newval);
+    xbt_dynar_set(cell->content,0,&newval);
   }
   return no_error;
 }
 
 /**
- * gras_cfg_set_host:
+ * xbt_cfg_set_host:
  * 
  * @cfg: the config set
  * @name: the name of the cell
@@ -763,24 +763,24 @@ gras_cfg_set_string(gras_cfg_t cfg,const char*name, const char*val) {
  * on the given @host to the given @port
  */ 
 
-gras_error_t 
-gras_cfg_set_host(gras_cfg_t cfg,const char*name, 
+xbt_error_t 
+xbt_cfg_set_host(xbt_cfg_t cfg,const char*name, 
 		  const char *host,int port) {
-  gras_cfgelm_t cell;
-  gras_error_t errcode;
-  gras_host_t *val=gras_new(gras_host_t,1);
+  xbt_cfgelm_t cell;
+  xbt_error_t errcode;
+  xbt_host_t *val=xbt_new(xbt_host_t,1);
 
   VERB3("Configuration setting: %s=%s:%d",name,host,port);
 
-  val->name = gras_strdup(name);
+  val->name = xbt_strdup(name);
   val->port = port;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&cell));
 
   if (cell->max > 1) {
-    gras_dynar_push(cell->content,&val);
+    xbt_dynar_push(cell->content,&val);
   } else {
-    gras_dynar_set(cell->content,0,&val);
+    xbt_dynar_set(cell->content,0,&val);
   }
   return no_error;
 }
@@ -788,7 +788,7 @@ gras_cfg_set_host(gras_cfg_t cfg,const char*name,
 /* ---- [ Removing ] ---- */
 
 /**
- * gras_cfg_rm_int:
+ * xbt_cfg_rm_int:
  *
  * @cfg: the config set
  * @name: the name of the cell
@@ -796,17 +796,17 @@ gras_cfg_set_host(gras_cfg_t cfg,const char*name,
  *
  * Remove the provided @val from the cell @name in @cfg.
  */
-gras_error_t gras_cfg_rm_int(gras_cfg_t cfg,const char*name, int val) {
+xbt_error_t xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
 
-  gras_cfgelm_t cell;
+  xbt_cfgelm_t cell;
   int cpt,seen;
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&cell));
   
-  gras_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(cell->content,cpt,seen) {
     if (seen == val) {
-      gras_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(cell->content,&cpt);
       return no_error;
     }
   }
@@ -817,7 +817,7 @@ gras_error_t gras_cfg_rm_int(gras_cfg_t cfg,const char*name, int val) {
 }
 
 /**
- * gras_cfg_rm_double:
+ * xbt_cfg_rm_double:
  *
  * @cfg: the config set
  * @name: the name of the cell
@@ -826,17 +826,17 @@ gras_error_t gras_cfg_rm_int(gras_cfg_t cfg,const char*name, int val) {
  * Remove the provided @val from the cell @name in @cfg.
  */
 
-gras_error_t gras_cfg_rm_double(gras_cfg_t cfg,const char*name, double val) {
-  gras_cfgelm_t cell;
+xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
+  xbt_cfgelm_t cell;
   int cpt;
   double seen;
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_double,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&cell));
   
-  gras_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(cell->content,cpt,seen) {
     if (seen == val) {
-      gras_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(cell->content,&cpt);
       return no_error;
     }
   }
@@ -847,7 +847,7 @@ gras_error_t gras_cfg_rm_double(gras_cfg_t cfg,const char*name, double val) {
 }
 
 /**
- * gras_cfg_rm_string:
+ * xbt_cfg_rm_string:
  *
  * @cfg: the config set
  * @name: the name of the cell
@@ -855,18 +855,18 @@ gras_error_t gras_cfg_rm_double(gras_cfg_t cfg,const char*name, double val) {
  *
  * Remove the provided @val from the cell @name in @cfg.
  */
-gras_error_t
-gras_cfg_rm_string(gras_cfg_t cfg,const char*name, const char *val) {
-  gras_cfgelm_t cell;
+xbt_error_t
+xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
+  xbt_cfgelm_t cell;
   int cpt;
   char *seen;
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&cell));
   
-  gras_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(cell->content,cpt,seen) {
     if (!strcpy(seen,val)) {
-      gras_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(cell->content,&cpt);
       return no_error;
     }
   }
@@ -877,7 +877,7 @@ gras_cfg_rm_string(gras_cfg_t cfg,const char*name, const char *val) {
 }
 
 /**
- * gras_cfg_rm_host:
+ * xbt_cfg_rm_host:
  * 
  * @cfg: the config set
  * @name: the name of the cell
@@ -887,18 +887,18 @@ gras_cfg_rm_string(gras_cfg_t cfg,const char*name, const char *val) {
  * Remove the provided @host:@port from the cell @name in @cfg.
  */
 
-gras_error_t
-gras_cfg_rm_host(gras_cfg_t cfg,const char*name, const char *host,int port) {
-  gras_cfgelm_t cell;
+xbt_error_t
+xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
+  xbt_cfgelm_t cell;
   int cpt;
-  gras_host_t *seen;
-  gras_error_t errcode;
+  xbt_host_t *seen;
+  xbt_error_t errcode;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&cell));
   
-  gras_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(cell->content,cpt,seen) {
     if (!strcpy(seen->name,host) && seen->port == port) {
-      gras_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(cell->content,&cpt);
       return no_error;
     }
   }
@@ -911,7 +911,7 @@ gras_cfg_rm_host(gras_cfg_t cfg,const char*name, const char *host,int port) {
 /* rm everything */
 
 /**
- * gras_cfg_empty:
+ * xbt_cfg_empty:
  * 
  * @cfg: the config set
  * @name: the name of the cell
@@ -919,14 +919,14 @@ gras_cfg_rm_host(gras_cfg_t cfg,const char*name, const char *host,int port) {
  * rm evenything
  */
 
-gras_error_t 
-gras_cfg_empty(gras_cfg_t cfg,const char*name) {
-  gras_cfgelm_t cell;
+xbt_error_t 
+xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
+  xbt_cfgelm_t cell;
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
   TRYCATCH(mismatch_error,
-	   gras_dict_get((gras_dict_t)cfg,name,(void**)&cell));
+	   xbt_dict_get((xbt_dict_t)cfg,name,(void**)&cell));
   if (errcode == mismatch_error) {
     ERROR1("Can't empty  '%s' since this config element does not exist",
 	   name);
@@ -934,7 +934,7 @@ gras_cfg_empty(gras_cfg_t cfg,const char*name) {
   }
 
   if (cell) {
-    gras_dynar_reset(cell->content);
+    xbt_dynar_reset(cell->content);
   }
   return no_error;
 }
@@ -942,101 +942,101 @@ gras_cfg_empty(gras_cfg_t cfg,const char*name) {
 /*----[ Getting ]---------------------------------------------------------*/
 
 /**
- * gras_cfg_get_int:
+ * xbt_cfg_get_int:
  * @cfg: the config set
  * @name: the name of the cell
  * @val: the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using gras_cfg_get_dynar() 
+ * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
  * @warning the returned value is the actual content of the config set
  */
-gras_error_t
-gras_cfg_get_int   (gras_cfg_t  cfg,
+xbt_error_t
+xbt_cfg_get_int   (xbt_cfg_t  cfg,
 		    const char *name,
 		    int        *val) {
-  gras_cfgelm_t cell;
-  gras_error_t errcode;
+  xbt_cfgelm_t cell;
+  xbt_error_t errcode;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&cell));
 
-  if (gras_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(cell->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values",
-	     name, gras_dynar_length(cell->content));
+	     name, xbt_dynar_length(cell->content));
   }
 
-  *val = gras_dynar_get_as(cell->content, 0, int);
+  *val = xbt_dynar_get_as(cell->content, 0, int);
   return no_error;
 }
 
 /**
- * gras_cfg_get_double:
+ * xbt_cfg_get_double:
  * @cfg: the config set
  * @name: the name of the cell
  * @val: the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using gras_cfg_get_dynar() 
+ * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
  * @warning the returned value is the actual content of the config set
  */
 
-gras_error_t
-gras_cfg_get_double(gras_cfg_t  cfg,
+xbt_error_t
+xbt_cfg_get_double(xbt_cfg_t  cfg,
 		    const char *name,
 		    double     *val) {
-  gras_cfgelm_t cell;
-  gras_error_t  errcode;
+  xbt_cfgelm_t cell;
+  xbt_error_t  errcode;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_double,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&cell));
 
-  if (gras_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(cell->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, gras_dynar_length(cell->content));
+	     name, xbt_dynar_length(cell->content));
   }
 
-  *val = gras_dynar_get_as(cell->content, 0, double);
+  *val = xbt_dynar_get_as(cell->content, 0, double);
   return no_error;
 }
 
 /**
- * gras_cfg_get_string:
+ * xbt_cfg_get_string:
  *
  * @th: the config set
  * @name: the name of the cell
  * @val: the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using gras_cfg_get_dynar() 
+ * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
  * @warning the returned value is the actual content of the config set
  */
 
-gras_error_t gras_cfg_get_string(gras_cfg_t  cfg,
+xbt_error_t xbt_cfg_get_string(xbt_cfg_t  cfg,
 				 const char *name,
 				 char      **val) {
-  gras_cfgelm_t  cell;
-  gras_error_t errcode;
+  xbt_cfgelm_t  cell;
+  xbt_error_t errcode;
 
   *val=NULL;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&cell));
 
-  if (gras_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(cell->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, gras_dynar_length(cell->content));
+	     name, xbt_dynar_length(cell->content));
   }
 
-  *val = gras_dynar_get_as(cell->content, 0, char *);
+  *val = xbt_dynar_get_as(cell->content, 0, char *);
   return no_error;
 }
 
 /**
- * gras_cfg_get_host:
+ * xbt_cfg_get_host:
  *
  * @cfg: the config set
  * @name: the name of the cell
@@ -1044,28 +1044,28 @@ gras_error_t gras_cfg_get_string(gras_cfg_t  cfg,
  * @port: the port number
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using gras_cfg_get_dynar() 
+ * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
  * instead.
  *
  * @warning the returned value is the actual content of the config set
  */
 
-gras_error_t gras_cfg_get_host  (gras_cfg_t  cfg,
+xbt_error_t xbt_cfg_get_host  (xbt_cfg_t  cfg,
 				 const char *name,
 				 char      **host,
 				 int        *port) {
-  gras_cfgelm_t cell;
-  gras_error_t  errcode;
-  gras_host_t  *val;
+  xbt_cfgelm_t cell;
+  xbt_error_t  errcode;
+  xbt_host_t  *val;
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&cell));
 
-  if (gras_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(cell->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, gras_dynar_length(cell->content));
+	     name, xbt_dynar_length(cell->content));
   }
 
-  val = gras_dynar_get_as(cell->content, 0, gras_host_t*);
+  val = xbt_dynar_get_as(cell->content, 0, xbt_host_t*);
   *host=val->name;
   *port=val->port;
   
@@ -1073,7 +1073,7 @@ gras_error_t gras_cfg_get_host  (gras_cfg_t  cfg,
 }
 
 /**
- * gras_cfg_get_dynar:
+ * xbt_cfg_get_dynar:
  * @cfg: where to search in
  * @name: what to search for
  * @dynar: result
@@ -1082,11 +1082,11 @@ gras_error_t gras_cfg_get_host  (gras_cfg_t  cfg,
  *
  * @warning the returned value is the actual content of the config set
  */
-gras_error_t gras_cfg_get_dynar (gras_cfg_t    cfg,
+xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t    cfg,
 				 const char   *name,
-				 gras_dynar_t *dynar) {
-  gras_cfgelm_t cell;
-  gras_error_t  errcode = gras_dict_get((gras_dict_t)cfg,name,
+				 xbt_dynar_t *dynar) {
+  xbt_cfgelm_t cell;
+  xbt_error_t  errcode = xbt_dict_get((xbt_dict_t)cfg,name,
 					(void**)&cell);
 
   if (errcode == mismatch_error) {

@@ -85,6 +85,6 @@ static const DataDescriptor msgResultDesc[] =
 void
 grasRepportError (gras_socket_t *sock, int id, int SeqCount,
 		  const char *severeError,
-		  gras_error_t errcode, const char* format,...);
+		  xbt_error_t errcode, const char* format,...);
 
 #endif /* GRAS_ADDONS_H */

@@ -46,7 +46,7 @@
  * Register all messages and callbacks needed for the current process to be ready
  * to do BW tests
  */
-gras_error_t grasbw_register_messages(void);
+xbt_error_t grasbw_register_messages(void);
 
 /* ***************************************************************************
  * Bandwidth tests
@@ -66,7 +66,7 @@ gras_error_t grasbw_register_messages(void);
  * Conduct a bandwidth test from the local process to the given peer.
  * This call is blocking until the end of the experiment.
  */
-gras_error_t grasbw_test(const char*to_name,unsigned int to_port,
+xbt_error_t grasbw_test(const char*to_name,unsigned int to_port,
 			unsigned int bufSize,unsigned int expSize,unsigned int msgSize,
 			/*OUT*/ double *sec, double*bw);
 
@@ -87,7 +87,7 @@ gras_error_t grasbw_test(const char*to_name,unsigned int to_port,
  * Conduct a bandwidth test from the process from_host:from_port to to_host:to_port.
  * This call is blocking until the end of the experiment.
  */
-gras_error_t grasbw_request(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_request(const char* from_name,unsigned int from_port,
 			   const char* to_name,unsigned int to_port,
 			   unsigned int bufSize,unsigned int expSize,unsigned int msgSize,
 			   /*OUT*/ double *sec, double*bw);
@@ -111,7 +111,7 @@ gras_error_t grasbw_request(const char* from_name,unsigned int from_port,
  * Ask the process 'from_name:from_port' to start to saturate the link between itself
  * and to_name:to_name.
  */
-gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
 				  const char* to_name,unsigned int to_port,
 				  unsigned int msgSize, unsigned int timeout);
 
@@ -127,7 +127,7 @@ gras_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
  * Ask the process 'from_name:from_port' to stop saturating the link between itself
  * and to_name:to_name.
  */
-gras_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
+xbt_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
 				 const char* to_name,unsigned int to_port);
 
 

@@ -14,7 +14,7 @@
 
 #include "gras/DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_convert,datadesc,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_convert,datadesc,
 				 "Inter-architecture convertions");
 
 /***
@@ -68,7 +68,7 @@ gras_dd_reverse_bytes(void *to,
  * The data to be converted is stored in @src, and is to be stored in @dst.
  * Both pointers may be the same location if no resizing is needed.
  */
-gras_error_t
+xbt_error_t
 gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 		    int r_arch, 
 		    void *src, void *dst) {
@@ -84,8 +84,8 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
   } tester;
   */
 
-  gras_assert(type->category_code == e_gras_datadesc_type_cat_scalar);
-  gras_assert(r_arch != GRAS_THISARCH);
+  xbt_assert(type->category_code == e_gras_datadesc_type_cat_scalar);
+  xbt_assert(r_arch != GRAS_THISARCH);
   
   r_size = type->size[r_arch];
   l_size = type->size[GRAS_THISARCH];
@@ -122,7 +122,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 
       DEBUG5("Resize integer %d from %lu @%p to %lu @%p",
 	     cpt, r_size,r_data, l_size,l_data);
-      gras_assert0(r_data != l_data, "Impossible to resize in place");
+      xbt_assert0(r_data != l_data, "Impossible to resize in place");
 
       if(sizeChange < 0) {
 	DEBUG3("Truncate %d bytes (%s,%s)", -sizeChange,

@@ -11,7 +11,7 @@
 #include "gras.h"
 #include "amok/bandwidth.h"
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,"Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,"Messages specific to this example");
 
 /* **********************************************************************
  * Sensor code
@@ -26,22 +26,22 @@ typedef struct {
 int sensor (int argc,char *argv[]);
 
 int sensor (int argc,char *argv[]) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   sensor_data_t g;
 
-  gras_init(&argc,argv);
+  xbt_init(&argc,argv);
   g=gras_userdata_new(s_sensor_data_t);  
 
   amok_bw_init();
    
   if ((errcode=gras_socket_server(atoi(argv[1]),&(g->sock)))) { 
-    ERROR1("Sensor: Error %s encountered while opening the server socket",gras_error_name(errcode));
+    ERROR1("Sensor: Error %s encountered while opening the server socket",xbt_error_name(errcode));
     return 1;
   }
 
   errcode=gras_msg_handle(60.0);
   if (errcode != no_error) {
-     ERROR1("Sensor: Error '%s' while handling message",gras_error_name(errcode));
+     ERROR1("Sensor: Error '%s' while handling message",xbt_error_name(errcode));
      gras_socket_close(g->sock);
      return errcode;
   }
@@ -63,7 +63,7 @@ typedef struct {
 int maestro (int argc,char *argv[]);
 
 int maestro(int argc,char *argv[]) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   maestro_data_t g;
   double sec, bw;
   int buf_size=32;
@@ -71,13 +71,13 @@ int maestro(int argc,char *argv[]) {
   int msg_size=64;
   gras_socket_t peer;
 
-  gras_init(&argc,argv);
+  xbt_init(&argc,argv);
   g=gras_userdata_new(s_maestro_data_t);
   amok_bw_init();
   gras_os_sleep(1,0);
    
   if ((errcode=gras_socket_server(6000,&(g->sock)))) { 
-    ERROR1("Maestro: Error %s encountered while opening the server socket",gras_error_name(errcode));
+    ERROR1("Maestro: Error %s encountered while opening the server socket",xbt_error_name(errcode));
     return 1;
   }
       
@@ -89,7 +89,7 @@ int maestro(int argc,char *argv[]) {
 
   if ((errcode=gras_socket_client(argv[1],atoi(argv[2]),&peer))) {
      ERROR3("Client: Unable to connect to my peer on %s:%s. Got %s",
-	    argv[1],argv[2],gras_error_name(errcode));
+	    argv[1],argv[2],xbt_error_name(errcode));
      return 1;
   }
 
@@ -97,7 +97,7 @@ int maestro(int argc,char *argv[]) {
 			       buf_size,exp_size,msg_size,&sec,&bw))) {*/
   
   if ((errcode=amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw))) {
-    ERROR1("maestro: Error %s encountered while doing the test",gras_error_name(errcode));
+    ERROR1("maestro: Error %s encountered while doing the test",xbt_error_name(errcode));
     return 1;
   }
    

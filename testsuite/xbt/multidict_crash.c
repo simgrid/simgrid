@@ -19,11 +19,11 @@
 #define NB_TEST 20
 int verbose=0;
 
-static gras_error_t test1();
+static xbt_error_t test1();
 
-static gras_error_t test1() {
-  gras_error_t errcode;
-  gras_dict_t *head=NULL;
+static xbt_error_t test1() {
+  xbt_error_t errcode;
+  xbt_dict_t *head=NULL;
   int i,j,k,l;
   char **key = NULL;
   char **val = NULL;
@@ -54,10 +54,10 @@ static gras_error_t test1() {
 	key[l]=val[l];/*  NOWADAYS, no need to strdup the key. */
       }
       if (verbose) printf("in multitree %p.\n",head);
-      TRYFAIL(gras_multidict_set(&head,MULTICACHE_DEPTH,key,
+      TRYFAIL(xbt_multidict_set(&head,MULTICACHE_DEPTH,key,
 				 strdup(val[0]),&free));
 
-      TRYFAIL(gras_multidict_get(head,
+      TRYFAIL(xbt_multidict_get(head,
 				 MULTICACHE_DEPTH,(const char **)val,
 				 &data));
       if (!data || strcmp((char*)data,val[0])) {
@@ -66,8 +66,8 @@ static gras_error_t test1() {
 	abort();
       }
     }
-    gras_dict_dump(head,&gras_dict_print);
-    gras_dict_free(&head);
+    xbt_dict_dump(head,&xbt_dict_print);
+    xbt_dict_free(&head);
 
     for (l=0 ; l<MULTICACHE_DEPTH ; l++)
       if (val[l]) free(val[l]);
@@ -81,11 +81,11 @@ static gras_error_t test1() {
 }
 
 int main(int argc, char *argv[]) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
 
-  gras_init(argc,argv,"root.thresh=debug"));
+  xbt_init(argc,argv,"root.thresh=debug"));
   TRYFAIL(test1());
    
-  gras_exit();
+  xbt_exit();
   return 0;
 }

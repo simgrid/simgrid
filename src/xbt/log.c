@@ -21,19 +21,19 @@
 
 typedef struct {
   char *catname;
-  e_gras_log_priority_t thresh;
-} s_gras_log_setting_t,*gras_log_setting_t;
+  e_xbt_log_priority_t thresh;
+} s_xbt_log_setting_t,*xbt_log_setting_t;
 
-static gras_dynar_t gras_log_settings=NULL;
+static xbt_dynar_t xbt_log_settings=NULL;
 static void _free_setting(void *s) {
-  gras_log_setting_t set=(gras_log_setting_t)s;
+  xbt_log_setting_t set=(xbt_log_setting_t)s;
   if (set) {
-    gras_free(set->catname);
-/*    gras_free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
+    xbt_free(set->catname);
+/*    xbt_free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
   }
 }
 
-const char *gras_log_priority_names[8] = {
+const char *xbt_log_priority_names[8] = {
   "NONE",
   "TRACE",
   "DEBUG",
@@ -44,64 +44,64 @@ const char *gras_log_priority_names[8] = {
   "CRITICAL"
 };
 
-s_gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT) = {
+s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   0, 0, 0,
-  "root", gras_log_priority_uninitialized, 0,
+  "root", xbt_log_priority_uninitialized, 0,
   NULL, 0
 };
 
-GRAS_LOG_NEW_SUBCATEGORY(gras,GRAS_LOG_ROOT_CAT,"All GRAS categories");
-GRAS_LOG_NEW_SUBCATEGORY(xbt,GRAS_LOG_ROOT_CAT,"All XBT categories (gras toolbox)");
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
+XBT_LOG_NEW_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories");
+XBT_LOG_NEW_SUBCATEGORY(xbt,XBT_LOG_ROOT_CAT,"All XBT categories (gras toolbox)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
 
 
-static void _apply_control(gras_log_category_t cat) {
+static void _apply_control(xbt_log_category_t cat) {
   int cursor;
-  gras_log_setting_t setting=NULL;
+  xbt_log_setting_t setting=NULL;
   int found = 0;
 
-  if (!gras_log_settings)
+  if (!xbt_log_settings)
     return;
 
-  gras_assert0(cat,"NULL category");
-  gras_assert(cat->name);
+  xbt_assert0(cat,"NULL category");
+  xbt_assert(cat->name);
 
-  gras_dynar_foreach(gras_log_settings,cursor,setting) {
-    gras_assert0(setting,"Damnit, NULL cat in the list");
-    gras_assert1(setting->catname,"NULL setting(=%p)->catname",(void*)setting);
+  xbt_dynar_foreach(xbt_log_settings,cursor,setting) {
+    xbt_assert0(setting,"Damnit, NULL cat in the list");
+    xbt_assert1(setting->catname,"NULL setting(=%p)->catname",(void*)setting);
 
     if (!strcmp(setting->catname,cat->name)) {
       found = 1;
 
-      gras_log_threshold_set(cat, setting->thresh);
-      gras_dynar_cursor_rm(gras_log_settings,&cursor);
+      xbt_log_threshold_set(cat, setting->thresh);
+      xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
 
-      if (cat->threshold <= gras_log_priority_verbose) {
-	s_gras_log_event_t _log_ev = 
-	  {cat,gras_log_priority_verbose,__FILE__,_GRAS_GNUC_FUNCTION,__LINE__};
-	_gras_log_event_log(&_log_ev,
+      if (cat->threshold <= xbt_log_priority_verbose) {
+	s_xbt_log_event_t _log_ev = 
+	  {cat,xbt_log_priority_verbose,__FILE__,_XBT_GNUC_FUNCTION,__LINE__};
+	_xbt_log_event_log(&_log_ev,
 	         "Apply settings for category '%s': set threshold to %s (=%d)",
 		 cat->name, 
-	         gras_log_priority_names[cat->threshold], cat->threshold);
+	         xbt_log_priority_names[cat->threshold], cat->threshold);
       }
     }
   }
-  if (!found && cat->threshold <= gras_log_priority_verbose) {
-    s_gras_log_event_t _log_ev = 
-      {cat,gras_log_priority_verbose,__FILE__,_GRAS_GNUC_FUNCTION,__LINE__};
-    _gras_log_event_log(&_log_ev,
+  if (!found && cat->threshold <= xbt_log_priority_verbose) {
+    s_xbt_log_event_t _log_ev = 
+      {cat,xbt_log_priority_verbose,__FILE__,_XBT_GNUC_FUNCTION,__LINE__};
+    _xbt_log_event_log(&_log_ev,
 			"Category '%s': inherited threshold = %s (=%d)",
 			cat->name,
-			gras_log_priority_names[cat->threshold], cat->threshold);
+			xbt_log_priority_names[cat->threshold], cat->threshold);
   }
 
 }
 
-void _gras_log_event_log( gras_log_event_t ev, const char *fmt, ...) {
-  gras_log_category_t cat = ev->cat;
+void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
+  xbt_log_category_t cat = ev->cat;
   va_start(ev->ap, fmt);
   while(1) {
-    gras_log_appender_t appender = cat->appender;
+    xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
       appender->do_append(appender, ev, fmt);
     }
@@ -113,12 +113,12 @@ void _gras_log_event_log( gras_log_event_t ev, const char *fmt, ...) {
   va_end(ev->ap);
 }
 
-static void _cat_init(gras_log_category_t category) {
-  if (category == &_GRAS_LOGV(GRAS_LOG_ROOT_CAT)) {
-    category->threshold = gras_log_priority_info;
-    category->appender = gras_log_default_appender;
+static void _cat_init(xbt_log_category_t category) {
+  if (category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)) {
+    category->threshold = xbt_log_priority_info;
+    category->appender = xbt_log_default_appender;
   } else {
-    gras_log_parent_set(category, category->parent);
+    xbt_log_parent_set(category, category->parent);
   }
   _apply_control(category);
 }
@@ -128,27 +128,27 @@ static void _cat_init(gras_log_category_t category) {
  * initialization. 
  * Also resets threshold to inherited!
  */
-int _gras_log_cat_init(e_gras_log_priority_t priority,
-		       gras_log_category_t   category) {
+int _xbt_log_cat_init(e_xbt_log_priority_t priority,
+		       xbt_log_category_t   category) {
     
   _cat_init(category);
         
   return priority >= category->threshold;
 }
 
-void gras_log_parent_set(gras_log_category_t cat,
-			 gras_log_category_t parent) {
+void xbt_log_parent_set(xbt_log_category_t cat,
+			 xbt_log_category_t parent) {
 
-  gras_assert0(cat,"NULL category to be given a parent");
-  gras_assert1(parent,"The parent category of %s is NULL",cat->name);
+  xbt_assert0(cat,"NULL category to be given a parent");
+  xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
 
   /* unlink from current parent */
-  if (cat->threshold != gras_log_priority_uninitialized) {
-    gras_log_category_t* cpp = &parent->firstChild;
+  if (cat->threshold != xbt_log_priority_uninitialized) {
+    xbt_log_category_t* cpp = &parent->firstChild;
     while(*cpp != cat && *cpp != NULL) {
       cpp = &(*cpp)->nextSibling;
     }
-    gras_assert(*cpp == cat);
+    xbt_assert(*cpp == cat);
     *cpp = cat->nextSibling;
   }
 
@@ -158,7 +158,7 @@ void gras_log_parent_set(gras_log_category_t cat,
   parent->firstChild = cat;
 
   /* Make sure parent is initialized */
-  if (parent->threshold == gras_log_priority_uninitialized) {
+  if (parent->threshold == xbt_log_priority_uninitialized) {
     _cat_init(parent);
   }
     
@@ -167,28 +167,28 @@ void gras_log_parent_set(gras_log_category_t cat,
   cat->isThreshInherited = 1;
 } /* log_setParent */
 
-static void _set_inherited_thresholds(gras_log_category_t cat) {
-  gras_log_category_t child = cat->firstChild;
+static void _set_inherited_thresholds(xbt_log_category_t cat) {
+  xbt_log_category_t child = cat->firstChild;
   for( ; child != NULL; child = child->nextSibling) {
     if (child->isThreshInherited) {
-      if (cat != &_GRAS_LOGV(log))
+      if (cat != &_XBT_LOGV(log))
 	VERB3("Set category threshold of %s to %s (=%d)",
-	      child->name,gras_log_priority_names[cat->threshold],cat->threshold);
+	      child->name,xbt_log_priority_names[cat->threshold],cat->threshold);
       child->threshold = cat->threshold;
       _set_inherited_thresholds(child);
     }
   }
 }
 
-void gras_log_threshold_set(gras_log_category_t   cat,
-			    e_gras_log_priority_t threshold) {
+void xbt_log_threshold_set(xbt_log_category_t   cat,
+			    e_xbt_log_priority_t threshold) {
   cat->threshold = threshold;
   cat->isThreshInherited = 0;
   _set_inherited_thresholds(cat);
 }
 
-static void _gras_log_parse_setting(const char*        control_string,
-				    gras_log_setting_t set) {
+static void _xbt_log_parse_setting(const char*        control_string,
+				    xbt_log_setting_t set) {
   const char *name, *dot, *eq;
   
   set->catname=NULL;
@@ -204,12 +204,12 @@ static void _gras_log_parse_setting(const char*        control_string,
   eq = control_string;
   control_string += strcspn(control_string, " ");
 
-  gras_assert1(*dot == '.' && *eq == '=',
+  xbt_assert1(*dot == '.' && *eq == '=',
 	       "Invalid control string '%s'",control_string);
 
   if (!strncmp(dot + 1, "thresh", min(eq - dot - 1,strlen("thresh")))) {
     int i;
-    char *neweq=gras_strdup(eq+1);
+    char *neweq=xbt_strdup(eq+1);
     char *p=neweq-1;
     
     while (*(++p) != '\0') {
@@ -219,41 +219,41 @@ static void _gras_log_parse_setting(const char*        control_string,
     }
     
     DEBUG1("New priority name = %s",neweq);
-    for (i=0; i<gras_log_priority_infinite-1; i++) {
-      if (!strncmp(gras_log_priority_names[i],neweq,p-eq)) {
+    for (i=0; i<xbt_log_priority_infinite-1; i++) {
+      if (!strncmp(xbt_log_priority_names[i],neweq,p-eq)) {
 	DEBUG1("This is priority %d",i);
 	break;
       }
     }
-    if (i<gras_log_priority_infinite-1) {
+    if (i<xbt_log_priority_infinite-1) {
       set->thresh=i;
     } else {
-      gras_assert1(FALSE,"Unknown priority name: %s",eq+1);
+      xbt_assert1(FALSE,"Unknown priority name: %s",eq+1);
     }
-    gras_free(neweq);
+    xbt_free(neweq);
   } else {
     char buff[512];
     snprintf(buff,min(512,eq - dot - 1),"%s",dot+1);
-    gras_assert1(FALSE,"Unknown setting of the log category: %s",buff);
+    xbt_assert1(FALSE,"Unknown setting of the log category: %s",buff);
   }
-  set->catname=(char*)gras_malloc(dot - name+1);
+  set->catname=(char*)xbt_malloc(dot - name+1);
     
   strncpy(set->catname,name,dot-name);
   set->catname[dot-name]='\0'; /* Just in case */
   DEBUG1("This is for cat '%s'", set->catname);
 }
 
-static gras_error_t _gras_log_cat_searchsub(gras_log_category_t cat,char *name,
-					    /*OUT*/gras_log_category_t*whereto) {
-  gras_error_t errcode;
-  gras_log_category_t child;
+static xbt_error_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name,
+					    /*OUT*/xbt_log_category_t*whereto) {
+  xbt_error_t errcode;
+  xbt_log_category_t child;
   
   if (!strcmp(cat->name,name)) {
     *whereto=cat;
     return no_error;
   }
   for(child=cat->firstChild ; child != NULL; child = child->nextSibling) {
-    errcode=_gras_log_cat_searchsub(child,name,whereto);
+    errcode=_xbt_log_cat_searchsub(child,name,whereto);
     if (errcode==no_error)
       return no_error;
   }
@@ -293,7 +293,7 @@ static void _cleanup_double_spaces(char *s) {
 }
 
 /**
- * gras_log_control_set:
+ * xbt_log_control_set:
  * @cs: What to parse
  *
  * Typically passed a command-line argument. The string has the syntax:
@@ -310,9 +310,9 @@ static void _cleanup_double_spaces(char *s) {
  * This routine may only be called once and that must be before any other
  * logging command! Typically, this is done from main().
  */
-void gras_log_control_set(const char* control_string) {
-  gras_error_t errcode;
-  gras_log_setting_t set;
+void xbt_log_control_set(const char* control_string) {
+  xbt_error_t errcode;
+  xbt_log_setting_t set;
   char *cs;
   char *p;
   int done = 0;
@@ -320,17 +320,17 @@ void gras_log_control_set(const char* control_string) {
   DEBUG1("Parse log settings '%s'",control_string);
   if (control_string == NULL)
     return;
-  if (gras_log_settings == NULL)
-    gras_log_settings = gras_dynar_new(sizeof(gras_log_setting_t),
+  if (xbt_log_settings == NULL)
+    xbt_log_settings = xbt_dynar_new(sizeof(xbt_log_setting_t),
 				       _free_setting);
 
-  set = gras_new(s_gras_log_setting_t,1);
-  cs=gras_strdup(control_string);
+  set = xbt_new(s_xbt_log_setting_t,1);
+  cs=xbt_strdup(control_string);
 
   _cleanup_double_spaces(cs);
 
   while (!done) {
-    gras_log_category_t cat;
+    xbt_log_category_t cat;
     
     p=strrchr(cs,' ');
     if (p) {
@@ -340,31 +340,31 @@ void gras_log_control_set(const char* control_string) {
       p=cs;
       done = 1;
     }
-    _gras_log_parse_setting(p,set);
+    _xbt_log_parse_setting(p,set);
     
-    errcode = _gras_log_cat_searchsub(&_GRAS_LOGV(root),set->catname,&cat);
+    errcode = _xbt_log_cat_searchsub(&_XBT_LOGV(root),set->catname,&cat);
     if (errcode == mismatch_error) {
       DEBUG0("Store for further application");
       DEBUG1("push %p to the settings",(void*)set);
-      gras_dynar_push(gras_log_settings,&set);
+      xbt_dynar_push(xbt_log_settings,&set);
       /* malloc in advance the next slot */
-      set = gras_new(s_gras_log_setting_t,1);
+      set = xbt_new(s_xbt_log_setting_t,1);
     } else {
       DEBUG0("Apply directly");
-      gras_free(set->catname);
-      gras_log_threshold_set(cat,set->thresh);
+      xbt_free(set->catname);
+      xbt_log_threshold_set(cat,set->thresh);
     }
   }
-  gras_free(set);
-  gras_free(cs);
+  xbt_free(set);
+  xbt_free(cs);
 } 
 
-void gras_log_appender_set(gras_log_category_t cat, gras_log_appender_t app) {
+void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
   cat->appender = app;
 }
 
-void gras_log_exit(void) {
+void xbt_log_exit(void) {
   VERB0("Exiting log");
-  gras_dynar_free(&gras_log_settings);
+  xbt_dynar_free(&xbt_log_settings);
   VERB0("Exited log");
 }

@@ -26,19 +26,19 @@
 #include "timeouts.h"
 #include "protocol.h"
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(rl,"Real Life");
+XBT_LOG_NEW_DEFAULT_CATEGORY(rl,"Real Life");
 			      
 /* globals */
 static grasProcessData_t *_grasProcessData;
 
 /* Prototypes of internal functions */
 static int grasConversionRequired(const DataDescriptor *description, size_t howMany);
-static gras_error_t
+static xbt_error_t
 _gras_rawsock_exchange(gras_rawsock_t *sd, int sender, unsigned int timeout,
 		       unsigned int expSize, unsigned int msgSize);
 
 
-gras_error_t gras_process_init() {
+xbt_error_t gras_process_init() {
   if (!(_grasProcessData=(grasProcessData_t *)malloc(sizeof(grasProcessData_t)))) {
     fprintf(stderr,"gras_process_init: cannot malloc %d bytes\n",sizeof(grasProcessData_t));
     return malloc_error;
@@ -52,7 +52,7 @@ gras_error_t gras_process_init() {
   _grasProcessData->userdata = NULL;
   return no_error;
 }
-gras_error_t gras_process_finalize() {
+xbt_error_t gras_process_finalize() {
   fprintf(stderr,"FIXME: %s not implemented (=> leaking on exit :)\n",__FUNCTION__);
   return no_error;
 }
@@ -60,7 +60,7 @@ gras_error_t gras_process_finalize() {
 /* **************************************************************************
  * Openning/Maintaining/Closing connexions
  * **************************************************************************/
-gras_error_t
+xbt_error_t
 gras_sock_client_open(const char *host, short port, 
 		      /* OUT */ gras_sock_t **sock) {
 
@@ -94,7 +94,7 @@ gras_sock_client_open(const char *host, short port,
 }
 
 
-gras_error_t
+xbt_error_t
 gras_sock_server_open(unsigned short startingPort, unsigned short endingPort,
 		      /* OUT */ gras_sock_t **sock) {
 
@@ -115,7 +115,7 @@ gras_sock_server_open(unsigned short startingPort, unsigned short endingPort,
   return no_error;
 }
 
-gras_error_t gras_sock_close(gras_sock_t *sock) {
+xbt_error_t gras_sock_close(gras_sock_t *sock) {
   if (sock) {
     DROP_SOCKET(&(sock->sock));
     if (sock->peer_addr) free(sock->peer_addr);
@@ -275,7 +275,7 @@ int grasDataRecv( gras_sock_t *sd,
   return recvResult;
 }
 
-gras_error_t grasDataSend(gras_sock_t *sd,
+xbt_error_t grasDataSend(gras_sock_t *sd,
 			 const void *data,
 			 const DataDescriptor *description,
 			 size_t description_length,
@@ -331,7 +331,7 @@ gras_error_t grasDataSend(gras_sock_t *sd,
   return no_error;
 }
 
-gras_error_t
+xbt_error_t
 grasMsgRecv(gras_msg_t **msg,
 	    double timeOut) {
   int dummyldap;
@@ -464,17 +464,17 @@ grasMsgRecv(gras_msg_t **msg,
  * Send a message to the network
  */
 
-gras_error_t
+xbt_error_t
 gras_msg_send(gras_sock_t *sd,
 	    gras_msg_t *msg,
-	    e_gras_free_directive_t freeDirective) {
+	    e_xbt_free_directive_t freeDirective) {
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
   int i;
 
   /* arg validity checks */
-  gras_assert0(msg,"Trying to send NULL message");
-  gras_assert0(sd, "Trying to send over a NULL socket");
+  xbt_assert0(msg,"Trying to send NULL message");
+  xbt_assert0(sd, "Trying to send over a NULL socket");
 
 
   fprintf(stderr,"Header to send=ver:'%s' msg:%d size:%d seqCount:%d\n",
@@ -486,7 +486,7 @@ gras_msg_send(gras_sock_t *sd,
 			    msg->header,
 			    headerDescriptor,headerDescriptorCount,1))) {
     fprintf(stderr,"gras_msg_send: Error '%s' while sending header of message %s to %s:%d\n",
-	    gras_error_name(errcode),msg->entry->name,gras_sock_get_peer_name(sd),gras_sock_get_peer_port(sd));
+	    xbt_error_name(errcode),msg->entry->name,gras_sock_get_peer_name(sd),gras_sock_get_peer_port(sd));
     return errcode;
   }
 
@@ -494,7 +494,7 @@ gras_msg_send(gras_sock_t *sd,
 			    msg->dataCount,countDescriptor,countDescriptorCount,
 			    msg->entry->seqCount))) {
     fprintf(stderr,"gras_msg_send: Error '%s' while sending sequence counts of message %s to %s\n",
-	    gras_error_name(errcode),msg->entry->name,gras_sock_get_peer_name(sd));
+	    xbt_error_name(errcode),msg->entry->name,gras_sock_get_peer_name(sd));
     return errcode;
   }
 
@@ -504,7 +504,7 @@ gras_msg_send(gras_sock_t *sd,
 			      (const DataDescriptor*)msg->entry->dd[i],msg->entry->ddCount[i],
 			      msg->dataCount[i]))) {
       fprintf(stderr,"gras_msg_send: Error '%s' while sending sequence %d of message %s to %s\n",
-	      gras_error_name(errcode),i,msg->entry->name,gras_sock_get_peer_name(sd));
+	      xbt_error_name(errcode),i,msg->entry->name,gras_sock_get_peer_name(sd));
       return errcode;
     }
   }  
@@ -524,7 +524,7 @@ void grasSockFree(gras_sock_t *s) {
 /* **************************************************************************
  * Creating/Using raw sockets
  * **************************************************************************/
-gras_error_t gras_rawsock_server_open(unsigned short startingPort, 
+xbt_error_t gras_rawsock_server_open(unsigned short startingPort, 
 				  unsigned short endingPort,
 				  unsigned int bufSize, gras_rawsock_t **sock) {
   struct sockaddr_in sockaddr;
@@ -576,7 +576,7 @@ void Dummy(int sig) {
   return;
 }
 
-gras_error_t gras_rawsock_client_open(const char *host, short port, 
+xbt_error_t gras_rawsock_client_open(const char *host, short port, 
 				  unsigned int bufSize, gras_rawsock_t **sock) {
   int i,addrCount;
   IPAddress addresses[10];
@@ -638,7 +638,7 @@ gras_error_t gras_rawsock_client_open(const char *host, short port,
   return no_error;
 }
 
-gras_error_t gras_rawsock_close(gras_rawsock_t *sd) {
+xbt_error_t gras_rawsock_close(gras_rawsock_t *sd) {
   if (sd) {
     CloseSocket(&(sd->sock), 0);
     free(sd);
@@ -652,7 +652,7 @@ unsigned short gras_rawsock_get_peer_port(gras_rawsock_t *sd) {
 }
 
 /* FIXME: RL ignores the provided timeout and compute an appropriate one */
-static gras_error_t
+static xbt_error_t
 _gras_rawsock_exchange(gras_rawsock_t *sd, int sender, unsigned int timeout,
 		     unsigned int expSize, unsigned int msgSize){
   char *expData;
@@ -719,12 +719,12 @@ _gras_rawsock_exchange(gras_rawsock_t *sd, int sender, unsigned int timeout,
   return no_error;
 }
 
-gras_error_t
+xbt_error_t
 gras_rawsock_recv(gras_rawsock_t *sd, unsigned int expSize, unsigned int msgSize, 
 		unsigned int timeout) {
   return _gras_rawsock_exchange(sd,0,timeout,expSize,msgSize);
 }
-gras_error_t
+xbt_error_t
 gras_rawsock_send(gras_rawsock_t *sd, unsigned int expSize, unsigned int msgSize){
   return _gras_rawsock_exchange(sd,1,0,expSize,msgSize);
 }

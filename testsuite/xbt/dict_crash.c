@@ -21,41 +21,41 @@ static void print_str(void *str) {
   printf("%s",(char*)str);
 }
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
-static gras_error_t traverse(gras_dict_t head) {
-  gras_dict_cursor_t cursor=NULL;
+static xbt_error_t traverse(xbt_dict_t head) {
+  xbt_dict_cursor_t cursor=NULL;
   char *key;
   char *data;
 
-  gras_dict_foreach(head,cursor,key,data) {
+  xbt_dict_foreach(head,cursor,key,data) {
     /*    printf("   Seen:  %s=%s\n",key,data); */
-    gras_assert2 (!strcmp(key,data),
+    xbt_assert2 (!strcmp(key,data),
       "Key(%s) != value(%s). Abording\n",key,data);
   }
   return no_error;
 }
 
-static gras_error_t countelems(gras_dict_t head,int*count) {
-  gras_dict_cursor_t cursor;
+static xbt_error_t countelems(xbt_dict_t head,int*count) {
+  xbt_dict_cursor_t cursor;
   char *key;
   void *data;
   *count=0;
 
-  gras_dict_foreach(head,cursor,key,data) {
+  xbt_dict_foreach(head,cursor,key,data) {
     (*count)++;
   }
   return no_error;
 }
 
 int main(int argc,char **argv) {
-  gras_error_t errcode;
-  gras_dict_t head=NULL;
+  xbt_error_t errcode;
+  xbt_dict_t head=NULL;
   int i,j,k, nb;
   char *key;
   void *data;
 
-  gras_init_defaultlog(&argc,argv,"dict.thresh=verbose");
+  xbt_init_defaultlog(&argc,argv,"dict.thresh=verbose");
   srand((unsigned int)time(NULL));
 
   printf("Dictionnary: CRASH test:\n");
@@ -64,7 +64,7 @@ int main(int argc,char **argv) {
   printf(" (a point is a test)\n");
 
   for (i=0;i<20;i++) {
-    head=gras_dict_new();
+    head=xbt_dict_new();
     if (i%10) printf("."); else printf("%d",i/10); fflush(stdout);
     nb=0;
     for (j=0;j<1000;j++) {
@@ -77,22 +77,22 @@ int main(int argc,char **argv) {
 	key[k]=rand() % ('z' - 'a') + 'a';
       key[k]='\0';
       /*      printf("[%d %s]\n",j,key); */
-      gras_dict_set(head,key,key,&free);
+      xbt_dict_set(head,key,key,&free);
     }
     nb=0;
-    /*    gras_dict_dump(head,(void (*)(void*))&printf); */
+    /*    xbt_dict_dump(head,(void (*)(void*))&printf); */
     TRYFAIL(countelems(head,&nb));
     if (nb != 1000) {
        printf ("\nI found %d elements, and not 1000\n",nb);
        abort();
     }	  
     TRYFAIL(traverse(head));
-    gras_dict_free(&head);
-    gras_dict_free(&head);
+    xbt_dict_free(&head);
+    xbt_dict_free(&head);
   }
 
 
-  head=gras_dict_new();
+  head=xbt_dict_new();
   printf("\n Fill 20 000 elements, with keys being the number of element\n");
   printf("  (a point is 1 000 elements)\n");
   for (j=0;j<NB_ELM;j++) {
@@ -106,7 +106,7 @@ int main(int argc,char **argv) {
     }
     
     sprintf(key,"%d",j);
-    gras_dict_set(head,key,key,&free);
+    xbt_dict_set(head,key,key,&free);
   }
 
   printf("\n Count the elements (retrieving the key and data for each): \n");
@@ -123,7 +123,7 @@ int main(int argc,char **argv) {
     for (j=0;j<NB_ELM;j++) {
       
       sprintf(key,"%d",j);
-      TRYFAIL(gras_dict_get(head,key,&data));
+      TRYFAIL(xbt_dict_get(head,key,&data));
       if (strcmp(key,(char*)data)) {
 	printf("key=%s != data=%s\n",key,(char*)data);
 	abort();
@@ -141,16 +141,16 @@ int main(int argc,char **argv) {
     if (!(j%10000)) printf("."); fflush(stdout);
     
     sprintf(key,"%d",j);
-    TRYFAIL(gras_dict_remove(head,key));
+    TRYFAIL(xbt_dict_remove(head,key));
   }
   printf("\n");
   free(key);
 
   
   printf("\n Free the structure (twice)\n");
-  gras_dict_free(&head);
-  gras_dict_free(&head);
+  xbt_dict_free(&head);
+  xbt_dict_free(&head);
   
-  gras_exit();
+  xbt_exit();
   return 0;
 }

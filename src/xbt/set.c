@@ -17,48 +17,48 @@
 
 #include "xbt/set.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,"data container consisting in dict+dynar");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,"data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/
-typedef struct gras_set_ {
-  gras_dict_t  dict;  /* data stored by name */
-  gras_dynar_t dynar; /* data stored by ID   */
-} s_gras_set_t;
+typedef struct xbt_set_ {
+  xbt_dict_t  dict;  /* data stored by name */
+  xbt_dynar_t dynar; /* data stored by ID   */
+} s_xbt_set_t;
 
 /*####[ Memory  ]############################################################*/
 /**
- * gras_set_new:
+ * xbt_set_new:
  * @dst: where to
  *
  * Creates a new set.
  */
-gras_set_t gras_set_new (void) {
-  gras_set_t res=gras_new(s_gras_set_t,1);
-  gras_error_t errcode;
+xbt_set_t xbt_set_new (void) {
+  xbt_set_t res=xbt_new(s_xbt_set_t,1);
+  xbt_error_t errcode;
 
-  res->dict=gras_dict_new ();
-  res->dynar=gras_dynar_new(sizeof(void*),NULL);
+  res->dict=xbt_dict_new ();
+  res->dynar=xbt_dynar_new(sizeof(void*),NULL);
 
   return res;
 }
 
 /**
- * gras_set_free:
+ * xbt_set_free:
  * @set:
  *
  * Frees a set.
  */
-void  gras_set_free(gras_set_t *set) {
+void  xbt_set_free(xbt_set_t *set) {
   if (*set) {
-    gras_dict_free ( &( (*set)->dict  ) );
-    gras_dynar_free( &( (*set)->dynar ) );
-    gras_free(*set);
+    xbt_dict_free ( &( (*set)->dict  ) );
+    xbt_dynar_free( &( (*set)->dynar ) );
+    xbt_free(*set);
     *set = NULL;
   }
 }
 
 /**
- * gras_set_add:
+ * xbt_set_add:
  * @set: set to populate
  * @elm: element to add. 
  * @free_ctn: How to add the data 
@@ -69,18 +69,18 @@ void  gras_set_free(gras_set_t *set) {
  * elm->name_len is used as is unless it's <= 0 (in which case it's recomputed);
  * elm->ID is attributed automatically.
  */
-void gras_set_add    (gras_set_t      set,
-		      gras_set_elm_t  elm,
+void xbt_set_add    (xbt_set_t      set,
+		      xbt_set_elm_t  elm,
 		      void_f_pvoid_t *free_func) {
 
-  gras_error_t   errcode;
-  gras_set_elm_t found_in_dict;
+  xbt_error_t   errcode;
+  xbt_set_elm_t found_in_dict;
 
   if (elm->name_len <= 0) {
     elm->name_len = strlen(elm->name);
   }
 
-  errcode = gras_dict_get_ext (set->dict, 
+  errcode = xbt_dict_get_ext (set->dict, 
 				    elm->name, elm->name_len,
 				    (void**)&found_in_dict);
   if (errcode == no_error) {
@@ -91,39 +91,39 @@ void gras_set_add    (gras_set_t      set,
     } else {
       elm->ID=found_in_dict->ID;
       DEBUG2("Reinsertion of key %s (id %d)", elm->name, elm->ID);
-      gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
-      gras_dynar_set(set->dynar, elm->ID, &elm);
+      xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
+      xbt_dynar_set(set->dynar, elm->ID, &elm);
       return;
     }
   } else {
-    gras_assert_error(mismatch_error);
+    xbt_assert_error(mismatch_error);
   }
 
-  elm->ID = gras_dynar_length( set->dynar );
-  gras_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
-  gras_dynar_set(set->dynar, elm->ID, &elm);
+  elm->ID = xbt_dynar_length( set->dynar );
+  xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
+  xbt_dynar_set(set->dynar, elm->ID, &elm);
   DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
 
 }
 
 /**
- * gras_set_get_by_name:
+ * xbt_set_get_by_name:
  * @set:
  * @name: Name of the searched cell
  * @dst: where to put the found data into
  *
  * get a data stored in the cell by providing its name.
  */
-gras_error_t gras_set_get_by_name    (gras_set_t     set,
+xbt_error_t xbt_set_get_by_name    (xbt_set_t     set,
 				      const char     *name,
-				      /* OUT */gras_set_elm_t *dst) {
-  gras_error_t errcode;
-  errcode = gras_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
-  DEBUG2("Lookup key %s: %s",name,gras_error_name(errcode));
+				      /* OUT */xbt_set_elm_t *dst) {
+  xbt_error_t errcode;
+  errcode = xbt_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
+  DEBUG2("Lookup key %s: %s",name,xbt_error_name(errcode));
   return errcode;
 }
 /**
- * gras_set_get_by_name_ext:
+ * xbt_set_get_by_name_ext:
  * @set:
  * @name: Name of the searched cell
  * @name_len: length of the name, when strlen cannot be trusted
@@ -133,16 +133,16 @@ gras_error_t gras_set_get_by_name    (gras_set_t     set,
  * of the name, when strlen cannot be trusted because you don't use a char*
  * as name, you weird guy).
  */
-gras_error_t gras_set_get_by_name_ext(gras_set_t      set,
+xbt_error_t xbt_set_get_by_name_ext(xbt_set_t      set,
 				      const char     *name,
 				      int             name_len,
-				      /* OUT */gras_set_elm_t *dst) {
+				      /* OUT */xbt_set_elm_t *dst) {
 
-  return gras_dict_get_ext (set->dict, name, name_len, (void**)dst);
+  return xbt_dict_get_ext (set->dict, name, name_len, (void**)dst);
 }
 
 /**
- * gras_set_get_by_code:
+ * xbt_set_get_by_code:
  * @set:
  * @id: what you're looking for
  * @dst: where to put the found data into
@@ -150,15 +150,15 @@ gras_error_t gras_set_get_by_name_ext(gras_set_t      set,
  * get a data stored in the cell by providing its id. 
  * @warning, if the ID does not exists, you're getting into trouble
  */
-gras_error_t gras_set_get_by_id      (gras_set_t      set,
+xbt_error_t xbt_set_get_by_id      (xbt_set_t      set,
 				      int             id,
-				      /* OUT */gras_set_elm_t *dst) {
+				      /* OUT */xbt_set_elm_t *dst) {
 
   /* Don't bother checking the bounds, the dynar does so */
 
-  *dst = gras_dynar_get_as(set->dynar,id,gras_set_elm_t);
+  *dst = xbt_dynar_get_as(set->dynar,id,xbt_set_elm_t);
   DEBUG3("Lookup type of id %d (of %lu): %s", 
-	 id, gras_dynar_length(set->dynar), (*dst)->name);
+	 id, xbt_dynar_length(set->dynar), (*dst)->name);
   
   return no_error;
 }
@@ -166,63 +166,63 @@ gras_error_t gras_set_get_by_id      (gras_set_t      set,
 /***
  *** Cursors
  ***/
-typedef struct gras_set_cursor_ {
-  gras_set_t set;
+typedef struct xbt_set_cursor_ {
+  xbt_set_t set;
   int val;
-} s_gras_set_cursor_t;
+} s_xbt_set_cursor_t;
 
 /**
- * gras_set_cursor_first:
+ * xbt_set_cursor_first:
  * @set: on what to let the cursor iterate
  * @cursor: dest address
  *
  * Create the cursor if it does not exists. Rewind it in any case.
  */
-void         gras_set_cursor_first       (gras_set_t         set,
-					  gras_set_cursor_t *cursor) {
+void         xbt_set_cursor_first       (xbt_set_t         set,
+					  xbt_set_cursor_t *cursor) {
 
   if (set != NULL) {
     if (!*cursor) {
       DEBUG0("Create the cursor on first use");
-      *cursor = gras_new(s_gras_set_cursor_t,1);
-      gras_assert0(*cursor,
+      *cursor = xbt_new(s_xbt_set_cursor_t,1);
+      xbt_assert0(*cursor,
 		   "Malloc error during the creation of the cursor");
     }
     (*cursor)->set = set;
-    gras_dynar_cursor_first(set->dynar, &( (*cursor)->val) );
+    xbt_dynar_cursor_first(set->dynar, &( (*cursor)->val) );
   } else {
     *cursor = NULL;
   }
 }
 
 /**
- * gras_set_cursor_step:
+ * xbt_set_cursor_step:
  * @cursor: the cursor
  *
  * Move to the next element. 
  */
-void         gras_set_cursor_step        (gras_set_cursor_t cursor) {
-  gras_dynar_cursor_step(cursor->set->dynar, &( cursor->val ) );
+void         xbt_set_cursor_step        (xbt_set_cursor_t cursor) {
+  xbt_dynar_cursor_step(cursor->set->dynar, &( cursor->val ) );
 }
 
 /**
- * gras_set_cursor_get_or_free:
+ * xbt_set_cursor_get_or_free:
  * @cursor: the cursor
  * @Returns: true if it's ok, false if there is no more data
  *
  * Get current data
  */
-int          gras_set_cursor_get_or_free (gras_set_cursor_t *curs,
-					  gras_set_elm_t    *elm) {
-  gras_set_cursor_t cursor;
+int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *curs,
+					  xbt_set_elm_t    *elm) {
+  xbt_set_cursor_t cursor;
 
   if (!curs || !(*curs))
     return FALSE;
 
   cursor=*curs;
 
-  if (! gras_dynar_cursor_get( cursor->set->dynar,&(cursor->val),elm) ) {
-    gras_free(cursor);
+  if (! xbt_dynar_cursor_get( cursor->set->dynar,&(cursor->val),elm) ) {
+    xbt_free(cursor);
     *curs=NULL;
     return FALSE;    
   } 

@@ -12,18 +12,18 @@
 #include <gras.h>
 #include "gras/Transport/transport_interface.h"
 
-/*GRAS_LOG_NEW_DEFAULT_CATEGORY(test);*/
+/*XBT_LOG_NEW_DEFAULT_CATEGORY(test);*/
 
 int main(int argc,char *argv[]) {
   gras_socket_t sock;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   char data_send[256];
   char data_recv[256];
 
   memset(data_send, 0, sizeof(data_send));
   memset(data_recv, 0, sizeof(data_recv));
 
-  gras_init_defaultlog(&argc,argv,"trp.thresh=debug");
+  xbt_init_defaultlog(&argc,argv,"trp.thresh=debug");
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");
   TRYFAIL(gras_socket_client(NULL,55555,&sock));
@@ -37,13 +37,13 @@ int main(int argc,char *argv[]) {
   
   if (strcmp(data_send, data_recv)) {
     fprintf(stderr, "===[CLIENT]=== String sent != string received\n");
-    gras_abort();
+    xbt_abort();
   } 
   fprintf(stderr,"===[CLIENT]=== Got a valid ACK\n");
   
   fprintf(stderr,"===[CLIENT]=== Exiting successfully\n");
   gras_socket_close(sock);
    
-  gras_exit();
+  xbt_exit();
   return 0;
 }

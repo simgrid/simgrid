@@ -21,7 +21,7 @@ typedef struct {
   int             payload_size;
 } gras_msg_t;
 
-gras_error_t gras_msg_send_namev(gras_socket_t  sock, 
+xbt_error_t gras_msg_send_namev(gras_socket_t  sock, 
 				 const char    *namev, 
 				 void          *payload);
 

@@ -18,7 +18,7 @@
 #include "gras/Virtu/virtu_interface.h"
 #include "gras/Msg/msg_interface.h" /* FIXME: Get rid of this cyclic */
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(process,gras,"Process manipulation code");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(process,gras,"Process manipulation code");
 
 /* **************************************************************************
  * Process data
@@ -38,21 +38,21 @@ void
 gras_procdata_init() {
   gras_procdata_t *pd=gras_procdata_get();
   pd->userdata  = NULL;
-  pd->msg_queue = gras_dynar_new(sizeof(gras_msg_t),     NULL);
-  pd->cbl_list  = gras_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
-  pd->sockets   = gras_dynar_new(sizeof(gras_socket_t*), NULL);
+  pd->msg_queue = xbt_dynar_new(sizeof(gras_msg_t),     NULL);
+  pd->cbl_list  = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
+  pd->sockets   = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
 }
 
 void
 gras_procdata_exit() {
   gras_procdata_t *pd=gras_procdata_get();
 
-  gras_dynar_free(&( pd->msg_queue ));
-  gras_dynar_free(&( pd->cbl_list ));
-  gras_dynar_free(&( pd->sockets ));
+  xbt_dynar_free(&( pd->msg_queue ));
+  xbt_dynar_free(&( pd->cbl_list ));
+  xbt_dynar_free(&( pd->sockets ));
 }
 
-gras_dynar_t 
+xbt_dynar_t 
 gras_socketset_get(void) {
    return gras_procdata_get()->sockets;
 }

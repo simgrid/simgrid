@@ -13,6 +13,6 @@
 
 /* Modules definitions */
 void gras_log_init(void);
-void gras_log_exit(void);
+void xbt_log_exit(void);
 
 #endif /* XBT_MODINTER_H */

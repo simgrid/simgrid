@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* gras/sysdep.h -- all system dependency                                   */
+/*  xbt/sysdep.h -- all system dependency                                   */
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
 
@@ -11,8 +11,8 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 
-#ifndef _GRAS_SYSDEP_H
-#define _GRAS_SYSDEP_H
+#ifndef _XBT_SYSDEP_H
+#define _XBT_SYSDEP_H
 
 #include <string.h> /* Included directly for speed */
 
@@ -30,36 +30,36 @@ BEGIN_DECL
   #define REALLOC(p, s) (__REALLOC_OP ((p), (s)))
 #endif
   
-#define gras_strdup(s)  ((s)?(strdup(s)?:(gras_die("memory allocation error"),NULL))\
+#define xbt_strdup(s)  ((s)?(strdup(s)?:(xbt_die("memory allocation error"),NULL))\
 			    :(NULL))
-#define gras_malloc(n)   (malloc(n) ?: (gras_die("memory allocation error"),NULL))
-#define gras_malloc0(n)  (calloc( (n),1 ) ?: (gras_die("memory allocation error"),NULL))
-#define gras_realloc(p,s) (s? (p? (realloc(p,s)?:gras_die("memory allocation error"),NULL) \
-				: gras_malloc(s)) \
+#define xbt_malloc(n)   (malloc(n) ?: (xbt_die("memory allocation error"),NULL))
+#define xbt_malloc0(n)  (calloc( (n),1 ) ?: (xbt_die("memory allocation error"),NULL))
+#define xbt_realloc(p,s) (s? (p? (realloc(p,s)?:xbt_die("memory allocation error"),NULL) \
+				: xbt_malloc(s)) \
 			    : (p? (free(p),NULL) \
 			        : NULL))
-#define gras_free free /*nothing specific to do here. A poor valgrind replacement?*/
-#define gras_free_fct free /* replacement with the guareenty of being a function */
+#define xbt_free free /*nothing specific to do here. A poor valgrind replacement?*/
+#define xbt_free_fct free /* replacement with the guareenty of being a function */
    
-#define gras_new(type, count)  ((type*)gras_malloc (sizeof (type) * (count)))
-#define gras_new0(type, count) ((type*)gras_malloc0 (sizeof (type) * (count)))
+#define xbt_new(type, count)  ((type*)xbt_malloc (sizeof (type) * (count)))
+#define xbt_new0(type, count) ((type*)xbt_malloc0 (sizeof (type) * (count)))
 
 /* Attributes are only in recent versions of GCC */
 
 #if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-# define _GRAS_GNUC_PRINTF( format_idx, arg_idx )    \
+# define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
 	   __attribute__((__format__ (__printf__, format_idx, arg_idx)))
-# define _GRAS_GNUC_SCANF( format_idx, arg_idx )     \
+# define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
 	       __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
-# define _GRAS_GNUC_FORMAT( arg_idx )                \
+# define _XBT_GNUC_FORMAT( arg_idx )                \
 		   __attribute__((__format_arg__ (arg_idx)))
-# define _GRAS_GNUC_NORETURN __attribute__((__noreturn__))
+# define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 
 #else   /* !__GNUC__ */
-# define _GRAS_GNUC_PRINTF( format_idx, arg_idx )
-# define _GRAS_GNUC_SCANF( format_idx, arg_idx )
-# define _GRAS_GNUC_FORMAT( arg_idx )
-# define _GRAS_GNUC_NORETURN
+# define _XBT_GNUC_PRINTF( format_idx, arg_idx )
+# define _XBT_GNUC_SCANF( format_idx, arg_idx )
+# define _XBT_GNUC_FORMAT( arg_idx )
+# define _XBT_GNUC_NORETURN
 
 #endif  /* !__GNUC__ */
 
@@ -67,15 +67,15 @@ BEGIN_DECL
 
 #if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
 
-# define _GRAS_GNUC_FUNCTION __FUNCTION__
-# define _GRAS_INLINE inline
+# define _XBT_GNUC_FUNCTION __FUNCTION__
+# define _XBT_INLINE inline
 #else
-# define _GRAS_GNUC_FUNCTION "function"
-# define _GRAS_INLINE 
+# define _XBT_GNUC_FUNCTION "function"
+# define _XBT_INLINE 
 #endif
 
 
-void gras_abort(void) _GRAS_GNUC_NORETURN;
+void xbt_abort(void) _XBT_GNUC_NORETURN;
 
 /* FIXME: This is a very good candidate to rewrite (along with a proper string stuff) 
    but I'm too lazy right now, so copy the definition */
@@ -85,4 +85,4 @@ int atoi(const char *nptr);
 
 END_DECL   
 
-#endif /* _GRAS_SYSDEP_H */
+#endif /* _XBT_SYSDEP_H */

@@ -45,11 +45,11 @@ typedef struct s_gras_msgtype {
   gras_datadesc_type_t ctn_type;
 } s_gras_msgtype_t;
 
-extern gras_set_t _gras_msgtype_set; /* of gras_msgtype_t */
+extern xbt_set_t _gras_msgtype_set; /* of gras_msgtype_t */
 void gras_msgtype_free(void *msgtype);
 
 
-gras_error_t gras_msg_recv(gras_socket_t    sock,
+xbt_error_t gras_msg_recv(gras_socket_t    sock,
 			   gras_msgtype_t  *msgtype,
 			   void           **payload,
 			   int             *payload_size);
@@ -61,7 +61,7 @@ gras_error_t gras_msg_recv(gras_socket_t    sock,
  */
 struct s_gras_cblist {
   long int id;
-  gras_dynar_t cbs; /* of gras_msg_cb_t */
+  xbt_dynar_t cbs; /* of gras_msg_cb_t */
 };
 
 void gras_cblist_free(void *cbl);

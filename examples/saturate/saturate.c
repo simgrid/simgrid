@@ -15,7 +15,7 @@
 
 #include <gras.h>
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(saturate,"Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(saturate,"Messages specific to this example");
 
 /* **********************************************************************
  * Sensor code
@@ -30,11 +30,11 @@ typedef struct {
 int sensor (int argc,char *argv[]);
 
 int sensor (int argc,char *argv[]) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   sensor_data_t *g=gras_userdata_new(sensor_data_t);  
 
   if ((errcode=gras_socket_server(4000,&(g->sock)))) {
-    CRITICAL1("Sensor: Error %s encountered while opening the server socket",gras_error_name(errcode));
+    CRITICAL1("Sensor: Error %s encountered while opening the server socket",xbt_error_name(errcode));
     return 1;
   }
 
@@ -46,7 +46,7 @@ int sensor (int argc,char *argv[]) {
   while (1) {
     if ((errcode=gras_msg_handle(60.0)) && errcode != timeout_error) { 
        CRITICAL1("Sensor: Error '%s' while handling message",
-	      gras_error_name(errcode));
+	      xbt_error_name(errcode));
     }
   }
 
@@ -70,7 +70,7 @@ int maestro (int argc,char *argv[]);
 double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2);
 
 double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2) {
-  gras_error_t errcode;
+  xbt_error_t errcode;
   int bufSize=32 * 1024;
   int expSize=64 * 1024;
   int msgSize=64 * 1024;
@@ -78,7 +78,7 @@ double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2) 
   double sec, bw, sec_sat,bw_sat;
 
   if ((errcode=grasbw_request(bw1,4000,bw2,4000,bufSize,expSize,msgSize,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",gras_error_name(errcode));
+    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
     return -1;
   }
    
@@ -86,12 +86,12 @@ double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2) 
 
   if ((errcode=grasbw_saturate_start(sat1,4000,sat2,4000,satSize,60))) {
     fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return -1;
   }
   gras_os_sleep(1,0);
   if ((errcode=grasbw_request(bw1,4000,bw2,4000,bufSize,expSize,msgSize,&sec_sat,&bw_sat))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",gras_error_name(errcode));
+    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
     return -1;
   }
    
@@ -100,7 +100,7 @@ double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2) 
 
   if ((errcode=grasbw_saturate_stop(sat1,4000,sat2,4000))) {
     fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return -1;
   }
 
@@ -123,7 +123,7 @@ int maestro(int argc,char *argv[]) {
   int msgSize=expSize;
   int satSize=msgSize * 100;
   double dummy,beginSim;
-  gras_error_t errcode;
+  xbt_error_t errcode;
   maestro_data_t *g=gras_userdata_new(maestro_data_t);
   //  const char *hosts[MAXHOSTS] = { "61", "62", "63", "69", "70", "77", "81", "83", "85", "87", "88", "95", "98", "107", "109", "111", "112", "121", "124", "125", "131", "145", "150", "156", "157", "162", "165", "168", "169", "170", "175", "177", "178" };
   const char *hosts[MAXHOSTS] = { "A", "B", "C", "D" };
@@ -134,7 +134,7 @@ int maestro(int argc,char *argv[]) {
   int a,b,c,d,begin;
 
   if ((errcode=gras_socket_server(4000,&(g->sock)))) { 
-    fprintf(stderr,"MAESTRO: Error %s encountered while opening the server socket\n",gras_error_name(errcode));
+    fprintf(stderr,"MAESTRO: Error %s encountered while opening the server socket\n",xbt_error_name(errcode));
     return 1;
   }
 
@@ -151,7 +151,7 @@ int maestro(int argc,char *argv[]) {
       fprintf(stderr,"BW XP(%s %s)=",hosts[a],hosts[b]); 
       if ((errcode=grasbw_request(hosts[a],4000,hosts[b],4000,bufSize,expSize,msgSize,
 				  &dummy,&(bw[a][b])))) {
-	fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",gras_error_name(errcode));
+	fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
 	return 1;
       }
       fprintf(stderr,"%f Mb/s in %f sec\n",bw[a][b],dummy);
@@ -166,7 +166,7 @@ int maestro(int argc,char *argv[]) {
       	
       if ((errcode=grasbw_saturate_start(hosts[a],4000,hosts[b],4000,satSize,360000000))) {
 	fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation\n",
-		gras_error_name(errcode));
+		xbt_error_name(errcode));
 	return -1;
       }
       gras_os_sleep(1,0);
@@ -184,7 +184,7 @@ int maestro(int argc,char *argv[]) {
 	  
 	  if ((errcode=grasbw_request(hosts[c],4000,hosts[d],4000,bufSize,expSize,msgSize,
 				      &dummy,&(bw_sat[c][d])))) {
-	    fprintf(stderr,"MAESTRO: Error %s encountered in test\n",gras_error_name(errcode));
+	    fprintf(stderr,"MAESTRO: Error %s encountered in test\n",xbt_error_name(errcode));
 	    return 1;
 	  }
 	  fprintf(stderr, "MAESTRO[%.2f sec]: SATURATED BW XP(%s %s // %s %s) => %f (%f vs %f)%s\n",
@@ -200,7 +200,7 @@ int maestro(int argc,char *argv[]) {
 
       if ((errcode=grasbw_saturate_stop(hosts[a],4000,hosts[b],4000))) {
 	fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation\n",
-		gras_error_name(errcode));
+		xbt_error_name(errcode));
 	return -1;
       }
       fprintf(stderr,"Did an iteration on saturation pair in %ld sec (%.2f simulated sec)\n",
@@ -216,7 +216,7 @@ int maestro(int argc,char *argv[]) {
   fprintf(stderr,"MAESTRO: Start saturation with size %d\n",msgSize);
   if ((errcode=grasbw_saturate_start(argv[5],atoi(argv[6]),argv[7],atoi(argv[8]),msgSize*10,60))) {
     fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return 1;
   }
   fprintf(stderr,"MAESTRO: Saturation started\n");
@@ -225,7 +225,7 @@ int maestro(int argc,char *argv[]) {
   /* test with saturation */
   if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
 			      bufSize,expSize,msgSize,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",gras_error_name(errcode));
+    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
     return 1;
   }
    
@@ -236,14 +236,14 @@ int maestro(int argc,char *argv[]) {
   /* stop saturation */
   if ((errcode=grasbw_saturate_stop(argv[5],atoi(argv[6]),argv[7],atoi(argv[8])))) {
     fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation\n",
-	    gras_error_name(errcode));
+	    xbt_error_name(errcode));
     return 1;
   }
 
   /* test without saturation */
   if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
 			      bufSize,expSize,msgSize,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",gras_error_name(errcode));
+    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
     return 1;
   }
    

@@ -11,14 +11,14 @@
 #include "xbt/error.h"
 
 /**
- * gras_error_name:
+ * xbt_error_name:
  * @errcode: 
  * @Returns: the printable name of an error code
  *
  * usefull to do nice error repporting messages
  */
 
-const char *gras_error_name(gras_error_t errcode)  {
+const char *xbt_error_name(xbt_error_t errcode)  {
 
    switch (errcode) {
       
@@ -34,11 +34,11 @@ const char *gras_error_name(gras_error_t errcode)  {
    }
 }
 
-GRAS_LOG_EXTERNAL_CATEGORY(gras);
-GRAS_LOG_DEFAULT_CATEGORY(gras);
+XBT_LOG_EXTERNAL_CATEGORY(gras);
+XBT_LOG_DEFAULT_CATEGORY(gras);
   
-void gras_die (const char *msg) {
+void xbt_die (const char *msg) {
    CRITICAL1("%s",msg);
-   gras_abort();
+   xbt_abort();
 }
 

@@ -12,8 +12,8 @@
 #include <msg.h>
 #include "gras/Virtu/virtu_sg.h"
 
-GRAS_LOG_EXTERNAL_CATEGORY(transport);
-GRAS_LOG_DEFAULT_CATEGORY(transport);
+XBT_LOG_EXTERNAL_CATEGORY(transport);
+XBT_LOG_DEFAULT_CATEGORY(transport);
 
 /**
  * gras_trp_select:
@@ -26,11 +26,11 @@ GRAS_LOG_DEFAULT_CATEGORY(transport);
  *
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */
-gras_error_t 
+xbt_error_t 
 gras_trp_select(double timeout, 
 		gras_socket_t *dst) {
 
-  gras_error_t errcode;
+  xbt_error_t errcode;
   double startTime=gras_os_time();
   gras_procdata_t *pd=gras_procdata_get();
   gras_trp_sg_sock_data_t *sockdata;
@@ -52,7 +52,7 @@ gras_trp_select(double timeout,
     r_pid = MSG_task_probe_from((m_channel_t) pd->chan);
     if (r_pid >= 0) {
       /* Try to reuse an already openned socket to that expeditor */
-      gras_dynar_foreach(pd->sockets,cursor,sock_iter) {
+      xbt_dynar_foreach(pd->sockets,cursor,sock_iter) {
 	DEBUG1("Consider %p as outgoing socket to expeditor",sock_iter);
 	sockdata = sock_iter->data;
 
@@ -80,7 +80,7 @@ gras_trp_select(double timeout,
 
       (*dst)->port      = -1;
 
-      sockdata = gras_new(gras_trp_sg_sock_data_t,1);
+      sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
       sockdata->from_PID = MSG_process_self_PID();
       sockdata->to_PID   = r_pid;
       sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));
@@ -90,17 +90,17 @@ gras_trp_select(double timeout,
       (*dst)->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
 
       remote_hd=(gras_hostdata_t *)MSG_host_get_data(sockdata->to_host);
-      gras_assert0(remote_hd,"Run gras_process_init!!");
+      xbt_assert0(remote_hd,"Run gras_process_init!!");
 
       sockdata->to_chan = -1;
       (*dst)->peer_port = -10;
-      for (cursor=0; cursor<GRAS_MAX_CHANNEL; cursor++) {
+      for (cursor=0; cursor<XBT_MAX_CHANNEL; cursor++) {
 	if (remote_hd->proc[cursor] == r_pid) {
 	  sockdata->to_chan = cursor;
 	  DEBUG2("Chan %d on %s is for my pal",
 		 cursor,(*dst)->peer_name);
 
-	  gras_dynar_foreach(remote_hd->ports, cpt, pr) {
+	  xbt_dynar_foreach(remote_hd->ports, cpt, pr) {
 	    if (sockdata->to_chan == pr.tochan) {
 	      if (pr.raw) {
 		DEBUG0("Damn, it's raw");
@@ -124,7 +124,7 @@ gras_trp_select(double timeout,
 	  }
 	}
       }
-      gras_assert0(sockdata->to_chan != -1,
+      xbt_assert0(sockdata->to_chan != -1,
 		   "Got a message from a process without channel");
 
       return no_error;
@@ -147,10 +147,10 @@ gras_trp_select(double timeout,
   
 /* dummy implementations of the functions used in RL mode */
 
-gras_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
+xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
   return mismatch_error;
 }
-gras_error_t gras_trp_file_setup(gras_trp_plugin_t *plug) {
+xbt_error_t gras_trp_file_setup(gras_trp_plugin_t *plug) {
   return mismatch_error;
 }
 

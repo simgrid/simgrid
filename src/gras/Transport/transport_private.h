@@ -59,12 +59,12 @@ void gras_trp_socket_new(int incomming,
 			 gras_socket_t *dst);
 
 /* The drivers */
-typedef gras_error_t (*gras_trp_setup_t)(gras_trp_plugin_t *dst);
+typedef xbt_error_t (*gras_trp_setup_t)(gras_trp_plugin_t *dst);
 
-gras_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug);
-gras_error_t gras_trp_file_setup(gras_trp_plugin_t *plug);
-gras_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug);
-gras_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
+xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug);
+xbt_error_t gras_trp_file_setup(gras_trp_plugin_t *plug);
+xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug);
+xbt_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
 
 /*
 
@@ -88,7 +88,7 @@ void gras_trp_buf_init_sock(gras_socket_t sock);
 
 
 /* Data exchange over raw sockets */
-gras_error_t gras_socket_raw_exchange(gras_socket_t peer,
+xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int expSize,
