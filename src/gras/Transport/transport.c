@@ -113,6 +113,7 @@ gras_error_t gras_trp_socket_new(int incoming,
 
   sock->plugin = NULL;
   sock->sd     = -1;
+  sock->data   = NULL;
 
   sock->incoming  = incoming ? 1:0;
   sock->outgoing  = incoming ? 0:1;
