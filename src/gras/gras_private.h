@@ -40,12 +40,15 @@
 #include "gras/cond.h"
 
 #include "gras/transport.h"
-#include "Transport/transport_interface.h"
 #include "gras/datadesc.h"
-#include "DataDesc/datadesc_interface.h"
 #include "gras/messages.h"
-#include "Msg/msg_interface.h"
 
-#include "Virtu/virtu_interface.h"
+/* modules initialization functions */
+void gras_msg_init(void);
+void gras_msg_exit(void);
+gras_error_t gras_trp_init(void); /* FIXME */
+void         gras_trp_exit(void);
+void gras_datadesc_init(void);
+void gras_datadesc_exit(void);
 
 #endif /* GRAS_PRIVATE_H */
