@@ -22,12 +22,12 @@ print "/* This file is perl-generated, of course */\n\n";
 print "#include <stdio.h>\n";
 print "#include <gras.h>\n\n";
 
-print "GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic struct test\");\n\n";
+print "XBT_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic struct test\");\n\n";
 
 print "#define READ  0\n#define WRITE 1\n#define RW    2\n\n";
   
 
-print "gras_error_t write_read(gras_datadesc_type_t type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
+print "xbt_error_t write_read(gras_datadesc_type_t type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
 
 my ($i,$j,$k,$l);
 my $max=scalar @types;
@@ -43,11 +43,11 @@ for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl)
 }}}}
 
 # print "\n#define test(a) do {if (!(a)) { failed = 1; ERROR1(\"%s failed\",#a);}} while (0)\n";
- print "\n#define test(a) gras_assert(a)\n";
+ print "\n#define test(a) xbt_assert(a)\n";
 
-print "\ngras_error_t test_structures(gras_socket_t *sock, int direction);\n";
-print "\ngras_error_t test_structures(gras_socket_t *sock, int direction) {\n";
-print "  gras_error_t errcode;\n";
+print "\nxbt_error_t test_structures(gras_socket_t *sock, int direction);\n";
+print "\nxbt_error_t test_structures(gras_socket_t *sock, int direction) {\n";
+print "  xbt_error_t errcode;\n";
 for $i (0..$max-1) { for $j (0..$max-1) { for $k (0..$max-1) { for $l (0..$maxl) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  struct $struct my_$struct = {".$val[$i]."+(".$types[$i].")1,"
