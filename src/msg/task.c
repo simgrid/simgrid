@@ -80,11 +80,12 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   int i;
 
   xbt_assert0((task != NULL), "Invalid parameter");
-  xbt_assert0((xbt_dynar_length(task->simdata->sleeping)==0), 
-	      "Task still used. Cannot destroy it now!");
 
   task->simdata->using--;
   if(task->simdata->using>0) return MSG_OK;
+
+  xbt_assert0((xbt_dynar_length(task->simdata->sleeping)==0), 
+	      "Task still used. There is a problem. Cannot destroy it now!");
 
   if(task->name) xbt_free(task->name);
 
@@ -154,13 +155,20 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 
 MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task)
 {
+  int _cursor;
+  m_process_t proc = NULL;
+
   xbt_assert0(((task != NULL)
 	       && (task->simdata != NULL)), "Invalid parameters");
 
-  xbt_dynar_push(task->simdata->sleeping, process);
+  xbt_dynar_push(task->simdata->sleeping, &process);
   process->simdata->waiting_task = task;
-  xbt_context_yield(process->simdata->context);
+  xbt_context_yield();
   process->simdata->waiting_task = NULL;
+  xbt_dynar_foreach(task->simdata->sleeping,_cursor,proc) {
+    if(proc==process) 
+      xbt_dynar_remove_at(task->simdata->sleeping,_cursor,&proc);
+  }
 
   return MSG_OK;
 }

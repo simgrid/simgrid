@@ -42,7 +42,9 @@ m_host_t *MSG_get_host_table(void);
 m_process_t MSG_process_create(const char *name,
 			       m_process_code_t code, void *data,
 			       m_host_t host);
-
+m_process_t MSG_process_create_with_arguments(const char *name,
+					      m_process_code_t code, void *data,
+					      m_host_t host, int argc, char **argv);
 MSG_error_t MSG_get_arguments(int *argc, char ***argv);
 MSG_error_t MSG_set_arguments(m_process_t process,int argc, char *argv[]);
 

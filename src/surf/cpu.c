@@ -199,7 +199,8 @@ static void update_actions_state(double now, double delta)
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       action->generic_action.max_duration -= delta;
 /*     if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
-    if (action->generic_action.remains <= 0) {
+    if ((action->generic_action.remains <= 0) && 
+	(lmm_get_variable_weight(action->variable)>0)) {
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
@@ -313,7 +314,7 @@ static void action_resume(surf_action_t action)
 
 static int action_is_suspended(surf_action_t action)
 {
-  return (lmm_get_variable_weight(maxmin_system, ((surf_action_cpu_t) action)->variable) == 0.0);
+  return (lmm_get_variable_weight(((surf_action_cpu_t) action)->variable) == 0.0);
 }
 
 static e_surf_cpu_state_t get_state(void *cpu)

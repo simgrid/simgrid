@@ -12,7 +12,7 @@
 #include "msg/msg.h"
 
 /** This flag enable the debugging messages from PRINT_DEBUG_MESSAGE() */
-#undef VERBOSE
+#define VERBOSE
 #include "messages.h"
 
 int unix_emitter(int argc, char *argv[]);
@@ -27,6 +27,17 @@ typedef enum {
   MAX_CHANNEL
 } channel_t;
 
+void print_args(int argc, char** argv);
+void print_args(int argc, char** argv)
+{
+  int i ; 
+
+  fprintf(stderr,"<");
+  for(i=0; i<argc; i++) 
+    fprintf(stderr,"%s ",argv[i]);
+  fprintf(stderr,">\n");
+}
+
 /** The number of task each slave will process */
 #define NB_TASK 3
 int unix_emitter(int argc, char *argv[])
@@ -37,6 +48,8 @@ int unix_emitter(int argc, char *argv[])
   m_task_t *todo = NULL;
 
   int i;
+  PRINT_MESSAGE("Hello !");
+  print_args(argc,argv);
 
   {                  /* Process organisation */
     slaves_count = argc - 1;
@@ -93,6 +106,8 @@ int unix_receiver(int argc, char *argv[])
   m_task_t *todo = (m_task_t *) calloc(NB_TASK, sizeof(m_task_t));
   int i;
 
+  PRINT_MESSAGE("Hello !");
+  print_args(argc,argv);
 
   for (i = 0; i < NB_TASK;) {
     int a;
@@ -112,6 +127,7 @@ int unix_receiver(int argc, char *argv[])
     }
   }
   free(todo);
+  PRINT_MESSAGE("I'm done. See you!\n");
   return 0;
 }
 
@@ -135,13 +151,13 @@ void test_all(const char *platform_file,const char *application_file, double sha
     MSG_launch_application(application_file);
   }
   MSG_main();
-/*   printf("Simulation time %g\n",MSG_getClock()); */
-  MSG_clean();
+  printf("Simulation time %Lg\n",MSG_getClock());
+/*   MSG_clean(); */
 }
 
 int main(int argc, char *argv[])
 {
   test_all("msg_platform.txt","msg_deployment.txt",-.1);
-  test_all("msg_platform.txt","msg_deployment.txt",.1);
+/*   test_all("msg_platform.txt","msg_deployment.txt",.1); */
   return (0);
 }

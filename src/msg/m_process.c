@@ -38,6 +38,19 @@ m_process_t MSG_process_create(const char *name,
 			       m_process_code_t code, void *data,
 			       m_host_t host)
 {
+  return MSG_process_create_with_arguments(name, code, data, host, -1, NULL);
+}
+
+static void MSG_process_cleanup(void *arg)
+{
+  xbt_fifo_remove(msg_global->process_list, arg);
+  xbt_fifo_remove(msg_global->process_to_run, arg);
+}
+
+m_process_t MSG_process_create_with_arguments(const char *name,
+					      m_process_code_t code, void *data,
+					      m_host_t host, int argc, char **argv)
+{
   simdata_process_t simdata = xbt_new0(s_simdata_process_t,1);
   m_process_t process = xbt_new0(s_m_process_t,1);
   m_process_t self = NULL;
@@ -49,9 +62,11 @@ m_process_t MSG_process_create(const char *name,
   simdata->PID = PID++;
   simdata->host = host;
   simdata->waiting_task = NULL;
-  simdata->argc = -1;
-  simdata->argv = NULL;
-  simdata->context = xbt_context_new(code, simdata->argc, simdata->argv);
+  simdata->argc = argc;
+  simdata->argv = argv;
+  simdata->context = xbt_context_new(code, NULL, NULL, 
+				     MSG_process_cleanup, process, 
+				     simdata->argc, simdata->argv);
 
   if((self=msg_global->current_process)) {
     simdata->PPID = MSG_process_get_PID(self);
@@ -72,6 +87,10 @@ m_process_t MSG_process_create(const char *name,
   self = msg_global->current_process;
   xbt_context_start(process->simdata->context);
   msg_global->current_process = self;
+
+  xbt_fifo_push(msg_global->process_list, process);
+  xbt_fifo_push(msg_global->process_to_run, process);
+
   return process;
 }
 
@@ -258,12 +277,11 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 		"Got a problem in deciding which action to choose !");
     if(simdata_task->compute) 
       surf_workstation_resource->extension_public->suspend(simdata_task->compute);
-    else 
+    else
       surf_workstation_resource->extension_public->suspend(simdata_task->comm);
-
   } else {
     m_task_t dummy = MSG_TASK_UNINITIALIZED;
-    dummy = MSG_task_create("suspended", 0.01, 0, NULL);
+    dummy = MSG_task_create("suspended", 0.0, 0, NULL);
 
     __MSG_task_execute(process,dummy);
     surf_workstation_resource->extension_public->suspend(dummy->simdata->compute);

@@ -77,7 +77,8 @@ MSG_error_t MSG_task_get(m_task_t * task,
   t_simdata->using++;
   t_simdata->comm = surf_workstation_resource->extension_public->
     communicate(MSG_process_get_host(t_simdata->sender)->simdata->host,
-		h, t_simdata->message_size);
+		h->simdata->host, t_simdata->message_size);
+  surf_workstation_resource->common_public->action_set_data(t_simdata->comm,t);
 
   do {
     __MSG_task_wait_event(process, t);
@@ -157,9 +158,14 @@ MSG_error_t MSG_task_put(m_task_t task,
     
   if(remote_host->simdata->sleeping[channel]) 
     MSG_process_resume(remote_host->simdata->sleeping[channel]);
-  else 
+  else {
+    process->simdata->put_host = dest;
+    process->simdata->put_channel = channel;
     MSG_process_suspend(process);
-  
+    process->simdata->put_host = NULL;
+    process->simdata->put_channel = -1;
+  }
+
   do {
     __MSG_task_wait_event(process, task);
     state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
@@ -203,6 +209,7 @@ void __MSG_task_execute(m_process_t process, m_task_t task)
   simdata->compute = surf_workstation_resource->extension_public->
     execute(MSG_process_get_host(process)->simdata->host,
 	    simdata->computation_amount);
+  surf_workstation_resource->common_public->action_set_data(simdata->compute,task);
 }
 
 MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
@@ -247,6 +254,7 @@ MSG_error_t MSG_process_sleep(long double nb_sec)
   simdata->compute = surf_workstation_resource->extension_public->
     sleep(MSG_process_get_host(process)->simdata->host,
 	    simdata->computation_amount);
+  surf_workstation_resource->common_public->action_set_data(simdata->compute,dummy);
 
   
   simdata->using++;

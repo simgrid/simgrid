@@ -38,7 +38,7 @@ extern char *yytext;
 void MSG_launch_application(const char *file) 
 {
   char *host_name = NULL;
-  int argc = 0 ;
+  int argc = -1 ;
   char **argv = NULL;
   m_process_t process = NULL ;
   m_host_t host = NULL;
@@ -67,9 +67,10 @@ void MSG_launch_application(const char *file)
       host = MSG_get_host_by_name(host_name);
       xbt_assert1(host, "Unknown host %s",host_name);
 
-     process = MSG_process_create(argv[0], code, NULL, host);
-     MSG_set_arguments(process, argc, argv);
-     xbt_free(host_name); 
+      process = MSG_process_create_with_arguments(argv[0], code, NULL, host,argc,argv);
+      argc=-1;
+      argv=NULL;
+      xbt_free(host_name); 
     }
     else {
       CRITICAL1("Parse error line %d\n", surf_line_pos);
@@ -148,10 +149,9 @@ MSG_error_t MSG_set_arguments(m_process_t process,int argc, char *argv[])
 {
   simdata_process_t simdata = NULL;
 
-  xbt_assert0((process) && (process->simdata), "Invalid parameters");
-  simdata = process->simdata;
-  simdata->argc = argc;
-  simdata->argv = argv;
+  xbt_assert0(0,"Deprecated ! Do not use anymore. "
+	      "Use MSG_process_create_with_arguments instead.\n");
+
   return MSG_OK;
 }
 
