@@ -24,7 +24,7 @@ if test -z "$*"; then
     echo \`$0\'" command line, or rerun aci_configurator and save the new ones."
     echo
   else
-    configure_args="--enable-maintainer-mode --enable-gtk-doc"
+    configure_args="--enable-maintainer-mode --enable-gtk-doc --enable-compile-warnings"
     echo "**Warning**: I am going to run \`configure' with the default arguments."
     echo "ie, $configure_args."
     echo "If you wish to pass any to it, please specify them on the"
