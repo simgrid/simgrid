@@ -149,7 +149,10 @@ int client(int argc,char *argv[]) {
   /* 1. Init the GRAS's infrastructure */
   gras_init(&argc, argv, NULL);
    
-  /* 2. Get the server's address from the command line, if specified */
+  /* 2. Get the server's address. 
+     If in simulation, the default is not the same. In any case, the command line override defaults when specified */
+  if (gras_if_SG())
+     host = "Tremblay";
   if (argc == 3) {
     host=argv[1];
     port=atoi(argv[2]);
