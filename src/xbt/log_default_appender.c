@@ -11,7 +11,7 @@
 #include "gras_private.h"
 #include <stdio.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log_app,log);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log_app,log,"default logging handler");
 
 /**
  * The root category's default logging function.

@@ -12,7 +12,7 @@
 #include <gras.h>
 
 #include "gras/DataDesc/datadesc_interface.h"
-GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
+GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
 #define READ  0
 #define WRITE 1
@@ -137,7 +137,7 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
   gras_datadesc_type_t *my_type;
   int *i,*j;
   
-  if (! (i=malloc(sizeof(int))) )
+  if (! (i=gras_new(int,1)) )
     RAISE_MALLOC;
   *i=12345;
 
@@ -148,9 +148,9 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     gras_assert(*i == *j);
-    free(j);
+    gras_free(j);
   }
-  free(i);
+  gras_free(i);
   return no_error;
 }
 
@@ -170,9 +170,9 @@ gras_error_t test_string(gras_socket_t *sock, int direction) {
       gras_assert4(i[cpt] == j[cpt],"i[%d]=%c  !=  j[%d]=%c",
 		   cpt,i[cpt],cpt,j[cpt]);
     } 
-    free(j);
+    gras_free(j);
   }
-  free(i);
+  gras_free(i);
   return no_error;
 }
 
@@ -205,7 +205,7 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
 			&my_type));
 
   /* init a value, exchange it and check its validity*/
-  if (! (i=malloc(sizeof(homostruct))) )
+  if (! (i=gras_new(homostruct,1)) )
     RAISE_MALLOC;
   i->a = 2235;    i->b = 433425;
   i->c = -23423;  i->d = -235235;
@@ -216,9 +216,9 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
     gras_assert(i->b == j->b);
     gras_assert(i->c == j->c);
     gras_assert(i->d == j->d);
-    free(j);
+    gras_free(j);
   }
-  free(i);
+  gras_free(i);
   return no_error;
 }
 
@@ -252,7 +252,7 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
 			&my_type));
 
   /* init a value, exchange it and check its validity*/
-  if (! (i=malloc(sizeof(hetestruct))) )
+  if (! (i=gras_new(hetestruct,1)) )
     RAISE_MALLOC;
   i->c1 = 's'; i->l1 = 123455;
   i->c2 = 'e'; i->l2 = 774531;
@@ -263,9 +263,9 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
     gras_assert(i->c2 == j->c2);
     gras_assert2(i->l1 == j->l1,"i->l1(=%ld)  !=  j->l1(=%ld)",i->l1,j->l1);
     gras_assert(i->l2 == j->l2);
-    free(j);
+    gras_free(j);
   }
-  free(i);
+  gras_free(i);
   return no_error;
 }
 
@@ -294,7 +294,7 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
 			&my_type));
 
   /* init a value, exchange it and check its validity*/
-  if (! (i=malloc(sizeof(nestedstruct))) )
+  if (! (i=gras_new(nestedstruct,1)) )
     RAISE_MALLOC;
   i->homo.a = 235231;  i->homo.b = -124151;
   i->homo.c = 211551;  i->homo.d = -664222;
@@ -311,9 +311,9 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
     gras_assert(i->hete.c2 == j->hete.c2);
     gras_assert(i->hete.l1 == j->hete.l1);
     gras_assert(i->hete.l2 == j->hete.l2);
-    free(j);
+    gras_free(j);
   }
-  free(i);
+  gras_free(i);
   return no_error;
 }
 
@@ -345,7 +345,7 @@ gras_error_t declare_chained_list_type(void) {
 }
 
 chained_list_t * cons(int v, chained_list_t *l) {
-  chained_list_t *nl = malloc(sizeof (chained_list_t));
+  chained_list_t *nl = gras_new(chained_list_t,1);
   
   nl->v = v;
   nl->l = l;
@@ -355,7 +355,7 @@ chained_list_t * cons(int v, chained_list_t *l) {
 void list_free(chained_list_t*l) {
   if (l) {
     list_free(l->l);
-    free(l);
+    gras_free(l);
   }
 }
 int list_eq(chained_list_t*i,chained_list_t*j) {
@@ -536,11 +536,11 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
   INFO0("---- Test on struct containing dynamic array and its size (cbps test) ----");
 
   /* create and fill the struct */
-  if (! (i=malloc(sizeof(Clause))) )
+  if (! (i=gras_new(Clause,1)) )
     RAISE_MALLOC;
 
   i->num_lits = 5432;
-  if (! (i->literals = malloc(sizeof(int) * i->num_lits)) )
+  if (! (i->literals = gras_new(int, i->num_lits)) )
     RAISE_MALLOC;
   for (cpt=0; cpt<i->num_lits; cpt++)
     i->literals[cpt] = cpt * cpt - ((cpt * cpt) / 2);
@@ -559,11 +559,11 @@ gras_error_t test_clause(gras_socket_t *sock, int direction) {
     for (cpt=0; cpt<i->num_lits; cpt++)
       gras_assert(i->literals[cpt] == j->literals[cpt]);
     
-    free(j->literals);
-    free(j);
+    gras_free(j->literals);
+    gras_free(j);
   }
-  free(i->literals);
-  free(i);
+  gras_free(i->literals);
+  gras_free(i);
   return no_error;
 }
 
@@ -609,7 +609,7 @@ int main(int argc,char *argv[]) {
   
   TRYFAIL(test_string(sock,direction)); 
 
-// TRYFAIL(test_structures(sock,direction));
+  TRYFAIL(test_structures(sock,direction));
 
   TRYFAIL(test_homostruct(sock,direction));
   TRYFAIL(test_hetestruct(sock,direction));

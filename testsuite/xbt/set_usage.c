@@ -13,7 +13,7 @@
 
 #include <gras.h>
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
+GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 GRAS_LOG_EXTERNAL_CATEGORY(set);
 
 typedef struct  {
@@ -41,9 +41,9 @@ static void my_elem_free(void *e) {
   my_elem_t *elm=(my_elem_t*)e;
 
   if (elm) {
-    free(elm->name);
-    free(elm->data);
-    free(elm);
+    gras_free(elm->name);
+    gras_free(elm->data);
+    gras_free(elm);
   }
 }
 
@@ -54,7 +54,7 @@ static gras_error_t debuged_add_with_data(gras_set_t *set,
   gras_error_t  errcode;
   my_elem_t    *elm;
 
-  elm = (my_elem_t*)malloc(sizeof(my_elem_t));
+  elm = gras_new(my_elem_t,1);
   elm->name=strdup(name);
   elm->name_len=0;
 
@@ -153,10 +153,9 @@ static gras_error_t traverse(gras_set_t *set) {
   gras_set_foreach(set,cursor,elm) {
     gras_assert0(elm,"Dude ! Got a null elm during traversal!");
     printf("   - Id(%d):  %s->%s\n",elm->ID,elm->name,elm->data);
-    if (strcmp(elm->name,elm->data)) {
-      printf("Key(%s) != value(%s). Abording\n",elm->name,elm->data);
-      abort();
-    }
+    gras_assert2(!strcmp(elm->name,elm->data),
+		 "Key(%s) != value(%s). Abording",
+		 elm->name,elm->data);
   }
   return no_error;
 }

@@ -9,7 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/DataDesc/datadesc_private.h"
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(cbps,datadesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_cbps,datadesc,"callback persistant state");
 
 typedef struct {
   gras_datadesc_type_t *type;
@@ -28,7 +28,7 @@ struct s_gras_cbps {
 static void free_string(void *d);
 
 static void free_string(void *d){
-  free(*(void**)d);
+  gras_free(*(void**)d);
 }
 
 gras_error_t
@@ -36,7 +36,7 @@ gras_cbps_new(gras_cbps_t **dst) {
   gras_error_t errcode;
   gras_cbps_t *res;
 
-  if (!(res=malloc(sizeof(gras_cbps_t))))
+  if (!(res=gras_new(gras_cbps_t,1)))
     RAISE_MALLOC;
 
   TRY(gras_dynar_new(&(res->lints), sizeof(int), NULL));
@@ -61,7 +61,7 @@ gras_cbps_free(gras_cbps_t **state) {
   gras_dynar_free(    (*state)->frames    );
   gras_dynar_free(    (*state)->globals   );
 
-  free(*state);
+  gras_free(*state);
   *state = NULL;
 }
 
@@ -95,7 +95,7 @@ gras_cbps_v_push(gras_cbps_t        *ps,
     return errcode;
   }
  
-  p_var       = calloc(1, sizeof(gras_cbps_elm_t));
+  p_var       = gras_new0(gras_cbps_elm_t,1);
   p_var->type = ddt;
   p_var->data = data;
   
@@ -144,7 +144,7 @@ gras_cbps_v_pop (gras_cbps_t        *ps,
     *ddt = var->type;  
   data    = var->data;
   
-  free(var);
+  gras_free(var);
   
   gras_dynar_pop(ps->frames, &frame);
   {
@@ -156,7 +156,7 @@ gras_cbps_v_pop (gras_cbps_t        *ps,
       gras_dynar_get(frame, l, &_name);
       if (!strcmp(name, _name)) {
 	gras_dynar_remove_at(frame, l, &_name);
-	free(_name);
+	gras_free(_name);
 	break;
       }
     }
@@ -195,7 +195,7 @@ gras_cbps_v_set (gras_cbps_t        *ps,
     gras_dynar_new(&p_dynar, sizeof (gras_cbps_elm_t *), NULL);
     gras_dict_set(ps->space, name, (void **)p_dynar, NULL);
     
-    p_elm   = calloc(1, sizeof(gras_cbps_elm_t));
+    p_elm   = gras_new0(gras_cbps_elm_t,1);
     gras_dynar_push(ps->globals, &name);
   } else {
     gras_dynar_pop(p_dynar, &p_elm);
@@ -293,9 +293,9 @@ gras_cbps_block_end(gras_cbps_t *ps) {
       gras_dynar_free_container(varstack); /*already empty, save a test ;) */
     }
     
-    if (var->data) free(var->data);
-    free(var);
-    free(name);
+    if (var->data) gras_free(var->data);
+    gras_free(var);
+    gras_free(name);
   }
   gras_dynar_free_container(frame);/* we just emptied it */
   DEBUG0("<<< Block end");

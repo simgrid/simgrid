@@ -14,6 +14,7 @@
 #include <gras.h>
 
 GRAS_LOG_EXTERNAL_CATEGORY(dict);
+GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
 static gras_error_t fill(gras_dict_t **head);
 static gras_error_t debuged_add(gras_dict_t *head,const char*key);
@@ -50,7 +51,7 @@ static gras_error_t debuged_add(gras_dict_t *head,const char*key)
   char *data=strdup(key);
 
   printf("   - Add %s\n",key);
-  errcode=gras_dict_set(head,key,data,&free);
+  errcode=gras_dict_set(head,key,data,&gras_free);
   if (GRAS_LOG_ISENABLED(dict,gras_log_priority_debug)) {
     gras_dict_dump(head,(void (*)(void*))&printf);
     fflush(stdout);
@@ -88,10 +89,8 @@ static gras_error_t traverse(gras_dict_t *head) {
 
   gras_dict_foreach(head,cursor,key,data) {
     printf("   - Seen:  %s->%s\n",key,data);
-    if (strcmp(key,data)) {
-      printf("Key(%s) != value(%s). Abording\n",key,data);
-      abort();
-    }
+    gras_assert2(!strcmp(key,data),
+		 "Key(%s) != value(%s). Abording\n",key,data);
   }
   return no_error;
 }
@@ -118,13 +117,13 @@ int main(int argc,char **argv) {
 
   printf(" - Change some values\n");
   printf("   - Change 123 to 'Changed 123'\n");
-  TRYFAIL(gras_dict_set(head,"123",strdup("Changed 123"),&free));
+  TRYFAIL(gras_dict_set(head,"123",strdup("Changed 123"),&gras_free));
   printf("   - Change 123 back to '123'\n");
-  TRYFAIL(gras_dict_set(head,"123",strdup("123"),&free));
+  TRYFAIL(gras_dict_set(head,"123",strdup("123"),&gras_free));
   printf("   - Change 12a to 'Dummy 12a'\n");
-  TRYFAIL(gras_dict_set(head,"12a",strdup("Dummy 12a"),&free));
+  TRYFAIL(gras_dict_set(head,"12a",strdup("Dummy 12a"),&gras_free));
   printf("   - Change 12a to '12a'\n");
-  TRYFAIL(gras_dict_set(head,"12a",strdup("12a"),&free));
+  TRYFAIL(gras_dict_set(head,"12a",strdup("12a"),&gras_free));
 
   //  gras_dict_dump(head,(void (*)(void*))&printf);
   printf(" - Traverse the resulting dictionnary\n");

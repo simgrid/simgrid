@@ -87,28 +87,26 @@ typedef enum {
  * GRAS_LOG_NEW_SUBCATEGORY:
  * @catName: name of new category
  * @parent: father of the new category in the tree
+ * @desc: string describing the purpose of this category
  *
  * Defines a new subcategory of the parent. 
  */
-//#ifndef NLOG
-#define GRAS_LOG_NEW_SUBCATEGORY(catName, parent)     \
+#define GRAS_LOG_NEW_SUBCATEGORY(catName, parent, desc) \
     extern gras_log_category_t _GRAS_LOGV(parent);    \
     gras_log_category_t _GRAS_LOGV(catName) = {       \
         &_GRAS_LOGV(parent), 0, 0,                    \
         #catName, gras_log_priority_uninitialized, 1, \
         0, 1                                          \
     };
-//#else /* No logging at all, please */
-//#define GRAS_LOG_NEW_SUBCATEGORY(catName,parent)
-//#endif
 
 /**
  * GRAS_LOG_NEW_CATEGORY:
  * @catName: name of new category
+ * @desc: string describing the purpose of this category
  *
  * Creates a new subcategory of the root category.
  */
-#define GRAS_LOG_NEW_CATEGORY(catName)  GRAS_LOG_NEW_SUBCATEGORY(catName, GRAS_LOG_ROOT_CAT)
+#define GRAS_LOG_NEW_CATEGORY(catName,desc)  GRAS_LOG_NEW_SUBCATEGORY(catName, GRAS_LOG_ROOT_CAT, desc)
 
 /**
  * GRAS_LOG_DEFAULT_CATEGORY:
@@ -127,24 +125,26 @@ typedef enum {
 /**
  * GRAS_LOG_NEW_DEFAULT_CATEGORY:
  * @cname: name of the cat
+ * @desc: string describing the purpose of this category
  *
  * Creates a new subcategory of the root category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
-#define GRAS_LOG_NEW_DEFAULT_CATEGORY(cname)        \
-    GRAS_LOG_NEW_CATEGORY(cname)                    \
+#define GRAS_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
+    GRAS_LOG_NEW_CATEGORY(cname,desc)                    \
     GRAS_LOG_DEFAULT_CATEGORY(cname)
 
 /**
  * GRAS_LOG_NEW_DEFAULT_SUBCATEGORY:
  * @cname: name of the cat
  * @parent: name of the parent
+ * @desc: string describing the purpose of this category
  *
  * Creates a new subcategory of the parent category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
-#define GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(cname, parent)     \
-    GRAS_LOG_NEW_SUBCATEGORY(cname, parent)                 \
+#define GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(cname, parent, desc) \
+    GRAS_LOG_NEW_SUBCATEGORY(cname, parent, desc)             \
     GRAS_LOG_DEFAULT_CATEGORY(cname)
 
 /**

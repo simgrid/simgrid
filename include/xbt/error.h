@@ -15,6 +15,9 @@
 #include <stddef.h>    /* offsetof() */
 #include <sys/types.h>  /* size_t */
 #include <stdarg.h>
+
+#include <stdio.h> /* FIXME: Get rid of it */
+
 #ifdef HAVE_EXECINFO_H
 #include <execinfo.h>  /* to print the backtrace */
 #endif
@@ -68,7 +71,7 @@ typedef enum {
 	     __FILE__,__LINE__,                                \
              gras_error_name(errcode));                        \
      fflush(stdout);                                           \
-     abort();                                                  \
+     gras_abort();                                             \
   } } while(0)
 
 #define TRYEXPECT(action,expected_error)  do {                 \
@@ -77,7 +80,7 @@ typedef enum {
     fprintf(stderr,"Got error %s (instead of %s expected)\n",  \
 	    gras_error_name(errcode),                          \
 	    gras_error_name(expected_error));                  \
-    abort();                                                   \
+    gras_abort();                                              \
   }                                                            \
 } while(0)
 
@@ -142,8 +145,6 @@ typedef enum {
 #define RAISE_MALLOC     RAISE0(malloc_error,"Malloc error")
 #define RAISE_IMPOSSIBLE RAISE0(unknown_error,"The Impossible did happen")
 #define RAISE_UNIMPLEMENTED RAISE1(unknown_error,"Function %s unimplemented",__FUNCTION__)
-
-#define gras_abort abort
 
 #ifdef NDEBUG
 #define gras_assert(cond)

@@ -18,13 +18,13 @@
 #include <stdio.h>
 
 GRAS_LOG_EXTERNAL_CATEGORY(dict);
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict_elm,dict);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict_elm,dict,"Dictionaries internals");
 
-GRAS_LOG_NEW_SUBCATEGORY(dict_add,dict);
-GRAS_LOG_NEW_SUBCATEGORY(dict_search,dict);
-GRAS_LOG_NEW_SUBCATEGORY(dict_remove,dict);
-GRAS_LOG_NEW_SUBCATEGORY(dict_collapse,dict);
-GRAS_LOG_NEW_SUBCATEGORY(dict_multi,dict);
+GRAS_LOG_NEW_SUBCATEGORY(dict_add,dict,"Dictionaries internals: elements addition");
+GRAS_LOG_NEW_SUBCATEGORY(dict_search,dict,"Dictionaries internals: searching");
+GRAS_LOG_NEW_SUBCATEGORY(dict_remove,dict,"Dictionaries internals: elements removal");
+GRAS_LOG_NEW_SUBCATEGORY(dict_collapse,dict,"Dictionaries internals: post-removal cleanup");
+GRAS_LOG_NEW_SUBCATEGORY(dict_multi,dict,"Dictionaries internals: dictionaries of dictionaries");
 
 /*####[ Private prototypes ]#################################################*/
 

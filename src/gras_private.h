@@ -11,11 +11,6 @@
 #ifndef GRAS_PRIVATE_H
 #define GRAS_PRIVATE_H
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #define max(a, b) (((a) > (b))?(a):(b))
 #define min(a, b) (((a) < (b))?(a):(b))
 
@@ -25,6 +20,8 @@
 #define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
 
 #include "gras_config.h"
+
+#include "gros/sysdep.h"
 
 #include "gros/error.h"
 #include "gros/log.h"

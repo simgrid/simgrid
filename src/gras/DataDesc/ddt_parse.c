@@ -13,7 +13,8 @@
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/DataDesc/ddt_parse.yy.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_parse,datadesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_parse,datadesc,
+  "Parsing C data structures to build GRAS data description");
 
 typedef struct s_type_modifier{
   short is_unsigned;
@@ -110,11 +111,11 @@ static gras_error_t change_to_fixed_array(gras_dynar_t *dynar, long int size) {
 
   GRAS_IN;
   gras_dynar_pop(dynar,&former);
-  array.type_name=malloc(strlen(former.type->name)+20);
+  array.type_name=(char*)gras_malloc(strlen(former.type->name)+20);
   DEBUG2("Array specification (size=%ld, elm='%s'), change pushed type",
 	 size,former.type_name);
   sprintf(array.type_name,"%s[%ld]",former.type_name,size);
-  free(former.type_name);
+  gras_free(former.type_name);
 
   TRY(gras_datadesc_array_fixed(array.type_name, former.type, size, &array.type)); /* redeclaration are ignored */
 
@@ -131,10 +132,10 @@ static gras_error_t change_to_ref(gras_dynar_t *dynar) {
 
   GRAS_IN;
   gras_dynar_pop(dynar,&former);
-  ref.type_name=malloc(strlen(former.type->name)+2);
+  ref.type_name=(char*)gras_malloc(strlen(former.type->name)+2);
   DEBUG1("Ref specification (elm='%s'), change pushed type", former.type_name);
   sprintf(ref.type_name,"%s*",former.type_name);
-  free(former.type_name);
+  gras_free(former.type_name);
 
   TRY(gras_datadesc_ref(ref.type_name, former.type, &ref.type)); /* redeclaration are ignored */
 
@@ -156,7 +157,7 @@ static gras_error_t change_to_ref_pop_array(gras_dynar_t *dynar) {
   ref.type_name = strdup(ref.type->name);
   ref.name = former.name;
 
-  free(former.type_name);
+  gras_free(former.type_name);
 
   TRY(gras_dynar_push(dynar,&ref));
   GRAS_OUT;
@@ -372,14 +373,14 @@ static gras_error_t parse_statement(char	 *definition,
 
 	DEBUG2("Anotation: %s=%s",keyname,keyval);
 	if (!strcmp(keyname,"size")) {
-	  free(keyname);
+	  gras_free(keyname);
 	  if (!identifier.tm.is_ref)
 	    PARSE_ERROR0("Size annotation for a field not being a reference");
 	  identifier.tm.is_ref--;
 
 	  if (!strcmp(keyval,"1")) {
 	    TRY(change_to_ref(identifiers));
-	    free(keyval);
+	    gras_free(keyval);
 	    continue;
 	  } else {
 	    char *p;
@@ -390,7 +391,7 @@ static gras_error_t parse_statement(char	 *definition,
 	    if (fixed) {
 	      TRY(change_to_fixed_array(identifiers,atoi(keyval)));
 	      TRY(change_to_ref(identifiers));
-	      free(keyval);
+	      gras_free(keyval);
 	      continue;
 
 	    } else {
@@ -490,8 +491,8 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
 
       VERB2("Append field '%s' to %p",field.name, struct_type);      
       TRYFAIL(gras_datadesc_struct_append(struct_type, field.name, field.type));
-      free(field.name);
-      free(field.type_name);
+      gras_free(field.name);
+      gras_free(field.type_name);
 
     }
     gras_dynar_reset(identifiers);
@@ -502,7 +503,7 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
       DEBUG1("struct_type=%p",struct_type);
       VERB2("Push field '%s' into size stack of %p", name, struct_type);
       gras_datadesc_cb_field_push(struct_type, name);
-      free(name);
+      gras_free(name);
     }
     gras_dynar_reset(fields_to_push);
   }
@@ -579,7 +580,7 @@ gras_datadesc_parse(const char            *name,
   for (C_count=0; C_statement[C_count] != '\0'; C_count++)
     if (C_statement[C_count] == ';' || C_statement[C_count] == '{')
       semicolon_count++;
-  definition = malloc(C_count + semicolon_count + 1);
+  definition = (char*)gras_malloc(C_count + semicolon_count + 1);
   for (C_count=0,def_count=0; C_statement[C_count] != '\0'; C_count++) {
     definition[def_count++] = C_statement[C_count];
     if (C_statement[C_count] == ';' || C_statement[C_count] == '{') {
@@ -610,7 +611,7 @@ gras_datadesc_parse(const char            *name,
 
   gras_ddt_parse_pointer_string_close();
   VERB0("end of _gras_ddt_type_parse()");
-  free(definition);
+  gras_free(definition);
   /* register it under the name provided as symbol */
   if (strcmp(res->name,name)) {
     ERROR2("In GRAS_DEFINE_TYPE, the provided symbol (here %s) must be the C type name (here %s)",

@@ -1,7 +1,14 @@
+  Version 0.7 (protocol not changed; API changed)
+2004-09-08 Martin Quinson
+  - Reduce the number of system headers loaded, overload some more system
+    calls (such as malloc to cast the result of the system one, and work
+    properly on AIX)
+  - Fix and reintroduce the config support
+
 2004-09-07 Martin Quinson
-  Version 0.6.3 (protocol not changed; API changed)
-  - Source code reorganization to allow Arnaud to put the surf in the same
-    tree.
+  - Source code reorganization to allow Arnaud to surf all over there.
+  - Allow to document the logging categories
+  - Remove all uppercase from logging categories and useless cleanup in names.
 
 2004-08-18 Martin Quinson
   Version 0.6.2 (protocol not changed; API changed)

@@ -8,11 +8,9 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <time.h>       /* time() */
-
 #include "gras/Transport/transport_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(transport,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(transport,gras,"Conveying bytes over the network");
 
 static gras_dict_t  *_gras_trp_plugins;     /* All registered plugins */
 static void gras_trp_plugin_free(void *p); /* free one of the plugins */
@@ -26,14 +24,12 @@ gras_error_t
 gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   gras_error_t errcode;
 
-  gras_trp_plugin_t *plug = malloc(sizeof(gras_trp_plugin_t));
+  gras_trp_plugin_t *plug = gras_new0(gras_trp_plugin_t, 1);
   
   DEBUG1("Create plugin %s",name);
 
   if (!plug) 
     RAISE_MALLOC;
-
-  memset(plug,0,sizeof(gras_trp_plugin_t));
 
   plug->name=strdup(name);
   if (!plug->name)
@@ -43,8 +39,8 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   switch (errcode) {
   case mismatch_error:
     /* SG plugin return mismatch when in RL mode (and vice versa) */
-    free(plug->name);
-    free(plug);
+    gras_free(plug->name);
+    gras_free(plug);
     break;
 
   case no_error:
@@ -53,7 +49,7 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
     break;
 
   default:
-    free(plug);
+    gras_free(plug);
     return errcode;
   }
   return no_error;
@@ -91,11 +87,11 @@ void gras_trp_plugin_free(void *p) {
       plug->exit(plug);
     } else if (plug->data) {
       DEBUG1("Plugin %s lacks exit(). Free data anyway.",plug->name);
-      free(plug->data);
+      gras_free(plug->data);
     }
 
-    free(plug->name);
-    free(plug);
+    gras_free(plug->name);
+    gras_free(plug);
   }
 }
 
@@ -110,7 +106,7 @@ gras_error_t gras_trp_socket_new(int incoming,
 
   gras_socket_t *sock;
 
-  if (! (sock=malloc(sizeof(gras_socket_t))) )
+  if (! (sock=gras_new(gras_socket_t,1)) )
     RAISE_MALLOC;
   DEBUG1("Create a new socket (%p)", sock);
 
@@ -165,7 +161,7 @@ gras_socket_server(unsigned short port,
 	 sock->accepting?'y':'n');
 
   if (errcode != no_error) {
-    free(sock);
+    gras_free(sock);
     return errcode;
   }
 
@@ -210,7 +206,7 @@ gras_socket_client(const char *host,
 	 sock->accepting?'y':'n');
 
   if (errcode != no_error) {
-    free(sock);
+    gras_free(sock);
     return errcode;
   }
 
@@ -234,8 +230,8 @@ void gras_socket_close(gras_socket_t *sock) {
 
 	/* free the memory */
 	if (sock->peer_name)
-	  free(sock->peer_name);
-	free(sock);
+	  gras_free(sock->peer_name);
+	gras_free(sock);
 	return;
       }
     }

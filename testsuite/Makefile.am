@@ -10,15 +10,15 @@ EXTRA_DIST=run_tests.in \
 
 # Test stuff
 
-gros_tests =                                  \
-	gros/dynar_int  gros/dynar_double gros/dynar_string   \
-	gros/dict_usage gros/dict_crash                 \
-	gros/set_usage                             \
-	gros/log_usage                             
-#	gros/config_usage
+gros_tests =                                                      \
+	gros/dynar_int    gros/dynar_double   gros/dynar_string   \
+	gros/dict_usage   gros/dict_crash                         \
+	gros/set_usage                                            \
+	gros/log_usage                                            \
+	gros/config_usage
 # gros/multidict_crash 
 
-RL_tests =                                    \
+RL_tests =                                              \
 	gras/trp_tcp_client   gras/trp_tcp_server       \
 	gras/trp_file_client  gras/trp_file_server      \
 	gras/datadesc_usage

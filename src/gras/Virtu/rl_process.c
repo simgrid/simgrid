@@ -10,15 +10,16 @@
 
 #include "gras/Virtu/virtu_rl.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(process,GRAS);
-			      
+GRAS_LOG_EXTERNAL_CATEGORY(process);
+GRAS_LOG_DEFAULT_CATEGORY(process);
+
 /* globals */
 static gras_procdata_t *_gras_procdata = NULL;
 
 gras_error_t gras_process_init() {
   gras_error_t errcode;
 
-  if (!(_gras_procdata=(gras_procdata_t *)malloc(sizeof(gras_procdata_t))))
+  if (!(_gras_procdata=gras_new(gras_procdata_t,1)))
     RAISE_MALLOC;
 
   TRY(gras_procdata_init());

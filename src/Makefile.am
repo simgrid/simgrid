@@ -1,6 +1,6 @@
 SUBDIRS=.  
 # amok not ported to GRAS NG yet
-AM_CFLAGS= -DNDEBUG 
+#AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.
 # -DNDEBUG cuts asserts and logs at "trace" and "debug" levels.
@@ -69,15 +69,17 @@ else
  lib_LTLIBRARIES= libgrasrl.la
 endif
 
-#  gros/config.c                               
 
 COMMON_S=\
   \
-  gros/module.c      gros/gros_interface.h                                      \
+  gros/gros_interface.h                                                         \
+  gros/sysdep.c                                                                 \
   gros/log.c         gros/log_default_appender.c   gros/error.c                 \
   gros/dynar.c                                                                  \
   gros/dict.c        gros/dict_elm.c               gros/dict_cursor.c           \
   gros/set.c                                                                    \
+  gros/module.c                                                                 \
+  gros/config.c                                                                 \
   \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \

@@ -10,7 +10,7 @@
 
 #include "gras/DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_create,datadesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_create,datadesc,"Creating new datadescriptions");
 
 /**
  * gras_ddt_freev:
@@ -32,11 +32,10 @@ gras_ddt_new(const char            *name,
   gras_datadesc_type_t *res;
 
   GRAS_IN1("(%s)",name);
-  res=malloc(sizeof(gras_datadesc_type_t));
+  res=gras_new0(gras_datadesc_type_t,1);
   if (!res) 
     RAISE_MALLOC;
 
-  memset(res, 0, sizeof(gras_datadesc_type_t));
   res->name = strdup(name);
   res->name_len = strlen(name);
       
@@ -113,7 +112,7 @@ gras_datadesc_scalar(const char                      *name,
   for (arch = 0; arch < gras_arch_count; arch ++) {
     long int sz;
     long int mask;
-    res->size[arch] = gras_arches[arch].sizeof_scalars[type];
+    res->size[arch] = gras_arches[arch].sizeofs[type];
 
     sz = res->size[arch];
     mask = sz;
@@ -163,8 +162,8 @@ void gras_dd_cat_field_free(void *f) {
   GRAS_IN;
   if (field) {
     if (field->name) 
-      free(field->name);
-    free(field);
+      gras_free(field->name);
+    gras_free(field);
   }
   GRAS_OUT;
 }
@@ -234,24 +233,23 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
 	       "Cannot add a dynamically sized field in structure %s",
 	       struct_type->name);
     
-  field=malloc(sizeof(gras_dd_cat_field_t));
+  field=gras_new(gras_dd_cat_field_t,1);
   if (!field)
     RAISE_MALLOC;
 
   field->name   = strdup(name);
 
   DEBUG0("----------------");
-  DEBUG4("PRE s={size=%ld,align=%ld,asize=%ld} struct_boundary=%d",
+  DEBUG3("PRE s={size=%ld,align=%ld,asize=%ld}",
 	 struct_type->size[GRAS_THISARCH], 
 	 struct_type->alignment[GRAS_THISARCH], 
-	 struct_type->aligned_size[GRAS_THISARCH],
-	 gras_arches[GRAS_THISARCH].struct_boundary);
+	 struct_type->aligned_size[GRAS_THISARCH]);
      
      
   for (arch=0; arch<gras_arch_count; arch ++) {
     field->offset[arch] = aligned(struct_type->size[arch],
 				  min(field_type->alignment[arch],
-				      gras_arches[arch].struct_boundary));
+				      gras_arches[arch].boundaries));
 
     struct_type->size[arch] = field->offset[arch] + field_type->size[arch];
     struct_type->alignment[arch] = max(struct_type->alignment[arch],
@@ -357,17 +355,13 @@ gras_datadesc_union_append(gras_datadesc_type_t  *union_type,
     return no_error;
   }
     
-  field=malloc(sizeof(gras_dd_cat_field_t));
+  field=gras_new0(gras_dd_cat_field_t,1);
   if (!field)
     RAISE_MALLOC;
 
   field->name   = strdup(name);
-  for (arch=0; arch<gras_arch_count; arch ++) {
-    field->offset[arch] = 0; /* that's the purpose of union ;) */
-  }
   field->type   = field_type;
-  field->pre    = NULL;
-  field->post   = NULL;
+  /* All offset are left to 0 in an union */
   
   TRY(gras_dynar_push(union_type->category.union_data.fields, &field));
 
@@ -609,7 +603,7 @@ gras_error_t
 gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type,
 			  gras_datadesc_type_t **dst) {
   gras_error_t errcode;
-  char *name=malloc(strlen(element_type->name) + 4);
+  char *name=(char*)gras_malloc(strlen(element_type->name) + 4);
 
   sprintf(name,"%s[]",element_type->name);
 
@@ -619,7 +613,7 @@ gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type,
   sprintf(name,"%s[]*",element_type->name);
   TRY(gras_datadesc_ref(name,*dst,dst));
 
-  free(name);
+  gras_free(name);
 
   return no_error;
 }
@@ -770,6 +764,6 @@ void gras_datadesc_free(gras_datadesc_type_t *type) {
     /* datadesc was invalid. Killing it is like euthanasy, I guess */
     break;
   }
-  free(type->name);
-  free(type);
+  gras_free(type->name);
+  gras_free(type);
 }

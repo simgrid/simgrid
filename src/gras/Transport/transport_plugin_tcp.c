@@ -24,7 +24,7 @@
 #include "gras_private.h"
 #include "transport_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport,"TCP transport");
 
 /***
  *** Prototypes 

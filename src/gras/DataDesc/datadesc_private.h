@@ -49,11 +49,10 @@ typedef struct {
 
   int endian;
 
-  int sizeof_scalars[9]; /* char,short,int,long,long_long,
-			    pdata,pfunc,
-			    float,double */
-
-  int struct_boundary;
+  int sizeofs[9]; /* char,short,int,long,long_long,
+		   pdata,pfunc,
+		   float,double */
+  int boundaries[9]; /* idem */
 } gras_arch_desc_t;
 
 extern const gras_arch_desc_t gras_arches[gras_arch_count];

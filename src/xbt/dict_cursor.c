@@ -15,7 +15,7 @@
 #include <string.h> /* strlen() */
 
 GRAS_LOG_EXTERNAL_CATEGORY(dict);
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict_cursor,dict);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict_cursor,dict,"To traverse dictionaries");
 
 
 /*####[ Dict cursor functions ]#############################################*/

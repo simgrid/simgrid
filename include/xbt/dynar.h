@@ -11,9 +11,6 @@
 #ifndef _GRAS_DYNAR_H
 #define _GRAS_DYNAR_H
 
-#include <stdlib.h> /* malloc() */
-#include <string.h> /* strlen() */
-
 typedef struct gras_dynar_s gras_dynar_t;
 
 /* pointer to a function freeing something */

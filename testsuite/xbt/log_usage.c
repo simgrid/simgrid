@@ -37,15 +37,15 @@
 #include <gras.h>
 #include <stdio.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(Test, Top);
-GRAS_LOG_NEW_CATEGORY(Top);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,"Logging specific to this test");
+GRAS_LOG_NEW_CATEGORY(top,"Useless test channel");
 
 int main(int argc, char **argv) {
   gras_init_defaultlog(&argc,argv,"root.thresh=debug log.thresh=debug");
 
   DEBUG1("val=%d", 1);
   WARN1("val=%d", 2);
-  CDEBUG2(Top, "val=%d%s", 3, "!");
+  CDEBUG2(top, "val=%d%s", 3, "!");
   CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");
   
   gras_exit();

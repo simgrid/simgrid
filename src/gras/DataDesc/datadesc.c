@@ -10,7 +10,7 @@
 
 #include "gras/DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,gras,"Data description");
 /* FIXME: make this host-dependent using a trick such as UserData*/
 gras_set_t *gras_datadesc_set_local=NULL;
 

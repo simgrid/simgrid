@@ -22,7 +22,7 @@ print "/* This file is perl-generated, of course */\n\n";
 print "#include <stdio.h>\n";
 print "#include <gras.h>\n\n";
 
-print "GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test);\n\n";
+print "GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic struct test\");\n\n";
 
 print "#define READ  0\n#define WRITE 1\n#define RW    2\n\n";
   

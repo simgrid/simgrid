@@ -36,7 +36,7 @@ int main(int argc,char *argv[]) {
   
   if (strcmp(data_send, data_recv)) {
     fprintf(stderr, "===[CLIENT]=== String sent != string received\n");
-    exit(1);
+    gras_abort();
   } 
   fprintf(stderr,"===[CLIENT]=== Got a valid ACK\n");
   

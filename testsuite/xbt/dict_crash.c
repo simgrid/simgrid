@@ -11,6 +11,7 @@
 #include <gras.h>
 #include <time.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define NB_ELM 20000
 #define SIZEOFKEY 1024
@@ -20,6 +21,7 @@ static void print_str(void *str) {
   printf("%s",(char*)str);
 }
 
+GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
 static gras_error_t traverse(gras_dict_t *head) {
   gras_dict_cursor_t *cursor=NULL;
@@ -28,10 +30,8 @@ static gras_error_t traverse(gras_dict_t *head) {
 
   gras_dict_foreach(head,cursor,key,data) {
     //    printf("   Seen:  %s=%s\n",key,data);
-    if (strcmp(key,data)) {
-      printf("Key(%s) != value(%s). Abording\n",key,data);
-      abort();
-    }
+    gras_assert2 (!strcmp(key,data),
+      "Key(%s) != value(%s). Abording\n",key,data);
   }
   return no_error;
 }

@@ -10,7 +10,7 @@
 
 #include "gras_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,tbx);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,gros,"data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/
 struct gras_set_ {
@@ -26,7 +26,7 @@ struct gras_set_ {
  * Creates a new set.
  */
 gras_error_t gras_set_new (gras_set_t **dst) {
-  gras_set_t *res=(gras_set_t*)malloc(sizeof(gras_set_t));
+  gras_set_t *res=gras_new(gras_set_t,1);
   gras_error_t errcode;
 
   if (!res)
@@ -49,7 +49,7 @@ void         gras_set_free(gras_set_t **set) {
   if (*set) {
     gras_dict_free ( &( (*set)->dict  ) );
     gras_dynar_free(    (*set)->dynar  );
-    free(*set);
+    gras_free(*set);
     *set=NULL;
   }
 }
@@ -182,7 +182,7 @@ void         gras_set_cursor_first       (gras_set_t   *set,
   if (set != NULL) {
     if (!*cursor) {
       DEBUG0("Create the cursor on first use");
-      *cursor = (gras_set_cursor_t*)malloc(sizeof(gras_set_cursor_t));
+      *cursor = gras_new(gras_set_cursor_t,1);
       gras_assert0(*cursor,
 		   "Malloc error during the creation of the cursor");
     }
@@ -220,7 +220,7 @@ int          gras_set_cursor_get_or_free (gras_set_cursor_t **curs,
   cursor=*curs;
 
   if (! gras_dynar_cursor_get( cursor->set->dynar,&(cursor->val),elm) ) {
-    free(cursor);
+    gras_free(cursor);
     *curs=NULL;
     return FALSE;    
   } 

@@ -10,7 +10,7 @@
 
 #include "gras_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(module,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(module,gros, "module handling");
 
 extern void gras_log_exit(void);
 static int gras_running_process = 0;

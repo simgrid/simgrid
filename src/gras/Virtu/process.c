@@ -12,6 +12,8 @@
 #include "gras/Virtu/virtu_interface.h"
 #include "gras/Msg/msg_interface.h" /* FIXME: Get rid of this cyclic */
 
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(process,gras,"Process manipulation code");
+
 /* **************************************************************************
  * Process data
  * **************************************************************************/

@@ -14,7 +14,8 @@
 
 #include "gras/DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(convert,datadesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_convert,datadesc,
+				 "Inter-architecture convertions");
 
 /***
  *** Table of all known architectures:

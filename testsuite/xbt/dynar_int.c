@@ -12,7 +12,7 @@
 #include <gras.h>
 
 #define NB_ELEM 5000
-GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
+GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
@@ -21,22 +21,19 @@ int main(int argc,char *argv[]) {
    
    gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
 
-   fprintf(stderr,"==== Traverse the empty dynar\n");
+   INFO0("==== Traverse the empty dynar");
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    gras_dynar_foreach(d,cursor,i){
-     fprintf(stderr,
-	     "Damnit, there is something in the empty dynar\n");
-     abort();
+     gras_assert0(0,"Damnit, there is something in the empty dynar");
    }
    gras_dynar_free(d);
 
-   fprintf(stderr,
-	   "==== Push %d int, set them again 3 times, traverse them, shift them\n",
-	   NB_ELEM);
+   INFO1("==== Push %d int, set them again 3 times, traverse them, shift them",
+	NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_push(d,&cpt));
-     //fprintf (stderr,"Push %d, length=%d \n",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
    }
    for (cursor=0; cursor< NB_ELEM; cursor++) {
      gras_dynar_get(d,cursor,&cpt);
@@ -49,121 +46,97 @@ int main(int argc,char *argv[]) {
      		  "The retrieved value is not the same than the injected one (%d!=%d)",
      		  cursor,cpt);
    }
-   for (cpt=0; cpt< NB_ELEM; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++)
      TRYFAIL(gras_dynar_set(d,cpt,&cpt));
-   }
-   for (cpt=0; cpt< NB_ELEM; cpt++) {
+
+   for (cpt=0; cpt< NB_ELEM; cpt++) 
      TRYFAIL(gras_dynar_set(d,cpt,&cpt));
-   }
-   for (cpt=0; cpt< NB_ELEM; cpt++) {
+   
+   for (cpt=0; cpt< NB_ELEM; cpt++) 
      TRYFAIL(gras_dynar_set(d,cpt,&cpt));
-   }
+   
    cpt=0;
    gras_dynar_foreach(d,cursor,i){
-     if (i != cpt) {
-       fprintf(stderr,
-	  "The retrieved value is not the same than the injected one (%d!=%d)\n",
-	       i,cpt);
-       abort();
-     }
+     gras_assert2(i == cpt,
+	  "The retrieved value is not the same than the injected one (%d!=%d)",
+		  i,cpt);
      cpt++;
    }
-   if (cpt !=NB_ELEM) {
-     fprintf(stderr,
-	     "Cannot retrieve my %d values. Last got one is %d\n",NB_ELEM,
-	     cpt);
-       abort();
-   }     
+   gras_assert2(cpt == NB_ELEM,
+		"Cannot retrieve my %d values. Last got one is %d",
+		NB_ELEM, cpt);
 
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      gras_dynar_shift(d,&i);
-     if (i != cpt) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one (%d!=%d)\n",
+     gras_assert2(i == cpt,
+           "The retrieved value is not the same than the injected one (%d!=%d)",
 	       i,cpt);
-       abort();
-     }
-     //     fprintf (stderr,"Pop %d, length=%d \n",cpt, gras_dynar_length(d));
+     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
    }
    gras_dynar_free(d);
 
-
-   fprintf(stderr,"==== Unshift/pop %d int\n",NB_ELEM);
+   
+   INFO1("==== Unshift/pop %d int",NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_unshift(d,&cpt));
-     //     fprintf (stderr,"Push %d, length=%d \n",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
    }
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      gras_dynar_pop(d,&i);
-     if (i != cpt) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one (%d!=%d)\n",
-	       i,cpt);
-       abort();
-     }
-     //     fprintf (stderr,"Pop %d, length=%d \n",cpt, gras_dynar_length(d));
+     gras_assert2(i == cpt,
+           "The retrieved value is not the same than the injected one (%d!=%d)",
+		 i,cpt);
+     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
    }
    gras_dynar_free(d);
 
 
-
-   fprintf(stderr,"==== Push %d int, insert 1000 int in the middle, shift everything\n",NB_ELEM);
+   
+   INFO1("==== Push %d int, insert 1000 int in the middle, shift everything",NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      TRYFAIL(gras_dynar_push(d,&cpt));
-     //     fprintf (stderr,"Push %d, length=%d \n",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
    }
    for (cpt=0; cpt< 1000; cpt++) {
      TRYFAIL(gras_dynar_insert_at(d,2500,&cpt));
-     //     fprintf (stderr,"Push %d, length=%d \n",cpt, gras_dynar_length(d));
+     DEBUG2("Push %d, length=%d",cpt, gras_dynar_length(d));
    }
 
    for (cpt=0; cpt< 2500; cpt++) {
      gras_dynar_shift(d,&i);
-     if (i != cpt) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one at the begining (%d!=%d)\n",
+     gras_assert2(i == cpt,
+           "The retrieved value is not the same than the injected one at the begining (%d!=%d)",
 	       i,cpt);
-       abort();
-     }
-     //     fprintf (stderr,"Pop %d, length=%d \n",cpt, gras_dynar_length(d));
+     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
    }
    for (cpt=999; cpt>=0; cpt--) {
      gras_dynar_shift(d,&i);
-     if (i != cpt) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one in the middle (%d!=%d)\n",
+     gras_assert2(i == cpt,
+           "The retrieved value is not the same than the injected one in the middle (%d!=%d)",
 	       i,cpt);
-       abort();
-     }
    }
    for (cpt=2500; cpt< NB_ELEM; cpt++) {
      gras_dynar_shift(d,&i);
-     if (i != cpt) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one at the end (%d!=%d)\n",
+      gras_assert2(i == cpt,
+           "The retrieved value is not the same than the injected one at the end (%d!=%d)",
 	       i,cpt);
-       abort();
-     }
    }
    gras_dynar_free(d);
 
 
-   fprintf(stderr,"==== Push %d int, remove 2000-4000. free the rest\n",NB_ELEM);
+   INFO1("==== Push %d int, remove 2000-4000. free the rest",NB_ELEM);
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
-   for (cpt=0; cpt< NB_ELEM; cpt++) {
+   for (cpt=0; cpt< NB_ELEM; cpt++) 
      TRYFAIL(gras_dynar_push(d,&cpt));
-   }
+   
    for (cpt=2000; cpt< 4000; cpt++) {
      gras_dynar_remove_at(d,2000,&i);
-     if (i != cpt) {
-       fprintf(stderr,
-           "Remove a bad value. Got %d, expected %d\n",
-	       i,cpt);
-       abort();
-     }
-     //     fprintf (stderr,"remove %d, length=%d \n",cpt, gras_dynar_length(d));
+     gras_assert2(i == cpt,
+		  "Remove a bad value. Got %d, expected %d",
+		  i,cpt);
+     DEBUG2("remove %d, length=%d",cpt, gras_dynar_length(d));
    }
    gras_dynar_free(d);
 

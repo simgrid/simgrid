@@ -19,6 +19,8 @@
 
 #define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
 
+#include <gros/sysdep.h>
+
 #include <gros/error.h>
 #include <gros/log.h>
 

@@ -7,18 +7,18 @@ tests_nb=0
 rm -f test.failed test.success test.ignored
 
 if [ xvalgrind = "x$1" ] ; then
-  valgrind=valgrind
+  valgrind="libtool --mode=execute valgrind"
 else
   valgrind=
 fi
-#	    config_usage                        \
-for test in gros/log_usage                           \
-            gros/dynar_int gros/dynar_double gros/dynar_string \
- 	    gros/dict_usage gros/dict_crash               \
+for test in gros/log_usage                                          \
+            gros/dynar_int gros/dynar_double gros/dynar_string      \
+ 	    gros/dict_usage gros/dict_crash                         \
+	    gros/config_usage                                       \
 	    \
 	    gras/datadesc_usage                       
 #	    "gras/datadesc_usage --read @srcdir@/datadesc.little32" \
-#	    "gras/datadesc_usage --read @srcdir@/datadesc.big32" \
+#	    "gras/datadesc_usage --read @srcdir@/datadesc.big32"    \
 #	    "gras/datadesc_usage --read @srcdir@/datadesc.big64" 
 
 #	    "gras/datadesc_usage --read @srcdir@/datadesc.little64" \

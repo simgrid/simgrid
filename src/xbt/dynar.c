@@ -10,7 +10,7 @@
 
 #include "gras_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,tbx);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,gros,"Dynamic arrays");
 
 struct gras_dynar_s {
   size_t          size;
@@ -65,7 +65,7 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
 
     const size_t new_size    = nb > (2*(old_size+1)) ? nb : (2*(old_size+1));
     const size_t new_length  = new_size*elmsize;
-    char * const new_data    = calloc(1, elmsize*new_size);
+    char * const new_data    = gras_malloc0(elmsize*new_size);
 
     DEBUG3("expend %p from %d to %d elements", dynar, old_size, nb);
     if (!new_data)
@@ -74,7 +74,7 @@ _gras_dynar_expand(gras_dynar_t * const dynar,
     if (old_data) {
       memcpy(new_data, old_data, used_length);
       _gras_clear_mem(old_data, old_length);
-      free(old_data);
+      gras_free(old_data);
     }
 
     _gras_clear_mem(new_data + used_length, new_length - used_length);
@@ -136,7 +136,7 @@ gras_dynar_new(gras_dynar_t   ** const p_dynar,
   gras_error_t  errcode = no_error;
   gras_dynar_t *dynar   = NULL;
 
-  if (!(dynar = calloc(1, sizeof(gras_dynar_t))))
+  if (!(dynar = gras_new0(gras_dynar_t,1)))
     RAISE_MALLOC;
 
   dynar->size    = 0;
@@ -163,12 +163,12 @@ gras_dynar_free_container(gras_dynar_t * const dynar) {
 
     if (dynar->data) {
       _gras_clear_mem(dynar->data, dynar->size);
-      free(dynar->data);
+      gras_free(dynar->data);
     }
 
     _gras_clear_mem(dynar, sizeof(gras_dynar_t));
 
-    free(dynar);
+    gras_free(dynar);
   }
 }
 
@@ -190,7 +190,7 @@ gras_dynar_reset(gras_dynar_t * const dynar) {
 
   if (dynar->data) {
     _gras_clear_mem(dynar->data, dynar->size);
-    free(dynar->data);
+    gras_free(dynar->data);
   }
 
   dynar->size = 0;
@@ -556,10 +556,10 @@ void gras_dynar_cursor_rm(gras_dynar_t * dynar,
   if (dynar->elmsize > sizeof(void*)) {
     DEBUG0("Elements too big to fit into a pointer");
     if (dynar->free) {
-      dst=malloc(dynar->elmsize);
+      dst=gras_malloc(dynar->elmsize);
       gras_dynar_remove_at(dynar,(*cursor)--,dst);
       (dynar->free)(dst);
-      free(dst);
+      gras_free(dst);
     } else {
       DEBUG0("Ok, we dont care about the element when no free function");
       gras_dynar_remove_at(dynar,(*cursor)--,NULL);

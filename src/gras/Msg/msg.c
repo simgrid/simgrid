@@ -13,7 +13,7 @@
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Virtu/virtu_interface.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(msg,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(msg,gras,"High level messaging");
 
 gras_set_t *_gras_msgtype_set = NULL;
 static char GRAS_header[6];
@@ -60,8 +60,8 @@ gras_msg_exit(void) {
 void gras_msgtype_free(void *t) {
   gras_msgtype_t *msgtype=(gras_msgtype_t *)t;
   if (msgtype) {
-    free(msgtype->name);
-    free(msgtype);
+    gras_free(msgtype->name);
+    gras_free(msgtype);
   }
 }
 
@@ -77,7 +77,7 @@ static char *make_namev(const char *name, short int ver) {
   if (!ver)
     return (char *)name;
 
-  namev = malloc(strlen(name)+2+3+1);
+  namev = (char*)gras_malloc(strlen(name)+2+3+1);
 
   if (namev) {
       sprintf(namev,"%s_v%d",name,ver);
@@ -142,7 +142,7 @@ gras_msgtype_declare_v(const char            *name,
     return errcode; /* Was expecting for mismatch_error */
   }
 
-  if (! (msgtype = malloc(sizeof(gras_msgtype_t))) ) 
+  if (! (msgtype = gras_new(gras_msgtype_t,1)) ) 
     RAISE_MALLOC;
 
   msgtype->name = (namev == name ? strdup(name) : namev);
@@ -181,7 +181,7 @@ gras_msgtype_t * gras_msgtype_by_namev(const char      *name,
   if (errcode != no_error)
     res = NULL;
   if (name != namev) 
-    free(namev);
+    gras_free(namev);
   
   return res;
 }
@@ -260,14 +260,14 @@ gras_msg_recv(gras_socket_t   *sock,
 	   "Got error %s while retrieving the type associated to messages '%s'",
 	   gras_error_name(errcode),msg_name);
   /* FIXME: Survive unknown messages */
-  free(msg_name);
+  gras_free(msg_name);
 
   *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
   gras_assert2(*payload_size > 0,
 	       "%s %s",
 	       "Dynamic array as payload is forbided for now (FIXME?).",
 	       "Reference to dynamic array is allowed.");
-  *payload = malloc(*payload_size);
+  *payload = gras_malloc(*payload_size);
   TRY(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
 
   return no_error;
@@ -314,7 +314,7 @@ gras_msg_wait(double                 timeout,
     if (msg.type->code == msgt_want->code) {
       *expeditor = msg.expeditor;
       memcpy(payload, msg.payload, msg.payload_size);
-      free(msg.payload);
+      gras_free(msg.payload);
       gras_dynar_cursor_rm(pd->msg_queue, &cpt);
       VERB0("The waited message was queued");
       return no_error;
@@ -326,7 +326,7 @@ gras_msg_wait(double                 timeout,
     TRY(gras_msg_recv(*expeditor, &msgt_got, &payload_got, &payload_size_got));
     if (msgt_got->code == msgt_want->code) {
       memcpy(payload, payload_got, payload_size_got);
-      free(payload_got);
+      gras_free(payload_got);
       VERB0("Got waited message");
       return no_error;
     }
@@ -407,7 +407,7 @@ gras_msg_handle(double timeOut) {
 	  cpt+1,cb,msgtype->name);
     if ((*cb)(expeditor,payload)) {
       /* cb handled the message */
-      free(payload);
+      gras_free(payload);
       return no_error;
     }
   }
@@ -422,7 +422,7 @@ gras_cbl_free(void *data){
   gras_cblist_t *list=*(void**)data;
   if (list) {
     gras_dynar_free(list->cbs);
-    free(list);
+    gras_free(list);
   }
 }
 
@@ -446,7 +446,7 @@ gras_cb_register(gras_msgtype_t *msgtype,
   }
   if (!list) {
     /* First cb? Create room */
-    list = malloc(sizeof(gras_cblist_t));
+    list = gras_new(gras_cblist_t,1);
     if (!list)
       RAISE_MALLOC;
 

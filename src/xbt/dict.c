@@ -17,7 +17,8 @@
 
 #include <stdio.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,tbx);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,gros,
+   "Dictionaries provide the same functionnalities than hash tables");
 
 /*####[ Private prototypes ]#################################################*/
 

@@ -24,7 +24,7 @@ static gras_dynar_t *gras_log_settings=NULL;
 static void _free_setting(void *s) {
   gras_log_setting_t *set=(gras_log_setting_t*)s;
   if (set) {
-    free(set->catname);
+    gras_free(set->catname);
 //    free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log
   }
 }
@@ -45,9 +45,9 @@ gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT) = {
   "root", gras_log_priority_uninitialized, 0,
   NULL, 0
 };
-GRAS_LOG_NEW_SUBCATEGORY(GRAS,GRAS_LOG_ROOT_CAT);
-GRAS_LOG_NEW_SUBCATEGORY(tbx,GRAS);
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,tbx);
+GRAS_LOG_NEW_SUBCATEGORY(gras,GRAS_LOG_ROOT_CAT,"All GRAS categories");
+GRAS_LOG_NEW_SUBCATEGORY(gros,GRAS_LOG_ROOT_CAT,"All GROS categories (gras toolbox)");
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,gros,"Loggings from the logging mecanism itself");
 
 
 static void _apply_control(gras_log_category_t* cat) {
@@ -225,13 +225,13 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
     } else {
       gras_assert1(FALSE,"Unknown priority name: %s",eq+1);
     }
-    free(neweq);
+    gras_free(neweq);
   } else {
     char buff[512];
     snprintf(buff,min(512,eq - dot - 1),"%s",dot+1);
     gras_assert1(FALSE,"Unknown setting of the log category: %s",buff);
   }
-  if (!(set->catname=malloc(dot - name+1)))
+  if (!(set->catname=(char*)gras_malloc(dot - name+1)))
     RAISE_MALLOC;
     
   strncpy(set->catname,name,dot-name);
@@ -321,7 +321,7 @@ gras_error_t gras_log_control_set(const char* control_string) {
     TRY(gras_dynar_new(&gras_log_settings,sizeof(gras_log_setting_t*),
 		       _free_setting));
 
-  if (!(set = malloc(sizeof(gras_log_setting_t))))
+  if (! (set = gras_new(gras_log_setting_t,1)) )
     RAISE_MALLOC;
 
   if (!(cs=strdup(control_string)))
@@ -341,8 +341,8 @@ gras_error_t gras_log_control_set(const char* control_string) {
     }
     errcode = _gras_log_parse_setting(p,set);
     if (errcode != no_error) {
-      free(set);
-      free(cs);
+      gras_free(set);
+      gras_free(cs);
     }
     
     TRYCATCH(_gras_log_cat_searchsub(&_GRAS_LOGV(root),set->catname,&cat),
@@ -352,18 +352,18 @@ gras_error_t gras_log_control_set(const char* control_string) {
       DEBUG1("push %p to the settings",set);
       TRY(gras_dynar_push(gras_log_settings,&set));
       /* malloc in advance the next slot */
-      if (!(set = malloc(sizeof(gras_log_setting_t)))) { 
-	free(cs);
+      if (!(set = gras_new(gras_log_setting_t,1))) { 
+	gras_free(cs);
 	RAISE_MALLOC;
       }
     } else {
       DEBUG0("Apply directly");
-      free(set->catname);
+      gras_free(set->catname);
       gras_log_threshold_set(cat,set->thresh);
     }
   }
-  free(set);
-  free(cs);
+  gras_free(set);
+  gras_free(cs);
   return no_error;
 } 
 

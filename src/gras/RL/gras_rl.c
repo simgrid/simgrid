@@ -26,7 +26,7 @@
 #include "timeouts.h"
 #include "protocol.h"
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(rl);
+GRAS_LOG_NEW_DEFAULT_CATEGORY(rl,"Real Life");
 			      
 /* globals */
 static grasProcessData_t *_grasProcessData;

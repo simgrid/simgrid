@@ -12,11 +12,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "gras_private.h"
 #include "transport_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
+	"Pseudo-transport to write to/read from a file");
 
 /***
  *** Prototypes 
@@ -52,7 +54,7 @@ typedef struct {
 gras_error_t
 gras_trp_file_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_file_plug_data_t *file = malloc(sizeof(gras_trp_file_plug_data_t));
+  gras_trp_file_plug_data_t *file = gras_new(gras_trp_file_plug_data_t,1);
   if (!file)
     RAISE_MALLOC;
 

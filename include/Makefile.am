@@ -1,5 +1,6 @@
 include_HEADERS = gras.h gros.h
 nobase_include_HEADERS = \
+	gros/sysdep.h \
 	gros/log.h gros/error.h \
 	gros/module.h \
 	gros/dynar.h gros/dict.h gros/set.h \

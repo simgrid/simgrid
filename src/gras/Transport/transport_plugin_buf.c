@@ -15,7 +15,8 @@
 #include "gras_private.h"
 #include "transport_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
+      "Generic buffered transport (works on top of TCP or SG)");
 
 /***
  *** Prototypes 

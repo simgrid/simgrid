@@ -10,7 +10,7 @@
 
 #include "Virtu/virtu_sg.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(process,GRAS);
+GRAS_LOG_EXTERNAL_CATEGORY(process);
 
 gras_error_t
 gras_process_init() {

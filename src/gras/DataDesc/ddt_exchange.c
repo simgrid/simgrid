@@ -11,7 +11,8 @@
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(exchange,datadesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_exchange,datadesc,
+				 "Sending data over the network");
 
 #undef DETECT_CYCLE
 /* CRUDE HACK to turn all cycle detection of */
@@ -81,12 +82,13 @@ gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
     if (r_arch != GRAS_THISARCH)
       TRY(gras_dd_convert_elm(int_type,1,r_arch, i,i));
   } else {
-    void *ptr = NULL;
-    ptr = malloc((size_t)int_type->size[r_arch]);
+    void *ptr = gras_malloc(int_type->size[r_arch]);
+    if (!ptr)
+       RAISE_MALLOC;
     TRY(gras_trp_chunk_recv(sock, (char*)ptr, int_type->size[r_arch]));
     if (r_arch != GRAS_THISARCH)
       TRY(gras_dd_convert_elm(int_type,1,r_arch, ptr,i));
-    free(ptr);
+    gras_free(ptr);
   }
   DEBUG1("recv_int(%d)",*i);
 
@@ -120,7 +122,7 @@ gras_dd_alloc_ref(gras_dict_t *refs,
   char *l_data = NULL;
 
   gras_assert1(size>0,"Cannot allocate %ld bytes!", size);
-  if (! (l_data = malloc((size_t)size)) )
+  if (! (l_data = gras_malloc((size_t)size)) )
     RAISE_MALLOC;
 
   *l_ref = l_data;
@@ -131,7 +133,7 @@ gras_dd_alloc_ref(gras_dict_t *refs,
 #ifdef DETECT_CYCLE
   if (r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
     gras_error_t errcode;
-    void *ptr = malloc(sizeof(void *));
+    void *ptr = gras_malloc(sizeof(void *));
     if (!ptr)
       RAISE_MALLOC;
 
@@ -139,7 +141,7 @@ gras_dd_alloc_ref(gras_dict_t *refs,
 
     DEBUG2("Insert %p under %p",*(void**)ptr, *(void**)r_ref);
 
-    TRY(gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, free));
+    TRY(gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, gras_free));
   }
 #endif
   return no_error;
@@ -555,12 +557,13 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       if (r_arch != GRAS_THISARCH)
 	TRY(gras_dd_convert_elm(type,1,r_arch, l_data,l_data));
     } else {
-      void *ptr = NULL;
-      ptr = malloc((size_t)type->size[r_arch]);
+      void *ptr = gras_malloc(type->size[r_arch]);
+      if (!ptr)
+	 RAISE_MALLOC;
       TRY(gras_trp_chunk_recv(sock, (char*)ptr, type->size[r_arch]));
       if (r_arch != GRAS_THISARCH)
 	TRY(gras_dd_convert_elm(type,1,r_arch, ptr,l_data));
-      free(ptr);
+      gras_free(ptr);
     }
     break;
 
@@ -639,7 +642,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       gras_assert(pointer_type);
     }
 
-    if (! (r_ref = malloc((size_t)pointer_type->size[r_arch])) )
+    if (! (r_ref = gras_malloc(pointer_type->size[r_arch])) )
       RAISE_MALLOC;
     TRY(gras_trp_chunk_recv(sock, (char*)r_ref,
 			    pointer_type->size[r_arch]));
@@ -649,7 +652,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       VERB1("Not receiving data remotely referenced @%p since it's NULL",
 	    *(void **)r_ref);
       *(void**)l_data = NULL;
-      free(r_ref);
+      gras_free(r_ref);
       break;
     }
     errcode = gras_dict_get_ext(refs,
@@ -702,7 +705,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     } else {
       return errcode;
     }
-    free(r_ref);
+    gras_free(r_ref);
     break;
   }
 
@@ -734,12 +737,14 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 	if (r_arch != GRAS_THISARCH)
 	  TRY(gras_dd_convert_elm(sub_type,count,r_arch, l_data,l_data));
       } else {
-	ptr = malloc((size_t)sub_type->aligned_size[r_arch] * count);
+	ptr = gras_malloc(sub_type->aligned_size[r_arch] * count);
+	if (!ptr)
+	   RAISE_MALLOC;
 	TRY(gras_trp_chunk_recv(sock, (char*)ptr, 
 				sub_type->size[r_arch] * count));
 	if (r_arch != GRAS_THISARCH)
 	  TRY(gras_dd_convert_elm(sub_type,count,r_arch, ptr,l_data));
-	free(ptr);
+	gras_free(ptr);
       }
     } else {
       /* not scalar content, get it recursively (may contain pointers) */

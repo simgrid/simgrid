@@ -12,7 +12,7 @@
 
 #include "gras_private.h" /* prototypes of this module */
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(config,tbx);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(config,gros,"configuration support");
 
 /* gras_cfgelm_t: the typedef corresponding to a config cell. 
 
@@ -44,13 +44,13 @@ void gras_cfg_str_free(void *d);
 void gras_cfg_host_free(void *d);
 
 void gras_cfg_str_free(void *d){
-  free(*(void**)d);
+  gras_free(*(void**)d);
 }
 void gras_cfg_host_free(void *d){
   gras_host_t *h=(gras_host_t*) *(void**)d; 
   if (h) {
-    if (h->name) free(h->name);
-    free(h);
+    if (h->name) gras_free(h->name);
+    gras_free(h);
   }
 }
 
@@ -128,14 +128,8 @@ gras_cfg_dump(const char *name,const char *indent,gras_cfg_t *cfg) {
   if (name)
     printf("%s>> Dumping of the config set '%s':\n",indent,name);
   gras_dict_foreach(dict,cursor,key,cell) {
-    if ((errcode=gras_dict_cursor_get_key(cursor,(char**)&name))  != no_error ||
-	(errcode=gras_dict_cursor_get_data(cursor,(void**)&cell)) != no_error) {
-      gras_dict_cursor_free(cursor);
-      return;
-    }
 
     printf("%s  %s:",indent,key);
-    fflush(stdout);
 
     size = gras_dynar_length(cell->content);
     printf("%d_to_%d_%s. Actual size=%d. List of values:\n",
@@ -143,6 +137,7 @@ gras_cfg_dump(const char *name,const char *indent,gras_cfg_t *cfg) {
 	   size);
 
     switch (cell->type) {
+       
     case gras_cfgelm_int:
       for (i=0; i<size; i++) {
 	gras_dynar_get(cell->content,i,&ival);
@@ -178,6 +173,7 @@ gras_cfg_dump(const char *name,const char *indent,gras_cfg_t *cfg) {
   }
 
   if (name) printf("%s<< End of the config set '%s'\n",indent,name);
+  fflush(stdout);
 
   gras_dict_cursor_free(cursor);
   return;
@@ -196,7 +192,7 @@ void gras_cfgelm_free(void *data) {
 
   if (!c) return;
   gras_dynar_free(c->content);
-  free(c);
+  gras_free(c);
 }
 
 /*----[ Registering stuff ]-----------------------------------------------*/
@@ -218,6 +214,7 @@ gras_cfg_register(gras_cfg_t *cfg,
   gras_cfgelm_t *res;
   gras_error_t errcode;
 
+  DEBUG4("Register cfg elm %s (%d to %d %s)",name,min,max,gras_cfgelm_type_name[type]);
   TRYCATCH(mismatch_error,gras_dict_get((gras_dict_t*)cfg,name,(void**)&res));
 
   if (errcode != mismatch_error) {
@@ -225,7 +222,7 @@ gras_cfg_register(gras_cfg_t *cfg,
     /* Will be removed by the insertion of the new one */
   } 
 
-  res=malloc(sizeof(gras_cfgelm_t));
+  res=gras_new(gras_cfgelm_t,1);
   if (!res)
     RAISE_MALLOC;
 
@@ -296,7 +293,7 @@ gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    free(entrycpy);
+    gras_free(entrycpy);
     gras_abort();
   }
   *(tok++)='\0';
@@ -304,7 +301,7 @@ gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
   min=strtol(tok, &tok, 10);
   if (!tok) {
     ERROR1("Invalid minimum in config element descriptor %s",entry);
-    free(entrycpy);
+    gras_free(entrycpy);
     gras_abort();
   }
 
@@ -312,7 +309,7 @@ gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    free(entrycpy);
+    gras_free(entrycpy);
     gras_abort();
   }
   tok += strlen("_to_");
@@ -320,7 +317,7 @@ gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
   max=strtol(tok, &tok, 10);
   if (!tok) {
     ERROR1("Invalid maximum in config element descriptor %s",entry);
-    free(entrycpy);
+    gras_free(entrycpy);
     gras_abort();
   }
 
@@ -328,7 +325,7 @@ gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid config element descriptor: ",entry,
 	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    free(entrycpy);
+    gras_free(entrycpy);
     gras_abort();
   }
 
@@ -339,14 +336,14 @@ gras_cfg_register_str(gras_cfg_t *cfg,const char *entry) {
     ERROR3("%s%s%s",
 	  "Invalid type in config element descriptor: ",entry,
 	  "; Should be one of 'string', 'int', 'host' or 'double'.");
-    free(entrycpy);
+    gras_free(entrycpy);
     gras_abort();
   }
 
   TRYCLEAN(gras_cfg_register(cfg,entrycpy,type,min,max),
-	   free(entrycpy));
+	   gras_free(entrycpy));
 
-  free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
+  gras_free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
   return no_error;
 }
 
@@ -374,7 +371,8 @@ gras_cfg_check(gras_cfg_t *cfg) {
 	     name,
 	     cell->min,
 	     gras_cfgelm_type_name[cell->type],
-	     size);
+	     size); 
+      gras_dict_cursor_free(cursor);
       return mismatch_error;
     }
 
@@ -384,11 +382,13 @@ gras_cfg_check(gras_cfg_t *cfg) {
 	     cell->max,
 	     gras_cfgelm_type_name[cell->type],
 	     size);
+      gras_dict_cursor_free(cursor);
       return mismatch_error;
     }
 
   }
 
+  gras_dict_cursor_free(cursor);
   return no_error;
 }
 
@@ -396,15 +396,17 @@ static gras_error_t gras_cfgelm_get(gras_cfg_t *cfg,
 				    const char *name,
 				    gras_cfgelm_type_t type,
 				    /* OUT */ gras_cfgelm_t **whereto){
-  gras_error_t errcode;
-
-  TRYCATCH(mismatch_error,gras_dict_get((gras_dict_t*)cfg,name,(void**)whereto));
+   
+  gras_error_t errcode = gras_dict_get((gras_dict_t*)cfg,name,
+				       (void**)whereto);
 
   if (errcode == mismatch_error) {
     ERROR1("No registered cell %s in this config set",
 	   name);
     return mismatch_error;
   }
+  if (errcode != no_error)
+     return errcode;
 
   gras_assert3((*whereto)->type == type,
 	       "You tried to access to the config element %s as an %s, but its type is %s.",
@@ -542,12 +544,13 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
   int len;
   gras_error_t errcode;
 
+  GRAS_IN;
   if (!options || !strlen(options)) { /* nothing to do */
     return no_error;
   }
   optionlist_cpy=strdup(options);
 
-  DEBUG1("Options list='%s'",options);
+  DEBUG1("List to parse and set:'%s'",options);
   option=optionlist_cpy;
   while (1) { /* breaks in the code */
 
@@ -555,7 +558,7 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
       break;
     name=option;
     len=strlen(name);
-    DEBUG3("Parse list '%s'. len=%d; option-name=%d",name,len,option-name);
+    DEBUG3("Still to parse and set: '%s'. len=%d; option-name=%d",name,len,option-name);
 
     /* Pass the value */
     while (option-name<=(len-1) && *option != ' ' && *option != '\n' && *option != '\t') {
@@ -578,7 +581,7 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
       if (option-name == len-1)
 	option=NULL; /* don't do next iteration */
     }
-    DEBUG2("this='%s';rest='%s'",name,option);
+    DEBUG2("parse now:'%s'; parse later:'%s'",name,option);
 
     if (name[0] == ' ' || name[0] == '\n' || name[0] == '\t')
       continue;
@@ -587,7 +590,7 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
     
     val=strchr(name,':');
     if (!val) {
-      free(optionlist_cpy);
+      gras_free(optionlist_cpy);
       gras_assert1(FALSE,
 		   "Malformated option: '%s'; Should be of the form 'name:value'",
 		   name);
@@ -602,51 +605,51 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
       break;
     case mismatch_error:
       ERROR1("No registrated cell corresponding to '%s'.",name);
-      free(optionlist_cpy);
+      gras_free(optionlist_cpy);
       return mismatch_error;
       break;
     default:
-      free(optionlist_cpy);
+      gras_free(optionlist_cpy);
       return errcode;
     }
 
     switch (cell->type) {
     case gras_cfgelm_string:
       TRYCLEAN(gras_cfg_set_string(cfg, name, val),
-	       free(optionlist_cpy));
+	       gras_free(optionlist_cpy));
       break;
 
     case gras_cfgelm_int:
       i=strtol(val, &val, 0);
       if (val==NULL) {
-	free(optionlist_cpy);	
+	gras_free(optionlist_cpy);	
 	gras_assert1(FALSE,
 		     "Value of option %s not valid. Should be an integer",
 		     name);
       }
 
       TRYCLEAN(gras_cfg_set_int(cfg,name,i),
-	       free(optionlist_cpy));
+	       gras_free(optionlist_cpy));
       break;
 
     case gras_cfgelm_double:
       d=strtod(val, &val);
       if (val==NULL) {
-	free(optionlist_cpy);	
+	gras_free(optionlist_cpy);	
 	gras_assert1(FALSE,
 	       "Value of option %s not valid. Should be a double",
 	       name);
       }
 
       TRYCLEAN(gras_cfg_set_double(cfg,name,d),
-	       free(optionlist_cpy));
+	       gras_free(optionlist_cpy));
       break;
 
     case gras_cfgelm_host:
       str=val;
       val=strchr(val,':');
       if (!val) {
-	free(optionlist_cpy);	
+	gras_free(optionlist_cpy);	
 	gras_assert1(FALSE,
 	       "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
@@ -655,23 +658,23 @@ gras_cfg_set_parse(gras_cfg_t *cfg, const char *options) {
       *(val++)='\0';
       i=strtol(val, &val, 0);
       if (val==NULL) {
-	free(optionlist_cpy);	
+	gras_free(optionlist_cpy);	
 	gras_assert1(FALSE,
 	       "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
       }
 
       TRYCLEAN(gras_cfg_set_host(cfg,name,str,i),
-	       free(optionlist_cpy));
+	       gras_free(optionlist_cpy));
       break;      
 
     default: 
-      free(optionlist_cpy);
+      gras_free(optionlist_cpy);
       RAISE1(unknown_error,"Type of config element %s is not valid.",name);
     }
     
   }
-  free(optionlist_cpy);
+  gras_free(optionlist_cpy);
   return no_error;
 }
 
@@ -689,6 +692,7 @@ gras_cfg_set_int(gras_cfg_t *cfg,const char*name, int val) {
   gras_cfgelm_t *cell;
   gras_error_t errcode;
 
+  VERB2("Configuration setting: %s=%d",name,val);
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
 
   if (cell->max > 1) {
@@ -712,6 +716,7 @@ gras_cfg_set_double(gras_cfg_t *cfg,const char*name, double val) {
   gras_cfgelm_t *cell;
   gras_error_t errcode;
 
+  VERB2("Configuration setting: %s=%f",name,val);
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_double,&cell));
 
   if (cell->max > 1) {
@@ -735,13 +740,15 @@ gras_error_t
 gras_cfg_set_string(gras_cfg_t *cfg,const char*name, const char*val) { 
   gras_cfgelm_t *cell;
   gras_error_t errcode;
+   char *newval = strdup(val);
 
+  VERB2("Configuration setting: %s=%s",name,val);
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
 
   if (cell->max > 1) {
-    return gras_dynar_push(cell->content,&val);
+    return gras_dynar_push(cell->content,&newval);
   } else {
-    return gras_dynar_set(cell->content,0,&val);
+    return gras_dynar_set(cell->content,0,&newval);
   }
 }
 
@@ -762,8 +769,9 @@ gras_cfg_set_host(gras_cfg_t *cfg,const char*name,
 		  const char *host,int port) {
   gras_cfgelm_t *cell;
   gras_error_t errcode;
-  gras_host_t *val=malloc(sizeof(gras_host_t));
+  gras_host_t *val=gras_new(gras_host_t,1);
 
+  VERB3("Configuration setting: %s=%s:%d",name,host,port);
   if (!val)
     RAISE_MALLOC;
   val->name = strdup(name);
@@ -956,7 +964,7 @@ gras_cfg_get_int   (gras_cfg_t  *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %d values",
 	     name, gras_dynar_length(cell->content));
   }
 
@@ -1079,9 +1087,17 @@ gras_error_t gras_cfg_get_dynar (gras_cfg_t    *cfg,
 				 const char    *name,
 				 gras_dynar_t **dynar) {
   gras_cfgelm_t *cell;
-  gras_error_t errcode;
+  gras_error_t errcode = gras_dict_get((gras_dict_t*)cfg,name,
+				       (void**)&cell);
 
-  TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));
+  if (errcode == mismatch_error) {
+    ERROR1("No registered cell %s in this config set",
+	   name);
+    return mismatch_error;
+  }
+  if (errcode != no_error)
+     return errcode;
+
   *dynar = cell->content;
   return no_error;
 }

@@ -19,7 +19,7 @@
 #include "Virtu/virtu_sg.h"
 
 GRAS_LOG_EXTERNAL_CATEGORY(transport);
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
 
 /***
  *** Prototypes 

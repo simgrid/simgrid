@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <gras.h>
 
+GRAS_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
+
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
@@ -19,16 +21,15 @@ int main(int argc,char *argv[]) {
    
    gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
 
-   fprintf(stderr,"==== Traverse the empty dynar\n");
+   INFO0("==== Traverse the empty dynar");
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    gras_dynar_foreach(d,cursor,cpt){
-     fprintf(stderr,
-	     "Damnit, there is something in the empty dynar\n");
-     abort();
+     gras_assert0(FALSE,
+	     "Damnit, there is something in the empty dynar");
    }
    gras_dynar_free(d);
 
-   fprintf(stderr,"==== Push/shift 5000 doubles\n");
+   INFO0("==== Push/shift 5000 doubles");
    TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
@@ -36,27 +37,21 @@ int main(int argc,char *argv[]) {
    }
    gras_dynar_foreach(d,cursor,d2){
      d1=(double)cursor;
-     if (d1 != d2) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one (%f!=%f)\n",
-	       d1,d2);
-       abort();
-     }
+     gras_assert2(d1 == d2,
+           "The retrieved value is not the same than the injected one (%f!=%f)",
+		  d1,d2);
    }
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
      gras_dynar_shift(d,&d2);
-     if (d1 != d2) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one (%f!=%f)\n",
-	       d1,d2);
-       abort();
-     }
+     gras_assert2(d1 == d2,
+           "The retrieved value is not the same than the injected one (%f!=%f)",
+		  d1,d2);
    }
    gras_dynar_free(d);
 
 
-   fprintf(stderr,"==== Unshift/pop 5000 doubles\n");
+   INFO0("==== Unshift/pop 5000 doubles");
    TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
@@ -65,18 +60,15 @@ int main(int argc,char *argv[]) {
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
      gras_dynar_pop(d,&d2);
-     if (d1 != d2) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one (%f!=%f)\n",
-	       d1,d2);
-       abort();
-     }
+     gras_assert2 (d1 == d2,
+           "The retrieved value is not the same than the injected one (%f!=%f)",
+		   d1,d2);
    }
    gras_dynar_free(d);
 
 
 
-   fprintf(stderr,"==== Push 5000 doubles, insert 1000 doubles in the middle, shift everything\n");
+   INFO0("==== Push 5000 doubles, insert 1000 doubles in the middle, shift everything");
    TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
@@ -90,38 +82,29 @@ int main(int argc,char *argv[]) {
    for (cpt=0; cpt< 2500; cpt++) {
      d1=(double)cpt;
      gras_dynar_shift(d,&d2);
-     if (d1 != d2) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one at the begining (%f!=%f)\n",
-	       d1,d2);
-       abort();
-     }
-     //     fprintf (stderr,"Pop %d, length=%d \n",cpt, gras_dynar_length(d));
+     gras_assert2(d1 == d2,
+           "The retrieved value is not the same than the injected one at the begining (%f!=%f)",
+		  d1,d2);
+     DEBUG2("Pop %d, length=%d",cpt, gras_dynar_length(d));
    }
    for (cpt=999; cpt>=0; cpt--) {
      d1=(double)cpt;
      gras_dynar_shift(d,&d2);
-     if (d1 != d2) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one in the middle (%f!=%f)\n",
-	       d1,d2);
-       abort();
-     }
+     gras_assert2 (d1 == d2,
+           "The retrieved value is not the same than the injected one in the middle (%f!=%f)",
+		   d1,d2);
    }
    for (cpt=2500; cpt< 5000; cpt++) {
      d1=(double)cpt;
      gras_dynar_shift(d,&d2);
-     if (d1 != d2) {
-       fprintf(stderr,
-           "The retrieved value is not the same than the injected one at the end (%f!=%f)\n",
-	       d1,d2);
-       abort();
-     }
+     gras_assert2 (d1 == d2,
+           "The retrieved value is not the same than the injected one at the end (%f!=%f)",
+		   d1,d2);
    }
    gras_dynar_free(d);
 
 
-   fprintf(stderr,"==== Push 5000 double, remove 2000-4000. free the rest\n");
+   INFO0("==== Push 5000 double, remove 2000-4000. free the rest");
    TRYFAIL(gras_dynar_new(&d,sizeof(double),NULL));
    for (cpt=0; cpt< 5000; cpt++) {
      d1=(double)cpt;
@@ -130,12 +113,9 @@ int main(int argc,char *argv[]) {
    for (cpt=2000; cpt< 4000; cpt++) {
      d1=(double)cpt;
      gras_dynar_remove_at(d,2000,&d2);
-     if (d1 != d2) {
-       fprintf(stderr,
-           "Remove a bad value. Got %f, expected %f\n",
+     gras_assert2 (d1 == d2,
+           "Remove a bad value. Got %f, expected %f",
 	       d2,d1);
-       abort();
-     }
    }
    gras_dynar_free(d);
 
