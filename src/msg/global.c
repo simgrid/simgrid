@@ -31,6 +31,9 @@ void MSG_global_init(void)
   MSG_global_init_args(&argc,argv);
 }
 
+/** \ingroup msg_simulation
+ * \brief Initialize some MSG internal data.
+ */
 void MSG_global_init_args(int *argc, char **argv)
 {
   if (!msg_global) {
@@ -44,7 +47,174 @@ void MSG_global_init_args(int *argc, char **argv)
     msg_global->max_channel = 0;
     msg_global->current_process = NULL;
     msg_global->registered_functions = xbt_dict_new();
+    msg_global->PID = 1;
   }
+}
+
+/** \ingroup msg_easier_life
+ * \brief Traces MSG events in the Paje format.
+ */
+void MSG_paje_output(const char *filename)
+{
+  int i;
+  const char *paje_preembule="%EventDef	SetLimits	0\n"
+    "%	StartTime	date\n"
+    "%	EndTime	date\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeDefineContainerType	1\n"
+    "%	NewType	string\n"
+    "%	ContainerType	string\n"
+    "%	NewName	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeDefineEventType	2\n"
+    "%	NewType	string\n"
+    "%	ContainerType	string\n"
+    "%	NewName	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeDefineStateType	3\n"
+    "%	NewType	string\n"
+    "%	ContainerType	string\n"
+    "%	NewName	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeDefineVariableType	4\n"
+    "%	NewType	string\n"
+    "%	ContainerType	string\n"
+    "%	NewName	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeDefineLinkType	5\n"
+    "%	NewType	string\n"
+    "%	ContainerType	string\n"
+    "%	SourceContainerType	string\n"
+    "%	DestContainerType	string\n"
+    "%	NewName	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeDefineEntityValue	6\n"
+    "%	NewValue	string\n"
+    "%	EntityType	string\n"
+    "%	NewName	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeCreateContainer	7\n"
+    "%	Time	date\n"
+    "%	NewContainer	string\n"
+    "%	NewContainerType	string\n"
+    "%	Container	string\n"
+    "%	NewName	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeDestroyContainer	8\n"
+    "%	Time	date\n"
+    "%	Name	string\n"
+    "%	Type	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeNewEvent	9\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeSetState	10\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeSetState	101\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	string\n"
+    "%	FileName	string\n"
+    "%	LineNumber	int\n"
+    "%EndEventDef\n"
+    "%EventDef	PajePushState	111\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	string\n"
+    "%	FileName	string\n"
+    "%	LineNumber	int\n"
+    "%EndEventDef\n"
+    "%EventDef	PajePushState	11\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajePopState	12\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeSetVariable	13\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	double\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeAddVariable	14\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	double\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeSubVariable	15\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	double\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeStartLink	16\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	string\n"
+    "%	SourceContainer	string\n"
+    "%	Key	string\n"
+    "%EndEventDef\n"
+    "%EventDef	PajeEndLink	17\n"
+    "%	Time	date\n"
+    "%	EntityType	string\n"
+    "%	Container	string\n"
+    "%	Value	string\n"
+    "%	DestContainer	string\n"
+    "%	Key	string\n"
+    "%EndEventDef\n";
+
+  const char *type_definitions = "1	Sim_t	0	Simulation_t\n"
+    "1	H_t	Sim_t	m_host_t\n"
+    "1	P_t	H_t	m_process_t\n"
+    "3	S_t	P_t	\"Process State\"\n"
+    "6	E	S_t	Executing\n"
+    "6	B	S_t	Blocked\n"
+    "6	C	S_t	Communicating\n"
+    "5	Comm	Sim_t	P_t	P_t	Communication_t\n";
+
+  const char *ext = ".trace";
+  int ext_len = strlen(ext);
+  int len;
+
+  xbt_assert0(msg_global, "Initialize MSG first\n");
+  xbt_assert0(!msg_global->paje_output, "Paje output allready defined\n");
+  xbt_assert0(filename, "Need a real file name\n");
+
+  len = strlen(filename);
+  if((len<ext_len) || (strncmp(filename+len-ext_len,ext,ext_len))) {
+    CRITICAL2("%s does not end by \"%s\". It may cause troubles when using Paje\n",
+	      filename,ext);
+  }
+
+  xbt_assert0(filename, "Need a real file name\n");
+
+  msg_global->paje_output=fopen(filename,"w");
+  xbt_assert1(msg_global->paje_output, "Failed to open %s \n",filename);
+
+  fprintf(msg_global->paje_output,"%s",paje_preembule);
+  fprintf(msg_global->paje_output,"%s",type_definitions);
+  for(i=0; i<msg_global->max_channel; i++) {
+    fprintf(msg_global->paje_output, "6	COMM_%d	Comm	\"Channel %d\"\n" ,i,i);
+  }
+  fprintf(msg_global->paje_output,
+	  "7	0.0	CUR	Sim_t	0	\"MSG simulation\"\n");
+
 }
 
 /** \ingroup msg_simulation
@@ -115,8 +285,6 @@ MSG_error_t MSG_main(void)
 {
   m_process_t process = NULL;
   int nbprocess,i;
-  long double Before=0.0;
-  long double Now=0.0;
   double elapsed_time = 0.0;
 
   /* Clean IO before the run */
@@ -129,13 +297,16 @@ MSG_error_t MSG_main(void)
     xbt_context_empty_trash();
     while ((process = xbt_fifo_pop(msg_global->process_to_run))) {
 /*       fprintf(stderr,"-> %s (%d)\n",process->name, process->simdata->PID); */
+      DEBUG3("Scheduling  %s(%d) on %s",	     
+	     process->name,process->simdata->PID,
+	     process->simdata->host->name);
       msg_global->current_process = process;
       xbt_context_schedule(process->simdata->context);
       msg_global->current_process = NULL;
     }
-    Before = MSG_getClock();
+    DEBUG1("%Lg : Calling surf_solve",MSG_getClock());
     elapsed_time = surf_solve();
-    Now = MSG_getClock();
+    DEBUG1("Elapsed_time %lg",elapsed_time);
 
 /*     fprintf(stderr, "====== %Lg =====\n",Now); */
 /*     if (elapsed_time==0.0) { */
@@ -195,12 +366,13 @@ MSG_error_t MSG_main(void)
 	    "MSG: Congratulations ! Simulation terminated : all process are over\n");
     return MSG_OK;
   } else {
+    xbt_fifo_item_t item = NULL;
     fprintf(stderr,"MSG: Oops ! Deadlock or code not perfectly clean.\n");
     fprintf(stderr,"MSG: %d processes are still running, waiting for something.\n",
 	    nbprocess);
     /*  List the process and their state */
     fprintf(stderr,"MSG: <process>(<pid>) on <host>: <status>.\n");
-    while ((process=xbt_fifo_pop(msg_global->process_list))) {
+    xbt_fifo_foreach(msg_global->process_list,item,process,m_process_t) {
       simdata_process_t p_simdata = (simdata_process_t) process->simdata;
       simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
       
@@ -293,6 +465,30 @@ MSG_error_t MSG_main(void)
 /* } */
 
 /** \ingroup msg_simulation
+ * \brief Kill all running process
+
+ * \param reset_PIDs should we reset the PID numbers. A negative
+ *   number means no reset and a positive number will be used to set the PID
+ *   of the next newly created process.
+ */
+int MSG_process_killall(int reset_PIDs)
+{
+  xbt_fifo_item_t i = NULL;
+  m_process_t p = NULL;
+
+  while((p=xbt_fifo_shift(msg_global->process_list))) {
+    MSG_process_kill(p);
+  }
+  xbt_context_empty_trash();
+  if(reset_PIDs>0) {
+    msg_global->PID = reset_PIDs; 
+    msg_global->session++;
+ }
+
+  return msg_global->PID;
+}
+
+/** \ingroup msg_simulation
  * \brief Clean the MSG simulation
  */
 MSG_error_t MSG_clean(void)
@@ -315,6 +511,10 @@ MSG_error_t MSG_clean(void)
   xbt_fifo_free(msg_global->process_list);
   xbt_dict_free(&(msg_global->registered_functions));
 
+  if(msg_global->paje_output) {
+    fclose(msg_global->paje_output);
+    msg_global->paje_output = NULL;
+  }
   xbt_free(msg_global);
   surf_finalize();
 

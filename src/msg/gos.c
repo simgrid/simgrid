@@ -57,8 +57,10 @@ MSG_error_t MSG_task_get(m_task_t * task,
   h = MSG_host_self();
   h_simdata = h->simdata;
   while ((t = xbt_fifo_pop(h_simdata->mbox[channel])) == NULL) {
-    xbt_assert0(!(h_simdata->sleeping[channel]),
-		"A process is already blocked on this channel");
+    xbt_assert2(!(h_simdata->sleeping[channel]),
+		"A process (%s(%d)) is already blocked on this channel",
+		h_simdata->sleeping[channel]->name,
+		h_simdata->sleeping[channel]->simdata->PID);
     h_simdata->sleeping[channel] = process; /* I'm waiting. Wake me up when you're ready */
     __MSG_process_block();
     if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
@@ -84,6 +86,8 @@ MSG_error_t MSG_task_get(m_task_t * task,
   if(__MSG_process_isBlocked(t_simdata->sender)) 
     __MSG_process_unblock(t_simdata->sender);
 
+  PAJE_PROCESS_STATE(process,"C");  
+
   do {
     __MSG_task_wait_event(process, t);
     state=surf_workstation_resource->common_public->action_get_state(t_simdata->comm);
@@ -93,6 +97,8 @@ MSG_error_t MSG_task_get(m_task_t * task,
     xbt_fifo_unshift(msg_global->process_to_run,process);
     xbt_context_yield();
   }
+
+  PAJE_COMM_STOP(process,t,channel);
 
   if(state == SURF_ACTION_DONE) MSG_RETURN(MSG_OK);
   else if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
@@ -192,6 +198,8 @@ MSG_error_t MSG_task_put(m_task_t task,
 
   xbt_fifo_push(((simdata_host_t) remote_host->simdata)->
 		mbox[channel], task);
+
+  PAJE_COMM_START(process,task,channel);
     
   if(remote_host->simdata->sleeping[channel]) 
     __MSG_process_unblock(remote_host->simdata->sleeping[channel]);
@@ -203,6 +211,8 @@ MSG_error_t MSG_task_put(m_task_t task,
   process->simdata->put_host = NULL;
   process->simdata->put_channel = -1;
 /*   } */
+
+  PAJE_PROCESS_STATE(process,"C");  
 
   state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
   while (state==SURF_ACTION_RUNNING) {
@@ -231,6 +241,7 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 {
   task->simdata->rate=max_rate;
   return(MSG_task_put(task, dest, channel));
+  task->simdata->rate=-1.0;
 }
 
 /** \ingroup msg_gos_functions
@@ -248,6 +259,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
   m_process_t process = MSG_process_self();
 
   __MSG_task_execute(process, task);
+  PAJE_PROCESS_STATE(process,"E");  
   return __MSG_wait_for_computation(process,task);
 }
 

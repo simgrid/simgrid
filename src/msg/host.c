@@ -36,6 +36,8 @@ m_host_t __MSG_host_create(const char *name,
 
   xbt_fifo_push(msg_global->host, host);
 
+  PAJE_HOST_NEW(host);
+
   return host;
 }
 
@@ -110,6 +112,8 @@ void __MSG_host_destroy(m_host_t host)
 
   xbt_assert0((host != NULL), "Invalid parameters");
 
+  PAJE_HOST_FREE(host);
+ 
   /* Clean Simulator data */
   simdata = (host)->simdata;
 
