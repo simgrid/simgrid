@@ -105,6 +105,7 @@ AC_CONFIG_FILES([
   testsuite/Makefile
     testsuite/run_tests    
     testsuite/gras/trp_tcp_usage
+    testsuite/gras/trp_file_usage
 ],[
      test -e testsuite/run_tests          && chmod +x testsuite/run_tests;
      test -e testsuite/gras/trp_tcp_usage && chmod +x testsuite/gras/trp_tcp_usage;
