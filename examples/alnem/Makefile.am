@@ -9,9 +9,9 @@ alnem_sensor_SOURCES=         _alnem_sensor.c    alnem.c
 alnem_maestro_SOURCES=        _alnem_maestro.c   alnem.c
 
 
-alnem_simulator_LDADD=	  $(top_srcdir)/src/Core/libgrassg.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@ @LIBS_XML@
-alnem_sensor_LDADD=       $(top_srcdir)/src/Core/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@
-alnem_maestro_LDADD=      $(top_srcdir)/src/Core/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@
+alnem_simulator_LDADD=	  $(top_srcdir)/src/base/libgrassg.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@ @LIBS_XML@
+alnem_sensor_LDADD=       $(top_srcdir)/src/base/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@
+alnem_maestro_LDADD=      $(top_srcdir)/src/base/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@
 
 bin_PROGRAMS=alnem_builder
 alnem_builder_LDADD=  @LIBS_SimGrid@ @LIBS_XML@

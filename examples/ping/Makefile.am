@@ -9,9 +9,9 @@ ping_client_SOURCES=	_ping_client.c ping.c
 ping_server_SOURCES=	_ping_server.c ping.c
 
 
-ping_simulator_LDADD=	$(top_srcdir)/src/Core/libgrassg.a @LIBS_SimGrid@ @LIBS_XML@
-ping_client_LDADD=	$(top_srcdir)/src/Core/libgrasrl.a
-ping_server_LDADD=	$(top_srcdir)/src/Core/libgrasrl.a
+ping_simulator_LDADD=	$(top_srcdir)/src/base/libgrassg.a @LIBS_SimGrid@ @LIBS_XML@
+ping_client_LDADD=	$(top_srcdir)/src/base/libgrasrl.a
+ping_server_LDADD=	$(top_srcdir)/src/base/libgrasrl.a
 
 # cleanup temps
 CLEANFILES= _ping_simulator.c _ping_client.c _ping_server.c 

@@ -8,9 +8,9 @@ bandwidth_maestro_SOURCES=	_bandwidth_maestro.c bandwidth.c
 bandwidth_sensor_SOURCES=	_bandwidth_sensor.c bandwidth.c
 
 
-bandwidth_simulator_LDADD=	$(top_srcdir)/src/Core/libgrassg.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@ @LIBS_XML@
-bandwidth_maestro_LDADD=	$(top_srcdir)/src/Core/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a
-bandwidth_sensor_LDADD= 	$(top_srcdir)/src/Core/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a
+bandwidth_simulator_LDADD=	$(top_srcdir)/src/base/libgrassg.a $(top_srcdir)/src/modules/libgrasmodules.a @LIBS_SimGrid@ @LIBS_XML@
+bandwidth_maestro_LDADD=	$(top_srcdir)/src/base/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a
+bandwidth_sensor_LDADD= 	$(top_srcdir)/src/base/libgrasrl.a $(top_srcdir)/src/modules/libgrasmodules.a
 
 # cleanup temps
 CLEANFILES=_bandwidth_simulator.c _bandwidth_maestro.c _bandwidth_sensor.c
