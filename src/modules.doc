@@ -121,9 +121,14 @@
      - <b>Virtualization</b>: Running both on top of the simulator and on
        top of real platforms, and portability support.
 */     
-/**    \defgroup GRAS_dd     Data description
+/**    \addtogroup GRAS_implem
        \ingroup GRAS_API
-       \brief Describing data to be exchanged (Communication facility)           */
+       
+       Internals of GRAS */
+/**    \addtogroup GRAS_dd
+       \ingroup GRAS_API */
+/**    \addtogroup GRAS_dd_implem 
+       \ingroup GRAS_implem */
 /**    \defgroup GRAS_sock   Sockets
        \ingroup GRAS_API
        \brief Open/close sockets, and get info on peer (Communication facility). */
