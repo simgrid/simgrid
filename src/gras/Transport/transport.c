@@ -16,8 +16,6 @@ XBT_LOG_NEW_SUBCATEGORY(raw_trp,transport,"Conveying bytes over the network with
 static xbt_dict_t _gras_trp_plugins;      /* All registered plugins */
 static void gras_trp_plugin_free(void *p); /* free one of the plugins */
 
-/* static void gras_trp_socket_free(void *s); /\* free one socket *\/ */
-
 static void
 gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   xbt_error_t errcode;
