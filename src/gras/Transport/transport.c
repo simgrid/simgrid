@@ -86,6 +86,29 @@ void gras_socket_close(gras_socket_t *sock) {
   }
 }
 
+/**
+ * gras_trp_chunk_send:
+ *
+ * Send a bunch of bytes from on socket
+ */
+gras_error_t
+gras_trp_chunk_send(gras_socket_t *sd,
+		    char *data,
+		    size_t size) {
+  return (*sd->plugin->chunk_send)(sd,data,size);
+}
+/**
+ * gras_trp_chunk_recv:
+ *
+ * Receive a bunch of bytes from a socket
+ */
+gras_error_t gras_trp_chunk_recv(gras_socket_t *sd,
+				 char *data,
+				 size_t size) {
+  return (*sd->plugin->chunk_recv)(sd,data,size);
+}
+
+
 gras_error_t
 gras_trp_plugin_get_by_name(const char *name,
 			    gras_trp_plugin_t **dst){
