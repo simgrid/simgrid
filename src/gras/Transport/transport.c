@@ -9,7 +9,6 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <time.h>       /* time() */
-//#include <errno.h>
 
 #include "Transport/transport_private.h"
 
@@ -213,7 +212,7 @@ void gras_socket_close(gras_socket_t **sock) {
 	return;
       }
     }
-    WARNING0("Ignoring request to free an unknown socket");
+    WARN0("Ignoring request to free an unknown socket");
   }
 }
 
@@ -259,3 +258,12 @@ gras_trp_plugin_get_by_name(const char *name,
   return gras_dict_retrieve(_gras_trp_plugins,name,(void**)dst);
 }
 
+int   gras_socket_my_port  (gras_socket_t *sock) {
+  return sock->port;
+}
+int   gras_socket_peer_port(gras_socket_t *sock) {
+  return sock->peer_port;
+}
+char *gras_socket_peer_name(gras_socket_t *sock) {
+  return sock->peer_name;
+}

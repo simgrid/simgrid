@@ -72,7 +72,7 @@ gras_trp_select(double timeout,
 
     /* we cannot have more than FD_SETSIZE sockets */
     if (++max_fds > FD_SETSIZE) {
-      WARNING0("too many open sockets.");
+      WARN0("too many open sockets.");
       done = 0;
       break;
     }
@@ -139,7 +139,7 @@ gras_trp_select(double timeout,
 
 	 recvd = recv(sock_iter->sd, &lookahead, 1, MSG_PEEK);
 	 if (recvd < 0) {
-	   WARNING2("socket %d failed: %s", sock_iter->sd, strerror(errno));
+	   WARN2("socket %d failed: %s", sock_iter->sd, strerror(errno));
 	   /* done with this socket */
 	   gras_socket_close(&sock_iter);
 	   cursor--;

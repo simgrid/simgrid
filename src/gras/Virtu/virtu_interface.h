@@ -19,8 +19,7 @@
  * Data for each process 
  */
 typedef struct {
-  /* queue of messages which where received but not wanted in msgWait, and therefore
-     temporarly queued until the next msgHandle */
+  /*queue of msgs storing the ones got while msg_wait'ing for something else */
   gras_dynar_t *msg_queue; /* elm type: gras_msg_t */
 
   /* registered callbacks for each message */
@@ -34,7 +33,9 @@ typedef struct {
 
   /* globals of the process */
   void *userdata;               
-} gras_process_data_t;
+} gras_procdata_t;
 
-
+/* FIXME: mv to _private? */
+gras_procdata_t *gras_procdata_get(void);
+gras_error_t gras_procdata_init(void);
 #endif  /* GRAS_VIRTU_INTERFACE_H */

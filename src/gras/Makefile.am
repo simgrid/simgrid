@@ -12,7 +12,6 @@ lib_LIBRARIES= libgrasrl.a libgrassg.a
 
 #                     Core/dict_multi.c
 #  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
-#   Messaging/messaging.c                       
 #   Messaging/datadesc_simple.c                 
 #   Transport/transport_sg.c 
 
@@ -31,11 +30,16 @@ COMMON_S=\
   Transport/transport_plugin_tcp.c            \
   Transport/transport_plugin_sg.c             \
   \
-  DataDesc/ddt_create.c          DataDesc/ddt_declare.c \
-  DataDesc/ddt_remote.c          DataDesc/ddt_use.c     \
-  DataDesc/cbps.c                DataDesc/datadesc.c    \
-  DataDesc/datadesc_interface.h  DataDesc/datadesc_private.h 
+  DataDesc/ddt_create.c          \
+  DataDesc/ddt_convert.c         DataDesc/ddt_exchange.c     \
+  DataDesc/cbps.c                DataDesc/datadesc.c         \
+  DataDesc/datadesc_interface.h  DataDesc/datadesc_private.h \
+  \
+  Msg/msg.c   Msg/msg_interface.h   Msg/msg_private.h \
+  \
+  Virtu/process.c
 
+# DataDesc/ddt_declare.c 
 
 #  DataDesc/datadesc.c                               \
 #  DataDesc/tools.c                                  \

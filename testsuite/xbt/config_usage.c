@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   gras_cfg_t *set;
   int ival;
   
-  gras_init_defaultlog(argc,argv,"config.thresh=debug root.thresh=info");
+  gras_init_defaultlog(&argc,argv,"config.thresh=debug root.thresh=info");
 
   fprintf(stderr,"==== Alloc and free a config set.\n");
   set=make_set();
@@ -87,6 +87,7 @@ int main(int argc, char **argv) {
 	 "Count: 3; Options:\\nmquinson\\necaron\\nfsuter");
   test5();
 
+  gras_exit();
   return 0;
 }
 

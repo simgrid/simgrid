@@ -16,7 +16,7 @@ typedef struct gras_module_ gras_module_t;
 typedef gras_module_t (*gras_module_new_fct_t)(int argc, char **argv);
 typedef int (*gras_module_finalize_fct_t)(void);
 
-void gras_init(int argc,char **argv);
-void gras_init_defaultlog(int argc,char **argv, const char *defaultlog);
+void gras_init(int *argc,char **argv);
+void gras_init_defaultlog(int *argc,char **argv, const char *defaultlog);
 void gras_exit(void);
 #endif /* _GRAS_MODULE_H */

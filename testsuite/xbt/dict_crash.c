@@ -55,7 +55,7 @@ int main(int argc,char **argv) {
   char *key;
   void *data;
 
-  gras_init_defaultlog(argc,argv,"dict.thresh=verbose");
+  gras_init_defaultlog(&argc,argv,"dict.thresh=verbose");
   srand((unsigned int)time(NULL));
 
   printf("Dictionnary: CRASH test:\n");
@@ -149,5 +149,7 @@ int main(int argc,char **argv) {
   printf("\n Free the structure (twice)\n");
   gras_dict_free(&head);
   gras_dict_free(&head);
+  
+  gras_exit();
   return 0;
 }

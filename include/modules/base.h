@@ -83,7 +83,7 @@ static const DataDescriptor msgResultDesc[] =
  * on localhost's stderr.
  */
 void
-grasRepportError (gras_socket_t *sock, gras_msgid_t id, int SeqCount,
+grasRepportError (gras_socket_t *sock, int id, int SeqCount,
 		  const char *severeError,
 		  gras_error_t errcode, const char* format,...);
 

@@ -166,7 +166,7 @@ int main(int argc,char **argv) {
   gras_set_t *set=NULL;
   my_elem_t *elm;
 
-  gras_init_defaultlog(argc,argv,"set.thresh=verbose");
+  gras_init_defaultlog(&argc,argv,"set.thresh=verbose");
    
   printf("\nData set: USAGE test:\n");
 
@@ -235,5 +235,6 @@ int main(int argc,char **argv) {
   printf(" - Traverse the resulting data set\n");
   TRYFAIL(traverse(set));
 
+  gras_exit();
   return 0;
 }

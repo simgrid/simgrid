@@ -224,65 +224,14 @@ struct s_gras_datadesc_type {
  * Type creation functions *
  ***************************/
 gras_error_t 
-gras_ddt_new_scalar(const char                       *name,
-		    gras_ddt_scalar_type_t           type,
-		    enum e_gras_dd_scalar_encoding   encoding,
-		    gras_datadesc_type_cb_void_t     cb,
-		    gras_datadesc_type_t           **dst);
-gras_error_t 
-gras_ddt_new_struct(const char                      *name,
-		    gras_datadesc_type_cb_void_t     pre,
-		    gras_datadesc_type_cb_void_t     post,
-		    gras_datadesc_type_t           **dst);
-gras_error_t 
-gras_ddt_new_struct_append(gras_datadesc_type_t            *struct_type,
-			   const char                      *name,
-			   gras_datadesc_type_t            *field_type,
-			   gras_datadesc_type_cb_void_t     pre,
-			   gras_datadesc_type_cb_void_t     post);
-gras_error_t 
-gras_ddt_new_union(const char                      *name,
-		   gras_datadesc_type_cb_int_t      field_count,
-		   gras_datadesc_type_cb_void_t     post,
-		   gras_datadesc_type_t           **dst);
-gras_error_t 
-gras_ddt_new_union_append(gras_datadesc_type_t            *union_type,
-			  const char                      *name,
-			  gras_datadesc_type_t            *field_type,
-			  gras_datadesc_type_cb_void_t     pre,
-			  gras_datadesc_type_cb_void_t     post);
-gras_error_t 
-gras_ddt_new_ref(const char                      *name,
-		 gras_datadesc_type_t            *referenced_type,
-		 gras_datadesc_type_cb_int_t      discriminant,
-		 gras_datadesc_type_cb_void_t     post,
-		 gras_datadesc_type_t           **dst);
-gras_error_t 
-gras_ddt_new_array(const char                      *name,
-		   gras_datadesc_type_t            *element_type,
-		   long int                         fixed_size,
-		   gras_datadesc_type_cb_int_t      dynamic_size,
-		   gras_datadesc_type_cb_void_t     post,
-		   gras_datadesc_type_t           **dst);
-gras_error_t 
-gras_ddt_new_ignored(const char       *name,
-		     void             *default_value,
-		     void_f_pvoid_t   *free_func,
-		     long int                       size,
-		     long int                       alignment,
-		     gras_datadesc_type_cb_void_t     post,
-		     gras_datadesc_type_t           **dst);
+gras_datadesc_declare_scalar(const char                       *name,
+			     gras_ddt_scalar_type_t           type,
+			     enum e_gras_dd_scalar_encoding   encoding,
+			     gras_datadesc_type_cb_void_t     cb,
+			     gras_datadesc_type_t           **dst);
 
-
-gras_error_t
-gras_ddt_new_parse(const char            *name,
-		   const char            *C_definition,
-		   gras_datadesc_type_t **dst);
-gras_error_t
-gras_ddt_new_from_nws(const char           *name,
-		      const DataDescriptor *desc,
-		      size_t                howmany,
-		      gras_datadesc_type_t **dst);
+/* Do not use it on a registered type ! */
+void gras_ddt_free(gras_datadesc_type_t **type);
 
 /****************************************************
  * Callback persistant state constructor/destructor *

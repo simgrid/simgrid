@@ -80,7 +80,6 @@ gras_error_t test_array(void) {
   gras_datadesc_type_t *my_type;
   
   array i,*j;
-  long int code;
   int cpt;
 
   INFO0("==== Test on fixed array ====");
@@ -90,8 +89,8 @@ gras_error_t test_array(void) {
   j=NULL;
 
   TRY(gras_datadesc_by_name("int", &int_type));
-  TRY(gras_datadesc_declare_array("fixed array of int", int_type, 5, &code));
-  TRY(gras_datadesc_by_code(code,&my_type));
+  TRY(gras_datadesc_declare_array_fixed("fixed int array", 
+					int_type, 5, &my_type));
 
   TRY(write_read(my_type, (void*)&i,(void**) &j));
   for (cpt=0; cpt<SIZE; cpt++)
@@ -104,7 +103,6 @@ gras_error_t test_intref(void) {
   gras_datadesc_type_t *int_type;
   gras_datadesc_type_t *my_type;
   int *i,**j=NULL;
-  long int code;
   
   if (! (i=malloc(sizeof(int))) )
     RAISE_MALLOC;
@@ -112,8 +110,7 @@ gras_error_t test_intref(void) {
   INFO1("==== Test on a reference to an integer (%p) ====",i);
 
   TRY(gras_datadesc_by_name("int", &int_type));
-  TRY(gras_datadesc_declare_ref("int*",int_type,&code));
-  TRY(gras_datadesc_by_code(code,&my_type));
+  TRY(gras_datadesc_declare_ref("int*",int_type,&my_type));
 
   TRY(write_read(my_type, (void*)&i,(void**) &j));
   gras_assert(*i == **j);
@@ -128,14 +125,14 @@ typedef char *string;
 gras_error_t test_string(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *type;
-  string i=strdup("Some data");
-  string *j=NULL;
+  char *i=strdup("Some data");
+  char *j=NULL;
   
   INFO0("==== Test on string (dynamic array) ====");
   TRY(gras_datadesc_by_name("string", &type));
-  TRY(write_read(type, (void*)&i,(void**) &j));
-  gras_assert(!strcmp(i,*j));
-  free(*j);
+  TRY(write_read(type, (void*)i,(void**) &j));
+  gras_assert(!strcmp(i,j));
+  free(j);
   return no_error;
 }
 
@@ -149,17 +146,15 @@ typedef struct {
 gras_error_t test_homostruct(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *my_type;
-  long int my_code;
   homostruct *i, *j; 
 
   INFO0("==== Test on homogeneous structure ====");
   /* create descriptor */
-  TRY(gras_datadesc_declare_struct("homostruct",&my_code));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"a","int"));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"b","int"));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"c","int"));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"d","int"));
-  TRY(gras_datadesc_by_code(my_code, &my_type));
+  TRY(gras_datadesc_declare_struct("homostruct",&my_type));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"a","signed int"));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"b","int"));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"c","int"));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"d","int"));
 
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(homostruct))) )
@@ -191,17 +186,15 @@ typedef struct {
 gras_error_t test_hetestruct(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *my_type;
-  long int my_code;
   hetestruct *i, *j; 
 
   INFO0("==== Test on heterogeneous structure ====");
   /* create descriptor */
-  TRY(gras_datadesc_declare_struct("hetestruct",&my_code));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"c1","unsigned char"));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"l1","unsigned long int"));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"c2","unsigned char"));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"l2","unsigned long int"));
-  TRY(gras_datadesc_by_code(my_code, &my_type));
+  TRY(gras_datadesc_declare_struct("hetestruct",&my_type));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"c1","unsigned char"));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"l1","unsigned long int"));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"c2","unsigned char"));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"l2","unsigned long int"));
 
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(hetestruct))) )
@@ -231,15 +224,13 @@ typedef struct {
 gras_error_t test_nestedstruct(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *my_type;
-  long int my_code;
   nestedstruct *i, *j; 
 
   INFO0("==== Test on nested structures ====");
   /* create descriptor */
-  TRY(gras_datadesc_declare_struct("nestedstruct",&my_code));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"hete","hetestruct"));
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"homo","homostruct"));
-  TRY(gras_datadesc_by_code(my_code, &my_type));
+  TRY(gras_datadesc_declare_struct("nestedstruct",&my_type));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"hete","hetestruct"));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"homo","homostruct"));
 
   /* init a value, exchange it and check its validity*/
   if (! (i=malloc(sizeof(nestedstruct))) )
@@ -299,22 +290,16 @@ int list_eq(chained_list_t*i,chained_list_t*j) {
 gras_error_t test_chain_list(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *my_type,*ref_my_type;
-  long int my_code;
-  long int ref_my_code;
   chained_list_t *i, *j; 
 
   INFO0("==== Test on chained list ====");
   /* create descriptor */
-  TRY(gras_datadesc_declare_struct("chained_list_t",&my_code));
-  TRY(gras_datadesc_by_code(my_code, &my_type));
+  TRY(gras_datadesc_declare_struct("chained_list_t",&my_type));
+  TRY(gras_datadesc_declare_ref("chained_list_t*",my_type,&ref_my_type));
 
-  TRY(gras_datadesc_declare_ref("chained_list_t*",my_type,&ref_my_code));
+  TRY(gras_datadesc_declare_struct_append_name(my_type,"v","int"));
+  TRY(gras_datadesc_declare_struct_append(my_type,"l",ref_my_type));
 
-  TRY(gras_datadesc_declare_struct_add_name(my_code,"v","int"));
-  TRY(gras_datadesc_declare_struct_add_code(my_code,"l",ref_my_code));
-
-  TRY(gras_datadesc_by_code(ref_my_code, &ref_my_type));
-      
   /* init a value, exchange it and check its validity*/
   i = cons( rand(), cons( rand() , cons( rand(), NULL)));
   j = NULL;
@@ -376,13 +361,13 @@ typedef struct { /* structure presented in the IEEE article */
 int main(int argc,char *argv[]) {
   gras_error_t errcode;
 
-  gras_init_defaultlog(argc,argv,
+  gras_init_defaultlog(&argc,argv,
 		       "DataDesc.thresh=verbose"
 		       " test.thresh=debug"
 		       //		       " set.thresh=debug"
 		       );
 
-  /*
+
   TRYFAIL(test_int());    
   TRYFAIL(test_float());  
   TRYFAIL(test_array());  
@@ -392,9 +377,13 @@ int main(int argc,char *argv[]) {
   TRYFAIL(test_homostruct());
   TRYFAIL(test_hetestruct());
   TRYFAIL(test_nestedstruct());
-  */
-  TRYFAIL(test_chain_list());
-  TRYFAIL(test_graph());
 
+  TRYFAIL(test_chain_list());
+
+  CRITICAL0("Not even test graphs: it dies with awfully scaring messages");
+  gras_abort();
+  //  TRYFAIL(test_graph());
+  
+  gras_exit();
   return 0;
 }

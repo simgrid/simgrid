@@ -221,7 +221,7 @@ gras_cfg_register(gras_cfg_t *cfg,
   TRYCATCH(mismatch_error,gras_dict_retrieve((gras_dict_t*)cfg,name,(void**)&res));
 
   if (errcode != mismatch_error) {
-    WARNING1("Config elem %s registered twice.",name);
+    WARN1("Config elem %s registered twice.",name);
     /* Will be removed by the insertion of the new one */
   } 
 
@@ -956,7 +956,7 @@ gras_cfg_get_int   (gras_cfg_t  *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_int,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARNING2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
 	     name, gras_dynar_length(cell->content));
   }
 
@@ -987,7 +987,7 @@ gras_cfg_get_double(gras_cfg_t *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_double,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARNING2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
 	     name, gras_dynar_length(cell->content));
   }
 
@@ -1020,7 +1020,7 @@ gras_error_t gras_cfg_get_string(gras_cfg_t *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_string,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARNING2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
 	     name, gras_dynar_length(cell->content));
   }
 
@@ -1054,7 +1054,7 @@ gras_error_t gras_cfg_get_host  (gras_cfg_t *cfg,
   TRY (gras_cfgelm_get(cfg,name,gras_cfgelm_host,&cell));
 
   if (gras_dynar_length(cell->content) > 1) {
-    WARNING2("You asked for the first value of the config element '%s', but there is %d values\n",
+    WARN2("You asked for the first value of the config element '%s', but there is %d values\n",
 	     name, gras_dynar_length(cell->content));
   }
 

@@ -13,25 +13,19 @@
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(process,GRAS);
 			      
 /* globals */
-static gras_process_data_t *_gras_process_data;
+static gras_procdata_t *_gras_procdata = NULL;
 
 gras_error_t gras_process_init() {
-  //  gras_error_t errcode;
+  gras_error_t errcode;
 
-  if (!(_gras_process_data=(gras_process_data_t *)malloc(sizeof(gras_process_data_t))))
+  if (!(_gras_procdata=(gras_procdata_t *)malloc(sizeof(gras_procdata_t))))
     RAISE_MALLOC;
 
-  WARNING0("Implement message queue");
-  /*
-  TRY(gras_dynar_new(  &(_gras_process_data->msg_queue)  ));
-  TRY(gras_dynar_new(  &(_gras_process_data->cbl_list)  ));
-  */
-
-  _gras_process_data->userdata = NULL;
+  TRY(gras_procdata_init());
   return no_error;
 }
 gras_error_t gras_process_exit() {
-  WARNING0("FIXME: not implemented (=> leaking on exit :)");
+  WARN0("FIXME: not implemented (=> leaking on exit :)");
   return no_error;
 }
 
@@ -39,11 +33,8 @@ gras_error_t gras_process_exit() {
  * Process data
  * **************************************************************************/
 
-void *gras_userdata_get(void) {
-  return _gras_process_data->userdata;
-}
+gras_procdata_t *gras_procdata_get(void) {
+  gras_assert0(_gras_procdata,"Run gras_process_init!");
 
-void *gras_userdata_set(void *ud) {
-  _gras_process_data->userdata = ud;
-  return ud;
+  return _gras_procdata;
 }

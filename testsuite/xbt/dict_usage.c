@@ -101,7 +101,7 @@ int main(int argc,char **argv) {
   gras_dict_t *head=NULL;
   char *data;
 
-  gras_init_defaultlog(argc,argv,"dict.thresh=verbose");
+  gras_init_defaultlog(&argc,argv,"dict.thresh=verbose");
    
   printf("\nGeneric dictionnary: USAGE test:\n");
 

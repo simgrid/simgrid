@@ -19,12 +19,11 @@ RL_tests =                                    \
 	trp_tcp_client   trp_tcp_server       \
 	trp_file_client  trp_file_server      \
 	datadesc_usage
-#	gs_example_send gs_example_receive
 
 SG_tests =
 
 noinst_PROGRAMS = $(core_tests) $(RL_tests) $(SG_tests)
-noinst_SCRIPTS = run_tests gs_example trp_tcp_usage
+noinst_SCRIPTS = run_tests trp_tcp_usage
 TESTS=run_tests
 
 test: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
@@ -55,7 +54,4 @@ trp_file_client_LDADD=    $(LDADD_RL)
 trp_file_server_LDADD=    $(LDADD_RL)
 
 datadesc_usage_LDADD=     $(LDADD_RL)
-
-#gs_example_send_LDADD=    $(LDADD_UTILS)
-#gs_example_receive_LDADD= $(LDADD_UTILS)
 

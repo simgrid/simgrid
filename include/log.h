@@ -310,13 +310,13 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define CINFO5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, gras_log_priority_info, f,a1,a2,a3,a4,a5)
 #define CINFO6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, gras_log_priority_info, f,a1,a2,a3,a4,a5,a6)
 
-#define CWARNING0(c, f)                   CLOG0(c, gras_log_priority_warning, f)
-#define CWARNING1(c, f,a1)                CLOG1(c, gras_log_priority_warning, f,a1)
-#define CWARNING2(c, f,a1,a2)             CLOG2(c, gras_log_priority_warning, f,a1,a2)
-#define CWARNING3(c, f,a1,a2,a3)          CLOG3(c, gras_log_priority_warning, f,a1,a2,a3)
-#define CWARNING4(c, f,a1,a2,a3,a4)       CLOG4(c, gras_log_priority_warning, f,a1,a2,a3,a4)
-#define CWARNING5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, gras_log_priority_warning, f,a1,a2,a3,a4,a5)
-#define CWARNING6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, gras_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
+#define CWARN0(c, f)                   CLOG0(c, gras_log_priority_warning, f)
+#define CWARN1(c, f,a1)                CLOG1(c, gras_log_priority_warning, f,a1)
+#define CWARN2(c, f,a1,a2)             CLOG2(c, gras_log_priority_warning, f,a1,a2)
+#define CWARN3(c, f,a1,a2,a3)          CLOG3(c, gras_log_priority_warning, f,a1,a2,a3)
+#define CWARN4(c, f,a1,a2,a3,a4)       CLOG4(c, gras_log_priority_warning, f,a1,a2,a3,a4)
+#define CWARN5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, gras_log_priority_warning, f,a1,a2,a3,a4,a5)
+#define CWARN6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, gras_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
 
 #define CERROR0(c, f)                   CLOG0(c, gras_log_priority_error, f)
 #define CERROR1(c, f,a1)                CLOG1(c, gras_log_priority_error, f,a1)
@@ -446,7 +446,7 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define INFO6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_info, f,a1,a2,a3,a4,a5,a6)
 
 /**
- * WARNING6:
+ * WARN6:
  * @f: the format string
  * @a1: first argument of the format
  * @a2: second argument of the format
@@ -457,18 +457,18 @@ extern gras_log_appender_t *gras_log_default_appender;
  *
  * Log something to the current default category under the warning priority.
  *
- * The macros WARNING0 ... WARNING5 naturally also exist, but are not listed here 
+ * The macros WARN0 ... WARN5 naturally also exist, but are not listed here 
  * for sake of clarity. They just differ in the number of arguments passed
  * along with the format string.
  */
 
-#define WARNING0(f)                   LOG0(gras_log_priority_warning, f)
-#define WARNING1(f,a1)                LOG1(gras_log_priority_warning, f,a1)
-#define WARNING2(f,a1,a2)             LOG2(gras_log_priority_warning, f,a1,a2)
-#define WARNING3(f,a1,a2,a3)          LOG3(gras_log_priority_warning, f,a1,a2,a3)
-#define WARNING4(f,a1,a2,a3,a4)       LOG4(gras_log_priority_warning, f,a1,a2,a3,a4)
-#define WARNING5(f,a1,a2,a3,a4,a5)    LOG5(gras_log_priority_warning, f,a1,a2,a3,a4,a5)
-#define WARNING6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
+#define WARN0(f)                   LOG0(gras_log_priority_warning, f)
+#define WARN1(f,a1)                LOG1(gras_log_priority_warning, f,a1)
+#define WARN2(f,a1,a2)             LOG2(gras_log_priority_warning, f,a1,a2)
+#define WARN3(f,a1,a2,a3)          LOG3(gras_log_priority_warning, f,a1,a2,a3)
+#define WARN4(f,a1,a2,a3,a4)       LOG4(gras_log_priority_warning, f,a1,a2,a3,a4)
+#define WARN5(f,a1,a2,a3,a4,a5)    LOG5(gras_log_priority_warning, f,a1,a2,a3,a4,a5)
+#define WARN6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
 
 /**
  * ERROR6:

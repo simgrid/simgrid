@@ -27,7 +27,7 @@ int main(int argc,char *argv[]) {
    char buf[1024];
    char *s1,*s2;
    
-   gras_init_defaultlog(argc,argv,"dynar.thresh=debug");
+   gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
    
    fprintf(stderr,"==== Traverse the empty dynar\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(char *),&free_string));
@@ -174,5 +174,6 @@ int main(int argc,char *argv[]) {
    }
    gras_dynar_free(d);
 
+   gras_exit();
    return 0;
 }

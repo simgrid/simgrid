@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* ddt_use - use of datatypes structs (public)                              */
+/* ddt_exchange - send/recv data described                                  */
 
 /* Authors: Olivier Aumage, Martin Quinson                                  */
 /* Copyright (C) 2003, 2004 the GRAS posse.                                 */
@@ -10,7 +10,7 @@
 
 #include "DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(use,DataDesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(exchange,DataDesc);
 
 static const char *gras_datadesc_cat_names[9] = { 
   "undefined", 
@@ -127,23 +127,6 @@ gras_dd_alloc_ref(gras_dict_t *refs,
     TRY(gras_dict_insert_ext(refs,(const char *) r_ref, r_len, ptr, NULL));
   }
   return no_error;
-}
-
-/**
- * gras_datadesc_get_id_from_name:
- * Returns: -1 in case of error.
- *
- * Retrieve the ID of a previously declared datatype from its name.
- */
-long int
-gras_datadesc_get_id_from_name(const char *name) {
-  gras_error_t errcode;
-  gras_datadesc_type_t *type;
-
-  errcode = gras_datadesc_by_name(name,&type);
-  if (errcode != no_error)
-    return -1;
-  return type->code;
 }
 
 /**
@@ -685,6 +668,8 @@ gras_datadesc_recv(gras_socket_t *sock,
 
   TRY(gras_dict_new(&refs));
   TRY(gras_dd_cbps_new(&state));
+  if (!dst)
+    CRITICAL0("Cannot receive data into a NULL pointer!");
   if (*dst) 
     VERB0("'*dst' not NULL in datadesc_recv. Data to be copied there without malloc");
 

@@ -80,18 +80,12 @@ static gras_error_t test1() {
   return no_error;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
   gras_error_t errcode;
 
-  TRY(gras_log_control_set("root.thresh=debug"));
-  /*
-  //DirectDiagnostics(DIAGDEBUG, stdout);
-  DirectDiagnostics(DIAGINFO, stdout);
-  //  DirectDiagnostics(DIAGLOG, stdout);
-  DirectDiagnostics(DIAGWARN, stderr);
-  DirectDiagnostics(DIAGERROR, stderr);
-  DirectDiagnostics(DIAGFATAL, stderr);
-  */
+  gras_init(argc,argv,"root.thresh=debug"));
   TRYFAIL(test1());
+   
+  gras_exit();
   return 0;
 }

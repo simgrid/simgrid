@@ -17,6 +17,8 @@
 #define TRUE  1
 #define FALSE 0
 
+#define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
+
 #include <gras/error.h>
 #include <gras/log.h>
 
@@ -32,7 +34,6 @@
 #include <gras/process.h>
 #include <gras/virtu.h>
 #include <gras/cond.h>
-
 
 #include <gras/transport.h>
 #include <gras/datadesc.h>

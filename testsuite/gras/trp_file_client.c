@@ -19,7 +19,7 @@ int main(int argc,char *argv[]) {
   gras_error_t errcode;
   char data_send[256];
 
-  gras_init_defaultlog(argc,argv,"trp.thresh=debug");
+  gras_init_defaultlog(&argc,argv,"trp.thresh=debug");
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");
   TRYFAIL(gras_socket_client_from_file("-",&sock));
@@ -30,5 +30,7 @@ int main(int argc,char *argv[]) {
   
   fprintf(stderr,"===[CLIENT]=== Exiting successfully\n");
   gras_socket_close(&sock);
+   
+  gras_exit();
   return 0;
 }

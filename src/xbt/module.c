@@ -23,7 +23,7 @@ struct gras_module_ {
 };
 
 void 
-gras_init(int argc, char **argv) {
+gras_init(int *argc, char **argv) {
    gras_init_defaultlog(argc, argv, NULL);
 }
 
@@ -35,8 +35,8 @@ gras_init(int argc, char **argv) {
  * Initialize the gras mecanisms.
  */
 void
-gras_init_defaultlog(int argc,char **argv, const char *defaultlog) {
-  int i;
+gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
+  int i,j;
   char *opt;
   gras_error_t errcode;
   int found=0;
@@ -44,12 +44,20 @@ gras_init_defaultlog(int argc,char **argv, const char *defaultlog) {
   INFO0("Initialize GRAS");
   
   /** Set logs and init log submodule */
-  for (i=1; i<argc; i++) {
+  for (i=1; i<*argc; i++) {
     if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log="))) {
       found = 1;
       opt=strchr(argv[i],'=');
       opt++;
       TRYFAIL(gras_log_control_set(opt));
+      /*remove this from argv*/
+      for (j=i+1; j<*argc; j++) {
+	argv[j-1] = argv[j];
+      } 
+      argv[j-1] = NULL;
+      (*argc)--;
+      i--; /* compensate effect of next loop incrementation */
+      WARN1("argc %d",*argc);
     }
   }
   if (!found && defaultlog) {
@@ -57,6 +65,7 @@ gras_init_defaultlog(int argc,char **argv, const char *defaultlog) {
   }
    
   /** init other submodules */
+  gras_msg_init();
   gras_trp_init();
   gras_datadesc_init();
 }
@@ -68,6 +77,7 @@ gras_init_defaultlog(int argc,char **argv, const char *defaultlog) {
  */
 void 
 gras_exit(){
+  gras_msg_exit();
   gras_trp_exit();
   gras_datadesc_exit();
   gras_log_exit();

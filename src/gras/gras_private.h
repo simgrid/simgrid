@@ -22,6 +22,8 @@
 #define TRUE  1
 #define FALSE 0
 
+#define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
+
 #include "gras_config.h"
 
 #include "gras/error.h"
@@ -42,7 +44,7 @@
 #include "gras/datadesc.h"
 #include "DataDesc/datadesc_interface.h"
 #include "gras/messages.h"
-#include "Messaging/messaging_interface.h"
+#include "Msg/msg_interface.h"
 
 #include "Virtu/virtu_interface.h"
 

@@ -14,25 +14,18 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(process,GRAS);
 
 gras_error_t
 gras_process_init() {
+  gras_error_t errcode;
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_process_data_t *pd;
+  gras_procdata_t *pd;
   int i;
   
-  if (!(pd=(gras_process_data_t *)malloc(sizeof(gras_process_data_t)))) 
+  if (!(pd=(gras_procdata_t *)malloc(sizeof(gras_procdata_t)))) 
     RAISE_MALLOC;
-
-  WARNING0("Implement msg queue");
-  /*
-  pd->grasMsgQueueLen=0;
-  pd->grasMsgQueue = NULL;
-
-  pd->grasCblListLen = 0;
-  pd->grasCblList = NULL;
-  */
 
   if (MSG_process_set_data(MSG_process_self(),(void*)pd) != MSG_OK) {
     return unknown_error;
   }
+  TRY(gras_procdata_init());
 
   if (!hd) {
     if (!(hd=(gras_hostdata_t *)malloc(sizeof(gras_hostdata_t)))) 
@@ -79,7 +72,7 @@ gras_process_init() {
 gras_error_t
 gras_process_exit() {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_process_data_t *pd=(gras_process_data_t *)MSG_process_get_data(MSG_process_self());
+  gras_procdata_t *pd=(gras_procdata_t *)MSG_process_get_data(MSG_process_self());
   int myPID=MSG_process_self_PID();
   int i;
 
@@ -88,12 +81,8 @@ gras_process_exit() {
   INFO2("GRAS: Finalizing process '%s' (%d)",
 	MSG_process_get_name(MSG_process_self()),MSG_process_self_PID());
 
-  WARNING0("Implement msg queue");
-  /*
-  if (pd->grasMsgQueueLen) {
-    fprintf(stderr,"GRAS: Warning: process %d terminated, but some queued messages where not handled\n",MSG_process_self_PID());
-  }
-  */
+  if (gras_dynar_length(pd->msg_queue))
+    WARN1("process %d terminated, but some queued messages where not handled",MSG_process_self_PID());
 
   for (i=0; i< GRAS_MAX_CHANNEL; i++)
     if (myPID == hd->proc[i])
@@ -115,20 +104,11 @@ gras_process_exit() {
  * Process data
  * **************************************************************************/
 
-void *gras_userdata_get(void) {
-  gras_process_data_t *pd=(gras_process_data_t *)MSG_process_get_data(MSG_process_self());
+gras_procdata_t *gras_procdata_get(void) {
+  gras_procdata_t *pd=(gras_procdata_t *)MSG_process_get_data(MSG_process_self());
 
   gras_assert0(pd,"Run gras_process_init!");
 
-  return pd->userdata;
+  return pd;
 }
 
-void *gras_userdata_set(void *ud) {
-  gras_process_data_t *pd=(gras_process_data_t *)MSG_process_get_data(MSG_process_self());
-
-  gras_assert0(pd,"Run gras_process_init!");
-
-  pd->userdata = ud;
-
-  return pd->userdata;
-}

@@ -38,23 +38,82 @@
 BEGIN_DECL
 
 
+/* datadesc */
 typedef struct s_gras_datadesc_type gras_datadesc_type_t;
+
+/* callbacks prototypes */
+typedef void (*gras_datadesc_type_cb_void_t)(void                 *vars,
+					     gras_datadesc_type_t *p_type,
+					     void                 *data);
+typedef int (*gras_datadesc_type_cb_int_t)(void                 *vars,
+					   gras_datadesc_type_t *p_type,
+					   void                 *data);
 
 /***********************************************
  **** Search and retrieve declared datatype ****
  ***********************************************/
-long int gras_datadesc_get_id_from_name(const char *name);
-
 gras_error_t gras_datadesc_by_name(const char *name,
 				   gras_datadesc_type_t **type);
-gras_error_t gras_datadesc_by_id  (long int code,
-				   gras_datadesc_type_t **type);
-#define gras_datadesc_by_code(a,b) gras_datadesc_by_id(a,b)
 
-/*********************************************
- **** DataDesc callback persistent states ****
- *********************************************/
+/******************************************
+ **** Declare datadescription yourself ****
+ ******************************************/
+
+gras_error_t 
+gras_datadesc_declare_struct(const char            *name,
+			     gras_datadesc_type_t **dst);
+gras_error_t 
+gras_datadesc_declare_struct_append(gras_datadesc_type_t          *struct_type,
+				    const char                    *name,
+				    gras_datadesc_type_t          *field_type);
+gras_error_t 
+gras_datadesc_declare_struct_append_name(gras_datadesc_type_t *struct_type,
+					 const char           *name,
+					 const char          *field_type_name);
+gras_error_t 
+gras_datadesc_declare_union(const char                      *name,
+			    gras_datadesc_type_cb_int_t      selector,
+			    gras_datadesc_type_t           **dst);
+gras_error_t 
+gras_datadesc_declare_union_append(gras_datadesc_type_t          *union_type,
+				   const char                    *name,
+				   gras_datadesc_type_t          *field_type);
+gras_error_t 
+gras_datadesc_declare_union_append_name(gras_datadesc_type_t *union_type,
+					const char           *name,
+					const char           *field_type_name);
+gras_error_t 
+gras_datadesc_declare_ref(const char                      *name,
+			  gras_datadesc_type_t            *referenced_type,
+			  gras_datadesc_type_t           **dst);
+gras_error_t
+gras_datadesc_declare_ref_generic(const char                   *name,
+				  gras_datadesc_type_cb_int_t   discriminant,
+				  gras_datadesc_type_t        **dst);
+gras_error_t 
+gras_datadesc_declare_array_fixed(const char                    *name,
+				  gras_datadesc_type_t          *element_type,
+				  long int                       fixed_size,
+				  gras_datadesc_type_t         **dst);
+gras_error_t 
+gras_datadesc_declare_array_dyn(const char                      *name,
+				gras_datadesc_type_t            *element_type,
+				gras_datadesc_type_cb_int_t      dynamic_size,
+				gras_datadesc_type_t           **dst);
+
+/*********************************
+ * Change stuff within datadescs *
+ *********************************/
+
 typedef struct s_gras_dd_cbps gras_dd_cbps_t;
+void gras_datadesc_cb_set_pre (gras_datadesc_type_t    *type,
+			       gras_datadesc_type_cb_void_t  pre);
+void gras_datadesc_cb_set_post(gras_datadesc_type_t    *type,
+			       gras_datadesc_type_cb_void_t  post);
+
+/********************************************************
+ * Advanced data describing: callback persistent states *
+ ********************************************************/
 
 void *
 gras_dd_cbps_pop (gras_dd_cbps_t        *ps, 
@@ -82,99 +141,7 @@ void
 gras_dd_cbps_block_end(gras_dd_cbps_t *ps);
 
 
-/******************************************
- **** Declare datadescription manually ****
- ******************************************/
 
-typedef void (*gras_datadesc_type_cb_void_t)(void                 *vars,
-					     gras_datadesc_type_t *p_type,
-					     void                 *data);
-typedef int (*gras_datadesc_type_cb_int_t)(void                 *vars,
-					   gras_datadesc_type_t *p_type,
-					   void                 *data);
-
-
-
-/* Create a new type and register it on the local machine */
-#define gras_datadesc_declare_struct(   name,             code) \
-        gras_datadesc_declare_struct_cb(name, NULL, NULL, code)
-
-#define gras_datadesc_declare_struct_add_name(   struct_code,field_name,field_type_name) \
-        gras_datadesc_declare_struct_add_name_cb(struct_code,field_name,field_type_name, NULL, NULL)
-
-#define gras_datadesc_declare_struct_add_code(   struct_code,field_name,field_type_code) \
-        gras_datadesc_declare_struct_add_code_cb(struct_code,field_name,field_type_code, NULL, NULL)
-
-gras_error_t 
-gras_datadesc_declare_struct_cb(const char                   *name,
-				gras_datadesc_type_cb_void_t  pre_cb,
-				gras_datadesc_type_cb_void_t  post_cb,
-				long int                     *code);
-gras_error_t 
-gras_datadesc_declare_struct_add_name_cb(long int                      struct_code,
-					 const char                   *field_name,
-					 const char                   *field_type_name,
-					 gras_datadesc_type_cb_void_t  pre_cb,
-					 gras_datadesc_type_cb_void_t  post_cb);
-
-gras_error_t 
-gras_datadesc_declare_struct_add_code_cb(long int                      struct_code,
-					 const char                   *field_name,
-					 long int                      field_code,
-					 gras_datadesc_type_cb_void_t  pre_cb,
-					 gras_datadesc_type_cb_void_t  post_cb);
-/* union */
-#define gras_datadesc_declare_union(   name,             code) \
-        gras_datadesc_declare_union_cb(name, NULL, NULL, code)
-
-#define gras_datadesc_declare_union_add_name(   union_code,field_name,field_type_name) \
-        gras_datadesc_declare_union_add_name_cb(union_code,field_name,field_type_name, NULL, NULL)
-
-#define gras_datadesc_declare_union_add_code(   union_code,field_name,field_type_code) \
-        gras_datadesc_declare_union_add_code_cb(union_code,field_name,field_type_code, NULL, NULL)
-
-gras_error_t 
-gras_datadesc_declare_union_cb(const char                   *name,
-			       gras_datadesc_type_cb_int_t   field_count,
-			       gras_datadesc_type_cb_void_t  post,
-			       long int                     *code);
-gras_error_t 
-gras_datadesc_declare_union_add_name_cb(long int                      union_code,
-					const char                   *field_name,
-					const char                   *field_type_name,
-					gras_datadesc_type_cb_void_t  pre_cb,
-					gras_datadesc_type_cb_void_t  post_cb);
-gras_error_t 
-gras_datadesc_declare_union_add_code_cb(long int                      union_code,
-					const char                   *field_name,
-					long int                      field_code,
-					gras_datadesc_type_cb_void_t  pre_cb,
-					gras_datadesc_type_cb_void_t  post_cb);
-/* ref */
-#define gras_datadesc_declare_ref(name,ref_type, code) \
-        gras_datadesc_declare_ref_cb(name, ref_type, NULL, NULL, code)
-#define gras_datadesc_declare_ref_disc(name,discriminant, code) \
-        gras_datadesc_declare_ref_cb(name, NULL, discriminant,  NULL, code)
-
-gras_error_t
-gras_datadesc_declare_ref_cb(const char                      *name,
-			     gras_datadesc_type_t            *referenced_type,
-			     gras_datadesc_type_cb_int_t      discriminant,
-			     gras_datadesc_type_cb_void_t     post,
-			     long int                        *code);
-/* array */
-#define gras_datadesc_declare_array(name,elm_type, size, code) \
-        gras_datadesc_declare_array_cb(name, elm_type, size, NULL,         NULL, code)
-#define gras_datadesc_declare_array_dyn(name,elm_type, dynamic_size, code) \
-        gras_datadesc_declare_array_cb(name, elm_type, -1,   dynamic_size, NULL, code)
-
-gras_error_t 
-gras_datadesc_declare_array_cb(const char                      *name,
-			       gras_datadesc_type_t            *element_type,
-			       long int                         fixed_size,
-			       gras_datadesc_type_cb_int_t      dynamic_size,
-			       gras_datadesc_type_cb_void_t     post,
-			       long int                        *code);
 
 /*******************************
  **** About data convertion ****
@@ -187,17 +154,17 @@ int gras_arch_selfid(void); /* ID of this arch */
 gras_error_t
 gras_datadesc_parse(const char *name,
 		    const char *Cdefinition,
-		    long int   *code);
+		    gras_datadesc_type_t **dst);
 #define GRAS_DEFINE_TYPE(name,def) \
   static const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
  
-#define gras_type_symbol_parse(bag,name)                                  \
- _gs_type_parse(bag, _gs_this_type_symbol_does_not_exist__##name)
- 
-#define gs_type_get_by_symbol(bag,name)                  \
+/*#define gras_type_symbol_parse(name)                                  \
+ _gras_datadesc_parse(_gras_this_datadesc_type_symbol_does_not_exist__##name)
+*/ 
+#define gras_datadesc_by_symbol(name)                    \
   (bag->bag_ops->get_type_by_name(bag, NULL, #name) ?    \
      bag->bag_ops->get_type_by_name(bag, NULL, #name) :  \
-     gras_type_symbol_parse(bag, name)                   \
+     gras_datadesc_parse(name)                           \
   )
 
 /*****************************
@@ -245,11 +212,10 @@ typedef struct DataDescriptorStruct {
   sizeof(memberType) * repetitions
 
 gras_error_t
-gras_datadesc_from_nws(const char           *name,
-		       const DataDescriptor *desc,
-		       size_t                howmany,
-		       long int             *code);
-
+gras_datadesc_import_nws(const char           *name,
+			 const DataDescriptor *desc,
+			 size_t                howmany,
+			 gras_datadesc_type_t **dst);
 
 END_DECL
 

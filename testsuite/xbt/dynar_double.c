@@ -17,7 +17,7 @@ int main(int argc,char *argv[]) {
    int cpt,cursor;
    double d1,d2;
    
-   gras_init_defaultlog(argc,argv,"dynar.thresh=debug");
+   gras_init_defaultlog(&argc,argv,"dynar.thresh=debug");
 
    fprintf(stderr,"==== Traverse the empty dynar\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));

@@ -203,7 +203,7 @@ void gras_trp_file_close(gras_socket_t *sock){
 
     /* close the socket */
     if(close(sock->sd) < 0) {
-      WARNING2("error while closing file %d: %s", 
+      WARN2("error while closing file %d: %s", 
 	       sock->sd, strerror(errno));
     }
   }

@@ -221,7 +221,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  *sock,
   
     if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *)&i, s) 
 	|| setsockopt(sd, TcpProtoNumber(), TCP_NODELAY, (char *)&i, s)) {
-      WARNING0("setsockopt failed, cannot condition the accepted socket");
+      WARN0("setsockopt failed, cannot condition the accepted socket");
     }
  
      /* FIXME: bufSize removed until we can have optionsets 
@@ -292,7 +292,7 @@ void gras_trp_tcp_socket_close(gras_socket_t *sock){
 
   /* close the socket */
   if(close(sock->sd) < 0) {
-    WARNING3("error while closing tcp socket %d: %d (%s)\n", 
+    WARN3("error while closing tcp socket %d: %d (%s)\n", 
 	     sock->sd, errno, strerror(errno));
   }
 }
