@@ -1,3 +1,10 @@
+2004-07-19 Martin Quinson
+  Version 0.1.1
+  - Build shared library also
+  - Install html doc to the right location
+  - stop removing maintainer files in make clean
+  - build tests only on make check
+  
 2004-07-13 Martin Quinson
   version 0.1
   - No major issue in previous version => change versionning schema
