@@ -82,24 +82,17 @@ static gras_error_t debuged_remove(gras_dict_t *head,const char*key)
 
 
 static gras_error_t traverse(gras_dict_t *head) {
-  gras_error_t errcode;
   gras_dict_cursor_t *cursor=NULL;
   char *key;
   char *data;
 
-  //  gras_dict_dump(head,&print_str);
-  TRY(gras_dict_cursor_new(head,&cursor));
-
-  while (gras_dict_cursor_next(cursor) == no_error) {
-    TRY(gras_dict_cursor_get_key(cursor,&key));
-    TRY(gras_dict_cursor_get_data(cursor,(void**)&data));
+  gras_dict_foreach(head,cursor,key,data) {
     printf("   - Seen:  %s->%s\n",key,data);
     if (strcmp(key,data)) {
       printf("Key(%s) != value(%s). Abording\n",key,data);
       abort();
     }
   }
-  gras_dict_cursor_free(cursor);
   return no_error;
 }
 

@@ -22,39 +22,27 @@ static void print_str(void *str) {
 
 
 static gras_error_t traverse(gras_dict_t *head) {
-  gras_error_t errcode;
   gras_dict_cursor_t *cursor=NULL;
   char *key;
   char *data;
 
-  //gras_dict_dump(head,(void (*)(void*))&printf);
-  TRY(gras_dict_cursor_new(head,&cursor));
-
-  while (gras_dict_cursor_next(cursor) == no_error) {
-    TRY(gras_dict_cursor_get_key(cursor,&key));
-    TRY(gras_dict_cursor_get_data(cursor,(void**)&data));
+  gras_dict_foreach(head,cursor,key,data) {
     //    printf("   Seen:  %s=%s\n",key,data);
     if (strcmp(key,data)) {
       printf("Key(%s) != value(%s). Abording\n",key,data);
       abort();
     }
   }
-  gras_dict_cursor_free(cursor);
   return no_error;
 }
 
 static gras_error_t countelems(gras_dict_t *head,int*count) {
   gras_dict_cursor_t *cursor;
-  gras_error_t errcode;
   char *key;
   void *data;
   *count=0;
 
-  TRY(gras_dict_cursor_new(head,&cursor));
-
-  while ((errcode=gras_dict_cursor_next(cursor))==no_error) {
-    TRY(gras_dict_cursor_get_data(cursor,&data));
-    TRY(gras_dict_cursor_get_key(cursor,&key));
+  gras_dict_foreach(head,cursor,key,data) {
     (*count)++;
   }
   return no_error;
