@@ -1,0 +1,82 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description>
+  <cpu name="Tremblay" power="98.094999999999999"/>
+  <cpu name="Jupiter" power="76.296000000000006"/>
+  <cpu name="Fafard" power="76.296000000000006"/>
+  <cpu name="Ginette" power="48.492"/>
+  <cpu name="Bourassa" power="48.492"/>
+  <network_link name="6" bandwidth="41.279125" latency="5.9904e-05"/>
+  <network_link name="11" bandwidth="0.25275" latency="0.00570455"/>
+  <network_link name="3" bandwidth="34.285625" latency="0.000514433"/>
+  <network_link name="7" bandwidth="11.618875" latency="0.00018998"/>
+  <network_link name="9" bandwidth="7.20975" latency="0.001461517"/>
+  <network_link name="12" bandwidth="1.792625" latency="0.007877863"/>
+  <network_link name="2" bandwidth="118.6825" latency="0.000136931"/>
+  <network_link name="8" bandwidth="8.158" latency="0.000270544"/>
+  <network_link name="1" bandwidth="34.285625" latency="0.000514433"/>
+  <network_link name="4" bandwidth="10.099625" latency="0.00047978"/>
+  <network_link name="0" bandwidth="41.279125" latency="5.9904e-05"/>
+  <network_link name="10" bandwidth="4.67975" latency="0.000848712"/>
+  <network_link name="5" bandwidth="27.94625" latency="0.000278066"/>
+  <route src="Tremblay" dst="Jupiter">
+    <route_element name="9"/>
+  </route>
+  <route src="Tremblay" dst="Fafard">
+    <route_element name="4"/><route_element name="3"/><route_element name="2"/><route_element name="0"/><route_element name="1"/><route_element name="8"/>
+  </route>
+  <route src="Tremblay" dst="Ginette">
+    <route_element name="4"/><route_element name="3"/><route_element name="5"/>
+  </route>
+  <route src="Tremblay" dst="Bourassa">
+    <route_element name="4"/><route_element name="3"/><route_element name="2"/><route_element name="0"/><route_element name="1"/><route_element name="6"/><route_element name="7"/>
+  </route>
+  <route src="Jupiter" dst="Tremblay">
+    <route_element name="9"/>
+  </route>
+  <route src="Jupiter" dst="Fafard">
+    <route_element name="9"/><route_element name="4"/><route_element name="3"/><route_element name="2"/><route_element name="0"/><route_element name="1"/><route_element name="8"/>
+  </route>
+  <route src="Jupiter" dst="Ginette">
+    <route_element name="9"/><route_element name="4"/><route_element name="3"/><route_element name="5"/>
+  </route>
+  <route src="Jupiter" dst="Bourassa">
+    <route_element name="9"/><route_element name="4"/><route_element name="3"/><route_element name="2"/><route_element name="0"/><route_element name="1"/><route_element name="6"/><route_element name="7"/>
+  </route>
+  <route src="Fafard" dst="Tremblay">
+    <route_element name="8"/><route_element name="1"/><route_element name="0"/><route_element name="2"/><route_element name="3"/><route_element name="4"/>
+  </route>
+  <route src="Fafard" dst="Jupiter">
+    <route_element name="8"/><route_element name="1"/><route_element name="0"/><route_element name="2"/><route_element name="3"/><route_element name="4"/><route_element name="9"/>
+  </route>
+  <route src="Fafard" dst="Ginette">
+    <route_element name="8"/><route_element name="1"/><route_element name="0"/><route_element name="2"/><route_element name="5"/>
+  </route>
+  <route src="Fafard" dst="Bourassa">
+    <route_element name="8"/><route_element name="6"/><route_element name="7"/>
+  </route>
+  <route src="Ginette" dst="Tremblay">
+    <route_element name="5"/><route_element name="3"/><route_element name="4"/>
+  </route>
+  <route src="Ginette" dst="Jupiter">
+    <route_element name="5"/><route_element name="3"/><route_element name="4"/><route_element name="9"/>
+  </route>
+  <route src="Ginette" dst="Fafard">
+    <route_element name="5"/><route_element name="2"/><route_element name="0"/><route_element name="1"/><route_element name="8"/>
+  </route>
+  <route src="Ginette" dst="Bourassa">
+    <route_element name="5"/><route_element name="2"/><route_element name="0"/><route_element name="1"/><route_element name="6"/><route_element name="7"/>
+  </route>
+  <route src="Bourassa" dst="Tremblay">
+    <route_element name="7"/><route_element name="6"/><route_element name="1"/><route_element name="0"/><route_element name="2"/><route_element name="3"/><route_element name="4"/>
+  </route>
+  <route src="Bourassa" dst="Jupiter">
+    <route_element name="7"/><route_element name="6"/><route_element name="1"/><route_element name="0"/><route_element name="2"/><route_element name="3"/><route_element name="4"/><route_element name="9"/>
+  </route>
+  <route src="Bourassa" dst="Fafard">
+    <route_element name="7"/><route_element name="6"/><route_element name="8"/>
+  </route>
+  <route src="Bourassa" dst="Ginette">
+    <route_element name="7"/><route_element name="6"/><route_element name="1"/><route_element name="0"/><route_element name="2"/><route_element name="5"/>
+  </route>
+</platform_description>
