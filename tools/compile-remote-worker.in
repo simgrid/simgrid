@@ -8,6 +8,13 @@
 
 # Where to install the stuff into (REMOTE_PREFIX gets fixed by the makefile)
 PREFIX=$REMOTE_PREFIX
+if echo $PREFIX | egrep '^/' > /dev/null ; then
+  echo "Prefix is an absolute path. Good, it makes configure happy"
+else
+  echo "Change prefix to an absolute path to keep configure happy"
+  PREFIX="$HOME/$PREFIX"
+fi
+echo "(PREFIX=$PREFIX)"
 
 # Where extra libraries are installed (if any)
 LD_LIBRARY_PATH="$PREFIX/lib"
