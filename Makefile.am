@@ -69,8 +69,7 @@ mail:
           mail -e \
 	       -a "From: Arnaud.Legrand@imag.fr" \
 	       -s "New version of GRAS ($$ver)" \
-	       martin.quinson@imag.fr,arnaud.legrand@imag.fr
-
+	       simgrid2-users@listes.ens-lyon.fr
 
 splint:
 	splint `find src -name '*.c' | grep -v RL | grep -v SG` +matchanyintegral -warnposix +boolint -Inws_portability/Include/ -Isrc/include -Isrc/base -Isrc
