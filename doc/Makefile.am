@@ -1,7 +1,7 @@
 DOCSOURCES = $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.doc")
 
 EXTRA_DIST = html Doxyfile.API Doxyfile.Examples Doxyfile.main \
- FAQ.doc index.doc footer.html simgrid_logo.png simgrid_modules.jpg
+ modules.doc FAQ.doc index.doc footer.html simgrid_logo.png simgrid_modules.jpg
 
 DISTCLEANFILES = api_index.doc
 MAINTAINERCLEANFILES = html

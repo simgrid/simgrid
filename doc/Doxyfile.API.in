@@ -406,7 +406,7 @@ INPUT                  = @top_srcdir@/include/ \
                          @top_srcdir@/src/gras/Transport \
                          @top_srcdir@/src/gras/Virtu \
                          @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/src/modules.doc \
+                         @srcdir@/modules.doc \
                          ./api_index.doc \
                          ./logcategories.doc
 
