@@ -33,7 +33,7 @@ write_read(gras_datadesc_type_t *type,void *src, void *dst,
   if (direction == WRITE || direction == RW)
     TRY(gras_datadesc_send(sock, type, src));
   if (direction == RW) 
-    gras_socket_close(&sock);
+    gras_socket_close(sock);
    
   /* read */
   if (direction == RW) 
@@ -43,7 +43,7 @@ write_read(gras_datadesc_type_t *type,void *src, void *dst,
     TRY(gras_datadesc_recv(sock, type, gras_arch_selfid(), dst));
 
   if (direction == RW) 
-    gras_socket_close(&sock);
+    gras_socket_close(sock);
   
   return no_error;
 }
@@ -451,7 +451,7 @@ int main(int argc,char *argv[]) {
   TRYFAIL(test_graph(sock,direction));
 
   if (direction != RW) 
-    gras_socket_close(&sock);
+    gras_socket_close(sock);
   gras_exit();
   return 0;
 }
