@@ -54,7 +54,7 @@ AC_CHECK_FUNCS([gettimeofday usleep \
 
 AC_ARG_ENABLE(context,
   [  --enable-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=ucontext]].],,
-  enable_context=ucontext)
+  enable_context=pthread)
 AC_MSG_CHECKING(on top of what can we build the contexts)
 if test "x$enable_context" = "xucontext"; then
   ac_header=ucontext.h
