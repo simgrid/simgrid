@@ -1,5 +1,7 @@
 /** @addtogroup XBT_API
  *
+ *   - Portability support. 
+ *     - \ref XBT_syscall
  *   - Grounding features
  *     - \ref XBT_log
  *     - \ref XBT_error
@@ -12,14 +14,18 @@
  *     - \ref XBT_fifo
  *     - \ref XBT_swag
  *     - \ref XBT_heap
- *   - Portability support. The targeted audiance of this portability support
- *     is merly the programming environments (\ref MSG_API, \ref GRAS_API and
- *     \ref SMPI_API), not the user code which should get its portability from 
- *     the used programming environment. 
- *     - \ref XBT_context
  *
  *  @{
  */
+
+
+/* *************** *
+ * * PORTABILITY * *
+ * *************** */
+
+    /** @defgroup XBT_syscall Malloc and friends
+     *  @brief malloc and associated functions, killing the program on error
+     */
 
 /* ************* *
  * * GROUNDING * *
@@ -75,9 +81,9 @@
 /**       \addtogroup XBT_heap
           \ingroup XBT_API */
 
-/* *************** *
- * * PORTABILITY * *
- * *************** */
+/* ************************* *
+ * * PORTABILITY-INTERNALS * *
+ * ************************* */
 
  /** \defgroup XBT_context Portable context implementation
   *  \brief Contexts are a higher level system than <tt>setjump/longjmp</tt> 
