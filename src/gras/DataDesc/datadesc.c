@@ -24,7 +24,8 @@ gras_datadesc_init(void) {
   gras_error_t errcode;
 
   VERB0("Initializing DataDesc");
-  errcode = gras_set_new(&gras_datadesc_set_local);
+
+  errcode =  gras_dd_typeset_create(GRAS_THISARCH,&gras_datadesc_set_local);
   gras_assert0(errcode==no_error,
 	       "Impossible to create the data set containg locally known types");
 }
