@@ -1,1 +1,19 @@
-Everything is new or even to be written for now.
+This is a shortened version of the changelog, to let users decide to upgrade
+or not.
+
+0.0.4 (2004-07-11)
+ - compute the inter-field paddings of structure correctly
+ - macro to parse [simple] datatypes w/o the pain of declaring them manually
+ - toysuite to automatize remote compilation
+
+0.0.3 (2004-07-07)
+ - implement convertion between
+
+0.0.2 (2004-07-05)
+ - ping test works in SG
+
+0.0.1 (2004-06-21)
+ - ping test works in RL
+
+Begin of the coding back in june 2003. The first prototype was completely
+rewriten /at least once/ since then.
