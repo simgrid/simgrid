@@ -26,17 +26,17 @@ extern gras_dynar_t *_gras_trp_sockets; /* all existing sockets */
  */
 
 struct s_gras_socket  {
-   gras_trp_plugin_t *plugin;
+  gras_trp_plugin_t *plugin;
    
-   int incoming; /* true if incoming (server) sock, false if client sock */
-   int accepting; /* true if master incoming sock in tcp */
+  int incoming; /* true if incoming (server) sock, false if client sock */
+  int accepting; /* true if master incoming sock in tcp */
    
-   int  sd;
-   int  port; /* port on this side */
-   int  peer_port; /* port on the other side */
-   char *peer_name; /* hostname of the other side */
+  int  sd;
+  int  port; /* port on this side */
+  int  peer_port; /* port on the other side */
+  char *peer_name; /* hostname of the other side */
 
-   void *specific; /* plugin specific data */
+  void *specific; /* plugin specific data */
 };
 	
 

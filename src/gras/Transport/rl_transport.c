@@ -130,7 +130,8 @@ gras_trp_select(double timeout,
     ready = select(max_fds, &FDS, NULL, NULL, p_tout);
     if (ready == -1) {
       switch (errno) {
-      case  EINTR: /* a signal we don't care about occured. We don't care */
+      case  EINTR: /* a signal we don't care about occured. we don't care */
+	/* if we cared, we would have set an handler */
 	continue;
       case EINVAL: /* invalid value */
 	RAISE3(system_error,"invalid select: nb fds: %d, timeout: %d.%d",
@@ -138,7 +139,8 @@ gras_trp_select(double timeout,
       case ENOMEM: 
 	RAISE_MALLOC;
       default:
-	RAISE2(system_error,"Error during select: %s (%d)",strerror(errno),errno);
+	RAISE2(system_error,"Error during select: %s (%d)",
+	       strerror(errno),errno);
       }
       RAISE_IMPOSSIBLE;
     } else if (ready == 0) {
