@@ -8,26 +8,11 @@
 #ifndef _XBT_CONTEXT_PRIVATE_H
 #define _XBT_CONTEXT_PRIVATE_H
 
-#define HAVE_CONTEXT 1
 
 #include "xbt/sysdep.h"
 #include "xbt/context.h"
+#include "portable.h" /* loads context system definitions */
 
-#ifdef HAVE_LIBPTHREAD
-#include <pthread.h>
-typedef struct s_context {
-  pthread_cond_t cond;
-  pthread_mutex_t mutex;
-  pthread_t *thread;            /* the thread that execute the code   */
-  context_function_t code;                /* the scheduler fonction   */
-  int argc;
-  char *argv[];
-} s_context_t;
-#endif
-
-#if HAVE_CONTEXT==1
-#include <stdlib.h>
-#include <ucontext.h>
 #define STACK_SIZE 524288
 typedef struct s_context {
   ucontext_t uc;                /* the thread that execute the code   */
@@ -37,6 +22,19 @@ typedef struct s_context {
   char **argv;
   struct s_context *save;
 } s_context_t;
-#endif
+
+
+#if 0 /* FIXME: KILLME */
+//#ifdef HAVE_LIBPTHREAD
+#include <pthread.h>
+typedef struct s_context {
+  pthread_cond_t cond;
+  pthread_mutex_t mutex;
+  pthread_t *thread;            /* the thread that execute the code   */
+  context_function_t code;                /* the scheduler fonction   */
+  int argc;
+  char *argv[];
+} s_context_t;
+#endif /* ENDOFKILLME*/
 
 #endif              /* _XBT_CONTEXT_PRIVATE_H */

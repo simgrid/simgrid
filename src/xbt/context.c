@@ -2,20 +2,25 @@
 
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
+/* Copyright (c) 2004 Arnaud Legrand.                                       */
+/* Copyright (c) 2004 Martin Quinson.                                       */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "portable.h"
 #include "context_private.h"
 #include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "gras_config.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 
-
-/************************ GNU LIBC CONTEXTS **************************/
-#if USE_CONTEXT==1
+#ifndef HAVE_UCONTEXT_H
+/* don't want to play with conditional compilation in automake tonight, sorry.
+   include directly the c file from here when needed. */
+# include "context_win32.c" 
+#endif
 
 static context_t current_context = NULL;
 static xbt_dynar_t context_to_destroy = NULL;
@@ -138,10 +143,14 @@ void context_yield(context_t context)
 
   return;
 }
-#else 
+
 
 /****************************** PTHREADS ***************************/
-/* #if HAVE_LIBPTHREAD==1 */
+
+/* FIXME: this is dead code as we don't really need it.
+   If you have pthreads, you have contexts (which are better) */
+
+#if 0 
 #ifdef HAVE_LIBPTHREAD  /* Nevermind, let's use pthreads... */
 
 static void *__MSG_process_launcher(void *p)
@@ -247,4 +256,4 @@ MSG_error_t __MSG_context_yield(context_t context)
   return MSG_OK;
 }
 #endif /* HAVE_LIBPTHREAD */
-#endif /* USE_CONTEXT */
+#endif /* 0 */
