@@ -1,5 +1,5 @@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
-AM_CFLAGS=-g
+AM_CFLAGS=-g -O0
 
 CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out
 DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/*
