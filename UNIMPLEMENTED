@@ -1,26 +1,50 @@
-- gras_dd_convert_elm  		  
-  gras_datadesc_cpy
+###
+### Avant 0.5
+###
 
-- callback en reception ??
+- gras_dd_convert_elm  		  
+
+- gras_trp_select [SG]
+
+  gras_trp_sg_socket_client
+  gras_trp_sg_socket_server
+  gras_trp_sg_socket_close
+  gras_trp_sg_select
+  gras_trp_sg_bloc_send
+  gras_trp_sg_bloc_recv
+  gras_trp_sg_flush
+
+- tcp->incoming_socks
+  sock specific tcp (buffsize) inutile
+
+###
+### Avant 1.0
+###
+
+- renomages     
+  gras_os_time
+  gras_os_sleep
+  gras_os_getload
+
+- gras_datadesc_parse
+  gras_datadesc_import_nws
+
+- rawsock
+
+- Documentation (en particulier DD et Msg)
+
+- gras_datadesc_cpy -> donne la taille prise pour donner un poids aux messages
+
+- callback en reception ?? (remettre les pointeurs sur fonction etc)
 
 - Virer cat ignored
+  gras_ddt_new_ignored : Pas portable (taille) => virer cat?
+  Necessaire aux pointeurs sur fonction? Renomer 'void'
 
-gras_ddt_new_ignored : Pas portable (taille) => virer cat?
+###
+### Apres
+### 
 
-gras_ddt_new_parse
-gras_ddt_new_from_nws
-
-
-
-gras_trp_select [SG]
-
-gras_trp_sg_socket_client
-gras_trp_sg_socket_server
-gras_trp_sg_socket_close
-gras_trp_sg_select
-gras_trp_sg_bloc_send
-gras_trp_sg_bloc_recv
-gras_trp_sg_flush
-
-tcp->incoming_socks
-sock specific tcp (buffsize) inutile
+- Adaptative timeout
+- datadesc_set_cste: Donne la valeur par defaut en reception
+  plus de transfert, ce qui est utile pour les pointeurs sur fct

@@ -1,3 +1,30 @@
+TODO:
+   [SG plugin]   
+     - Porting to new standards.
+   [SG select]   
+     - Porting to new standards.
+
+2004-04-21 Martin Quinson  <martin.quinson@tuxfamily.org>
+ [Messaging]
+   - Porting to new standards.
+ [Data description]
+   - interface cleanup. 
+     There is no bag anymore, no need to take extra provision to mask the
+       pointers behind "ID". 
+     Better splitup of functions between files create/exchange/convert.
+       This is still a bit artificial since convert and receive are so
+       interleaved, but anyway.
+ [Virtu(process)]
+   - add a queued message list to procdata (the ones not matching criteria
+     in msg_wait)
+   - factorize some more code between SG and RL wrt procdata
+ [Tests]
+   - use gras_exit in example to track memleaks
+   - get rid of gs_example now that GS is properly integrated into gras
+   - update run_test to integrate the lastest tests (datadesc)
+ [Logging]
+   - rename WARNINGn macros to WARNn since it prooved error-prone
+     
 2004-04-19 Martin Quinson  <martin.quinson@tuxfamily.org>
  [Data description]
    - register init/exit functions within gras module mecanism   
@@ -16,10 +43,6 @@
  [Transport]
    [File plugin] 
      - Bugfix when using a filename explicitely (instead of '-')
-   [SG plugin]   
-     - Porting to new standards.
-   [SG select]   
-     - Porting to new standards.
 
 2004-04-09 Martin Quinson  <martin.quinson@tuxfamily.org>
  [Transport plugins]
