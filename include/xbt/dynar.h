@@ -73,7 +73,7 @@ int  xbt_dynar_cursor_get   (const xbt_dynar_t dynar, int *cursor, void *whereto
  * Iterates over the whole dynar. Example:
  *
  * <programlisting>
- * xbt_dynar_t *dyn;
+ * xbt_dynar_t dyn;
  * int cpt;
  * string *str;
  * xbt_dynar_foreach (dyn,cpt,str) {
