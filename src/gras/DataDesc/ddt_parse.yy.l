@@ -12,8 +12,8 @@
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/DataDesc/ddt_parse.yy.h"
 #include <string.h>
-  YY_BUFFER_STATE input_buffer;
-  FILE *file_to_parse;
+  YY_BUFFER_STATE gras_ddt_input_buffer;
+  FILE *gras_ddt_file_to_parse;
 
   int gras_ddt_parse_line_pos = 1;
   int gras_ddt_parse_col_pos = 0;
@@ -197,9 +197,9 @@ int gras_ddt_parse_lex_n_dump(void) {
 }
 
 void  gras_ddt_parse_pointer_init(const char *file) {
-  file_to_parse = fopen(file,"r");
-  input_buffer = yy_create_buffer( file_to_parse, 10 );
-  yy_switch_to_buffer(input_buffer);
+  gras_ddt_file_to_parse = fopen(file,"r");
+  gras_ddt_input_buffer = yy_create_buffer( gras_ddt_file_to_parse, 10 );
+  yy_switch_to_buffer(gras_ddt_input_buffer);
 
   gras_ddt_parse_line_pos = 1;
   gras_ddt_parse_char_pos = 0;
@@ -208,8 +208,8 @@ void  gras_ddt_parse_pointer_init(const char *file) {
 }
 
 void  gras_ddt_parse_pointer_close(void) {
-  yy_delete_buffer(input_buffer);
-  fclose(file_to_parse);
+  yy_delete_buffer(gras_ddt_input_buffer);
+  fclose(gras_ddt_file_to_parse);
 
   gras_ddt_parse_line_pos = 1;
   gras_ddt_parse_char_pos = 0;
@@ -218,9 +218,9 @@ void  gras_ddt_parse_pointer_close(void) {
 
 
 void  gras_ddt_parse_pointer_string_init(const char *string_to_parse) {
-  input_buffer = yy_scan_string (string_to_parse);
+  gras_ddt_input_buffer = yy_scan_string (string_to_parse);
   definition = string_to_parse;
-  yy_switch_to_buffer(input_buffer);
+  yy_switch_to_buffer(gras_ddt_input_buffer);
 
   gras_ddt_parse_line_pos = 1;
   gras_ddt_parse_char_pos = 0;
@@ -228,7 +228,7 @@ void  gras_ddt_parse_pointer_string_init(const char *string_to_parse) {
 }
 
 void  gras_ddt_parse_pointer_string_close(void) {
-  yy_delete_buffer(input_buffer);
+  yy_delete_buffer(gras_ddt_input_buffer);
 
   gras_ddt_parse_line_pos = 1;
   gras_ddt_parse_char_pos = 0;
