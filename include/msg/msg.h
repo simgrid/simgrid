@@ -79,6 +79,9 @@ MSG_error_t MSG_task_destroy(m_task_t task);
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel);
 MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, 
 			 m_channel_t channel);
+MSG_error_t MSG_task_put_bounded(m_task_t task,
+				 m_host_t dest, m_channel_t channel,
+				 long double max_rate);
 MSG_error_t MSG_task_execute(m_task_t task);
 int MSG_task_Iprobe(m_channel_t channel);
 int MSG_task_probe_from(m_channel_t channel);

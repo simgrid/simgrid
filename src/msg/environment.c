@@ -64,7 +64,8 @@ void MSG_create_environment(const char *file) {
   char *name = NULL;
   void *workstation = NULL;
 
-  surf_workstation_resource_init_CLM03(file);
+/*   surf_workstation_resource_init_CLM03(file); */
+  surf_workstation_resource_init_KCCFLN05(file);
 
   xbt_dict_foreach(workstation_set, cursor, name, workstation) {
     __MSG_host_create(name, workstation, NULL);

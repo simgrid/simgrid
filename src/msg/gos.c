@@ -75,9 +75,11 @@ MSG_error_t MSG_task_get(m_task_t * task,
 
   /* Transfer */
   t_simdata->using++;
+
   t_simdata->comm = surf_workstation_resource->extension_public->
     communicate(MSG_process_get_host(t_simdata->sender)->simdata->host,
-		h->simdata->host, t_simdata->message_size);
+		h->simdata->host, t_simdata->message_size,t_simdata->rate);
+  
   surf_workstation_resource->common_public->action_set_data(t_simdata->comm,t);
 
   if(__MSG_process_isBlocked(t_simdata->sender)) 
@@ -189,14 +191,14 @@ MSG_error_t MSG_task_put(m_task_t task,
     
   if(remote_host->simdata->sleeping[channel]) 
     __MSG_process_unblock(remote_host->simdata->sleeping[channel]);
-  else {
+/*   else { */
     process->simdata->put_host = dest;
     process->simdata->put_channel = channel;
     while(!(task_simdata->comm)) 
       __MSG_process_block();
     process->simdata->put_host = NULL;
     process->simdata->put_channel = -1;
-  }
+/*   } */
 
   do {
     __MSG_task_wait_event(process, task);
@@ -210,6 +212,14 @@ MSG_error_t MSG_task_put(m_task_t task,
 	  == SURF_CPU_OFF)
     MSG_RETURN(MSG_HOST_FAILURE);
   else MSG_RETURN(MSG_TRANSFER_FAILURE);
+}
+
+MSG_error_t MSG_task_put_bounded(m_task_t task,
+				 m_host_t dest, m_channel_t channel,
+				 long double max_rate)
+{
+  task->simdata->rate=max_rate;
+  return(MSG_task_put(task, dest, channel));
 }
 
 /** \ingroup msg_gos_functions

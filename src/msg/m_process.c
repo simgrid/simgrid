@@ -285,9 +285,9 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 		"Got a problem in deciding which action to choose !");
     simdata->suspended = 1;
     if(simdata_task->compute) 
-      surf_workstation_resource->extension_public->suspend(simdata_task->compute);
+      surf_workstation_resource->common_public->suspend(simdata_task->compute);
     else
-      surf_workstation_resource->extension_public->suspend(simdata_task->comm);
+      surf_workstation_resource->common_public->suspend(simdata_task->comm);
   } else {
     m_task_t dummy = MSG_TASK_UNINITIALIZED;
     dummy = MSG_task_create("suspended", 0.0, 0, NULL);
@@ -295,7 +295,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
     simdata = process->simdata;
     simdata->suspended = 1;
     __MSG_task_execute(process,dummy);
-    surf_workstation_resource->extension_public->suspend(dummy->simdata->compute);
+    surf_workstation_resource->common_public->suspend(dummy->simdata->compute);
     __MSG_wait_for_computation(process,dummy);
     simdata->suspended = 0;
 
@@ -334,9 +334,9 @@ MSG_error_t MSG_process_resume(m_process_t process)
 
 
   if(simdata_task->compute) 
-    surf_workstation_resource->extension_public->resume(simdata_task->compute);
+    surf_workstation_resource->common_public->resume(simdata_task->compute);
   else 
-    surf_workstation_resource->extension_public->resume(simdata_task->comm);
+    surf_workstation_resource->common_public->resume(simdata_task->comm);
 
   MSG_RETURN(MSG_OK);
 }
@@ -367,7 +367,7 @@ MSG_error_t __MSG_process_block(void)
   
   process->simdata->blocked=1;
   __MSG_task_execute(process,dummy);
-  surf_workstation_resource->extension_public->suspend(dummy->simdata->compute);
+  surf_workstation_resource->common_public->suspend(dummy->simdata->compute);
   __MSG_wait_for_computation(process,dummy);
   process->simdata->blocked=0;
 
@@ -397,7 +397,7 @@ MSG_error_t __MSG_process_unblock(m_process_t process)
 
   xbt_assert0(simdata->blocked,"Process not blocked");
 
-  surf_workstation_resource->extension_public->resume(simdata_task->compute);
+  surf_workstation_resource->common_public->resume(simdata_task->compute);
 
   MSG_RETURN(MSG_OK);
 }
