@@ -1,7 +1,7 @@
 dnl AC_PROG_FLEX: Check whether the LEXer is flex, and which version it has
 dnl The first arg must be a version number with 3 parts.
 
-dnl hint: I guess you want to check for a version number higher to 2.5.31
+dnl You may want to check for version >= 2.5.31 (the one breaking posix compatibility)
 
 AC_DEFUN([_AC_PROG_FLEX_HELPER_TOO_OLD],[
   AC_MSG_NOTICE([Found flex is too old. Parsers won't get updated (Found v$FLEX_VERSION < v$1)])
