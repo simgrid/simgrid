@@ -70,8 +70,10 @@ gras_trp_select(double timeout,
 
     /* construct the set of socket to ear from */
     FD_ZERO(&FDS);
+    max_fds = 0;
     xbt_dynar_foreach(sockets,cursor,sock_iter) {
       if (sock_iter->incoming) {
+	DEBUG1("Considering socket %d for select",sock_iter->sd);
 #ifndef HAVE_WINSOCK_H
 	if (max_fds < sock_iter->sd)
 	  max_fds = sock_iter->sd;
@@ -80,6 +82,17 @@ gras_trp_select(double timeout,
       } else {
 	DEBUG1("Not considering socket %d for select",sock_iter->sd);
       }
+    }
+
+    if (max_fds == 0) {
+       if (timeout > 0) {
+	  DEBUG0("No socket to select onto. Sleep instead.");
+	  gras_os_sleep(timeout,0);
+	  return timeout_error;
+       } else {
+	  DEBUG0("No socket to select onto. Return directly.");
+	  return timeout_error;
+       }
     }
 
 #ifndef HAVE_WINSOCK_H
@@ -110,7 +123,7 @@ gras_trp_select(double timeout,
       /* no timeout: good luck! */
       p_tout = NULL;
     }
-
+     
     DEBUG1("Selecting over %d socket(s)", max_fds-1);
     ready = select(max_fds, &FDS, NULL, NULL, p_tout);
     if (ready == -1) {
