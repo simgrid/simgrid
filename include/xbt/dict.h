@@ -12,6 +12,7 @@
 #define _XBT_DICT_H
 
 #include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/error.h" /* BEGIN_DECL */
 
 #ifdef  __cplusplus
 extern "C" 
