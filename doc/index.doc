@@ -44,9 +44,10 @@ The SimGrid toolkit is composed of different modules :
 \li GRAS (<em>not functionnal yet</em>) is an ongoing project to emulate virtual virtual platforms
     through SURF. As a consequence a code developped using the GRAS
     framework is able to run as well in the real-world as in the
-    simulator. If you intend to use MSG in a very intensive way
-    (e.g. for simulating a peer-to-peer environment), you may want to
-    switch to GRAS.
+    simulator. The resulting code is very portable and highly interoperable while 
+    remaining very efficient. Even if you do not plan to run your code for real, 
+    you may want to switch to GRAS if you intend to use MSG in a very intensive way
+    (e.g. for simulating a peer-to-peer environment).
 
 \li SMPI (<em>not functionnal yet</em>) is an ongoing project to enable MPI code to run on top of a
     virtual platform through SURF. It follows the same principle as
