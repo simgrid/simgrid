@@ -5,7 +5,7 @@ ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
 AUTOMAKE_OPTIONS = gnu
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
-EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog\
+EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog ChangeLog.debian\
 	acmacro/aci.m4 \
 	tools/gras-check-arch	tools/compile-remote-worker.in \
 	tools/MSG_visualization tools/platform_generation \
