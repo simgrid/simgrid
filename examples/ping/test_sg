@@ -1,5 +1,5 @@
 #! /bin/sh
-if test -e ./ping_simulator ; then
-  exec ./ping_simulator ../WAN_3.platform.txt ping_deployment
+if test -x ./ping_simulator ; then
+  exec ./ping_simulator ../WAN_3.platform.txt ping_deployment.txt
 fi
 exit 77
