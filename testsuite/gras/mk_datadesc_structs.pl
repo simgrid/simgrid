@@ -19,8 +19,7 @@ die 'scalar @types != scalar @abrev' unless (scalar @types == scalar @abrev);
 
 print "/* This file is perl-generated, of course */\n\n";
 
-print "#include <stdio.h>\n";
-print "#include <gras.h>\n\n";
+print "#include \"gras.h\"\n\n";
 
 print "XBT_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic struct test\");\n\n";
 

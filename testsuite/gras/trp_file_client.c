@@ -2,13 +2,13 @@
 
 /* trp_tcp_client: Client of a test case for the tcp transport.             */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <gras.h>
+#include "gras.h"
 #include "gras/Transport/transport_interface.h"
 
 /* XBT_LOG_NEW_DEFAULT_CATEGORY(test); */
@@ -19,7 +19,7 @@ int main(int argc,char *argv[]) {
   char data_send[256];
 
   memset(data_send,0,sizeof(data_send));
-  xbt_init_defaultlog(&argc,argv,"trp.thresh=debug");
+  gras_init(&argc,argv,"trp.thresh=debug");
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");
   TRYFAIL(gras_socket_client_from_file("-",&sock));
