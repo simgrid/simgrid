@@ -11,8 +11,6 @@ Simplifier le déploiement RL
      - pull (l'actuel du gras_stub deploy et qui dépend de wget, pas grave
        pour l'instant)
  - renomer gras-remote-worker en graspe-qqch
-XMLeries
-   - Versionner le surfxml
 Pb des contextes     
    - gras aura besoin des pthreads un jour 
      => KISS et on oublie pth. A la place, on fait du context over pthread
