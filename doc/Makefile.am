@@ -8,7 +8,10 @@ MAINTAINERCLEANFILES = html
 
 if MAINTAINER_MODE
 simgrid_modules.map: simgrid_modules.fig
-	fig2dev -Lmap simgrid_modules.fig | sed 's/imagemap/simgrid_modules/g' | sed 's/\.gif/.png/' | grep -e IMG -e MAP -e AREA > simgrid_modules.map
+	fig2dev -Lmap simgrid_modules.fig | grep -e IMG -e MAP -e AREA | \
+	sed 's/imagemap/simgrid_modules/g' | sed 's/\.gif/.png/' | \
+	sed 's/<IMG /<IMG style="border:0px "/g' | sed 's/\.gif/.png/' \
+	> simgrid_modules.map
 
 simgrid_modules.png: simgrid_modules.fig
 	fig2dev -Lpng simgrid_modules.fig > simgrid_modules.png
