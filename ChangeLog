@@ -11,9 +11,6 @@ Simplifier le déploiement RL
      - pull (l'actuel du gras_stub deploy et qui dépend de wget, pas grave
        pour l'instant)
  - renomer gras-remote-worker en graspe-qqch
-Pb des contextes     
- - Maintenant que les pthreads sont dans l'archive, améliorer le test pour
-   voir si les contexts sont cassés ou non.
 
 ---------------------
 Changements à ce jour
@@ -22,7 +19,8 @@ Changements à ce jour
   Alpha 4 on the path to SimGrid 3
 
   [Arnaud]
-   - Add an implementation of the contexts using pthread
+   - Bugfix: sanitize Paje use in MSG.
+   - Portability fix: Add an implementation of the contexts using pthread
 
   [Martin]
   (misc)
