@@ -50,9 +50,11 @@ void         gras_dynar_shift     (gras_dynar_t *dynar, void *dst);
 void         gras_dynar_map(const gras_dynar_t *dynar, void_f_pvoid_t *operator);
 
 /* cursor functions */
-void _gras_dynar_first     (const gras_dynar_t *dynar, int *cursor);
-int  _gras_dynar_next      (const gras_dynar_t *dynar,
-			   int  *cursor, void *whereto);
+void gras_dynar_cursor_first    (const gras_dynar_t *dynar, int *cursor);
+void gras_dynar_cursor_step     (const gras_dynar_t *dynar,
+				 int  *cursor);
+int  gras_dynar_cursor_get      (const gras_dynar_t *dynar,
+				 int  *cursor, void *whereto);
 
 /**
  * gras_dynar_foreach:
@@ -71,10 +73,15 @@ int  _gras_dynar_next      (const gras_dynar_t *dynar,
  * }</programlisting>
  */
 #define gras_dynar_foreach(_dynar,_cursor,_data) \
-       for (_gras_dynar_first(_dynar,&_cursor);     \
-	    _gras_dynar_next(_dynar,&_cursor,&_data); \
-	    )
-
+       for (gras_dynar_cursor_first(_dynar,&_cursor)      ; \
+	    gras_dynar_cursor_get(_dynar,&_cursor,&_data) ; \
+            gras_dynar_cursor_step(_dynar,&_cursor)         )
+/*
+       for (gras_dynar_length(_dynar) && (_gras_dynar_cursor_first(_dynar,&_cursor),      \
+					  1);     \
+	    gras_dynar_length(_dynar) && gras_dynar_cursor_get(_dynar,&_cursor,&_data); \
+            gras_dynar_cursor_step(_dynar,&_cursor))
+*/
 void gras_dynar_cursor_rm(gras_dynar_t * dynar,
 			  int          * const cursor);
 
