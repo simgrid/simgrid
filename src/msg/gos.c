@@ -90,6 +90,11 @@ MSG_error_t MSG_task_get(m_task_t * task,
     state=surf_workstation_resource->common_public->action_get_state(t_simdata->comm);
   } while (state==SURF_ACTION_RUNNING);
 
+  if(t->simdata->using>1) {
+    xbt_fifo_unshift(msg_global->process_to_run,process);
+    xbt_context_yield();
+  }
+
   if(state == SURF_ACTION_DONE) MSG_RETURN(MSG_OK);
   else if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
 	  == SURF_CPU_OFF)
