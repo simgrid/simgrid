@@ -19,8 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 const char *WARN = "/***********\n * DO NOT EDIT! THIS FILE WERE AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n";
 const char *SIM_FILENAME = "_%s_simulator.c";
 const char *SIM_BINARYNAME = "%s_simulator";
-const char *SIM_FILENAME_LDADD = "_%s_simulator_LDADD";
-const char *SIM_FILENAME_SOURCES = "_%s_simulator_SOURCES";
+const char *SIM_FILENAME_LDADD = "%s_simulator_LDADD";
+const char *SIM_FILENAME_SOURCES = "%s_simulator_SOURCES";
 const char *RL_FILENAME = "_%s_%s.c";
 const char *RL_BINARYNAME = "%s_%s";
 const char *RL_FILENAME_LDADD = "%s_%s_LDADD";
@@ -199,7 +199,7 @@ static void generate_makefile(char *project, char *deployment)
   fprintf(OUT, "# AUTOMAKE variable definition\n");
   fprintf(OUT, "INCLUDES= @CFLAGS_SimGrid@\n\n");
   fprintf(OUT, "PROGRAMS=");
-  fprintf(OUT, SIM_FILENAME,project);
+  fprintf(OUT, SIM_BINARYNAME,project);
 
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT, " ");
@@ -208,25 +208,19 @@ static void generate_makefile(char *project, char *deployment)
 
   fprintf(OUT, "\n\n");
   fprintf(OUT, SIM_FILENAME_SOURCES,project);
-  fprintf(OUT, "=");
+  fprintf(OUT, "=\t");
   fprintf(OUT, SIM_FILENAME,project);
   fprintf(OUT, " %s.c\n", project);
+  fprintf(OUT, SIM_FILENAME_LDADD, project);
+  fprintf(OUT, "=\tpath/to/libsimgrid.a\n\n");
 
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT, RL_FILENAME_SOURCES, project,key);
     fprintf(OUT, "=\t");
     fprintf(OUT, RL_FILENAME, project,key);
     fprintf(OUT, " %s.c\n", project);
-  }
-
-  fprintf(OUT, "\n\n");
-  fprintf(OUT, SIM_FILENAME_LDADD, project);
-  fprintf(OUT, "=\tpath/to/libsimgrid.a\n");
-
-
-  xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT, RL_FILENAME_LDADD, project, key);
-    fprintf(OUT, "=\tpath/to/libgras.a\n");
+    fprintf(OUT, "=\tpath/to/libgras.a\n\n");
   }
 
   fprintf(OUT, "\n# cleanup temps\n");
