@@ -10,11 +10,13 @@
 
 
 #include "xbt/sysdep.h"
+#include "xbt/swag.h"
 #include "xbt/context.h"
 #include "portable.h" /* loads context system definitions */
 
 #define STACK_SIZE 524288
 typedef struct s_xbt_context {
+  s_xbt_swag_hookup_t hookup;
   ucontext_t uc;                /* the thread that execute the code   */
   char stack[STACK_SIZE];
   xbt_context_function_t code;        /* the scheduler fonction   */

@@ -16,6 +16,11 @@
 #include "gras_config.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 
+#define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\
+                              fprintf(stderr, format, ## __VA_ARGS__), \
+                              fprintf(stderr, "\n"))
+#define VOIRP(expr) WARNING("  {" #expr " = %p }", expr)
+
 #ifndef HAVE_UCONTEXT_H
 /* don't want to play with conditional compilation in automake tonight, sorry.
    include directly the c file from here when needed. */
@@ -23,19 +28,33 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 #endif
 
 static xbt_context_t current_context = NULL;
-static xbt_dynar_t context_to_destroy = NULL;
+static xbt_context_t init_context = NULL;
+static xbt_swag_t context_to_destroy = NULL;
+static xbt_swag_t context_living = NULL;
+
+static void xbt_context_destroy(xbt_context_t context)
+{
+  xbt_free(context);
+
+  return;
+}
 
 void xbt_context_init(void)
 {
   if(!current_context) {
-    current_context = xbt_new0(s_xbt_context_t,1);
-    context_to_destroy = xbt_dynar_new(sizeof(xbt_context_t),xbt_free);
+    current_context = init_context = xbt_new0(s_xbt_context_t,1);
+    context_to_destroy = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
+    context_living = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
+    xbt_swag_insert(init_context, context_living);
   }
 }
 
 void xbt_context_empty_trash(void)
 {
-  xbt_dynar_reset(context_to_destroy);
+  xbt_context_t context=NULL;
+
+  while((context=xbt_swag_extract(context_to_destroy)))
+    xbt_context_destroy(context);
 }
 
 static void *__context_wrapper(void *c)
@@ -46,13 +65,15 @@ static void *__context_wrapper(void *c)
 /*   msg_global->current_process = process; */
 
   /*  WARNING("Calling the main function"); */
+  /*   xbt_context_yield(context); */
   (context->code) (context->argc,context->argv);
 
   for(i=0;i<context->argc; i++) 
     if(context->argv[i]) xbt_free(context->argv[i]);
   if(context->argv) xbt_free(context->argv);
 
-  xbt_dynar_push(context_to_destroy, &context);
+  xbt_swag_remove(context, context_living);
+  xbt_swag_insert(context, context_to_destroy);
 
   xbt_context_yield(context);
 
@@ -61,14 +82,11 @@ static void *__context_wrapper(void *c)
 
 void xbt_context_start(xbt_context_t context) 
 {
+/*   xbt_fifo_insert(msg_global->process, process); */
+/*   xbt_fifo_insert(msg_global->process_to_run, process); */
 
-/*   TBX_FIFO_insert(msg_global->process, process); */
-/*   TBX_FIFO_insert(msg_global->process_to_run, process); */
-
-  /*  WARNING("Assigning __MSG_process_launcher to context (%p)",context); */
   makecontext (&(context->uc), (void (*) (void)) __context_wrapper,
 	       1, context);
-
   return;
 }
 
@@ -79,67 +97,72 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 
   res = xbt_new0(s_xbt_context_t,1);
 
-  /*  WARNING("Initializing context (%p)",res); */
-
   xbt_assert0(getcontext(&(res->uc))==0,"Error in context saving.");
 
-  /*  VOIRP(res->uc); */
   res->code = code;
-  res->uc.uc_link = &(current_context->uc); /* FIXME LATER */
+  res->uc.uc_link = NULL;
+/*   res->uc.uc_link = &(current_context->uc); */
   /* WARNING : when this context is over, the current_context (i.e. the 
-     father), is awaken... May result in bugs later.*/
+     father), is awaken... Theorically, the wrapper should prevent using 
+     this feature. */
   res->uc.uc_stack.ss_sp = res->stack;
   res->uc.uc_stack.ss_size = STACK_SIZE;
+
+  xbt_swag_insert(res, context_living);
+
   return res;
-}
-
-static void xbt_context_destroy(xbt_context_t context)
-{
-  xbt_free(context);
-
-  return;
 }
 
 void xbt_context_yield(xbt_context_t context)
 {
+  int return_value = 0;
 
   xbt_assert0(current_context,"You have to call context_init() first.");
-
-  /*   __MSG_context_init(); */
-  /*  fprintf(stderr,"\n"); */
-  /*  WARNING("--------- current_context (%p) is yielding to context(%p) ---------",current_context,context); */
-  /*  VOIRP(current_context); */
-  /*  if(current_context) VOIRP(current_context->save); */
-  /*  VOIRP(context); */
-  /*  if(context) VOIRP(context->save); */
+  
+/*   WARNING("--------- current_context (%p) is yielding to context(%p) ---------",current_context,context); */
+/*   VOIRP(current_context); */
+/*   if(current_context) VOIRP(current_context->save); */
+/*   VOIRP(context); */
+/*   if(context) VOIRP(context->save); */
 
   if (context) {
-/*     m_process_t self = msg_global->current_process; */
     if(context->save==NULL) {
-      /*      WARNING("**** Yielding to somebody else ****"); */
-      /*      WARNING("Saving current_context value (%p) to context(%p)->save",current_context,context); */
+/*       WARNING("**** Yielding to somebody else ****"); */
+/*       WARNING("Saving current_context value (%p) to context(%p)->save",current_context,context); */
       context->save = current_context ;
-      context->uc.uc_link = &(current_context->uc);
-      /*      WARNING("current_context becomes  context(%p) ",context); */
+/*       WARNING("current_context becomes  context(%p) ",context); */
       current_context = context ;
-      /*      WARNING("Current position memorized (context->save). Jumping to context (%p)",context); */
-      if(!swapcontext (&(context->save->uc), &(context->uc))) 
-	xbt_assert0(0,"Context swapping failure");
-      /*      WARNING("I am (%p). Coming back\n",context); */
+/*       WARNING("Current position memorized (context->save). Jumping to context (%p)",context); */
+      return_value = swapcontext (&(context->save->uc), &(context->uc));
+      xbt_assert0((return_value==0),"Context swapping failure");
+/*       WARNING("I am (%p). Coming back\n",context); */
     } else {
       xbt_context_t old_context = context->save ;
-      /*      WARNING("**** Back ! ****"); */
-      /*      WARNING("Setting current_context (%p) to context(%p)->save",current_context,context); */
+/*       WARNING("**** Back ! ****"); */
+/*       WARNING("Setting current_context (%p) to context(%p)->save",current_context,context); */
       current_context = context->save ;
-      /*      WARNING("Setting context(%p)->save to NULL",current_context,context); */
+/*       WARNING("Setting context(%p)->save to NULL",context); */
       context->save = NULL ;
-      /*      WARNING("Current position memorized (%p). Jumping to context (%p)",context,old_context); */
-      if(!swapcontext (&(context->uc), &(old_context->uc)) ) 
-	xbt_assert0(0,"Context swapping failure");
-      /*      WARNING("I am (%p). Coming back\n",context); */
+/*       WARNING("Current position memorized (%p). Jumping to context (%p)",context,old_context); */
+      return_value = swapcontext (&(context->uc), &(old_context->uc));
+      xbt_assert0((return_value==0),"Context swapping failure");
+/*       WARNING("I am (%p). Coming back\n",context); */
     }
-/*     msg_global->current_process = self; */
   }
 
   return;
+}
+
+void xbt_context_exit(void) {
+  xbt_context_t context=NULL;
+
+  xbt_context_empty_trash();
+  xbt_swag_free(context_to_destroy);
+
+  while((context=xbt_swag_extract(context_living)))
+    xbt_context_destroy(context);
+
+  xbt_swag_free(context_living);
+
+  init_context = current_context = NULL ;
 }
