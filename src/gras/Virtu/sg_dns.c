@@ -11,5 +11,9 @@
 #include "gras/Virtu/virtu_sg.h"
 
 const char *gras_os_myname(void) {
+  m_process_t process = MSG_process_self();
+  if ((process != NULL) && (process->simdata))
    return MSG_host_get_name(MSG_host_self());
+  else 
+    return "";
 }
