@@ -13,6 +13,7 @@
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 #include "xbt/error.h"
+#include "xbt/dynar.h" /* void_f_pvoid_t */
 
 BEGIN_DECL()
 

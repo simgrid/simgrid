@@ -15,64 +15,113 @@
 #include "xbt/dynar.h"
 
 BEGIN_DECL()
-  
-/* For now, a config is only a special dynar. But don't rely on it, */
-/* it may change in the future. */
-typedef xbt_dynar_t xbt_cfg_t;
 
-/* type of a typed hash cell */
-typedef enum {
-  xbt_cfgelm_int=0, xbt_cfgelm_double, xbt_cfgelm_string, xbt_cfgelm_host,
-  xbt_cfgelm_type_count
-} e_xbt_cfgelm_type_t;
-
-/*----[ Memory management ]-----------------------------------------------*/
-xbt_cfg_t xbt_cfg_new (void);
-void xbt_cfg_cpy(xbt_cfg_t tocopy,
-        /* OUT */ xbt_cfg_t *whereto);
-void xbt_cfg_free(xbt_cfg_t *cfg);
-void xbt_cfg_dump(const char *name,const char*indent,xbt_cfg_t cfg);
-
-/*----[ Registering stuff ]-----------------------------------------------*/
-/* Register a possible cell */
-void xbt_cfg_register(xbt_cfg_t cfg,
-		       const char *name, e_xbt_cfgelm_type_t type,
-		       int min, int max);
-/* Unregister a possible cell */
-xbt_error_t xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
-
-/* Parse the configuration descriptor and register it */
-/* Should be of the form "<name>:<min nb>_to_<max nb>_<type>", */
-/*  with type being one of 'string','int', 'host' or 'double'  */
-xbt_error_t xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
-
-/* Check that each cell have the right amount of elements */
-xbt_error_t xbt_cfg_check(xbt_cfg_t cfg);
-
-/* Get the type of this option in that repository */
-xbt_error_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name, 
-			       /* OUT */ e_xbt_cfgelm_type_t *type);
-
-/*----[ Setting ]---------------------------------------------------------
- * xbt_cfg_set_* functions.
+/** @addtogroup XBT_config
+ * 
+ *  All modules of the SimGrid toolkit can be configured with this API. 
+ *  User modules and libraries can also use these facilities to handle 
+ *  their own configuration.
  *
- * If the registered maximum is equal to 1, those functions remplace the 
+ *  A configuration set contain several \e variables which have a uniq name
+ *  in the set and can take a given type of value. For example, it may 
+ *  contain a \a size variable, accepting \e int values. 
+ *  Moreover,  of values.
+ *
+ *  It is impossible to set a value to a variable which has not been registered before.
+ *  Usually, the module registers all the options it accepts in the configuration set,
+ *  during its initialization and user code then set and unset values.
+ *
+ *  The easiest way to register a variable is to use the xbt_str_register_str function, 
+ *  which accepts a string representation of the config element descriptor. The syntax 
+ *  is the following: \verbatim <name>:<min nb>_to_<max nb>_<type>\endverbatim
+ *
+ *  For example, <tt>size:1_to_1_int</tt> describes a variable called \e size which 
+ *  must take exactly one value, and the value being an integer.
+ *
+ *  Another example could be <tt>outputfiles:0_to_10_string</tt> which describes a variable
+ *  called \e outputfiles and which can take between 0 and 10 strings as value.
+ *
+ *  To some extend, configuration sets can be seen as typed hash structures.
+ * 
+ *  \todo This great mecanism is not used in SimGrid yet...
+ *
+ *  \todo We need a callback mecanism so that the configurable code get
+ *  notified of configuration changes.
+ *
+ *  \section XBT_cfg_ex Example
+ *
+ *  \dontinclude config_usage.c
+ *
+ *  First, let's create a configuration set with some registered variables.
+ *  This must be done by the configurable library before the user interactions.
+ *
+ *  \skip make_set
+ *  \until end_of_make_set
+ *
+ *  Now, set and get a single value
+ *  \skip get_single_value
+ *  \skip int
+ *  \until cfg_free
+ *
+ *  And now, set and get a multiple value
+ *  \skip get_multiple_value
+ *  \skip dyn
+ *  \until cfg_free
+ *
+ *  All those functions throws mismatch_error if asked to deal with an 
+ *  unregistered variable.
+ *  \skip myset
+ *  \until cfg_free
+ *  @{
+ */
+
+/** @name 1. Type declaration and memory management
+ *
+ *  
+ *
+ *  @{
+ */
+  /** @brief Configuration set are only special dynars. But don't rely on it, it may change. */
+  typedef xbt_dynar_t xbt_cfg_t;
+
+  /** @brief possible content of each configuration cell */
+  typedef enum {
+    xbt_cfgelm_int=0,  /**< int */
+    xbt_cfgelm_double, /**< double */
+    xbt_cfgelm_string, /**< char* */
+    xbt_cfgelm_host,   /**< both a char* (representing the hostname) and an integer (representing the port) */
+    xbt_cfgelm_type_count 
+  } e_xbt_cfgelm_type_t;
+
+  xbt_cfg_t xbt_cfg_new (void);
+  void xbt_cfg_cpy(xbt_cfg_t tocopy, /* OUT */ xbt_cfg_t *whereto);
+  void xbt_cfg_free(xbt_cfg_t *cfg);
+  void xbt_cfg_dump(const char *name,const char*indent,xbt_cfg_t cfg);
+
+ /** @} */
+
+/** @name 2. User interface: changing values
+ *
+ * This is the only interface you should use unless you want to let your 
+ * own code become configurable with this.
+ *
+ * If the variable accept at most one value, those functions replace the 
  * current value with the provided one. If max>1, the provided value is 
  * appended to the list.
  *
- * string values are strdup'ed before use, so you have to free your copy  */
-
-xbt_error_t xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa);
-xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...);
-
-/*
-  Add the cells described in a string to a typed hash.
+ * string values are strdup'ed before use, so you can (and should) free
+ * your copy  
+ *
+ * @{
  */
-xbt_error_t xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
+
+  xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...);
+  xbt_error_t xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa);
+  xbt_error_t xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
 
 
 /*
-  Set the value of the cell @name in @cfg with the provided value.
+  Set the value of the cell \a name in \a cfg with the provided value.
  */
 xbt_error_t xbt_cfg_set_int   (xbt_cfg_t cfg, const char *name, 
 				 int val);
@@ -98,26 +147,42 @@ xbt_error_t xbt_cfg_rm_host  (xbt_cfg_t cfg, const char *name,
 /* rm every values */
 xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);	
 
-/*----[ Getting ]---------------------------------------------------------*/
-/* Returns a pointer to the values actually stored in the cache. Do not   */
-/* modify them unless you really know what you're doing.                  */
-xbt_error_t xbt_cfg_get_int   (xbt_cfg_t  cfg,
-				 const char *name,
-				 int        *val);
-xbt_error_t xbt_cfg_get_double(xbt_cfg_t  cfg,
-				 const char *name,
-				 double     *val);
-xbt_error_t xbt_cfg_get_string(xbt_cfg_t  cfg,
-				 const char *name, 
-				 char      **val);
-xbt_error_t xbt_cfg_get_host  (xbt_cfg_t  cfg, 
-				 const char *name, 
-				 char      **host,
-				 int        *port);
-xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t    cfg,
-				 const char   *name,
-		       /* OUT */ xbt_dynar_t *dynar);
+/* @} */
+/** @name 3.  Registering stuff
+ *
+ *  This how to add new variables to an existing configuration set. Use it to make your code 
+ *  configurable.
+ *
+ *  @{
+ */
+  void xbt_cfg_register(xbt_cfg_t cfg,
+		        const char *name, e_xbt_cfgelm_type_t type,
+		        int min, int max);
+  xbt_error_t xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
+  xbt_error_t xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
+  xbt_error_t xbt_cfg_check(xbt_cfg_t cfg);
+  xbt_error_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name, 
+			       /* OUT */ e_xbt_cfgelm_type_t *type);
+/*  @} */
+/** @name 4. Getting the stored values
+ *
+ * This is how to retrieve the values stored in the configuration set. This is only 
+ * intended to configurable code, naturally.
+ *
+ * Note that those function return a pointer to the values actually stored 
+ * in the set. Do not modify them unless you really know what you're doing.                  
+ *
+ *  @{
+ */
 
+  xbt_error_t xbt_cfg_get_int   (xbt_cfg_t cfg, const char *name, int    *val);
+  xbt_error_t xbt_cfg_get_double(xbt_cfg_t cfg, const char *name, double *val);
+  xbt_error_t xbt_cfg_get_string(xbt_cfg_t cfg, const char *name, char  **val);
+  xbt_error_t xbt_cfg_get_host  (xbt_cfg_t cfg, const char *name, char  **host, int *port);
+  xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t cfg, const char *name, xbt_dynar_t *dynar);
+
+/** @} */
+/** @} */
 END_DECL()
   
 #endif /* _XBT_CONFIG_H_ */

@@ -9,15 +9,26 @@
 #define _XBT_CONTEXT_H
 
 #include "xbt/misc.h"
+#include "xbt/dynar.h" /* void_f_pvoid_t */
 
-/** \name Context types
- *  \ingroup XBT_context
-*/
-/*@{*/
-typedef struct s_xbt_context *xbt_context_t;
-/**< A context */
-typedef int(*xbt_context_function_t)(int argc, char *argv[]);
-/**< A context function */
+/** @addtogroup XBT_context
+ *  
+ *  INTERNALS OF SIMGRID, DON'T USE IT.
+ *
+ *  This is a portable to Unix and Windows context implementation.
+ *
+ * @{
+ */
+
+/** @name Context types
+ *  @{
+ */
+
+  /** @brief A context */
+  typedef struct s_xbt_context *xbt_context_t;
+  /** @brief A context function */
+  typedef int(*xbt_context_function_t)(int argc, char *argv[]);
+
 /*@}*/
 
 void xbt_context_init(void);
@@ -31,5 +42,5 @@ void xbt_context_free(xbt_context_t context);
 void xbt_context_start(xbt_context_t context);
 void xbt_context_yield(void);
 void xbt_context_schedule(xbt_context_t context);
-
+/*@} */
 #endif				/* _XBT_CONTEXT_H */

@@ -15,10 +15,6 @@
 #include "xbt/misc.h" /* BEGIN_DECL */
 #include "xbt/log.h"
 
-#ifdef HAVE_EXECINFO_H
-#include <execinfo.h>  /* to print the backtrace */
-#endif
-
 BEGIN_DECL()
 
 #define _XBT_ERR_PRE do {
@@ -27,15 +23,16 @@ BEGIN_DECL()
 } while (0)
   
 /** @addtogroup XBT_error 
+ *
+ *  This is how the errors get reported in the SimGrid toolkit. This mecanism is not 
+ *  as powerful as exceptions, but since we're using C, there is not much we can do.
+ *
  *  @{*/
 
-/** \brief Kill the programm in silence */
-void xbt_abort(void) _XBT_GNUC_NORETURN;
-
-/** \brief Kill the programm with an error message */
-void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
-
-
+/** @name 1. Type definition and basic operations
+ *
+ *  @{
+ */
 /** \brief Error types */
 typedef enum {
   no_error=0,       /**< succes */
@@ -56,9 +53,13 @@ typedef enum {
   remote_unknown_error
 } xbt_error_t;
 
-const char *xbt_error_name(xbt_error_t errcode);
+ const char *xbt_error_name(xbt_error_t errcode);
+ void xbt_abort(void) _XBT_GNUC_NORETURN;
+ void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
-/** @name TRY macro family
+/** @} */
+
+/** @name 2. TRY macro family
  * 
  * Those functions are used to launch a function call and react automatically 
  * to its return value. They expect such a variable to be declared in the scope:
@@ -109,9 +110,11 @@ const char *xbt_error_name(xbt_error_t errcode);
 } while(0)
 
 /** @}*/
-/** @name RAISE macro family
+/** @name 3. RAISE macro family
  *
  *  Return a error code, doing some logs on stderr.
+ *
+ *  @todo This should use the logging features, not stderr
  * 
  *  @{
  */
@@ -154,10 +157,10 @@ const char *xbt_error_name(xbt_error_t errcode);
 
 /**@}*/
 /** 
- * \name assert macro familly
+ * \name 4. assert macro familly
  *
  * Those are the GRAS version of the good ol' assert macro. You can pass them a format message and 
- * arguments, just as if it where a printf.
+ * arguments, just as if it where a printf. It is converted to a CRITICALn logging request.
  *
  * @{
  */
@@ -171,7 +174,8 @@ const char *xbt_error_name(xbt_error_t errcode);
 #define xbt_assert5(cond,msg,a,b,c,d,e)
 #define xbt_assert6(cond,msg,a,b,c,d,e,f)
 #else
-/** @hideinitializer  */
+/** @brief The condition which failed will be displayed.
+    @hideinitializer  */
 #define xbt_assert(cond)                  if (!(cond)) { CRITICAL1("Assertion %s failed", #cond); xbt_abort(); }
 /** @hideinitializer  */
 #define xbt_assert0(cond,msg)             if (!(cond)) { CRITICAL0(msg); xbt_abort(); }
@@ -191,7 +195,7 @@ const char *xbt_error_name(xbt_error_t errcode);
 
 /** @}*/
 
-/** @name Useful predefined errors 
+/** @name 5. Useful predefined errors 
  *
  *  @{ 
  */

@@ -49,15 +49,6 @@ typedef struct {
    int port;
 } xbt_host_t;
 
-/** \name Free functions
- *  \ingroup XBT_dynar
- * Pointer to a function freeing something
-*/
-/*@{*/
-typedef   void (void_f_ppvoid_t)(void**); /**< Pointer to a function freeing something */
-typedef   void (void_f_pvoid_t) (void*);  /**< Pointer to a function freeing something */
-/*@}*/
-
 END_DECL()
 
 #endif /* XBT_MISC_H */

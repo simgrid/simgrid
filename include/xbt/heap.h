@@ -9,6 +9,7 @@
 #define _XBT_HEAP_H
 
 #include "xbt/misc.h"
+#include "xbt/dynar.h" /* void_f_pvoid_t */
 
 /** \brief Heap data type 
     \ingroup XBT_heap
