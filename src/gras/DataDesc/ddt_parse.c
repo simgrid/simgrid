@@ -404,6 +404,7 @@ static gras_datadesc_type_t *parse_struct(char *definition) {
       free(field.type_name);
     }
   }
+  gras_datadesc_declare_struct_close(struct_type);
   if (errcode != mismatch_error)
     return NULL; /* FIXME: LEAK! */
 
