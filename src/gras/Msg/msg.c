@@ -351,7 +351,7 @@ gras_msg_wait(double           timeout,
 
 /** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
  *
- * @param timeOut: How long to wait for incoming messages
+ * @param timeOut: How long to wait for incoming messages (in seconds)
  * @return the error code (or no_error).
  *
  * Messages are passed to the callbacks.
@@ -371,43 +371,61 @@ gras_msg_handle(double timeOut) {
   gras_msgtype_t  msgtype;
 
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
-  gras_cblist_t  *list;
+  gras_cblist_t  *list=NULL;
   gras_msg_cb_t       cb;
+   
+  int timerexpected;
 
   VERB1("Handling message within the next %.2fs",timeOut);
   
   untiltimer = gras_msg_timer_handle();
   DEBUG2("[%.0f] Next timer in %f sec", gras_os_time(), untiltimer);
   if (untiltimer == 0.0) {
-     /* A timer was already elapsed */
+     /* A timer was already elapsed and handled */
      return no_error;
+  }
+  if (untiltimer != -1.0) {
+     timerexpected = 1;
+     timeOut = MIN(timeOut, untiltimer);
+  } else {
+     timerexpected = 0;
   }
    
   /* get a message (from the queue or from the net) */
   if (xbt_dynar_length(pd->msg_queue)) {
+    DEBUG0("Get a message from the queue");
     xbt_dynar_shift(pd->msg_queue,&msg);
     expeditor = msg.expeditor;
     msgtype   = msg.type;
     payload   = msg.payload;
     errcode   = no_error;
   } else {
-    errcode = gras_trp_select(MIN(timeOut,untiltimer), &expeditor);
+    errcode = gras_trp_select(timeOut, &expeditor);
     if (errcode != no_error && errcode != timeout_error)
        return errcode;
     if (errcode != timeout_error)
        TRY(gras_msg_recv(expeditor, &msgtype, &payload, &payload_size));
   }
 
-  if (errcode == timeout_error && untiltimer < timeOut) {
-     /* A timer elapsed before the arrival of any message even if we select()ed a bit */
-     untiltimer = gras_msg_timer_handle();
-     if (untiltimer == 0.0) {
-	return no_error;
+  if (errcode == timeout_error ) {
+     if (timerexpected) {
+	  
+	/* A timer elapsed before the arrival of any message even if we select()ed a bit */
+	untiltimer = gras_msg_timer_handle();
+	if (untiltimer == 0.0) {
+	   return no_error;
+	} else {
+	   xbt_assert1(untiltimer>0, "Negative timer (%f). I'm puzzeled", untiltimer);
+	   ERROR1("No timer elapsed, in contrary to expectations (next in %f sec)",
+		  untiltimer);
+	   return timeout_error;
+	}
+	
      } else {
-	WARN1("Weird. I computed that a timer should elapse shortly, but none did (I still should wait %f sec)",
-	      untiltimer);
+	/* select timeouted, and no timer elapsed. Nothing to do */
 	return timeout_error;
      }
+     
   }
    
   /* A message was already there or arrived in the meanwhile. handle it */
