@@ -28,7 +28,8 @@ TESTS=run_tests
 
 test: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests
-
+valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
+	./run_tests valgrind
 
 # LDADD_UTILS is still a separate var to distinguish core tester from RL tester
 LDADD_UTILS=$(top_srcdir)/src/base/libgrasrl.a 
