@@ -144,6 +144,16 @@
 	  This a system call virtualization layer, which also acts as a
           portability layer.
 	  
+    \section GRAS_todo TODO
+     Documentation related:
+       - Add an example to the \ref GRAS_msg section, at least
+       - Document examples/gras/gras_stub_generator utility and how to deal
+         with the fact that programs must have a main in RL and not in SG.
+       - Document example/gras/ping as it uses almost all of the GRAS
+         features.
+     
+     Code related: too long to be written here. See the TODO file
+     
     @{
 */     
 
