@@ -37,7 +37,7 @@ void surf_action_change_state(surf_action_t action, e_surf_action_state_t state)
 {
   surf_action_state_t action_state = &(action->resource_type->states); 
 
-  xbt_swag_extract(action, action->state_set);
+  xbt_swag_remove(action, action->state_set);
 
   if(state == SURF_ACTION_READY) 
     action->state_set = action_state->ready_action_set;

@@ -28,7 +28,8 @@ typedef struct xbt_swag {
 xbt_swag_t xbt_swag_new(size_t offset);
 void xbt_swag_init(xbt_swag_t swag, size_t offset);
 void xbt_swag_insert(void *obj, xbt_swag_t swag);
-void *xbt_swag_extract(void *obj, xbt_swag_t swag);
+void *xbt_swag_remove(void *obj, xbt_swag_t swag);
+void *xbt_swag_extract(xbt_swag_t swag);
 int xbt_swag_size(xbt_swag_t swag);
 int xbt_swag_belongs(void *obj, xbt_swag_t swag);
 

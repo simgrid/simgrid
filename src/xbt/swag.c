@@ -53,7 +53,7 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
   swag->tail = obj;
 }
 
-void *xbt_swag_extract(void *obj, xbt_swag_t swag)
+void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 {
   size_t offset = swag->offset;
 
@@ -82,6 +82,27 @@ void *xbt_swag_extract(void *obj, xbt_swag_t swag)
     PREV(obj, offset) = NEXT(obj, offset) = NULL;
   }
   (swag->count)--;
+  return obj;
+}
+
+void *xbt_swag_extract(xbt_swag_t swag)
+{
+  size_t offset = swag->offset;
+  void *obj = NULL;
+
+  if ((!swag) || (!(swag->head)))
+    return NULL;
+
+  obj = swag->head;
+
+  if (swag->head == swag->tail) {	/* special case */
+    swag->head = swag->tail = NULL;
+  } else {
+    swag->head = NEXT(obj, offset);
+    PREV(swag->head, offset) = NULL;
+    NEXT(obj, offset) = NULL;
+  }
+
   return obj;
 }
 

@@ -20,7 +20,7 @@ typedef struct lmm_element {
 } s_lmm_element_t, *lmm_element_t;
 #define insert_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->element_set))
 #define insert_active_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->active_element_set))
-#define remove_active_elem_in_constraint(elem) xbt_swag_extract(elem,&(elem->constraint->active_element_set))
+#define remove_active_elem_in_constraint(elem) xbt_swag_remove(elem,&(elem->constraint->active_element_set))
 
 typedef struct lmm_constraint {
   /* hookup to system */
@@ -60,15 +60,15 @@ typedef struct lmm_system {
   s_xbt_swag_t saturated_constraint_set;	/* a list of lmm_constraint_t_t */
 } s_lmm_system_t;
 
-#define extract_variable(sys) xbt_swag_extract(xbt_swag_getFirst(&(sys->variable_set)),&(sys->variable_set))
-#define extract_constraint(sys) xbt_swag_extract(xbt_swag_getFirst(&(sys->constraint_set)),&(sys->constraint_set))
+#define extract_variable(sys) xbt_swag_remove(xbt_swag_getFirst(&(sys->variable_set)),&(sys->variable_set))
+#define extract_constraint(sys) xbt_swag_remove(xbt_swag_getFirst(&(sys->constraint_set)),&(sys->constraint_set))
 #define insert_variable(sys,var) xbt_swag_insert(var,&(sys->variable_set))
 #define insert_constraint(sys,cnst) xbt_swag_insert(cnst,&(sys->constraint_set))
-#define remove_variable(sys,var) do {xbt_swag_extract(var,&(sys->variable_set));\
-                                 xbt_swag_extract(var,&(sys->saturated_variable_set));} while(0)
-#define remove_constraint(sys,cnst) do {xbt_swag_extract(cnst,&(sys->constraint_set));\
-                                        xbt_swag_extract(cnst,&(sys->saturated_constraint_set));} while(0)
-#define remove_active_constraint(sys,cnst) xbt_swag_extract(cnst,&(sys->active_constraint_set))
+#define remove_variable(sys,var) do {xbt_swag_remove(var,&(sys->variable_set));\
+                                 xbt_swag_remove(var,&(sys->saturated_variable_set));} while(0)
+#define remove_constraint(sys,cnst) do {xbt_swag_remove(cnst,&(sys->constraint_set));\
+                                        xbt_swag_remove(cnst,&(sys->saturated_constraint_set));} while(0)
+#define remove_active_constraint(sys,cnst) xbt_swag_remove(cnst,&(sys->active_constraint_set))
 #define make_constraint_active(sys,cnst) xbt_swag_insert(cnst,&(sys->active_constraint_set))
 #define make_constraint_inactive(sys,cnst) remove_active_constraint(sys,cnst)
 

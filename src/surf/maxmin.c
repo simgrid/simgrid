@@ -64,7 +64,7 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 
   for (i = 0; i < var->cnsts_number; i++) {
     elem = &var->cnsts[i];
-    xbt_swag_extract(elem, &(elem->constraint->element_set));
+    xbt_swag_remove(elem, &(elem->constraint->element_set));
     if (xbt_swag_size(&(elem->constraint->element_set)))
       make_constraint_inactive(sys, elem->constraint);
   }
@@ -174,7 +174,7 @@ static void saturated_constraints_update(lmm_system_t sys,
     *min_usage = cnst->remaining / cnst->usage;
 
     while ((useless_cnst = xbt_swag_getFirst(&(sys->saturated_constraint_set))))
-      xbt_swag_extract(useless_cnst, &(sys->saturated_constraint_set));
+      xbt_swag_remove(useless_cnst, &(sys->saturated_constraint_set));
 
     xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
   } else if (*min_usage == cnst->remaining / cnst->usage) {
@@ -195,7 +195,7 @@ static void saturated_variables_update(lmm_system_t sys)
     elem_list = &(cnst->active_element_set);
     xbt_swag_foreach(elem, elem_list)
 	xbt_swag_insert(elem->variable, &(sys->saturated_variable_set));
-    xbt_swag_extract(cnst, cnst_list);
+    xbt_swag_remove(cnst, cnst_list);
   }
 
 }
@@ -266,7 +266,7 @@ void lmm_solve(lmm_system_t sys)
 	cnst->usage -= elem->value / var->weight;
 	remove_active_elem_in_constraint(elem);
       }
-      xbt_swag_extract(var, var_list);
+      xbt_swag_remove(var, var_list);
     }
 
     /* Find out which variables reach the maximum */
