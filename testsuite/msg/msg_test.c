@@ -182,7 +182,7 @@ void test_all(const char *platform_file,const char *application_file)
     MSG_launch_application(application_file);
   }
   MSG_main();
-  printf("Simulation time %Lg\n",MSG_getClock());
+  printf("Simulation time %g\n",MSG_getClock());
 }
 
 int main(int argc, char *argv[])
