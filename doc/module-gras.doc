@@ -63,18 +63,19 @@
 
     \section GRAS_maingen_script Generating the main()s manually with
     
-    This is done by the stub_generator binary, which lives in
-    the tools/gras/ directory. Here is the calling syntax:
-    \verbatim stub_generator <project_name> <deployment_file>\endverbatim
+    This is done by the gras_stub_generator program, which gets installed on
+    <tt>make install</tt> (the source resides in the tools/gras/ directory).
+    Here is the calling syntax: 
+    \verbatim gras_stub_generator <project_name> <deployment_file.xml>\endverbatim
     
     It parses the deployment file, searching for all the kind of processes
     you have in your project. It then generates the following C files:
-     - a file _<project_name>_<process_kind>.c for each process kind you
+     - a <tt>_<project_name>_<process_kind>.c</tt> file for each process kind you
        have\n
        They are used to launch your project in real life. They
        contain a main() in charge of initializing the GRAS infrastructure and
        launching your code afterward.
-     - a file _<project_name>_simulator.c.\n
+     - a <tt>_<project_name>_simulator.c</tt> file.\n
        This file is suited to the simulation mode. It contains a main()
        function initializing the simulator and launching your project within.
     
@@ -84,7 +85,7 @@
     
     Unfortunately, all this is still partially documented. I guess I ought
     to improve this situation somehow. In the meanwhile, check the generated 
-    code, sorry. 
+    code and maybe also the GRAS \ref GRAS_example, sorry. 
         
     \section GRAS_maingen_make Integration within your Makefile 
     
@@ -95,12 +96,12 @@
  PROCESSES=list of processes type in your project
 
  $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(NAME).c $(NAME)_deployment.xml
-        path/to/stub_generator $(NAME) $(NAME)_deployment.xml >/dev/null
+        path/to/gras_stub_generator $(NAME) $(NAME)_deployment.xml >/dev/null
 \endverbatim
 
     Of course, your personal millage may vary. For the \ref GRAS_ex_ping, may read:
 \verbatim _ping_client.c _ping_server.c _ping_simulator.c: ping.c ping_deployment.xml 
-        $(top_srcdir)/tools/gras//stub_generator ping ping_deployment.xml >/dev/null
+        $(top_srcdir)/tools/gras/gras_stub_generator ping ping_deployment.xml >/dev/null
 \endverbatim
 
      */
