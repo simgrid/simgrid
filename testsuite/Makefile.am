@@ -34,8 +34,8 @@ valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests valgrind
 
 # LDADD_UTILS is still a separate var to distinguish core tester from RL tester
-LDADD_UTILS=$(top_srcdir)/src/base/libgrasrl.a 
-LDADD_RL=   $(top_srcdir)/src/base/libgrasrl.a   
+LDADD_UTILS=$(top_srcdir)/src/base/libgrasrl.la 
+LDADD_RL=   $(top_srcdir)/src/base/libgrasrl.la   
 
 log_usage_LDADD=          $(LDADD_UTILS)
 
