@@ -4,7 +4,7 @@ DISTCLEANFILES =  *~
 ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
 AUTOMAKE_OPTIONS = gnu
 
-EXTRA_DIST = bootstrap COPYING INSTALL NEWS README TODO AUTHORS \
+EXTRA_DIST = bootstrap COPYING INSTALL NEWS README TODO AUTHORS ChangeLog\
 	acmacro/aci.m4 \
 	tools/gras-check-arch	tools/compile-remote-worker.in
 
