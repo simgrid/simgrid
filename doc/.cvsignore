@@ -5,3 +5,4 @@ Doxyfile.Examples
 Doxyfile.main
 api_index.doc
 logcategories.doc
+simgrid_modules.map simgrid_modules.png

@@ -1,0 +1,4 @@
+Makefile.in Makefile
+_*.c
+.deps .libs
+gras_stub_generator
