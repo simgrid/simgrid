@@ -39,16 +39,12 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 void         gras_trp_sg_socket_close(gras_socket_t *sd);
 
 gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sd,
-				    char *data,
+				    const char *data,
 				    long int size);
 
 gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sd,
 				    char *data,
 				    long int size);
-
-/* FIXME
-  gras_error_t gras_trp_sg_flush(gras_socket_t *sd);
-*/
 
 /***
  *** Specific plugin part
@@ -95,6 +91,7 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
   plug->chunk_send    = gras_trp_sg_chunk_send;
   plug->chunk_recv    = gras_trp_sg_chunk_recv;
 
+  plug->flush         = NULL; /* nothing cached */
 
   return no_error;
 }
@@ -244,7 +241,7 @@ typedef struct {
 } sg_task_data_t;
 
 gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
-				    char *data,
+				    const char *data,
 				    long int size) {
   m_task_t task=NULL;
   static unsigned int count=0;
@@ -265,9 +262,9 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
 
   task=MSG_task_create(name,0,((double)size)/(1024.0*1024.0),task_data);
 
-  DEBUG4("send chunk %s from %s to %s on channel %d",
+  DEBUG5("send chunk %s from %s to  %s:%d (size=%ld)",
 	 name, MSG_host_get_name(MSG_host_self()),
-	 MSG_host_get_name(sock_data->to_host), sock_data->to_chan);
+	 MSG_host_get_name(sock_data->to_host), sock_data->to_chan,size);
   if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) {
     RAISE0(system_error,"Problem during the MSG_task_put");
   }
@@ -284,16 +281,20 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
   sg_task_data_t *task_data;
   gras_trp_sg_sock_data_t *sock_data = sock->data;
 
-  DEBUG3("recv chunk on %s from %s on channel %d",
-	 MSG_host_get_name(MSG_host_self()),
-	 MSG_host_get_name(sock_data->to_host), sock_data->to_chan);
+  GRAS_IN;
+  DEBUG4("recv chunk on %s ->  %s:%d (size=%ld)",
+	 MSG_host_get_name(sock_data->to_host),
+	 MSG_host_get_name(MSG_host_self()), sock_data->to_chan, size);
   if (MSG_task_get(&task, (sock->raw ? pd->rawChan : pd->chan)) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_get()");
 
   task_data = MSG_task_get_data(task);
-  gras_assert2(task_data->size == size,
-	       "Got %d bytes when %ld where expected",
-	       task_data->size, size);
+  if (task_data->size != size)
+    RAISE5(mismatch_error,
+	   "Got %d bytes when %ld where expected (in %s->%s:%d)",
+	   task_data->size, size,
+	   MSG_host_get_name(sock_data->to_host),
+	   MSG_host_get_name(MSG_host_self()), sock_data->to_chan);
   memcpy(data,task_data->data,size);
   free(task_data->data);
   free(task_data);
@@ -301,12 +302,6 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
   if (MSG_task_destroy(task) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_destroy()");
 
+  GRAS_OUT;
   return no_error;
 }
-
-/*FIXME
-
-gras_error_t gras_trp_sg_flush(gras_socket_t *sd){
-  RAISE_UNIMPLEMENTED;
-}
-*/
