@@ -8,6 +8,9 @@
 #ifndef MSG_H
 #define MSG_H
 
+#include "xbt/misc.h"
+
+BEGIN_DECL()
 #include "msg/datatypes.h"
 
 /************************** Global ******************************************/
@@ -113,5 +116,5 @@ MSG_error_t MSG_get_errno(void);
 /* m_link_t MSG_link_merge(const char *name, m_link_t src1, m_link_t src2); */
 /* m_link_t MSG_get_link_by_name(const char *name); */
 /* void MSG_tracelink(m_host_t dest, const char* **names, int *count); */
-
+END_DECL()
 #endif

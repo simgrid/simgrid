@@ -7,6 +7,9 @@
 
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
+#include "xbt/misc.h"
+
+BEGIN_DECL()
 
 /** \defgroup m_datatypes_management MSG Data Types 
     \brief This section describes the different datatypes provided by MSG.
@@ -134,4 +137,6 @@ typedef enum {
  *    it is generally not possible to interact directly with a link...
  */
 typedef struct m_link *m_link_t;
+
+END_DECL()
 #endif
