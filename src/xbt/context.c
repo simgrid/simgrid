@@ -130,7 +130,7 @@ static void *__context_wrapper(void *c)
 /** \name Functions 
  *  \ingroup XBT_context
  */
-/*@{*/
+/* @{ */
 /** Context module initialization
  *
  * \warning It has to be called before using any other function of this module.
@@ -289,5 +289,4 @@ void xbt_context_free(xbt_context_t context)
 
   return;
 }
-
-/*@}*/
+/* @} */

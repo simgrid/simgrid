@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap, xbt, "Heap");
 /** \name Functions 
  *  \ingroup XBT_heap
  */
-/*@{*/
+/* @{ */
 /**
  * \param init_size initial size of the heap
  * \param free_func function to call on each element when you want to free
@@ -186,4 +186,4 @@ static void xbt_heap_increaseKey(xbt_heap_t H, int i)
   }
   return;
 }
-/*@}*/
+/* @} */

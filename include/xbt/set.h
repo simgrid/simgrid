@@ -98,8 +98,8 @@ int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *cursor,
        xbt_set_cursor_get_or_free(&(cursor),(xbt_set_elm_t*)&(elm));          \
        xbt_set_cursor_step(cursor) )
 
-/*@}*/
-/*@}*/
+/* @} */
+/* @} */
 END_DECL()
 
 #endif /* _XBT_SET_H */

@@ -12,14 +12,25 @@
 #include "xbt/sysdep.h"
 #include "xbt/swag.h"
 #include "xbt/dynar.h" /* void_f_pvoid_t */
-#include "portable.h" /* loads context system definitions */
+#include "portable.h"  /* loads context system definitions */
 
 #include "xbt/context.h"
 
+#ifdef S_SPLINT_S
+/* Dummy definition for splint since it chokes on ucontext.h */
+typedef struct ucontext {
+   struct ucontext *uc_link;
+   sigset_t uc_sigmask;
+   int uc_stack;
+   int uc_mcontext;
+} ucontext_t;
+typedef int CONTEXT;
+#endif 
+
 #ifdef USE_PTHREADS
-#include <pthread.h>
+#  include <pthread.h>
 #else
-#define STACK_SIZE 524288
+#  define STACK_SIZE 524288
 #endif     /* USE_PTHREADS */
 
 typedef struct s_xbt_context {

@@ -9,6 +9,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/error.h"
+#include "xbt/sysdep.h"
 
 /**
  * \brief Usefull to do nice error repporting messages.

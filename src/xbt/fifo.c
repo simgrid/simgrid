@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO");
 /** \name Functions 
  *  \ingroup XBT_fifo
  */
-/*@{*/
+/* @{ */
 
 /** Constructor
  * \return a new fifo
@@ -394,6 +394,6 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
   if(i) return i->prev;
   return NULL;
 }
-/*@}*/
+/* @} */
 
 

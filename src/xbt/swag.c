@@ -33,7 +33,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(swag,xbt,"Swag : O(1) set library");
 /** \name Functions 
  *  \ingroup XBT_swag
  */
-/*@{*/
+/* @{ */
 
 /** Creates a new swag.
  * \param offset where the hookup is located in the structure
@@ -239,4 +239,4 @@ int xbt_swag_belongs(void *obj, xbt_swag_t swag)
   return ((NEXT(obj, swag->offset)) || (PREV(obj, swag->offset))
 	  || (swag->head == obj));
 }
-/*@}*/
+/* @} */

@@ -175,5 +175,5 @@ xbt_dynar_foreach (dyn,cpt,str) {
 
 END_DECL()
 
-/*@}*/
+/* @} */
 #endif /* _XBT_DYNAR_H */

@@ -155,7 +155,7 @@ typedef enum {
           __FILE__,__LINE__,__FUNCTION__,a1,a2,a3,a4,a5,a6); \
   _XBT_ERR_POST(code)
 
-/**@}*/
+/** @} */
 /** 
  * \name 4. assert macro familly
  *
@@ -193,7 +193,7 @@ typedef enum {
 #define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); xbt_abort(); }
 #endif
 
-/** @}*/
+/** @} */
 
 /** @name 5. Useful predefined errors 
  *
@@ -205,8 +205,8 @@ typedef enum {
 #define DIE_IMPOSSIBLE xbt_assert0(0,"The Impossible did happen (yet again)")
 #define xbt_assert_error(a) xbt_assert1(errcode == (a), "Error %s unexpected",xbt_error_name(errcode))
 
-/** @}*/
-/**@}*/
+/** @} */
+/** @} */
 
 END_DECL()
 

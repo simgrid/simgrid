@@ -27,7 +27,7 @@
     do his job but believe me, you don't want to try to play with 
     those structs directly. Use them as an abstract datatype.
 */
-/*@{*/
+/* @{ */
 typedef struct xbt_swag_hookup {
   void *next;
   void *prev;
@@ -64,7 +64,7 @@ typedef struct xbt_swag {
   int count;
 } s_xbt_swag_t, *xbt_swag_t;
 /**< A typical swag */
-/*@}*/
+/* @} */
 
 xbt_swag_t xbt_swag_new(size_t offset);
 void xbt_swag_free(xbt_swag_t swag);
@@ -104,7 +104,7 @@ static __inline__ void *xbt_swag_getFirst(xbt_swag_t swag)
  *
  * Iterates over the whole swag. 
  */
-/*@{*/
+/* @{ */
 #define xbt_swag_foreach(obj,swag)                            \
    for((obj)=xbt_swag_getFirst((swag));                       \
        (obj)!=NULL;                                           \
@@ -130,6 +130,6 @@ static __inline__ void *xbt_swag_getFirst(xbt_swag_t swag)
     You can safely modify the \a swag while using this loop. 
     Well, safely... Err. You can remove \a obj without having any 
     trouble at least.  */
-/*@}*/
+/* @} */
 
 #endif    /* _XBT_SWAG_H */

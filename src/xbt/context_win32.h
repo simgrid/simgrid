@@ -19,7 +19,9 @@
 #ifndef UCONTEXT_H
 #define UCONTEXT_H
 
-#include <windows.h>
+#ifndef S_SPLINT_S
+#  include <windows.h>
+#endif
 
 typedef struct __stack {
 	void *ss_sp;

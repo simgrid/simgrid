@@ -15,9 +15,9 @@
 #ifndef _XBT_LOG_H_
 #define _XBT_LOG_H_
 
-#include <stdarg.h>
+#include "xbt/misc.h"
 
-#include "xbt/sysdep.h"
+#include <stdarg.h>
 
 /**\brief Log priorities
  * \ingroup XBT_log
@@ -392,7 +392,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * for sake of clarity. They just differ in the number of arguments passed
  * along with the format string.
  */
-/*@{*/
+/* @{ */
 #define DEBUG0(f)                   LOG0(xbt_log_priority_debug, f)
 #define DEBUG1(f,a1)                LOG1(xbt_log_priority_debug, f,a1)
 #define DEBUG2(f,a1,a2)             LOG2(xbt_log_priority_debug, f,a1,a2)
@@ -402,7 +402,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define DEBUG6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6)
 #define DEBUG7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
 #define DEBUG8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
-/*@}*/
+/* @} */
 
 /** \name VERB
  * \ingroup XBT_log
@@ -419,7 +419,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * for sake of clarity. They just differ in the number of arguments passed
  * along with the format string.
  */
-/*@{*/
+/* @{ */
 #define VERB0(f)                   LOG0(xbt_log_priority_verbose, f)
 #define VERB1(f,a1)                LOG1(xbt_log_priority_verbose, f,a1)
 #define VERB2(f,a1,a2)             LOG2(xbt_log_priority_verbose, f,a1,a2)
@@ -427,7 +427,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define VERB4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_verbose, f,a1,a2,a3,a4)
 #define VERB5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5)
 #define VERB6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6)
-/*@}*/
+/* @} */
 
 /** \name INFO
  * \ingroup XBT_log
@@ -444,7 +444,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * for sake of clarity. They just differ in the number of arguments passed
  * along with the format string.
  */
-/*@{*/
+/* @{ */
 #define INFO0(f)                   LOG0(xbt_log_priority_info, f)
 #define INFO1(f,a1)                LOG1(xbt_log_priority_info, f,a1)
 #define INFO2(f,a1,a2)             LOG2(xbt_log_priority_info, f,a1,a2)
@@ -452,7 +452,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define INFO4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_info, f,a1,a2,a3,a4)
 #define INFO5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_info, f,a1,a2,a3,a4,a5)
 #define INFO6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6)
-/*@}*/
+/* @} */
 
 /** \name WARN
  * \ingroup XBT_log
@@ -469,7 +469,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * for sake of clarity. They just differ in the number of arguments passed
  * along with the format string.
  */
-/*@{*/
+/* @{ */
 #define WARN0(f)                   LOG0(xbt_log_priority_warning, f)
 #define WARN1(f,a1)                LOG1(xbt_log_priority_warning, f,a1)
 #define WARN2(f,a1,a2)             LOG2(xbt_log_priority_warning, f,a1,a2)
@@ -477,7 +477,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define WARN4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_warning, f,a1,a2,a3,a4)
 #define WARN5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_warning, f,a1,a2,a3,a4,a5)
 #define WARN6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
-/*@}*/
+/* @} */
 
 /** \name ERROR
  * \ingroup XBT_log
@@ -494,7 +494,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * for sake of clarity. They just differ in the number of arguments passed
  * along with the format string.
  */
-/*@{*/
+/* @{ */
 #define ERROR0(f)                   LOG0(xbt_log_priority_error, f)
 #define ERROR1(f,a1)                LOG1(xbt_log_priority_error, f,a1)
 #define ERROR2(f,a1,a2)             LOG2(xbt_log_priority_error, f,a1,a2)
@@ -502,7 +502,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define ERROR4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_error, f,a1,a2,a3,a4)
 #define ERROR5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_error, f,a1,a2,a3,a4,a5)
 #define ERROR6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6)
-/*@}*/
+/* @} */
 
 /** \name CRITICAL
  * \ingroup XBT_log
@@ -519,7 +519,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * for sake of clarity. They just differ in the number of arguments passed
  * along with the format string.
  */
-/*@{*/
+/* @{ */
 #define CRITICAL0(f)                   LOG0(xbt_log_priority_critical, f)
 #define CRITICAL1(f,a1)                LOG1(xbt_log_priority_critical, f,a1)
 #define CRITICAL2(f,a1,a2)             LOG2(xbt_log_priority_critical, f,a1,a2)
@@ -527,7 +527,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CRITICAL4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_critical, f,a1,a2,a3,a4)
 #define CRITICAL5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_critical, f,a1,a2,a3,a4,a5)
 #define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
-/*@}*/
+/* @} */
 
 #define XBT_IN               LOG1(xbt_log_priority_trace, ">> begin of %s",     _XBT_GNUC_FUNCTION)
 #define XBT_IN1(fmt,a)       LOG2(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_GNUC_FUNCTION, a)
