@@ -21,7 +21,10 @@ msg[5]: discriminent = Archi & msg type & Flags
 	  
  	  2: successful return (usual datatype attached as payload)
 	  3: error return (payload = remoterr)
-	  4..7: reserved.
+	  
+	  4..7: idem, with group communication (ask for forward)
+	        list of receivers (and path for answer) placed before the
+                payload 
 
 msg[6..8]: message serial (for answers; omitted for one-ways)
            short in binary encoding (loop every 65536)
