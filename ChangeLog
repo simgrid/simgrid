@@ -1,4 +1,33 @@
-2004-11-07 Martin Quinson
+2004-10-29 Martin Quinson
+  - Introduction of the remote errors. 
+    They are the result of a RMI/RPC on the remote machine.
+    ErrCodes being scalar values, you can't get the host on which those
+    errors did happen. Extending the error mecanism as in Gnome is possible.
+    No idea yet whether it is a good idea.
+    
+2004-10-28 Martin Quinson
+  - Interface revolution: the Starred Structure Eradication.
+    I used to do typedef struct {} toto_t; and then handle *toto_t.
+    Arnaud (and Oli) didn't like it, and I surrendered. Now, you have:
+      - ???_t is a valid type (builded with typedef)
+      - s_toto_t is a structure (access to fields with .)
+      - s_toto   is a structure needing 'struct' keyword to be used
+      - e_toto_t is an enum
+      -   toto_t is an 'object' (struct*)
+    Exemple:
+      typedef struct s_toto {} s_toto_t, *toto_t;
+      typedef enum {} e_toto_t;
+    Moreover, only toto_t (and e_toto_t) are public. The rest (mainly
+     s_toto_t) is private.
+    
+  - While I was at it, all gras_<obj>_free() functions want a gras_<obj>_t*
+    so that it can set the variable to NULL. It was so for dicts and sets,
+    it changed for dynars.
+    
+  - Fix a bunch of memleaks in dict_remove
+  - Fix a bug in sg/server_socket opening: it failed all the time.
+
+2004-10-07 Martin Quinson
   - Speed up dynar lookup operation a bit.
   
     gras_dynar_get is dead. 
@@ -19,7 +48,7 @@
 
     So, this brings the dict_crash test from ~33s to ~25s (200000 elms).
 
-2004-11-04 Martin Quinson
+2004-10-05 Martin Quinson
   - Allow to (en/dis)able the cycle detection at run time.
   
     Whether we should check for cycle or not is now a property of each
