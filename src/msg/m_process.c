@@ -485,9 +485,12 @@ int __MSG_process_isBlocked(m_process_t process)
 
 
 const char* xbt_procname(void) {
+  const char res = NULL;
   m_process_t process = MSG_process_self();
   if ((process != NULL) && (process->simdata))
-    return MSG_process_get_name(process);
+    res = MSG_process_get_name(process);
+  if (res) 
+    return res;
   else
     return "";
 }
