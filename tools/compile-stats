@@ -36,8 +36,8 @@ for VERSION in `ls buildlogs|grep -v html` ; do
 
     ## Extract some info out there
     last=`tail -n 1 buildlogs/$VERSION/$file`
-    sys=`grep "checking target system type..." buildlogs/$VERSION/$file| \
-	 sed 's/checking target system type...//'`
+    sys=`grep -e "^build='[^']*'\$" buildlogs/$VERSION/$file| \
+	 sed "s/^build='\([^']*\)'\$/\1/"`
     grassys=`grep "^#define GRAS_THISARCH" buildlogs/$VERSION/$file| \
              sed 's/.*GRAS_THISARCH //'`
 
