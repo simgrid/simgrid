@@ -564,7 +564,7 @@ static double share_cpu_KCCFLN05_resources(double now)
 	  scale -= ROUTE(action->src->id,action->dst->id).impact_on_dst_with_other_send *
 	    lmm_variable_getvalue(action->variable);
 	}
-	if(scale<0.0) scale=0.0;
+	if(scale<0.0) scale=0.1;
 	xbt_assert0(scale>=0.0,"Negative interference !");
       }
       lmm_update_constraint_bound(maxmin_system_cpu_KCCFLN05,workstation->constraint,
