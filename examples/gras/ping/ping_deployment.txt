@@ -1,4 +1,0 @@
-<DEPLOYMENT>
-  Bellemare server 4000
-  Gaston client Bellemare 4000
-</DEPLOYMENT>

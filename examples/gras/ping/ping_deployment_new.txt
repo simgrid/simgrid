@@ -1,2 +1,0 @@
-"cpu A" server 4000
-"cpu B" client 125 4000
