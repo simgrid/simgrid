@@ -1,3 +1,11 @@
+2004-08-18 Martin Quinson
+  Version 0.6.2 (protocol not changed; API changed)
+  - Interface cleanup: gras_msgtype_by_name returns the type (instead of a
+     gras_error_t), and NULL when not found. Functions expecting a msgtype
+     as argument (msg_wait; msg_send) deal with NULL argument by providing a
+     hopefully usefull message.
+  - Portability to prehistoric sparcs again
+
 2004-08-17 Martin Quinson
   Version 0.6.1 (protocol not changed; ABI not changed)
   - prealloc some buffers to speed things up

@@ -3,7 +3,7 @@ AC_PREREQ(2.59)
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.6.1],[martin.quinson@ens-lyon.fr])
+AC_INIT([GRAS],[0.6.2],[martin.quinson@ens-lyon.fr])
 AC_CONFIG_SRCDIR([src/include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 
@@ -79,6 +79,7 @@ dnl ####[ maint mode ]#######################################################
 AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
 then
+#   enable_iso_c=yes                 Ouais, un autre jour
    GNOME_COMPILE_WARNINGS(yes)
 fi
 
