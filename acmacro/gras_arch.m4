@@ -44,7 +44,7 @@ dnl warning, this does not work with char (quite logical)
 dnl
 AC_DEFUN([GRAS_TWO_COMPLEMENT],
 [
-AC_MSG_CHECKING(whether $1 is two-compliment)
+AC_MSG_CHECKING(whether $1 is two-complement)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include "confdefs.h"
 union {
    signed $1 testInt;
@@ -55,11 +55,11 @@ union {
    return ((unsigned int)intTester.bytes[0] +
 	   (unsigned int)intTester.bytes[sizeof($1) - 1]) - 509; /* should be 0 */
 ]])], dnl end of AC LANG PROGRAM
-[two_compliment=yes],[two_compliment=no] )dnl end of AC COMPILE IFELSE
+[two_complement=yes],[two_complement=no] )dnl end of AC COMPILE IFELSE
 
-AC_MSG_RESULT($two_compliment)
-if test x$two_compliment != xyes ; then
-  AC_MSG_ERROR([GRAS works only two-compliment integers (yet)])
+AC_MSG_RESULT($two_complement)
+if test x$two_complement != xyes ; then
+  AC_MSG_ERROR([GRAS works only two-complement integers (yet)])
 fi
 ])
 
@@ -133,7 +133,7 @@ AC_DEFUN([GRAS_ARCH],
 [
 # Check for the architecture
 AC_C_BIGENDIAN(endian=1,endian=0,AC_MSG_ERROR([GRAS works only for little or big endian systems (yet)]))
-dnl Make sure we don't run on a non-two-compliment arch, since we dunno convert them
+dnl Make sure we don't run on a non-two-complement arch, since we dunno convert them
 GRAS_TWO_COMPLEMENT(int)
 AC_DEFINE_UNQUOTED(GRAS_BIGENDIAN,$endian,[define if big endian])
           
