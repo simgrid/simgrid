@@ -31,6 +31,7 @@ int main(int argc,char *argv[]) {
   sprintf(data_send,"Hello, I am a little test data to send.");
   fprintf(stderr,"===[CLIENT]=== Send data\n");
   TRYFAIL(gras_trp_chunk_send(sock,data_send, sizeof(data_send)));
+  TRYFAIL(gras_trp_flush(sock));
   fprintf(stderr,"===[CLIENT]=== Waiting for the ACK\n");
   TRYFAIL(gras_trp_chunk_recv(sock,data_recv, sizeof(data_recv)));
   
