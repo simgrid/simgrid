@@ -17,6 +17,8 @@ INCLUDES= -I$(top_srcdir)/include \
           @CFLAGS_SimGrid@
 EXTRA_DIST= \
         \
+	portable.h \
+	\
         xbt/dict_private.h \
         xbt/heap_private.h \
         xbt/fifo_private.h \
@@ -103,6 +105,8 @@ COMMON_S=\
   surf/surf_parse.c                                                          \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   \
+  gras/gras.c \
+  \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
   \
   gras/DataDesc/ddt_create.c          \
@@ -125,7 +129,7 @@ libgrasrl_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \
   \
   gras/Virtu/rl_process.c        gras/Virtu/rl_time.c                   gras/Virtu/rl_conditional.c
-libgrasrl_la_LDFLAGS = $(VERSION_INFO)
+libgrasrl_la_LDFLAGS = $(VERSION_INFO) @GRAS_WINSOCK_DEP@
 
 if HAVE_SG
   libgrassg_la_SOURCES= $(COMMON_S) \
