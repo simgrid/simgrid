@@ -161,30 +161,29 @@ gras_msgtype_declare_v(const char            *name,
  *
  * Retrieve a datatype description from its name
  */
-gras_error_t 
-gras_msgtype_by_name (const char     *name,
-		      gras_msgtype_t **dst) {
-  return gras_msgtype_by_namev(name,0,dst);
+gras_msgtype_t * gras_msgtype_by_name (const char *name) {
+  return gras_msgtype_by_namev(name,0);
 }
 /**
  * gras_msgtype_by_namev:
  *
  * Retrieve a datatype description from its name and version
  */
-gras_error_t
-gras_msgtype_by_namev(const char      *name,
-		      short int        version,
-		      gras_msgtype_t **dst) {
+gras_msgtype_t * gras_msgtype_by_namev(const char      *name,
+				       short int        version) {
+  gras_msgtype_t *res;
 
   gras_error_t errcode;
   char *namev = make_namev(name,version); 
 
   errcode = gras_set_get_by_name(_gras_msgtype_set, namev,
-				 (gras_set_elm_t**)dst);
+				 (gras_set_elm_t**)&res);
+  if (errcode != no_error)
+    res = NULL;
   if (name != namev) 
     free(namev);
-
-  return errcode;
+  
+  return res;
 }
 
 /**
@@ -199,6 +198,11 @@ gras_msg_send(gras_socket_t  *sock,
 
   gras_error_t errcode;
   static gras_datadesc_type_t *string_type=NULL;
+
+  if (!msgtype)
+    RAISE0(mismatch_error,
+	   "Cannot send the NULL message (did msgtype_by_name fail?)");
+
   if (!string_type) {
     string_type = gras_datadesc_by_name("string");
     gras_assert(string_type);
@@ -297,6 +301,10 @@ gras_msg_wait(double                 timeout,
   
   *expeditor = NULL;
   payload_got = NULL;
+
+  if (!msgt_want)
+    RAISE0(mismatch_error,
+	   "Cannot wait for the NULL message (did msgtype_by_name fail?)");
 
   VERB1("Waiting for message %s",msgt_want->name);
 
