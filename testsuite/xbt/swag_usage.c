@@ -5,7 +5,7 @@
 typedef struct {
   s_xbt_swag_hookup_t setA;
   s_xbt_swag_hookup_t setB;
-  char *name;
+  const char *name;
 } shmurtz, s_shmurtz_t, *shmurtz_t;
 
 int main(void)
