@@ -25,7 +25,7 @@ gras_error_t gras_process_init() {
   return no_error;
 }
 gras_error_t gras_process_exit() {
-  WARN0("FIXME: not implemented (=> leaking on exit :)");
+  gras_procdata_exit();
   return no_error;
 }
 
