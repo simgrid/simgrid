@@ -96,7 +96,7 @@ typedef struct s_gras_dd_cat_field {
 
   char 	   *name;
   long int  offset[gras_arch_count];
-  int       code;
+  gras_datadesc_type_t *type;
   
   gras_datadesc_type_cb_void_t pre;
   gras_datadesc_type_cb_void_t post;
@@ -121,6 +121,7 @@ enum e_gras_dd_scalar_encoding {
 };
 typedef struct s_gras_dd_cat_scalar {
   enum e_gras_dd_scalar_encoding encoding;
+  gras_ddt_scalar_type_t type; /* to check easily that redefinition matches*/
 } gras_dd_cat_scalar_t;
 
 /**
@@ -150,10 +151,10 @@ typedef struct s_gras_dd_cat_union {
  * Specific fields of a reference
  */
 typedef struct s_gras_dd_cat_ref {
-  int	 	 		code;
+  gras_datadesc_type_t     *type;
 
   /* callback used to return the referenced type number  */
-  gras_datadesc_type_cb_int_t   selector;
+  gras_datadesc_selector_t  selector;
 } gras_dd_cat_ref_t;
 
 
@@ -163,7 +164,7 @@ typedef struct s_gras_dd_cat_ref {
  * Specific fields of an array
  */
 typedef struct s_gras_dd_cat_array {
-  int	 	 		code;
+  gras_datadesc_type_t *type;
 
   /* element_count < 0 means dynamically defined */
   long int                  	  fixed_size;
@@ -214,8 +215,6 @@ struct s_gras_datadesc_type {
   char                                *name;
   unsigned int                         name_len;
         
-  unsigned int                         refcounter;
-   
   /* payload */
   long int                             size[gras_arch_count];
   
@@ -230,8 +229,10 @@ struct s_gras_datadesc_type {
 };
 
 /***************************
- * Type creation functions *
+ * constructor/desctructor *
  ***************************/
+void gras_datadesc_free(gras_datadesc_type_t *type);
+
 gras_error_t 
 gras_datadesc_scalar(const char                       *name,
 		     gras_ddt_scalar_type_t           type,

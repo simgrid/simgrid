@@ -79,7 +79,7 @@ gras_error_t gras_trp_buf_init_sock(gras_socket_t *sock) {
   data->out.data = NULL;
   data->out.pos  = 0;
   //  data->buffsize = 32 * 1024 - 4; /* default socket buffsize (32k) - headers */ 
-  data->buffsize = 1000 * 1024 ; /* 1Mb */ 
+  data->buffsize = 100 * 1024 ; /* 100k */ 
   sock->bufdata = data;
   return no_error;
 }

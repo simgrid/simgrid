@@ -106,9 +106,11 @@ Describing data to be exchanged
 </para>
 
 @name: 
-@discriminant: 
+@selector: 
 @dst: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@discriminant: 
 
 
 <!-- ##### FUNCTION gras_datadesc_struct ##### -->

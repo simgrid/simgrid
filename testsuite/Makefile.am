@@ -13,8 +13,8 @@ core_tests =                                  \
 	dynar_int dynar_double dynar_string   \
 	dict_usage dict_crash                 \
 	set_usage                             \
-	log_usage                             \
-	config_usage
+	log_usage                             
+#	config_usage
 # multidict_crash 
 
 RL_tests =                                    \

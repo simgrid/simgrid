@@ -184,7 +184,6 @@ int gras_datadesc_size(gras_datadesc_type_t *type) {
  */
 void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
   int cpt;
-  gras_error_t errcode;
 
   printf("DataDesc dump:");
   if(!ddt) {
@@ -192,7 +191,6 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
     return;
   }
   printf ("%s (ID:%d)\n",ddt->name,ddt->code);
-  printf ("  refcounter=%d\n",ddt->refcounter);
   printf ("  category: %s\n",gras_datadesc_cat_names[ddt->category_code]);
 
   printf ("  size[");
@@ -227,19 +225,12 @@ void gras_datadesc_type_dump(const gras_datadesc_type_t *ddt){
   if (ddt->category_code == e_gras_datadesc_type_cat_struct) {
     gras_dd_cat_struct_t  struct_data;
     gras_dd_cat_field_t  *field;
-    gras_datadesc_type_t *sub_type;
 
     struct_data = ddt->category.struct_data;
     gras_dynar_foreach(struct_data.fields, cpt, field) {
     printf(">>> Dump field #%d (%s) (offset=%ld)\n",
 	   cpt,field->name,field->offset[GRAS_THISARCH]);
-    errcode=gras_datadesc_by_id(field->code, &sub_type);
-    if (errcode != no_error) {
-      ERROR4("Got %s while searching for the sub type %d, #%d of %s",
-	     gras_error_name(errcode),field->code,cpt,ddt->name);
-      gras_abort();
-    }
-    gras_datadesc_type_dump(sub_type);
+    gras_datadesc_type_dump(field->type);
     printf("<<< end dump field #%d (%s)\n",cpt,field->name);
     }
  }

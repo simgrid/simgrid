@@ -79,7 +79,7 @@ gras_error_t gras_set_add    (gras_set_t     *set,
 
   errcode = gras_dict_get_ext (set->dict, 
 				    elm->name, elm->name_len,
-				    (void**) &found_in_dict);
+				    (void**)&found_in_dict);
   if (errcode == no_error) {
     if (elm == found_in_dict) {
       DEBUG2("Ignoring request to insert the same element twice (key %s ; id %d)",
@@ -142,27 +142,22 @@ gras_error_t gras_set_get_by_name_ext(gras_set_t     *set,
 /**
  * gras_set_get_by_code:
  * @set:
- * @name: Name of the searched cell
- * @name_len: length of the name, when strlen cannot be trusted
+ * @id: what you're looking for
  * @dst: where to put the found data into
  *
- * get a data stored in the cell by providing its name (and the length
- * of the name, when strlen cannot be trusted because you don't use a char*
- * as name, you weird guy).
+ * get a data stored in the cell by providing its id. 
+ * @warning, if the ID does not exists, you're getting into trouble
  */
 gras_error_t gras_set_get_by_id      (gras_set_t     *set,
 				      int             id,
 				      /* OUT */gras_set_elm_t **dst) {
-  if (id < gras_dynar_length(set->dynar) &&
-      id >= 0) {
-    gras_dynar_get(set->dynar,id,dst);
-    DEBUG3("Lookup type of id %d (of %d): %s", 
-	   id, gras_dynar_length(set->dynar), (*dst)->name);
+
+  /* Don't bother checking the bounds, the dynar does so */
+
+  gras_dynar_get(set->dynar,id,dst);
+  DEBUG3("Lookup type of id %d (of %d): %s", 
+	 id, gras_dynar_length(set->dynar), (*dst)->name);
   
-  } else {
-    DEBUG1("Cannot get ID %d: out of bound", id);
-    return mismatch_error;
-  }
   return no_error;
 }
 

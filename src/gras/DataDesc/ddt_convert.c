@@ -79,20 +79,12 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
   */
 
   gras_assert(type->category_code == e_gras_datadesc_type_cat_scalar);
-
-
+  gras_assert(r_arch != GRAS_THISARCH);
+  
   r_size = type->size[r_arch];
   l_size = type->size[GRAS_THISARCH];
   DEBUG4("r_size=%d l_size=%d,    src=%p dst=%p",
 	 r_size,l_size,src,dst);
-
-  if (r_arch == GRAS_THISARCH) { 
-    DEBUG0("No conversion needed");
-    return no_error;
-  }
-
-  r_size = type->size[r_arch];
-  l_size = type->size[GRAS_THISARCH];
 
   DEBUG2("remote=%c local=%c", gras_arches[r_arch].endian?'B':'l',
 	 gras_arches[GRAS_THISARCH].endian?'B':'l');

@@ -23,9 +23,9 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
       ## -W is not all that useful.  And it cannot be controlled
       ## with individual -Wno-xxx flags, unlike -Wall
       if test "x$enable_compile_warnings" = "xyes"; then
-        warnCFLAGS="$warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations\
-	            -finline-functions  -Wshadow -Wpointer-arith \
-		    -Wwrite-strings -Wno-unused-function -Werror"
+        warnCFLAGS="$warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
+	            -finline-functions  -Wshadow -Wpointer-arith -Wchar-subscripts \
+		    -Wformat=2 -Wno-unused-variable -Wno-unused-function -Wwrite-strings -Werror"
       fi
     fi
   fi

@@ -628,7 +628,7 @@ int main(int argc,char *argv[]) {
 
   TRYFAIL(declare_chained_list_type());
   TRYFAIL(test_chain_list(sock,direction));
-  TRYFAIL(test_graph(sock,direction));
+  //  TRYFAIL(test_graph(sock,direction));
 
   TRYFAIL(test_pbio(sock,direction));
 

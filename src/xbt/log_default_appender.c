@@ -13,7 +13,6 @@
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log_app,log);
 
-
 /**
  * The root category's default logging function.
  */

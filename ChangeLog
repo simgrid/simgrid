@@ -1,3 +1,30 @@
+2004-08-09 Martin Quinson
+  Version 0.5 (protocol not changed; ABI changed)
+  - Allow to off turn the cycle detection code in data exchange at
+    compilation time. It should be at run time, but I'm short of time (and
+    the config stuff is still broken). That way, we keep dict of of the
+    critical path, which is good because the performance is poor:
+     - search not dichotomial yet
+     - dynar give no way to access their content and memcpy everytime
+  - In composed data description (struct, ref and so on), stop foolness of
+    keeping the subtype's ID, but store the type itself. This keeps sets out
+    of the critical path, which is good since they rely on dynar and
+    dictionnaries. The only loose of that is that we cannot detect the
+    redeclaration of a structure/union with another content (but I'm not sure 
+    the code detected this error well before anyway). We still can detect
+    the redefinition discrepancy for the other types.
+  - Use a whole bunch of optimisation flags (plus -fno-strict-aliasing since
+    it breaks the code because of type-punning used all over the place).
+    This breaks on all non-gcc architectures (for now).
+    
+  All those changes (plus the buffer of last time) allow me to gain 2 order
+  of magnitude on cruel tests consisting of 800000 array of integers on two
+  level of a hierarchical structure (200 secondes -> 4 secondes)
+  
+  API change:
+    - the selector of reference must now return the type it points to, not
+      the ID of this type.
+
 2004-08-06 Martin Quinson
   Version 0.4 (protocol changed; ABI not changed)
   - Allow to pass --gras-log argument to processes in simulation mode. Really.

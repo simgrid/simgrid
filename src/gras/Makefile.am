@@ -1,7 +1,13 @@
 SUBDIRS=. Tests
-AM_CFLAGS=-p -g -finline-functions -ffast-math -funroll-loops\
- -funroll-all-loops -fexpensive-optimizations -O3 -fno-omit-frame-pointer\
- -DGRAS_LOG_STATIC_THRESHOLD=gras_log_priority_infinite -DNDEBUG
+AM_CFLAGS=-g -ffast-math -funroll-loops -O3 -fno-strict-aliasing 
+ 
+
+# -DNLOG -DNDEBUG
+
+# fast-math is nasty when using IEEE floating point semantic
+# strict-aliasing breaks my type-punning bad habit.
+
+
 MAINTAINERCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include \
           @CFLAGS_SimGrid@
@@ -44,6 +50,8 @@ else
  lib_LTLIBRARIES= libgrasrl.la
 endif
 
+#  Core/config.c                               
+
 COMMON_S=\
   \
   Core/module.c      Core/core_interface.h                                      \
@@ -52,7 +60,6 @@ COMMON_S=\
   Core/dict.c        Core/dict_elm.c               Core/dict_cursor.c           \
   Core/set.c                                                                    \
   \
-  Core/config.c                               \
   \
   Transport/transport.c          Transport/transport_private.h   Transport/transport_plugin_buf.c  \
   \

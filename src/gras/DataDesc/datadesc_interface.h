@@ -36,8 +36,5 @@ gras_error_t
 gras_datadesc_recv(gras_socket_t *sock, gras_datadesc_type_t *type, 
 		   int r_arch, void *dst);
 
-/* Indicate (lack of) interest in datatype */
-void gras_datadesc_addref(gras_datadesc_type_t *type);
-void gras_datadesc_unref(gras_datadesc_type_t *type);
    
 #endif /* GRAS_DATADESC_INTERFACE_H */

@@ -132,6 +132,9 @@ gras_msgtype_declare_v(const char            *name,
 		 "Message %s re-registred with another payload (%s was %s)",
 		 namev,gras_datadesc_get_name(payload),
 		 gras_datadesc_get_name(msgtype->ctn_type));
+
+    return no_error; /* do really ignore it */
+
   } else if (errcode == mismatch_error) {
     INFO3("Register version %d of message '%s' (payload: %s).", 
 	   version, name, gras_datadesc_get_name(payload));    
@@ -139,8 +142,6 @@ gras_msgtype_declare_v(const char            *name,
     return errcode; /* Was expecting for mismatch_error */
   }
 
-  /* create type anyway so that the old type gets removed from here, and
-     hopefully free'd when ref counter gets 0 */
   if (! (msgtype = malloc(sizeof(gras_msgtype_t))) ) 
     RAISE_MALLOC;
 
@@ -148,7 +149,6 @@ gras_msgtype_declare_v(const char            *name,
   msgtype->name_len = strlen(namev);
   msgtype->version = version;
   msgtype->ctn_type = payload;
-  gras_datadesc_addref(payload);
 
   TRY(gras_set_add(_gras_msgtype_set, (gras_set_elm_t*)msgtype,
 		   &gras_msgtype_free));

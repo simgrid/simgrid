@@ -50,15 +50,26 @@ typedef enum {
 	      
 
 /**
+ * NLOG:
+ *
+ * All logging facilities are disabled at compilation time
+ */
+
+
+/**
  * GRAS_LOG_STATIC_THRESHOLD:
  *
  * All logging with priority < GRAS_LOG_STATIC_THRESHOLD is disabled at
  * compile time, i.e., compiled out.
  */
+#ifdef NLOG
+#  define GRAS_LOG_STATIC_THRESHOLD gras_log_priority_infinite
+#else
+
 #ifndef GRAS_LOG_STATIC_THRESHOLD
 #  define GRAS_LOG_STATIC_THRESHOLD gras_log_priority_none
-#endif
-
+#endif 
+#endif /* !defined(NLOG) */
 
 /* Transforms a category name to a global variable name. */
 #define _GRAS_LOGV(cat)   _GRAS_LOG_CONCAT(_gras_this_log_category_does_not_exist__, cat)
@@ -74,6 +85,7 @@ typedef enum {
  *
  * Defines a new subcategory of the parent. 
  */
+//#ifndef NLOG
 #define GRAS_LOG_NEW_SUBCATEGORY(catName, parent)     \
     extern gras_log_category_t _GRAS_LOGV(parent);    \
     gras_log_category_t _GRAS_LOGV(catName) = {       \
@@ -81,6 +93,9 @@ typedef enum {
         #catName, gras_log_priority_uninitialized, 1, \
         0, 1                                          \
     };
+//#else /* No logging at all, please */
+//#define GRAS_LOG_NEW_SUBCATEGORY(catName,parent)
+//#endif
 
 /**
  * GRAS_LOG_NEW_CATEGORY:
@@ -97,7 +112,7 @@ typedef enum {
  * Indicates which category is the default one.
  */
 
-#ifdef GRAS_LOG_MAYDAY /* debuging the logs themselves */
+#if defined(GRAS_LOG_MAYDAY) /*|| defined (NLOG) * turning logging off */
 # define GRAS_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define GRAS_LOG_DEFAULT_CATEGORY(cname) \
@@ -540,11 +555,20 @@ extern gras_log_appender_t *gras_log_default_appender;
 #define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(gras_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
 
 #ifdef __GNUC__
-#define GRAS_IN  LOG1(gras_log_priority_trace, ">> begin of %s", __FUNCTION__)
-#define GRAS_OUT LOG1(gras_log_priority_trace, "<< end of %s", __FUNCTION__)
-#else
-#define GRAS_IN  LOG0(gras_log_priority_trace, ">> begin of function")
-#define GRAS_OUT LOG0(gras_log_priority_trace, "<< end of function")
-#endif
+#define GRAS_IN               LOG1(gras_log_priority_trace, ">> begin of %s",     __FUNCTION__)
+#define GRAS_IN1(fmt,a)       LOG2(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a)
+#define GRAS_IN2(fmt,a,b)     LOG3(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a,b)
+#define GRAS_IN3(fmt,a,b,c)   LOG4(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a,b,c)
+#define GRAS_IN4(fmt,a,b,c,d) LOG5(gras_log_priority_trace, ">> begin of %s" fmt, __FUNCTION__, a,b,c,d)
+#define GRAS_OUT              LOG1(gras_log_priority_trace, "<< end of %s",       __FUNCTION__)
+#else /* if fool enough to compile without gcc */
+#define GRAS_IN               LOG0(gras_log_priority_trace, ">> begin of function")
+#define GRAS_IN1(fmt,a)       LOG2(gras_log_priority_trace, ">> begin of function " fmt, a)
+#define GRAS_IN2(fmt,a,b)     LOG3(gras_log_priority_trace, ">> begin of function " fmt, a,b)
+#define GRAS_IN3(fmt,a,b,c)   LOG4(gras_log_priority_trace, ">> begin of function " fmt, a,b,c)
+#define GRAS_IN4(fmt,a,b,c,d) LOG5(gras_log_priority_trace, ">> begin of function " fmt, a,b,c,d)
+
+#define GRAS_OUT(fmt,a) LOG0(gras_log_priority_trace, "<< end of function")
+#endif /* end of foolness for non-gcc */
 
 #endif /* ! _GRAS_LOG_H_ */

@@ -296,6 +296,7 @@ An easy-to-use, fast and flexible message logging architecture.
 </para>
 
 @gras_log_priority_none: 
+@gras_log_priority_trace: 
 @gras_log_priority_debug: 
 @gras_log_priority_verbose: 
 @gras_log_priority_info: 
