@@ -27,8 +27,6 @@ long double MSG_getClock(void);
 /************************** Host handling ***********************************/
 MSG_error_t MSG_host_set_data(m_host_t host, void *data);
 void *MSG_host_get_data(m_host_t host);
-
-int MSG_process_get_PPID(m_process_t process);
 const char *MSG_host_get_name(m_host_t host);
 m_host_t MSG_host_self(void);
 int MSG_get_host_msgload(m_host_t host);
@@ -55,6 +53,7 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data);
 m_host_t MSG_process_get_host(m_process_t process);
 m_process_t MSG_process_from_PID(int PID);
 int MSG_process_get_PID(m_process_t process);
+int MSG_process_get_PPID(m_process_t process);
 const char *MSG_process_get_name(m_process_t process);
 int MSG_process_self_PID(void);
 int MSG_process_self_PPID(void);
