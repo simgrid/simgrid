@@ -37,12 +37,21 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_DEFAULT_CATEGORY(xbt);
   
 /**
- * @brief Kill the prog
+ * @brief Kill the program with an error message 
  * \param msg 
  *
  * Things are so messed up that the only thing to do now, is to stop the program.
+ *
+ * The message is handled by a CRITICAL logging request
+ *
+ * If you want to pass arguments to the format, you can always write xbt_assert1(0,"fmt",args)
  */
 void xbt_die (const char *msg) {
    CRITICAL1("%s",msg);
    xbt_abort();
+}
+
+/** @brief Kill the program in silence */
+void xbt_abort(void) {
+   abort();
 }

@@ -27,18 +27,13 @@ struct xbt_module_ {
   xbt_module_finalize_fct_t finalize;
 };
 
+/** @brief Initialize the xbt mecanisms. */
 void 
 xbt_init(int *argc, char **argv) {
   xbt_init_defaultlog(argc, argv, NULL);
 }
 
-/**
- * xbt_init_defaultlog:
- * @argc:
- * @argv:
- *
- * Initialize the xbt mecanisms.
- */
+/** @brief Initialize the xbt mecanisms. */
 void
 xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
   static short int first_run = 1;
@@ -51,12 +46,9 @@ xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
   xbt_log_init(argc,argv,defaultlog);
 }
 
-/**
- * xbt_exit:
- *
- * Finalize the xbt mecanisms.
- */
+/** @brief Finalize the xbt mecanisms. */
 void 
 xbt_exit(){
   xbt_log_exit();
 }
+

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* config - Dictionnary where the type of each cell is provided.            */
+/* config - Dictionnary where the type of each variable is provided.            */
 
 /* This is useful to build named structs, like option or property sets.     */
 
@@ -20,13 +20,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(config,xbt,"configuration support");
 
-/* xbt_cfgelm_t: the typedef corresponding to a config cell. 
+/* xbt_cfgelm_t: the typedef corresponding to a config variable. 
 
    Both data and DTD are mixed, but fixing it now would prevent me to ever
    defend my thesis. */
 
 typedef struct {
-  /* Allowed type of the cell */
+  /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
   int min,max;
 
@@ -38,10 +38,10 @@ typedef struct {
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count]=
   {"int","double","string","host"};
 
-/* Internal stuff used in cache to free a cell */
+/* Internal stuff used in cache to free a variable */
 static void xbt_cfgelm_free(void *data);
 
-/* Retrieve the cell we'll modify */
+/* Retrieve the variable we'll modify */
 static xbt_error_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
 				    e_xbt_cfgelm_type_t type,
 				    /* OUT */ xbt_cfgelm_t *whereto);
@@ -62,10 +62,7 @@ void xbt_cfg_host_free(void *d){
 
 /*----[ Memory management ]-----------------------------------------------*/
 
-/**
- * xbt_cfg_new:
- *
- * \return
+/** @brief Constructor
  *
  * Initialise an config set
  */
@@ -75,45 +72,43 @@ xbt_cfg_t xbt_cfg_new(void) {
   return (xbt_cfg_t)xbt_dict_new();
 }
 
-/**
- * xbt_cfg_cpy:
+/** @brief Copy an existing configuration set
  *
  * \arg whereto the config set to be created
  * \arg tocopy the source data
  *
+ * This only copy the registrations, not the actual content
  */
 
 void
 xbt_cfg_cpy(xbt_cfg_t tocopy,xbt_cfg_t *whereto) {
   xbt_dict_cursor_t cursor=NULL; 
-  xbt_cfgelm_t cell=NULL;
+  xbt_cfgelm_t variable=NULL;
   char *name=NULL;
   
   *whereto=NULL;
   xbt_assert0(tocopy,"cannot copy NULL config");
 
-  xbt_dict_foreach((xbt_dict_t)tocopy,cursor,name,cell) {
-    xbt_cfg_register(*whereto, name, cell->type, cell->min, cell->max);
+  xbt_dict_foreach((xbt_dict_t)tocopy,cursor,name,variable) {
+    xbt_cfg_register(*whereto, name, variable->type, variable->min, variable->max);
   }
 }
 
+/** @brief Destructor */
 void xbt_cfg_free(xbt_cfg_t *cfg) {
   xbt_dict_free((xbt_dict_t*)cfg);
 }
 
-/**
- * xbt_cfg_dump:
+/** @brief Dump a config set for debuging purpose
+ *
  * \arg name The name to give to this config set
  * \arg indent what to write at the begining of each line (right number of spaces)
  * \arg cfg the config set
- *
- * Dumps a config set for debuging purpose
  */
-void
-xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
+void xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
   xbt_dict_t dict = (xbt_dict_t) cfg;
   xbt_dict_cursor_t cursor=NULL; 
-  xbt_cfgelm_t cell=NULL;
+  xbt_cfgelm_t variable=NULL;
   char *key=NULL;
   int i; 
   int size;
@@ -124,41 +119,41 @@ xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n",indent,name);
-  xbt_dict_foreach(dict,cursor,key,cell) {
+  xbt_dict_foreach(dict,cursor,key,variable) {
 
     printf("%s  %s:",indent,key);
 
-    size = xbt_dynar_length(cell->content);
+    size = xbt_dynar_length(variable->content);
     printf("%d_to_%d_%s. Actual size=%d. List of values:\n",
-	   cell->min,cell->max,xbt_cfgelm_type_name[cell->type],
+	   variable->min,variable->max,xbt_cfgelm_type_name[variable->type],
 	   size);
 
-    switch (cell->type) {
+    switch (variable->type) {
        
     case xbt_cfgelm_int:
       for (i=0; i<size; i++) {
-	ival = xbt_dynar_get_as(cell->content,i,int);
+	ival = xbt_dynar_get_as(variable->content,i,int);
 	printf ("%s    %d\n",indent,ival);
       }
       break;
 
     case xbt_cfgelm_double:
       for (i=0; i<size; i++) {
-	dval = xbt_dynar_get_as(cell->content,i,double);
+	dval = xbt_dynar_get_as(variable->content,i,double);
 	printf ("%s    %f\n",indent,dval);
       }
       break;
 
     case xbt_cfgelm_string:
       for (i=0; i<size; i++) {
-	sval = xbt_dynar_get_as(cell->content,i,char*);
+	sval = xbt_dynar_get_as(variable->content,i,char*);
 	printf ("%s    %s\n",indent,sval);
       }
       break;
 
     case xbt_cfgelm_host:
       for (i=0; i<size; i++) {
-	hval = xbt_dynar_get_as(cell->content,i,xbt_host_t*);
+	hval = xbt_dynar_get_as(variable->content,i,xbt_host_t*);
 	printf ("%s    %s:%d\n",indent,hval->name,hval->port);
       }
       break;
@@ -176,11 +171,7 @@ xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
   return;
 }
 
-/**
- * xbt_cfgelm_free:
- *
- * \arg data the data to be freed (typed as void* to be usable as free funct in dict)
- *
+/*
  * free an config element
  */
 
@@ -194,14 +185,12 @@ void xbt_cfgelm_free(void *data) {
 
 /*----[ Registering stuff ]-----------------------------------------------*/
 
-/**
- * xbt_cfg_register:
- * \arg cfg the config set
- * \arg type the type of the config element
- * \arg min the minimum
- * \arg max the maximum
+/** @brief Register an element within a config set
  *
- * register an element within a config set
+ *  @arg cfg the config set
+ *  @arg type the type of the config element
+ *  @arg min the minimum
+ *  @arg max the maximum
  */
 
 void
@@ -250,14 +239,12 @@ xbt_cfg_register(xbt_cfg_t cfg,
   xbt_dict_set((xbt_dict_t)cfg,name,res,&xbt_cfgelm_free);
 }
 
-/**
- * xbt_cfg_unregister:
+/** @brief Unregister an element from a config set. 
  * 
- * \arg cfg the config set
- * \arg name the name of the elem to be freed
+ *  @arg cfg the config set
+ *  @arg name the name of the elem to be freed
  * 
- * unregister an element from a config set. 
- * Note that it removes both the DTD and the actual content.
+ *  Note that it removes both the description and the actual content.
  */
 
 xbt_error_t
@@ -266,12 +253,14 @@ xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
 }
 
 /**
- * xbt_cfg_register_str:
+ * @brief Parse a string and register the stuff described.
  *
- * \arg cfg the config set
- * \arg entry a string describing the element to register
+ * @arg cfg the config set
+ * @arg entry a string describing the element to register
  *
- * Parse a string and register the stuff described.
+ * The string may consist in several variable description separated by a space. 
+ * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
+ * with type being one of  'string','int', 'host' or 'double'.
  */
 
 xbt_error_t
@@ -340,40 +329,34 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
   return no_error;
 }
 
-/**
- * xbt_cfg_check:
- *
- * \arg cfg the config set
- * 
- * Check the config set
- */
+/** @brief Check that each variable have the right amount of values */
 
 xbt_error_t
 xbt_cfg_check(xbt_cfg_t cfg) {
   xbt_dict_cursor_t cursor; 
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   char *name;
   int size;
 
   xbt_assert0(cfg,"NULL config set.");
 
-  xbt_dict_foreach((xbt_dict_t)cfg,cursor,name,cell) {
-    size = xbt_dynar_length(cell->content);
-    if (cell->min > size) { 
+  xbt_dict_foreach((xbt_dict_t)cfg,cursor,name,variable) {
+    size = xbt_dynar_length(variable->content);
+    if (variable->min > size) { 
       ERROR4("Config elem %s needs at least %d %s, but there is only %d values.",
 	     name,
-	     cell->min,
-	     xbt_cfgelm_type_name[cell->type],
+	     variable->min,
+	     xbt_cfgelm_type_name[variable->type],
 	     size); 
       xbt_dict_cursor_free(&cursor);
       return mismatch_error;
     }
 
-    if (cell->max < size) {
+    if (variable->max < size) {
       ERROR4("Config elem %s accepts at most %d %s, but there is %d values.",
 	     name,
-	     cell->max,
-	     xbt_cfgelm_type_name[cell->type],
+	     variable->max,
+	     xbt_cfgelm_type_name[variable->type],
 	     size);
       xbt_dict_cursor_free(&cursor);
       return mismatch_error;
@@ -394,7 +377,7 @@ static xbt_error_t xbt_cfgelm_get(xbt_cfg_t  cfg,
 				       (void**)whereto);
 
   if (errcode == mismatch_error) {
-    ERROR1("No registered cell %s in this config set",
+    ERROR1("No registered variable %s in this config set",
 	   name);
     return mismatch_error;
   }
@@ -410,39 +393,37 @@ static xbt_error_t xbt_cfgelm_get(xbt_cfg_t  cfg,
   return no_error;
 }
 
-/**
- * xbt_cfg_get_type:
+/** @brief Get the type of this variable in that configuration set
  *
  * \arg cfg the config set
  * \arg name the name of the element 
  * \arg type the result
  *
- * Give the type of the config element
  */
 
 xbt_error_t
 xbt_cfg_get_type(xbt_cfg_t cfg, const char *name, 
 		      /* OUT */e_xbt_cfgelm_type_t *type) {
 
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
-  TRYCATCH(mismatch_error,xbt_dict_get((xbt_dict_t)cfg,name,(void**)&cell));
+  TRYCATCH(mismatch_error,xbt_dict_get((xbt_dict_t)cfg,name,(void**)&variable));
 
   if (errcode == mismatch_error) {
-    ERROR1("Can't get the type of '%s' since this cell does not exist",
+    ERROR1("Can't get the type of '%s' since this variable does not exist",
 	   name);
     return mismatch_error;
   }
 
-  *type=cell->type;
+  *type=variable->type;
 
   return no_error;
 }
 
 /*----[ Setting ]---------------------------------------------------------*/
-/** 
- * xbt_cfg_set_vargs(): 
+/**  @brief va_args version of xbt_cfg_set
+ *
  * \arg cfg config set to fill
  * \arg varargs NULL-terminated list of pairs {(const char*)key, value}
  *
@@ -488,18 +469,17 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa) {
       break;
 
     default: 
-      RAISE1(unknown_error,"Config element cell %s not valid.",name);
+      RAISE1(unknown_error,"Config element variable %s not valid.",name);
     }
   }
   return no_error;
 }
 
-/** 
- * xbt_cfg_set():
+/** @brief Add a NULL-terminated list of pairs {(char*)key, value} to the set
+ *
  * \arg cfg config set to fill
  * \arg varargs NULL-terminated list of pairs {(const char*)key, value}
  *
- * Add some values to the config set.
  * \warning if the list isn't NULL terminated, it will segfault. 
  */
 xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...) {
@@ -512,16 +492,16 @@ xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...) {
   return errcode;
 }
 
-/**
- * xbt_cfg_set_parse():
+/** @brief Add values parsed from a string into a config set
+ *
  * \arg cfg config set to fill
  * \arg options a string containing the content to add to the config set. This
- * is a '\t',' ' or '\n' separated list of cells. Each individual cell is
+ * is a '\\t',' ' or '\\n' separated list of variables. Each individual variable is
  * like "[name]:[value]" where [name] is the name of an already registred 
- * cell, and [value] conforms to the data type under which this cell was
+ * variable, and [value] conforms to the data type under which this variable was
  * registred.
  *
- * Add the cells described in a string to a config set.
+ * @todo This is a crude manual parser, it should be a proper lexer.
  */
 
 xbt_error_t
@@ -530,7 +510,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
   double d;
   char *str;
 
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   char *optionlist_cpy;
   char *option,  *name,*val;
 
@@ -556,19 +536,21 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
     /* Pass the value */
     while (option-name<=(len-1) && *option != ' ' && *option != '\n' && *option != '\t') {
-      /*fprintf(stderr,"Take %c.\n",*option);*/
+      DEBUG1("Take %c.\n",*option);
       option++;
     }
     if (option-name == len) {
-      /*fprintf(stderr,"Boundary=EOL\n");*/
+      DEBUG0("Boundary=EOL\n");
       option=NULL; /* don't do next iteration */
 
     } else {
-      /*fprintf(stderr,"Boundary on '%c'. len=%d;option-name=%d\n",*option,len,option-name);*/
+      DEBUG3("Boundary on '%c'. len=%d;option-name=%d\n",
+	     *option,len,option-name);
 
       /* Pass the following blank chars */
       *(option++)='\0';
-      while (option-name<(len-1) && (*option == ' ' || *option == '\n' || *option == '\t')) {
+      while (option-name<(len-1) && 
+	     (*option == ' ' || *option == '\n' || *option == '\t')) {
 	/*      fprintf(stderr,"Ignore a blank char.\n");*/
 	option++;
       }
@@ -586,19 +568,19 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     if (!val) {
       xbt_free(optionlist_cpy);
       xbt_assert1(FALSE,
-		   "Malformated option: '%s'; Should be of the form 'name:value'",
-		   name);
+	     "Malformated option: '%s'; Should be of the form 'name:value'",
+		  name);
     }
     *(val++)='\0';
 
     DEBUG2("name='%s';val='%s'",name,val);
 
-    errcode=xbt_dict_get((xbt_dict_t)cfg,name,(void**)&cell);
+    errcode=xbt_dict_get((xbt_dict_t)cfg,name,(void**)&variable);
     switch (errcode) {
     case no_error:
       break;
     case mismatch_error:
-      ERROR1("No registrated cell corresponding to '%s'.",name);
+      ERROR1("No registrated variable corresponding to '%s'.",name);
       xbt_free(optionlist_cpy);
       return mismatch_error;
       break;
@@ -607,7 +589,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       return errcode;
     }
 
-    switch (cell->type) {
+    switch (variable->type) {
     case xbt_cfgelm_string:
       errcode = xbt_cfg_set_string(cfg, name, val);
       if (errcode != no_error) {
@@ -654,7 +636,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       if (!val) {
 	xbt_free(optionlist_cpy);	
 	xbt_assert1(FALSE,
-	       "Value of option %s not valid. Should be an host (machine:port)",
+	    "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
       }
 
@@ -663,7 +645,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       if (val==NULL) {
 	xbt_free(optionlist_cpy);	
 	xbt_assert1(FALSE,
-	       "Value of option %s not valid. Should be an host (machine:port)",
+	    "Value of option %s not valid. Should be an host (machine:port)",
 	       name);
       }
 
@@ -684,99 +666,90 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
   return no_error;
 }
 
-/**
- * xbt_cfg_set_int:
+/** @brief Set or add an integer value to \a name within \a cfg
  *
  * \arg cfg the config set
- * \arg name the name of the cell
- * \arg val the value of the cell
- *
- * Set the value of the cell #name in #cfg with the provided value.
+ * \arg name the name of the variable
+ * \arg val the value of the variable
  */ 
 xbt_error_t
 xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
   VERB2("Configuration setting: %s=%d",name,val);
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
 
-  if (cell->max > 1) {
-    xbt_dynar_push(cell->content,&val);
+  if (variable->max > 1) {
+    xbt_dynar_push(variable->content,&val);
   } else {
-    xbt_dynar_set(cell->content,0,&val);
+    xbt_dynar_set(variable->content,0,&val);
   }
   return no_error;
 }
 
-/**
- * xbt_cfg_set_double:
- * \arg cfg the config set
- * \arg name the name of the cell
- * \arg val the doule to set
+/** @brief Set or add a double value to \a name within \a cfg
  * 
- * Set the value of the cell #name in #cfg with the provided value.
+ * \arg cfg the config set
+ * \arg name the name of the variable
+ * \arg val the doule to set
  */ 
 
 xbt_error_t
 xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
   VERB2("Configuration setting: %s=%f",name,val);
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
 
-  if (cell->max > 1) {
-    xbt_dynar_push(cell->content,&val);
+  if (variable->max > 1) {
+    xbt_dynar_push(variable->content,&val);
   } else {
-    xbt_dynar_set(cell->content,0,&val);
+    xbt_dynar_set(variable->content,0,&val);
   }
   return no_error;
 }
 
-/**
- * xbt_cfg_set_string:
+/** @brief Set or add a string value to \a name within \a cfg
  * 
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg val the value to be added
  *
- * Set the value of the cell #name in #cfg with the provided value.
  */ 
 
 xbt_error_t
 xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) { 
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t errcode;
   char *newval = xbt_strdup(val);
 
   VERB2("Configuration setting: %s=%s",name,val);
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
 
-  if (cell->max > 1) {
-    xbt_dynar_push(cell->content,&newval);
+  if (variable->max > 1) {
+    xbt_dynar_push(variable->content,&newval);
   } else {
-    xbt_dynar_set(cell->content,0,&newval);
+    xbt_dynar_set(variable->content,0,&newval);
   }
   return no_error;
 }
 
-/**
- * xbt_cfg_set_host:
+/** @brief Set or add an host value to \a name within \a cfg
  * 
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg host the host
  * \arg port the port number
  *
- * Set the value of the cell #name in #cfg with the provided value 
- * on the given #host to the given #port
+ * \e host values are composed of a string (hostname) and an integer (port)
  */ 
 
 xbt_error_t 
 xbt_cfg_set_host(xbt_cfg_t cfg,const char*name, 
 		  const char *host,int port) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t errcode;
   xbt_host_t *val=xbt_new(xbt_host_t,1);
 
@@ -785,38 +758,35 @@ xbt_cfg_set_host(xbt_cfg_t cfg,const char*name,
   val->name = xbt_strdup(name);
   val->port = port;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
 
-  if (cell->max > 1) {
-    xbt_dynar_push(cell->content,&val);
+  if (variable->max > 1) {
+    xbt_dynar_push(variable->content,&val);
   } else {
-    xbt_dynar_set(cell->content,0,&val);
+    xbt_dynar_set(variable->content,0,&val);
   }
   return no_error;
 }
 
 /* ---- [ Removing ] ---- */
 
-/**
- * xbt_cfg_rm_int:
+/** @brief Remove the provided \e val integer value from a variable
  *
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg val the value to be removed
- *
- * Remove the provided #val from the cell #name in #cfg.
  */
 xbt_error_t xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
 
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   int cpt,seen;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
   
-  xbt_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
-      xbt_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(variable->content,&cpt);
       return no_error;
     }
   }
@@ -826,27 +796,24 @@ xbt_error_t xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
   return mismatch_error;
 }
 
-/**
- * xbt_cfg_rm_double:
+/** @brief Remove the provided \e val double value from a variable
  *
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg val the value to be removed
- *
- * Remove the provided #val from the cell #name in #cfg.
  */
 
 xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   int cpt;
   double seen;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
   
-  xbt_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
-      xbt_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(variable->content,&cpt);
       return no_error;
     }
   }
@@ -856,27 +823,24 @@ xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
   return mismatch_error;
 }
 
-/**
- * xbt_cfg_rm_string:
+/** @brief Remove the provided \e val string value from a variable
  *
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg val the value of the string which will be removed
- *
- * Remove the provided #val from the cell #name in #cfg.
  */
 xbt_error_t
 xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   int cpt;
   char *seen;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
   
-  xbt_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen,val)) {
-      xbt_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(variable->content,&cpt);
       return no_error;
     }
   }
@@ -886,29 +850,26 @@ xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
   return mismatch_error;
 }
 
-/**
- * xbt_cfg_rm_host:
+/** @brief Remove the provided \e val host value from a variable
  * 
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg host the hostname
  * \arg port the port number
- *
- * Remove the provided #host:#port from the cell #name in #cfg.
  */
 
 xbt_error_t
 xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   int cpt;
   xbt_host_t *seen;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
   
-  xbt_dynar_foreach(cell->content,cpt,seen) {
+  xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen->name,host) && seen->port == port) {
-      xbt_dynar_cursor_rm(cell->content,&cpt);
+      xbt_dynar_cursor_rm(variable->content,&cpt);
       return no_error;
     }
   }
@@ -918,48 +879,43 @@ xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
   return mismatch_error;
 }
 
-/* rm everything */
-
-/**
- * xbt_cfg_empty:
+/** @brief Remove all the values from a variable
  * 
  * \arg cfg the config set
- * \arg name the name of the cell
- *
- * rm evenything
+ * \arg name the name of the variable
  */
 
 xbt_error_t 
 xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
 
   xbt_error_t errcode;
 
   TRYCATCH(mismatch_error,
-	   xbt_dict_get((xbt_dict_t)cfg,name,(void**)&cell));
+	   xbt_dict_get((xbt_dict_t)cfg,name,(void**)&variable));
   if (errcode == mismatch_error) {
     ERROR1("Can't empty  '%s' since this config element does not exist",
 	   name);
     return mismatch_error;
   }
 
-  if (cell) {
-    xbt_dynar_reset(cell->content);
+  if (variable) {
+    xbt_dynar_reset(variable->content);
   }
   return no_error;
 }
 
 /*----[ Getting ]---------------------------------------------------------*/
 
-/**
- * xbt_cfg_get_int:
+/** @brief Retrieve an integer value of a variable (get a warning if not uniq)
+ *
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
- * instead.
+ * If there is more than one value, it will issue a warning. Consider using 
+ * xbt_cfg_get_dynar() instead.
  *
  * \warning the returned value is the actual content of the config set
  */
@@ -967,29 +923,29 @@ xbt_error_t
 xbt_cfg_get_int   (xbt_cfg_t  cfg,
 		    const char *name,
 		    int        *val) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
 
-  if (xbt_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values",
-	     name, xbt_dynar_length(cell->content));
+	     name, xbt_dynar_length(variable->content));
   }
 
-  *val = xbt_dynar_get_as(cell->content, 0, int);
+  *val = xbt_dynar_get_as(variable->content, 0, int);
   return no_error;
 }
 
-/**
- * xbt_cfg_get_double:
+/** @brief Retrieve a double value of a variable (get a warning if not uniq)
+ * 
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
- * instead.
+ * If there is more than one value, it will issue a warning. Consider using 
+ * xbt_cfg_get_dynar() instead.
  *
  * \warning the returned value is the actual content of the config set
  */
@@ -998,30 +954,29 @@ xbt_error_t
 xbt_cfg_get_double(xbt_cfg_t  cfg,
 		    const char *name,
 		    double     *val) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t  errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
 
-  if (xbt_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, xbt_dynar_length(cell->content));
+	     name, xbt_dynar_length(variable->content));
   }
 
-  *val = xbt_dynar_get_as(cell->content, 0, double);
+  *val = xbt_dynar_get_as(variable->content, 0, double);
   return no_error;
 }
 
-/**
- * xbt_cfg_get_string:
+/** @brief Retrieve a string value of a variable (get a warning if not uniq)
  *
  * \arg th the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg val the wanted value
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
- * instead.
+ * If there is more than one value, it will issue a warning. Consider using 
+ * xbt_cfg_get_dynar() instead.
  *
  * \warning the returned value is the actual content of the config set
  */
@@ -1029,33 +984,32 @@ xbt_cfg_get_double(xbt_cfg_t  cfg,
 xbt_error_t xbt_cfg_get_string(xbt_cfg_t  cfg,
 				 const char *name,
 				 char      **val) {
-  xbt_cfgelm_t  cell;
+  xbt_cfgelm_t  variable;
   xbt_error_t errcode;
 
   *val=NULL;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
 
-  if (xbt_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, xbt_dynar_length(cell->content));
+	     name, xbt_dynar_length(variable->content));
   }
 
-  *val = xbt_dynar_get_as(cell->content, 0, char *);
+  *val = xbt_dynar_get_as(variable->content, 0, char *);
   return no_error;
 }
 
-/**
- * xbt_cfg_get_host:
+/** @brief Retrieve an host value of a variable (get a warning if not uniq)
  *
  * \arg cfg the config set
- * \arg name the name of the cell
+ * \arg name the name of the variable
  * \arg host the host
  * \arg port the port number
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() 
- * instead.
+ * If there is more than one value, it will issue a warning. Consider using
+ * xbt_cfg_get_dynar() instead.
  *
  * \warning the returned value is the actual content of the config set
  */
@@ -1064,50 +1018,50 @@ xbt_error_t xbt_cfg_get_host  (xbt_cfg_t  cfg,
 				 const char *name,
 				 char      **host,
 				 int        *port) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t  errcode;
   xbt_host_t  *val;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&cell));
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
 
-  if (xbt_dynar_length(cell->content) > 1) {
+  if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
-	     name, xbt_dynar_length(cell->content));
+	     name, xbt_dynar_length(variable->content));
   }
 
-  val = xbt_dynar_get_as(cell->content, 0, xbt_host_t*);
+  val = xbt_dynar_get_as(variable->content, 0, xbt_host_t*);
   *host=val->name;
   *port=val->port;
   
   return no_error;
 }
 
-/**
- * xbt_cfg_get_dynar:
+/** @brief Retrieve the dynar of all the values stored in a variable
+ * 
  * \arg cfg where to search in
  * \arg name what to search for
  * \arg dynar result
  *
- * Get the data stored in the config bag. 
+ * Get the data stored in the config set. 
  *
  * \warning the returned value is the actual content of the config set
  */
 xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t    cfg,
 				 const char   *name,
 				 xbt_dynar_t *dynar) {
-  xbt_cfgelm_t cell;
+  xbt_cfgelm_t variable;
   xbt_error_t  errcode = xbt_dict_get((xbt_dict_t)cfg,name,
-					(void**)&cell);
+					(void**)&variable);
 
   if (errcode == mismatch_error) {
-    ERROR1("No registered cell %s in this config set",
+    ERROR1("No registered variable %s in this config set",
 	   name);
     return mismatch_error;
   }
   if (errcode != no_error)
      return errcode;
 
-  *dynar = cell->content;
+  *dynar = variable->content;
   return no_error;
 }
 

@@ -3,7 +3,7 @@
 /* a fast and simple context switching library                              */
 
 /* Copyright (c) 2004 Arnaud Legrand.                                       */
-/* Copyright (c) 2004 Martin Quinson.                                       */
+/* Copyright (c) 2004, 2005 Martin Quinson.                                 */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,12 +14,6 @@
 #include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "gras_config.h"
-
- /** \defgroup XBT_context User-level context library
-  *  \brief This section describes how to use high-level functions 
-  *  (as opposed to <tt>setjump/longjmp</tt>) to schedule non-preemptible 
-  *  threads.
-  */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 
@@ -45,9 +39,11 @@ static void __xbt_context_yield(xbt_context_t context)
 
   xbt_assert0(current_context,"You have to call context_init() first.");
   
-/*   WARNING("--------- current_context (%p) is yielding to context(%p) ---------",current_context,context); */
-/*   VOIRP(current_context); */
-/*   if(current_context) VOIRP(current_context->save); */
+  DEBUG2("--------- current_context (%p) is yielding to context(%p) ---------",
+	 current_context,context);
+
+  if(current_context)
+    DEBUG1("current_context->save = %p",current_context->save);
 /*   VOIRP(context); */
 /*   if(context) VOIRP(context->save); */
 

@@ -16,11 +16,8 @@
 
 #include "xbt/set.h"
 
-/** \defgroup XBT_set A generic set datatype
-  *  \brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
-  */
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,"data container consisting in dict+dynar");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,
+	     "set: data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/
 typedef struct xbt_set_ {
@@ -29,12 +26,7 @@ typedef struct xbt_set_ {
 } s_xbt_set_t;
 
 /*####[ Memory  ]############################################################*/
-/**
- * \ingroup XBT_set 
- * \return a new set
- *
- * Creates a new set.
- */
+/** @brief Constructor */
 xbt_set_t xbt_set_new (void) {
   xbt_set_t res=xbt_new(s_xbt_set_t,1);
 
@@ -44,12 +36,7 @@ xbt_set_t xbt_set_new (void) {
   return res;
 }
 
-/**
- * \ingroup XBT_set 
- * \param set
- *
- * Frees a set.
- */
+/** @brief Destructor */
 void  xbt_set_free(xbt_set_t *set) {
   if (*set) {
     xbt_dict_free ( &( (*set)->dict  ) );
@@ -59,16 +46,14 @@ void  xbt_set_free(xbt_set_t *set) {
   }
 }
 
-/**
- * \ingroup XBT_set 
+/** @brief Add an element to a set. 
+ *
  * \param set set to populate
  * \param elm element to add. 
  * \param free_func How to add the data 
  *
- * Add an element to a set. 
- *
  * elm->name must be set;
- * elm->name_len is used as is unless it's <= 0 (in which case it's recomputed);
+ * if elm->name_len <= 0, it is recomputed. If >0, it's used as is;
  * elm->ID is attributed automatically.
  */
 void xbt_set_add    (xbt_set_t      set,
@@ -108,13 +93,11 @@ void xbt_set_add    (xbt_set_t      set,
 
 }
 
-/**
- * \ingroup XBT_set 
+/** @brief Retrive data by providing its name.
+ * 
  * \param set
  * \param name Name of the searched cell
  * \param dst where to put the found data into
- *
- * get a data stored in the cell by providing its name.
  */
 xbt_error_t xbt_set_get_by_name    (xbt_set_t     set,
 				      const char     *name,
@@ -124,16 +107,16 @@ xbt_error_t xbt_set_get_by_name    (xbt_set_t     set,
   DEBUG2("Lookup key %s: %s",name,xbt_error_name(errcode));
   return errcode;
 }
-/**
- * \ingroup XBT_set 
+
+/** @brief Retrive data by providing its name and the length of the name
+ *
  * \param set
  * \param name Name of the searched cell
  * \param name_len length of the name, when strlen cannot be trusted
  * \param dst where to put the found data into
  *
- * get a data stored in the cell by providing its name (and the length
- * of the name, when strlen cannot be trusted because you don't use a char*
- * as name, you weird guy).
+ * This is useful when strlen cannot be trusted because you don't use a char*
+ * as name, you weirdo.
  */
 xbt_error_t xbt_set_get_by_name_ext(xbt_set_t      set,
 				      const char     *name,
@@ -143,13 +126,12 @@ xbt_error_t xbt_set_get_by_name_ext(xbt_set_t      set,
   return xbt_dict_get_ext (set->dict, name, name_len, (void**)dst);
 }
 
-/**
- * \ingroup XBT_set 
+/** @brief Retrive data by providing its ID
+ *
  * \param set
  * \param id what you're looking for
  * \param dst where to put the found data into
  *
- * get a data stored in the cell by providing its id. 
  * @warning, if the ID does not exists, you're getting into trouble
  */
 xbt_error_t xbt_set_get_by_id      (xbt_set_t      set,
@@ -173,13 +155,7 @@ typedef struct xbt_set_cursor_ {
   int val;
 } s_xbt_set_cursor_t;
 
-/**
- * \ingroup XBT_set 
- * \param set on what to let the cursor iterate
- * \param cursor dest address
- *
- * Create the cursor if it does not exists. Rewind it in any case.
- */
+/** @brief Create the cursor if it does not exists, rewind it in any case. */
 void         xbt_set_cursor_first       (xbt_set_t         set,
 					  xbt_set_cursor_t *cursor) {
 
@@ -197,23 +173,14 @@ void         xbt_set_cursor_first       (xbt_set_t         set,
   }
 }
 
-/**
- * \ingroup XBT_set 
- * \param cursor the cursor
- *
- * Move to the next element. 
- */
+/** @brief Move to the next element.  */
 void         xbt_set_cursor_step        (xbt_set_cursor_t cursor) {
   xbt_dynar_cursor_step(cursor->set->dynar, &( cursor->val ) );
 }
 
-/**
- * \ingroup XBT_set 
- * \param curs the cursor
- * \param elm an element
+/** @brief Get current data
+ * 
  * \return true if it's ok, false if there is no more data
- *
- * Get current data
  */
 int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *curs,
 					  xbt_set_elm_t    *elm) {

@@ -11,8 +11,10 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/swag.h"
-#include "xbt/context.h"
+#include "xbt/dynar.h" /* void_f_pvoid_t */
 #include "portable.h" /* loads context system definitions */
+
+#include "xbt/context.h"
 
 #define STACK_SIZE 524288
 typedef struct s_xbt_context {

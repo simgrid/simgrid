@@ -8,7 +8,7 @@
 #ifndef _XBT_HEAP_PRIVATE_H
 #define _XBT_HEAP_PRIVATE_H
 
-#include <stdlib.h>
+#include "xbt/dynar.h" /* void_f_pvoid_t */
 #include "xbt/heap.h"
 
 typedef struct xbt_heapItem {

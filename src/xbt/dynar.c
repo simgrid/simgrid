@@ -14,9 +14,6 @@
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
-/** \defgroup XBT_dynar A generic dynamic array
-  *  \brief This section describes the API to generic dynamic array (vector).
-  */
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
@@ -123,8 +120,8 @@ _xbt_dynar_put_elm(const xbt_dynar_t  dynar,
   memcpy(elm, src, elmsize);
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Constructor
+ * 
  * \param elmsize size of each element in the dynar
  * \param free_f function to call each time we want to get rid of an element (or NULL if nothing to do).
  *
@@ -147,12 +144,12 @@ xbt_dynar_new(const unsigned long           elmsize,
   return dynar;
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Destructor of the structure not touching to the content
+ * 
  * \param dynar poor victim
  *
- * kilkil a dynar BUT NOT its content. Ie, the array is freed, but not what
- * its contain points to.
+ * kilkil a dynar BUT NOT its content. Ie, the array is freed, but the content
+ * is not touched (the \a free_f function is not used)
  */
 void
 xbt_dynar_free_container(xbt_dynar_t *dynar) {
@@ -170,11 +167,9 @@ xbt_dynar_free_container(xbt_dynar_t *dynar) {
   }
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar who to squeeze
+/** @brief Frees the content and set the size to 0
  *
- * Frees the content and set the size to 0
+ * \param dynar who to squeeze
  */
 void
 xbt_dynar_reset(xbt_dynar_t const dynar) {
@@ -194,8 +189,8 @@ xbt_dynar_reset(xbt_dynar_t const dynar) {
   dynar->data = NULL;
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Destructor
+ * 
  * \param dynar poor victim
  *
  * kilkil a dynar and its content
@@ -209,24 +204,20 @@ xbt_dynar_free(xbt_dynar_t * dynar) {
   }
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Count of dynar's elements
+ * 
  * \param dynar the dynar we want to mesure
- *
- * Returns the count of elements in a dynar
  */
 unsigned long
 xbt_dynar_length(const xbt_dynar_t dynar) {
   return (dynar ? (unsigned long) dynar->used : (unsigned long)0);
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Retrieve a copy of the Nth element of a dynar.
+ *
  * \param dynar information dealer
  * \param idx index of the slot we want to retrive
  * \param[out] dst where to put the result to.
- *
- * Retrieve a copy of the Nth element of a dynar.
  */
 void
 xbt_dynar_get_cpy(const xbt_dynar_t dynar,
@@ -240,14 +231,14 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
   _xbt_dynar_get_elm(dst, dynar, idx);
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Retrieve a pointer to the Nth element of a dynar.
+ *
  * \param dynar information dealer
  * \param idx index of the slot we want to retrieve
- * \return the #idx-th element of #dynar.
+ * \return the \a idx-th element of \a dynar.
  *
- * Retrieve the Nth element of a dynar. Warning, the returned value is the actual content of 
- * the dynar. Make a copy before fooling with it.
+ * \warning The returned value is the actual content of the dynar. 
+ * Make a copy before fooling with it.
  */
 void*
 xbt_dynar_get_ptr(const xbt_dynar_t dynar,
@@ -260,15 +251,13 @@ xbt_dynar_get_ptr(const xbt_dynar_t dynar,
   return _xbt_dynar_elm(dynar, idx);
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Set the Nth element of a dynar (expended if needed). Previous value at this position is NOT freed
+ * 
  * \param dynar information dealer
  * \param idx index of the slot we want to modify
  * \param src What will be feeded to the dynar
  *
- * Set the Nth element of a dynar, expanding the dynar if needed, BUT NOT freeing
- * the previous value at this position. If you want to free the previous content,
- * use xbt_dynar_replace().
+ * If you want to free the previous content, use xbt_dynar_replace().
  */
 void
 xbt_dynar_set(xbt_dynar_t         dynar,
@@ -287,8 +276,8 @@ xbt_dynar_set(xbt_dynar_t         dynar,
   _xbt_dynar_put_elm(dynar, idx, src);
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Set the Nth element of a dynar (expended if needed). Previous value is freed
+ *
  * \param dynar
  * \param idx
  * \param object
@@ -314,16 +303,14 @@ xbt_dynar_replace(xbt_dynar_t         dynar,
   xbt_dynar_set(dynar, idx, object);
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Make room for a new element, and return a pointer to it
  * 
- * Make room for a new element in the dynar, and return a pointer to
- * its position. You can then use regular affectation to set its value
- * instead of relying on the slow memcpy
+ * You can then use regular affectation to set its value instead of relying 
+ * on the slow memcpy. This is what xbt_dynar_insert_at_as() does.
  */
 void *
 xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
-			 const int            idx) {
+			const int            idx) {
    
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
@@ -349,20 +336,16 @@ xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
   }
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar
- * \param idx
- * \param src What will be feeded to the dynar
- *
+/** @brief Set the Nth dynar's element, expending the dynar and sliding the previous values to the right
+ * 
  * Set the Nth element of a dynar, expanding the dynar if needed, and
  * moving the previously existing value and all subsequent ones to one
  * position right in the dynar.
  */
 void
 xbt_dynar_insert_at(xbt_dynar_t  const dynar,
-                     const int            idx,
-                     const void   * const src) {
+		    const int            idx,
+		    const void   * const src) {
 
   /* checks done in xbt_dynar_insert_at_ptr */
   memcpy(xbt_dynar_insert_at_ptr(dynar,idx),
@@ -370,11 +353,7 @@ xbt_dynar_insert_at(xbt_dynar_t  const dynar,
 	 dynar->elmsize);
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar 
- * \param idx
- * \param object
+/** @brief Remove the Nth dynar's element, sliding the previous values to the left
  *
  * Get the Nth element of a dynar, removing it from the dynar and moving
  * all subsequent values to one position left in the dynar.
@@ -409,23 +388,17 @@ xbt_dynar_remove_at(xbt_dynar_t  const dynar,
   }
 }
 
-/**
- * \ingroup XBT_dynar
- * 
- * Make room at the end of the dynar for a new element, and return a pointer to it
+/** @brief Make room at the end of the dynar for a new element, and return a pointer to it.
+ *
+ * You can then use regular affectation to set its value instead of relying 
+ * on the slow memcpy. This is what xbt_dynar_push_as() does.
  */
 void *
 xbt_dynar_push_ptr(xbt_dynar_t  const dynar) {
   return xbt_dynar_insert_at_ptr(dynar, dynar->used);    
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar
- * \param src
- *
- * Add an element at the end of the dynar
- */
+/** @brief Add an element at the end of the dynar */
 void
 xbt_dynar_push(xbt_dynar_t  const dynar,
                 const void   * const src) {
@@ -433,11 +406,10 @@ xbt_dynar_push(xbt_dynar_t  const dynar,
   xbt_dynar_insert_at(dynar, dynar->used, src); 
 }
 
-/**
- * \param dynar
- * \param dst
+/** @brief Mark the last dynar's element as unused and return a pointer to it.
  *
- * Make the last element of the dynar as unused and return a pointer to it.
+ * You can then use regular affectation to set its value instead of relying 
+ * on the slow memcpy. This is what xbt_dynar_pop_as() does.
  */
 void *
 xbt_dynar_pop_ptr(xbt_dynar_t  const dynar) {
@@ -448,13 +420,7 @@ xbt_dynar_pop_ptr(xbt_dynar_t  const dynar) {
   return _xbt_dynar_elm(dynar,dynar->used);
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar
- * \param[out] dst
- *
- * Get and remove the last element of the dynar
- */
+/** @brief Get and remove the last element of the dynar */
 void
 xbt_dynar_pop(xbt_dynar_t  const dynar,
                void         * const dst) {
@@ -464,13 +430,9 @@ xbt_dynar_pop(xbt_dynar_t  const dynar,
   xbt_dynar_remove_at(dynar, dynar->used-1, dst);
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar
- * \param src
+/** @brief Add an element at the begining of the dynar.
  *
- * Add an element at the begining of the dynar (rather long, Use
- * xbt_dynar_push() when possible)
+ * This is less efficient than xbt_dynar_push()
  */
 void
 xbt_dynar_unshift(xbt_dynar_t  const dynar,
@@ -480,13 +442,9 @@ xbt_dynar_unshift(xbt_dynar_t  const dynar,
   xbt_dynar_insert_at(dynar, 0, src);
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar
- * \param[out] dst
+/** @brief Get and remove the first element of the dynar.
  *
- * Get and remove the first element of the dynar (rather long, Use
- * xbt_dynar_pop() when possible)
+ * This is less efficient than xbt_dynar_pop()
  */
 void
 xbt_dynar_shift(xbt_dynar_t  const dynar,
@@ -496,13 +454,10 @@ xbt_dynar_shift(xbt_dynar_t  const dynar,
   xbt_dynar_remove_at(dynar, 0, dst);
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar
- * \param operator
+/** @brief Apply a function to each member of a dynar
  *
- * Apply a function to each member of a dynar (this function may change the
- * value of the element itself, but should not mess with the dynar).
+ * The mapped function may change the value of the element itself, 
+ * but should not mess with the structure of the dynar.
  */
 void
 xbt_dynar_map(const xbt_dynar_t  dynar,
@@ -522,30 +477,20 @@ xbt_dynar_map(const xbt_dynar_t  dynar,
   }
 }
 
-/**
- * \ingroup XBT_dynar
+/** @brief Put the cursor at the begining of the dynar.
  *
- * Put the cursor at the begining of the dynar. (actually, one step before
- * the begining, so that you can iterate over the dynar with a for loop).
- *
- * Dynar cursor are as dumb as possible. If you insert or remove elements
- * from the dynar between the creation and end, you'll fuck up your
- * cursors.
- *
+ * Actually, the cursor is set one step before the begining, so that you
+ * can iterate over the dynar with a for loop.
  */
 void
 xbt_dynar_cursor_first(const xbt_dynar_t dynar,
-			int        * const cursor) {
+		       int        * const cursor) {
 
   DEBUG1("Set cursor on %p to the first position",(void*)dynar);
   *cursor = 0;
 }
 
-/**
- * \ingroup XBT_dynar
- *
- * Move the cursor to the next value (and return true), or return false.
- */
+/** @brief Move the cursor to the next value */
 void
 xbt_dynar_cursor_step(const xbt_dynar_t dynar,
 		       int        * const cursor) {
@@ -553,11 +498,7 @@ xbt_dynar_cursor_step(const xbt_dynar_t dynar,
   (*cursor)++;
 }
 
-/**
- * \ingroup XBT_dynar
- *
- * Get the current value of the cursor
- */
+/** @brief Get the data currently pointed by the cursor */
 int
 xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 		      int                * const cursor,
@@ -580,12 +521,9 @@ xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 
 }
 
-/**
- * \ingroup XBT_dynar
- * \param dynar
- * \param cursor
+/** @brief Removes and free the entry pointed by the cursor 
  *
- * Remove (free) the entry pointed by the cursor, for use in the middle of a foreach
+ * This function can be used while traversing without problem.
  */
 void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 			  int          * const cursor) {
