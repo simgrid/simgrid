@@ -1,4 +1,8 @@
 #! @BASH@
+
+##
+## Cleanups of previous executions
+##
 failed_nb=0
 success_nb=0
 ignored_nb=0
@@ -6,78 +10,116 @@ tests_nb=0
 
 rm -f test.failed test.success test.ignored
 
+##
+## Args parsing (simplistic for now)
+##
 if [ xvalgrind = "x$1" ] ; then
   valgrind="libtool --mode=execute valgrind --show-reachable=yes"
 else
   valgrind=
 fi
-for test in xbt/log_usage@EXEEXT@                                 \
-            xbt/dynar_int@EXEEXT@ xbt/dynar_double@EXEEXT@ xbt/dynar_string@EXEEXT@       \
- 	    xbt/dict_usage@EXEEXT@ xbt/dict_crash@EXEEXT@                         \
-	    xbt/config_usage@EXEEXT@                                      \
-	    xbt/heap_bench@EXEEXT@ \
-	    \
-	    surf/maxmin_usage@EXEEXT@       surf/maxmin_bench@EXEEXT@               \
-	    "surf/trace_usage@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/"              \
-	    "surf/surf_usage@EXEEXT@  --surf-path=@top_srcdir@/testsuite/surf/ platform.xml" \
-	    "surf/surf_usage2@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/ platform.xml" \
-	    \
-	    "msg/msg_test@EXEEXT@ --surf-path=@top_srcdir@/examples/msg/"
 
-#	    gras/trp_tcp_usage      gras/trp_file_usage
-#	    gras/datadesc_usage@EXEEXT@
-#	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little32"
-#	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little64"
-#	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big32"
-#	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big64"
-#	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.aix"
-#	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.win32"
-#	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.g5"
+##
+## Tests defintions
+##
+xbt_TESTS=" xbt/log_usage@EXEEXT@;        \
+            xbt/dynar_int@EXEEXT@;        \
+  	      xbt/dynar_double@EXEEXT@;   \
+	      xbt/dynar_string@EXEEXT@;   \
+            xbt/dict_usage@EXEEXT@;       \
+	      xbt/dict_crash@EXEEXT@;     \
+            xbt/config_usage@EXEEXT@;     \
+            xbt/heap_bench@EXEEXT@;"
+	   
+surf_TESTS="surf/maxmin_usage@EXEEXT@;                                                      \
+            surf/maxmin_bench@EXEEXT@;                                                      \
+	    surf/trace_usage@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/;              \
+	    surf/surf_usage@EXEEXT@  --surf-path=@top_srcdir@/testsuite/surf/ platform.xml; \
+	    surf/surf_usage2@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/ platform.xml;"
 
-do		    
-  tests_nb=`expr $tests_nb + 1`
-  echo "#### Test $test"
-  if [ x@EXEEXT@ = x ] ; then 
-    wine=
-  else
-    wine=wine
-  fi
-  if [ "x$test" = "xdict_crash@EXEEXT@" ] ; then
-    $wine ./$test --xbt-log="root.thres=info" 2>&1
-    retval=$?
-  else 
-    winesave=$wine
-    if [ x@EXEEXT@ != x ] ; then 
-      if echo ${test} | grep @EXEEXT@ >/dev/null ; then : ; else
-        echo "This is not a win32 binary, don't use wine"
-        wine=""
-      fi
+msg_TESTS=" msg/msg_test@EXEEXT@ --surf-path=@top_srcdir@/examples/msg/;"
+
+gras_TESTS="gras/trp_tcp_usage;      gras/trp_file_usage;                                     \
+	    gras/datadesc_usage@EXEEXT@;                                                      \
+	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little32; \
+	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little64; \
+	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big32;    \
+	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big64;    \
+	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.aix;      \
+	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.win32;    \
+	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.g5;"      \
+	    
+##
+## Loop on all tests to run them
+##
+
+# we split tests on ';' so that they can contain spaces (test=accumulator)
+test=""
+
+for testpart in $xbt_TESTS $surf_TESTS $msg_TESTS 
+# gras_TESTS
+do
+  test="$test $testpart"
+  if echo $test | grep ';' ; then
+    # end of test declaration found.
+  
+    # we must have a space after the ;
+    if echo $test | egrep ';[^ ]' ; then
+      echo "$0.in broken: you should add a space after each ';'"
+      exit 1
     fi
-      # if the user defines valgrind while cross-compiling, too bad
-      $wine $valgrind ./$test --xbt-log="root.thres=info" 2>&1
+    
+    # Cleanup test declaration, run it.
+    test=`echo $test | sed 's/;//'`
+    
+    tests_nb=`expr $tests_nb + 1`
+    echo "#### Test $test"
+    if [ x@EXEEXT@ = x ] ; then 
+      wine=
+    else
+      wine=wine
+    fi
+    if [ "x$test" = "xdict_crash@EXEEXT@" ] ; then
+      $wine ./$test --xbt-log="root.thres=info" 2>&1
       retval=$?
-    wine=$winesave
-  fi
-  if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
-    echo "## failed. Rerun $test with full details."
-#    if [ "x$test" = "xdict_crash" ] ; then
+    else 
+      winesave=$wine
+      if [ x@EXEEXT@ != x ] ; then 
+        if echo ${test} | grep @EXEEXT@ >/dev/null ; then : ; else
+#         echo "This is not a win32 binary, don't use wine"
+          wine=""
+        fi
+      fi
+        # if the user defines valgrind while cross-compiling, too bad
+        $wine $valgrind ./$test --xbt-log="root.thres=info" 2>&1
+        retval=$?
+      wine=$winesave
+    fi
+    if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
+      echo "## failed" # . Rerun $test with full details."
+#      if [ "x$test" = "xdict_crash" ] ; then
 #      $wine ./$test --xbt-log="root.thres=debug" 2>&1
 #    else 
 #      $wine $valgrind ./$test --xbt-log="root.thres=debug" 2>&1
 #    fi
-    failed_nb=`expr $failed_nb + 1`
-    echo "  $test (returned $retval)" >> test.failed
-  else # retval == 77
-    echo "## Ignored since it returned 77"
-    ignored_nb=`expr $ignored_nb + 1`
-    echo "  $test" >> test.ignored
-  fi else
-    echo "## Success"
-    success_nb=`expr $success_nb + 1`
-    echo "  $test" >> test.success
-  fi
+      failed_nb=`expr $failed_nb + 1`
+      echo "  $test (returned $retval)" >> test.failed
+    else # retval == 77
+      echo "## Ignored since it returned 77"
+      ignored_nb=`expr $ignored_nb + 1`
+      echo "  $test" >> test.ignored
+    fi else
+      echo "## Success"
+      success_nb=`expr $success_nb + 1`
+      echo "  $test" >> test.success
+    fi
+    test=""
+  fi # end of ';' found in test declaration => run it
 done
 
+###
+### Display summary
+###
 
 echo
 echo "#### Summary"
