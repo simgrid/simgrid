@@ -112,8 +112,10 @@ gras_datadesc_scalar(const char                      *name,
   for (arch = 0; arch < gras_arch_count; arch ++) {
     long int sz;
     long int mask;
-    res->size[arch] = gras_arches[arch].sizeofs[type];
-
+    res->size[arch]         = gras_arches[arch].sizeofs[type];
+    res->alignment[arch]    = gras_arches[arch].boundaries[type];
+    res->aligned_size[arch] = aligned(res->size[arch], res->alignment[arch]);
+#if 0
     sz = res->size[arch];
     mask = sz;
     
@@ -142,6 +144,7 @@ gras_datadesc_scalar(const char                      *name,
       res->alignment[arch]       = res->size[arch];
       res->aligned_size[arch]    = res->size[arch];
     }
+#endif     
   }
 
   res->category_code                 = e_gras_datadesc_type_cat_scalar;
@@ -248,8 +251,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t  *struct_type,
      
   for (arch=0; arch<gras_arch_count; arch ++) {
     field->offset[arch] = aligned(struct_type->size[arch],
-				  min(field_type->alignment[arch],
-				      gras_arches[arch].boundaries));
+				  field_type->alignment[arch]);
 
     struct_type->size[arch] = field->offset[arch] + field_type->size[arch];
     struct_type->alignment[arch] = max(struct_type->alignment[arch],
