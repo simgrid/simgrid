@@ -21,6 +21,6 @@ ping_server_LDADD=	$(top_builddir)/src/libgras.la
 MAINTAINERCLEANFILES = _ping_simulator.c _ping_client.c _ping_server.c 
 
 # generate temps
-_ping_client.c _ping_server.c _ping_simulator.c: ping_deployment.txt $(top_srcdir)/examples/gras_stub_generator
-	$(top_srcdir)/examples/gras_stub_generator ping $(srcdir)/ping_deployment.txt >/dev/null
+$(srcdir)/_ping_client.c $(srcdir)/_ping_server.c $(srcdir)/_ping_simulator.c: $(srcdir)/ping_deployment.txt $(top_srcdir)/examples/gras_stub_generator
+	cd $(srcdir) ; $(top_srcdir)/examples/gras_stub_generator ping ping_deployment.txt >/dev/null
 
