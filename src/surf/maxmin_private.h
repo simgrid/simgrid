@@ -33,7 +33,7 @@ typedef struct lmm_constraint {
   xbt_maxmin_float_t bound;
   xbt_maxmin_float_t remaining;
   xbt_maxmin_float_t usage;
-  char *id;
+  void *id;
 } s_lmm_constraint_t;
 
 typedef struct lmm_variable {
@@ -47,7 +47,7 @@ typedef struct lmm_variable {
   xbt_maxmin_float_t weight;
   xbt_maxmin_float_t bound;
   xbt_maxmin_float_t value;
-  char *id;
+  void *id;
 } s_lmm_variable_t;
 
 typedef struct lmm_system {

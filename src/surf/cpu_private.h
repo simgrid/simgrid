@@ -14,14 +14,23 @@ typedef struct surf_action_cpu {
 } s_surf_action_cpu_t, *surf_action_cpu_t;
 
 typedef struct cpu {
+  surf_resource_t resource;   /* Any such object, added in a trace
+				 should start by this field!!! */
   const char *name;
   xbt_maxmin_float_t power_scale;
   xbt_maxmin_float_t current_power;
-  tmgr_trace_t power_trace;
-  e_surf_action_state_t current_state;
-  tmgr_trace_t state_trace;
+/*   tmgr_trace_t power_trace; */
+  tmgr_trace_event_t power_event;
+  e_surf_cpu_state_t current_state;
+/*   tmgr_trace_t state_trace; */
+  tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
 } s_cpu_t, *cpu_t;
 
+/* typedef struct surf_cpu_resource_extension_private { */
+/* } s_surf_cpu_resource_extension_private_t; */
 
-#endif				/* _SURF_SURF_PRIVATE_H */
+void surf_cpu_resource_init(const char *filename);
+
+
+#endif				/* _SURF_CPU_PRIVATE_H */

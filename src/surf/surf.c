@@ -13,7 +13,7 @@ lmm_system_t maxmin_system = NULL;
 
 e_surf_action_state_t surf_action_get_state(surf_action_t action)
 {
-  surf_action_state_t action_state = &(action->resource_type->states); 
+  surf_action_state_t action_state = &(action->resource_type->common_public->states); 
   
   if(action->state_set == action_state->ready_action_set)
     return SURF_ACTION_READY;
@@ -28,14 +28,14 @@ e_surf_action_state_t surf_action_get_state(surf_action_t action)
 
 void surf_action_free(surf_action_t * action)
 {
-  (*action)->resource_type->action_cancel(*action);
+  (*action)->resource_type->common_public->action_cancel(*action);
   xbt_free(*action);
   *action=NULL;
 }
 
 void surf_action_change_state(surf_action_t action, e_surf_action_state_t state)
 {
-  surf_action_state_t action_state = &(action->resource_type->states); 
+  surf_action_state_t action_state = &(action->resource_type->common_public->states); 
 
   xbt_swag_remove(action, action->state_set);
 
@@ -54,7 +54,7 @@ void surf_action_change_state(surf_action_t action, e_surf_action_state_t state)
 
 void surf_init(void)
 {
-  if(!resource_list) resource_list = xbt_dynar_new(sizeof(surf_resource_t), NULL);
+  if(!resource_list) resource_list = xbt_dynar_new(sizeof(surf_resource_private_t), NULL);
   if(!history) history = tmgr_history_new();
   if(!maxmin_system) maxmin_system = lmm_system_new();
 }
@@ -65,37 +65,43 @@ xbt_heap_float_t surf_solve(void)
   xbt_heap_float_t next_event_date = -1.0;
   xbt_heap_float_t resource_next_action_end = -1.0;
   xbt_maxmin_float_t value = -1.0;
+  surf_resource_object_t resource_obj = NULL;
   surf_resource_t resource = NULL;
+  tmgr_trace_event_t event = NULL;
   int i;
 
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if(next_event_date > NOW) break;
-    while (tmgr_history_get_next_event_leq(history, next_event_date,
-					   &value, (void **) &resource)) {
-      if(surf_cpu_resource->resource.resource_used(resource)) {
-	min = next_event_date-NOW;
-      }
+    while ((event = tmgr_history_get_next_event_leq(history, next_event_date,
+					   &value, (void **) &resource_obj))) {
+      resource_obj->resource->common_private->update_resource_state(resource_obj,
+								    event, value);
     }
   }
 
+  min = -1.0;
+
   xbt_dynar_foreach (resource_list,i,resource) {
-    resource_next_action_end = resource->share_resources(NOW);
+    resource_next_action_end = resource->common_private->share_resources(NOW);
     if((min<0) || (resource_next_action_end<min)) 
       min = resource_next_action_end;
   }
 
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if(next_event_date > NOW+min) break;
-    while (tmgr_history_get_next_event_leq(history, next_event_date,
-					   &value, (void **) &resource)) {
-      if(surf_cpu_resource->resource.resource_used(resource)) {
+    while ((event=tmgr_history_get_next_event_leq(history, next_event_date,
+						  &value, (void **) &resource_obj))) {
+      if(resource_obj->resource->common_public->resource_used(resource_obj)) {
 	min = next_event_date-NOW;
+/* 	update_state of resource_obj according to new value */
       }
+      resource_obj->resource->common_private->update_resource_state(resource_obj,
+								    event, value);
     }
   }
 
   xbt_dynar_foreach (resource_list,i,resource) {
-    resource->update_state(NOW, min);
+    resource->common_private->update_actions_state(NOW, min);
   }
 
   NOW=NOW+min;

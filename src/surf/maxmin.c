@@ -87,7 +87,7 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
   s_lmm_element_t elem;
 
   cnst = xbt_new0(s_lmm_constraint_t, 1);
-/*   cnst->id = id; */
+  cnst->id = id;
   xbt_swag_init(&(cnst->element_set),
 		xbt_swag_offset(elem, element_set_hookup));
   xbt_swag_init(&(cnst->active_element_set),
@@ -96,8 +96,6 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
   cnst->bound = bound_value;
   cnst->usage = 0;
   insert_constraint(sys, cnst);
-
-  cnst->id = id;
 
   return cnst;
 }
@@ -116,7 +114,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   lmm_variable_t var = NULL;
 
   var = xbt_new0(s_lmm_variable_t, 1);
-/*   var->id = id; */
+  var->id = id;
   var->cnsts = xbt_new0(s_lmm_element_t, number_of_constraints);
   var->cnsts_size = number_of_constraints;
   /* var->cnsts_number = 0; *//* Useless because of the calloc  */
@@ -124,8 +122,6 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->bound = bound;
   var->value = -1;
   insert_variable(sys, var);
-
-  var->id = id;
 
   return var;
 }

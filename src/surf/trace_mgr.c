@@ -129,9 +129,9 @@ void tmgr_trace_free(tmgr_trace_t trace)
   xbt_free(trace);
 }
 
-void tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t trace,
-			    xbt_heap_float_t start_time, int offset,
-			    void *resource)
+tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t trace,
+					  xbt_heap_float_t start_time, int offset,
+					  void *resource)
 {
   tmgr_trace_event_t trace_event = NULL;
 
@@ -145,6 +145,8 @@ void tmgr_history_add_trace(tmgr_history_t history, tmgr_trace_t trace,
     abort();
 
   xbt_heap_push(history->heap, trace_event, start_time);
+
+  return trace_event;
 }
 
 xbt_heap_float_t tmgr_history_next_date(tmgr_history_t history)
@@ -155,10 +157,10 @@ xbt_heap_float_t tmgr_history_next_date(tmgr_history_t history)
     return -1.0;
 }
 
-int tmgr_history_get_next_event_leq(tmgr_history_t history,
-				    xbt_heap_float_t date,
-				    xbt_maxmin_float_t * value,
-				    void **resource)
+tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t history,
+						   xbt_heap_float_t date,
+						   xbt_maxmin_float_t * value,
+						   void **resource)
 {
   xbt_heap_float_t event_date = xbt_heap_maxkey(history->heap);
   tmgr_trace_event_t trace_event = NULL;
@@ -166,10 +168,10 @@ int tmgr_history_get_next_event_leq(tmgr_history_t history,
   tmgr_trace_t trace = NULL;
 
   if (event_date > date)
-    return 0;
+    return NULL;
 
   if (!(trace_event = xbt_heap_pop(history->heap)))
-    return 0;
+    return NULL;
 
   trace = trace_event->trace;
   event = xbt_dynar_get_ptr(trace->event_list, trace_event->idx);
@@ -188,5 +190,5 @@ int tmgr_history_get_next_event_leq(tmgr_history_t history,
     xbt_free(trace_event);
   }
 
-  return 1;
+  return trace_event;
 }

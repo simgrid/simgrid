@@ -23,7 +23,7 @@ typedef struct tmgr_trace_event {
   tmgr_trace_t trace;
   int idx;
   void *resource;
-} s_tmgr_trace_event_t, *tmgr_trace_event_t;
+} s_tmgr_trace_event_t;
 
 typedef struct tmgr_history {
   xbt_heap_t heap;
