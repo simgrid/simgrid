@@ -41,7 +41,7 @@ void test(void)
 
   surf_init(); /* Initialize some common structures */
   surf_cpu_resource_init("platform.txt"); /* Now it is possible to use CPUs */
-  surf_network_resource_init("platform.txt"); /* Now it is possible to use CPUs */
+  surf_network_resource_init("platform.txt"); /* Now it is possible to use eth0 */
 
   printf("%p \n", surf_cpu_resource);
   cpuA = surf_cpu_resource->common_public->name_service("Cpu A");
