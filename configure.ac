@@ -3,7 +3,7 @@
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.0.1],[martin.quinson@ens-lyon.fr])
+AC_INIT([GRAS],[0.0.1b],[martin.quinson@ens-lyon.fr])
 AC_CONFIG_SRCDIR([src/include/gras.h])
 AC_REVISION($Revision$)
 dnl A C_CONFIG_SUBDIRS(src/nws_portability)
@@ -29,8 +29,9 @@ AC_PROG_CC
 AM_SANITY_CHECK
 AC_PROG_MAKE_SET
 
-# Check architecture signature
+# Check architecture signature begin
 GRAS_ARCH
+# Check architecture signature end
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -50,11 +51,13 @@ AC_CHECK_FUNCS([memset strchr strerror usleep])
 GNOME_GTKDOC_CHECK
 
 dnl ####[ Search libs ]#######################################################
-ACI_PACKAGE_SAVED(XML,[XML library (version XML2)],xml2-config,,,:)
+dnl A CI_PACKAGE_SAVED(XML,[XML library (version XML2)],xml2-config,,,:)
 ACI_PACKAGE([SimGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
 AM_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
 
-dnl A C_CHECK_LIB(pthread, pthread_mutex_lock)
+dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
+AC_CHECK_LIB(nsl, gethostbyname, [LIBS="$LIBS -lnsl"])
+AC_CHECK_LIB(socket, connect,    [LIBS="$LIBS -lsocket"])
 	
 dnl ####[ maint mode ]#######################################################
 AM_MAINTAINER_MODE
