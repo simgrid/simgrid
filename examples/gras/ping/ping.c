@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Ping,"Messages specific to this example");
 
-/** \brief register messages which may be sent (common to client and server) */
+/* register messages which may be sent (common to client and server) */
 static void register_messages(void) {
   gras_msgtype_declare("ping", gras_datadesc_by_name("int"));
   gras_msgtype_declare("pong", gras_datadesc_by_name("int"));
