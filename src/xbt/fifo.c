@@ -4,6 +4,7 @@
    under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
+#include "xbt/error.h"
 #include "fifo_private.h"
 
 /*
@@ -33,22 +34,15 @@ void xbt_fifo_free(xbt_fifo_t l)
  * xbt_fifo_push()
  * at the tail
  */
-void xbt_fifo_push(xbt_fifo_t l, void *t)
+xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t l, void *t)
 {
   xbt_fifo_item_t new;
 
-  (l->count)++;
   new = xbt_fifo_newitem();
   new->content = t;
-  if (l->head == NULL) {
-    l->head = new;
-    l->tail = new;
-    return;
-  }
-  new->prev = l->tail;
-  new->prev->next = new;
-  l->tail = new;
-  return;
+
+  xbt_fifo_push_item(l,new);
+  return new;
 }
 
 /*
@@ -60,20 +54,11 @@ void *xbt_fifo_pop(xbt_fifo_t l)
   xbt_fifo_item_t item;
   void *content;
 
-  if (l->tail == NULL)
-    return NULL;
+  item = xbt_fifo_pop_item(l);
+  if(item==NULL) return NULL;
 
-  item = l->tail;
   content = item->content;
-
-  l->tail = item->prev;
-  if (l->tail == NULL)
-    l->head = NULL;
-  else
-    l->tail->next = NULL;
-
   xbt_fifo_freeitem(item);
-  (l->count)--;
   return content;
 }
 
@@ -81,13 +66,80 @@ void *xbt_fifo_pop(xbt_fifo_t l)
  * xbt_fifo_unshift()
  * at the head
  */
-void xbt_fifo_unshift(xbt_fifo_t l, void *t)
+xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t l, void *t)
 {
   xbt_fifo_item_t new;
 
-  (l->count)++;
   new = xbt_fifo_newitem();
   new->content = t;
+  xbt_fifo_unshift_item(l,new);
+  return new;
+}
+
+/*
+ * xbt_fifo_shift()
+ * from the head
+ */
+void *xbt_fifo_shift(xbt_fifo_t l)
+{
+  xbt_fifo_item_t item;
+  void *content;
+
+  item = xbt_fifo_shift_item(l);
+  if(l==NULL) return NULL;
+
+  content = item->content;
+  xbt_fifo_freeitem(item);
+  return content;
+}
+
+/*
+ * xbt_fifo_push_item()
+ * at the tail
+ */
+void xbt_fifo_push_item(xbt_fifo_t l, xbt_fifo_item_t new)
+{
+  (l->count)++;
+  if (l->head == NULL) {
+    l->head = new;
+    l->tail = new;
+    return;
+  }
+  new->prev = l->tail;
+  new->prev->next = new;
+  l->tail = new;
+}
+
+/*
+ * xbt_fifo_pop_item()
+ * from the tail
+ */
+xbt_fifo_item_t xbt_fifo_pop_item(xbt_fifo_t l)
+{
+  xbt_fifo_item_t item;
+
+  if (l->tail == NULL)
+    return NULL;
+
+  item = l->tail;
+
+  l->tail = item->prev;
+  if (l->tail == NULL)
+    l->head = NULL;
+  else
+    l->tail->next = NULL;
+
+  (l->count)--;
+  return item;
+}
+
+/*
+ * xbt_fifo_unshift_item()
+ * at the head
+ */
+void xbt_fifo_unshift_item(xbt_fifo_t l, xbt_fifo_item_t new)
+{
+  (l->count)++;
   if (l->head == NULL) {
     l->head = new;
     l->tail = new;
@@ -100,19 +152,17 @@ void xbt_fifo_unshift(xbt_fifo_t l, void *t)
 }
 
 /*
- * xbt_fifo_shift()
+ * xbt_fifo_shift_item()
  * from the head
  */
-void *xbt_fifo_shift(xbt_fifo_t l)
+xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t l)
 {
   xbt_fifo_item_t item;
-  void *content;
 
   if (l->head == NULL)
     return NULL;
 
   item = l->head;
-  content = item->content;
 
   l->head = item->next;
   if (l->head == NULL)
@@ -120,9 +170,8 @@ void *xbt_fifo_shift(xbt_fifo_t l)
   else
     l->head->prev = NULL;
 
-  xbt_fifo_freeitem(item);
   (l->count)--;
-  return content;
+  return item;
 }
 
 /*
@@ -140,6 +189,7 @@ void xbt_fifo_remove(xbt_fifo_t l, void *t)
       continue;
     /* remove the item */
     xbt_fifo_remove_item(l, current);
+    xbt_fifo_freeitem(current);
     /* WILL NOT REMOVE DUPLICATES */
     break;
   }
@@ -155,7 +205,6 @@ void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
   if (l->head == l->tail) {	/* special case */
       l->head = NULL;
       l->tail = NULL;
-      xbt_fifo_freeitem(current);
       (l->count)--;
       return;
     }
@@ -163,15 +212,12 @@ void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
     if (current == l->head) {	/* It's the head */
       l->head = current->next;
       l->head->prev = NULL;
-      xbt_fifo_freeitem(current);
     } else if (current == l->tail) {	/* It's the tail */
       l->tail = current->prev;
       l->tail->next = NULL;
-      xbt_fifo_freeitem(current);
     } else {			/* It's in the middle */
       current->prev->next = current->next;
       current->next->prev = current->prev;
-      xbt_fifo_freeitem(current);
     }
     (l->count)--;
 }

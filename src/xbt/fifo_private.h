@@ -26,6 +26,7 @@ typedef struct xbt_fifo {
 #define xbt_fifo_getNextitem(i) ((i)?(i)->next:NULL)
 #define xbt_fifo_getPrevitem(i) ((i)?(i)->prev:NULL)
 #define xbt_fifo_getItemcontent(i) ((i)?(i)->content:NULL)
+#define xbt_fifo_Itemcontent(i) ((i)->content)
 #define xbt_fifo_setItemcontent(i,v) (i->content=v)
 
 

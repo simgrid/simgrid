@@ -16,10 +16,15 @@ typedef struct xbt_fifo *xbt_fifo_t;
 xbt_fifo_t xbt_fifo_new(void);
 void xbt_fifo_free(xbt_fifo_t);
 
-void xbt_fifo_push(xbt_fifo_t, void *);
+xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t, void *);
 void *xbt_fifo_pop(xbt_fifo_t);
-void xbt_fifo_unshift(xbt_fifo_t, void *);
+xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t, void *);
 void *xbt_fifo_shift(xbt_fifo_t);
+
+void xbt_fifo_push_item(xbt_fifo_t, xbt_fifo_item_t);
+xbt_fifo_item_t xbt_fifo_pop_item(xbt_fifo_t);
+void xbt_fifo_unshift_item(xbt_fifo_t, xbt_fifo_item_t);
+xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t);
 
 void xbt_fifo_remove(xbt_fifo_t, void *);
 void xbt_fifo_remove_item(xbt_fifo_t, xbt_fifo_item_t);
