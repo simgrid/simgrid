@@ -40,7 +40,8 @@ static workstation_KCCFLN05_t workstation_new(const char *name,
 					      tmgr_trace_t state_trace,
 					      double interference_send,
 					      double interference_recv,
-					      double interference_send_recv)
+					      double interference_send_recv,
+					      double max_outgoing_rate)
 {
   workstation_KCCFLN05_t workstation = xbt_new0(s_workstation_KCCFLN05_t, 1);
 
@@ -66,6 +67,10 @@ static workstation_KCCFLN05_t workstation_new(const char *name,
   workstation->constraint =
       lmm_constraint_new(maxmin_system_cpu_KCCFLN05, workstation,
 			 workstation->power_current * workstation->power_scale);
+  if(max_outgoing_rate>0) 
+    workstation->bus=
+      lmm_constraint_new(maxmin_system_cpu_KCCFLN05, workstation,
+			 max_outgoing_rate);
 
   workstation->incomming_communications = 
     xbt_dynar_new(sizeof(surf_action_network_KCCFLN05_t),NULL);
@@ -87,7 +92,8 @@ static void parse_workstation(void)
   double interference_send = 0.0;
   double interference_recv = 0.0;
   double interference_send_recv = 0.0;
-     
+  double max_outgoing_rate = -1.0;
+
   surf_parse_get_double(&power_scale,A_cpu_power);
   surf_parse_get_double(&power_initial,A_cpu_availability);
   surf_parse_get_trace(&power_trace,A_cpu_availability_file);
@@ -102,10 +108,11 @@ static void parse_workstation(void)
   surf_parse_get_double(&interference_send,A_cpu_interference_send);
   surf_parse_get_double(&interference_recv,A_cpu_interference_recv);
   surf_parse_get_double(&interference_send_recv,A_cpu_interference_send_recv);
+  surf_parse_get_double(&max_outgoing_rate,A_cpu_max_outgoing_rate);
 
   workstation_new(A_cpu_name, power_scale, power_initial, power_trace, state_initial,
 		  state_trace, interference_send, interference_recv,
-		  interference_send_recv);
+		  interference_send_recv, max_outgoing_rate);
 }
 
 /*********** resource management ***********/
@@ -399,16 +406,16 @@ static void update_actions_network_KCCFLN05_state(double now, double delta)
       surf_network_resource->common_public->states.failed_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
-    action->generic_action.remains -=
-	lmm_variable_getvalue(action->variable) * delta;
+    surf_double_update(&(action->generic_action.remains),
+		       lmm_variable_getvalue(action->variable) * delta);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
-      action->generic_action.max_duration -= delta;
-    if ((action->generic_action.remains <= 0) && 
+          surf_double_update(&(action->generic_action.max_duration), delta);
+    if ((action->generic_action.remains <= 0.0) && 
 	(lmm_get_variable_weight(action->variable)>0)) {
       action->generic_action.finish = surf_get_clock();
       action_network_KCCFLN05_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
-	       (action->generic_action.max_duration <= 0)) {
+	       (action->generic_action.max_duration <= 0.0)) {
       action->generic_action.finish = surf_get_clock();
       action_network_KCCFLN05_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else {			/* Need to check that none of the resource has failed */
@@ -449,13 +456,17 @@ static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size,
 
   if(rate>0)
     action->variable = lmm_variable_new(maxmin_system_network_KCCFLN05, action, 1.0, rate,
-					route->size);
+					route->size+1);
   else
     action->variable = lmm_variable_new(maxmin_system_network_KCCFLN05, action, 1.0, -1.0,
-					route->size);
+					route->size+1);
 
   for (i = 0; i < route->size; i++)
     lmm_expand(maxmin_system_network_KCCFLN05, route->links[i]->constraint, 
+	       action->variable, 1.0);
+
+  if(card_src->bus) 
+    lmm_expand(maxmin_system_network_KCCFLN05, card_src->bus, 
 	       action->variable, 1.0);
 
   action->src=src;
@@ -530,7 +541,8 @@ static double share_cpu_KCCFLN05_resources(double now)
 	  scale -= ROUTE(action->src->id,action->dst->id).impact_on_src *
 	    lmm_variable_getvalue(action->variable);
 	}
-	xbt_assert0(scale>0.0,"Negative interference !");
+	if(scale<0.0) scale=0.0;
+	xbt_assert0(scale>=0.0,"Negative interference !");
       } else if((xbt_dynar_length(workstation->incomming_communications)) &&
 		(!xbt_dynar_length(workstation->outgoing_communications))) {
 	scale = workstation->interference_recv;
@@ -538,7 +550,8 @@ static double share_cpu_KCCFLN05_resources(double now)
 	  scale -= ROUTE(action->src->id,action->dst->id).impact_on_dst *
 	    lmm_variable_getvalue(action->variable);
 	}
-	xbt_assert0(scale>0.0,"Negative interference !");
+	if(scale<0.0) scale=0.0;
+	xbt_assert0(scale>=0.0,"Negative interference !");
       } else {
 	scale = workstation->interference_send_recv;
 	xbt_dynar_foreach (workstation->outgoing_communications,cpt,action) {
@@ -549,7 +562,8 @@ static double share_cpu_KCCFLN05_resources(double now)
 	  scale -= ROUTE(action->src->id,action->dst->id).impact_on_dst_with_other_send *
 	    lmm_variable_getvalue(action->variable);
 	}
-	xbt_assert0(scale>0.0,"Negative interference !");
+	if(scale<0.0) scale=0.0;
+	xbt_assert0(scale>=0.0,"Negative interference !");
       }
       lmm_update_constraint_bound(maxmin_system_cpu_KCCFLN05,workstation->constraint,
 				  W*scale);
@@ -571,8 +585,8 @@ static void update_actions_cpu_KCCFLN05_state(double now, double delta)
       surf_cpu_resource->common_public->states.failed_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
-    action->generic_action.remains -=
-	lmm_variable_getvalue(action->variable) * delta;
+    surf_double_update(&(action->generic_action.remains),
+	lmm_variable_getvalue(action->variable) * delta);
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       action->generic_action.max_duration -= delta;
     if ((action->generic_action.remains <= 0) && 

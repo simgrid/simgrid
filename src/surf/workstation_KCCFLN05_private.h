@@ -30,6 +30,7 @@ typedef struct workstation_KCCFLN05 {
   int id; /* cpu and network card are a single object... */
   xbt_dynar_t incomming_communications;
   xbt_dynar_t outgoing_communications;
+  lmm_constraint_t bus;
 } s_workstation_KCCFLN05_t, *workstation_KCCFLN05_t;
 
 /**************************************/
