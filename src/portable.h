@@ -1,0 +1,105 @@
+/* $Id$ */
+
+/* portable -- header loading to write portable code */
+
+/* Copyright (c) 2004 Martin Quinson. */
+/* LGPL*/
+
+#ifndef GRAS_PORTABLE_H
+#define GRAS_PORTABLE_H
+
+#include "gras_config.h"
+
+#include <errno.h>
+#include <sys/time.h> /* struct timeval */
+#include <sys/types.h>
+
+/****
+ **** Networking 
+ ****/
+
+
+#ifdef HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#  include <netinet/in.h>   /* sometimes required for #include <arpa/inet.h> */
+#  include <netinet/tcp.h>  /* TCP_NODELAY */
+#  include <netdb.h>        /* getprotobyname() */
+#  include <arpa/inet.h>    /* inet_ntoa() */
+# endif
+
+#ifdef HAVE_WINSOCK2_H
+#  include <winsock2.h>
+#  include <ws2tcpip.h>  /* socklen_t, but doubtful */
+#elif HAVE_WINSOCK_H
+#  include <winsock.h>
+#endif
+
+#ifdef HAVE_WINSOCK_H
+#       define tcp_read( s, buf, len )  recv( s, buf, len, 0 )
+#       define tcp_write( s, buf, len ) send( s, buf, len, 0 )
+#       define ioctl( s, c, a )         ioctlsocket( (s), (c), (a) )
+#       define ioctl_t                          u_long
+#       define AC_SOCKET_INVALID        ((unsigned int) ~0)
+
+#       ifdef SD_BOTH
+#               define tcp_close( s )   (shutdown( s, SD_BOTH ), closesocket( s ))
+#       else
+#               define tcp_close( s )           closesocket( s )
+#       endif
+
+#       define EWOULDBLOCK WSAEWOULDBLOCK
+#       define EINPROGRESS WSAEINPROGRESS
+#       define ETIMEDOUT   WSAETIMEDOUT
+
+#       undef  sock_errno
+#       undef  sock_errstr
+#       define sock_errno()    WSAGetLastError()
+#       define sock_errstr(e)  ber_pvt_wsa_err2string(e)
+
+char *ber_pvt_wsa_err2string(int errcode);
+
+#       define S_IRGRP 0
+#       define S_IWGRP 0
+
+#else
+#       define tcp_read( s, buf, len)   read( s, buf, len )
+#       define tcp_write( s, buf, len)  write( s, buf, len )
+
+#       ifdef SHUT_RDWR
+#               define tcp_close( s )   (shutdown( s, SHUT_RDWR ), close( s ))
+#       else
+#               define tcp_close( s )   close( s )
+#       endif
+#endif /* windows or unix ? */
+
+/****
+ **** File handling
+ ****/
+
+#include <fcntl.h>
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+/****
+ **** Time handling
+ ****/
+
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
+#ifdef _WIN32
+#define sleep _sleep /* else defined in stdlib.h */
+#endif
+
+
+#endif /* GRAS_PORTABLE_H */
