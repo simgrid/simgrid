@@ -105,10 +105,10 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	   \
 	   echo "-- Compiling... (the output gets into buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; \
 	   if echo $$site | grep  '%' >/dev/null ; then \
-	     if ssh -CA $$machine "env REMOTE_PREFIX=$(REMOTE_PREFIX) ssh -A $$machine2 $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log;\
+	     if ssh $$machine "env REMOTE_PREFIX=$(REMOTE_PREFIX) ssh -A $$machine2 $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log;\
 	     then echo "Sucessful"; else failed=1;echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
 	   else \
-	     if ssh -CA $$machine "eval $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log ;\
+	     if ssh $$machine "eval $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log ;\
 	     then echo "Sucessful"; else failed=1;echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
 	   fi;\
 	done;\
