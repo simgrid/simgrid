@@ -20,8 +20,9 @@ int multiplier (int argc,char *argv[])
 {
   int i,j,k,l;
   double *A,*B,*C;
-  int n = 500;
+  int n = 100;
   double start = 0.0;
+  double now = 0.0;
 
   gras_init(&argc, argv, NULL);
 
@@ -29,9 +30,12 @@ int multiplier (int argc,char *argv[])
   B = malloc(n*n*sizeof(double));
   C = malloc(n*n*sizeof(double));
 
-  INFO1("Before computation: %lg", start=gras_os_time());
+  start=now=gras_os_time();
+
+  INFO1("Before computation: %lg", start);
 
   for(l=0; l<4; l++) {
+    now=gras_os_time();
     GRAS_BENCH_ONCE_RUN_ONCE_BEGIN();
     for(i=0; i<n; i++)
       for(j=0; j<n; j++) {
@@ -46,10 +50,12 @@ int multiplier (int argc,char *argv[])
 	  C[i*n+j] += A[i*n+k]*B[k*n+j];
     
     GRAS_BENCH_ONCE_RUN_ONCE_END();
+    now=gras_os_time()-now;
+    INFO2("Iteration %d : %lg ", l, now);
   }
 
-  start = gras_os_time()-start;
-  INFO2("After computation: %lg; Duration: %lg ", gras_os_time(), start);
+  now=gras_os_time()-start;
+  INFO2("After computation: %lg; Duration: %lg ", gras_os_time(), now);
 
   return 0;
 }

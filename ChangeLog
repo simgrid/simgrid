@@ -1,8 +1,17 @@
 SimGrid (2.92) NOT RELEASED YET; urgency=low
 
   Alpha 3 on the path to SimGrid 3
+  [Arnaud]
+  (gras)
+   - New! First try of benchmarking macros.
+   - New! First try so that gras_stub_generator generate deployment and
+     remote compilation helpers.
+  (msg)
+   - Bugfix: Initialization fix in msg_test.
 
   [Martin]
+  (surf)
+   - Bugfix: applied patch to lexer so that it doesn't need a huge heap.
   (xbt)
    - Bugfix: let dicts work with NULL content (_foreach didn't) and cleanups
   (gras)
