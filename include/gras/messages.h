@@ -19,6 +19,21 @@ BEGIN_DECL()
 
 /** @addtogroup GRAS_msg
  *  @brief Defining messages and callbacks, and exchanging messages (Communication facility) 
+ * 
+ *  There is two way to receive messages in GRAS. The first one is to
+ *  register a given function as callback to a given type of messages (see
+ *  \ref gras_cb_register and associated section). But you can also
+ *  explicitely wait for a given message with the \ref gras_msg_wait
+ *  function.
+ * 
+ *  Usually, both ways are not intended to be mixed of a given type of
+ *  messages. But if you do so, it shouldn't trigger any issue.  If the
+ *  message arrives when gras_msg_wait is blocked, then it will be routed
+ *  to it. If it arrives when before or after gras_msg_wait, it will be
+ *  passed to the callback.
+ * 
+ *  For an example of use, please refer to \ref GRAS_ex_ping.
+ * 
  *  @{
  */
 
@@ -54,8 +69,20 @@ gras_msgtype_t gras_msgtype_by_namev(const char     *name,
 				     short int       version);
 /** @} */  
 
-/** @name Callback declaration and use */
-/** @{ */
+/** @name Callback declaration and use
+ * 
+ * This is how to register a given function so that it gets called when a
+ * given type of message arrives.
+ * 
+ * You can register several callbacks to the same kind of messages, and
+ * they will get stacked. The lastly added callback gets the message first.
+ * If it consumes the message, it should return a true value when done. If
+ * not, it should return 0, and the message will be passed to the second
+ * callback of the stack, if any.
+ * 
+ * @{
+ */
+ 
 /** \brief Type of message callback functions. 
  * \param msg: The message itself
  * \return true if the message was consumed by the callback, false if the message was
