@@ -21,15 +21,15 @@
 
 #include "gras_config.h"
 
-#include "gros/sysdep.h"
+#include "xbt/sysdep.h"
 
-#include "gros/error.h"
-#include "gros/log.h"
-#include "gros/module.h"
-#include "gros/dynar.h"
-#include "gros/dict.h"
-#include "gros/set.h"
-#include "gros/config.h"
+#include "xbt/error.h"
+#include "xbt/log.h"
+#include "xbt/module.h"
+#include "xbt/dynar.h"
+#include "xbt/dict.h"
+#include "xbt/set.h"
+#include "xbt/config.h"
 
 #include "gras/core.h"
 #include "gras/process.h"

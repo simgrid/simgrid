@@ -11,10 +11,10 @@ if [ xvalgrind = "x$1" ] ; then
 else
   valgrind=
 fi
-for test in gros/log_usage                                          \
-            gros/dynar_int gros/dynar_double gros/dynar_string      \
- 	    gros/dict_usage gros/dict_crash                         \
-	    gros/config_usage                                       \
+for test in xbt/log_usage                                          \
+            xbt/dynar_int xbt/dynar_double xbt/dynar_string      \
+ 	    xbt/dict_usage xbt/dict_crash                         \
+	    xbt/config_usage                                       \
 	    \
 	    gras/trp_tcp_usage      gras/trp_file_usage             \
 	    gras/datadesc_usage                                     

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* gros.h - Public interface to the GROS (gras's toolbox)                   */
+/* xbt.h - Public interface to the xbt (gras's toolbox)                   */
 
 /* Authors: Martin Quinson                                                  */
 /* Copyright (C) 2004 the OURAGAN project.                                  */
@@ -8,8 +8,8 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef GROS_H
-#define GROS_H
+#ifndef xbt_H
+#define xbt_H
 
 #define max(a, b) (((a) > (b))?(a):(b))
 #define min(a, b) (((a) < (b))?(a):(b))
@@ -19,17 +19,17 @@
 
 #define GRAS_MAX_CHANNEL 10 /* FIXME: killme */
 
-#include <gros/sysdep.h>
+#include <xbt/sysdep.h>
 
-#include <gros/error.h>
-#include <gros/log.h>
+#include <xbt/error.h>
+#include <xbt/log.h>
 
-#include <gros/module.h>
+#include <xbt/module.h>
 
-#include <gros/dynar.h>
-#include <gros/dict.h>
-#include <gros/set.h>
+#include <xbt/dynar.h>
+#include <xbt/dict.h>
+#include <xbt/set.h>
 
-#include <gros/config.h>
+#include <xbt/config.h>
 
-#endif /* GROS_H */
+#endif /* xbt_H */

@@ -1,10 +1,10 @@
-include_HEADERS = gras.h gros.h
+include_HEADERS = gras.h xbt.h
 nobase_include_HEADERS = \
-	gros/sysdep.h \
-	gros/log.h gros/error.h \
-	gros/module.h \
-	gros/dynar.h gros/dict.h gros/set.h \
-	gros/config.h \
+	xbt/sysdep.h \
+	xbt/log.h xbt/error.h \
+	xbt/module.h \
+	xbt/dynar.h xbt/dict.h xbt/set.h \
+	xbt/config.h \
 	\
 	gras/datadesc.h gras/transport.h \
 	gras/virtu.h gras/cond.h gras/process.h \

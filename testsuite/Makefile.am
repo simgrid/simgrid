@@ -2,7 +2,7 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src
 AM_CFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o datadesc_usage.out 
-DISTCLEANFILES =  gras/.libs/* gros/.libs/*
+DISTCLEANFILES =  gras/.libs/* xbt/.libs/*
 MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little64 gras/datadesc.big32 gras/datadesc.big64 \
@@ -10,13 +10,13 @@ EXTRA_DIST=run_tests.in \
 
 # Test stuff
 
-gros_tests =                                                      \
-	gros/dynar_int    gros/dynar_double   gros/dynar_string   \
-	gros/dict_usage   gros/dict_crash                         \
-	gros/set_usage                                            \
-	gros/log_usage                                            \
-	gros/config_usage
-# gros/multidict_crash 
+xbt_tests =                                                      \
+	xbt/dynar_int    xbt/dynar_double   xbt/dynar_string   \
+	xbt/dict_usage   xbt/dict_crash                         \
+	xbt/set_usage                                            \
+	xbt/log_usage                                            \
+	xbt/config_usage
+# xbt/multidict_crash 
 
 RL_tests =                                              \
 	gras/trp_tcp_client   gras/trp_tcp_server       \
@@ -25,7 +25,7 @@ RL_tests =                                              \
 
 SG_tests =
 
-check_PROGRAMS = $(gros_tests) $(RL_tests) $(SG_tests)
+check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
 TESTS=run_tests
 
@@ -38,19 +38,19 @@ valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 LDADD_UTILS=$(top_builddir)/src/libgrasrl.la 
 LDADD_RL=   $(top_builddir)/src/libgrasrl.la   
 
-gros_log_usage_LDADD=          $(LDADD_UTILS)
+xbt_log_usage_LDADD=          $(LDADD_UTILS)
 
-gros_dynar_int_LDADD=          $(LDADD_UTILS)
-gros_dynar_double_LDADD=       $(LDADD_UTILS)
-gros_dynar_string_LDADD=       $(LDADD_UTILS)
+xbt_dynar_int_LDADD=          $(LDADD_UTILS)
+xbt_dynar_double_LDADD=       $(LDADD_UTILS)
+xbt_dynar_string_LDADD=       $(LDADD_UTILS)
 
-gros_dict_usage_LDADD=         $(LDADD_UTILS)
-gros_dict_crash_LDADD=         $(LDADD_UTILS)
-#gros_multidict_crash_LDADD=    $(LDADD_UTILS)
+xbt_dict_usage_LDADD=         $(LDADD_UTILS)
+xbt_dict_crash_LDADD=         $(LDADD_UTILS)
+#xbt_multidict_crash_LDADD=    $(LDADD_UTILS)
 
-gros_set_usage_LDADD=          $(LDADD_UTILS)
+xbt_set_usage_LDADD=          $(LDADD_UTILS)
 
-gros_config_usage_LDADD=       $(LDADD_UTILS)
+xbt_config_usage_LDADD=       $(LDADD_UTILS)
 
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)

@@ -11,7 +11,7 @@
 #ifndef GRAS_H
 #define GRAS_H
 
-#include <gros.h> /* our toolbox */
+#include <xbt.h> /* our toolbox */
 
 #include <gras/core.h> /* FIXME: killme */
 #include <gras/process.h>

@@ -19,7 +19,7 @@ INCLUDES= -I$(top_srcdir)/include \
 EXTRA_DIST= \
         gras_private.h\
         \
-        gros/dict_private.h \
+        xbt/dict_private.h \
         \
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
@@ -74,14 +74,14 @@ endif
 
 COMMON_S=\
   \
-  gros/gros_interface.h                                                         \
-  gros/sysdep.c                                                                 \
-  gros/log.c         gros/log_default_appender.c   gros/error.c                 \
-  gros/dynar.c                                                                  \
-  gros/dict.c        gros/dict_elm.c               gros/dict_cursor.c           \
-  gros/set.c                                                                    \
-  gros/module.c                                                                 \
-  gros/config.c                                                                 \
+  xbt/xbt_interface.h                                                         \
+  xbt/sysdep.c                                                                 \
+  xbt/log.c         xbt/log_default_appender.c   xbt/error.c                 \
+  xbt/dynar.c                                                                  \
+  xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \
+  xbt/set.c                                                                    \
+  xbt/module.c                                                                 \
+  xbt/config.c                                                                 \
   \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
