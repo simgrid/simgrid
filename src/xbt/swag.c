@@ -52,6 +52,7 @@ void xbt_swag_insert(void *obj, xbt_swag_t swag)
 
   (swag->count)++;
   if (swag->head == NULL) {
+    xbt_assert0(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     return;
@@ -71,6 +72,7 @@ void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
 
   (swag->count)++;
   if (swag->head == NULL) {
+    xbt_assert0(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     return;
@@ -90,6 +92,7 @@ void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
 
   (swag->count)++;
   if (swag->head == NULL) {
+    xbt_assert0(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     return;
@@ -116,6 +119,7 @@ void *xbt_swag_remove(void *obj, xbt_swag_t swag)
       return NULL;
     swag->head = NULL;
     swag->tail = NULL;
+    NEXT(obj, offset) = PREV(obj, offset) = NULL;
   } else if (obj == swag->head) {	/* It's the head */
     swag->head = NEXT(obj, offset);
     PREV(swag->head, offset) = NULL;
@@ -145,6 +149,7 @@ void *xbt_swag_extract(xbt_swag_t swag)
 
   if (swag->head == swag->tail) {	/* special case */
     swag->head = swag->tail = NULL;
+    PREV(obj, offset) = NEXT(obj, offset) = NULL;
   } else {
     swag->head = NEXT(obj, offset);
     PREV(swag->head, offset) = NULL;
