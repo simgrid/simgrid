@@ -5,3 +5,4 @@ chrono.Makefile.am
 chrono.Makefile.local
 chrono.Makefile.remote
 chrono.deploy.sh
+chrono.trace
