@@ -54,7 +54,7 @@ GRAS_ARCH
 GRAS_CHECK_STRUCT_COMPACTION
 
 AC_ARG_ENABLE(context,
-  [  --enable-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=ucontext]].],,
+  [  --enable-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=pthread]].],,
   enable_context=pthread)
 AC_MSG_CHECKING(on top of what can we build the contexts)
 if test "x$enable_context" = "xucontext"; then
