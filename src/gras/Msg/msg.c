@@ -125,7 +125,7 @@ void gras_msgtype_declare(const char           *name,
  * @param version: something like versionning symbol
  * @param payload: datadescription of the payload
  *
- * Registers a message to the GRAS mecanism. Use this version instead of 
+ * Registers a message to the GRAS mechanism. Use this version instead of 
  * gras_msgtype_declare when you change the semantic or syntax of a message and
  * want your programs to be able to deal with both versions. Internally, each
  * will be handled as an independent message type, so you can register 

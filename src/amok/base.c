@@ -88,6 +88,6 @@ void amok_base_init(void) {
 }
 
 void amok_base_exit(void) {
-   /* No real module mecanism in GRAS so far, nothing to do. */
+   /* No real module mechanism in GRAS so far, nothing to do. */
 }
 

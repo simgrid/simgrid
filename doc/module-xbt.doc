@@ -93,5 +93,5 @@
   *  implementation of the serveral programmation environment of the 
   *  SimGrid toolkit (nammely, \ref MSG_API, \ref GRAS_API and \ref SMPI_API).
   *
-  *  You should use those mecanism instead.
+  *  You should use those mechanism instead.
   */

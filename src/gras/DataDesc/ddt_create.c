@@ -236,7 +236,7 @@ gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
  * gras_datadesc_cycle_set:
  * 
  * Tell GRAS that the pointers of the type described by ddt may present
- * some loop, and that the cycle detection mecanism is needed.
+ * some loop, and that the cycle detection mechanism is needed.
  *
  * Note that setting this option when not needed have a rather bad effect 
  * on the performance (several times slower on big data).
@@ -250,7 +250,7 @@ gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
  * gras_datadesc_cycle_unset:
  * 
  * Tell GRAS that the pointers of the type described by ddt do not present
- * any loop and that cycle detection mecanism are not needed.
+ * any loop and that cycle detection mechanism are not needed.
  * (default)
  */
 void

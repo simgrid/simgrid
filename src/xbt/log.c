@@ -347,7 +347,7 @@ s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
 XBT_LOG_NEW_CATEGORY(xbt,"All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_CATEGORY(surf,"All SURF categories");
 XBT_LOG_NEW_CATEGORY(msg,"All MSG categories");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mecanism itself");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mechanism itself");
 
 void xbt_log_init(int *argc,char **argv, const char *defaultlog) {
   int i,j;

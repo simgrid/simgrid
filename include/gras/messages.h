@@ -47,7 +47,7 @@ BEGIN_DECL()
  *  to add a version number to the message (by default, the version is set to 0). Any messages of the 
  *  wrong version will be ignored by the applications not providing any specific callback for them.
  *  
- *  This mecanism (stolen from the dynamic loader one) should ensure you to change the semantic of a given
+ *  This mechanism (stolen from the dynamic loader one) should ensure you to change the semantic of a given
  *  message while still understanding the old one.
  */
 /** @{ */  

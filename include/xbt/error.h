@@ -24,7 +24,7 @@ BEGIN_DECL()
   
 /** @addtogroup XBT_error 
  *
- *  This is how the errors get reported in the SimGrid toolkit. This mecanism is not 
+ *  This is how the errors get reported in the SimGrid toolkit. This mechanism is not 
  *  as powerful as exceptions, but since we're using C, there is not much we can do.
  *
  *  @{*/

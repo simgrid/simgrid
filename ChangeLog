@@ -6,9 +6,9 @@ SimGrid (2.91) unstable; urgency=low
   (surf)
    - Bug fix in the lmm_solver.
   (msg)
-   - Interface to Paje (see http://www-id.imag.fr/Logiciels/paje/) through the function 
-     MSG_paje_output.
-   - Introducing two new functions MSG_process_kill() and MSG_process_killall().
+   - New! Interface to Paje (see http://www-id.imag.fr/Logiciels/paje/) 
+     through the function MSG_paje_output.
+   - New! Introducing two new functions MSG_process_kill() and MSG_process_killall().
    - It is possible to bound the rate of a communication in MSG with 
      MSG_task_put_bounded() (was already in the previous version but I had forgotten 
      to write it in the changelog).
@@ -21,13 +21,13 @@ SimGrid (2.91) unstable; urgency=low
    - Begin to move Gras examples to examples/gras/
    - Let make distcheck work again (yeah!)
   (documentation)
-   - documentation overhault using doxygen. 
+   - documentation overhauled using doxygen. 
      gtk-doc-tools is dead in SimGrid now.
    - Automatically extract all existing logging categories, and add the list
      to the documentation (long standing one, to say the less)
   (gras)
    - Cleanup the known architecture table. Reorder the entries to group what
-     should be, and use a more consistant naming scheme.
+     should be, and use a more consistent naming scheme.
      (some of the test dataset are still to be regenerated)
    - New! Allow library to register globals on each process just as userdata
      does. 
@@ -36,13 +36,13 @@ SimGrid (2.91) unstable; urgency=low
       Use it in msg and trp.
       This cleans a lot the internals and helps enforcing privacy of the
        headers between the gras components.
-   - New! Add a timer mecanism, not unlike cron(8) and at(1). 
+   - New! Add a timer mechanism, not unlike cron(8) and at(1). 
    - Bugfix: gras_os_time was delirious in RL.
    - Bugfix: gras_trp_select/RL don't run into the wall when asked to select
      onto 0 sockets.
    - Reenable GRAS now that it works.
 
- --
+ -- Arnaud Legrand <Arnaud.Legrand@imag.fr>  Mon, 14 Feb 2005 14:02:13 -0800
 
 SimGrid (2.90) unstable; urgency=low
 
@@ -60,7 +60,7 @@ SimGrid (2.90) unstable; urgency=low
     SimGrid now comprises 3 different projects : MSG, GRAS and SMPI. 
     I wanted to release the new MSG as soon as possible and I have 
     broken GRAS, which is the reason why, for now, only MSG is fully 
-    functionnal. A laconic description of these projects is available 
+    functional. A laconic description of these projects is available 
     in the documentation.
   
   * REVOLUTION 2: I have removed SG and I am now using a new simulation
@@ -80,7 +80,7 @@ SimGrid (2.90) unstable; urgency=low
          Have a look in tools/platform_generation. There is a tiny script 
          that converts from the old platform format to the new one. Concerning
          the application deployment format, parsing the old one is tricky.  
-         I think most of you should hower be able to convert your files.  If 
+         I think most of you should however be able to convert your files.  If 
          it is really an issue, I can write a C code that does the conversion. 
          Let me know.
        2) the toolbox tbx does not exist anymore. We now have a library
@@ -91,7 +91,7 @@ SimGrid (2.90) unstable; urgency=low
 
 *****************************************************************************
 * Follows the old GRAS changelog. It does not follow the same syntax, but I *
-* dont feel like converting the oldies. (Mt)                                *
+* don't feel like converting the oldies. (Mt)                                *
 *****************************************************************************
 
 2005-01-31 Arnaud
@@ -104,13 +104,13 @@ SimGrid (2.90) unstable; urgency=low
 
 2004-11-28 Arnaud
   - Main loop and datastructures of SURF. A cpu resource object is
-    functionnal. Surf can thus be used to create cpu's with variable
+    functional. Surf can thus be used to create cpu's with variable
     performance on which you can execute some actions.
 	
 2004-11-15 Martin Quinson
   - Port to ARM. Simply added the alignment and size descriptions. Should
     work, but the ARM machines are so slow that I didn't had the opportunity
-    to 'make check' overthere yet.
+    to 'make check' over there yet.
 
 2004-11-15 Arnaud Legrand
   - Trace manager now written. It uses a heap structure and is therefore
@@ -127,7 +127,7 @@ SimGrid (2.90) unstable; urgency=low
   - Rename every gras_* function that was in xbt/ to its xbt_
     counterpart.
   - Add a heap and a doubly-linked list to xbt
-  - Added a dichotomy to the dictionnaries. make check works as well before
+  - Added a dichotomy to the dictionaries. make check works as well before
     so I assume that the patch is correct. I do not know however if things
     run effectively faster than before now. :)
 
@@ -138,7 +138,7 @@ SimGrid (2.90) unstable; urgency=low
   - Introduction of the remote errors. 
     They are the result of a RMI/RPC on the remote machine.
     ErrCodes being scalar values, you can't get the host on which those
-    errors did happen. Extending the error mecanism as in Gnome is possible.
+    errors did happen. Extending the error mechanism as in Gnome is possible.
     No idea yet whether it is a good idea.
     
 2004-10-28 Martin Quinson
@@ -194,7 +194,7 @@ SimGrid (2.90) unstable; urgency=low
     Note that the cycle detection is off by default since it impacts the 
     performance. Watch the data you feed GRAS with ;)
     
-    This property is hereditary. Any element embeeded in a structure having it
+    This property is hereditary. Any element embedded in a structure having it
     set have it set for the time of this data exchange.
     
     You should set it both on sender and receiver side. If you don't set it on
@@ -221,12 +221,12 @@ SimGrid (2.90) unstable; urgency=low
     
     It should allow to kill the last bits of gras first version soon.
   
-    This is not completely satisfactory yet (dupplicate code with
-     chunk_{send,recv}; a bit out of the plugin mecanism), but it should
+    This is not completely satisfactory yet (duplicate code with
+     chunk_{send,recv}; a bit out of the plugin mechanism), but it should
      work. 
 
   - Simplify transport plugin (internal) interface by not passing any
-    argument to _server and _client, but embeeding them in the socket
+    argument to _server and _client, but embedding them in the socket
     struct directly. 
 
 2004-09-28 Martin Quinson
@@ -368,7 +368,7 @@ SimGrid (2.90) unstable; urgency=low
   - Improvement to the remote testing toysuite
   
 2004-07-10 Martin Quinson
- [autoconf mecanism]
+ [autoconf mechanism]
   - get ride of a bunch of deprecated macros
   - actually run the test for two-compliment, not only compile it :-/
   - test whether the structures get packed (and bail out if yes. Damn.
@@ -499,7 +499,7 @@ SimGrid (2.90) unstable; urgency=low
      
 2004-04-19 Martin Quinson
  [Data description]
-   - register init/exit functions within gras module mecanism   
+   - register init/exit functions within gras module mechanism   
    - send/receive function. 
    Convertion is not implemented, but short-cutted if not needed.
    struct/array elements are sent one by one (instead of block-wise), but

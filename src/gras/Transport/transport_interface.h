@@ -30,7 +30,7 @@ gras_trp_select(double timeout,
 
 
 /***
- *** Plugin mecanism 
+ *** Plugin mechanism 
  ***/
 
 /* A plugin type */

@@ -30,8 +30,8 @@ BEGIN_DECL()
  *   -# basic operations
  *   -# Automatic parsing
  *   -# Simple manual definitions
- *   -# Callback Persistant State: Simple push/pop mecanism
- *   -# Callback Persistant State: Full featured mecanism
+ *   -# Callback Persistant State: Simple push/pop mechanism
+ *   -# Callback Persistant State: Full featured mechanism
  */
 /*@{*/
 
@@ -92,7 +92,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  * It specifies that the structure s_array contains two fields, and that the size of the array pointed 
  * by \a data is the \a length field, and that the \a father field is a simple reference.
  * 
- * If you cannot express your datadescs with this mecanism, you'll have to use the more advanced 
+ * If you cannot express your datadescs with this mechanism, you'll have to use the more advanced 
  * (and somehow complex) one described below.
  * 
  *  \warning Since GRAS_DEFINE_TYPE is a macro, you shouldn't  put any comma in your type definition 
@@ -141,7 +141,7 @@ gras_datadesc_parse(const char *name, const char *C_statement);
  * 
  * If your types are dynamic, you'll need to add some extra callback. For example, there is a
  * specific callback for the string type which is in charge of computing the length of the char
- * array. This is done with the cbps mecanism, explained in next section.
+ * array. This is done with the cbps mechanism, explained in next section.
  * 
  * If your types may contain pointer cycle, you must specify it to GRAS using the @ref gras_datadesc_cycle_set. 
  * 
@@ -252,7 +252,7 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
 /*@}*/
 
-/** @name 4. Callback Persistant State: Simple push/pop mecanism
+/** @name 4. Callback Persistant State: Simple push/pop mechanism
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
  * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
@@ -289,9 +289,9 @@ void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 
 /*@}*/
 
-/** @name 5. Callback Persistant State: Full featured mecanism
+/** @name 5. Callback Persistant State: Full featured mechanism
  * 
- * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mecanism
+ * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mechanism
  * introduced in previous section isn't enough, you can always use this full featured one.
  */
 

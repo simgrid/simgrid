@@ -52,7 +52,7 @@ void gras_trp_init(void){
      _gras_trp_plugins=xbt_dict_new();
 
 #ifdef HAVE_WINSOCK2_H
-     /* initialize the windows mecanism */
+     /* initialize the windows mechanism */
      {  
 	WORD wVersionRequested;
 	WSADATA wsaData;

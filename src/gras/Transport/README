@@ -1,4 +1,4 @@
-There is a plugin mecanism in here, and the selection is automatic
+There is a plugin mechanism in here, and the selection is automatic
 
 If you open a socket in SG realm, you'll get a SG socket.
 If you open a socket in RL realm, you'll get a TCP socket.

@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* config - Dictionnary where the type of each cell is provided.            */
+/* config - Dictionary where the type of each cell is provided.            */
 
 /* This is useful to build named structs, like option or property sets.     */
 
@@ -22,10 +22,9 @@ BEGIN_DECL()
  *  User modules and libraries can also use these facilities to handle 
  *  their own configuration.
  *
- *  A configuration set contain several \e variables which have a uniq name
+ *  A configuration set contain several \e variables which have a unique name
  *  in the set and can take a given type of value. For example, it may 
  *  contain a \a size variable, accepting \e int values. 
- *  Moreover,  of values.
  *
  *  It is impossible to set a value to a variable which has not been registered before.
  *  Usually, the module registers all the options it accepts in the configuration set,
@@ -43,9 +42,9 @@ BEGIN_DECL()
  *
  *  To some extend, configuration sets can be seen as typed hash structures.
  * 
- *  \todo This great mecanism is not used in SimGrid yet...
+ *  \todo This great mechanism is not used in SimGrid yet...
  *
- *  \todo We need a callback mecanism so that the configurable code get
+ *  \todo We need a callback mechanism so that the configurable code get
  *  notified of configuration changes.
  *
  *  \section XBT_cfg_ex Example

@@ -258,7 +258,7 @@ xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
  * @arg cfg the config set
  * @arg entry a string describing the element to register
  *
- * The string may consist in several variable description separated by a space. 
+ * The string may consist in several variable descriptions separated by a space. 
  * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
  * with type being one of  'string','int', 'host' or 'double'.
  */
