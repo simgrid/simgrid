@@ -33,14 +33,21 @@ my (@coltab) = (
 while (<>) {
     $orgline = $thisline = $_;
 
-    if ( $thisline =~ /^\[[0-9\.]*\] P[0-9]* \|/ ) {
-        ( $number, $message ) = split ( / \| /, $thisline );
-        chomp $message;
-        $head = $number;
-        $number =~ s/^\[[0-9\.]*\] P//;
-        $number =~ s/^ .*$//;
-        $head   =~ s/^(\[.*\]) (.*)$/$col_norm$1 $coltab[($number-1) % scalar(@coltab)]$2/;
-        print $head. " " . $message . $col_norm . "\n";
+    if ( $thisline =~ /^\[(\w+):(\w+):\((\d+\)) ([0-9\.]*)\] ([^\[]*) \[([^\[]*)\] (.*)$/ ) {
+	$host=$1;
+	$procname=$2;
+	$pid=$3;
+	$date=$4;
+	$location=$5;
+	$xbt_channel=$6;
+	$message=$7;
+
+	print $col_norm;
+	printf "[% 10.3f]",$date;
+	print $coltab[($pid-1) % scalar(@coltab)];
+	printf "[%10s:%-10s]",$host,$procname;
+	print " $message";
+	print $col_norm."\n";
         next;
     }
     print $col_default. $orgline;
