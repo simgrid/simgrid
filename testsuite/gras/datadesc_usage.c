@@ -19,7 +19,7 @@ GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
 #define RW    2
 
 int r_arch;
-  
+const char *filename = "datadesc_usage.out";  
 
 gras_error_t
 write_read(gras_datadesc_type_t *type,void *src, void *dst, 
@@ -32,7 +32,7 @@ write_read(gras_datadesc_type_t *type,void *src, void *dst,
    
   /* write */
   if (direction == RW) 
-    TRY(gras_socket_client_from_file("datadesc_usage.out",&sock));
+    TRY(gras_socket_client_from_file(filename,&sock));
   if (direction == WRITE || direction == RW)
     TRY(gras_datadesc_send(sock, type, src));
   if (direction == RW) 
@@ -40,7 +40,7 @@ write_read(gras_datadesc_type_t *type,void *src, void *dst,
    
   /* read */
   if (direction == RW) 
-    TRY(gras_socket_server_from_file("datadesc_usage.out",&sock));
+    TRY(gras_socket_server_from_file(filename,&sock));
 
   if (direction == READ || direction == RW)
     TRY(gras_datadesc_recv(sock, type, r_arch, dst));
@@ -106,9 +106,11 @@ gras_error_t test_array(gras_socket_t *sock, int direction) {
 
   TRY(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
-    for (cpt=0; cpt<SIZE; cpt++)
+    for (cpt=0; cpt<SIZE; cpt++) {
+      DEBUG1("Test spot %d",cpt);
       gras_assert4(i[cpt] == j[cpt],"i[%d]=%d  !=  j[%d]=%d",
 		   cpt,i[cpt],cpt,j[cpt]);
+    }
   }
   return no_error;
 }
@@ -421,27 +423,28 @@ int main(int argc,char *argv[]) {
   gras_error_t errcode;
   gras_socket_t *sock;
   int direction = RW;
+  int cpt;
   char r_arch_char = gras_arch_selfid();
 
-  gras_init_defaultlog(&argc,argv,
-		       "DataDesc.thresh=verbose"
-		       " test.thresh=debug"
-		       //" set.thresh=debug"
-		       );
-  if (argc >= 2) {
-    if (!strcmp(argv[1], "--read"))
+  gras_init_defaultlog(&argc,argv,NULL);
+
+  for (cpt=1; cpt<argc; cpt++) {
+    if (!strcmp(argv[cpt], "--read")) {
       direction = READ;
-    if (!strcmp(argv[1], "--write"))
+    } else if (!strcmp(argv[cpt], "--write")) {
       direction = WRITE;
+    } else {
+       filename=argv[cpt];
+    }
   }
     
   if (direction == WRITE) {
-    TRYFAIL(gras_socket_client_from_file("datadesc_usage.out",&sock));
+    TRYFAIL(gras_socket_client_from_file(filename,&sock));
     TRY(gras_datadesc_send(sock, gras_datadesc_by_name("char"),
 			   &r_arch_char));
   }
   if (direction == READ) {
-    TRYFAIL(gras_socket_server_from_file("datadesc_usage.out",&sock));
+    TRYFAIL(gras_socket_server_from_file(filename,&sock));
     TRY(gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
 			   gras_arch_selfid(), &r_arch_char));
     INFO1("This datafile was generated on %s", 
