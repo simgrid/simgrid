@@ -123,8 +123,10 @@ AC_SUBST([GRAS_DEP])
 AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
 then
-   GNOME_COMPILE_WARNINGS(yes)
+   # Maintainers have no choice ! I'm a BOFH, and I plainly assume. [Mt]
+   enable_compile_warnings=yes
 fi
+SG_COMPILE_FLAGS
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
@@ -205,7 +207,7 @@ AC_OUTPUT
 
 echo "
 
-Configuration of package \`${PACKAGE}' on $gras_arch_name (=$gras_arch):
+Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (=$gras_arch):
 
 	Compiler:	${CC}
 
