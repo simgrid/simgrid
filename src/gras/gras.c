@@ -29,7 +29,7 @@ void gras_init(int *argc,char **argv, const char *defaultlog) {
   /* First initialize the XBT */
   xbt_init_defaultlog(argc,argv,defaultlog);
    
-  /*gras_chrono_init(); * FIXME: Arnaud, WTF?? It depends on MSG!! */
+  gras_chrono_init();
   /* module registrations: 
    *    - declare process specific data we need (without creating them) 
    */

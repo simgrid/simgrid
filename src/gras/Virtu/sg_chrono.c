@@ -1,6 +1,6 @@
 /* 	$Id$	 */
 
-/* chrono.c - code benchmarking for emulation                               */
+/* sg_chrono.c - code benchmarking for emulation                            */
 
 /* Copyright (c) 2005 Martin Quinson, Arnaud Legrand. All rights reserved.  */
 
@@ -32,7 +32,7 @@ static double sys_time(void) {
 static double timer = 0.0;
 static int benchmarking = 0;
 static xbt_dict_t benchmark_set = NULL;
-static double reference = .01019;
+static double reference = .00523066250047108838;
 static double duration = 0.0;
 static const char* __location__ = NULL;
 
