@@ -163,6 +163,8 @@ FILE *surf_fopen(const char *name, const char *mode)
   char* path = NULL;
   FILE *file = NULL;
 
+  xbt_assert1((name!=NULL), "Need a real file name, not \"%s\"\n",name);
+
   xbt_assert0(surf_path,"surf_init has to be called before using surf_fopen");
   if(!path_name) path_name=xbt_new0(char,strlen(name)+1);
 
