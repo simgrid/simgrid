@@ -86,7 +86,7 @@ int server (int argc,char *argv[]) {
 
   int port = 4000;
   
-  xbt_init(&argc,argv);
+  gras_init(&argc,argv, NULL);
   g=gras_userdata_new(server_data_t);
    
   if (argc == 2) {
@@ -145,7 +145,7 @@ int client(int argc,char *argv[]) {
   const char *host = "127.0.0.1";
         int   port = 4000;
 
-  xbt_init(&argc, argv);
+  gras_init(&argc, argv, NULL);
   g=gras_userdata_new(client_data_t);
    
   if (argc == 3) {
