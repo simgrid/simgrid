@@ -25,7 +25,6 @@
      (fprintf(stderr, "FAILURE: %s(%s:%d)" GS_FAILURE_CONTEXT "%s\n", __func__, __FILE__, __LINE__, (str)), \
       abort())
 
-#define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 #define max(a, b) (((a) > (b))?(a):(b))
 #define min(a, b) (((a) < (b))?(a):(b))
 
@@ -38,14 +37,16 @@
 #include "gras/module.h"
 #include "gras/dynar.h"
 #include "gras/dict.h"
+#include "gras/set.h"
 #include "gras/config.h"
 
-#include "gras/data_description.h"
-#include "gras/dd_type_bag.h"
+//#include "gras/data_description.h"
+//#include "gras/dd_type_bag.h"
 
 #include "gras/core.h"
 #include "gras/transport.h"
-#include "gras/datadesc_simple.h"
+//#include "gras/datadesc_simple.h"
+#include "gras/datadesc.h"
 #include "gras/socket.h"
 #include "gras/messages.h"
 
