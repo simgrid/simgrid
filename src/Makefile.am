@@ -40,7 +40,9 @@ EXTRA_DIST= \
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
 	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
-	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c
+	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c \
+	\
+	modules.doc
 
 
 #        gras_private.h
