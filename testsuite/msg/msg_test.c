@@ -5,24 +5,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file msg_test.c 
- *  \brief Test program for msg.
-*/
-
 #include "msg/msg.h"
 
-/** This flag enable the debugging messages from PRINT_DEBUG_MESSAGE() */
 #define VERBOSE
 #include "messages.h"
 
-int unix_emitter(int argc, char *argv[]);
-int unix_receiver(int argc, char *argv[]);
-int unix_forwarder(int argc, char *argv[]);
+int master(int argc, char *argv[]);
+int slave(int argc, char *argv[]);
+int forwarder(int argc, char *argv[]);
 void test_all(const char *platform_file, const char *application_file);
 
 
-/** The names of the channels we will use in this simulation. There is
-    only one channel identified by the name PORT_22. */
 typedef enum {
   PORT_22 = 0,
   MAX_CHANNEL
@@ -39,16 +32,104 @@ void print_args(int argc, char** argv)
   fprintf(stderr,">\n");
 }
 
-/** The number of task each slave will process */
-#define NB_TASK 3
-int unix_emitter(int argc, char *argv[])
+int master(int argc, char *argv[])
 {
   int slaves_count = 0;
   m_host_t *slaves = NULL;
-  int todo_count = 0;
   m_task_t *todo = NULL;
+  int number_of_tasks = 0;
+  double task_comp_size = 0;
+  double task_comm_size = 0;
+
 
   int i;
+
+  print_args(argc,argv);
+
+  ASSERT(sscanf(argv[1],"%d", &number_of_tasks),
+	 "Invalid argument %s\n",argv[1]);
+  ASSERT(sscanf(argv[2],"%lg", &task_comp_size),
+	 "Invalid argument %s\n",argv[2]);
+  ASSERT(sscanf(argv[3],"%lg", &task_comm_size),
+	 "Invalid argument %s\n",argv[3]);
+
+  {                  /*  Task creation */
+    char sprintf_buffer[64];
+
+    todo = calloc(number_of_tasks, sizeof(m_task_t));
+
+    for (i = 0; i < number_of_tasks; i++) {
+      sprintf(sprintf_buffer, "Task_%d", i);
+      todo[i] = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+    }
+  }
+
+  {                  /* Process organisation */
+    slaves_count = argc - 4;
+    slaves = calloc(slaves_count, sizeof(m_host_t));
+    
+    for (i = 4; i < argc; i++) {
+      slaves[i-4] = MSG_get_host_by_name(argv[i]);
+      if(slaves[i-4]==NULL) {
+	PRINT_MESSAGE("Unknown host %s. Stopping Now! \n", argv[i]);
+	abort();
+      }
+    }
+  }
+
+  PRINT_MESSAGE("Got %d slave(s) :\n", slaves_count);
+  for (i = 0; i < slaves_count; i++)
+    PRINT_MESSAGE("\t %s\n", slaves[i]->name);
+
+  PRINT_MESSAGE("Got %d task to process :\n", number_of_tasks);
+
+  for (i = 0; i < number_of_tasks; i++)
+    PRINT_MESSAGE("\t\"%s\"\n", todo[i]->name);
+
+  for (i = 0; i < number_of_tasks; i++) {
+    PRINT_MESSAGE("Sending \"%s\" to \"%s\"\n",
+                  todo[i]->name,
+                  slaves[i % slaves_count]->name);
+    MSG_task_put(todo[i], slaves[i % slaves_count],
+                 PORT_22);
+    PRINT_MESSAGE("Send completed\n");
+  }
+  
+  PRINT_MESSAGE("All tasks have been dispatched. Bye!\n");
+  free(slaves);
+  free(todo);
+  return 0;
+}
+
+int slave(int argc, char *argv[])
+{
+  print_args(argc,argv);
+
+  while(1) {
+    m_task_t task = NULL;
+    int a;
+    a = MSG_task_get(&(task), PORT_22);
+    if (a == MSG_OK) {
+      PRINT_MESSAGE("Received \"%s\" \n", task->name);
+      PRINT_MESSAGE("Processing \"%s\" \n", task->name);
+      MSG_task_execute(task);
+      PRINT_MESSAGE("\"%s\" done \n", task->name);
+      MSG_task_destroy(task);
+    } else {
+      PRINT_MESSAGE("Hey ?! What's up ? \n");
+      DIE("Unexpected behaviour");
+    }
+  }
+  PRINT_MESSAGE("I'm done. See you!\n");
+  return 0;
+}
+
+
+int forwarder(int argc, char *argv[])
+{
+  int i;
+  int slaves_count = argc - 1;
+  m_host_t *slaves = calloc(slaves_count, sizeof(m_host_t));
 
   print_args(argc,argv);
 
@@ -65,100 +146,18 @@ int unix_emitter(int argc, char *argv[])
     }
   }
 
-  {                  /*  Task creation */
-    char sprintf_buffer[64];
-    int slave  = slaves_count;
 
-    todo = calloc(NB_TASK * slave, sizeof(m_task_t));
-    todo_count = NB_TASK * slave;
-
-    for (i = 0; i < NB_TASK * slave; i++) {
-      sprintf(sprintf_buffer, "Task_%d", i);
-      todo[i] = MSG_task_create(sprintf_buffer, 5000, 10, NULL);
-    }
-  }
-
-  PRINT_MESSAGE("Got %d slave(s) :\n", slaves_count);
-  for (i = 0; i < slaves_count; i++)
-    PRINT_MESSAGE("\t %s\n", slaves[i]->name);
-
-  PRINT_MESSAGE("Got %d task to process :\n", todo_count);
-
-  for (i = 0; i < todo_count; i++)
-    PRINT_MESSAGE("\t\"%s\"\n", todo[i]->name);
-
-  for (i = 0; i < todo_count; i++) {
-    PRINT_MESSAGE("Sending \"%s\" to \"%s\"\n",
-                  todo[i]->name,
-                  slaves[i % slaves_count]->name);
-    MSG_task_put(todo[i], slaves[i % slaves_count],
-                 PORT_22);
-    PRINT_MESSAGE("Send completed\n");
-  }
-  
-  free(slaves);
-  free(todo);
-  return 0;
-}
-
-int unix_receiver(int argc, char *argv[])
-{
-  int todo_count = 0;
-  m_task_t *todo = (m_task_t *) calloc(NB_TASK, sizeof(m_task_t));
-  int i;
-
-  print_args(argc,argv);
-
-  for (i = 0; i < NB_TASK;) {
-    int a;
-    PRINT_MESSAGE("Awaiting Task %d \n", i);
-    a = MSG_task_get(&(todo[i]), PORT_22);
-    if (a == MSG_OK) {
-      todo_count++;
-      PRINT_MESSAGE("Received \"%s\" \n", todo[i]->name);
-      PRINT_MESSAGE("Processing \"%s\" \n", todo[i]->name);
-      MSG_task_execute(todo[i]);
-      PRINT_MESSAGE("\"%s\" done \n", todo[i]->name);
-      MSG_task_destroy(todo[i]);
-      i++;
-    } else {
-      PRINT_MESSAGE("Hey ?! What's up ? \n");
-      DIE("Unexpected behaviour");
-    }
-  }
-  free(todo);
-  PRINT_MESSAGE("I'm done. See you!\n");
-  return 0;
-}
-
-
-int unix_forwarder(int argc, char *argv[])
-{
-  m_host_t slave=NULL;
-  int i;
-
-  print_args(argc,argv);
-
-  if(argc<2) 
-    DIE("Need somebody to which I can send my work! ");
-
-  slave = MSG_get_host_by_name(argv[1]);
-
-  if(slave==NULL) {
-    PRINT_MESSAGE("Unknown host %s. Stopping Now! \n", argv[1]);
-    abort();
-  }
-
-  for (i = 0; i < NB_TASK;) {
+  while(1) {
     m_task_t task = NULL;
     int a;
-    PRINT_MESSAGE("Awaiting Task %d \n", i);
-    a = MSG_task_get(&task, PORT_22);
+    a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
       PRINT_MESSAGE("Received \"%s\" \n", task->name);
-      PRINT_MESSAGE("Sending to somebody else \"%s\" \n", task->name);
-      MSG_task_put(task,slave,PORT_22);
-      i++;
+      PRINT_MESSAGE("Sending \"%s\" to \"%s\"\n",
+		    task->name,
+		    slaves[i % slaves_count]->name);
+      MSG_task_put(task, slaves[i % slaves_count],
+		   PORT_22);
     } else {
       PRINT_MESSAGE("Hey ?! What's up ? \n");
       DIE("Unexpected behaviour");
@@ -177,9 +176,9 @@ void test_all(const char *platform_file,const char *application_file)
     MSG_create_environment(platform_file);
   }
   {                            /*   Application deployment */
-    MSG_function_register("master", unix_emitter);
-    MSG_function_register("slave", unix_receiver);
-    MSG_function_register("forwarder", unix_forwarder);
+    MSG_function_register("master", master);
+    MSG_function_register("slave", slave);
+    MSG_function_register("forwarder", forwarder);
     MSG_launch_application(application_file);
   }
   MSG_main();
