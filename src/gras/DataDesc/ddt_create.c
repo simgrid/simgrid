@@ -47,15 +47,21 @@ gras_ddt_new_scalar(const char                       *name,
 
   res->size = size>0 ? size : 0;
   
-  if (size>0) { /* Black magic from Oli FIXME: documentation ;)*/
+  if (size>0) { 
     long int sz   = size;
     long int mask = sz;
- 
+
+    /* just in case you wonder, x>>1 == x/2 on all architecture when x>=0 */
+
+    /* make sure mask have all the bits under the biggest one of size set to 1
+       Example: size=000100101 => mask=0000111111 */
     while ((sz >>= 1)) {
       mask |= sz;
     }
 
-    if (size & (mask >> 1)) {
+    if (size & (mask >> 1)) { /* if size have bits to one beside its biggest */
+      /* size is not a power of 2 */
+      /* alignment= next power of 2 after size */
       res->alignment = (size & ~(mask >> 1)) << 1;
       gras_assert0(res->alignment != 0,
 		   "scalar type too large");
@@ -65,8 +71,9 @@ gras_ddt_new_scalar(const char                       *name,
 		    "scalar type too large");
       
     } else {
-      res->alignment       = size & ~(mask >> 1);;
-      res->aligned_size    = aligned(size, res->alignment);
+      /* size is a power of 2, life is great */
+      res->alignment       = size;
+      res->aligned_size    = size;
     }
     
   } else {
