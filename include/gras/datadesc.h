@@ -97,12 +97,9 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 /** @{ */
 
  
-/**   @def GRAS_DEFINE_TYPE
+/**   @brief Automatically parse C code
  *    @hideinitializer
- *    @brief Automatically parse C code
  */
-  
-
 #define GRAS_DEFINE_TYPE(name,def) \
   static const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
  
