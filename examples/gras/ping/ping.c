@@ -45,7 +45,7 @@ static int server_cb_ping_handler(gras_socket_t  expeditor,
   globals->endcondition = 0;
    
   /* 3. Log which client connected */
-  INFO3("SERVER: >>>>>>>> Got message PING(%d) from %s:%d <<<<<<<<", 
+  INFO3(">>>>>>>> Got message PING(%d) from %s:%d <<<<<<<<", 
 	msg, 
  	gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor));
   
@@ -56,12 +56,12 @@ static int server_cb_ping_handler(gras_socket_t  expeditor,
 
   /* 6. Deal with errors */
   if (errcode != no_error) {
-    ERROR1("SERVER: Unable answer with PONG: %s\n", xbt_error_name(errcode));
+    ERROR1("Unable answer with PONG: %s\n", xbt_error_name(errcode));
     gras_socket_close(globals->sock);
     return 1;
   }
 
-  INFO0("SERVER: >>>>>>>> Answered with PONG(4321) <<<<<<<<");
+  INFO0(">>>>>>>> Answered with PONG(4321) <<<<<<<<");
    
   /* 7. Set the endcondition boolean to true (and make sure the server stops after receiving it). */
   globals->endcondition = 1;
@@ -105,7 +105,7 @@ int server (int argc,char *argv[]) {
   /* 5. Register my callback */
   gras_cb_register(gras_msgtype_by_name("ping"),&server_cb_ping_handler);
 
-  INFO1("SERVER: >>>>>>>> Listening on port %d <<<<<<<<", gras_socket_my_port(globals->sock));
+  INFO1(">>>>>>>> Listening on port %d <<<<<<<<", gras_socket_my_port(globals->sock));
   globals->endcondition=0;
 
   /* 6. Wait up to 10 minutes for an incomming message to handle */
@@ -117,16 +117,12 @@ int server (int argc,char *argv[]) {
   if (!globals->endcondition)
      WARN0("An error occured, the endcondition was not set by the callback");
   
-  /* 8. Sleep one second, but only in real life, not in simulation */
-  if (!gras_if_RL())
-    gras_os_sleep(1);
-
-  /* 9. Free the allocated resources, and shut GRAS down */
+  /* 8. Free the allocated resources, and shut GRAS down */
   gras_socket_close(globals->sock);
   free(globals);
   gras_exit();
    
-  INFO0("SERVER: Done.");
+  INFO0("Done.");
   return no_error;
 } /* end_of_server */
 
@@ -162,11 +158,11 @@ int client(int argc,char *argv[]) {
    
   /* 4. Create a socket to speak to the server */
   if ((errcode=gras_socket_client(host,port,&toserver))) {
-    ERROR1("Client: Unable to connect to the server. Got %s",
+    ERROR1("Unable to connect to the server. Got %s",
 	   xbt_error_name(errcode));
     return 1;
   }
-  INFO2("Client: Connected to %s:%d.",host,port);    
+  INFO2("Connected to %s:%d.",host,port);    
 
 
   /* 5. Register the messages. 
@@ -174,39 +170,39 @@ int client(int argc,char *argv[]) {
   register_messages();
 
   /* 6. Keep the user informed of what's going on */
-  INFO2("Client: >>>>>>>> Connected to server which is on %s:%d <<<<<<<<", 
+  INFO2(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<", 
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
   /* 7. Prepare and send the ping message to the server */
   ping = 1234;
   errcode = gras_msg_send(toserver, gras_msgtype_by_name("ping"), &ping);
   if (errcode != no_error) {
-    fprintf(stderr, "Client: Unable send PING to server (%s)\n",
+    fprintf(stderr, "Unable send PING to server (%s)\n",
 	    xbt_error_name(errcode));
     gras_socket_close(toserver);
     return 1;
   }
-  INFO3("Client: >>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
+  INFO3(">>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
 	ping,
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
   /* 8. Wait for the answer from the server, and deal with issues */
   if ((errcode=gras_msg_wait(6000,gras_msgtype_by_name("pong"),
 			     &from,&pong))) {
-    ERROR1("Client: Why can't I get my PONG message like everyone else (%s)?",
+    ERROR1("Why can't I get my PONG message like everyone else (%s)?",
 	   xbt_error_name(errcode));
     gras_socket_close(toserver);
     return 1;
   }
 
   /* 9. Keep the user informed of what's going on, again */
-  INFO3("Client: >>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<", 
+  INFO3(">>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<", 
 	pong,
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
   /* 10. Free the allocated resources, and shut GRAS down */
   gras_socket_close(toserver);
   gras_exit();
-  INFO0("Client: Done.");
+  INFO0("Done.");
   return 0;
 } /* end_of_client */
