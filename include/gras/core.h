@@ -56,6 +56,8 @@ typedef enum { free_after_use, free_never } e_xbt_free_directive_t;
 const char *
 gras_get_my_fqdn(void);
 
+void gras_init(int *argc,char **argv, const char *defaultlog);
+void gras_exit(void);
 
 END_DECL
 
