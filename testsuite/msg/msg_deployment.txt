@@ -1,0 +1,6 @@
+<DEPLOYMENT>
+  121  master 70 125 62
+  70 slave
+  125 slave
+  62  slave
+</DEPLOYMENT>
