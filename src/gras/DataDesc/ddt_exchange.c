@@ -125,7 +125,6 @@ gras_dd_alloc_ref(xbt_dict_t  refs,
   DEBUG3("alloc_ref: r_ref=%p; *r_ref=%p, r_len=%ld",
 	 (void*)r_ref, (void*)(r_ref?*r_ref:NULL), r_len);
   if (detect_cycle && r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
-    xbt_error_t errcode;
     void *ptr = xbt_malloc(sizeof(void *));
 
     CRITICAL0("detect_cycle");

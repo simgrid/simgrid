@@ -47,7 +47,6 @@ _cursor_push_keys(xbt_dict_cursor_t p_cursor,
  */
 xbt_dict_cursor_t 
 xbt_dict_cursor_new(const xbt_dict_t head) {
-  xbt_error_t        errcode  = no_error;
   xbt_dict_cursor_t res = NULL;
 
   res = xbt_new(s_xbt_dict_cursor_t,1);
@@ -102,7 +101,6 @@ static _XBT_INLINE
 void
 _cursor_push_keys(xbt_dict_cursor_t cursor,
                   xbt_dictelm_t     elm) {
-  xbt_error_t         errcode = no_error;
   xbt_dictelm_t       child = NULL;
   int                  i       = 0;
   static volatile int  count   = 0; /* ??? */
@@ -132,7 +130,6 @@ _cursor_push_keys(xbt_dict_cursor_t cursor,
  */
 void
 xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
-  xbt_error_t errcode = no_error;
 
   CDEBUG0(dict_cursor, "xbt_dict_cursor_rewind");
   xbt_assert(cursor);

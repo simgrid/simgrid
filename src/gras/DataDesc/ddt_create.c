@@ -27,7 +27,6 @@ void gras_ddt_freev(void *ddt) {
 }
 
 static gras_datadesc_type_t gras_ddt_new(const char *name) {
-  xbt_error_t errcode;
   gras_datadesc_type_t res;
 
   XBT_IN1("(%s)",name);
@@ -103,8 +102,10 @@ gras_datadesc_type_t
   res = gras_ddt_new(name);
 
   for (arch = 0; arch < gras_arch_count; arch ++) {
+#if 0
     long int sz;
     long int mask;
+#endif
     res->size[arch]         = gras_arches[arch].sizeofs[type];
     res->alignment[arch]    = gras_arches[arch].boundaries[type];
     res->aligned_size[arch] = aligned(res->size[arch], res->alignment[arch]);
@@ -174,7 +175,6 @@ void gras_dd_cat_field_free(void *f) {
 gras_datadesc_type_t 
   gras_datadesc_struct(const char            *name) {
 
-  xbt_error_t errcode;
   gras_datadesc_type_t res;
   long int arch;
   
@@ -213,7 +213,6 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
 			    const char          *name,
 			    gras_datadesc_type_t field_type) {
 
-  xbt_error_t errcode;
   gras_dd_cat_field_t field;
   int arch;
 
@@ -310,7 +309,6 @@ gras_datadesc_type_t
 gras_datadesc_union(const char                   *name,
 		    gras_datadesc_type_cb_int_t   selector) {
 
-  xbt_error_t errcode;
   gras_datadesc_type_t res;
   int arch;
 
@@ -401,7 +399,6 @@ gras_datadesc_type_t
   gras_datadesc_ref(const char           *name,
 		    gras_datadesc_type_t  referenced_type) {
 
-  xbt_error_t errcode;
   gras_datadesc_type_t res;
   gras_datadesc_type_t pointer_type = gras_datadesc_by_name("data pointer");
   int arch;
@@ -650,7 +647,6 @@ void gras_datadesc_cb_recv(gras_datadesc_type_t          type,
 static gras_datadesc_type_t 
   gras_dd_find_field(gras_datadesc_type_t  type,
 		     const char           *field_name) {
-   gras_datadesc_type_t sub_type=NULL;
    xbt_dynar_t         field_array;
    
    gras_dd_cat_field_t  field=NULL;

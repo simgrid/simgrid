@@ -17,7 +17,6 @@ static short _amok_bw_initialized = 0;
 
 /**** code ****/
 void amok_bw_init(void) {
-  xbt_error_t errcode;
   gras_datadesc_type_t bw_request_desc, bw_res_desc, sat_request_desc;
 
   if (_amok_bw_initialized)

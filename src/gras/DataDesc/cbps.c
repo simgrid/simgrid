@@ -32,7 +32,6 @@ static void free_string(void *d){
 }
 
 gras_cbps_t gras_cbps_new(void) {
-  xbt_error_t errcode;
   gras_cbps_t  res;
 
   res=xbt_new(s_gras_cbps_t,1);
@@ -306,7 +305,6 @@ gras_cbps_block_end(gras_cbps_t ps) {
 void
 gras_cbps_i_push(gras_cbps_t ps,
 		 int val) {
-  xbt_error_t errcode;
   DEBUG1("push %d as a size",val);
   xbt_dynar_push_as(ps->lints,int,val);
 }

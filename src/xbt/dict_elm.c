@@ -131,7 +131,6 @@ _xbt_dictelm_alloc(char                *key,
 		    void                *data,
 		    void_f_pvoid_t      *free_f,
                  /*OUT*/s_xbt_dictelm_t **pp_elm) {
-  xbt_error_t   errcode = no_error;
   s_xbt_dictelm_t *p_elm  = NULL;
 
   p_elm = xbt_new(s_xbt_dictelm_t,1);
@@ -653,7 +652,6 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
 		      int             key_len,
 		      int             offset,
 		      void **data) {
-  void *res;
 
   CDEBUG3(dict_search, "Search %.*s in %p", key_len, key, (void*)p_head); 
 

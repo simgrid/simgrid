@@ -117,7 +117,6 @@ xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
   xbt_cfgelm_t cell=NULL;
   char *key=NULL;
   int i; 
-  xbt_error_t errcode;
   int size;
   int ival;
   char *sval;

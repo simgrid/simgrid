@@ -16,7 +16,7 @@ XBT_LOG_NEW_SUBCATEGORY(raw_trp,transport,"Conveying bytes over the network with
 static xbt_dict_t _gras_trp_plugins;      /* All registered plugins */
 static void gras_trp_plugin_free(void *p); /* free one of the plugins */
 
-static void gras_trp_socket_free(void *s); /* free one socket */
+/* static void gras_trp_socket_free(void *s); /\* free one socket *\/ */
 
 static void
 gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
@@ -344,7 +344,7 @@ xbt_error_t gras_socket_raw_send(gras_socket_t peer,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 	     
   xbt_free(chunk);
-  return no_error;//gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);   
+  return no_error;/* gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);    */
 }
 
 xbt_error_t gras_socket_raw_recv(gras_socket_t peer, 
@@ -368,5 +368,5 @@ xbt_error_t gras_socket_raw_recv(gras_socket_t peer,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
   xbt_free(chunk);
-  return no_error;//gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);   
+  return no_error;/* gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);    */
 }

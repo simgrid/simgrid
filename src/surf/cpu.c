@@ -110,7 +110,7 @@ static void action_change_state(surf_action_t action, e_surf_action_state_t stat
   return;
 }
 
-static xbt_heap_float_t share_resources()
+static xbt_heap_float_t share_resources(xbt_heap_float_t now)
 {
   surf_action_cpu_t action = NULL;
   xbt_swag_t running_actions= surf_cpu_resource->common_public->states.running_action_set;
@@ -148,7 +148,6 @@ static void update_actions_state(xbt_heap_float_t now,
       action_change_state((surf_action_t)action, SURF_ACTION_DONE);
     } else { /* Need to check that none of the resource has failed*/
       lmm_constraint_t cnst = NULL;
-      int tab_size =  lmm_get_number_of_cnst_from_var(maxmin_system, action->variable);
       int i=0;
       cpu_t cpu = NULL;
 
@@ -191,7 +190,6 @@ static void update_resource_state(void *id,
 
 static surf_action_t execute(void *cpu, xbt_maxmin_float_t size)
 {
-  lmm_variable_t var;
   surf_action_cpu_t action = NULL;
   cpu_t CPU = cpu;
   

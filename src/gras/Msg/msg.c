@@ -25,8 +25,6 @@ static char *make_namev(const char *name, short int ver);
  * Initialize this submodule.
  */
 void gras_msg_init(void) {
-  xbt_error_t errcode;
-  
   /* only initialize once */
   if (_gras_msgtype_set != NULL)
     return;

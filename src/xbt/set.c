@@ -34,7 +34,6 @@ typedef struct xbt_set_ {
  */
 xbt_set_t xbt_set_new (void) {
   xbt_set_t res=xbt_new(s_xbt_set_t,1);
-  xbt_error_t errcode;
 
   res->dict=xbt_dict_new ();
   res->dynar=xbt_dynar_new(sizeof(void*),NULL);

@@ -203,7 +203,6 @@ xbt_error_t
 gras_trp_tcp_socket_accept(gras_socket_t  sock,
 			   gras_socket_t *dst) {
   gras_socket_t res;
-  xbt_error_t errcode;
   
   struct sockaddr_in peer_in;
   socklen_t peer_in_len = sizeof(peer_in);
@@ -412,7 +411,7 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
    int res_last, msg_sofar, exp_sofar;
    
    fd_set rd_set;
-   int rv;
+/*    int rv; */
    
    struct timeval timeOut;
    

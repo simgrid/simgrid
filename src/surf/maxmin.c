@@ -194,8 +194,6 @@ static void saturated_constraints_update(lmm_system_t sys,
   if (cnst->remaining <= 0)
     return;
   if ((*min_usage < 0) || (*min_usage > cnst->remaining / cnst->usage)) {
-    xbt_swag_t active_elem_list = &(cnst->active_element_set);
-
     *min_usage = cnst->remaining / cnst->usage;
 
     while ((useless_cnst = xbt_swag_getFirst(&(sys->saturated_constraint_set))))

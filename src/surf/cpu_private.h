@@ -27,10 +27,4 @@ typedef struct cpu {
   lmm_constraint_t constraint;
 } s_cpu_t, *cpu_t;
 
-/* typedef struct surf_cpu_resource_extension_private { */
-/* } s_surf_cpu_resource_extension_private_t; */
-
-void surf_cpu_resource_init(const char *filename);
-
-
 #endif				/* _SURF_CPU_PRIVATE_H */

@@ -159,7 +159,6 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar) {
 static xbt_error_t parse_statement(char	 *definition,
 				    xbt_dynar_t  identifiers,
 				    xbt_dynar_t  fields_to_push) {
-  xbt_error_t errcode;
   char buffname[512];
 
   s_identifier_t identifier;

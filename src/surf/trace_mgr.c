@@ -38,8 +38,6 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   FILE *f = NULL;
   int linecount = 0;
   char line[256];
-  xbt_heap_float_t current_time = 0.0, previous_time = 0.0;
-  xbt_maxmin_float_t value = -1.0;
   xbt_heap_float_t periodicity = -1.0;	/* No periodicity by default */
   s_tmgr_event_t event;
   tmgr_event_t last_event = NULL;

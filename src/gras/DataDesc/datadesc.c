@@ -32,7 +32,6 @@ _strlen_cb(gras_cbps_t vars, void *data) {
  **/
 void
 gras_datadesc_init(void) {
-  xbt_error_t errcode;
   gras_datadesc_type_t ddt; /* What to add */
 
   /* only initialize once */

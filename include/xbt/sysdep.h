@@ -76,14 +76,7 @@ BEGIN_DECL
 
 
 void xbt_abort(void) _XBT_GNUC_NORETURN;
-
-/* FIXME: This is a very good candidate to rewrite (along with a proper string stuff) 
-   but I'm too lazy right now, so copy the definition */
-long int strtol(const char *nptr, char **endptr, int base);
-double strtod(const char *nptr, char **endptr);
-int atoi(const char *nptr);
-
-END_DECL   
+   
 #include "xbt/error.h" /* needed for xbt_die */
 
 #endif /* _XBT_SYSDEP_H */

@@ -130,7 +130,7 @@ typedef enum {
           __FILE__,__LINE__,__FUNCTION__,a1,a2,a3,a4,a5,a6); \
   _XBT_ERR_POST(code)
 
-//#define RAISE_MALLOC     RAISE0(malloc_error,"Malloc error")
+/* #define RAISE_MALLOC     RAISE0(malloc_error,"Malloc error") */
 #define RAISE_IMPOSSIBLE RAISE0(unknown_error,"The Impossible did happen")
 #define RAISE_UNIMPLEMENTED RAISE1(unknown_error,"Function %s unimplemented",__FUNCTION__)
 
@@ -154,7 +154,7 @@ typedef enum {
 #define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); xbt_abort(); }
 #endif
 
-void xbt_die(const char *msg);
+void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 #define DIE_IMPOSSIBLE xbt_assert0(0,"The Impossible did happen (yet again)")
 #define xbt_assert_error(a) xbt_assert1(errcode == (a), "Error %s unexpected",xbt_error_name(errcode))

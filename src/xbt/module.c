@@ -49,7 +49,6 @@ void
 xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
   int i,j;
   char *opt;
-  xbt_error_t errcode;
   int found=0;
 
   INFO0("Initialize GRAS");
