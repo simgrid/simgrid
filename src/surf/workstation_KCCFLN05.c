@@ -682,7 +682,11 @@ static void action_change_state(surf_action_t action,
 
 static void action_free(surf_action_t action)
 {
-  xbt_assert0(0, "Workstation is a virtual resource. I should not be there!");
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->common_public->action_free(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->action_free(action);
+  else DIE_IMPOSSIBLE;
   return;
 }
 
