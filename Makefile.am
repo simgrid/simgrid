@@ -79,9 +79,9 @@ splint:
 ## Cruft for remote compilation
 ##
 
-MACHINES ?= valnure.cs.ucsb.edu sperm.cs.ucsb.edu     basalt.cs.ucsb.edu \
-	    graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
-	    nala.cs.utk.edu
+MACHINES ?= graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
+            valnure.cs.ucsb.edu sperm.cs.ucsb.edu     basalt.cs.ucsb.edu \
+	    nala.cs.utk.edu     AIX
 
 # ACTION: What to do there
 # possible values:
@@ -97,7 +97,7 @@ MACHINES ?= valnure.cs.ucsb.edu sperm.cs.ucsb.edu     basalt.cs.ucsb.edu \
 # default value:
 ACTION ?= clean untar config compile check
 
-REMOTE_PREFIX ?='${HOME}/simgrid'
+REMOTE_PREFIX ?='simgrid'
 
 remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	@echo;echo "----[ Recompile the package on remote hosts ]----"
