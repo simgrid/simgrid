@@ -4280,3 +4280,22 @@ xbt_swag.sgml
 
 @Returns: 
 
+<!-- ##### ENUM xbt_error_t ##### -->
+<para>
+
+</para>
+
+@no_error: 
+@mismatch_error: 
+@system_error: 
+@network_error: 
+@timeout_error: 
+@thread_error: 
+@unknown_error: 
+@remote_mismatch_error: 
+@remote_system_error: 
+@remote_network_error: 
+@remote_timeout_error: 
+@remote_thread_error: 
+@remote_unknown_error: 
+
