@@ -1,0 +1,229 @@
+/* $Id$ */
+
+/* datadesc_private - declarations visible only from within datadesc        */
+
+/* Authors: Olivier Aumage, Martin Quinson                                  */
+/* Copyright (C) 2003, 2004 the GRAS posse.                                 */
+
+/* This program is free software; you can redistribute it and/or modify it
+   under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef GRAS_DATADESC_PRIVATE_H
+#define GRAS_DATADESC_PRIVATE_H
+
+#include "gras_private.h"
+#include "DataDesc/datadesc_interface.h"
+
+#define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
+
+
+
+/**********************************************************/
+/* Actual definitions of the stuff in the type descriptor */
+/**********************************************************/
+
+/**
+ * e_gras_datadesc_type_category:
+ *
+ * Defines all possible type categories
+ */
+typedef enum e_gras_datadesc_type_category {
+        e_gras_datadesc_type_cat_undefined = 0,
+
+        e_gras_datadesc_type_cat_scalar,
+        e_gras_datadesc_type_cat_struct,
+        e_gras_datadesc_type_cat_union,
+        e_gras_datadesc_type_cat_ref,       /* ref to an uniq element */
+        e_gras_datadesc_type_cat_array,
+        e_gras_datadesc_type_cat_ignored,
+
+        e_gras_datadesc_type_cat_invalid
+} gras_datadesc_type_category_t;
+
+
+/*------------------------------------------------*/
+/* definitions of specific data for each category */
+/*------------------------------------------------*/
+/**
+ * s_gras_dd_cat_field:
+ *
+ * Fields of struct and union
+ */
+typedef struct s_gras_dd_cat_field {
+
+  char 			      *name;
+  long int		       offset; /* only for struct */
+  int                          code;
+  
+  gras_datadesc_type_cb_void_t pre;
+  gras_datadesc_type_cb_void_t post;
+
+} gras_dd_cat_field_t;
+void gras_dd_cat_field_free(void *f);
+
+/**
+ * gras_dd_cat_scalar_t:
+ *
+ * Specific fields of a scalar
+ */
+enum e_gras_dd_scalar_encoding {
+  e_gras_dd_scalar_encoding_undefined = 0,
+  
+  e_gras_dd_scalar_encoding_uint,
+  e_gras_dd_scalar_encoding_sint,
+  e_gras_dd_scalar_encoding_float,
+  
+  e_gras_dd_scalar_encoding_invalid 
+};
+typedef struct s_gras_dd_cat_scalar {
+  enum e_gras_dd_scalar_encoding encoding;
+} gras_dd_cat_scalar_t;
+
+/**
+ * gras_dd_cat_struct_t:
+ *
+ * Specific fields of a struct
+ */
+typedef struct s_gras_dd_cat_struct {
+  gras_dynar_t *fields; /* elm type = gras_dd_cat_struct_field_t */
+} gras_dd_cat_struct_t;
+
+/**
+ * gras_dd_cat_union_t:
+ *
+ * Specific fields of a union
+ */
+typedef struct s_gras_dd_cat_union {
+  gras_datadesc_type_cb_int_t field_count;
+  gras_dynar_t *fields; /* elm type = gras_dd_cat_union_field_t */
+} gras_dd_cat_union_t;
+
+/**
+ * gras_dd_cat_ref_t:
+ *
+ * Specific fields of a reference
+ */
+typedef struct s_gras_dd_cat_ref {
+  int	 	 		code;
+
+  /* callback used to return the referenced type number  */
+  gras_datadesc_type_cb_int_t   discriminant;
+} gras_dd_cat_ref_t;
+
+
+/**
+ * gras_dd_cat_array_t:
+ *
+ * Specific fields of an array
+ */
+typedef struct s_gras_dd_cat_array {
+  int	 	 		code;
+
+  /* element_count < 0 means dynamically defined */
+  long int                  	  fixed_size;
+
+  /* callback used to return the dynamic length */
+  gras_datadesc_type_cb_int_t dynamic_size;
+} gras_dd_cat_array_t;
+
+/**
+ * gras_dd_cat_ignored_t:
+ *
+ * Specific fields of an ignored field
+ */
+typedef struct s_gras_dd_cat_ignored {
+        void	 	 		*default_value;
+} gras_dd_cat_ignored_t;
+
+
+/**
+ * u_gras_datadesc_category:
+ *
+ * Specific data to each possible category
+ */
+union u_gras_datadesc_category {
+        void                  *undefined_data;
+        gras_dd_cat_scalar_t   scalar_data;
+        gras_dd_cat_struct_t   struct_data;
+        gras_dd_cat_union_t    union_data;
+        gras_dd_cat_ref_t      ref_data;
+        gras_dd_cat_array_t    array_data;
+        gras_dd_cat_ignored_t  ignored_data;
+};
+
+
+/****************************************/
+/* The holy grail: type descriptor type */
+/****************************************/
+/**
+ * s_gras_datadesc_type:
+ *
+ * Type descriptor.
+ */
+struct s_gras_datadesc_type {
+  /* headers for the data set */
+  unsigned int                         code;
+  char                                *name;
+  unsigned int                         name_len;
+        
+  /* payload */
+  long int                             size;
+  
+  long int                             alignment;
+  long int                             aligned_size;
+  
+  enum  e_gras_datadesc_type_category  category_code;
+  union u_gras_datadesc_category       category;
+  
+  gras_datadesc_type_cb_void_t         pre;
+  gras_datadesc_type_cb_void_t         post;
+};
+
+/***************************
+ * Type creation functions *
+ ***************************/
+gras_error_t 
+gras_ddt_new_scalar(const char                       *name,
+		    long int                         size,
+		    enum e_gras_dd_scalar_encoding   encoding,
+		    gras_datadesc_type_cb_void_t     cb,
+		    gras_datadesc_type_t           **dst);
+gras_error_t 
+gras_ddt_new_struct(const char                      *name,
+		    gras_datadesc_type_cb_void_t     pre,
+		    gras_datadesc_type_cb_void_t     post,
+		    gras_datadesc_type_t           **dst);
+gras_error_t 
+gras_ddt_new_struct_append(gras_datadesc_type_t            *struct_type,
+			   const char                      *name,
+			   gras_datadesc_type_t            *field_type,
+			   gras_datadesc_type_cb_void_t     pre,
+			   gras_datadesc_type_cb_void_t     post);
+gras_error_t 
+gras_ddt_new_union(const char                      *name,
+		   gras_datadesc_type_cb_int_t      field_count,
+		   gras_datadesc_type_cb_void_t     post,
+		   gras_datadesc_type_t           **dst);
+gras_error_t 
+gras_ddt_new_union_append(gras_datadesc_type_t            *union_type,
+			  const char                      *name,
+			  gras_datadesc_type_t            *field_type,
+			  gras_datadesc_type_cb_void_t     pre,
+			  gras_datadesc_type_cb_void_t     post);
+gras_error_t 
+gras_ddt_new_ref(const char                      *name,
+		 gras_datadesc_type_t            *referenced_type,
+		 gras_datadesc_type_cb_int_t      discriminant,
+		 gras_datadesc_type_cb_void_t     post,
+		 gras_datadesc_type_t           **dst);
+gras_error_t 
+gras_ddt_new_array(const char                      *name,
+		   gras_datadesc_type_t            *element_type,
+		   long int                         fixed_size,
+		   gras_datadesc_type_cb_int_t      dynamic_size,
+		   gras_datadesc_type_cb_void_t     post,
+		   gras_datadesc_type_t           **dst);
+
+
+
+#endif /* GRAS_DATADESC_PRIVATE_H */
