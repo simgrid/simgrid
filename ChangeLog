@@ -3,14 +3,8 @@ SimGrid (2.93-cvs) NOT RELEASED YET; urgency=low
 ---------------------------
 Tentative de TODO pour 2.93
 ---------------------------
-Simplifier le déploiement RL
- - Changer "make remote" en un script nommé GrasPE (Platform Expender)
-   - Ajouter des actions pour la disémination du code:
-     - scp (l'actuel dans make remote)
-     - rsync 
-     - pull (l'actuel du gras_stub deploy et qui dépend de wget, pas grave
-       pour l'instant)
- - renomer gras-remote-worker en graspe-qqch
+Pour la simplification du déploiement RL, reste plus qu'a mettre la
+diffusion "pull" dans tools/graspe-{master,slave}
 
 ---------------------
 Changements à ce jour
@@ -19,7 +13,7 @@ Changements à ce jour
   Alpha 4 on the path to SimGrid 3
 
   [Arnaud]
-   - Bugfix: sanitize Paje use in MSG.
+   - Use Paje properly where used. Still to be sanitized properly.
    - Portability fix: Add an implementation of the contexts using pthread
 
   [Martin]
@@ -33,6 +27,14 @@ Changements à ce jour
      from libgras. As a result, this lib is now only 200k when stripped.
      Some of the xbt modules may also be duplicated (two sets and such) and
      should be cleaned/killed before SG3.
+   - Insist on using xlC on AIX because of weird problems involving gcc there.
+   - Cleanup the make remote stuff. This is now done by scripts
+     tools/graspe-{master,slave} (GRAS Platform Expender). This is still
+     mainly for our private use, but we're working on changing them to user
+     tools, too.
+  (gras)
+   - Bugfix: flush the socket on close only if there is some *output*.
+   - Bugfix: flush idempotent when there's nothing to send (don't send size=0)
   (msg)
    - Add MSG_task_get_name. The task names are mainly for debugging purpose,
      but anyway.
