@@ -7,10 +7,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "portable.h"
 #include "gras/Transport/transport_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(transport,gras,"Conveying bytes over the network");
 XBT_LOG_NEW_SUBCATEGORY(raw_trp,transport,"Conveying bytes over the network without formating");
+static short int _gras_trp_started = 0;
 
 static xbt_dict_t _gras_trp_plugins;      /* All registered plugins */
 static void gras_trp_plugin_free(void *p); /* free one of the plugins */
@@ -45,22 +47,69 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
 }
 
 void gras_trp_init(void){
-  /* make room for all plugins */
-  _gras_trp_plugins=xbt_dict_new();
+  if (!_gras_trp_started) {
+     /* make room for all plugins */
+     _gras_trp_plugins=xbt_dict_new();
 
-  /* Add them */
-  gras_trp_plugin_new("tcp", gras_trp_tcp_setup);
-  gras_trp_plugin_new("file",gras_trp_file_setup);
-  gras_trp_plugin_new("sg",gras_trp_sg_setup);
+#ifdef HAVE_WINSOCK2_H
+     /* initialize the windows mecanism */
+     {  
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	
+	wVersionRequested = MAKEWORD( 2, 0 );
+	xbt_assert0(WSAStartup( wVersionRequested, &wsaData ) == 0,
+		    "Cannot find a usable WinSock DLL");
+	
+	/* Confirm that the WinSock DLL supports 2.0.*/
+	/* Note that if the DLL supports versions greater    */
+	/* than 2.0 in addition to 2.0, it will still return */
+	/* 2.0 in wVersion since that is the version we      */
+	/* requested.                                        */
+	
+	xbt_assert0(LOBYTE( wsaData.wVersion ) == 2 &&
+		    HIBYTE( wsaData.wVersion ) == 0,
+		    "Cannot find a usable WinSock DLL");
+	INFO0("Found and initialized winsock2");
+     }       /* The WinSock DLL is acceptable. Proceed. */
+#elif HAVE_WINSOCK_H
+     {       WSADATA wsaData;
+	xbt_assert0(WSAStartup( 0x0101, &wsaData ) == 0,
+		    "Cannot find a usable WinSock DLL");
+	INFO0("Found and initialized winsock");
+     }
+#endif
+   
+     /* Add plugins */
+     gras_trp_plugin_new("tcp", gras_trp_tcp_setup);
+     gras_trp_plugin_new("file",gras_trp_file_setup);
+     gras_trp_plugin_new("sg",gras_trp_sg_setup);
 
-  /* buf is composed, so it must come after the others */
-  gras_trp_plugin_new("buf", gras_trp_buf_setup);
-
+     /* buf is composed, so it must come after the others */
+     gras_trp_plugin_new("buf", gras_trp_buf_setup);
+  }
+   
+  _gras_trp_started++;
 }
 
 void
 gras_trp_exit(void){
-  xbt_dict_free(&_gras_trp_plugins);
+   if (_gras_trp_started == 0) {
+      return;
+   }
+   
+   if ( --_gras_trp_started == 0 ) {
+#ifdef HAVE_WINSOCK_H
+      if ( WSACleanup() == SOCKET_ERROR ) {
+	 if ( WSAGetLastError() == WSAEINPROGRESS ) {
+	    WSACancelBlockingCall();
+	    WSACleanup();
+	 }
+	}
+#endif
+
+      xbt_dict_free(&_gras_trp_plugins);
+   }
 }
 
 
@@ -109,6 +158,7 @@ void gras_trp_socket_new(int incoming,
   *dst = sock;
 
   xbt_dynar_push(gras_socketset_get(),dst);
+  XBT_OUT;
 }
 
 
@@ -145,6 +195,7 @@ gras_socket_server_ext(unsigned short port,
   sock->raw = raw;
 
   /* Call plugin socket creation function */
+  DEBUG1("Prepare socket with plugin (fct=%p)",trp->socket_server);
   errcode = trp->socket_server(trp, sock);
   DEBUG3("in=%c out=%c accept=%c",
 	 sock->incoming?'y':'n', 
@@ -246,7 +297,7 @@ void gras_socket_close(gras_socket_t sock) {
     xbt_dynar_foreach(sockets,cursor,sock_iter) {
       if (sock == sock_iter) {
 	xbt_dynar_cursor_rm(sockets,&cursor);
-	if ( sock->plugin->socket_close) 
+	if (sock->plugin->socket_close) 
 	  (* sock->plugin->socket_close)(sock);
 
 	/* free the memory */
