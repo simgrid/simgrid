@@ -7,14 +7,14 @@ MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little32_4 \
   gras/datadesc.little64\
-  gras/datadesc.big32 gras/datadesc.big32_8_4 \
+  gras/datadesc.big32 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
   gras/mk_datadesc_structs.pl \
   surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml \
   msg/messages.h
 
 # Data sets still to regenerate:
 # gras/datadesc.big64 
-# gras/datadesc.big32_4 gras/datadesc.big32_2 
+# gras/datadesc.big32_4 
 
 
 # Test stuff
