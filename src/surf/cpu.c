@@ -185,10 +185,6 @@ static void update_actions_state(double now, double delta)
     }
   }
 
-/*   xbt_swag_foreach_safe(action, next_action, failed_actions) { */
-/*     lmm_variable_disable(maxmin_system, action->variable); */
-/*   } */
-
   return;
 }
 

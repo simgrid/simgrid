@@ -362,7 +362,8 @@ static void action_network_KCCFLN05_free(surf_action_t action)
   workstation_KCCFLN05_t dst = ((surf_action_network_KCCFLN05_t) action)->dst;
 
   xbt_swag_remove(action, action->state_set);
-  lmm_variable_free(maxmin_system_network_KCCFLN05, 
+  if(((surf_action_network_KCCFLN05_t)action)->variable)
+    lmm_variable_free(maxmin_system_network_KCCFLN05, 
 		    ((surf_action_network_KCCFLN05_t) action)->variable);
 
   xbt_dynar_foreach (src->outgoing_communications,cpt,act) {
@@ -394,11 +395,31 @@ static double share_network_KCCFLN05_resources(double now)
 static void action_network_KCCFLN05_change_state(surf_action_t action,
 						 e_surf_action_state_t state)
 {
+  int cpt;
+  surf_action_t act = NULL;
+  workstation_KCCFLN05_t src = ((surf_action_network_KCCFLN05_t) action)->src;
+  workstation_KCCFLN05_t dst = ((surf_action_network_KCCFLN05_t) action)->dst;
+
   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
     if(((surf_action_network_KCCFLN05_t)action)->variable) {
-      lmm_variable_disable(maxmin_system, ((surf_action_network_KCCFLN05_t)action)->variable);
+      lmm_variable_disable(maxmin_system_network_KCCFLN05, 
+			   ((surf_action_network_KCCFLN05_t)action)->variable);
       ((surf_action_network_KCCFLN05_t)action)->variable = NULL;
     }
+
+  xbt_dynar_foreach (src->outgoing_communications,cpt,act) {
+    if(act==action) {
+      xbt_dynar_remove_at(src->outgoing_communications, cpt, &act);
+      break;
+    }
+  }
+
+  xbt_dynar_foreach (dst->incomming_communications,cpt,act) {
+    if(act==action) {
+      xbt_dynar_remove_at(dst->incomming_communications, cpt, &act);
+      break;
+    }
+  }
   surf_action_change_state(action, state);
   return;
 }
@@ -429,10 +450,6 @@ static void update_actions_network_KCCFLN05_state(double now, double delta)
       /* FIXME : FAILURES ARE NOT HANDLED YET */
     }
   }
-
-/*   xbt_swag_foreach_safe(action, next_action, failed_actions) { */
-/*     lmm_variable_disable(maxmin_system_network_KCCFLN05, action->variable); */
-/*   } */
 
   return;
 }
@@ -506,7 +523,8 @@ static int network_KCCFLN05_action_is_suspended(surf_action_t action)
 static void action_cpu_KCCFLN05_free(surf_action_t action)
 {
   xbt_swag_remove(action, action->state_set);
-  lmm_variable_free(maxmin_system_cpu_KCCFLN05, ((surf_action_cpu_KCCFLN05_t)action)->variable);
+  if(((surf_action_cpu_KCCFLN05_t)action)->variable)
+    lmm_variable_free(maxmin_system_cpu_KCCFLN05, ((surf_action_cpu_KCCFLN05_t)action)->variable);
   xbt_free(action);
 }
 
@@ -515,7 +533,8 @@ static void action_cpu_KCCFLN05_change_state(surf_action_t action,
 {
   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
     if(((surf_action_cpu_KCCFLN05_t)action)->variable) {
-      lmm_variable_disable(maxmin_system, ((surf_action_cpu_KCCFLN05_t)action)->variable);
+      lmm_variable_disable(maxmin_system_cpu_KCCFLN05, 
+			   ((surf_action_cpu_KCCFLN05_t)action)->variable);
       ((surf_action_cpu_KCCFLN05_t)action)->variable = NULL;
     }
 
@@ -539,6 +558,11 @@ static double share_cpu_KCCFLN05_resources(double now)
   double scale=0.0;
   int cpt;
   surf_action_network_KCCFLN05_t action;
+
+  if(surf_get_clock()>=475.895) 
+    {
+      W=0.0;
+    }
 
   for(cnst = lmm_get_first_active_constraint(maxmin_system_cpu_KCCFLN05);
       cnst;
@@ -634,10 +658,6 @@ static void update_actions_cpu_KCCFLN05_state(double now, double delta)
       }
     }
   }
-
-/*   xbt_swag_foreach_safe(action, next_action, failed_actions) { */
-/*     lmm_variable_disable(maxmin_system_cpu_KCCFLN05, action->variable); */
-/*   } */
 
   return;
 }
