@@ -1,0 +1,42 @@
+SimGrid (2.90) unstable; urgency=low
+
+  * It is a long time since the last release of SimGrid. I'm sorry about
+    that but as I had told you, I was rewriting a lot of things. I apologize 
+    to those who had been reporting bugs to me and that I had not answered. 
+    If your bug is still in the new version, please tell me. Here is a 
+    summary of the main changes.
+
+  * REVOLUTION 1: The SimGrid project has merged with the GRAS project
+    lead by Martin Quinson. As a consequence SimGrid gains a lot in
+    portability, speed, and a lot more but you'll figure it out later. 
+    SimGrid now comprises 3 different projects : MSG, GRAS and SMPI. 
+    I wanted to release the new MSG as soon as possible and I have 
+    broken GRAS, which is the reason why, for now, only MSG is fully 
+    functionnal. A laconic description of these projects is available 
+    in the documentation.
+  
+  * REVOLUTION 2: I have removed SG and I am now using a new simulation
+    kernel optimized for our needs (called SURF but only the developers
+    should use it). Hence, MSG is now roughly 30 times faster and I think
+    that by rewriting a little bit MSG, I could event speed it up a little
+    bit more. Beside the gain in speed, it is also much easier to encode a
+    new platform model with SURF than it was with SG. More to come...
+  
+  * REVOLUTION 3: I have tried to change a little as possible the API of
+    MSG but a few things really had to disappear. The main differences
+    with the previous version are :
+       1) no more m_links_t and the corresponding functions. Platforms are
+         directly read from a XML description and cannot be hard-coded
+         anymore. The same format is used for application deployment
+         description. The new format is described in the documentation. 
+         Have a look in tools/platform_generation. There is a tiny script 
+         that converts from the old platform format to the new one. Concerning
+         the application deployment format, parsing the old one is tricky.  
+         I think most of you should hower be able to convert your files.  If 
+         it is really an issue, I can write a C code that does the conversion. 
+         Let me know.
+       2) the toolbox tbx does not exist anymore. We now have a library
+          with much more data-structures but without the hash-tables (we have 
+          dictionaries that are much faster).
+
+ -- Arnaud Legrand <Arnaud.Legrand@imag.fr>  Mon, 31 Jan 2005 10:45:53 -0800
