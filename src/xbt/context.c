@@ -25,7 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 static xbt_context_t current_context = NULL;
 static xbt_dynar_t context_to_destroy = NULL;
 
-void context_init(void)
+void xbt_context_init(void)
 {
   if(!current_context) {
     current_context = xbt_new0(s_xbt_context_t,1);
@@ -33,7 +33,7 @@ void context_init(void)
   }
 }
 
-void context_empty_trash(void)
+void xbt_context_empty_trash(void)
 {
   xbt_dynar_reset(context_to_destroy);
 }
@@ -54,12 +54,12 @@ static void *__context_wrapper(void *c)
 
   xbt_dynar_push(context_to_destroy, &context);
 
-  context_yield(context);
+  xbt_context_yield(context);
 
   return NULL;
 }
 
-void context_start(xbt_context_t context) 
+void xbt_context_start(xbt_context_t context) 
 {
 
 /*   TBX_FIFO_insert(msg_global->process, process); */
@@ -72,7 +72,7 @@ void context_start(xbt_context_t context)
   return;
 }
 
-xbt_context_t context_create(xbt_context_function_t code,
+xbt_context_t xbt_context_create(xbt_context_function_t code,
 			 int argc, char *argv[])
 {
   xbt_context_t res = NULL;
@@ -93,14 +93,14 @@ xbt_context_t context_create(xbt_context_function_t code,
   return res;
 }
 
-static void context_destroy(xbt_context_t context)
+static void xbt_context_destroy(xbt_context_t context)
 {
   xbt_free(context);
 
   return;
 }
 
-void context_yield(xbt_context_t context)
+void xbt_context_yield(xbt_context_t context)
 {
 
   xbt_assert0(current_context,"You have to call context_init() first.");
