@@ -1,5 +1,7 @@
-This is a shortened version of the changelog, to let users decide to upgrade
-or not.
+This is a shortened version of the changelog.
+
+0.1 (2004-07-13)
+ - No major issue discovered, time to change the versionning schema
 
 0.0.4 (2004-07-11)
  - compute the inter-field paddings of structure correctly

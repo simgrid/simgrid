@@ -1,3 +1,9 @@
+2004-07-13 Martin Quinson
+  version 0.1
+  - No major issue in previous version => change versionning schema
+  - Re-enable little64 convertion test now that Abdou kindly regenerated the
+    corresponding dataset.
+  
 2004-07-11 Martin Quinson
   version 0.0.4
   - Get it working with any kind of structure (we can compute the padding
