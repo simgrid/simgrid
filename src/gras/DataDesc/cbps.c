@@ -34,6 +34,7 @@ gras_dd_cbps_new(gras_dd_cbps_t **dst) {
   TRY(gras_dynar_new(&(res->stack), sizeof(gras_dynar_t*), NULL));
   TRY(gras_dynar_new(&(res->globals), sizeof(char*), NULL));
 
+  gras_dd_cbps_block_begin(res);
   *dst = res;
   return no_error;
 }
@@ -41,6 +42,7 @@ gras_dd_cbps_new(gras_dd_cbps_t **dst) {
 void
 gras_dd_cbps_free(gras_dd_cbps_t **state) {
 
+  gras_dd_cbps_block_end(*state);
   gras_dict_free ( &( (*state)->space   ) );
   gras_dynar_free(    (*state)->stack     );
   gras_dynar_free(    (*state)->globals   );
@@ -80,7 +82,7 @@ gras_dd_cbps_push(gras_dd_cbps_t        *ps,
   gras_dynar_push(p_dynar, &p_var);
   
   gras_dynar_pop(ps->stack, &p_dynar);
-  gras_dynar_push(p_dynar, &name);
+  gras_dynar_push(p_dynar, strdup(name));
   gras_dynar_push(ps->stack, &p_dynar); 
 }
 
