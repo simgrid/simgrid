@@ -94,12 +94,19 @@ MSG_error_t __MSG_process_block(void);
 MSG_error_t __MSG_process_unblock(m_process_t process);
 int __MSG_process_isBlocked(m_process_t process);
 
-/* #define ALVIN_SPECIAL_LOGING */
 #ifdef ALVIN_SPECIAL_LOGING
 #define PAJE_PROCESS_STATE(process,state)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,"10 %lg S_t P%d %s\n",\
             surf_get_clock(), process->simdata->PID,state)
+#define PAJE_PROCESS_PUSH_STATE(process,state)\
+  if(msg_global->paje_output) \
+    fprintf(msg_global->paje_output,"11 %lg S_t P%d %s\n",\
+            surf_get_clock(), process->simdata->PID,state)
+#define PAJE_PROCESS_POP_STATE(process)\
+  if(msg_global->paje_output) \
+    fprintf(msg_global->paje_output,"12 %lg S_t P%d\n",\
+            surf_get_clock(), process->simdata->PID)
 #define PAJE_PROCESS_FREE(process)
 #define PAJE_PROCESS_NEW(process)\
   if((msg_global->paje_output)) {\
@@ -133,6 +140,15 @@ int __MSG_process_isBlocked(m_process_t process);
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,"10 %lg S_t %p %s\n",\
             surf_get_clock(), process,state)
+#define PAJE_PROCESS_PUSH_STATE(process,state)\
+  if(msg_global->paje_output) \
+    fprintf(msg_global->paje_output,"11 %lg S_t %p %s\n",\
+            surf_get_clock(), process,state)
+#define PAJE_PROCESS_POP_STATE(process)\
+  if(msg_global->paje_output) \
+    fprintf(msg_global->paje_output,"12 %lg S_t %p\n",\
+            surf_get_clock(), process)
+
 #define PAJE_PROCESS_FREE(process)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,"8 %lg %p P_t\n", \

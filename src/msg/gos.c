@@ -86,7 +86,8 @@ MSG_error_t MSG_task_get(m_task_t * task,
   if(__MSG_process_isBlocked(t_simdata->sender)) 
     __MSG_process_unblock(t_simdata->sender);
 
-  PAJE_PROCESS_STATE(process,"C");  
+  //  PAJE_PROCESS_STATE(process,"C");  
+  PAJE_PROCESS_PUSH_STATE(process,"C");  
 
   do {
     __MSG_task_wait_event(process, t);
@@ -98,6 +99,7 @@ MSG_error_t MSG_task_get(m_task_t * task,
     xbt_context_yield();
   }
 
+  PAJE_PROCESS_POP_STATE(process);  
   PAJE_COMM_STOP(process,t,channel);
 
   if(state == SURF_ACTION_DONE) MSG_RETURN(MSG_OK);
@@ -212,7 +214,8 @@ MSG_error_t MSG_task_put(m_task_t task,
   process->simdata->put_channel = -1;
 /*   } */
 
-  PAJE_PROCESS_STATE(process,"C");  
+  // PAJE_PROCESS_STATE(process,"C");  
+  PAJE_PROCESS_PUSH_STATE(process,"C");  
 
   state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
   while (state==SURF_ACTION_RUNNING) {
@@ -221,6 +224,8 @@ MSG_error_t MSG_task_put(m_task_t task,
   }
     
   MSG_task_destroy(task);
+
+  PAJE_PROCESS_POP_STATE(process);  
 
   if(state == SURF_ACTION_DONE) MSG_RETURN(MSG_OK);
   else if(surf_workstation_resource->extension_public->get_state(local_host->simdata->host) 
@@ -257,10 +262,14 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 MSG_error_t MSG_task_execute(m_task_t task)
 {
   m_process_t process = MSG_process_self();
-
+  MSG_error_t res;
   __MSG_task_execute(process, task);
-  PAJE_PROCESS_STATE(process,"E");  
-  return __MSG_wait_for_computation(process,task);
+
+  //  PAJE_PROCESS_STATE(process,"E");  
+  PAJE_PROCESS_PUSH_STATE(process,"E");  
+  res = __MSG_wait_for_computation(process,task);
+  PAJE_PROCESS_POP_STATE(process);
+  return res;
 }
 
 void __MSG_task_execute(m_process_t process, m_task_t task)
