@@ -1,3 +1,20 @@
+2004-07-05
+  - Plug a whole bunch of memleaks
+  - each process now have to call gras_{init,exit}. One day, their log
+    settings will be separated
+ [Transport]
+  - Continue the code factorisation between SG, RL and common
+
+2004-07-04
+ [Transport]
+  - Redistribution between SG and RL. 
+    We wanna have to accept in SG, so move accepted related parts of RL in
+    the common part. (more precisely, the dynar of all known sockets is no
+    more a static in transport.c, but part of the process_data)
+ [Core/module.c] 
+ [gras_stub_generator]
+  - Bug fix: Do call gras_process_init from gras_init (wasnt called in RL).
+
 2004-07-03
   - Create a new log channel tbx containing dict, set, log, dynar (to shut
     them all up in one shot)
@@ -16,6 +33,8 @@
     being a pointer to the data. Let's say that I like it better ;)
       The price for that is constructs like "int msg=*(int*)payload" in
     handlers, but it's a fine price, IMHO.
+ [examples/ping]
+  - Let it work in RL (yuhu)
 
 2004-06-21
  [Transport]
