@@ -40,7 +40,7 @@ SG_tests =                                              \
 	surf/trace_usage surf/surf_usage surf/surf_usage2 \
 	msg/msg_test
 
-check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
+noinst_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
 TESTS=run_tests
 
