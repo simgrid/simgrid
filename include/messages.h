@@ -53,7 +53,7 @@ typedef struct gras_msgentry_s  gras_msgentry_t;
  */
 typedef struct {
   /* public */
-  gras_sock_t *sock; /** the socket on which the message was received (to answer) */
+  gras_socket_t *sock; /** the socket on which the message was received (to answer) */
 
   /* private */
   gras_msgheader_t *header;
@@ -92,7 +92,7 @@ gras_msgtype_register(gras_msgid_t msgId,
  * Create a new message, and send it on the network through the given socket.
  */
 gras_error_t
-gras_msg_new_and_send(gras_sock_t *sd,
+gras_msg_new_and_send(gras_socket_t *sd,
 		      gras_msgid_t msgId,
 		      int seqCount,
 		      ...);
@@ -210,7 +210,7 @@ gras_error_t gras_msg_handle(double timeOut);
  */
 
 gras_error_t
-gras_msg_send(gras_sock_t *sd,
+gras_msg_send(gras_socket_t *sd,
 	      gras_msg_t *msg,
 	      e_gras_free_directive_t freeDirective);
 

@@ -33,52 +33,59 @@ gras_ddt_new(const char            *name,
  * Create a new scalar and give a pointer to it 
  */
 gras_error_t 
-gras_ddt_new_scalar(const char                       *name,
-		    long int                         size,
+gras_ddt_new_scalar(const char                      *name,
+		    gras_ddt_scalar_type_t           type,
 		    enum e_gras_dd_scalar_encoding   encoding,
 		    gras_datadesc_type_cb_void_t     cb,
 		    gras_datadesc_type_t           **dst) {
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
+  long int arch;
 
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  res->size = size>0 ? size : 0;
-  
-  if (size>0) { 
-    long int sz   = size;
-    long int mask = sz;
+  for (arch = 0; arch < gras_arch_count; arch ++) {
+    long int sz;
+    long int mask;
 
-    /* just in case you wonder, x>>1 == x/2 on all architectures when x>=0 */
+    res->size[arch] = gras_arch_sizes[arch].sizeof_scalars[type];
+    
+    sz = res->size[arch];
+    mask = sz;
+    
+    /* just in case you wonder, x>>1 == x/2 on all architectures when x>=0 and a size is always>=0 */
 
     /* make sure mask have all the bits under the biggest one of size set to 1
        Example: size=000100101 => mask=0000111111 */
     while ((sz >>= 1)) {
       mask |= sz;
     }
-
-    if (size & (mask >> 1)) { /* if size have bits to one beside its biggest */
+    
+    if (res->size[arch] & (mask >> 1)) { /* if size have bits to one beside its biggest */
       /* size is not a power of 2 */
       /* alignment= next power of 2 after size */
-      res->alignment = (size & ~(mask >> 1)) << 1;
-      gras_assert0(res->alignment != 0,
+      res->alignment[arch] = (res->size[arch] & ~(mask >> 1)) << 1;
+      gras_assert0(res->alignment[arch] != 0,
 		   "scalar type too large");
       
-      res->aligned_size    = aligned(size, res->alignment);
-      gras_assert0 (res->aligned_size >= 0,
+      res->aligned_size[arch]    = aligned(res->size[arch], res->alignment[arch]);
+      gras_assert0 (res->aligned_size[arch] >= 0,
 		    "scalar type too large");
       
     } else {
       /* size is a power of 2, life is great */
-      res->alignment       = size;
-      res->aligned_size    = size;
+      res->alignment[arch]       = res->size[arch];
+      res->aligned_size[arch]    = res->size[arch];
     }
-    
-  } else {
-    res->alignment    = 0;
-    res->aligned_size = 0;
+
+    /* FIXME size < 0 sometimes? 
+       } else {
+       res->alignment    = 0;
+       res->aligned_size = 0;
+       }
+    */
   }
 
   res->category_code                 = e_gras_datadesc_type_cat_scalar;
@@ -116,13 +123,16 @@ gras_ddt_new_struct(const char                      *name,
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
+  long int arch;
 
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  res->size			= 0;
-  res->alignment		= 0;
-  res->aligned_size		= 0;
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    res->size[arch]			= 0;
+    res->alignment[arch]		= 0;
+    res->aligned_size[arch]		= 0;
+  }
   res->category_code		= e_gras_datadesc_type_cat_struct;
   TRY(gras_dynar_new(&(res->category.struct_data.fields),
 		     sizeof(gras_dd_cat_field_t*),
@@ -147,6 +157,7 @@ gras_ddt_new_struct_append(gras_datadesc_type_t            *struct_type,
 
   gras_error_t errcode;
   gras_dd_cat_field_t *field;
+  int arch;
 
   gras_assert0(field_type->size >= 0,
 	       "Cannot add a dynamically sized field in a structure");
@@ -156,16 +167,21 @@ gras_ddt_new_struct_append(gras_datadesc_type_t            *struct_type,
     RAISE_MALLOC;
 
   field->name   = strdup(name);
-  field->offset = aligned(struct_type->size, field_type->alignment);
+
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    field->offset[arch] = aligned(struct_type->size[arch], field_type->alignment[arch]);
+  }
   field->code   = field_type->code;
   field->pre    = pre;
   field->post   = post;
   
   TRY(gras_dynar_push(struct_type->category.struct_data.fields, field));
 
-  struct_type->size 		= field->offset + field_type->size;
-  struct_type->alignment	= max(struct_type->alignment, field_type->alignment);
-  struct_type->aligned_size	= aligned(struct_type->size, struct_type->alignment);
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    struct_type->size[arch] 		= field->offset[arch] + field_type->size[arch];
+    struct_type->alignment[arch]	= max(struct_type->alignment[arch], field_type->alignment[arch]);
+    struct_type->aligned_size[arch]	= aligned(struct_type->size[arch], struct_type->alignment[arch]);
+  }
 
   return no_error;
 }
@@ -183,6 +199,7 @@ gras_ddt_new_union(const char                      *name,
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
+  int arch;
 
   gras_assert0(field_count,
 	       "Attempt to creat an union without field_count function");
@@ -190,9 +207,11 @@ gras_ddt_new_union(const char                      *name,
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  res->size			= 0;
-  res->alignment		= 0;
-  res->aligned_size		= 0;
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    res->size[arch]			= 0;
+    res->alignment[arch]		= 0;
+    res->aligned_size[arch]		= 0;
+  }
   res->category_code		= e_gras_datadesc_type_cat_union;
   TRY(gras_dynar_new(&(res->category.union_data.fields),
 		     sizeof(gras_dd_cat_field_t*),
@@ -218,6 +237,7 @@ gras_ddt_new_union_append(gras_datadesc_type_t            *union_type,
 
   gras_error_t errcode;
   gras_dd_cat_field_t *field;
+  int arch;
 
   gras_assert0(field_type->size >= 0,
 	       "Cannot add a dynamically sized field in an union");
@@ -227,16 +247,20 @@ gras_ddt_new_union_append(gras_datadesc_type_t            *union_type,
     RAISE_MALLOC;
 
   field->name   = strdup(name);
-  field->offset = 0; /* that's the purpose of union ;) */
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    field->offset[arch] = 0; /* that's the purpose of union ;) */
+  }
   field->code   = field_type->code;
   field->pre    = pre;
   field->post   = post;
   
   TRY(gras_dynar_push(union_type->category.union_data.fields, field));
 
-  union_type->size 	   = max(union_type->size, field_type->size);
-  union_type->alignment	   = max(union_type->alignment, field_type->alignment);
-  union_type->aligned_size = aligned(union_type->size, union_type->alignment);
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    union_type->size[arch] 	   = max(union_type->size[arch], field_type->size[arch]);
+    union_type->alignment[arch]	   = max(union_type->alignment[arch], field_type->alignment[arch]);
+    union_type->aligned_size[arch] = aligned(union_type->size[arch], union_type->alignment[arch]);
+  }
 
   return no_error;
 }
@@ -255,6 +279,7 @@ gras_ddt_new_ref(const char                      *name,
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
+  int arch;
 
   gras_assert0(discriminant || referenced_type,
 	       "Attempt to create a generic reference without discriminant");
@@ -263,9 +288,12 @@ gras_ddt_new_ref(const char                      *name,
   res=*dst;
 
   /* FIXME: Size from bootstraping */
-  res->size			= 0;
-  res->alignment		= 0;
-  res->aligned_size		= 0;
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    res->size[arch]			= 0;
+    res->alignment[arch]		= 0;
+    res->aligned_size[arch]		= 0;
+  }
+
   res->category_code		= e_gras_datadesc_type_cat_ref;
 
   res->category.ref_data.code         = referenced_type ? referenced_type->code : -1;
@@ -291,6 +319,7 @@ gras_ddt_new_array(const char                      *name,
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
+  int arch;
 
   gras_assert0(dynamic_size || fixed_size>0,
 	       "Attempt to create a dynamic array without size discriminant");
@@ -298,13 +327,15 @@ gras_ddt_new_array(const char                      *name,
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  if (fixed_size <= 0) {
-    res->size = fixed_size;
-  } else {
-    res->size = fixed_size * element_type->aligned_size;
+  for (arch=0; arch<gras_arch_count; arch ++) {
+    if (fixed_size <= 0) {
+      res->size[arch] = fixed_size; /* make sure it indicates "dynamic" */
+    } else {
+      res->size[arch] = fixed_size * element_type->aligned_size[arch];
+    }
+    res->alignment[arch]	= element_type->alignment[arch];
+    res->aligned_size[arch]	= fixed_size; /*FIXME: That was so in GS, but looks stupid*/
   }
-  res->alignment		= element_type->alignment;
-  res->aligned_size		= fixed_size; /*FIXME: That was so in GS, but looks stupid*/
   res->category_code		= e_gras_datadesc_type_cat_array;
 
   res->category.array_data.code         = element_type->code;
@@ -332,6 +363,8 @@ gras_ddt_new_ignored(const char *name,
 		     long int                       alignment,
 		     gras_datadesc_type_cb_void_t     post,
 		     gras_datadesc_type_t           **dst) {
+  RAISE_UNIMPLEMENTED;
+  /*
   gras_error_t errcode;
   gras_datadesc_type_t *res;
 
@@ -364,6 +397,28 @@ gras_ddt_new_ignored(const char *name,
   res->size = size;
 
   return no_error;
+  */
+}
+
+/**
+ * gras_ddt_new_parse:
+ *
+ * Create a datadescription from the result of parsing the C type description
+ */
+gras_error_t
+gras_ddt_new_parse(const char            *name,
+		   const char            *C_statement,
+		   gras_datadesc_type_t **dst) {
+  RAISE_UNIMPLEMENTED;
+}
+
+
+gras_error_t
+gras_ddt_new_from_nws(const char           *name,
+		      const DataDescriptor *desc,
+		      size_t                howmany,
+		      gras_datadesc_type_t **dst) {
+  RAISE_UNIMPLEMENTED;
 }
 
 /**

@@ -2,6 +2,10 @@
 
 /* file trp (transport) - send/receive a bunch of bytes in SG realm         */
 
+/* Note that this is only used to debug other parts of GRAS since message   */
+/*  exchange in SG realm is implemented directly without mimicing real life */
+/*  This would be terribly unefficient.                                     */
+
 /* Authors: Martin Quinson                                                  */
 /* Copyright (C) 2004 Martin Quinson.                                       */
 
@@ -14,9 +18,49 @@
 GRAS_LOG_EXTERNAL_CATEGORY(transport);
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport);
 
+
+/***
+ *** Prototypes 
+ ***/
+void         gras_trp_sg_exit(gras_trp_plugin_t *plugin);
+gras_error_t gras_trp_sg_socket_client(const char *host,
+				       unsigned short port,
+				       int raw, 
+				       unsigned int bufSize, 
+				       /* OUT */ gras_socket_t **dst);
+gras_error_t gras_trp_sg_socket_server(unsigned short port,
+				       int raw, 
+				       unsigned int bufSize, 
+				       /* OUT */ gras_socket_t **dst);
+void         gras_trp_sg_socket_close(gras_trp_sock_t **sd);
+gras_error_t gras_trp_sg_select(double timeOut,
+				gras_socket_t **sd);
+
+gras_error_t gras_trp_sg_bloc_send(gras_socket_t *sd,
+				   void *data,
+				   size_t size,
+				   double timeOut);
+
+gras_error_t gras_trp_sg_bloc_recv(gras_socket_t *sd,
+				   void *data,
+				   size_t size,
+				   double timeOut);
+gras_error_t gras_trp_sg_flush(gras_socket_t *sd);
+
+/***
+ *** Specific plugin part
+ ***/
 typedef struct {
   int dummy;
 } gras_trp_sg_specific_t;
+
+/***
+ *** Specific socket part
+ ***/
+
+/***
+ *** Code
+ ***/
 
 gras_error_t
 gras_trp_sg_init(void) {

@@ -1,6 +1,8 @@
 /* $Id$ */
 
-/* datadesc_private - declarations visible only from within datadesc        */
+/* datadesc - describing the data to exchange                               */
+
+/* module's private interface masked even to other parts of GRAS.           */
 
 /* Authors: Olivier Aumage, Martin Quinson                                  */
 /* Copyright (C) 2003, 2004 the GRAS posse.                                 */
@@ -22,6 +24,38 @@
 #define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
 extern gras_set_t *gras_datadesc_set_local;
+
+/*******************************************
+ * Descriptions of all known architectures *
+ *******************************************/
+
+#define gras_arch_count 1
+typedef enum {
+  gras_ddt_scalar_char      = 0,
+  gras_ddt_scalar_short     = 1,
+  gras_ddt_scalar_int       = 2,
+  gras_ddt_scalar_long      = 3,
+  gras_ddt_scalar_long_long = 4,
+
+  gras_ddt_scalar_pdata     = 5,
+  gras_ddt_scalar_pfunc     = 6,
+
+  gras_ddt_scalar_float     = 7,
+  gras_ddt_scalar_double    = 8
+} gras_ddt_scalar_type_t;
+
+typedef struct {
+  const char *name;
+
+  int endian;
+
+  int sizeof_scalars[9]; /* char,short,int,long,long_long,
+			    pdata,pfunc,
+			    float,double */
+} gras_arch_sizes_t;
+
+extern const gras_arch_sizes_t gras_arch_sizes[gras_arch_count];
+
 
 /**********************************************************/
 /* Actual definitions of the stuff in the type descriptor */
@@ -57,13 +91,14 @@ typedef enum e_gras_datadesc_type_category {
 typedef struct s_gras_dd_cat_field {
 
   char 			      *name;
-  long int		       offset; /* only for struct */
+  long int		       offset[gras_arch_count]; /* only for struct */
   int                          code;
   
   gras_datadesc_type_cb_void_t pre;
   gras_datadesc_type_cb_void_t post;
 
 } gras_dd_cat_field_t;
+
 void gras_dd_cat_field_free(void *f);
 
 /**
@@ -90,7 +125,7 @@ typedef struct s_gras_dd_cat_scalar {
  * Specific fields of a struct
  */
 typedef struct s_gras_dd_cat_struct {
-  gras_dynar_t *fields; /* elm type = gras_dd_cat_struct_field_t */
+  gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
 } gras_dd_cat_struct_t;
 
 /**
@@ -100,7 +135,7 @@ typedef struct s_gras_dd_cat_struct {
  */
 typedef struct s_gras_dd_cat_union {
   gras_datadesc_type_cb_int_t field_count;
-  gras_dynar_t *fields; /* elm type = gras_dd_cat_union_field_t */
+  gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
 } gras_dd_cat_union_t;
 
 /**
@@ -173,10 +208,10 @@ struct s_gras_datadesc_type {
   unsigned int                         name_len;
         
   /* payload */
-  long int                             size;
+  long int                             size[gras_arch_count];
   
-  long int                             alignment;
-  long int                             aligned_size;
+  long int                             alignment[gras_arch_count];
+  long int                             aligned_size[gras_arch_count];
   
   enum  e_gras_datadesc_type_category  category_code;
   union u_gras_datadesc_category       category;
@@ -190,7 +225,7 @@ struct s_gras_datadesc_type {
  ***************************/
 gras_error_t 
 gras_ddt_new_scalar(const char                       *name,
-		    long int                         size,
+		    gras_ddt_scalar_type_t           type,
 		    enum e_gras_dd_scalar_encoding   encoding,
 		    gras_datadesc_type_cb_void_t     cb,
 		    gras_datadesc_type_t           **dst);
@@ -238,6 +273,16 @@ gras_ddt_new_ignored(const char       *name,
 		     gras_datadesc_type_cb_void_t     post,
 		     gras_datadesc_type_t           **dst);
 
+
+gras_error_t
+gras_ddt_new_parse(const char            *name,
+		   const char            *C_definition,
+		   gras_datadesc_type_t **dst);
+gras_error_t
+gras_ddt_new_from_nws(const char           *name,
+		      const DataDescriptor *desc,
+		      size_t                howmany,
+		      gras_datadesc_type_t **dst);
 
 
 #endif /* GRAS_DATADESC_PRIVATE_H */

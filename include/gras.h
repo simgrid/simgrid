@@ -11,22 +11,11 @@
 #ifndef GRAS_H
 #define GRAS_H
 
-/* Oli's macro */
-#ifndef GS_FAILURE_CONTEXT
-#  define GS_FAILURE_CONTEXT
-#endif /* GS_FAILURE_CONTEXT */
-
-#define GS_FAILURE(str) \
-     (fprintf(stderr, "FAILURE: %s(%s:%d)" GS_FAILURE_CONTEXT "%s\n", __func__, __FILE__, __LINE__, (str)), \
-      abort())
-
 #define max(a, b) (((a) > (b))?(a):(b))
 #define min(a, b) (((a) < (b))?(a):(b))
 
 #define TRUE  1
 #define FALSE 0
-
-/* end of Oli's cruft */
 
 #include <gras/error.h>
 #include <gras/log.h>
@@ -45,12 +34,7 @@
 
 #include <gras/transport.h>
 #include <gras/datadesc.h>
-//#include <gras/datadesc_simple.h>
-#include <gras/socket.h>
 #include <gras/messages.h>
-
-#include <gras/data_description.h>
-#include <gras/dd_type_bag.h>
 
 #include <gras/modules/base.h>
 #include <gras/modules/bandwidth.h>

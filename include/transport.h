@@ -14,8 +14,7 @@
 #ifndef GRAS_TRANSPORT_H
 #define GRAS_TRANSPORT_H
 
-/* each plugin implements the socket the way it wants */
-typedef void gras_trp_sock_t;
+typedef struct s_gras_socket gras_socket_t;
 
 /* A plugin type */
 typedef struct gras_trp_plugin_ gras_trp_plugin_t;
@@ -25,9 +24,21 @@ gras_error_t gras_trp_init(void);
 
 void         gras_trp_exit(void);
 
-gras_error_t gras_trp_plugin_get_by_name(const char *name,
-					 gras_trp_plugin_t **dst);
-
-
+gras_error_t gras_socket_client(const char *host,
+				unsigned short port,
+				unsigned int bufSize,
+				/* OUT */ gras_socket_t **dst);
+gras_error_t gras_socket_server(unsigned short port,
+				unsigned int bufSize,
+				/* OUT */ gras_socket_t **dst);
+void         gras_socket_close(gras_socket_t *sd);
+ 
+   
+gras_error_t gras_trp_bloc_send(gras_socket_t *sd,
+				void *data,
+				size_t size);
+gras_error_t gras_trp_bloc_recv(gras_socket_t *sd,
+				void *data,
+				size_t size);
 
 #endif /* GRAS_TRANSPORT_H */

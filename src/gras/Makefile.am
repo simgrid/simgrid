@@ -1,12 +1,11 @@
 SUBDIRS=. Tests
 DISTCLEANFILES=Makefile.in
-INCLUDES= -I$(top_srcdir)/src/include -I../nws_portability/Include  \
+INCLUDES= -I$(top_srcdir)/src/include \
           @CFLAGS_XML@ @CFLAGS_SimGrid@
 EXTRA_DIST=                 \
 	gras_private.h      \
-	Core/dict_private.h \
-	DataDesc/gs_private.h     \
-	DataDesc/parse.yy.l      
+	Core/dict_private.h 
+#	DataDesc/parse.yy.l      
 
 
 lib_LIBRARIES= libgrasrl.a libgrassg.a
@@ -17,6 +16,7 @@ noinst_LIBRARIES=libgrasutils.a
 #  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
 #   Messaging/messaging.c                       
 #   Messaging/datadesc_simple.c                 
+#   Transport/transport_sg.c 
 
 COMMON_S=\
   \
@@ -29,13 +29,13 @@ COMMON_S=\
   Core/config.c                               \
   \
   Transport/transport.c    Transport/transport_private.h      \
-  Transport/transport_sg.c Transport/transport_tcp.c          \
+  Transport/transport_tcp.c          \
   \
   \
-  DataDesc/ddt_create.c        DataDesc/ddt_declare.c \
-  DataDesc/ddt_remote.c \
-  DataDesc/datadesc.c          DataDesc/datadesc_interface.h \
-  DataDesc/datadesc_private.h
+  DataDesc/ddt_create.c          DataDesc/ddt_declare.c \
+  DataDesc/ddt_remote.c          DataDesc/ddt_use.c     \
+  DataDesc/cbps.c                DataDesc/datadesc.c    \
+  DataDesc/datadesc_interface.h  DataDesc/datadesc_private.h
   
 #  DataDesc/datadesc.c                               \
 #  DataDesc/tools.c                                  \
@@ -52,31 +52,25 @@ COMMON_S=\
 #  DataDesc/vars.c
 
 DataDesc/parse.yy.c: DataDesc/parse.yy.l
-	flex -o$@ -Pgras_datadesc_parse_ $^
+	flex -o$@ -Pgras_ddt_ $^
 
-COMMON_L=\
- $(foreach file,\
-  diagnostic formatutil strutil osutil, \
-  $(top_srcdir)/src/nws_portability/build-@host@/obj/$(file).o)
+libgrasutils_a_SOURCES = $(COMMON_S) 
+#Tests/gras_dummy.c
 
-libgrasutils_a_SOURCES = $(COMMON_S) Tests/gras_dummy.c
-libgrasutils_a_LIBADD = $(COMMON_L)
+libgrasrl_a_SOURCES= $(COMMON_S) \
+  Transport/rl_transport.c       \
+  Virtu/rl_process.c       Virtu/rl_time.c
 
-
+libgrassg_a_SOURCES= $(COMMON_S) \
+  Transport/sg_transport.c       \
+  Virtu/sg_process.c Virtu/sg_time.c
 
 # RL/gras_rl.c RL/gras_rl.h FIXME
-libgrasrl_a_SOURCES= $(COMMON_S) Messaging/messaging_rl.c
-libgrasrl_a_LIBADD= \
- $(foreach file,\
-  exp_smooth forc median mse_forc protocol \
-  dnsutil fbuff forecast_api last_value run_mean timeouts, \
-  $(top_srcdir)/src/nws_portability/build-@host@/obj/$(file).o) \
- $(COMMON_L)
+
+# $(foreach file,\
+#  exp_smooth forc median mse_forc protocol \
+#  dnsutil fbuff forecast_api last_value run_mean timeouts, \
+#  $(top_srcdir)/src/nws_portability/build-@host@/obj/$(file).o) 
+
 
 	
-# SG/gras_sg.c SG/gras_sg.h FIXME	
-libgrassg_a_SOURCES= $(COMMON_S) Messaging/messaging_sg.c
-libgrassg_a_LIBADD= \
- $(COMMON_L)
-
-

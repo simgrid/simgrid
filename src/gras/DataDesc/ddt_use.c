@@ -10,7 +10,24 @@
 
 #include "DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(use,DataDesc);
+//GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(use,DataDesc);
+
+/**
+ * gras_datadesc_get_id_from_name:
+ * Returns: -1 in case of error.
+ *
+ * Retrieve the ID of a previously declared datatype from its name.
+ */
+long int
+gras_datadesc_get_id_from_name(const char *name) {
+  gras_error_t errcode;
+  gras_datadesc_type_t *type;
+
+  errcode = gras_ddt_get_by_name(name,&type);
+  if (errcode != no_error)
+    return -1;
+  return type->code;
+}
 
 /**
  * gras_datadesc_type_cmp:
@@ -20,19 +37,20 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(use,DataDesc);
  * This comparison does not take the set headers into account (name and ID), 
  * but only the payload (actual type description).
  */
-int gras_datadesc_type_cmp(const gras_datadesc_t *d1,
-			  const gras_datadesc_t *d2) {
+int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
+			   const gras_datadesc_type_t *d2) {
   int ret,cpt;
-  gras_dd_cat_struct_field_t *field1,*field2;
+  gras_dd_cat_field_t *field1,*field2;
+  gras_datadesc_type_t *field_desc_1,*field_desc_2;
 
 
-  if (!d1 & & d2) return 1;
+  if (!d1 && d2) return 1;
   if (!d1 && !d2) return 0;
   if ( d1 && !d2) return -1;
 
   if (d1->size          != d2->size     )     return d1->size          > d2->size         ? 1 : -1;
   if (d1->alignment     != d2->alignment)     return d1->alignment     > d2->alignment    ? 1 : -1;
-  if (d1->aligned_size  != d2->aligned_size)  return d1->aligned_siz e > d2->aligned_size ? 1 : -1;
+  if (d1->aligned_size  != d2->aligned_size)  return d1->aligned_size  > d2->aligned_size ? 1 : -1;
 
   if (d1->category_code != d2->category_code) return d1->category_code > d2->category_code ? 1 : -1;
 
@@ -45,10 +63,7 @@ int gras_datadesc_type_cmp(const gras_datadesc_t *d1,
       return d1->category.scalar_data.encoding > d2->category.scalar_data.encoding ? 1 : -1 ;
     break;
     
-  case e_gras_datadesc_type_cat_struct:
-    if (d1->category.struct_data.field_count != d2->category.struct_data.field_count) 
-      return d1->category.struct_data.field_count > d2->category.struct_data.field_count ? 1 : -1;
-    
+  case e_gras_datadesc_type_cat_struct:    
     if (gras_dynar_length(d1->category.struct_data.fields) != 
 	gras_dynar_length(d2->category.struct_data.fields))
       return gras_dynar_length(d1->category.struct_data.fields) >
@@ -58,7 +73,9 @@ int gras_datadesc_type_cmp(const gras_datadesc_t *d1,
     gras_dynar_foreach(d1->category.struct_data.fields, cpt, field1) {
       
       gras_dynar_get(d2->category.struct_data.fields, cpt, field2);
-      ret = gras_datadesc_type_cmp(field1,field2);
+      gras_ddt_get_by_code(field1->code,&field_desc_1); /* FIXME: errcode ignored */
+      gras_ddt_get_by_code(field2->code,&field_desc_2);
+      ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
       if (ret)
 	return ret;
       
@@ -78,7 +95,9 @@ int gras_datadesc_type_cmp(const gras_datadesc_t *d1,
     gras_dynar_foreach(d1->category.union_data.fields, cpt, field1) {
       
       gras_dynar_get(d2->category.union_data.fields, cpt, field2);
-      ret = gras_datadesc_type_cmp(field1,field2);
+      gras_ddt_get_by_code(field1->code,&field_desc_1); /* FIXME: errcode ignored */
+      gras_ddt_get_by_code(field2->code,&field_desc_2);
+      ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
       if (ret)
 	return ret;
       
@@ -116,6 +135,34 @@ int gras_datadesc_type_cmp(const gras_datadesc_t *d1,
   
 }
 
-gras_error_t gras_datadesc_cpy(gras_datadesc_t *type, void *src, void **dst) {
-  
+/**
+ * gras_datadesc_cpy:
+ *
+ * Copy the data pointed by src and described by type to a new location, and store a pointer to it in dst.
+ *
+ */
+gras_error_t gras_datadesc_cpy(gras_datadesc_type_t *type, void *src, void **dst) {
+  RAISE_UNIMPLEMENTED;
+}
+
+/**
+ * gras_datadesc_send:
+ *
+ * Copy the data pointed by src and described by type to the socket
+ *
+ */
+gras_error_t gras_datadesc_send(gras_socket_t *sock, gras_datadesc_type_t *type, void *src) {
+
+  RAISE_UNIMPLEMENTED;
+}
+
+/**
+ * gras_datadesc_recv:
+ *
+ * Get an instance of the datatype described by @type from the @socket, and store a pointer to it in @dst
+ *
+ */
+gras_error_t
+gras_datadesc_recv(gras_socket_t *sock, gras_datadesc_type_t *type, void **dst) {
+  RAISE_UNIMPLEMENTED;
 }

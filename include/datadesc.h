@@ -37,59 +37,48 @@
 
 BEGIN_DECL
 
-/**
- * Basic types we can embeed in DataDescriptors.
- */
-typedef enum
-  {CHAR_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INT_TYPE, LONG_TYPE, SHORT_TYPE,
-   UNSIGNED_INT_TYPE, UNSIGNED_LONG_TYPE, UNSIGNED_SHORT_TYPE, STRUCT_TYPE}
-  DataTypes;
-#define SIMPLE_TYPE_COUNT 9
-
-/*!  \brief Describe a collection of data.
- * 
-** A description of a collection of #type# data.  #repetitions# is used only
-** for arrays; it contains the number of elements.  #offset# is used only for
-** struct members in host format; it contains the offset of the member from the
-** beginning of the struct, taking into account internal padding added by the
-** compiler for alignment purposes.  #members#, #length#, and #tailPadding# are
-** used only for STRUCT_TYPE data; the #length#-long array #members# describes
-** the members of the nested struct, and #tailPadding# indicates how many
-** padding bytes the compiler adds to the end of the structure.
-*/
-
-typedef struct DataDescriptorStruct {
-  DataTypes type;
-  size_t repetitions;
-  size_t offset;
-  /*@null@*/ struct DataDescriptorStruct *members;
-  size_t length;
-  size_t tailPadding;
-} DataDescriptor;
-/** DataDescriptor for an array */
-#define SIMPLE_DATA(type,repetitions) \
-  {type, repetitions, 0, NULL, 0, 0}
-/** DataDescriptor for an structure member */
-#define SIMPLE_MEMBER(type,repetitions,offset) \
-  {type, repetitions, offset, NULL, 0, 0}
-/** DataDescriptor for padding bytes */
-#define PAD_BYTES(structType,lastMember,memberType,repetitions) \
-  sizeof(structType) - offsetof(structType, lastMember) - \
-  sizeof(memberType) * repetitions
-
-/*
-gras_error_t gras_datadesc_parse(const char       *def,
-				 gras_datadesc__t **dst);
-gras_error_t gras_datadesc_from_nws(const DataDescriptor *desc,
-				    size_t                howmany,
-				    gras_datadesc_t     **dst);
-gras_error_t gras_datadesc_sizeof_host(gras_datadesc_t *desc,
-				       size_t          *dst);
-gras_error_t gras_datadesc_sizeof_network(gras_datadesc_t *desc,
-					  size_t          *dst);
-*/
 
 typedef struct s_gras_datadesc_type gras_datadesc_type_t;
+
+/***********************************************
+ **** Search and retrieve declared datatype ****
+ ***********************************************/
+long int gras_datadesc_get_id_from_name(const char *name);
+
+/*********************************************
+ **** DataDesc callback persistent states ****
+ *********************************************/
+typedef struct s_gras_dd_cbps gras_dd_cbps_t;
+
+void *
+gras_dd_cbps_pop (gras_dd_cbps_t        *ps, 
+		  const char            *name,
+		  gras_datadesc_type_t **ddt);
+void
+gras_dd_cbps_push(gras_dd_cbps_t        *ps,
+		  const char            *name,
+		  void                  *data,
+		  gras_datadesc_type_t  *ddt);
+void
+gras_dd_cbps_set (gras_dd_cbps_t        *ps,
+		  const char            *name,
+		  void                  *data,
+		  gras_datadesc_type_t  *ddt);
+
+void *
+gras_dd_cbps_get (gras_dd_cbps_t        *ps, 
+		  const char            *name,
+		  gras_datadesc_type_t **ddt);
+
+void
+gras_dd_cbps_block_begin(gras_dd_cbps_t *ps);
+void
+gras_dd_cbps_block_end(gras_dd_cbps_t *ps);
+
+
+/******************************************
+ **** Declare datadescription manually ****
+ ******************************************/
 
 typedef void (*gras_datadesc_type_cb_void_t)(void                 *vars,
 					     gras_datadesc_type_t *p_type,
@@ -181,15 +170,74 @@ gras_datadesc_declare_array_cb(const char                      *name,
 			       gras_datadesc_type_cb_void_t     post,
 			       long int                        *code);
 
+/****************************
+ **** Parse C statements ****
+ ****************************/
+gras_error_t
+gras_datadesc_parse(const char *name,
+		    const char *Cdefinition,
+		    long int   *code);
+#define GRAS_DEFINE_TYPE(name,def) \
+  static const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
+ 
+#define gras_type_symbol_parse(bag,name)                                  \
+ _gs_type_parse(bag, _gs_this_type_symbol_does_not_exist__##name)
+ 
+#define gs_type_get_by_symbol(bag,name)                  \
+  (bag->bag_ops->get_type_by_name(bag, NULL, #name) ?    \
+     bag->bag_ops->get_type_by_name(bag, NULL, #name) :  \
+     gras_type_symbol_parse(bag, name)                   \
+  )
 
-/* Use the datadescriptions */
-int
-gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
-		       const gras_datadesc_type_t *d2);
+/*****************************
+ **** NWS datadescription ****
+ *****************************/
 
+/**
+ * Basic types we can embeed in DataDescriptors.
+ */
+typedef enum
+  {CHAR_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INT_TYPE, LONG_TYPE, SHORT_TYPE,
+   UNSIGNED_INT_TYPE, UNSIGNED_LONG_TYPE, UNSIGNED_SHORT_TYPE, STRUCT_TYPE}
+  DataTypes;
+#define SIMPLE_TYPE_COUNT 9
 
-gras_error_t 
-gras_datadesc_cpy(gras_datadesc_type_t *type, void *src, void **dst);
+/*!  \brief Describe a collection of data.
+ * 
+** A description of a collection of #type# data.  #repetitions# is used only
+** for arrays; it contains the number of elements.  #offset# is used only for
+** struct members in host format; it contains the offset of the member from the
+** beginning of the struct, taking into account internal padding added by the
+** compiler for alignment purposes.  #members#, #length#, and #tailPadding# are
+** used only for STRUCT_TYPE data; the #length#-long array #members# describes
+** the members of the nested struct, and #tailPadding# indicates how many
+** padding bytes the compiler adds to the end of the structure.
+*/
+
+typedef struct DataDescriptorStruct {
+  DataTypes type;
+  size_t repetitions;
+  size_t offset;
+  /*@null@*/ struct DataDescriptorStruct *members;
+  size_t length;
+  size_t tailPadding;
+} DataDescriptor;
+/** DataDescriptor for an array */
+#define SIMPLE_DATA(type,repetitions) \
+  {type, repetitions, 0, NULL, 0, 0}
+/** DataDescriptor for an structure member */
+#define SIMPLE_MEMBER(type,repetitions,offset) \
+  {type, repetitions, offset, NULL, 0, 0}
+/** DataDescriptor for padding bytes */
+#define PAD_BYTES(structType,lastMember,memberType,repetitions) \
+  sizeof(structType) - offsetof(structType, lastMember) - \
+  sizeof(memberType) * repetitions
+
+gras_error_t
+gras_datadesc_from_nws(const char           *name,
+		       const DataDescriptor *desc,
+		       size_t                howmany,
+		       long int             *code);
 
 
 END_DECL

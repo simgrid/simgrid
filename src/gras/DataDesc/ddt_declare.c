@@ -18,7 +18,7 @@ gras_datadesc_declare_struct_cb(const char                   *name,
   gras_error_t errcode;
   gras_datadesc_type_t *type;
   TRY(gras_ddt_new_struct(name, pre, post, &type));
-  TRY(gras_ddt_register(gras_datadesc_set_local, type));
+  TRY(gras_ddt_register(type));
   *code = type->code;
   return no_error;
 }
@@ -75,7 +75,7 @@ gras_datadesc_declare_union_cb(const char                   *name,
   gras_error_t errcode;
   gras_datadesc_type_t *type;
   TRY(gras_ddt_new_union(name, field_count, post, &type));
-  TRY(gras_ddt_register(gras_datadesc_set_local, type));
+  TRY(gras_ddt_register(type));
   *code = type->code;
   return no_error;
 }
@@ -132,7 +132,7 @@ gras_datadesc_declare_ref_cb(const char                      *name,
   gras_error_t errcode;
   gras_datadesc_type_t *type;
   TRY(gras_ddt_new_ref(name, referenced_type,discriminant,post, &type));
-  TRY(gras_ddt_register(gras_datadesc_set_local, type));
+  TRY(gras_ddt_register(type));
   *code = type->code;
   return no_error;
 }
@@ -147,7 +147,43 @@ gras_datadesc_declare_array_cb(const char                      *name,
   gras_error_t errcode;
   gras_datadesc_type_t *type;
   TRY(gras_ddt_new_array(name, element_type, fixed_size, dynamic_size, post, &type));
-  TRY(gras_ddt_register(gras_datadesc_set_local, type));
+  TRY(gras_ddt_register(type));
+  *code = type->code;
+  return no_error;
+}
+
+/**
+ * gras_datadesc_parse:
+ *
+ * Parse a C type declaration, and declare locally the corresponding type description
+ */
+gras_error_t
+gras_datadesc_parse(const char *name,
+		    const char *definition,
+		    long int   *code) {
+  gras_error_t errcode;
+  gras_datadesc_type_t *type;
+  TRY(gras_ddt_new_parse(name,definition,&type));
+  TRY(gras_ddt_register( type));
+  *code = type->code;
+  return no_error;
+}
+
+/**
+ * gras_datadesc_parse:
+ *
+ * Parse a NWS type declaration, and declare locally the corresponding type description
+ */
+gras_error_t
+gras_datadesc_from_nws(const char           *name,
+		       const DataDescriptor *desc,
+		       size_t                howmany,
+		       long int             *code) {
+
+  gras_error_t errcode;
+  gras_datadesc_type_t *type;
+  TRY(gras_ddt_new_from_nws(name,desc,howmany,&type));
+  TRY(gras_ddt_register(type));
   *code = type->code;
   return no_error;
 }

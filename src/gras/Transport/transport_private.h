@@ -1,9 +1,8 @@
 /* $Id$ */
 
-/* trp (transport) - send/receive a bunch of bytes                          */
+/* transport - low level communication (send/receive bunches of bytes)      */
 
-/* This file implements the public interface of this module, exported to the*/
-/*  other modules of GRAS, but not to the end user.                         */
+/* module's private interface masked even to other parts of GRAS.           */
 
 /* Authors: Martin Quinson                                                  */
 /* Copyright (C) 2004 Martin Quinson.                                       */
@@ -15,100 +14,37 @@
 #define GRAS_TRP_PRIVATE_H
 
 #include "gras_private.h"
-/* A low-level socket type (each plugin implements it the way it prefers */
-//typedef void gras_trp_sock_t;
- 
-/* A plugin type */
-struct gras_trp_plugin_ {
-  const char *name;
- 
-  gras_error_t (*init)(void);
-  void         (*exit)(gras_trp_plugin_t *);
- 
-  gras_error_t (*socket_client_open)(const char *host,
-                                     unsigned short port,
-                                     int raw,
-                                     unsigned int bufSize,
-                                     /* OUT */ gras_trp_sock_t **dst);
-  gras_error_t (*socket_server_open)(unsigned short port,
-                                     int raw,
-                                     unsigned int bufSize,
-                                     /* OUT */ gras_trp_sock_t **dst);
-  void (*socket_close)(gras_trp_sock_t **sd);
- 
-  gras_error_t (*select)(double timeOut,
-                         gras_trp_sock_t **sd);
-   
-  gras_error_t (*bloc_send)(gras_trp_sock_t *sd,
-                            void *data,
-                            size_t size,
-                            double timeOut);
-  gras_error_t (*bloc_recv)(gras_trp_sock_t *sd,
-                            void *data,
-                            size_t size,
-                            double timeOut);
-  gras_error_t (*flush)(gras_trp_sock_t *sd);
- 
-  void *specific;
-};
+#include "Transport/transport_interface.h"
 
-/**********************************************************************
- * Internal stuff to the module. Other modules shouldn't fool with it *
- **********************************************************************/
+extern gras_dynar_t *_gras_trp_sockets; /* all existing sockets */
+
+
+/**
+ * s_gras_socket:
+ * 
+ * Description of a socket.
+ */
+
+struct s_gras_socket  {
+   gras_trp_plugin_t *plugin;
+   
+   int incoming; /* true if incoming (server) sock, false if client sock */
+   int accepting; /* true if master incoming sock in tcp */
+   
+   int  sd;
+   int  port; /* port on this side */
+   int  peer_port; /* port on the other side */
+   char *peer_name; /* hostname of the other side */
+
+   void *specific; /* plugin specific data */
+};
+	
 
 /* TCP driver */
-gras_error_t gras_trp_tcp_init(void);
-void         gras_trp_tcp_exit(gras_trp_plugin_t *plugin);
-gras_error_t gras_trp_tcp_socket_client(const char *host,
-					unsigned short port,
-					int raw, 
-					unsigned int bufSize, 
-					/* OUT */ gras_trp_sock_t **dst);
-gras_error_t gras_trp_tcp_socket_server(unsigned short port,
-					int raw, 
-					unsigned int bufSize, 
-					/* OUT */ gras_trp_sock_t **dst);
-void         gras_trp_tcp_socket_close(gras_trp_sock_t **sd);
-gras_error_t gras_trp_tcp_select(double timeOut,
-				 gras_trp_sock_t **sd);
-  
-gras_error_t gras_trp_tcp_bloc_send(gras_trp_sock_t *sd,
-				    void *data,
-				    size_t size,
-				    double timeOut);
-
-gras_error_t gras_trp_tcp_bloc_recv(gras_trp_sock_t *sd,
-				    void *data,
-				    size_t size,
-				    double timeOut);
-gras_error_t gras_trp_tcp_flush(gras_trp_sock_t *sd);
+gras_error_t gras_trp_tcp_init(gras_trp_plugin_t **dst);
 
 /* SG driver */
-gras_error_t gras_trp_sg_init(void);
-void         gras_trp_sg_exit(gras_trp_plugin_t *plugin);
-gras_error_t gras_trp_sg_socket_client(const char *host,
-				       unsigned short port,
-				       int raw, 
-				       unsigned int bufSize, 
-				       /* OUT */ gras_trp_sock_t **dst);
-gras_error_t gras_trp_sg_socket_server(unsigned short port,
-				       int raw, 
-				       unsigned int bufSize, 
-				       /* OUT */ gras_trp_sock_t **dst);
-void         gras_trp_sg_socket_close(gras_trp_sock_t **sd);
-gras_error_t gras_trp_sg_select(double timeOut,
-				gras_trp_sock_t **sd);
-
-gras_error_t gras_trp_sg_bloc_send(gras_trp_sock_t *sd,
-				   void *data,
-				   size_t size,
-				   double timeOut);
-
-gras_error_t gras_trp_sg_bloc_recv(gras_trp_sock_t *sd,
-				   void *data,
-				   size_t size,
-				   double timeOut);
-gras_error_t gras_trp_sg_flush(gras_trp_sock_t *sd);
+gras_error_t gras_trp_sg_init (gras_trp_plugin_t **dst);
 
 
 
