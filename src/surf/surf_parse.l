@@ -135,7 +135,7 @@ static void __print_val(void) {
 
 e_surf_token_t surf_parse(void) {
   surf_tok_num = surf_parse_lex();
-  __print_val();
+/*   __print_val(); */
   surf_char_pos += strlen(surf_parse_text);
   return(surf_tok_num);
 }
