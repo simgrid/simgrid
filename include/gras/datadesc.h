@@ -120,11 +120,12 @@ int gras_datadesc_get_id(gras_datadesc_type_t *ddt);
  * Advanced data describing: callback persistent states *
  ********************************************************/
 
-void *
+gras_error_t
 gras_dd_cbps_pop (gras_dd_cbps_t        *ps, 
 		  const char            *name,
-		  gras_datadesc_type_t **ddt);
-void
+		  gras_datadesc_type_t **ddt,
+		  void                 **res);
+gras_error_t
 gras_dd_cbps_push(gras_dd_cbps_t        *ps,
 		  const char            *name,
 		  void                  *data,
