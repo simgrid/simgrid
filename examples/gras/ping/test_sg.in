@@ -1,5 +1,9 @@
 #! @BASH@
-if test -x ./ping_simulator ; then
-  exec ./ping_simulator @top_srcdir@/examples/msg/small_platform.xml @srcdir@/ping_deployment.xml $@
+if [ x@EXEEXT@ = x ] ; then 
+  exenv=
+else
+  exenv=wine
 fi
-exit 77
+
+exec $exenv ./ping_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/ping_deployment.xml $@
+
