@@ -32,7 +32,7 @@ gras_error_t gras_trp_sg_socket_server(unsigned short port,
 				       int raw, 
 				       unsigned int bufSize, 
 				       /* OUT */ gras_socket_t **dst);
-void         gras_trp_sg_socket_close(gras_trp_sock_t **sd);
+void         gras_trp_sg_socket_close(gras_socket_t **sd);
 gras_error_t gras_trp_sg_select(double timeOut,
 				gras_socket_t **sd);
 
@@ -63,7 +63,7 @@ typedef struct {
  ***/
 
 gras_error_t
-gras_trp_sg_init(void) {
+gras_trp_sg_init(gras_trp_plugin_t **dst) {
 
   gras_trp_sg_specific_t *specific = malloc(sizeof(gras_trp_sg_specific_t));
   if (!specific)
@@ -82,42 +82,42 @@ gras_error_t gras_trp_sg_socket_client(const char *host,
 				       unsigned short port,
 				       int raw, 
 				       unsigned int bufSize, 
-				       /* OUT */ gras_trp_sock_t **dst){
+				       /* OUT */ gras_socket_t **dst){
   RAISE_UNIMPLEMENTED;
 }
 
 gras_error_t gras_trp_sg_socket_server(unsigned short port,
 				       int raw, 
 				       unsigned int bufSize, 
-				       /* OUT */ gras_trp_sock_t **dst){
+				       /* OUT */ gras_socket_t **dst){
   RAISE_UNIMPLEMENTED;
 }
 
-void gras_trp_sg_socket_close(gras_trp_sock_t **sd){
+void gras_trp_sg_socket_close(gras_socket_t **sd){
   ERROR1("%s not implemented",__FUNCTION__);
   abort();
 }
 
 gras_error_t gras_trp_sg_select(double timeOut,
-				gras_trp_sock_t **sd){
+				gras_socket_t **sd){
   RAISE_UNIMPLEMENTED;
 }
   
-gras_error_t gras_trp_sg_bloc_send(gras_trp_sock_t *sd,
+gras_error_t gras_trp_sg_bloc_send(gras_socket_t *sd,
 				   void *data,
 				   size_t size,
 				   double timeOut){
   RAISE_UNIMPLEMENTED;
 }
 
-gras_error_t gras_trp_sg_bloc_recv(gras_trp_sock_t *sd,
+gras_error_t gras_trp_sg_bloc_recv(gras_socket_t *sd,
 				   void *data,
 				   size_t size,
 				   double timeOut){
   RAISE_UNIMPLEMENTED;
 }
 
-gras_error_t gras_trp_sg_flush(gras_trp_sock_t *sd){
+gras_error_t gras_trp_sg_flush(gras_socket_t *sd){
   RAISE_UNIMPLEMENTED;
 }
 

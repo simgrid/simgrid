@@ -90,9 +90,6 @@ gras_trp_tcp_init(gras_trp_plugin_t **dst) {
   res->socket_accept = gras_trp_tcp_socket_accept;
   res->socket_close  = gras_trp_tcp_socket_close;
 
-  res->bloc_send     = gras_trp_tcp_bloc_send;
-  res->bloc_recv     = gras_trp_tcp_bloc_recv;
-
   res->specific      = (void*)tcp;
   res->free_specific = gras_trp_tcp_free_specific;
 
@@ -110,21 +107,21 @@ gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
 					unsigned short port,
 					unsigned int bufSize, 
 					/* OUT */ gras_socket_t **dst){
-  /*
+  
   int addrCount;
   IPAddress addresses[10];
   int i;
   int sd;
   
-  if (!(*sock=malloc(sizeof(gras_socket_t)))) {
-    fprintf(stderr,"Malloc error\n");
-    return malloc_error;
-  }
+  if (!(*sock=malloc(sizeof(gras_socket_t))))
+    RAISE_MALLOC;
+  
   (*sock)->peer_addr=NULL;
   
   if (!(addrCount = IPAddressValues(host, addresses, 10))) {
-    fprintf(stderr,"grasOpenClientSocket: address retrieval of '%s' failed\n",host);
-    return system_error;
+    RAISE2(system_error,
+	  "tcp address retrieval of '%s' failed: %s",
+	   host,strerror(errno));
   }
   
   for(i = 0; i < addrCount && i<10 ; i++) {
@@ -135,11 +132,8 @@ gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
     }
   }
   free(*sock);
-  fprintf(stderr,"grasOpenClientSocket: something wicked happenned while connecting to %s:%d",
+  RAISE2(system_error,"Something wicked happenned while connecting to %s:%d",
           host,port);
-  return system_error;
-  */
-  RAISE_UNIMPLEMENTED;
 }
 
 /**
@@ -168,7 +162,7 @@ gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
   server.sin_family = AF_INET;
   if((sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     free(res);
-    RAISE0(system_error,"socket allocation failed");
+    RAISE1(system_error,"socket allocation failed: %s", strerror(errno));
   }
 
   (void)setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on));
@@ -177,13 +171,13 @@ gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
   if (bind(sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
     free(res);
     close(sd);
-    RAISE1(system_error,"Cannot bind to port %d",port);
+    RAISE2(system_error,"Cannot bind to port %d: %s",port, strerror(errno));
   }
 
   if (listen(sd, 5) != -1) {
     free(res);
     close(sd);
-    RAISE1(system_error,"Cannot listen to port %d",port);
+    RAISE2(system_error,"Cannot listen to port %d: %s",port,strerror(errno));
   }
 
   FD_SET(sd, &(data->incoming_socks));
@@ -300,11 +294,18 @@ void gras_trp_tcp_socket_close(gras_socket_t *sock){
 
 }
 
-gras_error_t gras_trp_tcp_bloc_send(gras_socket_t *sock,
-				    char *data,
-				    size_t size){
-
-  gras_assert0(sock && !sock->incoming, "Ascked to send stuff on an incomming socket");
+/**
+ * gras_trp_tcp_chunk_send:
+ *
+ * Send data on a TCP socket
+ */
+gras_error_t 
+gras_trp_tcp_chunk_send(gras_socket_t *sock,
+		    char *data,
+		    size_t size) {
+  
+  /*  gras_assert0(sock && !sock->incoming,
+      "Asked to send stuff on an incomming socket");*/
   gras_assert0(size >= 0, "Cannot send a negative amount of data");
 
   while (size) {
@@ -329,12 +330,17 @@ gras_error_t gras_trp_tcp_bloc_send(gras_socket_t *sock,
 
   return no_error;
 }
-
-gras_error_t gras_trp_tcp_bloc_recv(gras_socket_t *sock,
-				    char *data,
-				    size_t size){
-
-  gras_assert0(sock && !sock->incoming, "Ascked to receive stuff on an outcomming socket");
+/**
+ * gras_trp_tcp_chunk_recv:
+ *
+ * Receive data on a TCP socket.
+ */
+gras_error_t 
+gras_trp_tcp_chunk_recv(gras_socket_t *sock,
+			char *data,
+			size_t size) {
+  gras_assert0(sock && !sock->incoming,
+	       "Ascked to receive stuff on an outcomming socket");
   gras_assert0(size >= 0, "Cannot receive a negative amount of data");
   
   while (size) {

@@ -29,7 +29,8 @@ COMMON_S=\
   Core/config.c                               \
   \
   Transport/transport.c    Transport/transport_private.h      \
-  Transport/transport_tcp.c          \
+  Transport/transport_plugin_tcp.c          \
+  Transport/transport_plugin_sg.c          \
   \
   \
   DataDesc/ddt_create.c          DataDesc/ddt_declare.c \
