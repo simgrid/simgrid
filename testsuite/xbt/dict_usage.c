@@ -60,6 +60,8 @@ static xbt_error_t search(xbt_dict_t head,const char*key) {
   
   errcode=xbt_dict_get(head,key,&data);
   printf("   - Search %s. Found %s\n",key,data?(char*)data:"(null)");fflush(stdout);
+  if (!data)
+     return errcode;
   if (strcmp((char*)data,key)) 
     return mismatch_error;
   return errcode;
@@ -108,6 +110,11 @@ int main(int argc,char **argv) {
   
   fill(&head);
 
+  printf(" - Test that it works with NULL data\n");
+  printf("   - Store NULL under 'null'\n");
+  xbt_dict_set(head,"null",NULL,NULL);
+  TRYFAIL(search(head,"null"));
+   
   printf(" - Change some values\n");
   printf("   - Change 123 to 'Changed 123'\n");
   xbt_dict_set(head,"123",strdup("Changed 123"),&free);
