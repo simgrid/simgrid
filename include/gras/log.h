@@ -66,9 +66,14 @@ typedef enum {
 #  define GRAS_LOG_STATIC_THRESHOLD gras_log_priority_infinite
 #else
 
-#ifndef GRAS_LOG_STATIC_THRESHOLD
-#  define GRAS_LOG_STATIC_THRESHOLD gras_log_priority_none
-#endif 
+#  ifdef NDEBUG
+#    define GRAS_LOG_STATIC_THRESHOLD gras_log_priority_verbose
+#  else /* !NLOG && !NDEBUG */
+
+#    ifndef GRAS_LOG_STATIC_THRESHOLD
+#      define GRAS_LOG_STATIC_THRESHOLD gras_log_priority_none
+#    endif /* !GRAS_LOG_STATIC_THRESHOLD */
+#  endif /* NDEBUG */
 #endif /* !defined(NLOG) */
 
 /* Transforms a category name to a global variable name. */
