@@ -1,1 +1,2 @@
 Makefile Makefile.in aclocal.m4 autom4te.cache config.status grenier libtool gras-0.0.040129.tar.gz
+configure
