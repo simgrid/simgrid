@@ -170,6 +170,16 @@ gras_datadesc_get_id(gras_datadesc_type_t *ddt) {
 }
 
 /**
+ * gras_datadesc_size: 
+ *
+ * Returns the size occuped by data of this type (on the current arch).
+ *
+ */
+int gras_datadesc_size(gras_datadesc_type_t *type) {
+  return type->size[GRAS_THISARCH];
+}
+
+/**
  * gras_datadesc_type_dump:
  *
  * For debugging purpose
