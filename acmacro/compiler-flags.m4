@@ -19,8 +19,9 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
     ## with individual -Wno-xxx flags, unlike -Wall
     if test "x$enable_compile_warnings" = "xyes"; then
       warnCFLAGS="$warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
- -finline-functions  -Wshadow -Wpointer-arith -Wchar-subscripts -Wcomment\
- -Wformat=2 -Wno-unused-variable -Wno-unused-function -Wwrite-strings -Werror"
+ -finline-functions  -Wshadow -Wpointer-arith -Wchar-subscripts -Wcomment \
+ -Wformat=2 -Wno-unused-variable -Wno-unused-function -Wwrite-strings \
+ -Werror"
     fi
   fi
 
@@ -52,18 +53,18 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
       optCFLAGS="-ffast-math -funroll-loops -fno-strict-aliasing"
       case " $CFLAGS " in
       *-O*) ;;
-      *) optCFLAGS="-03" ;;
+      *) optCFLAGS="$optCFLAGS -03" ;;
       esac
   fi
-  AC_MSG_RESULT($complCFLAGS)
+  AC_MSG_RESULT($optCFLAGS)
 
   # Take the right flags
   if test "x$cflags_set" != "xyes" ; then  
     if test "x$enable_iso_c" != "xno"; then
-      CFLAGS="$CFLAGS $complCFLAGS"
+      CFLAGS="$CFLAGS $complCFLAGS $optCFLAGS"
     fi
     if test "x$enable_compile_warnings" != "xno" ; then
-      CFLAGS="$CFLAGS $warnCFLAGS"
+      CFLAGS="$CFLAGS $warnCFLAGS $optCFLAGS"
     fi  
     
     cflags_set=yes
