@@ -5,3 +5,4 @@ timer.Makefile.am
 timer.Makefile.local
 timer.Makefile.remote
 timer.deploy.sh
+timer.trace
