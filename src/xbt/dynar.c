@@ -10,8 +10,7 @@
 
 #include "gras_private.h"
 
-
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,tbx);
 
 struct gras_dynar_s {
   size_t          size;

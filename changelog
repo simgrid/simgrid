@@ -1,4 +1,6 @@
-TODO:
+2004-07-03
+ - Create a new log channel tbx containing dict, set, log, dynar (to shut
+   them all up in one shot)
 
 2004-06-21
  [Transport]

@@ -10,7 +10,7 @@
 
 #include "gras_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(set,tbx);
 
 /*####[ Type definition ]####################################################*/
 struct gras_set_ {

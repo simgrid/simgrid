@@ -48,7 +48,8 @@ gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT) = {
   NULL, 0
 };
 GRAS_LOG_NEW_SUBCATEGORY(GRAS,GRAS_LOG_ROOT_CAT);
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,GRAS);
+GRAS_LOG_NEW_SUBCATEGORY(tbx,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(log,tbx);
 
 
 static void _apply_control(gras_log_category_t* cat) {

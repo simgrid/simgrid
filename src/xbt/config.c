@@ -12,7 +12,7 @@
 
 #include "gras_private.h" /* prototypes of this module */
 
-GRAS_LOG_NEW_DEFAULT_CATEGORY(config);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(config,tbx);
 
 /* gras_cfgelm_t: the typedef corresponding to a config cell. 
 

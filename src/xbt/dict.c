@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,GRAS);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(dict,tbx);
 
 /*####[ Private prototypes ]#################################################*/
 
