@@ -36,7 +36,6 @@ void
 gras_datadesc_init(void) {
   gras_error_t errcode;
   gras_datadesc_type_t *ddt; /* What to add */
-  gras_datadesc_type_t *elm; /* element of ddt when needed */
 
   /* only initialize once */
   if (gras_datadesc_set_local != NULL)
