@@ -12,7 +12,7 @@
 
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(exchange,DataDesc);
 
-static const char *gras_datadesc_cat_names[9] = { 
+const char *gras_datadesc_cat_names[9] = { 
   "undefined", 
   "scalar", "struct", "union", "ref", "array", "ignored",
   "invalid"};
@@ -43,7 +43,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       int                   r_arch,
 		       char                **r_data,
 		       long int              r_lgr,
-		       char                **dst);
+		       char                 *dst);
 
 
 static gras_error_t
@@ -122,12 +122,12 @@ gras_dd_alloc_ref(gras_dict_t *refs,
     void *ptr = malloc(sizeof(void *));
     if (!ptr)
       RAISE_MALLOC;
-    //    memcpy(ptr,&l_data, sizeof(void *));
+
     memcpy(ptr,l_ref, sizeof(void *));
 
     DEBUG2("Insert %p under %p",*(void**)ptr, *(void**)r_ref);
-    /* FIXME: Leaking on the ptr. Do I really need to copy it? */
-    TRY(gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, NULL));
+
+    TRY(gras_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, free));
   }
   return no_error;
 }
@@ -146,25 +146,62 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
   gras_dd_cat_field_t *field1,*field2;
   gras_datadesc_type_t *field_desc_1,*field_desc_2;
 
+  if (d1 == d2) return 0; /* easy optimization */
 
-  if (!d1 && d2) return 1;
-  if (!d1 && !d2) return 0;
-  if ( d1 && !d2) return -1;
+  if (!d1 && d2) {
+    DEBUG0("ddt_cmp: !d1 && d2 => 1");
+    return 1;
+  }
+  if (!d1 && !d2) {
+    DEBUG0("ddt_cmp: !d1 && !d2 => 0");
+    return 0;
+  }
+  if ( d1 && !d2) {
+    DEBUG0("ddt_cmp: d1 && !d2 => -1");
+    return -1;
+  }
 
-  if      (d1->size          != d2->size     )     
-    return d1->size          >  d2->size         ? 1 : -1;
-  if      (d1->alignment     != d2->alignment)     
-    return d1->alignment     >  d2->alignment    ? 1 : -1;
-  if      (d1->aligned_size  != d2->aligned_size)  
-    return d1->aligned_size  >  d2->aligned_size ? 1 : -1;
+  for (cpt=0; cpt<gras_arch_count; cpt++) {
+    if (d1->size[cpt] != d2->size[cpt]) {
+      DEBUG5("ddt_cmp: %s->size=%d  !=  %s->size=%d (on %s)",
+	     d1->name,d1->size[cpt],d2->name,d2->size[cpt],
+	     gras_arches[cpt].name);
+      return d1->size[cpt] >  d2->size[cpt] ? 1 : -1;
+    }
 
-  if      (d1->category_code != d2->category_code) 
-    return d1->category_code >  d2->category_code ? 1 : -1;
+    if (d1->alignment[cpt] != d2->alignment[cpt]) {
+      DEBUG5("ddt_cmp: %s->alignment=%d  !=  %s->alignment=%d (on %s)",
+	     d1->name,d1->alignment[cpt],d2->name,d2->alignment[cpt],
+	     gras_arches[cpt].name);
+      return d1->alignment[cpt] > d2->alignment[cpt] ? 1 : -1;
+    }
 
-  if      (d1->pre          != d2->pre)           
-    return d1->pre          >  d2->pre ? 1 : -1;
-  if      (d1->post         != d2->post)
-    return d1->post          > d2->post ? 1 : -1;
+    if (d1->aligned_size[cpt] != d2->aligned_size[cpt]) {
+      DEBUG5("ddt_cmp: %s->aligned_size=%d  !=  %s->aligned_size=%d (on %s)",
+	     d1->name,d1->aligned_size[cpt],d2->name,d2->aligned_size[cpt],
+	     gras_arches[cpt].name);
+      return d1->aligned_size[cpt] > d2->aligned_size[cpt] ? 1 : -1;
+    }
+  }
+
+  if (d1->category_code != d2->category_code) {
+    DEBUG4("ddt_cmp: %s->cat=%s  !=  %s->cat=%s",
+	   d1->name,gras_datadesc_cat_names[d1->category_code],
+	   d2->name,gras_datadesc_cat_names[d2->category_code]);
+    return d1->category_code > d2->category_code ? 1 : -1;
+  }
+
+  if (d1->pre != d2->pre) {
+    DEBUG4("ddt_cmp: %s->pre=%p  !=  %s->pre=%p",
+	   d1->name,d1->pre, d2->name,d2->pre);
+    return d1->pre > d2->pre ? 1 : -1;
+  }
+
+  if (d1->post != d2->post) {
+    DEBUG4("ddt_cmp: %s->post=%p  !=  %s->post=%p",
+	   d1->name,d1->post, d2->name,d2->post);
+    return d1->post > d2->post ? 1 : -1;
+  }
 
   switch (d1->category_code) {
   case e_gras_datadesc_type_cat_scalar:
@@ -174,19 +211,27 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t *d1,
     
   case e_gras_datadesc_type_cat_struct:    
     if (gras_dynar_length(d1->category.struct_data.fields) != 
-	gras_dynar_length(d2->category.struct_data.fields))
+	gras_dynar_length(d2->category.struct_data.fields)) {
+      DEBUG4("ddt_cmp: %s (having %d fields) !=  %s (having %d fields)",
+	     d1->name, gras_dynar_length(d1->category.struct_data.fields),
+	     d2->name, gras_dynar_length(d2->category.struct_data.fields));
+      
       return gras_dynar_length(d1->category.struct_data.fields) >
 	gras_dynar_length(d2->category.struct_data.fields) ?
 	1 : -1;
-    
+    }
     gras_dynar_foreach(d1->category.struct_data.fields, cpt, field1) {
       
-      gras_dynar_get(d2->category.struct_data.fields, cpt, field2);
+      gras_dynar_get(d2->category.struct_data.fields, cpt, &field2);
       gras_datadesc_by_id(field1->code,&field_desc_1); /* FIXME: errcode ignored */
       gras_datadesc_by_id(field2->code,&field_desc_2);
       ret = gras_datadesc_type_cmp(field_desc_1,field_desc_2);
-      if (ret)
+      if (ret) {
+	DEBUG6("%s->field[%d]=%s != %s->field[%d]=%s",
+	       d1->name,cpt,field1->name, 	       
+	       d2->name,cpt,field2->name);
 	return ret;
+      }
       
     }
     break;
@@ -464,22 +509,17 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 		       int                   r_arch,
 		       char                **r_data,
 		       long int              r_lgr,
-		       char                **dst) {
+		       char                 *l_data) {
 
   gras_error_t          errcode;
-  char                 *l_data = *dst; /* dereference to avoid typo */
   int                   cpt;
   gras_datadesc_type_t *sub_type;
 
-  VERB1("Recv a %s", type->name);
+  VERB2("Recv a %s @%p", type->name, l_data);
+  gras_assert(l_data);
 
   switch (type->category_code) {
   case e_gras_datadesc_type_cat_scalar:
-    if (!l_data) {
-      TRY(gras_dd_alloc_ref(refs,type->size[GRAS_THISARCH],r_data,r_lgr, dst));
-      l_data = *dst;
-    } 
-    
     if (type->size[GRAS_THISARCH] >= type->size[r_arch]) {
       TRY(gras_trp_chunk_recv(sock, (char*)l_data, type->size[r_arch]));
       TRY(gras_dd_convert_elm(type,r_arch, l_data,l_data));
@@ -498,11 +538,6 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
     struct_data = type->category.struct_data;
 
-    if (!l_data) {
-      TRY(gras_dd_alloc_ref(refs,type->size[GRAS_THISARCH],r_data,r_lgr, dst));
-      l_data = *dst;
-    } 
-
     VERB1(">> Receive all fields of the structure %s",type->name);
     gras_dynar_foreach(struct_data.fields, cpt, field) {
       char                 *field_data = l_data + field->offset[GRAS_THISARCH];
@@ -511,7 +546,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,NULL,0,
-				 &field_data));
+				 field_data));
     }
     VERB1("<< Received all fields of the structure %s", type->name);
     
@@ -524,11 +559,6 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     int                    field_num;
 
     union_data = type->category.union_data;
-
-    if (!l_data) {
-      TRY(gras_dd_alloc_ref(refs,type->size[GRAS_THISARCH],r_data,r_lgr, dst));
-      l_data = *dst;
-    } 
 
     /* retrieve the field number */
     TRY(gras_dd_recv_int(sock, r_arch, &field_num));
@@ -546,7 +576,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     
     TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 			       r_arch,NULL,0,
-			       dst));
+			       l_data));
     break;
   }
 
@@ -574,16 +604,12 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     TRY(gras_trp_chunk_recv(sock, (char*)r_ref,
 			    pointer_type->size[r_arch]));
 
-    if (!l_data) {
-      TRY(gras_dd_alloc_ref(refs,type->size[GRAS_THISARCH],r_data,r_lgr, dst));
-      l_data = *dst;
-    } 
-
     /* Receive the pointed data only if not already sent */
     if (gras_dd_is_r_null(r_ref, pointer_type->size[r_arch])) {
-      VERB1("Not receiving data remotely referenced at %p since it's NULL",
+      VERB1("Not receiving data remotely referenced @%p since it's NULL",
 	    *(void **)r_ref);
       *(void**)l_data = NULL;
+      free(r_ref);
       break;
     }
     errcode = gras_dict_get_ext(refs,
@@ -593,27 +619,34 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
     if (errcode == mismatch_error) {
       void *l_referenced=NULL;
-      VERB1("Receiving data remotely referenced at %p", *(void**)r_ref);
 
       TRY(gras_datadesc_by_id(ref_code, &sub_type));
+      
+      VERB1("Receiving '%s' ",sub_type->name);
+      TRY(gras_dd_alloc_ref(refs,sub_type->size[GRAS_THISARCH], 
+			    r_ref,pointer_type->size[r_arch], (char**)&l_referenced));
+
+      VERB2("Receiving '%s' remotely referenced at %p",
+	    sub_type->name, *(void**)r_ref);
+
       //      DEBUG2("l_ref= %p; &l_ref=%p",l_referenced,&l_referenced);
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,r_ref,pointer_type->size[r_arch],
-				 (char**)&l_referenced));
+				 (char*)l_referenced));
       *(void**)l_data=l_referenced;
+      VERB3("'%s' remotely referenced at %p locally at %p",
+	    sub_type->name, *(void**)r_ref, l_referenced);
       
     } else if (errcode == no_error) {
-      VERB1("NOT receiving data remotely referenced at %p (already done). ",
-	    *(void**)r_ref);
-
-      VERB2("l_ref=%p; *l_ref=%p", l_ref,*l_ref);
+      VERB2("NOT receiving data remotely referenced @%p (already done, locally @%p). ",
+	    *(void**)r_ref, *(void**)l_ref);
 
       *(void**)l_data=*l_ref;
 
     } else {
       return errcode;
     }
-    VERB1("*l_data=%p",*(void**)l_data);
+    free(r_ref);
     break;
   }
 
@@ -635,16 +668,16 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
     /* receive the content */
     TRY(gras_datadesc_by_id(array_data.code, &sub_type));
     elm_size = sub_type->aligned_size[GRAS_THISARCH];
-    
+    VERB2("Receive a %d-long array of %s",count, sub_type->name);
+
     if (!l_data) {
-      TRY(gras_dd_alloc_ref(refs,elm_size*count,r_data,r_lgr, dst));
-      l_data = *dst;
+      TRY(gras_dd_alloc_ref(refs,elm_size*count,r_data,r_lgr, &l_data));
     } 
 
     ptr = l_data;
     for (cpt=0; cpt<count; cpt++) {
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
-				 r_arch, NULL, 0, &ptr));
+				 r_arch, NULL, 0, ptr));
       ptr += elm_size;
     }
     break;
@@ -668,7 +701,7 @@ gras_error_t
 gras_datadesc_recv(gras_socket_t *sock, 
 		   gras_datadesc_type_t *type, 
 		   int r_arch,
-		   void **dst) {
+		   void *dst) {
 
   gras_error_t errcode;
   gras_dd_cbps_t *state = NULL; /* callback persistent state */
@@ -676,14 +709,12 @@ gras_datadesc_recv(gras_socket_t *sock,
 
   TRY(gras_dict_new(&refs));
   TRY(gras_dd_cbps_new(&state));
-  if (!dst)
-    CRITICAL0("Cannot receive data into a NULL pointer!");
-  if (*dst) 
-    VERB0("'*dst' not NULL in datadesc_recv. Data to be copied there without malloc");
+  //  if (dst) FIXME
+  //    VERB0("'dst' not NULL in datadesc_recv. Data to be copied there without malloc");
 
   errcode = gras_datadesc_recv_rec(sock, state, refs, type, 
 				   r_arch, NULL, 0,
-				   (char **) dst);
+				   (char *) dst);
 
   gras_dict_free(&refs);
   gras_dd_cbps_free(&state);
