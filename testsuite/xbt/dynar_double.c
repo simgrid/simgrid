@@ -141,5 +141,6 @@ int main(int argc,char *argv[]) {
    }
    gras_dynar_free(d);
 
+   gras_finalize();
    return 0;
 }

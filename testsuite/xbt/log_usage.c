@@ -50,5 +50,6 @@ int main(int argc, char **argv) {
   CDEBUG2(Top, "val=%d%s", 3, "!");
   CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");
   
+  gras_finalize();
   return 0;
 }

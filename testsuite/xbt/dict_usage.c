@@ -115,7 +115,7 @@ int main(int argc,char **argv) {
   gras_dict_free(&head);
   printf(" Free the dictionnary again\n");
   gras_dict_free(&head);
-
+  
   TRYFAIL(fill(&head));
 
   printf(" - Change some values\n");
@@ -155,7 +155,7 @@ int main(int argc,char **argv) {
 
   printf(" Free the dictionnary (twice)\n");
   gras_dict_free(&head);
-  gras_dict_free(&head); // frees it twice to see if it triggers an error
+  gras_dict_free(&head);
 
   printf(" - Traverse the resulting dictionnary\n");
   TRYFAIL(traverse(head));
@@ -165,6 +165,10 @@ int main(int argc,char **argv) {
   printf(" - Remove the data (traversing the resulting dictionnary each time)\n");
   TRYEXPECT(debuged_remove(head,"Does not exist"),mismatch_error);
   TRYFAIL(traverse(head));
+
+  gras_dict_free(&head);
+  gras_finalize();
+  return 0;
 
   TRYCATCH(debuged_remove(head,"12345"),mismatch_error);
   TRYFAIL(traverse(head));
@@ -182,7 +186,5 @@ int main(int argc,char **argv) {
   printf(" - Free the dictionnary twice\n");
   gras_dict_free(&head);
   gras_dict_free(&head);
-  printf("Done\n");
-  fflush(stdout);
   return 0;
 }

@@ -14,6 +14,7 @@ noinst_LIBRARIES=libgrasutils.a
 
 COMMON_S=\
   \
+  core/module.c                                                                 \
   core/log.c         core/log_default_appender.c   core/error.c                 \
   core/dynar.c                                                                  \
   core/dict.c        core/dict_elm.c               core/dict_cursor.c           \

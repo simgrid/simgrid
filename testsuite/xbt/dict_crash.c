@@ -131,11 +131,12 @@ int main(int argc,char **argv) {
       }
     }
   }
+  free(key);
 
   printf("\n Remove my 200 000 elements. (a point is 10 000 elements)\n");
   if (!(key=malloc(10))) {
     fprintf(stderr,"Out of memory\n");
-    return 3;
+    abort();
   }
   for (j=0;j<NB_ELM;j++) {
     if (!(j%10000)) printf("."); fflush(stdout);
@@ -144,6 +145,7 @@ int main(int argc,char **argv) {
     TRYFAIL(gras_dict_remove(head,key));
   }
   printf("\n");
+  free(key);
 
   
   printf("\n Free the structure (twice)\n");

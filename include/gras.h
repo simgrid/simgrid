@@ -32,6 +32,8 @@
 #include <gras/error.h>
 #include <gras/log.h>
 
+#include <gras/module.h>
+
 #include <gras/dynar.h>
 #include <gras/dict.h>
 
