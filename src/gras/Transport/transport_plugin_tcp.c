@@ -93,7 +93,7 @@ xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
   plug->data = (void*)data;
   plug->exit = gras_trp_tcp_exit;
-
+   
   return no_error;
 }
 
@@ -117,20 +117,19 @@ xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
   if (sock->sd < 0) {
     RAISE1(system_error,
 	   "Failed to create socket: %s",
-	   strerror (errno));
+	   sock_errstr);
   }
 
   if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
       setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
-     WARN1("setsockopt failed, cannot set buffer size: %s",
-	   strerror(errno));
+     WARN1("setsockopt failed, cannot set buffer size: %s",sock_errstr);
   }
   
   he = gethostbyname (sock->peer_name);
   if (he == NULL) {
     RAISE2(system_error,
 	   "Failed to lookup hostname %s: %s",
-	   sock->peer_name, strerror (errno));
+	   sock->peer_name, sock_errstr);
   }
   
   haddr = ((struct in_addr *) (he->h_addr_list)[0]);
@@ -141,10 +140,10 @@ xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
   addr.sin_port = htons (sock->peer_port);
 
   if (connect (sock->sd, (struct sockaddr*) &addr, sizeof (addr)) < 0) {
-    close(sock->sd);
+    tcp_close(sock->sd);
     RAISE3(system_error,
 	   "Failed to connect socket to %s:%d (%s)",
-	   sock->peer_name, sock->peer_port, strerror (errno));
+	   sock->peer_name, sock->peer_port, sock_errstr);
   }
   
   return no_error;
@@ -169,28 +168,28 @@ xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_family = AF_INET;
   if((sock->sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-    RAISE1(system_error,"Socket allocation failed: %s", strerror(errno));
+    RAISE1(system_error,"Socket allocation failed: %s", sock_errstr);
   }
 
   if (setsockopt(sock->sd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on))) {
      RAISE1(system_error,"setsockopt failed, cannot condition the socket: %s",
-	    strerror(errno));
+	    sock_errstr);
   }
    
   if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
       setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
      WARN1("setsockopt failed, cannot set buffer size: %s",
-	   strerror(errno));
+	   sock_errstr);
   }
 	
   if (bind(sock->sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
-    close(sock->sd);
-    RAISE2(system_error,"Cannot bind to port %d: %s",sock->port, strerror(errno));
+    tcp_close(sock->sd);
+    RAISE2(system_error,"Cannot bind to port %d: %s",sock->port, sock_errstr);
   }
 
   if (listen(sock->sd, 5) < 0) {
-    close(sock->sd);
-    RAISE2(system_error,"Cannot listen to port %d: %s",sock->port,strerror(errno));
+    tcp_close(sock->sd);
+    RAISE2(system_error,"Cannot listen to port %d: %s",sock->port,sock_errstr);
   }
 
   if (sock->raw)
@@ -214,7 +213,8 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
   int sd;
   int tmp_errno;
   int size;
-			
+		
+  XBT_IN;
   gras_trp_socket_new(1,&res);
 
   sd = accept(sock->sd, (struct sockaddr *)&peer_in, &peer_in_len);
@@ -223,7 +223,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
   if(sd == -1) {
     gras_socket_close(sock);
     RAISE1(system_error,
-	   "Accept failed (%s). Droping server socket.", strerror(tmp_errno));
+	   "Accept failed (%s). Droping server socket.", sock_errstr);
   } else {
     int i = 1;
     socklen_t s = sizeof(int);
@@ -231,15 +231,15 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
     if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *)&i, s) 
 	|| setsockopt(sd, TcpProtoNumber(), TCP_NODELAY, (char *)&i, s)) {
        RAISE1(system_error,"setsockopt failed, cannot condition the socket: %s",
-	      strerror(errno));
+	      sock_errstr);
     }
- 
-    (*dst)->bufSize = sock->bufSize;
+
+    res->bufSize = sock->bufSize;
     size = sock->bufSize * 1024;
     if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size))
        || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
        WARN1("setsockopt failed, cannot set buffer size: %s",
-	     strerror(errno));
+	     sock_errstr);
     }
      
     res->plugin    = sock->plugin;
@@ -271,6 +271,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
     
     *dst = res;
 
+    XBT_OUT;
     return no_error;
   }
 }
@@ -297,17 +298,23 @@ void gras_trp_tcp_socket_close(gras_socket_t sock){
     }
   } */
 
-  /* forget about the socket */
-  if (sock->raw)
+#ifndef HAVE_WINSOCK_H
+  /* forget about the socket 
+     ... but not when using winsock since accept'ed socket can not fit 
+     into the fd_set*/
+  if (sock->raw){
     FD_CLR(sock->sd, &(tcp->raw_socks));
-  else
+  } else {
     FD_CLR(sock->sd, &(tcp->msg_socks));
-
-  /* close the socket */
-  if(close(sock->sd) < 0) {
-    WARN3("error while closing tcp socket %d: %d (%s)\n", 
-	     sock->sd, errno, strerror(errno));
   }
+#endif
+   
+  /* close the socket */
+  if(tcp_close(sock->sd) < 0) {
+    WARN3("error while closing tcp socket %d: %d (%s)\n", 
+	     sock->sd, sock_errno, sock_errstr);
+  }
+
 }
 
 /**
@@ -326,13 +333,13 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
   while (size) {
     int status = 0;
     
-    status = write(sock->sd, data, (size_t)size);
+    status = tcp_write(sock->sd, data, (size_t)size);
     DEBUG3("write(%d, %p, %ld);", sock->sd, data, size);
     
-    if (status == -1) {
+    if (status <= 0) {
       RAISE4(system_error,"write(%d,%p,%ld) failed: %s",
 	     sock->sd, data, size,
-	     strerror(errno));
+	     sock_errstr);
     }
     
     if (status) {
@@ -362,13 +369,13 @@ gras_trp_tcp_chunk_recv(gras_socket_t sock,
   while (size) {
     int status = 0;
     
-    status = read(sock->sd, data, (size_t)size);
+    status = tcp_read(sock->sd, data, (size_t)size);
     DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
     
-    if (status == -1) {
+    if (status <= 0) {
       RAISE4(system_error,"read(%d,%p,%d) failed: %s",
 	     sock->sd, data, (int)size,
-	     strerror(errno));
+	     sock_errstr);
     }
     
     if (status) {
@@ -448,3 +455,79 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
    xbt_free(chunk);
    return no_error;
 }
+
+
+#ifdef HAVE_WINSOCK_H
+#define RETSTR( x ) case x: return #x
+
+const char *gras_wsa_err2string( int err ) {
+   switch( err ) {
+      RETSTR( WSAEINTR );
+      RETSTR( WSAEBADF );
+      RETSTR( WSAEACCES );
+      RETSTR( WSAEFAULT );
+      RETSTR( WSAEINVAL );
+      RETSTR( WSAEMFILE );
+      RETSTR( WSAEWOULDBLOCK );
+      RETSTR( WSAEINPROGRESS );
+      RETSTR( WSAEALREADY );
+      RETSTR( WSAENOTSOCK );
+      RETSTR( WSAEDESTADDRREQ );
+      RETSTR( WSAEMSGSIZE );
+      RETSTR( WSAEPROTOTYPE );
+      RETSTR( WSAENOPROTOOPT );
+      RETSTR( WSAEPROTONOSUPPORT );
+      RETSTR( WSAESOCKTNOSUPPORT );
+      RETSTR( WSAEOPNOTSUPP );
+      RETSTR( WSAEPFNOSUPPORT );
+      RETSTR( WSAEAFNOSUPPORT );
+      RETSTR( WSAEADDRINUSE );
+      RETSTR( WSAEADDRNOTAVAIL );
+      RETSTR( WSAENETDOWN );
+      RETSTR( WSAENETUNREACH );
+      RETSTR( WSAENETRESET );
+      RETSTR( WSAECONNABORTED );
+      RETSTR( WSAECONNRESET );
+      RETSTR( WSAENOBUFS );
+      RETSTR( WSAEISCONN );
+      RETSTR( WSAENOTCONN );
+      RETSTR( WSAESHUTDOWN );
+      RETSTR( WSAETOOMANYREFS );
+      RETSTR( WSAETIMEDOUT );
+      RETSTR( WSAECONNREFUSED );
+      RETSTR( WSAELOOP );
+      RETSTR( WSAENAMETOOLONG );
+      RETSTR( WSAEHOSTDOWN );
+      RETSTR( WSAEHOSTUNREACH );
+      RETSTR( WSAENOTEMPTY );
+      RETSTR( WSAEPROCLIM );
+      RETSTR( WSAEUSERS );
+      RETSTR( WSAEDQUOT );
+      RETSTR( WSAESTALE );
+      RETSTR( WSAEREMOTE );
+      RETSTR( WSASYSNOTREADY );
+      RETSTR( WSAVERNOTSUPPORTED );
+      RETSTR( WSANOTINITIALISED );
+      RETSTR( WSAEDISCON );
+      
+#ifdef HAVE_WINSOCK2
+      RETSTR( WSAENOMORE );
+      RETSTR( WSAECANCELLED );
+      RETSTR( WSAEINVALIDPROCTABLE );
+      RETSTR( WSAEINVALIDPROVIDER );
+      RETSTR( WSASYSCALLFAILURE );
+      RETSTR( WSASERVICE_NOT_FOUND );
+      RETSTR( WSATYPE_NOT_FOUND );
+      RETSTR( WSA_E_NO_MORE );
+      RETSTR( WSA_E_CANCELLED );
+      RETSTR( WSAEREFUSED );
+#endif /* HAVE_WINSOCK2	*/
+
+      RETSTR( WSAHOST_NOT_FOUND );
+      RETSTR( WSATRY_AGAIN );
+      RETSTR( WSANO_RECOVERY );
+      RETSTR( WSANO_DATA );
+   }
+   return "unknown WSA error";
+}
+#endif /* HAVE_WINSOCK_H */
