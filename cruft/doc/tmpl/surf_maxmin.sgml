@@ -1,0 +1,211 @@
+<!-- ##### SECTION Title ##### -->
+Max-min linear solver
+
+<!-- ##### SECTION Short_Description ##### -->
+A linear program solver where the constraints are positive and the
+objective function is max-min.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION lmm_system_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_system_free ##### -->
+<para>
+
+</para>
+
+@sys: 
+
+
+<!-- ##### FUNCTION lmm_variable_disable ##### -->
+<para>
+
+</para>
+
+@sys: 
+@var: 
+
+
+<!-- ##### FUNCTION lmm_constraint_new ##### -->
+<para>
+
+</para>
+
+@sys: 
+@id: 
+@bound_value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_constraint_free ##### -->
+<para>
+
+</para>
+
+@sys: 
+@cnst: 
+
+
+<!-- ##### FUNCTION lmm_variable_new ##### -->
+<para>
+
+</para>
+
+@sys: 
+@id: 
+@weight_value: 
+@bound: 
+@number_of_constraints: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_variable_free ##### -->
+<para>
+
+</para>
+
+@sys: 
+@var: 
+
+
+<!-- ##### FUNCTION lmm_variable_getvalue ##### -->
+<para>
+
+</para>
+
+@var: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_expand ##### -->
+<para>
+
+</para>
+
+@sys: 
+@cnst: 
+@var: 
+@value: 
+
+
+<!-- ##### FUNCTION lmm_get_cnst_from_var ##### -->
+<para>
+
+</para>
+
+@sys: 
+@var: 
+@num: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_get_number_of_cnst_from_var ##### -->
+<para>
+
+</para>
+
+@sys: 
+@var: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_get_var_from_cnst ##### -->
+<para>
+
+</para>
+
+@sys: 
+@cnst: 
+@var: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_constraint_id ##### -->
+<para>
+
+</para>
+
+@cnst: 
+
+
+<!-- ##### FUNCTION lmm_variable_id ##### -->
+<para>
+
+</para>
+
+@var: 
+
+
+<!-- ##### FUNCTION lmm_update ##### -->
+<para>
+
+</para>
+
+@sys: 
+@cnst: 
+@var: 
+@value: 
+
+
+<!-- ##### FUNCTION lmm_update_variable_bound ##### -->
+<para>
+
+</para>
+
+@sys: 
+@var: 
+@bound: 
+
+
+<!-- ##### FUNCTION lmm_update_variable_weight ##### -->
+<para>
+
+</para>
+
+@sys: 
+@var: 
+@weight: 
+
+
+<!-- ##### FUNCTION lmm_update_constraint_bound ##### -->
+<para>
+
+</para>
+
+@sys: 
+@cnst: 
+@bound: 
+
+
+<!-- ##### FUNCTION lmm_constraint_used ##### -->
+<para>
+
+</para>
+
+@sys: 
+@cnst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lmm_solve ##### -->
+<para>
+
+</para>
+
+@sys: 
+
+
