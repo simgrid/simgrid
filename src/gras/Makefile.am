@@ -10,9 +10,9 @@ lib_LIBRARIES= libgrasrl.a libgrassg.a
 noinst_LIBRARIES=libgrasutils.a
 
 #                     core/dict_multi.c
+#  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            
 
 COMMON_S=\
-  Common/gras.c      Common/gras_datadesc.c        Common/gras_msg.c            \
   \
   core/log.c         core/log_default_appender.c   core/error.c                 \
   core/dynar.c                                                                  \
