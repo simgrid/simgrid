@@ -30,8 +30,10 @@ echo "#### Summary"
 echo "$success_nb tests of $tests_nb successfull ($success)"
 if [ $failed_nb != 0 ] ; then
   echo "$failed_nb tests of $tests_nb failed ($failed)"
-  echo "Rerun the tests using the following command: script -c 'make test'"
-  echo " and send the file typescript it will produce to martin.quinson@ens-lyon.fr"
-  echo " along with a short description of the target platform (arch, OS, distrib, compiler)."
+  echo "Rerun the tests using the following command: script -c 'make test' gras.tests.log"
+  echo " and send the following informations to martin.quinson@ens-lyon.fr:"
+  echo "   - the file gras.tests.log produced by this command"
+  echo "   - a short description of the target platform (arch, OS, distrib, compiler)."
+  echo "   - the config.log produced by the compilation, if possible."
 fi
 exit $failed_nb
