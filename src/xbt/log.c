@@ -25,7 +25,7 @@
  *  This section describes the API to the log functions used 
  *  everywhere in this project.
      
-<h3>Overview</h3>
+\section log_overview Overview
      
 This is an adaptation of the log4c project, which is dead upstream, and
 which I was given the permission to fork under the LGPL licence by the
@@ -37,7 +37,7 @@ concepts work together to enable developers to log messages according to
 message type and priority, and to control at runtime how these messages are
 formatted and where they are reported.
 
-<h3>Category hierarchy</h3>
+\section log_cat Category hierarchy
 
 The first and foremost advantage of any logging API over plain printf()
 resides in its ability to disable certain log statements while allowing
@@ -71,7 +71,9 @@ definition.
 Typically, there will be a Category for each module and sub-module, so you
 can independently control logging for each module.
 
-<h3>Priority</h3>
+For a list of all existing categories, please refer to the \ref XBT_log_cats section.
+
+\section log_pri Priority
 
 A category may be assigned a threshold priorty. The set of priorites are
 defined by the \ref e_xbt_log_priority_t enum. All logging request under
@@ -110,7 +112,7 @@ equivalent to the shorter:
 
 <code>CWARN4(MyCat, "Values are: %d and '%s'", 5, "oops");</code>
 
-<h3>Default category</h3>
+\subsection log_subcat Using a default category
   
 If \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, Parent) or
 \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat) is used to create the
@@ -121,7 +123,7 @@ category, then the even shorter form can be used:
 Only one default category can be created per file, though multiple
 non-defaults can be created and used.
 
-<h3>Example</h3>
+\section log_example Example
 
 Here is a more complete example:
 
@@ -151,7 +153,7 @@ int main() {
 }
 \endverbatim
 
-<h3>Configuration</h3>
+\section log_conf Configuration
 Configuration is typically done during program initialization by invoking
 the xbt_log_control_set() method. The control string passed to it typically
 comes from the command line. Look at the documentation for that function for
@@ -162,7 +164,7 @@ Any SimGrid program can furthermore be configured at run time by passing a
 --surf-log are synonyms). You can provide several of those arguments to
 change the setting of several categories.
 
-<h3>Performance</h3>
+\section log_perf Performance
 
 Clever design insures efficiency. Except for the first invocation, a
 disabled logging request requires an a single comparison of a static
@@ -179,7 +181,7 @@ Compiling with the \verbatim-DNLOG\endverbatim option disables all logging
 requests at compilation time while the \verbatim-DNDEBUG\endverbatim disables 
 the requests of priority below INFO.
  
-<h3>Appenders</h3>
+\section log_app Appenders
 
 Each category has an optional appender. An appender is a pointer to a
 structure which starts with a pointer to a doAppend() function. DoAppend()
@@ -203,7 +205,7 @@ remote dedicated server, or other ones offering different output formats.
 This is on our TODO list for quite a while now, but your help would be
 welcome here.
 
-<h3>Misc and Caveats</h3>
+\section log_misc Misc and Caveats
 
   - Do not use any of the macros that start with '_'.
   - Log4J has a 'rolling file appender' which you can select with a run-time
