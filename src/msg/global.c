@@ -33,7 +33,6 @@ void MSG_global_init(void)
   char **argv=NULL;
 
   CRITICAL0("Please stop using this function. Use MSG_global_init_args instead.");
-  DIE_IMPOSSIBLE;
   MSG_global_init_args(&argc,argv);
 }
 
