@@ -199,16 +199,15 @@ gras_error_t
 gras_trp_tcp_socket_accept(gras_socket_t  *sock,
 			   gras_socket_t **dst) {
   gras_socket_t *res;
+  gras_error_t errcode;
   
   struct sockaddr_in peer_in;
   socklen_t peer_in_len = sizeof(peer_in);
 
   int sd;
   int tmp_errno;
-				
-  res=malloc(sizeof(gras_socket_t));
-  if (!res)
-    RAISE_MALLOC;
+			
+  TRY(gras_trp_socket_new(1,&res));
 
   sd = accept(sock->sd, (struct sockaddr *)&peer_in, &peer_in_len);
   tmp_errno = errno;
@@ -226,13 +225,13 @@ gras_trp_tcp_socket_accept(gras_socket_t  *sock,
       WARN0("setsockopt failed, cannot condition the accepted socket");
     }
  
-     /* FIXME: bufSize removed until we can have optionsets 
-    i = ((gras_trp_tcp_sock_specific_t*)sock->specific)->buffsize;
-    if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *)&i, s)
-	|| setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *)&i, s)) {
-      WARNING0("setsockopt failed, cannot set buffsize");	
-    }
-      */
+    /* FIXME: bufSize removed until we can have optionsets 
+       i = ((gras_trp_tcp_sock_specific_t*)sock->specific)->buffsize;
+       if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *)&i, s)
+       || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *)&i, s)) {
+       WARNING0("setsockopt failed, cannot set buffsize");	
+       }
+    */
      
     res->plugin    = sock->plugin;
     res->incoming  = sock->incoming;
