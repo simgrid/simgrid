@@ -3,3 +3,4 @@ cscope.files cscope.out
 *.lo *.la
 gras_config.h.in gras_config.h
 stamp-h.in stamp-h stamp-h1
+*.loT
