@@ -10,10 +10,12 @@ EXTRA_DIST= ./gras_private.h    \
 	Virtu/virtu_sg.h \
 	DataDesc/ddt_parse.yy.l DataDesc/ddt_parse.yy.c
 
+VERSION_INFO=-version-info 0:1:0
+
 if HAVE_SG
- lib_LIBRARIES= libgrasrl.a libgrassg.a
+ lib_LTLIBRARIES= libgrasrl.la libgrassg.la
 else
- lib_LIBRARIES= libgrasrl.a
+ lib_LTLIBRARIES= libgrasrl.la
 endif
 
 COMMON_S=\
@@ -43,14 +45,16 @@ COMMON_S=\
 DataDesc/ddt_parse.yy.c: DataDesc/ddt_parse.yy.l
 	@LEX@ -o$@ -Pgras_ddt_parse_ $^
 
-libgrasrl_a_SOURCES= $(COMMON_S) \
+libgrasrl_la_SOURCES= $(COMMON_S) \
   Transport/rl_transport.c  Transport/transport_plugin_tcp.c  Transport/transport_plugin_file.c      \
   \
   Virtu/rl_process.c        Virtu/rl_time.c                   Virtu/rl_conditional.c
+libgrasrl_la_LDFLAGS = $(VERSION_INFO)
 
 if HAVE_SG
-  libgrassg_a_SOURCES= $(COMMON_S) \
+  libgrassg_la_SOURCES= $(COMMON_S) \
     Transport/sg_transport.c  Transport/transport_plugin_sg.c             \
     \
     Virtu/sg_process.c        Virtu/sg_time.c                   Virtu/sg_conditional.c
+  libgrassg_la_LDFLAGS = $(VERSION_INFO)
 endif
