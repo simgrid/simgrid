@@ -2,9 +2,12 @@ SUBDIRS=. Tests
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include \
           @CFLAGS_XML@ @CFLAGS_SimGrid@
-EXTRA_DIST=                 \
-	gras_private.h      \
-	Core/dict_private.h 
+EXTRA_DIST= ./gras_private.h    \
+	Core/dict_private.h \
+	Transport/transport_interface.h \
+	Virtu/virtu_interface.h \
+	Virtu/virtu_rl.h \
+	Virtu/virtu_sg.h
 #	DataDesc/parse.yy.l      
 
 
