@@ -92,6 +92,7 @@ WARNING="This file is generated, do not edit"
 AC_SUBST(WARNING)
 
 dnl ####[ Makes the output ]###################################################
+#    examples/bandwidth/Makefile examples/bandwidth/test_sg
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
@@ -99,7 +100,6 @@ AC_CONFIG_FILES([
   src/amok/Makefile
   examples/Makefile 
     examples/ping/Makefile      examples/ping/test_sg
-    examples/bandwidth/Makefile examples/bandwidth/test_sg
   doc/Makefile
   tools/compile-remote-worker
   testsuite/Makefile
@@ -112,7 +112,7 @@ AC_CONFIG_FILES([
      test -e testsuite/gras/trp_file_usage&& chmod +x testsuite/gras/trp_file_usage;
      test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
      test -e examples/ping/test_sg        && chmod +x examples/ping/test_sg;
-     test -e examples/bandwidth/test_sg   && chmod +x examples/bandwidth/test_sg;
+#     test -e examples/bandwidth/test_sg   && chmod +x examples/bandwidth/test_sg;
      chmod +x $srcdir/tools/gras-check-arch;
      chmod +x $srcdir/examples/ping/test_rl
 ])
