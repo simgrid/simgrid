@@ -7,7 +7,7 @@ for test in log_usage                           \
  	    dict_usage dict_crash               \
 	    config_usage                        \
 	    \
-	    gs_example
+	    datadesc_usage
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
