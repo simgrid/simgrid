@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+/* $Id$ */
 
 /* A few tests for the xbt_heap module                                      */
 
@@ -7,23 +7,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/time.h>
+
 #include "xbt/heap.h"
+#include "gras/virtu.h" /* time manipulation in bench */
 
 #define MAX_TEST 1000000
-
-/* Pour le bench */
-long us_time(void);
-long us_time(void)
-{
-  struct timeval start;
-  gettimeofday(&start, NULL);
-
-  return (start.tv_sec * 1000000 + start.tv_usec);
-}
 
 int compare_xbt_heap_float_t(const void *a, const void *b);
 void test_heap_validity(int size);
@@ -73,23 +63,23 @@ void test_heap_mean_operation(int size)
 {
   xbt_heap_t heap = xbt_heap_new(size, NULL);
   xbt_heap_float_t val;
-  long date = 0;
+  double date = 0;
   int i, j;
 
-  date = us_time();
+  date = gras_os_time();
   for (i = 0; i < size; i++)
     xbt_heap_push(heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
-  date = us_time() - date;
-  printf("Creation time  %d size heap : %g\n", size, 0.0 + date);
+  date = gras_os_time() - date;
+  printf("Creation time  %d size heap : %f\n", size, 0.0 + date);
 
-  date = us_time();
+  date = gras_os_time();
   for (j = 0; j < MAX_TEST; j++) {
     val = xbt_heap_maxkey(heap);
     xbt_heap_pop(heap);
     xbt_heap_push(heap, NULL, 3.0 * val);
   }
-  date = us_time() - date;
-  printf("Mean access time for a %d size heap : %g\n", size,
+  date = gras_os_time() - date;
+  printf("Mean access time for a %d size heap : %f\n", size,
 	 date * 1.0 / (MAX_TEST + 0.0));
 
   xbt_heap_free(heap);
