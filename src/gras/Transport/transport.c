@@ -418,3 +418,37 @@ xbt_error_t gras_socket_raw_recv(gras_socket_t peer,
   xbt_free(chunk);
   return no_error;/* gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);    */
 }
+
+/*
+ * Creating procdata for this module
+ */
+static void *gras_trp_procdata_new() {
+   gras_trp_procdata_t res = xbt_new(s_gras_trp_procdata_t,1);
+   
+   res->sockets   = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
+   
+   return (void*)res;
+}
+
+/*
+ * Freeing procdata for this module
+ */
+static void gras_trp_procdata_free(void *data) {
+   gras_trp_procdata_t res = (gras_trp_procdata_t)data;
+   
+   xbt_dynar_free(&( res->sockets ));
+}
+
+/*
+ * Module registration
+ */
+void gras_trp_register() {
+   gras_procdata_add("gras_trp",gras_trp_procdata_new, gras_trp_procdata_free);
+}
+
+
+xbt_dynar_t 
+gras_socketset_get(void) {
+   /* FIXME: KILLME */
+   return ((gras_trp_procdata_t) gras_libdata_get("gras_trp"))->sockets;
+}

@@ -12,13 +12,22 @@
 #ifndef GRAS_MSG_INTERFACE_H
 #define GRAS_MSG_INTERFACE_H
 
-/* gras_msg_t is dereferenced to be stored in procdata, living in Virtu */
+#include "gras/transport.h"
+
+/*
+ * Data of this module specific to each process 
+ * (used by sg_process.c to check some usual errors at the end of the simulation)
+ * FIXME: it could be cleaned up ?
+ */
 typedef struct {
-  gras_socket_t   expeditor;
-  gras_msgtype_t  type;
-  void           *payload;
-  int             payload_size;
-} gras_msg_t;
+  /*queue of msgs storing the ones got while msg_wait'ing for something else */
+  xbt_dynar_t msg_queue; /* elm type: gras_msg_t */
+
+  /* registered callbacks for each message */
+  xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
+
+} s_gras_msg_procdata_t,*gras_msg_procdata_t;
+
 
 xbt_error_t gras_msg_send_namev(gras_socket_t  sock, 
 				 const char    *namev, 
@@ -26,6 +35,5 @@ xbt_error_t gras_msg_send_namev(gras_socket_t  sock,
 
 #define GRAS_PROTOCOL_VERSION '\0';
 
-typedef struct s_gras_cblist gras_cblist_t;
-void gras_cbl_free(void *); /* virtu use that to free the memory at the end */
+
 #endif  /* GRAS_MSG_INTERFACE_H */

@@ -28,6 +28,15 @@
 
 #include "gras/Msg/msg_interface.h"
 
+
+/** @brief Message instance */
+typedef struct {
+  gras_socket_t   expeditor;
+  gras_msgtype_t  type;
+  void           *payload;
+  int             payload_size;
+} gras_msg_t;
+
 /**
  * gras_msgtype_t:
  *
@@ -63,6 +72,24 @@ struct s_gras_cblist {
   xbt_dynar_t cbs; /* of gras_msg_cb_t */
 };
 
+typedef struct s_gras_cblist gras_cblist_t;
+void gras_cbl_free(void *); /* used to free the memory at the end */
 void gras_cblist_free(void *cbl);
+
+
+/* ********* *
+ * * TIMER * *
+ * ********* */
+typedef void (*void_f_void_t)(void);
+  
+typedef struct {
+  double expiry;
+  double period;
+  void_f_void_t action;
+  int repeat;
+} *gras_timer_t;
+
+extern xbt_dynar_t _gras_timers;
+
 
 #endif  /* GRAS_MESSAGE_PRIVATE_H */

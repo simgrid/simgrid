@@ -31,7 +31,7 @@ gras_trp_select(double timeout,
 
   xbt_error_t errcode;
   double startTime=gras_os_time();
-  gras_procdata_t *pd=gras_procdata_get();
+  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t *trp;
 

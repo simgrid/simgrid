@@ -24,9 +24,27 @@ static int gras_running_process = 0;
 void gras_init(int *argc,char **argv, const char *defaultlog) {
 
   INFO0("Initialize GRAS");
+  
+  /* First initialize the XBT */
   xbt_init_defaultlog(argc,argv,defaultlog);
-  gras_process_init(); /* calls procdata_init, which calls dynar_new */
-  /** init other submodules */
+   
+  
+  /* module registrations: 
+   *    - declare process specific data we need (without creating them) 
+   */
+  if (gras_running_process == 0) {
+     gras_trp_register();
+     gras_msg_register();
+  }
+   
+  /*
+   * Initialize the process specific stuff
+   */
+  gras_process_init(); /* calls procdata_init, which creates process specific data for each module */
+  
+  /*
+   * Initialize the global stuff if it's not the first process created
+   */
   if (gras_running_process++ == 0) {
     gras_msg_init();
     gras_trp_init();

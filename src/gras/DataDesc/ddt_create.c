@@ -123,7 +123,7 @@ void gras_dd_cat_field_free(void *f) {
   XBT_OUT;
 }
 
-/** Create a new struct and give a pointer to it */
+/** \brief Declare a new structure description */
 gras_datadesc_type_t 
   gras_datadesc_struct(const char            *name) {
 
@@ -155,7 +155,7 @@ gras_datadesc_type_t
   return res;
 }
 
-/** Append a field to the struct */
+/** \brief Append a new field to a structure description */
 void
 gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
 			    const char          *name,
@@ -217,7 +217,9 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   XBT_OUT;
 }
 
-/** No new field can be added afterward, and it is mandatory to close the structure before using it.
+/** \brief Close a structure description
+ * 
+ * No new field can be added afterward, and it is mandatory to close the structure before using it.
  */
 void
 gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
@@ -256,14 +258,10 @@ gras_datadesc_cycle_unset(gras_datadesc_type_t ddt) {
   ddt->cycle = 0;
 }
 
-/**
- * gras_datadesc_union:
- *
- * Create a new union and give a pointer to it 
- */
+/** \brief Declare a new union description */
 gras_datadesc_type_t 
-gras_datadesc_union(const char                   *name,
-		    gras_datadesc_type_cb_int_t   selector) {
+  gras_datadesc_union(const char                   *name,
+		      gras_datadesc_type_cb_int_t   selector) {
 
   gras_datadesc_type_t res;
   int arch;
@@ -300,15 +298,10 @@ gras_datadesc_union(const char                   *name,
   return res;
 }
 
-/**
- * gras_datadesc_union_append:
- *
- * Append a field to the union
- */
-void
-gras_datadesc_union_append(gras_datadesc_type_t  union_type,
-			   const char           *name,
-			   gras_datadesc_type_t  field_type) {
+/** \brief Append a new field to an union description */
+void gras_datadesc_union_append(gras_datadesc_type_t  union_type,
+				const char           *name,
+				gras_datadesc_type_t  field_type) {
 
   gras_dd_cat_field_t field;
   int arch;
@@ -343,12 +336,16 @@ gras_datadesc_union_append(gras_datadesc_type_t  union_type,
 }
 
 
-/** No new field can be added afterward, and it is mandatory to close the union before using it.*/
+/** \brief Close an union description 
+ *
+ * No new field can be added afterward, and it is mandatory to close the union before using it.
+ */
 void
 gras_datadesc_union_close(gras_datadesc_type_t union_type) {
    union_type->category.union_data.closed = 1;
 }
 
+/** \brief Declare a new type being a reference to the one passed in arg */
 gras_datadesc_type_t 
   gras_datadesc_ref(const char           *name,
 		    gras_datadesc_type_t  referenced_type) {
@@ -386,7 +383,8 @@ gras_datadesc_type_t
 
   return res;
 }
-/**
+/** \brief Declare a new type being a generic reference.
+ * 
  * The callback passed in argument is to be used to select which type is currently used.
  * So, when GRAS wants to send a generic reference, it passes the current data to the selector 
  * callback and expects it to return the type description to use. 
@@ -429,9 +427,7 @@ gras_datadesc_type_t
   return res;
 }
 
-/*
- * Create a new array and give a pointer to it 
- */
+/** \brief Declare a new type being an array of fixed size and content */
 gras_datadesc_type_t 
   gras_datadesc_array_fixed(const char           *name,
 			    gras_datadesc_type_t  element_type,
@@ -472,13 +468,11 @@ gras_datadesc_type_t
 
   return res;
 }
-/*
- * Create a new array and give a pointer to it 
- */
-gras_datadesc_type_t 
-  gras_datadesc_array_dyn(const char                  *name,
-			  gras_datadesc_type_t         element_type,
-			  gras_datadesc_type_cb_int_t  dynamic_size) {
+
+/** \brief Declare a new type being an array of fixed size, but accepting several content types. */
+gras_datadesc_type_t gras_datadesc_array_dyn(const char                 *name,
+					     gras_datadesc_type_t        element_type,
+					     gras_datadesc_type_cb_int_t dynamic_size) {
 
   gras_datadesc_type_t res;
   int arch;
@@ -520,7 +514,8 @@ gras_datadesc_type_t
   return res;
 }
 
-/**
+/** \brief Declare a new type being an array which size can be found with \ref gras_cbps_i_pop 
+ * 
  * Most of the time, you want to include a reference in your structure which
  * is a pointer to a dynamic array whose size is fixed by another field of 
  * your structure.

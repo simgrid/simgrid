@@ -10,7 +10,7 @@
 #ifndef VIRTU_SG_H
 #define VIRTU_SG_H
 
-#include "gras/Virtu/virtu_interface.h"
+#include "gras/Virtu/virtu_private.h"
 #include "msg/msg.h" /* SimGrid header */
 
 #define XBT_MAX_CHANNEL 10

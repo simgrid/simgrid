@@ -20,6 +20,35 @@ static char GRAS_header[6];
 static char *make_namev(const char *name, short int ver);
 
 /*
+ * Creating procdata for this module
+ */
+static void *gras_msg_procdata_new() {
+   gras_msg_procdata_t res = xbt_new(s_gras_msg_procdata_t,1);
+   
+   res->msg_queue = xbt_dynar_new(sizeof(gras_msg_t),     NULL);
+   res->cbl_list  = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
+   
+   return (void*)res;
+}
+
+/*
+ * Freeing procdata for this module
+ */
+static void gras_msg_procdata_free(void *data) {
+   gras_msg_procdata_t res = (gras_msg_procdata_t)data;
+   
+   xbt_dynar_free(&( res->msg_queue ));
+   xbt_dynar_free(&( res->cbl_list ));
+}
+
+/*
+ * Module registration
+ */
+void gras_msg_register() {
+   gras_procdata_add("gras_msg",gras_msg_procdata_new, gras_msg_procdata_free);
+}
+
+/*
  * Initialize this submodule.
  */
 void gras_msg_init(void) {
@@ -76,7 +105,8 @@ static char *make_namev(const char *name, short int ver) {
   return namev;
 }
 
-/**
+/** @brief declare a new message type of the given name. It only accepts the given datadesc as payload
+ *
  * @param name: name as it should be used for logging messages (must be uniq)
  * @param payload: datadescription of the payload
  */
@@ -85,7 +115,8 @@ void gras_msgtype_declare(const char           *name,
    gras_msgtype_declare_v(name, 0, payload);
 }
 
-/**
+/** @brief declare a new versionned message type of the given name and payload
+ *
  * @param name: name as it should be used for logging messages (must be uniq)
  * @param version: something like versionning symbol
  * @param payload: datadescription of the payload
@@ -133,15 +164,12 @@ gras_msgtype_declare_v(const char           *name,
 	       &gras_msgtype_free);
 }
 
-/*
- * Retrieve a msgtype description from its name
- */
+/** @brief retrive an existing message type from its name. */
 gras_msgtype_t gras_msgtype_by_name (const char *name) {
   return gras_msgtype_by_namev(name,0);
 }
-/*
- * Retrieve a msgtype description from its name and version
- */
+
+/** @brief retrive an existing message type from its name and version. */
 gras_msgtype_t gras_msgtype_by_namev(const char      *name,
 				     short int        version) {
   gras_msgtype_t res;
@@ -161,9 +189,8 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
   return res;
 }
 
-/*
- * Send the given message on the given socket 
- */
+/** \brief Send the data pointed by \a payload as a message of type
+ * \a msgtype to the peer \a sock */
 xbt_error_t
 gras_msg_send(gras_socket_t   sock,
 	      gras_msgtype_t  msgtype,
@@ -244,7 +271,8 @@ gras_msg_recv(gras_socket_t    sock,
   return no_error;
 }
 
-/**
+/** \brief Waits for a message to come in over a given socket. 
+ *
  * @param timeout: How long should we wait for this message.
  * @param msgt_want: type of awaited msg
  * @param[out] expeditor: where to create a socket to answer the incomming message
@@ -252,7 +280,7 @@ gras_msg_recv(gras_socket_t    sock,
  * @return the error code (or no_error).
  *
  * Every message of another type received before the one waited will be queued
- * and used by subsequent call to this function or MsgHandle().
+ * and used by subsequent call to this function or gras_msg_handle().
  */
 xbt_error_t
 gras_msg_wait(double           timeout,    
@@ -265,7 +293,7 @@ gras_msg_wait(double           timeout,
   int payload_size_got;
   xbt_error_t errcode;
   double start, now;
-  gras_procdata_t *pd=gras_procdata_get();
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   int cpt;
   gras_msg_t msg;
   
@@ -317,12 +345,12 @@ gras_msg_wait(double           timeout,
   RAISE_IMPOSSIBLE;
 }
 
-/**
+/** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
+ *
  * @param timeOut: How long to wait for incoming messages
  * @return the error code (or no_error).
  *
- * Waits up to \a timeOut seconds to see if a message comes in; if so, calls the
- * registered listener for that message (see \ref gras_cb_register()).
+ * Messages are passed to the callbacks.
  */
 xbt_error_t 
 gras_msg_handle(double timeOut) {
@@ -336,11 +364,9 @@ gras_msg_handle(double timeOut) {
   int             payload_size;
   gras_msgtype_t  msgtype;
 
-  gras_procdata_t*pd=gras_procdata_get();
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   gras_cblist_t  *list;
-  gras_cb_t       cb;
-
-
+  gras_msg_cb_t       cb;
 
   VERB1("Handling message within the next %.2fs",timeOut);
   
@@ -372,8 +398,8 @@ gras_msg_handle(double timeOut) {
   }
   
   xbt_dynar_foreach(list->cbs,cpt,cb) { 
-    INFO3("Use the callback #%d (@%p) for incomming msg %s",
-	  cpt+1,cb,msgtype->name);
+    VERB3("Use the callback #%d (@%p) for incomming msg %s",
+          cpt+1,cb,msgtype->name);
     if ((*cb)(expeditor,payload)) {
       /* cb handled the message */
       xbt_free(payload);
@@ -395,10 +421,16 @@ gras_cbl_free(void *data){
   }
 }
 
+/** \brief Bind the given callback to the given message type 
+ *
+ * Several callbacks can be attached to a given message type. The lastly added one will get the message first, and 
+ * if it returns false, the message will be passed to the second one. 
+ * And so on until one of the callbacks accepts the message.
+ */
 void
 gras_cb_register(gras_msgtype_t msgtype,
-		 gras_cb_t cb) {
-  gras_procdata_t *pd=gras_procdata_get();
+		 gras_msg_cb_t cb) {
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   gras_cblist_t *list=NULL;
   int cpt;
 
@@ -416,7 +448,7 @@ gras_cb_register(gras_msgtype_t msgtype,
     /* First cb? Create room */
     list = xbt_new(gras_cblist_t,1);
     list->id = msgtype->code;
-    list->cbs = xbt_dynar_new(sizeof(gras_cb_t), NULL);
+    list->cbs = xbt_dynar_new(sizeof(gras_msg_cb_t), NULL);
     xbt_dynar_push(pd->cbl_list,&list);
   }
 
@@ -424,13 +456,14 @@ gras_cb_register(gras_msgtype_t msgtype,
   xbt_dynar_insert_at(list->cbs,0,&cb);
 }
 
+/** \brief Unbind the given callback from the given message type */
 void
 gras_cb_unregister(gras_msgtype_t msgtype,
-		   gras_cb_t cb) {
+		   gras_msg_cb_t cb) {
 
-  gras_procdata_t *pd=gras_procdata_get();
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   gras_cblist_t *list;
-  gras_cb_t cb_cpt;
+  gras_msg_cb_t cb_cpt;
   int cpt;
   int found = 0;
 

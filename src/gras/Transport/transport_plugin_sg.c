@@ -153,7 +153,7 @@ xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
   xbt_error_t errcode;
 
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_procdata_t *pd=gras_procdata_get();
+  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t *data;
   
@@ -259,7 +259,7 @@ xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
 xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
 				    char *data,
 				    long int size){
-  gras_procdata_t *pd=gras_procdata_get();
+  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
 
   m_task_t task=NULL;
   sg_task_data_t *task_data;
@@ -302,7 +302,7 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
   char name[256];
   gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *)peer->data;
   
-  gras_procdata_t *pd=gras_procdata_get();
+  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
   double startTime;
   
   startTime=gras_os_time(); /* used only in sender mode */

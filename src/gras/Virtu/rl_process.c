@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "gras_modinter.h" /* module initialization interface */
 #include "gras/Virtu/virtu_rl.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(process);
@@ -31,7 +32,7 @@ xbt_error_t gras_process_exit() {
  * **************************************************************************/
 
 gras_procdata_t *gras_procdata_get(void) {
-  xbt_assert0(_gras_procdata,"Run gras_process_init!");
+  xbt_assert0(_gras_procdata,"Run gras_process_init (ie, gras_init)!");
 
   return _gras_procdata;
 }

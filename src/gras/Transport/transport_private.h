@@ -93,4 +93,6 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
 				      unsigned long int expSize,
 				      unsigned long int msgSize);
 
+xbt_dynar_t gras_socketset_get(void); /* FIXME:KILLME */
+
 #endif /* GRAS_TRP_PRIVATE_H */

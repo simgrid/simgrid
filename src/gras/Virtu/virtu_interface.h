@@ -16,35 +16,16 @@
 #include "xbt/log.h"
 #include "xbt/error.h"
 #include "xbt/dynar.h"
+#include "xbt/dict.h"
 #include "gras/virtu.h"
 #include "gras/process.h"
 
-/**
- * gras_process_data_t:
- *
- * Data for each process 
- */
-typedef struct {
-  /*queue of msgs storing the ones got while msg_wait'ing for something else */
-  xbt_dynar_t msg_queue; /* elm type: gras_msg_t */
+/* declare a new process specific data 
+   (used by gras_<module>_register to make sure that gras_process_init will create it) */
 
-  /* registered callbacks for each message */
-  xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
-   
-  /* SG only elements. In RL, they are part of the OS ;) */
-  int chan;    /* Formated messages channel */
-  int rawChan; /* Unformated echange channel */
-  xbt_dynar_t sockets; /* all sockets known to this process */
+typedef void* (pvoid_f_void_t)(void); /* FIXME: find a better place for it */
 
-  /* globals of the process */
-  void *userdata;               
-} gras_procdata_t;
+void gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
+void *gras_libdata_get(const char *name);
 
-/* Access */
-xbt_dynar_t gras_socketset_get(void);
-
-/* FIXME: mv to _private? */
-gras_procdata_t *gras_procdata_get(void);
-void gras_procdata_init(void);
-void gras_procdata_exit(void);
 #endif  /* GRAS_VIRTU_INTERFACE_H */

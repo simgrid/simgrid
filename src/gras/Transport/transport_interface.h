@@ -77,4 +77,15 @@ xbt_error_t
 gras_trp_plugin_get_by_name(const char *name,
 			    gras_trp_plugin_t **dst);
 
+/* Data of this module specific to each process
+ * (used by sg_process.c to cleanup the SG channel cruft)
+ */
+typedef struct {
+   /* SG only elements. In RL, they are part of the OS ;) */
+   int chan;    /* Formated messages channel */
+   int rawChan; /* Unformated echange channel */
+   xbt_dynar_t sockets; /* all sockets known to this process */
+   
+} s_gras_trp_procdata_t,*gras_trp_procdata_t;
+
 #endif /* GRAS_TRP_INTERFACE_H */

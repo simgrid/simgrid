@@ -13,11 +13,46 @@
 #include "gras/transport.h"
 #include "gras/datadesc.h"
 #include "gras/messages.h"
+#include "gras_modinter.h"
 
-#include "gras/Virtu/virtu_interface.h"
-#include "gras/Msg/msg_interface.h" /* FIXME: Get rid of this cyclic */
+#include "gras/Virtu/virtu_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(process,gras,"Process manipulation code");
+
+
+/* Functions to handle gras_procdata_t->libdata cells*/
+typedef struct {
+   char *name;
+   pvoid_f_void_t *creator;
+   void_f_pvoid_t *destructor;
+} s_gras_procdata_fabric_t, *gras_procdata_fabric_t;
+
+static xbt_dynar_t _gras_procdata_fabrics = NULL; /* content: s_gras_procdata_fabric_t */
+
+static void gras_procdata_fabric_free(void *fab) {
+   free( ((gras_procdata_fabric_t)fab)->name );
+}
+
+/** @brief declare the functions in charge of creating/destructing the procdata of a module
+ *  
+ *  This is intended to be called from the gras_<module>_register function.
+ */
+void gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor) {
+   
+   gras_procdata_fabric_t fab;
+   
+   if (!_gras_procdata_fabrics) {
+      /* create the dynar if needed */
+      _gras_procdata_fabrics = xbt_dynar_new(sizeof(s_gras_procdata_fabric_t),
+					     gras_procdata_fabric_free);
+   }
+   
+   fab=xbt_dynar_push_ptr(_gras_procdata_fabrics);
+   
+   fab->name       = xbt_strdup(name);
+   fab->creator    = creator;
+   fab->destructor = destructor;
+}
 
 /* **************************************************************************
  * Process data
@@ -33,25 +68,50 @@ void gras_userdata_set(void *ud) {
   pd->userdata = ud;
 }
 
+void *gras_libdata_get(const char *name) {
+  gras_procdata_t *pd=gras_procdata_get();
+  void *res;
+  xbt_error_t errcode;
+   
+  errcode = xbt_dict_get(pd->libdata, name, &res);
+  xbt_assert2(errcode == no_error, 
+	      "Cannot retrive the libdata associated to %s: %s",
+	      name, xbt_error_name(errcode));
+   
+  return res;
+}
+
 void
 gras_procdata_init() {
   gras_procdata_t *pd=gras_procdata_get();
+  s_gras_procdata_fabric_t fab;
+   
+  int cursor;
+   
+  xbt_error_t errcode;
+  void *data;
+
   pd->userdata  = NULL;
-  pd->msg_queue = xbt_dynar_new(sizeof(gras_msg_t),     NULL);
-  pd->cbl_list  = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
-  pd->sockets   = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
+  pd->libdata   = xbt_dict_new();
+   
+  xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){
+     
+     xbt_assert1(fab.name,"Name of fabric #%d is NULL!",cursor);
+     DEBUG1("Create the procdata for %s",fab.name);
+     /* Check for our own errors */
+     errcode = xbt_dict_get(pd->libdata, fab.name, &data);
+     xbt_assert1(errcode == mismatch_error,
+		 "MayDay: two modules use '%s' as libdata name", fab.name);
+     
+     /* Add the data in place */
+     xbt_dict_set(pd->libdata, fab.name, (fab.creator)(), fab.destructor);
+
+  }
 }
 
 void
 gras_procdata_exit() {
   gras_procdata_t *pd=gras_procdata_get();
 
-  xbt_dynar_free(&( pd->msg_queue ));
-  xbt_dynar_free(&( pd->cbl_list ));
-  xbt_dynar_free(&( pd->sockets ));
-}
-
-xbt_dynar_t 
-gras_socketset_get(void) {
-   return gras_procdata_get()->sockets;
+  xbt_dict_free(&( pd->libdata ));
 }
