@@ -1,0 +1,5 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description>
+  <process host="Fafard" function="client"></process>
+</platform_description>

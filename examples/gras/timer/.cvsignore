@@ -1,0 +1,4 @@
+.deps .libs Makefile Makefile.in _*.c timer_client timer_simulator
+test_sg
+test_rl
+timer.Makefile.am

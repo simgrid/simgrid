@@ -1,0 +1,5 @@
+#! @BASH@
+if test -x ./timer_simulator ; then
+  exec ./timer_simulator @top_srcdir@/examples/msg/small_platform.xml @srcdir@/timer_deployment.xml
+fi
+exit 77
