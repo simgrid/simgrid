@@ -86,15 +86,15 @@ void test(void)
 
     xbt_dynar_foreach(resource_list, i, resource) {
       printf("\t %s actions\n", resource->common_public->name);
-      while (action =
+      while ((action =
 	     xbt_swag_extract(resource->common_public->states.
-			      failed_action_set)) {
+			      failed_action_set))) {
 	printf("\t * Failed : %p\n", action);
 	resource->common_public->action_free(action);
       }
-      while (action =
+      while ((action =
 	     xbt_swag_extract(resource->common_public->states.
-			      done_action_set)) {
+			      done_action_set))) {
 	printf("\t * Done : %p\n", action);
 	resource->common_public->action_free(action);
       }
