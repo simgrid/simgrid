@@ -38,7 +38,11 @@
 BEGIN_DECL
 
 
-/* datadesc */
+/**
+ * gras_datadesc_type_t:
+ * 
+ * Opaque type describing a type description you don't want to open.
+ */
 typedef struct s_gras_datadesc_type gras_datadesc_type_t;
 
 /* callbacks prototypes */
