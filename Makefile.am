@@ -82,10 +82,11 @@ MACHINES ?= graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
             valnure.cs.ucsb.edu sperm.cs.ucsb.edu     basalt.cs.ucsb.edu \
 	    nala.cs.utk.edu     AIX
 
-# ACTION: What to do there
+# ACTIONS: What to do there
 # possible values:
 #  - clean:   erase any previously existing source tree and 
 #             open the new open
+#  - untar:   open the tarball which was just copied
 #  - touch:   touch every file of the source tree to deal with 
 #             clock brokenness. May help, may harm.
 #  - config:  launch configure
@@ -94,7 +95,7 @@ MACHINES ?= graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
 #  - check:   run 'make check'
 #
 # default value:
-ACTION ?= clean untar config compile check
+ACTIONS ?= clean untar config compile check
 
 REMOTE_PREFIX ?='simgrid'
 
@@ -105,7 +106,7 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	 for site in $(MACHINES) ; do \
 	   machine=`echo $$site |sed 's/^\([^%]*\)%.*$$/\1/'`;\
 	   machine2=`echo $$site |sed 's/^\([^%]*\)%\(.*\)$$/\2/'`;\
-	   cmd="\"sh -c 'env REMOTE_PREFIX=$(REMOTE_PREFIX) $(REMOTE_PREFIX)/src/compile-remote-worker $(ACTION) 2>&1'\"";\
+	   cmd="\"sh -c 'env REMOTE_PREFIX=$(REMOTE_PREFIX) $(REMOTE_PREFIX)/src/compile-remote-worker $(ACTIONS) 2>&1'\"";\
 	   if echo $$site | grep  '%' >/dev/null ; then \
 	     echo "----[ Compile on $$machine2 (behind $$machine) ]----";\
 	   else \
