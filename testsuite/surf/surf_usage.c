@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include "surf/surf.h"
 
+#include "xbt/log.h"
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
+
 const char *string_action(e_surf_action_state_t state);
 const char *string_action(e_surf_action_state_t state)
 {
@@ -50,14 +53,14 @@ void test(char *platform)
   surf_network_resource_init_CM02(platform);	/* Now it is possible to use eth0 */
 
   /*********************** CPU ***********************************/
-  printf("%p \n", surf_cpu_resource);
+  DEBUG1("%p \n", surf_cpu_resource);
   cpuA = surf_cpu_resource->common_public->name_service("Cpu A");
   cpuB = surf_cpu_resource->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  printf("%s : %p\n",
+  DEBUG2("%s : %p\n",
 	 surf_cpu_resource->common_public->get_resource_name(cpuA), cpuA);
-  printf("%s : %p\n",
+  DEBUG2("%s : %p\n",
 	 surf_cpu_resource->common_public->get_resource_name(cpuB), cpuB);
 
   /* Let's do something on it */
@@ -71,20 +74,20 @@ void test(char *platform)
   stateActionC = surf_cpu_resource->common_public->action_get_state(actionC);	/* When you know actionA resource type */
 
   /* And just look at the state of these tasks */
-  printf("actionA : %p (%s)\n", actionA, string_action(stateActionA));
-  printf("actionB : %p (%s)\n", actionB, string_action(stateActionB));
-  printf("actionC : %p (%s)\n", actionB, string_action(stateActionC));
+  DEBUG2("actionA : %p (%s)\n", actionA, string_action(stateActionA));
+  DEBUG2("actionB : %p (%s)\n", actionB, string_action(stateActionB));
+  DEBUG2("actionC : %p (%s)\n", actionB, string_action(stateActionC));
 
   /*********************** Network *******************************/
-  printf("%p \n", surf_network_resource);
+  DEBUG1("%p \n", surf_network_resource);
   cardA = surf_network_resource->common_public->name_service("Cpu A");
   cardB = surf_network_resource->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  printf("%s : %p\n",
+  DEBUG2("%s : %p\n",
 	 surf_network_resource->common_public->get_resource_name(cardA),
 	 cardA);
-  printf("%s : %p\n",
+  DEBUG2("%s : %p\n",
 	 surf_network_resource->common_public->get_resource_name(cardB),
 	 cardB);
 
@@ -97,37 +100,37 @@ void test(char *platform)
   do {
     surf_action_t action = NULL;
     now = surf_get_clock();
-    printf("Next Event : " "%lg" "\n", now);
-    printf("\t CPU actions\n");
+    DEBUG1("Next Event : " "%lg" "\n", now);
+    DEBUG0("\t CPU actions\n");
     while ((action =
 	    xbt_swag_extract(surf_cpu_resource->common_public->states.
 			     failed_action_set))) {
-      printf("\t * Failed : %p\n", action);
+      DEBUG1("\t * Failed : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
     while ((action =
 	    xbt_swag_extract(surf_cpu_resource->common_public->states.
 			     done_action_set))) {
-      printf("\t * Done : %p\n", action);
+      DEBUG1("\t * Done : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
-    printf("\t Network actions\n");
+    DEBUG0("\t Network actions\n");
     while ((action =
 	    xbt_swag_extract(surf_network_resource->common_public->states.
 			     failed_action_set))) {
-      printf("\t * Failed : %p\n", action);
+      DEBUG1("\t * Failed : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
     while ((action =
 	    xbt_swag_extract(surf_network_resource->common_public->states.
 			     done_action_set))) {
-      printf("\t * Done : %p\n", action);
+      DEBUG1("\t * Done : %p\n", action);
       action->resource_type->common_public->action_free(action);
     }
 
   } while (surf_solve()>=0.0);
 
-  printf("Simulation Terminated\n");
+  DEBUG0("Simulation Terminated\n");
 
   surf_finalize();
 }

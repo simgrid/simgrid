@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include "surf/surf.h"
 
+#include "xbt/log.h"
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
+
 const char *string_action(e_surf_action_state_t state);
 const char *string_action(e_surf_action_state_t state)
 {
@@ -53,10 +56,10 @@ void test(char *platform)
       surf_workstation_resource->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
-  printf("%s : %p\n",
+  DEBUG2("%s : %p\n",
 	 surf_workstation_resource->common_public->
 	 get_resource_name(workstationA), workstationA);
-  printf("%s : %p\n",
+  DEBUG2("%s : %p\n",
 	 surf_workstation_resource->common_public->
 	 get_resource_name(workstationB), workstationB);
 
@@ -82,26 +85,26 @@ void test(char *platform)
     surf_resource_t resource = NULL;
 
     now = surf_get_clock();
-    printf("Next Event : " "%lg" "\n", now);
+    DEBUG1("Next Event : " "%lg" "\n", now);
 
     xbt_dynar_foreach(resource_list, i, resource) {
-      printf("\t %s actions\n", resource->common_public->name);
+      DEBUG1("\t %s actions\n", resource->common_public->name);
       while ((action =
 	     xbt_swag_extract(resource->common_public->states.
 			      failed_action_set))) {
-	printf("\t * Failed : %p\n", action);
+	DEBUG1("\t * Failed : %p\n", action);
 	resource->common_public->action_free(action);
       }
       while ((action =
 	     xbt_swag_extract(resource->common_public->states.
 			      done_action_set))) {
-	printf("\t * Done : %p\n", action);
+	DEBUG1("\t * Done : %p\n", action);
 	resource->common_public->action_free(action);
       }
     }
   } while (surf_solve()>=0.0);
 
-  printf("Simulation Terminated\n");
+  DEBUG0("Simulation Terminated\n");
 
   surf_finalize();
 }

@@ -11,7 +11,10 @@
 #include <stdio.h>
 #include "surf/maxmin.h"
 
-#define PRINT_VAR(var) printf(#var " = %lg\n",lmm_variable_getvalue(var));
+#include "xbt/log.h"
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
+
+#define PRINT_VAR(var) DEBUG1(#var " = %lg\n",lmm_variable_getvalue(var));
 
 /*                               */
 /*        ______                 */
@@ -57,14 +60,14 @@ void test(void)
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
 
-  printf("\n");
+  DEBUG0("\n");
   lmm_solve(Sys);
 
   PRINT_VAR(R_1_2_3);
   PRINT_VAR(R_1);
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
-  printf("\n");
+  DEBUG0("\n");
 
 
   lmm_update_variable_weight(Sys,R_1_2_3,.5);
@@ -101,22 +104,22 @@ void test2(void)
   PRINT_VAR(T1);
   PRINT_VAR(T2);
 
-  printf("\n");
+  DEBUG0("\n");
   lmm_solve(Sys);
 
   PRINT_VAR(T1);
   PRINT_VAR(T2);
 
-  printf("\n");
+  DEBUG0("\n");
 
   lmm_system_free(Sys);
 } 
 
 int main(int argc, char **argv)
 {
-  printf("***** Test 1 ***** \n");
+  DEBUG0("***** Test 1 ***** \n");
   test();
-  printf("***** Test 2 ***** \n");
+  DEBUG0("***** Test 2 ***** \n");
   test2();
 
   return 0;

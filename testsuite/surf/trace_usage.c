@@ -13,6 +13,9 @@
 #include "surf/trace_mgr.h"
 #include "surf/surf.h"
 
+#include "xbt/log.h"
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
+
 void test(void);
 void test(void)
 {
@@ -29,10 +32,10 @@ void test(void)
   tmgr_history_add_trace(history, trace_B, 0.0, 0, host_B);
 
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
-    printf("%lg" " : \n", next_event_date);
+    DEBUG1("%lg" " : \n", next_event_date);
     while (tmgr_history_get_next_event_leq(history, next_event_date,
 					   &value, (void **) &resource)) {
-      printf("\t %s : " "%lg" "\n", resource, value);
+      DEBUG2("\t %s : " "%lg" "\n", resource, value);
     }
     if (next_event_date > 1000)
       break;
