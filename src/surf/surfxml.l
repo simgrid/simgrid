@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/01/05 17:50:49.
+ * Generated 2005/01/07 10:51:23.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -46,26 +46,32 @@ const char rcs_flexml[] =
 
 /* FleXML-provided data. */
 const char* pcdata;
-AT_route_impact_on_computation A_route_impact_on_computation;
 AT_network_link_bandwidth A_network_link_bandwidth;
 AT_cpu_name A_cpu_name;
 AT_network_link_state A_network_link_state;
 AT_argument_value A_argument_value;
 AT_cpu_availability_file A_cpu_availability_file;
 AT_process_host A_process_host;
+AT_route_impact_on_src A_route_impact_on_src;
 AT_route_src A_route_src;
 AT_network_link_latency_file A_network_link_latency_file;
+AT_route_impact_on_dst_with_other_send A_route_impact_on_dst_with_other_send;
+AT_cpu_interference_send_recv A_cpu_interference_send_recv;
 AT_cpu_availability A_cpu_availability;
+AT_route_impact_on_dst A_route_impact_on_dst;
+AT_cpu_interference_recv A_cpu_interference_recv;
+AT_route_impact_on_src_with_other_recv A_route_impact_on_src_with_other_recv;
 AT_network_link_name A_network_link_name;
 AT_route_element_name A_route_element_name;
 AT_cpu_power A_cpu_power;
 AT_include_file A_include_file;
 AT_process_function A_process_function;
-AT_cpu_state A_cpu_state;
 AT_route_dst A_route_dst;
+AT_cpu_state A_cpu_state;
 AT_network_link_latency A_network_link_latency;
-AT_cpu_state_file A_cpu_state_file;
 AT_network_link_state_file A_network_link_state_file;
+AT_cpu_interference_send A_cpu_interference_send;
+AT_cpu_state_file A_cpu_state_file;
 AT_network_link_bandwidth_file A_network_link_bandwidth_file;
 
 /* XML state. */
@@ -383,6 +389,9 @@ const char* *statenames=NULL;
   A_cpu_availability_file = NULL;
   A_cpu_state = A_cpu_state_ON;
   A_cpu_state_file = NULL;
+  A_cpu_interference_send = "1.0";
+  A_cpu_interference_recv = "1.0";
+  A_cpu_interference_send_recv = "1.0";
   ENTER(AL_cpu);
   }
 
@@ -406,6 +415,15 @@ const char* *statenames=NULL;
 
  "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_cpu_state_file);
  "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_cpu_state_file);
+
+ "interference_send"{Eq}\' ENTER(VALUE1); BUFFERSET(A_cpu_interference_send);
+ "interference_send"{Eq}\" ENTER(VALUE2); BUFFERSET(A_cpu_interference_send);
+
+ "interference_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(A_cpu_interference_recv);
+ "interference_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(A_cpu_interference_recv);
+
+ "interference_send_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(A_cpu_interference_send_recv);
+ "interference_send_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(A_cpu_interference_send_recv);
 
  ">" {
   if (!A_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
@@ -446,7 +464,7 @@ const char* *statenames=NULL;
   A_network_link_name = NULL;
   A_network_link_bandwidth = NULL;
   A_network_link_bandwidth_file = NULL;
-  A_network_link_latency = "0.001";
+  A_network_link_latency = "0.0";
   A_network_link_latency_file = NULL;
   A_network_link_state = A_network_link_state_ON;
   A_network_link_state_file = NULL;
@@ -515,7 +533,10 @@ const char* *statenames=NULL;
 <ROOT_route,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<route"{s} {
   A_route_src = NULL;
   A_route_dst = NULL;
-  A_route_impact_on_computation = NULL;
+  A_route_impact_on_src = NULL;
+  A_route_impact_on_dst = NULL;
+  A_route_impact_on_src_with_other_recv = NULL;
+  A_route_impact_on_dst_with_other_send = NULL;
   ENTER(AL_route);
   }
 
@@ -526,8 +547,17 @@ const char* *statenames=NULL;
  "dst"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_dst);
  "dst"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_dst);
 
- "impact_on_computation"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_impact_on_computation);
- "impact_on_computation"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_impact_on_computation);
+ "impact_on_src"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_impact_on_src);
+ "impact_on_src"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_impact_on_src);
+
+ "impact_on_dst"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_impact_on_dst);
+ "impact_on_dst"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_impact_on_dst);
+
+ "impact_on_src_with_other_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_impact_on_src_with_other_recv);
+ "impact_on_src_with_other_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_impact_on_src_with_other_recv);
+
+ "impact_on_dst_with_other_send"{Eq}\' ENTER(VALUE1); BUFFERSET(A_route_impact_on_dst_with_other_send);
+ "impact_on_dst_with_other_send"{Eq}\" ENTER(VALUE2); BUFFERSET(A_route_impact_on_dst_with_other_send);
 
  ">" {
   if (!A_route_src) FAIL("Required attribute `src' not set for `route' element.");

@@ -1,5 +1,5 @@
 /* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2005/01/05 17:50:46.
+ * Generated 2005/01/07 10:51:22.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -43,8 +43,6 @@ extern void STag_argument(void);
 extern void ETag_argument(void);
 
 /* XML application data. */
-typedef const char* AT_route_impact_on_computation;
-#define AU_route_impact_on_computation NULL
 typedef const char* AT_network_link_bandwidth;
 #define AU_network_link_bandwidth NULL
 typedef const char* AT_cpu_name;
@@ -56,12 +54,24 @@ typedef const char* AT_cpu_availability_file;
 #define AU_cpu_availability_file NULL
 typedef const char* AT_process_host;
 #define AU_process_host NULL
+typedef const char* AT_route_impact_on_src;
+#define AU_route_impact_on_src NULL
 typedef const char* AT_route_src;
 #define AU_route_src NULL
 typedef const char* AT_network_link_latency_file;
 #define AU_network_link_latency_file NULL
+typedef const char* AT_route_impact_on_dst_with_other_send;
+#define AU_route_impact_on_dst_with_other_send NULL
+typedef const char* AT_cpu_interference_send_recv;
+#define AU_cpu_interference_send_recv NULL
 typedef const char* AT_cpu_availability;
 #define AU_cpu_availability NULL
+typedef const char* AT_route_impact_on_dst;
+#define AU_route_impact_on_dst NULL
+typedef const char* AT_cpu_interference_recv;
+#define AU_cpu_interference_recv NULL
+typedef const char* AT_route_impact_on_src_with_other_recv;
+#define AU_route_impact_on_src_with_other_recv NULL
 typedef const char* AT_network_link_name;
 #define AU_network_link_name NULL
 typedef const char* AT_route_element_name;
@@ -72,40 +82,48 @@ typedef const char* AT_include_file;
 #define AU_include_file NULL
 typedef const char* AT_process_function;
 #define AU_process_function NULL
-typedef enum { AU_cpu_state, A_cpu_state_ON,A_cpu_state_OFF } AT_cpu_state;
 typedef const char* AT_route_dst;
 #define AU_route_dst NULL
+typedef enum { AU_cpu_state, A_cpu_state_ON,A_cpu_state_OFF } AT_cpu_state;
 typedef const char* AT_network_link_latency;
 #define AU_network_link_latency NULL
-typedef const char* AT_cpu_state_file;
-#define AU_cpu_state_file NULL
 typedef const char* AT_network_link_state_file;
 #define AU_network_link_state_file NULL
+typedef const char* AT_cpu_interference_send;
+#define AU_cpu_interference_send NULL
+typedef const char* AT_cpu_state_file;
+#define AU_cpu_state_file NULL
 typedef const char* AT_network_link_bandwidth_file;
 #define AU_network_link_bandwidth_file NULL
 
 /* FleXML-provided data. */
 extern const char* pcdata;
-extern AT_route_impact_on_computation A_route_impact_on_computation;
 extern AT_network_link_bandwidth A_network_link_bandwidth;
 extern AT_cpu_name A_cpu_name;
 extern AT_network_link_state A_network_link_state;
 extern AT_argument_value A_argument_value;
 extern AT_cpu_availability_file A_cpu_availability_file;
 extern AT_process_host A_process_host;
+extern AT_route_impact_on_src A_route_impact_on_src;
 extern AT_route_src A_route_src;
 extern AT_network_link_latency_file A_network_link_latency_file;
+extern AT_route_impact_on_dst_with_other_send A_route_impact_on_dst_with_other_send;
+extern AT_cpu_interference_send_recv A_cpu_interference_send_recv;
 extern AT_cpu_availability A_cpu_availability;
+extern AT_route_impact_on_dst A_route_impact_on_dst;
+extern AT_cpu_interference_recv A_cpu_interference_recv;
+extern AT_route_impact_on_src_with_other_recv A_route_impact_on_src_with_other_recv;
 extern AT_network_link_name A_network_link_name;
 extern AT_route_element_name A_route_element_name;
 extern AT_cpu_power A_cpu_power;
 extern AT_include_file A_include_file;
 extern AT_process_function A_process_function;
-extern AT_cpu_state A_cpu_state;
 extern AT_route_dst A_route_dst;
+extern AT_cpu_state A_cpu_state;
 extern AT_network_link_latency A_network_link_latency;
-extern AT_cpu_state_file A_cpu_state_file;
 extern AT_network_link_state_file A_network_link_state_file;
+extern AT_cpu_interference_send A_cpu_interference_send;
+extern AT_cpu_state_file A_cpu_state_file;
 extern AT_network_link_bandwidth_file A_network_link_bandwidth_file;
 
 /* XML application utilities. */
