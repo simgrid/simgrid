@@ -10,7 +10,7 @@
 
 #include "DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(exchange,DataDesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(exchange,datadesc);
 
 const char *gras_datadesc_cat_names[9] = { 
   "undefined", 
@@ -331,17 +331,25 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     gras_dd_cat_field_t  *field;
     char                 *field_data;
 
+   gras_assert1(type->category.struct_data.closed,
+		"Please call gras_datadesc_declare_array_close on %s before sending it",
+		type->name);
     struct_data = type->category.struct_data;
     VERB1(">> Send all fields of the structure %s",type->name);
     gras_dynar_foreach(struct_data.fields, cpt, field) {
       field_data = data;
       field_data += field->offset[GRAS_THISARCH];
       
-      TRY(gras_datadesc_by_id(field->code, &sub_type));
+      errcode=gras_datadesc_by_id(field->code, &sub_type);
+      if (errcode != no_error) 
+	RAISE4(errcode,
+	       "Got %s while searching for the sub type %d, #%d of %s",
+	       gras_error_name(errcode),field->code,cpt,type->name);
       
       if (field->pre)
 	field->pre(state,sub_type,field_data);
       
+      VERB1("Send field %s",field->name);
       TRY(gras_datadesc_send_rec(sock,state,refs,sub_type, field_data));
       
       if (field->post)
@@ -359,6 +367,9 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     
     union_data = type->category.union_data;
     
+    gras_assert1(union_data.closed,
+		"Please call gras_datadesc_declare_union_close on %s before sending it",
+		type->name);
     /* retrieve the field number */
     field_num = union_data.selector(state, type, data);
     
@@ -535,7 +546,7 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
   switch (type->category_code) {
   case e_gras_datadesc_type_cat_scalar:
-    if (type->size[GRAS_THISARCH] >= type->size[r_arch]) {
+    if (type->size[GRAS_THISARCH] == type->size[r_arch]) {
       TRY(gras_trp_chunk_recv(sock, (char*)l_data, type->size[r_arch]));
       TRY(gras_dd_convert_elm(type,1,r_arch, l_data,l_data));
     } else {
@@ -553,6 +564,9 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
     struct_data = type->category.struct_data;
 
+    gras_assert1(struct_data.closed,
+		"Please call gras_datadesc_declare_struct_close on %s before receiving it",
+		type->name);
     VERB1(">> Receive all fields of the structure %s",type->name);
     gras_dynar_foreach(struct_data.fields, cpt, field) {
       char                 *field_data = l_data + field->offset[GRAS_THISARCH];
@@ -575,6 +589,9 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
     union_data = type->category.union_data;
 
+    gras_assert1(union_data.closed,
+		"Please call gras_datadesc_declare_union_close on %s before receiving it",
+		type->name);
     /* retrieve the field number */
     TRY(gras_dd_recv_int(sock, r_arch, &field_num));
     if (field_num < 0)
