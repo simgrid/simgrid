@@ -1,6 +1,6 @@
 #! @BASH@ -e
 if [ x@EXEEXT@ = x ] ; then 
-  wine="libtool --mode=execute valgrind --run-libc-freeres=no"
+  wine=
 else
   wine=wine
 fi
