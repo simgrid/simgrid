@@ -1,3 +1,22 @@
+2004-08-06 Martin Quinson
+  Version 0.4 (protocol changed; ABI not changed)
+  - Allow to pass --gras-log argument to processes in simulation mode. Really.
+  - New debugging level: trace (under debug) to see effect of GRAS_IN/OUT
+  - Implement a buffer transport, and use it by default (it relies on tcp in
+     real life and on sg in simulation).
+    That's a bit hackish since I had a new field to the structure to store
+     its data without interfering with the subtype ones. Inheritance
+     is tricky in C. And that's a kind of reverse inheritance with one class
+     derivating two classes. Or maybe a game with java interfaces. Anyway,
+     that's damn hard in C (at least).
+    Moreover, I got tired while trying to ensure plugin separation and
+     genericity in SG mode. MSG wants me to do weird things, so let's go for
+     cruel hacks (temporarily of course ;).
+     See comment in transport_private.h:71
+  - do not include all the _interface headers in private but in the files
+    which really need them (to cut the compilation time when they are
+    modified) 
+
 2004-07-26 Martin Quinson
   Version 0.3 (protocol not changed; ABI changed)
   - Major overhault of the datadesc interface to simplify it:
