@@ -14,6 +14,11 @@
 #include "gras_private.h"
 #include "DataDesc/datadesc_interface.h"
 
+/**
+ * aligned:
+ * 
+ * Align the data v on the boundary a.
+ */
 #define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
 extern gras_set_t *gras_datadesc_set_local;
