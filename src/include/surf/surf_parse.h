@@ -6,6 +6,9 @@
 #ifndef _SURF_SURF_PARSE_H
 #define _SURF_SURF_PARSE_H
 
+#include "xbt/misc.h"
+#include "surf/trace_mgr.h"
+
 typedef enum {
   TOKEN_EMPTY = 0,
   TOKEN_LP = 512,
@@ -28,6 +31,9 @@ extern int tok_num;
 e_surf_token_t surf_parse(void);
 void find_section(const char* file, const char* section_name);
 void close_section(const char* section_name);
+void surf_parse_float(xbt_maxmin_float_t *value);
+void surf_parse_trace(tmgr_trace_t *trace);
+
 
 /* Should not be called if you use the previous "section" functions */
 void  surf_parse_open(const char *file);

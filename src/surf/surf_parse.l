@@ -200,7 +200,29 @@ void  surf_parse_close(void) {
   tok_num = 0;
 }
 
+void surf_parse_float(xbt_maxmin_float_t *value)
+{ 
+  e_surf_token_t token;
+  int ret = 0;
 
+  token = surf_parse();		/* power_scale */
+  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
+  ret = sscanf(surf_parse_text, XBT_MAXMIN_FLOAT_T, value);
+  xbt_assert2((ret==1), "Parse error line %d : %s not a number", line_pos,
+	      surf_parse_text);
+}
+
+void surf_parse_trace(tmgr_trace_t *trace)
+{
+  e_surf_token_t token;
+  
+  token = surf_parse();		/* power_trace */
+  xbt_assert1((token == TOKEN_WORD), "Parse error line %d", line_pos);
+  if (strcmp(surf_parse_text, "") == 0)
+    *trace = NULL;
+  else
+    *trace = tmgr_trace_new(surf_parse_text);
+}
 /*  Local variables: */
 /*  mode: c */
 /*  End: */
