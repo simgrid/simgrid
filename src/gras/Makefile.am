@@ -1,9 +1,11 @@
 SUBDIRS=. Tests
-AM_CFLAGS=-g -ffast-math -funroll-loops -O3 -fno-strict-aliasing 
- 
+AM_CFLAGS= -DNDEBUG 
 
-# -DNLOG -DNDEBUG
+# -DNLOG   cuts absolutely all logs at compilation time.
+# -DNDEBUG cuts asserts and logs at "trace" and "debug" levels.
 
+# -g -ffast-math -funroll-loops -O3 -fno-strict-aliasing
+# Those should be added by configure when using gcc
 # fast-math is nasty when using IEEE floating point semantic
 # strict-aliasing breaks my type-punning bad habit.
 
@@ -18,6 +20,19 @@ EXTRA_DIST= ./gras_private.h    \
 	Virtu/virtu_rl.h \
 	Virtu/virtu_sg.h \
 	DataDesc/ddt_parse.yy.l DataDesc/ddt_parse.yy.c
+
+#LIBRARY_VERSION= 0:0:0
+#                 | | |
+#          +------+ | +---+
+#          |        |     |
+#       current:revision:age
+#          |        |     |
+#          |        |     +- Increment if interfaces have been added
+#          |        |        Set to zero if interfaces have been removed or
+#          |        |        changed
+#          |        +- Increment if source code has changed
+#          |           Set to zero if current is incremented
+#          +- Increment if interfaces have been added, removed or changed
 
 VERSION_INFO= -release 20040722 -version-info 0:0:0
 # from `info libtool "Updating version info"` 
