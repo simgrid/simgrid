@@ -17,30 +17,44 @@
    
 #include "xbt/misc.h"
 BEGIN_DECL()
-#if 0
-#define __CALLOC_OP(n, s)  calloc((n), (s))
-  #define __REALLOC_OP(n, s)  realloc((n), (s))
-#define CALLOC(n, s)  ((__CALLOC_OP  ((n)?:(FAILURE("attempt to alloc 0 bytes"), 0), (s)?:(FAILURE("attempt to alloc 0 bytes"), 0)))?:(FAILURE("memory allocation error"), NULL))
-  /* #define REALLOC(p, s) ((__REALLOC_OP ((p), (s)?:(FAILURE("attempt to alloc 0 bytes"), 0)))?:(FAILURE("memory reallocation error"), NULL)) */
-  #define REALLOC(p, s) (__REALLOC_OP ((p), (s)))
-#endif
-  
+
+/** @addtogroup XBT_syscall
+ *  @{
+ */
+
+/** @brief like strdup, but xbt_die() on error 
+    @hideinitializer */
 #define xbt_strdup(s)  ((s)?(strdup(s)?:(xbt_die("memory allocation error"),NULL))\
 			    :(NULL))
+/** @brief like malloc, but xbt_die() on error 
+    @hideinitializer */
 #define xbt_malloc(n)   (malloc(n) ?: (xbt_die("memory allocation error"),NULL))
+
+/** @brief like malloc, but xbt_die() on error and memset data to 0
+    @hideinitializer */
 #define xbt_malloc0(n)  (calloc( (n),1 ) ?: (xbt_die("memory allocation error"),NULL))
+  
+/** @brief like realloc, but xbt_die() on error 
+    @hideinitializer */
 #define xbt_realloc(p,s) (s? (p? (realloc(p,s)?:(xbt_die("memory allocation error"),NULL)) \
 				: xbt_malloc(s)) \
 			    : (p? (free(p),NULL) \
 			        : NULL))
+/** @brief like free
+    @hideinitializer */
 #define xbt_free free /*nothing specific to do here. A poor valgrind replacement?*/
-#define xbt_free_fct free /* replacement with the guareenty of being a function */
+/*#define xbt_free_fct free * replacement with the guareenty of being a function  FIXME:KILLME*/
    
+/** @brief like calloc, but xbt_die() on error and don't memset to 0
+    @hideinitializer */
 #define xbt_new(type, count)  ((type*)xbt_malloc (sizeof (type) * (count)))
+/** @brief like calloc, but xbt_die() on error
+    @hideinitializer */
 #define xbt_new0(type, count) ((type*)xbt_malloc0 (sizeof (type) * (count)))
 
+/** @} */
+  
 /* Attributes are only in recent versions of GCC */
-
 #if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
 	   __attribute__((__format__ (__printf__, format_idx, arg_idx)))
