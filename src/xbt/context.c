@@ -16,10 +16,10 @@
 #include "gras_config.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 
-#define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\
-                              fprintf(stderr, format, ## __VA_ARGS__), \
-                              fprintf(stderr, "\n"))
-#define VOIRP(expr) WARNING("  {" #expr " = %p }", expr)
+/* #define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\ */
+/*                               fprintf(stderr, format, ## __VA_ARGS__), \ */
+/*                               fprintf(stderr, "\n")) */
+/* #define VOIRP(expr) WARNING("  {" #expr " = %p }", expr) */
 
 #ifndef HAVE_UCONTEXT_H
 /* don't want to play with conditional compilation in automake tonight, sorry.
@@ -141,6 +141,8 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 
   res->code = code;
   res->uc.uc_link = NULL;
+  res->argc = argc;
+  res->argv = argv;
 /*   res->uc.uc_link = &(current_context->uc); */
   /* WARNING : when this context is over, the current_context (i.e. the 
      father), is awaken... Theorically, the wrapper should prevent using 
