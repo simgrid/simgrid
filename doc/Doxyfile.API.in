@@ -395,9 +395,9 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = @top_srcdir@/include/ \
-                         @top_srcdir@/include/surf \
                          @top_srcdir@/include/msg \
                          @top_srcdir@/include/xbt \
+                         @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/src/modules.doc \
