@@ -21,7 +21,6 @@ AC_DEFUN([AC_PROG_FLEX],
       dnl
       dnl We were asked to check the version number
       dnl
-      set -x
       changequote(<<, >>)dnl because of the regexp [blabla]
       FLEX_VERSION=`flex --version | sed -e 's/^[^0-9]*//' -e 's/[^0-9]*$//'`
 
@@ -42,9 +41,7 @@ AC_DEFUN([AC_PROG_FLEX],
         LEX="$SHELL $missing_dir/missing flex";
         AC_SUBST(LEXLIB, '')
       fi
-      set +x
     fi
   fi
   AC_MSG_NOTICE([Flex found. Parsers will get updated])
-  exit 0
 ])
