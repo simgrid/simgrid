@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
 <platform_description>
+  <!-- ljlkj -->
   <cpu name="Tremblay" power="98.094999999999999"/>
   <cpu name="Jupiter" power="76.296000000000006"/>
   <cpu name="Fafard" power="76.296000000000006"/>

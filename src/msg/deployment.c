@@ -47,7 +47,16 @@ static void parse_process_finalize(void)
  * \brief An application deployer.
  *
  * Creates the process described in \a file.
- * @param file a file containing an XML description of the application.
+ * \param file a filename of a xml description of the application. This file 
+ * follows this DTD :
+ *
+ *     \include surfxml.dtd
+ *
+ * Here is a small example of such a platform 
+ *
+ *     \include small_deployment.xml
+ *
+ * Have a look in the directory examples/msg/ to have a bigger example.
  */
 void MSG_launch_application(const char *file) 
 {
