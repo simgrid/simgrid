@@ -31,7 +31,7 @@ xbt_error_t gras_process_exit() {
 
 const char *xbt_procname(void) {
   if(_gras_procname) return _gras_procname;
-  else return "(null)";
+  else return "";
 }
 
 int gras_os_getpid(void) {
