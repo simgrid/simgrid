@@ -35,23 +35,20 @@ xbt_error_t gras_process_exit(void);
 /* Manipulating User Data                                                   */
 /****************************************************************************/
 /**
- * gras_userdata_get:
- *
- * Get the data associated with the current process.
+ * \brief Get the data associated with the current process.
+ * \ingroup GRAS_globals
  */
 void *gras_userdata_get(void);
 
 /**
- * gras_userdata_set:
- *
- * Set the data associated with the current process.
+ * \brief Set the data associated with the current process.
+ * \ingroup GRAS_globals
  */
 void gras_userdata_set(void *ud);
 
 /**
- * gras_userdata_new:
- *
- * Malloc and set the data associated with the current process.
+ * \brief Malloc and set the data associated with the current process.
+ * \ingroup GRAS_globals
  */
 
 #define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())

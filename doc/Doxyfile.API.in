@@ -396,9 +396,11 @@ WARN_LOGFILE           =
 
 INPUT                  = @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \
+                         @top_srcdir@/include/gras \
                          @top_srcdir@/include/xbt \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
+                         @top_srcdir@/src/gras/ \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/src/modules.doc \
                          ./api_index.doc
