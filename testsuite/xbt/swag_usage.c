@@ -40,7 +40,7 @@ int main(void)
   xbt_swag_insert(obj2, setB);
 
   xbt_swag_remove(obj1, setB);
-  //  xbt_swag_remove(obj2, setB);
+  /*  xbt_swag_remove(obj2, setB);*/
 
   xbt_swag_foreach(obj,setA) {
     printf("\t%s\n",obj->name);
