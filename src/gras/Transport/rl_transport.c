@@ -37,11 +37,26 @@ gras_trp_select(double timeout,
   struct timeval tout, *p_tout;
 
   int max_fds=0; /* first arg of select: number of existing sockets */
+  /* but accept() of winsock returns sockets bigger than the limit, so don't bother 
+     with this tiny optimisation on BillWare */
   fd_set FDS;
   int ready; /* return of select: number of socket ready to be serviced */
+  int fd_setsize; /* FD_SETSIZE not always defined. Get this portably */
 
   gras_socket_t sock_iter; /* iterating over all sockets */
   int cursor;              /* iterating over all sockets */
+
+   
+  /* Compute FD_SETSIZE */
+#ifdef HAVE_SYSCONF
+   fd_setsize = sysconf( _SC_OPEN_MAX );
+#else
+#  ifdef HAVE_GETDTABLESIZE 
+   fd_setsize = getdtablesize();
+#  else
+   fd_setsize = FD_SETSIZE;
+#  endif /* !USE_SYSCONF */
+#endif
 
   *dst=NULL;
   while (done == -1) {
@@ -57,20 +72,27 @@ gras_trp_select(double timeout,
     FD_ZERO(&FDS);
     xbt_dynar_foreach(sockets,cursor,sock_iter) {
       if (sock_iter->incoming) {
+#ifndef HAVE_WINSOCK_H
 	if (max_fds < sock_iter->sd)
 	  max_fds = sock_iter->sd;
+#endif
 	FD_SET(sock_iter->sd, &FDS);
       } else {
 	DEBUG1("Not considering socket %d for select",sock_iter->sd);
       }
     }
 
-    /* we cannot have more than FD_SETSIZE sockets */
-    if (++max_fds > FD_SETSIZE) {
-      WARN0("too many open sockets.");
+#ifndef HAVE_WINSOCK_H
+    /* we cannot have more than FD_SETSIZE sockets 
+       ... but with WINSOCK which returns sockets higher than the limit (killing this optim) */
+    if (++max_fds > fd_setsize && fd_setsize > 0) {
+      WARN1("too many open sockets (%d).",max_fds);
       done = 0;
       break;
     }
+#else
+    max_fds = fd_setsize;
+#endif
 
     if (timeout > 0) { 
       /* set the timeout */
@@ -121,9 +143,10 @@ gras_trp_select(double timeout,
        if (   sock_iter->accepting
 	   && sock_iter->plugin->socket_accept) { 
 	 /* not a socket but an ear. accept on it and serve next socket */
-	 gras_socket_t accepted;
-
-	 TRY(sock_iter->plugin->socket_accept(sock_iter,&accepted));
+	 gras_socket_t accepted=NULL;
+	 
+	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
+	 TRY((sock_iter->plugin->socket_accept)(sock_iter,&accepted));
 	 accepted->raw = sock_iter->raw;
        } else {
 #if 0 
@@ -147,6 +170,7 @@ gras_trp_select(double timeout,
 #endif
 	   /* Got a suited socket ! */
 	   *dst = sock_iter;
+	   XBT_OUT;
 	   return no_error;
 #if 0
 	 }
@@ -161,9 +185,11 @@ gras_trp_select(double timeout,
 
   }
 
+  XBT_OUT;
   return timeout_error;
 }
 
 xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug) {
   return mismatch_error;
 }
+
