@@ -342,16 +342,59 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
 
   len = xbt_dynar_length(p_elm->sub);
 
-  for (p = 0; p < len; p++) {
-    int          cmp     = 0;
+  if(1) {
+    int p_min = 0;
+    int p_max = len-1;
+    int cmp = 0;
 
-    _dict_child_cmp(p_elm, p, key, key_len, &o, &m, &cmp);
-
-    if (m)
-      break;
-
-    o = *p_offset;
-    m = 0;
+    p = p_min;
+    if(len==0) {
+      p=0;
+    } else {
+      _dict_child_cmp(p_elm, p_min, key, key_len, &o, &m, &cmp);
+      if(!m) { /* OK, maybe it is somewhere else. */
+	o = *p_offset;
+	if (cmp<0) { /* Insert at the very beginning */
+	  p=0;
+	} else if (p_max<=0) { /* No way. It is not there. Insert à the very end */
+	  p=p_max+1;
+	  m = 0;
+	} else { 
+	  p=p_max;
+	  _dict_child_cmp(p_elm, p_max, key, key_len, &o, &m, &cmp);
+	  if(!m) {
+	    o = *p_offset;
+	    if(cmp>0) { /* Should be located at the end of the table */
+	      p=p_max+1;
+	    } else { /* Too bad, let's go for a dichotomic search. */
+	      while(p_max-p_min>1) {
+		_dict_child_cmp(p_elm, (p_min+p_max)/2, key, key_len, &o, &m, &cmp);
+		if(m) break;
+		o = *p_offset;
+		if(cmp<0) p_max=(p_min+p_max)/2;
+		if(cmp>0) p_min=(p_min+p_max)/2;
+	      } 
+	      if(m) /* We have the element */
+		p=(p_min+p_max)/2 ;
+	      else /* it should be inserted just after p_min */
+		p=p_min + 1;
+	    }
+	  } 
+	}
+      }
+    }
+  } else {
+    for (p = 0; p < len; p++) {
+      int          cmp     = 0;
+      
+      _dict_child_cmp(p_elm, p, key, key_len, &o, &m, &cmp);
+      
+      if (m)
+	break;
+      
+      o = *p_offset;
+      m = 0;
+    }
   }
 
   *p_offset = o;
