@@ -34,6 +34,7 @@ gras_trp_select(double timeout,
 		gras_socket_t **dst) {
 
   gras_error_t errcode;
+  gras_dynar_t *sockets= gras_socketset_get();
   int done = -1;
   double wakeup = gras_time() + 1000000*timeout;
   double now = 0;
@@ -60,7 +61,7 @@ gras_trp_select(double timeout,
 
     /* construct the set of socket to ear from */
     FD_ZERO(&FDS);
-    gras_dynar_foreach(_gras_trp_sockets,cursor,sock_iter) {
+    gras_dynar_foreach(sockets,cursor,sock_iter) {
       if (sock_iter->incoming) {
 	if (max_fds < sock_iter->sd)
 	  max_fds = sock_iter->sd;
@@ -115,7 +116,7 @@ gras_trp_select(double timeout,
       continue;	 /* this was a timeout */
     }
 
-    gras_dynar_foreach(_gras_trp_sockets,cursor,sock_iter) { 
+    gras_dynar_foreach(sockets,cursor,sock_iter) { 
        if(!FD_ISSET(sock_iter->sd, &FDS)) { /* this socket is not ready */
 	continue;
        }
@@ -129,7 +130,8 @@ gras_trp_select(double timeout,
 	 gras_socket_t *accepted;
 
 	 TRY(sock_iter->plugin->socket_accept(sock_iter,&accepted));
-	 TRY(gras_dynar_push(_gras_trp_sockets,&accepted));
+	 accepted->raw = sock_iter->raw;
+	 TRY(gras_dynar_push(sockets,&accepted));
        } else {
 #if 0 
        FIXME: this fails of files. quite logical
