@@ -1,3 +1,4 @@
 #! /bin/sh
+test -e ./ping_simulator || exit 77
 exec ./ping_simulator ../WAN_3.platform.txt ping_deployment
 
