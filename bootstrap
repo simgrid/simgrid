@@ -1,7 +1,7 @@
 #!/bin/sh -e
 # Run this to generate all the initial makefiles, etc.
 
-amver=1.8
+amver=1.9
 
 # AUTOCONF=
 # AUTOHEADER=
