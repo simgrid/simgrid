@@ -25,7 +25,11 @@ Changements à ce jour
   [Martin]
   (infrastructure)
    - fix detection of older flex version and the reaction, since we do
-     depend on modern ones (we use lex_destroy) 
+     depend on modern ones (we use lex_destroy)
+   - Better separation of SG and RL in the libs: remove all simulation code
+     from libgras. As a result, this lib is now only 200k when stripped.
+     Some of the xbt modules may also be dupplicated (two sets and such) and
+     should be cleaned/killed before SG3.
 
  -- SimGrid team <simgrid2-users@listes.ens-lyon.fr> NOT RELEASED YET
 
