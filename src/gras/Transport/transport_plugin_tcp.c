@@ -77,7 +77,7 @@ typedef struct {
 gras_error_t
 gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_tcp_plug_data_t *data = malloc(sizeof(gras_trp_tcp_plug_data_t));
+  gras_trp_tcp_plug_data_t *data = gras_new(gras_trp_tcp_plug_data_t,1);
   if (!data)
     RAISE_MALLOC;
 
