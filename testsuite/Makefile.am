@@ -5,11 +5,16 @@ CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out
 DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/*
 MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
-  gras/datadesc.little32 gras/datadesc.little64 gras/datadesc.big32 gras/datadesc.big64 \
-  gras/datadesc.aix gras/datadesc.win32 gras/datadesc.g5 \
+  gras/datadesc.little32 gras/datadesc.little32_4 \
+  gras/datadesc.little64\
+  gras/datadesc.big32 gras/datadesc.big32_8_4 \
   gras/mk_datadesc_structs.pl \
   surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml \
   msg/messages.h
+
+# Data sets still to regenerate:
+# gras/datadesc.big64 
+# gras/datadesc.big32_4 gras/datadesc.big32_2 
 
 
 # Test stuff

@@ -47,12 +47,15 @@ gras_TESTS="gras/trp_tcp_usage;      gras/trp_file_usage;                       
             gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32;  \
 	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32_4;\
 	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little64;  \
-	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32;     \
-	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_8_4; \
-	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_4;   \
-	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_2;   \
-	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big64;"    \
-	    
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32;"     
+
+# Data sets still to regenerate:
+#
+#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_8_4; \
+#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_4;   \
+#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_2;   \
+#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big64;"    
+
 ##
 ## Loop on all tests to run them
 ##
