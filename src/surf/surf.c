@@ -122,12 +122,19 @@ void surf_action_set_data(surf_action_t action,
   action->data=data;
 }
 
+/* HACKHACK: msg_global must be set to a sensible value (like NULL) to use the logging mecanisme
+ * since log_default_appender use xbt_procname which, in SG, is defined in src/msg/m_process.c
+ * (in RL, xbt_procname is defined in src/gras/Virtu/rl_process.c)
+ */
+extern void *msg_global;
+
 void surf_init(int *argc, char **argv)
 {
   int i,j;
   char *opt;
 
   xbt_init(argc, argv);
+  msg_global=NULL; /* see HACKHACK note above */
   if (!surf_path) {
     const char *initial_path = "./";
     surf_path = xbt_dynar_new(sizeof(char*), NULL);
