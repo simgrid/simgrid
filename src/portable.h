@@ -1,9 +1,12 @@
 /* $Id$ */
 
-/* portable -- header loading to write portable code */
+/* portable -- header loading to write portable code                         */
+/* loads much more stuff than sysdep.h since the latter is in public interface*/
 
-/* Copyright (c) 2004 Martin Quinson. */
-/* LGPL*/
+/* Copyright (c) 2004 Martin Quinson. All rights reserved.                   */
+
+/* This program is free software; you can redistribute it and/or modify it
+  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef GRAS_PORTABLE_H
 #define GRAS_PORTABLE_H
