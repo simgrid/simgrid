@@ -53,6 +53,7 @@ write_read(gras_datadesc_type_t *type,void *src, void *dst,
 
 gras_error_t test_int(gras_socket_t *sock, int direction);
 gras_error_t test_float(gras_socket_t *sock, int direction);
+gras_error_t test_double(gras_socket_t *sock, int direction);
 gras_error_t test_array(gras_socket_t *sock, int direction);
 gras_error_t test_intref(gras_socket_t *sock, int direction);
 gras_error_t test_string(gras_socket_t *sock, int direction);
@@ -63,11 +64,13 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction);
 gras_error_t test_chain_list(gras_socket_t *sock, int direction);
 gras_error_t test_graph(gras_socket_t *sock, int direction);
 
+gras_error_t test_pbio(gras_socket_t *sock, int direction);
+
 gras_error_t test_int(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
   int i=5,j;
   
-  INFO0("==== Test on integer ====");
+  INFO0("---- Test on integer ----");
   TRY(write_read(gras_datadesc_by_name("int"), &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     gras_assert(i == j);
@@ -78,8 +81,19 @@ gras_error_t test_float(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
   float i=5.0,j;
   
-  INFO0("==== Test on float ====");
+  INFO0("---- Test on float ----");
   TRY(write_read(gras_datadesc_by_name("float"), &i,&j, sock,direction));
+  if (direction == READ || direction == RW) {
+    gras_assert2(i == j,"%f != %f",i,j);
+  }
+  return no_error;
+}
+gras_error_t test_double(gras_socket_t *sock, int direction) {
+  gras_error_t errcode;
+  double i=-3252355.1234,j;
+  
+  INFO0("---- Test on double ----");
+  TRY(write_read(gras_datadesc_by_name("double"), &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     gras_assert2(i == j,"%f != %f",i,j);
   }
@@ -96,7 +110,7 @@ gras_error_t test_array(gras_socket_t *sock, int direction) {
   array j;
   int cpt;
 
-  INFO0("==== Test on fixed array ====");
+  INFO0("---- Test on fixed array ----");
 
   TRY(gras_datadesc_declare_array_fixed("fixed int array", 
 					gras_datadesc_by_name("int"),
@@ -121,7 +135,7 @@ gras_error_t test_intref(gras_socket_t *sock, int direction) {
     RAISE_MALLOC;
   *i=12345;
 
-  INFO1("==== Test on a reference to an integer (%p) ====",i);
+  INFO1("---- Test on a reference to an integer (%p) ----",i);
 
   TRY(gras_datadesc_declare_ref("int*",gras_datadesc_by_name("int"),&my_type));
 
@@ -142,7 +156,7 @@ gras_error_t test_string(gras_socket_t *sock, int direction) {
   char *i=strdup("Some data"), *j=NULL;
   int cpt;
   
-  INFO0("==== Test on string (ref to dynamic array) ====");
+  INFO0("---- Test on string (ref to dynamic array) ----");
   TRY(write_read(gras_datadesc_by_name("string"), &i,&j,
 		 sock,direction));
   if (direction == READ || direction == RW) {
@@ -168,7 +182,7 @@ gras_error_t test_homostruct(gras_socket_t *sock, int direction) {
   gras_datadesc_type_t *my_type;
   homostruct *i, *j; 
 
-  INFO0("==== Test on homogeneous structure ====");
+  INFO0("---- Test on homogeneous structure ----");
   /* create descriptor */
   TRY(gras_datadesc_declare_struct("homostruct",&my_type));
   TRY(gras_datadesc_declare_struct_append(my_type,"a",
@@ -215,7 +229,7 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
   gras_datadesc_type_t *my_type;
   hetestruct *i, *j; 
 
-  INFO0("==== Test on heterogeneous structure ====");
+  INFO0("---- Test on heterogeneous structure ----");
   /* create descriptor */
   TRY(gras_datadesc_declare_struct("hetestruct",&my_type));
   TRY(gras_datadesc_declare_struct_append(my_type,"c1",
@@ -260,7 +274,7 @@ gras_error_t test_nestedstruct(gras_socket_t *sock, int direction) {
   gras_datadesc_type_t *my_type;
   nestedstruct *i, *j; 
 
-  INFO0("==== Test on nested structures ====");
+  INFO0("---- Test on nested structures ----");
   /* create descriptor */
   TRY(gras_datadesc_declare_struct("nestedstruct",&my_type));
 
@@ -347,7 +361,7 @@ gras_error_t test_chain_list(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
   chained_list_t *i, *j; 
 
-  INFO0("==== Test on chained list ====");
+  INFO0("---- Test on chained list ----");
 
   /* init a value, exchange it and check its validity*/
   i = cons( 12355, cons( 246264 , cons( 23263, NULL)));
@@ -371,7 +385,7 @@ gras_error_t test_graph(gras_socket_t *sock, int direction) {
   gras_error_t errcode;
   chained_list_t *i, *j; 
 
-  INFO0("==== Test on graph (cyclique chained list) ====");
+  INFO0("---- Test on graph (cyclique chained list) ----");
   /* init a value, exchange it and check its validity*/
   i = cons( 1151515, cons( -232362 , cons( 222552, NULL)));
   i->l->l->l = i;
@@ -400,22 +414,109 @@ gras_error_t test_graph(gras_socket_t *sock, int direction) {
 
     list_free(j);
   }
-  i->l->l->l = NULL; /* do this even in READ mode */
+  i->l->l->l = NULL; /* do this even in WRITE mode */
   list_free(i);
   return no_error;
 }
 
 /**** PBIO *****/
-typedef struct { /* structure presented in the IEEE article */
+GRAS_DEFINE_TYPE(s_pbio,
+struct s_pbio{ /* structure presented in the IEEE article */
   int Cnstatv;
   double Cstatev[12];
   int Cnprops;
   double Cprops[110];
-  int Cndi[4], Cnshr, Cnpt;
-  double Cdtime, Ctime[2];
+  int Cndi[4];
+  int Cnshr;
+  int Cnpt;
+  double Cdtime;
+  double Ctime[2];
   int Cntens;
-  double Cdfgrd0[3][373], Cdfgrd1[3][3], Cstress[106], Cddsdde[106][106];
-} KSdata1;
+  /*
+  double Cdfgrd0[373][3];
+  double Cdfgrd1[3][3];
+  double Cstress[106];
+  double Cddsdde[106][106];
+  */
+};
+		 )
+typedef struct s_pbio pbio_t;
+
+gras_error_t test_pbio(gras_socket_t *sock, int direction) {
+  gras_error_t errcode;
+  pbio_t i,j;
+  int cpt;
+  //  int cpt2;
+  gras_datadesc_type_t *pbio_type;
+
+  INFO0("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
+  pbio_type = gras_datadesc_by_symbol(s_pbio);
+  INFO1("sizof(s_pbio)=%d",sizeof(struct s_pbio));
+  gras_datadesc_type_dump(gras_datadesc_by_name("double[373]"));
+  gras_datadesc_type_dump(pbio_type);
+  /* Fill in that damn struct */
+  i.Cnstatv = 325115;
+  for (cpt=0; cpt<12; cpt++) 
+    i.Cstatev[cpt] = ((double) cpt) * -2361.11;
+  i.Cnprops = -37373;
+  for (cpt=0; cpt<110; cpt++)
+    i.Cprops[cpt] = cpt * 100.0;
+  for (cpt=0; cpt<4; cpt++)
+    i.Cndi[cpt] = cpt * 23262;
+  i.Cnshr = -4634;
+  i.Cnpt = 114142;
+  i.Cdtime = -11515.662;
+  i.Ctime[0] = 332523.226;
+  i.Ctime[1] = -26216.113;
+  i.Cntens = 235211411;
+  /*
+  for (cpt=0; cpt<3; cpt++) {
+    for (cpt2=0; cpt2<373; cpt2++)
+      i.Cdfgrd0[cpt2][cpt] = ((double)cpt) * ((double)cpt2);
+    for (cpt2=0; cpt2<3; cpt2++)
+      i.Cdfgrd1[cpt][cpt2] = -((double)cpt) * ((double)cpt2);
+  }
+  for (cpt=0; cpt<106; cpt++) {
+    i.Cstress[cpt]=(double)cpt * 22.113;
+    for (cpt2=0; cpt2<106; cpt2++) 
+      i.Cddsdde[cpt][cpt2] = ((double)cpt) * ((double)cpt2);
+      }*/
+  TRY(write_read(gras_datadesc_by_symbol(s_pbio),
+		 &i,&j, sock,direction));
+  if (direction == READ || direction == RW) {
+    /* Check that the data match */
+    gras_assert(i.Cnstatv == j.Cnstatv);
+    for (cpt=0; cpt<12; cpt++)
+      gras_assert(i.Cstatev[cpt] == j.Cstatev[cpt]);
+    gras_assert(i.Cnprops == j.Cnprops);
+    for (cpt=0; cpt<110; cpt++)
+      gras_assert(i.Cprops[cpt] == j.Cprops[cpt]);
+    for (cpt=0; cpt<4; cpt++) 
+      gras_assert(i.Cndi[cpt] == j.Cndi[cpt]);
+    gras_assert(i.Cnshr == j.Cnshr);
+    gras_assert(i.Cnpt == j.Cnpt);
+    gras_assert(i.Cdtime == j.Cdtime);
+    gras_assert(i.Ctime[0] == j.Ctime[0]);
+    gras_assert(i.Ctime[1] == j.Ctime[1]);
+    gras_assert(i.Cntens == j.Cntens);
+    /*
+    for (cpt=0; cpt<3; cpt++) {
+      for (cpt2=0; cpt2<373; cpt2++)
+	gras_assert(i.Cdfgrd0[cpt2][cpt] == j.Cdfgrd0[cpt2][cpt]);
+      for (cpt2=0; cpt2<3; cpt2++)
+	gras_assert(i.Cdfgrd1[cpt][cpt2] == j.Cdfgrd1[cpt][cpt2]);
+    }
+    for (cpt=0; cpt<106; cpt++) {
+      gras_assert(i.Cstress[cpt] == j.Cstress[cpt]);
+      for (cpt2=0; cpt2<106; cpt2++) 
+	gras_assert4(i.Cddsdde[cpt][cpt2] == j.Cddsdde[cpt][cpt2],
+		     "%f=i.Cddsdde[%d][%d] != j.Cddsdde[cpt][cpt2]=%f",
+		     i.Cddsdde[cpt][cpt2],cpt,cpt2,j.Cddsdde[cpt][cpt2]);
+		     }*/
+  }
+
+  return no_error;
+}
 
 int main(int argc,char *argv[]) {
   gras_error_t errcode;
@@ -451,8 +552,10 @@ int main(int argc,char *argv[]) {
   }
   r_arch = (int)r_arch_char;
   
+  
   TRYFAIL(test_int(sock,direction));    
   TRYFAIL(test_float(sock,direction));  
+  TRYFAIL(test_double(sock,direction));  
   TRYFAIL(test_array(sock,direction));  
   TRYFAIL(test_intref(sock,direction)); 
   
@@ -465,6 +568,8 @@ int main(int argc,char *argv[]) {
   TRYFAIL(declare_chained_list_type());
   TRYFAIL(test_chain_list(sock,direction));
   TRYFAIL(test_graph(sock,direction));
+
+  TRYFAIL(test_pbio(sock,direction));
 
   if (direction != RW) 
     gras_socket_close(sock);
