@@ -176,15 +176,22 @@ trace="${trace}_D:4/${ac_cv_struct_boundary_float}:8/${ac_cv_struct_boundary_dou
 
 # sizeof float/double are not tested since IEEE 754 is assumed.
 # Check README.IEEE for rational.
+
+# The numbers after the _ in the arch name are the maximal packing boundary.
+# big32_2   means that all data are aligned on a 2 bytes boundary.              (ARM)
+# big32_8_4 means that some or them are aligned on 8 bytes, some are on 4 bytes (AIX)
 case $trace in
-  l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=0; gras_arch_name=little32;;
-  l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=1; gras_arch_name=little64;;
-  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=2; gras_arch_name=big32;;
-  B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=3; gras_arch_name=big64;;
-  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=4; gras_arch_name=aix;;
-  B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:) gras_arch=5; gras_arch_name=arm;;
-  l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=6; gras_arch_name=win32;;
-  B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=7; gras_arch_name=g5;;
+  l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=0; gras_arch_name=little32;;
+  l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=1; gras_arch_name=little32_4;;
+  
+  l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=2; gras_arch_name=little64;;
+  
+  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=3; gras_arch_name=big32;;
+  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=4; gras_arch_name=big32_8_4;;
+  B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=5; gras_arch_name=big32_4;;
+  B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:) gras_arch=6; gras_arch_name=big32_2;;
+  
+  B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=7; gras_arch_name=big64;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
