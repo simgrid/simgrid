@@ -1,16 +1,6 @@
 SimGrid (2.93-cvs) NOT RELEASED YET; urgency=low
 
----------------------------
-Tentative de TODO pour 2.93
----------------------------
-Pour la simplification du déploiement RL, reste plus qu'a mettre la
-diffusion "pull" dans tools/graspe-{master,slave}
-
----------------------
-Changements à ce jour
----------------------
-
-  Alpha 4 on the path to SimGrid 3
+  Alpha 4 on the path to SimGrid 3 (aka the "neuf-trois" version)
 
   [Arnaud]
    - Use Paje properly where used. Still to be sanitized properly.

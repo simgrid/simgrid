@@ -1,3 +1,5 @@
+- pull method of source diffusion in graspe-slave
+
 - Use a xbt_set for gras_procdata_t->libdata instead of a dict
   so that the search can be linear.
 
