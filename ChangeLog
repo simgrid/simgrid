@@ -1,4 +1,10 @@
-2004-01-31 Arnaud
+2005-02-04 Martin
+  - Reenable GRAS/RL; keep GRAS/SG disabled for now
+  - Various cleanups to the autotools stuff
+  - Begin to move Gras examples to examples/gras/
+  - Let make distcheck work again (yeah!)
+
+2005-01-31 Arnaud
   - Finished rewriting and debugging MSG. Rewrote the documentation.
     Preparing to release.
 
