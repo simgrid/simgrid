@@ -4,7 +4,7 @@
 
 /* This is useful to build named structs, like option or property sets.     */
 
-/* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2001,2002,2003,2004 Martin Quinson. All rights reserved.   */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
