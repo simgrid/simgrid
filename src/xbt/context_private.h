@@ -16,19 +16,31 @@
 
 #include "xbt/context.h"
 
+#ifdef USE_PTHREADS
+#include <pthread.h>
+#else
 #define STACK_SIZE 524288
+#endif     /* USE_PTHREADS */
+
 typedef struct s_xbt_context {
   s_xbt_swag_hookup_t hookup;
+#ifdef USE_PTHREADS
+  pthread_cond_t cond;
+  pthread_mutex_t mutex;
+  pthread_t *thread;		/* the thread that execute the code   */
+#else
   ucontext_t uc;                /* the thread that execute the code   */
   char stack[STACK_SIZE];
-  xbt_context_function_t code;        /* the scheduler fonction   */
+  struct s_xbt_context *save;
+#endif     /* USE_PTHREADS */
+  xbt_context_function_t code;	        /* the scheduler fonction   */
   int argc;
   char **argv;
-  struct s_xbt_context *save;
   void_f_pvoid_t *startup_func;
   void *startup_arg;
   void_f_pvoid_t *cleanup_func;
   void *cleanup_arg;
 } s_xbt_context_t;
+#else
 
 #endif              /* _XBT_CONTEXT_PRIVATE_H */

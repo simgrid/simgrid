@@ -44,11 +44,41 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS([sys/socket.h winsock.h winsock2.h \
                   sys/stat.h \
 		  ucontext.h \
+		  pthread.h \
+		  windows.h \
 		  sys/time.h \
 		  errno.h unistd.h ])
 AC_CHECK_FUNCS([gettimeofday usleep \
                 getdtablesize \
                 sysconf])
+
+AC_ARG_ENABLE(context,
+  [  --enable-context=[ucontext/pthreads]   Use either (System V) swapcontext or pthread [[default=ucontext]].],,
+  enable_context=ucontext)
+AC_MSG_CHECKING(on top of what can we build the contexts)
+if test "x$enable_context" = "xucontext"; then
+  ac_header=ucontext.h
+  as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+  if test `eval echo '${'$as_ac_Header'}'` = yes; then
+    AC_MSG_RESULT(found ucontext.h. Great!)
+  else
+    ac_header=windows.h
+    as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+    if test `eval echo '${'$as_ac_Header'}'` = yes; then
+      AC_MSG_RESULT(you don't have ucontext.h but we provide an alternative for windows so you should be fine.")
+    else
+      AC_MSG_RESULT([[cannot find ucontext. I'm going to try as if you had set --enable-context=pthreads !]])
+      enable_context=pthreads
+    fi
+  fi
+fi
+if test "x$enable_context" = "xpthreads"; then
+  AC_CHECK_LIB(pthread,pthread_create,,
+    [AC_MSG_ERROR([[Cannot find pthreads, no way (try --enable-context=ucontext if you haven't already tried).]])])
+  AC_DEFINE([USE_PTHREADS],1,[Define if we USE pthreads or not])
+  AC_MSG_RESULT(You have pthreads. Let's use them.)
+fi
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

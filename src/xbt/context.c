@@ -17,21 +17,20 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
 
-/* #define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\ */
-/*                               fprintf(stderr, format, ## __VA_ARGS__), \ */
-/*                               fprintf(stderr, "\n")) */
-/* #define VOIRP(expr) WARNING("  {" #expr " = %p }", expr) */
-
-#ifndef HAVE_UCONTEXT_H
-/* don't want to play with conditional compilation in automake tonight, sorry.
-   include directly the c file from here when needed. */
-# include "context_win32.c" 
-#endif
+#define VOIRP(expr) DEBUG1("  {" #expr " = %p }", expr)
 
 static xbt_context_t current_context = NULL;
 static xbt_context_t init_context = NULL;
 static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
+
+#ifndef USE_PTHREADS /* USE_PTHREADS and USE_CONTEXT are exclusive */
+# ifndef HAVE_UCONTEXT_H
+/* don't want to play with conditional compilation in automake tonight, sorry.
+   include directly the c file from here when needed. */
+#  include "context_win32.c" 
+# endif
+#endif
 
 static void __xbt_context_yield(xbt_context_t context)
 {
@@ -42,44 +41,90 @@ static void __xbt_context_yield(xbt_context_t context)
   DEBUG2("--------- current_context (%p) is yielding to context(%p) ---------",
 	 current_context,context);
 
+#ifdef USE_PTHREADS
+  if (context) {
+    xbt_context_t self = current_context;
+    pthread_mutex_lock(&(context->mutex));
+    current_context = context;
+    pthread_cond_signal(&(context->cond));
+    pthread_cond_wait(&(context->cond), &(context->mutex));
+    pthread_mutex_unlock(&(context->mutex));
+    current_context = self;
+  }
+#else
   if(current_context)
-    DEBUG1("current_context->save = %p",current_context->save);
-/*   VOIRP(context); */
-/*   if(context) VOIRP(context->save); */
+    VOIRP(current_context->save);
 
+  VOIRP(context);
+  if(context) VOIRP(context->save);
   if (context) {
     if(context->save==NULL) {
-/*       WARNING("**** Yielding to somebody else ****"); */
-/*       WARNING("Saving current_context value (%p) to context(%p)->save",current_context,context); */
+      DEBUG0("**** Yielding to somebody else ****");
+      DEBUG2("Saving current_context value (%p) to context(%p)->save",current_context,context);
       context->save = current_context ;
-/*       WARNING("current_context becomes  context(%p) ",context); */
+      DEBUG1("current_context becomes  context(%p) ",context);
       current_context = context ;
-/*       WARNING("Current position memorized (context->save). Jumping to context (%p)",context); */
+      DEBUG1("Current position memorized (context->save). Jumping to context (%p)",context);
       return_value = swapcontext (&(context->save->uc), &(context->uc));
       xbt_assert0((return_value==0),"Context swapping failure");
-/*       WARNING("I am (%p). Coming back\n",context); */
+      DEBUG1("I am (%p). Coming back\n",context);
     } else {
       xbt_context_t old_context = context->save ;
-/*       WARNING("**** Back ! ****"); */
-/*       WARNING("Setting current_context (%p) to context(%p)->save",current_context,context); */
+      DEBUG0("**** Back ! ****");
+      DEBUG2("Setting current_context (%p) to context(%p)->save",current_context,context);
       current_context = context->save ;
-/*       WARNING("Setting context(%p)->save to NULL",context); */
+      DEBUG1("Setting context(%p)->save to NULL",context);
       context->save = NULL ;
-/*       WARNING("Current position memorized (%p). Jumping to context (%p)",context,old_context); */
+      DEBUG2("Current position memorized (%p). Jumping to context (%p)",context,old_context);
       return_value = swapcontext (&(context->uc), &(old_context->uc));
       xbt_assert0((return_value==0),"Context swapping failure");
-/*       WARNING("I am (%p). Coming back\n",context); */
+      DEBUG1("I am (%p). Coming back\n",context);
     }
   }
-
+#endif
   return;
 }
 
 static void xbt_context_destroy(xbt_context_t context)
 {
+#ifdef USE_PTHREADS
+  xbt_free(context->thread);
+  pthread_mutex_destroy(&(context->mutex));
+  pthread_cond_destroy(&(context->cond));
+#endif
   free(context);
-
   return;
+}
+
+static void *__context_wrapper(void *c)
+{
+  xbt_context_t context = c;
+  int i;
+
+#ifdef USE_PTHREADS
+  pthread_cond_wait(&(context->cond), &(context->mutex));
+  pthread_mutex_unlock(&(context->mutex));
+#endif
+
+  if(context->startup_func)
+    context->startup_func(context->startup_arg);
+
+   DEBUG0("Calling the main function");
+  (context->code) (context->argc,context->argv);
+
+  for(i=0;i<context->argc; i++) 
+    if(context->argv[i]) free(context->argv[i]);
+  if(context->argv) free(context->argv);
+
+  if(context->cleanup_func)
+    context->cleanup_func(context->cleanup_arg);
+
+  xbt_swag_remove(context, context_living);
+  xbt_swag_insert(context, context_to_destroy);
+
+  __xbt_context_yield(context);
+  xbt_assert0(0,"You're cannot be here!");
+  return NULL;
 }
 
 /** \name Functions 
@@ -113,35 +158,6 @@ void xbt_context_empty_trash(void)
     xbt_context_destroy(context);
 }
 
-static void *__context_wrapper(void *c)
-{
-  xbt_context_t context = c;
-  int i;
-
-/*   msg_global->current_process = process; */
-
-  if(context->startup_func)
-    context->startup_func(context->startup_arg);
-
-  /*  WARNING("Calling the main function"); */
-  /*   xbt_context_yield(context); */
-  (context->code) (context->argc,context->argv);
-
-  for(i=0;i<context->argc; i++) 
-    if(context->argv[i]) free(context->argv[i]);
-  if(context->argv) free(context->argv);
-
-  if(context->cleanup_func)
-    context->cleanup_func(context->cleanup_arg);
-
-  xbt_swag_remove(context, context_living);
-  xbt_swag_insert(context, context_to_destroy);
-
-  __xbt_context_yield(context);
-  xbt_assert0(0,"You're cannot be here!");
-  return NULL;
-}
-
 /** 
  * \param context the context to start
  * 
@@ -150,11 +166,16 @@ static void *__context_wrapper(void *c)
  */
 void xbt_context_start(xbt_context_t context) 
 {
-/*   xbt_fifo_insert(msg_global->process, process); */
-/*   xbt_fifo_insert(msg_global->process_to_run, process); */
+#ifdef USE_PTHREADS
+  pthread_mutex_lock(&(context->mutex));
 
+  /* Launch the thread */
+  xbt_assert0(!pthread_create(context->thread, NULL, __context_wrapper, context),
+	      "Unable to create a thread.");
+#else
   makecontext (&(context->uc), (void (*) (void)) __context_wrapper,
 	       1, context);
+#endif
   return;
 }
 
@@ -178,19 +199,24 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 
   res = xbt_new0(s_xbt_context_t,1);
 
+  res->code = code;
+#ifdef USE_PTHREADS
+  res->thread = xbt_new0(pthread_t,1);
+  xbt_assert0(!pthread_mutex_init(&(res->mutex), NULL), "Mutex initialization error");
+  xbt_assert0(!pthread_cond_init(&(res->cond), NULL), "Condition initialization error");
+#else
   /* FIXME: strerror is not thread safe */
   xbt_assert2(getcontext(&(res->uc))==0,"Error in context saving: %d (%s)", errno, strerror(errno));
-
-  res->code = code;
   res->uc.uc_link = NULL;
-  res->argc = argc;
-  res->argv = argv;
-/*   res->uc.uc_link = &(current_context->uc); */
+  /*   res->uc.uc_link = &(current_context->uc); */
   /* WARNING : when this context is over, the current_context (i.e. the 
      father), is awaken... Theorically, the wrapper should prevent using 
      this feature. */
   res->uc.uc_stack.ss_sp = res->stack;
   res->uc.uc_stack.ss_size = STACK_SIZE;
+#endif
+  res->argc = argc;
+  res->argv = argv;
   res->startup_func = startup_func;
   res->startup_arg = startup_arg;
   res->cleanup_func = cleanup_func;
@@ -201,7 +227,6 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
   return res;
 }
 
-
 /** 
  * Calling this function makes the current context yield. The context
  * that scheduled it returns from xbt_context_schedule as if nothing
@@ -211,7 +236,6 @@ void xbt_context_yield(void)
 {
   __xbt_context_yield(current_context);
 }
-
 
 /** 
  * \param context the winner
@@ -265,4 +289,5 @@ void xbt_context_free(xbt_context_t context)
 
   return;
 }
+
 /*@}*/
