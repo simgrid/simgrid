@@ -1,6 +1,6 @@
 DOCSOURCES = $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.doc")
 
-EXTRA_DIST = html
+EXTRA_DIST = html Doxyfile.API Doxyfile.Examples  Doxyfile.main
 
 html: $(DOCSOURCES) Doxyfile.API  Doxyfile.Examples  Doxyfile.main
 	@touch @top_srcdir@/src/api_index.doc
