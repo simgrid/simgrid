@@ -347,6 +347,14 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
   var->bound = bound;
 }
 
+void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
+				double weight)
+{
+  sys->modified = 1;
+  var->weight = weight;
+}
+
+
 double lmm_get_variable_weight(lmm_system_t sys, lmm_variable_t var)
 				  
 {
