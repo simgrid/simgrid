@@ -69,10 +69,12 @@ void gras_msgtype_free(void *t) {
  * the name unchanged. Pay attention to this before free'ing the result.
  */
 static char *make_namev(const char *name, short int ver) {
-  char *namev=malloc(strlen(name)+2+3+1);
+  char *namev;
 
   if (!ver)
     return (char *)name;
+
+  namev = malloc(strlen(name)+2+3+1);
 
   if (namev) {
       sprintf(namev,"%s_v%d",name,ver);
@@ -121,32 +123,34 @@ gras_msgtype_declare_v(const char            *name,
 
   errcode = gras_set_get_by_name(_gras_msgtype_set,
 				 namev,(gras_set_elm_t**)&msgtype);
-  if (errcode == mismatch_error) {
-    /* create type */
-    if (! (msgtype = malloc(sizeof(gras_msgtype_t))) ) 
-      RAISE_MALLOC;
 
-    msgtype->name = (namev == name ? strdup(name) : namev);
-    msgtype->name_len = strlen(namev);
-    msgtype->version = version;
-    msgtype->ctn_type = payload;
-
-    TRY(gras_set_add(_gras_msgtype_set, (gras_set_elm_t*)msgtype,
-		     &gras_msgtype_free));
-
-    DEBUG2("Register version %d of message '%s'.", version, name);
-  } else if (errcode == no_error) { /* found */ 
-    if (namev != name)
-      free(namev);
-
-    gras_assert1(!gras_datadesc_type_cmp(msgtype->ctn_type, payload),
-		 "Message %s registred again with a different payload",
-		 namev);
+  if (errcode == no_error) {
+    VERB2("Re-register version %d of message '%s' (same payload, ignored).",
+	  version, name);
+    gras_assert3(!gras_datadesc_type_cmp(msgtype->ctn_type, payload),
+		 "Message %s re-registred with another payload (%s was %s)",
+		 namev,gras_datadesc_get_name(payload),
+		 gras_datadesc_get_name(msgtype->ctn_type));
+  } else if (errcode == mismatch_error) {
+    INFO3("Register version %d of message '%s' (payload: %s).", 
+	   version, name, gras_datadesc_get_name(payload));    
   } else {
-    if (namev != name)
-      free(namev);
-    return errcode; /* Error is set lookup */
+    return errcode; /* Was expecting for mismatch_error */
   }
+
+  /* create type anyway so that the old type gets removed from here, and
+     hopefully free'd when ref counter gets 0 */
+  if (! (msgtype = malloc(sizeof(gras_msgtype_t))) ) 
+    RAISE_MALLOC;
+
+  msgtype->name = (namev == name ? strdup(name) : namev);
+  msgtype->name_len = strlen(namev);
+  msgtype->version = version;
+  msgtype->ctn_type = payload;
+  gras_datadesc_ref(payload);
+
+  TRY(gras_set_add(_gras_msgtype_set, (gras_set_elm_t*)msgtype,
+		   &gras_msgtype_free));
 
   return no_error;
 }
@@ -174,12 +178,12 @@ gras_msgtype_by_namev(const char      *name,
   gras_error_t errcode;
   char *namev = make_namev(name,version); 
 
-  TRY(gras_set_get_by_name(_gras_msgtype_set, namev,
-			   (gras_set_elm_t**)dst));
+  errcode = gras_set_get_by_name(_gras_msgtype_set, namev,
+				 (gras_set_elm_t**)dst);
   if (name != namev) 
     free(namev);
 
-  return no_error;
+  return errcode;
 }
 
 /**
@@ -209,20 +213,37 @@ gras_msg_send(gras_socket_t  *sock,
 /**
  * gras_msg_recv:
  *
- * receive the next message on the given socket (which should be dropped 
- * when the function returns an error)
+ * receive the next message on the given socket.  
+ * The room for the payload will be malloc'ed by the function.
  */
 gras_error_t
 gras_msg_recv(gras_socket_t   *sock,
 	      gras_msgtype_t **msgtype,
 	      void           **payload) {
+
+  *payload = NULL;
+  return gras_msg_recv_no_malloc(sock,msgtype,payload);
+}
+/**
+ * gras_msg_recv_no_malloc:
+ *
+ * receive the next message on the given socket. 
+ *
+ * No room will be allocated by the function, which is good to get
+ * the payload onto the stack (passing the address of a static variable), 
+ * but will happily segfault if passed an arbitrary pointer... 
+ */
+gras_error_t
+gras_msg_recv_no_malloc(gras_socket_t   *sock,
+			gras_msgtype_t **msgtype,
+			void           **payload) {
   
   gras_error_t errcode;
   static gras_datadesc_type_t *string_type=NULL;
   char header[6];
   int cpt;
   int r_arch;
-  char *msg_name;
+  char *msg_name=NULL;
 
   if (!string_type) {
     string_type=gras_datadesc_by_name("string");
@@ -237,6 +258,8 @@ gras_msg_recv(gras_socket_t   *sock,
     RAISE2(mismatch_error,"GRAS protocol mismatch (got %d, use %d)",
 	   (int)header[4], (int)GRAS_header[4]);
   r_arch = (int)header[5];
+  DEBUG2("Handle an incoming message using protocol %d from arch %s",
+	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
   TRY(gras_datadesc_recv(sock, string_type, r_arch,(void**) &msg_name));
   TRY(gras_set_get_by_name(_gras_msgtype_set,
@@ -326,7 +349,7 @@ gras_msg_handle(double timeOut) {
 
   gras_msg_t      msg;
   gras_socket_t  *expeditor;
-  void           *payload;
+  void           *payload=NULL;
   gras_msgtype_t *msgtype;
 
   gras_procdata_t*pd=gras_procdata_get();
@@ -335,7 +358,7 @@ gras_msg_handle(double timeOut) {
 
 
 
-  VERB1("Handling message within the next %d",timeOut);
+  VERB1("Handling message within the next %.2fs",timeOut);
   
   /* get a message (from the queue or from the net) */
   if (gras_dynar_length(pd->msg_queue)) {
@@ -358,13 +381,16 @@ gras_msg_handle(double timeOut) {
     }
   }
   if (!list) {
-    INFO1("Unexpected message '%s' ignored", msgtype->name);
+    INFO1("No callback for the incomming '%s' message. Discarded.", 
+	  msgtype->name);
     WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return no_error;
   }
   
   gras_dynar_foreach(list->cbs,cpt,cb) { 
-    if (cb(expeditor,msgtype->ctn_type,payload)) {
+    INFO3("Invoque the callback #%d (@%p) for incomming msg %s",
+	  cpt+1,cb,msgtype->name);
+    if ((*cb)(expeditor,msgtype->ctn_type,payload)) {
       /* cb handled the message */
       return no_error;
     }
@@ -380,8 +406,10 @@ gras_cb_register(gras_msgtype_t *msgtype,
 		 gras_cb_t cb) {
   gras_error_t errcode;
   gras_procdata_t *pd=gras_procdata_get();
-  gras_cblist_t *list;
+  gras_cblist_t *list=NULL;
   int cpt;
+
+  DEBUG2("Register %p as callback to %s",cb,msgtype->name);
 
   /* search the list of cb for this message on this host (creating if NULL) */
   gras_dynar_foreach(pd->cbl_list,cpt,list) {
@@ -403,7 +431,7 @@ gras_cb_register(gras_msgtype_t *msgtype,
   }
 
   /* Insert the new one into the set */
-  TRY(gras_dynar_insert_at(list->cbs,0,cb));
+  TRY(gras_dynar_insert_at(list->cbs,0,&cb));
 
   return no_error;
 }
