@@ -1,3 +1,0 @@
-#! /bin/sh
-./ping_server 4000 $@&
-./ping_client 127.0.0.1 4000 $@
