@@ -124,3 +124,13 @@ gras_procdata_t *gras_procdata_get(void) {
   return pd;
 }
 
+const char* xbt_procname(void) {
+  const char *res = NULL;
+  m_process_t process = MSG_process_self();
+  if ((process != NULL) && (process->simdata))
+    res = MSG_process_get_name(process);
+  if (res) 
+    return res;
+  else
+    return "";
+}
