@@ -10,6 +10,7 @@
 #include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
 #include "xbt/log.h"
+#include "surf/surf_parse.h"
 
 typedef struct surf_resource_private {
   /* Share the resources to the actions and return in hom much time

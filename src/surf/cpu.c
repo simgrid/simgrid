@@ -54,14 +54,112 @@ static void *cpu_new(const char *name, xbt_maxmin_float_t power_scale,
   return cpu;
 }
 
+static void find_section(const char* file, const char* section_name)
+{
+  e_surf_token_t token;
+  int found = 0;
+
+  surf_parse_open(file);
+
+  while((token=surf_parse())) {
+    if(token!=TOKEN_BEGIN_SECTION) continue;
+
+    token=surf_parse();
+    xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+    if(strcmp(surf_parse_text,section_name)==0) found=1;
+
+    token=surf_parse();
+    xbt_assert1((token==TOKEN_CLOSURE),"Parse error line %d",line_pos);
+
+    if(found) return;
+  }
+
+  CRITICAL2("Could not find %s section in %s\n",section_name,file);
+}
+
+static void close_section(const char* section_name)
+{
+  e_surf_token_t token;
+
+  token=surf_parse();
+  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+  xbt_assert1((strcmp(surf_parse_text,"CPU")==0), 
+	      "Closing section does not match the opening one (%s).", 
+	      section_name);
+  
+  token=surf_parse();
+  xbt_assert1((token==TOKEN_CLOSURE),"Parse error line %d",line_pos);
+
+  surf_parse_close();
+}
+
+/*  
+   Semantic:  name       scale     initial     power     initial     state
+                                    power      trace      state      trace
+   
+   Token:   TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD TOKEN_WORD
+   Type:     string      float      float      string     ON/OFF     string
+*/
+
+static void parse_host(void)
+{
+  e_surf_token_t token;
+  char *name = NULL; 
+  xbt_maxmin_float_t power_scale = 0.0;
+  xbt_maxmin_float_t initial_power = 0.0;
+  tmgr_trace_t power_trace = NULL;;
+  e_surf_cpu_state_t initial_state = SURF_CPU_OFF;
+  tmgr_trace_t state_trace = NULL;
+
+  name=xbt_strdup(surf_parse_text);
+
+  token=surf_parse(); /* power_scale */
+  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+  xbt_assert2((sscanf(surf_parse_text,XBT_MAXMIN_FLOAT_T, &power_scale)==1),
+    "Parse error line %d : %s not a number",line_pos,surf_parse_text);
+
+  token=surf_parse(); /* initial_power */
+  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+  xbt_assert2((sscanf(surf_parse_text,XBT_MAXMIN_FLOAT_T, &initial_power)==1),
+    "Parse error line %d : %s not a number",line_pos,surf_parse_text);
+
+  token=surf_parse(); /* power_trace */
+  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+  if(strcmp(surf_parse_text,"")==0) power_trace = NULL;
+  else power_trace = tmgr_trace_new(surf_parse_text);
+
+  token=surf_parse(); /* initial_state */
+  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+  if(strcmp(surf_parse_text,"ON")==0) initial_state = SURF_CPU_ON;
+  else if(strcmp(surf_parse_text,"OFF")==0) initial_state = SURF_CPU_OFF;
+  else CRITICAL2("Invalid cpu state (line %d): %s neq ON or OFF\n",line_pos, 
+		 surf_parse_text);
+
+  token=surf_parse(); /* state_trace */
+  xbt_assert1((token==TOKEN_WORD),"Parse error line %d",line_pos);
+  if(strcmp(surf_parse_text,"")==0) state_trace = NULL;
+  else state_trace = tmgr_trace_new(surf_parse_text);
+
+  cpu_new(name, power_scale, initial_power, power_trace, initial_state, state_trace);
+}
+
 static void parse_file(const char *file)
 {
-  tmgr_trace_t trace_A = tmgr_trace_new("trace_A.txt");
-  tmgr_trace_t trace_B = tmgr_trace_new("trace_B.txt");
-  tmgr_trace_t trace_A_failure = tmgr_trace_new("trace_A_failure.txt");
+  e_surf_token_t token;
 
-  cpu_new("Cpu A", 100.0, 1.0, trace_A, SURF_CPU_ON, trace_A_failure);
-  cpu_new("Cpu B", 100.0, 1.0, trace_B, SURF_CPU_ON, NULL);
+  find_section(file,"CPU");
+
+  while(1) {
+    token=surf_parse();
+
+    if(token==TOKEN_END_SECTION) break;
+    if(token==TOKEN_NEWLINE) continue;
+    
+    if(token==TOKEN_WORD) parse_host();
+    else CRITICAL1("Parse error line %d\n",line_pos);
+  }
+
+  close_section("CPU");  
 }
 
 static void *name_service(const char *name)

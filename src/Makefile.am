@@ -25,6 +25,7 @@ EXTRA_DIST= \
 	surf/trace_mgr_private.h \
 	surf/surf_private.h \
 	surf/cpu_private.h \
+	surf/surf_parse.l surf/surf_parse.h \
 	\
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
@@ -97,6 +98,7 @@ COMMON_S=\
   surf/maxmin.c                                                              \
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
+  surf/surf_parse.c                                                          \
   surf/cpu.c                                                                 \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
@@ -113,6 +115,9 @@ COMMON_S=\
 
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 	@LEX@ -o$@ -Pgras_ddt_parse_ $^
+
+surf/surf_parse.c: surf/surf_parse.l
+	@LEX@ -o$@ -Psurf_parse_ $^
 
 libgrasrl_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \
