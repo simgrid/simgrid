@@ -25,3 +25,4 @@ PROCESSES= client server
 $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _ping_simulator.c: $(srcdir)/ping_deployment.xml $(top_srcdir)/tools/gras/gras_stub_generator
 	$(top_srcdir)/tools/gras/gras_stub_generator ping ping_deployment.xml >/dev/null
 
+include $(top_srcdir)/acmacro/dist-files.mk

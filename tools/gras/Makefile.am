@@ -9,3 +9,5 @@ LDADD_RL=   $(top_builddir)/src/libsimgrid.la
 
 gras_stub_generator_SOURCES = stub_generator.c
 gras_stub_generator_LDADD = $(LDADD_UTILS)
+
+include $(top_srcdir)/acmacro/dist-files.mk

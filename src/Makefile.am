@@ -172,3 +172,6 @@ libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@ -lm
 
 libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC)
 libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@ -lm
+
+
+include $(top_srcdir)/acmacro/dist-files.mk

@@ -12,4 +12,5 @@ libamok_la_SOURCES= \
 
 VERSION_INFO= -release 20040722 -version-info 0:0:0
 
+include $(top_srcdir)/acmacro/dist-files.mk
 

@@ -21,3 +21,5 @@ nobase_include_HEADERS = \
 	\
 	amok/base.h \
 	amok/bandwidth.h
+
+include $(top_srcdir)/acmacro/dist-files.mk

@@ -23,3 +23,4 @@ MAINTAINERCLEANFILES = _$(NAME)_simulator.c _$(NAME)_client.c _$(NAME)_server.c
 $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(srcdir)/$(NAME)_deployment.xml $(top_srcdir)/tools/gras/gras_stub_generator
 	$(top_srcdir)/tools/gras/gras_stub_generator $(NAME) $(NAME)_deployment.xml >/dev/null
 
+include $(top_srcdir)/acmacro/dist-files.mk

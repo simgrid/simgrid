@@ -8,3 +8,4 @@ check_PROGRAMS=msg_test
 msg_test_SOURCES= messages.h msg_test.c
 msg_test_LDADD=	$(top_builddir)/src/libsimgrid.la
 
+include $(top_srcdir)/acmacro/dist-files.mk

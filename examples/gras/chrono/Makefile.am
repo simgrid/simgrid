@@ -22,3 +22,4 @@ CLEANFILES= _chrono_simulator.c _chrono_multiplier.c
 _chrono_multiplier.c _chrono_simulator.c: chrono_deployment.xml $(top_srcdir)/tools/gras/gras_stub_generator
 	$(top_srcdir)/tools/gras/gras_stub_generator chrono chrono_deployment.xml >/dev/null
 
+include $(top_srcdir)/acmacro/dist-files.mk
