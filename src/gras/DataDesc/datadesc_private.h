@@ -52,10 +52,10 @@ typedef struct {
   int sizeof_scalars[9]; /* char,short,int,long,long_long,
 			    pdata,pfunc,
 			    float,double */
-} gras_arch_sizes_t;
+} gras_arch_desc_t;
 
-extern const gras_arch_sizes_t gras_arch_sizes[gras_arch_count];
-
+extern const gras_arch_desc_t gras_arches[gras_arch_count];
+extern const char *gras_datadesc_cat_names[9];
 
 /**********************************************************/
 /* Actual definitions of the stuff in the type descriptor */
@@ -64,21 +64,23 @@ extern const gras_arch_sizes_t gras_arch_sizes[gras_arch_count];
 /**
  * e_gras_datadesc_type_category:
  *
- * Defines all possible type categories
+ * Defines all possible type categories. 
  */
 typedef enum e_gras_datadesc_type_category {
-        e_gras_datadesc_type_cat_undefined = 0,
+  
+  /* if you edit this, also fix gras_datadesc_cat_names in ddt_exchange.c */
 
-        e_gras_datadesc_type_cat_scalar = 1,
-        e_gras_datadesc_type_cat_struct = 2,
-        e_gras_datadesc_type_cat_union = 3,
-        e_gras_datadesc_type_cat_ref = 4,       /* ref to an uniq element */
-        e_gras_datadesc_type_cat_array = 5,
-        e_gras_datadesc_type_cat_ignored = 6,
-
-        e_gras_datadesc_type_cat_invalid = 7
+  e_gras_datadesc_type_cat_undefined = 0,
+  
+  e_gras_datadesc_type_cat_scalar = 1,
+  e_gras_datadesc_type_cat_struct = 2,
+  e_gras_datadesc_type_cat_union = 3,
+  e_gras_datadesc_type_cat_ref = 4,       /* ref to an uniq element */
+  e_gras_datadesc_type_cat_array = 5,
+  e_gras_datadesc_type_cat_ignored = 6,
+  
+  e_gras_datadesc_type_cat_invalid = 7
 } gras_datadesc_type_category_t;
-
 
 /*------------------------------------------------*/
 /* definitions of specific data for each category */
@@ -207,6 +209,8 @@ struct s_gras_datadesc_type {
   char                                *name;
   unsigned int                         name_len;
         
+  unsigned int                         refcounter;
+   
   /* payload */
   long int                             size[gras_arch_count];
   
@@ -230,9 +234,6 @@ gras_datadesc_declare_scalar(const char                       *name,
 			     gras_datadesc_type_cb_void_t     cb,
 			     gras_datadesc_type_t           **dst);
 
-/* Do not use it on a registered type ! */
-void gras_ddt_free(gras_datadesc_type_t **type);
-
 /****************************************************
  * Callback persistant state constructor/destructor *
  ****************************************************/
@@ -250,3 +251,4 @@ gras_dd_convert_elm(gras_datadesc_type_t *type,
 		    void *src, void *dst);
 
 #endif /* GRAS_DATADESC_PRIVATE_H */
+
