@@ -14,16 +14,3 @@ Error reporting
 
 </para>
 
-<!-- ##### ENUM gras_error_t ##### -->
-<para>
-
-</para>
-
-@no_error: no error
-@mismatch_error: Not found
-@system_error: a syscall did fail
-@network_error: error while sending/receiving data
-@timeout_error: not quick enough, dude
-@thread_error: error while [un]locking
-@unknown_error: no idea
-
