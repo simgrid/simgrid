@@ -1,7 +1,7 @@
 SUBDIRS= include src examples testsuite doc
 DISTCLEANFILES =  *~  
 
-ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros
+ACLOCAL = aclocal -I acmacro
 AUTOMAKE_OPTIONS = gnu
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
