@@ -1,0 +1,144 @@
+<!-- ##### SECTION Title ##### -->
+Data description
+
+<!-- ##### SECTION Short_Description ##### -->
+Simple ways to describe data to exchange
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_datadesc_from_nws ##### -->
+<para>
+
+</para>
+
+@desc: 
+@howmany: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@name: 
+@code: 
+
+
+<!-- ##### FUNCTION gras_datadesc_parse ##### -->
+<para>
+
+</para>
+
+@def: 
+@dst: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@name: 
+@Cdefinition: 
+@code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_array ##### -->
+<para>
+
+</para>
+
+@name: 
+@elm_type: 
+@size: 
+@code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_array_dyn ##### -->
+<para>
+
+</para>
+
+@name: 
+@elm_type: 
+@dynamic_size: 
+@code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_ref ##### -->
+<para>
+
+</para>
+
+@name: 
+@ref_type: 
+@code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_ref_disc ##### -->
+<para>
+
+</para>
+
+@name: 
+@discriminant: 
+@code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_struct ##### -->
+<para>
+
+</para>
+
+@name: 
+@code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_struct_add_code ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_type_code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_struct_add_name ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_type_name: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_union ##### -->
+<para>
+
+</para>
+
+@name: 
+@code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_union_add_code ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_type_code: 
+
+
+<!-- ##### MACRO gras_datadesc_declare_union_add_name ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_type_name: 
+
+

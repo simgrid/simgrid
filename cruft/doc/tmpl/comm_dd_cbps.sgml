@@ -1,0 +1,74 @@
+<!-- ##### SECTION Title ##### -->
+Data description callbacks persistant state
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_dd_cbps_block_begin ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_block_end ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_get ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_set ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+

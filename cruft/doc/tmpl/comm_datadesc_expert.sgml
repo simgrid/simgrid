@@ -1,0 +1,177 @@
+<!-- ##### SECTION Title ##### -->
+Advanced Data description
+
+<!-- ##### SECTION Short_Description ##### -->
+Advanced ways to describe data (for experts)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION gras_datadesc_declare_array_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@element_type: 
+@fixed_size: 
+@dynamic_size: 
+@post: 
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_ref_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@referenced_type: 
+@discriminant: 
+@post: 
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_add_code_cb ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_code: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_add_name_cb ##### -->
+<para>
+
+</para>
+
+@struct_code: 
+@field_name: 
+@field_type_name: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@pre_cb: 
+@post_cb: 
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_add_code_cb ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_code: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_add_name_cb ##### -->
+<para>
+
+</para>
+
+@union_code: 
+@field_name: 
+@field_type_name: 
+@pre_cb: 
+@post_cb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_cb ##### -->
+<para>
+
+</para>
+
+@name: 
+@field_count: 
+@post: 
+@code: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_block_begin ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_block_end ##### -->
+<para>
+
+</para>
+
+@ps: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_get ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_pop ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_push ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+
+<!-- ##### FUNCTION gras_dd_cbps_set ##### -->
+<para>
+
+</para>
+
+@ps: 
+@name: 
+@data: 
+@ddt: 
+
+
