@@ -1,3 +1,1 @@
 SUBDIRS= ping # bandwidth alnem saturate
-EXTRA_DIST=gras_stub_generator
-# gras_stub_generator WAN_3.platform.txt WAN_3.platform_2.txt 

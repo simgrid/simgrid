@@ -1,5 +1,5 @@
 #! @BASH@
 if test -x ./ping_simulator ; then
-  exec ./ping_simulator @srcdir@/../WAN_3.platform.txt @srcdir@/ping_deployment.txt
+  exec ./ping_simulator @top_srcdir@/examples/msg/small_platform.xml @srcdir@/ping_deployment.xml
 fi
 exit 77
