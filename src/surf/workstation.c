@@ -30,6 +30,12 @@ static workstation_t workstation_new(const char *name,
   return workstation;
 }
 
+static void workstation_free(void *workstation)
+{
+  xbt_free(((workstation_t)workstation)->name);
+  xbt_free(workstation);
+}
+
 static void create_workstations(void)
 {
   xbt_dict_cursor_t cursor = NULL;
@@ -42,7 +48,7 @@ static void create_workstations(void)
     xbt_dict_get(network_card_set, name, (void *) &nw_card);
     xbt_assert0(nw_card, "No corresponding card found");
     xbt_dict_set(workstation_set, name,
-		 workstation_new(name, cpu, nw_card), NULL);
+		 workstation_new(name, cpu, nw_card), workstation_free);
   }
 }
 
@@ -137,10 +143,11 @@ static void action_resume(surf_action_t action)
 
 static int action_is_suspended(surf_action_t action)
 {
-  xbt_assert0(action->resource_type ==
-	      ((surf_resource_t) surf_cpu_resource),
-	      "Resource type mismatch");
-  return surf_cpu_resource->extension_public->is_suspended(action);
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    return 0;
+  if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    return surf_cpu_resource->extension_public->is_suspended(action);
+  DIE_IMPOSSIBLE;
 }
 
 static surf_action_t communicate(void *workstation_src,
@@ -159,6 +166,20 @@ static e_surf_cpu_state_t get_state(void *workstation)
 
 static void finalize(void)
 {
+  xbt_dict_free(&workstation_set);
+  xbt_swag_free(surf_workstation_resource->common_public->states.ready_action_set);
+  xbt_swag_free(surf_workstation_resource->common_public->states.
+		running_action_set);
+  xbt_swag_free(surf_workstation_resource->common_public->states.
+		failed_action_set);
+  xbt_swag_free(surf_workstation_resource->common_public->states.done_action_set);
+
+  xbt_free(surf_workstation_resource->common_public);
+  xbt_free(surf_workstation_resource->common_private);
+  xbt_free(surf_workstation_resource->extension_public);
+
+  xbt_free(surf_workstation_resource);
+  surf_workstation_resource = NULL;
 }
 
 static void surf_workstation_resource_init_internal(void)

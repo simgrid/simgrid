@@ -13,7 +13,7 @@
 typedef struct workstation {
   surf_resource_t resource;	/* Any such object, added in a trace
 				   should start by this field!!! */
-  const char *name;
+  char *name;
   void *cpu;
   void *network_card;
 } s_workstation_t, *workstation_t;

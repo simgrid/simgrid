@@ -21,7 +21,7 @@ typedef struct network_link {
 				   should start by this field!!! */
   /* Using this object with the public part of
      resource does not make sense */
-  const char *name;
+  char *name;
   double bw_current;
   tmgr_trace_event_t bw_event;
   double lat_current;
@@ -33,7 +33,7 @@ typedef struct network_link {
 
 
 typedef struct network_card {
-  const char *name;
+  char *name;
   int id;
 } s_network_card_t, *network_card_t;
 

@@ -19,7 +19,7 @@ typedef struct surf_action_cpu {
 typedef struct cpu {
   surf_resource_t resource;	/* Any such object, added in a trace
 				   should start by this field!!! */
-  const char *name;
+  char *name;
   double power_scale;
   double power_current;
   tmgr_trace_event_t power_event;

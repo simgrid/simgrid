@@ -20,8 +20,7 @@ typedef struct lmm_element {
   lmm_variable_t variable;
   double value;
 } s_lmm_element_t, *lmm_element_t;
-#define insert_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->element_set))
-#define insert_active_elem_in_constraint(elem) xbt_swag_insert(elem,&(elem->constraint->active_element_set))
+#define insert_active_elem_in_constraint(elem) xbt_swag_insert_at_head(elem,&(elem->constraint->active_element_set))
 #define remove_active_elem_in_constraint(elem) xbt_swag_remove(elem,&(elem->constraint->active_element_set))
 
 typedef struct lmm_constraint {
@@ -65,7 +64,6 @@ typedef struct lmm_system {
 
 #define extract_variable(sys) xbt_swag_remove(xbt_swag_getFirst(&(sys->variable_set)),&(sys->variable_set))
 #define extract_constraint(sys) xbt_swag_remove(xbt_swag_getFirst(&(sys->constraint_set)),&(sys->constraint_set))
-#define insert_variable(sys,var) xbt_swag_insert(var,&(sys->variable_set))
 #define insert_constraint(sys,cnst) xbt_swag_insert(cnst,&(sys->constraint_set))
 #define remove_variable(sys,var) do {xbt_swag_remove(var,&(sys->variable_set));\
                                  xbt_swag_remove(var,&(sys->saturated_variable_set));} while(0)

@@ -141,6 +141,7 @@ void surf_finalize(void)
     xbt_dynar_free(&resource_list);
 
   tmgr_finalize();
+  surf_parse_lex_destroy();
 }
 
 double surf_solve(void)
@@ -186,7 +187,7 @@ double surf_solve(void)
   }
 
   if (min < 0.0)
-    return 0.0;
+    return -1.0;
 
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if (next_event_date > NOW + min)

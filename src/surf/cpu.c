@@ -14,13 +14,10 @@ surf_cpu_resource_t surf_cpu_resource = NULL;
 
 xbt_dict_t cpu_set = NULL;
 
-static void cpu_free(void *CPU)
+static void cpu_free(void *cpu)
 {
-/*   cpu_t cpu = CPU; */
-/* lmm_constraint_free(maxmin_system,cpu->constraint); */
-/* Clean somewhere else ! */
-
-  xbt_free(CPU);
+  xbt_free(((cpu_t)cpu)->name);
+  xbt_free(cpu);
 }
 
 /* power_scale is the basic power of the cpu when the cpu is
@@ -29,7 +26,7 @@ static void cpu_free(void *CPU)
    state_trace values mean SURF_CPU_ON if >0 and SURF_CPU_OFF
    otherwise.
 */
-static cpu_t cpu_new(const char *name, double power_scale,
+static cpu_t cpu_new(char *name, double power_scale,
 		     double power_initial,
 		     tmgr_trace_t power_trace,
 		     e_surf_cpu_state_t state_initial,
