@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-#include <gras.h>
+#include "gras.h"
 
 GRAS_LOG_NEW_DEFAULT_CATEGORY(Ping);
 
