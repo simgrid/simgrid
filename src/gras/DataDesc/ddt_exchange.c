@@ -758,8 +758,8 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
     } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
 	       sub_type->category.array_data.fixed_size > 0 &&
 	       sub_type->category.array_data.type->category_code == e_gras_datadesc_type_cat_scalar) {
-      array_data = sub_type->category.array_data;
       gras_datadesc_type_t subsub_type = array_data.type;
+      array_data = sub_type->category.array_data;
        
       VERB1("Array of %d fixed array of scalars, get it in one shot",count);
       if (subsub_type->aligned_size[GRAS_THISARCH] >= 
