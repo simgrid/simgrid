@@ -1,0 +1,60 @@
+/** \addtogroup GRAS_API
+  
+    \section GRAS_funct Offered functionnalities
+     - <b>Communication facilities</b>: Exchanging messages between peers
+       - \ref GRAS_dd: any data which may transit on the network must be
+         described beforehand so that GRAS can handle the platform
+         heterogeneity and convert them if needed.
+       - \ref GRAS_sock: this is how to open a communication channel to
+         other processes, and retrive information about them.
+       - \ref GRAS_msg: communications are message oriented. You have to
+         describe all possible messages and their payload beforehand, and
+         can then attach callbacks to the arrival of a given kind of message. 
+     - <b>Virtualization</b>: Running both on top of the simulator and on
+       top of real platforms, and portability support.
+       - \ref GRAS_globals: The use of globals is forbidden since the
+         "processes" are threads in simulation mode. \n
+	 This is how to let GRAS handle your globals properly.
+       - \ref GRAS_cond: How to declare specific code for the simulation mode
+          or for the real mode.
+       - \ref GRAS_virtu: You naturally don't want to call the
+          gettimeofday(2) function in simulation mode since it would give
+          you the time on the host running the simulation, not the time in
+          the simulated world (you are belonging to).\n
+	  This a system call virtualization layer, which also acts as a
+          portability layer.
+	  
+    \section GRAS_example Examples
+      
+    There is for now rather few examples of GRAS, but it's better than
+    nothing, isn't it?
+    
+       - \ref GRAS_ex_ping 
+	  
+    \section GRAS_todo TODO
+     Documentation related:
+       - Add an example to the \ref GRAS_msg section, at least
+       - Document examples/gras/gras_stub_generator utility and how to deal
+         with the fact that programs must have a main in RL and not in SG.
+       - Document example/gras/ping as it uses almost all of the GRAS
+         features.
+     
+     Code related: too long to be written here. See the TODO file
+     
+    @{
+*/     
+
+       /** \defgroup GRAS_dd      Data description      */       
+       /** \defgroup GRAS_sock    Sockets               */           
+       /** \defgroup GRAS_msg     Messages              */               
+	 
+       /** \defgroup GRAS_globals Globals               */ 
+       /** \defgroup GRAS_cond    Conditional execution */ 
+       /** \defgroup GRAS_virtu   Syscalls              */ 
+
+/** @} */
+
+/** \page GRAS_ex_ping The classical Ping-Pong in GRAS
+    \include gras/ping/ping.c
+  */
+
