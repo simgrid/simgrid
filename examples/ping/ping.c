@@ -30,15 +30,10 @@ gras_error_t register_messages(void);
 /* Code */
 gras_error_t register_messages(void) {
   gras_error_t errcode;
-  gras_datadesc_type_t *payload_t;
-  gras_msgtype_t *msg_t;
+  gras_msgtype_t *msg_t; /* FIXME: not needed */
 
-  TRY(gras_datadesc_declare_struct("msg_ping_t",&payload_t));
-  TRY(gras_datadesc_declare_struct_append(payload_t,"dummy",
-					  gras_datadesc_by_name("int")));
-
-  TRY(gras_msgtype_declare("ping", payload_t, &msg_t)); msg_t=NULL;
-  TRY(gras_msgtype_declare("pong", payload_t, &msg_t));
+  TRY(gras_msgtype_declare("ping", gras_datadesc_by_name("int"), &msg_t));
+  TRY(gras_msgtype_declare("pong", gras_datadesc_by_name("int"), &msg_t));
 
   return no_error;
 }
@@ -55,40 +50,38 @@ typedef struct {
 
 /* Function prototypes */
 int server_cb_ping_handler(gras_socket_t        *expeditor,
-			   gras_datadesc_type_t *payload_type,
 			   void                 *payload_data);
 int server (int argc,char *argv[]);
 
 
 int server_cb_ping_handler(gras_socket_t        *expeditor,
-			   gras_datadesc_type_t *payload_type,
 			   void                 *payload_data) {
-			      
+			     
   gras_error_t errcode;
-  msg_ping_t *msg=payload_data;
+  int msg=*(int*)payload_data;
   gras_msgtype_t *pong_t=NULL;
 
   server_data_t *g=(server_data_t*)gras_userdata_get();
 
   g->endcondition = 0;
   INFO3("SERVER: >>>>>>>> Got message PING(%d) from %s:%d <<<<<<<<", 
-	msg->dummy, 
+	msg, 
  	gras_socket_peer_name(expeditor),
 	gras_socket_peer_port(expeditor));
   
-  msg->dummy = 4321;
+  msg = 4321;
   TRY(gras_msgtype_by_name("pong",&pong_t));
-  errcode = gras_msg_send(expeditor, pong_t, payload_data);
+  errcode = gras_msg_send(expeditor, pong_t, &msg);
 
   if (errcode != no_error) {
     ERROR1("SERVER: Unable answer with PONG: %s\n", gras_error_name(errcode));
-    gras_socket_close(&(g->sock));
+    gras_socket_close(g->sock);
     return 1;
   }
 
-  free(msg);
   INFO0("SERVER: >>>>>>>> Answed with PONG(4321) <<<<<<<<");
   g->endcondition = 1;
+  gras_socket_close(expeditor);
   return 1;
 }
 
@@ -131,7 +124,7 @@ int server (int argc,char *argv[]) {
   if (!gras_if_RL())
     gras_sleep(5,0);
   INFO0("SERVER: Done.");
-  gras_socket_close(&(g->sock));
+  gras_socket_close(g->sock);
   return no_error;
 }
 
@@ -152,7 +145,7 @@ int client(int argc,char *argv[]) {
   client_data_t *g=gras_userdata_new(client_data_t);
 
   gras_socket_t  *from;
-  msg_ping_t     *msg_ping_data, *msg_pong_data;
+  int ping, pong;
   gras_msgtype_t *msg_ping_type, *msg_pong_type;
 
   const char *host = "127.0.0.1";
@@ -183,36 +176,31 @@ int client(int argc,char *argv[]) {
   INFO2("Client: >>>>>>>> Connected to server which is on %s:%d <<<<<<<<", 
 	gras_socket_peer_name(g->sock),gras_socket_peer_port(g->sock));
 
-  msg_ping_data = malloc(sizeof(msg_ping_t));
-  msg_ping_data->dummy = 1234;
-  errcode = gras_msg_send(g->sock, msg_ping_type, msg_ping_data);
+  ping = 1234;
+  errcode = gras_msg_send(g->sock, msg_ping_type, &ping);
   if (errcode != no_error) {
     fprintf(stderr, "Client: Unable send PING to server (%s)\n",
 	    gras_error_name(errcode));
-    gras_socket_close(&(g->sock));
+    gras_socket_close(g->sock);
     return 1;
   }
   INFO3("Client: >>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
-	msg_ping_data->dummy,
+	ping,
 	gras_socket_peer_name(g->sock),gras_socket_peer_port(g->sock));
 
-  msg_pong_data = NULL;
   if ((errcode=gras_msg_wait(6000,
-			     msg_pong_type,&from,(void**)&msg_pong_data))) {
+			     msg_pong_type,&from,&pong))) {
     ERROR1("Client: Why can't I get my PONG message like everyone else (%s)?",
 	   gras_error_name(errcode));
-    gras_socket_close(&(g->sock));
+    gras_socket_close(g->sock);
     return 1;
   }
 
   INFO3("Client: >>>>>>>> Got PONG(%d) got from %s:%d <<<<<<<<", 
-	msg_pong_data->dummy,
+	pong,
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
-  free(msg_ping_data);  
-  free(msg_pong_data);
-
-  gras_socket_close(&(g->sock));
+  gras_socket_close(g->sock);
   INFO0("Client: Done.");
   return 0;
 }

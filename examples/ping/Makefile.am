@@ -1,5 +1,7 @@
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include -g
+EXTRA_DIST=ping_test
+TESTS=test_rl test_sg
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=ping_simulator ping_client ping_server 
@@ -19,5 +21,4 @@ CLEANFILES= _ping_simulator.c _ping_client.c _ping_server.c
 # generate temps
 _ping_client.c _ping_server.c _ping_simulator.c: ping_deployment.txt $(top_srcdir)/src/examples/gras_stub_generator
 	$(top_srcdir)/src/examples/gras_stub_generator ping ping_deployment.txt >/dev/null
-
 
