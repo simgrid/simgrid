@@ -57,7 +57,7 @@ int main(int argc,char **argv) {
   char *key;
   void *data;
 
-  parse_log_opt(argc,argv,"dict.thresh=debug");
+  parse_log_opt(argc,argv,"dict.thresh=verbose");
   srand((unsigned int)time(NULL));
 
   printf("Dictionnary: CRASH test:\n");
@@ -79,7 +79,7 @@ int main(int argc,char **argv) {
 	key[k]=rand() % ('z' - 'a') + 'a';
       key[k]='\0';
       //      printf("[%d %s]\n",j,key);
-      TRYFAIL(gras_dict_insert(head,strdup(key),key,&free));
+      TRYFAIL(gras_dict_insert(head,key,key,&free));
     }
     nb=0;
     //    gras_dict_dump(head,(void (*)(void*))&printf);
@@ -97,7 +97,10 @@ int main(int argc,char **argv) {
   printf("\n Fill 200 000 elements, with keys being the number of element\n");
   printf("  (a point is 10 000 elements)\n");
   for (j=0;j<NB_ELM;j++) {
-    if (!(j%10000)) printf("."); fflush(stdout);
+    if (!(j%10000)) {
+      printf("."); 
+      fflush(stdout);
+    }
     if (!(key=malloc(10))) {
       fprintf(stderr,"Out of memory\n");
       abort();
@@ -140,9 +143,11 @@ int main(int argc,char **argv) {
     sprintf(key,"%d",j);
     TRYFAIL(gras_dict_remove(head,key));
   }
-
-  gras_dict_free(&head);
-  gras_dict_free(&head);
   printf("\n");
+
+  
+  printf("\n Free the structure (twice)\n");
+  gras_dict_free(&head);
+  gras_dict_free(&head);
   return 0;
 }
