@@ -49,8 +49,8 @@ AC_CHECK_HEADERS([sys/socket.h winsock.h winsock2.h \
 		  sys/time.h ])
 AC_CHECK_FUNCS([gettimeofday \
                 getdtablesize \
+		swapcontext \
                 sysconf])
-
 
 AC_MSG_CHECKING(how to link against winsock)
 save_LIBS="$LIBS"
@@ -95,11 +95,6 @@ dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
 AC_CHECK_LIB(nsl, gethostbyname, [LIBS="$LIBS -lnsl"])
 AC_CHECK_LIB(socket, connect,    [LIBS="$LIBS -lsocket"])
 
-AC_CHECK_LIB(c,swapcontext,
-  [AC_DEFINE([USE_CONTEXT],1,[Define if GNU contexts available and you wish to use them])],
-  [AC_MSG_ERROR([[Cannot find context in your libc, go away !]])])
-
-	
 dnl ####[ maint mode ]#######################################################
 AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
