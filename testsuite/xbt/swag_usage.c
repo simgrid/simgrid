@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "swag.h"
+#include "xbt/swag.h"
 
 typedef struct {
   s_xbt_swag_hookup_t setA;
@@ -22,8 +22,8 @@ int main(void)
   printf("%p %p %d\n",obj1,&(obj1->setB),
 	 (char *)&(obj1->setB) - (char *)obj1);
 
-  setA = xbt_swag_new((char *)&(obj1->setA) - (char *)obj1);
-  setB = xbt_swag_new((char *)&(obj1->setB) - (char *)obj1);
+  setA = xbt_swag_new(xbt_swag_offset(*obj1,setA));
+  setB = xbt_swag_new(xbt_swag_offset(*obj1,setB));
 
   xbt_swag_insert(obj1, setA);
   xbt_swag_insert(obj1, setB);
