@@ -40,5 +40,7 @@ void lmm_update_variable_weight(lmm_variable_t var,
 void lmm_update_constraint_bound(lmm_constraint_t cnst,
 				 xbt_maxmin_float_t bound);
 
+int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
+
 void lmm_solve(lmm_system_t sys);
 #endif				/* _SURF_MAXMIN_H */

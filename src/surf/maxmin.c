@@ -173,9 +173,9 @@ static void saturated_constraints_update(lmm_system_t sys,
 
     *min_usage = cnst->remaining / cnst->usage;
 
-    while (xbt_swag_extract
-	   (useless_cnst, &(sys->saturated_constraint_set))) {
-    }
+    while ((useless_cnst = xbt_swag_getFirst(&(sys->saturated_constraint_set))))
+      xbt_swag_extract(useless_cnst, &(sys->saturated_constraint_set));
+
     xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
   } else if (*min_usage == cnst->remaining / cnst->usage) {
     xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
@@ -313,6 +313,10 @@ void lmm_update_constraint_bound(lmm_constraint_t cnst,
   cnst->bound = bound;
 }
 
+int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst)
+{
+  return xbt_swag_belongs(cnst,&(sys->active_constraint_set));
+}
 
 
 /* void lmm_print(lmm_system_t sys) */
