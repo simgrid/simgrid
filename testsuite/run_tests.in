@@ -22,7 +22,7 @@ for test in xbt/log_usage@EXEEXT@                                 \
 	    "surf/surf_usage@EXEEXT@  --surf-path=@top_srcdir@/testsuite/surf/ platform.xml" \
 	    "surf/surf_usage2@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/ platform.xml" \
 	    \
-	    "msg/msg_test@EXEEXT@ --surf-path=@top_srcdir@/testsuite/msg/ platform.xml"
+	    "msg/msg_test@EXEEXT@ --surf-path=@top_srcdir@/examples/msg/"
 
 #	    gras/trp_tcp_usage      gras/trp_file_usage
 #	    gras/datadesc_usage@EXEEXT@

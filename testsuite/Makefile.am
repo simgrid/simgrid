@@ -9,7 +9,7 @@ EXTRA_DIST=run_tests.in \
   gras/datadesc.aix gras/datadesc.win32 gras/datadesc.g5 \
   gras/mk_datadesc_structs.pl \
   surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml \
-  msg/msg_platform.xml msg/msg_deployment.xml msg/messages.h
+  msg/messages.h
 
 
 # Test stuff
