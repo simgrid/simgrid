@@ -309,8 +309,9 @@ gras_cbps_block_end(gras_cbps_t *ps) {
  */
 void
 gras_cbps_i_push(gras_cbps_t        *ps, 
-		    int val) {
+		 int val) {
   gras_error_t errcode;
+  DEBUG1("push %d as a size",val);
   TRYFAIL(gras_dynar_push(ps->lints,&val));
 }
 /**
@@ -325,6 +326,7 @@ gras_cbps_i_pop(gras_cbps_t        *ps) {
   gras_assert0(gras_dynar_length(ps->lints) > 0,
 	       "gras_cbps_i_pop: no value to pop");
   gras_dynar_pop(ps->lints, &ret);
+  DEBUG1("pop %d as a size",ret);
   return ret;
 }
 
