@@ -40,14 +40,11 @@
 GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(Test, Top);
 GRAS_LOG_NEW_CATEGORY(Top);
 
-int main(int ac, char **av) {
-  gras_error_t errcode;
+void parse_log_opt(int argc, char **argv,const char *deft);
 
-  if (ac > 1) {
-    TRYFAIL(gras_log_control_set(av[1]));
-  } else {
-    TRYFAIL(gras_log_control_set("root.thresh=debug log.thresh=debug"));
-  }
+int main(int argc, char **argv) {
+  parse_log_opt(argc,argv,"root.thresh=debug log.thresh=debug");
+
   DEBUG1("val=%d", 1);
   WARNING1("val=%d", 2);
   CDEBUG2(Top, "val=%d%s", 3, "!");

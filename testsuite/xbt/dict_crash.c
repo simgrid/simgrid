@@ -48,14 +48,16 @@ static gras_error_t countelems(gras_dict_t *head,int*count) {
   return no_error;
 }
 
-int main() {
+void parse_log_opt(int argc, char **argv, const char *deft);
+
+int main(int argc,char **argv) {
   gras_error_t errcode;
   gras_dict_t *head=NULL;
   int i,j,k, nb;
   char *key;
   void *data;
 
-  TRY(gras_log_control_set("root.thresh=info"));
+  parse_log_opt(argc,argv,"dict.thresh=debug");
   srand((unsigned int)time(NULL));
 
   printf("Dictionnary: CRASH test:\n");

@@ -20,20 +20,21 @@ noinst_PROGRAMS =                             \
 
 noinst_SCRIPTS = run_tests gs_example
 
-dynar_int_LDADD=          $(top_srcdir)/src/base/libgrasutils.a
-dynar_double_LDADD=       $(top_srcdir)/src/base/libgrasutils.a
-dynar_string_LDADD=       $(top_srcdir)/src/base/libgrasutils.a
+log_usage_LDADD=          $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
-dict_usage_LDADD=         $(top_srcdir)/src/base/libgrasutils.a
-dict_crash_LDADD=         $(top_srcdir)/src/base/libgrasutils.a
-multidict_crash_LDADD=    $(top_srcdir)/src/base/libgrasutils.a
+dynar_int_LDADD=          $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+dynar_double_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+dynar_string_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
-config_usage_LDADD=       $(top_srcdir)/src/base/libgrasutils.a
+dict_usage_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+dict_crash_LDADD=         $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+multidict_crash_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
-log_usage_LDADD=           $(top_srcdir)/src/base/libgrasutils.a
+config_usage_LDADD=       $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
-gs_example_send_LDADD=    $(top_srcdir)/src/base/libgrasutils.a
-gs_example_receive_LDADD= $(top_srcdir)/src/base/libgrasutils.a
+
+gs_example_send_LDADD=    $(top_srcdir)/src/base/libgrasutils.a test_utils.o
+gs_example_receive_LDADD= $(top_srcdir)/src/base/libgrasutils.a test_utils.o
 
 TESTS=run_tests
 

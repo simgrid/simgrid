@@ -96,15 +96,15 @@ static gras_error_t traverse(gras_dict_t *head) {
   return no_error;
 }
 
-int main() {
+void parse_log_opt(int argc, char **argv,const char *deft);
+
+int main(int argc,char **argv) {
   gras_error_t errcode;
   gras_dict_t *head=NULL;
   char *data;
 
-  //  TRY(gras_log_control_set("root.thresh=info dict_collapse.thresh=debug"));
-  //TRY(gras_log_control_set("root.thresh=info"));
-  //  TRY(gras_log_control_set("root.thresh=info dict_search.thresh=info dict.thresh=debug dict_collapse.thresh=debug log.thresh=debug"));
-
+  parse_log_opt(argc,argv,"dict.thresh=debug");
+   
   printf("\nGeneric dictionnary: USAGE test:\n");
 
   printf(" Traverse the empty dictionnary\n");

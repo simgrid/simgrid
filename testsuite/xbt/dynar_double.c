@@ -11,12 +11,16 @@
 #include <stdio.h>
 #include <gras.h>
 
+void parse_log_opt(int argc, char **argv,const char *deft);
+
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
    int cpt,cursor;
    double d1,d2;
    
+   parse_log_opt(argc,argv,"dynar.thresh=debug");
+
    fprintf(stderr,"==== Traverse the empty dynar\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    gras_dynar_foreach(d,cursor,cpt){

@@ -48,12 +48,14 @@ int test5()
   return 1;
 }
  
-int main() {
+void parse_log_opt(int argc, char **argv,const char *deft);
+
+int main(int argc, char **argv) {
   gras_error_t errcode;
   gras_cfg_t *set;
   int ival;
   
-  gras_log_control_set("config.thresh=debug root.thresh=info");
+  parse_log_opt(argc,argv,"config.thresh=debug root.thresh=info");
 
   fprintf(stderr,"==== Alloc and free a config set.\n");
   set=make_set();

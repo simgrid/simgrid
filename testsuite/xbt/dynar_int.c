@@ -14,13 +14,15 @@
 #define NB_ELEM 5000
 GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
 
+void parse_log_opt(int argc, char **argv, const char *def);
+
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
    int i,cpt,cursor;
    
-   //   TRYFAIL(gras_log_control_set("root.thresh=debug dynar.thresh=info"));
-   TRYFAIL(gras_log_control_set("dynar.thresh=debug root.thresh=info"));
+   parse_log_opt(argc,argv,"dynar.thresh=debug");
+
    fprintf(stderr,"==== Traverse the empty dynar\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
    gras_dynar_foreach(d,cursor,i){

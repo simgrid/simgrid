@@ -17,12 +17,16 @@ void free_string(void *d){
   free(*(void**)d);
 }
 
+void parse_log_opt(int argc, char **argv,const char *deft);
+
 int main(int argc,char *argv[]) {
    gras_dynar_t *d;
    gras_error_t errcode;
    int cpt,i;
    char buf[1024];
    char *s1,*s2;
+   
+   parse_log_opt(argc,argv,"dynar.thresh=debug");
    
    fprintf(stderr,"==== Traverse the empty dynar\n");
    TRYFAIL(gras_dynar_new(&d,sizeof(int),NULL));
