@@ -330,11 +330,11 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     gras_dd_cat_struct_t  struct_data;
     gras_dd_cat_field_t  *field;
     char                 *field_data;
-
-   gras_assert1(type->category.struct_data.closed,
-		"Please call gras_datadesc_declare_array_close on %s before sending it",
-		type->name);
+    
     struct_data = type->category.struct_data;
+    gras_assert1(struct_data.closed,
+      "Please call gras_datadesc_declare_struct_close on %s before sending it",
+		type->name);
     VERB1(">> Send all fields of the structure %s",type->name);
     gras_dynar_foreach(struct_data.fields, cpt, field) {
       field_data = data;

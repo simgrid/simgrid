@@ -14,17 +14,30 @@
 
 #include "DataDesc/datadesc_private.h"
 
-GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(convert,DataDesc);
+GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(convert,datadesc);
 
 /***
- *** Table of all known architectures. 
+ *** Table of all known architectures:
+ ***
+ ***  l C<1/1> I<2/2:4/4:4/4:8/4> P<4/4:4/4> D<4/4:8/4>
+ ***  l C<1/1> I<2/2:4/4:8/8:8/8> P<4/4:4/4> D<4/4:8/8>
+ ***  B C<1/1> I<2/2:4/4:4/8:8/8> P<4/4:4/4> D<4/4:8/4>
+ ***  B C<1/1> I<2/2:4/8:8/8:8/8> P<4/4:4/4> D<4/4:8/4>
+ ***
  ***/
 
 const gras_arch_desc_t gras_arches[gras_arch_count] = {
-  {"little32", 0,   {1,2,4,4,8,   4,4,   4,8}},
-  {"little64", 0,   {1,2,4,8,8,   8,8,   4.8}},
-  {"big32",    1,   {1,2,4,4,8,   4,4,   4,8}},
-  {"big64",    1,   {1,2,4,8,8,   8,8,   4,8}}
+  {"little32", 0,   {1,2,4,4,8,   4,4,   4,8}, 4},
+  //                {1,2,4,4,4,   4,4,   4,4}}, 
+
+  {"little64", 0,   {1,2,4,8,8,   8,8,   4,8}, 8},
+  //                {1,2,4,8,8,   8,8,   4,8}},
+
+  {"big32",    1,   {1,2,4,4,8,   4,4,   4,8}, 8},
+  //                {1,2,4,4,8,   4,4,   4,8}},
+
+  {"big64",    1,   {1,2,4,8,8,   8,8,   4,8}, 8}
+  //                {1,2,4,8,8,   8,8,   4,8}}
 };
 
 const char *gras_datadesc_arch_name(int code) {
@@ -36,13 +49,6 @@ const char *gras_datadesc_arch_name(int code) {
 /**
  * Local function doing the grunt work
  */
-static void
-gras_dd_resize_int(const void *source,
-		   size_t sourceSize,
-		   void *destination,
-		   size_t destinationSize,
-		   int signedType,
-		   int lowOrderFirst);
 static void
 gras_dd_reverse_bytes(void *to,
 		      const void *from,
@@ -65,6 +71,12 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
   const void *r_data;
   void *l_data;
   size_t r_size, l_size;
+  /* Hexadecimal displayer
+  union {
+    char c[sizeof(int)];
+    int i;
+  } tester;
+  */
 
   gras_assert(type->category_code == e_gras_datadesc_type_cat_scalar);
 
@@ -75,13 +87,15 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
 	 r_size,l_size,src,dst);
 
   if (r_arch == GRAS_THISARCH) { 
-//      || scal.encoding == e_gras_dd_scalar_encoding_float) {
     DEBUG0("No conversion needed");
     return no_error;
   }
 
   r_size = type->size[r_arch];
   l_size = type->size[GRAS_THISARCH];
+
+  DEBUG2("remote=%c local=%c", gras_arches[r_arch].endian?'B':'l',
+	 gras_arches[GRAS_THISARCH].endian?'B':'l');
 
   if(r_size != l_size) {
     for(cpt = 0, r_data = src, l_data = dst; 
@@ -90,21 +104,97 @@ gras_dd_convert_elm(gras_datadesc_type_t *type, int count,
 	  r_data = (char *)r_data + r_size,
 	  l_data = (char *)l_data + l_size) {
 
-      DEBUG5("Resize elm %d from %d @%p to %d @%p",cpt, r_size,r_data, l_size,l_data);
-      gras_dd_resize_int(r_data, r_size, l_data, l_size,
-			 scal.encoding == e_gras_dd_scalar_encoding_sint,
-			 gras_arches[r_arch].endian && 
-			 gras_arches[r_arch].endian 
-			 != gras_arches[GRAS_THISARCH].endian);*/
+      /*
+      fprintf(stderr,"r_data=");
+      for (cpt=0; cpt<r_size; cpt++) {
+	tester.i=0;
+	tester.c[0]= ((char*)r_data)[cpt];
+	fprintf(stderr,"\\%02x", tester.i);
+      }
+      fprintf(stderr,"\n");
+      */
 
+      /* Resize that damn integer, pal */
+
+      unsigned char *l_sign, *r_sign;
+      int padding;
+      int sizeChange = l_size - r_size;
+      int lowOrderFirst = !gras_arches[r_arch].endian ||
+	gras_arches[r_arch].endian == gras_arches[GRAS_THISARCH].endian; 
+
+      DEBUG5("Resize integer %d from %d @%p to %d @%p",
+	     cpt, r_size,r_data, l_size,l_data);
+      gras_assert0(r_data != l_data, "Impossible to resize in place");
+
+      if(sizeChange < 0) {
+	DEBUG3("Truncate %d bytes (%s,%s)", -sizeChange,
+	       lowOrderFirst?"lowOrderFirst":"bigOrderFirst",
+	       scal.encoding == e_gras_dd_scalar_encoding_sint?"signed":"unsigned");
+	/* Truncate high-order bytes. */
+	memcpy(l_data, 
+	       gras_arches[r_arch].endian ? ((char*)r_data-sizeChange)
+ 	                                  :         r_data,
+	       l_size);
+
+	if(scal.encoding == e_gras_dd_scalar_encoding_sint) {
+	  DEBUG0("This is signed");
+	  /* Make sure the high order bit of r_data and l_data are the same */
+	  l_sign = gras_arches[GRAS_THISARCH].endian
+	         ? ((unsigned char*)l_data + l_size - 1)
+  	         :  (unsigned char*)l_data;
+	  r_sign = gras_arches[r_arch].endian
+	         ? ((unsigned char*)r_data + r_size - 1)
+	         :  (unsigned char*)r_data;
+	  DEBUG2("This is signed (r_sign=%c l_sign=%c", *r_sign,*l_sign);
+
+	  if ((*r_sign > 127) != (*l_sign > 127)) {
+	    if(*r_sign > 127)
+	      *l_sign += 128;
+	    else
+	      *l_sign -= 128;
+	  }
+	}
+      } else {
+	DEBUG1("Extend %d bytes", sizeChange);
+	if (scal.encoding != e_gras_dd_scalar_encoding_sint) {
+	  DEBUG0("This is signed");
+	  padding = 0; /* pad unsigned with 0 */
+	} else {
+	  /* extend sign */
+	  r_sign = gras_arches[r_arch].endian ? ((unsigned char*)r_data + r_size - 1)
+ 	                                      :  (unsigned char*)r_data;
+	  padding = (*r_sign > 127) ? 0xff : 0;
+	}
+
+	memset(l_data, padding, l_size);
+	memcpy(!gras_arches[r_arch].endian ? l_data : ((char *)l_data + sizeChange), 
+	       r_data, r_size);
+
+	/*
+	fprintf(stderr,"r_data=");
+	for (cpt=0; cpt<r_size; cpt++) {
+	  tester.i=0;
+	  tester.c[0] = ((char*)r_data)[cpt];
+	  fprintf(stderr,"\\%02x", tester.i);
+	}
+	fprintf(stderr,"\n");
+
+	fprintf(stderr,"l_data=");
+	for (cpt=0; cpt<l_size; cpt++) {
+	  tester.i=0;
+	  tester.c[0]= ((char*)l_data)[cpt];
+	  fprintf(stderr,"\\%02x", tester.i);
+	} fprintf(stderr,"\n");
+	*/
+      }
     }
-    src=dst; /* Make sure to reverse bytes on the right data */
   }
 
+  /* flip bytes if needed */
   if(gras_arches[r_arch].endian != gras_arches[GRAS_THISARCH].endian && 
      (l_size * count)  > 1) {
 
-    for(cpt = 0, r_data=src, l_data=dst;
+    for(cpt = 0, r_data=dst, l_data=dst;
 	cpt < count;
 	cpt++, 
 	  r_data = (char *)r_data + l_size, /* resizing already done */
@@ -142,65 +232,6 @@ gras_dd_reverse_bytes(void *to,
     charBegin = *fromBegin;
     *toBegin = *fromEnd;
     *toEnd = charBegin;
-  }
-}
-
-/*
- * Copies the integer value of size #sourceSize# stored in #source# to the
- * #destinationSize#-long area #destination#.  #signedType# indicates whether
- * or not the source integer is signed; #lowOrderFirst# whether or not the
- * bytes run least-significant to most-significant.
- *
- * It should be thread safe (operates on local variables and calls mem*)
- */
-static void
-gras_dd_resize_int(const void *r_data,
-		   size_t r_size,
-		   void *destination,
-		   size_t l_size,
-		   int signedType,
-		   int lowOrderFirst) {
-
-  unsigned char *destinationSign;
-  int padding;
-  int sizeChange = l_size - r_size;
-  unsigned char *r_dataSign;
-  
-  gras_assert0(sizeChange, "Nothing to resize");
-
-  if(sizeChange < 0) {
-    DEBUG1("Truncate %d bytes", -sizeChange);
-    /* Truncate high-order bytes. */
-    memcpy(destination, 
-	   lowOrderFirst?r_data:((char*)r_data-sizeChange),
-	   l_size);
-    if(signedType) {
-      DEBUG0("This is signed");
-      /* Make sure the high order bit of r_data and
-       * destination are the same */
-      destinationSign = lowOrderFirst ? ((unsigned char*)destination + l_size - 1) : (unsigned char*)destination;
-      r_dataSign = lowOrderFirst ? ((unsigned char*)r_data + r_size - 1) : (unsigned char*)r_data;
-      if((*r_dataSign > 127) != (*destinationSign > 127)) {
-	if(*r_dataSign > 127)
-	  *destinationSign += 128;
-	else
-	  *destinationSign -= 128;
-      }
-    }
-  } else {
-    DEBUG1("Extend %d bytes", sizeChange);
-    /* Pad with zeros or extend sign, as appropriate. */
-    if(!signedType)
-      padding = 0;
-    else {
-      r_dataSign = lowOrderFirst ? ((unsigned char*)r_data + r_size - 1)
-	                         : (unsigned char*)r_data;
-      padding = (*r_dataSign > 127) ? 0xff : 0;
-    }
-    memset(destination, padding, l_size);
-    memcpy(lowOrderFirst ? destination 
-                         : ((char *)destination + sizeChange),
-	   r_data, r_size);
   }
 }
 

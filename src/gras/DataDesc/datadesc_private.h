@@ -52,6 +52,8 @@ typedef struct {
   int sizeof_scalars[9]; /* char,short,int,long,long_long,
 			    pdata,pfunc,
 			    float,double */
+
+  int struct_boundary;
 } gras_arch_desc_t;
 
 extern const gras_arch_desc_t gras_arches[gras_arch_count];
@@ -128,7 +130,6 @@ typedef struct s_gras_dd_cat_scalar {
  */
 typedef struct s_gras_dd_cat_struct {
   gras_dynar_t *fields; /* elm type = gras_dd_cat_field_t */
-  int remaining; /**/
   int closed; /* gras_datadesc_declare_struct_close() was called */
 } gras_dd_cat_struct_t;
 
