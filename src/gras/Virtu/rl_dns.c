@@ -18,7 +18,6 @@
  * Next time maybe ;)
  */
 const char *gras_os_myname(void) {
-
    return "(unknown host)";
 }
 
