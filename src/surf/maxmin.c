@@ -62,7 +62,7 @@ void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
   for (i = 0; i < var->cnsts_number; i++) {
     elem = &var->cnsts[i];
     xbt_swag_remove(elem, &(elem->constraint->element_set));
-    if (xbt_swag_size(&(elem->constraint->element_set)))
+    if (!xbt_swag_size(&(elem->constraint->element_set)))
       make_constraint_inactive(sys, elem->constraint);
   }
   var->cnsts_number = 0;
