@@ -36,9 +36,11 @@ typedef struct {
 gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
 					const char *host,
 					unsigned short port,
+					int raw,
 					/* OUT */ gras_socket_t *sock);
 gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
 					unsigned short port,
+					int raw,
 					/* OUT */ gras_socket_t *sock);
 gras_error_t gras_trp_tcp_socket_accept(gras_socket_t  *sock,
 					gras_socket_t **dst);
@@ -107,12 +109,15 @@ void gras_trp_tcp_free_specific(void *s) {
 gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
 					const char *host,
 					unsigned short port,
+					int raw,
 					/* OUT */ gras_socket_t *sock){
   
   struct sockaddr_in addr;
   struct hostent *he;
   struct in_addr *haddr;
 
+  gras_assert0(!raw,"Raw TCP sockets not implemented yet");
+   
   sock->incoming = 1; /* TCP sockets are duplex'ed */
 
   sock->sd = socket (AF_INET, SOCK_STREAM, 0);
@@ -154,12 +159,15 @@ gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
  */
 gras_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
 					unsigned short port,
+					int raw,
 					/* OUT */ gras_socket_t *sock){
 //  int size = bufSize * 1024;
   int on = 1;
   struct sockaddr_in server;
 
-  gras_trp_tcp_specific_t *data=(gras_trp_tcp_specific_t*)self -> specific;
+  gras_assert0(!raw,"Raw TCP sockets not implemented yet");
+
+   gras_trp_tcp_specific_t *data=(gras_trp_tcp_specific_t*)self -> specific;
  
   sock->outgoing  = 1; /* TCP => duplex mode */
 

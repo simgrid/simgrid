@@ -42,18 +42,6 @@ void         gras_trp_exit(void);
 /* A plugin type */
 typedef struct gras_trp_plugin_ gras_trp_plugin_t;
 
-
-/**
- * e_gras_trp_plugin:
- * 
- * Caracterize each possible transport plugin
- */
-typedef enum e_gras_trp_plugin {
-   e_gras_trp_plugin_undefined = 0,
-     
-     e_gras_trp_plugin_tcp
-} gras_trp_plugin_type_t;
-
 /* A plugin type */
 struct gras_trp_plugin_ {
   char          *name;
@@ -63,9 +51,11 @@ struct gras_trp_plugin_ {
   gras_error_t (*socket_client)(gras_trp_plugin_t *self,
 				const char *host,
 				unsigned short port,
+				int raw,
 				/* OUT */ gras_socket_t *dst);
   gras_error_t (*socket_server)(gras_trp_plugin_t *self,
 				unsigned short port,
+				int raw,
 				/* OUT */ gras_socket_t *dst);
    
   gras_error_t (*socket_accept)(gras_socket_t  *sock,

@@ -129,7 +129,7 @@ gras_socket_server(unsigned short port,
   sock->port=port;
 
   /* Call plugin socket creation function */
-  errcode = trp->socket_server(trp, port, sock);
+  errcode = trp->socket_server(trp, port, 0/* not raw */, sock);
   if (errcode != no_error) {
     free(sock);
     return errcode;
@@ -176,6 +176,7 @@ gras_socket_client(const char *host,
   /* plugin-specific */
   errcode= (* trp->socket_client)(trp, 
 				  host ? host : "localhost", port,
+				  0 /* not raw */,
 				  sock);
   if (errcode != no_error) {
     free(sock);
