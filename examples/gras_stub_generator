@@ -115,7 +115,7 @@ int main (int argc,char *argv[]) {
   /*  Simulation setup */
   MSG_global_init();
   MSG_set_verbosity(MSG_SILENT);
-  MSG_set_channel_number(GRAS_MAX_CHANNEL);
+  MSG_set_channel_number(10); // GRAS_MAX_CHANNEL hardcoded since Alvin killed its definition
   MSG_create_environment(argv[1]);
 
   /*  Application deployment */
