@@ -31,23 +31,23 @@ xbt_TESTS=" xbt/log_usage@EXEEXT@;        \
             xbt/config_usage@EXEEXT@;     \
             xbt/heap_bench@EXEEXT@;"
 	   
-surf_TESTS="surf/maxmin_usage@EXEEXT@;                                                      \
-            surf/maxmin_bench@EXEEXT@;                                                      \
-	    surf/trace_usage@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/;              \
-	    surf/surf_usage@EXEEXT@  --surf-path=@top_srcdir@/testsuite/surf/ platform.xml; \
-	    surf/surf_usage2@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/ platform.xml;"
+surf_TESTS="surf/maxmin_usage@EXEEXT@;                                        \
+            surf/maxmin_bench@EXEEXT@;                                        \
+	    surf/trace_usage@EXEEXT@ --surf-path=@srcdir@/surf/;              \
+	    surf/surf_usage@EXEEXT@  --surf-path=@srcdir@/surf/ platform.xml; \
+	    surf/surf_usage2@EXEEXT@ --surf-path=@srcdir@/surf/ platform.xml;"
 
 msg_TESTS=" msg/msg_test@EXEEXT@ --surf-path=@top_srcdir@/examples/msg/;"
 
-gras_TESTS="gras/trp_tcp_usage;      gras/trp_file_usage;                                     \
-	    gras/datadesc_usage@EXEEXT@;                                                      \
-	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little32; \
-	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little64; \
-	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big32;    \
-	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big64;    \
-	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.aix;      \
-	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.win32;    \
-	    gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.g5;"      \
+gras_TESTS="gras/trp_tcp_usage;      gras/trp_file_usage;                       \
+	    gras/datadesc_usage@EXEEXT@;                                        \
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32; \
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little64; \
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32;    \
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big64;    \
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.aix;      \
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.win32;    \
+	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.g5;"      \
 	    
 ##
 ## Loop on all tests to run them
