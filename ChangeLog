@@ -1,12 +1,17 @@
-SimGrid (2.92) unstable; urgency=low
+SimGrid (2.92) NOT RELEASED YET; urgency=low
 
   Alpha 3 on the path to SimGrid 3
 
   [Martin]
   (xbt)
    - Bugfix: let dicts work with NULL content (_foreach didn't) and cleanups
+  (gras)
+   - API Change: gras_os_sleep to take the amount of seconds as a double.
+     Accepting an int was error prone since it was the only location where
+     seconds were coded as such. It leaded to damn rounding errors.
+   - Bugfix: Hard to belive that timers ever worked before this.
 
- -- Martin Quinson <mquinson@debian.org>  Wed, 23 Feb 2005 00:45:40 +0100
+ -- 
 
 SimGrid (2.91) unstable; urgency=low
 
