@@ -2,6 +2,9 @@
   - Doxygenification of all GRAS. gtk-doc-tools is dead in SG now.
   - Automatically extract all existing logging categories, and add the list
     to the documentation (long standing one, to say the less)
+  - Cleanup the known architecture table. Reorder the entries to group what
+    should be, and use a more consistant naming scheme.
+    (some of the test dataset are still to be regenerated)
 
 2005-02-04 Martin
   - Reenable GRAS/RL; keep GRAS/SG disabled for now
