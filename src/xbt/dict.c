@@ -179,7 +179,8 @@ gras_dict_remove_ext(gras_dict_t *dict,
 gras_error_t
 gras_dict_remove(gras_dict_t *dict,
 		 const char  *key) {
-  gras_assert(dict);
+  if (!dict) 
+     RAISE1(mismatch_error,"Asked to remove key %s from NULL dict",key);
 
   return gras_dictelm_remove(dict->head, key);
 }
