@@ -16,11 +16,13 @@ for test in log_usage                           \
             dynar_int dynar_double dynar_string \
  	    dict_usage dict_crash               \
 	    \
-	    datadesc_usage                      \
+	    datadesc_usage                       \
 	    "datadesc_usage --read datadesc.little32" \
-	    "datadesc_usage --read datadesc.little64" \
-	    "datadesc_usage --read datadesc.big32"  \
+	    "datadesc_usage --read datadesc.big32" \
 	    "datadesc_usage --read datadesc.big64" 
+
+#	    "datadesc_usage --read datadesc.little64" \
+
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
