@@ -29,23 +29,6 @@ struct s_m_host {
 */
 typedef struct s_m_host *m_host_t;
 
-/********************************* Link **************************************/
-struct s_m_link {
-  char *name;			/* link name if any */
-  void *simdata;		/* simulator data */
-  void *data;			/* user data */
-};
-
-/** \brief Link datatype  
-    \ingroup m_datatypes_management
-
-    A <em>link</em> is an agglomeration of communicating resources
-    representing a set of physical network links.
-
-    \see m_link_management
-*/
-typedef struct s_m_link *m_link_t;
-
 /********************************* Task **************************************/
 
 struct s_m_task {
@@ -123,5 +106,23 @@ typedef enum {
   MSG_STORE_AND_FORWARD = 1, /* 0 means uninitialized value */
   MSG_TCP
 } MSG_sharing_t;
+
+/************************ deprecated *****************************************/
+/* /\********************************* Link **************************************\/ */
+/* struct s_m_link { */
+/*   char *name;			/\* link name if any *\/ */
+/*   void *simdata;		/\* simulator data *\/ */
+/*   void *data;			/\* user data *\/ */
+/* }; */
+
+/* /\** \brief Link datatype   */
+/*     \ingroup m_datatypes_management */
+
+/*     A <em>link</em> is an agglomeration of communicating resources */
+/*     representing a set of physical network links. */
+
+/*     \see m_link_management */
+/* *\/ */
+/* typedef struct s_m_link *m_link_t; */
 
 #endif
