@@ -39,7 +39,6 @@
 ============================================================================
 
 * while (1) { fork; exec the child, wait in father }
-* message forwarding
 
  - core ok (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
  - virtualize (linux, solaris, SG) & conditions
@@ -181,15 +180,6 @@
 
 [Macro parseuse]
  Gerer les typedefs (necessite de l'aide de grassouillet)
- Gerer les pointeurs. 
-   Faut des annotations pour dire si c'est :
-    - un AZT
-    - un tableau dont la longueur est ailleurs dans la struct
-    - une ref
-   Ca peut se faire soit avec des commentaires, soit avec des macros se
-     reecrivant a rien dans la vraie vie, et parsee. Mais le risque est que
-     ces macros soient reecrites avant d'etre passee a mon bordel, selon les
-     cpp. 
  Gerer les unions => specifier des annotations, mais j'y crois pas
  Gerer les enum
  Gerer les long long
@@ -205,12 +195,6 @@
 [Grassouillet]
  Gerer les typedefs pour aliaser un type sur un autre
  Merger gs_type_union_append_field et gs_type_struc_append_field si possible.
- Gerer les enum ?
- gs_type_copy/gs_type_free
- A quoi sert le champ name de gs_type_struct_append_field ?
- Ca plante bizarement si on met une structure n'existant pas dans le
-   message (a l'usage)
- gs_type_dump, nardin, comment voir ce qui se passe sinon ??
  
 [Autres]
  Faire toutes les modifs aux Utils listees plus haut
