@@ -606,6 +606,7 @@ gras_datadesc_parse(const char            *name,
 	   name,res->name);
     xbt_abort();
   }    
+  gras_ddt_parse_lex_destroy();
   XBT_OUT;
   return res;
 }
