@@ -30,7 +30,8 @@ MKDB_OPTIONS=--sgml-mode --output-format=xml --ignore-files="ddt_parse.yy.c"
 FIXXREF_OPTIONS=
 
 # Used for dependencies.
-HFILE_GLOB=$(shell find $(top_srcdir)/src -name "*.h")
+HFILE_GLOB=$(shell find $(top_srcdir)/src -name "*.h") \
+           $(shell find $(top_srcdir)/include -name "*.h")
 CFILE_GLOB=$(shell find $(top_srcdir)/src -name "*.c"|grep -v ddt_parse.yy.c)
 #CFILE_GLOB=$(top_srcdir)/src/core/*.c
 

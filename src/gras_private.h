@@ -26,13 +26,13 @@
 
 #include "gras_config.h"
 
-#include "gras/error.h"
-#include "gras/log.h"
-#include "gras/module.h"
-#include "gras/dynar.h"
-#include "gras/dict.h"
-#include "gras/set.h"
-#include "gras/config.h"
+#include "gros/error.h"
+#include "gros/log.h"
+#include "gros/module.h"
+#include "gros/dynar.h"
+#include "gros/dict.h"
+#include "gros/set.h"
+#include "gros/config.h"
 
 #include "gras/core.h"
 #include "gras/process.h"

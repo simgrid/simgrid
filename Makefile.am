@@ -1,4 +1,4 @@
-SUBDIRS= src doc
+SUBDIRS= include src examples doc testsuite
 DISTCLEANFILES =  *~  
 
 ACLOCAL = aclocal -I acmacro -I /usr/share/aclocal/gnome2-macros

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <gras.h>
 
-#include "../src/gras/DataDesc/datadesc_interface.h"
+#include "gras/DataDesc/datadesc_interface.h"
 GRAS_LOG_NEW_DEFAULT_CATEGORY(test);
 
 #define READ  0

@@ -3,8 +3,8 @@ AC_PREREQ(2.59)
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.6.2],[martin.quinson@ens-lyon.fr])
-AC_CONFIG_SRCDIR([src/include/gras.h])
+AC_INIT([GRAS],[0.6.3],[martin.quinson@ens-lyon.fr])
+AC_CONFIG_SRCDIR([include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 
 AC_REVISION($Revision$)
@@ -95,29 +95,37 @@ AC_SUBST(WARNING)
 dnl ####[ Makes the output ]###################################################
 AC_CONFIG_FILES([
   Makefile
+  include/Makefile
   src/Makefile
-    src/include/Makefile
-    src/base/Makefile
-      src/base/Tests/Makefile
-      src/base/Tests/run_tests
-        src/base/Tests/trp_tcp_usage
-        src/base/Tests/trp_file_usage
-    src/examples/Makefile 
-      src/examples/ping/Makefile 
-      src/examples/ping/test_sg
+  examples/Makefile 
+    examples/ping/Makefile 
+    examples/ping/test_sg
   doc/Makefile
   tools/compile-remote-worker
+  testsuite/Makefile
+    testsuite/run_tests    
+    testsuite/gras/trp_tcp_usage
 ],[
-     test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
-     test -e src/base/Tests/trp_file_usage&& chmod +x src/base/Tests/trp_file_usage;
-     test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests;
+     test -e testsuite/run_tests          && chmod +x testsuite/run_tests;
+     test -e testsuite/gras/trp_tcp_usage && chmod +x testsuite/gras/trp_tcp_usage;
+     test -e testsuite/gras/trp_file_usage&& chmod +x testsuite/gras/trp_file_usage;
      test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
-     test -e src/examples/ping/test_sg    && chmod +x src/examples/ping/test_sg;
+     test -e examples/ping/test_sg        && chmod +x examples/ping/test_sg;
      chmod +x $srcdir/tools/gras-check-arch;
-     chmod +x $srcdir/src/examples/ping/test_rl])
+     chmod +x $srcdir/examples/ping/test_rl
+])
+
+#    src/gros/Makefile
+#    src/gras/Makefile
+
+#      testsuite/gras/Makefile
+#
+#        testsuite/gras/trp_tcp_usage
+#        testsuite/gras/trp_file_usage
+
 
 #      src/examples/pastry/Makefile
-#    src/modules/Makefile
+#    src/amok/Makefile
 #      src/examples/bandwidth/Makefile src/examples/saturate/Makefile
 #      src/examples/alnem/Makefile 
 

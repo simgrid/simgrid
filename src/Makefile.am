@@ -12,12 +12,13 @@ AM_CFLAGS= -DNDEBUG
 
 
 MAINTAINERCLEANFILES=Makefile.in
-INCLUDES= -I$(top_srcdir)/src/include \
+INCLUDES= -I$(top_srcdir)/include \
           @CFLAGS_SimGrid@
 EXTRA_DIST= \
+        gras_private.h\
+        \
         gros/dict_private.h \
         \
-        gras/gras_private.h    \
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h \
 	gras/Virtu/virtu_rl.h \
@@ -72,7 +73,7 @@ endif
 
 COMMON_S=\
   \
-  gros/module.c      gros/core_interface.h                                      \
+  gros/module.c      gros/gros_interface.h                                      \
   gros/log.c         gros/log_default_appender.c   gros/error.c                 \
   gros/dynar.c                                                                  \
   gros/dict.c        gros/dict_elm.c               gros/dict_cursor.c           \

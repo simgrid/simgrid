@@ -1,3 +1,8 @@
+2004-09-07 Martin Quinson
+  Version 0.6.3 (protocol not changed; API changed)
+  - Source code reorganization to allow Arnaud to put the surf in the same
+    tree.
+
 2004-08-18 Martin Quinson
   Version 0.6.2 (protocol not changed; API changed)
   - Interface cleanup: gras_msgtype_by_name returns the type (instead of a

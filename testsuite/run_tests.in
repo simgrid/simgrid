@@ -12,16 +12,16 @@ else
   valgrind=
 fi
 #	    config_usage                        \
-for test in log_usage                           \
-            dynar_int dynar_double dynar_string \
- 	    dict_usage dict_crash               \
+for test in gros/log_usage                           \
+            gros/dynar_int gros/dynar_double gros/dynar_string \
+ 	    gros/dict_usage gros/dict_crash               \
 	    \
-	    datadesc_usage                       
-#	    "datadesc_usage --read @srcdir@/datadesc.little32" \
-#	    "datadesc_usage --read @srcdir@/datadesc.big32" \
-#	    "datadesc_usage --read @srcdir@/datadesc.big64" 
+	    gras/datadesc_usage                       
+#	    "gras/datadesc_usage --read @srcdir@/datadesc.little32" \
+#	    "gras/datadesc_usage --read @srcdir@/datadesc.big32" \
+#	    "gras/datadesc_usage --read @srcdir@/datadesc.big64" 
 
-#	    "datadesc_usage --read @srcdir@/datadesc.little64" \
+#	    "gras/datadesc_usage --read @srcdir@/datadesc.little64" \
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
