@@ -54,6 +54,7 @@ void surf_action_change_state(surf_action_t action, e_surf_action_state_t state)
 
 void surf_init(void)
 {
+  xbt_init();
   if(!resource_list) resource_list = xbt_dynar_new(sizeof(surf_resource_private_t), NULL);
   if(!history) history = tmgr_history_new();
   if(!maxmin_system) maxmin_system = lmm_system_new();
