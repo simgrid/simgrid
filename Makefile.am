@@ -81,7 +81,8 @@ REMOTE_PREFIX ?='${HOME}/gras'
 remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	@echo;echo "----[ Recompile the package on remote hosts ]----"
 	@test -e buildlogs/@PACKAGE@-@VERSION@ || mkdir -p buildlogs/@PACKAGE@-@VERSION@
-	@for site in $(MACHINES) ; do \
+	@failed=0;\
+	 for site in $(MACHINES) ; do \
 	   machine=`echo $$site |sed 's/^\([^%]*\)%.*$$/\1/'`;\
 	   machine2=`echo $$site |sed 's/^\([^%]*\)%\(.*\)$$/\2/'`;\
 	   cmd="\"sh -c 'env REMOTE_PREFIX=$(REMOTE_PREFIX) $(REMOTE_PREFIX)/src/compile-remote-worker $(ACTION) 2>&1'\"";\
@@ -99,11 +100,12 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	   echo "-- Compiling... (the output gets into buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; \
 	   if echo $$site | grep  '%' >/dev/null ; then \
 	     if ssh -CA $$machine "env REMOTE_PREFIX=$(REMOTE_PREFIX) ssh -A $$machine2 $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log;\
-	     then echo "Sucessful"; else echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
+	     then echo "Sucessful"; else failed=1;echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
 	   else \
 	     if ssh -CA $$machine "eval $$cmd" 2>&1 > buildlogs/@PACKAGE@-@VERSION@/$$site.log ;\
-	     then echo "Sucessful"; else echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
+	     then echo "Sucessful"; else failed=1;echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
 	   fi;\
-	done
+	done;\
+	exit $$failed
 
 endif
