@@ -78,7 +78,7 @@ if test "x$with_context" = "xucontext" ; then
       AC_MSG_RESULT(there is no ucontext on windows, and none is needed.")
     else
       AC_MSG_RESULT([[no working ucontext found. Falling back to pthreads]])
-      with_context=pthreads
+      with_context=pthread
     fi
   fi
 fi
@@ -170,7 +170,7 @@ AC_CONFIG_FILES([
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
   doc/Makefile
     doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
-  tools/compile-remote-worker tools/Makefile
+  tools/graspe-slave            tools/Makefile
     tools/gras/Makefile
   testsuite/Makefile
   testsuite/run_tests    
@@ -180,7 +180,7 @@ AC_CONFIG_FILES([
     for file in                                                 \
      testsuite/run_tests                                        \
      testsuite/gras/trp_tcp_usage testsuite/gras/trp_file_usage \
-     tools/compile-remote-worker                                \
+     tools/graspe-slave                                         \
      examples/msg/run_msg_test                                  \
      examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
      examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
