@@ -49,7 +49,7 @@ gras_error_t gras_trp_tcp_chunk_recv(gras_socket_t *sd,
 				     char *data,
 				     size_t size);
 
-void         gras_trp_tcp_free_specific(void *s);
+void gras_trp_tcp_exit(gras_trp_plugin_t *plug);
 
 
 static int TcpProtoNumber(void);
@@ -77,12 +77,12 @@ typedef struct {
 gras_error_t
 gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
 
-  gras_trp_tcp_plug_data_t *tcp = malloc(sizeof(gras_trp_tcp_plug_data_t));
-  if (!tcp)
+  gras_trp_tcp_plug_data_t *data = malloc(sizeof(gras_trp_tcp_plug_data_t));
+  if (!data)
     RAISE_MALLOC;
 
-  FD_ZERO(&(tcp->msg_socks));
-  FD_ZERO(&(tcp->raw_socks));
+  FD_ZERO(&(data->msg_socks));
+  FD_ZERO(&(data->raw_socks));
 
   plug->socket_client = gras_trp_tcp_socket_client;
   plug->socket_server = gras_trp_tcp_socket_server;
@@ -92,9 +92,15 @@ gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
   plug->chunk_send    = gras_trp_tcp_chunk_send;
   plug->chunk_recv    = gras_trp_tcp_chunk_recv;
 
-  plug->data      = (void*)tcp;
+  plug->data = (void*)data;
+  plug->exit = gras_trp_tcp_exit;
 
   return no_error;
+}
+
+void gras_trp_tcp_exit(gras_trp_plugin_t *plug) {
+  DEBUG1("Exit plugin TCP (free %p)", plug->data);
+  free(plug->data);
 }
 
 gras_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
@@ -267,7 +273,7 @@ void gras_trp_tcp_socket_close(gras_socket_t *sock){
   if (!sock) return; /* close only once */
   tcp=sock->plugin->data;
 
-  DEBUG1("close tcp connection %d\n", sock->sd);
+  DEBUG1("close tcp connection %d", sock->sd);
 
   /* FIXME: no pipe in GRAS so far  
   if(!FD_ISSET(sd, &connectedPipes)) {
@@ -313,7 +319,7 @@ gras_trp_tcp_chunk_send(gras_socket_t *sock,
     int status = 0;
     
     status = write(sock->sd, data, (size_t)size);
-    DEBUG3("write(%d, %p, %ld);\n", sock->sd, data, size);
+    DEBUG3("write(%d, %p, %ld);", sock->sd, data, size);
     
     if (status == -1) {
       RAISE4(system_error,"write(%d,%p,%d) failed: %s",
@@ -349,7 +355,7 @@ gras_trp_tcp_chunk_recv(gras_socket_t *sock,
     int status = 0;
     
     status = read(sock->sd, data, (size_t)size);
-    DEBUG3("read(%d, %p, %ld);\n", sock->sd, data, size);
+    DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
     
     if (status == -1) {
       RAISE4(system_error,"read(%d,%p,%d) failed: %s",
