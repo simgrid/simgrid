@@ -1,9 +1,9 @@
-AC_PREREQ(2.57)
+ AC_PREREQ(2.57)
 
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.0.040304],[martin.quinson@ens-lyon.fr])
+AC_INIT([GRAS],[0.0.1],[martin.quinson@ens-lyon.fr])
 AC_CONFIG_SRCDIR([src/include/gras.h])
 AC_REVISION($Revision$)
 dnl A C_CONFIG_SUBDIRS(src/nws_portability)
@@ -83,17 +83,18 @@ AC_CONFIG_FILES([
       src/base/Tests/run_tests
         src/base/Tests/trp_tcp_usage
         src/base/Tests/trp_file_usage
-    src/modules/Makefile
     src/examples/Makefile 
       src/examples/ping/Makefile 
-      src/examples/bandwidth/Makefile src/examples/saturate/Makefile
-      src/examples/alnem/Makefile 
   doc/Makefile
 ],[( cd src/include ; test -e gras || ln -s . gras )
      test -e src/base/Tests/trp_tcp_usage && chmod +x src/base/Tests/trp_tcp_usage;
      test -e src/base/Tests/trp_file_usage && chmod +x src/base/Tests/trp_file_usage;
      test -e src/base/Tests/run_tests     && chmod +x src/base/Tests/run_tests;
      chmod +x src/examples/ping/test_rl; chmod +x src/examples/ping/test_sg])
+
+#    src/modules/Makefile
+#      src/examples/bandwidth/Makefile src/examples/saturate/Makefile
+#      src/examples/alnem/Makefile 
 
 AC_OUTPUT
 
