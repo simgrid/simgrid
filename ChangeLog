@@ -1,3 +1,34 @@
+SimGrid (2.93-cvs) NOT RELEASED YET; urgency=low
+
+---------------------------
+Tentative de TODO pour 2.93
+---------------------------
+Simplifier le déploiement RL
+ - Changer "make remote" en un script nommé GrasPE (Platform Expender)
+   - Ajouter des actions pour la disémination du code:
+     - scp (l'actuel dans make remote)
+     - rsync 
+     - pull (l'actuel du gras_stub deploy et qui dépend de wget, pas grave
+       pour l'instant)
+ - renomer gras-remote-worker en graspe-qqch
+XMLeries
+   - Versionner le surfxml
+   - Tester si flexml passe avec flex-old
+Pb des contextes     
+   - gras aura besoin des pthreads un jour 
+     => KISS et on oublie pth. A la place, on fait du context over pthread
+	quand les contextes locaux sont cassés
+
+---------------------
+Changements à ce jour
+---------------------
+
+  Alpha 4 on the path to SimGrid 3
+
+  (nothing yet)
+
+ -- SimGrid team <simgrid2-users@listes.ens-lyon.fr> NOT RELEASED YET
+
 SimGrid (2.92) unstable; urgency=low
 
   Alpha 3 on the path to SimGrid 3
@@ -21,7 +52,7 @@ SimGrid (2.92) unstable; urgency=low
      seconds were coded as such. It leaded to damn rounding errors.
    - Bugfix: Hard to belive that timers ever worked before this.
 
- -- SimGrid team <simgrid2-users@listes.ens-lyon.fr> Wed, 23 Feb 2005 22:09:21 +0100
+ -- SimGrid team <simgrid2-users@listes.ens-lyon.fr>  Wed, 23 Feb 2005 22:09:21 +0100
 
 SimGrid (2.91) unstable; urgency=low
 
