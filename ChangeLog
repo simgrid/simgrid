@@ -1,3 +1,9 @@
+2004-07-21 Martin Quinson
+  Version 0.1.2
+  - Some documentation cleanups
+  - remove the useless last argument of msgtype_declare
+  - rename the Virtu functions to fit into the 'os' namespace
+
 2004-07-19 Martin Quinson
   Version 0.1.1
   - Build shared library also
