@@ -3,7 +3,7 @@ AC_PREREQ(2.59)
 #We need a recent ACI
 ACI_PREREQ(2003.01.16)
 
-AC_INIT([GRAS],[0.1.1],[martin.quinson@ens-lyon.fr])
+AC_INIT([GRAS],[0.1.2],[martin.quinson@ens-lyon.fr])
 AC_CONFIG_SRCDIR([src/include/gras.h])
 AC_CONFIG_HEADERS([src/gras_config.h])
 
