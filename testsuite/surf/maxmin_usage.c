@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include "surf/maxmin.h"
 
-#define PRINT_VAR(var) printf(#var " = %g\n",lmm_variable_getvalue(var));
+#define PRINT_VAR(var) printf(#var " = %lg\n",lmm_variable_getvalue(var));
 
 /*                               */
 /*        ______                 */
