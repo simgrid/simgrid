@@ -28,10 +28,10 @@ for test in xbt/log_usage@EXEEXT@                                 \
 	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.g5" \
 	    \
 	    surf/maxmin_usage@EXEEXT@       surf/maxmin_bench@EXEEXT@               \
-	    "surf/trace_usage@EXEEXT@ --surf-path=surf/"                            \
-	    "surf/surf_usage@EXEEXT@  --surf-path=surf/ platform.xml" \
-	    "surf/surf_usage2@EXEEXT@ --surf-path=surf/ platform.xml" \
-	    "msg/msg_test@EXEEXT@ --surf-path=msg/ platform.xml"
+	    "surf/trace_usage@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/"                            \
+	    "surf/surf_usage@EXEEXT@  --surf-path=@top_srcdir@/testsuite/surf/ platform.xml" \
+	    "surf/surf_usage2@EXEEXT@ --surf-path=@top_srcdir@/testsuite/surf/ platform.xml" \
+	    "msg/msg_test@EXEEXT@ --surf-path=@top_srcdir@/testsuite/msg/ platform.xml"
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
