@@ -33,7 +33,7 @@ Changements à ce jour
      depend on modern ones (we use lex_destroy)
    - Better separation of SG and RL in the libs: remove all simulation code
      from libgras. As a result, this lib is now only 200k when stripped.
-     Some of the xbt modules may also be dupplicated (two sets and such) and
+     Some of the xbt modules may also be duplicated (two sets and such) and
      should be cleaned/killed before SG3.
   (msg)
    - Add MSG_task_get_name. The task names are mainly for debugging purpose,
