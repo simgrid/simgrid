@@ -51,8 +51,6 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
       return trace;
   }
 
-  /* Parsing et création de la trace */
-
   if ((f = fopen(filename, "r")) == NULL) {
     CRITICAL1("Cannot open file '%s'\n", filename);
     xbt_abort();
@@ -81,9 +79,6 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 	 &event.value) != 2) {
       CRITICAL2("%s,%d: Syntax error\n", filename, linecount);
       xbt_abort();
-/*       xbt_dynar_free(&(trace->event_list)); */
-/*       xbt_free(trace);	 */
-/*       return NULL; */
     }
 
     if (last_event) {
