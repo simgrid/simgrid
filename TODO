@@ -173,20 +173,14 @@
       Quand qqch arrive sur le pipe, c'est le signal du suicide.
       
 [Conversions inter-architectures]
- Marquer les padding bytes explicitement aux structures (juste le sizeof
-   doit suffire)
- Marquer les offsetof des fields explicitement a l'ajout.
- Prevoir tous les encoding pour les types elementaires 
-   [taille, sexe, signess[non, a un, a deux]] 
-   plus les flotants, justifiant un traitement a part
- Tester avec autoconf les encodings sur l'archi courante
- Trouver un moyen de convertir un encoding en un autre (si possible par
-   blocs)
- Generer ces convertors en assembleur a chaud, puisqu'on a rien de mieux a
-   foutre de notre temps
+ Convert in the same buffer when size increase
+ Exchange structures in one shoot.
+ Port to really exotic platforms (Cray is not IEEE ;)
+ Generate the convertion functions in assembly, since we have a plenty of
+   time to waste.
 
 [XML]
- Tout comme c'est dit dans les articles
+ Do what is written in the paper
 
 [Macro parseuse]
  Gerer les typedefs (necessite de l'aide de grassouillet)
