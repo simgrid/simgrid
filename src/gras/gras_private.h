@@ -40,12 +40,9 @@
 #include "gras/set.h"
 #include "gras/config.h"
 
-//#include "gras/data_description.h"
-//#include "gras/dd_type_bag.h"
-
 #include "gras/core.h"
+#include "gras/process.h"
 #include "gras/transport.h"
-//#include "gras/datadesc_simple.h"
 #include "gras/datadesc.h"
 #include "gras/socket.h"
 #include "gras/messages.h"
@@ -138,19 +135,18 @@ struct gras_msgheader_s {
 };
 
 /**
- * grasProcessData_t:
+ * gras_process_data_t:
  *
  * Data for each process 
  */
 typedef struct {
   /* queue of messages which where received but not wanted in msgWait, and therefore
      temporarly queued until the next msgHandle */
-  int grasMsgQueueLen;
-  gras_msg_t **grasMsgQueue;
+  gras_dynar_t *msg_queue; /* elm type: gras_msg_t */
 
   /* registered callbacks for each message */
-  int grasCblListLen;
-  gras_cblist_t *grasCblList;
+  gras_dynar_t *cbl_list; /* elm type: gras_cblist_t */
+   
 
   /* The channel we are listening to in SG for formated messages */
   int chan;
@@ -159,7 +155,7 @@ typedef struct {
 
   /* globals of the process */
   void *userdata;               
-} grasProcessData_t;
+} gras_process_data_t;
 
 
 /*@unused@*/static const DataDescriptor headerDescriptor[] =
@@ -191,11 +187,11 @@ typedef struct {
 gras_msgentry_t * grasMsgEntryGet(gras_msgid_t id);
 
 /**
- * grasProcessDataGet: 
+ * gras_process_data_get: 
  * 
  * Get the GRAS globals for this host
  */ /*@observer@*/
-grasProcessData_t *grasProcessDataGet(void);
+gras_process_data_t *gras_process_data_get(void);
 
 /**
  * gras_cb_get: 

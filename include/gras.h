@@ -40,6 +40,8 @@
 #include <gras/config.h>
 
 #include <gras/core.h>
+#include <gras/process.h>
+
 
 #include <gras/transport.h>
 #include <gras/datadesc.h>

@@ -8,8 +8,8 @@
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef GRAS_CORE_H
-#define GRAS_CORE_H
+#ifndef GRAS_PROCESS_H
+#define GRAS_PROCESS_H
 
 #include <stddef.h>    /* offsetof() */
 #include <sys/types.h>  /* size_t */
@@ -38,43 +38,48 @@
 BEGIN_DECL
 
 /* **************************************************************************
- * Garbage collection support
+ * Initializing the processes
  * **************************************************************************/
-typedef enum { free_after_use, free_never } e_gras_free_directive_t;
-
-
-/* **************************************************************************
- * Wrappers over OS functions
- * **************************************************************************/
+/**
+ * gras_process_init:
+ * 
+ * Perform the various intialisations needed by gras. Each process must run it
+ */
+gras_error_t gras_process_init(void);
 
 /**
- * gras_get_my_fqdn:
+ * gras_process_exit:
+ * 
+ * Frees the memory allocated by gras. Processes should run it
+ */
+gras_error_t gras_process_exit(void);
+
+/****************************************************************************/
+/* Manipulating User Data                                                   */
+/****************************************************************************/
+/**
+ * gras_userdata_get:
  *
- * Returns the fully-qualified name of the host machine, or NULL if the name
- * cannot be determined.  Always returns the same value, so multiple calls
- * cause no problems.
+ * Get the data associated with the current process.
  */
-const char *
-gras_get_my_fqdn(void);
+void *gras_userdata_get(void);
 
 /**
- * gras_time:
- * 
- * Get the time in number of second since the Epoch.
- * (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
+ * gras_userdata_set:
+ *
+ * Set the data associated with the current process.
  */
-double gras_time(void);
+void *gras_userdata_set(void *ud);
 
 /**
- * gras_sleep:
- * @sec: number of seconds to sleep
- * @usec: number of microseconds to sleep
- * 
- * sleeps for the given amount of seconds plus the given amount of microseconds.
+ * gras_userdata_new:
+ *
+ * Malloc and set the data associated with the current process.
  */
-void gras_sleep(unsigned long sec, unsigned long usec);
+
+#define gras_userdata_new(type) gras_userdata_set(malloc(sizeof(type)))
 
 END_DECL
 
-#endif /* GRAS_CORE_H */
+#endif /* GRAS_PROCESS_H */
 
