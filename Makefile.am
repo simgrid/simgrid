@@ -7,7 +7,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog \
 	acmacro/aci.m4 \
-	tools/gras-check-arch	tools/compile-remote-worker.in \
+	tools/gras-check-arch	tools/graspe-slave.in \
 	tools/MSG_visualization tools/platform_generation \
         tools/doxygen/index_create.pl
 
@@ -103,14 +103,14 @@ ACTIONS ?= scp clean untar config compile check
 
 REMOTE_PREFIX ?='simgrid'
 
-remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
+remote: @PACKAGE@-@VERSION@.tar.gz tools/graspe-slave
 	@echo;echo "----[ Recompile the package on remote hosts ]----"
 	@test -e @srcdir@/buildlogs/@PACKAGE@-@VERSION@ || mkdir -p @srcdir@/buildlogs/@PACKAGE@-@VERSION@
 	@failed=0;\
 	 for site in $(MACHINES) ; do \
 	   machine=`echo $$site |sed 's/^\([^%]*\)%.*$$/\1/'`;\
 	   machine2=`echo $$site |sed 's/^\([^%]*\)%\(.*\)$$/\2/'`;\
-	   cmd="\"sh -c 'env REMOTE_PREFIX=$(REMOTE_PREFIX) $(REMOTE_PREFIX)/src/compile-remote-worker $(ACTIONS) 2>&1'\"";\
+	   cmd="\"sh -c 'env REMOTE_PREFIX=$(REMOTE_PREFIX) $(REMOTE_PREFIX)/src/graspe-slave $(ACTIONS) 2>&1'\"";\
 	   if echo $$site | grep  '%' >/dev/null ; then \
 	     echo "----[ Compile on $$machine2 (behind $$machine) ]----";\
 	   else \
@@ -120,7 +120,7 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	   \
 	   if echo $(ACTIONS) |grep -q scp ; then \
  	     echo "-- Copy the data over"; \
-	     scp @srcdir@/@PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker \
+	     scp @srcdir@/@PACKAGE@-@VERSION@.tar.gz tools/graspe-slave \
 	       $$machine:$(REMOTE_PREFIX)/src;\
 	   fi; \
 	   \
