@@ -14,6 +14,27 @@ Describing data to be exchanged
 
 </para>
 
+<!-- ##### USER_FUNCTION gras_datadesc_type_cb_int_t ##### -->
+<para>
+
+</para>
+
+@vars: 
+@p_type: 
+@data: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION gras_datadesc_type_cb_void_t ##### -->
+<para>
+
+</para>
+
+@vars: 
+@p_type: 
+@data: 
+
+
 <!-- ##### FUNCTION gras_datadesc_by_name ##### -->
 <para>
 
@@ -33,14 +54,14 @@ Describing data to be exchanged
 @name: 
 
 
-<!-- ##### FUNCTION gras_datadesc_import_nws ##### -->
+<!-- ##### FUNCTION gras_datadesc_declare_array_fixed ##### -->
 <para>
 
 </para>
 
 @name: 
-@desc: 
-@howmany: 
+@element_type: 
+@fixed_size: 
 @dst: 
 @Returns: 
 
@@ -74,6 +95,17 @@ Describing data to be exchanged
 @code: 
 
 
+<!-- ##### FUNCTION gras_datadesc_declare_ref_generic ##### -->
+<para>
+
+</para>
+
+@name: 
+@discriminant: 
+@dst: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gras_datadesc_declare_struct ##### -->
 <para>
 
@@ -84,6 +116,25 @@ Describing data to be exchanged
 @Returns: 
 <!-- # Unused Parameters # -->
 @code: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_append ##### -->
+<para>
+
+</para>
+
+@struct_type: 
+@name: 
+@field_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_struct_close ##### -->
+<para>
+
+</para>
+
+@struct_type: 
 
 
 <!-- ##### FUNCTION gras_datadesc_declare_union ##### -->
@@ -97,6 +148,25 @@ Describing data to be exchanged
 @Returns: 
 <!-- # Unused Parameters # -->
 @code: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_append ##### -->
+<para>
+
+</para>
+
+@union_type: 
+@name: 
+@field_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gras_datadesc_declare_union_close ##### -->
+<para>
+
+</para>
+
+@union_type: 
 
 
 <!-- ##### FUNCTION gras_datadesc_cb_set_pre ##### -->

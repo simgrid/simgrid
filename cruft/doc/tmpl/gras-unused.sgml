@@ -2075,6 +2075,17 @@ Sockets
 @Returns: 
 @dst: 
 
+<!-- ##### FUNCTION gras_datadesc_import_nws ##### -->
+<para>
+
+</para>
+
+@name: 
+@desc: 
+@howmany: 
+@dst: 
+@Returns: 
+
 <!-- ##### FUNCTION gras_datadesc_parse ##### -->
 <para>
 
