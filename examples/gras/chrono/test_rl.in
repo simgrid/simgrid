@@ -5,6 +5,4 @@ else
   wine=wine
 fi
     
-$wine ./chrono_server@EXEEXT@ $@ &
-sleep 1
-$wine ./chrono_client@EXEEXT@ $@
+exec $wine ./chrono_multiplier@EXEEXT@ $@
