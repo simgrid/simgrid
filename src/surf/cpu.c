@@ -75,7 +75,7 @@ static void parse_cpu(void)
   char *name = NULL;
   double power_scale = 0.0;
   double power_initial = 0.0;
-  tmgr_trace_t power_trace = NULL;;
+  tmgr_trace_t power_trace = NULL;
   e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
   tmgr_trace_t state_trace = NULL;
 
