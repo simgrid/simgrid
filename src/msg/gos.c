@@ -61,6 +61,9 @@ MSG_error_t MSG_task_get(m_task_t * task,
   /* Get the task */
   h = MSG_host_self();
   h_simdata = h->simdata;
+
+  DEBUG2("Waiting for a task on channel %d (%s)", channel,h->name);
+
   while ((t = xbt_fifo_pop(h_simdata->mbox[channel])) == NULL) {
     xbt_assert2(!(h_simdata->sleeping[channel]),
 		"A process (%s(%d)) is already blocked on this channel",
@@ -127,6 +130,7 @@ int MSG_task_Iprobe(m_channel_t channel)
   m_host_t h = NULL;
   simdata_host_t h_simdata = NULL;
 
+  DEBUG2("Probing on channel %d (%s)", channel,h->name);
   CHECK_HOST();
   h = MSG_host_self();
   h_simdata = h->simdata;
@@ -152,12 +156,14 @@ int MSG_task_probe_from(m_channel_t channel)
   CHECK_HOST();
   h = MSG_host_self();
   h_simdata = h->simdata;
+
+  DEBUG2("Probing on channel %d (%s)", channel,h->name);
    
-  item = xbt_fifo_getFirstItem(((simdata_host_t)h->simdata)->mbox[channel]);
-  if (!item || !(t = xbt_fifo_get_item_content(item)) || (simdata_task_t)t->simdata)
+  item = xbt_fifo_getFirstItem(h->simdata->mbox[channel]);
+  if (!item || !(t = xbt_fifo_get_item_content(item)))
     return -1;
    
-  return MSG_process_get_PID(((simdata_task_t)t->simdata)->sender);
+  return MSG_process_get_PID(t->simdata->sender);
 }
 
 /** \ingroup msg_gos_functions
@@ -201,6 +207,9 @@ MSG_error_t MSG_task_put(m_task_t task,
   
   local_host = ((simdata_process_t) process->simdata)->host;
   remote_host = dest;
+
+  DEBUG4("Trying to send a task (%lg Mb) from %s to %s on channel %d", 
+	 task->simdata->message_size,local_host->name, remote_host->name, channel);
 
   xbt_fifo_push(((simdata_host_t) remote_host->simdata)->
 		mbox[channel], task);
@@ -266,6 +275,9 @@ MSG_error_t MSG_task_execute(m_task_t task)
 {
   m_process_t process = MSG_process_self();
   MSG_error_t res;
+
+  DEBUG1("Computing on %s", process->simdata->host->name);
+
   __MSG_task_execute(process, task);
 
   PAJE_PROCESS_PUSH_STATE(process,"E");  
