@@ -57,7 +57,7 @@ void *xbt_swag_extract(void *obj, xbt_swag_t swag)
 {
   size_t offset = swag->offset;
 
-  if (!obj)
+  if ((!obj) || (!swag))
     return NULL;
   if(!xbt_swag_belongs(obj, swag)) /* Trying to remove an object that
 				      was not in this swag */
