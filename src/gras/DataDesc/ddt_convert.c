@@ -17,7 +17,7 @@
 
 const gras_arch_desc_t gras_arches[gras_arch_count] = {
   {"i386",   0,   {1,2,4,4,8,   4,4,   4,8}},
-  {"ppc",    1.   {1,2,4,4,8,   4,4,   4,8}}
+  {"ppc",    1,   {1,2,4,4,8,   4,4,   4,8}}
 };
 
 const char *gras_datadesc_arch_name(int code) {

@@ -29,7 +29,7 @@ extern gras_set_t *gras_datadesc_set_local;
  * Descriptions of all known architectures *
  *******************************************/
 
-#define gras_arch_count 1
+#define gras_arch_count 2
 typedef enum {
   gras_ddt_scalar_char      = 0,
   gras_ddt_scalar_short     = 1,
