@@ -20,6 +20,9 @@ ping_server_LDADD=	$(top_builddir)/src/libgras.la
 MAINTAINERCLEANFILES = _ping_simulator.c _ping_client.c _ping_server.c 
 
 # generate temps
-_ping_client.c _ping_server.c _ping_simulator.c: $(srcdir)/ping_deployment.txt $(srcdir)/../gras_stub_generator
+NAME=ping
+PROCESSES= client server
+
+$(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _ping_simulator.c: $(srcdir)/ping_deployment.txt $(srcdir)/../gras_stub_generator
 	$(srcdir)/../gras_stub_generator ping ping_deployment.txt >/dev/null
 
