@@ -1,7 +1,7 @@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src
 AM_CFLAGS=-g
 
-CLEANFILES = *~ test a.out *.o datadesc_usage.out 
+CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out
 DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/*
 MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
