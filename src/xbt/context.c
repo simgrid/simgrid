@@ -108,9 +108,13 @@ static void *__context_wrapper(void *c)
   int i;
 
 #ifdef USE_PTHREADS
+  DEBUG0("**** Lock ****");
   pthread_mutex_lock(&(context->mutex));
+  DEBUG0("**** Releasing the prisonner ****");
   pthread_cond_signal(&(context->cond));
+  DEBUG0("**** Going to Jail ****");
   pthread_cond_wait(&(context->cond), &(context->mutex));
+  DEBUG0("**** Unlocking ****");
   pthread_mutex_unlock(&(context->mutex));
 #endif
 
@@ -176,10 +180,14 @@ void xbt_context_start(xbt_context_t context)
 {
 #ifdef USE_PTHREADS
   /* Launch the thread */
+  DEBUG0("**** Locking ****");
   pthread_mutex_lock(&(context->mutex));
+  DEBUG0("**** Pthread create ****");
   xbt_assert0(!pthread_create(context->thread, NULL, __context_wrapper, context),
 	      "Unable to create a thread.");
+  DEBUG0("**** Going to jail ****");
   pthread_cond_wait(&(context->cond), &(context->mutex));
+  DEBUG0("**** Unlocking ****");
   pthread_mutex_unlock(&(context->mutex));  
 #else
   makecontext (&(context->uc), (void (*) (void)) __context_wrapper,
