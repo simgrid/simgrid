@@ -8,7 +8,7 @@ if HAVE_SG
  noinst_PROGRAMS=ping_simulator ping_client ping_server 
 
  ping_simulator_SOURCES=_ping_simulator.c ping.c
- ping_simulator_LDADD=	$(top_srcdir)/src/base/libgrassg.a @LIBS_SimGrid@ @LIBS_XML@
+ ping_simulator_LDADD=	$(top_srcdir)/src/base/libgrassg.a @LIBS_SimGrid@
 else
  noinst_PROGRAMS=ping_client ping_server
 endif

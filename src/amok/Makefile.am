@@ -1,5 +1,5 @@
 DISTCLEANFILES=Makefile.in
-INCLUDES= -I$(top_srcdir)/src/include @CFLAGS_XML@ @CFLAGS_SimGrid@
+INCLUDES= -I$(top_srcdir)/src/include @CFLAGS_SimGrid@
 
 lib_LIBRARIES= libgrasmodules.a
 

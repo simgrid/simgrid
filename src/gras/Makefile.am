@@ -1,7 +1,7 @@
 SUBDIRS=. Tests
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include \
-          @CFLAGS_XML@ @CFLAGS_SimGrid@
+          @CFLAGS_SimGrid@
 EXTRA_DIST= ./gras_private.h    \
 	Core/dict_private.h \
 	Transport/transport_interface.h \
