@@ -30,8 +30,13 @@ debian: dist
 	dput local *.changes
 
 publish: dist
+	 @echo "----[ Put the documentation on the local filesystem ]----"
+	 rm -rf ~/public_html/gras/doc
+	 mkdir ~/public_html/gras/doc
+	 cp -r doc/html ~/public_html/gras/doc
 	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
 	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/gras/dl
+	 @echo "----[ Sync remote host ]----"
 	 make -C public_html publish
 
 mail:
@@ -52,7 +57,7 @@ mail:
 
 
 splint:
-	splint `find src examples -name '*.c'` +matchanyintegral -warnposix +boolint -Inws_portability/Include/ -Isrc/
+	splint `find src -name '*.c' | grep -v RL | grep -v SG` +matchanyintegral -warnposix +boolint -Inws_portability/Include/ -Isrc/include -Isrc/base -Isrc
 
 ##
 ## Cruft for remote compilation
@@ -106,6 +111,7 @@ remote: @PACKAGE@-@VERSION@.tar.gz tools/compile-remote-worker
 	     then echo "Sucessful"; else failed=1;echo "Failed (check buildlogs/@PACKAGE@-@VERSION@/$$site.log)"; fi;echo; \
 	   fi;\
 	done;\
+	tools/compile-stats;\
 	exit $$failed
 
 endif

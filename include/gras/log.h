@@ -150,13 +150,14 @@ typedef struct gras_log_category_s gras_log_category_t;
  * Do NOT access any members of this structure directly.
  */
 struct gras_log_category_s {
-  gras_log_category_t *parent;
-  gras_log_category_t *firstChild, *nextSibling;
-  const char *name;
-  int threshold;
-  int isThreshInherited;
-  gras_log_appender_t *appender;
-  int willLogToParent;
+            gras_log_category_t *parent;
+/*@null@*/  gras_log_category_t *firstChild; 
+/*@null@*/  gras_log_category_t *nextSibling;
+            const char *name;
+            int threshold;
+            int isThreshInherited;
+/*@null@*/  gras_log_appender_t *appender;
+            int willLogToParent;
   // TODO: Formats?
 };
 
