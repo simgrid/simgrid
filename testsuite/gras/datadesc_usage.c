@@ -65,6 +65,7 @@ gras_error_t test_chain_list(gras_socket_t *sock, int direction);
 gras_error_t test_graph(gras_socket_t *sock, int direction);
 
 gras_error_t test_pbio(gras_socket_t *sock, int direction);
+gras_error_t test_clause(gras_socket_t *sock, int direction);
 
 /* defined in datadesc_structures.c, which in perl generated */
 gras_error_t test_structures(gras_socket_t *sock, int direction); 
@@ -261,7 +262,7 @@ gras_error_t test_hetestruct(gras_socket_t *sock, int direction) {
   if (direction == READ || direction == RW) {
     gras_assert(i->c1 == j->c1);
     gras_assert(i->c2 == j->c2);
-    gras_assert2(i->l1 == j->l1,"i->l1(=%d)  !=  j->l1(=%d)",i->l1,j->l1);
+    gras_assert2(i->l1 == j->l1,"i->l1(=%ld)  !=  j->l1(=%ld)",i->l1,j->l1);
     gras_assert(i->l2 == j->l2);
     free(j);
   }
@@ -522,6 +523,88 @@ gras_error_t test_pbio(gras_socket_t *sock, int direction) {
   return no_error;
 }
 
+typedef struct {
+   int num_lits; /* size of next array */
+   int* literals;
+} Clause;
+
+void Clause_pre_cb  (void *vars,gras_datadesc_type_t *p_type,void *data);
+int  Clause_num_lits(void *vars,gras_datadesc_type_t *p_type,void *data);
+
+void Clause_pre_cb(void *vars,
+		   gras_datadesc_type_t *p_type,
+		   void *data) {
+  Clause c=*(Clause*)data;
+  int *count=malloc(sizeof(int));
+  *count=c.num_lits;
+
+  gras_dd_cbps_push(vars,"num_lits",count,
+		    gras_datadesc_by_name("int"));
+  DEBUG2("writen data=%p (got %p)",count,data);
+  DEBUG1("writen count=%d",*count);
+}
+
+int Clause_num_lits(void *vars,
+		    gras_datadesc_type_t *p_type,
+		    void *data) {
+  //  int *res;
+  gras_datadesc_type_t *ddt;
+  void *d = gras_dd_cbps_get (vars,"num_lits",&ddt);
+  DEBUG1("read data=%p",d);
+  DEBUG1("read count=%d",*(int*)d);
+  return *(int*)d;
+}
+
+gras_error_t test_clause(gras_socket_t *sock, int direction) {
+  gras_error_t errcode;
+  gras_datadesc_type_t *ddt,*array_t;
+  Clause *i,*j;
+  int cpt;
+  
+  INFO0("---- Test on struct containing dynamic array and its size (cbps test) ----");
+
+  /* create and fill the struct */
+  if (! (i=malloc(sizeof(Clause))) )
+    RAISE_MALLOC;
+
+  i->num_lits = 5432;
+  if (! (i->literals = malloc(sizeof(int) * i->num_lits)) )
+    RAISE_MALLOC;
+  for (cpt=0; cpt<i->num_lits; cpt++)
+    i->literals[cpt] = cpt * cpt - ((cpt * cpt) / 2);
+  DEBUG3("created data=%p (within %p @%p)",&(i->num_lits),i,&i);
+  DEBUG1("created count=%d",i->num_lits);
+
+  /* create the damn type descriptor */
+  TRYFAIL(gras_datadesc_declare_struct("Clause",&ddt));
+  gras_datadesc_cb_set_pre(ddt,Clause_pre_cb);
+  
+  TRYFAIL(gras_datadesc_declare_struct_append(ddt,"num_lits",
+					      gras_datadesc_by_name("int")));
+
+  TRYFAIL(gras_datadesc_declare_array_dyn("Clause{int[]}",
+					  gras_datadesc_by_name("int"),
+					  Clause_num_lits,
+					  &array_t));
+  TRYFAIL(gras_datadesc_declare_ref("Clause{int[]}*",array_t,&array_t));
+  TRYFAIL(gras_datadesc_declare_struct_append(ddt,"literals",array_t));
+  gras_datadesc_declare_struct_close(ddt);
+  TRYFAIL(gras_datadesc_declare_ref("Clause*",ddt,&ddt));
+
+  TRY(write_read(ddt, &i,&j, sock,direction));
+  if (direction == READ || direction == RW) {
+    gras_assert(i->num_lits == j->num_lits);
+    for (cpt=0; cpt<i->num_lits; cpt++)
+      gras_assert(i->literals[cpt] == j->literals[cpt]);
+    
+    free(j->literals);
+    free(j);
+  }
+  free(i->literals);
+  free(i);
+  return no_error;
+}
+
 int main(int argc,char *argv[]) {
   gras_error_t errcode;
   gras_socket_t *sock;
@@ -556,7 +639,6 @@ int main(int argc,char *argv[]) {
   }
   r_arch = (int)r_arch_char;
   
-  
   TRYFAIL(test_int(sock,direction));    
   TRYFAIL(test_float(sock,direction));  
   TRYFAIL(test_double(sock,direction));  
@@ -576,6 +658,8 @@ int main(int argc,char *argv[]) {
   TRYFAIL(test_graph(sock,direction));
 
   TRYFAIL(test_pbio(sock,direction));
+
+  TRYFAIL(test_clause(sock,direction));
 
   if (direction != RW) 
     gras_socket_close(sock);
