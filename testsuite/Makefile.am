@@ -1,10 +1,10 @@
 INCLUDES = -I$(top_srcdir)/src/include
-AM_CFLAGS=-g -Wno-unused-function 
+AM_CFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o
 DISTCLEANFILES=Makefile.in *~
 EXTRA_DIST=run_tests.in \
-  datadesc_usage.i386 datadesc_usage.ppc datadesc_usage.sparc
+  datadesc.i386 datadesc.ppc datadesc.sparc
 
 # Test stuff
 
