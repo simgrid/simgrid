@@ -275,3 +275,7 @@ void surf_workstation_resource_init_CLM03(const char *filename)
 /*     } */
 /*   } */
 }
+
+void surf_workstation_resource_init_resource_init_KCCFLN05(const char *filename)
+{
+}
