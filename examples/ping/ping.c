@@ -40,18 +40,18 @@ void register_messages(void) {
 
 /* Global private data */
 typedef struct {
-  gras_socket_t *sock;
+  gras_socket_t sock;
   int endcondition;
 } server_data_t;
 
 /* Function prototypes */
-int server_cb_ping_handler(gras_socket_t        *expeditor,
-			   void                 *payload_data);
+int server_cb_ping_handler(gras_socket_t  expeditor,
+			   void          *payload_data);
 int server (int argc,char *argv[]);
 
 
-int server_cb_ping_handler(gras_socket_t        *expeditor,
-			   void                 *payload_data) {
+int server_cb_ping_handler(gras_socket_t  expeditor,
+			   void          *payload_data) {
 			     
   gras_error_t errcode;
   int msg=*(int*)payload_data;
@@ -116,7 +116,7 @@ int server (int argc,char *argv[]) {
   if (g->endcondition)
   
   if (!gras_if_RL())
-    gras_os_sleep(5,0);
+    gras_os_sleep(1,0);
   gras_socket_close(g->sock);
   free(g);
   gras_exit();
@@ -130,7 +130,7 @@ int server (int argc,char *argv[]) {
 
 /* Global private data */
 typedef struct {
-  gras_socket_t *sock;
+  gras_socket_t sock;
 } client_data_t;
 
 /* Function prototypes */
@@ -140,7 +140,7 @@ int client(int argc,char *argv[]) {
   gras_error_t errcode;
   client_data_t *g;
 
-  gras_socket_t  *from;
+  gras_socket_t from;
   int ping, pong;
 
   const char *host = "127.0.0.1";
@@ -155,7 +155,7 @@ int client(int argc,char *argv[]) {
   } 
 
   INFO2("Launch client (server on %s:%d)",host,port);
-  gras_os_sleep(5,0); /* Wait for the server to be setup */
+  gras_os_sleep(1,0); /* Wait for the server startup */
   if ((errcode=gras_socket_client(host,port,&(g->sock)))) {
     ERROR1("Client: Unable to connect to the server. Got %s",
 	   gras_error_name(errcode));
