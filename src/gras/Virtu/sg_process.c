@@ -48,7 +48,6 @@ gras_process_init() {
 	    MSG_host_get_name(MSG_host_self()),GRAS_MAX_CHANNEL);
 
   pd->chan = i;
-  pd->sock = NULL;
   hd->proc[ i ] = MSG_process_self_PID();
 
   /* take a free RAW channel for this process */
@@ -59,8 +58,12 @@ gras_process_init() {
 	    MSG_host_get_name(MSG_host_self()),GRAS_MAX_CHANNEL);
   }
   pd->rawChan = i;
-  pd->rawSock = NULL;
+
   hd->proc[ i ] = MSG_process_self_PID();
+
+  /* Connect a dummy socket to ourselves. It's returned by select() */
+  TRY(gras_socket_client(MSG_host_get_name(MSG_host_self()),
+			 pd->chan, &(pd->sock)));
 
   VERB2("Creating process '%s' (%d)",
 	   MSG_process_get_name(MSG_process_self()),
@@ -76,7 +79,7 @@ gras_process_exit() {
   int cpt;
   gras_sg_portrec_t pr;
 
-  gras_assert0(hd && pd,"Run gras_process_init!!\n");
+  gras_assert0(hd && pd,"Run gras_process_init!!");
 
   INFO2("GRAS: Finalizing process '%s' (%d)",
 	MSG_process_get_name(MSG_process_self()),MSG_process_self_PID());

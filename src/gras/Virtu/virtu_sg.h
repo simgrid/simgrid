@@ -31,5 +31,14 @@ typedef struct {
 
 } gras_hostdata_t;
 
+/* data for each socket (FIXME: find a better location for that)*/
+typedef struct {
+  int from_PID;    /* process which sent this message */
+  int to_PID;      /* process to which this message is destinated */
+
+  m_host_t to_host;   /* Who's on other side */
+  m_channel_t to_chan;/* Channel on which the other side is earing */
+} gras_trp_sg_sock_data_t;
+
 
 #endif /* VIRTU_SG_H */

@@ -57,18 +57,6 @@ typedef struct {
   int placeholder; /* nothing plugin specific so far */
 } gras_trp_sg_plug_data_t;
 
-/***
- *** Specific socket part
- ***/
-typedef struct {
-  int from_PID;    /* process which sent this message */
-  int to_PID;      /* process to which this message is destinated */
-
-  m_host_t to_host;   /* Who's on other side */
-  m_channel_t to_chan;/* Channel on which the other side is earing */
-} gras_trp_sg_sock_data_t;
-
-
 
 /***
  *** Code
@@ -202,18 +190,6 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
     pr.raw    = sock->raw;
     TRY(gras_dynar_push(hd->ports,&pr));
     
-    if (sock->raw) {
-      if (pd->rawSock) 
-	WARN1("asked to open two raw server sockets on %s, first one lost",
-	      MSG_host_get_name(MSG_host_self()));
-      pd->rawSock = sock;
-    } else {
-      if (pd->sock) 
-	WARN1("asked to open two server sockets on %s, first one lost",
-	      MSG_host_get_name(MSG_host_self()));
-      pd->sock = sock;
-    }
-
   default:
     return errcode;
   }
@@ -238,7 +214,6 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 
 void gras_trp_sg_socket_close(gras_socket_t *sock){
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_procdata_t *pd=gras_procdata_get();
   int cpt;
   gras_sg_portrec_t *pr;
 
@@ -253,11 +228,6 @@ void gras_trp_sg_socket_close(gras_socket_t *sock){
       if (pr->port == sock->port) {
 	gras_dynar_cursor_rm(hd->ports, &cpt);
 
-	if (sock->raw) {
-	  pd->rawSock = NULL;
-	} else {
-	  pd->sock = NULL;
-	}
 	return;
       }
     }
