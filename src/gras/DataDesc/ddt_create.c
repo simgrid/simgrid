@@ -44,9 +44,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
 }
 
 /**
- * gras_datadesc_by_name:
- *
- * Retrieve a type from its name
+ * This returns NULL when no type of this name can be found
  */
 gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
 
@@ -64,8 +62,6 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
 }
 
 /**
- * gras_datadesc_by_id:
- *
  * Retrieve a type from its code
  */
 xbt_error_t gras_datadesc_by_id(long int              code,
@@ -76,8 +72,6 @@ xbt_error_t gras_datadesc_by_id(long int              code,
 }
 
 /**
- * gras_datadesc_scalar:
- *
  * Create a new scalar and give a pointer to it 
  */
 gras_datadesc_type_t 
@@ -117,11 +111,7 @@ gras_datadesc_type_t
 }
 
 
-/**
- * gras_dd_cat_field_free:
- *
- * Frees one struct or union field
- */
+/** Frees one struct or union field */
 void gras_dd_cat_field_free(void *f) {
   gras_dd_cat_field_t field = *(gras_dd_cat_field_t *)f;
   XBT_IN;
@@ -133,11 +123,7 @@ void gras_dd_cat_field_free(void *f) {
   XBT_OUT;
 }
 
-/**
- * gras_datadesc_struct:
- *
- * Create a new struct and give a pointer to it 
- */
+/** Create a new struct and give a pointer to it */
 gras_datadesc_type_t 
   gras_datadesc_struct(const char            *name) {
 
@@ -169,11 +155,7 @@ gras_datadesc_type_t
   return res;
 }
 
-/**
- * gras_datadesc_struct_append:
- *
- * Append a field to the struct
- */
+/** Append a field to the struct */
 void
 gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
 			    const char          *name,
@@ -235,6 +217,8 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   XBT_OUT;
 }
 
+/** No new field can be added afterward, and it is mandatory to close the structure before using it.
+ */
 void
 gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
   XBT_IN;
@@ -249,7 +233,7 @@ gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
 /**
  * gras_datadesc_cycle_set:
  * 
- * Tell GRAS that the pointers of the type described by @ddt may present
+ * Tell GRAS that the pointers of the type described by ddt may present
  * some loop, and that the cycle detection mecanism is needed.
  *
  * Note that setting this option when not needed have a rather bad effect 
@@ -259,10 +243,11 @@ void
 gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
   ddt->cycle = 1;
 }
+
 /**
  * gras_datadesc_cycle_unset:
  * 
- * Tell GRAS that the pointers of the type described by @ddt do not present
+ * Tell GRAS that the pointers of the type described by ddt do not present
  * any loop and that cycle detection mecanism are not needed.
  * (default)
  */
@@ -357,15 +342,13 @@ gras_datadesc_union_append(gras_datadesc_type_t  union_type,
   }
 }
 
+
+/** No new field can be added afterward, and it is mandatory to close the union before using it.*/
 void
 gras_datadesc_union_close(gras_datadesc_type_t union_type) {
    union_type->category.union_data.closed = 1;
 }
-/**
- * gras_datadesc_ref:
- *
- * Create a new ref to a fixed type and give a pointer to it 
- */
+
 gras_datadesc_type_t 
   gras_datadesc_ref(const char           *name,
 		    gras_datadesc_type_t  referenced_type) {
@@ -404,9 +387,9 @@ gras_datadesc_type_t
   return res;
 }
 /**
- * gras_datadesc_ref_generic:
- *
- * Create a new ref to a type given at use time, and give a pointer to it 
+ * The callback passed in argument is to be used to select which type is currently used.
+ * So, when GRAS wants to send a generic reference, it passes the current data to the selector 
+ * callback and expects it to return the type description to use. 
  */
 gras_datadesc_type_t 
   gras_datadesc_ref_generic(const char                *name,
@@ -446,9 +429,7 @@ gras_datadesc_type_t
   return res;
 }
 
-/**
- * gras_datadesc_array_fixed:
- *
+/*
  * Create a new array and give a pointer to it 
  */
 gras_datadesc_type_t 
@@ -491,9 +472,7 @@ gras_datadesc_type_t
 
   return res;
 }
-/**
- * gras_datadesc_array_dyn:
- *
+/*
  * Create a new array and give a pointer to it 
  */
 gras_datadesc_type_t 
@@ -542,8 +521,6 @@ gras_datadesc_type_t
 }
 
 /**
- * gras_datadesc_ref_pop_arr:
- *
  * Most of the time, you want to include a reference in your structure which
  * is a pointer to a dynamic array whose size is fixed by another field of 
  * your structure.
@@ -591,9 +568,6 @@ gras_datadesc_import_nws(const char           *name,
 }
 
 /**
- * gras_datadesc_cb_send:
- *
- * Add a pre-send callback to this datadesc.
  * (useful to push the sizes of the upcoming arrays, for example)
  */
 void gras_datadesc_cb_send (gras_datadesc_type_t          type,
@@ -601,16 +575,13 @@ void gras_datadesc_cb_send (gras_datadesc_type_t          type,
   type->send = send;
 }
 /**
- * gras_datadesc_cb_recv:
- *
- * Add a post-receive callback to this datadesc.
  * (useful to put the function pointers to the rigth value, for example)
  */
 void gras_datadesc_cb_recv(gras_datadesc_type_t          type,
 			   gras_datadesc_type_cb_void_t  recv) {
   type->recv = recv;
 }
-/**
+/*
  * gras_dd_find_field:
  * 
  * Returns the type descriptor of the given field. Abort on error.
@@ -642,9 +613,7 @@ static gras_datadesc_type_t
 }
 				  
 /**
- * gras_datadesc_cb_field_send:
- *
- * Add a pre-send callback to the given field of the datadesc (which must be a struct or union).
+ * The given datadesc must be a struct or union (abort if not).
  * (useful to push the sizes of the upcoming arrays, for example)
  */
 void gras_datadesc_cb_field_send (gras_datadesc_type_t          type,
@@ -656,10 +625,9 @@ void gras_datadesc_cb_field_send (gras_datadesc_type_t          type,
 }
 
 /**
- * gras_datadesc_cb_field_push:
- *
- * Add a pre-send callback to the given field resulting in its value to be pushed to
- * the stack of sizes. It must be a int, unsigned int, long int or unsigned long int.
+ * The value, which must be an int, unsigned int, long int or unsigned long int
+ * is pushed to the stacks of sizes and can then be retrieved with 
+ * \ref gras_datadesc_ref_pop_arr or directly with \ref gras_cbps_i_pop.
  */
 void gras_datadesc_cb_field_push (gras_datadesc_type_t  type,
 				  const char           *field_name) {
@@ -680,9 +648,7 @@ void gras_datadesc_cb_field_push (gras_datadesc_type_t  type,
    }
 }
 /**
- * gras_datadesc_cb_field_recv:
- *
- * Add a post-receive callback to the given field of the datadesc (which must be a struct or union).
+ * The given datadesc must be a struct or union (abort if not).
  * (useful to put the function pointers to the right value, for example)
  */
 void gras_datadesc_cb_field_recv(gras_datadesc_type_t          type,
@@ -693,9 +659,7 @@ void gras_datadesc_cb_field_recv(gras_datadesc_type_t          type,
    sub_type->recv = recv;
 }
 
-/**
- * gras_datadesc_free:
- *
+/*
  * Free a datadesc. Should only be called at xbt_exit. 
  */
 void gras_datadesc_free(gras_datadesc_type_t *type) {

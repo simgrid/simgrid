@@ -14,64 +14,227 @@
 
 BEGIN_DECL()
 
-/**
- * gras_datadesc_type_t:
+/** @defgroup GRAS_dd Data description
+ *  @brief Describing data to be exchanged (Communication facility)
+ *
+ * @section Overview
+ *
+ * Since GRAS takes care of potential representation conversion when the platform is heterogeneous, 
+ * any data which transits on the network must be described beforehand.
  * 
- * Opaque type describing a type description you don't want to open.
+ * There is several possible interfaces for this, ranging from the really completely automatic parsing to 
+ * completely manual. Let's study each of them from the simplest to the more advanced.
  */
+  
+/** @name a) basic operations
+ *  @ingroup GRAS_dd
+ *
+ * If you only want to send pre-existing types, simply retrieve the pre-defined description with 
+ * the \ref gras_datadesc_by_name function. Existing types entail:
+ *  - char (both signed and unsigned)
+ *  - int (short, regular, long and long long, both signed and unsigned)
+ *  - float and double
+ *  - string (which is indeed a reference to a dynamically sized array of char, strlen being used to retrive the size)
+ * 
+ * Example:\verbatim gras_datadesc_type_t i = gras_datadesc_by_name("int");
+ gras_datadesc_type_t uc = gras_datadesc_by_name("unsigned char");
+ gras_datadesc_type_t str = gras_datadesc_by_name("string");\endverbatim
+ */
+/** @{ */
+  
+/** @brief Opaque type describing a type description. */
 typedef struct s_gras_datadesc_type *gras_datadesc_type_t;
 
+/** \brief Search a type description from its name */
+gras_datadesc_type_t gras_datadesc_by_name(const char *name);
+
+
+/** @} */
+  
+/** @fn gras_datadesc_type_t gras_datadesc_parse(const char *name, const char *C_statement) 
+ *  @ingroup GRAS_dd_implem 
+ *
+ *  Helper function doing the crude job of type parsing.
+ */
+  
+/** @name b) Automatic parsing
+ *  @ingroup GRAS_dd
+ * 
+ *  If you need to declare a new datatype, this is the simplest way to describe it to GRAS. Simply
+ *  enclose its type definition  into a \ref GRAS_DEFINE_TYPE macro call, and you're set. Here is 
+ *  an type declaration  example: \verbatim GRAS_DEFINE_TYPE(mytype,struct mytype {
+   int myfirstfield;
+   char mysecondfield;
+ });\endverbatim
+ *  The type is then both copied verbatim into your source file and stored for further parsing. This allows
+ *  you to let GRAS parse the exact version you are actually using in your program.
+ *  You can then retrieve the corresponding type description with \ref gras_datadesc_by_symbol.
+ *  Don't worry too much for the performances, the type is only parsed once and a binary representation 
+ *  is stored and used in any subsequent calls.
+ * 
+ *  If your structure contains any pointer, you have to explain GRAS the size of the pointed array. This
+ *  can be 1 in the case of simple references, or more in the case of regular arrays. For that, use the 
+ *  \ref GRAS_ANNOTE macro within the type declaration you are passing to \ref GRAS_DEFINE_TYPE. This macro
+ *  rewrites itself to nothing in the declaration (so they won't pollute the type definition copied verbatim
+ *  into your code), and give some information to GRAS about your pointer. 
+ 
+ *  GRAS_ANNOTE takes two arguments being the key name and the key value. For now, the only accepted key name 
+ *  is "size", to specify the length of the pointed array. It can either be the string "1" (without the quote)
+ *  or the name of another field of the structure.
+ *  
+ *  Here is an example:\verbatim GRAS_DEFINE_TYPE(s_clause,
+  struct s_array {
+    int length;
+    int *data GRAS_ANNOTE(size,length);
+    struct s_array *father GRAS_ANNOTE(size,1);
+ }
+;)\endverbatim
+ * It specifies that the structure s_array contains two fields, and that the size of the array pointed 
+ * by \a data is the \a length field, and that the \a father field is a simple reference.
+ * 
+ * If you cannot express your datadescs with this mecanism, you'll have to use the more advanced 
+ * (and somehow complex) one described below.
+ * 
+ *  \warning Since GRAS_DEFINE_TYPE is a macro, you shouldn't  put any comma in your type definition 
+ *  (comma separates macro args). 
+ * 
+ *  For example, change \verbatim int a, b;\endverbatim to \verbatim int a;
+ int b:\endverbatim
+ */
+/** @{ */
+
+ 
+/**   @def GRAS_DEFINE_TYPE
+ *    @hideinitializer
+ *    @brief Automatically parse C code
+ */
+  
+
+#define GRAS_DEFINE_TYPE(name,def) \
+  static const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
+ 
+/** @brief Retrieve a datadesc which was previously parsed 
+ *  @hideinitializer
+ */
+#define gras_datadesc_by_symbol(name)  \
+  (gras_datadesc_by_name(#name) ?      \
+   gras_datadesc_by_name(#name) :      \
+     gras_datadesc_parse(#name,        \
+			 _gras_this_type_symbol_does_not_exist__##name) \
+  )
+
+/** @def GRAS_ANNOTE
+ *  @brief Add an annotation to a type to be automatically parsed
+ */
+#define GRAS_ANNOTE(key,val)
+
+/*@}*/
+
+gras_datadesc_type_t 
+gras_datadesc_parse(const char *name, const char *C_statement);
+
+/** @name c) Simple manual definitions
+ *  @ingroup GRAS_dd
+ * 
+ * Here are the functions to use if you want to declare your description manually. 
+ * The function names should be self-explanatory in most cases.
+ * 
+ * You can add callbacks to the datatypes doing any kind of action you may want. Usually, 
+ * pre-send callbacks are used to prepare the type expedition while post-receive callbacks 
+ * are used to fix any issue after the receive.
+ * 
+ * If your types are dynamic, you'll need to add some extra callback. For example, there is a
+ * specific callback for the string type which is in charge of computing the length of the char
+ * array. This is done with the cbps mecanism, explained in next section.
+ * 
+ * If your types may contain pointer cycle, you must specify it to GRAS using the @ref gras_datadesc_cycle_set. 
+ * 
+ * Example:\verbatim
+ typedef struct {
+   unsigned char c1;
+   unsigned long int l1;
+   unsigned char c2;
+   unsigned long int l2;
+ } mystruct;
+ [...]
+  my_type=gras_datadesc_struct("mystruct");
+  gras_datadesc_struct_append(my_type,"c1", gras_datadesc_by_name("unsigned char"));
+  gras_datadesc_struct_append(my_type,"l1", gras_datadesc_by_name("unsigned long"));
+  gras_datadesc_struct_append(my_type,"c2", gras_datadesc_by_name("unsigned char"));
+  gras_datadesc_struct_append(my_type,"l2", gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_close(my_type);
+
+  my_type=gras_datadesc_ref("mystruct*", gras_datadesc_by_name("mystruct"));
+  
+  [Use my_type to send pointers to mystruct data]\endverbatim
+ */
+/*@{*/
+
+
+/** \brief Opaque type describing a type description callback persistant state. */
 typedef struct s_gras_cbps *gras_cbps_t;
 
 /* callbacks prototypes */
+/** \brief Prototype of type callbacks returning nothing. */
 typedef void (*gras_datadesc_type_cb_void_t)(gras_cbps_t vars, void *data);
+/** \brief Prototype of type callbacks returning an int. */
 typedef int (*gras_datadesc_type_cb_int_t)(gras_cbps_t vars, void *data);
+/** \brief Prototype of type callbacks selecting a type. */
 typedef gras_datadesc_type_t (*gras_datadesc_selector_t)(gras_cbps_t vars, void *data);
 
-/***********************************************
- **** Search and retrieve declared datatype ****
- ***********************************************/
-gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 
 /******************************************
  **** Declare datadescription yourself ****
  ******************************************/
 
+/** \brief Declare a new structure description */
 gras_datadesc_type_t gras_datadesc_struct(const char *name);
 
+/** \brief Append a new field to a structure description */
 void
   gras_datadesc_struct_append(gras_datadesc_type_t  struct_type,
 			      const char           *name,
 			      gras_datadesc_type_t  field_type);
+/** \brief Close a structure description */
 void
   gras_datadesc_struct_close(gras_datadesc_type_t   struct_type);
 
+/** \brief Declare a new union description */
 gras_datadesc_type_t 
   gras_datadesc_union(const char                   *name,
 		      gras_datadesc_type_cb_int_t   selector);
+/** \brief Append a new field to an union description */
 void
   gras_datadesc_union_append(gras_datadesc_type_t   union_type,
 			     const char            *name,
 			     gras_datadesc_type_t   field_type);
+/** \brief Close an union description */
 void
   gras_datadesc_union_close(gras_datadesc_type_t    union_type);
 
+
+/** \brief Declare a new type being a reference to the one passed in arg */
 gras_datadesc_type_t 
   gras_datadesc_ref(const char                     *name,
 		    gras_datadesc_type_t            referenced_type);
+/** \brief Declare a new type being a generic reference. */
 gras_datadesc_type_t 
   gras_datadesc_ref_generic(const char                *name,
 			    gras_datadesc_selector_t   selector);
 
+/** \brief Declare a new type being an array of fixed size and content */
 gras_datadesc_type_t 
   gras_datadesc_array_fixed(const char             *name,
 			    gras_datadesc_type_t    element_type,
 			    long int                fixed_size);
+
+/** \brief Declare a new type being an array of fixed size, but accepting several content types. */
 gras_datadesc_type_t 
   gras_datadesc_array_dyn(const char                 *name,
 			  gras_datadesc_type_t        element_type,
 			  gras_datadesc_type_cb_int_t dynamic_size);
 
+/** \brief Declare a new type being an array which size can be found with \ref gras_cbps_i_pop */
 gras_datadesc_type_t 
   gras_datadesc_ref_pop_arr(gras_datadesc_type_t  element_type);
 
@@ -79,32 +242,46 @@ gras_datadesc_type_t
  * Change stuff within datadescs *
  *********************************/
 
+/** \brief Specify that this type may contain cycles */
 void gras_datadesc_cycle_set(gras_datadesc_type_t type);
+/** \brief Specify that this type do not contain any cycles (default) */
 void gras_datadesc_cycle_unset(gras_datadesc_type_t type);
-
+/** \brief Add a pre-send callback to this datadesc. */
 void gras_datadesc_cb_send (gras_datadesc_type_t         type,
 			    gras_datadesc_type_cb_void_t pre);
+/** \brief Add a post-receive callback to this datadesc.*/
 void gras_datadesc_cb_recv(gras_datadesc_type_t          type,
 			   gras_datadesc_type_cb_void_t  post);
+/** \brief Add a pre-send callback to the given field of the datadesc */
 void gras_datadesc_cb_field_send (gras_datadesc_type_t   type,
 				  const char            *field_name,
 				  gras_datadesc_type_cb_void_t  pre);
+/** \brief Add a post-receive callback to the given field of the datadesc */
 void gras_datadesc_cb_field_recv(gras_datadesc_type_t    type,
 				 const char             *field_name,
 				 gras_datadesc_type_cb_void_t  post);
+/** \brief Add a pre-send callback to the given field resulting in its value to be pushed */
 void gras_datadesc_cb_field_push (gras_datadesc_type_t   type,
 				  const char            *field_name);
 
 /******************************
  * Get stuff within datadescs *
  ******************************/
+/** \brief Returns the name of a datadescription */
 char * gras_datadesc_get_name(gras_datadesc_type_t ddt);
+/** \brief Returns the identifier of a datadescription */
 int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
-/********************************************************
- * Advanced data describing: callback persistent states *
- ********************************************************/
-/* simple one: push/pop sizes of arrays */
+/*@}*/
+
+/** @name Callback Persistant State: Simple push/pop mecanism
+ *  @ingroup GRAS_dd
+ * 
+ * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
+ * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
+ */
+/*@{*/
+
 void
 gras_cbps_i_push(gras_cbps_t ps, int val);
 int 
@@ -117,8 +294,17 @@ void gras_datadesc_cb_push_lint(gras_cbps_t vars, void *data);
 void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 
 
+/*@}*/
 
-/* complex one: complete variable environment support */
+/** @name Callback Persistant State: Full featured mecanism
+ *  @ingroup GRAS_dd
+ * 
+ * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mecanism
+ * introduced in previous section isn't enough, you can always use this full featured one.
+ */
+
+/*@{*/
+
 xbt_error_t
   gras_cbps_v_pop (gras_cbps_t            ps, 
 		   const char            *name,
@@ -145,7 +331,7 @@ gras_cbps_block_begin(gras_cbps_t ps);
 void
 gras_cbps_block_end(gras_cbps_t ps);
 
-
+/* @} */
 
 
 /*******************************
@@ -153,25 +339,9 @@ gras_cbps_block_end(gras_cbps_t ps);
  *******************************/
 int gras_arch_selfid(void); /* ID of this arch */
 
-/****************************
- **** Parse C statements ****
- ****************************/
-gras_datadesc_type_t 
-gras_datadesc_parse(const char *name,
-		    const char *Cdefinition);
-#define GRAS_DEFINE_TYPE(name,def) \
-  static const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
-#define GRAS_ANNOTE(key,val)
- 
-#define gras_datadesc_by_symbol(name)  \
-  (gras_datadesc_by_name(#name) ?      \
-   gras_datadesc_by_name(#name) :      \
-     gras_datadesc_parse(#name,        \
-			 _gras_this_type_symbol_does_not_exist__##name) \
-  )
 
 /*****************************
- **** NWS datadescription ****
+ **** NWS datadescription * FIXME: obsolete?
  *****************************/
 
 /**
@@ -219,6 +389,7 @@ gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
 			 unsigned long         howmany,
 	       /* OUT */ gras_datadesc_type_t *dst);
+
 
 END_DECL()
 

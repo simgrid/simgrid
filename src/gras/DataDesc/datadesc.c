@@ -126,20 +126,12 @@ gras_datadesc_exit(void) {
   DEBUG0("Exited DataDesc");
 }
 
-/**
- * gras_datadesc_get_name:
- *
- * Returns the name of a datadescription (to ease the debug)
- */
+/** This is mainly to debug */
 char *
 gras_datadesc_get_name(gras_datadesc_type_t ddt) {
   return ddt->name;
 }
-/**
- * gras_datadesc_get_id:
- *
- * Returns the name of a datadescription (to ease the debug)
- */
+/** This is mainly to debug */
 int
 gras_datadesc_get_id(gras_datadesc_type_t ddt) {
   return ddt->code;
