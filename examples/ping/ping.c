@@ -162,8 +162,7 @@ int client(int argc,char *argv[]) {
   } 
 
   INFO2("Launch client (server on %s:%d)",host,port);
-  if (!gras_if_RL())
-    gras_sleep(5,0); /* Wait for the server to be setup */
+  gras_sleep(5,0); /* Wait for the server to be setup */
   if ((errcode=gras_socket_client(host,port,&(g->sock)))) {
     ERROR1("Client: Unable to connect to the server. Got %s",
 	   gras_error_name(errcode));
