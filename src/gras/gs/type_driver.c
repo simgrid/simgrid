@@ -5,9 +5,14 @@
 static
 gras_dict_t *p_type_driver_dict = NULL;
 
+//GRAS_LOG_NEW_DEFAULT_CATEGORY(FIXME_type_driver);
+
 void
 gs_type_drivers_init(void) {
-        gras_dict_insert(p_type_driver_dict, "rl", gs_rl_type_driver(), NULL);
+  gras_error_t errcode;
+  
+  TRYFAIL(gras_dict_new(&p_type_driver_dict));
+  TRYFAIL(gras_dict_insert(p_type_driver_dict, "rl", gs_rl_type_driver(), NULL));
 }
 
 

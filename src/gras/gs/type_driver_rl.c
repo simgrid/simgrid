@@ -124,15 +124,15 @@ gs_rl_bag__init(struct s_gs_type_bag	*p_bag) {
 
         p_rl = calloc(1, sizeof(struct s_gs_rl_type_bag));
 
-        p_rl->incoming_dict	= NULL;
+        gras_dict_new(&p_rl->incoming_dict);
 
         gras_dynar_new(&p_rl->type_dynar, sizeof(struct s_gs_type *), NULL);
-        p_rl->type_dict	= NULL;
+	gras_dict_new (&p_rl->type_dict);
 
         gras_dynar_new(&p_rl->message_dynar, sizeof(struct s_gs_type *), NULL);
-        p_rl->message_dict	= NULL;
+	gras_dict_new (&p_rl->message_dict);
 
-        p_rl->outgoing_dict	= NULL;
+        gras_dict_new (&p_rl->outgoing_dict);
 
         p_bag->specific		= p_rl;
         p_bag->bag_ops		= type_bag_ops;
@@ -168,10 +168,10 @@ gs_rl_bag_register_incoming_connection(struct s_gs_type_bag	*p_bag,
         p_in->p_connection	= p_cnx;
 
         gras_dynar_new(&p_in->type_dynar, sizeof(struct s_gs_type *), NULL);
-        p_in->type_dict		= NULL;
+        gras_dict_new (&p_in->type_dict);
 
         gras_dynar_new(&p_in->message_dynar, sizeof(struct s_gs_type *), NULL);
-        p_in->message_dict	= NULL;
+        gras_dict_new (&p_in->message_dict);
 
         gras_dict_insert_ext(p_rl->incoming_dict,
                              (char *)&p_cnx,
@@ -196,8 +196,8 @@ gs_rl_bag_register_outgoing_connection(struct s_gs_type_bag	*p_bag,
         p_out = malloc(sizeof (struct s_gs_rl_outgoing_connection));
 
         p_out->p_connection	= p_cnx;
-        p_out->type_marker_dict	= NULL;
-        p_out->message_marker_dict	= NULL;
+        gras_dict_new(&p_out->type_marker_dict);
+        gras_dict_new(&p_out->message_marker_dict);
 
         gras_dict_insert_ext(p_rl->outgoing_dict, (char *)&p_cnx, sizeof(p_cnx), p_out, NULL);
 

@@ -196,7 +196,7 @@ gs_vars_alloc(void) {
 
         p_vars = calloc(1, sizeof (struct s_gs_vars));
 
-        p_vars->space = NULL;
+        gras_dict_new (&p_vars->space);
         gras_dynar_new(&p_vars->stack, sizeof (gras_dynar_t *), NULL);
 
         gs_vars_enter(p_vars);

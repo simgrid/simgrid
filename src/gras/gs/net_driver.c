@@ -2,12 +2,17 @@
 
 #include "gs/gs_private.h"
 
+//GRAS_LOG_NEW_DEFAULT_CATEGORY(FIXME_net_driver);
+
 static
 gras_dict_t *p_net_driver_dict = NULL;
 
 void
 gs_net_drivers_init(void) {
-        gras_dict_insert(p_net_driver_dict, "fd", gs_fd_net_driver(), NULL);
+  gras_error_t errcode;
+
+  TRYFAIL(gras_dict_new(&p_net_driver_dict));
+  TRYFAIL(gras_dict_insert(p_net_driver_dict, "fd", gs_fd_net_driver(), NULL));
 }
 
 

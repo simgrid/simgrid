@@ -165,6 +165,9 @@ _gs_message_send_type(struct s_gs_type_bag	 *p_bag,
         struct s_gs_type_bag_ops	*bops = p_bag->bag_ops;
         struct s_gs_connection_ops	*cops = p_cnx->connection_ops;
 
+	if (!*p_refs)
+	  gras_dict_new(p_refs);
+
         if (p_type->category_code > 1)
                 fprintf(stderr, "\n");
         fprintf(stderr, "sending a %s\n", p_type->name);
@@ -621,6 +624,9 @@ _gs_message_receive_type(struct s_gs_type_bag	 *p_bag,
         struct s_gs_connection_ops	*cops		= p_cnx->connection_ops;
         struct s_gs_type        	*p_local_type	= NULL;
         void				*new_data	= *p_new_ptr;
+
+	if (!*p_refs)
+	  gras_dict_new(p_refs);
 
         p_local_type = bops->get_type_by_name(p_bag, NULL, p_remote_type->name);
         if (p_local_type->category_code > 1)
