@@ -9,6 +9,9 @@
 #include "trace_mgr_private.h"
 #include <stdlib.h>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trace, surf,
+				"Logging specific to the SURF trace module");
+
 static xbt_dict_t trace_list = NULL;
 static void _tmgr_trace_free(void *trace)
 {
@@ -51,8 +54,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   /* Parsing et création de la trace */
 
   if ((f = fopen(filename, "r")) == NULL) {
-    fprintf(stderr, "Cannot open file '%s'\n", filename);
-    return NULL;
+    CRITICAL1("Cannot open file '%s'\n", filename);
   }
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
