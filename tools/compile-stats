@@ -38,6 +38,9 @@ for VERSION in `ls buildlogs|grep -v html` ; do
     last=`tail -n 1 buildlogs/$VERSION/$file`
     sys=`grep "checking target system type..." buildlogs/$VERSION/$file| \
 	 sed 's/checking target system type...//'`
+    grassys=`grep "^#define GRAS_THISARCH" buildlogs/$VERSION/$file| \
+             sed 's/.*GRAS_THISARCH //'`
+
 	 
     ## Make text and html outputs
     if [ "x$last" = "xRemote compilation sucessful." ] ; then
@@ -51,7 +54,7 @@ for VERSION in `ls buildlogs|grep -v html` ; do
     echo "    <td bgcolor='$color'>$host"                 >> $HTML
     echo "    <td><a href=$VERSION/$host.config>$sys</a>" >> $HTML
     
-    echo "$res $host     $sys"
+    echo "$res $host     $sys ($grassys)"
   done
   echo "</table>" >> $HTML
 done
