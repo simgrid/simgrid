@@ -32,7 +32,7 @@ void MSG_global_init(void)
   int argc=0;
   char **argv=NULL;
 
-  CRITICAL0("Please stop using this function. Use MSG_global_init_args instead.");
+  CRITICAL0("Function MSG_global_init() is deprecated by MSG_global_init_args().");
   MSG_global_init_args(&argc,argv);
 }
 
@@ -42,9 +42,10 @@ void MSG_global_init(void)
 void MSG_global_init_args(int *argc, char **argv)
 {
   if (!msg_global) {
+    surf_init(argc, argv);	/* Initialize some common structures. Warning, it sets msg_global=NULL */
+     
     msg_global = xbt_new0(s_MSG_Global_t,1);
 
-    surf_init(argc, argv);	/* Initialize some common structures */
     xbt_context_init();
     msg_global->host = xbt_fifo_new();
     msg_global->process_to_run = xbt_fifo_new();
@@ -198,7 +199,7 @@ void MSG_paje_output(const char *filename)
   int len;
 
   xbt_assert0(msg_global, "Initialize MSG first\n");
-  xbt_assert0(!msg_global->paje_output, "Paje output allready defined\n");
+  xbt_assert0(!msg_global->paje_output, "Paje output already defined\n");
   xbt_assert0(filename, "Need a real file name\n");
 
   len = strlen(filename);
@@ -206,8 +207,6 @@ void MSG_paje_output(const char *filename)
     CRITICAL2("%s does not end by \"%s\". It may cause troubles when using Paje\n",
 	      filename,ext);
   }
-
-  xbt_assert0(filename, "Need a real file name\n");
 
   msg_global->paje_output=fopen(filename,"w");
   xbt_assert1(msg_global->paje_output, "Failed to open %s \n",filename);
@@ -227,7 +226,7 @@ void MSG_paje_output(const char *filename)
  */
 void MSG_set_verbosity(MSG_outputmode_t mode)
 {
-  CRITICAL0("MSG_set_verbosity : Not implemented yet.");
+  CRITICAL0("MSG_set_verbosity : Deprecated function. Use the XBT logging interface.");
 }
 
 /** \defgroup m_channel_management    Understanding channels
