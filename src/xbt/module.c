@@ -78,8 +78,10 @@ gras_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
  */
 void 
 gras_exit(){
+  INFO0("Exiting GRAS");
   gras_msg_exit();
   gras_trp_exit();
   gras_datadesc_exit();
   gras_log_exit();
+  DEBUG0("Exited GRAS");
 }
