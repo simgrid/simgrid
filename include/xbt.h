@@ -10,6 +10,7 @@
 #ifndef xbt_H
 #define xbt_H
 
+#include <xbt/misc.h>
 #include <xbt/sysdep.h>
 
 #include <xbt/error.h>
