@@ -52,20 +52,6 @@ AC_CHECK_FUNCS([gettimeofday \
                 getdtablesize \
                 sysconf])
 
-AC_MSG_CHECKING(how to link against winsock)
-save_LIBS="$LIBS"
-case $host_os in
-  *mingw* ) GRAS_WINSOCK_DEP=-lws2_32;;
-  * ) GRAS_WINSOCK_DEP="";;
-esac
-	   
-if test x$GRAS_WINSOCK_DEP = x; then 
-   AC_MSG_RESULT(not needed)
-else
-   AC_MSG_RESULT($winsock_ver)
-fi
-AC_SUBST([GRAS_WINSOCK_DEP])
-
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
@@ -90,10 +76,30 @@ AC_SUBST([htmldir],         ['${datadir}/doc/gras/html'])dnl
 dnl ####[ Search libs ]#######################################################
 ACI_PACKAGE([SimGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
 AM_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
+if test x$HAVE_SimGrid = xyes; then
+  GRAS_SG_DEP="-lsimgrid"
+else
+  GRAS_SG_DEP=""
+fi
+AC_SUBST([GRAS_SG_DEP])
+
 
 dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
-AC_CHECK_LIB(nsl, gethostbyname, [LIBS="$LIBS -lnsl"])
-AC_CHECK_LIB(socket, connect,    [LIBS="$LIBS -lsocket"])
+GRAS_RL_DEP=""
+AC_CHECK_LIB(nsl, gethostbyname, [GRAS_RL_DEP="$GRAS_RL_DEP -lnsl"])
+AC_CHECK_LIB(socket, connect,    [GRAS_RL_DEP="$GRAS_RL_DEP -lsocket"])
+
+AC_MSG_CHECKING(for extra dependencies of libgrasrl)
+case $host_os in
+  *mingw* ) GRAS_RL_DEP=-lws2_32;;
+esac
+	   
+if test "x$GRAS_RL_DEP" = x; then 
+   AC_MSG_RESULT(none)
+else
+   AC_MSG_RESULT($GRAS_RL_DEP)
+fi
+AC_SUBST([GRAS_RL_DEP])
 
 dnl ####[ maint mode ]#######################################################
 AM_MAINTAINER_MODE

@@ -131,12 +131,12 @@ libgrasrl_la_SOURCES= $(COMMON_S) \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c      \
   \
   gras/Virtu/rl_process.c        gras/Virtu/rl_time.c                   gras/Virtu/rl_conditional.c
-libgrasrl_la_LDFLAGS = $(VERSION_INFO) @GRAS_WINSOCK_DEP@
+libgrasrl_la_LDFLAGS = $(VERSION_INFO) @GRAS_RL_DEP@
 
 if HAVE_SG
   libgrassg_la_SOURCES= $(COMMON_S) \
     gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
     \
     gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c
-  libgrassg_la_LDFLAGS = $(VERSION_INFO)
+  libgrassg_la_LDFLAGS = $(VERSION_INFO) @GRAS_SG_DEP@
 endif
