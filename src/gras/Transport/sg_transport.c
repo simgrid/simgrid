@@ -37,12 +37,17 @@ gras_trp_select(double timeout,
   gras_trp_plugin_t *trp;
 
   gras_socket_t *sock_iter; /* iterating over all sockets */
-  int cursor;               /* iterating over all sockets */
+  int cursor,cpt;
 
-  int r_pid, cpt;
+  gras_sg_portrec_t pr;     /* iterating to find the chanel of expeditor */
+
+  int r_pid;
   gras_hostdata_t *remote_hd;
 
-  DEBUG1("select with timeout=%d",timeout);
+  DEBUG3("select on %s@%s with timeout=%d",
+	 MSG_process_get_name(MSG_process_self()),
+	 MSG_host_get_name(MSG_host_self()),
+	 timeout);
   do {
     r_pid = MSG_task_probe_from((m_channel_t) pd->chan);
     if (r_pid >= 0) {
@@ -78,27 +83,59 @@ gras_trp_select(double timeout,
       if (!(sockdata = malloc(sizeof(gras_trp_sg_sock_data_t))))
 	RAISE_MALLOC;
 
-      sockdata->from_PID = r_pid;
-      sockdata->to_PID = MSG_process_self_PID();
-      sockdata->to_host = MSG_process_get_host(MSG_process_from_PID(r_pid));
+      sockdata->from_PID = MSG_process_self_PID();
+      sockdata->to_PID   = r_pid;
+      sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));
       (*dst)->data = sockdata;
 
-      (*dst)->peer_port = -1;
       (*dst)->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
 
       remote_hd=(gras_hostdata_t *)MSG_host_get_data(sockdata->to_host);
       gras_assert0(remote_hd,"Run gras_process_init!!");
 
       sockdata->to_chan = -1;
-      for (cpt=0; cpt< GRAS_MAX_CHANNEL; cpt++)
-	if (r_pid == remote_hd->proc[cpt])
-	  sockdata->to_chan = cpt;
+      (*dst)->peer_port = -10;
+      for (cursor=0; cursor<GRAS_MAX_CHANNEL; cursor++) {
+	if (remote_hd->proc[cursor] == r_pid) {
+	  sockdata->to_chan = cursor;
+	  DEBUG2("Chan %d on %s is for my pal",
+		 cursor,(*dst)->peer_name);
 
-      gras_assert0(sockdata->to_chan>0,
+	  gras_dynar_foreach(remote_hd->ports, cpt, pr) {
+	    if (sockdata->to_chan == pr.tochan) {
+	      if (pr.raw) {
+		DEBUG0("Damn, it's raw");
+		continue;
+	      }
+
+	      (*dst)->peer_port = pr.port;
+	      DEBUG1("Cool, it points to port %d", pr.port);
+	      break;
+	    } else {
+	      DEBUG2("Wrong port (tochan=%d, looking for %d)\n",
+		     pr.tochan,sockdata->to_chan);
+	    }
+	  }
+	  if ((*dst)->peer_port == -10) {
+	    /* was raw */
+	    sockdata->to_chan = -1;
+	  } else {
+	    /* found it, don't let it override by raw */
+	    break;
+	  }
+	}
+      }
+      gras_assert0(sockdata->to_chan != -1,
 		   "Got a message from a process without channel");
 
       return no_error;
     } else {
+      /*
+      DEBUG2("Select on %s@%s did not find anything yet",
+	     MSG_process_get_name(MSG_process_self()),
+	     MSG_host_get_name(MSG_host_self()));
+      */
+      // MSG_process_sleep(1);
       MSG_process_sleep(0.01);
     }
   } while (gras_time()-startTime < timeout

@@ -17,6 +17,7 @@ gras_process_init() {
   gras_error_t errcode;
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   gras_procdata_t *pd;
+  gras_sg_portrec_t prraw,pr;
   int i;
   
   if (!(pd=(gras_procdata_t *)malloc(sizeof(gras_procdata_t)))) 
@@ -50,6 +51,12 @@ gras_process_init() {
   pd->chan = i;
   hd->proc[ i ] = MSG_process_self_PID();
 
+  /* regiter it to the ports structure */
+  pr.port = -1;
+  pr.tochan = i;
+  pr.raw = 0;
+  TRY(gras_dynar_push(hd->ports,&pr));
+
   /* take a free RAW channel for this process */
   for (i=0; i<GRAS_MAX_CHANNEL && hd->proc[i]; i++);
   if (i == GRAS_MAX_CHANNEL) {
@@ -60,6 +67,12 @@ gras_process_init() {
   pd->rawChan = i;
 
   hd->proc[ i ] = MSG_process_self_PID();
+
+  /* regiter it to the ports structure */
+  prraw.port = -1;
+  prraw.tochan = i;
+  prraw.raw = 1;
+  TRY(gras_dynar_push(hd->ports,&prraw));
 
   VERB2("Creating process '%s' (%d)",
 	   MSG_process_get_name(MSG_process_self()),

@@ -64,13 +64,13 @@ typedef struct {
 static gras_error_t find_port(gras_hostdata_t *hd, int port,
 			      gras_sg_portrec_t *hpd) {
   int cpt;
-  gras_sg_portrec_t pd;
+  gras_sg_portrec_t pr;
 
   gras_assert0(hd,"Please run gras_process_init on each process");
   
-  gras_dynar_foreach(hd->ports, cpt, pd) {
-    if (pd.port == port) {
-      memcpy(hpd,&pd,sizeof(gras_sg_portrec_t));
+  gras_dynar_foreach(hd->ports, cpt, pr) {
+    if (pr.port == port) {
+      memcpy(hpd,&pr,sizeof(gras_sg_portrec_t));
       return no_error;
     }
   }
@@ -152,6 +152,7 @@ gras_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
   data->to_chan      = pr.tochan;
   
   sock->data = data;
+  sock->incoming = 1;
 
   DEBUG6("%s (PID %d) connects in %s mode to %s:%d (to_PID=%d)",
 	  MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
@@ -215,19 +216,21 @@ gras_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 void gras_trp_sg_socket_close(gras_socket_t *sock){
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   int cpt;
-  gras_sg_portrec_t *pr;
+  
+  gras_sg_portrec_t pr;
 
   if (!sock) return;
   gras_assert0(hd,"Please run gras_process_init on each process");
 
-  free(sock->data);
+  if (sock->data)
+    free(sock->data);
 
   if (sock->incoming) {
     /* server mode socket. Un register it from 'OS' tables */
     gras_dynar_foreach(hd->ports, cpt, pr) {
-      if (pr->port == sock->port) {
+      DEBUG2("Check pr %d of %d", cpt, gras_dynar_length(hd->ports));
+      if (pr.port == sock->port) {
 	gras_dynar_cursor_rm(hd->ports, &cpt);
-
 	return;
       }
     }
@@ -262,6 +265,9 @@ gras_error_t gras_trp_sg_chunk_send(gras_socket_t *sock,
 
   task=MSG_task_create(name,0,((double)size)/(1024.0*1024.0),task_data);
 
+  DEBUG4("send chunk %s from %s to %s on channel %d",
+	 name, MSG_host_get_name(MSG_host_self()),
+	 MSG_host_get_name(sock_data->to_host), sock_data->to_chan);
   if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) {
     RAISE0(system_error,"Problem during the MSG_task_put");
   }
@@ -276,7 +282,11 @@ gras_error_t gras_trp_sg_chunk_recv(gras_socket_t *sock,
 
   m_task_t task=NULL;
   sg_task_data_t *task_data;
+  gras_trp_sg_sock_data_t *sock_data = sock->data;
 
+  DEBUG3("recv chunk on %s from %s on channel %d",
+	 MSG_host_get_name(MSG_host_self()),
+	 MSG_host_get_name(sock_data->to_host), sock_data->to_chan);
   if (MSG_task_get(&task, (sock->raw ? pd->rawChan : pd->chan)) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_get()");
 
