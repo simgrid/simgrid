@@ -11,12 +11,7 @@
 #include "transport_private.h"
 
 #if 0
-#  include <errno.h>
-#  include <sys/time.h>
 #  include <sys/types.h>
-#  include <sys/stat.h>
-#  include <fcntl.h>
-#  include <unistd.h>
 #endif 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
