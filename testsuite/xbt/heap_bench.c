@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include "xbt_heap.h"
+#include "xbt/heap.h"
 
 #define MAX_TEST 1000000
 
