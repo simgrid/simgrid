@@ -35,6 +35,7 @@ SimGrid (2.91) unstable; urgency=low
       Use it in msg and trp.
       This cleans a lot the internals and helps enforcing privacy of the
        headers between the gras components.
+   - Bugfix: gras_os_time was delirious in RL.
    - Reenable GRAS
 
  --
