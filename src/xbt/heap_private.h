@@ -1,0 +1,29 @@
+/* Authors: Arnaud Legrand                                                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+   under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <stdlib.h>
+#include "xbt_heap.h"
+
+typedef struct xbt_heapItem {
+  void *content;
+  xbt_heap_float_t key;
+} s_xbt_heapItem_t ,*xbt_heapItem_t;
+
+typedef struct xbt_heap {
+  int size;
+  int count;
+  xbt_heapItem_t items;
+  void_f_pvoid_t *free;
+} s_xbt_heap_t;
+
+#define PARENT(i)  i/2
+#define LEFT(i)    2*i
+#define RIGHT(i)   2*i+1
+
+#define KEY(H,i)     ((H->items)[i]).key
+#define CONTENT(H,i) ((H->items)[i]).content
+
+void xbt_heap_maxHeapify(xbt_heap_t H);
+void xbt_heap_increaseKey(xbt_heap_t H, int i);
