@@ -5,5 +5,5 @@ else
   wine=wine
 fi
     
-$wine ./msg_test@EXEEXT@ @srcdir@/msg_platform.xml   @srcdir@/msg_deployment.xml
-$wine ./msg_test@EXEEXT@ @srcdir@/small_platform.xml @srcdir@/small_deployment.xml
+$wine ./msg_test@EXEEXT@ @srcdir@/msg_platform.xml @srcdir@/msg_deployment.xml $@
+$wine ./msg_test@EXEEXT@ @srcdir@/small_platform.xml @srcdir@/small_deployment.xml $@
