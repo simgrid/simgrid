@@ -328,8 +328,8 @@ gras_userdata_new
 <SECTION>
 <FILE>virtu_syscall</FILE>
 <TITLE>System calls abstraction layer</TITLE>
-gras_time
-gras_sleep
+gras_os_time
+gras_os_sleep
 </SECTION>
 
 <SECTION>
