@@ -56,6 +56,7 @@
   <cpu name="St_Antoine" power="34.333"/>
   <cpu name="Louis" power="98.094999999999999"/>
   <cpu name="Julien" power="22.151"/>
+  <cpu name="St_Paul" power="114.444"/>
   <cpu name="Mathematica" power="137.333"/>
   <cpu name="LaTeX" power="85.832999999999998"/>
   <cpu name="Sirois" power="114.444"/>
