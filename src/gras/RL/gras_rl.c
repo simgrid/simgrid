@@ -26,7 +26,7 @@
 #include "timeouts.h"
 #include "protocol.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(rl,"Real Life");
+/* XBT_LOG_NEW_DEFAULT_CATEGORY(rl,"Real Life");  Comment this to make sure it doesn't land into the documentation*/
 			      
 /* globals */
 static grasProcessData_t *_grasProcessData;
