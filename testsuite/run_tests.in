@@ -43,7 +43,7 @@ do
     wine=wine
   fi
   if [ "x$test" = "xdict_crash@EXEEXT@" ] ; then
-    $wine ./$test --gras-log="root.thres=info" 2>&1
+    $wine ./$test --xbt-log="root.thres=info" 2>&1
     retval=$?
   else 
     winesave=$wine
@@ -54,16 +54,16 @@ do
       fi
     fi
       # if the user defines valgrind while cross-compiling, too bad
-      $wine $valgrind ./$test --gras-log="root.thres=info" 2>&1
+      $wine $valgrind ./$test --xbt-log="root.thres=info" 2>&1
       retval=$?
     wine=$winesave
   fi
   if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
     echo "## failed. Rerun $test with full details."
 #    if [ "x$test" = "xdict_crash" ] ; then
-#      $wine ./$test --gras-log="root.thres=debug" 2>&1
+#      $wine ./$test --xbt-log="root.thres=debug" 2>&1
 #    else 
-#      $wine $valgrind ./$test --gras-log="root.thres=debug" 2>&1
+#      $wine $valgrind ./$test --xbt-log="root.thres=debug" 2>&1
 #    fi
     failed_nb=`expr $failed_nb + 1`
     echo "  $test (returned $retval)" >> test.failed
@@ -92,9 +92,9 @@ fi
 if [ $failed_nb != 0 ] ; then
   echo "$failed_nb tests of $tests_nb failed: "
   cat test.failed
-  echo "Rerun the tests using the following command: script -c 'make test' gras.tests.log"
-  echo " and send the following informations to martin.quinson@ens-lyon.fr:"
-  echo "   - the file gras.tests.log produced by this command."
+  echo "Rerun the tests using the following command: script -c 'make test' simgrid.tests.log"
+  echo " and send the following informations to simgrid2-users@listes.ens-lyon.fr:"
+  echo "   - the file simgrid.tests.log produced by this command."
   echo "   - a short description of the target platform (arch, OS, distrib, compiler)."
   echo "   - the config.log produced by the compilation."
 fi
