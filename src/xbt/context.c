@@ -175,7 +175,8 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 
   res = xbt_new0(s_xbt_context_t,1);
 
-  xbt_assert0(getcontext(&(res->uc))==0,"Error in context saving.");
+  /* FIXME: strerror is not thread safe */
+  xbt_assert2(getcontext(&(res->uc))==0,"Error in context saving: %d (%s)", errno, strerror(errno));
 
   res->code = code;
   res->uc.uc_link = NULL;
