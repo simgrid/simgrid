@@ -32,12 +32,12 @@ void gras_os_sleep(double sec);
 
 /** @brief get the fully-qualified name of the current host
  *
- * Returns the fully-qualified name of the host machine, or NULL if the name
+ * Returns the fully-qualified name of the host machine, or "localhost" if the name
  * cannot be determined.  Always returns the same value, so multiple calls
  * cause no problems.
  */
 const char *
-gras_get_my_fqdn(void);
+gras_os_myname(void);
 
 /** @} */
 END_DECL()
