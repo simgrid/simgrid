@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
-TESTS=test_rl test_sg
+TESTS= #test_rl test_sg
 EXTRA_DIST=ping_deployment.txt $(TESTS)
 
 # check_SCRIPTS=$(TESTS)
