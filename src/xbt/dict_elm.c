@@ -643,12 +643,11 @@ gras_dictelm_set(gras_dictelm_t **pp_head,
 static 
 gras_error_t
 _gras_dictelm_get_rec(gras_dictelm_t *p_head,
-			   const char     *key,
-			   int             key_len,
-			   int             offset,
-			   /* OUT */void **data) {
-
-  gras_error_t errcode = no_error;
+		      const char     *key,
+		      int             key_len,
+		      int             offset,
+		      void **data) {
+  void *res;
 
   CDEBUG3(dict_search, "Search %.*s in %p", key_len, key, p_head); 
 
@@ -658,7 +657,7 @@ _gras_dictelm_get_rec(gras_dictelm_t *p_head,
   if (offset >= key_len) {
     *data = p_head->content;
 
-    return errcode;
+    return no_error;
   }
 
   {
@@ -682,7 +681,7 @@ _gras_dictelm_get_rec(gras_dictelm_t *p_head,
         gras_dynar_get(p_head->sub, pos, &p_child);
         *data = p_child->content;
 
-        return errcode;
+        return no_error;
       }
 
     case 2: /* A child constitutes a prefix of the key => recurse */
