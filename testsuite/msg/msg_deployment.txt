@@ -1,7 +1,0 @@
-<DEPLOYMENT>
-  Jacquelin master iRMX Bousquet Soucy Kuenning
-  iRMX slave
-  Bousquet slave 
-  Soucy slave
-  Kuenning slave
-</DEPLOYMENT>
