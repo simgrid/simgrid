@@ -11,47 +11,63 @@
 #ifndef _GRAS_DYNAR_H
 #define _GRAS_DYNAR_H
 
-typedef struct gras_dynar_s gras_dynar_t;
+#include "xbt/misc.h" /* BEGIN_DECL */
+
+BEGIN_DECL
+
+typedef struct gras_dynar_s *gras_dynar_t;
 
 /* pointer to a function freeing something */
 typedef   void (void_f_ppvoid_t)(void**);
 typedef   void (void_f_pvoid_t) (void*);
 
-gras_dynar_t *gras_dynar_new(unsigned long elm_size, 
+gras_dynar_t  gras_dynar_new(unsigned long elm_size, 
 			     void_f_pvoid_t *free_func);
 void          gras_dynar_free(gras_dynar_t *dynar);
 void          gras_dynar_free_container(gras_dynar_t *dynar);
 
-unsigned long gras_dynar_length(const gras_dynar_t *dynar);
-void          gras_dynar_reset(gras_dynar_t *dynar);
+unsigned long gras_dynar_length(const gras_dynar_t dynar);
+void          gras_dynar_reset(gras_dynar_t dynar);
 
 
 /* regular array functions */
-void gras_dynar_get_cpy(const gras_dynar_t *dynar, int idx, void *const dst);
-void *gras_dynar_get_ptr(const gras_dynar_t * const dynar,
-			 const int                  idx);
+void gras_dynar_get_cpy(const gras_dynar_t dynar, int idx, void *const dst);
+void *gras_dynar_get_ptr(const gras_dynar_t dynar,
+			 const int          idx);
 
 #define gras_dynar_get_as(dynar,idx,type) *(type*)gras_dynar_get_ptr(dynar,idx)
   
-void gras_dynar_set(gras_dynar_t *dynar, int  idx, const void *src);
-void gras_dynar_replace(gras_dynar_t *dynar,
+void gras_dynar_set(gras_dynar_t dynar, int  idx, const void *src);
+void gras_dynar_replace(gras_dynar_t dynar,
 			int idx, const void *object);
 
 /* perl array function */
-void gras_dynar_insert_at(gras_dynar_t *dynar,
-			   int  idx, const void *src);
-void gras_dynar_remove_at(gras_dynar_t *dynar,
-			   int  idx, void *object);
-void gras_dynar_push     (gras_dynar_t *dynar, const void *src);
-void gras_dynar_pop      (gras_dynar_t *dynar, void *const dst);
-void gras_dynar_unshift  (gras_dynar_t *dynar, const void *src);
-void gras_dynar_shift    (gras_dynar_t *dynar, void *const dst);
-void gras_dynar_map      (const gras_dynar_t *dynar, void_f_pvoid_t *operator);
+
+void gras_dynar_insert_at(gras_dynar_t dynar,
+			  int  idx, const void *src);
+void gras_dynar_remove_at(gras_dynar_t dynar,
+			  int  idx, void *object);
+void gras_dynar_push     (gras_dynar_t dynar, const void *src);
+void gras_dynar_pop      (gras_dynar_t dynar, void *const dst);
+void gras_dynar_unshift  (gras_dynar_t dynar, const void *src);
+void gras_dynar_shift    (gras_dynar_t dynar, void *const dst);
+void gras_dynar_map      (const gras_dynar_t dynar, void_f_pvoid_t *operator);
+
+/* speed-optimized versions */
+void *gras_dynar_insert_at_ptr(gras_dynar_t const dynar,
+			       const int          idx);
+void *gras_dynar_push_ptr(gras_dynar_t dynar);
+void *gras_dynar_pop_ptr(gras_dynar_t dynar);
+
+#define gras_dynar_insert_at_as(dynar,idx,type,value) *(type*)gras_dynar_insert_at_ptr(dynar,idx)=value
+#define gras_dynar_push_as(dynar,type,value) *(type*)gras_dynar_push_ptr(dynar)=value
+#define gras_dynar_pop_as(dynar,type) *(type*)gras_dynar_pop_ptr(dynar)
+
 
 /* cursor functions */
-void gras_dynar_cursor_first (const gras_dynar_t *dynar, int *cursor);
-void gras_dynar_cursor_step  (const gras_dynar_t *dynar, int *cursor);
-int  gras_dynar_cursor_get   (const gras_dynar_t *dynar, int *cursor, void *whereto);
+void gras_dynar_cursor_first (const gras_dynar_t dynar, int *cursor);
+void gras_dynar_cursor_step  (const gras_dynar_t dynar, int *cursor);
+int  gras_dynar_cursor_get   (const gras_dynar_t dynar, int *cursor, void *whereto);
 
 /**
  * gras_dynar_foreach:
@@ -79,7 +95,8 @@ int  gras_dynar_cursor_get   (const gras_dynar_t *dynar, int *cursor, void *wher
 	    gras_dynar_length(_dynar) && gras_dynar_cursor_get(_dynar,&_cursor,&_data); \
             gras_dynar_cursor_step(_dynar,&_cursor))
 */
-void gras_dynar_cursor_rm(gras_dynar_t * dynar,
-			  int          * const cursor);
+void gras_dynar_cursor_rm(gras_dynar_t dynar,
+			  int          *const cursor);
 
+END_DECL
 #endif /* _GRAS_DYNAR_H */

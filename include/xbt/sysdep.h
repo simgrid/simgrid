@@ -18,17 +18,29 @@
 
 #include <time.h> /* FIXME: remove */
 #include <unistd.h> /* FIXME: remove */
+#include <stdlib.h> 
 
-#ifdef  __cplusplus
-extern "C" 
+#include "xbt/misc.h"
+BEGIN_DECL
+#if 0
+#define __CALLOC_OP(n, s)  calloc((n), (s))
+  #define __REALLOC_OP(n, s)  realloc((n), (s))
+#define CALLOC(n, s)  ((__CALLOC_OP  ((n)?:(FAILURE("attempt to alloc 0 bytes"), 0), (s)?:(FAILURE("attempt to alloc 0 bytes"), 0)))?:(FAILURE("memory allocation error"), NULL))
+  /* #define REALLOC(p, s) ((__REALLOC_OP ((p), (s)?:(FAILURE("attempt to alloc 0 bytes"), 0)))?:(FAILURE("memory reallocation error"), NULL)) */
+  #define REALLOC(p, s) (__REALLOC_OP ((p), (s)))
 #endif
-
-char* gras_strdup  (const char *str);
-void* gras_malloc  (long int bytes);
-void* gras_malloc0 (long int bytes);
-void* gras_realloc (void  *memory, long int bytes);
-void  gras_free    (void  *memory);
-
+  
+#define gras_strdup(s)  ((s)?(strdup(s)?:(gras_die("memory allocation error"),NULL))\
+			    :(NULL))
+#define gras_malloc(n)   (malloc(n) ?: (gras_die("memory allocation error"),NULL))
+#define gras_malloc0(n)  (calloc( (n),1 ) ?: (gras_die("memory allocation error"),NULL))
+#define gras_realloc(p,s) (s? (p? (realloc(p,s)?:gras_die("memory allocation error"),NULL) \
+				: gras_malloc(s)) \
+			    : (p? (free(p),NULL) \
+			        : NULL))
+#define gras_free free /*nothing specific to do here. A poor valgrind replacement?*/
+#define gras_free_fct free /* replacement with the guareenty of being a function */
+   
 #define gras_new(type, count)  ((type*)gras_malloc (sizeof (type) * (count)))
 #define gras_new0(type, count) ((type*)gras_malloc0 (sizeof (type) * (count)))
 
@@ -71,10 +83,6 @@ long int strtol(const char *nptr, char **endptr, int base);
 double strtod(const char *nptr, char **endptr);
 int atoi(const char *nptr);
 
-
-   
-#ifdef  __cplusplus
-}
-#endif
+END_DECL   
 
 #endif /* _GRAS_SYSDEP_H */

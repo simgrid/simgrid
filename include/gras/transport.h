@@ -15,46 +15,46 @@
 
 #include "xbt/error.h"
 
-typedef struct s_gras_socket gras_socket_t;
+typedef struct s_gras_socket *gras_socket_t;
 
 gras_error_t gras_socket_client(const char *host,
 				unsigned short port,
-				/* OUT */ gras_socket_t **dst);
+				/* OUT */ gras_socket_t *dst);
 gras_error_t gras_socket_server(unsigned short port,
-				/* OUT */ gras_socket_t **dst);
-void         gras_socket_close(gras_socket_t *sd);
+				/* OUT */ gras_socket_t *dst);
+void         gras_socket_close(gras_socket_t sd);
 
 /* get information about socket */
-int   gras_socket_my_port  (gras_socket_t *sock);
-int   gras_socket_peer_port(gras_socket_t *sock);
-char *gras_socket_peer_name(gras_socket_t *sock);
+int   gras_socket_my_port  (gras_socket_t sock);
+int   gras_socket_peer_port(gras_socket_t sock);
+char *gras_socket_peer_name(gras_socket_t sock);
 
 /* extended interface to get all details */
 gras_error_t gras_socket_client_ext(const char *host,
 				    unsigned short port,
 				    unsigned long int bufSize,
 				    int raw, 
-				    /* OUT */ gras_socket_t **dst);
+				    /* OUT */ gras_socket_t *dst);
 gras_error_t gras_socket_server_ext(unsigned short port,
 				    unsigned long int bufSize,
 				    int raw,
-				    /* OUT */ gras_socket_t **dst);
+				    /* OUT */ gras_socket_t *dst);
 
 /* using raw sockets */
-gras_error_t gras_socket_raw_send(gras_socket_t *peer, 
+gras_error_t gras_socket_raw_send(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int expSize, 
 				  unsigned long int msgSize);
-gras_error_t gras_socket_raw_recv(gras_socket_t *peer, 
+gras_error_t gras_socket_raw_recv(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int expSize, 
 				  unsigned long int msgSize);
 
 /* debuging functions */
 gras_error_t gras_socket_client_from_file(const char*path,
-					  /* OUT */ gras_socket_t **dst);
+					  /* OUT */ gras_socket_t *dst);
 gras_error_t gras_socket_server_from_file(const char*path,
-					  /* OUT */ gras_socket_t **dst);
+					  /* OUT */ gras_socket_t *dst);
 					  
    
 #endif /* GRAS_TRANSPORT_H */

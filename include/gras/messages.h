@@ -21,17 +21,17 @@
 BEGIN_DECL
 
 /* msgtype declaration and retrival */
-typedef struct s_gras_msgtype gras_msgtype_t;
+typedef struct s_gras_msgtype *gras_msgtype_t;
 
-void gras_msgtype_declare  (const char            *name,
-			    gras_datadesc_type_t  *payload);
-void gras_msgtype_declare_v(const char            *name,
-			    short int              version,
-			    gras_datadesc_type_t  *payload);
+void gras_msgtype_declare  (const char           *name,
+			    gras_datadesc_type_t  payload);
+void gras_msgtype_declare_v(const char           *name,
+			    short int             version,
+			    gras_datadesc_type_t  payload);
 
-gras_msgtype_t *gras_msgtype_by_name (const char     *name);
-gras_msgtype_t *gras_msgtype_by_namev(const char      *name,
-				      short int        version);
+gras_msgtype_t gras_msgtype_by_name (const char     *name);
+gras_msgtype_t gras_msgtype_by_namev(const char     *name,
+				     short int       version);
 
 /**
  * gras_cb_t:
@@ -44,20 +44,20 @@ gras_msgtype_t *gras_msgtype_by_namev(const char      *name,
  *
  * If the callback accepts the message, it should free it after use.
  */
-typedef int (*gras_cb_t)(gras_socket_t        *expeditor,
-			 void                 *payload);
-void gras_cb_register  (gras_msgtype_t *msgtype,
-			gras_cb_t       cb);
-void gras_cb_unregister(gras_msgtype_t *msgtype,
-			gras_cb_t     cb);
+typedef int (*gras_cb_t)(gras_socket_t  expeditor,
+			 void          *payload);
+void gras_cb_register  (gras_msgtype_t msgtype,
+			gras_cb_t      cb);
+void gras_cb_unregister(gras_msgtype_t msgtype,
+			gras_cb_t      cb);
 
-gras_error_t gras_msg_send(gras_socket_t  *sock,
-			   gras_msgtype_t *msgtype,
+gras_error_t gras_msg_send(gras_socket_t   sock,
+			   gras_msgtype_t  msgtype,
 			   void           *payload);
-gras_error_t gras_msg_wait(double                 timeout,    
-			   gras_msgtype_t        *msgt_want,
-			   gras_socket_t        **expeditor,
-			   void                  *payload);
+gras_error_t gras_msg_wait(double          timeout,    
+			   gras_msgtype_t  msgt_want,
+			   gras_socket_t  *expeditor,
+			   void           *payload);
 gras_error_t gras_msg_handle(double timeOut);
 
 

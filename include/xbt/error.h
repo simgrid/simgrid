@@ -3,7 +3,7 @@
 /* gras/error.h - Error tracking support                                    */
 
 /* Authors: Martin Quinson                                                  */
-/* Copyright (C) 2003 the OURAGAN project.                                  */
+/* Copyright (C) 2003,2004 da GRAS posse.                                   */
 
 /* This program is free software; you can redistribute it and/or modify it
    under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,48 +12,34 @@
 #ifndef GRAS_ERROR_H
 #define GRAS_ERROR_H
 
-#include <stddef.h>    /* offsetof() */
-#include <sys/types.h>  /* size_t */
-#include <stdarg.h>
-
 #include <stdio.h> /* FIXME: Get rid of it */
 
+#include "xbt/misc.h" /* BEGIN_DECL */
 #include "xbt/log.h"
 
 #ifdef HAVE_EXECINFO_H
 #include <execinfo.h>  /* to print the backtrace */
 #endif
 
-/* C++ users need love */
-#ifndef BEGIN_DECL
-# ifdef __cplusplus
-#  define BEGIN_DECL extern "C" {
-# else
-#  define BEGIN_DECL 
-# endif
-#endif
-
-/*! C++ users need love */
-#ifndef END_DECL
-# ifdef __cplusplus
-#  define END_DECL }
-# else
-#  define END_DECL 
-# endif
-#endif
-/* End of cruft for C++ */
-
 BEGIN_DECL
 
 typedef enum {
-  no_error=0,     /* succes */
-//  malloc_error,   /* Well known error */
-  mismatch_error, /* The provided ID does not match */
-  system_error,   /* a syscall did fail */
-  network_error,  /* error while sending/receiving data */
-  timeout_error,  /* not quick enough, dude */
-  thread_error,   /* error while [un]locking */
-  unknown_error 
+  no_error=0,       /* succes */
+  mismatch_error=1, /* The provided ID does not match */
+  system_error=2,   /* a syscall did fail */
+  network_error=3,  /* error while sending/receiving data */
+  timeout_error=4,  /* not quick enough, dude */
+  thread_error=5,   /* error while [un]locking */
+  unknown_error=6,
+     
+  /* remote errors: result of a RMI/RPC.
+     no_error(=0) is the same for both */   
+  remote_mismatch_error=129,
+  remote_system_error,
+  remote_network_error,
+  remote_timeout_error,
+  remote_thread_error,
+  remote_unknown_error
 } gras_error_t;
 
 /*@observer@*/ const char *gras_error_name(gras_error_t errcode);
@@ -108,7 +94,7 @@ typedef enum {
   return code;                                                 \
 } while (0)
 
-#else
+#else /* if 0 */
 #define _GRAS_ERR_PRE do {
 #define _GRAS_ERR_POST(code)                                   \
   return code;                                                 \
@@ -167,6 +153,8 @@ typedef enum {
 #define gras_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) { CRITICAL5(msg,a,b,c,d,e); gras_abort(); }
 #define gras_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); gras_abort(); }
 #endif
+
+void gras_die(const char *msg);
 
 #define DIE_IMPOSSIBLE gras_assert0(0,"The Impossible did happen (yet again)")
 #define gras_assert_error(a) gras_assert1(errcode == (a), "Error %s unexpected",gras_error_name(errcode))

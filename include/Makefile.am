@@ -12,8 +12,6 @@ nobase_include_HEADERS = \
 	\
 	gras/messages.h \
 	\
-	gras/core.h\
-	\
 	gras/modules/base.h \
 	gras/modules/bandwidth.h
 

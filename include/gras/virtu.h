@@ -11,29 +11,7 @@
 #ifndef GRAS_VIRTU_H
 #define GRAS_VIRTU_H
 
-#include <stddef.h>    /* offsetof() */
-#include <sys/types.h>  /* size_t */
-#include <stdarg.h>
-
-
-/*! C++ users need love */
-#ifndef BEGIN_DECL
-# ifdef __cplusplus
-#  define BEGIN_DECL extern "C" {
-# else
-#  define BEGIN_DECL 
-# endif
-#endif
-
-/*! C++ users need love */
-#ifndef END_DECL
-# ifdef __cplusplus
-#  define END_DECL }
-# else
-#  define END_DECL 
-# endif
-#endif
-/* End of cruft for C++ */
+#include "xbt/misc.h" /* BEGIN_DECL */
 
 BEGIN_DECL
 
@@ -54,6 +32,16 @@ double gras_os_time(void);
  * sleeps for the given amount of time.
  */
 void gras_os_sleep(unsigned long sec, unsigned long usec);
+
+/**
+ * gras_get_my_fqdn:
+ *
+ * Returns the fully-qualified name of the host machine, or NULL if the name
+ * cannot be determined.  Always returns the same value, so multiple calls
+ * cause no problems.
+ */
+const char *
+gras_get_my_fqdn(void);
 
 END_DECL
 

@@ -21,7 +21,7 @@
 #include "xbt/sysdep.h"
 
 /**
- * gras_log_priority_t:
+ * e_gras_log_priority_t:
  * @gras_log_priority_none:          used internally (don't poke with)
  * @gras_log_priority_debug:         crufty output 
  * @gras_log_priority_verbose:       verbose output for the user wanting more
@@ -47,7 +47,7 @@ typedef enum {
   gras_log_priority_infinite      = 8, 
 
   gras_log_priority_uninitialized = -1 
-} gras_log_priority_t;
+} e_gras_log_priority_t;
 	      
 
 /**
@@ -93,8 +93,8 @@ typedef enum {
  * Defines a new subcategory of the parent. 
  */
 #define GRAS_LOG_NEW_SUBCATEGORY(catName, parent, desc) \
-    extern gras_log_category_t _GRAS_LOGV(parent);    \
-    gras_log_category_t _GRAS_LOGV(catName) = {       \
+    extern s_gras_log_category_t _GRAS_LOGV(parent);    \
+    s_gras_log_category_t _GRAS_LOGV(catName) = {       \
         &_GRAS_LOGV(parent), 0, 0,                    \
         #catName, gras_log_priority_uninitialized, 1, \
         0, 1                                          \
@@ -120,7 +120,7 @@ typedef enum {
 # define GRAS_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define GRAS_LOG_DEFAULT_CATEGORY(cname) \
-	 static gras_log_category_t* _GRAS_LOGV(default) = &_GRAS_LOGV(cname)
+	 static gras_log_category_t _GRAS_LOGV(default) = &_GRAS_LOGV(cname)
 #endif
 
 /**
@@ -157,41 +157,41 @@ typedef enum {
  */
 
 #define GRAS_LOG_EXTERNAL_CATEGORY(cname) \
-   extern gras_log_category_t _GRAS_LOGV(cname)
+   extern s_gras_log_category_t _GRAS_LOGV(cname)
 
 /* Functions you may call */
 
 extern void gras_log_control_set(const char* cs);
 
 /* Forward declarations */
-typedef struct gras_log_appender_s gras_log_appender_t;
-typedef struct gras_log_event_s    gras_log_event_t;
-typedef struct gras_log_category_s gras_log_category_t;
+typedef struct gras_log_appender_s s_gras_log_appender_t,*gras_log_appender_t;
+typedef struct gras_log_event_s    s_gras_log_event_t,   *gras_log_event_t;
+typedef struct gras_log_category_s s_gras_log_category_t,*gras_log_category_t;
 
 /**
- * Do NOT access any members of this structure directly.
+ * Do NOT access any members of this structure directly. FIXME: move to private?
  */
 struct gras_log_category_s {
-            gras_log_category_t *parent;
-/*@null@*/  gras_log_category_t *firstChild; 
-/*@null@*/  gras_log_category_t *nextSibling;
+            gras_log_category_t parent;
+/*@null@*/  gras_log_category_t firstChild; 
+/*@null@*/  gras_log_category_t nextSibling;
             const char *name;
             int threshold;
             int isThreshInherited;
-/*@null@*/  gras_log_appender_t *appender;
+/*@null@*/  gras_log_appender_t appender;
             int willLogToParent;
   /* TODO: Formats? */
 };
 
 struct gras_log_appender_s {
-  void (*do_append) (gras_log_appender_t* thisLogAppender,
-		    gras_log_event_t* event, const char *fmt);
+  void (*do_append) (gras_log_appender_t thisLogAppender,
+		    gras_log_event_t event, const char *fmt);
   void *appender_data;
 };
 
 struct gras_log_event_s {
-  gras_log_category_t* cat;
-  gras_log_priority_t priority;
+  gras_log_category_t cat;
+  e_gras_log_priority_t priority;
   const char* fileName;
   const char* functionName;
   int lineNum;
@@ -205,8 +205,8 @@ struct gras_log_event_s {
  *
  * Programatically alters a category's threshold priority (don't use).
  */
-extern void gras_log_threshold_set(gras_log_category_t* cat,
-				   gras_log_priority_t thresholdPriority);
+extern void gras_log_threshold_set(gras_log_category_t cat,
+				   e_gras_log_priority_t thresholdPriority);
 
 /**
  * gras_log_parent_set:
@@ -215,8 +215,8 @@ extern void gras_log_threshold_set(gras_log_category_t* cat,
  *
  * Programatically alter a category's parent (don't use).
  */
-extern void gras_log_parent_set(gras_log_category_t* cat, 
-				gras_log_category_t* parent);
+extern void gras_log_parent_set(gras_log_category_t cat,
+				gras_log_category_t parent);
 
 /**
  * gras_log_appender_set:
@@ -225,21 +225,21 @@ extern void gras_log_parent_set(gras_log_category_t* cat,
  *
  * Programatically sets the category's appender (don't use).
  */
-extern void gras_log_appender_set(gras_log_category_t* cat,
-				  gras_log_appender_t* app);
+extern void gras_log_appender_set(gras_log_category_t cat,
+				  gras_log_appender_t app);
 
 /* Functions that you shouldn't call. */
-extern void _gras_log_event_log(gras_log_event_t*ev,
+extern void _gras_log_event_log(gras_log_event_t ev,
 				const char *fmt,
 				...) _GRAS_GNUC_PRINTF(2,3);
 
-extern int _gras_log_cat_init(gras_log_priority_t priority, 
-			      gras_log_category_t* category);
+extern int _gras_log_cat_init(e_gras_log_priority_t priority, 
+			      gras_log_category_t   category);
 
 
-extern gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT);
+extern s_gras_log_category_t _GRAS_LOGV(GRAS_LOG_ROOT_CAT);
 GRAS_LOG_EXTERNAL_CATEGORY(GRAS);
-extern gras_log_appender_t *gras_log_default_appender;
+extern gras_log_appender_t gras_log_default_appender;
 
 /**
  * GRAS_LOG_ISENABLED:
@@ -282,7 +282,7 @@ extern gras_log_appender_t *gras_log_default_appender;
 
 #define _GRAS_LOG_PRE(catv, priority) do {                              \
      if (_GRAS_LOG_ISENABLEDV(catv, priority)) {                        \
-         gras_log_event_t _log_ev =                                     \
+         s_gras_log_event_t _log_ev =                                   \
              {&(catv),priority,__FILE__,_GRAS_GNUC_FUNCTION,__LINE__};         \
          _gras_log_event_log(&_log_ev
 

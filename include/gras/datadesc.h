@@ -11,10 +11,6 @@
 #ifndef GRAS_DATADESC_H
 #define GRAS_DATADESC_H
 
-#include <stddef.h>    /* offsetof() */
-#include <sys/types.h>  /* size_t */
-#include <stdarg.h>
-
 #include "xbt/misc.h" /* BEGIN_DECL */
 
 BEGIN_DECL
@@ -24,132 +20,131 @@ BEGIN_DECL
  * 
  * Opaque type describing a type description you don't want to open.
  */
-typedef struct s_gras_datadesc_type gras_datadesc_type_t;
+typedef struct s_gras_datadesc_type *gras_datadesc_type_t;
 
-typedef struct s_gras_cbps gras_cbps_t;
+typedef struct s_gras_cbps *gras_cbps_t;
 
 /* callbacks prototypes */
-typedef void (*gras_datadesc_type_cb_void_t)(gras_cbps_t *vars, void *data);
-typedef int (*gras_datadesc_type_cb_int_t)(gras_cbps_t *vars, void *data);
-typedef gras_datadesc_type_t *(*gras_datadesc_selector_t)(gras_cbps_t *vars, void *data);
+typedef void (*gras_datadesc_type_cb_void_t)(gras_cbps_t vars, void *data);
+typedef int (*gras_datadesc_type_cb_int_t)(gras_cbps_t vars, void *data);
+typedef gras_datadesc_type_t (*gras_datadesc_selector_t)(gras_cbps_t vars, void *data);
 
 /***********************************************
  **** Search and retrieve declared datatype ****
  ***********************************************/
-gras_datadesc_type_t *gras_datadesc_by_name(const char *name);
+gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 
 /******************************************
  **** Declare datadescription yourself ****
  ******************************************/
 
-gras_datadesc_type_t *
-  gras_datadesc_struct(const char *name);
+gras_datadesc_type_t gras_datadesc_struct(const char *name);
 
 void
-  gras_datadesc_struct_append(gras_datadesc_type_t    *struct_type,
-			      const char              *name,
-			      gras_datadesc_type_t    *field_type);
+  gras_datadesc_struct_append(gras_datadesc_type_t  struct_type,
+			      const char           *name,
+			      gras_datadesc_type_t  field_type);
 void
-  gras_datadesc_struct_close(gras_datadesc_type_t     *struct_type);
+  gras_datadesc_struct_close(gras_datadesc_type_t   struct_type);
 
-gras_datadesc_type_t *
-  gras_datadesc_union(const char                      *name,
-		      gras_datadesc_type_cb_int_t      selector);
+gras_datadesc_type_t 
+  gras_datadesc_union(const char                   *name,
+		      gras_datadesc_type_cb_int_t   selector);
 void
-  gras_datadesc_union_append(gras_datadesc_type_t     *union_type,
-			     const char               *name,
-			     gras_datadesc_type_t     *field_type);
+  gras_datadesc_union_append(gras_datadesc_type_t   union_type,
+			     const char            *name,
+			     gras_datadesc_type_t   field_type);
 void
-  gras_datadesc_union_close(gras_datadesc_type_t      *union_type);
+  gras_datadesc_union_close(gras_datadesc_type_t    union_type);
 
-gras_datadesc_type_t *
-  gras_datadesc_ref(const char                      *name,
-		    gras_datadesc_type_t            *referenced_type);
-gras_datadesc_type_t *
+gras_datadesc_type_t 
+  gras_datadesc_ref(const char                     *name,
+		    gras_datadesc_type_t            referenced_type);
+gras_datadesc_type_t 
   gras_datadesc_ref_generic(const char                *name,
 			    gras_datadesc_selector_t   selector);
 
-gras_datadesc_type_t *
-  gras_datadesc_array_fixed(const char                    *name,
-			    gras_datadesc_type_t          *element_type,
-			    long int                       fixed_size);
-gras_datadesc_type_t *
-  gras_datadesc_array_dyn(const char                      *name,
-			  gras_datadesc_type_t            *element_type,
-			  gras_datadesc_type_cb_int_t      dynamic_size);
+gras_datadesc_type_t 
+  gras_datadesc_array_fixed(const char             *name,
+			    gras_datadesc_type_t    element_type,
+			    long int                fixed_size);
+gras_datadesc_type_t 
+  gras_datadesc_array_dyn(const char                 *name,
+			  gras_datadesc_type_t        element_type,
+			  gras_datadesc_type_cb_int_t dynamic_size);
 
-gras_datadesc_type_t *
-  gras_datadesc_ref_pop_arr(gras_datadesc_type_t  *element_type);
+gras_datadesc_type_t 
+  gras_datadesc_ref_pop_arr(gras_datadesc_type_t  element_type);
 
 /*********************************
  * Change stuff within datadescs *
  *********************************/
 
-void gras_datadesc_cycle_set(gras_datadesc_type_t *type);
-void gras_datadesc_cycle_unset(gras_datadesc_type_t *type);
+void gras_datadesc_cycle_set(gras_datadesc_type_t type);
+void gras_datadesc_cycle_unset(gras_datadesc_type_t type);
 
-void gras_datadesc_cb_send (gras_datadesc_type_t    *type,
-			    gras_datadesc_type_cb_void_t  pre);
-void gras_datadesc_cb_recv(gras_datadesc_type_t    *type,
+void gras_datadesc_cb_send (gras_datadesc_type_t         type,
+			    gras_datadesc_type_cb_void_t pre);
+void gras_datadesc_cb_recv(gras_datadesc_type_t          type,
 			   gras_datadesc_type_cb_void_t  post);
-void gras_datadesc_cb_field_send (gras_datadesc_type_t    *type,
-				  const char *field_name,
+void gras_datadesc_cb_field_send (gras_datadesc_type_t   type,
+				  const char            *field_name,
 				  gras_datadesc_type_cb_void_t  pre);
-void gras_datadesc_cb_field_recv(gras_datadesc_type_t    *type,
-				 const char *field_name,
+void gras_datadesc_cb_field_recv(gras_datadesc_type_t    type,
+				 const char             *field_name,
 				 gras_datadesc_type_cb_void_t  post);
-void gras_datadesc_cb_field_push (gras_datadesc_type_t         *type,
-				  const char                   *field_name);
+void gras_datadesc_cb_field_push (gras_datadesc_type_t   type,
+				  const char            *field_name);
 
 /******************************
  * Get stuff within datadescs *
  ******************************/
-char * gras_datadesc_get_name(gras_datadesc_type_t *ddt);
-int gras_datadesc_get_id(gras_datadesc_type_t *ddt);
+char * gras_datadesc_get_name(gras_datadesc_type_t ddt);
+int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
 /********************************************************
  * Advanced data describing: callback persistent states *
  ********************************************************/
 /* simple one: push/pop sizes of arrays */
 void
-gras_cbps_i_push(gras_cbps_t *ps, int val);
+gras_cbps_i_push(gras_cbps_t ps, int val);
 int 
-gras_cbps_i_pop(gras_cbps_t *ps);
+gras_cbps_i_pop(gras_cbps_t ps);
 
-int gras_datadesc_cb_pop(gras_cbps_t *vars, void *data);
-void gras_datadesc_cb_push_int(gras_cbps_t *vars, void *data);
-void gras_datadesc_cb_push_uint(gras_cbps_t *vars, void *data);
-void gras_datadesc_cb_push_lint(gras_cbps_t *vars, void *data);
-void gras_datadesc_cb_push_ulint(gras_cbps_t *vars, void *data);
+int gras_datadesc_cb_pop(gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_int(gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_uint(gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_lint(gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
 
 
 
 /* complex one: complete variable environment support */
 gras_error_t
-gras_cbps_v_pop (gras_cbps_t        *ps, 
-		    const char            *name,
-		    gras_datadesc_type_t **ddt,
-		  void                 **res);
+  gras_cbps_v_pop (gras_cbps_t            ps, 
+		   const char            *name,
+      	 /* OUT */ gras_datadesc_type_t  *ddt,
+	 /* OUT */ void                 **res);
 gras_error_t
-gras_cbps_v_push(gras_cbps_t        *ps,
-		    const char            *name,
-		    void                  *data,
-		    gras_datadesc_type_t  *ddt);
+gras_cbps_v_push(gras_cbps_t            ps,
+		 const char            *name,
+		 void                  *data,
+		 gras_datadesc_type_t   ddt);
 void
-gras_cbps_v_set (gras_cbps_t        *ps,
-		    const char            *name,
-		    void                  *data,
-		    gras_datadesc_type_t  *ddt);
+gras_cbps_v_set (gras_cbps_t            ps,
+		 const char            *name,
+		 void                  *data,
+		 gras_datadesc_type_t   ddt);
 
 void *
-gras_cbps_v_get (gras_cbps_t        *ps, 
-		    const char            *name,
-		    gras_datadesc_type_t **ddt);
+gras_cbps_v_get (gras_cbps_t            ps, 
+		 const char            *name,
+       /* OUT */ gras_datadesc_type_t  *ddt);
 
 void
-gras_cbps_block_begin(gras_cbps_t *ps);
+gras_cbps_block_begin(gras_cbps_t ps);
 void
-gras_cbps_block_end(gras_cbps_t *ps);
+gras_cbps_block_end(gras_cbps_t ps);
 
 
 
@@ -162,7 +157,7 @@ int gras_arch_selfid(void); /* ID of this arch */
 /****************************
  **** Parse C statements ****
  ****************************/
-gras_datadesc_type_t *
+gras_datadesc_type_t 
 gras_datadesc_parse(const char *name,
 		    const char *Cdefinition);
 #define GRAS_DEFINE_TYPE(name,def) \
@@ -223,8 +218,8 @@ typedef struct DataDescriptorStruct {
 gras_error_t
 gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
-			 size_t                howmany,
-			 gras_datadesc_type_t **dst);
+			 unsigned long         howmany,
+	       /* OUT */ gras_datadesc_type_t *dst);
 
 END_DECL
 
