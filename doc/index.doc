@@ -53,6 +53,12 @@ The SimGrid toolkit is composed of different modules :
     virtual platform through SURF. It follows the same principle as
     the ones used in GRAS but is specific to MPI applications.
 
+Here is a figure the depicts the relation between those different modules.
+<center>
+\image html simgrid_modules.jpg
+</center>
+
+
 The section \ref publications contains links to papers that provide
 additional details on the project as well as validation and
 experimental results.
