@@ -233,7 +233,8 @@ static gras_error_t _gras_log_parse_setting(const char* control_string,
   if (!(set->catname=malloc(dot - name+1)))
     RAISE_MALLOC;
     
-  strncat(set->catname,name,dot-name);
+  strncpy(set->catname,name,dot-name);
+  set->catname[dot-name]='\0'; /* Just in case */
   DEBUG1("This is for cat '%s'", set->catname);
   return no_error;
 }
@@ -316,7 +317,8 @@ gras_error_t gras_log_control_set(const char* control_string) {
   if (control_string == NULL)
     return no_error;
   if (gras_log_settings == NULL)
-    TRY(gras_dynar_new(&gras_log_settings,sizeof(gras_log_setting_t*),_free_setting));
+    TRY(gras_dynar_new(&gras_log_settings,sizeof(gras_log_setting_t*),
+		       _free_setting));
 
   if (!(set = malloc(sizeof(gras_log_setting_t))))
     RAISE_MALLOC;
@@ -342,7 +344,8 @@ gras_error_t gras_log_control_set(const char* control_string) {
       free(cs);
     }
     
-    TRYCATCH(_gras_log_cat_searchsub(&_GRAS_LOGV(root),set->catname,&cat),mismatch_error);
+    TRYCATCH(_gras_log_cat_searchsub(&_GRAS_LOGV(root),set->catname,&cat),
+	     mismatch_error);
     if (errcode == mismatch_error) {
       DEBUG0("Store for further application");
       DEBUG1("push %p to the settings",set);
@@ -368,5 +371,7 @@ void gras_log_appender_set(gras_log_category_t* cat, gras_log_appender_t* app) {
 }
 
 void gras_log_exit(void) {
+  VERB0("Exiting log");
   gras_dynar_free(gras_log_settings);
+  VERB0("Exited log");
 }
