@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/01/07 10:51:23.
+ * Generated 2005/01/09 15:25:17.
  *
  * This program was generated with the FleXML XML processor generator,
  * (Id: flexml.pl,v 1.35 2005/01/05 06:29:58 legranda Exp).
@@ -533,10 +533,10 @@ const char* *statenames=NULL;
 <ROOT_route,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<route"{s} {
   A_route_src = NULL;
   A_route_dst = NULL;
-  A_route_impact_on_src = NULL;
-  A_route_impact_on_dst = NULL;
-  A_route_impact_on_src_with_other_recv = NULL;
-  A_route_impact_on_dst_with_other_send = NULL;
+  A_route_impact_on_src = "0.0";
+  A_route_impact_on_dst = "0.0";
+  A_route_impact_on_src_with_other_recv = "0.0";
+  A_route_impact_on_dst_with_other_send = "0.0";
   ENTER(AL_route);
   }
 

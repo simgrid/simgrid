@@ -27,10 +27,10 @@
 <!ELEMENT route (route_element*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
-<!ATTLIST route impact_on_src CDATA>
-<!ATTLIST route impact_on_dst CDATA>
-<!ATTLIST route impact_on_src_with_other_recv CDATA>
-<!ATTLIST route impact_on_dst_with_other_send CDATA>
+<!ATTLIST route impact_on_src CDATA "0.0">
+<!ATTLIST route impact_on_dst CDATA "0.0">
+<!ATTLIST route impact_on_src_with_other_recv CDATA "0.0">
+<!ATTLIST route impact_on_dst_with_other_send CDATA "0.0">
 
 <!ELEMENT route_element EMPTY>
 <!ATTLIST route_element name CDATA #REQUIRED>
