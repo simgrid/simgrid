@@ -128,6 +128,7 @@ AC_CONFIG_FILES([
     examples/msg/Makefile          examples/msg/run_msg_test
     examples/gras/Makefile 
       examples/gras/ping/Makefile  examples/gras/ping/test_sg  examples/gras/ping/test_rl
+      examples/gras/timer/Makefile examples/gras/timer/test_sg examples/gras/timer/test_rl
   doc/Makefile
     doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
   tools/compile-remote-worker tools/Makefile
@@ -137,18 +138,21 @@ AC_CONFIG_FILES([
   testsuite/gras/trp_tcp_usage
   testsuite/gras/trp_file_usage
 ],[
-     test -e testsuite/run_tests          && chmod +x testsuite/run_tests;
-     test -e testsuite/gras/trp_tcp_usage && chmod +x testsuite/gras/trp_tcp_usage;
-     test -e testsuite/gras/trp_file_usage&& chmod +x testsuite/gras/trp_file_usage;
-     test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
-     test -e examples/msg/run_msg_test    && chmod +x examples/msg/run_msg_test;
-     test -e examples/gras/ping/test_sg   && chmod +x examples/gras/ping/test_sg;
-     test -e examples/gras/ping/test_rl   && chmod +x examples/gras/ping/test_rl;
-#     test -e examples/gras/bandwidth/test_sg   && chmod +x examples/gras/bandwidth/test_sg;
-     test -e examples/gras/pastry/test_sg && chmod +x examples/gras/pastry/test_sg;
-     chmod +x $srcdir/tools/gras-check-arch;
+    for file in                                                 \
+     testsuite/run_tests                                        \
+     testsuite/gras/trp_tcp_usage testsuite/gras/trp_file_usage \
+     tools/compile-remote-worker                                \
+     examples/msg/run_msg_test                                  \
+     examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
+     examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
+    ; do                                                        \
+      test -e $file && chmod +x $file;                          \
+    done
+    chmod +x $srcdir/tools/gras-check-arch;
 ])
 
+#    examples/gras/pastry/test_sg   
+#    examples/gras/bandwidth/test_sg 
 
 
 
