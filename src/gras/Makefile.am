@@ -1,4 +1,5 @@
 SUBDIRS=. Tests
+AM_CFLAGS=-g
 MAINTAINERCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include \
           @CFLAGS_SimGrid@
