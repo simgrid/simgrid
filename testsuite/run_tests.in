@@ -19,17 +19,18 @@ for test in xbt/log_usage@EXEEXT@                                 \
 	    \
 	    gras/trp_tcp_usage      gras/trp_file_usage             \
 	    gras/datadesc_usage@EXEEXT@                                     \
-	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.little32" \
-	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.little64" \
-	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.big32"    \
-	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.big64"    \
-	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.aix" \
-	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.win32" \
-	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/../testsuite/gras/datadesc.g5" \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little32" \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.little64" \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big32"    \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.big64"    \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.aix" \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.win32" \
+	    "gras/datadesc_usage@EXEEXT@ --read @top_srcdir@/testsuite/gras/datadesc.g5" \
 	    \
 	    surf/maxmin_usage@EXEEXT@       surf/maxmin_bench@EXEEXT@               \
 	    surf/trace_usage@EXEEXT@                                        \
-	    "surf/surf_usage@EXEEXT@ platform.txt" "surf/surf_usage2@EXEEXT@ platform.txt"                                        
+	    "surf/surf_usage@EXEEXT@  @top_srcdir@/testsuite/surf/platform.txt" \
+	    "surf/surf_usage2@EXEEXT@ @top_srcdir@/testsuite/surf/platform.txt"
 do		    
   tests_nb=`expr $tests_nb + 1`
   echo "#### Test $test"
