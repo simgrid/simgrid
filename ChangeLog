@@ -19,15 +19,27 @@ Plutot finaliser ce qui est commencé et finir le Grand Nettoyage:
 DONE
 ----
   [Arnaud]
+  (gras)
+  * Add a gras_process_getpid function.
+
   (msg)
   * Add MSG_task_get_compute_duration() and MSG_task_get_data_size()
+  * Extend the logs so that they also print PID, hostname, date, ... if
+    available. 
+  * Convert the MSG example to the use of xbt_logs instead of PRINT_MESSAGE
+  * Rewrite tools/MSG_visualization/colorize.pl for using with logs instead
+    of PRINT_MESSAGE
+
 
   [Martin]
+  (infrastructure)
   * Cleanups in configury with regard to compile optimization/warning flags.
     Also add -fno-loop-optimize to any powerpc since it's the optimization
     killing gcc (< 3.4.0).
+  (xbt)
   * Bugfix: XBT_LOG_NEW_DEFAULT_CATEGORY now compiles without compiler
     warning (thanks loris for stumbling into this one).
+  (gras)
   * Change SIMGRID_INSTALL_PATH to GRAS_ROOT in Makefiles generated for user.
   * Rename gras_get_my_fqdn to gras_os_myname and implement it in the simulator
     RL would imply a DNS resolver, which is *hard* to do in a portable way. 
