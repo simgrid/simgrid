@@ -65,7 +65,7 @@ void MSG_launch_application(const char *file)
       xbt_assert1(code, "Unknown function %s",argv[0]);
 
       host = MSG_get_host_by_name(host_name);
-      xbt_assert1(host_name, "Unknown host %s",host_name);
+      xbt_assert1(host, "Unknown host %s",host_name);
 
      process = MSG_process_create(argv[0], code, NULL, host);
      MSG_set_arguments(process, argc, argv);
@@ -77,7 +77,7 @@ void MSG_launch_application(const char *file)
     }
   }
 
-  close_section("CPU");
+  close_section("DEPLOYMENT");
 }
 
 /** \ingroup msg_easier_life

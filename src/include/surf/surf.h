@@ -10,6 +10,7 @@
 
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
+#include "xbt/dict.h"
 
 /* Actions and resources are higly connected structures... */
 typedef struct surf_action *surf_action_t;
@@ -147,6 +148,7 @@ typedef struct surf_workstation_resource {
 
 extern surf_workstation_resource_t surf_workstation_resource;
 void surf_workstation_resource_init(const char *filename);
+extern xbt_dict_t workstation_set;
 
 /*******************************************/
 /*** SURF Globals **************************/

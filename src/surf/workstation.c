@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(workstation, surf,
 
 surf_workstation_resource_t surf_workstation_resource = NULL;
 
-static xbt_dict_t workstation_set = NULL;
+xbt_dict_t workstation_set = NULL;
 
 static workstation_t workstation_new(const char *name,
 				     void *cpu, void *card)

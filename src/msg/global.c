@@ -24,9 +24,12 @@ MSG_Global_t msg_global = NULL;
 void MSG_global_init(void)
 {
   if (!msg_global) {
+    int argc=0;
+    char **argv=NULL;
+
     msg_global = xbt_new0(s_MSG_Global_t,1);
 
-    surf_init(NULL, NULL);	/* Initialize some common structures */
+    surf_init(&argc, argv);	/* Initialize some common structures */
     msg_global->host = xbt_fifo_new();
     msg_global->process_to_run = xbt_fifo_new();
     msg_global->process_list = xbt_fifo_new();
@@ -41,7 +44,7 @@ void MSG_global_init(void)
  */
 void MSG_set_verbosity(MSG_outputmode_t mode)
 {
-  CRITICAL0("Not implemented yet.");
+  CRITICAL0("MSG_set_verbosity : Not implemented yet.");
 }
 
 /** \ingroup m_channel_management
@@ -80,7 +83,7 @@ MSG_error_t MSG_set_channel_number(int number)
  */
 MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, long double param)
 {
-  xbt_assert0(0,"This function is now deprecated and useless. Store and forward does not exist anymore. Please stop using it.");
+  CRITICAL0("MSG_set_sharing_policy: this function is now deprecated and useless. Store and forward does not exist anymore. Please stop using it.");
   
   return MSG_OK;
 }

@@ -60,7 +60,15 @@ src_name dst_name (link_name link_name link_name ... )
  * it looks like.
  */
 void MSG_create_environment(const char *file) {
+  xbt_dict_cursor_t cursor = NULL;
+  char *name = NULL;
+  void *workstation = NULL;
+
   surf_workstation_resource_init(file);
+
+  xbt_dict_foreach(workstation_set, cursor, name, workstation) {
+    __MSG_host_create(name, workstation, NULL);
+  }
 
   return;
 }
