@@ -3,10 +3,19 @@
     them all up in one shot)
  [DataDesc]
   - Fix the ugly case of reference to dynamic array.
+  - New (semi-public) function gras_datadesc_size to allow the messaging
+    layer to malloc the needed space for the buffer.
  [Transport]
   - gras_socket_close now expect the socket to close (and not its address to
     put NULL in it after it). This is because the socket passed to handlers
     is one of their argument (=> not writable).
+ [Messaging]
+  - propagate the interface cleanup from last week in datadesc, ie remove a
+    superfluous level of indirection. User pass adress of variable
+    containing data (both when sending and receiving), and not of a variable
+    being a pointer to the data. Let's say that I like it better ;)
+      The price for that is constructs like "int msg=*(int*)payload" in
+    handlers, but it's a fine price, IMHO.
 
 2004-06-21
  [Transport]

@@ -22,6 +22,7 @@ typedef struct {
   gras_socket_t  *expeditor;
   gras_msgtype_t *type;
   void           *payload;
+  int             payload_size;
 } gras_msg_t;
 
 gras_error_t gras_msg_send_namev(gras_socket_t *sock, 

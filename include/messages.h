@@ -65,12 +65,11 @@ gras_error_t gras_msgtype_by_namev(const char      *name,
  * If the callback accepts the message, it should free it after use.
  */
 typedef int (*gras_cb_t)(gras_socket_t        *expeditor,
-			 gras_datadesc_type_t *payload_type,
-			 void                 *payload_data);
+			 void                 *payload);
 gras_error_t gras_cb_register  (gras_msgtype_t *msgtype,
-			        gras_cb_t     cb);
+			        gras_cb_t       cb);
 void         gras_cb_unregister(gras_msgtype_t *msgtype,
-			       gras_cb_t     cb);
+				gras_cb_t     cb);
 
 gras_error_t gras_msg_send(gras_socket_t  *sock,
 			   gras_msgtype_t *msgtype,
@@ -78,7 +77,7 @@ gras_error_t gras_msg_send(gras_socket_t  *sock,
 gras_error_t gras_msg_wait(double                 timeout,    
 			   gras_msgtype_t        *msgt_want,
 			   gras_socket_t        **expeditor,
-			   void                 **payload);
+			   void                  *payload);
 gras_error_t gras_msg_handle(double timeOut);
 
 

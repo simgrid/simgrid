@@ -205,7 +205,7 @@ gras_msg_send(gras_socket_t  *sock,
   
   TRY(gras_trp_chunk_send(sock, GRAS_header, 6));
 
-  TRY(gras_datadesc_send(sock, string_type,       msgtype->name));
+  TRY(gras_datadesc_send(sock, string_type,   &msgtype->name));
   TRY(gras_datadesc_send(sock, msgtype->ctn_type, payload));
 
   return no_error;
@@ -214,30 +214,13 @@ gras_msg_send(gras_socket_t  *sock,
  * gras_msg_recv:
  *
  * receive the next message on the given socket.  
- * The room for the payload will be malloc'ed by the function.
  */
 gras_error_t
 gras_msg_recv(gras_socket_t   *sock,
 	      gras_msgtype_t **msgtype,
-	      void           **payload) {
+	      void           **payload,
+	      int             *payload_size) {
 
-  *payload = NULL;
-  return gras_msg_recv_no_malloc(sock,msgtype,payload);
-}
-/**
- * gras_msg_recv_no_malloc:
- *
- * receive the next message on the given socket. 
- *
- * No room will be allocated by the function, which is good to get
- * the payload onto the stack (passing the address of a static variable), 
- * but will happily segfault if passed an arbitrary pointer... 
- */
-gras_error_t
-gras_msg_recv_no_malloc(gras_socket_t   *sock,
-			gras_msgtype_t **msgtype,
-			void           **payload) {
-  
   gras_error_t errcode;
   static gras_datadesc_type_t *string_type=NULL;
   char header[6];
@@ -261,10 +244,18 @@ gras_msg_recv_no_malloc(gras_socket_t   *sock,
   DEBUG2("Handle an incoming message using protocol %d from arch %s",
 	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
-  TRY(gras_datadesc_recv(sock, string_type, r_arch,(void**) &msg_name));
+  TRY(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
   TRY(gras_set_get_by_name(_gras_msgtype_set,
 			   msg_name,(gras_set_elm_t**)msgtype));
-  TRY(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, payload));
+
+
+  *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
+  gras_assert2(*payload_size > 0,
+	       "%s %s",
+	       "Dynamic array as payload is forbided for now (FIXME?).",
+	       "Reference to dynamic array is allowed.");
+  *payload = malloc(*payload_size);
+  TRY(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
 
   return no_error;
 }
@@ -284,9 +275,11 @@ gras_error_t
 gras_msg_wait(double                 timeout,    
 	      gras_msgtype_t        *msgt_want,
 	      gras_socket_t        **expeditor,
-	      void                 **payload) {
+	      void                  *payload) {
 
   gras_msgtype_t *msgt_got;
+  void *payload_got;
+  int payload_size_got;
   gras_error_t errcode;
   double start, now;
   gras_procdata_t *pd=gras_procdata_get();
@@ -294,7 +287,7 @@ gras_msg_wait(double                 timeout,
   gras_msg_t msg;
   
   *expeditor = NULL;
-  *payload   = NULL;
+  payload_got = NULL;
 
   VERB1("Waiting for message %s",msgt_want->name);
 
@@ -303,17 +296,20 @@ gras_msg_wait(double                 timeout,
   gras_dynar_foreach(pd->msg_queue,cpt,msg){
     if (msg.type->code == msgt_want->code) {
       *expeditor = msg.expeditor;
-      *payload   = msg.payload;
+      memcpy(payload, msg.payload, msg.payload_size);
+      free(msg.payload);
       gras_dynar_cursor_rm(pd->msg_queue, &cpt);
-      VERB0("Waited message was queued");
+      VERB0("The waited message was queued");
       return no_error;
     }
   }
 
   while (1) {
     TRY(gras_trp_select(timeout - now + start, expeditor));
-    TRY(gras_msg_recv(*expeditor, &msgt_got, payload));
+    TRY(gras_msg_recv(*expeditor, &msgt_got, &payload_got, &payload_size_got));
     if (msgt_got->code == msgt_want->code) {
+      memcpy(payload, payload_got, payload_size_got);
+      free(payload_got);
       VERB0("Got waited message");
       return no_error;
     }
@@ -321,7 +317,8 @@ gras_msg_wait(double                 timeout,
     /* not expected msg type. Queue it for later */
     msg.expeditor = *expeditor;
     msg.type      =  msgt_got;
-    msg.payload   = *payload;
+    msg.payload   =  payload;
+    msg.payload_size = payload_size_got;
     TRY(gras_dynar_push(pd->msg_queue,&msg));
     
     now=gras_time();
@@ -350,6 +347,7 @@ gras_msg_handle(double timeOut) {
   gras_msg_t      msg;
   gras_socket_t  *expeditor;
   void           *payload=NULL;
+  int             payload_size;
   gras_msgtype_t *msgtype;
 
   gras_procdata_t*pd=gras_procdata_get();
@@ -369,7 +367,7 @@ gras_msg_handle(double timeOut) {
     
   } else {
     TRY(gras_trp_select(timeOut, &expeditor));
-    TRY(gras_msg_recv(expeditor, &msgtype, &payload));
+    TRY(gras_msg_recv(expeditor, &msgtype, &payload, &payload_size));
   }
       
   /* handle it */
@@ -390,8 +388,9 @@ gras_msg_handle(double timeOut) {
   gras_dynar_foreach(list->cbs,cpt,cb) { 
     INFO3("Invoque the callback #%d (@%p) for incomming msg %s",
 	  cpt+1,cb,msgtype->name);
-    if ((*cb)(expeditor,msgtype->ctn_type,payload)) {
+    if ((*cb)(expeditor,payload)) {
       /* cb handled the message */
+      free(payload);
       return no_error;
     }
   }

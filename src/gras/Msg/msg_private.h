@@ -38,12 +38,8 @@ void gras_msgtype_free(void *msgtype);
 
 gras_error_t gras_msg_recv(gras_socket_t   *sock,
 			   gras_msgtype_t **msgtype,
-			   void           **payload);
-gras_error_t
-gras_msg_recv_no_malloc(gras_socket_t   *sock,
-			gras_msgtype_t **msgtype,
-			void           **payload);
-
+			   void           **payload,
+			   int             *payload_size);
 
 /**
  * gras_cblist_t:
