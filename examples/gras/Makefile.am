@@ -1,1 +1,1 @@
-SUBDIRS= ping # bandwidth alnem saturate
+SUBDIRS= ping timer # bandwidth alnem saturate
