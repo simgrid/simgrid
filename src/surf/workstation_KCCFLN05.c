@@ -268,6 +268,11 @@ static void parse_route_set_endpoints(void)
 {
   src_id = ((workstation_KCCFLN05_t) name_service(A_route_src))->id;
   dst_id = ((workstation_KCCFLN05_t) name_service(A_route_dst))->id;
+  surf_parse_get_double(&impact_on_src,A_route_impact_on_src);
+  surf_parse_get_double(&impact_on_dst,A_route_impact_on_dst);
+  surf_parse_get_double(&impact_on_src_with_other_recv,A_route_impact_on_src_with_other_recv);
+  surf_parse_get_double(&impact_on_dst_with_other_send,A_route_impact_on_dst_with_other_send);
+
   nb_link = 0;
   link_name = NULL;
 }
@@ -465,6 +470,13 @@ static void action_cpu_KCCFLN05_free(surf_action_t action)
   xbt_free(action);
 }
 
+/* #define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\ */
+/*                               fprintf(stderr, format, ## __VA_ARGS__), \ */
+/*                               fprintf(stderr, "\n")) */
+/* #define VOIRP(expr) WARNING("  {" #expr " = %p }", expr) */
+/* #define VOIRD(expr) WARNING("  {" #expr " = %d }", expr) */
+/* #define VOIRG(expr) WARNING("  {" #expr " = %lg }", expr) */
+
 static double share_cpu_KCCFLN05_resources(double now)
 {
   s_surf_action_cpu_KCCFLN05_t s_cpu_action;
@@ -489,6 +501,10 @@ static double share_cpu_KCCFLN05_resources(double now)
 		(xbt_dynar_length(workstation->outgoing_communications))) {
 	scale = workstation->interference_send;
 	xbt_dynar_foreach (workstation->outgoing_communications,cpt,action) {
+/* 	  VOIRD(action->src->id); */
+/* 	  VOIRD(action->dst->id); */
+/* 	  VOIRP(&ROUTE(action->src->id,action->dst->id)); */
+/* 	  VOIRG(ROUTE(action->src->id,action->dst->id).impact_on_src); */
 	  scale -= ROUTE(action->src->id,action->dst->id).impact_on_src *
 	    lmm_variable_getvalue(action->variable);
 	}
