@@ -3,7 +3,7 @@ AM_CFLAGS=-g -Wno-unused-function
 
 CLEANFILES = *~ test a.out *.o
 DISTCLEANFILES=Makefile.in *~
-EXTRA_DIST=test_utils.c run_tests.in
+EXTRA_DIST=run_tests.in
 
 # Test stuff
 

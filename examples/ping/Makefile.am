@@ -1,6 +1,6 @@
 DISTCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/src/include -g
-EXTRA_DIST=ping_test
+EXTRA_DIST=test_rl test_sg
 TESTS=test_rl test_sg
 
 # AUTOMAKE variable definition
