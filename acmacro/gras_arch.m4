@@ -174,9 +174,7 @@ case $trace in
   l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=1; gras_arch_name=little64;;
   B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:) gras_arch=2; gras_arch_name=big32;;
   B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:) gras_arch=3; gras_arch_name=big64;;
-  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=4; gras_arch_name=aix
-     AC_MSG_ERROR([GRAS does not work on AIX because  max_align != const])
-   ;;
+  B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:) gras_arch=4; gras_arch_name=aix;;
 esac
 if test x$gras_arch = xunknown ; then
   AC_MSG_RESULT([damnit ($trace)])
