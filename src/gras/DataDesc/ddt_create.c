@@ -274,6 +274,11 @@ void
 gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
   XBT_IN;
   struct_type->category.struct_data.closed = 1;
+  DEBUG4("structure %s closed. size=%ld,align=%ld,asize=%ld",
+	 struct_type->name,
+	 struct_type->size[GRAS_THISARCH], 
+	 struct_type->alignment[GRAS_THISARCH], 
+	 struct_type->aligned_size[GRAS_THISARCH]);
 }
 
 /**
