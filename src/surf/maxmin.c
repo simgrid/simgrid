@@ -79,8 +79,8 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 
 static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
 {
-  xbt_assert0(xbt_swag_size(&(cnst->element_set)),
-	      "This list should be empty!");
+/*   xbt_assert0(xbt_swag_size(&(cnst->element_set)), */
+/* 	      "This list should be empty!"); */
   remove_active_constraint(sys, cnst);
   xbt_free(cnst);
 }
@@ -148,7 +148,7 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 
   sys->modified = 1;
 
-  xbt_assert0(var->cnsts_number >= var->cnsts_size,
+  xbt_assert0(var->cnsts_number < var->cnsts_size,
 	      "Too much constraints");
 
   elem = &(var->cnsts[var->cnsts_number++]);
