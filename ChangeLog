@@ -1,4 +1,22 @@
-Version 0.7 (protocol not changed; API changed)
+2004-09-29 Martin Quinson
+  - Re-enable raw sockets.
+    Created by gras_socket_{client,server}_ext;
+    Used with gras_raw_{send,recv}
+    
+    It should allow to kill the last bits of gras first version.
+  
+    This is not completely satisfactory yet (dupplicate code with
+     chunk_{send,recv}; a bit out of the plugin mecanism), but it should
+     work. 
+
+  - Simplify transport plugin interface by not passing any argument to
+    _server and _client, but embeeding them in the socket struct directly. 
+
+2004-09-28 Martin Quinson
+  - Finish the port to AIX.
+    autoconf was my problem (segfault within the malloc replacement
+    function. No idea why)
+        
 2004-09-16 Martin Quinson
   - Fix some size_t madness on 64bit architectures.
   
