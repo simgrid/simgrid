@@ -41,7 +41,11 @@ static void append_file(xbt_log_appender_t this,
 
   /* TODO: define a format field in struct for timestamp, etc.
      struct DefaultLogAppender* this = (struct DefaultLogAppender*)this0;*/
-    
+
+  char *procname = (char*)xbt_procname();
+  if (!procname) 
+     procname = (char*)"";
+   
     if ((FILE*)(this->appender_data) == NULL)
       this->appender_data = (void*)stderr;
     
@@ -51,7 +55,7 @@ static void append_file(xbt_log_appender_t this,
 		 "Priority %d is greater than the biggest allowed value",
 		 ev->priority);
 
-    fprintf(stderr, "[%s] %s:%d: ", xbt_procname(), ev->fileName, ev->lineNum);
+    fprintf(stderr, "[%s] %s:%d: ", procname, ev->fileName, ev->lineNum);
     fprintf(stderr, "[%s/%s] ", 
 	    ev->cat->name, xbt_log_priority_names[ev->priority] );
     vfprintf(stderr, fmt, ev->ap);
