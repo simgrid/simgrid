@@ -6,7 +6,7 @@ DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/*
 MAINTAINERCLEANFILES=Makefile.in
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little64 gras/datadesc.big32 gras/datadesc.big64 \
-  gras/datadesc.aix gras/datadesc.win32 \
+  gras/datadesc.aix gras/datadesc.win32 gras/datadesc.g5 \
   gras/mk_datadesc_structs.pl \
   surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt
 
