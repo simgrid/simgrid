@@ -28,36 +28,36 @@ struct gras_dict_ {
 };
 
 /*####[ Function prototypes ]################################################*/
-void         gras_dictelm_free        (gras_dictelm_t **pp_elm);
+void         gras_dictelm_free      (gras_dictelm_t **pp_elm);
 
-gras_error_t gras_dictelm_insert      (gras_dictelm_t **pp_head,
-				       const char      *_key,
-				       void            *data,
-				       void_f_pvoid_t  *free_ctn);
-gras_error_t gras_dictelm_insert_ext  (gras_dictelm_t **pp_head,
-				       const char      *_key,
-				       int              key_len,
-				       void            *data,
-				       void_f_pvoid_t  *free_ctn);
+gras_error_t gras_dictelm_set       (gras_dictelm_t **pp_head,
+				     const char      *_key,
+				     void            *data,
+				     void_f_pvoid_t  *free_ctn);
+gras_error_t gras_dictelm_set_ext   (gras_dictelm_t **pp_head,
+				     const char      *_key,
+				     int              key_len,
+				     void            *data,
+				     void_f_pvoid_t  *free_ctn);
 
-gras_error_t gras_dictelm_retrieve    (gras_dictelm_t *p_head,
-				       const char     *key,
-				       /* OUT */void **data);
-gras_error_t gras_dictelm_retrieve_ext(gras_dictelm_t *p_head,
-				       const char     *key,
-				       int             key_len,
-				       /* OUT */void **data);
+gras_error_t gras_dictelm_get       (gras_dictelm_t *p_head,
+				     const char     *key,
+				     /* OUT */void **data);
+gras_error_t gras_dictelm_get_ext   (gras_dictelm_t *p_head,
+				     const char     *key,
+				     int             key_len,
+				     /* OUT */void **data);
 
-gras_error_t gras_dictelm_remove      (gras_dictelm_t *p_head,
-				       const char  *key);
-gras_error_t gras_dictelm_remove_ext  (gras_dictelm_t *p_head,
+gras_error_t gras_dictelm_remove    (gras_dictelm_t *p_head,
+				     const char  *key);
+gras_error_t gras_dictelm_remove_ext(gras_dictelm_t *p_head,
 				       const char  *key,
 				       int          key_len);
 
-gras_error_t gras_dictelm_dump        (gras_dictelm_t *p_head,
-				       void_f_pvoid_t *output);
+gras_error_t gras_dictelm_dump      (gras_dictelm_t *p_head,
+				     void_f_pvoid_t *output);
 
-void         gras_dictelm_print_fct   (void *data);
+void         gras_dictelm_print_fct (void *data);
 
 #endif  /* _GRAS_DICT_ELM_T_ */
 
