@@ -47,7 +47,8 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS([sys/socket.h winsock.h winsock2.h \
                   sys/stat.h \
 		  ucontext.h \
-		  sys/time.h ])
+		  sys/time.h \
+		  errno.h unistd.h ])
 AC_CHECK_FUNCS([gettimeofday \
                 getdtablesize \
                 sysconf])
@@ -74,13 +75,13 @@ GTK_DOC_CHECK()
 AC_SUBST([htmldir],         ['${datadir}/doc/gras/html'])dnl
 
 dnl ####[ Search libs ]#######################################################
-ACI_PACKAGE([SimGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
-AM_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
-if test x$HAVE_SimGrid = xyes; then
-  GRAS_SG_DEP="-lsimgrid"
-else
+dnl A CI_PACKAGE([S imGrid],[the SimGrid simulator],[SG_init],[-lsimgrid],[simgrid.h],,:)
+dnl A M_CONDITIONAL(HAVE_SG,test x$HAVE_SimGrid = xyes)
+dnl if test x$HAVE_SimGrid = xyes; then
+dnl   GRAS_SG_DEP="-lsimgrid"
+dnl else
   GRAS_SG_DEP=""
-fi
+dnl fi
 AC_SUBST([GRAS_SG_DEP])
 
 
