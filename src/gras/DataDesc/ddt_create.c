@@ -50,10 +50,16 @@ gras_ddt_new(const char            *name,
  *
  * Retrieve a type from its name
  */
-gras_error_t gras_datadesc_by_name(const char            *name,
-				   gras_datadesc_type_t **type) {
-  return gras_set_get_by_name(gras_datadesc_set_local,
-			      name,(gras_set_elm_t**)type);
+gras_datadesc_type_t *gras_datadesc_by_name(const char *name) {
+
+  gras_datadesc_type_t *type;
+
+  if (gras_set_get_by_name(gras_datadesc_set_local,
+			   name,(gras_set_elm_t**)&type) == no_error) {
+    return type;
+  } else { 
+    return NULL;
+  }
 }
 
 /**
@@ -179,21 +185,6 @@ gras_datadesc_declare_struct(const char                      *name,
   return no_error;
 }
 
-gras_error_t 
-gras_datadesc_declare_struct_append_name(gras_datadesc_type_t *struct_type,
-					 const char           *name,
-					 const char          *field_type_name){
-  gras_error_t errcode;
-  gras_datadesc_type_t *field_type;
-
-  errcode = gras_datadesc_by_name(field_type_name, &field_type);
-  if (errcode != no_error) {
-    WARN2("Got error '%s' while looking for '%s'",
-	  gras_error_name(errcode), field_type_name);
-    return errcode;
-  }
-  return gras_datadesc_declare_struct_append(struct_type,name,field_type);
-}
 /**
  * gras_datadesc_declare_struct_append:
  *
@@ -321,13 +312,13 @@ gras_datadesc_declare_ref(const char             *name,
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
-  gras_datadesc_type_t *pointer_type;
+  gras_datadesc_type_t *pointer_type = gras_datadesc_by_name("data pointer");
   int arch;
 
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  TRY(gras_datadesc_by_name("data pointer", &pointer_type));
+  gras_assert0(pointer_type, "Cannot get the description of data pointer");
       
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch]			= pointer_type->size[arch];
@@ -354,13 +345,13 @@ gras_datadesc_declare_ref_generic(const char                      *name,
 
   gras_error_t errcode;
   gras_datadesc_type_t *res;
-  gras_datadesc_type_t *pointer_type;
+  gras_datadesc_type_t *pointer_type = gras_datadesc_by_name("data pointer");
   int arch;
 
   TRY(gras_ddt_new(name,dst));
   res=*dst;
 
-  TRY(gras_datadesc_by_name("data pointer", &pointer_type));
+  gras_assert0(pointer_type, "Cannot get the description of data pointer");
       
   for (arch=0; arch<gras_arch_count; arch ++) {
     res->size[arch]			= pointer_type->size[arch];

@@ -194,8 +194,10 @@ gras_msg_send(gras_socket_t  *sock,
 
   gras_error_t errcode;
   static gras_datadesc_type_t *string_type=NULL;
-  if (!string_type)
-    TRY(gras_datadesc_by_name("string", &string_type));
+  if (!string_type) {
+    string_type = gras_datadesc_by_name("string");
+    gras_assert(string_type);
+  }
   
   TRY(gras_trp_chunk_send(sock, GRAS_header, 6));
 
@@ -222,8 +224,10 @@ gras_msg_recv(gras_socket_t   *sock,
   int r_arch;
   char *msg_name;
 
-  if (!string_type)
-    TRY(gras_datadesc_by_name("string", &string_type));
+  if (!string_type) {
+    string_type=gras_datadesc_by_name("string");
+    gras_assert(string_type);
+  }
   
   TRY(gras_trp_chunk_recv(sock, header, 6));
   for (cpt=0; cpt<4; cpt++)

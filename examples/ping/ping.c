@@ -34,8 +34,8 @@ gras_error_t register_messages(void) {
   gras_msgtype_t *msg_t;
 
   TRY(gras_datadesc_declare_struct("msg_ping_t",&payload_t));
-  TRY(gras_datadesc_declare_struct_append_name(payload_t,
-					       "dummy","msg_ping_t"));
+  TRY(gras_datadesc_declare_struct_append(payload_t,"dummy",
+					  gras_datadesc_by_name("int")));
 
   TRY(gras_msgtype_declare("ping", payload_t, &msg_t)); msg_t=NULL;
   TRY(gras_msgtype_declare("pong", payload_t, &msg_t));

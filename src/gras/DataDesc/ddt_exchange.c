@@ -48,11 +48,12 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
 
 static gras_error_t
 gras_dd_send_int(gras_socket_t *sock,int i) {
-  gras_error_t errcode;
 
-  if (!int_type) 
-    TRY(gras_datadesc_by_name("int", &int_type));
-  
+  if (!int_type) {
+    int_type = gras_datadesc_by_name("int");
+     gras_assert(int_type);  
+  }
+   
   DEBUG1("send_int(%d)",i);
   return gras_trp_chunk_send(sock, (char*)&i, int_type->size[GRAS_THISARCH]);
 }
@@ -61,8 +62,10 @@ static gras_error_t
 gras_dd_recv_int(gras_socket_t *sock, int r_arch, int *i) {
   gras_error_t errcode;
 
-  if (!int_type) 
-    TRY(gras_datadesc_by_name("int", &int_type));
+  if (!int_type) {
+     int_type = gras_datadesc_by_name("int");
+     gras_assert(int_type);
+  }
 
   if (int_type->size[GRAS_THISARCH] >= int_type->size[r_arch]) {
     TRY(gras_trp_chunk_recv(sock, (char*)i, int_type->size[r_arch]));
@@ -356,8 +359,11 @@ gras_datadesc_send_rec(gras_socket_t        *sock,
     }
     
     /* Send the actual value of the pointer for cycle handling */
-    if (!pointer_type)
-      TRY(gras_datadesc_by_name("data pointer", &pointer_type));
+    if (!pointer_type) {
+      pointer_type = gras_datadesc_by_name("data pointer");
+      gras_assert(pointer_type);
+    }
+     
     TRY(gras_trp_chunk_send(sock, (char*)data,
 			    pointer_type->size[GRAS_THISARCH]));
     
@@ -558,8 +564,10 @@ gras_datadesc_recv_rec(gras_socket_t        *sock,
       TRY(gras_dd_recv_int(sock, r_arch, &ref_code));
 
     /* Get the actual value of the pointer for cycle handling */
-    if (!pointer_type)
-      TRY(gras_datadesc_by_name("data pointer", &pointer_type));
+    if (!pointer_type) {
+      pointer_type = gras_datadesc_by_name("data pointer");
+      gras_assert(pointer_type);
+    }
 
     if (! (r_ref = malloc((size_t)pointer_type->size[r_arch])) )
       RAISE_MALLOC;

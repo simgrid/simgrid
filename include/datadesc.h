@@ -52,8 +52,7 @@ typedef int (*gras_datadesc_type_cb_int_t)(void                 *vars,
 /***********************************************
  **** Search and retrieve declared datatype ****
  ***********************************************/
-gras_error_t gras_datadesc_by_name(const char *name,
-				   gras_datadesc_type_t **type);
+gras_datadesc_type_t *gras_datadesc_by_name(const char *name);
 
 /******************************************
  **** Declare datadescription yourself ****
@@ -67,10 +66,6 @@ gras_datadesc_declare_struct_append(gras_datadesc_type_t          *struct_type,
 				    const char                    *name,
 				    gras_datadesc_type_t          *field_type);
 gras_error_t 
-gras_datadesc_declare_struct_append_name(gras_datadesc_type_t *struct_type,
-					 const char           *name,
-					 const char          *field_type_name);
-gras_error_t 
 gras_datadesc_declare_union(const char                      *name,
 			    gras_datadesc_type_cb_int_t      selector,
 			    gras_datadesc_type_t           **dst);
@@ -78,10 +73,6 @@ gras_error_t
 gras_datadesc_declare_union_append(gras_datadesc_type_t          *union_type,
 				   const char                    *name,
 				   gras_datadesc_type_t          *field_type);
-gras_error_t 
-gras_datadesc_declare_union_append_name(gras_datadesc_type_t *union_type,
-					const char           *name,
-					const char           *field_type_name);
 gras_error_t 
 gras_datadesc_declare_ref(const char                      *name,
 			  gras_datadesc_type_t            *referenced_type,

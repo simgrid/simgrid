@@ -129,8 +129,9 @@ gras_datadesc_init(void) {
 				       e_gras_dd_scalar_encoding_float, 
 				       NULL,&ddt));
 
-  TRYFAIL(gras_datadesc_by_name("char",&elm));
-  TRYFAIL(gras_datadesc_declare_array_dyn("string", elm, _strlen_cb,&ddt));
+  TRYFAIL(gras_datadesc_declare_array_dyn("string", 
+					  gras_datadesc_by_name("char"), 
+					  _strlen_cb,&ddt));
 
   //  elm=ddt;
   //  TRYFAIL(gras_datadesc_declare_ref("string", elm, &ddt));
