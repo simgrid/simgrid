@@ -25,7 +25,7 @@ static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
 
 #ifndef USE_PTHREADS /* USE_PTHREADS and USE_CONTEXT are exclusive */
-# ifndef HAVE_UCONTEXT_H
+# ifndef USE_UCONTEXT
 /* don't want to play with conditional compilation in automake tonight, sorry.
    include directly the c file from here when needed. */
 #  include "context_win32.c" 

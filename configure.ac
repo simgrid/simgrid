@@ -53,36 +53,44 @@ GRAS_ARCH
 # Check architecture signature end
 GRAS_CHECK_STRUCT_COMPACTION
 
-AC_ARG_ENABLE(context,
-  [  --enable-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=pthread]].],,
-  enable_context=pthread)
+
+AC_CHECK_UCONTEXT
 AC_MSG_CHECKING(on top of what can we build the contexts)
-if test "x$enable_context" = "xucontext"; then
-  AC_CHECK_HEADERS([ucontext.h])
-  ac_header=ucontext.h
-  as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-  if test `eval echo '${'$as_ac_Header'}'` = yes; then
+AC_ARG_WITH(context,
+  [  --with-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=auto]].],,
+  with_context=auto)
+
+case $with_context in
+ ucontext) ;;
+ pthread) ;;
+ auto) with_context=ucontext;;
+ *) AC_MSG_ERROR("--with-context must be either ucontext or pthread") ;;
+esac
+
+if test "x$with_context" = "xucontext" ; then
+  if test "x$ac_check_ucontext" = "xyes"; then
     AC_MSG_RESULT(found ucontext.h. Great!)
+    AC_DEFINE([USE_UCONTEXT],1,[Define if we use ucontext or not])
   else
     ac_header=windows.h
     as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
     if test `eval echo '${'$as_ac_Header'}'` = yes; then
-      AC_MSG_RESULT(you don't have ucontext.h but we provide an alternative for windows so you should be fine.")
+      AC_MSG_RESULT(there is no ucontext on windows, and none is needed.")
     else
-      AC_MSG_RESULT([[cannot find ucontext. I'm going to try as if you had set --enable-context=pthreads !]])
-      enable_context=pthreads
+      AC_MSG_RESULT([[no working ucontext found. Falling back to pthreads]])
+      with_context=pthreads
     fi
   fi
-else if test "x$enable_context" = "xpthread"; then
+fi
+
+if test "x$with_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
 dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
   AC_CHECK_LIB(pthread,pthread_create,,
-    [AC_MSG_ERROR([[Cannot find pthreads, no way (try --enable-context=ucontext if you haven't already tried).]])])
-  AC_DEFINE([USE_PTHREADS],1,[Define if we USE pthreads or not])
+    [AC_MSG_ERROR([[Cannot find pthreads, no way (try --with-context=ucontext if you haven't already tried).]])])
+  AC_DEFINE([USE_PTHREADS],1,[Define if we use pthreads or not])
   AC_MSG_RESULT(You have pthreads. Let's use them.)
-else 
-  AC_MSG_ERROR("--enable-context must be either ucontext or pthread")
-fi fi
+fi
 
 #########################################
 ## Check for libraries extra-dependencies

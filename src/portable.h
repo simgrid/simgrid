@@ -121,7 +121,7 @@ const char *gras_wsa_err2string(int errcode);
  **** Contexts
  ****/
 
-#ifdef HAVE_UCONTEXT_H
+#ifdef USE_UCONTEXT
 # ifndef S_SPLINT_S /* This header drives splint into the wall */
 #   include <ucontext.h>
 # endif 

@@ -22,8 +22,9 @@ BEGIN_DECL()
  *  @{
  */
 
+#ifdef __GNUC__
 /** @brief like strdup, but xbt_die() on error */
-static __inline__ char *xbt_strdup(const char *s) {
+static inline char *xbt_strdup(const char *s) {
   char *res = NULL;
   if (s) {
     res=strdup(s);
@@ -34,7 +35,7 @@ static __inline__ char *xbt_strdup(const char *s) {
 }
 /** @brief like malloc, but xbt_die() on error 
     @hideinitializer */
-static __inline__ void *xbt_malloc(int n){
+static inline void *xbt_malloc(int n){
   void *res=malloc(n);
   if (!res)
      xbt_die("Memory allocation failed");
@@ -43,7 +44,7 @@ static __inline__ void *xbt_malloc(int n){
 
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
-static __inline__ void *xbt_malloc0(int n) {
+static inline void *xbt_malloc0(int n) {
   void *res=calloc(n,1);
   if (!res)
      xbt_die("Memory callocation failed");
@@ -52,7 +53,7 @@ static __inline__ void *xbt_malloc0(int n) {
   
 /** @brief like realloc, but xbt_die() on error 
     @hideinitializer */
-static __inline__ void *xbt_realloc(void*p,int s){
+static inline void *xbt_realloc(void*p,int s){
   void *res=res;
   if (s) {
     if (p) {
@@ -69,6 +70,13 @@ static __inline__ void *xbt_realloc(void*p,int s){
   }
   return res;
 }
+#else /* non __GNUC__  */
+#  define xbt_strdup(s)    strdup(s)
+#  define xbt_malloc(n)    malloc(n)
+#  define xbt_malloc0(n)   calloc(n,1)
+#  define xbt_realloc(p,s) realloc(p,s)
+#endif /* __GNUC__ ? */
+
 /** @brief like free
     @hideinitializer */
 #define xbt_free free /*nothing specific to do here. A poor valgrind replacement?*/
