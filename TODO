@@ -1,3 +1,6 @@
+- Use a xbt_set for gras_procdata_t->libdata instead of a dict
+  so that the search can be linear.
+
 [sorry for the parts in french :]
 
 ###
@@ -17,8 +20,6 @@
 
 - rawsock
   Verifier que les messages vont pas sur des sock raw
-
-- Documentation (en particulier DD et Msg)
 
 - gras_datadesc_cpy -> donne la taille prise pour donner un poids aux messages
 
@@ -43,7 +44,7 @@
  - core ok (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
  - virtualize (linux, solaris, SG) & conditions
  - binary representation: any type, SNWF (Sender Native Wire Format)
- - modules (logs, manage, token ring, bw)
+ - modules (log control, manage, token ring, bw)
  - cleanups, documentation
 
 [autoconf]
@@ -76,7 +77,6 @@
   Allow each process in simulation to have its own setting
 
 [dict]
-  dichotomie in search
   speed up the cursors, for example using the contexts when available
   fix multi levels dicts
 
