@@ -17,8 +17,6 @@ GRAS_LOG_NEW_DEFAULT_SUBCATEGORY(transport,GRAS);
 static gras_dict_t  *_gras_trp_plugins;     /* All registered plugins */
 static void gras_trp_plugin_free(void *p); /* free one of the plugins */
 
-
-gras_dynar_t *_gras_trp_sockets; /* all existing sockets */
 static void gras_trp_socket_free(void *s); /* free one socket */
 
 gras_error_t
@@ -65,9 +63,6 @@ gras_error_t
 gras_trp_init(void){
   gras_error_t errcode;
   
-  /* make room for all socket ownership descriptions */
-  TRY(gras_dynar_new(&_gras_trp_sockets, sizeof(gras_socket_t*), NULL));
-
   /* make room for all plugins */
   TRY(gras_dict_new(&_gras_trp_plugins));
 
@@ -82,7 +77,6 @@ gras_trp_init(void){
 void
 gras_trp_exit(void){
   gras_dict_free(&_gras_trp_plugins);
-  gras_dynar_free(_gras_trp_sockets);
 }
 
 
@@ -172,7 +166,7 @@ gras_socket_server(unsigned short port,
 
   *dst = sock;
   /* Register this socket */
-  errcode = gras_dynar_push(_gras_trp_sockets,dst);
+  errcode = gras_dynar_push(gras_socketset_get(),dst);
   if (errcode != no_error) {
     free(sock);
     *dst = NULL;
@@ -224,7 +218,7 @@ gras_socket_client(const char *host,
 
   /* register socket */
   *dst = sock;
-  errcode = gras_dynar_push(_gras_trp_sockets,dst);
+  errcode = gras_dynar_push(gras_socketset_get(),dst);
   if (errcode != no_error) {
     free(sock);
     *dst = NULL;
@@ -235,18 +229,21 @@ gras_socket_client(const char *host,
 }
 
 void gras_socket_close(gras_socket_t *sock) {
+  gras_dynar_t *sockets = gras_socketset_get();
   gras_socket_t *sock_iter;
   int cursor;
 
   /* FIXME: Issue an event when the socket is closed */
   if (sock) {
-    gras_dynar_foreach(_gras_trp_sockets,cursor,sock_iter) {
+    gras_dynar_foreach(sockets,cursor,sock_iter) {
       if (sock == sock_iter) {
-	gras_dynar_cursor_rm(_gras_trp_sockets,&cursor);
+	gras_dynar_cursor_rm(sockets,&cursor);
 	if ( sock->plugin->socket_close) 
 	  (* sock->plugin->socket_close)(sock);
 
 	/* free the memory */
+	if (sock->peer_name)
+	  free(sock->peer_name);
 	free(sock);
 	return;
       }
