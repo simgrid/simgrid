@@ -88,6 +88,7 @@ typedef enum {
   }                                                            \
 } while(0)
 
+#if 0
 #define _GRAS_ERR_PRE do {                                     \
  void *_gs_array[30];                                          \
   size_t _gs_size= backtrace (_gs_array, 30);                  \
@@ -101,6 +102,12 @@ typedef enum {
   return code;                                                 \
 } while (0)
 
+#else
+#define _GRAS_ERR_PRE do {
+#define _GRAS_ERR_POST(code)                                   \
+  return code;                                                 \
+} while (0)
+#endif
 
 #define RAISE0(code,fmt) _GRAS_ERR_PRE     \
   fprintf(stderr,"%s:%d:%s: " fmt "\n",    \
