@@ -43,7 +43,26 @@ GRAS_CHECK_STRUCT_COMPACTION
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([stddef.h stdlib.h string.h unistd.h])
+AC_HEADER_TIME
+AC_CHECK_HEADERS([sys/socket.h winsock.h winsock2.h \
+                  sys/stat.h\
+		  sys/time.h ])
+AC_CHECK_FUNCS([gettimeofday ])
+
+
+AC_MSG_CHECKING(how to link against winsock)
+save_LIBS="$LIBS"
+case $host_os in
+  *mingw* ) GRAS_WINSOCK_DEP=-lws2_32;;
+  * ) GRAS_WINSOCK_DEP="";;
+esac
+	   
+if test x$GRAS_WINSOCK_DEP = x; then 
+   AC_MSG_RESULT(not needed)
+else
+   AC_MSG_RESULT($winsock_ver)
+fi
+AC_SUBST([GRAS_WINSOCK_DEP])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -93,6 +112,8 @@ AC_SUBST(WARNING)
 
 dnl ####[ Makes the output ]###################################################
 #    examples/bandwidth/Makefile examples/bandwidth/test_sg
+#    examples/pastry/Makefile    examples/pastry/test_sg
+
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
@@ -113,6 +134,7 @@ AC_CONFIG_FILES([
      test -e tools/compile-remote-worker  && chmod +x tools/compile-remote-worker;
      test -e examples/ping/test_sg        && chmod +x examples/ping/test_sg;
 #     test -e examples/bandwidth/test_sg   && chmod +x examples/bandwidth/test_sg;
+     test -e examples/pastry/test_sg      && chmod +x examples/pastry/test_sg;
      chmod +x $srcdir/tools/gras-check-arch;
      chmod +x $srcdir/examples/ping/test_rl
 ])
@@ -122,7 +144,7 @@ AC_CONFIG_FILES([
 #    examples/saturate/Makefile  examples/saturate/test_sg
 #    examples/alnem/Makefile     examples/alnem/test_sg
 
-#    examples/pastry/Makefile    examples/pastry/test_sg
+
 
 AC_OUTPUT
 
