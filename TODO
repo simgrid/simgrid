@@ -61,6 +61,8 @@
     get into trouble...
   Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
     but versions above 3.4.0 should be ok.
+  The ucontext usability test is too light. It returns success on IRIX, but
+    shouldn't since ucontext are broken for us there.
 
 [portability layer]
   Dynar of type, such as ref of type
