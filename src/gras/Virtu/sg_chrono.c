@@ -11,6 +11,7 @@
 #include "xbt/dict.h"
 #include "gras/chrono.h"
 #include "msg/msg.h"
+#include "xbt/xbt_portability.h"
 #include "portable.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(chrono,gras,"Benchmarking used code");

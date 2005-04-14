@@ -91,13 +91,6 @@ static inline void *xbt_realloc(void*p,int s){
 
 /** @} */  
 
-/** @brief get time in seconds 
-
-  * gives  the  number  of  seconds since the Epoch (00:00:00 UTC, January 1, 1970).
-  * Most users should use gras_os_time and should not use this function unless 
-    they really know what they are doing. */
-double xbt_os_time(void);
-
 END_DECL()
 
 #endif /* _XBT_SYSDEP_H */

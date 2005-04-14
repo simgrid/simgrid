@@ -13,22 +13,13 @@
 
 #include "xbt/sysdep.h"
 #include "gras/virtu.h"
+#include "xbt/xbt_portability.h" /* private */
 
 XBT_LOG_EXTERNAL_CATEGORY(virtu);
 XBT_LOG_DEFAULT_CATEGORY(virtu);
 
 double gras_os_time() {
-#ifdef HAVE_GETTIMEOFDAY
-  struct timeval tv;
-
-  gettimeofday(&tv, NULL);
-
-  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
-#else
-  /* Poor resolution */
-  return (double)(time(NULL)); 
-#endif /* HAVE_GETTIMEOFDAY? */ 
-	
+  return xbt_os_time();
 }
  
 void gras_os_sleep(double sec) {
