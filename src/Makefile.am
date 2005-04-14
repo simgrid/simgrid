@@ -160,13 +160,21 @@ if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
 	@LEX@ -o$@ -Psurf_parse_ $^
 
+if HAVE_FLEXML
 surf/surfxml.l: surf/surfxml.dtd
 	set -e; cd surf; flexml -b 1000000 -S -L surfxml.dtd ; \
 	mv surfxml.l surfxml.l.bak ; \
 	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
-
 include/surf/surfxml.h: surf/surfxml.dtd
 	cd include/surf; flexml -H -L ../../surf/surfxml.dtd
+else
+
+include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
+	@echo "ERROR: src/surf/surfxml.dtd was modified, but the flexml program was not detected"
+	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
+	@echo "ERROR:   touch src/include/surf/surfxml.h src/surf/surfxml.l"
+	@exit 1
+endif
 endif
 
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC)
