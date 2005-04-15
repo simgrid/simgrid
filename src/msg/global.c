@@ -490,15 +490,22 @@ int MSG_process_killall(int reset_PIDs)
 {
   xbt_fifo_item_t i = NULL;
   m_process_t p = NULL;
+  m_process_t self = MSG_process_self();
 
   while((p=xbt_fifo_shift(msg_global->process_list))) {
-    MSG_process_kill(p);
+    if(p!=self) MSG_process_kill(p);
   }
-  xbt_context_empty_trash();
+
   if(reset_PIDs>0) {
     msg_global->PID = reset_PIDs; 
     msg_global->session++;
  }
+
+  xbt_context_empty_trash();
+
+  if(self) {
+    xbt_context_yield();
+  }
 
   return msg_global->PID;
 }

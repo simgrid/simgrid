@@ -155,9 +155,13 @@ void MSG_process_kill(m_process_t process)
 	surf_workstation_resource->common_public->
 	  action_change_state(p_simdata->waiting_task->simdata->comm,SURF_ACTION_FAILED);
       else
-	fprintf(stderr,"UNKNOWN STATUS. Please report this bug.\n");
+	CRITICAL0("UNKNOWN STATUS. Please report this bug.");
     } else { /* Must be trying to put a task somewhere */
-      fprintf(stderr,"UNKNOWN STATUS. Please report this bug.\n");
+      if(process==MSG_process_self()) {
+	return;
+      } else {
+	CRITICAL0("UNKNOWN STATUS. Please report this bug.");
+      }
     }
   }
 
