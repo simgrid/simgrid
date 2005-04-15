@@ -42,8 +42,9 @@ AC_REQUIRE([AC_PROG_LEX])dnl
         AC_MSG_NOTICE([Found flex is too old. Parsers won't get updated (Found v$FLEX_VERSION < v$1)])
         LEX=${am_missing_run}flex
         AC_SUBST(LEXLIB, '')
+      else
+        AC_MSG_NOTICE([Flex found. Parsers will get updated])      
       fi
     fi
   fi
-  AC_MSG_NOTICE([Flex found. Parsers will get updated])
 ])
