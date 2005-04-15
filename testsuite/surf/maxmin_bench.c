@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "xbt/xbt_portability.h"
 #include "surf/maxmin.h"
 #include "xbt/sysdep.h"		/* time manipulation for benchmarking */
 
