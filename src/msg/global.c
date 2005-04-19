@@ -197,6 +197,9 @@ void MSG_paje_output(const char *filename)
   const char *ext = ".trace";
   int ext_len = strlen(ext);
   int len;
+  m_host_t host;
+  m_process_t process;
+  xbt_fifo_item_t item = NULL;
 
   xbt_assert0(msg_global, "Initialize MSG first\n");
   xbt_assert0(!msg_global->paje_output, "Paje output already defined\n");
@@ -213,12 +216,23 @@ void MSG_paje_output(const char *filename)
 
   fprintf(msg_global->paje_output,"%s",paje_preembule);
   fprintf(msg_global->paje_output,"%s",type_definitions);
+
+  /*    Channels    */
   for(i=0; i<msg_global->max_channel; i++) {
     fprintf(msg_global->paje_output, "6	COMM_%d	Comm	\"Channel %d\"\n" ,i,i);
   }
   fprintf(msg_global->paje_output,
 	  "7	0.0	CUR	Sim_t	0	\"MSG simulation\"\n");
 
+  /*    Hosts       */
+  xbt_fifo_foreach(msg_global->host,item,host,m_host_t) {
+    PAJE_HOST_NEW(host);
+  }
+
+  /*    Process       */
+  xbt_fifo_foreach(msg_global->process_list,item,process,m_process_t) {
+    PAJE_PROCESS_NEW(process);
+  }
 }
 
 /** \ingroup msg_simulation
