@@ -1,5 +1,6 @@
 /** @addtogroup XBT_API
  *
+ *  The XBT functionalities fall into several categories:
  *   - Portability support. 
  *     - \ref XBT_syscall
  *   - Grounding features
