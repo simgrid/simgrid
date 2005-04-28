@@ -10,7 +10,6 @@ TODO
 Je pense que c'est plutot post SG3, tout ca.
 
 Plutot finaliser ce qui est commencé et finir le Grand Nettoyage:
-  - déplacer les exemples msg pour faire une seule passe doxygen
   - regarder ce qu'on peut couper de la xbt
   - diffusion "pull" dans graspe
 
@@ -45,10 +44,13 @@ DONE
   * Cleanups in configury with regard to compile optimization/warning flags.
     Also add -fno-loop-optimize to any powerpc since it's the optimization
     killing gcc (< 3.4.0).
-  * Cleanups in the doxygenification of MSG examples.
+  * Doxygen cleanups: move MSG examples, kill the second Doxygen phase
+    needed by MSG examples complications
+  
   (xbt)
   * Bugfix: XBT_LOG_NEW_DEFAULT_CATEGORY now compiles without compiler
     warning (thanks loris for stumbling into this one).
+    
   (gras)
   * Change SIMGRID_INSTALL_PATH to GRAS_ROOT in Makefiles generated for user.
   * Rename gras_get_my_fqdn to gras_os_myname and implement it in the simulator
