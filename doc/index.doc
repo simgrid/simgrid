@@ -52,7 +52,7 @@ this page. It is organized as follow:
 \section overview Overview of the toolkit components
 
 As depicted by the following schema, the SimGrid toolkit is basically
-three-layered.
+three-layered (click on the picture to jump to a specific component).
 
 
 \htmlonly
