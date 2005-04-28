@@ -171,7 +171,7 @@ AC_CONFIG_FILES([
       examples/gras/timer/Makefile examples/gras/timer/test_sg examples/gras/timer/test_rl
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
   doc/Makefile
-    doc/Doxyfile.main           doc/Doxyfile.API          doc/Doxyfile.Examples   
+    doc/Doxyfile
   tools/graspe-slave            tools/Makefile
     tools/gras/Makefile
   testsuite/Makefile
