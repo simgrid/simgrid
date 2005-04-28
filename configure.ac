@@ -55,7 +55,7 @@ GRAS_ARCH
 GRAS_CHECK_STRUCT_COMPACTION
 
 
-SG_CONFIGURE_PART(Checking for threads, contexts or assimilated...)
+SG_CONFIGURE_PART([Checking for threads, contexts or assimilated...])
 AC_CHECK_UCONTEXT
 AC_MSG_CHECKING(on top of what can we build the contexts)
 AC_ARG_WITH(context,
