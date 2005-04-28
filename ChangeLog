@@ -46,6 +46,7 @@ DONE
   * Cleanups in configury with regard to compile optimization/warning flags.
     Also add -fno-loop-optimize to any powerpc since it's the optimization
     killing gcc (< 3.4.0).
+  * Cleanups in the doxygenification of MSG examples.
   (xbt)
   * Bugfix: XBT_LOG_NEW_DEFAULT_CATEGORY now compiles without compiler
     warning (thanks loris for stumbling into this one).
