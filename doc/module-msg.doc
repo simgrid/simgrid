@@ -1,0 +1,136 @@
+/** \addtogroup MSG_API 
+
+  \section MSG_funct Offered functionnalities
+   - \ref m_process_management
+   - \ref m_datatypes_management
+   - \ref m_host_management
+   - \ref m_task_management
+   - \ref msg_gos_functions
+   - \ref m_channel_management
+   - \ref msg_easier_life
+   - \ref msg_simulation
+
+  \section MSG_examples Examples of use
+ 
+   - \ref MSG_ex_master_slave
+*/
+
+/**     \addtogroup m_datatypes_management
+        \ingroup MSG_API  */
+/**     \addtogroup m_process_management
+        \ingroup MSG_API  */
+/**     \addtogroup m_host_management
+        \ingroup MSG_API  */
+/**     \addtogroup m_task_management
+        \ingroup MSG_API  */
+/**     \addtogroup msg_gos_functions
+        \ingroup MSG_API  */
+/**     \addtogroup m_channel_management
+        \ingroup MSG_API  */
+/**     \addtogroup msg_easier_life
+        \ingroup MSG_API  */
+/**     \addtogroup msg_simulation
+        \ingroup MSG_API  */
+
+/** \page MSG_ex_master_slave Master/slave application
+
+    <center>[\ref MSG_API]</center>
+    
+    Simulation of a master-slave application using a realistic platform and
+    an external description of the deployment. 
+
+    \section MSG_ex_ms_TOC Table of contents:
+    
+     - \ref MSG_ext_ms_code
+       - \ref MSG_ext_ms_preliminary
+       - \ref MSG_ext_ms_master
+       - \ref MSG_ext_ms_slave
+       - \ref MSG_ext_ms_forwarder
+       - \ref MSG_ext_ms_core
+       - \ref MSG_ext_ms_main
+     - \ref MSG_ext_ms_helping
+       - \ref MSG_ext_ms_application 
+       - \ref MSG_ext_ms_platform
+     
+    <hr> 
+    
+    \dontinclude msg/msg_test.c
+    
+    \section MSG_ext_ms_code Code of the application
+    
+    \subsection MSG_ext_ms_preliminary Preliminary declarations
+    
+    \skip include
+    \until printf
+    \until }
+    
+    \subsection MSG_ext_ms_master Master code
+    
+      This function has to be assigned to a m_process_t that will behave as the master.
+      It should not be called directly but either given as a parameter to
+      #MSG_process_create() or registered as a public function through 
+      #MSG_function_register() and then automatically assigned to a process through
+      #MSG_launch_application().
+ 
+      C style arguments (argc/argv) are interpreted as:
+       - the number of tasks to distribute
+       - the computation size of each task
+       - the size of the files associated to each task
+       - a list of host that will accept those tasks.
+
+      Tasks are dumbly sent in a round-robin style.
+      
+      \until end_of_master
+    
+    \subsection MSG_ext_ms_slave Slave code
+    
+      This function has to be assigned to a #m_process_t that has to behave as a slave.
+      Just like #master(), it should not be called directly.
+
+      This function keeps waiting for tasks and executes them as it receives them.
+      
+      \until end_of_slave
+
+   \subsection MSG_ext_ms_forwarder Forwarder code
+   
+      This function has to be assigned to a #m_process_t that has to behave as a forwarder.
+      Just like #master(), it should not be called directly.
+
+      C style arguments (argc/argv) are interpreted as a list of host
+      that will accept those tasks.
+
+      This function keeps waiting for tasks and dispathes them to its slaves.
+
+   \subsection MSG_ext_ms_core Simulation core
+
+      This function is the core of the simulation and is divided only into 3 parts
+      thanks to MSG_create_environment() and MSG_launch_application().
+         -# Simulation settings : MSG_create_environment() creates a realistic 
+            environment
+         -# Application deployment : create the agents on the right locations with  
+            MSG_launch_application()
+         -# The simulation is run with #MSG_main()
+	 
+      Its arguments are:
+	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
+	- <i>application_file</i>: the name of a file containing a valid surfxml application description
+	
+      \until end_of_test_all
+      
+   \subsection MSG_ext_ms_main Main() function
+   
+      This initializes MSG, runs a simulation, and free all data-structures created by MSG.
+      
+      \until end_of_main
+
+   \section MSG_ext_ms_helping Helping files
+
+   \subsection MSG_ext_ms_application Example of application file
+
+   \include msg/small_deployment.xml
+
+   \subsection MSG_ext_ms_platform Example of platform file
+   
+   \include msg/small_platform.xml
+   
+*/
