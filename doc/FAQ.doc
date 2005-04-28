@@ -152,7 +152,7 @@ MSG_examples. There is also a mailing list: <simgrid-user#lists.gforge.inria.fr>
 \subsection faq_generic Building a generic simulator
 
 Please read carefully the \ref MSG_examples. You'll find in \ref
-msg_test.c a very simple consisting of a master (that owns a bunch of
+MSG_ex_master_slave a very simple consisting of a master (that owns a bunch of
 tasks and distributes them) , some slaves (that process tasks whenever
 they receive one) and some forwarder agents (that simply pass the
 tasks they receive to some slaves).
