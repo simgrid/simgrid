@@ -409,6 +409,7 @@ INPUT                  = @top_srcdir@/include/ \
                          @srcdir@/modules.doc \
                          @srcdir@/module-gras.doc \
                          @srcdir@/module-xbt.doc \
+                         @srcdir@/module-msg.doc \
                          ./api_index.doc \
                          ./logcategories.doc
 
