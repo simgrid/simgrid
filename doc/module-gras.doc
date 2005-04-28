@@ -1,3 +1,7 @@
+#####################################################################
+###########################  CORE ###################################
+#####################################################################
+
 /** \addtogroup GRAS_API
   
     \section GRAS_funct Offered functionnalities
@@ -15,20 +19,29 @@
          a function (like setitimer(2) or signal(2) games could do).
      - <b>Virtualization</b>: Running both on top of the simulator and on
        top of real platforms, and portability support.
-       - \ref GRAS_globals: The use of globals is forbidden since the
-         "processes" are threads in simulation mode. \n
-	 This is how to let GRAS handle your globals properly.
-       - \ref GRAS_main_generation: Since processes are threads in
-          simulation mode and regular processes in the real world, GRAS does
-          generate your main functions for you.
-       - \ref GRAS_cond: How to declare specific code for the simulation mode
-          or for the real mode.
        - \ref GRAS_virtu: You naturally don't want to call the
           gettimeofday(2) function in simulation mode since it would give
           you the time on the host running the simulation, not the time in
           the simulated world (you are belonging to).\n
 	  This a system call virtualization layer, which also acts as a
           portability layer.
+       - \ref GRAS_globals: The use of globals is forbidden since the
+         "processes" are threads in simulation mode. \n
+	 This is how to let GRAS handle your globals properly.
+       - \ref GRAS_cond: How to declare specific code for the simulation mode
+          or for the real mode.
+     - <b>Project management tools</b>: Here are some tools which may help
+          you setting up a GRAS project.\n
+          Setting up and building a GRAS application is complicated by the
+	  library schizoid. The code to setup the environment differs
+	  depending on whether you run on the simulator on a real platform.
+          And then, you'll have to deal with the usual distributed
+          application development difficulties.
+       - \ref GRAS_main_generation: Since processes are threads in
+          simulation mode and regular processes in the real world, GRAS does
+          generate your main functions for you.
+       - \ref GRAS_compile
+     
 	  
     \section GRAS_example Examples
       
@@ -50,9 +63,25 @@
 
 /** @} */
 
+#####################################################################
+#########################  EXTRA PAGES ##############################
+#####################################################################
+
+---------------------------------------------------------------------
+--------------------- main() generation -----------------------------
+---------------------------------------------------------------------
+
 /** \page GRAS_main_generation main() and GRAS
 
     <center>[\ref GRAS_API]</center>
+
+    \section GRAS_maingen_toc Table of content
+     
+     - \ref GRAS_maingen_intro
+     - \ref GRAS_maingen_script
+     - \ref GRAS_maingen_make
+    
+    <hr>
 
     \section GRAS_maingen_intro What's the matter with main() functions in GRAS?
 
@@ -66,7 +95,7 @@
     or such). Then GRAS can generate the wrapper functions adapted to the
     real and simulated modes.
 
-    \section GRAS_maingen_script Generating the main()s manually with
+    \section GRAS_maingen_script Generating the main()s automatically
     
     This is done by the gras_stub_generator program, which gets installed on
     <tt>make install</tt> (the source resides in the tools/gras/ directory).
@@ -92,7 +121,7 @@
     to improve this situation somehow. In the meanwhile, check the generated 
     code and maybe also the GRAS \ref GRAS_example, sorry. 
         
-    \section GRAS_maingen_make Integration within your Makefile 
+    \section GRAS_maingen_make Integration within an hand-made Makefile 
     
     The easiest to set it up is to add the following chunk at the end of
     your Makefile (or Makefile.am), putting the right values into NAME and
@@ -109,7 +138,114 @@
         $(top_srcdir)/tools/gras/gras_stub_generator ping ping_deployment.xml >/dev/null
 \endverbatim
 
-     */
+   \warning 
+   Actually, gras_stub_generator also generates some makefiles both for
+   local compilation and remote code distribution and installation. See the
+   section \ref GRAS_compile for more details.
+
+*/
+
+---------------------------------------------------------------------
+------------------------- Compiling ---------------------------------
+---------------------------------------------------------------------
+
+/** \page GRAS_compile Compiling your GRAS project
+
+    <center>[\ref GRAS_API]</center>
+
+    As explained in section \ref GRAS_main_generation, the
+    gras_stub_generator tool can be used to generate the system
+    initialization code in your projet. While we were at this, this tool
+    also generates the makefiles you will need to compile your project
+    properly.
+    
+    Code source deployment and remote compilation also constitutes a
+    challenging area in distributed applications development. The GRASPE
+    (GRAS Platform Expender) tool was designed to make this less painful.
+
+    \section GRAS_compile_toc Table of content
+    
+      - \ref GRAS_compile_local
+        - \ref GRAS_compile_local_install
+	- \ref GRAS_compile_local_helpfiles
+	- \ref GRAS_compile_local_makefile
+      - \ref GRAS_compile_remote
+      
+    <hr>
+    
+    \section GRAS_compile_local Local compilation of GRAS projects
+    
+    \subsection GRAS_compile_local_install Installing SimGrid and GRAS
+    
+    To compile locally a GRAS project, you first need to install SimGrid on
+    your machine. Use the --prefix flag to the configure script to specify
+    where you want to install the toolkit (refere to section \ref
+    faq_compiling for more information)
+    
+    \subsection GRAS_compile_local_helpfiles Simulation description files
+    
+    Then, you will probably need to write a platform description file and
+    application deployment description file to feed the simulator with. This
+    part is unfortunatelly not documented enough. Files examples can be
+    found along with the MSG \ref MSG_ex_master_slave example. 
+
+    \note yes, both platform and application description files are portable
+    between MSG and GRAS. Actually, there depend on the SURF, not on the
+    programming environment you use.
+    
+    For the first try, you could probably reuse the provided platform file
+    as is while you will need to adapt the application file to fit your
+    needs. 
+    
+    To generate new platform files, we usually use the Tiers Topology
+    Generator (ask google about it) and annotate the generated graph with
+    home-made scripts to let them fit the SURF. Those scripts live in the
+    tools/platform_generation/ directory of the distribution.
+    
+    \subsection GRAS_compile_local_makefile Generating a Makefile usable for your project
+    
+    From the information contained in the application description file, the
+    gras_stub_generator tool can create a Makefile which can be used to
+    seamlessly compile your project. Just go to the directory containing all
+    your project files, and type:
+    
+\verbatim path/to/gras_stub_generator [project_name] [application_deployment.file] >/dev/null
+\endverbatim
+
+    The first argument is the name of your project, such as
+    "MyLovelyApplication" while the second one is the application deployment
+    file. 
+    
+    Several files get generated by this command. One C file per kind of
+    process in your project (such as "master" and "slave") plus one C file
+    for simulating your project. All those files are (or should ;) described
+    in section \ref GRAS_main_generation.
+    
+    The most intersting file in this context is
+    [project_name].Makefile.local (you can safely ignore the others for
+    now). To use it, simply type (from your project main directory):
+    
+\verbatim GRAS_ROOT=/path/to/simgrid/installation make -f [project_name].Makefile.local
+\endverbatim
+    
+    And that's it, all the binaries are built and linked against the correct
+    libraries.
+    
+    \section GRAS_compile_remote Distribution and remote compilation of GRAS projects
+    
+    Actually, there is two somehow parallel ways to do so since both Arnaud
+    and Martin gave it a try. Merging both approaches is underway. As usual,
+    if you want to help, you're welcome ;)
+    
+*/
+
+#####################################################################
+#########################  EXAMPLES #################################
+#####################################################################
+
+---------------------------------------------------------------------
+------------------------- Ping Pong ---------------------------------
+---------------------------------------------------------------------
 
 /** \page GRAS_ex_ping The classical Ping-Pong in GRAS
 
@@ -202,6 +338,10 @@
     \skip client
     \until end_of_client
   */
+
+---------------------------------------------------------------------
+---------------------------- Timers ---------------------------------
+---------------------------------------------------------------------
 
 /** \page GRAS_ex_timer Some timer games
 
