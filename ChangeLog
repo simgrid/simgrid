@@ -6,9 +6,8 @@ TODO
 
 - Faire descendre gras de msg?
 - Compilation de data_send/recv?
+- La révolution des exceptions ?
 Je pense que c'est plutot post SG3, tout ca.
-
-La révolution des exceptions !!
 
 Plutot finaliser ce qui est commencé et finir le Grand Nettoyage:
   - déplacer les exemples msg pour faire une seule passe doxygen
