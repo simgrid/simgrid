@@ -1,4 +1,4 @@
-Makefile Makefile.in aclocal.m4 autom4te.cache config.status grenier libtool 
+Makefile Makefile.in aclocal.m4 autom4te.cache config.status config.log grenier libtool
 simgrid-*.tar.gz simgrid-*
 configure
 buildlogs
