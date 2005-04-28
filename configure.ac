@@ -19,9 +19,9 @@ ACLOCAL="$ACLOCAL -I acmacro"
 AC_PROG_LIBTOOL
 
 ###############
-## Basic checks
+## System checks
 ##
-
+SG_CONFIGURE_PART(System checks...)
 AC_PROG_CC(xlC gcc cc)
 AM_SANITY_CHECK
 AC_PROG_MAKE_SET
@@ -48,12 +48,14 @@ AC_TYPE_SIZE_T
 ## SimGrid and GRAS specific checks
 ##
 
+SG_CONFIGURE_PART(Checking GRAS architecture signature...)
 # Check architecture signature begin
 GRAS_ARCH
 # Check architecture signature end
 GRAS_CHECK_STRUCT_COMPACTION
 
 
+SG_CONFIGURE_PART(Checking for threads, contexts or assimilated...)
 AC_CHECK_UCONTEXT
 AC_MSG_CHECKING(on top of what can we build the contexts)
 AC_ARG_WITH(context,
@@ -96,6 +98,7 @@ fi
 ## Check for libraries extra-dependencies
 ##
 
+SG_CONFIGURE_PART(Checking extra libraries dependencies...)
 SIMGRID_DEP=""
 AC_SUBST([SIMGRID_DEP])
 

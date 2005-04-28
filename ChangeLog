@@ -46,6 +46,7 @@ DONE
     killing gcc (< 3.4.0).
   * Doxygen cleanups: move MSG examples, kill the second Doxygen phase
     needed by MSG examples complications
+  * Borrow configury beautifications from PHP
   
   (xbt)
   * Bugfix: XBT_LOG_NEW_DEFAULT_CATEGORY now compiles without compiler
