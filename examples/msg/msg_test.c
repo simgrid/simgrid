@@ -5,16 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file msg_test.c 
- *  \ingroup MSG_examples
- *  \brief Simulation of a master-slave application using a realistic platform 
- *  and an external description of the deployment.
-*/
+#include "msg/msg.h" /* Yeah! If you want to use msg, you need to include msg/msg.h */
 
-/** Yeah! If you want to use msg, you need to include msg/msg.h */
-#include "msg/msg.h"
-
-/** This includes creates a log channel for to have nice outputs. */
+/* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 
@@ -23,14 +16,12 @@ int slave(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
 void test_all(const char *platform_file, const char *application_file);
 
-
 typedef enum {
   PORT_22 = 0,
   MAX_CHANNEL
 } channel_t;
 
-/** Print arguments
- * This function is just used so that users can check that each process
+/* This function is just used so that users can check that each process
  *  has received the arguments it was supposed to receive.
  */
 static void print_args(int argc, char** argv)
@@ -43,21 +34,7 @@ static void print_args(int argc, char** argv)
   fprintf(stderr,">\n");
 }
 
-/** Emitter function
- * This function has to be assigned to a m_process_t that will behave as the master.
-   It should not be called directly but either given as a parameter to
-   #MSG_process_create() or registered as a public function through 
-   #MSG_function_register() and then automatically assigned to a process through
-   #MSG_launch_application().
- 
-   C style arguments (argc/argv) are interpreted as 
-   \li the number of tasks to distribute
-   \li the computation size of each task
-   \li the size of the files associated to each task
-   \li a list of host that will accept those tasks.
-
-   Tasks are dumbly sent in a round-robin style.
-  */
+/** Emitter function  */
 int master(int argc, char *argv[])
 {
   int slaves_count = 0;
@@ -125,14 +102,9 @@ int master(int argc, char *argv[])
   free(slaves);
   free(todo);
   return 0;
-}
+} /* end_of_master */
 
-/** Receiver function
- * This function has to be assigned to a #m_process_t that has to behave as a slave.
-   Just like #master(), it should not be called directly.
-
-   This function keeps waiting for tasks and executes them as it receives them.
-  */
+/** Receiver function  */
 int slave(int argc, char *argv[])
 {
   print_args(argc,argv);
@@ -154,17 +126,9 @@ int slave(int argc, char *argv[])
   }
   INFO0("I'm done. See you!");
   return 0;
-}
+} /* end_of_slave */
 
-/** Receiver function
- * This function has to be assigned to a #m_process_t that has to behave as a forwarder.
-   Just like #master(), it should not be called directly.
-
-   C style arguments (argc/argv) are interpreted as a list of host
-   that will accept those tasks.
-
-   This function keeps waiting for tasks and dispathes them to its slaves.
-  */
+/** Receiver function */
 int forwarder(int argc, char *argv[])
 {
   int i;
@@ -206,22 +170,10 @@ int forwarder(int argc, char *argv[])
 
   INFO0("I'm done. See you!");
   return 0;
-}
+} /* end_of_forwarder */
 
 
-/** Test function
- * This function is the core of the simulation and is divided only into 3 parts
- * thanks to MSG_create_environment() and MSG_launch_application().
- *      -# Simulation settings : MSG_create_environment() creates a realistic 
- *         environment
- *      -# Application deployment : create the agents on the right locations with  
- *         MSG_launch_application()
- *      -# The simulation is run with #MSG_main()
- * @param platform_file the name of a file containing an valid surfxml platform 
- *        description.
- * @param application_file the name of a file containing a valid surfxml application 
- *        description
- */
+/** Test function */
 void test_all(const char *platform_file,const char *application_file)
 {
   {				/*  Simulation setting */
@@ -238,13 +190,10 @@ void test_all(const char *platform_file,const char *application_file)
   MSG_main();
   
   INFO1("Simulation time %g",MSG_getClock());
-}
+} /* end_of_test_all */
 
 
-/** Main function
- * This initializes MSG, runs a simulation, and free all data-structures created 
- * by MSG.
- */
+/** Main function */
 int main(int argc, char *argv[])
 {
   MSG_global_init_args(&argc,argv);
@@ -256,4 +205,4 @@ int main(int argc, char *argv[])
   test_all(argv[1],argv[2]);
   MSG_clean();
   return (0);
-}
+} /* end_of_main */
