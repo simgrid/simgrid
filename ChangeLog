@@ -4,14 +4,15 @@ SimGrid (2.94-cvs) UNRELEASED
 TODO
 ----
 
-- Faire descendre gras de msg?
-- Compilation de data_send/recv?
-- La révolution des exceptions ?
-Je pense que c'est plutot post SG3, tout ca.
+- Stop layering gras over msg?
+- Pre-compilation of data_send/recv?
+- Exception revolution?
+All of them seem to be post-SG3 issues.
 
-Plutot finaliser ce qui est commencé et finir le Grand Nettoyage:
-  - regarder ce qu'on peut couper de la xbt
-  - diffusion "pull" dans graspe
+Rather finalize what's underway and finish the Big Cleanup:
+  - Check what can be cut from the xbt
+  - "pull" code diffusion in graspe
+  - document the gras' timing macro
 
 ----
 DONE
