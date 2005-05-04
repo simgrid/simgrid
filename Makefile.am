@@ -44,9 +44,9 @@ publish-old: dist
 	 make -C public_html publish
 
 publish: dist
-	 @echo "----[ Put the tarball @VERSION@ on gcl ]----"
-	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
-	 scp -r doc/html/* gcl.ucsd.edu:/home/www/simgrid/
+	 @echo "----[ Put the tarball @VERSION@ on gforge ]----"
+#	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
+#	 scp -r doc/html/* gcl.ucsd.edu:/home/www/simgrid/
 	 scp -r doc/html/* scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	 scp ChangeLog gcl.ucsd.edu:/home/www/simgrid/dl/ChangeLog
 	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
@@ -54,6 +54,11 @@ publish: dist
 	 cp -r doc/html ~/public_html/simgrid2/doc/
 	 cp ChangeLog ~/public_html/simgrid2/
 	 make -C ~/public_html
+
+sync-gforge: 
+	rsync --copy-links --verbose --archive --cvs-exclude --compress --delete \
+	--delete-excluded --rsh=ssh -I \
+	doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 
 mail:
 	 @ver=`dpkg-parsechangelog -lChangeLog | egrep '^Version: ' | sed 's/Version: //'`;\
@@ -76,7 +81,7 @@ splint:
 	       +matchanyintegral -warnposix +boolint \
 	       +show-summary +stats\
 	       -Iinclude -Isrc/include -Isrc/base -Isrc
-.PHONY: splint
+.PHONY: splint sync-gforge
 ##
 ## Cruft for remote compilation
 ##
