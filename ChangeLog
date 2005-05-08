@@ -13,6 +13,7 @@ Rather finalize what's underway and finish the Big Cleanup:
   - Check what can be cut from the xbt
   - "pull" code diffusion in graspe
   - document the gras' timing macro
+  - add a real implementation (even if simplistic) to gras_os_myname
 
 ----
 DONE
