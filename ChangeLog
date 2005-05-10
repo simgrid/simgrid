@@ -63,9 +63,9 @@ DONE
     macros. While I was at it, various cleanups:
      - allow to declare more than one timed section per file (fix a stupid bug)
      - move some private declaration to the right place
-     - the chrono module now cleanups its mess on gras exit
      - merge conditional execution and timing macros into emulation module
      - document the module
+     - make sure the module cleanups its mess on gras_exit
 
  --
 
