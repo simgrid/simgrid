@@ -1,22 +1,22 @@
-/* 	$Id$	 */
+/* $Id$ */
 
-/* sg_chrono.c - code benchmarking for emulation                            */
+/* sg_emul - Emulation support (simulation)                                 */
 
-/* Copyright (c) 2005 Martin Quinson, Arnaud Legrand. All rights reserved.  */
+/* Copyright (c) 2003-5 Arnaud Legrand, Martin Quinson. All rights reserved.*/
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
-#include "xbt/dict.h"
-#include "gras/chrono.h"
-#include "msg/msg.h"
-#include "xbt/xbt_portability.h"
-#include "portable.h"
+#include "gras/emul.h"
+#include "gras/Virtu/virtu_sg.h"
 #include "gras_modinter.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(chrono,gras,"Benchmarking used code");
+#include "xbt/xbt_portability.h" /* timers */
+#include "xbt/dict.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(emul,gras,"Emulation support");
+
+/*** Timing macros ***/
 static xbt_os_timer_t timer;
 static int benchmarking = 0;
 static xbt_dict_t benchmark_set = NULL;
@@ -128,3 +128,15 @@ void gras_chrono_exit(void) {
   xbt_dict_free(&benchmark_set);
   xbt_os_timer_free(timer);
 }
+
+/*** Conditional execution support ***/
+
+int gras_if_RL(void) {
+   return 0;
+}
+
+int gras_if_SG(void) {
+   return 1;
+}
+
+

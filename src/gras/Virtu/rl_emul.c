@@ -1,21 +1,19 @@
-/* 	$Id$	 */
+/* $Id$ */
 
-/* rl_chrono.c - code benchmarking for emulation (fake for real life)       */
+/* rl_emul - Emulation support (real life)                                  */
 
-/* Copyright (c) 2005 Martin Quinson, Arnaud Legrand. All rights reserved.  */
+/* Copyright (c) 2003-5 Arnaud Legrand, Martin Quinson. All rights reserved.*/
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
-#include "xbt/dict.h"
-#include "gras/chrono.h"
-#include "msg/msg.h"
-#include "portable.h"
+#include "gras/emul.h"
+#include "gras/Virtu/virtu_rl.h"
 #include "gras_modinter.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(chrono,gras,"Benchmarking used code");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(emul,gras,"Emulation support");
 
+/*** Timing macros: nothing to do in RL. Actually do the job and shutup ***/
 
 int gras_bench_always_begin(const char *location,int line) {
   return 0;
@@ -35,3 +33,13 @@ int gras_bench_once_end(void) {
 
 void gras_chrono_init(void)  {}
 void gras_chrono_exit(void)  {}
+
+/*** Conditional execution support ***/
+
+int gras_if_RL(void) {
+   return 1;
+}
+
+int gras_if_SG(void) {
+   return 0;
+}
