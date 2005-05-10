@@ -61,5 +61,6 @@ void gras_exit(void) {
     gras_trp_exit();
     gras_datadesc_exit();
   }
+  gras_chrono_exit();
   xbt_exit();
 }
