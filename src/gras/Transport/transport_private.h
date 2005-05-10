@@ -18,7 +18,7 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
-#include "gras/cond.h"       /* gras_if_RL() */
+#include "gras/emul.h"       /* gras_if_RL() */
 
 #include "gras_modinter.h"   /* module init/exit */
 #include "gras/transport.h"  /* rest of module interface */
