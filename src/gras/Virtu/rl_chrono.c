@@ -12,30 +12,26 @@
 #include "gras/chrono.h"
 #include "msg/msg.h"
 #include "portable.h"
+#include "gras_modinter.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(chrono,gras,"Benchmarking used code");
 
 
-int gras_bench_always_begin(const char *location, int line)
-{
+int gras_bench_always_begin(const char *location,int line) {
   return 0;
 }
 
-int gras_bench_always_end(void)
-{
+int gras_bench_always_end(void) {
   return 0;
 }
 
-int gras_bench_once_begin(const char *location, int line)
-{
+int gras_bench_once_begin(const char *location,int line) {
   return 0;
 }
 
-int gras_bench_once_end(void)
-{
+int gras_bench_once_end(void) {
   return 0;
 }
 
-void gras_chrono_init(void)
-{
-}
+void gras_chrono_init(void)  {}
+void gras_chrono_exit(void)  {}
