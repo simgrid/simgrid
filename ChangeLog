@@ -59,6 +59,12 @@ DONE
   * Rename gras_get_my_fqdn to gras_os_myname and implement it in the simulator
     RL would imply a DNS resolver, which is *hard* to do in a portable way
     (and therefore delayed).
+  * Implement a real timer mecanism and use it in timing macros. This allows
+    to avoid rounding errors and get a 0.000005 sec precision in timing
+    macros. While I was at it, various cleanups:
+     - allow to declare more than one timed section per file (fix a stupid bug)
+     - move some private declaration to the right place
+     - the chrono module now cleanups its mess on gras exit
 
  --
 
