@@ -127,8 +127,8 @@ COMMON_SRC=\
 RL_SRC= \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c  \
   \
-  gras/Virtu/rl_chrono.c \
-  gras/Virtu/rl_process.c        gras/Virtu/rl_time.c gras/Virtu/rl_conditional.c \
+  gras/Virtu/rl_emul.c \
+  gras/Virtu/rl_process.c        gras/Virtu/rl_time.c \
   gras/Virtu/rl_dns.c
 
 SG_SRC=  \
@@ -148,8 +148,8 @@ SG_SRC=  \
   \
   gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
   \
-  gras/Virtu/sg_chrono.c \
-  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c                 gras/Virtu/sg_conditional.c \
+  gras/Virtu/sg_emul.c \
+  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
   gras/Virtu/sg_dns.c
 
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l

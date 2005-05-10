@@ -15,9 +15,9 @@ nobase_include_HEADERS = \
 	\
 	gras/core.h \
 	gras/datadesc.h gras/transport.h \
-	gras/virtu.h gras/cond.h gras/process.h \
+	gras/virtu.h gras/emul.h gras/process.h \
 	\
-	gras/messages.h gras/timer.h gras/chrono.h\
+	gras/messages.h gras/timer.h \
 	\
 	amok/base.h \
 	amok/bandwidth.h
