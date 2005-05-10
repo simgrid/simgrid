@@ -17,4 +17,11 @@
     they really know what they are doing. */
 double xbt_os_time(void);
 
+typedef struct s_xbt_os_timer *xbt_os_timer_t;
+xbt_os_timer_t xbt_os_timer_new(void);
+void xbt_os_timer_free(xbt_os_timer_t timer);
+void xbt_os_timer_start(xbt_os_timer_t timer);
+void xbt_os_timer_stop(xbt_os_timer_t timer);
+double xbt_os_timer_elapsed(xbt_os_timer_t timer);
+
 #endif
