@@ -16,7 +16,6 @@
 
 BEGIN_DECL()
 
-void gras_chrono_init(void);
 int gras_bench_always_begin(const char *location, int line);
 int gras_bench_always_end(void);
 int gras_bench_once_begin(const char *location, int line);

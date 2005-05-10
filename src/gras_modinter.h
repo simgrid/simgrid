@@ -11,6 +11,9 @@
 #define GRAS_MODINTER_H
 
 /* modules initialization functions */
+void gras_chrono_init(void);
+void gras_chrono_exit(void); 
+
 void gras_msg_register(void);
 void gras_msg_init(void);
 void gras_msg_exit(void);
