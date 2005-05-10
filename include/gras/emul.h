@@ -147,24 +147,24 @@ int gras_bench_once_end(void);
  */
 /** \brief Start benchmarking this code block
     \hideinitializer */
-#define GRAS_BENCH_ALWAYS_BEGIN()  do { if(gras_if_SG()) gras_bench_always_begin(__FILE__, __LINE__); } while(0)
+#define GRAS_BENCH_ALWAYS_BEGIN()           gras_bench_always_begin(__FILE__, __LINE__)
 /** \brief Stop benchmarking this code block
     \hideinitializer */
-#define GRAS_BENCH_ALWAYS_END() do { if(gras_if_SG()) gras_bench_always_end(); } while(0)
+#define GRAS_BENCH_ALWAYS_END()             gras_bench_always_end()
 
 /** \brief Start benchmarking this code block if it has never been benchmarked, run it in any case
  *  \hideinitializer */
-#define GRAS_BENCH_ONCE_RUN_ALWAYS_BEGIN()  do { if(gras_if_SG()) gras_bench_once_begin(__FILE__, __LINE__); } while(0)
+#define GRAS_BENCH_ONCE_RUN_ALWAYS_BEGIN()  gras_bench_once_begin(__FILE__, __LINE__)
 /** \brief Stop benchmarking this part of the code
     \hideinitializer */
-#define GRAS_BENCH_ONCE_RUN_ALWAYS_END()    do { if(gras_if_SG()) gras_bench_once_end(); } while(0)
+#define GRAS_BENCH_ONCE_RUN_ALWAYS_END()    gras_bench_once_end()
 
 /** \brief Start benchmarking this code block if it has never been benchmarked, ignore it if it was
     \hideinitializer */
-#define GRAS_BENCH_ONCE_RUN_ONCE_BEGIN()  if((gras_if_SG()&&(gras_bench_once_begin(__FILE__, __LINE__)))||(gras_if_RL())) { 
+#define GRAS_BENCH_ONCE_RUN_ONCE_BEGIN()    if (gras_bench_once_begin(__FILE__, __LINE__)) { 
 /** \brief Stop benchmarking this part of the code
     \hideinitializer */
-#define GRAS_BENCH_ONCE_RUN_ONCE_END()    } GRAS_BENCH_ONCE_RUN_ALWAYS_END();
+#define GRAS_BENCH_ONCE_RUN_ONCE_END()      } gras_bench_once_end()
 /** @} */
 
 END_DECL()
