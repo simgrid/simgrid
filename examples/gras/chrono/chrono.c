@@ -32,7 +32,7 @@ int multiplier (int argc,char *argv[])
 
   start=now=gras_os_time();
 
-  INFO1("Before computation: %lg", start);
+  INFO1("Begin matrix multiplication loop (time: %lg)", start);
 
   for(l=0; l<4; l++) {
     now=gras_os_time();
@@ -55,7 +55,27 @@ int multiplier (int argc,char *argv[])
   }
 
   now=gras_os_time()-start;
-  INFO2("After computation: %lg; Duration: %lg ", gras_os_time(), now);
+  INFO2("End matrix multiplication loop (time: %lg; Duration: %lg)", gras_os_time(), now);
+
+  start=now=gras_os_time();
+  INFO1("Begin malloc loop (time: %lg)", start);
+  for(l=0; l<4; l++) {
+    now=gras_os_time();
+    GRAS_BENCH_ONCE_RUN_ONCE_BEGIN();
+     free(A);
+     A = malloc(n*n*sizeof(double));
+    GRAS_BENCH_ONCE_RUN_ONCE_END();
+    now=gras_os_time()-now;
+    INFO2("Iteration %d : %lg ", l, now);
+  }
+   
+  start=now=gras_os_time();
+  INFO1("Begin integer incrementation loop (time: %lg)", start);
+  for(l=0; l<4; l++) {
+    GRAS_BENCH_ONCE_RUN_ONCE_BEGIN();
+    j++;
+    GRAS_BENCH_ONCE_RUN_ONCE_END();
+  }
 
   return 0;
 }
