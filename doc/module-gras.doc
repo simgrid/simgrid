@@ -59,7 +59,7 @@
        /** \defgroup GRAS_timer   Timers                */               
 	 
        /** \defgroup GRAS_globals Globals               */ 
-       /** \defgroup GRAS_cond    Conditional execution */ 
+       /** \defgroup GRAS_emul    Emulation support */ 
        /** \defgroup GRAS_virtu   Syscalls              */ 
 
 /** @} */
