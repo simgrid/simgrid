@@ -27,7 +27,6 @@ void gras_init(int *argc,char **argv, const char *defaultlog) {
   /* First initialize the XBT */
   xbt_init_defaultlog(argc,argv,defaultlog);
    
-  gras_chrono_init();
   /* module registrations: 
    *    - declare process specific data we need (without creating them) 
    */
@@ -45,6 +44,7 @@ void gras_init(int *argc,char **argv, const char *defaultlog) {
    * Initialize the global stuff if it's not the first process created
    */
   if (gras_running_process++ == 0) {
+    gras_emul_init();
     gras_msg_init();
     gras_trp_init();
     gras_datadesc_init();
@@ -58,7 +58,7 @@ void gras_exit(void) {
     gras_msg_exit();
     gras_trp_exit();
     gras_datadesc_exit();
+    gras_emul_exit();
   }
-  gras_chrono_exit();
   xbt_exit();
 }
