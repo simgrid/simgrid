@@ -28,8 +28,9 @@
        - \ref GRAS_globals: The use of globals is forbidden since the
          "processes" are threads in simulation mode. \n
 	 This is how to let GRAS handle your globals properly.
-       - \ref GRAS_cond: How to declare specific code for the simulation mode
-          or for the real mode.
+       - \ref GRAS_emul: Support to emulate code excution (ie, reporting
+         execution time into the simulator and having code sections specific
+         to simulation or to real mode).
      - <b>Project management tools</b>: Here are some tools which may help
           you setting up a GRAS project.\n
           Setting up and building a GRAS application is complicated by the
