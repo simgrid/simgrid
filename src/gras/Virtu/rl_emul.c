@@ -15,6 +15,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(emul,gras,"Emulation support");
 
 /*** Timing macros: nothing to do in RL. Actually do the job and shutup ***/
 
+void gras_emul_init(void)  {}
+void gras_emul_exit(void)  {}
+
 int gras_bench_always_begin(const char *location,int line) {
   return 0;
 }
@@ -30,9 +33,6 @@ int gras_bench_once_begin(const char *location,int line) {
 int gras_bench_once_end(void) {
   return 0;
 }
-
-void gras_chrono_init(void)  {}
-void gras_chrono_exit(void)  {}
 
 /*** Conditional execution support ***/
 

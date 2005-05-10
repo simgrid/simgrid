@@ -26,6 +26,21 @@ static double duration = 0.0;
 static char* locbuf = NULL;
 static int locbufsize;
 
+void gras_emul_init(void)
+{
+  if(!benchmark_set) {
+    benchmark_set = xbt_dict_new();
+    timer = xbt_os_timer_new();
+  }
+}
+
+void gras_emul_exit(void) {
+  if (locbuf) free(locbuf);
+  xbt_dict_free(&benchmark_set);
+  xbt_os_timer_free(timer);
+}
+
+
 static void store_in_dict(xbt_dict_t dict, const char *key, double value)
 {
   double *ir = NULL;
@@ -115,19 +130,6 @@ int gras_bench_once_end(void)
   return 0;
 }
 
-void gras_chrono_init(void)
-{
-  if(!benchmark_set) {
-    benchmark_set = xbt_dict_new();
-    timer = xbt_os_timer_new();
-  }
-}
-
-void gras_chrono_exit(void) {
-  if (locbuf) free(locbuf);
-  xbt_dict_free(&benchmark_set);
-  xbt_os_timer_free(timer);
-}
 
 /*** Conditional execution support ***/
 
