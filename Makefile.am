@@ -47,7 +47,7 @@ publish: dist
 	 @echo "----[ Put the tarball @VERSION@ on gforge ]----"
 #	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
 #	 scp -r doc/html/* gcl.ucsd.edu:/home/www/simgrid/
-	 scp -r doc/html/* scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
+#	 scp -r doc/html/* scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	 scp ChangeLog gcl.ucsd.edu:/home/www/simgrid/dl/ChangeLog
 	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
 	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/simgrid2
@@ -69,12 +69,12 @@ mail:
            dpkg-parsechangelog -lChangeLog ;\
            echo;echo; \
 	   echo "It is available from the official website:";\
-	   echo "  http://grail.sdsc.edu/simgrid/";\
+	   echo "  http://simgrid.gforge.inria.fr";\
 	   echo;echo "Cheers, the SimGrid team.") | \
           mail -e \
 	       -a "From: Arnaud.Legrand@imag.fr" \
-	       -s "New version of GRAS ($$ver)" \
-	       simgrid-devel@lists.gforge.inria.fr
+	       -s "New version of SimGrid ($$ver)" \
+	       simgrid-user@lists.gforge.inria.fr
 
 splint:
 	splint `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
