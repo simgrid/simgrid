@@ -27,7 +27,7 @@ int gras_bench_always_end(void) {
 }
 
 int gras_bench_once_begin(const char *location,int line) {
-  return 0;
+  return 1;
 }
 
 int gras_bench_once_end(void) {
