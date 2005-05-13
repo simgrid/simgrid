@@ -193,7 +193,6 @@ AC_CONFIG_FILES([
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
-    chmod +x $srcdir/tools/gras-check-arch;
 ])
 
 #    examples/gras/pastry/test_sg   
