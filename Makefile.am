@@ -74,7 +74,7 @@ mail:
           mail -e \
 	       -a "From: Arnaud.Legrand@imag.fr" \
 	       -s "New version of GRAS ($$ver)" \
-	       simgrid2-users@listes.ens-lyon.fr
+	       simgrid-devel@lists.gforge.inria.fr
 
 splint:
 	splint `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
