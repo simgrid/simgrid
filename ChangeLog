@@ -1,33 +1,18 @@
-SimGrid (2.94-cvs) UNRELEASED
+SimGrid (2.94) unstable; urgency=low
 
-----
-TODO
-----
+  The first release candidate for SimGrid 3 !
 
-- Stop layering gras over msg?
-- Pre-compilation of data_send/recv?
-- Exception revolution?
-All of them seem to be post-SG3 issues.
-
-Rather finalize what's underway and finish the Big Cleanup:
-  - Check what can be cut from the xbt
-  - "pull" code diffusion in graspe
-  - add a real implementation (even if simplistic) to gras_os_myname
-
-----
-DONE
-----
-  [Arnaud]
+  >>>Arnaud<<<
   (documentation)
   * Update the main page and the FAQ. Adding references to gforge.
-  
+
   (gras)
   * Add a gras_os_getpid function.
 
   (msg)
   * Add MSG_task_get_compute_duration() and MSG_task_get_data_size()
   * Extend the logs so that they also print PID, hostname, date, ... if
-    available. 
+    available.
   * Convert the MSG example to the use of xbt_logs instead of PRINT_MESSAGE,
     and kill the old version which were in testsuite/
   * Rewrite tools/MSG_visualization/colorize.pl for using with logs instead
@@ -36,11 +21,11 @@ DONE
   (xbt)
   * Add xbt_os_time(). As the rest of xbt/portability, this is not public
     for users. Instead, each programming environment (GRAS, MSG,...) use it
-    when needed to provide such a feature to users. 
+    when needed to provide such a feature to users.
     Don't shortcut the mecanism or you will also shortcut the virtualization
     you need on the simulator.
 
-  [Martin]
+  >>>Martin<<<
   (infrastructure)
   * Cleanups in configury with regard to compile optimization/warning flags.
     Also add -fno-loop-optimize to any powerpc since it's the optimization
@@ -48,11 +33,13 @@ DONE
   * Doxygen cleanups: move MSG examples, kill the second Doxygen phase
     needed by MSG examples complications
   * Borrow configury beautifications from PHP
-  
+
   (xbt)
   * Bugfix: XBT_LOG_NEW_DEFAULT_CATEGORY now compiles without compiler
     warning (thanks loris for stumbling into this one).
-    
+  * Bugfix: stop loading private headers (gras_config.h) from the public
+    ones (xbt/swag.h).
+
   (gras)
   * Change SIMGRID_INSTALL_PATH to GRAS_ROOT in Makefiles generated for user.
   * Rename gras_get_my_fqdn to gras_os_myname and implement it in the simulator
@@ -66,8 +53,11 @@ DONE
      - merge conditional execution and timing macros into emulation module
      - document the module
      - make sure the module cleanups its mess on gras_exit
+  * Documentation improvements:
+     - (new) how to compile applications using GRAS
+     - (new) emulation support (timing macros)
 
- --
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Fri, 13 May 2005 10:49:31 +0200
 
 SimGrid (2.93) unstable; urgency=low
 
