@@ -7,7 +7,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog \
 	acmacro/aci.m4 \
-	tools/gras-check-arch	tools/graspe-slave.in \
+	tools/graspe-slave.in \
 	tools/MSG_visualization tools/platform_generation
 
 SOURCE_FILES = $(shell find . -name "*.[ch]")
