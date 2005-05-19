@@ -71,7 +71,7 @@ xbt_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
   manually do deal with the weirdness of the hostdata, themselves here to deal
   with the weird channel concept of SG and convert them back to ports.
   
-  When introducing buffered transport (whith I want to get used in SG to debug
+  When introducing buffered transport (which I want to get used in SG to debug
   the buffering itself), we should not make the rest of the code aware of the
   change and not specify code for this. This is bad design.
   
