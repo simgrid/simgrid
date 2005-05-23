@@ -99,7 +99,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  *  (comma separates macro args). 
  * 
  *  For example, change \verbatim int a, b;\endverbatim to \verbatim int a;
- int b:\endverbatim
+ int b;\endverbatim
  */
 /** @{ */
 
