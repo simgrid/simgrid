@@ -1,3 +1,10 @@
+SimGrid (2.95) unstable; urgency=low
+
+  MSG
+  * Implement MSG_get_msgload [MQ]
+
+ -- 
+
 SimGrid (2.94) unstable; urgency=low
 
   The first release candidate for SimGrid 3 !

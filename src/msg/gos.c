@@ -377,9 +377,9 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 int MSG_get_msgload(void) 
 {
   CHECK_HOST();
-  xbt_assert0(0,"Not implemented yet!");
   
-  return 1;
+  m_process_t process = MSG_process_self();
+  return xbt_fifo_size(process->simdata->host->simdata->process_list);
 }
 
 /** \ingroup msg_gos_functions
