@@ -316,7 +316,7 @@ static void generate_makefile_local(char *project, char *deployment)
   fprintf(OUT, 
 	  "DISTDIR=gras-$(PROJECT_NAME)\n\n"
 	  "GRAS_ROOT?= $(shell echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\")\n"
-	  "CFLAGS = -O3 -w\n"
+	  "CFLAGS = -O3 -w -g\n"
 	  "INCLUDES = -I$(GRAS_ROOT)/include\n"
 	  "LIBS_SIM = -lm  -L$(GRAS_ROOT)/lib/ -lsimgrid\n"
 	  "LIBS_RL = -lm  -L$(GRAS_ROOT)/lib/ -lgras\n"
@@ -366,15 +366,22 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "\n"
 	  "dist: clean distdir\n"
 	  "\ttar c $(DISTDIR) | gzip -c > $(DISTDIR).tar.gz\n"
-	  "\n"
+	  "\n", project, project);
+
+  fprintf(OUT,
 	  "clean:\n"
-	  "\trm -f $(BIN_FILES) $(OBJ_FILES) *~\n"
+	  "\trm -f $(BIN_FILES) $(OBJ_FILES) *~ %s.o " SIM_OBJNAME, project, project);
+  xbt_dict_foreach(process_function_set,cursor,key,data) {
+     fprintf(OUT, " " RL_OBJNAME, project, key);
+  }
+  fprintf(OUT,   
+	  "\n"
 	  "\trm -rf $(DISTDIR)\n"
 	  "\n"
 	  ".SUFFIXES:\n"
 	  ".PHONY : clean\n"
-	  "\n", project, project);
-
+	  "\n");
+   
   fprintf(OUT, "############ REMOTE COMPILING #########\n");
   fprintf(OUT, 
 	  "MACHINES ?= ");
