@@ -152,10 +152,11 @@ SG_SRC=  \
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
   gras/Virtu/sg_dns.c
 
+BUILT_SOURCES=include/surf/surfxml.h surf/surfxml.c \
+              gras/DataDesc/ddt_parse.yy.c
+
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 	@LEX@ -o$@ -Pgras_ddt_parse_ $^
-
-surf/surf_parse.c: surf/surfxml.c
 
 if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
