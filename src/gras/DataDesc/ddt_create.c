@@ -441,8 +441,13 @@ gras_datadesc_type_t
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_array,
 		 "Redefinition of type %s does not match", name);
-    xbt_assert1(res->category.array_data.type == element_type,
-		 "Redefinition of type %s does not match", name);
+     
+    if (res->category.array_data.type != element_type) {
+       ERROR1("Redefinition of type %s does not match: array elements differ", name);
+       gras_datadesc_type_dump(res->category.array_data.type);
+       gras_datadesc_type_dump(element_type);
+    }
+     
     xbt_assert1(res->category.array_data.fixed_size == fixed_size,
 		 "Redefinition of type %s does not match", name);
     xbt_assert1(res->category.array_data.dynamic_size == NULL,
