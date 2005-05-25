@@ -3,6 +3,17 @@ SimGrid (2.95) unstable; urgency=low
   MSG
   * Implement MSG_get_msgload [MQ]
 
+  SURF
+  * Bugfix: Allow absolute paths for platform description files [MQ]
+
+  GRAS
+  * <project>.Makefile.local (generated from gras_stub_generator) |MQ]:
+    - Do clean .o files
+    - Compile with -g
+  * bugfix in automatic type parsing: differentiate the types "char[22]"
+    and "unsigned char[22]". "short" and "long" modifiers were also ignored;
+    other modifier (such as reference level) are still ignored. [MQ]
+  
  -- 
 
 SimGrid (2.94) unstable; urgency=low
