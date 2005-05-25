@@ -1,5 +1,5 @@
 /* XML processor/application API for ../../surf/surfxml.dtd.
- * Generated 2005/04/07 14:48:26.
+ * Generated 2005/05/25 14:49:51.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -70,6 +70,8 @@ typedef const char* AT_network_link_bandwidth;
 #define AU_network_link_bandwidth NULL
 typedef const char* AT_cpu_name;
 #define AU_cpu_name NULL
+typedef const char* AT_process_kill_time;
+#define AU_process_kill_time NULL
 typedef enum { AU_network_link_state, A_network_link_state_ON,A_network_link_state_OFF } AT_network_link_state;
 typedef const char* AT_argument_value;
 #define AU_argument_value NULL
@@ -103,6 +105,8 @@ typedef const char* AT_route_element_name;
 #define AU_route_element_name NULL
 typedef const char* AT_cpu_power;
 #define AU_cpu_power NULL
+typedef const char* AT_process_start_time;
+#define AU_process_start_time NULL
 typedef const char* AT_include_file;
 #define AU_include_file NULL
 typedef const char* AT_process_function;
@@ -125,6 +129,7 @@ typedef const char* AT_network_link_bandwidth_file;
 extern const char* pcdata;
 extern AT_network_link_bandwidth A_network_link_bandwidth;
 extern AT_cpu_name A_cpu_name;
+extern AT_process_kill_time A_process_kill_time;
 extern AT_network_link_state A_network_link_state;
 extern AT_argument_value A_argument_value;
 extern AT_cpu_availability_file A_cpu_availability_file;
@@ -142,6 +147,7 @@ extern AT_route_impact_on_src_with_other_recv A_route_impact_on_src_with_other_r
 extern AT_network_link_name A_network_link_name;
 extern AT_route_element_name A_route_element_name;
 extern AT_cpu_power A_cpu_power;
+extern AT_process_start_time A_process_start_time;
 extern AT_include_file A_include_file;
 extern AT_process_function A_process_function;
 extern AT_route_dst A_route_dst;

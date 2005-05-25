@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/04/06 12:46:16.
+ * Generated 2005/05/25 14:48:29.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -69,6 +69,7 @@ const char rcs_flexml[] =
 const char* pcdata;
 AT_network_link_bandwidth A_network_link_bandwidth;
 AT_cpu_name A_cpu_name;
+AT_process_kill_time A_process_kill_time;
 AT_network_link_state A_network_link_state;
 AT_argument_value A_argument_value;
 AT_cpu_availability_file A_cpu_availability_file;
@@ -86,6 +87,7 @@ AT_route_impact_on_src_with_other_recv A_route_impact_on_src_with_other_recv;
 AT_network_link_name A_network_link_name;
 AT_route_element_name A_route_element_name;
 AT_cpu_power A_cpu_power;
+AT_process_start_time A_process_start_time;
 AT_include_file A_include_file;
 AT_process_function A_process_function;
 AT_route_dst A_route_dst;
@@ -670,6 +672,8 @@ const char* *statenames=NULL;
 <ROOT_process,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<process"{s} {
   A_process_host = NULL;
   A_process_function = NULL;
+  A_process_start_time = "0.0";
+  A_process_kill_time = "-1.0";
   ENTER(AL_process);
   }
 
@@ -679,6 +683,12 @@ const char* *statenames=NULL;
 
  "function"{Eq}\' ENTER(VALUE1); BUFFERSET(A_process_function);
  "function"{Eq}\" ENTER(VALUE2); BUFFERSET(A_process_function);
+
+ "start_time"{Eq}\' ENTER(VALUE1); BUFFERSET(A_process_start_time);
+ "start_time"{Eq}\" ENTER(VALUE2); BUFFERSET(A_process_start_time);
+
+ "kill_time"{Eq}\' ENTER(VALUE1); BUFFERSET(A_process_kill_time);
+ "kill_time"{Eq}\" ENTER(VALUE2); BUFFERSET(A_process_kill_time);
 
  ">" {
   if (!A_process_host) FAIL("Required attribute `host' not set for `process' element.");
