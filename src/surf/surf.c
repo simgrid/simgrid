@@ -169,20 +169,31 @@ FILE *surf_fopen(const char *name, const char *mode)
   int i; 
   char* path = NULL;
   FILE *file = NULL;
+  int path_name_len = 0; /* don't count '\0' */
 
-  xbt_assert1((name!=NULL), "Need a real file name, not \"%s\"\n",name);
+  xbt_assert0(name, "Need a non-NULL file name");
 
   xbt_assert0(surf_path,"surf_init has to be called before using surf_fopen");
-  if(!path_name) path_name=xbt_new0(char,strlen(name)+1);
+   
+  if (name[0] == '/') { /* don't mess with absolute file names */
+    return fopen(name,mode);
+     
+  } else { /* search relative files in the path */
+   
+    if(!path_name) {
+       path_name_len = strlen(name);
+       path_name=xbt_new0(char,path_name_len+1);
+    }
 
-  xbt_dynar_foreach(surf_path,i,path) {
-    if(strlen(path_name)<strlen(path)+strlen(name)+2) 
-      path_name=xbt_realloc(path_name,strlen(path)+strlen(name)+2);
-    strcpy(path_name, path);
-    strcat(path_name,"/");
-    strcat(path_name,name);
-    file = fopen(path_name,mode);
-    if(file) return file;
+    xbt_dynar_foreach(surf_path,i,path) {
+      if(path_name_len < strlen(path)+strlen(name)+1) {
+	 path_name_len = strlen(path)+strlen(name)+1; /* plus '/' */
+	 path_name=xbt_realloc(path_name,path_name_len+1);
+      }
+      sprintf(path_name,"%s/%s",path, name);
+      file = fopen(path_name,mode);
+      if (file) return file;
+    }
   }
   return file;
 }
