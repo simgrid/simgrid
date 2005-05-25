@@ -341,7 +341,8 @@ xbt_error_t gras_datadesc_send(gras_socket_t        sock,
  
   refs = xbt_dict_new();
   state = gras_cbps_new();
-   
+  
+  xbt_assert0(type,"called with NULL type descriptor");
   errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src, type->cycle);
 
   xbt_dict_free(&refs);
@@ -654,6 +655,7 @@ gras_datadesc_recv(gras_socket_t         sock,
   refs = xbt_dict_new();
   state = gras_cbps_new();
 
+  xbt_assert0(type,"called with NULL type descriptor");
   errcode = gras_datadesc_recv_rec(sock, state, refs, type, 
 				   r_arch, NULL, 0,
 				   (char *) dst,-1, 
