@@ -16,7 +16,9 @@ static int parse_argc = -1 ;
 static char **parse_argv = NULL;
 static m_process_code_t parse_code = NULL;
 static m_host_t parse_host = NULL;
-
+static double start_time = 0.0;
+static double kill_time = -1.0;
+  
 static void parse_process_init(void)
 {
   parse_host = MSG_get_host_by_name(A_process_host);
@@ -28,6 +30,8 @@ static void parse_process_init(void)
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
   parse_argv[(parse_argc) - 1] = xbt_strdup(A_process_function);
+  surf_parse_get_double(&start_time,A_process_start_time);
+  surf_parse_get_double(&kill_time,A_process_kill_time);
 }
 
 static void parse_argument(void)
@@ -40,7 +44,7 @@ static void parse_argument(void)
 static void parse_process_finalize(void)
 {
   MSG_process_create_with_arguments(parse_argv[0], parse_code, NULL, parse_host,
-				    parse_argc,parse_argv);
+				    parse_argc,parse_argv,start_time,kill_time);
 }
 
 /** \ingroup msg_easier_life

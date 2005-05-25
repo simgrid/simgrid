@@ -55,6 +55,7 @@ typedef struct simdata_process {
   char **argv;                  /* arguments table if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
   int paje_state;               /* the number of state stacked with Paje */
+  double kill_time;             /* When to kill the process */
 } s_simdata_process_t;
 
 /************************** Global variables ********************************/

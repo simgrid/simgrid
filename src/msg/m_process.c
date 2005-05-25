@@ -27,14 +27,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(m_process, msg,
  * \brief Creates and runs a new #m_process_t.
  *
  * Does exactly the same as #MSG_process_create_with_arguments but without 
-   providing standard arguments (\a argc, \a argv).
+   providing standard arguments (\a argc, \a argv, \a start_time, \a kill_time).
  * \sa MSG_process_create_with_arguments
  */
 m_process_t MSG_process_create(const char *name,
 			       m_process_code_t code, void *data,
 			       m_host_t host)
 {
-  return MSG_process_create_with_arguments(name, code, data, host, -1, NULL);
+  return MSG_process_create_with_arguments(name, code, data, host, -1, NULL, 0.0, -1.0);
 }
 
 static void MSG_process_cleanup(void *arg)
@@ -80,7 +80,8 @@ static void MSG_process_cleanup(void *arg)
  */
 m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,
-					      m_host_t host, int argc, char **argv)
+					      m_host_t host, int argc, char **argv,
+					      double start_time, double kill_time)
 {
   simdata_process_t simdata = xbt_new0(s_simdata_process_t,1);
   m_process_t process = xbt_new0(s_m_process_t,1);
@@ -94,6 +95,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   simdata->waiting_task = NULL;
   simdata->argc = argc;
   simdata->argv = argv;
+  simdata->kill_time = kill_time;
   simdata->context = xbt_context_new(code, NULL, NULL, 
 				     MSG_process_cleanup, process, 
 				     simdata->argc, simdata->argv);
@@ -119,7 +121,12 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   msg_global->current_process = self;
 
   xbt_fifo_push(msg_global->process_list, process);
-  xbt_fifo_push(msg_global->process_to_run, process);
+  if (start_time == 0.0) {	
+     xbt_fifo_push(msg_global->process_to_run, process);
+  } else {
+     /* FIXME: let the process sleep for the specified amount of time */
+     xbt_fifo_push(msg_global->process_to_run, process);
+  }
 
   PAJE_PROCESS_NEW(process);
 

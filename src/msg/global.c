@@ -325,14 +325,22 @@ MSG_error_t MSG_main(void)
   while (1) {
     xbt_context_empty_trash();
     while ((process = xbt_fifo_pop(msg_global->process_to_run))) {
-/*       fprintf(stderr,"-> %s (%d)\n",process->name, process->simdata->PID); */
-      DEBUG3("Scheduling  %s(%d) on %s",	     
-	     process->name,process->simdata->PID,
-	     process->simdata->host->name);
-      msg_global->current_process = process;
-      fflush(NULL);
-      xbt_context_schedule(process->simdata->context);
-      msg_global->current_process = NULL;
+      if (process->simdata->kill_time >= 0.0 &&
+	  process->simdata->kill_time < surf_get_clock()) {
+	INFO3("KILLING %s(%d) on %s (kill_time elapsed; too bad)",
+	       process->name,process->simdata->PID,
+	       process->simdata->host->name);
+	MSG_process_kill(process);
+	 
+      } else {
+	DEBUG3("Scheduling  %s(%d) on %s",	     
+	       process->name,process->simdata->PID,
+	       process->simdata->host->name);
+	msg_global->current_process = process;
+	fflush(NULL);
+	xbt_context_schedule(process->simdata->context);
+	msg_global->current_process = NULL;
+      }
     }
     DEBUG1("%lg : Calling surf_solve",MSG_getClock());
     elapsed_time = surf_solve();
