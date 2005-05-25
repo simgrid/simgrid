@@ -111,10 +111,15 @@ static void change_to_fixed_array(xbt_dynar_t dynar, long int size) {
 
   XBT_IN;
   xbt_dynar_pop(dynar,&former);
-  array.type_name=(char*)xbt_malloc(strlen(former.type->name)+20);
+  array.type_name=(char*)xbt_malloc(strlen(former.type->name)+48);
   DEBUG2("Array specification (size=%ld, elm='%s'), change pushed type",
 	 size,former.type_name);
-  sprintf(array.type_name,"%s[%ld]",former.type_name,size);
+  sprintf(array.type_name,"%s%s%s%s[%ld]",
+	  (former.tm.is_unsigned?"u ":""),
+	  (former.tm.is_short?"s ":""),
+	  (former.tm.is_long?"l ":""),
+	  former.type_name,
+	  size);
   free(former.type_name);
 
   array.type = gras_datadesc_array_fixed(array.type_name, former.type, size); /* redeclaration are ignored */
