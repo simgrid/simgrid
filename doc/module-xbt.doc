@@ -77,8 +77,11 @@
     
 /**       \addtogroup XBT_fifo
           \ingroup XBT_API */
-/**        \addtogroup XBT_swag
-          \ingroup XBT_API */
+	  
+    /** @defgroup XBT_swag A O(1) set datatype
+     *  @brief a O(1) set based on linked lists
+     */
+	  
 /**       \addtogroup XBT_heap
           \ingroup XBT_API */
 
