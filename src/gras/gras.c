@@ -63,7 +63,7 @@ void gras_exit(void) {
   xbt_exit();
 }
 
-hexa_print(const char*name, unsigned char *data, int size) {
+void hexa_print(const char*name, unsigned char *data, int size) {
    int i;
    printf("%s: ", name);
    for (i=0;i<size;i++)  {

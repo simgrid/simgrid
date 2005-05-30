@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
 /***
  *** Prototypes 
  ***/
-hexa_print(unsigned char *data, int size);   /* in gras.c */
+void hexa_print(unsigned char *data, int size);   /* in gras.c */
 
 /* retrieve the port record associated to a numerical port on an host */
 static xbt_error_t find_port(gras_hostdata_t *hd, int port,
