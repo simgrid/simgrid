@@ -14,6 +14,9 @@ SimGrid (2.95) unstable; urgency=low
     and "unsigned char[22]". "short" and "long" modifiers were also ignored;
     other modifier (such as reference level) are still ignored. [MQ]
   * Real (even if simplistic) implementation of gras_os_myname() on RL [MQ]
+  * bugfix: embeed the buffer size within the buffer itself on SG. [MQ]
+    That way, send() are atomic and cannot get intermixed anymore (at least
+    the ones which are less than 100k; bigger messages still have the issue)
   
  -- 
 
