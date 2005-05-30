@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
 /***
  *** Prototypes 
  ***/
-hexa_print(const char*name, unsigned char *data, int size);   /* in gras.c */
+void hexa_print(const char*name, unsigned char *data, int size);   /* in gras.c */
    
 xbt_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
 					gras_socket_t sock);
