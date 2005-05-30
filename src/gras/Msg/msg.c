@@ -249,7 +249,7 @@ gras_msg_recv(gras_socket_t    sock,
   TRY(gras_trp_chunk_recv(sock, header, 6));
   for (cpt=0; cpt<4; cpt++)
     if (header[cpt] != GRAS_header[cpt])
-      RAISE0(mismatch_error,"Incoming bytes do not look like a GRAS message");
+      RAISE2(mismatch_error,"Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",header,GRAS_header);
   if (header[4] != GRAS_header[4]) 
     RAISE2(mismatch_error,"GRAS protocol mismatch (got %d, use %d)",
 	   (int)header[4], (int)GRAS_header[4]);
