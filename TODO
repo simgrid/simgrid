@@ -1,3 +1,5 @@
+- a way to get the network proximity (needed by Pastry, at least)
+
 - pull method of source diffusion in graspe-slave
 
 - Use a xbt_set for gras_procdata_t->libdata instead of a dict
@@ -10,7 +12,7 @@
 ###
 
 - tcp->incoming_socks
-  sock specific tcp (buffsize) inutile
+  sock specific tcp (buffsize) useless
 
 ###
 ### Soon
