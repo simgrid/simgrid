@@ -21,6 +21,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
 /***
  *** Prototypes 
  ***/
+hexa_print(const char*name, unsigned char *data, int size);   /* in gras.c */
+   
 xbt_error_t gras_trp_buf_socket_client(gras_trp_plugin_t *self,
 					gras_socket_t sock);
 xbt_error_t gras_trp_buf_socket_server(gras_trp_plugin_t *self,
@@ -74,9 +76,12 @@ void gras_trp_buf_init_sock(gras_socket_t sock) {
   data->in.data  = xbt_malloc(data->buffsize);
   data->in.pos   = 0; /* useless, indeed, since size==pos */
    
-  data->out.size = 0;
+   /* In SG, the 4 first bytes are for the chunk size as htonl'ed, so that we can send it in one shoot.
+    * This is mandatory in SG because all emissions go to the same channel, so if we split them,
+    * they can get mixed. */
+  data->out.size = gras_if_RL()?0:4;
   data->out.data = xbt_malloc(data->buffsize);
-  data->out.pos  = 0;
+  data->out.pos  = data->out.size;
    
   sock->bufdata = data;
 }
@@ -246,15 +251,31 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
 
     if (data->in.size == data->in.pos) { /* out of data. Get more */
       int nextsize;
-      DEBUG0("Recv the size");
-      TRY(super->chunk_recv(sock,(char*)&nextsize, 4));
-      data->in.size = (int)ntohl(nextsize);
-
-      VERB1("Recv the chunk (size=%d)",data->in.size);
+      if (gras_if_RL()) {
+	 DEBUG0("Recv the size");
+	 TRY(super->chunk_recv(sock,(char*)&nextsize, 4));
+	 data->in.size = (int)ntohl(nextsize);
+	 VERB1("Recv the chunk (size=%d)",data->in.size);
+      } else {
+	 data->in.size = -1;
+      }
+       
       TRY(super->chunk_recv(sock, data->in.data, data->in.size));
-      data->in.pos=0;
+       
+      if (gras_if_RL()) {
+	 data->in.pos=0;
+      } else {
+	 memcpy((char*)&nextsize,data->in.data,4);
+	 data->in.size = (int)ntohl(nextsize)+4;
+	 data->in.pos=4;
+	 VERB3("Got the chunk (size=%d+4 for the size ifself)='%.*s'",data->in.size-4,
+	       data->in.size,data->in.data);
+	 if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
+	   hexa_print("chunck received",data->in.data,data->in.size);
+      }
+       
     }
-    
+     
     thissize = min(size-chunck_pos ,  data->in.size - data->in.pos);
     DEBUG2("Get the chars %d..%ld out of the buffer",
 	   data->in.pos,
@@ -284,18 +305,30 @@ gras_trp_buf_flush(gras_socket_t sock) {
   gras_trp_bufdata_t *data=sock->bufdata;
 
   XBT_IN;
-  if (! (data->out.size-data->out.pos) ) {
-     DEBUG0("Nothing to flush");
+  DEBUG0("Flush");
+  if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
+     hexa_print("chunck to send",data->out.data,data->out.size);
+  if ((data->out.size - data->out.pos) == (gras_if_RL()?0:4) ) { /* 4 first bytes=size in SG mode*/
+     DEBUG2("Nothing to flush (size=%d; pos=%d)",data->out.size,data->out.pos);
      return no_error;
   }
    
-  size = (int)htonl(data->out.size-data->out.pos);
-  DEBUG1("Send the size (=%d)",data->out.size-data->out.pos);
-  TRY(super->chunk_send(sock,(char*) &size, 4));
+  size = (int)htonl(data->out.size - data->out.pos);
+  DEBUG4("%s the size (=%d) to %s:%d",(gras_if_RL()?"Send":"Embeed"),data->out.size-data->out.pos,
+	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
+  if (gras_if_RL()) {
+     TRY(super->chunk_send(sock,(char*) &size, 4));
+  } else {
+     memcpy(data->out.data, &size, 4);
+  }
+      
 
-  DEBUG1("Send the chunk (size=%d)",data->out.size);
+  DEBUG3("Send the chunk (size=%d) to %s:%d",data->out.size,
+	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
   TRY(super->chunk_send(sock, data->out.data, data->out.size));
   VERB1("Chunk sent (size=%d)",data->out.size);
+  if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
+     hexa_print("chunck sent",data->out.data,data->out.size);
   data->out.size = 0;
   return no_error;
 }
