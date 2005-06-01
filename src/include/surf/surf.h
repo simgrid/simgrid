@@ -79,10 +79,6 @@ typedef struct surf_resource {
   surf_resource_public_t common_public;
 } s_surf_resource_t;
 
-typedef struct surf_resource_object {
-  surf_resource_t resource;
-} s_surf_resource_object_t, *surf_resource_object_t;
-
 /**************************************/
 /* Implementations of resource object */
 /**************************************/
