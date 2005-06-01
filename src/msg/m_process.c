@@ -136,6 +136,8 @@ void MSG_process_kill(m_process_t process)
   int i;
   simdata_process_t p_simdata = process->simdata;
   simdata_host_t h_simdata= p_simdata->host->simdata;
+  int _cursor;
+  m_process_t proc = NULL;
 
 /*   fprintf(stderr,"Killing %s(%d) on %s.\n",process->name, */
 /* 	  p_simdata->PID,p_simdata->host->name); */
@@ -148,6 +150,10 @@ void MSG_process_kill(m_process_t process)
   }
   if (i==msg_global->max_channel) {
     if(p_simdata->waiting_task) {
+      xbt_dynar_foreach(p_simdata->waiting_task->simdata->sleeping,_cursor,proc) {
+	if(proc==process) 
+	  xbt_dynar_remove_at(p_simdata->waiting_task->simdata->sleeping,_cursor,&proc);
+      }
       if(p_simdata->waiting_task->simdata->compute)
 	surf_workstation_resource->common_public->
 	  action_free(p_simdata->waiting_task->simdata->compute);
