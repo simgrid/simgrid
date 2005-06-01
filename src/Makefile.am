@@ -28,6 +28,7 @@ EXTRA_DIST= \
 	surf/surf_private.h \
 	surf/cpu_private.h \
 	surf/workstation_private.h \
+	surf/surf_timer_private.h \
 	surf/surf_parse.c \
 	surf/surfxml.l \
 	surf/surfxml.c \
@@ -139,6 +140,7 @@ SG_SRC=  \
   surf/surf.c                                                                \
   surf/surf_parse.c                                                          \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
+  surf/surf_timer.c                                                               \
   surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c  \
   include/surf/surfxml.h \
