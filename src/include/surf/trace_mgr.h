@@ -21,6 +21,7 @@ tmgr_history_t tmgr_history_new(void);
 void tmgr_history_free(tmgr_history_t history);
 
 tmgr_trace_t tmgr_trace_new(const char *filename);
+tmgr_trace_t tmgr_empty_trace_new(void);
 void tmgr_trace_free(tmgr_trace_t trace);
 
 tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t history,

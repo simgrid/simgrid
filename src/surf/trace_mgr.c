@@ -109,6 +109,22 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   return trace;
 }
 
+tmgr_trace_t tmgr_empty_trace_new(void)
+{
+  tmgr_trace_t trace = NULL;
+  double periodicity = -1.0;	/* No periodicity by default */
+  s_tmgr_event_t event;
+  tmgr_event_t last_event = NULL;
+
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
+
+  event.delta = 0.0;
+  event.value = 0.0;
+  xbt_dynar_push(trace->event_list, &event);
+
+  return trace;
+}
 
 void tmgr_trace_free(tmgr_trace_t trace)
 {
