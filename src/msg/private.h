@@ -54,9 +54,18 @@ typedef struct simdata_process {
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
-  int paje_state;               /* the number of state stacked with Paje */
-  double kill_time;             /* When to kill the process */
+  int paje_state;               /* the number of states stacked with Paje */
 } s_simdata_process_t;
+
+typedef struct process_arg {
+  const char *name;
+  m_process_code_t code;
+  void *data;
+  m_host_t host;
+  int argc;
+  char **argv;
+  double kill_time;
+} s_process_arg_t, *process_arg_t;
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
@@ -73,6 +82,7 @@ typedef struct MSG_Global {
 } s_MSG_Global_t, *MSG_Global_t;
 
 extern MSG_Global_t msg_global;
+      
 
 /*************************************************************/
 
