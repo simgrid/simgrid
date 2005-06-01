@@ -43,8 +43,31 @@ static void parse_argument(void)
 
 static void parse_process_finalize(void)
 {
-  MSG_process_create_with_arguments(parse_argv[0], parse_code, NULL, parse_host,
-				    parse_argc,parse_argv,start_time,kill_time);
+  process_arg_t arg = NULL;
+  m_process_t process = NULL;
+  if(start_time>MSG_get_clock()) {
+    arg = xbt_new0(s_process_arg_t,1);
+    arg->name = parse_argv[0];
+    arg->code = parse_code;
+    arg->data = NULL;
+    arg->host = parse_host;
+    arg->argc = parse_argc;
+    arg->argv = parse_argv;
+    arg-> kill_time = kill_time;
+
+    surf_timer_resource->extension_public->set(start_time, (void*) &MSG_process_create_with_arguments,
+					       arg);
+  }
+  if(start_time==MSG_get_clock()) {
+    process = MSG_process_create_with_arguments(parse_argv[0], parse_code, 
+						NULL, parse_host,
+						parse_argc,parse_argv);
+    if(kill_time > MSG_getClock()) {
+      surf_timer_resource->extension_public->set(kill_time, 
+						 (void*) &MSG_process_kill,
+						 (void*) process);
+    }
+  }
 }
 
 /** \ingroup msg_easier_life

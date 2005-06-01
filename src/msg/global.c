@@ -325,22 +325,13 @@ MSG_error_t MSG_main(void)
   while (1) {
     xbt_context_empty_trash();
     while ((process = xbt_fifo_pop(msg_global->process_to_run))) {
-      if (process->simdata->kill_time >= 0.0 &&
-	  process->simdata->kill_time < surf_get_clock()) {
-	INFO3("KILLING %s(%d) on %s (kill_time elapsed; too bad)",
-	       process->name,process->simdata->PID,
-	       process->simdata->host->name);
-	MSG_process_kill(process);
-	 
-      } else {
-	DEBUG3("Scheduling  %s(%d) on %s",	     
-	       process->name,process->simdata->PID,
-	       process->simdata->host->name);
-	msg_global->current_process = process;
-	fflush(NULL);
-	xbt_context_schedule(process->simdata->context);
-	msg_global->current_process = NULL;
-      }
+      DEBUG3("Scheduling  %s(%d) on %s",	     
+	     process->name,process->simdata->PID,
+	     process->simdata->host->name);
+      msg_global->current_process = process;
+      fflush(NULL);
+      xbt_context_schedule(process->simdata->context);
+      msg_global->current_process = NULL;
     }
     DEBUG1("%lg : Calling surf_solve",MSG_getClock());
     elapsed_time = surf_solve();
@@ -359,6 +350,31 @@ MSG_error_t MSG_main(void)
       surf_action_t action = NULL;
       surf_resource_t resource = NULL;
       m_task_t task = NULL;
+
+      void *fun = NULL;
+      void *arg = NULL;
+      while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
+	DEBUG2("got %p %p", fun, arg);
+	if(fun==MSG_process_create_with_arguments) {
+	  process_arg_t args = arg;
+	  DEBUG2("Launching %s on %s", args->name, args->host->name);
+	  process = MSG_process_create_with_arguments(args->name, args->code, 
+						      args->data, args->host,
+						      args->argc,args->argv);
+	  if(args->kill_time > MSG_getClock()) {
+	    surf_timer_resource->extension_public->set(args->kill_time, 
+						       (void*) &MSG_process_kill,
+						       (void*) process);
+	  }
+	  xbt_free(args);
+	}
+	if(fun==MSG_process_kill) {
+	  process = arg;
+	  DEBUG3("Killing %s(%d) on %s", process->name, process->simdata->PID, 
+		 process->simdata->host->name);
+	  MSG_process_kill(process);
+	}
+      }
       
       xbt_dynar_foreach(resource_list, i, resource) {
 	while ((action =
