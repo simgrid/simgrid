@@ -168,7 +168,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
 						   double *value,
 						   void **resource)
 {
-  double event_date = xbt_heap_maxkey(h->heap);
+  double event_date = tmgr_history_next_date(h);
   tmgr_trace_event_t trace_event = NULL;
   tmgr_event_t event = NULL;
   tmgr_trace_t trace = NULL;
