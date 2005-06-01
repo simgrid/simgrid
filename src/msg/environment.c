@@ -61,6 +61,7 @@ void MSG_create_environment(const char *file) {
   char *name = NULL;
   void *workstation = NULL;
 
+  surf_timer_resource_init(file);
 #ifdef ALVIN_SURF_SPECIAL
   surf_workstation_resource_init_KCCFLN05(file);
 #else
