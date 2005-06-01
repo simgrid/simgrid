@@ -12,7 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(timer, surf,
 
 surf_timer_resource_t surf_timer_resource = NULL;
 static tmgr_trace_t empty_trace = NULL;
-static xbt_dict_t command_set = NULL;
+static xbt_swag_t command_pending = NULL;
+static xbt_swag_t command_to_run = NULL;
 
 static void timer_free(void *timer)
 {
@@ -24,28 +25,22 @@ static command_t command_new(void *fun, void* args)
   command_t command = xbt_new0(s_command_t, 1);
 
   command->resource = (surf_resource_t) surf_timer_resource;
-  command->fun = fun;
+  command->function = fun;
   command->args = args;
-/*   command->name = name; */
-/*   command->power_scale = power_scale; */
-/*   xbt_assert0(command->power_scale>0,"Power has to be >0"); */
-/*   command->power_current = power_initial; */
-/*   if (power_trace) */
-/*     command->power_event = */
-/* 	tmgr_history_add_trace(history, power_trace, 0.0, 0, command); */
-
-/*   command->state_current = state_initial; */
-/*   if (state_trace) */
-/*     command->state_event = */
-/* 	tmgr_history_add_trace(history, state_trace, 0.0, 0, command); */
-
-/*   command->constraint = */
-/*       lmm_constraint_new(maxmin_system, command, */
-/* 			 command->power_current * command->power_scale); */
-
-/*   xbt_dict_set(command_set, name, command, command_free); */
-
+  xbt_swag_insert(command,command_pending);
   return command;
+}
+
+static void command_free(command_t command)
+{
+  free(command);
+
+  if(xbt_swag_belongs(command,command_to_run)) {
+    xbt_swag_remove(command,command_to_run);
+  } else if (xbt_swag_belongs(command,command_pending)) {
+    xbt_swag_remove(command,command_pending);
+  }
+  return;
 }
 
 static void parse_timer(void)
@@ -114,7 +109,9 @@ static void update_resource_state(void *id,
 {
   command_t command = id;
 
-  // Move this command to the list of commands to execute
+  /* Move this command to the list of commands to execute */
+  xbt_swag_remove(command,command_pending);
+  xbt_swag_insert(command,command_to_run);
 
   return;
 }
@@ -125,14 +122,22 @@ static void set(double date, void *function, void *arg)
 
   command = command_new(function, arg);
 
-  tmgr_history_add_trace(history, empty_trace, date, 0, command);
-  
+  tmgr_history_add_trace(history, empty_trace, date, 0, command);  
 }
 
 
 static int get(void **function, void **arg)
 {
-  return 0;
+  command_t command = NULL;
+
+  command = xbt_swag_extract(command_to_run);
+  if(command) {
+    *function = command->function;
+    *arg = command->args;
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 static void action_suspend(surf_action_t action)
@@ -153,7 +158,8 @@ static int action_is_suspended(surf_action_t action)
 
 static void finalize(void)
 {
-  xbt_dict_free(&command_set);
+  xbt_swag_free(command_pending);
+  xbt_swag_free(command_to_run);
 
   xbt_swag_free(surf_timer_resource->common_public->states.ready_action_set);
   xbt_swag_free(surf_timer_resource->common_public->states.
@@ -218,7 +224,12 @@ static void surf_timer_resource_init_internal(void)
   surf_timer_resource->extension_public->set = set;
   surf_timer_resource->extension_public->get = get;
 
-  command_set = xbt_dict_new();
+  {
+    s_command_t var;
+    command_pending = xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
+    command_to_run  = xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
+  }
+
   empty_trace = tmgr_empty_trace_new();
 
   xbt_assert0(maxmin_system, "surf_init has to be called first!");

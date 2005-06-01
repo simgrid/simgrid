@@ -19,9 +19,10 @@
 typedef struct command {
   surf_resource_t resource;	/* Any such object, added in a trace
 				   should start by this field!!! */
-  void *fun;
+  void *function;
   void *args;
   char *name;
+  s_xbt_swag_hookup_t command_set_hookup;
 } s_command_t, *command_t;
 
 extern xbt_dict_t command_set;
