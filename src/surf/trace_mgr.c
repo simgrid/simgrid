@@ -141,7 +141,6 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
 {
   tmgr_trace_event_t trace_event = NULL;
 
-
   trace_event = xbt_new0(s_tmgr_trace_event_t, 1);
   trace_event->trace = trace;
   trace_event->idx = offset;
@@ -181,7 +180,6 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
 
   trace = trace_event->trace;
   event = xbt_dynar_get_ptr(trace->event_list, trace_event->idx);
-
 
   *value = event->value;
   *resource = trace_event->resource;
