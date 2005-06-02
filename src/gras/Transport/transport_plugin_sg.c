@@ -293,7 +293,6 @@ xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
      int netsize;
      
      memcpy((char*)&netsize,task_data->data,4);
-     netsize = (int)ntohl(netsize);
      DEBUG1("netsize embeeded = %d",netsize);
 
      memcpy(data,task_data->data,netsize+4);

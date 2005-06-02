@@ -313,10 +313,11 @@ gras_trp_buf_flush(gras_socket_t sock) {
      return no_error;
   }
    
-  size = (int)htonl(data->out.size - data->out.pos);
+  size = (int)data->out.size - data->out.pos;
   DEBUG4("%s the size (=%d) to %s:%d",(gras_if_RL()?"Send":"Embeed"),data->out.size-data->out.pos,
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
   if (gras_if_RL()) {
+     size = (int)htonl(size);
      TRY(super->chunk_send(sock,(char*) &size, 4));
   } else {
      memcpy(data->out.data, &size, 4);
