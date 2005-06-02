@@ -9,7 +9,7 @@
 
 #include "gras/Virtu/virtu_rl.h"
 #include <netdb.h>  /* {end,set}hostent() gethostby{addr,name}() */
-
+#include <unistd.h> /* gethostname */
 
 /* A portable DNS resolver is a nightmare to do in a portable manner.
    keep it simple/stupid for now. */
