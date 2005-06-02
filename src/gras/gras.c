@@ -17,6 +17,10 @@
 #include "gras/core.h"
 #include "gras/process.h" /* FIXME: killme and put process_init in modinter */
 
+/* FIXME: move it to some random header */
+void hexa_print(const char*name, unsigned char *data, int size);
+
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories (cf. section \ref GRAS_API)");
 static int gras_running_process = 0;
 
