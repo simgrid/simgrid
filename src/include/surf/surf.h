@@ -82,6 +82,23 @@ typedef struct surf_resource {
 /**************************************/
 /* Implementations of resource object */
 /**************************************/
+/* Timer resource */
+typedef struct surf_timer_resource_extension_private
+*surf_timer_resource_extension_private_t;
+typedef struct surf_timer_resource_extension_public {
+  void (*set) (double date, void *function, void *arg);
+  int (*get)  (void **function, void **arg);
+} s_surf_timer_resource_extension_public_t,
+  *surf_timer_resource_extension_public_t;
+
+typedef struct surf_timer_resource {
+  surf_resource_private_t common_private;
+  surf_resource_public_t common_public;
+  surf_timer_resource_extension_public_t extension_public;
+} s_surf_timer_resource_t, *surf_timer_resource_t;
+extern surf_timer_resource_t surf_timer_resource;
+void surf_timer_resource_init(const char *filename);
+
 /* Cpu resource */
 typedef enum {
   SURF_CPU_ON = 1,		/* Ready        */
