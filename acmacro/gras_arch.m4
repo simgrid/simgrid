@@ -202,6 +202,21 @@ fi
 echo "$as_me:$LINENO: GRAS trace of this machine: $trace" >&AS_MESSAGE_LOG_FD
 AC_DEFINE_UNQUOTED(GRAS_THISARCH,$gras_arch,[defines the GRAS architecture signature of this machine])
 AC_MSG_RESULT($gras_arch ($gras_arch_name))
+
+AC_MSG_CHECKING(the maximal size of scalar)
+ac_cv_sizeof_max=0
+for s in $ac_cv_sizeof_char \
+         $ac_cv_sizeof_short_int $ac_cv_sizeof_int $ac_cv_sizeof_long_int $ac_cv_sizeof_long_long_int \
+         $ac_cv_sizeof_void_p $ac_cv_sizeof_void_LpR_LvoidR \
+	 4 8; do
+	 
+  if test $ac_cv_sizeof_max -lt $s ; then 
+    ac_cv_sizeof_max=$s
+  fi
+done
+AC_MSG_RESULT($ac_cv_sizeof_max)
+AC_DEFINE_UNQUOTED([SIZEOF_MAX],$ac_cv_sizeof_max,[The maximal size of any scalar on this arch])
+
 ])
 # END OF GRAS ARCH CHECK
 
