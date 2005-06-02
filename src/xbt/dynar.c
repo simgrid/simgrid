@@ -466,7 +466,7 @@ xbt_dynar_map(const xbt_dynar_t  dynar,
   __sanity_check_dynar(dynar);
 
   {
-    char         elm[64];
+    char         elm[SIZEOF_MAX];
     const unsigned long used = dynar->used;
     unsigned long       i    = 0;
 
