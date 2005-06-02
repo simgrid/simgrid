@@ -139,6 +139,7 @@ AC_SUBST(LDFLAGS)
 ## Check for programs
 ##
 
+SG_CONFIGURE_PART(Check for programs...)
 AC_CHECK_PROG(BASH, bash, `which bash`, /bin/sh)
 WARNING="This file is generated, do not edit"
 AC_SUBST(WARNING)
@@ -161,7 +162,10 @@ AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != xNOTFOUND)
 
 #    examples/bandwidth/Makefile examples/bandwidth/test_sg
 #    examples/pastry/Makefile    examples/pastry/test_sg
+#      examples/gras/token/Makefile examples/gras/token/test_sg examples/gras/token/test_rl
+#      examples/gras/chord/Makefile  examples/gras/chord/test_sg examples/gras/chord/test_rl
 
+SG_CONFIGURE_PART(Generating files...)
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
@@ -171,7 +175,7 @@ AC_CONFIG_FILES([
     examples/msg/Makefile          examples/msg/run_msg_test
     examples/gras/Makefile 
       examples/gras/ping/Makefile  examples/gras/ping/test_sg  examples/gras/ping/test_rl
-      examples/gras/timer/Makefile examples/gras/timer/test_sg examples/gras/timer/test_rl
+      examples/gras/timer/Makefile  examples/gras/timer/test_sg examples/gras/timer/test_rl
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
   doc/Makefile
     doc/Doxyfile
@@ -195,6 +199,8 @@ AC_CONFIG_FILES([
     done
 ])
 
+#     examples/gras/token/test_sg  examples/gras/token/test_rl   \
+#     examples/gras/chord/test_sg  examples/gras/chord/test_rl   \
 #    examples/gras/pastry/test_sg   
 #    examples/gras/bandwidth/test_sg 
 
