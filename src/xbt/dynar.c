@@ -15,17 +15,11 @@
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
-
+#include "xbt/dynar_private.h" /* type definition, which we share with the 
+	 		 	  code in charge of sending this across the net */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
 
-typedef struct xbt_dynar_s {
-  unsigned long          size;
-  unsigned long          used;
-  unsigned long          elmsize;
-  void           *data;
-  void_f_pvoid_t *free_f;
-} s_xbt_dynar_t;
 
 #define __sanity_check_dynar(dynar)       \
            xbt_assert0(dynar,           \
