@@ -92,9 +92,8 @@ typedef enum e_gras_datadesc_type_category {
   e_gras_datadesc_type_cat_union = 3,
   e_gras_datadesc_type_cat_ref = 4,       /* ref to an uniq element */
   e_gras_datadesc_type_cat_array = 5,
-  e_gras_datadesc_type_cat_ignored = 6,
   
-  e_gras_datadesc_type_cat_invalid = 7
+  e_gras_datadesc_type_cat_invalid = 6
 } gras_datadesc_type_category_t;
 
 /*------------------------------------------------*/
@@ -111,8 +110,8 @@ typedef struct s_gras_dd_cat_field {
   long int  offset[gras_arch_count];
   gras_datadesc_type_t type;
   
-  gras_datadesc_type_cb_void_t pre;
-  gras_datadesc_type_cb_void_t post;
+  gras_datadesc_type_cb_void_t send;
+  gras_datadesc_type_cb_void_t recv;
 
 } s_gras_dd_cat_field_t,*gras_dd_cat_field_t;
 
@@ -134,7 +133,7 @@ enum e_gras_dd_scalar_encoding {
 };
 typedef struct s_gras_dd_cat_scalar {
   enum e_gras_dd_scalar_encoding encoding;
-  gras_ddt_scalar_type_t type; /* to check easily that redefinition matches*/
+  gras_ddt_scalar_type_t type; /* to check easily that redefinition matches */
 } gras_dd_cat_scalar_t;
 
 /**
@@ -188,17 +187,6 @@ typedef struct s_gras_dd_cat_array {
 } gras_dd_cat_array_t;
 
 /**
- * gras_dd_cat_ignored_t:
- *
- * Specific fields of an ignored field
- */
-typedef struct s_gras_dd_cat_ignored {
-  void	 	 		*default_value;
-  void_f_pvoid_t                *free_func;
-} gras_dd_cat_ignored_t;
-
-
-/**
  * u_gras_datadesc_category:
  *
  * Specific data to each possible category
@@ -210,8 +198,13 @@ union u_gras_datadesc_category {
         gras_dd_cat_union_t    union_data;
         gras_dd_cat_ref_t      ref_data;
         gras_dd_cat_array_t    array_data;
-        gras_dd_cat_ignored_t  ignored_data;
 };
+
+/* flags about the datadesc */
+enum {
+   gras_datadesc_flag_cycle = 1, /* true if the datatype may contain cycle */
+   gras_datadesc_flag_sentinel = 1024
+} gras_datadesc_flag_t;
 
 
 /****************************************/
@@ -240,7 +233,10 @@ typedef struct s_gras_datadesc_type {
   gras_datadesc_type_cb_void_t         send;
   gras_datadesc_type_cb_void_t         recv;
    
-  int                                  cycle; /* true if the datatype may contain cycle */
+  int                                  flags; /* possible flags are in gras_datadesc_flag_t */
+   
+  char                                 extra[SIZEOF_MAX]; /* random value for users (like default value or whatever) */
+
 } s_gras_datadesc_type_t;
 
 /***************************
