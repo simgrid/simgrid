@@ -55,6 +55,7 @@ xbt_error_t test_int(gras_socket_t sock, int direction);
 xbt_error_t test_float(gras_socket_t sock, int direction);
 xbt_error_t test_double(gras_socket_t sock, int direction);
 xbt_error_t test_array(gras_socket_t sock, int direction);
+xbt_error_t test_dynar_scal(gras_socket_t sock, int direction);
 xbt_error_t test_intref(gras_socket_t sock, int direction);
 xbt_error_t test_string(gras_socket_t sock, int direction);
 
@@ -63,6 +64,7 @@ xbt_error_t test_hetestruct(gras_socket_t sock, int direction);
 xbt_error_t test_nestedstruct(gras_socket_t sock, int direction);
 xbt_error_t test_chain_list(gras_socket_t sock, int direction);
 xbt_error_t test_graph(gras_socket_t sock, int direction);
+xbt_error_t test_dynar_ref(gras_socket_t sock, int direction);
 
 xbt_error_t test_pbio(gras_socket_t sock, int direction);
 xbt_error_t test_clause(gras_socket_t sock, int direction);
@@ -130,6 +132,39 @@ xbt_error_t test_array(gras_socket_t sock, int direction) {
 		   cpt,i[cpt],cpt,j[cpt]);
     }
   }
+  return no_error;
+}
+/*** Dynar of scalar ***/
+
+xbt_error_t test_dynar_scal(gras_socket_t sock, int direction){
+  xbt_error_t errcode;
+  gras_datadesc_type_t my_type;
+  xbt_dynar_t i,j;
+  int cpt;
+   
+  INFO0("---- Test on dynar containing integers ----");
+  my_type = gras_datadesc_dynar(gras_datadesc_by_name("int"),NULL);
+  i = xbt_dynar_new(sizeof(int),NULL);
+  for (cpt=0; cpt<64; cpt++) {
+    xbt_dynar_push_as(i,int,cpt); 
+    DEBUG2("Push %d, length=%lu",cpt, xbt_dynar_length(i));
+  }
+/*  xbt_dynar_dump(i);*/
+  TRY(write_read(my_type, &i,&j, sock, direction));
+/*  xbt_dynar_dump(j);*/
+  if (direction == READ || direction == RW) {
+     for (cpt=0; cpt<64; cpt++){
+	int ret=xbt_dynar_get_as(j,cpt,int);
+	if (cpt != ret) {
+	   CRITICAL3("The retrieved value for cpt=%d is not the same than the injected one (%d!=%d)",
+		     cpt,ret,cpt);
+	   xbt_abort();
+	}
+     }
+     xbt_dynar_free(&j);
+  }
+  xbt_dynar_free(&i);
+
   return no_error;
 }
 xbt_error_t test_intref(gras_socket_t sock, int direction) {
@@ -421,6 +456,47 @@ xbt_error_t test_graph(gras_socket_t sock, int direction) {
   return no_error;
 }
 
+
+/*** Dynar of references ***/
+static void free_string(void *d){ /* used to free the data in dynar */
+     free(*(void**)d);
+}
+xbt_error_t test_dynar_ref(gras_socket_t sock, int direction){
+  xbt_error_t errcode;
+  gras_datadesc_type_t my_type;
+  xbt_dynar_t i,j;
+  char buf[1024];
+  char *s1,*s2;
+  int cpt;
+   
+  INFO0("---- Test on dynar containing integers ----");
+  my_type = gras_datadesc_dynar(gras_datadesc_by_name("string"),&free_string);
+
+  i=xbt_dynar_new(sizeof(char*),&free_string);   
+  for (cpt=0; cpt< 64; cpt++) {
+    sprintf(buf,"%d",cpt);
+    s1=strdup(buf);
+    xbt_dynar_push(i,&s1);
+  }
+
+  TRY(write_read(my_type, &i,&j, sock, direction));
+  if (direction == READ || direction == RW) {
+     for (cpt=0; cpt< 64; cpt++) {
+	sprintf(buf,"%d",cpt);
+	xbt_dynar_shift(j,&s2);
+	xbt_assert2 (!strcmp(buf,s2),
+		     "The retrieved value is not the same than the injected one (%s!=%s)",
+		     buf,s2);
+	free(s2);
+     }
+     xbt_dynar_free(&j);
+  }
+  xbt_dynar_free(&i);
+
+  return no_error;
+}
+
+
 /**** PBIO *****/
 GRAS_DEFINE_TYPE(s_pbio,
 struct s_pbio{ /* structure presented in the IEEE article */
@@ -595,16 +671,17 @@ int main(int argc,char *argv[]) {
 	  gras_datadesc_arch_name(gras_arch_selfid()));
   }
   r_arch = (int)r_arch_char;
-  
+
   TRYFAIL(test_int(sock,direction));    
   TRYFAIL(test_float(sock,direction));  
   TRYFAIL(test_double(sock,direction));  
-  TRYFAIL(test_array(sock,direction));  
+  TRYFAIL(test_array(sock,direction));
+  TRYFAIL(test_dynar_scal(sock,direction));  
   TRYFAIL(test_intref(sock,direction)); 
   
   TRYFAIL(test_string(sock,direction)); 
 
-     TRYFAIL(test_structures(sock,direction));
+  TRYFAIL(test_structures(sock,direction));
 
   TRYFAIL(test_homostruct(sock,direction));
   TRYFAIL(test_hetestruct(sock,direction));
@@ -613,6 +690,7 @@ int main(int argc,char *argv[]) {
   TRYFAIL(declare_chained_list_type());
   TRYFAIL(test_chain_list(sock,direction));
   TRYFAIL(test_graph(sock,direction)); 
+  TRYFAIL(test_dynar_ref(sock,direction));  
 
   TRYFAIL(test_pbio(sock,direction));
 
