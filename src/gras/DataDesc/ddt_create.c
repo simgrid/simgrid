@@ -14,6 +14,10 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_create,datadesc,"Creating new datadescriptions");
 
+/*** prototypes ***/
+static gras_dd_cat_field_t
+  gras_dd_find_field(gras_datadesc_type_t  type,
+		     const char           *field_name);
 /**
  * gras_ddt_freev:
  *
@@ -35,7 +39,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
 
   res->name = (char*)strdup(name);
   res->name_len = strlen(name);
-  res->cycle = 0;
+  res->flags = 0;
       
   xbt_set_add(gras_datadesc_set_local,
 	       (xbt_set_elm_t)res,&gras_ddt_freev);
@@ -199,8 +203,8 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
 					      struct_type->alignment[arch]);
   }
   field->type   = field_type;
-  field->pre    = NULL;
-  field->post   = NULL;
+  field->send   = NULL;
+  field->recv   = NULL;
   
   xbt_dynar_push(struct_type->category.struct_data.fields, &field);
 
@@ -243,7 +247,7 @@ gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
  */
 void
 gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
-  ddt->cycle = 1;
+  ddt->flags &=   gras_datadesc_flag_cycle;
 }
 
 /**
@@ -255,7 +259,7 @@ gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
  */
 void
 gras_datadesc_cycle_unset(gras_datadesc_type_t ddt) {
-  ddt->cycle = 0;
+  ddt->flags &= ~(gras_datadesc_flag_cycle);
 }
 
 /** \brief Declare a new union description */
@@ -559,6 +563,62 @@ gras_datadesc_type_t
 
   return res;
 }
+
+#include "xbt/dynar_private.h"
+static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data) {
+  gras_datadesc_type_t subtype;
+  xbt_dynar_t dynar=(xbt_dynar_t)data;
+   
+  memcpy(&dynar->free_f, &typedesc->extra, sizeof(dynar->free_f));
+
+  /* search for the elemsize in what we have. If elements are "int", typedesc got is "int[]*" */
+  subtype = gras_dd_find_field(typedesc,"data")->type;
+  
+  /* this is now a ref to array of what we're looking for */
+  subtype = subtype->category.ref_data.type;
+  subtype = subtype->category.array_data.type;
+   
+  DEBUG1("subtype is %s",subtype->name);
+
+  dynar->elmsize = subtype->size[GRAS_THISARCH];
+  dynar->size = dynar->used;
+}
+
+gras_datadesc_type_t
+gras_datadesc_dynar(gras_datadesc_type_t elm_t,
+		    void_f_pvoid_t *free_func) {
+   
+  char *buffname;
+  gras_datadesc_type_t res;
+  
+  buffname=xbt_new0(char, strlen(elm_t->name)+10);
+  sprintf(buffname,"dynar(%s)_s",elm_t->name);
+   
+  res = gras_datadesc_struct(buffname);
+  
+  gras_datadesc_struct_append(res, "size",    gras_datadesc_by_name("unsigned long int"));
+   
+  gras_datadesc_struct_append(res, "used",    gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_cb_field_push(res, "used");
+   
+  gras_datadesc_struct_append(res, "elmsize", gras_datadesc_by_name("unsigned long int"));
+   
+  gras_datadesc_struct_append(res, "data",    gras_datadesc_ref_pop_arr (elm_t));
+
+  gras_datadesc_struct_append(res, "free_f",  gras_datadesc_by_name("function pointer"));
+  memcpy(res->extra,&free_func,sizeof(free_func));
+      
+  gras_datadesc_struct_close(res);
+   
+  gras_datadesc_cb_recv(res,  &gras_datadesc_dynar_cb);
+
+  /* build a ref to it */
+  sprintf(buffname,"dynar(%s)",elm_t->name);
+  res=gras_datadesc_ref(buffname,res);
+  free(buffname);
+  return res;
+}
+
 xbt_error_t
 gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
@@ -586,7 +646,7 @@ void gras_datadesc_cb_recv(gras_datadesc_type_t          type,
  * 
  * Returns the type descriptor of the given field. Abort on error.
  */
-static gras_datadesc_type_t 
+static gras_dd_cat_field_t
   gras_dd_find_field(gras_datadesc_type_t  type,
 		     const char           *field_name) {
    xbt_dynar_t         field_array;
@@ -604,7 +664,7 @@ static gras_datadesc_type_t
    }
    xbt_dynar_foreach(field_array,field_num,field) {
       if (!strcmp(field_name,field->name)) {
-	 return field->type;
+	 return field;
       }
    }
    ERROR2("No field nammed %s in %s",field_name,type->name);
@@ -620,8 +680,8 @@ void gras_datadesc_cb_field_send (gras_datadesc_type_t          type,
 				  const char                   *field_name,
 				  gras_datadesc_type_cb_void_t  send) {
    
-   gras_datadesc_type_t sub_type=gras_dd_find_field(type,field_name);   
-   sub_type->send = send;
+   gras_dd_cat_field_t field=gras_dd_find_field(type,field_name);   
+   field->send = send;
 }
 
 /**
@@ -632,15 +692,19 @@ void gras_datadesc_cb_field_send (gras_datadesc_type_t          type,
 void gras_datadesc_cb_field_push (gras_datadesc_type_t  type,
 				  const char           *field_name) {
    
-   gras_datadesc_type_t sub_type=gras_dd_find_field(type,field_name);
+   gras_dd_cat_field_t  field=gras_dd_find_field(type,field_name);
+   gras_datadesc_type_t sub_type=field->type;
+   
+   DEBUG3("add a PUSHy cb to '%s' field (type '%s') of '%s'",
+	  field_name,sub_type->name,type->name);
    if (!strcmp("int",sub_type->name)) {
-      sub_type->send = gras_datadesc_cb_push_int;
+      field->send = gras_datadesc_cb_push_int;
    } else if (!strcmp("unsigned int",sub_type->name)) {
-      sub_type->send = gras_datadesc_cb_push_uint;
+      field->send = gras_datadesc_cb_push_uint;
    } else if (!strcmp("long int",sub_type->name)) {
-      sub_type->send = gras_datadesc_cb_push_lint;
+      field->send = gras_datadesc_cb_push_lint;
    } else if (!strcmp("unsigned long int",sub_type->name)) {
-      sub_type->send = gras_datadesc_cb_push_ulint;
+      field->send = gras_datadesc_cb_push_ulint;
    } else {
       ERROR1("Field %s is not an int, unsigned int, long int neither unsigned long int",
 	     sub_type->name);
@@ -655,8 +719,8 @@ void gras_datadesc_cb_field_recv(gras_datadesc_type_t          type,
 				 const char                   *field_name,
 				 gras_datadesc_type_cb_void_t  recv) {
    
-   gras_datadesc_type_t sub_type=gras_dd_find_field(type,field_name);   
-   sub_type->recv = recv;
+   gras_dd_cat_field_t field=gras_dd_find_field(type,field_name);   
+   field->recv = recv;
 }
 
 /*
@@ -671,13 +735,6 @@ void gras_datadesc_free(gras_datadesc_type_t *type) {
   case e_gras_datadesc_type_cat_ref:
   case e_gras_datadesc_type_cat_array:
     /* nothing to free in there */
-    break;
-    
-  case e_gras_datadesc_type_cat_ignored:
-    if ((*type)->category.ignored_data.free_func) {
-      (*type)->category.ignored_data.free_func
-	((*type)->category.ignored_data.default_value);
-    }
     break;
     
   case e_gras_datadesc_type_cat_struct:
@@ -844,8 +901,6 @@ int gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
     
     break;
     
-  case e_gras_datadesc_type_cat_ignored:
-    /* That's ignored... */
   default:
     /* two stupidly created ddt are equally stupid ;) */
     break;
