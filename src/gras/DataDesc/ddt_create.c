@@ -247,7 +247,7 @@ gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
  */
 void
 gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
-  ddt->flags &=   gras_datadesc_flag_cycle;
+  ddt->flags |= gras_datadesc_flag_cycle;
 }
 
 /**
