@@ -69,6 +69,8 @@ BEGIN_DECL()
   unsigned long xbt_dynar_length(const xbt_dynar_t dynar);
   void          xbt_dynar_reset(xbt_dynar_t dynar);
 
+  void          xbt_dynar_dump(xbt_dynar_t dynar);
+
 /** @name 2. regular array functions
  *  @{
  */

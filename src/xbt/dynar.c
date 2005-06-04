@@ -115,6 +115,12 @@ _xbt_dynar_put_elm(const xbt_dynar_t  dynar,
   memcpy(elm, src, elmsize);
 }
 
+void
+xbt_dynar_dump(xbt_dynar_t dynar) {
+  INFO5("Dynar dump: size=%lu; used=%lu; elmsize=%lu; data=%p; free_f=%p",
+	dynar->size, dynar->used, dynar->elmsize, dynar->data, dynar->free_f);
+}	
+
 /** @brief Constructor
  * 
  * \param elmsize size of each element in the dynar
