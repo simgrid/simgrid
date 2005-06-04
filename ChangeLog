@@ -6,17 +6,30 @@ SimGrid (2.95) unstable; urgency=low
   SURF
   * Bugfix: Allow absolute paths for platform description files [MQ]
 
-  GRAS
+  GRAS (new features)
+  * gras_datadesc_dynar() builds a dynar type descriptor, allowing to send
+    dynar over the network (yeah) [MQ]
+  * Real (even if simplistic) implementation of gras_os_myname() on RL [MQ]
+  
+  GRAS (bug fixes)
+  * Differentiate the types "char[22]" and "unsigned char[22]" in automatic
+    type parsing. "short" and "long" modifiers were also ignored; other
+    modifier (such as reference level) are still ignored. [MQ] 
+  * Embeed the buffer size within the buffer itself on SG. [MQ]
+    That way, send() are atomic and cannot get intermixed anymore (at least
+    the ones which are less than 100k; bigger messages still have the issue)
+  * Array size pushed by the field, not by the field type (or each
+    and every long int will push stuff to the cbps) [MQ]
+
+  GRAS (minor cleanups)
   * <project>.Makefile.local (generated from gras_stub_generator) |MQ]:
     - Do clean .o files
     - Compile with -g
-  * bugfix in automatic type parsing: differentiate the types "char[22]"
-    and "unsigned char[22]". "short" and "long" modifiers were also ignored;
-    other modifier (such as reference level) are still ignored. [MQ]
-  * Real (even if simplistic) implementation of gras_os_myname() on RL [MQ]
-  * bugfix: embeed the buffer size within the buffer itself on SG. [MQ]
-    That way, send() are atomic and cannot get intermixed anymore (at least
-    the ones which are less than 100k; bigger messages still have the issue)
+  * Callbacks now receive the gras_datadesc_type_t they work on as argument.
+  * type category 'ignored' killed as it was never used and were difficult
+    to transmit.
+  * whether a type can cycle or not is now a flag, leaving room for more
+    flags (as "ignored", if we feel the need one day ;)
   
  -- 
 
