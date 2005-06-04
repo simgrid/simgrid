@@ -11,6 +11,7 @@
 #define GRAS_DATADESC_H
 
 #include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/dynar.h" /* void_f_pvoid_t */
 
 BEGIN_DECL()
 
@@ -172,11 +173,11 @@ typedef struct s_gras_cbps *gras_cbps_t;
 
 /* callbacks prototypes */
 /** \brief Prototype of type callbacks returning nothing. */
-typedef void (*gras_datadesc_type_cb_void_t)(gras_cbps_t vars, void *data);
+typedef void (*gras_datadesc_type_cb_void_t)(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 /** \brief Prototype of type callbacks returning an int. */
-typedef int (*gras_datadesc_type_cb_int_t)(gras_cbps_t vars, void *data);
+typedef int (*gras_datadesc_type_cb_int_t)(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 /** \brief Prototype of type callbacks selecting a type. */
-typedef gras_datadesc_type_t (*gras_datadesc_selector_t)(gras_cbps_t vars, void *data);
+typedef gras_datadesc_type_t (*gras_datadesc_selector_t)(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 
 
 /******************************************
@@ -215,6 +216,10 @@ gras_datadesc_type_t
 			  gras_datadesc_type_cb_int_t dynamic_size);
 gras_datadesc_type_t 
   gras_datadesc_ref_pop_arr(gras_datadesc_type_t  element_type);
+
+gras_datadesc_type_t 
+  gras_datadesc_dynar(gras_datadesc_type_t elm_t,
+		      void_f_pvoid_t *free_func);
 
 /*********************************
  * Change stuff within datadescs *
@@ -280,11 +285,11 @@ gras_cbps_i_push(gras_cbps_t ps, int val);
 int 
 gras_cbps_i_pop(gras_cbps_t ps);
 
-int gras_datadesc_cb_pop(gras_cbps_t vars, void *data);
-void gras_datadesc_cb_push_int(gras_cbps_t vars, void *data);
-void gras_datadesc_cb_push_uint(gras_cbps_t vars, void *data);
-void gras_datadesc_cb_push_lint(gras_cbps_t vars, void *data);
-void gras_datadesc_cb_push_ulint(gras_cbps_t vars, void *data);
+int gras_datadesc_cb_pop(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_int(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_uint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_lint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_ulint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 
 
 /* @} */
