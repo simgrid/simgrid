@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(datadesc,gras,"Data description");
 
 /* callback for array size when sending strings */
 static int
-_strlen_cb(/*@unused@*/gras_cbps_t vars, void *data) {
+_strlen_cb(/*@unused@*/gras_datadesc_type_t type,/*@unused@*/gras_cbps_t vars, void *data) {
 
   return 1+(int)strlen(data);
 }
