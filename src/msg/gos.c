@@ -376,9 +376,11 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  */
 int MSG_get_msgload(void) 
 {
+  m_process_t process;
+   
   CHECK_HOST();
   
-  m_process_t process = MSG_process_self();
+  process = MSG_process_self();
   return xbt_fifo_size(process->simdata->host->simdata->process_list);
 }
 
