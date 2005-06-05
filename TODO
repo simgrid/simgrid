@@ -33,13 +33,6 @@
   gras_datadesc_cpy needs to provide the size of the corresponding messages, so
   that we can report it into the simulator.
 
-- callback on reception ?? (to put functions pointer back in place, etc)
-
-- category "ignored" should be dropped, since it's not portable (what's its 
-  size on remote site?). But function's pointer may benefit from it.
-  We could change it to an attribute just as the "cycle"  one. That way, it 
-  would get malloced, but not transfered.
-
 ###
 ### A bit later
 ### 
@@ -59,15 +52,12 @@
  - cleanups, documentation
 
 [autoconf]
-  Check in autoconf that no datatype is bigger than 64, or dynar_map will
-    get into trouble...
   Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
     but versions above 3.4.0 should be ok.
   The ucontext usability test is too light. It returns success on IRIX, but
     shouldn't since ucontext are broken for us there.
 
 [portability layer]
-  Dynar of type, such as ref of type
   Mallocators
   
 [Messaging]
@@ -98,9 +88,6 @@
 [datadesc]
   Error handling in cbps
   Regression tests of cbps
-
-[testsuite]
-  use logging, not printf
 
 *********
 * GRAS1 * Integrer grassouillet a gras; multiplexage XML; module de comm
@@ -207,10 +194,10 @@
  Check short ***
  Check struct { struct { int a } b; }
  
- Factorise code in union/struct field adding
+ Factorize code in union/struct field adding
  
 [Other]
- Allow [homogeneous] dynar and dico to be sent
+ Allow [homogeneous] dico to be sent
  Make GRAS thread safe by mutexing what needs to be
  
 
