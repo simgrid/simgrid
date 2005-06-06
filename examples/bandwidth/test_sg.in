@@ -1,5 +1,7 @@
 #! @BASH@
-if test -x ./bandwidth_simulator ; then
-  exec ./bandwidth_simulator @srcdir@/../WAN_3.platform.txt @srcdir@/bandwidth_deployment.txt
+if [ x@EXEEXT@ = x ] ; then
+  exenv="libtool --mode=execute valgrind"
+else
+  exenv=wine
 fi
-exit 77
+exec $exenv ./bandwidth_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/bandwidth_deployment.xml $@

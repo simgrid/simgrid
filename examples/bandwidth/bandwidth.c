@@ -29,7 +29,7 @@ int sensor (int argc,char *argv[]) {
   xbt_error_t errcode;
   sensor_data_t g;
 
-  xbt_init(&argc,argv);
+  gras_init(&argc, argv, NULL);
   g=gras_userdata_new(s_sensor_data_t);  
 
   amok_bw_init();
@@ -71,10 +71,10 @@ int maestro(int argc,char *argv[]) {
   int msg_size=64;
   gras_socket_t peer;
 
-  xbt_init(&argc,argv);
+  gras_init(&argc, argv, NULL);
   g=gras_userdata_new(s_maestro_data_t);
   amok_bw_init();
-  gras_os_sleep(1,0);
+  gras_os_sleep(1.0);
    
   if ((errcode=gras_socket_server(6000,&(g->sock)))) { 
     ERROR1("Maestro: Error %s encountered while opening the server socket",xbt_error_name(errcode));

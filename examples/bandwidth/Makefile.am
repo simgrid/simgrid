@@ -3,24 +3,31 @@ AM_CFLAGS=-g
 TESTS=test_rl test_sg
 EXTRA_DIST=bandwidth_deployment.txt $(TESTS)
 
-if HAVE_SG
-  check_PROGRAMS=bandwidth_maestro bandwidth_sensor bandwidth_simulator
+noinst_PROGRAMS=bandwidth_maestro bandwidth_sensor bandwidth_simulator
   
-  bandwidth_simulator_SOURCES=	_bandwidth_simulator.c bandwidth.c
-  bandwidth_simulator_LDADD=	$(top_builddir)/src/libgrassg.la $(top_builddir)/src/amok/libamok.la @LIBS_SimGrid@ 
-else
-  check_PROGRAMS=bandwidth_maestro bandwidth_sensor
-endif
+bandwidth_simulator_SOURCES=	_bandwidth_simulator.c bandwidth.c
+bandwidth_simulator_LDADD=	$(top_builddir)/src/libsimgrid.la $(top_builddir)/src/amok/libamok.la
 
 bandwidth_maestro_SOURCES=	_bandwidth_maestro.c bandwidth.c
-bandwidth_sensor_SOURCES=	_bandwidth_sensor.c bandwidth.c
+bandwidth_maestro_LDADD=	$(top_builddir)/src/libgras.la $(top_builddir)/src/amok/libamok.la
 
-bandwidth_maestro_LDADD=	$(top_builddir)/src/libgrasrl.la $(top_builddir)/src/amok/libamok.la
-bandwidth_sensor_LDADD= 	$(top_builddir)/src/libgrasrl.la $(top_builddir)/src/amok/libamok.la
+bandwidth_sensor_SOURCES=	_bandwidth_sensor.c bandwidth.c
+bandwidth_sensor_LDADD= 	$(top_builddir)/src/libgras.la $(top_builddir)/src/amok/libamok.la
 
 # cleanup temps
-MAINTAINERCLEANFILES=_bandwidth_simulator.c _bandwidth_maestro.c _bandwidth_sensor.c
+CLEANFILES=_bandwidth_simulator.c _bandwidth_maestro.c _bandwidth_sensor.c \
+	   bandwidth.Makefile.local bandwidth.Makefile.remote bandwidth.deploy.sh
+	   
+MOSTLYCLEANFILES = bandwidth.trace
 
 # generate temps
-_bandwidth_maestro.c _bandwidth_sensor.c _bandwidth_simulator.c: bandwidth_deployment.txt
-	$(top_srcdir)/examples/gras_stub_generator bandwidth bandwidth_deployment.txt >/dev/null
+NAME=bandwidth
+PROCESSES= maestro sensor
+
+$(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(srcdir)/$(NAME)_deployment.xml ../../../tools/gras/gras_stub_generator@EXEEXT@
+	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv ../../../tools/gras/gras_stub_generator@EXEEXT@ $(NAME) $(srcdir)/$(NAME)_deployment.xml >/dev/null
+
+../../../tools/gras/gras_stub_generator@EXEEXT@:
+	make -C   ../../../tools/gras/ gras_stub_generator@EXEEXT@
+
+include $(top_srcdir)/acmacro/dist-files.mk
