@@ -139,10 +139,7 @@ gras_msgtype_declare_v(const char           *name,
   xbt_error_t   errcode;
   gras_msgtype_t msgtype;
   char *namev=make_namev(name,version);
-   
-  if (!payload) 
-     WARN1("Message %s has NULL payload",name);
-   
+      
   errcode = xbt_set_get_by_name(_gras_msgtype_set,
 				 namev,(xbt_set_elm_t*)&msgtype);
 
