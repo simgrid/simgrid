@@ -160,7 +160,6 @@ AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != xNOTFOUND)
 ##
 
 
-#    examples/bandwidth/Makefile examples/bandwidth/test_sg
 #    examples/pastry/Makefile    examples/pastry/test_sg
 #      examples/gras/token/Makefile examples/gras/token/test_sg examples/gras/token/test_rl
 #      examples/gras/chord/Makefile  examples/gras/chord/test_sg examples/gras/chord/test_rl
@@ -172,28 +171,33 @@ AC_CONFIG_FILES([
   src/Makefile
   src/amok/Makefile
   examples/Makefile 
-    examples/msg/Makefile          examples/msg/run_msg_test
+    examples/msg/Makefile           examples/msg/run_msg_test
     examples/gras/Makefile 
-      examples/gras/ping/Makefile  examples/gras/ping/test_sg  examples/gras/ping/test_rl
+      examples/gras/ping/Makefile   examples/gras/ping/test_sg  examples/gras/ping/test_rl
       examples/gras/timer/Makefile  examples/gras/timer/test_sg examples/gras/timer/test_rl
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
+    examples/amok/Makefile       
+      examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg
   doc/Makefile
     doc/Doxyfile
   tools/graspe-slave            tools/Makefile
     tools/gras/Makefile
   testsuite/Makefile
   testsuite/run_tests    
-  testsuite/gras/trp_tcp_usage
-  testsuite/gras/trp_file_usage
+  testsuite/gras/trp_tcp_usage  testsuite/gras/trp_file_usage
 ],[
     for file in                                                 \
      testsuite/run_tests                                        \
      testsuite/gras/trp_tcp_usage testsuite/gras/trp_file_usage \
      tools/graspe-slave           tools/graspe-master           \
-     examples/msg/run_msg_test                                  \
+     \
+     examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
+     \
      examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
      examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
      examples/gras/chrono/test_sg examples/gras/chrono/test_rl  \
+     \
+     examples/msg/run_msg_test                                  \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
@@ -202,7 +206,6 @@ AC_CONFIG_FILES([
 #     examples/gras/token/test_sg  examples/gras/token/test_rl   \
 #     examples/gras/chord/test_sg  examples/gras/chord/test_rl   \
 #    examples/gras/pastry/test_sg   
-#    examples/gras/bandwidth/test_sg 
 
 
 
