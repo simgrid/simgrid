@@ -127,9 +127,9 @@ gras_datadesc_exit(void) {
 }
 
 /** This is mainly to debug */
-char *
+const char *
 gras_datadesc_get_name(gras_datadesc_type_t ddt) {
-  return ddt->name;
+  return ddt?(const char*)ddt->name:"(null)";
 }
 /** This is mainly to debug */
 int
