@@ -67,23 +67,6 @@ const char *SIM_PREEMBULE =
 "  return retcode;\n" \
 "}\n"
 
-#define SIM_MAIN_PREEMBULE \
-"int main (int argc,char *argv[]) {\n" \
-"  int i,j;\n" \
-"\n" \
-"  /*  Simulation setup */\n" \
-"  MSG_global_init_args(&argc,argv);\n" \
-"  if (argc != 3) {\n" \
-"    fprintf(stderr, \"Usage: %%s platform_file application_description.txt [--gras-log=...]\\n\",argv[0]);\n" \
-"    exit(1);\n" \
-"  }\n" \
-"\n" \
-"  MSG_paje_output(\"%s.trace\");\n" \
-"  MSG_set_channel_number(10); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" \
-"  MSG_create_environment(argv[1]);\n" \
-"\n" \
-"  /*  Application deployment */\n"
-
 const char *SIM_MAIN_POSTEMBULE = "\n"
 "\n"
 "  MSG_launch_application(argv[2]);\n"
@@ -181,7 +164,23 @@ static void generate_sim(char *project)
   }
   fprintf(OUT, "\n%s\n",warning);
 
-  fprintf(OUT, SIM_MAIN_PREEMBULE, project);
+  fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n" 
+                     "  int i,j;\n" 
+                     "\n" 
+	             "  /*  Simulation setup */\n" 
+                     "  MSG_global_init_args(&argc,argv);\n" 
+                     "  if (argc != 3) {\n" 
+                     "    fprintf(stderr, \"Usage: %s platform_file application_description.txt [--gras-log=...]\\n\",argv[0]);\n" 
+                     "    exit(1);\n" 
+                     "  }\n"
+                     "\n");
+   fprintf(OUT, 
+	   "  MSG_paje_output(\"%s.trace\");\n" 
+	   "  MSG_set_channel_number(10); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" 
+	   "  MSG_create_environment(argv[1]);\n" 
+	   "\n" 
+	   "  /*  Application deployment */\n",
+	   project);
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT,"  MSG_function_register(\"%s\", launch_%s);\n",key,key);
   }
