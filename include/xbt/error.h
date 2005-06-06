@@ -17,11 +17,6 @@
 
 BEGIN_DECL()
 
-#define _XBT_ERR_PRE do {
-#define _XBT_ERR_POST(code)                                    \
-  return code;                                                 \
-} while (0)
-  
 /** @addtogroup XBT_error 
  *
  *  This is how the errors get reported in the SimGrid toolkit. This mechanism is not 
@@ -110,6 +105,13 @@ typedef enum {
 } while(0)
 
 /** @}*/
+
+#define _XBT_ERR_PRE do {
+#define _XBT_ERR_POST(code)                                    \
+  return code;                                                 \
+} while (0)
+  
+
 /** @name 3. RAISE macro family
  *
  *  Return a error code, doing some logs on stderr.
@@ -120,40 +122,19 @@ typedef enum {
  */
 
 /** @hideinitializer  */
-#define RAISE0(code,fmt) _XBT_ERR_PRE     \
-  fprintf(stderr,"%s:%d:%s: " fmt "\n",    \
-          __FILE__,__LINE__,__FUNCTION__); \
-  _XBT_ERR_POST(code)
+#define RAISE0(code,fmt)                   _XBT_ERR_PRE   ERROR0(fmt);                   _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE1(code,fmt,a1) _XBT_ERR_PRE     \
-  fprintf(stderr,"%s:%d:%s: " fmt "\n",       \
-          __FILE__,__LINE__,__FUNCTION__,a1); \
-  _XBT_ERR_POST(code)
+#define RAISE1(code,fmt,a1)                _XBT_ERR_PRE   ERROR1(fmt,a1);                _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE2(code,fmt,a1,a2) _XBT_ERR_PRE     \
-  fprintf(stderr,"%s:%d:%s: " fmt "\n",          \
-          __FILE__,__LINE__,__FUNCTION__,a1,a2); \
-  _XBT_ERR_POST(code)
+#define RAISE2(code,fmt,a1,a2)             _XBT_ERR_PRE   ERROR2(fmt,a1,a2);             _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE3(code,fmt,a1,a2,a3) _XBT_ERR_PRE     \
-  fprintf(stderr,"%s:%d:%s: " fmt "\n",             \
-          __FILE__,__LINE__,__FUNCTION__,a1,a2,a3); \
-  _XBT_ERR_POST(code)
+#define RAISE3(code,fmt,a1,a2,a3)          _XBT_ERR_PRE   ERROR3(fmt,a1,a2,a3);          _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE4(code,fmt,a1,a2,a3,a4) _XBT_ERR_PRE     \
-  fprintf(stderr,"%s:%d:%s: " fmt "\n",                \
-          __FILE__,__LINE__,__FUNCTION__,a1,a2,a3,a4); \
-  _XBT_ERR_POST(code)
+#define RAISE4(code,fmt,a1,a2,a3,a4)       _XBT_ERR_PRE   ERROR4(fmt,a1,a2,a3,a4);       _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE5(code,fmt,a1,a2,a3,a4,a5) _XBT_ERR_PRE     \
-  fprintf(stderr,"%s:%d:%s: " fmt "\n",                   \
-          __FILE__,__LINE__,__FUNCTION__,a1,a2,a3,a4,a5); \
-  _XBT_ERR_POST(code)
+#define RAISE5(code,fmt,a1,a2,a3,a4,a5)    _XBT_ERR_PRE   ERROR5(fmt,a1,a2,a3,a4,a5);    _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE6(code,fmt,a1,a2,a3,a4,a5,a6) _XBT_ERR_PRE     \
-  fprintf(stderr,"%s:%d:%s: " fmt "\n",                      \
-          __FILE__,__LINE__,__FUNCTION__,a1,a2,a3,a4,a5,a6); \
-  _XBT_ERR_POST(code)
+#define RAISE6(code,fmt,a1,a2,a3,a4,a5,a6) _XBT_ERR_PRE   ERROR6(fmt,a1,a2,a3,a4,a5,a6); _XBT_ERR_POST(code)
 
 /** @} */
 /** 
