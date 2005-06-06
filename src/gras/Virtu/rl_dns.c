@@ -8,8 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/Virtu/virtu_rl.h"
-#include <netdb.h>  /* {end,set}hostent() gethostby{addr,name}() */
-#include <unistd.h> /* gethostname */
+#include "portable.h"
 
 /* A portable DNS resolver is a nightmare to do in a portable manner.
    keep it simple/stupid for now. */
@@ -23,7 +22,8 @@ const char *gras_os_myname(void) {
   myname = xbt_new(char, 255);
     
   if (gethostname(myname, 255) == -1) {
-    /* gethostname() failed! Trying with localhost instead. 
+#ifdef HAVE_SYS_SOCKET_H
+     /* gethostname() failed! Trying with localhost instead. 
        We first need to query the DNS to make sure localhost is resolved 
        See the note in nws/Portability/dnsutil.c about {end,set}hostent() */
     struct hostent *tmp;
@@ -37,6 +37,9 @@ const char *gras_os_myname(void) {
       /* Erm. localhost cannot be resolved. There's something wrong in the user DNS setting */
       sprintf(myname, "(misconfigured host)");
     }
+#else
+      sprintf(myname, "(misconfigured windows host)");
+#endif     
   }
    
   myname[254] = '\0';
