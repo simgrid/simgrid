@@ -38,12 +38,12 @@ void         gras_socket_close(gras_socket_t sd);
 xbt_error_t gras_socket_client_ext(const char *host,
 				    unsigned short port,
 				    unsigned long int bufSize,
-				    int raw, 
+				    int measurement, 
 				    /* OUT */ gras_socket_t *dst);
 /** \brief Create a server socket, full interface to all relevant settings */
 xbt_error_t gras_socket_server_ext(unsigned short port,
 				    unsigned long int bufSize,
-				    int raw,
+				    int measurement,
 				    /* OUT */ gras_socket_t *dst);
 /* @}*/
 /** \name Retrieving data about sockets and peers 
@@ -61,23 +61,23 @@ int   gras_socket_peer_port(gras_socket_t sock);
 char *gras_socket_peer_name(gras_socket_t sock);
 /* @}*/
 
-/** \name Using raw sockets
+/** \name Using measurement sockets
  *  \ingroup GRAS_sock
  * 
  * You may want to use sockets not to exchange valuable data (in messages), 
- * but to conduct some experiments such as bandwidth measurement. If so, try those raw sockets.
+ * but to conduct some bandwidth measurements and related experiments. If so, try those measurement sockets.
  * 
- * You can only use those functions on sockets openned with the "raw" boolean set to true.
+ * You can only use those functions on sockets openned with the "measurement" boolean set to true.
  * 
- * \bug Raw sockets are not fully functionnal yet.
+ * \bug Measurement sockets are not fully functionnal yet.
  */
 /* @{*/
 
-xbt_error_t gras_socket_raw_send(gras_socket_t peer, 
+xbt_error_t gras_socket_meas_send(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int expSize, 
 				  unsigned long int msgSize);
-xbt_error_t gras_socket_raw_recv(gras_socket_t peer, 
+xbt_error_t gras_socket_meas_recv(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int expSize, 
 				  unsigned long int msgSize);
