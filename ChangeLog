@@ -30,6 +30,8 @@ SimGrid (2.95) unstable; urgency=low
     to transmit.
   * whether a type can cycle or not is now a flag, leaving room for more
     flags (as "ignored", if we feel the need one day ;)
+  * Rename raw sockets to measurement sockets since "raw" has another
+    meaning in networking community.
   
  -- 
 
