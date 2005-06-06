@@ -251,7 +251,7 @@ void gras_datadesc_cb_field_push (gras_datadesc_type_t   type,
  * Get stuff within datadescs *
  ******************************/
 /** \brief Returns the name of a datadescription */
-char * gras_datadesc_get_name(gras_datadesc_type_t ddt);
+const char * gras_datadesc_get_name(gras_datadesc_type_t ddt);
 /** \brief Returns the identifier of a datadescription */
 int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
