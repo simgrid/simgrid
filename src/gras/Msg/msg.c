@@ -308,7 +308,7 @@ gras_msg_wait(double           timeout,
     RAISE0(mismatch_error,
 	   "Cannot wait for the NULL message (did msgtype_by_name fail?)");
 
-  VERB1("Waiting for message %s",msgt_want->name);
+  VERB1("Waiting for message '%s'",msgt_want->name);
 
   start = now = gras_os_time();
 
@@ -480,7 +480,7 @@ gras_cb_register(gras_msgtype_t msgtype,
   gras_cblist_t *list=NULL;
   int cpt;
 
-  DEBUG2("Register %p as callback to %s",cb,msgtype->name);
+  DEBUG2("Register %p as callback to '%s'",cb,msgtype->name);
 
   /* search the list of cb for this message on this host (creating if NULL) */
   xbt_dynar_foreach(pd->cbl_list,cpt,list) {
