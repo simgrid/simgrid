@@ -11,7 +11,7 @@
 #include "gras/Transport/transport_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(transport,gras,"Conveying bytes over the network");
-XBT_LOG_NEW_SUBCATEGORY(raw_trp,transport,"Conveying bytes over the network without formating");
+XBT_LOG_NEW_SUBCATEGORY(meas_trp,transport,"Conveying bytes over the network without formating for perf measurements");
 static short int _gras_trp_started = 0;
 
 static xbt_dict_t _gras_trp_plugins;      /* All registered plugins */
@@ -153,7 +153,7 @@ void gras_trp_socket_new(int incoming,
   sock->port      = -1;
   sock->peer_port = -1;
   sock->peer_name = NULL;
-  sock->raw = 0;
+  sock->meas = 0;
 
   *dst = sock;
 
@@ -172,7 +172,7 @@ xbt_error_t
 gras_socket_server_ext(unsigned short port,
 		       
 		       unsigned long int bufSize,
-		       int raw,
+		       int measurement,
 		       
 		       /* OUT */ gras_socket_t *dst) {
  
@@ -192,7 +192,7 @@ gras_socket_server_ext(unsigned short port,
   sock->plugin= trp;
   sock->port=port;
   sock->bufSize = bufSize;
-  sock->raw = raw;
+  sock->meas = measurement;
 
   /* Call plugin socket creation function */
   DEBUG1("Prepare socket with plugin (fct=%p)",trp->socket_server);
@@ -223,7 +223,7 @@ gras_socket_client_ext(const char *host,
 		       unsigned short port,
 		       
 		       unsigned long int bufSize,
-		       int raw,
+		       int meas,
 		       
 		       /* OUT */ gras_socket_t *dst) {
  
@@ -242,7 +242,7 @@ gras_socket_client_ext(const char *host,
   sock->peer_port = port;
   sock->peer_name = (char*)strdup(host?host:"localhost");
   sock->bufSize = bufSize;
-  sock->raw = raw;
+  sock->meas = meas;
 
   /* plugin-specific */
   errcode= (*trp->socket_client)(trp, sock);
@@ -375,7 +375,7 @@ char *gras_socket_peer_name(gras_socket_t sock) {
   return sock->peer_name;
 }
 
-xbt_error_t gras_socket_raw_send(gras_socket_t peer, 
+xbt_error_t gras_socket_meas_send(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int exp_size, 
 				  unsigned long int msg_size) {
@@ -383,22 +383,24 @@ xbt_error_t gras_socket_raw_send(gras_socket_t peer,
   char *chunk = xbt_malloc(msg_size);
   int exp_sofar;
    
-  xbt_assert0(peer->raw,"Asked to send raw data on a regular socket");
+  XBT_IN;
+  xbt_assert0(peer->meas,"Asked to send measurement data on a regular socket");
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
-     CDEBUG5(raw_trp,"Sent %d of %lu (msg_size=%ld) to %s:%d",
+     CDEBUG5(meas_trp,"Sent %d of %lu (msg_size=%ld) to %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
      TRY(gras_trp_chunk_send(peer,chunk,msg_size));
   }
-  CDEBUG5(raw_trp,"Sent %d of %lu (msg_size=%ld) to %s:%d",
+  CDEBUG5(meas_trp,"Sent %d of %lu (msg_size=%ld) to %s:%d",
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 	     
   free(chunk);
-  return no_error;/* gras_socket_raw_exchange(peer,1,timeout,expSize,msgSize);    */
+  XBT_OUT;
+  return no_error;/* gras_socket_meas_exchange(peer,1,timeout,expSize,msgSize);    */
 }
 
-xbt_error_t gras_socket_raw_recv(gras_socket_t peer, 
+xbt_error_t gras_socket_meas_recv(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int exp_size, 
 				  unsigned long int msg_size){
@@ -407,19 +409,21 @@ xbt_error_t gras_socket_raw_recv(gras_socket_t peer,
   char *chunk = xbt_malloc(msg_size);
   int exp_sofar;
 
-  xbt_assert0(peer->raw,"Asked to recveive raw data on a regular socket\n");
+  XBT_IN;
+  xbt_assert0(peer->meas,"Asked to receive measurement data on a regular socket\n");
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
-     CDEBUG5(raw_trp,"Recvd %d of %lu (msg_size=%ld) from %s:%d",
+     CDEBUG5(meas_trp,"Recvd %d of %lu (msg_size=%ld) from %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
      TRY(gras_trp_chunk_recv(peer,chunk,msg_size));
   }
-  CDEBUG5(raw_trp,"Recvd %d of %lu (msg_size=%ld) from %s:%d",
+  CDEBUG5(meas_trp,"Recvd %d of %lu (msg_size=%ld) from %s:%d",
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
   free(chunk);
-  return no_error;/* gras_socket_raw_exchange(peer,0,timeout,expSize,msgSize);    */
+  XBT_OUT;
+  return no_error;/* gras_socket_meas_exchange(peer,0,timeout,expSize,msgSize);    */
 }
 
 /*

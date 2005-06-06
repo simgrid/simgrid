@@ -49,7 +49,7 @@ static int TcpProtoNumber(void);
 
 typedef struct {
   fd_set msg_socks;
-  fd_set raw_socks;
+  fd_set meas_socks;
 } gras_trp_tcp_plug_data_t;
 
 /***
@@ -69,7 +69,7 @@ xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
   gras_trp_tcp_plug_data_t *data = xbt_new(gras_trp_tcp_plug_data_t,1);
 
   FD_ZERO(&(data->msg_socks));
-  FD_ZERO(&(data->raw_socks));
+  FD_ZERO(&(data->meas_socks));
 
   plug->socket_client = gras_trp_tcp_socket_client;
   plug->socket_server = gras_trp_tcp_socket_server;
@@ -182,8 +182,8 @@ xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
     RAISE2(system_error,"Cannot listen to port %d: %s",sock->port,sock_errstr);
   }
 
-  if (sock->raw)
-    FD_SET(sock->sd, &(tcp->raw_socks));
+  if (sock->meas)
+    FD_SET(sock->sd, &(tcp->meas_socks));
   else
     FD_SET(sock->sd, &(tcp->msg_socks));
 
@@ -292,8 +292,8 @@ void gras_trp_tcp_socket_close(gras_socket_t sock){
   /* forget about the socket 
      ... but not when using winsock since accept'ed socket can not fit 
      into the fd_set*/
-  if (sock->raw){
-    FD_CLR(sock->sd, &(tcp->raw_socks));
+  if (sock->meas){
+    FD_CLR(sock->sd, &(tcp->meas_socks));
   } else {
     FD_CLR(sock->sd, &(tcp->msg_socks));
   }
@@ -398,12 +398,13 @@ static int TcpProtoNumber(void) {
   return returnValue;
 }
 
-/* Data exchange over raw sockets. Placing this in there is a kind of crude hack.
-   It means that the only possible raw are TCP where we may want to do UDP for them. 
+#if 0 /* KILLME */
+/* Data exchange over measurement sockets. Placing this in there is a kind of crude hack.
+   It means that the only possible measurement sockets are TCP where we may want to do UDP for them. 
    But I fail to find a good internal organization for now. We may want to split 
-   raw and regular sockets more efficiently.
+   meas and regular sockets more efficiently.
 */
-xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
+xbt_error_t gras_socket_meas_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int exp_size,
@@ -445,7 +446,7 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
    free(chunk);
    return no_error;
 }
-
+#endif
 
 #ifdef HAVE_WINSOCK_H
 #define RETSTR( x ) case x: return #x

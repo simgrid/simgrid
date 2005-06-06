@@ -39,7 +39,7 @@ typedef struct s_gras_socket  {
   int incoming :1; /* true if we can read from this sock */
   int outgoing :1; /* true if we can write on this sock */
   int accepting :1; /* true if master incoming sock in tcp */
-  int raw :1; /* true if this is an experiment socket instead of messaging */
+  int meas :1; /* true if this is an experiment socket instead of messaging */
 
   unsigned long int bufSize; /* what to say to the OS. field here to remember it when accepting */
    
@@ -86,8 +86,8 @@ xbt_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
 void gras_trp_buf_init_sock(gras_socket_t sock);
 
 
-/* Data exchange over raw sockets */
-xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
+/* Data exchange over measurement sockets */ /* FIXME: KILLME */
+xbt_error_t gras_socket_meas_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int expSize,

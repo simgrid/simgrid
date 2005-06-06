@@ -160,7 +160,7 @@ gras_trp_select(double timeout,
 	 
 	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
 	 TRY((sock_iter->plugin->socket_accept)(sock_iter,&accepted));
-	 accepted->raw = sock_iter->raw;
+	 accepted->meas = sock_iter->meas;
        } else {
 #if 0 
        FIXME: this fails of files. quite logical

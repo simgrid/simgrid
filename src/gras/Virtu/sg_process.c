@@ -21,7 +21,7 @@ gras_process_init() {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   gras_procdata_t *pd=xbt_new(gras_procdata_t,1);
   gras_trp_procdata_t trp_pd;
-  gras_sg_portrec_t prraw,pr;
+  gras_sg_portrec_t prmeas,pr;
   int i;
   
   if (MSG_process_set_data(MSG_process_self(),(void*)pd) != MSG_OK)
@@ -54,25 +54,25 @@ gras_process_init() {
   /* regiter it to the ports structure */
   pr.port = -1;
   pr.tochan = i;
-  pr.raw = 0;
+  pr.meas = 0;
   xbt_dynar_push(hd->ports,&pr);
 
-  /* take a free RAW channel for this process */
+  /* take a free meas channel for this process */
   for (i=0; i<XBT_MAX_CHANNEL && hd->proc[i]; i++);
   if (i == XBT_MAX_CHANNEL) {
     RAISE2(system_error,
 	   "GRAS: Can't add a new process on %s, because all channel are already in use. Please increase MAX CHANNEL (which is %d for now) and recompile GRAS\n.",
 	    MSG_host_get_name(MSG_host_self()),XBT_MAX_CHANNEL);
   }
-  trp_pd->rawChan = i;
+  trp_pd->measChan = i;
 
   hd->proc[ i ] = MSG_process_self_PID();
 
   /* register it to the ports structure */
-  prraw.port = -1;
-  prraw.tochan = i;
-  prraw.raw = 1;
-  xbt_dynar_push(hd->ports,&prraw);
+  prmeas.port = -1;
+  prmeas.tochan = i;
+  prmeas.meas = 1;
+  xbt_dynar_push(hd->ports,&prmeas);
 
   VERB2("Creating process '%s' (%d)",
 	   MSG_process_get_name(MSG_process_self()),
@@ -103,7 +103,7 @@ gras_process_exit() {
       hd->proc[cpt] = 0;
 
   xbt_dynar_foreach(hd->ports, cpt, pr) {
-    if (pr.port == trp_pd->chan || pr.port == trp_pd->rawChan) {
+    if (pr.port == trp_pd->chan || pr.port == trp_pd->measChan) {
       xbt_dynar_cursor_rm(hd->ports, &cpt);
     }
   }

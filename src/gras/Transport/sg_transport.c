@@ -55,7 +55,7 @@ gras_trp_select(double timeout,
 	DEBUG1("Consider %p as outgoing socket to expeditor",sock_iter);
 	sockdata = sock_iter->data;
 
-	if (sock_iter->raw || !sock_iter->outgoing)
+	if (sock_iter->meas || !sock_iter->outgoing)
 	  continue;
 
 	if (sockdata->from_PID == r_pid) {
@@ -101,8 +101,8 @@ gras_trp_select(double timeout,
 
 	  xbt_dynar_foreach(remote_hd->ports, cpt, pr) {
 	    if (sockdata->to_chan == pr.tochan) {
-	      if (pr.raw) {
-		DEBUG0("Damn, it's raw");
+	      if (pr.meas) {
+		DEBUG0("Damn, it's for measurement");
 		continue;
 	      }
 
@@ -115,10 +115,10 @@ gras_trp_select(double timeout,
 	    }
 	  }
 	  if ((*dst)->peer_port == -10) {
-	    /* was raw */
+	    /* was for measurement */
 	    sockdata->to_chan = -1;
 	  } else {
-	    /* found it, don't let it override by raw */
+	    /* found it, don't let it override by meas */
 	    break;
 	  }
 	}

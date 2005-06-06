@@ -18,7 +18,7 @@
 typedef struct {
   int port;  /* list of ports used by a server socket */
   int tochan; /* the channel it points to */
-  int raw;   /* (boolean) the channel is in raw mode or for messages */
+  int meas;   /* (boolean) the channel is for measurements or for messages */
 } gras_sg_portrec_t;
 
 /* Data for each host */

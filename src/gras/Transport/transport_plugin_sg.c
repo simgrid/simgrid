@@ -120,14 +120,14 @@ xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 	   sock->peer_name,sock->peer_port);
   } 
 
-  if (pr.raw && !sock->raw) {
+  if (pr.meas && !sock->meas) {
     RAISE2(mismatch_error,
 	   "can't connect to %s:%d in regular mode, the process listen "
-	   "in raw mode on this port",sock->peer_name,sock->peer_port);
+	   "in meas mode on this port",sock->peer_name,sock->peer_port);
   }
-  if (!pr.raw && sock->raw) {
+  if (!pr.meas && sock->meas) {
     RAISE2(mismatch_error,
-	   "can't connect to %s:%d in raw mode, the process listen "
+	   "can't connect to %s:%d in meas mode, the process listen "
 	   "in regular mode on this port",sock->peer_name,sock->peer_port);
   }
 
@@ -143,7 +143,7 @@ xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
 
   DEBUG6("%s (PID %d) connects in %s mode to %s:%d (to_PID=%d)",
 	  MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
-	  sock->raw?"RAW":"regular",
+	  sock->meas?"meas":"regular",
 	 sock->peer_name,sock->peer_port,data->to_PID);
 
   return no_error;
@@ -174,9 +174,9 @@ xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
     break;
 
   case mismatch_error: /* Port not used so far. Do it */
-    pr.tochan = sock->raw ? pd->rawChan : pd->chan;
+    pr.tochan = sock->meas ? pd->measChan : pd->chan;
     pr.port   = sock->port;
-    pr.raw    = sock->raw;
+    pr.meas    = sock->meas;
     xbt_dynar_push(hd->ports,&pr);
     break;
     
@@ -195,7 +195,7 @@ xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 
   VERB6("'%s' (%d) ears on %s:%d%s (%p)",
     MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
-    host,sock->port,sock->raw? " (mode RAW)":"",sock);
+    host,sock->port,sock->meas? " (mode meas)":"",sock);
 
   return no_error;
 }
@@ -275,7 +275,7 @@ xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
   DEBUG4("recv chunk on %s ->  %s:%d (size=%ld)",
 	 MSG_host_get_name(sock_data->to_host),
 	 MSG_host_get_name(MSG_host_self()), sock_data->to_chan, size);
-  if (MSG_task_get(&task, (sock->raw ? pd->rawChan : pd->chan)) != MSG_OK)
+  if (MSG_task_get(&task, (sock->meas ? pd->measChan : pd->chan)) != MSG_OK)
     RAISE0(unknown_error,"Error in MSG_task_get()");
   DEBUG1("Got chuck %s",MSG_task_get_name(task));
 
@@ -307,8 +307,9 @@ xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
   return no_error;
 }
 
-/* Data exchange over raw sockets */
-xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
+#if 0
+/* Data exchange over measurement sockets */
+xbt_error_t gras_socket_meas_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int expSize,
@@ -328,11 +329,11 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
 
     if (sender) {
     
-      sprintf(name,"Raw data[%d]",count++);
+      sprintf(name,"meas data[%d]",count++);
       
       task=MSG_task_create(name,0,((double)msgSize)/(1024.0*1024.0),NULL);
 
-      DEBUG5("%f:%s: gras_socket_raw_send(%f %s -> %s) BEGIN",
+      DEBUG5("%f:%s: gras_socket_meas_send(%f %s -> %s) BEGIN",
 	     gras_os_time(), MSG_process_get_name(MSG_process_self()),
 	     ((double)msgSize)/(1024.0*1024.0),
 	     MSG_host_get_name( MSG_host_self()), peer->peer_name);
@@ -340,7 +341,7 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
       if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK)
 	RAISE0(system_error,"Problem during the MSG_task_put()");
 	       
-      DEBUG5("%f:%s: gras_socket_raw_send(%f %s -> %s) END",
+      DEBUG5("%f:%s: gras_socket_meas_send(%f %s -> %s) END",
 	     gras_os_time(), MSG_process_get_name(MSG_process_self()),
 	     ((double)msgSize)/(1024.0*1024.0),
 	     MSG_host_get_name( MSG_host_self()), peer->peer_name);
@@ -348,11 +349,11 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
     } else { /* we are receiver, simulate a select */
       
       task=NULL;
-      DEBUG2("%f:%s: gras_socket_raw_recv() BEGIN\n",
+      DEBUG2("%f:%s: gras_socket_meas_recv() BEGIN\n",
 	     gras_os_time(), MSG_process_get_name(MSG_process_self()));
       do {
-	if (MSG_task_Iprobe((m_channel_t) pd->rawChan)) {
-	  if (MSG_task_get(&task, (m_channel_t) pd->rawChan) != MSG_OK) {
+	if (MSG_task_Iprobe((m_channel_t) pd->measChan)) {
+	  if (MSG_task_get(&task, (m_channel_t) pd->measChan) != MSG_OK) {
 	    fprintf(stderr,"GRAS: Error in MSG_task_get()\n");
 	    return unknown_error;
 	  }
@@ -362,7 +363,7 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
 	    return unknown_error;
 	  }
 	  
-	  DEBUG2("%f:%s: gras_socket_raw_recv() END\n",
+	  DEBUG2("%f:%s: gras_socket_meas_recv() END\n",
 		 gras_os_time(), MSG_process_get_name(MSG_process_self()));
 	  break;
 	} else {
@@ -378,3 +379,4 @@ xbt_error_t gras_socket_raw_exchange(gras_socket_t peer,
 
   return no_error;
 }
+#endif
