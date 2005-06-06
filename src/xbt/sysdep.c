@@ -70,7 +70,11 @@ void xbt_os_timer_stop(xbt_os_timer_t timer) {
 #endif
 }
 double xbt_os_timer_elapsed(xbt_os_timer_t timer) {
+#ifdef HAVE_GETTIMEOFDAY
    return  ((double)timer->stop.tv_sec)  - ((double)timer->start.tv_sec) +
          ((((double)timer->stop.tv_usec) - ((double)timer->start.tv_usec)) / 1000000.0);
+#else 
+   return  (double)timer->stop  - (double)timer->start;
+#endif
 }
 
