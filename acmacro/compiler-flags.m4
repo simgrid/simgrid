@@ -6,11 +6,11 @@ dnl For now, only sets extra flags on GCC
 
 AC_DEFUN([SG_COMPILE_FLAGS],[
   AC_ARG_ENABLE(compile-warnings,
-    AS_HELP_STRING([--enable-compile-warnings], [use compiler warnings (default=no)]),
+    AS_HELP_STRING([--enable-compile-warnings], [use compiler warnings (default=no, unless in maintainer mode)]),
     enable_compile_warnings=$withval,enable_compile_warnings=no)
 
   AC_ARG_ENABLE(compile-optimizations,
-    AS_HELP_STRING([--enable-compile-optimizations], [use compiler optimizations (default=yes, unless if CFLAGS is explicitly set)]),
+    AS_HELP_STRING([--disable-compile-optimizations], [use compiler optimizations (default=yes, unless if CFLAGS is explicitly set)]),
     enable_compile_optimizations=$enableval,enable_compile_optimizations=auto)
 
   if test "x$cflags_set" != "xyes" ; then 
