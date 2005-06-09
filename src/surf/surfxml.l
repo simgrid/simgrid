@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/05/25 14:48:29.
+ * Generated 2005/06/09 14:30:33.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -672,7 +672,7 @@ const char* *statenames=NULL;
 <ROOT_process,S_platform_description_2,S_include,S_include_2,S_platform_description_1,S_include_1,S_platform_description>"<process"{s} {
   A_process_host = NULL;
   A_process_function = NULL;
-  A_process_start_time = "0.0";
+  A_process_start_time = "-1.0";
   A_process_kill_time = "-1.0";
   ENTER(AL_process);
   }

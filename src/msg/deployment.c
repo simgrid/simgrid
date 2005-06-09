@@ -58,7 +58,7 @@ static void parse_process_finalize(void)
     surf_timer_resource->extension_public->set(start_time, (void*) &MSG_process_create_with_arguments,
 					       arg);
   }
-  if(start_time==MSG_get_clock()) {
+  if((start_time<0) || (start_time==MSG_get_clock())) {
     process = MSG_process_create_with_arguments(parse_argv[0], parse_code, 
 						NULL, parse_host,
 						parse_argc,parse_argv);

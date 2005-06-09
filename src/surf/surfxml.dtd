@@ -39,7 +39,7 @@
 <!ELEMENT process (argument*)>
 <!ATTLIST process host CDATA #REQUIRED>
 <!ATTLIST process function CDATA #REQUIRED>
-<!ATTLIST process start_time CDATA "0.0">
+<!ATTLIST process start_time CDATA "-1.0">
 <!ATTLIST process kill_time CDATA "-1.0">
 
 <!ELEMENT argument EMPTY>
