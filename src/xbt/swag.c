@@ -31,7 +31,10 @@ xbt_swag_t xbt_swag_new(size_t offset)
 {
   xbt_swag_t swag = xbt_new0(s_xbt_swag_t, 1);
 
+  swag->tail = NULL;
+  swag->head = NULL;
   swag->offset = offset;
+  swag->count = 0;
 
   return swag;
 }
@@ -56,7 +59,10 @@ void xbt_swag_free(xbt_swag_t swag)
  */
 void xbt_swag_init(xbt_swag_t swag, size_t offset)
 {
+  swag->tail = NULL;
+  swag->head = NULL;
   swag->offset = offset;
+  swag->count = 0;
 }
 
 

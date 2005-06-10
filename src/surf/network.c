@@ -377,7 +377,8 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   action->generic_action.finish = -1.0;
   action->generic_action.resource_type =
       (surf_resource_t) surf_network_resource;
-
+  action->suspended = 0;  /* Should be useless because of the 
+			     calloc but it seems to help valgrind... */
   action->generic_action.state_set =
       surf_network_resource->common_public->states.running_action_set;
 

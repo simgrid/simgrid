@@ -117,12 +117,24 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
 				double bound, int number_of_constraints)
 {
   lmm_variable_t var = NULL;
-
+  int i;
   var = xbt_new0(s_lmm_variable_t, 1);
   var->id = id;
   var->cnsts = xbt_new0(s_lmm_element_t, number_of_constraints);
+  for(i=0; i<number_of_constraints; i++) {
+    /* Should be useless because of the 
+       calloc but it seems to help valgrind... */
+    var->cnsts[i].element_set_hookup.next = NULL;
+    var->cnsts[i].element_set_hookup.prev = NULL;
+    var->cnsts[i].active_element_set_hookup.next = NULL;
+    var->cnsts[i].active_element_set_hookup.prev = NULL;
+    var->cnsts[i].constraint = NULL;
+    var->cnsts[i].variable = NULL;
+    var->cnsts[i].value = 0.0;
+  }
   var->cnsts_size = number_of_constraints;
-  /* var->cnsts_number = 0; *//* Useless because of the calloc  */
+  var->cnsts_number = 0; /* Should be useless because of the 
+			    calloc but it seems to help valgrind... */
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
