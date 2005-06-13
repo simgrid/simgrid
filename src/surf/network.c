@@ -208,14 +208,22 @@ static int resource_used(void *resource_id)
 			     ((network_link_CM02_t) resource_id)->constraint);
 }
 
-static void action_free(surf_action_t action)
+static int action_free(surf_action_t action)
 {
-  xbt_swag_remove(action, action->state_set);
-  if(((surf_action_network_CM02_t)action)->variable)
-    lmm_variable_free(maxmin_system, ((surf_action_network_CM02_t)action)->variable);
-  free(action);
+  action->using--;
+  if(!action->using) {
+    xbt_swag_remove(action, action->state_set);
+    if(((surf_action_network_CM02_t)action)->variable)
+      lmm_variable_free(maxmin_system, ((surf_action_network_CM02_t)action)->variable);
+    free(action);
+    return 1;
+  }
+  return 0;
+}
 
-  return;
+static void action_use(surf_action_t action)
+{
+  action->using++;
 }
 
 static void action_cancel(surf_action_t action)
@@ -231,11 +239,11 @@ static void action_recycle(surf_action_t action)
 static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
-  if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
-    if(((surf_action_network_CM02_t)action)->variable) {
-      lmm_variable_disable(maxmin_system, ((surf_action_network_CM02_t)action)->variable);
-      ((surf_action_network_CM02_t)action)->variable = NULL;
-    }
+/*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
+/*     if(((surf_action_network_CM02_t)action)->variable) { */
+/*       lmm_variable_disable(maxmin_system, ((surf_action_network_CM02_t)action)->variable); */
+/*       ((surf_action_network_CM02_t)action)->variable = NULL; */
+/*     } */
 
   surf_action_change_state(action, state);
   return;
@@ -370,6 +378,7 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
 
   action = xbt_new0(s_surf_action_network_CM02_t, 1);
 
+  action->generic_action.using = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   action->generic_action.max_duration = NO_MAX_DURATION;
@@ -492,6 +501,7 @@ static void surf_network_resource_init_internal(void)
   surf_network_resource->common_public->action_get_state =
       surf_action_get_state;
   surf_network_resource->common_public->action_free = action_free;
+  surf_network_resource->common_public->action_use = action_use;
   surf_network_resource->common_public->action_cancel = action_cancel;
   surf_network_resource->common_public->action_recycle = action_recycle;
   surf_network_resource->common_public->action_change_state =

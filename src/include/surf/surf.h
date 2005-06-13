@@ -24,6 +24,7 @@ typedef enum {
   SURF_ACTION_RUNNING,		/* Running      */
   SURF_ACTION_FAILED,		/* Task Failure */
   SURF_ACTION_DONE,		/* Completed    */
+  SURF_ACTION_TO_FREE, 		/* Action to free in next cleanup */
   SURF_ACTION_NOT_IN_THE_SYSTEM	/* Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
@@ -48,6 +49,7 @@ typedef struct surf_action {
   double finish;		/* finish time : this is modified during the run
 				 * and fluctuates until the task is completed */
   void *data;			/* for your convenience */
+  int using;
   surf_resource_t resource_type;
 } s_surf_action_t;
 
@@ -62,7 +64,8 @@ typedef struct surf_resource_public {
   const char *(*get_resource_name) (void *resource_id);
 
    e_surf_action_state_t(*action_get_state) (surf_action_t action);
-  void (*action_free) (surf_action_t action);
+  void (*action_use) (surf_action_t action);
+  int  (*action_free) (surf_action_t action);
   void (*action_cancel) (surf_action_t action);
   void (*action_recycle) (surf_action_t action);
   void (*action_change_state) (surf_action_t action,

@@ -207,14 +207,16 @@ static int resource_used(void *resource_id)
 			     ((network_link_DASSF_t) resource_id)->constraint);
 }
 
-static void action_free(surf_action_t action)
+static int action_free(surf_action_t action)
 {
-  xbt_swag_remove(action, action->state_set);
-  if(((surf_action_network_DASSF_t)action)->variable)
-    lmm_variable_free(maxmin_system, ((surf_action_network_DASSF_t)action)->variable);
-  free(action);
-
-  return;
+  action->using--;
+  if(!action->using) {
+    xbt_swag_remove(action, action->state_set);
+    if(((surf_action_network_DASSF_t)action)->variable)
+      lmm_variable_free(maxmin_system, ((surf_action_network_DASSF_t)action)->variable);
+    free(action);
+  }
+  return 1;
 }
 
 static void action_cancel(surf_action_t action)
@@ -230,11 +232,11 @@ static void action_recycle(surf_action_t action)
 static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
-  if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
-    if(((surf_action_network_DASSF_t)action)->variable) {
-      lmm_variable_disable(maxmin_system, ((surf_action_network_DASSF_t)action)->variable);
-      ((surf_action_network_DASSF_t)action)->variable = NULL;
-    }
+/*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
+/*     if(((surf_action_network_DASSF_t)action)->variable) { */
+/*       lmm_variable_disable(maxmin_system, ((surf_action_network_DASSF_t)action)->variable); */
+/*       ((surf_action_network_DASSF_t)action)->variable = NULL; */
+/*     } */
 
   surf_action_change_state(action, state);
   return;
@@ -369,6 +371,7 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
 
   action = xbt_new0(s_surf_action_network_DASSF_t, 1);
 
+  action->generic_action.using = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   action->generic_action.max_duration = NO_MAX_DURATION;

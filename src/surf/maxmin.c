@@ -270,6 +270,7 @@ void lmm_solve(lmm_system_t sys)
 
   /* Init */
   var_list = &(sys->variable_set);
+  DEBUG1("Variable set : %d", xbt_swag_size(var_list));
   xbt_swag_foreach(var, var_list) {
     var->value = 0.0;
   }
@@ -278,6 +279,7 @@ void lmm_solve(lmm_system_t sys)
   /* Compute Usage and store the variables that reach the maximum */
 
   cnst_list = &(sys->active_constraint_set);
+  DEBUG1("cnst_list : %d", xbt_swag_size(cnst_list));
   xbt_swag_foreach(cnst, cnst_list) {
     /* INIT */
     elem_list = &(cnst->element_set);
@@ -302,7 +304,6 @@ void lmm_solve(lmm_system_t sys)
   do {
     /* Fix the variables that have to be */
     var_list = &(sys->saturated_variable_set);
-
 
     xbt_swag_foreach(var, var_list) {
       /* First check if some of these variables have reach their upper

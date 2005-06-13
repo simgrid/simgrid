@@ -354,33 +354,39 @@ static void update_network_KCCFLN05_state(void *id,
 /*************** actions **************/
 /**************************************/
 /*************** network **************/
-static void action_network_KCCFLN05_free(surf_action_t action)
+static int action_network_KCCFLN05_free(surf_action_t action)
 {
   int cpt;
   surf_action_t act = NULL;
   workstation_KCCFLN05_t src = ((surf_action_network_KCCFLN05_t) action)->src;
   workstation_KCCFLN05_t dst = ((surf_action_network_KCCFLN05_t) action)->dst;
 
-  xbt_swag_remove(action, action->state_set);
-  if(((surf_action_network_KCCFLN05_t)action)->variable)
-    lmm_variable_free(maxmin_system_network_KCCFLN05, 
-		    ((surf_action_network_KCCFLN05_t) action)->variable);
+  action->using--;
+  if(!action->using) {
 
-  xbt_dynar_foreach (src->outgoing_communications,cpt,act) {
-    if(act==action) {
-      xbt_dynar_remove_at(src->outgoing_communications, cpt, &act);
-      break;
+    xbt_swag_remove(action, action->state_set);
+    if(((surf_action_network_KCCFLN05_t)action)->variable)
+      lmm_variable_free(maxmin_system_network_KCCFLN05, 
+			((surf_action_network_KCCFLN05_t) action)->variable);
+    
+    xbt_dynar_foreach (src->outgoing_communications,cpt,act) {
+      if(act==action) {
+	xbt_dynar_remove_at(src->outgoing_communications, cpt, &act);
+	break;
+      }
     }
-  }
-
-  xbt_dynar_foreach (dst->incomming_communications,cpt,act) {
-    if(act==action) {
-      xbt_dynar_remove_at(dst->incomming_communications, cpt, &act);
-      break;
+    
+    xbt_dynar_foreach (dst->incomming_communications,cpt,act) {
+      if(act==action) {
+	xbt_dynar_remove_at(dst->incomming_communications, cpt, &act);
+	break;
+      }
     }
+    
+    free(action);
+    return 1;
   }
-
-  free(action);
+  return 0;
 }
 
 static double share_network_KCCFLN05_resources(double now)
@@ -400,12 +406,12 @@ static void action_network_KCCFLN05_change_state(surf_action_t action,
   workstation_KCCFLN05_t src = ((surf_action_network_KCCFLN05_t) action)->src;
   workstation_KCCFLN05_t dst = ((surf_action_network_KCCFLN05_t) action)->dst;
 
-  if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
-    if(((surf_action_network_KCCFLN05_t)action)->variable) {
-      lmm_variable_disable(maxmin_system_network_KCCFLN05, 
-			   ((surf_action_network_KCCFLN05_t)action)->variable);
-      ((surf_action_network_KCCFLN05_t)action)->variable = NULL;
-    }
+/*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
+/*     if(((surf_action_network_KCCFLN05_t)action)->variable) { */
+/*       lmm_variable_disable(maxmin_system_network_KCCFLN05,  */
+/* 			   ((surf_action_network_KCCFLN05_t)action)->variable); */
+/*       ((surf_action_network_KCCFLN05_t)action)->variable = NULL; */
+/*     } */
 
   xbt_dynar_foreach (src->outgoing_communications,cpt,act) {
     if(act==action) {
@@ -465,6 +471,7 @@ static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size,
 
   action = xbt_new0(s_surf_action_network_KCCFLN05_t, 1);
 
+  action->generic_action.using = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   action->generic_action.max_duration = NO_MAX_DURATION;
@@ -520,23 +527,28 @@ static int network_KCCFLN05_action_is_suspended(surf_action_t action)
 }
 
 /***************** CPU ****************/
-static void action_cpu_KCCFLN05_free(surf_action_t action)
+static int action_cpu_KCCFLN05_free(surf_action_t action)
 {
-  xbt_swag_remove(action, action->state_set);
-  if(((surf_action_cpu_KCCFLN05_t)action)->variable)
-    lmm_variable_free(maxmin_system_cpu_KCCFLN05, ((surf_action_cpu_KCCFLN05_t)action)->variable);
-  free(action);
+  action->using--;
+  if(!action->using) {
+    xbt_swag_remove(action, action->state_set);
+    if(((surf_action_cpu_KCCFLN05_t)action)->variable)
+      lmm_variable_free(maxmin_system_cpu_KCCFLN05, ((surf_action_cpu_KCCFLN05_t)action)->variable);
+    free(action);
+    return 1;
+  }
+  return 0;
 }
 
 static void action_cpu_KCCFLN05_change_state(surf_action_t action,
 				e_surf_action_state_t state)
 {
-  if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED))
-    if(((surf_action_cpu_KCCFLN05_t)action)->variable) {
-      lmm_variable_disable(maxmin_system_cpu_KCCFLN05, 
-			   ((surf_action_cpu_KCCFLN05_t)action)->variable);
-      ((surf_action_cpu_KCCFLN05_t)action)->variable = NULL;
-    }
+/*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
+/*     if(((surf_action_cpu_KCCFLN05_t)action)->variable) { */
+/*       lmm_variable_disable(maxmin_system_cpu_KCCFLN05,  */
+/* 			   ((surf_action_cpu_KCCFLN05_t)action)->variable); */
+/*       ((surf_action_cpu_KCCFLN05_t)action)->variable = NULL; */
+/*     } */
 
   surf_action_change_state(action, state);
   return;
@@ -669,6 +681,7 @@ static surf_action_t execute_KCCFLN05(void *cpu, double size)
 
   action = xbt_new0(s_surf_action_cpu_KCCFLN05_t, 1);
 
+  action->generic_action.using = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   action->generic_action.max_duration = NO_MAX_DURATION;
@@ -721,12 +734,22 @@ static void action_change_state(surf_action_t action,
   return;
 }
 
-static void action_free(surf_action_t action)
+static int action_free(surf_action_t action)
 {
   if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    surf_network_resource->common_public->action_free(action);
+    return surf_network_resource->common_public->action_free(action);
   else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    surf_cpu_resource->common_public->action_free(action);
+    return surf_cpu_resource->common_public->action_free(action);
+  else DIE_IMPOSSIBLE;
+  return 1;
+}
+
+static void action_use(surf_action_t action)
+{
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->common_public->action_use(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->action_use(action);
   else DIE_IMPOSSIBLE;
   return;
 }
@@ -992,6 +1015,7 @@ static void workstation_KCCFLN05_resource_init_internal(void)
   surf_workstation_resource->common_public->action_get_state =
       surf_action_get_state;
   surf_workstation_resource->common_public->action_free = action_free;
+  surf_workstation_resource->common_public->action_use = action_use;
   surf_workstation_resource->common_public->action_cancel = NULL;
   surf_workstation_resource->common_public->action_recycle = NULL;
   surf_workstation_resource->common_public->action_change_state = action_change_state;

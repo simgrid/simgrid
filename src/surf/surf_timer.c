@@ -68,10 +68,10 @@ static int resource_used(void *resource_id)
   return 1;
 }
 
-static void action_free(surf_action_t action)
+static int action_free(surf_action_t action)
 {
   DIE_IMPOSSIBLE;
-  return;
+  return 1;
 }
 
 static void action_cancel(surf_action_t action)
