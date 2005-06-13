@@ -106,14 +106,23 @@ MSG_error_t MSG_task_get(m_task_t * task,
     xbt_context_yield();
   }
 
-  PAJE_PROCESS_POP_STATE(process);  
+  PAJE_PROCESS_POP_STATE(process);
   PAJE_COMM_STOP(process,t,channel);
 
-  if(state == SURF_ACTION_DONE) MSG_RETURN(MSG_OK);
-  else if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
-	  == SURF_CPU_OFF)
+  if(state == SURF_ACTION_DONE) {
+    if(surf_workstation_resource->common_public->action_free(t_simdata->comm)) 
+      t_simdata->comm = NULL;
+    MSG_RETURN(MSG_OK);
+  } else if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
+	  == SURF_CPU_OFF) {
+    if(surf_workstation_resource->common_public->action_free(t_simdata->comm)) 
+      t_simdata->comm = NULL;
     MSG_RETURN(MSG_HOST_FAILURE);
-  else MSG_RETURN(MSG_TRANSFER_FAILURE);
+  } else {
+    if(surf_workstation_resource->common_public->action_free(t_simdata->comm)) 
+      t_simdata->comm = NULL;
+    MSG_RETURN(MSG_TRANSFER_FAILURE);
+  }
 }
 
 /** \ingroup msg_gos_functions
@@ -223,6 +232,7 @@ MSG_error_t MSG_task_put(m_task_t task,
   process->simdata->put_channel = channel;
   while(!(task_simdata->comm)) 
     __MSG_process_block();
+  surf_workstation_resource->common_public->action_use(task_simdata->comm);
   process->simdata->put_host = NULL;
   process->simdata->put_channel = -1;
 
@@ -239,11 +249,20 @@ MSG_error_t MSG_task_put(m_task_t task,
 
   PAJE_PROCESS_POP_STATE(process);  
 
-  if(state == SURF_ACTION_DONE) MSG_RETURN(MSG_OK);
-  else if(surf_workstation_resource->extension_public->get_state(local_host->simdata->host) 
-	  == SURF_CPU_OFF)
+  if(state == SURF_ACTION_DONE) {
+    if(surf_workstation_resource->common_public->action_free(task_simdata->comm)) 
+      task_simdata->comm = NULL;
+    MSG_RETURN(MSG_OK);
+  } else if(surf_workstation_resource->extension_public->get_state(local_host->simdata->host) 
+	    == SURF_CPU_OFF) {
+    if(surf_workstation_resource->common_public->action_free(task_simdata->comm)) 
+      task_simdata->comm = NULL;
     MSG_RETURN(MSG_HOST_FAILURE);
-  else MSG_RETURN(MSG_TRANSFER_FAILURE);
+  } else { 
+    if(surf_workstation_resource->common_public->action_free(task_simdata->comm)) 
+      task_simdata->comm = NULL;
+    MSG_RETURN(MSG_TRANSFER_FAILURE);
+  }
 }
 
 /** \ingroup msg_gos_functions
@@ -313,12 +332,21 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
   simdata->using--;
     
 
-  if(state == SURF_ACTION_DONE) MSG_RETURN(MSG_OK);
-  else if(surf_workstation_resource->extension_public->
-	  get_state(MSG_process_get_host(process)->simdata->host) 
-	  == SURF_CPU_OFF)
+  if(state == SURF_ACTION_DONE) {
+    if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
+      simdata->compute = NULL;
+    MSG_RETURN(MSG_OK);
+  } else if(surf_workstation_resource->extension_public->
+	    get_state(MSG_process_get_host(process)->simdata->host) 
+	    == SURF_CPU_OFF) {
+    if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
+      simdata->compute = NULL;
     MSG_RETURN(MSG_HOST_FAILURE);
-  else MSG_RETURN(MSG_TRANSFER_FAILURE);
+  } else {
+    if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
+      simdata->compute = NULL;
+    MSG_RETURN(MSG_TRANSFER_FAILURE);
+  }
 }
 
 /** \ingroup msg_gos_functions
@@ -355,16 +383,23 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   if(state == SURF_ACTION_DONE) {
     if(surf_workstation_resource->extension_public->
        get_state(MSG_process_get_host(process)->simdata->host) 
-       == SURF_CPU_OFF)
+       == SURF_CPU_OFF) {
+      if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
+	simdata->compute = NULL;
       MSG_RETURN(MSG_HOST_FAILURE);
-
+    }
     if(__MSG_process_isBlocked(process)) {
       __MSG_process_unblock(MSG_process_self());
     }
     if(surf_workstation_resource->extension_public->
        get_state(MSG_process_get_host(process)->simdata->host) 
-       == SURF_CPU_OFF)
+       == SURF_CPU_OFF) {
+      if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
+	simdata->compute = NULL;
       MSG_RETURN(MSG_HOST_FAILURE);
+    }
+    if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
+      simdata->compute = NULL;
     MSG_task_destroy(dummy);
     MSG_RETURN(MSG_OK);
   } else MSG_RETURN(MSG_HOST_FAILURE);

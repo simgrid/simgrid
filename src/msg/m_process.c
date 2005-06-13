@@ -157,10 +157,12 @@ void MSG_process_kill(m_process_t process)
       if(p_simdata->waiting_task->simdata->compute)
 	surf_workstation_resource->common_public->
 	  action_free(p_simdata->waiting_task->simdata->compute);
-      else if (p_simdata->waiting_task->simdata->comm)
+      else if (p_simdata->waiting_task->simdata->comm) {
 	surf_workstation_resource->common_public->
 	  action_change_state(p_simdata->waiting_task->simdata->comm,SURF_ACTION_FAILED);
-      else
+	surf_workstation_resource->common_public->
+	  action_free(p_simdata->waiting_task->simdata->comm);
+      } else 
 	CRITICAL0("UNKNOWN STATUS. Please report this bug.");
     } else { /* Must be trying to put a task somewhere */
       if(process==MSG_process_self()) {
