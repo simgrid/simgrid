@@ -384,7 +384,6 @@ MSG_error_t MSG_main(void)
 	  if(task) {
 	    int _cursor;
 	    DEBUG1("** %s failed **",task->name);
-/* 	    fprintf(stderr,"** %s **\n",task->name); */
 	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
 	      DEBUG3("\t preparing to wake up %s(%d) on %s",	     
 		     process->name,process->simdata->PID,
@@ -401,7 +400,6 @@ MSG_error_t MSG_main(void)
 	  if(task) {
 	    int _cursor;
 	    DEBUG1("** %s done **",task->name);
-/* 	    fprintf(stderr,"** %s **\n",task->name); */
 	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
 	      DEBUG3("\t preparing to wake up %s(%d) on %s",	     
 		     process->name,process->simdata->PID,
