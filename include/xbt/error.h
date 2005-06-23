@@ -65,12 +65,10 @@ typedef enum {
 /** @brief return the error code if != no_error
  *  @hideinitializer
  */
-#define TRY(action) do {                                \
-  if ((errcode=action) != no_error) {                   \
-     fprintf (stderr, "%s:%d: '%s' error raising...\n", \
-	     __FILE__,__LINE__,                         \
-             xbt_error_name(errcode));                  \
-     return errcode;                                    \
+#define TRY(action) do {                                       \
+  if ((errcode=action) != no_error) {                          \
+     ERROR1("'%s' error raising...", xbt_error_name(errcode)); \
+     return errcode;                                           \
   } } while (0)
    
 /** @brief return the error code if != no_error and != \a catched
@@ -83,9 +81,7 @@ typedef enum {
  */
 #define TRYFAIL(action) do {                                   \
   if ((errcode=action) != no_error) {                          \
-     fprintf(stderr,"%s:%d: Got '%s' error !\n",               \
-	     __FILE__,__LINE__,                                \
-             xbt_error_name(errcode));                         \
+     ERROR1("Got '%s' error !", xbt_error_name(errcode));      \
      fflush(stdout);                                           \
      xbt_abort();                                              \
   } } while(0)
@@ -97,7 +93,7 @@ typedef enum {
 #define TRYEXPECT(action,expected_error)  do {                 \
   errcode=action;                                              \
   if (errcode != expected_error) {                             \
-    fprintf(stderr,"Got error %s (instead of %s expected)\n",  \
+    ERROR2("Got error %s (instead of %s expected)\n",          \
 	    xbt_error_name(errcode),                          \
 	    xbt_error_name(expected_error));                  \
     xbt_abort();                                              \
