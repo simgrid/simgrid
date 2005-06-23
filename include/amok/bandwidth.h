@@ -35,7 +35,7 @@ void amok_bw_exit(void);
  * This call is blocking until the end of the experiment.
  */
 xbt_error_t amok_bw_test(gras_socket_t peer,
-			  unsigned int buf_size,unsigned int exp_size,unsigned int msg_size,
+			  unsigned long int buf_size,unsigned long int exp_size,unsigned long int msg_size,
 			  /*OUT*/ double *sec, double *bw);
 
 #if 0   

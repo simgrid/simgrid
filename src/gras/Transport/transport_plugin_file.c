@@ -23,12 +23,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
 void         gras_trp_file_close(gras_socket_t sd);
   
 xbt_error_t gras_trp_file_chunk_send(gras_socket_t sd,
-				      const char *data,
-				      long int size);
+				     const char *data,
+				     unsigned long int size);
 
 xbt_error_t gras_trp_file_chunk_recv(gras_socket_t sd,
-				      char *data,
-				      long int size);
+				     char *data,
+				     unsigned long int size);
 
 
 /***
@@ -181,7 +181,7 @@ void gras_trp_file_close(gras_socket_t sock){
 xbt_error_t 
 gras_trp_file_chunk_send(gras_socket_t sock,
 			 const char *data,
-			 long int size) {
+			 unsigned long int size) {
   
   xbt_assert0(sock->outgoing, "Cannot write on client file socket");
   xbt_assert0(size >= 0, "Cannot send a negative amount of data");
@@ -216,7 +216,7 @@ gras_trp_file_chunk_send(gras_socket_t sock,
 xbt_error_t 
 gras_trp_file_chunk_recv(gras_socket_t sock,
 			char *data,
-			long int size) {
+			unsigned long int size) {
 
   xbt_assert0(sock, "Cannot recv on an NULL socket");
   xbt_assert0(sock->incoming, "Cannot recv on client file socket");

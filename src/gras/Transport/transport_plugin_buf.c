@@ -33,12 +33,12 @@ xbt_error_t gras_trp_buf_socket_accept(gras_socket_t sock,
 void         gras_trp_buf_socket_close(gras_socket_t sd);
   
 xbt_error_t gras_trp_buf_chunk_send(gras_socket_t sd,
-				     const char *data,
-				     long int size);
+				    const char *data,
+				    unsigned long int size);
 
 xbt_error_t gras_trp_buf_chunk_recv(gras_socket_t sd,
-				     char *data,
-				     long int size);
+				    char *data,
+				    unsigned long int size);
 xbt_error_t gras_trp_buf_flush(gras_socket_t sock);
 
 
@@ -187,12 +187,12 @@ void gras_trp_buf_socket_close(gras_socket_t sock){
 /**
  * gras_trp_buf_chunk_send:
  *
- * Send data on a TCP socket
+ * Send data on a buffered socket
  */
 xbt_error_t 
 gras_trp_buf_chunk_send(gras_socket_t sock,
 			const char *chunk,
-			long int size) {
+			unsigned long int size) {
 
   xbt_error_t errcode;
   gras_trp_bufdata_t *data=(gras_trp_bufdata_t*)sock->bufdata;
@@ -228,12 +228,12 @@ gras_trp_buf_chunk_send(gras_socket_t sock,
 /**
  * gras_trp_buf_chunk_recv:
  *
- * Receive data on a TCP socket.
+ * Receive data on a buffered socket.
  */
 xbt_error_t 
 gras_trp_buf_chunk_recv(gras_socket_t sock,
 			char *chunk,
-			long int size) {
+			unsigned long int size) {
 
   xbt_error_t errcode;
   gras_trp_plugin_t *super=((gras_trp_buf_plug_data_t*)sock->plugin->data)->super;

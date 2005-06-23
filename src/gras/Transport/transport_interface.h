@@ -57,11 +57,11 @@ struct gras_trp_plugin_ {
   void         (*socket_close)(gras_socket_t sd);
     
   xbt_error_t (*chunk_send)(gras_socket_t sd,
-			     const char *data,
-			     long int size);
+                            const char *data,
+			    unsigned long int size);
   xbt_error_t (*chunk_recv)(gras_socket_t sd,
-			     char *data,
-			     long int size);
+			    char *data,
+			    unsigned long int size);
 
   /* flush has to make sure that the pending communications are achieved */
   xbt_error_t (*flush)(gras_socket_t sd);

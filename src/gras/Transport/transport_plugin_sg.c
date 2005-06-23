@@ -36,12 +36,12 @@ xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
 void         gras_trp_sg_socket_close(gras_socket_t sd);
 
 xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sd,
-				    const char *data,
-				    long int size);
+                                   const char *data,
+				   unsigned long int size);
 
 xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sd,
-				    char *data,
-				    long int size);
+                                   char *data,
+				   unsigned long int size);
 
 /***
  *** Specific plugin part
@@ -236,8 +236,8 @@ typedef struct {
 } sg_task_data_t;
 
 xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
-				    const char *data,
-				    long int size) {
+                                   const char *data,
+				   unsigned long int size) {
   m_task_t task=NULL;
   static unsigned int count=0;
   char name[256];
@@ -264,8 +264,8 @@ xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
 }
 
 xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
-				    char *data,
-				    long int size){
+                                   char *data,
+				   unsigned long int size){
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
 
   m_task_t task=NULL;

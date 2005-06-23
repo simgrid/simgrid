@@ -32,12 +32,12 @@ xbt_error_t gras_trp_tcp_socket_accept(gras_socket_t  sock,
 void         gras_trp_tcp_socket_close(gras_socket_t sd);
   
 xbt_error_t gras_trp_tcp_chunk_send(gras_socket_t sd,
-				     const char *data,
-				     long int size);
+				    const char *data,
+				    unsigned long int size);
 
 xbt_error_t gras_trp_tcp_chunk_recv(gras_socket_t sd,
-				     char *data,
-				     long int size);
+				    char *data,
+				    unsigned long int size);
 
 void gras_trp_tcp_exit(gras_trp_plugin_t *plug);
 
@@ -317,7 +317,7 @@ void gras_trp_tcp_socket_close(gras_socket_t sock){
 xbt_error_t 
 gras_trp_tcp_chunk_send(gras_socket_t sock,
 			const char *data,
-			long int size) {
+			unsigned long int size) {
   
   /* TCP sockets are in duplex mode, don't check direction */
   xbt_assert0(size >= 0, "Cannot send a negative amount of data");
@@ -353,7 +353,7 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
 xbt_error_t 
 gras_trp_tcp_chunk_recv(gras_socket_t sock,
 			char *data,
-			long int size) {
+			unsigned long int size) {
 
   /* TCP sockets are in duplex mode, don't check direction */
   xbt_assert0(sock, "Cannot recv on an NULL socket");
@@ -362,8 +362,8 @@ gras_trp_tcp_chunk_recv(gras_socket_t sock,
   while (size) {
     int status = 0;
     
-    status = tcp_read(sock->sd, data, (size_t)size);
     DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
+    status = tcp_read(sock->sd, data, (size_t)size);
     
     if (status < 0) {
       RAISE4(system_error,"read(%d,%p,%d) failed: %s",

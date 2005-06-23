@@ -25,9 +25,9 @@
  */
 typedef struct {
   xbt_host_t host; /* host+raw socket to use */
-  unsigned int buf_size;
-  unsigned int exp_size;
-  unsigned int msg_size;
+  unsigned long int buf_size;
+  unsigned long int exp_size;
+  unsigned long int msg_size;
 } s_bw_request_t,*bw_request_t;
 
 /**
