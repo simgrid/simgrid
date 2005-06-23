@@ -22,16 +22,25 @@
 
 - gras_datadesc_import_nws?
 
-- rawsock
-  Check that messages don't go on raw socks
-  Rename to meassock or whatever to show that they're not intended for 
-  out of band communication, but for socket operation measurements.
+- meassock
+  Check that messages don't go on meas socks
+  Implement it
 
 - Implement gras_datadesc_cpy to speedup things in the simulator
   For now, we mimick closely the RL when on simulator, which is not needed.
   (this was easier to do).
   gras_datadesc_cpy needs to provide the size of the corresponding messages, so
   that we can report it into the simulator.
+
+- a init/exit mecanism for logging appender
+- more logging appenders
+
+- when a send failed because the socket was closed on the other side, 
+  try to reopen it seamlessly. Needs exceptions or another way to
+  differentiate between the several system_error.
+- cache accepted sockets and close the old ones after a while. 
+  Depends on the previous item.
+
 
 ###
 ### A bit later
