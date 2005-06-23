@@ -12,20 +12,10 @@ chrono_simulator_LDADD=	$(top_builddir)/src/libsimgrid.la
 chrono_multiplier_SOURCES=	_chrono_multiplier.c chrono.c
 chrono_multiplier_LDADD=	$(top_builddir)/src/libgras.la
 
+# Take care of generatated sources
+NAME=chrono
+PROCESSES=multiplier
+include $(top_srcdir)/examples/temps-gras-stub.mk
 
-# cleanup temps
-CLEANFILES = _chrono_simulator.c _chrono_multiplier.c \
-             chrono.Makefile.local chrono.Makefile.remote chrono.deploy.sh 
-
-MOSTLYCLEANFILES = chrono.trace
-
-# generate temps
-
-# A rule to generate the source file each time the deployment file changes
-_chrono_multiplier.c _chrono_simulator.c: chrono_deployment.xml ../../../tools/gras/gras_stub_generator@EXEEXT@
-	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv ../../../tools/gras/gras_stub_generator chrono $(srcdir)/chrono_deployment.xml >/dev/null
-
-../../../tools/gras/gras_stub_generator@EXEEXT@:
-	make -C   ../../../tools/gras/ gras_stub_generator@EXEEXT@
-
+# Cruft
 include $(top_srcdir)/acmacro/dist-files.mk

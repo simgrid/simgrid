@@ -17,12 +17,10 @@ alnem_maestro_LDADD=      $(top_srcdir)/src/base/libgrasrl.a $(top_srcdir)/src/m
 bin_PROGRAMS=alnem_builder
 alnem_builder_LDADD=  @LIBS_SimGrid@ 
 
-# cleanup temps
-CLEANFILES= _alnem_simulator.c _alnem_sensor.c _alnem_maestro.c 
-
-# generate temps 
-_alnem_sensor.c _alnem_maestro.c _alnem_simulator.c: alnem_deployment.txt
-	../gras_stub_generator alnem alnem_deployment.txt >/dev/null
+# Take care of generatated sources
+NAME=alnem
+PROCESSES=sensor maestro
+include $(top_srcdir)/examples/temps-gras-stub.mk
 
 
 

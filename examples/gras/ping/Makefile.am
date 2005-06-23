@@ -14,20 +14,10 @@ ping_client_LDADD=	$(top_builddir)/src/libgras.la
 ping_server_SOURCES=	_ping_server.c ping.c
 ping_server_LDADD=	$(top_builddir)/src/libgras.la
 
-# cleanup temps
-CLEANFILES = _ping_simulator.c _ping_client.c _ping_server.c \
-             ping.Makefile.local ping.Makefile.remote ping.deploy.sh 
-
-MOSTLYCLEANFILES = ping.trace
-
-# generate temps
+# Take care of generatated sources
 NAME=ping
 PROCESSES= client server
+include $(top_srcdir)/examples/temps-gras-stub.mk
 
-$(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _ping_simulator.c: $(srcdir)/ping_deployment.xml ../../../tools/gras/gras_stub_generator@EXEEXT@
-	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv ../../../tools/gras/gras_stub_generator@EXEEXT@ ping $(srcdir)/ping_deployment.xml >/dev/null
-
-../../../tools/gras/gras_stub_generator@EXEEXT@:
-	make -C   ../../../tools/gras/ gras_stub_generator@EXEEXT@
-
+# Cruft
 include $(top_srcdir)/acmacro/dist-files.mk
