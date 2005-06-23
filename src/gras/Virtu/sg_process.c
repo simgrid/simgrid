@@ -91,7 +91,7 @@ gras_process_exit() {
 
   xbt_assert0(hd,"Run gras_process_init (ie, gras_init)!!");
 
-  INFO2("GRAS: Finalizing process '%s' (%d)",
+  VERB2("GRAS: Finalizing process '%s' (%d)",
 	MSG_process_get_name(MSG_process_self()),MSG_process_self_PID());
 
   if (xbt_dynar_length(msg_pd->msg_queue))

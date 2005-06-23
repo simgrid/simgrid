@@ -319,9 +319,9 @@ static void _apply_control(xbt_log_category_t cat) {
       xbt_log_threshold_set(cat, setting->thresh);
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
 
-      if (cat->threshold <= xbt_log_priority_verbose) {
+      if (cat->threshold <= xbt_log_priority_debug) {
 	s_xbt_log_event_t _log_ev = 
-	  {cat,xbt_log_priority_verbose,__FILE__,_XBT_GNUC_FUNCTION,__LINE__};
+	  {cat,xbt_log_priority_debug,__FILE__,_XBT_GNUC_FUNCTION,__LINE__};
 	_xbt_log_event_log(&_log_ev,
 	         "Apply settings for category '%s': set threshold to %s (=%d)",
 		 cat->name, 
