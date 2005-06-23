@@ -158,8 +158,8 @@ gras_trp_select(double timeout,
 	 /* not a socket but an ear. accept on it and serve next socket */
 	 gras_socket_t accepted=NULL;
 	 
-	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
 	 TRY((sock_iter->plugin->socket_accept)(sock_iter,&accepted));
+	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
 	 accepted->meas = sock_iter->meas;
        } else {
 #if 0 
