@@ -20,7 +20,16 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,"Messages specific to this example");
 /* Global private data */
 typedef struct {
   gras_socket_t sock;
+  int done;
 } s_sensor_data_t,*sensor_data_t;
+
+static int sensor_cb_quit(gras_socket_t  expeditor,
+                          void          *payload_data) {
+  sensor_data_t globals=(sensor_data_t)gras_userdata_get();
+                          
+  globals->done = 1;                  
+  return 1;         
+}
 
 /* Function prototypes */
 int sensor (int argc,char *argv[]);
@@ -38,13 +47,19 @@ int sensor (int argc,char *argv[]) {
     ERROR1("Sensor: Error %s encountered while opening the server socket",xbt_error_name(errcode));
     return 1;
   }
-
-  errcode=gras_msg_handle(60.0);
-  if (errcode != no_error) {
-     ERROR1("Sensor: Error '%s' while handling message",xbt_error_name(errcode));
-     gras_socket_close(g->sock);
-     return errcode;
-  }
+  g->done = 0;
+  
+  gras_msgtype_declare("quit",NULL);
+  gras_cb_register(gras_msgtype_by_name("quit"),&sensor_cb_quit);
+  
+  while (! g->done ) {
+    errcode=gras_msg_handle(60.0);
+    if (errcode != no_error) {
+       ERROR1("Sensor: Error '%s' while handling message",xbt_error_name(errcode));
+       gras_socket_close(g->sock);
+       return errcode;
+    }	
+  }	
 
   gras_socket_close(g->sock);
   return 0;
@@ -67,10 +82,8 @@ int maestro(int argc,char *argv[]) {
   maestro_data_t g;
   double sec, bw;
   int buf_size=32;
-//  int exp_size=64;
-  int exp_size=1024 * 1024;
+  int exp_size=1024*50;
   int msg_size=1024;
-//  int msg_size=64;
   gras_socket_t peer;
 
   gras_init(&argc, argv, NULL);
@@ -97,18 +110,24 @@ int maestro(int argc,char *argv[]) {
      return 1;
   }
 
-/*  if ((errcode=amok_bw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-			       buf_size,exp_size,msg_size,&sec,&bw))) {*/
-  
-  if ((errcode=amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw))) {
-    ERROR1("maestro: Error %s encountered while doing the test",xbt_error_name(errcode));
-    return 1;
-  }
-   
+  INFO0("Test the BW between me and one of the sensors");  
+  TRY(amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw));
   INFO6("maestro: Experience between me and %s:%d (%d kb in msgs of %d kb) took %f sec, achieving %f kb/s",
 	argv[1],atoi(argv[2]),
 	exp_size,msg_size,
 	sec,bw);
+
+  INFO0("Test the BW between the two sensors");  
+  TRY(amok_bw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
+                      buf_size,exp_size,msg_size,&sec,&bw));	
+
+  /* ask sensors to quit */                    
+  gras_msgtype_declare("quit",NULL);
+  TRY(gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL));
+  gras_socket_close(peer);
+  TRY(gras_socket_client(argv[3],atoi(argv[4]),&peer));
+  TRY(gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL));
+  gras_socket_close(peer);
 
   gras_socket_close(g->sock);
   return 0;
