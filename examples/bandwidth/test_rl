@@ -1,4 +1,0 @@
-#! /bin/sh
-./bandwidth_sensor 4000 $@&
-./bandwidth_sensor 5000 $@&
-./bandwidth_maestro 127.0.0.1 4000 127.0.0.1 5000 $@
