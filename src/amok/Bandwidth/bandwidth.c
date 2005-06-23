@@ -117,7 +117,6 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 
   /* Measurement sockets for the experiments */
   gras_socket_t measMasterIn,measIn,measOut;
-  gras_socket_t sock_dummy; /* ignored arg to msg_wait */
   int port;
   xbt_error_t errcode;
   bw_request_t request,request_ack;
@@ -148,7 +147,7 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
   TRY(gras_socket_meas_accept(measMasterIn,&measIn));
 
   if ((errcode=gras_msg_wait(60,gras_msgtype_by_name("BW handshake ACK"),
-			     &sock_dummy,&request_ack))) {
+			     NULL,&request_ack))) {
     ERROR1("Error %s encountered while waiting for the answer to BW request.\n",
 	    xbt_error_name(errcode));
     return errcode;
@@ -275,89 +274,63 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
   return 1;
 }
 
-int amok_bw_cb_bw_request(gras_socket_t    expeditor,
-			  void            *payload) {
-   CRITICAL0("Not implemented");
-   return 1;
-}
-
-int amok_bw_cb_sat_start(gras_socket_t     expeditor,
-			 void             *payload) {
-   CRITICAL0("Not implemented");
-   return 1;
-} 
-int amok_bw_cb_sat_begin(gras_socket_t     expeditor,
-			 void             *payload) {
-   CRITICAL0("Not implemented");
-   return 1;
-}
-
-#if 0
-/* function to request a BW test between two external hosts */
-xbt_error_t grasbw_request(const char* from_name,unsigned int from_port,
-			   const char* to_name,unsigned int to_port,
-			   unsigned int bufSize,unsigned int expSize,unsigned int msgSize,
-			   /*OUT*/ double *sec, double*bw) {
+/**
+ * \brief request a bandwidth measurement between two remote hosts
+ *
+ * Results are reported in last args, and sizes are in kb.
+ */
+xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
+			    const char* to_name,unsigned int to_port,
+			    unsigned long int buf_size,
+			    unsigned long int exp_size,
+			    unsigned long int msg_size,
+			    /*OUT*/ double *sec, double*bw) {
   
-  gras_sock_t *sock;
-  gras_msg_t *answer;
+  gras_socket_t sock;
   xbt_error_t errcode;
   /* The request */
-  BwExp_t *request;
-  msgHost_t *target;
+  bw_request_t request;
+  bw_res_t result;
 
-  if((errcode=gras_sock_client_open(from_name,from_port,&sock))) {
-    fprintf(stderr,"grasbw_request(): Error %s encountered while contacting the actuator\n",
-	    xbt_error_name(errcode));
-    return errcode;
-  }
-  if (!(request=(BwExp_t *)malloc(sizeof(BwExp_t))) ||
-      !(target=(msgHost_t*)malloc(sizeof(msgHost_t)))) {
-    fprintf(stderr,"grasbw_test(): Malloc error\n");
-    gras_sock_close(sock);
-    return malloc_error;    
-  }
+  request=xbt_new0(s_bw_request_t,1);
+  request->buf_size=buf_size;
+  request->exp_size=exp_size;
+  request->msg_size=msg_size;
 
-  request->bufSize=bufSize;
-  request->expSize=expSize;
-  request->msgSize=msgSize;
-  strcpy(target->host,to_name);
-  target->port=to_port;
+  request->host.name = (char*)to_name;
+  request->host.port = to_port;
+
+  TRY(gras_socket_client(from_name,from_port,&sock));
+  TRY(gras_msg_send(sock,gras_msgtype_by_name("BW request"),&request));
+  free(request);
+
+  TRY(gras_msg_wait(240,gras_msgtype_by_name("BW result"),NULL, &result));
   
-  if ((errcode=gras_msg_new_and_send(sock,GRASMSG_BW_REQUEST, 2, 
-			      target,1,
-			      request,1))) {
-    fprintf(stderr,"grasbw_request(): Error %s encountered while sending the request.\n",
-	    xbt_error_name(errcode));
-    gras_sock_close(sock);
-    return errcode;
-  }
-  if ((errcode=gras_msg_wait(240,GRASMSG_BW_RESULT,&answer))) {
-    fprintf(stderr,"grasbw_request(): Error %s encountered while waiting for the answer.\n",
-	    xbt_error_name(errcode));
-    gras_sock_close(sock);
-    return errcode;
-  }
+  *sec=result->seconds;
+  *bw =result->bw;
 
-  if((errcode=gras_msg_ctn(answer,0,0,msgError_t).errcode)) {
-    fprintf(stderr,"grasbw_request(): Peer reported error %s (%s).\n",
-	    xbt_error_name(errcode),gras_msg_ctn(answer,0,0,msgError_t).errmsg);
-    gras_msg_free(answer);
-    gras_sock_close(sock);
-    return errcode;
-  }
+  VERB6("BW test between %s:%d and %s:%d took %f sec, achieving %f kb/s",
+	from_name,from_port, to_name,to_port,
+	*sec,*bw);
 
-  /*  fprintf(stderr,"sec=%p",gras_msg_ctn(answer,1,0,msgResult_t)); */
-  *sec=gras_msg_ctn(answer,1,0,msgResult_t).value;
-  *bw=gras_msg_ctn(answer,1,1,msgResult_t).value;
-
-  gras_msg_free(answer);
-  gras_sock_close(sock);
+  gras_socket_close(sock);
   return no_error;
 }
 
-int grasbw_cbBWRequest(gras_msg_t *msg) {
-  /* specification of the test to run */
+int amok_bw_cb_bw_request(gras_socket_t    expeditor,
+			  void            *payload) {
+  /* specification of the test to run, and our answer */
+  bw_request_t request = *(bw_request_t*)payload;
+  bw_res_t result = xbt_new0(s_bw_res_t,1);
+
+  TRY(gras_socket_client(request->to_name,request->to_port,&peer));
+  TRY(amok_bw_test(peer,
+		   request->buf_size,request->exp_size,request->msg_size,
+		   &(result->sec),&(result->bw)));
+  gras_socket_close(peer);
+  free(request);
+
+
   char* to_name=gras_msg_ctn(msg,0,0,msgHost_t).host;
   unsigned int to_port=gras_msg_ctn(msg,0,0,msgHost_t).port;
 
@@ -367,12 +340,6 @@ int grasbw_cbBWRequest(gras_msg_t *msg) {
   /* our answer */
   msgError_t *error;
   msgResult_t *res;
-
-  if (!(error=(msgError_t *)malloc(sizeof(msgError_t))) ||
-      !(res=(msgResult_t *)malloc(sizeof(msgResult_t) * 2))) {
-    fprintf(stderr,"%s:%d:grasbw_cbRequest: Malloc error\n",__FILE__,__LINE__);
-    return malloc_error;    
-  }
 
   if ((error->errcode=grasbw_test(to_name,to_port,bufSize,expSize,msgSize,
 				  &(res[0].value),&(res[1].value) ))) {
@@ -394,6 +361,17 @@ int grasbw_cbBWRequest(gras_msg_t *msg) {
   return 1;
 }
 
+int amok_bw_cb_sat_start(gras_socket_t     expeditor,
+			 void             *payload) {
+   CRITICAL0("amok_bw_cb_sat_start; not implemented");
+   return 1;
+} 
+int amok_bw_cb_sat_begin(gras_socket_t     expeditor,
+			 void             *payload) {
+   CRITICAL0("amok_bw_cb_sat_begin: not implemented");
+   return 1;
+}
+#if 0
 /* ***************************************************************************
  * Link saturation
  * ***************************************************************************/
