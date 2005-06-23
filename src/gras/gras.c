@@ -26,7 +26,7 @@ static int gras_running_process = 0;
 
 void gras_init(int *argc,char **argv, const char *defaultlog) {
 
-  INFO0("Initialize GRAS");
+  VERB0("Initialize GRAS");
   
   /* First initialize the XBT */
   xbt_init_defaultlog(argc,argv,defaultlog);
@@ -57,13 +57,13 @@ void gras_init(int *argc,char **argv, const char *defaultlog) {
 
 void gras_exit(void) {
   INFO0("Exiting GRAS");
-  gras_process_exit();
   if (--gras_running_process == 0) {
     gras_msg_exit();
     gras_trp_exit();
     gras_datadesc_exit();
     gras_emul_exit();
   }
+  gras_process_exit();
   xbt_exit();
 }
 
