@@ -302,8 +302,8 @@ gras_msg_wait(double           timeout,
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   int cpt;
   s_gras_msg_t msg;
+  gras_socket_t expeditor_res = NULL;
   
-  *expeditor = NULL;
   payload_got = NULL;
 
   if (!msgt_want)
@@ -316,7 +316,8 @@ gras_msg_wait(double           timeout,
 
   xbt_dynar_foreach(pd->msg_queue,cpt,msg){
     if (msg.type->code == msgt_want->code) {
-      *expeditor = msg.expeditor;
+      if (expeditor)
+        *expeditor = msg.expeditor;
       memcpy(payload, msg.payload, msg.payload_size);
       free(msg.payload);
       xbt_dynar_cursor_rm(pd->msg_queue, &cpt);
@@ -326,9 +327,11 @@ gras_msg_wait(double           timeout,
   }
 
   while (1) {
-    TRY(gras_trp_select(timeout - now + start, expeditor));
-    TRY(gras_msg_recv(*expeditor, &msgt_got, &payload_got, &payload_size_got));
+    TRY(gras_trp_select(timeout - now + start, &expeditor_res));
+    TRY(gras_msg_recv(expeditor_res, &msgt_got, &payload_got, &payload_size_got));
     if (msgt_got->code == msgt_want->code) {
+      if (expeditor)
+      	*expeditor=expeditor_res;
       memcpy(payload, payload_got, payload_size_got);
       free(payload_got);
       VERB0("Got waited message");
@@ -336,9 +339,9 @@ gras_msg_wait(double           timeout,
     }
 
     /* not expected msg type. Queue it for later */
-    msg.expeditor = *expeditor;
-    msg.type      =  msgt_got;
-    msg.payload   =  payload;
+    msg.expeditor = expeditor_res;
+    msg.type      = msgt_got;
+    msg.payload   = payload;
     msg.payload_size = payload_size_got;
     xbt_dynar_push(pd->msg_queue,&msg);
     
