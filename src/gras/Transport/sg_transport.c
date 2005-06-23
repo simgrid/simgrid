@@ -58,7 +58,7 @@ gras_trp_select(double timeout,
 	if (sock_iter->meas || !sock_iter->outgoing)
 	  continue;
 
-	if (sockdata->from_PID == r_pid) {
+	if (sockdata->to_PID == r_pid) {
 	  *dst=sock_iter;
 	  return no_error;
 	}
