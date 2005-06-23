@@ -214,8 +214,8 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
   if (sock->data)
     free(sock->data);
 
-  if (sock->incoming) {
-    /* server mode socket. Un register it from 'OS' tables */
+  if (sock->incoming && sock->port >= 0) {
+    /* server mode socket. Unregister it from 'OS' tables */
     xbt_dynar_foreach(hd->ports, cpt, pr) {
       DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
       if (pr.port == sock->port) {
@@ -224,7 +224,8 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
         return;
       }
     }
-    WARN0("socket_close called on an unknown socket");
+    WARN2("socket_close called on the unknown incoming socket %p (port=%d)",
+	  sock,sock->port);
   }
   XBT_OUT;
 }
