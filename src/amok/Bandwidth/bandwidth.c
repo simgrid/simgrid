@@ -306,7 +306,7 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
 
   TRY(gras_msg_wait(240,gras_msgtype_by_name("BW result"),NULL, &result));
   
-  *sec=result->seconds;
+  *sec=result->sec;
   *bw =result->bw;
 
   VERB6("BW test between %s:%d and %s:%d took %f sec, achieving %f kb/s",
@@ -319,18 +319,23 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
 
 int amok_bw_cb_bw_request(gras_socket_t    expeditor,
 			  void            *payload) {
+			  
+  xbt_error_t errcode;			  
   /* specification of the test to run, and our answer */
   bw_request_t request = *(bw_request_t*)payload;
-  bw_res_t result = xbt_new0(s_bw_res_t,1);
+  bw_res_t result = xbt_new0(s_bw_res,1);
+  gras_socket_t peer;
 
-  TRY(gras_socket_client(request->to_name,request->to_port,&peer));
+  TRY(gras_socket_client(request->host.name,request->host.port,&peer));
   TRY(amok_bw_test(peer,
 		   request->buf_size,request->exp_size,request->msg_size,
 		   &(result->sec),&(result->bw)));
   gras_socket_close(peer);
   free(request);
+  
+  return 1;
 
-
+#if 0
   char* to_name=gras_msg_ctn(msg,0,0,msgHost_t).host;
   unsigned int to_port=gras_msg_ctn(msg,0,0,msgHost_t).port;
 
@@ -359,6 +364,7 @@ int amok_bw_cb_bw_request(gras_socket_t    expeditor,
 		 res,2);
   gras_msg_free(msg);
   return 1;
+#endif
 }
 
 int amok_bw_cb_sat_start(gras_socket_t     expeditor,
