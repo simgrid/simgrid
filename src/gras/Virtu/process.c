@@ -112,7 +112,14 @@ gras_procdata_init() {
 
 void
 gras_procdata_exit() {
+  int len;
   gras_procdata_t *pd=gras_procdata_get();
 
   xbt_dict_free(&( pd->libdata ));
+  
+  /* Remove procdata in reverse order wrt creation */
+  while ((len=xbt_dynar_length(_gras_procdata_fabrics))) {
+    xbt_dynar_remove_at(_gras_procdata_fabrics,len-1,NULL);
+  }
+  xbt_dynar_free( & _gras_procdata_fabrics );
 }
