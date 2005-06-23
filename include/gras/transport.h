@@ -81,7 +81,8 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
 				  unsigned int timeout,
 				  unsigned long int expSize, 
 				  unsigned long int msgSize);
-
+xbt_error_t gras_socket_meas_accept(gras_socket_t peer,gras_socket_t *accepted);
+            
 /* @}*/
 
 /** \name Using files as sockets
