@@ -94,6 +94,10 @@ void gras_trp_init(void){
 
 void
 gras_trp_exit(void){
+  xbt_dynar_t sockets = gras_socketset_get();
+  gras_socket_t sock_iter;
+  int cursor;
+
    if (_gras_trp_started == 0) {
       return;
    }
@@ -108,6 +112,14 @@ gras_trp_exit(void){
 	}
 #endif
 
+      /* Close all the sockets */
+      xbt_dynar_foreach(sockets,cursor,sock_iter) {
+	VERB1("Closing the socket %p left open on exit. Maybe a socket leak?",
+	      sock_iter);
+	gras_socket_close(sock_iter);
+      }
+      
+      /* Delete the plugins */
       xbt_dict_free(&_gras_trp_plugins);
    }
 }
@@ -309,7 +321,7 @@ void gras_socket_close(gras_socket_t sock) {
 	return;
       }
     }
-    WARN0("Ignoring request to free an unknown socket");
+    WARN1("Ignoring request to free an unknown socket (%p)",sock);
   }
   XBT_OUT;
 }
@@ -444,6 +456,7 @@ static void gras_trp_procdata_free(void *data) {
    gras_trp_procdata_t res = (gras_trp_procdata_t)data;
    
    xbt_dynar_free(&( res->sockets ));
+   free(res);
 }
 
 /*
