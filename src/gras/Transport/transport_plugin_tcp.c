@@ -129,6 +129,7 @@ xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t *self,
   addr.sin_family = AF_INET;
   addr.sin_port = htons (sock->peer_port);
 
+  DEBUG2("Connect to %s:%d",sock->peer_name, sock->peer_port);
   if (connect (sock->sd, (struct sockaddr*) &addr, sizeof (addr)) < 0) {
     tcp_close(sock->sd);
     RAISE3(system_error,
@@ -177,9 +178,10 @@ xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t *self,
     RAISE2(system_error,"Cannot bind to port %d: %s",sock->port, sock_errstr);
   }
 
+  DEBUG1("Listen on port %d",sock->port);
   if (listen(sock->sd, 5) < 0) {
     tcp_close(sock->sd);
-    RAISE2(system_error,"Cannot listen to port %d: %s",sock->port,sock_errstr);
+    RAISE2(system_error,"Cannot listen on port %d: %s",sock->port,sock_errstr);
   }
 
   if (sock->meas)
@@ -210,7 +212,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
   sd = accept(sock->sd, (struct sockaddr *)&peer_in, &peer_in_len);
   tmp_errno = errno;
 
-  if(sd == -1) {
+  if (sd == -1) {
     gras_socket_close(sock);
     RAISE1(system_error,
 	   "Accept failed (%s). Droping server socket.", sock_errstr);
@@ -257,7 +259,7 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
       }
     }
 
-    VERB3("accepted socket %d to %s:%d", sd, res->peer_name,res->peer_port);
+    VERB3("Accepted socket %d to %s:%d", sd, res->peer_name,res->peer_port);
     
     *dst = res;
 
@@ -326,7 +328,7 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
     status = tcp_write(sock->sd, data, (size_t)size);
     DEBUG3("write(%d, %p, %ld);", sock->sd, data, size);
     
-    if (status <= 0) {
+    if (status < 0) {
       RAISE4(system_error,"write(%d,%p,%ld) failed: %s",
 	     sock->sd, data, size,
 	     sock_errstr);
@@ -336,7 +338,8 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
       size  -= status;
       data  += status;
     } else {
-      RAISE0(system_error,"file descriptor closed");
+      RAISE1(system_error,"file descriptor closed (%s)",
+             sock_errstr);
     }
   }
 
@@ -362,7 +365,7 @@ gras_trp_tcp_chunk_recv(gras_socket_t sock,
     status = tcp_read(sock->sd, data, (size_t)size);
     DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
     
-    if (status <= 0) {
+    if (status < 0) {
       RAISE4(system_error,"read(%d,%p,%d) failed: %s",
 	     sock->sd, data, (int)size,
 	     sock_errstr);
@@ -372,7 +375,7 @@ gras_trp_tcp_chunk_recv(gras_socket_t sock,
       size  -= status;
       data  += status;
     } else {
-      RAISE0(system_error,"file descriptor closed");
+      RAISE0(system_error,"file descriptor closed (nothing read on the socket)");
     }
   }
   
