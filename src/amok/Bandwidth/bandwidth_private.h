@@ -40,7 +40,7 @@ typedef struct {
 typedef struct {
   s_amok_remoterr_t err;
   unsigned int timestamp;
-  double seconds;
+  double sec;
   double bw;
 } s_bw_res,*bw_res_t;
 
