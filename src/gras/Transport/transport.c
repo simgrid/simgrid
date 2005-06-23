@@ -399,7 +399,7 @@ xbt_error_t gras_socket_meas_send(gras_socket_t peer,
   char *chunk = xbt_malloc0(msg_size);
   unsigned long int exp_sofar;
    
-  XBT_CIN(trp_meas);
+  XBT_IN;
 
   xbt_assert0(peer->meas,"Asked to send measurement data on a regular socket");
 
@@ -415,7 +415,7 @@ xbt_error_t gras_socket_meas_send(gras_socket_t peer,
 	     
   free(chunk);
 
-  XBT_COUT(trp_meas);
+  XBT_OUT;
   return no_error;
 }
 
@@ -428,7 +428,7 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
   char *chunk = xbt_malloc(msg_size);
   unsigned long int exp_sofar;
 
-  XBT_CIN(trp_meas);
+  XBT_IN;
 
   xbt_assert0(peer->meas,"Asked to receive measurement data on a regular socket\n");
 
@@ -443,7 +443,7 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
   free(chunk);
-  XBT_COUT(trp_meas);
+  XBT_OUT;
 
   return no_error;
 }
