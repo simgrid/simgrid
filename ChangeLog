@@ -1,15 +1,18 @@
 SimGrid (2.95) unstable; urgency=low
 
   MSG
-  * Implement MSG_get_msgload [MQ]
+  * Implement MSG_get_msgload [MQ, AL]
 
   SURF
   * Bugfix: Allow absolute paths for platform description files [MQ]
+  * Bugfix: do free the variables after use. Leads to drastic performance 
+    improvement [AL] 
 
   GRAS (new features)
   * gras_datadesc_dynar() builds a dynar type descriptor, allowing to send
     dynar over the network (yeah) [MQ]
   * Real (even if simplistic) implementation of gras_os_myname() on RL [MQ]
+  * simple/static token-ring example. [Alexandre Colucci and MQ]
   
   GRAS (bug fixes)
   * Differentiate the types "char[22]" and "unsigned char[22]" in automatic
