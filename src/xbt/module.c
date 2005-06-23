@@ -41,7 +41,7 @@ xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
     return;
   
   first_run = 0;
-  INFO0("Initialize XBT");
+  VERB0("Initialize XBT");
   
   xbt_log_init(argc,argv,defaultlog);
 }
