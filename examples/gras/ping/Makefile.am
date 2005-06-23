@@ -1,5 +1,4 @@
 INCLUDES= -I$(top_srcdir)/include
-AM_CFLAGS=-g
 TESTS= test_rl test_sg
 EXTRA_DIST=ping_deployment.xml $(TESTS)
 
