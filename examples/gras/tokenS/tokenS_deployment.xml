@@ -1,0 +1,36 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description>
+
+ <process host="Tremblay" function="node">
+    <argument value="4000"/>     <!-- port on which I am listening -->
+    <argument value="Fafard"/>   <!-- peer (successor) host -->
+    <argument value="4000"/>     <!-- port on which peer is listening -->
+ </process>
+ 
+ <process host="Fafard" function="node">
+    <argument value="4000"/>      <!-- port on which I am listening -->
+    <argument value="Jupiter"/>   <!-- peer (successor) host -->
+    <argument value="4000"/>      <!-- port on which peer is listening -->
+ </process>
+ 
+ <process host="Jupiter" function="node">
+    <argument value="4000"/>      <!-- port on which I am listening -->
+    <argument value="Ginette"/>   <!-- peer (successor) host -->
+    <argument value="4000"/>      <!-- port on which peer is listening -->
+ </process>
+ 
+ <process host="Ginette" function="node">
+    <argument value="4000"/>      <!-- port on which I am listening -->
+    <argument value="Bourassa"/>  <!-- peer (successor) host -->
+    <argument value="4000"/>      <!-- port on which peer is listening -->
+ </process>
+ 
+ <process host="Bourassa" function="node">
+    <argument value="4000"/>      <!-- port on which I am listening -->
+    <argument value="Tremblay"/>  <!-- peer (successor) host -->
+    <argument value="4000"/>      <!-- port on which peer is listening -->
+    <argument value="--create-token"/>   <!-- I'm first client, ie I have to create the token -->
+ </process>
+ 
+</platform_description>

@@ -1,0 +1,10 @@
+#! @BASH@
+if [ x@EXEEXT@ = x ] ; then 
+#  exenv="libtool --mode=execute valgrind --run-libc-freeres=no --show-reachable=yes "
+  exenv=
+else
+  exenv=wine
+fi
+
+exec $exenv ./tokenS_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/tokenS_deployment.xml $@
+
