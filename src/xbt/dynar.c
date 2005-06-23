@@ -243,7 +243,7 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
  */
 void*
 xbt_dynar_get_ptr(const xbt_dynar_t dynar,
-		   const int          idx) {
+	   const int          idx) {
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
@@ -364,29 +364,29 @@ xbt_dynar_remove_at(xbt_dynar_t  const dynar,
                      const int            idx,
                      void         * const object) {
 
+  unsigned long nb_shift;
+  unsigned long offset;
+
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
   __check_inbound_idx(dynar, idx);
 
-  if (object)
+  if (object) {
     _xbt_dynar_get_elm(object, dynar, idx);
-
-  {
-    const unsigned long old_used = dynar->used;
-    const unsigned long new_used = old_used - 1;
-
-    const unsigned long nb_shift =  old_used-1 - idx;
-    const unsigned long elmsize  =  dynar->elmsize;
-
-    const unsigned long offset   =  nb_shift*elmsize;
-
-    void * const elm_src  = _xbt_dynar_elm(dynar, idx+1);
-    void * const elm_dst  = _xbt_dynar_elm(dynar, idx);
-
-    memmove(elm_dst, elm_src, offset);
-
-    dynar->used = new_used;
+  } else if (dynar->free_f) {
+    char elm[SIZEOF_MAX];
+    _xbt_dynar_get_elm(elm, dynar, idx);
+    (*dynar->free_f)(elm);
   }
+
+  nb_shift =  dynar->used-1 - idx;
+  offset   =  nb_shift * dynar->elmsize;
+
+  memmove(_xbt_dynar_elm(dynar, idx),
+          _xbt_dynar_elm(dynar, idx+1), 
+          offset);
+
+  dynar->used--;
 }
 
 /** @brief Make room at the end of the dynar for a new element, and return a pointer to it.
