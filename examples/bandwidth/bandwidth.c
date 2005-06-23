@@ -67,14 +67,15 @@ int maestro(int argc,char *argv[]) {
   maestro_data_t g;
   double sec, bw;
   int buf_size=32;
-  int exp_size=64;
-  int msg_size=64;
+//  int exp_size=64;
+  int exp_size=1024 * 1024;
+  int msg_size=1024;
+//  int msg_size=64;
   gras_socket_t peer;
 
   gras_init(&argc, argv, NULL);
   g=gras_userdata_new(s_maestro_data_t);
   amok_bw_init();
-  gras_os_sleep(1.0);
    
   if ((errcode=gras_socket_server(6000,&(g->sock)))) { 
     ERROR1("Maestro: Error %s encountered while opening the server socket",xbt_error_name(errcode));
@@ -87,6 +88,9 @@ int maestro(int argc,char *argv[]) {
      return 1;
   }
 
+  /* wait to ensure that all server sockets are there before starting the experiment */	
+  gras_os_sleep(1.0);
+  
   if ((errcode=gras_socket_client(argv[1],atoi(argv[2]),&peer))) {
      ERROR3("Client: Unable to connect to my peer on %s:%s. Got %s",
 	    argv[1],argv[2],xbt_error_name(errcode));
@@ -101,7 +105,7 @@ int maestro(int argc,char *argv[]) {
     return 1;
   }
    
-  INFO6("maestro: Experience between me and %s:%d (%d ko in msgs of %d ko) took %f sec, achieving %f Mb/s",
+  INFO6("maestro: Experience between me and %s:%d (%d kb in msgs of %d kb) took %f sec, achieving %f kb/s",
 	argv[1],atoi(argv[2]),
 	exp_size,msg_size,
 	sec,bw);
