@@ -7,7 +7,7 @@
   <process host="Ginette" function="sensor">
      <argument value="4000"/>       <!-- port number -->
   </process>
-  <process host="Fafard" function="maestro">
+  <process host="Jupiter" function="maestro">
      <argument value="Tremblay"/>   <!-- server host -->
      <argument value="4000"/>       <!-- port number -->
      <argument value="Ginette"/>   <!-- server host -->
