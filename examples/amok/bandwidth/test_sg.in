@@ -1,0 +1,7 @@
+#! @BASH@
+if [ x@EXEEXT@ = x ] ; then
+  exenv="libtool --mode=execute valgrind"
+else
+  exenv=wine
+fi
+exec $exenv ./bandwidth_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/bandwidth_deployment.xml $@

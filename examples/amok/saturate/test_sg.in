@@ -1,0 +1,5 @@
+#! @BASH@
+if test -x ./saturate_simulator ; then
+  exec ./saturate_simulator @srcdir@/../WAN_3.platform.txt @srcdir@/saturate_deployment.txt
+fi
+exit 77
