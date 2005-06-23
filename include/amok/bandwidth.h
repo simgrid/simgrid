@@ -38,7 +38,6 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 			  unsigned long int buf_size,unsigned long int exp_size,unsigned long int msg_size,
 			  /*OUT*/ double *sec, double *bw);
 
-#if 0   
 /**
  * grasbw_request:
  * @from_name: Name of the host we are asking to do a experiment with (to_name:to_port)
@@ -56,11 +55,12 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
  * Conduct a bandwidth test from the process from_host:from_port to to_host:to_port.
  * This call is blocking until the end of the experiment.
  */
-xbt_error_t grasbw_request(const char* from_name,unsigned int from_port,
+xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
 			   const char* to_name,unsigned int to_port,
-			   unsigned int bufSize,unsigned int expSize,unsigned int msgSize,
+			   unsigned long int bufSize,unsigned long int expSize,unsigned long int msgSize,
 			   /*OUT*/ double *sec, double*bw);
 
+#if 0   
 
 /* ***************************************************************************
  * Link saturation
