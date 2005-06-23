@@ -163,9 +163,6 @@ AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != xNOTFOUND)
 #    examples/pastry/Makefile    examples/pastry/test_sg
 #      examples/gras/chord/Makefile  examples/gras/chord/test_sg examples/gras/chord/test_rl
 
-#    examples/amok/Makefile       
-#      examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
-
 SG_CONFIGURE_PART(Generating files...)
 AC_CONFIG_FILES([
   Makefile
@@ -179,6 +176,8 @@ AC_CONFIG_FILES([
       examples/gras/timer/Makefile  examples/gras/timer/test_sg examples/gras/timer/test_rl
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
       examples/gras/tokenS/Makefile examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl
+    examples/amok/Makefile       
+      examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
   doc/Makefile
     doc/Doxyfile
   tools/graspe-slave            tools/Makefile
