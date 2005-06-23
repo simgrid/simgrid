@@ -43,6 +43,8 @@ static void gras_msg_procdata_free(void *data) {
    xbt_dynar_free(&( res->msg_queue ));
    xbt_dynar_free(&( res->cbl_list ));
    xbt_dynar_free(&( res->timers ));
+   
+   free(res);
 }
 
 /*
