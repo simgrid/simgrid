@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include "gras.h"
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging for this test");
+
 /*====[ Code ]===============================================================*/
 static xbt_cfg_t make_set(){
   xbt_cfg_t set=NULL; 

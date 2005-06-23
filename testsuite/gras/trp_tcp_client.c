@@ -11,7 +11,7 @@
 #include "gras.h"
 #include "gras/Transport/transport_interface.h"
 
-/*XBT_LOG_NEW_DEFAULT_CATEGORY(test);*/
+XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging for this test");
 
 int main(int argc,char *argv[]) {
   gras_socket_t sock;
