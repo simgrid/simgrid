@@ -330,17 +330,18 @@ gras_datadesc_send_rec(gras_socket_t         sock,
  *
  */
 xbt_error_t gras_datadesc_send(gras_socket_t        sock, 
-				gras_datadesc_type_t type, 
-				void *src) {
+                               gras_datadesc_type_t type, 
+                               void *src) {
 
   xbt_error_t errcode;
   gras_cbps_t  state;
   xbt_dict_t  refs; /* all references already sent */
  
+  xbt_assert0(type,"called with NULL type descriptor");
+
   refs = xbt_dict_new();
   state = gras_cbps_new();
   
-  xbt_assert0(type,"called with NULL type descriptor");
   errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src, (type->flags & gras_datadesc_flag_cycle));
 
   xbt_dict_free(&refs);
