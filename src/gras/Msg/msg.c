@@ -219,7 +219,8 @@ gras_msg_send(gras_socket_t   sock,
   TRY(gras_trp_chunk_send(sock, GRAS_header, 6));
 
   TRY(gras_datadesc_send(sock, string_type,   &msgtype->name));
-  TRY(gras_datadesc_send(sock, msgtype->ctn_type, payload));
+  if (msgtype->ctn_type)
+    TRY(gras_datadesc_send(sock, msgtype->ctn_type, payload));
   TRY(gras_trp_flush(sock));
 
   return no_error;
@@ -266,14 +267,18 @@ gras_msg_recv(gras_socket_t    sock,
   /* FIXME: Survive unknown messages */
   free(msg_name);
 
-  *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
-  xbt_assert2(*payload_size > 0,
-	       "%s %s",
-	       "Dynamic array as payload is forbided for now (FIXME?).",
-	       "Reference to dynamic array is allowed.");
-  *payload = xbt_malloc(*payload_size);
-  TRY(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
-
+  if ((*msgtype)->ctn_type) {
+    *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
+    xbt_assert2(*payload_size > 0,
+		"%s %s",
+		"Dynamic array as payload is forbided for now (FIXME?).",
+		"Reference to dynamic array is allowed.");
+    *payload = xbt_malloc(*payload_size);
+    TRY(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
+  } else {
+    *payload = NULL;
+    *payload_size = 0;
+  }
   return no_error;
 }
 
