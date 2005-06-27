@@ -20,14 +20,13 @@ EXTRA_DIST=run_tests.in \
 
 xbt_tests =                                                      \
 	xbt/dynar_int    xbt/dynar_double   xbt/dynar_string     \
-	xbt/dict_usage   xbt/dict_crash                          \
+	xbt/dict_usage   xbt/dict_crash     xbt/multidict_crash  \
 	xbt/set_usage                                            \
 	xbt/log_usage                                            \
 	xbt/heap_bench                                           \
 	xbt/swag_usage                                           \
 	xbt/context_usage                                        \
 	xbt/config_usage
-# xbt/multidict_crash 
 
 RL_tests =                                              \
 	gras/trp_tcp_client   gras/trp_tcp_server       \
@@ -59,7 +58,7 @@ xbt_dynar_string_LDADD=       $(LDADD_RL)
 
 xbt_dict_usage_LDADD=         $(LDADD_RL)
 xbt_dict_crash_LDADD=         $(LDADD_RL)
-#xbt_multidict_crash_LDADD=    $(LDADD_RL)
+xbt_multidict_crash_LDADD=    $(LDADD_RL)
 
 xbt_set_usage_LDADD=          $(LDADD_RL)
 xbt_swag_usage_LDADD=         $(LDADD_RL)
