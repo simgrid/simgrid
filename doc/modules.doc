@@ -1,5 +1,5 @@
 /** 
-  \defgroup SimGrid_API  API of SimGrid */
+  \defgroup SimGrid_API  SimGrid modules */
 
 /** \defgroup XBT_API      XBT
        \ingroup SimGrid_API
@@ -49,7 +49,7 @@
     \ingroup SimGrid_API
     \brief Realistic programming environment (Grid Reality And Simulation)
   
-    GRAS provide a complete API to implement distributed application on top
+    GRAS provides a complete API to implement distributed application on top
     of heterogeneous plateforms. In addition to the SimGrid implementation
     of this interface (allowing you to work on your application within the
     comfort of the simulator), an implementation suited to real platforms is
@@ -73,6 +73,17 @@
     If none of those programming environments fits your needs, you may
     consider implementing your own directly on top of \ref SURF_API (but you
     probably want to contact us before).
+*/
+
+/** \defgroup AMOK_API AMOK
+    \ingroup SimGrid_API
+    \brief Distributed toolkit built over \ref GRAS_API (Advanced Metacomputing Overlay Kit)
+
+    AMOK provides several tools useful to most applications built on top of GRAS, 
+    but yet not belonging to GRAS itself. It is planned that those modules will be 
+    changed to real plugins one day, allowing users to load only the needed parts at
+    run time. For now, they live in another library against which you should link your 
+    programs explicitly.
 */
 
 /** \defgroup SMPI_API      SMPI
