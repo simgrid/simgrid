@@ -35,7 +35,8 @@ BEGIN_DECL()
  *  is the following: \verbatim <name>:<min nb>_to_<max nb>_<type>\endverbatim
  *
  *  For example, <tt>size:1_to_1_int</tt> describes a variable called \e size which 
- *  must take exactly one value, and the value being an integer.
+ *  must take exactly one value, and the value being an integer. Set the maximum to 0 to 
+ *  disable the upper bound on data count.
  *
  *  Another example could be <tt>outputfiles:0_to_10_string</tt> which describes a variable
  *  called \e outputfiles and which can take between 0 and 10 strings as value.
@@ -43,9 +44,6 @@ BEGIN_DECL()
  *  To some extend, configuration sets can be seen as typed hash structures.
  * 
  *  \todo This great mechanism is not used in SimGrid yet...
- *
- *  \todo We need a callback mechanism so that the configurable code get
- *  notified of configuration changes.
  *
  *  \section XBT_cfg_ex Example
  *
@@ -89,8 +87,13 @@ BEGIN_DECL()
     xbt_cfgelm_double, /**< double */
     xbt_cfgelm_string, /**< char* */
     xbt_cfgelm_host,   /**< both a char* (representing the hostname) and an integer (representing the port) */
+    
+    xbt_cfgelm_any,    /* not shown to users to prevent errors */
     xbt_cfgelm_type_count 
   } e_xbt_cfgelm_type_t;
+  
+  /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
+  typedef void (*xbt_cfg_cb_t)(const char*, int);
 
   xbt_cfg_t xbt_cfg_new (void);
   void xbt_cfg_cpy(xbt_cfg_t tocopy, /* OUT */ xbt_cfg_t *whereto);
@@ -135,13 +138,18 @@ xbt_error_t xbt_cfg_set_host  (xbt_cfg_t cfg, const char *name,
  Remove the provided value from the cell @name in @cfg.
  */
 xbt_error_t xbt_cfg_rm_int   (xbt_cfg_t cfg, const char *name, 
-				int val);
+			      int val);
 xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, 
-				double val);
+		              double val);
 xbt_error_t xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, 
-				const char *val);
+                              const char *val);
 xbt_error_t xbt_cfg_rm_host  (xbt_cfg_t cfg, const char *name, 
-				const char *host,int port);
+                              const char *host,int port);
+			  	  
+/*
+ Remove the value at position \e pos from the config \e cfg
+ */
+xbt_error_t xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos);
 
 /* rm every values */
 xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);	
@@ -156,7 +164,8 @@ xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
  */
   void xbt_cfg_register(xbt_cfg_t cfg,
 		        const char *name, e_xbt_cfgelm_type_t type,
-		        int min, int max);
+		        int min, int max,
+                        xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm);
   xbt_error_t xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
   xbt_error_t xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
   xbt_error_t xbt_cfg_check(xbt_cfg_t cfg);
@@ -169,7 +178,9 @@ xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
  * intended to configurable code, naturally.
  *
  * Note that those function return a pointer to the values actually stored 
- * in the set. Do not modify them unless you really know what you're doing.                  
+ * in the set. Do not modify them unless you really know what you're doing. 
+ * Likewise, do not free the strings after use, they are not copy of the data,
+ * but the data themselves.
  *
  *  @{
  */
@@ -179,6 +190,11 @@ xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
   xbt_error_t xbt_cfg_get_string(xbt_cfg_t cfg, const char *name, char  **val);
   xbt_error_t xbt_cfg_get_host  (xbt_cfg_t cfg, const char *name, char  **host, int *port);
   xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t cfg, const char *name, xbt_dynar_t *dynar);
+
+  xbt_error_t xbt_cfg_get_int_at   (xbt_cfg_t cfg, const char *name, int pos, int *val);
+  xbt_error_t xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos, double *val);
+  xbt_error_t xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos, char  **val);
+  xbt_error_t xbt_cfg_get_host_at  (xbt_cfg_t cfg, const char *name, int pos, char  **host, int *port);
 
 /** @} */
 /** @} */
