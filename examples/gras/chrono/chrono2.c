@@ -67,7 +67,7 @@ static int mat_mult(int n)
 
 int multiplier (int argc,char *argv[])
 {
-  gras_init(&argc, argv, NULL);
+  gras_init(&argc, argv);
 
   mat_mult(10);
   mat_mult(20);

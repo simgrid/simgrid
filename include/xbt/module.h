@@ -16,6 +16,5 @@ typedef xbt_module_t (*xbt_module_new_fct_t)(int argc, char **argv);
 typedef int (*xbt_module_finalize_fct_t)(void);
 
 void xbt_init(int *argc,char **argv);
-void xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog);
 void xbt_exit(void);
 #endif /* _XBT_MODULE_H */

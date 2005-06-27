@@ -112,7 +112,7 @@ int node (int argc,char *argv[]) {
   
   
   /* 1. Init the GRAS infrastructure and declare my globals */
-  gras_init(&argc,argv, NULL);
+  gras_init(&argc,argv);
   globals=gras_userdata_new(node_data_t);
   
   
@@ -209,6 +209,5 @@ int node (int argc,char *argv[]) {
   free(globals);
   gras_exit();
   
-  INFO0("Done");
   return no_error;
 } /* end_of_node */

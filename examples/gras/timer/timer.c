@@ -55,7 +55,7 @@ int client(int argc,char *argv[]) {
   int cpt;
   my_globals *globals;
 
-  gras_init(&argc,argv,NULL);
+  gras_init(&argc,argv);
   globals=gras_userdata_new(my_globals);
   globals->still_to_do = -1;
 

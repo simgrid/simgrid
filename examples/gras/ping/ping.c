@@ -80,7 +80,7 @@ int server (int argc,char *argv[]) {
   int port = 4000;
   
   /* 1. Init the GRAS infrastructure and declare my globals */
-  gras_init(&argc,argv, NULL);
+  gras_init(&argc,argv);
   globals=gras_userdata_new(server_data_t);
    
   /* 2. Get the port I should listen on from the command line, if specified */
@@ -143,7 +143,7 @@ int client(int argc,char *argv[]) {
         int   port = 4000;
 
   /* 1. Init the GRAS's infrastructure */
-  gras_init(&argc, argv, NULL);
+  gras_init(&argc, argv);
    
   /* 2. Get the server's address. The command line override defaults when specified */
   if (argc == 3) {

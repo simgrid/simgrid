@@ -24,7 +24,7 @@ int multiplier (int argc,char *argv[])
   double start = 0.0;
   double now = 0.0;
 
-  gras_init(&argc, argv, NULL);
+  gras_init(&argc, argv);
 
   A = malloc(n*n*sizeof(double));
   B = malloc(n*n*sizeof(double));

@@ -11,7 +11,7 @@
 #define XBT_MODINTER_H
 
 /* Modules definitions */
-void xbt_log_init(int *argc,char **argv, const char *defaultlog);
+void xbt_log_init(int *argc,char **argv);
 void xbt_log_exit(void);
 
 #endif /* XBT_MODINTER_H */
