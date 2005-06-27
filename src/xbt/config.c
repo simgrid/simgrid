@@ -29,6 +29,10 @@ typedef struct {
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
   int min,max;
+  
+  /* Callbacks */
+  xbt_cfg_cb_t cb_set;
+  xbt_cfg_cb_t cb_rm;
 
   /* actual content 
      (cannot be an union because type host uses both str and i) */
@@ -36,7 +40,7 @@ typedef struct {
 } s_xbt_cfgelm_t,*xbt_cfgelm_t;
 
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count]=
-  {"int","double","string","host"};
+  {"int","double","string","host","any"};
 
 /* Internal stuff used in cache to free a variable */
 static void xbt_cfgelm_free(void *data);
@@ -46,13 +50,10 @@ static xbt_error_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
 				    e_xbt_cfgelm_type_t type,
 				    /* OUT */ xbt_cfgelm_t *whereto);
 
-void xbt_cfg_str_free(void *d);
-void xbt_cfg_host_free(void *d);
-
-void xbt_cfg_str_free(void *d){
+static void xbt_cfg_str_free(void *d){
   free(*(void**)d);
 }
-void xbt_cfg_host_free(void *d){
+static void xbt_cfg_host_free(void *d){
   xbt_host_t *h=(xbt_host_t*) *(void**)d; 
   if (h) {
     if (h->name) free(h->name);
@@ -72,7 +73,7 @@ xbt_cfg_t xbt_cfg_new(void) {
   return (xbt_cfg_t)xbt_dict_new();
 }
 
-/** @brief Copy an existing configuration set
+/** \brief Copy an existing configuration set
  *
  * \arg whereto the config set to be created
  * \arg tocopy the source data
@@ -90,7 +91,8 @@ xbt_cfg_cpy(xbt_cfg_t tocopy,xbt_cfg_t *whereto) {
   xbt_assert0(tocopy,"cannot copy NULL config");
 
   xbt_dict_foreach((xbt_dict_t)tocopy,cursor,name,variable) {
-    xbt_cfg_register(*whereto, name, variable->type, variable->min, variable->max);
+    xbt_cfg_register(*whereto, name, variable->type, variable->min, variable->max,
+                     variable->cb_set, variable->cb_rm);
   }
 }
 
@@ -124,9 +126,10 @@ void xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
     printf("%s  %s:",indent,key);
 
     size = xbt_dynar_length(variable->content);
-    printf("%d_to_%d_%s. Actual size=%d. List of values:\n",
+    printf("%d_to_%d_%s. Actual size=%d. prerm=%p,postset=%p, List of values:\n",
 	   variable->min,variable->max,xbt_cfgelm_type_name[variable->type],
-	   size);
+	   size,
+           variable->cb_rm, variable->cb_set);
 
     switch (variable->type) {
        
@@ -196,7 +199,8 @@ void xbt_cfgelm_free(void *data) {
 void
 xbt_cfg_register(xbt_cfg_t cfg,
 		  const char *name, e_xbt_cfgelm_type_t type,
-		  int min, int max){
+		  int min, int max,
+		  xbt_cfg_cb_t cb_set,  xbt_cfg_cb_t cb_rm){
   xbt_cfgelm_t res;
   xbt_error_t errcode;
 
@@ -214,6 +218,8 @@ xbt_cfg_register(xbt_cfg_t cfg,
   res->type=type;
   res->min=min;
   res->max=max;
+  res->cb_set = cb_set;
+  res->cb_rm  = cb_rm;
 
   switch (type) {
   case xbt_cfgelm_int:
@@ -323,7 +329,7 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
     xbt_abort();
   }
 
-  xbt_cfg_register(cfg,entrycpy,type,min,max);
+  xbt_cfg_register(cfg,entrycpy,type,min,max,NULL,NULL);
 
   free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
   return no_error;
@@ -352,7 +358,7 @@ xbt_cfg_check(xbt_cfg_t cfg) {
       return mismatch_error;
     }
 
-    if (variable->max < size) {
+    if (variable->max > 0 && variable->max < size) {
       ERROR4("Config elem %s accepts at most %d %s, but there is %d values.",
 	     name,
 	     variable->max,
@@ -377,14 +383,14 @@ static xbt_error_t xbt_cfgelm_get(xbt_cfg_t  cfg,
 				       (void**)whereto);
 
   if (errcode == mismatch_error) {
-    ERROR1("No registered variable %s in this config set",
+    RAISE1(mismatch_error,
+           "No registered variable '%s' in this config set",
 	   name);
-    return mismatch_error;
   }
   if (errcode != no_error)
      return errcode;
 
-  xbt_assert3((*whereto)->type == type,
+  xbt_assert3(type == xbt_cfgelm_any || (*whereto)->type == type,
 	       "You tried to access to the config element %s as an %s, but its type is %s.",
 	       name,
 	       xbt_cfgelm_type_name[type],
@@ -410,11 +416,9 @@ xbt_cfg_get_type(xbt_cfg_t cfg, const char *name,
 
   TRYCATCH(mismatch_error,xbt_dict_get((xbt_dict_t)cfg,name,(void**)&variable));
 
-  if (errcode == mismatch_error) {
-    ERROR1("Can't get the type of '%s' since this variable does not exist",
+  if (errcode == mismatch_error)
+    RAISE1(mismatch_error,"Can't get the type of '%s' since this variable does not exist",
 	   name);
-    return mismatch_error;
-  }
 
   *type=variable->type;
 
@@ -536,15 +540,15 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
     /* Pass the value */
     while (option-name<=(len-1) && *option != ' ' && *option != '\n' && *option != '\t') {
-      DEBUG1("Take %c.\n",*option);
+      DEBUG1("Take %c.",*option);
       option++;
     }
     if (option-name == len) {
-      DEBUG0("Boundary=EOL\n");
+      DEBUG0("Boundary=EOL");
       option=NULL; /* don't do next iteration */
 
     } else {
-      DEBUG3("Boundary on '%c'. len=%d;option-name=%d\n",
+      DEBUG3("Boundary on '%c'. len=%d;option-name=%d",
 	     *option,len,option-name);
 
       /* Pass the following blank chars */
@@ -680,11 +684,22 @@ xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
   VERB2("Configuration setting: %s=%d",name,val);
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
 
-  if (variable->max > 1) {
-    xbt_dynar_push(variable->content,&val);
-  } else {
+  if (variable->max == 1) {
+    if (variable->cb_rm && xbt_dynar_length(variable->content))
+      (*variable->cb_rm)(name, 0);
+          
     xbt_dynar_set(variable->content,0,&val);
+  } else {
+    if (variable->max && xbt_dynar_length(variable->content) == variable->max)
+      RAISE3(mismatch_error,
+             "Cannot add value %d to the config element %s since it's already full (size=%d)",
+             val,name,variable->max); 
+             
+    xbt_dynar_push(variable->content,&val);
   }
+
+  if (variable->cb_set)
+    (*variable->cb_set)(name, xbt_dynar_length(variable->content) -1);
   return no_error;
 }
 
@@ -703,11 +718,22 @@ xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
   VERB2("Configuration setting: %s=%f",name,val);
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
 
-  if (variable->max > 1) {
-    xbt_dynar_push(variable->content,&val);
-  } else {
+  if (variable->max == 1) {
+    if (variable->cb_rm && xbt_dynar_length(variable->content))
+      (*variable->cb_rm)(name, 0);
+          
     xbt_dynar_set(variable->content,0,&val);
+  } else {
+    if (variable->max && xbt_dynar_length(variable->content) == variable->max)
+      RAISE3(mismatch_error,
+             "Cannot add value %f to the config element %s since it's already full (size=%d)",
+             val,name,variable->max); 
+             
+    xbt_dynar_push(variable->content,&val);
   }
+
+  if (variable->cb_set)
+    (*variable->cb_set)(name, xbt_dynar_length(variable->content) -1);
   return no_error;
 }
 
@@ -728,11 +754,22 @@ xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) {
   VERB2("Configuration setting: %s=%s",name,val);
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
 
-  if (variable->max > 1) {
-    xbt_dynar_push(variable->content,&newval);
-  } else {
+  if (variable->max == 1) {
+    if (variable->cb_rm && xbt_dynar_length(variable->content))
+      (*variable->cb_rm)(name, 0);
+          
     xbt_dynar_set(variable->content,0,&newval);
+  } else {
+    if (variable->max && xbt_dynar_length(variable->content) == variable->max)
+      RAISE3(mismatch_error,
+             "Cannot add value %s to the config element %s since it's already full (size=%d)",
+             name,val,variable->max); 
+             
+    xbt_dynar_push(variable->content,&newval);
   }
+
+  if (variable->cb_set)
+    (*variable->cb_set)(name, xbt_dynar_length(variable->content) -1);
   return no_error;
 }
 
@@ -760,11 +797,22 @@ xbt_cfg_set_host(xbt_cfg_t cfg,const char*name,
 
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
 
-  if (variable->max > 1) {
-    xbt_dynar_push(variable->content,&val);
-  } else {
+  if (variable->max == 1) {
+    if (variable->cb_rm && xbt_dynar_length(variable->content))
+      (*variable->cb_rm)(name, 0);
+          
     xbt_dynar_set(variable->content,0,&val);
+  } else {
+    if (variable->max && xbt_dynar_length(variable->content) == variable->max)
+      RAISE4(mismatch_error,
+             "Cannot add value %s:%d to the config element %s since it's already full (size=%d)",
+             host,port,name,variable->max); 
+             
+    xbt_dynar_push(variable->content,&val);
   }
+
+  if (variable->cb_set)
+    (*variable->cb_set)(name, xbt_dynar_length(variable->content) -1);
   return no_error;
 }
 
@@ -782,10 +830,16 @@ xbt_error_t xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
   int cpt,seen;
   xbt_error_t errcode;
 
+  if (xbt_dynar_length(variable->content) == variable->min)
+    RAISE3(mismatch_error,
+           "Cannot remove value %d from the config element %s since it's already at its minimal size (=%d)",
+           val,name,variable->min); 
+
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
+      if (variable->cb_rm) (*variable->cb_rm)(name, cpt);
       xbt_dynar_cursor_rm(variable->content,&cpt);
       return no_error;
     }
@@ -809,11 +863,17 @@ xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
   double seen;
   xbt_error_t errcode;
 
+  if (xbt_dynar_length(variable->content) == variable->min)
+    RAISE3(mismatch_error,
+           "Cannot remove value %f from the config element %s since it's already at its minimal size (=%d)",
+           val,name,variable->min); 
+
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
       xbt_dynar_cursor_rm(variable->content,&cpt);
+      if (variable->cb_rm) (*variable->cb_rm)(name, cpt);
       return no_error;
     }
   }
@@ -836,10 +896,16 @@ xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
   char *seen;
   xbt_error_t errcode;
 
+  if (xbt_dynar_length(variable->content) == variable->min)
+    RAISE3(mismatch_error,
+           "Cannot remove value %s from the config element %s since it's already at its minimal size (=%d)",
+           name,val,variable->min); 
+           
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen,val)) {
+      if (variable->cb_rm) (*variable->cb_rm)(name, cpt);
       xbt_dynar_cursor_rm(variable->content,&cpt);
       return no_error;
     }
@@ -865,10 +931,16 @@ xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
   xbt_host_t *seen;
   xbt_error_t errcode;
 
+  if (xbt_dynar_length(variable->content) == variable->min)
+    RAISE4(mismatch_error,
+           "Cannot remove value %s:%d from the config element %s since it's already at its minimal size (=%d)",
+           host,port,name,variable->min); 
+           
   TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen->name,host) && seen->port == port) {
+      if (variable->cb_rm) (*variable->cb_rm)(name, cpt);
       xbt_dynar_cursor_rm(variable->content,&cpt);
       return no_error;
     }
@@ -876,6 +948,28 @@ xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
 
   ERROR3("Can't remove the value %s:%d of config element %s: value not found.",
 	 host,port,name);
+  return mismatch_error;
+}
+
+/** @brief Remove the \e pos th value from the provided variable */
+
+xbt_error_t xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos) {
+
+  xbt_cfgelm_t variable;
+  int cpt;
+  xbt_host_t *seen;
+  xbt_error_t errcode;
+
+  if (xbt_dynar_length(variable->content) == variable->min)
+    RAISE3(mismatch_error,
+           "Cannot remove %dth value from the config element %s since it's already at its minimal size (=%d)",
+           pos,name,variable->min); 
+           
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_any,&variable));
+  
+  if (variable->cb_rm) (*variable->cb_rm)(name, pos);	  
+  xbt_dynar_remove_at(variable->content, pos, NULL);
+
   return mismatch_error;
 }
 
@@ -900,6 +994,13 @@ xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
   }
 
   if (variable) {
+    if (variable->cb_rm) {
+      int cpt;
+      void *ignored;
+      xbt_dynar_foreach(variable->content,cpt,ignored) {
+        (*variable->cb_rm)(name, cpt);
+      }
+    }
     xbt_dynar_reset(variable->content);
   }
   return no_error;
@@ -1065,3 +1166,68 @@ xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t    cfg,
   return no_error;
 }
 
+
+/** @brief Retrieve one of the integer value of a variable */
+xbt_error_t
+xbt_cfg_get_int_at(xbt_cfg_t   cfg,
+                   const char *name,
+                   int         pos,
+                   int        *val) {
+                  
+  xbt_cfgelm_t variable;
+  xbt_error_t errcode;
+
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
+  *val = xbt_dynar_get_as(variable->content, pos, int);
+  return no_error; 
+}
+
+/** @brief Retrieve one of the double value of a variable */
+xbt_error_t
+xbt_cfg_get_double_at(xbt_cfg_t   cfg,
+                      const char *name,
+                      int         pos,
+                      double     *val) {
+                  
+  xbt_cfgelm_t variable;
+  xbt_error_t errcode;
+
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
+  *val = xbt_dynar_get_as(variable->content, pos, double);
+  return no_error; 
+}
+
+
+/** @brief Retrieve one of the string value of a variable */
+xbt_error_t
+xbt_cfg_get_string_at(xbt_cfg_t   cfg,
+                      const char *name,
+                      int         pos,
+                      char      **val) {
+                  
+  xbt_cfgelm_t variable;
+  xbt_error_t errcode;
+
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
+  *val = xbt_dynar_get_as(variable->content, pos, char*);
+  return no_error; 
+}
+
+/** @brief Retrieve one of the host value of a variable */
+xbt_error_t
+xbt_cfg_get_host_at(xbt_cfg_t   cfg,
+                    const char *name,
+                    int         pos,
+                    char      **host,
+                    int        *port) {
+                  
+  xbt_cfgelm_t variable;
+  xbt_error_t errcode;
+  xbt_host_t *val;
+
+  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
+  val = xbt_dynar_get_ptr(variable->content, pos);
+  *port = val->port;
+  *host = val->name;
+  return no_error; 
+}
