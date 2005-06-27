@@ -13,7 +13,6 @@ nobase_include_HEADERS = \
 	msg/msg.h \
 	msg/datatypes.h \
 	\
-	gras/core.h \
 	gras/datadesc.h gras/transport.h \
 	gras/virtu.h gras/emul.h gras/process.h \
 	\
