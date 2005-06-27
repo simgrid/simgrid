@@ -157,7 +157,7 @@ int main(int argc,char **argv) {
   xbt_set_t set=NULL;
   my_elem_t  elm;
 
-  xbt_init_defaultlog(&argc,argv,"set.thresh=verbose");
+  xbt_init(&argc,argv);
    
   printf("\nData set: USAGE test:\n");
 

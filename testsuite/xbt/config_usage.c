@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
   char *str;
   
-  xbt_init_defaultlog(&argc,argv,"config.thresh=debug root.thresh=info");
+  xbt_init(&argc,argv);
 
   fprintf(stderr,"==== Alloc and free a config set.\n");
   set=make_set();

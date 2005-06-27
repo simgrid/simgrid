@@ -645,7 +645,7 @@ int main(int argc,char *argv[]) {
   int cpt;
   char r_arch_char = gras_arch_selfid();
 
-  gras_init(&argc,argv,NULL);
+  gras_init(&argc,argv);
 
   for (cpt=1; cpt<argc; cpt++) {
     if (!strcmp(argv[cpt], "--read")) {

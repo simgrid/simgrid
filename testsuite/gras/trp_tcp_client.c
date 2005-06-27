@@ -22,7 +22,7 @@ int main(int argc,char *argv[]) {
   memset(data_send, 0, sizeof(data_send));
   memset(data_recv, 0, sizeof(data_recv));
 
-  gras_init(&argc,argv,"trp.thresh=debug");
+  gras_init(&argc,argv);
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");
   TRYFAIL(gras_socket_client(NULL,55555,&sock));

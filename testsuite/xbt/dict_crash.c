@@ -54,7 +54,7 @@ int main(int argc,char **argv) {
   char *key;
   void *data;
 
-  xbt_init_defaultlog(&argc,argv,"dict.thresh=verbose");
+  xbt_init(&argc,argv);
   srand((unsigned int)time(NULL));
 
   printf("Dictionnary: CRASH test:\n");

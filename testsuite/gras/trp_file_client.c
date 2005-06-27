@@ -19,7 +19,7 @@ int main(int argc,char *argv[]) {
   char data_send[256];
 
   memset(data_send,0,sizeof(data_send));
-  gras_init(&argc,argv,"trp.thresh=debug");
+  gras_init(&argc,argv);
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");
   TRYFAIL(gras_socket_client_from_file("-",&sock));

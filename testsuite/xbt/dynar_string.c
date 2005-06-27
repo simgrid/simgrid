@@ -28,7 +28,7 @@ int main(int argc,char *argv[]) {
    char buf[1024];
    char *s1,*s2;
    
-   xbt_init_defaultlog(&argc,argv,"dynar.thresh=debug");
+   xbt_init(&argc,argv);
    
    INFO0("==== Traverse the empty dynar");
    d=xbt_dynar_new(sizeof(char *),&free_string);

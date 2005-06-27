@@ -18,7 +18,7 @@ int main(int argc,char *argv[]) {
   xbt_error_t errcode;
   char data_recv[256];
 
-  gras_init(&argc,argv,"trp.thresh=debug");
+  gras_init(&argc,argv);
 
   fprintf(stderr,"===[SERVER]=== Create the socket\n");
   TRYFAIL(gras_socket_server_from_file("-",&sock));

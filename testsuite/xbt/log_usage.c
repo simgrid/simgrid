@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,"Logging specific to this test");
 XBT_LOG_NEW_CATEGORY(top,"Useless test channel");
 
 int main(int argc, char **argv) {
-  xbt_init_defaultlog(&argc,argv,"root.thresh=debug log.thresh=debug");
+  xbt_init(&argc,argv);
 
   DEBUG1("val=%d", 1);
   WARN1("val=%d", 2);

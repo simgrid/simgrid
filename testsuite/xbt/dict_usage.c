@@ -97,7 +97,7 @@ int main(int argc,char **argv) {
   xbt_dict_t head=NULL;
   char *data;
 
-  xbt_init_defaultlog(&argc,argv,"dict.thresh=verbose");
+  xbt_init(&argc,argv);
    
   printf("\nGeneric dictionnary: USAGE test:\n");
 

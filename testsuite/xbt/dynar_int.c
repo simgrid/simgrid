@@ -19,7 +19,7 @@ int main(int argc,char *argv[]) {
    int i,cpt,cursor;
    int *iptr;
    
-   xbt_init_defaultlog(&argc,argv,"dynar.thresh=debug");
+   xbt_init(&argc,argv);
 
    INFO0("==== Traverse the empty dynar");
    d=xbt_dynar_new(sizeof(int),NULL);
