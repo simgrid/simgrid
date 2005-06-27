@@ -9,11 +9,6 @@
 
 #include "dict_private.h"
 
-#include <stdlib.h> /* malloc() */
-#include <string.h> /* strlen() */
-
-#include <stdio.h>
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
