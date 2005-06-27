@@ -1,5 +1,9 @@
 SimGrid (2.95) unstable; urgency=low
 
+  XBT
+  * Cleanup in the xbt_config API; add configuration callbacks. [MQ]
+  * Cleanup in the initialization API: the unused "defaultlog" is dead. [MQ]
+
   MSG
   * Implement MSG_get_msgload [MQ, AL]
 
@@ -9,6 +13,8 @@ SimGrid (2.95) unstable; urgency=low
     improvement [AL] 
 
   GRAS (new features)
+  * Implement measurement sockets. You can now get the bandwidth between two
+    hosts thanks to AMOK (see below). [MQ]
   * gras_datadesc_dynar() builds a dynar type descriptor, allowing to send
     dynar over the network (yeah) [MQ]
   * Real (even if simplistic) implementation of gras_os_myname() on RL [MQ]
@@ -23,24 +29,33 @@ SimGrid (2.95) unstable; urgency=low
     the ones which are less than 100k; bigger messages still have the issue)
   * Array size pushed by the field, not by the field type (or each
     and every long int will push stuff to the cbps) [MQ]
+  * use select() to sleep since it allows to portably sleep less than one
+    second. [MQ]
 
   GRAS (minor cleanups)
   * <project>.Makefile.local (generated from gras_stub_generator) |MQ]:
     - Do clean .o files
     - Compile with -g
-  * Callbacks now receive the gras_datadesc_type_t they work on as argument.
+  * Type Callbacks now receive the gras_datadesc_type_t they work on as argument.
   * type category 'ignored' killed as it was never used and were difficult
     to transmit.
   * whether a type can cycle or not is now a flag, leaving room for more
     flags (as "ignored", if we feel the need one day ;)
   * Rename raw sockets to measurement sockets since "raw" has another
-    meaning in networking community.
+    meaning in networking community. 
   
+  AMOK 
+  * Advanced Metacomputing Overlay Kit introduction. It is based over GRAS
+    and offers features not belonging to GRAS but that most applications
+    need. One day, it may be a set of plugins loadable at runtime.
+  * New module: bandwidth 
+    bandwidth measurement between arbitrary nodes running this module. [MQ]
+
  -- 
 
 SimGrid (2.94) unstable; urgency=low
 
-  The first release candidate for SimGrid 3 !
+  The first beta release of SimGrid 3 !
 
   >>>Arnaud<<<
   (documentation)
