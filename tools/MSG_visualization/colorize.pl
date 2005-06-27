@@ -30,10 +30,22 @@ my (@coltab) = (
     $col_background . $col_blue,   $col_background . $col_magenta,
 );
 
+my %pid;
+
+sub pidcolor {
+    my $pid = shift;
+
+    unless (defined($pid{$pid})) {
+	# first time we see this pid. Affect it a color
+	$pid{$pid}=(scalar keys %pid) % (scalar @coltab);
+    }
+    return $coltab[$pid{$pid}];
+}
+
 while (<>) {
     $orgline = $thisline = $_;
 
-    if ( $thisline =~ /^\[(\w+):(\w+):\((\d+\)) ([0-9\.]*)\] ([^\[]*) \[([^\[]*)\] (.*)$/ ) {
+    if ( $thisline =~ /^\[(\w+):(\w+):\((\d+)\) ([0-9\.]*)\] ([^\[]*) \[([^\[]*)\] (.*)$/ ) {
 	$host=$1;
 	$procname=$2;
 	$pid=$3;
@@ -44,13 +56,18 @@ while (<>) {
 
 	print $col_norm;
 	printf "[% 10.3f]",$date;
-	print $coltab[($pid-1) % scalar(@coltab)];
+
+	print pidcolor($pid);
 	printf "[%10s:%-10s]",$host,$procname;
 	print " $message";
 	print $col_norm."\n";
-        next;
+    } elsif ( $thisline =~ /^==(\d+)== (.*)$/) {
+	# take care of valgrind outputs
+	print pidcolor($1)."$2\n";
+
+    } else {
+	print $col_default. $orgline;
     }
-    print $col_default. $orgline;
 }
 
 print $col_norm;
