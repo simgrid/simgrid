@@ -12,7 +12,6 @@
 
 #include <xbt.h> /* our toolbox */
 
-#include <gras/core.h> /* FIXME: killme */
 #include <gras/process.h>
 #include <gras/virtu.h>
 #include <gras/emul.h>
@@ -21,5 +20,8 @@
 #include <gras/datadesc.h>
 #include <gras/messages.h>
 #include <gras/timer.h>
+
+void gras_init(int *argc, char **argv);
+void gras_exit(void);
 
 #endif /* GRAS_H */
