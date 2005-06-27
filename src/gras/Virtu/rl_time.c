@@ -23,15 +23,20 @@ double gras_os_time() {
 }
  
 void gras_os_sleep(double sec) {
-  DEBUG1("Do sleep %d sec", (int)sec);
-  sleep(sec);
-
 #ifdef HAVE_USLEEP
-  DEBUG1("Do sleep %d usec", (int) ((sec - floor(sec)) * 1000000 ));
+  DEBUG1("Do sleep %f sec", sec);
+  sleep(sec);
   (void)usleep( (sec - floor(sec)) * 1000000);
-#else
-  if ( ((int) sec) == 0) {
-     WARN0("This platform does not implement usleep. Cannot sleep less than one second");
-  }
-#endif /* ! HAVE_USLEEP */
+        
+#else /* don't have usleep. Use select to sleep less than one second */
+  struct timeval timeout;
+
+  DEBUG1("Do sleep %f sec", sec);
+  
+  timeout.tv_sec =  (unsigned long)(sec);
+  timeout.tv_usec = (sec - floor(sec)) * 1000000;
+              
+  select(0, NULL, NULL, NULL, &timeout);
+#endif
 }
+
