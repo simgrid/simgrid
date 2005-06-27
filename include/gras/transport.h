@@ -69,10 +69,12 @@ char *gras_socket_peer_name(gras_socket_t sock);
  * 
  * You can only use those functions on sockets openned with the "measurement" boolean set to true.
  * 
- * \bug Measurement sockets are not fully functionnal yet.
  */
 /* @{*/
 
+
+
+int gras_socket_is_meas(gras_socket_t sock);
 xbt_error_t gras_socket_meas_send(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int expSize, 
