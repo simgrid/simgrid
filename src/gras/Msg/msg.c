@@ -241,12 +241,17 @@ gras_msg_recv(gras_socket_t    sock,
   int r_arch;
   char *msg_name=NULL;
 
+  xbt_assert1(!gras_socket_is_meas(sock), 
+  	      "Asked to receive a message on the measurement socket %p", sock);
   if (!string_type) {
     string_type=gras_datadesc_by_name("string");
     xbt_assert(string_type);
   }
   
-  TRY(gras_trp_chunk_recv(sock, header, 6));
+  errcode=gras_trp_chunk_recv(sock, header, 6);
+  if (errcode!=no_error)
+    RAISE2(errcode,"Got '%s' while trying to get the mesage header on socket %p",
+    	   xbt_error_name(errcode),sock);
   for (cpt=0; cpt<4; cpt++)
     if (header[cpt] != GRAS_header[cpt])
       RAISE2(mismatch_error,"Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",header,GRAS_header);
@@ -413,8 +418,12 @@ gras_msg_handle(double timeOut) {
     errcode = gras_trp_select(timeOut, &expeditor);
     if (errcode != no_error && errcode != timeout_error)
        return errcode;
-    if (errcode != timeout_error)
-       TRY(gras_msg_recv(expeditor, &msgtype, &payload, &payload_size));
+    if (errcode == no_error) {
+    	errcode = gras_msg_recv(expeditor, &msgtype, &payload, &payload_size);
+	if (errcode != no_error) 
+	  RAISE2(errcode, "Error '%s' while receiving a message on select()ed socket %p",
+	  	 xbt_error_name(errcode),expeditor);
+    }
   }
 
   if (errcode == timeout_error ) {
@@ -426,7 +435,7 @@ gras_msg_handle(double timeOut) {
 	   return no_error;
 	} else {
 	   xbt_assert1(untiltimer>0, "Negative timer (%f). I'm puzzeled", untiltimer);
-	   ERROR1("No timer elapsed, in contrary to expectations (next in %f sec)",
+	   WARN1("No timer elapsed, in contrary to expectations (next in %f sec)",
 		  untiltimer);
 	   return timeout_error;
 	}
