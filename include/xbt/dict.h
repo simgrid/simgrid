@@ -131,61 +131,54 @@ BEGIN_DECL()
          xbt_dict_cursor_step(cursor) )
 
 /** @} */
-/** @} */
+/** @name 5. Multi-dictionnary
+ *
+ * They can be seen as dictionnary of multiple keys or as dictionnary of 
+ * dictionnary of ... of data. Most of the functions here work the same way 
+ * than their simple dictionnary counterpart.
+ *
+ * Note that there is no xbt_multidict_free neither xbt_multi_dict_new functions.
+ * Use xbt_dict_free() and xbt_dict_new() instead.
+ *
+ * @{
+ */
 
-#if 0
-
-                         MULTI-DICTS ARE BROKEN
-
-
-/*####[ Multi cache functions ]##############################################*/
-/* The are cache of cache of data. Any function there works the same way     */
-/*  than their simple cache counterpart.                                     */
-/*###############################"###########################################*/
-/* To dump multicache, this function dumps a cache                           */
+/** \brief To dump multicache, this function dumps a cache                           */
 void xbt_dict_print(void *data);
-/* To dump multicache, this one dumps a string                               */
+/** \brief To dump multicache, this one dumps a string                               */
 void xbt_dict_prints(void *data);
 
-/*----[ xbt_multidict_free ]------------------------------------------------*/
-/* This function does not exist. Use xbt_dict_free instead.                 */
+
+/*----[ xbt_multidict_set ]--------------------------------------------------*/
+xbt_error_t 
+xbt_multidict_set(xbt_dict_t mdict,
+                  xbt_dynar_t keys,
+                  void *data,void (*free_ctn)(void*));
+xbt_error_t
+xbt_multidict_set_ext(xbt_dict_t mdict,
+                      xbt_dynar_t keys, xbt_dynar_t lens,
+                      void *data,void_f_pvoid_t *free_ctn);
+
+/*----[ xbt_multidict_get ]--------------------------------------------------*/
+xbt_error_t 
+xbt_multidict_get(xbt_dict_t mdict,
+                  xbt_dynar_t keys,
+		  /*OUT*/void **data);
+xbt_error_t 
+xbt_multidict_get_ext(xbt_dict_t mdict,
+                      xbt_dynar_t keys, xbt_dynar_t lens,
+                      /*OUT*/void **data);
+
+/*----[ xbt_multidict_remove ]-----------------------------------------------*/
 /*---------------------------------------------------------------------------*/
+xbt_error_t 
+xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys);
+xbt_error_t 
+xbt_multidict_remove_ext(xbt_dict_t mdict, 
+                         xbt_dynar_t keys, xbt_dynar_t lens);
 
-/*----[ xbt_multidict_set ]-------------------------------------------------*/
-/* Insert the data in the structure under the #keycount# #key#s.             */
-/* The key are destroyed in the process. Think to strdup it before.          */
-/* Returns if it was ok or not                                               */
-/*---------------------------------------------------------------------------*/
-xbt_error_t xbt_multidict_set(xbt_dict_t *head,
-				int keycount,char **key,
-				void *data,void (*free_ctn)(void*));
-
-xbt_error_t xbt_multidict_set_ext(xbt_dict_t *head,
-				    int keycount,char **key,int *key_len,
-				    void *data,void_f_pvoid_t *free_ctn);
-
-/*----[ xbt_multidict_get ]-------------------------------------------------*/
-/* Search the given #key#. data=NULL when not found.                         */
-/* Returns true if anything went ok, and false on internal error.            */
-/*---------------------------------------------------------------------------*/
-xbt_error_t xbt_multidict_get(xbt_dict_t head,
-				int keycount,const char **key,
-				/* OUT */void **data);
-
-xbt_error_t xbt_multidict_get_ext(xbt_dict_t head,
-				    int keycount,const char **key,int *key_len,
-				    /* OUT */void **data);
-
-/*----[ xbt_multidict_remove ]----------------------------------------------*/
-/* Remove the entry associated with the given #key#.                         */
-/* Returns if ok. Removing a non-existant key is ok.                         */
-/*---------------------------------------------------------------------------*/
-xbt_error_t xbt_multidict_remove(xbt_dict_t head,
-				   int keycount,const char **key);
-
-xbt_error_t xbt_multidict_remove_ext(xbt_dict_t head,
-                                       int keycount,const char **key,int *key_len);
-#endif
+/** @} */
+/** @} */
 
 END_DECL()
 
