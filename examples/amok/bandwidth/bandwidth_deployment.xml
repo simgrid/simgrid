@@ -4,13 +4,13 @@
   <process host="Tremblay" function="sensor">
      <argument value="4000"/>       <!-- port number -->
   </process>
-  <process host="Ginette" function="sensor">
+  <process host="Jupiter" function="sensor">
      <argument value="4000"/>       <!-- port number -->
   </process>
   <process host="Jupiter" function="maestro">
      <argument value="Tremblay"/>   <!-- server host -->
      <argument value="4000"/>       <!-- port number -->
-     <argument value="Ginette"/>   <!-- server host -->
+     <argument value="Jupiter"/>   <!-- server host -->
      <argument value="4000"/>       <!-- port number -->
   </process>
 </platform_description>

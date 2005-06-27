@@ -1,6 +1,7 @@
 #! @BASH@
 if [ x@EXEEXT@ = x ] ; then
-  exenv="libtool --mode=execute valgrind"
+#  exenv="libtool --mode=execute valgrind"
+  exenv=
 else
   exenv=wine
 fi
