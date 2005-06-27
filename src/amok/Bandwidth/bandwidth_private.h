@@ -16,12 +16,9 @@
 #include "gras.h"
 #include "amok/bandwidth.h"
 
-/**
- * bw_request_t:
- *
- * Request for a BW experiment.
+/* Request for a BW experiment.
  * If host==NULL, it should be between the sender and the receiver.
- * If not, it should be between between the receiver and @host (3-tiers).
+ * If not, it should be between between the receiver and host (3-tiers).
  */
 typedef struct {
   xbt_host_t host; /* host+raw socket to use */
@@ -30,12 +27,8 @@ typedef struct {
   unsigned long int msg_size;
 } s_bw_request_t,*bw_request_t;
 
-/**
- * bw_res_t:
- *
- * Result of a BW experiment (payload when answering).
+/* Result of a BW experiment (payload when answering).
  * if err.msg != NULL, it wasn't sucessful. Check err.msg and err.code to see why.
- * else
  */
 typedef struct {
   s_amok_remoterr_t err;
@@ -45,10 +38,7 @@ typedef struct {
 } s_bw_res,*bw_res_t;
 
 
-/**
- * sat_request_t:
- *
- * Description of a saturation experiment (payload asking some host to collaborate for that)
+/* Description of a saturation experiment (payload asking some host to collaborate for that)
  */
 typedef struct {
   xbt_host_t host; /* host+raw socket to use */

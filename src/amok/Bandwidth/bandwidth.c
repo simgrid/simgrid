@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(bw,amok,"Bandwidth testing");
 
 static short _amok_bw_initialized = 0;
 
-/**** code ****/
+/** @brief module initialization; all participating nodes must run this */
 void amok_bw_init(void) {
   gras_datadesc_type_t bw_request_desc, bw_res_desc, sat_request_desc;
 
@@ -51,10 +51,10 @@ void amok_bw_init(void) {
      sat_request_desc = gras_datadesc_ref("sat_request_t",sat_request_desc);
      
      /* Register the bandwidth messages */
-     gras_msgtype_declare("BW request",       bw_request_desc);
-     gras_msgtype_declare("BW result",        bw_res_desc);
      gras_msgtype_declare("BW handshake",     bw_request_desc);
      gras_msgtype_declare("BW handshake ACK", bw_request_desc);
+     gras_msgtype_declare("BW request",       bw_request_desc);
+     gras_msgtype_declare("BW result",        bw_res_desc);
      
      /* Register the saturation messages */
      gras_msgtype_declare("SAT start",   sat_request_desc);
@@ -81,6 +81,7 @@ void amok_bw_init(void) {
   _amok_bw_initialized =1;
 }
 
+/** @brief module finalization */
 void amok_bw_exit(void) {
   if (! _amok_bw_initialized)
     return;
@@ -98,15 +99,23 @@ void amok_bw_exit(void) {
   _amok_bw_initialized = 0;
 }
 
-   
-
 /* ***************************************************************************
  * Bandwidth tests
  * ***************************************************************************/
 
 /**
- * \brief bandwidth measurement between localhost and @peer
+ * \brief bandwidth measurement between localhost and \e peer
  * 
+ * \arg peer: A (regular) socket at which the the host with which we should conduct the experiment can be contacted
+ * \arg buf_size: Size of the socket buffer
+ * \arg exp_size: Total size of data sent across the network
+ * \arg msg_size: Size of each message sent. Ie, (\e expSize % \e msgSize) messages will be sent.
+ * \arg sec: where the result (in seconds) should be stored.
+ * \arg bw: observed Bandwidth (in kb/s) 
+ *
+ * Conduct a bandwidth test from the local process to the given peer.
+ * This call is blocking until the end of the experiment.
+ *
  * Results are reported in last args, and sizes are in kb.
  */
 xbt_error_t amok_bw_test(gras_socket_t peer,
@@ -152,7 +161,7 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 	    xbt_error_name(errcode));
     return errcode;
   }
-   
+  
   /* FIXME: What if there is a remote error? */
    
   if((errcode=gras_socket_client_ext(gras_socket_peer_name(peer),
@@ -277,6 +286,21 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
 /**
  * \brief request a bandwidth measurement between two remote hosts
  *
+ * \arg from_name: Name of the first host 
+ * \arg from_port: port on which the first process is listening for messages
+ * \arg to_name: Name of the second host 
+ * \arg to_port: port on which the second process is listening (for messages, do not 
+ * give a measurement socket here. The needed measurement sockets will be created 
+ * automatically and negociated between the peers)
+ * \arg buf_size: Size of the socket buffer
+ * \arg exp_size: Total size of data sent across the network
+ * \arg msg_size: Size of each message sent. (\e expSize % \e msgSize) messages will be sent.
+ * \arg sec: where the result (in seconds) should be stored.
+ * \arg bw: observed Bandwidth (in kb/s)
+ *
+ * Conduct a bandwidth test from the process from_host:from_port to to_host:to_port.
+ * This call is blocking until the end of the experiment.
+ *
  * Results are reported in last args, and sizes are in kb.
  */
 xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
@@ -314,6 +338,7 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
 	*sec,*bw);
 
   gras_socket_close(sock);
+  free(result);
   return no_error;
 }
 
@@ -330,8 +355,13 @@ int amok_bw_cb_bw_request(gras_socket_t    expeditor,
   TRY(amok_bw_test(peer,
 		   request->buf_size,request->exp_size,request->msg_size,
 		   &(result->sec),&(result->bw)));
+
+  TRY(gras_msg_send(expeditor,gras_msgtype_by_name("BW result"),&result));
+
+  gras_os_sleep(1);
   gras_socket_close(peer);
   free(request);
+  free(result);
   
   return 1;
 
