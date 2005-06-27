@@ -6,6 +6,12 @@
 \endhtmlonly
 </center>
 
+\section hot_news HOT NEWS
+
+<b>SimGrid 2.94 (aka SimGrid 3beta1) was released on 13 May 2005. Get it from 
+<a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.</b> 
+SimGrid 3 was never as close as it is now...
+
 \section quick Quick start
 
 SimGrid is a toolkit that provides core functionalities for the simulation
@@ -127,7 +133,9 @@ want to do and what would be the result of your work.
 
 If your favorite programming environment/model is not there (BSP,
 components, etc.) is not represented in the SimGrid toolkit yet, you may
-consider adding it. You should contact us first, though.
+consider adding it. You should contact us first on the 
+<a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel>SimGrid 
+developers mailing list</a>, though.
 
 Any question, remark or suggestion are welcome on the 
 <a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user>SimGrid users
