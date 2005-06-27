@@ -17,7 +17,6 @@ XBT_LOG_NEW_SUBCATEGORY(dict_add,dict,"Dictionaries internals: elements addition
 XBT_LOG_NEW_SUBCATEGORY(dict_search,dict,"Dictionaries internals: searching");
 XBT_LOG_NEW_SUBCATEGORY(dict_remove,dict,"Dictionaries internals: elements removal");
 XBT_LOG_NEW_SUBCATEGORY(dict_collapse,dict,"Dictionaries internals: post-removal cleanup");
-XBT_LOG_NEW_SUBCATEGORY(dict_multi,dict,"Dictionaries internals: dictionaries of dictionaries");
 
 /*####[ Private prototypes ]#################################################*/
 
