@@ -14,4 +14,4 @@ $exenv ./tokenS_node@EXEEXT@ 4010 127.0.0.1 4020 $@ &
 $exenv ./tokenS_node@EXEEXT@ 4020 127.0.0.1 4030 $@ &
 $exenv ./tokenS_node@EXEEXT@ 4030 127.0.0.1 4040 $@ &
 $exenv ./tokenS_node@EXEEXT@ 4040 127.0.0.1 4050 $@ &
-$exenv ./tokenS_node@EXEEXT@ 4050 127.0.0.1 4000 $@ &
+$exenv ./tokenS_node@EXEEXT@ 4050 127.0.0.1 4000 $@ 
