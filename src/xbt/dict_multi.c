@@ -2,246 +2,231 @@
 
 /* dict_multi - dictionnaries of dictionnaries of ... of data               */
 
-/* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
+/* Copyright (c) 2003-2005 Martin Quinson. All rights reserved.             */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_private.h"
+#include "dict_private.h"
 
-#include <stdlib.h> /* malloc() */
-#include <string.h> /* strlen() */
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict_multi,dict, "Dictionaries of multiple keys");
 
-/*####[ Multi dict functions ]##############################################*/
-/*###############################"##########################################*/
-/**
- * gras_mutidict_set:
+static void _free_dict(void*d) {
+  xbt_dict_t dict=*(xbt_dict_t*)d;
+  xbt_dict_free(&dict);
+}
+
+/** \brief Insert \e data under all the keys contained in \e keys, providing their sizes in \e lens.
  *
- * @head: the head of dict
- * @keycount: the number of the key
- * @key: the key
- * @data: the data to set
- * @Returns: gras_error_t
+ * \arg mdict: the multi-dict
+ * \arg keys: dynar of (char *) containing all the keys
+ * \arg lens: length of each element of \e keys
+ * \arg data: what to store in the structure
+ * \arg free_ctn: function to use to free the pushed content on need
  *
- * set the data in the structure under the @keycount @key.
+ * Dynars are not modified during the operation.
  */
 
-gras_error_t
-gras_multidict_set_ext(gras_dict_t    **pp_head,
-                          int              keycount,
-                          char           **key,
-                          int             *key_len,
-                          void            *data,
-                          void_f_pvoid_t  *free_ctn) {
-  gras_error_t  errcode   = no_error;
-  gras_dictelm_t  *p_elm    =     NULL;
-  gras_dictelm_t  *p_subdict =     NULL;
-  int           i         =        0;
+xbt_error_t
+xbt_multidict_set_ext(xbt_dict_t  mdict,
+                      xbt_dynar_t keys, xbt_dynar_t     lens,
+                      void       *data, void_f_pvoid_t *free_ctn) {
+                      
+  xbt_error_t errcode;
+  xbt_dict_t thislevel,nextlevel;
+  int i;
+  
+  unsigned long int thislen;
+  char *thiskey;
+  int keys_len=xbt_dynar_length(keys);
 
-  CDEBUG2(dict_multi, "fast_multidict_set(%p,%d). Keys:", *pp_head, keycount);
+  xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
+  xbt_assert0(keys_len, "Can't set a zero-long key set in a multidict");
 
-  /*
-  for (i = 0; i < keycount; i++) {
-    CDEBUG1(dict_multi, "\"%s\"", key[i]);
-  }
-  */
+  DEBUG2("xbt_multidict_set(%p,%d)", mdict, keys_len);
 
-  gras_assert0(keycount >= 1, "Can't set less than one key in a multidict");
-
-  if (keycount == 1)
-    return gras_dict_set_ext(pp_head, key[0], key_len[0], data, free_ctn);
-
-  if (!*pp_head) {
-    TRY(_gras_dict_alloc(NULL, 0, 0, NULL, NULL, pp_head));
-  }
-
-  p_elm = *pp_head;
-
-  for (i = 0; i < keycount-1; i++) {
+  for (i=0         , thislevel = mdict    ; 
+       i<keys_len-1                       ; 
+       i++         , thislevel = nextlevel) {
+       
+    xbt_dynar_get_cpy(keys, i, &thiskey);
+    xbt_dynar_get_cpy(lens, i, &thislen);
+    
+    DEBUG5("multi_set: at level %d, len=%ld, key=%p |%*s|", i, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level */
-    TRYCATCH(gras_dict_get(p_elm, key[i], (void*)&p_subdict), mismatch_error);
+    TRYCATCH(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel), mismatch_error);
 
     /* make sure the dict of next level exists */
     if (errcode == mismatch_error) {
-      TRY(_gras_dict_alloc(NULL, 0, 0, NULL, NULL, &p_subdict));
-      TRY(gras_dict_set_ext(&p_elm, key[i], key_len[i], &p_subdict,
-                               _free_dict));
+      nextlevel=xbt_dict_new();
+      xbt_dict_set_ext(thislevel, thiskey, thislen, &nextlevel, _free_dict);
     }
-
-    p_elm = p_subdict;
   }
 
-  return gras_dict_set_ext(&p_elm, key[i], key_len[i], data, free_ctn);
+  xbt_dynar_get_cpy(keys, i, &thiskey);
+  xbt_dynar_get_cpy(lens, i, &thislen);
+  
+  xbt_dict_set_ext(thislevel, thiskey, thislen, data, free_ctn);
+  
+  return no_error;
 }
 
-gras_error_t
-gras_multidict_set(gras_dictelm_t    **pp_head,
-                      int              keycount,
-                      char           **key,
-                      void            *data,
-                      void_f_pvoid_t  *free_ctn) {
-  gras_error_t  errcode = no_error;
-  int          *key_len = NULL;
-  int           i       = 0;
-
-  key_len = malloc(keycount * sizeof (int));
-  if (!key_len)
-    RAISE_MALLOC;
-
-  for (i = 0; i < keycount; i++) {
-    key_len[i] = 1+strlen(key[i]);
-  }
-
-  TRYCLEAN(gras_multidict_set_ext(pp_head, keycount, key, key_len, data, free_ctn),
-           gras_free(key_len));
-
-  gras_free(key_len);
-
-  return errcode;
-}
-
-/**
- * gras_mutidict_get:
+/** \brief Insert \e data under all the keys contained in \e keys
  *
- * @head: the head of dict
- * @keycount: the number of the key
- * @key: the key
- * @data: where to put the got data
- * @Returns: gras_error_t
- *
- * Search the given @key. data=NULL when not found
+ * \arg head: the head of dict
+ * \arg keys: dynar of null-terminated strings containing all the keys
+ * \arg data: what to store in the structure
+ * \arg free_ctn: function to use to free the pushed content on need
  */
+xbt_error_t
+xbt_multidict_set(xbt_dict_t  mdict,
+                  xbt_dynar_t keys,
+                  void       *data,  void_f_pvoid_t *free_ctn) {
+  xbt_error_t errcode;
+  xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
+  int i;
 
-
-gras_error_t
-gras_multidict_get_ext(gras_dictelm_t    *p_head,
-                            int             keycount,
-                            const char    **key,
-                            int            *key_len,
-                            /* OUT */void **data) {
-  gras_error_t  errcode = no_error;
-  gras_dictelm_t  *p_elm  =   p_head;
-  int           i       =        0;
-
-  CDEBUG2(dict_multi, "fast_multidict_get(%p, %d). Keys:", p_head, keycount);
-
-  /*
-  for (i = 0; i < keycount; i++) {
-    CDEBUG1(dict_multi, "\"%s\"", key[i]);
-  }
-  */
-
-  i = 0;
-
-  while (p_elm && i < keycount-1) {
-
-    TRY(gras_dict_get_ext(p_elm, key[i], key_len[i], (void**)p_elm));
-
-    /*
-    if (p_elm) {
-      CDEBUG3(dict_multi,"Found level %d for key %s in multitree %", i, key[i], p_head);
-    } else {
-      CDEBUG3(dict_multi,"NOT found level %d for key %s in multitree %p", i, key[i], p_head);
-    }
-    */
-
-    i++;
+  for (i = 0; i < xbt_dynar_length(keys); i++) {
+    char *thiskey = xbt_dynar_get_as(keys, i, char*);
+    unsigned long int thislen = (unsigned long int) strlen(thiskey);
+    DEBUG2("Push %ld as level %d length",thislen, i);
+    xbt_dynar_push(lens,&thislen);
   }
 
-  if (p_elm) { /* Found all dicts to the data */
-
-    /*    gras_dict_dump(dict,&gras_dict_prints); */
-    return gras_dict_get_ext(p_elm, key[i], key_len[i], data);
-
-  } else {
-
-    *data = NULL;
-
-    return 1;
-  }
-
+  errcode = xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
+  xbt_dynar_free(&lens);         
+  return errcode;
 }
 
-gras_error_t
-gras_multidict_get(gras_dictelm_t    *p_head,
-                        int             keycount,
-                        const char    **key,
-                        /* OUT */void **data) {
-  gras_error_t  errcode = no_error;
-  int          *key_len = NULL;
-  int           i       = 0;
+/** \brief Insert \e data under all the keys contained in \e keys, providing their sizes in \e lens.
+ *
+ * \arg mdict: the multi-dict
+ * \arg keys: dynar of (char *) containing all the keys
+ * \arg lens: length of each element of \e keys
+ * \arg data: where to put what was found in structure
+ * \arg free_ctn: function to use to free the pushed content on need
+ *
+ * Dynars are not modified during the operation.
+ */
+xbt_error_t
+xbt_multidict_get_ext(xbt_dict_t  mdict,
+                      xbt_dynar_t keys,   xbt_dynar_t lens,
+                      /*OUT*/void **data) {
+  xbt_error_t errcode;
+  xbt_dict_t thislevel,nextlevel;
+  int i;
 
-  key_len = malloc(keycount * sizeof (int));
-  if (!key_len)
-    RAISE_MALLOC;
+  unsigned long int thislen;
+  char *thiskey;
+  int keys_len=xbt_dynar_length(keys);
 
-  for (i = 0; i < keycount; i++) {
-    key_len[i] = 1+strlen(key[i]);
+  xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
+  xbt_assert0(xbt_dynar_length(keys) >= 1, "Can't get a zero-long key set in a multidict");
+  
+  DEBUG2("xbt_multidict_get(%p, %ld)", mdict, xbt_dynar_length(keys));
+
+  for (i=0         , thislevel=mdict      ; 
+       i<keys_len-1                       ; 
+       i++         , thislevel = nextlevel) {
+       
+    xbt_dynar_get_cpy(keys, i, &thiskey);
+    xbt_dynar_get_cpy(lens, i, &thislen);
+
+    DEBUG5("multi_get: at level %d, len=%ld, key=%p |%*s|", i, thislen, thiskey, (int)thislen,thiskey);
+
+    /* search the dict of next level: let mismatch raise if not found */
+    TRY(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel));
+  }
+  
+  xbt_dynar_get_cpy(keys, i, &thiskey);
+  xbt_dynar_get_cpy(lens, i, &thislen);
+  
+  return xbt_dict_get_ext(thislevel, thiskey, thislen, data);
+}
+
+xbt_error_t
+xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys, /*OUT*/void **data) {
+  xbt_error_t errcode;
+  xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
+  int i;
+  
+  for (i = 0; i < xbt_dynar_length(keys); i++) {
+    char *thiskey = xbt_dynar_get_as(keys, i, char*);
+    unsigned long int thislen = (unsigned long int) strlen(thiskey);
+    xbt_dynar_push(lens,&thislen);
   }
 
-  TRYCLEAN(gras_multidict_get_ext(p_head, keycount, key, key_len, data),
-           gras_free(key_len));
-  gras_free(key_len);
-
+  errcode = xbt_multidict_get_ext(mdict, keys, lens, data),
+  xbt_dynar_free(&lens);         
   return errcode;
 }
 
 
-/**
- *  gras_mutidict_remove:
+/** \brief Remove the entry under all the keys contained in \e keys, providing their sizes in \e lens.
  *
- *  @head: the head of dict
- *  @keycount: the number of the key
- *  @key: the key
- *  @Returns: gras_error_t
+ * \arg mdict: the multi-dict
+ * \arg keys: dynar of (char *) containing all the keys
+ * \arg lens: length of each element of \e keys
+ * \arg data: what to store in the structure
+ * \arg free_ctn: function to use to free the pushed content on need
  *
- * Remove the entry associated with the given @key
+ * Dynars are not modified during the operation.
+ *
  * Removing a non-existant key is ok.
  */
 
-gras_error_t
-gras_multidict_remove_ext(gras_dictelm_t  *p_head,
-                          int           keycount,
-                          const char  **key,
-                          int          *key_len) {
-  gras_dictelm_t *p_elm = p_head;
-  int          i      =      0;
+xbt_error_t
+xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
+  xbt_error_t errcode;
+  xbt_dict_t thislevel,nextlevel;
+  int i;
 
-  while (p_elm && i < keycount-1) {
-    if (!gras_dict_get_ext(p_elm, key[i], key_len[i], (void**)&p_elm)) {
-      return 0;
-    }
+  xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
+  xbt_assert0(xbt_dynar_length(keys), "Can't remove a zero-long key set in a multidict");
+
+  unsigned long int thislen;
+  char *thiskey;
+  int keys_len=xbt_dynar_length(keys);
+
+  xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
+  xbt_assert0(keys_len, "Can't set a zero-long key set in a multidict");
+
+  for (i=0         , thislevel=mdict      ; 
+       i<keys_len-1                       ; 
+       i++         , thislevel = nextlevel) {
+       
+    xbt_dynar_get_cpy(keys, i, &thiskey);
+    xbt_dynar_get_cpy(lens, i, &thislen);
+
+    /* search the dict of next level */
+    TRYCATCH(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel), mismatch_error);
+
+    /* If non-existant entry, nothing to do */
+    if (errcode == mismatch_error)
+      return no_error;
   }
 
-  if (p_elm) {
-    /* Found all dicts to the data */
-    return gras_dict_remove_ext(p_elm, key[i], key_len[i]);
-  } else {
-    return 1;
-  }
-
+  xbt_dynar_get_cpy(keys, i, &thiskey);
+  xbt_dynar_get_cpy(lens, i, &thislen);
+  
+  return xbt_dict_remove_ext(thislevel, thiskey, thislen);
 }
 
-gras_error_t
-gras_multidict_remove(gras_dictelm_t  *p_head,
-                      int           keycount,
-                      const char  **key) {
-  gras_error_t  errcode = no_error;
-  int          *key_len = NULL;
-  int           i       = 0;
+xbt_error_t
+xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys) {
 
-  key_len = malloc(keycount * sizeof (int));
-  if (!key_len)
-    RAISE_MALLOC;
-
-  for (i = 0; i < keycount; i++) {
-    key_len[i] = 1+strlen(key[i]);
+  xbt_error_t errcode;
+  xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
+  int i;
+      
+  for (i = 0; i < xbt_dynar_length(keys); i++) {
+    char *thiskey = xbt_dynar_get_as(keys, i, char*);
+    unsigned long int thislen = strlen(thiskey);
+    xbt_dynar_push(lens,&thislen);
   }
-
-  TRYCLEAN(gras_multidict_remove_ext(p_head, keycount, key, key_len),
-           gras_free(key_len));
-  gras_free(key_len);
-
+                      
+  errcode = xbt_multidict_remove_ext(mdict, keys, lens);
+  xbt_dynar_free(&lens);
   return errcode;
 }
