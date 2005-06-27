@@ -39,7 +39,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
 
   res->name = (char*)strdup(name);
   res->name_len = strlen(name);
-  res->flags = 0;
+  res->cycle = 0;
       
   xbt_set_add(gras_datadesc_set_local,
 	       (xbt_set_elm_t)res,&gras_ddt_freev);
@@ -247,7 +247,7 @@ gras_datadesc_struct_close(gras_datadesc_type_t struct_type) {
  */
 void
 gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
-  ddt->flags |= gras_datadesc_flag_cycle;
+  ddt->cycle = 1;
 }
 
 /**
@@ -259,7 +259,7 @@ gras_datadesc_cycle_set(gras_datadesc_type_t ddt) {
  */
 void
 gras_datadesc_cycle_unset(gras_datadesc_type_t ddt) {
-  ddt->flags &= ~(gras_datadesc_flag_cycle);
+  ddt->cycle = 0;
 }
 
 /** \brief Declare a new union description */

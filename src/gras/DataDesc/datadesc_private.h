@@ -200,13 +200,6 @@ union u_gras_datadesc_category {
         gras_dd_cat_array_t    array_data;
 };
 
-/* flags about the datadesc */
-enum {
-   gras_datadesc_flag_cycle = 1, /* true if the datatype may contain cycle */
-   gras_datadesc_flag_sentinel = 1024
-} gras_datadesc_flag_t;
-
-
 /****************************************/
 /* The holy grail: type descriptor type */
 /****************************************/
@@ -233,9 +226,11 @@ typedef struct s_gras_datadesc_type {
   gras_datadesc_type_cb_void_t         send;
   gras_datadesc_type_cb_void_t         recv;
    
-  int                                  flags; /* possible flags are in gras_datadesc_flag_t */
+  /* flags */
+  int                                  cycle :1;
    
-  char                                 extra[SIZEOF_MAX]; /* random value for users (like default value or whatever) */
+  /* random value for users (like default value or whatever) */
+  char                                 extra[SIZEOF_MAX]; 
 
 } s_gras_datadesc_type_t;
 

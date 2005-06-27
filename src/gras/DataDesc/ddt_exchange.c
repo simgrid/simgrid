@@ -180,7 +180,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
       
       VERB1("Send field %s",field->name);
       TRY(gras_datadesc_send_rec(sock,state,refs,sub_type, field_data, 
-				 detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				 detect_cycle || sub_type->cycle));
       
     }
     VERB1("<< Sent all fields of the structure %s", type->name);
@@ -220,7 +220,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
       field->send(type,state,data);
     
     TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, data, 
-			       detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+			       detect_cycle || sub_type->cycle));
           
     break;
   }
@@ -262,7 +262,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
        if (detect_cycle)
 	 xbt_dict_set_ext(refs, (char*)ref, sizeof(void*), ref, NULL);
        TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, *ref, 
-				  detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				  detect_cycle || sub_type->cycle));
 	  
     } else if (errcode == no_error) {
        VERB1("Not sending data referenced at %p (already done)", (void*)*ref);
@@ -309,7 +309,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
     } else {
       for (cpt=0; cpt<count; cpt++) {
 	TRY(gras_datadesc_send_rec(sock,state,refs, sub_type, ptr, 
-				   detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				   detect_cycle || sub_type->cycle));
 	ptr += elm_size;
       }
     }
@@ -342,7 +342,7 @@ xbt_error_t gras_datadesc_send(gras_socket_t        sock,
   refs = xbt_dict_new();
   state = gras_cbps_new();
   
-  errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src, (type->flags & gras_datadesc_flag_cycle));
+  errcode = gras_datadesc_send_rec(sock,state,refs,type,(char*)src, type->cycle);
 
   xbt_dict_free(&refs);
   gras_cbps_free(&state);
@@ -415,7 +415,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,NULL,0,
 				 field_data,-1, 
-				 detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				 detect_cycle || sub_type->cycle));
        
       if (field->recv)
         field->recv(type,state,(void*)l_data);
@@ -453,7 +453,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
     TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 			       r_arch,NULL,0,
 			       l_data,-1,
-			       detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+			       detect_cycle || sub_type->cycle));
     if (field->recv)
        field->recv(type,state,l_data);
 
@@ -535,7 +535,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				 r_arch,r_ref,pointer_type->size[r_arch],
 				 (char*)l_referenced, subsubcount,
-				 detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				 detect_cycle || sub_type->cycle));
 			       
       *(void**)l_data=l_referenced;
       VERB3("'%s' remotely referenced at %p locally at %p",
@@ -625,7 +625,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       for (cpt=0; cpt<count; cpt++) {
 	TRY(gras_datadesc_recv_rec(sock,state,refs, sub_type,
 				   r_arch, NULL, 0, ptr,-1,
-				   detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				   detect_cycle || sub_type->cycle));
 				   
 	ptr += elm_size;
       }
@@ -667,7 +667,7 @@ gras_datadesc_recv(gras_socket_t         sock,
   errcode = gras_datadesc_recv_rec(sock, state, refs, type, 
 				   r_arch, NULL, 0,
 				   (char *) dst,-1, 
-				   (type->flags & gras_datadesc_flag_cycle));
+				   type->cycle);
 
   xbt_dict_free(&refs);
   gras_cbps_free(&state);
@@ -728,7 +728,7 @@ gras_datadesc_gen_send_rec(gras_socket_t         sock,
       printf("  VERB1(\"Send field %s\");\n",field->name);
       printf("  data += %lu;\n",field->offset[GRAS_THISARCH]);
       TRY(gras_datadesc_gen_send_rec(sock,state,refs,sub_type, field_data, 
-				     detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				     detect_cycle || sub_type->cycle));
       printf("  data -= %lu;\n",field->offset[GRAS_THISARCH]);
       
       xbt_assert0(!field->recv, "Callbacks not implemented in IDL compiler");
@@ -769,7 +769,7 @@ gras_datadesc_gen_send_rec(gras_socket_t         sock,
       field->send(state,data);
     
     TRY(gras_datadesc_gen_send_rec(sock,state,refs, sub_type, data,
-				   detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				   detect_cycle || sub_type->cycle));
            
     break;
   }
@@ -811,7 +811,7 @@ gras_datadesc_gen_send_rec(gras_socket_t         sock,
        if (detect_cycle)
 	 xbt_dict_set_ext(refs, (char*)ref, sizeof(void*), ref, NULL);
        TRY(gras_datadesc_gen_send_rec(sock,state,refs, sub_type, *ref, 
-				      detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				      detect_cycle || sub_type->cycle));
 	  
     } else if (errcode == no_error) {
        VERB1("Not sending data referenced at %p (already done)", (void*)*ref);
@@ -858,7 +858,7 @@ gras_datadesc_gen_send_rec(gras_socket_t         sock,
     } else {
       for (cpt=0; cpt<count; cpt++) {
 	TRY(gras_datadesc_gen_send_rec(sock,state,refs, sub_type, ptr, 
-				       detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				       detect_cycle || sub_type->cycle));
 	ptr += elm_size;
       }
     }
@@ -892,7 +892,7 @@ xbt_error_t gras_datadesc_gen_send(gras_socket_t        sock,
   printf("xbt_error_t gras_%s_send(gras_socket_t sock,void *dst){\n",
 	 type->name);
   errcode = gras_datadesc_gen_send_rec(sock,state,refs,type,(char*)src, 
-				       detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle));
+				       detect_cycle || sub_type->cycle);
   printf("}\n");
   
   xbt_dict_free(&refs);
@@ -966,7 +966,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
       TRY(gras_datadesc_gen_recv_rec(sock,state,refs, sub_type,
 				     r_arch,NULL,0,
 				     field_data,-1,
-				     detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				     detect_cycle || sub_type->cycle));
       if (field->recv)
         field->recv(type,state,data);
 
@@ -1003,7 +1003,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
     TRY(gras_datadesc_gen_recv_rec(sock,state,refs, sub_type,
 				   r_arch,NULL,0,
 				   l_data,-1,
-				   detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				   detect_cycle || sub_type->cycle));
     if (field->recv)
         field->recv(type,state,data);
 		  
@@ -1085,7 +1085,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
       TRY(gras_datadesc_gen_recv_rec(sock,state,refs, sub_type,
 				     r_arch,r_ref,pointer_type->size[r_arch],
 				     (char*)l_referenced, subsubcount,
-				     detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				     detect_cycle || sub_type->cycle));
 				     
       *(void**)l_data=l_referenced;
       VERB3("'%s' remotely referenced at %p locally at %p",
@@ -1175,7 +1175,7 @@ gras_datadesc_gen_recv_rec(gras_socket_t         sock,
       for (cpt=0; cpt<count; cpt++) {
 	TRY(gras_datadesc_gen_recv_rec(sock,state,refs, sub_type,
 				       r_arch, NULL, 0, ptr,-1,
-				       detect_cycle || (sub_type->flags & gras_datadesc_flag_cycle)));
+				       detect_cycle || sub_type->cycle));
 				      
 	ptr += elm_size;
       }
@@ -1219,7 +1219,7 @@ gras_datadesc_gen_recv(gras_socket_t         sock,
   errcode = gras_datadesc_gen_recv_rec(sock, state, refs, type, 
 				       r_arch, NULL, 0,
 				       (char *) dst,-1, 
-				       (sub_type->flags & gras_datadesc_flag_cycle)); 
+				       sub_type->cycle); 
 
   printf("}\n");
   xbt_dict_free(&refs);
