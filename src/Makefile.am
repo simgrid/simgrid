@@ -69,7 +69,7 @@ EXTRA_DIST= \
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-VERSION_INFO= -release 20050131 -version-info 0:0:0
+VERSION_INFO= -release 20050627 -version-info 0:0:0
 # from `info libtool "Updating version info"` 
 # and  `info libtool "Release numbers"` 
 #
@@ -98,18 +98,19 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la
 
 COMMON_SRC=\
   \
-  xbt_modinter.h    gras_modinter.h                                            \
+  xbt_modinter.h    gras_modinter.h                                          \
   \
-  xbt/sysdep.c                                                                 \
+  xbt/sysdep.c                                                               \
   xbt/log.c         xbt/log_default_appender.c   xbt/error.c                 \
-  xbt/dynar.c                                                                  \
+  xbt/dynar.c                                                                \
   xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \
-  xbt/heap.c                                                                    \
-  xbt/fifo.c                                                                    \
-  xbt/swag.c                                                                   \
-  xbt/set.c                                                                    \
-  xbt/module.c                                                                 \
-  xbt/config.c                                                                 \
+  xbt/dict_multi.c                                                           \
+  xbt/heap.c                                                                 \
+  xbt/fifo.c                                                                 \
+  xbt/swag.c                                                                 \
+  xbt/set.c                                                                  \
+  xbt/module.c                                                               \
+  xbt/config.c                                                               \
   \
   gras/gras.c \
   \
