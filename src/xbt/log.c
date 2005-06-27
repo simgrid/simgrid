@@ -262,10 +262,9 @@ XBT_LOG_NEW_CATEGORY(surf,"All SURF categories");
 XBT_LOG_NEW_CATEGORY(msg,"All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mechanism itself");
 
-void xbt_log_init(int *argc,char **argv, const char *defaultlog) {
+void xbt_log_init(int *argc,char **argv) {
   int i,j;
   char *opt;
-  int found=0;
 
   /* Set logs and init log submodule */
   for (i=1; i<*argc; i++) {
@@ -273,7 +272,6 @@ void xbt_log_init(int *argc,char **argv, const char *defaultlog) {
 	!strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
 	!strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
 	!strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))) {
-      found = 1;
       opt=strchr(argv[i],'=');
       opt++;
       xbt_log_control_set(opt);
@@ -286,9 +284,6 @@ void xbt_log_init(int *argc,char **argv, const char *defaultlog) {
       (*argc)--;
       i--; /* compensate effect of next loop incrementation */
     }
-  }
-  if (!found && defaultlog) {
-     xbt_log_control_set(defaultlog);
   }
 }
 

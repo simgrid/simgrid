@@ -30,12 +30,6 @@ struct xbt_module_ {
 /** @brief Initialize the xbt mechanisms. */
 void 
 xbt_init(int *argc, char **argv) {
-  xbt_init_defaultlog(argc, argv, NULL);
-}
-
-/** @brief Initialize the xbt mechanisms. */
-void
-xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
   static short int first_run = 1;
   if (!first_run)
     return;
@@ -43,7 +37,7 @@ xbt_init_defaultlog(int *argc,char **argv, const char *defaultlog) {
   first_run = 0;
   VERB0("Initialize XBT");
   
-  xbt_log_init(argc,argv,defaultlog);
+  xbt_log_init(argc,argv);
 }
 
 /** @brief Finalize the xbt mechanisms. */
