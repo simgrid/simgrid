@@ -49,7 +49,7 @@ typedef struct {
  *** Code
  ***/
 xbt_error_t
-gras_trp_file_setup(gras_trp_plugin_t *plug) {
+gras_trp_file_setup(gras_trp_plugin_t plug) {
 
   gras_trp_file_plug_data_t *file = xbt_new(gras_trp_file_plug_data_t,1);
 
@@ -74,7 +74,7 @@ xbt_error_t
 gras_socket_client_from_file(const char*path,
 			     /* OUT */ gras_socket_t *dst) {
   xbt_error_t errcode;
-  gras_trp_plugin_t *trp;
+  gras_trp_plugin_t trp;
 
   xbt_assert0(gras_if_RL(),
 	       "Cannot use file as socket in the simulator");
@@ -117,7 +117,7 @@ xbt_error_t
 gras_socket_server_from_file(const char*path,
 			     /* OUT */ gras_socket_t *dst) {
   xbt_error_t errcode;
-  gras_trp_plugin_t *trp;
+  gras_trp_plugin_t trp;
 
   xbt_assert0(gras_if_RL(),
 	       "Cannot use file as socket in the simulator");

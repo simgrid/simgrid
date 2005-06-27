@@ -34,7 +34,7 @@ gras_trp_select(double timeout,
  ***/
 
 /* A plugin type */
-typedef struct gras_trp_plugin_ gras_trp_plugin_t;
+typedef struct gras_trp_plugin_ s_gras_trp_plugin_t, *gras_trp_plugin_t;
 
 /* A plugin type */
 struct gras_trp_plugin_ {
@@ -43,10 +43,10 @@ struct gras_trp_plugin_ {
   /* dst pointers are created and initialized with default values
      before call to socket_client/server. 
      Retrive the info you need from there. */
-  xbt_error_t (*socket_client)(gras_trp_plugin_t *self,
-				gras_socket_t      dst);
-  xbt_error_t (*socket_server)(gras_trp_plugin_t *self,
-				gras_socket_t      dst);
+  xbt_error_t (*socket_client)(gras_trp_plugin_t self,
+				gras_socket_t    dst);
+  xbt_error_t (*socket_server)(gras_trp_plugin_t self,
+				gras_socket_t    dst);
    
   xbt_error_t (*socket_accept)(gras_socket_t  sock,
 				gras_socket_t *dst);
@@ -70,12 +70,12 @@ struct gras_trp_plugin_ {
  
    /* exit is responsible for freeing data and telling the OS this plugin goes */
    /* exit=NULL, data gets freed. (ie exit function needed only when data contains pointers) */
-  void         (*exit)(gras_trp_plugin_t *);
+  void         (*exit)(gras_trp_plugin_t);
 };
 
 xbt_error_t
 gras_trp_plugin_get_by_name(const char *name,
-			    gras_trp_plugin_t **dst);
+			    gras_trp_plugin_t *dst);
 
 /* Data of this module specific to each process
  * (used by sg_process.c to cleanup the SG channel cruft)

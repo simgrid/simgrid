@@ -202,7 +202,7 @@ gras_trp_select(double timeout,
   return timeout_error;
 }
 
-xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug) {
+xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t plug) {
   return mismatch_error;
 }
 

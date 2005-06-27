@@ -33,7 +33,7 @@ gras_trp_select(double timeout,
   double startTime=gras_os_time();
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
   gras_trp_sg_sock_data_t *sockdata;
-  gras_trp_plugin_t *trp;
+  gras_trp_plugin_t trp;
 
   gras_socket_t sock_iter; /* iterating over all sockets */
   int cursor,cpt;
@@ -149,10 +149,10 @@ gras_trp_select(double timeout,
   
 /* dummy implementations of the functions used in RL mode */
 
-xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug) {
+xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t plug) {
   return mismatch_error;
 }
-xbt_error_t gras_trp_file_setup(gras_trp_plugin_t *plug) {
+xbt_error_t gras_trp_file_setup(gras_trp_plugin_t plug) {
   return mismatch_error;
 }
 

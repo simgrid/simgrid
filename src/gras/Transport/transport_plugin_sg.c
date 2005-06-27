@@ -29,9 +29,9 @@ static xbt_error_t find_port(gras_hostdata_t *hd, int port,
 			      gras_sg_portrec_t *hpd);
 
 
-xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t self,
 				       /* OUT */ gras_socket_t sock);
-xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t self,
 				       /* OUT */ gras_socket_t sock);
 void         gras_trp_sg_socket_close(gras_socket_t sd);
 
@@ -72,7 +72,7 @@ static xbt_error_t find_port(gras_hostdata_t *hd, int port,
 
 
 xbt_error_t
-gras_trp_sg_setup(gras_trp_plugin_t *plug) {
+gras_trp_sg_setup(gras_trp_plugin_t plug) {
 
   gras_trp_sg_plug_data_t *data=xbt_new(gras_trp_sg_plug_data_t,1);
 
@@ -90,7 +90,7 @@ gras_trp_sg_setup(gras_trp_plugin_t *plug) {
   return no_error;
 }
 
-xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t self,
 				       /* OUT */ gras_socket_t sock){
 
   xbt_error_t errcode;
@@ -149,7 +149,7 @@ xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t *self,
   return no_error;
 }
 
-xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t *self,
+xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t self,
 				       gras_socket_t sock){
 
   xbt_error_t errcode;

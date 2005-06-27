@@ -21,7 +21,7 @@ static void
 gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
   xbt_error_t errcode;
 
-  gras_trp_plugin_t *plug = xbt_new0(gras_trp_plugin_t, 1);
+  gras_trp_plugin_t plug = xbt_new0(s_gras_trp_plugin_t, 1);
   
   DEBUG1("Create plugin %s",name);
 
@@ -126,7 +126,7 @@ gras_trp_exit(void){
 
 
 void gras_trp_plugin_free(void *p) {
-  gras_trp_plugin_t *plug = p;
+  gras_trp_plugin_t plug = p;
 
   if (plug) {
     if (plug->exit) {
@@ -155,18 +155,20 @@ void gras_trp_socket_new(int incoming,
   DEBUG1("Create a new socket (%p)", (void*)sock);
 
   sock->plugin = NULL;
-  sock->sd     = -1;
-  sock->data   = NULL;
 
   sock->incoming  = incoming ? 1:0;
   sock->outgoing  = incoming ? 0:1;
   sock->accepting = incoming ? 1:0;
+  sock->meas = 0;
 
+  sock->sd     = -1;
   sock->port      = -1;
   sock->peer_port = -1;
   sock->peer_name = NULL;
-  sock->meas = 0;
 
+  sock->data   = NULL;
+  sock->bufdata = NULL;
+  
   *dst = sock;
 
   xbt_dynar_push(gras_socketset_get(),dst);
@@ -189,7 +191,7 @@ gras_socket_server_ext(unsigned short port,
 		       /* OUT */ gras_socket_t *dst) {
  
   xbt_error_t errcode;
-  gras_trp_plugin_t *trp;
+  gras_trp_plugin_t trp;
   gras_socket_t sock;
 
   *dst = NULL;
@@ -242,7 +244,7 @@ gras_socket_client_ext(const char *host,
 		       /* OUT */ gras_socket_t *dst) {
  
   xbt_error_t errcode;
-  gras_trp_plugin_t *trp;
+  gras_trp_plugin_t trp;
   gras_socket_t sock;
 
   *dst = NULL;
@@ -376,7 +378,7 @@ gras_trp_flush(gras_socket_t sd) {
 
 xbt_error_t
 gras_trp_plugin_get_by_name(const char *name,
-			    gras_trp_plugin_t **dst){
+			    gras_trp_plugin_t *dst){
 
   return xbt_dict_get(_gras_trp_plugins,name,(void**)dst);
 }
@@ -391,6 +393,25 @@ char *gras_socket_peer_name(gras_socket_t sock) {
   return sock->peer_name;
 }
 
+/** \brief Check if the provided socket is a measurement one (or a regular one) */
+int gras_socket_is_meas(gras_socket_t sock) {
+  return sock->meas;
+}
+
+/** \brief Send a chunk of (random) data over a measurement socket 
+ *
+ * @param peer measurement socket to use for the experiment
+ * @param timeout timeout (in seconds)
+ * @param exp_size total amount of data to send (in bytes).
+ * @param msg_size size of each chunk sent over the socket (in bytes).
+ *
+ * Calls to gras_socket_meas_send() and gras_socket_meas_recv() on 
+ * each side of the socket should be paired. 
+ * 
+ * The exchanged data is zeroed to make sure it's initialized, but
+ * there is no way to control what is sent (ie, you cannot use these 
+ * functions to exchange data out of band).
+ */
 xbt_error_t gras_socket_meas_send(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int exp_size, 
@@ -419,6 +440,11 @@ xbt_error_t gras_socket_meas_send(gras_socket_t peer,
   return no_error;
 }
 
+/** \brief Receive a chunk of data over a measurement socket 
+ *
+ * Calls to gras_socket_meas_send() and gras_socket_meas_recv() on 
+ * each side of the socket should be paired. 
+ */
 xbt_error_t gras_socket_meas_recv(gras_socket_t peer, 
 				  unsigned int timeout,
 				  unsigned long int exp_size, 
@@ -452,14 +478,13 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
  * \brief Something similar to the good old accept system call. 
  *
  * Make sure that there is someone speaking to the provided server socket.
- * In RL, it does an accept(2), close the master socket, and put the accepted
- * socket in place of the provided one. In SG, it does not do anything for 
+ * In RL, it does an accept(2) and return the result as last argument. 
+ * In SG, as accepts are useless, it returns the provided argument as result.
+ * You should thus test whether (peer != accepted) before closing both of them.
  *
  * You should only call this on measurement sockets. It is automatically 
  * done for regular sockets, but you usually want more control about 
  * what's going on with measurement sockets.
- *
- * 
  */
 xbt_error_t gras_socket_meas_accept(gras_socket_t peer, gras_socket_t *accepted){
   xbt_error_t errcode;

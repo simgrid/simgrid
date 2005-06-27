@@ -34,7 +34,7 @@
 typedef struct gras_trp_bufdata_ gras_trp_bufdata_t;
 
 typedef struct s_gras_socket  {
-  gras_trp_plugin_t *plugin;
+  gras_trp_plugin_t plugin;
     
   int incoming :1; /* true if we can read from this sock */
   int outgoing :1; /* true if we can write on this sock */
@@ -58,12 +58,12 @@ void gras_trp_socket_new(int incomming,
 			 gras_socket_t *dst);
 
 /* The drivers */
-typedef xbt_error_t (*gras_trp_setup_t)(gras_trp_plugin_t *dst);
+typedef xbt_error_t (*gras_trp_setup_t)(gras_trp_plugin_t dst);
 
-xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t *plug);
-xbt_error_t gras_trp_file_setup(gras_trp_plugin_t *plug);
-xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t *plug);
-xbt_error_t gras_trp_buf_setup(gras_trp_plugin_t *plug);
+xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t plug);
+xbt_error_t gras_trp_file_setup(gras_trp_plugin_t plug);
+xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t plug);
+xbt_error_t gras_trp_buf_setup(gras_trp_plugin_t plug);
 
 /*
 
