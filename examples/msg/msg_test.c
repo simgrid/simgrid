@@ -82,20 +82,20 @@ int master(int argc, char *argv[])
 
   INFO1("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    INFO1("\t %s", slaves[i]->name);
+    VERB1("\t %s", slaves[i]->name);
 
   INFO1("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++)
-    INFO1("\t\"%s\"", todo[i]->name);
+    VERB1("\t\"%s\"", todo[i]->name);
 
   for (i = 0; i < number_of_tasks; i++) {
-    INFO2("Sending \"%s\" to \"%s\"",
+    VERB2("Sending \"%s\" to \"%s\"",
                   todo[i]->name,
                   slaves[i % slaves_count]->name);
     MSG_task_put(todo[i], slaves[i % slaves_count],
                  PORT_22);
-    INFO0("Send completed");
+    DEBUG0("Send completed");
   }
   
   INFO0("All tasks have been dispatched. Bye!");
@@ -115,9 +115,9 @@ int slave(int argc, char *argv[])
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
       INFO1("Received \"%s\" ", task->name);
-      INFO1("Processing \"%s\" ", task->name);
+      DEBUG1("Processing \"%s\" ", task->name);
       MSG_task_execute(task);
-      INFO1("\"%s\" done ", task->name);
+      VERB1("\"%s\" done ", task->name);
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
