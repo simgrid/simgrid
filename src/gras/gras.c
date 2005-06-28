@@ -71,7 +71,7 @@ void hexa_print(const char*name, unsigned char *data, int size) {
    int i;
    printf("%s: ", name);
    for (i=0;i<size;i++)  {
-      if (data[i]<32)// || data[i]>'9')
+      if (data[i]<32) /* || data[i]>'9') */
 	printf("'\\%d'",data[i]);
       else
 	printf("%c",data[i]);
