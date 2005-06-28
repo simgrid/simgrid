@@ -66,11 +66,16 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
         esac
         optCFLAGS="$optCFLAGS -finline-functions -ffast-math -funroll-loops -fno-strict-aliasing"
       
-        if test "x$target_cpu" = "xpowerpc" ; then
+        GCC_VER=`gcc --version | head -n 1 | sed 's/^[^0-9]*\([^ ]*\).*$/\1/'`
+        GCC_VER_MAJ=`echo $GCC_VER | sed 's/^\(.\).*$/\1/'`
+        if test "x$target_cpu" = "xpowerpc" && test "x$GCC_VER_MAJ" != "x2" ; then
           # avoid gcc bug #12828, which is fixed in 3.4.0, but this version
           # isn't propagated enough to desserve an extra check
+          
+          # Note that the flag didn't exist before gcc 3.0
           optCFLAGS="$optCFLAGS -fno-loop-optimize"
         fi
+        dnl A C_MSG_WARN(GCC_VER_MAJ=$GCC_VER_MAJ)
     fi
     AC_MSG_RESULT($optCFLAGS)
     # Take it only if CFLAGS not explicitly set. Unless the flag was explicitly given
