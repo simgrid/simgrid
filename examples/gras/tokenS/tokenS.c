@@ -109,6 +109,9 @@ int node (int argc,char *argv[]) {
   xbt_error_t errcode;
   node_data_t *globals;
   
+  const char *host;
+  int   myport;
+  int   peerport;
   
   /* 1. Init the GRAS infrastructure and declare my globals */
   gras_init(&argc,argv);
@@ -117,9 +120,9 @@ int node (int argc,char *argv[]) {
   
   /* 2. Get the successor's address. The command line overrides
         defaults when specified */
-  const char *host = "127.0.0.1";
-  int   myport = 4000;
-  int   peerport = 4000;
+  host = "127.0.0.1";
+  myport = 4000;
+  peerport = 4000;
   if (argc >= 4) {
     myport=atoi(argv[1]);
     host=argv[2];
