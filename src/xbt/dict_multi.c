@@ -184,15 +184,12 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
   xbt_dict_t thislevel,nextlevel;
   int i;
 
-  xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
-  xbt_assert0(xbt_dynar_length(keys), "Can't remove a zero-long key set in a multidict");
-
   unsigned long int thislen;
   char *thiskey;
   int keys_len=xbt_dynar_length(keys);
 
   xbt_assert(xbt_dynar_length(keys) == xbt_dynar_length(lens));
-  xbt_assert0(keys_len, "Can't set a zero-long key set in a multidict");
+  xbt_assert0(xbt_dynar_length(keys), "Can't remove a zero-long key set in a multidict");
 
   for (i=0         , thislevel=mdict      ; 
        i<keys_len-1                       ; 
