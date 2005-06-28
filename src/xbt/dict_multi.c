@@ -12,8 +12,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict_multi,dict, "Dictionaries of multiple keys");
 
 static void _free_dict(void*d) {
-  xbt_dict_t dict=*(xbt_dict_t*)d;
-  xbt_dict_free(&dict);
+  VERB1("free dict %p",d);
+  xbt_dict_free((xbt_dict_t*)&d);
 }
 
 /** \brief Insert \e data under all the keys contained in \e keys, providing their sizes in \e lens.
@@ -60,7 +60,8 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
     /* make sure the dict of next level exists */
     if (errcode == mismatch_error) {
       nextlevel=xbt_dict_new();
-      xbt_dict_set_ext(thislevel, thiskey, thislen, &nextlevel, _free_dict);
+      VERB1("Create a dict (%p)",nextlevel);
+      xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
     }
   }
 
@@ -133,7 +134,8 @@ xbt_multidict_get_ext(xbt_dict_t  mdict,
     xbt_dynar_get_cpy(keys, i, &thiskey);
     xbt_dynar_get_cpy(lens, i, &thislen);
 
-    DEBUG5("multi_get: at level %d, len=%ld, key=%p |%*s|", i, thislen, thiskey, (int)thislen,thiskey);
+    DEBUG6("multi_get: at level %d (%p), len=%ld, key=%p |%*s|", 
+      i, thislevel, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level: let mismatch raise if not found */
     TRY(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel));
