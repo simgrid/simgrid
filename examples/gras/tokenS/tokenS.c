@@ -11,7 +11,7 @@
  
 #include "gras.h"
  
-#define NBLOOPS 1000
+#define NBLOOPS 100
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Token,"Messages specific to this example");
 
