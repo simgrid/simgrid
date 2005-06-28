@@ -54,7 +54,7 @@ static int node_cb_stoken_handler(gras_socket_t  expeditor,
   int supersteps = 1;
   if (NBLOOPS >= 1000) {
     supersteps = 100;
-  } else if (NBLOOPS > 100) {
+  } else if (NBLOOPS >= 100) {
     supersteps = 10;
   } 
   if (globals->create && (! (globals->remaining_loop % supersteps))) {
