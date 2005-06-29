@@ -505,7 +505,7 @@ static int MSG_get_msgload(void)
    
   CHECK_HOST();
   
-  xbt_abort(0, "This function is still to be specified correctly (what do you mean by 'load', exactly?). In the meantime, please don't use it");
+  xbt_assert0(0, "This function is still to be specified correctly (what do you mean by 'load', exactly?). In the meantime, please don't use it");
   process = MSG_process_self();
   return xbt_fifo_size(process->simdata->host->simdata->process_list);
 }
