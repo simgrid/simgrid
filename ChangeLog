@@ -5,13 +5,17 @@ SimGrid (2.95) unstable; urgency=low
   * Cleanup in the xbt_config API; add configuration callbacks. [MQ]
   * Cleanup in the initialization API: the unused "defaultlog" is dead. [MQ]
 
-  MSG
-  * Implement MSG_get_msgload [MQ, AL]
-
   SURF
   * Bugfix: Allow absolute paths for platform description files [MQ]
   * Bugfix: do free the variables after use. Leads to drastic performance 
     improvement [AL] 
+  * Implement max_duration (ie, timeouts) on resources [AL]
+
+  MSG
+  * Implement MSG_config to configure MSG at runtime. xbt_cfg test on a real
+    case ;) [MQ]
+  * Implement MSG_channel_select_from() to help GRAS now that SURF provide
+    the needed support (timeouts) [AL]
 
   GRAS (new features)
   * Implement measurement sockets. You can now get the bandwidth between two
@@ -20,6 +24,8 @@ SimGrid (2.95) unstable; urgency=low
     dynar over the network (yeah) [MQ]
   * Real (even if simplistic) implementation of gras_os_myname() on RL [MQ]
   * simple/static token-ring example. [Alexandre Colucci and MQ]
+  * Use MSG_channel_select_from() and remove the *slow* hack we had to put
+    in place before [MQ]
   
   GRAS (bug fixes)
   * Differentiate the types "char[22]" and "unsigned char[22]" in automatic
