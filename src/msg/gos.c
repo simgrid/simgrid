@@ -211,6 +211,60 @@ int MSG_task_probe_from(m_channel_t channel)
   return MSG_process_get_PID(t->simdata->sender);
 }
 
+MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
+				    int *PID)
+{
+  m_host_t h = NULL;
+  simdata_host_t h_simdata = NULL;
+  xbt_fifo_item_t item;
+  m_task_t t;
+  int first_time = 1;
+  m_process_t process = MSG_process_self();
+
+  if(PID) {
+    *PID = -1;
+  }
+
+  if(max_duration==0.0) {
+    return MSG_task_probe_from(channel);
+  } else {
+    CHECK_HOST();
+    h = MSG_host_self();
+    h_simdata = h->simdata;
+    
+    DEBUG2("Probing on channel %d (%s)", channel,h->name);
+    while((item = xbt_fifo_getFirstItem(h->simdata->mbox[channel]))) {
+      if(max_duration>0) {
+	if(!first_time) {
+	  MSG_RETURN(MSG_OK);
+	}
+      }
+      xbt_assert2(!(h_simdata->sleeping[channel]),
+		  "A process (%s(%d)) is already blocked on this channel",
+		  h_simdata->sleeping[channel]->name,
+		  h_simdata->sleeping[channel]->simdata->PID);
+      h_simdata->sleeping[channel] = process; /* I'm waiting. Wake me up when you're ready */
+      if(max_duration>0) {
+	__MSG_process_block(max_duration);
+      } else {
+	__MSG_process_block(-1);
+      }
+      if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
+	 == SURF_CPU_OFF) {
+	MSG_RETURN(MSG_HOST_FAILURE);
+      }
+      h_simdata->sleeping[channel] = NULL;
+      first_time = 0;
+    }
+    if (!item || !(t = xbt_fifo_get_item_content(item))) {
+      MSG_RETURN(MSG_OK);
+    }
+    if(PID) {
+      *PID = MSG_process_get_PID(t->simdata->sender);
+    }
+    MSG_RETURN(MSG_OK);
+  }
+}
 /** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.

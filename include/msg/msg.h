@@ -98,6 +98,8 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 MSG_error_t MSG_task_execute(m_task_t task);
 int MSG_task_Iprobe(m_channel_t channel);
 int MSG_task_probe_from(m_channel_t channel);
+MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
+				    int *PID);
 MSG_error_t MSG_process_sleep(double nb_sec);
 MSG_error_t MSG_get_errno(void);
 
