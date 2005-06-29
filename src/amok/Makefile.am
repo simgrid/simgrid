@@ -1,4 +1,8 @@
 
+
+              THIS FILE IS NOT USED. IT SHOULD, AND SHOULD BUILD SHARED PLUGINS
+              
+
 INCLUDES= -I$(top_srcdir)/src -I$(top_srcdir)/include
 
 EXTRA_DIST = \
@@ -11,6 +15,7 @@ libamok_la_SOURCES= \
 	Bandwidth/bandwidth.c Bandwidth/saturate.c
 
 VERSION_INFO= -release 20040722 -version-info 0:0:0
+libamok_la_LDFLAGS = $(VERSION_INFO)
 
 include $(top_srcdir)/acmacro/dist-files.mk
 
