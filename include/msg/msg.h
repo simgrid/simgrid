@@ -87,6 +87,8 @@ const char *MSG_task_get_name(m_task_t task);
 MSG_error_t MSG_task_destroy(m_task_t task);
 
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel);
+MSG_error_t MSG_task_get_with_time_out(m_task_t * task, m_channel_t channel,
+				       double max_duration);
 MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, 
 			 m_channel_t channel);
 MSG_error_t MSG_task_put_bounded(m_task_t task,

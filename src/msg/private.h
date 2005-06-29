@@ -102,7 +102,7 @@ void __MSG_task_execute(m_process_t process, m_task_t task);
 MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task);
 MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task);
 
-MSG_error_t __MSG_process_block(void);
+int __MSG_process_block(double max_duration);
 MSG_error_t __MSG_process_unblock(m_process_t process);
 int __MSG_process_isBlocked(m_process_t process);
 

@@ -441,7 +441,7 @@ int MSG_process_isSuspended(m_process_t process)
   return (process->simdata->suspended);
 }
 
-MSG_error_t __MSG_process_block(void)
+int __MSG_process_block(double max_duration)
 {
   m_process_t process = MSG_process_self();
 
@@ -453,6 +453,9 @@ MSG_error_t __MSG_process_block(void)
   process->simdata->blocked=1;
   __MSG_task_execute(process,dummy);
   surf_workstation_resource->common_public->suspend(dummy->simdata->compute);
+  if(max_duration>=0)
+    surf_workstation_resource->common_public->set_max_duration(dummy->simdata->compute, 
+							       max_duration);
   __MSG_wait_for_computation(process,dummy);
   process->simdata->blocked=0;
 
@@ -461,7 +464,7 @@ MSG_error_t __MSG_process_block(void)
   
   MSG_task_destroy(dummy);
 
-  return MSG_OK;
+  return 1;
 }
 
 MSG_error_t __MSG_process_unblock(m_process_t process)
