@@ -15,6 +15,7 @@ BEGIN_DECL()
 #include "msg/datatypes.h"
 
 /************************** Global ******************************************/
+xbt_error_t MSG_config(const char *name, ...);
 void MSG_global_init(void);
 void MSG_global_init_args(int *argc, char **argv);
 void MSG_set_verbosity(MSG_outputmode_t mode);
