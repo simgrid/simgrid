@@ -13,6 +13,7 @@
 #include "xbt/swag.h"
 #include "xbt/dynar.h" /* void_f_pvoid_t */
 #include "portable.h"  /* loads context system definitions */
+#include "ucontext_stack.h"  /* loads context system definitions */
 
 #include "xbt/context.h"
 

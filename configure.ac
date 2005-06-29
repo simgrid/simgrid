@@ -55,13 +55,46 @@ GRAS_ARCH
 GRAS_CHECK_STRUCT_COMPACTION
 
 
+dnl ##
+dnl ##  CONTEXT IMPLEMENTATION
+dnl ##
+
 SG_CONFIGURE_PART([Checking for threads, contexts or assimilated...])
-AC_CHECK_UCONTEXT
+
+dnl #
+dnl #  1. determine possibilities
+dnl #
+
+dnl #  check for MCSC method
 AC_MSG_CHECKING(on top of what can we build the contexts)
+AC_CHECK_HEADER(ucontext.h,,, [#include <sys/types.h>])
+AC_CHECK_FUNCS(makecontext swapcontext getcontext setcontext)
+AC_CHECK_MCSC(mcsc=yes, mcsc=no)
+
+dnl #  check for pthread method
+AC_CHECK_HEADERS([pthread.h])
+AC_CHECK_LIB(pthread,pthread_create,pthread=yes, pthread=no)
+
+dnl #
+dnl #  2. make a general decision
+dnl #
+
+if test ".$mcsc" = .yes; then
+   mcsc=yes
+elif test ".$pthread" = .yes; then
+   pthread=yes
+else
+    AC_ERROR([no appropriate backend found])
+fi
+
+dnl #
+dnl #  3. allow decision to be overridden by user
+dnl #
+
+AC_MSG_CHECKING(what kind of backend should we use)
 AC_ARG_WITH(context,
   [  --with-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=auto]].],,
   with_context=auto)
-
 case $with_context in
  ucontext) ;;
  pthread) ;;
@@ -70,8 +103,8 @@ case $with_context in
 esac
 
 if test "x$with_context" = "xucontext" ; then
-  if test "x$ac_check_ucontext" = "xyes"; then
-    AC_MSG_RESULT(found ucontext.h. Great!)
+  if test ".$mcsc" = .yes; then
+    AC_MSG_RESULT(found working ucontext. Great!)
     AC_DEFINE([USE_UCONTEXT],1,[Define if we use ucontext or not])
   else
     ac_header=windows.h
@@ -87,11 +120,27 @@ fi
 
 if test "x$with_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
-dnl A C_CHECK_LIB(pthread, pthread_mutex_lock, LIBS="$LIBS -lpthread")
   AC_CHECK_LIB(pthread,pthread_create,,
     [AC_MSG_ERROR([[Cannot find pthreads, no way (try --with-context=ucontext if you haven't already tried).]])])
   AC_DEFINE([USE_PTHREADS],1,[Define if we use pthreads or not])
   AC_MSG_RESULT(You have pthreads. Let's use them.)
+fi
+
+dnl #
+dnl #  4. determine a few additional details
+dnl #
+
+if test "x$with_context" = "xucontext" ; then
+dnl #  direction of stack grow
+  AC_CHECK_STACKGROWTH(PTH_STACKGROWTH)
+  if test ".$ac_cv_check_stackgrowth" = ".down"; then
+      PTH_STACK_GROWTH="down"
+  else
+      PTH_STACK_GROWTH="up"
+  fi
+  AC_SUBST(PTH_STACK_GROWTH)
+  
+  AC_CHECK_STACKSETUP(makecontext, pth_skaddr_makecontext, pth_sksize_makecontext)
 fi
 
 #########################################
@@ -169,6 +218,7 @@ AC_CONFIG_FILES([
   include/Makefile
   src/Makefile
   src/amok/Makefile
+  src/ucontext_stack.h
   examples/Makefile 
     examples/msg/Makefile           examples/msg/run_msg_test
     examples/gras/Makefile 

@@ -229,8 +229,8 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
   /* WARNING : when this context is over, the current_context (i.e. the 
      father), is awaken... Theorically, the wrapper should prevent using 
      this feature. */
-  res->uc.uc_stack.ss_sp = res->stack;
-  res->uc.uc_stack.ss_size = STACK_SIZE;
+  res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack,STACK_SIZE);
+  res->uc.uc_stack.ss_size = pth_sksize_makecontext(res->stack,STACK_SIZE);
 #endif
   res->argc = argc;
   res->argv = argv;
