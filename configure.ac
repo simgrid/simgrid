@@ -211,13 +211,13 @@ AM_CONDITIONAL(HAVE_FLEXML,test x$FLEXML != xNOTFOUND)
 
 #    examples/pastry/Makefile    examples/pastry/test_sg
 #      examples/gras/chord/Makefile  examples/gras/chord/test_sg examples/gras/chord/test_rl
+#  src/amok/Makefile
 
 SG_CONFIGURE_PART(Generating files...)
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
   src/Makefile
-  src/amok/Makefile
   src/ucontext_stack.h
   examples/Makefile 
     examples/msg/Makefile           examples/msg/run_msg_test
