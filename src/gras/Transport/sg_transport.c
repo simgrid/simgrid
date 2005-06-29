@@ -47,103 +47,93 @@ gras_trp_select(double timeout,
 	 MSG_process_get_name(MSG_process_self()),
 	 MSG_host_get_name(MSG_host_self()),
 	 timeout);
-  do {
-    r_pid = MSG_task_probe_from((m_channel_t) pd->chan);
-    if (r_pid >= 0) {
-      /* Try to reuse an already openned socket to that expeditor */
-      xbt_dynar_foreach(pd->sockets,cursor,sock_iter) {
-	DEBUG1("Consider %p as outgoing socket to expeditor",sock_iter);
-	sockdata = sock_iter->data;
 
-	if (sock_iter->meas || !sock_iter->outgoing)
-	  continue;
+  r_pid = MSG_task_select_from((m_channel_t) pd->chan, timeout);
 
-	if (sockdata->to_PID == r_pid) {
-	  *dst=sock_iter;
-	  return no_error;
-	}
-      }
+  if (r_pid < 0) {
+    DEBUG0("TIMEOUT");
+    return timeout_error;
+  }
 
-      /* Socket to expeditor not created yet */
-      DEBUG0("Create a socket to the expeditor");
+  /* Ok, got something. Open a socket back to the expeditor */
 
-      TRY(gras_trp_plugin_get_by_name("buf",&trp));
-
-      gras_trp_socket_new(1,dst);
-      (*dst)->plugin   = trp;
-
-      (*dst)->incoming  = 1;
-      (*dst)->outgoing  = 1;
-      (*dst)->accepting = 0;
-      (*dst)->sd        = -1;
-
-      (*dst)->port      = -1;
-
-      sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
-      sockdata->from_PID = MSG_process_self_PID();
-      sockdata->to_PID   = r_pid;
-      sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));
-      (*dst)->data = sockdata;
-      gras_trp_buf_init_sock(*dst);
-
-      (*dst)->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
-
-      remote_hd=(gras_hostdata_t *)MSG_host_get_data(sockdata->to_host);
-      xbt_assert0(remote_hd,"Run gras_process_init!!");
-
-      sockdata->to_chan = -1;
-      (*dst)->peer_port = -10;
-      for (cursor=0; cursor<XBT_MAX_CHANNEL; cursor++) {
-	if (remote_hd->proc[cursor] == r_pid) {
-	  sockdata->to_chan = cursor;
-	  DEBUG2("Chan %d on %s is for my pal",
-		 cursor,(*dst)->peer_name);
-
-	  xbt_dynar_foreach(remote_hd->ports, cpt, pr) {
-	    if (sockdata->to_chan == pr.tochan) {
-	      if (pr.meas) {
-		DEBUG0("Damn, it's for measurement");
-		continue;
-	      }
-
-	      (*dst)->peer_port = pr.port;
-	      DEBUG1("Cool, it points to port %d", pr.port);
-	      break;
-	    } else {
-	      DEBUG2("Wrong port (tochan=%d, looking for %d)\n",
-		     pr.tochan,sockdata->to_chan);
-	    }
-	  }
-	  if ((*dst)->peer_port == -10) {
-	    /* was for measurement */
-	    sockdata->to_chan = -1;
-	  } else {
-	    /* found it, don't let it override by meas */
-	    break;
-	  }
-	}
-      }
-      xbt_assert0(sockdata->to_chan != -1,
-		   "Got a message from a process without channel");
-
+  /* Try to reuse an already openned socket to that expeditor */
+  xbt_dynar_foreach(pd->sockets,cursor,sock_iter) {
+    DEBUG1("Consider %p as outgoing socket to expeditor",sock_iter);
+    sockdata = sock_iter->data;
+    
+    if (sock_iter->meas || !sock_iter->outgoing)
+      continue;
+    
+    if (sockdata->to_PID == r_pid) {
+      *dst=sock_iter;
       return no_error;
-    } else {
- 
-      DEBUG5("Select on %s@%s did not find anything yet at %f (waited %f of %f sec)",
-	     MSG_process_get_name(MSG_process_self()),
-	     MSG_host_get_name(MSG_host_self()),
-	     gras_os_time(),
-	     gras_os_time()-startTime , timeout);
- 
-      /* MSG_process_sleep(1); */
-      MSG_process_sleep(0.001);
     }
-  } while (gras_os_time()-startTime < timeout
-	   || MSG_task_Iprobe((m_channel_t) pd->chan));
-
-  DEBUG0("TIMEOUT");
-  return timeout_error;
-
+  }
+  
+  /* Socket to expeditor not created yet */
+  DEBUG0("Create a socket to the expeditor");
+  
+  TRY(gras_trp_plugin_get_by_name("buf",&trp));
+  
+  gras_trp_socket_new(1,dst);
+  (*dst)->plugin   = trp;
+  
+  (*dst)->incoming  = 1;
+  (*dst)->outgoing  = 1;
+  (*dst)->accepting = 0;
+  (*dst)->sd        = -1;
+  
+  (*dst)->port      = -1;
+  
+  sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
+  sockdata->from_PID = MSG_process_self_PID();
+  sockdata->to_PID   = r_pid;
+  sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));
+  (*dst)->data = sockdata;
+  gras_trp_buf_init_sock(*dst);
+  
+  (*dst)->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
+  
+  remote_hd=(gras_hostdata_t *)MSG_host_get_data(sockdata->to_host);
+  xbt_assert0(remote_hd,"Run gras_process_init!!");
+  
+  sockdata->to_chan = -1;
+  (*dst)->peer_port = -10;
+  for (cursor=0; cursor<XBT_MAX_CHANNEL; cursor++) {
+    if (remote_hd->proc[cursor] == r_pid) {
+      sockdata->to_chan = cursor;
+      DEBUG2("Chan %d on %s is for my pal",
+	     cursor,(*dst)->peer_name);
+      
+      xbt_dynar_foreach(remote_hd->ports, cpt, pr) {
+	if (sockdata->to_chan == pr.tochan) {
+	  if (pr.meas) {
+	    DEBUG0("Damn, it's for measurement");
+	    continue;
+	  }
+	  
+	  (*dst)->peer_port = pr.port;
+	  DEBUG1("Cool, it points to port %d", pr.port);
+	  break;
+	} else {
+	  DEBUG2("Wrong port (tochan=%d, looking for %d)\n",
+		 pr.tochan,sockdata->to_chan);
+	}
+      }
+      if ((*dst)->peer_port == -10) {
+	/* was for measurement */
+	sockdata->to_chan = -1;
+      } else {
+	/* found it, don't let it override by meas */
+	break;
+      }
+    }
+  }
+  xbt_assert0(sockdata->to_chan != -1,
+	      "Got a message from a process without channel");
+  
+  return no_error;
 }
 
   
