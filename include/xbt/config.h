@@ -117,8 +117,8 @@ BEGIN_DECL()
  * @{
  */
 
-  xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...);
-  xbt_error_t xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa);
+  xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
+  xbt_error_t xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
   xbt_error_t xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
 
 
