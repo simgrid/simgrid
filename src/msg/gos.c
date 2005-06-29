@@ -233,7 +233,7 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
     h_simdata = h->simdata;
     
     DEBUG2("Probing on channel %d (%s)", channel,h->name);
-    while((item = xbt_fifo_getFirstItem(h->simdata->mbox[channel]))) {
+    while(!(item = xbt_fifo_getFirstItem(h->simdata->mbox[channel]))) {
       if(max_duration>0) {
 	if(!first_time) {
 	  MSG_RETURN(MSG_OK);
