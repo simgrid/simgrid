@@ -29,6 +29,7 @@ static xbt_swag_t context_living = NULL;
 /* don't want to play with conditional compilation in automake tonight, sorry.
    include directly the c file from here when needed. */
 #  include "context_win32.c" 
+#  define USE_WIN_CONTEXT
 # endif
 #endif
 
@@ -221,7 +222,7 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
   res->thread = xbt_new0(pthread_t,1);
   xbt_assert0(!pthread_mutex_init(&(res->mutex), NULL), "Mutex initialization error");
   xbt_assert0(!pthread_cond_init(&(res->cond), NULL), "Condition initialization error");
-#else
+#else 
   /* FIXME: strerror is not thread safe */
   xbt_assert2(getcontext(&(res->uc))==0,"Error in context saving: %d (%s)", errno, strerror(errno));
   res->uc.uc_link = NULL;
@@ -229,9 +230,11 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
   /* WARNING : when this context is over, the current_context (i.e. the 
      father), is awaken... Theorically, the wrapper should prevent using 
      this feature. */
+# ifndef USE_WIN_CONTEXT    
   res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack,STACK_SIZE);
   res->uc.uc_stack.ss_size = pth_sksize_makecontext(res->stack,STACK_SIZE);
-#endif
+# endif /* USE_WIN_CONTEXT */
+#endif /* USE_PTHREADS or not */
   res->argc = argc;
   res->argv = argv;
   res->startup_func = startup_func;
