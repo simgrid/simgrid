@@ -67,7 +67,7 @@ dnl ##        ...stack grow up...
 dnl ##    #endif
 dnl ##
 
-AC_DEFUN(AC_CHECK_STACKGROWTH,[dnl
+AC_DEFUN([AC_CHECK_STACKGROWTH],[dnl
 AC_MSG_CHECKING(for direction of stack growth)
 AC_CACHE_VAL(ac_cv_check_stackgrowth, [
 cross_compiling=no
@@ -122,7 +122,7 @@ dnl ##  configure.ac:
 dnl ##     AC_CHECK_MCSC(<success-action>, <failure-action>)
 dnl ##
 
-AC_DEFUN(AC_CHECK_MCSC, [
+AC_DEFUN([AC_CHECK_MCSC], [
 AC_MSG_CHECKING(for usable SVR4/SUSv2 makecontext(2)/swapcontext(2))
 AC_CACHE_VAL(ac_cv_check_mcsc, [
 AC_TRY_RUN([
@@ -209,7 +209,7 @@ dnl ##    xxx.sp_ss   = <macro-addr>(skaddr, sksize);
 dnl ##    xxx.sp_size = <macro-size>(skaddr, sksize);
 dnl ##
 
-AC_DEFUN(AC_CHECK_STACKSETUP,[dnl
+AC_DEFUN([AC_CHECK_STACKSETUP],[dnl
 dnl #   check for consistent usage
 ifelse($1,[sigstack],,[
 ifelse($1,[sigaltstack],,[
