@@ -389,6 +389,11 @@ static int action_network_KCCFLN05_free(surf_action_t action)
   return 0;
 }
 
+static void action_network_KCCFLN05_use(surf_action_t action)
+{
+  action->using++;
+}
+
 static double share_network_KCCFLN05_resources(double now)
 {
  s_surf_action_network_KCCFLN05_t action;
@@ -543,6 +548,11 @@ static int action_cpu_KCCFLN05_free(surf_action_t action)
     return 1;
   }
   return 0;
+}
+
+static void action_cpu_KCCFLN05_use(surf_action_t action)
+{
+  action->using++;
 }
 
 static void action_cpu_KCCFLN05_change_state(surf_action_t action,
@@ -871,6 +881,7 @@ static void cpu_KCCFLN05_resource_init_internal(void)
   surf_cpu_resource->common_public->action_get_state =
       surf_action_get_state;
   surf_cpu_resource->common_public->action_free = action_cpu_KCCFLN05_free;
+  surf_cpu_resource->common_public->action_use = action_cpu_KCCFLN05_use;
   surf_cpu_resource->common_public->action_cancel = NULL;
   surf_cpu_resource->common_public->action_recycle = NULL;
   surf_cpu_resource->common_public->action_change_state = action_cpu_KCCFLN05_change_state;
@@ -959,6 +970,7 @@ static void network_KCCFLN05_resource_init_internal(void)
   surf_network_resource->common_public->action_get_state =
       surf_action_get_state;
   surf_network_resource->common_public->action_free = action_network_KCCFLN05_free;
+  surf_network_resource->common_public->action_use = action_network_KCCFLN05_use;
   surf_network_resource->common_public->action_cancel = NULL;
   surf_network_resource->common_public->action_recycle = NULL;
   surf_network_resource->common_public->action_change_state = action_network_KCCFLN05_change_state;
