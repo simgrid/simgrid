@@ -84,7 +84,13 @@ if test ".$mcsc" = .yes; then
 elif test ".$pthread" = .yes; then
    pthread=yes
 else
-    AC_ERROR([no appropriate backend found])
+    ac_header=windows.h
+    as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+    if test `eval echo '${'$as_ac_Header'}'` = yes; then
+      windows_context=yes
+    else
+      AC_ERROR([no appropriate backend found])
+    fi
 fi
 
 dnl #
@@ -98,6 +104,7 @@ AC_ARG_WITH(context,
 case $with_context in
  ucontext) ;;
  pthread) ;;
+ windows) ;;
  auto) with_context=ucontext;;
  *) AC_MSG_ERROR("--with-context must be either ucontext or pthread") ;;
 esac
@@ -107,12 +114,11 @@ if test "x$with_context" = "xucontext" ; then
     AC_MSG_RESULT(found working ucontext. Great!)
     AC_DEFINE([USE_UCONTEXT],1,[Define if we use ucontext or not])
   else
-    ac_header=windows.h
-    as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-    if test `eval echo '${'$as_ac_Header'}'` = yes; then
-      AC_MSG_RESULT(there is no ucontext on windows, and none is needed.")
+    if test ".$windows_context" = .yes ; then
+      AC_MSG_RESULT(use windows context portability layer.)
+      with_context=windows
     else
-      AC_MSG_RESULT([[no working ucontext found. Falling back to pthreads]])
+      AC_MSG_RESULT([[no working ucontext found. Try pthreads as a fallback]])
       with_context=pthread
     fi
   fi
@@ -270,10 +276,12 @@ echo "
 
 Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (=$gras_arch):
 
-	Compiler:	${CC}
+	Compiler:	 ${CC} (version: ${GCC_VERSION})
+	
+	CFlags:		 ${CFLAGS}
+	LDFlags:	 ${LDFLAGS}
 
-	CFlags:		${CFLAGS}
-	LDFlags:	${LDFLAGS}
+	Context backend: ${with_context}
 "
 
 exit 0;
