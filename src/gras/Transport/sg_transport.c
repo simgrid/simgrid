@@ -48,8 +48,8 @@ gras_trp_select(double timeout,
 	 MSG_host_get_name(MSG_host_self()),
 	 timeout);
 
-  r_pid = MSG_task_select_from((m_channel_t) pd->chan, timeout);
-
+  TRY(MSG_channel_select_from((m_channel_t) pd->chan, timeout, &r_pid));
+  
   if (r_pid < 0) {
     DEBUG0("TIMEOUT");
     return timeout_error;
