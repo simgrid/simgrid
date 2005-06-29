@@ -204,7 +204,10 @@ xbt_cfg_register(xbt_cfg_t cfg,
   xbt_cfgelm_t res;
   xbt_error_t errcode;
 
-  DEBUG4("Register cfg elm %s (%d to %d %s)",name,min,max,xbt_cfgelm_type_name[type]);
+  xbt_assert4(type>=xbt_cfgelm_int && type<=xbt_cfgelm_host,
+              "type of %s not valid (%d should be between %d and %d)",
+              name,type,xbt_cfgelm_int, xbt_cfgelm_host);
+  DEBUG5("Register cfg elm %s (%d to %d %s (=%d))",name,min,max,xbt_cfgelm_type_name[type],type);
   errcode = xbt_dict_get((xbt_dict_t)cfg,name,(void**)&res);
 
   if (errcode == no_error) {
@@ -414,12 +417,16 @@ xbt_cfg_get_type(xbt_cfg_t cfg, const char *name,
   xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
-  TRYCATCH(mismatch_error,xbt_dict_get((xbt_dict_t)cfg,name,(void**)&variable));
+  errcode=xbt_dict_get((xbt_dict_t)cfg,name,(void**)&variable);
 
-  if (errcode == mismatch_error)
+  if (errcode == mismatch_error) {
     RAISE1(mismatch_error,"Can't get the type of '%s' since this variable does not exist",
 	   name);
+  } else if (errcode != no_error) {
+    return errcode;
+  }
 
+  INFO1("type in variable = %d",variable->type);
   *type=variable->type;
 
   return no_error;
@@ -429,69 +436,68 @@ xbt_cfg_get_type(xbt_cfg_t cfg, const char *name,
 /**  @brief va_args version of xbt_cfg_set
  *
  * \arg cfg config set to fill
- * \arg varargs NULL-terminated list of pairs {(const char*)key, value}
+ * \arg n   variable name
+ * \arg pa  variable value
  *
  * Add some values to the config set.
- * \warning if the list isn't NULL terminated, it will segfault. 
  */
 xbt_error_t
-xbt_cfg_set_vargs(xbt_cfg_t cfg, va_list pa) {
-  char *str,*name;
+xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa) {
+  char *str;
   int i;
   double d;
   e_xbt_cfgelm_type_t type;
 
   xbt_error_t errcode;
   
-  while ((name=va_arg(pa,char *))) {
-
-    if (!xbt_cfg_get_type(cfg,name,&type)) {
-      ERROR1("Can't set the property '%s' since it's not registered",name);
-      return mismatch_error;
-    }
-
-    switch (type) {
-    case xbt_cfgelm_host:
-      str = va_arg(pa, char *);
-      i=va_arg(pa,int);
-      TRY(xbt_cfg_set_host(cfg,name,str,i));
-      break;
-      
-    case xbt_cfgelm_string:
-      str=va_arg(pa, char *);
-      TRY(xbt_cfg_set_string(cfg, name, str));
-      break;
-
-    case xbt_cfgelm_int:
-      i=va_arg(pa,int);
-      TRY(xbt_cfg_set_int(cfg,name,i));
-      break;
-
-    case xbt_cfgelm_double:
-      d=va_arg(pa,double);
-      TRY(xbt_cfg_set_double(cfg,name,d));
-      break;
-
-    default: 
-      RAISE1(unknown_error,"Config element variable %s not valid.",name);
-    }
+  errcode = xbt_cfg_get_type(cfg,name,&type);
+  if (errcode != no_error) {
+    ERROR1("Can't set the property '%s' since it's not registered",name);
+    return mismatch_error;
   }
+
+  switch (type) {
+  case xbt_cfgelm_host:
+    str = va_arg(pa, char *);
+    i=va_arg(pa,int);
+    TRY(xbt_cfg_set_host(cfg,name,str,i));
+    break;
+      
+  case xbt_cfgelm_string:
+    str=va_arg(pa, char *);
+    TRY(xbt_cfg_set_string(cfg, name, str));
+    break;
+
+  case xbt_cfgelm_int:
+    i=va_arg(pa,int);
+    TRY(xbt_cfg_set_int(cfg,name,i));
+    break;
+
+  case xbt_cfgelm_double:
+    d=va_arg(pa,double);
+    TRY(xbt_cfg_set_double(cfg,name,d));
+    break;
+
+  default:
+    xbt_assert2(0,"Config element variable %s not valid (type=%d)",name,type);
+  }
+
   return no_error;
 }
 
 /** @brief Add a NULL-terminated list of pairs {(char*)key, value} to the set
  *
  * \arg cfg config set to fill
- * \arg varargs NULL-terminated list of pairs {(const char*)key, value}
+ * \arg name variable name
+ * \arg varargs variable value
  *
- * \warning if the list isn't NULL terminated, it will segfault. 
  */
-xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, ...) {
+xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...) {
   va_list pa;
   xbt_error_t errcode;
 
-  va_start(pa,cfg);
-  errcode=xbt_cfg_set_vargs(cfg,pa);
+  va_start(pa,name);
+  errcode=xbt_cfg_set_vargs(cfg,name,pa);
   va_end(pa);
   return errcode;
 }
