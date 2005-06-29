@@ -559,13 +559,6 @@ static void action_cpu_KCCFLN05_change_state(surf_action_t action,
   return;
 }
 
-/* #define WARNING(format, ...) (fprintf(stderr, "[%s , %s : %d] ", __FILE__, __FUNCTION__, __LINE__),\ */
-/*                               fprintf(stderr, format, ## __VA_ARGS__), \ */
-/*                               fprintf(stderr, "\n")) */
-/* #define VOIRP(expr) WARNING("  {" #expr " = %p }", expr) */
-/* #define VOIRD(expr) WARNING("  {" #expr " = %d }", expr) */
-/* #define VOIRG(expr) WARNING("  {" #expr " = %lg }", expr) */
-
 static double share_cpu_KCCFLN05_resources(double now)
 {
   s_surf_action_cpu_KCCFLN05_t s_cpu_action;
