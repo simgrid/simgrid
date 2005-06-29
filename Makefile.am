@@ -89,7 +89,7 @@ splint:
 ##
 
 remote: 
-	@tools/graspe-master
+	@$(top_srcdir)/tools/graspe-master
 
 endif
 
