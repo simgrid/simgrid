@@ -1,6 +1,7 @@
 SimGrid (2.95) unstable; urgency=low
 
   XBT
+  * Steal some nice code to GNU pth to fix context detection and usage [AL]
   * Cleanup in the xbt_config API; add configuration callbacks. [MQ]
   * Cleanup in the initialization API: the unused "defaultlog" is dead. [MQ]
 
