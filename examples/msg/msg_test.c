@@ -176,6 +176,8 @@ int forwarder(int argc, char *argv[])
 /** Test function */
 void test_all(const char *platform_file,const char *application_file)
 {
+
+  MSG_config("surf_workstation_model","KCCFLN05");
   {				/*  Simulation setting */
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_paje_output("msg_test.trace");
