@@ -11,6 +11,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(global, msg,
 				"Logging specific to MSG (global)");
 
+int __stop_at_time = -1.0 ;
+
 MSG_Global_t msg_global = NULL;
 
 /* static void MarkAsFailed(m_task_t t, TBX_HashTable_t failedProcessList); */
@@ -324,6 +326,13 @@ MSG_error_t MSG_main(void)
 /* xbt_fifo_size(msg_global->process_to_run) */
   while (1) {
     xbt_context_empty_trash();
+    if(xbt_fifo_size(msg_global->process_to_run) && (elapsed_time>0)) {
+      DEBUG0("**************************************************");
+    }
+    if((__stop_at_time>0) && (MSG_getClock() >= __stop_at_time)) {
+      DEBUG0("Let's stop here!");
+    }
+
     while ((process = xbt_fifo_pop(msg_global->process_to_run))) {
       DEBUG3("Scheduling  %s(%d) on %s",	     
 	     process->name,process->simdata->PID,
