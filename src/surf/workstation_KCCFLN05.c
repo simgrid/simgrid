@@ -526,6 +526,11 @@ static int network_KCCFLN05_action_is_suspended(surf_action_t action)
   return (lmm_get_variable_weight(((surf_action_network_KCCFLN05_t) action)->variable) == 0.0);
 }
 
+static void network_KCCFLN05_action_set_max_duration(surf_action_t action, double duration)
+{
+  action->max_duration = duration;
+}
+
 /***************** CPU ****************/
 static int action_cpu_KCCFLN05_free(surf_action_t action)
 {
@@ -722,6 +727,11 @@ static int cpu_KCCFLN05_action_is_suspended(surf_action_t action)
   return (lmm_get_variable_weight(((surf_action_cpu_KCCFLN05_t) action)->variable) == 0.0);
 }
 
+static void cpu_KCCFLN05_action_set_max_duration(surf_action_t action, double duration)
+{
+  action->max_duration = duration;
+}
+
 /************* workstation ************/
 static void action_change_state(surf_action_t action,
 				e_surf_action_state_t state)
@@ -804,6 +814,16 @@ static int action_is_suspended(surf_action_t action)
     return surf_cpu_resource->common_public->is_suspended(action);
   DIE_IMPOSSIBLE;
 }
+
+static void action_set_max_duration(surf_action_t action, double duration)
+{
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    return surf_network_resource->common_public->set_max_duration(action,duration);
+  if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    return surf_cpu_resource->common_public->set_max_duration(action,duration);
+  DIE_IMPOSSIBLE;
+}
+
 
 /**************************************/
 /********* Module  creation ***********/
@@ -1032,6 +1052,7 @@ static void workstation_KCCFLN05_resource_init_internal(void)
   surf_workstation_resource->common_public->suspend = action_suspend;
   surf_workstation_resource->common_public->resume = action_resume;
   surf_workstation_resource->common_public->is_suspended = action_is_suspended;
+  surf_workstation_resource->common_public->set_max_duration = action_set_max_duration;
 
   surf_workstation_resource->extension_public->execute = execute_KCCFLN05;
 /*FIXME*//*  surf_workstation_resource->extension_public->sleep = action_sleep; */

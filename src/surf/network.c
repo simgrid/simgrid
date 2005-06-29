@@ -442,6 +442,11 @@ static int action_is_suspended(surf_action_t action)
   return ((surf_action_network_CM02_t) action)->suspended;
 }
 
+static void action_set_max_duration(surf_action_t action, double duration)
+{
+  action->max_duration = duration;
+}
+
 static void finalize(void)
 {
   int i,j;
@@ -520,6 +525,7 @@ static void surf_network_resource_init_internal(void)
   surf_network_resource->common_public->suspend = action_suspend;
   surf_network_resource->common_public->resume = action_resume;
   surf_network_resource->common_public->is_suspended = action_is_suspended;
+  surf_cpu_resource->common_public->set_max_duration = action_set_max_duration;
 
   surf_network_resource->extension_public->communicate = communicate;
 

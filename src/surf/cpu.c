@@ -278,6 +278,11 @@ static int action_is_suspended(surf_action_t action)
   return (lmm_get_variable_weight(((surf_action_cpu_Cas01_t) action)->variable) == 0.0);
 }
 
+static void action_set_max_duration(surf_action_t action, double duration)
+{
+  action->max_duration = duration;
+}
+
 static e_surf_cpu_state_t get_state(void *cpu)
 {
   return ((cpu_Cas01_t) cpu)->state_current;
@@ -346,6 +351,7 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->common_public->suspend = action_suspend;
   surf_cpu_resource->common_public->resume = action_resume;
   surf_cpu_resource->common_public->is_suspended = action_is_suspended;
+  surf_cpu_resource->common_public->set_max_duration = action_set_max_duration;
 
   surf_cpu_resource->extension_public->execute = execute;
   surf_cpu_resource->extension_public->sleep = action_sleep;

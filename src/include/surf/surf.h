@@ -74,6 +74,7 @@ typedef struct surf_resource_public {
   void (*suspend) (surf_action_t action);
   void (*resume) (surf_action_t action);
   int (*is_suspended) (surf_action_t action);
+  void (*set_max_duration) (surf_action_t action, double duration);
   const char *name;
 } s_surf_resource_public_t, *surf_resource_public_t;
 
