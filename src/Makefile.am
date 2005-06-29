@@ -1,5 +1,3 @@
-SUBDIRS= . amok
-
 AM_CFLAGS= -g
 #AM_CFLAGS= -DNDEBUG 
 
@@ -51,9 +49,10 @@ EXTRA_DIST= \
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h          gras/Virtu/virtu_private.h\
 	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
-	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c
-
-
+	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c \
+	\
+	amok/Bandwidth/bandwidth_private.h
+	        
 #        gras_private.h
 
 #LIBRARY_VERSION= 0:0:0
@@ -156,6 +155,12 @@ SG_SRC=  \
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
   gras/Virtu/sg_dns.c
 
+AMOK_SRC= \
+  amok/base.c \
+  amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c
+        
+                        
+
 BUILT_SOURCES=include/surf/surfxml.h surf/surfxml.c \
               gras/DataDesc/ddt_parse.yy.c
 
@@ -183,10 +188,10 @@ include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
 endif
 endif
 
-libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC)
+libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@ -lm
 
-libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC)
+libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@ -lm
 
 
