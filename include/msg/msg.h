@@ -38,7 +38,7 @@ void *MSG_host_get_data(m_host_t host);
 const char *MSG_host_get_name(m_host_t host);
 m_host_t MSG_host_self(void);
 int MSG_get_host_msgload(m_host_t host);
-int MSG_get_msgload(void);
+/* int MSG_get_msgload(void); This function lacks specification; discard it */
 
 void MSG_create_environment(const char *file);
 

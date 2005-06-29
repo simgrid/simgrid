@@ -499,12 +499,13 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  * \brief Return the number of MSG tasks currently running on a
  * the host of the current running process.
  */
-int MSG_get_msgload(void) 
+static int MSG_get_msgload(void) 
 {
   m_process_t process;
    
   CHECK_HOST();
   
+  xbt_abort(0, "This function is still to be specified correctly (what do you mean by 'load', exactly?). In the meantime, please don't use it");
   process = MSG_process_self();
   return xbt_fifo_size(process->simdata->host->simdata->process_list);
 }
