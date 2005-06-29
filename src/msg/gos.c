@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gos, msg,
  *  by an agent for handling some task.
  */
 
-/** \ingroup msg_gos_functions
+/* \ingroup msg_gos_functions
  * \brief This function is now deprecated and useless. Please stop using it.
  */
 MSG_error_t MSG_process_start(m_process_t process)
