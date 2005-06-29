@@ -60,13 +60,22 @@ void MSG_create_environment(const char *file) {
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   void *workstation = NULL;
+  char *workstation_model_name;
 
+  msg_config_init(); /* make sure that our configuration set is created */
   surf_timer_resource_init(file);
-#ifdef ALVIN_SURF_SPECIAL
-  surf_workstation_resource_init_KCCFLN05(file);
-#else
-  surf_workstation_resource_init_CLM03(file);
-#endif
+
+  /* which model do you want today? */
+  xbt_cfg_get_string (_msg_cfg_set, "surf_workstation_model",
+		      &workstation_model_name);
+  if (!strcmp(workstation_model_name,"KCCFLN05")) {
+    surf_workstation_resource_init_KCCFLN05(file);
+  } else if (!strcmp(workstation_model_name,"CLM03")) {
+    surf_workstation_resource_init_CLM03(file);
+  } else {
+    xbt_assert0(0,"The impossible happened (once again)");
+  }
+  _msg_init_status = 2; /* inited; don't change settings now */
 
   xbt_dict_foreach(workstation_set, cursor, name, workstation) {
     __MSG_host_create(name, workstation, NULL);

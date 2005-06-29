@@ -15,6 +15,7 @@
 #include "xbt/swag.h"
 #include "xbt/dict.h"
 #include "xbt/context.h"
+#include "xbt/config.h"
 
 /**************** datatypes **********************************/
 
@@ -83,6 +84,12 @@ typedef struct MSG_Global {
 
 extern MSG_Global_t msg_global;
       
+/************************** Configuration support ********************************/
+void msg_config_init(void); /* create the config set, call this before use! */
+extern int _msg_init_status; /* 0: beginning of time; 
+                                1: pre-inited (cfg_set created); 
+                                2: inited (running) */
+extern xbt_cfg_t _msg_cfg_set;
 
 /*************************************************************/
 
