@@ -22,18 +22,12 @@
 
 - gras_datadesc_import_nws?
 
-- meassock
-  Check that messages don't go on meas socks
-  Implement it
-
 - Implement gras_datadesc_cpy to speedup things in the simulator
   For now, we mimick closely the RL when on simulator, which is not needed.
   (this was easier to do).
   gras_datadesc_cpy needs to provide the size of the corresponding messages, so
   that we can report it into the simulator.
 
-- a init/exit mecanism for logging appender
-- more logging appenders
 
 - when a send failed because the socket was closed on the other side, 
   try to reopen it seamlessly. Needs exceptions or another way to
@@ -46,6 +40,7 @@
 ### A bit later
 ### 
 
+- timeout the send/recv too
 - Adaptative timeout
 - datadesc_set_cste: give the value by default when receiving. 
   It's not transfered anymore, which is good for functions pointer.
@@ -58,13 +53,10 @@
  - virtualize (linux, solaris, SG) & conditions
  - binary representation: any type, SNWF (Sender Native Wire Format)
  - modules (log control, manage, token ring, bw)
- - cleanups, documentation
 
 [autoconf]
   Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
     but versions above 3.4.0 should be ok.
-  The ucontext usability test is too light. It returns success on IRIX, but
-    shouldn't since ucontext are broken for us there.
 
 [portability layer]
   Mallocators
@@ -89,6 +81,8 @@
   Hijack message from a given category to another for a while (to mask
     initializations, and more)
   Allow each process in simulation to have its own setting
+- a init/exit mecanism for logging appender
+- more logging appenders
 
 [dict]
   speed up the cursors, for example using the contexts when available
