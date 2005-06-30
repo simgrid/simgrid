@@ -338,7 +338,7 @@ MSG_error_t MSG_main(void)
 	     process->name,process->simdata->PID,
 	     process->simdata->host->name);
       msg_global->current_process = process;
-      fflush(NULL);
+/*       fflush(NULL); */
       xbt_context_schedule(process->simdata->context);
       msg_global->current_process = NULL;
     }
