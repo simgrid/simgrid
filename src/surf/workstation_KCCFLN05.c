@@ -821,10 +821,10 @@ static int action_is_suspended(surf_action_t action)
 static void action_set_max_duration(surf_action_t action, double duration)
 {
   if(action->resource_type==(surf_resource_t)surf_network_resource) 
-    return surf_network_resource->common_public->set_max_duration(action,duration);
-  if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
-    return surf_cpu_resource->common_public->set_max_duration(action,duration);
-  DIE_IMPOSSIBLE;
+    surf_network_resource->common_public->set_max_duration(action,duration);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->set_max_duration(action,duration);
+  else DIE_IMPOSSIBLE;
 }
 
 
