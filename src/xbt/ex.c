@@ -1,5 +1,6 @@
 /*
-**  OSSP ex - Exception Handling
+**  OSSP ex - Exception Handling (modified to fit into SimGrid)
+**  Copyright (c) 2005 Martin Quinson
 **  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>
 **  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>
 **  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>
@@ -34,25 +35,26 @@
 #include "xbt/ex.h"
 
 /* default __ex_ctx callback function */
-ex_ctx_t *__ex_ctx_default(void)
-{
-    static ex_ctx_t ctx = EX_CTX_INITIALIZER;
+ex_ctx_t *__xbt_ex_ctx_default(void) {
+    static ex_ctx_t ctx = SG_CTX_INITIALIZER;
 
     return &ctx;
 }
 
 /* default __ex_terminate callback function */
-void __ex_terminate_default(ex_t *e)
-{
+void __xbt_ex_terminate_default(ex_t *e) {
+
     fprintf(stderr,
-            "**EX: UNCAUGHT EXCEPTION: "
-            "class=0x%lx object=0x%lx value=0x%lx [%s:%d@%s]\n",
-            (long)((e)->ex_class), (long)((e)->ex_object), (long)((e)->ex_value),
-            (e)->ex_file, (e)->ex_line, (e)->ex_func);
+            "** SimGrid: UNCAUGHT EXCEPTION:\n"
+	    "** (%d/%d) %s\n"
+            "** Thrown by %s%s%s at %s:%d:%s\n",
+	    e->code, e->value, e->msg,
+	    e->procname, (e->host?"@":""),(e->host?e->host:""),
+	    e->file,e->line,e->func);
     abort();
 }
 
 /* the externally visible API */
-ex_ctx_cb_t  __ex_ctx       = &__ex_ctx_default;
-ex_term_cb_t __ex_terminate = &__ex_terminate_default;
+ex_ctx_cb_t  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
+ex_term_cb_t __xbt_ex_terminate = &__xbt_ex_terminate_default;
 

@@ -1,5 +1,6 @@
 /*
-**  OSSP ex - Exception Handling
+**  OSSP ex - Exception Handling (modified to fit into SimGrid)
+**  Copyright (c) 2005 Martin Quinson.
 **  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>
 **  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>
 **  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>
@@ -28,30 +29,14 @@
 **  ex.h: exception handling (pre-processor part)
 */
 
-#ifndef __EX_H__
-#define __EX_H__
+#ifndef __SG_EX_H__
+#define __SG_EX_H__
+
+#include <xbt/misc.h>
+#include <xbt/sysdep.h>
 
 /* required ISO-C standard facilities */
 #include <stdio.h>
-
-/* convenience define */
-#ifndef NULL
-#define NULL (void *)0
-#endif
-
-/* determine how the current function name can be fetched */
-#if (   defined(__STDC__) \
-     && defined(__STDC_VERSION__) \
-     && __STDC_VERSION__ >= 199901L)
-#define __EX_FUNC__ __func__      /* ISO-C99 compliant */
-#elif (   defined(__GNUC__) \
-       && defined(__GNUC_MINOR__) \
-       && (   __GNUC__ > 2 \
-           || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8)))
-#define __EX_FUNC__ __FUNCTION__  /* gcc >= 2.8 */
-#else
-#define __EX_FUNC__ "#NA#"        /* not available */
-#endif
 
 /* the machine context */
 #if defined(__EX_MCTX_MCSC__)
@@ -79,16 +64,17 @@
 /* declare the machine context type */
 typedef struct { __ex_mctx_struct } __ex_mctx_t;
 
-/* declare the exception type (public) */
+/** Content of an exception */
 typedef struct {
-    /* throw value */
-    void       *ex_class;
-    void       *ex_object;
-    void       *ex_value;
-    /* throw point */
-    const char *ex_file;
-    int         ex_line;
-    const char *ex_func;
+  char *msg;      /*< human readable message; to be freed */
+  int   code;     /*< category like HTTP (what went wrong) */
+  int   value;    /*< like errno (why did it went wrong) */
+  /* throw point */
+  char *host;     /*< NULL for localhost; hostname:port if remote */
+  char *procname; 
+  char *file;     /*< to be freed only for remote exceptions */
+  int   line;
+  char *func;     /*< to be freed only for remote exceptions */
 } ex_t;
 
 /* declare the context type (private) */
@@ -104,148 +90,153 @@ typedef struct {
 } ex_ctx_t;
 
 /* the static and dynamic initializers for a context structure */
-#define EX_CTX_INITIALIZER \
-    { NULL, 0, 0, 0, 0, 0, 0, { NULL, NULL, NULL, NULL, 0, NULL } }
-#define EX_CTX_INITIALIZE(ctx) \
+#define SG_CTX_INITIALIZER \
+    { NULL, 0, 0, 0, 0, 0, 0, { /* content */ NULL, 0, 0, \
+                                /*throw point*/ NULL, NULL, NULL, 0, NULL } }
+#define SG_CTX_INITIALIZE(ctx) \
     do { \
-        (ctx)->ctx_mctx         = NULL; \
-        (ctx)->ctx_deferred     = 0;    \
-        (ctx)->ctx_deferring    = 0;    \
-        (ctx)->ctx_defer        = 0;    \
-        (ctx)->ctx_shielding    = 0;    \
-        (ctx)->ctx_shield       = 0;    \
-        (ctx)->ctx_caught       = 0;    \
-        (ctx)->ctx_ex.ex_class  = NULL; \
-        (ctx)->ctx_ex.ex_object = NULL; \
-        (ctx)->ctx_ex.ex_value  = NULL; \
-        (ctx)->ctx_ex.ex_file   = NULL; \
-        (ctx)->ctx_ex.ex_line   = 0;    \
-        (ctx)->ctx_ex.ex_func   = NULL; \
+        (ctx)->ctx_mctx        = NULL; \
+        (ctx)->ctx_deferred    = 0;    \
+        (ctx)->ctx_deferring   = 0;    \
+        (ctx)->ctx_defer       = 0;    \
+        (ctx)->ctx_shielding   = 0;    \
+        (ctx)->ctx_shield      = 0;    \
+        (ctx)->ctx_caught      = 0;    \
+        (ctx)->ctx_ex.msg      = NULL; \
+        (ctx)->ctx_ex.code     = 0;    \
+        (ctx)->ctx_ex.value    = 0;    \
+        (ctx)->ctx_ex.host     = NULL; \
+        (ctx)->ctx_ex.procname = NULL; \
+        (ctx)->ctx_ex.file     = NULL; \
+        (ctx)->ctx_ex.line     = 0;    \
+        (ctx)->ctx_ex.func     = NULL; \
     } while (0)
 
 /* the exception context */
 typedef ex_ctx_t *(*ex_ctx_cb_t)(void);
-extern ex_ctx_cb_t __ex_ctx;
-extern ex_ctx_t *__ex_ctx_default(void);
+extern ex_ctx_cb_t __xbt_ex_ctx;
+extern ex_ctx_t *__xbt_ex_ctx_default(void);
 
 /* the termination handler */
 typedef void (*ex_term_cb_t)(ex_t *);
-extern ex_term_cb_t __ex_terminate;
-extern void __ex_terminate_default(ex_t *e);
+extern ex_term_cb_t __xbt_ex_terminate;
+extern void __xbt_ex_terminate_default(ex_t *e);
 
 /* the block for trying execution */
-#define ex_try \
+#define sg_try \
     { \
-        ex_ctx_t *__ex_ctx_ptr = __ex_ctx(); \
+        ex_ctx_t *__xbt_ex_ctx_ptr = __xbt_ex_ctx(); \
         int __ex_cleanup = 0; \
         __ex_mctx_t *__ex_mctx_en; \
         __ex_mctx_t __ex_mctx_me; \
-        __ex_mctx_en = __ex_ctx_ptr->ctx_mctx; \
-        __ex_ctx_ptr->ctx_mctx = &__ex_mctx_me; \
+        __ex_mctx_en = __xbt_ex_ctx_ptr->ctx_mctx; \
+        __xbt_ex_ctx_ptr->ctx_mctx = &__ex_mctx_me; \
         if (__ex_mctx_save(&__ex_mctx_me)) { \
             if (1)
 
 /* the optional(!) block for cleanup */
-#define ex_cleanup \
+#define sg_cleanup \
             else { \
             } \
-            __ex_ctx_ptr->ctx_caught = 0; \
+            __xbt_ex_ctx_ptr->ctx_caught = 0; \
         } \
         else { \
             __ex_mctx_restored(&__ex_mctx_me); \
-            __ex_ctx_ptr->ctx_caught = 1; \
+            __xbt_ex_ctx_ptr->ctx_caught = 1; \
         } \
-        __ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
+        __xbt_ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
         __ex_cleanup = 1; \
         if (1) { \
             if (1)
 
 /* the block for catching an exception */
-#define ex_catch(e) \
+#define sg_catch(e) \
             else { \
             } \
             if (!(__ex_cleanup)) \
-                __ex_ctx_ptr->ctx_caught = 0; \
+                __xbt_ex_ctx_ptr->ctx_caught = 0; \
         } \
         else { \
             if (!(__ex_cleanup)) { \
                 __ex_mctx_restored(&__ex_mctx_me); \
-                __ex_ctx_ptr->ctx_caught = 1; \
+                __xbt_ex_ctx_ptr->ctx_caught = 1; \
             } \
         } \
-        __ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
+        __xbt_ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
     } \
-    if (   !(__ex_ctx()->ctx_caught) \
-        || ((e) = __ex_ctx()->ctx_ex, 0)) { \
+    if (   !(__xbt_ex_ctx()->ctx_caught) \
+        || ((e) = __xbt_ex_ctx()->ctx_ex, 0)) { \
     } \
     else
 
 /* the throwing of a new exception */
-#define ex_throw(c,o,v) \
-    ((   __ex_ctx()->ctx_shielding > 0 \
-      || (__ex_ctx()->ctx_deferring > 0 && __ex_ctx()->ctx_deferred == 1)) ? 0 : \
-     (__ex_ctx()->ctx_ex.ex_class  = (void *)(c), \
-      __ex_ctx()->ctx_ex.ex_object = (void *)(o), \
-      __ex_ctx()->ctx_ex.ex_value  = (void *)(v), \
-      __ex_ctx()->ctx_ex.ex_file   = __FILE__, \
-      __ex_ctx()->ctx_ex.ex_line   = __LINE__, \
-      __ex_ctx()->ctx_ex.ex_func   = __EX_FUNC__, \
-      __ex_ctx()->ctx_deferred     = 1, \
-      (__ex_ctx()->ctx_deferring > 0 ? 0 : \
-       (__ex_ctx()->ctx_mctx == NULL \
-        ? (__ex_terminate((ex_t *)&(__ex_ctx()->ctx_ex)), -1) \
-        : (__ex_mctx_restore(__ex_ctx()->ctx_mctx), 1) ))))
+#define sg_throw(c,v,m) \
+    ((   __xbt_ex_ctx()->ctx_shielding > 0 \
+      || (__xbt_ex_ctx()->ctx_deferring > 0 && __xbt_ex_ctx()->ctx_deferred == 1)) ? 0 : \
+     (__xbt_ex_ctx()->ctx_ex.msg      = bprintf(m), \
+      __xbt_ex_ctx()->ctx_ex.code     = (c), \
+      __xbt_ex_ctx()->ctx_ex.value    = (v), \
+      __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL, \
+      __xbt_ex_ctx()->ctx_ex.procname = strdup(xbt_procname()), \
+      __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__, \
+      __xbt_ex_ctx()->ctx_ex.line     = __LINE__, \
+      __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION, \
+      __xbt_ex_ctx()->ctx_deferred     = 1, \
+      (__xbt_ex_ctx()->ctx_deferring > 0 ? 0 : \
+       (__xbt_ex_ctx()->ctx_mctx == NULL \
+        ? (__xbt_ex_terminate((ex_t *)&(__xbt_ex_ctx()->ctx_ex)), -1) \
+        : (__ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx), 1) ))))
 
 /* the re-throwing of an already caught exception */
-#define ex_rethrow \
-    ((   __ex_ctx()->ctx_shielding > 0 \
-      || __ex_ctx()->ctx_deferring > 0) ? 0 : \
-      (  __ex_ctx()->ctx_mctx == NULL \
-       ? (__ex_terminate((ex_t *)&(__ex_ctx()->ctx_ex)), -1) \
-       : (__ex_mctx_restore(__ex_ctx()->ctx_mctx), 1) ))
+#define sg_rethrow \
+    ((   __xbt_ex_ctx()->ctx_shielding > 0 \
+      || __xbt_ex_ctx()->ctx_deferring > 0) ? 0 : \
+      (  __xbt_ex_ctx()->ctx_mctx == NULL \
+       ? (__xbt_ex_terminate((ex_t *)&(__xbt_ex_ctx()->ctx_ex)), -1) \
+       : (__ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx), 1) ))
 
 /* shield an operation from exception handling */
-#define ex_shield \
-    for (__ex_ctx()->ctx_shielding++, \
-         __ex_ctx()->ctx_shield =  1; \
-         __ex_ctx()->ctx_shield == 1; \
-         __ex_ctx()->ctx_shield =  0, \
-         __ex_ctx()->ctx_shielding--)
+#define sg_shield \
+    for (__xbt_ex_ctx()->ctx_shielding++, \
+         __xbt_ex_ctx()->ctx_shield =  1; \
+         __xbt_ex_ctx()->ctx_shield == 1; \
+         __xbt_ex_ctx()->ctx_shield =  0, \
+         __xbt_ex_ctx()->ctx_shielding--)
 
 /* defer immediate exception handling */
-#define ex_defer \
-    for (((__ex_ctx()->ctx_deferring)++ == 0 ? __ex_ctx()->ctx_deferred = 0 : 0), \
-         __ex_ctx()->ctx_defer =  1;  \
-         __ex_ctx()->ctx_defer == 1;  \
-         __ex_ctx()->ctx_defer =  0,  \
-         ((--(__ex_ctx()->ctx_deferring) == 0 && __ex_ctx()->ctx_deferred == 1) ? ex_rethrow : 0))
+#define sg_defer \
+    for (((__xbt_ex_ctx()->ctx_deferring)++ == 0 ? __xbt_ex_ctx()->ctx_deferred = 0 : 0), \
+         __xbt_ex_ctx()->ctx_defer =  1;  \
+         __xbt_ex_ctx()->ctx_defer == 1;  \
+         __xbt_ex_ctx()->ctx_defer =  0,  \
+         ((--(__xbt_ex_ctx()->ctx_deferring) == 0 && __xbt_ex_ctx()->ctx_deferred == 1) ? sg_rethrow : 0))
 
 /* exception handling tests */
-#define ex_catching \
-    (__ex_ctx()->ctx_mctx != NULL)
-#define ex_shielding \
-    (__ex_ctx()->ctx_shielding > 0)
-#define ex_deferring \
-    (__ex_ctx()->ctx_deferring > 0)
+#define sg_catching \
+    (__xbt_ex_ctx()->ctx_mctx != NULL)
+#define sg_shielding \
+    (__xbt_ex_ctx()->ctx_shielding > 0)
+#define sg_deferring \
+    (__xbt_ex_ctx()->ctx_deferring > 0)
 
 /* optional namespace mapping */
 #if defined(__EX_NS_UCCXX__)
-#define Try      ex_try
-#define Cleanup  ex_cleanup
-#define Catch    ex_catch
-#define Throw    ex_throw
-#define Rethrow  ex_rethrow
-#define Shield   ex_shield
-#define Defer    ex_defer
+#define Try      sg_try
+#define Cleanup  sg_cleanup
+#define Catch    sg_catch
+#define Throw    sg_throw
+#define Rethrow  sg_rethrow
+#define Shield   sg_shield
+#define Defer    sg_defer
 #elif defined(__EX_NS_CXX__) || (!defined(__cplusplus) && !defined(__EX_NS_CUSTOM__))
-#define try      ex_try
-#define cleanup  ex_cleanup
-#define catch    ex_catch
-#define throw    ex_throw
-#define rethrow  ex_rethrow
-#define shield   ex_shield
-#define defer    ex_defer
+#define try      sg_try
+#define cleanup  sg_cleanup
+#define catch    sg_catch
+#define throw    sg_throw
+#define rethrow  sg_rethrow
+#define shield   sg_shield
+#define defer    sg_defer
 #endif
 
-#endif /* __EX_H__ */
-
+#endif /* __SG_EX_H__ */
+ 
