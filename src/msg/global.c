@@ -237,8 +237,8 @@ void MSG_paje_output(const char *filename)
   }
 }
 
-/** \ingroup msg_simulation
- * \brief Defines the verbosity of the simulation.
+/** @deprecated Defines the verbosity of the simulation.
+ *  @ingroup msg_simulation
  */
 void MSG_set_verbosity(MSG_outputmode_t mode)
 {
