@@ -91,6 +91,10 @@ static inline void *xbt_realloc(void*p,int s){
 
 /** @} */  
 
+/* FIXME: better place? */
+int vasprintf  (char **ptr, const char *fmt, va_list ap);
+char *bprintf(const char*fmt, ...);
+
 END_DECL()
 
 #endif /* _XBT_SYSDEP_H */
