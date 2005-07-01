@@ -58,7 +58,7 @@ publish: dist
 sync-gforge: 
 	rsync --copy-links --verbose --archive --cvs-exclude --compress --delete \
 	--delete-excluded --rsh=ssh -I \
-	doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
+	doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/
 	ssh scm.gforge.inria.fr "chgrp -R simgrid /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
 	ssh scm.gforge.inria.fr "chmod g+rw -R /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
 
