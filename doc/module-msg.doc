@@ -1,4 +1,4 @@
-/** \addtogroup MSG_API 
+/** @addtogroup MSG_API 
 
   \section MSG_funct Offered functionnalities
    - \ref m_process_management
@@ -15,8 +15,9 @@
    - \ref MSG_ex_master_slave
 */
 
-/**     \addtogroup m_datatypes_management
-        \ingroup MSG_API  */
+/** @defgroup m_datatypes_management MSG Data Types 
+    @brief This section describes the different datatypes provided by MSG.
+*/
 /**     \addtogroup m_process_management
         \ingroup MSG_API  */
 /**     \addtogroup m_host_management
