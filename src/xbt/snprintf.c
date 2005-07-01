@@ -1026,3 +1026,17 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
   return (int) str_l;
 }
 #endif
+
+
+/* FIXME: better place */
+#include "xbt/sysdep.h"
+
+char *bprintf(const char*fmt, ...) {
+  va_list ap;
+  char *res;
+  
+  va_start(ap, fmt);
+  vasprintf(&res,fmt,ap);
+  va_end(ap);
+  return res;
+}
