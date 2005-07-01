@@ -351,15 +351,15 @@ typedef enum
   DataTypes;
 #define SIMPLE_TYPE_COUNT 9
 
-/*!  \brief Describe a collection of data.
+/**  \brief Describe a collection of data.
  * 
-** A description of a collection of #type# data.  #repetitions# is used only
-** for arrays; it contains the number of elements.  #offset# is used only for
+** A description of a collection of \a type data.  \a repetitions is used only
+** for arrays; it contains the number of elements.  \a offset is used only for
 ** struct members in host format; it contains the offset of the member from the
 ** beginning of the struct, taking into account internal padding added by the
-** compiler for alignment purposes.  #members#, #length#, and #tailPadding# are
-** used only for STRUCT_TYPE data; the #length#-long array #members# describes
-** the members of the nested struct, and #tailPadding# indicates how many
+** compiler for alignment purposes.  \a members, \a length, and \a tailPadding are
+** used only for STRUCT_TYPE data; the \a length -long array \a members describes
+** the members of the nested struct, and \a tailPadding indicates how many
 ** padding bytes the compiler adds to the end of the structure.
 */
 
