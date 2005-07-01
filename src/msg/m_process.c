@@ -399,8 +399,11 @@ MSG_error_t MSG_process_resume(m_process_t process)
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
-  simdata = process->simdata;
+  if(process == MSG_process_self()) {
+    MSG_RETURN(MSG_OK);
+  }
 
+  simdata = process->simdata;
 
   if(simdata->blocked) {
     PAJE_PROCESS_POP_STATE(process);
