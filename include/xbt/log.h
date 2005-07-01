@@ -47,8 +47,8 @@ typedef enum {
 
 
 /**
- * \def XBT_LOG_STATIC_THRESHOLD:
- * \ingroup XBT_log
+ * @def XBT_LOG_STATIC_THRESHOLD
+ * @ingroup XBT_log
  *
  * All logging requests with priority < XBT_LOG_STATIC_THRESHOLD are disabled at
  * compile time, i.e., compiled out.
