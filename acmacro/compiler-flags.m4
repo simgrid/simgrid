@@ -42,13 +42,14 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
 
       ## -W is not all that useful.  And it cannot be controlled
       ## with individual -Wno-xxx flags, unlike -Wall
+      
+      ## -Wformat=2 chokes on the snprintf replacement because the format is passed to real sprintf
+      ## -Wshadow chokes on try{ try{} } constructs
       if test "x$enable_compile_warnings" = "xyes"; then
         warnCFLAGS=`echo $warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
         -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings \
 	-Wno-unused-variable -Wno-unused-function -Wno-unused-label \
         -Werror \
-      ## -Wformat=2 chokes on the snprintf replacement because the format is passed to real sprintf
-      ## -Wshadow chokes on try{ try{} } constructs
 	| sed 's/ +/ /g'`
       fi
     fi
