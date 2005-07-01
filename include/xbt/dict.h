@@ -104,7 +104,7 @@ BEGIN_DECL()
  *
  *  @{ */
 
-  /** \brief Cursor on dictionnaries (opaque type) */
+  /** @brief Cursor on dictionnaries (opaque type) */
   typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
   xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t head);
   void               xbt_dict_cursor_free(xbt_dict_cursor_t *cursor);
@@ -123,8 +123,8 @@ BEGIN_DECL()
   int          xbt_dict_cursor_get_or_free (xbt_dict_cursor_t *cursor,
 					    char              **key,
 					    void              **data);
-  /** \brief toto 
-      \hideinitializer */
+  /** @def xbt_dict_foreach
+      @hideinitializer */
 #  define xbt_dict_foreach(dict,cursor,key,data)                       \
     for (cursor=NULL, xbt_dict_cursor_first((dict),&(cursor)) ;        \
          xbt_dict_cursor_get_or_free(&(cursor),&(key),(void**)(&data));\
