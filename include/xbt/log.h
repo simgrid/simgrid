@@ -279,7 +279,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define _XBT_LOG_PRE(catv, priority) do {                              \
      if (_XBT_LOG_ISENABLEDV(catv, priority)) {                        \
          s_xbt_log_event_t _log_ev =                                   \
-             {&(catv),priority,__FILE__,_XBT_GNUC_FUNCTION,__LINE__};         \
+             {&(catv),priority,__FILE__,_XBT_FUNCTION,__LINE__};         \
          _xbt_log_event_log(&_log_ev
 
 #define _XBT_LOG_POST                          \
@@ -535,12 +535,12 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
 /* @} */
 
-#define XBT_IN               LOG1(xbt_log_priority_trace, ">> begin of %s",     _XBT_GNUC_FUNCTION)
-#define XBT_IN1(fmt,a)       LOG2(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_GNUC_FUNCTION, a)
-#define XBT_IN2(fmt,a,b)     LOG3(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_GNUC_FUNCTION, a,b)
-#define XBT_IN3(fmt,a,b,c)   LOG4(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_GNUC_FUNCTION, a,b,c)
-#define XBT_IN4(fmt,a,b,c,d) LOG5(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_GNUC_FUNCTION, a,b,c,d)
-#define XBT_OUT              LOG1(xbt_log_priority_trace, "<< end of %s",       _XBT_GNUC_FUNCTION)
+#define XBT_IN               LOG1(xbt_log_priority_trace, ">> begin of %s",     _XBT_FUNCTION)
+#define XBT_IN1(fmt,a)       LOG2(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a)
+#define XBT_IN2(fmt,a,b)     LOG3(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b)
+#define XBT_IN3(fmt,a,b,c)   LOG4(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c)
+#define XBT_IN4(fmt,a,b,c,d) LOG5(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d)
+#define XBT_OUT              LOG1(xbt_log_priority_trace, "<< end of %s",       _XBT_FUNCTION)
 #define XBT_HERE             LOG0(xbt_log_priority_trace, "-- was here")
 
 #endif /* ! _XBT_LOG_H_ */
