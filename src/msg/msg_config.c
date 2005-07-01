@@ -13,7 +13,7 @@
 #include "xbt/error.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_cfg, msg,
-				"Configuration support in \ref MSG");
+				"Configuration support in \ref MSG_API");
 
 
 int _msg_init_status = 0; /* 0: beginning of time; 
