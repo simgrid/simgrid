@@ -13,6 +13,8 @@
 
 #include "gras_config.h"
 
+#include <stdarg.h>
+
 #ifdef HAVE_ERRNO_H
 #  include <errno.h>
 #endif
@@ -131,16 +133,41 @@ const char *gras_wsa_err2string(int errcode);
 #  include "xbt/context_win32.h" /* Manual reimplementation for prehistoric platforms */
 #endif
 
-/**
- ** What is needed to protect solaris's printf from ever seing NULL associated to a %s format
- ** (without adding an extra check on linux :)
- **/
+/****
+ **** string handling (parts from http://www.ijs.si/software/snprintf/)
+ ****/
+
+/* prototype of C99 functions */
+#ifdef HAVE_SNPRINTF
+#include <stdio.h>
+#else
+extern int snprintf(char *, size_t, const char *, /*args*/ ...);
+extern int vsnprintf(char *, size_t, const char *, va_list);
+#endif
+
+/* use internal functions when OS provided ones are borken */
+#if defined(HAVE_SNPRINTF) && defined(PREFER_PORTABLE_SNPRINTF)
+extern int portable_snprintf(char *str, size_t str_m, const char *fmt, /*args*/ ...);
+extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap);
+#define snprintf  portable_snprintf
+#define vsnprintf portable_vsnprintf
+#endif
+
+/* prototype of GNU functions  */
+extern int asprintf  (char **ptr, const char *fmt, /*args*/ ...);
+extern int vasprintf (char **ptr, const char *fmt, va_list ap);
+extern int asnprintf (char **ptr, size_t str_m, const char *fmt, /*args*/ ...);
+extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
+
+/*
+ * That's needed to protect solaris's printf from ever seing NULL associated to a %s format
+ * (without adding an extra check on working platforms :)
+ */
 
 #ifdef PRINTF_NULL_WORKING
 #  define PRINTF_STR(a) (a)
 #else
 #  define PRINTF_STR(a) (a)?:"(null)"
 #endif
-  
 
 #endif /* GRAS_PORTABLE_H */
