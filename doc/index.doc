@@ -47,10 +47,10 @@ use.
 For more information about the SimGrid toolkit, please simply keep reading
 this page. It is organized as follow:
 
-  - \ref overview: Presentation of the toolkit, of each of its components
+  - \ref overview : Presentation of the toolkit, of each of its components
     and of their interactions.
-  - \ref people: Who is behind this project.
-  - \ref publications: Some articles providing more details about the
+  - \ref people : Who is behind this project.
+  - \ref publications : Some articles providing more details about the
     SimGrid toolkit or using and validating it.
 
 <hr>
