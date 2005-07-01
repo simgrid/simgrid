@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #include "ex_test_ts.h"
 #include "xbt/ex.h"
@@ -42,25 +43,25 @@ TS_TEST(test_controlflow)
 
     ts_test_check(TS_CTX, "basic nested control flow");
     n = 1;
-    ex_try {
+    sg_try {
         if (n != 1)
             ts_test_fail(TS_CTX, "M1: n=%d (!= 1)", n);
         n++;
-        ex_try {
+        sg_try {
             if (n != 2)
                 ts_test_fail(TS_CTX, "M2: n=%d (!= 2)", n);
             n++;
-            ex_throw(0, 0, 0);
+            sg_throw(0,0,"something");
         }
-        ex_catch (ex) {
+        sg_catch (ex) {
             if (n != 3)
                 ts_test_fail(TS_CTX, "M3: n=%d (!= 1)", n);
             n++;
-            ex_rethrow;
+            sg_rethrow;
         }
         ts_test_fail(TS_CTX, "MX: n=%d (expected: not reached)", n);
     }
-    ex_catch (ex) {
+    sg_catch (ex) {
         if (n != 4)
             ts_test_fail(TS_CTX, "M4: n=%d (!= 4)", n);
         n++;
@@ -73,17 +74,17 @@ TS_TEST(test_value)
 {
     ex_t ex;
 
-    ex_try {
-        ex_throw(1, 2, 3);
+    sg_try {
+        sg_throw(1, 2, "toto");
     }
-    ex_catch (ex) {
+    sg_catch (ex) {
         ts_test_check(TS_CTX, "exception value passing");
-        if (ex.ex_class != (void *)1)
-            ts_test_fail(TS_CTX, "ex_class=0x%lx (!= 1)", (long)ex.ex_class);
-        if (ex.ex_object != (void *)2)
-            ts_test_fail(TS_CTX, "ex_object=0x%lx (!= 2)", (long)ex.ex_object);
-        if (ex.ex_value != (void *)3)
-            ts_test_fail(TS_CTX, "ex_value=0x%lx (!= 3)", (long)ex.ex_value);
+        if (ex.code != 1)
+            ts_test_fail(TS_CTX, "code=%d (!= 1)", ex.code);
+        if (ex.value != 2)
+            ts_test_fail(TS_CTX, "value=%d (!= 2)", ex.value);
+        if (strcmp(ex.msg,"toto"))
+            ts_test_fail(TS_CTX, "message=%s (!= toto)", ex.msg);
     }
 }
 
@@ -94,12 +95,12 @@ TS_TEST(test_variables)
     volatile int v1, v2;
 
     r1 = r2 = v1 = v2 = 1234;
-    ex_try {
+    sg_try {
         r2 = 5678;
         v2 = 5678;
-        ex_throw(0, 0, 0);
+        sg_throw(0, 0, 0);
     }
-    ex_catch (ex) {
+    sg_catch (ex) {
         ts_test_check(TS_CTX, "variable preservation");
         if (r1 != 1234)
             ts_test_fail(TS_CTX, "r1=%d (!= 1234)", r1);
@@ -119,27 +120,27 @@ TS_TEST(test_defer)
     volatile int i3 = 0;
 
     ts_test_check(TS_CTX, "exception deferring");
-    if (ex_deferring)
+    if (sg_deferring)
         ts_test_fail(TS_CTX, "unexpected deferring scope");
-    ex_try {
-        ex_defer {
-            if (!ex_deferring)
+    sg_try {
+        sg_defer {
+            if (!sg_deferring)
                 ts_test_fail(TS_CTX, "unexpected non-deferring scope");
-            ex_defer {
+            sg_defer {
                 i1 = 1;
-                ex_throw(0, 0, 4711);
+                sg_throw(4711, 0, NULL);
                 i2 = 2;
-                ex_throw(0, 0, 0);
+                sg_throw(0, 0, NULL);
                 i3 = 3;
-                ex_throw(0, 0, 0);
+                sg_throw(0, 0, NULL);
             }
-            ex_throw(0, 0, 0);
+            sg_throw(0, 0, 0);
         }
         ts_test_fail(TS_CTX, "unexpected not occurred deferred throwing");
     }
-    ex_catch (ex) {
-        if ((long)ex.ex_value != (long)4711)
-            ts_test_fail(TS_CTX, "caught exception with value %d, expected 4711", (long)ex.ex_value);
+    sg_catch (ex) {
+        if (ex.code != 4711)
+            ts_test_fail(TS_CTX, "caught exception with value %d, expected 4711", ex.value);
     }
     if (i1 != 1)
         ts_test_fail(TS_CTX, "v.i1 not set (expected 1, got %d)", i1);
@@ -154,27 +155,27 @@ TS_TEST(test_shield)
     ex_t ex;
 
     ts_test_check(TS_CTX, "exception shielding");
-    if (ex_shielding)
+    if (sg_shielding)
         ts_test_fail(TS_CTX, "unexpected shielding scope");
-    if (ex_catching)
+    if (sg_catching)
         ts_test_fail(TS_CTX, "unexpected catching scope");
-    ex_try {
-        ex_shield {
-            if (!ex_shielding)
+    sg_try {
+        sg_shield {
+            if (!sg_shielding)
                 ts_test_fail(TS_CTX, "unexpected non-shielding scope");
-            ex_throw(0, 0, 0);
+            sg_throw(0, 0, 0);
         }
-        if (ex_shielding)
+        if (sg_shielding)
             ts_test_fail(TS_CTX, "unexpected shielding scope");
-        if (!ex_catching)
+        if (!sg_catching)
             ts_test_fail(TS_CTX, "unexpected non-catching scope");
     }
-    ex_catch (ex) {
+    sg_catch (ex) {
         ts_test_fail(TS_CTX, "unexpected exception catched");
-        if (ex_catching)
+        if (sg_catching)
             ts_test_fail(TS_CTX, "unexpected catching scope");
     }
-    if (ex_catching)
+    if (sg_catching)
         ts_test_fail(TS_CTX, "unexpected catching scope");
 }
 
@@ -188,19 +189,19 @@ TS_TEST(test_cleanup)
 
     v1 = 1234;
     c = 0;
-    ex_try {
+    sg_try {
         v1 = 5678;
-        ex_throw(1, 2, 3);
+        sg_throw(1, 2, "blah");
     }
-    ex_cleanup {
+    sg_cleanup {
         if (v1 != 5678)
             ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
         c = 1;
     }
-    ex_catch (ex) {
+    sg_catch (ex) {
         if (v1 != 5678)
             ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
-        if (!(ex.ex_class == (void *)1 && ex.ex_object == (void *)2 && ex.ex_value == (void *)3))
+        if (!(ex.code == 1 && ex.value == 2 && !strcmp(ex.msg,"blah")))
             ts_test_fail(TS_CTX, "unexpected exception contents");
     }
     if (!c)
