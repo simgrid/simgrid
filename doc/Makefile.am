@@ -18,7 +18,6 @@ simgrid_modules.png: simgrid_modules.fig
 	fig2dev -Lpng simgrid_modules.fig > simgrid_modules.png
 
 html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modules.png
-	touch api_index.doc
 	doxygen Doxyfile >/dev/null
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
