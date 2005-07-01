@@ -19,6 +19,7 @@ EXTRA_DIST=run_tests.in \
 # Test stuff
 
 xbt_tests =                                                      \
+        xbt/ex_test                                              \
 	xbt/dynar_int    xbt/dynar_double   xbt/dynar_string     \
 	xbt/dict_usage   xbt/dict_crash     xbt/multidict_crash  \
 	xbt/set_usage                                            \
@@ -49,6 +50,9 @@ valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 # LDADD_UTILS is still a separate var to distinguish core tester from RL tester
 LDADD_SG=$(top_builddir)/src/libsimgrid.la 
 LDADD_RL=$(top_builddir)/src/libgras.la   
+
+xbt_ex_test_SOURCES=          xbt/ex_test.c xbt/ex_test_ts.c xbt/ex_test_ts.h
+xbt_ex_test_LDADD=            $(LDADD_RL)
 
 xbt_log_usage_LDADD=          $(LDADD_RL)
 

@@ -25,7 +25,8 @@ fi
 ##
 ## Tests defintions
 ##
-xbt_TESTS=" xbt/log_usage@EXEEXT@;        \
+xbt_TESTS=" xbt/ex_test@EXEEXT@;          \
+            xbt/log_usage@EXEEXT@;        \
             xbt/dynar_int@EXEEXT@;        \
   	      xbt/dynar_double@EXEEXT@;   \
 	      xbt/dynar_string@EXEEXT@;   \
