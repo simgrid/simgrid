@@ -1,6 +1,7 @@
 SimGrid (2.96) unstable; urgency=low
 
-  * 
+  MSG
+  * Bugfix: MSG_process_resume now works with the current running process.
 
  --
 
