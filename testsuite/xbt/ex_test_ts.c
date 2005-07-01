@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "gras_config.h"
 
 #include "ex_test_ts.h"
 
