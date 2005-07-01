@@ -71,6 +71,7 @@ BEGIN_DECL()
 
   void          xbt_dynar_dump(xbt_dynar_t dynar);
 
+/** @} */
 /** @name 2. regular array functions
  *  @{
  */
