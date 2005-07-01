@@ -1,7 +1,7 @@
 dnl AC_CHECK_UCONTEXT: Check whether ucontext are working
 
 dnl Most of the code is stolen from the GNU pth autoconf macros by
-dnl Ralf S. Engelschall. As 
+dnl Ralf S. Engelschall. 
 dnl # ``"Reuse an expert's code" is the right
 dnl #   advice for most people. But it's a useless
 dnl #   advice for the experts writing the code
