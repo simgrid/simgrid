@@ -58,7 +58,7 @@ SimGrid (2.95) unstable; urgency=low
   * New module: bandwidth 
     bandwidth measurement between arbitrary nodes running this module. [MQ]
 
- -- Arnaud Legrand <Arnaud.Legrand@imag.fr>  Thu, 30 Jun 2005 16:29:20 -0700
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Thu, 30 Jun 2005 16:29:20 -0700
 
 SimGrid (2.94) unstable; urgency=low
 
