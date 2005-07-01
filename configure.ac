@@ -38,6 +38,16 @@ AC_CHECK_HEADERS([sys/socket.h \
 AC_CHECK_FUNCS([gettimeofday usleep \
                 getdtablesize \
                 sysconf])
+                
+# check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
+AC_FUNC_SNPRINTF
+# check for asprintf function familly (or request the replacements from xbt/snprintf.c)
+AC_CHECK_FUNC(  asprintf, :,   AC_DEFINE(NEED_ASPRINTF,  1,  enable the asprintf   replacement))
+# we don't use those:
+# A C_CHECK_FUNC( vasprintf, :,   A C_DEFINE(NEED_VASPRINTF, 1,  enable the vasprintf  replacement))
+# A C_CHECK_FUNC( asnprintf, :,   A C_DEFINE(NEED_ASNPRINTF,  1, enable the asnprintf  replacement))
+# A C_CHECK_FUNC(vasnprintf, :,   A C_DEFINE(NEED_VASNPRINTF, 1, enable the vansprintf replacement))
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
