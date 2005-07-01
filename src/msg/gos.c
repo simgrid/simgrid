@@ -57,7 +57,7 @@ MSG_error_t MSG_task_get(m_task_t * task,
  * \param channel the channel on which the agent should be
    listening. This value has to be >=0 and < than the maximal
    number of channels fixed with MSG_set_channel_number().
- * \param timeout the maximum time to wait for a task before giving
+ * \param max_duration the maximum time to wait for a task before giving
     up. In such a case, \a task will not be modified and will still be
     equal to \c NULL when returning.
  * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
