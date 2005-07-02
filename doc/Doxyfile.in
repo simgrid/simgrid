@@ -402,7 +402,6 @@ INPUT                  = @srcdir@/index.doc \
                          @srcdir@/module-msg.doc \
                          @srcdir@/module-gras.doc @srcdir@/module-amok.doc \
 			 \
-                         ./api_index.doc \
                          ./logcategories.doc \
 			 \
                          @top_srcdir@/include/ \
