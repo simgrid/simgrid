@@ -43,25 +43,24 @@ TS_TEST(test_controlflow)
 
     ts_test_check(TS_CTX, "basic nested control flow");
     n = 1;
-    xbt_try {
+    TRY {
         if (n != 1)
             ts_test_fail(TS_CTX, "M1: n=%d (!= 1)", n);
         n++;
-        xbt_try {
+        TRY {
             if (n != 2)
                 ts_test_fail(TS_CTX, "M2: n=%d (!= 2)", n);
             n++;
-            xbt_throw(0,0,"something");
-        }
-        xbt_catch (ex) {
+            THROW(0,0,"something");
+        } CATCH (ex) {
             if (n != 3)
                 ts_test_fail(TS_CTX, "M3: n=%d (!= 1)", n);
             n++;
-            xbt_rethrow;
+            RETHROW;
         }
         ts_test_fail(TS_CTX, "MX: n=%d (expected: not reached)", n);
     }
-    xbt_catch (ex) {
+    CATCH(ex) {
         if (n != 4)
             ts_test_fail(TS_CTX, "M4: n=%d (!= 4)", n);
         n++;
@@ -74,10 +73,9 @@ TS_TEST(test_value)
 {
     ex_t ex;
 
-    xbt_try {
-        xbt_throw(1, 2, "toto");
-    }
-    xbt_catch (ex) {
+    TRY {
+        THROW(1, 2, "toto");
+    } CATCH(ex) {
         ts_test_check(TS_CTX, "exception value passing");
         if (ex.category != 1)
             ts_test_fail(TS_CTX, "category=%d (!= 1)", ex.category);
@@ -95,12 +93,11 @@ TS_TEST(test_variables)
     volatile int v1, v2;
 
     r1 = r2 = v1 = v2 = 1234;
-    xbt_try {
+    TRY {
         r2 = 5678;
         v2 = 5678;
-        xbt_throw(0, 0, 0);
-    }
-    xbt_catch (ex) {
+        THROW(0, 0, 0);
+    } CATCH(ex) {
         ts_test_check(TS_CTX, "variable preservation");
         if (r1 != 1234)
             ts_test_fail(TS_CTX, "r1=%d (!= 1234)", r1);
@@ -120,25 +117,25 @@ TS_TEST(test_defer)
     volatile int i3 = 0;
 
     ts_test_check(TS_CTX, "exception deferring");
-    if (xbt_deferring)
+    if (IS_DEFERRED)
         ts_test_fail(TS_CTX, "unexpected deferring scope");
-    xbt_try {
-        xbt_defer {
-            if (!xbt_deferring)
+    TRY {
+        DEFER {
+            if (!IS_DEFERRED)
                 ts_test_fail(TS_CTX, "unexpected non-deferring scope");
-            xbt_defer {
+            DEFER {
                 i1 = 1;
-                xbt_throw(4711, 0, NULL);
+                THROW(4711, 0, NULL);
                 i2 = 2;
-                xbt_throw(0, 0, NULL);
+                THROW(0, 0, NULL);
                 i3 = 3;
-                xbt_throw(0, 0, NULL);
+                THROW(0, 0, NULL);
             }
-            xbt_throw(0, 0, 0);
+            THROW(0, 0, 0);
         }
         ts_test_fail(TS_CTX, "unexpected not occurred deferred throwing");
     }
-    xbt_catch (ex) {
+    CATCH(ex) {
         if (ex.category != 4711)
             ts_test_fail(TS_CTX, "caught exception with value %d, expected 4711", ex.value);
     }
@@ -155,27 +152,26 @@ TS_TEST(test_shield)
     ex_t ex;
 
     ts_test_check(TS_CTX, "exception shielding");
-    if (xbt_shielding)
+    if (IS_SHIELDED)
         ts_test_fail(TS_CTX, "unexpected shielding scope");
-    if (xbt_catching)
+    if (IS_CATCHED)
         ts_test_fail(TS_CTX, "unexpected catching scope");
-    xbt_try {
-        xbt_shield {
-            if (!xbt_shielding)
+    TRY {
+        SHIELD {
+            if (!IS_SHIELDED)
                 ts_test_fail(TS_CTX, "unexpected non-shielding scope");
-            xbt_throw(0, 0, 0);
+            THROW(0, 0, 0);
         }
-        if (xbt_shielding)
+        if (IS_SHIELDED)
             ts_test_fail(TS_CTX, "unexpected shielding scope");
-        if (!xbt_catching)
+        if (!IS_CATCHED)
             ts_test_fail(TS_CTX, "unexpected non-catching scope");
-    }
-    xbt_catch (ex) {
+    } CATCH(ex) {
         ts_test_fail(TS_CTX, "unexpected exception catched");
-        if (xbt_catching)
+        if (IS_CATCHED)
             ts_test_fail(TS_CTX, "unexpected catching scope");
     }
-    if (xbt_catching)
+    if (IS_CATCHED)
         ts_test_fail(TS_CTX, "unexpected catching scope");
 }
 
@@ -189,16 +185,14 @@ TS_TEST(test_cleanup)
 
     v1 = 1234;
     c = 0;
-    xbt_try {
+    TRY {
         v1 = 5678;
-        xbt_throw(1, 2, "blah");
-    }
-    xbt_cleanup {
+        THROW(1, 2, "blah");
+    } CLEANUP {
         if (v1 != 5678)
             ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
         c = 1;
-    }
-    xbt_catch (ex) {
+    } CATCH(ex) {
         if (v1 != 5678)
             ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
         if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.msg,"blah")))
@@ -243,7 +237,7 @@ static void bad_example(void) {
   ex_t ex;
 
   /* BAD_EXAMPLE */
-  xbt_try {
+  TRY {
     char *cp1, *cp2, *cp3;
     
     cp1 = mallocex(SMALLAMOUNT);
@@ -252,13 +246,13 @@ static void bad_example(void) {
     cp3 = mallocex(SMALLAMOUNT);
     strcpy(cp1, "foo");
     strcpy(cp2, "bar");
-  } xbt_cleanup {
+  } CLEANUP {
     if (cp3 != NULL) free(cp3);
     if (cp2 != NULL) free(cp2);
     if (cp1 != NULL) free(cp1);
-  } xbt_catch(ex) {
+  } CATCH(ex) {
     printf("cp3=%s", cp3);
-    xbt_rethrow;
+    RETHROW;
   }
   /* end_of_bad_example */
 }
@@ -273,7 +267,7 @@ static void good_example(void) {
     char * volatile /*03*/ cp1 = NULL /*02*/;
     char * volatile /*03*/ cp2 = NULL /*02*/;
     char * volatile /*03*/ cp3 = NULL /*02*/;
-    xbt_try {
+    TRY {
       cp1 = mallocex(SMALLAMOUNT);
       globalcontext->first = cp1;
       cp1 = NULL /*05 give away*/;
@@ -281,16 +275,16 @@ static void good_example(void) {
       cp3 = mallocex(SMALLAMOUNT);
       strcpy(cp1, "foo");
       strcpy(cp2, "bar");
-    } xbt_cleanup { /*04*/
+    } CLEANUP { /*04*/
       printf("cp3=%s", cp3 == NULL /*02*/ ? "" : cp3);
       if (cp3 != NULL)
 	free(cp3);
       if (cp2 != NULL)
 	free(cp2);
       /*05 cp1 was given away */
-    } xbt_catch(ex) {
+    } CATCH(ex) {
       /*05 global context untouched */
-      xbt_rethrow;
+      RETHROW;
     }
   }
   /* end_of_good_example */
