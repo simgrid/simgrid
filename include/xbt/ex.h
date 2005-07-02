@@ -63,8 +63,7 @@
 
 /* declare the machine context type */
 typedef struct { __ex_mctx_struct } __ex_mctx_t;
-
-/** \ingroup XBT_ex
+/** @addtogroup XBT_ex
  *
  * This module is a small ISO-C++ style exception handling library
  * for use in the ISO-C language. It allows you to use the paradigm 
