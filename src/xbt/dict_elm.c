@@ -861,7 +861,7 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
         p_child = xbt_dynar_get_as(head->sub, pos, s_xbt_dictelm_t*);
         /*DEBUG5("Recurse on child %d of %p to remove %.*s (prefix=%d)",
           pos, (void*)p_child, key+offset, key_len-offset,offset);*/
-        TRY(_xbt_dictelm_remove_rec(p_child, key, key_len, offset));
+        TRYOLD(_xbt_dictelm_remove_rec(p_child, key, key_len, offset));
 
         _collapse_if_need(head, pos, old_offset);
 	return no_error;

@@ -208,7 +208,7 @@ xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor,
                          /*OUT*/char        **key) {
   xbt_error_t errcode = no_error;
 
-  TRY(__cursor_not_null(cursor));
+  TRYOLD(__cursor_not_null(cursor));
 
   *key = xbt_dynar_get_as(cursor->keys, cursor->pos - 1, char*);
 
@@ -227,12 +227,12 @@ xbt_dict_cursor_get_data(xbt_dict_cursor_t   cursor,
   char         *key     = NULL;
   int           key_len = 0;
 
-  TRY(__cursor_not_null(cursor));
+  TRYOLD(__cursor_not_null(cursor));
 
   key     = xbt_dynar_get_as(cursor->keys,     cursor->pos-1,  char *);
   key_len = xbt_dynar_get_as(cursor->key_lens, cursor->pos_len-1, int);
 
-  TRY(xbt_dictelm_get_ext(cursor->head, key, key_len, data));
+  TRYOLD(xbt_dictelm_get_ext(cursor->head, key, key_len, data));
 
   return errcode;
 }

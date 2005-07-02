@@ -65,7 +65,7 @@ typedef enum {
 /** @brief return the error code if != no_error
  *  @hideinitializer
  */
-#define TRY(action) do {                                       \
+#define TRYOLD(action) do {                                       \
   if ((errcode=action) != no_error) {                          \
      ERROR1("'%s' error raising...", xbt_error_name(errcode)); \
      return errcode;                                           \

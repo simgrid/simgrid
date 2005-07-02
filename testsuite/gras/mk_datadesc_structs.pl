@@ -63,7 +63,7 @@ for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l
 print "  INFO0(\"---- Test on all possible struct having 3 fields (".(($max_i+1)*($max_j+1)*($max_k+1)*($max_l+1))." structs) ----\");\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
-    print "  TRY(write_read(gras_datadesc_by_symbol($struct), &my_$struct, &my_${struct}2, sock,direction));\n";
+    print "  TRYOLD(write_read(gras_datadesc_by_symbol($struct), &my_$struct, &my_${struct}2, sock,direction));\n";
     print "  if (direction == READ || direction == RW) {\n";
     print "     int failed = 0;\n";
     print "     test(my_$struct.a == my_${struct}2.a);\n";

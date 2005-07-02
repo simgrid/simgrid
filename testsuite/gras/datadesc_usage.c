@@ -31,19 +31,19 @@ write_read(gras_datadesc_type_t type,void *src, void *dst,
    
   /* write */
   if (direction == RW) 
-    TRY(gras_socket_client_from_file(filename,&sock));
+    TRYOLD(gras_socket_client_from_file(filename,&sock));
   if (direction == WRITE || direction == RW)
-    TRY(gras_datadesc_send(sock, type, src));
-/*  TRY(gras_datadesc_gen_send(sock, type, src));*/
+    TRYOLD(gras_datadesc_send(sock, type, src));
+/*  TRYOLD(gras_datadesc_gen_send(sock, type, src));*/
   if (direction == RW) 
     gras_socket_close(sock);
    
   /* read */
   if (direction == RW) 
-    TRY(gras_socket_server_from_file(filename,&sock));
+    TRYOLD(gras_socket_server_from_file(filename,&sock));
 
   if (direction == READ || direction == RW)
-    TRY(gras_datadesc_recv(sock, type, r_arch, dst));
+    TRYOLD(gras_datadesc_recv(sock, type, r_arch, dst));
 
   if (direction == RW) 
     gras_socket_close(sock);
@@ -79,7 +79,7 @@ xbt_error_t test_int(gras_socket_t sock, int direction) {
   int i=5,j;
   
   INFO0("---- Test on integer ----");
-  TRY(write_read(gras_datadesc_by_name("int"), &i,&j, sock,direction));
+  TRYOLD(write_read(gras_datadesc_by_name("int"), &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert(i == j);
   }
@@ -90,7 +90,7 @@ xbt_error_t test_float(gras_socket_t sock, int direction) {
   float i=5.0,j;
   
   INFO0("---- Test on float ----");
-  TRY(write_read(gras_datadesc_by_name("float"), &i,&j, sock,direction));
+  TRYOLD(write_read(gras_datadesc_by_name("float"), &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert2(i == j,"%f != %f",i,j);
   }
@@ -101,7 +101,7 @@ xbt_error_t test_double(gras_socket_t sock, int direction) {
   double i=-3252355.1234,j;
   
   INFO0("---- Test on double ----");
-  TRY(write_read(gras_datadesc_by_name("double"), &i,&j, sock,direction));
+  TRYOLD(write_read(gras_datadesc_by_name("double"), &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert2(i == j,"%f != %f",i,j);
   }
@@ -124,7 +124,7 @@ xbt_error_t test_array(gras_socket_t sock, int direction) {
 				    gras_datadesc_by_name("int"),
 				    SIZE);
 
-  TRY(write_read(my_type, &i,&j, sock,direction));
+  TRYOLD(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     for (cpt=0; cpt<SIZE; cpt++) {
       DEBUG1("Test spot %d",cpt);
@@ -150,7 +150,7 @@ xbt_error_t test_dynar_scal(gras_socket_t sock, int direction){
     DEBUG2("Push %d, length=%lu",cpt, xbt_dynar_length(i));
   }
 /*  xbt_dynar_dump(i);*/
-  TRY(write_read(my_type, &i,&j, sock, direction));
+  TRYOLD(write_read(my_type, &i,&j, sock, direction));
 /*  xbt_dynar_dump(j);*/
   if (direction == READ || direction == RW) {
      for (cpt=0; cpt<64; cpt++){
@@ -179,7 +179,7 @@ xbt_error_t test_intref(gras_socket_t sock, int direction) {
 
   my_type = gras_datadesc_ref("int*",gras_datadesc_by_name("int"));
 
-  TRY(write_read(my_type, &i,&j, sock,direction));
+  TRYOLD(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert(*i == *j);
     free(j);
@@ -197,7 +197,7 @@ xbt_error_t test_string(gras_socket_t sock, int direction) {
   int cpt;
   
   INFO0("---- Test on string (ref to dynamic array) ----");
-  TRY(write_read(gras_datadesc_by_name("string"), &i,&j,
+  TRYOLD(write_read(gras_datadesc_by_name("string"), &i,&j,
 		 sock,direction));
   if (direction == READ || direction == RW) {
     for (cpt=0; cpt<strlen(i); cpt++) {
@@ -242,7 +242,7 @@ xbt_error_t test_homostruct(gras_socket_t sock, int direction) {
   i->a = 2235;    i->b = 433425;
   i->c = -23423;  i->d = -235235;
 
-  TRY(write_read(my_type, &i,&j, sock,direction));
+  TRYOLD(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert2(i->a == j->a,"i->a=%d != j->a=%d",i->a,j->a);
     xbt_assert(i->b == j->b);
@@ -288,7 +288,7 @@ xbt_error_t test_hetestruct(gras_socket_t sock, int direction) {
   i->c1 = 's'; i->l1 = 123455;
   i->c2 = 'e'; i->l2 = 774531;
 
-  TRY(write_read(my_type, &i,&j, sock,direction));
+  TRYOLD(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert(i->c1 == j->c1);
     xbt_assert(i->c2 == j->c2);
@@ -330,7 +330,7 @@ xbt_error_t test_nestedstruct(gras_socket_t sock, int direction) {
   i->hete.c1 = 's'; i->hete.l1 = 123455;
   i->hete.c2 = 'e'; i->hete.l2 = 774531;
 
-  TRY(write_read(my_type, &i,&j, sock,direction));
+  TRYOLD(write_read(my_type, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert(i->homo.a == j->homo.a);
     xbt_assert(i->homo.b == j->homo.b);
@@ -403,7 +403,7 @@ xbt_error_t test_chain_list(gras_socket_t sock, int direction) {
   i = cons( 12355, cons( 246264 , cons( 23263, NULL)));
   j = NULL;
 
-  TRY(write_read(gras_datadesc_by_name("chained_list_t*"),
+  TRYOLD(write_read(gras_datadesc_by_name("chained_list_t*"),
 		 &i,&j,
 		 sock,direction));
   if (direction == READ || direction == RW) {
@@ -428,7 +428,7 @@ xbt_error_t test_graph(gras_socket_t sock, int direction) {
   j = NULL;
 
   gras_datadesc_cycle_set(gras_datadesc_by_name("chained_list_t*"));
-  TRY(write_read(gras_datadesc_by_name("chained_list_t*"),
+  TRYOLD(write_read(gras_datadesc_by_name("chained_list_t*"),
 		 &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     
@@ -479,7 +479,7 @@ xbt_error_t test_dynar_ref(gras_socket_t sock, int direction){
     xbt_dynar_push(i,&s1);
   }
 
-  TRY(write_read(my_type, &i,&j, sock, direction));
+  TRYOLD(write_read(my_type, &i,&j, sock, direction));
   if (direction == READ || direction == RW) {
      for (cpt=0; cpt< 64; cpt++) {
 	sprintf(buf,"%d",cpt);
@@ -555,7 +555,7 @@ xbt_error_t test_pbio(gras_socket_t sock, int direction) {
     for (cpt2=0; cpt2<106; cpt2++) 
       i.Cddsdde[cpt][cpt2] = ((double)cpt) * ((double)cpt2);
   }
-  TRY(write_read(gras_datadesc_by_symbol(s_pbio),
+  TRYOLD(write_read(gras_datadesc_by_symbol(s_pbio),
 		 &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     /* Check that the data match */
@@ -624,7 +624,7 @@ xbt_error_t test_clause(gras_socket_t sock, int direction) {
 
   ddt=gras_datadesc_ref("Clause*",ddt);
 
-  TRY(write_read(ddt, &i,&j, sock,direction));
+  TRYOLD(write_read(ddt, &i,&j, sock,direction));
   if (direction == READ || direction == RW) {
     xbt_assert(i->num_lits == j->num_lits);
     for (cpt=0; cpt<i->num_lits; cpt++)
@@ -659,12 +659,12 @@ int main(int argc,char *argv[]) {
     
   if (direction == WRITE) {
     TRYFAIL(gras_socket_client_from_file(filename,&sock));
-    TRY(gras_datadesc_send(sock, gras_datadesc_by_name("char"),
+    TRYOLD(gras_datadesc_send(sock, gras_datadesc_by_name("char"),
 			   &r_arch_char));
   }
   if (direction == READ) {
     TRYFAIL(gras_socket_server_from_file(filename,&sock));
-    TRY(gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
+    TRYOLD(gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
 			   gras_arch_selfid(), &r_arch_char));
     INFO3("This datafile was generated on %s (%d), I'm %s.",
 	  gras_datadesc_arch_name(r_arch_char),(int)r_arch_char,

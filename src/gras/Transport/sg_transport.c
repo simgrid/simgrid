@@ -48,7 +48,7 @@ gras_trp_select(double timeout,
 	 MSG_host_get_name(MSG_host_self()),
 	 timeout);
 
-  TRY(MSG_channel_select_from((m_channel_t) pd->chan, timeout, &r_pid));
+  TRYOLD(MSG_channel_select_from((m_channel_t) pd->chan, timeout, &r_pid));
   
   if (r_pid < 0) {
     DEBUG0("TIMEOUT");
@@ -74,7 +74,7 @@ gras_trp_select(double timeout,
   /* Socket to expeditor not created yet */
   DEBUG0("Create a socket to the expeditor");
   
-  TRY(gras_trp_plugin_get_by_name("buf",&trp));
+  TRYOLD(gras_trp_plugin_get_by_name("buf",&trp));
   
   gras_trp_socket_new(1,dst);
   (*dst)->plugin   = trp;

@@ -103,24 +103,24 @@ int maestro(int argc,char *argv[]) {
   }
 
   INFO0("Test the BW between me and one of the sensors");  
-  TRY(amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw));
+  TRYOLD(amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw));
   INFO6("Experience between me and %s:%d (%d kb in msgs of %d kb) took %f sec, achieving %f kb/s",
 	argv[1],atoi(argv[2]),
 	exp_size,msg_size,
 	sec,bw);
 
   INFO0("Test the BW between the two sensors");  
-  TRY(amok_bw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
+  TRYOLD(amok_bw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
                       buf_size,exp_size,msg_size,&sec,&bw));	
   INFO2("Experience took took %f sec, achieving %f kb/s",
 	sec,bw);
 
   /* ask sensors to quit */                    
   gras_msgtype_declare("quit",NULL);
-  TRY(gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL));
+  TRYOLD(gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL));
   gras_socket_close(peer);
-  TRY(gras_socket_client(argv[3],atoi(argv[4]),&peer));
-  TRY(gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL));
+  TRYOLD(gras_socket_client(argv[3],atoi(argv[4]),&peer));
+  TRYOLD(gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL));
   gras_socket_close(peer);
 
   gras_socket_close(g->sock);

@@ -216,12 +216,12 @@ gras_msg_send(gras_socket_t   sock,
 
   DEBUG3("send '%s' to %s:%d", msgtype->name, 
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
-  TRY(gras_trp_chunk_send(sock, GRAS_header, 6));
+  TRYOLD(gras_trp_chunk_send(sock, GRAS_header, 6));
 
-  TRY(gras_datadesc_send(sock, string_type,   &msgtype->name));
+  TRYOLD(gras_datadesc_send(sock, string_type,   &msgtype->name));
   if (msgtype->ctn_type)
-    TRY(gras_datadesc_send(sock, msgtype->ctn_type, payload));
-  TRY(gras_trp_flush(sock));
+    TRYOLD(gras_datadesc_send(sock, msgtype->ctn_type, payload));
+  TRYOLD(gras_trp_flush(sock));
 
   return no_error;
 }
@@ -262,7 +262,7 @@ gras_msg_recv(gras_socket_t    sock,
   DEBUG2("Handle an incoming message using protocol %d (remote is %s)",
 	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
-  TRY(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
+  TRYOLD(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
   errcode = xbt_set_get_by_name(_gras_msgtype_set,
 				 msg_name,(xbt_set_elm_t*)msgtype);
   if (errcode != no_error)
@@ -279,7 +279,7 @@ gras_msg_recv(gras_socket_t    sock,
 		"Dynamic array as payload is forbided for now (FIXME?).",
 		"Reference to dynamic array is allowed.");
     *payload = xbt_malloc(*payload_size);
-    TRY(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
+    TRYOLD(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
   } else {
     *payload = NULL;
     *payload_size = 0;
@@ -337,8 +337,8 @@ gras_msg_wait(double           timeout,
   }
 
   while (1) {
-    TRY(gras_trp_select(timeout - now + start, &expeditor_res));
-    TRY(gras_msg_recv(expeditor_res, &msgt_got, &payload_got, &payload_size_got));
+    TRYOLD(gras_trp_select(timeout - now + start, &expeditor_res));
+    TRYOLD(gras_msg_recv(expeditor_res, &msgt_got, &payload_got, &payload_size_got));
     if (msgt_got->code == msgt_want->code) {
       if (expeditor)
       	*expeditor=expeditor_res;

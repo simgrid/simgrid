@@ -460,22 +460,22 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa) {
   case xbt_cfgelm_host:
     str = va_arg(pa, char *);
     i=va_arg(pa,int);
-    TRY(xbt_cfg_set_host(cfg,name,str,i));
+    TRYOLD(xbt_cfg_set_host(cfg,name,str,i));
     break;
       
   case xbt_cfgelm_string:
     str=va_arg(pa, char *);
-    TRY(xbt_cfg_set_string(cfg, name, str));
+    TRYOLD(xbt_cfg_set_string(cfg, name, str));
     break;
 
   case xbt_cfgelm_int:
     i=va_arg(pa,int);
-    TRY(xbt_cfg_set_int(cfg,name,i));
+    TRYOLD(xbt_cfg_set_int(cfg,name,i));
     break;
 
   case xbt_cfgelm_double:
     d=va_arg(pa,double);
-    TRY(xbt_cfg_set_double(cfg,name,d));
+    TRYOLD(xbt_cfg_set_double(cfg,name,d));
     break;
 
   default:
@@ -688,7 +688,7 @@ xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
   xbt_error_t errcode;
 
   VERB2("Configuration setting: %s=%d",name,val);
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
 
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
@@ -722,7 +722,7 @@ xbt_cfg_set_double(xbt_cfg_t cfg,const char*name, double val) {
   xbt_error_t errcode;
 
   VERB2("Configuration setting: %s=%f",name,val);
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
 
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
@@ -758,7 +758,7 @@ xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) {
   char *newval = xbt_strdup(val);
 
   VERB2("Configuration setting: %s=%s",name,val);
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
 
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
@@ -801,7 +801,7 @@ xbt_cfg_set_host(xbt_cfg_t cfg,const char*name,
   val->name = xbt_strdup(name);
   val->port = port;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
 
   if (variable->max == 1) {
     if (variable->cb_rm && xbt_dynar_length(variable->content))
@@ -841,7 +841,7 @@ xbt_error_t xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
            "Cannot remove value %d from the config element %s since it's already at its minimal size (=%d)",
            val,name,variable->min); 
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
@@ -874,7 +874,7 @@ xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
            "Cannot remove value %f from the config element %s since it's already at its minimal size (=%d)",
            val,name,variable->min); 
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (seen == val) {
@@ -907,7 +907,7 @@ xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
            "Cannot remove value %s from the config element %s since it's already at its minimal size (=%d)",
            name,val,variable->min); 
            
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen,val)) {
@@ -942,7 +942,7 @@ xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
            "Cannot remove value %s:%d from the config element %s since it's already at its minimal size (=%d)",
            host,port,name,variable->min); 
            
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
   
   xbt_dynar_foreach(variable->content,cpt,seen) {
     if (!strcpy(seen->name,host) && seen->port == port) {
@@ -971,7 +971,7 @@ xbt_error_t xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos) {
            "Cannot remove %dth value from the config element %s since it's already at its minimal size (=%d)",
            pos,name,variable->min); 
            
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_any,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_any,&variable));
   
   if (variable->cb_rm) (*variable->cb_rm)(name, pos);	  
   xbt_dynar_remove_at(variable->content, pos, NULL);
@@ -1033,7 +1033,7 @@ xbt_cfg_get_int   (xbt_cfg_t  cfg,
   xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values",
@@ -1064,7 +1064,7 @@ xbt_cfg_get_double(xbt_cfg_t  cfg,
   xbt_cfgelm_t variable;
   xbt_error_t  errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
@@ -1096,7 +1096,7 @@ xbt_error_t xbt_cfg_get_string(xbt_cfg_t  cfg,
 
   *val=NULL;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
@@ -1129,7 +1129,7 @@ xbt_error_t xbt_cfg_get_host  (xbt_cfg_t  cfg,
   xbt_error_t  errcode;
   xbt_host_t  *val;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_host,&variable));
 
   if (xbt_dynar_length(variable->content) > 1) {
     WARN2("You asked for the first value of the config element '%s', but there is %lu values\n",
@@ -1183,7 +1183,7 @@ xbt_cfg_get_int_at(xbt_cfg_t   cfg,
   xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
   *val = xbt_dynar_get_as(variable->content, pos, int);
   return no_error; 
 }
@@ -1198,7 +1198,7 @@ xbt_cfg_get_double_at(xbt_cfg_t   cfg,
   xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_double,&variable));
   *val = xbt_dynar_get_as(variable->content, pos, double);
   return no_error; 
 }
@@ -1214,7 +1214,7 @@ xbt_cfg_get_string_at(xbt_cfg_t   cfg,
   xbt_cfgelm_t variable;
   xbt_error_t errcode;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_string,&variable));
   *val = xbt_dynar_get_as(variable->content, pos, char*);
   return no_error; 
 }
@@ -1231,7 +1231,7 @@ xbt_cfg_get_host_at(xbt_cfg_t   cfg,
   xbt_error_t errcode;
   xbt_host_t *val;
 
-  TRY (xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
+  TRYOLD(xbt_cfgelm_get(cfg,name,xbt_cfgelm_int,&variable));
   val = xbt_dynar_get_ptr(variable->content, pos);
   *port = val->port;
   *host = val->name;

@@ -138,7 +138,7 @@ xbt_multidict_get_ext(xbt_dict_t  mdict,
       i, thislevel, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level: let mismatch raise if not found */
-    TRY(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel));
+    TRYOLD(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel));
   }
   
   xbt_dynar_get_cpy(keys, i, &thiskey);

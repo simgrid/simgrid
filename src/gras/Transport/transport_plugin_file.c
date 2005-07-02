@@ -81,7 +81,7 @@ gras_socket_client_from_file(const char*path,
 
   gras_trp_socket_new(0,dst);
 
-  TRY(gras_trp_plugin_get_by_name("file",&trp));
+  TRYOLD(gras_trp_plugin_get_by_name("file",&trp));
   (*dst)->plugin=trp;
 
   if (strcmp("-", path)) {
@@ -124,7 +124,7 @@ gras_socket_server_from_file(const char*path,
 
   gras_trp_socket_new(1,dst);
 
-  TRY(gras_trp_plugin_get_by_name("file",&trp));
+  TRYOLD(gras_trp_plugin_get_by_name("file",&trp));
   (*dst)->plugin=trp;
 
 

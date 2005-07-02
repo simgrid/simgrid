@@ -199,7 +199,7 @@ gras_socket_server_ext(unsigned short port,
   DEBUG2("Create a server socket from plugin %s on port %d",
 	 gras_if_RL() ? "tcp" : "sg",
 	 port);
-  TRY(gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
+  TRYOLD(gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
 				              :"buf"),
 				  &trp));
 
@@ -249,7 +249,7 @@ gras_socket_client_ext(const char *host,
 
   *dst = NULL;
 
-  TRY(gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
+  TRYOLD(gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
 				              :"buf"),
 				  &trp));
 
@@ -428,7 +428,7 @@ xbt_error_t gras_socket_meas_send(gras_socket_t peer,
      CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
-     TRY(gras_trp_chunk_send(peer,chunk,msg_size));
+     TRYOLD(gras_trp_chunk_send(peer,chunk,msg_size));
   }
   CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	  exp_sofar,exp_size,msg_size,
@@ -462,7 +462,7 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
      CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
-     TRY(gras_trp_chunk_recv(peer,chunk,msg_size));
+     TRYOLD(gras_trp_chunk_recv(peer,chunk,msg_size));
   }
   CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	  exp_sofar,exp_size,msg_size,
@@ -499,7 +499,7 @@ xbt_error_t gras_socket_meas_accept(gras_socket_t peer, gras_socket_t *accepted)
     return no_error;
   }
 
-  TRY((peer->plugin->socket_accept)(peer,accepted));
+  TRYOLD((peer->plugin->socket_accept)(peer,accepted));
   (*accepted)->meas = peer->meas;
   CDEBUG1(trp_meas,"meas_accepted onto %d",(*accepted)->sd);
 

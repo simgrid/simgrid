@@ -153,7 +153,7 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
     ERROR1("Error %s encountered while sending the BW request.", xbt_error_name(errcode));
     return errcode;
   }
-  TRY(gras_socket_meas_accept(measMasterIn,&measIn));
+  TRYOLD(gras_socket_meas_accept(measMasterIn,&measIn));
 
   if ((errcode=gras_msg_wait(60,gras_msgtype_by_name("BW handshake ACK"),
 			     NULL,&request_ack))) {
@@ -174,8 +174,8 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
   DEBUG1("Got ACK; conduct the experiment (msg_size=%ld)",request->msg_size);
 
   *sec=gras_os_time();
-  TRY(gras_socket_meas_send(measOut,120,request->exp_size,request->msg_size));
-  TRY(gras_socket_meas_recv(measIn,120,1,1));
+  TRYOLD(gras_socket_meas_send(measOut,120,request->exp_size,request->msg_size));
+  TRYOLD(gras_socket_meas_recv(measIn,120,1,1));
 
   /*catch
     ERROR1("Error %s encountered while sending the BW experiment.",
@@ -256,12 +256,12 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
     /* FIXME: tell error to remote */
     return 1;
   }
-  TRY(gras_socket_meas_accept(measMasterIn,&measIn));
+  TRYOLD(gras_socket_meas_accept(measMasterIn,&measIn));
   DEBUG4("BW handshake answered. buf_size=%lu exp_size=%lu msg_size=%lu port=%d",
 	answer->buf_size,answer->exp_size,answer->msg_size,answer->host.port);
 
-  TRY(gras_socket_meas_recv(measIn, 120,request->exp_size,request->msg_size));
-  TRY(gras_socket_meas_send(measOut,120,1,1));
+  TRYOLD(gras_socket_meas_recv(measIn, 120,request->exp_size,request->msg_size));
+  TRYOLD(gras_socket_meas_send(measOut,120,1,1));
 
   /*catch
     ERROR1("Error %s encountered while receiving the experiment.",
@@ -324,11 +324,11 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
   request->host.name = (char*)to_name;
   request->host.port = to_port;
 
-  TRY(gras_socket_client(from_name,from_port,&sock));
-  TRY(gras_msg_send(sock,gras_msgtype_by_name("BW request"),&request));
+  TRYOLD(gras_socket_client(from_name,from_port,&sock));
+  TRYOLD(gras_msg_send(sock,gras_msgtype_by_name("BW request"),&request));
   free(request);
 
-  TRY(gras_msg_wait(240,gras_msgtype_by_name("BW result"),NULL, &result));
+  TRYOLD(gras_msg_wait(240,gras_msgtype_by_name("BW result"),NULL, &result));
   
   *sec=result->sec;
   *bw =result->bw;
@@ -351,12 +351,12 @@ int amok_bw_cb_bw_request(gras_socket_t    expeditor,
   bw_res_t result = xbt_new0(s_bw_res,1);
   gras_socket_t peer;
 
-  TRY(gras_socket_client(request->host.name,request->host.port,&peer));
-  TRY(amok_bw_test(peer,
+  TRYOLD(gras_socket_client(request->host.name,request->host.port,&peer));
+  TRYOLD(amok_bw_test(peer,
 		   request->buf_size,request->exp_size,request->msg_size,
 		   &(result->sec),&(result->bw)));
 
-  TRY(gras_msg_send(expeditor,gras_msgtype_by_name("BW result"),&result));
+  TRYOLD(gras_msg_send(expeditor,gras_msgtype_by_name("BW result"),&result));
 
   gras_os_sleep(1);
   gras_socket_close(peer);
