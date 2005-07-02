@@ -16,6 +16,7 @@
 #include "ucontext_stack.h"  /* loads context system definitions */
 
 #include "xbt/context.h"
+#include "xbt/ex.h"
 
 #ifdef S_SPLINT_S
 /* Dummy definition for splint since it chokes on ucontext.h */
@@ -52,6 +53,7 @@ typedef struct s_xbt_context {
   void *startup_arg;
   void_f_pvoid_t *cleanup_func;
   void *cleanup_arg;
+  ex_ctx_t *exception;	        /* exception */
 } s_xbt_context_t;
 #else
 

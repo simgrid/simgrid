@@ -140,6 +140,18 @@ static void *__context_wrapper(void *c)
   return NULL;
 }
 
+/* callback: context fetching */
+static ex_ctx_t *__context_ex_ctx(void)
+{
+  return current_context->exception;
+}
+
+/* callback: termination */
+static void __context_ex_terminate(ex_t *e)
+{
+  exit(e->value);
+}
+
 /** \name Functions 
  *  \ingroup XBT_context
  */
@@ -152,6 +164,10 @@ void xbt_context_init(void)
 {
   if(!current_context) {
     current_context = init_context = xbt_new0(s_xbt_context_t,1);
+    init_context->exception = xbt_new(ex_ctx_t,1);
+    XBT_CTX_INITIALIZE(init_context->exception);
+    __xbt_ex_ctx       = __context_ex_ctx;
+    __xbt_ex_terminate = __context_ex_terminate;
     context_to_destroy = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
     context_living = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
     xbt_swag_insert(init_context, context_living);
@@ -241,6 +257,8 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
   res->startup_arg = startup_arg;
   res->cleanup_func = cleanup_func;
   res->cleanup_arg = cleanup_arg;
+  res->exception = xbt_new(ex_ctx_t,1);
+  XBT_CTX_INITIALIZE(res->exception);
 
   xbt_swag_insert(res, context_living);
 
@@ -302,6 +320,7 @@ void xbt_context_free(xbt_context_t context)
   for(i=0;i<context->argc; i++) 
     if(context->argv[i]) free(context->argv[i]);
   if(context->argv) free(context->argv);
+  if(context->exception) free(context->exception);
   
   if(context->cleanup_func)
     context->cleanup_func(context->cleanup_arg);
