@@ -90,7 +90,7 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  *
  * @section XBT_ex_base BASIC USAGE
  *
- * \em xbt_try \b TRIED_BLOCK [\em xbt_cleanup \b CLEANUP_BLOCK] \em xbt_catch (variable) \b CATCH_BLOCK
+ * \em TRY \b TRIED_BLOCK [\em CLEANUP \b CLEANUP_BLOCK] \em CATCH (variable) \b CATCH_BLOCK
  *
  * This is the primary syntactical construct provided. It is modeled after the
  * ISO-C++ try-catch clause and should sound familiar to most of you.
@@ -113,41 +113,41 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * CATCH_BLOCK block. 
  *
  * Some notes:
- *  - xbt_try, xbt_cleanup and xbt_catch cannot be used separately, they work
+ *  - TRY, CLEANUP and CATCH cannot be used separately, they work
  *    only in combination and form a language clause as a whole.
  *  - In contrast to the syntax of other languages (such as C++ or Jave) there
- *    is only one xbt_catch block and not multiple ones (all exceptions are
- *    of the same C type xbt_t). 
- *  - the variable of xbt_catch can naturally be reused in subsequent 
- *    xbt_catch clauses.
- *  - it is possible to nest xbt_try clauses.
+ *    is only one CATCH block and not multiple ones (all exceptions are
+ *    of the same \em ex_t C type). 
+ *  - the variable of CATCH can naturally be reused in subsequent 
+ *    CATCH clauses.
+ *  - it is possible to nest TRY clauses.
  *
- * The xbt_try block is a regular ISO-C language statement block, but it is not
+ * The TRY block is a regular ISO-C language statement block, but it is not
  * allowed to jump into it via "goto" or longjmp(3) or out of it via "break",
  * "return", "goto" or longjmp(3) because there is some hidden setup and
  * cleanup that needs to be done regardless of whether an exception is
  * caught. Bypassing these steps will break the exception handling facility.
  *     
- * The xbt_cleanup and xbt_catch blocks are regular ISO-C language statement
- * blocks without any restrictions. You are even allowed to throw (and in the
- * xbt_catch block to re-throw) exceptions.
+ * The CLEANUP and CATCH blocks are regular ISO-C language statement
+ * blocks without any restrictions. You are even allowed to throw (and, in the
+ * CATCH block, to re-throw) exceptions.
  *
- * There is one subtle detail you should remember about xbt_try blocks:
- * Variables used in the xbt_cleanup or xbt_catch clauses must be declared with
+ * There is one subtle detail you should remember about TRY blocks:
+ * Variables used in the CLEANUP or CATCH clauses must be declared with
  * the storage class "volatile", otherwise they might contain outdated
  * information if an exception it thrown.
  *
  *
- * This is because you usually do not know which commands in the xbt_try
+ * This is because you usually do not know which commands in the TRY
  * were already successful before the exception was thrown (logically speaking)
  * and because the underlying ISO-C setjmp(3) facility applies those
  * restrictions (technically speaking). As a matter of fact, value changes
- * between the xbt_try and the xbt_throw may be discarded if you forget the
+ * between the TRY and the THROW may be discarded if you forget the
  * "volatile" keyword. 
  * 
  * @section XBT_ex_advanced ADVANCED USAGE
  *
- * @subsection xbt_defer DEFERING_BLOCK XBT_ex_defer
+ * @subsection DEFER DEFERING_BLOCK XBT_ex_defer
  *
  * This directive executes DEFERING_BLOCK while deferring the throwing of
  * exceptions, i.e., exceptions thrown within this block are remembered, but
@@ -157,10 +157,10 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  *
  * DEFERING_BLOCK is a regular ISO-C language statement block, but it is not
  * allowed to jump into it via "goto" or longjmp(3) or out of it via "break",
- * "return", "goto" or longjmp(3). It is however allowed to nest xbt_defer
+ * "return", "goto" or longjmp(3). It is however allowed to nest DEFER
  * clauses.
  *
- * @subsection XBT_ex_shield xbt_shield SHIELDED_BLOCK
+ * @subsection XBT_ex_shield SHIELD SHIELDED_BLOCK
  *
  * This directive executes SHIELDED_BLOCK while shielding it against the
  * throwing of exceptions, i.e., any exception thrown from this block or its
@@ -168,12 +168,12 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  *
  * SHIELDED_BLOCK is a regular ISO-C language statement block, but it is not
  * allowed to jump into it via "goto" or longjmp(3) or out of it via "break",
- * "return", "goto" or longjmp(3).  It is however allowed to nest xbt_shield
+ * "return", "goto" or longjmp(3).  It is however allowed to nest SHIELD
  * clauses.
  *
  * @subsection XBT_ex_conditions Retrieving the current execution condition
  *
- * \a xbt_catching, \a xbt_deferred and \a xbt_shielding return a boolean
+ * \a IS_CATCHED, \a IS_DEFERRED and \a IS_SHIELDED return a boolean
  * indicating whether the current scope is within a TRYIED_BLOCK,
  * DEFERING_BLOCK and SHIELDED_BLOCK (respectively)
  *
@@ -191,29 +191,29 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  *
  * This example raises a few issues:
  *  -# \b variable \b scope \n
- *     Variables which are used in the xbt_cleanup or xbt_catch clauses must be
- *     declared before the xbt_try clause, otherwise they only exist inside the
- *     xbt_try block. In the example above, cp1, cp2 and cp3 only exist in the
- *     xbt_try block and are invisible from the xbt_cleanup and xbt_catch
+ *     Variables which are used in the CLEANUP or CATCH clauses must be
+ *     declared before the TRY clause, otherwise they only exist inside the
+ *     TRY block. In the example above, cp1, cp2 and cp3 only exist in the
+ *     TRY block and are invisible from the CLEANUP and CATCH
  *     blocks.
  *  -# \b variable \b initialization \n
- *     Variables which are used in the xbt_cleanup or xbt_catch clauses must
- *     be initialized before the point of the first possible xbt_throw is
- *     reached. In the example above, xbt_cleanup would have trouble using cp3
+ *     Variables which are used in the CLEANUP or CATCH clauses must
+ *     be initialized before the point of the first possible THROW is
+ *     reached. In the example above, CLEANUP would have trouble using cp3
  *     if mallocex() throws a exception when allocating a TOOBIG buffer.
  *  -# \b volatile \b variable \n
- *     Variables which are used in the xbt_cleanup or xbt_catch clauses MUST BE
+ *     Variables which are used in the CLEANUP or CATCH clauses MUST BE
  *     DECLARED AS "volatile", otherwise they might contain outdated
  *     information when an exception is thrown. 
  *  -# \b clean \b before \b catch \n
- *     The xbt_cleanup clause is not only place before the xbt_catch clause in
+ *     The CLEANUP clause is not only place before the CATCH clause in
  *     the source code, it also occures before in the control flow. So,
- *     resources being cleaned up cannot be used in the xbt_catch block. In the
- *     example, c3 gets freed before the printf placed in xbt_catch.
+ *     resources being cleaned up cannot be used in the CATCH block. In the
+ *     example, c3 gets freed before the printf placed in CATCH.
  *  -# \b variable \b uninitialization \n
  *     If resources are passed out of the scope of the
- *     xbt_try/xbt_cleanup/xbt_catch construct, they naturally shouldn't get
- *     cleaned up. The example above does free(3) cp1 in xbt_cleanup although
+ *     TRY/CLEANUP/CATCH construct, they naturally shouldn't get
+ *     cleaned up. The example above does free(3) cp1 in CLEANUP although
  *     its value was affected to globalcontext->first, invalidating this
  *     pointer.
 
@@ -287,7 +287,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
 /** @brief Introduce a block where exception may be dealed with 
  *  @hideinitializer
  */
-#define xbt_try \
+#define TRY \
     { \
         ex_ctx_t *__xbt_ex_ctx_ptr = __xbt_ex_ctx(); \
         int __ex_cleanup = 0; \
@@ -301,7 +301,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
 /** @brief optional(!) block for cleanup 
  *  @hideinitializer
  */
-#define xbt_cleanup \
+#define CLEANUP \
             else { \
             } \
             __xbt_ex_ctx_ptr->ctx_caught = 0; \
@@ -318,7 +318,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
 /** @brief the block for catching (ie, deal with) an exception 
  *  @hideinitializer
  */
-#define xbt_catch(e) \
+#define CATCH(e) \
             else { \
             } \
             if (!(__ex_cleanup)) \
@@ -354,7 +354,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
  * The sg_throw can be performed everywhere, including inside sg_try, 
  * sg_cleanup and sg_catch blocks.
  */
-#define xbt_throw(c,v,m) \
+#define THROW(c,v,m) \
     ((   __xbt_ex_ctx()->ctx_shielding > 0 \
       || (__xbt_ex_ctx()->ctx_deferring > 0 && __xbt_ex_ctx()->ctx_deferred == 1)) ? 0 : \
      (__xbt_ex_ctx()->ctx_ex.msg      = bprintf(m), \
@@ -374,7 +374,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
 /** @brief re-throwing of an already caught exception (ie, pass it to the upper catch block) 
  *  @hideinitializer
  */
-#define xbt_rethrow \
+#define RETHROW \
     ((   __xbt_ex_ctx()->ctx_shielding > 0 \
       || __xbt_ex_ctx()->ctx_deferring > 0) ? 0 : \
       (  __xbt_ex_ctx()->ctx_mctx == NULL \
@@ -384,7 +384,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
 /** @brief shield an operation from exception handling 
  *  @hideinitializer
  */
-#define xbt_shield \
+#define SHIELD \
     for (__xbt_ex_ctx()->ctx_shielding++, \
          __xbt_ex_ctx()->ctx_shield =  1; \
          __xbt_ex_ctx()->ctx_shield == 1; \
@@ -394,47 +394,28 @@ extern void __xbt_ex_terminate_default(ex_t *e);
 /** @brief defer immediate exception handling 
  *  @hideinitializer
  */
-#define xbt_defer \
+#define DEFER \
     for (((__xbt_ex_ctx()->ctx_deferring)++ == 0 ? __xbt_ex_ctx()->ctx_deferred = 0 : 0), \
          __xbt_ex_ctx()->ctx_defer =  1;  \
          __xbt_ex_ctx()->ctx_defer == 1;  \
          __xbt_ex_ctx()->ctx_defer =  0,  \
-         ((--(__xbt_ex_ctx()->ctx_deferring) == 0 && __xbt_ex_ctx()->ctx_deferred == 1) ? xbt_rethrow : 0))
+         ((--(__xbt_ex_ctx()->ctx_deferring) == 0 && __xbt_ex_ctx()->ctx_deferred == 1) ? RETHROW : 0))
 
 /** @brief exception handling tests 
  *  @hideinitializer
  */
-#define xbt_catching \
+#define IS_CATCHED \
     (__xbt_ex_ctx()->ctx_mctx != NULL)
 /** @brief exception handling tests 
  *  @hideinitializer
  */
-#define xbt_shielding \
+#define IS_SHIELDED \
     (__xbt_ex_ctx()->ctx_shielding > 0)
 /** @brief exception handling tests 
  *  @hideinitializer
  */
-#define xbt_deferring \
+#define IS_DEFERRED \
     (__xbt_ex_ctx()->ctx_deferring > 0)
-
-/* optional namespace mapping */
-#if defined(__EX_NS_UCCXX__)
-#define Try      xbt_try
-#define Cleanup  xbt_cleanup
-#define Catch    xbt_catch
-#define Throw    xbt_throw
-#define Rethrow  xbt_rethrow
-#define Shield   xbt_shield
-#define Defer    xbt_defer
-#elif defined(__EX_NS_CXX__) || (!defined(__cplusplus) && !defined(__EX_NS_CUSTOM__))
-#define try      xbt_try
-#define cleanup  xbt_cleanup
-#define catch    xbt_catch
-#define throw    xbt_throw
-#define rethrow  xbt_rethrow
-#define shield   xbt_shield
-#define defer    xbt_defer
-#endif
 
 /** @} */
 #endif /* __XBT_EX_H__ */
