@@ -4,6 +4,7 @@
  *   - Portability support. 
  *     - \ref XBT_syscall
  *   - Grounding features
+ *     - \ref XBT_ex
  *     - \ref XBT_log
  *     - \ref XBT_error
  *     - \ref XBT_config
@@ -31,6 +32,10 @@
 /* ************* *
  * * GROUNDING * *
  * ************* */
+    /** @defgroup XBT_ex Exception support
+     *  @brief A set of macros providing exception a la C++ in ANSI C (grounding feature)
+     */
+
     /** @defgroup XBT_log Logging support
      *  @brief A generic logging facility in the spirit of log4j (grounding feature)
      *  @{
