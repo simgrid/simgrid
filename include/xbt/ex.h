@@ -81,14 +81,14 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * These features are brought to you by a modified version of the libex 
  * library, one of the numerous masterpiece of Ralf S. Engelschall.
  *
- * @section Introduction
+ * @section XBT_ex_intro DESCRIPTION
  * 
  * In SimGrid, exceptions is a triple <\a msg , \a category , \a value> 
  * where \a msg is a human-readable text describing the exceptional 
  * condition, \a code an integer describing what went wrong and \a value
  * providing a sort of sub-category. (this is different in the original libex).
  *
- * @section Basic usage
+ * @section XBT_ex_base BASIC USAGE
  *
  * \em xbt_try \b TRIED_BLOCK [\em xbt_cleanup \b CLEANUP_BLOCK] \em xbt_catch (variable) \b CATCH_BLOCK
  *
@@ -145,9 +145,9 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * between the xbt_try and the xbt_throw may be discarded if you forget the
  * "volatile" keyword. 
  * 
- * @section Advanced usage
+ * @section XBT_ex_advanced ADVANCED USAGE
  *
- * @subsection xbt_defer DEFERING_BLOCK
+ * @subsection xbt_defer DEFERING_BLOCK XBT_ex_defer
  *
  * This directive executes DEFERING_BLOCK while deferring the throwing of
  * exceptions, i.e., exceptions thrown within this block are remembered, but
@@ -160,7 +160,7 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * "return", "goto" or longjmp(3). It is however allowed to nest xbt_defer
  * clauses.
  *
- * @subsection xbt_shield SHIELDED_BLOCK
+ * @subsection XBT_ex_shield xbt_shield SHIELDED_BLOCK
  *
  * This directive executes SHIELDED_BLOCK while shielding it against the
  * throwing of exceptions, i.e., any exception thrown from this block or its
@@ -171,13 +171,13 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * "return", "goto" or longjmp(3).  It is however allowed to nest xbt_shield
  * clauses.
  *
- * @subsection Retrieving the current execution condition
+ * @subsection XBT_ex_conditions Retrieving the current execution condition
  *
  * \a xbt_catching, \a xbt_deferred and \a xbt_shielding return a boolean
  * indicating whether the current scope is within a TRYIED_BLOCK,
  * DEFERING_BLOCK and SHIELDED_BLOCK (respectively)
  *
- * \section PROGRAMMING PITFALLS
+ * \section XBT_ex_pitfalls PROGRAMMING PITFALLS 
  *
  * Exception handling is a very elegant and efficient way of dealing with
  * exceptional situation. Nevertheless it requires additional discipline in
@@ -185,48 +185,32 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * following code which shows some pitfalls and contains many errors (assuming
  * a mallocex() function which throws an exception if malloc(3) fails):
  *
- \verbatim
-// BAD EXAMPLE
-xbt_try {
-  char *cp1, *cp2, cp3;
-
-  cp1 = mallocex(SMALLAMOUNT);
-  globalcontext->first = cp1;
-  cp2 = mallocex(TOOBIG);
-  cp3 = mallocex(SMALLAMOUNT);
-  strcpy(cp1, "foo");
-  strcpy(cp2, "bar");
-} xbt_cleanup {
-  if (cp3 != NULL) free(cp3);
-  if (cp2 != NULL) free(cp2);
-  if (cp1 != NULL) free(cp1);
-} xbt_catch(ex) {
-  printf("cp3=%s", cp3);
-  ex_rethrow;
-}\endverbatim
-
+ * \dontinclude ex_test.c
+ * \skip BAD_EXAMPLE
+ * \until end_of_bad_example
+ *
  * This example raises a few issues:
- *  -# \b variable scope\n
+ *  -# \b variable \b scope \n
  *     Variables which are used in the xbt_cleanup or xbt_catch clauses must be
  *     declared before the xbt_try clause, otherwise they only exist inside the
  *     xbt_try block. In the example above, cp1, cp2 and cp3 only exist in the
  *     xbt_try block and are invisible from the xbt_cleanup and xbt_catch
  *     blocks.
- *  -# \b variable initialization \n
+ *  -# \b variable \b initialization \n
  *     Variables which are used in the xbt_cleanup or xbt_catch clauses must
  *     be initialized before the point of the first possible xbt_throw is
  *     reached. In the example above, xbt_cleanup would have trouble using cp3
  *     if mallocex() throws a exception when allocating a TOOBIG buffer.
- *  -# \b volatile variable \n
+ *  -# \b volatile \b variable \n
  *     Variables which are used in the xbt_cleanup or xbt_catch clauses MUST BE
  *     DECLARED AS "volatile", otherwise they might contain outdated
  *     information when an exception is thrown. 
- *  -# \b clean before catch \n
+ *  -# \b clean \b before \b catch \n
  *     The xbt_cleanup clause is not only place before the xbt_catch clause in
  *     the source code, it also occures before in the control flow. So,
  *     resources being cleaned up cannot be used in the xbt_catch block. In the
  *     example, c3 gets freed before the printf placed in xbt_catch.
- *  -# \b variable uninitialization \n
+ *  -# \b variable \b uninitialization \n
  *     If resources are passed out of the scope of the
  *     xbt_try/xbt_cleanup/xbt_catch construct, they naturally shouldn't get
  *     cleaned up. The example above does free(3) cp1 in xbt_cleanup although
@@ -234,36 +218,10 @@ xbt_try {
  *     pointer.
 
  * The following is fixed version of the code (annotated with the pitfall items
- * for reference):
- \verbatim
-// GOOD EXAMPLE
-{ / *01* /
-  char * volatile / *03* / cp1 = NULL / *02* /;
-  char * volatile / *03* / cp2 = NULL / *02* /;
-  char * volatile / *03* / cp3 = NULL / *02* /;
-  try {
-    cp1 = mallocex(SMALLAMOUNT);
-    globalcontext->first = cp1;
-    cp1 = NULL / *05 give away* /;
-    cp2 = mallocex(TOOBIG);
-    cp3 = mallocex(SMALLAMOUNT);
-    strcpy(cp1, "foo");
-    strcpy(cp2, "bar");
-  }
-  clean { / *04* /
-    printf("cp3=%s", cp3 == NULL / *02* / ? "" : cp3);
-    if (cp3 != NULL)
-      free(cp3);
-    if (cp2 != NULL)
-      free(cp2);
-    / *05 cp1 was given away * /
-  }
-  catch(ex) {
-    / *05 global context untouched * /
-    rethrow;
-  }
-}\endverbatim
-
+ * for reference): 
+ *
+ * \skip GOOD_EXAMPLE
+ * \until end_of_good_example
  *
  * @{
  */
@@ -381,6 +339,10 @@ extern void __xbt_ex_terminate_default(ex_t *e);
 
 /** @brief Build an exception from the supplied arguments and throws it
  *  @hideinitializer
+ *
+ *  @param c: category code (integer)
+ *  @param v: value (integer)
+ *  @param m: message text
  *
  * If called from within a sg_try/sg_catch construct, this exception 
  * is copied into the sg_catch relevant variable program control flow 
