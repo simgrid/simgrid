@@ -36,7 +36,7 @@
 
 /* default __ex_ctx callback function */
 ex_ctx_t *__xbt_ex_ctx_default(void) {
-    static ex_ctx_t ctx = SG_CTX_INITIALIZER;
+    static ex_ctx_t ctx = XBT_CTX_INITIALIZER;
 
     return &ctx;
 }
@@ -48,7 +48,7 @@ void __xbt_ex_terminate_default(ex_t *e) {
             "** SimGrid: UNCAUGHT EXCEPTION:\n"
 	    "** (%d/%d) %s\n"
             "** Thrown by %s%s%s at %s:%d:%s\n",
-	    e->code, e->value, e->msg,
+	    e->category, e->value, e->msg,
 	    e->procname, (e->host?"@":""),(e->host?e->host:""),
 	    e->file,e->line,e->func);
     abort();
