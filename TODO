@@ -1,217 +1,208 @@
-- a way to get the network proximity (needed by Pastry, at least)
-
-- pull method of source diffusion in graspe-slave
-
-- Use a xbt_set for gras_procdata_t->libdata instead of a dict
-  so that the search can be linear.
-
-[sorry for the parts in french :]
-
 ###
-### Very soon
+### Ongoing stuff
 ###
 
-- tcp->incoming_socks
+* tcp->incoming_socks
   sock specific tcp (buffsize) useless
 
-###
-### Soon
-###
-
-- gras_os_getload
-
-- gras_datadesc_import_nws?
-
-- Implement gras_datadesc_cpy to speedup things in the simulator
-  For now, we mimick closely the RL when on simulator, which is not needed.
-  (this was easier to do).
-  gras_datadesc_cpy needs to provide the size of the corresponding messages, so
-  that we can report it into the simulator.
-
-
-- when a send failed because the socket was closed on the other side, 
-  try to reopen it seamlessly. Needs exceptions or another way to
-  differentiate between the several system_error.
-- cache accepted sockets and close the old ones after a while. 
-  Depends on the previous item.
-
+* use the exception everywhere
 
 ###
-### A bit later
-### 
+### Planned
+###
 
-- timeout the send/recv too
-- Adaptative timeout
-- datadesc_set_cste: give the value by default when receiving. 
-  It's not transfered anymore, which is good for functions pointer.
-
-============================================================================
-
-* while (1) { fork; exec the child, wait in father }
-
- - core ok (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
- - virtualize (linux, solaris, SG) & conditions
- - binary representation: any type, SNWF (Sender Native Wire Format)
- - modules (log control, manage, token ring, bw)
+*
+* Infrastructure
+****************
 
 [autoconf]
-  Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
+  * Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
     but versions above 3.4.0 should be ok.
 
+*
+* XBT
+*****
+
+[doc]
+  * graphic showing:
+    (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
+
 [portability layer]
-  Mallocators
-  
-[Messaging]
-  Message forwarding
-  Message priority
-  Message declarations in a tree manner (such as log channels)
-  
-[errors]
-  Better split casual errors from programing errors.
+  * Mallocators and/or memory pool so that we can cleanly kill an actor
+
+[errors/exception]
+  * Better split casual errors from programing errors.
     The first ones should be repported to the user, the second should kill
     the program (or, yet better, only the msg handler)
-  Allows the use of an error handler depending on the current module (ie,
-   the same philosophy than log4c using GSL's error functions)
-  Rethink the error codes. Source of inspirations are:
-   - comerr (common error reporting from ext2)
-   - libgpg-error
+  * Allows the use of an error handler depending on the current module (ie,
+    the same philosophy than log4c using GSL's error functions)
 
 [logs]
-  Several appenders; fix the setting stuff to change the appender
-  Hijack message from a given category to another for a while (to mask
+  * Hijack message from a given category to another for a while (to mask
     initializations, and more)
-  Allow each process in simulation to have its own setting
-- a init/exit mecanism for logging appender
-- more logging appenders
+  * Allow each actor to have its own setting
+  * a init/exit mecanism for logging appender
+  * Several appenders; fix the setting stuff to change the appender
+  * more logging appenders (take those from Ralf in l2)
 
 [dict]
-  speed up the cursors, for example using the contexts when available
-  fix multi levels dicts
+  * speed up the cursors, for example using the contexts when available
+
+[modules]
+  * better formalisation of what modules are (amok deeply needs it)
+    configuration + init() + exit() + dependencies
+  * allow to load them at runtime
+    check in erlang how they upgrade them without downtime
+
+[other modules]
+  * we may need a round-robin database module, and a statistical one
+  * a hook module *may* help cleaning up some parts. Not sure yet.
+  * Some of the datacontainer modules seem to overlap. Kill some of them?
+
+*
+* GRAS
+******
+
+[doc]
+  * add the token ring as official example
+  * implement the P2P protocols that macedon does. They constitute great
+    examples, too
+
+[transport]  
+  * Spawn threads handling the communication
+    - Data sending cannot be delegated if we want to be kept informed
+      (*easily*) of errors here.
+      - Actor execution flow shouldn't be interrupted
+      - It should be allowed to access (both in read and write access) 
+        any data available (ie, referenced) from the actor without 
+        requesting to check for a condition before.
+        (in other word, no mutex or assimilated)
+      - I know that enforcing those rules prevent the implementation of
+        really cleaver stuff. Keeping the stuff simple for the users is more
+        important to me than allowing them to do cleaver tricks. Black magic
+        should be done *within* gras to reach a good performance level.
+
+    - Data receiving can be delegated (and should)
+      The first step here is a "simple" mailbox mecanism, with a fifo of
+        messages protected by semaphore.
+      The rest is rather straightforward too.
+
+  * use poll(2) instead of select(2) when available. (first need to check
+    the advantage of doing so ;)
+
+    Another idea we spoke about was to simulate this feature with a bunch of
+    threads blocked in a read(1) on each incomming socket. The latency is
+    reduced by the cost of a syscall, but the more I think about it, the
+    less I find the idea adapted to our context.
+
+  * timeout the send/recv too (hard to do in RL)
+  * Adaptative timeout
+  * multiplex on incoming SOAP over HTTP (once datadesc can deal with it)
+
+  * The module syntax/API is too complex. 
+    - Everybody opens a server socket (or almost), and nobody open two of
+      them. This should be done automatically without user intervention.
+    - I'd like to offer the possibility to speak to someone, not to speak on
+      a socket. Users shouldn't care about such technical details. 
+    - the idea of host_cookie in NWS seem to match my needs, but we still
+      need a proper name ;)
+    - this would allow to exchange a "socket" between peer :)
+    - the creation needs to identify the peer actor within the process
+
+  * when a send failed because the socket was closed on the other side, 
+    try to reopen it seamlessly. Needs exceptions or another way to
+    differentiate between the several system_error.
+  * cache accepted sockets and close the old ones after a while. 
+    Depends on the previous item; difficult to achieve with firewalls
 
 [datadesc]
-  Error handling in cbps
-  Regression tests of cbps
-
-*********
-* GRAS1 * Integrer grassouillet a gras; multiplexage XML; module de comm
-*********
-
-[simuler le select sur les sockets avec des threads]
-  Le plan, c'est qu'a l'ouverture d'une socket server, on cree un thread
-    charge de faire du pool blocant dessus, et des que ce thread se debloque
-    car il commence a lire qqch, il passe la main a un thread de
-    communication charge de faire la lecture. 
-  Quand la lecture est finie, le thread de comm passe la main aux threads
-    d'execution (un par couleur).
-    
-  Voici comment faire le coeur du truc [dixit Olivier]:
-    Une liste est utilisee pour stocker ce que le thread de comm a le droit
-      de lire. Elle est protegee par mutex pour eviter les acces concurents.
-      c'est la "liste de lecture"
-    Une semaphore "de lecture" est utilisee pour permettre aux threads
-      servants des sockets de prevenir le thread de comm qu'ils ont qqch
-      pour lui
-    Dans la liste de lecture, on place les messages en cours de creation, et
-      un ptit mutex pour que le thread de comm dise aux threads servants de
-      retourner ecouter la socket car il a fini
-    Chaque couleur a sa file de callback a appeller, proteger par semaphore
-      et un mutex comme pour la file de lecture
-    
-    Init:
-     initialisation de toutes les semaphore a 0
-     comm: sem_P(semaphore lecture)
-     couleur: sem_P(semaphore de la couleur correspondante)
-     servant: read (1) sur la socket
-     
-    Arrive d'un message
-     servant:
-     1) le read debloque (c'est la version de gras, utilisee pour multiplexe
-        sur le XML, ou sur les differentes versions de gras/de pilote reseau)
-     2) Allocation du message vide pour contenir ce qui s'annonce
-     3) initialisation du mutex du message_instance a 0 (verrouille)
-     4) placement du message instance dans la file (prise de mutex,
-        placement, lachage de mutex)
-     5) sem_V(sempahore)
-     6) mutex_lock sur le mutex_verrouille
-     sleep
-     7) quand on revient, on rebloque un read(1), et on recommence
-     
-     comm:
-     1) on se reveille quand la semaphore se libere (etape 6 des servants)
-     2) prise d'une tache dans la file (protegee par semaphore)
-     3) lecture de l'instance de message
-     4) lache le mutex dans l'instance pour liberer le servant
-     5) pose le message pret dans la file de la couleur correpondant au
-        premier callback de la pile pour ces {messageID x version} et
-        augmente le semaphore correspondant.
-     6) se rebloque sur le semaphore de lecture et recommence
-     
-     couleur:
-     1) on se reveille quand quelqu'un a pose qqch dans sa file des messages
-        prets
-     2) on le retire de la file
-     3) on acquiere le mutex d'execution de sa couleur (pour les callbacks
-        cameleon)
-     4) on execute le callback qu'il faut
-     5) on lache le mutex de sa couleur
-     Si le callback annonce avoir mange le message
-       a) on libere le message (le payload doit avoir ete libere par 
-          l'utilisateur)
-       b) on decremente le TTL du callback, et on le vire si c'etait pas un
-          callback infini et qu'il arrive en fin de vie
-     Sinon
-       a) on place le message dans la liste des messages de la couleur du
-          suivant dans la pile des callback
-     6) On se rendort sur le semaphore de sa couleur et recommence
-     
-    Emission d'un message:
-     A faire. Le thread de comm peut faire ceci, ou on peut faire un nouveau
-      thread de comm pour cela.
-     
-    Fermeture d'une socket client:
-     Probleme: faut tuer le thread servant.
-     Solution pour l'instant: fermer la socket depuis ailleurs.
-     Solution si ca marche pas (ou pas partout): Les servants font des
-      selects sur un pool {leur socket x un pipe fait pour}
-      Quand qqch arrive sur le pipe, c'est le signal du suicide.
-      
-[Inter-arch conversions]
- Convert in the same buffer when size increase
- Exchange (on net) structures in one shoot when possible.
- Port to really exotic platforms (Cray is not IEEE ;)
-
-[XML]
- Do what is written in the paper (multiplex on incoming HTTP)
-
-[DataDesc and Parsing macro]
- Handle typedefs (needs love from DataDesc/)
- Handle unions with annotate
- Handle enum
- Handle long long and long double
- Forbid "char", allow "signed char" and "unsigned char", or user code won't be
-   portable to ARM, at least.
- Handle struct/union/enum embeeded within another container 
-   (needs modifications in DataDesc, too)
+  * Implement gras_datadesc_cpy to speedup things in the simulator
+    (and allow to have several "actors" within the same unix process).
+    For now, we mimick closely the RL even in SG. It was easier to do
+      since the datadesc layer is unchanged, but it is not needed and
+      hinders performance.
+    gras_datadesc_cpy needs to provide the size of the corresponding messages, so
+     that we can report it into the simulator.
+  * Add a XML wire protocol alongside to the binary one (for SOAP/HTTP)
+  * cbps:
+    - Error handling
+    - Regression tests
+  * Inter-arch conversions
+    - Port to ARM
+    - Convert in the same buffer when size increase
+    - Exchange (on net) structures in one shoot when possible.
+    - Port to really exotic platforms (Cray is not IEEE ;)
+  * datadesc_set_cste: give the value by default when receiving. 
+    - It's not transfered anymore, which is good for functions pointer.
+  * Parsing macro
+    - Cleanup the code (bison?)
+    - Factorize code in union/struct field adding
+    - Handle typedefs (needs love from DataDesc/)
+    - Handle unions with annotate
+    - Handle enum
+    - Handle long long and long double
+    - Forbid "char", allow "signed char" and "unsigned char", or user code won't be 
+      portable to ARM, at least.
+    - Handle struct/union/enum embeeded within another container 
+      (needs modifications in DataDesc, too)
  
- Check short a, b;
- Check short ***
- Check struct { struct { int a } b; }
- 
- Factorize code in union/struct field adding
- 
-[Other]
- Allow [homogeneous] dico to be sent
- Make GRAS thread safe by mutexing what needs to be
- 
+    - Check short a, b;
+    - Check short ***
+    - Check struct { struct { int a } b; } 
 
-************
-* La suite *
-************
-GRAS double (ou encore "GRAS too" ou "too GRAS"):
- - Message prioritization
- - Visualisation tool to see what happens in the simulator (Paje ?)
- - Tool to visualize/deploy and manage in RL
-   
-GRAS (très):
- - outils mathematiques pour dire des choses sur la validite du protocole
-    
+  * gras_datadesc_import_nws?
+
+[Messaging]
+  * A proper RPC mecanism
+    - gras_rpctype_declare_v (name,ver, payload_request, payload_answer)
+      (or gras_msgtype_declare_rpc_v). 
+    - Attaching a cb works the same way.
+    - gras_msg_rpc(peer, &request, &answer)
+    - On the wire, a byte indicate the message type:
+      - 0: one-way message (what we have for now)
+      - 1: method call (answer expected; sessionID attached)
+      - 2: successful return (usual datatype attached, with sessionID)
+      - 3: error return (payload = exception)
+      - other message types are possible (forwarding request, group
+        communication)
+  * Message priority
+  * Message forwarding
+  * Group communication
+  * Message declarations in a tree manner (such as log channels)?
+  
+[GRASPE] (platform expender) 
+  * Tool to visualize/deploy and manage in RL
+  * pull method of source diffusion in graspe-slave
+
+[Actors] (parallelism in GRAS)
+  * An actor is a user process. 
+    It has a highly sequential control flow from its birth until its death. 
+    The timers won't stop the current execution to branch elsewhere, they
+    will be delayed until the actor is ready to listen. Likewise, no signal
+    delivery. The goal is to KISS for users.
+  * You can fork a new actor, even on remote hosts. 
+  * They are implemented as threads in RL, but this is still a distributed
+    memory *model*. If you want to share data with another actor, send it
+    using the message interface to explicit who's responsible of this data.
+  * data exchange between actors placed within the same UNIX process is  
+    *implemented* by memcopy, but that's an implementation detail.
+
+[Other, more general issues]
+  * watchdog in RL (ie, while (1) { fork; exec the child, wait in father })
+  * Allow [homogeneous] dico to be sent
+  * Make GRAS thread safe by mutexing what needs to be
+  * Use a xbt_set for gras_procdata_t->libdata instead of a dict
+    so that the search can be linear.
+
+*
+* AMOK
+******
+
+[bandwidth]
+  * finish this module (still missing the saturate part)
+  * add a version guessing the appropriate datasizes automatically
+[other modules]
+  * provide a way to retrieve the host load as in NWS
+  * log control, management, dynamic token ring
+  * a way using SSH to ask a remote host to open a socket back on me
+ 
