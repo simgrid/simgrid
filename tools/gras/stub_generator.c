@@ -162,7 +162,6 @@ static void generate_sim(char *project)
   fprintf(OUT, "\n%s\n",warning);
 
   fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n" 
-                     "  int i,j;\n" 
                      "\n" 
 	             "  /*  Simulation setup */\n" 
                      "  MSG_global_init_args(&argc,argv);\n" 
@@ -437,9 +436,6 @@ static void generate_makefile_local(char *project, char *deployment)
 
 static void generate_makefile_remote(char *project, char *deployment)
 {
-  xbt_dict_cursor_t cursor=NULL;
-  char *key = NULL;
-  void *data = NULL;
   char *filename = NULL;
   FILE *OUT = NULL;
 

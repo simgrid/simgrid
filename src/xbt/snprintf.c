@@ -417,6 +417,12 @@ static char credits[] = "\n\
 @(#)snprintf.c, v2.2: Copyright 1999, Mark Martinec. Frontier Artistic License applies.\n\
 @(#)snprintf.c, v2.2: http://www.ijs.si/software/snprintf/\n";
 
+static void __foo__(void) 
+{
+   printf("%s",credits);
+   __foo__();
+}
+
 #if defined(NEED_ASPRINTF)
 int asprintf(char **ptr, const char *fmt, /*args*/ ...) {
   va_list ap;

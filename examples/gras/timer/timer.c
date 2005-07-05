@@ -51,8 +51,6 @@ static void delayed_action(void) {
 } /* end_of_delayed_action */
 
 int client(int argc,char *argv[]) {
-  xbt_error_t errcode;
-  int cpt;
   my_globals *globals;
 
   gras_init(&argc,argv);
