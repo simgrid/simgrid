@@ -307,7 +307,7 @@ MSG_error_t MSG_task_put(m_task_t task,
   local_host = ((simdata_process_t) process->simdata)->host;
   remote_host = dest;
 
-  DEBUG4("Trying to send a task (%lg Mb) from %s to %s on channel %d", 
+  DEBUG4("Trying to send a task (%g Mb) from %s to %s on channel %d", 
 	 task->simdata->message_size,local_host->name, remote_host->name, channel);
 
   xbt_fifo_push(((simdata_host_t) remote_host->simdata)->

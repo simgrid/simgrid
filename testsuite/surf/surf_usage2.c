@@ -85,7 +85,7 @@ void test(char *platform)
     surf_resource_t resource = NULL;
 
     now = surf_get_clock();
-    DEBUG1("Next Event : " "%lg" "\n", now);
+    DEBUG1("Next Event : " "%g" "\n", now);
 
     xbt_dynar_foreach(resource_list, i, resource) {
       DEBUG1("\t %s actions\n", resource->common_public->name);

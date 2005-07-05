@@ -100,7 +100,7 @@ void test(char *platform)
   do {
     surf_action_t action = NULL;
     now = surf_get_clock();
-    DEBUG1("Next Event : " "%lg" "\n", now);
+    DEBUG1("Next Event : " "%g" "\n", now);
     DEBUG0("\t CPU actions\n");
     while ((action =
 	    xbt_swag_extract(surf_cpu_resource->common_public->states.

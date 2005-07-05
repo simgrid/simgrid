@@ -342,16 +342,16 @@ MSG_error_t MSG_main(void)
       xbt_context_schedule(process->simdata->context);
       msg_global->current_process = NULL;
     }
-    DEBUG1("%lg : Calling surf_solve",MSG_getClock());
+    DEBUG1("%g : Calling surf_solve",MSG_getClock());
     elapsed_time = surf_solve();
-    DEBUG1("Elapsed_time %lg",elapsed_time);
+    DEBUG1("Elapsed_time %g",elapsed_time);
 
-/*     fprintf(stderr, "====== %lg =====\n",Now); */
+/*     fprintf(stderr, "====== %g =====\n",Now); */
 /*     if (elapsed_time==0.0) { */
 /*       fprintf(stderr, "No change in time\n"); */
 /*     } */
     if (elapsed_time<0.0) {
-/*       fprintf(stderr, "We're done %lg\n",elapsed_time); */
+/*       fprintf(stderr, "We're done %g\n",elapsed_time); */
       break;
     }
 

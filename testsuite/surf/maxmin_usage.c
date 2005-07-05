@@ -14,7 +14,7 @@
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
 
-#define PRINT_VAR(var) DEBUG1(#var " = %lg\n",lmm_variable_getvalue(var));
+#define PRINT_VAR(var) DEBUG1(#var " = %g\n",lmm_variable_getvalue(var));
 
 /*                               */
 /*        ______                 */

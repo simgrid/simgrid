@@ -78,7 +78,7 @@ int main(int argc, char **argv)
   date = xbt_os_time() * 1000000;
   test(nb_cnst, nb_var, nb_elem);
   printf("One shot execution time for a total of %d constraints, "
-	 "%d variables with %d active constraint each : %lg microsecondes \n",
+	 "%d variables with %d active constraint each : %g microsecondes \n",
 	 nb_cnst, nb_var, nb_elem, date);
   return 0;
 }
