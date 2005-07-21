@@ -285,25 +285,26 @@ a bit old now. We are actively working on improving this.
 
 \subsection research Papers using SimGrid results
 
-\li <b>Optimal algorithms for scheduling divisible workloads on
+\li <b> A study of meta-scheduling architectures for high throughput
+        computing: Pull vs. Push</b>\n
+    by <em> Vincent Garonne, Andrei Tsaregorodtsev, and Eddy Caron </em>\n
+    Proceedings of 4th Internationnal Symposium on Parallel and
+    Distributed Computing Job Scheduling Strategies for Parallel
+    Processing (ISPDC'05), July 2005.\n
+    Preliminary version in http://www.ens-lyon.fr/LIP/Pub/Rapports/RR/RR2005/RR2005-27.pdf
+
+\li <b>Exploiting Replication and Data Reuse to Efficiently Schedule
+       Data-intensive Applications on Grids</b>\n
+    by <em> E. Santos-Neto, W. Cirne, F. Brasileiro, A. Lima.</em>\n
+    Proceedings of 10th Job Scheduling Strategies for Parallel Processing, June 2004.\n
+    http://www.lsd.ufcg.edu.br/~elizeu/articles/jsspp.v6.pdf
+
+\li <b>Optimal algorithms for scheduling divisible workloads on 
        heterogeneous systems</b>\n
     by <em>Olivier Beaumont and Arnaud Legrand and Yves Robert</em>\n
-   In this paper, we discuss several algorithms for scheduling
-   divisible loads on heterogeneous systems. Our main contributions
-   are (i) new optimality results for single-round algorithms and (ii)
-   the design of an asymptotically optimal multi-round algorithm. This
-   multi-round algorithm automatically performs resource selection, a
-   difficult task that was previously left to the user. Because it is
-   periodic, it is simpler to implement, and more robust to changes in
-   the speeds of processors or communication links. On the theoretical
-   side, to the best of our knowledge, this is the first published
-   result assessing the absolute performance of a multi-round
-   algorithm.  On the practical side, extensive simulations reveal
-   that our multi-round algorithm outperforms existing solutions on a
-   large variety of platforms, especially when the
-   communication-to-computation ratio is not very high (the difficult
-   case).\n
-   ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-36.ps.gz
+    in Proceedings of the 17th International Parallel and Distributed Processing Symposium (IPDPS'03).\n
+    Preliminary version on ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-36.ps.gz
+
 \li <b>On-line Parallel Tomography</b>\n
     by <em>Shava Smallen</em>\n
     Masters Thesis, UCSD, May 2001
