@@ -82,20 +82,20 @@ int master(int argc, char *argv[])
 
   INFO1("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    VERB1("\t %s", slaves[i]->name);
+    INFO1("\t %s", slaves[i]->name);
 
   INFO1("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++)
-    VERB1("\t\"%s\"", todo[i]->name);
+    INFO1("\t\"%s\"", todo[i]->name);
 
   for (i = 0; i < number_of_tasks; i++) {
-    VERB2("Sending \"%s\" to \"%s\"",
+    INFO2("Sending \"%s\" to \"%s\"",
                   todo[i]->name,
                   slaves[i % slaves_count]->name);
     MSG_task_put(todo[i], slaves[i % slaves_count],
                  PORT_22);
-    DEBUG0("Send completed");
+    INFO0("Send completed");
   }
   
   INFO0("All tasks have been dispatched. Bye!");
@@ -115,9 +115,9 @@ int slave(int argc, char *argv[])
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
       INFO1("Received \"%s\" ", task->name);
-      DEBUG1("Processing \"%s\" ", task->name);
+      INFO1("Processing \"%s\" ", task->name);
       MSG_task_execute(task);
-      VERB1("\"%s\" done ", task->name);
+      INFO1("\"%s\" done ", task->name);
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
@@ -177,7 +177,7 @@ int forwarder(int argc, char *argv[])
 void test_all(const char *platform_file,const char *application_file)
 {
 
-  MSG_config("surf_workstation_model","KCCFLN05");
+  /* MSG_config("surf_workstation_model","KCCFLN05"); */
   {				/*  Simulation setting */
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_paje_output("msg_test.trace");
