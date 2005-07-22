@@ -17,12 +17,9 @@ surf_network_resource_t surf_network_resource = NULL;
 static xbt_dict_t network_link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
-static int card_number = 0;
-static network_link_CM02_t **routing_table = NULL;
-static int *routing_table_size = NULL;
-
-#define ROUTE(i,j) routing_table[(i)+(j)*card_number]
-#define ROUTE_SIZE(i,j) routing_table_size[(i)+(j)*card_number]
+int card_number = 0;
+network_link_CM02_t **routing_table = NULL;
+int *routing_table_size = NULL;
 
 static void create_routing_table(void)
 {
