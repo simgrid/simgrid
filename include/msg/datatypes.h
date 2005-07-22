@@ -42,7 +42,7 @@ typedef struct simdata_task *simdata_task_t;
 /** @brief Task datatype 
     @ingroup m_datatypes_management_details */
 typedef struct m_task {
-  char *name;			/**< @brief host name if any */
+  char *name;			/**< @brief task name if any */
   simdata_task_t simdata;	/**< @brief simulator data */
   void *data;			/**< @brief user data */
 } s_m_task_t;
