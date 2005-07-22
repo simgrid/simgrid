@@ -177,6 +177,19 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
   make_constraint_active(sys, cnst);
 }
 
+void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
+		    lmm_variable_t var, double value)
+{
+  int i ; 
+  sys->modified = 1;
+
+  for(i=0; i< var->cnsts_number ; i++)
+    if(var->cnsts[i].constraint == cnst) break;
+  
+  if(i<var->cnsts_number) var->cnsts[i].value +=value;
+  else lmm_expand(sys,cnst,var,value);
+}
+
 lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
 				       lmm_variable_t var, int num)
 {

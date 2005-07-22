@@ -30,6 +30,8 @@ double lmm_variable_getvalue(lmm_variable_t var);
 
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, double value);
+void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
+		    lmm_variable_t var, double value);
 
 lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
 				       lmm_variable_t var, int num);
