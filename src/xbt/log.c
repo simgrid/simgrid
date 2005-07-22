@@ -543,7 +543,7 @@ static void _cleanup_double_spaces(char *s) {
  * where [category] is one the category names and keyword is one of the
  * following:
  *
- *      thresh  	value is an integer priority level. Sets the category's
+ *      thres  		value is an integer priority level. Sets the category's
  *                        threshold priority.
  *
  * \warning
