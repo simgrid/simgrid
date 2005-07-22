@@ -64,7 +64,6 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->using = 1;
   simdata->sender = NULL;
 
-
   return task;
 }
 

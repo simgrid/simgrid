@@ -68,6 +68,7 @@ void MSG_create_environment(const char *file) {
   /* which model do you want today? */
   xbt_cfg_get_string (_msg_cfg_set, "surf_workstation_model",
 		      &workstation_model_name);
+  DEBUG1("Model : %s", workstation_model_name);
   if (!strcmp(workstation_model_name,"KCCFLN05")) {
     surf_workstation_resource_init_KCCFLN05(file);
   } else if (!strcmp(workstation_model_name,"CLM03")) {
