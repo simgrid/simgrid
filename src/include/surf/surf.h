@@ -154,6 +154,12 @@ typedef struct surf_workstation_resource_extension_public {
   surf_action_t(*communicate) (void *workstation_src,
 			       void *workstation_dst, double size,
 			       double max_rate);
+  surf_action_t(*execute_parallel_task) (int workstation_nb,
+					 void **workstation_list,
+					 double *computation_amount,
+					 double *communication_amount,
+					 double amount,
+					 double rate);
 } s_surf_workstation_resource_extension_public_t,
     *surf_workstation_resource_extension_public_t;
 

@@ -18,4 +18,11 @@ typedef struct workstation_CLM03 {
   void *network_card;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
+typedef struct surf_action_parallel_task_CSL05 {
+  s_surf_action_t generic_action;
+  lmm_variable_t variable;
+  double rate;
+  int suspended;
+} s_surf_action_parallel_task_CSL05_t, *surf_action_parallel_task_CSL05_t;
+
 #endif				/* _SURF_WORKSTATION_PRIVATE_H */

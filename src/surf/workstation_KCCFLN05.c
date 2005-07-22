@@ -16,7 +16,7 @@ static lmm_system_t maxmin_system_cpu_KCCFLN05 = NULL;
 static lmm_system_t maxmin_system_network_KCCFLN05 = NULL;
 static xbt_dict_t network_link_set = NULL;
 static int nb_workstation = 0;
-s_route_KCCFLN05_t *routing_table = NULL;
+static s_route_KCCFLN05_t *routing_table = NULL;
 #define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
 
 /**************************************/
@@ -514,6 +514,17 @@ static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size,
   return (surf_action_t) action;
 }
 
+static surf_action_t execute_parallel_task_KCCFLN05 (int workstation_nb,
+						     void **workstation_list,
+						     double *computation_amount,
+						     double *communication_amount,
+						     double amount,
+						     double rate)
+{
+  DIE_IMPOSSIBLE;
+  return NULL;
+}
+
 static void network_KCCFLN05_action_suspend(surf_action_t action)
 {
   lmm_update_variable_weight(maxmin_system_network_KCCFLN05,
@@ -993,7 +1004,6 @@ static void network_KCCFLN05_resource_init_internal(void)
 
   network_link_set = xbt_dict_new();
 
-
   maxmin_system_network_KCCFLN05 = lmm_system_new();
 }
 
@@ -1063,6 +1073,9 @@ static void workstation_KCCFLN05_resource_init_internal(void)
 /*FIXME*//*  surf_workstation_resource->extension_public->sleep = action_sleep; */
   surf_workstation_resource->extension_public->get_state = get_state;
   surf_workstation_resource->extension_public->communicate = communicate_KCCFLN05;
+  surf_workstation_resource->extension_public->execute_parallel_task = 
+    execute_parallel_task_KCCFLN05;
+
 }
 
 /**************************************/
