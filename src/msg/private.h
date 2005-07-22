@@ -38,6 +38,11 @@ typedef struct simdata_task {
   m_process_t sender;
   double rate;
   int using;
+  /*******  Parallel Tasks Only !!!! *******/
+  int host_nb;
+  void * *host_list;            /* SURF modeling */
+  double *comp_amount;
+  double *comm_amount;
 } s_simdata_task_t;
 
 /******************************* Process *************************************/

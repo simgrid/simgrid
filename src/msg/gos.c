@@ -439,6 +439,75 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
   }
 }
 
+m_task_t MSG_parallel_task_create(const char *name, 
+				  int host_nb,
+				  const m_host_t *host_list,
+				  double *computation_amount,
+				  double *communication_amount,
+				  void *data)
+{
+  simdata_task_t simdata = xbt_new0(s_simdata_task_t,1);
+  m_task_t task = xbt_new0(s_m_task_t,1);
+  int i;
+
+  /* Task structure */
+  task->name = xbt_strdup(name);
+  task->simdata = simdata;
+  task->data = data;
+
+  /* Simulator Data */
+  simdata->sleeping = xbt_dynar_new(sizeof(m_process_t),NULL);
+  simdata->rate = -1.0;
+  simdata->using = 1;
+  simdata->sender = NULL;
+  simdata->host_nb = host_nb;
+  
+  simdata->host_list = xbt_new0(void *, host_nb);
+  simdata->comp_amount = computation_amount;
+  simdata->comm_amount = communication_amount;
+
+  for(i=0;i<host_nb;i++)
+    simdata->host_list[i] = host_list[i]->simdata->host;
+
+  return task;
+}
+
+
+static void __MSG_parallel_task_execute(m_process_t process, m_task_t task)
+{
+  simdata_task_t simdata = NULL;
+
+  CHECK_HOST();
+
+  simdata = task->simdata;
+
+  xbt_assert0(simdata->host_nb,"This is not a parallel task. Go to hell.");
+
+  simdata->compute = surf_workstation_resource->extension_public->
+  execute_parallel_task(task->simdata->host_nb,
+			task->simdata->host_list,
+			task->simdata->comp_amount,
+			task->simdata->comm_amount,
+			1.0,
+			-1.0);
+  surf_workstation_resource->common_public->action_set_data(simdata->compute,task);
+}
+
+MSG_error_t MSG_parallel_task_execute(m_task_t task)
+{
+  m_process_t process = MSG_process_self();
+  MSG_error_t res;
+
+  DEBUG0("Computing on a tons of guys");
+  
+  __MSG_parallel_task_execute(process, task);
+
+  res = __MSG_wait_for_computation(process,task);
+
+  return res;  
+}
+
+
 /** \ingroup msg_gos_functions
  * \brief Sleep for the specified number of seconds
  *

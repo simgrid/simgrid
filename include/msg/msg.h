@@ -81,6 +81,12 @@ MSG_error_t MSG_process_start(m_process_t process);
 
 m_task_t MSG_task_create(const char *name, double compute_duration,
 			 double message_size, void *data);
+m_task_t MSG_parallel_task_create(const char *name, 
+				  int host_nb,
+				  const m_host_t *host_list,
+				  double *computation_amount,
+				  double *communication_amount,
+				  void *data);
 void *MSG_task_get_data(m_task_t task);
 m_process_t MSG_task_get_sender(m_task_t task);
 const char *MSG_task_get_name(m_task_t task);
@@ -96,6 +102,8 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 m_host_t dest, m_channel_t channel,
 				 double max_rate);
 MSG_error_t MSG_task_execute(m_task_t task);
+MSG_error_t MSG_parallel_task_execute(m_task_t task);
+
 int MSG_task_Iprobe(m_channel_t channel);
 int MSG_task_probe_from(m_channel_t channel);
 MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
