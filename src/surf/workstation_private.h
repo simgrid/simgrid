@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+/* 	$Id$ */
 
 /* Copyright (c) 2004 Arnaud Legrand. All rights reserved.                  */
 
