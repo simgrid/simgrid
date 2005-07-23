@@ -131,7 +131,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   if(action) action->resource_type->common_public->action_free(action);
   action = task->simdata->comm;
   if(action) action->resource_type->common_public->action_free(action);
-
+  if(task->simdata->host_list) xbt_free(task->simdata->host_list);
 
   free(task->simdata);
   free(task);
