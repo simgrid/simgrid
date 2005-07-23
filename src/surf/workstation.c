@@ -142,7 +142,10 @@ static void action_change_state(surf_action_t action,
 
 static double share_resources(double now)
 {
-  return -1.0;
+  s_surf_action_parallel_task_CSL05_t action;
+  return generic_maxmin_share_resources(surf_workstation_resource->common_public->
+					states.running_action_set,
+					xbt_swag_offset(action, variable));
 }
 
 static void update_actions_state(double now, double delta)
@@ -315,7 +318,7 @@ static surf_action_t execute_parallel_task (int workstation_nb,
   action->suspended = 0;  /* Should be useless because of the
 			     calloc but it seems to help valgrind... */
   action->generic_action.state_set =
-      surf_network_resource->common_public->states.running_action_set;
+      surf_workstation_resource->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
