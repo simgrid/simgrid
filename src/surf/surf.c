@@ -51,7 +51,7 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
     return -1.0;
 
   if (value > 0) {
-    min = value = action->remains / value;
+    min = action->remains / value;
     if ((action->max_duration >= 0) && (action->max_duration < min))
       min = action->max_duration;
   } else
