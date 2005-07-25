@@ -40,7 +40,8 @@ static network_link_CM02_t network_link_new(char *name,
 				       tmgr_trace_t lat_trace,
 				       e_surf_network_link_state_t
 				       state_initial,
-				       tmgr_trace_t state_trace)
+				       tmgr_trace_t state_trace,
+				       e_surf_network_link_sharing_policy_t policy)
 {
   network_link_CM02_t nw_link = xbt_new0(s_network_link_CM02_t, 1);
 
@@ -62,6 +63,9 @@ static network_link_CM02_t network_link_new(char *name,
 
   nw_link->constraint =
       lmm_constraint_new(maxmin_system, nw_link, nw_link->bw_current);
+
+  if(policy == SURF_NETWORK_LINK_FATPIPE)
+    lmm_constraint_shared(nw_link->constraint);
 
   xbt_dict_set(network_link_set, name, nw_link, network_link_free);
 
@@ -111,6 +115,7 @@ static void parse_network_link(void)
   double lat_initial;
   tmgr_trace_t lat_trace;
   e_surf_network_link_state_t state_initial = SURF_NETWORK_LINK_ON;
+  e_surf_network_link_sharing_policy_t policy_initial = SURF_NETWORK_LINK_SHARED;
   tmgr_trace_t state_trace;
 
   name = xbt_strdup(A_network_link_name);
@@ -124,12 +129,19 @@ static void parse_network_link(void)
 	      "Invalid state")
   if (A_network_link_state==A_network_link_state_ON) 
     state_initial = SURF_NETWORK_LINK_ON;
-  if (A_network_link_state==A_network_link_state_OFF) 
+  else if (A_network_link_state==A_network_link_state_OFF) 
     state_initial = SURF_NETWORK_LINK_OFF;
+
+  if (A_network_link_sharing_policy==A_network_link_sharing_policy_SHARED) 
+    policy_initial = SURF_NETWORK_LINK_SHARED;
+  else if (A_network_link_sharing_policy==A_network_link_sharing_policy_FATPIPE) 
+    policy_initial = SURF_NETWORK_LINK_FATPIPE;
+
   surf_parse_get_trace(&state_trace,A_network_link_state_file);
 
   network_link_new(name, bw_initial, bw_trace,
-		   lat_initial, lat_trace, state_initial, state_trace);
+		   lat_initial, lat_trace, state_initial, state_trace,
+		   policy_initial);
 }
 
 static int nb_link = 0;
@@ -403,19 +415,26 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
     action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
 					route_size);
 
-  if(action->rate<0)
-    lmm_update_variable_bound(maxmin_system, action->variable,
-			      SG_TCP_CTE_GAMMA / action->lat_current);
-  else 
-    lmm_update_variable_bound(maxmin_system, action->variable,
-			      min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
-
-  if(route_size == 0) {
-    action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+  if(action->rate<0) {
+    if(action->lat_current>0)
+      lmm_update_variable_bound(maxmin_system, action->variable,
+				SG_TCP_CTE_GAMMA / action->lat_current);
+    else
+      lmm_update_variable_bound(maxmin_system, action->variable, -1.0);
+  } else {
+    if(action->lat_current>0)
+      lmm_update_variable_bound(maxmin_system, action->variable,
+				min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
+    else
+      lmm_update_variable_bound(maxmin_system, action->variable, action->rate);
   }
 
   for (i = 0; i < route_size; i++)
     lmm_expand(maxmin_system, route[i]->constraint, action->variable, 1.0);
+
+  if(route_size == 0) {
+    action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+  }
 
   return (surf_action_t) action;
 }
