@@ -19,6 +19,8 @@ void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var);
 
 lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
 				    double bound_value);
+void lmm_constraint_shared(lmm_constraint_t cnst);
+
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
 
 lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,

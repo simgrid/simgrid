@@ -33,6 +33,7 @@ typedef struct lmm_constraint {
   s_xbt_swag_t active_element_set;	/* a list of lmm_mat_element_t */
   double bound;
   double remaining;
+  int shared;
   double usage;
   void *id;
 } s_lmm_constraint_t;

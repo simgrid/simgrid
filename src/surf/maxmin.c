@@ -101,9 +101,15 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
 
   cnst->bound = bound_value;
   cnst->usage = 0;
+  cnst->shared = 1;
   insert_constraint(sys, cnst);
 
   return cnst;
+}
+
+void lmm_constraint_shared(lmm_constraint_t cnst)
+{
+  cnst->shared = 0;
 }
 
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst)
@@ -301,7 +307,10 @@ void lmm_solve(lmm_system_t sys)
     xbt_swag_foreach(elem, elem_list) {
       if(elem->variable->weight <=0) break;
       if ((elem->value > 0)) {
-	cnst->usage += elem->value / elem->variable->weight;
+	if(cnst->shared)
+	  cnst->usage += elem->value / elem->variable->weight;
+	else 
+	  cnst->usage = 1;
 	make_elem_active(elem);
       }
     }
@@ -337,8 +346,10 @@ void lmm_solve(lmm_system_t sys)
       for (i = 0; i < var->cnsts_number; i++) {
 	elem = &var->cnsts[i];
 	cnst = elem->constraint;
-	cnst->remaining -= elem->value * var->value;
-	cnst->usage -= elem->value / var->weight;
+	if(cnst->shared) {
+	  cnst->remaining -= elem->value * var->value;
+	  cnst->usage -= elem->value / var->weight;
+	}
 	make_elem_inactive(elem);
       }
       xbt_swag_remove(var, var_list);
