@@ -490,7 +490,8 @@ static void __MSG_parallel_task_execute(m_process_t process, m_task_t task)
 			task->simdata->comm_amount,
 			1.0,
 			-1.0);
-  surf_workstation_resource->common_public->action_set_data(simdata->compute,task);
+  if(simdata->compute)
+    surf_workstation_resource->common_public->action_set_data(simdata->compute,task);
 }
 
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
@@ -502,7 +503,10 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   
   __MSG_parallel_task_execute(process, task);
 
-  res = __MSG_wait_for_computation(process,task);
+  if(simdata->compute)
+    res = __MSG_wait_for_computation(process,task);
+  else 
+    res = MSG_OK;
 
   return res;  
 }

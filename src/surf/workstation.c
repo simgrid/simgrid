@@ -285,6 +285,7 @@ static surf_action_t execute_parallel_task (int workstation_nb,
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   int nb_link = 0;
+  int nb_host = 0;
   network_link_CM02_t link;
 
   /* Compute the number of affected resources... */
@@ -295,17 +296,25 @@ static surf_action_t execute_parallel_task (int workstation_nb,
       int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
       network_link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
       
-      if(communication_amount[i*workstation_nb+j]>=0)
+      if(communication_amount[i*workstation_nb+j]>0)
 	for(k=0; k< route_size; k++) {
 	  xbt_dict_set(network_link_set, route[k]->name, route[k], NULL);
 	}
     }
   }
- 
+
   xbt_dict_foreach(network_link_set, cursor, name, link) {
     nb_link++;
   }
-  
+
+  xbt_dict_free(&network_link_set);
+
+  for (i = 0; i<workstation_nb; i++)
+    if(computation_amount[i]>0) nb_host++;
+ 
+  if(nb_link + workstation_nb == 0)
+    return NULL;
+
   action = xbt_new0(s_surf_action_parallel_task_CSL05_t, 1);
   action->generic_action.using = 1;
   action->generic_action.cost = amount;
@@ -325,17 +334,15 @@ static surf_action_t execute_parallel_task (int workstation_nb,
 
   if(action->rate>0)
     action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
-					workstation_nb + nb_link);
+					nb_host + nb_link);
   else   
     action->variable = lmm_variable_new(maxmin_system, action, 1.0, action->rate,
-					workstation_nb + nb_link);
-
-  if(nb_link + workstation_nb == 0)
-    action_change_state((surf_action_t) action, SURF_ACTION_DONE);
+					nb_host + nb_link);
 
   for (i = 0; i<workstation_nb; i++)
-    lmm_expand(maxmin_system, ((cpu_Cas01_t) ((workstation_CLM03_t) workstation_list[i])->cpu)->constraint, 
-	       action->variable, computation_amount[i]);
+    if(computation_amount[i]>0)
+      lmm_expand(maxmin_system, ((cpu_Cas01_t) ((workstation_CLM03_t) workstation_list[i])->cpu)->constraint, 
+		 action->variable, computation_amount[i]);
 
   for (i=0; i<workstation_nb; i++) {
     for(j=0; j< workstation_nb; j++) {
@@ -345,7 +352,7 @@ static surf_action_t execute_parallel_task (int workstation_nb,
       network_link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
       
       for(k=0; k< route_size; k++) {
-	if(communication_amount[i*workstation_nb+j]>=0) {
+	if(communication_amount[i*workstation_nb+j]>0) {
 	  lmm_expand_add(maxmin_system, route[k]->constraint, 
 		       action->variable, communication_amount[i*workstation_nb+j]);
 	}
