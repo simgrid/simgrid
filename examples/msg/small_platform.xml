@@ -20,6 +20,13 @@
   <network_link name="0" bandwidth="41.279125" latency="5.9904e-05"/>
   <network_link name="10" bandwidth="4.67975" latency="0.000848712"/>
   <network_link name="5" bandwidth="27.94625" latency="0.000278066"/>
+  <network_link name="loopback_FATPIPE" bandwidth="10.00" latency="0.1" sharing_policy="FATPIPE"/>
+  <network_link name="loopback" bandwidth="498.00" latency="0.000015"/>
+  <route src="Tremblay" dst="Tremblay"><route_element name="loopback"/></route>
+  <route src="Jupiter" dst="Jupiter"><route_element name="loopback"/></route>
+  <route src="Fafard" dst="Fafard"><route_element name="loopback"/></route>
+  <route src="Ginette" dst="Ginette"><route_element name="loopback"/></route>
+  <route src="Bourassa" dst="Bourassa"><route_element name="loopback"/></route>
   <route src="Tremblay" dst="Jupiter">
     <route_element name="9"/>
   </route>

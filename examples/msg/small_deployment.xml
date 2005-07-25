@@ -10,8 +10,10 @@
      <argument value="Fafard"/>   <!-- Second slave -->
      <argument value="Ginette"/>  <!-- Third slave -->
      <argument value="Bourassa"/> <!-- Last slave -->
+     <argument value="Tremblay"/> <!-- Me! I can work too! -->
   </process>
   <!-- The slave process (with no argument) -->
+  <process host="Tremblay" function="slave"/>
   <process host="Jupiter" function="slave"/>
   <process host="Fafard" function="slave"/>
   <process host="Ginette" function="slave"/>
