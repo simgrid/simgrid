@@ -93,6 +93,9 @@ int master(int argc, char *argv[])
     INFO2("Sending \"%s\" to \"%s\"",
                   todo[i]->name,
                   slaves[i % slaves_count]->name);
+    if(MSG_host_self()==slaves[i % slaves_count]) {
+      INFO0("Hey ! It's me ! :)");
+    }
     MSG_task_put(todo[i], slaves[i % slaves_count],
                  PORT_22);
     INFO0("Send completed");
