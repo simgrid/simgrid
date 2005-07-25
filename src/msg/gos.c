@@ -335,22 +335,24 @@ MSG_error_t MSG_task_put(m_task_t task,
     state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
   }
     
-  MSG_task_destroy(task);
 
   PAJE_PROCESS_POP_STATE(process);  
 
   if(state == SURF_ACTION_DONE) {
     if(surf_workstation_resource->common_public->action_free(task_simdata->comm)) 
       task_simdata->comm = NULL;
+    MSG_task_destroy(task);
     MSG_RETURN(MSG_OK);
   } else if(surf_workstation_resource->extension_public->get_state(local_host->simdata->host) 
 	    == SURF_CPU_OFF) {
     if(surf_workstation_resource->common_public->action_free(task_simdata->comm)) 
       task_simdata->comm = NULL;
+    MSG_task_destroy(task);
     MSG_RETURN(MSG_HOST_FAILURE);
   } else { 
     if(surf_workstation_resource->common_public->action_free(task_simdata->comm)) 
       task_simdata->comm = NULL;
+    MSG_task_destroy(task);
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
 }
@@ -503,7 +505,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   
   __MSG_parallel_task_execute(process, task);
 
-  if(simdata->compute)
+  if(task->simdata->compute)
     res = __MSG_wait_for_computation(process,task);
   else 
     res = MSG_OK;
