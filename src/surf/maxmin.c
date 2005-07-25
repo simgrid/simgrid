@@ -295,9 +295,9 @@ void lmm_solve(lmm_system_t sys)
   DEBUG1("cnst_list : %d", xbt_swag_size(cnst_list));
   xbt_swag_foreach(cnst, cnst_list) {
     /* INIT */
-    elem_list = &(cnst->element_set);
     cnst->remaining = cnst->bound;
     cnst->usage = 0;
+    elem_list = &(cnst->element_set);
     xbt_swag_foreach(elem, elem_list) {
       if(elem->variable->weight <=0) break;
       if ((elem->value > 0)) {
