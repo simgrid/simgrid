@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/06/21 12:23:56.
+ * Generated 2005/07/25 10:16:11.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -90,6 +90,7 @@ AT_cpu_power A_cpu_power;
 AT_process_start_time A_process_start_time;
 AT_include_file A_include_file;
 AT_process_function A_process_function;
+AT_network_link_sharing_policy A_network_link_sharing_policy;
 AT_route_dst A_route_dst;
 AT_cpu_state A_cpu_state;
 AT_network_link_latency A_network_link_latency;
@@ -503,6 +504,7 @@ const char* *statenames=NULL;
   A_network_link_latency_file = NULL;
   A_network_link_state = A_network_link_state_ON;
   A_network_link_state_file = NULL;
+  A_network_link_sharing_policy = A_network_link_sharing_policy_SHARED;
   ENTER(AL_network_link);
   }
 
@@ -529,6 +531,11 @@ const char* *statenames=NULL;
 
  "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_network_link_state_file);
  "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_network_link_state_file);
+
+ "sharing_policy"{Eq}"'SHARED'" |
+ "sharing_policy"{Eq}"\"SHARED\"" A_network_link_sharing_policy = A_network_link_sharing_policy_SHARED;
+ "sharing_policy"{Eq}"'FATPIPE'" |
+ "sharing_policy"{Eq}"\"FATPIPE\"" A_network_link_sharing_policy = A_network_link_sharing_policy_FATPIPE;
 
  ">" {
   if (!A_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");

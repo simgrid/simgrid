@@ -1,5 +1,5 @@
 /* XML processor/application API for ../../surf/surfxml.dtd.
- * Generated 2005/06/21 12:23:56.
+ * Generated 2005/07/25 10:16:11.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -111,6 +111,7 @@ typedef const char* AT_include_file;
 #define AU_include_file NULL
 typedef const char* AT_process_function;
 #define AU_process_function NULL
+typedef enum { AU_network_link_sharing_policy, A_network_link_sharing_policy_SHARED,A_network_link_sharing_policy_FATPIPE } AT_network_link_sharing_policy;
 typedef const char* AT_route_dst;
 #define AU_route_dst NULL
 typedef enum { AU_cpu_state, A_cpu_state_ON,A_cpu_state_OFF } AT_cpu_state;
@@ -150,6 +151,7 @@ extern AT_cpu_power A_cpu_power;
 extern AT_process_start_time A_process_start_time;
 extern AT_include_file A_include_file;
 extern AT_process_function A_process_function;
+extern AT_network_link_sharing_policy A_network_link_sharing_policy;
 extern AT_route_dst A_route_dst;
 extern AT_cpu_state A_cpu_state;
 extern AT_network_link_latency A_network_link_latency;

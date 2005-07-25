@@ -24,6 +24,7 @@
 <!ATTLIST network_link latency_file CDATA "">
 <!ATTLIST network_link state (ON|OFF) "ON">
 <!ATTLIST network_link state_file CDATA "">
+<!ATTLIST network_link sharing_policy (SHARED|FATPIPE) "SHARED">
 
 <!ELEMENT route (route_element*)>
 <!ATTLIST route src CDATA #REQUIRED>
