@@ -317,7 +317,7 @@ MSG_error_t MSG_main(void)
   m_process_t process = NULL;
   int nbprocess,i;
   double elapsed_time = 0.0;
-  int state_modifications;
+  int state_modifications = 1;
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
@@ -464,7 +464,7 @@ MSG_error_t MSG_main(void)
 	if(p_simdata->waiting_task) {
 	  if(p_simdata->waiting_task->simdata->compute) {
 	    if(p_simdata->put_host) 
-	      fprintf(stderr,"Trying to send a task on Host %s, channel %d.\n",
+	      fprintf(stderr,"Trying to send a task to Host %s, channel %d.\n",
 		      p_simdata->put_host->name, p_simdata->put_channel);
 	    else 
 	      fprintf(stderr,"Waiting for %s to finish.\n",p_simdata->waiting_task->name);
