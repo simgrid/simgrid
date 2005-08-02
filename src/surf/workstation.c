@@ -117,7 +117,13 @@ static void action_use(surf_action_t action)
 
 static void action_cancel(surf_action_t action)
 {
-  DIE_IMPOSSIBLE;
+  if(action->resource_type==(surf_resource_t)surf_network_resource) 
+    surf_network_resource->common_public->action_cancel(action);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->action_cancel(action);
+  else if(action->resource_type==(surf_resource_t)surf_workstation_resource)
+    return parallel_action_use(action);
+  else DIE_IMPOSSIBLE;
   return;
 }
 
@@ -270,6 +276,12 @@ static e_surf_cpu_state_t get_state(void *workstation)
 {
   return surf_cpu_resource->extension_public->
       get_state(((workstation_CLM03_t) workstation)->cpu);
+}
+
+static double get_speed(void *workstation, double load)
+{
+  return surf_cpu_resource->extension_public->
+      get_speed(((workstation_CLM03_t) workstation)->cpu, load);
 }
 
 static surf_action_t execute_parallel_task (int workstation_nb,
@@ -436,6 +448,7 @@ static void surf_workstation_resource_init_internal(void)
   surf_workstation_resource->extension_public->execute = execute;
   surf_workstation_resource->extension_public->sleep = action_sleep;
   surf_workstation_resource->extension_public->get_state = get_state;
+  surf_workstation_resource->extension_public->get_speed = get_speed;
   surf_workstation_resource->extension_public->communicate = communicate;
   surf_workstation_resource->extension_public->execute_parallel_task = 
     execute_parallel_task;

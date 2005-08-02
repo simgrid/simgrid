@@ -124,6 +124,7 @@ static void action_use(surf_action_t action)
 
 static void action_cancel(surf_action_t action)
 {
+  surf_action_change_state(action, SURF_ACTION_FAILED);
   return;
 }
 
@@ -288,6 +289,11 @@ static e_surf_cpu_state_t get_state(void *cpu)
   return ((cpu_Cas01_t) cpu)->state_current;
 }
 
+static double get_speed(void *cpu, double load)
+{
+  return load*(((cpu_Cas01_t) cpu)->power_scale);
+}
+
 static void finalize(void)
 {
   xbt_dict_free(&cpu_set);
@@ -357,6 +363,7 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->extension_public->sleep = action_sleep;
 
   surf_cpu_resource->extension_public->get_state = get_state;
+  surf_cpu_resource->extension_public->get_speed = get_speed;
 
   cpu_set = xbt_dict_new();
 
