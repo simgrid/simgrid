@@ -175,3 +175,15 @@ int MSG_get_host_msgload(m_host_t h)
   return(0);
 /*   return(surf_workstation_resource->extension_public->get_load(h->simdata->host)); */
 }
+
+/** \ingroup m_host_management
+ * \brief Return the speed of the processor (in Mflop/s), regardless of 
+    the current load on the machine.
+ */
+double MSG_get_host_speed(m_host_t h)
+{
+  xbt_assert0((h!= NULL), "Invalid parameters");
+
+  return(surf_workstation_resource->
+	 extension_public->get_speed(h->simdata->host,1.0));
+}
