@@ -20,6 +20,7 @@ xbt_dict_t network_card_set = NULL;
 int card_number = 0;
 network_link_CM02_t **routing_table = NULL;
 int *routing_table_size = NULL;
+static network_link_CM02_t loopback = NULL;
 
 static void create_routing_table(void)
 {
@@ -171,6 +172,8 @@ static void parse_route_set_route(void)
 
 static void parse_file(const char *file)
 {
+  int i;
+
   /* Figuring out the network links */
   surf_parse_reset_parser();
   ETag_network_link_fun=parse_network_link;
@@ -195,6 +198,20 @@ static void parse_file(const char *file)
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
+
+  /* Adding loopback if needed */
+    
+  for (i = 0; i < card_number; i++) 
+    if(!ROUTE_SIZE(i,i)) {
+      if(!loopback)
+	loopback = network_link_new(xbt_strdup("__MSG_loopback__"), 
+				   498.00, NULL, 0.000015, NULL, 
+				   SURF_NETWORK_LINK_ON, NULL,
+				   SURF_NETWORK_LINK_FATPIPE);
+      ROUTE_SIZE(i,i)=1;
+      ROUTE(i,i) = xbt_new0(network_link_CM02_t, 1);
+      ROUTE(i,i)[0] = loopback;
+    }
 }
 
 static void *name_service(const char *name)
@@ -484,6 +501,7 @@ static void finalize(void)
   free(surf_network_resource);
   surf_network_resource = NULL;
 
+  loopback = NULL;
   for (i = 0; i < card_number; i++) 
     for (j = 0; j < card_number; j++) 
       free(ROUTE(i,j));
