@@ -2,8 +2,10 @@ SimGrid (2.96) unstable; urgency=low
 
   SURF:
   * New! Add a FATPIPE model. [AL]
-  * Naw! Add a parallel task model. [AL]
-  
+  * New! Add a parallel task model. [AL]
+  * New! Add automatically a loopback interface (in the default
+    network model) if none was precised.
+
   MSG
   * Bugfix: MSG_process_resume now works with the current running process. 
     [AL]
@@ -11,9 +13,10 @@ SimGrid (2.96) unstable; urgency=low
   * Modification of MSG_task_get_compute_duration. Once a task has been
     processed, the value returned by this function is now equal to 0. [AL]
   * New! Add double MSG_task_get_remaining_computation(m_task_t task) and
-    MSG_error_t MSG_task_cancel(m_task_t task). Add a state to MSG_error_t
-    corresponding to the cancelation of a m_task. For now, MSG_task_cancel
-    only works with computation tasks. [AL]
+    MSG_error_t MSG_task_cancel(m_task_t task). Add a state
+    (MSG_TASK_CANCELLED) to MSG_error_t corresponding to the cancelation
+    of a m_task. For now, MSG_task_cancel only works with computation
+    tasks. [AL]
   * New! Add double MSG_get_host_speed(m_host_t h) that returns the speed
     of the processor (in Mflop/s) regardless of the current load on the
     machine. [AL]
