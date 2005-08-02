@@ -427,6 +427,7 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
   if(state == SURF_ACTION_DONE) {
     if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
       simdata->compute = NULL;
+    simdata->computation_amount = 0.0;
     MSG_RETURN(MSG_OK);
   } else if(surf_workstation_resource->extension_public->
 	    get_state(MSG_process_get_host(process)->simdata->host) 
@@ -437,10 +438,28 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
   } else {
     if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
       simdata->compute = NULL;
-    MSG_RETURN(MSG_TRANSFER_FAILURE);
+    MSG_RETURN(MSG_TASK_CANCELLED);
   }
 }
-
+/** \ingroup m_task_management
+ * \brief Creates a new #m_task_t (a parallel one....).
+ *
+ * A constructor for #m_task_t taking six arguments and returning the 
+   corresponding object.
+ * \param name a name for the object. It is for user-level information
+   and can be NULL.
+ * \param host_nb the number of hosts implied in the parallel task.
+ * \param host_list an array of #host_nb m_host_t.
+ * \param computation_amount an array of #host_nb
+   doubles. computation_amount[i] is the total number of operations
+   that have to be performed on host_list[i].
+ * \param communication_amount an array of #host_nb*#host_nb doubles.
+ * \param data a pointer to any data may want to attach to the new
+   object.  It is for user-level information and can be NULL. It can
+   be retrieved with the function \ref MSG_task_get_data.
+ * \see m_task_t
+ * \return The new corresponding object.
+ */
 m_task_t MSG_parallel_task_create(const char *name, 
 				  int host_nb,
 				  const m_host_t *host_list,

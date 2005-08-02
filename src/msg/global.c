@@ -317,7 +317,7 @@ MSG_error_t MSG_main(void)
   m_process_t process = NULL;
   int nbprocess,i;
   double elapsed_time = 0.0;
-
+  int state_modifications;
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
@@ -342,19 +342,7 @@ MSG_error_t MSG_main(void)
       xbt_context_schedule(process->simdata->context);
       msg_global->current_process = NULL;
     }
-    DEBUG1("%g : Calling surf_solve",MSG_getClock());
-    elapsed_time = surf_solve();
-    DEBUG1("Elapsed_time %g",elapsed_time);
-
-/*     fprintf(stderr, "====== %g =====\n",Now); */
-/*     if (elapsed_time==0.0) { */
-/*       fprintf(stderr, "No change in time\n"); */
-/*     } */
-    if (elapsed_time<0.0) {
-/*       fprintf(stderr, "We're done %g\n",elapsed_time); */
-      break;
-    }
-
+    
     {
       surf_action_t action = NULL;
       surf_resource_t resource = NULL;
@@ -362,6 +350,24 @@ MSG_error_t MSG_main(void)
 
       void *fun = NULL;
       void *arg = NULL;
+
+      xbt_dynar_foreach(resource_list, i, resource) {
+	if(xbt_swag_size(resource->common_public->states.failed_action_set) ||
+	   xbt_swag_size(resource->common_public->states.done_action_set))
+	  state_modifications = 1;
+      }
+      
+      if(!state_modifications) {
+	DEBUG1("%g : Calling surf_solve",MSG_getClock());
+	elapsed_time = surf_solve();
+	DEBUG1("Elapsed_time %g",elapsed_time);
+	
+	if (elapsed_time<0.0) {
+	  /*       fprintf(stderr, "We're done %g\n",elapsed_time); */
+	  break;
+	}
+      }
+
       while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
 	DEBUG2("got %p %p", fun, arg);
 	if(fun==MSG_process_create_with_arguments) {
@@ -387,8 +393,8 @@ MSG_error_t MSG_main(void)
       
       xbt_dynar_foreach(resource_list, i, resource) {
 	while ((action =
-	       xbt_swag_extract(resource->common_public->states.
-				failed_action_set))) {
+		xbt_swag_extract(resource->common_public->states.
+				 failed_action_set))) {
 	  task = action->data;
 	  if(task) {
 	    int _cursor;
@@ -403,8 +409,8 @@ MSG_error_t MSG_main(void)
 	  }
 	}
 	while ((action =
-	       xbt_swag_extract(resource->common_public->states.
-				done_action_set))) {
+		xbt_swag_extract(resource->common_public->states.
+				 done_action_set))) {
 	  task = action->data;
 	  if(task) {
 	    int _cursor;
@@ -420,6 +426,7 @@ MSG_error_t MSG_main(void)
 	}
       }
     }
+    state_modifications = 0;
   }
 
   if ((nbprocess=xbt_fifo_size(msg_global->process_list)) == 0) {
@@ -481,49 +488,6 @@ MSG_error_t MSG_main(void)
     return MSG_WARNING;
   }
 }
-
-/* static void MarkAsFailed(m_task_t t, TBX_HashTable_t failedProcessList)  */
-/* { */
-/*   simdata_task_t simdata = NULL; */
-/*   xbt_fifo_item_t i = NULL; */
-/*   m_process_t p = NULL; */
-  
-/*   xbt_assert0((t!=NULL),"Invalid task"); */
-/*   simdata = t->simdata; */
-
-/* #define KILL(task) if(task) SG_failTask(task) */
-/*   KILL(simdata->compute); */
-/*   KILL(simdata->TCP_comm); */
-/*   KILL(simdata->s[0]); */
-/*   KILL(simdata->s[1]); */
-/*   KILL(simdata->s[2]); */
-/*   KILL(simdata->s[3]); */
-/*   KILL(simdata->sleep); */
-/* #undef KILL   */
-/* /\*   if(simdata->comm) SG_failEndToEndTransfer(simdata->comm); *\/ */
-  
-/*   xbt_fifo_foreach(simdata->sleeping,i,p,m_process_t) { */
-/*     if(!TBX_HashTable_isInList(failedProcessList,p,TBX_basicHash))  */
-/*       TBX_HashTable_insert(failedProcessList,p,TBX_basicHash); */
-/*   } */
-  
-/* } */
-
-/* static xbt_fifo_t MSG_buildFailedHostList(double begin, double end) */
-/* { */
-/*   xbt_fifo_t failedHostList = xbt_fifo_new(); */
-/*   m_host_t host = NULL; */
-/*   xbt_fifo_item_t i; */
-
-/*   xbt_fifo_foreach(msg_global->host,i,host,m_host_t) { */
-/*     SG_Resource r= ((simdata_host_t) (host->simdata))->host; */
-
-/*     if(SG_evaluateFailureTrace(r->failure_trace,begin,end)!=-1.0) */
-/*       xbt_fifo_insert(failedHostList,host); */
-/*   } */
-
-/*   return failedHostList; */
-/* } */
 
 /** \ingroup msg_simulation
  * \brief Kill all running process

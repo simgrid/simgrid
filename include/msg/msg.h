@@ -39,6 +39,7 @@ const char *MSG_host_get_name(m_host_t host);
 m_host_t MSG_host_self(void);
 int MSG_get_host_msgload(m_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
+double MSG_get_host_speed(m_host_t h);
 
 void MSG_create_environment(const char *file);
 
@@ -90,7 +91,7 @@ m_task_t MSG_parallel_task_create(const char *name,
 void *MSG_task_get_data(m_task_t task);
 m_process_t MSG_task_get_sender(m_task_t task);
 const char *MSG_task_get_name(m_task_t task);
-
+MSG_error_t MSG_task_cancel(m_task_t task);
 MSG_error_t MSG_task_destroy(m_task_t task);
 
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel);
@@ -112,6 +113,7 @@ MSG_error_t MSG_process_sleep(double nb_sec);
 MSG_error_t MSG_get_errno(void);
 
 double MSG_task_get_compute_duration(m_task_t task);
+double MSG_task_get_remaining_computation(m_task_t task);
 double MSG_task_get_data_size(m_task_t task);
 
 /************************** Deprecated ***************************************/

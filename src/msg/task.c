@@ -139,9 +139,31 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   return MSG_OK;
 }
 
+
+/** \ingroup m_task_management
+ * \brief Cancel a #m_task_t.
+ * \param task the taskt to cancel. If it was executed or transfered, it 
+          stops the process that were working on it.
+ */
+MSG_error_t MSG_task_cancel(m_task_t task)
+{
+  xbt_assert0((task != NULL), "Invalid parameter");
+
+  if(task->simdata->compute) {
+    surf_workstation_resource->common_public->action_cancel(task->simdata->compute);
+    return MSG_OK;
+  }
+  if(task->simdata->comm) {
+    surf_workstation_resource->common_public->action_cancel(task->simdata->comm);
+    return MSG_OK;
+  }
+
+  return MSG_FATAL;
+}
+
 /** \ingroup m_task_management
  * \brief Returns the computation amount needed to process a task #m_task_t.
- *
+ *        Once a task has been processed, this amount is thus set to 0...
  */
 double MSG_task_get_compute_duration(m_task_t task)
 {
@@ -150,6 +172,23 @@ double MSG_task_get_compute_duration(m_task_t task)
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->computation_amount;
+}
+
+/** \ingroup m_task_management
+ * \brief Returns the remaining computation amount of a task #m_task_t.
+ *
+ */
+double MSG_task_get_remaining_computation(m_task_t task)
+{
+  simdata_task_t simdata = NULL;
+
+  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+
+  if(task->simdata->compute) {
+    return task->simdata->compute->remains;
+  } else {
+    return task->simdata->computation_amount;
+  }
 }
 
 /** \ingroup m_task_management
