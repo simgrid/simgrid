@@ -367,9 +367,11 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 m_host_t dest, m_channel_t channel,
 				 double max_rate)
 {
+  MSG_error_t res = MSG_OK;
   task->simdata->rate=max_rate;
-  return(MSG_task_put(task, dest, channel));
+  res = MSG_task_put(task, dest, channel);
   task->simdata->rate=-1.0;
+  return(res);
 }
 
 /** \ingroup msg_gos_functions
