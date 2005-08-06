@@ -15,18 +15,16 @@
 /***
  *** Main user functions
  ***/
-xbt_error_t gras_trp_chunk_send(gras_socket_t sd,
-				 char *data,
-				 long int size);
-xbt_error_t gras_trp_chunk_recv(gras_socket_t sd,
-				 char *data,
-				 long int size);
-xbt_error_t gras_trp_flush(gras_socket_t sd);
+void gras_trp_chunk_send(gras_socket_t sd,
+			 char *data,
+			 long int size);
+void gras_trp_chunk_recv(gras_socket_t sd,
+			 char *data,
+			 long int size);
+void gras_trp_flush(gras_socket_t sd);
 
 /* Find which socket needs to be read next */
-xbt_error_t 
-gras_trp_select(double timeout,
-		gras_socket_t *dst);
+gras_socket_t gras_trp_select(double timeout);
 
 
 /***
@@ -43,39 +41,37 @@ struct gras_trp_plugin_ {
   /* dst pointers are created and initialized with default values
      before call to socket_client/server. 
      Retrive the info you need from there. */
-  xbt_error_t (*socket_client)(gras_trp_plugin_t self,
-				gras_socket_t    dst);
-  xbt_error_t (*socket_server)(gras_trp_plugin_t self,
-				gras_socket_t    dst);
+  void (*socket_client)(gras_trp_plugin_t self,
+			gras_socket_t    dst);
+  void (*socket_server)(gras_trp_plugin_t self,
+			gras_socket_t    dst);
    
-  xbt_error_t (*socket_accept)(gras_socket_t  sock,
-				gras_socket_t *dst);
+  gras_socket_t (*socket_accept)(gras_socket_t  from);
    
    
    /* socket_close() is responsible of telling the OS that the socket is over,
     but should not free the socket itself (beside the specific part) */
-  void         (*socket_close)(gras_socket_t sd);
+  void (*socket_close)(gras_socket_t sd);
     
-  xbt_error_t (*chunk_send)(gras_socket_t sd,
-                            const char *data,
-			    unsigned long int size);
-  xbt_error_t (*chunk_recv)(gras_socket_t sd,
-			    char *data,
-			    unsigned long int size);
+  void (*chunk_send)(gras_socket_t sd,
+		     const char *data,
+		     unsigned long int size);
+  void (*chunk_recv)(gras_socket_t sd,
+		     char *data,
+		     unsigned long int size);
 
   /* flush has to make sure that the pending communications are achieved */
-  xbt_error_t (*flush)(gras_socket_t sd);
+  void (*flush)(gras_socket_t sd);
 
-  void          *data; /* plugin-specific data */
+  void *data; /* plugin-specific data */
  
    /* exit is responsible for freeing data and telling the OS this plugin goes */
    /* exit=NULL, data gets freed. (ie exit function needed only when data contains pointers) */
-  void         (*exit)(gras_trp_plugin_t);
+  void (*exit)(gras_trp_plugin_t);
 };
 
-xbt_error_t
-gras_trp_plugin_get_by_name(const char *name,
-			    gras_trp_plugin_t *dst);
+gras_trp_plugin_t
+gras_trp_plugin_get_by_name(const char *name);
 
 /* Data of this module specific to each process
  * (used by sg_process.c to cleanup the SG channel cruft)

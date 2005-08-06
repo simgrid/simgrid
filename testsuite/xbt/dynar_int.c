@@ -15,7 +15,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 int main(int argc,char *argv[]) {
    /* Vars_decl [doxygen cruft] */
    xbt_dynar_t d;
-   xbt_error_t errcode;
    int i,cpt,cursor;
    int *iptr;
    

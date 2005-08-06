@@ -58,20 +58,11 @@ typedef struct xbt_set_elm_ *  xbt_set_elm_t;
  *  @{
  */
 
-void xbt_set_add (xbt_set_t      set,
-		   xbt_set_elm_t  elm,
-		   void_f_pvoid_t *free_func);
+void xbt_set_add (xbt_set_t set, xbt_set_elm_t  elm, void_f_pvoid_t *free_func);
 
-xbt_error_t xbt_set_get_by_name    (xbt_set_t      set,
-				    const char     *key,
-				    /* OUT */xbt_set_elm_t *dst);
-xbt_error_t xbt_set_get_by_name_ext(xbt_set_t      set,
-				    const char     *name,
-				    int             name_len,
-				    /* OUT */xbt_set_elm_t *dst);
-xbt_error_t xbt_set_get_by_id      (xbt_set_t      set,
-				    int             id,
-				    /* OUT */xbt_set_elm_t *dst);
+xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t set, const char *key);
+xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t set, const char *key, int key_len);
+xbt_set_elm_t xbt_set_get_by_id      (xbt_set_t set, int         id);
 				      
 /** @} */
 /** @name 3. Cursors

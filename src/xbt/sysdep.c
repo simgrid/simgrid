@@ -38,7 +38,7 @@ double xbt_os_time(void) {
 #endif /* HAVE_GETTIMEOFDAY? */ 	
 }
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");
+/*XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");*/
 
 
 struct s_xbt_os_timer {

@@ -11,7 +11,7 @@
 #include "gras/Virtu/virtu_rl.h"
 #include "gras_modinter.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(emul,gras,"Emulation support");
+XBT_LOG_NEW_SUBCATEGORY(emul,gras,"Emulation support");
 
 /*** Timing macros: nothing to do in RL. Actually do the job and shutup ***/
 

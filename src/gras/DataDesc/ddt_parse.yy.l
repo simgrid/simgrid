@@ -7,6 +7,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/*   char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
+     char *string_buf_ptr = NULL; FIXME; killme*/
+
 %option noyywrap
 %{
 #include "gras/DataDesc/datadesc_private.h"
@@ -32,9 +35,6 @@ digit           [0-9]
 %%
    int comment_caller=0;
    int annotate_caller=0;
-
-   char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
-   char *string_buf_ptr = NULL;
 
 "//"[^\n]*
 
@@ -233,6 +233,9 @@ void  gras_ddt_parse_pointer_string_close(void) {
   gras_ddt_parse_line_pos = 1;
   gras_ddt_parse_char_pos = 0;
   gras_ddt_parse_tok_num = 0;
+
+  if (0)
+    yyunput('\0',NULL); /* fake a use of this function to calm gcc down */
 }
 
 /* Local variables:*/

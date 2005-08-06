@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "gras_modinter.h" /* module initialization interface */
 #include "gras/Virtu/virtu_sg.h"
 #include "gras/Msg/msg_interface.h" /* For some checks at simulation end */
@@ -15,9 +16,8 @@
 XBT_LOG_EXTERNAL_CATEGORY(process);
 XBT_LOG_DEFAULT_CATEGORY(process);
 
-xbt_error_t
+void
 gras_process_init() {
-  xbt_error_t errcode;
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   gras_procdata_t *pd=xbt_new(gras_procdata_t,1);
   gras_trp_procdata_t trp_pd;
@@ -25,7 +25,7 @@ gras_process_init() {
   int i;
   
   if (MSG_process_set_data(MSG_process_self(),(void*)pd) != MSG_OK)
-    return unknown_error;
+    THROW0(system_error,0,"Error in MSG_process_set_data()");
    
   gras_procdata_init();
 
@@ -37,15 +37,15 @@ gras_process_init() {
     memset(hd->proc, 0, sizeof(hd->proc[0]) * XBT_MAX_CHANNEL); 
 
     if (MSG_host_set_data(MSG_host_self(),(void*)hd) != MSG_OK)
-      return unknown_error;
+      THROW0(system_error,0,"Error in MSG_host_set_data()");
   }
   
   /* take a free channel for this process */
   trp_pd = (gras_trp_procdata_t)gras_libdata_get("gras_trp");
   for (i=0; i<XBT_MAX_CHANNEL && hd->proc[i]; i++);
   if (i == XBT_MAX_CHANNEL) 
-    RAISE2(system_error,
-	   "GRAS: Can't add a new process on %s, because all channel are already in use. Please increase MAX CHANNEL (which is %d for now) and recompile GRAS\n.",
+    THROW2(system_error,0,
+	   "Can't add a new process on %s, because all channels are already in use. Please increase MAX CHANNEL (which is %d for now) and recompile GRAS.",
 	    MSG_host_get_name(MSG_host_self()),XBT_MAX_CHANNEL);
 
   trp_pd->chan = i;
@@ -60,8 +60,8 @@ gras_process_init() {
   /* take a free meas channel for this process */
   for (i=0; i<XBT_MAX_CHANNEL && hd->proc[i]; i++);
   if (i == XBT_MAX_CHANNEL) {
-    RAISE2(system_error,
-	   "GRAS: Can't add a new process on %s, because all channel are already in use. Please increase MAX CHANNEL (which is %d for now) and recompile GRAS\n.",
+    THROW2(system_error,0,
+	   "Can't add a new process on %s, because all channels are already in use. Please increase MAX CHANNEL (which is %d for now) and recompile GRAS.",
 	    MSG_host_get_name(MSG_host_self()),XBT_MAX_CHANNEL);
   }
   trp_pd->measChan = i;
@@ -77,10 +77,9 @@ gras_process_init() {
   VERB2("Creating process '%s' (%d)",
 	   MSG_process_get_name(MSG_process_self()),
 	   MSG_process_self_PID());
-  return no_error;
 }
 
-xbt_error_t
+void
 gras_process_exit() {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   gras_msg_procdata_t msg_pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
@@ -107,8 +106,6 @@ gras_process_exit() {
       xbt_dynar_cursor_rm(hd->ports, &cpt);
     }
   }
-
-  return no_error;
 }
 
 /* **************************************************************************

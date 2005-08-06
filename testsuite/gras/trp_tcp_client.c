@@ -11,11 +11,10 @@
 #include "gras.h"
 #include "gras/Transport/transport_interface.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging for this test");
+XBT_LOG_NEW_CATEGORY(test,"Logging for this test");
 
 int main(int argc,char *argv[]) {
   gras_socket_t sock;
-  xbt_error_t errcode;
   char data_send[256];
   char data_recv[256];
 
@@ -25,14 +24,14 @@ int main(int argc,char *argv[]) {
   gras_init(&argc,argv);
 
   fprintf(stderr,"===[CLIENT]=== Contact the server\n");
-  TRYFAIL(gras_socket_client(NULL,55555,&sock));
+  sock = gras_socket_client(NULL,55555);
 
   sprintf(data_send,"Hello, I am a little test data to send.");
   fprintf(stderr,"===[CLIENT]=== Send data\n");
-  TRYFAIL(gras_trp_chunk_send(sock,data_send, sizeof(data_send)));
-  TRYFAIL(gras_trp_flush(sock));
+  gras_trp_chunk_send(sock,data_send, sizeof(data_send));
+  gras_trp_flush(sock);
   fprintf(stderr,"===[CLIENT]=== Waiting for the ACK\n");
-  TRYFAIL(gras_trp_chunk_recv(sock,data_recv, sizeof(data_recv)));
+  gras_trp_chunk_recv(sock,data_recv, sizeof(data_recv));
   
   if (strcmp(data_send, data_recv)) {
     fprintf(stderr, "===[CLIENT]=== String sent != string received\n");

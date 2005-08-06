@@ -9,6 +9,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "gras/DataDesc/datadesc_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_cbps,datadesc,"callback persistant state");
 
@@ -26,9 +27,9 @@ typedef struct s_gras_cbps {
   xbt_dynar_t globals;
 } s_gras_cbps_t;
 
-static void free_string(void *d);
+void free_string(void *d);
 
-static void free_string(void *d){
+void free_string(void *d){
   free(*(void**)d);
 }
 
@@ -73,21 +74,25 @@ gras_cbps_v_push(gras_cbps_t          ps,
 		 void                *data,
 		 gras_datadesc_type_t ddt) {
 
-  xbt_dynar_t          varstack,frame;
-  gras_cbps_elm_t       var;
-  xbt_error_t errcode;
-  char *varname = (char*)strdup(name);
+  xbt_dynar_t     varstack,frame;
+  gras_cbps_elm_t var;
+  char           *varname = (char*)strdup(name);
+  xbt_ex_t        e;
 
   DEBUG2("push(%s,%p)",name,(void*)data);
-  errcode = xbt_dict_get(ps->space, name, (void **)&varstack);
- 
-  if (errcode == mismatch_error) {
-    DEBUG1("Create a new variable stack for '%s' into the space",name);
-    varstack = xbt_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
-    xbt_dict_set(ps->space, varname, (void **)varstack, NULL);
+
+  TRY {
+    varstack = xbt_dict_get(ps->space, name);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      DEBUG1("Create a new variable stack for '%s' into the space",name);
+      varstack = xbt_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
+      xbt_dict_set(ps->space, varname, (void **)varstack, NULL);
+      xbt_ex_free(e);
     /* leaking, you think? only if you do not close all the openned blocks ;)*/
-  } else if (errcode != no_error) {
-    return errcode;
+    } else {
+      RETHROW;
+    }
   }
  
   var       = xbt_new0(s_gras_cbps_elm_t,1);
@@ -117,14 +122,18 @@ gras_cbps_v_pop (gras_cbps_t            ps,
   xbt_dynar_t          varstack,frame;
   gras_cbps_elm_t       var            = NULL;
   void                 *data           = NULL;
-  xbt_error_t errcode;
+  xbt_ex_t e;
 
   DEBUG1("pop(%s)",name);
-  /* FIXME: Error handling */
-  errcode = xbt_dict_get(ps->space, name, (void **)&varstack);
-  if (errcode == mismatch_error) {
-    RAISE1(mismatch_error,"Asked to pop the non-existant %s",
-	   name);
+  TRY {
+    varstack = xbt_dict_get(ps->space, name);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      xbt_ex_free(e);
+      THROW1(mismatch_error,1,"Asked to pop the non-existant %s",
+	     name);
+    }
+    RETHROW;
   }
   xbt_dynar_pop(varstack, &var);
   
@@ -136,7 +145,7 @@ gras_cbps_v_pop (gras_cbps_t            ps,
   
   if (ddt)
     *ddt = var->type;  
-  data    = var->data;
+  data = var->data;
   
   free(var);
   
@@ -176,14 +185,23 @@ gras_cbps_v_set (gras_cbps_t          ps,
 		 void                *data,
 		 gras_datadesc_type_t ddt) {
 
-  xbt_dynar_t    dynar        = NULL;
-  gras_cbps_elm_t elm          = NULL;
-  xbt_error_t    errcode;
+  xbt_dynar_t dynar = NULL;
+  gras_cbps_elm_t elm = NULL;
+  xbt_ex_t e;
   
   DEBUG1("set(%s)",name);
-  errcode = xbt_dict_get(ps->space, name, (void **)&dynar);
-  
-  if (errcode == mismatch_error) {
+  TRY {
+    dynar = xbt_dict_get(ps->space, name);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      dynar = NULL;
+      xbt_ex_free(e);
+    } else {
+      RETHROW;
+    }
+  }
+
+  if (dynar == NULL) {
     dynar = xbt_dynar_new(sizeof (gras_cbps_elm_t), NULL);
     xbt_dict_set(ps->space, name, (void **)dynar, NULL);
     
@@ -216,8 +234,7 @@ gras_cbps_v_get (gras_cbps_t           ps,
   gras_cbps_elm_t elm   = NULL;
   
   DEBUG1("get(%s)",name);
-  /* FIXME: Error handling */
-  xbt_dict_get(ps->space, name, (void **)&dynar);
+  dynar = xbt_dict_get(ps->space, name);
   xbt_dynar_pop(dynar, &elm);
   xbt_dynar_push(dynar, &elm);
   
@@ -268,7 +285,7 @@ gras_cbps_block_end(gras_cbps_t ps) {
     gras_cbps_elm_t var         = NULL;
  
     DEBUG2("Get ride of %s (%p)",name,(void*)name);
-    xbt_dict_get(ps->space, name, (void **)&varstack);
+    varstack = xbt_dict_get(ps->space, name);
     xbt_dynar_pop(varstack, &var);
  
     if (!xbt_dynar_length(varstack)) {

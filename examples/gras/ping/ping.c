@@ -35,7 +35,7 @@ typedef struct {
 static int server_cb_ping_handler(gras_socket_t  expeditor,
    			          void          *payload_data) {
 			     
-  xbt_error_t errcode;
+  xbt_ex_t e;
   /* 1. Get the payload into the msg variable */
   int msg=*(int*)payload_data;
 
@@ -52,13 +52,13 @@ static int server_cb_ping_handler(gras_socket_t  expeditor,
   /* 4. Change the value of the msg variable */
   msg = 4321;
   /* 5. Send it back as payload of a pong message to the expeditor */
-  errcode = gras_msg_send(expeditor, gras_msgtype_by_name("pong"), &msg);
+  TRY {
+    gras_msg_send(expeditor, gras_msgtype_by_name("pong"), &msg);
 
-  /* 6. Deal with errors */
-  if (errcode != no_error) {
-    ERROR1("Unable answer with PONG: %s\n", xbt_error_name(errcode));
+  /* 6. Deal with errors: add some details to the exception */
+  } CATCH(e) {
     gras_socket_close(globals->sock);
-    return 1;
+    RETHROW0("Unable answer with PONG: %s");
   }
 
   INFO0(">>>>>>>> Answered with PONG(4321) <<<<<<<<");
@@ -74,7 +74,6 @@ static int server_cb_ping_handler(gras_socket_t  expeditor,
 } /* end_of_server_cb_ping_handler */
 
 int server (int argc,char *argv[]) {
-  xbt_error_t errcode;
   server_data_t *globals;
 
   int port = 4000;
@@ -91,11 +90,7 @@ int server (int argc,char *argv[]) {
   INFO1("Launch server (port=%d)", port);
 
   /* 3. Create my master socket */
-  if ((errcode=gras_socket_server(port,&(globals->sock)))) { 
-    CRITICAL1("Error %s encountered while opening the server socket",
-	      xbt_error_name(errcode));
-    return 1;
-  }
+  globals->sock = gras_socket_server(port);
 
   /* 4. Register the known messages. This function is called twice here, but it's because
         this file also acts as regression test, no need to do so yourself of course. */
@@ -109,11 +104,9 @@ int server (int argc,char *argv[]) {
   globals->endcondition=0;
 
   /* 6. Wait up to 10 minutes for an incomming message to handle */
-  errcode = gras_msg_handle(600.0);
+  gras_msg_handle(600.0);
    
   /* 7. Housekeeping */
-  if (errcode != no_error)
-    return errcode;
   if (!globals->endcondition)
      WARN0("An error occured, the endcondition was not set by the callback");
   
@@ -133,7 +126,7 @@ int server (int argc,char *argv[]) {
 /* Function prototypes */
 
 int client(int argc,char *argv[]) {
-  xbt_error_t errcode; 
+  xbt_ex_t e; 
   gras_socket_t toserver; /* peer */
 
   gras_socket_t from;
@@ -157,10 +150,10 @@ int client(int argc,char *argv[]) {
   gras_os_sleep(1);
    
   /* 4. Create a socket to speak to the server */
-  if ((errcode=gras_socket_client(host,port,&toserver))) {
-    ERROR1("Unable to connect to the server. Got %s",
-	   xbt_error_name(errcode));
-    return 1;
+  TRY {
+    toserver=gras_socket_client(host,port);
+  } CATCH(e) {
+    RETHROW0("Unable to connect to the server: %s");
   }
   INFO2("Connected to %s:%d.",host,port);    
 
@@ -175,24 +168,23 @@ int client(int argc,char *argv[]) {
 
   /* 7. Prepare and send the ping message to the server */
   ping = 1234;
-  errcode = gras_msg_send(toserver, gras_msgtype_by_name("ping"), &ping);
-  if (errcode != no_error) {
-    fprintf(stderr, "Unable send PING to server (%s)\n",
-	    xbt_error_name(errcode));
+  TRY {
+    gras_msg_send(toserver, gras_msgtype_by_name("ping"), &ping);
+  } CATCH(e) {
     gras_socket_close(toserver);
-    return 1;
+    RETHROW0("Failed to send PING to server: %s");
   }
   INFO3(">>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
 	ping,
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
   /* 8. Wait for the answer from the server, and deal with issues */
-  if ((errcode=gras_msg_wait(6000,gras_msgtype_by_name("pong"),
-			     &from,&pong))) {
-    ERROR1("Why can't I get my PONG message like everyone else (%s)?",
-	   xbt_error_name(errcode));
+  TRY {
+    gras_msg_wait(6000,gras_msgtype_by_name("pong"),
+		  &from,&pong);
+  } CATCH(e) {
     gras_socket_close(toserver);
-    return 1;
+    RETHROW0("Why can't I get my PONG message like everyone else: %s");
   }
 
   /* 9. Keep the user informed of what's going on, again */

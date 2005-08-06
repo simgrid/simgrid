@@ -76,24 +76,24 @@ BEGIN_DECL()
  *  @{
  */
 
-  void xbt_dynar_get_cpy(const xbt_dynar_t dynar, int idx, void *const dst);
+  void xbt_dynar_get_cpy(const xbt_dynar_t dynar, int idx, void * const dst);
   
   void xbt_dynar_set(xbt_dynar_t dynar, int idx, const void *src);
   void xbt_dynar_replace(xbt_dynar_t dynar, int idx, const void *object);
 
   void xbt_dynar_insert_at(xbt_dynar_t dynar, int  idx, const void *src);
-  void xbt_dynar_remove_at(xbt_dynar_t dynar, int  idx, void *object);
+  void xbt_dynar_remove_at(xbt_dynar_t dynar, int  idx, void * const dst);
 
 /** @} */
 /** @name 2. Perl-like functions
  *  @{
  */
 
-  void xbt_dynar_push     (xbt_dynar_t dynar, const void *src);
-  void xbt_dynar_pop      (xbt_dynar_t dynar, void *const dst);
-  void xbt_dynar_unshift  (xbt_dynar_t dynar, const void *src);
-  void xbt_dynar_shift    (xbt_dynar_t dynar, void *const dst);
-  void xbt_dynar_map      (const xbt_dynar_t dynar, void_f_pvoid_t *operator);
+  void xbt_dynar_push    (xbt_dynar_t dynar, const void *src);
+  void xbt_dynar_pop     (xbt_dynar_t dynar, void *const dst);
+  void xbt_dynar_unshift (xbt_dynar_t dynar, const void *src);
+  void xbt_dynar_shift   (xbt_dynar_t dynar, void *const dst);
+  void xbt_dynar_map            (const xbt_dynar_t dynar, void_f_pvoid_t *operator);
 
 /** @} */
 /** @name 3. Manipulating pointers to the content

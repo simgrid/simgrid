@@ -14,6 +14,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/error.h"
+#include "xbt/ex.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
@@ -36,25 +37,23 @@ typedef struct xbt_dict_ {
 typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
 
 /*####[ Function prototypes ]################################################*/
-void xbt_dictelm_free      (s_xbt_dictelm_t **pp_elm);
+void  xbt_dictelm_free      (s_xbt_dictelm_t **pp_elm);
 
-void xbt_dictelm_set       (s_xbt_dictelm_t **pp_head,
+void  xbt_dictelm_set       (s_xbt_dictelm_t **pp_head,
 			     const char      *_key,
 			     void            *data,
 			     void_f_pvoid_t  *free_ctn);
-void xbt_dictelm_set_ext   (s_xbt_dictelm_t **pp_head,
+void  xbt_dictelm_set_ext   (s_xbt_dictelm_t **pp_head,
 			     const char      *_key,
 			     int              key_len,
 			     void            *data,
 			     void_f_pvoid_t  *free_ctn);
 
-xbt_error_t xbt_dictelm_get       (s_xbt_dictelm_t *p_head,
-				     const char     *key,
-				     /* OUT */void **data);
-xbt_error_t xbt_dictelm_get_ext   (s_xbt_dictelm_t *p_head,
-				     const char     *key,
-				     int             key_len,
-				     /* OUT */void **data);
+void* xbt_dictelm_get       (s_xbt_dictelm_t *p_head, 
+	                     const char     *key);
+void* xbt_dictelm_get_ext   (s_xbt_dictelm_t *p_head,
+			     const char     *key,
+			     int             key_len);
 
 xbt_error_t xbt_dictelm_remove    (s_xbt_dictelm_t *p_head,
 				     const char  *key);

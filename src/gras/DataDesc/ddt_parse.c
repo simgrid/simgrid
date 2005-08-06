@@ -11,6 +11,7 @@
 
 #include <ctype.h> /* isdigit */
 
+#include "xbt/ex.h"
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/DataDesc/ddt_parse.yy.h"
 
@@ -89,6 +90,7 @@ static void parse_type_modifier(type_modifier_t type_modifier)  {
   XBT_OUT;
 }
 
+static void print_type_modifier(s_type_modifier_t tm) __attribute__((unused));
 static void print_type_modifier(s_type_modifier_t tm) {
   int i;
 
@@ -177,7 +179,7 @@ static xbt_error_t parse_statement(char	 *definition,
   gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   if(gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RA) {
     XBT_OUT;
-    return mismatch_error; /* end of the englobing structure or union */
+    return old_mismatch_error; /* end of the englobing structure or union */
   }
   
   if (XBT_LOG_ISENABLED(ddt_parse,xbt_log_priority_debug)) {
@@ -252,7 +254,7 @@ static xbt_error_t parse_statement(char	 *definition,
       identifier.type = gras_datadesc_by_name("unsigned char");
 
     } else { /* impossible, gcc parses this shit before us */
-      RAISE_IMPOSSIBLE;
+      THROW_IMPOSSIBLE;
     }
     
   } else if (!strcmp(identifier.type_name, "float")) {
@@ -397,7 +399,7 @@ static xbt_error_t parse_statement(char	 *definition,
 	      continue;
 	    }
 	  }
-	  RAISE_IMPOSSIBLE;
+	  THROW_IMPOSSIBLE;
 
 	} else {
 	  PARSE_ERROR1("Unknown annotation type: '%s'",keyname);
@@ -615,5 +617,3 @@ gras_datadesc_parse(const char            *name,
   XBT_OUT;
   return res;
 }
-
-

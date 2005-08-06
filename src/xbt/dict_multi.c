@@ -27,13 +27,13 @@ static void _free_dict(void*d) {
  * Dynars are not modified during the operation.
  */
 
-xbt_error_t
+void
 xbt_multidict_set_ext(xbt_dict_t  mdict,
                       xbt_dynar_t keys, xbt_dynar_t     lens,
                       void       *data, void_f_pvoid_t *free_ctn) {
-                      
-  xbt_error_t errcode;
-  xbt_dict_t thislevel,nextlevel;
+      
+  xbt_ex_t e;
+  xbt_dict_t thislevel,nextlevel=NULL;
   int i;
   
   unsigned long int thislen;
@@ -55,13 +55,17 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
     DEBUG5("multi_set: at level %d, len=%ld, key=%p |%*s|", i, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level */
-    TRYCATCH(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel), mismatch_error);
-
-    /* make sure the dict of next level exists */
-    if (errcode == mismatch_error) {
-      nextlevel=xbt_dict_new();
-      VERB1("Create a dict (%p)",nextlevel);
-      xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
+    TRY {
+      nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
+    } CATCH(e) {
+      if (e.category == arg_error || e.category == mismatch_error) {
+	/* make sure the dict of next level exists */
+	nextlevel=xbt_dict_new();
+	VERB1("Create a dict (%p)",nextlevel);
+	xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
+      } else {
+	RETHROW;
+      }
     }
   }
 
@@ -69,8 +73,6 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
   xbt_dynar_get_cpy(lens, i, &thislen);
   
   xbt_dict_set_ext(thislevel, thiskey, thislen, data, free_ctn);
-  
-  return no_error;
 }
 
 /** \brief Insert \e data under all the keys contained in \e keys
@@ -80,11 +82,10 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
  * \arg data: what to store in the structure
  * \arg free_ctn: function to use to free the pushed content on need
  */
-xbt_error_t
+void
 xbt_multidict_set(xbt_dict_t  mdict,
                   xbt_dynar_t keys,
                   void       *data,  void_f_pvoid_t *free_ctn) {
-  xbt_error_t errcode;
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
   int i;
 
@@ -95,9 +96,9 @@ xbt_multidict_set(xbt_dict_t  mdict,
     xbt_dynar_push(lens,&thislen);
   }
 
-  errcode = xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
+  xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
   xbt_dynar_free(&lens);         
-  return errcode;
+
 }
 
 /** \brief Insert \e data under all the keys contained in \e keys, providing their sizes in \e lens.
@@ -110,11 +111,9 @@ xbt_multidict_set(xbt_dict_t  mdict,
  *
  * Dynars are not modified during the operation.
  */
-xbt_error_t
+void *
 xbt_multidict_get_ext(xbt_dict_t  mdict,
-                      xbt_dynar_t keys,   xbt_dynar_t lens,
-                      /*OUT*/void **data) {
-  xbt_error_t errcode;
+                      xbt_dynar_t keys,   xbt_dynar_t lens) {
   xbt_dict_t thislevel,nextlevel;
   int i;
 
@@ -138,20 +137,20 @@ xbt_multidict_get_ext(xbt_dict_t  mdict,
       i, thislevel, thislen, thiskey, (int)thislen,thiskey);
 
     /* search the dict of next level: let mismatch raise if not found */
-    TRYOLD(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel));
+    nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
   }
   
   xbt_dynar_get_cpy(keys, i, &thiskey);
   xbt_dynar_get_cpy(lens, i, &thislen);
   
-  return xbt_dict_get_ext(thislevel, thiskey, thislen, data);
+  return xbt_dict_get_ext(thislevel, thiskey, thislen);
 }
 
-xbt_error_t
-xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys, /*OUT*/void **data) {
-  xbt_error_t errcode;
+void *
+xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys) {
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
   int i;
+  void *res;
   
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char*);
@@ -159,9 +158,9 @@ xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys, /*OUT*/void **data) {
     xbt_dynar_push(lens,&thislen);
   }
 
-  errcode = xbt_multidict_get_ext(mdict, keys, lens, data),
+  res = xbt_multidict_get_ext(mdict, keys, lens),
   xbt_dynar_free(&lens);         
-  return errcode;
+  return res;
 }
 
 
@@ -180,9 +179,9 @@ xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys, /*OUT*/void **data) {
 
 xbt_error_t
 xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
-  xbt_error_t errcode;
-  xbt_dict_t thislevel,nextlevel;
+  xbt_dict_t thislevel,nextlevel=NULL;
   int i;
+  xbt_ex_t e;
 
   unsigned long int thislen;
   char *thiskey;
@@ -199,11 +198,15 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
     xbt_dynar_get_cpy(lens, i, &thislen);
 
     /* search the dict of next level */
-    TRYCATCH(xbt_dict_get_ext(thislevel, thiskey, thislen, (void*)&nextlevel), mismatch_error);
-
-    /* If non-existant entry, nothing to do */
-    if (errcode == mismatch_error)
-      return no_error;
+    TRY {
+      nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
+    } CATCH(e) {
+      /* If non-existant entry, nothing to do */
+      if (e.category == arg_error) 
+	xbt_ex_free(e);
+      else 
+	RETHROW;
+    }
   }
 
   xbt_dynar_get_cpy(keys, i, &thiskey);

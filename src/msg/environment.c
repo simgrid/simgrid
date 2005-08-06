@@ -66,8 +66,8 @@ void MSG_create_environment(const char *file) {
   surf_timer_resource_init(file);
 
   /* which model do you want today? */
-  xbt_cfg_get_string (_msg_cfg_set, "surf_workstation_model",
-		      &workstation_model_name);
+  workstation_model_name = xbt_cfg_get_string (_msg_cfg_set, "surf_workstation_model");
+
   DEBUG1("Model : %s", workstation_model_name);
   if (!strcmp(workstation_model_name,"KCCFLN05")) {
     surf_workstation_resource_init_KCCFLN05(file);

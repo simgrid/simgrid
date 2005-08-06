@@ -23,12 +23,11 @@ xbt_cfg_t _msg_cfg_set = NULL;
 
 /* callback of the surf_workstation_model variable */
 static void _msg_cfg_cb__surf_workstation_model(const char *name, int pos) {
-  xbt_error_t errcode;
   char *val;
 
   xbt_assert0(_msg_init_status<2, "Cannot change the model after the initialization");
   
-  TRYFAIL(xbt_cfg_get_string (_msg_cfg_set, name, &val));
+  val = xbt_cfg_get_string (_msg_cfg_set, name);
   
   xbt_assert1(!strcmp(val, "CLM03") ||
               !strcmp(val, "KCCFLN05"),
@@ -37,7 +36,6 @@ static void _msg_cfg_cb__surf_workstation_model(const char *name, int pos) {
 
 /* create the config set and register what should be */
 void msg_config_init(void) {
-  xbt_error_t errcode;
 
   if (_msg_init_status) 
     return; /* Already inited, nothing to do */
@@ -49,7 +47,7 @@ void msg_config_init(void) {
                     "surf_workstation_model", xbt_cfgelm_string, 1,1,
                     &_msg_cfg_cb__surf_workstation_model,NULL);
                     
-  TRYFAIL(xbt_cfg_set_string(_msg_cfg_set,"surf_workstation_model", "CLM03"));
+  xbt_cfg_set_string(_msg_cfg_set,"surf_workstation_model", "CLM03");
 }
 
 /** \brief set a configuration variable
@@ -64,18 +62,16 @@ void msg_config_init(void) {
  * Example:
  * MSG_config("surf_workstation_model","CLM03");
  */
-xbt_error_t
+void
 MSG_config(const char *name, ...) {
   va_list pa;
-  xbt_error_t errcode;
     
   if (!_msg_init_status) {
     msg_config_init();
   }
-xbt_cfg_dump("msg_cfg_set","",_msg_cfg_set);
+  /*  xbt_cfg_dump("msg_cfg_set","",_msg_cfg_set);*/
   va_start(pa,name);
-  errcode=xbt_cfg_set_vargs(_msg_cfg_set,name,pa);
+  xbt_cfg_set_vargs(_msg_cfg_set,name,pa);
   va_end(pa);
-  
-  return errcode;
+
 }

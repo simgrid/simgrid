@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 XBT_LOG_EXTERNAL_CATEGORY(transport);
@@ -23,11 +24,7 @@ XBT_LOG_DEFAULT_CATEGORY(transport);
  *
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */
-xbt_error_t 
-gras_trp_select(double timeout,
-		gras_socket_t *dst) {
-
-  xbt_error_t errcode;
+gras_socket_t gras_trp_select(double timeout) {
   xbt_dynar_t sockets= gras_socketset_get();
   int done = -1;
   double wakeup = gras_os_time() + timeout;
@@ -58,7 +55,6 @@ gras_trp_select(double timeout,
 #  endif /* !USE_SYSCONF */
 #endif
 
-  *dst=NULL;
   while (done == -1) {
     if (timeout > 0) { /* did we timeout already? */
       now = gras_os_time();
@@ -88,10 +84,10 @@ gras_trp_select(double timeout,
        if (timeout > 0) {
 	  DEBUG1("No socket to select onto. Sleep %f sec instead.",timeout);
 	  gras_os_sleep(timeout);
-	  return timeout_error;
+	  THROW1(timeout_error,0,"No socket to select onto. Sleep %f sec instead",timeout);
        } else {
 	  DEBUG0("No socket to select onto. Return directly.");
-	  return timeout_error;
+	  THROW0(timeout_error,0, "No socket to select onto. Return directly.");
        }
     }
 
@@ -132,15 +128,15 @@ gras_trp_select(double timeout,
 	/* if we cared, we would have set an handler */
 	continue;
       case EINVAL: /* invalid value */
-	RAISE3(system_error,"invalid select: nb fds: %d, timeout: %d.%d",
+	THROW3(system_error,EINVAL,"invalid select: nb fds: %d, timeout: %d.%d",
 	       max_fds, (int)tout.tv_sec,(int) tout.tv_usec);
       case ENOMEM: 
 	xbt_assert0(0,"Malloc error during the select");
       default:
-	RAISE2(system_error,"Error during select: %s (%d)",
+	THROW2(system_error,errno,"Error during select: %s (%d)",
 	       strerror(errno),errno);
       }
-      RAISE_IMPOSSIBLE;
+      THROW_IMPOSSIBLE;
     } else if (ready == 0) {
       continue;	 /* this was a timeout */
     }
@@ -158,7 +154,7 @@ gras_trp_select(double timeout,
 	 /* not a socket but an ear. accept on it and serve next socket */
 	 gras_socket_t accepted=NULL;
 	 
-	 TRYOLD((sock_iter->plugin->socket_accept)(sock_iter,&accepted));
+	 accepted = (sock_iter->plugin->socket_accept)(sock_iter);
 	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
 	 accepted->meas = sock_iter->meas;
        } else {
@@ -182,9 +178,8 @@ gras_trp_select(double timeout,
 	 } else { 
 #endif
 	   /* Got a suited socket ! */
-	   *dst = sock_iter;
 	   XBT_OUT;
-	   return no_error;
+	   return sock_iter;
 #if 0
 	 }
 #endif
@@ -199,10 +194,10 @@ gras_trp_select(double timeout,
   }
 
   XBT_OUT;
-  return timeout_error;
+  return NULL;
 }
 
-xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t plug) {
-  return mismatch_error;
+void gras_trp_sg_setup(gras_trp_plugin_t plug) {
+  THROW0(mismatch_error,0,"No SG transport on live platforms");
 }
 

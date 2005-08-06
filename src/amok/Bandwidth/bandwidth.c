@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "amok/Bandwidth/bandwidth_private.h"
 #include "gras/messages.h"
 
@@ -125,20 +126,25 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 			 /*OUT*/ double *sec, double *bw) {
 
   /* Measurement sockets for the experiments */
-  gras_socket_t measMasterIn,measIn,measOut;
+  gras_socket_t measMasterIn=NULL,measIn,measOut;
   int port;
   xbt_error_t errcode;
   bw_request_t request,request_ack;
+  xbt_ex_t e;
   
-  for (port = 5000, errcode = system_error;
-       errcode == system_error && port < 10000;
-       errcode = gras_socket_server_ext(++port,buf_size,1,&measMasterIn));
-  if (errcode != no_error) {
-    ERROR1("Error %s encountered while opening a measurement socket",
-	   xbt_error_name(errcode));
-    return errcode;
+  for (port = 5000; port < 10000 && measMasterIn == NULL; port++) {
+    TRY {
+      measMasterIn = gras_socket_server_ext(++port,buf_size,1);
+    } CATCH(e) {
+      measMasterIn = NULL;
+      if (port < 10000) {
+	xbt_ex_free(e);
+      } else {
+	RETHROW0("Error caught while opening a measurement socket: %s");
+      }
+    }
   }
-	
+  
   request=xbt_new0(s_bw_request_t,1);
   request->buf_size=buf_size*1024;
   request->exp_size=exp_size*1024;
@@ -149,33 +155,34 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 	gras_socket_peer_name(peer),gras_socket_peer_port(peer), request->host.port,
 	buf_size,request->buf_size);
 
-  if ((errcode=gras_msg_send(peer,gras_msgtype_by_name("BW handshake"),&request))) {
-    ERROR1("Error %s encountered while sending the BW request.", xbt_error_name(errcode));
-    return errcode;
+  TRY {
+    gras_msg_send(peer,gras_msgtype_by_name("BW handshake"),&request);
+  } CATCH(e) {
+    RETHROW0("Error encountered while sending the BW request: %s");
   }
-  TRYOLD(gras_socket_meas_accept(measMasterIn,&measIn));
+  measIn = gras_socket_meas_accept(measMasterIn);
 
-  if ((errcode=gras_msg_wait(60,gras_msgtype_by_name("BW handshake ACK"),
-			     NULL,&request_ack))) {
-    ERROR1("Error %s encountered while waiting for the answer to BW request.\n",
-	    xbt_error_name(errcode));
-    return errcode;
+  TRY {
+    gras_msg_wait(60,gras_msgtype_by_name("BW handshake ACK"),NULL,&request_ack);
+  } CATCH(e) {
+    RETHROW0("Error encountered while waiting for the answer to BW request: %s");
   }
   
   /* FIXME: What if there is a remote error? */
    
-  if((errcode=gras_socket_client_ext(gras_socket_peer_name(peer),
-				     request_ack->host.port, 
-				     request->buf_size,1,&measOut))) {
-    ERROR3("Error %s encountered while opening the measurement socket to %s:%d for BW test\n",
-	    xbt_error_name(errcode),gras_socket_peer_name(peer),request_ack->host.port);
-    return errcode;
+  TRY {
+    measOut=gras_socket_client_ext(gras_socket_peer_name(peer),
+				   request_ack->host.port, 
+				   request->buf_size,1);
+  } CATCH(e) {
+    RETHROW2("Error encountered while opening the measurement socket to %s:%d for BW test",
+	     gras_socket_peer_name(peer),request_ack->host.port);
   }
   DEBUG1("Got ACK; conduct the experiment (msg_size=%ld)",request->msg_size);
 
   *sec=gras_os_time();
-  TRYOLD(gras_socket_meas_send(measOut,120,request->exp_size,request->msg_size));
-  TRYOLD(gras_socket_meas_recv(measIn,120,1,1));
+  gras_socket_meas_send(measOut,120,request->exp_size,request->msg_size);
+  gras_socket_meas_recv(measIn,120,1,1);
 
   /*catch
     ERROR1("Error %s encountered while sending the BW experiment.",
@@ -208,10 +215,10 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 */
 int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
 			    void          *payload) {
-  gras_socket_t measMasterIn,measIn,measOut;
+  gras_socket_t measMasterIn=NULL,measIn,measOut;
   bw_request_t request=*(bw_request_t*)payload;
   bw_request_t answer;
-  xbt_error_t errcode;
+  xbt_ex_t e;
   int port;
   
   VERB5("Handshaked to connect to %s:%d (sizes: buf=%lu exp=%lu msg=%lu)",
@@ -221,13 +228,17 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
   /* Build our answer */
   answer = xbt_new0(s_bw_request_t,1);
   
-  for (port = 6000, errcode = system_error;
-       errcode == system_error;
-       errcode = gras_socket_server_ext(++port,request->buf_size,1,&measMasterIn));
-  if (errcode != no_error) {
-    ERROR1("Error %s encountered while opening a measurement server socket", xbt_error_name(errcode));
-    /* FIXME: tell error to remote */
-    return 1;
+  for (port = 6000; port < 10000 && measMasterIn == NULL; port++) {
+    TRY {
+      measMasterIn = gras_socket_server_ext(port,request->buf_size,1);
+    } CATCH(e) {
+      measMasterIn = NULL;
+      if (port < 10000)
+	xbt_ex_free(e);
+      else
+	/* FIXME: tell error to remote */
+	RETHROW0("Error encountered while opening a measurement server socket: %s");
+    }
   }
    
   answer->buf_size=request->buf_size;
@@ -236,42 +247,39 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
   answer->host.port=gras_socket_my_port(measMasterIn);
 
   /* Don't connect asap to leave time to other side to enter the accept() */
-  if ((errcode=gras_socket_client_ext(gras_socket_peer_name(expeditor),
-				      request->host.port,
-				      request->buf_size,1,&measOut))) { 
-    ERROR3("Error '%s' encountered while opening a measurement socket back to %s:%d", 
-	   xbt_error_name(errcode),gras_socket_peer_name(expeditor),request->host.port);
+  TRY {
+    measOut = gras_socket_client_ext(gras_socket_peer_name(expeditor),
+				     request->host.port,
+				     request->buf_size,1);
+  } CATCH(e) {
+    RETHROW2("Error encountered while opening a measurement socket back to %s:%d : %s", 
+	     gras_socket_peer_name(expeditor),request->host.port);
     /* FIXME: tell error to remote */
-    return 1;
   }
 
-
-  if ((errcode=gras_msg_send(expeditor,
-			     gras_msgtype_by_name("BW handshake ACK"),
-			     &answer))) {
-    ERROR1("Error %s encountered while sending the answer.",
-	    xbt_error_name(errcode));
+  TRY {
+    gras_msg_send(expeditor, gras_msgtype_by_name("BW handshake ACK"), &answer);
+  } CATCH(e) { 
     gras_socket_close(measMasterIn);
     gras_socket_close(measOut);
     /* FIXME: tell error to remote */
-    return 1;
+    RETHROW0("Error encountered while sending the answer: %s");
   }
-  TRYOLD(gras_socket_meas_accept(measMasterIn,&measIn));
-  DEBUG4("BW handshake answered. buf_size=%lu exp_size=%lu msg_size=%lu port=%d",
-	answer->buf_size,answer->exp_size,answer->msg_size,answer->host.port);
 
-  TRYOLD(gras_socket_meas_recv(measIn, 120,request->exp_size,request->msg_size));
-  TRYOLD(gras_socket_meas_send(measOut,120,1,1));
+  TRY {
+    measIn = gras_socket_meas_accept(measMasterIn);
+    DEBUG4("BW handshake answered. buf_size=%lu exp_size=%lu msg_size=%lu port=%d",
+	   answer->buf_size,answer->exp_size,answer->msg_size,answer->host.port);
 
-  /*catch
-    ERROR1("Error %s encountered while receiving the experiment.",
-	    xbt_error_name(errcode));
+    gras_socket_meas_recv(measIn, 120,request->exp_size,request->msg_size);
+    gras_socket_meas_send(measOut,120,1,1);
+  } CATCH(e) {
     gras_socket_close(measMasterIn);
     gras_socket_close(measIn);
     gras_socket_close(measOut);
-    * FIXME: tell error to remote ? *
-    return 1;
-    }*/
+    /* FIXME: tell error to remote ? */
+    RETHROW0("Error encountered while receiving the experiment: %s");
+  }
 
   if (measIn != measMasterIn)
     gras_socket_close(measMasterIn);
@@ -311,7 +319,6 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
 			    /*OUT*/ double *sec, double*bw) {
   
   gras_socket_t sock;
-  xbt_error_t errcode;
   /* The request */
   bw_request_t request;
   bw_res_t result;
@@ -324,11 +331,11 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
   request->host.name = (char*)to_name;
   request->host.port = to_port;
 
-  TRYOLD(gras_socket_client(from_name,from_port,&sock));
-  TRYOLD(gras_msg_send(sock,gras_msgtype_by_name("BW request"),&request));
+  sock = gras_socket_client(from_name,from_port);
+  gras_msg_send(sock,gras_msgtype_by_name("BW request"),&request);
   free(request);
 
-  TRYOLD(gras_msg_wait(240,gras_msgtype_by_name("BW result"),NULL, &result));
+  gras_msg_wait(240,gras_msgtype_by_name("BW result"),NULL, &result);
   
   *sec=result->sec;
   *bw =result->bw;
@@ -345,18 +352,17 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
 int amok_bw_cb_bw_request(gras_socket_t    expeditor,
 			  void            *payload) {
 			  
-  xbt_error_t errcode;			  
   /* specification of the test to run, and our answer */
   bw_request_t request = *(bw_request_t*)payload;
   bw_res_t result = xbt_new0(s_bw_res,1);
   gras_socket_t peer;
 
-  TRYOLD(gras_socket_client(request->host.name,request->host.port,&peer));
-  TRYOLD(amok_bw_test(peer,
-		   request->buf_size,request->exp_size,request->msg_size,
-		   &(result->sec),&(result->bw)));
+  peer = gras_socket_client(request->host.name,request->host.port);
+  amok_bw_test(peer,
+	       request->buf_size,request->exp_size,request->msg_size,
+	       &(result->sec),&(result->bw));
 
-  TRYOLD(gras_msg_send(expeditor,gras_msgtype_by_name("BW result"),&result));
+  gras_msg_send(expeditor,gras_msgtype_by_name("BW result"),&result);
 
   gras_os_sleep(1);
   gras_socket_close(peer);

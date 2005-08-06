@@ -14,8 +14,7 @@
 #ifndef GRAS_DATADESC_INTERFACE_H
 #define GRAS_DATADESC_INTERFACE_H
 
-xbt_error_t gras_datadesc_by_id  (long int code,
-				   gras_datadesc_type_t *type);
+gras_datadesc_type_t gras_datadesc_by_id  (long int code);
 
 /* to debug */
 void gras_datadesc_type_dump(const gras_datadesc_type_t ddt);
@@ -30,8 +29,8 @@ gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
 int  gras_datadesc_size(gras_datadesc_type_t type);
 /* Described data exchanges: direct use */
 xbt_error_t gras_datadesc_cpy(gras_datadesc_type_t type, void *src, void **dst);
-xbt_error_t gras_datadesc_send(gras_socket_t sock, gras_datadesc_type_t type, void *src);
-xbt_error_t gras_datadesc_recv(gras_socket_t sock, gras_datadesc_type_t type,
+void gras_datadesc_send(gras_socket_t sock, gras_datadesc_type_t type, void *src);
+void gras_datadesc_recv(gras_socket_t sock, gras_datadesc_type_t type,
 				int r_arch, void *dst);
 
 /* Described data exchanges: IDL compilation */

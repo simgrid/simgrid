@@ -498,7 +498,6 @@ MSG_error_t MSG_main(void)
  */
 int MSG_process_killall(int reset_PIDs)
 {
-  xbt_fifo_item_t i = NULL;
   m_process_t p = NULL;
   m_process_t self = MSG_process_self();
 

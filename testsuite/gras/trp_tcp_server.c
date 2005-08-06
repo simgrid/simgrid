@@ -11,26 +11,25 @@
 #include "gras.h"
 #include "gras/Transport/transport_interface.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging for this test");
+XBT_LOG_NEW_CATEGORY(test,"Logging for this test");
 
 int main(int argc,char *argv[]) {
   gras_socket_t sock, conn;
-  xbt_error_t errcode;
   char data_recv[256];
 
   gras_init(&argc,argv);
 
   fprintf(stderr,"===[SERVER]=== Create the socket\n");
-  TRYFAIL(gras_socket_server(55555,&sock));
+  sock = gras_socket_server(55555);
 
   fprintf(stderr,"===[SERVER]=== Waiting for incomming connexions\n");
-  TRYFAIL(gras_trp_select(60,&conn));
+  conn = gras_trp_select(60);
 
   fprintf(stderr,"===[SERVER]=== Contacted ! Waiting for the data\n");
-  TRYFAIL(gras_trp_chunk_recv(conn,data_recv, sizeof(data_recv)));
+  gras_trp_chunk_recv(conn,data_recv, sizeof(data_recv));
   fprintf(stderr,"===[SERVER]=== Got '%s'. Send it back.\n", data_recv);
-  TRYFAIL(gras_trp_chunk_send(conn,data_recv, sizeof(data_recv)));
-  TRYFAIL(gras_trp_flush(conn));
+  gras_trp_chunk_send(conn,data_recv, sizeof(data_recv));
+  gras_trp_flush(conn);
   gras_socket_close(conn);
 
   fprintf(stderr,"===[SERVER]=== Exiting successfully\n");

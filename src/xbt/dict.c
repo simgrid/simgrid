@@ -7,8 +7,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "dict_private.h"
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
@@ -105,15 +105,14 @@ xbt_dict_set(xbt_dict_t     dict,
  *
  * Search the given \a key. mismatch_error when not found.
  */
-xbt_error_t
-xbt_dict_get_ext(xbt_dict_t     dict,
-		  const char     *key,
-		  int             key_len,
-		  /* OUT */void **data) {
+void *
+xbt_dict_get_ext(xbt_dict_t      dict,
+                 const char     *key,
+                 int             key_len) {
 
   xbt_assert(dict);
 
-  return xbt_dictelm_get_ext(dict->head, key, key_len, data);
+  return xbt_dictelm_get_ext(dict->head, key, key_len);
 }
 
 /**
@@ -124,15 +123,35 @@ xbt_dict_get_ext(xbt_dict_t     dict,
  * \param data the data that we are looking for
  * \return xbt_error
  *
- * Search the given \a key. mismatch_error when not found.
+ * Search the given \a key. THROWs mismatch_error when not found. 
+ * Check xbt_dict_get_or_null() for a version returning NULL without exception when 
+ * not found.
  */
-xbt_error_t
+void *
 xbt_dict_get(xbt_dict_t     dict,
-	      const char     *key,
-	      /* OUT */void **data) {
+             const char     *key) {
   xbt_assert(dict);
 
-  return xbt_dictelm_get(dict->head, key, data);
+  return xbt_dictelm_get(dict->head, key);
+}
+
+/**
+ * \brief like xbt_dict_get(), but returning NULL when not found
+ */
+void *
+xbt_dict_get_or_null(xbt_dict_t     dict,
+		     const char     *key) {
+  xbt_ex_t e;
+  void *res;
+  TRY {
+    res = xbt_dictelm_get(dict->head, key);
+  } CATCH(e) {
+    if (e.category != mismatch_error) 
+      RETHROW;
+    xbt_ex_free(e);
+    res=NULL;
+  }
+  return res;
 }
 
 
@@ -166,8 +185,8 @@ xbt_dict_remove_ext(xbt_dict_t  dict,
 xbt_error_t
 xbt_dict_remove(xbt_dict_t  dict,
 		 const char  *key) {
-  if (!dict) 
-     RAISE1(mismatch_error,"Asked to remove key %s from NULL dict",key);
+  if (!dict)
+    THROW1(arg_error,0,"Asked to remove key %s from NULL dict",key);
 
   return xbt_dictelm_remove(dict->head, key);
 }

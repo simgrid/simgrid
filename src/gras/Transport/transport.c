@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 
@@ -19,7 +20,7 @@ static void gras_trp_plugin_free(void *p); /* free one of the plugins */
 
 static void
 gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
-  xbt_error_t errcode;
+  xbt_ex_t e;
 
   gras_trp_plugin_t plug = xbt_new0(s_gras_trp_plugin_t, 1);
   
@@ -27,23 +28,20 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
 
   plug->name=xbt_strdup(name);
 
-  errcode = setup(plug);
-  switch (errcode) {
-  case mismatch_error:
-    /* SG plugin return mismatch when in RL mode (and vice versa) */
-    free(plug->name);
-    free(plug);
-    break;
-
-  case no_error:
-    xbt_dict_set(_gras_trp_plugins,
-		  name, plug, gras_trp_plugin_free);
-    break;
-
-  default:
-    DIE_IMPOSSIBLE;
+  TRY {
+    setup(plug);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      /* SG plugin raise mismatch when in RL mode (and vice versa) */
+      free(plug->name);
+      free(plug);
+      xbt_ex_free(e);
+    } else {
+      RETHROW;
+    }
   }
 
+  xbt_dict_set(_gras_trp_plugins, name, plug, gras_trp_plugin_free);
 }
 
 void gras_trp_init(void){
@@ -182,26 +180,21 @@ void gras_trp_socket_new(int incoming,
  * Opens a server socket and make it ready to be listened to.
  * In real life, you'll get a TCP socket.
  */
-xbt_error_t
+gras_socket_t
 gras_socket_server_ext(unsigned short port,
 		       
 		       unsigned long int bufSize,
-		       int measurement,
-		       
-		       /* OUT */ gras_socket_t *dst) {
+		       int measurement) {
  
-  xbt_error_t errcode;
+  xbt_ex_t e;
   gras_trp_plugin_t trp;
   gras_socket_t sock;
-
-  *dst = NULL;
 
   DEBUG2("Create a server socket from plugin %s on port %d",
 	 gras_if_RL() ? "tcp" : "sg",
 	 port);
-  TRYOLD(gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
-				              :"buf"),
-				  &trp));
+  trp = gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
+				                :"buf"));
 
   /* defaults settings */
   gras_trp_socket_new(1,&sock);
@@ -212,20 +205,18 @@ gras_socket_server_ext(unsigned short port,
 
   /* Call plugin socket creation function */
   DEBUG1("Prepare socket with plugin (fct=%p)",trp->socket_server);
-  errcode = trp->socket_server(trp, sock);
-  DEBUG3("in=%c out=%c accept=%c",
-	 sock->incoming?'y':'n', 
-	 sock->outgoing?'y':'n',
-	 sock->accepting?'y':'n');
-
-  if (errcode != no_error) {
+  TRY {
+    trp->socket_server(trp, sock);
+    DEBUG3("in=%c out=%c accept=%c",
+	   sock->incoming?'y':'n', 
+	   sock->outgoing?'y':'n',
+	   sock->accepting?'y':'n');
+  } CATCH(e) {
     free(sock);
-    return errcode;
+    RETHROW;
   }
 
-  *dst = sock;
-
-  return no_error;
+  return sock;
 }
    
 /**
@@ -234,24 +225,19 @@ gras_socket_server_ext(unsigned short port,
  * Opens a client socket to a remote host.
  * In real life, you'll get a TCP socket.
  */
-xbt_error_t
+gras_socket_t
 gras_socket_client_ext(const char *host,
 		       unsigned short port,
 		       
 		       unsigned long int bufSize,
-		       int measurement,
-		       
-		       /* OUT */ gras_socket_t *dst) {
+		       int measurement) {
  
-  xbt_error_t errcode;
+  xbt_ex_t e;
   gras_trp_plugin_t trp;
   gras_socket_t sock;
 
-  *dst = NULL;
-
-  TRYOLD(gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
-				              :"buf"),
-				  &trp));
+  trp = gras_trp_plugin_get_by_name((measurement? (gras_if_RL() ? "tcp" : "sg")
+				                : "buf"));
 
   DEBUG1("Create a client socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
   /* defaults settings */
@@ -263,20 +249,18 @@ gras_socket_client_ext(const char *host,
   sock->meas = measurement;
 
   /* plugin-specific */
-  errcode= (*trp->socket_client)(trp, sock);
-  DEBUG3("in=%c out=%c accept=%c",
-	 sock->incoming?'y':'n', 
-	 sock->outgoing?'y':'n',
-	 sock->accepting?'y':'n');
-
-  if (errcode != no_error) {
+  TRY {
+    (*trp->socket_client)(trp, sock);
+    DEBUG3("in=%c out=%c accept=%c",
+	   sock->incoming?'y':'n', 
+	   sock->outgoing?'y':'n',
+	   sock->accepting?'y':'n');
+  } CATCH(e) {
     free(sock);
-    return errcode;
+    RETHROW;
   }
 
-  *dst = sock;
-
-  return no_error;
+  return sock;
 }
 
 /**
@@ -285,10 +269,9 @@ gras_socket_client_ext(const char *host,
  * Opens a server socket and make it ready to be listened to.
  * In real life, you'll get a TCP socket.
  */
-xbt_error_t
-gras_socket_server(unsigned short port,
-		   /* OUT */ gras_socket_t *dst) {
-   return gras_socket_server_ext(port,32,0,dst);
+gras_socket_t
+gras_socket_server(unsigned short port) {
+   return gras_socket_server_ext(port,32,0);
 }
 
 /**
@@ -297,11 +280,10 @@ gras_socket_server(unsigned short port,
  * Opens a client socket to a remote host.
  * In real life, you'll get a TCP socket.
  */
-xbt_error_t
+gras_socket_t
 gras_socket_client(const char *host,
-		   unsigned short port,
-		   /* OUT */ gras_socket_t *dst) {
-   return gras_socket_client_ext(host,port,32,0,dst);
+		   unsigned short port) {
+   return gras_socket_client_ext(host,port,32,0);
 }
 
 
@@ -337,7 +319,7 @@ void gras_socket_close(gras_socket_t sock) {
  *
  * Send a bunch of bytes from on socket
  */
-xbt_error_t
+void
 gras_trp_chunk_send(gras_socket_t sd,
 		    char *data,
 		    long int size) {
@@ -347,14 +329,14 @@ gras_trp_chunk_send(gras_socket_t sd,
   xbt_assert1(sd->plugin->chunk_send,
 	       "No function chunk_send on transport plugin %s",
 	       sd->plugin->name);
-  return (*sd->plugin->chunk_send)(sd,data,size);
+  (*sd->plugin->chunk_send)(sd,data,size);
 }
 /**
  * gras_trp_chunk_recv:
  *
  * Receive a bunch of bytes from a socket
  */
-xbt_error_t 
+void
 gras_trp_chunk_recv(gras_socket_t sd,
 		    char *data,
 		    long int size) {
@@ -363,7 +345,7 @@ gras_trp_chunk_recv(gras_socket_t sd,
   xbt_assert1(sd->plugin->chunk_recv,
 	       "No function chunk_recv on transport plugin %s",
 	       sd->plugin->name);
-  return (sd->plugin->chunk_recv)(sd,data,size);
+  (sd->plugin->chunk_recv)(sd,data,size);
 }
 
 /**
@@ -371,16 +353,14 @@ gras_trp_chunk_recv(gras_socket_t sd,
  *
  * Make sure all pending communications are done
  */
-xbt_error_t 
+void
 gras_trp_flush(gras_socket_t sd) {
-  return (sd->plugin->flush)(sd);
+  (sd->plugin->flush)(sd);
 }
 
-xbt_error_t
-gras_trp_plugin_get_by_name(const char *name,
-			    gras_trp_plugin_t *dst){
-
-  return xbt_dict_get(_gras_trp_plugins,name,(void**)dst);
+gras_trp_plugin_t
+gras_trp_plugin_get_by_name(const char *name){
+  return xbt_dict_get(_gras_trp_plugins,name);
 }
 
 int   gras_socket_my_port  (gras_socket_t sock) {
@@ -412,11 +392,10 @@ int gras_socket_is_meas(gras_socket_t sock) {
  * there is no way to control what is sent (ie, you cannot use these 
  * functions to exchange data out of band).
  */
-xbt_error_t gras_socket_meas_send(gras_socket_t peer, 
-				  unsigned int timeout,
-				  unsigned long int exp_size, 
-				  unsigned long int msg_size) {
-  xbt_error_t errcode;
+void gras_socket_meas_send(gras_socket_t peer, 
+			   unsigned int timeout,
+			   unsigned long int exp_size, 
+			   unsigned long int msg_size) {
   char *chunk = xbt_malloc0(msg_size);
   unsigned long int exp_sofar;
    
@@ -428,7 +407,7 @@ xbt_error_t gras_socket_meas_send(gras_socket_t peer,
      CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
-     TRYOLD(gras_trp_chunk_send(peer,chunk,msg_size));
+     gras_trp_chunk_send(peer,chunk,msg_size);
   }
   CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	  exp_sofar,exp_size,msg_size,
@@ -437,7 +416,6 @@ xbt_error_t gras_socket_meas_send(gras_socket_t peer,
   free(chunk);
 
   XBT_OUT;
-  return no_error;
 }
 
 /** \brief Receive a chunk of data over a measurement socket 
@@ -445,12 +423,11 @@ xbt_error_t gras_socket_meas_send(gras_socket_t peer,
  * Calls to gras_socket_meas_send() and gras_socket_meas_recv() on 
  * each side of the socket should be paired. 
  */
-xbt_error_t gras_socket_meas_recv(gras_socket_t peer, 
-				  unsigned int timeout,
-				  unsigned long int exp_size, 
-				  unsigned long int msg_size){
+void gras_socket_meas_recv(gras_socket_t peer, 
+			   unsigned int timeout,
+			   unsigned long int exp_size, 
+			   unsigned long int msg_size){
   
-  xbt_error_t errcode;
   char *chunk = xbt_malloc(msg_size);
   unsigned long int exp_sofar;
 
@@ -462,7 +439,7 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
      CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
-     TRYOLD(gras_trp_chunk_recv(peer,chunk,msg_size));
+     gras_trp_chunk_recv(peer,chunk,msg_size);
   }
   CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	  exp_sofar,exp_size,msg_size,
@@ -470,8 +447,6 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
 
   free(chunk);
   XBT_OUT;
-
-  return no_error;
 }
 
 /**
@@ -486,24 +461,22 @@ xbt_error_t gras_socket_meas_recv(gras_socket_t peer,
  * done for regular sockets, but you usually want more control about 
  * what's going on with measurement sockets.
  */
-xbt_error_t gras_socket_meas_accept(gras_socket_t peer, gras_socket_t *accepted){
-  xbt_error_t errcode;
+gras_socket_t gras_socket_meas_accept(gras_socket_t peer){
   gras_socket_t res;
-  
+
   xbt_assert0(peer->meas,
 	      "No need to accept on non-measurement sockets (it's automatic)");
 
   if (!peer->accepting) {
     /* nothing to accept here */
-    *accepted=peer;
-    return no_error;
+    return peer;
   }
 
-  TRYOLD((peer->plugin->socket_accept)(peer,accepted));
-  (*accepted)->meas = peer->meas;
-  CDEBUG1(trp_meas,"meas_accepted onto %d",(*accepted)->sd);
+  res = (peer->plugin->socket_accept)(peer);
+  res->meas = peer->meas;
+  CDEBUG1(trp_meas,"meas_accepted onto %d",res->sd);
 
-  return no_error;
+  return res;
 } 
 
 

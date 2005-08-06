@@ -58,10 +58,10 @@ extern xbt_set_t _gras_msgtype_set; /* of gras_msgtype_t */
 void gras_msgtype_free(void *msgtype);
 
 
-xbt_error_t gras_msg_recv(gras_socket_t    sock,
-			   gras_msgtype_t  *msgtype,
-			   void           **payload,
-			   int             *payload_size);
+void gras_msg_recv(gras_socket_t    sock,
+		   gras_msgtype_t  *msgtype,
+		   void           **payload,
+		   int             *payload_size);
 
 /**
  * gras_cblist_t:

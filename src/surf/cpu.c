@@ -86,11 +86,7 @@ static void parse_file(const char *file)
 
 static void *name_service(const char *name)
 {
-  void *cpu = NULL;
-
-  xbt_dict_get(cpu_set, name, &cpu);
-
-  return cpu;
+  return xbt_dict_get_or_null(cpu_set, name);
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -160,8 +156,10 @@ static void update_actions_state(double now, double delta)
   surf_action_cpu_Cas01_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_cpu_resource->common_public->states.running_action_set;
+  /* FIXME: UNUSED
   xbt_swag_t failed_actions =
       surf_cpu_resource->common_public->states.failed_action_set;
+  */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     surf_double_update(&(action->generic_action.remains),

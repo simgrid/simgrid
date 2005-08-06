@@ -81,9 +81,7 @@ static void network_card_free(void *nw_card)
 
 static int network_card_new(const char *card_name)
 {
-  network_card_CM02_t card = NULL;
-
-  xbt_dict_get(network_card_set, card_name, (void *) &card);
+  network_card_CM02_t card = xbt_dict_get_or_null(network_card_set, card_name);
 
   if (!card) {
     card = xbt_new0(s_network_card_CM02_t, 1);
@@ -102,7 +100,7 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
   ROUTE_SIZE(src_id, dst_id) = nb_link;
   link_list = (ROUTE(src_id, dst_id) = xbt_new0(network_link_CM02_t, nb_link));
   for (i = 0; i < nb_link; i++) {
-    xbt_dict_get(network_link_set, links[i], (void *) &(link_list[i]));
+    link_list[i] = xbt_dict_get_or_null(network_link_set, links[i]);
     free(links[i]);
   }
   free(links);
@@ -216,10 +214,7 @@ static void parse_file(const char *file)
 
 static void *name_service(const char *name)
 {
-  network_card_CM02_t card = NULL;
-
-  xbt_dict_get(network_card_set, name, (void *) &card);
-
+  network_card_CM02_t card = xbt_dict_get_or_null(network_card_set, name);
   return card;
 }
 
@@ -300,8 +295,10 @@ static void update_actions_state(double now, double delta)
   surf_action_network_CM02_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_resource->common_public->states.running_action_set;
+  /*
   xbt_swag_t failed_actions =
       surf_network_resource->common_public->states.failed_action_set;
+  */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     deltap = delta;

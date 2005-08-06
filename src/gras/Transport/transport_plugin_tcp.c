@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "portable.h"
-
+#include "xbt/ex.h"
 #if 0
 #  include <signal.h>       /* close() pipe() read() write() */
 #  include <sys/wait.h>     /* waitpid() */
@@ -22,22 +22,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport,"TCP transport");
 /***
  *** Prototypes 
  ***/
-xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t self,
-					gras_socket_t sock);
-xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t self,
-					gras_socket_t sock);
-xbt_error_t gras_trp_tcp_socket_accept(gras_socket_t  sock,
-					gras_socket_t *dst);
+void gras_trp_tcp_socket_client(gras_trp_plugin_t self, gras_socket_t sock);
+void gras_trp_tcp_socket_server(gras_trp_plugin_t self, gras_socket_t sock);
+gras_socket_t gras_trp_tcp_socket_accept(gras_socket_t  sock);
 
-void         gras_trp_tcp_socket_close(gras_socket_t sd);
+void          gras_trp_tcp_socket_close(gras_socket_t sd);
   
-xbt_error_t gras_trp_tcp_chunk_send(gras_socket_t sd,
-				    const char *data,
-				    unsigned long int size);
+void gras_trp_tcp_chunk_send(gras_socket_t sd,
+			     const char *data,
+			     unsigned long int size);
 
-xbt_error_t gras_trp_tcp_chunk_recv(gras_socket_t sd,
-				    char *data,
-				    unsigned long int size);
+void gras_trp_tcp_chunk_recv(gras_socket_t sd,
+			     char *data,
+			     unsigned long int size);
 
 void gras_trp_tcp_exit(gras_trp_plugin_t plug);
 
@@ -64,7 +61,7 @@ typedef struct {
 /***
  *** Code
  ***/
-xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t plug) {
+void gras_trp_tcp_setup(gras_trp_plugin_t plug) {
 
   gras_trp_tcp_plug_data_t *data = xbt_new(gras_trp_tcp_plug_data_t,1);
 
@@ -83,8 +80,6 @@ xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t plug) {
 
   plug->data = (void*)data;
   plug->exit = gras_trp_tcp_exit;
-   
-  return no_error;
 }
 
 void gras_trp_tcp_exit(gras_trp_plugin_t plug) {
@@ -92,8 +87,7 @@ void gras_trp_tcp_exit(gras_trp_plugin_t plug) {
   free(plug->data);
 }
 
-xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t self,
-					gras_socket_t sock){
+void gras_trp_tcp_socket_client(gras_trp_plugin_t self, gras_socket_t sock){
   
   struct sockaddr_in addr;
   struct hostent *he;
@@ -105,9 +99,7 @@ xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t self,
   sock->sd = socket (AF_INET, SOCK_STREAM, 0);
   
   if (sock->sd < 0) {
-    RAISE1(system_error,
-	   "Failed to create socket: %s",
-	   sock_errstr);
+    THROW1(system_error,0, "Failed to create socket: %s", sock_errstr);
   }
 
   if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
@@ -117,8 +109,7 @@ xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t self,
   
   he = gethostbyname (sock->peer_name);
   if (he == NULL) {
-    RAISE2(system_error,
-	   "Failed to lookup hostname %s: %s",
+    THROW2(system_error,0, "Failed to lookup hostname %s: %s",
 	   sock->peer_name, sock_errstr);
   }
   
@@ -131,13 +122,11 @@ xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t self,
 
   if (connect (sock->sd, (struct sockaddr*) &addr, sizeof (addr)) < 0) {
     tcp_close(sock->sd);
-    RAISE3(system_error,
+    THROW3(system_error,0,
 	   "Failed to connect socket to %s:%d (%s)",
 	   sock->peer_name, sock->peer_port, sock_errstr);
   }
   VERB4("Connect to %s:%d (sd=%d, port %d here)",sock->peer_name, sock->peer_port, sock->sd, sock->port);
-   
-  return no_error;
 }
 
 /**
@@ -145,8 +134,7 @@ xbt_error_t gras_trp_tcp_socket_client(gras_trp_plugin_t self,
  *
  * Open a socket used to receive messages.
  */
-xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t self,
-					/* OUT */ gras_socket_t sock){
+void gras_trp_tcp_socket_server(gras_trp_plugin_t self, gras_socket_t sock){
   int size = sock->bufSize * 1024; 
   int on = 1;
   struct sockaddr_in server;
@@ -158,14 +146,12 @@ xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t self,
   server.sin_port = htons((u_short)sock->port);
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_family = AF_INET;
-  if((sock->sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-    RAISE1(system_error,"Socket allocation failed: %s", sock_errstr);
-  }
+  if((sock->sd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    THROW1(system_error,0,"Socket allocation failed: %s", sock_errstr);
 
-  if (setsockopt(sock->sd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on))) {
-     RAISE1(system_error,"setsockopt failed, cannot condition the socket: %s",
+  if (setsockopt(sock->sd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)))
+     THROW1(system_error,0,"setsockopt failed, cannot condition the socket: %s",
 	    sock_errstr);
-  }
    
   if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
       setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
@@ -175,13 +161,13 @@ xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t self,
 	
   if (bind(sock->sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
     tcp_close(sock->sd);
-    RAISE2(system_error,"Cannot bind to port %d: %s",sock->port, sock_errstr);
+    THROW2(system_error,0,"Cannot bind to port %d: %s",sock->port, sock_errstr);
   }
 
   DEBUG2("Listen on port %d (sd=%d)",sock->port, sock->sd);
   if (listen(sock->sd, 5) < 0) {
     tcp_close(sock->sd);
-    RAISE2(system_error,"Cannot listen on port %d: %s",sock->port,sock_errstr);
+    THROW2(system_error,0,"Cannot listen on port %d: %s",sock->port,sock_errstr);
   }
 
   if (sock->meas)
@@ -190,13 +176,9 @@ xbt_error_t gras_trp_tcp_socket_server(gras_trp_plugin_t self,
     FD_SET(sock->sd, &(tcp->msg_socks));
 
   VERB2("Openned a server socket on port %d (sd=%d)",sock->port,sock->sd);
-  
-  return no_error;
 }
 
-xbt_error_t
-gras_trp_tcp_socket_accept(gras_socket_t  sock,
-			   gras_socket_t *dst) {
+gras_socket_t gras_trp_tcp_socket_accept(gras_socket_t  sock) {
   gras_socket_t res;
   
   struct sockaddr_in peer_in;
@@ -205,6 +187,9 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
   int sd;
   int tmp_errno;
   int size;
+
+  int i = 1;
+  socklen_t s = sizeof(int);
 		
   XBT_IN;
   gras_trp_socket_new(1,&res);
@@ -214,58 +199,50 @@ gras_trp_tcp_socket_accept(gras_socket_t  sock,
 
   if (sd == -1) {
     gras_socket_close(sock);
-    RAISE1(system_error,
+    THROW1(system_error,0,
 	   "Accept failed (%s). Droping server socket.", sock_errstr);
-  } else {
-    int i = 1;
-    socklen_t s = sizeof(int);
-  
-    if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *)&i, s) 
-	|| setsockopt(sd, TcpProtoNumber(), TCP_NODELAY, (char *)&i, s)) {
-       RAISE1(system_error,"setsockopt failed, cannot condition the socket: %s",
-	      sock_errstr);
-    }
-
-    res->bufSize = sock->bufSize;
-    size = sock->bufSize * 1024;
-    if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size))
-       || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
-       WARN1("setsockopt failed, cannot set buffer size: %s",
-	     sock_errstr);
-    }
-     
-    res->plugin    = sock->plugin;
-    res->incoming  = sock->incoming;
-    res->outgoing  = sock->outgoing;
-    res->accepting = 0;
-    res->sd        = sd;
-    res->port      = -1;
-    res->peer_port = peer_in.sin_port;
-
-    /* FIXME: Lock to protect inet_ntoa */
-    if (((struct sockaddr *)&peer_in)->sa_family != AF_INET) {
-      res->peer_name = (char*)strdup("unknown");
-    } else {
-      struct in_addr addrAsInAddr;
-      char *tmp;
- 
-      addrAsInAddr.s_addr = peer_in.sin_addr.s_addr;
-      
-      tmp = inet_ntoa(addrAsInAddr);
-      if (tmp != NULL) {
-	res->peer_name = (char*)strdup(tmp);
-      } else {
-	res->peer_name = (char*)strdup("unknown");
-      }
-    }
-
-    VERB3("Accepted from %s:%d (sd=%d)", res->peer_name,res->peer_port,sd);
-    
-    *dst = res;
-
-    XBT_OUT;
-    return no_error;
   }
+  
+  if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *)&i, s) 
+      || setsockopt(sd, TcpProtoNumber(), TCP_NODELAY, (char *)&i, s))
+    THROW1(system_error,0,"setsockopt failed, cannot condition the socket: %s",
+	   sock_errstr);
+
+  res->bufSize = sock->bufSize;
+  size = sock->bufSize * 1024;
+  if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size))
+      || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size)))
+    WARN1("setsockopt failed, cannot set buffer size: %s", sock_errstr);
+     
+  res->plugin    = sock->plugin;
+  res->incoming  = sock->incoming;
+  res->outgoing  = sock->outgoing;
+  res->accepting = 0;
+  res->sd        = sd;
+  res->port      = -1;
+  res->peer_port = peer_in.sin_port;
+
+  /* FIXME: Lock to protect inet_ntoa */
+  if (((struct sockaddr *)&peer_in)->sa_family != AF_INET) {
+    res->peer_name = (char*)strdup("unknown");
+  } else {
+    struct in_addr addrAsInAddr;
+    char *tmp;
+    
+    addrAsInAddr.s_addr = peer_in.sin_addr.s_addr;
+    
+    tmp = inet_ntoa(addrAsInAddr);
+    if (tmp != NULL) {
+      res->peer_name = (char*)strdup(tmp);
+    } else {
+      res->peer_name = (char*)strdup("unknown");
+    }
+  }
+  
+  VERB3("Accepted from %s:%d (sd=%d)", res->peer_name,res->peer_port,sd);
+  
+  XBT_OUT;
+  return res;
 }
 
 void gras_trp_tcp_socket_close(gras_socket_t sock){
@@ -314,7 +291,7 @@ void gras_trp_tcp_socket_close(gras_socket_t sock){
  *
  * Send data on a TCP socket
  */
-xbt_error_t 
+void
 gras_trp_tcp_chunk_send(gras_socket_t sock,
 			const char *data,
 			unsigned long int size) {
@@ -329,7 +306,7 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
     DEBUG3("write(%d, %p, %ld);", sock->sd, data, size);
     
     if (status < 0) {
-      RAISE4(system_error,"write(%d,%p,%ld) failed: %s",
+      THROW4(system_error,0,"write(%d,%p,%ld) failed: %s",
 	     sock->sd, data, size,
 	     sock_errstr);
     }
@@ -338,19 +315,17 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
       size  -= status;
       data  += status;
     } else {
-      RAISE1(system_error,"file descriptor closed (%s)",
+      THROW1(system_error,0,"file descriptor closed (%s)",
              sock_errstr);
     }
   }
-
-  return no_error;
 }
 /**
  * gras_trp_tcp_chunk_recv:
  *
  * Receive data on a TCP socket.
  */
-xbt_error_t 
+void
 gras_trp_tcp_chunk_recv(gras_socket_t sock,
 			char *data,
 			unsigned long int size) {
@@ -366,7 +341,7 @@ gras_trp_tcp_chunk_recv(gras_socket_t sock,
     status = tcp_read(sock->sd, data, (size_t)size);
     
     if (status < 0) {
-      RAISE4(system_error,"read(%d,%p,%d) failed: %s",
+      THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
 	     sock->sd, data, (int)size,
 	     sock_errstr);
     }
@@ -375,12 +350,11 @@ gras_trp_tcp_chunk_recv(gras_socket_t sock,
       size  -= status;
       data  += status;
     } else {
-      RAISE3(system_error,"file descriptor closed (nothing read(%d, %p, %ld) on the socket)",
+      THROW3(system_error,0,
+	     "file descriptor closed (nothing read(%d, %p, %ld) on the socket)",
              sock->sd, data, size);
     }
   }
-  
-  return no_error;
 }
 
 

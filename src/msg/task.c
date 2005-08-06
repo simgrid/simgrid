@@ -11,8 +11,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(task, msg,
 				"Logging specific to MSG (task)");
 
-static char sprint_buffer[64];
-
 /** \defgroup m_task_management Managing functions of Tasks
  *  \brief This section describes the task structure of MSG
  *  (#m_task_t) and the functions for managing it.
@@ -111,9 +109,7 @@ const char *MSG_task_get_name(m_task_t task)
  */
 MSG_error_t MSG_task_destroy(m_task_t task)
 {
-  simdata_task_t simdata = NULL;
   surf_action_t action = NULL;
-  int i;
 
   xbt_assert0((task != NULL), "Invalid parameter");
 
@@ -165,10 +161,7 @@ MSG_error_t MSG_task_cancel(m_task_t task)
  * \brief Returns the computation amount needed to process a task #m_task_t.
  *        Once a task has been processed, this amount is thus set to 0...
  */
-double MSG_task_get_compute_duration(m_task_t task)
-{
-  simdata_task_t simdata = NULL;
-
+double MSG_task_get_compute_duration(m_task_t task) {
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->computation_amount;
@@ -180,8 +173,6 @@ double MSG_task_get_compute_duration(m_task_t task)
  */
 double MSG_task_get_remaining_computation(m_task_t task)
 {
-  simdata_task_t simdata = NULL;
-
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   if(task->simdata->compute) {
@@ -195,10 +186,7 @@ double MSG_task_get_remaining_computation(m_task_t task)
  * \brief Returns the size of the data attached to a task #m_task_t.
  *
  */
-double MSG_task_get_data_size(m_task_t task)
-{
-  simdata_task_t simdata = NULL;
-
+double MSG_task_get_data_size(m_task_t task) {
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->message_size;

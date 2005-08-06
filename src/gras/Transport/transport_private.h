@@ -58,12 +58,12 @@ void gras_trp_socket_new(int incomming,
 			 gras_socket_t *dst);
 
 /* The drivers */
-typedef xbt_error_t (*gras_trp_setup_t)(gras_trp_plugin_t dst);
+typedef void (*gras_trp_setup_t)(gras_trp_plugin_t dst);
 
-xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t plug);
-xbt_error_t gras_trp_file_setup(gras_trp_plugin_t plug);
-xbt_error_t gras_trp_sg_setup(gras_trp_plugin_t plug);
-xbt_error_t gras_trp_buf_setup(gras_trp_plugin_t plug);
+void gras_trp_tcp_setup(gras_trp_plugin_t plug);
+void gras_trp_file_setup(gras_trp_plugin_t plug);
+void gras_trp_sg_setup(gras_trp_plugin_t plug);
+void gras_trp_buf_setup(gras_trp_plugin_t plug);
 
 /*
 

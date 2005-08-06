@@ -11,6 +11,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h" 
+
 #include "msg/msg.h"
 
 #include "transport_private.h"
@@ -25,23 +27,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
 void hexa_print(unsigned char *data, int size);   /* in gras.c */
 
 /* retrieve the port record associated to a numerical port on an host */
-static xbt_error_t find_port(gras_hostdata_t *hd, int port,
-			      gras_sg_portrec_t *hpd);
+static void find_port(gras_hostdata_t *hd, int port, gras_sg_portrec_t *hpd);
 
 
-xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t self,
-				       /* OUT */ gras_socket_t sock);
-xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t self,
-				       /* OUT */ gras_socket_t sock);
-void         gras_trp_sg_socket_close(gras_socket_t sd);
+void gras_trp_sg_socket_client(gras_trp_plugin_t self,
+			       /* OUT */ gras_socket_t sock);
+void gras_trp_sg_socket_server(gras_trp_plugin_t self,
+			       /* OUT */ gras_socket_t sock);
+void gras_trp_sg_socket_close(gras_socket_t sd);
 
-xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sd,
-                                   const char *data,
-				   unsigned long int size);
+void gras_trp_sg_chunk_send(gras_socket_t sd,
+			    const char *data,
+			    unsigned long int size);
 
-xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sd,
-                                   char *data,
-				   unsigned long int size);
+void gras_trp_sg_chunk_recv(gras_socket_t sd,
+			    char *data,
+			    unsigned long int size);
 
 /***
  *** Specific plugin part
@@ -54,8 +55,8 @@ typedef struct {
 /***
  *** Code
  ***/
-static xbt_error_t find_port(gras_hostdata_t *hd, int port,
-			      gras_sg_portrec_t *hpd) {
+static void find_port(gras_hostdata_t *hd, int port,
+		      gras_sg_portrec_t *hpd) {
   int cpt;
   gras_sg_portrec_t pr;
 
@@ -64,14 +65,14 @@ static xbt_error_t find_port(gras_hostdata_t *hd, int port,
   xbt_dynar_foreach(hd->ports, cpt, pr) {
     if (pr.port == port) {
       memcpy(hpd,&pr,sizeof(gras_sg_portrec_t));
-      return no_error;
+      return;
     }
   }
-  return mismatch_error;
+  THROW1(mismatch_error,0,"Unable to find any portrec for port #%d",port);
 }
 
 
-xbt_error_t
+void
 gras_trp_sg_setup(gras_trp_plugin_t plug) {
 
   gras_trp_sg_plug_data_t *data=xbt_new(gras_trp_sg_plug_data_t,1);
@@ -86,14 +87,11 @@ gras_trp_sg_setup(gras_trp_plugin_t plug) {
   plug->chunk_recv    = gras_trp_sg_chunk_recv;
 
   plug->flush         = NULL; /* nothing cached */
-
-  return no_error;
 }
 
-xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t self,
-				       /* OUT */ gras_socket_t sock){
-
-  xbt_error_t errcode;
+void gras_trp_sg_socket_client(gras_trp_plugin_t self,
+			       /* OUT */ gras_socket_t sock){
+  xbt_ex_t e;
 
   m_host_t peer;
   gras_hostdata_t *hd;
@@ -101,32 +99,33 @@ xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t self,
   gras_sg_portrec_t pr;
 
   /* make sure this socket will reach someone */
-  if (!(peer=MSG_get_host_by_name(sock->peer_name))) {
-      fprintf(stderr,"GRAS: can't connect to %s: no such host.\n",sock->peer_name);
-      return mismatch_error;
-  }
-  if (!(hd=(gras_hostdata_t *)MSG_host_get_data(peer))) {
-    RAISE1(mismatch_error,
+  if (!(peer=MSG_get_host_by_name(sock->peer_name))) 
+    THROW1(mismatch_error,0,"Can't connect to %s: no such host.\n",sock->peer_name);
+
+  if (!(hd=(gras_hostdata_t *)MSG_host_get_data(peer))) 
+    THROW1(mismatch_error,0,
 	   "can't connect to %s: no process on this host",
 	   sock->peer_name);
+  
+  TRY {
+    find_port(hd,sock->peer_port,&pr);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      xbt_ex_free(e);
+      THROW2(mismatch_error,0,
+	     "can't connect to %s:%d, no process listen on this port",
+	     sock->peer_name,sock->peer_port);
+    } 
+    RETHROW;
   }
-  errcode = find_port(hd,sock->peer_port,&pr);
-  if (errcode != no_error && errcode != mismatch_error) 
-    return errcode;
-
-  if (errcode == mismatch_error) {
-    RAISE2(mismatch_error,
-	   "can't connect to %s:%d, no process listen on this port",
-	   sock->peer_name,sock->peer_port);
-  } 
 
   if (pr.meas && !sock->meas) {
-    RAISE2(mismatch_error,
+    THROW2(mismatch_error,0,
 	   "can't connect to %s:%d in regular mode, the process listen "
 	   "in meas mode on this port",sock->peer_name,sock->peer_port);
   }
   if (!pr.meas && sock->meas) {
-    RAISE2(mismatch_error,
+    THROW2(mismatch_error,0,
 	   "can't connect to %s:%d in meas mode, the process listen "
 	   "in regular mode on this port",sock->peer_name,sock->peer_port);
   }
@@ -145,44 +144,45 @@ xbt_error_t gras_trp_sg_socket_client(gras_trp_plugin_t self,
 	  MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
 	  sock->meas?"meas":"regular",
 	 sock->peer_name,sock->peer_port,data->to_PID);
-
-  return no_error;
 }
 
-xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t self,
-				       gras_socket_t sock){
-
-  xbt_error_t errcode;
+void gras_trp_sg_socket_server(gras_trp_plugin_t self,
+			       gras_socket_t sock){
 
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t *data;
+  int found;
   
   const char *host=MSG_host_get_name(MSG_host_self());
+
+  xbt_ex_t e;
 
   xbt_assert0(hd,"Please run gras_process_init on each process");
 
   sock->accepting = 0; /* no such nuisance in SG */
 
-  errcode = find_port(hd,sock->port,&pr);
-  switch (errcode) {
-  case no_error: /* Port already used... */
-    RAISE2(mismatch_error,
-	   "can't listen on address %s:%d: port already in use\n.",
-	   host,sock->port);
-    break;
-
-  case mismatch_error: /* Port not used so far. Do it */
-    pr.tochan = sock->meas ? pd->measChan : pd->chan;
-    pr.port   = sock->port;
-    pr.meas    = sock->meas;
-    xbt_dynar_push(hd->ports,&pr);
-    break;
-    
-  default:
-    return errcode;
+  found = 0;
+  TRY {
+    find_port(hd,sock->port,&pr);
+    found = 1;
+  } CATCH(e) {
+    if (e.category == mismatch_error)
+      xbt_ex_free(e);
+    else
+      RETHROW;
   }
+   
+  if (found) 
+    THROW2(mismatch_error,0,
+	   "can't listen on address %s:%d: port already in use.",
+	   host,sock->port);
+
+  pr.tochan = sock->meas ? pd->measChan : pd->chan;
+  pr.port   = sock->port;
+  pr.meas    = sock->meas;
+  xbt_dynar_push(hd->ports,&pr);
   
   /* Create the socket */
   data = xbt_new(gras_trp_sg_sock_data_t,1);
@@ -196,8 +196,6 @@ xbt_error_t gras_trp_sg_socket_server(gras_trp_plugin_t self,
   VERB6("'%s' (%d) ears on %s:%d%s (%p)",
     MSG_process_get_name(MSG_process_self()), MSG_process_self_PID(),
     host,sock->port,sock->meas? " (mode meas)":"",sock);
-
-  return no_error;
 }
 
 void gras_trp_sg_socket_close(gras_socket_t sock){
@@ -235,9 +233,9 @@ typedef struct {
   void *data;
 } sg_task_data_t;
 
-xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
-                                   const char *data,
-				   unsigned long int size) {
+void gras_trp_sg_chunk_send(gras_socket_t sock,
+			    const char *data,
+			    unsigned long int size) {
   m_task_t task=NULL;
   static unsigned int count=0;
   char name[256];
@@ -257,15 +255,13 @@ xbt_error_t gras_trp_sg_chunk_send(gras_socket_t sock,
 	 name, MSG_host_get_name(MSG_host_self()),
 	 MSG_host_get_name(sock_data->to_host), sock_data->to_chan,size);
   if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) {
-    RAISE0(system_error,"Problem during the MSG_task_put");
+    THROW0(system_error,0,"Problem during the MSG_task_put");
   }
-
-  return no_error;
 }
 
-xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
-                                   char *data,
-				   unsigned long int size){
+void gras_trp_sg_chunk_recv(gras_socket_t sock,
+			    char *data,
+			    unsigned long int size){
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
 
   m_task_t task=NULL;
@@ -277,13 +273,13 @@ xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
 	 MSG_host_get_name(sock_data->to_host),
 	 MSG_host_get_name(MSG_host_self()), sock_data->to_chan, size);
   if (MSG_task_get(&task, (sock->meas ? pd->measChan : pd->chan)) != MSG_OK)
-    RAISE0(unknown_error,"Error in MSG_task_get()");
+    THROW0(system_error,0,"Error in MSG_task_get()");
   DEBUG1("Got chuck %s",MSG_task_get_name(task));
 
   task_data = MSG_task_get_data(task);
   if (size != -1) {	
      if (task_data->size != size)
-       RAISE5(mismatch_error,
+       THROW5(mismatch_error,0,
 	      "Got %d bytes when %ld where expected (in %s->%s:%d)",
 	      task_data->size, size,
 	      MSG_host_get_name(sock_data->to_host),
@@ -302,10 +298,9 @@ xbt_error_t gras_trp_sg_chunk_recv(gras_socket_t sock,
   free(task_data);
 
   if (MSG_task_destroy(task) != MSG_OK)
-    RAISE0(unknown_error,"Error in MSG_task_destroy()");
+    THROW0(system_error,0,"Error in MSG_task_destroy()");
 
   XBT_OUT;
-  return no_error;
 }
 
 #if 0

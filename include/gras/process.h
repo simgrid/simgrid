@@ -23,14 +23,14 @@ BEGIN_DECL()
  * 
  * Perform the various intialisations needed by gras. Each process must run it
  */
-xbt_error_t gras_process_init(void);
+void gras_process_init(void);
 
 /**
  * gras_process_exit:
  * 
  * Frees the memory allocated by gras. Processes should run it
  */
-xbt_error_t gras_process_exit(void);
+void gras_process_exit(void);
 
 /****************************************************************************/
 /* Manipulating User Data                                                   */

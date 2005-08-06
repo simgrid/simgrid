@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "gras/Transport/transport_private.h"
 #include "msg/msg.h"
 #include "gras/Virtu/virtu_sg.h"
@@ -25,12 +26,9 @@ XBT_LOG_DEFAULT_CATEGORY(transport);
  *
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */
-xbt_error_t 
-gras_trp_select(double timeout, 
-		gras_socket_t *dst) {
-
-  xbt_error_t errcode;
-  double startTime=gras_os_time();
+gras_socket_t gras_trp_select(double timeout) {
+  
+  gras_socket_t res;
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t trp;
@@ -48,11 +46,11 @@ gras_trp_select(double timeout,
 	 MSG_host_get_name(MSG_host_self()),
 	 timeout);
 
-  TRYOLD(MSG_channel_select_from((m_channel_t) pd->chan, timeout, &r_pid));
+  MSG_channel_select_from((m_channel_t) pd->chan, timeout, &r_pid);
   
   if (r_pid < 0) {
     DEBUG0("TIMEOUT");
-    return timeout_error;
+    THROW0(timeout_error,0,"Timeout");
   }
 
   /* Ok, got something. Open a socket back to the expeditor */
@@ -66,45 +64,44 @@ gras_trp_select(double timeout,
       continue;
     
     if (sockdata->to_PID == r_pid) {
-      *dst=sock_iter;
-      return no_error;
+      return sock_iter;
     }
   }
   
   /* Socket to expeditor not created yet */
   DEBUG0("Create a socket to the expeditor");
   
-  TRYOLD(gras_trp_plugin_get_by_name("buf",&trp));
+  trp = gras_trp_plugin_get_by_name("buf");
   
-  gras_trp_socket_new(1,dst);
-  (*dst)->plugin   = trp;
+  gras_trp_socket_new(1,&res);
+  res->plugin   = trp;
   
-  (*dst)->incoming  = 1;
-  (*dst)->outgoing  = 1;
-  (*dst)->accepting = 0;
-  (*dst)->sd        = -1;
+  res->incoming  = 1;
+  res->outgoing  = 1;
+  res->accepting = 0;
+  res->sd        = -1;
   
-  (*dst)->port      = -1;
+  res->port      = -1;
   
   sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
   sockdata->from_PID = MSG_process_self_PID();
   sockdata->to_PID   = r_pid;
   sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));
-  (*dst)->data = sockdata;
-  gras_trp_buf_init_sock(*dst);
+  res->data = sockdata;
+  gras_trp_buf_init_sock(res);
   
-  (*dst)->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
+  res->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
   
   remote_hd=(gras_hostdata_t *)MSG_host_get_data(sockdata->to_host);
   xbt_assert0(remote_hd,"Run gras_process_init!!");
   
   sockdata->to_chan = -1;
-  (*dst)->peer_port = -10;
+  res->peer_port = -10;
   for (cursor=0; cursor<XBT_MAX_CHANNEL; cursor++) {
     if (remote_hd->proc[cursor] == r_pid) {
       sockdata->to_chan = cursor;
       DEBUG2("Chan %d on %s is for my pal",
-	     cursor,(*dst)->peer_name);
+	     cursor,res->peer_name);
       
       xbt_dynar_foreach(remote_hd->ports, cpt, pr) {
 	if (sockdata->to_chan == pr.tochan) {
@@ -113,7 +110,7 @@ gras_trp_select(double timeout,
 	    continue;
 	  }
 	  
-	  (*dst)->peer_port = pr.port;
+	  res->peer_port = pr.port;
 	  DEBUG1("Cool, it points to port %d", pr.port);
 	  break;
 	} else {
@@ -121,7 +118,7 @@ gras_trp_select(double timeout,
 		 pr.tochan,sockdata->to_chan);
 	}
       }
-      if ((*dst)->peer_port == -10) {
+      if (res->peer_port == -10) {
 	/* was for measurement */
 	sockdata->to_chan = -1;
       } else {
@@ -133,17 +130,16 @@ gras_trp_select(double timeout,
   xbt_assert0(sockdata->to_chan != -1,
 	      "Got a message from a process without channel");
   
-  return no_error;
+  return res;
 }
 
   
 /* dummy implementations of the functions used in RL mode */
 
-xbt_error_t gras_trp_tcp_setup(gras_trp_plugin_t plug) {
-  return mismatch_error;
+void gras_trp_tcp_setup(gras_trp_plugin_t plug) {
 }
-xbt_error_t gras_trp_file_setup(gras_trp_plugin_t plug) {
-  return mismatch_error;
+void gras_trp_file_setup(gras_trp_plugin_t plug) {
+  THROW0(mismatch_error,0,"No file within SG realm");
 }
 
 

@@ -13,6 +13,7 @@
 
 #include "xbt/xbt_portability.h" /* timers */
 #include "xbt/dict.h"
+#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(emul,gras,"Emulation support");
 
@@ -43,9 +44,19 @@ void gras_emul_exit(void) {
 
 static void store_in_dict(xbt_dict_t dict, const char *key, double value)
 {
-  double *ir = NULL;
+  double *ir;
+  xbt_ex_t e;
 
-  xbt_dict_get(dict, key, (void *) &ir);
+  TRY {
+    ir = xbt_dict_get(dict, key);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      ir = NULL;
+      xbt_ex_free(e);
+    } else {
+      RETHROW;
+    }
+  }
   if (!ir) {
     ir = xbt_new0(double,1);
     xbt_dict_set(dict, key, ir, free);
@@ -53,11 +64,8 @@ static void store_in_dict(xbt_dict_t dict, const char *key, double value)
   *ir = value;
 }
 
-static double get_from_dict(xbt_dict_t dict, const char *key)
-{
-  double *ir = NULL;
-
-  xbt_dict_get(dict, key, (void *) &ir);
+static double get_from_dict(xbt_dict_t dict, const char *key) {
+  double *ir = xbt_dict_get(dict, key);
 
   return *ir;
 }
@@ -86,9 +94,9 @@ int gras_bench_always_end(void)
   return 0;
 }
 
-int gras_bench_once_begin(const char *location,int line)
-{
+int gras_bench_once_begin(const char *location,int line) { 
   double *ir = NULL;
+  xbt_ex_t e;
   xbt_assert0(!benchmarking,"Already benchmarking");
   benchmarking = 1;
 
@@ -98,7 +106,16 @@ int gras_bench_once_begin(const char *location,int line)
   }
   sprintf(locbuf,"%s:%d",location, line);
    
-  xbt_dict_get(benchmark_set, locbuf, (void *) &ir);
+  TRY {
+    ir = xbt_dict_get(benchmark_set, locbuf);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      xbt_ex_free(e);
+      ir = NULL;
+    } else {
+      RETHROW;
+    }
+  }
   if(!ir) {
     DEBUG1("%s",locbuf); 
     duration = 1;

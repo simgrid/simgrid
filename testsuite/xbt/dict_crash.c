@@ -122,7 +122,7 @@ int main(int argc,char **argv) {
     for (j=0;j<NB_ELM;j++) {
       
       sprintf(key,"%d",j);
-      TRYFAIL(xbt_dict_get(head,key,&data));
+      data = xbt_dict_get(head,key);
       if (strcmp(key,(char*)data)) {
 	printf("key=%s != data=%s\n",key,(char*)data);
 	abort();

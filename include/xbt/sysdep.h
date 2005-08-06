@@ -13,6 +13,7 @@
 
 #include <string.h>
 #include <stdlib.h> 
+#include <stdio.h>
    
 #include "xbt/misc.h"
 #include "xbt/error.h"

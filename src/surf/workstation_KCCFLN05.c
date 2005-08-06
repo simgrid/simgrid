@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "workstation_KCCFLN05_private.h"
 
@@ -121,11 +122,7 @@ static void parse_workstation(void)
 
 static void *name_service(const char *name)
 {
-  void *workstation = NULL;
-
-  xbt_dict_get(workstation_set, name, &workstation);
-
-  return workstation;
+  return xbt_dict_get_or_null(workstation_set, name);
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -254,7 +251,7 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link,
   route->size= nb_link;
   link_list = route->links = xbt_new0(network_link_KCCFLN05_t, nb_link);
   for (i = 0; i < nb_link; i++) {
-    xbt_dict_get(network_link_set, links[i], (void *) &(link_list[i]));
+    link_list[i] = xbt_dict_get(network_link_set, links[i]);
     free(links[i]);
   }
   free(links);
@@ -441,9 +438,10 @@ static void update_actions_network_KCCFLN05_state(double now, double delta)
   surf_action_network_KCCFLN05_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_resource->common_public->states.running_action_set;
+  /* FIXME: unused
   xbt_swag_t failed_actions =
       surf_network_resource->common_public->states.failed_action_set;
-
+  */
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     surf_double_update(&(action->generic_action.remains),
 		       lmm_variable_getvalue(action->variable) * delta);
@@ -656,8 +654,10 @@ static void update_actions_cpu_KCCFLN05_state(double now, double delta)
   surf_action_cpu_KCCFLN05_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_cpu_resource->common_public->states.running_action_set;
+  /*
   xbt_swag_t failed_actions =
       surf_cpu_resource->common_public->states.failed_action_set;
+  */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     surf_double_update(&(action->generic_action.remains),

@@ -36,9 +36,11 @@
 #include "ex_test_ts.h"
 #include "xbt/ex.h"
 
+XBT_LOG_NEW_CATEGORY(test,"This test");
+
 TS_TEST(test_controlflow)
 {
-    ex_t ex;
+    xbt_ex_t ex;
     volatile int n;
 
     ts_test_check(TS_CTX, "basic nested control flow");
@@ -51,7 +53,7 @@ TS_TEST(test_controlflow)
             if (n != 2)
                 ts_test_fail(TS_CTX, "M2: n=%d (!= 2)", n);
             n++;
-            THROW(0,0,"something");
+            THROW0(unknown_error,0,"something");
         } CATCH (ex) {
             if (n != 3)
                 ts_test_fail(TS_CTX, "M3: n=%d (!= 1)", n);
@@ -71,13 +73,13 @@ TS_TEST(test_controlflow)
 
 TS_TEST(test_value)
 {
-    ex_t ex;
+    xbt_ex_t ex;
 
     TRY {
-        THROW(1, 2, "toto");
+        THROW0(unknown_error, 2, "toto");
     } CATCH(ex) {
         ts_test_check(TS_CTX, "exception value passing");
-        if (ex.category != 1)
+        if (ex.category != unknown_error)
             ts_test_fail(TS_CTX, "category=%d (!= 1)", ex.category);
         if (ex.value != 2)
             ts_test_fail(TS_CTX, "value=%d (!= 2)", ex.value);
@@ -88,7 +90,7 @@ TS_TEST(test_value)
 
 TS_TEST(test_variables)
 {
-    ex_t ex;
+    xbt_ex_t ex;
     int r1, r2;
     volatile int v1, v2;
 
@@ -96,7 +98,7 @@ TS_TEST(test_variables)
     TRY {
         r2 = 5678;
         v2 = 5678;
-        THROW(0, 0, 0);
+        THROW0(unknown_error, 0, "toto");
     } CATCH(ex) {
         ts_test_check(TS_CTX, "variable preservation");
         if (r1 != 1234)
@@ -109,75 +111,9 @@ TS_TEST(test_variables)
     }
 }
 
-TS_TEST(test_defer)
-{
-    ex_t ex;
-    volatile int i1 = 0;
-    volatile int i2 = 0;
-    volatile int i3 = 0;
-
-    ts_test_check(TS_CTX, "exception deferring");
-    if (IS_DEFERRED)
-        ts_test_fail(TS_CTX, "unexpected deferring scope");
-    TRY {
-        DEFER {
-            if (!IS_DEFERRED)
-                ts_test_fail(TS_CTX, "unexpected non-deferring scope");
-            DEFER {
-                i1 = 1;
-                THROW(4711, 0, NULL);
-                i2 = 2;
-                THROW(0, 0, NULL);
-                i3 = 3;
-                THROW(0, 0, NULL);
-            }
-            THROW(0, 0, 0);
-        }
-        ts_test_fail(TS_CTX, "unexpected not occurred deferred throwing");
-    }
-    CATCH(ex) {
-        if (ex.category != 4711)
-            ts_test_fail(TS_CTX, "caught exception with value %d, expected 4711", ex.value);
-    }
-    if (i1 != 1)
-        ts_test_fail(TS_CTX, "v.i1 not set (expected 1, got %d)", i1);
-    if (i2 != 2)
-        ts_test_fail(TS_CTX, "v.i2 not set (expected 2, got %d)", i2);
-    if (i3 != 3)
-        ts_test_fail(TS_CTX, "v.i3 not set (expected 3, got %d)", i3);
-}
-
-TS_TEST(test_shield)
-{
-    ex_t ex;
-
-    ts_test_check(TS_CTX, "exception shielding");
-    if (IS_SHIELDED)
-        ts_test_fail(TS_CTX, "unexpected shielding scope");
-    if (IS_CATCHED)
-        ts_test_fail(TS_CTX, "unexpected catching scope");
-    TRY {
-        SHIELD {
-            if (!IS_SHIELDED)
-                ts_test_fail(TS_CTX, "unexpected non-shielding scope");
-            THROW(0, 0, 0);
-        }
-        if (IS_SHIELDED)
-            ts_test_fail(TS_CTX, "unexpected shielding scope");
-        if (!IS_CATCHED)
-            ts_test_fail(TS_CTX, "unexpected non-catching scope");
-    } CATCH(ex) {
-        ts_test_fail(TS_CTX, "unexpected exception catched");
-        if (IS_CATCHED)
-            ts_test_fail(TS_CTX, "unexpected catching scope");
-    }
-    if (IS_CATCHED)
-        ts_test_fail(TS_CTX, "unexpected catching scope");
-}
-
 TS_TEST(test_cleanup)
 {
-    ex_t ex;
+    xbt_ex_t ex;
     volatile int v1;
     int c;
 
@@ -187,7 +123,7 @@ TS_TEST(test_cleanup)
     c = 0;
     TRY {
         v1 = 5678;
-        THROW(1, 2, "blah");
+        THROW0(1, 2, "blah");
     } CLEANUP {
         if (v1 != 5678)
             ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
@@ -211,8 +147,6 @@ int main(int argc, char *argv[])
     ts_suite_test(ts, test_controlflow, "basic nested control flow");
     ts_suite_test(ts, test_value,       "exception value passing");
     ts_suite_test(ts, test_variables,   "variable value preservation");
-    ts_suite_test(ts, test_defer,       "exception deferring");
-    ts_suite_test(ts, test_shield,      "exception shielding");
     ts_suite_test(ts, test_cleanup,     "cleanup handling");
     n = ts_suite_run(ts);
     ts_suite_free(ts);
@@ -260,7 +194,7 @@ static void bad_example(void) {
 
 static void good_example(void) {
   struct {char*first;} *globalcontext;
-  ex_t ex;
+  xbt_ex_t ex;
 
   /* GOOD_EXAMPLE */
   { /*01*/

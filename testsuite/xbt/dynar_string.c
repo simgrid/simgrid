@@ -23,7 +23,6 @@ static void free_string(void *d){
 
 int main(int argc,char *argv[]) {
    xbt_dynar_t d;
-   xbt_error_t errcode;
    int cpt;
    char buf[1024];
    char *s1,*s2;

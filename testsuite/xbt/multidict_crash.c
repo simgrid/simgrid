@@ -25,7 +25,6 @@ static void str_free(void *s) {
 }
 
 int main(int argc, char *argv[]) {
-  xbt_error_t errcode;
   xbt_dict_t mdict = NULL;
   int i,j,k,l;
   xbt_dynar_t keys = xbt_dynar_new(sizeof(char*),str_free);
@@ -69,9 +68,9 @@ int main(int argc, char *argv[]) {
       }
       if (verbose>0) printf("in multitree %p.\n",mdict);
                                                         
-      TRYFAIL(xbt_multidict_set(mdict,keys,xbt_strdup(key),free));
+      xbt_multidict_set(mdict,keys,xbt_strdup(key),free);
 
-      TRYFAIL(xbt_multidict_get(mdict,keys,&data));
+      data = xbt_multidict_get(mdict,keys);
 
       xbt_assert2(data && !strcmp((char*)data,key),
 	          "Retrieved value (%s) does not match the entrered one (%s)\n",

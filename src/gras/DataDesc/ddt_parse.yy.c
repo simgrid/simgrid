@@ -486,7 +486,9 @@ char *gras_ddt_parse_text;
 /* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#line 12 "gras/DataDesc/ddt_parse.yy.l"
+/*   char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
+     char *string_buf_ptr = NULL; FIXME; killme*/
+#line 15 "gras/DataDesc/ddt_parse.yy.l"
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/DataDesc/ddt_parse.yy.h"
 #include <string.h>
@@ -501,7 +503,7 @@ char *gras_ddt_parse_text;
   XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,gras_ddt_parse_text)
 
-#line 505 "gras/DataDesc/ddt_parse.yy.c"
+#line 507 "gras/DataDesc/ddt_parse.yy.c"
 
 #define INITIAL 0
 #define annotate 1
@@ -655,15 +657,12 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 32 "gras/DataDesc/ddt_parse.yy.l"
+#line 35 "gras/DataDesc/ddt_parse.yy.l"
 
    int comment_caller=0;
    int annotate_caller=0;
 
-   char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
-   char *string_buf_ptr = NULL;
-
-#line 667 "gras/DataDesc/ddt_parse.yy.c"
+#line 666 "gras/DataDesc/ddt_parse.yy.c"
 
 	if ( (yy_init) )
 		{
@@ -982,7 +981,7 @@ YY_RULE_SETUP
 #line 175 "gras/DataDesc/ddt_parse.yy.l"
 ECHO;
 	YY_BREAK
-#line 986 "gras/DataDesc/ddt_parse.yy.c"
+#line 985 "gras/DataDesc/ddt_parse.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(annotate):
 case YY_STATE_EOF(comment):
@@ -2014,6 +2013,9 @@ void  gras_ddt_parse_pointer_string_close(void) {
   gras_ddt_parse_line_pos = 1;
   gras_ddt_parse_char_pos = 0;
   gras_ddt_parse_tok_num = 0;
+
+  if (0)
+    yyunput('\0',NULL); /* fake a use of this function to calm gcc down */
 }
 
 /* Local variables:*/

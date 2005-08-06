@@ -10,7 +10,7 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
+#include "xbt/ex.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
@@ -60,17 +60,29 @@ void xbt_set_add    (xbt_set_t      set,
 		      xbt_set_elm_t  elm,
 		      void_f_pvoid_t *free_func) {
 
-  xbt_error_t   errcode;
-  xbt_set_elm_t found_in_dict;
+  int found = 1;
+  xbt_set_elm_t found_in_dict = NULL;
+  xbt_ex_t e;
 
   if (elm->name_len <= 0) {
     elm->name_len = strlen(elm->name);
   }
 
-  errcode = xbt_dict_get_ext (set->dict, 
-				    elm->name, elm->name_len,
-				    (void**)&found_in_dict);
-  if (errcode == no_error) {
+  TRY {
+    found_in_dict = xbt_dict_get_ext (set->dict, 
+				      elm->name, elm->name_len);
+  } CATCH(e) {
+    if (e.category != mismatch_error) 
+      RETHROW;
+    found = 0;
+    elm->ID = xbt_dynar_length( set->dynar );
+    xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
+    xbt_dynar_set(set->dynar, elm->ID, &elm);
+    DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
+    xbt_ex_free(e);
+  }
+  
+  if (found) {
     if (elm == found_in_dict) {
       DEBUG2("Ignoring request to insert the same element twice (key %s ; id %d)",
 	     elm->name, elm->ID);
@@ -82,15 +94,7 @@ void xbt_set_add    (xbt_set_t      set,
       xbt_dynar_set(set->dynar, elm->ID, &elm);
       return;
     }
-  } else {
-    xbt_assert_error(mismatch_error);
   }
-
-  elm->ID = xbt_dynar_length( set->dynar );
-  xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
-  xbt_dynar_set(set->dynar, elm->ID, &elm);
-  DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
-
 }
 
 /** @brief Retrive data by providing its name.
@@ -99,13 +103,10 @@ void xbt_set_add    (xbt_set_t      set,
  * \param name Name of the searched cell
  * \param dst where to put the found data into
  */
-xbt_error_t xbt_set_get_by_name    (xbt_set_t     set,
-				      const char     *name,
-				      /* OUT */xbt_set_elm_t *dst) {
-  xbt_error_t errcode;
-  errcode = xbt_dict_get_ext(set->dict, name, strlen(name), (void**) dst);
-  DEBUG2("Lookup key %s: %s",name,xbt_error_name(errcode));
-  return errcode;
+xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t     set,
+				      const char     *name) {
+  DEBUG1("Lookup key %s",name);
+  return xbt_dict_get_ext(set->dict, name, strlen(name));
 }
 
 /** @brief Retrive data by providing its name and the length of the name
@@ -118,12 +119,11 @@ xbt_error_t xbt_set_get_by_name    (xbt_set_t     set,
  * This is useful when strlen cannot be trusted because you don't use a char*
  * as name, you weirdo.
  */
-xbt_error_t xbt_set_get_by_name_ext(xbt_set_t      set,
+xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t      set,
 				      const char     *name,
-				      int             name_len,
-				      /* OUT */xbt_set_elm_t *dst) {
+				      int             name_len) {
 
-  return xbt_dict_get_ext (set->dict, name, name_len, (void**)dst);
+  return xbt_dict_get_ext (set->dict, name, name_len);
 }
 
 /** @brief Retrive data by providing its ID
@@ -134,17 +134,16 @@ xbt_error_t xbt_set_get_by_name_ext(xbt_set_t      set,
  *
  * @warning, if the ID does not exists, you're getting into trouble
  */
-xbt_error_t xbt_set_get_by_id      (xbt_set_t      set,
-				      int             id,
-				      /* OUT */xbt_set_elm_t *dst) {
-
+xbt_set_elm_t xbt_set_get_by_id (xbt_set_t set, int id) {
+  xbt_set_elm_t res;
+  
   /* Don't bother checking the bounds, the dynar does so */
 
-  *dst = xbt_dynar_get_as(set->dynar,id,xbt_set_elm_t);
+  res = xbt_dynar_get_as(set->dynar,id,xbt_set_elm_t);
   DEBUG3("Lookup type of id %d (of %lu): %s", 
-	 id, xbt_dynar_length(set->dynar), (*dst)->name);
+	 id, xbt_dynar_length(set->dynar), res->name);
   
-  return no_error;
+  return res;
 }
 
 /***

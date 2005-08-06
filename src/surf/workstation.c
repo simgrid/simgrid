@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "workstation_private.h"
 #include "cpu_private.h"
@@ -38,15 +39,16 @@ static void workstation_free(void *workstation)
 
 static void create_workstations(void)
 {
-   xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   void *cpu = NULL;
   void *nw_card = NULL;
 
   xbt_dict_foreach(cpu_set, cursor, name, cpu) {
-    nw_card = NULL;
-    xbt_dict_get(network_card_set, name, (void *) &nw_card);
-    xbt_assert1(nw_card, "No corresponding card found for %s",name);
+    nw_card = xbt_dict_get_or_null(network_card_set, name);
+    xbt_assert1(nw_card,
+		"No corresponding card found for %s",name);
+
     xbt_dict_set(workstation_set, name,
 		 workstation_new(name, cpu, nw_card), workstation_free);
   }
@@ -54,11 +56,7 @@ static void create_workstations(void)
 
 static void *name_service(const char *name)
 {
-  void *workstation = NULL;
-
-  xbt_dict_get(workstation_set, name, &workstation);
-
-  return workstation;
+  return xbt_dict_get_or_null(workstation_set, name);
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -160,8 +158,10 @@ static void update_actions_state(double now, double delta)
   surf_action_parallel_task_CSL05_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_workstation_resource->common_public->states.running_action_set;
+  /* FIXME: unused
   xbt_swag_t failed_actions =
       surf_workstation_resource->common_public->states.failed_action_set;
+  */
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     surf_double_update(&(action->generic_action.remains),

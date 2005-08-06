@@ -124,7 +124,7 @@ m_process_code_t MSG_get_registered_function(const char *name)
 
   xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_get_registered_function.");
  
-  xbt_dict_get(msg_global->registered_functions,name,(void **) &code);
+  code = xbt_dict_get(msg_global->registered_functions,name);
 
   return code;
 }
@@ -151,7 +151,7 @@ MSG_error_t MSG_get_arguments(int *argc, char ***argv)
   return MSG_OK;
 }
 
-/** \ingroup msg_easier_life
+/* \ingroup msg_easier_life
  * \brief Set the arguments of a process.
  *
  * This functions sets the argument number and the arguments table for a
@@ -162,8 +162,6 @@ MSG_error_t MSG_get_arguments(int *argc, char ***argv)
  */
 MSG_error_t MSG_set_arguments(m_process_t process,int argc, char *argv[])
 {
-  simdata_process_t simdata = NULL;
-
   xbt_assert0(0,"Deprecated ! Do not use anymore. "
 	      "Use MSG_process_create_with_arguments instead.\n");
 

@@ -10,7 +10,7 @@
 #include "amok/Bandwidth/bandwidth_private.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(bw);
-XBT_LOG_DEFAULT_CATEGORY(bw);
+/*XBT_LOG_DEFAULT_CATEGORY(bw);*/
 
 #if 0
 /* ***************************************************************************

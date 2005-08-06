@@ -8,6 +8,7 @@
 #ifndef _SURF_SURF_PARSE_H
 #define _SURF_SURF_PARSE_H
 
+#include <stdio.h>
 #include "xbt/misc.h"
 #include "surf/trace_mgr.h"
 #include "surfxml.h"

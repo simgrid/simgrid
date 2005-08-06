@@ -7,7 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
+#include "xbt/ex.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/DataDesc/datadesc_interface.h"
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
@@ -138,14 +138,21 @@ gras_msgtype_declare_v(const char           *name,
 		       short int             version,
 		       gras_datadesc_type_t  payload) {
  
-  xbt_error_t   errcode;
   gras_msgtype_t msgtype;
   char *namev=make_namev(name,version);
-      
-  errcode = xbt_set_get_by_name(_gras_msgtype_set,
-				 namev,(xbt_set_elm_t*)&msgtype);
+  int found = 0;
+  xbt_ex_t e;    
+  
+  TRY {
+    msgtype = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,namev);
+    found = 1;
+  } CATCH(e) {
+    if (e.category != mismatch_error)
+      RETHROW;
+    xbt_ex_free(e);
+  }
 
-  if (errcode == no_error) {
+  if (found) {
     VERB2("Re-register version %d of message '%s' (same payload, ignored).",
 	  version, name);
     xbt_assert3(!gras_datadesc_type_cmp(msgtype->ctn_type, payload),
@@ -156,7 +163,7 @@ gras_msgtype_declare_v(const char           *name,
     return ; /* do really ignore it */
 
   }
-  xbt_assert_error(mismatch_error); /* expect this error */
+
   VERB3("Register version %d of message '%s' (payload: %s).", 
 	version, name, gras_datadesc_get_name(payload));    
 
@@ -179,16 +186,9 @@ gras_msgtype_t gras_msgtype_by_name (const char *name) {
 gras_msgtype_t gras_msgtype_by_namev(const char      *name,
 				     short int        version) {
   gras_msgtype_t res;
-
-  xbt_error_t errcode;
   char *namev = make_namev(name,version); 
 
-  errcode = xbt_set_get_by_name(_gras_msgtype_set, namev,
-				 (xbt_set_elm_t*)&res);
-  if (errcode != no_error)
-    res = NULL;
-  if (!res) 
-     WARN1("msgtype_by_name(%s) returns NULL",namev);
+  res = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set, namev);
   if (name != namev) 
     free(namev);
   
@@ -197,16 +197,15 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
 
 /** \brief Send the data pointed by \a payload as a message of type
  * \a msgtype to the peer \a sock */
-xbt_error_t
+void
 gras_msg_send(gras_socket_t   sock,
 	      gras_msgtype_t  msgtype,
 	      void           *payload) {
 
-  xbt_error_t errcode;
   static gras_datadesc_type_t string_type=NULL;
 
   if (!msgtype)
-    RAISE0(mismatch_error,
+    THROW0(mismatch_error,0,
 	   "Cannot send the NULL message (did msgtype_by_name fail?)");
 
   if (!string_type) {
@@ -216,25 +215,23 @@ gras_msg_send(gras_socket_t   sock,
 
   DEBUG3("send '%s' to %s:%d", msgtype->name, 
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
-  TRYOLD(gras_trp_chunk_send(sock, GRAS_header, 6));
+  gras_trp_chunk_send(sock, GRAS_header, 6);
 
-  TRYOLD(gras_datadesc_send(sock, string_type,   &msgtype->name));
+  gras_datadesc_send(sock, string_type,   &msgtype->name);
   if (msgtype->ctn_type)
-    TRYOLD(gras_datadesc_send(sock, msgtype->ctn_type, payload));
-  TRYOLD(gras_trp_flush(sock));
-
-  return no_error;
+    gras_datadesc_send(sock, msgtype->ctn_type, payload);
+  gras_trp_flush(sock);
 }
 /*
  * receive the next message on the given socket.  
  */
-xbt_error_t
+void
 gras_msg_recv(gras_socket_t    sock,
 	      gras_msgtype_t  *msgtype,
 	      void           **payload,
 	      int             *payload_size) {
 
-  xbt_error_t errcode;
+  xbt_ex_t e;
   static gras_datadesc_type_t string_type=NULL;
   char header[6];
   int cpt;
@@ -248,28 +245,33 @@ gras_msg_recv(gras_socket_t    sock,
     xbt_assert(string_type);
   }
   
-  errcode=gras_trp_chunk_recv(sock, header, 6);
-  if (errcode!=no_error)
-    RAISE2(errcode,"Got '%s' while trying to get the mesage header on socket %p",
-    	   xbt_error_name(errcode),sock);
+  TRY {
+    gras_trp_chunk_recv(sock, header, 6);
+  } CATCH(e) {
+    THROW2(e.category,e.value,
+	   "Exception caught while trying to get the mesage header on socket %p : %s",
+    	   sock,e.msg);
+  }
+
   for (cpt=0; cpt<4; cpt++)
     if (header[cpt] != GRAS_header[cpt])
-      RAISE2(mismatch_error,"Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",header,GRAS_header);
+      THROW2(mismatch_error,0,
+	     "Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",header,GRAS_header);
   if (header[4] != GRAS_header[4]) 
-    RAISE2(mismatch_error,"GRAS protocol mismatch (got %d, use %d)",
+    THROW2(mismatch_error,0,"GRAS protocol mismatch (got %d, use %d)",
 	   (int)header[4], (int)GRAS_header[4]);
   r_arch = (int)header[5];
   DEBUG2("Handle an incoming message using protocol %d (remote is %s)",
 	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
-  TRYOLD(gras_datadesc_recv(sock, string_type, r_arch, &msg_name));
-  errcode = xbt_set_get_by_name(_gras_msgtype_set,
-				 msg_name,(xbt_set_elm_t*)msgtype);
-  if (errcode != no_error)
-    RAISE2(errcode,
-	   "Got error %s while retrieving the type associated to messages '%s'",
-	   xbt_error_name(errcode),msg_name);
-  /* FIXME: Survive unknown messages */
+  gras_datadesc_recv(sock, string_type, r_arch, &msg_name);
+  TRY {
+    *msgtype = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,msg_name);
+  } CATCH(e) {
+    /* FIXME: Survive unknown messages */
+    RETHROW1("Exception caught while retrieving the type associated to messages '%s' : %s",
+	     msg_name);
+  }
   free(msg_name);
 
   if ((*msgtype)->ctn_type) {
@@ -279,12 +281,11 @@ gras_msg_recv(gras_socket_t    sock,
 		"Dynamic array as payload is forbided for now (FIXME?).",
 		"Reference to dynamic array is allowed.");
     *payload = xbt_malloc(*payload_size);
-    TRYOLD(gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload));
+    gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload);
   } else {
     *payload = NULL;
     *payload_size = 0;
   }
-  return no_error;
 }
 
 /** \brief Waits for a message to come in over a given socket. 
@@ -298,7 +299,7 @@ gras_msg_recv(gras_socket_t    sock,
  * Every message of another type received before the one waited will be queued
  * and used by subsequent call to this function or gras_msg_handle().
  */
-xbt_error_t
+void
 gras_msg_wait(double           timeout,    
 	      gras_msgtype_t   msgt_want,
 	      gras_socket_t   *expeditor,
@@ -307,7 +308,6 @@ gras_msg_wait(double           timeout,
   gras_msgtype_t msgt_got;
   void *payload_got;
   int payload_size_got;
-  xbt_error_t errcode;
   double start, now;
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   int cpt;
@@ -316,9 +316,7 @@ gras_msg_wait(double           timeout,
   
   payload_got = NULL;
 
-  if (!msgt_want)
-    RAISE0(mismatch_error,
-	   "Cannot wait for the NULL message (did msgtype_by_name fail?)");
+  xbt_assert0(msgt_want,"Cannot wait for the NULL message");
 
   VERB1("Waiting for message '%s'",msgt_want->name);
 
@@ -332,20 +330,20 @@ gras_msg_wait(double           timeout,
       free(msg.payload);
       xbt_dynar_cursor_rm(pd->msg_queue, &cpt);
       VERB0("The waited message was queued");
-      return no_error;
+      return;
     }
   }
 
   while (1) {
-    TRYOLD(gras_trp_select(timeout - now + start, &expeditor_res));
-    TRYOLD(gras_msg_recv(expeditor_res, &msgt_got, &payload_got, &payload_size_got));
+    expeditor_res = gras_trp_select(timeout - now + start);
+    gras_msg_recv(expeditor_res, &msgt_got, &payload_got, &payload_size_got);
     if (msgt_got->code == msgt_want->code) {
       if (expeditor)
       	*expeditor=expeditor_res;
       memcpy(payload, payload_got, payload_size_got);
       free(payload_got);
       VERB0("Got waited message");
-      return no_error;
+      return;
     }
 
     /* not expected msg type. Queue it for later */
@@ -357,11 +355,12 @@ gras_msg_wait(double           timeout,
     
     now=gras_os_time();
     if (now - start + 0.001 < timeout) {
-      RAISE1(timeout_error,"Timeout while waiting for msg %s",msgt_want->name);
+      THROW1(timeout_error,  now-start+0.001-timeout,
+	     "Timeout while waiting for msg %s",msgt_want->name);
     }
   }
 
-  RAISE_IMPOSSIBLE;
+  THROW_IMPOSSIBLE;
 }
 
 /** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
@@ -371,12 +370,11 @@ gras_msg_wait(double           timeout,
  *
  * Messages are passed to the callbacks.
  */
-xbt_error_t 
+void
 gras_msg_handle(double timeOut) {
   
   double          untiltimer;
    
-  xbt_error_t    errcode;
   int             cpt;
 
   s_gras_msg_t    msg;
@@ -389,7 +387,8 @@ gras_msg_handle(double timeOut) {
   gras_cblist_t  *list=NULL;
   gras_msg_cb_t       cb;
    
-  int timerexpected;
+  int timerexpected, timeouted;
+  xbt_ex_t e;
 
   VERB1("Handling message within the next %.2fs",timeOut);
   
@@ -397,7 +396,7 @@ gras_msg_handle(double timeOut) {
   DEBUG2("[%.0f] Next timer in %f sec", gras_os_time(), untiltimer);
   if (untiltimer == 0.0) {
      /* A timer was already elapsed and handled */
-     return no_error;
+     return;
   }
   if (untiltimer != -1.0) {
      timerexpected = 1;
@@ -407,42 +406,53 @@ gras_msg_handle(double timeOut) {
   }
    
   /* get a message (from the queue or from the net) */
+  timeouted = 0;
   if (xbt_dynar_length(pd->msg_queue)) {
     DEBUG0("Get a message from the queue");
     xbt_dynar_shift(pd->msg_queue,&msg);
     expeditor = msg.expeditor;
     msgtype   = msg.type;
     payload   = msg.payload;
-    errcode   = no_error;
   } else {
-    errcode = gras_trp_select(timeOut, &expeditor);
-    if (errcode != no_error && errcode != timeout_error)
-       return errcode;
-    if (errcode == no_error) {
-    	errcode = gras_msg_recv(expeditor, &msgtype, &payload, &payload_size);
-	if (errcode != no_error) 
-	  RAISE2(errcode, "Error '%s' while receiving a message on select()ed socket %p",
-	  	 xbt_error_name(errcode),expeditor);
+    TRY {
+      expeditor = gras_trp_select(timeOut);
+    } CATCH(e) {
+      if (e.category != timeout_error)
+	RETHROW;
+      xbt_ex_free(e);
+      timeouted = 1;
+    }
+
+    if (!timeouted) {
+      TRY {
+	gras_msg_recv(expeditor, &msgtype, &payload, &payload_size);
+      } CATCH(e) {
+	RETHROW1("Error caught  while receiving a message on select()ed socket %p: %s",
+	  	 expeditor);
+      }
     }
   }
 
-  if (errcode == timeout_error ) {
+  if (timeouted) {
      if (timerexpected) {
 	  
 	/* A timer elapsed before the arrival of any message even if we select()ed a bit */
 	untiltimer = gras_msg_timer_handle();
 	if (untiltimer == 0.0) {
-	   return no_error;
+	  /* we served a timer, we're done */
+	  return;
 	} else {
-	   xbt_assert1(untiltimer>0, "Negative timer (%f). I'm puzzeled", untiltimer);
+	   xbt_assert1(untiltimer>0, "Negative timer (%f). I'm 'puzzeled'", untiltimer);
 	   WARN1("No timer elapsed, in contrary to expectations (next in %f sec)",
 		  untiltimer);
-	   return timeout_error;
+	   THROW1(timeout_error,0,
+		  "No timer elapsed, in contrary to expectations (next in %f sec)",
+		  untiltimer);
 	}
 	
      } else {
 	/* select timeouted, and no timer elapsed. Nothing to do */
-	return timeout_error;
+       THROW0(timeout_error, 0, "No new message or timer");
      }
      
   }
@@ -459,7 +469,7 @@ gras_msg_handle(double timeOut) {
     INFO1("No callback for the incomming '%s' message. Discarded.", 
 	  msgtype->name);
     WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
-    return no_error;
+    return;
   }
   
   xbt_dynar_foreach(list->cbs,cpt,cb) { 
@@ -468,13 +478,12 @@ gras_msg_handle(double timeOut) {
     if ((*cb)(expeditor,payload)) {
       /* cb handled the message */
       free(payload);
-      return no_error;
+      return;
     }
   }
 
-  INFO1("Message '%s' refused by all registered callbacks", msgtype->name);
-  WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
-  return mismatch_error;
+  THROW1(mismatch_error,0,
+	 "Message '%s' refused by all registered callbacks", msgtype->name);
 }
 
 void

@@ -73,7 +73,6 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
   m_host_t h = NULL;
   simdata_task_t t_simdata = NULL;
   simdata_host_t h_simdata = NULL;
-  int warning = 0;
   int first_time = 1;
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
   

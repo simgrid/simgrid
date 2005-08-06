@@ -9,10 +9,7 @@
 
 #include "portable.h"
 #include "transport_private.h"
-
-#if 0
-#  include <sys/types.h>
-#endif 
+#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
 	"Pseudo-transport to write to/read from a file");
@@ -20,15 +17,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
 /***
  *** Prototypes 
  ***/
-void         gras_trp_file_close(gras_socket_t sd);
+void gras_trp_file_close(gras_socket_t sd);
   
-xbt_error_t gras_trp_file_chunk_send(gras_socket_t sd,
-				     const char *data,
-				     unsigned long int size);
+void gras_trp_file_chunk_send(gras_socket_t sd,
+			      const char *data,
+			      unsigned long int size);
 
-xbt_error_t gras_trp_file_chunk_recv(gras_socket_t sd,
-				     char *data,
-				     unsigned long int size);
+void gras_trp_file_chunk_recv(gras_socket_t sd,
+			      char *data,
+			      unsigned long int size);
 
 
 /***
@@ -48,7 +45,7 @@ typedef struct {
 /***
  *** Code
  ***/
-xbt_error_t
+void
 gras_trp_file_setup(gras_trp_plugin_t plug) {
 
   gras_trp_file_plug_data_t *file = xbt_new(gras_trp_file_plug_data_t,1);
@@ -59,8 +56,6 @@ gras_trp_file_setup(gras_trp_plugin_t plug) {
   plug->chunk_send   = gras_trp_file_chunk_send;
   plug->chunk_recv   = gras_trp_file_chunk_recv;
   plug->data         = (void*)file;
-
-  return no_error;
 }
 
 /**
@@ -70,40 +65,37 @@ gras_trp_file_setup(gras_trp_plugin_t plug) {
  *
  * This only possible in RL, and is mainly for debugging.
  */
-xbt_error_t
-gras_socket_client_from_file(const char*path,
-			     /* OUT */ gras_socket_t *dst) {
-  xbt_error_t errcode;
-  gras_trp_plugin_t trp;
+gras_socket_t
+gras_socket_client_from_file(const char*path) {
+  gras_socket_t res;
 
   xbt_assert0(gras_if_RL(),
 	       "Cannot use file as socket in the simulator");
 
-  gras_trp_socket_new(0,dst);
+  gras_trp_socket_new(0,&res);
 
-  TRYOLD(gras_trp_plugin_get_by_name("file",&trp));
-  (*dst)->plugin=trp;
+  res->plugin=gras_trp_plugin_get_by_name("file");
 
   if (strcmp("-", path)) {
-    (*dst)->sd = open(path, O_WRONLY|O_CREAT | O_BINARY, S_IRUSR|S_IWUSR|S_IRGRP );
+    res->sd = open(path, O_WRONLY|O_CREAT | O_BINARY, S_IRUSR|S_IWUSR|S_IRGRP );
     
-    if ( (*dst)->sd < 0) {
-      RAISE2(system_error,
+    if ( res->sd < 0) {
+      THROW2(system_error,0,
 	     "Cannot create a client socket from file %s: %s",
 	     path, strerror(errno));
     }
   } else {
-    (*dst)->sd = 1; /* stdout */
+    res->sd = 1; /* stdout */
   }
 
   DEBUG5("sock_client_from_file(%s): sd=%d in=%c out=%c accept=%c",
 	 path,
-	 (*dst)->sd,
-	 (*dst)->incoming?'y':'n', 
-	 (*dst)->outgoing?'y':'n',
-	 (*dst)->accepting?'y':'n');
-   
-  return no_error;
+	 res->sd,
+	 res->incoming?'y':'n', 
+	 res->outgoing?'y':'n',
+	 res->accepting?'y':'n');
+
+  return res;
 }
 
 /**
@@ -113,40 +105,36 @@ gras_socket_client_from_file(const char*path,
  *
  * This only possible in RL, and is mainly for debugging.
  */
-xbt_error_t
-gras_socket_server_from_file(const char*path,
-			     /* OUT */ gras_socket_t *dst) {
-  xbt_error_t errcode;
-  gras_trp_plugin_t trp;
+gras_socket_t gras_socket_server_from_file(const char*path) {
+  gras_socket_t res;
 
   xbt_assert0(gras_if_RL(),
 	       "Cannot use file as socket in the simulator");
 
-  gras_trp_socket_new(1,dst);
+  gras_trp_socket_new(1,&res);
 
-  TRYOLD(gras_trp_plugin_get_by_name("file",&trp));
-  (*dst)->plugin=trp;
+  res->plugin=gras_trp_plugin_get_by_name("file");
 
 
   if (strcmp("-", path)) {
-    (*dst)->sd = open(path, O_RDONLY | O_BINARY);
+    res->sd = open(path, O_RDONLY | O_BINARY);
 
-    if ( (*dst)->sd < 0) {
-      RAISE2(system_error,
+    if ( res->sd < 0) {
+      THROW2(system_error,0,
 	     "Cannot create a server socket from file %s: %s",
 	     path, strerror(errno));
     }
   } else {
-    (*dst)->sd = 0; /* stdin */
+    res->sd = 0; /* stdin */
   }
 
   DEBUG4("sd=%d in=%c out=%c accept=%c",
-	 (*dst)->sd,
-	 (*dst)->incoming?'y':'n', 
-	 (*dst)->outgoing?'y':'n',
-	 (*dst)->accepting?'y':'n');
+	 res->sd,
+	 res->incoming?'y':'n', 
+	 res->outgoing?'y':'n',
+	 res->accepting?'y':'n');
 
-  return no_error;
+  return res;
 }
 
 void gras_trp_file_close(gras_socket_t sock){
@@ -178,7 +166,7 @@ void gras_trp_file_close(gras_socket_t sock){
  *
  * Send data on a file pseudo-socket
  */
-xbt_error_t 
+void
 gras_trp_file_chunk_send(gras_socket_t sock,
 			 const char *data,
 			 unsigned long int size) {
@@ -193,7 +181,7 @@ gras_trp_file_chunk_send(gras_socket_t sock,
     status = write(sock->sd, data, (long int)size);
     
     if (status == -1) {
-      RAISE4(system_error,"write(%d,%p,%d) failed: %s",
+      THROW4(system_error,0,"write(%d,%p,%d) failed: %s",
 	     sock->sd, data, (int)size,
 	     strerror(errno));
     }
@@ -202,21 +190,19 @@ gras_trp_file_chunk_send(gras_socket_t sock,
       size  -= status;
       data  += status;
     } else {
-      RAISE0(system_error,"file descriptor closed");
+      THROW0(system_error,0,"file descriptor closed");
     }
   }
-
-  return no_error;
 }
 /**
  * gras_trp_file_chunk_recv:
  *
  * Receive data on a file pseudo-socket.
  */
-xbt_error_t 
+void
 gras_trp_file_chunk_recv(gras_socket_t sock,
-			char *data,
-			unsigned long int size) {
+			 char *data,
+			 unsigned long int size) {
 
   xbt_assert0(sock, "Cannot recv on an NULL socket");
   xbt_assert0(sock->incoming, "Cannot recv on client file socket");
@@ -229,7 +215,7 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
     DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
     
     if (status == -1) {
-      RAISE4(system_error,"read(%d,%p,%d) failed: %s",
+      THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
 	     sock->sd, data, (int)size,
 	     strerror(errno));
     }
@@ -238,10 +224,8 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
       size  -= status;
       data  += status;
     } else {
-      RAISE0(system_error,"file descriptor closed");
+      THROW0(system_error,0,"file descriptor closed");
     }
   }
-  
-  return no_error;
 }
 

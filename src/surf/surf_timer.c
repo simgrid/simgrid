@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "surf_timer_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(timer, surf,

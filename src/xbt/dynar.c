@@ -424,7 +424,7 @@ xbt_dynar_pop_ptr(xbt_dynar_t  const dynar) {
 /** @brief Get and remove the last element of the dynar */
 void
 xbt_dynar_pop(xbt_dynar_t  const dynar,
-               void         * const dst) {
+              void         * const dst) {
 
   /* sanity checks done by remove_at */
   DEBUG1("Pop %p",(void*)dynar);

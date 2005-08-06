@@ -9,8 +9,9 @@
 
 
 #include <stdarg.h>
-#include "gras_config.h" /* to get a workgin stdarg.h */
+#include "gras_config.h" /* to get a working stdarg.h */
 #include <ctype.h>
+#include <stdio.h> /* snprintf */
 
 #include "xbt_modinter.h"
 
@@ -497,7 +498,7 @@ static xbt_error_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name,
     if (errcode==no_error)
       return no_error;
   }
-  return mismatch_error;
+  return old_mismatch_error;
 }
 
 static void _cleanup_double_spaces(char *s) {
@@ -583,7 +584,7 @@ void xbt_log_control_set(const char* control_string) {
     _xbt_log_parse_setting(p,set);
     
     errcode = _xbt_log_cat_searchsub(&_XBT_LOGV(root),set->catname,&cat);
-    if (errcode == mismatch_error) {
+    if (errcode == old_mismatch_error) {
       DEBUG0("Store for further application");
       DEBUG1("push %p to the settings",(void*)set);
       xbt_dynar_push(xbt_log_settings,&set);

@@ -13,7 +13,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
 int main(int argc,char *argv[]) {
    xbt_dynar_t d;
-   xbt_error_t errcode;
    int cpt,cursor;
    double d1,d2;
    

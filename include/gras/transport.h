@@ -25,26 +25,21 @@
 typedef struct s_gras_socket *gras_socket_t;
 
 /** \brief Simply create a client socket (to speak to a remote host) */
-xbt_error_t gras_socket_client(const char *host,
-				unsigned short port,
-				/* OUT */ gras_socket_t *dst);
+gras_socket_t gras_socket_client(const char *host, unsigned short port);
 /** \brief Simply create a server socket (to ear from remote hosts speaking to you) */
-xbt_error_t gras_socket_server(unsigned short port,
-				/* OUT */ gras_socket_t *dst);
+gras_socket_t gras_socket_server(unsigned short port);
 /** \brief Close socket */
-void         gras_socket_close(gras_socket_t sd);
+void          gras_socket_close(gras_socket_t sd);
 
 /** \brief Create a client socket, full interface to all relevant settings */
-xbt_error_t gras_socket_client_ext(const char *host,
-				    unsigned short port,
-				    unsigned long int bufSize,
-				    int measurement, 
-				    /* OUT */ gras_socket_t *dst);
+gras_socket_t gras_socket_client_ext(const char *host,
+				     unsigned short port,
+				     unsigned long int bufSize,
+				     int measurement);
 /** \brief Create a server socket, full interface to all relevant settings */
-xbt_error_t gras_socket_server_ext(unsigned short port,
-				    unsigned long int bufSize,
-				    int measurement,
-				    /* OUT */ gras_socket_t *dst);
+gras_socket_t gras_socket_server_ext(unsigned short port,
+				     unsigned long int bufSize,
+				     int measurement);
 /* @}*/
 /** \name Retrieving data about sockets and peers 
  *  \ingroup GRAS_sock
@@ -75,15 +70,15 @@ char *gras_socket_peer_name(gras_socket_t sock);
 
 
 int gras_socket_is_meas(gras_socket_t sock);
-xbt_error_t gras_socket_meas_send(gras_socket_t peer, 
-				  unsigned int timeout,
-				  unsigned long int expSize, 
-				  unsigned long int msgSize);
-xbt_error_t gras_socket_meas_recv(gras_socket_t peer, 
-				  unsigned int timeout,
-				  unsigned long int expSize, 
-				  unsigned long int msgSize);
-xbt_error_t gras_socket_meas_accept(gras_socket_t peer,gras_socket_t *accepted);
+void gras_socket_meas_send(gras_socket_t peer, 
+			   unsigned int timeout,
+			   unsigned long int expSize, 
+			   unsigned long int msgSize);
+void gras_socket_meas_recv(gras_socket_t peer, 
+			   unsigned int timeout,
+			   unsigned long int expSize, 
+			   unsigned long int msgSize);
+gras_socket_t gras_socket_meas_accept(gras_socket_t peer);
             
 /* @}*/
 
@@ -98,10 +93,8 @@ xbt_error_t gras_socket_meas_accept(gras_socket_t peer,gras_socket_t *accepted);
  */
 /* @{*/
 /* debuging functions */
-xbt_error_t gras_socket_client_from_file(const char*path,
-					  /* OUT */ gras_socket_t *dst);
-xbt_error_t gras_socket_server_from_file(const char*path,
-					  /* OUT */ gras_socket_t *dst);
+gras_socket_t gras_socket_client_from_file(const char*path);
+gras_socket_t gras_socket_server_from_file(const char*path);
 					  
 /* @} */
    

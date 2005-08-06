@@ -9,7 +9,7 @@
 #include "xbt/error.h"
 #include "fifo_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO");
+/*XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO"); UNUSED SO FAR */
 
 /** \defgroup XBT_fifo A generic workqueue
   *  \brief This section describes the API to generic workqueue. These functions

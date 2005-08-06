@@ -10,8 +10,6 @@
 #ifndef XBT_ERROR_H
 #define XBT_ERROR_H
 
-#include <stdio.h> /* FIXME: Get rid of it */
-
 #include "xbt/misc.h" /* BEGIN_DECL */
 #include "xbt/log.h"
 
@@ -31,21 +29,13 @@ BEGIN_DECL()
 /** \brief Error types */
 typedef enum {
   no_error=0,       /**< succes */
-  mismatch_error=1, /**< The provided ID does not match */
-  system_error=2,   /**< a syscall did fail */
-  network_error=3,  /**< error while sending/receiving data */
-  timeout_error=4,  /**< not quick enough, dude */
-  thread_error=5,   /**< error while [un]locking */
-  unknown_error=6,  /**< unknown error */
+  old_mismatch_error=1, /**< The provided ID does not match */
+  old_system_error=2,   /**< a syscall did fail */
+  old_network_error=3,  /**< error while sending/receiving data */
+  old_timeout_error=4,  /**< not quick enough, dude */
+  old_thread_error=5,   /**< error while [un]locking */
+  old_unknown_error=6   /**< unknown error */
      
-  /* remote errors: result of a RMI/RPC.
-     no_error(=0) is the same for both */   
-  remote_mismatch_error=129,
-  remote_system_error,
-  remote_network_error,
-  remote_timeout_error,
-  remote_thread_error,
-  remote_unknown_error
 } xbt_error_t;
 
  const char *xbt_error_name(xbt_error_t errcode);
@@ -118,19 +108,19 @@ typedef enum {
  */
 
 /** @hideinitializer  */
-#define RAISE0(code,fmt)                   _XBT_ERR_PRE   ERROR0(fmt);                   _XBT_ERR_POST(code)
+#define OLDRAISE0(code,fmt)                   _XBT_ERR_PRE   ERROR0(fmt);                   _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE1(code,fmt,a1)                _XBT_ERR_PRE   ERROR1(fmt,a1);                _XBT_ERR_POST(code)
+#define OLDRAISE1(code,fmt,a1)                _XBT_ERR_PRE   ERROR1(fmt,a1);                _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE2(code,fmt,a1,a2)             _XBT_ERR_PRE   ERROR2(fmt,a1,a2);             _XBT_ERR_POST(code)
+#define OLDRAISE2(code,fmt,a1,a2)             _XBT_ERR_PRE   ERROR2(fmt,a1,a2);             _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE3(code,fmt,a1,a2,a3)          _XBT_ERR_PRE   ERROR3(fmt,a1,a2,a3);          _XBT_ERR_POST(code)
+#define OLDRAISE3(code,fmt,a1,a2,a3)          _XBT_ERR_PRE   ERROR3(fmt,a1,a2,a3);          _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE4(code,fmt,a1,a2,a3,a4)       _XBT_ERR_PRE   ERROR4(fmt,a1,a2,a3,a4);       _XBT_ERR_POST(code)
+#define OLDRAISE4(code,fmt,a1,a2,a3,a4)       _XBT_ERR_PRE   ERROR4(fmt,a1,a2,a3,a4);       _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE5(code,fmt,a1,a2,a3,a4,a5)    _XBT_ERR_PRE   ERROR5(fmt,a1,a2,a3,a4,a5);    _XBT_ERR_POST(code)
+#define OLDRAISE5(code,fmt,a1,a2,a3,a4,a5)    _XBT_ERR_PRE   ERROR5(fmt,a1,a2,a3,a4,a5);    _XBT_ERR_POST(code)
 /** @hideinitializer  */
-#define RAISE6(code,fmt,a1,a2,a3,a4,a5,a6) _XBT_ERR_PRE   ERROR6(fmt,a1,a2,a3,a4,a5,a6); _XBT_ERR_POST(code)
+#define OLDRAISE6(code,fmt,a1,a2,a3,a4,a5,a6) _XBT_ERR_PRE   ERROR6(fmt,a1,a2,a3,a4,a5,a6); _XBT_ERR_POST(code)
 
 /** @} */
 /** 
@@ -176,11 +166,11 @@ typedef enum {
  *
  *  @{ 
  */
-#define RAISE_IMPOSSIBLE RAISE0(unknown_error,"The Impossible did happen")
-#define RAISE_UNIMPLEMENTED RAISE1(unknown_error,"Function %s unimplemented",__FUNCTION__)
+#define RAISE_IMPOSSIBLE RAISE0(old_unknown_error,"The Impossible did happen (yet again)")
+#define RAISE_UNIMPLEMENTED RAISE1(old_unknown_error,"Function %s unimplemented",__FUNCTION__)
 
-#define DIE_IMPOSSIBLE xbt_assert0(0,"The Impossible did happen (yet again)")
-#define xbt_assert_error(a) xbt_assert1(errcode == (a), "Error %s unexpected",xbt_error_name(errcode))
+#define OLDDIE_IMPOSSIBLE xbt_assert0(0,"The Impossible did happen (yet again)")
+#define OLDxbt_assert_error(a) xbt_assert1(errcode == (a), "Error %s unexpected",xbt_error_name(errcode))
 
 /** @} */
 /** @} */

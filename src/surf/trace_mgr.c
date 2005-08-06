@@ -49,7 +49,7 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
   tmgr_event_t last_event = NULL;
 
   if (trace_list) {
-    xbt_dict_get(trace_list, filename, (void **) &trace);
+    trace = xbt_dict_get_or_null(trace_list, filename);
     if (trace)
       return trace;
   }
@@ -112,9 +112,9 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 tmgr_trace_t tmgr_empty_trace_new(void)
 {
   tmgr_trace_t trace = NULL;
-  double periodicity = -1.0;	/* No periodicity by default */
+  /*double periodicity = -1.0;	 No periodicity by default; unused variables
+  tmgr_event_t last_event = NULL;*/
   s_tmgr_event_t event;
-  tmgr_event_t last_event = NULL;
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);

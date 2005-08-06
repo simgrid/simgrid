@@ -7,7 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
+#include "xbt/ex.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/timer.h"
 #include "gras/Virtu/virtu_interface.h"
@@ -43,7 +43,7 @@ void gras_timer_repeat(double interval, void_f_void_t action) {
 }
 
 /** @brief Cancel a delayed task */
-xbt_error_t gras_timer_cancel_delay(double interval, void_f_void_t action) {
+void gras_timer_cancel_delay(double interval, void_f_void_t action) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   int cursor,found;
   s_gras_timer_t timer;
@@ -60,14 +60,13 @@ xbt_error_t gras_timer_cancel_delay(double interval, void_f_void_t action) {
   }
   
   if (!found)
-     RAISE2(mismatch_error,"Cannot remove the action %p delayed of %f second: not found",
+     THROW2(mismatch_error,0,"Cannot remove the action %p delayed of %f second: not found",
 	    action,interval);
    
-  return no_error;
 }
 
 /** @brief Cancel a repetitive task */
-xbt_error_t gras_timer_cancel_repeat(double interval, void_f_void_t action) {
+void gras_timer_cancel_repeat(double interval, void_f_void_t action) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   int cursor,found;
   s_gras_timer_t timer;
@@ -84,14 +83,12 @@ xbt_error_t gras_timer_cancel_repeat(double interval, void_f_void_t action) {
   }
   
   if (!found)
-     RAISE2(mismatch_error,"Cannot remove the action %p delayed of %f second: not found",
+     THROW2(mismatch_error,0,"Cannot remove the action %p delayed of %f second: not found",
 	    action,interval);
-   
-  return no_error;
 }
 
 /** @brief Cancel all delayed tasks */
-xbt_error_t gras_timer_cancel_delay_all(void) {
+void gras_timer_cancel_delay_all(void) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   int cursor, found;
   s_gras_timer_t timer;
@@ -106,30 +103,27 @@ xbt_error_t gras_timer_cancel_delay_all(void) {
   }
   
   if (!found)
-     RAISE0(mismatch_error,"No delayed action to remove");
+     THROW0(mismatch_error,0,"No delayed action to remove");
    
-  return no_error;
 }
 
 /** @brief Cancel all repetitive tasks */
-xbt_error_t gras_timer_cancel_repeat_all(void){
+void gras_timer_cancel_repeat_all(void){
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
   int cursor, found;
   s_gras_timer_t timer;
 
   found = FALSE;
   xbt_dynar_foreach(pd->timers,cursor,timer){
-     if (timer.repeat   == FALSE) {
-	
-	found = TRUE;
-	xbt_dynar_cursor_rm(pd->timers, &cursor);
-     }
+    if (timer.repeat   == FALSE) {
+      
+      found = TRUE;
+      xbt_dynar_cursor_rm(pd->timers, &cursor);
+    }
   }
   
   if (!found)
-     RAISE0(mismatch_error,"No repetitive action to remove");
-   
-  return no_error;
+    THROW0(mismatch_error,0,"No repetitive action to remove");
 }
 
 /** @brief Cancel all delayed and repetitive tasks */

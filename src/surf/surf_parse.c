@@ -174,7 +174,6 @@ void  surf_parse_close(void) {
 
 int surf_parse(void)
 {
-  int ret=0;
   return surf_parse_lex();
 }
 

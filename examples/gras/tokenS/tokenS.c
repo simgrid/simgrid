@@ -40,8 +40,8 @@ typedef struct {
 /* Callback function */
 static int node_cb_stoken_handler(gras_socket_t  expeditor,
 				  void          *payload_data) {
-			     
-  xbt_error_t errcode;
+  
+  xbt_ex_t e;
   
   /* 1. Get the payload into the msg variable */
   int msg=*(int*)payload_data;
@@ -76,14 +76,14 @@ static int node_cb_stoken_handler(gras_socket_t  expeditor,
      
      
     /* 6. Send it as payload of a stoken message to the successor */
-    errcode = gras_msg_send(globals->tosuccessor, 
-			    gras_msgtype_by_name("stoken"), &msg);
+    TRY {
+      gras_msg_send(globals->tosuccessor, 
+		    gras_msgtype_by_name("stoken"), &msg);
      
     /* 7. Deal with errors */
-    if (errcode != no_error) {
-      ERROR1("Unable to forward token: %s\n", xbt_error_name(errcode));
+    } CATCH(e) {
       gras_socket_close(globals->sock);
-      return 1;
+      RETHROW0("Unable to forward token: %s");
     }
   
   }
@@ -106,7 +106,6 @@ static int node_cb_stoken_handler(gras_socket_t  expeditor,
 
 
 int node (int argc,char *argv[]) {
-  xbt_error_t errcode;
   node_data_t *globals;
   
   const char *host;
@@ -138,24 +137,14 @@ int node (int argc,char *argv[]) {
 	gras_os_getpid(), host,peerport, myport);
 
   /* 4. Create my master socket for listening */
-  if ((errcode=gras_socket_server(myport,&(globals->sock)))) { 
-    CRITICAL1("Error %s encountered while opening the server socket. Bailing out.",
-	      xbt_error_name(errcode));
-    return 1;
-  }
+  globals->sock = gras_socket_server(myport);
   gras_os_sleep(1.0); /* Make sure all server sockets are created */
 
 
   /* 5. Create socket to the successor on the ring */
   DEBUG2("Connect to my successor on %s:%d",host,peerport);
 
-  if ((errcode=gras_socket_client(host,peerport,
-				  &(globals->tosuccessor)))) {
-    ERROR1("Unable to connect to the node (got %s). Bailing out.",
-	   xbt_error_name(errcode));
-    return 1;
-  } 
- 
+  globals->tosuccessor = gras_socket_client(host,peerport);
   
   /* 6. Register the known messages. This function is called twice here,
         but it's because this file also acts as regression test.
@@ -180,26 +169,14 @@ int node (int argc,char *argv[]) {
     INFO3("Create the token (with value %d) and send it to %s:%d",
 	  token, host, peerport);
 
-    errcode = gras_msg_send(globals->tosuccessor,
-			    gras_msgtype_by_name("stoken"), &token);
-      
-    if (errcode != no_error) {
-      fprintf(stderr, "Unable send 'stoken' to successor (%s)\n",
-	      xbt_error_name(errcode));
-      return 1;
-    }
+    gras_msg_send(globals->tosuccessor,
+		  gras_msgtype_by_name("stoken"), &token);
   } 
   
   /* 8. Wait up to 10 seconds for an incomming message to handle */
   while (globals->remaining_loop > (globals->create ? -1 : 0)) {
-    errcode = gras_msg_handle(10.0);
+    gras_msg_handle(10.0);
   
-    /* 9. Housekeeping */
-    if (errcode != no_error) {
-      ERROR1("Got error %s in msg_handle", xbt_error_name(errcode));
-      return errcode;
-    }
-    	
     DEBUG1("looping (remaining_loop=%d)", globals->remaining_loop);
   }
 
@@ -211,5 +188,5 @@ int node (int argc,char *argv[]) {
   free(globals);
   gras_exit();
   
-  return no_error;
+  return 0;
 } /* end_of_node */

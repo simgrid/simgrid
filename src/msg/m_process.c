@@ -344,7 +344,6 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 {
   simdata_process_t simdata = NULL;
   simdata_task_t simdata_task = NULL;
-  int i;
 
   xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
 
@@ -394,7 +393,6 @@ MSG_error_t MSG_process_resume(m_process_t process)
 {
   simdata_process_t simdata = NULL;
   simdata_task_t simdata_task = NULL;
-  int i;
 
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
@@ -474,7 +472,6 @@ MSG_error_t __MSG_process_unblock(m_process_t process)
 {
   simdata_process_t simdata = NULL;
   simdata_task_t simdata_task = NULL;
-  int i;
 
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();

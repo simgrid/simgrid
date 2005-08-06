@@ -117,42 +117,42 @@ BEGIN_DECL()
  * @{
  */
 
-  xbt_error_t xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
-  xbt_error_t xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
-  xbt_error_t xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
+  void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
+  void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
+  void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
 
 
 /*
   Set the value of the cell \a name in \a cfg with the provided value.
  */
-xbt_error_t xbt_cfg_set_int   (xbt_cfg_t cfg, const char *name, 
-				 int val);
-xbt_error_t xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, 
-				 double val);
-xbt_error_t xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, 
-				 const char *val);
-xbt_error_t xbt_cfg_set_host  (xbt_cfg_t cfg, const char *name, 
-				 const char *host,int port);
+void xbt_cfg_set_int   (xbt_cfg_t cfg, const char *name, 
+			int val);
+void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, 
+			double val);
+void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, 
+			const char *val);
+void xbt_cfg_set_host  (xbt_cfg_t cfg, const char *name, 
+			const char *host,int port);
 
 /*
  Remove the provided value from the cell @name in @cfg.
  */
-xbt_error_t xbt_cfg_rm_int   (xbt_cfg_t cfg, const char *name, 
-			      int val);
-xbt_error_t xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, 
-		              double val);
-xbt_error_t xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, 
-                              const char *val);
-xbt_error_t xbt_cfg_rm_host  (xbt_cfg_t cfg, const char *name, 
-                              const char *host,int port);
+void xbt_cfg_rm_int   (xbt_cfg_t cfg, const char *name, 
+		       int val);
+void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, 
+		       double val);
+void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, 
+		       const char *val);
+void xbt_cfg_rm_host  (xbt_cfg_t cfg, const char *name, 
+		       const char *host,int port);
 			  	  
 /*
  Remove the value at position \e pos from the config \e cfg
  */
-xbt_error_t xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos);
+void xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos);
 
 /* rm every values */
-xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);	
+void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);	
 
 /* @} */
 /** @name 3.  Registering stuff
@@ -169,8 +169,7 @@ xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
   xbt_error_t xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
   xbt_error_t xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
   xbt_error_t xbt_cfg_check(xbt_cfg_t cfg);
-  xbt_error_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name, 
-			       /* OUT */ e_xbt_cfgelm_type_t *type);
+  e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
 /*  @} */
 /** @name 4. Getting the stored values
  *
@@ -185,16 +184,16 @@ xbt_error_t xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
  *  @{
  */
 
-  xbt_error_t xbt_cfg_get_int   (xbt_cfg_t cfg, const char *name, int    *val);
-  xbt_error_t xbt_cfg_get_double(xbt_cfg_t cfg, const char *name, double *val);
-  xbt_error_t xbt_cfg_get_string(xbt_cfg_t cfg, const char *name, char  **val);
-  xbt_error_t xbt_cfg_get_host  (xbt_cfg_t cfg, const char *name, char  **host, int *port);
-  xbt_error_t xbt_cfg_get_dynar (xbt_cfg_t cfg, const char *name, xbt_dynar_t *dynar);
+  int         xbt_cfg_get_int   (xbt_cfg_t cfg, const char *name);
+  double      xbt_cfg_get_double(xbt_cfg_t cfg, const char *name);
+  char*       xbt_cfg_get_string(xbt_cfg_t cfg, const char *name);
+  void        xbt_cfg_get_host  (xbt_cfg_t cfg, const char *name, char  **host, int *port);
+  xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t cfg, const char *name);
 
-  xbt_error_t xbt_cfg_get_int_at   (xbt_cfg_t cfg, const char *name, int pos, int *val);
-  xbt_error_t xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos, double *val);
-  xbt_error_t xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos, char  **val);
-  xbt_error_t xbt_cfg_get_host_at  (xbt_cfg_t cfg, const char *name, int pos, char  **host, int *port);
+  int    xbt_cfg_get_int_at   (xbt_cfg_t cfg, const char *name, int pos);
+  double xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos);
+  char*  xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos);
+  void   xbt_cfg_get_host_at  (xbt_cfg_t cfg, const char *name, int pos, char  **host, int *port);
 
 /** @} */
 /** @} */

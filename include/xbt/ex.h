@@ -36,8 +36,11 @@
 #include <xbt/sysdep.h>
 
 /* required ISO-C standard facilities */
+#include <errno.h>
 #include <stdio.h>
 
+//#define __EX_MCTX_MCSC__ 1
+#define __EX_MCTX_SSJLJ__ 1
 /* the machine context */
 #if defined(__EX_MCTX_MCSC__)
 #include <ucontext.h>            /* POSIX.1 ucontext(3) */
@@ -63,6 +66,7 @@
 
 /* declare the machine context type */
 typedef struct { __ex_mctx_struct } __ex_mctx_t;
+ 
 /** @addtogroup XBT_ex
  *
  * This module is a small ISO-C++ style exception handling library
@@ -117,7 +121,7 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  *    only in combination and form a language clause as a whole.
  *  - In contrast to the syntax of other languages (such as C++ or Jave) there
  *    is only one CATCH block and not multiple ones (all exceptions are
- *    of the same \em ex_t C type). 
+ *    of the same \em xbt_ex_t C type). 
  *  - the variable of CATCH can naturally be reused in subsequent 
  *    CATCH clauses.
  *  - it is possible to nest TRY clauses.
@@ -145,38 +149,6 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * between the TRY and the THROW may be discarded if you forget the
  * "volatile" keyword. 
  * 
- * @section XBT_ex_advanced ADVANCED USAGE
- *
- * @subsection DEFER DEFERING_BLOCK XBT_ex_defer
- *
- * This directive executes DEFERING_BLOCK while deferring the throwing of
- * exceptions, i.e., exceptions thrown within this block are remembered, but
- * the control flow still continues until the end of the block. At its end, the
- * first exception which occured within the block (if any) is rethrown (any
- * subsequent exceptions are ignored).
- *
- * DEFERING_BLOCK is a regular ISO-C language statement block, but it is not
- * allowed to jump into it via "goto" or longjmp(3) or out of it via "break",
- * "return", "goto" or longjmp(3). It is however allowed to nest DEFER
- * clauses.
- *
- * @subsection XBT_ex_shield SHIELD SHIELDED_BLOCK
- *
- * This directive executes SHIELDED_BLOCK while shielding it against the
- * throwing of exceptions, i.e., any exception thrown from this block or its
- * subroutines are silently ignored.
- *
- * SHIELDED_BLOCK is a regular ISO-C language statement block, but it is not
- * allowed to jump into it via "goto" or longjmp(3) or out of it via "break",
- * "return", "goto" or longjmp(3).  It is however allowed to nest SHIELD
- * clauses.
- *
- * @subsection XBT_ex_conditions Retrieving the current execution condition
- *
- * \a IS_CATCHED, \a IS_DEFERRED and \a IS_SHIELDED return a boolean
- * indicating whether the current scope is within a TRYIED_BLOCK,
- * DEFERING_BLOCK and SHIELDED_BLOCK (respectively)
- *
  * \section XBT_ex_pitfalls PROGRAMMING PITFALLS 
  *
  * Exception handling is a very elegant and efficient way of dealing with
@@ -226,43 +198,50 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * @{
  */
 
+typedef enum {
+  unknown_error=0,  /**< unknown error */
+  arg_error,        /**< Invalid argument */
+  mismatch_error,   /**< The provided ID does not match */
+  
+  system_error,   /**< a syscall did fail */
+  network_error,  /**< error while sending/receiving data */
+  timeout_error,  /**< not quick enough, dude */
+  thread_error    /**< error while [un]locking */
+} xbt_errcat_t;
+
+const char *xbt_errcat_name(xbt_error_t errcode);
+
 /** @brief Structure describing an exception */
 typedef struct {
-  char *msg;      /**< human readable message; to be freed */
-  int   category; /**< category like HTTP (what went wrong) */
-  int   value;    /**< like errno (why did it went wrong) */
+  char        *msg;      /**< human readable message; to be freed */
+  xbt_errcat_t category; /**< category like HTTP (what went wrong) */
+  int          value;    /**< like errno (why did it went wrong) */
   /* throw point */
   char *host;     /* NULL for localhost; hostname:port if remote */
   char *procname; 
   char *file;     /**< to be freed only for remote exceptions */
   int   line;     
   char *func;     /**< to be freed only for remote exceptions */
-} ex_t;
+  /* Backtrace */
+  void *bt[10];
+  int   used;
+} xbt_ex_t;
 
 /* declare the context type (private) */
 typedef struct {
     __ex_mctx_t  *ctx_mctx;     /* permanent machine context of enclosing try/catch */
-    int           ctx_deferred; /* permanent flag whether exception is deferred */
-    int           ctx_deferring;/* permanent counter of exception deferring level */
-    int           ctx_defer;    /* temporary flag for exception deferring macro */
-    int           ctx_shielding;/* permanent counter of exception shielding level */
-    int           ctx_shield;   /* temporary flag for exception shielding macro */
     int           ctx_caught;   /* temporary flag whether exception was caught */
-    volatile ex_t ctx_ex;       /* temporary exception storage */
+    volatile xbt_ex_t ctx_ex;       /* temporary exception storage */
 } ex_ctx_t;
 
 /* the static and dynamic initializers for a context structure */
 #define XBT_CTX_INITIALIZER \
-    { NULL, 0, 0, 0, 0, 0, 0, { /* content */ NULL, 0, 0, \
-                                /*throw point*/ NULL, NULL, NULL, 0, NULL } }
+    { NULL, 0, { /* content */ NULL, 0, 0, \
+                 /* throw point*/ NULL, NULL, NULL, 0, NULL,\
+                 /* backtrace */ {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL},0 } }
 #define XBT_CTX_INITIALIZE(ctx) \
     do { \
         (ctx)->ctx_mctx        = NULL; \
-        (ctx)->ctx_deferred    = 0;    \
-        (ctx)->ctx_deferring   = 0;    \
-        (ctx)->ctx_defer       = 0;    \
-        (ctx)->ctx_shielding   = 0;    \
-        (ctx)->ctx_shield      = 0;    \
         (ctx)->ctx_caught      = 0;    \
         (ctx)->ctx_ex.msg      = NULL; \
         (ctx)->ctx_ex.category = 0;    \
@@ -272,6 +251,17 @@ typedef struct {
         (ctx)->ctx_ex.file     = NULL; \
         (ctx)->ctx_ex.line     = 0;    \
         (ctx)->ctx_ex.func     = NULL; \
+        (ctx)->ctx_ex.bt[0]    = NULL; \
+        (ctx)->ctx_ex.bt[1]    = NULL; \
+        (ctx)->ctx_ex.bt[2]    = NULL; \
+        (ctx)->ctx_ex.bt[3]    = NULL; \
+        (ctx)->ctx_ex.bt[4]    = NULL; \
+        (ctx)->ctx_ex.bt[5]    = NULL; \
+        (ctx)->ctx_ex.bt[6]    = NULL; \
+        (ctx)->ctx_ex.bt[7]    = NULL; \
+        (ctx)->ctx_ex.bt[8]    = NULL; \
+        (ctx)->ctx_ex.bt[9]    = NULL; \
+        (ctx)->ctx_ex.used     = 0; \
     } while (0)
 
 /* the exception context */
@@ -280,13 +270,17 @@ extern ex_ctx_cb_t __xbt_ex_ctx;
 extern ex_ctx_t *__xbt_ex_ctx_default(void);
 
 /* the termination handler */
-typedef void (*ex_term_cb_t)(ex_t *);
+typedef void (*ex_term_cb_t)(xbt_ex_t *);
 extern ex_term_cb_t __xbt_ex_terminate;
-extern void __xbt_ex_terminate_default(ex_t *e);
+extern void __xbt_ex_terminate_default(xbt_ex_t *e)  __attribute__((__noreturn__));
 
 /** @brief Introduce a block where exception may be dealed with 
  *  @hideinitializer
  */
+/*        xbt_assert1(1,\
+                "Severe error in exception mecanism: cannot save the catching context: %s", \
+		    strerror(errno)); \
+*/
 #define TRY \
     { \
         ex_ctx_t *__xbt_ex_ctx_ptr = __xbt_ex_ctx(); \
@@ -305,8 +299,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
             else { \
             } \
             __xbt_ex_ctx_ptr->ctx_caught = 0; \
-        } \
-        else { \
+        } else { \
             __ex_mctx_restored(&__ex_mctx_me); \
             __xbt_ex_ctx_ptr->ctx_caught = 1; \
         } \
@@ -323,8 +316,7 @@ extern void __xbt_ex_terminate_default(ex_t *e);
             } \
             if (!(__ex_cleanup)) \
                 __xbt_ex_ctx_ptr->ctx_caught = 0; \
-        } \
-        else { \
+        } else { \
             if (!(__ex_cleanup)) { \
                 __ex_mctx_restored(&__ex_mctx_me); \
                 __xbt_ex_ctx_ptr->ctx_caught = 1; \
@@ -344,78 +336,85 @@ extern void __xbt_ex_terminate_default(ex_t *e);
  *  @param v: value (integer)
  *  @param m: message text
  *
- * If called from within a sg_try/sg_catch construct, this exception 
- * is copied into the sg_catch relevant variable program control flow 
- * is derouted to the sg_catch (after the optional sg_cleanup). 
+ * If called from within a TRY/CATCH construct, this exception 
+ * is copied into the CATCH relevant variable program control flow 
+ * is derouted to the CATCH (after the optional sg_cleanup). 
  *
- * If no sg_try/sg_catch conctruct embeeds this call, the program calls
+ * If no TRY/CATCH construct embeeds this call, the program calls
  * abort(3). 
  *
- * The sg_throw can be performed everywhere, including inside sg_try, 
- * sg_cleanup and sg_catch blocks.
+ * The THROW can be performed everywhere, including inside TRY, 
+ * CLEANUP and CATCH blocks.
  */
-#define THROW(c,v,m) \
-    ((   __xbt_ex_ctx()->ctx_shielding > 0 \
-      || (__xbt_ex_ctx()->ctx_deferring > 0 && __xbt_ex_ctx()->ctx_deferred == 1)) ? 0 : \
-     (__xbt_ex_ctx()->ctx_ex.msg      = bprintf(m), \
-      __xbt_ex_ctx()->ctx_ex.category = (c), \
-      __xbt_ex_ctx()->ctx_ex.value    = (v), \
-      __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL, \
-      __xbt_ex_ctx()->ctx_ex.procname = strdup(xbt_procname()), \
-      __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__, \
-      __xbt_ex_ctx()->ctx_ex.line     = __LINE__, \
-      __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION, \
-      __xbt_ex_ctx()->ctx_deferred     = 1, \
-      (__xbt_ex_ctx()->ctx_deferring > 0 ? 0 : \
-       (__xbt_ex_ctx()->ctx_mctx == NULL \
-        ? (__xbt_ex_terminate((ex_t *)&(__xbt_ex_ctx()->ctx_ex)), -1) \
-        : (__ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx), 1) ))))
+#include <execinfo.h>
+#define _THROW(c,v,m) \
+  do { /* change this sequence into one block */                               \
+     /* build the exception */ \
+     __xbt_ex_ctx()->ctx_ex.msg      = (m); \
+     __xbt_ex_ctx()->ctx_ex.category = (c); \
+     __xbt_ex_ctx()->ctx_ex.value    = (v);  \
+     __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL;                            \
+     __xbt_ex_ctx()->ctx_ex.procname = strdup(xbt_procname());                 \
+     __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__;                        \
+     __xbt_ex_ctx()->ctx_ex.line     = __LINE__;                               \
+     __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION;                   \
+     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,10);\
+     /* deal with the exception */                                             \
+     if (__xbt_ex_ctx()->ctx_mctx == NULL)                                     \
+       __xbt_ex_terminate((xbt_ex_t *)&(__xbt_ex_ctx()->ctx_ex)); /* not catched */\
+     else                                                                      \
+       __ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx); /* catched somewhere */    \
+     abort();/* nope, stupid GCC, we won't survive a THROW (this won't be reached) */ \
+  } while (0)
+
+#define THROW0(c,v,m)                   _THROW(c,v,bprintf(m))
+#define THROW1(c,v,m,a1)                _THROW(c,v,bprintf(m,a1))
+#define THROW2(c,v,m,a1,a2)             _THROW(c,v,bprintf(m,a1,a2))
+#define THROW3(c,v,m,a1,a2,a3)          _THROW(c,v,bprintf(m,a1,a2,a3))
+#define THROW4(c,v,m,a1,a2,a3,a4)       _THROW(c,v,bprintf(m,a1,a2,a3,a4))
+#define THROW5(c,v,m,a1,a2,a3,a4,a5)    _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5))
+#define THROW6(c,v,m,a1,a2,a3,a4,a5,a6) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6))
+
+#define THROW_IMPOSSIBLE     THROW0(unknown_error,0,"The Impossible Did Happen (yet again)")
+#define DIE_IMPOSSIBLE       xbt_assert0(0,"The Impossible Did Happen (yet again)")
+#define THROW_UNIMPLEMENTED  THROW1(unknown_error,0,"Function %s unimplemented",__FUNCTION__)
 
 /** @brief re-throwing of an already caught exception (ie, pass it to the upper catch block) 
  *  @hideinitializer
  */
 #define RETHROW \
-    ((   __xbt_ex_ctx()->ctx_shielding > 0 \
-      || __xbt_ex_ctx()->ctx_deferring > 0) ? 0 : \
-      (  __xbt_ex_ctx()->ctx_mctx == NULL \
-       ? (__xbt_ex_terminate((ex_t *)&(__xbt_ex_ctx()->ctx_ex)), -1) \
-       : (__ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx), 1) ))
+  do { \
+   if (__xbt_ex_ctx()->ctx_mctx == NULL) \
+     __xbt_ex_terminate((xbt_ex_t *)&(__xbt_ex_ctx()->ctx_ex)); \
+   else \
+     __ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx); \
+   abort();\
+  } while(0)
 
-/** @brief shield an operation from exception handling 
+/** @brief like RETHROW, but adding some details to the message
  *  @hideinitializer
  */
-#define SHIELD \
-    for (__xbt_ex_ctx()->ctx_shielding++, \
-         __xbt_ex_ctx()->ctx_shield =  1; \
-         __xbt_ex_ctx()->ctx_shield == 1; \
-         __xbt_ex_ctx()->ctx_shield =  0, \
-         __xbt_ex_ctx()->ctx_shielding--)
 
-/** @brief defer immediate exception handling 
- *  @hideinitializer
- */
-#define DEFER \
-    for (((__xbt_ex_ctx()->ctx_deferring)++ == 0 ? __xbt_ex_ctx()->ctx_deferred = 0 : 0), \
-         __xbt_ex_ctx()->ctx_defer =  1;  \
-         __xbt_ex_ctx()->ctx_defer == 1;  \
-         __xbt_ex_ctx()->ctx_defer =  0,  \
-         ((--(__xbt_ex_ctx()->ctx_deferring) == 0 && __xbt_ex_ctx()->ctx_deferred == 1) ? RETHROW : 0))
 
-/** @brief exception handling tests 
- *  @hideinitializer
- */
-#define IS_CATCHED \
-    (__xbt_ex_ctx()->ctx_mctx != NULL)
-/** @brief exception handling tests 
- *  @hideinitializer
- */
-#define IS_SHIELDED \
-    (__xbt_ex_ctx()->ctx_shielding > 0)
-/** @brief exception handling tests 
- *  @hideinitializer
- */
-#define IS_DEFERRED \
-    (__xbt_ex_ctx()->ctx_deferring > 0)
+#define _XBT_PRE_RETHROW \
+  do {                                                               \
+    char *_xbt_ex_internal_msg = __xbt_ex_ctx()->ctx_ex.msg;         \
+    __xbt_ex_ctx()->ctx_ex.msg = bprintf(
+#define _XBT_POST_RETHROW \
+ _xbt_ex_internal_msg); \
+    free(_xbt_ex_internal_msg);                                      \
+    RETHROW;                                                         \
+  } while (0)
+
+#define RETHROW0(msg)           _XBT_PRE_RETHROW msg,          _XBT_POST_RETHROW
+#define RETHROW1(msg,a)         _XBT_PRE_RETHROW msg,a,        _XBT_POST_RETHROW
+#define RETHROW2(msg,a,b)       _XBT_PRE_RETHROW msg,a,b,      _XBT_POST_RETHROW
+#define RETHROW3(msg,a,b,c)     _XBT_PRE_RETHROW msg,a,b,c,    _XBT_POST_RETHROW
+#define RETHROW4(msg,a,b,c,d)   _XBT_PRE_RETHROW msg,a,b,c,    _XBT_POST_RETHROW
+#define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e _XBT_POST_RETHROW
+
+void xbt_ex_free(xbt_ex_t e);
+const char * xbt_ex_catname(xbt_errcat_t cat);
 
 /** @} */
 #endif /* __XBT_EX_H__ */

@@ -8,6 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"
+#include "xbt/ex.h"
 #include "dict_private.h"
 
 #include <string.h> /* strlen() */
@@ -73,16 +74,13 @@ xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
  * Sanity check to see if the head contains something
  */
 static _XBT_INLINE
-xbt_error_t
+void
 __cursor_not_null(xbt_dict_cursor_t cursor) {
 
   xbt_assert0(cursor, "Null cursor");
 
-  if (!cursor->head) {
-    return mismatch_error;
-  }
-
-  return no_error;
+  if (!cursor->head)
+    THROW0(arg_error,0,"Null headed cursor");
 }
 
 
@@ -171,8 +169,8 @@ int
 xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
 			    char               **key,
 			    void               **data) {
-  xbt_error_t  errcode = no_error;
-  int           key_len = 0;
+  int      key_len = 0;
+  xbt_ex_t e;
   
   if (!cursor || !(*cursor))
     return FALSE;
@@ -185,16 +183,16 @@ xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
   *key    = xbt_dynar_get_as((*cursor)->keys,     (*cursor)->pos,     char*);
   key_len = xbt_dynar_get_as((*cursor)->key_lens, (*cursor)->pos_len, int);
 
-  errcode = xbt_dictelm_get_ext((*cursor)->head, *key, key_len, data);
-  if (errcode == mismatch_error) {
-    xbt_dict_cursor_free(cursor);
-    return FALSE;
+  TRY {
+    *data = xbt_dictelm_get_ext((*cursor)->head, *key, key_len);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      xbt_dict_cursor_free(cursor);
+      xbt_ex_free(e);
+      return FALSE;
+    }
+    RETHROW;
   }
-
-  xbt_assert1(errcode == no_error,
-	       "Unexpected problem while retrieving the content of cursor. Got %s",
-	       xbt_error_name(errcode));
-
   return TRUE;
 }
 
@@ -203,16 +201,11 @@ xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
  * @param cursor: the cursor
  * @param key where to put the key
  */
-xbt_error_t
-xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor,
-                         /*OUT*/char        **key) {
-  xbt_error_t errcode = no_error;
+char *
+xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor) {
+  __cursor_not_null(cursor);
 
-  TRYOLD(__cursor_not_null(cursor));
-
-  *key = xbt_dynar_get_as(cursor->keys, cursor->pos - 1, char*);
-
-  return errcode;
+  return xbt_dynar_get_as(cursor->keys, cursor->pos - 1, char*);
 }
 
 /**
@@ -220,21 +213,17 @@ xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor,
  * @param cursor the cursor
  * @param data where to put the data
  */
-xbt_error_t
-xbt_dict_cursor_get_data(xbt_dict_cursor_t   cursor,
-                          /*OUT*/void        **data) {
-  xbt_error_t  errcode = no_error;
+void *
+xbt_dict_cursor_get_data(xbt_dict_cursor_t   cursor) {
   char         *key     = NULL;
   int           key_len = 0;
 
-  TRYOLD(__cursor_not_null(cursor));
+  __cursor_not_null(cursor);
 
   key     = xbt_dynar_get_as(cursor->keys,     cursor->pos-1,  char *);
   key_len = xbt_dynar_get_as(cursor->key_lens, cursor->pos_len-1, int);
 
-  TRYOLD(xbt_dictelm_get_ext(cursor->head, key, key_len, data));
-
-  return errcode;
+  return xbt_dictelm_get_ext(cursor->head, key, key_len);
 }
 
 

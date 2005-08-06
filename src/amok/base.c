@@ -10,7 +10,7 @@
 #include "gras.h"
 #include "amok/base.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
+XBT_LOG_NEW_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
 
 amok_remoterr_t amok_remoterr_new(xbt_error_t param_errcode, 
 				  const char* format,...) {
@@ -51,7 +51,6 @@ void
 amok_repport_error (gras_socket_t sock, gras_msgtype_t msgtype,
 		    xbt_error_t param_errcode, const char* format,...) {
   amok_remoterr_t error;
-  xbt_error_t errcode;
   va_list ap;
 
   error=xbt_new(s_amok_remoterr_t,1);
@@ -61,12 +60,14 @@ amok_repport_error (gras_socket_t sock, gras_msgtype_t msgtype,
   vsnprintf(error->msg,1024,format,ap);
   va_end(ap);
 
-  errcode = gras_msg_send(sock,msgtype,error);
+  gras_msg_send(sock,msgtype,error);
+  /* FIXME: error handling while error reporting :-/ 
   if (errcode != no_error) {
      CRITICAL4("Error '%s' while reporting error '%s' to %s:%d",
 	       xbt_error_name(errcode),error->msg,
 	       gras_socket_peer_name(sock),gras_socket_peer_port(sock) );
   }
+  */
 }
 
 void amok_base_init(void) {

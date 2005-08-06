@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <execinfo.h>
 
 #include "xbt/ex.h"
 
@@ -42,19 +43,46 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
 }
 
 /* default __ex_terminate callback function */
-void __xbt_ex_terminate_default(ex_t *e) {
+void __xbt_ex_terminate_default(xbt_ex_t *e)  {
+  char **strings;
+  size_t i;
 
-    fprintf(stderr,
-            "** SimGrid: UNCAUGHT EXCEPTION:\n"
-	    "** (%d/%d) %s\n"
-            "** Thrown by %s%s%s at %s:%d:%s\n",
-	    e->category, e->value, e->msg,
-	    e->procname, (e->host?"@":""),(e->host?e->host:""),
-	    e->file,e->line,e->func);
-    abort();
+  fprintf(stderr,
+	  "** SimGrid: UNCAUGHT EXCEPTION: category: %s; value: %d\n"
+	  "** %s\n"
+	  "** Thrown by %s%s%s at %s:%d:%s\n",
+	  xbt_ex_catname(e->category), e->value, e->msg,
+	  e->procname, (e->host?"@":""),(e->host?e->host:"localhost"),
+	  e->file,e->line,e->func);
+
+  fprintf(stderr,"** Backtrace:\n");
+  strings = backtrace_symbols (e->bt, e->used);
+
+  for (i = 0; i < e->used; i++)
+     printf ("   %s\n", strings[i]);
+
+  free (strings);
+  abort();
 }
 
 /* the externally visible API */
 ex_ctx_cb_t  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
 ex_term_cb_t __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
+void xbt_ex_free(xbt_ex_t e) {
+  free(e.msg);
+}
+
+/** \brief returns a short name for the given exception category */
+const char * xbt_ex_catname(xbt_errcat_t cat) {
+  switch (cat) {
+  case unknown_error: return  "unknown_err";
+  case arg_error:      return "invalid_arg";
+  case mismatch_error: return "mismatch";
+  case system_error:   return "system_err";
+  case network_error:  return "network_err";
+  case timeout_error:  return "timeout";
+  case thread_error:   return "thread_err";
+  default:             return "INVALID_ERR";
+  }
+}

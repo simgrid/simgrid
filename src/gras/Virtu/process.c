@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/error.h"
@@ -72,13 +73,13 @@ void gras_userdata_set(void *ud) {
 void *gras_libdata_get(const char *name) {
   gras_procdata_t *pd=gras_procdata_get();
   void *res;
-  xbt_error_t errcode;
+  xbt_ex_t e;
    
-  errcode = xbt_dict_get(pd->libdata, name, &res);
-  xbt_assert2(errcode == no_error, 
-	      "Cannot retrive the libdata associated to %s: %s",
-	      name, xbt_error_name(errcode));
-   
+  TRY {
+    res = xbt_dict_get(pd->libdata, name);
+  } CATCH(e) {
+    RETHROW1("Cannot retrive the libdata associated to %s: %s",name);
+  }   
   return res;
 }
 
@@ -89,24 +90,29 @@ gras_procdata_init() {
    
   int cursor;
    
-  xbt_error_t errcode;
+  xbt_ex_t e;
   void *data;
 
   pd->userdata  = NULL;
   pd->libdata   = xbt_dict_new();
    
   xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){
+    int found = 0;
      
-     xbt_assert1(fab.name,"Name of fabric #%d is NULL!",cursor);
-     DEBUG1("Create the procdata for %s",fab.name);
-     /* Check for our own errors */
-     errcode = xbt_dict_get(pd->libdata, fab.name, &data);
-     xbt_assert1(errcode == mismatch_error,
-		 "MayDay: two modules use '%s' as libdata name", fab.name);
-     
-     /* Add the data in place */
-     xbt_dict_set(pd->libdata, fab.name, (fab.creator)(), fab.destructor);
-
+    xbt_assert1(fab.name,"Name of fabric #%d is NULL!",cursor);
+    DEBUG1("Create the procdata for %s",fab.name);
+    /* Check for our own errors */
+    TRY {
+      data = xbt_dict_get(pd->libdata, fab.name);
+      found = 1;
+    } CATCH(e) {
+      xbt_ex_free(e);
+    }
+    xbt_assert1(!found,
+		"MayDay: two modules use '%s' as libdata name", fab.name);
+    
+    /* Add the data in place */
+    xbt_dict_set(pd->libdata, fab.name, (fab.creator)(), fab.destructor);
   }
 }
 

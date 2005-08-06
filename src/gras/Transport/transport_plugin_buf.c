@@ -13,6 +13,7 @@
 #include "portable.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
+#include "xbt/ex.h"
 #include "transport_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
@@ -26,23 +27,22 @@ static gras_trp_plugin_t _buf_super;
  ***/
 void hexa_print(const char*name, unsigned char *data, int size);   /* in gras.c */
    
-xbt_error_t gras_trp_buf_socket_client(gras_trp_plugin_t self,
-					gras_socket_t sock);
-xbt_error_t gras_trp_buf_socket_server(gras_trp_plugin_t self,
-					gras_socket_t sock);
-xbt_error_t gras_trp_buf_socket_accept(gras_socket_t sock,
-					gras_socket_t *dst);
+void gras_trp_buf_socket_client(gras_trp_plugin_t self,
+				gras_socket_t sock);
+void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+				gras_socket_t sock);
+gras_socket_t gras_trp_buf_socket_accept(gras_socket_t sock);
 
 void         gras_trp_buf_socket_close(gras_socket_t sd);
   
-xbt_error_t gras_trp_buf_chunk_send(gras_socket_t sd,
-				    const char *data,
-				    unsigned long int size);
+void gras_trp_buf_chunk_send(gras_socket_t sd,
+			     const char *data,
+			     unsigned long int size);
 
-xbt_error_t gras_trp_buf_chunk_recv(gras_socket_t sd,
-				    char *data,
-				    unsigned long int size);
-xbt_error_t gras_trp_buf_flush(gras_socket_t sock);
+void gras_trp_buf_chunk_recv(gras_socket_t sd,
+			     char *data,
+			     unsigned long int size);
+void gras_trp_buf_flush(gras_socket_t sock);
 
 
 /***
@@ -92,14 +92,13 @@ void gras_trp_buf_init_sock(gras_socket_t sock) {
 /***
  *** Code
  ***/
-xbt_error_t
+void
 gras_trp_buf_setup(gras_trp_plugin_t plug) {
-  xbt_error_t errcode;
   gras_trp_buf_plug_data_t *data =xbt_new(gras_trp_buf_plug_data_t,1);
 
   XBT_IN;
-  TRYOLD(gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg",
-				  &_buf_super));
+  _buf_super = gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg");
+
   DEBUG1("Derivate a buffer plugin from %s",gras_if_RL() ? "tcp" : "sg");
 
   plug->socket_client = gras_trp_buf_socket_client;
@@ -114,20 +113,15 @@ gras_trp_buf_setup(gras_trp_plugin_t plug) {
 
   plug->data = (void*)data;
   plug->exit = NULL;
-  
-  return no_error;
 }
 
-xbt_error_t gras_trp_buf_socket_client(gras_trp_plugin_t self,
-					/* OUT */ gras_socket_t sock){
-  xbt_error_t errcode;
+void gras_trp_buf_socket_client(gras_trp_plugin_t self,
+				/* OUT */ gras_socket_t sock){
 
   XBT_IN;
-  TRYOLD(_buf_super->socket_client(_buf_super,sock));
+  _buf_super->socket_client(_buf_super,sock);
   sock->plugin = self;
   gras_trp_buf_init_sock(sock);
-    
-  return no_error;
 }
 
 /**
@@ -135,32 +129,29 @@ xbt_error_t gras_trp_buf_socket_client(gras_trp_plugin_t self,
  *
  * Open a socket used to receive messages.
  */
-xbt_error_t gras_trp_buf_socket_server(gras_trp_plugin_t self,
-					/* OUT */ gras_socket_t sock){
-  xbt_error_t errcode;
+void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+				/* OUT */ gras_socket_t sock){
 
   XBT_IN;
-  TRYOLD(_buf_super->socket_server(_buf_super,sock));
+  _buf_super->socket_server(_buf_super,sock);
   sock->plugin = self;
   gras_trp_buf_init_sock(sock);
-  return no_error;
 }
 
-xbt_error_t
-gras_trp_buf_socket_accept(gras_socket_t  sock,
-			   gras_socket_t *dst) {
-  xbt_error_t errcode;
+gras_socket_t
+gras_trp_buf_socket_accept(gras_socket_t  sock) {
+
+  gras_socket_t res;
       
   XBT_IN;
-  TRYOLD(_buf_super->socket_accept(sock,dst));
-  (*dst)->plugin = sock->plugin;
-  gras_trp_buf_init_sock(*dst);
+  res = _buf_super->socket_accept(sock);
+  res->plugin = sock->plugin;
+  gras_trp_buf_init_sock(res);
   XBT_OUT;
-  return no_error;
+  return res;
 }
 
 void gras_trp_buf_socket_close(gras_socket_t sock){
-  xbt_error_t errcode;
   gras_trp_bufdata_t *data=sock->bufdata;
 
   XBT_IN;
@@ -188,12 +179,11 @@ void gras_trp_buf_socket_close(gras_socket_t sock){
  *
  * Send data on a buffered socket
  */
-xbt_error_t 
+void
 gras_trp_buf_chunk_send(gras_socket_t sock,
 			const char *chunk,
 			unsigned long int size) {
 
-  xbt_error_t errcode;
   gras_trp_bufdata_t *data=(gras_trp_bufdata_t*)sock->bufdata;
   int chunk_pos=0;
 
@@ -217,11 +207,10 @@ gras_trp_buf_chunk_send(gras_socket_t sock,
 	   data->out.size,size-chunk_pos,size,(int)chunk_pos,chunk);
 
     if (data->out.size == data->buffsize) /* out of space. Flush it */
-      TRYOLD(gras_trp_buf_flush(sock));
+      gras_trp_buf_flush(sock);
   }
 
   XBT_OUT;
-  return no_error;
 }
 
 /**
@@ -229,12 +218,12 @@ gras_trp_buf_chunk_send(gras_socket_t sock,
  *
  * Receive data on a buffered socket.
  */
-xbt_error_t 
+void
 gras_trp_buf_chunk_recv(gras_socket_t sock,
 			char *chunk,
 			unsigned long int size) {
 
-  xbt_error_t errcode;
+  xbt_ex_t e;
   gras_trp_bufdata_t *data=sock->bufdata;
   long int chunck_pos = 0;
  
@@ -252,17 +241,19 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
       int nextsize;
       if (gras_if_RL()) {
 	 DEBUG0("Recv the size");
-	 errcode=_buf_super->chunk_recv(sock,(char*)&nextsize, 4);
-	 if (errcode!=no_error)
-	   RAISE4(errcode,"Got '%s' while trying to get the chunk size on %p (peer = %s:%d)",
-	          xbt_error_name(errcode),sock,gras_socket_peer_name(sock),gras_socket_peer_port(sock));
+	 TRY {
+	   _buf_super->chunk_recv(sock,(char*)&nextsize, 4);
+	 } CATCH(e) {
+	   RETHROW3("Unable to get the chunk size on %p (peer = %s:%d): %s",
+		    sock,gras_socket_peer_name(sock),gras_socket_peer_port(sock));
+	 }
 	 data->in.size = (int)ntohl(nextsize);
 	 VERB1("Recv the chunk (size=%d)",data->in.size);
       } else {
 	 data->in.size = -1;
       }
        
-      TRYOLD(_buf_super->chunk_recv(sock, data->in.data, data->in.size));
+      _buf_super->chunk_recv(sock, data->in.data, data->in.size);
        
       if (gras_if_RL()) {
 	 data->in.pos=0;
@@ -291,7 +282,6 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
   }
 
   XBT_OUT;
-  return no_error;
 }
 
 /**
@@ -299,9 +289,8 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
  *
  * Make sure the data is sent
  */
-xbt_error_t 
+void
 gras_trp_buf_flush(gras_socket_t sock) {
-  xbt_error_t errcode;
   int size;
   gras_trp_bufdata_t *data=sock->bufdata;
   XBT_IN;    
@@ -311,7 +300,7 @@ gras_trp_buf_flush(gras_socket_t sock) {
      hexa_print("chunck to send ",data->out.data,data->out.size);
   if ((data->out.size - data->out.pos) == (gras_if_RL()?0:4) ) { /* 4 first bytes=size in SG mode*/
      DEBUG2("Nothing to flush (size=%d; pos=%d)",data->out.size,data->out.pos);
-     return no_error;
+     return;
   }
    
   size = (int)data->out.size - data->out.pos;
@@ -319,7 +308,7 @@ gras_trp_buf_flush(gras_socket_t sock) {
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
   if (gras_if_RL()) {
      size = (int)htonl(size);
-     TRYOLD(_buf_super->chunk_send(sock,(char*) &size, 4));
+     _buf_super->chunk_send(sock,(char*) &size, 4);
   } else {
      memcpy(data->out.data, &size, 4);
   }
@@ -327,10 +316,9 @@ gras_trp_buf_flush(gras_socket_t sock) {
 
   DEBUG3("Send the chunk (size=%d) to %s:%d",data->out.size,
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
-  TRYOLD(_buf_super->chunk_send(sock, data->out.data, data->out.size));
+  _buf_super->chunk_send(sock, data->out.data, data->out.size);
   VERB1("Chunk sent (size=%d)",data->out.size);
   if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
      hexa_print("chunck sent    ",data->out.data,data->out.size);
   data->out.size = gras_if_RL()?0:4;
-  return no_error;
 }

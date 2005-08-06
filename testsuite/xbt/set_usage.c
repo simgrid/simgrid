@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "gras.h"
+#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 XBT_LOG_EXTERNAL_CATEGORY(set);
@@ -29,11 +30,10 @@ static void debuged_add(xbt_set_t set,const char*key);
 static void debuged_add_with_data(xbt_set_t  set,
 				  const char *name,
 				  const char *data);
-static xbt_error_t search_name(xbt_set_t set,const char*key);
-static xbt_error_t search_id(xbt_set_t head,
-			      int id,
-			      const char*expected_key);
-static xbt_error_t traverse(xbt_set_t set);
+static void search_name(xbt_set_t set,const char*key);
+static void search_id(xbt_set_t head,int id,
+		      const char*expected_key);
+static void traverse(xbt_set_t set);
 
 static void my_elem_free(void *e) {
   my_elem_t elm=(my_elem_t)e;
@@ -86,59 +86,43 @@ static void fill(xbt_set_t *set) {
   debuged_add(*set,"123457");
 }
 
-static xbt_error_t search_name(xbt_set_t head,const char*key) {
-  xbt_error_t    errcode;
-  my_elem_t       elm;
-  
-  errcode=xbt_set_get_by_name(head,key,(xbt_set_elm_t*)&elm);
+static void search_name(xbt_set_t head,const char*key) {
+  my_elem_t elm = (my_elem_t)xbt_set_get_by_name(head,key);
+
   printf("   - Search by name %s. Found %s (under ID %d)\n",
 	 key, 
 	 elm? elm->data:"(null)",
 	 elm? elm->ID:-1);
-  if (strcmp(key,elm->name)) {
-    printf("    The key (%s) is not the one expected (%s)\n",
+  if (strcmp(key,elm->name))
+    THROW2(mismatch_error,0,"The key (%s) is not the one expected (%s)",
 	   key,elm->name);
-    return mismatch_error;
-  }
-  if (strcmp(elm->name,elm->data)) {
-    printf("    The name (%s) != data (%s)\n",
-	   elm->name,elm->data);
-    return mismatch_error;
-  }
+  if (strcmp(elm->name,elm->data))
+    THROW2(mismatch_error,0,"The name (%s) != data (%s)",
+	   key,elm->name);
   fflush(stdout);
-  return errcode;
 }
 
-static xbt_error_t search_id(xbt_set_t head,int id,const char*key) {
-  xbt_error_t errcode;
-  my_elem_t    elm;
-  
-  errcode=xbt_set_get_by_id(head,id,(xbt_set_elm_t*)&elm);
+static void search_id(xbt_set_t head,int id,const char*key) {
+  my_elem_t elm = (my_elem_t) xbt_set_get_by_id(head,id);
+
   printf("   - Search by id %d. Found %s (data %s)\n",
 	 id, 
 	 elm? elm->name:"(null)",
 	 elm? elm->data:"(null)");
-  if (id != elm->ID) {
-    printf("    The found ID (%d) is not the one expected (%d)\n",
+  if (id != elm->ID)
+    THROW2(mismatch_error,0,"The found ID (%d) is not the one expected (%d)",
 	   elm->ID,id);
-    return mismatch_error;
-  }
-  if (strcmp(key,elm->name)) {
-    printf("    The key (%s) is not the one expected (%s)\n",
+  if (strcmp(key,elm->name))
+    THROW2(mismatch_error,0,"The key (%s) is not the one expected (%s)",
 	   elm->name,key);
-    return mismatch_error;
-  }
-  if (strcmp(elm->name,elm->data)) {
-    printf("    The name (%s) != data (%s)\n",
+  if (strcmp(elm->name,elm->data))
+    THROW2(mismatch_error,0,"The name (%s) != data (%s)",
 	   elm->name,elm->data);
-    return mismatch_error;
-  }
   fflush(stdout);
-  return errcode;
 }
 
 
-static xbt_error_t traverse(xbt_set_t set) {
+static void traverse(xbt_set_t set) {
   xbt_set_cursor_t cursor=NULL;
   my_elem_t         elm=NULL;
 
@@ -149,11 +133,24 @@ static xbt_error_t traverse(xbt_set_t set) {
 		 "Key(%s) != value(%s). Abording",
 		 elm->name,elm->data);
   }
-  return no_error;
+}
+
+static void search_not_found(xbt_set_t set, const char *data) {
+  xbt_ex_t e;
+  
+  TRY {
+    xbt_set_get_by_name(set,data);
+    THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
+  } CATCH(e) {
+    if (e.category == mismatch_error) {
+      xbt_ex_free(e);
+    } else {
+      RETHROW;
+    }
+  }
 }
 
 int main(int argc,char **argv) {
-  xbt_error_t errcode;
   xbt_set_t set=NULL;
   my_elem_t  elm;
 
@@ -162,7 +159,7 @@ int main(int argc,char **argv) {
   printf("\nData set: USAGE test:\n");
 
   printf(" Traverse the empty set\n");
-  TRYFAIL(traverse(set));
+  traverse(set);
 
   fill(&set);
   printf(" Free the data set\n");
@@ -184,38 +181,35 @@ int main(int argc,char **argv) {
 
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
   printf(" - Traverse the resulting data set\n");
-  TRYFAIL(traverse(set));
+  traverse(set);
 
   printf(" - Retrive values\n");
-  xbt_set_get_by_name(set,"123",(xbt_set_elm_t*)&elm);
+  elm = (my_elem_t) xbt_set_get_by_name(set,"123");
   xbt_assert(elm);
-  TRYFAIL(strcmp("123",elm->data));
+  strcmp("123",elm->data);
 
-  TRYEXPECT(xbt_set_get_by_name(set,"Can't be found",(xbt_set_elm_t*)&elm),
-	    mismatch_error);
-  TRYEXPECT(xbt_set_get_by_name(set,"123 Can't be found",(xbt_set_elm_t*)&elm),
-	    mismatch_error);
-  TRYEXPECT(xbt_set_get_by_name(set,"12345678 NOT",(xbt_set_elm_t*)&elm),
-	    mismatch_error);
+  search_not_found(set,"Can't be found");
+  search_not_found(set,"123 Can't be found");
+  search_not_found(set,"12345678 NOT");
 
-  TRYFAIL(search_name(set,"12"));
-  TRYFAIL(search_name(set,"12a"));
-  TRYFAIL(search_name(set,"12b"));
-  TRYFAIL(search_name(set,"123"));
-  TRYFAIL(search_name(set,"123456"));
-  TRYFAIL(search_name(set,"1234"));
-  TRYFAIL(search_name(set,"123457"));
+  search_name(set,"12");
+  search_name(set,"12a");
+  search_name(set,"12b");
+  search_name(set,"123");
+  search_name(set,"123456");
+  search_name(set,"1234");
+  search_name(set,"123457");
 
-  TRYFAIL(search_id(set,0,"12"));
-  TRYFAIL(search_id(set,1,"12a"));
-  TRYFAIL(search_id(set,2,"12b"));
-  TRYFAIL(search_id(set,3,"123"));
-  TRYFAIL(search_id(set,4,"123456"));
-  TRYFAIL(search_id(set,5,"1234"));
-  TRYFAIL(search_id(set,6,"123457"));
+  search_id(set,0,"12");
+  search_id(set,1,"12a");
+  search_id(set,2,"12b");
+  search_id(set,3,"123");
+  search_id(set,4,"123456");
+  search_id(set,5,"1234");
+  search_id(set,6,"123457");
 
   printf(" - Traverse the resulting data set\n");
-  TRYFAIL(traverse(set));
+  traverse(set);
 
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 
@@ -224,7 +218,7 @@ int main(int argc,char **argv) {
   xbt_set_free(&set);
 
   printf(" - Traverse the resulting data set\n");
-  TRYFAIL(traverse(set));
+  traverse(set);
 
   xbt_exit();
   return 0;

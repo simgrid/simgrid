@@ -103,14 +103,14 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 /** @name 3. Message exchange */
 /** @{ */
 
-  xbt_error_t gras_msg_send(gras_socket_t   sock,
-			    gras_msgtype_t  msgtype,
-			    void           *payload);
-  xbt_error_t gras_msg_wait(double          timeout,    
-			    gras_msgtype_t  msgt_want,
-			    gras_socket_t  *expeditor,
-			    void           *payload);
-  xbt_error_t gras_msg_handle(double timeOut);
+  void gras_msg_send(gras_socket_t   sock,
+		     gras_msgtype_t  msgtype,
+		     void           *payload);
+  void gras_msg_wait(double          timeout,    
+		     gras_msgtype_t  msgt_want,
+		     gras_socket_t  *expeditor,
+		     void           *payload);
+  void gras_msg_handle(double timeOut);
 
 /* @} */
 

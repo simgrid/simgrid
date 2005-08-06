@@ -23,12 +23,12 @@ const char *xbt_error_name(xbt_error_t errcode)  {
    switch (errcode) {
       
     case no_error: return "success";
-    case mismatch_error: return "mismatch";
-    case system_error: return "system";
-    case network_error: return "network";
-    case timeout_error: return "timeout";
-    case thread_error: return "thread";
-    case unknown_error: return "unclassified";
+    case old_mismatch_error: return "mismatch";
+    case old_system_error: return "system";
+    case old_network_error: return "network";
+    case old_timeout_error: return "timeout";
+    case old_thread_error: return "thread";
+    case old_unknown_error: return "unclassified";
     default:
       return "SEVERE ERROR in error repporting module";
    }

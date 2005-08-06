@@ -12,8 +12,8 @@
 #define _XBT_DICT_H
 
 #include "xbt/misc.h" /* BEGIN_DECL */
-#include "xbt/error.h"
 #include "xbt/dynar.h" /* void_f_pvoid_t */
+#include "xbt/error.h"
 
 BEGIN_DECL()
 
@@ -61,9 +61,11 @@ BEGIN_DECL()
  *
  *  @{ */
 
-  void xbt_dict_set(xbt_dict_t head, const char *key, void *data, void_f_pvoid_t *free_ctn);
-  xbt_error_t xbt_dict_get(xbt_dict_t head,const char *key, /* OUT */void **data);
-  xbt_error_t xbt_dict_remove(xbt_dict_t head,const char *key);
+  void  xbt_dict_set(xbt_dict_t head, const char *key, void *data, void_f_pvoid_t *free_ctn);
+  void *xbt_dict_get(xbt_dict_t head,const char *key);
+  void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
+
+  xbt_error_t xbt_dict_remove(xbt_dict_t head, const char *key);
   void xbt_dict_dump(xbt_dict_t head,void (*output)(void*));
   
 /** @} */
@@ -73,12 +75,11 @@ BEGIN_DECL()
  *
  *  @{
  */
-  void xbt_dict_set_ext(xbt_dict_t     head,
-		        const char     *key, int  key_len,
-		        void           *data,
-		        void_f_pvoid_t *free_ctn);
-  xbt_error_t xbt_dict_get_ext(xbt_dict_t head,const char *key, int key_len,
-			       /* OUT */void **data);
+  void  xbt_dict_set_ext(xbt_dict_t     head,
+	 	         const char     *key, int  key_len,
+		         void           *data,
+		         void_f_pvoid_t *free_ctn);
+  void *xbt_dict_get_ext(xbt_dict_t head,const char *key, int key_len);
   xbt_error_t xbt_dict_remove_ext(xbt_dict_t head,
 				  const char *key, int key_len);
 
@@ -112,10 +113,8 @@ BEGIN_DECL()
   void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);
 
 
-  xbt_error_t xbt_dict_cursor_get_key     (xbt_dict_cursor_t cursor,
-					   /*OUT*/char **key);
-  xbt_error_t xbt_dict_cursor_get_data    (xbt_dict_cursor_t cursor,
-					   /*OUT*/void **data);
+  char * xbt_dict_cursor_get_key     (xbt_dict_cursor_t cursor);
+  void * xbt_dict_cursor_get_data    (xbt_dict_cursor_t cursor);
 
   void xbt_dict_cursor_first (const xbt_dict_t   dict,
 			     xbt_dict_cursor_t *cursor);
@@ -150,24 +149,18 @@ void xbt_dict_prints(void *data);
 
 
 /*----[ xbt_multidict_set ]--------------------------------------------------*/
-xbt_error_t 
+void
 xbt_multidict_set(xbt_dict_t mdict,
                   xbt_dynar_t keys,
                   void *data,void (*free_ctn)(void*));
-xbt_error_t
+void
 xbt_multidict_set_ext(xbt_dict_t mdict,
                       xbt_dynar_t keys, xbt_dynar_t lens,
                       void *data,void_f_pvoid_t *free_ctn);
 
 /*----[ xbt_multidict_get ]--------------------------------------------------*/
-xbt_error_t 
-xbt_multidict_get(xbt_dict_t mdict,
-                  xbt_dynar_t keys,
-		  /*OUT*/void **data);
-xbt_error_t 
-xbt_multidict_get_ext(xbt_dict_t mdict,
-                      xbt_dynar_t keys, xbt_dynar_t lens,
-                      /*OUT*/void **data);
+void *xbt_multidict_get    (xbt_dict_t mdict, xbt_dynar_t keys);
+void *xbt_multidict_get_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens);
 
 /*----[ xbt_multidict_remove ]-----------------------------------------------*/
 /*---------------------------------------------------------------------------*/

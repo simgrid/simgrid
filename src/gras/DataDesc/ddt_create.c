@@ -10,6 +10,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h" /* min()/max() */
+#include "xbt/ex.h"
 #include "gras/DataDesc/datadesc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_create,datadesc,"Creating new datadescriptions");
@@ -48,31 +49,26 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
 }
 
 /**
- * This returns NULL when no type of this name can be found
+ * This returns NULL no type of this name can be found instead of throwing exceptions which would complicate the GRAS_DEFINE_TYPE macro
  */
 gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
-
-  gras_datadesc_type_t type;
-
-  XBT_IN1("(%s)",name);
-  if (xbt_set_get_by_name(gras_datadesc_set_local,
-			   name,(xbt_set_elm_t*)&type) == no_error) {
-    XBT_OUT;
-    return type;
-  } else { 
-    XBT_OUT;
-    return NULL;
+  xbt_ex_t e;
+  gras_datadesc_type_t res;
+  TRY {
+    res = (gras_datadesc_type_t)xbt_set_get_by_name(gras_datadesc_set_local,name);
+  } CATCH(e) {
+    if (e.category != mismatch_error)
+      RETHROW;
+    res = NULL;
   }
+  return res;
 }
 
 /**
  * Retrieve a type from its code
  */
-xbt_error_t gras_datadesc_by_id(long int              code,
-				 gras_datadesc_type_t *type) {
-  XBT_IN;
-  return xbt_set_get_by_id(gras_datadesc_set_local,
-			    code,(xbt_set_elm_t*)type);
+gras_datadesc_type_t gras_datadesc_by_id(long int code) {
+  return (gras_datadesc_type_t)xbt_set_get_by_id(gras_datadesc_set_local,code);
 }
 
 /**
@@ -97,7 +93,7 @@ gras_datadesc_type_t
 		 "Redefinition of type %s does not match", name);
     VERB1("Discarding redefinition of %s",name);
     return res;
-  }
+  } 
   res = gras_ddt_new(name);
 
   for (arch = 0; arch < gras_arch_count; arch ++) {
@@ -403,6 +399,7 @@ gras_datadesc_type_t
 
   XBT_IN1("(%s)",name);
   res = gras_datadesc_by_name(name);
+
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_ref,
 		 "Redefinition of type %s does not match", name);
@@ -624,7 +621,7 @@ gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
 			 unsigned long         howmany,
 	       /* OUT */ gras_datadesc_type_t *dst) {
-  RAISE_UNIMPLEMENTED;
+  THROW_UNIMPLEMENTED;
 }
 
 /**

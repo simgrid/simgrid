@@ -42,9 +42,6 @@ void test(char *platform)
   surf_action_t actionB = NULL;
   surf_action_t actionC = NULL;
   surf_action_t commAB = NULL;
-  e_surf_action_state_t stateActionA;
-  e_surf_action_state_t stateActionB;
-  e_surf_action_state_t stateActionC;
   double now = -1.0;
 
   surf_workstation_resource_init_CLM03(platform);

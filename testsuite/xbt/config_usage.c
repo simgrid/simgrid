@@ -26,7 +26,7 @@ static xbt_cfg_t make_set(){
 } /* end_of_make_set */
  
 int main(int argc, char **argv) {
-  xbt_error_t errcode;
+  xbt_ex_t e;
   xbt_cfg_t set;
 
   char *str;
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
   fprintf(stderr,"==== Alloc and free a config set.\n");
   set=make_set();
-  TRYFAIL(xbt_cfg_set_parse(set, "hostname:veloce user:mquinson\nuser:oaumage\tuser:alegrand"));
+  xbt_cfg_set_parse(set, "hostname:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
   xbt_cfg_dump("test set","",set);
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
@@ -48,10 +48,16 @@ int main(int argc, char **argv) {
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
 
-  fprintf(stderr,"==== Validation test (ERROR EXPECTED: too many elements)\n");
+  fprintf(stderr,"==== Validation test\n");
   set=make_set();
-  xbt_cfg_set_parse(set,"hostname:toto:42");
-  xbt_cfg_set_parse(set,"speed:42 speed:24 speed:34");
+  TRY {
+    xbt_cfg_set_parse(set,"hostname:toto:42");
+    xbt_cfg_set_parse(set,"speed:42 speed:24 speed:34");
+  } CATCH(e) {
+    if (e.category != mismatch_error)
+      RETHROW;
+    xbt_ex_free(e);
+  }
   xbt_cfg_check(set);
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
@@ -63,7 +69,7 @@ int main(int argc, char **argv) {
   xbt_cfg_t myset=make_set();
      
   xbt_cfg_set_parse(myset,"hostname:toto:42 speed:42");
-  xbt_cfg_get_int(myset,"speed",&ival); 
+  ival = xbt_cfg_get_int(myset,"speed"); 
   fprintf(stderr,"speed value: %d\n",ival); /* Prints: "speed value: 42" */
   xbt_cfg_free(&myset);
   }
@@ -78,7 +84,7 @@ int main(int argc, char **argv) {
   xbt_cfg_set_parse(myset, "hostname:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
   xbt_cfg_set_parse(myset,"speed:42");
   xbt_cfg_check(myset); 
-  xbt_cfg_get_dynar(myset,"user",&dyn);
+  dyn = xbt_cfg_get_dynar(myset,"user");
   fprintf(stderr,"Count: %lu; Options: ",xbt_dynar_length(dyn));
   xbt_dynar_foreach(dyn,ival,str) {
     fprintf(stderr,"%s;",str); 
@@ -91,7 +97,14 @@ int main(int argc, char **argv) {
   fprintf(stderr,"==== Try to use an unregistered option. (ERROR EXPECTED: 'color' not registered)\n");
   {
   xbt_cfg_t myset=make_set();
-  TRYEXPECT(mismatch_error,xbt_cfg_set_parse(myset,"color:blue"));
+  TRY {
+    xbt_cfg_set_parse(myset,"color:blue");
+    THROW1(unknown_error,0,"Found an option which shouldn't be there (%s)","color:blue");
+  } CATCH(e) {
+    if (e.category != mismatch_error)
+      RETHROW;
+    xbt_ex_free(e);
+  }
   /* This spits an error: 'color' not registered */
   xbt_cfg_free(&myset);
   }

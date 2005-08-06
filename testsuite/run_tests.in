@@ -17,9 +17,9 @@ export LD_LIBRARY_PATH=@top_srcdir@/src/.libs
 ## Args parsing (simplistic for now)
 ##
 if [ xvalgrind = "x$1" ] ; then
-  valgrind="libtool --mode=execute valgrind --show-reachable=yes"
+  exenv="libtool --mode=execute valgrind --show-reachable=yes"
 else
-  valgrind=
+  exenv=
 fi
 
 ##
@@ -80,33 +80,32 @@ do
     
     tests_nb=`expr $tests_nb + 1`
     echo "#### Test $test"
-    if [ x@EXEEXT@ = x ] ; then 
-      wine=
+    if [ x@EXEEXT@ = x ] ; then
+      :
     else
-      wine=wine
+      # overwrites "valgrind" as a value, but should be exclusive.
+      exenv=wine  
     fi
     if [ "x$test" = "xdict_crash@EXEEXT@" ] ; then
-      $wine ./$test --xbt-log="root.thres=info" 2>&1
+      $exenv ./$test --xbt-log="root.thres=info" 2>&1
       retval=$?
     else 
-      winesave=$wine
-      if [ x@EXEEXT@ != x ] ; then 
+      exenvsave=$exenv
+      if [ x@EXEEXT@ != x ] && [ x$exenv = xwine ] ; then 
         if echo ${test} | grep @EXEEXT@ >/dev/null ; then : ; else
-#         echo "This is not a win32 binary, don't use wine"
-          wine=""
+          exenv=""
         fi
       fi
-        # if the user defines valgrind while cross-compiling, too bad
-        $wine $valgrind ./$test --xbt-log="root.thres=info" 2>&1
-        retval=$?
-      wine=$winesave
+      $exenv ./$test --xbt-log="root.thres=info" 2>&1
+      retval=$?
+      exenv=$exenvsave
     fi
     if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
       echo "## failed" # . Rerun $test with full details."
 #      if [ "x$test" = "xdict_crash" ] ; then
-#      $wine ./$test --xbt-log="root.thres=debug" 2>&1
+#      $exenv ./$test --xbt-log="root.thres=debug" 2>&1
 #    else 
-#      $wine $valgrind ./$test --xbt-log="root.thres=debug" 2>&1
+#      $exenv ./$test --xbt-log="root.thres=debug" 2>&1
 #    fi
       failed_nb=`expr $failed_nb + 1`
       echo "  $test (returned $retval)" >> test.failed

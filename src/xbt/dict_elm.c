@@ -7,6 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex.h"
 #include "portable.h" /* PRINTF_STR */
 #include "dict_private.h"  /* prototypes of this module */
 
@@ -49,11 +50,10 @@ static void _xbt_dictelm_set_rec(s_xbt_dictelm_t *head,
 				  int             offset,
 				  void           *data,
 				  void_f_pvoid_t *free_f);
-static xbt_error_t _xbt_dictelm_get_rec(s_xbt_dictelm_t *head,
-					       const char     *key,
-					       int             key_len,
-					       int             offset,
-					       /* OUT */void **data);
+static void * _xbt_dictelm_get_rec(s_xbt_dictelm_t *head,
+                                   const char     *key,
+				   int             key_len,
+				   int             offset);
 static xbt_error_t _xbt_dictelm_remove_rec(s_xbt_dictelm_t *head,
 					     const char     *key,
 					     int             key_len,
@@ -570,7 +570,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
     }
 
   default:
-    DIE_IMPOSSIBLE;
+    THROW_IMPOSSIBLE;
   }
 }
 
@@ -647,12 +647,11 @@ xbt_dictelm_set(s_xbt_dictelm_t **pp_head,
  * Search the given @key. mismatch_error when not found.
  */
 static 
-xbt_error_t
+void *
 _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
 		      const char     *key,
 		      int             key_len,
-		      int             offset,
-		      void **data) {
+		      int             offset) {
 
   CDEBUG3(dict_search, "Search %.*s in %p", key_len, key, (void*)p_head); 
 
@@ -660,16 +659,12 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
 
   /* we did enough recursion, we're done */
   if (offset >= key_len) {
-    *data = p_head->content;
-
-    return no_error;
+    return p_head->content;
   }
 
   {
     int match = 0;
     int pos   = 0;
-
-    *data = NULL; /* Let's be clean */
 
     /*** Search where is the good child, and how good it is ***/
     _xbt_dictelm_child_search(p_head, key, key_len, &pos, &offset, &match);
@@ -677,16 +672,13 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
     switch (match) {
 
     case 0: /* no child have a common prefix */
-      return mismatch_error;
+      THROW1(mismatch_error,0,"key '%s' not found",key);
 
     case 1: /* A child have exactly this key => Got it */
       {
         s_xbt_dictelm_t *p_child = NULL;
-
         p_child = xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
-        *data = p_child->content;
-
-        return no_error;
+        return p_child->content;
       }
 
     case 2: /* A child constitutes a prefix of the key => recurse */
@@ -695,17 +687,17 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
 
         p_child = xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
 
-        return _xbt_dictelm_get_rec(p_child, key, key_len, offset, data);
+        return _xbt_dictelm_get_rec(p_child, key, key_len, offset);
       }
 
     case 3: /* The key is a prefix of the child => not found */
-      return mismatch_error;
+      THROW1(mismatch_error,0,"key %s not found",key);
 
     case 4: /* A child share a common prefix with this key => not found */
-      return mismatch_error;
+      THROW1(mismatch_error,0,"key %s not found",key);
 
     default:
-      RAISE_IMPOSSIBLE;
+      THROW_IMPOSSIBLE;
     }
   }
 }
@@ -720,17 +712,15 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
  *
  * Search the given @key. mismatch_error when not found.
  */
-xbt_error_t
+void *
 xbt_dictelm_get_ext(s_xbt_dictelm_t *p_head,
-			  const char     *key,
-			  int             key_len,
-			  /* OUT */void **data) {
+		    const char      *key,
+		    int              key_len) {
   /* there is no head, go to hell */
-  if (!p_head) {
-    return mismatch_error;
-  }
+  if (!p_head)
+    THROW1(mismatch_error,0,"Key '%s' not found in dict",key);
 
-  return _xbt_dictelm_get_rec(p_head, key, key_len, 0, data);
+  return _xbt_dictelm_get_rec(p_head, key, key_len, 0);
 }
 
 /**
@@ -743,12 +733,11 @@ xbt_dictelm_get_ext(s_xbt_dictelm_t *p_head,
  *
  * Search the given @key. mismatch_error when not found.
  */
-xbt_error_t
-xbt_dictelm_get(s_xbt_dictelm_t    *p_head,
-                   const char     *key,
-                   /* OUT */void **data) {
+void *
+xbt_dictelm_get(s_xbt_dictelm_t *p_head,
+		const char      *key) {
 
-  return xbt_dictelm_get_ext(p_head, key, strlen(key), data);
+  return xbt_dictelm_get_ext(p_head, key, strlen(key));
 }
 
 /*----[ _xbt_dict_collapse ]------------------------------------------------*/
@@ -861,7 +850,7 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
         p_child = xbt_dynar_get_as(head->sub, pos, s_xbt_dictelm_t*);
         /*DEBUG5("Recurse on child %d of %p to remove %.*s (prefix=%d)",
           pos, (void*)p_child, key+offset, key_len-offset,offset);*/
-        TRYOLD(_xbt_dictelm_remove_rec(p_child, key, key_len, offset));
+        _xbt_dictelm_remove_rec(p_child, key, key_len, offset);
 
         _collapse_if_need(head, pos, old_offset);
 	return no_error;
@@ -876,7 +865,7 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
 
 
     default:
-      RAISE_IMPOSSIBLE;
+      THROW_IMPOSSIBLE;
 
     }
   }
@@ -896,9 +885,8 @@ xbt_dictelm_remove_ext(xbt_dictelm_t head,
 			const char  *key,
 			int          key_len) {
   /* there is no head, go to hell */
-  if (!head) {
-    RAISE0(mismatch_error, "there is no head, go to hell");
-  }
+  if (!head) 
+    THROW1(arg_error,0,"Asked to remove key %s from NULL dict",key);
   
   return _xbt_dictelm_remove_rec(head, key, key_len, 0);
 }
