@@ -666,7 +666,7 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
     switch (match) {
 
     case 0: /* no child have a common prefix */
-      THROW1(not_found_error,0,"key '%s' not found",key);
+      THROW2(not_found_error,0,"key '%.*s' not found",key_len,key);
 
     case 1: /* A child have exactly this key => Got it */
       {
@@ -685,10 +685,10 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
       }
 
     case 3: /* The key is a prefix of the child => not found */
-      THROW1(not_found_error,0,"key %s not found",key);
+      THROW2(not_found_error,0,"key %.*s not found",key_len,key);
 
     case 4: /* A child share a common prefix with this key => not found */
-      THROW1(not_found_error,0,"key %s not found",key);
+      THROW2(not_found_error,0,"key %.*s not found",key_len,key);
 
     default:
       THROW_IMPOSSIBLE;
@@ -711,7 +711,7 @@ xbt_dictelm_get_ext(s_xbt_dictelm_t *p_head,
 		    int              key_len) {
   /* there is no head, go to hell */
   if (!p_head)
-    THROW2(not_found_error,0,"Key '%*s' not found in dict",key_len,key);
+    THROW2(not_found_error,0,"Key '%.*s' not found in dict",key_len,key);
 
   return _xbt_dictelm_get_rec(p_head, key, key_len, 0);
 }
@@ -851,7 +851,7 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
     case 3: /* The key is a prefix of the child => not found */
     case 4: /* A child share a common prefix with this key => not found */
 
-      THROW2(not_found_error,0,"Unable to remove key '%*s': not found",key_len,key);
+      THROW2(not_found_error,0,"Unable to remove key '%.*s': not found",key_len,key);
 
     default:
       THROW_IMPOSSIBLE;
