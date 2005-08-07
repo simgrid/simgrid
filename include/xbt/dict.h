@@ -65,7 +65,7 @@ BEGIN_DECL()
   void *xbt_dict_get(xbt_dict_t head,const char *key);
   void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
 
-  xbt_error_t xbt_dict_remove(xbt_dict_t head, const char *key);
+  void xbt_dict_remove(xbt_dict_t head, const char *key);
   void xbt_dict_dump(xbt_dict_t head,void (*output)(void*));
   
 /** @} */
@@ -80,8 +80,7 @@ BEGIN_DECL()
 		         void           *data,
 		         void_f_pvoid_t *free_ctn);
   void *xbt_dict_get_ext(xbt_dict_t head,const char *key, int key_len);
-  xbt_error_t xbt_dict_remove_ext(xbt_dict_t head,
-				  const char *key, int key_len);
+  void xbt_dict_remove_ext(xbt_dict_t head, const char *key, int key_len);
 
 
 /** @} */
@@ -164,11 +163,8 @@ void *xbt_multidict_get_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens
 
 /*----[ xbt_multidict_remove ]-----------------------------------------------*/
 /*---------------------------------------------------------------------------*/
-xbt_error_t 
-xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys);
-xbt_error_t 
-xbt_multidict_remove_ext(xbt_dict_t mdict, 
-                         xbt_dynar_t keys, xbt_dynar_t lens);
+void xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys);
+void xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens);
 
 /** @} */
 /** @} */
