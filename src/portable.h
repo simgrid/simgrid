@@ -170,4 +170,11 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 #  define PRINTF_STR(a) (a)?:"(null)"
 #endif
 
+/*
+ * What we need to extract the backtrace in exception handling code
+ */
+#ifdef HAVE_EXECINFO_H
+#  include <execinfo.h>
+#endif
+
 #endif /* GRAS_PORTABLE_H */
