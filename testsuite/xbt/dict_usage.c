@@ -228,8 +228,8 @@ xbt_dict_dump(head,(void (*)(void*))&printf);
   } CATCH(e) {
     if (e.category != not_found_error) 
       RETHROW;
-    xbt_ex_free(e);              traverse(head);
-  } 
+    xbt_ex_free(e);
+  }                              traverse(head);
   
   printf(" - Free the dictionnary twice\n");
   xbt_dict_free(&head);
