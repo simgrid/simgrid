@@ -1,8 +1,8 @@
 #! @BASH@ -e
 if [ x@EXEEXT@ = x ] ; then 
-  wine=
+  exenv=$SG_TEST_EXENV
 else
-  wine=wine
+  exenv=wine
 fi
     
-exec $wine ./chrono_multiplier@EXEEXT@ $@
+exec $exenv ./chrono_multiplier@EXEEXT@ $@

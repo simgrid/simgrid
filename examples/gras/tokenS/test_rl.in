@@ -2,7 +2,7 @@
 if [ x@EXEEXT@ = x ] ; then 
 #  exenv="libtool --mode=execute valgrind --db-attach=yes --run-libc-freeres=no "
 #  exenv="libtool --mode=execute valgrind --run-libc-freeres=no "
-  exenv=
+  exenv=$SG_TEST_EXENV
 else
   exenv=wine
 fi

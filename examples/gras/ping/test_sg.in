@@ -1,6 +1,6 @@
 #! @BASH@
 if [ x@EXEEXT@ = x ] ; then 
-  exenv=
+  exenv=$SG_TEST_EXENV
 else
   exenv=wine
 fi
