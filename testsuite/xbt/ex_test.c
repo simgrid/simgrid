@@ -35,6 +35,7 @@
 
 #include "ex_test_ts.h"
 #include "xbt/ex.h"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_CATEGORY(test,"This test");
 
