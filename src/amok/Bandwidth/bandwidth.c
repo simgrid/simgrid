@@ -175,7 +175,7 @@ xbt_error_t amok_bw_test(gras_socket_t peer,
 				   request_ack->host.port, 
 				   request->buf_size,1);
   } CATCH(e) {
-    RETHROW2("Error encountered while opening the measurement socket to %s:%d for BW test",
+    RETHROW2("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
 	     gras_socket_peer_name(peer),request_ack->host.port);
   }
   DEBUG1("Got ACK; conduct the experiment (msg_size=%ld)",request->msg_size);
