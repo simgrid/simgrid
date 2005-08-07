@@ -202,6 +202,7 @@ typedef enum {
   unknown_error=0,  /**< unknown error */
   arg_error,        /**< Invalid argument */
   mismatch_error,   /**< The provided ID does not match */
+  not_found_error,  /**< The searched element was not found */
   
   system_error,   /**< a syscall did fail */
   network_error,  /**< error while sending/receiving data */
@@ -209,7 +210,7 @@ typedef enum {
   thread_error    /**< error while [un]locking */
 } xbt_errcat_t;
 
-const char *xbt_errcat_name(xbt_error_t errcode);
+const char *xbt_errcat_name(xbt_errcat_t errcode);
 
 /** @brief Structure describing an exception */
 typedef struct {
