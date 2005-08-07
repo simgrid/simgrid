@@ -7,11 +7,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "math.h" /* floor */
+#include <math.h> /* floor */
 
 #include "portable.h"
 
 #include "xbt/sysdep.h"
+#include "xbt/log.h"
 #include "gras/virtu.h"
 #include "xbt/xbt_portability.h" /* private */
 
