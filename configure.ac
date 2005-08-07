@@ -35,7 +35,8 @@ AC_CHECK_HEADERS([sys/socket.h \
                   sys/stat.h \
 		  windows.h winsock.h winsock2.h \
 		  sys/time.h \
-		  errno.h unistd.h ])
+		  errno.h unistd.h \
+		  execinfo.h])
 AC_CHECK_FUNCS([gettimeofday usleep \
                 getdtablesize \
                 sysconf])
