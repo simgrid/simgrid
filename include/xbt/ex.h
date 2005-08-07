@@ -35,12 +35,16 @@
 #include <xbt/misc.h>
 #include <xbt/sysdep.h>
 
+/* do not include execinfo.h directly since it's not always available. 
+   Instead, copy the parts we need (and fake when it's not there) */
+extern int backtrace (void **__array, int __size);
+
 /* required ISO-C standard facilities */
 #include <errno.h>
 #include <stdio.h>
 
 //#define __EX_MCTX_MCSC__ 1
-#define __EX_MCTX_SSJLJ__ 1
+//#define __EX_MCTX_SSJLJ__ 1
 /* the machine context */
 #if defined(__EX_MCTX_MCSC__)
 #include <ucontext.h>            /* POSIX.1 ucontext(3) */
@@ -343,7 +347,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e)  __attribute__((__noreturn__
  * The THROW can be performed everywhere, including inside TRY, 
  * CLEANUP and CATCH blocks.
  */
-#include <execinfo.h>
+
 #define _THROW(c,v,m) \
   do { /* change this sequence into one block */                               \
      /* build the exception */ \
