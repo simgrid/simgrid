@@ -1,9 +1,9 @@
 include_HEADERS = gras.h xbt.h
 nobase_include_HEADERS = \
-        xbt/ex.h \
 	xbt/misc.h \
 	xbt/sysdep.h \
-	xbt/log.h xbt/error.h \
+	xbt/asserts.h xbt/error.h xbt/ex.h \
+	xbt/log.h \
 	xbt/module.h \
 	xbt/dynar.h xbt/dict.h xbt/set.h \
 	xbt/heap.h \

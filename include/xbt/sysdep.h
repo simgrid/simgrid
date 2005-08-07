@@ -14,11 +14,13 @@
 #include <string.h>
 #include <stdlib.h> 
 #include <stdio.h>
+#include <stdarg.h> /* va_list */
    
 #include "xbt/misc.h"
-#include "xbt/error.h"
+#include "xbt/asserts.h"
   
 BEGIN_DECL()
+
 /** @addtogroup XBT_syscall
  *  @{
  */
@@ -94,8 +96,8 @@ static inline void *xbt_realloc(void*p,int s){
 
 /* FIXME: better place? */
 int vasprintf  (char **ptr, const char *fmt, va_list ap);
-char *bprintf(const char*fmt, ...);
-
+char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+  
 END_DECL()
 
 #endif /* _XBT_SYSDEP_H */

@@ -10,6 +10,8 @@
 #ifndef XBT_ERROR_H
 #define XBT_ERROR_H
 
+//#error do not use this crap anymore
+
 #include "xbt/misc.h" /* BEGIN_DECL */
 #include "xbt/log.h"
 
@@ -121,44 +123,6 @@ typedef enum {
 #define OLDRAISE5(code,fmt,a1,a2,a3,a4,a5)    _XBT_ERR_PRE   ERROR5(fmt,a1,a2,a3,a4,a5);    _XBT_ERR_POST(code)
 /** @hideinitializer  */
 #define OLDRAISE6(code,fmt,a1,a2,a3,a4,a5,a6) _XBT_ERR_PRE   ERROR6(fmt,a1,a2,a3,a4,a5,a6); _XBT_ERR_POST(code)
-
-/** @} */
-/** 
- * \name 4. assert macro familly
- *
- * Those are the GRAS version of the good ol' assert macro. You can pass them a format message and 
- * arguments, just as if it where a printf. It is converted to a CRITICALn logging request.
- *
- * @{
- */
-#ifdef NDEBUG
-#define xbt_assert(cond)
-#define xbt_assert0(cond,msg)
-#define xbt_assert1(cond,msg,a)
-#define xbt_assert2(cond,msg,a,b)
-#define xbt_assert3(cond,msg,a,b,c)
-#define xbt_assert4(cond,msg,a,b,c,d)
-#define xbt_assert5(cond,msg,a,b,c,d,e)
-#define xbt_assert6(cond,msg,a,b,c,d,e,f)
-#else
-/** @brief The condition which failed will be displayed.
-    @hideinitializer  */
-#define xbt_assert(cond)                  if (!(cond)) { CRITICAL1("Assertion %s failed", #cond); xbt_abort(); }
-/** @hideinitializer  */
-#define xbt_assert0(cond,msg)             if (!(cond)) { CRITICAL0(msg); xbt_abort(); }
-/** @hideinitializer  */
-#define xbt_assert1(cond,msg,a)           if (!(cond)) { CRITICAL1(msg,a); xbt_abort(); }
-/** @hideinitializer  */
-#define xbt_assert2(cond,msg,a,b)         if (!(cond)) { CRITICAL2(msg,a,b); xbt_abort(); }
-/** @hideinitializer  */
-#define xbt_assert3(cond,msg,a,b,c)       if (!(cond)) { CRITICAL3(msg,a,b,c); xbt_abort(); }
-/** @hideinitializer  */
-#define xbt_assert4(cond,msg,a,b,c,d)     if (!(cond)) { CRITICAL4(msg,a,b,c,d); xbt_abort(); }
-/** @hideinitializer  */
-#define xbt_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) { CRITICAL5(msg,a,b,c,d,e); xbt_abort(); }
-/** @hideinitializer  */
-#define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); xbt_abort(); }
-#endif
 
 /** @} */
 

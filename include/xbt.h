@@ -14,6 +14,7 @@
 #include <xbt/sysdep.h>
 
 #include <xbt/error.h>
+#include <xbt/asserts.h>
 #include <xbt/log.h>
 
 #include <xbt/module.h>
