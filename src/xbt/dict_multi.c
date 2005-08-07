@@ -62,6 +62,7 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
 	RETHROW;
 
       /* make sure the dict of next level exists */
+      xbt_ex_free(e);
       nextlevel=xbt_dict_new();
       VERB1("Create a dict (%p)",nextlevel);
       xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
