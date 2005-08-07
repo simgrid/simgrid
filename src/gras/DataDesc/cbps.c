@@ -66,7 +66,7 @@ void gras_cbps_free(gras_cbps_t *state) {
  * name already exists, it is masked by the one given here, and will be 
  * seeable again only after a pop to remove the value this push adds.
  */
-xbt_error_t
+void
 gras_cbps_v_push(gras_cbps_t          ps,
 		 const char          *name,
 		 void                *data,
@@ -102,16 +102,14 @@ gras_cbps_v_push(gras_cbps_t          ps,
   DEBUG4("Push %s (%p @%p) into frame %p",varname,(void*)varname,(void*)&varname,(void*)frame);
   xbt_dynar_push(frame, &varname);
   xbt_dynar_push(ps->frames, &frame); 
-  return no_error;
 }
 
 /** \brief Retrieve an element from the PS, and remove it from the PS.
  *
- * If it's not
- * present in the current block, it will fail (with abort) and not search
- * in upper blocks since this denotes a programmation error.
+ * If it's not present in the current block, it will fail (throwing not_found)
+ * and not search in upper blocks since this denotes a programmation error.
  */
-xbt_error_t
+void
 gras_cbps_v_pop (gras_cbps_t            ps, 
 		 const char            *name,
 		 gras_datadesc_type_t  *ddt,
@@ -129,7 +127,7 @@ gras_cbps_v_pop (gras_cbps_t            ps,
       RETHROW;
 
     xbt_ex_free(e);
-    THROW1(mismatch_error,1,"Asked to pop the non-existant %s", name);
+    THROW1(not_found_error,1,"Asked to pop the non-existant %s", name);
   }
   xbt_dynar_pop(varstack, &var);
   
@@ -163,7 +161,6 @@ gras_cbps_v_pop (gras_cbps_t            ps,
   xbt_dynar_push(ps->frames, &frame);
   
   *res = data;
-  return no_error;
 }
 
 /** \brief Change the value of an element in the PS.
