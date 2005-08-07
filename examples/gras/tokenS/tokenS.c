@@ -111,6 +111,8 @@ int node (int argc,char *argv[]) {
   const char *host;
   int   myport;
   int   peerport;
+    
+  xbt_ex_t e;
   
   /* 1. Init the GRAS infrastructure and declare my globals */
   gras_init(&argc,argv);
