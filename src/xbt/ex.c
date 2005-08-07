@@ -31,8 +31,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <execinfo.h>
 
+#include "portable.h" /* execinfo when available */
 #include "xbt/ex.h"
 
 /* default __ex_ctx callback function */
@@ -44,8 +44,6 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
 
 /* default __ex_terminate callback function */
 void __xbt_ex_terminate_default(xbt_ex_t *e)  {
-  char **strings;
-  size_t i;
 
   fprintf(stderr,
 	  "** SimGrid: UNCAUGHT EXCEPTION: category: %s; value: %d\n"
@@ -55,6 +53,11 @@ void __xbt_ex_terminate_default(xbt_ex_t *e)  {
 	  e->procname, (e->host?"@":""),(e->host?e->host:"localhost"),
 	  e->file,e->line,e->func);
 
+#ifdef HAVE_EXECINFO_H
+ {
+  char **strings;
+  size_t i;
+
   fprintf(stderr,"** Backtrace:\n");
   strings = backtrace_symbols (e->bt, e->used);
 
@@ -62,6 +65,9 @@ void __xbt_ex_terminate_default(xbt_ex_t *e)  {
      printf ("   %s\n", strings[i]);
 
   free (strings);
+ }
+#endif
+
   abort();
 }
 
@@ -88,3 +94,11 @@ const char * xbt_ex_catname(xbt_errcat_t cat) {
   default:              return "INVALID_ERR";
   }
 }
+
+#ifndef HAVE_EXECINFO_H
+/* dummy implementation. We won't use the result, but ex.h needs it to be defined */
+int backtrace (void **__array, int __size) {
+  return 0;
+}
+
+#endif
