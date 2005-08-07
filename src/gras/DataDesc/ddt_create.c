@@ -627,11 +627,11 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t,
   return res;
 }
 
-xbt_error_t
+
+gras_datadesc_type_t
 gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
-			 unsigned long         howmany,
-	       /* OUT */ gras_datadesc_type_t *dst) {
+			 unsigned long         howmany) {
   THROW_UNIMPLEMENTED;
 }
 
