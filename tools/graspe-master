@@ -3,7 +3,9 @@
 MACHINES=${MACHINES:-\
            graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
            valnure.cs.ucsb.edu sperm.cs.ucsb.edu     basalt.cs.ucsb.edu \
-           nala.cs.utk.edu     AIX}
+           AIX}
+
+# no access anymore: nala.cs.utk.edu
 
 # ACTIONS: What to do there
 # possible values:
