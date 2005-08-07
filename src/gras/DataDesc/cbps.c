@@ -27,9 +27,7 @@ typedef struct s_gras_cbps {
   xbt_dynar_t globals;
 } s_gras_cbps_t;
 
-void free_string(void *d);
-
-void free_string(void *d){
+static void free_string(void *d){
   free(*(void**)d);
 }
 
@@ -76,7 +74,7 @@ gras_cbps_v_push(gras_cbps_t          ps,
 
   xbt_dynar_t     varstack,frame;
   gras_cbps_elm_t var;
-  char           *varname = (char*)strdup(name);
+  char           *varname = (char*)xbt_strdup(name);
   xbt_ex_t        e;
 
   DEBUG2("push(%s,%p)",name,(void*)data);
@@ -84,15 +82,14 @@ gras_cbps_v_push(gras_cbps_t          ps,
   TRY {
     varstack = xbt_dict_get(ps->space, name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
-      DEBUG1("Create a new variable stack for '%s' into the space",name);
-      varstack = xbt_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
-      xbt_dict_set(ps->space, varname, (void **)varstack, NULL);
-      xbt_ex_free(e);
-    /* leaking, you think? only if you do not close all the openned blocks ;)*/
-    } else {
+    if (e.category != mismatch_error) 
       RETHROW;
-    }
+
+    DEBUG1("Create a new variable stack for '%s' into the space",name);
+    varstack = xbt_dynar_new(sizeof (gras_cbps_elm_t *), NULL);
+    xbt_dict_set(ps->space, varname, (void **)varstack, NULL);
+    xbt_ex_free(e);
+    /* leaking, you think? only if you do not close all the openned blocks ;)*/
   }
  
   var       = xbt_new0(s_gras_cbps_elm_t,1);
@@ -128,12 +125,11 @@ gras_cbps_v_pop (gras_cbps_t            ps,
   TRY {
     varstack = xbt_dict_get(ps->space, name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
-      xbt_ex_free(e);
-      THROW1(mismatch_error,1,"Asked to pop the non-existant %s",
-	     name);
-    }
-    RETHROW;
+    if (e.category != mismatch_error)
+      RETHROW;
+
+    xbt_ex_free(e);
+    THROW1(mismatch_error,1,"Asked to pop the non-existant %s", name);
   }
   xbt_dynar_pop(varstack, &var);
   
@@ -187,19 +183,9 @@ gras_cbps_v_set (gras_cbps_t          ps,
 
   xbt_dynar_t dynar = NULL;
   gras_cbps_elm_t elm = NULL;
-  xbt_ex_t e;
   
   DEBUG1("set(%s)",name);
-  TRY {
-    dynar = xbt_dict_get(ps->space, name);
-  } CATCH(e) {
-    if (e.category == mismatch_error) {
-      dynar = NULL;
-      xbt_ex_free(e);
-    } else {
-      RETHROW;
-    }
-  }
+  dynar = xbt_dict_get_or_null(ps->space, name);
 
   if (dynar == NULL) {
     dynar = xbt_dynar_new(sizeof (gras_cbps_elm_t), NULL);
