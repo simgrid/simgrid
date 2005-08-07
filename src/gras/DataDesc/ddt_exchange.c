@@ -260,12 +260,10 @@ gras_datadesc_send_rec(gras_socket_t         sock,
       else 
 	reference_is_to_send = 1;
     } CATCH(e) {
-      if (e.category == mismatch_error) {
-	reference_is_to_send = 1;
-	xbt_ex_free(e);
-      } else {
+      if (e.category != mismatch_error)
 	RETHROW;
-      }
+      reference_is_to_send = 1;
+      xbt_ex_free(e);
     }
 
     if (reference_is_to_send) {
@@ -512,12 +510,10 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       else 
 	reference_is_to_recv = 1;
     } CATCH(e) {
-      if (e.category == mismatch_error) {
-	reference_is_to_recv = 1;
-	xbt_ex_free(e);
-      } else {
-	RETHROW;
-      }
+      if (e.category != mismatch_error)
+        RETHROW;
+      reference_is_to_recv = 1;
+      xbt_ex_free(e);
     }
     if (reference_is_to_recv) {
       int subsubcount = 0;
