@@ -205,7 +205,7 @@ gras_msg_send(gras_socket_t   sock,
   static gras_datadesc_type_t string_type=NULL;
 
   if (!msgtype)
-    THROW0(mismatch_error,0,
+    THROW0(arg_error,0,
 	   "Cannot send the NULL message (did msgtype_by_name fail?)");
 
   if (!string_type) {
@@ -248,9 +248,8 @@ gras_msg_recv(gras_socket_t    sock,
   TRY {
     gras_trp_chunk_recv(sock, header, 6);
   } CATCH(e) {
-    THROW2(e.category,e.value,
-	   "Exception caught while trying to get the mesage header on socket %p : %s",
-    	   sock,e.msg);
+    RETHROW1("Exception caught while trying to get the mesage header on socket %p : %s",
+    	     sock);
   }
 
   for (cpt=0; cpt<4; cpt++)
@@ -482,6 +481,7 @@ gras_msg_handle(double timeOut) {
     }
   }
 
+  /* FIXME: gras_datadesc_free not implemented => leaking the payload */
   THROW1(mismatch_error,0,
 	 "Message '%s' refused by all registered callbacks", msgtype->name);
 }
