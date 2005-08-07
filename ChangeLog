@@ -1,5 +1,12 @@
 SimGrid (2.96) unstable; urgency=low
 
+  XBT:
+  * New! Exception handling with setjmp or such (code from OSSP ex) [MQ]
+    This deprecates the xbt_error_t mecanisms. 
+    It modifies (simplifies) all XBT and GRAS API.
+    MSG API keeps unchanged (exceptions raised by XBT are catched from 
+     within MSG and masked with existing error handling facilities)
+
   SURF:
   * New! Add a FATPIPE model. [AL]
   * New! Add a parallel task model. [AL]
