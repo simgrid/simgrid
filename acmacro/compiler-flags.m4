@@ -87,5 +87,12 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
       CFLAGS="$optCFLAGS $CFLAGS"
     fi
   fi
+
+  if test x$lt_cv_prog_gnu_ld = xyes ; then
+    LD_DYNAMIC_FLAGS=-Wl,--export-dynamic
+  else
+    LD_DYNAMIC_FLAGS=
+  fi
+  AC_SUBST(LD_DYNAMIC_FLAGS) 
   
 ])

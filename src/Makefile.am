@@ -194,10 +194,10 @@ endif
 endif
 
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC) $(AMOK_SRC)
-libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@ -lm -Wl,--export-dynamic
+libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
 libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)
-libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@ -lm -Wl,--export-dynamic
+libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
 
 include $(top_srcdir)/acmacro/dist-files.mk
