@@ -88,6 +88,7 @@ xbt_multidict_set(xbt_dict_t  mdict,
                   void       *data,  void_f_pvoid_t *free_ctn) {
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
   int i;
+  xbt_ex_t e;
 
   for (i = 0; i < xbt_dynar_length(keys); i++) {
     char *thiskey = xbt_dynar_get_as(keys, i, char*);
@@ -96,9 +97,13 @@ xbt_multidict_set(xbt_dict_t  mdict,
     xbt_dynar_push(lens,&thislen);
   }
 
-  xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
-  xbt_dynar_free(&lens);         
-
+  TRY {
+    xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
+  } CLEANUP {
+    xbt_dynar_free(&lens);         
+  } CATCH(e) {
+    RETHROW;
+  }
 }
 
 /** \brief Insert \e data under all the keys contained in \e keys, providing their sizes in \e lens.
