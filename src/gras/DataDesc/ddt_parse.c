@@ -90,7 +90,6 @@ static void parse_type_modifier(type_modifier_t type_modifier)  {
   XBT_OUT;
 }
 
-static void print_type_modifier(s_type_modifier_t tm) __attribute__((unused));
 static void print_type_modifier(s_type_modifier_t tm) {
   int i;
 
