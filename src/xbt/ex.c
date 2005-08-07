@@ -71,6 +71,7 @@ ex_term_cb_t __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
 void xbt_ex_free(xbt_ex_t e) {
   free(e.msg);
+  free(e.procname);
 }
 
 /** \brief returns a short name for the given exception category */
