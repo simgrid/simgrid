@@ -142,7 +142,7 @@ static void search_not_found(xbt_set_t set, const char *data) {
     xbt_set_get_by_name(set,data);
     THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
+    if (e.category == not_found_error) {
       xbt_ex_free(e);
     } else {
       RETHROW;
