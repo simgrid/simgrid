@@ -67,6 +67,7 @@ TS_TEST(test_controlflow)
         if (n != 4)
             ts_test_fail(TS_CTX, "M4: n=%d (!= 4)", n);
         n++;
+        xbt_ex_free(ex);
     }
     if (n != 5)
         ts_test_fail(TS_CTX, "M5: n=%d (!= 5)", n);
@@ -86,6 +87,7 @@ TS_TEST(test_value)
             ts_test_fail(TS_CTX, "value=%d (!= 2)", ex.value);
         if (strcmp(ex.msg,"toto"))
             ts_test_fail(TS_CTX, "message=%s (!= toto)", ex.msg);
+        xbt_ex_free(ex);
     }
 }
 
@@ -109,6 +111,7 @@ TS_TEST(test_variables)
         /* r2 is allowed to be destroyed because not volatile */
         if (v2 != 5678)
             ts_test_fail(TS_CTX, "v2=%d (!= 5678)", v2);
+        xbt_ex_free(ex);
     }
 }
 
@@ -134,6 +137,7 @@ TS_TEST(test_cleanup)
             ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
         if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.msg,"blah")))
             ts_test_fail(TS_CTX, "unexpected exception contents");
+        xbt_ex_free(ex);
     }
     if (!c)
         ts_test_fail(TS_CTX, "ex_cleanup not executed");
