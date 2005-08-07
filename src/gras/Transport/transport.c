@@ -35,13 +35,15 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
       /* SG plugin raise mismatch when in RL mode (and vice versa) */
       free(plug->name);
       free(plug);
+      plug=NULL;
       xbt_ex_free(e);
     } else {
       RETHROW;
     }
   }
 
-  xbt_dict_set(_gras_trp_plugins, name, plug, gras_trp_plugin_free);
+  if (plug)
+    xbt_dict_set(_gras_trp_plugins, name, plug, gras_trp_plugin_free);
 }
 
 void gras_trp_init(void){
