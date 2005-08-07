@@ -603,6 +603,6 @@ int main(int argc, char *argv[])
   generate_deployment(project_name, deployment_file);
 
   free(warning);
-  surf_finalize();
+  surf_exit();
   return 0;
 }
