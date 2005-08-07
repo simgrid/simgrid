@@ -57,18 +57,29 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
   TRY {
     res = (gras_datadesc_type_t)xbt_set_get_by_name(gras_datadesc_set_local,name);
   } CATCH(e) {
-    if (e.category != mismatch_error)
+    if (e.category != not_found_error)
       RETHROW;
+    xbt_ex_free(e);
     res = NULL;
   }
   return res;
 }
 
 /**
- * Retrieve a type from its code
+ * Retrieve a type from its code (or NULL if not found)
  */
 gras_datadesc_type_t gras_datadesc_by_id(long int code) {
-  return (gras_datadesc_type_t)xbt_set_get_by_id(gras_datadesc_set_local,code);
+  xbt_ex_t e;
+  gras_datadesc_type_t res;
+  TRY {
+    res = (gras_datadesc_type_t)xbt_set_get_by_id(gras_datadesc_set_local,code);
+  } CATCH(e) {
+    if (e.category != not_found_error)
+      RETHROW;
+    xbt_ex_free(e);
+    res = NULL;
+  }
+  return res;
 }
 
 /**

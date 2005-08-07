@@ -147,7 +147,7 @@ gras_msgtype_declare_v(const char           *name,
     msgtype = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,namev);
     found = 1;
   } CATCH(e) {
-    if (e.category != mismatch_error)
+    if (e.category != not_found_error)
       RETHROW;
     xbt_ex_free(e);
   }

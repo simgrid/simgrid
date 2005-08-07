@@ -256,11 +256,11 @@ gras_datadesc_send_rec(gras_socket_t         sock,
     TRY {
       if (detect_cycle)
 	/* return ignored. Just checking whether it's known or not */
-	xbt_dict_get_ext(refs,(char*)ref, sizeof(void*));
+	xbt_dict_get_ext(refs,(char*)ref, sizeof(char*));
       else 
 	reference_is_to_send = 1;
     } CATCH(e) {
-      if (e.category != mismatch_error)
+      if (e.category != not_found_error)
 	RETHROW;
       reference_is_to_send = 1;
       xbt_ex_free(e);
@@ -510,7 +510,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       else 
 	reference_is_to_recv = 1;
     } CATCH(e) {
-      if (e.category != mismatch_error)
+      if (e.category != not_found_error)
         RETHROW;
       reference_is_to_recv = 1;
       xbt_ex_free(e);
