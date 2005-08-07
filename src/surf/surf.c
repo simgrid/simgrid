@@ -195,7 +195,7 @@ FILE *surf_fopen(const char *name, const char *mode)
   return file;
 }
 
-void surf_finalize(void)
+void surf_exit(void)
 {
   int i;
   surf_resource_t resource = NULL;
@@ -224,6 +224,7 @@ void surf_finalize(void)
     free(path_name);
     path_name = NULL;
   }
+  xbt_exit();
 }
 
 double surf_solve(void)
