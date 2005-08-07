@@ -67,18 +67,6 @@ _collapse_if_need(s_xbt_dictelm_t *p_head,
 
 /* ---- */
 
-static _XBT_INLINE
-void *
-xbt_memdup(const void * const ptr,
-	    const size_t       length) {
-  void * new_ptr = NULL;
-
-  new_ptr = xbt_malloc(length);
-  memcpy(new_ptr, ptr, length);
-   
-  return new_ptr;
-}
-
 /*
  * _xbt_nibble_to_char:
  *
@@ -547,7 +535,11 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       _xbt_dictelm_alloc(key, key_len, offset, FALSE, data, free_f, &p_new);
       p_child=xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
 
-      anc_key = xbt_memdup(key, anc_key_len);
+      /* memdup the old key, taking care of the terminating NULL byte */
+      anc_key = xbt_malloc(anc_key_len+1);
+      memcpy(anc_key, key, anc_key_len);
+      anc_key[anc_key_len] = '\0';
+
 
       _xbt_dictelm_alloc(anc_key, anc_key_len, old_offset, TRUE, NULL, NULL, &p_anc);
 
@@ -593,7 +585,10 @@ xbt_dictelm_set_ext(s_xbt_dictelm_t **pp_head,
   s_xbt_dictelm_t  *p_head  = *pp_head;
   char         *key     =  NULL;
 
-  key = xbt_memdup(_key, key_len+1);
+  /* Make sure the copied key is NULL-terminated */
+  key = xbt_malloc(key_len+1);
+  memcpy(key, _key, key_len);
+  key[key_len] = '\0';
 
   /* there is no head, create it */
   if (!p_head) {
