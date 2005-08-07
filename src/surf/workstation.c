@@ -108,7 +108,7 @@ static void action_use(surf_action_t action)
   else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
     surf_cpu_resource->common_public->action_use(action);
   else if(action->resource_type==(surf_resource_t)surf_workstation_resource)
-    return parallel_action_use(action);
+    parallel_action_use(action);
   else DIE_IMPOSSIBLE;
   return;
 }
@@ -120,7 +120,7 @@ static void action_cancel(surf_action_t action)
   else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
     surf_cpu_resource->common_public->action_cancel(action);
   else if(action->resource_type==(surf_resource_t)surf_workstation_resource)
-    return parallel_action_use(action);
+    parallel_action_use(action);
   else DIE_IMPOSSIBLE;
   return;
 }
