@@ -277,10 +277,6 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e)  __attribute__((__noreturn__
 /** @brief Introduce a block where exception may be dealed with 
  *  @hideinitializer
  */
-/*        xbt_assert1(1,\
-                "Severe error in exception mecanism: cannot save the catching context: %s", \
-		    strerror(errno)); \
-*/
 #define TRY \
     { \
         ex_ctx_t *__xbt_ex_ctx_ptr = __xbt_ex_ctx(); \
