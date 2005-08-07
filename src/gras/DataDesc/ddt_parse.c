@@ -163,9 +163,9 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar) {
   XBT_OUT;
 }
 
-static xbt_error_t parse_statement(char	 *definition,
-				    xbt_dynar_t  identifiers,
-				    xbt_dynar_t  fields_to_push) {
+static void parse_statement(char	 *definition,
+			    xbt_dynar_t  identifiers,
+			    xbt_dynar_t  fields_to_push) {
   char buffname[512];
 
   s_identifier_t identifier;
@@ -178,7 +178,7 @@ static xbt_error_t parse_statement(char	 *definition,
   gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
   if(gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RA) {
     XBT_OUT;
-    return old_mismatch_error; /* end of the englobing structure or union */
+    THROW0(mismatch_error,0,"End of the englobing structure or union");
   }
   
   if (XBT_LOG_ISENABLED(ddt_parse,xbt_log_priority_debug)) {
@@ -434,18 +434,19 @@ static xbt_error_t parse_statement(char	 *definition,
   }
 
   XBT_OUT;
-  return no_error;
 }
 
 static gras_datadesc_type_t parse_struct(char *definition) {
 
-  xbt_error_t errcode;
+  xbt_ex_t e;
+
   char buffname[32];
   static int anonymous_struct=0;
 
   xbt_dynar_t identifiers;
   s_identifier_t field;
   int i;
+  int done;
 
   xbt_dynar_t fields_to_push;
   char *name;
@@ -472,9 +473,16 @@ static gras_datadesc_type_t parse_struct(char *definition) {
 		 gras_ddt_parse_text);
 
   /* Parse the identifiers */
-  for (errcode=parse_statement(definition,identifiers,fields_to_push);
-       errcode == no_error                            ;
-       errcode=parse_statement(definition,identifiers,fields_to_push)) {
+  done = 0;
+  do {
+    TRY {
+      parse_statement(definition,identifiers,fields_to_push);
+    } CATCH(e) {
+      if (e.category != mismatch_error)
+	RETHROW;
+      xbt_ex_free(e);
+      done = 1;
+    }
     
     DEBUG1("This statement contained %lu identifiers",xbt_dynar_length(identifiers));
     /* append the identifiers we've found */
@@ -500,12 +508,8 @@ static gras_datadesc_type_t parse_struct(char *definition) {
       free(name);
     }
     xbt_dynar_reset(fields_to_push);
-  }
+  } while (!done);
   gras_datadesc_struct_close(struct_type);
-  if (errcode != mismatch_error) {
-    XBT_OUT;
-    return NULL; /* FIXME: LEAK! */
-  }
 
   /* terminates */
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RA)
