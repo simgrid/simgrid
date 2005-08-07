@@ -91,11 +91,9 @@ static void search_not_found(xbt_dict_t head, const char *data) {
     data = xbt_dict_get(head,"Can't be found");
     THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
-      xbt_ex_free(e);
-    } else {
+    if (e.category != not_found_error) 
       RETHROW;
-    }
+    xbt_ex_free(e);
   }
 }
 
@@ -192,7 +190,7 @@ xbt_dict_dump(head,(void (*)(void*))&printf);
   TRY {
     debuged_remove(head,"Does not exist");
   } CATCH(e) {
-    if (e.category != mismatch_error) 
+    if (e.category != not_found_error) 
       RETHROW;
     xbt_ex_free(e);
   }
@@ -218,7 +216,7 @@ xbt_dict_dump(head,(void (*)(void*))&printf);
   TRY {
     debuged_remove(head,"12346");
   } CATCH(e) {
-    if (e.category != mismatch_error) 
+    if (e.category != not_found_error) 
       RETHROW;
     xbt_ex_free(e);              traverse(head);
   } 
@@ -228,7 +226,7 @@ xbt_dict_dump(head,(void (*)(void*))&printf);
   TRY {
     debuged_remove(head,"12346");
   } CATCH(e) {
-    if (e.category != mismatch_error) 
+    if (e.category != not_found_error) 
       RETHROW;
     xbt_ex_free(e);              traverse(head);
   } 

@@ -99,9 +99,9 @@ int main(int argc, char **argv) {
   xbt_cfg_t myset=make_set();
   TRY {
     xbt_cfg_set_parse(myset,"color:blue");
-    THROW1(unknown_error,0,"Found an option which shouldn't be there (%s)","color:blue");
+    THROW1(mismatch_error,0,"Found an option which shouldn't be there (%s)","color:blue");
   } CATCH(e) {
-    if (e.category != mismatch_error)
+    if (e.category != not_found_error)
       RETHROW;
     xbt_ex_free(e);
   }

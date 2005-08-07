@@ -140,7 +140,7 @@ int main(int argc,char **argv) {
     if (!(j%10000)) printf("."); fflush(stdout);
     
     sprintf(key,"%d",j);
-    TRYFAIL(xbt_dict_remove(head,key));
+    xbt_dict_remove(head,key);
   }
   printf("\n");
   free(key);
