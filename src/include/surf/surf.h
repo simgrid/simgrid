@@ -188,6 +188,6 @@ double surf_solve(void);	/*  update all states and returns
 				   the time elapsed since last
 				   event */
 double surf_get_clock(void);
-void surf_finalize(void);	/* clean everything */
+void surf_exit(void);	/* clean everything */
 
 #endif				/* _SURF_SURF_H */
