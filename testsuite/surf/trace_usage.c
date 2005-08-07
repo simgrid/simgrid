@@ -41,8 +41,6 @@ void test(void)
       break;
   }
 
-  tmgr_trace_free(trace_A);
-  tmgr_trace_free(trace_B);
   tmgr_history_free(history);
   free(host_B);
   free(host_A);
@@ -53,5 +51,6 @@ int main(int argc, char **argv)
 {
   surf_init(&argc,argv);
   test();
+  surf_exit();
   return 0;
 }

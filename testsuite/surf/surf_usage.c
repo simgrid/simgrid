@@ -131,8 +131,6 @@ void test(char *platform)
   } while (surf_solve()>=0.0);
 
   DEBUG0("Simulation Terminated\n");
-
-  surf_finalize();
 }
 
 int main(int argc, char **argv)
@@ -143,5 +141,7 @@ int main(int argc, char **argv)
      return 1;
   }
   test(argv[1]);
+
+  surf_exit();
   return 0;
 }

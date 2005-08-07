@@ -103,7 +103,6 @@ void test(char *platform)
 
   DEBUG0("Simulation Terminated\n");
 
-  surf_finalize();
 }
 
 int main(int argc, char **argv)
@@ -111,8 +110,11 @@ int main(int argc, char **argv)
   surf_init(&argc, argv);	/* Initialize some common structures */
   if(argc==1) {
      fprintf(stderr,"Usage : %s platform.txt\n",argv[0]);
+     surf_exit();
      return 1;
   }
   test(argv[1]);
+
+  surf_exit();
   return 0;
 }
