@@ -10,17 +10,16 @@
 #include <stdio.h>
 #include "gras.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging for this test");
+XBT_LOG_NEW_CATEGORY(test,"Logging for this test");
 
 /*====[ Code ]===============================================================*/
 static xbt_cfg_t make_set(){
   xbt_cfg_t set=NULL; 
-  xbt_error_t errcode;
 
   set = xbt_cfg_new();
-  TRYFAIL(xbt_cfg_register_str(set,"speed:1_to_2_int"));
-  TRYFAIL(xbt_cfg_register_str(set,"hostname:1_to_1_string"));
-  TRYFAIL(xbt_cfg_register_str(set,"user:1_to_10_string"));
+  xbt_cfg_register_str(set,"speed:1_to_2_int");
+  xbt_cfg_register_str(set,"hostname:1_to_1_string");
+  xbt_cfg_register_str(set,"user:1_to_10_string");
 
   return set;
 } /* end_of_make_set */
@@ -40,21 +39,29 @@ int main(int argc, char **argv) {
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
 
-  fprintf(stderr,
-	  "==== Validation test. (ERROR EXPECTED: not enough values of 'speed')\n");
+  fprintf(stderr, "==== Validation test with too few values of 'speed'\n");
   set=make_set();
   xbt_cfg_set_parse(set, "hostname:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
-  xbt_cfg_check(set);
+  TRY {
+    xbt_cfg_check(set);
+  } CATCH(e) {
+    if (e.category != mismatch_error || 
+	strncmp(e.msg,"Config elem speed needs",strlen("Config elem speed needs")))
+      RETHROW;
+    xbt_ex_free(e);
+  }
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
 
-  fprintf(stderr,"==== Validation test\n");
-  set=make_set();
+  fprintf(stderr,"==== Validation test with too much values of 'speed'\n");
+  set=make_set(); 
+    xbt_cfg_set_parse(set,"hostname:toto:42 user:alegrand");
   TRY {
-    xbt_cfg_set_parse(set,"hostname:toto:42");
     xbt_cfg_set_parse(set,"speed:42 speed:24 speed:34");
   } CATCH(e) {
-    if (e.category != mismatch_error)
+    if (e.category != mismatch_error ||
+	strncmp(e.msg,"Cannot add value 34 to the config elem speed",
+		strlen("Config elem speed needs")))
       RETHROW;
     xbt_ex_free(e);
   }
