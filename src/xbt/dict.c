@@ -146,7 +146,7 @@ xbt_dict_get_or_null(xbt_dict_t     dict,
   TRY {
     res = xbt_dictelm_get(dict->head, key);
   } CATCH(e) {
-    if (e.category != mismatch_error) 
+    if (e.category != not_found_error) 
       RETHROW;
     xbt_ex_free(e);
     res=NULL;
@@ -165,13 +165,13 @@ xbt_dict_get_or_null(xbt_dict_t     dict,
  *
  * Remove the entry associated with the given \a key
  */
-xbt_error_t
+void
 xbt_dict_remove_ext(xbt_dict_t  dict,
                      const char  *key,
                      int          key_len) {
   xbt_assert(dict);
   
-  return xbt_dictelm_remove_ext(dict->head, key, key_len);
+  xbt_dictelm_remove_ext(dict->head, key, key_len);
 }
 
 /**
@@ -182,13 +182,13 @@ xbt_dict_remove_ext(xbt_dict_t  dict,
  *
  * Remove the entry associated with the given \a key
  */
-xbt_error_t
+void
 xbt_dict_remove(xbt_dict_t  dict,
 		 const char  *key) {
   if (!dict)
     THROW1(arg_error,0,"Asked to remove key %s from NULL dict",key);
 
-  return xbt_dictelm_remove(dict->head, key);
+  xbt_dictelm_remove(dict->head, key);
 }
 
 

@@ -9,16 +9,17 @@
 
 
 #include <stdarg.h>
-#include "gras_config.h" /* to get a working stdarg.h */
 #include <ctype.h>
 #include <stdio.h> /* snprintf */
+#include <stdlib.h> /* snprintf */
+#include "gras_config.h" /* to get a working stdarg.h */
 
 #include "xbt_modinter.h"
 
 #include "xbt/misc.h"
+#include "xbt/ex.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "xbt/dynar.h"
 
 /** \addtogroup XBT_log
@@ -484,21 +485,16 @@ static void _xbt_log_parse_setting(const char*        control_string,
   DEBUG1("This is for cat '%s'", set->catname);
 }
 
-static xbt_error_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name,
-					    /*OUT*/xbt_log_category_t*whereto) {
-  xbt_error_t errcode;
+static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name) {
   xbt_log_category_t child;
   
   if (!strcmp(cat->name,name)) {
-    *whereto=cat;
-    return no_error;
+    return cat;
   }
   for(child=cat->firstChild ; child != NULL; child = child->nextSibling) {
-    errcode=_xbt_log_cat_searchsub(child,name,whereto);
-    if (errcode==no_error)
-      return no_error;
+    return _xbt_log_cat_searchsub(child,name);
   }
-  return old_mismatch_error;
+  THROW0(not_found_error,0,"No such category");
 }
 
 static void _cleanup_double_spaces(char *s) {
@@ -552,7 +548,6 @@ static void _cleanup_double_spaces(char *s) {
  * logging command! Typically, this is done from main().
  */
 void xbt_log_control_set(const char* control_string) {
-  xbt_error_t errcode;
   xbt_log_setting_t set;
   char *cs;
   char *p;
@@ -572,6 +567,8 @@ void xbt_log_control_set(const char* control_string) {
 
   while (!done) {
     xbt_log_category_t cat;
+    int found;
+    xbt_ex_t e;
     
     p=strrchr(cs,' ');
     if (p) {
@@ -582,15 +579,24 @@ void xbt_log_control_set(const char* control_string) {
       done = 1;
     }
     _xbt_log_parse_setting(p,set);
-    
-    errcode = _xbt_log_cat_searchsub(&_XBT_LOGV(root),set->catname,&cat);
-    if (errcode == old_mismatch_error) {
+
+    TRY {
+      cat = _xbt_log_cat_searchsub(&_XBT_LOGV(root),set->catname);
+      found = 1;
+    } CATCH(e) {
+      if (e.category != not_found_error)
+	RETHROW;
+      xbt_ex_free(e);
+      found = 0;
+
       DEBUG0("Store for further application");
       DEBUG1("push %p to the settings",(void*)set);
       xbt_dynar_push(xbt_log_settings,&set);
       /* malloc in advance the next slot */
       set = xbt_new(s_xbt_log_setting_t,1);
-    } else {
+    } 
+
+    if (found) {
       DEBUG0("Apply directly");
       free(set->catname);
       xbt_log_threshold_set(cat,set->thresh);

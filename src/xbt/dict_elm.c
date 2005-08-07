@@ -54,10 +54,10 @@ static void * _xbt_dictelm_get_rec(s_xbt_dictelm_t *head,
                                    const char     *key,
 				   int             key_len,
 				   int             offset);
-static xbt_error_t _xbt_dictelm_remove_rec(s_xbt_dictelm_t *head,
-					     const char     *key,
-					     int             key_len,
-					     int             offset);
+static void _xbt_dictelm_remove_rec(s_xbt_dictelm_t *head,
+				    const char     *key,
+				    int             key_len,
+				    int             offset);
 
 static _XBT_INLINE
 void
@@ -642,9 +642,8 @@ xbt_dictelm_set(s_xbt_dictelm_t **pp_head,
  * @key: the key to find data
  * @offset: offset on the key
  * @data: the data that we are looking for
- * @Returns: xbt_error
  *
- * Search the given @key. mismatch_error when not found.
+ * Search the given @key. Throws not_found_error when not found.
  */
 static 
 void *
@@ -672,7 +671,7 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
     switch (match) {
 
     case 0: /* no child have a common prefix */
-      THROW1(mismatch_error,0,"key '%s' not found",key);
+      THROW1(not_found_error,0,"key '%s' not found",key);
 
     case 1: /* A child have exactly this key => Got it */
       {
@@ -691,10 +690,10 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
       }
 
     case 3: /* The key is a prefix of the child => not found */
-      THROW1(mismatch_error,0,"key %s not found",key);
+      THROW1(not_found_error,0,"key %s not found",key);
 
     case 4: /* A child share a common prefix with this key => not found */
-      THROW1(mismatch_error,0,"key %s not found",key);
+      THROW1(not_found_error,0,"key %s not found",key);
 
     default:
       THROW_IMPOSSIBLE;
@@ -708,9 +707,8 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
  * @head: the head of the dict
  * @key: the key to find data
  * @data: the data that we are looking for
- * @Returns: xbt_error
  *
- * Search the given @key. mismatch_error when not found.
+ * Search the given @key. Throws not_found_error when not found.
  */
 void *
 xbt_dictelm_get_ext(s_xbt_dictelm_t *p_head,
@@ -718,7 +716,7 @@ xbt_dictelm_get_ext(s_xbt_dictelm_t *p_head,
 		    int              key_len) {
   /* there is no head, go to hell */
   if (!p_head)
-    THROW1(mismatch_error,0,"Key '%s' not found in dict",key);
+    THROW2(not_found_error,0,"Key '%*s' not found in dict",key_len,key);
 
   return _xbt_dictelm_get_rec(p_head, key, key_len, 0);
 }
@@ -729,9 +727,8 @@ xbt_dictelm_get_ext(s_xbt_dictelm_t *p_head,
  * @head: the head of the dict
  * @key: the key to find data
  * @data: the data that we are looking for
- * @Returns: xbt_error
  *
- * Search the given @key. mismatch_error when not found.
+ * Search the given @key. Throws not_found_error when not found.
  */
 void *
 xbt_dictelm_get(s_xbt_dictelm_t *p_head,
@@ -800,16 +797,14 @@ _collapse_if_need(xbt_dictelm_t head,
  * @head: the head of the dict
  * @key: the key of the data to be removed
  * @offset: offset on the key
- * @Returns: xbt_error_t
  *
- * Remove the entry associated with the given @key
+ * Remove the entry associated with the given @key. Throws not_found_error.
  */
-xbt_error_t
+void
 _xbt_dictelm_remove_rec(xbt_dictelm_t head,
 			 const char  *key,
 			 int          key_len,
 			 int          offset) {
-  xbt_error_t errcode = no_error;
 
   /* there is no key to search, we did enough recursion => kill current */
   if (offset >= key_len) {
@@ -829,7 +824,7 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
       head->key_len = 0; /* killme. Cleanup done one step higher in recursion */
     }
 
-    return errcode;
+    return;
 
   } else {
     int match      =      0;
@@ -853,7 +848,7 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
         _xbt_dictelm_remove_rec(p_child, key, key_len, offset);
 
         _collapse_if_need(head, pos, old_offset);
-	return no_error;
+	return;
       }
 
 
@@ -861,8 +856,7 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
     case 3: /* The key is a prefix of the child => not found */
     case 4: /* A child share a common prefix with this key => not found */
 
-      return mismatch_error;
-
+      THROW2(not_found_error,0,"Unable to remove key '%*s': not found",key_len,key);
 
     default:
       THROW_IMPOSSIBLE;
@@ -876,11 +870,10 @@ _xbt_dictelm_remove_rec(xbt_dictelm_t head,
  *
  * @head: the head of the dict
  * @key: the key of the data to be removed
- * @Returns: xbt_error_t
  *
- * Remove the entry associated with the given @key
+ * Remove the entry associated with the given @key. Throws not_found_err
  */
-xbt_error_t
+void
 xbt_dictelm_remove_ext(xbt_dictelm_t head,
 			const char  *key,
 			int          key_len) {
@@ -888,7 +881,7 @@ xbt_dictelm_remove_ext(xbt_dictelm_t head,
   if (!head) 
     THROW1(arg_error,0,"Asked to remove key %s from NULL dict",key);
   
-  return _xbt_dictelm_remove_rec(head, key, key_len, 0);
+  _xbt_dictelm_remove_rec(head, key, key_len, 0);
 }
 
 /**
@@ -896,14 +889,13 @@ xbt_dictelm_remove_ext(xbt_dictelm_t head,
  *
  * @head: the head of the dict
  * @key: the key of the data to be removed
- * @Returns: xbt_error_t
  *
- * Remove the entry associated with the given @key
+ * Throws not_found when applicable
  */
-xbt_error_t
+void
 xbt_dictelm_remove(xbt_dictelm_t head,
 		    const char     *key) {
-  return _xbt_dictelm_remove_rec(head, key, strlen(key),0);
+  _xbt_dictelm_remove_rec(head, key, strlen(key),0);
 }
 
 /*----[ _xbt_dict_dump_rec ]------------------------------------------------*/
@@ -981,7 +973,6 @@ _xbt_dictelm_dump_rec(xbt_dictelm_t  head,
  *
  * @head: the head of the dict
  * @output: a function to dump each data in the tree
- * @Returns: xbt_error_t
  *
  * Ouputs the content of the structure. (for debuging purpose). @ouput is a
  * function to output the data. If NULL, data won't be displayed.

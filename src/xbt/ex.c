@@ -76,13 +76,14 @@ void xbt_ex_free(xbt_ex_t e) {
 /** \brief returns a short name for the given exception category */
 const char * xbt_ex_catname(xbt_errcat_t cat) {
   switch (cat) {
-  case unknown_error: return  "unknown_err";
-  case arg_error:      return "invalid_arg";
-  case mismatch_error: return "mismatch";
-  case system_error:   return "system_err";
-  case network_error:  return "network_err";
-  case timeout_error:  return "timeout";
-  case thread_error:   return "thread_err";
-  default:             return "INVALID_ERR";
+  case unknown_error:   return  "unknown_err";
+  case arg_error:       return "invalid_arg";
+  case mismatch_error:  return "mismatch";
+  case not_found_error: return "not found";
+  case system_error:    return "system_err";
+  case network_error:   return "network_err";
+  case timeout_error:   return "timeout";
+  case thread_error:    return "thread_err";
+  default:              return "INVALID_ERR";
   }
 }

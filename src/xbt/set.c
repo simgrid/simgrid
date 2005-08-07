@@ -72,7 +72,7 @@ void xbt_set_add    (xbt_set_t      set,
     found_in_dict = xbt_dict_get_ext (set->dict, 
 				      elm->name, elm->name_len);
   } CATCH(e) {
-    if (e.category != mismatch_error) 
+    if (e.category != not_found_error) 
       RETHROW;
     found = 0;
     elm->ID = xbt_dynar_length( set->dynar );

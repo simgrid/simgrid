@@ -55,11 +55,11 @@ void* xbt_dictelm_get_ext   (s_xbt_dictelm_t *p_head,
 			     const char     *key,
 			     int             key_len);
 
-xbt_error_t xbt_dictelm_remove    (s_xbt_dictelm_t *p_head,
-				     const char  *key);
-xbt_error_t xbt_dictelm_remove_ext(s_xbt_dictelm_t *p_head,
-				       const char  *key,
-				       int          key_len);
+void xbt_dictelm_remove    (s_xbt_dictelm_t *p_head,
+			    const char  *key);
+void xbt_dictelm_remove_ext(s_xbt_dictelm_t *p_head,
+			    const char  *key,
+			    int          key_len);
 
 void         xbt_dictelm_dump      (s_xbt_dictelm_t *p_head,
 				     void_f_pvoid_t *output);

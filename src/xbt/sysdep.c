@@ -12,7 +12,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/xbt_portability.h" /* private */
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "portable.h"
 
 

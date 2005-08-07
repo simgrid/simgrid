@@ -58,14 +58,13 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
     TRY {
       nextlevel = xbt_dict_get_ext(thislevel, thiskey, thislen);
     } CATCH(e) {
-      if (e.category == arg_error || e.category == mismatch_error) {
-	/* make sure the dict of next level exists */
-	nextlevel=xbt_dict_new();
-	VERB1("Create a dict (%p)",nextlevel);
-	xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
-      } else {
+      if (e.category != not_found_error)
 	RETHROW;
-      }
+
+      /* make sure the dict of next level exists */
+      nextlevel=xbt_dict_new();
+      VERB1("Create a dict (%p)",nextlevel);
+      xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
     }
   }
 
@@ -182,7 +181,7 @@ xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys) {
  * Removing a non-existant key is ok.
  */
 
-xbt_error_t
+void
 xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
   xbt_dict_t thislevel,nextlevel=NULL;
   int i;
@@ -217,13 +216,13 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
   xbt_dynar_get_cpy(keys, i, &thiskey);
   xbt_dynar_get_cpy(lens, i, &thislen);
   
-  return xbt_dict_remove_ext(thislevel, thiskey, thislen);
+  xbt_dict_remove_ext(thislevel, thiskey, thislen);
 }
 
-xbt_error_t
+void
 xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys) {
 
-  xbt_error_t errcode;
+  xbt_ex_t e;
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
   int i;
       
@@ -232,8 +231,12 @@ xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys) {
     unsigned long int thislen = strlen(thiskey);
     xbt_dynar_push(lens,&thislen);
   }
-                      
-  errcode = xbt_multidict_remove_ext(mdict, keys, lens);
-  xbt_dynar_free(&lens);
-  return errcode;
+         
+  TRY {
+    xbt_multidict_remove_ext(mdict, keys, lens);
+  } CLEANUP {
+    xbt_dynar_free(&lens);
+  } CATCH(e) {
+    RETHROW;
+  }
 }

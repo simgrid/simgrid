@@ -214,7 +214,7 @@ xbt_cfg_register(xbt_cfg_t cfg,
   TRY {
     res = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
+    if (e.category == not_found_error) {
       found = 1;
       xbt_ex_free(e);
     } else {
@@ -265,11 +265,12 @@ xbt_cfg_register(xbt_cfg_t cfg,
  *  @arg name the name of the elem to be freed
  * 
  *  Note that it removes both the description and the actual content.
+ *  Throws not_found when no such element exists.
  */
 
-xbt_error_t
+void
 xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
-  return xbt_dict_remove((xbt_dict_t)cfg,name);
+  xbt_dict_remove((xbt_dict_t)cfg,name);
 }
 
 /**
@@ -397,10 +398,10 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t  cfg,
   TRY {
     res = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
-      THROW1(mismatch_error,0,
-	     "No registered variable '%s' in this config set",name);
+    if (e.category == not_found_error) {
       xbt_ex_free(e);
+      THROW1(not_found_error,0,
+	     "No registered variable '%s' in this config set",name);
     }
     RETHROW;
   }
@@ -431,10 +432,10 @@ xbt_cfg_get_type(xbt_cfg_t cfg, const char *name) {
   TRY {
     variable = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
-      THROW1(mismatch_error,0,
-	     "Can't get the type of '%s' since this variable does not exist",name);
+    if (e.category == not_found_error) { 
       xbt_ex_free(e);
+      THROW1(not_found_error,0,
+	     "Can't get the type of '%s' since this variable does not exist",name);
     }
     RETHROW;
   }
@@ -465,9 +466,9 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa) {
   TRY {
     type = xbt_cfg_get_type(cfg,name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
+    if (e.category == not_found_error) {
       xbt_ex_free(e);
-      THROW1(mismatch_error,0,"Can't set the property '%s' since it's not registered",name);
+      THROW1(not_found_error,0,"Can't set the property '%s' since it's not registered",name);
     }
     RETHROW;
   }
@@ -602,9 +603,9 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       variable = xbt_dict_get((xbt_dict_t)cfg,name);
     } CATCH(e) {
       free(optionlist_cpy);
-      if (e.category == mismatch_error) {
+      if (e.category == not_found_error) {
 	xbt_ex_free(e);
-	THROW1(mismatch_error,0,"No registrated variable corresponding to '%s'.",name);
+	THROW1(not_found_error,0,"No registrated variable corresponding to '%s'.",name);
       }
       RETHROW;
     }
@@ -839,7 +840,7 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg,const char*name, int val) {
     }
   }
 
-  THROW2(mismatch_error,0,
+  THROW2(not_found_error,0,
 	 "Can't remove the value %d of config element %s: value not found.",val,name);
 }
 
@@ -871,7 +872,7 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg,const char*name, double val) {
     }
   }
 
-  THROW2(mismatch_error,0,
+  THROW2(not_found_error,0,
 	 "Can't remove the value %f of config element %s: value not found.",val,name);
 }
 
@@ -903,7 +904,7 @@ xbt_cfg_rm_string(xbt_cfg_t cfg,const char*name, const char *val) {
     }
   }
 
-  THROW2(mismatch_error,0,
+  THROW2(not_found_error,0,
 	 "Can't remove the value %s of config element %s: value not found.",val,name);
 }
 
@@ -936,7 +937,7 @@ xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
     }
   }
 
-  THROW3(mismatch_error,0,
+  THROW3(not_found_error,0,
 	 "Can't remove the value %s:%d of config element %s: value not found.",
 	 host,port,name);
 }
@@ -972,12 +973,12 @@ xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
   TRY {
     variable = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
-      xbt_ex_free(e);
-      THROW1(mismatch_error,0,
-	     "Can't empty  '%s' since this config element does not exist", name);
-    }
-    RETHROW;
+    if (e.category != not_found_error)
+      RETHROW;
+
+    xbt_ex_free(e);
+    THROW1(not_found_error,0,
+	   "Can't empty  '%s' since this config element does not exist", name);
   }
 
   if (variable) {
@@ -1115,9 +1116,9 @@ xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t    cfg, const char *name) {
   TRY {
     variable = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
-    if (e.category == mismatch_error) {
+    if (e.category == not_found_error) {
       xbt_ex_free(e);
-      THROW1(mismatch_error,0,
+      THROW1(not_found_error,0,
 	     "No registered variable %s in this config set",name);
     }
     RETHROW;
