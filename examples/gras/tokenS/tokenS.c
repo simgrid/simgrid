@@ -92,15 +92,15 @@ static int node_cb_stoken_handler(gras_socket_t  expeditor,
      reused by our predecessor.
      Closing this side would thus create troubles */
   
-  /* 9. Decrease the remaining_loop integer. */
+  /* 8. Decrease the remaining_loop integer. */
   globals->remaining_loop -= 1;
    
-  /* 10. Repport the hop number to the user at the end */
+  /* 9. Repport the hop number to the user at the end */
   if (globals->remaining_loop == -1 && globals->create) {
     INFO1("Shut down the token-ring. There was %d hops.",msg);
   }
 
-  /* 11. Tell GRAS that we consummed this message */
+  /* 10. Tell GRAS that we consummed this message */
   return 1;
 } /* end_of_node_cb_stoken_handler */
 
@@ -169,8 +169,12 @@ int node (int argc,char *argv[]) {
     INFO3("Create the token (with value %d) and send it to %s:%d",
 	  token, host, peerport);
 
-    gras_msg_send(globals->tosuccessor,
-		  gras_msgtype_by_name("stoken"), &token);
+    TRY {	  
+      gras_msg_send(globals->tosuccessor,
+  		  gras_msgtype_by_name("stoken"), &token);
+    } CATCH(e) {
+      RETHROW0("Unable to send the freshly created token: %s");
+    }
   } 
   
   /* 8. Wait up to 10 seconds for an incomming message to handle */
