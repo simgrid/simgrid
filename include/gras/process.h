@@ -11,7 +11,6 @@
 #define GRAS_PROCESS_H
 
 #include "xbt/misc.h"  /* BEGIN_DECL */
-#include "xbt/error.h" /* xbt_error_t */
 
 BEGIN_DECL()
 
