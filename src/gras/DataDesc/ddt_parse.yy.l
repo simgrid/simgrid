@@ -7,9 +7,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/*   char string_buf[GRAS_DDT_PARSE_MAX_STR_CONST];
-     char *string_buf_ptr = NULL; FIXME; killme*/
-
 %option noyywrap
 %{
 #include "gras/DataDesc/datadesc_private.h"
