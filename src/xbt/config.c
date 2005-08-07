@@ -9,8 +9,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h> /* FIXME: killme */
-
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -210,7 +208,8 @@ xbt_cfg_register(xbt_cfg_t cfg,
   xbt_assert4(type>=xbt_cfgelm_int && type<=xbt_cfgelm_host,
               "type of %s not valid (%d should be between %d and %d)",
               name,type,xbt_cfgelm_int, xbt_cfgelm_host);
-  DEBUG5("Register cfg elm %s (%d to %d %s (=%d))",name,min,max,xbt_cfgelm_type_name[type],type);
+  DEBUG5("Register cfg elm %s (%d to %d %s (=%d))",
+	 name,min,max,xbt_cfgelm_type_name[type],type);
   TRY {
     res = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
@@ -284,7 +283,7 @@ xbt_cfg_unregister(xbt_cfg_t cfg,const char *name) {
  * with type being one of  'string','int', 'host' or 'double'.
  */
 
-xbt_error_t
+void
 xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
   char *entrycpy=xbt_strdup(entry);
   char *tok;
@@ -293,66 +292,42 @@ xbt_cfg_register_str(xbt_cfg_t cfg,const char *entry) {
   e_xbt_cfgelm_type_t type;
 
   tok=strchr(entrycpy, ':');
-  if (!tok) {
-    ERROR3("%s%s%s",
-	  "Invalid config element descriptor: ",entry,
-	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    free(entrycpy);
-    xbt_abort();
-  }
+  xbt_assert2(tok,"Invalid config element descriptor: %s%s",
+	      entry,
+	      "; Should be <name>:<min nb>_to_<max nb>_<type>");
   *(tok++)='\0';
 
   min=strtol(tok, &tok, 10);
-  if (!tok) {
-    ERROR1("Invalid minimum in config element descriptor %s",entry);
-    free(entrycpy);
-    xbt_abort();
-  }
+  xbt_assert1(tok,"Invalid minimum in config element descriptor %s",entry);
 
-  if (!strcmp(tok,"_to_")){
-    ERROR3("%s%s%s",
-	  "Invalid config element descriptor: ",entry,
-	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    free(entrycpy);
-    xbt_abort();
-  }
+  xbt_assert2(strcmp(tok,"_to_"),
+	      "Invalid config element descriptor : %s%s",	    
+	      entry,
+	      "; Should be <name>:<min nb>_to_<max nb>_<type>");
   tok += strlen("_to_");
 
   max=strtol(tok, &tok, 10);
-  if (!tok) {
-    ERROR1("Invalid maximum in config element descriptor %s",entry);
-    free(entrycpy);
-    xbt_abort();
-  }
+  xbt_assert1(tok,"Invalid maximum in config element descriptor %s",entry);
 
-  if (*(tok++)!='_') {
-    ERROR3("%s%s%s",
-	  "Invalid config element descriptor: ",entry,
-	  "; Should be <name>:<min nb>_to_<max nb>_<type>");
-    free(entrycpy);
-    xbt_abort();
-  }
+  xbt_assert2( *(tok++) =='_',
+	       "Invalid config element descriptor: %s%s",entry,
+	       "; Should be <name>:<min nb>_to_<max nb>_<type>");
 
   for (type=0; 
        type<xbt_cfgelm_type_count && strcmp(tok,xbt_cfgelm_type_name[type]); 
        type++);
-  if (type == xbt_cfgelm_type_count) {
-    ERROR3("%s%s%s",
-	  "Invalid type in config element descriptor: ",entry,
+  xbt_assert2(type < xbt_cfgelm_type_count,
+	  "Invalid type in config element descriptor: %s%s",entry,
 	  "; Should be one of 'string', 'int', 'host' or 'double'.");
-    free(entrycpy);
-    xbt_abort();
-  }
 
   xbt_cfg_register(cfg,entrycpy,type,min,max,NULL,NULL);
 
   free(entrycpy); /* strdup'ed by dict mechanism, but cannot be const */
-  return no_error;
 }
 
 /** @brief Check that each variable have the right amount of values */
 
-xbt_error_t
+void
 xbt_cfg_check(xbt_cfg_t cfg) {
   xbt_dict_cursor_t cursor; 
   xbt_cfgelm_t variable;
@@ -364,29 +339,27 @@ xbt_cfg_check(xbt_cfg_t cfg) {
   xbt_dict_foreach((xbt_dict_t)cfg,cursor,name,variable) {
     size = xbt_dynar_length(variable->content);
     if (variable->min > size) { 
-      ERROR4("Config elem %s needs at least %d %s, but there is only %d values.",
+      xbt_dict_cursor_free(&cursor);
+      THROW4(mismatch_error,0,
+	     "Config elem %s needs at least %d %s, but there is only %d values.",
 	     name,
 	     variable->min,
 	     xbt_cfgelm_type_name[variable->type],
 	     size); 
-      xbt_dict_cursor_free(&cursor);
-      return mismatch_error;
     }
 
     if (variable->max > 0 && variable->max < size) {
-      ERROR4("Config elem %s accepts at most %d %s, but there is %d values.",
+      xbt_dict_cursor_free(&cursor);
+      THROW4(mismatch_error,0,
+	     "Config elem %s accepts at most %d %s, but there is %d values.",
 	     name,
 	     variable->max,
 	     xbt_cfgelm_type_name[variable->type],
 	     size);
-      xbt_dict_cursor_free(&cursor);
-      return mismatch_error;
     }
-
   }
 
   xbt_dict_cursor_free(&cursor);
-  return no_error;
 }
 
 static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t  cfg,

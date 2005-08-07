@@ -167,8 +167,8 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 		        int min, int max,
                         xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm);
   void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
-  xbt_error_t xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
-  xbt_error_t xbt_cfg_check(xbt_cfg_t cfg);
+  void xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
+  void xbt_cfg_check(xbt_cfg_t cfg);
   e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
 /*  @} */
 /** @name 4. Getting the stored values
