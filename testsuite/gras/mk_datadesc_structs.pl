@@ -26,7 +26,7 @@ print "XBT_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic st
 print "#define READ  0\n#define WRITE 1\n#define RW    2\n\n";
   
 
-print "xbt_error_t write_read(gras_datadesc_type_t type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
+print "void write_read(gras_datadesc_type_t type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
 
 my ($i,$j,$k,$l);
 my $max=scalar @types;

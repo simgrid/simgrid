@@ -10,7 +10,7 @@
 #ifndef XBT_ERROR_H
 #define XBT_ERROR_H
 
-//#error do not use this crap anymore
+#error do not use this crap anymore
 
 #include "xbt/misc.h" /* BEGIN_DECL */
 #include "xbt/log.h"

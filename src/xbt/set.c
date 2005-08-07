@@ -101,7 +101,7 @@ void xbt_set_add    (xbt_set_t      set,
  * 
  * \param set
  * \param name Name of the searched cell
- * \param dst where to put the found data into
+ * \returns the data you're looking for
  */
 xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t     set,
 				      const char     *name) {
@@ -114,7 +114,7 @@ xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t     set,
  * \param set
  * \param name Name of the searched cell
  * \param name_len length of the name, when strlen cannot be trusted
- * \param dst where to put the found data into
+ * \returns the data you're looking for
  *
  * This is useful when strlen cannot be trusted because you don't use a char*
  * as name, you weirdo.
@@ -130,7 +130,7 @@ xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t      set,
  *
  * \param set
  * \param id what you're looking for
- * \param dst where to put the found data into
+ * \returns the data you're looking for
  *
  * @warning, if the ID does not exists, you're getting into trouble
  */

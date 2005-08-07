@@ -31,7 +31,6 @@ typedef struct {
  * if err.msg != NULL, it wasn't sucessful. Check err.msg and err.code to see why.
  */
 typedef struct {
-  s_amok_remoterr_t err;
   unsigned int timestamp;
   double sec;
   double bw;

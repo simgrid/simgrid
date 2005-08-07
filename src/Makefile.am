@@ -103,7 +103,8 @@ COMMON_SRC=\
   xbt_modinter.h    gras_modinter.h                                          \
   \
   xbt/sysdep.c                                                               \
-  xbt/log.c         xbt/log_default_appender.c   xbt/error.c                 \
+  xbt/asserts.c                                                              \
+  xbt/log.c         xbt/log_default_appender.c                               \
   xbt/dynar.c                                                                \
   xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \
   xbt/dict_multi.c                                                           \

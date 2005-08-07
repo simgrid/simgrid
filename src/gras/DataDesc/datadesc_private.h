@@ -16,7 +16,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 #include "xbt/set.h"
@@ -253,7 +252,7 @@ void gras_cbps_free(gras_cbps_t *state);
 /***************
  * Convertions *
  ***************/
-xbt_error_t
+void
 gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 		    int r_arch, 
 		    void *src, void *dst);

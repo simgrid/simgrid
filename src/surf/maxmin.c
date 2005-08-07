@@ -7,7 +7,7 @@
 
 
 #include "xbt/sysdep.h"
-#include "xbt/error.h"
+#include "xbt/log.h"
 #include "maxmin_private.h"
 #include <stdlib.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(maxmin, surf,

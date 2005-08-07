@@ -9,7 +9,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include <stdio.h>
 #include "gras/virtu.h"
 

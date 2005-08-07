@@ -12,7 +12,7 @@
 /* This type should be added to a type that is to be used in such a swag */
 
 #include "xbt/sysdep.h"
-#include "xbt/error.h"
+#include "xbt/log.h"
 #include "xbt/swag.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(swag,xbt,"Swag : O(1) set library");

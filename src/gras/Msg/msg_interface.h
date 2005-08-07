@@ -32,9 +32,9 @@ typedef struct {
 } s_gras_msg_procdata_t,*gras_msg_procdata_t;
 
 
-xbt_error_t gras_msg_send_namev(gras_socket_t  sock, 
-				 const char    *namev, 
-				 void          *payload);
+void gras_msg_send_namev(gras_socket_t  sock, 
+			 const char    *namev, 
+			 void          *payload);
 
 #define GRAS_PROTOCOL_VERSION '\0';
 

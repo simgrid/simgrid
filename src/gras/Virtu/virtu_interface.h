@@ -14,7 +14,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 #include "gras/virtu.h"

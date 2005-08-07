@@ -16,7 +16,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "xbt/set.h"
 #include "gras/transport.h"

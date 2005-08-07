@@ -36,14 +36,14 @@
 void amok_bw_init(void);
 void amok_bw_exit(void);
 
-xbt_error_t amok_bw_test(gras_socket_t peer,
-			  unsigned long int buf_size,unsigned long int exp_size,unsigned long int msg_size,
-			  /*OUT*/ double *sec, double *bw);
+void amok_bw_test(gras_socket_t peer,
+		  unsigned long int buf_size,unsigned long int exp_size,unsigned long int msg_size,
+	  /*OUT*/ double *sec, double *bw);
 
-xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
-			   const char* to_name,unsigned int to_port,
-			   unsigned long int bufSize,unsigned long int expSize,unsigned long int msgSize,
-			   /*OUT*/ double *sec, double*bw);
+void amok_bw_request(const char* from_name,unsigned int from_port,
+		     const char* to_name,unsigned int to_port,
+		     unsigned long int bufSize,unsigned long int expSize,unsigned long int msgSize,
+	     /*OUT*/ double *sec, double*bw);
 
 /** @} */
 #if 0   
@@ -66,7 +66,7 @@ xbt_error_t amok_bw_request(const char* from_name,unsigned int from_port,
  * Ask the process 'from_name:from_port' to start to saturate the link between itself
  * and to_name:to_name.
  */
-xbt_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
+void grasbw_saturate_start(const char* from_name,unsigned int from_port,
 				  const char* to_name,unsigned int to_port,
 				  unsigned int msgSize, unsigned int timeout);
 
@@ -82,7 +82,7 @@ xbt_error_t grasbw_saturate_start(const char* from_name,unsigned int from_port,
  * Ask the process 'from_name:from_port' to stop saturating the link between itself
  * and to_name:to_name.
  */
-xbt_error_t grasbw_saturate_stop(const char* from_name,unsigned int from_port,
+void grasbw_saturate_stop(const char* from_name,unsigned int from_port,
 				 const char* to_name,unsigned int to_port);
 
 

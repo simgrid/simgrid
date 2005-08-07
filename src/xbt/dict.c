@@ -100,10 +100,9 @@ xbt_dict_set(xbt_dict_t     dict,
  * \param dict the dealer of data
  * \param key the key to find data
  * \param key_len the size of the \a key
- * \param data the data that we are looking for
- * \return xbt_error
+ * \returns the data that we are looking for
  *
- * Search the given \a key. mismatch_error when not found.
+ * Search the given \a key. throws not_found_error when not found.
  */
 void *
 xbt_dict_get_ext(xbt_dict_t      dict,
@@ -120,8 +119,7 @@ xbt_dict_get_ext(xbt_dict_t      dict,
  *
  * \param dict the dealer of data
  * \param key the key to find data
- * \param data the data that we are looking for
- * \return xbt_error
+ * \returns the data that we are looking for
  *
  * Search the given \a key. THROWs mismatch_error when not found. 
  * Check xbt_dict_get_or_null() for a version returning NULL without exception when 
@@ -161,9 +159,9 @@ xbt_dict_get_or_null(xbt_dict_t     dict,
  * \param dict the trash can
  * \param key the key of the data to be removed
  * \param key_len the size of the \a key
- * \return xbt_error_t
+ * 
  *
- * Remove the entry associated with the given \a key
+ * Remove the entry associated with the given \a key (throws not_found)
  */
 void
 xbt_dict_remove_ext(xbt_dict_t  dict,

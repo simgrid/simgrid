@@ -11,8 +11,6 @@
 #ifndef GRAS_TRANSPORT_H
 #define GRAS_TRANSPORT_H
 
-#include "xbt/error.h"
-
 /** \addtogroup GRAS_sock
  *  \brief Socket handling (Communication facility).
  */

@@ -9,6 +9,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
+#include "xbt/log.h"
 #include "surf/surf_parse.h"
 #include "surf/surf.h"
 

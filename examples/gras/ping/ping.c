@@ -116,7 +116,7 @@ int server (int argc,char *argv[]) {
   gras_exit();
    
   INFO0("Done.");
-  return no_error;
+  return 0;
 } /* end_of_server */
 
 /* **********************************************************************

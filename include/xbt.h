@@ -13,7 +13,6 @@
 #include <xbt/misc.h>
 #include <xbt/sysdep.h>
 
-#include <xbt/error.h>
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 

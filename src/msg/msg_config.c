@@ -10,7 +10,7 @@
 
 #include "private.h"
 #include "xbt/sysdep.h"
-#include "xbt/error.h"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_cfg, msg,
 				"Configuration support in \ref MSG_API");

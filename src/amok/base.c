@@ -12,64 +12,6 @@
 
 XBT_LOG_NEW_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
 
-amok_remoterr_t amok_remoterr_new(xbt_error_t param_errcode, 
-				  const char* format,...) {
-   
-  amok_remoterr_t res;
-   
-  va_list ap;
-  va_start(ap,format);
-  res = amok_remoterr_new_va(param_errcode,format,ap);
-  va_end(ap);
-  return res;
-}
-
-amok_remoterr_t amok_remoterr_new_va(xbt_error_t param_errcode, 
-				     const char* format,va_list ap) {
-  amok_remoterr_t res=xbt_new(s_amok_remoterr_t,1);
-  res->code=param_errcode;
-  if (format) {
-     res->msg=(char*)xbt_malloc(1024);
-     vsnprintf(res->msg,1024,format,ap);
-  } else {
-     res->msg = NULL;
-  }
-   
-  return res;   
-}
-
-void amok_remoterr_free(amok_remoterr_t *err) {
-   if (err && *err) {
-      if ((*err)->msg) free((*err)->msg);
-      free(*err);
-      err=NULL;
-   }
-}
-
-
-void
-amok_repport_error (gras_socket_t sock, gras_msgtype_t msgtype,
-		    xbt_error_t param_errcode, const char* format,...) {
-  amok_remoterr_t error;
-  va_list ap;
-
-  error=xbt_new(s_amok_remoterr_t,1);
-  error->code=param_errcode;
-  error->msg=(char*)xbt_malloc(1024); /* FIXME */
-  va_start(ap,format);
-  vsnprintf(error->msg,1024,format,ap);
-  va_end(ap);
-
-  gras_msg_send(sock,msgtype,error);
-  /* FIXME: error handling while error reporting :-/ 
-  if (errcode != no_error) {
-     CRITICAL4("Error '%s' while reporting error '%s' to %s:%d",
-	       xbt_error_name(errcode),error->msg,
-	       gras_socket_peer_name(sock),gras_socket_peer_port(sock) );
-  }
-  */
-}
-
 void amok_base_init(void) {
   gras_datadesc_type_t host_desc, remoterr_desc;
      

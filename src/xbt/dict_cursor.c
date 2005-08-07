@@ -199,7 +199,7 @@ xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
 /**
  * @brief Get current key
  * @param cursor: the cursor
- * @param key where to put the key
+ * @returns the current key
  */
 char *
 xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor) {
@@ -211,7 +211,7 @@ xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor) {
 /**
  * @brief Get current data
  * @param cursor the cursor
- * @param data where to put the data
+ * @returns the current data
  */
 void *
 xbt_dict_cursor_get_data(xbt_dict_cursor_t   cursor) {

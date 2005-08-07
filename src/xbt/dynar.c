@@ -11,7 +11,6 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
@@ -47,10 +46,9 @@ void _xbt_clear_mem(void * const ptr,
 }
 
 static _XBT_INLINE
-xbt_error_t
+void
 _xbt_dynar_expand(xbt_dynar_t const dynar,
                    const int          nb) {
-  xbt_error_t errcode     = no_error;
   const unsigned long old_size    = dynar->size;
 
   if (nb > old_size) {
@@ -79,8 +77,6 @@ _xbt_dynar_expand(xbt_dynar_t const dynar,
     dynar->size = new_size;
     dynar->data = new_data;
   }
-
-  return errcode;
 }
 
 static _XBT_INLINE

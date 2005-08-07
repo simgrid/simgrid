@@ -302,31 +302,25 @@ void gras_datadesc_cb_push_ulint(gras_datadesc_type_t typedesc, gras_cbps_t vars
 
 /* @{ */
 
-xbt_error_t
-  gras_cbps_v_pop (gras_cbps_t            ps, 
-		   const char            *name,
-      	 /* OUT */ gras_datadesc_type_t  *ddt,
-	 /* OUT */ void                 **res);
-xbt_error_t
-gras_cbps_v_push(gras_cbps_t            ps,
-		 const char            *name,
-		 void                  *data,
-		 gras_datadesc_type_t   ddt);
-void
-gras_cbps_v_set (gras_cbps_t            ps,
-		 const char            *name,
-		 void                  *data,
-		 gras_datadesc_type_t   ddt);
+void   gras_cbps_v_pop (gras_cbps_t            ps, 
+			const char            *name,
+	      /* OUT */ gras_datadesc_type_t  *ddt,
+	      /* OUT */ void                 **res);
+void   gras_cbps_v_push(gras_cbps_t            ps,
+			const char            *name,
+			void                  *data,
+			gras_datadesc_type_t   ddt);
+void   gras_cbps_v_set (gras_cbps_t            ps,
+			const char            *name,
+			void                  *data,
+			gras_datadesc_type_t   ddt);
 
-void *
-gras_cbps_v_get (gras_cbps_t            ps, 
-		 const char            *name,
-       /* OUT */ gras_datadesc_type_t  *ddt);
+void * gras_cbps_v_get (gras_cbps_t            ps, 
+			const char            *name,
+	      /* OUT */ gras_datadesc_type_t  *ddt);
 
-void
-gras_cbps_block_begin(gras_cbps_t ps);
-void
-gras_cbps_block_end(gras_cbps_t ps);
+void gras_cbps_block_begin(gras_cbps_t ps);
+void gras_cbps_block_end(gras_cbps_t ps);
 
 /* @} */
 /* @} */
@@ -382,11 +376,10 @@ typedef struct DataDescriptorStruct {
   sizeof(structType) - offsetof(structType, lastMember) - \
   sizeof(memberType) * repetitions
 
-xbt_error_t
+gras_datadesc_type_t
 gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
-			 unsigned long         howmany,
-	       /* OUT */ gras_datadesc_type_t *dst);
+			 unsigned long         howmany);
 
 
 END_DECL()

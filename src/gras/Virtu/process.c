@@ -10,7 +10,6 @@
 #include "xbt/ex.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "gras/transport.h"
 #include "gras/datadesc.h"
 #include "gras/messages.h"

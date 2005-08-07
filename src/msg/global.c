@@ -5,9 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include"private.h"
-#include"xbt/sysdep.h"
-#include "xbt/error.h"
+#include "private.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(global, msg,
 				"Logging specific to MSG (global)");
 

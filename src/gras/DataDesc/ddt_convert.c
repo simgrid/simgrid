@@ -86,7 +86,7 @@ gras_dd_reverse_bytes(void *to,
  * The data to be converted is stored in @src, and is to be stored in @dst.
  * Both pointers may be the same location if no resizing is needed.
  */
-xbt_error_t
+void
 gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 		    int r_arch, 
 		    void *src, void *dst) {
@@ -221,7 +221,6 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
     }
   }
 
-  return no_error;
 }
 
 static void

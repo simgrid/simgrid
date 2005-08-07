@@ -6,7 +6,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
-#include "xbt/error.h"
 #include "fifo_private.h"
 
 /*XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO"); UNUSED SO FAR */

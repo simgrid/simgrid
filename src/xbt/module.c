@@ -9,7 +9,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "xbt/config.h"
 

@@ -6,7 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"
-#include "xbt/error.h"
+#include "xbt/log.h"
 #include "surf/surf_parse.h"
 #include "surf/surf_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(parse, surf ,"Logging specific to the SURF  module");

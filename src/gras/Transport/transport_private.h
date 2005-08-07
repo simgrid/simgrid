@@ -14,7 +14,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/error.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
@@ -87,12 +86,13 @@ void gras_trp_buf_init_sock(gras_socket_t sock);
 
 
 /* Data exchange over measurement sockets */ /* FIXME: KILLME */
-xbt_error_t gras_socket_meas_exchange(gras_socket_t peer,
+/*
+void gras_socket_meas_exchange(gras_socket_t peer,
 				      int sender,
 				      unsigned int timeout,
 				      unsigned long int expSize,
 				      unsigned long int msgSize);
-
+*/
 xbt_dynar_t gras_socketset_get(void); /* FIXME:KILLME */
 
 #endif /* GRAS_TRP_PRIVATE_H */

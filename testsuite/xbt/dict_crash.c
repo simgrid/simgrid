@@ -22,7 +22,7 @@ static void print_str(void *str) {
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging specific to this test");
 
-static xbt_error_t traverse(xbt_dict_t head) {
+static void traverse(xbt_dict_t head) {
   xbt_dict_cursor_t cursor=NULL;
   char *key;
   char *data;
@@ -32,23 +32,21 @@ static xbt_error_t traverse(xbt_dict_t head) {
     xbt_assert2 (!strcmp(key,data),
       "Key(%s) != value(%s). Abording\n",key,data);
   }
-  return no_error;
 }
 
-static xbt_error_t countelems(xbt_dict_t head,int*count) {
+static int countelems(xbt_dict_t head) {
   xbt_dict_cursor_t cursor;
   char *key;
   void *data;
-  *count=0;
+  int res = 0;
 
   xbt_dict_foreach(head,cursor,key,data) {
-    (*count)++;
+    res++;
   }
-  return no_error;
+  return res;
 }
 
 int main(int argc,char **argv) {
-  xbt_error_t errcode;
   xbt_dict_t head=NULL;
   int i,j,k, nb;
   char *key;
@@ -78,14 +76,13 @@ int main(int argc,char **argv) {
       /*      printf("[%d %s]\n",j,key); */
       xbt_dict_set(head,key,key,&free);
     }
-    nb=0;
     /*    xbt_dict_dump(head,(void (*)(void*))&printf); */
-    TRYFAIL(countelems(head,&nb));
+    nb = countelems(head);
     if (nb != 1000) {
        printf ("\nI found %d elements, and not 1000\n",nb);
        abort();
     }	  
-    TRYFAIL(traverse(head));
+    traverse(head);
     xbt_dict_free(&head);
     xbt_dict_free(&head);
   }
@@ -109,7 +106,7 @@ int main(int argc,char **argv) {
   }
 
   printf("\n Count the elements (retrieving the key and data for each): \n");
-  TRYFAIL(countelems(head,&i));
+  i = countelems(head);
 
   printf(" There is %d elements\n",i);
   printf("\n Search my 20 000 elements 20 times. (a point is a test)\n");
