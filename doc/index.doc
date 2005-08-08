@@ -40,9 +40,8 @@ pre-compiled binaries [yet].
  
 \subsection quick_more More information
 
-The API is described <a href="API/html/modules.html">here</a> while 
-<a href="examples/html/modules.html">this page</a> presents some example of
-use.
+The API (along with some example of
+use) is described in \ref SimGrid_API.
 
 For more information about the SimGrid toolkit, please simply keep reading
 this page. It is organized as follow:
