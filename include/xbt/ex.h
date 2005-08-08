@@ -43,8 +43,6 @@ extern int backtrace (void **__array, int __size);
 #include <errno.h>
 #include <stdio.h>
 
-//#define __EX_MCTX_MCSC__ 1
-//#define __EX_MCTX_SSJLJ__ 1
 /* the machine context */
 #if defined(__EX_MCTX_MCSC__)
 #include <ucontext.h>            /* POSIX.1 ucontext(3) */
@@ -277,7 +275,7 @@ extern ex_ctx_t *__xbt_ex_ctx_default(void);
 /* the termination handler */
 typedef void (*ex_term_cb_t)(xbt_ex_t *);
 extern ex_term_cb_t __xbt_ex_terminate;
-extern void __xbt_ex_terminate_default(xbt_ex_t *e)  __attribute__((__noreturn__));
+extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 
 /** @brief Introduce a block where exception may be dealed with 
  *  @hideinitializer
