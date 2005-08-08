@@ -62,7 +62,7 @@ static void parse_process_finalize(void)
     process = MSG_process_create_with_arguments(parse_argv[0], parse_code, 
 						NULL, parse_host,
 						parse_argc,parse_argv);
-    if(kill_time > MSG_getClock()) {
+    if(kill_time > MSG_get_clock()) {
       surf_timer_resource->extension_public->set(kill_time, 
 						 (void*) &MSG_process_kill,
 						 (void*) process);

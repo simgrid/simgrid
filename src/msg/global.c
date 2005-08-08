@@ -329,7 +329,7 @@ MSG_error_t MSG_main(void)
     if(xbt_fifo_size(msg_global->process_to_run) && (elapsed_time>0)) {
       DEBUG0("**************************************************");
     }
-    if((__stop_at_time>0) && (MSG_getClock() >= __stop_at_time)) {
+    if((__stop_at_time>0) && (MSG_get_clock() >= __stop_at_time)) {
       DEBUG0("Let's stop here!");
     }
 
@@ -358,7 +358,7 @@ MSG_error_t MSG_main(void)
       }
       
       if(!state_modifications) {
-	DEBUG1("%g : Calling surf_solve",MSG_getClock());
+	DEBUG1("%g : Calling surf_solve",MSG_get_clock());
 	elapsed_time = surf_solve();
 	DEBUG1("Elapsed_time %g",elapsed_time);
 	
@@ -376,7 +376,7 @@ MSG_error_t MSG_main(void)
 	  process = MSG_process_create_with_arguments(args->name, args->code, 
 						      args->data, args->host,
 						      args->argc,args->argv);
-	  if(args->kill_time > MSG_getClock()) {
+	  if(args->kill_time > MSG_get_clock()) {
 	    surf_timer_resource->extension_public->set(args->kill_time, 
 						       (void*) &MSG_process_kill,
 						       (void*) process);
@@ -552,14 +552,6 @@ MSG_error_t MSG_clean(void)
   return MSG_OK;
 }
 
-
-/** \ingroup msg_easier_life
- * \brief A clock (in second).
- * \deprecated Use MSG_get_clock
- */
-double MSG_getClock(void) {
-  return surf_get_clock();
-}
 
 /** \ingroup msg_easier_life
  * \brief A clock (in second).

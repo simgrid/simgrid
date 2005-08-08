@@ -13,7 +13,7 @@
  * Time elapsed since the begining of the simulation.
  */
 double gras_os_time() {
-  return MSG_getClock();
+  return MSG_get_clock();
 }
 
 /*

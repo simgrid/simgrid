@@ -29,7 +29,6 @@ m_process_code_t MSG_get_registered_function(const char *name);
 void MSG_launch_application(const char *file);
 void MSG_paje_output(const char *filename);
 
-double MSG_getClock(void);
 double MSG_get_clock(void);
 
 /************************** Host handling ***********************************/
@@ -74,7 +73,7 @@ m_process_t MSG_process_self(void);
 
 MSG_error_t MSG_process_suspend(m_process_t process);
 MSG_error_t MSG_process_resume(m_process_t process);
-int MSG_process_isSuspended(m_process_t process);
+int MSG_process_is_suspended(m_process_t process);
 
 MSG_error_t MSG_process_start(m_process_t process);
 

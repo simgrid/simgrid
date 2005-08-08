@@ -435,7 +435,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
  * This checks whether a process is suspended or not by inspecting the
  * task on which it was waiting for the completion.
  */
-int MSG_process_isSuspended(m_process_t process)
+int MSG_process_is_suspended(m_process_t process)
 {
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
 
