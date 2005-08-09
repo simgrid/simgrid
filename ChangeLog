@@ -1,5 +1,7 @@
 SimGrid (2.96) unstable; urgency=low
 
+  AKA SimGrid 3 rc 2.
+  
   XBT:
   * New! Exception handling with setjmp or such (code from OSSP ex) [MQ]
     This deprecates the xbt_error_t mecanisms. 
@@ -27,8 +29,20 @@ SimGrid (2.96) unstable; urgency=low
   * New! Add double MSG_get_host_speed(m_host_t h) that returns the speed
     of the processor (in Mflop/s) regardless of the current load on the
     machine. [AL]
+  * API Change: use proper naming convention for MSG_getClock and 
+    MSG_process_isSuspended: MSG_get_clock and MSG_process_is_suspended.
+    [AL]
+  * New! Add void MSG_task_set_priority(m_task_t task, double priority). 
+    This function changes the priority of a computation task. This priority
+    doesn't affect the transfer rate. A priority of 2 will make a task 
+    receive two times more cpu power than the other ones. This function 
+    has been added to suit the needs of Nguyen The Loc and hasn't been that
+    much tested yet. So if it fails, please report it and send me your code. 
+    [AL]
+  * API Change: removed all functions and types that were marked "deprecated" 
+    since many months. Renamed MSG_global_init_args to MSG_global_init.
 
- --
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Mon,  8 Aug 2005 17:58:47 -0700
 
 SimGrid (2.95) unstable; urgency=low
 
