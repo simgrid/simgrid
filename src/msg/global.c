@@ -29,19 +29,15 @@ MSG_Global_t msg_global = NULL;
 /** \ingroup msg_simulation
  * \brief Initialize some MSG internal data.
  */
-void MSG_global_init(void)
+void MSG_global_init_args(int *argc, char **argv)
 {
-  int argc=0;
-  char **argv=NULL;
-
-  CRITICAL0("Function MSG_global_init() is deprecated by MSG_global_init_args().");
-  MSG_global_init_args(&argc,argv);
+  MSG_global_init(argc,argv);
 }
 
 /** \ingroup msg_simulation
  * \brief Initialize some MSG internal data.
  */
-void MSG_global_init_args(int *argc, char **argv)
+void MSG_global_init(int *argc, char **argv)
 {
   if (!msg_global) {
     surf_init(argc, argv);	/* Initialize some common structures. Warning, it sets msg_global=NULL */
@@ -237,14 +233,6 @@ void MSG_paje_output(const char *filename)
   }
 }
 
-/** @deprecated Defines the verbosity of the simulation.
- *  @ingroup msg_simulation
- */
-void MSG_set_verbosity(MSG_outputmode_t mode)
-{
-  CRITICAL0("MSG_set_verbosity : Deprecated function. Use the XBT logging interface.");
-}
-
 /** \defgroup m_channel_management    Understanding channels
  *  \brief This section briefly describes the channel notion of MSG
  *  (#m_channel_t).
@@ -272,26 +260,6 @@ MSG_error_t MSG_set_channel_number(int number)
 
   msg_global->max_channel = number;
 
-  return MSG_OK;
-}
-
-/** \ingroup m_simulation
- * \brief Set the sharing policy used for the links
- *
- * This function can be called to change the sharing policy used for the links 
-   (see \ref paper_tcp). By default the store and forward mechanism is used
-   with a parameter equal to 0.1. This function has to be called before creating 
-   any link. 
- * \param mode the sharing policy used for the links: can be either 
-   MSG_STORE_AND_FORWARD or MSG_TCP.
- * \param param a parameter for the sharing policy. It has to be >0. It is 
-   currently used only for the MSG_STORE_AND_FORWARD flavor and represents the
-   granularity of the communications (i.e. the packet size).
- */
-MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, double param)
-{
-  CRITICAL0("MSG_set_sharing_policy: this function is now deprecated and useless. Store and forward does not exist anymore. Please stop using it.");
-  
   return MSG_OK;
 }
 

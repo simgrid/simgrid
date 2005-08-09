@@ -16,11 +16,9 @@ BEGIN_DECL()
 
 /************************** Global ******************************************/
 void MSG_config(const char *name, ...);
-void MSG_global_init(void);
+void MSG_global_init(int *argc, char **argv);
 void MSG_global_init_args(int *argc, char **argv);
-void MSG_set_verbosity(MSG_outputmode_t mode);
 MSG_error_t MSG_set_channel_number(int number);
-MSG_error_t MSG_set_sharing_policy(MSG_sharing_t mode, double param);
 int MSG_get_channel_number(void);
 MSG_error_t MSG_main(void);
 MSG_error_t MSG_clean(void);
@@ -55,8 +53,6 @@ m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_host_t host, int argc, char **argv);
 void MSG_process_kill(m_process_t process);
 int MSG_process_killall(int reset_PIDs);
-MSG_error_t MSG_get_arguments(int *argc, char ***argv);
-MSG_error_t MSG_set_arguments(m_process_t process,int argc, char *argv[]);
 
 MSG_error_t MSG_process_change_host(m_process_t process, m_host_t host);
 
@@ -74,8 +70,6 @@ m_process_t MSG_process_self(void);
 MSG_error_t MSG_process_suspend(m_process_t process);
 MSG_error_t MSG_process_resume(m_process_t process);
 int MSG_process_is_suspended(m_process_t process);
-
-MSG_error_t MSG_process_start(m_process_t process);
 
 /************************** Task handling ************************************/
 
@@ -103,6 +97,7 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 double max_rate);
 MSG_error_t MSG_task_execute(m_task_t task);
 MSG_error_t MSG_parallel_task_execute(m_task_t task);
+void MSG_task_set_priority(m_task_t task, double priority);
 
 int MSG_task_Iprobe(m_channel_t channel);
 int MSG_task_probe_from(m_channel_t channel);
@@ -115,27 +110,5 @@ double MSG_task_get_compute_duration(m_task_t task);
 double MSG_task_get_remaining_computation(m_task_t task);
 double MSG_task_get_data_size(m_task_t task);
 
-/************************** Deprecated ***************************************/
-/* MSG_error_t MSG_routing_table_init(void); */
-/* MSG_error_t MSG_routing_table_set(m_host_t host1, m_host_t host2, */
-/* 				  m_link_t link); */
-/* m_link_t MSG_routing_table_get(m_host_t host1, m_host_t host2); */
-/* m_host_t MSG_host_create(const char *name, */
-/* 			char *trace_file, */
-/* 			long double fixed_cpu, */
-/* 			char* failure_trace, */
-/* 			long double fixed_failure, */
-/* 			void *data); */
-/* m_host_t MSG_host_from_PID(int PID); */
-/* MSG_error_t MSG_host_destroy(m_host_t host); */
-
-/* void MSG_link_set_sharing_value(long double alpha); */
-/* m_link_t MSG_link_create(const char *name, */
-/* 			 char *lat_trace_file, long double fixed_latency, */
-/* 			 char *bw_trace_file, long double fixed_bandwidth); */
-/* MSG_error_t MSG_link_destroy(m_link_t link); */
-/* m_link_t MSG_link_merge(const char *name, m_link_t src1, m_link_t src2); */
-/* m_link_t MSG_get_link_by_name(const char *name); */
-/* void MSG_tracelink(m_host_t dest, const char* **names, int *count); */
 END_DECL()
 #endif

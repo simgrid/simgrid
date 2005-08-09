@@ -201,7 +201,7 @@ void test_all(const char *platform_file,const char *application_file)
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_global_init_args(&argc,argv);
+  MSG_global_init(&argc,argv);
   if (argc < 3) {
      printf ("Usage: %s platform_file deployment_file\n",argv[0]);
      printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);

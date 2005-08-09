@@ -106,7 +106,7 @@ void MSG_launch_application(const char *file)
  */
 void MSG_function_register(const char *name,m_process_code_t code)
 {
-  xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_function_register.");
+  xbt_assert0(msg_global,"MSG_global_init has to be called before MSG_function_register.");
 
   xbt_dict_set(msg_global->registered_functions,name,code,NULL);
 }
@@ -122,49 +122,10 @@ m_process_code_t MSG_get_registered_function(const char *name)
 {
   m_process_code_t code = NULL;
 
-  xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_get_registered_function.");
+  xbt_assert0(msg_global,"MSG_global_init has to be called before MSG_get_registered_function.");
  
   code = xbt_dict_get(msg_global->registered_functions,name);
 
   return code;
-}
-
-/** \ingroup msg_easier_life
- * \brief Get the arguments of the current process.
- * \deprecated{Not useful since #m_process_code_t is int (*)(int argc, char *argv[])}
- *
- * This functions returns the values set for the current process 
- * using #MSG_set_arguments or #MSG_launch_application.
- * \param argc the number of arguments
- * \param argv the arguments table
- */
-MSG_error_t MSG_get_arguments(int *argc, char ***argv)
-{
-  m_process_t process = MSG_process_self();
-  simdata_process_t simdata = NULL;
-
-  xbt_assert0((argc) && (argv), "Invalid parameters");
-  simdata = process->simdata;
-  *argc = simdata->argc;
-  *argv = simdata->argv;
-
-  return MSG_OK;
-}
-
-/* \ingroup msg_easier_life
- * \brief Set the arguments of a process.
- *
- * This functions sets the argument number and the arguments table for a
- * proces.
- * \param process is the process you want to modify
- * \param argc the number of arguments
- * \param argv the arguments table
- */
-MSG_error_t MSG_set_arguments(m_process_t process,int argc, char *argv[])
-{
-  xbt_assert0(0,"Deprecated ! Do not use anymore. "
-	      "Use MSG_process_create_with_arguments instead.\n");
-
-  return MSG_OK;
 }
 

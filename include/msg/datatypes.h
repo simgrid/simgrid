@@ -124,34 +124,5 @@ typedef enum {
 } MSG_error_t;
 /** @} */
 
-
-/** @deprecated MSG verbosity
-    @ingroup m_datatypes_management
-*/
-typedef enum {
-  MSG_SILENT = 0,
-  MSG_SOME,
-  MSG_VERBOSE
-} MSG_outputmode_t;
-
-
-/** @deprecated Network sharing mechanism
-    @ingroup m_datatypes_management
-    @brief Sharing policy : 0 means uninitialized value
-*/
-typedef enum {
-  MSG_STORE_AND_FORWARD = 1, /**<  Packet level simulation of communications. Bad */
-  MSG_TCP                    /**<  Continuous model of network communications. Good  */
-} MSG_sharing_t;
-
-/** @deprecated Link datatype  
- *  @ingroup m_datatypes_management
- *    The notion of <em>link</em> was present in the earliest versions of MSG.  
- *    It was an agglomeration of communicating resources representing a set of
- *    physical network links. This abstraction a disappeared because in real-life,
- *    it is generally not possible to interact directly with a link...
- */
-typedef struct m_link *m_link_t;
-
 END_DECL()
 #endif
