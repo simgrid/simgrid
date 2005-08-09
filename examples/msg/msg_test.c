@@ -194,7 +194,7 @@ void test_all(const char *platform_file,const char *application_file)
   }
   MSG_main();
   
-  INFO1("Simulation time %g",MSG_getClock());
+  INFO1("Simulation time %g",MSG_get_clock());
 } /* end_of_test_all */
 
 
