@@ -41,6 +41,7 @@ typedef struct surf_action {
   s_xbt_swag_hookup_t state_hookup;
   xbt_swag_t state_set;
   double cost;			/* cost        */
+  double priority;		/* priority (1.0 by default) */
   double max_duration;		/* max_duration (may fluctuate until
 				   the task is completed) */
   double remains;		/* How much of that cost remains to
@@ -75,6 +76,7 @@ typedef struct surf_resource_public {
   void (*resume) (surf_action_t action);
   int (*is_suspended) (surf_action_t action);
   void (*set_max_duration) (surf_action_t action, double duration);
+  void (*set_priority) (surf_action_t action, double priority);
   const char *name;
 } s_surf_resource_public_t, *surf_resource_public_t;
 

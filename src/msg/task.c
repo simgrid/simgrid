@@ -59,6 +59,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->computation_amount = compute_duration;
   simdata->message_size = message_size;
   simdata->rate = -1.0;
+  simdata->priority = 1.0;
   simdata->using = 1;
   simdata->sender = NULL;
 
@@ -192,56 +193,6 @@ double MSG_task_get_data_size(m_task_t task) {
   return task->simdata->message_size;
 }
 
-/* static MSG_error_t __MSG_task_check(m_task_t task) */
-/* { */
-/*   simdata_task_t simdata = NULL; */
-/*   int warning = 0; */
-
-/*   if (task == NULL) {		/\* Fatal *\/ */
-/*     WARNING("Task uninitialized"); */
-/*     return MSG_FATAL; */
-/*   } */
-/*   simdata = task->simdata; */
-
-/*   if (simdata == NULL) {	/\* Fatal *\/ */
-/*     WARNING("Simulator Data uninitialized"); */
-/*     return MSG_FATAL; */
-/*   } */
-
-/*   if (simdata->compute == NULL) {	/\* Fatal if execute ... *\/ */
-/*     WARNING("No duration set for this task"); */
-/*     warning++; */
-/*   } */
-
-/*   if (simdata->message_size == 0) {	/\* Fatal if transfered ... *\/ */
-/*     WARNING("No message_size set for this task"); */
-/*     warning++; */
-/*   } */
-
-/* /\*    if (task->data == NULL) { *\/ */
-/* /\*      WARNING("User Data uninitialized"); *\/ */
-/* /\*      warning++; *\/ */
-/* /\*    } *\/ */
-
-/*   if (warning) */
-/*     return MSG_WARNING; */
-/*   return MSG_OK; */
-/* } */
-
-/* static m_task_t __MSG_task_copy(m_task_t src) */
-/* { */
-/*   m_task_t copy = NULL; */
-/*   simdata_task_t simdata = NULL; */
-
-/*   __MSG_task_check(src); */
-
-/*   simdata = src->simdata; */
-/*   copy = MSG_task_create(src->name, SG_getTaskCost(simdata->compute), */
-/* 			 simdata->message_size, MSG_task_get_data(src)); */
-
-/*   return (copy); */
-/* } */
-
 MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task)
 {
   int _cursor;
@@ -260,4 +211,20 @@ MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task)
   }
 
   return MSG_OK;
+}
+
+
+/** \ingroup m_task_management
+ * \brief Changes the priority of a computation task. This priority doesn't affect 
+ *        the transfer rate. A priority of 2 will make a task receive two times more
+ *        cpu power than the other ones.
+ *
+ */
+void MSG_task_set_priority(m_task_t task, double priority) {
+  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+
+  task->simdata->priority = 1/priority;
+  if(task->simdata->compute)
+    surf_workstation_resource->common_public->
+      set_priority(task->simdata->compute, task->simdata->priority);
 }

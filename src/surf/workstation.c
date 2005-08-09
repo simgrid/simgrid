@@ -262,6 +262,15 @@ static void action_set_max_duration(surf_action_t action, double duration)
     surf_cpu_resource->common_public->set_max_duration(action,duration);
   else  DIE_IMPOSSIBLE;
 }
+ 
+static void action_set_priority(surf_action_t action, double priority)
+{
+  if(action->resource_type==(surf_resource_t)surf_network_resource)
+    surf_network_resource->common_public->set_priority(action,priority);
+  else if(action->resource_type==(surf_resource_t)surf_cpu_resource) 
+    surf_cpu_resource->common_public->set_priority(action,priority);
+  else  DIE_IMPOSSIBLE;
+}
 
 static surf_action_t communicate(void *workstation_src,
 				 void *workstation_dst, double size,
@@ -444,6 +453,7 @@ static void surf_workstation_resource_init_internal(void)
   surf_workstation_resource->common_public->resume = action_resume;
   surf_workstation_resource->common_public->is_suspended = action_is_suspended;
   surf_workstation_resource->common_public->set_max_duration = action_set_max_duration;
+  surf_workstation_resource->common_public->set_priority = action_set_priority;
 
   surf_workstation_resource->extension_public->execute = execute;
   surf_workstation_resource->extension_public->sleep = action_sleep;

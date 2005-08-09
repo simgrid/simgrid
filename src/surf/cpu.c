@@ -228,6 +228,7 @@ static surf_action_t execute(void *cpu, double size)
   action->generic_action.using = 1;
   action->generic_action.cost = size;
   action->generic_action.remains = size;
+  action->generic_action.priority = 1.0;
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
@@ -242,7 +243,8 @@ static surf_action_t execute(void *cpu, double size)
 	surf_cpu_resource->common_public->states.failed_action_set;
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0, 1);
+  action->variable = lmm_variable_new(maxmin_system, action, 
+				      action->generic_action.priority, -1.0, 1);
   lmm_expand(maxmin_system, CPU->constraint, action->variable,
 	     1.0);
 
@@ -269,7 +271,8 @@ static void action_suspend(surf_action_t action)
 static void action_resume(surf_action_t action)
 {
   lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_cpu_Cas01_t) action)->variable, 1.0);
+			     ((surf_action_cpu_Cas01_t) action)->variable, 
+			     action->priority);
 }
 
 static int action_is_suspended(surf_action_t action)
@@ -280,6 +283,11 @@ static int action_is_suspended(surf_action_t action)
 static void action_set_max_duration(surf_action_t action, double duration)
 {
   action->max_duration = duration;
+}
+
+static void action_set_priority(surf_action_t action, double priority)
+{
+  action->priority = priority;
 }
 
 static e_surf_cpu_state_t get_state(void *cpu)
@@ -356,7 +364,7 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->common_public->resume = action_resume;
   surf_cpu_resource->common_public->is_suspended = action_is_suspended;
   surf_cpu_resource->common_public->set_max_duration = action_set_max_duration;
-
+  surf_cpu_resource->common_public->set_priority = action_set_priority;
   surf_cpu_resource->extension_public->execute = execute;
   surf_cpu_resource->extension_public->sleep = action_sleep;
 

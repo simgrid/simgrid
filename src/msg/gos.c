@@ -16,16 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gos, msg,
  *  by an agent for handling some task.
  */
 
-/* \ingroup msg_gos_functions
- * \brief This function is now deprecated and useless. Please stop using it.
- */
-MSG_error_t MSG_process_start(m_process_t process)
-{
-  xbt_assert0(0,"This function is now deprecated and useless. Please stop using it.");
-  
-  return MSG_OK;
-}
-
 /** \ingroup msg_gos_functions
  * \brief Listen on a channel and wait for receiving a task.
  *
@@ -409,6 +399,9 @@ void __MSG_task_execute(m_process_t process, m_task_t task)
   simdata->compute = surf_workstation_resource->extension_public->
     execute(MSG_process_get_host(process)->simdata->host,
 	    simdata->computation_amount);
+  surf_workstation_resource->common_public->
+    set_priority(simdata->compute, simdata->priority);
+
   surf_workstation_resource->common_public->action_set_data(simdata->compute,task);
 }
 
