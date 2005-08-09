@@ -4,7 +4,7 @@ DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@
 EXTRA_DIST = html Doxyfile \
  modules.doc FAQ.doc index.doc footer.html simgrid_logo.png simgrid_modules.png
 
-DISTCLEANFILES = api_index.doc
+DISTCLEANFILES = index-API.doc simgrid.tag
 MAINTAINERCLEANFILES = html
 
 if MAINTAINER_MODE
