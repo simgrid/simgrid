@@ -1,6 +1,10 @@
 SimGrid (2.97) unstable; urgency=low
   
-
+ SURF:
+  * New! Give the possibility to hijack the surf parser and thus bypass 
+    MSG_create_environment and MSG_launch_application. Have a look at
+    examples/msg/msg_test_surfxml_bypassed.c to see how it can be done.
+	
  -- 
 
 SimGrid (2.96) unstable; urgency=low
