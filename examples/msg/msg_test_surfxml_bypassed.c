@@ -31,8 +31,8 @@ static int surf_parse_bypass(void)
   A_cpu_interference_send_recv = "1.0";
   A_cpu_max_outgoing_rate = "-1.0";
 
-  STag_cpu_fun();
-  ETag_cpu_fun();
+  STag_cpu();
+  ETag_cpu();
 
 /*   <cpu name="Cpu B" power="100.00" availability_file="trace_B.txt"/> */
   A_cpu_name = "Cpu B";
@@ -46,8 +46,8 @@ static int surf_parse_bypass(void)
   A_cpu_interference_send_recv = "1.0";
   A_cpu_max_outgoing_rate = "-1.0";
 
-  STag_cpu_fun();
-  ETag_cpu_fun();
+  STag_cpu();
+  ETag_cpu();
 
 /*   <network_link name="LinkA" bandwidth="10.0" latency="0.2"/> */
   A_network_link_name = "LinkA";
@@ -139,7 +139,7 @@ static int surf_parse_bypass(void)
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-void test_all(const char *platform_file, const char *application_file);
+void test_all(void);
 
 typedef enum {
   PORT_22 = 0,
@@ -270,7 +270,6 @@ void test_all(void)
   {                            /*   Application deployment */
     MSG_function_register("master", master);
     MSG_function_register("slave", slave);
-    MSG_function_register("forwarder", forwarder);
     MSG_launch_application(NULL);
   }
   MSG_main();
