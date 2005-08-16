@@ -14,6 +14,7 @@
 #include "surfxml.h"
 
 typedef   void (*void_f_void_t)(void);
+typedef   int (*int_f_void_t)(void);
 
 extern void_f_void_t STag_platform_description_fun;
 extern void_f_void_t ETag_platform_description_fun;
@@ -33,7 +34,7 @@ extern void_f_void_t ETag_argument_fun;
 
 void surf_parse_open(const char *file);
 void surf_parse_close(void);
-int  surf_parse(void);
+extern int_f_void_t surf_parse;
 void surf_parse_reset_parser(void);
 void surf_parse_get_double(double *value,const char *string);
 void surf_parse_get_trace(tmgr_trace_t *trace, const char *string);

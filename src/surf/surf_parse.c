@@ -178,10 +178,13 @@ void  surf_parse_close(void) {
   }
 }
 
-int surf_parse(void)
+
+static int __surf_parse(void)
 {
   return surf_parse_lex();
 }
+
+int_f_void_t surf_parse = __surf_parse;
 
 void surf_parse_get_double(double *value,const char *string)
 { 
