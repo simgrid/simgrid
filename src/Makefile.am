@@ -39,7 +39,7 @@ EXTRA_DIST= \
 	include/surf/maxmin.h \
 	include/surf/trace_mgr.h \
 	include/surf/surf.h \
-	include/surf/surf_parse.h \
+	include/surf/surf_parse_private.h \
 	\
 	include/xbt/xbt_portability.h \
 	include/xbt/context.h \
@@ -52,7 +52,7 @@ EXTRA_DIST= \
 	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c \
 	\
 	amok/Bandwidth/bandwidth_private.h
-	        
+
 #        gras_private.h
 
 #LIBRARY_VERSION= 0:0:0
@@ -148,7 +148,6 @@ SG_SRC=  \
   surf/surf_timer.c                                                               \
   surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c  \
-  include/surf/surfxml.h \
   \
   msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
@@ -163,10 +162,8 @@ SG_SRC=  \
 AMOK_SRC= \
   amok/base.c \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c
-        
-                        
 
-BUILT_SOURCES=include/surf/surfxml.h surf/surfxml.c \
+BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
               gras/DataDesc/ddt_parse.yy.c
 
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
@@ -178,14 +175,12 @@ surf/surfxml.c: surf/surfxml.l
 
 if HAVE_FLEXML
 surf/surfxml.l: surf/surfxml.dtd
-	set -e; cd surf; flexml -b 1000000 -S -L surfxml.dtd ; \
-	mv surfxml.l surfxml.l.bak ; \
-	sed 's/surfxml\.h/surf\/surfxml\.h/g' surfxml.l.bak > surfxml.l
-include/surf/surfxml.h: surf/surfxml.dtd
-	cd include/surf; flexml -H -L ../../surf/surfxml.dtd
+	set -e; cd surf; flexml -b 1000000 -S -L surfxml.dtd
+../include/surf/surfxml.h: surf/surfxml.dtd
+	cd ../include/surf; flexml -H -L ../../src/surf/surfxml.dtd
 else
 
-include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
+../include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
 	@echo "ERROR: src/surf/surfxml.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch src/include/surf/surfxml.h src/surf/surfxml.l"

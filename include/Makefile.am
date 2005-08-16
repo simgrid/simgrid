@@ -14,6 +14,9 @@ nobase_include_HEADERS = \
 	msg/msg.h \
 	msg/datatypes.h \
 	\
+	surf/surf_parse.h \
+	surf/surfxml.h \
+	\
 	gras/datadesc.h gras/transport.h \
 	gras/virtu.h gras/emul.h gras/process.h \
 	\
@@ -21,5 +24,8 @@ nobase_include_HEADERS = \
 	\
 	amok/base.h \
 	amok/bandwidth.h
+
+surf/surfxml.h:
+	$(MAKE) -C ../src ../include/surf/surfxml.h
 
 include $(top_srcdir)/acmacro/dist-files.mk
