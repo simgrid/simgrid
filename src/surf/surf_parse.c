@@ -150,6 +150,10 @@ void ETag_argument(void)
 }
 
 void  surf_parse_open(const char *file) {
+  if(!file) {
+    WARN0("I hope you know what you're doing... you just gave me a NULL pointer!");
+    return;
+  }
   if(!surf_input_buffer_stack) 
     surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE),NULL);
   if(!surf_file_to_parse_stack) 
@@ -168,8 +172,10 @@ void  surf_parse_close(void) {
   if(surf_file_to_parse_stack) 
     xbt_dynar_free(&surf_file_to_parse_stack);
 
-  surf_parse__delete_buffer(surf_input_buffer);
-  fclose(surf_file_to_parse);
+  if(surf_file_to_parse) {
+    surf_parse__delete_buffer(surf_input_buffer);
+    fclose(surf_file_to_parse);
+  }
 }
 
 int surf_parse(void)
