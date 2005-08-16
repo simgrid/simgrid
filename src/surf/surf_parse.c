@@ -7,7 +7,7 @@
 
 #include "xbt/misc.h"
 #include "xbt/log.h"
-#include "surf/surf_parse.h"
+#include "surf/surf_parse_private.h"
 #include "surf/surf_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(parse, surf ,"Logging specific to the SURF  module");
 
@@ -179,12 +179,12 @@ void  surf_parse_close(void) {
 }
 
 
-static int __surf_parse(void)
+static int _surf_parse(void)
 {
   return surf_parse_lex();
 }
 
-int_f_void_t surf_parse = __surf_parse;
+int_f_void_t surf_parse = _surf_parse;
 
 void surf_parse_get_double(double *value,const char *string)
 { 

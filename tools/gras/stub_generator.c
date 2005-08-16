@@ -10,7 +10,7 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "surf/surf_parse.h"
+#include "surf/surf_parse_private.h"
 #include "surf/surf.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
