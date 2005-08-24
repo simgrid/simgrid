@@ -124,7 +124,7 @@ int slave(int argc, char *argv[])
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
-      xbt_assert0(0,"Unexpected behaviour");
+      xbt_assert0(0,"Unexpected behavior");
     }
   }
   INFO0("I'm done. See you!");
@@ -167,7 +167,7 @@ int forwarder(int argc, char *argv[])
 		   PORT_22);
     } else {
       INFO0("Hey ?! What's up ? ");
-      xbt_assert0(0,"Unexpected behaviour");
+      xbt_assert0(0,"Unexpected behavior");
     }
   }
 
