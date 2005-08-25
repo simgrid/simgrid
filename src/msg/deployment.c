@@ -123,8 +123,8 @@ m_process_code_t MSG_get_registered_function(const char *name)
   m_process_code_t code = NULL;
 
   xbt_assert0(msg_global,"MSG_global_init has to be called before MSG_get_registered_function.");
- 
-  code = xbt_dict_get(msg_global->registered_functions,name);
+
+  code = xbt_dict_get_or_null(msg_global->registered_functions,name);
 
   return code;
 }

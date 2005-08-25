@@ -128,18 +128,9 @@ xbt_dict_get_ext(xbt_dict_t      dict,
 void *
 xbt_dict_get(xbt_dict_t     dict,
              const char     *key) {
-  xbt_ex_t e;
   xbt_assert(dict);
 
-  TRY {
-    return xbt_dictelm_get(dict->head, key);
-  } CATCH(e) {
-    if(e.category==not_found_error) {
-      return NULL;
-    }
-    RETHROW;
-  }
-  return NULL;
+  return xbt_dictelm_get(dict->head, key);
 }
 
 /**
