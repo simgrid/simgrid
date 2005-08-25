@@ -117,10 +117,10 @@ int slave(int argc, char *argv[])
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      INFO1("Received \"%s\" ", task->name);
-      INFO1("Processing \"%s\" ", task->name);
+      INFO1("Received \"%s\" ", MSG_task_get_name(task));
+      INFO1("Processing \"%s\" ", MSG_task_get_name(task));
       MSG_task_execute(task);
-      INFO1("\"%s\" done ", task->name);
+      INFO1("\"%s\" done ", MSG_task_get_name(task));
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
@@ -159,9 +159,9 @@ int forwarder(int argc, char *argv[])
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      INFO1("Received \"%s\" ", task->name);
+      INFO1("Received \"%s\" ", MSG_task_get_name(task));
       INFO2("Sending \"%s\" to \"%s\"",
-		    task->name,
+		    MSG_task_get_name(task),
 		    slaves[i % slaves_count]->name);
       MSG_task_put(task, slaves[i % slaves_count],
 		   PORT_22);
