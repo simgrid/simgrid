@@ -264,7 +264,7 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
 	 VERB3("Got the chunk (size=%d+4 for the size ifself)='%.*s'",
 	       data->in.size-4, data->in.size,data->in.data);
 	 if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
-	   hexa_print("chunck received",data->in.data,data->in.size);
+	   hexa_print("chunck received",(unsigned char *) data->in.data,data->in.size);
       }
        
     }
@@ -297,7 +297,7 @@ gras_trp_buf_flush(gras_socket_t sock) {
   
   DEBUG0("Flush");
   if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
-     hexa_print("chunck to send ",data->out.data,data->out.size);
+     hexa_print("chunck to send ",(unsigned char *) data->out.data,data->out.size);
   if ((data->out.size - data->out.pos) == (gras_if_RL()?0:4) ) { /* 4 first bytes=size in SG mode*/
      DEBUG2("Nothing to flush (size=%d; pos=%d)",data->out.size,data->out.pos);
      return;
@@ -319,6 +319,6 @@ gras_trp_buf_flush(gras_socket_t sock) {
   _buf_super->chunk_send(sock, data->out.data, data->out.size);
   VERB1("Chunk sent (size=%d)",data->out.size);
   if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
-     hexa_print("chunck sent    ",data->out.data,data->out.size);
+     hexa_print("chunck sent    ",(unsigned char *) data->out.data,data->out.size);
   data->out.size = gras_if_RL()?0:4;
 }
