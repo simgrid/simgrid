@@ -6,7 +6,6 @@
  *   - Grounding features
  *     - \ref XBT_ex
  *     - \ref XBT_log
- *     - \ref XBT_error
  *     - \ref XBT_config
  *   - Data structures
  *     - \ref XBT_dynar 
@@ -55,11 +54,6 @@
 	 */
 
     /** @} */
-
-
-    /** @defgroup XBT_error Error tracking support
-     *  @brief A set of macros easing the handling of errors (grounding feature)
-     */
 
     /** @defgroup XBT_config Configuration support
      *  @brief Changing the configuration of SimGrid components (grounding feature)
