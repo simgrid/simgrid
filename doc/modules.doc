@@ -35,7 +35,7 @@
 
       \section MSG_who Who should use this (and who shouldn't)
       
-      You should use this model if you want to study some heuristics for a
+      You should use this module if you want to study some heuristics for a
       given problem you don't really want to implement. If you want to get a
       real implementation of your solution, have a look at the \ref GRAS_API 
       programming environment. If you want to study an existing MPI program,

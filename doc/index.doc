@@ -8,9 +8,8 @@
 
 \section hot_news HOT NEWS
 
-<b>SimGrid 2.95 (aka SimGrid 3beta2) was released on 1st July 2005. Get it from
+<b>SimGrid 3.00 was released on 21st of August 2005. Get it from
 <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.</b> 
-SimGrid 3 was never as close as it is now...
 
 \section quick Quick start
 
@@ -56,7 +55,7 @@ this page. It is organized as follow:
 
 \section overview Overview of the toolkit components
 
-As depicted by the following schema, the SimGrid toolkit is basically
+As depicted by the following diagram, the SimGrid toolkit is basically
 three-layered (click on the picture to jump to a specific component).
 
 
@@ -69,9 +68,9 @@ three-layered (click on the picture to jump to a specific component).
 </center>
 \endhtmlonly
 
-\subsection overview_fondation Basement layer
+\subsection overview_fondation Base layer
 
-The basement of the whole toolkit is constituted by the <b>\ref XBT_API
+The base of the whole toolkit is constituted by the <b>\ref XBT_API
 (eXtended Bundle of Tools)</b>.
 
 It is a portable library providing some grounding features such as \ref
