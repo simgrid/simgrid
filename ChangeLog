@@ -1,11 +1,17 @@
-SimGrid (2.97) unstable; urgency=low
+SimGrid (3.01) unstable; urgency=low
+
+  * 
+
+ --
+
+SimGrid (3.00) stable; urgency=low
   
  SURF:
   * New! Give the possibility to hijack the surf parser and thus bypass 
     MSG_create_environment and MSG_launch_application. Have a look at
     examples/msg/msg_test_surfxml_bypassed.c to see how it can be done.
 	
- -- 
+ -- Arnaud Legrand <simgrid-devel@lists.gforge.inria.fr>  Sat, 20 Aug 2005 23:25:25 -0700
 
 SimGrid (2.96) unstable; urgency=low
 
