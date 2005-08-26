@@ -1,6 +1,22 @@
 SimGrid (3.01) unstable; urgency=low
 
-  * 
+  XBT:
+  * Unfortunately, I had missed 5 misnamed functions:
+      xbt_fifo_item_t xbt_fifo_newitem(void);
+      void xbt_fifo_freeitem(xbt_fifo_item_t);
+      xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l);
+      xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
+      xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
+    They're now deprecated. Please use their new versions:
+      xbt_fifo_item_t xbt_fifo_new_item(void);
+      void xbt_fifo_free_item(xbt_fifo_item_t);
+      xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l);
+      xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i);
+      xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
+    [AL]
+  
+  MSG:
+  * Add addtionnal checkings on channel values in communicating functions.
 
  --
 
