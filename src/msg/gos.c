@@ -67,6 +67,7 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
   
   CHECK_HOST();
+  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   /* Sanity check */
   xbt_assert0(task,"Null pointer for the task\n");
 
@@ -164,6 +165,7 @@ int MSG_task_Iprobe(m_channel_t channel)
   m_host_t h = NULL;
   simdata_host_t h_simdata = NULL;
 
+  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   DEBUG2("Probing on channel %d (%s)", channel,h->name);
   CHECK_HOST();
   h = MSG_host_self();
@@ -187,6 +189,7 @@ int MSG_task_probe_from(m_channel_t channel)
   xbt_fifo_item_t item;
   m_task_t t;
 
+  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   CHECK_HOST();
   h = MSG_host_self();
   h_simdata = h->simdata;
@@ -210,6 +213,7 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
   int first_time = 1;
   m_process_t process = MSG_process_self();
 
+  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   if(PID) {
     *PID = -1;
   }
@@ -287,6 +291,8 @@ MSG_error_t MSG_task_put(m_task_t task,
   m_host_t remote_host = NULL;
 
   CHECK_HOST();
+
+  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
 
   task_simdata = task->simdata;
   task_simdata->sender = process;
