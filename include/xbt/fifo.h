@@ -46,10 +46,10 @@ int xbt_fifo_is_in(xbt_fifo_t, void *);
  *  @{
  */
 
-xbt_fifo_item_t xbt_fifo_newitem(void);
+xbt_fifo_item_t xbt_fifo_new_item(void);
 void xbt_fifo_set_item_content(xbt_fifo_item_t, void *);
 void *xbt_fifo_get_item_content(xbt_fifo_item_t);
-void xbt_fifo_freeitem(xbt_fifo_item_t);
+void xbt_fifo_free_item(xbt_fifo_item_t);
 
 void xbt_fifo_push_item(xbt_fifo_t, xbt_fifo_item_t);
 xbt_fifo_item_t xbt_fifo_pop_item(xbt_fifo_t);
@@ -59,9 +59,9 @@ xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t);
 void xbt_fifo_remove(xbt_fifo_t, void *);
 void xbt_fifo_remove_item(xbt_fifo_t, xbt_fifo_item_t);
 
-xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l);
-xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
-xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
+xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l);
+xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i);
+xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
 
 /** 
  * \brief List iterator
@@ -74,9 +74,9 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
  * Iterates over the whole list. 
  */
 #define xbt_fifo_foreach(f,i,n,type)                  \
-   for(i=xbt_fifo_getFirstItem(f);                    \
+   for(i=xbt_fifo_get_first_item(f);                    \
      ((i)?(n=(type)(xbt_fifo_get_item_content(i))):(NULL));             \
-       i=xbt_fifo_getNextItem(i))
+       i=xbt_fifo_get_next_item(i))
 
 /** @} */
 
@@ -86,6 +86,18 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
  */
 void **xbt_fifo_to_array(xbt_fifo_t);
 xbt_fifo_t xbt_fifo_copy(xbt_fifo_t);
+/** @} */
+
+/** @name 5. Deprecated functions: don't use!
+ *
+ *  @{
+ */
+xbt_fifo_item_t xbt_fifo_newitem(void);
+void xbt_fifo_freeitem(xbt_fifo_item_t);
+
+xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l);
+xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
+xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
 /** @} */
 
 END_DECL()

@@ -168,7 +168,7 @@ int MSG_task_Iprobe(m_channel_t channel)
   CHECK_HOST();
   h = MSG_host_self();
   h_simdata = h->simdata;
-  return(xbt_fifo_getFirstItem(h_simdata->mbox[channel])!=NULL);
+  return(xbt_fifo_get_first_item(h_simdata->mbox[channel])!=NULL);
 }
 
 /** \ingroup msg_gos_functions
@@ -193,7 +193,7 @@ int MSG_task_probe_from(m_channel_t channel)
 
   DEBUG2("Probing on channel %d (%s)", channel,h->name);
    
-  item = xbt_fifo_getFirstItem(h->simdata->mbox[channel]);
+  item = xbt_fifo_get_first_item(h->simdata->mbox[channel]);
   if (!item || !(t = xbt_fifo_get_item_content(item)))
     return -1;
    
@@ -222,7 +222,7 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
     h_simdata = h->simdata;
     
     DEBUG2("Probing on channel %d (%s)", channel,h->name);
-    while(!(item = xbt_fifo_getFirstItem(h->simdata->mbox[channel]))) {
+    while(!(item = xbt_fifo_get_first_item(h->simdata->mbox[channel]))) {
       if(max_duration>0) {
 	if(!first_time) {
 	  MSG_RETURN(MSG_OK);

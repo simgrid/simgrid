@@ -6,9 +6,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
+#include "xbt/log.h"
 #include "fifo_private.h"
 
-/*XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO"); UNUSED SO FAR */
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO");
 
 /** Constructor
  * \return a new fifo
@@ -29,8 +30,8 @@ void xbt_fifo_free(xbt_fifo_t l)
 {
   xbt_fifo_item_t b, tmp;
 
-  for (b = xbt_fifo_getFirstitem(l); b;
-       tmp = b, b = b->next, xbt_fifo_freeitem(tmp));
+  for (b = xbt_fifo_get_first_item(l); b;
+       tmp = b, b = b->next, xbt_fifo_free_item(tmp));
   free(l);
   return;
 }
@@ -46,7 +47,7 @@ xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t l, void *t)
 {
   xbt_fifo_item_t new;
 
-  new = xbt_fifo_newitem();
+  new = xbt_fifo_new_item();
   new->content = t;
 
   xbt_fifo_push_item(l,new);
@@ -69,7 +70,7 @@ void *xbt_fifo_pop(xbt_fifo_t l)
   if(!(item = xbt_fifo_pop_item(l))) return NULL;
 
   content = item->content;
-  xbt_fifo_freeitem(item);
+  xbt_fifo_free_item(item);
   return content;
 }
 
@@ -84,7 +85,7 @@ xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t l, void *t)
 {
   xbt_fifo_item_t new;
 
-  new = xbt_fifo_newitem();
+  new = xbt_fifo_new_item();
   new->content = t;
   xbt_fifo_unshift_item(l,new);
   return new;
@@ -106,7 +107,7 @@ void *xbt_fifo_shift(xbt_fifo_t l)
   if(!(item = xbt_fifo_shift_item(l))) return NULL;
   
   content = item->content;
-  xbt_fifo_freeitem(item);
+  xbt_fifo_free_item(item);
   return content;
 }
 
@@ -217,7 +218,7 @@ void xbt_fifo_remove(xbt_fifo_t l, void *t)
       continue;
     /* remove the item */
     xbt_fifo_remove_item(l, current);
-    xbt_fifo_freeitem(current);
+    xbt_fifo_free_item(current);
     /* WILL NOT REMOVE DUPLICATES */
     break;
   }
@@ -259,7 +260,7 @@ void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
  */
 int xbt_fifo_is_in(xbt_fifo_t f, void *content)
 {
-  xbt_fifo_item_t item = xbt_fifo_getFirstitem(f);
+  xbt_fifo_item_t item = xbt_fifo_get_first_item(f);
   while (item) {
     if (item->content == content)
       return 1;
@@ -283,7 +284,7 @@ void **xbt_fifo_to_array(xbt_fifo_t f)
   else
     array = xbt_new0(void *, f->count);
 
-  for (i = 0, b = xbt_fifo_getFirstitem(f); b; i++, b = b->next) {
+  for (i = 0, b = xbt_fifo_get_first_item(f); b; i++, b = b->next) {
     array[i] = b->content;
   }
   return array;
@@ -300,7 +301,7 @@ xbt_fifo_t xbt_fifo_copy(xbt_fifo_t f)
 
   copy = xbt_fifo_new();
 
-  for (b = xbt_fifo_getFirstitem(f); b; b = b->next) {
+  for (b = xbt_fifo_get_first_item(f); b; b = b->next) {
     xbt_fifo_push(copy, b->content);
   }
   return copy;
@@ -309,9 +310,17 @@ xbt_fifo_t xbt_fifo_copy(xbt_fifo_t f)
 /** Constructor
  * \return a new bucket
  */
-xbt_fifo_item_t xbt_fifo_newitem(void)
+xbt_fifo_item_t xbt_fifo_new_item(void)
 {
   return xbt_new0(struct xbt_fifo_item,1);
+}
+
+/** \deprecated Use #xbt_fifo_new_item instead.
+ */
+xbt_fifo_item_t xbt_fifo_newitem(void)
+{
+  WARN0("This function is deprecated. Use xbt_fifo_new_item.");
+  return xbt_fifo_new_item();
 }
 
 /**
@@ -339,8 +348,18 @@ void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
  *
  * Free the bucket but does not modifies the object (if any) that was stored in it.
  */
+void xbt_fifo_free_item(xbt_fifo_item_t b)
+{
+  free(b);
+  return;
+}
+
+/** Destructor
+ * \deprecated Use #xbt_fifo_free_item instead.
+ */
 void xbt_fifo_freeitem(xbt_fifo_item_t b)
 {
+  WARN0("This function is deprecated. Use xbt_fifo_free_item.");
   free(b);
   return;
 }
@@ -358,30 +377,55 @@ int xbt_fifo_size(xbt_fifo_t f)
  * \param l a list
  * \return the head of \a l.
  */
-xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
+xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
 {
   return l->head;
+}
+
+/** \deprecated Use #xbt_fifo_get_first_item instead.
+ */
+xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
+{
+  WARN0("This function is deprecated. Use xbt_fifo_get_first_item.");
+  return xbt_fifo_get_first_item(l);
 }
 
 /**
  * \param i a bucket
  * \return the bucket that comes next
  */
-xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i)
+xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i)
 {
   if(i) return i->next;
   return NULL;
+}
+
+/** \deprecated Use #xbt_fifo_get_next_item instead.
+ */
+xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i)
+{
+  WARN0("This function is deprecated. Use xbt_fifo_get_next_item.");
+  return xbt_fifo_get_next_item(i);
 }
 
 /**
  * \param i a bucket
  * \return the bucket that is just before \a i.
  */
-xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
+xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i)
 {
   if(i) return i->prev;
   return NULL;
 }
+
+/** \deprecated Use #xbt_fifo_get_prev_item instead.
+ */
+xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
+{
+  WARN0("This function is deprecated. Use xbt_fifo_get_prev_item.");
+  return xbt_fifo_get_prev_item(i);
+}
+
 /* @} */
 
 
