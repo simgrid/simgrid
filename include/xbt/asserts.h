@@ -14,11 +14,7 @@
 BEGIN_DECL()
 
 /**
- * \name 4. assert macro familly
- *
- * Those are the GRAS version of the good ol' assert macro. You can pass them a format message and
- * arguments, just as if it where a printf. It is converted to a CRITICALn logging request.
- *
+ * \addtogroup XBT_error
  * @{
  */
 #ifdef NDEBUG
@@ -50,10 +46,10 @@ BEGIN_DECL()
 #define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); xbt_abort(); }
 #endif
      
-/** @} */
-     
 void xbt_abort(void) _XBT_GNUC_NORETURN;
 void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
+
+/** @} */     
   
 END_DECL()
 

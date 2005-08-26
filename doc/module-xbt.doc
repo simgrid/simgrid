@@ -6,6 +6,7 @@
  *   - Grounding features
  *     - \ref XBT_ex
  *     - \ref XBT_log
+ *     - \ref XBT_error
  *     - \ref XBT_config
  *   - Data structures
  *     - \ref XBT_dynar 
@@ -55,7 +56,12 @@
 
     /** @} */
 
-    /** @defgroup XBT_config Configuration support
+    /** @defgroup XBT_error Assert macro familly
+     *  @brief Those are the GRAS version of the good ol' assert macro. You can pass them a format message and 
+     * arguments, just as if it where a printf. It is converted to a CRITICALn logging request.
+     */
+
+   /** @defgroup XBT_config Configuration support
      *  @brief Changing the configuration of SimGrid components (grounding feature)
      */
 
