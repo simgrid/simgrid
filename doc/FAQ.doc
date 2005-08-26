@@ -147,7 +147,7 @@ You are at the right place... Having a look to these <a
 href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">slides</a>
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
-MSG_examples. There is also a mailing list: <simgrid-user#lists.gforge.inria.fr>.
+MSG_examples. There is also a mailing list: <simgrid-user@lists.gforge.inria.fr>.
 
 \subsection faq_generic Building a generic simulator
 

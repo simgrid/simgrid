@@ -74,8 +74,11 @@
      * \brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
      */
     
-/**       \addtogroup XBT_fifo
-          \ingroup XBT_API */
+    /** \defgroup XBT_fifo A generic workqueue
+      *  \brief This section describes the API to generic workqueue. These functions
+      *   provide the same kind of functionnality as dynamic arrays but in time O(1). 
+      *   However these functions use malloc/free way too much often.
+      */
 	  
     /** @defgroup XBT_swag A O(1) set datatype
      *  @brief a O(1) set based on linked lists

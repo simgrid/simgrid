@@ -74,7 +74,7 @@ The base of the whole toolkit is constituted by the <b>\ref XBT_API
 (eXtended Bundle of Tools)</b>.
 
 It is a portable library providing some grounding features such as \ref
-XBT_log, \ref XBT_ex, \ref XBT_error and \ref XBT_config. XBT also encompass
+XBT_log, \ref XBT_ex and \ref XBT_config. XBT also encompass
 the following convenient datastructures: \ref XBT_dynar, \ref XBT_fifo, \ref
 XBT_dict, \ref XBT_heap, \ref XBT_set and \ref XBT_swag.
 
