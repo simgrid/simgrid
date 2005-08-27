@@ -1,4 +1,4 @@
-SimGrid (3.01) unstable; urgency=low
+SimGrid (3.0.1) unstable; urgency=low
 
   XBT:
   * Unfortunately, I had missed 5 misnamed functions:
@@ -17,6 +17,10 @@ SimGrid (3.01) unstable; urgency=low
   
   MSG:
   * Add addtionnal checkings on channel values in communicating functions.
+
+
+  Documentation improvements:
+  * xbt_log module unmercifully reworked [MQ]
 
  --
 

@@ -26,20 +26,48 @@
  *
  *  This section describes the API to the log functions used 
  *  everywhere in this project.
-     
-\section log_overview Overview
-     
-This is an adaptation of the log4c project, which is dead upstream, and
-which I was given the permission to fork under the LGPL licence by the
-authors. log4c itself was loosely based on the Apache project's Log4J,
-Log4CC, etc. project. Because C is not object oriented, a lot had to change.
-    
-There is 3 main concepts: category, priority and appender. These three
-concepts work together to enable developers to log messages according to
-message type and priority, and to control at runtime how these messages are
-formatted and where they are reported.
 
-\section log_cat Category hierarchy
+\section XBT_log_toc Table of contents
+ 
+ - \ref log_overview
+   - \ref log_cat
+   - \ref log_pri
+   - \ref log_app
+   - \ref log_hist
+ - \ref log_API
+   - \ref log_API_cat
+   - \ref log_API_pri
+   - \ref log_API_subcat
+   - \ref log_API_easy
+   - \ref log_API_example
+ - \ref log_user
+   - \ref log_use_conf
+   - \ref log_use_misc
+ - \ref log_internals
+   - \ref log_in_perf
+   - \ref log_in_app
+     
+\section log_overview 1. Introduction
+
+This module is in charge of handling the log messages of every SimGrid
+program. The main design goal are:
+
+  - <b>configurability</b>: the user can choose <i>at runtime</i> what messages to show and 
+    what to hide, as well as how messages get displayed.
+  - <b>ease of use</b>: both to the programmer (using preprocessor macros black magic)
+    and to the user (with command line options)
+  - <b>performances</b>: logging shouldn't slow down the program when turned off, for example
+  - deal with <b>distributed settings</b>: SimGrid programs are [often] distributed ones, 
+    and the logging mecanism allows to syndicate each and every log source into the same place.
+    At least, its design would allow to, once we write the last missing pieces
+     
+There is three main concepts in SimGrid's logging mecanism: <i>category</i>,
+<i>priority</i> and <i>appender</i>. These three concepts work together to
+enable developers to log messages according to message type and priority, and
+to control at runtime how these messages are formatted and where they are
+reported. 
+
+\subsection log_cat 1.1 Category hierarchy
 
 The first and foremost advantage of any logging API over plain printf()
 resides in its ability to disable certain log statements while allowing
@@ -48,7 +76,48 @@ that is, the space of all possible logging statements, is categorized
 according to some developer-chosen criteria. 
 	  
 This observation led to choosing category as the central concept of the
-system. Every category is declared by providing a name and an optional
+system. In a certain sense, they can be considered as logging topics or
+channels.
+
+\subsection log_pri 1.2 Logging priorities
+
+The user can naturally declare interest into this or that logging category, but
+he also can specify the desired level of details for each of them. This is
+controled by the <i>priority</i> concept (which should maybe be renamed to
+<i>severity</i>). 
+
+Empirically, the user can specify that he wants to see every debuging message
+of GRAS while only being interested into the messages at level "error" or
+higher about the XBT internals.
+
+\subsection log_app 1.3 Message appenders
+
+The message appenders are the elements in charge of actually displaying the
+message to the user. For now, there is only one appender: the one able to print
+stuff on stderr. But everything is in place internally to write new ones, such
+as the one able to send the strings to a central server in charge of
+syndicating the logs of every distributed daemons on a well known location.
+
+It should also be possible to pass configuration informations to the appenders,
+specifying for example that the message location (file and line number) is only
+relevant to debugging information, not to critical error messages.
+
+One day, for sure ;)
+
+\subsection log_hist 1.4 History of this module
+
+Historically, this module is an adaptation of the log4c project, which is dead
+upstream, and which I was given the permission to fork under the LGPL licence
+by the log4c's authors. The log4c project itself was loosely based on the
+Apache project's Log4J, which also inspired Log4CC, Log4py and so on. Our work
+differs somehow from these projects anyway, because the C programming language
+is not object oriented.
+
+\section log_API 2. Programmer interface
+
+\subsection log_API_cat 2.1 Constructing the category hierarchy
+
+Every category is declared by providing a name and an optional
 parent. If no parent is explicitly named, the root category, LOG_ROOT_CAT is
 the category's parent. 
       
@@ -73,9 +142,11 @@ definition.
 Typically, there will be a Category for each module and sub-module, so you
 can independently control logging for each module.
 
-For a list of all existing categories, please refer to the \ref XBT_log_cats section.
+For a list of all existing categories, please refer to the \ref XBT_log_cats
+section. This file is generated automatically from the SimGrid source code, so
+it should be complete and accurate.
 
-\section log_pri Priority
+\section log_API_pri 2.2 Declaring message priority
 
 A category may be assigned a threshold priorty. The set of priorites are
 defined by the \ref e_xbt_log_priority_t enum. All logging request under
@@ -92,7 +163,7 @@ compile with the -Wall option, gcc will warn you for unmatched arguments, ie
 when you pass a pointer to a string where an integer was specified by the
 format. This is usualy a good idea.
 
-Because most C compilers do not support vararg macros, there is a version of
+Because some C compilers do not support vararg macros, there is a version of
 the macro for any number of arguments from 0 to 6. The macro name ends with
 the total number of arguments.
 	
@@ -114,7 +185,7 @@ equivalent to the shorter:
 
 <code>CWARN4(MyCat, "Values are: %d and '%s'", 5, "oops");</code>
 
-\subsection log_subcat Using a default category
+\section log_API_subcat 2.3 Using a default category (the easy interface)
   
 If \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, Parent) or
 \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat) is used to create the
@@ -125,7 +196,24 @@ category, then the even shorter form can be used:
 Only one default category can be created per file, though multiple
 non-defaults can be created and used.
 
-\section log_example Example
+\section log_API_easy 2.4 Putting all together: the easy interface
+
+First of all, each module should register its own category into the categories
+tree using \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY.
+
+Then, logging should be done with the DEBUG<n>, VERB<n>, INFO<n>, WARN<n>,
+ERROR<n> or CRITICAL<n> macro families. For each group, there is 6 different
+macros (like DEBUG0, DEBUG1, DEBUG2, DEBUG3, DEBUG4 and DEBUG5), only differing
+in the number of arguments passed along the format. This is because we want
+SimGrid itself to keep compilable on ancient compiler not supporting variable
+number of arguments to macros. But we should provide a macro simpler to use for
+the users not interested in SP3 machines (FIXME).
+
+Under GCC, these macro check there arguments the same way than printf does. So,
+if you compile with -Wall, the folliwing code will issue a warning:
+<code>DEBUG2("Found %s (id %f)", some_string, a_double)</code>
+
+\section log_API_example 2.5 Example of use
 
 Here is a more complete example:
 
@@ -155,22 +243,47 @@ int main() {
 }
 \endverbatim
 
-\section log_conf Configuration
+
+\section log_user 3. User interface
+
+\section log_use_conf 3.1 Configuration
 Configuration is typically done during program initialization by invoking
 the xbt_log_control_set() method. The control string passed to it typically
 comes from the command line. Look at the documentation for that function for
 the format of the control string.
 
 Any SimGrid program can furthermore be configured at run time by passing a
---xbt-log argument on the command line (--gras-log, --msg-log and
---surf-log are synonyms). You can provide several of those arguments to
-change the setting of several categories.
+--xbt-log argument on the command line (--gras-log, --msg-log and --surf-log
+are synonyms provided by aestheticism). You can provide several of those
+arguments to change the setting of several categories, they will be applied
+from left to right. So, 
+\verbatim --xbt-log="root.thres=debug root.thres=critical"\endverbatim 
+should disable any logging.
 
-\section log_perf Performance
+Note that the quotes on above line are mandatory because there is a space in
+the argument, so we are protecting ourselves from the shell, not from SimGrid.
+We could also reach the same effect with this:
+\verbatim --xbt-log=root.thres=debug --xbt-log=root.thres=critical\endverbatim 
 
-Clever design insures efficiency. Except for the first invocation, a
-disabled logging request requires an a single comparison of a static
-variable to a constant.
+\section log_use_misc 3.2 Misc and Caveats
+
+  - Do not use any of the macros that start with '_'.
+  - Log4J has a 'rolling file appender' which you can select with a run-time
+    option and specify the max file size. This would be a nice default for
+    non-kernel applications.
+  - Careful, category names are global variables.
+
+\section log_internals 4. Internal considerations
+
+This module is a mess of macro black magic, and when it goes wrong, SimGrid
+studently loose its ability to explain its problems. When messing around this
+module, I often find useful to define XBT_LOG_MAYDAY (which turns it back to
+good old printf) for the time of finding what's going wrong.
+
+\section log_in_perf 4.1 Performance
+
+Except for the first invocation of a given category, a disabled logging request
+requires an a single comparison of a static variable to a constant.
 
 There is also compile time constant, \ref XBT_LOG_STATIC_THRESHOLD, which
 causes all logging requests with a lower priority to be optimized to 0 cost
@@ -182,8 +295,11 @@ might be compiled with
 Compiling with the \verbatim-DNLOG\endverbatim option disables all logging 
 requests at compilation time while the \verbatim-DNDEBUG\endverbatim disables 
 the requests of priority below INFO.
- 
-\section log_app Appenders
+
+\todo Logging performance *may* be improved further by improving the message
+propagation from appender to appender in the category tree.
+
+\section log_in_app 4.2 Appenders
 
 Each category has an optional appender. An appender is a pointer to a
 structure which starts with a pointer to a doAppend() function. DoAppend()
@@ -205,30 +321,11 @@ The default appender function currently prints to stderr, and no other one
 exist, even if more would be needed, like the one able to send the logs to a
 remote dedicated server, or other ones offering different output formats.
 This is on our TODO list for quite a while now, but your help would be
-welcome here.
+welcome here, too.
 
-\section log_misc Misc and Caveats
-
-  - Do not use any of the macros that start with '_'.
-  - Log4J has a 'rolling file appender' which you can select with a run-time
-    option and specify the max file size. This would be a nice default for
-    non-kernel applications.
-  - Careful, category names are global variables.
 
 */
 
-/*
-FAIRE DES ZOLIS LOGS
---------------------
-Pour utiliser les logs, tu déjà faire, non ? Tu colle sur la ligne de
-commande un ou plusieurs arguments de la forme
-  --gras-log="<réglage> [<reglage>+]" (ou sans " si t'as pas d'espace)
-chaque réglage étant de la forme:
-  <canal>.thres=<priorité>
-Les différents réglages sont lus de gauche à droite.
-"root.thres=debug root.thres=critical" ferme tout, normalement.
-
-*/
 
 typedef struct {
   char *catname;
@@ -537,15 +634,17 @@ static void _cleanup_double_spaces(char *s) {
  *
  *      ( [category] "." [keyword] "=" value (" ")... )...
  *
- * where [category] is one the category names and keyword is one of the
- * following:
+ * where [category] is one the category names (see \ref XBT_log_cats for a complete list) 
+ * and keyword is one of the following:
  *
- *      thres  		value is an integer priority level. Sets the category's
- *                        threshold priority.
+ *    - thres: category's threshold priority. Possible values:
+ *             TRACE,DEBUG,VERBOSE,INFO,WARNING,ERROR,CRITICAL
+ *             
  *
  * \warning
  * This routine may only be called once and that must be before any other
  * logging command! Typically, this is done from main().
+ * \todo the previous warning seems a bit old and need double checking
  */
 void xbt_log_control_set(const char* control_string) {
   xbt_log_setting_t set;

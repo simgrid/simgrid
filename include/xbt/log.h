@@ -89,6 +89,7 @@ typedef enum {
  * \param catName name of new category
  * \param parent father of the new category in the tree
  * \param desc string describing the purpose of this category
+ * \hideinitializer
  *
  * Defines a new subcategory of the parent. 
  */
@@ -100,6 +101,7 @@ typedef enum {
  * \ingroup XBT_log  
  * \param catName name of new category
  * \param desc string describing the purpose of this category
+ * \hideinitializer
  *
  * Creates a new subcategory of the root category.
  */
@@ -108,6 +110,7 @@ typedef enum {
 /**
  * \ingroup XBT_log  
  * \param cname name of the cat
+ * \hideinitializer
  *
  * Indicates which category is the default one.
  */
@@ -123,6 +126,7 @@ typedef enum {
  * \ingroup XBT_log  
  * \param cname name of the cat
  * \param desc string describing the purpose of this category
+ * \hideinitializer
  *
  * Creates a new subcategory of the root category and makes it the default
  * (used by macros that don't explicitly specify a category).
@@ -136,6 +140,7 @@ typedef enum {
  * \param cname name of the cat
  * \param parent name of the parent
  * \param desc string describing the purpose of this category
+ * \hideinitializer
  *
  * Creates a new subcategory of the parent category and makes it the default
  * (used by macros that don't explicitly specify a category).
@@ -147,6 +152,7 @@ typedef enum {
 /**
  * \ingroup XBT_log  
  * \param cname name of the cat
+ * \hideinitializer
  *
  * Indicates that a category you'll use in this file (to get subcategories of it, 
  * for example) really lives in another file.
@@ -241,6 +247,7 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * \ingroup XBT_log 
  * \param catName name of the category
  * \param priority minimal priority to be enabled to return true
+ * \hideinitializer
  *
  * Returns true if the given priority is enabled for the category.
  * If you have expensive expressions that are computed outside of the log
