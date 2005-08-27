@@ -101,6 +101,7 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
   link_list = (ROUTE(src_id, dst_id) = xbt_new0(network_link_CM02_t, nb_link));
   for (i = 0; i < nb_link; i++) {
     link_list[i] = xbt_dict_get_or_null(network_link_set, links[i]);
+    xbt_assert1(link_list[i],"Invalid link name \"%s\"",links[i]);
     free(links[i]);
   }
   free(links);
