@@ -91,6 +91,17 @@ m_process_t MSG_task_get_sender(m_task_t task)
 }
 
 /** \ingroup m_task_management
+ * \brief Return the source of a #m_task_t.
+ *
+ * This functions returns the #m_host_t from which this task was sent
+ */
+m_host_t MSG_task_get_source(m_task_t task)
+{
+   xbt_assert0(task, "Invalid parameters");
+   return ((simdata_task_t) task->simdata)->source;
+}
+
+/** \ingroup m_task_management
  * \brief Return the name of a #m_task_t.
  *
  * This functions returns the name of a #m_task_t as specified on creation

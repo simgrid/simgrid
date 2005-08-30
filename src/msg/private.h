@@ -36,6 +36,7 @@ typedef struct simdata_task {
   double computation_amount;	/* Computation size  */
   xbt_dynar_t sleeping;		/* process to wake-up */
   m_process_t sender;
+  m_host_t source;
   double priority;
   double rate;
   int using;

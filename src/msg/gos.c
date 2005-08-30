@@ -296,6 +296,7 @@ MSG_error_t MSG_task_put(m_task_t task,
 
   task_simdata = task->simdata;
   task_simdata->sender = process;
+  task_simdata->source = MSG_process_get_host(process);
   xbt_assert0(task_simdata->using==1,"Gargl!");
   task_simdata->comm = NULL;
   
@@ -481,6 +482,7 @@ m_task_t MSG_parallel_task_create(const char *name,
   simdata->rate = -1.0;
   simdata->using = 1;
   simdata->sender = NULL;
+  simdata->source = NULL;
   simdata->host_nb = host_nb;
   
   simdata->host_list = xbt_new0(void *, host_nb);

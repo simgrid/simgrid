@@ -83,6 +83,7 @@ m_task_t MSG_parallel_task_create(const char *name,
 				  void *data);
 void *MSG_task_get_data(m_task_t task);
 m_process_t MSG_task_get_sender(m_task_t task);
+m_host_t MSG_task_get_source(m_task_t task);
 const char *MSG_task_get_name(m_task_t task);
 MSG_error_t MSG_task_cancel(m_task_t task);
 MSG_error_t MSG_task_destroy(m_task_t task);

@@ -41,7 +41,7 @@ int xbt_fifo_size(xbt_fifo_t);
 int xbt_fifo_is_in(xbt_fifo_t, void *);
 /** @} */
 
-/** @name 3. Manipulating directly items
+/** @name 3. Manipulating items directly
  *
  *  @{
  */
