@@ -159,6 +159,9 @@ static int action_is_suspended(surf_action_t action)
 
 static void finalize(void)
 {
+  tmgr_trace_free(empty_trace);
+  empty_trace = NULL;
+
   xbt_swag_free(command_pending);
   xbt_swag_free(command_to_run);
 

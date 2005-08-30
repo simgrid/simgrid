@@ -93,6 +93,7 @@ extern MSG_Global_t msg_global;
       
 /************************** Configuration support ********************************/
 void msg_config_init(void); /* create the config set, call this before use! */
+void msg_config_finalize(void); /* destroy the config set, call this at cleanup. */
 extern int _msg_init_status; /* 0: beginning of time; 
                                 1: pre-inited (cfg_set created); 
                                 2: inited (running) */

@@ -50,6 +50,15 @@ void msg_config_init(void) {
   xbt_cfg_set_string(_msg_cfg_set,"surf_workstation_model", "CLM03");
 }
 
+void msg_config_finalize(void) {
+
+  if (!_msg_init_status) 
+    return; /* Not initialized yet. Nothing to do */
+
+  xbt_cfg_free(&_msg_cfg_set);
+  _msg_init_status = 0;
+}
+
 /** \brief set a configuration variable
  * 
  * Currently existing configuation variable:

@@ -99,6 +99,7 @@ static void xbt_context_destroy(xbt_context_t context)
   pthread_mutex_destroy(&(context->mutex));
   pthread_cond_destroy(&(context->cond));
 #endif
+  if(context->exception) free(context->exception);
   free(context);
   return;
 }
@@ -320,7 +321,6 @@ void xbt_context_free(xbt_context_t context)
   for(i=0;i<context->argc; i++) 
     if(context->argv[i]) free(context->argv[i]);
   if(context->argv) free(context->argv);
-  if(context->exception) free(context->exception);
   
   if(context->cleanup_func)
     context->cleanup_func(context->cleanup_arg);

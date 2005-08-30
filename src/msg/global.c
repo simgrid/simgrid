@@ -514,6 +514,7 @@ MSG_error_t MSG_clean(void)
     fclose(msg_global->paje_output);
     msg_global->paje_output = NULL;
   }
+  msg_config_finalize();
   free(msg_global);
   surf_exit();
 
