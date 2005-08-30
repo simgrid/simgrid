@@ -14,6 +14,7 @@ SimGrid (3.0.1) unstable; urgency=low
       xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i);
       xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
     [AL]
+  * Bugfix: really disconnect fifo items which are remove_item()ed [AL]
   
   MSG:
   * Add addtionnal checkings on channel values in communicating functions.
