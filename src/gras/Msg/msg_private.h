@@ -28,7 +28,8 @@
 
 #include "gras/Msg/msg_interface.h"
 
-
+extern char _GRAS_header[6];
+ 
 /** @brief Message instance */
 typedef struct {
   gras_socket_t   expeditor;

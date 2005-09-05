@@ -9,17 +9,17 @@
 
 #include "xbt/ex.h"
 #include "gras/Msg/msg_private.h"
-#include "gras/DataDesc/datadesc_interface.h"
-#include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Virtu/virtu_interface.h"
+#include "gras/DataDesc/datadesc_interface.h"
+#include "gras/Transport/transport_interface.h" /* gras_select */
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg,gras,"High level messaging");
 
 xbt_set_t _gras_msgtype_set = NULL;
-static char GRAS_header[6];
 static char *make_namev(const char *name, short int ver);
+char _GRAS_header[6];
 
 /*
  * Creating procdata for this module
@@ -66,9 +66,9 @@ void gras_msg_init(void) {
   
   _gras_msgtype_set = xbt_set_new();
 
-  memcpy(GRAS_header,"GRAS", 4);
-  GRAS_header[4]=GRAS_PROTOCOL_VERSION;
-  GRAS_header[5]=(char)GRAS_THISARCH;
+  memcpy(_GRAS_header,"GRAS", 4);
+  _GRAS_header[4]=GRAS_PROTOCOL_VERSION;
+  _GRAS_header[5]=(char)GRAS_THISARCH;
 }
 
 /*
@@ -194,97 +194,9 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
   
   return res;
 }
-
-/** \brief Send the data pointed by \a payload as a message of type
- * \a msgtype to the peer \a sock */
-void
-gras_msg_send(gras_socket_t   sock,
-	      gras_msgtype_t  msgtype,
-	      void           *payload) {
-
-  static gras_datadesc_type_t string_type=NULL;
-
-  if (!msgtype)
-    THROW0(arg_error,0,
-	   "Cannot send the NULL message (did msgtype_by_name fail?)");
-
-  if (!string_type) {
-    string_type = gras_datadesc_by_name("string");
-    xbt_assert(string_type);
-  }
-
-  DEBUG3("send '%s' to %s:%d", msgtype->name, 
-	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
-  gras_trp_chunk_send(sock, GRAS_header, 6);
-
-  gras_datadesc_send(sock, string_type,   &msgtype->name);
-  if (msgtype->ctn_type)
-    gras_datadesc_send(sock, msgtype->ctn_type, payload);
-  gras_trp_flush(sock);
-}
-/*
- * receive the next message on the given socket.  
- */
-void
-gras_msg_recv(gras_socket_t    sock,
-	      gras_msgtype_t  *msgtype,
-	      void           **payload,
-	      int             *payload_size) {
-
-  xbt_ex_t e;
-  static gras_datadesc_type_t string_type=NULL;
-  char header[6];
-  int cpt;
-  int r_arch;
-  char *msg_name=NULL;
-
-  xbt_assert1(!gras_socket_is_meas(sock), 
-  	      "Asked to receive a message on the measurement socket %p", sock);
-  if (!string_type) {
-    string_type=gras_datadesc_by_name("string");
-    xbt_assert(string_type);
-  }
-  
-  TRY {
-    gras_trp_chunk_recv(sock, header, 6);
-  } CATCH(e) {
-    RETHROW1("Exception caught while trying to get the mesage header on socket %p : %s",
-    	     sock);
-  }
-
-  for (cpt=0; cpt<4; cpt++)
-    if (header[cpt] != GRAS_header[cpt])
-      THROW2(mismatch_error,0,
-	     "Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",header,GRAS_header);
-  if (header[4] != GRAS_header[4]) 
-    THROW2(mismatch_error,0,"GRAS protocol mismatch (got %d, use %d)",
-	   (int)header[4], (int)GRAS_header[4]);
-  r_arch = (int)header[5];
-  DEBUG2("Handle an incoming message using protocol %d (remote is %s)",
-	 (int)header[4],gras_datadesc_arch_name(r_arch));
-
-  gras_datadesc_recv(sock, string_type, r_arch, &msg_name);
-  TRY {
-    *msgtype = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,msg_name);
-  } CATCH(e) {
-    /* FIXME: Survive unknown messages */
-    RETHROW1("Exception caught while retrieving the type associated to messages '%s' : %s",
-	     msg_name);
-  }
-  free(msg_name);
-
-  if ((*msgtype)->ctn_type) {
-    *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
-    xbt_assert2(*payload_size > 0,
-		"%s %s",
-		"Dynamic array as payload is forbided for now (FIXME?).",
-		"Reference to dynamic array is allowed.");
-    *payload = xbt_malloc(*payload_size);
-    gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload);
-  } else {
-    *payload = NULL;
-    *payload_size = 0;
-  }
+/** @brief retrive an existing message type from its name and version. */
+gras_msgtype_t gras_msgtype_by_id(int id) {
+  return (gras_msgtype_t)xbt_set_get_by_id(_gras_msgtype_set, id);
 }
 
 /** \brief Waits for a message to come in over a given socket. 
