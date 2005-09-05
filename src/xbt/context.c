@@ -35,8 +35,6 @@ static xbt_swag_t context_living = NULL;
 
 static void __xbt_context_yield(xbt_context_t context)
 {
-  int return_value = 0;
-
   xbt_assert0(current_context,"You have to call context_init() first.");
   
   DEBUG2("--------- current_context (%p) is yielding to context(%p) ---------",
@@ -66,6 +64,9 @@ static void __xbt_context_yield(xbt_context_t context)
   if(context) VOIRP(context->save);
   if (context) {
     if(context->save==NULL) {
+
+      int return_value = 0;
+
       DEBUG0("**** Yielding to somebody else ****");
       DEBUG2("Saving current_context value (%p) to context(%p)->save",current_context,context);
       context->save = current_context ;
