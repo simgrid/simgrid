@@ -42,7 +42,8 @@ void gras_trp_sg_chunk_send(gras_socket_t sd,
 
 void gras_trp_sg_chunk_recv(gras_socket_t sd,
 			    char *data,
-			    unsigned long int size);
+			    unsigned long int size,
+			    unsigned long int bufsize);
 
 /***
  *** Specific plugin part
@@ -242,6 +243,8 @@ void gras_trp_sg_chunk_send(gras_socket_t sock,
   gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *)sock->data;
   sg_task_data_t *task_data;
   
+  xbt_assert0(sock->meas, "SG chunk exchange shouldn't be used on non-measurement sockets");
+
   sprintf(name,"Chunk[%d]",count++);
 
   task_data=xbt_new(sg_task_data_t,1);
@@ -261,13 +264,15 @@ void gras_trp_sg_chunk_send(gras_socket_t sock,
 
 void gras_trp_sg_chunk_recv(gras_socket_t sock,
 			    char *data,
-			    unsigned long int size){
+			    unsigned long int size,
+			    unsigned long int bufsize){
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
 
   m_task_t task=NULL;
   sg_task_data_t *task_data;
   gras_trp_sg_sock_data_t *sock_data = sock->data;
 
+  xbt_assert0(sock->meas, "SG chunk exchange shouldn't be used on non-measurement sockets");
   XBT_IN;
   DEBUG4("recv chunk on %s ->  %s:%d (size=%ld)",
 	 MSG_host_get_name(sock_data->to_host),

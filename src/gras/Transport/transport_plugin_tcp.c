@@ -34,7 +34,8 @@ void gras_trp_tcp_chunk_send(gras_socket_t sd,
 
 void gras_trp_tcp_chunk_recv(gras_socket_t sd,
 			     char *data,
-			     unsigned long int size);
+			     unsigned long int size,
+			     unsigned long int bufsize);
 
 void gras_trp_tcp_exit(gras_trp_plugin_t plug);
 
@@ -328,17 +329,19 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
 void
 gras_trp_tcp_chunk_recv(gras_socket_t sock,
 			char *data,
-			unsigned long int size) {
+			unsigned long int size,
+			unsigned long int bufsize) {
 
   /* TCP sockets are in duplex mode, don't check direction */
   xbt_assert0(sock, "Cannot recv on an NULL socket");
   xbt_assert0(size >= 0, "Cannot receive a negative amount of data");
+  xbt_assert0(bufsize>=size,"Not enough buffer size to receive that much data");
   
   while (size) {
     int status = 0;
     
     DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
-    status = tcp_read(sock->sd, data, (size_t)size);
+    status = tcp_read(sock->sd, data, (size_t)bufsize);
     
     if (status < 0) {
       THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
@@ -347,12 +350,12 @@ gras_trp_tcp_chunk_recv(gras_socket_t sock,
     }
     
     if (status) {
-      size  -= status;
-      data  += status;
+      size    -= status;
+      bufsize -= status;
+      data    += status;
     } else {
-      THROW3(system_error,0,
-	     "file descriptor closed (nothing read(%d, %p, %ld) on the socket)",
-             sock->sd, data, size);
+      gras_socket_close(sock);
+      THROW0(system_error,0,"Socket closed by remote side");
     }
   }
 }

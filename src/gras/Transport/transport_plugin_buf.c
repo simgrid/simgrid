@@ -41,7 +41,8 @@ void gras_trp_buf_chunk_send(gras_socket_t sd,
 
 void gras_trp_buf_chunk_recv(gras_socket_t sd,
 			     char *data,
-			     unsigned long int size);
+			     unsigned long int size,
+			     unsigned long int bufsize);
 void gras_trp_buf_flush(gras_socket_t sock);
 
 
@@ -221,7 +222,8 @@ gras_trp_buf_chunk_send(gras_socket_t sock,
 void
 gras_trp_buf_chunk_recv(gras_socket_t sock,
 			char *chunk,
-			unsigned long int size) {
+			unsigned long int size,
+			unsigned long int bufsize) {
 
   xbt_ex_t e;
   gras_trp_bufdata_t *data=sock->bufdata;
@@ -242,7 +244,7 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
       if (gras_if_RL()) {
 	 DEBUG0("Recv the size");
 	 TRY {
-	   _buf_super->chunk_recv(sock,(char*)&nextsize, 4);
+	   _buf_super->chunk_recv(sock,(char*)&nextsize, 4,4);
 	 } CATCH(e) {
 	   RETHROW3("Unable to get the chunk size on %p (peer = %s:%d): %s",
 		    sock,gras_socket_peer_name(sock),gras_socket_peer_port(sock));
@@ -253,7 +255,7 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
 	 data->in.size = -1;
       }
        
-      _buf_super->chunk_recv(sock, data->in.data, data->in.size);
+      _buf_super->chunk_recv(sock, data->in.data, data->in.size, data->in.size);
        
       if (gras_if_RL()) {
 	 data->in.pos=0;

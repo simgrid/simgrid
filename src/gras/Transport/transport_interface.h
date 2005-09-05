@@ -58,7 +58,8 @@ struct gras_trp_plugin_ {
 		     unsigned long int size);
   void (*chunk_recv)(gras_socket_t sd,
 		     char *data,
-		     unsigned long int size);
+		     unsigned long int size,
+		     unsigned long int bufsize);
 
   /* flush has to make sure that the pending communications are achieved */
   void (*flush)(gras_socket_t sd);

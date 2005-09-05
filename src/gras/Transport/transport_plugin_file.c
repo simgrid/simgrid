@@ -25,7 +25,8 @@ void gras_trp_file_chunk_send(gras_socket_t sd,
 
 void gras_trp_file_chunk_recv(gras_socket_t sd,
 			      char *data,
-			      unsigned long int size);
+			      unsigned long int size,
+			      unsigned long int bufsize);
 
 
 /***
@@ -202,16 +203,18 @@ gras_trp_file_chunk_send(gras_socket_t sock,
 void
 gras_trp_file_chunk_recv(gras_socket_t sock,
 			 char *data,
-			 unsigned long int size) {
+			 unsigned long int size,
+			 unsigned long int bufsize) {
 
   xbt_assert0(sock, "Cannot recv on an NULL socket");
   xbt_assert0(sock->incoming, "Cannot recv on client file socket");
   xbt_assert0(size >= 0, "Cannot receive a negative amount of data");
-  
+  xbt_assert0(bufsize>=size,"Not enough buffer size to receive that much data");
+
   while (size) {
     int status = 0;
     
-    status = read(sock->sd, data, (long int)size);
+    status = read(sock->sd, data, (long int)bufsize);
     DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
     
     if (status == -1) {
@@ -221,8 +224,9 @@ gras_trp_file_chunk_recv(gras_socket_t sock,
     }
     
     if (status) {
-      size  -= status;
-      data  += status;
+      size    -= status;
+      bufsize -= status;
+      data    += status;
     } else {
       THROW0(system_error,0,"file descriptor closed");
     }
