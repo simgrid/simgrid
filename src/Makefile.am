@@ -135,7 +135,9 @@ RL_SRC= \
   \
   gras/Virtu/rl_emul.c \
   gras/Virtu/rl_process.c        gras/Virtu/rl_time.c \
-  gras/Virtu/rl_dns.c
+  gras/Virtu/rl_dns.c\
+  \
+  gras/Msg/rl_msg.c
 
 SG_SRC=  \
   xbt/context.c                                                                \
@@ -157,7 +159,9 @@ SG_SRC=  \
   \
   gras/Virtu/sg_emul.c \
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
-  gras/Virtu/sg_dns.c
+  gras/Virtu/sg_dns.c\
+  \
+  gras/Msg/sg_msg.c
 
 AMOK_SRC= \
   amok/base.c \
