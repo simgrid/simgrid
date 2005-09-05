@@ -127,7 +127,7 @@ int server (int argc,char *argv[]) {
 
 int client(int argc,char *argv[]) {
   xbt_ex_t e; 
-  gras_socket_t toserver; /* peer */
+  gras_socket_t toserver=NULL; /* peer */
 
   gras_socket_t from;
   int ping, pong;
