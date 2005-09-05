@@ -141,6 +141,9 @@ void gras_trp_tcp_setup(gras_trp_plugin_t plug) {
 void gras_trp_file_setup(gras_trp_plugin_t plug) {
   THROW0(mismatch_error,0,NULL);
 }
-
-
+void gras_trp_buf_setup(gras_trp_plugin_t plug) {
+  THROW0(mismatch_error,0,NULL);
+}
+void gras_trp_buf_init_sock(gras_socket_t sock) {
+}
    

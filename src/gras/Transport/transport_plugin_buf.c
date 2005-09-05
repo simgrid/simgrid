@@ -17,7 +17,7 @@
 #include "transport_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_buf,transport,
-      "Generic buffered transport (works on top of TCP or SG)");
+      "Generic buffered transport (works on top of TCP or Files, but not SG)");
 
 
 static gras_trp_plugin_t _buf_super;
@@ -83,7 +83,7 @@ void gras_trp_buf_init_sock(gras_socket_t sock) {
    /* In SG, the 4 first bytes are for the chunk size as htonl'ed, so that we can send it in one shoot.
     * This is mandatory in SG because all emissions go to the same channel, so if we split them,
     * they can get mixed. */
-  data->out.size = gras_if_RL()?0:4;
+  data->out.size = 0;
   data->out.data = xbt_malloc(data->buffsize);
   data->out.pos  = data->out.size;
    
@@ -98,9 +98,9 @@ gras_trp_buf_setup(gras_trp_plugin_t plug) {
   gras_trp_buf_plug_data_t *data =xbt_new(gras_trp_buf_plug_data_t,1);
 
   XBT_IN;
-  _buf_super = gras_trp_plugin_get_by_name(gras_if_RL() ? "tcp" : "sg");
+  _buf_super = gras_trp_plugin_get_by_name("tcp");
 
-  DEBUG1("Derivate a buffer plugin from %s",gras_if_RL() ? "tcp" : "sg");
+  DEBUG1("Derivate a buffer plugin from %s","tcp");
 
   plug->socket_client = gras_trp_buf_socket_client;
   plug->socket_server = gras_trp_buf_socket_server;
@@ -241,34 +241,19 @@ gras_trp_buf_chunk_recv(gras_socket_t sock,
 
     if (data->in.size == data->in.pos) { /* out of data. Get more */
       int nextsize;
-      if (gras_if_RL()) {
-	 DEBUG0("Recv the size");
-	 TRY {
-	   _buf_super->chunk_recv(sock,(char*)&nextsize, 4,4);
-	 } CATCH(e) {
-	   RETHROW3("Unable to get the chunk size on %p (peer = %s:%d): %s",
-		    sock,gras_socket_peer_name(sock),gras_socket_peer_port(sock));
-	 }
-	 data->in.size = (int)ntohl(nextsize);
-	 VERB1("Recv the chunk (size=%d)",data->in.size);
-      } else {
-	 data->in.size = -1;
+      DEBUG0("Recv the size");
+      TRY {
+	_buf_super->chunk_recv(sock,(char*)&nextsize, 4,4);
+      } CATCH(e) {
+	RETHROW3("Unable to get the chunk size on %p (peer = %s:%d): %s",
+		 sock,gras_socket_peer_name(sock),gras_socket_peer_port(sock));
       }
+      data->in.size = (int)ntohl(nextsize);
+      VERB1("Recv the chunk (size=%d)",data->in.size);
        
       _buf_super->chunk_recv(sock, data->in.data, data->in.size, data->in.size);
        
-      if (gras_if_RL()) {
-	 data->in.pos=0;
-      } else {
-	 memcpy((char*)&nextsize,data->in.data,4);
-	 data->in.size = nextsize+4;
-	 data->in.pos=4;
-	 VERB3("Got the chunk (size=%d+4 for the size ifself)='%.*s'",
-	       data->in.size-4, data->in.size,data->in.data);
-	 if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
-	   hexa_print("chunck received",(unsigned char *) data->in.data,data->in.size);
-      }
-       
+      data->in.pos=0;
     }
      
     thissize = min(size-chunck_pos ,  data->in.size - data->in.pos);
@@ -300,20 +285,16 @@ gras_trp_buf_flush(gras_socket_t sock) {
   DEBUG0("Flush");
   if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
      hexa_print("chunck to send ",(unsigned char *) data->out.data,data->out.size);
-  if ((data->out.size - data->out.pos) == (gras_if_RL()?0:4) ) { /* 4 first bytes=size in SG mode*/
+  if ((data->out.size - data->out.pos) == 0) { 
      DEBUG2("Nothing to flush (size=%d; pos=%d)",data->out.size,data->out.pos);
      return;
   }
    
   size = (int)data->out.size - data->out.pos;
-  DEBUG4("%s the size (=%d) to %s:%d",(gras_if_RL()?"Send":"Embeed"),data->out.size-data->out.pos,
+  DEBUG3("Send the size (=%d) to %s:%d",data->out.size-data->out.pos,
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
-  if (gras_if_RL()) {
-     size = (int)htonl(size);
-     _buf_super->chunk_send(sock,(char*) &size, 4);
-  } else {
-     memcpy(data->out.data, &size, 4);
-  }
+  size = (int)htonl(size);
+  _buf_super->chunk_send(sock,(char*) &size, 4);
       
 
   DEBUG3("Send the chunk (size=%d) to %s:%d",data->out.size,
@@ -322,5 +303,5 @@ gras_trp_buf_flush(gras_socket_t sock) {
   VERB1("Chunk sent (size=%d)",data->out.size);
   if (XBT_LOG_ISENABLED(trp_buf,xbt_log_priority_debug))
      hexa_print("chunck sent    ",(unsigned char *) data->out.data,data->out.size);
-  data->out.size = gras_if_RL()?0:4;
+  data->out.size = 0;
 }

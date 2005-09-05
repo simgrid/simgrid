@@ -117,7 +117,7 @@ COMMON_SRC=\
   \
   gras/gras.c \
   \
-  gras/Transport/transport.c          gras/Transport/transport_private.h   gras/Transport/transport_plugin_buf.c  \
+  gras/Transport/transport.c          gras/Transport/transport_private.h  \
   \
   gras/DataDesc/ddt_create.c          \
   gras/DataDesc/ddt_convert.c         gras/DataDesc/ddt_exchange.c     \
@@ -132,6 +132,7 @@ COMMON_SRC=\
 
 RL_SRC= \
   gras/Transport/rl_transport.c  gras/Transport/transport_plugin_tcp.c  gras/Transport/transport_plugin_file.c  \
+  gras/Transport/transport_plugin_buf.c \
   \
   gras/Virtu/rl_emul.c \
   gras/Virtu/rl_process.c        gras/Virtu/rl_time.c \
