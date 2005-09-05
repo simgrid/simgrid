@@ -366,7 +366,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      abort();/* nope, stupid GCC, we won't survive a THROW (this won't be reached) */ \
   } while (0)
 
-#define THROW0(c,v,m)                   _THROW(c,v,bprintf(m))
+#define THROW0(c,v,m)                   _THROW(c,v,(m?bprintf(m):NULL))
 #define THROW1(c,v,m,a1)                _THROW(c,v,bprintf(m,a1))
 #define THROW2(c,v,m,a1,a2)             _THROW(c,v,bprintf(m,a1,a2))
 #define THROW3(c,v,m,a1,a2,a3)          _THROW(c,v,bprintf(m,a1,a2,a3))
