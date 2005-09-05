@@ -139,7 +139,7 @@ gras_socket_t gras_trp_select(double timeout) {
 void gras_trp_tcp_setup(gras_trp_plugin_t plug) {
 }
 void gras_trp_file_setup(gras_trp_plugin_t plug) {
-  THROW0(mismatch_error,0,"No file within SG realm");
+  THROW0(mismatch_error,0,NULL);
 }
 
 
