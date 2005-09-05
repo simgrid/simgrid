@@ -115,17 +115,267 @@ gras_dd_alloc_ref(xbt_dict_t  refs,
   }
 }
 
+static int
+gras_datadesc_copy_rec(gras_cbps_t           state,
+		       xbt_dict_t            refs,
+		       gras_datadesc_type_t  type, 
+		       char                 *src,
+		       char                 *dst,
+		       int                   subsize,
+		       int                   detect_cycle) {
+
+
+  xbt_ex_t             e;
+  int                  cpt;
+  gras_datadesc_type_t sub_type; /* type on which we recurse */
+  int count = 0;
+
+  VERB4("Copy a %s (%s) from %p to %p", 
+	type->name, gras_datadesc_cat_names[type->category_code],
+	src,dst);
+
+  if (type->send) {
+    type->send(type,state,src);
+  }
+
+  switch (type->category_code) {
+  case e_gras_datadesc_type_cat_scalar:
+    memcpy(dst,src,type->size[GRAS_THISARCH]);
+    count += type->size[GRAS_THISARCH];
+    break;
+
+  case e_gras_datadesc_type_cat_struct: {
+    gras_dd_cat_struct_t struct_data;
+    gras_dd_cat_field_t  field;
+    char                *field_src;
+    char                *field_dst;
+    
+    struct_data = type->category.struct_data;
+    xbt_assert1(struct_data.closed,
+      "Please call gras_datadesc_declare_struct_close on %s before copying it",
+		type->name);
+    VERB1(">> Copy all fields of the structure %s",type->name);
+    xbt_dynar_foreach(struct_data.fields, cpt, field) {
+      field_src = src + field->offset[GRAS_THISARCH];
+      field_dst = dst + field->offset[GRAS_THISARCH];
+      
+      sub_type = field->type;
+      
+      if (field->send)
+	field->send(type,state,field_src);
+      
+      VERB1("Copy field %s",field->name);
+      count += gras_datadesc_copy_rec(state,refs,sub_type, field_src, field_dst, 0,
+				      detect_cycle || sub_type->cycle);
+      
+    }
+    VERB1("<< Copied all fields of the structure %s", type->name);
+    
+    break;
+  }
+
+  case e_gras_datadesc_type_cat_union: {
+    gras_dd_cat_union_t union_data;
+    gras_dd_cat_field_t field=NULL;
+    int                 field_num;
+    
+    union_data = type->category.union_data;
+    
+    xbt_assert1(union_data.closed,
+		"Please call gras_datadesc_declare_union_close on %s before copying it",
+		type->name);
+    /* retrieve the field number */
+    field_num = union_data.selector(type, state, src);
+    
+    xbt_assert1(field_num > 0,
+		"union field selector of %s gave a negative value", 
+		type->name);
+    
+    xbt_assert3(field_num < xbt_dynar_length(union_data.fields),
+	 "union field selector of %s returned %d but there is only %lu fields",
+		 type->name, field_num, xbt_dynar_length(union_data.fields));
+    
+    /* Copy the content */
+    field = xbt_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
+    sub_type = field->type;
+    
+    if (field->send)
+      field->send(type,state,src);
+    
+    count += gras_datadesc_copy_rec(state,refs, sub_type, src, dst,0,
+				    detect_cycle || sub_type->cycle);
+          
+    break;
+  }
+    
+  case e_gras_datadesc_type_cat_ref: {
+    gras_dd_cat_ref_t      ref_data;
+    char                 **o_ref=NULL;
+    char                 **n_ref=NULL;
+    int                    reference_is_to_cpy;
+    
+    ref_data = type->category.ref_data;
+    
+    /* Detect the referenced type */
+    sub_type = ref_data.type;
+    if (sub_type == NULL) {
+      sub_type = (*ref_data.selector)(type,state,src);
+    }
+    
+    /* Send the pointed data only if not already sent */
+    if (*(void**)src == NULL) {
+      VERB0("Not copying NULL referenced data");
+      *(void**)dst = NULL;
+      break;
+    }
+    o_ref=(char**)src;
+
+    reference_is_to_cpy = 0;
+    TRY {
+      if (detect_cycle)
+	/* return ignored. Just checking whether it's known or not */
+	n_ref=xbt_dict_get_ext(refs,(char*)o_ref, sizeof(char*));
+      else 
+	reference_is_to_cpy = 1;
+    } CATCH(e) {
+      if (e.category != not_found_error)
+	RETHROW;
+      reference_is_to_cpy = 1;
+      xbt_ex_free(e);
+    }
+
+    if (reference_is_to_cpy) {
+      int subsubcount = 0;
+      void *l_referenced=NULL;
+       VERB2("Copy a ref to '%s' referenced at %p",sub_type->name, (void*)*o_ref);
+       
+       if (!pointer_type) { 
+	 pointer_type = gras_datadesc_by_name("data pointer");
+	 xbt_assert(pointer_type);
+       }
+
+       if (sub_type->category_code == e_gras_datadesc_type_cat_array) {
+	 /* Damn. Reference to a dynamic array. Allocating the space for it 
+	    is more complicated */
+	 gras_dd_cat_array_t array_data = sub_type->category.array_data;
+	 gras_datadesc_type_t subsub_type;
+	 
+	 subsub_type = array_data.type;
+	 subsubcount = array_data.fixed_size;
+	 if (subsubcount == 0)
+	   subsubcount = array_data.dynamic_size(subsub_type,state,*o_ref);
+	 
+	 gras_dd_alloc_ref(refs,
+			   subsub_type->size[GRAS_THISARCH] * subsubcount, 
+			   o_ref,pointer_type->size[GRAS_THISARCH], 
+			   (char**)&l_referenced,
+			   detect_cycle);
+       } else {
+	 gras_dd_alloc_ref(refs,sub_type->size[GRAS_THISARCH], 
+			   o_ref,pointer_type->size[GRAS_THISARCH], 
+			   (char**)&l_referenced,
+			   detect_cycle);
+       }
+       
+       count += gras_datadesc_copy_rec(state,refs, sub_type,
+				       *o_ref,(char*)l_referenced, subsubcount,
+				       detect_cycle || sub_type->cycle);
+			       
+       *(void**)dst=l_referenced;
+       VERB3("'%s' previously referenced at %p now at %p",
+	     sub_type->name, *(void**)o_ref, l_referenced);
+       
+    } else {
+      VERB2("NOT copying data previously referenced @%p (already done, @%p now)",
+	    *(void**)o_ref, *(void**)n_ref);
+      
+      *(void**)dst=*n_ref;
+      
+    } 
+    break;
+  }
+
+  case e_gras_datadesc_type_cat_array: {
+    gras_dd_cat_array_t    array_data;
+    long int               count;
+    char                  *src_ptr=src;
+    char                  *dst_ptr=dst;
+    long int               elm_size;
+    
+    array_data = type->category.array_data;
+    
+    /* determine and send the element count */
+    count = array_data.fixed_size;
+    if (count == 0)
+      count = subsize;
+    if (count == 0) {
+      count = array_data.dynamic_size(type,state,src);
+      xbt_assert1(count >=0,
+		   "Invalid (negative) array size for type %s",type->name);
+    }
+    
+    /* send the content */
+    sub_type = array_data.type;
+    elm_size = sub_type->aligned_size[GRAS_THISARCH];
+    if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
+      VERB1("Array of %ld scalars, copy it in one shot",count);
+      memcpy(dst, src, sub_type->aligned_size[GRAS_THISARCH] * count);
+      count += sub_type->aligned_size[GRAS_THISARCH] * count;
+    } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
+	       sub_type->category.array_data.fixed_size > 0 &&
+	       sub_type->category.array_data.type->category_code == e_gras_datadesc_type_cat_scalar) {
+       
+      VERB1("Array of %ld fixed array of scalars, copy it in one shot",count);
+      memcpy(dst,src,sub_type->category.array_data.type->aligned_size[GRAS_THISARCH] 
+		     * count * sub_type->category.array_data.fixed_size);
+      count += sub_type->category.array_data.type->aligned_size[GRAS_THISARCH] 
+	       * count * sub_type->category.array_data.fixed_size;
+       
+    } else {
+      for (cpt=0; cpt<count; cpt++) {
+	count += gras_datadesc_copy_rec(state,refs, sub_type, src_ptr, dst_ptr, 0,
+					detect_cycle || sub_type->cycle);
+	src_ptr += elm_size;
+	dst_ptr += elm_size;
+      }
+    }
+    break;
+  }
+
+  default:
+    xbt_assert0(0, "Invalid type");
+  }
+  return count;
+}
 /**
- * gras_datadesc_cpy:
+ * gras_datadesc_copy:
  *
  * Copy the data pointed by src and described by type 
  * to a new location, and store a pointer to it in dst.
  *
  */
-void gras_datadesc_cpy(gras_datadesc_type_t type, 
-		       void *src, 
-		       void **dst) {
-  THROW_UNIMPLEMENTED;
+int gras_datadesc_copy(gras_datadesc_type_t type, 
+		       void *src, void *dst) {
+  xbt_ex_t e;
+  gras_cbps_t  state;
+  xbt_dict_t  refs; /* all references already sent */
+  int size;
+ 
+  xbt_assert0(type,"called with NULL type descriptor");
+
+  refs = xbt_dict_new();
+  state = gras_cbps_new();
+  
+  TRY {
+    size = gras_datadesc_copy_rec(state,refs,type,(char*)src,(char*)dst,0, 
+				  type->cycle);
+  } CLEANUP {
+    xbt_dict_free(&refs);
+    gras_cbps_free(&state);
+  } CATCH(e) {
+    RETHROW;
+  }
+  return size;
 }
 
 /***
@@ -135,7 +385,7 @@ void gras_datadesc_cpy(gras_datadesc_type_t type,
 static void
 gras_datadesc_send_rec(gras_socket_t         sock,
 		       gras_cbps_t           state,
-		       xbt_dict_t           refs,
+		       xbt_dict_t            refs,
 		       gras_datadesc_type_t  type, 
 		       char                 *data,
 		       int                   detect_cycle) {
@@ -447,7 +697,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
     if (field_num < 0)
       THROW1(mismatch_error,0,
 	     "Received union field for %s is negative", type->name);
-    if (field_num < xbt_dynar_length(union_data.fields)) 
+    if (field_num > xbt_dynar_length(union_data.fields)) 
       THROW3(mismatch_error,0,
 	     "Received union field for %s is said to be #%d but there is only %lu fields",
 	     type->name, field_num, xbt_dynar_length(union_data.fields));
