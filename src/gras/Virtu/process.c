@@ -71,7 +71,7 @@ void gras_userdata_set(void *ud) {
 
 void *gras_libdata_get(const char *name) {
   gras_procdata_t *pd=gras_procdata_get();
-  void *res;
+  void *res=NULL;
   xbt_ex_t e;
    
   TRY {

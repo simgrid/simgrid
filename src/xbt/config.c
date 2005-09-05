@@ -365,7 +365,7 @@ xbt_cfg_check(xbt_cfg_t cfg) {
 static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t  cfg,
 				   const char *name,
 				   e_xbt_cfgelm_type_t type){
-  xbt_cfgelm_t res;
+  xbt_cfgelm_t res=NULL;
   xbt_ex_t e;
 
   TRY {
@@ -432,7 +432,7 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa) {
   char *str;
   int i;
   double d;
-  e_xbt_cfgelm_type_t type;
+  e_xbt_cfgelm_type_t type=0; /* Set a dummy value to make gcc happy. It cannot get uninitialized */
 
   xbt_ex_t e;
   
@@ -508,7 +508,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
   double d;
   char *str;
 
-  xbt_cfgelm_t variable;
+  xbt_cfgelm_t variable=NULL;
   char *optionlist_cpy;
   char *option,  *name,*val;
 
@@ -942,7 +942,7 @@ void xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos) {
 
 void
 xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
-  xbt_cfgelm_t variable;
+  xbt_cfgelm_t variable=NULL;
   xbt_ex_t e;
 
   TRY {
@@ -1085,7 +1085,7 @@ void xbt_cfg_get_host  (xbt_cfg_t   cfg,  const char *name,
  * \warning the returned value is the actual content of the config set
  */
 xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t    cfg, const char *name) {
-  xbt_cfgelm_t variable;
+  xbt_cfgelm_t variable=NULL;
   xbt_ex_t     e;
 
   TRY {

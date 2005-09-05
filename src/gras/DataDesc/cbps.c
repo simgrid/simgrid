@@ -72,7 +72,7 @@ gras_cbps_v_push(gras_cbps_t          ps,
 		 void                *data,
 		 gras_datadesc_type_t ddt) {
 
-  xbt_dynar_t     varstack,frame;
+  xbt_dynar_t     varstack=NULL,frame;
   gras_cbps_elm_t var;
   char           *varname = (char*)xbt_strdup(name);
   xbt_ex_t        e;

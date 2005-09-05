@@ -359,7 +359,7 @@ int gras_datadesc_copy(gras_datadesc_type_t type,
   xbt_ex_t e;
   gras_cbps_t  state;
   xbt_dict_t  refs; /* all references already sent */
-  int size;
+  int size=0;
  
   xbt_assert0(type,"called with NULL type descriptor");
 

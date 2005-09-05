@@ -140,7 +140,7 @@ void *
 xbt_dict_get_or_null(xbt_dict_t     dict,
 		     const char     *key) {
   xbt_ex_t e;
-  void *res;
+  void *res=NULL;
   TRY {
     res = xbt_dictelm_get(dict->head, key);
   } CATCH(e) {

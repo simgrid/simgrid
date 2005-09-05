@@ -665,8 +665,8 @@ void xbt_log_control_set(const char* control_string) {
   _cleanup_double_spaces(cs);
 
   while (!done) {
-    xbt_log_category_t cat;
-    int found;
+    xbt_log_category_t cat=NULL;
+    int found=0;
     xbt_ex_t e;
     
     p=strrchr(cs,' ');

@@ -138,7 +138,7 @@ gras_msgtype_declare_v(const char           *name,
 		       short int             version,
 		       gras_datadesc_type_t  payload) {
  
-  gras_msgtype_t msgtype;
+  gras_msgtype_t msgtype=NULL;
   char *namev=make_namev(name,version);
   int found = 0;
   xbt_ex_t e;    
@@ -289,7 +289,7 @@ gras_msg_handle(double timeOut) {
   int             cpt;
 
   s_gras_msg_t    msg;
-  gras_socket_t   expeditor;
+  gras_socket_t   expeditor=NULL;
   void           *payload=NULL;
   int             payload_size;
   gras_msgtype_t  msgtype;

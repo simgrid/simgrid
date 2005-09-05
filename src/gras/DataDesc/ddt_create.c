@@ -53,7 +53,7 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
  */
 gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
   xbt_ex_t e;
-  gras_datadesc_type_t res;
+  gras_datadesc_type_t res = NULL;
   TRY {
     res = (gras_datadesc_type_t)xbt_set_get_by_name(gras_datadesc_set_local,name);
   } CATCH(e) {
@@ -70,7 +70,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
  */
 gras_datadesc_type_t gras_datadesc_by_id(long int code) {
   xbt_ex_t e;
-  gras_datadesc_type_t res;
+  gras_datadesc_type_t res=NULL;
   TRY {
     res = (gras_datadesc_type_t)xbt_set_get_by_id(gras_datadesc_set_local,code);
   } CATCH(e) {

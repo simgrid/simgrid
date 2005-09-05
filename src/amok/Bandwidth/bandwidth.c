@@ -126,7 +126,7 @@ void amok_bw_test(gras_socket_t peer,
 	  /*OUT*/ double *sec, double *bw) {
 
   /* Measurement sockets for the experiments */
-  gras_socket_t measMasterIn=NULL,measIn,measOut;
+  gras_socket_t measMasterIn=NULL,measIn,measOut=NULL;
   int port;
   bw_request_t request,request_ack;
   xbt_ex_t e;
@@ -212,7 +212,7 @@ void amok_bw_test(gras_socket_t peer,
 */
 int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
 			    void          *payload) {
-  gras_socket_t measMasterIn=NULL,measIn,measOut;
+  gras_socket_t measMasterIn=NULL,measIn=NULL,measOut=NULL;
   bw_request_t request=*(bw_request_t*)payload;
   bw_request_t answer;
   xbt_ex_t e;
