@@ -62,6 +62,7 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 
   gras_msgtype_t gras_msgtype_by_name (const char *name);
   gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version);
+  gras_msgtype_t gras_msgtype_by_id(int id);
 
 /** @} */  
 /** @name 2. Callback declaration and use
