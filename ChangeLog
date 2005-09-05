@@ -23,6 +23,10 @@ SimGrid (3.0.1) unstable; urgency=low
   * Actually implement gras_datadesc_copy() so that we don't have to mimick
     RL communication on top of SG since it's so uneffective. 
     It may also be used for inter-thread communication in RL, one day. [MQ]
+  * Use gras_datadesc_copy() to exchange messages on top of SG [MQ]
+    Allows to:
+    - improve message exchange performance on top of SG
+    - deprecate transport_plugin_sg.c:gras_trp_sg_chunk_send() & recv()
 
   Documentation improvements:
   * xbt_log module unmercifully reworked [MQ]
