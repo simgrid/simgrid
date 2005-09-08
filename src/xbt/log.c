@@ -124,13 +124,13 @@ the category's parent.
 A category is created by a macro call at the top level of a file.  A
 category can be created with any one of the following macros:
 
- - \ref XBT_LOG_NEW_CATEGORY(MyCat); Create a new root
- - \ref XBT_LOG_NEW_SUBCATEGORY(MyCat, ParentCat);
+ - \ref XBT_LOG_NEW_CATEGORY(MyCat,desc); Create a new root
+ - \ref XBT_LOG_NEW_SUBCATEGORY(MyCat, ParentCat,desc);
     Create a new category being child of the category ParentCat
- - \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat);
+ - \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat,desc);
     Like XBT_LOG_NEW_CATEGORY, but the new category is the default one
       in this file
- -  \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, ParentCat);
+ -  \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, ParentCat,desc);
     Like XBT_LOG_NEW_SUBCATEGORY, but the new category is the default one
       in this file
 	    
