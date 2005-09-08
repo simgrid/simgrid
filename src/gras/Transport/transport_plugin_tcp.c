@@ -541,15 +541,16 @@ gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock) {
   data->out_buf.data = xbt_malloc(data->buffsize);
   data->out_buf.pos  = data->out_buf.size;
 
-  data->in_buf_v = data->out_buf_v = NULL;
 #ifdef HAVE_READV
+  data->in_buf_v = data->out_buf_v = NULL;
   data->in_buf_v=xbt_dynar_new(sizeof(struct iovec),NULL);
   data->out_buf_v=xbt_dynar_new(sizeof(struct iovec),NULL);
+  data->out = buffering_iov;
+#else
+  data->out = buffering_buf;
 #endif
    
   data->in = buffering_buf;
-  data->out = buffering_iov;
-  /*data->out = buffering_buf;*/
 
   sock->bufdata = data;
   return sock;
@@ -566,8 +567,11 @@ gras_trp_buf_setup(gras_trp_plugin_t plug) {
   plug->socket_accept = gras_trp_buf_socket_accept;
   plug->socket_close  = gras_trp_buf_socket_close;
 
+#ifdef HAVE_READV
   plug->send = gras_trp_iov_send;
-  /*plug->send = gras_trp_buf_send;*/
+#else
+  plug->send = gras_trp_buf_send;
+#endif
   plug->recv = gras_trp_buf_recv;
 
   plug->raw_send    = gras_trp_tcp_send;
