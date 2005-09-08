@@ -12,6 +12,7 @@
 #include "gras.h"
  
 #define NBLOOPS 100
+/*#define NBLOOPS 30000*/
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Token,"Messages specific to this example");
 
@@ -58,7 +59,7 @@ static int node_cb_stoken_handler(gras_socket_t  expeditor,
     supersteps = 10;
   } 
   if (globals->create && (! (globals->remaining_loop % supersteps))) {
-    INFO1("Begin a new loop. Still to do: %d", globals->remaining_loop);
+    VERB1("Begin a new loop. Still to do: %d", globals->remaining_loop);
   } else if (! (globals->remaining_loop % supersteps)) {
     VERB3("Got token(%d) from %s remaining_loop=%d", 
 	  msg, gras_socket_peer_name(expeditor),globals->remaining_loop);
