@@ -96,7 +96,7 @@ gras_procdata_init() {
   pd->libdata   = xbt_dict_new();
    
   xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){
-    int found = 0;
+    volatile int found = 0;
      
     xbt_assert1(fab.name,"Name of fabric #%d is NULL!",cursor);
     DEBUG1("Create the procdata for %s",fab.name);
@@ -106,6 +106,7 @@ gras_procdata_init() {
       found = 1;
     } CATCH(e) {
       xbt_ex_free(e);
+      found = 0;
     }
     if (found)
       THROW1(unknown_error,0,"MayDay: two modules use '%s' as libdata name", fab.name);

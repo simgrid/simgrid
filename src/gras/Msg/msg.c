@@ -140,7 +140,7 @@ gras_msgtype_declare_v(const char           *name,
  
   gras_msgtype_t msgtype=NULL;
   char *namev=make_namev(name,version);
-  int found = 0;
+  volatile int found = 0;
   xbt_ex_t e;    
   
   TRY {
