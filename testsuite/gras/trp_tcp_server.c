@@ -26,9 +26,9 @@ int main(int argc,char *argv[]) {
   conn = gras_trp_select(60);
 
   fprintf(stderr,"===[SERVER]=== Contacted ! Waiting for the data\n");
-  gras_trp_chunk_recv(conn,data_recv, sizeof(data_recv));
+  gras_trp_recv(conn,data_recv, sizeof(data_recv));
   fprintf(stderr,"===[SERVER]=== Got '%s'. Send it back.\n", data_recv);
-  gras_trp_chunk_send(conn,data_recv, sizeof(data_recv));
+  gras_trp_send(conn,data_recv, sizeof(data_recv),1);
   gras_trp_flush(conn);
   gras_socket_close(conn);
 

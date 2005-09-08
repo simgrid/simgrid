@@ -25,7 +25,7 @@ int main(int argc,char *argv[]) {
 
   sprintf(data_send,"Hello, I am a little test data to send.");
   fprintf(stderr,"===[CLIENT]=== Send data\n");
-  gras_trp_chunk_send(sock,data_send, sizeof(data_send));
+  gras_trp_send(sock,data_send, sizeof(data_send),1);
   
   fprintf(stderr,"===[CLIENT]=== Exiting successfully\n");
   gras_socket_close(sock);

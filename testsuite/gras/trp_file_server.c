@@ -26,7 +26,7 @@ int main(int argc,char *argv[]) {
   conn = gras_trp_select(60);
 
   fprintf(stderr,"===[SERVER]=== Contacted ! Waiting for the data\n");
-  gras_trp_chunk_recv(conn,data_recv, sizeof(data_recv));
+  gras_trp_recv(conn,data_recv, sizeof(data_recv));
   fprintf(stderr,"===[SERVER]=== Got '%s'.\n", data_recv);
 
   fprintf(stderr,"===[SERVER]=== Exiting successfully\n");

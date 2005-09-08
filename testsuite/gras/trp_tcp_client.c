@@ -28,10 +28,10 @@ int main(int argc,char *argv[]) {
 
   sprintf(data_send,"Hello, I am a little test data to send.");
   fprintf(stderr,"===[CLIENT]=== Send data\n");
-  gras_trp_chunk_send(sock,data_send, sizeof(data_send));
+  gras_trp_send(sock,data_send, sizeof(data_send),1);
   gras_trp_flush(sock);
   fprintf(stderr,"===[CLIENT]=== Waiting for the ACK\n");
-  gras_trp_chunk_recv(sock,data_recv, sizeof(data_recv));
+  gras_trp_recv(sock,data_recv, sizeof(data_recv));
   
   if (strcmp(data_send, data_recv)) {
     fprintf(stderr, "===[CLIENT]=== String sent != string received\n");
