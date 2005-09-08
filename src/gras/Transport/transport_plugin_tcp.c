@@ -16,6 +16,10 @@
 #include "xbt/ex.h"
 #include "transport_private.h"
 
+#ifdef HAVE_READV
+#include <sys/uio.h>
+#endif       
+
 #ifndef MIN
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
