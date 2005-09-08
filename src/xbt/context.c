@@ -63,10 +63,10 @@ static void __xbt_context_yield(xbt_context_t context)
   VOIRP(context);
   if(context) VOIRP(context->save);
   if (context) {
+
+    int return_value = 0;
+
     if(context->save==NULL) {
-
-      int return_value = 0;
-
       DEBUG0("**** Yielding to somebody else ****");
       DEBUG2("Saving current_context value (%p) to context(%p)->save",current_context,context);
       context->save = current_context ;
