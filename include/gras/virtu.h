@@ -10,9 +10,9 @@
 #ifndef GRAS_VIRTU_H
 #define GRAS_VIRTU_H
 
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_virtu  
  *  @brief System call abstraction layer (Virtualization).
@@ -47,7 +47,7 @@ gras_os_myname(void);
 int gras_os_getpid(void);
 
 /** @} */
-END_DECL()
+SG_END_DECL()
 
 #endif /* GRAS_VIRTU_H */
 

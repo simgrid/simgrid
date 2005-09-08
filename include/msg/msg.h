@@ -11,8 +11,9 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 
-BEGIN_DECL()
 #include "msg/datatypes.h"
+SG_BEGIN_DECL()
+
 
 /************************** Global ******************************************/
 void MSG_config(const char *name, ...);
@@ -111,5 +112,5 @@ double MSG_task_get_compute_duration(m_task_t task);
 double MSG_task_get_remaining_computation(m_task_t task);
 double MSG_task_get_data_size(m_task_t task);
 
-END_DECL()
+SG_END_DECL()
 #endif

@@ -14,7 +14,7 @@
 
 #include "xbt/dynar.h"
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup XBT_config
  * 
@@ -197,6 +197,6 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 
 /** @} */
 /** @} */
-END_DECL()
+SG_END_DECL()
   
 #endif /* _XBT_CONFIG_H_ */

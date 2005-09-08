@@ -10,9 +10,9 @@
 #ifndef _XBT_DYNAR_H
 #define _XBT_DYNAR_H
 
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** \addtogroup XBT_dynar
   *  
@@ -176,7 +176,7 @@ xbt_dynar_foreach (dyn,cpt,str) {
             xbt_dynar_cursor_step(_dynar,&(_cursor))         )
 
 
-END_DECL()
+SG_END_DECL()
 
 /* @} */
 #endif /* _XBT_DYNAR_H */

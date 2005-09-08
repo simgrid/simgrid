@@ -10,9 +10,9 @@
 #ifndef GRAS_PROCESS_H
 #define GRAS_PROCESS_H
 
-#include "xbt/misc.h"  /* BEGIN_DECL */
+#include "xbt/misc.h"  /* SG_BEGIN_DECL */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /* **************************************************************************
  * Initializing the processes
@@ -65,7 +65,7 @@ void gras_userdata_set(void *ud);
 #define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())
 /* @} */
 
-END_DECL()
+SG_END_DECL()
 
 #endif /* GRAS_PROCESS_H */
 

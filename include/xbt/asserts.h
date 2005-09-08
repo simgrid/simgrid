@@ -11,7 +11,7 @@
 
 #include "xbt/misc.h"
   
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /**
  * \addtogroup XBT_error
@@ -51,6 +51,6 @@ void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 /** @} */     
   
-END_DECL()
+SG_END_DECL()
 
 #endif /* _XBT_ASSERTS_H */

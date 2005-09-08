@@ -11,9 +11,9 @@
 #ifndef GRAS_COND_H
 #define GRAS_COND_H
 
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_emul
  *  @brief Code execution "emulation" and "virtualization".
@@ -167,7 +167,7 @@ int gras_bench_once_end(void);
 #define GRAS_BENCH_ONCE_RUN_ONCE_END()      } gras_bench_once_end()
 /** @} */
 
-END_DECL()
+SG_END_DECL()
 
 #endif /* GRAS_COND_H */
 

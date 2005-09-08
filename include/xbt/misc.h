@@ -57,25 +57,25 @@
 
 #define XBT_MAX_CHANNEL 10 /* FIXME: killme */
 /*! C++ users need love */
-#ifndef BEGIN_DECL
+#ifndef SG_BEGIN_DECL
 # ifdef __cplusplus
-#  define BEGIN_DECL() extern "C" {
+#  define SG_BEGIN_DECL() extern "C" {
 # else
-#  define BEGIN_DECL() 
+#  define SG_BEGIN_DECL() 
 # endif
 #endif
 
 /*! C++ users need love */
-#ifndef END_DECL
+#ifndef SG_END_DECL
 # ifdef __cplusplus
-#  define END_DECL() }
+#  define SG_END_DECL() }
 # else
-#  define END_DECL() 
+#  define SG_END_DECL() 
 # endif
 #endif
 /* End of cruft for C++ */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 /* Dunno where to place this: needed by config and amok */
 typedef struct {  
    char *name;
@@ -84,6 +84,6 @@ typedef struct {
 
 const char *xbt_procname(void);
 
-END_DECL()
+SG_END_DECL()
 
 #endif /* XBT_MISC_H */

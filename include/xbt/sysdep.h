@@ -19,7 +19,7 @@
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
   
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup XBT_syscall
  *  @{
@@ -98,6 +98,6 @@ static inline void *xbt_realloc(void*p,int s){
 int vasprintf  (char **ptr, const char *fmt, va_list ap);
 char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
   
-END_DECL()
+SG_END_DECL()
 
 #endif /* _XBT_SYSDEP_H */

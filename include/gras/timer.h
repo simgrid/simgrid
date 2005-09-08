@@ -13,7 +13,7 @@
 
 #include "xbt/misc.h"
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_timer
  *  @brief Delayed and repetitive tasks (Communication facility)
@@ -52,6 +52,6 @@ BEGIN_DECL()
 
 /** @} */
 
-END_DECL()
+SG_END_DECL()
 
 #endif /* GRAS_TIMER_H */

@@ -10,10 +10,10 @@
 #ifndef GRAS_DATADESC_H
 #define GRAS_DATADESC_H
 
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 #include "xbt/dynar.h" /* void_f_pvoid_t */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_dd Data description
  *  @brief Describing data to be exchanged (Communication facility)
@@ -382,6 +382,6 @@ gras_datadesc_import_nws(const char           *name,
 			 unsigned long         howmany);
 
 
-END_DECL()
+SG_END_DECL()
 
 #endif /* GRAS_DATADESC_H */

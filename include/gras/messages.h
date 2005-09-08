@@ -15,7 +15,7 @@
 #include "gras/transport.h"
 #include "gras/datadesc.h"
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_msg
  *  @brief Defining messages and callbacks, and exchanging messages (Communication facility) 
@@ -115,7 +115,7 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 
 /* @} */
 
-END_DECL()
+SG_END_DECL()
 
 #endif /* GRAS_MSG_H */
 

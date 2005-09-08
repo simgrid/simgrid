@@ -9,7 +9,7 @@
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /* ******************************** Host ************************************ */
 /** @defgroup m_datatypes_management_details */
@@ -124,5 +124,5 @@ typedef enum {
 } MSG_error_t;
 /** @} */
 
-END_DECL()
+SG_END_DECL()
 #endif

@@ -10,9 +10,9 @@
 #ifndef _XBT_SET_H
 #define _XBT_SET_H
 
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup XBT_set
  * 
@@ -91,6 +91,6 @@ int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *cursor,
 
 /* @} */
 /* @} */
-END_DECL()
+SG_END_DECL()
 
 #endif /* _XBT_SET_H */

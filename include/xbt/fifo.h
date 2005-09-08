@@ -7,9 +7,9 @@
 
 #ifndef _XBT_FIFO_H
 #define _XBT_FIFO_H
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** \addtogroup XBT_fifo
  *  @{ */
@@ -100,7 +100,7 @@ xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
 xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
 /** @} */
 
-END_DECL()
+SG_END_DECL()
 
 /** @} */
 #endif				/* _XBT_FIFO_H */

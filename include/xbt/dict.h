@@ -11,10 +11,10 @@
 #ifndef _XBT_DICT_H
 #define _XBT_DICT_H
 
-#include "xbt/misc.h" /* BEGIN_DECL */
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 #include "xbt/dynar.h" /* void_f_pvoid_t */
 
-BEGIN_DECL()
+SG_BEGIN_DECL()
 
 /** @addtogroup XBT_dict
  * 
@@ -168,6 +168,6 @@ void xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t le
 /** @} */
 /** @} */
 
-END_DECL()
+SG_END_DECL()
 
 #endif /* _XBT_DICT_H */
