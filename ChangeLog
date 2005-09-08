@@ -18,7 +18,8 @@ SimGrid (3.0.1) unstable; urgency=low
   * Documentation: xbt_log module unmercifully reworked [MQ]
   
   MSG:
-  * Add addtionnal checkings on channel values in communicating functions.
+  * Add addtionnal checkings on channel values in communication [AL]
+  * New: MSG_task_get_source to see on which host a task was generated [HC]
 
   GRAS performance improvements:
   * Actually implement gras_datadesc_copy() so that we don't have to mimick
