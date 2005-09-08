@@ -39,7 +39,8 @@ AC_CHECK_HEADERS([sys/socket.h \
 		  execinfo.h])
 AC_CHECK_FUNCS([gettimeofday usleep \
                 getdtablesize \
-                sysconf])
+                sysconf\
+                readv])
                 
 # check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
 AC_FUNC_SNPRINTF
