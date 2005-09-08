@@ -107,8 +107,8 @@ gras_procdata_init() {
     } CATCH(e) {
       xbt_ex_free(e);
     }
-    xbt_assert1(!found,
-		"MayDay: two modules use '%s' as libdata name", fab.name);
+    if (found)
+      THROW1(unknown_error,0,"MayDay: two modules use '%s' as libdata name", fab.name);
     
     /* Add the data in place */
     xbt_dict_set(pd->libdata, fab.name, (fab.creator)(), fab.destructor);
