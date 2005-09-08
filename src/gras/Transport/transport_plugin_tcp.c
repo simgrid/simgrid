@@ -1,94 +1,63 @@
 /* $Id$ */
 
-/* tcp trp (transport) - send/receive a bunch of bytes from a tcp socket    */
+/* buf trp (transport) - buffered transport using the TCP one            */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdlib.h>
+#include <string.h>       /* memset */
+
 #include "portable.h"
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
 #include "xbt/ex.h"
-#if 0
-#  include <signal.h>       /* close() pipe() read() write() */
-#  include <sys/wait.h>     /* waitpid() */
-#endif
-
-
 #include "transport_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport,"TCP transport");
+#ifndef MIN
+#define MIN(a,b) ((a)<(b)?(a):(b))
+#endif
 
-/***
- *** Prototypes 
- ***/
-void gras_trp_tcp_socket_client(gras_trp_plugin_t self, gras_socket_t sock);
-void gras_trp_tcp_socket_server(gras_trp_plugin_t self, gras_socket_t sock);
-gras_socket_t gras_trp_tcp_socket_accept(gras_socket_t  sock);
-
-void          gras_trp_tcp_socket_close(gras_socket_t sd);
-  
-void gras_trp_tcp_chunk_send(gras_socket_t sd,
-			     const char *data,
-			     unsigned long int size);
-
-void gras_trp_tcp_chunk_recv(gras_socket_t sd,
-			     char *data,
-			     unsigned long int size,
-			     unsigned long int bufsize);
-
-void gras_trp_tcp_exit(gras_trp_plugin_t plug);
-
-
-static int TcpProtoNumber(void);
-/***
- *** Specific plugin part
- ***/
-
-typedef struct {
-  fd_set msg_socks;
-  fd_set meas_socks;
-} gras_trp_tcp_plug_data_t;
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport,
+      "TCP buffered transport");
 
 /***
  *** Specific socket part
  ***/
 
+typedef enum { buffering_buf, buffering_iov } buffering_kind;
+
 typedef struct {
+  int size;
+  char *data;
+  int pos; /* for receive; not exchanged over the net */
+} gras_trp_buf_t;
+
+
+struct gras_trp_bufdata_{
   int buffsize;
-} gras_trp_tcp_sock_data_t;
+  gras_trp_buf_t in_buf;
+  gras_trp_buf_t out_buf;
+
+#ifdef HAVE_READV
+  xbt_dynar_t in_buf_v;
+  xbt_dynar_t out_buf_v;
+#endif
+
+  buffering_kind in;
+  buffering_kind out;
+};
 
 
-/***
- *** Code
- ***/
-void gras_trp_tcp_setup(gras_trp_plugin_t plug) {
+/*****************************/
+/****[ SOCKET MANAGEMENT ]****/
+/*****************************/
+static int _gras_tcp_proto_number(void);
 
-  gras_trp_tcp_plug_data_t *data = xbt_new(gras_trp_tcp_plug_data_t,1);
-
-  FD_ZERO(&(data->msg_socks));
-  FD_ZERO(&(data->meas_socks));
-
-  plug->socket_client = gras_trp_tcp_socket_client;
-  plug->socket_server = gras_trp_tcp_socket_server;
-  plug->socket_accept = gras_trp_tcp_socket_accept;
-  plug->socket_close  = gras_trp_tcp_socket_close;
-
-  plug->chunk_send    = gras_trp_tcp_chunk_send;
-  plug->chunk_recv    = gras_trp_tcp_chunk_recv;
-
-  plug->flush = NULL; /* nothing's cached */
-
-  plug->data = (void*)data;
-  plug->exit = gras_trp_tcp_exit;
-}
-
-void gras_trp_tcp_exit(gras_trp_plugin_t plug) {
-  DEBUG1("Exit plugin TCP (free %p)", plug->data);
-  free(plug->data);
-}
-
-void gras_trp_tcp_socket_client(gras_trp_plugin_t self, gras_socket_t sock){
+static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
+					       gras_socket_t sock){
   
   struct sockaddr_in addr;
   struct hostent *he;
@@ -127,21 +96,21 @@ void gras_trp_tcp_socket_client(gras_trp_plugin_t self, gras_socket_t sock){
 	   "Failed to connect socket to %s:%d (%s)",
 	   sock->peer_name, sock->peer_port, sock_errstr);
   }
-  VERB4("Connect to %s:%d (sd=%d, port %d here)",sock->peer_name, sock->peer_port, sock->sd, sock->port);
+  VERB4("Connect to %s:%d (sd=%d, port %d here)",
+	sock->peer_name, sock->peer_port, sock->sd, sock->port);
 }
 
 /**
- * gras_trp_tcp_socket_server:
+ * gras_trp_sock_socket_server:
  *
  * Open a socket used to receive messages.
  */
-void gras_trp_tcp_socket_server(gras_trp_plugin_t self, gras_socket_t sock){
+static inline void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
+					       gras_socket_t sock){
   int size = sock->bufSize * 1024; 
   int on = 1;
   struct sockaddr_in server;
 
-  gras_trp_tcp_plug_data_t *tcp=(gras_trp_tcp_plug_data_t*)self->data;
- 
   sock->outgoing  = 1; /* TCP => duplex mode */
 
   server.sin_port = htons((u_short)sock->port);
@@ -171,15 +140,10 @@ void gras_trp_tcp_socket_server(gras_trp_plugin_t self, gras_socket_t sock){
     THROW2(system_error,0,"Cannot listen on port %d: %s",sock->port,sock_errstr);
   }
 
-  if (sock->meas)
-    FD_SET(sock->sd, &(tcp->meas_socks));
-  else
-    FD_SET(sock->sd, &(tcp->msg_socks));
-
   VERB2("Openned a server socket on port %d (sd=%d)",sock->port,sock->sd);
 }
 
-gras_socket_t gras_trp_tcp_socket_accept(gras_socket_t  sock) {
+static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock) {
   gras_socket_t res;
   
   struct sockaddr_in peer_in;
@@ -205,7 +169,7 @@ gras_socket_t gras_trp_tcp_socket_accept(gras_socket_t  sock) {
   }
   
   if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *)&i, s) 
-      || setsockopt(sd, TcpProtoNumber(), TCP_NODELAY, (char *)&i, s))
+      || setsockopt(sd, _gras_tcp_proto_number(), TCP_NODELAY, (char *)&i, s))
     THROW1(system_error,0,"setsockopt failed, cannot condition the socket: %s",
 	   sock_errstr);
 
@@ -246,11 +210,9 @@ gras_socket_t gras_trp_tcp_socket_accept(gras_socket_t  sock) {
   return res;
 }
 
-void gras_trp_tcp_socket_close(gras_socket_t sock){
-  gras_trp_tcp_plug_data_t *tcp;
+static void gras_trp_sock_socket_close(gras_socket_t sock){
   
   if (!sock) return; /* close only once */
-  tcp=sock->plugin->data;
 
   VERB1("close tcp connection %d", sock->sd);
 
@@ -268,16 +230,6 @@ void gras_trp_tcp_socket_close(gras_socket_t sock){
     }
   } */
 
-#ifndef HAVE_WINSOCK_H
-  /* forget about the socket 
-     ... but not when using winsock since accept'ed socket can not fit 
-     into the fd_set*/
-  if (sock->meas){
-    FD_CLR(sock->sd, &(tcp->meas_socks));
-  } else {
-    FD_CLR(sock->sd, &(tcp->msg_socks));
-  }
-#endif
    
   /* close the socket */
   if(tcp_close(sock->sd) < 0) {
@@ -286,20 +238,20 @@ void gras_trp_tcp_socket_close(gras_socket_t sock){
   }
 
 }
+/************************************/
+/****[ end of SOCKET MANAGEMENT ]****/
+/************************************/
 
-/**
- * gras_trp_tcp_chunk_send:
- *
- * Send data on a TCP socket
- */
-void
-gras_trp_tcp_chunk_send(gras_socket_t sock,
-			const char *data,
-			unsigned long int size) {
+
+/************************************/
+/****[ UNBUFFERED DATA EXCHANGE ]****/
+/************************************/
+/* Temptation to merge this with file data exchange is great, 
+   but doesn't work on BillWare (see tcp_write() in portable.h) */
+static inline void gras_trp_tcp_send(gras_socket_t sock,
+				     const char *data,
+				     unsigned long int size) {
   
-  /* TCP sockets are in duplex mode, don't check direction */
-  xbt_assert0(size >= 0, "Cannot send a negative amount of data");
-
   while (size) {
     int status = 0;
     
@@ -321,52 +273,379 @@ gras_trp_tcp_chunk_send(gras_socket_t sock,
     }
   }
 }
-/**
- * gras_trp_tcp_chunk_recv:
- *
- * Receive data on a TCP socket.
- */
-void
-gras_trp_tcp_chunk_recv(gras_socket_t sock,
-			char *data,
-			unsigned long int size,
-			unsigned long int bufsize) {
+static inline int 
+gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
+				   char *data,
+				   unsigned long int size,
+				   unsigned long int bufsize) {
 
-  /* TCP sockets are in duplex mode, don't check direction */
-  xbt_assert0(sock, "Cannot recv on an NULL socket");
-  xbt_assert0(size >= 0, "Cannot receive a negative amount of data");
-  xbt_assert0(bufsize>=size,"Not enough buffer size to receive that much data");
-  
-  while (size) {
+  int got = 0;
+
+  while (size>got) {
     int status = 0;
     
-    DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
-    status = tcp_read(sock->sd, data, (size_t)bufsize);
+    DEBUG5("read(%d, %p, %ld) got %d so far (%s)",
+	  sock->sd, data+got, bufsize, got,
+	  hexa_str(data,got));
+    status = tcp_read(sock->sd, data+got, (size_t)bufsize);
     
     if (status < 0) {
       THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
-	     sock->sd, data, (int)size,
+	     sock->sd, data+got, (int)size,
 	     sock_errstr);
     }
+    DEBUG2("Got %d more bytes (%s)",status,hexa_str(data+got,status));
     
     if (status) {
-      size    -= status;
       bufsize -= status;
-      data    += status;
+      got     += status;
     } else {
-      gras_socket_close(sock);
       THROW0(system_error,0,"Socket closed by remote side");
     }
   }
+  return got;
 }
 
+static int gras_trp_tcp_recv(gras_socket_t sock,
+				   char *data,
+				   unsigned long int size) {
+  return gras_trp_tcp_recv_withbuffer(sock,data,size,size);
+
+}
+/*******************************************/
+/****[ end of UNBUFFERED DATA EXCHANGE ]****/
+/*******************************************/
+
+/**********************************/
+/****[ BUFFERED DATA EXCHANGE ]****/
+/**********************************/
+
+/* Make sure the data is sent */
+static void
+gras_trp_bufiov_flush(gras_socket_t sock) {
+#ifdef HAVE_READV
+  xbt_dynar_t vect;
+  int size;
+#endif
+  gras_trp_bufdata_t *data=sock->bufdata;
+  XBT_IN;    
+  
+  DEBUG0("Flush");
+  if (data->out == buffering_buf) {
+    if (XBT_LOG_ISENABLED(trp_tcp,xbt_log_priority_debug))
+      hexa_print("chunk to send ",
+		 (unsigned char *) data->out_buf.data,data->out_buf.size);
+    if ((data->out_buf.size - data->out_buf.pos) != 0) { 
+      DEBUG3("Send the chunk (size=%d) to %s:%d",data->out_buf.size,
+	     gras_socket_peer_name(sock),gras_socket_peer_port(sock));
+      gras_trp_tcp_send(sock, data->out_buf.data, data->out_buf.size);
+      VERB1("Chunk sent (size=%d)",data->out_buf.size);
+      data->out_buf.size = 0;
+    }
+  }
+
+#ifdef HAVE_READV
+  if (data->out == buffering_iov) {
+    vect = sock->bufdata->out_buf_v;
+    if ((size = xbt_dynar_length(vect))) {
+      DEBUG1("Flush %d chunks out of this socket",size);
+      writev(sock->sd,xbt_dynar_get_ptr(vect,0),size);
+      xbt_dynar_reset(vect);
+    }
+    data->out_buf.size = 0; /* reset the buffer containing non-stable data */
+  }
+
+  if (data->in == buffering_iov) {
+    vect = sock->bufdata->in_buf_v;
+    if ((size = xbt_dynar_length(vect))) {
+      DEBUG1("Get %d chunks from of this socket",size);
+      readv(sock->sd,xbt_dynar_get_ptr(vect,0),size);
+      xbt_dynar_reset(vect);
+    }
+  }
+#endif
+}
+static void
+gras_trp_buf_send(gras_socket_t sock,
+		  const char *chunk,
+		  unsigned long int size,
+		  int stable_ignored) {
+
+  gras_trp_bufdata_t *data=(gras_trp_bufdata_t*)sock->bufdata;
+  int chunk_pos=0;
+
+  XBT_IN;
+
+  while (chunk_pos < size) {
+    /* size of the chunk to receive in that shot */
+    long int thissize = min(size-chunk_pos,data->buffsize-data->out_buf.size);
+    DEBUG4("Set the chars %d..%ld into the buffer; size=%ld, ctn=(%s)",
+	   (int)data->out_buf.size,
+	   ((int)data->out_buf.size) + thissize -1,
+	   size,
+	   hexa_str((char*)chunk,thissize));
+
+    memcpy(data->out_buf.data + data->out_buf.size, chunk + chunk_pos, thissize);
+
+    data->out_buf.size += thissize;
+    chunk_pos      += thissize;
+    DEBUG4("New pos = %d; Still to send = %ld of %ld; ctn sofar=(%s)",
+	   data->out_buf.size,size-chunk_pos,size,hexa_str((char*)chunk,chunk_pos));
+
+    if (data->out_buf.size == data->buffsize) /* out of space. Flush it */
+      gras_trp_bufiov_flush(sock);
+  }
+
+  XBT_OUT;
+}
+
+static int
+gras_trp_buf_recv(gras_socket_t sock,
+		  char *chunk,
+		  unsigned long int size) {
+
+  gras_trp_bufdata_t *data=sock->bufdata;
+  long int chunk_pos = 0;
+   
+  XBT_IN;
+
+  while (chunk_pos < size) {
+    /* size of the chunk to receive in that shot */
+    long int thissize;
+
+    if (data->in_buf.size == data->in_buf.pos) { /* out of data. Get more */
+
+      DEBUG2("Get more data (size=%d,bufsize=%d)",
+	     (int)MIN(size-chunk_pos,data->buffsize),
+	     (int)data->buffsize);
+
+       
+      data->in_buf.size = 
+	gras_trp_tcp_recv_withbuffer(sock, data->in_buf.data, 
+				     MIN(size-chunk_pos,data->buffsize),
+				     data->buffsize);
+       
+      data->in_buf.pos=0;
+    }
+     
+    thissize = min(size-chunk_pos ,  data->in_buf.size - data->in_buf.pos);
+    memcpy(chunk+chunk_pos, data->in_buf.data + data->in_buf.pos, thissize);
+
+    data->in_buf.pos += thissize;
+    chunk_pos        += thissize;
+    DEBUG4("New pos = %d; Still to receive = %ld of %ld. Ctn so far=(%s)",
+	   data->in_buf.pos,size - chunk_pos,size,hexa_str(chunk,chunk_pos));
+  }
+
+  XBT_OUT;
+  return chunk_pos;
+}
+
+/*****************************************/
+/****[ end of BUFFERED DATA EXCHANGE ]****/
+/*****************************************/
+
+/********************************/
+/****[ VECTOR DATA EXCHANGE ]****/
+/********************************/
+#ifdef HAVE_READV
+static void
+gras_trp_iov_send(gras_socket_t sock,
+		  const char *chunk,
+		  unsigned long int size,
+		  int stable) {
+  struct iovec elm;
+  gras_trp_bufdata_t *data=(gras_trp_bufdata_t*)sock->bufdata;
+    
+
+  DEBUG1("Buffer one chunk to be sent later (%s)",
+	hexa_str((char*)chunk,size));
+
+  elm.iov_len = (size_t)size;
+
+  if (!stable) {
+    /* data storage won't last until flush. Save it in a buffer if we can */
+
+    if (size > data->buffsize-data->out_buf.size) {
+      /* buffer too small: 
+	 flush the socket, using data in its actual storage */
+      elm.iov_base = (void*)chunk;
+      xbt_dynar_push(data->out_buf_v,&elm);
+
+      gras_trp_bufiov_flush(sock);      
+      return;
+    } else {
+      /* buffer big enough: 
+	 copy data into it, and chain it for upcoming writev */
+      memcpy(data->out_buf.data + data->out_buf.size, chunk, size);
+      elm.iov_base = (void*)(data->out_buf.data + data->out_buf.size);
+      data->out_buf.size += size;
+
+      xbt_dynar_push(data->out_buf_v,&elm);
+    }
+
+  } else {
+    /* data storage stable. Chain it */
+    
+    elm.iov_base = (void*)chunk;
+    xbt_dynar_push(data->out_buf_v,&elm);
+  }
+}
+static int
+gras_trp_iov_recv(gras_socket_t sock,
+		  char *chunk,
+		  unsigned long int size) {
+  struct iovec elm;
+
+  DEBUG0("Buffer one chunk to be received later");
+  elm.iov_base = (void*)chunk;
+  elm.iov_len = (size_t)size;
+  xbt_dynar_push(sock->bufdata->in_buf_v,&elm);
+
+  return size;
+}
+
+#endif
+/***************************************/
+/****[ end of VECTOR DATA EXCHANGE ]****/
+/***************************************/
+
+
+/***
+ *** Prototypes of BUFFERED
+ ***/
+   
+void gras_trp_buf_socket_client(gras_trp_plugin_t self,
+				gras_socket_t sock);
+void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+				gras_socket_t sock);
+gras_socket_t gras_trp_buf_socket_accept(gras_socket_t sock);
+
+void         gras_trp_buf_socket_close(gras_socket_t sd);
+  
+
+gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock) {
+  gras_trp_bufdata_t *data=xbt_new(gras_trp_bufdata_t,1);
+  
+  data->buffsize = 100 * 1024 ; /* 100k */ 
+
+  data->in_buf.size  = 0;
+  data->in_buf.data  = xbt_malloc(data->buffsize);
+  data->in_buf.pos   = 0; /* useless, indeed, since size==pos */
+   
+  data->out_buf.size = 0;
+  data->out_buf.data = xbt_malloc(data->buffsize);
+  data->out_buf.pos  = data->out_buf.size;
+
+  data->in_buf_v = data->out_buf_v = NULL;
+#ifdef HAVE_READV
+  data->in_buf_v=xbt_dynar_new(sizeof(struct iovec),NULL);
+  data->out_buf_v=xbt_dynar_new(sizeof(struct iovec),NULL);
+#endif
+   
+  data->in = buffering_buf;
+  data->out = buffering_iov;
+  /*data->out = buffering_buf;*/
+
+  sock->bufdata = data;
+  return sock;
+}
+
+/***
+ *** Code
+ ***/
+void
+gras_trp_buf_setup(gras_trp_plugin_t plug) {
+
+  plug->socket_client = gras_trp_buf_socket_client;
+  plug->socket_server = gras_trp_buf_socket_server;
+  plug->socket_accept = gras_trp_buf_socket_accept;
+  plug->socket_close  = gras_trp_buf_socket_close;
+
+  plug->send = gras_trp_iov_send;
+  /*plug->send = gras_trp_buf_send;*/
+  plug->recv = gras_trp_buf_recv;
+
+  plug->raw_send    = gras_trp_tcp_send;
+  plug->raw_recv    = gras_trp_tcp_recv;
+
+  plug->flush         = gras_trp_bufiov_flush;
+
+  plug->data = NULL;
+  plug->exit = NULL;
+}
+
+void gras_trp_buf_socket_client(gras_trp_plugin_t self,
+				/* OUT */ gras_socket_t sock){
+
+  gras_trp_sock_socket_client(NULL,sock);
+  gras_trp_buf_init_sock(sock);
+}
+
+/**
+ * gras_trp_buf_socket_server:
+ *
+ * Open a socket used to receive messages.
+ */
+void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+				/* OUT */ gras_socket_t sock){
+
+  gras_trp_sock_socket_server(NULL,sock);
+  gras_trp_buf_init_sock(sock);
+}
+
+gras_socket_t gras_trp_buf_socket_accept(gras_socket_t sock) {
+  return gras_trp_buf_init_sock(gras_trp_sock_socket_accept(sock));
+}
+
+void gras_trp_buf_socket_close(gras_socket_t sock){
+  gras_trp_bufdata_t *data=sock->bufdata;
+
+  if (data->in_buf.size!=data->in_buf.pos) {
+     WARN3("Socket closed, but %d bytes were unread (size=%d,pos=%d)",
+	   data->in_buf.size - data->in_buf.pos,
+	   data->in_buf.size, data->in_buf.pos);
+  }
+  if (data->in_buf.data)
+    free(data->in_buf.data);
+   
+  if (data->out_buf.size!=data->out_buf.pos) {
+    DEBUG2("Flush the socket before closing (in=%d,out=%d)",
+	   data->in_buf.size, data->out_buf.size);
+    gras_trp_bufiov_flush(sock);
+  }   
+  if (data->out_buf.data)
+    free(data->out_buf.data);
+
+#ifdef HAVE_READV
+  if (data->in_buf_v) {
+    if (xbt_dynar_length(data->in_buf_v)) 
+      WARN0("Socket closed, but some bytes were unread");
+    xbt_dynar_free(&data->in_buf_v);
+  }
+  if (data->out_buf_v) {
+    if (xbt_dynar_length(data->out_buf_v)) {
+      DEBUG0("Flush the socket before closing");
+      gras_trp_bufiov_flush(sock);
+    }
+    xbt_dynar_free(&data->out_buf_v);
+  }
+#endif
+
+  free(data);
+  gras_trp_sock_socket_close(sock);
+}
+
+/****************************/
+/****[ HELPER FUNCTIONS ]****/
+/****************************/
 
 /*
  * Returns the tcp protocol number from the network protocol data base.
  *
  * getprotobyname() is not thread safe. We need to lock it.
  */
-static int TcpProtoNumber(void) {
+static int _gras_tcp_proto_number(void) {
   struct protoent *fetchedEntry;
   static int returnValue = 0;
   
@@ -453,3 +732,7 @@ const char *gras_wsa_err2string( int err ) {
    return "unknown WSA error";
 }
 #endif /* HAVE_WINSOCK_H */
+
+/***********************************/
+/****[ end of HELPER FUNCTIONS ]****/
+/***********************************/

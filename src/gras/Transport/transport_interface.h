@@ -15,12 +15,9 @@
 /***
  *** Main user functions
  ***/
-void gras_trp_chunk_send(gras_socket_t sd,
-			 char *data,
-			 long int size);
-void gras_trp_chunk_recv(gras_socket_t sd,
-			 char *data,
-			 long int size);
+/* stable if we know the storage will keep as is until the next trp_flush */
+void gras_trp_send(gras_socket_t sd, char *data, long int size, int stable);
+void gras_trp_recv(gras_socket_t sd, char *data, long int size);
 void gras_trp_flush(gras_socket_t sd);
 
 /* Find which socket needs to be read next */
@@ -53,13 +50,21 @@ struct gras_trp_plugin_ {
     but should not free the socket itself (beside the specific part) */
   void (*socket_close)(gras_socket_t sd);
     
-  void (*chunk_send)(gras_socket_t sd,
-		     const char *data,
-		     unsigned long int size);
-  void (*chunk_recv)(gras_socket_t sd,
-		     char *data,
-		     unsigned long int size,
-		     unsigned long int bufsize);
+  /* send/recv may be buffered */
+  void (*send)(gras_socket_t sd,
+	       const char *data,
+	       unsigned long int size,
+	       int stable /* storage will survive until flush*/);
+  int (*recv)(gras_socket_t sd,
+	      char *data,
+	      unsigned long int size);
+  /* raw_send/raw_recv is never buffered (use it for measurement stuff) */
+  void (*raw_send)(gras_socket_t sd,
+		   const char *data,
+		   unsigned long int size);
+  int (*raw_recv)(gras_socket_t sd,
+		  char *data,
+		  unsigned long int size);
 
   /* flush has to make sure that the pending communications are achieved */
   void (*flush)(gras_socket_t sd);

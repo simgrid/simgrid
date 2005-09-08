@@ -11,7 +11,7 @@
 
 #include "xbt/ex.h"
 #include "gras/DataDesc/datadesc_private.h"
-#include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
+#include "gras/Transport/transport_interface.h" /* gras_trp_send/recv */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_exchange,datadesc,
 				 "Sending data over the network");
@@ -22,27 +22,17 @@ const char *gras_datadesc_cat_names[9] = {
 
 static gras_datadesc_type_t int_type = NULL;
 static gras_datadesc_type_t pointer_type = NULL;    
-static _XBT_INLINE void gras_dd_send_int(gras_socket_t sock,             int  i);
-static _XBT_INLINE void gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i);
 
 static _XBT_INLINE void
-gras_dd_alloc_ref(xbt_dict_t  refs,  long int     size,
-		  char       **r_ref, long int     r_len,
-		  char	     **l_ref, int detect_cycle);
-
-static _XBT_INLINE int
-gras_dd_is_r_null(char **r_ptr, long int length);
-
-static _XBT_INLINE void
-gras_dd_send_int(gras_socket_t sock,int i) {
+gras_dd_send_int(gras_socket_t sock,int *i, int stable) {
 
   if (!int_type) {
     int_type = gras_datadesc_by_name("int");
      xbt_assert(int_type);  
   }
    
-  DEBUG1("send_int(%d)",i);
-  gras_trp_chunk_send(sock, (char*)&i, int_type->size[GRAS_THISARCH]);
+  DEBUG1("send_int(%d)",*i);
+  gras_trp_send(sock, (char*)i, int_type->size[GRAS_THISARCH], stable);
 }
 
 static _XBT_INLINE void
@@ -54,13 +44,13 @@ gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i) {
   }
 
   if (int_type->size[GRAS_THISARCH] >= int_type->size[r_arch]) {
-    gras_trp_chunk_recv(sock, (char*)i, int_type->size[r_arch]);
+    gras_trp_recv(sock, (char*)i, int_type->size[r_arch]);
     if (r_arch != GRAS_THISARCH)
       gras_dd_convert_elm(int_type,1,r_arch, i,i);
   } else {
     void *ptr = xbt_malloc(int_type->size[r_arch]);
 
-    gras_trp_chunk_recv(sock, (char*)ptr, int_type->size[r_arch]);
+    gras_trp_recv(sock, (char*)ptr, int_type->size[r_arch]);
     if (r_arch != GRAS_THISARCH)
       gras_dd_convert_elm(int_type,1,r_arch, ptr,i);
     free(ptr);
@@ -403,7 +393,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 
   switch (type->category_code) {
   case e_gras_datadesc_type_cat_scalar:
-    gras_trp_chunk_send(sock, data, type->size[GRAS_THISARCH]);
+    gras_trp_send(sock, data, type->size[GRAS_THISARCH], 1);
     break;
 
   case e_gras_datadesc_type_cat_struct: {
@@ -457,7 +447,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 		 type->name, field_num, xbt_dynar_length(union_data.fields));
 
     /* Send the field number */
-    gras_dd_send_int(sock, field_num);
+    gras_dd_send_int(sock, &field_num, 0 /* not stable */);
     
     /* Send the content */
     field = xbt_dynar_get_as(union_data.fields, field_num, gras_dd_cat_field_t);
@@ -483,7 +473,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
     sub_type = ref_data.type;
     if (sub_type == NULL) {
       sub_type = (*ref_data.selector)(type,state,data);
-      gras_dd_send_int(sock, sub_type->code);
+      gras_dd_send_int(sock, &(sub_type->code),1 /*stable*/);
     }
     
     /* Send the actual value of the pointer for cycle handling */
@@ -492,8 +482,8 @@ gras_datadesc_send_rec(gras_socket_t         sock,
       xbt_assert(pointer_type);
     }
      
-    gras_trp_chunk_send(sock, (char*)data,
-			pointer_type->size[GRAS_THISARCH]);
+    gras_trp_send(sock, (char*)data,
+		  pointer_type->size[GRAS_THISARCH], 1 /*stable*/);
     
     /* Send the pointed data only if not already sent */
     if (*(void**)data == NULL) {
@@ -531,7 +521,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 
   case e_gras_datadesc_type_cat_array: {
     gras_dd_cat_array_t    array_data;
-    long int               count;
+    int                    count;
     char                  *ptr=data;
     long int               elm_size;
     
@@ -543,24 +533,26 @@ gras_datadesc_send_rec(gras_socket_t         sock,
       count = array_data.dynamic_size(type,state,data);
       xbt_assert1(count >=0,
 		   "Invalid (negative) array size for type %s",type->name);
-      gras_dd_send_int(sock, count);
+      gras_dd_send_int(sock, &count, 0/*non-stable*/);
     }
     
     /* send the content */
     sub_type = array_data.type;
     elm_size = sub_type->aligned_size[GRAS_THISARCH];
     if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
-      VERB1("Array of %ld scalars, send it in one shot",count);
-      gras_trp_chunk_send(sock, data, 
-			  sub_type->aligned_size[GRAS_THISARCH] * count);
+      VERB1("Array of %d scalars, send it in one shot",count);
+      gras_trp_send(sock, data, 
+		    sub_type->aligned_size[GRAS_THISARCH] * count,
+		    0 /* not stable */);
     } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
 	       sub_type->category.array_data.fixed_size > 0 &&
 	       sub_type->category.array_data.type->category_code == e_gras_datadesc_type_cat_scalar) {
        
-      VERB1("Array of %ld fixed array of scalars, send it in one shot",count);
-      gras_trp_chunk_send(sock, data, 
-			  sub_type->category.array_data.type->aligned_size[GRAS_THISARCH] 
-			  * count * sub_type->category.array_data.fixed_size);
+      VERB1("Array of %d fixed array of scalars, send it in one shot",count);
+      gras_trp_send(sock, data, 
+		    sub_type->category.array_data.type->aligned_size[GRAS_THISARCH] 
+		    * count * sub_type->category.array_data.fixed_size,
+		    0 /* not stable */);
        
     } else {
       for (cpt=0; cpt<count; cpt++) {
@@ -640,13 +632,13 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
   switch (type->category_code) {
   case e_gras_datadesc_type_cat_scalar:
     if (type->size[GRAS_THISARCH] == type->size[r_arch]) {
-      gras_trp_chunk_recv(sock, (char*)l_data, type->size[r_arch]);
+      gras_trp_recv(sock, (char*)l_data, type->size[r_arch]);
       if (r_arch != GRAS_THISARCH)
 	gras_dd_convert_elm(type,1,r_arch, l_data,l_data);
     } else {
       void *ptr = xbt_malloc(type->size[r_arch]);
 
-      gras_trp_chunk_recv(sock, (char*)ptr, type->size[r_arch]);
+      gras_trp_recv(sock, (char*)ptr, type->size[r_arch]);
       if (r_arch != GRAS_THISARCH)
 	gras_dd_convert_elm(type,1,r_arch, ptr,l_data);
       free(ptr);
@@ -740,8 +732,8 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 
     r_ref = xbt_malloc(pointer_type->size[r_arch]);
 
-    gras_trp_chunk_recv(sock, (char*)r_ref,
-			pointer_type->size[r_arch]);
+    gras_trp_recv(sock, (char*)r_ref,
+		  pointer_type->size[r_arch]);
 
     /* Receive the pointed data only if not already sent */
     if (gras_dd_is_r_null(r_ref, pointer_type->size[r_arch])) {
@@ -838,15 +830,15 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       VERB1("Array of %d scalars, get it in one shoot", count);
       if (sub_type->aligned_size[GRAS_THISARCH] >= 
 	  sub_type->aligned_size[r_arch]) {
-	gras_trp_chunk_recv(sock, (char*)l_data, 
-			    sub_type->aligned_size[r_arch] * count);
+	gras_trp_recv(sock, (char*)l_data, 
+		      sub_type->aligned_size[r_arch] * count);
 	if (r_arch != GRAS_THISARCH)
 	  gras_dd_convert_elm(sub_type,count,r_arch, l_data,l_data);
       } else {
 	ptr = xbt_malloc(sub_type->aligned_size[r_arch] * count);
 
-	gras_trp_chunk_recv(sock, (char*)ptr, 
-			    sub_type->size[r_arch] * count);
+	gras_trp_recv(sock, (char*)ptr, 
+		      sub_type->size[r_arch] * count);
 	if (r_arch != GRAS_THISARCH)
 	  gras_dd_convert_elm(sub_type,count,r_arch, ptr,l_data);
 	free(ptr);
@@ -861,16 +853,16 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       VERB1("Array of %d fixed array of scalars, get it in one shot",count);
       if (subsub_type->aligned_size[GRAS_THISARCH] >= 
 	  subsub_type->aligned_size[r_arch]) {
-	gras_trp_chunk_recv(sock, (char*)l_data, 
-			    subsub_type->aligned_size[r_arch] * count * 
-			    array_data.fixed_size);
+	gras_trp_recv(sock, (char*)l_data, 
+		      subsub_type->aligned_size[r_arch] * count * 
+		      array_data.fixed_size);
 	if (r_arch != GRAS_THISARCH)
 	  gras_dd_convert_elm(subsub_type,count*array_data.fixed_size,r_arch, l_data,l_data);
       } else {
 	ptr = xbt_malloc(subsub_type->aligned_size[r_arch] * count*array_data.fixed_size);
 
-	gras_trp_chunk_recv(sock, (char*)ptr, 
-			    subsub_type->size[r_arch] * count*array_data.fixed_size);
+	gras_trp_recv(sock, (char*)ptr, 
+		      subsub_type->size[r_arch] * count*array_data.fixed_size);
 	if (r_arch != GRAS_THISARCH)
 	  gras_dd_convert_elm(subsub_type,count*array_data.fixed_size,r_arch, ptr,l_data);
 	free(ptr);

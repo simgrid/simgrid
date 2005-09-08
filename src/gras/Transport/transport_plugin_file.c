@@ -19,15 +19,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
  ***/
 void gras_trp_file_close(gras_socket_t sd);
   
+void gras_trp_file_chunk_send_raw(gras_socket_t sd,
+				  const char *data,
+				  unsigned long int size);
 void gras_trp_file_chunk_send(gras_socket_t sd,
 			      const char *data,
-			      unsigned long int size);
-
-void gras_trp_file_chunk_recv(gras_socket_t sd,
-			      char *data,
 			      unsigned long int size,
-			      unsigned long int bufsize);
+			      int stable_ignored);
 
+int gras_trp_file_chunk_recv(gras_socket_t sd,
+			     char *data,
+			     unsigned long int size);
 
 /***
  *** Specific plugin part
@@ -54,8 +56,12 @@ gras_trp_file_setup(gras_trp_plugin_t plug) {
   FD_ZERO(&(file->incoming_socks));
 
   plug->socket_close = gras_trp_file_close;
-  plug->chunk_send   = gras_trp_file_chunk_send;
-  plug->chunk_recv   = gras_trp_file_chunk_recv;
+
+  plug->raw_send = gras_trp_file_chunk_send_raw;
+  plug->send = gras_trp_file_chunk_send;
+
+  plug->raw_recv = plug->recv = gras_trp_file_chunk_recv;
+
   plug->data         = (void*)file;
 }
 
@@ -170,7 +176,14 @@ void gras_trp_file_close(gras_socket_t sock){
 void
 gras_trp_file_chunk_send(gras_socket_t sock,
 			 const char *data,
-			 unsigned long int size) {
+			 unsigned long int size,
+			 int stable_ignored) {
+  gras_trp_file_chunk_send_raw(sock,data,size);
+}
+void
+gras_trp_file_chunk_send_raw(gras_socket_t sock,
+			     const char *data,
+			     unsigned long int size) {
   
   xbt_assert0(sock->outgoing, "Cannot write on client file socket");
   xbt_assert0(size >= 0, "Cannot send a negative amount of data");
@@ -200,36 +213,36 @@ gras_trp_file_chunk_send(gras_socket_t sock,
  *
  * Receive data on a file pseudo-socket.
  */
-void
+int
 gras_trp_file_chunk_recv(gras_socket_t sock,
 			 char *data,
-			 unsigned long int size,
-			 unsigned long int bufsize) {
+			 unsigned long int size) {
+
+  int got = 0;
 
   xbt_assert0(sock, "Cannot recv on an NULL socket");
   xbt_assert0(sock->incoming, "Cannot recv on client file socket");
   xbt_assert0(size >= 0, "Cannot receive a negative amount of data");
-  xbt_assert0(bufsize>=size,"Not enough buffer size to receive that much data");
 
   while (size) {
     int status = 0;
     
-    status = read(sock->sd, data, (long int)bufsize);
-    DEBUG3("read(%d, %p, %ld);", sock->sd, data, size);
+    status = read(sock->sd, data+got, (long int)size);
+    DEBUG3("read(%d, %p, %ld);", sock->sd, data+got, size);
     
     if (status == -1) {
       THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
-	     sock->sd, data, (int)size,
+	     sock->sd, data+got, (int)size,
 	     strerror(errno));
     }
     
     if (status) {
       size    -= status;
-      bufsize -= status;
-      data    += status;
+      got    += status;
     } else {
       THROW0(system_error,0,"file descriptor closed");
     }
   }
+  return got;
 }
 

@@ -11,7 +11,7 @@
 #include "gras/Msg/msg_private.h"
 
 #include "gras/DataDesc/datadesc_interface.h"
-#include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
+#include "gras/Transport/transport_interface.h" /* gras_trp_send/recv */
 
 XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
 XBT_LOG_DEFAULT_CATEGORY(gras_msg);
@@ -36,7 +36,7 @@ gras_msg_send(gras_socket_t   sock,
 
   DEBUG3("send '%s' to %s:%d", msgtype->name, 
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
-  gras_trp_chunk_send(sock, _GRAS_header, 6);
+  gras_trp_send(sock, _GRAS_header, 6, 1 /* stable */);
 
   gras_datadesc_send(sock, string_type,   &msgtype->name);
   if (msgtype->ctn_type)
@@ -67,7 +67,7 @@ gras_msg_recv(gras_socket_t    sock,
   }
   
   TRY {
-    gras_trp_chunk_recv(sock, header, 6);
+    gras_trp_recv(sock, header, 6);
   } CATCH(e) {
     RETHROW1("Exception caught while trying to get the mesage header on socket %p: %s",
     	     sock);

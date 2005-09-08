@@ -15,12 +15,12 @@ SimGrid (3.0.1) unstable; urgency=low
       xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
     [AL]
   * Bugfix: really disconnect fifo items which are remove_item()ed [AL]
-  * Doc: xbt_log module unmercifully reworked [MQ]
+  * Documentation: xbt_log module unmercifully reworked [MQ]
   
   MSG:
   * Add addtionnal checkings on channel values in communicating functions.
 
-  GRAS:
+  GRAS performance improvements:
   * Actually implement gras_datadesc_copy() so that we don't have to mimick
     RL communication on top of SG since it's so uneffective. 
     It may also be used for inter-thread communication in RL, one day. [MQ]
@@ -28,7 +28,37 @@ SimGrid (3.0.1) unstable; urgency=low
     Allows to:
     - improve message exchange performance on top of SG
     - deprecate transport_plugin_sg.c:gras_trp_sg_chunk_send() & recv()
+  * Don't exchange on the network the size of the used part of buffer,
+    instead, specify the possible buffer size to read(). [MQ] 
+    Advantages:
+     - reduces the amount of read/write calls (one pair per exchange)
+     - reduces the amount of exchanged data (the size)
+     - allows to retrieve all arrived data on receiver side, if we don't need
+       it right now (subsequent read will peek the buffer)
+     - allows the receiver to proceed with the begining of the stream before
+       everything is arrived
+     - make it possible to build an iov transport (using readv/writev)
+    Extra difficulty: 
+     - take care of the data with non-stable storage (like stacked data),
+       and bufferize them.
+  * If possible, TCP send uses vector I/O (when writev() is here) [MQ]
+     - Don't use it for receive since we send data sizes and data on the
+       same stream, so we wouldn't be able to chain large amount of chunks
+       before having to flush the stuff to read the size.
+  * Rework the transport plugin mecanism to simplify it and reduce the
+    amount of pointer dereferencement when searching for the right function 
+    to use. [MQ]
 
+  * I guess that now, we do almost as few system calls as possible while
+    doing as few data copy as possible.
+
+    To improve it further, we could try to send all the sizes first and then
+    all the data (to use iov on receiving size), but it's only a partial
+    solution: when you have 2 dimensional data, the sizes of the second
+    dimension is data of the first dimension, so you need 3 streams.
+
+    I'm not sure the potential performance gains justify the coding burden.
+    
  --
 
 SimGrid (3.00) stable; urgency=low

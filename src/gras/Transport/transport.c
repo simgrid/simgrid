@@ -81,7 +81,6 @@ void gras_trp_init(void){
 #endif
    
      /* Add plugins */
-     gras_trp_plugin_new("tcp", gras_trp_tcp_setup);
      gras_trp_plugin_new("file",gras_trp_file_setup);
      gras_trp_plugin_new("sg",gras_trp_sg_setup);
 
@@ -315,21 +314,15 @@ void gras_socket_close(gras_socket_t sock) {
 }
 
 /**
- * gras_trp_chunk_send:
+ * gras_trp_send:
  *
  * Send a bunch of bytes from on socket
+ * (stable if we know the storage will keep as is until the next trp_flush)
  */
 void
-gras_trp_chunk_send(gras_socket_t sd,
-		    char *data,
-		    long int size) {
-  xbt_assert1(sd->outgoing,
-	       "Socket not suited for data send (outgoing=%c)",
-	       sd->outgoing?'y':'n');
-  xbt_assert1(sd->plugin->chunk_send,
-	       "No function chunk_send on transport plugin %s",
-	       sd->plugin->name);
-  (*sd->plugin->chunk_send)(sd,data,size);
+gras_trp_send(gras_socket_t sd, char *data, long int size, int stable) {
+  xbt_assert0(sd->outgoing,"Socket not suited for data send");
+  (*sd->plugin->send)(sd,data,size,stable);
 }
 /**
  * gras_trp_chunk_recv:
@@ -337,15 +330,9 @@ gras_trp_chunk_send(gras_socket_t sd,
  * Receive a bunch of bytes from a socket
  */
 void
-gras_trp_chunk_recv(gras_socket_t sd,
-		    char *data,
-		    long int size) {
-  xbt_assert0(sd->incoming,
-	       "Socket not suited for data receive");
-  xbt_assert1(sd->plugin->chunk_recv,
-	       "No function chunk_recv on transport plugin %s",
-	       sd->plugin->name);
-  (sd->plugin->chunk_recv)(sd,data,size,size);
+gras_trp_recv(gras_socket_t sd, char *data, long int size) {
+  xbt_assert0(sd->incoming,"Socket not suited for data receive");
+  (sd->plugin->recv)(sd,data,size);
 }
 
 /**
@@ -355,7 +342,8 @@ gras_trp_chunk_recv(gras_socket_t sd,
  */
 void
 gras_trp_flush(gras_socket_t sd) {
-  (sd->plugin->flush)(sd);
+  if (sd->plugin->flush)
+    (sd->plugin->flush)(sd);
 }
 
 gras_trp_plugin_t
@@ -402,12 +390,13 @@ void gras_socket_meas_send(gras_socket_t peer,
   XBT_IN;
 
   xbt_assert0(peer->meas,"Asked to send measurement data on a regular socket");
+  xbt_assert0(peer->outgoing,"Socket not suited for data send");
 
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
      CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
-     gras_trp_chunk_send(peer,chunk,msg_size);
+     (*peer->plugin->raw_send)(peer,chunk,msg_size);
   }
   CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	  exp_sofar,exp_size,msg_size,
@@ -433,13 +422,15 @@ void gras_socket_meas_recv(gras_socket_t peer,
 
   XBT_IN;
 
-  xbt_assert0(peer->meas,"Asked to receive measurement data on a regular socket\n");
+  xbt_assert0(peer->meas,
+	      "Asked to receive measurement data on a regular socket");
+  xbt_assert0(peer->incoming,"Socket not suited for data receive");
 
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
      CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
-     gras_trp_chunk_recv(peer,chunk,msg_size);
+     (peer->plugin->raw_recv)(peer,chunk,msg_size);
   }
   CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	  exp_sofar,exp_size,msg_size,

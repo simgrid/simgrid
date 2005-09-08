@@ -136,14 +136,10 @@ gras_socket_t gras_trp_select(double timeout) {
   
 /* dummy implementations of the functions used in RL mode */
 
-void gras_trp_tcp_setup(gras_trp_plugin_t plug) {
-}
-void gras_trp_file_setup(gras_trp_plugin_t plug) {
-  THROW0(mismatch_error,0,NULL);
-}
-void gras_trp_buf_setup(gras_trp_plugin_t plug) {
-  THROW0(mismatch_error,0,NULL);
-}
-void gras_trp_buf_init_sock(gras_socket_t sock) {
-}
+void gras_trp_tcp_setup(gras_trp_plugin_t plug) {  THROW0(mismatch_error,0,NULL); }
+void gras_trp_file_setup(gras_trp_plugin_t plug){  THROW0(mismatch_error,0,NULL); }
+void gras_trp_buf_setup(gras_trp_plugin_t plug) {  THROW0(mismatch_error,0,NULL); }
+void gras_trp_iov_setup(gras_trp_plugin_t plug) {  THROW0(mismatch_error,0,NULL); }
+
+gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock) { return sock;}
    

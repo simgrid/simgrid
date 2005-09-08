@@ -60,6 +60,7 @@ void gras_trp_socket_new(int incomming,
 typedef void (*gras_trp_setup_t)(gras_trp_plugin_t dst);
 
 void gras_trp_tcp_setup(gras_trp_plugin_t plug);
+void gras_trp_iov_setup(gras_trp_plugin_t plug);
 void gras_trp_file_setup(gras_trp_plugin_t plug);
 void gras_trp_sg_setup(gras_trp_plugin_t plug);
 void gras_trp_buf_setup(gras_trp_plugin_t plug);
@@ -82,17 +83,8 @@ void gras_trp_buf_setup(gras_trp_plugin_t plug);
 
 */
 
-void gras_trp_buf_init_sock(gras_socket_t sock);
+gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock);
 
-
-/* Data exchange over measurement sockets */ /* FIXME: KILLME */
-/*
-void gras_socket_meas_exchange(gras_socket_t peer,
-				      int sender,
-				      unsigned int timeout,
-				      unsigned long int expSize,
-				      unsigned long int msgSize);
-*/
 xbt_dynar_t gras_socketset_get(void); /* FIXME:KILLME */
 
 #endif /* GRAS_TRP_PRIVATE_H */

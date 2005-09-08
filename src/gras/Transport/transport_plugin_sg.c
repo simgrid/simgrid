@@ -24,7 +24,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
 /***
  *** Prototypes 
  ***/
-void hexa_print(unsigned char *data, int size);   /* in gras.c */
 
 /* retrieve the port record associated to a numerical port on an host */
 static void find_port(gras_hostdata_t *hd, int port, gras_sg_portrec_t *hpd);
@@ -36,14 +35,17 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 			       /* OUT */ gras_socket_t sock);
 void gras_trp_sg_socket_close(gras_socket_t sd);
 
+void gras_trp_sg_chunk_send_raw(gras_socket_t sd,
+				const char *data,
+				unsigned long int size);
 void gras_trp_sg_chunk_send(gras_socket_t sd,
 			    const char *data,
-			    unsigned long int size);
-
-void gras_trp_sg_chunk_recv(gras_socket_t sd,
-			    char *data,
 			    unsigned long int size,
-			    unsigned long int bufsize);
+			    int stable_ignored);
+
+int gras_trp_sg_chunk_recv(gras_socket_t sd,
+			    char *data,
+			    unsigned long int size);
 
 /***
  *** Specific plugin part
@@ -84,8 +86,9 @@ gras_trp_sg_setup(gras_trp_plugin_t plug) {
   plug->socket_server = gras_trp_sg_socket_server;
   plug->socket_close  = gras_trp_sg_socket_close;
 
-  plug->chunk_send    = gras_trp_sg_chunk_send;
-  plug->chunk_recv    = gras_trp_sg_chunk_recv;
+  plug->raw_send = gras_trp_sg_chunk_send_raw;
+  plug->send = gras_trp_sg_chunk_send;
+  plug->raw_recv = plug->recv = gras_trp_sg_chunk_recv;
 
   plug->flush         = NULL; /* nothing cached */
 }
@@ -236,7 +239,14 @@ typedef struct {
 
 void gras_trp_sg_chunk_send(gras_socket_t sock,
 			    const char *data,
-			    unsigned long int size) {
+			    unsigned long int size,
+			    int stable_ignored) {
+  gras_trp_sg_chunk_send_raw(sock,data,size);
+}
+
+void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
+				const char *data,
+				unsigned long int size) {
   m_task_t task=NULL;
   static unsigned int count=0;
   char name[256];
@@ -262,10 +272,9 @@ void gras_trp_sg_chunk_send(gras_socket_t sock,
   }
 }
 
-void gras_trp_sg_chunk_recv(gras_socket_t sock,
+int gras_trp_sg_chunk_recv(gras_socket_t sock,
 			    char *data,
-			    unsigned long int size,
-			    unsigned long int bufsize){
+			    unsigned long int size){
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
 
   m_task_t task=NULL;
@@ -282,23 +291,13 @@ void gras_trp_sg_chunk_recv(gras_socket_t sock,
   DEBUG1("Got chuck %s",MSG_task_get_name(task));
 
   task_data = MSG_task_get_data(task);
-  if (size != -1) {	
-     if (task_data->size != size)
-       THROW5(mismatch_error,0,
-	      "Got %d bytes when %ld where expected (in %s->%s:%d)",
-	      task_data->size, size,
-	      MSG_host_get_name(sock_data->to_host),
-	      MSG_host_get_name(MSG_host_self()), sock_data->to_chan);
-     memcpy(data,task_data->data,size);
-  } else {
-     /* damn, the size is embeeded at the begining of the chunk */
-     int netsize;
-     
-     memcpy((char*)&netsize,task_data->data,4);
-     DEBUG1("netsize embeeded = %d",netsize);
-
-     memcpy(data,task_data->data,netsize+4);
-  }
+  if (task_data->size != size)
+    THROW5(mismatch_error,0,
+	   "Got %d bytes when %ld where expected (in %s->%s:%d)",
+	   task_data->size, size,
+	   MSG_host_get_name(sock_data->to_host),
+	   MSG_host_get_name(MSG_host_self()), sock_data->to_chan);
+  memcpy(data,task_data->data,size);
   free(task_data->data);
   free(task_data);
 
@@ -306,5 +305,6 @@ void gras_trp_sg_chunk_recv(gras_socket_t sock,
     THROW0(system_error,0,"Error in MSG_task_destroy()");
 
   XBT_OUT;
+  return size;
 }
 
