@@ -17,9 +17,7 @@
 #include "gras.h"
 #include "gras/process.h" /* FIXME: killme and put process_init in modinter */
 
-/* FIXME: move it to some random header */
-void hexa_print(const char*name, unsigned char *data, int size);
-
+#include "portable.h" /* hexa_*() */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories (cf. section \ref GRAS_API)");
 static int gras_running_process = 0;
@@ -67,15 +65,28 @@ void gras_exit(void) {
   xbt_exit();
 }
 
-void hexa_print(const char*name, unsigned char *data, int size) {
-   int i;
-   printf("%s: ", name);
-   for (i=0;i<size;i++)  {
-      if (data[i]<32) /* || data[i]>'9') */
-	printf("'\\%d'",data[i]);
-      else
-	printf("%c",data[i]);
+const char *hexa_str(unsigned char *data, int size) {
+  static char*buff=NULL;
+  static int buffsize=0;
+  int i,pos=0;	
+  
+  if (buffsize<5*(size+1)) {
+    if (buff)
+      free(buff);
+    buffsize=5*(size+1);
+    buff=xbt_malloc(buffsize);
+  }
+  for (i=0;i<size;i++)  {
+    if (data[i]<32 || data[i]>126)
+      sprintf(buff+pos,".(%02x)",data[i]);
+    else
+      sprintf(buff+pos,"%c(%02x)",data[i],data[i]);
+    while (buff[++pos]);
    }
-   printf("\n");
+  buff[pos]='\0';  
+  return buff;
+}
+void hexa_print(const char*name, unsigned char *data, int size) {
+   printf("%s: %s\n", name,hexa_str(data,size));
 }
 
