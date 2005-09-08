@@ -9,7 +9,6 @@
 
 #include "xbt/ex.h"
 
-//#include "msg/msg.h"
 #include "gras/Virtu/virtu_sg.h"
 
 #include "gras/Msg/msg_private.h"
