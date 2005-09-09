@@ -2,10 +2,6 @@
 ### Ongoing stuff
 ###
 
-* tcp->incoming_socks
-  sock specific tcp (buffsize) useless
-
-* use the exception everywhere
 
 ###
 ### Planned
@@ -193,8 +189,6 @@
   * watchdog in RL (ie, while (1) { fork; exec the child, wait in father })
   * Allow [homogeneous] dico to be sent
   * Make GRAS thread safe by mutexing what needs to be
-  * Use a xbt_set for gras_procdata_t->libdata instead of a dict
-    so that the search can be linear.
 
 *
 * AMOK
