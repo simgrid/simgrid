@@ -477,6 +477,8 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer){
 static void *gras_trp_procdata_new() {
    gras_trp_procdata_t res = xbt_new(s_gras_trp_procdata_t,1);
    
+   res->name = xbt_strdup("gras_trp");
+   res->name_len = 0;
    res->sockets   = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
    
    return (void*)res;
@@ -495,13 +497,14 @@ static void gras_trp_procdata_free(void *data) {
 /*
  * Module registration
  */
+int gras_trp_libdata_id;
 void gras_trp_register() {
-   gras_procdata_add("gras_trp",gras_trp_procdata_new, gras_trp_procdata_free);
+   gras_trp_libdata_id = gras_procdata_add("gras_trp",gras_trp_procdata_new, gras_trp_procdata_free);
 }
 
 
 xbt_dynar_t 
 gras_socketset_get(void) {
    /* FIXME: KILLME */
-   return ((gras_trp_procdata_t) gras_libdata_get("gras_trp"))->sockets;
+   return ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
 }

@@ -29,7 +29,7 @@ XBT_LOG_DEFAULT_CATEGORY(transport);
 gras_socket_t gras_trp_select(double timeout) {
   
   gras_socket_t res;
-  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
+  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t trp;
 

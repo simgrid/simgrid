@@ -154,7 +154,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 			       gras_socket_t sock){
 
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
+  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t *data;
   int found;
@@ -275,7 +275,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
 int gras_trp_sg_chunk_recv(gras_socket_t sock,
 			    char *data,
 			    unsigned long int size){
-  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
+  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
 
   m_task_t task=NULL;
   sg_task_data_t *task_data;

@@ -25,6 +25,7 @@
 #include "gras/Transport/transport_interface.h" /* semi-public API */
 #include "gras/Virtu/virtu_interface.h" /* socketset_get() */
 
+extern int gras_trp_libdata_id; /* our libdata identifier */
 /**
  * s_gras_socket:
  * 

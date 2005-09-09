@@ -83,10 +83,15 @@ gras_trp_plugin_get_by_name(const char *name);
  * (used by sg_process.c to cleanup the SG channel cruft)
  */
 typedef struct {
-   /* SG only elements. In RL, they are part of the OS ;) */
-   int chan;    /* Formated messages channel */
-   int measChan; /* Unformated echange channel for performance measurement*/
-   xbt_dynar_t sockets; /* all sockets known to this process */
+  /* set headers */
+  unsigned int ID;
+  char        *name;
+  unsigned int name_len;
+
+  /* SG only elements. In RL, they are part of the OS ;) */
+  int chan;    /* Formated messages channel */
+  int measChan; /* Unformated echange channel for performance measurement*/
+  xbt_dynar_t sockets; /* all sockets known to this process */
    
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 
