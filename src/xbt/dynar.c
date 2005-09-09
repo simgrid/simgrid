@@ -177,13 +177,14 @@ xbt_dynar_reset(xbt_dynar_t const dynar) {
   if (dynar->free_f) {
     xbt_dynar_map(dynar, dynar->free_f);
   }
-
+/*
   if (dynar->data)
     free(dynar->data);
 
   dynar->size = 0;
+  */
   dynar->used = 0;
-  dynar->data = NULL;
+/*  dynar->data = NULL;*/
 }
 
 /** @brief Destructor
