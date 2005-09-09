@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_timer,gras,
 
 /** @brief Request \a action to be called once in \a delay seconds */
 void gras_timer_delay(double delay, void_f_void_t action) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
    
   gras_timer_t timer = xbt_dynar_push_ptr(pd->timers);
    
@@ -31,7 +31,7 @@ void gras_timer_delay(double delay, void_f_void_t action) {
 
 /** @brief Request \a action to be called every \a interval seconds */
 void gras_timer_repeat(double interval, void_f_void_t action) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
    
   gras_timer_t timer = xbt_dynar_push_ptr(pd->timers);
 
@@ -44,7 +44,7 @@ void gras_timer_repeat(double interval, void_f_void_t action) {
 
 /** @brief Cancel a delayed task */
 void gras_timer_cancel_delay(double interval, void_f_void_t action) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   int cursor,found;
   s_gras_timer_t timer;
 
@@ -67,7 +67,7 @@ void gras_timer_cancel_delay(double interval, void_f_void_t action) {
 
 /** @brief Cancel a repetitive task */
 void gras_timer_cancel_repeat(double interval, void_f_void_t action) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   int cursor,found;
   s_gras_timer_t timer;
 
@@ -89,7 +89,7 @@ void gras_timer_cancel_repeat(double interval, void_f_void_t action) {
 
 /** @brief Cancel all delayed tasks */
 void gras_timer_cancel_delay_all(void) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   int cursor, found;
   s_gras_timer_t timer;
 
@@ -109,7 +109,7 @@ void gras_timer_cancel_delay_all(void) {
 
 /** @brief Cancel all repetitive tasks */
 void gras_timer_cancel_repeat_all(void){
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   int cursor, found;
   s_gras_timer_t timer;
 
@@ -128,14 +128,14 @@ void gras_timer_cancel_repeat_all(void){
 
 /** @brief Cancel all delayed and repetitive tasks */
 void gras_timer_cancel_all(void) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   xbt_dynar_reset( pd->timers );
 }
 
    
 /* returns 0 if it handled a timer, or the delay until next timer, or -1 if no armed timer */
 double gras_msg_timer_handle(void) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   int cursor;
   gras_timer_t timer;
   double now=gras_os_time();

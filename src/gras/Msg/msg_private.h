@@ -29,6 +29,8 @@
 #include "gras/Msg/msg_interface.h"
 
 extern char _GRAS_header[6];
+
+extern int gras_msg_libdata_id; /* The identifier of our libdata */
  
 /** @brief Message instance */
 typedef struct {

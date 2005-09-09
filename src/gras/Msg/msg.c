@@ -27,6 +27,8 @@ char _GRAS_header[6];
 static void *gras_msg_procdata_new() {
    gras_msg_procdata_t res = xbt_new(s_gras_msg_procdata_t,1);
    
+   res->name = xbt_strdup("gras_msg");
+   res->name_len = 0;
    res->msg_queue = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
    res->cbl_list  = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
    res->timers    = xbt_dynar_new(sizeof(s_gras_timer_t), NULL);
@@ -50,8 +52,9 @@ static void gras_msg_procdata_free(void *data) {
 /*
  * Module registration
  */
+int gras_msg_libdata_id;
 void gras_msg_register() {
-   gras_procdata_add("gras_msg",gras_msg_procdata_new, gras_msg_procdata_free);
+   gras_msg_libdata_id = gras_procdata_add("gras_msg",gras_msg_procdata_new, gras_msg_procdata_free);
 }
 
 /*
@@ -220,7 +223,7 @@ gras_msg_wait(double           timeout,
   void *payload_got;
   int payload_size_got;
   double start, now;
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   int cpt;
   s_gras_msg_t msg;
   gras_socket_t expeditor_res = NULL;
@@ -294,7 +297,7 @@ gras_msg_handle(double timeOut) {
   int             payload_size;
   gras_msgtype_t  msgtype;
 
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t  *list=NULL;
   gras_msg_cb_t       cb;
    
@@ -416,7 +419,7 @@ gras_cbl_free(void *data){
 void
 gras_cb_register(gras_msgtype_t msgtype,
 		 gras_msg_cb_t cb) {
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list=NULL;
   int cpt;
 
@@ -447,7 +450,7 @@ void
 gras_cb_unregister(gras_msgtype_t msgtype,
 		   gras_msg_cb_t cb) {
 
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list;
   gras_msg_cb_t cb_cpt;
   int cpt;

@@ -20,6 +20,11 @@
  * FIXME: it could be cleaned up ?
  */
 typedef struct {
+  /* set headers */
+  unsigned int ID;
+  char        *name;
+  unsigned int name_len;
+
   /*queue of msgs storing the ones got while msg_wait'ing for something else */
   xbt_dynar_t msg_queue; /* elm type: s_gras_msg_t */
 
