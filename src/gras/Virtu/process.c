@@ -37,8 +37,9 @@ static void gras_procdata_fabric_free(void *fab) {
 /** @brief declare the functions in charge of creating/destructing the procdata of a module
  *  
  *  This is intended to be called from the gras_<module>_register function.
+ *  This returns the module ID you can use for gras_libdata_by_id()
  */
-void gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor) {
+int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor) {
    
    gras_procdata_fabric_t fab;
    
@@ -53,6 +54,7 @@ void gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t d
    fab->name       = xbt_strdup(name);
    fab->creator    = creator;
    fab->destructor = destructor;
+   return xbt_dynar_length(_gras_procdata_fabrics)-1;
 }
 
 /* **************************************************************************
@@ -69,17 +71,22 @@ void gras_userdata_set(void *ud) {
   pd->userdata = ud;
 }
 
-void *gras_libdata_get(const char *name) {
+void *gras_libdata_by_name(const char *name) {
   gras_procdata_t *pd=gras_procdata_get();
   void *res=NULL;
   xbt_ex_t e;
    
   TRY {
-    res = xbt_dict_get(pd->libdata, name);
+    res = xbt_set_get_by_name(pd->libdata, name);
   } CATCH(e) {
     RETHROW1("Cannot retrive the libdata associated to %s: %s",name);
   }   
   return res;
+}
+
+void *gras_libdata_by_id(int id) {
+  gras_procdata_t *pd=gras_procdata_get();
+  return xbt_set_get_by_id(pd->libdata, id);
 }
 
 void
@@ -93,7 +100,7 @@ gras_procdata_init() {
   void *data;
 
   pd->userdata  = NULL;
-  pd->libdata   = xbt_dict_new();
+  pd->libdata   = xbt_set_new();
    
   xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){
     volatile int found = 0;
@@ -102,7 +109,7 @@ gras_procdata_init() {
     DEBUG1("Create the procdata for %s",fab.name);
     /* Check for our own errors */
     TRY {
-      data = xbt_dict_get(pd->libdata, fab.name);
+      data = xbt_set_get_by_name(pd->libdata, fab.name);
       found = 1;
     } CATCH(e) {
       xbt_ex_free(e);
@@ -112,7 +119,7 @@ gras_procdata_init() {
       THROW1(unknown_error,0,"MayDay: two modules use '%s' as libdata name", fab.name);
     
     /* Add the data in place */
-    xbt_dict_set(pd->libdata, fab.name, (fab.creator)(), fab.destructor);
+    xbt_set_add(pd->libdata, (fab.creator)(), fab.destructor);
   }
 }
 
@@ -121,7 +128,7 @@ gras_procdata_exit() {
   int len;
   gras_procdata_t *pd=gras_procdata_get();
 
-  xbt_dict_free(&( pd->libdata ));
+  xbt_set_free(&( pd->libdata ));
   
   /* Remove procdata in reverse order wrt creation */
   while ((len=xbt_dynar_length(_gras_procdata_fabrics))) {

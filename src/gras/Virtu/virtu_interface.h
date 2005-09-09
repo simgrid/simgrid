@@ -14,8 +14,7 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/dynar.h"
-#include "xbt/dict.h"
+#include "xbt/set.h"
 #include "gras/virtu.h"
 #include "gras/process.h"
 
@@ -24,7 +23,8 @@
 
 typedef void* (pvoid_f_void_t)(void); /* FIXME: find a better place for it */
 
-void gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
-void *gras_libdata_get(const char *name);
+int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
+void *gras_libdata_by_name(const char *name);
+void *gras_libdata_by_id(int id);
 
 #endif  /* GRAS_VIRTU_INTERFACE_H */

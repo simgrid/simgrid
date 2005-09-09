@@ -11,6 +11,7 @@
 #define VIRTU_SG_H
 
 #include "gras/Virtu/virtu_private.h"
+#include "xbt/dynar.h"
 #include "msg/msg.h" /* SimGrid header */
 
 #define XBT_MAX_CHANNEL 10

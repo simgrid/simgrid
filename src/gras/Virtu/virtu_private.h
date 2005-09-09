@@ -22,7 +22,7 @@ typedef struct {
 
   /* data specific to each process for each module. 
      Registered with gras_procdata_add(), retrieved with gras_libdata_get() */
-  xbt_dict_t libdata;
+  xbt_set_t libdata;
 } gras_procdata_t;
 
 gras_procdata_t *gras_procdata_get(void);

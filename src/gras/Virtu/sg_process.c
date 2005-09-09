@@ -41,7 +41,7 @@ gras_process_init() {
   }
   
   /* take a free channel for this process */
-  trp_pd = (gras_trp_procdata_t)gras_libdata_get("gras_trp");
+  trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
   for (i=0; i<XBT_MAX_CHANNEL && hd->proc[i]; i++);
   if (i == XBT_MAX_CHANNEL) 
     THROW2(system_error,0,
@@ -82,8 +82,8 @@ gras_process_init() {
 void
 gras_process_exit() {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_msg_procdata_t msg_pd=(gras_msg_procdata_t)gras_libdata_get("gras_msg");
-  gras_trp_procdata_t trp_pd=(gras_trp_procdata_t)gras_libdata_get("gras_trp");
+  gras_msg_procdata_t msg_pd=(gras_msg_procdata_t)gras_libdata_by_name("gras_msg");
+  gras_trp_procdata_t trp_pd=(gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
   int myPID=MSG_process_self_PID();
   int cpt;
   gras_sg_portrec_t pr;
