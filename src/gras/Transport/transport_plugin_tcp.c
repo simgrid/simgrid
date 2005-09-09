@@ -16,6 +16,8 @@
 #include "xbt/ex.h"
 #include "transport_private.h"
 
+#undef HAVE_READV
+
 #ifdef HAVE_READV
 #include <sys/uio.h>
 #endif       
@@ -350,6 +352,7 @@ gras_trp_bufiov_flush(gras_socket_t sock) {
 
 #ifdef HAVE_READV
   if (data->out == buffering_iov) {
+    DEBUG0("Flush out iov");
     vect = sock->bufdata->out_buf_v;
     if ((size = xbt_dynar_length(vect))) {
       DEBUG1("Flush %d chunks out of this socket",size);
@@ -360,6 +363,7 @@ gras_trp_bufiov_flush(gras_socket_t sock) {
   }
 
   if (data->in == buffering_iov) {
+    DEBUG0("Flush in iov");
     vect = sock->bufdata->in_buf_v;
     if ((size = xbt_dynar_length(vect))) {
       DEBUG1("Get %d chunks from of this socket",size);
