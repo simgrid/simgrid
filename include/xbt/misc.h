@@ -84,6 +84,11 @@ typedef struct {
 
 const char *xbt_procname(void);
 
+   /** \brief Pointer to a function freeing a pointed data */
+   typedef void (void_f_ppvoid_t)(void**);
+   /** \brief Pointer to a function freeing some data */
+   typedef   void (void_f_pvoid_t) (void*);
+
 SG_END_DECL()
 
 #endif /* XBT_MISC_H */

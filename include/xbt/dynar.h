@@ -56,10 +56,6 @@ SG_BEGIN_DECL()
    /** \brief Dynar data type (opaque type) */
    typedef struct xbt_dynar_s *xbt_dynar_t;
 
-   /** \brief Pointer to a function freeing a pointed data */
-   typedef void (void_f_ppvoid_t)(void**);
-   /** \brief Pointer to a function freeing some data */
-   typedef   void (void_f_pvoid_t) (void*);
 
   xbt_dynar_t   xbt_dynar_new(unsigned long elm_size, 
 			     void_f_pvoid_t *free_func);
