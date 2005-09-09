@@ -21,16 +21,25 @@ SimGrid (3.0.1) unstable; urgency=low
   * Add addtionnal checkings on channel values in communication [AL]
   * New: MSG_task_get_source to see on which host a task was generated [HC]
 
-  GRAS performance improvements:
+  GRAS performance improvements: [MQ]
+  [DataDesc]
+  * Reduce the amount of cbps creation/destruction by making it static to 
+    datadesc_send/recv() and using a (newly created) cbps_reset (based on 
+    dynar_reset ())
+  [Virtu]
+  * Change libdata to a set so that we can search for stuff by ID (and thus 
+    reduce the insane amount of dict lookups)     
+  
+  [Transport]
   * Actually implement gras_datadesc_copy() so that we don't have to mimick
     RL communication on top of SG since it's so uneffective. 
-    It may also be used for inter-thread communication in RL, one day. [MQ]
-  * Use gras_datadesc_copy() to exchange messages on top of SG [MQ]
+    It may also be used for inter-thread communication in RL, one day. 
+  * Use gras_datadesc_copy() to exchange messages on top of SG 
     Allows to:
     - improve message exchange performance on top of SG
     - deprecate transport_plugin_sg.c:gras_trp_sg_chunk_send() & recv()
   * Don't exchange on the network the size of the used part of buffer,
-    instead, specify the possible buffer size to read(). [MQ] 
+    instead, specify the possible buffer size to read(). 
     Advantages:
      - reduces the amount of read/write calls (one pair per exchange)
      - reduces the amount of exchanged data (the size)
@@ -42,13 +51,13 @@ SimGrid (3.0.1) unstable; urgency=low
     Extra difficulty: 
      - take care of the data with non-stable storage (like stacked data),
        and bufferize them.
-  * If possible, TCP send uses vector I/O (when writev() is here) [MQ]
+  * If possible, TCP send uses vector I/O (when writev() is here) 
      - Don't use it for receive since we send data sizes and data on the
        same stream, so we wouldn't be able to chain large amount of chunks
        before having to flush the stuff to read the size.
   * Rework the transport plugin mecanism to simplify it and reduce the
     amount of pointer dereferencement when searching for the right function 
-    to use. [MQ]
+    to use. 
 
   * I guess that now, we do almost as few system calls as possible while
     doing as few data copy as possible.
@@ -59,7 +68,8 @@ SimGrid (3.0.1) unstable; urgency=low
     dimension is data of the first dimension, so you need 3 streams.
 
     I'm not sure the potential performance gains justify the coding burden.
-    
+
+
  --
 
 SimGrid (3.00) stable; urgency=low
