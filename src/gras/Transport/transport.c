@@ -93,7 +93,7 @@ void gras_trp_init(void){
 
 void
 gras_trp_exit(void){
-  xbt_dynar_t sockets = gras_socketset_get();
+  xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   gras_socket_t sock_iter;
   int cursor;
 
@@ -170,7 +170,7 @@ void gras_trp_socket_new(int incoming,
   
   *dst = sock;
 
-  xbt_dynar_push(gras_socketset_get(),dst);
+  xbt_dynar_push(((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets,dst);
   XBT_OUT;
 }
 
@@ -287,7 +287,7 @@ gras_socket_client(const char *host,
 
 
 void gras_socket_close(gras_socket_t sock) {
-  xbt_dynar_t sockets = gras_socketset_get();
+  xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   gras_socket_t sock_iter;
   int cursor;
 
@@ -502,9 +502,3 @@ void gras_trp_register() {
    gras_trp_libdata_id = gras_procdata_add("gras_trp",gras_trp_procdata_new, gras_trp_procdata_free);
 }
 
-
-xbt_dynar_t 
-gras_socketset_get(void) {
-   /* FIXME: KILLME */
-   return ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
-}

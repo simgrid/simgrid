@@ -23,7 +23,7 @@
 #include "gras/transport.h"  /* rest of module interface */
 
 #include "gras/Transport/transport_interface.h" /* semi-public API */
-#include "gras/Virtu/virtu_interface.h" /* socketset_get() */
+#include "gras/Virtu/virtu_interface.h" /* libdata management */
 
 extern int gras_trp_libdata_id; /* our libdata identifier */
 /**
@@ -85,7 +85,5 @@ void gras_trp_buf_setup(gras_trp_plugin_t plug);
 */
 
 gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock);
-
-xbt_dynar_t gras_socketset_get(void); /* FIXME:KILLME */
 
 #endif /* GRAS_TRP_PRIVATE_H */

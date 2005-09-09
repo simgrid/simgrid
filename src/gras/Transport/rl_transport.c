@@ -25,7 +25,7 @@ XBT_LOG_DEFAULT_CATEGORY(transport);
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */
 gras_socket_t gras_trp_select(double timeout) {
-  xbt_dynar_t sockets= gras_socketset_get();
+  xbt_dynar_t sockets= ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   int done = -1;
   double wakeup = gras_os_time() + timeout;
   double now = 0;
