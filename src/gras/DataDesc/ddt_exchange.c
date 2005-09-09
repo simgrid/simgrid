@@ -580,19 +580,20 @@ void gras_datadesc_send(gras_socket_t        sock,
 			void *src) {
 
   xbt_ex_t e;
-  gras_cbps_t  state;
+  static gras_cbps_t state=NULL;
   xbt_dict_t  refs; /* all references already sent */
  
   xbt_assert0(type,"called with NULL type descriptor");
 
   refs = xbt_dict_new();
-  state = gras_cbps_new();
+  if (!state)
+    state = gras_cbps_new();
   
   TRY {
     gras_datadesc_send_rec(sock,state,refs,type,(char*)src, type->cycle);
   } CLEANUP {
     xbt_dict_free(&refs);
-    gras_cbps_free(&state);
+    gras_cbps_reset(state);
   } CATCH(e) {
     RETHROW;
   }
@@ -909,11 +910,12 @@ gras_datadesc_recv(gras_socket_t         sock,
 		   void                 *dst) {
 
   xbt_ex_t e;
-  gras_cbps_t  state; /* callback persistent state */
+  static gras_cbps_t state=NULL; /* callback persistent state */
   xbt_dict_t  refs;  /* all references already sent */
 
   refs = xbt_dict_new();
-  state = gras_cbps_new();
+  if (!state)
+    state = gras_cbps_new();
 
   xbt_assert0(type,"called with NULL type descriptor");
   TRY {
@@ -923,7 +925,7 @@ gras_datadesc_recv(gras_socket_t         sock,
 			   type->cycle);
   } CLEANUP {
     xbt_dict_free(&refs);
-    gras_cbps_free(&state);
+    gras_cbps_reset(state);
   } CATCH(e) {
     RETHROW;
   }

@@ -248,6 +248,7 @@ gras_datadesc_type_t
  ****************************************************/
 gras_cbps_t gras_cbps_new(void);
 void gras_cbps_free(gras_cbps_t *state);
+void gras_cbps_reset(gras_cbps_t state);
 
 /***************
  * Convertions *

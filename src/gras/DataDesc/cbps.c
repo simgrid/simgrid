@@ -60,6 +60,17 @@ void gras_cbps_free(gras_cbps_t *state) {
   *state = NULL;
 }
 
+void gras_cbps_reset(gras_cbps_t state) {
+
+  xbt_dynar_reset(state->lints);
+
+  xbt_dict_free ( &(state->space) );
+  state->space = xbt_dict_new();
+
+  xbt_dynar_reset(state->frames);
+  xbt_dynar_reset(state->globals);
+}
+
 /** \brief Declare a new element in the PS, and give it a value.
  *
  * If an element of that
