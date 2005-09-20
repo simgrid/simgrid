@@ -111,34 +111,53 @@ static void *__context_wrapper(void *c)
   int i;
 
 #ifdef USE_PTHREADS
-  DEBUG0("**** Lock ****");
+  DEBUG2("**[%p:%p]** Lock ****",context,(void*)pthread_self());
   pthread_mutex_lock(&(context->mutex));
-  DEBUG0("**** Releasing the prisonner ****");
+  DEBUG2("**[%p:%p]** Releasing the prisonner ****",context,(void*)pthread_self());
   pthread_cond_signal(&(context->cond));
-  DEBUG0("**** Going to Jail ****");
+  DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)pthread_self());
   pthread_cond_wait(&(context->cond), &(context->mutex));
-  DEBUG0("**** Unlocking ****");
+  DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)pthread_self());
   pthread_mutex_unlock(&(context->mutex));
 #endif
 
   if(context->startup_func)
     context->startup_func(context->startup_arg);
 
-   DEBUG0("Calling the main function");
+  DEBUG0("Calling the main function");
   (context->code) (context->argc,context->argv);
 
+  DEBUG0("Freeing arguments");
   for(i=0;i<context->argc; i++) 
     if(context->argv[i]) free(context->argv[i]);
   if(context->argv) free(context->argv);
 
-  if(context->cleanup_func)
+  if(context->cleanup_func) {
+    DEBUG0("Calling cleanup function");
     context->cleanup_func(context->cleanup_arg);
+  }
 
+  DEBUG0("Putting context in the to_destroy set");
   xbt_swag_remove(context, context_living);
   xbt_swag_insert(context, context_to_destroy);
+  DEBUG0("Context put in the to_destroy set");
 
+  DEBUG0("Yielding");
+#ifdef USE_PTHREADS
+  DEBUG0("**** Locking ****");
+  pthread_mutex_lock(&(context->mutex));
+  DEBUG0("**** Updating current_context ****");
+  current_context = context;
+  DEBUG0("**** Releasing the prisonner ****");
+  pthread_cond_signal(&(context->cond));  
+  DEBUG0("**** Unlocking ****");
+  pthread_mutex_unlock(&(context->mutex));
+  DEBUG0("**** Exiting ****");
+  pthread_exit(0);
+#else
   __xbt_context_yield(context);
-  xbt_assert0(0,"You're cannot be here!");
+#endif
+  xbt_assert0(0,"You can't be here!");
   return NULL;
 }
 
@@ -199,14 +218,15 @@ void xbt_context_start(xbt_context_t context)
 {
 #ifdef USE_PTHREADS
   /* Launch the thread */
-  DEBUG0("**** Locking ****");
+  DEBUG1("**[%p]** Locking ****",context);
   pthread_mutex_lock(&(context->mutex));
-  DEBUG0("**** Pthread create ****");
+  DEBUG1("**[%p]** Pthread create ****",context);
   xbt_assert0(!pthread_create(context->thread, NULL, __context_wrapper, context),
 	      "Unable to create a thread.");
-  DEBUG0("**** Going to jail ****");
+  DEBUG2("**[%p]** Pthread created : %p ****",context,(void*)(*(context->thread)));
+  DEBUG1("**[%p]** Going to jail ****",context);
   pthread_cond_wait(&(context->cond), &(context->mutex));
-  DEBUG0("**** Unlocking ****");
+  DEBUG1("**[%p]** Unlocking ****",context);
   pthread_mutex_unlock(&(context->mutex));  
 #else
   makecontext (&(context->uc), (void (*) (void)) __context_wrapper,
@@ -286,6 +306,7 @@ void xbt_context_yield(void)
  */
 void xbt_context_schedule(xbt_context_t context)
 {
+  DEBUG1("Scheduling %p",context);
   xbt_assert0((current_context==init_context),
 	      "You are not supposed to run this function here!");
   __xbt_context_yield(context);
