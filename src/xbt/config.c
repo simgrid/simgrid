@@ -541,8 +541,8 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       option=NULL; /* don't do next iteration */
 
     } else {
-      DEBUG3("Boundary on '%c'. len=%d;option-name=%d",
-	     *option,len,option-name);
+      DEBUG3("Boundary on '%c'. len=%d;option-name=%ld",
+	     *option,len,(long)(option-name));
 
       /* Pass the following blank chars */
       *(option++)='\0';

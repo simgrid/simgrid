@@ -28,8 +28,8 @@ int main(void)
   obj1->name="Obj 1";
   obj2->name="Obj 2";
 
-  printf("%p %p %d\n",obj1,&(obj1->setB),
-	 (char *)&(obj1->setB) - (char *)obj1);
+  printf("%p %p %ld\n",obj1,&(obj1->setB),
+	 (long)((char *)&(obj1->setB) - (char *)obj1));
 
   setA = xbt_swag_new(xbt_swag_offset(*obj1,setA));
   setB = xbt_swag_new(xbt_swag_offset(*obj1,setB));
