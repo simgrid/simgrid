@@ -292,7 +292,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
     
     DEBUG5("read(%d, %p, %ld) got %d so far (%s)",
 	  sock->sd, data+got, bufsize, got,
-	  hexa_str(data,got));
+	  hexa_str((unsigned char*)data,got));
     status = tcp_read(sock->sd, data+got, (size_t)bufsize);
     
     if (status < 0) {
@@ -300,7 +300,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
 	     sock->sd, data+got, (int)size,
 	     sock_errstr);
     }
-    DEBUG2("Got %d more bytes (%s)",status,hexa_str(data+got,status));
+    DEBUG2("Got %d more bytes (%s)",status,hexa_str((unsigned char*)data+got,status));
     
     if (status) {
       bufsize -= status;
@@ -391,14 +391,14 @@ gras_trp_buf_send(gras_socket_t sock,
 	   (int)data->out_buf.size,
 	   ((int)data->out_buf.size) + thissize -1,
 	   size,
-	   hexa_str((char*)chunk,thissize));
+	   hexa_str((unsigned char*)chunk,thissize));
 
     memcpy(data->out_buf.data + data->out_buf.size, chunk + chunk_pos, thissize);
 
     data->out_buf.size += thissize;
     chunk_pos      += thissize;
     DEBUG4("New pos = %d; Still to send = %ld of %ld; ctn sofar=(%s)",
-	   data->out_buf.size,size-chunk_pos,size,hexa_str((char*)chunk,chunk_pos));
+	   data->out_buf.size,size-chunk_pos,size,hexa_str((unsigned char*)chunk,chunk_pos));
 
     if (data->out_buf.size == data->buffsize) /* out of space. Flush it */
       gras_trp_bufiov_flush(sock);
@@ -442,7 +442,7 @@ gras_trp_buf_recv(gras_socket_t sock,
     data->in_buf.pos += thissize;
     chunk_pos        += thissize;
     DEBUG4("New pos = %d; Still to receive = %ld of %ld. Ctn so far=(%s)",
-	   data->in_buf.pos,size - chunk_pos,size,hexa_str(chunk,chunk_pos));
+	   data->in_buf.pos,size - chunk_pos,size,hexa_str((unsigned char*)chunk,chunk_pos));
   }
 
   XBT_OUT;

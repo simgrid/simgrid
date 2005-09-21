@@ -473,7 +473,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
     sub_type = ref_data.type;
     if (sub_type == NULL) {
       sub_type = (*ref_data.selector)(type,state,data);
-      gras_dd_send_int(sock, &(sub_type->code),1 /*stable*/);
+      gras_dd_send_int(sock, (int*) &(sub_type->code),1 /*stable*/);
     }
     
     /* Send the actual value of the pointer for cycle handling */
