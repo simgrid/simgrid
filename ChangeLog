@@ -16,10 +16,13 @@ SimGrid (3.0.1) unstable; urgency=low
     [AL]
   * Bugfix: really disconnect fifo items which are remove_item()ed [AL]
   * Documentation: xbt_log module unmercifully reworked [MQ]
+  * Bugfix: there was a problem with the ending of contexts with 
+    the pthread backend. It caused some weird deadlock or behavior
+    depending on the pthread implementation. [AL]
   
   MSG:
-  * Add addtionnal checkings on channel values in communication [AL]
-  * New: MSG_task_get_source to see on which host a task was generatedÂ [HC]
+  * Add additionnal checkings on channel values in communication [AL]
+  * New: MSG_task_get_source to see on which host a task was generated [HC]
 
   GRAS performance improvements: [MQ]
   [DataDesc]
