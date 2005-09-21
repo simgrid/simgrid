@@ -10,8 +10,13 @@ tests_nb=0
 
 rm -f test.failed test.success test.ignored
 
-# Work around a libtool issue on solaris
-export LD_LIBRARY_PATH=@top_srcdir@/src/.libs
+# Work around a libtool issue on solaris, making sure that it works even on sh older than tcsh
+LD_LIBRARY_PATH=@top_srcdir@/src/.libs
+if export LD_LIBRARY_PATH ; then 
+  :
+else
+  setenv LD_LIBRARY_PATH @top_srcdir@/src/.libs
+fi
 
 ##
 ## Args parsing (simplistic for now)
