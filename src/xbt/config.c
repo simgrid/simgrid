@@ -565,7 +565,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     if (!val) {
       free(optionlist_cpy);
       xbt_assert1(FALSE,
-	     "Malformated option: '%s'; Should be of the form 'name:value'",
+	     "Bad format for option '%s'; Should be of the form 'name:value'",
 		  name);
     }
     *(val++)='\0';
