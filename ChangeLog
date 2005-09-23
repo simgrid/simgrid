@@ -22,7 +22,7 @@ SimGrid (3.0.1) unstable; urgency=low
   
   MSG:
   * Add additionnal checkings on channel values in communication [AL]
-  * New: MSG_task_get_source to see on which host a task was generated [HC]
+  * New: MSG_task_get_source to see on which host a task was generated [HC]
 
   GRAS performance improvements: [MQ]
   [DataDesc]
