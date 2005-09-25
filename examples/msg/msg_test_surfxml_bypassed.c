@@ -23,7 +23,7 @@ static int surf_parse_bypass(void)
   A_cpu_name = "Cpu A";
   A_cpu_power= "100.00";
   A_cpu_availability = "1.0";
-  A_cpu_availability_file = "trace_A.txt";
+  A_cpu_availability_file = "";
   A_cpu_state = A_cpu_state_ON;
   A_cpu_state_file = NULL;
   A_cpu_interference_send = "1.0";
@@ -38,7 +38,7 @@ static int surf_parse_bypass(void)
   A_cpu_name = "Cpu B";
   A_cpu_power= "100.00";
   A_cpu_availability = "1.0";
-  A_cpu_availability_file = "trace_B.txt";
+  A_cpu_availability_file = "";
   A_cpu_state = A_cpu_state_ON;
   A_cpu_state_file = NULL;
   A_cpu_interference_send = "1.0";
