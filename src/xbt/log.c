@@ -46,6 +46,7 @@
  - \ref log_internals
    - \ref log_in_perf
    - \ref log_in_app
+ - \ref XBT_log_cats
      
 \section log_overview 1. Introduction
 
