@@ -24,6 +24,10 @@ SimGrid (3.0.1) unstable; urgency=low
   * Add additionnal checkings on channel values in communication [AL]
   * New: MSG_task_get_source to see on which host a task was generated [HC]
 
+  GRAS new functionnalities: [MQ]
+  * enhance the parsing macro to allow the size of multidimentional objects
+    to be given thru annotations.
+
   GRAS performance improvements: [MQ]
   [DataDesc]
   * Reduce the amount of cbps creation/destruction by making it static to 

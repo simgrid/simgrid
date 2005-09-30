@@ -80,26 +80,43 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  *  into your code), and give some information to GRAS about your pointer. 
  
  *  GRAS_ANNOTE takes two arguments being the key name and the key value. For now, the only accepted key name 
- *  is "size", to specify the length of the pointed array. It can either be the string "1" (without the quote)
- *  or the name of another field of the structure.
+ *  is "size", to specify the length of the pointed array. It can either be:
+ *    - the string "1" (without the quote),
+ *    - the name of another field of the structure
+ *    - a sort of computed expression for multidimensional arrays (see below -- pay attention to the warnings below).
  *  
  *  Here is an example:\verbatim GRAS_DEFINE_TYPE(s_clause,
   struct s_array {
+    struct s_array *father GRAS_ANNOTE(size,1);
     int length;
     int *data GRAS_ANNOTE(size,length);
-    struct s_array *father GRAS_ANNOTE(size,1);
+    int rows;
+    int cols;
+    int *matrix GRAS_ANNOTE(size,rows*cols);
  }
 ;)\endverbatim
- * It specifies that the structure s_array contains two fields, and that the size of the array pointed 
- * by \a data is the \a length field, and that the \a father field is a simple reference.
+ * It specifies that the structure s_array contains five fields, that the \a father field is a simple reference,
+ * that the size of the array pointed by \a data is the \a length field, and that the \a matrix field is an array
+ * which size is the result of \a rows times \a cols.
  * 
+ *  \warning The mecanism for multidimensional arrays is known to be fragile and cumbersome. If you want to use it, 
+ *  you have to understand how it is implemented: the multiplication is performed using the sizes stack. In previous example,
+ *  a \ref gras_datadesc_cb_push_int callback is added to the \a rows field and a \ref gras_datadesc_cb_push_int_mult one is 
+ *  added to \a cols. So, when the structure is sent, the rows field push its value onto the stack, then the \a cols field 
+ *  retrieve this value from the stack, compute (and push) the multiplication value. The \a matrix field can then retrive this
+ *  value by poping the array. There is several ways for this to go wrong:
+ *   - if the matrix field is placed before the sizes, the right value won't get pushed into the stack soon enough. Reorder your structure fields if needed.
+ *   - if you write GRAS_ANNOTE(size,cols*rows); in previous example (inverting rows and cols in annotation),
+ *     \a rows will be given a \ref gras_datadesc_cb_push_int_mult. This cannot work since it will try to 
+ *     pop the value which will be pushed by \a cols <i>afterward</i>.
+ *   - if you have more than one matrix in your structure, don't interleave the size. They are pushed/poped in the structure order.
+ *   - if some of the sizes are used in more than one matrix, you cannot use this mecanism -- sorry.
+ *
  * If you cannot express your datadescs with this mechanism, you'll have to use the more advanced 
  * (and somehow complex) one described below.
- * 
- *  \warning Since GRAS_DEFINE_TYPE is a macro, you shouldn't  put any comma in your type definition 
- *  (comma separates macro args). 
- * 
- *  For example, change \verbatim int a, b;\endverbatim to \verbatim int a;
+ *
+ *  \warning Since GRAS_DEFINE_TYPE is a macro, you shouldn't put any comma in your type definition 
+ *  (comma separates macro args). For example, change \verbatim int a, b;\endverbatim to \verbatim int a;
  int b;\endverbatim
  */
 /** @{ */
@@ -246,6 +263,9 @@ void gras_datadesc_cb_field_recv(gras_datadesc_type_t    type,
 /** \brief Add a pre-send callback to the given field resulting in its value to be pushed */
 void gras_datadesc_cb_field_push (gras_datadesc_type_t   type,
 				  const char            *field_name);
+/** \brief Add a pre-send callback to the given field resulting in its value multiplied to any previously pushed value and then pushed back */
+void gras_datadesc_cb_field_push_multiplier (gras_datadesc_type_t type,
+					     const char          *field_name);
 
 /******************************
  * Get stuff within datadescs *
@@ -261,6 +281,7 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
  * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
+ *
  * 
  * Here is an example:\verbatim
 struct s_array {
@@ -277,6 +298,27 @@ gras_datadesc_struct_append(my_type,"data",
 gras_datadesc_struct_close(my_type);
 \endverbatim
 
+ *
+ * The *_mult versions are intended for multi-dimensional arrays: They multiply their value to the previously pushed one 
+ * (by another field callback) and push the result of the multiplication back. An example of use follows. Please note
+ * that the first field needs a regular push callback, not a multiplier one. Think of it as a stacked calculator (man dc(1)).\verbatim
+struct s_matrix {
+  int row;
+  int col;
+  int *data;
+}
+[...]
+my_type=gras_datadesc_struct("s_matrix");
+gras_datadesc_struct_append(my_type,"row", gras_datadesc_by_name("int"));
+gras_datadesc_cb_field_send (my_type, "length", gras_datadesc_cb_push_int);
+gras_datadesc_struct_append(my_type,"col", gras_datadesc_by_name("int"));
+gras_datadesc_cb_field_send (my_type, "length", gras_datadesc_cb_push_int_mult);
+
+gras_datadesc_struct_append(my_type,"data",
+                            gras_datadesc_array_dyn ("s_matrix::data",gras_datadesc_by_name("int"), gras_datadesc_cb_pop));
+gras_datadesc_struct_close(my_type);
+\endverbatim
+ 
  */
 /* @{ */
 
@@ -286,10 +328,16 @@ int
 gras_cbps_i_pop(gras_cbps_t ps);
 
 int gras_datadesc_cb_pop(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+
 void gras_datadesc_cb_push_int(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 void gras_datadesc_cb_push_uint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 void gras_datadesc_cb_push_lint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 void gras_datadesc_cb_push_ulint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+
+void gras_datadesc_cb_push_int_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_uint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_lint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 
 
 /* @} */

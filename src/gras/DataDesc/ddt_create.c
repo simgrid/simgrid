@@ -692,6 +692,7 @@ void gras_datadesc_cb_field_send (gras_datadesc_type_t          type,
    field->send = send;
 }
 
+
 /**
  * The value, which must be an int, unsigned int, long int or unsigned long int
  * is pushed to the stacks of sizes and can then be retrieved with 
@@ -719,6 +720,38 @@ void gras_datadesc_cb_field_push (gras_datadesc_type_t  type,
       xbt_abort();
    }
 }
+
+/**
+ * Any previously pushed value is poped and the field value is multiplied to
+ * it. The result is then pushed back into the stack of sizes. It can then be
+ * retrieved with \ref gras_datadesc_ref_pop_arr or directly with \ref
+ * gras_cbps_i_pop.
+ *
+ * The field must be an int, unsigned int, long int or unsigned long int.
+ */
+void gras_datadesc_cb_field_push_multiplier (gras_datadesc_type_t  type,
+					     const char         *field_name) {
+   
+   gras_dd_cat_field_t  field=gras_dd_find_field(type,field_name);
+   gras_datadesc_type_t sub_type=field->type;
+   
+   DEBUG3("add a PUSHy cb to '%s' field (type '%s') of '%s'",
+	  field_name,sub_type->name,type->name);
+   if (!strcmp("int",sub_type->name)) {
+      field->send = gras_datadesc_cb_push_int_mult;
+   } else if (!strcmp("unsigned int",sub_type->name)) {
+      field->send = gras_datadesc_cb_push_uint_mult;
+   } else if (!strcmp("long int",sub_type->name)) {
+      field->send = gras_datadesc_cb_push_lint_mult;
+   } else if (!strcmp("unsigned long int",sub_type->name)) {
+      field->send = gras_datadesc_cb_push_ulint_mult;
+   } else {
+      ERROR1("Field %s is not an int, unsigned int, long int neither unsigned long int",
+	     sub_type->name);
+      xbt_abort();
+   }
+}
+
 /**
  * The given datadesc must be a struct or union (abort if not).
  * (useful to put the function pointers to the right value, for example)

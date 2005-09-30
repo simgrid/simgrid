@@ -358,14 +358,13 @@ static void parse_statement(char	 *definition,
 
 	while ( (gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump()) == GRAS_DDT_PARSE_TOKEN_EMPTY );
 
+	/* get the value */
+
 	if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD) 
 	  PARSE_ERROR1("Unparsable annotation: Expected key value, got '%s'",gras_ddt_parse_text);
 	keyval = (char*)strdup(gras_ddt_parse_text);
 
 	while ( (gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump()) == GRAS_DDT_PARSE_TOKEN_EMPTY );
-
-	if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RP) 
-	  PARSE_ERROR1("Unparsable annotation: Expected parenthesis, got '%s'",gras_ddt_parse_text);
 
 	/* Done with parsing the annotation. Now deal with it by replacing previously pushed type with the right one */
 
@@ -379,7 +378,6 @@ static void parse_statement(char	 *definition,
 	  if (!strcmp(keyval,"1")) {
 	    change_to_ref(identifiers);
 	    free(keyval);
-	    continue;
 	  } else {
 	    char *p;
 	    int fixed = 1;
@@ -390,19 +388,39 @@ static void parse_statement(char	 *definition,
 	      change_to_fixed_array(identifiers,atoi(keyval));
 	      change_to_ref(identifiers);
 	      free(keyval);
-	      continue;
 
 	    } else {
 	      change_to_ref_pop_array(identifiers);
 	      xbt_dynar_push(fields_to_push,&keyval);
-	      continue;
 	    }
 	  }
-	  THROW_IMPOSSIBLE;
-
 	} else {
 	  PARSE_ERROR1("Unknown annotation type: '%s'",keyname);
 	}
+
+	/* Get all the multipliers */
+	while (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
+
+	  gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+
+	  if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD) 
+	    PARSE_ERROR1("Unparsable annotation: Expected field name after '*', got '%s'",gras_ddt_parse_text);
+	  
+	  keyval = xbt_malloc(strlen(gras_ddt_parse_text)+2);
+	  sprintf(keyval,"*%s",gras_ddt_parse_text);
+
+	  /* ask caller to push field as a multiplier */
+	  xbt_dynar_push(fields_to_push,&keyval);
+
+	  /* skip blanks after this block*/
+	  while ( (gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump()) 
+		  == GRAS_DDT_PARSE_TOKEN_EMPTY );
+	}
+
+	if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RP) 
+	  PARSE_ERROR1("Unparsable annotation: Expected parenthesis, got '%s'",
+		       gras_ddt_parse_text);
+
 	continue;
 
 	/* End of annotation handling */
@@ -503,8 +521,15 @@ static gras_datadesc_type_t parse_struct(char *definition) {
     /* Make sure that all fields declaring a size push it into the cbps */
     xbt_dynar_foreach(fields_to_push,i, name) {
       DEBUG1("struct_type=%p",(void*)struct_type);
-      VERB2("Push field '%s' into size stack of %p", name, (void*)struct_type);
-      gras_datadesc_cb_field_push(struct_type, name);
+      if (name[0] == '*') {
+	VERB2("Push field '%s' as a multiplier into size stack of %p",
+	      name+1, (void*)struct_type);
+	gras_datadesc_cb_field_push_multiplier(struct_type, name+1);
+      } else {
+	VERB2("Push field '%s' into size stack of %p",
+	      name, (void*)struct_type);
+	gras_datadesc_cb_field_push(struct_type, name);
+      }
       free(name);
     }
     xbt_dynar_reset(fields_to_push);
