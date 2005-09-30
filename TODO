@@ -143,6 +143,7 @@
       portable to ARM, at least.
     - Handle struct/union/enum embeeded within another container 
       (needs modifications in DataDesc, too)
+    - Allow sizes for multi-dimensional objects (such as matrices)
  
     - Check short a, b;
     - Check short ***
