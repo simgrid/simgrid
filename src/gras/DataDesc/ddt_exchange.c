@@ -287,7 +287,7 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
 
   case e_gras_datadesc_type_cat_array: {
     gras_dd_cat_array_t    array_data;
-    long int               count;
+    long int               array_count;
     char                  *src_ptr=src;
     char                  *dst_ptr=dst;
     long int               elm_size;
@@ -295,12 +295,12 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
     array_data = type->category.array_data;
     
     /* determine and send the element count */
-    count = array_data.fixed_size;
-    if (count == 0)
-      count = subsize;
-    if (count == 0) {
-      count = array_data.dynamic_size(type,state,src);
-      xbt_assert1(count >=0,
+    array_count = array_data.fixed_size;
+    if (array_count == 0)
+      array_count = subsize;
+    if (array_count == 0) {
+      array_count = array_data.dynamic_size(type,state,src);
+      xbt_assert1(array_count >=0,
 		   "Invalid (negative) array size for type %s",type->name);
     }
     
@@ -308,21 +308,24 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
     sub_type = array_data.type;
     elm_size = sub_type->aligned_size[GRAS_THISARCH];
     if (sub_type->category_code == e_gras_datadesc_type_cat_scalar) {
-      VERB1("Array of %ld scalars, copy it in one shot",count);
-      memcpy(dst, src, sub_type->aligned_size[GRAS_THISARCH] * count);
-      count += sub_type->aligned_size[GRAS_THISARCH] * count;
+      VERB1("Array of %ld scalars, copy it in one shot",array_count);
+      memcpy(dst, src, sub_type->aligned_size[GRAS_THISARCH] * array_count);
+      count += sub_type->aligned_size[GRAS_THISARCH] * array_count;
     } else if (sub_type->category_code == e_gras_datadesc_type_cat_array &&
 	       sub_type->category.array_data.fixed_size > 0 &&
 	       sub_type->category.array_data.type->category_code == e_gras_datadesc_type_cat_scalar) {
        
-      VERB1("Array of %ld fixed array of scalars, copy it in one shot",count);
+      VERB1("Array of %ld fixed array of scalars, copy it in one shot",
+	    array_count);
       memcpy(dst,src,sub_type->category.array_data.type->aligned_size[GRAS_THISARCH] 
-		     * count * sub_type->category.array_data.fixed_size);
+		     * array_count * sub_type->category.array_data.fixed_size);
       count += sub_type->category.array_data.type->aligned_size[GRAS_THISARCH] 
-	       * count * sub_type->category.array_data.fixed_size;
+	       * array_count * sub_type->category.array_data.fixed_size;
        
     } else {
-      for (cpt=0; cpt<count; cpt++) {
+      VERB1("Array of %ld stuff, copy it in one after the other",array_count);
+      for (cpt=0; cpt<array_count; cpt++) {
+	VERB2("Copy the %dth stuff out of %ld",cpt,array_count);
 	count += gras_datadesc_copy_rec(state,refs, sub_type, src_ptr, dst_ptr, 0,
 					detect_cycle || sub_type->cycle);
 	src_ptr += elm_size;
