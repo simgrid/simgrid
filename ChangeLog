@@ -25,8 +25,10 @@ SimGrid (3.0.1) unstable; urgency=low
   * New: MSG_task_get_source to see on which host a task was generated [HC]
 
   GRAS new functionnalities: [MQ]
-  * enhance the parsing macro to allow the size of multidimentional objects
+  * Enhance the parsing macro to allow the size of multidimentional objects
     to be given thru annotations.
+  * New example (and documentation): Matrix Multiplication a la RPC manner 
+    (as when I was young!) and fix a bunch of bugs found on the way.
 
   GRAS performance improvements: [MQ]
   [DataDesc]

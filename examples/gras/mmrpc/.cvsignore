@@ -1,0 +1,8 @@
+.deps .libs Makefile Makefile.in _*.c mmrpc_server mmrpc_client mmrpc_simulator
+test_sg
+test_rl
+mmrpc.Makefile.am
+mmrpc.Makefile.local
+mmrpc.Makefile.remote
+mmrpc.deploy.sh
+mmrpc.trace

@@ -49,7 +49,8 @@
     There is for now rather few examples of GRAS, but it's better than
     nothing, isn't it?
     
-       - \ref GRAS_ex_ping 
+       - \ref GRAS_ex_ping
+       - \ref GRAS_ex_mmrpc
        - \ref GRAS_ex_timer
 	       
     @{ */     
@@ -267,7 +268,7 @@
     the code of the client and of the server is placed in the same file. See
     the \ref GRAS_main_generation section if wondering.
 
-    \section GRAS_ex_ping_over Overview
+    \section GRAS_ex_ping_toc Table of contents of the ping example
       - \ref GRAS_ex_ping_common
         - \ref GRAS_ex_ping_initial
         - \ref GRAS_ex_ping_register
@@ -297,10 +298,13 @@
     This function, called by both the client and the server is in charge of
     declaring the existing messages to GRAS. Since the payload does not
     involve any newly created types but only int, this is quite easy. 
-    (to exchange more complicated types, see \ref GRAS_dd)
+    (to exchange more complicated types, see \ref GRAS_dd or 
+    \ref GRAS_ex_mmrpc for an example).
     
     \skip register_messages
     \until }
+
+    [Back to \ref GRAS_ex_ping_toc]
 
     \section GRAS_ex_ping_server 2) Server's code
     
@@ -325,19 +329,155 @@
     \subsection GRAS_ex_ping_sermain 2.c) The "main" of the server
     
     This is the "main" of the server. As explained in the \ref
-    GRAS_main_generation, you don't have to (and shouldn't) write any main()
+    GRAS_main_generation, you must not write any main()
+    function yourself. Instead, you just have to write a regular function
+    like this one which will act as a main.
+    
+    \skip server
+    \until end_of_server
+
+    [Back to \ref GRAS_ex_ping_toc]
+    
+    \section GRAS_ex_ping_client 3) Client's code
+    
+    \subsection GRAS_ex_ping_climain 3.a) Client's "main" function
+    
+    This function is quite straightforward, and the inlined comments should
+    be enough to understand it.
+
+    \skip client
+    \until end_of_client
+
+    [Back to \ref GRAS_ex_ping_toc]
+ */
+
+---------------------------------------------------------------------
+-------------------------- MM RPC -----------------------------------
+---------------------------------------------------------------------
+
+/** \page GRAS_ex_mmrpc A simple RPC for matrix multiplication
+
+    <center>[\ref GRAS_API]</center>
+
+    This example implements a remote matrix multiplication. It involves a client 
+    (creating the matrices and sending the multiplications requests) and a server 
+    (computing the multiplication on client's behalf).
+
+    This example also constitutes a more advanced example of data description 
+    mechanisms, since the message payload type is a bit more complicated than in 
+    other examples such as the ping one (\ref GRAS_ex_ping).
+
+    It works the following way (not very different from the ping example):
+     - Both the client and the server register all needed messages and datatypes
+     - The server registers a callback to the "request" message, which computes
+       what needs to be and returns the result to the expeditor.
+     - The client creates two matrices, ask for their multiplication and check 
+       the server's answer.
+ 
+    This example resides in the <b>examples/gras/mmrpc/mmrpc.c</b> file. (See
+    the \ref GRAS_main_generation section if wondering why both the server
+    and the client live in the same source file)
+
+    \section GRAS_ex_mmrpc_toc Table of contents of the mmrpc example
+      - \ref GRAS_ex_mmrpc_common
+        - \ref GRAS_ex_mmrpc_initial
+        - \ref GRAS_ex_mmrpc_dataregister
+        - \ref GRAS_ex_mmrpc_msgregister
+      - \ref GRAS_ex_mmrpc_server
+	- \ref GRAS_ex_mmrpc_sercb
+	- \ref GRAS_ex_mmrpc_sermain
+      - \ref GRAS_ex_mmrpc_client
+	- \ref GRAS_ex_mmrpc_climain
+	
+    <hr>
+
+    \dontinclude gras/mmrpc/mmrpc.c
+    
+    \section GRAS_ex_mmrpc_common 1) Common code to the client and the server 
+    
+    \subsection GRAS_ex_mmrpc_initial 1.a) Initial settings
+    
+    Let's first load the gras header, specify the matrix size and declare a 
+    logging category (see \ref XBT_log for more info on logging).
+    
+    \skip include
+    \until XBT_LOG
+
+    \subsection GRAS_ex_mmrpc_dataregister 1.b) Register the data types
+
+    The messages involved in this example do use structures as payload, 
+    so we have to declare it to GRAS. Hopefully, this can be done easily by enclosing 
+    the structure declaration within a GRAS_DEFINE macro call. It will then copy this 
+    declaration into an hidden string variable, which can be automatically parsed at 
+    run time. Of course, the declaration is also copied unmodified by this macro, so that it
+    gets parsed by the compiler also. 
+
+    There is some semantic that GRAS cannot guess alone and you need to  <i>annotate</i>
+    your declaration to add some. For example, the ctn pointer can be a reference to an 
+    object or a whole array (in which case you also has to specify its size). This is done 
+    with the GRAS_ANNOTE call. It is removed from the text passed to the compiler, but it helps
+    GRAS getting some information about the semantic of your data. Here, it says that \a ctn is an 
+    array, which size is the result of the operation \a rows * \a cols (with \a rows and \a cols 
+    being the other fields of the structure). 
+
+    Please note that this annotation mechanism is not as robust and cool as this example seems to 
+    imply. If you want to use it yourself, you'd better use the exact right syntax, which is 
+    detailed in the \ref GRAS_dd section.
+
+    \skip GRAS_DEFINE
+    \until matrix_t
+
+    \subsection GRAS_ex_mmrpc_msgregister 1.c) Register the messages
+    
+    This function, called by both the client and the server is in charge of
+    declaring the existing messages to GRAS. Note the use of the \ref gras_datadesc_by_symbol 
+    function to parse and retrieve the structure declaration which were passed to \ref GRAS_DEFINE 
+    above. 
+
+    The datatype description builded that way can then be used to build an array datatype or 
+    to declare messages.
+    
+    \skip register_messages
+    \until }
+
+    [Back to \ref GRAS_ex_mmrpc_toc]
+
+    \section GRAS_ex_mmrpc_server 2) Server's code
+    
+    \subsection GRAS_ex_mmrpc_sercb 2.a) The callback to the mmrpc message
+
+    Here is the callback run when the server receives any mmrpc message (this
+    will be registered later by the server). Note the way we get the message 
+    payload. In the ping example, there was one additional level of pointer 
+    indirection (see \ref GRAS_ex_ping_sercb). This is because the payload is
+    an array here (ie a pointer) whereas it is a scalar in the ping example.
+    
+    \skip server_cb_request_handler
+    \until end_of_server_cb_request_handler
+
+    \subsection GRAS_ex_mmrpc_sermain 2.b) The "main" of the server
+    
+    This is the "main" of the server. As explained in the \ref
+    GRAS_main_generation, you must not write any main()
     function yourself. Instead, you just have to write a regular function
     like this one which will act as a main.
     
     \skip server
     \until end_of_server
     
-    \section GRAS_ex_ping_client 3) Client's code
+    [Back to \ref GRAS_ex_mmrpc_toc]
+
+    \section GRAS_ex_mmrpc_client 3) Client's code
     
-    \subsection GRAS_ex_ping_climain 3.a) Client's "main" function
+    \subsection GRAS_ex_mmrpc_climain 3.a) Client's "main" function
     
+    This function is quite straightforward, and the inlined comments should
+    be enough to understand it.
+
     \skip client
     \until end_of_client
+
+    [Back to \ref GRAS_ex_mmrpc_toc]
   */
 
 ---------------------------------------------------------------------
