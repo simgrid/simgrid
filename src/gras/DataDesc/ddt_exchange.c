@@ -392,6 +392,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
 
   if (type->send) {
     type->send(type,state,data);
+    DEBUG0("Run the emission callback");
   }
 
   switch (type->category_code) {
@@ -415,8 +416,10 @@ gras_datadesc_send_rec(gras_socket_t         sock,
       
       sub_type = field->type;
       
-      if (field->send)
+      if (field->send) {
+	DEBUG1("Run the emission callback of field %s", field->name);
 	field->send(type,state,field_data);
+      }
       
       VERB1("Send field %s",field->name);
       gras_datadesc_send_rec(sock,state,refs,sub_type, field_data, 
@@ -669,8 +672,10 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
 			     field_data,-1, 
 			     detect_cycle || sub_type->cycle);
        
-      if (field->recv)
+      if (field->recv) {
+	DEBUG1("Run the reception callback of field %s", field->name);
         field->recv(type,state,(void*)l_data);
+      }
     
     }
     VERB1("<< Received all fields of the structure %s", type->name);
