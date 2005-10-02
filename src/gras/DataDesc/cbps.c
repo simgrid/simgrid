@@ -320,7 +320,9 @@ gras_cbps_i_pop(gras_cbps_t ps) {
  * Used by \ref gras_datadesc_ref_pop_arr
  */
 int gras_datadesc_cb_pop(gras_datadesc_type_t ignored, gras_cbps_t vars, void *data) {
-  return gras_cbps_i_pop(vars);
+  int res =  gras_cbps_i_pop(vars);
+  DEBUG1("Pop %d as a size",res);
+  return res;
 }
 
 /* ************************* */
@@ -357,29 +359,29 @@ void gras_datadesc_cb_push_ulint(gras_datadesc_type_t ignored, gras_cbps_t vars,
 /* ************************************ */
 /** \brief Cb to push an integer as multiplier. Must be attached to the field you want to push */
 void gras_datadesc_cb_push_int_mult(gras_datadesc_type_t ignored, gras_cbps_t vars, void *data) {
-  int *i = (int*)data;
-  (*i) * gras_cbps_i_pop(vars);
-  gras_cbps_i_push(vars, (int) *i);
+  int i = *(int*)data;
+  i *= gras_cbps_i_pop(vars);
+  gras_cbps_i_push(vars, i);
 }
 
 /** \brief Cb to push an unsigned integer as multiplier. Must be attached to the field you want to push */
 void gras_datadesc_cb_push_uint_mult(gras_datadesc_type_t ignored, gras_cbps_t vars, void *data) {
-  unsigned int *i = (unsigned int*)data;
-  (*i) * gras_cbps_i_pop(vars);
-  gras_cbps_i_push(vars, (int) *i);
+  unsigned int i = *(unsigned int*)data;
+  i *= gras_cbps_i_pop(vars);
+  gras_cbps_i_push(vars, (int) i);
 }
 
 /** \brief Cb to push an long integer as multiplier. Must be attached to the field you want to push
  */
 void gras_datadesc_cb_push_lint_mult(gras_datadesc_type_t ignored, gras_cbps_t vars, void *data) {
-  long int *i = (long int*)data;
-  (*i) * gras_cbps_i_pop(vars);
-  gras_cbps_i_push(vars, (int) *i);
+  long int i = *(long int*)data;
+  i *= gras_cbps_i_pop(vars);
+  gras_cbps_i_push(vars, (int) i);
 }
 /** \brief Cb to push an unsigned long integer as multiplier. Must be attached to the field you want to push
  */
 void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t ignored, gras_cbps_t vars, void *data) {
-  unsigned long int *i = (unsigned long int*)data;
-  (*i) * gras_cbps_i_pop(vars);
-  gras_cbps_i_push(vars, (int) *i);
+  unsigned long int i = *(unsigned long int*)data;
+  i *= gras_cbps_i_pop(vars);
+  gras_cbps_i_push(vars, (int) i);
 }
