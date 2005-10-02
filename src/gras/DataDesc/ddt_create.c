@@ -735,7 +735,7 @@ void gras_datadesc_cb_field_push_multiplier (gras_datadesc_type_t  type,
    gras_dd_cat_field_t  field=gras_dd_find_field(type,field_name);
    gras_datadesc_type_t sub_type=field->type;
    
-   DEBUG3("add a PUSHy cb to '%s' field (type '%s') of '%s'",
+   DEBUG3("add a MPUSHy cb to '%s' field (type '%s') of '%s'",
 	  field_name,sub_type->name,type->name);
    if (!strcmp("int",sub_type->name)) {
       field->send = gras_datadesc_cb_push_int_mult;
