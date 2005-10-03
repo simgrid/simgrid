@@ -19,6 +19,12 @@ SimGrid (3.0.1) unstable; urgency=low
   * Bugfix: there was a problem with the ending of contexts with 
     the pthread backend. It caused some weird deadlock or behavior
     depending on the pthread implementation. [AL]
+  * Bugfix: get the exceptions raised in the simulator repport where
+    and why they come from when they are not catched in time [AL, MQ]
+
+  SURF:
+  * Bugfix: Do repport the error when two non-connected hosts try to
+    exchange data (Thanks to Flavien for stumbling into this one) [AL]
   
   MSG:
   * Add additionnal checkings on channel values in communication [AL]
@@ -27,7 +33,7 @@ SimGrid (3.0.1) unstable; urgency=low
   GRAS new functionnalities: [MQ]
   * Enhance the parsing macro to allow the size of multidimentional objects
     to be given thru annotations.
-  * New example (and documentation): Matrix Multiplication a la RPC manner 
+  * New example (and documentation): Matrix Multiplication a la RPC 
     (as when I was young!) and fix a bunch of bugs found on the way.
 
   GRAS performance improvements: [MQ]
