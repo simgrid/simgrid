@@ -71,7 +71,7 @@ gras_socket_t gras_trp_select(double timeout) {
   /* Socket to expeditor not created yet */
   DEBUG0("Create a socket to the expeditor");
   
-  trp = gras_trp_plugin_get_by_name("buf");
+  trp = gras_trp_plugin_get_by_name("sg");
   
   gras_trp_socket_new(1,&res);
   res->plugin   = trp;
