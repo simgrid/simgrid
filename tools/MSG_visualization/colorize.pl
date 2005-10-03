@@ -32,6 +32,30 @@ my (@coltab) = (
 
 my %pid;
 
+# Get options
+#
+while (($_ = $ARGV[0]) =~ /^-/) {
+    shift;
+    if (/-location/i) {
+        $opt_print_location = 1;  shift;
+    } elsif (/-h(elp)?$|-u(sage)?$/i) {
+        print<<EOH
+colorize.pl - Log colorizer for SimGrid
+Syntax:
+
+    colorize.pl [options] <file>
+
+    where <file> is a text file of values or '-' for STDIN
+
+Options: () denote short version
+
+    -location          Print the location in the code of the message.
+EOH
+;
+	exit;
+    }
+}
+
 sub pidcolor {
     my $pid = shift;
 
@@ -42,6 +66,7 @@ sub pidcolor {
     return $coltab[$pid{$pid}];
 }
 
+# Read the messages and do the job
 while (<>) {
     $orgline = $thisline = $_;
 
@@ -54,11 +79,17 @@ while (<>) {
 	$xbt_channel=$6;
 	$message=$7;
 
+	$location =~ s/:$//;
+
 	print $col_norm;
 	printf "[% 10.3f]",$date;
 
 	print pidcolor($pid);
-	printf "[%10s:%-10s]",$host,$procname;
+	if($opt_print_location) {
+	    printf "[%10s:%-10s %s ]",$host,$procname,$location;
+	} else {
+	    printf "[%10s:%-10s]",$host,$procname;
+	}
 	print " $message";
 	print $col_norm."\n";
     } elsif ( $thisline =~ /^==(\d+)== (.*)$/) {
