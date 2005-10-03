@@ -444,12 +444,19 @@ int MSG_process_is_suspended(m_process_t process)
   return (process->simdata->suspended);
 }
 
+static char blocked_name[512];
+
 int __MSG_process_block(double max_duration)
 {
   m_process_t process = MSG_process_self();
 
   m_task_t dummy = MSG_TASK_UNINITIALIZED;
-  dummy = MSG_task_create("blocked", 0.0, 0, NULL);
+  snprintf(blocked_name,512,"blocked (%s:%s)",process->name,
+	  process->simdata->host->name);
+
+  XBT_IN1(": max_duration=%g",max_duration);
+
+  dummy = MSG_task_create(blocked_name, 0.0, 0, NULL);
   
   PAJE_PROCESS_PUSH_STATE(process,"B");
 
@@ -467,6 +474,7 @@ int __MSG_process_block(double max_duration)
   
   MSG_task_destroy(dummy);
 
+  XBT_OUT;
   return 1;
 }
 
@@ -478,9 +486,12 @@ MSG_error_t __MSG_process_unblock(m_process_t process)
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
+  XBT_IN2(": %s unblocking %s", MSG_process_self()->name,process->name);
+
   simdata = process->simdata;
   if(!(simdata->waiting_task)) {
     xbt_assert0(0,"Process not waiting for anything else. Weird !");
+    XBT_OUT;
     return MSG_WARNING;
   }
   simdata_task = simdata->waiting_task->simdata;
@@ -490,6 +501,8 @@ MSG_error_t __MSG_process_unblock(m_process_t process)
   surf_workstation_resource->common_public->resume(simdata_task->compute);
 
   PAJE_PROCESS_POP_STATE(process);
+
+  XBT_OUT;
 
   MSG_RETURN(MSG_OK);
 }

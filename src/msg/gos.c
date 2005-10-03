@@ -104,6 +104,8 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
     /* OK, we should both be ready now. Are you there ? */
   }
 
+  DEBUG1("OK, got a task (%s)", t->name);
+
   t_simdata = t->simdata;
   /*   *task = __MSG_task_copy(t); */
   *task=t;
@@ -111,21 +113,24 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
   /* Transfer */
   t_simdata->using++;
 
+  DEBUG0("Calling SURF for communication creation");
   t_simdata->comm = surf_workstation_resource->extension_public->
     communicate(MSG_process_get_host(t_simdata->sender)->simdata->host,
 		h->simdata->host, t_simdata->message_size,t_simdata->rate);
   
   surf_workstation_resource->common_public->action_set_data(t_simdata->comm,t);
 
-  if(__MSG_process_isBlocked(t_simdata->sender)) 
+  if(__MSG_process_isBlocked(t_simdata->sender))
     __MSG_process_unblock(t_simdata->sender);
 
   PAJE_PROCESS_PUSH_STATE(process,"C");  
 
   do {
+    DEBUG0("Waiting for action termination");
     __MSG_task_wait_event(process, t);
     state=surf_workstation_resource->common_public->action_get_state(t_simdata->comm);
   } while (state==SURF_ACTION_RUNNING);
+  DEBUG0("Action terminated");
 
   if(t->simdata->using>1) {
     xbt_fifo_unshift(msg_global->process_to_run,process);
@@ -311,13 +316,18 @@ MSG_error_t MSG_task_put(m_task_t task,
 
   PAJE_COMM_START(process,task,channel);
     
-  if(remote_host->simdata->sleeping[channel]) 
+  if(remote_host->simdata->sleeping[channel]) {
+    DEBUG0("Somebody is listening. Let's wake him up!");
     __MSG_process_unblock(remote_host->simdata->sleeping[channel]);
+  }
 
   process->simdata->put_host = dest;
   process->simdata->put_channel = channel;
-  while(!(task_simdata->comm)) 
+  while(!(task_simdata->comm)) {
+    DEBUG0("Communication not initiated yet. Let's block!");
     __MSG_process_block(-1);
+  }
+  DEBUG0("Registering to this communication");
   surf_workstation_resource->common_public->action_use(task_simdata->comm);
   process->simdata->put_host = NULL;
   process->simdata->put_channel = -1;
@@ -327,10 +337,11 @@ MSG_error_t MSG_task_put(m_task_t task,
 
   state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
   while (state==SURF_ACTION_RUNNING) {
+    DEBUG0("Waiting for action termination");
     __MSG_task_wait_event(process, task);
     state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
   }
-    
+  DEBUG0("Action terminated");
 
   PAJE_PROCESS_POP_STATE(process);  
 
