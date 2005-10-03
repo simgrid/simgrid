@@ -472,6 +472,8 @@ static surf_action_t communicate_KCCFLN05(void *src, void *dst, double size,
   route_KCCFLN05_t route = &ROUTE(card_src->id, card_dst->id);
   int i;
 
+  xbt_assert2(route->size,"You're trying to send data from %s to %s but there is no connexion between these two cards.", card_src->name, card_dst->name);
+
   action = xbt_new0(s_surf_action_network_KCCFLN05_t, 1);
 
   action->generic_action.using = 1;

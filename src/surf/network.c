@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_private.h"
+#include "xbt/log.h"
 
 #define SG_TCP_CTE_GAMMA 20000.0
 
@@ -400,6 +401,8 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   network_link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
   int i;
 
+  xbt_assert2(route_size,"You're trying to send data from %s to %s but there is no connexion between these two cards.", card_src->name, card_dst->name);
+
   action = xbt_new0(s_surf_action_network_CM02_t, 1);
 
   action->generic_action.using = 1;
@@ -446,10 +449,6 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
 
   for (i = 0; i < route_size; i++)
     lmm_expand(maxmin_system, route[i]->constraint, action->variable, 1.0);
-
-  if(route_size == 0) {
-    action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-  }
 
   return (surf_action_t) action;
 }
