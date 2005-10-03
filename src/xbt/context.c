@@ -172,8 +172,9 @@ static ex_ctx_t *__context_ex_ctx(void)
 }
 
 /* callback: termination */
-static void __context_ex_terminate(xbt_ex_t *e)
-{
+static void __context_ex_terminate(xbt_ex_t *e) {
+  xbt_ex_display(e);
+
   __context_exit(current_context, e->value);
 }
 

@@ -42,8 +42,8 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
     return &ctx;
 }
 
-/* default __ex_terminate callback function */
-void __xbt_ex_terminate_default(xbt_ex_t *e)  {
+/** @brief shows an exception content and the associated stack if available */
+void xbt_ex_display(xbt_ex_t *e)  {
 
   fprintf(stderr,
 	  "** SimGrid: UNCAUGHT EXCEPTION: category: %s; value: %d\n"
@@ -67,6 +67,12 @@ void __xbt_ex_terminate_default(xbt_ex_t *e)  {
   free (strings);
  }
 #endif
+}
+
+
+/* default __ex_terminate callback function */
+void __xbt_ex_terminate_default(xbt_ex_t *e)  {
+  xbt_ex_display(e);
 
   abort();
 }
