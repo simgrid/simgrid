@@ -105,28 +105,9 @@ static void xbt_context_destroy(xbt_context_t context)
   return;
 }
 
-static void *__context_wrapper(void *c)
+static void __context_exit(xbt_context_t context ,int value)
 {
-  xbt_context_t context = c;
   int i;
-
-#ifdef USE_PTHREADS
-  DEBUG2("**[%p:%p]** Lock ****",context,(void*)pthread_self());
-  pthread_mutex_lock(&(context->mutex));
-  DEBUG2("**[%p:%p]** Releasing the prisonner ****",context,(void*)pthread_self());
-  pthread_cond_signal(&(context->cond));
-  DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)pthread_self());
-  pthread_cond_wait(&(context->cond), &(context->mutex));
-  DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)pthread_self());
-  pthread_mutex_unlock(&(context->mutex));
-#endif
-
-  if(context->startup_func)
-    context->startup_func(context->startup_arg);
-
-  DEBUG0("Calling the main function");
-  (context->code) (context->argc,context->argv);
-
   DEBUG0("Freeing arguments");
   for(i=0;i<context->argc; i++) 
     if(context->argv[i]) free(context->argv[i]);
@@ -158,6 +139,29 @@ static void *__context_wrapper(void *c)
   __xbt_context_yield(context);
 #endif
   xbt_assert0(0,"You can't be here!");
+}
+
+static void *__context_wrapper(void *c)
+{
+  xbt_context_t context = c;
+
+#ifdef USE_PTHREADS
+  DEBUG2("**[%p:%p]** Lock ****",context,(void*)pthread_self());
+  pthread_mutex_lock(&(context->mutex));
+  DEBUG2("**[%p:%p]** Releasing the prisonner ****",context,(void*)pthread_self());
+  pthread_cond_signal(&(context->cond));
+  DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)pthread_self());
+  pthread_cond_wait(&(context->cond), &(context->mutex));
+  DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)pthread_self());
+  pthread_mutex_unlock(&(context->mutex));
+#endif
+
+  if(context->startup_func)
+    context->startup_func(context->startup_arg);
+
+  DEBUG0("Calling the main function");
+
+  __context_exit(context, (context->code) (context->argc,context->argv));
   return NULL;
 }
 
@@ -170,7 +174,7 @@ static ex_ctx_t *__context_ex_ctx(void)
 /* callback: termination */
 static void __context_ex_terminate(xbt_ex_t *e)
 {
-  exit(e->value);
+  __context_exit(current_context, e->value);
 }
 
 /** \name Functions 
