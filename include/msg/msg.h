@@ -92,6 +92,8 @@ MSG_error_t MSG_task_destroy(m_task_t task);
 MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel);
 MSG_error_t MSG_task_get_with_time_out(m_task_t * task, m_channel_t channel,
 				       double max_duration);
+MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel, 
+				   m_host_t host);
 MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, 
 			 m_channel_t channel);
 MSG_error_t MSG_task_put_bounded(m_task_t task,
@@ -103,6 +105,7 @@ void MSG_task_set_priority(m_task_t task, double priority);
 
 int MSG_task_Iprobe(m_channel_t channel);
 int MSG_task_probe_from(m_channel_t channel);
+int MSG_task_probe_from_host(int channel, m_host_t host);
 MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
 				    int *PID);
 MSG_error_t MSG_process_sleep(double nb_sec);

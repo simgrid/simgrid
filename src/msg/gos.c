@@ -16,47 +16,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gos, msg,
  *  by an agent for handling some task.
  */
 
-/** \ingroup msg_gos_functions
- * \brief Listen on a channel and wait for receiving a task.
- *
- * It takes two parameters.
- * \param task a memory location for storing a #m_task_t. It will
-   hold a task when this function will return. Thus \a task should not
-   be equal to \c NULL and \a *task should be equal to \c NULL. If one of
-   those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
-   listening. This value has to be >=0 and < than the maximal
-   number of channels fixed with MSG_set_channel_number().
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
- * if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
- */
-MSG_error_t MSG_task_get(m_task_t * task,
-			 m_channel_t channel)
-{
-  return MSG_task_get_with_time_out(task, channel, -1);
-}
-
-/** \ingroup msg_gos_functions
- * \brief Listen on a channel and wait for receiving a task with a timeout.
- *
- * It takes three parameters.
- * \param task a memory location for storing a #m_task_t. It will
-   hold a task when this function will return. Thus \a task should not
-   be equal to \c NULL and \a *task should be equal to \c NULL. If one of
-   those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
-   listening. This value has to be >=0 and < than the maximal
-   number of channels fixed with MSG_set_channel_number().
- * \param max_duration the maximum time to wait for a task before giving
-    up. In such a case, \a task will not be modified and will still be
-    equal to \c NULL when returning.
- * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
-   if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
- */
-
-MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
-				       m_channel_t channel,
-				       double max_duration)
+static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
+							m_channel_t channel,
+							double max_duration,
+							m_host_t host)
 {
   m_process_t process = MSG_process_self();
   m_task_t t = NULL;
@@ -65,7 +28,8 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
   simdata_host_t h_simdata = NULL;
   int first_time = 1;
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
-  
+  xbt_fifo_item_t item = NULL;
+
   CHECK_HOST();
   xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   /* Sanity check */
@@ -80,7 +44,19 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
 
   DEBUG2("Waiting for a task on channel %d (%s)", channel,h->name);
 
-  while ((t = xbt_fifo_shift(h_simdata->mbox[channel])) == NULL) {
+  while (1) {
+    if(xbt_fifo_size(h_simdata->mbox[channel])>0) {
+      if(!host) {
+	t = xbt_fifo_shift(h_simdata->mbox[channel]);
+	break;
+      } else {
+	xbt_fifo_foreach(h->simdata->mbox[channel],item,t,m_task_t) {
+	  if(t->simdata->source==host) break;
+	}
+	if(item) break;
+      }
+    }
+						       
     if(max_duration>0) {
       if(!first_time) {
 	MSG_RETURN(MSG_OK);
@@ -157,6 +133,71 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
 }
 
 /** \ingroup msg_gos_functions
+ * \brief Listen on a channel and wait for receiving a task.
+ *
+ * It takes two parameters.
+ * \param task a memory location for storing a #m_task_t. It will
+   hold a task when this function will return. Thus \a task should not
+   be equal to \c NULL and \a *task should be equal to \c NULL. If one of
+   those two condition does not hold, there will be a warning message.
+ * \param channel the channel on which the agent should be
+   listening. This value has to be >=0 and < than the maximal
+   number of channels fixed with MSG_set_channel_number().
+ * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
+ * if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ */
+MSG_error_t MSG_task_get(m_task_t * task,
+			 m_channel_t channel)
+{
+  return MSG_task_get_with_time_out(task, channel, -1);
+}
+
+/** \ingroup msg_gos_functions
+ * \brief Listen on a channel and wait for receiving a task with a timeout.
+ *
+ * It takes three parameters.
+ * \param task a memory location for storing a #m_task_t. It will
+   hold a task when this function will return. Thus \a task should not
+   be equal to \c NULL and \a *task should be equal to \c NULL. If one of
+   those two condition does not hold, there will be a warning message.
+ * \param channel the channel on which the agent should be
+   listening. This value has to be >=0 and < than the maximal
+   number of channels fixed with MSG_set_channel_number().
+ * \param max_duration the maximum time to wait for a task before giving
+    up. In such a case, \a task will not be modified and will still be
+    equal to \c NULL when returning.
+ * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
+   if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ */
+MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
+				       m_channel_t channel,
+				       double max_duration)
+{
+  return __MSG_task_get_with_time_out_from_host(task, channel, max_duration, NULL);
+}
+
+/** \ingroup msg_gos_functions
+ * \brief Listen on \a channel and waits for receiving a task from \a host.
+ *
+ * It takes three parameters.
+ * \param task a memory location for storing a #m_task_t. It will
+   hold a task when this function will return. Thus \a task should not
+   be equal to \c NULL and \a *task should be equal to \c NULL. If one of
+   those two condition does not hold, there will be a warning message.
+ * \param channel the channel on which the agent should be
+   listening. This value has to be >=0 and < than the maximal
+   number of channels fixed with MSG_set_channel_number().
+ * \param host the host that is to be watched.
+ * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
+   if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
+ */
+MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel, 
+				   m_host_t host)
+{
+  return __MSG_task_get_with_time_out_from_host(task, channel, -1, host);
+}
+
+/** \ingroup msg_gos_functions
  * \brief Test whether there is a pending communication on a channel.
  *
  * It takes one parameter.
@@ -208,6 +249,22 @@ int MSG_task_probe_from(m_channel_t channel)
   return MSG_process_get_PID(t->simdata->sender);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Wait for at most \a max_duration second for a task reception
+   on \a channel. *\a PID is updated with the PID of the first process
+   that triggered this event is any.
+ *
+ * It takes three parameters:
+ * \param channel the channel on which the agent should be
+   listening. This value has to be >=0 and < than the maximal.
+   number of channels fixed with MSG_set_channel_number().
+ * \param PID a memory location for storing an int.
+ * \param max_duration the maximum time to wait for a task before
+    giving up. In the case of a reception, *\a PID will be updated
+    with the PID of the first process to send a task.
+ * \return #MSG_HOST_FAILURE if the host is shut down in the meantime
+   and #MSG_OK otherwise.
+ */
 MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
 				    int *PID)
 {
@@ -263,6 +320,43 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
     MSG_RETURN(MSG_OK);
   }
 }
+
+
+/** \ingroup msg_gos_functions
+
+ * \brief Return the number of tasks waiting to be received on a \a
+   channel and sent by \a host.
+ *
+ * It takes two parameters.
+ * \param channel the channel on which the agent should be
+   listening. This value has to be >=0 and < than the maximal
+   number of channels fixed with MSG_set_channel_number().
+ * \param host the host that is to be watched.
+ * \return the number of tasks waiting to be received on \a channel
+   and sent by \a host.
+ */
+int MSG_task_probe_from_host(int channel, m_host_t host)
+{
+  simdata_host_t h_simdata = NULL;
+  xbt_fifo_item_t item;
+  m_task_t t;
+  int count = 0;
+  m_host_t h = NULL;
+  
+  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
+  CHECK_HOST();
+  h = MSG_host_self();
+  h_simdata = h->simdata;
+
+  DEBUG2("Probing on channel %d (%s)", channel,h->name);
+   
+  xbt_fifo_foreach(h->simdata->mbox[channel],item,t,m_task_t) {
+    if(t->simdata->source==host) count++;
+  }
+   
+  return count;
+}
+
 /** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
