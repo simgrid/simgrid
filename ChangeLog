@@ -26,10 +26,19 @@ SimGrid (3.0.1) unstable; urgency=low
   * Bugfix: Do repport the error when two non-connected hosts try to
     exchange data (Thanks to Flavien for stumbling into this one) [AL]
   
+  SURF:
+  * Add additionnal checkings on communications. Assert that two
+    communicating hosts are connected by a set of links... [AL]
+	
   MSG:
   * Add additionnal checkings on channel values in communication [AL]
   * New: MSG_task_get_source to see on which host a task was generated [HC]
-
+  * New: int MSG_task_probe_from_host(int channel, m_host_t host): returns
+    the number of tasks waiting to be received on channel and sent
+    by host. [AL]
+  * New: MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel, m_host_t host); 
+    waits for the first task coming from a given host.. [AL]
+	
   GRAS new functionnalities: [MQ]
   * Enhance the parsing macro to allow the size of multidimentional objects
     to be given thru annotations.
