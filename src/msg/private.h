@@ -124,17 +124,17 @@ int __MSG_process_isBlocked(m_process_t process);
 #ifdef ALVIN_SPECIAL_LOGING
 #define PAJE_PROCESS_STATE(process,state)\
   if(msg_global->paje_output) \
-    fprintf(msg_global->paje_output,"10 %g S_t P%d %s\n",\
+    fprintf(msg_global->paje_output,"10 %f S_t P%d %s\n",\
             surf_get_clock(), (process)->simdata->PID,(state))
 #define PAJE_PROCESS_PUSH_STATE(process,state)\
   if(msg_global->paje_output) { \
-    fprintf(msg_global->paje_output,"11 %g S_t P%d %s\n",\
+    fprintf(msg_global->paje_output,"11 %f S_t P%d %s\n",\
             surf_get_clock(), (process)->simdata->PID,(state));\
     (process)->simdata->paje_state++; \
   }
 #define PAJE_PROCESS_POP_STATE(process)\
   if(msg_global->paje_output) { \
-    fprintf(msg_global->paje_output,"12 %g S_t P%d\n",\
+    fprintf(msg_global->paje_output,"12 %f S_t P%d\n",\
             surf_get_clock(), (process)->simdata->PID); \
     (process)->simdata->paje_state--; \
   }
@@ -142,7 +142,7 @@ int __MSG_process_isBlocked(m_process_t process);
 #define PAJE_PROCESS_NEW(process)\
   if((msg_global->paje_output)) {\
     if((msg_global->session==0) || ((msg_global->session>0) && ((process)->simdata->PID > msg_global->paje_maxPID))) \
-    fprintf(msg_global->paje_output,"7 %g P%d P_t %p \"%s %d (%d)\"\n", \
+    fprintf(msg_global->paje_output,"7 %f P%d P_t %p \"%s %d (%d)\"\n", \
             surf_get_clock(), (process)->simdata->PID, (process)->simdata->host, \
             (process)->name, (process)->simdata->PID, msg_global->session);\
     if(msg_global->paje_maxPID<(process)->simdata->PID) msg_global->paje_maxPID=(process)->simdata->PID;\
@@ -150,62 +150,62 @@ int __MSG_process_isBlocked(m_process_t process);
 #define PAJE_COMM_START(process,task,channel)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,\
-	    "16	%g	Comm	CUR	COMM_%d	P%d	%p\n", \
+	    "16	%f	Comm	CUR	COMM_%d	P%d	%p\n", \
             surf_get_clock(), channel, (process)->simdata->PID, task)
 #define PAJE_COMM_STOP(process,task,channel)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,\
-	    "17	%g	Comm	CUR	COMM_%d	P%d	%p\n", \
+	    "17	%f	Comm	CUR	COMM_%d	P%d	%p\n", \
             surf_get_clock(), channel, (process)->simdata->PID, task)
 #define PAJE_HOST_NEW(host)\
   if(msg_global->paje_output)\
-    fprintf(msg_global->paje_output,"7 %g %p H_t CUR \"%s\"\n",surf_get_clock(), \
+    fprintf(msg_global->paje_output,"7 %f %p H_t CUR \"%s\"\n",surf_get_clock(), \
 	    host, host->name)
 #define PAJE_HOST_FREE(host)\
   if(msg_global->paje_output)\
-    fprintf(msg_global->paje_output,"8 %g %p H_t\n",surf_get_clock(), host)
+    fprintf(msg_global->paje_output,"8 %f %p H_t\n",surf_get_clock(), host)
 
 #else
 
 #define PAJE_PROCESS_STATE(process,state)\
   if(msg_global->paje_output) \
-    fprintf(msg_global->paje_output,"10 %g S_t %p %s\n",\
+    fprintf(msg_global->paje_output,"10 %f S_t %p %s\n",\
             surf_get_clock(), (process),(state))
 #define PAJE_PROCESS_PUSH_STATE(process,state)\
   if(msg_global->paje_output) \
-    fprintf(msg_global->paje_output,"11 %g S_t %p %s\n",\
+    fprintf(msg_global->paje_output,"11 %f S_t %p %s\n",\
             surf_get_clock(), (process),(state))
 #define PAJE_PROCESS_POP_STATE(process)\
   if(msg_global->paje_output) \
-    fprintf(msg_global->paje_output,"12 %g S_t %p\n",\
+    fprintf(msg_global->paje_output,"12 %f S_t %p\n",\
             surf_get_clock(), (process))
 
 #define PAJE_PROCESS_FREE(process)\
   if(msg_global->paje_output) \
-    fprintf(msg_global->paje_output,"8 %g %p P_t\n", \
+    fprintf(msg_global->paje_output,"8 %f %p P_t\n", \
 	    surf_get_clock(), (process))
 #define PAJE_PROCESS_NEW(process)\
   if(msg_global->paje_output) \
-    fprintf(msg_global->paje_output,"7 %g %p P_t %p \"%s %d (%d)\"\n", \
+    fprintf(msg_global->paje_output,"7 %f %p P_t %p \"%s %d (%d)\"\n", \
             surf_get_clock(), (process), (process)->simdata->host, \
             (process)->name, (process)->simdata->PID, msg_global->session)
 #define PAJE_COMM_START(process,task,channel)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,\
-	    "16	%g	Comm	CUR	COMM_%d	%p	%p\n", \
+	    "16	%f	Comm	CUR	COMM_%d	%p	%p\n", \
             surf_get_clock(), channel, (process), task)
 #define PAJE_COMM_STOP(process,task,channel)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,\
-	    "17	%g	Comm	CUR	COMM_%d	%p	%p\n", \
+	    "17	%f	Comm	CUR	COMM_%d	%p	%p\n", \
             surf_get_clock(), channel, (process), task)
 #define PAJE_HOST_NEW(host)\
   if(msg_global->paje_output)\
-    fprintf(msg_global->paje_output,"7 %g %p H_t CUR \"%s\"\n",surf_get_clock(), \
+    fprintf(msg_global->paje_output,"7 %f %p H_t CUR \"%s\"\n",surf_get_clock(), \
 	    host, host->name)
 #define PAJE_HOST_FREE(host)\
   if(msg_global->paje_output)\
-    fprintf(msg_global->paje_output,"8 %g %p H_t\n",surf_get_clock(), host);
+    fprintf(msg_global->paje_output,"8 %f %p H_t\n",surf_get_clock(), host);
 
 #endif /* Alvin_Special_Loging */
 #endif
