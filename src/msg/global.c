@@ -398,33 +398,29 @@ MSG_error_t MSG_main(void)
   }
 
   if ((nbprocess=xbt_fifo_size(msg_global->process_list)) == 0) {
-    fprintf(stderr,
-	    "MSG: Congratulations ! Simulation terminated : all process are over\n");
+    INFO0("Congratulations ! Simulation terminated : all process are over");
     return MSG_OK;
   } else {
     xbt_fifo_item_t item = NULL;
-    fprintf(stderr,"MSG: Oops ! Deadlock or code not perfectly clean.\n");
-    fprintf(stderr,"MSG: %d processes are still running, waiting for something.\n",
-	    nbprocess);
+    INFO0("Oops ! Deadlock or code not perfectly clean.");
+    INFO1("MSG: %d processes are still running, waiting for something.",
+	  nbprocess);
     /*  List the process and their state */
-    fprintf(stderr,"MSG: <process>(<pid>) on <host>: <status>.\n");
+    INFO0("MSG: <process>(<pid>) on <host>: <status>.");
     xbt_fifo_foreach(msg_global->process_list,item,process,m_process_t) {
       simdata_process_t p_simdata = (simdata_process_t) process->simdata;
       simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
       
 
-      fprintf(stderr,"MSG:  %s(%d) on %s: ",
+      INFO4("MSG:  %s(%d) on %s: %s",
 	     process->name,p_simdata->PID,
-	     p_simdata->host->name);
-
-      if (process->simdata->blocked) 	  
-	fprintf(stderr,"[blocked] ");
-      if (process->simdata->suspended) 	  
-	fprintf(stderr,"[suspended] ");
+	    p_simdata->host->name,
+	    (process->simdata->blocked)?"[blocked] "
+	    :((process->simdata->suspended)?"[suspended] ":""));
 
       for (i=0; i<msg_global->max_channel; i++) {
 	if (h_simdata->sleeping[i] == process) {
-	  fprintf(stderr,"Listening on channel %d.\n",i);
+	  INFO1("\tListening on channel %d.",i);
 	  break;
 	}
       }
@@ -432,18 +428,18 @@ MSG_error_t MSG_main(void)
 	if(p_simdata->waiting_task) {
 	  if(p_simdata->waiting_task->simdata->compute) {
 	    if(p_simdata->put_host) 
-	      fprintf(stderr,"Trying to send a task to Host %s, channel %d.\n",
-		      p_simdata->put_host->name, p_simdata->put_channel);
+	      INFO2("\tTrying to send a task to Host %s, channel %d.",
+		    p_simdata->put_host->name, p_simdata->put_channel);
 	    else 
-	      fprintf(stderr,"Waiting for %s to finish.\n",p_simdata->waiting_task->name);
+	      INFO1("Waiting for %s to finish.",p_simdata->waiting_task->name);
 	  } else if (p_simdata->waiting_task->simdata->comm)
-	    fprintf(stderr,"Waiting for %s to be finished transfered.\n",
+	    INFO1("Waiting for %s to be finished transfered.",
 		    p_simdata->waiting_task->name);
 	  else
-	    fprintf(stderr,"UNKNOWN STATUS. Please report this bug.\n");
+	    INFO0("UNKNOWN STATUS. Please report this bug.");
 	}
 	else { /* Must be trying to put a task somewhere */
-	  fprintf(stderr,"UNKNOWN STATUS. Please report this bug.\n");
+	  INFO0("UNKNOWN STATUS. Please report this bug.");
 	}
       } 
     }
@@ -453,6 +449,7 @@ MSG_error_t MSG_main(void)
       xbt_abort();
     }
 
+    INFO0("Return a Warning.");
     return MSG_WARNING;
   }
 }
