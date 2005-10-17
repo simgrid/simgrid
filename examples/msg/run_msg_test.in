@@ -10,3 +10,6 @@ $exenv ./msg_test@EXEEXT@ @srcdir@/msg_platform.xml @srcdir@/msg_deployment.xml 
 $exenv ./msg_test@EXEEXT@ @srcdir@/small_platform.xml @srcdir@/small_deployment.xml $@
 
 $exenv ./msg_test_surfxml_bypassed@EXEEXT@
+
+$exenv ./msg_test_suspend@EXEEXT@ @srcdir@/msg_platform.xml @srcdir@/msg_deployment_suspend.xml $@
+
