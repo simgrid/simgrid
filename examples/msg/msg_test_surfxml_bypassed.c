@@ -12,6 +12,7 @@
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
+#define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
 
 static int surf_parse_bypass(void)
 {
@@ -139,25 +140,12 @@ static int surf_parse_bypass(void)
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-void test_all(void);
+MSG_error_t test_all(void);
 
 typedef enum {
   PORT_22 = 0,
   MAX_CHANNEL
 } channel_t;
-
-/* This function is just used so that users can check that each process
- *  has received the arguments it was supposed to receive.
- */
-static void print_args(int argc, char** argv)
-{
-  int i ; 
-
-  fprintf(stderr,"<");
-  for(i=0; i<argc; i++) 
-    fprintf(stderr,"%s ",argv[i]);
-  fprintf(stderr,">\n");
-}
 
 /** Emitter function  */
 int master(int argc, char *argv[])
@@ -171,8 +159,6 @@ int master(int argc, char *argv[])
 
 
   int i;
-
-  print_args(argc,argv);
 
   xbt_assert1(sscanf(argv[1],"%d", &number_of_tasks),
 	 "Invalid argument %s\n",argv[1]);
@@ -226,7 +212,12 @@ int master(int argc, char *argv[])
     INFO0("Send completed");
   }
   
-  INFO0("All tasks have been dispatched. Bye!");
+  INFO0("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  for (i = 0; i < slaves_count; i++) 
+    MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
+		 slaves[i], PORT_22);
+  
+  INFO0("Goodbye now!");
   free(slaves);
   free(todo);
   return 0;
@@ -235,21 +226,23 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  print_args(argc,argv);
-
   while(1) {
     m_task_t task = NULL;
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
-      INFO1("Received \"%s\" ", task->name);
-      INFO1("Processing \"%s\" ", task->name);
+      INFO1("Received \"%s\" ", MSG_task_get_name(task));
+      if(MSG_task_get_data(task)==FINALIZE) {
+	MSG_task_destroy(task);
+	break;
+      }
+      INFO1("Processing \"%s\" ", MSG_task_get_name(task));
       MSG_task_execute(task);
-      INFO1("\"%s\" done ", task->name);
+      INFO1("\"%s\" done ", MSG_task_get_name(task));
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
-      xbt_assert0(0,"Unexpected behaviour");
+      xbt_assert0(0,"Unexpected behavior");
     }
   }
   INFO0("I'm done. See you!");
@@ -257,10 +250,10 @@ int slave(int argc, char *argv[])
 } /* end_of_slave */
 
 /** Test function */
-void test_all(void)
+MSG_error_t test_all(void)
 {
+  MSG_error_t res = MSG_OK;
 
-  /* MSG_config("surf_workstation_model","KCCFLN05"); */
   {				/*  Simulation setting */
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_paje_output("msg_test.trace");
@@ -272,18 +265,22 @@ void test_all(void)
     MSG_function_register("slave", slave);
     MSG_launch_application(NULL);
   }
-  MSG_main();
+  res = MSG_main();
   
   INFO1("Simulation time %g",MSG_get_clock());
+  return res;
 } /* end_of_test_all */
-
 
 /** Main function */
 int main(int argc, char *argv[])
 {
+  MSG_error_t res = MSG_OK;
+
   MSG_global_init(&argc,argv);
-  test_all();
+  res = test_all();
   MSG_clean();
-  return (0);
+
+  if(res==MSG_OK) return 0; 
+  else return 1;
 } /* end_of_main */
 

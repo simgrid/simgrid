@@ -14,25 +14,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
-void test_all(const char *platform_file, const char *application_file);
+MSG_error_t test_all(const char *platform_file, const char *application_file);
 
 typedef enum {
   PORT_22 = 0,
   MAX_CHANNEL
 } channel_t;
 
-/* This function is just used so that users can check that each process
- *  has received the arguments it was supposed to receive.
- */
-static void print_args(int argc, char** argv)
-{
-  int i ; 
-
-  fprintf(stderr,"<");
-  for(i=0; i<argc; i++) 
-    fprintf(stderr,"%s ",argv[i]);
-  fprintf(stderr,">\n");
-}
+#define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
 
 /** Emitter function  */
 int master(int argc, char *argv[])
@@ -46,8 +35,6 @@ int master(int argc, char *argv[])
 
 
   int i;
-
-  print_args(argc,argv);
 
   xbt_assert1(sscanf(argv[1],"%d", &number_of_tasks),
 	 "Invalid argument %s\n",argv[1]);
@@ -101,7 +88,12 @@ int master(int argc, char *argv[])
     INFO0("Send completed");
   }
   
-  INFO0("All tasks have been dispatched. Bye!");
+  INFO0("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  for (i = 0; i < slaves_count; i++) 
+    MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
+		 slaves[i], PORT_22);
+  
+  INFO0("Goodbye now!");
   free(slaves);
   free(todo);
   return 0;
@@ -110,14 +102,16 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  print_args(argc,argv);
-
   while(1) {
     m_task_t task = NULL;
     int a;
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
       INFO1("Received \"%s\" ", MSG_task_get_name(task));
+      if(MSG_task_get_data(task)==FINALIZE) {
+	MSG_task_destroy(task);
+	break;
+      }
       INFO1("Processing \"%s\" ", MSG_task_get_name(task));
       MSG_task_execute(task);
       INFO1("\"%s\" done ", MSG_task_get_name(task));
@@ -137,8 +131,6 @@ int forwarder(int argc, char *argv[])
   int i;
   int slaves_count = argc - 1;
   m_host_t *slaves = calloc(slaves_count, sizeof(m_host_t));
-
-  print_args(argc,argv);
 
   {                  /* Process organisation */
     slaves_count = argc - 1;
@@ -160,9 +152,17 @@ int forwarder(int argc, char *argv[])
     a = MSG_task_get(&(task), PORT_22);
     if (a == MSG_OK) {
       INFO1("Received \"%s\" ", MSG_task_get_name(task));
+      if(MSG_task_get_data(task)==FINALIZE) {
+	INFO0("All tasks have been dispatched. Let's tell everybody the computation is over.");
+	for (i = 0; i < slaves_count; i++) 
+	  MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
+		       slaves[i], PORT_22);
+	MSG_task_destroy(task);
+	break;
+      }
       INFO2("Sending \"%s\" to \"%s\"",
 		    MSG_task_get_name(task),
-		    slaves[i % slaves_count]->name);
+		    slaves[i% slaves_count]->name);
       MSG_task_put(task, slaves[i % slaves_count],
 		   PORT_22);
     } else {
@@ -177,8 +177,10 @@ int forwarder(int argc, char *argv[])
 
 
 /** Test function */
-void test_all(const char *platform_file,const char *application_file)
+MSG_error_t test_all(const char *platform_file,
+			    const char *application_file)
 {
+  MSG_error_t res = MSG_OK;
 
   /* MSG_config("surf_workstation_model","KCCFLN05"); */
   {				/*  Simulation setting */
@@ -192,22 +194,27 @@ void test_all(const char *platform_file,const char *application_file)
     MSG_function_register("forwarder", forwarder);
     MSG_launch_application(application_file);
   }
-  MSG_main();
+  res = MSG_main();
   
   INFO1("Simulation time %g",MSG_get_clock());
+  return res;
 } /* end_of_test_all */
 
 
 /** Main function */
 int main(int argc, char *argv[])
 {
+  MSG_error_t res = MSG_OK;
+
   MSG_global_init(&argc,argv);
   if (argc < 3) {
      printf ("Usage: %s platform_file deployment_file\n",argv[0]);
      printf ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
      exit(1);
   }
-  test_all(argv[1],argv[2]);
+  res = test_all(argv[1],argv[2]);
   MSG_clean();
-  return (0);
+
+  if(res==MSG_OK) return 0; 
+  else return 1;
 } /* end_of_main */
