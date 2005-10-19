@@ -239,7 +239,7 @@ typedef struct {
 
 /* the static and dynamic initializers for a context structure */
 #define XBT_CTX_INITIALIZER \
-    { NULL, 0, { /* content */ NULL, 0, 0, \
+    { NULL, 0, { /* content */ NULL, unknown_error, 0, \
                  /* throw point*/ NULL, NULL, NULL, 0, NULL,\
                  /* backtrace */ {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL},0 } }
 #define XBT_CTX_INITIALIZE(ctx) \
@@ -310,6 +310,12 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 /** @brief the block for catching (ie, deal with) an exception 
  *  @hideinitializer
  */
+#ifdef __cplusplus
+#  define XBT_EX_T_CPLUSPLUSCAST (xbt_ex_t&)
+#else
+#  define XBT_EX_T_CPLUSPLUSCAST 
+#endif
+
 #define CATCH(e) \
             else { \
             } \
@@ -324,7 +330,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
         __xbt_ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
     } \
     if (   !(__xbt_ex_ctx()->ctx_caught) \
-        || ((e) = __xbt_ex_ctx()->ctx_ex, 0)) { \
+        || ((e) = XBT_EX_T_CPLUSPLUSCAST __xbt_ex_ctx()->ctx_ex, 0)) { \
     } \
     else
 
