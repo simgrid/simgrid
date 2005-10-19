@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log_app,log,"default logging handler");
 
 extern const char *xbt_log_priority_names[7];
 
-static void append_file(xbt_log_appender_t this, xbt_log_event_t ev,
+static void append_file(xbt_log_appender_t this_appender, xbt_log_event_t ev,
 			const char *fmt);
 
 /*
@@ -51,7 +51,7 @@ static const char* xbt_logappender_verbose_information(void) {
   return buffer;
 }
 
-static void append_file(xbt_log_appender_t this,
+static void append_file(xbt_log_appender_t this_appender,
 			xbt_log_event_t ev, 
 			const char *fmt) {
 
@@ -62,8 +62,8 @@ static void append_file(xbt_log_appender_t this,
   if (!procname) 
      procname = (char*)"";
    
-    if ((FILE*)(this->appender_data) == NULL)
-      this->appender_data = (void*)stderr;
+    if ((FILE*)(this_appender->appender_data) == NULL)
+      this_appender->appender_data = (void*)stderr;
     
     xbt_assert0(ev->priority>=0,
 		 "Negative logging priority naturally forbidden");

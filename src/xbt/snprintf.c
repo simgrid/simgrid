@@ -714,7 +714,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
           else if (precision == 0) str_arg_l = 0;
           else {
        /* memchr on HP does not like n > 2^31  !!! */
-            const char *q = memchr(str_arg, '\0',
+            char *q = (char *) memchr(str_arg, '\0',
                              precision <= 0x7fffffff ? precision : 0x7fffffff);
             str_arg_l = !q ? precision : (q-str_arg);
           }
@@ -954,7 +954,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
         int n = min_field_width - (str_arg_l+number_of_zeros_to_pad);
         if (n > 0) {
           if (str_l < str_m) {
-            size_t avail = str_m-str_l;
+            int avail = str_m-str_l;
             fast_memset(str+str_l, (zero_padding?'0':' '), (n>avail?avail:n));
           }
           str_l += n;
@@ -971,7 +971,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
         int n = zero_padding_insertion_ind;
         if (n > 0) {
           if (str_l < str_m) {
-            size_t avail = str_m-str_l;
+            int avail = str_m-str_l;
             fast_memcpy(str+str_l, str_arg, (n>avail?avail:n));
           }
           str_l += n;
@@ -980,7 +980,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
         n = number_of_zeros_to_pad;
         if (n > 0) {
           if (str_l < str_m) {
-            size_t avail = str_m-str_l;
+            int avail = str_m-str_l;
             fast_memset(str+str_l, '0', (n>avail?avail:n));
           }
           str_l += n;
@@ -991,7 +991,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
       { int n = str_arg_l - zero_padding_insertion_ind;
         if (n > 0) {
           if (str_l < str_m) {
-            size_t avail = str_m-str_l;
+            int avail = str_m-str_l;
             fast_memcpy(str+str_l, str_arg+zero_padding_insertion_ind,
                         (n>avail?avail:n));
           }
@@ -1003,7 +1003,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
         int n = min_field_width - (str_arg_l+number_of_zeros_to_pad);
         if (n > 0) {
           if (str_l < str_m) {
-            size_t avail = str_m-str_l;
+            int avail = str_m-str_l;
             fast_memset(str+str_l, ' ', (n>avail?avail:n));
           }
           str_l += n;
