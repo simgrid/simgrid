@@ -13,6 +13,7 @@
 #include <stdio.h> /* snprintf */
 #include <stdlib.h> /* snprintf */
 #include "gras_config.h" /* to get a working stdarg.h */
+#include "portable.h" /* to get a working stdarg.h */
 
 #include "xbt_modinter.h"
 
@@ -547,7 +548,7 @@ static void _xbt_log_parse_setting(const char*        control_string,
   xbt_assert1(*dot == '.' && *eq == '=',
 	       "Invalid control string '%s'",control_string);
 
-  if (!strncmp(dot + 1, "thresh", min(eq - dot - 1,strlen("thresh")))) {
+  if (!strncmp(dot + 1, "thresh", min((size_t)(eq - dot - 1),strlen("thresh")))) {
     int i;
     char *neweq=xbt_strdup(eq+1);
     char *p=neweq-1;
@@ -566,7 +567,7 @@ static void _xbt_log_parse_setting(const char*        control_string,
       }
     }
     if (i<xbt_log_priority_infinite-1) {
-      set->thresh=i;
+      set->thresh= (e_xbt_log_priority_t) i;
     } else {
       xbt_assert1(FALSE,"Unknown priority name: %s",eq+1);
     }

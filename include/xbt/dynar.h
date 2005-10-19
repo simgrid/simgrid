@@ -89,7 +89,7 @@ SG_BEGIN_DECL()
   void xbt_dynar_pop     (xbt_dynar_t dynar, void *const dst);
   void xbt_dynar_unshift (xbt_dynar_t dynar, const void *src);
   void xbt_dynar_shift   (xbt_dynar_t dynar, void *const dst);
-  void xbt_dynar_map            (const xbt_dynar_t dynar, void_f_pvoid_t *operator);
+  void xbt_dynar_map     (const xbt_dynar_t dynar, void_f_pvoid_t *op);
 
 /** @} */
 /** @name 3. Manipulating pointers to the content

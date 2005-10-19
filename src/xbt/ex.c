@@ -56,7 +56,7 @@ void xbt_ex_display(xbt_ex_t *e)  {
 #ifdef HAVE_EXECINFO_H
  {
   char **strings;
-  size_t i;
+  int i;
 
   fprintf(stderr,"** Backtrace:\n");
   strings = backtrace_symbols (e->bt, e->used);

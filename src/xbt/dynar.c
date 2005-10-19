@@ -52,7 +52,7 @@ _xbt_dynar_expand(xbt_dynar_t const dynar,
   const unsigned long old_size    = dynar->size;
 
   if (nb > old_size) {
-    char * const old_data    = dynar->data;
+    char * const old_data    = (char *) dynar->data;
 
     const unsigned long elmsize     = dynar->elmsize;
     const unsigned long old_length  = old_size*elmsize;
@@ -62,7 +62,7 @@ _xbt_dynar_expand(xbt_dynar_t const dynar,
 
     const unsigned long new_size    = nb > (2*(old_size+1)) ? nb : (2*(old_size+1));
     const unsigned long new_length  = new_size*elmsize;
-    char * const new_data    = xbt_malloc0(elmsize*new_size);
+    char * const new_data    = (char *) xbt_malloc0(elmsize*new_size);
 
     DEBUG3("expend %p from %lu to %d elements", (void*)dynar, (unsigned long)old_size, nb);
 
@@ -83,7 +83,7 @@ static _XBT_INLINE
 void *
 _xbt_dynar_elm(const xbt_dynar_t  dynar,
 		const unsigned long idx) {
-  char * const data    = dynar->data;
+  char * const data    = (char*) dynar->data;
   const unsigned long elmsize = dynar->elmsize;
 
   return data + idx*elmsize;
@@ -459,7 +459,7 @@ xbt_dynar_shift(xbt_dynar_t  const dynar,
  */
 void
 xbt_dynar_map(const xbt_dynar_t  dynar,
-               void_f_pvoid_t     * const operator) {
+               void_f_pvoid_t     * const op) {
 
   __sanity_check_dynar(dynar);
 
@@ -470,7 +470,7 @@ xbt_dynar_map(const xbt_dynar_t  dynar,
 
     for (i = 0; i < used; i++) {
       _xbt_dynar_get_elm(elm, dynar, i);
-      operator(elm);
+      op(elm);
     }
   }
 }
