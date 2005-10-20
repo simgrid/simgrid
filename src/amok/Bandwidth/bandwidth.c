@@ -37,7 +37,6 @@ void amok_bw_init(void) {
      bw_request_desc = gras_datadesc_ref("bw_request_t",bw_request_desc);
 
      bw_res_desc = gras_datadesc_struct("s_bw_res_t");
-     gras_datadesc_struct_append(bw_res_desc,"err",gras_datadesc_by_name("s_amok_remoterr_t"));
      gras_datadesc_struct_append(bw_res_desc,"timestamp",gras_datadesc_by_name("unsigned int"));
      gras_datadesc_struct_append(bw_res_desc,"seconds",gras_datadesc_by_name("double"));
      gras_datadesc_struct_append(bw_res_desc,"bw",gras_datadesc_by_name("double"));
@@ -59,13 +58,13 @@ void amok_bw_init(void) {
      
      /* Register the saturation messages */
      gras_msgtype_declare("SAT start",   sat_request_desc);
-     gras_msgtype_declare("SAT started", gras_datadesc_by_name("amok_remoterr_t"));
+     gras_msgtype_declare("SAT started", NULL);
      gras_msgtype_declare("SAT begin",   sat_request_desc);
-     gras_msgtype_declare("SAT begun",   gras_datadesc_by_name("amok_remoterr_t"));
+     gras_msgtype_declare("SAT begun",   NULL);
      gras_msgtype_declare("SAT end",     NULL);
-     gras_msgtype_declare("SAT ended",   gras_datadesc_by_name("amok_remoterr_t"));
+     gras_msgtype_declare("SAT ended",   NULL);
      gras_msgtype_declare("SAT stop",    NULL);
-     gras_msgtype_declare("SAT stopped", gras_datadesc_by_name("amok_remoterr_t"));
+     gras_msgtype_declare("SAT stopped", NULL);
   }
    
   /* Register the callbacks */
@@ -136,10 +135,10 @@ void amok_bw_test(gras_socket_t peer,
       measMasterIn = gras_socket_server_ext(++port,buf_size,1);
     } CATCH(e) {
       measMasterIn = NULL;
-      if (port < 10000) {
-	xbt_ex_free(e);
-      } else {
+      if (port == 10000 -1) {
 	RETHROW0("Error caught while opening a measurement socket: %s");
+      } else {
+	xbt_ex_free(e);	
       }
     }
   }
