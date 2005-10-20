@@ -18,7 +18,7 @@ struct s_matrix {
   int rows;
   int cols;
   double *ctn GRAS_ANNOTE(size, rows*cols);
-};);
+};)
 typedef struct s_matrix matrix_t;
 
 static void mat_dump(matrix_t *mat, const char* name) {
@@ -182,8 +182,8 @@ int client(int argc,char *argv[]) {
     for (j=0; j<MATSIZE; j++)
       request[1].ctn[i*MATSIZE+j] = i*MATSIZE+j;
   }
-  //  mat_dump(&request[0],"C:sent0");
-  //  mat_dump(&request[1],"C:sent1");
+  /*  mat_dump(&request[0],"C:sent0");*/
+  /*  mat_dump(&request[1],"C:sent1");*/
 
   gras_msg_send(toserver, gras_msgtype_by_name("request"), &request);
 
@@ -196,7 +196,7 @@ int client(int argc,char *argv[]) {
   /* 8. Wait for the answer from the server, and deal with issues */
   gras_msg_wait(6000,gras_msgtype_by_name("answer"),&from,&answer);
 
-  //  mat_dump(&answer,"C:answer");
+  /*  mat_dump(&answer,"C:answer");*/
   for (i=0; i<MATSIZE*MATSIZE; i++) 
     xbt_assert(answer.ctn[i]==i);
 
