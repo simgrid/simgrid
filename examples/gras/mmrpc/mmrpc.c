@@ -87,7 +87,7 @@ static int server_cb_request_handler(gras_socket_t expeditor, void *payload_data
 
 int server (int argc,char *argv[]) {
   xbt_ex_t e; 
-  gras_socket_t sock;
+  gras_socket_t sock=NULL;
   int port = 4000;
   
   /* 1. Init the GRAS infrastructure */
