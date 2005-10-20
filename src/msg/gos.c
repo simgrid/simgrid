@@ -53,7 +53,10 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 	xbt_fifo_foreach(h->simdata->mbox[channel],item,t,m_task_t) {
 	  if(t->simdata->source==host) break;
 	}
-	if(item) break;
+	if(item) {
+	  xbt_fifo_remove_item(h->simdata->mbox[channel],item);
+	  break;
+	} 
       }
     }
 						       
