@@ -1,11 +1,11 @@
 #! /bin/bash
 
 MACHINES=${MACHINES:-\
-           graal.ens-lyon.fr   allo-psmn.ens-lyon.fr \
-           valnure.cs.ucsb.edu sperm.cs.ucsb.edu     basalt.cs.ucsb.edu \
+           graal.ens-lyon.fr   \
+           sperm.cs.ucsb.edu     basalt.cs.ucsb.edu valnure.cs.ucsb.edu \
            AIX}
 
-# no access anymore: nala.cs.utk.edu
+# no access anymore: nala.cs.utk.edu allo-psmn.ens-lyon.fr 
 
 # ACTIONS: What to do there
 # possible values:
