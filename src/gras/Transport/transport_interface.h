@@ -12,6 +12,8 @@
 #ifndef GRAS_TRP_INTERFACE_H
 #define GRAS_TRP_INTERFACE_H
 
+#include "portable.h" /* sometimes needed for fd_set */
+
 /***
  *** Main user functions
  ***/
