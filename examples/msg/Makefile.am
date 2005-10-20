@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
-EXTRA_DIST= msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml
+EXTRA_DIST= msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml
 
 CLEANFILES=msg_test.trace
 
