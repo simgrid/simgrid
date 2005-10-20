@@ -83,9 +83,7 @@ void gras_trp_init(void){
      /* Add plugins */
      gras_trp_plugin_new("file",gras_trp_file_setup);
      gras_trp_plugin_new("sg",gras_trp_sg_setup);
-
-     /* buf is composed, so it must come after the others */
-     gras_trp_plugin_new("buf", gras_trp_buf_setup);
+     gras_trp_plugin_new("tcp", gras_trp_tcp_setup);
   }
    
   _gras_trp_started++;
@@ -351,7 +349,7 @@ gras_trp_plugin_get_by_name(const char *name){
   return xbt_dict_get(_gras_trp_plugins,name);
 }
 
-int   gras_socket_my_port  (gras_socket_t sock) {
+int gras_socket_my_port  (gras_socket_t sock) {
   return sock->port;
 }
 int   gras_socket_peer_port(gras_socket_t sock) {

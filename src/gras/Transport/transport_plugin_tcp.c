@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* buf trp (transport) - buffered transport using the TCP one            */
+/* buf trp (transport) - buffered transport using the TCP one               */
 
 /* Copyright (c) 2004 Martin Quinson. All rights reserved.                  */
 
@@ -564,7 +564,7 @@ gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock) {
  *** Code
  ***/
 void
-gras_trp_buf_setup(gras_trp_plugin_t plug) {
+gras_trp_tcp_setup(gras_trp_plugin_t plug) {
 
   plug->socket_client = gras_trp_buf_socket_client;
   plug->socket_server = gras_trp_buf_socket_server;

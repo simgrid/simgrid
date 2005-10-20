@@ -64,7 +64,6 @@ void gras_trp_tcp_setup(gras_trp_plugin_t plug);
 void gras_trp_iov_setup(gras_trp_plugin_t plug);
 void gras_trp_file_setup(gras_trp_plugin_t plug);
 void gras_trp_sg_setup(gras_trp_plugin_t plug);
-void gras_trp_buf_setup(gras_trp_plugin_t plug);
 
 /*
 
