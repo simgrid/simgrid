@@ -144,7 +144,7 @@ gras_datadesc_get_id(gras_datadesc_type_t ddt) {
  *
  */
 int gras_datadesc_size(gras_datadesc_type_t type) {
-  return type->size[GRAS_THISARCH];
+  return type?type->size[GRAS_THISARCH]:0;
 }
 
 /**
