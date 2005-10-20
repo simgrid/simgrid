@@ -1,7 +1,7 @@
 #! @BASH@ -e
 if [ x@EXEEXT@ = x ] ; then 
 #  exenv="libtool --mode=execute valgrind --run-libc-freeres=no "
-  exenv=
+  exenv=$SG_TEST_EXENV
 else
   exenv=wine
 fi
