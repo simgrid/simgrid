@@ -30,6 +30,8 @@ gras_msg_send(gras_socket_t   sock,
   m_task_t task=NULL;
   gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *)sock->data;
   gras_msg_t msg;
+  int whole_payload_size=0; /* msg->payload_size is used to memcpy the payload. 
+                               This is used to report the load onto the simulator. It also counts the size of pointed stuff */
 
   xbt_assert1(!gras_socket_is_meas(sock), 
   	      "Asked to send a message on the measurement socket %p", sock);
@@ -37,9 +39,11 @@ gras_msg_send(gras_socket_t   sock,
   msg=xbt_new0(s_gras_msg_t,1);
   msg->type=msgtype;
 
+   
+  msg->payload_size=gras_datadesc_size(msgtype->ctn_type);
   msg->payload=xbt_malloc(gras_datadesc_size(msgtype->ctn_type));
   if (msgtype->ctn_type)
-    msg->payload_size=gras_datadesc_copy(msgtype->ctn_type,payload,msg->payload);
+    whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,payload,msg->payload);
 
   task=MSG_task_create(msgtype->name,0,
 		       ((double)msg->payload_size)/(1024.0*1024.0),msg);
