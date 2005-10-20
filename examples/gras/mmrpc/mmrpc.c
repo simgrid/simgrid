@@ -78,7 +78,6 @@ static int server_cb_request_handler(gras_socket_t expeditor, void *payload_data
   /* 5. Cleanups */
   free(data[0].ctn); 
   free(data[1].ctn);
-  free(data);
   free(result.ctn);
   gras_socket_close(expeditor);
    
