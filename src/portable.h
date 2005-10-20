@@ -34,6 +34,7 @@
 #  include <netinet/tcp.h>  /* TCP_NODELAY */
 #  include <netdb.h>        /* getprotobyname() */
 #  include <arpa/inet.h>    /* inet_ntoa() */
+#  include <sys/types.h>    /* sometimes required for fd_set */
 # endif
 
 #ifdef HAVE_WINSOCK2_H
