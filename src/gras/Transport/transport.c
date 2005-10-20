@@ -192,7 +192,7 @@ gras_socket_server_ext(unsigned short port,
   DEBUG2("Create a server socket from plugin %s on port %d",
 	 gras_if_RL() ? "tcp" : "sg",
 	 port);
-  trp = gras_trp_plugin_get_by_name(gras_if_SG() ? "sg":(measurement?"tcp":"buf"));
+  trp = gras_trp_plugin_get_by_name(gras_if_SG() ? "sg":"tcp");
 
   /* defaults settings */
   gras_trp_socket_new(1,&sock);
@@ -234,7 +234,7 @@ gras_socket_client_ext(const char *host,
   gras_trp_plugin_t trp;
   gras_socket_t sock;
 
-  trp = gras_trp_plugin_get_by_name(gras_if_SG() ? "sg":(measurement?"tcp":"buf"));
+  trp = gras_trp_plugin_get_by_name(gras_if_SG() ? "sg":"tcp");
 
   DEBUG1("Create a client socket from plugin %s",gras_if_RL() ? "tcp" : "sg");
   /* defaults settings */
