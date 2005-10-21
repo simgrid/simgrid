@@ -93,8 +93,7 @@ SimGrid (3.0.1) unstable; urgency=low
 
     I'm not sure the potential performance gains justify the coding burden.
 
-
- --
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>  Fri, 21 Oct 2005 14:42:20 +0200
 
 SimGrid (3.00) stable; urgency=low
   
