@@ -1,5 +1,5 @@
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
- $(shell find @top_srcdir@/src @top_srcdir@/include -name "*.doc")
+ $(shell find @srcdir@ -name "*.doc")
 
 EXTRA_DIST = html Doxyfile \
  modules.doc FAQ.doc index.doc footer.html simgrid_logo.png simgrid_modules.png
