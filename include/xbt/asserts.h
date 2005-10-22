@@ -10,6 +10,7 @@
 #define _XBT_ASSERTS_H
 
 #include "xbt/misc.h"
+#include "xbt/log.h"
   
 SG_BEGIN_DECL()
 
