@@ -20,80 +20,22 @@
  *  @{
  */
 
+  /*PORTABILITY*/
+     /** @defgroup XBT_syscall Malloc and friends */
 
-/* *************** *
- * * PORTABILITY * *
- * *************** */
+  /*GROUNDING*/
+     /** @defgroup XBT_ex     Exception support */
+     /** @defgroup XBT_log    Logging support */
+     /** @defgroup XBT_error  Assert macro familly */
+     /** @defgroup XBT_config Configuration support */
 
-    /** @defgroup XBT_syscall Malloc and friends
-     *  @brief malloc and associated functions, killing the program on error
-     */
-
-/* ************* *
- * * GROUNDING * *
- * ************* */
-    /** @defgroup XBT_ex Exception support
-     *  @brief A set of macros providing exception a la C++ in ANSI C (grounding feature)
-     */
-
-    /** @defgroup XBT_log Logging support
-     *  @brief A generic logging facility in the spirit of log4j (grounding feature)
-     *  @{
-     */
-
-	/** \defgroup XBT_log_cats Existing log categories
-	 *  \ingroup XBT_log
-	 *  \brief (automatically extracted) 
-	 *     
-	 *  This is the list of all existing log categories in SimGrid.
-         *  This list was automatically extracted from the source code by
-         *  the src/xbt_log_extract_hierarchy utility.
-	 *     
-         *  You can thus be certain that it is uptodate, but it may somehow
-         *  lack a final manual touch.
-	 *  Anyway, nothing's perfect ;)
-	 */
-
-    /** @} */
-
-    /** @defgroup XBT_error Assert macro familly
-     *  @brief Those are the GRAS version of the good ol' assert macro. You can pass them a format message and 
-     * arguments, just as if it where a printf. It is converted to a CRITICALn logging request.
-     */
-
-   /** @defgroup XBT_config Configuration support
-     *  @brief Changing the configuration of SimGrid components (grounding feature)
-     */
-
-/* **************** *
- * * DATA STRUCTS * *
- * **************** */
-    /** @defgroup XBT_dynar A generic dynamic array
-     *  @brief DynArr are dynamically sized vector which may contain any type of variables.
-     */
-
-    /** @defgroup XBT_dict A generic dictionnary
-     *  @brief The dictionnary data structure (comparable to hash tables)
-     */
-    
-    /** \defgroup XBT_set A generic set datatype
-     * \brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
-     */
-    
-    /** \defgroup XBT_fifo A generic workqueue
-      *  \brief This section describes the API to generic workqueue. These functions
-      *   provide the same kind of functionnality as dynamic arrays but in time O(1). 
-      *   However these functions use malloc/free way too much often.
-      */
-	  
-    /** @defgroup XBT_swag A O(1) set datatype
-     *  @brief a O(1) set based on linked lists
-     */
-
-	  
-    /** @defgroup XBT_heap A generic heap data structure
-     *  @brief This section describes the API to generic heap with O(log(n)) access. 
-     */
+  /*DATA STRUCTS*/
+     /** @defgroup XBT_dynar  Dynar: generic dynamic array */
+     /** @defgroup XBT_dict   Dict: generic dictionnary */
+     /** @defgroup XBT_set    Set: generic set datatype */
+     /** @defgroup XBT_fifo   Fifo: generic workqueue */
+     /** @defgroup XBT_swag   Swag: O(1) set datatype */
+     /** @defgroup XBT_heap Heap: generic heap data structure */
 
 /* ************************* *
  * * PORTABILITY-INTERNALS * *

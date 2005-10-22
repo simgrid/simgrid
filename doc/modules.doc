@@ -6,9 +6,9 @@
     \brief The core toolbox of SimGrid, containing usefull datatypes,
            portability support and so on.
 
-  <center><table><tr><td><b>Top</b>     <td> [\ref index]
-                 <tr><td>   Other modules      <td> [\ref SURF_API] [\ref MSG_API] [\ref GRAS_API] [\ref AMOK_API] [\ref SMPI_API] </table></center>
-   
+  <center><table><tr><td><b>Top</b>        <td> [\ref index]
+                 <tr><td>   Other modules  <td> [\ref SURF_API] [\ref MSG_API] [\ref GRAS_API] [\ref AMOK_API] [\ref SMPI_API] 
+                 <tr><td><b>Down</b>       <td> [\ref XBT_syscall] </table></center>
 */
 
 /** \defgroup SURF_API       SURF
