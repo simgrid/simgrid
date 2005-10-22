@@ -17,10 +17,11 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_dynar
   * @brief DynArr are dynamically sized vector which may contain any type of variables.
   *
-  * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+  * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]
   *                <tr><td><b>Prev</b>   <td> [\ref XBT_config]
   *                <tr><td><b>Next</b>   <td> [\ref XBT_dict]
-  *                <tr><td><b>Down</b>   <td> [\ref XBT_dynar_cons]        </table></center>
+  *                <tr><td><b>Down</b>   <td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor 
+  * </table></center>
   *
   * These are the SimGrid version of the dynamically size arrays, which all C programmer recode one day or another.
   *  
@@ -61,9 +62,9 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_cons Dynar constructor and destructor
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td>   Prev       <td> 
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_array]        </table></center>
+ * <center><table><tr><td><b>Up </b>       <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Jump to</b><td> --\>\ref XBT_dynar_cons\<--\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
+ * </table></center>
  *
  *  @{
  */
@@ -85,9 +86,9 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_array Dynar as a regular array
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_cons]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_perl]        </table></center>
+ * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n--\>\ref XBT_dynar_array\<--\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
+ * </table></center>
  *
  *  @{
  */
@@ -104,9 +105,9 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_array]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_ctn]        </table></center>
+ * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n--\>\ref XBT_dynar_perl\<--\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
+ * </table></center>
  *
  *  @{
  */
@@ -121,9 +122,9 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_ctn Direct manipulation to the dynars content
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_perl]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_speed]        </table></center>
+ * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n--\>\ref XBT_dynar_ctn\<--\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
+ * </table></center>
  *
  *  Those functions do not retrive the content, but only their address.
  *
@@ -139,9 +140,9 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_speed Speed optimized access to dynars of scalars
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_ctn]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_cursor]        </table></center>
+ * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n--\>\ref XBT_dynar_speed\<--\n\ref XBT_dynar_cursor
+ * </table></center>
  *
  *  While the other functions use a memcpy to retrive the content into the
  *  user provided area, those ones use a regular affectation. It only works
@@ -153,7 +154,15 @@ SG_BEGIN_DECL()
   /** @brief Quick retrieval of scalar content 
    *  @hideinitializer */
 #  define xbt_dynar_get_as(dynar,idx,type) \
-          *(type*)xbt_dynar_get_ptr(dynar,idx)
+          (*(type*)xbt_dynar_get_ptr((dynar),(idx)))
+  /** @brief Quick retrieval of scalar content 
+   *  @hideinitializer */
+#  define xbt_dynar_getlast_as(dynar,type) \
+          (*(type*)xbt_dynar_get_ptr((dynar),xbt_dynar_length(dynar)-1))
+  /** @brief Quick retrieval of scalar content 
+   *  @hideinitializer */
+#  define xbt_dynar_getfirst_as(dynar,type) \
+          (*(type*)xbt_dynar_get_ptr((dynar),0))
   /** @brief Quick insertion of scalar content 
    *  @hideinitializer */
 #  define xbt_dynar_insert_at_as(dynar,idx,type,value) \
@@ -165,15 +174,15 @@ SG_BEGIN_DECL()
   /** @brief Quick insertion of scalar content 
    *  @hideinitializer */
 #  define xbt_dynar_pop_as(dynar,type) \
-           *(type*)xbt_dynar_pop_ptr(dynar)
+           (*(type*)xbt_dynar_pop_ptr(dynar))
 
 /** @} */
 /** @defgroup XBT_dynar_cursor Cursors on dynar
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_speed]
- *                <tr><td>   Next       <td>                          </table></center>
+ * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n--\>\ref XBT_dynar_cursor\<--
+ * </table></center>
  *
  * Cursors are used to iterate over the structure. Never add elements to the 
  * DynArr during the traversal. To remove elements, use the
