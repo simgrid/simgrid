@@ -15,25 +15,33 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 
-/* This type should be added to a type that is to be used in such a swag */
-/* Whenever a new object with this struct is created, all fields have
-   to be set to NULL */
 
 /** 
- * \addtogroup XBT_swag
+ * @addtogroup XBT_swag
+ * @brief a O(1) set based on linked lists
  * 
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_heap]
+ *                <tr><td><b>Down</b>   <td> [\ref XBT_swag_type]        </table></center>
+ *
  *  Warning, this module is done to be efficient and performs tons of
- *  cast and dirty things. So avoid using it unless you really know
- *  what you are doing. It is basically a fifo but with restrictions so that
+ *  cast and dirty things. So make sure you know what you are doing while using it.
+ *  It is basically a fifo but with restrictions so that
  *  it can be used as a set. Any operation (add, remove, belongs) is O(1) and
  *  no call to malloc/free is done.
  *
- * @{
  */
 
-/** \name Swag types
+/** @defgroup XBT_swag_type Swag types
+    @ingroup XBT_swag
 
+   <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_swag]
+                  <tr><td>   Prev       <td> 
+                  <tr><td><b>Next</b>   <td> [\ref XBT_swag_func]        </table></center>
+                  
     Specific set. 
+
 
     These typedefs are public so that the compiler can
     do his job but believe me, you don't want to try to play with 
@@ -45,7 +53,11 @@ typedef struct xbt_swag_hookup {
   void *prev;
 } s_xbt_swag_hookup_t; 
 /**< This type should be added to a type that is to be used in a swag. 
- * For example like that :
+ *
+ *  Whenever a new object with this struct is created, all fields have
+ *  to be set to NULL 
+ *
+ * Here is an example like that :
 
 \code
 typedef struct foo {
@@ -78,9 +90,15 @@ typedef struct xbt_swag {
 /**< A typical swag */
 /* @} */
 
-/** \name Functions 
+/** @defgroup XBT_swag_func SWAG functions 
+ *  @ingroup XBT_swag
+ 
+   <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_swag]
+                  <tr><td><b>Prev</b>   <td> [\ref XBT_swag_type]
+                  <tr><td><b>Next</b>   <td> [\ref XBT_swag_curs]        </table></center>
+                  
+ *  @{
  */
-/* @{ */
 
 xbt_swag_t xbt_swag_new(size_t offset);
 void xbt_swag_free(xbt_swag_t swag);
@@ -106,6 +124,7 @@ static _XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
  * \arg var a variable of type <tt>struct</tt> something
  * \arg field a field of <tt>struct</tt> something
  * \return the offset of \a field in <tt>struct</tt> something.
+ * @hideinitializer
  *
  * It is very similar to offsetof except that is done at runtime and that 
  * you have to declare a variable. Why defining such a macro then ? 
@@ -115,8 +134,13 @@ static _XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 /* @} */
 
 /**
- * \name Swag iterator
- *
+ * \defgroup XBT_swag_curs Swag cursor
+ * @ingroup XBT_swag
+
+   <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_swag]
+                  <tr><td><b>Prev</b>   <td> [\ref XBT_swag_func]
+                  <tr><td>   Next       <td>                       </table></center>
+ 
  * Iterates over the whole swag. 
  *
  * @{ */
@@ -150,7 +174,6 @@ static _XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
        (obj)=obj_next,                                            \
        ((obj)?(obj_next=xbt_swag_getNext((obj),(swag)->offset)):  \
                  (obj_next=NULL))     )
-/* @} */
 /* @} */
 
 #endif    /* _XBT_SWAG_H */

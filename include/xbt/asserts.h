@@ -14,7 +14,16 @@
 SG_BEGIN_DECL()
 
 /**
- * \addtogroup XBT_error
+ * @addtogroup XBT_error
+ * @brief Those are the SimGrid version of the good ol' assert macro.
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_log]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_config]     </table></center>
+ *
+ * You can pass them a format message and arguments, just as if it where a printf.
+ * It is converted to a CRITICALn logging request.
+ *
  * @{
  */
 #ifdef NDEBUG

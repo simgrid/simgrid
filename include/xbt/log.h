@@ -7,6 +7,31 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** @addtogroup XBT_log
+ *  @brief A generic logging facility in the spirit of log4j (grounding feature)
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_ex]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_error]     
+ *                <tr><td><b>Down</b>   <td> [\ref XBT_log_cats]        </table></center>
+ *
+ */
+ 
+/** \defgroup XBT_log_cats Existing log categories
+ *  \ingroup XBT_log
+ *  \brief (automatically extracted) 
+ *     
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_log] </table></center>
+ *
+ *  This is the list of all existing log categories in SimGrid.
+ *  This list was automatically extracted from the source code by
+ *  the src/xbt_log_extract_hierarchy utility.
+ *     
+ *  You can thus be certain that it is uptodate, but it may somehow
+ *  lack a final manual touch.
+ *  Anyway, nothing's perfect ;)
+ */
+
 /* XBT_LOG_MAYDAY: define this to replace the logging facilities with basic
    printf function. Useful to debug the logging facilities themselves */
 #undef XBT_LOG_MAYDAY

@@ -14,7 +14,15 @@
 
 SG_BEGIN_DECL()
 
-/** \addtogroup XBT_dynar
+/** @addtogroup XBT_dynar
+  * @brief DynArr are dynamically sized vector which may contain any type of variables.
+  *
+  * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+  *                <tr><td><b>Prev</b>   <td> [\ref XBT_config]
+  *                <tr><td><b>Next</b>   <td> [\ref XBT_dict]
+  *                <tr><td><b>Down</b>   <td> [\ref XBT_dynar_cons]        </table></center>
+  *
+  * These are the SimGrid version of the dynamically size arrays, which all C programmer recode one day or another.
   *  
   * For performance concerns, the content of DynArr must be homogeneous (in
   * contrary to dictionnaries -- see the \ref XBT_dict section). You thus
@@ -47,10 +55,16 @@ SG_BEGIN_DECL()
   * \until dynar_free
   * \skip xbt_exit
   * \until }
-  * @{
+  *
   */
 
-/** @name 1. Constructor/destructor
+/** @defgroup XBT_dynar_cons Dynar constructor and destructor
+ *  @ingroup XBT_dynar
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td>   Prev       <td> 
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_array]        </table></center>
+ *
  *  @{
  */
    /** \brief Dynar data type (opaque type) */
@@ -68,7 +82,13 @@ SG_BEGIN_DECL()
   void          xbt_dynar_dump(xbt_dynar_t dynar);
 
 /** @} */
-/** @name 2. regular array functions
+/** @defgroup XBT_dynar_array Dynar as a regular array
+ *  @ingroup XBT_dynar
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_cons]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_perl]        </table></center>
+ *
  *  @{
  */
 
@@ -81,7 +101,13 @@ SG_BEGIN_DECL()
   void xbt_dynar_remove_at(xbt_dynar_t dynar, int  idx, void * const dst);
 
 /** @} */
-/** @name 2. Perl-like functions
+/** @defgroup XBT_dynar_perl Perl-like use of dynars
+ *  @ingroup XBT_dynar
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_array]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_ctn]        </table></center>
+ *
  *  @{
  */
 
@@ -92,7 +118,12 @@ SG_BEGIN_DECL()
   void xbt_dynar_map     (const xbt_dynar_t dynar, void_f_pvoid_t *op);
 
 /** @} */
-/** @name 3. Manipulating pointers to the content
+/** @defgroup XBT_dynar_ctn Direct manipulation to the dynars content
+ *  @ingroup XBT_dynar
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_perl]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_speed]        </table></center>
  *
  *  Those functions do not retrive the content, but only their address.
  *
@@ -105,7 +136,12 @@ SG_BEGIN_DECL()
   void *xbt_dynar_pop_ptr(xbt_dynar_t dynar);
 
 /** @} */
-/** @name 4. Speed optimized functions for scalars
+/** @defgroup XBT_dynar_speed Speed optimized access to dynars of scalars
+ *  @ingroup XBT_dynar
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_ctn]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar_cursor]        </table></center>
  *
  *  While the other functions use a memcpy to retrive the content into the
  *  user provided area, those ones use a regular affectation. It only works
@@ -132,7 +168,12 @@ SG_BEGIN_DECL()
            *(type*)xbt_dynar_pop_ptr(dynar)
 
 /** @} */
-/** @name 5. Cursors on DynArr
+/** @defgroup XBT_dynar_cursor Cursors on dynar
+ *  @ingroup XBT_dynar
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar_speed]
+ *                <tr><td>   Next       <td>                          </table></center>
  *
  * Cursors are used to iterate over the structure. Never add elements to the 
  * DynArr during the traversal. To remove elements, use the
@@ -171,8 +212,8 @@ xbt_dynar_foreach (dyn,cpt,str) {
 	    xbt_dynar_cursor_get(_dynar,&(_cursor),&_data) ; \
             xbt_dynar_cursor_step(_dynar,&(_cursor))         )
 
+/** @} */
 
 SG_END_DECL()
 
-/* @} */
 #endif /* _XBT_DYNAR_H */

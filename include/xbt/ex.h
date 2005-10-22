@@ -70,6 +70,11 @@ extern int backtrace (void **__array, int __size);
 typedef struct { __ex_mctx_struct } __ex_mctx_t;
  
 /** @addtogroup XBT_ex
+ *  @brief A set of macros providing exception a la C++ in ANSI C (grounding feature)
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_syscall]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_log]            </table></center>
  *
  * This module is a small ISO-C++ style exception handling library
  * for use in the ISO-C language. It allows you to use the paradigm 
@@ -87,9 +92,15 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * These features are brought to you by a modified version of the libex 
  * library, one of the numerous masterpiece of Ralf S. Engelschall.
  *
+ * @section XBT_ex_toc TABLE OF CONTENTS
+ *
+ *  - \ref XBT_ex_intro
+ *  - \ref XBT_ex_base
+ *  - \ref XBT_ex_pitfalls
+ *
  * @section XBT_ex_intro DESCRIPTION
  * 
- * In SimGrid, exceptions is a triple <\a msg , \a category , \a value> 
+ * In SimGrid, an exception is a triple <\a msg , \a category , \a value> 
  * where \a msg is a human-readable text describing the exceptional 
  * condition, \a code an integer describing what went wrong and \a value
  * providing a sort of sub-category. (this is different in the original libex).
@@ -307,15 +318,17 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
         if (1) { \
             if (1)
 
+#ifndef DOXYGEN_SKIP
+#  ifdef __cplusplus
+#    define XBT_EX_T_CPLUSPLUSCAST (xbt_ex_t&)
+#  else
+#    define XBT_EX_T_CPLUSPLUSCAST 
+#  endif
+#endif
+
 /** @brief the block for catching (ie, deal with) an exception 
  *  @hideinitializer
  */
-#ifdef __cplusplus
-#  define XBT_EX_T_CPLUSPLUSCAST (xbt_ex_t&)
-#else
-#  define XBT_EX_T_CPLUSPLUSCAST 
-#endif
-
 #define CATCH(e) \
             else { \
             } \
@@ -334,7 +347,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
     } \
     else
 
-/** @brief Build an exception from the supplied arguments and throws it
+/** @brief Helper macro for THROWS0-6
  *  @hideinitializer
  *
  *  @param c: category code (integer)
@@ -372,12 +385,26 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      abort();/* nope, stupid GCC, we won't survive a THROW (this won't be reached) */ \
   } while (0)
 
+/** @brief Builds and throws an exception with a string taking no arguments
+    @hideinitializer */
 #define THROW0(c,v,m)                   _THROW(c,v,(m?bprintf(m):NULL))
+/** @brief Builds and throws an exception with a string taking one argument
+    @hideinitializer */
 #define THROW1(c,v,m,a1)                _THROW(c,v,bprintf(m,a1))
+/** @brief Builds and throws an exception with a string taking two arguments
+    @hideinitializer */
 #define THROW2(c,v,m,a1,a2)             _THROW(c,v,bprintf(m,a1,a2))
+/** @brief Builds and throws an exception with a string taking three arguments
+    @hideinitializer */
 #define THROW3(c,v,m,a1,a2,a3)          _THROW(c,v,bprintf(m,a1,a2,a3))
+/** @brief Builds and throws an exception with a string taking four arguments
+    @hideinitializer */
 #define THROW4(c,v,m,a1,a2,a3,a4)       _THROW(c,v,bprintf(m,a1,a2,a3,a4))
+/** @brief Builds and throws an exception with a string taking five arguments
+    @hideinitializer */
 #define THROW5(c,v,m,a1,a2,a3,a4,a5)    _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5))
+/** @brief Builds and throws an exception with a string taking six arguments
+    @hideinitializer */
 #define THROW6(c,v,m,a1,a2,a3,a4,a5,a6) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6))
 
 #define THROW_IMPOSSIBLE     THROW0(unknown_error,0,"The Impossible Did Happen (yet again)")
@@ -396,11 +423,8 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
    abort();\
   } while(0)
 
-/** @brief like RETHROW, but adding some details to the message
- *  @hideinitializer
- */
 
-
+#ifndef DOXYGEN_SKIP
 #define _XBT_PRE_RETHROW \
   do {                                                               \
     char *_xbt_ex_internal_msg = __xbt_ex_ctx()->ctx_ex.msg;         \
@@ -410,14 +434,34 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
     free(_xbt_ex_internal_msg);                                      \
     RETHROW;                                                         \
   } while (0)
+#endif
 
+/** @brief like THROW0, but adding some details to the message of an existing exception
+ *  @hideinitializer
+ */
 #define RETHROW0(msg)           _XBT_PRE_RETHROW msg,          _XBT_POST_RETHROW
+/** @brief like THROW1, but adding some details to the message of an existing exception
+ *  @hideinitializer
+ */
 #define RETHROW1(msg,a)         _XBT_PRE_RETHROW msg,a,        _XBT_POST_RETHROW
+/** @brief like THROW2, but adding some details to the message of an existing exception
+ *  @hideinitializer
+ */
 #define RETHROW2(msg,a,b)       _XBT_PRE_RETHROW msg,a,b,      _XBT_POST_RETHROW
+/** @brief like THROW3, but adding some details to the message of an existing exception
+ *  @hideinitializer
+ */
 #define RETHROW3(msg,a,b,c)     _XBT_PRE_RETHROW msg,a,b,c,    _XBT_POST_RETHROW
+/** @brief like THROW4, but adding some details to the message of an existing exception
+ *  @hideinitializer
+ */
 #define RETHROW4(msg,a,b,c,d)   _XBT_PRE_RETHROW msg,a,b,c,    _XBT_POST_RETHROW
+/** @brief like THROW5, but adding some details to the message of an existing exception
+ *  @hideinitializer
+ */
 #define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e _XBT_POST_RETHROW
 
+/** @brief Exception destructor */
 void xbt_ex_free(xbt_ex_t e);
 const char * xbt_ex_catname(xbt_errcat_t cat);
 

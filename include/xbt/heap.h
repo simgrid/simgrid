@@ -12,7 +12,11 @@
 #include "xbt/dynar.h" /* void_f_pvoid_t */
 
 /** @addtogroup XBT_heap
+ *  @brief This section describes the API to generic heap with O(log(n)) access.
  *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_swag]
+ *                <tr><td>   Next       <td>                          </table></center>
  *  @{
  */
 /* @brief heap datatype */

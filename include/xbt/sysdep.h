@@ -22,11 +22,16 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_syscall
+ *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td>Prev          <td>
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_ex]            </table></center>
  *  @{
  */
 
-#ifdef __GNUC__
-/** @brief like strdup, but xbt_die() on error */
+#if defined(__GNUC__) || defined(DOXYGEN)
+/** @brief Like strdup, but xbt_die() on error */
 static inline char *xbt_strdup(const char *s) {
   char *res = NULL;
   if (s) {
@@ -36,7 +41,7 @@ static inline char *xbt_strdup(const char *s) {
   } 
   return res;
 }
-/** @brief like malloc, but xbt_die() on error 
+/** @brief Like malloc, but xbt_die() on error 
     @hideinitializer */
 static inline void *xbt_malloc(int n){
   void *res=malloc(n);

@@ -17,6 +17,12 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_dict
+ *  @brief The dictionnary data structure (comparable to hash tables)
+ * 
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_set]       
+ *                <tr><td><b>Down</b>   <td> [\ref XBT_dict_cons]        </table></center>
  * 
  *  This section describes the API to a dictionnary structure that
  *  associates as string to a void* key. Even if it provides the same
@@ -34,18 +40,16 @@ SG_BEGIN_DECL()
  xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add \endverbatim
 
  *
- * \warning This section also gets bitten by the doxygen bug reordering the name sections. 
- * Make sure to read in this order:
- *  -# Constructor/destructor
- *  -# Dictionnaries basic usage
- *  -# Non-null terminated keys
- *  -# Traversing dictionnaries with cursors
- *
- * @{
-*/
+ */
 
-/**  @name 1. Constructor/destructor
- *   @{
+/** @defgroup XBT_dict_cons Dict constructor and destructor
+ *  @ingroup XBT_dict
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
+ *                <tr><td>   Prev       <td> 
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_basic]        </table></center>
+ *
+ *  @{
  */
 
   /** \brief Dictionnary data type (opaque structure) */
@@ -54,11 +58,17 @@ SG_BEGIN_DECL()
   void xbt_dict_free(xbt_dict_t *dict);
 
 /** @} */
-/** @name 2. Dictionnaries basic usage
+/** @defgroup XBT_dict_basic Dictionnaries basic usage
+ *  @ingroup XBT_dict
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_cons]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_nnul]        </table></center>
  *
  * Careful, those functions assume that the key is null-terminated.
  *
- *  @{ */
+ *  @{
+ */
 
   void  xbt_dict_set(xbt_dict_t head, const char *key, void *data, void_f_pvoid_t *free_ctn);
   void *xbt_dict_get(xbt_dict_t head,const char *key);
@@ -68,7 +78,12 @@ SG_BEGIN_DECL()
   void xbt_dict_dump(xbt_dict_t head,void (*output)(void*));
   
 /** @} */
-/** @name 3. Non-null terminated keys
+/** @defgroup XBT_dict_nnul Dictionnaries with non-nul terminated keys
+ *  @ingroup XBT_dict
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_basic]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_curs]        </table></center>
  *
  * Those functions work even with non-null terminated keys.
  *
@@ -83,7 +98,12 @@ SG_BEGIN_DECL()
 
 
 /** @} */
-/** @name 4. Cursors on dictionnaries 
+/** @defgroup XBT_dict_curs Cursors on dictionnaries 
+ *  @ingroup XBT_dict
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_nnul]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_multi]        </table></center>
  *
  *  Don't get impressed, there is a lot of functions here, but traversing a 
  *  dictionnary is imediate with the xbt_dict_foreach macro.
@@ -128,7 +148,12 @@ SG_BEGIN_DECL()
          xbt_dict_cursor_step(cursor) )
 
 /** @} */
-/** @name 5. Multi-dictionnary
+/** @defgroup XBT_dict_multi Multi-level dictionnaries
+ *  @ingroup XBT_dict
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_curs]
+ *                <tr><td>   Next       <td>              </table></center>
  *
  * They can be seen as dictionnary of multiple keys or as dictionnary of 
  * dictionnary of ... of data. Most of the functions here work the same way 
@@ -165,7 +190,6 @@ void *xbt_multidict_get_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens
 void xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys);
 void xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens);
 
-/** @} */
 /** @} */
 
 SG_END_DECL()

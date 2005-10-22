@@ -15,7 +15,13 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_set
+ *  @brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
  * 
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo]       
+ *                <tr><td><b>Down</b>   <td> [\ref XBT_set_cons]        </table></center>
+ *
  *  The elements stored in such a data structure can be retrieve both by
  *  name and by ID. For this to work, the first fields of the structures
  *  stored must begin with:
@@ -29,11 +35,15 @@ SG_BEGIN_DECL()
  *  Such a datastructure was necessary/useful to store the GRAS type 
  *  descriptions, but it should be reworked to become generic.
  *
- * @{
-*/
+ */
 
 
-/** @name 1. Set and set elements, constructor/destructor
+/** @defgroup XBT_set_cons Set and set elements, constructor/destructor
+ *  @ingroup XBT_set
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_set]
+ *                <tr><td>   Prev       <td> 
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_set_basic]        </table></center>
  *
  *  @{
  */
@@ -53,7 +63,12 @@ void xbt_set_free(xbt_set_t *set);
 /** @} */
 typedef struct xbt_set_elm_  s_xbt_set_elm_t;
 typedef struct xbt_set_elm_ *  xbt_set_elm_t;
-/** @name 2. Main functions
+/** @defgroup XBT_set_basic Sets basic usage
+ *  @ingroup XBT_set
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_set]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_set_cons]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_set_curs]        </table></center>
  *
  *  @{
  */
@@ -65,7 +80,12 @@ xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t set, const char *key, int key_le
 xbt_set_elm_t xbt_set_get_by_id      (xbt_set_t set, int         id);
 				      
 /** @} */
-/** @name 3. Cursors
+/** @defgroup XBT_set_curs Sets cursors
+ *  @ingroup XBT_set
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_set]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_set_basic]
+ *                <tr><td>   Next       <td>                       </table></center>
  *
  *  \warning Don't add or remove entries to the cache while traversing
  *
@@ -89,7 +109,6 @@ int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *cursor,
        xbt_set_cursor_get_or_free(&(cursor),(xbt_set_elm_t*)&(elm));          \
        xbt_set_cursor_step(cursor) )
 
-/* @} */
 /* @} */
 SG_END_DECL()
 

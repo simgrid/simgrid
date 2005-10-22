@@ -11,10 +11,24 @@
 
 SG_BEGIN_DECL()
 
-/** \addtogroup XBT_fifo
- *  @{ */
+/** @addtogroup XBT_fifo
+ *  @brief This section describes the API to generic workqueue.
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_set]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_swag]       
+ *                <tr><td><b>Down</b>   <td> [\ref XBT_fifo_cons]        </table></center>
+ *
+ * These functions provide the same kind of functionnality as dynamic arrays but in time O(1).
+ * However these functions use malloc/free way too much often.            
+ */
 
-/** @name 1. Constructor/destructor
+/** @defgroup XBT_fifo_cons Fifo constructor and destructor
+ *  @ingroup XBT_fifo
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
+ *                <tr><td>   Prev       <td> 
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo_perl]        </table></center>
  *  @{
  */
 
@@ -30,7 +44,12 @@ xbt_fifo_t xbt_fifo_new(void);
 void xbt_fifo_free(xbt_fifo_t);
 /** @} */
 
-/** @name 2. Perl-like functions
+/** @defgroup XBT_fifo_perl Fifo perl-like functions
+ *  @ingroup XBT_fifo
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo_cons]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo_direct]        </table></center>
  *  @{
  */
 xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t, void *);
@@ -41,7 +60,12 @@ int xbt_fifo_size(xbt_fifo_t);
 int xbt_fifo_is_in(xbt_fifo_t, void *);
 /** @} */
 
-/** @name 3. Manipulating items directly
+/** @defgroup XBT_fifo_direct Direct access to fifo elements
+ *  @ingroup XBT_fifo
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo_perl]
+ *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo_misc]        </table></center>
  *
  *  @{
  */
@@ -70,6 +94,7 @@ xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
  * \param i a bucket (#xbt_fifo_item_t)
  * \param type a type
  * \param n an object of type \a type.
+ * @hideinitializer
  *
  * Iterates over the whole list. 
  */
@@ -80,7 +105,12 @@ xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
 
 /** @} */
 
-/** @name 4. Miscanaleous
+/** @defgroup XBT_fifo_misc Misc fifo functions
+ *  @ingroup XBT_fifo
+ *
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
+ *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo_direct]
+ *                <tr><td>   Next       <td>                     </table></center>
  *
  *  @{
  */
@@ -88,19 +118,16 @@ void **xbt_fifo_to_array(xbt_fifo_t);
 xbt_fifo_t xbt_fifo_copy(xbt_fifo_t);
 /** @} */
 
-/** @name 5. Deprecated functions: don't use!
- *
- *  @{
- */
+/* Deprecated functions: don't use! */
 xbt_fifo_item_t xbt_fifo_newitem(void);
 void xbt_fifo_freeitem(xbt_fifo_item_t);
 
 xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l);
 xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
 xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
-/** @} */
+
 
 SG_END_DECL()
 
-/** @} */
+
 #endif				/* _XBT_FIFO_H */
