@@ -18,25 +18,35 @@ SG_BEGIN_DECL()
 /** @addtogroup GRAS_dd Data description
  *  @brief Describing data to be exchanged (Communication facility)
  *
- * @section Overview
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
+ *                <tr><td>Prev          <td> 
+ *                <tr><td><b>Next</b>   <td> [\ref GRAS_sock]
+ *                <tr><td><b>Down</b>   <td> [\ref GRAS_dd_basic]            </table></center>
  *
  * Since GRAS takes care of potential representation conversion when the platform is heterogeneous, 
  * any data which transits on the network must be described beforehand.
  * 
  * There is several possible interfaces for this, ranging from the really completely automatic parsing to 
- * completely manual. Let's study each of them from the simplest to the more advanced.
+ * completely manual. Let's study each of them from the simplest to the more advanced:
  * 
- * \warning At least, I would like to present those sections in the right order, but doxygen prevents me 
- * from doing so. There is a weird bug I fail to circumvent here. The right order is naturally:
- *   -# basic operations
- *   -# Automatic parsing
- *   -# Simple manual definitions
- *   -# Callback Persistant State: Simple push/pop mechanism
- *   -# Callback Persistant State: Full featured mechanism
- */
-/* @{*/
+ *   - Section \ref GRAS_dd_basic presents how to retrieve and use an already described type.
+ *   - Section \ref GRAS_dd_auto shows how to get GRAS parsing your type description automagically. This
+ *     is unfortunately not always possible (only works for some structures), but if it is for your data,
+ *     this is definitly the way to go.
+ *   - Section \ref GRAS_dd_manual presents how to build a description manually. This is useful when you want
+ *     to describe an array or a pointer of pre-defined structures.
+ *   - You sometimes need to exchange informations between descriptions at send or receive time. This is 
+ *     for example useful when your structure contains an array which size is given by another field of the 
+ *     structure.
+ *     - Section \ref GRAS_dd_cb_simple provides a simple interface to do so, allowing to share integers stored on a stack.
+ *     - Section \ref GRAS_dd_cb_full provides a full featured interface to do so, but it may reveal somehow difficult to use.
+ **/
 
-/** @name 1. basic operations
+/** @defgroup GRAS_dd_basic Basic operations on data descriptions
+ *  @ingroup GRAS_dd
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
+ *                <tr><td>   Prev       <td> 
+ *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_auto]            </table></center>
  *
  * If you only want to send pre-existing types, simply retrieve the pre-defined description with 
  * the \ref gras_datadesc_by_name function. Existing types entail:
@@ -48,6 +58,7 @@ SG_BEGIN_DECL()
  * Example:\verbatim gras_datadesc_type_t i = gras_datadesc_by_name("int");
  gras_datadesc_type_t uc = gras_datadesc_by_name("unsigned char");
  gras_datadesc_type_t str = gras_datadesc_by_name("string");\endverbatim
+ *
  */
 /* @{ */
   
@@ -59,7 +70,11 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 
 /* @} */
     
-/** @name 2. Automatic parsing
+/** @defgroup GRAS_dd_auto Automatic parsing of data descriptions
+ *  @ingroup GRAS_dd
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
+ *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_basic]
+ *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_manual]            </table></center>
  * 
  *  If you need to declare a new datatype, this is the simplest way to describe it to GRAS. Simply
  *  enclose its type definition  into a \ref GRAS_DEFINE_TYPE macro call, and you're set. Here is 
@@ -148,7 +163,11 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
 gras_datadesc_type_t 
 gras_datadesc_parse(const char *name, const char *C_statement);
 
-/** @name 3. Simple manual definitions
+/** @defgroup GRAS_dd_manual Simple manual data description
+ *  @ingroup GRAS_dd
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
+ *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_auto]
+ *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_cb_simple]            </table></center>
  * 
  * Here are the functions to use if you want to declare your description manually. 
  * The function names should be self-explanatory in most cases.
@@ -277,7 +296,11 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
 /* @} */
 
-/** @name 4. Callback Persistant State: Simple push/pop mechanism
+/** @defgroup GRAS_dd_cb_simple Data description with Callback Persistant State: Simple push/pop mechanism
+ *  @ingroup GRAS_dd
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
+ *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_manual]
+ *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_cb_full]            </table></center>
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
  * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
@@ -342,7 +365,11 @@ void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t typedesc, gras_cbps_t
 
 /* @} */
 
-/** @name 5. Callback Persistant State: Full featured mechanism
+/** @defgroup GRAS_dd_cb_full Data description with Callback Persistant State: Full featured interface
+ *  @ingroup GRAS_dd
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
+ *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_cb_simple]
+ *                <tr><td>Next          <td>             </table></center>
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mechanism
  * introduced in previous section isn't enough, you can always use this full featured one.

@@ -38,6 +38,10 @@ void gras_process_exit(void);
 /** \addtogroup GRAS_globals
  *  \brief Handling global variables so that it works on simulator (Virtualization).
  * 
+ * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
+ *                <tr><td><b>Prev</b>   <td> [\ref GRAS_virtu]
+ *                <tr><td><b>Next</b>   <td> [\ref GRAS_emul]            </table></center>
+ *
  * In GRAS, using globals is forbidden since the "processes" will
  * sometimes run as a thread inside the same process (namely, in
  * simulation mode). So, you have to put all globals in a structure, and
