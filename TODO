@@ -5,13 +5,18 @@
 int vasprintf  (char **ptr, const char *fmt, va_list ap);
 char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
-Replace fifo with dynars
+Module renamings:
+ - rename SWAG to RING?
+ - Rename cursor to iterator
 
-Replace set with SWAG
+log.h still contains @name which break doxygen:
+xbt/log.h:/** \name DEBUG
+xbt/log.h:/** \name VERB
+xbt/log.h:/** \name INFO
+xbt/log.h:/** \name WARN
+xbt/log.h:/** \name ERROR
+xbt/log.h:/** \name CRITICAL
 
-Rename SWAG to RING?
-
-Rename cursor to iterator
 
 ###
 ### Planned
@@ -66,6 +71,8 @@ Rename cursor to iterator
   * we may need a round-robin database module, and a statistical one
   * a hook module *may* help cleaning up some parts. Not sure yet.
   * Some of the datacontainer modules seem to overlap. Kill some of them?
+    - replace fifo with dynars
+    - replace set with SWAG
 
 *
 * GRAS
