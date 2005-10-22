@@ -558,11 +558,11 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
  * \param name a name for the object. It is for user-level information
    and can be NULL.
  * \param host_nb the number of hosts implied in the parallel task.
- * \param host_list an array of #host_nb m_host_t.
- * \param computation_amount an array of #host_nb
+ * \param host_list an array of \a host_nb m_host_t.
+ * \param computation_amount an array of \a host_nb
    doubles. computation_amount[i] is the total number of operations
    that have to be performed on host_list[i].
- * \param communication_amount an array of #host_nb*#host_nb doubles.
+ * \param communication_amount an array of \a host_nb* \a host_nb doubles.
  * \param data a pointer to any data may want to attach to the new
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_task_get_data.
