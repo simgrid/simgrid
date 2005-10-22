@@ -33,66 +33,73 @@
 #include <time.h>
 #include <string.h>
 
-#include "xbt/testsuite.h"
+#include "xbt/cunit.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_CATEGORY(test,"This test");
 
-TS_TEST(test_controlflow)
-{
-    xbt_ex_t ex;
-    volatile int n;
+XBT_TEST_UNIT(test_expected_failure) {
+    xbt_test0("Skipped test");
+    xbt_test_skip();
 
-    ts_test_check(TS_CTX, "basic nested control flow");
-    n = 1;
+    xbt_test0("EXPECTED FAILURE");
+    xbt_test_expect_failure();
+    xbt_test_log2("%s %s","Test","log");
+    xbt_test_fail0("EXPECTED FAILURE");
+}
+
+XBT_TEST_UNIT(test_controlflow) {
+    xbt_ex_t ex;
+    volatile int n=1;
+
+    xbt_test0("basic nested control flow");
+
     TRY {
         if (n != 1)
-            ts_test_fail(TS_CTX, "M1: n=%d (!= 1)", n);
+            xbt_test_fail1("M1: n=%d (!= 1)", n);
         n++;
         TRY {
             if (n != 2)
-                ts_test_fail(TS_CTX, "M2: n=%d (!= 2)", n);
+                xbt_test_fail1("M2: n=%d (!= 2)", n);
             n++;
             THROW0(unknown_error,0,"something");
         } CATCH (ex) {
             if (n != 3)
-                ts_test_fail(TS_CTX, "M3: n=%d (!= 1)", n);
+                xbt_test_fail1("M3: n=%d (!= 1)", n);
             n++;
             RETHROW;
         }
-        ts_test_fail(TS_CTX, "MX: n=%d (expected: not reached)", n);
+        xbt_test_fail1("MX: n=%d (shouldn't reach this point)", n);
     }
     CATCH(ex) {
         if (n != 4)
-            ts_test_fail(TS_CTX, "M4: n=%d (!= 4)", n);
+            xbt_test_fail1("M4: n=%d (!= 4)", n);
         n++;
         xbt_ex_free(ex);
     }
     if (n != 5)
-        ts_test_fail(TS_CTX, "M5: n=%d (!= 5)", n);
+        xbt_test_fail1("M5: n=%d (!= 5)", n);
 }
 
-TS_TEST(test_value)
-{
+XBT_TEST_UNIT(test_value) {
     xbt_ex_t ex;
 
     TRY {
         THROW0(unknown_error, 2, "toto");
     } CATCH(ex) {
-        ts_test_check(TS_CTX, "exception value passing");
+        xbt_test0("exception value passing");
         if (ex.category != unknown_error)
-            ts_test_fail(TS_CTX, "category=%d (!= 1)", ex.category);
+            xbt_test_fail1("category=%d (!= 1)", ex.category);
         if (ex.value != 2)
-            ts_test_fail(TS_CTX, "value=%d (!= 2)", ex.value);
+            xbt_test_fail1("value=%d (!= 2)", ex.value);
         if (strcmp(ex.msg,"toto"))
-            ts_test_fail(TS_CTX, "message=%s (!= toto)", ex.msg);
+            xbt_test_fail1("message=%s (!= toto)", ex.msg);
         xbt_ex_free(ex);
     }
 }
 
-TS_TEST(test_variables)
-{
+XBT_TEST_UNIT(test_variables) {
     xbt_ex_t ex;
     int r1, r2;
     volatile int v1, v2;
@@ -103,25 +110,24 @@ TS_TEST(test_variables)
         v2 = 5678;
         THROW0(unknown_error, 0, "toto");
     } CATCH(ex) {
-        ts_test_check(TS_CTX, "variable preservation");
+        xbt_test0("variable preservation");
         if (r1 != 1234)
-            ts_test_fail(TS_CTX, "r1=%d (!= 1234)", r1);
+            xbt_test_fail1("r1=%d (!= 1234)", r1);
         if (v1 != 1234)
-            ts_test_fail(TS_CTX, "v1=%d (!= 1234)", v1);
+            xbt_test_fail1("v1=%d (!= 1234)", v1);
         /* r2 is allowed to be destroyed because not volatile */
         if (v2 != 5678)
-            ts_test_fail(TS_CTX, "v2=%d (!= 5678)", v2);
+            xbt_test_fail1("v2=%d (!= 5678)", v2);
         xbt_ex_free(ex);
     }
 }
 
-TS_TEST(test_cleanup)
-{
+XBT_TEST_UNIT(test_cleanup) {
     xbt_ex_t ex;
     volatile int v1;
     int c;
 
-    ts_test_check(TS_CTX, "cleanup handling");
+    xbt_test0("cleanup handling");
 
     v1 = 1234;
     c = 0;
@@ -130,32 +136,32 @@ TS_TEST(test_cleanup)
         THROW0(1, 2, "blah");
     } CLEANUP {
         if (v1 != 5678)
-            ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
+            xbt_test_fail1("v1 = %d (!= 5678)", v1);
         c = 1;
     } CATCH(ex) {
         if (v1 != 5678)
-            ts_test_fail(TS_CTX, "v1 = %d (!= 5678)", v1);
+            xbt_test_fail1("v1 = %d (!= 5678)", v1);
         if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.msg,"blah")))
-            ts_test_fail(TS_CTX, "unexpected exception contents");
+            xbt_test_fail0("unexpected exception contents");
         xbt_ex_free(ex);
     }
     if (!c)
-        ts_test_fail(TS_CTX, "ex_cleanup not executed");
+        xbt_test_fail0("xbt_ex_free not executed");
 }
 
-int main(int argc, char *argv[])
-{
-    ts_suite_t *ts;
-    int n;
+int main(int argc, char *argv[]) {
+    xbt_test_suite_t suite;
 
-    ts = ts_suite_new("OSSP ex (Exception Handling)");
-    ts_suite_test(ts, test_controlflow, "basic nested control flow");
-    ts_suite_test(ts, test_value,       "exception value passing");
-    ts_suite_test(ts, test_variables,   "variable value preservation");
-    ts_suite_test(ts, test_cleanup,     "cleanup handling");
-    n = ts_suite_run(ts);
-    ts_suite_free(ts);
-    return n;
+    suite = xbt_test_suite_new("Testsuite Autotest");
+    xbt_test_suite_push(suite, test_expected_failure, "expected failures");
+    
+    suite = xbt_test_suite_new("Exception Handling");
+    xbt_test_suite_push(suite, test_controlflow, "basic nested control flow");
+    xbt_test_suite_push(suite, test_value,       "exception value passing");
+    xbt_test_suite_push(suite, test_variables,   "variable value preservation");
+    xbt_test_suite_push(suite, test_cleanup,     "cleanup handling");
+
+    return xbt_test_run();
 }
 
 

@@ -1,7 +1,8 @@
 SimGrid (3.0.2) unstable; urgency=low
 
   XBT:
-  * New module: testsuite [MQ]
+  * New module: cunit [MQ]
+  * New functions: xbt_dynar_getfirst_as() and xbt_dynar_getlast_as() [MQ]
 
  --
 

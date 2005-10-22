@@ -25,6 +25,6 @@
 #include <xbt/heap.h>
 
 #include <xbt/config.h>
-#include <xbt/testsuite.h>
+#include <xbt/cunit.h>
 
 #endif /* xbt_H */
