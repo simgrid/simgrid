@@ -86,7 +86,7 @@
     \subsection MSG_ext_ms_slave Slave code
     
       This function has to be assigned to a #m_process_t that has to behave as a slave.
-      Just like #master(), it should not be called directly.
+      Just like the master fuction (described in \ref MSG_ext_ms_master), it should not be called directly.
 
       This function keeps waiting for tasks and executes them as it receives them.
       
@@ -95,7 +95,7 @@
    \subsection MSG_ext_ms_forwarder Forwarder code
    
       This function has to be assigned to a #m_process_t that has to behave as a forwarder.
-      Just like #master(), it should not be called directly.
+      Just like the master fuction (described in \ref MSG_ext_ms_master), it should not be called directly.
 
       C style arguments (argc/argv) are interpreted as a list of host
       that will accept those tasks.
