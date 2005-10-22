@@ -99,6 +99,9 @@ SG_BEGIN_DECL()
  * @{
  */
 
+  /** @brief Configuration set are only special dynars. But don't rely on it, it may change. */
+  typedef xbt_dynar_t xbt_cfg_t;
+
   void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
   void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
   void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
@@ -138,7 +141,7 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 
 /* @} */
 
-/** @defgroup XBT_cfg_decl Type declaration and memory management
+/** @defgroup XBT_cfg_decl Configuration type declaration and memory management
  *  @ingroup XBT_config
  *
  * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_config]
@@ -147,8 +150,6 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
  *
  *  @{
  */
-  /** @brief Configuration set are only special dynars. But don't rely on it, it may change. */
-  typedef xbt_dynar_t xbt_cfg_t;
 
   /** @brief possible content of each configuration cell */
   typedef enum {
