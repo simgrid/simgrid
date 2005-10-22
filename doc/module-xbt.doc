@@ -89,9 +89,11 @@
     /** @defgroup XBT_swag A O(1) set datatype
      *  @brief a O(1) set based on linked lists
      */
+
 	  
-/**       \addtogroup XBT_heap
-          \ingroup XBT_API */
+    /** @defgroup XBT_heap A generic heap data structure
+     *  @brief This section describes the API to generic heap with O(log(n)) access. 
+     */
 
 /* ************************* *
  * * PORTABILITY-INTERNALS * *
@@ -107,3 +109,5 @@
   *
   *  You should use those mechanism instead.
   */
+
+/** @} */ End of XBT_API

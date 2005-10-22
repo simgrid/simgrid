@@ -12,17 +12,14 @@
 #include "heap_private.h"
 
 
-/** \defgroup XBT_heap A generic heap data structure
+/** @addtogroup XBT_heap 
  *  \brief This section describes the API to generic heap with O(log(n)) access.
  */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap, xbt, "Heap");
 
-/** \name Functions 
- *  \ingroup XBT_heap
- */
-/* @{ */
 /**
+ * @brief Creates a new heap.
  * \param init_size initial size of the heap
  * \param free_func function to call on each element when you want to free
  *             the whole heap (or NULL if nothing to do).
@@ -40,9 +37,8 @@ xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t * const free_func)
 }
 
 /**
- * \param H poor victim
- *
- * kilkil a heap and its content
+ * @brief kilkil a heap and its content
+ * @param H poor victim
  */
 void xbt_heap_free(xbt_heap_t H)
 {
@@ -56,8 +52,9 @@ void xbt_heap_free(xbt_heap_t H)
 }
 
 /**
- * \param H the heap we're working on
- * \return the number of elements in the heap
+ * @brief returns the number of elements in the heap
+ * @param H the heap we're working on
+ * @return the number of elements in the heap
  */
 int xbt_heap_size(xbt_heap_t H)
 {
@@ -65,12 +62,12 @@ int xbt_heap_size(xbt_heap_t H)
 }
 
 /**
+ * @brief Add an element into the heap.
  * \param H the heap we're working on
  * \param content the object you want to add to the heap
  * \param key the key associated to this object
  *
- * Add an element int the heap. The element with the smallest key is
- * automatically moved at the top of the heap.
+ * The element with the smallest key is automatically moved at the top of the heap.
  */
 void xbt_heap_push(xbt_heap_t H, void *content, double key)
 {
@@ -91,6 +88,7 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
 }
 
 /**
+ * @brief Extracts from the heap and returns the element with the smallest key.
  * \param H the heap we're working on
  * \return the element with the smallest key
  *
@@ -120,6 +118,7 @@ void *xbt_heap_pop(xbt_heap_t H)
 }
 
 /**
+ * @brief returns the smallest key in the heap (heap unchanged)
  * \param H the heap we're working on
  *
  * \return the smallest key in the heap without modifying the heap.
@@ -131,6 +130,7 @@ double xbt_heap_maxkey(xbt_heap_t H)
 }
 
 /**
+ * @brief returns the value associated to the smallest key in the heap (heap unchanged)
  * \param H the heap we're working on
  *
  * \return the value associated to the smallest key in the heap
@@ -186,4 +186,3 @@ static void xbt_heap_increaseKey(xbt_heap_t H, int i)
   }
   return;
 }
-/* @} */

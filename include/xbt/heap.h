@@ -11,9 +11,11 @@
 #include "xbt/misc.h"
 #include "xbt/dynar.h" /* void_f_pvoid_t */
 
-/** \brief Heap data type 
-    \ingroup XBT_heap
-*/
+/** @addtogroup XBT_heap
+ *
+ *  @{
+ */
+/* @brief heap datatype */
 typedef struct xbt_heap *xbt_heap_t;
 
 xbt_heap_t xbt_heap_new(int num, void_f_pvoid_t free_func);
@@ -26,4 +28,5 @@ void *xbt_heap_pop(xbt_heap_t H);
 double xbt_heap_maxkey(xbt_heap_t H);
 void *xbt_heap_maxcontent(xbt_heap_t H);
 
+/* @} */
 #endif				/* _XBT_HEAP_H */
