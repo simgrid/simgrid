@@ -100,8 +100,9 @@ static inline void *xbt_realloc(void*p,int s){
 /** @} */  
 
 /* FIXME: better place? */
-int vasprintf  (char **ptr, const char *fmt, va_list ap);
-char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
+int   vasprintf (char **ptr, const char *fmt, va_list ap);
+char *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
   
 SG_END_DECL()
 
