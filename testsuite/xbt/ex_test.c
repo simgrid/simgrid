@@ -33,7 +33,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "ex_test_ts.h"
+#include "xbt/testsuite.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 

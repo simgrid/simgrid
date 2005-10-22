@@ -1,7 +1,17 @@
 ###
 ### Ongoing stuff
 ###
+/* FIXME: better place? */
+int vasprintf  (char **ptr, const char *fmt, va_list ap);
+char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
+Replace fifo with dynars
+
+Replace set with SWAG
+
+Rename SWAG to RING?
+
+Rename cursor to iterator
 
 ###
 ### Planned
@@ -33,7 +43,7 @@
     The first ones should be repported to the user, the second should kill
     the program (or, yet better, only the msg handler)
   * Allows the use of an error handler depending on the current module (ie,
-    the same philosophy than log4c using GSL's error functions)
+    the same philosophy as log4c using GSL's error functions)
 
 [logs]
   * Hijack message from a given category to another for a while (to mask
@@ -62,7 +72,6 @@
 ******
 
 [doc]
-  * add the token ring as official example
   * implement the P2P protocols that macedon does. They constitute great
     examples, too
 

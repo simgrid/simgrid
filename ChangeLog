@@ -1,6 +1,7 @@
 SimGrid (3.0.2) unstable; urgency=low
 
-  * 
+  XBT:
+  * New module: testsuite [MQ]
 
  --
 

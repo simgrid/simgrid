@@ -34,7 +34,7 @@
 #include <stdarg.h>
 #include "gras_config.h"
 
-#include "ex_test_ts.h"
+#include "xbt/testsuite.h"
 
 /* embedded ring data structure library */
 #define RING_ENTRY(elem) \

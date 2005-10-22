@@ -114,6 +114,7 @@ COMMON_SRC=\
   xbt/set.c                                                                  \
   xbt/module.c                                                               \
   xbt/config.c                                                               \
+  xbt/testsuite.c                                                            \
   \
   gras/gras.c \
   \

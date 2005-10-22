@@ -10,6 +10,7 @@ nobase_include_HEADERS = \
 	xbt/fifo.h \
 	xbt/swag.h \
 	xbt/config.h \
+	xbt/testsuite.h \
 	\
 	msg/msg.h \
 	msg/datatypes.h \
