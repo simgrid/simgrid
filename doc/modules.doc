@@ -2,9 +2,11 @@
   \defgroup SimGrid_API  SimGrid modules */
 
 /** \defgroup XBT_API      XBT
-       \ingroup SimGrid_API
-       \brief The core toolbox of SimGrid, containing usefull datatypes,
-       portability support and so on.
+    \ingroup SimGrid_API
+    \brief The core toolbox of SimGrid, containing usefull datatypes,
+           portability support and so on.
+
+   
 */
 
 /** \defgroup SURF_API       SURF
