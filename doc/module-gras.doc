@@ -75,7 +75,10 @@
 
 /** \page GRAS_main_generation main() and GRAS
 
-    <center>[\ref GRAS_API]</center>
+  <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
+                 <tr><td><b>Prev</b>   <td> [\ref GRAS_emul]
+                 <tr><td><b>Next</b>   <td> [\ref GRAS_compile]            </table></center>
+
 
     \section GRAS_maingen_toc Table of content
      
@@ -153,7 +156,9 @@
 
 /** \page GRAS_compile Compiling your GRAS project
 
-    <center>[\ref GRAS_API]</center>
+    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
+                   <tr><td><b>Prev</b>   <td> [\ref GRAS_main_generation]
+                   <tr><td><b>Next</b>   <td> [\ref GRAS_ex_ping]            </table></center>
 
     As explained in section \ref GRAS_main_generation, the
     gras_stub_generator tool can be used to generate the system
@@ -251,7 +256,9 @@
 
 /** \page GRAS_ex_ping The classical Ping-Pong in GRAS
 
-    <center>[\ref GRAS_API]</center>
+    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
+                   <tr><td><b>Prev</b>   <td> [\ref GRAS_compile]
+                   <tr><td><b>Next</b>   <td> [\ref GRAS_ex_mmrpc]            </table></center>
 
     This example implements the very classical ping-pong in GRAS. It
     involves a client (initiating the ping-pong) and a server (answering to 
@@ -357,7 +364,9 @@
 
 /** \page GRAS_ex_mmrpc A simple RPC for matrix multiplication
 
-    <center>[\ref GRAS_API]</center>
+    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
+                   <tr><td><b>Prev</b>   <td> [\ref GRAS_ex_ping]
+                   <tr><td><b>Next</b>   <td> [\ref GRAS_ex_timer]            </table></center>
 
     This example implements a remote matrix multiplication. It involves a client 
     (creating the matrices and sending the multiplications requests) and a server 
@@ -486,7 +495,9 @@
 
 /** \page GRAS_ex_timer Some timer games
 
-    <center>[\ref GRAS_API]</center>
+    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
+                   <tr><td><b>Prev</b>   <td> [\ref GRAS_ex_mmrpc]
+                   <tr><td>   Next       <td>            </table></center>
 
     This example fools around with the GRAS timers (\ref GRAS_timer). It is
     mainly a regression test, since it uses almost all timer features.
