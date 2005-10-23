@@ -13,6 +13,7 @@
 #define _XBT_CUNIT_H_
 
 #include "xbt/sysdep.h"    /* XBT_GNU_PRINTF */
+#include "xbt/ex.h"
 
 /* test suite object type */
 typedef struct s_xbt_test_suite *xbt_test_suite_t;
@@ -21,7 +22,7 @@ typedef struct s_xbt_test_suite *xbt_test_suite_t;
 typedef struct s_xbt_test_unit *xbt_test_unit_t;
 
 /* test callback function type */
-typedef void (*ts_test_cb_t)(xbt_test_unit_t);
+typedef void (*ts_test_cb_t)(void);
 
 /* test suite operations */
 xbt_test_suite_t xbt_test_suite_new  (const char *name,const char *fmt, ...);
@@ -30,44 +31,50 @@ void             xbt_test_suite_dump (xbt_test_suite_t suite);
 void             xbt_test_suite_push (xbt_test_suite_t suite, 
 				      ts_test_cb_t func, const char *fmt, ...);
 
+
 int xbt_test_run  (void);
 
-
 /* test operations */
-void    _xbt_test_add(xbt_test_unit_t u, const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(4,5);
-#define xbt_test_add0(fmt)           _xbt_test_add(_unit,__FILE__,__LINE__,fmt)
-#define xbt_test_add1(fmt,a)         _xbt_test_add(_unit,__FILE__,__LINE__,fmt,a)
-#define xbt_test_add2(fmt,a,b)       _xbt_test_add(_unit,__FILE__,__LINE__,fmt,a,b)
-#define xbt_test_add3(fmt,a,b,c)     _xbt_test_add(_unit,__FILE__,__LINE__,fmt,a,b,c)
-#define xbt_test_add4(fmt,a,b,c,d)   _xbt_test_add(_unit,__FILE__,__LINE__,fmt,a,b,c,d)
-#define xbt_test_add5(fmt,a,b,c,d,e) _xbt_test_add(_unit,__FILE__,__LINE__,fmt,a,b,c,d,e)
+void    _xbt_test_add(const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
+#define xbt_test_add0(fmt)           _xbt_test_add(__FILE__,__LINE__,fmt)
+#define xbt_test_add1(fmt,a)         _xbt_test_add(__FILE__,__LINE__,fmt,a)
+#define xbt_test_add2(fmt,a,b)       _xbt_test_add(__FILE__,__LINE__,fmt,a,b)
+#define xbt_test_add3(fmt,a,b,c)     _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c)
+#define xbt_test_add4(fmt,a,b,c,d)   _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d)
+#define xbt_test_add5(fmt,a,b,c,d,e) _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d,e)
 
-void    _xbt_test_fail(xbt_test_unit_t u, const char*file,int line, const char *fmt, ...) _XBT_GNUC_PRINTF(4,5);
-#define xbt_test_fail0(fmt)           _xbt_test_fail(_unit, __FILE__, __LINE__, fmt)
-#define xbt_test_fail1(fmt,a)         _xbt_test_fail(_unit, __FILE__, __LINE__, fmt,a)
-#define xbt_test_fail2(fmt,a,b)       _xbt_test_fail(_unit, __FILE__, __LINE__, fmt,a,b)
-#define xbt_test_fail3(fmt,a,b,c)     _xbt_test_fail(_unit, __FILE__, __LINE__, fmt,a,b,c)
-#define xbt_test_fail4(fmt,a,b,c,d)   _xbt_test_fail(_unit, __FILE__, __LINE__, fmt,a,b,c,d)
-#define xbt_test_fail5(fmt,a,b,c,d,e) _xbt_test_fail(_unit, __FILE__, __LINE__, fmt,a,b,c,d,e)
+void    _xbt_test_fail(const char*file,int line, const char *fmt, ...) _XBT_GNUC_PRINTF(3,4);
+#define xbt_test_fail0(fmt)           _xbt_test_fail(__FILE__, __LINE__, fmt)
+#define xbt_test_fail1(fmt,a)         _xbt_test_fail(__FILE__, __LINE__, fmt,a)
+#define xbt_test_fail2(fmt,a,b)       _xbt_test_fail(__FILE__, __LINE__, fmt,a,b)
+#define xbt_test_fail3(fmt,a,b,c)     _xbt_test_fail(__FILE__, __LINE__, fmt,a,b,c)
+#define xbt_test_fail4(fmt,a,b,c,d)   _xbt_test_fail(__FILE__, __LINE__, fmt,a,b,c,d)
+#define xbt_test_fail5(fmt,a,b,c,d,e) _xbt_test_fail(__FILE__, __LINE__, fmt,a,b,c,d,e)
 
-void    _xbt_test_log (xbt_test_unit_t u, const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(4,5);
-#define xbt_test_log0(fmt)           _xbt_test_log(_unit, __FILE__, __LINE__, fmt)
-#define xbt_test_log1(fmt,a)         _xbt_test_log(_unit, __FILE__, __LINE__, fmt,a)
-#define xbt_test_log2(fmt,a,b)       _xbt_test_log(_unit, __FILE__, __LINE__, fmt,a,b)
-#define xbt_test_log3(fmt,a,b,c)     _xbt_test_log(_unit, __FILE__, __LINE__, fmt,a,b,c)
-#define xbt_test_log4(fmt,a,b,c,d)   _xbt_test_log(_unit, __FILE__, __LINE__, fmt,a,b,c,d)
-#define xbt_test_log5(fmt,a,b,c,d,e) _xbt_test_log(_unit, __FILE__, __LINE__, fmt,a,b,c,d,e)
+#define xbt_test_assert0(cond,fmt)           if(!(cond)) xbt_test_fail0(fmt)
+#define xbt_test_assert1(cond,fmt,a)         if(!(cond)) xbt_test_fail1(fmt,a)
+#define xbt_test_assert2(cond,fmt,a,b)       if(!(cond)) xbt_test_fail2(fmt,a,b)
+#define xbt_test_assert3(cond,fmt,a,b,c)     if(!(cond)) xbt_test_fail3(fmt,a,b,c)
+#define xbt_test_assert4(cond,fmt,a,b,c,d)   if(!(cond)) xbt_test_fail4(fmt,a,b,c,d)
+#define xbt_test_assert5(cond,fmt,a,b,c,d,e) if(!(cond)) xbt_test_fail5(fmt,a,b,c,d,e)
 
-void _xbt_test_expect_failure(xbt_test_unit_t unit);
-#define    xbt_test_expect_failure() _xbt_test_expect_failure(_unit)
+void    _xbt_test_log (const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
+#define xbt_test_log0(fmt)           _xbt_test_log(__FILE__, __LINE__, fmt)
+#define xbt_test_log1(fmt,a)         _xbt_test_log(__FILE__, __LINE__, fmt,a)
+#define xbt_test_log2(fmt,a,b)       _xbt_test_log(__FILE__, __LINE__, fmt,a,b)
+#define xbt_test_log3(fmt,a,b,c)     _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c)
+#define xbt_test_log4(fmt,a,b,c,d)   _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c,d)
+#define xbt_test_log5(fmt,a,b,c,d,e) _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c,d,e)
 
-void _xbt_test_skip(xbt_test_unit_t unit);
-#define    xbt_test_skip() _xbt_test_skip(_unit)
+void xbt_test_exception(xbt_ex_t e);
+
+void xbt_test_expect_failure(void);
+void xbt_test_skip(void);
 
 /* test suite short-cut macros */
-#define XBT_TEST_UNIT(name,func,title)               \
-    void func(xbt_test_unit_t _unit);  /*prototype*/ \
-    void func(xbt_test_unit_t _unit) 
+#define XBT_TEST_UNIT(name,func,title)    \
+    void func(void);  /*prototype*/       \
+    void func(void) 
 
 #endif /* _TS_H_ */
 
