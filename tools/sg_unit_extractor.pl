@@ -22,8 +22,12 @@ my (@tests); # actual content
 open IN, "$infile" || die "$progname: Cannot open input file '$infile': $!\n";
 
 my $takeit=0;
+my $line=0;
+my $beginline=0;
 while (<IN>) {
+  $line++;
   if (m/ifdef +SIMGRID_TEST/) {
+    $beginline = $line;
     $takeit = 1;
     next;
   }
@@ -67,11 +71,12 @@ die "$progname: no suite defined in $infile\n"
 my ($GENERATED)=("/*******************************/\n".
                  "/* GENERATED FILE, DO NOT EDIT */\n".
                  "/*******************************/\n\n");
-
+$beginline+=2;
 open OUT,">$outfile" || die "$progname: Cannot open output file '$outfile': $!\n";
 print OUT $GENERATED;
 print OUT "#include \"xbt.h\"\n";
 print OUT $GENERATED;
+print OUT "# $beginline \"$infile\" \n";
 print OUT "$unit_source";
 print OUT $GENERATED;
 close OUT || die "$progname: Cannot close output file '$outfile': $!\n";
@@ -81,6 +86,7 @@ if (! -e "simgrid_units_main.c") {
   open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
   print OUT $GENERATED;
   print OUT "#include \"xbt.h\"\n\n";
+  print OUT "extern xbt_test_unit_t _xbt_current_unit;\n\n";
   print OUT "/* SGU: BEGIN PROTOTYPES */\n";
   print OUT "/* SGU: END PROTOTYPES */\n\n";
   print OUT $GENERATED;
@@ -131,7 +137,7 @@ open IN,"simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid
   $newmain .= "  /* SGU: BEGIN FILE $infile */\n";
   map {
     my ($name,$func,$title) = @{$_};
-    $newmain .=  "    void $func(xbt_test_unit_t _unit);\n"
+    $newmain .=  "    void $func(void);\n"
   } @tests;
 
   $newmain .= "  /* SGU: END FILE */\n\n";
