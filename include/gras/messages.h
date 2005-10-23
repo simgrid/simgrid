@@ -38,11 +38,10 @@ SG_BEGIN_DECL()
  *  passed to the callback.
  * 
  *  For an example of use, please refer to \ref GRAS_ex_ping.
- * 
- *  @{
  */
 
 /** @defgroup GRAS_msg_decl Message declaration and retrival 
+ *  @ingroup  GRAS_msg
  *  
  * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_msg]
  *                <tr><td>   Prev       <td> 
@@ -75,6 +74,7 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 
 /** @} */  
 /** @defgroup GRAS_msg_cb Callback declaration and use
+ *  @ingroup  GRAS_msg
  * 
  * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_msg]
  *                <tr><td><b>Prev</b>   <td> [\ref GRAS_msg_decl]
@@ -115,6 +115,7 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 
 /** @} */  
 /** @defgroup GRAS_msg_exchange Message exchange 
+ *  @ingroup  GRAS_msg
  *
  * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_msg]
  *                <tr><td><b>Prev</b>   <td> [\ref GRAS_msg_cb]
@@ -131,7 +132,6 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 		     void           *payload);
   void gras_msg_handle(double timeOut);
 
-/* @} */
 /* @} */
 
 SG_END_DECL()
