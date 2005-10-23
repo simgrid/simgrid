@@ -15,8 +15,6 @@
 #include "xbt/cunit.h"
 #include "xbt/dynar.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(testsuite,xbt,"Test infrastructure");
-
 /* collection of all suites */
 static xbt_dynar_t _xbt_test_suites = NULL; 
 /* global statistics */
@@ -32,6 +30,10 @@ static int _xbt_test_unit_ignore = 0;
 static int _xbt_test_nb_suites    = 0;
 static int _xbt_test_suite_failed = 0;
 static int _xbt_test_suite_ignore = 0;
+
+
+/* Context */
+xbt_test_unit_t _xbt_test_current_unit = NULL;
 
 
 /* test suite test log */
@@ -225,7 +227,8 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
     unit->test_expect = 0;
 
     /* run the test case function */
-    unit->func(unit);
+    _xbt_test_current_unit = unit;
+    unit->func();
   
     /* iterate through all performed tests to determine status */
     xbt_dynar_foreach(unit->tests,it_test, test) {
@@ -461,7 +464,8 @@ int xbt_test_run(void) {
 
 
 /* annotate test case with test */
-void _xbt_test_add(xbt_test_unit_t unit, const char*file,int line, const char *fmt, ...) {
+void _xbt_test_add(const char*file,int line, const char *fmt, ...) {
+  xbt_test_unit_t unit=_xbt_test_current_unit;
   xbt_test_test_t test;
   va_list ap;
   
@@ -483,13 +487,18 @@ void _xbt_test_add(xbt_test_unit_t unit, const char*file,int line, const char *f
 }
 
 /* annotate test case with log message and failure */
-void _xbt_test_fail(xbt_test_unit_t unit,  const char*file,int line,const char *fmt, ...) {
+void _xbt_test_fail(const char*file,int line,const char *fmt, ...) {
+  xbt_test_unit_t unit = _xbt_test_current_unit;
   xbt_test_test_t test;
   xbt_test_log_t log;
   va_list ap;
   
   xbt_assert(unit);
   xbt_assert(fmt);
+
+  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+	      "Test failed even before being declared (broken unit: %s)",
+	      unit->title);
 
   log = xbt_new(struct s_xbt_test_log,1);
   va_start(ap, fmt);
@@ -504,23 +513,42 @@ void _xbt_test_fail(xbt_test_unit_t unit,  const char*file,int line,const char *
   test->failed = 1;
 }
 
-void _xbt_test_expect_failure(xbt_test_unit_t unit) {
-  xbt_test_test_t test = xbt_dynar_getlast_as(unit->tests,xbt_test_test_t);
+void xbt_test_exception(xbt_ex_t e) {
+  _xbt_test_fail(e.file,e.line,"Exception %s raised: %s",xbt_ex_catname(e.category),e.msg);
+}
+
+void xbt_test_expect_failure(void) {
+  xbt_test_test_t test;
+  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+	      "Cannot expect the failure of a test before declaring it (broken unit: %s)",
+	      _xbt_test_current_unit->title);
+  test = xbt_dynar_getlast_as(_xbt_test_current_unit->tests,xbt_test_test_t);
   test->expected_failure = 1;
 }
-void _xbt_test_skip(xbt_test_unit_t unit) {
-  xbt_test_test_t test = xbt_dynar_getlast_as(unit->tests,xbt_test_test_t);
+void xbt_test_skip(void) {
+  xbt_test_test_t test;
+
+  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+	      "Test skiped even before being declared (broken unit: %s)",
+	      _xbt_test_current_unit->title);
+
+  test = xbt_dynar_getlast_as(_xbt_test_current_unit->tests,
+			      xbt_test_test_t);
   test->ignored = 1;
 }
 
 /* annotate test case with log message only */
-void _xbt_test_log(xbt_test_unit_t unit, const char*file,int line,const char *fmt, ...) {
+void _xbt_test_log(const char*file,int line,const char *fmt, ...) {
+  xbt_test_unit_t unit=_xbt_test_current_unit;
   xbt_test_test_t test;
   xbt_test_log_t log;
   va_list ap;
 
   xbt_assert(unit);
   xbt_assert(fmt);
+
+  xbt_assert1(xbt_dynar_length(_xbt_test_current_unit->tests),
+	      "Test logged into even before being declared (broken test unit: %s)",unit->title);
 
   log = xbt_new(struct s_xbt_test_log,1);
   va_start(ap, fmt);
