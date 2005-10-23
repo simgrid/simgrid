@@ -11,6 +11,7 @@
 #include "surf/surf_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(parse, surf ,"Logging specific to the SURF  module");
 
+#undef CLEANUP
 #include "surfxml.c"
 
 static xbt_dynar_t surf_input_buffer_stack=NULL;

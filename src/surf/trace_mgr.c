@@ -10,10 +10,6 @@
 #include "xbt/dict.h"
 #include "trace_mgr_private.h"
 #include "surf_private.h"
-#include <stdlib.h>
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trace, surf,
-				"Logging specific to the SURF trace module");
 
 static xbt_dict_t trace_list = NULL;
 static void _tmgr_trace_free(void *trace)

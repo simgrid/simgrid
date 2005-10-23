@@ -12,10 +12,6 @@ typedef struct surf_resource_object {
   surf_resource_t resource;
 } s_surf_resource_object_t, *surf_resource_object_t;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_global, surf,
-				"Logging specific to the SURF global module");
-
-
 static double NOW = 0;
 
 xbt_dynar_t resource_list = NULL;

@@ -8,8 +8,6 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(task, msg,
-				"Logging specific to MSG (task)");
 
 /** \defgroup m_task_management Managing functions of Tasks
  *  \brief This section describes the task structure of MSG

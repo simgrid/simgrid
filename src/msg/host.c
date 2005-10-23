@@ -8,8 +8,6 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host, msg,
-				"Logging specific to MSG (host)");
 
 /** \defgroup m_host_management Management functions of Hosts
  *  \brief This section describes the host structure of MSG

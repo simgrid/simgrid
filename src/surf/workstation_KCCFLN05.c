@@ -103,7 +103,7 @@ static void parse_workstation(void)
 
   xbt_assert0((A_cpu_state==A_cpu_state_ON)||
 	      (A_cpu_state==A_cpu_state_OFF),
-	      "Invalid state")
+	      "Invalid state");
   if (A_cpu_state==A_cpu_state_ON) state_initial = SURF_CPU_ON;
   if (A_cpu_state==A_cpu_state_OFF) state_initial = SURF_CPU_OFF;
   surf_parse_get_trace(&state_trace,A_cpu_state_file);
@@ -229,7 +229,7 @@ static void parse_network_link(void)
 
   xbt_assert0((A_network_link_state==A_network_link_state_ON)||
 	      (A_network_link_state==A_network_link_state_OFF),
-	      "Invalid state")
+	      "Invalid state");
   if (A_network_link_state==A_network_link_state_ON) 
     state_initial = SURF_NETWORK_LINK_ON;
   if (A_network_link_state==A_network_link_state_OFF) 

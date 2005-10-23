@@ -66,7 +66,7 @@ static void parse_cpu(void)
   surf_parse_get_trace(&power_trace,A_cpu_availability_file);
 
   xbt_assert0((A_cpu_state==A_cpu_state_ON)||(A_cpu_state==A_cpu_state_OFF),
-	      "Invalid state")
+	      "Invalid state");
   if (A_cpu_state==A_cpu_state_ON) state_initial = SURF_CPU_ON;
   if (A_cpu_state==A_cpu_state_OFF) state_initial = SURF_CPU_OFF;
   surf_parse_get_trace(&state_trace,A_cpu_state_file);

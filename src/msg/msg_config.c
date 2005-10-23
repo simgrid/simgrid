@@ -12,10 +12,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_cfg, msg,
-				"Configuration support in \ref MSG_API");
-
-
 int _msg_init_status = 0; /* 0: beginning of time; 
                              1: pre-inited (cfg_set created); 
                              2: inited (running) */

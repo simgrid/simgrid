@@ -9,8 +9,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "surf/surf_parse_private.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(deployment, msg,
-				"Logging specific to MSG (environment)");
 
 static int parse_argc = -1 ;
 static char **parse_argv = NULL;

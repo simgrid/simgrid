@@ -11,9 +11,6 @@
 #include "cpu_private.h"
 #include "network_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(workstation, surf,
-				"Logging specific to the SURF workstation module");
-
 surf_workstation_resource_t surf_workstation_resource = NULL;
 
 xbt_dict_t workstation_set = NULL;

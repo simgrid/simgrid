@@ -8,9 +8,6 @@
 #include "xbt/ex.h"
 #include "surf_timer_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(timer, surf,
-				"Logging specific to the SURF timer module");
-
 surf_timer_resource_t surf_timer_resource = NULL;
 static tmgr_trace_t empty_trace = NULL;
 static xbt_swag_t command_pending = NULL;

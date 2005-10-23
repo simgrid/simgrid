@@ -127,7 +127,7 @@ static void parse_network_link(void)
 
   xbt_assert0((A_network_link_state==A_network_link_state_ON)||
 	      (A_network_link_state==A_network_link_state_OFF),
-	      "Invalid state")
+	      "Invalid state");
   if (A_network_link_state==A_network_link_state_ON) 
     state_initial = SURF_NETWORK_LINK_ON;
   else if (A_network_link_state==A_network_link_state_OFF) 
