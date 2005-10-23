@@ -12,7 +12,8 @@
 SG_BEGIN_DECL()
 
 /* ******************************** Host ************************************ */
-/** @defgroup m_datatypes_management_details */
+/** @defgroup m_datatypes_management_details Details on MSG datatypes
+    @ingroup  m_datatypes_management*/
 
 typedef struct simdata_host *simdata_host_t;
 /** @brief Host datatype 
