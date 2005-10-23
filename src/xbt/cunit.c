@@ -288,7 +288,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
     suite_title[i]='\0';
 
     sprintf(suite_title + 40 - (suite_len+4)/2, "[ %s ]", suite->title);
-    suite_title[40 + (suite_len+4)/2] = '=';
+    suite_title[40 + (suite_len+5)/2] = '=';
 
     fprintf(stderr, "\n%s  %s\n",suite_title,
 	    (suite->nb_units?(suite->unit_failed?"FAILED":"OK"):"SKIP"));
