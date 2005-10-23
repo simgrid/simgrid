@@ -223,7 +223,7 @@ typedef enum {
   thread_error    /**< error while [un]locking */
 } xbt_errcat_t;
 
-const char *xbt_errcat_name(xbt_errcat_t errcode);
+const char * xbt_ex_catname(xbt_errcat_t cat);
 
 /** @brief Structure describing an exception */
 typedef struct {
@@ -463,7 +463,6 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 
 /** @brief Exception destructor */
 void xbt_ex_free(xbt_ex_t e);
-const char * xbt_ex_catname(xbt_errcat_t cat);
 
 void xbt_ex_display(xbt_ex_t *e);
 
