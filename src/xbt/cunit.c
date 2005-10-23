@@ -107,6 +107,7 @@ static void xbt_test_unit_dump(xbt_test_unit_t unit) {
 
 /* test suite */
 struct s_xbt_test_suite {
+  const char *name;
   char       *title;
   xbt_dynar_t units; /* of xbt_test_unit_t */
 
@@ -127,7 +128,7 @@ static void xbt_test_suite_free(void *s) {
 }
 
 /** @brief create test suite */
-xbt_test_suite_t xbt_test_suite_new(const char *fmt, ...) {
+xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...) {
   xbt_test_suite_t suite = xbt_new0(struct s_xbt_test_suite,1);
   va_list ap;
 
@@ -138,9 +139,32 @@ xbt_test_suite_t xbt_test_suite_new(const char *fmt, ...) {
   vasprintf(&suite->title,fmt, ap);
   suite->units = xbt_dynar_new(sizeof(xbt_test_unit_t), NULL);
   va_end(ap);
+  suite->name=name;
 
   xbt_dynar_push(_xbt_test_suites,&suite);
 
+  return suite;
+}
+
+/** @brief retrive a testsuite from name, or create a new one */
+xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...) {
+  xbt_test_suite_t suite;
+  int it_suite;
+
+  char *bufname;
+  va_list ap;
+
+  if (_xbt_test_suites)
+    xbt_dynar_foreach(_xbt_test_suites, it_suite, suite)
+      if (!strcmp(suite->name,name))
+	return suite;
+  
+  va_start(ap, fmt);
+  vasprintf(&bufname,fmt, ap);
+  va_end(ap);
+  suite = xbt_test_suite_new(name,bufname,NULL);
+  free(bufname);
+  
   return suite;
 }
 
@@ -437,7 +461,7 @@ int xbt_test_run(void) {
 
 
 /* annotate test case with test */
-void _xbt_test(xbt_test_unit_t unit, const char*file,int line, const char *fmt, ...) {
+void _xbt_test_add(xbt_test_unit_t unit, const char*file,int line, const char *fmt, ...) {
   xbt_test_test_t test;
   va_list ap;
   
@@ -509,3 +533,21 @@ void _xbt_test_log(xbt_test_unit_t unit, const char*file,int line,const char *fm
   xbt_dynar_push(test->logs, &log);
 }
 
+
+
+
+#ifdef SIMGRID_TEST
+
+XBT_TEST_SUITE("cuint","Testsuite Autotest %d",0);
+
+XBT_TEST_UNIT("expect",test_expected_failure,"expected failures") {
+    xbt_test_add0("Skipped test");
+    xbt_test_skip(); 
+
+    xbt_test_add2("%s %s","EXPECTED","FAILURE");
+    xbt_test_expect_failure();
+    xbt_test_log2("%s %s","Test","log");
+    xbt_test_fail0("EXPECTED FAILURE");
+}
+
+#endif /* SIMGRID_TEST */

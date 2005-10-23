@@ -5,3 +5,4 @@ gras_config.h.in gras_config.h
 stamp-h.in stamp-h stamp-h1
 *.loT
 ucontext_stack.h
+*_unit.c simgrid_units_main.c testall*

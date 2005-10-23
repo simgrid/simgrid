@@ -28,11 +28,6 @@
 **  ex_test.c: exception handling test suite
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-
 #include "xbt/cunit.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"

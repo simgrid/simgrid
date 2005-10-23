@@ -94,6 +94,7 @@ VERSION_INFO= -release 20050627 -version-info 0:0:0
 #   using this trick is ready for a "stable" release (say, in Debian).
 
 lib_LTLIBRARIES= libsimgrid.la libgras.la
+noinst_PROGRAMS=testall
 
 COMMON_SRC=\
   \
@@ -169,8 +170,40 @@ AMOK_SRC= \
   amok/base.c \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c
 
+###
+### Testing infrastructure
+###
+
+TEST_CFILES=xbt/cunit.c  xbt/ex.c  
+TEST_UNITS= cunit_unit.c ex_unit.c 
+
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
-              gras/DataDesc/ddt_parse.yy.c
+              gras/DataDesc/ddt_parse.yy.c \
+              $(TEST_UNITS) simgrid_units_main.c
+
+testall_SOURCES= $(TEST_UNITS) simgrid_units_main.c
+testall_LDADD=libgras.la
+
+if MAINTAINER_MODE
+%_unit.c: $(TEST_CFILES) @top_srcdir@/tools/sg_unit_extractor.pl
+	@echo TEST_UNITS=$(TEST_UNITS)
+	@echo testall_SOURCES=$(testall_SOURCES)
+	@lookfor=`echo $@ | sed 's/_unit.c$$/.c/'`;      \
+	 for s in $(TEST_CFILES) ; do                    \
+           if echo $$s | grep $$lookfor >/dev/null; then \
+             src="$$src $$s";                            \
+           fi;                                           \
+          done;                                          \
+	  echo "Generate Testing Suite $@ from$$src";    \
+	  @top_srcdir@/tools/sg_unit_extractor.pl $$src
+
+simgrid_units_main.c: $(TEST_UNITS)
+endif
+
+###
+### Regenerate what needs to with flex & flexml
+###
+
 
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 	@LEX@ -o$@ -Pgras_ddt_parse_ $^
@@ -194,11 +227,16 @@ else
 endif
 endif
 
+###
+### Declare the library content
+###
+
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
 libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+
 
 
 include $(top_srcdir)/acmacro/dist-files.mk
