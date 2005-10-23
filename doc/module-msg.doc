@@ -16,6 +16,7 @@
 */
 
 /** @defgroup m_datatypes_management MSG Data Types 
+    @ingroup MSG_API
     @brief This section describes the different datatypes provided by MSG.
 */
 /**     \addtogroup m_process_management
