@@ -1249,11 +1249,12 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
   {	
     /* non-existant_entry */
     xbt_cfg_t myset=make_set();
+    xbt_ex_t e;
     
     TRY {
       xbt_cfg_set_parse(myset, "color:blue");
     } CATCH(e) {
-      if (e.category != mismatch_error)
+      if (e.category != not_found_error)
         xbt_test_exception(e);
       xbt_ex_free(e);
     }
