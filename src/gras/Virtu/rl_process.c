@@ -11,9 +11,6 @@
 #include "gras/Virtu/virtu_rl.h"
 #include "portable.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(process);
-XBT_LOG_DEFAULT_CATEGORY(process);
-
 /* globals */
 static gras_procdata_t *_gras_procdata = NULL;
 char const *_gras_procname = NULL;

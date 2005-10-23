@@ -15,8 +15,6 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(swag,xbt,"Swag : O(1) set library");
-
 #define PREV(obj,offset) xbt_swag_getPrev(obj,offset)
 #define NEXT(obj,offset) xbt_swag_getNext(obj,offset)
 

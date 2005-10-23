@@ -12,8 +12,6 @@
 #include <stdio.h>
 #include "gras/virtu.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log_app,log,"default logging handler");
-
 /**
  * The root category's default logging function.
  */

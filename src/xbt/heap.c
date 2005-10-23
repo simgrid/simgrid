@@ -16,8 +16,6 @@
  *  \brief This section describes the API to generic heap with O(log(n)) access.
  */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(heap, xbt, "Heap");
-
 /**
  * @brief Creates a new heap.
  * \param init_size initial size of the heap

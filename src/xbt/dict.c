@@ -10,7 +10,7 @@
 #include "xbt/ex.h"
 #include "dict_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict,xbt,
+XBT_LOG_NEW_SUBCATEGORY(dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
 /*####[ Private prototypes ]#################################################*/
 
