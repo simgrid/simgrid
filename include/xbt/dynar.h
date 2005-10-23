@@ -31,7 +31,7 @@ SG_BEGIN_DECL()
   * structure creation (of type void_f_ppvoid_t or void_f_pvoid_t).
   *
   * \section XBT_dynar_exscal Example with scalar
-  * \dontinclude dynar_int.c
+  * \dontinclude dynar.c
   *
   * \skip Vars_decl
   * \skip dyn
@@ -44,17 +44,16 @@ SG_BEGIN_DECL()
   * \until xbt_dynar_free
   *
   * \section XBT_dynar_exptr Example with pointed data
-  * \dontinclude dynar_string.c
   * 
-  * \skip doxygen_first_cruft
-  * \skip f
-  * \until xbt_init
+  * \skip doxygen_string_cruft
+  * \skip function
+  * \until s2
   * \skip Populate_str
   * \skip dyn
   * \until }
   * \skip macro
   * \until dynar_free
-  * \skip xbt_exit
+  * \skip end_of_doxygen
   * \until }
   *
   */

@@ -459,6 +459,7 @@ EXCLUDE_PATTERNS       =
 
 EXAMPLE_PATH           = ./ \
                          @top_srcdir@/src/surf/ \
+                         @top_srcdir@/src/xbt/ \
                          @top_srcdir@/examples \
                          @top_srcdir@/testsuite
 

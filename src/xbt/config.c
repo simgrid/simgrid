@@ -1232,21 +1232,32 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
     dyn = xbt_cfg_get_dynar(myset,"user");
 
     if (xbt_dynar_length(dyn) != 3) 
-      xbt_test_fail1("Dynar length = %d, I expected 3",
-		     (int)xbt_dynar_length(dyn));
+      xbt_test_fail1("Dynar length = %d, I expected 3", (int)xbt_dynar_length(dyn));
 
     if (strcmp(xbt_dynar_get_as(dyn,0,char*),"foo"))
-      xbt_test_fail1("Dynar[0] = %s, I expected foo",
-		     xbt_dynar_get_as(dyn,0,char*));
+      xbt_test_fail1("Dynar[0] = %s, I expected foo",   xbt_dynar_get_as(dyn,0,char*));
 
     if (strcmp(xbt_dynar_get_as(dyn,1,char*),"bar"))
-      xbt_test_fail1("Dynar[1] = %s, I expected bar",
-		     xbt_dynar_get_as(dyn,1,char*));
+      xbt_test_fail1("Dynar[1] = %s, I expected bar",   xbt_dynar_get_as(dyn,1,char*));
 
     if (strcmp(xbt_dynar_get_as(dyn,2,char*),"toto"))
-      xbt_test_fail1("Dynar[2] = %s, I expected toto",
-		     xbt_dynar_get_as(dyn,2,char*));
+      xbt_test_fail1("Dynar[2] = %s, I expected toto",  xbt_dynar_get_as(dyn,2,char*));
+    xbt_cfg_free(&myset);    
+  }
+  
+  xbt_test_add0("Access to a non-existant entry");
+  {	
+    /* non-existant_entry */
+    xbt_cfg_t myset=make_set();
     
+    TRY {
+      xbt_cfg_set_parse(myset, "color:blue");
+    } CATCH(e) {
+      if (e.category != mismatch_error)
+        xbt_test_exception(e);
+      xbt_ex_free(e);
+    }
+    xbt_cfg_free(&myset);    
   }
 }
 #endif /* SIMGRID_TEST */

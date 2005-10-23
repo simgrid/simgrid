@@ -808,7 +808,7 @@ XBT_TEST_UNIT("double",test_dynar_double,"Dyars of doubles") {
 }
 
 
-/* doxygen_first_cruft*/
+/* doxygen_string_cruft */
 
 /* The function we will use to free the data */
 static void free_string(void *d){
@@ -950,7 +950,6 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
 		  s2,buf);
       free(s2);
    }
-   xbt_dynar_free(&d);
-   xbt_dynar_free(&d);  
+   xbt_dynar_free(&d); /* end_of_doxygen */
 }
 #endif /* SIMGRID_TEST */
