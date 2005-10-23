@@ -19,15 +19,9 @@ EXTRA_DIST=run_tests.in \
 # Test stuff
 
 xbt_tests =                                                      \
-        xbt/ex_test                                              \
-	xbt/dynar_int    xbt/dynar_double   xbt/dynar_string     \
-	xbt/dict_usage   xbt/dict_crash     xbt/multidict_crash  \
-	xbt/set_usage                                            \
 	xbt/log_usage                                            \
 	xbt/heap_bench                                           \
-	xbt/swag_usage                                           \
-	xbt/context_usage                                        \
-	xbt/config_usage
+	xbt/context_usage                                        
 
 RL_tests =                                              \
 	gras/trp_tcp_client   gras/trp_tcp_server       \
