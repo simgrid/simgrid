@@ -17,9 +17,6 @@
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Transport/transport_private.h" /* sock->data */
 
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
-XBT_LOG_DEFAULT_CATEGORY(gras_msg);
-
 /** \brief Send the data pointed by \a payload as a message of type
  * \a msgtype to the peer \a sock */
 void
