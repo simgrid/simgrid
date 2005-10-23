@@ -174,8 +174,8 @@ AMOK_SRC= \
 ### Testing infrastructure
 ###
 
-TEST_CFILES=xbt/cunit.c  xbt/ex.c  
-TEST_UNITS= cunit_unit.c ex_unit.c 
+TEST_CFILES=xbt/cunit.c  xbt/ex.c  xbt/config.c
+TEST_UNITS= cunit_unit.c ex_unit.c config_unit.c
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
               gras/DataDesc/ddt_parse.yy.c \
