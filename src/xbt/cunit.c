@@ -218,64 +218,6 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
   if (suite == NULL)
     return 0;
 
-  /* iterate through all tests to see how much failed */
-  xbt_dynar_foreach(suite->units, it_unit, unit) {
-    /* init unit case counters */
-    unit->nb_tests = 0;
-    unit->test_ignore = 0;
-    unit->test_failed = 0;
-    unit->test_expect = 0;
-
-    /* run the test case function */
-    _xbt_test_current_unit = unit;
-    unit->func();
-  
-    /* iterate through all performed tests to determine status */
-    xbt_dynar_foreach(unit->tests,it_test, test) {
-      if (test->ignored) {
-	unit->test_ignore++;
-      } else {
-	unit->nb_tests++;
-
-	if ( test->failed && !test->expected_failure) unit->test_failed++;
-	if (!test->failed &&  test->expected_failure) unit->test_failed++;
-	if (test->expected_failure)
-	  unit->test_expect++;
-      }
-    }
-    
-    /* Accumulate test counts into the suite */
-    suite->nb_tests    += unit->nb_tests;
-    suite->test_failed += unit->test_failed;
-    suite->test_ignore += unit->test_ignore;
-    suite->test_expect += unit->test_expect;
-
-    _xbt_test_nb_tests    += unit->nb_tests;
-    _xbt_test_test_failed += unit->test_failed;
-    _xbt_test_test_ignore += unit->test_ignore;
-    _xbt_test_test_expect += unit->test_expect;
-    
-    /* What's the conclusion of this test anyway? */
-    if (unit->nb_tests) {
-      suite->nb_units++;
-      if (unit->test_failed)
-	suite->unit_failed++;
-    } else {
-      suite->unit_ignore++;
-    }
-  }
-  _xbt_test_nb_units    += suite->nb_units;
-  _xbt_test_unit_failed += suite->unit_failed;
-  _xbt_test_unit_ignore += suite->unit_ignore;
-
-  if (suite->nb_units) {
-    _xbt_test_nb_suites++;
-    if (suite->test_failed)
-      _xbt_test_suite_failed++;
-  } else {
-    _xbt_test_suite_ignore++;
-  }
-
   /* suite title pretty-printing */
   {
     char suite_title[80];
@@ -292,20 +234,43 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
 
     sprintf(suite_title + 40 - (suite_len+4)/2, "[ %s ]", suite->title);
     suite_title[40 + (suite_len+5)/2] = '=';
-
-    fprintf(stderr, "\n%s  %s\n",suite_title,
-	    (suite->nb_units?(suite->unit_failed?"FAILED":"OK"):"SKIP"));
-    
+    fprintf(stderr, "\n%s\n",suite_title);
   }
-  
-  /* iterate through all test cases to display details */
+
+  /* iterate through all tests */
   xbt_dynar_foreach(suite->units, it_unit, unit) {
+    /* init unit case counters */
+    unit->nb_tests = 0;
+    unit->test_ignore = 0;
+    unit->test_failed = 0;
+    unit->test_expect = 0;
+
+    /* display unit title */
     asprintf(&cp," Unit: %s ........................................"
 	     "........................................", unit->title);
     cp[72] = '\0';
     fprintf(stderr, "%s", cp);
     free(cp);
+
+    /* run the test case function */
+    _xbt_test_current_unit = unit;
+    unit->func();
     
+    /* iterate through all performed tests to determine status */
+    xbt_dynar_foreach(unit->tests,it_test, test) {
+      if (test->ignored) {
+	unit->test_ignore++;
+      } else {
+	unit->nb_tests++;
+
+	if ( test->failed && !test->expected_failure) unit->test_failed++;
+	if (!test->failed &&  test->expected_failure) unit->test_failed++;
+	if (test->expected_failure)
+	  unit->test_expect++;
+      }
+    }
+
+    /* Display whether this unit went well */
     if (unit->test_failed > 0 || unit->test_expect) {
       /* some tests failed (or were supposed to), so do detailed reporting of test case */
       if (unit->test_failed > 0) {
@@ -342,10 +307,47 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
     } else {
       fprintf(stderr, ".. skip\n"); /* no test were run */
     }
+
+
+    
+
+    /* Accumulate test counts into the suite */
+    suite->nb_tests    += unit->nb_tests;
+    suite->test_failed += unit->test_failed;
+    suite->test_ignore += unit->test_ignore;
+    suite->test_expect += unit->test_expect;
+
+    _xbt_test_nb_tests    += unit->nb_tests;
+    _xbt_test_test_failed += unit->test_failed;
+    _xbt_test_test_ignore += unit->test_ignore;
+    _xbt_test_test_expect += unit->test_expect;
+    
+    /* What's the conclusion of this test anyway? */
+    if (unit->nb_tests) {
+      suite->nb_units++;
+      if (unit->test_failed)
+	suite->unit_failed++;
+    } else {
+      suite->unit_ignore++;
+    }
   }
+  _xbt_test_nb_units    += suite->nb_units;
+  _xbt_test_unit_failed += suite->unit_failed;
+  _xbt_test_unit_ignore += suite->unit_ignore;
+
+  if (suite->nb_units) {
+    _xbt_test_nb_suites++;
+    if (suite->test_failed)
+      _xbt_test_suite_failed++;
+  } else {
+    _xbt_test_suite_ignore++;
+  }
+
   
   /* print test suite summary */
-  fprintf(stderr, " ==============================================================================\n");
+  fprintf(stderr,
+	  " =======================================================================%s\n",
+	  (suite->nb_units?(suite->unit_failed?" FAILED":"==== OK"):"== SKIP"));
   fprintf(stderr, " Summary: Units: %.0f%% ok (%d units: ", 
 	  suite->nb_units?((1-(double)suite->unit_failed/(double)suite->nb_units)*100.0):100.0,
 	  suite->nb_units);
@@ -418,7 +420,7 @@ int xbt_test_run(void) {
       fprintf(stderr, "%s%d ignored",(first?"":", "),_xbt_test_suite_ignore);
       first = 0;
     }
-    fprintf(stderr,")\n        Units:  %.0f%% ok (%d units:  ",
+    fprintf(stderr,")\n        Units:  %.0f%% ok (%d units: ",
 	    _xbt_test_nb_units?((1-(double)_xbt_test_unit_failed/(double)_xbt_test_nb_units)*100.0):100.0,
 	    _xbt_test_nb_units);
     first=1;
@@ -434,7 +436,7 @@ int xbt_test_run(void) {
       fprintf(stderr, "%s%d ignored",(first?"":", "),_xbt_test_unit_ignore);
       first = 0;
     }
-    fprintf(stderr,")\n        Tests:  %.0f%% ok (%d tests:  ",
+    fprintf(stderr,")\n        Tests:  %.0f%% ok (%d tests: ",
 	    _xbt_test_nb_tests?((1-(double)_xbt_test_test_failed/(double)_xbt_test_nb_tests)*100.0):100.0,
 	    _xbt_test_nb_tests);
     first=1;
