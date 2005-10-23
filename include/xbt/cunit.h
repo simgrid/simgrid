@@ -57,6 +57,7 @@ void    _xbt_test_fail(const char*file,int line, const char *fmt, ...) _XBT_GNUC
 #define xbt_test_assert3(cond,fmt,a,b,c)     if(!(cond)) xbt_test_fail3(fmt,a,b,c)
 #define xbt_test_assert4(cond,fmt,a,b,c,d)   if(!(cond)) xbt_test_fail4(fmt,a,b,c,d)
 #define xbt_test_assert5(cond,fmt,a,b,c,d,e) if(!(cond)) xbt_test_fail5(fmt,a,b,c,d,e)
+#define xbt_test_assert(cond)                xbt_test_assert0(cond,#cond)
 
 void    _xbt_test_log (const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
 #define xbt_test_log0(fmt)           _xbt_test_log(__FILE__, __LINE__, fmt)
