@@ -236,7 +236,7 @@ static void debuged_add(xbt_set_t  set,
 
   elm->data=xbt_strdup(data);
 
-  xbt_test_log2("   - Add %s (->%s)",name,data);
+  xbt_test_log2("Add %s (->%s)",name,data);
   xbt_set_add(set, (xbt_set_elm_t)elm, &my_elem_free);
 }
 
@@ -289,7 +289,6 @@ static void search_id(xbt_set_t head,int id,const char*key) {
   if (strcmp(elm->name,elm->data))
     THROW2(mismatch_error,0,"The name (%s) != data (%s)",
 	   elm->name,elm->data);
-  fflush(stdout);
 }
 
 
@@ -314,9 +313,8 @@ static void search_not_found(xbt_set_t set, const char *data) {
     xbt_set_get_by_name(set,data);
     THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
   } CATCH(e) {
-    if (e.category != not_found_error) {
+    if (e.category != not_found_error) 
       xbt_test_exception(e);
-    }
     xbt_ex_free(e);  
   }
 }
@@ -359,7 +357,7 @@ XBT_TEST_UNIT("change",test_set_change,"Changing some values") {
   traverse(set);
 }
 
-XBT_TEST_UNIT("retrieve",test_set_retrieve,"Retrieve some values") {
+XBT_TEST_UNIT("retrieve",test_set_retrieve,"Retrieving some values") {
   my_elem_t elm;
 
   xbt_test_add0("Search 123");

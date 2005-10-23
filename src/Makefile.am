@@ -184,10 +184,10 @@ AMOK_SRC= \
 # Suites and tests run in the given order.
 
 TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
-            xbt/set.c                      \
+            xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
             xbt/config.c
 TEST_UNITS= cunit_unit.c ex_unit.c         \
-            set_unit.c                     \
+            dynar_unit.c dict_unit.c set_unit.c swag_unit.c \
             config_unit.c
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
@@ -198,24 +198,19 @@ testall_SOURCES= $(TEST_UNITS) simgrid_units_main.c
 testall_LDADD=libgras.la
 
 EXTRA_DIST+=$(testall_SOURCES)
-
-# %_unit.c: $(TEST_CFILES) @top_srcdir@/tools/sg_unit_extractor.pl
-#@echo TEST_UNITS=$(TEST_UNITS)
-#	@echo testall_SOURCES=$(testall_SOURCES)
-#	@lookfor=`echo $@ | sed 's/_unit.c$$/.c/'`;      \
-#	 for s in $(TEST_CFILES) ; do                    \
-#           if echo $$s | grep $$lookfor >/dev/null; then \
-#             src="$$src $$s";                            \
-#           fi;                                           \
-#          done;                                          \
-#	  echo "Generate Testing Suite $@ from$$src";    
 	  
 if MAINTAINER_MODE
 cunit_unit.c: xbt/cunit.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-ex_unit.c:    xbt/ex.c
+ex_unit.c: xbt/ex.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-set_unit.c:   xbt/set.c
+dynar_unit.c: xbt/dynar.c
+	@top_srcdir@/tools/sg_unit_extractor.pl $^
+dict_unit.c: xbt/dict.c
+	@top_srcdir@/tools/sg_unit_extractor.pl $^
+set_unit.c: xbt/set.c
+	@top_srcdir@/tools/sg_unit_extractor.pl $^
+swag_unit.c: xbt/swag.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 config_unit.c: xbt/config.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
