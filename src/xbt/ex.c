@@ -213,4 +213,75 @@ XBT_TEST_UNIT("cleanup",test_cleanup,"cleanup handling") {
     if (!c)
         xbt_test_fail0("xbt_ex_free not executed");
 }
+
+
+/*
+ * The following is the example included in the documentation. It's a good 
+ * idea to check its syntax even if we don't try to run it.
+ * And actually, it allows to put comments in the code despite doxygen.
+ */ 
+static char *mallocex(int size) {
+  return NULL;
+}
+#define SMALLAMOUNT 10
+#define TOOBIG 100000000
+
+#if 0 /* this contains syntax errors, actually */
+static void bad_example(void) {
+  struct {char*first;} *globalcontext;
+  ex_t ex;
+
+  /* BAD_EXAMPLE */
+  TRY {
+    char *cp1, *cp2, *cp3;
+    
+    cp1 = mallocex(SMALLAMOUNT);
+    globalcontext->first = cp1;
+    cp2 = mallocex(TOOBIG);
+    cp3 = mallocex(SMALLAMOUNT);
+    strcpy(cp1, "foo");
+    strcpy(cp2, "bar");
+  } CLEANUP {
+    if (cp3 != NULL) free(cp3);
+    if (cp2 != NULL) free(cp2);
+    if (cp1 != NULL) free(cp1);
+  } CATCH(ex) {
+    printf("cp3=%s", cp3);
+    RETHROW;
+  }
+  /* end_of_bad_example */
+}
+#endif
+
+static void good_example(void) {
+  struct {char*first;} *globalcontext;
+  xbt_ex_t ex;
+
+  /* GOOD_EXAMPLE */
+  { /*01*/
+    char * volatile /*03*/ cp1 = NULL /*02*/;
+    char * volatile /*03*/ cp2 = NULL /*02*/;
+    char * volatile /*03*/ cp3 = NULL /*02*/;
+    TRY {
+      cp1 = mallocex(SMALLAMOUNT);
+      globalcontext->first = cp1;
+      cp1 = NULL /*05 give away*/;
+      cp2 = mallocex(TOOBIG);
+      cp3 = mallocex(SMALLAMOUNT);
+      strcpy(cp1, "foo");
+      strcpy(cp2, "bar");
+    } CLEANUP { /*04*/
+      printf("cp3=%s", cp3 == NULL /*02*/ ? "" : cp3);
+      if (cp3 != NULL)
+	free(cp3);
+      if (cp2 != NULL)
+	free(cp2);
+      /*05 cp1 was given away */
+    } CATCH(ex) {
+      /*05 global context untouched */
+      RETHROW;
+    }
+  }
+  /* end_of_good_example */
+}
 #endif /* SIMGRID_TEST */
