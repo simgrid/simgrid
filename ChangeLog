@@ -1,7 +1,10 @@
 SimGrid (3.0.2) unstable; urgency=low
 
   XBT:
-  * New module: cunit [MQ]
+  * New module: cunit (my jUnit implementation in ansi C) [MQ]
+    - Test units are placed directly into the library code, they get extracted
+      automatically and placed into the src/testall binary.
+    - Convert most of the XBT tests to this system.
   * New functions: xbt_dynar_getfirst_as() and xbt_dynar_getlast_as() [MQ]
 
  --
