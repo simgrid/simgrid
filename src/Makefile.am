@@ -196,6 +196,7 @@ BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
 
 testall_SOURCES= $(TEST_UNITS) simgrid_units_main.c
 testall_LDADD=libgras.la
+TESTS=testall
 
 EXTRA_DIST+=$(testall_SOURCES)
 	  
