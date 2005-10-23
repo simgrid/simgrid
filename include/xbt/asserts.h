@@ -11,6 +11,7 @@
 
 #include "xbt/misc.h"
 #include "xbt/log.h"
+#include "xbt/ex.h"
   
 SG_BEGIN_DECL()
 
@@ -27,6 +28,9 @@ SG_BEGIN_DECL()
  *
  * @{
  */
+void xbt_abort(void) _XBT_GNUC_NORETURN;
+void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
+
 #ifdef NDEBUG
 #define xbt_assert(cond)
 #define xbt_assert0(cond,msg)
@@ -39,25 +43,23 @@ SG_BEGIN_DECL()
 #else
      /** @brief The condition which failed will be displayed.
 	 @hideinitializer  */
-#define xbt_assert(cond)                  if (!(cond)) { CRITICAL1("Assertion %s failed", #cond); xbt_abort(); }
+#define xbt_assert(cond)                  if (!(cond)) THROW1(0,0,"Assertion %s failed", #cond)
      /** @hideinitializer  */
-#define xbt_assert0(cond,msg)             if (!(cond)) { CRITICAL0(msg); xbt_abort(); }
+#define xbt_assert0(cond,msg)             if (!(cond)) THROW0(0,0,msg)
      /** @hideinitializer  */
-#define xbt_assert1(cond,msg,a)           if (!(cond)) { CRITICAL1(msg,a); xbt_abort(); }
+#define xbt_assert1(cond,msg,a)           if (!(cond)) THROW1(0,0,msg,a)
      /** @hideinitializer  */
-#define xbt_assert2(cond,msg,a,b)         if (!(cond)) { CRITICAL2(msg,a,b); xbt_abort(); }
+#define xbt_assert2(cond,msg,a,b)         if (!(cond)) THROW2(0,0,msg,a,b)
      /** @hideinitializer  */
-#define xbt_assert3(cond,msg,a,b,c)       if (!(cond)) { CRITICAL3(msg,a,b,c); xbt_abort(); }
+#define xbt_assert3(cond,msg,a,b,c)       if (!(cond)) THROW3(0,0,msg,a,b,c)
      /** @hideinitializer  */
-#define xbt_assert4(cond,msg,a,b,c,d)     if (!(cond)) { CRITICAL4(msg,a,b,c,d); xbt_abort(); }
+#define xbt_assert4(cond,msg,a,b,c,d)     if (!(cond)) THROW4(0,0,msg,a,b,c,d)
      /** @hideinitializer  */
-#define xbt_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) { CRITICAL5(msg,a,b,c,d,e); xbt_abort(); }
+#define xbt_assert5(cond,msg,a,b,c,d,e)   if (!(cond)) THROW5(0,0,msg,a,b,c,d,e)
      /** @hideinitializer  */
-#define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) { CRITICAL6(msg,a,b,c,d,e,f); xbt_abort(); }
+#define xbt_assert6(cond,msg,a,b,c,d,e,f) if (!(cond)) THROW6(0,0,msg,a,b,c,d,e,f)
 #endif
      
-void xbt_abort(void) _XBT_GNUC_NORETURN;
-void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 /** @} */     
   

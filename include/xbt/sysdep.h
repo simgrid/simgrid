@@ -20,6 +20,12 @@
 #include "xbt/asserts.h"
   
 SG_BEGIN_DECL()
+/* They live in asserts.h, but need to be declared before this module.
+   double declaration to cut dependency cycle */
+
+void xbt_abort(void) _XBT_GNUC_NORETURN;
+void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
+
 
 /** @addtogroup XBT_syscall
  *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)
