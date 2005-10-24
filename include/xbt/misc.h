@@ -84,11 +84,16 @@ typedef struct {
 
 const char *xbt_procname(void);
 
-   /** \brief Pointer to a function freeing a pointed data */
-   typedef void (void_f_ppvoid_t)(void**);
-   /** \brief Pointer to a function freeing some data */
-   typedef   void (void_f_pvoid_t) (void*);
 
+/* Generic function type */
+
+   typedef void (void_f_ppvoid_t)(void**);
+   typedef void (void_f_pvoid_t) (void*);
+
+   typedef int  (int_f_pvoid_pvoid_t) (void*,void*);
+   
+   typedef int  (*int_f_void_t)   (void); /* FIXME: rename it to int_pf_void_t */
+   
 SG_END_DECL()
 
 #endif /* XBT_MISC_H */

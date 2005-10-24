@@ -9,8 +9,8 @@
 #define _SURF_SURF_PARSE_H
 
 #include "surf/surfxml.h"
+#include "xbt/misc.h"
 
-typedef   int (*int_f_void_t)(void);
 extern int_f_void_t surf_parse;
 
 #endif
