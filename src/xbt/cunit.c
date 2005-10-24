@@ -215,6 +215,8 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
   char *cp;
   int it_unit,it_test,it_log;
 
+  int first=1; /* for result pretty printing */
+
   if (suite == NULL)
     return 0;
 
@@ -351,7 +353,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite) {
   fprintf(stderr, " Summary: Units: %.0f%% ok (%d units: ", 
 	  suite->nb_units?((1-(double)suite->unit_failed/(double)suite->nb_units)*100.0):100.0,
 	  suite->nb_units);
-  int first=1;
+
   if (suite->nb_units != suite->unit_failed) {
     fprintf(stderr, "%s%d ok",(first?"":", "),suite->nb_units - suite->unit_failed);
     first = 0;
