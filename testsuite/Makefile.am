@@ -45,22 +45,7 @@ valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 LDADD_SG=$(top_builddir)/src/libsimgrid.la 
 LDADD_RL=$(top_builddir)/src/libgras.la   
 
-xbt_ex_test_LDADD=            $(LDADD_RL)
-
 xbt_log_usage_LDADD=          $(LDADD_RL)
-
-xbt_dynar_int_LDADD=          $(LDADD_RL)
-xbt_dynar_double_LDADD=       $(LDADD_RL)
-xbt_dynar_string_LDADD=       $(LDADD_RL)
-
-xbt_dict_usage_LDADD=         $(LDADD_RL)
-xbt_dict_crash_LDADD=         $(LDADD_RL)
-xbt_multidict_crash_LDADD=    $(LDADD_RL)
-
-xbt_set_usage_LDADD=          $(LDADD_RL)
-xbt_swag_usage_LDADD=         $(LDADD_RL)
-
-xbt_config_usage_LDADD=       $(LDADD_RL)
 
 xbt_heap_bench_LDADD=         $(LDADD_RL)
 
