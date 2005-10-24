@@ -205,6 +205,7 @@ int client(int argc,char *argv[]) {
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
   /* 10. Free the allocated resources, and shut GRAS down */
+  free(answer.ctn);
   gras_socket_close(toserver);
   gras_exit();
   INFO0("Done.");
