@@ -489,6 +489,7 @@ static void gras_trp_procdata_free(void *data) {
    gras_trp_procdata_t res = (gras_trp_procdata_t)data;
    
    xbt_dynar_free(&( res->sockets ));
+   free(res->name);
    free(res);
 }
 
