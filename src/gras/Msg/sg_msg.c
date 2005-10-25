@@ -17,12 +17,10 @@
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Transport/transport_private.h" /* sock->data */
 
-/** \brief Send the data pointed by \a payload as a message of type
- * \a msgtype to the peer \a sock */
-void
-gras_msg_send(gras_socket_t   sock,
-	      gras_msgtype_t  msgtype,
-	      void           *payload) {
+void gras_msg_send_ext(gras_socket_t   sock,
+		     e_gras_msg_kind_t kind,
+		       gras_msgtype_t  msgtype,
+		       void           *payload) {
 
   m_task_t task=NULL;
   gras_trp_sg_sock_data_t *sock_data = (gras_trp_sg_sock_data_t *)sock->data;
@@ -37,13 +35,14 @@ gras_msg_send(gras_socket_t   sock,
   msg->type=msgtype;
 
    
-  msg->payload_size=gras_datadesc_size(msgtype->ctn_type);
-  msg->payload=xbt_malloc(gras_datadesc_size(msgtype->ctn_type));
+  msg->payl_size=gras_datadesc_size(msgtype->ctn_type);
+  msg->payl=xbt_malloc(msg->payl_size);
   if (msgtype->ctn_type)
-    whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,payload,msg->payload);
+    whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,payload,msg->payl);
+  msg->kind = kind;
 
   task=MSG_task_create(msgtype->name,0,
-		       ((double)msg->payload_size)/(1024.0*1024.0),msg);
+		       ((double)whole_payload_size)/(1024.0*1024.0),msg);
 
   if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) 
     THROW0(system_error,0,"Problem during the MSG_task_put");
@@ -54,26 +53,26 @@ gras_msg_send(gras_socket_t   sock,
  */
 void
 gras_msg_recv(gras_socket_t    sock,
-	      gras_msgtype_t  *msgtype,
-	      void           **payload,
-	      int             *payload_size) {
+	      gras_msg_t       msg) {
 
   m_task_t task=NULL;
-  gras_msg_t msg;
+  gras_msg_t msg_got;
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
 
   xbt_assert1(!gras_socket_is_meas(sock), 
   	      "Asked to receive a message on the measurement socket %p", sock);
 
+  xbt_assert0(msg,"msg is an out parameter of gras_msg_recv...");
+
   if (MSG_task_get(&task, pd->chan) != MSG_OK)
     THROW0(system_error,0,"Error in MSG_task_get()");
 
-  msg = MSG_task_get_data(task);
-  *msgtype = gras_msgtype_by_id(msg->type->code);
-  *payload = msg->payload;
-  *payload_size = msg->payload_size;
+  msg_got=MSG_task_get_data(task);
 
-  free(msg);
+  msg_got->expe= msg->expe;
+  memcpy(msg,msg_got,sizeof(s_gras_msg_t));
+
+  free(msg_got);
   if (MSG_task_destroy(task) != MSG_OK)
     THROW0(system_error,0,"Error in MSG_task_destroy()");
 }

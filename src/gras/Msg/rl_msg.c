@@ -16,15 +16,14 @@
 XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
 XBT_LOG_DEFAULT_CATEGORY(gras_msg);
 
-/** \brief Send the data pointed by \a payload as a message of type
- * \a msgtype to the peer \a sock */
-void
-gras_msg_send(gras_socket_t   sock,
-	      gras_msgtype_t  msgtype,
-	      void           *payload) {
+void gras_msg_send_ext(gras_socket_t   sock,
+		     e_gras_msg_kind_t kind,
+		       gras_msgtype_t  msgtype,
+		       void           *payload) {
 
   static gras_datadesc_type_t string_type=NULL;
-
+  char c_kind=(char)kind;
+  
   if (!msgtype)
     THROW0(arg_error,0,
 	   "Cannot send the NULL message (did msgtype_by_name fail?)");
@@ -37,20 +36,20 @@ gras_msg_send(gras_socket_t   sock,
   DEBUG3("send '%s' to %s:%d", msgtype->name, 
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
   gras_trp_send(sock, _GRAS_header, 6, 1 /* stable */);
+  gras_trp_send(sock, &c_kind,      1, 1 /* stable */);
 
   gras_datadesc_send(sock, string_type,   &msgtype->name);
   if (msgtype->ctn_type)
     gras_datadesc_send(sock, msgtype->ctn_type, payload);
   gras_trp_flush(sock);
 }
+
 /*
  * receive the next message on the given socket.  
  */
 void
 gras_msg_recv(gras_socket_t    sock,
-	      gras_msgtype_t  *msgtype,
-	      void           **payload,
-	      int             *payload_size) {
+	      gras_msg_t       msg) {
 
   xbt_ex_t e;
   static gras_datadesc_type_t string_type=NULL;
@@ -58,6 +57,7 @@ gras_msg_recv(gras_socket_t    sock,
   int cpt;
   int r_arch;
   char *msg_name=NULL;
+  char c_kind;
 
   xbt_assert1(!gras_socket_is_meas(sock), 
   	      "Asked to receive a message on the measurement socket %p", sock);
@@ -68,6 +68,8 @@ gras_msg_recv(gras_socket_t    sock,
   
   TRY {
     gras_trp_recv(sock, header, 6);
+    gras_trp_recv(sock, &c_kind, 1);
+    msg->kind=(e_gras_msg_kind_t)c_kind;
   } CATCH(e) {
     RETHROW1("Exception caught while trying to get the mesage header on socket %p: %s",
     	     sock);
@@ -86,7 +88,7 @@ gras_msg_recv(gras_socket_t    sock,
 
   gras_datadesc_recv(sock, string_type, r_arch, &msg_name);
   TRY {
-    *msgtype = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,msg_name);
+    msg->type = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,msg_name);
   } CATCH(e) {
     /* FIXME: Survive unknown messages */
     RETHROW1("Exception caught while retrieving the type associated to messages '%s' : %s",
@@ -94,16 +96,16 @@ gras_msg_recv(gras_socket_t    sock,
   }
   free(msg_name);
 
-  if ((*msgtype)->ctn_type) {
-    *payload_size=gras_datadesc_size((*msgtype)->ctn_type);
-    xbt_assert2(*payload_size > 0,
+  if (msg->type->ctn_type) {
+    msg->payl_size=gras_datadesc_size(msg->type->ctn_type);
+    xbt_assert2(msg->payl_size > 0,
 		"%s %s",
 		"Dynamic array as payload is forbided for now (FIXME?).",
 		"Reference to dynamic array is allowed.");
-    *payload = xbt_malloc(*payload_size);
-    gras_datadesc_recv(sock, (*msgtype)->ctn_type, r_arch, *payload);
+    msg->payl = xbt_malloc(msg->payl_size);
+    gras_datadesc_recv(sock, msg->type->ctn_type, r_arch, msg->payl);
   } else {
-    *payload = NULL;
-    *payload_size = 0;
+    msg->payl = NULL;
+    msg->payl_size = 0;
   }
 }

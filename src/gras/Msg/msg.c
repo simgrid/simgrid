@@ -205,6 +205,94 @@ gras_msgtype_t gras_msgtype_by_id(int id) {
 /** \brief Waits for a message to come in over a given socket. 
  *
  * @param timeout: How long should we wait for this message.
+ * @param msgt_want: type of awaited msg (or NULL if I'm enclined to accept any message)
+ * @param expe_want: awaited expeditot (match on hostname, not port; NULL if not relevant)
+ * @param payl_filter: function returning true or false when passed a payload. Messages for which it returns false are not selected. (NULL if not relevant)
+ * @param filter_ctx: context passed as second argument of the filter (a pattern to match?)
+ * @param[out] msgt_got: where to write the descriptor of the message we got
+ * @param[out] expe_got: where to create a socket to answer the incomming message
+ * @param[out] payl_got: where to write the payload of the incomming message
+ *
+ * Every message of another type received before the one waited will be queued
+ * and used by subsequent call to this function or gras_msg_handle().
+ */
+
+void
+gras_msg_wait_ext(double           timeout,    
+		  gras_msgtype_t   msgt_want,
+		  gras_socket_t    expe_want,
+		  int_f_pvoid_pvoid_t payl_filter,
+		  void               *filter_ctx, 
+		  gras_msgtype_t  *msgt_got,
+		  gras_socket_t   *expe_got,
+		  void            *payl_got) {
+
+  s_gras_msg_t msg;
+  double start, now;
+  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
+  int cpt;
+
+  xbt_assert0(msgt_want,"Cannot wait for the NULL message");
+
+  VERB1("Waiting for message '%s'",msgt_want->name);
+
+  start = now = gras_os_time();
+
+  xbt_dynar_foreach(pd->msg_queue,cpt,msg){
+    if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
+	 && (!expe_want || (!strcmp( gras_socket_peer_name(msg.expe),
+				     gras_socket_peer_name(expe_want))))
+	 && (!payl_filter || payl_filter(msg.payl,filter_ctx))) {
+
+      if (expe_got)
+        *expe_got = msg.expe;
+      if (msgt_got)
+	*msgt_got = msg.type;
+      if (payl_got) 
+	memcpy(payl_got, msg.payl, msg.payl_size);
+      free(msg.payl);
+      xbt_dynar_cursor_rm(pd->msg_queue, &cpt);
+      VERB0("The waited message was queued");
+      return;
+    }
+  }
+
+  while (1) {
+    memset(&msg,sizeof(msg),0);
+
+    msg.expe = gras_trp_select(timeout - now + start);
+    gras_msg_recv(msg.expe, &msg);
+
+    if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
+	 && (!expe_want || (!strcmp( gras_socket_peer_name(msg.expe),
+				     gras_socket_peer_name(expe_want))))
+	 && (!payl_filter || payl_filter(msg.payl,filter_ctx))) {
+
+      if (expe_got)
+      	*expe_got=msg.expe;
+      if (msgt_got)
+	*msgt_got = msg.type;
+      if (payl_got) 
+	memcpy(payl_got, msg.payl, msg.payl_size);
+      free(msg.payl);
+      return;
+    }
+
+    /* not expected msg type. Queue it for later */
+    xbt_dynar_push(pd->msg_queue,&msg);
+    
+    now=gras_os_time();
+    if (now - start + 0.001 < timeout) {
+      THROW1(timeout_error,  now-start+0.001-timeout,
+	     "Timeout while waiting for msg %s",msgt_want->name);
+    }
+  }
+
+  THROW_IMPOSSIBLE;
+}
+/** \brief Waits for a message to come in over a given socket. 
+ *
+ * @param timeout: How long should we wait for this message.
  * @param msgt_want: type of awaited msg
  * @param[out] expeditor: where to create a socket to answer the incomming message
  * @param[out] payload: where to write the payload of the incomming message
@@ -219,62 +307,20 @@ gras_msg_wait(double           timeout,
 	      gras_socket_t   *expeditor,
 	      void            *payload) {
 
-  gras_msgtype_t msgt_got;
-  void *payload_got;
-  int payload_size_got;
-  double start, now;
-  gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
-  int cpt;
-  s_gras_msg_t msg;
-  gras_socket_t expeditor_res = NULL;
-  
-  payload_got = NULL;
+  return gras_msg_wait_ext(timeout,
+			   msgt_want, NULL,      NULL, NULL,
+			   NULL,      expeditor, payload);
+}
 
-  xbt_assert0(msgt_want,"Cannot wait for the NULL message");
 
-  VERB1("Waiting for message '%s'",msgt_want->name);
+/** \brief Send the data pointed by \a payload as a message of type
+ * \a msgtype to the peer \a sock */
+void
+gras_msg_send(gras_socket_t   sock,
+	      gras_msgtype_t  msgtype,
+	      void           *payload) {
 
-  start = now = gras_os_time();
-
-  xbt_dynar_foreach(pd->msg_queue,cpt,msg){
-    if (msg.type->code == msgt_want->code) {
-      if (expeditor)
-        *expeditor = msg.expeditor;
-      memcpy(payload, msg.payload, msg.payload_size);
-      free(msg.payload);
-      xbt_dynar_cursor_rm(pd->msg_queue, &cpt);
-      VERB0("The waited message was queued");
-      return;
-    }
-  }
-
-  while (1) {
-    expeditor_res = gras_trp_select(timeout - now + start);
-    gras_msg_recv(expeditor_res, &msgt_got, &payload_got, &payload_size_got);
-    if (msgt_got->code == msgt_want->code) {
-      if (expeditor)
-      	*expeditor=expeditor_res;
-      memcpy(payload, payload_got, payload_size_got);
-      free(payload_got);
-      VERB0("Got waited message");
-      return;
-    }
-
-    /* not expected msg type. Queue it for later */
-    msg.expeditor = expeditor_res;
-    msg.type      = msgt_got;
-    msg.payload   = payload;
-    msg.payload_size = payload_size_got;
-    xbt_dynar_push(pd->msg_queue,&msg);
-    
-    now=gras_os_time();
-    if (now - start + 0.001 < timeout) {
-      THROW1(timeout_error,  now-start+0.001-timeout,
-	     "Timeout while waiting for msg %s",msgt_want->name);
-    }
-  }
-
-  THROW_IMPOSSIBLE;
+  gras_msg_send_ext(sock, e_gras_msg_kind_oneway, msgtype, payload);
 }
 
 /** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
@@ -294,8 +340,7 @@ gras_msg_handle(double timeOut) {
   s_gras_msg_t    msg;
   gras_socket_t   expeditor=NULL;
   void           *payload=NULL;
-  int             payload_size;
-  gras_msgtype_t  msgtype;
+  gras_msgtype_t  msgtype=NULL;
 
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t  *list=NULL;
@@ -324,9 +369,9 @@ gras_msg_handle(double timeOut) {
   if (xbt_dynar_length(pd->msg_queue)) {
     DEBUG0("Get a message from the queue");
     xbt_dynar_shift(pd->msg_queue,&msg);
-    expeditor = msg.expeditor;
+    expeditor = msg.expe;
     msgtype   = msg.type;
-    payload   = msg.payload;
+    payload   = msg.payl;
   } else {
     TRY {
       expeditor = gras_trp_select(timeOut);
@@ -339,9 +384,12 @@ gras_msg_handle(double timeOut) {
 
     if (!timeouted) {
       TRY {
-	gras_msg_recv(expeditor, &msgtype, &payload, &payload_size);
+	/* FIXME: if not the right kind, queue it and recall ourself or goto >:-) */
+	gras_msg_recv(expeditor, &msg);
+	msgtype   = msg.type;
+	payload   = msg.payl;
       } CATCH(e) {
-	RETHROW1("Error caught  while receiving a message on select()ed socket %p: %s",
+	RETHROW1("Error caught while receiving a message on select()ed socket %p: %s",
 	  	 expeditor);
       }
     }

@@ -32,12 +32,28 @@ extern char _GRAS_header[6];
 
 extern int gras_msg_libdata_id; /* The identifier of our libdata */
  
+typedef enum {
+  e_gras_msg_kind_unknown = 0,
+  e_gras_msg_kind_oneway  = 1
+  /* future:
+       method call (answer expected; sessionID attached)
+       successful return (usual datatype attached, with sessionID)
+       error return (payload = exception)
+       [+ call cancel, and others]
+     even after: 
+       forwarding request and other application level routing stuff
+       group communication
+  */
+  
+} e_gras_msg_kind_t;
+ 
 /** @brief Message instance */
 typedef struct {
-  gras_socket_t   expeditor;
-  gras_msgtype_t  type;
-  void           *payload;
-  int             payload_size;
+    gras_socket_t   expe;
+  e_gras_msg_kind_t kind;
+    gras_msgtype_t  type;
+    void           *payl;
+    int             payl_size;
 } s_gras_msg_t, *gras_msg_t;
 
 /**
@@ -60,10 +76,13 @@ extern xbt_set_t _gras_msgtype_set; /* of gras_msgtype_t */
 void gras_msgtype_free(void *msgtype);
 
 
-void gras_msg_recv(gras_socket_t    sock,
-		   gras_msgtype_t  *msgtype,
-		   void           **payload,
-		   int             *payload_size);
+/* functions to extract msg from socket or put it on wire (depend RL vs SG) */
+void gras_msg_recv(gras_socket_t   sock,
+		   gras_msg_t      msg/*OUT*/);
+void gras_msg_send_ext(gras_socket_t   sock,
+		     e_gras_msg_kind_t kind,
+		       gras_msgtype_t  msgtype,
+		       void           *payload);
 
 /**
  * gras_cblist_t:
