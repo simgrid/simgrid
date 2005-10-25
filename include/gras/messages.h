@@ -130,6 +130,15 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 		     gras_msgtype_t  msgt_want,
 		     gras_socket_t  *expeditor,
 		     void           *payload);
+  void gras_msg_wait_ext(double           timeout,    
+			 gras_msgtype_t   msgt_want,
+			 gras_socket_t    expe_want,
+			 int_f_pvoid_pvoid_t payl_filter,
+			 void               *filter_ctx, 
+			 gras_msgtype_t  *msgt_got,
+			 gras_socket_t   *expe_got,
+			 void            *payl_got);
+
   void gras_msg_handle(double timeOut);
 
 /* @} */
