@@ -24,6 +24,7 @@ typedef struct {
 
 /* Data for each host */
 typedef struct {
+  int refcount;
   int proc[XBT_MAX_CHANNEL]; /* PID of who's connected to each channel */
                               /* If =0, then free */
 

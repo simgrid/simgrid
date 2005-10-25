@@ -32,12 +32,15 @@ gras_process_init() {
   if (!hd) {
     /* First process on this host */
     hd=xbt_new(gras_hostdata_t,1);
+    hd->refcount = 1;
     hd->ports = xbt_dynar_new(sizeof(gras_sg_portrec_t),NULL);
 
     memset(hd->proc, 0, sizeof(hd->proc[0]) * XBT_MAX_CHANNEL); 
 
     if (MSG_host_set_data(MSG_host_self(),(void*)hd) != MSG_OK)
       THROW0(system_error,0,"Error in MSG_host_set_data()");
+  } else {
+    hd->refcount++;
   }
   
   /* take a free channel for this process */
@@ -82,6 +85,8 @@ gras_process_init() {
 void
 gras_process_exit() {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
+  gras_procdata_t *pd=(gras_procdata_t*)MSG_process_get_data(MSG_process_self());
+
   gras_msg_procdata_t msg_pd=(gras_msg_procdata_t)gras_libdata_by_name("gras_msg");
   gras_trp_procdata_t trp_pd=(gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
   int myPID=MSG_process_self_PID();
@@ -106,6 +111,13 @@ gras_process_exit() {
       xbt_dynar_cursor_rm(hd->ports, &cpt);
     }
   }
+
+  if ( ! --(hd->refcount)) {
+    xbt_dynar_free(&hd->ports);
+    free(hd);
+  }
+  gras_procdata_exit();
+  free(pd);
 }
 
 /* **************************************************************************
