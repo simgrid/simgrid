@@ -143,8 +143,8 @@ perform some more complex compilations...
 
 \section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start ?
 
-You are at the right place... Having a look to these <a
-href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">slides</a>
+You are at the right place... Having a look to these
+<a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">slides</a>
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
 MSG_examples. There is also a mailing list: <simgrid-user@lists.gforge.inria.fr>.
@@ -182,8 +182,8 @@ not really satisfying but it is the best I have managed to do yet.
 \subsection faq_platform Building a realistic platform
 
 I can speak more than an hour on this subject and I still do not have
-the right answer, just some ideas. You can read the following <a
-href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">slides</a>.
+the right answer, just some ideas. You can read the following
+<a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">slides</a>.
 It may give you some hints. You can also have a look at the
 <tt>tools/platform_generation/</tt> directory. There is a perl-script
 I use to annotate a Tiers generated platform (may not be up-to-date
