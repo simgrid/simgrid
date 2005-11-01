@@ -217,6 +217,15 @@ config_unit.c: xbt/config.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
 simgrid_units_main.c: $(TEST_UNITS)
+
+else
+
+$(TEST_UNITS) simgrid_units_main.c: 
+	@echo "ERROR: Test units not generated."
+	@echo "ERROR: If you are using a CVS checkout, configure with the --enable-maintainer-mode flag"
+	@echo "ERROR: If not, please report the bug to the simgrid-devel mailing list."
+	@exit 1
+
 endif
 
 ###
