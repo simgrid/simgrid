@@ -1,7 +1,5 @@
 /*! \page faq Frequently Asked Questions
 
-\author Arnaud Legrand <arnaud.legrand#imag.fr>
-
 \section faq_installation Installing the SimGrid library
 
 Many people have been asking me questions on how to use SimGrid. Quite
@@ -331,7 +329,7 @@ parallel task model, and ... Anyway, we finally have migrated our CVS
 to gforge so people that are interested by helping on this part will
 have the possibility to do it.
 
-\subsection But I wanted to implement a distributed dynamic scheduler of DAGs... How can I do that it SG is not available anymore in the next versions ?
+\subsection faq_SG_DAG But I wanted to implement a distributed dynamic scheduler of DAGs... How can I do that it SG is not available anymore in the next versions ?
 
 Distributed is somehow "contagious". If you start making distributed
 decisions, there is no way to handle DAGs directly anymore (unless I am
@@ -347,4 +345,47 @@ keep using the 2.18.5 versions until somebody has ported SG on top of SURF.
 Note however that SURF will be slower than the old SG to handle traces with
 a lots of variations (there is no trace integration anymore).
 
+\section faq_flexml_limit I get the message "surf_parse_lex: Assertion `next<limit' failed."
+
+This is because your platform file is too big for the parser. 
+
+Actually, the message comes directly from FleXML, the technology on top of
+which the parser is built. FleXML has the bad idea of fetching the whole
+document in memory before parsing it. And moreover, the memory buffer size
+must be determinded at compilation time.
+
+We use a value which seems big enough for our need withour bloating the
+simulators footprints. But of course your mileage may vary. In this case,
+just edit src/surf/surfxml.l modify the definition of
+FLEXML_BUFFERSTACKSIZE. E.g.
+
+\verbatim
+#define FLEXML_BUFFERSTACKSIZE 1000000000
+\endverbatim
+
+Then recompile and everything should be fine, provided that your version of
+Flex is recent enough (>= 2.5.31). If not the compilation process should
+warn you.
+
+A while ago, we worked on FleXML to reduce a bit its memory consumtion, but
+these issues remain. There is two things we should do:
+
+  - use a dynamic buffer instead of a static one so that the only limit
+    becomes your memory, not a stupid constant fixed at compilation time
+    (maybe not so difficult).
+  - change the parser so that it does not need to get the whole file in
+    memory before parsing
+    (seems quite difficult, but I'm a complete newbe wrt flex stuff).
+
+These are changes to FleXML itself, not SimGrid. But since we kinda hijacked
+the development of FleXML, I can grant you that any patches would be really
+welcome and quickly integrated.
+
+
+
+\author Arnaud Legrand (arnaud.legran::imag.fr)
+\author Martin Quinson (martin.quinson::loria.fr)
+
+
 */
+
