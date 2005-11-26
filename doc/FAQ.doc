@@ -345,6 +345,76 @@ keep using the 2.18.5 versions until somebody has ported SG on top of SURF.
 Note however that SURF will be slower than the old SG to handle traces with
 a lots of variations (there is no trace integration anymore).
 
+\section faq_flexml_bypassing How could I have some C functions do what the platform and deployment files do?
+
+So you want to bypass the XML files parser, uh? Maybe doin some parameter
+sweep experiments on your simulations or so? This is possible, but it's not
+really easy. Here is how it goes.
+
+For this, you have to first remember that the XML parsing in SimGrid is done
+using a tool called FleXML. Given a DTD, this gives a flex-based parser. If
+you want to bypass the parser, you need to provide some code mimicking what
+it does and replacing it in its interactions with the SURF code. So, let's
+have a look at these interactions.
+
+FleXML parser are close to classical SAX parsers. It means that a
+well-formed SimGrid platform XML file might result in the following
+"events":
+
+  - start "platform_description"
+  - start "cpu" with attributes name="host1" power="1.0"
+  - end "cpu"
+  - start "cpu" with attributes name="host2" power="2.0"
+  - end "cpu"
+  - start "network_link" with ...
+  - end "network_link"
+  - start "route" with ...
+  - end "route"
+  - start "route" with ...
+  - end "route"
+  - end "platform_description"
+
+The communication from the parser to the SURF code uses two means:
+Attributes get copied into some global variables, and a surf-provided
+function gets called by the parser for each event. For example, the event
+  - start "cpu" with attributes name="host1" power="1.0"
+
+let the parser do the equivalent of:
+\verbatim
+  strcpy("host1",A_cpu_name);
+  A_cpu_power = 1.0;
+  (*STag_cpu_fun)();
+\endverbatim
+
+In SURF, we attach callbacks to the different events by initializing the
+pointer functions to some the right surf functions. Example in
+workstation_KCCFLN05.c (surf_parse_open() ends up calling surf_parse()):
+\verbatim
+  // Building the routes
+  surf_parse_reset_parser();
+  STag_route_fun=parse_route_set_endpoints;
+  ETag_route_element_fun=parse_route_elem;
+  ETag_route_fun=parse_route_set_route;
+  surf_parse_open(file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  surf_parse_close();
+\endverbatim
+    
+So, to bypass the FleXML parser, you need to write your own version of the
+surf_parse function, which should do the following:
+   - Call the corresponding STag_<tag>_fun function to simulate tag start
+   - Fill the A_<tag>_<attribute> variables with the wanted values
+   - Call the corresponding ETag_<tag>_fun function to simulate tag end
+   - (do the same for the next set of values, and loop)
+
+Then, tell SimGrid that you want to use your own "parser" instead of the stock one:
+\verbatim
+  surf_parse = surf_parse_bypass;
+  MSG_create_environment(NULL);
+\endverbatim
+
+An example of this trick is distributed in the file examples/msg/msg_test_surfxml_bypassed.c
+
 \section faq_flexml_limit I get the message "surf_parse_lex: Assertion `next<limit' failed."
 
 This is because your platform file is too big for the parser. 
@@ -415,7 +485,6 @@ double get_host_load() {
 Of course, it may not match your personal definition of "host load". In this
 case, please detail what you mean on the mailing list, and we will extend
 this FAQ section to fit your taste if possible.
-
 
 
 \author Arnaud Legrand (arnaud.legran::imag.fr)
