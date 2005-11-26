@@ -381,6 +381,41 @@ These are changes to FleXML itself, not SimGrid. But since we kinda hijacked
 the development of FleXML, I can grant you that any patches would be really
 welcome and quickly integrated.
 
+\section faq_host_load Where is the get_host_load function hidden in MSG?
+
+There is no such thing because its semantic wouldn't be really clear. Of
+course, it is something about the amount of host throughput, but there is as
+many definition of "host load" as people asking for this function.
+
+It may be instantaneous value or an average one. Moreover it may be only the
+power of the computer, or may take the background load into account, or may
+even take the currently running tasks into account. In some SURF models,
+communications have an influence on computational power. Should it be taken
+into account too?
+
+So, we decided not to include such a function into MSG and let people do it
+thereselves so that they get the value matching exactly what they mean. One
+possibility is to run active measurement as in next code snippet. It is very
+close from what you would have to do out of the simulator, and thus gives
+you information that you could also get in real settings to not hinder the
+realism of your simulation. 
+
+\verbatim
+double get_host_load() {
+   m_task_t task = MSG_task_create("test", 0.001, 0, NULL);
+   double date = MSG_get_clock();
+
+   MSG_task_execute(task);
+   date = MSG_get_clock() - date;
+   MSG_task_destroy(task);
+   return (0.001/date);
+}
+\endverbatim
+
+Of course, it may not match your personal definition of "host load". In this
+case, please detail what you mean on the mailing list, and we will extend
+this FAQ section to fit your taste if possible.
+
 
 
 \author Arnaud Legrand (arnaud.legran::imag.fr)
