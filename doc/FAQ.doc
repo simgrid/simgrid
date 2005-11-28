@@ -345,6 +345,63 @@ keep using the 2.18.5 versions until somebody has ported SG on top of SURF.
 Note however that SURF will be slower than the old SG to handle traces with
 a lots of variations (there is no trace integration anymore).
 
+
+\subsection faq_SURF_dynami How can I have variable resource availability?
+
+A nice feature of SimGrid is that it enables you to seamlessly have
+resources whose availability change over time. When you build a
+platform, you generally declare CPUs like that:
+
+\verbatim
+  <cpu name="Cpu A" power="100.00"/>
+\endverbatim 
+
+If you want the availability of "CPU A" to change over time, the only
+thing you have to do is change this definition like that:
+
+\verbatim
+  <cpu name="Cpu A" power="100.00" availability_file="trace_A.txt" state_file="trace_A_failure.txt"/>
+\endverbatim
+
+For CPUs, availability files are expressed in fraction of available
+power. Let's have a look at what "trace_A.txt" may look like:
+
+\verbatim
+PERIODICITY 1.0
+0.0 1.0
+11.0 0.5
+20.0 0.9
+\endverbatim
+
+At time 0, our CPU will deliver 100 Mflop/s. At time 11.0, it will
+deliver only 50 Mflop/s until time 20.0 where it will will start
+delivering 90 Mflop/s. Last at time 21.0 (20.0 plus the periodicity
+1.0), we'll be back to the beginning and it will deliver 100Mflop/s.
+
+Now let's look at the state file:
+\verbatim
+PERIODICITY 10.0
+1.0 -1.0
+2.0 1.0
+\endverbatim
+
+A negative value means "off" while a positive one means "on". At time
+1.0, the CPU is on. At time 1.0, it is turned off and at time 2.0, it
+is turned on again until time 12 (2.0 plus the periodicity 10.0). It
+will be turned on again at time 13.0 until time 23.0, and so on.
+
+Now, let's look how the same kind of thing can be done for network
+links. A usual declaration looks like:
+
+\verbatim
+  <network_link name="LinkA" bandwidth="10.0" latency="0.2"/>
+\endverbatim
+
+You have at your disposal the following options: bandwidth_file,
+latency_file and state_file. The only difference with CPUs is that
+bandwidth_file and latency_file do not express fraction of available
+power but are expressed directly in Mb/s and seconds.
+
 \section faq_flexml_bypassing How could I have some C functions do what the platform and deployment files do?
 
 So you want to bypass the XML files parser, uh? Maybe doin some parameter
