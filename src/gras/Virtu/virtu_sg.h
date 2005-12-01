@@ -14,8 +14,6 @@
 #include "xbt/dynar.h"
 #include "msg/msg.h" /* SimGrid header */
 
-#define XBT_MAX_CHANNEL 10
-
 typedef struct {
   int port;  /* list of ports used by a server socket */
   int tochan; /* the channel it points to */
