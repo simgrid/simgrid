@@ -1,6 +1,7 @@
 Makefile Makefile.in
 html sgml xml
 Doxyfile
-api_index.doc
+index-API.doc
 logcategories.doc
 simgrid_modules.map simgrid_modules.png
+simgrid.tag 
