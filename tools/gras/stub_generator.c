@@ -173,7 +173,7 @@ static void generate_sim(char *project)
                      "\n");
    fprintf(OUT, 
 	   "  MSG_paje_output(\"%s.trace\");\n" 
-	   "  MSG_set_channel_number(10); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" 
+	   "  MSG_set_channel_number(XBT_MAX_CHANNEL); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" 
 	   "  MSG_create_environment(argv[1]);\n" 
 	   "\n" 
 	   "  /*  Application deployment */\n",
