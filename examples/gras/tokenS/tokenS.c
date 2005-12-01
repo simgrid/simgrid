@@ -57,9 +57,11 @@ static int node_cb_stoken_handler(gras_socket_t  expeditor,
     supersteps = 100;
   } else if (NBLOOPS >= 100) {
     supersteps = 10;
-  } 
+  } else if (NBLOOPS <=10) {
+    supersteps = 1;
+  }
   if (globals->create && (! (globals->remaining_loop % supersteps))) {
-    VERB1("Begin a new loop. Still to do: %d", globals->remaining_loop);
+    INFO1("Begin a new loop. Still to do: %d", globals->remaining_loop);
   } else if (! (globals->remaining_loop % supersteps)) {
     VERB3("Got token(%d) from %s remaining_loop=%d", 
 	  msg, gras_socket_peer_name(expeditor),globals->remaining_loop);
