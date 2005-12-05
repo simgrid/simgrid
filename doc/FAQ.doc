@@ -520,7 +520,7 @@ which the parser is built. FleXML has the bad idea of fetching the whole
 document in memory before parsing it. And moreover, the memory buffer size
 must be determinded at compilation time.
 
-We use a value which seems big enough for our need withour bloating the
+We use a value which seems big enough for our need without bloating the
 simulators footprints. But of course your mileage may vary. In this case,
 just edit src/surf/surfxml.l modify the definition of
 FLEXML_BUFFERSTACKSIZE. E.g.
