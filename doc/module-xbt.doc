@@ -1,7 +1,7 @@
 /** @addtogroup XBT_API
  *
  *  The XBT functionalities fall into several categories:
- *   - Portability support. 
+ *   - Portability support
  *     - \ref XBT_syscall
  *   - Grounding features
  *     - \ref XBT_ex
@@ -45,11 +45,11 @@
   *  \brief Contexts are a higher level system than <tt>setjump/longjmp</tt> 
   *  for non-preemptible threads.
   *
-  *  You shouldn't use it directly since it is merly intended to ease the 
-  *  implementation of the serveral programmation environment of the 
-  *  SimGrid toolkit (nammely, \ref MSG_API, \ref GRAS_API and \ref SMPI_API).
+  *  You shouldn't use it directly since it is merely intended to ease the 
+  *  implementation of the several programmation environment of the 
+  *  SimGrid toolkit (namely, \ref MSG_API, \ref GRAS_API and \ref SMPI_API).
   *
-  *  You should use those mechanism instead.
+  *  You should use those environments instead.
   */
 
 /** @} */ End of XBT_API
