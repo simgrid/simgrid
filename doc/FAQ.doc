@@ -206,21 +206,58 @@ generates an input to <a href="http://www-id.imag.fr/Logiciels/paje/">Paje</a>.
 \endhtmlonly
 </center>
 
-\subsection faq_context I have tons of process and it is limiting my simulation.
+\subsection faq_context_1000 I want thousands of simulated processes
 
-MSG can use either pthreads or the GNU context library. On most
-systems, the number of pthreads is limited (especially with the
-current linux pthreads) and then your simulation may be limited for a
-stupid reason. If you enable the context option
-(<tt>--enable-context</tt> in the <tt>./configure</tt> phase), you
-will not use the pthread anymore and the context switching will be
-done manually, which enables us to have as much agents as your memory
-can hold and should be much faster... So think about it if your
-simulation is getting really big.
+SimGrid can use either pthreads library or the UNIX98 contextes. On most
+systems, the number of pthreads is limited and then your simulation may be
+limited for a stupid reason. This is especially true with the current linux
+pthreads, and I cannot get more than 2000 simulated processes with pthreads
+on my box. The UNIX98 contextes allow me to raise the limit to 25,000
+simulated processes on my laptop.
 
-Nevertheless, be aware that this code does not work on some system. It
-is not very clean. As usual, as soon as I will have a little bit more
-time, I will recode it in a cleaner way.
+The <tt>--with-context</tt> option of the <tt>./configure</tt> script allows
+you to choose between UNIX98 contextes (<tt>--with-context=ucontext</tt>)
+and the pthread version ( (<tt>--with-context=pthread</tt>). The default
+value is ucontext when the script detect a working UNIX98 context
+implementation. On Windows boxes, the provided value is discarded and an
+adapted version is picked up.
+
+We experienced some issues with contextes on some rare systems (solaris 8
+and lower comes to mind). The main problem is that the configure script
+detect the contextes as being functional when it's not true. If you happen
+to use such a system, switch manually to the pthread version, and provide us
+with a good patch for the configure script so that it is done automatically ;)
+
+\subsection faq_context_10000 I want hundred thousands of simulated processes
+
+As explained above, SimGrid can use UNIX98 contextes to represent and handle
+the simulated processes. Thanks to this, the main limitation to the number
+of simulated processes becomes the available memory. 
+
+Here are some tricks I had to use in order to run a token ring between
+25,000 processes on my laptop (1Gb memory, 1.5Gb swap).
+
+ - First of all, make sure your code runs for a few hundreds processes
+   before trying to push the limit. Make sure it's valgrind-clean, ie that
+   valgrind does not report neither memory error nor memory leaks. Indeed,
+   numerous simulated processes result in *fat* simulation hindering debugging.
+
+ - It was really boring to write 25,000 entries in the deployment file, so I wrote 
+   a little script <tt>examples/gras/tokenS/make_deployment.pl</tt>, which you may
+   want to adapt to your case.
+
+ - The deployment file became quite big, so I had to do what is in the FAQ
+   entry \ref faq_flexml_limit
+
+ - Each UNIX98 context has its own stack entry. As debugging this is quite 
+   hairly, the default value is a bit overestimated so that user don't get 
+   into trouble about this. You want to tune this size to increse the number 
+   of processes. This is the <tt>STACK_SIZE</tt> define in 
+   <tt>src/xbt/context_private.h</tt>, which is 128kb by default.
+   Reduce this as much as you can, but be warned that if this value is too 
+   low, you'll get a segfault. The token ring example, which is quite simple, 
+   runs with 40kb stacks.
+
 
 \section faq_SG Where has SG disappeared ?!?
 
