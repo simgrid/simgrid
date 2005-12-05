@@ -1,5 +1,7 @@
 /*! \page faq Frequently Asked Questions
 
+\htmlinclude FAQ.toc
+
 \section faq_installation Installing the SimGrid library
 
 Many people have been asking me questions on how to use SimGrid. Quite

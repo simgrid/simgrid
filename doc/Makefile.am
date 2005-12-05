@@ -21,6 +21,7 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	touch index-API.doc
 	doxygen Doxyfile >/dev/null
 	../tools/doxygen/index_create.pl simgrid.tag index-API.doc
+	../tools/doxygen/toc_create.pl FAQ.doc FAQ.toc
 	doxygen Doxyfile >/dev/null
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
