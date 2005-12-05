@@ -32,7 +32,7 @@ typedef int CONTEXT;
 #ifdef USE_PTHREADS
 #  include <pthread.h>
 #else
-#  define STACK_SIZE 524288
+#  define STACK_SIZE 128*1024 /* Lower this if you want to reduce the memory consumption */
 #endif     /* USE_PTHREADS */
 
 typedef struct s_xbt_context {
