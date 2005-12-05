@@ -13,7 +13,9 @@
 #include "gras/DataDesc/datadesc_interface.h"
 #include "gras/Transport/transport_interface.h" /* gras_select */
 
+#ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg,gras,"High level messaging");
 
