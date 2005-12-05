@@ -59,8 +59,10 @@ sync-gforge:
 	rsync --copy-links --verbose --archive --cvs-exclude --compress --delete \
 	--delete-excluded --rsh=ssh -I \
 	doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/
+	scp doc/index.php scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
+	scp doc/simgrid_logo_small2.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	ssh scm.gforge.inria.fr "chgrp -R simgrid /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
-	ssh scm.gforge.inria.fr "chmod g+rw -R /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
+	ssh scm.gforge.inria.fr "chmod g+rw -R /var/lib/gforge/chroot/home/groups/simgrid/htdocs/*"
 
 mail:
 	 @ver=`dpkg-parsechangelog -lChangeLog | egrep '^Version: ' | sed 's/Version: //'`;\
