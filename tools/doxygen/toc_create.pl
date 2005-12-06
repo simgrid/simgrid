@@ -43,21 +43,24 @@ print OUTPUT "<!-- Automatically generated table of contents --!>\n";
 foreach $entry (@toc) {
     ($level,$label,$name) = @$entry;
 
-    if($current_level<$level) {
+    while($current_level<$level) {
 	print OUTPUT "<ol type=\"1\">\n";
+	$current_level++;
     }
-    if($current_level>$level) {
+    while($current_level>$level) {
 	print OUTPUT "</ol>\n";
+	$current_level--;
     }
-    $current_level = $level;
     foreach (1..$current_level) {
 	print OUTPUT "\t";
     }
     print OUTPUT "<li> <a href=\"#$label\">$name</a>\n";
 }
 
-$current_level=-1;
-print OUTPUT "</ol>\n";
+while($current_level>-1) {
+    print OUTPUT "</ol>\n";
+    $current_level--;
+}
 print OUTPUT "<!-- End of automatically generated table of contents --!>\n";
 
 
