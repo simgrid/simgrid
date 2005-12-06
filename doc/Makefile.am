@@ -30,7 +30,7 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	for i in `find html -name '*.html'` ; do \
             cp $$i $$i.bak ; \
             cat $$i.bak |  \
-               sed -e 's|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>       <li><a href="faq.html"><span>FAQ</span></a></li>|' \
+               sed -e 's|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>|<li><a href="index.html"><span>Overview</span></a></li>       <li><a href="faq.html"><span>FAQ</span></a></li>|' \
                    -e 's|<li><a href="annotated.html"><span>Data\&nbsp;Structures</span></a></li>|<li><a href="publis.html"><span>Publications</span></a></li>|g' \
                    -e 's|<span>Modules</span>|<span>Modules API</span>|g' \
                    -e 's|<li><a href="dirs.html"><span>Directories</span></a></li>||g' \
