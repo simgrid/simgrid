@@ -749,7 +749,7 @@ welcome and quickly integrated.
 Unfortunately, we cannot debug every code written in SimGrid.  We
 furthermore believe that the framework provides ways enough
 information to debug such informations yourself. If the textual output
-is not enough, Make sure to check the \ref faq_paje FAQ entry to see
+is not enough, Make sure to check the \ref faq_visualization FAQ entry to see
 how to get a graphical one.
 
 Now, if you come up with a really simple example that deadlocks and

@@ -37,7 +37,6 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
             rm $$i.bak ; \
         done
 endif
-#	for i in `find html -name '*.html'` ; do cp $$i $$i.bak ; sed 's/Modules<\/a> | <a class="qindex" href="annotated.html">.*Fields<\/a>/Modules Tree<\/a> /g' $$i.bak > $$i ; rm $$i.bak ; done
 
 logcategories.doc: $(DOCSOURCES)
 	pwd=`pwd`; rm $$pwd/logcategories.doc; set -e; \
