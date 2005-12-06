@@ -2,7 +2,7 @@ DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@
  $(shell find @srcdir@ -name "*.doc")
 
 EXTRA_DIST = html Doxyfile \
- modules.doc FAQ.doc index.doc footer.html simgrid_logo.png simgrid_modules.png
+ modules.doc FAQ.doc index.doc publis.doc footer.html simgrid_logo.png simgrid_modules.png
 
 DISTCLEANFILES = index-API.doc simgrid.tag
 MAINTAINERCLEANFILES = html
@@ -22,10 +22,20 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	doxygen Doxyfile >/dev/null
 	../tools/doxygen/index_create.pl simgrid.tag index-API.doc
 	../tools/doxygen/toc_create.pl FAQ.doc FAQ.toc
+	../tools/doxygen/toc_create.pl index.doc index.toc
 	doxygen Doxyfile >/dev/null
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
-	for i in `find html -name '*.html'` ; do cp $$i $$i.bak ; sed 's|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>       <li><a href="faq.html"><span>FAQ</span></a></li>|' $$i.bak > $$i ; rm $$i.bak ; done
+	for i in `find html -name '*.html'` ; do \
+            cp $$i $$i.bak ; \
+            cat $$i.bak |  \
+               sed -e 's|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>       <li><a href="faq.html"><span>FAQ</span></a></li>|' \
+                   -e 's|<li><a href="annotated.html"><span>Data\&nbsp;Structures</span></a></li>|<li><a href="publis.html"><span>Publications</span></a></li>|g' \
+                   -e 's|<span>Modules</span>|<span>Modules API</span>|g' \
+                   -e 's|<li><a href="dirs.html"><span>Directories</span></a></li>||g' \
+            > $$i ; \
+            rm $$i.bak ; \
+        done
 endif
 #	for i in `find html -name '*.html'` ; do cp $$i $$i.bak ; sed 's/Modules<\/a> | <a class="qindex" href="annotated.html">.*Fields<\/a>/Modules Tree<\/a> /g' $$i.bak > $$i ; rm $$i.bak ; done
 

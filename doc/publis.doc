@@ -1,0 +1,153 @@
+/*! \page publis Publications
+
+When citing SimGrid, the prefered reference paper is <i>Scheduling
+Distributed Applications: the SimGrid Simulation Framework</i>, even if it's
+a bit old now. We are actively working on improving this.
+
+\subsection pub_simulation About simulation
+
+\li <b>Scheduling Distributed Applications: the
+       SimGrid Simulation Framework</b>\n
+    by <em>Henri Casanova and Arnaud Legrand and Loris Marchal</em>\n
+    Proceedings of the third IEEE International Symposium
+    on Cluster Computing and the Grid (CCGrid'03)\n
+    Since the advent of distributed computer systems an active field
+    of research has been the investigation of scheduling strategies
+    for parallel applications.  The common approach is to employ
+    scheduling heuristics that approximate an optimal
+    schedule. Unfortunately, it is often impossible to obtain
+    analytical results to compare the efficacy of these heuristics.
+    One possibility is to conducts large numbers of back-to-back
+    experiments on real platforms.  While this is possible on
+    tightly-coupled platforms, it is infeasible on modern distributed
+    platforms (i.e. Grids) as it is labor-intensive and does not
+    enable repeatable results. The solution is to resort to
+    simulations. Simulations not only enables repeatable results but
+    also make it possible to explore wide ranges of platform and
+    application scenarios.\n
+    In this paper we present the SimGrid framework which enables the
+    simulation of distributed applications in distributed computing
+    environments for the specific purpose of developing and evaluating
+    scheduling algorithms.  This paper focuses on SimGrid v2, which
+    greatly improves on the first version of the software with more
+    realistic network models and topologies.  SimGrid v2 also enables
+    the simulation of distributed scheduling agents, which has become
+    critical for current scheduling research in large-scale platforms.
+    After describing and validating these features, we present a case
+    study by which we demonstrate the usefulness of SimGrid for
+    conducting scheduling research.
+
+
+\li <b>A Network Model for Simulation of Grid Application</b>\n
+    by <em>Henri Casanova and Loris Marchal</em>\n
+    \anchor paper_tcp
+    In this work we investigate network models that can be
+    potentially employed in the simulation of scheduling algorithms for
+    distributed computing applications. We seek to develop a model of TCP
+    communication which is both high-level and realistic. Previous research
+    works show that accurate and global modeling of wide-area networks, such
+    as the Internet, faces a number of challenging issues. However, some
+    global models of fairness and bandwidth-sharing exist, and can be link
+    withthe behavior of TCP. Using both previous results and simulation (with
+    NS), we attempt to understand the macroscopic behavior of
+    TCP communications. We then propose a global model of the network for the
+    Grid platform. We perform partial validation of this model in
+    simulation. The model leads to an algorithm for computing
+    bandwidth-sharing. This algorithm can then be implemented as part of Grid
+    application simulations. We provide such an implementation for the
+    SimGrid simulation toolkit.\n
+    ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz
+
+
+\li <b>MetaSimGrid : Towards realistic scheduling simulation of
+        distributed applications</b>\n
+    by <em>Arnaud Legrand and Julien Lerouge</em>\n
+    Most scheduling problems are already hard on homogeneous
+    platforms, they become quite intractable in an heterogeneous
+    framework such as a metacomputing grid. In the best cases, a
+    guaranteed heuristic can be found, but most of the time, it is
+    not possible. Real experiments or simulations are often
+    involved to test or to compare heuristics. However, on a
+    distributed heterogeneous platform, such experiments are
+    technically difficult to drive, because of the genuine
+    instability of the platform. It is almost impossible to
+    guarantee that a platform which is not dedicated to the
+    experiment, will remain exactly the same between two tests,
+    thereby forbidding any meaningful comparison. Simulations are
+    then used to replace real experiments, so as to ensure the
+    reproducibility of measured data. A key issue is the
+    possibility to run the simulations against a realistic
+    environment. The main idea of trace-based simulation is to
+    record the platform parameters today, and to simulate the
+    algorithms tomorrow, against the recorded data: even though it
+    is not the current load of the platform, it is realistic,
+    because it represents a fair summary of what happened
+    previously. A good example of a trace-based simulation tool is
+    SimGrid, a toolkit providing a set of core abstractions and
+    functionalities that can be used to easily build simulators for
+    specific application domains and/or computing environment
+    topologies. Nevertheless, SimGrid lacks a number of convenient
+    features to craft simulations of a distributed application
+    where scheduling decisions are not taken by a single
+    process. Furthermore, modeling a complex platform by hand is
+    fastidious for a few hosts and is almost impossible for a real
+    grid. This report is a survey on simulation for scheduling
+    evaluation purposes and present MetaSimGrid, a simulator built
+    on top of SimGrid.\n
+    ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-28.ps.gz
+
+\li <b>SimGrid: A Toolkit for the Simulation of Application
+        Scheduling</b>\n
+    by <em>Henri Casanova</em>\n
+    Advances in hardware and software technologies have made it
+    possible to deploy parallel applications over increasingly large
+    sets of distributed resources. Consequently, the study of
+    scheduling algorithms for such applications has been an active area
+    of research. Given the nature of most scheduling problems one must
+    resort to simulation to effectively evaluate and compare their
+    efficacy over a wide range of scenarios. It has thus become
+    necessary to simulate those algorithms for increasingly complex
+    distributed, dynamic, heterogeneous environments. In this paper we
+    present SimGrid, a simulation toolkit for the study of scheduling
+    algorithms for distributed application. This paper gives the main
+    concepts and models behind SimGrid, describes its API and
+    highlights current implementation issues. We also give some
+    experimental results and describe work that builds on SimGrid's
+    functionalities.\n
+    http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz
+
+\subsection pub_research Papers using SimGrid results
+
+\li <b> A study of meta-scheduling architectures for high throughput
+        computing: Pull vs. Push</b>\n
+    by <em> Vincent Garonne, Andrei Tsaregorodtsev, and Eddy Caron </em>\n
+    Proceedings of 4th Internationnal Symposium on Parallel and
+    Distributed Computing Job Scheduling Strategies for Parallel
+    Processing (ISPDC'05), July 2005.\n
+    Preliminary version in http://marwww.in2p3.fr/~garonne/garonne-meta.pdf
+
+\li <b>Exploiting Replication and Data Reuse to Efficiently Schedule
+       Data-intensive Applications on Grids</b>\n
+    by <em> E. Santos-Neto, W. Cirne, F. Brasileiro, A. Lima.</em>\n
+    Proceedings of 10th Job Scheduling Strategies for Parallel Processing, June 2004.\n
+    http://www.lsd.ufcg.edu.br/~elizeu/articles/jsspp.v6.pdf
+
+\li <b>Optimal algorithms for scheduling divisible workloads on 
+       heterogeneous systems</b>\n
+    by <em>Olivier Beaumont and Arnaud Legrand and Yves Robert</em>\n
+    in Proceedings of the 17th International Parallel and Distributed Processing Symposium (IPDPS'03).\n
+    Preliminary version on ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-36.ps.gz
+
+\li <b>On-line Parallel Tomography</b>\n
+    by <em>Shava Smallen</em>\n
+    Masters Thesis, UCSD, May 2001
+\li <b>Applying Scheduling and Tuning to On-line Parallel Tomography </b>\n
+     by <em>Shava Smallen, Henri Casanova, Francine Berman</em>\n
+     in Proceedings of Supercomputing 2001
+\li <b>Heuristics for Scheduling Parameter Sweep applications in
+         Grid environments</b>\n
+    by <em>Henri Casanova, Arnaud Legrand, Dmitrii Zagorodnov and 
+            Francine Berman</em>\n
+    in Proceedings of the 9th Heterogeneous Computing workshop 
+    (HCW'2000), pp349-363.
+*/
