@@ -6,21 +6,16 @@
 \endhtmlonly
 </center>
 
-\htmlinclude index.toc
-
-\section hot_news HOT NEWS
-
-<b>SimGrid 3.0.1 was released on 22st of October 2005. Get it from
-<a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.</b> 
-
 \section quick Quick start
 
 SimGrid is a toolkit that provides core functionalities for the simulation
 of distributed applications in heterogeneous distributed environments.
+\htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
 The specific goal of the project is to facilitate research in the area of
 distributed and parallel application scheduling on distributed computing
 platforms ranging from simple network of workstations to Computational
 Grids.
+\htmlonly <!-- ______BODY_END______ --!> \endhtmlonly
 
 \subsection quick_dl Getting and installing the software
 
@@ -60,7 +55,7 @@ this page. It is organized as follow:
 As depicted by the following diagram, the SimGrid toolkit is basically
 three-layered (click on the picture to jump to a specific component).
 
-
+\htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
 \htmlonly
 <center>
 \endhtmlonly
@@ -142,6 +137,7 @@ See the \ref XBT_API section for more details.
 Any question, remark or suggestion are welcome on the 
 <a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user>SimGrid users
 mailing list</a>.
+\htmlonly <!-- ______BODY_END______ --!> \endhtmlonly
 
 <hr>
 

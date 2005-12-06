@@ -123,15 +123,7 @@ while (!feof($handle)) {
 $contents=str_replace("Welcome to", "Welcome to the", $contents);
 fclose($handle);
 echo $contents; } ?>
-______BODY________
-<?php if ($handle=fopen('http://'.$domain.'/export/projnews.php?group_name='.$group_name,'r')){
-$contents = '';
-while (!feof($handle)) {
-	$contents .= fread($handle, 8192);
-}
-fclose($handle);
-$contents=str_replace('href="/','href="http://'.$domain.'/',$contents);
-echo $contents; } ?>
+______BODY______
 
 </td>
 
@@ -155,6 +147,18 @@ fclose($handle);
 $contents=str_replace('href="/','href="http://'.$domain.'/',$contents);
 $contents=str_replace('src="/','src="http://'.$domain.'/',$contents);
 echo $contents; } ?>
+<br>
+<hr>
+<br>
+<?php if ($handle=fopen('http://'.$domain.'/export/projnews.php?group_name='.$group_name,'r')){
+$contents = '';
+while (!feof($handle)) {
+	$contents .= fread($handle, 8192);
+}
+fclose($handle);
+$contents=str_replace('href="/','href="http://'.$domain.'/',$contents);
+echo $contents; } ?>
+
 
 					</td>
 				</tr>
