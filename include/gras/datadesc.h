@@ -18,11 +18,6 @@ SG_BEGIN_DECL()
 /** @addtogroup GRAS_dd Data description
  *  @brief Describing data to be exchanged (Communication facility)
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
- *                <tr><td>Prev          <td> 
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_sock]
- *                <tr><td><b>Down</b>   <td> [\ref GRAS_dd_basic]            </table></center>
- *
  * Since GRAS takes care of potential representation conversion when the platform is heterogeneous, 
  * any data which transits on the network must be described beforehand.
  * 
@@ -44,9 +39,7 @@ SG_BEGIN_DECL()
 
 /** @defgroup GRAS_dd_basic Basic operations on data descriptions
  *  @ingroup GRAS_dd
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
- *                <tr><td>   Prev       <td> 
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_auto]            </table></center>
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Basics" --> \endhtmlonly
  *
  * If you only want to send pre-existing types, simply retrieve the pre-defined description with 
  * the \ref gras_datadesc_by_name function. Existing types entail:
@@ -72,9 +65,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
     
 /** @defgroup GRAS_dd_auto Automatic parsing of data descriptions
  *  @ingroup GRAS_dd
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_basic]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_manual]            </table></center>
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Automatic parsing" --> \endhtmlonly
  * 
  *  If you need to declare a new datatype, this is the simplest way to describe it to GRAS. Simply
  *  enclose its type definition  into a \ref GRAS_DEFINE_TYPE macro call, and you're set. Here is 
