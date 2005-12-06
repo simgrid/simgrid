@@ -25,8 +25,9 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	doxygen Doxyfile >/dev/null
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
-	for i in `find html -name '*.html'` ; do cp $$i $$i.bak ; sed 's/Modules<\/a> | <a class="qindex" href="annotated.html">.*Fields<\/a>/Modules Tree<\/a> /g' $$i.bak > $$i ; rm $$i.bak ; done
+	for i in `find html -name '*.html'` ; do cp $$i $$i.bak ; sed 's|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>       <li><a href="faq.html"><span>FAQ</span></a></li>|' $$i.bak > $$i ; rm $$i.bak ; done
 endif
+#	for i in `find html -name '*.html'` ; do cp $$i $$i.bak ; sed 's/Modules<\/a> | <a class="qindex" href="annotated.html">.*Fields<\/a>/Modules Tree<\/a> /g' $$i.bak > $$i ; rm $$i.bak ; done
 
 logcategories.doc: $(DOCSOURCES)
 	pwd=`pwd`; rm $$pwd/logcategories.doc; set -e; \

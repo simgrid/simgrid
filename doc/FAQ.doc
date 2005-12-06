@@ -14,10 +14,10 @@ instructions and still have some troubles, drop an e-mail to
 \subsection faq_compiling Compiling SimGrid
 
 Suppose you have uncompressed SimGrid in some temporary location of
-your home directory (say <tt>/home/joe/tmp/simgrid-2.18.2 </tt>). The
+your home directory (say <tt>/home/joe/tmp/simgrid-3.0.1 </tt>). The
 simplest way to use SimGrid is to install it in your home
 directory. Change your directory to
-<tt>/home/joe/tmp/simgrid-2.18.2</tt> and type
+<tt>/home/joe/tmp/simgrid-3.0.1</tt> and type
 
 \verbatim./configure --prefix=$HOME
 make
@@ -194,6 +194,27 @@ thought about adding a global structure where you directly compute the
 informations that are really important rather than writing everything
 down and then processing huge files ?
 
+\subsection faq_C Argh! Do I really have to code in C ?
+
+Up until now, there is no binding for other languages. If you use C++,
+you should be able to use the SimGrid library as a standard C library
+and everything should work fine (simply <i>link</i> against this
+library; recompiling SimGrid with a C++ compiler won't work and it
+wouldn't help if you could).
+
+In fact, the bindings needed to allow one to use SimGrid from Perl,
+Python, Java, etc. are double-layered.  The first layer would allow
+you to call for example the MSG_task_get_name(task) function while
+what you really want is a proper object wrapping allowing you to call
+task->name(). That's the purpose of the second layer.  The first one
+is granted with C++ but can be done with tools like 
+<a href="www.swig.org/">swig</a> for other languages like Perl, Ruby,
+Python, CAML. None of us really need the second one (which is a bit
+more demanding and cannot be automatically generated) yet and there is
+no real point in doing the first one without the second. :)
+
+As usual, you're welcome to participate.
+
 \section faq_questions How to ....? Is there a function in the API to simply ....?
 
 Here is the deal. The whole SimGrid project (MSG, SURF, GRAS, ...) is
@@ -280,6 +301,52 @@ haven't found time to do it yet. However you can try to play with
 MSG_process_suspend() and MSG_process_resume(). You can even do some
 synchronization with fake communications (using MSG_task_get(),
 MSG_task_put() and MSG_task_Iprobe()).
+
+\subsection faq_examples_MIA_host_load Where is the get_host_load function hidden in MSG?
+
+There is no such thing because its semantic wouldn't be really
+clear. Of course, it is something about the amount of host throughput,
+but there is as many definition of "host load" as people asking for
+this function. First, you have to remember that resource availability
+may vary over time, which make any load notion harder to define.
+
+It may be instantaneous value or an average one. Moreover it may be only the
+power of the computer, or may take the background load into account, or may
+even take the currently running tasks into account. In some SURF models,
+communications have an influence on computational power. Should it be taken
+into account too?
+
+So, we decided not to include such a function into MSG and let people do it
+thereselves so that they get the value matching exactly what they mean. One
+possibility is to run active measurement as in next code snippet. It is very
+close from what you would have to do out of the simulator, and thus gives
+you information that you could also get in real settings to not hinder the
+realism of your simulation. 
+
+\verbatim
+double get_host_load() {
+   m_task_t task = MSG_task_create("test", 0.001, 0, NULL);
+   double date = MSG_get_clock();
+
+   MSG_task_execute(task);
+   date = MSG_get_clock() - date;
+   MSG_task_destroy(task);
+   return (0.001/date);
+}
+\endverbatim
+
+Of course, it may not match your personal definition of "host load". In this
+case, please detail what you mean on the mailing list, and we will extend
+this FAQ section to fit your taste if possible.
+
+\subsection faq_examples_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid ?
+
+No, there is no native support for batch schedulers and none is
+planned because this is a very specific need (and doing it in a
+generic way is thus very hard). However some people have implemented
+their own batch schedulers. Vincent Garonne wrote one during his PhD
+and put his code in the contrib directory of our CVS so that other can
+keep working on it. You may find inspinring ideas in it.
 
 \section faq_SG Where has SG disappeared?!?
 
@@ -388,7 +455,7 @@ parallel task model, and ... Anyway, we finally have migrated our CVS
 to gforge so people that are interested by helping on this part will
 have the possibility to do it.
 
-\subsection faq_SG_DAG But I wanted to implement a distributed dynamic scheduler of DAGs... How can I do that if SG is not available anymore in the next versions?
+\subsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs without the SG module?
 
 Distributed is somehow "contagious". If you start making distributed
 decisions, there is no way to handle DAGs directly anymore (unless I am
@@ -470,41 +537,6 @@ You have at your disposal the following options: bandwidth_file,
 latency_file and state_file. The only difference with CPUs is that
 bandwidth_file and latency_file do not express fraction of available
 power but are expressed directly in Mb/s and seconds.
-
-\subsection faq_host_load Where is the get_host_load function hidden in MSG?
-
-There is no such thing because its semantic wouldn't be really clear. Of
-course, it is something about the amount of host throughput, but there is as
-many definition of "host load" as people asking for this function.
-
-It may be instantaneous value or an average one. Moreover it may be only the
-power of the computer, or may take the background load into account, or may
-even take the currently running tasks into account. In some SURF models,
-communications have an influence on computational power. Should it be taken
-into account too?
-
-So, we decided not to include such a function into MSG and let people do it
-thereselves so that they get the value matching exactly what they mean. One
-possibility is to run active measurement as in next code snippet. It is very
-close from what you would have to do out of the simulator, and thus gives
-you information that you could also get in real settings to not hinder the
-realism of your simulation. 
-
-\verbatim
-double get_host_load() {
-   m_task_t task = MSG_task_create("test", 0.001, 0, NULL);
-   double date = MSG_get_clock();
-
-   MSG_task_execute(task);
-   date = MSG_get_clock() - date;
-   MSG_task_destroy(task);
-   return (0.001/date);
-}
-\endverbatim
-
-Of course, it may not match your personal definition of "host load". In this
-case, please detail what you mean on the mailing list, and we will extend
-this FAQ section to fit your taste if possible.
 
 \subsection faq_flexml_bypassing How could I have some C functions do what the platform and deployment files do?
 
@@ -665,6 +697,20 @@ these issues remain. There is two things we should do:
 These are changes to FleXML itself, not SimGrid. But since we kinda hijacked
 the development of FleXML, I can grant you that any patches would be really
 welcome and quickly integrated.
+
+\subsection faq_deadlock There is a deadlock !!!
+
+Unfortunately, we cannot debug every code written in SimGrid.  We
+furthermore believe that the framework provides ways enough
+information to debug such informations yourself. If the textual output
+is not enough, Make sure to check the \ref faq_paje FAQ entry to see
+how to get a graphical one.
+
+Now, if you come up with a really simple example that deadlocks and
+you're absolutely convinced that it should not, you can ask on the
+list. Just be aware that you'll be severely punished if the mistake is
+on your side... We have plenty of FAQ entries to redact and new
+features to implement for the impenitents! ;)
 
 \author Arnaud Legrand (arnaud.legran::imag.fr)
 \author Martin Quinson (martin.quinson::loria.fr)
