@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-($#ARGV >= 1) or die "Usage: toc_create.pl <input-tag-file> <output-doc-file>";
+($#ARGV >= 1) or die "Usage: toc_create.pl <input-doc-file> <output-toc-file>";
 
 my(@toc);
 my($level,$label,$name);
@@ -62,21 +62,4 @@ while($current_level>-1) {
     $current_level--;
 }
 print OUTPUT "<!-- End of automatically generated table of contents --!>\n";
-
-
-# foreach $type qw(define enumeration enumvalue function typedef) {
-#     if(defined $database{$type}) {
-# 	print OUTPUT "<h2>$type</h2> \n  <ul>\n";
-# 	foreach $name (sort keys %{$database{$type}}) {
-# 	    if($type eq "function") {
-# 		print OUTPUT "\t<LI> $name()</LI>\n";
-# 	    } else {
-# 		print OUTPUT "\t<LI> #$name</LI>\n";
-# 	    }
-# 	}
-# 	print OUTPUT "\n  </ul>\n";
-#     }
-# }
-# print OUTPUT "*/";
-# close OUTPUT;
 
