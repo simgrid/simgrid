@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-($#ARGV >= 1) or die "Usage: index_create.pl <input-tag-file> <output-doc-file>";
+($#ARGV >= 1) or die "Usage: toc_create.pl <input-tag-file> <output-doc-file>";
 
 my(@toc);
 my($level,$label,$name);

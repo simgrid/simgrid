@@ -24,6 +24,7 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	../tools/doxygen/toc_create.pl FAQ.doc FAQ.toc
 	../tools/doxygen/toc_create.pl index.doc index.toc
 	doxygen Doxyfile >/dev/null
+	../tools/doxygen/index_php.pl index.php.in doc/index.html index.php
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
 	for i in `find html -name '*.html'` ; do \
