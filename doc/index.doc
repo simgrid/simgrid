@@ -50,7 +50,7 @@ this page. It is organized as follow:
   - \ref overview : Presentation of the toolkit, of each of its components
     and of their interactions.
   - \ref people : Who is behind this project.
-  - \ref publications : Some articles providing more details about the
+  - \ref publis : Some articles providing more details about the
     SimGrid toolkit or using and validating it.
 
 <hr>
@@ -70,37 +70,13 @@ three-layered (click on the picture to jump to a specific component).
 </center>
 \endhtmlonly
 
-\subsection overview_fondation Base layer
-
-The base of the whole toolkit is constituted by the <b>\ref XBT_API
-(eXtended Bundle of Tools)</b>.
-
-It is a portable library providing some grounding features such as \ref
-XBT_log, \ref XBT_ex and \ref XBT_config. XBT also encompass
-the following convenient datastructures: \ref XBT_dynar, \ref XBT_fifo, \ref
-XBT_dict, \ref XBT_heap, \ref XBT_set and \ref XBT_swag.
-
-See the \ref XBT_API section for more details.
-
-\subsection overview_kernel Simulation kernel layer
-
-The core functionnalities to simulate a virtual platform are provided by a
-module called <b>\ref SURF_API</b> ("that's historical, my friend").  It is
-very low-level and is not intended to be used as such by end-users. Instead,
-it serve as a basis for the higher level layer.
-
-SURF main features are a fast max-min linear solver and the ability to
-change transparently the model used to describe the platform. This greatly
-eases the comparison of the several models existing in the litterature.
-
-See the \ref SURF_API section for more details.
-
 \subsection overview_envs Programmation environments layer
 
-This simulation kernel is used to build several programmation environments.
-Each of them target a specific audiance and constitute a different paradigm.
-To choose which of them you want to use, you have to think about what you
-want to do and what would be the result of your work. 
+SimGrid provides several programmation environments built on top of a uniq
+simulation kernel. Each environment targets a specific audiance and
+constitutes a different paradigm. To choose which of them you want to use,
+you have to think about what you want to do and what would be the result of
+your work.
 
  - If you want to study a theoritical problem and compare several
    heuristics, you probably want to try <b>\ref MSG_API</b> (yet another
@@ -132,10 +108,36 @@ want to do and what would be the result of your work.
    See the \ref GRAS_API section for more details.
 
 If your favorite programming environment/model is not there (BSP,
-components, etc.) is not represented in the SimGrid toolkit yet, you may
+components, DAG, etc.) is not represented in the SimGrid toolkit yet, you may
 consider adding it. You should contact us first on the 
 <a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel>SimGrid 
 developers mailing list</a>, though.
+
+\subsection overview_kernel Simulation kernel layer
+
+The core functionnalities to simulate a virtual platform are provided by a
+module called <b>\ref SURF_API</b> ("that's historical, my friend").  It is
+very low-level and is not intended to be used as such by end-users. Instead,
+it serve as a basis for the higher level layer.
+
+SURF main features are a fast max-min linear solver and the ability to
+change transparently the model used to describe the platform. This greatly
+eases the comparison of the several models existing in the litterature.
+
+See the \ref SURF_API section for more details.
+
+\subsection overview_fondation Base layer
+
+The base of the whole toolkit is constituted by the <b>\ref XBT_API
+(eXtended Bundle of Tools)</b>.
+
+It is a portable library providing some grounding features such as \ref
+XBT_log, \ref XBT_ex and \ref XBT_config. XBT also encompass
+the following convenient datastructures: \ref XBT_dynar, \ref XBT_fifo, \ref
+XBT_dict, \ref XBT_heap, \ref XBT_set and \ref XBT_swag.
+
+See the \ref XBT_API section for more details.
+
 
 Any question, remark or suggestion are welcome on the 
 <a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user>SimGrid users
