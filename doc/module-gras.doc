@@ -52,6 +52,14 @@
        - \ref GRAS_ex_ping
        - \ref GRAS_ex_mmrpc
        - \ref GRAS_ex_timer
+
+    \htmlonly <!-- 
+      DOXYGEN_NAVBAR_CHILD "main() and GRAS"=GRAS_main_generation.html
+      DOXYGEN_NAVBAR_CHILD "Compiling your GRAS project"=GRAS_compile.html
+      DOXYGEN_NAVBAR_CHILD "Ex: Ping-Pong"=GRAS_ex_ping.html
+      DOXYGEN_NAVBAR_CHILD "Ex: RPC"=GRAS_ex_mmrpc.html
+      DOXYGEN_NAVBAR_CHILD "Ex: Timers"=GRAS_ex_timer.html
+    --> \endhtmlonly
 	       
     @{ */     
        /** @defgroup GRAS_dd      Data description      */       
