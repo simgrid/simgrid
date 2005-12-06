@@ -1,0 +1,195 @@
+#! /usr/bin/perl
+
+use strict;
+
+my %debug;
+$debug{'parse'} = 0; # show how we parse the module tree
+$debug{'input'} = 0; # display the resulting tree
+$debug{'rename'}= 0; # do not overwrite the files (allows several debuging runs without rerunning doxygen)
+
+###
+### Get the module definitions
+###
+
+open IN, "html/modules.html" || die "Cannot parse html/modules.html. Did you really run doxygen?\n";
+
+# pass headers
+while (<IN>) {
+  last if /group__SimGrid__API.html/;
+}
+
+# Parse the tree
+my $top;
+my $current;
+my $entry;
+
+$current->{'label'}="ROOT";
+push @{$top->{'down'}},$current;
+$current=$top;
+
+print "Push $current as child of $top\n" if $debug{'parse'};
+
+while (<IN>) {
+  if (/<ul>/) {
+    print "DOWN: $current -> " if $debug{'parse'};
+    $current = $current->{'down'}[scalar @{$current->{'down'}} - 1];
+    print "$current\n" if $debug{'parse'};
+    next;
+  }
+  if (/<\/ul>/) {
+    $current = $current->{'up'};
+    print "UP\n" if $debug{'parse'};
+    next;
+  }
+  if (/<p>/) {
+    last;
+  }
+  
+  m|href="([^"]*)">([^<]*)</a>|; #"
+  
+  $entry = {};
+  $entry->{'file'} = $1;  
+  $entry->{'label'} = $2;
+  $entry->{'up'} = $current;
+  push @{$current->{'down'}},$entry;
+  print "Push $1 $2 as child of $current\n" if $debug{'parse'};
+}
+close IN;
+
+# Check each file for extra information (short name, extra childs)
+sub extra_info {
+  my $current=shift;
+
+  if (defined($current->{'file'})) {
+    open IN, "html/$current->{'file'}";
+    while (<IN>) {
+      if (/DOXYGEN_NAVBAR_LABEL/) {
+        if (/DOXYGEN_NAVBAR_LABEL="([^"]*)"/) {#"
+          $current->{'label'}=$1;
+        } else {
+          die "Malformated DOXYGEN_NAVBAR_LABEL line in $current->{'file'}";
+        }
+      }
+      if (/DOXYGEN_NAVBAR_CHILD/) {
+        if (/DOXYGEN_NAVBAR_CHILD *"([^"]*)"=([^ ]*)/) {#"
+          $entry = {};
+          $entry->{'label'} = $1;
+          $entry->{'file'} = $2;
+          chomp($entry->{'file'});
+          $entry->{'up'} = $current;
+          push @{$current->{'down'}},$entry;
+        } else {
+          die "Malformated DOXYGEN_NAVBAR_CHILD line in $current->{'file'}";
+        }
+      }
+    }
+  }
+  
+  foreach my $entry (@{$current->{'down'}}) {
+    extra_info($entry);
+  }  
+}
+extra_info($top);
+
+## debug function
+sub display {
+  my $current=shift;
+  my $level=shift;
+  print "  " x $level;
+  print "$current: ".$current->{'label'}." ($current->{'file'})\n";
+  foreach my $entry (@{$current->{'down'}}) {
+    display($entry,$level+1);
+  }
+}
+
+display($top,0) if $debug{'input'};
+
+###
+### Generate the navbar
+###
+
+# the root deserves some special handling
+open IN,"html/modules.html" || die;
+open OUT,">html/modules.new.html" || die;
+my $line;
+while ($line = <IN>) {
+  last if $line =~ /<h1>SimGrid Modules</;
+  print OUT $line;
+}
+
+print OUT "<div class=\"tabs\">\n  <ul>\n";
+foreach $current (@{ ${$top->{'down'}}[0]->{'down'} }) {
+  print OUT "   <li><a href=\"$current->{'file'}\"><span>$current->{'label'}</span></a></li>\n";
+}
+print OUT "  </ul></div>\n";
+print OUT $line;
+while (<IN>) {
+  print OUT $_;
+}
+
+close OUT;
+close IN;
+rename("html/modules.new.html","html/modules.html") unless $debug{'rename'};
+
+# Operate the recursion
+sub handle_page {
+  my $current=shift;
+  my $level=shift;
+
+  # we generate the tabs bottom up begining from where we are in the tree
+  # and display them top down, as it should in a file
+  my @tabs = ();
+
+  if (defined ($current->{'label'}) and $current->{'label'} ne 'ROOT') {
+#    print "handle $current->{'file'}, at level $level\n";
+    # generate the tabs
+    my $iterator = $current;
+    my $lvl_it=$level;
+    while ($lvl_it >= 0) {
+      my $father = $iterator->{'up'};
+      $tabs[$lvl_it] = "<div class=\"tabs\">\n  <ul>\n";
+      foreach my $bro (@{$father->{'down'}}) {
+        $tabs[$lvl_it] .= "  <li".($bro==$iterator?" id=\"current\"":"")."> <a href=\"$bro->{'file'}\"><span>$bro->{'label'}</span></a></li>\n";      
+      }
+      $tabs[$lvl_it] .= "  </ul></div>\n";
+      $iterator = $father;
+      $lvl_it--;
+    }
+    if (defined $current->{'down'}) { # there's some kid. Display them too
+      $tabs[$level+1] = "<div class=\"tabs\">\n  <ul>\n";
+      foreach my $kid (@{$current->{'down'}}) {
+        $tabs[$level+1] .= "  <li> <a href=\"$kid->{'file'}\"><span>$kid->{'label'}</span></a></li>\n";      
+      }
+      $tabs[$level+1] .= "  </ul></div>\n";      
+    }
+    
+    # put them in place
+    open FROM,"html/$current->{'file'}" || die;
+    my $newname="html/$current->{'file'}";
+    $newname =~ s/.html/.new.html/;
+    open TO,">$newname" || die;
+    while (<FROM>) {
+      # add "current" to the module API granfather page
+      s|<li><a href="modules.html"><span>Modules API</span></a></li>|<li id="current"><a href="modules.html"><span>Modules API</span></a></li>|;
+      
+      print TO $_;
+      last if m|</ul></div>|;
+    }
+    foreach (@tabs) {
+      print TO $_;
+    }
+    while (<FROM>) {
+      print TO $_;
+    }    
+    close FROM;
+    close TO;
+    rename("$newname","html/$current->{'file'}") unless $debug{'rename'};
+  } 
+  
+  # recurse on childs
+  foreach my $entry (@{$current->{'down'}}) {
+    handle_page($entry,$level+1);
+  }
+}
+
+handle_page($top,-2);# skip roots (we have 2 roots) in level counting
