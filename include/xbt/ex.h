@@ -408,8 +408,13 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 #define THROW6(c,v,m,a1,a2,a3,a4,a5,a6) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6))
 
 #define THROW_IMPOSSIBLE     THROW0(unknown_error,0,"The Impossible Did Happen (yet again)")
-#define DIE_IMPOSSIBLE       xbt_assert0(0,"The Impossible Did Happen (yet again)")
 #define THROW_UNIMPLEMENTED  THROW1(unknown_error,0,"Function %s unimplemented",__FUNCTION__)
+
+#ifndef NDEBUG
+#  define DIE_IMPOSSIBLE       xbt_assert0(0,"The Impossible Did Happen (yet again)")
+#else
+#  define DIE_IMPOSSIBLE       exit(1);
+#endif
 
 /** @brief re-throwing of an already caught exception (ie, pass it to the upper catch block) 
  *  @hideinitializer
