@@ -12,7 +12,8 @@ $output = $ARGV[2];
 my($onglets) = '
 <div class="tabs">
   <ul>
-    <li><a href="doc/index.html"><span>Main&nbsp;Page</span></a></li>       <li><a href="doc/faq.html"><span>FAQ</span></a></li>
+    <li><a href="doc/index.html"><span>Overview</span></a></li>
+    <li><a href="doc/faq.html"><span>FAQ</span></a></li>
     <li><a href="doc/modules.html"><span>Modules API</span></a></li>
     <li><a href="doc/publis.html"><span>Publications</span></a></li>
     
