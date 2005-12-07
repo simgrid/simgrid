@@ -6,19 +6,12 @@
     \brief The core toolbox of SimGrid, containing usefull datatypes,
            portability support and so on.
 
-  <center><table><tr><td><b>Top</b>        <td> [\ref index]
-                 <tr><td>   Other modules  <td> [\ref SURF_API] [\ref MSG_API] [\ref GRAS_API] [\ref AMOK_API] [\ref SMPI_API] 
-                 <tr><td><b>Down</b>       <td> [\ref XBT_syscall] </table></center>
 */
 
 /** \defgroup SURF_API       SURF
     \ingroup SimGrid_API
     \brief Kernel of all the simulators used in SimGrid, and associated models.
  
-  <center><table><tr><td><b>Top</b>     <td> [\ref index]
-                 <tr><td><b>Related modules</b> <td> [\ref XBT_API]   
-                 <tr><td>   Other modules      <td> [\ref MSG_API] [\ref GRAS_API] [\ref AMOK_API] [\ref SMPI_API] </table></center>
-
       SURF provides the core functionnalities to simulate a virtual
       platform. It is very low-level and is not intended to be used as
       such but rather to serve as a basis for higher-level simulators.
@@ -38,10 +31,6 @@
     \ingroup SimGrid_API
     \brief Simple programming environment 
   
-  <center><table><tr><td><b>Top</b>     <td> [\ref index]
-                 <tr><td><b>Related modules</b> <td> [\ref XBT_API]   
-                 <tr><td>   Other modules      <td> [\ref SURF_API] [\ref GRAS_API] [\ref AMOK_API] [\ref SMPI_API] </table></center>
-
       MSG was the first distributed programming environment provided within
       SimGrid. While almost realistic, it remains quite simple (simplistic?).
 
@@ -61,11 +50,6 @@
     \ingroup SimGrid_API
     \brief Realistic programming environment (Grid Reality And Simulation)
   
-  <center><table><tr><td><b>Top</b>     <td> [\ref index]
-                 <tr><td><b>Related modules</b> <td> [\ref XBT_API]   [\ref AMOK_API]
-                 <tr><td>   Other modules       <td> [\ref SURF_API]  [\ref MSG_API] [\ref SMPI_API] 
-                 <tr><td><b>Down</b>            <td> [\ref GRAS_dd]   </table></center>
-
     GRAS provides a complete API to implement distributed application on top
     of heterogeneous plateforms. In addition to the SimGrid implementation
     of this interface (allowing you to work on your application within the
@@ -96,10 +80,6 @@
     \ingroup SimGrid_API
     \brief Distributed toolkit built over \ref GRAS_API (Advanced Metacomputing Overlay Kit)
 
-  <center><table><tr><td><b>Top</b>     <td> [\ref index]
-                 <tr><td><b>Related modules</b> <td> [\ref XBT_API] [\ref GRAS_API]
-                 <tr><td>   Other modules      <td> [\ref SURF_API] [\ref MSG_API] [\ref SMPI_API] </table></center>
-
     AMOK provides several tools useful to most applications built on top of GRAS, 
     but yet not belonging to GRAS itself. It is planned that those modules will be 
     changed to real plugins one day, allowing users to load only the needed parts at
@@ -111,10 +91,6 @@
     \ingroup SimGrid_API
     \brief Programming environment for the simulation of MPI applications
   
-  <center><table><tr><td><b>Top</b>     <td> [\ref index]
-                 <tr><td><b>Related modules</b> <td> [\ref XBT_API] 
-                 <tr><td>   Other modules       <td> [\ref SURF_API] [\ref GRAS_API] [\ref AMOK_API] [\ref MSG_API] </table></center>
-
     Once implemented, this programming environment will allow you to study
     within the simulator any MPI application without having to modify them
     for that. In other words, it will constitute an emulation solution for

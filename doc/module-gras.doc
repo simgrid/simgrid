@@ -5,7 +5,7 @@
 /** \addtogroup GRAS_API
   
     \section GRAS_funct Offered functionnalities
-     - <b>Communication facilities</b>: Exchanging messages between peers
+     - <b>\ref GRAS_comm</b>: Exchanging messages between peers
        - \ref GRAS_dd : any data which may transit on the network must be
          described beforehand so that GRAS can handle the platform
          heterogeneity and convert them if needed.
@@ -17,7 +17,7 @@
        - \ref GRAS_timer : this is how to program repetitive and delayed
          tasks, not unlike cron(8) and at(1). This cannot be used to timeout
          a function (like setitimer(2) or signal(2) games could do).
-     - <b>Virtualization</b>: Running both on top of the simulator and on
+     - <b>\ref GRAS_run</b>: Running both on top of the simulator and on
        top of real platforms, and portability support.
        - \ref GRAS_virtu : You naturally don't want to call the
           gettimeofday(2) function in simulation mode since it would give
@@ -31,7 +31,7 @@
        - \ref GRAS_emul : Support to emulate code excution (ie, reporting
          execution time into the simulator and having code sections specific
          to simulation or to real mode).
-     - <b>Project management tools</b>: Here are some tools which may help
+     - <b>\ref GRAS_code</b>: Here are some tools which may help
           you setting up a GRAS project.\n
           Setting up and building a GRAS application is complicated by the
 	  library schizoid. The code to setup the environment differs
@@ -53,25 +53,63 @@
        - \ref GRAS_ex_mmrpc
        - \ref GRAS_ex_timer
 
-    \htmlonly <!-- 
-      DOXYGEN_NAVBAR_CHILD "main() and GRAS"=GRAS_main_generation.html
-      DOXYGEN_NAVBAR_CHILD "Compiling your GRAS project"=GRAS_compile.html
-      DOXYGEN_NAVBAR_CHILD "Ex: Ping-Pong"=GRAS_ex_ping.html
-      DOXYGEN_NAVBAR_CHILD "Ex: RPC"=GRAS_ex_mmrpc.html
-      DOXYGEN_NAVBAR_CHILD "Ex: Timers"=GRAS_ex_timer.html
-    --> \endhtmlonly
-	       
+    @{ */
+       /** @defgroup GRAS_comm    Communication facilities */
+       /** @defgroup GRAS_run     Virtualization */
+       /** @defgroup GRAS_code    Project and code management */
+       /** @defgroup GRAS_ex      Examples */
+/** @} */
+#####################################################################
+/** @addtogroup GRAS_comm
+
+   Here are the communication facilities. GRAS allows you to exchange
+   <i>messages</i> on <i>sockets</i> (which can be seen as pipes between
+   processes). On reception, messages start <i>callbacks</i> (that's the
+   default communication mode, not the only one). All messages of a given
+   type convey the same kind of data, and you have to describe it
+   beforehand.
+
+   Timers are also seen as a mean of communication (with yourself). It
+   allows you to run a repetitive task ("do this every N second until I tell
+   you to stop"), or to deffer a treatment ("do this in 3 sec").
+
     @{ */     
        /** @defgroup GRAS_dd      Data description      */       
        /** @defgroup GRAS_sock    Sockets               */           
        /** @defgroup GRAS_msg     Messages              */               
        /** @defgroup GRAS_timer   Timers                */               
+     
+/** @} */
+#####################################################################
+/** @addtogroup GRAS_run
+
+    @{ */     
 	 
        /** @defgroup GRAS_globals Globals               */ 
        /** @defgroup GRAS_emul    Emulation support */ 
        /** @defgroup GRAS_virtu   Syscalls              */ 
 
 /** @} */
+
+#####################################################################
+/** @addtogroup GRAS_code
+
+    \htmlonly <!-- 
+      DOXYGEN_NAVBAR_LABEL="Project management"
+      DOXYGEN_NAVBAR_CHILD "main() and GRAS"=GRAS_main_generation.html
+      DOXYGEN_NAVBAR_CHILD "Compiling your GRAS project"=GRAS_compile.html
+    --> \endhtmlonly
+*/
+
+#####################################################################
+/** @addtogroup GRAS_ex
+
+    \htmlonly <!-- 
+      DOXYGEN_NAVBAR_CHILD "Ping-Pong"=GRAS_ex_ping.html
+      DOXYGEN_NAVBAR_CHILD "RPC"=GRAS_ex_mmrpc.html
+      DOXYGEN_NAVBAR_CHILD "Timers"=GRAS_ex_timer.html
+    --> \endhtmlonly
+*/
 
 #####################################################################
 #########################  EXTRA PAGES ##############################
@@ -81,12 +119,7 @@
 --------------------- main() generation -----------------------------
 ---------------------------------------------------------------------
 
-/** \page GRAS_main_generation main() and GRAS
-
-  <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
-                 <tr><td><b>Prev</b>   <td> [\ref GRAS_emul]
-                 <tr><td><b>Next</b>   <td> [\ref GRAS_compile]            </table></center>
-
+/** \page GRAS_main_generation main function
 
     \section GRAS_maingen_toc Table of content
      
@@ -162,11 +195,7 @@
 ------------------------- Compiling ---------------------------------
 ---------------------------------------------------------------------
 
-/** \page GRAS_compile Compiling your GRAS project
-
-    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
-                   <tr><td><b>Prev</b>   <td> [\ref GRAS_main_generation]
-                   <tr><td><b>Next</b>   <td> [\ref GRAS_ex_ping]            </table></center>
+/** \page GRAS_compile Compiling your project
 
     As explained in section \ref GRAS_main_generation, the
     gras_stub_generator tool can be used to generate the system
@@ -263,10 +292,6 @@
 ---------------------------------------------------------------------
 
 /** \page GRAS_ex_ping The classical Ping-Pong in GRAS
-
-    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
-                   <tr><td><b>Prev</b>   <td> [\ref GRAS_compile]
-                   <tr><td><b>Next</b>   <td> [\ref GRAS_ex_mmrpc]            </table></center>
 
     This example implements the very classical ping-pong in GRAS. It
     involves a client (initiating the ping-pong) and a server (answering to 
@@ -371,10 +396,6 @@
 ---------------------------------------------------------------------
 
 /** \page GRAS_ex_mmrpc A simple RPC for matrix multiplication
-
-    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
-                   <tr><td><b>Prev</b>   <td> [\ref GRAS_ex_ping]
-                   <tr><td><b>Next</b>   <td> [\ref GRAS_ex_timer]            </table></center>
 
     This example implements a remote matrix multiplication. It involves a client 
     (creating the matrices and sending the multiplications requests) and a server 
@@ -502,10 +523,6 @@
 ---------------------------------------------------------------------
 
 /** \page GRAS_ex_timer Some timer games
-
-    <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
-                   <tr><td><b>Prev</b>   <td> [\ref GRAS_ex_mmrpc]
-                   <tr><td>   Next       <td>            </table></center>
 
     This example fools around with the GRAS timers (\ref GRAS_timer). It is
     mainly a regression test, since it uses almost all timer features.
