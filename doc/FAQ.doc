@@ -1,6 +1,6 @@
 /*! \page faq Frequently Asked Questions
 
-\htmlinclude FAQ.toc
+\htmlinclude .FAQ.doc.toc
 
 \section faq_installation Installing the SimGrid library
 
@@ -41,7 +41,7 @@ SimGrid is not a binary, it is a library. Both a static and a dynamic
 version are available. Here is what you can find if you try a <tt>ls
 /home/joe/lib</tt>:
 
-\verbatim libsimgrid.a  libsimgrid.la  libsimgrid.so  libsimgrid.so.0 libsimgrid.so.0.0.1
+\verbatim libsimgrid.a libsimgrid.la libsimgrid.so libsimgrid.so.0 libsimgrid.so.0.0.1
 \endverbatim
 
 Thus, there is two ways to link your program with SimGrid:
@@ -455,7 +455,7 @@ parallel task model, and ... Anyway, we finally have migrated our CVS
 to gforge so people that are interested by helping on this part will
 have the possibility to do it.
 
-\subsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs without the SG module?
+\subsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
 
 Distributed is somehow "contagious". If you start making distributed
 decisions, there is no way to handle DAGs directly anymore (unless I am
@@ -471,7 +471,7 @@ keep using the 2.18.5 versions until somebody has ported SG on top of SURF.
 Note however that SURF will be slower than the old SG to handle traces with
 a lots of variations (there is no trace integration anymore).
 
-\subsection faq_SG_future Is there a chance for SG to come back one day in the maintained branch?
+\subsection faq_SG_future Will SG come back in the maintained branch one day?
 
 Sure. In fact, we already have thought about a new and cleaner API:
 \verbatim
@@ -506,8 +506,8 @@ double            SG_task_get_remaining_amount(SG_task_t task);
 void              SG_task_dependency_add(const char *name, void *data, SG_task_t src, SG_task_t dst);
 void              SG_task_dependency_remove(SG_task_t src, SG_task_t dst); 
 e_SG_task_state_t SG_task_state_get(SG_task_t task); /* e_SG_task_state_t can be either SG_SCHEDULED, SG_RUNNING, SG_DONE, or SG_FAILED */
-void              SG_task_watch(SG_task_t task, e_SG_task_state_t state); /* SG_simulate will stop as soon as the state of this task is the one given in argument. Watch-poin
-t is then automatically removed */
+void              SG_task_watch(SG_task_t task, e_SG_task_state_t state); /* SG_simulate will stop as soon as the state of this task is the one given in argument. 
+                                                                             Watch-point is then automatically removed */
 void              SG_task_unwatch(SG_task_t task, e_SG_task_state_t state);
 
 void              SG_task_unschedule(SG_task_t task); /* change state and rerun.. */
@@ -584,7 +584,7 @@ latency_file and state_file. The only difference with CPUs is that
 bandwidth_file and latency_file do not express fraction of available
 power but are expressed directly in Mb/s and seconds.
 
-\subsection faq_flexml_bypassing How could I have some C functions do what the platform and deployment files do?
+\subsection faq_flexml_bypassing How can I have some C functions do what the platform file does?
 
 So you want to bypass the XML files parser, uh? Maybe doin some parameter
 sweep experiments on your simulations or so? This is possible, but it's not

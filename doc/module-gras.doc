@@ -83,6 +83,8 @@
 #####################################################################
 /** @addtogroup GRAS_run
 
+   Virtualization facilities allow your code to run both on top of the simulator or in real setting.
+
     @{ */     
 	 
        /** @defgroup GRAS_globals Globals               */ 
@@ -94,6 +96,12 @@
 #####################################################################
 /** @addtogroup GRAS_code
 
+    Here is how to setup your code when you want to use GRAS. You will also
+    learn how to get the most repetitive parts of your code generated
+    automatically.
+
+    (use the tabs on top of the page to navigate)
+
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_LABEL="Project management"
       DOXYGEN_NAVBAR_CHILD "main() and GRAS"=GRAS_main_generation.html
@@ -104,11 +112,21 @@
 #####################################################################
 /** @addtogroup GRAS_ex
 
+    There is for now rather few examples of GRAS, but it's better than
+    nothing, isn't it?
+
+       - \ref GRAS_ex_ping
+       - \ref GRAS_ex_mmrpc
+       - \ref GRAS_ex_timer
+
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_CHILD "Ping-Pong"=GRAS_ex_ping.html
       DOXYGEN_NAVBAR_CHILD "RPC"=GRAS_ex_mmrpc.html
       DOXYGEN_NAVBAR_CHILD "Timers"=GRAS_ex_timer.html
     --> \endhtmlonly
+
+  There is some more examples in the distribution, under the directory
+  <tt>examples/gras</tt>.
 */
 
 #####################################################################

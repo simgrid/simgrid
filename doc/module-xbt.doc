@@ -20,16 +20,46 @@
  *  @{
  */
 
-  /*PORTABILITY*/
-     /** @defgroup XBT_syscall Malloc and friends */
+   /** @defgroup XBT_grounding   Grounding features */
+   /** @defgroup XBT_adt         Usual data structures */
 
-  /*GROUNDING*/
+/** @} */
+
+/*
+ * +++++++++++++
+ * + GROUNDING +
+ * +++++++++++++
+ */
+
+/** @addtogroup XBT_grounding 
+ *
+ * Grounding features are the basement of SimGrid. You'll find portable (and
+ * secure) wrappers to the malloc-like functions, logging support, error
+ * reporting features, etc.
+ *
+ * @{
+ */
+     /** @defgroup XBT_syscall Malloc and friends */
      /** @defgroup XBT_ex     Exception support */
      /** @defgroup XBT_log    Logging support */
      /** @defgroup XBT_error  Assert macro familly */
      /** @defgroup XBT_config Configuration support */
 
-  /*DATA STRUCTS*/
+/** @} */
+
+/* 
+ * ++++++++++++++++
+ * + DATA STRUCTS +
+ * ++++++++++++++++ 
+ */
+
+/** @addtogroup XBT_adt
+ *
+ * Here are the basic data containers that every C programmer rewrites one day.
+ * You won't need to do so yourself, you lucky one, because we did it for you.
+ *
+ * @{
+ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */
      /** @defgroup XBT_dict   Dict: generic dictionnary */
      /** @defgroup XBT_set    Set: generic set datatype */
@@ -37,8 +67,10 @@
      /** @defgroup XBT_swag   Swag: O(1) set datatype */
      /** @defgroup XBT_heap Heap: generic heap data structure */
 
+/** @} */ End of XBT_adt
+
 /* ************************* *
- * * PORTABILITY-INTERNALS * *
+ * * PORTABILITY-INTERNALS * * (not included in documentation)
  * ************************* */
 
  /** \defgroup XBT_context Portable context implementation
@@ -52,4 +84,3 @@
   *  You should use those environments instead.
   */
 
-/** @} */ End of XBT_API
