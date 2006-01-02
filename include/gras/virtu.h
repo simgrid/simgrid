@@ -15,11 +15,8 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_virtu  
- *  @brief System call abstraction layer (Virtualization).
+ *  @brief System call abstraction layer.
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_timer]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_globals]            </table></center>
  *
  *  @{
  */

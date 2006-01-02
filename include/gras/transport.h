@@ -1,3 +1,4 @@
+
 /* $Id$ */
 
 /* transport - low level communication (send/receive bunches of bytes)      */
@@ -12,27 +13,23 @@
 #define GRAS_TRANSPORT_H
 
 /** \addtogroup GRAS_sock
- *  \brief Socket handling (Communication facility).
+ *  \brief Socket handling
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd] 
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_msg]
- *                <tr><td><b>Down</b>   <td> [\ref GRAS_sock_create]          </table></center>
+ * The model of communications in GRAS is very close to the BSD socket one.
+ * To get two hosts exchanging data, one of them need to open a
+ * <i>server</i> socket on which it can listen for incoming messages and the
+ * other one must connect a <i>client</i> socket onto the server one.
  *
- * The model of communications in GRAS is very close to the BSD socket one. To get two hosts 
- * exchanging data, one of them need to open a <i>server</i> socket on which it can listen for incoming messages
- * and the other one must connect a <i>client</i> socket onto the server one.
+ * The main difference is that you cannot exchange arbitrary bytes on
+ * sockets, but messages. See the \ref GRAS_msg section for details.
  * 
- * If you need an example of this, check \ref GRAS_ex_ping.
+ * If you need an example of how to use sockets, check \ref GRAS_ex_ping.
  *
  */
  
 /** \defgroup GRAS_sock_create Socket creation functions
  *  \ingroup GRAS_sock
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_sock]
- *                <tr><td>Prev          <td> 
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_sock_info]            </table></center>
  */
 /* @{*/
 /** \brief Opaque type describing a socket */
@@ -58,10 +55,6 @@ gras_socket_t gras_socket_server_ext(unsigned short port,
 /** \defgroup GRAS_sock_info Retrieving data about sockets and peers 
  *  \ingroup GRAS_sock
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_sock]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_sock_create]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_sock_meas]         </table></center>
- *
  * Who are you talking to?
  */
 /* @{*/
@@ -77,10 +70,6 @@ char *gras_socket_peer_name(gras_socket_t sock);
 /** \defgroup GRAS_sock_meas Using measurement sockets
  *  \ingroup GRAS_sock
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_sock]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_sock_info]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_sock_file]         </table></center>
- *
  * You may want to use sockets not to exchange valuable data (in messages), 
  * but to conduct some bandwidth measurements and related experiments. If so, try those measurement sockets.
  * 
@@ -107,9 +96,6 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer);
 /** \defgroup GRAS_sock_file Using files as sockets
  *  \ingroup GRAS_sock
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_sock]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_sock_meas]
- *                <tr><td>Next          <td>          </table></center>
  *
  * For debugging purpose, it is possible to deal with files as if they were sockets.
  * It can even be useful to store stuff in a portable manner, but writing messages to a file

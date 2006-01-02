@@ -16,7 +16,7 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_dd Data description
- *  @brief Describing data to be exchanged (Communication facility)
+ *  @brief Describing data to be exchanged
  *
  * Since GRAS takes care of potential representation conversion when the platform is heterogeneous, 
  * any data which transits on the network must be described beforehand.
@@ -156,9 +156,6 @@ gras_datadesc_parse(const char *name, const char *C_statement);
 
 /** @defgroup GRAS_dd_manual Simple manual data description
  *  @ingroup GRAS_dd
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_auto]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_cb_simple]            </table></center>
  * 
  * Here are the functions to use if you want to declare your description manually. 
  * The function names should be self-explanatory in most cases.
@@ -289,13 +286,11 @@ int gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
 /** @defgroup GRAS_dd_cb_simple Data description with Callback Persistant State: Simple push/pop mechanism
  *  @ingroup GRAS_dd
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_manual]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_dd_cb_full]            </table></center>
  * 
  * Sometimes, one of the callbacks need to leave information for the next ones. If this is a simple integer (such as
  * an array size), you can use the functions described here. If not, you'll have to play with the complete cbps interface.
  *
+ * \htmlonly <!--  DOXYGEN_NAVBAR_LABEL="Simple push/pop Callback State" -->\endhtmlonly      
  * 
  * Here is an example:\verbatim
 struct s_array {
@@ -358,12 +353,14 @@ void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t typedesc, gras_cbps_t
 
 /** @defgroup GRAS_dd_cb_full Data description with Callback Persistant State: Full featured interface
  *  @ingroup GRAS_dd
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_dd]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_dd_cb_simple]
- *                <tr><td>Next          <td>             </table></center>
  * 
- * Sometimes, one of the callbacks need to leave information for the next ones. If the simple push/pop mechanism
- * introduced in previous section isn't enough, you can always use this full featured one.
+ * Sometimes, one of the callbacks need to leave information for the next
+ * ones. If the simple push/pop mechanism introduced in previous section
+ * isn't enough, you can always use this full featured one. The bad point is
+ * that it is quite badly documented...
+ *
+ * \htmlonly <!--  DOXYGEN_NAVBAR_LABEL="Full featured Callback State" -->\endhtmlonly      
+ *
  */
 
 /* @{ */

@@ -18,13 +18,8 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_msg
- *  @brief Defining messages and callbacks, and exchanging messages (Communication facility) 
+ *  @brief Defining messages and callbacks, and exchanging messages
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_sock]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_timer]
- *                <tr><td><b>Down</b>   <td> [\ref GRAS_msg_decl]            </table></center>
- *
  *  There is two way to receive messages in GRAS. The first one is to
  *  register a given function as callback to a given type of messages (see
  *  \ref gras_cb_register and associated section). But you can also
@@ -33,8 +28,8 @@ SG_BEGIN_DECL()
  * 
  *  Usually, both ways are not intended to be mixed of a given type of
  *  messages. But if you do so, it shouldn't trigger any issue.  If the
- *  message arrives when gras_msg_wait is blocked, then it will be routed
- *  to it. If it arrives when before or after gras_msg_wait, it will be
+ *  message arrives when gras_msg_wait is blocked, then it will be routed to
+ *  it. If it arrives when before or after \ref gras_msg_wait, it will be
  *  passed to the callback.
  * 
  *  For an example of use, please refer to \ref GRAS_ex_ping.
@@ -43,12 +38,11 @@ SG_BEGIN_DECL()
 /** @defgroup GRAS_msg_decl Message declaration and retrival 
  *  @ingroup  GRAS_msg
  *  
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_msg]
- *                <tr><td>   Prev       <td> 
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_msg_cb]               </table></center>
+ *  GRAS messages can only accept one type of payload. See \ref GRAS_dd for
+ *  more information on how to describe data in GRAS.
  *
- *  GRAS messages can only accept one type of payload. If you absolutely want to declare a message
- *  able to convey several datatypes, you can always say that it conveys a generic reference (see 
+ *  If you absolutely want use a message able to convey several datatypes,
+ *  you can always say that it conveys a generic reference (see
  *  \ref gras_datadesc_ref_generic).
  * 
  *  In order to ease the upgrade of GRAS applications, it is possible to \e version the messages, ie 
@@ -76,9 +70,6 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 /** @defgroup GRAS_msg_cb Callback declaration and use
  *  @ingroup  GRAS_msg
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_msg]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_msg_decl]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_msg_exchange]       </table></center>
  *
  * This is how to register a given function so that it gets called when a
  * given type of message arrives.
@@ -117,9 +108,6 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 /** @defgroup GRAS_msg_exchange Message exchange 
  *  @ingroup  GRAS_msg
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]::[\ref GRAS_msg]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_msg_cb]
- *                <tr><td>   Next       <td>                        </table></center>
  */
 /** @{ */
 

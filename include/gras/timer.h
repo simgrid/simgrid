@@ -16,11 +16,7 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup GRAS_timer
- *  @brief Delayed and repetitive tasks (Communication facility)
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_msg]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_virtu]            </table></center>
+ *  @brief Delayed and repetitive tasks
  *
  *  This is how to have a specific function called only once after the
  *  specified amount of time or a function executed every 5 mn until it gets 

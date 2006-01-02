@@ -18,10 +18,6 @@ SG_BEGIN_DECL()
 /** @addtogroup GRAS_emul
  *  @brief Code execution "emulation" and "virtualization".
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref GRAS_API]
- *                <tr><td><b>Prev</b>   <td> [\ref GRAS_globals]
- *                <tr><td><b>Next</b>   <td> [\ref GRAS_main_generation]            </table></center>
- *
  *  Emulation and virtualization words have a lot of different meanings in
  *  computer science. Here is what we mean, and what this module allows you
  *  to do (if it does not match your personal belives, I'm sorry):
