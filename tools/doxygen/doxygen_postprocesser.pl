@@ -199,7 +199,7 @@ sub handle_page {
 ###
 ### Post-processsing common to all pages
 ###
-map {push @allfiles,$_} qw(html/index.html html/faq.html html/publis.html);
+map {push @allfiles,$_} qw(html/index.html html/faq.html html/publis.html html/pages.html);
 
 foreach my $file (@allfiles) {
     open FROM,"$file" || die;
