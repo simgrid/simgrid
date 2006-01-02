@@ -4,6 +4,7 @@ DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@
 EXTRA_DIST = html Doxyfile \
  modules.doc FAQ.doc index.doc publis.doc footer.html simgrid_logo.png simgrid_modules.png
 
+CLEANFILES = .*.toc
 DISTCLEANFILES = index-API.doc simgrid.tag
 MAINTAINERCLEANFILES = html
 
@@ -18,24 +19,19 @@ simgrid_modules.png: simgrid_modules.fig
 	fig2dev -Lpng simgrid_modules.fig > simgrid_modules.png
 
 html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modules.png
-	touch index-API.doc
-	doxygen Doxyfile >/dev/null
-	../tools/doxygen/index_create.pl simgrid.tag index-API.doc
-	../tools/doxygen/toc_create.pl FAQ.doc FAQ.toc
-	../tools/doxygen/toc_create.pl index.doc index.toc
-	doxygen Doxyfile >/dev/null
+	: # Setting up
+	touch index-API.doc .FAQ.doc.toc
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
-	for i in `find html -name '*.html'` ; do \
-            cp $$i $$i.bak ; \
-            cat $$i.bak |  \
-               sed -e 's|<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>|<li><a href="index.html"><span>Overview</span></a></li>       <li><a href="faq.html"><span>FAQ</span></a></li>|' \
-                   -e 's|<li><a href="annotated.html"><span>Data\&nbsp;Structures</span></a></li>|<li><a href="publis.html"><span>Publications</span></a></li>|g' \
-                   -e 's|<span>Modules</span>|<span>Modules API</span>|g' \
-                   -e 's|<li><a href="dirs.html"><span>Directories</span></a></li>||g' \
-            > $$i ; \
-            rm $$i.bak ; \
-        done
+	cp @srcdir@/simgrid.css html/
+	: # First pass
+	doxygen Doxyfile >/dev/null
+	../tools/doxygen/index_create.pl simgrid.tag index-API.doc
+	../tools/doxygen/toc_create.pl FAQ.doc index.doc
+	: # Second pass
+	doxygen Doxyfile >/dev/null
+	: # Post-processing
+	rm html/dir*
 	../tools/doxygen/index_php.pl index.php.in html/index.html index.php
 	../tools/doxygen/doxygen_postprocesser.pl
 endif
