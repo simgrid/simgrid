@@ -1,15 +1,17 @@
 #!/usr/bin/perl -w
 
-($#ARGV >= 1) or die "Usage: toc_create.pl <input-doc-file> <output-toc-file>";
+use strict;
 
-my(@toc);
-my($level,$label,$name);
+($#ARGV >= 1) or die "Usage: toc_create.pl <input-doc-file>+";
 
-$input  = $ARGV[0];
-$output = $ARGV[1];
-open FILE,$input;
+sub handle_file {
+  my $infile = shift;
+  open FILE,$infile;
 
-while($line=<FILE>) {
+  my(@toc);
+  my($level,$label,$name);
+
+  while(my $line=<FILE>) {
     chomp $line;
     if($line=~/\\section\s*(\S\S*)\s*(.*)$/) {
 #	print "$line\n";
@@ -33,33 +35,42 @@ while($line=<FILE>) {
 #	print "\t\t$label : $name\n";
 	push @toc,[$level,$label,$name];
     }
-}
-close FILE;
+  }
+  close FILE;
 
-open OUTPUT,"> $output";
-my($current_level)=-1;
-my($entry);
-print OUTPUT "<!-- Automatically generated table of contents --!>\n";
-foreach $entry (@toc) {
-    ($level,$label,$name) = @$entry;
+  my $outfile = ".$infile.toc";
+  $outfile =~ s|\.\./||g;
+  $outfile =~ s|/|_|g;
+  open OUTPUT,"> $outfile";
+  my($current_level)=-1;
+  my($entry);
+  print OUTPUT "<!-- Automatically generated table of contents --!>\n";
+  print OUTPUT "<div class=\"toc\">\n";
+  print OUTPUT "<div class=\"tocTitle\">Table of content</div>\n";
+  foreach $entry (@toc) {
+      ($level,$label,$name) = @$entry;
 
-    while($current_level<$level) {
-	print OUTPUT "<ol type=\"1\">\n";
-	$current_level++;
-    }
-    while($current_level>$level) {
-	print OUTPUT "</ol>\n";
-	$current_level--;
-    }
-    foreach (1..$current_level) {
-	print OUTPUT "\t";
-    }
-    print OUTPUT "<li> <a href=\"#$label\">$name</a>\n";
-}
+      while($current_level<$level) {
+  	  print OUTPUT "<ol type=\"1\">\n";
+  	  $current_level++;
+      }	
+      while($current_level>$level) {
+	  print OUTPUT "</ol>\n";
+	  $current_level--;
+      }
+      foreach (1..$current_level) {
+	  print OUTPUT "\t";
+      }
+      print OUTPUT "<li> <a href=\"#$label\">$name</a>\n";
+  }
 
-while($current_level>-1) {
-    print OUTPUT "</ol>\n";
-    $current_level--;
-}
-print OUTPUT "<!-- End of automatically generated table of contents --!>\n";
+  while($current_level>-1) {
+      print OUTPUT "</ol>\n";
+      $current_level--;
+  }
+  print OUTPUT "</div>\n";
+  print OUTPUT "<!-- End of automatically generated table of contents --!>\n";
+} # sub handle_file
 
+
+map { handle_file($_) } @ARGV;
