@@ -30,9 +30,6 @@ void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 /** @addtogroup XBT_syscall
  *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td>Prev          <td>
- *                <tr><td><b>Next</b>   <td> [\ref XBT_ex]            </table></center>
  *  @{
  */
 
