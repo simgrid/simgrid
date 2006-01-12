@@ -1,10 +1,10 @@
 /*! \page publis Publications
 
+\section pub_reference Reference publication about SimGrid
+
 When citing SimGrid, the prefered reference paper is <i>Scheduling
 Distributed Applications: the SimGrid Simulation Framework</i>, even if it's
 a bit old now. We are actively working on improving this.
-
-\section pub_simulation Publications about simulation
 
 \li <b>Scheduling Distributed Applications: the
        SimGrid Simulation Framework</b>\n
@@ -37,6 +37,7 @@ a bit old now. We are actively working on improving this.
     study by which we demonstrate the usefulness of SimGrid for
     conducting scheduling research.
 
+\section pub_simulation Other publications about simulation
 
 \li <b>A Network Model for Simulation of Grid Application</b>\n
     by <em>Henri Casanova and Loris Marchal</em>\n
@@ -116,21 +117,63 @@ a bit old now. We are actively working on improving this.
     functionalities.\n
     http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz
 
-\section pub_research Papers using SimGrid results
+\section pub_research Papers using SimGrid results 
 
-\li <b> A study of meta-scheduling architectures for high throughput
-        computing: Pull vs. Push</b>\n
-    by <em> Vincent Garonne, Andrei Tsaregorodtsev, and Eddy Caron </em>\n
+This list is a selection of articles. We list only papers written by people
+external to the development group, but we also use our tool ourselves.
+
+\li 2005
+
+\li <b>On Dynamic Resource Management Mechanism using Control
+    Theoretic Approach for Wide-Area Grid Computing</b>\n
+    by <em>Hiroyuki Ohsaki, Soushi Watanabe, and Makoto Imase</em>
+    in Proceedings of IEEE Conference on Control Applications (CCA 2005), Aug. 2005.\n
+    http://www.ispl.jp/~oosaki/papers/Ohsaki05_CCA.pdf
+
+\li <b>Evaluation of Meta-scheduler Architectures and Task Assignment Policies for
+    high Throughput Computing</b>
+    by <em>Eddy Caron, Vincent Garonne and Andrei Tsaregorodtsev</em>\n    
     Proceedings of 4th Internationnal Symposium on Parallel and
     Distributed Computing Job Scheduling Strategies for Parallel
     Processing (ISPDC'05), July 2005.\n
-    Preliminary version in http://marwww.in2p3.fr/~garonne/garonne-meta.pdf
+    http://www.ens-lyon.fr/LIP/Pub/Rapports/RR/RR2005/RR2005-27.pdf
+
+\li 2004
+
+\li <b>Deadline Scheduling with Priority for Client-Server Systems on the Grid</b>\n
+    by <em>E Caron, PK Chouhan, F Desprez</em> 
+    in IEEE International Conference On Grid Computing. Super Computing 2004, oct 2004.
+    
+\li <b>Efficient Scheduling Heuristics for GridRPC Systems</b>
+    by <em>Y. Caniou and E. Jeannot.</em>\n
+    in IEEE QoS and Dynamic System workshop (QDS) of International Conference 
+    on Parallel and Distributed Systems (ICPADS), New-Port Beach California, USA, 
+    pages 621-630, July 2004\n
+    http://graal.ens-lyon.fr/~ycaniou/QDS04.ps
 
 \li <b>Exploiting Replication and Data Reuse to Efficiently Schedule
        Data-intensive Applications on Grids</b>\n
     by <em> E. Santos-Neto, W. Cirne, F. Brasileiro, A. Lima.</em>\n
     Proceedings of 10th Job Scheduling Strategies for Parallel Processing, June 2004.\n
     http://www.lsd.ufcg.edu.br/~elizeu/articles/jsspp.v6.pdf
+
+\li 2003
+
+\li <b>Link-Contention-Aware Genetic Scheduling Using Task Duplication in Grid Environments</b>\n
+    by <em>Wensheng Yao1 Contact Information, Xiao Xie1 and Jinyuan You1</em>\n
+    in Grid and Cooperative Computing: Second International Workshop, GCC 2003, Shanghai, China, December 7-10, 2003 (LNCS)
+    http://www.chinagrid.edu.cn/chinagrid/download/GCC2003/pdf/266.pdf
+
+\li <b>New Dynamic Heuristics in the Client-Agent-Server Model</b>\n
+    by <em>Y. Caniou and E. Jeannot</em>\n
+    in IEEE 13th Heteregeneous Computing Workshop - HCW'03, Nice, France, April 2003.\n
+    http://graal.ens-lyon.fr/~ycaniou/HCW03.ps
+
+\li <b>A Hierarchical Resource Reservation Algorithm for Network Enabled Servers</b>\n
+    by <em>E Caron, F Desprez, F Petit, V Villain</em>\n
+    in the 17th International Parallel and Distributed Processing Symposium -- IPDPS'03, Nice - France, April 2003. 
+
+*/
 
 \li <b>Optimal algorithms for scheduling divisible workloads on 
        heterogeneous systems</b>\n
@@ -150,4 +193,3 @@ a bit old now. We are actively working on improving this.
             Francine Berman</em>\n
     in Proceedings of the 9th Heterogeneous Computing workshop 
     (HCW'2000), pp349-363.
-*/
