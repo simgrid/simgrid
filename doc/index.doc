@@ -34,7 +34,7 @@ three-layered (click on the picture to jump to a specific component).
 \endhtmlonly
 \htmlinclude simgrid_modules.map
 \htmlonly
-<br><b>Relationships between the SimGrid components</b>
+<br><b>Relationships between the SimGrid components (click to jump to API)</b>
 </center>
 \endhtmlonly
 
