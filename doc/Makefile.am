@@ -34,6 +34,9 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	rm html/dir*
 	../tools/doxygen/index_php.pl index.php.in html/index.html index.php
 	../tools/doxygen/doxygen_postprocesser.pl
+
+publish:
+	$(MAKE) -C .. sync-gforge
 endif
 
 logcategories.doc: $(DOCSOURCES)
