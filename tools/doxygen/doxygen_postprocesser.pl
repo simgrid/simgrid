@@ -54,7 +54,7 @@ while (<IN>) {
   $entry->{'up'} = $current;
   push @{$current->{'down'}},$entry;
   print "Push $1 $2 as child of $current\n" if $debug{'parse'};
-  push @allfiles,$1;
+  push @allfiles,"html/$1";
 }
 close IN;
 
@@ -186,6 +186,7 @@ sub handle_page {
     close FROM;
     close TO;
     rename("$newname","html/$current->{'file'}") unless $debug{'rename'};
+#    print "mv $newname html/$current->{'file'}\n";
   } 
   
   # recurse on childs
@@ -194,35 +195,40 @@ sub handle_page {
   }
 }
 
+###
+### Launch the modules navbar reworking
+###
+handle_page($top,-2);# skip roots (we have 2 roots) in level counting
 
 
 ###
 ### Post-processsing common to all pages
 ###
-map {push @allfiles,$_} qw(html/index.html html/faq.html html/publis.html html/pages.html);
+map {push @allfiles,$_} qw(html/index.html html/faq.html html/publis.html html/pages.html index.php);
 
 foreach my $file (@allfiles) {
     open FROM,"$file" || die;
     my $outfile = "$file";
-    $outfile =~ s/.html/.new.html/;
+    $outfile =~ s/.(html|php)$/.new.$1/;
     open TO,">$outfile" || die;
+    print "POSTPROCESSING $file (tmp=$outfile)\n";
     while (<FROM>) {
       # Add the simgrid css, just in case
       print TO '<link href="simgrid.css" rel="stylesheet" type="text/css">'."\n"
         if (m|</head>|);
 
       # Rework the navbar
-      if (m,<li><a href="index.html"><span>Main\&nbsp;Page</span></a></li>,) {
-        print TO '<li><a href="index.html"><span>Overview</span></a></li>';
-        print TO '<li><a href="faq.html"><span>FAQ</span></a></li>';
+      if (m,<li><a href="(doc/)?index.html"><span>Main\&nbsp;Page</span></a></li>,) {
+        print TO '<li><a href="'.$1.'index.html"><span>Overview</span></a></li>'."\n";
+        print TO '<li><a href="'.$1.'faq.html"><span>FAQ</span></a></li>'."\n";
         next;
       }
-      if (m,<li><a href="annotated.html"><span>Data\&nbsp;Structures</span></a></li>,) {
-        print TO '<li><a href="publis.html"><span>Publications</span></a></li>';
+      if (m,<li><a href="(doc/)?annotated.html"><span>Data\&nbsp;Structures</span></a></li>,) {
+        print TO '<li><a href="'.$1.'publis.html"><span>Publications</span></a></li>'."\n";
         next;
       }
       s|<span>Modules</span>|<span>Modules API</span>|g;
-      s|<li><a href="dirs.html"><span>Directories</span></a></li>||g;
+      s|<li><a href="(doc/)?dirs.html"><span>Directories</span></a></li>||g;
                                                                                                  
       print TO $_;
     }
@@ -231,9 +237,5 @@ foreach my $file (@allfiles) {
     rename("$outfile", "$file") unless $debug{'rename'};
 }
 
-###
-### Launch the modules navbar reworking
-###
-handle_page($top,-2);# skip roots (we have 2 roots) in level counting
 
 
