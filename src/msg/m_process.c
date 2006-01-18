@@ -347,6 +347,8 @@ MSG_error_t MSG_process_suspend(m_process_t process)
   simdata_process_t simdata = NULL;
   simdata_task_t simdata_task = NULL;
 
+  XBT_IN2("(%p(%s))", process, process->name);
+
   xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
 
   PAJE_PROCESS_PUSH_STATE(process,"S");
@@ -359,7 +361,10 @@ MSG_error_t MSG_process_suspend(m_process_t process)
     simdata_task = simdata->waiting_task->simdata;
 
     simdata->suspended = 1;
-    if(simdata->blocked) return MSG_OK;
+    if(simdata->blocked) {
+      XBT_OUT;
+      return MSG_OK;
+    }
 
     xbt_assert0(((simdata_task->compute)||(simdata_task->comm))&&
 		!((simdata_task->compute)&&(simdata_task->comm)),
@@ -382,6 +387,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 
     MSG_task_destroy(dummy);
   }
+  XBT_OUT;
   return MSG_OK;
 }
 
@@ -399,7 +405,10 @@ MSG_error_t MSG_process_resume(m_process_t process)
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
+  XBT_IN2("(%p(%s))", process, process->name);
+
   if(process == MSG_process_self()) {
+    XBT_OUT;
     MSG_RETURN(MSG_OK);
   }
 
@@ -409,11 +418,13 @@ MSG_error_t MSG_process_resume(m_process_t process)
     PAJE_PROCESS_POP_STATE(process);
 
     simdata->suspended = 0; /* He'll wake up by itself */
+    XBT_OUT;
     MSG_RETURN(MSG_OK);
   }
 
   if(!(simdata->waiting_task)) {
     xbt_assert0(0,"Process not waiting for anything else. Weird !");
+    XBT_OUT;
     return MSG_WARNING;
   }
   simdata_task = simdata->waiting_task->simdata;
@@ -428,6 +439,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
     surf_workstation_resource->common_public->resume(simdata_task->comm);
   }
 
+  XBT_OUT;
   MSG_RETURN(MSG_OK);
 }
 
@@ -467,12 +479,14 @@ int __MSG_process_block(double max_duration)
     surf_workstation_resource->common_public->set_max_duration(dummy->simdata->compute, 
 							       max_duration);
   __MSG_wait_for_computation(process,dummy);
+  MSG_task_destroy(dummy);
   process->simdata->blocked=0;
 
-  if(process->simdata->suspended)
+  if(process->simdata->suspended) {
+    DEBUG0("I've been suspended in the meantime");    
     MSG_process_suspend(process);
-  
-  MSG_task_destroy(dummy);
+    DEBUG0("I've been resumed, let's keep going");    
+  }
 
   XBT_OUT;
   return 1;

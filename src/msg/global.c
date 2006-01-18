@@ -302,7 +302,7 @@ MSG_error_t MSG_main(void)
     }
 
     while ((process = xbt_fifo_pop(msg_global->process_to_run))) {
-      DEBUG3("Scheduling  %s(%d) on %s",	     
+      DEBUG3("Scheduling %s(%d) on %s",	     
 	     process->name,process->simdata->PID,
 	     process->simdata->host->name);
       msg_global->current_process = process;
