@@ -92,6 +92,26 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   /* Transfer */
   t_simdata->using++;
 
+  while(MSG_process_is_suspended(t_simdata->sender)) {
+    DEBUG1("Oooups, the sender (%s) has been suspended in the meantime. Let's wait for him", 
+	   t_simdata->sender->name);
+    m_task_t task_to_wait_for = t_simdata->sender->simdata->waiting_task;
+    if(__MSG_process_isBlocked(t_simdata->sender)) {
+      DEBUG0("He's blocked. Let's wait for him to go in the suspended state");
+      __MSG_process_unblock(t_simdata->sender);
+      task_to_wait_for->simdata->using++;
+      __MSG_task_wait_event(process, task_to_wait_for);
+      MSG_task_destroy(task_to_wait_for);
+    } else {
+      DEBUG0("He's suspended. Let's wait for him to go in the resumed state");
+      task_to_wait_for->simdata->using++;
+      __MSG_task_wait_event(process, task_to_wait_for);
+      MSG_task_destroy(task_to_wait_for);
+      DEBUG0("He's resumed. He should block again. So let's free him.");
+      __MSG_process_unblock(t_simdata->sender);
+      break;
+    }
+  }
   DEBUG0("Calling SURF for communication creation");
   t_simdata->comm = surf_workstation_resource->extension_public->
     communicate(MSG_process_get_host(t_simdata->sender)->simdata->host,
@@ -99,8 +119,10 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   
   surf_workstation_resource->common_public->action_set_data(t_simdata->comm,t);
 
-  if(__MSG_process_isBlocked(t_simdata->sender))
+  if(__MSG_process_isBlocked(t_simdata->sender)) {
+    DEBUG1("Unblocking %s",t_simdata->sender->name);
     __MSG_process_unblock(t_simdata->sender);
+  }
 
   PAJE_PROCESS_PUSH_STATE(process,"C");  
 
@@ -525,6 +547,7 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
   simdata_task_t simdata = task->simdata;
 
+  XBT_IN4("(%p(%s) %p(%s))",process,process->name,task,task->name);
   simdata->using++;
   do {
     __MSG_task_wait_event(process, task);
@@ -537,16 +560,19 @@ MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
     if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
       simdata->compute = NULL;
     simdata->computation_amount = 0.0;
+    XBT_OUT;
     MSG_RETURN(MSG_OK);
   } else if(surf_workstation_resource->extension_public->
 	    get_state(MSG_process_get_host(process)->simdata->host) 
 	    == SURF_CPU_OFF) {
     if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
       simdata->compute = NULL;
+    XBT_OUT;
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
     if(surf_workstation_resource->common_public->action_free(simdata->compute)) 
       simdata->compute = NULL;
+    XBT_OUT;
     MSG_RETURN(MSG_TASK_CANCELLED);
   }
 }
