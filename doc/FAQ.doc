@@ -462,8 +462,28 @@ decisions, there is no way to handle DAGs directly anymore (unless I am
 missing something). You have to encode your DAGs in term of communicating
 process to make the whole scheduling process distributed. Believe me, it is
 worth the effort since you'll then be able to try your algorithms in a very
-wide variety of conditions.
+wide variety of conditions. Here is an example of how you could do that.
+Assume T1 has to be done before T2.
 
+\verbatim
+ int your_agent(int argc, char *argv[] {
+   ...
+   T1 = MSG_task_create(...);
+   T2 = MSG_task_create(...);
+   ...
+   while(1) {
+     ...
+     if(cond) MSG_task_execute(T1);
+     ...
+     if((MSG_task_get_remaining_computation(T1)=0.0) && (you_re_in_a_good_mood))
+        MSG_task_execute(T2)
+     else {
+        /* do something else */
+     }
+   }
+ }
+\endverbatim
+ 
 If you decide that the distributed part is not that much important and that
 DAG is really the level of abstraction you want to work with (but it
 prevents you from having "realistic" platform modeling), then you should
