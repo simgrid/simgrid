@@ -153,7 +153,7 @@ fi
 if [ $failed_nb != 0 ] ; then
   echo "$failed_nb tests of $tests_nb failed: "
   cat test.failed
-  echo "Rerun the tests using the following command: script -c 'make test' simgrid.tests.log"
+  echo "Rerun the tests using the following command: script -c 'make check' simgrid.tests.log"
   echo " and send the following informations to simgrid-devel@lists.gforge.inria.fr:"
   echo "   - the file simgrid.tests.log produced by this command."
   echo "   - a short description of the target platform (arch, OS, distrib, compiler)."
