@@ -306,7 +306,8 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
   }
 
   if(max_duration==0.0) {
-    return MSG_task_probe_from(channel);
+    *PID = MSG_task_probe_from(channel);
+    MSG_RETURN(MSG_OK);
   } else {
     CHECK_HOST();
     h = MSG_host_self();
