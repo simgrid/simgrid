@@ -676,6 +676,42 @@ An example of this trick is distributed in the file examples/msg/msg_test_surfxm
 
 \section faq_troubleshooting Troubleshooting
 
+\subsection faq_distcheck_fails Dude! "make check" fails on my machine!
+
+Don't assume we never run this target, because we do. Really. Promise!
+
+There is several reasons which may cause the make check to fail on your
+machine:
+
+ - <b>You are using a borken compiler</b>.\n
+   The symptom may be that the "make check" fails within testsuite/gras
+   directory.\n
+   For example, the breezy release of Ubuntu comes with a prerelease of the
+   4.0 gcc compiler. This version happens to be completely unusable, and you
+   should install a gcc-3.4 compiler and change the /usr/bin/gcc link to let
+   it point on /usr/bin/gcc-3.4.
+ - <b>You are using a borken libc (probably concerning the contextes)</b>.\n
+   The symptom is that the "make check" fails within the examples/msg directory.\n
+   Be default, SimGrid uses something called ucontexts. This is part of the
+   libc, but it's quite undertested. For example, some (old) versions of the
+   glibc on alpha do not implement these functions, but provide the stubs
+   (which return ENOSYS: not implemented). It fools our detection mecanism
+   and leads to segfaults.\n
+   On some x86_64, the pointer to function is stored into a integer, but int
+   are 32bits only on this arch while pointers are 64bits. Our detection
+   mecanism also fails to detect the problem, which leads to segfaults.\n
+   In both cases, there is not much we can do to fix the bug. We are working
+   on a workaround for x86_64 machines, but in the meanwhile, you can
+   compile with --with-context=pthread to avoid ucontext completely. You'll
+   be a bit more limitated in the number of simulated processes you can start
+   concurently, but 5000 processes is still enough for most purposes, isn't
+   it?\n
+   This limitation is the reason why we insist on using this piece of ...
+   software even if it's so troublesome.
+ - <b>There is a bug in SimGrid we aren't aware of</b>.\n
+   If none of the above apply, please drop us a mail on the mailing list so
+   that we can check it out.
+
 \subsection faq_context_1000 I want thousands of simulated processes
 
 SimGrid can use either pthreads library or the UNIX98 contextes. On most
@@ -693,10 +729,11 @@ implementation. On Windows boxes, the provided value is discarded and an
 adapted version is picked up.
 
 We experienced some issues with contextes on some rare systems (solaris 8
-and lower comes to mind). The main problem is that the configure script
-detect the contextes as being functional when it's not true. If you happen
-to use such a system, switch manually to the pthread version, and provide us
-with a good patch for the configure script so that it is done automatically ;)
+and lower or old alpha linuxes comes to mind). The main problem is that the
+configure script detect the contextes as being functional when it's not
+true. If you happen to use such a system, switch manually to the pthread
+version, and provide us with a good patch for the configure script so that
+it is done automatically ;)
 
 \subsection faq_context_10000 I want hundred thousands of simulated processes
 
