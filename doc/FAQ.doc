@@ -692,7 +692,7 @@ machine:
    it point on /usr/bin/gcc-3.4.
  - <b>You are using a borken libc (probably concerning the contextes)</b>.\n
    The symptom is that the "make check" fails within the examples/msg directory.\n
-   Be default, SimGrid uses something called ucontexts. This is part of the
+   By default, SimGrid uses something called ucontexts. This is part of the
    libc, but it's quite undertested. For example, some (old) versions of the
    glibc on alpha do not implement these functions, but provide the stubs
    (which return ENOSYS: not implemented). It fools our detection mecanism
