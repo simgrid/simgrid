@@ -129,8 +129,8 @@ int slave(int argc, char *argv[])
 int forwarder(int argc, char *argv[])
 {
   int i;
-  int slaves_count = argc - 1;
-  m_host_t *slaves = calloc(slaves_count, sizeof(m_host_t));
+  int slaves_count;
+  m_host_t *slaves;
 
   {                  /* Process organisation */
     slaves_count = argc - 1;
