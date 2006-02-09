@@ -277,7 +277,7 @@ int MSG_task_probe_from(m_channel_t channel)
 /** \ingroup msg_gos_functions
  * \brief Wait for at most \a max_duration second for a task reception
    on \a channel. *\a PID is updated with the PID of the first process
-   that triggered this event is any.
+   that triggered this event if any.
  *
  * It takes three parameters:
  * \param channel the channel on which the agent should be
@@ -726,7 +726,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Return the number of MSG tasks currently running on a
+ * \brief Return the number of MSG tasks currently running on
  * the host of the current running process.
  */
 static int MSG_get_msgload(void) 
@@ -742,7 +742,7 @@ static int MSG_get_msgload(void)
 
 /** \ingroup msg_gos_functions
  *
- * \brief Return the the last value returned by a MSG function (except
+ * \brief Return the last value returned by a MSG function (except
  * MSG_get_errno...).
  */
 MSG_error_t MSG_get_errno(void)
