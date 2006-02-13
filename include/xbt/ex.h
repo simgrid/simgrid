@@ -72,10 +72,6 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
 /** @addtogroup XBT_ex
  *  @brief A set of macros providing exception a la C++ in ANSI C (grounding feature)
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_syscall]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_log]            </table></center>
- *
  * This module is a small ISO-C++ style exception handling library
  * for use in the ISO-C language. It allows you to use the paradigm 
  * of throwing and catching exceptions in order to reduce the amount
@@ -92,11 +88,15 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * These features are brought to you by a modified version of the libex 
  * library, one of the numerous masterpiece of Ralf S. Engelschall.
  *
+ * \htmlonly <div class="toc">\endhtmlonly
+ *
  * @section XBT_ex_toc TABLE OF CONTENTS
  *
  *  - \ref XBT_ex_intro
  *  - \ref XBT_ex_base
  *  - \ref XBT_ex_pitfalls
+ *
+ * \htmlonly </div> \endhtmlonly
  *
  * @section XBT_ex_intro DESCRIPTION
  * 
