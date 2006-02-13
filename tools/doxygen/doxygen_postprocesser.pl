@@ -204,14 +204,14 @@ handle_page($top,-2);# skip roots (we have 2 roots) in level counting
 ###
 ### Post-processsing common to all pages
 ###
-map {push @allfiles,$_} qw(html/index.html html/faq.html html/publis.html html/pages.html index.php);
+map {push @allfiles,$_} qw(html/index.html html/faq.html html/publis.html html/pages.html html/modules.html index.php);
 
 foreach my $file (@allfiles) {
     open FROM,"$file" || die;
     my $outfile = "$file";
     $outfile =~ s/.(html|php)$/.new.$1/;
     open TO,">$outfile" || die;
-    print "POSTPROCESSING $file (tmp=$outfile)\n";
+#    print "POSTPROCESSING $file (tmp=$outfile)\n";
     while (<FROM>) {
       # Add the simgrid css, just in case
       print TO '<link href="simgrid.css" rel="stylesheet" type="text/css">'."\n"
