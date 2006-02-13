@@ -32,7 +32,7 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	: # Second pass
 	doxygen Doxyfile >/dev/null
 	: # Post-processing
-	rm html/dir*
+	rm -f html/dir* 
 	../tools/doxygen/index_php.pl index.php.in html/index.html index.php
 	../tools/doxygen/doxygen_postprocesser.pl
 
