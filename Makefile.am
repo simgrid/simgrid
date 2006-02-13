@@ -3,7 +3,6 @@ DISTCLEANFILES =  *~
 
 ACLOCAL = aclocal-1.9 -I acmacro
 AUTOMAKE_OPTIONS = gnu
-DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog \
 	acmacro/aci.m4 \
@@ -58,7 +57,7 @@ publish: dist
 sync-gforge: 
 	rsync --copy-links --verbose --archive --cvs-exclude --compress --delete \
 	--delete-excluded --rsh=ssh -I \
-	doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/
+	doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/ || true
 	scp doc/index.php scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	scp doc/simgrid_logo_small2.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	ssh scm.gforge.inria.fr "chgrp -R simgrid /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
