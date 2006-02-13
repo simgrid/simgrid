@@ -165,7 +165,11 @@ echo $contents; } ?>
 			</table>
 		</td></tr>
 		</table><p>&nbsp;</p>
-</td></tr></table>
+</td></tr>
+		<tr><td align=center>
+			<a href="http://creativecommons.org/licenses/LGPL/2.1/"><img alt="CC-GNU LGPL" border="0" src="http://creativecommons.org/images/public/cc-LGPL-a.png" /></a>
+		</td></tr>
+</table>
 			&nbsp;<p>
                         <center>
                                 Help: <a href="mailto:siteadmin-help@lists.gforge.inria.fr">siteadmin-help@lists.gforge.inria.fr</a> Webmaster: <a href="mailto:webmaster@gforge.inria.fr">webmaster@gforge.inria.fr</a>
