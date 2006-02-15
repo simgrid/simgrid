@@ -93,6 +93,8 @@ const char *xbt_procname(void);
    typedef int  (int_f_pvoid_pvoid_t) (void*,void*);
    
    typedef int  (*int_f_void_t)   (void); /* FIXME: rename it to int_pf_void_t */
+
+#define XBT_BACKTRACE_SIZE 10 /* FIXME: better place? Do document */
    
 SG_END_DECL()
 

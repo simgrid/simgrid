@@ -237,7 +237,7 @@ typedef struct {
   int   line;     
   char *func;     /**< to be freed only for remote exceptions */
   /* Backtrace */
-  void *bt[10];
+  void *bt[XBT_BACKTRACE_SIZE];
   int   used;
 } xbt_ex_t;
 
@@ -376,7 +376,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__;                        \
      __xbt_ex_ctx()->ctx_ex.line     = __LINE__;                               \
      __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION;                   \
-     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,10);\
+     __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE);\
      /* deal with the exception */                                             \
      if (__xbt_ex_ctx()->ctx_mctx == NULL)                                     \
        __xbt_ex_terminate((xbt_ex_t *)&(__xbt_ex_ctx()->ctx_ex)); /* not catched */\
