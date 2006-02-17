@@ -28,12 +28,12 @@ html: Doxyfile ./logcategories.doc simgrid_modules.map simgrid_modules.png $(DOC
 	: # First pass
 	doxygen Doxyfile >/dev/null
 	@top_srcdir@/tools/doxygen/index_create.pl simgrid.tag index-API.doc
-	@top_srcdir@/tools/doxygen/toc_create.pl FAQ.doc index.doc
+	@top_srcdir@/tools/doxygen/toc_create.pl @srcdir@/FAQ.doc @srcdir@/index.doc
 	: # Second pass
 	doxygen Doxyfile >/dev/null
 	: # Post-processing
 	rm -f html/dir* 
-	@top_srcdir@/tools/doxygen/index_php.pl index.php.in html/index.html index.php
+	@top_srcdir@/tools/doxygen/index_php.pl @srcdir@/index.php.in html/index.html index.php
 	@top_srcdir@/tools/doxygen/doxygen_postprocesser.pl
 
 publish:
