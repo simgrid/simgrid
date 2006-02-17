@@ -55,9 +55,9 @@ publish: dist
 	 make -C ~/public_html
 
 sync-gforge: 
-	rsync --copy-links --verbose --archive --cvs-exclude --compress --delete \
-	--delete-excluded --rsh=ssh -I \
-	doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/ || true
+	rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times \
+	    --recursive --links --perms --times --omit-dir-times  \
+	    doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/ || true
 	scp doc/index.php scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	scp doc/simgrid_logo_small2.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	ssh scm.gforge.inria.fr "chgrp -R simgrid /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
