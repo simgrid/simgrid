@@ -21,7 +21,7 @@ simgrid_modules.png: simgrid_modules.fig
 html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modules.png
 	: # Setting up
 	touch index-API.doc .FAQ.doc.toc
-	test -e html || mkdir html
+	test -e html || mkdir html
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
 	cp @srcdir@/simgrid.css html/
