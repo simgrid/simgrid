@@ -690,6 +690,9 @@ machine:
    4.0 gcc compiler. This version happens to be completely unusable, and you
    should install a gcc-3.4 compiler and change the /usr/bin/gcc link to let
    it point on /usr/bin/gcc-3.4.
+ - <b>You are using a borken build environment</b>\n
+   If symptom is that configure complains about gcc not being able to build
+   executables, you are probably missing the libc6-dev package. Damn Ubuntu.
  - <b>You are using a borken libc (probably concerning the contextes)</b>.\n
    The symptom is that the "make check" fails within the examples/msg directory.\n
    By default, SimGrid uses something called ucontexts. This is part of the
