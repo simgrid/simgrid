@@ -53,7 +53,7 @@
        - \ref GRAS_ex_mmrpc
        - \ref GRAS_ex_timer
 
-    @{Â */
+    @{ */
        /** @defgroup GRAS_comm    Communication facilities */
        /** @defgroup GRAS_run     Virtualization */
        /** @defgroup GRAS_code    Project and code management */
