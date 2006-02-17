@@ -38,10 +38,13 @@ sub handle_file {
   }
   close FILE;
 
-  my $outfile = ".$infile.toc";
+  my $outfile = "$infile.toc";
+  $outfile =~ s|\./||g;
   $outfile =~ s|\.\./||g;
   $outfile =~ s|/|_|g;
-  open OUTPUT,"> $outfile";
+  $outfile = ".$outfile";
+  print "<<<<< $infile -> $outfile >>>>>>\n";
+  open OUTPUT,"> ./$outfile";
   my($current_level)=-1;
   my($entry);
   print OUTPUT "<!-- Automatically generated table of contents --!>\n";
@@ -70,6 +73,7 @@ sub handle_file {
   }
   print OUTPUT "</div>\n";
   print OUTPUT "<!-- End of automatically generated table of contents --!>\n";
+  close OUTPUT;
 } # sub handle_file
 
 
