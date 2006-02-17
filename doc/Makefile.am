@@ -18,7 +18,7 @@ simgrid_modules.map: simgrid_modules.fig
 simgrid_modules.png: simgrid_modules.fig
 	fig2dev -Lpng simgrid_modules.fig > simgrid_modules.png
 
-html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modules.png
+html: Doxyfile ./logcategories.doc simgrid_modules.map simgrid_modules.png $(DOCSOURCES)
 	: # Setting up
 	touch index-API.doc .FAQ.doc.toc
 	test -e html || mkdir html
@@ -27,20 +27,20 @@ html: $(DOCSOURCES) Doxyfile logcategories.doc simgrid_modules.map simgrid_modul
 	cp @srcdir@/simgrid.css html/
 	: # First pass
 	doxygen Doxyfile >/dev/null
-	../tools/doxygen/index_create.pl simgrid.tag index-API.doc
-	../tools/doxygen/toc_create.pl FAQ.doc index.doc
+	@top_srcdir@/tools/doxygen/index_create.pl simgrid.tag index-API.doc
+	@top_srcdir@/tools/doxygen/toc_create.pl FAQ.doc index.doc
 	: # Second pass
 	doxygen Doxyfile >/dev/null
 	: # Post-processing
 	rm -f html/dir* 
-	../tools/doxygen/index_php.pl index.php.in html/index.html index.php
-	../tools/doxygen/doxygen_postprocesser.pl
+	@top_srcdir@/tools/doxygen/index_php.pl index.php.in html/index.html index.php
+	@top_srcdir@/tools/doxygen/doxygen_postprocesser.pl
 
 publish:
 	$(MAKE) -C .. sync-gforge
 endif
 
-logcategories.doc: $(DOCSOURCES)
+./logcategories.doc: $(DOCSOURCES)
 	pwd=`pwd`; rm $$pwd/logcategories.doc; set -e; \
 	echo "/* Generated file, do not edit */"          > $$pwd/logcategories.doc; \
 	echo "/** \addtogroup XBT_log_cats"              >> $$pwd/logcategories.doc; \
