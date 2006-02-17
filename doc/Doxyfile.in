@@ -397,7 +397,7 @@ WARN_LOGFILE           =
 INPUT                  = @srcdir@/index.doc \
                          @srcdir@/FAQ.doc \
                          @srcdir@/publis.doc \
-                         @srcdir@/index-API.doc \
+                         ./index-API.doc \
 			 \
                          @srcdir@/modules.doc \
                          @srcdir@/module-xbt.doc \
