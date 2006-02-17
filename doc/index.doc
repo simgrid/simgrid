@@ -122,7 +122,7 @@ authors of SimGrid are:
 
  - Henri Casanova <casanova#cs.ucsd.edu> (Information and Computer Sciences Department, University of Hawai`i at Manoa)
  - Arnaud Legrand <arnaud.legrand#imag.fr> ("Informatique et Distribution" Laboratory (Grenoble, France), MESCal project)
- - Martin Quinson <martin.quinson#loria.fr> (University of Nancy (Nancy, France), LORIA Laboratory, Algorille project)
+ - Martin Quinson <martin.quinson#loria.fr> (University of Nancy I (Nancy, France), LORIA Laboratory, Algorille project)
 
 \subsection contributers Contributers and alumni project members
 
@@ -136,5 +136,12 @@ authors of SimGrid are:
    (1999). 
 
 <hr>
+\htmlonly
+<center>
+<a href="http://creativecommons.org/licenses/LGPL/2.1/"><img alt="CC-GNU LGPL" border="0" src="http://creativecommons.org/images/public/cc-LGPL-a.png" /></a>
+
+<a href="http://simgrid.gforge.inria.fr/"><img src="http://gforge.org/images/pow-gforge.png" alt="Back to the gforge site" border="0" /></a>
+</center>
+\endhtmlonly
 
 */
