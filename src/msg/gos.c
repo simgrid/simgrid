@@ -462,6 +462,7 @@ MSG_error_t MSG_task_put(m_task_t task,
     state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
   }
   DEBUG0("Action terminated");
+  task->simdata->rate=-1.0; /* Sets the rate back to default */
 
   PAJE_PROCESS_POP_STATE(process);  
 
@@ -497,7 +498,6 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
   MSG_error_t res = MSG_OK;
   task->simdata->rate=max_rate;
   res = MSG_task_put(task, dest, channel);
-  task->simdata->rate=-1.0;
   return(res);
 }
 
