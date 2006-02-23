@@ -38,6 +38,7 @@ m_host_t MSG_host_self(void);
 int MSG_get_host_msgload(m_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
 double MSG_get_host_speed(m_host_t h);
+int MSG_host_is_avail (m_host_t h);
 
 void MSG_create_environment(const char *file);
 

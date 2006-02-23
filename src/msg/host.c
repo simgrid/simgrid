@@ -185,3 +185,21 @@ double MSG_get_host_speed(m_host_t h)
   return(surf_workstation_resource->
 	 extension_public->get_speed(h->simdata->host,1.0));
 }
+
+/** \ingroup msg_gos_functions
+ * \brief Determine if a host is available.
+ *
+ * \param host host to test
+ */
+int MSG_host_is_avail (m_host_t h)
+{
+  xbt_assert0((h!= NULL), "Invalid parameters");
+
+  e_surf_cpu_state_t cpustate =
+    surf_workstation_resource->extension_public->get_state(h->simdata->host);
+
+  xbt_assert0((cpustate == SURF_CPU_ON || cpustate == SURF_CPU_OFF),
+	      "Invalid cpu state");
+
+  return (cpustate==SURF_CPU_ON);
+}
