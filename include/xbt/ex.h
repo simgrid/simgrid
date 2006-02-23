@@ -258,7 +258,7 @@ typedef struct {
         (ctx)->ctx_mctx        = NULL; \
         (ctx)->ctx_caught      = 0;    \
         (ctx)->ctx_ex.msg      = NULL; \
-        (ctx)->ctx_ex.category = 0;    \
+        (ctx)->ctx_ex.category = unknown_error;    \
         (ctx)->ctx_ex.value    = 0;    \
         (ctx)->ctx_ex.host     = NULL; \
         (ctx)->ctx_ex.procname = NULL; \
@@ -369,7 +369,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
   do { /* change this sequence into one block */                               \
      /* build the exception */ \
      __xbt_ex_ctx()->ctx_ex.msg      = (m); \
-     __xbt_ex_ctx()->ctx_ex.category = (c); \
+     __xbt_ex_ctx()->ctx_ex.category = (xbt_errcat_t)(c); \
      __xbt_ex_ctx()->ctx_ex.value    = (v);  \
      __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL;                            \
      __xbt_ex_ctx()->ctx_ex.procname = strdup(xbt_procname());                 \
