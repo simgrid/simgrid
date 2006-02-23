@@ -6,6 +6,7 @@
 \endhtmlonly
 </center>
 
+\htmlinclude .index.doc.toc
 SimGrid is a toolkit that provides core functionalities for the simulation
 of distributed applications in heterogeneous distributed environments.
 \htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
@@ -20,6 +21,8 @@ Grids.
   - The development webpage is <a href="https://gforge.inria.fr/projects/simgrid//">gforge.inria.fr/projects/simgrid</a>. 
   - The user mailing list is <simgrid-user@lists.gforge.inria.fr>
   - The SimGrid software package can be downloaded from <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>. 
+
+<br>
 
 <hr>
 
