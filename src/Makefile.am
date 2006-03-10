@@ -20,6 +20,7 @@ EXTRA_DIST= \
         xbt/dict_private.h \
         xbt/heap_private.h \
         xbt/fifo_private.h \
+        xbt/graph_private.h \	
         xbt/context_private.h xbt/context_win32.h xbt/context_win32.c\
         \
 	surf/maxmin_private.h \
@@ -112,6 +113,7 @@ COMMON_SRC=\
   xbt/heap.c                                                                 \
   xbt/fifo.c                                                                 \
   xbt/swag.c                                                                 \
+  xbt/graph.c                                                                \
   xbt/set.c                                                                  \
   xbt/module.c                                                               \
   xbt/config.c                                                               \
