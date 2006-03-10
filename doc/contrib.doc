@@ -1,0 +1,26 @@
+/*! \page contrib Contrib section
+
+\htmlinclude .contrib.doc.toc
+
+\section contrib_intro A contrib section ? Why ?
+
+Many people have come to ask us more complex examples than the simple ones
+that are distributed with the main branch of the SimGrid project. We do not
+want to include complex examples in the main branch but we think it is a
+good idea that users share their experience. That is why we have created a
+contrib branch that can be used by people who have a nice piece of work
+using SimGrid and accept to share it. The licence of this code should be
+LGPL if possible. If you can't licence your code with LGPL, just tell us
+about it and we will try to sort out whether it makes sense to publish it
+here.
+
+\section contrib_surf Projects relying on SURF
+\section contrib_msg  Projects relying on MSG
+\section contrib_gras Projects relying on GRAS
+\section contrib_smpi Projects relying on SMPI
+
+\author Arnaud Legrand (arnaud.legrand::imag.fr)
+\author Martin Quinson (martin.quinson::loria.fr)
+
+*/
+

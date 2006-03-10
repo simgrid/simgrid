@@ -396,6 +396,7 @@ WARN_LOGFILE           =
 
 INPUT                  = @srcdir@/index.doc \
                          @srcdir@/FAQ.doc \
+                         @srcdir@/contrib.doc \
                          @srcdir@/publis.doc \
                          ./index-API.doc \
 			 \

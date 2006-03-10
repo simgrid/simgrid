@@ -2,7 +2,7 @@ DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@
  $(shell find @srcdir@ -name "*.doc")
 
 EXTRA_DIST = html Doxyfile \
- modules.doc FAQ.doc index.doc publis.doc footer.html simgrid_logo.png simgrid_modules.png
+ modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html simgrid_logo.png simgrid_modules.png
 
 CLEANFILES = .*.toc
 DISTCLEANFILES = index-API.doc simgrid.tag
@@ -20,7 +20,7 @@ simgrid_modules.png: simgrid_modules.fig
 
 html: Doxyfile ./logcategories.doc simgrid_modules.map simgrid_modules.png $(DOCSOURCES)
 	: # Setting up
-	touch index-API.doc .FAQ.doc.toc .index.doc.toc
+	touch index-API.doc .FAQ.doc.toc .index.doc.toc .contrib.doc.toc
 	test -e html || mkdir html
 	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
@@ -28,7 +28,7 @@ html: Doxyfile ./logcategories.doc simgrid_modules.map simgrid_modules.png $(DOC
 	: # First pass
 	doxygen Doxyfile >/dev/null
 	@top_srcdir@/tools/doxygen/index_create.pl simgrid.tag index-API.doc
-	@top_srcdir@/tools/doxygen/toc_create.pl @srcdir@/FAQ.doc @srcdir@/index.doc
+	@top_srcdir@/tools/doxygen/toc_create.pl @srcdir@/FAQ.doc @srcdir@/index.doc @srcdir@/contrib.doc
 	: # Second pass
 	doxygen Doxyfile >/dev/null
 	: # Post-processing
