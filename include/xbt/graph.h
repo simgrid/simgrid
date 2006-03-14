@@ -1,8 +1,14 @@
+/* 	$Id$	 */
+
+/* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand. 
+   All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #ifndef _XBT_GRAPH_H
 #define _XBT_GRAPH_H
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
-#include "xbt/fifo.h" 
-#include "xbt/dict.h" 
 
 SG_BEGIN_DECL()
 
@@ -11,28 +17,32 @@ typedef struct xbt_edge  *xbt_edge_t;
 typedef struct xbt_graph  *xbt_graph_t;
 
 /* API */
-xbt_graph_t xbt_graph_new_graph(const char *name, unsigned short int directed, void *data);
+xbt_graph_t xbt_graph_new_graph(const char *name, 
+				unsigned short int directed, void *data);
 xbt_node_t xbt_graph_new_node(xbt_graph_t g,const char *name, void *data);
 xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,const char *name,
-			     xbt_node_t src, xbt_node_t dst, void *data);
+			      xbt_node_t src, xbt_node_t dst, void *data);
 
-void xbt_graph_remove_node(xbt_graph_t g, xbt_node_t n, void free_function(void * ptr));
-void xbt_graph_remove_edge(xbt_graph_t g, xbt_edge_t e, void free_function(void * ptr));
+void xbt_graph_remove_node(xbt_graph_t g, xbt_node_t n, 
+			   void_f_pvoid_t *free_function);
+void xbt_graph_remove_edge(xbt_graph_t g, xbt_edge_t e, 
+			   void_f_pvoid_t *free_function);
 void xbt_graph_free_graph(xbt_graph_t g, 
-			 void node_free_function(void * ptr),
-			 void edge_free_function(void * ptr),
-			 void graph_free_function(void * ptr));
+			  void_f_pvoid_t *node_free_function,
+			  void_f_pvoid_t *edge_free_function,
+			  void_f_pvoid_t *graph_free_function);
 
+/* Not implemented yet ! */
 void xbt_export_graphviz(xbt_graph_t g, const char *filename,
 			 const char *(node_name)(xbt_node_t),
 			 const char *(edge_name)(xbt_edge_t)
-			);
+			 );
 
-			void xbt_graph_export_surfxml(xbt_graph_t g,
-						      const char *filename,
-						      const char *(node_name)(xbt_node_t),
-						      const char *(edge_name)(xbt_edge_t)
-						     );
+void xbt_graph_export_surfxml(xbt_graph_t g,
+			      const char *filename,
+			      const char *(node_name)(xbt_node_t),
+			      const char *(edge_name)(xbt_edge_t)
+			      );
 
 void *xbt_graph_to_array(xbt_graph_t g); 
 void xbt_graph_shortest_paths(xbt_graph_t g);
