@@ -374,10 +374,10 @@ static void update_resource_state(void *id,
       action->lat_current += delta;
       if(action->rate<0)
 	lmm_update_variable_bound(maxmin_system, action->variable,
-				  SG_TCP_CTE_GAMMA / action->lat_current);
+				  SG_TCP_CTE_GAMMA / (2.0 * action->lat_current));
       else 
 	lmm_update_variable_bound(maxmin_system, action->variable,
-				  min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
+				  min(action->rate,SG_TCP_CTE_GAMMA / (2.0 * action->lat_current)));
     }
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
@@ -436,13 +436,13 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   if(action->rate<0) {
     if(action->lat_current>0)
       lmm_update_variable_bound(maxmin_system, action->variable,
-				SG_TCP_CTE_GAMMA / action->lat_current);
+				SG_TCP_CTE_GAMMA / (2.0 * action->lat_current));
     else
       lmm_update_variable_bound(maxmin_system, action->variable, -1.0);
   } else {
     if(action->lat_current>0)
       lmm_update_variable_bound(maxmin_system, action->variable,
-				min(action->rate,SG_TCP_CTE_GAMMA / action->lat_current));
+				min(action->rate,SG_TCP_CTE_GAMMA / (2.0 * action->lat_current)));
     else
       lmm_update_variable_bound(maxmin_system, action->variable, action->rate);
   }
