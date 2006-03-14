@@ -1,9 +1,19 @@
+/* 	$Id$	 */
+
+/* a generic graph library.                                                 */
+
+/* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand. 
+   All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/graph.h"
 #include "graph_private.h"
 
-/* XBT_LOG_NEW_DEFAULT_SUBCATEGORY(graph,xbt,"GRAPH"); */
+/* XBT_LOG_NEW_DEFAULT_SUBCATEGORY(graph,xbt,"Graph"); */
 
 /** Constructor
  * \return a new graph
@@ -73,7 +83,8 @@ void xbt_graph_free_graph(xbt_graph_t g,
   xbt_dynar_foreach(g->nodes,cursor,node)
     xbt_graph_remove_node(g,node,node_free_function);
 
-  /* if xbt_dynar_size(g->edges)>0 SCREAM! */
+  xbt_assert0(!xbt_dynar_length(g->edges),
+	      "Damnit, there are some remaining edges!");
 
   xbt_dynar_foreach(g->edges,cursor,edge)
       xbt_graph_remove_edge(g,edge,edge_free_function); 

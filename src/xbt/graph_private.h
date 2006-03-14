@@ -1,5 +1,13 @@
-#include "xbt/misc.h"
-#include "xbt/sysdep.h"
+/* 	$Id$	 */
+
+/* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand. 
+   All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef _XBT_GRAPH_PRIVATE_H
+#define _XBT_GRAPH_PRIVATE_H
 #include "xbt/dynar.h"
 
 /* Node structure */
@@ -30,3 +38,4 @@ typedef struct xbt_graph
   void *data;
 } s_xbt_graph_t;
 
+#endif				/* _XBT_GRAPH_PRIVATE_H */
