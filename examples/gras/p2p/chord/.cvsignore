@@ -1,0 +1,8 @@
+.deps .libs Makefile Makefile.in _*.c chord_node chord_simulator
+test_sg
+test_rl
+chord.Makefile.am
+chord.Makefile.local
+chord.Makefile.remote
+chord.deploy.sh
+chord.trace
