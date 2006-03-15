@@ -8,7 +8,7 @@ noinst_PROGRAMS=chord_node chord_simulator
 chord_simulator_SOURCES=	_chord_simulator.c chord.c
 chord_simulator_LDADD=	$(top_builddir)/src/libsimgrid.la
 
-chord_node_SOURCES=	_chord_client.c chord.c
+chord_node_SOURCES=	_chord_node.c chord.c
 chord_node_LDADD=	$(top_builddir)/src/libgras.la
 
 # Take care of generatated sources
