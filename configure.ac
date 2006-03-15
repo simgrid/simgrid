@@ -256,6 +256,9 @@ AC_CONFIG_FILES([
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
       examples/gras/tokenS/Makefile examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl
       examples/gras/mmrpc/Makefile examples/gras/mmrpc/test_sg examples/gras/mmrpc/test_rl
+
+      examples/gras/p2p/chord/Makefile examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl
+      
     examples/amok/Makefile       
       examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
   doc/Makefile
@@ -277,7 +280,8 @@ AC_CONFIG_FILES([
      examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
      examples/gras/chrono/test_sg examples/gras/chrono/test_rl  \
      examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl  \
-     examples/gras/mmrpc/test_sg examples/gras/mmrpc/test_rl  \
+     examples/gras/mmrpc/test_sg  examples/gras/mmrpc/test_rl   \
+     examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl  \
      examples/msg/run_msg_test                                  \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
