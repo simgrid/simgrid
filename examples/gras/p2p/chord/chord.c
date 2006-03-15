@@ -4,6 +4,14 @@
 
 #include "chord.h"
 
+static int closest_preceding_node(int id);
+static void check_predecessor(void);
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(chord,"Messages specific to this example");
+
+
+
+
 static void register_messages(){
 /*	gras_msgtype_declare("chord",gras_datadesc_by_symbol(s_pbio));*/
 	gras_msgtype_declare("chord_get_suc",gras_datadesc_by_symbol(s_get_suc));
@@ -55,12 +63,12 @@ static int node_cb_get_suc_handler(gras_socket_t expeditor,void *payload_data){
 		TRY{
 			temp_sock=gras_socket_client(globals->finger[contact].host,globals->finger[contact].port);
 		}CATCH(e){
-			RETHROW0("Unable to connect!");
+			RETHROW0("Unable to connect!: %s");
 		}
 		TRY{
 			gras_msg_send(temp_sock,gras_msgtype_by_name("chord_get_suc"),&asking);
 		}CATCH(e){
-			RETHROW0("Unable to ask!");
+			RETHROW0("Unable to ask!: %s");
 		}
 		gras_msg_wait(10.0,gras_msgtype_by_name("chord_rep_suc"),&temp_sock,&outgoing);
 	}
@@ -69,13 +77,13 @@ static int node_cb_get_suc_handler(gras_socket_t expeditor,void *payload_data){
 		gras_msg_send(expeditor,gras_msgtype_by_name("chord_rep_suc"),&outgoing);
 		INFO0("Successor information sent!");
 	}CATCH(e){
-		RETHROW2("%s:Timeout sending successor information to %s",globals->host,gras_socket_peer_name(expeditor));
+		RETHROW2("%s:Timeout sending successor information to %s: %s",globals->host,gras_socket_peer_name(expeditor));
 	}
 	gras_socket_close(expeditor);
 	return(1);
 }
 
-int closest_preceding_node(int id){
+static int closest_preceding_node(int id){
 	node_data_t *globals=(node_data_t*)gras_userdata_get();
 	int i;
 	for(i=globals->fingers-1;i>=0;i--){
@@ -87,10 +95,10 @@ int closest_preceding_node(int id){
 }
 
 
-void check_predecessor()
-{
-node_data_t *globals = (node_data_t*)gras_userdata_get();
-gras_socket_t temp_sock;
+static void check_predecessor() {
+  node_data_t *globals = (node_data_t*)gras_userdata_get();
+  gras_socket_t temp_sock;
+  xbt_ex_t e;
 if (globals->pre_host[0] == 0)
 	{
 	return;
@@ -106,7 +114,7 @@ CATCH(e)
 	}
 ping_t ping_kong;
 pong_t king_pong;
-ping_kong->id = 0;
+ping_kong.id = 0;
 TRY
 	{
 	gras_msg_send( temp_sock, gras_msgtype_by_name("chord_ping"),&ping_kong);
@@ -130,12 +138,13 @@ gras_socket_close(temp_sock);
 
 int node(int argc,char **argv){
 	node_data_t *globals=NULL;
-	gras_socket_t temp_sock,temp_sock2;
+	gras_socket_t temp_sock=NULL;
+	gras_socket_t temp_sock2=NULL;
 
 	xbt_ex_t e;
 
 	int create=0;
-	int other_port;
+	int other_port=-1;
 	char *other_host;
 
 	/* 1. Init the GRAS infrastructure and declare my globals */
@@ -154,7 +163,7 @@ int node(int argc,char **argv){
 	if(argc==3){
 		create=1;
 	}else{
-		other_host=strndup(argv[3],1024);
+		asprintf(&other_host,"%s",argv[3]);
 		other_port=atoi(argv[4]);
 	}
 	
@@ -177,21 +186,21 @@ int node(int argc,char **argv){
 		TRY{
 			temp_sock=gras_socket_client(other_host,other_port);
 		}CATCH(e){
-			RETHROW0("Unable to contact known host!");
+			RETHROW0("Unable to contact known host!: %s");
 		}
 		get_suc_t get_suc_msg;get_suc_msg.id=globals->id;
 		TRY{
 			gras_msg_send(temp_sock,gras_msgtype_by_name("chord_get_suc"),&get_suc_msg);
 		}CATCH(e){
 			gras_socket_close(temp_sock);
-			RETHROW0("Unable to contact known host to get successor!");
+			RETHROW0("Unable to contact known host to get successor!: %s");
 		}
 		rep_suc_t rep_suc_msg;
 		TRY{
 			INFO0("Waiting for reply!");
 			gras_msg_wait(6000,gras_msgtype_by_name("chord_rep_suc"),&temp_sock2,&rep_suc_msg);
 		}CATCH(e){
-			RETHROW2("%s: Error waiting for successor:%s",globals->host,e.msg);
+			RETHROW1("%s: Error waiting for successor:%s",globals->host);
 		}
 		globals->finger[0].id=rep_suc_msg.id;
 		snprintf(globals->finger[0].host,1024,rep_suc_msg.host);

@@ -2,9 +2,10 @@
  * vim:ts=2:sw=2:noexpandtab
  */
 
-#include <gras.h>
+#include "xbt/sysdep.h"
+#include "gras.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(chord,"Messages specific to this example");
+
 
 typedef enum msg_typus{
 	PING,
@@ -25,19 +26,19 @@ typedef enum msg_typus{
 );
 typedef struct s_pbio pbio_t;*/
 
-GRAS_DEFINE_TYPE(s_ping,
+//GRAS_DEFINE_TYPE(s_ping,
 	struct s_ping{
 		int id;
 	};
-);
+//);
 typedef struct s_ping ping_t;
 
-GRAS_DEFINE_TYPE(s_pong,
+//GRAS_DEFINE_TYPE(s_pong,
 	struct s_pong{
 		int id;
 		int failed;
 	};
-);
+//);
 typedef struct s_pong pong_t;
 
 GRAS_DEFINE_TYPE(s_get_suc,

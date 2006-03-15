@@ -1,10 +1,8 @@
 #!/bin/bash
-if [ x = x ] ; then 
+if [ x@EXEEXT@ = x ] ; then 
   exenv=$SG_TEST_EXENV
 else
   exenv=wine
 fi
-top_srcdir=/home/illogict/progs/simgrid/simgrid-3.0.1
-srcdir=`pwd`
 
-exec $exenv ./chord_simulator /home/illogict/progs/simgrid/simgrid-3.0.1/examples/msg/msg_platform.xml ~/progs/simgrid/simgrid-3.0.1/examples/gras/p2p/chord_t/chord_deployment.xml $@
+exec $exenv ./chord_simulator @top_srcdir@/examples/msg/msg_platform.xml @srcdir@/chord_deployment.xml $@
