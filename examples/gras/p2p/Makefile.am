@@ -1,3 +1,3 @@
-SUBDIRS= ping timer chrono tokenS mmrpc p2p
+SUBDIRS= chord
 
 include $(top_srcdir)/acmacro/dist-files.mk

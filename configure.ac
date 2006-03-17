@@ -257,6 +257,7 @@ AC_CONFIG_FILES([
       examples/gras/tokenS/Makefile examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl
       examples/gras/mmrpc/Makefile examples/gras/mmrpc/test_sg examples/gras/mmrpc/test_rl
 
+      examples/gras/p2p/Makefile
       examples/gras/p2p/chord/Makefile examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl
       
     examples/amok/Makefile       
