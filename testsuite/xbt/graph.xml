@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<!DOCTYPE graph SYSTEM "graphxml.dtd">
+<graph>
+  <node name="A"/>
+  <node name="B"/>
+  <edge source="A" target="B"/>
+</graph>

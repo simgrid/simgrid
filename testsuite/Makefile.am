@@ -9,6 +9,7 @@ EXTRA_DIST=run_tests.in \
   gras/datadesc.little64\
   gras/datadesc.big32 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
   gras/mk_datadesc_structs.pl \
+  xbt/graph.xml \
   surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml
 
 # Data sets still to regenerate:
@@ -21,6 +22,7 @@ EXTRA_DIST=run_tests.in \
 xbt_tests =                                                      \
 	xbt/log_usage                                            \
 	xbt/heap_bench                                           \
+	xbt/graphxml_usage                                       \
 	xbt/context_usage                                        
 
 RL_tests =                                              \
@@ -48,6 +50,8 @@ LDADD_RL=$(top_builddir)/src/libgras.la
 xbt_log_usage_LDADD=          $(LDADD_RL)
 
 xbt_heap_bench_LDADD=         $(LDADD_RL)
+
+xbt_graphxml_usage_LDADD=     $(LDADD_SG)
 
 xbt_context_usage_LDADD=      $(LDADD_SG)
 
