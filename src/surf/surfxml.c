@@ -1738,11 +1738,11 @@ int surf_parse__flex_debug = 0;
 char *surf_parse_text;
 #line 1 "surf/surfxml.l"
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/08/16 14:42:02.
+ * Generated 2006/03/20 15:32:38.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.44 2005/02/23 23:08:16 mquinson Exp).
+ * (Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1785,10 +1785,10 @@ char *surf_parse_text;
 #line 48 "surf/surfxml.l"
 
 /* Version strings. */
-const char rcs_flexml_skeleton[] =
+const char rcs_surfxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.26 2005/02/23 22:22:20 wdowling Exp $";
-const char rcs_flexml[] =
- "$" "Id: flexml.pl,v 1.44 2005/02/23 23:08:16 mquinson Exp $";
+const char rcs_surfxml_flexml[] =
+ "$" "Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -1857,7 +1857,7 @@ AT_network_link_bandwidth_file A_network_link_bandwidth_file;
 
 #define FAIL	return fail
 static int fail(const char*, ...);
-const char * parse_err_msg(void);
+const char * surfxml_parse_err_msg(void);
 
 /* Cleanup */
 static void cleanup(void);
@@ -1865,12 +1865,14 @@ static void cleanup(void);
 
 /* Text buffer stack handling. */
 char bufferstack[FLEXML_BUFFERSTACKSIZE];
-char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
+static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
   struct BufferLast_s *old; char* saved; char new1[1];
 } BufferLast;
-BufferLast* last = (BufferLast*)0;
-char* next = bufferstack;
+#ifdef FLEXML_HasMixed
+static BufferLast* last = (BufferLast*)0;
+#endif
+static char* next = bufferstack;
 
 #define BUFFERSET(P)  (P = next)
 #define BUFFERPUTC(C) (assert(next<limit), *(next++) = (C))
@@ -1945,10 +1947,10 @@ static char* popbuffer(void)
 
 
 
-#line 237 "surf/surfxml.l"
+#line 239 "surf/surfxml.l"
 /* State names. */
-const char* *statenames=NULL;
-#line 1952 "surf/surfxml.c"
+const char* *surfxml_statenames=NULL;
+#line 1954 "surf/surfxml.c"
 
 #define INITIAL 0
 #define PROLOG 1
@@ -2150,63 +2152,63 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 241 "surf/surfxml.l"
+#line 243 "surf/surfxml.l"
 
 
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
   /* FleXML_init */
   next = bufferstack;
-  if(!statenames) {statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
-  statenames[PROLOG] = NULL;
-  statenames[DOCTYPE] = NULL;
-  statenames[EPILOG] = NULL;
-  statenames[INCOMMENT] = NULL;
-  statenames[INPI] = NULL;
-  statenames[VALUE1] = NULL;
-  statenames[VALUE2] = NULL;
-  statenames[CDATA] = NULL;
-  statenames[ROOT_platform_description] = NULL;
-  statenames[AL_platform_description] = NULL;
-  statenames[S_platform_description] = "platform_description";
-  statenames[S_platform_description_1] = "platform_description";
-  statenames[S_platform_description_2] = "platform_description";
-  statenames[E_platform_description] = "platform_description";
-  statenames[ROOT_include] = NULL;
-  statenames[AL_include] = NULL;
-  statenames[S_include] = "include";
-  statenames[S_include_1] = "include";
-  statenames[S_include_2] = "include";
-  statenames[E_include] = "include";
-  statenames[ROOT_cpu] = NULL;
-  statenames[AL_cpu] = NULL;
-  statenames[E_cpu] = "cpu";
-  statenames[ROOT_network_link] = NULL;
-  statenames[AL_network_link] = NULL;
-  statenames[E_network_link] = "network_link";
-  statenames[ROOT_route] = NULL;
-  statenames[AL_route] = NULL;
-  statenames[S_route] = "route";
-  statenames[S_route_1] = "route";
-  statenames[S_route_2] = "route";
-  statenames[E_route] = "route";
-  statenames[ROOT_route_element] = NULL;
-  statenames[AL_route_element] = NULL;
-  statenames[E_route_element] = "route_element";
-  statenames[ROOT_process] = NULL;
-  statenames[AL_process] = NULL;
-  statenames[S_process] = "process";
-  statenames[S_process_1] = "process";
-  statenames[S_process_2] = "process";
-  statenames[E_process] = "process";
-  statenames[ROOT_argument] = NULL;
-  statenames[AL_argument] = NULL;
-  statenames[E_argument] = "argument";
+  if(!surfxml_statenames) {surfxml_statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
+  surfxml_statenames[PROLOG] = NULL;
+  surfxml_statenames[DOCTYPE] = NULL;
+  surfxml_statenames[EPILOG] = NULL;
+  surfxml_statenames[INCOMMENT] = NULL;
+  surfxml_statenames[INPI] = NULL;
+  surfxml_statenames[VALUE1] = NULL;
+  surfxml_statenames[VALUE2] = NULL;
+  surfxml_statenames[CDATA] = NULL;
+  surfxml_statenames[ROOT_platform_description] = NULL;
+  surfxml_statenames[AL_platform_description] = NULL;
+  surfxml_statenames[S_platform_description] = "platform_description";
+  surfxml_statenames[S_platform_description_1] = "platform_description";
+  surfxml_statenames[S_platform_description_2] = "platform_description";
+  surfxml_statenames[E_platform_description] = "platform_description";
+  surfxml_statenames[ROOT_include] = NULL;
+  surfxml_statenames[AL_include] = NULL;
+  surfxml_statenames[S_include] = "include";
+  surfxml_statenames[S_include_1] = "include";
+  surfxml_statenames[S_include_2] = "include";
+  surfxml_statenames[E_include] = "include";
+  surfxml_statenames[ROOT_cpu] = NULL;
+  surfxml_statenames[AL_cpu] = NULL;
+  surfxml_statenames[E_cpu] = "cpu";
+  surfxml_statenames[ROOT_network_link] = NULL;
+  surfxml_statenames[AL_network_link] = NULL;
+  surfxml_statenames[E_network_link] = "network_link";
+  surfxml_statenames[ROOT_route] = NULL;
+  surfxml_statenames[AL_route] = NULL;
+  surfxml_statenames[S_route] = "route";
+  surfxml_statenames[S_route_1] = "route";
+  surfxml_statenames[S_route_2] = "route";
+  surfxml_statenames[E_route] = "route";
+  surfxml_statenames[ROOT_route_element] = NULL;
+  surfxml_statenames[AL_route_element] = NULL;
+  surfxml_statenames[E_route_element] = "route_element";
+  surfxml_statenames[ROOT_process] = NULL;
+  surfxml_statenames[AL_process] = NULL;
+  surfxml_statenames[S_process] = "process";
+  surfxml_statenames[S_process_1] = "process";
+  surfxml_statenames[S_process_2] = "process";
+  surfxml_statenames[E_process] = "process";
+  surfxml_statenames[ROOT_argument] = NULL;
+  surfxml_statenames[AL_argument] = NULL;
+  surfxml_statenames[E_argument] = "argument";
   }
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-#line 2210 "surf/surfxml.c"
+#line 2212 "surf/surfxml.c"
 
 	if ( (yy_init) )
 		{
@@ -2301,52 +2303,52 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 297 "surf/surfxml.l"
+#line 299 "surf/surfxml.l"
 ENTER(INCOMMENT);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 298 "surf/surfxml.l"
+#line 300 "surf/surfxml.l"
 ENTER(INPI);
 	YY_BREAK
 
 
 case 3:
 YY_RULE_SETUP
-#line 301 "surf/surfxml.l"
+#line 303 "surf/surfxml.l"
 LEAVE;
 	YY_BREAK
 case 4:
-#line 303 "surf/surfxml.l"
+#line 305 "surf/surfxml.l"
 case 5:
-#line 304 "surf/surfxml.l"
+#line 306 "surf/surfxml.l"
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 304 "surf/surfxml.l"
+#line 306 "surf/surfxml.l"
 SKIP;
 	YY_BREAK
 case YY_STATE_EOF(INCOMMENT):
-#line 305 "surf/surfxml.l"
+#line 307 "surf/surfxml.l"
 FAIL("EOF in comment.");
 	YY_BREAK
 
 
 case 7:
 YY_RULE_SETUP
-#line 308 "surf/surfxml.l"
+#line 310 "surf/surfxml.l"
 LEAVE;
 	YY_BREAK
 case 8:
-#line 310 "surf/surfxml.l"
+#line 312 "surf/surfxml.l"
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 310 "surf/surfxml.l"
+#line 312 "surf/surfxml.l"
 SKIP;
 	YY_BREAK
 case YY_STATE_EOF(INPI):
-#line 311 "surf/surfxml.l"
+#line 313 "surf/surfxml.l"
 FAIL("EOF in PI (processing instruction).");
 	YY_BREAK
 
@@ -2354,7 +2356,7 @@ FAIL("EOF in PI (processing instruction).");
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 316 "surf/surfxml.l"
+#line 318 "surf/surfxml.l"
 SKIP;
 	YY_BREAK
 /* PROLOG: determine root element and process it. */
@@ -2362,13 +2364,13 @@ SKIP;
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 321 "surf/surfxml.l"
+#line 323 "surf/surfxml.l"
 SET(DOCTYPE); 
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 322 "surf/surfxml.l"
+#line 324 "surf/surfxml.l"
 FAIL("Bad declaration %s.",surf_parse_text);
 	YY_BREAK
 
@@ -2376,65 +2378,65 @@ FAIL("Bad declaration %s.",surf_parse_text);
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 326 "surf/surfxml.l"
+#line 328 "surf/surfxml.l"
 SET(ROOT_argument);
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 327 "surf/surfxml.l"
+#line 329 "surf/surfxml.l"
 SET(ROOT_route_element);
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 328 "surf/surfxml.l"
+#line 330 "surf/surfxml.l"
 SET(ROOT_cpu);
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 329 "surf/surfxml.l"
+#line 331 "surf/surfxml.l"
 SET(ROOT_include);
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 330 "surf/surfxml.l"
+#line 332 "surf/surfxml.l"
 SET(ROOT_route);
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 331 "surf/surfxml.l"
+#line 333 "surf/surfxml.l"
 SET(ROOT_platform_description);
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 332 "surf/surfxml.l"
+#line 334 "surf/surfxml.l"
 SET(ROOT_network_link);
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 333 "surf/surfxml.l"
+#line 335 "surf/surfxml.l"
 SET(ROOT_process);
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 334 "surf/surfxml.l"
+#line 336 "surf/surfxml.l"
 FAIL("Bad declaration %s.",surf_parse_text);
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 335 "surf/surfxml.l"
+#line 337 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in prolog.", surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(PROLOG):
 case YY_STATE_EOF(DOCTYPE):
-#line 336 "surf/surfxml.l"
+#line 338 "surf/surfxml.l"
 FAIL("EOF in prolog.");
 	YY_BREAK
 
@@ -2443,7 +2445,7 @@ FAIL("EOF in prolog.");
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 343 "surf/surfxml.l"
+#line 345 "surf/surfxml.l"
 {
   ENTER(AL_platform_description);
   }
@@ -2451,14 +2453,14 @@ YY_RULE_SETUP
 
 case 24:
 YY_RULE_SETUP
-#line 348 "surf/surfxml.l"
+#line 350 "surf/surfxml.l"
 {
   LEAVE; STag_platform_description();pcdata = NULL; ENTER(S_platform_description);
  }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 351 "surf/surfxml.l"
+#line 353 "surf/surfxml.l"
 {
   LEAVE; STag_platform_description(); pcdata = NULL; ETag_platform_description();
   switch (YY_START) {
@@ -2468,16 +2470,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 357 "surf/surfxml.l"
+#line 359 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of platform_description element.", surf_parse_text[0]);
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 358 "surf/surfxml.l"
+#line 360 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `platform_description' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_platform_description):
-#line 359 "surf/surfxml.l"
+#line 361 "surf/surfxml.l"
 FAIL("EOF in attribute list of `platform_description' element.");
 	YY_BREAK
 
@@ -2485,7 +2487,7 @@ FAIL("EOF in attribute list of `platform_description' element.");
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 363 "surf/surfxml.l"
+#line 365 "surf/surfxml.l"
 {
   LEAVE;
   ETag_platform_description();
@@ -2497,25 +2499,25 @@ YY_RULE_SETUP
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 370 "surf/surfxml.l"
+#line 372 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</platform_description>' expected.",surf_parse_text);
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 371 "surf/surfxml.l"
+#line 373 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</platform_description>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_platform_description):
 case YY_STATE_EOF(S_platform_description_2):
 case YY_STATE_EOF(S_platform_description):
-#line 372 "surf/surfxml.l"
+#line 374 "surf/surfxml.l"
 FAIL("Premature EOF: `</platform_description>' expected.");
 	YY_BREAK
 
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 375 "surf/surfxml.l"
+#line 377 "surf/surfxml.l"
 {
   A_include_file = NULL;
   ENTER(AL_include);
@@ -2525,18 +2527,18 @@ YY_RULE_SETUP
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-#line 381 "surf/surfxml.l"
+#line 383 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_include_file);
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 382 "surf/surfxml.l"
+#line 384 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_include_file);
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 384 "surf/surfxml.l"
+#line 386 "surf/surfxml.l"
 {
   if (!A_include_file) FAIL("Required attribute `file' not set for `include' element.");
   LEAVE; STag_include();pcdata = NULL; ENTER(S_include);
@@ -2544,7 +2546,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 388 "surf/surfxml.l"
+#line 390 "surf/surfxml.l"
 {
   if (!A_include_file) FAIL("Required attribute `file' not set for `include' element.");
   LEAVE; STag_include(); pcdata = NULL; ETag_include();
@@ -2557,16 +2559,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 397 "surf/surfxml.l"
+#line 399 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of include element.", surf_parse_text[0]);
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 398 "surf/surfxml.l"
+#line 400 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `include' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_include):
-#line 399 "surf/surfxml.l"
+#line 401 "surf/surfxml.l"
 FAIL("EOF in attribute list of `include' element.");
 	YY_BREAK
 
@@ -2574,7 +2576,7 @@ FAIL("EOF in attribute list of `include' element.");
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 403 "surf/surfxml.l"
+#line 405 "surf/surfxml.l"
 {
   LEAVE;
   ETag_include();
@@ -2588,25 +2590,25 @@ YY_RULE_SETUP
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 412 "surf/surfxml.l"
+#line 414 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</include>' expected.",surf_parse_text);
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 413 "surf/surfxml.l"
+#line 415 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</include>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_include):
 case YY_STATE_EOF(S_include):
 case YY_STATE_EOF(S_include_2):
-#line 414 "surf/surfxml.l"
+#line 416 "surf/surfxml.l"
 FAIL("Premature EOF: `</include>' expected.");
 	YY_BREAK
 
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-#line 417 "surf/surfxml.l"
+#line 419 "surf/surfxml.l"
 {
   A_cpu_name = NULL;
   A_cpu_power = NULL;
@@ -2625,132 +2627,132 @@ YY_RULE_SETUP
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 432 "surf/surfxml.l"
+#line 434 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_name);
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 433 "surf/surfxml.l"
+#line 435 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_name);
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-#line 435 "surf/surfxml.l"
+#line 437 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_power);
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 436 "surf/surfxml.l"
+#line 438 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_power);
 	YY_BREAK
 case 46:
 /* rule 46 can match eol */
 YY_RULE_SETUP
-#line 438 "surf/surfxml.l"
+#line 440 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_availability);
 	YY_BREAK
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
-#line 439 "surf/surfxml.l"
+#line 441 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_availability);
 	YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
-#line 441 "surf/surfxml.l"
+#line 443 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_availability_file);
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 442 "surf/surfxml.l"
+#line 444 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_availability_file);
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
-#line 445 "surf/surfxml.l"
+#line 447 "surf/surfxml.l"
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-#line 445 "surf/surfxml.l"
+#line 447 "surf/surfxml.l"
 A_cpu_state = A_cpu_state_ON;
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
-#line 447 "surf/surfxml.l"
+#line 449 "surf/surfxml.l"
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-#line 447 "surf/surfxml.l"
+#line 449 "surf/surfxml.l"
 A_cpu_state = A_cpu_state_OFF;
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-#line 449 "surf/surfxml.l"
+#line 451 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_state_file);
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-#line 450 "surf/surfxml.l"
+#line 452 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_state_file);
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-#line 452 "surf/surfxml.l"
+#line 454 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_interference_send);
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-#line 453 "surf/surfxml.l"
+#line 455 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_interference_send);
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-#line 455 "surf/surfxml.l"
+#line 457 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_interference_recv);
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-#line 456 "surf/surfxml.l"
+#line 458 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_interference_recv);
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 458 "surf/surfxml.l"
+#line 460 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_interference_send_recv);
 	YY_BREAK
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-#line 459 "surf/surfxml.l"
+#line 461 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_interference_send_recv);
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
-#line 461 "surf/surfxml.l"
+#line 463 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_cpu_max_outgoing_rate);
 	YY_BREAK
 case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
-#line 462 "surf/surfxml.l"
+#line 464 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_cpu_max_outgoing_rate);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 464 "surf/surfxml.l"
+#line 466 "surf/surfxml.l"
 {
   if (!A_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
   if (!A_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
@@ -2759,7 +2761,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 469 "surf/surfxml.l"
+#line 471 "surf/surfxml.l"
 {
   if (!A_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
   if (!A_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
@@ -2773,16 +2775,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 479 "surf/surfxml.l"
+#line 481 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of cpu element.", surf_parse_text[0]);
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 480 "surf/surfxml.l"
+#line 482 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `cpu' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_cpu):
-#line 481 "surf/surfxml.l"
+#line 483 "surf/surfxml.l"
 FAIL("EOF in attribute list of `cpu' element.");
 	YY_BREAK
 
@@ -2790,7 +2792,7 @@ FAIL("EOF in attribute list of `cpu' element.");
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
-#line 485 "surf/surfxml.l"
+#line 487 "surf/surfxml.l"
 {
   LEAVE;
   ETag_cpu();
@@ -2804,23 +2806,23 @@ YY_RULE_SETUP
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
-#line 494 "surf/surfxml.l"
+#line 496 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</cpu>' expected.",surf_parse_text);
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 495 "surf/surfxml.l"
+#line 497 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</cpu>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_cpu):
-#line 496 "surf/surfxml.l"
+#line 498 "surf/surfxml.l"
 FAIL("Premature EOF: `</cpu>' expected.");
 	YY_BREAK
 
 case 71:
 /* rule 71 can match eol */
 YY_RULE_SETUP
-#line 499 "surf/surfxml.l"
+#line 501 "surf/surfxml.l"
 {
   A_network_link_name = NULL;
   A_network_link_bandwidth = NULL;
@@ -2837,114 +2839,114 @@ YY_RULE_SETUP
 case 72:
 /* rule 72 can match eol */
 YY_RULE_SETUP
-#line 512 "surf/surfxml.l"
+#line 514 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_network_link_name);
 	YY_BREAK
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
-#line 513 "surf/surfxml.l"
+#line 515 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_network_link_name);
 	YY_BREAK
 case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
-#line 515 "surf/surfxml.l"
+#line 517 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_network_link_bandwidth);
 	YY_BREAK
 case 75:
 /* rule 75 can match eol */
 YY_RULE_SETUP
-#line 516 "surf/surfxml.l"
+#line 518 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_network_link_bandwidth);
 	YY_BREAK
 case 76:
 /* rule 76 can match eol */
 YY_RULE_SETUP
-#line 518 "surf/surfxml.l"
+#line 520 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_network_link_bandwidth_file);
 	YY_BREAK
 case 77:
 /* rule 77 can match eol */
 YY_RULE_SETUP
-#line 519 "surf/surfxml.l"
+#line 521 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_network_link_bandwidth_file);
 	YY_BREAK
 case 78:
 /* rule 78 can match eol */
 YY_RULE_SETUP
-#line 521 "surf/surfxml.l"
+#line 523 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_network_link_latency);
 	YY_BREAK
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
-#line 522 "surf/surfxml.l"
+#line 524 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_network_link_latency);
 	YY_BREAK
 case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
-#line 524 "surf/surfxml.l"
+#line 526 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_network_link_latency_file);
 	YY_BREAK
 case 81:
 /* rule 81 can match eol */
 YY_RULE_SETUP
-#line 525 "surf/surfxml.l"
+#line 527 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_network_link_latency_file);
 	YY_BREAK
 case 82:
 /* rule 82 can match eol */
-#line 528 "surf/surfxml.l"
+#line 530 "surf/surfxml.l"
 case 83:
 /* rule 83 can match eol */
 YY_RULE_SETUP
-#line 528 "surf/surfxml.l"
+#line 530 "surf/surfxml.l"
 A_network_link_state = A_network_link_state_ON;
 	YY_BREAK
 case 84:
 /* rule 84 can match eol */
-#line 530 "surf/surfxml.l"
+#line 532 "surf/surfxml.l"
 case 85:
 /* rule 85 can match eol */
 YY_RULE_SETUP
-#line 530 "surf/surfxml.l"
+#line 532 "surf/surfxml.l"
 A_network_link_state = A_network_link_state_OFF;
 	YY_BREAK
 case 86:
 /* rule 86 can match eol */
 YY_RULE_SETUP
-#line 532 "surf/surfxml.l"
+#line 534 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_network_link_state_file);
 	YY_BREAK
 case 87:
 /* rule 87 can match eol */
 YY_RULE_SETUP
-#line 533 "surf/surfxml.l"
+#line 535 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_network_link_state_file);
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */
-#line 536 "surf/surfxml.l"
+#line 538 "surf/surfxml.l"
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
-#line 536 "surf/surfxml.l"
+#line 538 "surf/surfxml.l"
 A_network_link_sharing_policy = A_network_link_sharing_policy_SHARED;
 	YY_BREAK
 case 90:
 /* rule 90 can match eol */
-#line 538 "surf/surfxml.l"
+#line 540 "surf/surfxml.l"
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
-#line 538 "surf/surfxml.l"
+#line 540 "surf/surfxml.l"
 A_network_link_sharing_policy = A_network_link_sharing_policy_FATPIPE;
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 540 "surf/surfxml.l"
+#line 542 "surf/surfxml.l"
 {
   if (!A_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
   if (!A_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
@@ -2953,7 +2955,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 545 "surf/surfxml.l"
+#line 547 "surf/surfxml.l"
 {
   if (!A_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
   if (!A_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
@@ -2967,16 +2969,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 555 "surf/surfxml.l"
+#line 557 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of network_link element.", surf_parse_text[0]);
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 556 "surf/surfxml.l"
+#line 558 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `network_link' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_network_link):
-#line 557 "surf/surfxml.l"
+#line 559 "surf/surfxml.l"
 FAIL("EOF in attribute list of `network_link' element.");
 	YY_BREAK
 
@@ -2984,7 +2986,7 @@ FAIL("EOF in attribute list of `network_link' element.");
 case 96:
 /* rule 96 can match eol */
 YY_RULE_SETUP
-#line 561 "surf/surfxml.l"
+#line 563 "surf/surfxml.l"
 {
   LEAVE;
   ETag_network_link();
@@ -2998,23 +3000,23 @@ YY_RULE_SETUP
 case 97:
 /* rule 97 can match eol */
 YY_RULE_SETUP
-#line 570 "surf/surfxml.l"
+#line 572 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</network_link>' expected.",surf_parse_text);
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 571 "surf/surfxml.l"
+#line 573 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</network_link>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_network_link):
-#line 572 "surf/surfxml.l"
+#line 574 "surf/surfxml.l"
 FAIL("Premature EOF: `</network_link>' expected.");
 	YY_BREAK
 
 case 99:
 /* rule 99 can match eol */
 YY_RULE_SETUP
-#line 575 "surf/surfxml.l"
+#line 577 "surf/surfxml.l"
 {
   A_route_src = NULL;
   A_route_dst = NULL;
@@ -3029,78 +3031,78 @@ YY_RULE_SETUP
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
-#line 586 "surf/surfxml.l"
+#line 588 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_route_src);
 	YY_BREAK
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
-#line 587 "surf/surfxml.l"
+#line 589 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_route_src);
 	YY_BREAK
 case 102:
 /* rule 102 can match eol */
 YY_RULE_SETUP
-#line 589 "surf/surfxml.l"
+#line 591 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_route_dst);
 	YY_BREAK
 case 103:
 /* rule 103 can match eol */
 YY_RULE_SETUP
-#line 590 "surf/surfxml.l"
+#line 592 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_route_dst);
 	YY_BREAK
 case 104:
 /* rule 104 can match eol */
 YY_RULE_SETUP
-#line 592 "surf/surfxml.l"
+#line 594 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_route_impact_on_src);
 	YY_BREAK
 case 105:
 /* rule 105 can match eol */
 YY_RULE_SETUP
-#line 593 "surf/surfxml.l"
+#line 595 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_route_impact_on_src);
 	YY_BREAK
 case 106:
 /* rule 106 can match eol */
 YY_RULE_SETUP
-#line 595 "surf/surfxml.l"
+#line 597 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_route_impact_on_dst);
 	YY_BREAK
 case 107:
 /* rule 107 can match eol */
 YY_RULE_SETUP
-#line 596 "surf/surfxml.l"
+#line 598 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_route_impact_on_dst);
 	YY_BREAK
 case 108:
 /* rule 108 can match eol */
 YY_RULE_SETUP
-#line 598 "surf/surfxml.l"
+#line 600 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_route_impact_on_src_with_other_recv);
 	YY_BREAK
 case 109:
 /* rule 109 can match eol */
 YY_RULE_SETUP
-#line 599 "surf/surfxml.l"
+#line 601 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_route_impact_on_src_with_other_recv);
 	YY_BREAK
 case 110:
 /* rule 110 can match eol */
 YY_RULE_SETUP
-#line 601 "surf/surfxml.l"
+#line 603 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_route_impact_on_dst_with_other_send);
 	YY_BREAK
 case 111:
 /* rule 111 can match eol */
 YY_RULE_SETUP
-#line 602 "surf/surfxml.l"
+#line 604 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_route_impact_on_dst_with_other_send);
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 604 "surf/surfxml.l"
+#line 606 "surf/surfxml.l"
 {
   if (!A_route_src) FAIL("Required attribute `src' not set for `route' element.");
   if (!A_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
@@ -3109,7 +3111,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 609 "surf/surfxml.l"
+#line 611 "surf/surfxml.l"
 {
   if (!A_route_src) FAIL("Required attribute `src' not set for `route' element.");
   if (!A_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
@@ -3123,16 +3125,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 619 "surf/surfxml.l"
+#line 621 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of route element.", surf_parse_text[0]);
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 620 "surf/surfxml.l"
+#line 622 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `route' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_route):
-#line 621 "surf/surfxml.l"
+#line 623 "surf/surfxml.l"
 FAIL("EOF in attribute list of `route' element.");
 	YY_BREAK
 
@@ -3140,7 +3142,7 @@ FAIL("EOF in attribute list of `route' element.");
 case 116:
 /* rule 116 can match eol */
 YY_RULE_SETUP
-#line 625 "surf/surfxml.l"
+#line 627 "surf/surfxml.l"
 {
   LEAVE;
   ETag_route();
@@ -3154,25 +3156,25 @@ YY_RULE_SETUP
 case 117:
 /* rule 117 can match eol */
 YY_RULE_SETUP
-#line 634 "surf/surfxml.l"
+#line 636 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</route>' expected.",surf_parse_text);
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 635 "surf/surfxml.l"
+#line 637 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</route>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_route):
 case YY_STATE_EOF(S_route_2):
 case YY_STATE_EOF(E_route):
-#line 636 "surf/surfxml.l"
+#line 638 "surf/surfxml.l"
 FAIL("Premature EOF: `</route>' expected.");
 	YY_BREAK
 
 case 119:
 /* rule 119 can match eol */
 YY_RULE_SETUP
-#line 639 "surf/surfxml.l"
+#line 641 "surf/surfxml.l"
 {
   A_route_element_name = NULL;
   ENTER(AL_route_element);
@@ -3182,18 +3184,18 @@ YY_RULE_SETUP
 case 120:
 /* rule 120 can match eol */
 YY_RULE_SETUP
-#line 645 "surf/surfxml.l"
+#line 647 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_route_element_name);
 	YY_BREAK
 case 121:
 /* rule 121 can match eol */
 YY_RULE_SETUP
-#line 646 "surf/surfxml.l"
+#line 648 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_route_element_name);
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 648 "surf/surfxml.l"
+#line 650 "surf/surfxml.l"
 {
   if (!A_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
   LEAVE; STag_route_element();pcdata = NULL; ENTER(E_route_element);
@@ -3201,7 +3203,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 652 "surf/surfxml.l"
+#line 654 "surf/surfxml.l"
 {
   if (!A_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
   LEAVE; STag_route_element(); pcdata = NULL; ETag_route_element();
@@ -3213,16 +3215,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 660 "surf/surfxml.l"
+#line 662 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of route_element element.", surf_parse_text[0]);
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 661 "surf/surfxml.l"
+#line 663 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `route_element' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_route_element):
-#line 662 "surf/surfxml.l"
+#line 664 "surf/surfxml.l"
 FAIL("EOF in attribute list of `route_element' element.");
 	YY_BREAK
 
@@ -3230,7 +3232,7 @@ FAIL("EOF in attribute list of `route_element' element.");
 case 126:
 /* rule 126 can match eol */
 YY_RULE_SETUP
-#line 666 "surf/surfxml.l"
+#line 668 "surf/surfxml.l"
 {
   LEAVE;
   ETag_route_element();
@@ -3243,23 +3245,23 @@ YY_RULE_SETUP
 case 127:
 /* rule 127 can match eol */
 YY_RULE_SETUP
-#line 674 "surf/surfxml.l"
+#line 676 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</route_element>' expected.",surf_parse_text);
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 675 "surf/surfxml.l"
+#line 677 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</route_element>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_route_element):
-#line 676 "surf/surfxml.l"
+#line 678 "surf/surfxml.l"
 FAIL("Premature EOF: `</route_element>' expected.");
 	YY_BREAK
 
 case 129:
 /* rule 129 can match eol */
 YY_RULE_SETUP
-#line 679 "surf/surfxml.l"
+#line 681 "surf/surfxml.l"
 {
   A_process_host = NULL;
   A_process_function = NULL;
@@ -3272,54 +3274,54 @@ YY_RULE_SETUP
 case 130:
 /* rule 130 can match eol */
 YY_RULE_SETUP
-#line 688 "surf/surfxml.l"
+#line 690 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_process_host);
 	YY_BREAK
 case 131:
 /* rule 131 can match eol */
 YY_RULE_SETUP
-#line 689 "surf/surfxml.l"
+#line 691 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_process_host);
 	YY_BREAK
 case 132:
 /* rule 132 can match eol */
 YY_RULE_SETUP
-#line 691 "surf/surfxml.l"
+#line 693 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_process_function);
 	YY_BREAK
 case 133:
 /* rule 133 can match eol */
 YY_RULE_SETUP
-#line 692 "surf/surfxml.l"
+#line 694 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_process_function);
 	YY_BREAK
 case 134:
 /* rule 134 can match eol */
 YY_RULE_SETUP
-#line 694 "surf/surfxml.l"
+#line 696 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_process_start_time);
 	YY_BREAK
 case 135:
 /* rule 135 can match eol */
 YY_RULE_SETUP
-#line 695 "surf/surfxml.l"
+#line 697 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_process_start_time);
 	YY_BREAK
 case 136:
 /* rule 136 can match eol */
 YY_RULE_SETUP
-#line 697 "surf/surfxml.l"
+#line 699 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_process_kill_time);
 	YY_BREAK
 case 137:
 /* rule 137 can match eol */
 YY_RULE_SETUP
-#line 698 "surf/surfxml.l"
+#line 700 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_process_kill_time);
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 700 "surf/surfxml.l"
+#line 702 "surf/surfxml.l"
 {
   if (!A_process_host) FAIL("Required attribute `host' not set for `process' element.");
   if (!A_process_function) FAIL("Required attribute `function' not set for `process' element.");
@@ -3328,7 +3330,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
-#line 705 "surf/surfxml.l"
+#line 707 "surf/surfxml.l"
 {
   if (!A_process_host) FAIL("Required attribute `host' not set for `process' element.");
   if (!A_process_function) FAIL("Required attribute `function' not set for `process' element.");
@@ -3342,16 +3344,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
-#line 715 "surf/surfxml.l"
+#line 717 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of process element.", surf_parse_text[0]);
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 716 "surf/surfxml.l"
+#line 718 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `process' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_process):
-#line 717 "surf/surfxml.l"
+#line 719 "surf/surfxml.l"
 FAIL("EOF in attribute list of `process' element.");
 	YY_BREAK
 
@@ -3359,7 +3361,7 @@ FAIL("EOF in attribute list of `process' element.");
 case 142:
 /* rule 142 can match eol */
 YY_RULE_SETUP
-#line 721 "surf/surfxml.l"
+#line 723 "surf/surfxml.l"
 {
   LEAVE;
   ETag_process();
@@ -3373,25 +3375,25 @@ YY_RULE_SETUP
 case 143:
 /* rule 143 can match eol */
 YY_RULE_SETUP
-#line 730 "surf/surfxml.l"
+#line 732 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</process>' expected.",surf_parse_text);
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 731 "surf/surfxml.l"
+#line 733 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</process>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_process):
 case YY_STATE_EOF(E_process):
 case YY_STATE_EOF(S_process_2):
-#line 732 "surf/surfxml.l"
+#line 734 "surf/surfxml.l"
 FAIL("Premature EOF: `</process>' expected.");
 	YY_BREAK
 
 case 145:
 /* rule 145 can match eol */
 YY_RULE_SETUP
-#line 735 "surf/surfxml.l"
+#line 737 "surf/surfxml.l"
 {
   A_argument_value = NULL;
   ENTER(AL_argument);
@@ -3401,18 +3403,18 @@ YY_RULE_SETUP
 case 146:
 /* rule 146 can match eol */
 YY_RULE_SETUP
-#line 741 "surf/surfxml.l"
+#line 743 "surf/surfxml.l"
 ENTER(VALUE1); BUFFERSET(A_argument_value);
 	YY_BREAK
 case 147:
 /* rule 147 can match eol */
 YY_RULE_SETUP
-#line 742 "surf/surfxml.l"
+#line 744 "surf/surfxml.l"
 ENTER(VALUE2); BUFFERSET(A_argument_value);
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 744 "surf/surfxml.l"
+#line 746 "surf/surfxml.l"
 {
   if (!A_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
   LEAVE; STag_argument();pcdata = NULL; ENTER(E_argument);
@@ -3420,7 +3422,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 748 "surf/surfxml.l"
+#line 750 "surf/surfxml.l"
 {
   if (!A_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
   LEAVE; STag_argument(); pcdata = NULL; ETag_argument();
@@ -3432,16 +3434,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 756 "surf/surfxml.l"
+#line 758 "surf/surfxml.l"
 FAIL("Unexpected character `%c' in attribute list of argument element.", surf_parse_text[0]);
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 757 "surf/surfxml.l"
+#line 759 "surf/surfxml.l"
 FAIL("Bad attribute `%s' in `argument' element start tag.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_argument):
-#line 758 "surf/surfxml.l"
+#line 760 "surf/surfxml.l"
 FAIL("EOF in attribute list of `argument' element.");
 	YY_BREAK
 
@@ -3449,7 +3451,7 @@ FAIL("EOF in attribute list of `argument' element.");
 case 152:
 /* rule 152 can match eol */
 YY_RULE_SETUP
-#line 762 "surf/surfxml.l"
+#line 764 "surf/surfxml.l"
 {
   LEAVE;
   ETag_argument();
@@ -3462,16 +3464,16 @@ YY_RULE_SETUP
 case 153:
 /* rule 153 can match eol */
 YY_RULE_SETUP
-#line 770 "surf/surfxml.l"
+#line 772 "surf/surfxml.l"
 FAIL("Unexpected end-tag `%s': `</argument>' expected.",surf_parse_text);
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 771 "surf/surfxml.l"
+#line 773 "surf/surfxml.l"
 FAIL("Unexpected character `%c': `</argument>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_argument):
-#line 772 "surf/surfxml.l"
+#line 774 "surf/surfxml.l"
 FAIL("Premature EOF: `</argument>' expected.");
 	YY_BREAK
 
@@ -3479,11 +3481,11 @@ FAIL("Premature EOF: `</argument>' expected.");
 
 case 155:
 YY_RULE_SETUP
-#line 778 "surf/surfxml.l"
+#line 780 "surf/surfxml.l"
 {SET(PROLOG); yyless(0); CLEANUP; return -1;}
 	YY_BREAK
 case YY_STATE_EOF(EPILOG):
-#line 779 "surf/surfxml.l"
+#line 781 "surf/surfxml.l"
 SUCCEED;
 	YY_BREAK
 
@@ -3492,89 +3494,89 @@ SUCCEED;
 /* Non-defined standard entities... */
 case 156:
 YY_RULE_SETUP
-#line 786 "surf/surfxml.l"
+#line 788 "surf/surfxml.l"
 BUFFERPUTC('&');
 	YY_BREAK
 case 157:
 YY_RULE_SETUP
-#line 787 "surf/surfxml.l"
+#line 789 "surf/surfxml.l"
 BUFFERPUTC('<');
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 788 "surf/surfxml.l"
+#line 790 "surf/surfxml.l"
 BUFFERPUTC('>');
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 789 "surf/surfxml.l"
+#line 791 "surf/surfxml.l"
 BUFFERPUTC('\'');
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 790 "surf/surfxml.l"
+#line 792 "surf/surfxml.l"
 BUFFERPUTC('"');
 	YY_BREAK
 /* Character entities. */
 case 161:
 YY_RULE_SETUP
-#line 793 "surf/surfxml.l"
+#line 795 "surf/surfxml.l"
 BUFFERPUTC((unsigned char)atoi(surf_parse_text+2));
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 794 "surf/surfxml.l"
+#line 796 "surf/surfxml.l"
 BUFFERPUTC((unsigned char)strtol(surf_parse_text+3,NULL,16));
 	YY_BREAK
 
 
 case 163:
 /* rule 163 can match eol */
-#line 799 "surf/surfxml.l"
+#line 801 "surf/surfxml.l"
 case 164:
 /* rule 164 can match eol */
-#line 800 "surf/surfxml.l"
+#line 802 "surf/surfxml.l"
 case 165:
 /* rule 165 can match eol */
-#line 801 "surf/surfxml.l"
+#line 803 "surf/surfxml.l"
 case 166:
 /* rule 166 can match eol */
 YY_RULE_SETUP
-#line 801 "surf/surfxml.l"
+#line 803 "surf/surfxml.l"
 BUFFERPUTC('\n');
 	YY_BREAK
 
 
 case 167:
 YY_RULE_SETUP
-#line 805 "surf/surfxml.l"
+#line 807 "surf/surfxml.l"
 ENTER(CDATA);
 	YY_BREAK
 case 168:
 YY_RULE_SETUP
-#line 806 "surf/surfxml.l"
+#line 808 "surf/surfxml.l"
 FAIL("Unexpected `]""]>' in character data.");
 	YY_BREAK
 
 
 case 169:
 YY_RULE_SETUP
-#line 810 "surf/surfxml.l"
+#line 812 "surf/surfxml.l"
 BUFFERDONE; LEAVE;
 	YY_BREAK
 case YY_STATE_EOF(VALUE1):
-#line 811 "surf/surfxml.l"
+#line 813 "surf/surfxml.l"
 FAIL("EOF in literal (\"'\" expected).");
 	YY_BREAK
 
 
 case 170:
 YY_RULE_SETUP
-#line 815 "surf/surfxml.l"
+#line 817 "surf/surfxml.l"
 BUFFERDONE; LEAVE;
 	YY_BREAK
 case YY_STATE_EOF(VALUE2):
-#line 816 "surf/surfxml.l"
+#line 818 "surf/surfxml.l"
 FAIL("EOF in literal (`\"' expected).");
 	YY_BREAK
 
@@ -3582,29 +3584,29 @@ FAIL("EOF in literal (`\"' expected).");
 case 171:
 /* rule 171 can match eol */
 YY_RULE_SETUP
-#line 820 "surf/surfxml.l"
+#line 822 "surf/surfxml.l"
 BUFFERPUTC(surf_parse_text[0]);
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 821 "surf/surfxml.l"
+#line 823 "surf/surfxml.l"
 FAIL("Spurious `%c' in character data.",surf_parse_text[0]);
 	YY_BREAK
 
 
 case 173:
 YY_RULE_SETUP
-#line 825 "surf/surfxml.l"
+#line 827 "surf/surfxml.l"
 LEAVE;
 	YY_BREAK
 /* "]""]"		BUFFERPUTC(surf_parse_text[0]); BUFFERPUTC(surf_parse_text[1]); */
 case 174:
 YY_RULE_SETUP
-#line 827 "surf/surfxml.l"
+#line 829 "surf/surfxml.l"
 BUFFERPUTC(surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(CDATA):
-#line 828 "surf/surfxml.l"
+#line 830 "surf/surfxml.l"
 FAIL("EOF in CDATA section.");
 	YY_BREAK
 
@@ -3615,16 +3617,16 @@ FAIL("EOF in CDATA section.");
 case 175:
 /* rule 175 can match eol */
 YY_RULE_SETUP
-#line 835 "surf/surfxml.l"
+#line 837 "surf/surfxml.l"
 FAIL("Syntax error on character `%c'.", surf_parse_text[0]);
 	YY_BREAK
 
 case 176:
 YY_RULE_SETUP
-#line 838 "surf/surfxml.l"
+#line 840 "surf/surfxml.l"
 ECHO;
 	YY_BREAK
-#line 3628 "surf/surfxml.c"
+#line 3630 "surf/surfxml.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ROOT_platform_description):
 case YY_STATE_EOF(S_platform_description_1):
@@ -4608,12 +4610,12 @@ void surf_parse_free (void * ptr )
 #undef YY_DECL_IS_OURS
 #undef YY_DECL
 #endif
-#line 838 "surf/surfxml.l"
+#line 840 "surf/surfxml.l"
 
 
 
 /* Element context stack lookup. */
-int element_context(int i)
+int surfxml_element_context(int i)
 {
   return (0<i && i<yy_start_stack_depth
 	  ? yy_start_stack[yy_start_stack_ptr - i]
@@ -4626,8 +4628,8 @@ void print_yy_stack(char* fmt, ...)
   int i = 0; va_list ap; va_start(ap, fmt);
   vfprintf(stderr, fmt, ap);
   for (i=1; i<yy_start_stack_ptr; i++)
-    fprintf(stderr, "%s/", statenames[yy_start_stack[i] ]);
-  fprintf(stderr,"%s\n", statenames[YY_START]);
+    fprintf(stderr, "%s/", surfxml_statenames[yy_start_stack[i] ]);
+  fprintf(stderr,"%s\n", surfxml_statenames[YY_START]);
   va_end(ap);
 }
 
@@ -4650,12 +4652,12 @@ static void debug_set(int state, const char* statename) {
 enum {flexml_max_err_msg_size = 512};
 
 static char flexml_err_msg[flexml_max_err_msg_size];
-const char * parse_err_msg()
+const char * surfxml_parse_err_msg()
 {
     return flexml_err_msg;
 }
 
-static void reset_parse_err_msg()
+static void reset_surfxml_parse_err_msg()
 {
     flexml_err_msg[0] = '\0';
 }
@@ -4663,9 +4665,9 @@ static void reset_parse_err_msg()
 
 static void cleanup(void)
 {
-    if (statenames) {
-        free(statenames);
-	statenames = NULL;
+    if (surfxml_statenames) {
+        free(surfxml_statenames);
+	surfxml_statenames = NULL;
     }
 }
 

@@ -1,9 +1,9 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2005/08/16 14:42:02.
+ * Generated 2006/03/20 15:32:38.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.44 2005/02/23 23:08:16 mquinson Exp).
+ * (Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -47,10 +47,10 @@
 %{
 
 /* Version strings. */
-const char rcs_flexml_skeleton[] =
+const char rcs_surfxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.26 2005/02/23 22:22:20 wdowling Exp $";
-const char rcs_flexml[] =
- "$" "Id: flexml.pl,v 1.44 2005/02/23 23:08:16 mquinson Exp $";
+const char rcs_surfxml_flexml[] =
+ "$" "Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -119,7 +119,7 @@ AT_network_link_bandwidth_file A_network_link_bandwidth_file;
 
 #define FAIL	return fail
 static int fail(const char*, ...);
-const char * parse_err_msg(void);
+const char * surfxml_parse_err_msg(void);
 
 /* Cleanup */
 static void cleanup(void);
@@ -127,12 +127,14 @@ static void cleanup(void);
 
 /* Text buffer stack handling. */
 char bufferstack[FLEXML_BUFFERSTACKSIZE];
-char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
+static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
   struct BufferLast_s *old; char* saved; char new1[1];
 } BufferLast;
-BufferLast* last = (BufferLast*)0;
-char* next = bufferstack;
+#ifdef FLEXML_HasMixed
+static BufferLast* last = (BufferLast*)0;
+#endif
+static char* next = bufferstack;
 
 #define BUFFERSET(P)  (P = next)
 #define BUFFERPUTC(C) (assert(next<limit), *(next++) = (C))
@@ -235,7 +237,7 @@ Literal		\'[^'']*\'|\"[^""]*\"
 
 %{
 /* State names. */
-const char* *statenames=NULL;
+const char* *surfxml_statenames=NULL;
 %}
 
 %%
@@ -244,51 +246,51 @@ const char* *statenames=NULL;
  SET(PROLOG);
   /* FleXML_init */
   next = bufferstack;
-  if(!statenames) {statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
-  statenames[PROLOG] = NULL;
-  statenames[DOCTYPE] = NULL;
-  statenames[EPILOG] = NULL;
-  statenames[INCOMMENT] = NULL;
-  statenames[INPI] = NULL;
-  statenames[VALUE1] = NULL;
-  statenames[VALUE2] = NULL;
-  statenames[CDATA] = NULL;
-  statenames[ROOT_platform_description] = NULL;
-  statenames[AL_platform_description] = NULL;
-  statenames[S_platform_description] = "platform_description";
-  statenames[S_platform_description_1] = "platform_description";
-  statenames[S_platform_description_2] = "platform_description";
-  statenames[E_platform_description] = "platform_description";
-  statenames[ROOT_include] = NULL;
-  statenames[AL_include] = NULL;
-  statenames[S_include] = "include";
-  statenames[S_include_1] = "include";
-  statenames[S_include_2] = "include";
-  statenames[E_include] = "include";
-  statenames[ROOT_cpu] = NULL;
-  statenames[AL_cpu] = NULL;
-  statenames[E_cpu] = "cpu";
-  statenames[ROOT_network_link] = NULL;
-  statenames[AL_network_link] = NULL;
-  statenames[E_network_link] = "network_link";
-  statenames[ROOT_route] = NULL;
-  statenames[AL_route] = NULL;
-  statenames[S_route] = "route";
-  statenames[S_route_1] = "route";
-  statenames[S_route_2] = "route";
-  statenames[E_route] = "route";
-  statenames[ROOT_route_element] = NULL;
-  statenames[AL_route_element] = NULL;
-  statenames[E_route_element] = "route_element";
-  statenames[ROOT_process] = NULL;
-  statenames[AL_process] = NULL;
-  statenames[S_process] = "process";
-  statenames[S_process_1] = "process";
-  statenames[S_process_2] = "process";
-  statenames[E_process] = "process";
-  statenames[ROOT_argument] = NULL;
-  statenames[AL_argument] = NULL;
-  statenames[E_argument] = "argument";
+  if(!surfxml_statenames) {surfxml_statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
+  surfxml_statenames[PROLOG] = NULL;
+  surfxml_statenames[DOCTYPE] = NULL;
+  surfxml_statenames[EPILOG] = NULL;
+  surfxml_statenames[INCOMMENT] = NULL;
+  surfxml_statenames[INPI] = NULL;
+  surfxml_statenames[VALUE1] = NULL;
+  surfxml_statenames[VALUE2] = NULL;
+  surfxml_statenames[CDATA] = NULL;
+  surfxml_statenames[ROOT_platform_description] = NULL;
+  surfxml_statenames[AL_platform_description] = NULL;
+  surfxml_statenames[S_platform_description] = "platform_description";
+  surfxml_statenames[S_platform_description_1] = "platform_description";
+  surfxml_statenames[S_platform_description_2] = "platform_description";
+  surfxml_statenames[E_platform_description] = "platform_description";
+  surfxml_statenames[ROOT_include] = NULL;
+  surfxml_statenames[AL_include] = NULL;
+  surfxml_statenames[S_include] = "include";
+  surfxml_statenames[S_include_1] = "include";
+  surfxml_statenames[S_include_2] = "include";
+  surfxml_statenames[E_include] = "include";
+  surfxml_statenames[ROOT_cpu] = NULL;
+  surfxml_statenames[AL_cpu] = NULL;
+  surfxml_statenames[E_cpu] = "cpu";
+  surfxml_statenames[ROOT_network_link] = NULL;
+  surfxml_statenames[AL_network_link] = NULL;
+  surfxml_statenames[E_network_link] = "network_link";
+  surfxml_statenames[ROOT_route] = NULL;
+  surfxml_statenames[AL_route] = NULL;
+  surfxml_statenames[S_route] = "route";
+  surfxml_statenames[S_route_1] = "route";
+  surfxml_statenames[S_route_2] = "route";
+  surfxml_statenames[E_route] = "route";
+  surfxml_statenames[ROOT_route_element] = NULL;
+  surfxml_statenames[AL_route_element] = NULL;
+  surfxml_statenames[E_route_element] = "route_element";
+  surfxml_statenames[ROOT_process] = NULL;
+  surfxml_statenames[AL_process] = NULL;
+  surfxml_statenames[S_process] = "process";
+  surfxml_statenames[S_process_1] = "process";
+  surfxml_statenames[S_process_2] = "process";
+  surfxml_statenames[E_process] = "process";
+  surfxml_statenames[ROOT_argument] = NULL;
+  surfxml_statenames[AL_argument] = NULL;
+  surfxml_statenames[E_argument] = "argument";
   }
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
@@ -838,7 +840,7 @@ const char* *statenames=NULL;
 %%
 
 /* Element context stack lookup. */
-int element_context(int i)
+int surfxml_element_context(int i)
 {
   return (0<i && i<yy_start_stack_depth
 	  ? yy_start_stack[yy_start_stack_ptr - i]
@@ -851,8 +853,8 @@ void print_yy_stack(char* fmt, ...)
   int i = 0; va_list ap; va_start(ap, fmt);
   vfprintf(stderr, fmt, ap);
   for (i=1; i<yy_start_stack_ptr; i++)
-    fprintf(stderr, "%s/", statenames[yy_start_stack[i] ]);
-  fprintf(stderr,"%s\n", statenames[YY_START]);
+    fprintf(stderr, "%s/", surfxml_statenames[yy_start_stack[i] ]);
+  fprintf(stderr,"%s\n", surfxml_statenames[YY_START]);
   va_end(ap);
 }
 
@@ -875,12 +877,12 @@ static void debug_set(int state, const char* statename) {
 enum {flexml_max_err_msg_size = 512};
 
 static char flexml_err_msg[flexml_max_err_msg_size];
-const char * parse_err_msg()
+const char * surfxml_parse_err_msg()
 {
     return flexml_err_msg;
 }
 
-static void reset_parse_err_msg()
+static void reset_surfxml_parse_err_msg()
 {
     flexml_err_msg[0] = '\0';
 }
@@ -888,9 +890,9 @@ static void reset_parse_err_msg()
 
 static void cleanup(void)
 {
-    if (statenames) {
-        free(statenames);
-	statenames = NULL;
+    if (surfxml_statenames) {
+        free(surfxml_statenames);
+	surfxml_statenames = NULL;
     }
 }
 

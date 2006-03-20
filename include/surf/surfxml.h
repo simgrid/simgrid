@@ -1,9 +1,9 @@
 /* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2006/03/20 11:23:22.
+ * Generated 2006/03/20 16:32:31.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.44 2005/02/23 23:08:16 mquinson Exp).
+ * (Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -161,11 +161,11 @@ extern AT_cpu_state_file A_cpu_state_file;
 extern AT_network_link_bandwidth_file A_network_link_bandwidth_file;
 
 /* XML application utilities. */
-extern int element_context(int);
+extern int surfxml_element_context(int);
 
 /* XML processor entry point. */
 extern int yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
-const char * parse_err_msg(void);
+const char * surfxml_parse_err_msg(void);
 #endif
