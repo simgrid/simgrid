@@ -205,7 +205,7 @@ void MSG_paje_output(const char *filename)
 
   len = strlen(filename);
   if((len<ext_len) || (strncmp(filename+len-ext_len,ext,ext_len))) {
-    CRITICAL2("%s does not end by \"%s\". It may cause troubles when using Paje\n",
+    CRITICAL2("The name of the Paje trace file \"%s\" does not end by \"%s\". Paje will cause difficulties to read it.\n",
 	      filename,ext);
   }
 
