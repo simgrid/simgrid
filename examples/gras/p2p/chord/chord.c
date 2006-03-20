@@ -146,8 +146,8 @@ static int closest_preceding_node(int id){
 		if(globals->finger[i].id>globals->id&&globals->finger[i].id<id){
 			return(i);
 		}
-	return(i);
 	}
+	return i;
 }
 
 
