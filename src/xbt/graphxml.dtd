@@ -1,0 +1,15 @@
+<!-- Small DTD for xbt graphs. -->
+<!ELEMENT graph ((node)*,(edge)*)>
+<!ELEMENT node EMPTY>
+<!ATTLIST node
+    label           CDATA                ""
+    name            CDATA                #REQUIRED
+>
+<!ELEMENT edge EMPTY>
+<!ATTLIST edge
+    label           CDATA                ""
+    name       CDATA        #IMPLIED
+    source     CDATA        #REQUIRED
+    target     CDATA        #REQUIRED
+    isDirected (true|false) "true"
+>
