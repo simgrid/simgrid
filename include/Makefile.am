@@ -12,6 +12,8 @@ nobase_include_HEADERS = \
 	xbt/swag.h \
 	xbt/config.h \
 	xbt/cunit.h \
+	xbt/graphxml_parse.h \
+	xbt/graphxml.h \
 	\
 	msg/msg.h \
 	msg/datatypes.h \
@@ -29,5 +31,8 @@ nobase_include_HEADERS = \
 
 surf/surfxml.h:
 	$(MAKE) -C ../src ../include/surf/surfxml.h
+
+xbt/graphxml.h:
+	$(MAKE) -C ../src ../include/xbt/graphxml.h
 
 include $(top_srcdir)/acmacro/dist-files.mk

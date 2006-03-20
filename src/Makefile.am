@@ -21,6 +21,10 @@ EXTRA_DIST= \
         xbt/heap_private.h \
         xbt/fifo_private.h \
         xbt/graph_private.h \
+	xbt/graphxml_parse.c \
+	xbt/graphxml.l \
+	xbt/graphxml.c \
+	xbt/graphxml.dtd \
         xbt/context_private.h xbt/context_win32.h xbt/context_win32.c\
         \
 	surf/maxmin_private.h \
@@ -118,6 +122,7 @@ COMMON_SRC=\
   xbt/module.c                                                               \
   xbt/config.c                                                               \
   xbt/cunit.c                                                                \
+  xbt/graphxml_parse.c                                                          \
   \
   gras/gras.c \
   \
@@ -193,6 +198,7 @@ TEST_UNITS= cunit_unit.c ex_unit.c         \
             config_unit.c
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
+              ../include/xbt/graphxml.h xbt/graphxml.c \
               gras/DataDesc/ddt_parse.yy.c \
               $(TEST_UNITS) simgrid_units_main.c
 
@@ -201,7 +207,7 @@ testall_LDADD=libgras.la
 TESTS=testall
 
 EXTRA_DIST+=$(testall_SOURCES)
-	  
+
 if MAINTAINER_MODE
 cunit_unit.c: xbt/cunit.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
@@ -240,19 +246,32 @@ gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 
 if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
+#	@LEX@ -Psurf_parse_ -t $^ | sed 's/]]//' > $@ 
 	@LEX@ -o$@ -Psurf_parse_ $^
+xbt/graphxml.c: xbt/graphxml.l
+#	@LEX@ -Pxbt_graph_parse_ -t $^ | sed 's/]]//' > $@
+	@LEX@ -o$@ -Pxbt_graph_parse_ $^
 
 if HAVE_FLEXML
 surf/surfxml.l: surf/surfxml.dtd
-	set -e; cd surf; flexml -b 1000000 -S -L surfxml.dtd
+	set -e; cd surf; flexml -b 1000000 -P surfxml -S -L surfxml.dtd
 ../include/surf/surfxml.h: surf/surfxml.dtd
-	cd ../include/surf; flexml -H -L ../../src/surf/surfxml.dtd
+	cd ../include/surf; flexml -P surfxml -H -L ../../src/surf/surfxml.dtd
+xbt/graphxml.l: xbt/graphxml.dtd
+	set -e; cd xbt; flexml -b 1000000 -P grahxml -S -L graphxml.dtd
+../include/xbt/graphxml.h: xbt/graphxml.dtd
+	cd ../include/xbt; flexml -P grahxml -H -L ../../src/xbt/graphxml.dtd
 else
 
 ../include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
 	@echo "ERROR: src/surf/surfxml.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch src/include/surf/surfxml.h src/surf/surfxml.l"
+	@exit 1
+../include/xbt/graphxml.h xbt/graphxml.l: xbt/graphxml.dtd
+	@echo "ERROR: src/xbt/graphxml.dtd was modified, but the flexml program was not detected"
+	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
+	@echo "ERROR:   touch src/include/xbt/graphxml.h src/xbt/graphxml.l"
 	@exit 1
 endif
 endif
