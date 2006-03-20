@@ -12,7 +12,7 @@
 #include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
 #include "xbt/log.h"
-#include "surf/surf_parse_private.h"
+#include "surf/surfxml_parse_private.h"
 
 #define NO_MAX_DURATION -1.0
 

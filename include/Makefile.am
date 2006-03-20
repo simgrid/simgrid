@@ -16,7 +16,7 @@ nobase_include_HEADERS = \
 	msg/msg.h \
 	msg/datatypes.h \
 	\
-	surf/surf_parse.h \
+	surf/surfxml_parse.h \
 	surf/surfxml.h \
 	\
 	gras/datadesc.h gras/transport.h \

@@ -8,7 +8,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "surf/surf_parse_private.h"
+#include "surf/surfxml_parse_private.h"
 
 static int parse_argc = -1 ;
 static char **parse_argv = NULL;

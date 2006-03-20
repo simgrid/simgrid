@@ -20,7 +20,7 @@ EXTRA_DIST= \
         xbt/dict_private.h \
         xbt/heap_private.h \
         xbt/fifo_private.h \
-        xbt/graph_private.h \	
+        xbt/graph_private.h \
         xbt/context_private.h xbt/context_win32.h xbt/context_win32.c\
         \
 	surf/maxmin_private.h \
@@ -29,7 +29,7 @@ EXTRA_DIST= \
 	surf/cpu_private.h \
 	surf/workstation_private.h \
 	surf/surf_timer_private.h \
-	surf/surf_parse.c \
+	surf/surfxml_parse.c \
 	surf/surfxml.l \
 	surf/surfxml.c \
 	surf/surfxml.dtd \
@@ -40,7 +40,7 @@ EXTRA_DIST= \
 	include/surf/maxmin.h \
 	include/surf/trace_mgr.h \
 	include/surf/surf.h \
-	include/surf/surf_parse_private.h \
+	include/surf/surfxml_parse_private.h \
 	\
 	include/xbt/xbt_portability.h \
 	include/xbt/context.h \
@@ -150,7 +150,7 @@ SG_SRC=  \
   surf/maxmin.c                                                              \
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
-  surf/surf_parse.c                                                          \
+  surf/surfxml_parse.c                                                          \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   surf/surf_timer.c                                                               \
   surf/network_dassf.c                                                       \

@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SURF_SURF_PARSE_H
-#define _SURF_SURF_PARSE_H
+#ifndef _SURF_SURFXML_PARSE_H
+#define _SURF_SURFXML_PARSE_H
 
 #include "surf/surfxml.h"
 #include "xbt/misc.h"

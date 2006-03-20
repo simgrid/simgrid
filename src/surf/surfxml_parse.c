@@ -7,7 +7,7 @@
 
 #include "xbt/misc.h"
 #include "xbt/log.h"
-#include "surf/surf_parse_private.h"
+#include "surf/surfxml_parse_private.h"
 #include "surf/surf_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(parse, surf ,"Logging specific to the SURF  module");
 
