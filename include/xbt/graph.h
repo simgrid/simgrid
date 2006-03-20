@@ -17,11 +17,10 @@ typedef struct xbt_edge  *xbt_edge_t;
 typedef struct xbt_graph  *xbt_graph_t;
 
 /* API */
-xbt_graph_t xbt_graph_new_graph(const char *name, 
-				unsigned short int directed, void *data);
-xbt_node_t xbt_graph_new_node(xbt_graph_t g,const char *name, void *data);
-xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,const char *name,
-			      xbt_node_t src, xbt_node_t dst, void *data);
+xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data);
+xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data);
+xbt_edge_t xbt_graph_new_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst, 
+			      void *data);
 
 void xbt_graph_remove_node(xbt_graph_t g, xbt_node_t n, 
 			   void_f_pvoid_t *free_function);
@@ -31,6 +30,8 @@ void xbt_graph_free_graph(xbt_graph_t g,
 			  void_f_pvoid_t *node_free_function,
 			  void_f_pvoid_t *edge_free_function,
 			  void_f_pvoid_t *graph_free_function);
+
+xbt_graph_t xbt_graph_read(const char *filename);
 
 /* Not implemented yet ! */
 void xbt_export_graphviz(xbt_graph_t g, const char *filename,
