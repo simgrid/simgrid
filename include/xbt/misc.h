@@ -89,6 +89,7 @@ const char *xbt_procname(void);
 
    typedef void (void_f_ppvoid_t)(void**);
    typedef void (void_f_pvoid_t) (void*);
+   typedef void (*void_f_void_t) (void);
 
    typedef int  (int_f_pvoid_pvoid_t) (void*,void*);
    

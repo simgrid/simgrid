@@ -37,8 +37,6 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  typedef void (*void_f_void_t)(void);
-
   void gras_timer_delay(double delay, void_f_void_t action);
   void gras_timer_repeat(double interval, void_f_void_t action);
 
