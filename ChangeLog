@@ -6,6 +6,10 @@ SimGrid (3.0.2) unstable; urgency=low
       automatically and placed into the src/testall binary.
     - Convert most of the XBT tests to this system.
   * New functions: xbt_dynar_getfirst_as() and xbt_dynar_getlast_as() [MQ]
+  * XML parsing: rewrote parts of flexml to enable multiple xml parsers to
+    live in the same C code. This required to change a little bit the API
+    of surfxml parsing but shouldn't be an issue for end-users. [AL]
+  * New module: sparse graph structure with basic algorithms. [AL]
 
  --
 
