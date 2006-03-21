@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2006/03/21 11:12:31.
+ * Generated 2006/03/21 12:59:32.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -218,7 +218,7 @@ Literal		\'[^'']*\'|\"[^""]*\"
  * INPI		inside an XML PI <?...?>
  * VALUE1	inside a '...'-delimited literal
  * VALUE2	inside a "..."-delimited literal
- * CDATA	inside a <![CDATA[...]]> section.
+ * CDATA	inside a <![CDATA[...] ]> section.
  * ROOT_<tag>	expect root element <tag>
  * AL_<tag>	inside the attribute list for <tag>
  * IN_<tag>	inside a <tag> with element contents (ready for end tag)
