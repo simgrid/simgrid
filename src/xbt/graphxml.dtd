@@ -11,5 +11,6 @@
     name       CDATA        #IMPLIED
     source     CDATA        #REQUIRED
     target     CDATA        #REQUIRED
+    length     CDATA        "0.0"
     isDirected (true|false) "true"
 >
