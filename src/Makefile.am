@@ -258,9 +258,9 @@ surf/surfxml.l: surf/surfxml.dtd
 ../include/surf/surfxml.h: surf/surfxml.dtd
 	cd ../include/surf; flexml -P surfxml -H -L ../../src/surf/surfxml.dtd
 xbt/graphxml.l: xbt/graphxml.dtd
-	set -e; cd xbt; flexml -b 1000000 -P grahxml -S -L graphxml.dtd
+	set -e; cd xbt; flexml -b 1000000 -P graphxml -S -L graphxml.dtd
 ../include/xbt/graphxml.h: xbt/graphxml.dtd
-	cd ../include/xbt; flexml -P grahxml -H -L ../../src/xbt/graphxml.dtd
+	cd ../include/xbt; flexml -P graphxml -H -L ../../src/xbt/graphxml.dtd
 else
 
 ../include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
