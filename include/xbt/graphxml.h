@@ -1,9 +1,9 @@
 /* XML processor/application API for ../../src/xbt/graphxml.dtd.
- * Generated 2006/03/20 16:15:20.
+ * Generated 2006/03/21 11:12:32.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp).
+ * (Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -48,44 +48,44 @@
 #define _FLEXML_graphxml_H
 
 /* XML application entry points. */
-extern void STag_graph(void);
-extern void ETag_graph(void);
-extern void STag_node(void);
-extern void ETag_node(void);
-extern void STag_edge(void);
-extern void ETag_edge(void);
+extern void STag_graphxml_graph(void);
+extern void ETag_graphxml_graph(void);
+extern void STag_graphxml_node(void);
+extern void ETag_graphxml_node(void);
+extern void STag_graphxml_edge(void);
+extern void ETag_graphxml_edge(void);
 
 /* XML application data. */
-typedef const char* AT_edge_target;
-#define AU_edge_target NULL
-typedef const char* AT_node_name;
-#define AU_node_name NULL
-typedef const char* AT_node_label;
-#define AU_node_label NULL
-typedef const char* AT_edge_label;
-#define AU_edge_label NULL
-typedef const char* AT_edge_source;
-#define AU_edge_source NULL
-typedef enum { AU_edge_isDirected, A_edge_isDirected_true,A_edge_isDirected_false } AT_edge_isDirected;
-typedef const char* AT_edge_name;
-#define AU_edge_name NULL
+typedef const char* AT_graphxml_edge_target;
+#define AU_graphxml_edge_target NULL
+typedef const char* AT_graphxml_node_name;
+#define AU_graphxml_node_name NULL
+typedef const char* AT_graphxml_node_label;
+#define AU_graphxml_node_label NULL
+typedef const char* AT_graphxml_edge_label;
+#define AU_graphxml_edge_label NULL
+typedef const char* AT_graphxml_edge_source;
+#define AU_graphxml_edge_source NULL
+typedef enum { AU_graphxml_edge_isDirected, A_graphxml_edge_isDirected_true,A_graphxml_edge_isDirected_false } AT_graphxml_edge_isDirected;
+typedef const char* AT_graphxml_edge_name;
+#define AU_graphxml_edge_name NULL
 
 /* FleXML-provided data. */
 extern const char* pcdata;
-extern AT_edge_target A_edge_target;
-extern AT_node_name A_node_name;
-extern AT_node_label A_node_label;
-extern AT_edge_label A_edge_label;
-extern AT_edge_source A_edge_source;
-extern AT_edge_isDirected A_edge_isDirected;
-extern AT_edge_name A_edge_name;
+extern AT_graphxml_edge_target A_graphxml_edge_target;
+extern AT_graphxml_node_name A_graphxml_node_name;
+extern AT_graphxml_node_label A_graphxml_node_label;
+extern AT_graphxml_edge_label A_graphxml_edge_label;
+extern AT_graphxml_edge_source A_graphxml_edge_source;
+extern AT_graphxml_edge_isDirected A_graphxml_edge_isDirected;
+extern AT_graphxml_edge_name A_graphxml_edge_name;
 
 /* XML application utilities. */
-extern int grahxml_element_context(int);
+extern int graphxml_element_context(int);
 
 /* XML processor entry point. */
 extern int yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
-const char * grahxml_parse_err_msg(void);
+const char * graphxml_parse_err_msg(void);
 #endif

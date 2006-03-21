@@ -1,9 +1,9 @@
 /* Validating XML processor for graphxml.dtd.
- * Generated 2006/03/20 16:15:21.
+ * Generated 2006/03/21 11:12:32.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp).
+ * (Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -47,10 +47,10 @@
 %{
 
 /* Version strings. */
-const char rcs_grahxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.26 2005/02/23 22:22:20 wdowling Exp $";
-const char rcs_grahxml_flexml[] =
- "$" "Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp $";
+const char rcs_graphxml_flexml_skeleton[] =
+ "$" "Id: skel,v 1.27 2006/03/21 08:24:12 legranda Exp $";
+const char rcs_graphxml_flexml[] =
+ "$" "Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -67,13 +67,13 @@ const char rcs_grahxml_flexml[] =
 /* XML processor api. */
 /* FleXML-provided data. */
 const char* pcdata;
-AT_edge_target A_edge_target;
-AT_node_name A_node_name;
-AT_node_label A_node_label;
-AT_edge_label A_edge_label;
-AT_edge_source A_edge_source;
-AT_edge_isDirected A_edge_isDirected;
-AT_edge_name A_edge_name;
+AT_graphxml_edge_target A_graphxml_edge_target;
+AT_graphxml_node_name A_graphxml_node_name;
+AT_graphxml_node_label A_graphxml_node_label;
+AT_graphxml_edge_label A_graphxml_edge_label;
+AT_graphxml_edge_source A_graphxml_edge_source;
+AT_graphxml_edge_isDirected A_graphxml_edge_isDirected;
+AT_graphxml_edge_name A_graphxml_edge_name;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -95,7 +95,7 @@ AT_edge_name A_edge_name;
 
 #define FAIL	return fail
 static int fail(const char*, ...);
-const char * grahxml_parse_err_msg(void);
+const char * graphxml_parse_err_msg(void);
 
 /* Cleanup */
 static void cleanup(void);
@@ -201,14 +201,14 @@ Literal		\'[^'']*\'|\"[^""]*\"
  * IMPOSSIBLE	dummy to permit disabling rules; must be last
  */
 %x PROLOG DOCTYPE EPILOG INCOMMENT INPI VALUE1 VALUE2 CDATA
-%x ROOT_graph AL_graph S_graph S_graph_1 S_graph_2 S_graph_3 S_graph_4 S_graph_5 E_graph
-%x ROOT_node AL_node E_node
-%x ROOT_edge AL_edge E_edge
+%x ROOT_graphxml_graph AL_graphxml_graph S_graphxml_graph S_graphxml_graph_1 S_graphxml_graph_2 S_graphxml_graph_3 S_graphxml_graph_4 S_graphxml_graph_5 E_graphxml_graph
+%x ROOT_graphxml_node AL_graphxml_node E_graphxml_node
+%x ROOT_graphxml_edge AL_graphxml_edge E_graphxml_edge
 %x IMPOSSIBLE
 
 %{
 /* State names. */
-const char* *grahxml_statenames=NULL;
+const char* *graphxml_statenames=NULL;
 %}
 
 %%
@@ -217,35 +217,35 @@ const char* *grahxml_statenames=NULL;
  SET(PROLOG);
   /* FleXML_init */
   next = bufferstack;
-  if(!grahxml_statenames) {grahxml_statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
-  grahxml_statenames[PROLOG] = NULL;
-  grahxml_statenames[DOCTYPE] = NULL;
-  grahxml_statenames[EPILOG] = NULL;
-  grahxml_statenames[INCOMMENT] = NULL;
-  grahxml_statenames[INPI] = NULL;
-  grahxml_statenames[VALUE1] = NULL;
-  grahxml_statenames[VALUE2] = NULL;
-  grahxml_statenames[CDATA] = NULL;
-  grahxml_statenames[ROOT_graph] = NULL;
-  grahxml_statenames[AL_graph] = NULL;
-  grahxml_statenames[S_graph] = "graph";
-  grahxml_statenames[S_graph_1] = "graph";
-  grahxml_statenames[S_graph_2] = "graph";
-  grahxml_statenames[S_graph_3] = "graph";
-  grahxml_statenames[S_graph_4] = "graph";
-  grahxml_statenames[S_graph_5] = "graph";
-  grahxml_statenames[E_graph] = "graph";
-  grahxml_statenames[ROOT_node] = NULL;
-  grahxml_statenames[AL_node] = NULL;
-  grahxml_statenames[E_node] = "node";
-  grahxml_statenames[ROOT_edge] = NULL;
-  grahxml_statenames[AL_edge] = NULL;
-  grahxml_statenames[E_edge] = "edge";
+  if(!graphxml_statenames) {graphxml_statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
+  graphxml_statenames[PROLOG] = NULL;
+  graphxml_statenames[DOCTYPE] = NULL;
+  graphxml_statenames[EPILOG] = NULL;
+  graphxml_statenames[INCOMMENT] = NULL;
+  graphxml_statenames[INPI] = NULL;
+  graphxml_statenames[VALUE1] = NULL;
+  graphxml_statenames[VALUE2] = NULL;
+  graphxml_statenames[CDATA] = NULL;
+  graphxml_statenames[ROOT_graphxml_graph] = NULL;
+  graphxml_statenames[AL_graphxml_graph] = NULL;
+  graphxml_statenames[S_graphxml_graph] = "graph";
+  graphxml_statenames[S_graphxml_graph_1] = "graph";
+  graphxml_statenames[S_graphxml_graph_2] = "graph";
+  graphxml_statenames[S_graphxml_graph_3] = "graph";
+  graphxml_statenames[S_graphxml_graph_4] = "graph";
+  graphxml_statenames[S_graphxml_graph_5] = "graph";
+  graphxml_statenames[E_graphxml_graph] = "graph";
+  graphxml_statenames[ROOT_graphxml_node] = NULL;
+  graphxml_statenames[AL_graphxml_node] = NULL;
+  graphxml_statenames[E_graphxml_node] = "node";
+  graphxml_statenames[ROOT_graphxml_edge] = NULL;
+  graphxml_statenames[AL_graphxml_edge] = NULL;
+  graphxml_statenames[E_graphxml_edge] = "edge";
   }
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-<ROOT_graph,AL_graph,S_graph,S_graph_1,S_graph_2,S_graph_3,S_graph_4,S_graph_5,E_graph,ROOT_node,AL_node,E_node,ROOT_edge,AL_edge,E_edge,PROLOG,DOCTYPE,EPILOG>{
+<ROOT_graphxml_graph,AL_graphxml_graph,S_graphxml_graph,S_graphxml_graph_1,S_graphxml_graph_2,S_graphxml_graph_3,S_graphxml_graph_4,S_graphxml_graph_5,E_graphxml_graph,ROOT_graphxml_node,AL_graphxml_node,E_graphxml_node,ROOT_graphxml_edge,AL_graphxml_edge,E_graphxml_edge,PROLOG,DOCTYPE,EPILOG>{
  "<!--" ENTER(INCOMMENT);
  "<?" ENTER(INPI);
 }
@@ -265,7 +265,7 @@ const char* *grahxml_statenames=NULL;
 
  /* SPACES: skipped uniformly */
 
-<ROOT_graph,AL_graph,S_graph,S_graph_1,S_graph_2,S_graph_3,S_graph_4,S_graph_5,E_graph,ROOT_node,AL_node,E_node,ROOT_edge,AL_edge,E_edge,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
+<ROOT_graphxml_graph,AL_graphxml_graph,S_graphxml_graph,S_graphxml_graph_1,S_graphxml_graph_2,S_graphxml_graph_3,S_graphxml_graph_4,S_graphxml_graph_5,E_graphxml_graph,ROOT_graphxml_node,AL_graphxml_node,E_graphxml_node,ROOT_graphxml_edge,AL_graphxml_edge,E_graphxml_edge,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
 
  /* PROLOG: determine root element and process it. */
 
@@ -275,9 +275,9 @@ const char* *grahxml_statenames=NULL;
 }
 
 <PROLOG,DOCTYPE>{
- "<!DOCTYPE"{S}"edge"{S}SYSTEM{S}("'graphxml.dtd'"|"\"graphxml.dtd\""){s}">" SET(ROOT_edge);
- "<!DOCTYPE"{S}"node"{S}SYSTEM{S}("'graphxml.dtd'"|"\"graphxml.dtd\""){s}">" SET(ROOT_node);
- "<!DOCTYPE"{S}"graph"{S}SYSTEM{S}("'graphxml.dtd'"|"\"graphxml.dtd\""){s}">" SET(ROOT_graph);
+ "<!DOCTYPE"{S}"edge"{S}SYSTEM{S}("'graphxml.dtd'"|"\"graphxml.dtd\""){s}">" SET(ROOT_graphxml_edge);
+ "<!DOCTYPE"{S}"node"{S}SYSTEM{S}("'graphxml.dtd'"|"\"graphxml.dtd\""){s}">" SET(ROOT_graphxml_node);
+ "<!DOCTYPE"{S}"graph"{S}SYSTEM{S}("'graphxml.dtd'"|"\"graphxml.dtd\""){s}">" SET(ROOT_graphxml_graph);
  "<!"[^>-][^>]*">" FAIL("Bad declaration %s.",yytext);
  . 		FAIL("Unexpected character `%c' in prolog.", yytext[0]);
  <<EOF>> 	FAIL("EOF in prolog.");
@@ -287,18 +287,18 @@ const char* *grahxml_statenames=NULL;
 
  /* <!-- Small DTD for xbt graphs. -->  */
 
-<ROOT_graph>"<graph"{s} {
-  ENTER(AL_graph);
+<ROOT_graphxml_graph>"<graph"{s} {
+  ENTER(AL_graphxml_graph);
   }
 
-<AL_graph>{
+<AL_graphxml_graph>{
  ">" {
-  LEAVE; STag_graph();pcdata = NULL; ENTER(S_graph);
+  LEAVE; STag_graphxml_graph();pcdata = NULL; ENTER(S_graphxml_graph);
  }
  "/>" {
-  LEAVE; STag_graph(); pcdata = NULL; ETag_graph();
+  LEAVE; STag_graphxml_graph(); pcdata = NULL; ETag_graphxml_graph();
   switch (YY_START) {
-   case ROOT_graph: SET(EPILOG); break;
+   case ROOT_graphxml_graph: SET(EPILOG); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of graph element.", yytext[0]);
@@ -306,12 +306,12 @@ const char* *grahxml_statenames=NULL;
  <<EOF>> FAIL("EOF in attribute list of `graph' element.");
 }
 
-<S_graph_1,E_graph,S_graph_3,S_graph_5,S_graph>{
+<S_graphxml_graph_1,E_graphxml_graph,S_graphxml_graph_3,S_graphxml_graph_5,S_graphxml_graph>{
  "</graph"{s}">" {
   LEAVE;
-  ETag_graph();
+  ETag_graphxml_graph();
   switch (YY_START) {
-   case ROOT_graph: SET(EPILOG); break;
+   case ROOT_graphxml_graph: SET(EPILOG); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</graph>' expected.",yytext);
@@ -323,29 +323,29 @@ const char* *grahxml_statenames=NULL;
   *     name            CDATA                #REQUIRED
   * >  */
 
-<ROOT_node,S_graph_2,S_graph_3,S_graph>"<node"{s} {
-  A_node_label = NULL;
-  A_node_name = NULL;
-  ENTER(AL_node);
+<ROOT_graphxml_node,S_graphxml_graph_2,S_graphxml_graph_3,S_graphxml_graph>"<node"{s} {
+  A_graphxml_node_label = NULL;
+  A_graphxml_node_name = NULL;
+  ENTER(AL_graphxml_node);
   }
 
-<AL_node>{
- "label"{Eq}\' ENTER(VALUE1); BUFFERSET(A_node_label);
- "label"{Eq}\" ENTER(VALUE2); BUFFERSET(A_node_label);
+<AL_graphxml_node>{
+ "label"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_label);
+ "label"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_label);
 
- "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_node_name);
- "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_node_name);
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_name);
 
  ">" {
-  if (!A_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_node();pcdata = NULL; ENTER(E_node);
+  if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
+  LEAVE; STag_graphxml_node();pcdata = NULL; ENTER(E_graphxml_node);
  }
  "/>" {
-  if (!A_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_node(); pcdata = NULL; ETag_node();
+  if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
+  LEAVE; STag_graphxml_node(); pcdata = NULL; ETag_graphxml_node();
   switch (YY_START) {
-   case S_graph_2: case S_graph_3: case S_graph: SET(S_graph_3); break;
-   case ROOT_node: SET(EPILOG); break;
+   case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
+   case ROOT_graphxml_node: SET(EPILOG); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of node element.", yytext[0]);
@@ -353,13 +353,13 @@ const char* *grahxml_statenames=NULL;
  <<EOF>> FAIL("EOF in attribute list of `node' element.");
 }
 
-<E_node>{
+<E_graphxml_node>{
  "</node"{s}">" {
   LEAVE;
-  ETag_node();
+  ETag_graphxml_node();
   switch (YY_START) {
-   case S_graph_2: case S_graph_3: case S_graph: SET(S_graph_3); break;
-   case ROOT_node: SET(EPILOG); break;
+   case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
+   case ROOT_graphxml_node: SET(EPILOG); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</node>' expected.",yytext);
@@ -374,45 +374,45 @@ const char* *grahxml_statenames=NULL;
   *     isDirected (true|false) "true"
   * >  */
 
-<ROOT_edge,S_graph_1,S_graph_3,S_graph_5,S_graph_4,S_graph>"<edge"{s} {
-  A_edge_label = NULL;
-  A_edge_name = NULL;
-  A_edge_source = NULL;
-  A_edge_target = NULL;
-  A_edge_isDirected = A_edge_isDirected_true;
-  ENTER(AL_edge);
+<ROOT_graphxml_edge,S_graphxml_graph_1,S_graphxml_graph_3,S_graphxml_graph_5,S_graphxml_graph_4,S_graphxml_graph>"<edge"{s} {
+  A_graphxml_edge_label = NULL;
+  A_graphxml_edge_name = NULL;
+  A_graphxml_edge_source = NULL;
+  A_graphxml_edge_target = NULL;
+  A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_true;
+  ENTER(AL_graphxml_edge);
   }
 
-<AL_edge>{
- "label"{Eq}\' ENTER(VALUE1); BUFFERSET(A_edge_label);
- "label"{Eq}\" ENTER(VALUE2); BUFFERSET(A_edge_label);
+<AL_graphxml_edge>{
+ "label"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_label);
+ "label"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_label);
 
- "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_edge_name);
- "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_edge_name);
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_name);
 
- "source"{Eq}\' ENTER(VALUE1); BUFFERSET(A_edge_source);
- "source"{Eq}\" ENTER(VALUE2); BUFFERSET(A_edge_source);
+ "source"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_source);
+ "source"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_source);
 
- "target"{Eq}\' ENTER(VALUE1); BUFFERSET(A_edge_target);
- "target"{Eq}\" ENTER(VALUE2); BUFFERSET(A_edge_target);
+ "target"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_target);
+ "target"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_target);
 
  "isDirected"{Eq}"'true'" |
- "isDirected"{Eq}"\"true\"" A_edge_isDirected = A_edge_isDirected_true;
+ "isDirected"{Eq}"\"true\"" A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_true;
  "isDirected"{Eq}"'false'" |
- "isDirected"{Eq}"\"false\"" A_edge_isDirected = A_edge_isDirected_false;
+ "isDirected"{Eq}"\"false\"" A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_false;
 
  ">" {
-  if (!A_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
-  if (!A_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_edge();pcdata = NULL; ENTER(E_edge);
+  if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
+  if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
+  LEAVE; STag_graphxml_edge();pcdata = NULL; ENTER(E_graphxml_edge);
  }
  "/>" {
-  if (!A_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
-  if (!A_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_edge(); pcdata = NULL; ETag_edge();
+  if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
+  if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
+  LEAVE; STag_graphxml_edge(); pcdata = NULL; ETag_graphxml_edge();
   switch (YY_START) {
-   case S_graph_1: case S_graph_3: case S_graph_5: case S_graph_4: case S_graph: SET(S_graph_5); break;
-   case ROOT_edge: SET(EPILOG); break;
+   case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
+   case ROOT_graphxml_edge: SET(EPILOG); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of edge element.", yytext[0]);
@@ -420,13 +420,13 @@ const char* *grahxml_statenames=NULL;
  <<EOF>> FAIL("EOF in attribute list of `edge' element.");
 }
 
-<E_edge>{
+<E_graphxml_edge>{
  "</edge"{s}">" {
   LEAVE;
-  ETag_edge();
+  ETag_graphxml_edge();
   switch (YY_START) {
-   case S_graph_1: case S_graph_3: case S_graph_5: case S_graph_4: case S_graph: SET(S_graph_5); break;
-   case ROOT_edge: SET(EPILOG); break;
+   case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
+   case ROOT_graphxml_edge: SET(EPILOG); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</edge>' expected.",yytext);
@@ -500,7 +500,7 @@ const char* *grahxml_statenames=NULL;
 %%
 
 /* Element context stack lookup. */
-int grahxml_element_context(int i)
+int graphxml_element_context(int i)
 {
   return (0<i && i<yy_start_stack_depth
 	  ? yy_start_stack[yy_start_stack_ptr - i]
@@ -513,8 +513,8 @@ void print_yy_stack(char* fmt, ...)
   int i = 0; va_list ap; va_start(ap, fmt);
   vfprintf(stderr, fmt, ap);
   for (i=1; i<yy_start_stack_ptr; i++)
-    fprintf(stderr, "%s/", grahxml_statenames[yy_start_stack[i] ]);
-  fprintf(stderr,"%s\n", grahxml_statenames[YY_START]);
+    fprintf(stderr, "%s/", graphxml_statenames[yy_start_stack[i] ]);
+  fprintf(stderr,"%s\n", graphxml_statenames[YY_START]);
   va_end(ap);
 }
 
@@ -537,12 +537,12 @@ static void debug_set(int state, const char* statename) {
 enum {flexml_max_err_msg_size = 512};
 
 static char flexml_err_msg[flexml_max_err_msg_size];
-const char * grahxml_parse_err_msg()
+const char * graphxml_parse_err_msg()
 {
     return flexml_err_msg;
 }
 
-static void reset_grahxml_parse_err_msg()
+static void reset_graphxml_parse_err_msg()
 {
     flexml_err_msg[0] = '\0';
 }
@@ -550,9 +550,9 @@ static void reset_grahxml_parse_err_msg()
 
 static void cleanup(void)
 {
-    if (grahxml_statenames) {
-        free(grahxml_statenames);
-	grahxml_statenames = NULL;
+    if (graphxml_statenames) {
+        free(graphxml_statenames);
+	graphxml_statenames = NULL;
     }
 }
 

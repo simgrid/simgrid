@@ -17,20 +17,20 @@ extern int_f_void_t surf_parse;
 /* Hook for the different tags. They can be redefined at will whereas
    the versions without the _fun can't. */
 
-extern void_f_void_t STag_platform_description_fun;
-extern void_f_void_t ETag_platform_description_fun;
-extern void_f_void_t STag_cpu_fun;
-extern void_f_void_t ETag_cpu_fun;
-extern void_f_void_t STag_network_link_fun;
-extern void_f_void_t ETag_network_link_fun;
-extern void_f_void_t STag_route_fun;
-extern void_f_void_t ETag_route_fun;
-extern void_f_void_t STag_route_element_fun;
-extern void_f_void_t ETag_route_element_fun;
-extern void_f_void_t STag_process_fun;
-extern void_f_void_t ETag_process_fun;
-extern void_f_void_t STag_argument_fun;
-extern void_f_void_t ETag_argument_fun;
+extern void_f_void_t STag_surfxml_platform_description_fun;
+extern void_f_void_t ETag_surfxml_platform_description_fun;
+extern void_f_void_t STag_surfxml_cpu_fun;
+extern void_f_void_t ETag_surfxml_cpu_fun;
+extern void_f_void_t STag_surfxml_network_link_fun;
+extern void_f_void_t ETag_surfxml_network_link_fun;
+extern void_f_void_t STag_surfxml_route_fun;
+extern void_f_void_t ETag_surfxml_route_fun;
+extern void_f_void_t STag_surfxml_route_element_fun;
+extern void_f_void_t ETag_surfxml_route_element_fun;
+extern void_f_void_t STag_surfxml_process_fun;
+extern void_f_void_t ETag_surfxml_process_fun;
+extern void_f_void_t STag_surfxml_argument_fun;
+extern void_f_void_t ETag_surfxml_argument_fun;
 
 void surf_parse_open(const char *file);
 void surf_parse_close(void);

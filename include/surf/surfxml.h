@@ -1,9 +1,9 @@
 /* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2006/03/20 16:32:31.
+ * Generated 2006/03/21 11:12:31.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.45 2006/03/03 19:25:46 wdowling Exp).
+ * (Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -48,117 +48,117 @@
 #define _FLEXML_surfxml_H
 
 /* XML application entry points. */
-extern void STag_platform_description(void);
-extern void ETag_platform_description(void);
-extern void STag_include(void);
-extern void ETag_include(void);
-extern void STag_cpu(void);
-extern void ETag_cpu(void);
-extern void STag_network_link(void);
-extern void ETag_network_link(void);
-extern void STag_route(void);
-extern void ETag_route(void);
-extern void STag_route_element(void);
-extern void ETag_route_element(void);
-extern void STag_process(void);
-extern void ETag_process(void);
-extern void STag_argument(void);
-extern void ETag_argument(void);
+extern void STag_surfxml_platform_description(void);
+extern void ETag_surfxml_platform_description(void);
+extern void STag_surfxml_include(void);
+extern void ETag_surfxml_include(void);
+extern void STag_surfxml_cpu(void);
+extern void ETag_surfxml_cpu(void);
+extern void STag_surfxml_network_link(void);
+extern void ETag_surfxml_network_link(void);
+extern void STag_surfxml_route(void);
+extern void ETag_surfxml_route(void);
+extern void STag_surfxml_route_element(void);
+extern void ETag_surfxml_route_element(void);
+extern void STag_surfxml_process(void);
+extern void ETag_surfxml_process(void);
+extern void STag_surfxml_argument(void);
+extern void ETag_surfxml_argument(void);
 
 /* XML application data. */
-typedef const char* AT_network_link_bandwidth;
-#define AU_network_link_bandwidth NULL
-typedef const char* AT_cpu_name;
-#define AU_cpu_name NULL
-typedef const char* AT_process_kill_time;
-#define AU_process_kill_time NULL
-typedef enum { AU_network_link_state, A_network_link_state_ON,A_network_link_state_OFF } AT_network_link_state;
-typedef const char* AT_argument_value;
-#define AU_argument_value NULL
-typedef const char* AT_cpu_availability_file;
-#define AU_cpu_availability_file NULL
-typedef const char* AT_process_host;
-#define AU_process_host NULL
-typedef const char* AT_route_impact_on_src;
-#define AU_route_impact_on_src NULL
-typedef const char* AT_route_src;
-#define AU_route_src NULL
-typedef const char* AT_network_link_latency_file;
-#define AU_network_link_latency_file NULL
-typedef const char* AT_cpu_max_outgoing_rate;
-#define AU_cpu_max_outgoing_rate NULL
-typedef const char* AT_route_impact_on_dst_with_other_send;
-#define AU_route_impact_on_dst_with_other_send NULL
-typedef const char* AT_cpu_interference_send_recv;
-#define AU_cpu_interference_send_recv NULL
-typedef const char* AT_cpu_availability;
-#define AU_cpu_availability NULL
-typedef const char* AT_route_impact_on_dst;
-#define AU_route_impact_on_dst NULL
-typedef const char* AT_cpu_interference_recv;
-#define AU_cpu_interference_recv NULL
-typedef const char* AT_route_impact_on_src_with_other_recv;
-#define AU_route_impact_on_src_with_other_recv NULL
-typedef const char* AT_network_link_name;
-#define AU_network_link_name NULL
-typedef const char* AT_route_element_name;
-#define AU_route_element_name NULL
-typedef const char* AT_cpu_power;
-#define AU_cpu_power NULL
-typedef const char* AT_process_start_time;
-#define AU_process_start_time NULL
-typedef const char* AT_include_file;
-#define AU_include_file NULL
-typedef const char* AT_process_function;
-#define AU_process_function NULL
-typedef enum { AU_network_link_sharing_policy, A_network_link_sharing_policy_SHARED,A_network_link_sharing_policy_FATPIPE } AT_network_link_sharing_policy;
-typedef const char* AT_route_dst;
-#define AU_route_dst NULL
-typedef enum { AU_cpu_state, A_cpu_state_ON,A_cpu_state_OFF } AT_cpu_state;
-typedef const char* AT_network_link_latency;
-#define AU_network_link_latency NULL
-typedef const char* AT_network_link_state_file;
-#define AU_network_link_state_file NULL
-typedef const char* AT_cpu_interference_send;
-#define AU_cpu_interference_send NULL
-typedef const char* AT_cpu_state_file;
-#define AU_cpu_state_file NULL
-typedef const char* AT_network_link_bandwidth_file;
-#define AU_network_link_bandwidth_file NULL
+typedef const char* AT_surfxml_network_link_bandwidth;
+#define AU_surfxml_network_link_bandwidth NULL
+typedef const char* AT_surfxml_cpu_name;
+#define AU_surfxml_cpu_name NULL
+typedef const char* AT_surfxml_process_kill_time;
+#define AU_surfxml_process_kill_time NULL
+typedef enum { AU_surfxml_network_link_state, A_surfxml_network_link_state_ON,A_surfxml_network_link_state_OFF } AT_surfxml_network_link_state;
+typedef const char* AT_surfxml_argument_value;
+#define AU_surfxml_argument_value NULL
+typedef const char* AT_surfxml_cpu_availability_file;
+#define AU_surfxml_cpu_availability_file NULL
+typedef const char* AT_surfxml_process_host;
+#define AU_surfxml_process_host NULL
+typedef const char* AT_surfxml_route_impact_on_src;
+#define AU_surfxml_route_impact_on_src NULL
+typedef const char* AT_surfxml_route_src;
+#define AU_surfxml_route_src NULL
+typedef const char* AT_surfxml_network_link_latency_file;
+#define AU_surfxml_network_link_latency_file NULL
+typedef const char* AT_surfxml_cpu_max_outgoing_rate;
+#define AU_surfxml_cpu_max_outgoing_rate NULL
+typedef const char* AT_surfxml_route_impact_on_dst_with_other_send;
+#define AU_surfxml_route_impact_on_dst_with_other_send NULL
+typedef const char* AT_surfxml_cpu_interference_send_recv;
+#define AU_surfxml_cpu_interference_send_recv NULL
+typedef const char* AT_surfxml_cpu_availability;
+#define AU_surfxml_cpu_availability NULL
+typedef const char* AT_surfxml_route_impact_on_dst;
+#define AU_surfxml_route_impact_on_dst NULL
+typedef const char* AT_surfxml_cpu_interference_recv;
+#define AU_surfxml_cpu_interference_recv NULL
+typedef const char* AT_surfxml_route_impact_on_src_with_other_recv;
+#define AU_surfxml_route_impact_on_src_with_other_recv NULL
+typedef const char* AT_surfxml_network_link_name;
+#define AU_surfxml_network_link_name NULL
+typedef const char* AT_surfxml_route_element_name;
+#define AU_surfxml_route_element_name NULL
+typedef const char* AT_surfxml_cpu_power;
+#define AU_surfxml_cpu_power NULL
+typedef const char* AT_surfxml_process_start_time;
+#define AU_surfxml_process_start_time NULL
+typedef const char* AT_surfxml_include_file;
+#define AU_surfxml_include_file NULL
+typedef const char* AT_surfxml_process_function;
+#define AU_surfxml_process_function NULL
+typedef enum { AU_surfxml_network_link_sharing_policy, A_surfxml_network_link_sharing_policy_SHARED,A_surfxml_network_link_sharing_policy_FATPIPE } AT_surfxml_network_link_sharing_policy;
+typedef const char* AT_surfxml_route_dst;
+#define AU_surfxml_route_dst NULL
+typedef enum { AU_surfxml_cpu_state, A_surfxml_cpu_state_ON,A_surfxml_cpu_state_OFF } AT_surfxml_cpu_state;
+typedef const char* AT_surfxml_network_link_latency;
+#define AU_surfxml_network_link_latency NULL
+typedef const char* AT_surfxml_network_link_state_file;
+#define AU_surfxml_network_link_state_file NULL
+typedef const char* AT_surfxml_cpu_interference_send;
+#define AU_surfxml_cpu_interference_send NULL
+typedef const char* AT_surfxml_cpu_state_file;
+#define AU_surfxml_cpu_state_file NULL
+typedef const char* AT_surfxml_network_link_bandwidth_file;
+#define AU_surfxml_network_link_bandwidth_file NULL
 
 /* FleXML-provided data. */
 extern const char* pcdata;
-extern AT_network_link_bandwidth A_network_link_bandwidth;
-extern AT_cpu_name A_cpu_name;
-extern AT_process_kill_time A_process_kill_time;
-extern AT_network_link_state A_network_link_state;
-extern AT_argument_value A_argument_value;
-extern AT_cpu_availability_file A_cpu_availability_file;
-extern AT_process_host A_process_host;
-extern AT_route_impact_on_src A_route_impact_on_src;
-extern AT_route_src A_route_src;
-extern AT_network_link_latency_file A_network_link_latency_file;
-extern AT_cpu_max_outgoing_rate A_cpu_max_outgoing_rate;
-extern AT_route_impact_on_dst_with_other_send A_route_impact_on_dst_with_other_send;
-extern AT_cpu_interference_send_recv A_cpu_interference_send_recv;
-extern AT_cpu_availability A_cpu_availability;
-extern AT_route_impact_on_dst A_route_impact_on_dst;
-extern AT_cpu_interference_recv A_cpu_interference_recv;
-extern AT_route_impact_on_src_with_other_recv A_route_impact_on_src_with_other_recv;
-extern AT_network_link_name A_network_link_name;
-extern AT_route_element_name A_route_element_name;
-extern AT_cpu_power A_cpu_power;
-extern AT_process_start_time A_process_start_time;
-extern AT_include_file A_include_file;
-extern AT_process_function A_process_function;
-extern AT_network_link_sharing_policy A_network_link_sharing_policy;
-extern AT_route_dst A_route_dst;
-extern AT_cpu_state A_cpu_state;
-extern AT_network_link_latency A_network_link_latency;
-extern AT_network_link_state_file A_network_link_state_file;
-extern AT_cpu_interference_send A_cpu_interference_send;
-extern AT_cpu_state_file A_cpu_state_file;
-extern AT_network_link_bandwidth_file A_network_link_bandwidth_file;
+extern AT_surfxml_network_link_bandwidth A_surfxml_network_link_bandwidth;
+extern AT_surfxml_cpu_name A_surfxml_cpu_name;
+extern AT_surfxml_process_kill_time A_surfxml_process_kill_time;
+extern AT_surfxml_network_link_state A_surfxml_network_link_state;
+extern AT_surfxml_argument_value A_surfxml_argument_value;
+extern AT_surfxml_cpu_availability_file A_surfxml_cpu_availability_file;
+extern AT_surfxml_process_host A_surfxml_process_host;
+extern AT_surfxml_route_impact_on_src A_surfxml_route_impact_on_src;
+extern AT_surfxml_route_src A_surfxml_route_src;
+extern AT_surfxml_network_link_latency_file A_surfxml_network_link_latency_file;
+extern AT_surfxml_cpu_max_outgoing_rate A_surfxml_cpu_max_outgoing_rate;
+extern AT_surfxml_route_impact_on_dst_with_other_send A_surfxml_route_impact_on_dst_with_other_send;
+extern AT_surfxml_cpu_interference_send_recv A_surfxml_cpu_interference_send_recv;
+extern AT_surfxml_cpu_availability A_surfxml_cpu_availability;
+extern AT_surfxml_route_impact_on_dst A_surfxml_route_impact_on_dst;
+extern AT_surfxml_cpu_interference_recv A_surfxml_cpu_interference_recv;
+extern AT_surfxml_route_impact_on_src_with_other_recv A_surfxml_route_impact_on_src_with_other_recv;
+extern AT_surfxml_network_link_name A_surfxml_network_link_name;
+extern AT_surfxml_route_element_name A_surfxml_route_element_name;
+extern AT_surfxml_cpu_power A_surfxml_cpu_power;
+extern AT_surfxml_process_start_time A_surfxml_process_start_time;
+extern AT_surfxml_include_file A_surfxml_include_file;
+extern AT_surfxml_process_function A_surfxml_process_function;
+extern AT_surfxml_network_link_sharing_policy A_surfxml_network_link_sharing_policy;
+extern AT_surfxml_route_dst A_surfxml_route_dst;
+extern AT_surfxml_cpu_state A_surfxml_cpu_state;
+extern AT_surfxml_network_link_latency A_surfxml_network_link_latency;
+extern AT_surfxml_network_link_state_file A_surfxml_network_link_state_file;
+extern AT_surfxml_cpu_interference_send A_surfxml_cpu_interference_send;
+extern AT_surfxml_cpu_state_file A_surfxml_cpu_state_file;
+extern AT_surfxml_network_link_bandwidth_file A_surfxml_network_link_bandwidth_file;
 
 /* XML application utilities. */
 extern int surfxml_element_context(int);

@@ -17,12 +17,12 @@ extern int_f_void_t xbt_graph_parse;
 
 /* Hook for the different tags. They can be redefined at will whereas
    the versions without the _fun can't. */
-extern void_f_void_t STag_graph_fun;
-extern void_f_void_t ETag_graph_fun;
-extern void_f_void_t STag_node_fun;
-extern void_f_void_t ETag_node_fun;
-extern void_f_void_t STag_edge_fun;
-extern void_f_void_t ETag_edge_fun;
+extern void_f_void_t STag_graphxml_graph_fun;
+extern void_f_void_t ETag_graphxml_graph_fun;
+extern void_f_void_t STag_graphxml_node_fun;
+extern void_f_void_t ETag_graphxml_node_fun;
+extern void_f_void_t STag_graphxml_edge_fun;
+extern void_f_void_t ETag_graphxml_edge_fun;
 
 void xbt_graph_parse_open(const char *file);
 void xbt_graph_parse_close(void);
