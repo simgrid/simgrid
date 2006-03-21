@@ -1,9 +1,9 @@
 /* Validating XML processor for graphxml.dtd.
- * Generated 2006/03/21 12:59:33.
+ * Generated 2006/03/21 13:43:39.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp).
+ * (Id: flexml.pl,v 1.47 2006/03/21 11:12:57 legranda Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -48,9 +48,9 @@
 
 /* Version strings. */
 const char rcs_graphxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.27 2006/03/21 08:24:12 legranda Exp $";
+ "$" "Id: skel,v 1.28 2006/03/21 12:04:13 legranda Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp $";
+ "$" "Id: flexml.pl,v 1.47 2006/03/21 11:12:57 legranda Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -67,13 +67,14 @@ const char rcs_graphxml_flexml[] =
 /* XML processor api. */
 /* FleXML-provided data. */
 const char* pcdata;
-AT_graphxml_edge_target A_graphxml_edge_target;
 AT_graphxml_node_name A_graphxml_node_name;
-AT_graphxml_node_label A_graphxml_node_label;
-AT_graphxml_edge_label A_graphxml_edge_label;
 AT_graphxml_edge_source A_graphxml_edge_source;
 AT_graphxml_edge_isDirected A_graphxml_edge_isDirected;
+AT_graphxml_edge_target A_graphxml_edge_target;
+AT_graphxml_node_label A_graphxml_node_label;
+AT_graphxml_edge_label A_graphxml_edge_label;
 AT_graphxml_edge_name A_graphxml_edge_name;
+AT_graphxml_edge_length A_graphxml_edge_length;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -371,6 +372,7 @@ const char* *graphxml_statenames=NULL;
   *     name       CDATA        #IMPLIED
   *     source     CDATA        #REQUIRED
   *     target     CDATA        #REQUIRED
+  *     length     CDATA        "0.0"
   *     isDirected (true|false) "true"
   * >  */
 
@@ -379,6 +381,7 @@ const char* *graphxml_statenames=NULL;
   A_graphxml_edge_name = NULL;
   A_graphxml_edge_source = NULL;
   A_graphxml_edge_target = NULL;
+  A_graphxml_edge_length = "0.0";
   A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_true;
   ENTER(AL_graphxml_edge);
   }
@@ -395,6 +398,9 @@ const char* *graphxml_statenames=NULL;
 
  "target"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_target);
  "target"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_target);
+
+ "length"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_length);
+ "length"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_length);
 
  "isDirected"{Eq}"'true'" |
  "isDirected"{Eq}"\"true\"" A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_true;
