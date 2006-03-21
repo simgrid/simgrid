@@ -162,10 +162,11 @@ static void  __parse_graph_end(void) {
   DEBUG0("</graph>");
 }
 static void __parse_node(void) {
-  DEBUG1("<node label=\"%s\"/>",A_node_name);
+  DEBUG1("<node label=\"%s\"/>",A_graphxml_node_name);
 }
 static void __parse_edge(void) {
-  DEBUG2("<edge source=\"%s\" target=\"%s\"/>",A_edge_source,A_edge_target);
+  DEBUG2("<edge source=\"%s\" target=\"%s\"/>",A_graphxml_edge_source,
+	 A_graphxml_edge_target);
 }
 
 xbt_graph_t xbt_graph_read(const char *filename)
@@ -176,10 +177,10 @@ xbt_graph_t xbt_graph_read(const char *filename)
 
   xbt_graph_parse_reset_parser();
   
-  STag_graph_fun = __parse_graph_begin;
-  ETag_graph_fun = __parse_graph_end;
-  ETag_node_fun = __parse_node;
-  ETag_edge_fun = __parse_edge;
+  STag_graphxml_graph_fun = __parse_graph_begin;
+  ETag_graphxml_graph_fun = __parse_graph_end;
+  ETag_graphxml_node_fun = __parse_node;
+  ETag_graphxml_edge_fun = __parse_edge;
 
   xbt_graph_parse_open(filename);
   xbt_assert1((!xbt_graph_parse()),"Parse error in %s",filename);

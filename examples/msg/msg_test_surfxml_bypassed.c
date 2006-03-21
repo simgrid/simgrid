@@ -6,8 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg/msg.h"  /* Yeah! If you want to use msg, you need to include msg/msg.h */
-#include "surf/surf_parse.h" /* to override surf_parse */
-#include "surf/surfxml.h"    /* to hijack surf_parse_lex */
+#include "surf/surfxml_parse.h" /* to override surf_parse */
+#include "surf/surfxml.h"       /* to hijack surf_parse_lex */
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
@@ -17,123 +17,123 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 static int surf_parse_bypass(void)
 {
 /* <platform_description> */
-  STag_platform_description();
+  STag_surfxml_platform_description();
 
 
 /*   <cpu name="Cpu A" power="100.00" availability_file="trace_A.txt"/> */
-  A_cpu_name = "Cpu A";
-  A_cpu_power= "100.00";
-  A_cpu_availability = "1.0";
-  A_cpu_availability_file = "";
-  A_cpu_state = A_cpu_state_ON;
-  A_cpu_state_file = NULL;
-  A_cpu_interference_send = "1.0";
-  A_cpu_interference_recv = "1.0";
-  A_cpu_interference_send_recv = "1.0";
-  A_cpu_max_outgoing_rate = "-1.0";
+  A_surfxml_cpu_name = "Cpu A";
+  A_surfxml_cpu_power= "100.00";
+  A_surfxml_cpu_availability = "1.0";
+  A_surfxml_cpu_availability_file = "";
+  A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
+  A_surfxml_cpu_state_file = NULL;
+  A_surfxml_cpu_interference_send = "1.0";
+  A_surfxml_cpu_interference_recv = "1.0";
+  A_surfxml_cpu_interference_send_recv = "1.0";
+  A_surfxml_cpu_max_outgoing_rate = "-1.0";
 
-  STag_cpu();
-  ETag_cpu();
+  STag_surfxml_cpu();
+  ETag_surfxml_cpu();
 
 /*   <cpu name="Cpu B" power="100.00" availability_file="trace_B.txt"/> */
-  A_cpu_name = "Cpu B";
-  A_cpu_power= "100.00";
-  A_cpu_availability = "1.0";
-  A_cpu_availability_file = "";
-  A_cpu_state = A_cpu_state_ON;
-  A_cpu_state_file = NULL;
-  A_cpu_interference_send = "1.0";
-  A_cpu_interference_recv = "1.0";
-  A_cpu_interference_send_recv = "1.0";
-  A_cpu_max_outgoing_rate = "-1.0";
+  A_surfxml_cpu_name = "Cpu B";
+  A_surfxml_cpu_power= "100.00";
+  A_surfxml_cpu_availability = "1.0";
+  A_surfxml_cpu_availability_file = "";
+  A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
+  A_surfxml_cpu_state_file = NULL;
+  A_surfxml_cpu_interference_send = "1.0";
+  A_surfxml_cpu_interference_recv = "1.0";
+  A_surfxml_cpu_interference_send_recv = "1.0";
+  A_surfxml_cpu_max_outgoing_rate = "-1.0";
 
-  STag_cpu();
-  ETag_cpu();
+  STag_surfxml_cpu();
+  ETag_surfxml_cpu();
 
 /*   <network_link name="LinkA" bandwidth="10.0" latency="0.2"/> */
-  A_network_link_name = "LinkA";
-  A_network_link_bandwidth = "10.0";
-  A_network_link_bandwidth_file = NULL;
-  A_network_link_latency = "0.2";
-  A_network_link_latency_file = NULL;
-  A_network_link_state = A_network_link_state_ON;
-  A_network_link_state_file = NULL;
-  A_network_link_sharing_policy = A_network_link_sharing_policy_SHARED;
-  STag_network_link();
-  ETag_network_link();
+  A_surfxml_network_link_name = "LinkA";
+  A_surfxml_network_link_bandwidth = "10.0";
+  A_surfxml_network_link_bandwidth_file = NULL;
+  A_surfxml_network_link_latency = "0.2";
+  A_surfxml_network_link_latency_file = NULL;
+  A_surfxml_network_link_state = A_surfxml_network_link_state_ON;
+  A_surfxml_network_link_state_file = NULL;
+  A_surfxml_network_link_sharing_policy = A_surfxml_network_link_sharing_policy_SHARED;
+  STag_surfxml_network_link();
+  ETag_surfxml_network_link();
 
 /*   <route src="Cpu A" dst="Cpu B"><route_element name="LinkA"/></route> */
-  A_route_src = "Cpu A";
-  A_route_dst = "Cpu B";
-  A_route_impact_on_src = "0.0";
-  A_route_impact_on_dst = "0.0";
-  A_route_impact_on_src_with_other_recv = "0.0";
-  A_route_impact_on_dst_with_other_send = "0.0";
+  A_surfxml_route_src = "Cpu A";
+  A_surfxml_route_dst = "Cpu B";
+  A_surfxml_route_impact_on_src = "0.0";
+  A_surfxml_route_impact_on_dst = "0.0";
+  A_surfxml_route_impact_on_src_with_other_recv = "0.0";
+  A_surfxml_route_impact_on_dst_with_other_send = "0.0";
 
-  STag_route();
+  STag_surfxml_route();
 
-  A_route_element_name = "LinkA";
-  STag_route_element();
-  ETag_route_element();
+  A_surfxml_route_element_name = "LinkA";
+  STag_surfxml_route_element();
+  ETag_surfxml_route_element();
 
-  ETag_route();
+  ETag_surfxml_route();
 
 /*   <route src="Cpu B" dst="Cpu A"><route_element name="LinkA"/></route> */
-  A_route_src = "Cpu B";
-  A_route_dst = "Cpu A";
-  A_route_impact_on_src = "0.0";
-  A_route_impact_on_dst = "0.0";
-  A_route_impact_on_src_with_other_recv = "0.0";
-  A_route_impact_on_dst_with_other_send = "0.0";
+  A_surfxml_route_src = "Cpu B";
+  A_surfxml_route_dst = "Cpu A";
+  A_surfxml_route_impact_on_src = "0.0";
+  A_surfxml_route_impact_on_dst = "0.0";
+  A_surfxml_route_impact_on_src_with_other_recv = "0.0";
+  A_surfxml_route_impact_on_dst_with_other_send = "0.0";
 
-  STag_route();
+  STag_surfxml_route();
 
-  A_route_element_name = "LinkA";
-  STag_route_element();
-  ETag_route_element();
+  A_surfxml_route_element_name = "LinkA";
+  STag_surfxml_route_element();
+  ETag_surfxml_route_element();
 
-  ETag_route();
+  ETag_surfxml_route();
 
 /*   <process host="Cpu A" function="master"> */
-  A_process_host = "Cpu A";
-  A_process_function = "master";
-  A_process_start_time = "-1.0";
-  A_process_kill_time = "-1.0";
-  STag_process();
+  A_surfxml_process_host = "Cpu A";
+  A_surfxml_process_function = "master";
+  A_surfxml_process_start_time = "-1.0";
+  A_surfxml_process_kill_time = "-1.0";
+  STag_surfxml_process();
 
 /*      <argument value="20"/> */
-  A_argument_value = "20";
-  STag_argument();
-  ETag_argument();
+  A_surfxml_argument_value = "20";
+  STag_surfxml_argument();
+  ETag_surfxml_argument();
 
 /*      <argument value="50000"/> */
-  A_argument_value = "50000";
-  STag_argument();
-  ETag_argument();
+  A_surfxml_argument_value = "50000";
+  STag_surfxml_argument();
+  ETag_surfxml_argument();
 
 /*      <argument value="10"/> */
-  A_argument_value = "10";
-  STag_argument();
-  ETag_argument();
+  A_surfxml_argument_value = "10";
+  STag_surfxml_argument();
+  ETag_surfxml_argument();
 
 /*      <argument value="Cpu B"/> */
-  A_argument_value = "Cpu B";
-  STag_argument();
-  ETag_argument();
+  A_surfxml_argument_value = "Cpu B";
+  STag_surfxml_argument();
+  ETag_surfxml_argument();
 
 /*   </process> */
-  ETag_process();
+  ETag_surfxml_process();
 
 /*   <process host="Cpu B" function="slave"/> */
-  A_process_host = "Cpu B";
-  A_process_function = "slave";
-  A_process_start_time = "-1.0";
-  A_process_kill_time = "-1.0";
-  STag_process();
-  ETag_process();
+  A_surfxml_process_host = "Cpu B";
+  A_surfxml_process_function = "slave";
+  A_surfxml_process_start_time = "-1.0";
+  A_surfxml_process_kill_time = "-1.0";
+  STag_surfxml_process();
+  ETag_surfxml_process();
 
 /* </platform_description> */
-  ETag_platform_description();
+  ETag_surfxml_platform_description();
 
   return 0;
 }

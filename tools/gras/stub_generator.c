@@ -111,14 +111,14 @@ static void parse_process_init(void)
   parse_argv = NULL;
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_process_function);
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
 }
 
 static void parse_argument(void)
 {
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_argument_value);
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
 
 static void parse_process_finalize(void)
@@ -126,11 +126,11 @@ static void parse_process_finalize(void)
   s_process_t process;
   void *p = (void *) 1234;
 
-  xbt_dict_set(process_function_set, A_process_function, p, NULL);
-  xbt_dict_set(machine_set, A_process_host, p, NULL);
+  xbt_dict_set(process_function_set, A_surfxml_process_function, p, NULL);
+  xbt_dict_set(machine_set, A_surfxml_process_host, p, NULL);
   process.argc=parse_argc;
   process.argv=parse_argv;
-  process.host=strdup(A_process_host);
+  process.host=strdup(A_surfxml_process_host);
   xbt_dynar_push(process_list,&process);
 }
 
@@ -572,9 +572,9 @@ int main(int argc, char *argv[])
   process_list = xbt_dynar_new(sizeof(s_process_t),s_process_free);
   machine_set = xbt_dict_new();
 
-  STag_process_fun = parse_process_init;
-  ETag_argument_fun = parse_argument;
-  ETag_process_fun = parse_process_finalize;
+  STag_surfxml_process_fun = parse_process_init;
+  ETag_surfxml_argument_fun = parse_argument;
+  ETag_surfxml_process_fun = parse_process_finalize;
   surf_parse_open(deployment_file);
   if(surf_parse()) xbt_assert1(0,"Parse error in %s",deployment_file);
   surf_parse_close();

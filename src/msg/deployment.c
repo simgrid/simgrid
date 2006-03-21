@@ -19,24 +19,24 @@ static double kill_time = -1.0;
   
 static void parse_process_init(void)
 {
-  parse_host = MSG_get_host_by_name(A_process_host);
-  xbt_assert1(parse_host, "Unknown host %s",A_process_host);
-  parse_code = MSG_get_registered_function(A_process_function);
-  xbt_assert1(parse_code, "Unknown function %s",A_process_function);
+  parse_host = MSG_get_host_by_name(A_surfxml_process_host);
+  xbt_assert1(parse_host, "Unknown host %s",A_surfxml_process_host);
+  parse_code = MSG_get_registered_function(A_surfxml_process_function);
+  xbt_assert1(parse_code, "Unknown function %s",A_surfxml_process_function);
   parse_argc = 0 ;
   parse_argv = NULL;
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_process_function);
-  surf_parse_get_double(&start_time,A_process_start_time);
-  surf_parse_get_double(&kill_time,A_process_kill_time);
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
+  surf_parse_get_double(&start_time,A_surfxml_process_start_time);
+  surf_parse_get_double(&kill_time,A_surfxml_process_kill_time);
 }
 
 static void parse_argument(void)
 {
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_argument_value);
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
 
 static void parse_process_finalize(void)
@@ -86,9 +86,9 @@ static void parse_process_finalize(void)
 void MSG_launch_application(const char *file) 
 {
   xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_launch_application.");
-  STag_process_fun = parse_process_init;
-  ETag_argument_fun = parse_argument;
-  ETag_process_fun = parse_process_finalize;
+  STag_surfxml_process_fun = parse_process_init;
+  ETag_surfxml_argument_fun = parse_argument;
+  ETag_surfxml_process_fun = parse_process_finalize;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();

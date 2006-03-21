@@ -60,16 +60,17 @@ static void parse_cpu(void)
   e_surf_cpu_state_t state_initial = SURF_CPU_OFF;
   tmgr_trace_t state_trace = NULL;
 
-  name = xbt_strdup(A_cpu_name);
-  surf_parse_get_double(&power_scale,A_cpu_power);
-  surf_parse_get_double(&power_initial,A_cpu_availability);
-  surf_parse_get_trace(&power_trace,A_cpu_availability_file);
+  name = xbt_strdup(A_surfxml_cpu_name);
+  surf_parse_get_double(&power_scale,A_surfxml_cpu_power);
+  surf_parse_get_double(&power_initial,A_surfxml_cpu_availability);
+  surf_parse_get_trace(&power_trace,A_surfxml_cpu_availability_file);
 
-  xbt_assert0((A_cpu_state==A_cpu_state_ON)||(A_cpu_state==A_cpu_state_OFF),
+  xbt_assert0((A_surfxml_cpu_state==A_surfxml_cpu_state_ON)||
+	      (A_surfxml_cpu_state==A_surfxml_cpu_state_OFF),
 	      "Invalid state");
-  if (A_cpu_state==A_cpu_state_ON) state_initial = SURF_CPU_ON;
-  if (A_cpu_state==A_cpu_state_OFF) state_initial = SURF_CPU_OFF;
-  surf_parse_get_trace(&state_trace,A_cpu_state_file);
+  if (A_surfxml_cpu_state==A_surfxml_cpu_state_ON) state_initial = SURF_CPU_ON;
+  if (A_surfxml_cpu_state==A_surfxml_cpu_state_OFF) state_initial = SURF_CPU_OFF;
+  surf_parse_get_trace(&state_trace,A_surfxml_cpu_state_file);
 
   cpu_new(name, power_scale, power_initial, power_trace, state_initial,
 	  state_trace);
@@ -78,7 +79,7 @@ static void parse_cpu(void)
 static void parse_file(const char *file)
 {
   surf_parse_reset_parser();
-  ETag_cpu_fun=parse_cpu;
+  ETag_surfxml_cpu_fun=parse_cpu;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();

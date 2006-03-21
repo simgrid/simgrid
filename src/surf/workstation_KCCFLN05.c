@@ -97,23 +97,23 @@ static void parse_workstation(void)
   double interference_send_recv = 0.0;
   double max_outgoing_rate = -1.0;
 
-  surf_parse_get_double(&power_scale,A_cpu_power);
-  surf_parse_get_double(&power_initial,A_cpu_availability);
-  surf_parse_get_trace(&power_trace,A_cpu_availability_file);
+  surf_parse_get_double(&power_scale,A_surfxml_cpu_power);
+  surf_parse_get_double(&power_initial,A_surfxml_cpu_availability);
+  surf_parse_get_trace(&power_trace,A_surfxml_cpu_availability_file);
 
-  xbt_assert0((A_cpu_state==A_cpu_state_ON)||
-	      (A_cpu_state==A_cpu_state_OFF),
+  xbt_assert0((A_surfxml_cpu_state==A_surfxml_cpu_state_ON)||
+	      (A_surfxml_cpu_state==A_surfxml_cpu_state_OFF),
 	      "Invalid state");
-  if (A_cpu_state==A_cpu_state_ON) state_initial = SURF_CPU_ON;
-  if (A_cpu_state==A_cpu_state_OFF) state_initial = SURF_CPU_OFF;
-  surf_parse_get_trace(&state_trace,A_cpu_state_file);
+  if (A_surfxml_cpu_state==A_surfxml_cpu_state_ON) state_initial = SURF_CPU_ON;
+  if (A_surfxml_cpu_state==A_surfxml_cpu_state_OFF) state_initial = SURF_CPU_OFF;
+  surf_parse_get_trace(&state_trace,A_surfxml_cpu_state_file);
 
-  surf_parse_get_double(&interference_send,A_cpu_interference_send);
-  surf_parse_get_double(&interference_recv,A_cpu_interference_recv);
-  surf_parse_get_double(&interference_send_recv,A_cpu_interference_send_recv);
-  surf_parse_get_double(&max_outgoing_rate,A_cpu_max_outgoing_rate);
+  surf_parse_get_double(&interference_send,A_surfxml_cpu_interference_send);
+  surf_parse_get_double(&interference_recv,A_surfxml_cpu_interference_recv);
+  surf_parse_get_double(&interference_send_recv,A_surfxml_cpu_interference_send_recv);
+  surf_parse_get_double(&max_outgoing_rate,A_surfxml_cpu_max_outgoing_rate);
 
-  workstation_new(A_cpu_name, power_scale, power_initial, power_trace, state_initial,
+  workstation_new(A_surfxml_cpu_name, power_scale, power_initial, power_trace, state_initial,
 		  state_trace, interference_send, interference_recv,
 		  interference_send_recv, max_outgoing_rate);
 }
@@ -223,18 +223,18 @@ static void parse_network_link(void)
   e_surf_network_link_state_t state_initial = SURF_NETWORK_LINK_ON;
   tmgr_trace_t state_trace;
 
-  name = xbt_strdup(A_network_link_name);
-  surf_parse_get_double(&bw_initial,A_network_link_bandwidth);
-  surf_parse_get_trace(&bw_trace, A_network_link_bandwidth_file);
+  name = xbt_strdup(A_surfxml_network_link_name);
+  surf_parse_get_double(&bw_initial,A_surfxml_network_link_bandwidth);
+  surf_parse_get_trace(&bw_trace, A_surfxml_network_link_bandwidth_file);
 
-  xbt_assert0((A_network_link_state==A_network_link_state_ON)||
-	      (A_network_link_state==A_network_link_state_OFF),
+  xbt_assert0((A_surfxml_network_link_state==A_surfxml_network_link_state_ON)||
+	      (A_surfxml_network_link_state==A_surfxml_network_link_state_OFF),
 	      "Invalid state");
-  if (A_network_link_state==A_network_link_state_ON) 
+  if (A_surfxml_network_link_state==A_surfxml_network_link_state_ON) 
     state_initial = SURF_NETWORK_LINK_ON;
-  if (A_network_link_state==A_network_link_state_OFF) 
+  if (A_surfxml_network_link_state==A_surfxml_network_link_state_OFF) 
     state_initial = SURF_NETWORK_LINK_OFF;
-  surf_parse_get_trace(&state_trace,A_network_link_state_file);
+  surf_parse_get_trace(&state_trace,A_surfxml_network_link_state_file);
 
   network_link_new(name, bw_initial, bw_trace, state_initial, state_trace);
 }
@@ -272,12 +272,12 @@ static double impact_on_dst_with_other_send;
 
 static void parse_route_set_endpoints(void)
 {
-  src_id = ((workstation_KCCFLN05_t) name_service(A_route_src))->id;
-  dst_id = ((workstation_KCCFLN05_t) name_service(A_route_dst))->id;
-  surf_parse_get_double(&impact_on_src,A_route_impact_on_src);
-  surf_parse_get_double(&impact_on_dst,A_route_impact_on_dst);
-  surf_parse_get_double(&impact_on_src_with_other_recv,A_route_impact_on_src_with_other_recv);
-  surf_parse_get_double(&impact_on_dst_with_other_send,A_route_impact_on_dst_with_other_send);
+  src_id = ((workstation_KCCFLN05_t) name_service(A_surfxml_route_src))->id;
+  dst_id = ((workstation_KCCFLN05_t) name_service(A_surfxml_route_dst))->id;
+  surf_parse_get_double(&impact_on_src,A_surfxml_route_impact_on_src);
+  surf_parse_get_double(&impact_on_dst,A_surfxml_route_impact_on_dst);
+  surf_parse_get_double(&impact_on_src_with_other_recv,A_surfxml_route_impact_on_src_with_other_recv);
+  surf_parse_get_double(&impact_on_dst_with_other_send,A_surfxml_route_impact_on_dst_with_other_send);
 
   nb_link = 0;
   link_name = NULL;
@@ -287,7 +287,7 @@ static void parse_route_elem(void)
 {
   nb_link++;
   link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
-  link_name[(nb_link) - 1] = xbt_strdup(A_route_element_name);
+  link_name[(nb_link) - 1] = xbt_strdup(A_surfxml_route_element_name);
 }
 
 static void parse_route_set_route(void)
@@ -300,7 +300,7 @@ static void parse_file(const char *file)
 {
   /* Figuring out the workstations */
   surf_parse_reset_parser();
-  ETag_cpu_fun=parse_workstation;
+  ETag_surfxml_cpu_fun=parse_workstation;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
@@ -309,16 +309,16 @@ static void parse_file(const char *file)
 
   /* Figuring out the network links */
   surf_parse_reset_parser();
-  ETag_network_link_fun=parse_network_link;
+  ETag_surfxml_network_link_fun=parse_network_link;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
 
   /* Building the routes */
   surf_parse_reset_parser();
-  STag_route_fun=parse_route_set_endpoints;
-  ETag_route_element_fun=parse_route_elem;
-  ETag_route_fun=parse_route_set_route;
+  STag_surfxml_route_fun=parse_route_set_endpoints;
+  ETag_surfxml_route_element_fun=parse_route_elem;
+  ETag_surfxml_route_fun=parse_route_set_route;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();

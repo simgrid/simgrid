@@ -113,20 +113,20 @@ static void parse_network_link(void)
   e_surf_network_link_state_t state_initial = SURF_NETWORK_LINK_ON;
   tmgr_trace_t state_trace;
 
-  name = xbt_strdup(A_network_link_name);
-  surf_parse_get_double(&bw_initial,A_network_link_bandwidth);
-  surf_parse_get_trace(&bw_trace, A_network_link_bandwidth_file);
-  surf_parse_get_double(&lat_initial,A_network_link_latency);
-  surf_parse_get_trace(&lat_trace, A_network_link_latency_file);
+  name = xbt_strdup(A_surfxml_network_link_name);
+  surf_parse_get_double(&bw_initial,A_surfxml_network_link_bandwidth);
+  surf_parse_get_trace(&bw_trace, A_surfxml_network_link_bandwidth_file);
+  surf_parse_get_double(&lat_initial,A_surfxml_network_link_latency);
+  surf_parse_get_trace(&lat_trace, A_surfxml_network_link_latency_file);
 
-  xbt_assert0((A_network_link_state==A_network_link_state_ON)||
-	      (A_network_link_state==A_network_link_state_OFF),
+  xbt_assert0((A_surfxml_network_link_state==A_surfxml_network_link_state_ON)||
+	      (A_surfxml_network_link_state==A_surfxml_network_link_state_OFF),
 	      "Invalid state");
-  if (A_network_link_state==A_network_link_state_ON) 
+  if (A_surfxml_network_link_state==A_surfxml_network_link_state_ON) 
     state_initial = SURF_NETWORK_LINK_ON;
-  if (A_network_link_state==A_network_link_state_OFF) 
+  if (A_surfxml_network_link_state==A_surfxml_network_link_state_OFF) 
     state_initial = SURF_NETWORK_LINK_OFF;
-  surf_parse_get_trace(&state_trace,A_network_link_state_file);
+  surf_parse_get_trace(&state_trace,A_surfxml_network_link_state_file);
 
   network_link_new(name, bw_initial, bw_trace,
 		   lat_initial, lat_trace, state_initial, state_trace);
@@ -139,8 +139,8 @@ static int dst_id = -1;
 
 static void parse_route_set_endpoints(void)
 {
-  src_id = network_card_new(A_route_src);
-  dst_id = network_card_new(A_route_dst);
+  src_id = network_card_new(A_surfxml_route_src);
+  dst_id = network_card_new(A_surfxml_route_dst);
   nb_link = 0;
   link_name = NULL;
 }
@@ -149,7 +149,7 @@ static void parse_route_elem(void)
 {
   nb_link++;
   link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
-  link_name[(nb_link) - 1] = xbt_strdup(A_route_element_name);
+  link_name[(nb_link) - 1] = xbt_strdup(A_surfxml_route_element_name);
 }
 
 static void parse_route_set_route(void)
@@ -161,14 +161,14 @@ static void parse_file(const char *file)
 {
   /* Figuring out the network links */
   surf_parse_reset_parser();
-  ETag_network_link_fun=parse_network_link;
+  ETag_surfxml_network_link_fun=parse_network_link;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
 
   /* Figuring out the network cards used */
   surf_parse_reset_parser();
-  STag_route_fun=parse_route_set_endpoints;
+  STag_surfxml_route_fun=parse_route_set_endpoints;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
@@ -177,9 +177,9 @@ static void parse_file(const char *file)
 
   /* Building the routes */
   surf_parse_reset_parser();
-  STag_route_fun=parse_route_set_endpoints;
-  ETag_route_element_fun=parse_route_elem;
-  ETag_route_fun=parse_route_set_route;
+  STag_surfxml_route_fun=parse_route_set_endpoints;
+  ETag_surfxml_route_element_fun=parse_route_elem;
+  ETag_surfxml_route_fun=parse_route_set_route;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
