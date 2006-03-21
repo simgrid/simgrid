@@ -246,10 +246,8 @@ gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 
 if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
-#	@LEX@ -Psurf_parse_ -t $^ | sed 's/]]//' > $@ 
 	@LEX@ -o$@ -Psurf_parse_ $^
 xbt/graphxml.c: xbt/graphxml.l
-#	@LEX@ -Pxbt_graph_parse_ -t $^ | sed 's/]]//' > $@
 	@LEX@ -o$@ -Pxbt_graph_parse_ $^
 
 if HAVE_FLEXML
