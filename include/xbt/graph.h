@@ -9,7 +9,7 @@
 #ifndef _XBT_GRAPH_H
 #define _XBT_GRAPH_H
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
-
+#include "xbt/dynar.h"
 SG_BEGIN_DECL()
 
 typedef struct xbt_node *xbt_node_t;
@@ -21,16 +21,23 @@ xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data);
 xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data);
 xbt_edge_t xbt_graph_new_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst, 
 			      void *data);
+void xbt_graph_edge_set_length(xbt_edge_t e, double length);
+double xbt_graph_edge_get_length(xbt_edge_t e);
+double* xbt_graph_get_length_matrix(xbt_graph_t g);
 
-void xbt_graph_remove_node(xbt_graph_t g, xbt_node_t n, 
+void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n, 
 			   void_f_pvoid_t *free_function);
-void xbt_graph_remove_edge(xbt_graph_t g, xbt_edge_t e, 
+void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e, 
 			   void_f_pvoid_t *free_function);
 void xbt_graph_free_graph(xbt_graph_t g, 
 			  void_f_pvoid_t *node_free_function,
 			  void_f_pvoid_t *edge_free_function,
 			  void_f_pvoid_t *graph_free_function);
 
+xbt_dynar_t xbt_graph_get_nodes(xbt_graph_t g);
+xbt_dynar_t xbt_graph_get_edges(xbt_graph_t g);
+xbt_node_t xbt_graph_edge_get_source(xbt_edge_t e);
+xbt_node_t xbt_graph_edge_get_target(xbt_edge_t e);
 xbt_graph_t xbt_graph_read(const char *filename);
 
 /* Not implemented yet ! */
@@ -45,8 +52,8 @@ void xbt_graph_export_surfxml(xbt_graph_t g,
 			      const char *(edge_name)(xbt_edge_t)
 			      );
 
-void *xbt_graph_to_array(xbt_graph_t g); 
-void xbt_graph_shortest_paths(xbt_graph_t g);
+/* void *xbt_graph_to_array(xbt_graph_t g);  */
+xbt_node_t* xbt_graph_shortest_paths(xbt_graph_t g);
 void xbt_graph_topological_sort(xbt_graph_t g);
 
 
