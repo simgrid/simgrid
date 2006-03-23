@@ -43,7 +43,7 @@ three-layered (click on the picture to jump to a specific component).
 
 \subsection overview_envs Programmation environments layer
 
-SimGrid provides several programmation environments built on top of a uniq
+SimGrid provides several programmation environments built on top of a unique
 simulation kernel. Each environment targets a specific audiance and
 constitutes a different paradigm. To choose which of them you want to use,
 you have to think about what you want to do and what would be the result of
