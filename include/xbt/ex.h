@@ -211,6 +211,7 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * @{
  */
 
+/** @brief different kind of errors */
 typedef enum {
   unknown_error=0,  /**< unknown error */
   arg_error,        /**< Invalid argument */
