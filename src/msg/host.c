@@ -189,7 +189,7 @@ double MSG_get_host_speed(m_host_t h)
 /** \ingroup msg_gos_functions
  * \brief Determine if a host is available.
  *
- * \param host host to test
+ * \param h host to test
  */
 int MSG_host_is_avail (m_host_t h)
 {
