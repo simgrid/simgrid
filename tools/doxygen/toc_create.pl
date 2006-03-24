@@ -43,7 +43,7 @@ sub handle_file {
   $outfile =~ s|\.\./||g;
   $outfile =~ s|/|_|g;
   $outfile = ".$outfile";
-  print "<<<<< $infile -> $outfile >>>>>>\n";
+  print "Create a TOC for $infile (in $outfile)\n";
   open OUTPUT,"> ./$outfile";
   my($current_level)=-1;
   my($entry);
