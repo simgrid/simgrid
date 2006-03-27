@@ -1,5 +1,6 @@
 
 
+
 /* 	$Id$	 */
 
 
@@ -55,14 +56,17 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
 			      xbt_node_t src, xbt_node_t dst, void *data)
 {
   xbt_edge_t edge = NULL;
+ 
 
   edge = xbt_new0(struct xbt_edge, 1);
   xbt_dynar_push(src->out, &edge);
   xbt_dynar_push(dst->in, &edge);
+
   edge->data = data;
   edge->src = src;
   edge->dst = dst;
-  if (!g->directed) {
+  if (!g->directed) 
+    {
     xbt_dynar_push(src->in, &edge);
     xbt_dynar_push(dst->out, &edge);
   }
@@ -123,37 +127,26 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 {
   unsigned long nbr;
   int i;
-  int idx;
   int cursor = 0;
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
-
-  if ((node_free_function) && (n->data))
-    node_free_function(n->data);
-
-  xbt_dynar_foreach(n->in,cursor,edge)
-    {
-      idx = __xbt_find_in_dynar(edge->src->out,edge);
-      xbt_dynar_remove_at(edge->src->out, idx,NULL);
-    }
-
-  xbt_dynar_foreach(n->out,cursor,edge)
-    {
-      idx = __xbt_find_in_dynar(edge->dst->in,edge);
-      xbt_dynar_remove_at(edge->dst->in, idx,NULL);
-    }
 
   nbr = xbt_dynar_length(g->edges);
   cursor=0;
   for (i = 0; i < nbr; i++)
     {
       xbt_dynar_cursor_get(g->edges, &cursor, &edge);
- 
+        
       if ((edge->dst == n) || (edge->src == n))
 	{
 	  xbt_graph_free_edge(g, edge, edge_free_function);
-	}     
+	} 
+      else xbt_dynar_cursor_step( g->edges, &cursor);   
     }
+
+
+ if ((node_free_function) && (n->data))
+    node_free_function(n->data);
 
   cursor = 0;
   xbt_dynar_foreach(g->nodes, cursor, node)
@@ -168,6 +161,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
 			 void free_function(void *ptr))
 {
+  int idx;
   int cursor = 0;
   xbt_edge_t edge = NULL; 
 
@@ -178,11 +172,21 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
     {
     if (edge == e)
       {
-	xbt_dynar_cursor_rm(g->edges, &cursor);
+	idx = __xbt_find_in_dynar(edge->dst->in,edge); 
+	xbt_dynar_remove_at(edge->dst->in, idx,NULL);
+	idx = __xbt_find_in_dynar(edge->src->out,edge);
+	xbt_dynar_remove_at(edge->src->out,idx,NULL);	
+	if (!g->directed)
+	  {
+	    idx = __xbt_find_in_dynar(edge->src->in,edge); 
+	    xbt_dynar_remove_at(edge->src->in,idx,NULL);
+	    idx = __xbt_find_in_dynar(edge->dst->out,edge);
+	    xbt_dynar_remove_at(edge->dst->out,idx,NULL);	   
+	  }
+        xbt_dynar_cursor_rm(g->edges, &cursor); 
 	break;
       }
     }
-
 }
 
 int __xbt_find_in_dynar(xbt_dynar_t dynar, void *p)
@@ -192,14 +196,11 @@ int __xbt_find_in_dynar(xbt_dynar_t dynar, void *p)
   void *tmp=NULL;
 
   xbt_dynar_foreach(dynar, cursor, tmp)
- {
-    if (tmp == p)
-      break;
-  }
-  /* FIXME : gerer le cas où n n'est pas dans le tableau, renvoyer
-     -1 */
-
-  return (cursor);
+    {
+      if (tmp == p)
+	return cursor;
+    }
+  return -1;
 }
 
 xbt_dynar_t xbt_graph_get_nodes(xbt_graph_t g)
@@ -223,18 +224,6 @@ xbt_node_t xbt_graph_edge_get_target(xbt_edge_t e)
   return e->dst;
 }
 
-int xbt_get_node_index(xbt_graph_t g, xbt_node_t n)
-{
-
-  int cursor = 0;
-  xbt_node_t tmp;
-  xbt_dynar_foreach(g->nodes, cursor, tmp)
-    {
-      if (tmp == n)
-	break;
-    }
-  return (cursor);
-}
 
 void xbt_graph_edge_set_length(xbt_edge_t e, double length)
 {
@@ -253,13 +242,12 @@ double xbt_graph_edge_get_length(xbt_edge_t e)
  */
 double *xbt_graph_get_length_matrix(xbt_graph_t g)
 {
-  fprintf(stderr, "%s", "START GET LENGTHS\n");
   int cursor = 0;
   int in_cursor = 0;
-  int idx, i;
+  int  idx,i;
   unsigned long n;
   xbt_edge_t edge = NULL;
-  xbt_node_t node;
+  xbt_node_t node=NULL;
   double *d = NULL;
 
 # define D(u,v) d[(u)*n+(v)]
@@ -271,35 +259,28 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
     {
       d[i] = -1.0;
     }
-
-
-  xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(stderr, "NODE NAME: %s\n", (char *) node->data);
-    /*  fprintf(stderr,"CURSOR:      %d\n",cursor ); */
-    in_cursor = 0;
-    D(cursor, cursor) = 0;
-    /*  fprintf(stderr,"d[]=      %le\n", D(cursor,cursor)); */
-    xbt_dynar_foreach(node->in, in_cursor, edge) {
-      fprintf(stderr, "EDGE IN:      %s\n", (char *) edge->data);
-      fprintf(stderr, "EDGE DST:      %s\n", (char *) edge->dst->data);
-
-      idx = xbt_get_node_index(g, edge->dst);
-      fprintf(stderr, "IDX: %d\n", idx);
-/* 	  fprintf(stderr,"EDGE ADR: %x\n",(int)edge ); */
-/* 	  fprintf(stderr,"EDGE LENGTH: %le\n", edge->length ); */
-      D(cursor, idx) = edge->length;
+ 
+  xbt_dynar_foreach(g->nodes, cursor, node) 
+    {
+      in_cursor = 0;
+      D(cursor, cursor) = 0;
+    
+      xbt_dynar_foreach(node->out, in_cursor, edge)
+	{
+	  if (edge->dst==node) 
+	    idx= __xbt_find_in_dynar(g->nodes, edge->src);
+	  else /*case of  undirected graphs*/ 
+	     idx = __xbt_find_in_dynar(g->nodes, edge->dst);
+	  D( cursor,idx) = edge->length;
+	}
     }
-    fprintf(stderr, "CURSOR END FOREACH:      %d\n", cursor);
-  }
-  fprintf(stderr, "BEFORE RETURN\n");
 
 # undef D
 
   return d;
 }
 
- /*  calculate all-pairs shortest paths */
-/*   the shortest distance between node  i and j are stocked in  distances[i][j] */
+
 void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 			 xbt_node_t * p)
 {
@@ -310,30 +291,43 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 # define D(u,v) d[(u)*n+(v)]
 # define P(u,v) p[(u)*n+(v)]
 
-
-
-  for (i = 0; i < n * n; i++) {
-    d[i] = adj[i];
-  }
-  for (i = 0; i < n; i++) {
-    for (j = 0; j < n; j++) {
-      if (D(i, j) != -1)
-	P(i, j) = xbt_dynar_get_ptr(g->nodes, i);
+  for (i = 0; i < n * n; i++)
+    {
+      d[i] = adj[i];
     }
-  }
 
-  for (k = 0; k < n; k++) {
-    for (i = 0; i < n; i++) {
-      for (j = 0; j < n; j++) {
-	if ((D(i, k) != -1) && (D(k, j) != -1)) {
-	  if ((D(i, j) == -1) || (D(i, j) > D(i, k) + D(k, j))) {
-	    D(i, j) = D(i, k) + D(k, j);
-	    P(i, j) = P(k, j);
-	  }
+
+  for (i = 0; i < n; i++)
+    {
+      for (j = 0; j < n; j++)
+	{
+	  if (D(i, j) != -1)
+	    {
+	      P(i,j) =*((xbt_node_t*) xbt_dynar_get_ptr(g->nodes, i));	     
+	    }
 	}
-      }
     }
-  }
+ 
+  for (k = 0; k < n; k++)
+    {
+      for (i = 0; i < n; i++)
+	{
+	  for (j = 0; j < n; j++)
+	    {
+	      if ((D(i, k) != -1) && (D(k, j) != -1))
+		{
+		  if ((D(i, j) == -1) || (D(i, j) > D(i, k) + D(k, j)))
+		    {
+		      D(i, j) = D(i, k) + D(k, j);
+		      P(i, j) = P(k, j);
+		    }
+		}
+	    }
+	}
+    }
+
+
+
 # undef P
 # undef D
 }
@@ -354,19 +348,29 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 
   n = xbt_dynar_length(g->nodes);
   adj = xbt_graph_get_length_matrix(g);
+  d = xbt_malloc(n*n*sizeof(double));
+  p = xbt_malloc(n*n*sizeof(xbt_node_t));
+  r = xbt_malloc(n*n*sizeof(xbt_node_t));
+ 
   xbt_floyd_algorithm(g, adj, d, p);
+ 
+  for (i = 0; i < n; i++)
+    {
+      for (j = 0; j < n; j++)
+	{
+	  k = j;
 
-  for (i = 0; i < n; i++) {
-    for (j = 0; j < n; j++) {
-      k = j;
-      while ((P(i, k)) && (xbt_get_node_index(g, P(i, k)) != i)) {
-	k = xbt_get_node_index(g, P(i, k));
-      }
-      if (P(i, j)) {
-	R(i, j) = (xbt_node_t) xbt_dynar_get_ptr(g->nodes, k);
-      }
+	  while ((P(i, k)) && (__xbt_find_in_dynar(g->nodes, P(i, k)) != i))
+	    {
+	      k = __xbt_find_in_dynar(g->nodes, P(i, k));
+	    }
+
+	  if (P(i, j))
+	    {
+	      R(i, j) = *((xbt_node_t*) xbt_dynar_get_ptr(g->nodes, k));
+	    }
+	}
     }
-  }
 # undef R
 # undef P
 
@@ -374,6 +378,7 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
   xbt_free(p);
   return r;
 }
+
 
 static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
@@ -394,7 +399,7 @@ static void __parse_node(void)
   xbt_node_t node =
       xbt_graph_new_node(parsed_graph, (void *) A_graphxml_node_name);
 
-  xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, free);
+  xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 
   DEBUG1("<node label=\"%s\"/>", (char *) (node->data));
 }
@@ -407,13 +412,14 @@ static void __parse_edge(void)
 						    A_graphxml_edge_target),
 				       (void *) A_graphxml_edge_name);
 
-  xbt_dict_set(parsed_edges, A_graphxml_edge_name, (void *) edge, free);
+  xbt_dict_set(parsed_edges, A_graphxml_edge_name, (void *) edge, NULL);
   xbt_graph_edge_set_length(edge, atof(A_graphxml_edge_length));
 
   DEBUG4("<edge name=\"%s\"  source=\"%s\" target=\"%s\" length=\"%f\"/>",
 	 (char *) edge->data,
 	 (char *) (edge->src)->data,
-	 (char *) (edge->dst)->data, xbt_graph_edge_get_length(edge));
+	 (char *) (edge->dst)->data,
+	 xbt_graph_edge_get_length(edge));
 }
 
 xbt_graph_t xbt_graph_read(const char *filename)
@@ -452,4 +458,3 @@ void xbt_graph_export_surfxml(xbt_graph_t g,
 
 }
 
-/* ./xbt/graphxml_usage xbt/graph.xml --xbt-log=graph.thres=debug */

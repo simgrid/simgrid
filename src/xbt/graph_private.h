@@ -41,6 +41,5 @@ typedef struct xbt_graph
 } s_xbt_graph_t;
 void xbt_floyd_algorithm(xbt_graph_t g, double* adj,double* d,  xbt_node_t* p);
 
-int xbt_get_node_index(xbt_graph_t g, xbt_node_t n);
 
 #endif				/* _XBT_GRAPH_PRIVATE_H */

@@ -20,31 +20,49 @@ void test(char *graph_file);
 void test(char *graph_file)
 {
   int i,j;
-
   unsigned long n;
   xbt_dynar_t dynar=NULL;
   xbt_dynar_t dynar1=NULL;
+  xbt_node_t * route=NULL;
+
   xbt_graph_t graph = xbt_graph_read(graph_file);
   n=xbt_dynar_length(xbt_graph_get_nodes( graph));
 
-
-  double *d=xbt_graph_get_length_matrix(graph);
-  
-  for(i=0;i<n;i++)
+  double *adj=xbt_graph_get_length_matrix(graph);
+ 
+ 
+ for(i=0;i<n;i++)
     {
       for(j=0;j<n;j++)
 	{
-	  fprintf(stderr,"%le\t",d[i*n+j] );
+	  fprintf(stderr,"%le\t",adj[i*n+j] );
 	}
       fprintf(stderr,"\n" );
     }
-  dynar = xbt_graph_get_nodes(graph);
+
+
+route= xbt_graph_shortest_paths( graph);
+ 
+  /* for(i=0;i<n;i++) */
+/*     { */
+/*       for(j=0;j<n;j++) */
+/* 	{ */
+/* 	 /\*  fprintf(stderr,"%le\t",(char*)((r[i*n+j])->data) ); *\/ */
+/* 	} */
+/*       fprintf(stderr,"\n" ); */
+/*     } */
+
+  
 
  
-  while(xbt_dynar_length(dynar))
-    xbt_graph_free_node(graph,*((xbt_node_t*)xbt_dynar_get_ptr(dynar,0)),NULL,NULL);
+ 
+ /*  while(xbt_dynar_length(dynar)) */
+/*     xbt_graph_free_node(graph,*((xbt_node_t*)xbt_dynar_get_ptr(dynar,0)),NULL,NULL); */
 
   dynar = xbt_graph_get_edges(graph);
+while(xbt_dynar_length(dynar))
+    xbt_graph_free_edge(graph,*((xbt_edge_t*)xbt_dynar_get_ptr(dynar,0)),NULL);
+ 
   printf("%lu edges\n",xbt_dynar_length(dynar));
  dynar1 = xbt_graph_get_nodes(graph);
  printf("%lu nodes\n",xbt_dynar_length(dynar1));
