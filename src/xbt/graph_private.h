@@ -16,8 +16,9 @@ typedef struct xbt_node
 {
   xbt_dynar_t out;
   xbt_dynar_t in;  /* not used when the graph is directed */
-  void *data;      /* used data */
-  void *xbtdata;   /* private xbt data */  
+  void *data;      /* user data */
+  void *xbtdata;   /* private xbt data: should be reinitialized at the
+		      beginning of your algorithm if you need to use it */  
 } s_xbt_node_t;
 
 /* edge structure */
@@ -26,8 +27,9 @@ typedef struct xbt_edge
 {
   xbt_node_t src;
   xbt_node_t dst;
-  void *data;      /* used data */
-  void *xbtdata;   /* private xbt data */
+  void *data;      /* user data */
+  void *xbtdata;   /* private xbt data: should be reinitialized at the
+		      beginning of your algorithm if you need to use it */  
   double length;
 } s_xbt_edge_t;
 
@@ -38,8 +40,9 @@ typedef struct xbt_graph
   xbt_dynar_t nodes;
   xbt_dynar_t edges;
   unsigned short int directed;
-  void *data;      /* used data */
-  void *xbtdata;   /* private xbt data */  
+  void *data;      /* user data */
+  void *xbtdata;   /* private xbt data: should be reinitialized at the
+		      beginning of your algorithm if you need to use it */  
 } s_xbt_graph_t;
 void xbt_floyd_algorithm(xbt_graph_t g, double* adj,double* d,  xbt_node_t* p);
 
