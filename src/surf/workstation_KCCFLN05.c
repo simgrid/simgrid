@@ -201,9 +201,10 @@ static int resource_used(void *resource_id)
     return (lmm_constraint_used(maxmin_system,
 			       ((cpu_KCCFLN05_t) resource_id)->
 			       constraint) || 
-	    lmm_constraint_used(maxmin_system,
+	    ((((cpu_KCCFLN05_t) resource_id)->bus)?
+	     lmm_constraint_used(maxmin_system,
 				((cpu_KCCFLN05_t) resource_id)->
-				bus));
+				bus):0));
   else 
     return lmm_constraint_used(maxmin_system,
 			       ((network_link_KCCFLN05_t) resource_id)->
