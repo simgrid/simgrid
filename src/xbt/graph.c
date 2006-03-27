@@ -449,7 +449,7 @@ xbt_graph_t xbt_graph_read(const char *filename)
   return graph;
 }
 
-void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
+void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
 			       const char *(node_name) (xbt_node_t),
 			       const char *(edge_name) (xbt_edge_t))
 {
@@ -482,7 +482,7 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
   fclose(file);
 }
 
-void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
+void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
 			       const char *(node_name)(xbt_node_t),
 			       const char *(edge_name)(xbt_edge_t))
 {
