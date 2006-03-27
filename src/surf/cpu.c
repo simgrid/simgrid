@@ -128,7 +128,6 @@ static void action_cancel(surf_action_t action)
 static void action_recycle(surf_action_t action)
 {
   DIE_IMPOSSIBLE;
-  return;
 }
 
 static void action_change_state(surf_action_t action,
