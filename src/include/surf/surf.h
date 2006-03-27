@@ -64,7 +64,7 @@ typedef struct surf_resource_public {
   void *(*name_service) (const char *name);
   const char *(*get_resource_name) (void *resource_id);
 
-   e_surf_action_state_t(*action_get_state) (surf_action_t action);
+  e_surf_action_state_t(*action_get_state) (surf_action_t action);
   void (*action_use) (surf_action_t action);
   int  (*action_free) (surf_action_t action);
   void (*action_cancel) (surf_action_t action);
@@ -89,8 +89,6 @@ typedef struct surf_resource {
 /* Implementations of resource object */
 /**************************************/
 /* Timer resource */
-typedef struct surf_timer_resource_extension_private
-*surf_timer_resource_extension_private_t;
 typedef struct surf_timer_resource_extension_public {
   void (*set) (double date, void *function, void *arg);
   int (*get)  (void **function, void **arg);
@@ -111,8 +109,6 @@ typedef enum {
   SURF_CPU_OFF = 0		/* Running      */
 } e_surf_cpu_state_t;
 
-typedef struct surf_cpu_resource_extension_private
-*surf_cpu_resource_extension_private_t;
 typedef struct surf_cpu_resource_extension_public {
   surf_action_t(*execute) (void *cpu, double size);
   surf_action_t(*sleep) (void *cpu, double duration);
@@ -130,8 +126,6 @@ extern surf_cpu_resource_t surf_cpu_resource;
 void surf_cpu_resource_init_Cas01(const char *filename);
 
 /* Network resource */
-typedef struct surf_network_resource_extension_private
-*surf_network_resource_extension_private_t;
 typedef struct surf_network_resource_extension_public {
   surf_action_t(*communicate) (void *src, void *dst, double size,
 			       double max_rate);
@@ -148,8 +142,6 @@ extern surf_network_resource_t surf_network_resource;
 void surf_network_resource_init_CM02(const char *filename);
 
 /* Workstation resource */
-typedef struct surf_workstation_resource_extension_private
-*surf_workstation_resource_extension_private_t;
 typedef struct surf_workstation_resource_extension_public {
   surf_action_t(*execute) (void *workstation, double size);
   surf_action_t(*sleep) (void *workstation, double duration);
