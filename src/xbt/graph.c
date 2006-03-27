@@ -462,19 +462,24 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
   file=fopen(filename,"w");
   xbt_assert1(file, "Failed to open %s \n",filename);
 
-  fprintf(file,"graph test {\n");
+  if(g->directed) fprintf(file,"digraph test {\n");
+  else fprintf(file,"graph test {\n");
+
   fprintf(file,"  graph [overlap=scale]\n");
 
   fprintf(file,"  node [shape=box, style=filled]\n");
   fprintf(file,"  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
   
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(file,"  %p ", node);
+    fprintf(file,"  \"%p\" ", node);
     if((node_name)&&((name=node_name(node)))) fprintf(file,"[label=\"%s\"]",name);
     fprintf(file,";\n");
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
-    fprintf(file,"  %p -- %p",edge->src, edge->dst);
+    if(g->directed)
+      fprintf(file,"  \"%p\" -> \"%p\"",edge->src, edge->dst);
+    else
+      fprintf(file,"  \"%p\" -- \"%p\"",edge->src, edge->dst);
     if((edge_name)&&((name=edge_name(edge)))) fprintf(file,"[label=\"%s\"]",name);
     fprintf(file,";\n");
   }
