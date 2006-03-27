@@ -57,6 +57,7 @@ void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
   int i;
   lmm_element_t elem = NULL;
 
+  XBT_IN2("%p,%p",sys,var);
   sys->modified = 1;
 
   for (i = 0; i < var->cnsts_number; i++) {
@@ -67,6 +68,7 @@ void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
       make_constraint_inactive(sys, elem->constraint);
   }
   var->cnsts_number = 0;
+  XBT_OUT;
 }
 
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
@@ -196,6 +198,20 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
   else lmm_expand(sys,cnst,var,value);
 }
 
+void lmm_elem_set_value(lmm_system_t sys, lmm_constraint_t cnst,
+			lmm_variable_t var, double value)
+{
+  int i ; 
+
+  for(i=0; i< var->cnsts_number ; i++)
+    if(var->cnsts[i].constraint == cnst) break;
+
+  if(i<var->cnsts_number) {
+    var->cnsts[i].value =value;
+    sys->modified = 1;
+  } else DIE_IMPOSSIBLE;
+}
+
 lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
 				       lmm_variable_t var, int num)
 {
@@ -271,8 +287,25 @@ static void saturated_variable_set_update(lmm_system_t sys)
     }
     xbt_swag_remove(cnst, cnst_list);
   }
-
 }
+
+/* static void lmm_print(lmm_system_t sys) */
+/* { */
+/*   lmm_constraint_t cnst = NULL; */
+/*   lmm_element_t elem = NULL; */
+/*   xbt_swag_t cnst_list = NULL; */
+/*   xbt_swag_t elem_list = NULL; */
+
+/*   cnst_list = &(sys->active_constraint_set); */
+/*   xbt_swag_foreach(cnst, cnst_list) { */
+/*     elem_list = &(cnst->element_set); */
+/*     xbt_swag_foreach(elem, elem_list) { */
+/*       printf("%g.%p(%g) + ",elem->value, elem->variable,elem->variable->weight); */
+/*     } */
+/*     printf("0 <= %g \n",cnst->bound); */
+/*   } */
+/*   fflush(NULL); */
+/* } */
 
 void lmm_solve(lmm_system_t sys)
 {
@@ -298,7 +331,7 @@ void lmm_solve(lmm_system_t sys)
   /* Compute Usage and store the variables that reach the maximum */
 
   cnst_list = &(sys->active_constraint_set);
-  DEBUG1("cnst_list : %d", xbt_swag_size(cnst_list));
+  DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
   xbt_swag_foreach(cnst, cnst_list) {
     /* INIT */
     cnst->remaining = cnst->bound;
@@ -366,6 +399,7 @@ void lmm_solve(lmm_system_t sys)
   } while (xbt_swag_size(&(sys->saturated_variable_set)));
 
   sys->modified = 0;
+/*   lmm_print(sys); */
 }
 
 /* Not a O(1) function */
@@ -438,19 +472,3 @@ lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint
   return xbt_swag_getNext(cnst,(sys->active_constraint_set).offset);
 }
 
-
-/* void lmm_print(lmm_system_t sys) */
-/* { */
-/*   lmm_variable_t var = NULL; */
-/*   lmm_constraint_t cnst = NULL; */
-/*   lmm_element_t elem = NULL; */
-/*   xbt_swag_t cnst_list = NULL; */
-/*   xbt_swag_t var_list = NULL; */
-/*   xbt_swag_t elem_list = NULL; */
-
-/*   var_list = &(sys->variable_set); */
-/*   xbt_swag_foreach(var, var_list) { */
-/*     printf("%s : {\n",var->id); */
-/*     printf("\t %s : {\n",var->id); */
-/*   } */
-/* } */
