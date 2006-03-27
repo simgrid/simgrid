@@ -8,6 +8,9 @@
 #include "surf_private.h"
 #include "xbt/module.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_main, surf,
+				"Logging specific to the SURF maxmin module");
+
 typedef struct surf_resource_object {
   surf_resource_t resource;
 } s_surf_resource_object_t, *surf_resource_object_t;
@@ -98,7 +101,14 @@ void surf_action_change_state(surf_action_t action,
 {
   surf_action_state_t action_state =
       &(action->resource_type->common_public->states);
-
+  XBT_IN2("(%p,%s)", action, 
+	  (((state==SURF_ACTION_READY)?("SURF_ACTION_READY"):
+	    ((state==SURF_ACTION_RUNNING)?("SURF_ACTION_RUNNING"):
+	     ((state==SURF_ACTION_FAILED)?("SURF_ACTION_FAILED"):
+	      ((state==SURF_ACTION_DONE)?("SURF_ACTION_DONE"):
+	       ((state==SURF_ACTION_TO_FREE)?("SURF_ACTION_TO_FREE"):
+		((state==SURF_ACTION_NOT_IN_THE_SYSTEM)?("SURF_ACTION_NOT_IN_THE_SYSTEM"):
+		 ""))))))));
   xbt_swag_remove(action, action->state_set);
 
   if (state == SURF_ACTION_READY)
@@ -114,6 +124,7 @@ void surf_action_change_state(surf_action_t action,
 
   if (action->state_set)
     xbt_swag_insert(action, action->state_set);
+  XBT_OUT;
 }
 
 void surf_action_set_data(surf_action_t action,

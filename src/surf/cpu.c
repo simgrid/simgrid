@@ -127,6 +127,7 @@ static void action_cancel(surf_action_t action)
 
 static void action_recycle(surf_action_t action)
 {
+  DIE_IMPOSSIBLE;
   return;
 }
 
@@ -224,6 +225,7 @@ static surf_action_t execute(void *cpu, double size)
   surf_action_cpu_Cas01_t action = NULL;
   cpu_Cas01_t CPU = cpu;
 
+  XBT_IN2("(%s,%g)",CPU->name,size);
   action = xbt_new0(s_surf_action_cpu_Cas01_t, 1);
 
   action->generic_action.using = 1;
@@ -248,7 +250,7 @@ static surf_action_t execute(void *cpu, double size)
 				      action->generic_action.priority, -1.0, 1);
   lmm_expand(maxmin_system, CPU->constraint, action->variable,
 	     1.0);
-
+  XBT_OUT;
   return (surf_action_t) action;
 }
 
@@ -256,24 +258,29 @@ static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_cpu_Cas01_t action = NULL;
 
+  XBT_IN2("(%s,%g)",((cpu_Cas01_t)cpu)->name,duration);
   action = (surf_action_cpu_Cas01_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   lmm_update_variable_weight(maxmin_system, action->variable, 0.0);
-
+  XBT_OUT;
   return (surf_action_t) action;
 }
 
 static void action_suspend(surf_action_t action)
 {
+  XBT_IN1("(%p)",action);
   lmm_update_variable_weight(maxmin_system,
 			     ((surf_action_cpu_Cas01_t) action)->variable, 0.0);
+  XBT_OUT;
 }
 
 static void action_resume(surf_action_t action)
 {
+  XBT_IN1("(%p)",action);
   lmm_update_variable_weight(maxmin_system,
 			     ((surf_action_cpu_Cas01_t) action)->variable, 
 			     action->priority);
+  XBT_OUT;
 }
 
 static int action_is_suspended(surf_action_t action)
@@ -283,12 +290,16 @@ static int action_is_suspended(surf_action_t action)
 
 static void action_set_max_duration(surf_action_t action, double duration)
 {
+  XBT_IN2("(%p,%g)",action,duration);
   action->max_duration = duration;
+  XBT_OUT;
 }
 
 static void action_set_priority(surf_action_t action, double priority)
 {
+  XBT_IN2("(%p,%g)",action,priority);
   action->priority = priority;
+  XBT_OUT;
 }
 
 static e_surf_cpu_state_t get_state(void *cpu)
