@@ -21,6 +21,14 @@ xbt_dynar_t resource_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
+const char *surf_action_state_names[6] = {
+  "SURF_ACTION_READY", 
+  "SURF_ACTION_RUNNING", 
+  "SURF_ACTION_FAILED", 
+  "SURF_ACTION_DONE", 
+  "SURF_ACTION_TO_FREE", 
+  "SURF_ACTION_NOT_IN_THE_SYSTEM"
+};
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				       size_t offset)
@@ -101,14 +109,7 @@ void surf_action_change_state(surf_action_t action,
 {
   surf_action_state_t action_state =
       &(action->resource_type->common_public->states);
-  XBT_IN2("(%p,%s)", action, 
-	  (((state==SURF_ACTION_READY)?("SURF_ACTION_READY"):
-	    ((state==SURF_ACTION_RUNNING)?("SURF_ACTION_RUNNING"):
-	     ((state==SURF_ACTION_FAILED)?("SURF_ACTION_FAILED"):
-	      ((state==SURF_ACTION_DONE)?("SURF_ACTION_DONE"):
-	       ((state==SURF_ACTION_TO_FREE)?("SURF_ACTION_TO_FREE"):
-		((state==SURF_ACTION_NOT_IN_THE_SYSTEM)?("SURF_ACTION_NOT_IN_THE_SYSTEM"):
-		 ""))))))));
+  XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);
   xbt_swag_remove(action, action->state_set);
 
   if (state == SURF_ACTION_READY)
