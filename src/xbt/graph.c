@@ -3,7 +3,7 @@
 /* a generic graph library.                                                 */
 
 /* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand.                     */
- * All rights reserved.                                                     */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,6 +15,7 @@
 #include "graph_private.h"
 #include "xbt/graphxml_parse.h"
 #include "xbt/dict.h"
+#include "xbt/heap.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(graph, xbt, "Graph");
 
@@ -56,16 +57,14 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
 
   edge = xbt_new0(struct xbt_edge, 1);
   xbt_dynar_push(src->out, &edge);
-  xbt_dynar_push(dst->in, &edge);
+  if (g->directed) 
+    xbt_dynar_push(dst->in, &edge);
+  else /* only the "out" field is used */
+    xbt_dynar_push(dst->out, &edge);
 
   edge->data = data;
   edge->src = src;
   edge->dst = dst;
-  if (!g->directed) 
-    {
-    xbt_dynar_push(src->in, &edge);
-    xbt_dynar_push(dst->out, &edge);
-  }
 
   xbt_dynar_push(g->edges, &edge);
 
@@ -169,17 +168,17 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
     {
     if (edge == e)
       {
-	idx = __xbt_find_in_dynar(edge->dst->in,edge); 
-	xbt_dynar_remove_at(edge->dst->in, idx,NULL);
+	if (g->directed) {
+	  idx = __xbt_find_in_dynar(edge->dst->in,edge); 
+	  xbt_dynar_remove_at(edge->dst->in, idx,NULL);
+	} else { /* only the out field is used */
+	  idx = __xbt_find_in_dynar(edge->dst->out,edge); 
+	  xbt_dynar_remove_at(edge->dst->out, idx,NULL);
+	}
+
 	idx = __xbt_find_in_dynar(edge->src->out,edge);
 	xbt_dynar_remove_at(edge->src->out,idx,NULL);	
-	if (!g->directed)
-	  {
-	    idx = __xbt_find_in_dynar(edge->src->in,edge); 
-	    xbt_dynar_remove_at(edge->src->in,idx,NULL);
-	    idx = __xbt_find_in_dynar(edge->dst->out,edge);
-	    xbt_dynar_remove_at(edge->dst->out,idx,NULL);	   
-	  }
+
         xbt_dynar_cursor_rm(g->edges, &cursor); 
 	free(edge);
 	break;
@@ -378,9 +377,57 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
   return r;
 }
 
+
+xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
+{
+  int tree_size=0;
+  int tree_size_max=xbt_dynar_length(g->nodes)-1;
+  xbt_edge_t *tree = xbt_new0(xbt_edge_t,tree_size_max);
+  xbt_edge_t e,edge;
+  xbt_node_t node = NULL;
+  xbt_dynar_t edge_list = NULL;
+  xbt_heap_t heap = xbt_heap_new(10,NULL);
+  int cursor;
+
+  xbt_assert0(!(g->directed),
+	      "Spanning trees do not make sense on directed graphs");
+
+  node = xbt_dynar_getfirst_as(g->nodes,xbt_node_t);
+  node->xbtdata = (void*) 1;
+  edge_list = node->out;
+  xbt_dynar_foreach(edge_list, cursor, e)
+    xbt_heap_push(heap,e, -(e->length));
+  
+  while((edge=xbt_heap_pop(heap))) {
+    if((edge->src->xbtdata) && (edge->dst->xbtdata)) continue;
+    tree[tree_size++]=edge;
+    if(!(edge->src->xbtdata)) {
+      edge->src->xbtdata = (void*) 1;
+      edge_list = edge->src->out;
+      xbt_dynar_foreach(edge_list, cursor, e) {
+	xbt_heap_push(heap,e, -(e->length));
+      }
+    } else {
+      edge->dst->xbtdata = (void*) 1;
+      edge_list = edge->dst->out;
+      xbt_dynar_foreach(edge_list, cursor, e) {
+	xbt_heap_push(heap,e, -(e->length));
+      }
+    }
+    if(tree_size==tree_size_max) break;
+  }
+  
+  xbt_heap_free(heap);
+
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    node->xbtdata = NULL;
+  }
+  return tree;
+}
+
+/********************* Import and Export ******************/
 static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
-
 
 static void __parse_graph_begin(void)
 {
