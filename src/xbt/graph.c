@@ -155,6 +155,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 	xbt_dynar_cursor_rm(g->nodes, &cursor);
 
     }
+
   return;
 }
 
@@ -184,6 +185,7 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
 	    xbt_dynar_remove_at(edge->dst->out,idx,NULL);	   
 	  }
         xbt_dynar_cursor_rm(g->edges, &cursor); 
+	free(edge);
 	break;
       }
     }
@@ -253,7 +255,7 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
 # define D(u,v) d[(u)*n+(v)]
   n = xbt_dynar_length(g->nodes);
 
-  d = (double *) xbt_malloc(n * n * (sizeof(double)));
+  d = (double *) xbt_new0(double, n*n);
 
   for (i = 0; i < n * n; i++)
     {
@@ -348,9 +350,9 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 
   n = xbt_dynar_length(g->nodes);
   adj = xbt_graph_get_length_matrix(g);
-  d = xbt_malloc(n*n*sizeof(double));
-  p = xbt_malloc(n*n*sizeof(xbt_node_t));
-  r = xbt_malloc(n*n*sizeof(xbt_node_t));
+  d = xbt_new0(double,n*n);
+  p = xbt_new0(xbt_node_t,n*n);
+  r = xbt_new0(xbt_node_t,n*n);
  
   xbt_floyd_algorithm(g, adj, d, p);
  
@@ -374,8 +376,9 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 # undef R
 # undef P
 
-  xbt_free(d);
-  xbt_free(p);
+  free(d);
+  free(p);
+  free(adj);
   return r;
 }
 
@@ -445,12 +448,68 @@ xbt_graph_t xbt_graph_read(const char *filename)
   parsed_graph = NULL;
   return graph;
 }
-void xbt_graph_export_surfxml(xbt_graph_t g,
-			      const char *filename,
-			      const char *(node_name) (xbt_node_t),
-			      const char *(edge_name) (xbt_edge_t)
-    )
-{
 
+void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
+			       const char *(node_name) (xbt_node_t),
+			       const char *(edge_name) (xbt_edge_t))
+{
+  int cursor = 0;
+  xbt_node_t node = NULL;
+  xbt_edge_t edge = NULL;
+  FILE *file = NULL;
+  const char *name=NULL;
+
+  file=fopen(filename,"w");
+  xbt_assert1(file, "Failed to open %s \n",filename);
+
+  fprintf(file,"graph test {\n");
+  fprintf(file,"  graph [overlap=scale]\n");
+
+  fprintf(file,"  node [shape=box, style=filled]\n");
+  fprintf(file,"  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
+  
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    fprintf(file,"  %p ", node);
+    if((node_name)&&((name=node_name(node)))) fprintf(file,"[label=\"%s\"]",name);
+    fprintf(file,";\n");
+  }
+  xbt_dynar_foreach(g->edges, cursor, edge) {
+    fprintf(file,"  %p -- %p",edge->src, edge->dst);
+    if((edge_name)&&((name=edge_name(edge)))) fprintf(file,"[label=\"%s\"]",name);
+    fprintf(file,";\n");
+  }
+  fprintf(file,"}\n");
+  fclose(file);
+}
+
+void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
+			       const char *(node_name)(xbt_node_t),
+			       const char *(edge_name)(xbt_edge_t))
+{
+  int cursor = 0;
+  xbt_node_t node = NULL;
+  xbt_edge_t edge = NULL;
+  FILE *file = NULL;
+  const char *name = NULL;
+
+  file=fopen(filename,"w");
+  xbt_assert1(file, "Failed to open %s \n",filename);
+
+  fprintf(file,"<?xml version='1.0'?>\n");
+  fprintf(file,"<!DOCTYPE graph SYSTEM \"graphxml.dtd\">\n");
+  fprintf(file,"<graph>\n");
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    fprintf(file,"  <node name=\"%p\" ", node);
+    if((node_name)&&((name=node_name(node)))) fprintf(file,"label=\"%s\" ",name);
+    fprintf(file,">\n");
+  }
+  xbt_dynar_foreach(g->edges, cursor, edge) {
+    fprintf(file,"  <edge source=\"%p\" target =\"%p\" ",
+	    edge->src, edge->dst );
+    if((edge_name)&&((name=edge_name(edge)))) fprintf(file,"label=\"%s\" ",name);
+    fprintf(file,">\n");
+  }
+  fprintf(file,"</graph>\n");
+  fclose(file);
 }
 

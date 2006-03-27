@@ -42,19 +42,14 @@ xbt_node_t xbt_graph_edge_get_source(xbt_edge_t e);
 xbt_node_t xbt_graph_edge_get_target(xbt_edge_t e);
 xbt_graph_t xbt_graph_read(const char *filename);
  
+void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
+			       const char *(node_name)(xbt_node_t),
+			       const char *(edge_name)(xbt_edge_t));
+void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
+			       const char *(node_name)(xbt_node_t),
+			       const char *(edge_name)(xbt_edge_t));
 
 /* Not implemented yet ! */
-void xbt_export_graphviz(xbt_graph_t g, const char *filename,
-			 const char *(node_name)(xbt_node_t),
-			 const char *(edge_name)(xbt_edge_t)
-			 );
-
-void xbt_graph_export_surfxml(xbt_graph_t g,
-			      const char *filename,
-			      const char *(node_name)(xbt_node_t),
-			      const char *(edge_name)(xbt_edge_t)
-			      );
-
 /* void *xbt_graph_to_array(xbt_graph_t g);  */
 xbt_node_t* xbt_graph_shortest_paths(xbt_graph_t g);
 void xbt_graph_topological_sort(xbt_graph_t g);
