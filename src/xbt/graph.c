@@ -382,7 +382,6 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 
 static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
-static xbt_dict_t parsed_edges = NULL;
 
 
 static void __parse_graph_begin(void)
@@ -412,7 +411,6 @@ static void __parse_edge(void)
 						    A_graphxml_edge_target),
 				       (void *) A_graphxml_edge_name);
 
-  xbt_dict_set(parsed_edges, A_graphxml_edge_name, (void *) edge, NULL);
   xbt_graph_edge_set_length(edge, atof(A_graphxml_edge_length));
 
   DEBUG4("<edge name=\"%s\"  source=\"%s\" target=\"%s\" length=\"%f\"/>",
@@ -428,7 +426,6 @@ xbt_graph_t xbt_graph_read(const char *filename)
 
   parsed_graph = graph;
   parsed_nodes = xbt_dict_new();
-  parsed_edges = xbt_dict_new();
 
 
   xbt_graph_parse_reset_parser();
@@ -444,7 +441,6 @@ xbt_graph_t xbt_graph_read(const char *filename)
   xbt_graph_parse_close();
 
   xbt_dict_free(&parsed_nodes);
-  xbt_dict_free(&parsed_edges);
 
   parsed_graph = NULL;
   return graph;
