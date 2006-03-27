@@ -1,13 +1,9 @@
-
-
-
 /* 	$Id$	 */
-
 
 /* a generic graph library.                                                 */
 
-/* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand. 
-   All rights reserved.                  */
+/* Copyright (c) 2006 Darina Dimitrova, Arnaud Legrand.                     */
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -382,7 +378,6 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
   return r;
 }
 
-
 static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
 
@@ -399,7 +394,7 @@ static void __parse_graph_end(void)
 static void __parse_node(void)
 {
   xbt_node_t node =
-      xbt_graph_new_node(parsed_graph, (void *) A_graphxml_node_name);
+      xbt_graph_new_node(parsed_graph, NULL);
 
   xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 
@@ -407,12 +402,11 @@ static void __parse_node(void)
 }
 static void __parse_edge(void)
 {
-  xbt_edge_t edge = xbt_graph_new_edge(parsed_graph,
-				       xbt_dict_get(parsed_nodes,
-						    A_graphxml_edge_source),
-				       xbt_dict_get(parsed_nodes,
-						    A_graphxml_edge_target),
-				       (void *) A_graphxml_edge_name);
+  xbt_edge_t edge = 
+    xbt_graph_new_edge(parsed_graph,
+		       xbt_dict_get(parsed_nodes,A_graphxml_edge_source),
+		       xbt_dict_get(parsed_nodes,A_graphxml_edge_target),
+		       NULL);
 
   xbt_graph_edge_set_length(edge, atof(A_graphxml_edge_length));
 
