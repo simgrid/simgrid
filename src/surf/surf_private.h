@@ -15,6 +15,7 @@
 #include "surf/surfxml_parse_private.h"
 
 #define NO_MAX_DURATION -1.0
+#define SG_TCP_CTE_GAMMA 20000.0
 
 typedef enum {
   SURF_NETWORK_LINK_ON = 1,	/* Ready        */
