@@ -53,6 +53,7 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
 /* void *xbt_graph_to_array(xbt_graph_t g);  */
 xbt_node_t* xbt_graph_shortest_paths(xbt_graph_t g);
 void xbt_graph_topological_sort(xbt_graph_t g);
+xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g);
 
 
 
