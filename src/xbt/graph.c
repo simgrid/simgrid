@@ -43,6 +43,8 @@ xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
   node->data = data;
   node->in = xbt_dynar_new(sizeof(xbt_node_t), NULL);
   node->out = xbt_dynar_new(sizeof(xbt_node_t), NULL);
+  node->position_x = -1.0;
+  node->position_y = -1.0;
   xbt_dynar_push(g->nodes, &node);
 
   return node;
@@ -429,12 +431,22 @@ xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
 static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
 
+static void *(*__parse_node_label_and_data)(xbt_node_t, const char*, const char*) = NULL;
+static void *(*__parse_edge_label_and_data)(xbt_edge_t, const char*, const char*) = NULL;
+
 static void __parse_graph_begin(void)
 {
+
   DEBUG0("<graph>");
+  if(A_graphxml_graph_isDirected == A_graphxml_graph_isDirected_true)
+    parsed_graph = xbt_graph_new_graph(1, NULL);
+  else parsed_graph = xbt_graph_new_graph(0, NULL);
+
+  parsed_nodes = xbt_dict_new();
 }
 static void __parse_graph_end(void)
 {
+  xbt_dict_free(&parsed_nodes);
   DEBUG0("</graph>");
 }
 
@@ -443,19 +455,29 @@ static void __parse_node(void)
   xbt_node_t node =
       xbt_graph_new_node(parsed_graph, NULL);
 
-  xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
+  DEBUG1("<node name=\"%s\"/>", A_graphxml_node_name);
+  if(__parse_node_label_and_data)
+    node->data = __parse_node_label_and_data(node,A_graphxml_node_label,
+					     A_graphxml_node_data);
+  xbt_graph_parse_get_double(&(node->position_x),A_graphxml_node_position_x);
+  xbt_graph_parse_get_double(&(node->position_y),A_graphxml_node_position_y);
 
-  DEBUG1("<node label=\"%s\"/>", (char *) (node->data));
+  xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 }
+
 static void __parse_edge(void)
 {
-  xbt_edge_t edge = 
+  xbt_edge_t edge =
     xbt_graph_new_edge(parsed_graph,
 		       xbt_dict_get(parsed_nodes,A_graphxml_edge_source),
 		       xbt_dict_get(parsed_nodes,A_graphxml_edge_target),
 		       NULL);
 
-  xbt_graph_edge_set_length(edge, atof(A_graphxml_edge_length));
+  if(__parse_edge_label_and_data)
+    edge->data = __parse_edge_label_and_data(edge,A_graphxml_edge_label,
+					     A_graphxml_edge_data);
+
+  xbt_graph_parse_get_double(&(edge->length),A_graphxml_edge_length);
 
   DEBUG4("<edge name=\"%s\"  source=\"%s\" target=\"%s\" length=\"%f\"/>",
 	 (char *) edge->data,
@@ -464,13 +486,15 @@ static void __parse_edge(void)
 	 xbt_graph_edge_get_length(edge));
 }
 
-xbt_graph_t xbt_graph_read(const char *filename)
+xbt_graph_t xbt_graph_read(const char *filename,
+			   void *(node_label_and_data)(xbt_node_t, const char*, const char*),
+			   void *(edge_label_and_data)(xbt_edge_t, const char*, const char*))
 {
-  xbt_graph_t graph = xbt_graph_new_graph(1, NULL);
 
-  parsed_graph = graph;
-  parsed_nodes = xbt_dict_new();
+  xbt_graph_t graph = NULL;
 
+  __parse_node_label_and_data = node_label_and_data;
+  __parse_edge_label_and_data = edge_label_and_data;
 
   xbt_graph_parse_reset_parser();
 
@@ -479,14 +503,13 @@ xbt_graph_t xbt_graph_read(const char *filename)
   ETag_graphxml_node_fun = __parse_node;
   ETag_graphxml_edge_fun = __parse_edge;
 
-
   xbt_graph_parse_open(filename);
   xbt_assert1((!xbt_graph_parse()), "Parse error in %s", filename);
   xbt_graph_parse_close();
 
-  xbt_dict_free(&parsed_nodes);
-
+  graph = parsed_graph;
   parsed_graph = NULL;
+
   return graph;
 }
 
@@ -530,7 +553,9 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
 
 void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
 			       const char *(node_name)(xbt_node_t),
-			       const char *(edge_name)(xbt_edge_t))
+			       const char *(edge_name)(xbt_edge_t),
+			       const char *(node_data_print)(void *),
+			       const char *(edge_data_print)(void *))
 {
   int cursor = 0;
   xbt_node_t node = NULL;
@@ -543,16 +568,22 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
 
   fprintf(file,"<?xml version='1.0'?>\n");
   fprintf(file,"<!DOCTYPE graph SYSTEM \"graphxml.dtd\">\n");
-  fprintf(file,"<graph>\n");
+  if(g->directed) fprintf(file,"<graph isDirected=\"true\">\n");
+  else fprintf(file,"<graph isDirected=\"false\">\n");
   xbt_dynar_foreach(g->nodes, cursor, node) {
     fprintf(file,"  <node name=\"%p\" ", node);
     if((node_name)&&((name=node_name(node)))) fprintf(file,"label=\"%s\" ",name);
+    if((node_data_print)&&((name=node_data_print(node->data)))) 
+      fprintf(file,"data=\"%s\" ",name);
     fprintf(file,">\n");
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
     fprintf(file,"  <edge source=\"%p\" target =\"%p\" ",
 	    edge->src, edge->dst );
     if((edge_name)&&((name=edge_name(edge)))) fprintf(file,"label=\"%s\" ",name);
+    if(edge->length>=0.0) fprintf(file,"length=\"%g\" ",edge->length);
+    if((edge_data_print)&&((name=edge_data_print(edge->data)))) 
+      fprintf(file,"data=\"%s\" ",name);
     fprintf(file,">\n");
   }
   fprintf(file,"</graph>\n");
