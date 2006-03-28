@@ -1,5 +1,5 @@
 /* Validating XML processor for graphxml.dtd.
- * Generated 2006/03/21 13:43:39.
+ * Generated 2006/03/28 12:29:32.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -69,12 +69,16 @@ const char rcs_graphxml_flexml[] =
 const char* pcdata;
 AT_graphxml_node_name A_graphxml_node_name;
 AT_graphxml_edge_source A_graphxml_edge_source;
-AT_graphxml_edge_isDirected A_graphxml_edge_isDirected;
+AT_graphxml_node_position_y A_graphxml_node_position_y;
+AT_graphxml_node_position_x A_graphxml_node_position_x;
+AT_graphxml_edge_data A_graphxml_edge_data;
 AT_graphxml_edge_target A_graphxml_edge_target;
+AT_graphxml_graph_isDirected A_graphxml_graph_isDirected;
 AT_graphxml_node_label A_graphxml_node_label;
+AT_graphxml_node_data A_graphxml_node_data;
 AT_graphxml_edge_label A_graphxml_edge_label;
-AT_graphxml_edge_name A_graphxml_edge_name;
 AT_graphxml_edge_length A_graphxml_edge_length;
+AT_graphxml_edge_name A_graphxml_edge_name;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -288,11 +292,20 @@ const char* *graphxml_statenames=NULL;
 
  /* <!-- Small DTD for xbt graphs. -->  */
 
+ /*     isDirected (true|false) "true"
+  * >  */
+
 <ROOT_graphxml_graph>"<graph"{s} {
+  A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
   ENTER(AL_graphxml_graph);
   }
 
 <AL_graphxml_graph>{
+ "isDirected"{Eq}"'true'" |
+ "isDirected"{Eq}"\"true\"" A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
+ "isDirected"{Eq}"'false'" |
+ "isDirected"{Eq}"\"false\"" A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_false;
+
  ">" {
   LEAVE; STag_graphxml_graph();pcdata = NULL; ENTER(S_graphxml_graph);
  }
@@ -322,11 +335,17 @@ const char* *graphxml_statenames=NULL;
 
  /*     label           CDATA                ""
   *     name            CDATA                #REQUIRED
+  *     data            CDATA                ""
+  *     position_x	    CDATA		 "-1.0"
+  *     position_y	    CDATA		 "-1.0"
   * >  */
 
 <ROOT_graphxml_node,S_graphxml_graph_2,S_graphxml_graph_3,S_graphxml_graph>"<node"{s} {
   A_graphxml_node_label = NULL;
   A_graphxml_node_name = NULL;
+  A_graphxml_node_data = NULL;
+  A_graphxml_node_position_x = "-1.0";
+  A_graphxml_node_position_y = "-1.0";
   ENTER(AL_graphxml_node);
   }
 
@@ -336,6 +355,15 @@ const char* *graphxml_statenames=NULL;
 
  "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_name);
  "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_name);
+
+ "data"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_data);
+ "data"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_data);
+
+ "position_x"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_x);
+ "position_x"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_x);
+
+ "position_y"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_y);
+ "position_y"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_y);
 
  ">" {
   if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
@@ -369,11 +397,11 @@ const char* *graphxml_statenames=NULL;
 }
 
  /*     label           CDATA                ""
-  *     name       CDATA        #IMPLIED
-  *     source     CDATA        #REQUIRED
-  *     target     CDATA        #REQUIRED
-  *     length     CDATA        "0.0"
-  *     isDirected (true|false) "true"
+  *     name            CDATA               #IMPLIED
+  *     source          CDATA               #REQUIRED
+  *     target          CDATA               #REQUIRED
+  *     length          CDATA               "-1.0"
+  *     data            CDATA               ""
   * >  */
 
 <ROOT_graphxml_edge,S_graphxml_graph_1,S_graphxml_graph_3,S_graphxml_graph_5,S_graphxml_graph_4,S_graphxml_graph>"<edge"{s} {
@@ -381,8 +409,8 @@ const char* *graphxml_statenames=NULL;
   A_graphxml_edge_name = NULL;
   A_graphxml_edge_source = NULL;
   A_graphxml_edge_target = NULL;
-  A_graphxml_edge_length = "0.0";
-  A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_true;
+  A_graphxml_edge_length = "-1.0";
+  A_graphxml_edge_data = NULL;
   ENTER(AL_graphxml_edge);
   }
 
@@ -402,10 +430,8 @@ const char* *graphxml_statenames=NULL;
  "length"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_length);
  "length"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_length);
 
- "isDirected"{Eq}"'true'" |
- "isDirected"{Eq}"\"true\"" A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_true;
- "isDirected"{Eq}"'false'" |
- "isDirected"{Eq}"\"false\"" A_graphxml_edge_isDirected = A_graphxml_edge_isDirected_false;
+ "data"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_data);
+ "data"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_data);
 
  ">" {
   if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
