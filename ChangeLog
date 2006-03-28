@@ -11,6 +11,10 @@ SimGrid (3.0.2) unstable; urgency=low
     of surfxml parsing but shouldn't be an issue for end-users. [AL]
   * New module: sparse graph structure with basic algorithms. [AL]
 
+  MSG,GRAS:
+  * Bug fix: Processes were started in reverse order, wrt deployment file.
+    Warning: if your code rely on this bug, please fix it.    [AL]
+
  --
 
 SimGrid (3.0.1) unstable; urgency=low
