@@ -113,15 +113,17 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   process->simdata = simdata;
   process->data = data;
 
-  xbt_fifo_push(host->simdata->process_list, process);
+  xbt_fifo_unshift(host->simdata->process_list, process);
 
   /* /////////////// FIX du current_process !!! ////////////// */
   self = msg_global->current_process;
   xbt_context_start(process->simdata->context);
   msg_global->current_process = self;
 
-  xbt_fifo_push(msg_global->process_list, process);
-  xbt_fifo_push(msg_global->process_to_run, process);
+  xbt_fifo_unshift(msg_global->process_list, process);
+  DEBUG2("Inserting %s(%s) in the to_run list",process->name,
+	 host->name);
+  xbt_fifo_unshift(msg_global->process_to_run, process);
 
   PAJE_PROCESS_NEW(process);
 
@@ -198,7 +200,7 @@ MSG_error_t MSG_process_change_host(m_process_t process, m_host_t host)
 
   xbt_fifo_remove(simdata->host->simdata->process_list,process);
   simdata->host = host;
-  xbt_fifo_push(host->simdata->process_list,process);
+  xbt_fifo_unshift(host->simdata->process_list,process);
 
   return MSG_OK;
 }

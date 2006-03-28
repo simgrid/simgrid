@@ -45,7 +45,7 @@ m_host_t __MSG_host_create(const char *name,
   simdata->process_list = xbt_fifo_new();
   /* Update global variables */
 
-  xbt_fifo_push(msg_global->host, host);
+  xbt_fifo_unshift(msg_global->host, host);
 
   PAJE_HOST_NEW(host);
 

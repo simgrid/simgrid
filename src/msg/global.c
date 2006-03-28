@@ -466,7 +466,7 @@ int MSG_process_killall(int reset_PIDs)
   m_process_t p = NULL;
   m_process_t self = MSG_process_self();
 
-  while((p=xbt_fifo_shift(msg_global->process_list))) {
+  while((p=xbt_fifo_pop(msg_global->process_list))) {
     if(p!=self) MSG_process_kill(p);
   }
 
@@ -494,7 +494,7 @@ MSG_error_t MSG_clean(void)
   m_process_t p = NULL;
 
 
-  while((p=xbt_fifo_shift(msg_global->process_list))) {
+  while((p=xbt_fifo_pop(msg_global->process_list))) {
     MSG_process_kill(p);
   }
   xbt_context_exit();
