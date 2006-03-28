@@ -16,6 +16,8 @@ typedef struct xbt_node
 {
   xbt_dynar_t out;
   xbt_dynar_t in;  /* not used when the graph is directed */
+  double position_x; /* positive value: negative means undefined */
+  double position_y; /* positive value: negative means undefined */
   void *data;      /* user data */
   void *xbtdata;   /* private xbt data: should be reinitialized at the
 		      beginning of your algorithm if you need to use it */  
@@ -30,7 +32,7 @@ typedef struct xbt_edge
   void *data;      /* user data */
   void *xbtdata;   /* private xbt data: should be reinitialized at the
 		      beginning of your algorithm if you need to use it */  
-  double length;
+  double length;   /* positive value: negative means undefined */
 } s_xbt_edge_t;
 
 /* Graph structure */
