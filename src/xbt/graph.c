@@ -17,6 +17,9 @@
 #include "xbt/dict.h"
 #include "xbt/heap.h"
 
+
+
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(graph, xbt, "Graph");
 
 
@@ -41,10 +44,11 @@ xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
   xbt_node_t node = NULL;
   node = xbt_new0(struct xbt_node, 1);
   node->data = data;
-  node->in = xbt_dynar_new(sizeof(xbt_node_t), NULL);
-  node->out = xbt_dynar_new(sizeof(xbt_node_t), NULL);
+  node->in = xbt_dynar_new(sizeof(xbt_edge_t), NULL);
+  node->out = xbt_dynar_new(sizeof(xbt_edge_t), NULL);
   node->position_x = -1.0;
   node->position_y = -1.0;
+
   xbt_dynar_push(g->nodes, &node);
 
   return node;
@@ -67,6 +71,12 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
   edge->data = data;
   edge->src = src;
   edge->dst = dst;
+  if (!g->directed) 
+    {
+      xbt_dynar_push(src->in, &edge);
+      xbt_dynar_push(dst->out, &edge);
+    }
+
 
   xbt_dynar_push(g->edges, &edge);
 
@@ -479,8 +489,7 @@ static void __parse_edge(void)
 
   xbt_graph_parse_get_double(&(edge->length),A_graphxml_edge_length);
 
-  DEBUG4("<edge name=\"%s\"  source=\"%s\" target=\"%s\" length=\"%f\"/>",
-	 (char *) edge->data,
+  DEBUG3("<edge  source=\"%s\" target=\"%s\" length=\"%f\"/>",
 	 (char *) (edge->src)->data,
 	 (char *) (edge->dst)->data,
 	 xbt_graph_edge_get_length(edge));
@@ -590,3 +599,50 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
   fclose(file);
 }
 
+xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g)
+{
+ 
+  xbt_node_t* sorted;
+  int cursor,idx;
+  xbt_node_t node;
+ unsigned long n;
+
+ n= xbt_dynar_length(g->nodes); 
+ idx=n-1;
+
+  sorted=xbt_malloc(n*sizeof(xbt_node_t));
+  xbt_dynar_foreach(g->nodes,cursor , node)
+    {
+      node->xbtdata=xbt_new0(int,1);
+    }
+
+  xbt_dynar_foreach(g->nodes,cursor , node) 
+    { 
+      xbt_graph_depth_visit(g,node,sorted,&idx);   
+    }
+	  
+  return sorted; 
+}
+
+void xbt_graph_depth_visit(xbt_graph_t g,xbt_node_t n,xbt_node_t* sorted,int* idx )
+{
+  int cursor;
+  xbt_edge_t edge;
+ 
+  if (*((int*)(n->xbtdata))==ALREADY_EXPLORED)
+    return;
+  else if (*((int*)(n->xbtdata))==CURRENTLY_EXPLORING)
+    THROW0(0,0,"There is a cycle");
+  else
+    {
+      *((int*)(n->xbtdata))=CURRENTLY_EXPLORING;
+
+      xbt_dynar_foreach(n->out,cursor, edge)
+	{
+	  xbt_graph_depth_visit(g,edge->dst,sorted,idx);
+	}
+ 
+      *((int*)(n->xbtdata))=ALREADY_EXPLORED;
+      sorted[(*idx)--]=n;
+    }	     
+}

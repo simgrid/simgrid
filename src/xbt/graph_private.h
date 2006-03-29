@@ -10,6 +10,10 @@
 #define _XBT_GRAPH_PRIVATE_H
 #include "xbt/dynar.h"
 
+#define NOT_EXPLORED 0
+#define CURRENTLY_EXPLORING 1
+#define ALREADY_EXPLORED 2
+
 /* Node structure */
 /* typedef struct xbt_node *xbt_node_t; */
 typedef struct xbt_node 
@@ -47,6 +51,6 @@ typedef struct xbt_graph
 		      beginning of your algorithm if you need to use it */  
 } s_xbt_graph_t;
 void xbt_floyd_algorithm(xbt_graph_t g, double* adj,double* d,  xbt_node_t* p);
-
+void xbt_graph_depth_visit (xbt_graph_t g,xbt_node_t n,xbt_node_t* sorted,int* idx);
 
 #endif				/* _XBT_GRAPH_PRIVATE_H */
