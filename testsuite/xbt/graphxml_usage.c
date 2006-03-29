@@ -12,10 +12,14 @@
 #include "xbt/graph.h"
 #include "xbt/graphxml.h"
 #include "xbt/dynar.h"
-#include <malloc.h>
-
-
-
+#include "xbt/sysdep.h"
+#include "../src/xbt/graph_private.h"
+void* node_label_and_data(xbt_node_t node,const char*label ,const char* data);
+void* node_label_and_data(xbt_node_t node,const char*label ,const char* data)
+{
+  char* lbl=xbt_strdup(label);
+  return lbl;
+}
 void test(char *graph_file);
 void test(char *graph_file)
 {
@@ -23,9 +27,10 @@ void test(char *graph_file)
   unsigned long n;
   xbt_dynar_t dynar=NULL;
   xbt_dynar_t dynar1=NULL;
+  xbt_node_t* sorted=NULL;
   xbt_node_t * route=NULL;
 
-  xbt_graph_t graph = xbt_graph_read(graph_file);
+  xbt_graph_t graph = xbt_graph_read(graph_file,&node_label_and_data,NULL);
   n=xbt_dynar_length(xbt_graph_get_nodes( graph));
 
   double *adj=xbt_graph_get_length_matrix(graph);
@@ -43,18 +48,29 @@ void test(char *graph_file)
 
 route= xbt_graph_shortest_paths( graph);
  
-  /* for(i=0;i<n;i++) */
+ /*  for(i=0;i<n;i++) */
 /*     { */
 /*       for(j=0;j<n;j++) */
 /* 	{ */
-/* 	 /\*  fprintf(stderr,"%le\t",(char*)((r[i*n+j])->data) ); *\/ */
+/* 	  if( route[i*n+j]) */
+/* 	  fprintf(stderr,"%s\t",(char*)(route[i*n+j])->data) ); */
 /* 	} */
 /*       fprintf(stderr,"\n" ); */
 /*     } */
 
   
+sorted= xbt_graph_topo_sort(graph);
 
- 
+  for(i=0;i<n;i++)
+    {
+      if (sorted[i]){
+/* fprintf(stderr,"sorted[%d] =%p\n",i,sorted[i] ); */
+	  fprintf(stderr,"%s\t",
+		  (char*)((sorted[i])->data)
+		 ) ;
+	
+	  fprintf(stderr,"\n" );}
+    }
  
  /*  while(xbt_dynar_length(dynar)) */
 /*     xbt_graph_free_node(graph,*((xbt_node_t*)xbt_dynar_get_ptr(dynar,0)),NULL,NULL); */
@@ -66,8 +82,9 @@ while(xbt_dynar_length(dynar))
   printf("%lu edges\n",xbt_dynar_length(dynar));
  dynar1 = xbt_graph_get_nodes(graph);
  printf("%lu nodes\n",xbt_dynar_length(dynar1));
-/*  free(d); */
-  xbt_graph_free_graph(graph, NULL, NULL, NULL);
+ xbt_free(adj);
+ xbt_free(route);
+ xbt_graph_free_graph(graph, NULL, NULL, NULL);
 }
 
 int main(int argc, char** argv)
