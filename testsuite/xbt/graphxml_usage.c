@@ -20,6 +20,11 @@ void* node_label_and_data(xbt_node_t node,const char*label ,const char* data)
   char* lbl=xbt_strdup(label);
   return lbl;
 }
+
+static const char *node_name(xbt_node_t n) {
+  return n->data;
+}
+
 void test(char *graph_file);
 void test(char *graph_file)
 {
@@ -35,6 +40,7 @@ void test(char *graph_file)
 
   double *adj=xbt_graph_get_length_matrix(graph);
  
+  xbt_graph_export_graphviz(graph, "graph.dot", node_name, NULL);
  
  for(i=0;i<n;i++)
     {
