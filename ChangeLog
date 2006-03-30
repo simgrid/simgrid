@@ -11,9 +11,14 @@ SimGrid (3.0.2) unstable; urgency=low
     of surfxml parsing but shouldn't be an issue for end-users. [AL]
   * New module: sparse graph structure with basic algorithms. [AL]
 
+  SURF:
+  * complete rewrote of the KCCFLN05 workstation model. It is now an
+    extension of the classical CLM03 model that gracefully handles
+    failures. This is now the standard model for MSG and GRAS. [AL]
+
   MSG,GRAS:
   * Bug fix: Processes were started in reverse order, wrt deployment file.
-    Warning: if your code rely on this bug, please fix it.    [AL]
+    Warning: if your code relies on this bug, please fix it.    [AL]
 
  --
 
