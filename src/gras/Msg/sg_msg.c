@@ -17,8 +17,12 @@
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Transport/transport_private.h" /* sock->data */
 
+XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
+XBT_LOG_DEFAULT_CATEGORY(gras_msg);
+
 void gras_msg_send_ext(gras_socket_t   sock,
 		     e_gras_msg_kind_t kind,
+		       unsigned long int ID,
 		       gras_msgtype_t  msgtype,
 		       void           *payload) {
 
@@ -33,12 +37,22 @@ void gras_msg_send_ext(gras_socket_t   sock,
 
   msg=xbt_new0(s_gras_msg_t,1);
   msg->type=msgtype;
-
+  msg->ID = ID;
    
-  msg->payl_size=gras_datadesc_size(msgtype->ctn_type);
-  msg->payl=xbt_malloc(msg->payl_size);
-  if (msgtype->ctn_type)
-    whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,payload,msg->payl);
+  if (kind == e_gras_msg_kind_rpcerror) {
+     /* error on remote host, carfull, payload is an exception */
+    msg->payl_size=gras_datadesc_size(gras_datadesc_by_name("ex_t"));
+    msg->payl=xbt_malloc(msg->payl_size);
+    whole_payload_size = gras_datadesc_copy(gras_datadesc_by_name("ex_t"),
+					    payload,msg->payl);
+  } else {
+    msg->payl_size=gras_datadesc_size(msgtype->ctn_type);
+    msg->payl=xbt_malloc(msg->payl_size);
+    if (msgtype->ctn_type)
+      whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,
+					      payload, msg->payl);
+  }
+
   msg->kind = kind;
 
   task=MSG_task_create(msgtype->name,0,
@@ -47,6 +61,10 @@ void gras_msg_send_ext(gras_socket_t   sock,
   if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) 
     THROW0(system_error,0,"Problem during the MSG_task_put");
 
+  VERB3("Sent a message type '%s' kind '%s' ID %lu",
+	msg->type->name,
+	e_gras_msg_kind_names[msg->kind],
+	msg->ID);
 }
 /*
  * receive the next message on the given socket.  
@@ -64,10 +82,12 @@ gras_msg_recv(gras_socket_t    sock,
 
   xbt_assert0(msg,"msg is an out parameter of gras_msg_recv...");
 
+
   if (MSG_task_get(&task, pd->chan) != MSG_OK)
     THROW0(system_error,0,"Error in MSG_task_get()");
 
   msg_got=MSG_task_get_data(task);
+
 
   msg_got->expe= msg->expe;
   memcpy(msg,msg_got,sizeof(s_gras_msg_t));
@@ -75,4 +95,10 @@ gras_msg_recv(gras_socket_t    sock,
   free(msg_got);
   if (MSG_task_destroy(task) != MSG_OK)
     THROW0(system_error,0,"Error in MSG_task_destroy()");
+
+  VERB3("Received a message type '%s' kind '%s' ID %lu",// from %s",
+	msg->type->name,
+	e_gras_msg_kind_names[msg->kind],
+	msg->ID);
+  //	gras_socket_peer_name(msg->expe));
 }

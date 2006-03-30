@@ -18,10 +18,12 @@ XBT_LOG_DEFAULT_CATEGORY(gras_msg);
 
 void gras_msg_send_ext(gras_socket_t   sock,
 		     e_gras_msg_kind_t kind,
+		       unsigned long int ID,
 		       gras_msgtype_t  msgtype,
 		       void           *payload) {
 
   static gras_datadesc_type_t string_type=NULL;
+  static gras_datadesc_type_t ulong_type=NULL;
   char c_kind=(char)kind;
   
   if (!msgtype)
@@ -32,15 +34,39 @@ void gras_msg_send_ext(gras_socket_t   sock,
     string_type = gras_datadesc_by_name("string");
     xbt_assert(string_type);
   }
+  if (!ulong_type) {
+    ulong_type = gras_datadesc_by_name("unsigned long int");
+    xbt_assert(ulong_type);
+  }
 
   DEBUG3("send '%s' to %s:%d", msgtype->name, 
 	 gras_socket_peer_name(sock),gras_socket_peer_port(sock));
   gras_trp_send(sock, _GRAS_header, 6, 1 /* stable */);
   gras_trp_send(sock, &c_kind,      1, 1 /* stable */);
+  switch (kind) {
+   case e_gras_msg_kind_oneway: 
+     break;
+     
+   case e_gras_msg_kind_rpccall:
+   case e_gras_msg_kind_rpcanswer:
+   case e_gras_msg_kind_rpcerror:
+     gras_datadesc_send(sock,ulong_type,&ID);
+     break;
 
+   default:
+     THROW1(unknown_error,0,"Unknown msg kind %d",kind);
+  }
+   
   gras_datadesc_send(sock, string_type,   &msgtype->name);
-  if (msgtype->ctn_type)
-    gras_datadesc_send(sock, msgtype->ctn_type, payload);
+  if (kind == e_gras_msg_kind_rpcerror) {
+     /* error on remote host, carfull, payload is an exception */
+    gras_datadesc_send(sock, gras_datadesc_by_name("ex_t"),payload);
+  } else {
+     /* regular message */
+     if (msgtype->ctn_type)
+       gras_datadesc_send(sock, msgtype->ctn_type, payload);
+  }
+   
   gras_trp_flush(sock);
 }
 
@@ -53,6 +79,7 @@ gras_msg_recv(gras_socket_t    sock,
 
   xbt_ex_t e;
   static gras_datadesc_type_t string_type=NULL;
+  static gras_datadesc_type_t ulong_type=NULL;
   char header[6];
   int cpt;
   int r_arch;
@@ -65,6 +92,11 @@ gras_msg_recv(gras_socket_t    sock,
     string_type=gras_datadesc_by_name("string");
     xbt_assert(string_type);
   }
+  if (!ulong_type) {
+    ulong_type = gras_datadesc_by_name("unsigned long int");
+    xbt_assert(ulong_type);
+  }
+
   
   TRY {
     gras_trp_recv(sock, header, 6);
@@ -86,6 +118,20 @@ gras_msg_recv(gras_socket_t    sock,
   DEBUG2("Handle an incoming message using protocol %d (remote is %s)",
 	 (int)header[4],gras_datadesc_arch_name(r_arch));
 
+  switch (msg->kind) {
+  case e_gras_msg_kind_oneway: 
+    break;
+    
+  case e_gras_msg_kind_rpccall:
+  case e_gras_msg_kind_rpcanswer:
+  case e_gras_msg_kind_rpcerror:
+    gras_datadesc_recv(sock,ulong_type,r_arch, &msg->ID);
+    break;
+    
+  default:
+    THROW_IMPOSSIBLE;
+  }
+
   gras_datadesc_recv(sock, string_type, r_arch, &msg_name);
   TRY {
     msg->type = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,msg_name);
@@ -96,16 +142,25 @@ gras_msg_recv(gras_socket_t    sock,
   }
   free(msg_name);
 
-  if (msg->type->ctn_type) {
-    msg->payl_size=gras_datadesc_size(msg->type->ctn_type);
-    xbt_assert2(msg->payl_size > 0,
-		"%s %s",
-		"Dynamic array as payload is forbided for now (FIXME?).",
-		"Reference to dynamic array is allowed.");
-    msg->payl = xbt_malloc(msg->payl_size);
-    gras_datadesc_recv(sock, msg->type->ctn_type, r_arch, msg->payl);
+  if (msg->kind == e_gras_msg_kind_rpcerror) {
+    /* error on remote host. Carfull with that exception, eugene */
+    msg->payl_size=gras_datadesc_size(gras_datadesc_by_name("ex_t"));
+    msg->payl=xbt_malloc(msg->payl_size);
+    gras_datadesc_recv(sock, gras_datadesc_by_name("ex_t"), r_arch, msg->payl);
+
   } else {
-    msg->payl = NULL;
-    msg->payl_size = 0;
+     /* regular message */
+     if (msg->type->ctn_type) {
+	msg->payl_size=gras_datadesc_size(msg->type->ctn_type);
+	xbt_assert2(msg->payl_size > 0,
+		    "%s %s",
+		    "Dynamic array as payload is forbided for now (FIXME?).",
+		    "Reference to dynamic array is allowed.");
+	msg->payl = xbt_malloc(msg->payl_size);
+	gras_datadesc_recv(sock, msg->type->ctn_type, r_arch, msg->payl);
+     } else {
+	msg->payl = NULL;
+	msg->payl_size = 0;
+     }
   }
 }

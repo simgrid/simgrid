@@ -32,29 +32,15 @@ extern char _GRAS_header[6];
 
 extern int gras_msg_libdata_id; /* The identifier of our libdata */
  
-typedef enum {
-  e_gras_msg_kind_unknown = 0,
-  e_gras_msg_kind_oneway  = 1
-  /* future:
-       method call (answer expected; sessionID attached)
-       successful return (usual datatype attached, with sessionID)
-       error return (payload = exception)
-       [+ call cancel, and others]
-     even after: 
-       forwarding request and other application level routing stuff
-       group communication
-  */
-  
-} e_gras_msg_kind_t;
- 
-/** @brief Message instance */
-typedef struct {
-    gras_socket_t   expe;
-  e_gras_msg_kind_t kind;
-    gras_msgtype_t  type;
-    void           *payl;
-    int             payl_size;
-} s_gras_msg_t, *gras_msg_t;
+extern const char *e_gras_msg_kind_names[e_gras_msg_kind_count];
+
+/* declare either regular messages or RPC or whatever */
+void 
+gras_msgtype_declare_ext(const char           *name,
+			 short int             version,
+			 e_gras_msg_kind_t     kind, 
+			 gras_datadesc_type_t  payload_request,
+			 gras_datadesc_type_t  payload_answer);
 
 /**
  * gras_msgtype_t:
@@ -69,7 +55,9 @@ typedef struct s_gras_msgtype {
         
   /* payload */
   short int version;
+  e_gras_msg_kind_t kind;
   gras_datadesc_type_t ctn_type;
+  gras_datadesc_type_t answer_type; /* only used for RPC */
 } s_gras_msgtype_t;
 
 extern xbt_set_t _gras_msgtype_set; /* of gras_msgtype_t */
@@ -81,6 +69,7 @@ void gras_msg_recv(gras_socket_t   sock,
 		   gras_msg_t      msg/*OUT*/);
 void gras_msg_send_ext(gras_socket_t   sock,
 		     e_gras_msg_kind_t kind,
+		       unsigned long int ID,
 		       gras_msgtype_t  msgtype,
 		       void           *payload);
 
@@ -98,6 +87,18 @@ typedef struct s_gras_cblist gras_cblist_t;
 void gras_cbl_free(void *); /* used to free the memory at the end */
 void gras_cblist_free(void *cbl);
 
+/**
+ * gras_msg_cbctx_t:
+ *
+ * Context associated to a given callback (to either regular message or RPC)
+ */
+struct s_gras_msg_cb_ctx {
+  gras_socket_t expeditor;
+  gras_msgtype_t msgtype;
+  unsigned long int ID;
+  
+};
+typedef struct s_gras_msg_cb_ctx s_gras_msg_cb_ctx_t;
 
 /* ********* *
  * * TIMER * *
@@ -111,6 +112,7 @@ typedef struct {
 
 /* returns 0 if it handled a timer, or the delay until next timer, or -1 if no armed timer */
 double gras_msg_timer_handle(void);
+
 
 
 #endif  /* GRAS_MESSAGE_PRIVATE_H */
