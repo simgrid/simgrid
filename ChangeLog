@@ -19,7 +19,18 @@ SimGrid (3.0.2) unstable; urgency=low
   MSG,GRAS:
   * Bug fix: Processes were started in reverse order, wrt deployment file.
     WARNING: if your code relies on this bug, please fix it.    [AL]
-    
+
+  GRAS:
+  * New! a real RPC mecanism, as it ought to be since too long. [MQ]
+      Exception occuring on server-side are propagated back to client (!).
+      
+    API CHANGE: the callback changed their prototype. Change:
+        int my_handler(gras_socket_t expeditor, void *payload_data) {
+      to:
+        int my_handler(gras_msg_cb_ctx_t ctx  , void *payload_data) {
+          gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
+      and you're set.
+
   AMOK:
   * Bandwidth module: 
     - Do not force experiment sizes to be expressed in kb, or it becomes
