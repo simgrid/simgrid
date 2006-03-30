@@ -13,8 +13,7 @@
 #define _XBT_SWAG_H
 
 #include "xbt/misc.h"
-#include "xbt/sysdep.h"
-
+#include "xbt/sysdep.h" /* sizeof */
 
 /** 
  * @addtogroup XBT_swag

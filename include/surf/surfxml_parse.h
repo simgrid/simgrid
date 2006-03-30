@@ -9,6 +9,7 @@
 #define _SURF_SURFXML_PARSE_H
 
 #include "surf/surfxml.h"
+#include "xbt/sysdep.h" /* to have FILE */
 #include "xbt/misc.h"
 
 /* Entry-point of the surfxml parser. */

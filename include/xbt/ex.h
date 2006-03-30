@@ -32,8 +32,8 @@
 #ifndef __XBT_EX_H__
 #define __XBT_EX_H__
 
-#include <xbt/misc.h>
 #include <xbt/sysdep.h>
+#include <xbt/misc.h>
 
 /* do not include execinfo.h directly since it's not always available. 
    Instead, copy the parts we need (and fake when it's not there) */

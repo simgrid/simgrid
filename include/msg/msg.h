@@ -9,7 +9,6 @@
 #define MSG_H
 
 #include "xbt/misc.h"
-#include "xbt/sysdep.h"
 
 #include "msg/datatypes.h"
 SG_BEGIN_DECL()
