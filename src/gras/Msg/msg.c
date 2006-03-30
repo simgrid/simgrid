@@ -337,9 +337,9 @@ gras_msg_wait(double           timeout,
 	      void            *payload) {
   s_gras_msg_t msg;
 
-  return gras_msg_wait_ext(timeout,
-			   msgt_want, NULL,      NULL, NULL,
-			   &msg);
+  gras_msg_wait_ext(timeout,
+		    msgt_want, NULL,      NULL, NULL,
+		    &msg);
   memcpy(payload,msg.payl,msg.payl_size);
   free(msg.payl);
   *expeditor = msg.expe;
