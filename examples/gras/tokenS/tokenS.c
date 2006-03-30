@@ -11,7 +11,7 @@
  
 #include "gras.h"
  
-#define NBLOOPS 100
+#define NBLOOPS 3
 /*#define NBLOOPS 30000*/
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Token,"Messages specific to this example");
@@ -39,14 +39,14 @@ typedef struct {
 
 
 /* Callback function */
-static int node_cb_stoken_handler(gras_socket_t  expeditor,
-				  void          *payload_data) {
+static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload) {
   
   xbt_ex_t e;
   
-  /* 1. Get the payload into the msg variable */
-  int msg=*(int*)payload_data;
- 
+  /* 1. Get the payload into the msg variable, and retrieve my caller */
+  int msg=*(int*)payload;
+  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+
 
   /* 2. Retrieve the node's state (globals) */
   node_data_t *globals=(node_data_t*)gras_userdata_get();
@@ -137,7 +137,8 @@ int node (int argc,char *argv[]) {
   globals->remaining_loop=NBLOOPS;
   globals->create = 0;
   globals->tosuccessor = NULL;
-  	
+
+  if (!gras_os_getpid() % 100)
   INFO4("Launch node %d (successor on %s:%d; listening on %d)",
 	gras_os_getpid(), host,peerport, myport);
 
