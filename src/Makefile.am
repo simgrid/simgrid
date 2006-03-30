@@ -134,7 +134,7 @@ COMMON_SRC=\
   gras/DataDesc/datadesc_interface.h  gras/DataDesc/datadesc_private.h \
   gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h \
   \
-  gras/Msg/msg.c                      gras/Msg/timer.c                 \
+  gras/Msg/msg.c                      gras/Msg/rpc.c                       gras/Msg/timer.c                 \
   gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
   \
   gras/Virtu/process.c
