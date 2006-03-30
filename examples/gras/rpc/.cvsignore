@@ -1,0 +1,8 @@
+.deps .libs Makefile Makefile.in _*.c *_server *_client *_simulator
+test_sg
+test_rl
+*.Makefile.am
+*.Makefile.local
+*.Makefile.remote
+*.deploy.sh
+*.trace

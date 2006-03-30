@@ -238,7 +238,7 @@ fi
 ##
 
 
-#    examples/pastry/Makefile    examples/pastry/test_sg
+#
 #      examples/gras/chord/Makefile  examples/gras/chord/test_sg examples/gras/chord/test_rl
 #  src/amok/Makefile
 
@@ -252,6 +252,7 @@ AC_CONFIG_FILES([
     examples/msg/Makefile           examples/msg/run_msg_test
     examples/gras/Makefile 
       examples/gras/ping/Makefile   examples/gras/ping/test_sg  examples/gras/ping/test_rl
+      examples/gras/rpc/Makefile    examples/gras/rpc/test_sg   examples/gras/rpc/test_rl
       examples/gras/timer/Makefile  examples/gras/timer/test_sg examples/gras/timer/test_rl
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
       examples/gras/tokenS/Makefile examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl
@@ -278,6 +279,7 @@ AC_CONFIG_FILES([
      examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
      \
      examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
+     examples/gras/rpc/test_sg    examples/gras/rpc/test_rl    \
      examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
      examples/gras/chrono/test_sg examples/gras/chrono/test_rl  \
      examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl  \
