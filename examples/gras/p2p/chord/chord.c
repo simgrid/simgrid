@@ -101,7 +101,8 @@ int node(int argc,char **argv);
 
 }*/
 
-static int node_cb_get_suc_handler(gras_socket_t expeditor,void *payload_data){
+static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
+	gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);   
 	xbt_ex_t e;
 	get_suc_t incoming=*(get_suc_t*)payload_data;
 	rep_suc_t outgoing;
