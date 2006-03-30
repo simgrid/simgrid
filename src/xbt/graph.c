@@ -404,6 +404,10 @@ xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
   xbt_assert0(!(g->directed),
 	      "Spanning trees do not make sense on directed graphs");
 
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    node->xbtdata = NULL;
+  }
+
   node = xbt_dynar_getfirst_as(g->nodes,xbt_node_t);
   node->xbtdata = (void*) 1;
   edge_list = node->out;
@@ -431,9 +435,6 @@ xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
   
   xbt_heap_free(heap);
 
-  xbt_dynar_foreach(g->nodes, cursor, node) {
-    node->xbtdata = NULL;
-  }
   return tree;
 }
 
