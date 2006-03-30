@@ -54,7 +54,8 @@ int client (int argc,char *argv[]);
  * Server code
  * **********************************************************************/
 
-static int server_cb_request_handler(gras_socket_t expeditor, void *payload_data) {
+static int server_cb_request_handler(gras_msg_cb_ctx_t ctx, void *payload_data) {
+  gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
 			     
   /* 1. Get the payload into the data variable */
   matrix_t *data=(matrix_t*)payload_data;

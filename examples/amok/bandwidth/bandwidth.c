@@ -23,8 +23,7 @@ typedef struct {
   int done;
 } s_sensor_data_t,*sensor_data_t;
 
-static int sensor_cb_quit(gras_socket_t  expeditor,
-                          void          *payload_data) {
+static int sensor_cb_quit(gras_msg_cb_ctx_t ctx, void *payload) {
   sensor_data_t globals=(sensor_data_t)gras_userdata_get();
                           
   globals->done = 1;                  
