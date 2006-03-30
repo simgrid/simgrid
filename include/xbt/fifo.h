@@ -14,11 +14,6 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_fifo
  *  @brief This section describes the API to generic workqueue.
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_set]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_swag]       
- *                <tr><td><b>Down</b>   <td> [\ref XBT_fifo_cons]        </table></center>
- *
  * These functions provide the same kind of functionnality as dynamic arrays but in time O(1).
  * However these functions use malloc/free way too much often.            
  */
@@ -26,9 +21,6 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_fifo_cons Fifo constructor and destructor
  *  @ingroup XBT_fifo
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
- *                <tr><td>   Prev       <td> 
- *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo_perl]        </table></center>
  *  @{
  */
 
@@ -47,9 +39,6 @@ void xbt_fifo_free(xbt_fifo_t);
 /** @defgroup XBT_fifo_perl Fifo perl-like functions
  *  @ingroup XBT_fifo
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo_cons]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo_direct]        </table></center>
  *  @{
  */
 xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t, void *);
@@ -62,10 +51,6 @@ int xbt_fifo_is_in(xbt_fifo_t, void *);
 
 /** @defgroup XBT_fifo_direct Direct access to fifo elements
  *  @ingroup XBT_fifo
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo_perl]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo_misc]        </table></center>
  *
  *  @{
  */
@@ -107,10 +92,6 @@ xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
 
 /** @defgroup XBT_fifo_misc Misc fifo functions
  *  @ingroup XBT_fifo
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_fifo]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo_direct]
- *                <tr><td>   Next       <td>                     </table></center>
  *
  *  @{
  */

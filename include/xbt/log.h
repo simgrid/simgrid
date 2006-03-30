@@ -10,10 +10,6 @@
 /** @addtogroup XBT_log
  *  @brief A generic logging facility in the spirit of log4j (grounding feature)
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_ex]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_error]     
- *                <tr><td><b>Down</b>   <td> [\ref XBT_log_cats]        </table></center>
  *
  */
  
@@ -21,8 +17,6 @@
  *  \ingroup XBT_log
  *  \brief (automatically extracted) 
  *     
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_log] </table></center>
- *
  *  This is the list of all existing log categories in SimGrid.
  *  This list was automatically extracted from the source code by
  *  the src/xbt_log_extract_hierarchy utility.

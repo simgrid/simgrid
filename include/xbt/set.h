@@ -17,11 +17,6 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_set
  *  @brief A data container consisting in \ref XBT_dict and \ref XBT_dynar
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_fifo]       
- *                <tr><td><b>Down</b>   <td> [\ref XBT_set_cons]        </table></center>
- *
  *  The elements stored in such a data structure can be retrieve both by
  *  name and by ID. For this to work, the first fields of the structures
  *  stored must begin with:
@@ -40,10 +35,6 @@ SG_BEGIN_DECL()
 
 /** @defgroup XBT_set_cons Set and set elements, constructor/destructor
  *  @ingroup XBT_set
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_set]
- *                <tr><td>   Prev       <td> 
- *                <tr><td><b>Next</b>   <td> [\ref XBT_set_basic]        </table></center>
  *
  *  @{
  */
@@ -66,10 +57,6 @@ typedef struct xbt_set_elm_ *  xbt_set_elm_t;
 /** @defgroup XBT_set_basic Sets basic usage
  *  @ingroup XBT_set
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_set]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_set_cons]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_set_curs]        </table></center>
- *
  *  @{
  */
 
@@ -82,10 +69,6 @@ xbt_set_elm_t xbt_set_get_by_id      (xbt_set_t set, int         id);
 /** @} */
 /** @defgroup XBT_set_curs Sets cursors
  *  @ingroup XBT_set
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_set]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_set_basic]
- *                <tr><td>   Next       <td>                       </table></center>
  *
  *  \warning Don't add or remove entries to the cache while traversing
  *

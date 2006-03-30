@@ -19,11 +19,6 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_dict
  *  @brief The dictionnary data structure (comparable to hash tables)
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dynar]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_set]       
- *                <tr><td><b>Down</b>   <td> [\ref XBT_dict_cons]        </table></center>
- * 
  *  This section describes the API to a dictionnary structure that
  *  associates as string to a void* key. Even if it provides the same
  *  functionnality than an hash table, the implementation differs and the
@@ -45,10 +40,6 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dict_cons Dict constructor and destructor
  *  @ingroup XBT_dict
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
- *                <tr><td>   Prev       <td> 
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_basic]        </table></center>
- *
  *  @{
  */
 
@@ -60,10 +51,6 @@ SG_BEGIN_DECL()
 /** @} */
 /** @defgroup XBT_dict_basic Dictionnaries basic usage
  *  @ingroup XBT_dict
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_cons]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_nnul]        </table></center>
  *
  * Careful, those functions assume that the key is null-terminated.
  *
@@ -81,10 +68,6 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dict_nnul Dictionnaries with non-nul terminated keys
  *  @ingroup XBT_dict
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_basic]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_curs]        </table></center>
- *
  * Those functions work even with non-null terminated keys.
  *
  *  @{
@@ -100,10 +83,6 @@ SG_BEGIN_DECL()
 /** @} */
 /** @defgroup XBT_dict_curs Cursors on dictionnaries 
  *  @ingroup XBT_dict
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_nnul]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dict_multi]        </table></center>
  *
  *  Don't get impressed, there is a lot of functions here, but traversing a 
  *  dictionnary is imediate with the xbt_dict_foreach macro.
@@ -150,10 +129,6 @@ SG_BEGIN_DECL()
 /** @} */
 /** @defgroup XBT_dict_multi Multi-level dictionnaries
  *  @ingroup XBT_dict
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dict]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_dict_curs]
- *                <tr><td>   Next       <td>              </table></center>
  *
  * They can be seen as dictionnary of multiple keys or as dictionnary of 
  * dictionnary of ... of data. Most of the functions here work the same way 

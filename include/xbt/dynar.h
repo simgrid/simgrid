@@ -17,12 +17,6 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_dynar
   * @brief DynArr are dynamically sized vector which may contain any type of variables.
   *
-  * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]
-  *                <tr><td><b>Prev</b>   <td> [\ref XBT_config]
-  *                <tr><td><b>Next</b>   <td> [\ref XBT_dict]
-  *                <tr><td><b>Down</b>   <td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor 
-  * </table></center>
-  *
   * These are the SimGrid version of the dynamically size arrays, which all C programmer recode one day or another.
   *  
   * For performance concerns, the content of DynArr must be homogeneous (in
@@ -61,10 +55,6 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_cons Dynar constructor and destructor
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Up </b>       <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Jump to</b><td> --\>\ref XBT_dynar_cons\<--\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
- * </table></center>
- *
  *  @{
  */
    /** \brief Dynar data type (opaque type) */
@@ -85,10 +75,6 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_array Dynar as a regular array
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n--\>\ref XBT_dynar_array\<--\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
- * </table></center>
- *
  *  @{
  */
 
@@ -104,10 +90,6 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
  *  @ingroup XBT_dynar
  *
- * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n--\>\ref XBT_dynar_perl\<--\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
- * </table></center>
- *
  *  @{
  */
 
@@ -120,10 +102,6 @@ SG_BEGIN_DECL()
 /** @} */
 /** @defgroup XBT_dynar_ctn Direct manipulation to the dynars content
  *  @ingroup XBT_dynar
- *
- * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n--\>\ref XBT_dynar_ctn\<--\n\ref XBT_dynar_speed\n\ref XBT_dynar_cursor
- * </table></center>
  *
  *  Those functions do not retrive the content, but only their address.
  *
@@ -138,10 +116,6 @@ SG_BEGIN_DECL()
 /** @} */
 /** @defgroup XBT_dynar_speed Speed optimized access to dynars of scalars
  *  @ingroup XBT_dynar
- *
- * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n--\>\ref XBT_dynar_speed\<--\n\ref XBT_dynar_cursor
- * </table></center>
  *
  *  While the other functions use a memcpy to retrive the content into the
  *  user provided area, those ones use a regular affectation. It only works
@@ -178,10 +152,6 @@ SG_BEGIN_DECL()
 /** @} */
 /** @defgroup XBT_dynar_cursor Cursors on dynar
  *  @ingroup XBT_dynar
- *
- * <center><table><tr><td><b>Up </b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_dynar]
- *                <tr><td><b>Jump to</b><td> \ref XBT_dynar_cons\n\ref XBT_dynar_array\n\ref XBT_dynar_perl\n\ref XBT_dynar_ctn\n\ref XBT_dynar_speed\n--\>\ref XBT_dynar_cursor\<--
- * </table></center>
  *
  * Cursors are used to iterate over the structure. Never add elements to the 
  * DynArr during the traversal. To remove elements, use the

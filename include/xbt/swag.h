@@ -19,11 +19,6 @@
  * @addtogroup XBT_swag
  * @brief a O(1) set based on linked lists
  * 
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_fifo]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_heap]
- *                <tr><td><b>Down</b>   <td> [\ref XBT_swag_type]        </table></center>
- *
  *  Warning, this module is done to be efficient and performs tons of
  *  cast and dirty things. So make sure you know what you are doing while using it.
  *  It is basically a fifo but with restrictions so that
@@ -35,10 +30,6 @@
 /** @defgroup XBT_swag_type Swag types
     @ingroup XBT_swag
 
-   <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_swag]
-                  <tr><td>   Prev       <td> 
-                  <tr><td><b>Next</b>   <td> [\ref XBT_swag_func]        </table></center>
-                  
     Specific set. 
 
 
@@ -92,10 +83,6 @@ typedef struct xbt_swag {
 /** @defgroup XBT_swag_func SWAG functions 
  *  @ingroup XBT_swag
  
-   <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_swag]
-                  <tr><td><b>Prev</b>   <td> [\ref XBT_swag_type]
-                  <tr><td><b>Next</b>   <td> [\ref XBT_swag_curs]        </table></center>
-                  
  *  @{
  */
 
@@ -136,10 +123,6 @@ static _XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
  * \defgroup XBT_swag_curs Swag cursor
  * @ingroup XBT_swag
 
-   <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_swag]
-                  <tr><td><b>Prev</b>   <td> [\ref XBT_swag_func]
-                  <tr><td>   Next       <td>                       </table></center>
- 
  * Iterates over the whole swag. 
  *
  * @{ */

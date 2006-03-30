@@ -19,11 +19,6 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_config
  *  @brief Changing the configuration of SimGrid components (grounding feature)
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_error]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_dynar]       
- *                <tr><td><b>Down</b>   <td> [\ref XBT_cfg_use]        </table></center>
- *
  *  All modules of the SimGrid toolkit can be configured with this API. 
  *  User modules and libraries can also use these facilities to handle 
  *  their own configuration.
@@ -81,10 +76,6 @@ SG_BEGIN_DECL()
 
 /** @defgroup XBT_cfg_use User interface: changing values
  *  @ingroup XBT_config
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_config]
- *                <tr><td>   Prev       <td> 
- *                <tr><td><b>Next</b>   <td> [\ref XBT_cfg_decl]        </table></center>
  *
  * This is the only interface you should use unless you want to let your 
  * own code become configurable with this.
@@ -144,10 +135,6 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 /** @defgroup XBT_cfg_decl Configuration type declaration and memory management
  *  @ingroup XBT_config
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_config]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_cfg_use]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_cfg_register]        </table></center>
- *
  *  @{
  */
 
@@ -175,10 +162,6 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 /** @defgroup XBT_cfg_register  Registering stuff
  *  @ingroup XBT_config
  *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_config]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_cfg_decl]
- *                <tr><td><b>Next</b>   <td> [\ref XBT_cfg_get]        </table></center>
- *
  *  This how to add new variables to an existing configuration set. Use it to make your code 
  *  configurable.
  *
@@ -195,10 +178,6 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
  *  @ingroup XBT_config
- *
- * <center><table><tr><td><b>Top</b>    <td> [\ref index]::[\ref XBT_API]::[\ref XBT_config]
- *                <tr><td><b>Prev</b>   <td> [\ref XBT_cfg_register]
- *                <tr><td>   Next       <td>         </table></center>
  *
  * This is how to retrieve the values stored in the configuration set. This is only 
  * intended to configurable code, naturally.
