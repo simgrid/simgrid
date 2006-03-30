@@ -46,14 +46,10 @@ typedef struct {
 } s_sat_request_t,*sat_request_t;
 
 /* Prototypes of local callbacks */
-int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
-			    void          *payload);
-int amok_bw_cb_bw_request(gras_socket_t    expeditor,
-			  void            *payload);
+int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload);
+int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx, void *payload);
 
-int amok_bw_cb_sat_start(gras_socket_t     expeditor,
-			 void             *payload);
-int amok_bw_cb_sat_begin(gras_socket_t     expeditor,
-			 void             *payload);
+int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload);
+int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload);
 
 #endif /* AMOK_BANDWIDTH_PRIVATE_H */

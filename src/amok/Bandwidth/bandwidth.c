@@ -209,8 +209,9 @@ void amok_bw_test(gras_socket_t peer,
 
    sizes are in byte
 */
-int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
+int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
 			    void          *payload) {
+  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
   gras_socket_t measMasterIn=NULL,measIn=NULL,measOut=NULL;
   bw_request_t request=*(bw_request_t*)payload;
   bw_request_t answer;
@@ -344,9 +345,10 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   free(result);
 }
 
-int amok_bw_cb_bw_request(gras_socket_t    expeditor,
+int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 			  void            *payload) {
 			  
+  gras_socket_t    expeditor = gras_msg_cb_ctx_from(ctx);
   /* specification of the test to run, and our answer */
   bw_request_t request = *(bw_request_t*)payload;
   bw_res_t result = xbt_new0(s_bw_res,1);
@@ -367,12 +369,12 @@ int amok_bw_cb_bw_request(gras_socket_t    expeditor,
   return 1;
 }
 
-int amok_bw_cb_sat_start(gras_socket_t     expeditor,
+int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx,
 			 void             *payload) {
    CRITICAL0("amok_bw_cb_sat_start; not implemented");
    return 1;
 } 
-int amok_bw_cb_sat_begin(gras_socket_t     expeditor,
+int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx,
 			 void             *payload) {
    CRITICAL0("amok_bw_cb_sat_begin: not implemented");
    return 1;
