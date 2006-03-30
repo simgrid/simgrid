@@ -390,6 +390,9 @@ gras_datadesc_send_rec(gras_socket_t         sock,
   VERB2("Send a %s (%s)", 
 	type->name, gras_datadesc_cat_names[type->category_code]);
 
+  if (!strcmp(type->name,"string"))
+    VERB1("value: '%s'",*(char**)data);
+
   if (type->send) {
     type->send(type,state,data);
     DEBUG0("Run the emission callback");
@@ -901,6 +904,9 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
   
   if (type->recv)
     type->recv(type,state,l_data);
+
+  if (!strcmp(type->name,"string"))
+    VERB1("value: '%s'",*(char**)l_data);
 
 }
 
