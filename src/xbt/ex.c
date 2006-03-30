@@ -35,6 +35,8 @@
 #include "portable.h" /* execinfo when available */
 #include "xbt/ex.h"
 
+#include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
+
 /* default __ex_ctx callback function */
 ex_ctx_t *__xbt_ex_ctx_default(void) {
     static ex_ctx_t ctx = XBT_CTX_INITIALIZER;
@@ -46,25 +48,24 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
 void xbt_ex_display(xbt_ex_t *e)  {
 
   fprintf(stderr,
-	  "** SimGrid: UNCAUGHT EXCEPTION: category: %s; value: %d\n"
+	  "** SimGrid: UNCAUGHT EXCEPTION on %s: category: %s; value: %d\n"
 	  "** %s\n"
 	  "** Thrown by %s%s%s at %s:%d:%s\n",
+	  gras_os_myname(),
 	  xbt_ex_catname(e->category), e->value, e->msg,
-	  e->procname, (e->host?"@":""),(e->host?e->host:"localhost"),
+	  e->procname, (e->host?"@":""),(e->host?e->host:""),//localhost"),
 	  e->file,e->line,e->func);
 
 #ifdef HAVE_EXECINFO_H
  {
-  char **strings;
   int i;
 
   fprintf(stderr,"** Backtrace:\n");
-  strings = backtrace_symbols (e->bt, e->used);
+  if (!e->bt_strings)
+    e->bt_strings = backtrace_symbols (e->bt, e->used);
 
   for (i = 0; i < e->used; i++)
-     printf ("   %s\n", strings[i]);
-
-  free (strings);
+     printf ("   %s\n", e->bt_strings[i]);
  }
 #endif
 }
@@ -82,8 +83,22 @@ ex_ctx_cb_t  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
 ex_term_cb_t __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
 void xbt_ex_free(xbt_ex_t e) {
+  int i;
+
   if (e.msg) free(e.msg);
   free(e.procname);
+  if (e.host) {
+    free(e.file);
+    free(e.func);
+    for (i=0; i<e.used; i++) 
+      free(e.bt_strings[i]);
+    free(e.bt_strings);
+    e.bt_strings=NULL;
+  }
+  /* locally, only one chunk of memory is allocated by the libc */
+  if (e.bt_strings)
+    free(e.bt_strings);
+
 }
 
 /** \brief returns a short name for the given exception category */

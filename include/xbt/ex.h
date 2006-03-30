@@ -232,14 +232,16 @@ typedef struct {
   xbt_errcat_t category; /**< category like HTTP (what went wrong) */
   int          value;    /**< like errno (why did it went wrong) */
   /* throw point */
-  char *host;     /* NULL for localhost; hostname:port if remote */
+  char *host;     /* NULL for localhost; hostname if remote */
+  /* FIXME: host should be hostname:port[#thread] */
   char *procname; 
   char *file;     /**< to be freed only for remote exceptions */
   int   line;     
   char *func;     /**< to be freed only for remote exceptions */
   /* Backtrace */
-  void *bt[XBT_BACKTRACE_SIZE];
   int   used;
+  char **bt_strings; /* only filed on display (or before the network propagation) */
+  void *bt[XBT_BACKTRACE_SIZE];
 } xbt_ex_t;
 
 /* declare the context type (private) */
@@ -253,30 +255,31 @@ typedef struct {
 #define XBT_CTX_INITIALIZER \
     { NULL, 0, { /* content */ NULL, unknown_error, 0, \
                  /* throw point*/ NULL, NULL, NULL, 0, NULL,\
-                 /* backtrace */ {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL},0 } }
+                 /* backtrace */ 0,NULL,{NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL} } }
 #define XBT_CTX_INITIALIZE(ctx) \
     do { \
-        (ctx)->ctx_mctx        = NULL; \
-        (ctx)->ctx_caught      = 0;    \
-        (ctx)->ctx_ex.msg      = NULL; \
-        (ctx)->ctx_ex.category = unknown_error;    \
-        (ctx)->ctx_ex.value    = 0;    \
-        (ctx)->ctx_ex.host     = NULL; \
-        (ctx)->ctx_ex.procname = NULL; \
-        (ctx)->ctx_ex.file     = NULL; \
-        (ctx)->ctx_ex.line     = 0;    \
-        (ctx)->ctx_ex.func     = NULL; \
-        (ctx)->ctx_ex.bt[0]    = NULL; \
-        (ctx)->ctx_ex.bt[1]    = NULL; \
-        (ctx)->ctx_ex.bt[2]    = NULL; \
-        (ctx)->ctx_ex.bt[3]    = NULL; \
-        (ctx)->ctx_ex.bt[4]    = NULL; \
-        (ctx)->ctx_ex.bt[5]    = NULL; \
-        (ctx)->ctx_ex.bt[6]    = NULL; \
-        (ctx)->ctx_ex.bt[7]    = NULL; \
-        (ctx)->ctx_ex.bt[8]    = NULL; \
-        (ctx)->ctx_ex.bt[9]    = NULL; \
-        (ctx)->ctx_ex.used     = 0; \
+        (ctx)->ctx_mctx          = NULL; \
+        (ctx)->ctx_caught        = 0;    \
+        (ctx)->ctx_ex.msg        = NULL; \
+        (ctx)->ctx_ex.category   = 0;    \
+        (ctx)->ctx_ex.value      = 0;    \
+        (ctx)->ctx_ex.host       = NULL; \
+        (ctx)->ctx_ex.procname   = NULL; \
+        (ctx)->ctx_ex.file       = NULL; \
+        (ctx)->ctx_ex.line       = 0;    \
+        (ctx)->ctx_ex.func       = NULL; \
+        (ctx)->ctx_ex.bt[0]      = NULL; \
+        (ctx)->ctx_ex.bt[1]      = NULL; \
+        (ctx)->ctx_ex.bt[2]      = NULL; \
+        (ctx)->ctx_ex.bt[3]      = NULL; \
+        (ctx)->ctx_ex.bt[4]      = NULL; \
+        (ctx)->ctx_ex.bt[5]      = NULL; \
+        (ctx)->ctx_ex.bt[6]      = NULL; \
+        (ctx)->ctx_ex.bt[7]      = NULL; \
+        (ctx)->ctx_ex.bt[8]      = NULL; \
+        (ctx)->ctx_ex.bt[9]      = NULL; \
+        (ctx)->ctx_ex.used       = 0; \
+        (ctx)->ctx_ex.bt_strings = NULL; \
     } while (0)
 
 /* the exception context */
@@ -348,6 +351,14 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
     } \
     else
 
+#define DO_THROW(e) \
+     /* deal with the exception */                                             \
+     if (__xbt_ex_ctx()->ctx_mctx == NULL)                                     \
+       __xbt_ex_terminate((xbt_ex_t *)&(e)); /* not catched */\
+     else                                                                      \
+       __ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx); /* catched somewhere */    \
+     abort()/* nope, stupid GCC, we won't survive a THROW (this won't be reached) */
+
 /** @brief Helper macro for THROWS0-6
  *  @hideinitializer
  *
@@ -378,12 +389,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      __xbt_ex_ctx()->ctx_ex.line     = __LINE__;                               \
      __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION;                   \
      __xbt_ex_ctx()->ctx_ex.used     = backtrace((void**)__xbt_ex_ctx()->ctx_ex.bt,XBT_BACKTRACE_SIZE);\
-     /* deal with the exception */                                             \
-     if (__xbt_ex_ctx()->ctx_mctx == NULL)                                     \
-       __xbt_ex_terminate((xbt_ex_t *)&(__xbt_ex_ctx()->ctx_ex)); /* not catched */\
-     else                                                                      \
-       __ex_mctx_restore(__xbt_ex_ctx()->ctx_mctx); /* catched somewhere */    \
-     abort();/* nope, stupid GCC, we won't survive a THROW (this won't be reached) */ \
+     DO_THROW(__xbt_ex_ctx()->ctx_ex);\
   } while (0)
 
 /** @brief Builds and throws an exception with a string taking no arguments
