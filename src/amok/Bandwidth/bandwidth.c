@@ -111,12 +111,12 @@ void amok_bw_exit(void) {
  * \arg exp_size: Total size of data sent across the network
  * \arg msg_size: Size of each message sent. Ie, (\e expSize % \e msgSize) messages will be sent.
  * \arg sec: where the result (in seconds) should be stored.
- * \arg bw: observed Bandwidth (in kb/s) 
+ * \arg bw: observed Bandwidth (in byte/s) 
  *
  * Conduct a bandwidth test from the local process to the given peer.
  * This call is blocking until the end of the experiment.
  *
- * Results are reported in last args, and sizes are in kb.
+ * Results are reported in last args, and sizes are in byte.
  */
 void amok_bw_test(gras_socket_t peer,
 		  unsigned long int buf_size,
@@ -144,12 +144,12 @@ void amok_bw_test(gras_socket_t peer,
   }
   
   request=xbt_new0(s_bw_request_t,1);
-  request->buf_size=buf_size*1024;
-  request->exp_size=exp_size*1024;
-  request->msg_size=msg_size*1024;
+  request->buf_size=buf_size;
+  request->exp_size=exp_size;
+  request->msg_size=msg_size;
   request->host.name = NULL;
   request->host.port = gras_socket_my_port(measMasterIn);
-  VERB5("Handshaking with %s:%d to connect it back on my %d (expsize=%ld kb= %ld b)", 
+  VERB5("Handshaking with %s:%d to connect it back on my %d (expsize=%ld byte= %ld b)", 
 	gras_socket_peer_name(peer),gras_socket_peer_port(peer), request->host.port,
 	buf_size,request->buf_size);
 
@@ -207,7 +207,7 @@ void amok_bw_test(gras_socket_t peer,
    receive the corresponding data on the measurement socket, 
    close the measurment socket
 
-   sizes are in byte (got converted from kb my expeditor)
+   sizes are in byte
 */
 int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
 			    void          *payload) {
@@ -300,12 +300,12 @@ int amok_bw_cb_bw_handshake(gras_socket_t  expeditor,
  * \arg exp_size: Total size of data sent across the network
  * \arg msg_size: Size of each message sent. (\e expSize % \e msgSize) messages will be sent.
  * \arg sec: where the result (in seconds) should be stored.
- * \arg bw: observed Bandwidth (in kb/s)
+ * \arg bw: observed Bandwidth (in byte/s)
  *
  * Conduct a bandwidth test from the process from_host:from_port to to_host:to_port.
  * This call is blocking until the end of the experiment.
  *
- * Results are reported in last args, and sizes are in kb.
+ * Results are reported in last args, and sizes are in bytes.
  */
 void amok_bw_request(const char* from_name,unsigned int from_port,
 		     const char* to_name,unsigned int to_port,
