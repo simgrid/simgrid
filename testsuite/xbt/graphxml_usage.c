@@ -45,7 +45,7 @@ void test(char *graph_file)
 
   double *adj = xbt_graph_get_length_matrix(graph);
 
-  graph_export_graphxml(graph, "testgraph.xml", NULL, NULL, NULL, NULL);
+  xbt_graph_export_graphxml(graph, "testgraph.xml", NULL, NULL, NULL, NULL);
   xbt_graph_export_graphviz(graph, "graph.dot", node_name, NULL);
 
   for (i = 0; i < n; i++) {
