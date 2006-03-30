@@ -45,12 +45,15 @@ SG_BEGIN_DECL()
  *  you can always say that it conveys a generic reference (see
  *  \ref gras_datadesc_ref_generic).
  * 
- *  In order to ease the upgrade of GRAS applications, it is possible to \e version the messages, ie 
- *  to add a version number to the message (by default, the version is set to 0). Any messages of the 
- *  wrong version will be ignored by the applications not providing any specific callback for them.
+ *  In order to ease the upgrade of GRAS applications, it is possible to \e
+ *  version the messages, ie to add a version number to the message (by
+ *  default, the version is set to 0). Any messages of the wrong version will
+ *  be ignored by the applications not providing any specific callback for
+ *  them.
  *  
- *  This mechanism (stolen from the dynamic loader one) should ensure you to change the semantic of a given
- *  message while still understanding the old one.
+ *  This mechanism (stolen from the dynamic loader one) should ensure you to
+ *  change the semantic of a given message while still understanding the old
+ *  one.
  */
 /** @{ */  
 /** \brief Opaque type */
@@ -65,6 +68,28 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
   gras_msgtype_t gras_msgtype_by_name (const char *name);
   gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version);
   gras_msgtype_t gras_msgtype_by_id(int id);
+
+/** @} */  
+/** @defgroup GRAS_msg_rpcdecl RPC declaration
+ *  @ingroup  GRAS_msg
+ *
+ * Remote Procedure Call (RPC) are a classical mecanism to request a service
+ * from a remote host. Using this set of functions, you let GRAS doing most of
+ * the work of sending the request, wait for an answer, make sure it is the
+ * right answer from the right host and so on.  Any exception raised on the
+ * server is also passed over the network to the client.
+ */
+/** @{ */
+
+void gras_msgtype_declare_rpc(const char           *name,
+			      gras_datadesc_type_t  payload_request,
+			      gras_datadesc_type_t  payload_answer);
+
+void gras_msgtype_declare_rpc_v(const char           *name,
+				short int             version,
+				gras_datadesc_type_t  payload_request,
+				gras_datadesc_type_t  payload_answer);
+
 
 /** @} */  
 /** @defgroup GRAS_msg_cb Callback declaration and use
@@ -83,6 +108,11 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
  * @{
  */
  
+  /** \brief Context of callbacks (opaque structure) */
+  typedef struct s_gras_msg_cb_ctx *gras_msg_cb_ctx_t;
+
+gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
+
   /** \brief Type of message callback functions. 
    *
    * \param expeditor: a socket to contact who sent this message
@@ -98,18 +128,37 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
    *
    * If the callback accepts the message, it should free it after use.
    */
-  typedef int (*gras_msg_cb_t)(gras_socket_t  expeditor,
-			       void          *payload);
+  typedef int (*gras_msg_cb_t)(gras_msg_cb_ctx_t  ctx,
+			       void             *payload);
 
   void gras_cb_register  (gras_msgtype_t msgtype, gras_msg_cb_t cb);
   void gras_cb_unregister(gras_msgtype_t msgtype, gras_msg_cb_t cb);
 
 /** @} */  
+
+/** @defgroup GRAS_msg_rpc RPC specific functions
+ *  @ingroup  GRAS_msg
+ */
+/** @{ */
+
+/* client side */
+void gras_msg_rpccall(gras_socket_t server,
+		      double timeOut,
+		      gras_msgtype_t msgtype,
+		      void *request, void *answer);
+
+/* server side */
+void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,void *answer);
+
+
+/** @} */
+
 /** @defgroup GRAS_msg_exchange Message exchange 
  *  @ingroup  GRAS_msg
  *
  */
 /** @{ */
+
 
   void gras_msg_send(gras_socket_t   sock,
 		     gras_msgtype_t  msgtype,
@@ -118,16 +167,57 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 		     gras_msgtype_t  msgt_want,
 		     gras_socket_t  *expeditor,
 		     void           *payload);
+  void gras_msg_handle(double timeOut);
+
+/** @} */
+/** @defgroup GRAS_msg_exchangeadv Message exchange (advanced interface)
+ *  @ingroup  GRAS_msg
+ *
+ */
+/** @{ */
+
+/** @brief Message kind (internal enum) */
+typedef enum {
+  e_gras_msg_kind_unknown = 0,
+
+  e_gras_msg_kind_oneway=1,    /**< good old regular messages */
+
+  e_gras_msg_kind_rpccall=2,   /**< RPC request */
+  /* HACK: e_gras_msg_kind_rpccall also designate RPC message *type* in 
+     msgtype_t, not only in msg_t*/
+  e_gras_msg_kind_rpcanswer=3, /**< RPC successful answer */
+  e_gras_msg_kind_rpcerror=4,  /**< RPC failure on server (payload=exception); should not leak to user-space */
+
+   /* future:
+       call cancel, and others
+     even after:
+       forwarding request and other application level routing stuff
+       group communication
+  */
+
+  e_gras_msg_kind_count=5 /* sentinel, dont mess with */
+} e_gras_msg_kind_t;
+
+
+/** @brief Message instance (internal struct) */
+typedef struct {
+    gras_socket_t   expe;
+  e_gras_msg_kind_t kind;
+    gras_msgtype_t  type;
+    unsigned long int ID;
+    void           *payl;
+    int             payl_size;
+} s_gras_msg_t, *gras_msg_t;
+
+typedef int (*gras_msg_filter_t)(gras_msg_t msg,void *ctx);
+
   void gras_msg_wait_ext(double           timeout,    
 			 gras_msgtype_t   msgt_want,
 			 gras_socket_t    expe_want,
-			 int_f_pvoid_pvoid_t payl_filter,
-			 void               *filter_ctx, 
-			 gras_msgtype_t  *msgt_got,
-			 gras_socket_t   *expe_got,
-			 void            *payl_got);
+			 gras_msg_filter_t filter,
+			 void             *filter_ctx, 
+			 gras_msg_t       msg_got);
 
-  void gras_msg_handle(double timeOut);
 
 /* @} */
 
