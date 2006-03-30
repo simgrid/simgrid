@@ -464,7 +464,7 @@ xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g)
     node->xbtdata = NULL;
    }	  
   return sorted; 
-
+}
 
 void xbt_graph_depth_visit(xbt_graph_t g,xbt_node_t n,xbt_node_t* sorted,int* idx )
 {
@@ -489,7 +489,6 @@ void xbt_graph_depth_visit(xbt_graph_t g,xbt_node_t n,xbt_node_t* sorted,int* id
     }	     
 }
 
-
 /********************* Import and Export ******************/
 static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
@@ -499,7 +498,6 @@ static void *(*__parse_edge_label_and_data)(xbt_edge_t, const char*, const char*
 
 static void __parse_graph_begin(void)
 {
-
   DEBUG0("<graph>");
   if(A_graphxml_graph_isDirected == A_graphxml_graph_isDirected_true)
     parsed_graph = xbt_graph_new_graph(1, NULL);
@@ -507,6 +505,7 @@ static void __parse_graph_begin(void)
 
   parsed_nodes = xbt_dict_new();
 }
+
 static void __parse_graph_end(void)
 {
   xbt_dict_free(&parsed_nodes);
