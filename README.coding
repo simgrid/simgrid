@@ -3,26 +3,29 @@
 **
 ******************************************************
 
-There is at least 4 projects in the tree:
+There is at least 5 sub-projects in the tree:
 
  - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
+ - SURF: a SimUlation aRtiFact. This is the simulation kernel.
+ - MSG:  originally MetaSimGrid, MSG is a simple distributed application
+         simulator.
  - GRAS: Grid Reality And Simulation (message passing API with two
          implementations allowing to compile programs on top of the
          simulator or for the real life without code modification)
- - SURF: Server for the Use of Resource Fictions (the simulator used 
-         in GRAS and more)
  - AMOK: Advanced Metacomputing Overlay Kit (high level toolbox; Grid
          application elements such as distributed database, topology
          discovery service, and so on)
 
-They are all in the same tree because GRAS depends on SURF which depends on
-GRAS (that's the only cycle here, we're not *that* vicious).
+They are all in the same tree because they are complementary tools and
+having all of them in the same package makes the installation easier
+for end-users. Moreover, it enables to share the compilation chain and
+eases the development.
 
 The tree is not splited on projects, but on file finality:
  include/            -> all *public* headers
  include/xbt/*.h     -> one file per module
- include/gros.h      -> file including all modules headers
-  (same for gras, surf and amok instead of gros)
+ include/gras.h      -> file including all modules headers
+  (same for xbt instead of gros)
   
  src/Makefile.am     -> main makefile. All projects should fit in only one
                         library (I mean 2, RL+SG), which is compiled here.
@@ -55,6 +58,13 @@ The tree is not splited on projects, but on file finality:
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
                 avoid any kind of trick. In particular, do only include the
                 public headers here.
+**
+** Indentation standard
+**
+*****************************************************
+
+Most files use the Kernighan & Ritchie coding style with 2 spaces of
+indentation. The indent program can help you to stick to it. :)
 
 **
 ** Type naming standard
