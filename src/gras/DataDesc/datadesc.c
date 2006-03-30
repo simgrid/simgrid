@@ -115,7 +115,7 @@ gras_datadesc_init(void) {
 
   ddt = gras_datadesc_struct("ex_t");
   gras_datadesc_struct_append(ddt,"msg",gras_datadesc_by_name("string"));
-  gras_datadesc_struct_append(ddt,"category",gras_datadesc_by_name("short int"));
+  gras_datadesc_struct_append(ddt,"category",gras_datadesc_by_name("int"));
   gras_datadesc_struct_append(ddt,"value",gras_datadesc_by_name("int"));
 
   gras_datadesc_struct_append(ddt,"host",gras_datadesc_by_name("string"));
@@ -123,11 +123,12 @@ gras_datadesc_init(void) {
   gras_datadesc_struct_append(ddt,"file",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(ddt,"line",gras_datadesc_by_name("int"));
   gras_datadesc_struct_append(ddt,"func",gras_datadesc_by_name("string"));
-  gras_datadesc_struct_append(ddt,"bt", 
-			      gras_datadesc_array_fixed("char*{XBT_BACKTRACE_SIZE]", 
-							gras_datadesc_by_name("string"),
-							XBT_BACKTRACE_SIZE));
   gras_datadesc_struct_append(ddt,"used",gras_datadesc_by_name("int"));
+  gras_datadesc_cb_field_push(ddt,"used");
+  gras_datadesc_struct_append(ddt,"bt_strings", 
+			      gras_datadesc_ref_pop_arr(gras_datadesc_by_name("string")));
+
+  //  gras_datadesc_struct_append(ddt,"bt");
   gras_datadesc_struct_close(ddt);
 }
 
