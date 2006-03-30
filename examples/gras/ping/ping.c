@@ -32,12 +32,12 @@ typedef struct {
 } server_data_t;
 
 
-static int server_cb_ping_handler(gras_socket_t  expeditor,
-   			          void          *payload_data) {
+static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload) {
 			     
   xbt_ex_t e;
-  /* 1. Get the payload into the msg variable */
-  int msg=*(int*)payload_data;
+  /* 1. Get the payload into the msg variable, and retrieve my caller */
+  int msg=*(int*)payload;
+  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
 
   /* 2. Retrieve the server's state (globals) */
 
