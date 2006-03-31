@@ -72,28 +72,6 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
   gras_msgtype_t gras_msgtype_by_id(int id);
 
 /** @} */  
-/** @defgroup GRAS_msg_rpcdecl RPC declaration
- *  @ingroup  GRAS_msg
- *
- * Remote Procedure Call (RPC) are a classical mecanism to request a service
- * from a remote host. Using this set of functions, you let GRAS doing most of
- * the work of sending the request, wait for an answer, make sure it is the
- * right answer from the right host and so on.  Any exception raised on the
- * server is also passed over the network to the client.
- */
-/** @{ */
-
-void gras_msgtype_declare_rpc(const char           *name,
-			      gras_datadesc_type_t  payload_request,
-			      gras_datadesc_type_t  payload_answer);
-
-void gras_msgtype_declare_rpc_v(const char           *name,
-				short int             version,
-				gras_datadesc_type_t  payload_request,
-				gras_datadesc_type_t  payload_answer);
-
-
-/** @} */  
 /** @defgroup GRAS_msg_cb Callback declaration and use
  *  @ingroup  GRAS_msg
  * 
@@ -140,8 +118,29 @@ gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
 
 /** @defgroup GRAS_msg_rpc RPC specific functions
  *  @ingroup  GRAS_msg
+ *
+ * Remote Procedure Call (RPC) are a classical mecanism to request a service
+ * from a remote host. Using this set of functions, you let GRAS doing most of
+ * the work of sending the request, wait for an answer, make sure it is the
+ * right answer from the right host and so on.  Any exception raised on the
+ * server is also passed over the network to the client.
+ * 
+ * Callbacks are attached to RPC incomming messages the regular way using
+ * \ref gras_cb_register.
+ * 
+ * For an example of use, check the examples/gras/rpc directory of the distribution.
  */
 /** @{ */
+
+/* declaration */
+void gras_msgtype_declare_rpc(const char           *name,
+			      gras_datadesc_type_t  payload_request,
+			      gras_datadesc_type_t  payload_answer);
+
+void gras_msgtype_declare_rpc_v(const char           *name,
+				short int             version,
+				gras_datadesc_type_t  payload_request,
+				gras_datadesc_type_t  payload_answer);
 
 /* client side */
 void gras_msg_rpccall(gras_socket_t server,
