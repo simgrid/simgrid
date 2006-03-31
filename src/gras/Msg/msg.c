@@ -246,11 +246,9 @@ gras_msgtype_t gras_msgtype_by_id(int id) {
  * @param timeout: How long should we wait for this message.
  * @param msgt_want: type of awaited msg (or NULL if I'm enclined to accept any message)
  * @param expe_want: awaited expeditot (match on hostname, not port; NULL if not relevant)
- * @param payl_filter: function returning true or false when passed a payload. Messages for which it returns false are not selected. (NULL if not relevant)
+ * @param filter: function returning true or false when passed a payload. Messages for which it returns false are not selected. (NULL if not relevant)
  * @param filter_ctx: context passed as second argument of the filter (a pattern to match?)
- * @param[out] msgt_got: where to write the descriptor of the message we got
- * @param[out] expe_got: where to create a socket to answer the incomming message
- * @param[out] payl_got: where to write the payload of the incomming message
+ * @param[out] msg_got: where to write the message we got
  *
  * Every message of another type received before the one waited will be queued
  * and used by subsequent call to this function or gras_msg_handle().
@@ -296,7 +294,7 @@ gras_msg_wait_ext(double           timeout,
 
     msg.expe = gras_trp_select(timeout - now + start);
     gras_msg_recv(msg.expe, &msg);
-    DEBUG0("Here");
+    DEBUG0("Got a message from the socket");
 
     if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
 	 && (!expe_want || (!strcmp( gras_socket_peer_name(msg.expe),
@@ -304,8 +302,10 @@ gras_msg_wait_ext(double           timeout,
 	 && (!filter || filter(&msg,filter_ctx))) {
 
       memcpy(msg_got,&msg,sizeof(s_gras_msg_t));
+      DEBUG0("Message matches expectations. Use it.");
       return;
     }
+    DEBUG0("Message does not match expectations. Queue it.");
 
     /* not expected msg type. Queue it for later */
     xbt_dynar_push(pd->msg_queue,&msg);
@@ -340,9 +340,14 @@ gras_msg_wait(double           timeout,
   gras_msg_wait_ext(timeout,
 		    msgt_want, NULL,      NULL, NULL,
 		    &msg);
-  memcpy(payload,msg.payl,msg.payl_size);
-  free(msg.payl);
-  *expeditor = msg.expe;
+
+  if (payload) {
+    memcpy(payload,msg.payl,msg.payl_size);
+    free(msg.payl);
+  }
+
+  if (expeditor)
+    *expeditor = msg.expe;
 }
 
 
@@ -414,7 +419,7 @@ gras_msg_handle(double timeOut) {
       TRY {
 	/* FIXME: if not the right kind, queue it and recall ourself or goto >:-) */
 	gras_msg_recv(msg.expe, &msg);
-	DEBUG0("Here");
+	DEBUG0("Received a msg from the socket");
     
       } CATCH(e) {
 	RETHROW1("Error caught while receiving a message on select()ed socket %p: %s",
