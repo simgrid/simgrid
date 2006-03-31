@@ -146,7 +146,6 @@ int node (int argc,char *argv[]) {
   globals->sock = gras_socket_server(myport);
   gras_os_sleep(1.0); /* Make sure all server sockets are created */
 
-
   /* 5. Create socket to the successor on the ring */
   DEBUG2("Connect to my successor on %s:%d",host,peerport);
 

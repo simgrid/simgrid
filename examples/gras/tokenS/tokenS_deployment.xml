@@ -6,6 +6,7 @@
     <argument value="4000"/>     <!-- port on which I am listening -->
     <argument value="Fafard"/>   <!-- peer (successor) host -->
     <argument value="4000"/>     <!-- port on which peer is listening -->
+    <argument value="--create-token"/>   <!-- I'm first client, ie I have to create the token -->
  </process>
  
  <process host="Fafard" function="node">
@@ -30,7 +31,6 @@
     <argument value="4000"/>      <!-- port on which I am listening -->
     <argument value="Tremblay"/>  <!-- peer (successor) host -->
     <argument value="4000"/>      <!-- port on which peer is listening -->
-    <argument value="--create-token"/>   <!-- I'm first client, ie I have to create the token -->
  </process>
  
 </platform_description>
