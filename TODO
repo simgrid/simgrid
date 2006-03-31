@@ -167,18 +167,8 @@ xbt/log.h:/** \name CRITICAL
   * gras_datadesc_import_nws?
 
 [Messaging]
-  * A proper RPC mecanism
-    - gras_rpctype_declare_v (name,ver, payload_request, payload_answer)
-      (or gras_msgtype_declare_rpc_v). 
-    - Attaching a cb works the same way.
-    - gras_msg_rpc(peer, &request, &answer)
-    - On the wire, a byte indicate the message type:
-      - 0: one-way message (what we have for now)
-      - 1: method call (answer expected; sessionID attached)
-      - 2: successful return (usual datatype attached, with sessionID)
-      - 3: error return (payload = exception)
-      - other message types are possible (forwarding request, group
-        communication)
+  * Other message types than oneway & RPC are possible:
+     - forwarding request, group communication
   * Message priority
   * Message forwarding
   * Group communication
