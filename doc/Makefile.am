@@ -1,28 +1,32 @@
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
  $(shell find @srcdir@ -name "*.doc")
+FIGS=simgrid_modules.fig amok_bw_test.fig
+PNGS=$(patsubst %.fig,%.png,$(FIGS)) simgrid_logo.png
 
 EXTRA_DIST = html Doxyfile \
- modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html simgrid_logo.png simgrid_modules.png
+ modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html \
+ $(foreach file,$(FIGS),fig/$(file)) $(PNGS)
+
 
 CLEANFILES = .*.toc
 DISTCLEANFILES = index-API.doc simgrid.tag
 MAINTAINERCLEANFILES = html
 
 if MAINTAINER_MODE
-simgrid_modules.map: simgrid_modules.fig
+simgrid_modules.map: fig/simgrid_modules.fig
 	fig2dev -Lmap simgrid_modules.fig | grep -e IMG -e MAP -e AREA | \
 	sed 's/imagemap/simgrid_modules/g' | sed 's/\.gif/.png/' | \
 	sed 's/<IMG /<IMG style="border:0px "/g' | sed 's/\.gif/.png/' \
 	> simgrid_modules.map
 
-simgrid_modules.png: simgrid_modules.fig
-	fig2dev -Lpng simgrid_modules.fig > simgrid_modules.png
+%.png: fig/%.fig
+	fig2dev -Lpng $^ > $@
 
-html: Doxyfile ./logcategories.doc simgrid_modules.map simgrid_modules.png $(DOCSOURCES)
+html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES)
 	: # Setting up
 	touch index-API.doc .FAQ.doc.toc .index.doc.toc .contrib.doc.toc
 	test -e html || mkdir html
-	cp @srcdir@/simgrid_logo.png @srcdir@/simgrid_modules.png html/
+	cp $(foreach file,$(PNGS),@srcdir@/$(file)) html/
 	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
 	cp @srcdir@/simgrid.css html/
 	: # First pass
