@@ -43,7 +43,7 @@
  *  get the BW between two remote hosts. The elapsed time, as long as the
  *  achieved bandwidth is returned in the last arguments of the functions.
  * 
- *  All sizes are in kilo bytes. The \a buf_size is the size of the buffer
+ *  All sizes are in bytes. The \a buf_size is the size of the buffer
  *   (this is a socket parameter set automatically). The \a exp_size is the
  *   amount of data to send during an experiment. \a msg_size is the size
  *   of each message sent. These values allow you to study phenomenon such
@@ -53,6 +53,10 @@
  *   socket will be prepared to accept 32k in its buffer and then four
  *   messages of 16k will be sent (so that the total amount of data equals
  *   64k). Of course, you can use other values if you want to.
+ * 
+ *  \htmlonly
+ * <img align=center src="amok_bw_test.png" alt="amok bandwidth measurement protocol"><br>
+ * \endhtmlonly
  * 
  *  \todo Cleanup and implement the link saturation stuff.
  *
