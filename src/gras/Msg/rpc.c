@@ -19,8 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_rpc,gras_msg,"RPC mecanism");
 /** @brief declare a new versionned RPC type of the given name and payloads
  *
  * @param name: name as it should be used for logging messages (must be uniq)
- * @param version: something like versionning symbol
- * @param payload: datadescription of the payload
+ * @param payload_request: datatype of request
+ * @param payload_answer: datatype of answer
  *
  * Registers a new RPC message to the GRAS mechanism. RPC are constituted of a pair 
  * of messages. 
@@ -40,7 +40,8 @@ gras_msgtype_declare_rpc(const char           *name,
  *
  * @param name: name as it should be used for logging messages (must be uniq)
  * @param version: something like versionning symbol
- * @param payload: datadescription of the payload
+ * @param payload_request: datatype of request
+ * @param payload_answer: datatype of answer
  *
  * Registers a new RPC message to the GRAS mechanism. RPC are constituted of a pair 
  * of messages. 
