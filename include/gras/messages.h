@@ -116,6 +116,24 @@ gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
 
 /** @} */  
 
+/** @defgroup GRAS_msg_exchange Message exchange 
+ *  @ingroup  GRAS_msg
+ *
+ */
+/** @{ */
+
+
+  void gras_msg_send(gras_socket_t   sock,
+		     gras_msgtype_t  msgtype,
+		     void           *payload);
+  void gras_msg_wait(double          timeout,    
+		     gras_msgtype_t  msgt_want,
+		     gras_socket_t  *expeditor,
+		     void           *payload);
+  void gras_msg_handle(double timeOut);
+
+/** @} */
+
 /** @defgroup GRAS_msg_rpc RPC specific functions
  *  @ingroup  GRAS_msg
  *
@@ -154,23 +172,6 @@ void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,void *answer);
 
 /** @} */
 
-/** @defgroup GRAS_msg_exchange Message exchange 
- *  @ingroup  GRAS_msg
- *
- */
-/** @{ */
-
-
-  void gras_msg_send(gras_socket_t   sock,
-		     gras_msgtype_t  msgtype,
-		     void           *payload);
-  void gras_msg_wait(double          timeout,    
-		     gras_msgtype_t  msgt_want,
-		     gras_socket_t  *expeditor,
-		     void           *payload);
-  void gras_msg_handle(double timeOut);
-
-/** @} */
 /** @defgroup GRAS_msg_exchangeadv Message exchange (advanced interface)
  *  @ingroup  GRAS_msg
  *
