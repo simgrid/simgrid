@@ -32,7 +32,9 @@ SG_BEGIN_DECL()
  *  it. If it arrives when before or after \ref gras_msg_wait, it will be
  *  passed to the callback.
  * 
- *  For an example of use, please refer to \ref GRAS_ex_ping.
+ *  For an example of use, please refer to \ref GRAS_ex_ping. The archive
+ *  contains much more examples, but their are not properly integrated into
+ *  this documentation yet. 
  */
 
 /** @defgroup GRAS_msg_decl Message declaration and retrival 
