@@ -23,7 +23,7 @@ void amok_bw_init(void) {
 
   if (! _amok_bw_initialized) {
 	
-     /* Build the datatype descriptions */ 
+     /* Build the Bandwidth datatype descriptions */ 
      bw_request_desc = gras_datadesc_struct("s_bw_request_t");
      gras_datadesc_struct_append(bw_request_desc,"host",
 				 gras_datadesc_by_name("xbt_host_t"));
@@ -43,18 +43,16 @@ void amok_bw_init(void) {
      gras_datadesc_struct_close(bw_res_desc);
      bw_res_desc = gras_datadesc_ref("bw_res_t",bw_res_desc);
 
+     gras_msgtype_declare_rpc("BW handshake",bw_request_desc,bw_request_desc);
+     gras_msgtype_declare_rpc("BW request",  bw_request_desc,bw_res_desc);
+
+     /* Build the saturation datatype descriptions */ 
      sat_request_desc = gras_datadesc_struct("s_sat_request_desc_t");
      gras_datadesc_struct_append(sat_request_desc,"host",gras_datadesc_by_name("xbt_host_t"));
      gras_datadesc_struct_append(sat_request_desc,"msg_size",gras_datadesc_by_name("unsigned int"));
      gras_datadesc_struct_append(sat_request_desc,"timeout",gras_datadesc_by_name("unsigned int"));
      gras_datadesc_struct_close(sat_request_desc);
      sat_request_desc = gras_datadesc_ref("sat_request_t",sat_request_desc);
-     
-     /* Register the bandwidth messages */
-     gras_msgtype_declare("BW handshake",     bw_request_desc);
-     gras_msgtype_declare("BW handshake ACK", bw_request_desc);
-     gras_msgtype_declare("BW request",       bw_request_desc);
-     gras_msgtype_declare("BW result",        bw_res_desc);
      
      /* Register the saturation messages */
      gras_msgtype_declare("SAT start",   sat_request_desc);
@@ -154,19 +152,12 @@ void amok_bw_test(gras_socket_t peer,
 	buf_size,request->buf_size);
 
   TRY {
-    gras_msg_send(peer,gras_msgtype_by_name("BW handshake"),&request);
+    gras_msg_rpccall(peer,60,
+		     gras_msgtype_by_name("BW handshake"),&request, &request_ack);
   } CATCH(e) {
     RETHROW0("Error encountered while sending the BW request: %s");
   }
   measIn = gras_socket_meas_accept(measMasterIn);
-
-  TRY {
-    gras_msg_wait(60,gras_msgtype_by_name("BW handshake ACK"),NULL,&request_ack);
-  } CATCH(e) {
-    RETHROW0("Error encountered while waiting for the answer to BW request: %s");
-  }
-  
-  /* FIXME: What if there is a remote error? */
    
   TRY {
     measOut=gras_socket_client_ext(gras_socket_peer_name(peer),
@@ -243,6 +234,17 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
   answer->msg_size=request->msg_size;
   answer->host.port=gras_socket_my_port(measMasterIn);
 
+
+
+  TRY {
+    gras_msg_rpcreturn(60,ctx,&answer);
+  } CATCH(e) { 
+    gras_socket_close(measMasterIn);
+    /* FIXME: tell error to remote */
+    RETHROW0("Error encountered while sending the answer: %s");
+  }
+
+
   /* Don't connect asap to leave time to other side to enter the accept() */
   TRY {
     measOut = gras_socket_client_ext(gras_socket_peer_name(expeditor),
@@ -252,15 +254,6 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
     RETHROW2("Error encountered while opening a measurement socket back to %s:%d : %s", 
 	     gras_socket_peer_name(expeditor),request->host.port);
     /* FIXME: tell error to remote */
-  }
-
-  TRY {
-    gras_msg_send(expeditor, gras_msgtype_by_name("BW handshake ACK"), &answer);
-  } CATCH(e) { 
-    gras_socket_close(measMasterIn);
-    gras_socket_close(measOut);
-    /* FIXME: tell error to remote */
-    RETHROW0("Error encountered while sending the answer: %s");
   }
 
   TRY {
@@ -329,10 +322,7 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   request->host.port = to_port;
 
   sock = gras_socket_client(from_name,from_port);
-  gras_msg_send(sock,gras_msgtype_by_name("BW request"),&request);
-  free(request);
-
-  gras_msg_wait(240,gras_msgtype_by_name("BW result"),NULL, &result);
+  gras_msg_rpccall(sock,240,gras_msgtype_by_name("BW request"),&request, &result);
   
   *sec=result->sec;
   *bw =result->bw;
@@ -348,7 +338,6 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
 int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 			  void            *payload) {
 			  
-  gras_socket_t    expeditor = gras_msg_cb_ctx_from(ctx);
   /* specification of the test to run, and our answer */
   bw_request_t request = *(bw_request_t*)payload;
   bw_res_t result = xbt_new0(s_bw_res,1);
@@ -359,7 +348,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 	       request->buf_size,request->exp_size,request->msg_size,
 	       &(result->sec),&(result->bw));
 
-  gras_msg_send(expeditor,gras_msgtype_by_name("BW result"),&result);
+  gras_msg_rpcreturn(240,ctx,&result);
 
   gras_os_sleep(1);
   gras_socket_close(peer);
