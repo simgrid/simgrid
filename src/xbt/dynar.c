@@ -831,8 +831,8 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
    xbt_dynar_free(&d);
 
    xbt_test_add1("==== Push %d strings, set them again 3 times, shift them",NB_ELEM);
-   d=xbt_dynar_new(sizeof(char*),&free_string);
    /* Populate_str [doxygen cruft] */
+   d=xbt_dynar_new(sizeof(char*),&free_string);
    /* 1. Populate the dynar */
    for (cpt=0; cpt< NB_ELEM; cpt++) {
      sprintf(buf,"%d",cpt);
