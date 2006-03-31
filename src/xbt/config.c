@@ -53,7 +53,7 @@ static void xbt_cfg_str_free(void *d){
   free(*(void**)d);
 }
 static void xbt_cfg_host_free(void *d){
-  xbt_host_t *h=(xbt_host_t*) *(void**)d; 
+  xbt_host_t h=(xbt_host_t) *(void**)d; 
   if (h) {
     if (h->name) free(h->name);
     free(h);
@@ -116,7 +116,7 @@ void xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
   int ival;
   char *sval;
   double dval;
-  xbt_host_t *hval;
+  xbt_host_t hval;
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n",indent,name);
@@ -155,7 +155,7 @@ void xbt_cfg_dump(const char *name,const char *indent,xbt_cfg_t cfg) {
 
     case xbt_cfgelm_host:
       for (i=0; i<size; i++) {
-	hval = xbt_dynar_get_as(variable->content,i,xbt_host_t*);
+	hval = xbt_dynar_get_as(variable->content,i,xbt_host_t);
 	printf ("%s    %s:%d\n",indent,hval->name,hval->port);
       }
       break;
@@ -248,7 +248,7 @@ xbt_cfg_register(xbt_cfg_t cfg,
    break;
 
   case xbt_cfgelm_host:
-   res->content = xbt_dynar_new(sizeof(xbt_host_t*),&xbt_cfg_host_free);
+   res->content = xbt_dynar_new(sizeof(xbt_host_t),&xbt_cfg_host_free);
    break;
 
   default:
@@ -760,7 +760,7 @@ void
 xbt_cfg_set_host(xbt_cfg_t cfg,const char*name, 
 		  const char *host,int port) {
   xbt_cfgelm_t variable;
-  xbt_host_t *val=xbt_new(xbt_host_t,1);
+  xbt_host_t val=xbt_new(s_xbt_host_t,1);
 
   VERB3("Configuration setting: %s=%s:%d",name,host,port);
 
@@ -895,7 +895,7 @@ void
 xbt_cfg_rm_host(xbt_cfg_t cfg,const char*name, const char *host,int port) {
   xbt_cfgelm_t variable;
   int cpt;
-  xbt_host_t *seen;
+  xbt_host_t seen;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_host);
   
@@ -1060,7 +1060,7 @@ char* xbt_cfg_get_string(xbt_cfg_t  cfg, const char *name) {
 void xbt_cfg_get_host  (xbt_cfg_t   cfg,  const char *name,
 			char      **host, int        *port) {
   xbt_cfgelm_t variable;
-  xbt_host_t  *val;
+  xbt_host_t  val;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_host);
 
@@ -1069,7 +1069,7 @@ void xbt_cfg_get_host  (xbt_cfg_t   cfg,  const char *name,
 	     name, xbt_dynar_length(variable->content));
   }
 
-  val = xbt_dynar_get_as(variable->content, 0, xbt_host_t*);
+  val = xbt_dynar_get_as(variable->content, 0, xbt_host_t);
   *host=val->name;
   *port=val->port;
 }
@@ -1134,7 +1134,7 @@ xbt_cfg_get_host_at(xbt_cfg_t cfg, const char *name, int pos,
                     char **host, int *port) {
                   
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_int);
-  xbt_host_t *val = xbt_dynar_get_ptr(variable->content, pos);
+  xbt_host_t val = xbt_dynar_get_ptr(variable->content, pos);
 
   *port = val->port;
   *host = val->name;

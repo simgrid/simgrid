@@ -80,7 +80,7 @@ SG_BEGIN_DECL()
 typedef struct {  
    char *name;
    int port;
-} xbt_host_t;
+} s_xbt_host_t, *xbt_host_t;
 
 const char *xbt_procname(void);
 
