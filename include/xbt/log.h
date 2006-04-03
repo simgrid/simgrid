@@ -362,6 +362,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CINFO4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_info, f,a1,a2,a3,a4)
 #define CINFO5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5)
 #define CINFO6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6)
+#define CINFO7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7)
+#define CINFO8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8)
 
 #define CWARN0(c, f)                   CLOG0(c, xbt_log_priority_warning, f)
 #define CWARN1(c, f,a1)                CLOG1(c, xbt_log_priority_warning, f,a1)
@@ -484,6 +486,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define INFO4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_info, f,a1,a2,a3,a4)
 #define INFO5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_info, f,a1,a2,a3,a4,a5)
 #define INFO6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6)
+#define INFO7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7)
+#define INFO8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8)
 /* @} */
 
 /** \name WARN
