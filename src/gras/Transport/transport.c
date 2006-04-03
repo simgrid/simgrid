@@ -174,15 +174,15 @@ void gras_trp_socket_new(int incoming,
 
 
 /**
- * gras_socket_server_ext:
- *
- * Opens a server socket and make it ready to be listened to.
- * In real life, you'll get a TCP socket.
+ * @brief Opens a server socket and makes it ready to be listened to.
+ * @param buf_size: size of the buffer (in byte) on the socket (for TCP sockets only). If 0, a sain default is used (32k, but may change)
+ * 
+ * In real life, you'll get a TCP socket. 
  */
 gras_socket_t
 gras_socket_server_ext(unsigned short port,
 		       
-		       unsigned long int bufSize,
+		       unsigned long int buf_size,
 		       int measurement) {
  
   xbt_ex_t e;
@@ -198,7 +198,7 @@ gras_socket_server_ext(unsigned short port,
   gras_trp_socket_new(1,&sock);
   sock->plugin= trp;
   sock->port=port;
-  sock->bufSize = bufSize;
+  sock->buf_size = buf_size>0 ? buf_size : 32*1024;
   sock->meas = measurement;
 
   /* Call plugin socket creation function */
@@ -218,16 +218,16 @@ gras_socket_server_ext(unsigned short port,
 }
    
 /**
- * gras_socket_client_ext:
- *
- * Opens a client socket to a remote host.
- * In real life, you'll get a TCP socket.
+ * @brief Opens a client socket to a remote host.
+ * @param buf_size: size of the buffer (in bytes) on the socket (for TCP sockets only). If 0, a sain default is used (32k, but may change)
+ * 
+ * In real life, you'll get a TCP socket. 
  */
 gras_socket_t
 gras_socket_client_ext(const char *host,
 		       unsigned short port,
 		       
-		       unsigned long int bufSize,
+		       unsigned long int buf_size,
 		       int measurement) {
  
   xbt_ex_t e;
@@ -242,7 +242,7 @@ gras_socket_client_ext(const char *host,
   sock->plugin= trp;
   sock->peer_port = port;
   sock->peer_name = (char*)strdup(host?host:"localhost");
-  sock->bufSize = bufSize;
+  sock->buf_size = buf_size>0 ? buf_size: 32*1024;
   sock->meas = measurement;
 
   /* plugin-specific */

@@ -68,7 +68,7 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
   struct sockaddr_in addr;
   struct hostent *he;
   struct in_addr *haddr;
-  int size = sock->bufSize * 1024; 
+  int size = sock->buf_size; 
 
   sock->incoming = 1; /* TCP sockets are duplex'ed */
 
@@ -113,7 +113,7 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
  */
 static inline void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
 					       gras_socket_t sock){
-  int size = sock->bufSize * 1024; 
+  int size = sock->buf_size; 
   int on = 1;
   struct sockaddr_in server;
 
@@ -179,8 +179,8 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock) {
     THROW1(system_error,0,"setsockopt failed, cannot condition the socket: %s",
 	   sock_errstr);
 
-  res->bufSize = sock->bufSize;
-  size = sock->bufSize * 1024;
+  res->buf_size = sock->buf_size;
+  size = sock->buf_size;
   if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size))
       || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size)))
     WARN1("setsockopt failed, cannot set buffer size: %s", sock_errstr);

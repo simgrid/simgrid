@@ -41,7 +41,7 @@ typedef struct s_gras_socket  {
   int accepting :1; /* true if master incoming sock in tcp */
   int meas :1; /* true if this is an experiment socket instead of messaging */
 
-  unsigned long int bufSize; /* what to say to the OS. field here to remember it when accepting */
+  unsigned long int buf_size; /* what to say to the OS. field here to remember it when accepting */
    
   int  sd; 
   int  port; /* port on this side */
