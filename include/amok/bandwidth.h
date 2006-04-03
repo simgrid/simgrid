@@ -75,6 +75,9 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
 		     unsigned long int buf_size,unsigned long int exp_size,unsigned long int msg_size,
 	     /*OUT*/ double *sec, double*bw);
 
+double * amok_bw_matrix(xbt_dynar_t hosts, /* dynar of xbt_host_t */
+                        int buf_size_bw, int exp_size_bw, int msg_size_bw);
+
 /** @} */
 #if 0   
 
