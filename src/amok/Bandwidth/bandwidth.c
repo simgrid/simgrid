@@ -2,7 +2,9 @@
 
 /* amok_bandwidth - Bandwidth tests facilities                              */
 
-/* Copyright (c) 2003-5 Martin Quinson. All rights reserved.                */
+/* Copyright (c) 2003-6 Martin Quinson.                                     */
+/* Copyright (c) 2006   Ahmed Harbaoui.                                     */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -367,4 +369,38 @@ int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx,
 			 void             *payload) {
    CRITICAL0("amok_bw_cb_sat_begin: not implemented");
    return 1;
+}
+
+double * amok_bw_matrix(xbt_dynar_t hosts,
+                         int buf_size_bw, int exp_size_bw, int msg_size_bw) { 
+  double sec;
+  /* construct of matrixs for bandwith and Latency */
+
+
+  double *matrix_bw;   /* matrix bandwidth */
+  int i,j,len=xbt_dynar_length(hosts);
+
+  matrix_bw = (double *) malloc(sizeof(double)* len*len);
+
+  xbt_host_t h1,h2;
+
+  h1 = xbt_new(s_xbt_host_t,1);
+  h2 = xbt_new(s_xbt_host_t,1);
+  i=0;
+  xbt_dynar_foreach (hosts,i,h1) {
+    j=0;
+    xbt_dynar_foreach (hosts,j,h2) {
+      if(i!=j) {
+        /* Mesurements of Bandwidth */
+        amok_bw_request(h1->name,h1->port,h2->name,h2->port,
+                        buf_size_bw,exp_size_bw,msg_size_bw,&sec,&matrix_bw[i*len + j]);
+      } else {
+        matrix_bw[i*len +j] = 0.0;
+      }
+
+    }
+  }
+  free(h1);
+  free(h2);
+  return matrix_bw;
 }
