@@ -1,3 +1,7 @@
 .deps .libs Makefile Makefile.in _*.c saturate_sensor saturate_maestro saturate_simulator
 test_sg
 test_rl
+saturate.Makefile.local
+saturate.Makefile.remote
+saturate.deploy.sh
+saturate.trace
