@@ -263,6 +263,7 @@ AC_CONFIG_FILES([
       
     examples/amok/Makefile       
       examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
+      examples/amok/saturate/Makefile  examples/amok/saturate/test_sg  examples/amok/saturate/test_rl
   doc/Makefile
     doc/Doxyfile
   tools/graspe-slave            tools/Makefile
@@ -277,6 +278,7 @@ AC_CONFIG_FILES([
      tools/graspe-slave           tools/graspe-master           \
      \
      examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
+     examples/amok/saturate/test_sg  examples/amok/saturate/test_rl \
      \
      examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
      examples/gras/rpc/test_sg    examples/gras/rpc/test_rl    \
