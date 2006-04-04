@@ -292,7 +292,7 @@ gras_msg_wait_ext(double           timeout,
   while (1) {
     memset(&msg,sizeof(msg),0);
 
-    msg.expe = gras_trp_select(timeout - now + start);
+    msg.expe = gras_trp_select(timeout ? timeout - now + start : 0);
     gras_msg_recv(msg.expe, &msg);
     DEBUG0("Got a message from the socket");
 
@@ -485,6 +485,7 @@ gras_msg_handle(double timeOut) {
 	}
       }
     } CATCH(e) {
+      free(msg.payl);
       if (msg.type->kind == e_gras_msg_kind_rpccall) {
 	/* The callback raised an exception, propagate it on the network */
 	e.host = (char*)gras_os_myname();
@@ -518,7 +519,7 @@ gras_msg_handle(double timeOut) {
 
   default:
     THROW1(unknown_error,0,
-	   "Cannot handle messages of kind %d yet",msg.type->kind);
+    	   "Cannot handle messages of kind %d yet",msg.type->kind);
   }
 
 }
