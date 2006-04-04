@@ -90,9 +90,8 @@ void xbt_ex_free(xbt_ex_t e) {
   if (e.remote) {
     free(e.file);
     free(e.func);
-    if (e.bt_strings) /* FIXME: should never be NULL... */
-      for (i=0; i<e.used; i++) 
-	free(e.bt_strings[i]);
+    for (i=0; i<e.used; i++) 
+      free(e.bt_strings[i]);
     free(e.bt_strings);
     e.bt_strings=NULL;
     free(e.host);
