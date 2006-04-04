@@ -76,38 +76,74 @@ static int msgfilter_rpcID(gras_msg_t msg, void* ctx) {
   return res;
 }
 
-/** @brief Conduct a RPC call
- *
- */
-void gras_msg_rpccall(gras_socket_t server,
-		      double timeOut,
-		      gras_msgtype_t msgtype,
-		      void *request, void *answer) {
+/** @brief Launch a RPC call, but do not block for the answer */
+gras_msg_cb_ctx_t 
+gras_msg_rpc_async_call(gras_socket_t server,
+			double timeOut,
+			gras_msgtype_t msgtype,
+			void *request) {
+  gras_msg_cb_ctx_t ctx = xbt_new0(s_gras_msg_cb_ctx_t,1);
 
-  unsigned long int msg_ID = last_msg_ID++;
+  ctx->ID = last_msg_ID++;
+  ctx->expeditor = server;
+  ctx->msgtype=msgtype;
+  ctx->timeout=timeOut;
+
+  VERB5("Send to %s:%d a RPC of type '%s' (ID=%lu) (exception%s caught)",
+	gras_socket_peer_name(server),
+	gras_socket_peer_port(server),
+	msgtype->name,ctx->ID,
+	(__xbt_ex_ctx()->ctx_caught?"":" not"));
+
+  gras_msg_send_ext(server, e_gras_msg_kind_rpccall, ctx->ID, msgtype, request);
+
+  return ctx;
+}
+
+/** @brief Wait teh answer of a RPC call previously launched asynchronously */
+void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
+			     void *answer) {
   s_gras_msg_t received;
 
-  DEBUG4("Send to %s:%d a RPC of type '%s' (ID=%lu)",
-	 gras_socket_peer_name(server),
-	 gras_socket_peer_port(server),
-	 msgtype->name,msg_ID);
-
-  gras_msg_send_ext(server, e_gras_msg_kind_rpccall, msg_ID, msgtype, request);
-  gras_msg_wait_ext(timeOut,
-		    msgtype, NULL, msgfilter_rpcID, &msg_ID,
+  gras_msg_wait_ext(ctx->timeout,
+		    ctx->msgtype, NULL, msgfilter_rpcID, &ctx->ID,
 		    &received);
+  free(ctx);
   if (received.kind == e_gras_msg_kind_rpcerror) {
     /* Damn. Got an exception. Extract it and revive it */
     xbt_ex_t e;
-    VERB0("Raise a remote exception");
     memcpy(&e,received.payl,received.payl_size);
+    VERB2("Raise a remote exception comming from %s %s",e.host,
+	  (__xbt_ex_ctx()->ctx_caught?"caught":"not caught"));
     free(received.payl);
-    memcpy((void*)&(__xbt_ex_ctx()->ctx_ex),&e,sizeof(xbt_ex_t));
+     __xbt_ex_ctx()->ctx_ex.msg      = e.msg;
+     __xbt_ex_ctx()->ctx_ex.category = e.category;
+     __xbt_ex_ctx()->ctx_ex.value    = e.value;
+     __xbt_ex_ctx()->ctx_ex.remote   = 1;
+     __xbt_ex_ctx()->ctx_ex.host     = e.host;
+     __xbt_ex_ctx()->ctx_ex.procname = e.procname;
+     __xbt_ex_ctx()->ctx_ex.file     = e.file;
+     __xbt_ex_ctx()->ctx_ex.line     = e.line;
+     __xbt_ex_ctx()->ctx_ex.func     = e.func;
+     __xbt_ex_ctx()->ctx_ex.used     = e.used;
+     //    memcpy((void*)&(__xbt_ex_ctx()->ctx_ex),&e,sizeof(xbt_ex_t));
     DO_THROW(__xbt_ex_ctx()->ctx_ex);
 
   }
   memcpy(answer,received.payl,received.payl_size);
   free(received.payl);
+}
+
+/** @brief Conduct a RPC call */
+void gras_msg_rpccall(gras_socket_t server,
+		      double timeout,
+		      gras_msgtype_t msgtype,
+		      void *request, void *answer) {
+
+  gras_msg_cb_ctx_t ctx;
+
+  ctx= gras_msg_rpc_async_call(server, timeout,msgtype,request);
+  gras_msg_rpc_async_wait(ctx, answer);
 }
 
 
