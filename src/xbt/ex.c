@@ -94,6 +94,7 @@ void xbt_ex_free(xbt_ex_t e) {
       free(e.bt_strings[i]);
     free(e.bt_strings);
     e.bt_strings=NULL;
+    free(e.host);
   }
   /* locally, only one chunk of memory is allocated by the libc */
   if (e.bt_strings)
