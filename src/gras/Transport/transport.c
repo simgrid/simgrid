@@ -388,7 +388,7 @@ void gras_socket_meas_send(gras_socket_t peer,
   XBT_IN;
 
   xbt_assert0(peer->meas,"Asked to send measurement data on a regular socket");
-  xbt_assert0(peer->outgoing,"Socket not suited for data send");
+  xbt_assert0(peer->outgoing,"Socket not suited for data send (was created with gras_socket_server(), not gras_socket_client())");
 
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
      CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
