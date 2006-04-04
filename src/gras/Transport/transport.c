@@ -382,10 +382,13 @@ void gras_socket_meas_send(gras_socket_t peer,
 			   unsigned int timeout,
 			   unsigned long int exp_size, 
 			   unsigned long int msg_size) {
-  char *chunk = xbt_malloc0(msg_size);
+  char *chunk=NULL;
   unsigned long int exp_sofar;
    
   XBT_IN;
+
+  if (gras_if_RL()) 
+    chunk=xbt_malloc0(msg_size);
 
   xbt_assert0(peer->meas,"Asked to send measurement data on a regular socket");
   xbt_assert0(peer->outgoing,"Socket not suited for data send (was created with gras_socket_server(), not gras_socket_client())");
@@ -400,7 +403,8 @@ void gras_socket_meas_send(gras_socket_t peer,
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 	     
-  free(chunk);
+  if (gras_if_RL()) 
+    free(chunk);
 
   XBT_OUT;
 }
@@ -415,10 +419,13 @@ void gras_socket_meas_recv(gras_socket_t peer,
 			   unsigned long int exp_size, 
 			   unsigned long int msg_size){
   
-  char *chunk = xbt_malloc(msg_size);
+  char *chunk=NULL;
   unsigned long int exp_sofar;
 
   XBT_IN;
+
+  if (gras_if_RL()) 
+    chunk = xbt_malloc(msg_size);
 
   xbt_assert0(peer->meas,
 	      "Asked to receive measurement data on a regular socket");
@@ -434,7 +441,8 @@ void gras_socket_meas_recv(gras_socket_t peer,
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
-  free(chunk);
+  if (gras_if_RL()) 
+    free(chunk);
   XBT_OUT;
 }
 

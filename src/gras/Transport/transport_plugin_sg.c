@@ -258,9 +258,13 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   sprintf(name,"Chunk[%d]",count++);
 
   task_data=xbt_new(sg_task_data_t,1);
-  task_data->data=(void*)xbt_malloc(size);
   task_data->size = size;
-  memcpy(task_data->data,data,size);
+  if (data) {
+    task_data->data=(void*)xbt_malloc(size);
+    memcpy(task_data->data,data,size);
+  } else {
+    task_data->data = NULL;
+  }
 
   task=MSG_task_create(name,0,((double)size)/(1024.0*1024.0),task_data);
 
@@ -286,7 +290,9 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
   DEBUG4("recv chunk on %s ->  %s:%d (size=%ld)",
 	 MSG_host_get_name(sock_data->to_host),
 	 MSG_host_get_name(MSG_host_self()), sock_data->to_chan, size);
-  if (MSG_task_get(&task, (sock->meas ? pd->measChan : pd->chan)) != MSG_OK)
+  if (MSG_task_get_with_time_out(&task, 
+				 (sock->meas ? pd->measChan : pd->chan),
+				 60) != MSG_OK)
     THROW0(system_error,0,"Error in MSG_task_get()");
   DEBUG1("Got chuck %s",MSG_task_get_name(task));
 
@@ -297,8 +303,10 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
 	   task_data->size, size,
 	   MSG_host_get_name(sock_data->to_host),
 	   MSG_host_get_name(MSG_host_self()), sock_data->to_chan);
-  memcpy(data,task_data->data,size);
-  free(task_data->data);
+  if (data) 
+    memcpy(data,task_data->data,size);
+  if (task_data->data)
+    free(task_data->data);
   free(task_data);
 
   if (MSG_task_destroy(task) != MSG_OK)
