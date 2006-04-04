@@ -4,8 +4,17 @@
   <process host="Tremblay" function="server">
      <argument value="4000"/>       <!-- port number -->
   </process>
+
+  <process host="Ginette" function="forwarder">
+     <argument value="4000"/>       <!-- self port number -->
+     <argument value="Tremblay"/>   <!-- server host -->
+     <argument value="4000"/>       <!-- server port number -->
+  </process>
+
   <process host="Fafard" function="client">
      <argument value="Tremblay"/>   <!-- server host -->
-     <argument value="4000"/>       <!-- port number -->
+     <argument value="4000"/>       <!-- server port number -->
+     <argument value="Ginette"/>   <!-- forwarder host -->
+     <argument value="4000"/>       <!-- forwarder port number -->
   </process>
 </platform_description>
