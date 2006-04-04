@@ -104,7 +104,8 @@ int client(int argc,char *argv[]) {
   if (!gotit) {
     THROW0(unknown_error,0,"Didn't got the remote exception!");
   }
-  xbt_assert1(e.category == unknown_error, "Got wrong category: %d", e.category);
+  xbt_assert2(e.category == unknown_error, "Got wrong category: %d (instead of %d)", 
+	      e.category,unknown_error);
   xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
   xbt_assert1(!strcmp(e.msg,"Some error we will catch on client side"), 
 	      "Got wrong message: %s", e.msg);;
@@ -114,7 +115,7 @@ int client(int argc,char *argv[]) {
   /* doxygen_ignore */
   for (i=0; i<5; i++) {
 	
-     INFO0("Call the exception raising RPC");
+     INFO1("Call the exception raising RPC (i=%d)",i);
      TRY {
 	gras_msg_rpccall(toserver, 6000.0,
 			 gras_msgtype_by_name("raise exception"), NULL, NULL);
@@ -129,8 +130,8 @@ int client(int argc,char *argv[]) {
   /* doxygen_resume */
   
   /* 9. Call a RPC which raises an exception (to test that exception propagation works) */
-  INFO0("Call the exception raising RPC on the forwarder");
   for (i=0;i<2;i++) {
+    INFO1("Call the exception raising RPC on the forwarder (i=%d)",i);
     TRY {
       gras_msg_rpccall(toforwarder, 6000.0,
 		       gras_msgtype_by_name("forward exception"), NULL, NULL);
