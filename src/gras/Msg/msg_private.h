@@ -88,7 +88,7 @@ void gras_cbl_free(void *); /* used to free the memory at the end */
 void gras_cblist_free(void *cbl);
 
 /**
- * gras_msg_cbctx_t:
+ * gras_msg_cb_ctx_t:
  *
  * Context associated to a given callback (to either regular message or RPC)
  */
@@ -96,7 +96,7 @@ struct s_gras_msg_cb_ctx {
   gras_socket_t expeditor;
   gras_msgtype_t msgtype;
   unsigned long int ID;
-  
+  double timeout;
 };
 typedef struct s_gras_msg_cb_ctx s_gras_msg_cb_ctx_t;
 
