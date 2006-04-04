@@ -315,8 +315,10 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   sock = gras_socket_client(from_name,from_port);
   gras_msg_rpccall(sock,240,gras_msgtype_by_name("BW request"),&request, &result);
   
-  *sec=result->sec;
-  *bw =result->bw;
+  if (sec)
+    *sec=result->sec;
+  if (bw)
+    *bw =result->bw;
 
   VERB6("BW test between %s:%d and %s:%d took %f sec, achieving %f kb/s",
 	from_name,from_port, to_name,to_port,
