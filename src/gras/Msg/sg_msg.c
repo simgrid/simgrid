@@ -107,5 +107,4 @@ gras_msg_recv(gras_socket_t    sock,
 	msg->type->name,
 	e_gras_msg_kind_names[msg->kind],
 	msg->ID);
-  //	gras_socket_peer_name(msg->expe));
 }
