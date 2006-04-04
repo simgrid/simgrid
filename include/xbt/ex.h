@@ -232,7 +232,7 @@ typedef struct {
   xbt_errcat_t category; /**< category like HTTP (what went wrong) */
   int          value;    /**< like errno (why did it went wrong) */
   /* throw point */
-  short remote; /* whether it was raised remotely */
+  short int remote; /* whether it was raised remotely */
   char *host;     /* NULL for localhost; hostname if remote */
   /* FIXME: host should be hostname:port[#thread] */
   char *procname; 
