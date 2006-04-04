@@ -67,8 +67,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 	<tr>
 		<td style="text-align: left; vertical-align: top;"><a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>"><img
-		  src="simgrid_logo_small2.png"
-		  style="width: 220px; height: 54px; text-decoration: underline;" border="0" alt="SimGrid"></a><br>
+		  src="simgrid_logo_small.png"
+		  style="text-decoration: underline;" border="0" alt="SimGrid"></a><br>
 		</td>
 		<td style="text-align: right; vertical-align: top;"><a href="http://<?php echo $domain; ?>"><img src="http://<?php echo $domain; ?>/themes/inria/images/logo.png" border="0" alt="gforge INRIA" width="198" height="52" /></a></td>
 	</tr>

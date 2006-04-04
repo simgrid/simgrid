@@ -1,7 +1,7 @@
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
  $(shell find @srcdir@ -name "*.doc")
 FIGS=simgrid_modules.fig amok_bw_test.fig
-PNGS=$(patsubst %.fig,%.png,$(FIGS)) simgrid_logo.png
+PNGS=$(patsubst %.fig,%.png,$(FIGS)) simgrid_logo.png simgrid_logo_small.png
 
 EXTRA_DIST = html Doxyfile \
  modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html \
@@ -14,7 +14,7 @@ MAINTAINERCLEANFILES = html
 
 if MAINTAINER_MODE
 simgrid_modules.map: fig/simgrid_modules.fig
-	fig2dev -Lmap simgrid_modules.fig | grep -e IMG -e MAP -e AREA | \
+	fig2dev -Lmap fig/simgrid_modules.fig | grep -e IMG -e MAP -e AREA | \
 	sed 's/imagemap/simgrid_modules/g' | sed 's/\.gif/.png/' | \
 	sed 's/<IMG /<IMG style="border:0px "/g' | sed 's/\.gif/.png/' \
 	> simgrid_modules.map
