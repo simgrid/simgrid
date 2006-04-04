@@ -85,10 +85,10 @@ double * amok_bw_matrix(xbt_dynar_t hosts, /* dynar of xbt_host_t */
 
 void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
 			    const char* to_name,unsigned int to_port,
-			    unsigned int msg_size, unsigned int duration);
+			    unsigned int msg_size, double duration);
 
 void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
-			    unsigned int msg_size, unsigned int duration,
+			    unsigned int msg_size, double duration,
 			    /*out*/ double *elapsed, double *bw);
 
 void amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
