@@ -45,6 +45,12 @@ void gras_msg_send_ext(gras_socket_t   sock,
     msg->payl=xbt_malloc(msg->payl_size);
     whole_payload_size = gras_datadesc_copy(gras_datadesc_by_name("ex_t"),
 					    payload,msg->payl);
+  } else if (kind == e_gras_msg_kind_rpcanswer) {
+    msg->payl_size=gras_datadesc_size(msgtype->answer_type);
+    msg->payl=xbt_malloc(msg->payl_size);
+    if (msgtype->answer_type)
+      whole_payload_size = gras_datadesc_copy(msgtype->answer_type,
+					      payload, msg->payl);
   } else {
     msg->payl_size=gras_datadesc_size(msgtype->ctn_type);
     msg->payl=xbt_malloc(msg->payl_size);
@@ -61,7 +67,8 @@ void gras_msg_send_ext(gras_socket_t   sock,
   if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) 
     THROW0(system_error,0,"Problem during the MSG_task_put");
 
-  VERB3("Sent a message type '%s' kind '%s' ID %lu",
+  VERB5("Sent to %s(%d) a message type '%s' kind '%s' ID %lu",
+	MSG_host_get_name(sock_data->to_host),sock_data->to_PID,
 	msg->type->name,
 	e_gras_msg_kind_names[msg->kind],
 	msg->ID);
