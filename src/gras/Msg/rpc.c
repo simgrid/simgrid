@@ -87,7 +87,10 @@ void gras_msg_rpccall(gras_socket_t server,
   unsigned long int msg_ID = last_msg_ID++;
   s_gras_msg_t received;
 
-  DEBUG2("Send a RPC of type '%s' (ID=%lu)",msgtype->name,msg_ID);
+  DEBUG4("Send to %s:%d a RPC of type '%s' (ID=%lu)",
+	 gras_socket_peer_name(server),
+	 gras_socket_peer_port(server),
+	 msgtype->name,msg_ID);
 
   gras_msg_send_ext(server, e_gras_msg_kind_rpccall, msg_ID, msgtype, request);
   gras_msg_wait_ext(timeOut,
