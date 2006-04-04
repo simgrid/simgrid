@@ -1,5 +1,9 @@
 #! @BASH@
-if test -x ./saturate_simulator ; then
-  exec ./saturate_simulator @srcdir@/../WAN_3.platform.txt @srcdir@/saturate_deployment.txt
+if [ x@EXEEXT@ = x ] ; then
+#  exenv="libtool --mode=execute valgrind"
+  exenv=$SG_TEST_EXENV
+else
+  exenv=wine
 fi
-exit 77
+
+exec $exenv ./saturate_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/saturate_deployment.xml $@
