@@ -388,7 +388,7 @@ gras_msg_handle(double timeOut) {
   VERB1("Handling message within the next %.2fs",timeOut);
   
   untiltimer = gras_msg_timer_handle();
-  DEBUG2("[%.0f] Next timer in %f sec", gras_os_time(), untiltimer);
+  DEBUG1("Next timer in %f sec", untiltimer);
   if (untiltimer == 0.0) {
      /* A timer was already elapsed and handled */
      return;
@@ -419,7 +419,8 @@ gras_msg_handle(double timeOut) {
       TRY {
 	/* FIXME: if not the right kind, queue it and recall ourself or goto >:-) */
 	gras_msg_recv(msg.expe, &msg);
-	DEBUG0("Received a msg from the socket");
+	DEBUG1("Received a msg from the socket kind:%s",
+	       e_gras_msg_kind_names[msg.kind]);
     
       } CATCH(e) {
 	RETHROW1("Error caught while receiving a message on select()ed socket %p: %s",
@@ -471,7 +472,7 @@ gras_msg_handle(double timeOut) {
   ctx.ID = msg.ID;
   ctx.msgtype = msg.type;
 
-  switch (msg.type->kind) {
+  switch (msg.kind) {
   case e_gras_msg_kind_oneway:
   case e_gras_msg_kind_rpccall:
     TRY {
@@ -488,14 +489,20 @@ gras_msg_handle(double timeOut) {
       free(msg.payl);
       if (msg.type->kind == e_gras_msg_kind_rpccall) {
 	/* The callback raised an exception, propagate it on the network */
-	e.host = (char*)gras_os_myname();
+	if (!e.remote) { /* the exception is born on this machine */
+	  e.host = (char*)gras_os_myname();
 #ifdef HAVE_EXECINFO_H
-	e.bt_strings = backtrace_symbols (e.bt, e.used);
+	  e.bt_strings = backtrace_symbols (e.bt, e.used);
 #endif
-	gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror , msg.ID, msg.type, &e);
+	} 
+	gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
+			  msg.ID, msg.type, &e);
+	INFO4("Propagated %s exception from '%s' RPC cb back to %s:%d",
+	      (e.remote ? "remote" : "local"),
+	      msg.type->name,
+	      gras_socket_peer_name(msg.expe),
+	      gras_socket_peer_port(msg.expe));
 	e.host = NULL;
-	INFO2("RPC callback raised an exception, which were propagated back to %s:%d",
-	      gras_socket_peer_name(msg.expe),	gras_socket_peer_port(msg.expe));
 	xbt_ex_free(e);
 	return;
       }
