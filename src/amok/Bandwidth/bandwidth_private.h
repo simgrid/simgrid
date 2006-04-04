@@ -16,6 +16,18 @@
 #include "gras.h"
 #include "amok/bandwidth.h"
 
+void amok_bw_bw_init(void); /* Must be called only once per node */
+void amok_bw_bw_join(void); /* Each process must run it */
+void amok_bw_bw_leave(void);/* Each process must run it */
+
+void amok_bw_sat_init(void); /* Must be called only once per node */
+void amok_bw_sat_join(void); /* Each process must run it */
+void amok_bw_sat_leave(void);/* Each process must run it */
+
+/***
+ * Plain bandwidth measurement stuff
+ ***/
+
 /* Request for a BW experiment.
  * If host==NULL, it should be between the sender and the receiver.
  * If not, it should be between between the receiver and host (3-tiers).
@@ -27,29 +39,28 @@ typedef struct {
   unsigned long int msg_size;
 } s_bw_request_t,*bw_request_t;
 
-/* Result of a BW experiment (payload when answering).
- * if err.msg != NULL, it wasn't sucessful. Check err.msg and err.code to see why.
- */
+/* Result of a BW experiment (payload when answering). */
 typedef struct {
   unsigned int timestamp;
   double sec;
   double bw;
-} s_bw_res,*bw_res_t;
+} s_bw_res_t,*bw_res_t;
 
+
+/***
+ * Saturation stuff
+ ***/
 
 /* Description of a saturation experiment (payload asking some host to collaborate for that)
  */
 typedef struct {
   s_xbt_host_t host; /* host+raw socket to use */
   unsigned int msg_size;
-  unsigned int timeout;
+  unsigned int duration;
 } s_sat_request_t,*sat_request_t;
 
-/* Prototypes of local callbacks */
-int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload);
-int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx, void *payload);
-
-int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload);
-int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload);
+void amok_bw_sat_start(const char* from_name,unsigned int from_port,
+		       const char* to_name,unsigned int to_port,
+		       unsigned int msg_size, unsigned int duration);
 
 #endif /* AMOK_BANDWIDTH_PRIVATE_H */

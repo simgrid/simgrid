@@ -15,70 +15,27 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(bw,amok,"Bandwidth testing");
 
+
+/******************************
+ * Stuff global to the module *
+ ******************************/
+
 static short _amok_bw_initialized = 0;
 
 /** @brief module initialization; all participating nodes must run this */
 void amok_bw_init(void) {
-  gras_datadesc_type_t bw_request_desc, bw_res_desc, sat_request_desc;
 
   amok_base_init();
 
   if (! _amok_bw_initialized) {
-	
-     /* Build the Bandwidth datatype descriptions */ 
-     bw_request_desc = gras_datadesc_struct("s_bw_request_t");
-     gras_datadesc_struct_append(bw_request_desc,"host",
-				 gras_datadesc_by_name("xbt_host_t"));
-     gras_datadesc_struct_append(bw_request_desc,"buf_size",
-				 gras_datadesc_by_name("unsigned long int"));
-     gras_datadesc_struct_append(bw_request_desc,"exp_size",
-				 gras_datadesc_by_name("unsigned long int"));
-     gras_datadesc_struct_append(bw_request_desc,"msg_size",
-				 gras_datadesc_by_name("unsigned long int"));
-     gras_datadesc_struct_close(bw_request_desc);
-     bw_request_desc = gras_datadesc_ref("bw_request_t",bw_request_desc);
-
-     bw_res_desc = gras_datadesc_struct("s_bw_res_t");
-     gras_datadesc_struct_append(bw_res_desc,"timestamp",gras_datadesc_by_name("unsigned int"));
-     gras_datadesc_struct_append(bw_res_desc,"seconds",gras_datadesc_by_name("double"));
-     gras_datadesc_struct_append(bw_res_desc,"bw",gras_datadesc_by_name("double"));
-     gras_datadesc_struct_close(bw_res_desc);
-     bw_res_desc = gras_datadesc_ref("bw_res_t",bw_res_desc);
-
-     gras_msgtype_declare_rpc("BW handshake",bw_request_desc,bw_request_desc);
-     gras_msgtype_declare_rpc("BW request",  bw_request_desc,bw_res_desc);
-
-     /* Build the saturation datatype descriptions */ 
-     sat_request_desc = gras_datadesc_struct("s_sat_request_desc_t");
-     gras_datadesc_struct_append(sat_request_desc,"host",gras_datadesc_by_name("xbt_host_t"));
-     gras_datadesc_struct_append(sat_request_desc,"msg_size",gras_datadesc_by_name("unsigned int"));
-     gras_datadesc_struct_append(sat_request_desc,"timeout",gras_datadesc_by_name("unsigned int"));
-     gras_datadesc_struct_close(sat_request_desc);
-     sat_request_desc = gras_datadesc_ref("sat_request_t",sat_request_desc);
-     
-     /* Register the saturation messages */
-     gras_msgtype_declare("SAT start",   sat_request_desc);
-     gras_msgtype_declare("SAT started", NULL);
-     gras_msgtype_declare("SAT begin",   sat_request_desc);
-     gras_msgtype_declare("SAT begun",   NULL);
-     gras_msgtype_declare("SAT end",     NULL);
-     gras_msgtype_declare("SAT ended",   NULL);
-     gras_msgtype_declare("SAT stop",    NULL);
-     gras_msgtype_declare("SAT stopped", NULL);
+    amok_bw_bw_init();
+    amok_bw_sat_init();
   }
    
-  /* Register the callbacks */
-  gras_cb_register(gras_msgtype_by_name("BW request"),
-		   &amok_bw_cb_bw_request);
-  gras_cb_register(gras_msgtype_by_name("BW handshake"),
-		   &amok_bw_cb_bw_handshake);
+  amok_bw_bw_join();
+  amok_bw_sat_join();
 
-  gras_cb_register(gras_msgtype_by_name("SAT start"),
-		   &amok_bw_cb_sat_start);
-  gras_cb_register(gras_msgtype_by_name("SAT begin"),
-		   &amok_bw_cb_sat_begin);
-  
-  _amok_bw_initialized =1;
+  _amok_bw_initialized++;
 }
 
 /** @brief module finalization */
@@ -86,22 +43,56 @@ void amok_bw_exit(void) {
   if (! _amok_bw_initialized)
     return;
    
-  gras_cb_unregister(gras_msgtype_by_name("BW request"),
-		     &amok_bw_cb_bw_request);
-  gras_cb_unregister(gras_msgtype_by_name("BW handshake"),
-		     &amok_bw_cb_bw_handshake);
+  amok_bw_bw_leave();
+  amok_bw_sat_leave();
 
-  gras_cb_unregister(gras_msgtype_by_name("SAT start"),
-		     &amok_bw_cb_sat_start);
-  gras_cb_unregister(gras_msgtype_by_name("SAT begin"),
-		     &amok_bw_cb_sat_begin);
-
-  _amok_bw_initialized = 0;
+  _amok_bw_initialized--;
 }
 
 /* ***************************************************************************
  * Bandwidth tests
  * ***************************************************************************/
+static int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload);
+static int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx, void *payload);
+
+void amok_bw_bw_init() {
+  gras_datadesc_type_t bw_request_desc, bw_res_desc;
+
+  /* Build the Bandwidth datatype descriptions */ 
+  bw_request_desc = gras_datadesc_struct("s_bw_request_t");
+  gras_datadesc_struct_append(bw_request_desc,"host",
+			      gras_datadesc_by_name("s_xbt_host_t"));
+  gras_datadesc_struct_append(bw_request_desc,"buf_size",
+			      gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_append(bw_request_desc,"exp_size",
+			      gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_append(bw_request_desc,"msg_size",
+			      gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_close(bw_request_desc);
+  bw_request_desc = gras_datadesc_ref("bw_request_t",bw_request_desc);
+  
+  bw_res_desc = gras_datadesc_struct("s_bw_res_t");
+  gras_datadesc_struct_append(bw_res_desc,"timestamp",gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_append(bw_res_desc,"seconds",gras_datadesc_by_name("double"));
+  gras_datadesc_struct_append(bw_res_desc,"bw",gras_datadesc_by_name("double"));
+  gras_datadesc_struct_close(bw_res_desc);
+  bw_res_desc = gras_datadesc_ref("bw_res_t",bw_res_desc);
+  
+  gras_msgtype_declare_rpc("BW handshake",bw_request_desc,bw_request_desc);
+  gras_msgtype_declare_rpc("BW request",  bw_request_desc,bw_res_desc);
+}
+void amok_bw_bw_join() {
+  gras_cb_register(gras_msgtype_by_name("BW request"),
+		   &amok_bw_cb_bw_request);
+  gras_cb_register(gras_msgtype_by_name("BW handshake"),
+		   &amok_bw_cb_bw_handshake);
+}
+void amok_bw_bw_leave() {
+  gras_cb_unregister(gras_msgtype_by_name("BW request"),
+		     &amok_bw_cb_bw_request);
+  gras_cb_unregister(gras_msgtype_by_name("BW handshake"),
+		     &amok_bw_cb_bw_handshake);
+}
 
 /**
  * \brief bandwidth measurement between localhost and \e peer
@@ -218,7 +209,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
   /* Build our answer */
   answer = xbt_new0(s_bw_request_t,1);
   
-  for (port = 6000; port < 10000 && measMasterIn == NULL; port++) {
+  for (port = 6000; port <= 10000 && measMasterIn == NULL; port++) {
     TRY {
       measMasterIn = gras_socket_server_ext(port,request->buf_size,1);
     } CATCH(e) {
@@ -235,8 +226,6 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
   answer->exp_size=request->exp_size;
   answer->msg_size=request->msg_size;
   answer->host.port=gras_socket_my_port(measMasterIn);
-
-
 
   TRY {
     gras_msg_rpcreturn(60,ctx,&answer);
@@ -331,10 +320,11 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
 
   VERB6("BW test between %s:%d and %s:%d took %f sec, achieving %f kb/s",
 	from_name,from_port, to_name,to_port,
-	*sec,*bw);
+	*sec,((double)*bw)/1024.0);
 
   gras_socket_close(sock);
   free(result);
+  free(request);
 }
 
 int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
@@ -342,7 +332,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 			  
   /* specification of the test to run, and our answer */
   bw_request_t request = *(bw_request_t*)payload;
-  bw_res_t result = xbt_new0(s_bw_res,1);
+  bw_res_t result = xbt_new0(s_bw_res_t,1);
   gras_socket_t peer;
 
   peer = gras_socket_client(request->host.name,request->host.port);
@@ -360,47 +350,25 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   return 1;
 }
 
-int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx,
-			 void             *payload) {
-   CRITICAL0("amok_bw_cb_sat_start; not implemented");
-   return 1;
-} 
-int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx,
-			 void             *payload) {
-   CRITICAL0("amok_bw_cb_sat_begin: not implemented");
-   return 1;
-}
-
 double * amok_bw_matrix(xbt_dynar_t hosts,
                          int buf_size_bw, int exp_size_bw, int msg_size_bw) { 
   double sec;
   /* construct of matrixs for bandwith and Latency */
 
 
-  double *matrix_bw;   /* matrix bandwidth */
   int i,j,len=xbt_dynar_length(hosts);
 
-  matrix_bw = (double *) malloc(sizeof(double)* len*len);
-
+  double *matrix_res = xbt_new0(double, len*len);
   xbt_host_t h1,h2;
 
-  h1 = xbt_new(s_xbt_host_t,1);
-  h2 = xbt_new(s_xbt_host_t,1);
-  i=0;
   xbt_dynar_foreach (hosts,i,h1) {
-    j=0;
     xbt_dynar_foreach (hosts,j,h2) {
-      if(i!=j) {
+      if (i!=j) {
         /* Mesurements of Bandwidth */
         amok_bw_request(h1->name,h1->port,h2->name,h2->port,
-                        buf_size_bw,exp_size_bw,msg_size_bw,&sec,&matrix_bw[i*len + j]);
-      } else {
-        matrix_bw[i*len +j] = 0.0;
-      }
-
+                        buf_size_bw,exp_size_bw,msg_size_bw,&sec,&matrix_res[i*len + j]);
+      } 
     }
   }
-  free(h1);
-  free(h2);
-  return matrix_bw;
+  return matrix_res;
 }
