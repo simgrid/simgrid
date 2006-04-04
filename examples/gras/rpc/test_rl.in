@@ -8,4 +8,6 @@ fi
     
 $exenv ./rpc_server@EXEEXT@ 4002 $@ &
 sleep 1
-$exenv ./rpc_client@EXEEXT@ 127.0.0.1 4002 $@
+$exenv ./rpc_forwarder@EXEEXT@ 4003 127.0.0.1 4002 $@ &
+sleep 1
+$exenv ./rpc_client@EXEEXT@ 127.0.0.1 4002 127.0.0.1 4003 $@
