@@ -13,23 +13,17 @@
 XBT_LOG_NEW_SUBCATEGORY(amok,XBT_LOG_ROOT_CAT,"All AMOK categories");
 
 void amok_base_init(void) {
-  gras_datadesc_type_t host_desc, remoterr_desc;
+  gras_datadesc_type_t host_desc;
      
   /* Build the datatype descriptions */
-  host_desc = gras_datadesc_struct("xbt_host_t");
+  host_desc = gras_datadesc_struct("s_xbt_host_t");
   gras_datadesc_struct_append(host_desc,"name",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(host_desc,"exp_size",gras_datadesc_by_name("int"));
   gras_datadesc_struct_close(host_desc);
-  host_desc = gras_datadesc_ref("xbt_host_t*",host_desc);
-   
-  remoterr_desc = gras_datadesc_struct("s_amok_remoterr_t");
-  gras_datadesc_struct_append(remoterr_desc,"msg",gras_datadesc_by_name("string"));
-  gras_datadesc_struct_append(remoterr_desc,"code",gras_datadesc_by_name("unsigned int"));
-  gras_datadesc_struct_close(remoterr_desc);
-  remoterr_desc = gras_datadesc_ref("amok_remoterr_t",remoterr_desc);
+  host_desc = gras_datadesc_ref("xbt_host_t",host_desc);
 }
 
 void amok_base_exit(void) {
-   /* No real module mechanism in GRAS so far, nothing to do. */
+   /* FIXME: No real module mechanism in GRAS so far, nothing to do. */
 }
 
