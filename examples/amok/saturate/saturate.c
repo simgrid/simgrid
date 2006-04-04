@@ -1,8 +1,8 @@
 /* $Id$ */
 
-/* saturate - link saturation demo of GRAS features                         */
+/* saturate - link saturation demo of AMOK features                         */
 
-/* Copyright (c) 2003 Martin Quinson. All rights reserved.                  */
+/* Copyright (c) 2003-6 Martin Quinson. All rights reserved.                */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,7 +12,8 @@
 #include <signal.h>
 #include <time.h>
 
-#include <gras.h>
+#include "gras.h"
+#include "amok/bandwidth.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(saturate,"Messages specific to this example");
 
@@ -22,36 +23,25 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(saturate,"Messages specific to this example");
 
 /* Global private data */
 typedef struct {
-  gras_socket_t *sock;
+  gras_socket_t sock;
 } sensor_data_t;
 
 /* Function prototypes */
 int sensor (int argc,char *argv[]);
 
 int sensor (int argc,char *argv[]) {
-  xbt_error_t errcode;
-  sensor_data_t *g=gras_userdata_new(sensor_data_t);  
+  sensor_data_t *g;
 
-  if ((errcode=gras_socket_server(4000,&(g->sock)))) {
-    CRITICAL1("Sensor: Error %s encountered while opening the server socket",xbt_error_name(errcode));
-    return 1;
-  }
+  gras_init(&argc,argv);
+  amok_bw_init();
 
-  if (grasbw_register_messages()) {
-    gras_socket_close(g->sock);
-    return 1;
-  }
+  g=gras_userdata_new(sensor_data_t);  
+  g->sock = gras_socket_server(4000);
 
   while (1) {
-    if ((errcode=gras_msg_handle(60.0)) && errcode != timeout_error) { 
-       CRITICAL1("Sensor: Error '%s' while handling message",
-	      xbt_error_name(errcode));
-    }
+    gras_msg_handle(60.0);
   }
 
-  gras_os_sleep(5,0);
-  gras_socket_close(g->sock);
-   
   return 0;
 }
 
@@ -59,200 +49,186 @@ int sensor (int argc,char *argv[]) {
  * Maestro code
  * **********************************************************************/
 
-/* Global private data */
-typedef struct {
-  gras_socket_t *sock;
-} maestro_data_t;
-
 /* Function prototypes */
 int maestro (int argc,char *argv[]);
-double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2);
 
-double XP(const char *bw1, const char *bw2, const char *sat1, const char *sat2) {
-  xbt_error_t errcode;
-  int bufSize=32 * 1024;
-  int expSize=64 * 1024;
-  int msgSize=64 * 1024;
-  int satSize=msgSize * 10;
+static double XP(const char *bw1, const char *bw2,
+		 const char *sat1, const char *sat2) {
+
+  int buf_size=32 * 1024;
+  int exp_size=64 * 1024;
+  int msg_size=64 * 1024;
+  int sat_size=msg_size * 10;
   double sec, bw, sec_sat,bw_sat;
 
-  if ((errcode=grasbw_request(bw1,4000,bw2,4000,bufSize,expSize,msgSize,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
-    return -1;
-  }
-   
-  fprintf(stderr,"MAESTRO: BW(%s,%s) => %f sec, achieving %f Mb/s\n",bw1,bw2,sec,bw);
+  /* Test BW without saturation */
+  amok_bw_request(bw1,4000,bw2,4000,
+		  buf_size,exp_size,msg_size,&sec,&bw);
+  INFO4("BW(%s,%s) => %f sec, achieving %f Mb/s",
+       bw1, bw2, sec, (bw/1024.0/1024.0));
 
-  if ((errcode=grasbw_saturate_start(sat1,4000,sat2,4000,satSize,60))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation\n",
-	    xbt_error_name(errcode));
-    return -1;
-  }
-  gras_os_sleep(1,0);
-  if ((errcode=grasbw_request(bw1,4000,bw2,4000,bufSize,expSize,msgSize,&sec_sat,&bw_sat))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
-    return -1;
-  }
-   
-  fprintf(stderr,"MAESTRO: BW(%s,%s//%s,%s) => %f sec, achieving %f Mb/s\n",
-	 bw1,bw2,sat1,sat2,sec_sat,bw_sat);
 
-  if ((errcode=grasbw_saturate_stop(sat1,4000,sat2,4000))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation\n",
-	    xbt_error_name(errcode));
-    return -1;
-  }
+  /* Test BW with saturation */  
+  amok_bw_saturate_start(sat1,4000,sat2,4000, sat_size,60);
+  gras_os_sleep(1.0); /* let it start */
+
+  amok_bw_request(bw1,4000,bw2,4000,
+		  buf_size,exp_size,msg_size,&sec_sat,&bw_sat);
+  INFO6("BW(%s,%s//%s,%s) => %f sec, achieving %f Mb/s",
+       bw1,bw2,sat1,sat2,sec,bw/1024.0/1024.0);
+  
+  amok_bw_saturate_stop(sat1,4000,NULL,NULL);
 
   if (bw_sat/bw < 0.7) {
-    fprintf(stderr,"MAESTRO: THERE IS SOME INTERFERENCE !!!\n");
+    INFO0("THERE IS SOME INTERFERENCE !!!");
   } 
   if (bw/bw_sat < 0.7) {
-    fprintf(stderr,"MAESTRO: THERE IS SOME INTERFERENCE (and Im a cretin) !!!\n");
+    INFO0("THERE IS SOME INTERFERENCE (and I'm an idiot) !!!");
   } 
   return bw_sat/bw;
-
 }
 
-//#define MAXHOSTS 33
-#define MAXHOSTS 4
-
+static void free_host(void *d){
+  xbt_host_t h=*(xbt_host_t*)d;
+  free(h->name);
+  free(h);
+}
 int maestro(int argc,char *argv[]) {
-  int bufSize=32 * 1024;
-  int expSize= 1024 * 1024;
-  int msgSize=expSize;
-  int satSize=msgSize * 100;
-  double dummy,beginSim;
-  xbt_error_t errcode;
-  maestro_data_t *g=gras_userdata_new(maestro_data_t);
-  //  const char *hosts[MAXHOSTS] = { "61", "62", "63", "69", "70", "77", "81", "83", "85", "87", "88", "95", "98", "107", "109", "111", "112", "121", "124", "125", "131", "145", "150", "156", "157", "162", "165", "168", "169", "170", "175", "177", "178" };
-  const char *hosts[MAXHOSTS] = { "A", "B", "C", "D" };
+  xbt_ex_t e;
+  /* XP setups */
+  int buf_size=0;
+  int exp_size= 1024 * 1024;
+  int msg_size=exp_size;
+  int sat_size=msg_size * 100;
 
-  double bw[MAXHOSTS][MAXHOSTS];
-  double bw_sat[MAXHOSTS][MAXHOSTS];
+  /* timers */
+  double begin_simulated; 
+  int begin;
 
-  int a,b,c,d,begin;
+  /* where are the sensors */
+  xbt_dynar_t hosts = xbt_dynar_new(sizeof(xbt_host_t),&free_host);
+  int nb_hosts;
 
-  if ((errcode=gras_socket_server(4000,&(g->sock)))) { 
-    fprintf(stderr,"MAESTRO: Error %s encountered while opening the server socket\n",xbt_error_name(errcode));
-    return 1;
+  /* results */
+  double *bw;
+  double *bw_sat;
+
+  /* iterators */
+  int i,j,k,l;
+  xbt_host_t h1,h2,h3,h4;
+
+  gras_init(&argc,argv);
+  amok_bw_init();
+
+  /* Get the sensor location from argc/argv */
+  for (i=1; i<argc-1; i+=2){
+    xbt_host_t host=xbt_new(s_xbt_host_t,1);
+    host->name=strdup(argv[i]);
+    host->port=atoi(argv[i+1]);
+    INFO2("New sensor: %s:%d",host->name,host->port);
+    xbt_dynar_push(hosts,&host);
   }
+  nb_hosts = xbt_dynar_length(hosts);
 
-  if (grasbw_register_messages()) {
-    gras_socket_close(g->sock);
-    return 1;
-  }
-
+  /* Do the test without saturation */
   begin=time(NULL);
-  beginSim=gras_os_time();
-  for (a=0; a<MAXHOSTS; a++) {
-    for (b=0; b<MAXHOSTS; b++) {
-      if (a==b) continue;
-      fprintf(stderr,"BW XP(%s %s)=",hosts[a],hosts[b]); 
-      if ((errcode=grasbw_request(hosts[a],4000,hosts[b],4000,bufSize,expSize,msgSize,
-				  &dummy,&(bw[a][b])))) {
-	fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
-	return 1;
-      }
-      fprintf(stderr,"%f Mb/s in %f sec\n",bw[a][b],dummy);
-    }
-  }
-  fprintf(stderr,"Did all BW tests in %ld sec (%.2f simulated sec)\n",
-	  time(NULL)-begin,gras_os_time()-beginSim);
-      
-  for (a=0; a<MAXHOSTS; a++) {
-    for (b=0; b<MAXHOSTS; b++) {
-      if (a==b) continue;
+  begin_simulated=gras_os_time();
+
+  bw=amok_bw_matrix(hosts,buf_size,exp_size,msg_size);
+
+  INFO2("Did all BW tests in %ld sec (%.2f simulated sec)",
+	  time(NULL)-begin,gras_os_time()-begin_simulated);
+
+  /* Do the test with saturation */
+  bw_sat=xbt_new(double,nb_hosts*nb_hosts);
+  xbt_dynar_foreach(hosts,i,h1) {
+    xbt_dynar_foreach(hosts,j,h2) {
+      if (i==j) continue;
       	
-      if ((errcode=grasbw_saturate_start(hosts[a],4000,hosts[b],4000,satSize,360000000))) {
-	fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation\n",
-		xbt_error_name(errcode));
-	return -1;
+      TRY {
+	amok_bw_saturate_start(h1->name,h1->port,
+			       h2->name,h2->port,
+			       sat_size,360000000);
+      } CATCH(e) {
+	RETHROW0("Cannot ask hosts to saturate the link: %s");
       }
-      gras_os_sleep(1,0);
+      gras_os_sleep(1.0);
 
       begin=time(NULL);
-      beginSim=gras_os_time();
-      for (c=0 ;c<MAXHOSTS; c++) {
-	if (a==c) continue;
-	if (b==c) continue;
+      begin_simulated=gras_os_time();
+      xbt_dynar_foreach(hosts,k,h3) {
+	if (i==k || j==k) continue;
 
-	for (d=0 ;d<MAXHOSTS; d++) {
-	  if (a==d) continue;
-	  if (b==d) continue;
-	  if (c==d) continue;
+	xbt_dynar_foreach(hosts,l,h4) {
+	  double ratio;
+	  if (i==l || j==l || k==l) continue;
+
+	  amok_bw_request(h3->name,h3->port, h4->name,h4->port,
+			  buf_size,exp_size,msg_size,
+			  NULL,&(bw_sat[k*nb_hosts + l])); 
 	  
-	  if ((errcode=grasbw_request(hosts[c],4000,hosts[d],4000,bufSize,expSize,msgSize,
-				      &dummy,&(bw_sat[c][d])))) {
-	    fprintf(stderr,"MAESTRO: Error %s encountered in test\n",xbt_error_name(errcode));
-	    return 1;
-	  }
-	  fprintf(stderr, "MAESTRO[%.2f sec]: SATURATED BW XP(%s %s // %s %s) => %f (%f vs %f)%s\n",
-		  gras_os_time(),
-		  hosts[c],hosts[d],hosts[a],hosts[b],
-		  bw_sat[c][d]/bw[c][d],bw[c][d],bw_sat[c][d],
+	  ratio=bw_sat[k*nb_hosts + l] / bw[k*nb_hosts + l];
+	  INFO8("SATURATED BW XP(%s %s // %s %s) => %f (%f vs %f)%s",
+		h1->name,h2->name,h3->name,h4->name,
+		ratio,
+		bw[k*nb_hosts + l] , bw_sat[k*nb_hosts + l],
 
-		  (bw_sat[c][d]/bw[c][d] < 0.7) ? " THERE IS SOME INTERFERENCE !!!":
-		  ((bw[c][d]/bw_sat[c][d] < 0.7) ? " THERE IS SOME INTERFERENCE (and Im a cretin) !!!":
-		   ""));
+		ratio < 0.7 ? " THERE IS SOME INTERFERENCE !!!": "");
 	}
       }
 
-      if ((errcode=grasbw_saturate_stop(hosts[a],4000,hosts[b],4000))) {
-	fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation\n",
-		xbt_error_name(errcode));
-	return -1;
-      }
-      fprintf(stderr,"Did an iteration on saturation pair in %ld sec (%.2f simulated sec)\n",
-	      time(NULL)-begin, gras_os_time()-beginSim);
+      amok_bw_saturate_stop(h1->name,h1->port, NULL,NULL);
+
+      INFO2("Did an iteration on saturation pair in %ld sec (%.2f simulated sec)",
+	      time(NULL)-begin, gras_os_time()-begin_simulated);
     }
   }
 
-  gras_os_sleep(5,0);
+  gras_os_sleep(5.0);
   exit(0);
 #if 0
   return 0;
   /* start saturation */
-  fprintf(stderr,"MAESTRO: Start saturation with size %d\n",msgSize);
-  if ((errcode=grasbw_saturate_start(argv[5],atoi(argv[6]),argv[7],atoi(argv[8]),msgSize*10,60))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation\n",
+  fprintf(stderr,"MAESTRO: Start saturation with size %d",msg_size);
+  if ((errcode=grasbw_saturate_start(argv[5],atoi(argv[6]),argv[7],atoi(argv[8]),msg_size*10,60))) {
+    fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation",
 	    xbt_error_name(errcode));
     return 1;
   }
-  fprintf(stderr,"MAESTRO: Saturation started\n");
-  gras_os_sleep(5,0);
+  fprintf(stderr,"MAESTRO: Saturation started");
+  gras_os_sleep(5.0);
 
   /* test with saturation */
   if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-			      bufSize,expSize,msgSize,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
+			      buf_size,exp_size,msg_size,&sec,&bw))) {
+    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test",xbt_error_name(errcode));
     return 1;
   }
    
-  fprintf(stderr,"MAESTRO: Experience3 (%d ko in msgs of %d ko with saturation) took %f sec, achieving %f Mb/s\n",
-	  expSize/1024,msgSize/1024,
+  fprintf(stderr,"MAESTRO: Experience3 (%d ko in msgs of %d ko with saturation) took %f sec, achieving %f Mb/s",
+	  exp_size/1024,msg_size/1024,
 	  sec,bw);
 
   /* stop saturation */
   if ((errcode=grasbw_saturate_stop(argv[5],atoi(argv[6]),argv[7],atoi(argv[8])))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation\n",
+    fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation",
 	    xbt_error_name(errcode));
     return 1;
   }
 
   /* test without saturation */
   if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-			      bufSize,expSize,msgSize,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test\n",xbt_error_name(errcode));
+			      buf_size,exp_size,msg_size,&sec,&bw))) {
+    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test",xbt_error_name(errcode));
     return 1;
   }
    
-  fprintf(stderr,"MAESTRO: Experience4 (%d ko in msgs of %d ko, without saturation) took %f sec, achieving %f Mb/s\n",
-	  expSize/1024,msgSize/1024,
+  fprintf(stderr,"MAESTRO: Experience4 (%d ko in msgs of %d ko, without saturation) took %f sec, achieving %f Mb/s",
+	  exp_size/1024,msg_size/1024,
 	  sec,bw);
 
-  gras_os_sleep(5,0);
+  gras_os_sleep(5.0);
 #endif
-  gras_socket_close(g->sock);
    
   return 0;
 }
