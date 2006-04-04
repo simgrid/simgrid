@@ -232,6 +232,7 @@ typedef struct {
   xbt_errcat_t category; /**< category like HTTP (what went wrong) */
   int          value;    /**< like errno (why did it went wrong) */
   /* throw point */
+  short remote; /* whether it was raised remotely */
   char *host;     /* NULL for localhost; hostname if remote */
   /* FIXME: host should be hostname:port[#thread] */
   char *procname; 
@@ -247,14 +248,14 @@ typedef struct {
 /* declare the context type (private) */
 typedef struct {
     __ex_mctx_t  *ctx_mctx;     /* permanent machine context of enclosing try/catch */
-    int           ctx_caught;   /* temporary flag whether exception was caught */
-    volatile xbt_ex_t ctx_ex;       /* temporary exception storage */
+    volatile int ctx_caught;    /* temporary flag whether exception was caught */
+    volatile xbt_ex_t ctx_ex;   /* temporary exception storage */
 } ex_ctx_t;
 
 /* the static and dynamic initializers for a context structure */
 #define XBT_CTX_INITIALIZER \
     { NULL, 0, { /* content */ NULL, unknown_error, 0, \
-                 /* throw point*/ NULL, NULL, NULL, 0, NULL,\
+                 /* throw point*/ 0,NULL, NULL, NULL, 0, NULL,\
                  /* backtrace */ 0,NULL,{NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL} } }
 #define XBT_CTX_INITIALIZE(ctx) \
     do { \
@@ -263,6 +264,7 @@ typedef struct {
         (ctx)->ctx_ex.msg        = NULL; \
         (ctx)->ctx_ex.category   = 0;    \
         (ctx)->ctx_ex.value      = 0;    \
+        (ctx)->ctx_ex.remote     = 0;    \
         (ctx)->ctx_ex.host       = NULL; \
         (ctx)->ctx_ex.procname   = NULL; \
         (ctx)->ctx_ex.file       = NULL; \
@@ -383,6 +385,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      __xbt_ex_ctx()->ctx_ex.msg      = (m); \
      __xbt_ex_ctx()->ctx_ex.category = (xbt_errcat_t)(c); \
      __xbt_ex_ctx()->ctx_ex.value    = (v);  \
+     __xbt_ex_ctx()->ctx_ex.remote   = 0;                            \
      __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL;                            \
      __xbt_ex_ctx()->ctx_ex.procname = strdup(xbt_procname());                 \
      __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__;                        \

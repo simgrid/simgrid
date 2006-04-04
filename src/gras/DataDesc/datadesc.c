@@ -118,6 +118,8 @@ gras_datadesc_init(void) {
   gras_datadesc_struct_append(ddt,"category",gras_datadesc_by_name("int"));
   gras_datadesc_struct_append(ddt,"value",gras_datadesc_by_name("int"));
 
+  gras_datadesc_struct_append(ddt,"remote",gras_datadesc_by_name("short int"));
+
   gras_datadesc_struct_append(ddt,"host",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(ddt,"procname",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(ddt,"file",gras_datadesc_by_name("string"));
