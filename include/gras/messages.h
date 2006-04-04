@@ -165,6 +165,13 @@ void gras_msg_rpccall(gras_socket_t server,
 		      double timeOut,
 		      gras_msgtype_t msgtype,
 		      void *request, void *answer);
+gras_msg_cb_ctx_t
+gras_msg_rpc_async_call(gras_socket_t server,
+			double timeOut,
+			gras_msgtype_t msgtype,
+			void *request);
+void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
+			     void *answer);
 
 /* server side */
 void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,void *answer);
