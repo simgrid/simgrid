@@ -5,8 +5,10 @@
   <process host="Gatien" function="node">
     <argument value="48"/>           <!-- my id -->
     <argument value="4000"/>         <!-- my port -->
-    <argument value="McGee"/>  	     <!-- known host -->
+    <argument value="Boivin"/>       <!-- known host -->
     <argument value="4000"/>         <!-- known port -->
+<!--    <argument value="McGee"/>         known host -->
+<!--    <argument value="4000"/>          known port -->
     <argument value="56"/>           <!-- +1 host number -->
     <argument value="Laroche"/>      <!-- +1 host name -->
     <argument value="56"/>           <!-- +2 host number -->
@@ -81,7 +83,7 @@
   <process host="TeX" function="node">
     <argument value="21"/>           <!-- my id -->
     <argument value="4000"/>         <!-- my port -->
-    <argument value="Jean_Yves"/>    <!-- known host -->
+    <argument value="Boivin"/>    <!-- known host -->
     <argument value="4000"/>         <!-- known port -->
     <argument value="32"/>           <!-- +1 host number -->
     <argument value="Geoff"/>        <!-- +1 host name -->
