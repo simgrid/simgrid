@@ -43,6 +43,33 @@ extern int backtrace (void **__array, int __size);
 #include <errno.h>
 #include <stdio.h>
 
+
+/*-*-* Emergency debuging: define this when the exceptions get crazy *-*-*/
+#undef __EX_MAYDAY
+
+#ifdef __EX_MAYDAY
+int gras_os_getpid(void);
+#  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
+                                   gras_os_getpid(),__FILE__,__LINE__,  \
+                                   (m)->jb                              \
+                                  ),
+#  define MAYDAY_RESTORE(m) printf("%d %s:%d restore %p\n",             \
+                                   gras_os_getpid(),__FILE__,__LINE__,  \
+                                   (m)->jb                              \
+                                  ),
+#  define MAYDAY_CATCH(e)   printf("%d %s:%d Catched '%s'\n",           \
+                                   gras_os_getpid(),__FILE__,__LINE__,  \
+                                   e.msg                                \
+				  ),
+#else
+#  define MAYDAY_SAVE(m)
+#  define MAYDAY_RESTORE(m)
+#  define MAYDAY_CATCH(e)
+#endif
+
+/*-*-* end of debugging stuff *-*-*/
+
+
 /* the machine context */
 #if defined(__EX_MCTX_MCSC__)
 #include <ucontext.h>            /* POSIX.1 ucontext(3) */
@@ -58,17 +85,17 @@ extern int backtrace (void **__array, int __size);
 #define __ex_mctx_restored(mctx) /* noop */
 #define __ex_mctx_restore(mctx)  (void)siglongjmp((mctx)->jb, 1)
 
-#elif defined(__EX_MCTX_SJLJ__) || !defined(__EX_MCTX_CUSTOM__)
+#elif defined(__EX_MCTX_SJLJ__) || !defined(__EX_MCTX_CUSTOM__) || defined(__EX_MAYDAY)
 #include <setjmp.h>              /* ISO-C jmp_buf(3) */
 #define __ex_mctx_struct         jmp_buf jb;
-#define __ex_mctx_save(mctx)     (setjmp((mctx)->jb) == 0)
+#define __ex_mctx_save(mctx)     ( MAYDAY_SAVE(mctx) setjmp((mctx)->jb) == 0)
 #define __ex_mctx_restored(mctx) /* noop */
-#define __ex_mctx_restore(mctx)  (void)longjmp((mctx)->jb, 1)
+#define __ex_mctx_restore(mctx)  ( MAYDAY_RESTORE(mctx) (void)longjmp((mctx)->jb, 1))
 #endif
 
 /* declare the machine context type */
 typedef struct { __ex_mctx_struct } __ex_mctx_t;
- 
+
 /** @addtogroup XBT_ex
  *  @brief A set of macros providing exception a la C++ in ANSI C (grounding feature)
  *
@@ -139,9 +166,13 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  *    CATCH clauses.
  *  - it is possible to nest TRY clauses.
  *
- * The TRY block is a regular ISO-C language statement block, but it is not
+ * The TRY block is a regular ISO-C language statement block, but
+ * 
+ * <center><b>it is not
  * allowed to jump into it via "goto" or longjmp(3) or out of it via "break",
- * "return", "goto" or longjmp(3) because there is some hidden setup and
+ * "return", "goto" or longjmp(3)</b>.</center>
+ *
+ * This is because there is some hidden setup and
  * cleanup that needs to be done regardless of whether an exception is
  * caught. Bypassing these steps will break the exception handling facility.
  *     
@@ -349,7 +380,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
         __xbt_ex_ctx_ptr->ctx_mctx = __ex_mctx_en; \
     } \
     if (   !(__xbt_ex_ctx()->ctx_caught) \
-        || ((e) = XBT_EX_T_CPLUSPLUSCAST __xbt_ex_ctx()->ctx_ex, 0)) { \
+        || ((e) = XBT_EX_T_CPLUSPLUSCAST __xbt_ex_ctx()->ctx_ex, MAYDAY_CATCH(e) 0)) { \
     } \
     else
 
