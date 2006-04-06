@@ -2,6 +2,8 @@
 // Peer-To-Peer CAN simulator 050406 by Dytto ESIAL //
 //////////////////////////////////////////////////////
 
+#include <time.h>
+//#include "gras.h"
 #include "types.h" // header containing the typedef struct of a node
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(can,"Messages specific to this example");
@@ -20,11 +22,12 @@ GRAS_DEFINE_TYPE(s_nuke,
 typedef struct s_nuke nuke_t;
 
 // the function that start the **** War of the Nodes ****
+int start_war(int argc,char **argv);
 int start_war(int argc,char **argv){
   //return 0; // in order to inhibit the War of the Nodes 
   gras_init(&argc,argv);
   gras_os_sleep((15-gras_os_getpid())*20+200); // wait a bit.
-  gras_socket_t temp_sock;
+  gras_socket_t temp_sock=NULL;
   xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
 	
   TRY{ // contacting the bad guy that will launch the War.
@@ -48,6 +51,7 @@ int start_war(int argc,char **argv){
   }
   gras_socket_close(temp_sock); // spare.
   gras_exit(); // spare.
+  return 0;
 }
 
 // the function thaht send the nuke "msg" on (xId;yId), if it's not on me :p.
@@ -60,7 +64,7 @@ static int send_nuke(nuke_t *msg, int xId, int yId){
   }
   else{
     char host[1024];
-    int port;
+    int port=0;
     
     if(xId<globals->x1){
       strcpy(host,globals->west_host);
@@ -78,7 +82,7 @@ static int send_nuke(nuke_t *msg, int xId, int yId){
     msg->xId=xId;
     msg->yId=yId;
 
-    gras_socket_t temp_sock;
+    gras_socket_t temp_sock=NULL;
     xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
     TRY{ // sending the nuke.
       temp_sock=gras_socket_client(host,port);
@@ -98,7 +102,8 @@ static int send_nuke(nuke_t *msg, int xId, int yId){
 }
 
 
-static int node_nuke_handler(gras_socket_t expeditor,void *payload_data){
+static int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
+  gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
   nuke_t *incoming=(nuke_t*)payload_data;
   node_data_t *globals=(node_data_t*)gras_userdata_get();
 
@@ -149,7 +154,7 @@ static int node_nuke_handler(gras_socket_t expeditor,void *payload_data){
   }
   else{ // the nuke isn't for me, so i forward her.
     char host[1024];
-    int port;
+    int port=0;
     
     if(incoming->xId<globals->x1){
       strcpy(host,globals->west_host);
@@ -164,7 +169,7 @@ static int node_nuke_handler(gras_socket_t expeditor,void *payload_data){
       strcpy(host,globals->north_host);
       port=globals->north_port;}
     
-    gras_socket_t temp_sock;
+    gras_socket_t temp_sock=NULL;
     xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
     TRY{
       temp_sock=gras_socket_client(host,port);
@@ -187,6 +192,7 @@ static int node_nuke_handler(gras_socket_t expeditor,void *payload_data){
     INFO4("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
     //INFO0("Closing node, all has been done!");
     }
+   return 1;
 }
 
 // END

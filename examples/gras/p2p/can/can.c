@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////
+/*////////////////////////////////////////////////////*/
 // Peer-To-Peer CAN simulator 050406 by Dytto ESIAL //
 //////////////////////////////////////////////////////
 
@@ -6,11 +6,13 @@
 #include "xbt/sysdep.h"
 #include "gras.h"
 
-#include "can_tests.c" // test class & header containing the typedef struct of a node // include type.h must be OFF.
+#include "can_tests.c"						      
 //#include "types.h" // header alone containing the typedef struct of a node // include can_tests.c must be OFF.
 
 //XBT_LOG_NEW_DEFAULT_CATEGORY(can,"Messages specific to this example"); // include can_tests.c must be OFF.
 
+//extern char *_gras_this_type_symbol_does_not_exist__s_nuke;
+int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data);
 
 // struct of a "get_successor" message, when a node look after the area in which he want to be.
 GRAS_DEFINE_TYPE(s_get_suc,
@@ -43,6 +45,8 @@ GRAS_DEFINE_TYPE(s_rep_suc,
 );
 typedef struct s_rep_suc rep_suc_t;
 
+int node(int argc,char **argv);
+
 // registering messages types
 static void register_messages(){
 	gras_msgtype_declare("can_get_suc",gras_datadesc_by_symbol(s_get_suc));
@@ -53,7 +57,7 @@ static void register_messages(){
 
 // a forwarding function for a "get_suc" message.
 static void forward_get_suc(get_suc_t msg, char host[1024], int port){
-	gras_socket_t temp_sock;
+	gras_socket_t temp_sock=NULL;
 	xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
 	//INFO2("Transmiting message to %s:%d",host,port);	
 	TRY{
@@ -71,8 +75,9 @@ static void forward_get_suc(get_suc_t msg, char host[1024], int port){
 }
 
 // the handling function of a "get_suc" message (what do a node when he receive a "get_suc" message.
-static void node_get_suc_handler(gras_socket_t expeditor,void *payload_data){
-        get_suc_t *incoming=(get_suc_t*)payload_data;
+static int node_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
+        gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
+	get_suc_t *incoming=(get_suc_t*)payload_data;
 	xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
 	node_data_t *globals=(node_data_t*)gras_userdata_get();
 
@@ -173,7 +178,7 @@ static void node_get_suc_handler(gras_socket_t expeditor,void *payload_data){
 		}
 		if(validate==1){ // the area for the new node has been defined, then send theses informations to the new node.
 		        INFO2("Sending environment informations to node %s:%d",incoming->host,incoming->port);
-			gras_socket_t temp_sock;	
+			gras_socket_t temp_sock=NULL;	
 			TRY{
 				temp_sock=gras_socket_client(incoming->host,incoming->port);
 			}CATCH(e){
@@ -198,6 +203,7 @@ static void node_get_suc_handler(gras_socket_t expeditor,void *payload_data){
 	INFO4("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
 	  //INFO0("Closing node, all has been done!");
 	}
+   return 1;
 }
 
 
@@ -232,7 +238,7 @@ int node(int argc,char **argv){
 		globals->y2=1000;
 	}else{ // asking for an area.
 		INFO1("Contacting %s so as to request for an area",argv[4]);
-		gras_socket_t temp_sock;	
+		gras_socket_t temp_sock=NULL;
 		TRY{
 			temp_sock=gras_socket_client(argv[4],atoi(argv[5]));
 		}CATCH(e){

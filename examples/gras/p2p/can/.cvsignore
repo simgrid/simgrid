@@ -1,0 +1,8 @@
+.deps .libs Makefile Makefile.in _*.c can_node can_simulator
+test_sg
+test_rl
+can.Makefile.am
+can.Makefile.local
+can.Makefile.remote
+can.deploy.sh
+can.trace
