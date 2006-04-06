@@ -65,7 +65,7 @@ void xbt_ex_display(xbt_ex_t *e)  {
     e->bt_strings = backtrace_symbols (e->bt, e->used);
 
   for (i = 0; i < e->used; i++)
-     printf ("   %s\n", e->bt_strings[i]);
+    printf ("   %s\n", e->bt_strings[i]);
  }
 #endif
 }
