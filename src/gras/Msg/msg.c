@@ -373,7 +373,7 @@ gras_msg_handle(double timeOut) {
   
   double          untiltimer;
    
-  int             cpt;
+  int             cpt, ran_ok;
 
   s_gras_msg_t    msg;
 
@@ -475,6 +475,7 @@ gras_msg_handle(double timeOut) {
   switch (msg.kind) {
   case e_gras_msg_kind_oneway:
   case e_gras_msg_kind_rpccall:
+    ran_ok=0;
     TRY {
       xbt_dynar_foreach(list->cbs,cpt,cb) { 
 	VERB3("Use the callback #%d (@%p) for incomming msg %s",
@@ -482,7 +483,8 @@ gras_msg_handle(double timeOut) {
 	if ((*cb)(&ctx,msg.payl)) {
 	  /* cb handled the message */
 	  free(msg.payl);
-	  return;
+	  ran_ok = 1;
+	  break;
 	}
       }
     } CATCH(e) {
@@ -504,13 +506,13 @@ gras_msg_handle(double timeOut) {
 	      gras_socket_peer_port(msg.expe));
 	e.host = NULL;
 	xbt_ex_free(e);
-	return;
-      }
-      RETHROW;
+      } else
+	RETHROW;
     }
+    if (!ran_ok)
+      THROW1(mismatch_error,0,
+	     "Message '%s' refused by all registered callbacks", msg.type->name);
     /* FIXME: gras_datadesc_free not implemented => leaking the payload */
-    THROW1(mismatch_error,0,
-	   "Message '%s' refused by all registered callbacks", msg.type->name);
     break;
 
 
