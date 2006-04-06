@@ -260,6 +260,7 @@ AC_CONFIG_FILES([
 
       examples/gras/p2p/Makefile
       examples/gras/p2p/chord/Makefile examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl
+      examples/gras/p2p/can/Makefile   examples/gras/p2p/can/test_sg   examples/gras/p2p/can/test_rl
       
     examples/amok/Makefile       
       examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
