@@ -129,7 +129,6 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
      __xbt_ex_ctx()->ctx_ex.used     = e.used;
      __xbt_ex_ctx()->ctx_ex.bt_strings = e.bt_strings;
     DO_THROW(__xbt_ex_ctx()->ctx_ex);
-
   }
   memcpy(answer,received.payl,received.payl_size);
   free(received.payl);
@@ -155,6 +154,7 @@ void gras_msg_rpccall(gras_socket_t server,
  */
 
 void gras_msg_rpcreturn(double timeOut,gras_msg_cb_ctx_t ctx,void *answer) {
-  gras_msg_send_ext(ctx->expeditor, e_gras_msg_kind_rpcanswer, ctx->ID, ctx->msgtype, answer);
+  gras_msg_send_ext(ctx->expeditor, e_gras_msg_kind_rpcanswer, 
+		    ctx->ID, ctx->msgtype, answer);
 }
 
