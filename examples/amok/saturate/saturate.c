@@ -24,11 +24,20 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(saturate,"Messages specific to this example");
 /* Global private data */
 typedef struct {
   gras_socket_t sock;
+  int done;
 } sensor_data_t;
 
 /* Function prototypes */
 int sensor (int argc,char *argv[]);
 
+static int sensor_cb_kill(gras_msg_cb_ctx_t ctx,
+			  void             *payload_data) {
+  
+  sensor_data_t *g=gras_userdata_get();
+  g->done = 1;
+  INFO0("Killed");
+  return 1;
+}
 int sensor (int argc,char *argv[]) {
   sensor_data_t *g;
 
@@ -37,11 +46,17 @@ int sensor (int argc,char *argv[]) {
 
   g=gras_userdata_new(sensor_data_t);  
   g->sock = gras_socket_server(4000);
+  g->done = 0;
+  gras_msgtype_declare("kill",NULL);
+  gras_cb_register(gras_msgtype_by_name("kill"),&sensor_cb_kill);
 
-  while (1) {
+  while (!g->done) {
     gras_msg_handle(60.0);
   }
 
+  gras_socket_close(g->sock);
+  free(g);
+  gras_exit();
   return 0;
 }
 
@@ -52,13 +67,15 @@ int sensor (int argc,char *argv[]) {
 /* Function prototypes */
 int maestro (int argc,char *argv[]);
 
+/* XP setups */
+const int buf_size = 0;
+const int exp_size = 1024;// * 1024;
+const int msg_size = 1024;
+const int sat_size = 1024 * 1024 * 10 * 10;
+
 static double XP(const char *bw1, const char *bw2,
 		 const char *sat1, const char *sat2) {
 
-  int buf_size=32 * 1024;
-  int exp_size=64 * 1024;
-  int msg_size=64 * 1024;
-  int sat_size=msg_size * 10;
   double sec, bw, sec_sat,bw_sat;
 
   /* Test BW without saturation */
@@ -88,18 +105,40 @@ static double XP(const char *bw1, const char *bw2,
   return bw_sat/bw;
 }
 
+static void kill_buddy(char *name,char *port){
+  gras_socket_t sock=gras_socket_client(name,atoi(port));
+  gras_msg_send(sock,gras_msgtype_by_name("kill"),NULL);
+  gras_socket_close(sock);
+}
+
 static void free_host(void *d){
   xbt_host_t h=*(xbt_host_t*)d;
   free(h->name);
   free(h);
 }
-int maestro(int argc,char *argv[]) {
+
+static void simple_saturation(int argc, char*argv[]) {
   xbt_ex_t e;
-  /* XP setups */
-  int buf_size=0;
-  int exp_size= 1024 * 1024;
-  int msg_size=exp_size;
-  int sat_size=msg_size * 100;
+
+  kill_buddy(argv[5],argv[6]);
+  kill_buddy(argv[7],argv[8]);
+
+  amok_bw_saturate_start(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
+			 sat_size*5,5);
+  gras_os_sleep(3);
+  TRY {
+    amok_bw_saturate_stop(argv[1],atoi(argv[2]),NULL,NULL);
+  } CATCH(e) {
+    xbt_ex_free(e);
+  }
+
+ 
+  kill_buddy(argv[1],argv[2]);
+  kill_buddy(argv[3],argv[4]);
+}
+
+static void full_fledged_saturation(int argc, char*argv[]) {
+  xbt_ex_t e;
 
   /* timers */
   double begin_simulated; 
@@ -116,9 +155,6 @@ int maestro(int argc,char *argv[]) {
   /* iterators */
   int i,j,k,l;
   xbt_host_t h1,h2,h3,h4;
-
-  gras_init(&argc,argv);
-  amok_bw_init();
 
   /* Get the sensor location from argc/argv */
   for (i=1; i<argc-1; i+=2){
@@ -148,7 +184,7 @@ int maestro(int argc,char *argv[]) {
       TRY {
 	amok_bw_saturate_start(h1->name,h1->port,
 			       h2->name,h2->port,
-			       sat_size,360000000);
+			       sat_size,120);
       } CATCH(e) {
 	RETHROW0("Cannot ask hosts to saturate the link: %s");
       }
@@ -163,6 +199,8 @@ int maestro(int argc,char *argv[]) {
 	  double ratio;
 	  if (i==l || j==l || k==l) continue;
 
+	  INFO4("TEST %s %s // %s %s",
+		h1->name,h2->name,h3->name,h4->name);
 	  amok_bw_request(h3->name,h3->port, h4->name,h4->port,
 			  buf_size,exp_size,msg_size,
 			  NULL,&(bw_sat[k*nb_hosts + l])); 
@@ -183,52 +221,19 @@ int maestro(int argc,char *argv[]) {
 	      time(NULL)-begin, gras_os_time()-begin_simulated);
     }
   }
+  xbt_dynar_free(&hosts);
+}
 
-  gras_os_sleep(5.0);
-  exit(0);
-#if 0
+int maestro(int argc,char *argv[]) {
+
+  gras_init(&argc,argv);
+  amok_bw_init();
+
+
+  //  simple_saturation(argc,argv);
+  full_fledged_saturation(argc, argv);  
+
+  gras_exit();
   return 0;
-  /* start saturation */
-  fprintf(stderr,"MAESTRO: Start saturation with size %d",msg_size);
-  if ((errcode=grasbw_saturate_start(argv[5],atoi(argv[6]),argv[7],atoi(argv[8]),msg_size*10,60))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while starting saturation",
-	    xbt_error_name(errcode));
-    return 1;
-  }
-  fprintf(stderr,"MAESTRO: Saturation started");
-  gras_os_sleep(5.0);
 
-  /* test with saturation */
-  if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-			      buf_size,exp_size,msg_size,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test",xbt_error_name(errcode));
-    return 1;
-  }
-   
-  fprintf(stderr,"MAESTRO: Experience3 (%d ko in msgs of %d ko with saturation) took %f sec, achieving %f Mb/s",
-	  exp_size/1024,msg_size/1024,
-	  sec,bw);
-
-  /* stop saturation */
-  if ((errcode=grasbw_saturate_stop(argv[5],atoi(argv[6]),argv[7],atoi(argv[8])))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while stopping saturation",
-	    xbt_error_name(errcode));
-    return 1;
-  }
-
-  /* test without saturation */
-  if ((errcode=grasbw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-			      buf_size,exp_size,msg_size,&sec,&bw))) {
-    fprintf(stderr,"MAESTRO: Error %s encountered while doing the test",xbt_error_name(errcode));
-    return 1;
-  }
-   
-  fprintf(stderr,"MAESTRO: Experience4 (%d ko in msgs of %d ko, without saturation) took %f sec, achieving %f Mb/s",
-	  exp_size/1024,msg_size/1024,
-	  sec,bw);
-
-  gras_os_sleep(5.0);
-#endif
-   
-  return 0;
 }
