@@ -288,6 +288,7 @@ AC_CONFIG_FILES([
      examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl  \
      examples/gras/mmrpc/test_sg  examples/gras/mmrpc/test_rl   \
      examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl  \
+     examples/gras/p2p/can/test_sg   examples/gras/p2p/can/test_rl  \
      examples/msg/run_msg_test                                  \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
