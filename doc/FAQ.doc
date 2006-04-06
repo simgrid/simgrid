@@ -808,6 +808,43 @@ Here are some tricks I had to use in order to run a token ring between
    low, you'll get a segfault. The token ring example, which is quite simple, 
    runs with 40kb stacks.
 
+\subsection faq_longjmp longjmp madness
+
+This is when valgrind starts complaining about longjmp things, just like:
+
+\verbatim ==21434== Conditional jump or move depends on uninitialised value(s)
+==21434==    at 0x420DBE5: longjmp (longjmp.c:33)
+==21434==
+==21434== Use of uninitialised value of size 4
+==21434==    at 0x420DC3A: __longjmp (__longjmp.S:48)
+\endverbatim
+
+or even when it reports scary things like:
+
+\verbatim ==24023== Warning: client switching stacks?  SP change: 0xBE3FF618 --> 0xBE7FF710
+x86->IR: unhandled instruction bytes: 0xF4 0xC7 0x83 0xD0
+==24023==          to suppress, use: --max-stackframe=4194552 or greater
+==24023== Your program just tried to execute an instruction that Valgrind
+==24023== did not recognise.  There are two possible reasons for this.
+==24023== 1. Your program has a bug and erroneously jumped to a non-code
+==24023==    location.  If you are running Memcheck and you just saw a
+==24023==    warning about a bad jump, it's probably your program's fault.
+==24023== 2. The instruction is legitimate but Valgrind doesn't handle it,
+==24023==    i.e. it's Valgrind's fault.  If you think this is the case or
+==24023==    you are not sure, please let us know.
+==24023== Either way, Valgrind will now raise a SIGILL signal which will
+==24023== probably kill your program.
+==24023==
+==24023== Process terminating with default action of signal 4 (SIGILL)
+==24023==  Illegal opcode at address 0x420D234
+==24023==    at 0x420D234: abort (abort.c:124)
+\endverbatim
+
+This is the sign that you didn't used the exception mecanism well. Most
+probably, you have a <tt>return;</tt> somewhere within a <tt>TRY{}</tt>
+block. This is <b>evil</b>, and you must not do this. Did you read the section
+about \ref XBT_ex??
+
 \subsection faq_flexml_limit I get the message "surf_parse_lex: Assertion `next&lt;limit' failed."
 
 This is because your platform file is too big for the parser. 
