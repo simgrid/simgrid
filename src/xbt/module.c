@@ -18,6 +18,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module,xbt, "module handling");
 
+char *xbt_binary_name=NULL; /* Mandatory to retrieve neat backtraces */
+
 struct xbt_module_ {
   xbt_dynar_t *deps;
   xbt_cfg_t *cfg;
@@ -32,7 +34,8 @@ xbt_init(int *argc, char **argv) {
   static short int first_run = 1;
   if (!first_run)
     return;
-  
+
+  xbt_binary_name = strdup(argv[0]);
   first_run = 0;
   VERB0("Initialize XBT");
   

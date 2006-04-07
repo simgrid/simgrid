@@ -10,6 +10,8 @@
 #ifndef _XBT_MODULE_H
 #define _XBT_MODULE_H
 
+extern char *xbt_binary_name;
+
 typedef struct xbt_module_ xbt_module_t;
 
 typedef xbt_module_t (*xbt_module_new_fct_t)(int argc, char **argv);
