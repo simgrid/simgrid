@@ -36,7 +36,7 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
       free(plug->name);
       free(plug);
       plug=NULL;
-      xbt_ex_free(e);
+      xbt_ex_free(&e);
     } else {
       RETHROW;
     }
@@ -175,7 +175,9 @@ void gras_trp_socket_new(int incoming,
 
 /**
  * @brief Opens a server socket and makes it ready to be listened to.
+ * @param port: port on which you want to listen
  * @param buf_size: size of the buffer (in byte) on the socket (for TCP sockets only). If 0, a sain default is used (32k, but may change)
+ * @param measurement: whether this socket is meant to convey measurement (if you don't know, use 0 to exchange regular messages)
  * 
  * In real life, you'll get a TCP socket. 
  */
@@ -219,7 +221,10 @@ gras_socket_server_ext(unsigned short port,
    
 /**
  * @brief Opens a client socket to a remote host.
+ * @param host: who you want to connect to
+ * @param port: where you want to connect to on this host
  * @param buf_size: size of the buffer (in bytes) on the socket (for TCP sockets only). If 0, a sain default is used (32k, but may change)
+ * @param measurement: whether this socket is meant to convey measurement (if you don't know, use 0 to exchange regular messages)
  * 
  * In real life, you'll get a TCP socket. 
  */

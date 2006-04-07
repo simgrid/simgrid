@@ -115,7 +115,7 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
     find_port(hd,sock->peer_port,&pr);
   } CATCH(e) {
     if (e.category == mismatch_error) {
-      xbt_ex_free(e);
+      xbt_ex_free(&e);
       THROW2(mismatch_error,0,
 	     "can't connect to %s:%d, no process listen on this port",
 	     sock->peer_name,sock->peer_port);
@@ -173,7 +173,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
     found = 1;
   } CATCH(e) {
     if (e.category == mismatch_error)
-      xbt_ex_free(e);
+      xbt_ex_free(&e);
     else
       RETHROW;
   }
