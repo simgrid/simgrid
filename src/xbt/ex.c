@@ -35,6 +35,7 @@
 #include "portable.h" /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/module.h" /* xbt_binary_name */
+#include "xbt/ex_interface.h"
 
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
 
@@ -45,53 +46,55 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
     return &ctx;
 }
 
-static void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
-   int i;
-   /* to get the backtrace from the libc */
-   char **backtrace = backtrace_symbols (e->bt, e->used);
-     
-   /* To build the commandline of addr2line */
-   char *cmd = xbt_new(char,strlen(ADDR2LINE)+strlen(xbt_binary_name)+20*e->used);
-   char *curr=cmd;
-   
-   /* to extract the addresses from the backtrace */
-   char **addrs=xbt_new(char*,e->used);
-   char buff[256],*p;
-	 
-   /* To read the output of addr2line */
-   FILE *pipe;
-   char line_func[1024],line_pos[1024];
-   
-   /* build the commandline */
-   curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,xbt_binary_name);
-   for (i=0; i<e->used;i++) {
-      /* retrieve this address */
-      snprintf(buff,256,"%s",strchr(backtrace[i],'[')+1);
-      p=strchr(buff,']');
-      *p='\0';
-      addrs[i]=bprintf("%s",buff);
-      
-      /* Add it to the command line args */
-      curr+=sprintf(curr,"%s ",addrs[i]);
-   }	 
-	 
-   /* parse the output and build a new backtrace */
-   e->bt_strings = xbt_new(char*,e->used);
-     
-   pipe = popen(cmd, "r");
-//     xbt_assert(pipe);//,"Cannot fork addr2line to display the backtrace");
-   for (i=0; i<e->used; i++) {
-      fgets(line_func,1024,pipe);
-      line_func[strlen(line_func)-1]='\0';
-      fgets(line_pos,1024,pipe);
-      line_pos[strlen(line_pos)-1]='\0';
-	
-      e->bt_strings[i] = bprintf("**   At %s: %s (%s)", addrs[i], line_func,line_pos);
-      free(addrs[i]);
-   }
-   free(addrs);
-   free(backtrace);
-   free(cmd);
+void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+  int i;
+  /* to get the backtrace from the libc */
+  char **backtrace = backtrace_symbols (e->bt, e->used);
+  
+  /* To build the commandline of addr2line */
+  char *cmd = xbt_new(char,strlen(ADDR2LINE)+strlen(xbt_binary_name)+20*e->used);
+  char *curr=cmd;
+  
+  /* to extract the addresses from the backtrace */
+  char **addrs=xbt_new(char*,e->used);
+  char buff[256],*p;
+  
+  /* To read the output of addr2line */
+  FILE *pipe;
+  char line_func[1024],line_pos[1024];
+  
+  /* build the commandline */
+  curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,xbt_binary_name);
+  for (i=0; i<e->used;i++) {
+    /* retrieve this address */
+    snprintf(buff,256,"%s",strchr(backtrace[i],'[')+1);
+    p=strchr(buff,']');
+    *p='\0';
+    addrs[i]=bprintf("%s",buff);
+    
+    /* Add it to the command line args */
+    curr+=sprintf(curr,"%s ",addrs[i]);
+  }	 
+  
+  /* parse the output and build a new backtrace */
+  e->bt_strings = xbt_new(char*,e->used);
+  
+  pipe = popen(cmd, "r");
+  //     xbt_assert(pipe);//,"Cannot fork addr2line to display the backtrace");
+  for (i=0; i<e->used; i++) {
+    fgets(line_func,1024,pipe);
+    line_func[strlen(line_func)-1]='\0';
+    fgets(line_pos,1024,pipe);
+    line_pos[strlen(line_pos)-1]='\0';
+    
+    e->bt_strings[i] = bprintf("**   At %s: %s (%s)", addrs[i], line_func,line_pos);
+    free(addrs[i]);
+  }
+  free(addrs);
+  free(backtrace);
+  free(cmd);
+#endif
 }    
 
 /** @brief shows an exception content and the associated stack if available */
@@ -104,21 +107,25 @@ void xbt_ex_display(xbt_ex_t *e)  {
 	  gras_os_myname(),
 	  xbt_ex_catname(e->category), e->value, e->msg,
 	  e->procname, (e->host?"@":""),(e->host?e->host:""));
+
+  if (!e->remote && !e->bt_strings)
+    xbt_ex_setup_backtrace(e);
+
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
   /* We have everything to build neat backtraces */
-     {
-	int i;
-	
-	fprintf(stderr,"\n");
-	if (!e->bt_strings)
-	  xbt_ex_setup_backtrace(e);
-	for (i=0; i<e->used; i++)
-	  printf("%s\n",e->bt_strings[i]);
-	
-     }
+  {
+    int i;
+    
+    fprintf(stderr,"\n");
+    for (i=0; i<e->used; i++)
+      fprintf(stderr,"%s\n",e->bt_strings[i]);
+    
+  }
 #else
-   fprintf(stderr," at %s:%d:%s (no backtrace available on that arch)\n",  e->file,e->line,e->func);
+  fprintf(stderr," at %s:%d:%s (no backtrace available on that arch)\n",  
+	  e->file,e->line,e->func);
 #endif
+  xbt_ex_free(*e);
 }
 
 
