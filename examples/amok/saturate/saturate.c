@@ -129,7 +129,7 @@ static void simple_saturation(int argc, char*argv[]) {
   TRY {
     amok_bw_saturate_stop(argv[1],atoi(argv[2]),NULL,NULL);
   } CATCH(e) {
-    xbt_ex_free(e);
+    xbt_ex_free(&e);
   }
 
  

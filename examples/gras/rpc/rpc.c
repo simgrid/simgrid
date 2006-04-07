@@ -110,7 +110,7 @@ int client(int argc,char *argv[]) {
   xbt_assert1(!strcmp(e.msg,"Some error we will catch on client side"), 
 	      "Got wrong message: %s", e.msg);;
   INFO0("Got the expected exception when calling the exception raising RPC");
-  xbt_ex_free(e);
+  xbt_ex_free(&e);
 
   /* doxygen_ignore */
   for (i=0; i<5; i++) {
@@ -121,7 +121,7 @@ int client(int argc,char *argv[]) {
 			 gras_msgtype_by_name("raise exception"), NULL, NULL);
      } CATCH(e) {
 	gotit = 1;
-	xbt_ex_free(e);
+	xbt_ex_free(&e);
      }
      if (!gotit) {
 	THROW0(unknown_error,0,"Didn't got the remote exception!");
@@ -146,7 +146,7 @@ int client(int argc,char *argv[]) {
     xbt_assert1(!strcmp(e.msg,"Some error we will catch on client side"), 
 		"Got wrong message: %s", e.msg);;
     INFO0("Got the expected exception when calling the exception raising RPC");
-    xbt_ex_free(e);
+    xbt_ex_free(&e);
   }
 
   /* 11. Cleanup the place before leaving */
