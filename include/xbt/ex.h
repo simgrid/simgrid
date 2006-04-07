@@ -508,7 +508,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 #define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e _XBT_POST_RETHROW
 
 /** @brief Exception destructor */
-void xbt_ex_free(xbt_ex_t e);
+void xbt_ex_free(xbt_ex_t *e);
 
 void xbt_ex_display(xbt_ex_t *e);
 
