@@ -54,14 +54,14 @@ void amok_bw_sat_leave(void) {
 /**
  * @brief Ask 'from_name:from_port' to stop saturating going to to_name:to_name.
  *
- * @from_name: Name of the host we are asking to do a experiment with (to_name:to_port)
- * @from_port: port on which the process we are asking for an experiment is listening
+ * @param from_name: Name of the host we are asking to do a experiment with (to_name:to_port)
+ * @param from_port: port on which the process we are asking for an experiment is listening
  * (for message, do not give a raw socket here. The needed raw socket will be negociated 
  * between the peers)
- * @to_name: Name of the host with which we should conduct the experiment
- * @to_port: port on which the peer process is listening for message
- * @msg_size: Size of each message sent.
- * @duration: How long in maximum should be the saturation.
+ * @param to_name: Name of the host with which we should conduct the experiment
+ * @param to_port: port on which the peer process is listening for message
+ * @param msg_size: Size of each message sent.
+ * @param duration: How long in maximum should be the saturation.
  *
  * Ask the process 'from_name:from_port' to start to saturate the link between itself
  * and to_name:to_name.
@@ -169,7 +169,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 	saturate_further=1;
 	memset(&msg_got,0,sizeof(msg_got)); /* may be overprotectiv here */
       }
-      xbt_ex_free(e);
+      xbt_ex_free(&e);
     }
 
     /* Check whether the experiment has to be terminated by now */
@@ -228,7 +228,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
     } CATCH(e) {
       measMaster = NULL;
       if (port < 10000)
-	xbt_ex_free(e);
+	xbt_ex_free(&e);
       else
 	RETHROW0("Error encountered while opening a measurement server socket: %s");
     }
@@ -255,7 +255,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
       gras_socket_meas_recv(meas,120,request->msg_size,request->msg_size);
     } CATCH(e) {
       saturate_further = 0;
-      xbt_ex_free(e);
+      xbt_ex_free(&e);
     }
   }
   INFO1("Saturation stopped on %s",gras_os_myname());
@@ -267,10 +267,10 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
 
 /**
  * @brief Ask 'from_name:from_port' to stop any saturation experiments
- * @from_name: Name of the host we are asking to do a experiment with (to_name:to_port)
- * @from_port: port on which the process we are asking for an experiment is listening
- * @time: the duration of the experiment
- * @bw: the achieved bandwidth
+ * @param from_name: Name of the host we are asking to do a experiment with (to_name:to_port)
+ * @param from_port: port on which the process we are asking for an experiment is listening
+ * @param time: the duration of the experiment
+ * @param bw: the achieved bandwidth
  *
  */
 void amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
