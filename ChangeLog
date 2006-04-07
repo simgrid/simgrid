@@ -10,6 +10,8 @@ SimGrid (3.0.2) unstable; urgency=low
     live in the same C code. This required to change a little bit the API
     of surfxml parsing but shouldn't be an issue for end-users. [AL]
   * New module: sparse graph structure with basic algorithms. [AL]
+  * Display more information on backtraces: source line & function names are
+    now displayed just like valgrind does (rely on addr2line tool) [MQ]
 
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
