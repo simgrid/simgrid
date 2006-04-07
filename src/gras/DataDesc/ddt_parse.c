@@ -498,7 +498,7 @@ static gras_datadesc_type_t parse_struct(char *definition) {
     } CATCH(e) {
       if (e.category != mismatch_error)
 	RETHROW;
-      xbt_ex_free(e);
+      xbt_ex_free(&e);
       done = 1;
     }
     
