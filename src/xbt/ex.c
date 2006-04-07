@@ -87,8 +87,16 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     line_func[strlen(line_func)-1]='\0';
     fgets(line_pos,1024,pipe);
     line_pos[strlen(line_pos)-1]='\0';
-    
-    e->bt_strings[i] = bprintf("**   At %s: %s (%s)", addrs[i], line_func,line_pos);
+
+    if (strcmp("??",line_func)) {
+      e->bt_strings[i] = bprintf("**   At %s: %s (%s)", addrs[i], line_func,line_pos);
+    } else {
+      char *p=bprintf("%s",backtrace[i]);
+      char *pos=strrchr(p,' ');
+      *pos = '\0';
+      e->bt_strings[i] = bprintf("**   At %s: ?? (%s)", addrs[i], p);
+      free(p);
+    }
     free(addrs[i]);
   }
   free(addrs);
@@ -125,7 +133,7 @@ void xbt_ex_display(xbt_ex_t *e)  {
   fprintf(stderr," at %s:%d:%s (no backtrace available on that arch)\n",  
 	  e->file,e->line,e->func);
 #endif
-  xbt_ex_free(*e);
+  xbt_ex_free(e);
 }
 
 
@@ -140,22 +148,23 @@ void __xbt_ex_terminate_default(xbt_ex_t *e)  {
 ex_ctx_cb_t  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
 ex_term_cb_t __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
-void xbt_ex_free(xbt_ex_t e) {
+void xbt_ex_free(xbt_ex_t *e) {
   int i;
 
-  if (e.msg) free(e.msg);
-  free(e.procname);
-  if (e.remote) {
-    free(e.file);
-    free(e.func);
-    free(e.host);
+  if (e->msg) free(e->msg);
+  free(e->procname);
+  if (e->remote) {
+    free(e->file);
+    free(e->func);
+    free(e->host);
   }
-  /* locally, only one chunk of memory is allocated by the libc */
-  if (e.bt_strings) {	
-     for (i=0; i<e.used; i++) 
-       free(e.bt_strings[i]);
-     free(e.bt_strings);
+  if (e->bt_strings) {	
+     for (i=0; i<e->used; i++) 
+       free(e->bt_strings[i]);
+     free(e->bt_strings);
+     e->bt_strings = NULL;
   }
+  
 }
 
 /** \brief returns a short name for the given exception category */
@@ -213,7 +222,7 @@ XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
         if (n != 4)
             xbt_test_fail1("M4: n=%d (!= 4)", n);
         n++;
-        xbt_ex_free(ex);
+        xbt_ex_free(&ex);
     }
     if (n != 5)
         xbt_test_fail1("M5: n=%d (!= 5)", n);
@@ -232,7 +241,7 @@ XBT_TEST_UNIT("value",test_value,"exception value passing") {
             xbt_test_fail1("value=%d (!= 2)", ex.value);
         if (strcmp(ex.msg,"toto"))
             xbt_test_fail1("message=%s (!= toto)", ex.msg);
-        xbt_ex_free(ex);
+        xbt_ex_free(&ex);
     }
 }
 
@@ -255,7 +264,7 @@ XBT_TEST_UNIT("variables",test_variables,"variable value preservation") {
         /* r2 is allowed to be destroyed because not volatile */
         if (v2 != 5678)
             xbt_test_fail1("v2=%d (!= 5678)", v2);
-        xbt_ex_free(ex);
+        xbt_ex_free(&ex);
     }
 }
 
@@ -280,7 +289,7 @@ XBT_TEST_UNIT("cleanup",test_cleanup,"cleanup handling") {
             xbt_test_fail1("v1 = %d (!= 5678)", v1);
         if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.msg,"blah")))
             xbt_test_fail0("unexpected exception contents");
-        xbt_ex_free(ex);
+        xbt_ex_free(&ex);
     }
     if (!c)
         xbt_test_fail0("xbt_ex_free not executed");
