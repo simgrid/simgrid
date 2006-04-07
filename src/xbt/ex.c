@@ -34,6 +34,7 @@
 
 #include "portable.h" /* execinfo when available */
 #include "xbt/ex.h"
+#include "xbt/module.h" /* xbt_binary_name */
 
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
 
@@ -44,29 +45,79 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
     return &ctx;
 }
 
+static void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
+   int i;
+   /* to get the backtrace from the libc */
+   char **backtrace = backtrace_symbols (e->bt, e->used);
+     
+   /* To build the commandline of addr2line */
+   char *cmd = xbt_new(char,strlen(ADDR2LINE)+strlen(xbt_binary_name)+20*e->used);
+   char *curr=cmd;
+   
+   /* to extract the addresses from the backtrace */
+   char **addrs=xbt_new(char*,e->used);
+   char buff[256],*p;
+	 
+   /* To read the output of addr2line */
+   FILE *pipe;
+   char line_func[1024],line_pos[1024];
+   
+   /* build the commandline */
+   curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,xbt_binary_name);
+   for (i=0; i<e->used;i++) {
+      /* retrieve this address */
+      snprintf(buff,256,"%s",strchr(backtrace[i],'[')+1);
+      p=strchr(buff,']');
+      *p='\0';
+      addrs[i]=bprintf("%s",buff);
+      
+      /* Add it to the command line args */
+      curr+=sprintf(curr,"%s ",addrs[i]);
+   }	 
+	 
+   /* parse the output and build a new backtrace */
+   e->bt_strings = xbt_new(char*,e->used);
+     
+   pipe = popen(cmd, "r");
+//     xbt_assert(pipe);//,"Cannot fork addr2line to display the backtrace");
+   for (i=0; i<e->used; i++) {
+      fgets(line_func,1024,pipe);
+      line_func[strlen(line_func)-1]='\0';
+      fgets(line_pos,1024,pipe);
+      line_pos[strlen(line_pos)-1]='\0';
+	
+      e->bt_strings[i] = bprintf("**   At %s: %s (%s)", addrs[i], line_func,line_pos);
+      free(addrs[i]);
+   }
+   free(addrs);
+   free(backtrace);
+   free(cmd);
+}    
+
 /** @brief shows an exception content and the associated stack if available */
 void xbt_ex_display(xbt_ex_t *e)  {
 
   fprintf(stderr,
 	  "** SimGrid: UNCAUGHT EXCEPTION on %s: category: %s; value: %d\n"
 	  "** %s\n"
-	  "** Thrown by %s%s%s at %s:%d:%s\n",
+	  "** Thrown by %s%s%s",
 	  gras_os_myname(),
 	  xbt_ex_catname(e->category), e->value, e->msg,
-	  e->procname, (e->host?"@":""),(e->host?e->host:""),//localhost"),
-	  e->file,e->line,e->func);
-
-#ifdef HAVE_EXECINFO_H
- {
-  int i;
-
-  fprintf(stderr,"** Backtrace:\n");
-  if (!e->bt_strings)
-    e->bt_strings = backtrace_symbols (e->bt, e->used);
-
-  for (i = 0; i < e->used; i++)
-    printf ("   %s\n", e->bt_strings[i]);
- }
+	  e->procname, (e->host?"@":""),(e->host?e->host:""));
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+  /* We have everything to build neat backtraces */
+     {
+	int i;
+	
+	fprintf(stderr,"\n");
+	if (!e->bt_strings)
+	  xbt_ex_setup_backtrace(e);
+	for (i=0; i<e->used; i++)
+	  printf("%s\n",e->bt_strings[i]);
+	
+     }
+#else
+   fprintf(stderr," at %s:%d:%s (no backtrace available on that arch)\n",  e->file,e->line,e->func);
 #endif
 }
 
@@ -90,16 +141,14 @@ void xbt_ex_free(xbt_ex_t e) {
   if (e.remote) {
     free(e.file);
     free(e.func);
-    for (i=0; i<e.used; i++) 
-      free(e.bt_strings[i]);
-    free(e.bt_strings);
-    e.bt_strings=NULL;
     free(e.host);
   }
   /* locally, only one chunk of memory is allocated by the libc */
-  if (e.bt_strings)
-    free(e.bt_strings);
-
+  if (e.bt_strings) {	
+     for (i=0; i<e.used; i++) 
+       free(e.bt_strings[i]);
+     free(e.bt_strings);
+  }
 }
 
 /** \brief returns a short name for the given exception category */
