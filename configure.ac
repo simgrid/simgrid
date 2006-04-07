@@ -40,7 +40,8 @@ AC_CHECK_HEADERS([sys/socket.h \
 AC_CHECK_FUNCS([gettimeofday usleep \
                 getdtablesize \
                 sysconf\
-                readv])
+                readv\
+		popen])
                 
 # check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
 AC_FUNC_SNPRINTF
@@ -231,6 +232,12 @@ then
    if test x$DOXYGEN = x ; then 
      AC_MSG_ERROR([doxygen is mandatory in maintainer mode])
    fi
+fi
+
+# Can we extract really usable backtraces? (also need the popen function)
+AC_PATH_PROG(ADDR2LINE, addr2line)
+if test x$ADDR2LINE != x ; then
+  AC_DEFINE_UNQUOTED(ADDR2LINE,"$ADDR2LINE",[Path to the addr2line tool])
 fi
 
 ###################
