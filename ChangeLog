@@ -21,6 +21,8 @@ SimGrid (3.0.2) unstable; urgency=low
   MSG,GRAS:
   * Bug fix: Processes were started in reverse order, wrt deployment file.
     WARNING: if your code relies on this bug, please fix it.    [AL]
+  * Bug fix: Add a test in MSG_task_execute to stop whenever a task is
+    being executed on two different locations.                  [AL]
 
   GRAS:
   * New! a real RPC mecanism, as it ought to be since too long. [MQ]

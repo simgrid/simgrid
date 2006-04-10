@@ -422,7 +422,8 @@ MSG_error_t MSG_task_put(m_task_t task,
   task_simdata = task->simdata;
   task_simdata->sender = process;
   task_simdata->source = MSG_process_get_host(process);
-  xbt_assert0(task_simdata->using==1,"Gargl!");
+  xbt_assert0(task_simdata->using==1,
+	      "This taks is still being used somewhere else. You cannot send it now. Go fix your code!");
   task_simdata->comm = NULL;
   
   local_host = ((simdata_process_t) process->simdata)->host;
@@ -533,6 +534,7 @@ void __MSG_task_execute(m_process_t process, m_task_t task)
   CHECK_HOST();
 
   simdata = task->simdata;
+  xbt_assert0(!simdata->compute,"This taks is executed somewhere else. Go fix your code!");
 
   simdata->compute = surf_workstation_resource->extension_public->
     execute(MSG_process_get_host(process)->simdata->host,
