@@ -174,7 +174,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 
     /* Check whether the experiment has to be terminated by now */
     elapsed=gras_os_time()-start;
-    INFO2("elapsed %f duration %f",elapsed, duration);
+    VERB2("elapsed %f duration %f",elapsed, duration);
 
   } while (saturate_further && elapsed < duration);
 

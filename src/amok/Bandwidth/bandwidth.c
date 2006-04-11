@@ -346,6 +346,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 
   gras_os_sleep(1);
   gras_socket_close(peer);
+  free(request->host.name);
   free(request);
   free(result);
   
