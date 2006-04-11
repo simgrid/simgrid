@@ -110,13 +110,11 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
 		    &received);
   free(ctx);
   if (received.kind == e_gras_msg_kind_rpcerror) {
-    /* Damn. Got an exception. Extract it and revive it */
     xbt_ex_t e;
     memcpy(&e,received.payl,received.payl_size);
     free(received.payl);
-    VERB3("Raise a remote exception cat:%d comming from %s %s",
-	  e.category, e.host,
-	  (__xbt_ex_ctx()->ctx_caught?"caught":"not caught"));
+    VERB3("Raise a remote exception cat:%d comming from %s (%s)",
+	  e.category, e.host, e.msg);
      __xbt_ex_ctx()->ctx_ex.msg      = e.msg;
      __xbt_ex_ctx()->ctx_ex.category = e.category;
      __xbt_ex_ctx()->ctx_ex.value    = e.value;
@@ -128,6 +126,8 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
      __xbt_ex_ctx()->ctx_ex.func     = e.func;
      __xbt_ex_ctx()->ctx_ex.used     = e.used;
      __xbt_ex_ctx()->ctx_ex.bt_strings = e.bt_strings;
+     memset(&__xbt_ex_ctx()->ctx_ex.bt,0,
+	    sizeof(__xbt_ex_ctx()->ctx_ex.bt));
     DO_THROW(__xbt_ex_ctx()->ctx_ex);
   }
   memcpy(answer,received.payl,received.payl_size);
