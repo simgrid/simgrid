@@ -11,6 +11,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Rpc,"Messages specific to this example");
 
+int err=0; /* to make the message of the raised exception more informative and
+	      even be able to follow their propagation from server to client*/
+
 /* register messages which may be sent (common to client and server) */
 static void register_messages(void) {
   gras_msgtype_declare_rpc("plain ping",
@@ -19,12 +22,40 @@ static void register_messages(void) {
 
   gras_msgtype_declare_rpc("raise exception", NULL, NULL);
   gras_msgtype_declare_rpc("forward exception", NULL, NULL);
+  gras_msgtype_declare("kill",NULL);
 }
 
 /* Function prototypes */
 int server (int argc,char *argv[]);
 int forwarder (int argc,char *argv[]);
 int client (int argc,char *argv[]);
+
+static void exception_raising(void) {
+  THROW1(unknown_error,42,"Some error we will catch on client side %d",err++);
+}
+static void exception_catching(void) {
+  int gotit = 0,i;
+  xbt_ex_t e;
+
+  for (i=0; i<5; i++) {
+    gotit=0;
+    TRY {
+      exception_raising();
+    } CATCH(e) {
+      gotit = 1;
+    }
+    if (!gotit) {
+      THROW0(unknown_error,0,"Didn't got the remote exception!");
+    }
+    xbt_assert2(e.category == unknown_error, "Got wrong category: %d (instead of %d)", 
+		e.category,unknown_error);
+    xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
+    xbt_assert1(!strncmp(e.msg,"Some error we will catch on client side",
+			 strlen("Some error we will catch on client side")), 
+		"Got wrong message: %s", e.msg);
+    xbt_ex_free(&e);
+  }
+}
 
 /* **********************************************************************
  * Client code
@@ -52,14 +83,16 @@ int client(int argc,char *argv[]) {
     host=argv[1];
     port=atoi(argv[2]);
   } 
-
   INFO2("Launch client (server on %s:%d)",host,port);
+
+  exception_catching();
    
-  /* 3. Wait for the server startup */
-  gras_os_sleep(1);
+  /* 3. Wait for the server & forwarder startup */
+  gras_os_sleep(2);
    
   /* 4. Create a socket to speak to the server */
   TRY {
+    exception_catching();
     toserver=gras_socket_client(host,port);
     toforwarder=gras_socket_client(argv[3],atoi(argv[4]));
   } CATCH(e) {
@@ -71,6 +104,7 @@ int client(int argc,char *argv[]) {
   /* 5. Register the messages. 
         See, it doesn't have to be done completely at the beginning,
 	but only before use */
+  exception_catching();
   register_messages();
 
   /* 6. Keep the user informed of what's going on */
@@ -80,12 +114,14 @@ int client(int argc,char *argv[]) {
   /* 7. Prepare and send the ping message to the server */
   ping = 1234;
   TRY {
+    exception_catching();
     gras_msg_rpccall(toserver, 6000.0,
 		     gras_msgtype_by_name("plain ping"), &ping, &pong);
   } CATCH(e) {
     gras_socket_close(toserver);
     RETHROW0("Failed to execute a PING rpc on the server: %s");
   }
+  exception_catching();
 
   /* 8. Keep the user informed of what's going on, again */
   INFO4("The answer to PING(%d) on %s:%d is PONG(%d)  ", 
@@ -93,24 +129,29 @@ int client(int argc,char *argv[]) {
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver),
 	pong);
 
-  /* 9. Call a RPC which raises an exception (to test that exception propagation works) */
+  /* 9. Call a RPC which raises an exception (to test exception propagation) */
   INFO0("Call the exception raising RPC");
   TRY {
     gras_msg_rpccall(toserver, 6000.0,
 		     gras_msgtype_by_name("raise exception"), NULL, NULL);
   } CATCH(e) {
-    gotit = 1;
-  }
-  if (!gotit) {
-    THROW0(unknown_error,0,"Didn't got the remote exception!");
-  }
-  xbt_assert2(e.category == unknown_error, "Got wrong category: %d (instead of %d)", 
+    gotit = 1; 
+    xbt_assert2(e.category == unknown_error, 
+		"Got wrong category: %d (instead of %d)", 
 	      e.category,unknown_error);
-  xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
-  xbt_assert1(!strcmp(e.msg,"Some error we will catch on client side"), 
-	      "Got wrong message: %s", e.msg);;
-  INFO0("Got the expected exception when calling the exception raising RPC");
-  xbt_ex_free(&e);
+    xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
+    xbt_assert1(!strncmp(e.msg,"Some error we will catch on client side",
+			 strlen("Some error we will catch on client side")), 
+		"Got wrong message: %s", e.msg);
+    INFO0("Got the expected exception when calling the exception raising RPC");
+    xbt_ex_free(&e);
+  }
+
+  if (!gotit)
+    THROW0(unknown_error,0,"Didn't got the remote exception!");
+
+  INFO0("Called the exception raising RPC");
+  exception_catching();
 
   /* doxygen_ignore */
   for (i=0; i<5; i++) {
@@ -130,7 +171,7 @@ int client(int argc,char *argv[]) {
   /* doxygen_resume */
   
   /* 9. Call a RPC which raises an exception (to test that exception propagation works) */
-  for (i=0;i<2;i++) {
+  for (i=0;i<5;i++) {
     INFO1("Call the exception raising RPC on the forwarder (i=%d)",i);
     TRY {
       gras_msg_rpccall(toforwarder, 6000.0,
@@ -140,17 +181,25 @@ int client(int argc,char *argv[]) {
     }
     if (!gotit) {
       THROW0(unknown_error,0,"Didn't got the remote exception!");
-    }
-    xbt_assert1(e.category == unknown_error, "Got wrong category: %d", e.category);
+    } 
     xbt_assert1(e.value == 42, "Got wrong value: %d (!=42)", e.value);
-    xbt_assert1(!strcmp(e.msg,"Some error we will catch on client side"), 
-		"Got wrong message: %s", e.msg);;
+    xbt_assert1(!strncmp(e.msg,"Some error we will catch on client side",
+			 strlen("Some error we will catch on client side")), 
+		"Got wrong message: %s", e.msg);
+    xbt_assert2(e.category == unknown_error, 
+		"Got wrong category: %d (instead of %d)", 
+		e.category,unknown_error);
     INFO0("Got the expected exception when calling the exception raising RPC");
     xbt_ex_free(&e);
+    exception_catching();
   }
+  
+  gras_msg_send(toserver,gras_msgtype_by_name("kill"),NULL);
+  gras_msg_send(toforwarder,gras_msgtype_by_name("kill"),NULL);
 
   /* 11. Cleanup the place before leaving */
   gras_socket_close(toserver);
+  gras_socket_close(toforwarder);
   gras_exit();
   INFO0("Done.");
   return 0;
@@ -162,13 +211,22 @@ int client(int argc,char *argv[]) {
  * **********************************************************************/
 typedef struct {
   gras_socket_t server;
+  int done;
 } s_forward_data_t, *forward_data_t;
 
-static int server_cb_forward_ex(gras_msg_cb_ctx_t ctx,
-			      void             *payload_data) {
+static int forwarder_cb_kill(gras_msg_cb_ctx_t ctx,
+			     void             *payload_data) {
+  forward_data_t fdata=gras_userdata_get();
+  fdata->done = 1;
+  return 1;
+}
+
+static int forwarder_cb_forward_ex(gras_msg_cb_ctx_t ctx,
+				   void             *payload_data) {
   forward_data_t fdata=gras_userdata_get();
 
-  gras_msg_rpccall(fdata->server, 60, gras_msgtype_by_name("raise exception"),NULL,NULL);
+  gras_msg_rpccall(fdata->server, 60,
+		   gras_msgtype_by_name("raise exception"),NULL,NULL);
   return 1;
 }
 
@@ -182,19 +240,25 @@ int forwarder (int argc,char *argv[]) {
   xbt_assert(argc == 4);
 
   fdata=gras_userdata_new(s_forward_data_t);
+  fdata->done = 0;
   port=atoi(argv[1]);
 
   INFO1("Launch forwarder (port=%d)", port);
   mysock = gras_socket_server(port);
 
-  gras_os_sleep(0.1); /* wait for the server to be ready */
+  gras_os_sleep(1); /* wait for the server to be ready */
   fdata->server=gras_socket_client(argv[2],atoi(argv[3]));
 
   register_messages();
-  gras_cb_register(gras_msgtype_by_name("forward exception"),&server_cb_forward_ex);
+  gras_cb_register(gras_msgtype_by_name("forward exception"),
+		   &forwarder_cb_forward_ex);
+  gras_cb_register(gras_msgtype_by_name("kill"),
+		   &forwarder_cb_kill);
 
-  gras_msg_handle(600.0); /* deal with the first forwarded request */
-  gras_msg_handle(600.0); /* deal with the second forwarded request */
+  while (!fdata->done) {
+    gras_msg_handle(600.0);
+  }
+
   gras_socket_close(mysock);
   gras_socket_close(fdata->server);
   free(fdata);
@@ -206,10 +270,22 @@ int forwarder (int argc,char *argv[]) {
 /* **********************************************************************
  * Server code
  * **********************************************************************/
+typedef struct {
+  gras_socket_t server;
+  int done;
+} s_server_data_t, *server_data_t;
+
+static int server_cb_kill(gras_msg_cb_ctx_t ctx,
+			  void             *payload_data) {
+  server_data_t sdata=gras_userdata_get();
+  sdata->done = 1;
+  return 1;
+}
 
 static int server_cb_raise_ex(gras_msg_cb_ctx_t ctx,
-				void             *payload_data) {
-  THROW0(unknown_error,42,"Some error we will catch on client side");
+			      void             *payload_data) {
+  exception_raising();
+  return 1;
 }
 
 static int server_cb_ping(gras_msg_cb_ctx_t ctx,
@@ -240,16 +316,19 @@ static int server_cb_ping(gras_msg_cb_ctx_t ctx,
 
 int server (int argc,char *argv[]) {
   gras_socket_t mysock;
+  server_data_t sdata;
 
   int port = 4000;
-  int i;
   
   /* 1. Init the GRAS infrastructure */
   gras_init(&argc,argv);
-   
+
   /* 2. Get the port I should listen on from the command line, if specified */
   if (argc == 2) 
     port=atoi(argv[1]);
+
+  sdata=gras_userdata_new(s_server_data_t);
+  sdata->done = 0;
 
   INFO1("Launch server (port=%d)", port);
 
@@ -260,23 +339,41 @@ int server (int argc,char *argv[]) {
   register_messages();
   gras_cb_register(gras_msgtype_by_name("plain ping"),&server_cb_ping);
   gras_cb_register(gras_msgtype_by_name("raise exception"),&server_cb_raise_ex);
+  gras_cb_register(gras_msgtype_by_name("kill"),&server_cb_kill);
 
   INFO1("Listening on port %d ", gras_socket_my_port(mysock));
 
   /* 5. Wait for the ping incomming messages */
-  gras_msg_handle(600.0);
-  /* 6. Wait for the exception raiser incomming messages */
-  gras_msg_handle(600.0);
-  /* doxygen_ignore */
-  for (i=0; i<5; i++)
-     gras_msg_handle(600.0);
-  /* doxygen_resume */
-
-  /* 7. Wait for the exception forwarder incomming messages (twice, to see if it triggers bugs) */
-  gras_msg_handle(600.0); 
-  gras_msg_handle(600.0); 
+  
+  /* BUG: if the server is gone before the forwarder tries to connect, 
+     it dies awfully with :
+==15875== Invalid read of size 4
+==15875==    at 0x408B805: find_port (transport_plugin_sg.c:68)
+==15875==    by 0x408BD64: gras_trp_sg_socket_client (transport_plugin_sg.c:115)
+==15875==    by 0x404A38B: gras_socket_client_ext (transport.c:255)
+==15875==    by 0x404A605: gras_socket_client (transport.c:288)
+==15875==    by 0x804B49D: forwarder (rpc.c:245)
+==15875==    by 0x80491FB: launch_forwarder (_rpc_simulator.c:52)
+==15875==    by 0x406780B: __context_wrapper (context.c:164)
+==15875==    by 0x41A6CB3: pthread_start_thread (manager.c:310)
+==15875==    by 0x42AA549: clone (clone.S:119)
+==15875==  Address 0x433B49C is 44 bytes inside a block of size 48 free'd
+==15875==    at 0x401CF46: free (vg_replace_malloc.c:235)
+==15875==    by 0x408F1FA: gras_process_exit (sg_process.c:117)
+==15875==    by 0x4049386: gras_exit (gras.c:64)
+==15875==    by 0x804B936: server (rpc.c:345)
+==15875==    by 0x80492B1: launch_server (_rpc_simulator.c:69)
+==15875==    by 0x406780B: __context_wrapper (context.c:164)
+==15875==    by 0x41A6CB3: pthread_start_thread (manager.c:310)
+==15875==    by 0x42AA549: clone (clone.S:119)
+  */
+  while (!sdata->done) {
+    gras_msg_handle(600.0); 
+    exception_catching();
+  }
    
   /* 8. Free the allocated resources, and shut GRAS down */
+  free(sdata);
   gras_socket_close(mysock);
   gras_exit();
    
