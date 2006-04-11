@@ -8,6 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
+#include "xbt/ex_interface.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/Virtu/virtu_interface.h"
 #include "gras/DataDesc/datadesc_interface.h"
@@ -448,7 +449,8 @@ gras_msg_handle(double timeOut) {
 	
      } else {
 	/* select timeouted, and no timer elapsed. Nothing to do */
-       THROW0(timeout_error, 0, "No new message or timer");
+       THROW1(timeout_error, 0, "No new message or timer (delay was %f)",
+	      timeOut);
      }
      
   }
@@ -478,13 +480,14 @@ gras_msg_handle(double timeOut) {
     ran_ok=0;
     TRY {
       xbt_dynar_foreach(list->cbs,cpt,cb) { 
-	VERB3("Use the callback #%d (@%p) for incomming msg %s",
-	      cpt+1,cb,msg.type->name);
-	if ((*cb)(&ctx,msg.payl)) {
-	  /* cb handled the message */
-	  free(msg.payl);
-	  ran_ok = 1;
-	  break;
+	if (!ran_ok) {
+	  VERB3("Use the callback #%d (@%p) for incomming msg %s",
+		cpt+1,cb,msg.type->name);
+	  if ((*cb)(&ctx,msg.payl)) {
+	    /* cb handled the message */
+	    free(msg.payl);
+	    ran_ok = 1;
+	  }
 	}
       }
     } CATCH(e) {
@@ -493,21 +496,20 @@ gras_msg_handle(double timeOut) {
 	/* The callback raised an exception, propagate it on the network */
 	if (!e.remote) { /* the exception is born on this machine */
 	  e.host = (char*)gras_os_myname();
-#ifdef HAVE_EXECINFO_H
-	  e.bt_strings = backtrace_symbols (e.bt, e.used);
-#endif
+	  xbt_ex_setup_backtrace(&e);
 	} 
-	gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
-			  msg.ID, msg.type, &e);
-	INFO4("Propagated %s exception from '%s' RPC cb back to %s:%d",
+	VERB4("Propagate %s exception from '%s' RPC cb back to %s:%d",
 	      (e.remote ? "remote" : "local"),
 	      msg.type->name,
 	      gras_socket_peer_name(msg.expe),
 	      gras_socket_peer_port(msg.expe));
-	e.host = NULL;
+	gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
+			  msg.ID, msg.type, &e);
 	xbt_ex_free(&e);
-      } else
-	RETHROW;
+	ran_ok=1;
+      } else {
+	RETHROW0("Callback raised an exception: %s");
+      }
     }
     if (!ran_ok)
       THROW1(mismatch_error,0,
