@@ -46,6 +46,27 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
     return &ctx;
 }
 
+
+/** \brief show the backtrace of the current point (lovely while debuging) */
+void xbt_display_backtrace(void) {
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+  xbt_ex_t e;
+  int i;
+
+  e.used     = backtrace((void**)e.bt,XBT_BACKTRACE_SIZE);
+  e.bt_strings = NULL;
+  xbt_ex_setup_backtrace(&e);
+  for (i=0; i<e.used; i++)
+    fprintf(stderr,"%s\n",e.bt_strings[i]);
+
+  e.msg=NULL;
+  e.remote=0;
+  xbt_ex_free(&e);
+#else 
+  fprintf(stderr,"No backtrace on this arch");
+#endif
+}
+
 void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
   int i;
