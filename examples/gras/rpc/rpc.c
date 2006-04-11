@@ -345,8 +345,10 @@ int server (int argc,char *argv[]) {
 
   /* 5. Wait for the ping incomming messages */
   
-  /* BUG: if the server is gone before the forwarder tries to connect, 
-     it dies awfully with :
+  /** \bug if the server is gone before the forwarder tries to connect, 
+     it dies awfully with the following message. The problem stands somewhere
+     at the interface between the gras_socket_t and the msg mess. There is thus
+     no way for me to dive into this before this interface is rewritten 
 ==15875== Invalid read of size 4
 ==15875==    at 0x408B805: find_port (transport_plugin_sg.c:68)
 ==15875==    by 0x408BD64: gras_trp_sg_socket_client (transport_plugin_sg.c:115)
