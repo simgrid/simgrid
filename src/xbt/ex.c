@@ -56,7 +56,7 @@ void xbt_display_backtrace(void) {
   e.used     = backtrace((void**)e.bt,XBT_BACKTRACE_SIZE);
   e.bt_strings = NULL;
   xbt_ex_setup_backtrace(&e);
-  for (i=0; i<e.used; i++)
+  for (i=1; i<e.used; i++) /* no need to display "xbt_display_backtrace" */
     fprintf(stderr,"%s\n",e.bt_strings[i]);
 
   e.msg=NULL;
@@ -84,6 +84,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   /* To read the output of addr2line */
   FILE *pipe;
   char line_func[1024],line_pos[1024];
+
+  /* size (in char) of pointers on this arch */
+  int addr_len=0;
   
   /* build the commandline */
   curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,xbt_binary_name);
@@ -97,7 +100,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     /* Add it to the command line args */
     curr+=sprintf(curr,"%s ",addrs[i]);
   }	 
-  
+  addr_len = strlen(addrs[0]);
+
   /* parse the output and build a new backtrace */
   e->bt_strings = xbt_new(char*,e->used);
   
@@ -110,16 +114,82 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     line_pos[strlen(line_pos)-1]='\0';
 
     if (strcmp("??",line_func)) {
-      e->bt_strings[i] = bprintf("**   At %s: %s (%s)", addrs[i], line_func,line_pos);
+      e->bt_strings[i] = bprintf("**   At %s: %s (%s)", 
+				 addrs[i], line_func,line_pos);
     } else {
-      char *p=bprintf("%s",backtrace[i]);
-      char *pos=strrchr(p,' ');
-      *pos = '\0';
-      e->bt_strings[i] = bprintf("**   At %s: ?? (%s)", addrs[i], p);
+      /* Damn. The symbol is in a dynamic library. Let's get wild */
+      char *maps_name;
+      FILE *maps;
+      char maps_buff[512];
+
+      long int addr,offset,offset_save;
+      char *p,*p2;
+
+      char *subcmd;
+      FILE *subpipe;
+      int found=0;
+
+      /* let's look for the offset of this library in our addressing space */
+      maps_name=bprintf("/proc/%d/maps",(int)getpid());
+      maps=fopen(maps_name,"r");
+
+      addr=strtol(addrs[i]+2, NULL,16);
+
+      while (!found) {
+	if (fgets(maps_buff,512,maps) == NULL) 
+	  break;
+	offset_save = offset;
+	offset=strtol(maps_buff,NULL,16);
+	if (offset > addr)
+	  found=1;
+      }
+
+      fclose(maps);
+      free(maps_name);
+
+      /* Ok, the maps line we just read is beyond the searched symbol. Got it,
+	 the symbol is in previous map, which offset is in offset_save.
+	 We now need to substract this from the address we got from backtrace.
+      */
+      offset=offset_save;
+      
+      free(addrs[i]);
+      addrs[i] = bprintf("0x%0*lx",addr_len-2,addr-offset);
+
+      /* Got it. We have our new address. Let's get the library path and we 
+	 are set */ 
+      p  = xbt_strdup(backtrace[i]);
+      p2 = strrchr(p,'(');
+      if (p2) *p2= '\0';
+      p2 = strrchr(p,' ');
+      if (p2) *p2= '\0';
+      
+      /* Here we go, fire an addr2line up */
+      subcmd = bprintf("%s -f -e %s %s",ADDR2LINE,p, addrs[i]);
       free(p);
+      subpipe = popen(subcmd,"r");
+      fgets(line_func,1024,subpipe);
+      line_func[strlen(line_func)-1]='\0';
+      fgets(line_pos,1024,subpipe);
+      line_pos[strlen(line_pos)-1]='\0';
+      pclose(subpipe);
+
+      /* check whether the trick worked */
+      if (strcmp("??",line_func)) {
+	e->bt_strings[i] = bprintf("**   At %s: %s (%s)", 
+				   addrs[i], line_func,line_pos);
+      } else {
+	/* damn, nothing to do here. Let's print the raw address */
+	p  = bprintf("%s",backtrace[i]);
+	p2 = strrchr(p,' ');
+	*p2= '\0';
+	e->bt_strings[i] = bprintf("**   At %s: ?? (%s)", addrs[i], p);
+	free(p);
+      }
     }
     free(addrs[i]);
   }
+  pclose(pipe);
   free(addrs);
   free(backtrace);
   free(cmd);
