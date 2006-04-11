@@ -29,7 +29,8 @@ XBT_LOG_DEFAULT_CATEGORY(transport);
 gras_socket_t gras_trp_select(double timeout) {
   
   gras_socket_t res;
-  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
+  gras_trp_procdata_t pd = 
+    (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t trp;
 
@@ -58,11 +59,11 @@ gras_socket_t gras_trp_select(double timeout) {
   /* Try to reuse an already openned socket to that expeditor */
   xbt_dynar_foreach(pd->sockets,cursor,sock_iter) {
     DEBUG1("Consider %p as outgoing socket to expeditor",sock_iter);
-    sockdata = sock_iter->data;
     
     if (sock_iter->meas || !sock_iter->outgoing)
       continue;
     
+    sockdata = sock_iter->data;
     if (sockdata->to_PID == r_pid) {
       return sock_iter;
     }
