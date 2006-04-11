@@ -53,7 +53,7 @@ void gras_msg_send_ext(gras_socket_t   sock,
 					      payload, msg->payl);
   } else {
     msg->payl_size=gras_datadesc_size(msgtype->ctn_type);
-    msg->payl=xbt_malloc(msg->payl_size);
+    msg->payl=msg->payl_size?xbt_malloc(msg->payl_size):NULL;
     if (msgtype->ctn_type)
       whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,
 					      payload, msg->payl);
