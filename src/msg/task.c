@@ -12,7 +12,8 @@
 /** \defgroup m_task_management Managing functions of Tasks
  *  \brief This section describes the task structure of MSG
  *  (#m_task_t) and the functions for managing it.
- *
+ *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
+ * 
  *  Since most scheduling algorithms rely on a concept of task
  *  that can be either <em>computed</em> locally or
  *  <em>transferred</em> on another processor, it seems to be the

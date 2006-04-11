@@ -14,7 +14,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(m_process, msg,
 /** \defgroup m_process_management Management Functions of Agents
  *  \brief This section describes the agent structure of MSG
  *  (#m_process_t) and the functions for managing it.
- *
+ *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Agents" --> \endhtmlonly
+ * 
  *  We need to simulate many independent scheduling decisions, so
  *  the concept of <em>process</em> is at the heart of the
  *  simulator. A process may be defined as a <em>code</em>, with
