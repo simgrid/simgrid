@@ -152,19 +152,19 @@ void xbt_ex_free(xbt_ex_t *e) {
   int i;
 
   if (e->msg) free(e->msg);
-  free(e->procname);
   if (e->remote) {
+    free(e->procname);
     free(e->file);
     free(e->func);
     free(e->host);
   }
+
   if (e->bt_strings) {	
      for (i=0; i<e->used; i++) 
-       free(e->bt_strings[i]);
-     free(e->bt_strings);
-     e->bt_strings = NULL;
+       free((char*)e->bt_strings[i]);
+     free((char **)e->bt_strings);
   }
-  
+  memset(e,0,sizeof(xbt_ex_t));
 }
 
 /** \brief returns a short name for the given exception category */
@@ -212,20 +212,33 @@ XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
             THROW0(unknown_error,0,"something");
         } CATCH (ex) {
             if (n != 3)
-                xbt_test_fail1("M3: n=%d (!= 1)", n);
+                xbt_test_fail1("M3: n=%d (!= 3)", n);
+            n++;
+	    xbt_ex_free(&ex);
+        }
+	n++;
+        TRY {
+            if (n != 5)
+                xbt_test_fail1("M2: n=%d (!= 5)", n);
+            n++;
+            THROW0(unknown_error,0,"something");
+        } CATCH (ex) {
+            if (n != 6)
+                xbt_test_fail1("M3: n=%d (!= 6)", n);
             n++;
             RETHROW;
+            n++;
         }
         xbt_test_fail1("MX: n=%d (shouldn't reach this point)", n);
     }
     CATCH(ex) {
-        if (n != 4)
-            xbt_test_fail1("M4: n=%d (!= 4)", n);
+        if (n != 7)
+            xbt_test_fail1("M4: n=%d (!= 7)", n);
         n++;
         xbt_ex_free(&ex);
     }
-    if (n != 5)
-        xbt_test_fail1("M5: n=%d (!= 5)", n);
+    if (n != 8)
+        xbt_test_fail1("M5: n=%d (!= 8)", n);
 }
 
 XBT_TEST_UNIT("value",test_value,"exception value passing") {
