@@ -105,10 +105,14 @@ static double XP(const char *bw1, const char *bw2,
   return bw_sat/bw;
 }
 
-static void kill_buddy(char *name,char *port){
-  gras_socket_t sock=gras_socket_client(name,atoi(port));
+static void kill_buddy(char *name,int port){
+  gras_socket_t sock=gras_socket_client(name,port);
   gras_msg_send(sock,gras_msgtype_by_name("kill"),NULL);
   gras_socket_close(sock);
+}
+static void kill_buddy_dynar(void *b) {
+  xbt_host_t buddy=*(xbt_host_t*)b;
+  kill_buddy(buddy->name,buddy->port);
 }
 
 static void free_host(void *d){
@@ -120,8 +124,8 @@ static void free_host(void *d){
 static void simple_saturation(int argc, char*argv[]) {
   xbt_ex_t e;
 
-  kill_buddy(argv[5],argv[6]);
-  kill_buddy(argv[7],argv[8]);
+  kill_buddy(argv[5],atoi(argv[6]));
+  kill_buddy(argv[7],atoi(argv[8]));
 
   amok_bw_saturate_start(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
 			 sat_size*5,5);
@@ -133,8 +137,8 @@ static void simple_saturation(int argc, char*argv[]) {
   }
 
  
-  kill_buddy(argv[1],argv[2]);
-  kill_buddy(argv[3],argv[4]);
+  kill_buddy(argv[1],atoi(argv[2]));
+  kill_buddy(argv[3],atoi(argv[4]));
 }
 
 static void full_fledged_saturation(int argc, char*argv[]) {
@@ -221,8 +225,13 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 	      time(NULL)-begin, gras_os_time()-begin_simulated);
     }
   }
+
+  free(bw_sat);
+  free(bw);
+  xbt_dynar_map(hosts,kill_buddy_dynar);
   xbt_dynar_free(&hosts);
 }
+
 
 int maestro(int argc,char *argv[]) {
 
