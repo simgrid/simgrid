@@ -192,13 +192,13 @@ int __MSG_process_isBlocked(m_process_t process);
 #define PAJE_COMM_START(process,task,channel)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,\
-	    "16	%f	Comm	CUR	COMM_%d	%p	%p\n", \
-            surf_get_clock(), channel, (process), task)
+	    "16	%f	Comm	CUR	\"CHANNEL_%d %s\"	%p	%p\n", \
+            surf_get_clock(), channel, task->name, (process), task)
 #define PAJE_COMM_STOP(process,task,channel)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,\
-	    "17	%f	Comm	CUR	COMM_%d	%p	%p\n", \
-            surf_get_clock(), channel, (process), task)
+	    "17	%f	Comm	CUR	\"CHANNEL_%d %s\"	%p	%p\n", \
+            surf_get_clock(), channel, task->name, (process), task)
 #define PAJE_HOST_NEW(host)\
   if(msg_global->paje_output)\
     fprintf(msg_global->paje_output,"7 %f %p H_t CUR \"%s\"\n",surf_get_clock(), \
