@@ -143,6 +143,7 @@ void MSG_paje_output(const char *filename)
     "%	EntityType	string\n"
     "%	Container	string\n"
     "%	Value	string\n"
+    "%	TaskName	string\n"
     "%EndEventDef\n"
     "%EventDef	PajePopState	12\n"
     "%	Time	date\n"

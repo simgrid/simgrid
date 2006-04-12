@@ -124,7 +124,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
     __MSG_process_unblock(t_simdata->sender);
   }
 
-  PAJE_PROCESS_PUSH_STATE(process,"C");  
+  PAJE_PROCESS_PUSH_STATE(process,"C",t);  
 
   do {
     DEBUG0("Waiting for action termination");
@@ -454,7 +454,7 @@ MSG_error_t MSG_task_put(m_task_t task,
   process->simdata->put_channel = -1;
 
 
-  PAJE_PROCESS_PUSH_STATE(process,"C");  
+  PAJE_PROCESS_PUSH_STATE(process,"C",task);  
 
   state=surf_workstation_resource->common_public->action_get_state(task_simdata->comm);
   while (state==SURF_ACTION_RUNNING) {
@@ -521,7 +521,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 
   __MSG_task_execute(process, task);
 
-  PAJE_PROCESS_PUSH_STATE(process,"E");  
+  PAJE_PROCESS_PUSH_STATE(process,"E",task);  
   res = __MSG_wait_for_computation(process,task);
   PAJE_PROCESS_POP_STATE(process);
   return res;

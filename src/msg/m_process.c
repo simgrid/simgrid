@@ -354,7 +354,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 
   xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
 
-  PAJE_PROCESS_PUSH_STATE(process,"S");
+  PAJE_PROCESS_PUSH_STATE(process,"S",NULL);
 
   if(process!=MSG_process_self()) {
     simdata = process->simdata;
@@ -473,7 +473,7 @@ int __MSG_process_block(double max_duration)
 
   dummy = MSG_task_create(blocked_name, 0.0, 0, NULL);
   
-  PAJE_PROCESS_PUSH_STATE(process,"B");
+  PAJE_PROCESS_PUSH_STATE(process,"B",NULL);
 
   process->simdata->blocked=1;
   __MSG_task_execute(process,dummy);
