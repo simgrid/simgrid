@@ -260,7 +260,8 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
   }
   INFO1("Saturation stopped on %s",gras_os_myname());
   gras_socket_close(meas);
-  gras_socket_close(measMaster);
+  if (gras_if_RL()) /* On SG, accepted=master */
+    gras_socket_close(measMaster); 
   free(request);
   return 1;
 }
