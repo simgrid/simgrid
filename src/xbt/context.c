@@ -175,10 +175,13 @@ static ex_ctx_t *__context_ex_ctx(void)
 static void __context_ex_terminate(xbt_ex_t *e) {
   xbt_ex_display(e);
 
+  abort();
+   /* FIXME: there should be a configuration variable to choose this
   if(current_context!=init_context) 
     __context_exit(current_context, e->value);
   else
     abort();
+    */
 }
 
 /** \name Functions 
