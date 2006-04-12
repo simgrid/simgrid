@@ -3,5 +3,5 @@ html sgml xml
 Doxyfile
 index-API.doc logcategories.doc index.php
 *.toc
-simgrid_modules.map simgrid_modules.png amok_bw_test.png
+simgrid_modules.map simgrid_modules.png amok_bw_test.png amok_bw_sat.png
 simgrid.tag 
