@@ -40,7 +40,8 @@ SimGrid (3.0.2) unstable; urgency=low
   * Bandwidth module: 
     - Do not force experiment sizes to be expressed in kb, or it becomes
       impossible to mesure the latency this way (needs one byte-long tests)
-    WARNING: this changes the amok_bw_* function semantic.
+    WARNING: this changes the amok_bw_* function semantic. [MQ]
+    - Implements the link saturation stuff. [MQ]
       
  --
 
