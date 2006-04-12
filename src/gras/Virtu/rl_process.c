@@ -29,8 +29,8 @@ const char *xbt_procname(void) {
   else return "";
 }
 
-int gras_os_getpid(void) {
-  return getpid();
+long int gras_os_getpid(void) {
+  return (long int) getpid();
 }
 
 /* **************************************************************************
