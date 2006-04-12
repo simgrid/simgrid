@@ -205,7 +205,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
       /* check whether the trick worked */
       if (strcmp("??",line_func)) {
-	e->bt_strings[i] = bprintf("**   In %s() in %s (dynamic symbol)", line_func,line_pos);
+	e->bt_strings[i] = bprintf("**   In %s() at %s (dynamic symbol)", line_func,line_pos);
       } else {
 	/* damn, nothing to do here. Let's print the raw address */
 	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
