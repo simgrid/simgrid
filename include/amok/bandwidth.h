@@ -18,8 +18,11 @@
 /** \addtogroup AMOK_bw
  *  \brief Test the bandwidth between two nodes
  *
- *  This module allows you to retrieve the bandwidth between to arbitrary hosts, 
- *  provided that they run some GRAS process which initialized this module. 
+ *  This module allows you to retrieve the bandwidth between to arbitrary hosts
+ *  and saturating the links leading to them, provided that they run some GRAS 
+ *  process which initialized this module.
+ * 
+ * \htmlonly <h3>Bandwidth measurement</h3>\endhtmlonly
  * 
  *  Retrieving the bandwidth is usually done by active measurment: one send
  *  a packet of known size, time how long it needs to go back and forth,
@@ -52,13 +55,39 @@
  *   buf_size=32k, msg_size=16k and exp_size=64k. That means that the
  *   socket will be prepared to accept 32k in its buffer and then four
  *   messages of 16k will be sent (so that the total amount of data equals
- *   64k). Of course, you can use other values if you want to.
+ *   64k). Of course, you can use other values if you want to. 
  * 
  *  \htmlonly
- * <img align=center src="amok_bw_test.png" alt="amok bandwidth measurement protocol"><br>
+ * <center><img align=center src="amok_bw_test.png" alt="amok bandwidth measurement protocol"><br>
+ * Fig 1: AMOK bandwidth measurement protocol.</center>
+ * <h3>Link saturation</h3>
  * \endhtmlonly
  * 
- *  \todo Cleanup and implement the link saturation stuff.
+ *  You sometimes want to try saturating some link during the network
+ *  related experiments (at least, we did ;). This also can turn quite
+ *  untrivial to do, unless you use this great module. You can either ask
+ *  for the saturation between the current host and a distant one with
+ *  amok_bw_saturate_begin() or between two distant hosts with
+ *  amok_bw_saturate_start(). In any case, remember that gras actors
+ *  (processes) are not interruptible. It means that an actor you
+ *  instructed to participate to a link saturation experiment will not do
+ *  anything else until it is to its end (either because the asked duration
+ *  was done or because someone used amok_bw_saturate_stop() on the emitter
+ *  end of the experiment).
+ * 
+ *  The following figure depicts the used protocol. Note that any
+ *  handshaking messages internal messages are omitted for sake of
+ *  simplicity. In this example, the experiment ends before the planned
+ *  experiment duration is over because one host use the
+ *  amok_bw_saturate_stop() function, but things are not really different
+ *  if the experiment stops alone. Also, it is not mandatory that the host
+ *  calling amok_bw_saturate_stop() is the same than the one which called
+ *  amok_bw_saturate_start(), despite what is depicted here.
+ * 
+ *  \htmlonly
+ * <center><img align=center src="amok_bw_sat.png" alt="amok bandwidth saturation protocol"><br>
+ * Fig 2: AMOK link saturation protocol.</center>
+ * \endhtmlonly
  *
  *  @{
  */
