@@ -167,6 +167,7 @@ int forwarder(int argc, char *argv[])
 		    slaves[i% slaves_count]->name);
       MSG_task_put(task, slaves[i % slaves_count],
 		   PORT_22);
+      i++;
     } else {
       INFO0("Hey ?! What's up ? ");
       xbt_assert0(0,"Unexpected behavior");
