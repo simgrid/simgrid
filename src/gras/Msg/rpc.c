@@ -121,6 +121,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
      __xbt_ex_ctx()->ctx_ex.remote   = 1;
      __xbt_ex_ctx()->ctx_ex.host     = e.host;
      __xbt_ex_ctx()->ctx_ex.procname = e.procname;
+     __xbt_ex_ctx()->ctx_ex.pid      = e.pid;
      __xbt_ex_ctx()->ctx_ex.file     = e.file;
      __xbt_ex_ctx()->ctx_ex.line     = e.line;
      __xbt_ex_ctx()->ctx_ex.func     = e.func;

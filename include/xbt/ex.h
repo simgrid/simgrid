@@ -242,6 +242,9 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * @{
  */
 
+/* we need this symbol here, even if it breaks a bit the module separation */
+long int gras_os_getpid(void);
+
 /** @brief different kind of errors */
 typedef enum {
   unknown_error=0,  /**< unknown error */
@@ -267,6 +270,7 @@ typedef struct {
   char *host;     /* NULL for localhost; hostname if remote */
   /* FIXME: host should be hostname:port[#thread] */
   char *procname; 
+  long int pid;
   char *file;     /**< to be freed only for remote exceptions */
   int   line;     
   char *func;     /**< to be freed only for remote exceptions */
@@ -286,7 +290,7 @@ typedef struct {
 /* the static and dynamic initializers for a context structure */
 #define XBT_CTX_INITIALIZER \
     { NULL, 0, { /* content */ NULL, unknown_error, 0, \
-                 /* throw point*/ 0,NULL, NULL, NULL, 0, NULL,\
+                 /* throw point*/ 0,NULL, NULL,0, NULL, 0, NULL,\
                  /* backtrace */ 0,NULL,{NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL} } }
 #define XBT_CTX_INITIALIZE(ctx) \
     do { \
@@ -298,6 +302,7 @@ typedef struct {
         (ctx)->ctx_ex.remote     = 0;    \
         (ctx)->ctx_ex.host       = NULL; \
         (ctx)->ctx_ex.procname   = NULL; \
+        (ctx)->ctx_ex.pid        = 0;    \
         (ctx)->ctx_ex.file       = NULL; \
         (ctx)->ctx_ex.line       = 0;    \
         (ctx)->ctx_ex.func       = NULL; \
@@ -419,6 +424,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      __xbt_ex_ctx()->ctx_ex.remote   = 0;                                     \
      __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL;                           \
      __xbt_ex_ctx()->ctx_ex.procname = (char*)xbt_procname();                 \
+     __xbt_ex_ctx()->ctx_ex.pid      = gras_os_getpid();                      \
      __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__;                       \
      __xbt_ex_ctx()->ctx_ex.line     = __LINE__;                              \
      __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION;                  \
