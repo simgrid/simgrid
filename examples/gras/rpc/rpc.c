@@ -53,7 +53,7 @@ static void exception_catching(void) {
     xbt_assert1(!strncmp(e.msg,"Some error we will catch on client side",
 			 strlen("Some error we will catch on client side")), 
 		"Got wrong message: %s", e.msg);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
 }
 
@@ -144,7 +144,7 @@ int client(int argc,char *argv[]) {
 			 strlen("Some error we will catch on client side")), 
 		"Got wrong message: %s", e.msg);
     INFO0("Got the expected exception when calling the exception raising RPC");
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
 
   if (!gotit)
@@ -162,7 +162,7 @@ int client(int argc,char *argv[]) {
 			 gras_msgtype_by_name("raise exception"), NULL, NULL);
      } CATCH(e) {
 	gotit = 1;
-	xbt_ex_free(&e);
+	xbt_ex_free(e);
      }
      if (!gotit) {
 	THROW0(unknown_error,0,"Didn't got the remote exception!");
@@ -190,7 +190,7 @@ int client(int argc,char *argv[]) {
 		"Got wrong category: %d (instead of %d)", 
 		e.category,unknown_error);
     INFO0("Got the expected exception when calling the exception raising RPC");
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
     exception_catching();
   }
   

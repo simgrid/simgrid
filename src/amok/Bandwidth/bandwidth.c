@@ -129,7 +129,7 @@ void amok_bw_test(gras_socket_t peer,
       if (port == 10000 -1) {
 	RETHROW0("Error caught while opening a measurement socket: %s");
       } else {
-	xbt_ex_free(&e);	
+	xbt_ex_free(e);	
       }
     }
   }
@@ -215,7 +215,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
     } CATCH(e) {
       measMasterIn = NULL;
       if (port < 10000)
-	xbt_ex_free(&e);
+	xbt_ex_free(e);
       else
 	/* FIXME: tell error to remote */
 	RETHROW0("Error encountered while opening a measurement server socket: %s");

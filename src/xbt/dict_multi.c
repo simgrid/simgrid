@@ -62,7 +62,7 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
 	RETHROW;
 
       /* make sure the dict of next level exists */
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       nextlevel=xbt_dict_new();
       VERB1("Create a dict (%p)",nextlevel);
       xbt_dict_set_ext(thislevel, thiskey, thislen, nextlevel, &_free_dict);
@@ -208,7 +208,7 @@ xbt_multidict_remove_ext(xbt_dict_t mdict, xbt_dynar_t keys, xbt_dynar_t lens) {
     } CATCH(e) {
       /* If non-existant entry, nothing to do */
       if (e.category == arg_error) 
-	xbt_ex_free(&e);
+	xbt_ex_free(e);
       else 
 	RETHROW;
     }

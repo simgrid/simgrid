@@ -59,7 +59,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
   } CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
     res = NULL;
   }
   return res;
@@ -76,7 +76,7 @@ gras_datadesc_type_t gras_datadesc_by_id(long int code) {
   } CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
     res = NULL;
   }
   return res;

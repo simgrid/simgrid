@@ -215,7 +215,7 @@ xbt_cfg_register(xbt_cfg_t cfg,
   } CATCH(e) {
     if (e.category == not_found_error) {
       found = 1;
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     } else {
       RETHROW;
     }
@@ -372,7 +372,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t  cfg,
     res = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
     if (e.category == not_found_error) {
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       THROW1(not_found_error,0,
 	     "No registered variable '%s' in this config set",name);
     }
@@ -406,7 +406,7 @@ xbt_cfg_get_type(xbt_cfg_t cfg, const char *name) {
     variable = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
     if (e.category == not_found_error) { 
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       THROW1(not_found_error,0,
 	     "Can't get the type of '%s' since this variable does not exist",name);
     }
@@ -440,7 +440,7 @@ xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa) {
     type = xbt_cfg_get_type(cfg,name);
   } CATCH(e) {
     if (e.category == not_found_error) {
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       THROW1(not_found_error,0,"Can't set the property '%s' since it's not registered",name);
     }
     RETHROW;
@@ -579,7 +579,7 @@ xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
       name = (char*) (optionlist_cpy-name + options); 
       free(optionlist_cpy);
       if (e.category == not_found_error) {
-	xbt_ex_free(&e);
+	xbt_ex_free(e);
 	THROW1(not_found_error,0,"No registrated variable corresponding to '%s'.",name);
       }
       RETHROW;
@@ -951,7 +951,7 @@ xbt_cfg_empty(xbt_cfg_t cfg,const char*name) {
     if (e.category != not_found_error)
       RETHROW;
 
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
     THROW1(not_found_error,0,
 	   "Can't empty  '%s' since this config element does not exist", name);
   }
@@ -1092,7 +1092,7 @@ xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t    cfg, const char *name) {
     variable = xbt_dict_get((xbt_dict_t)cfg,name);
   } CATCH(e) {
     if (e.category == not_found_error) {
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       THROW1(not_found_error,0,
 	     "No registered variable %s in this config set",name);
     }
@@ -1178,7 +1178,7 @@ XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
     if (e.category != mismatch_error || 
 	strncmp(e.msg,"Config elem speed needs",strlen("Config elem speed needs")))
       xbt_test_fail1("Got an exception. msg=%s",e.msg);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
   xbt_cfg_free(&set);
   xbt_cfg_free(&set);
@@ -1195,7 +1195,7 @@ XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
 	strncmp(e.msg,"Cannot add value 34 to the config elem speed",
 		strlen("Config elem speed needs")))
       xbt_test_fail1("Got an exception. msg=%s",e.msg);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
   xbt_cfg_check(set);
   xbt_cfg_free(&set);
@@ -1256,7 +1256,7 @@ XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
     } CATCH(e) {
       if (e.category != not_found_error)
         xbt_test_exception(e);
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     }
     xbt_cfg_free(&myset);    
   }

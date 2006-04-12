@@ -146,7 +146,7 @@ xbt_dict_get_or_null(xbt_dict_t     dict,
   } CATCH(e) {
     if (e.category != not_found_error) 
       RETHROW;
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
     res=NULL;
   }
   return res;
@@ -292,7 +292,7 @@ static void search_not_found(xbt_dict_t head, const char *data) {
   } CATCH(e) {
     if (e.category != not_found_error) 
       xbt_test_exception(e);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
 }
 
@@ -371,7 +371,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   } CATCH(e) {
     if (e.category != not_found_error) 
       xbt_test_exception(e);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
   traverse(head);
 
@@ -383,7 +383,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   } CATCH(e) {
     if (e.category != arg_error) 
       xbt_test_exception(e);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   } 
 
   xbt_test_add0("Remove each data manually (traversing the resulting dictionnary each time)");
@@ -397,7 +397,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   } CATCH(e) {
     if (e.category != not_found_error) 
       xbt_test_exception(e);
-    xbt_ex_free(&e);         
+    xbt_ex_free(e);         
     traverse(head);
   } 
   debuged_remove(head,"1234");   traverse(head);
@@ -408,7 +408,7 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   } CATCH(e) {
     if (e.category != not_found_error) 
       xbt_test_exception(e);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }                              traverse(head);
   
   xbt_test_add0("Free the dictionnary twice");

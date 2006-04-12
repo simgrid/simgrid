@@ -188,7 +188,7 @@ xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
   } CATCH(e) {
     if (e.category == mismatch_error) {
       xbt_dict_cursor_free(cursor);
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       return FALSE;
     }
     RETHROW;

@@ -140,7 +140,7 @@ gras_msgtype_declare_ext(const char           *name,
   } CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
 
   if (found) {
@@ -229,7 +229,7 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
   TRY {
     res = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set, namev);
   } CATCH(e) {
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
     THROW1(not_found_error,0,"No registred message of that name: %s",name);
   }
   if (name != namev) 
@@ -412,7 +412,7 @@ gras_msg_handle(double timeOut) {
     } CATCH(e) {
       if (e.category != timeout_error)
 	RETHROW;
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       timeouted = 1;
     }
 
@@ -505,7 +505,7 @@ gras_msg_handle(double timeOut) {
 	      gras_socket_peer_port(msg.expe));
 	gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
 			  msg.ID, msg.type, &e);
-	xbt_ex_free(&e);
+	xbt_ex_free(e);
 	ran_ok=1;
       } else {
 	RETHROW0("Callback raised an exception: %s");

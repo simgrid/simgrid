@@ -36,7 +36,7 @@ gras_trp_plugin_new(const char *name, gras_trp_setup_t setup) {
       free(plug->name);
       free(plug);
       plug=NULL;
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     } else {
       RETHROW;
     }

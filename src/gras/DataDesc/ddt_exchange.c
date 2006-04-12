@@ -231,7 +231,7 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
       if (e.category != not_found_error)
 	RETHROW;
       reference_is_to_cpy = 1;
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     }
 
     if (reference_is_to_cpy) {
@@ -511,7 +511,7 @@ gras_datadesc_send_rec(gras_socket_t         sock,
       if (e.category != not_found_error)
 	RETHROW;
       reference_is_to_send = 1;
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     }
 
     if (reference_is_to_send) {
@@ -766,7 +766,7 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
       if (e.category != not_found_error)
         RETHROW;
       reference_is_to_recv = 1;
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     }
     if (reference_is_to_recv) {
       int subsubcount = 0;

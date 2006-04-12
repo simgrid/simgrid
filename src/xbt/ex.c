@@ -61,7 +61,7 @@ void xbt_display_backtrace(void) {
 
   e.msg=NULL;
   e.remote=0;
-  xbt_ex_free(&e);
+  xbt_ex_free(e);
 #else 
   fprintf(stderr,"No backtrace on this arch");
 #endif
@@ -225,7 +225,7 @@ void xbt_ex_display(xbt_ex_t *e)  {
   fprintf(stderr," at %s:%d:%s (no backtrace available on that arch)\n",  
 	  e->file,e->line,e->func);
 #endif
-  xbt_ex_free(e);
+  xbt_ex_free(*e);
 }
 
 
@@ -240,23 +240,23 @@ void __xbt_ex_terminate_default(xbt_ex_t *e)  {
 ex_ctx_cb_t  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
 ex_term_cb_t __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
-void xbt_ex_free(xbt_ex_t *e) {
+void xbt_ex_free(xbt_ex_t e) {
   int i;
 
-  if (e->msg) free(e->msg);
-  if (e->remote) {
-    free(e->procname);
-    free(e->file);
-    free(e->func);
-    free(e->host);
+  if (e.msg) free(e.msg);
+  if (e.remote) {
+    free(e.procname);
+    free(e.file);
+    free(e.func);
+    free(e.host);
   }
 
-  if (e->bt_strings) {	
-     for (i=0; i<e->used; i++) 
-       free((char*)e->bt_strings[i]);
-     free((char **)e->bt_strings);
+  if (e.bt_strings) {	
+     for (i=0; i<e.used; i++) 
+       free((char*)e.bt_strings[i]);
+     free((char **)e.bt_strings);
   }
-  memset(e,0,sizeof(xbt_ex_t));
+//  memset(e,0,sizeof(xbt_ex_t));
 }
 
 /** \brief returns a short name for the given exception category */
@@ -306,7 +306,7 @@ XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
             if (n != 3)
                 xbt_test_fail1("M3: n=%d (!= 3)", n);
             n++;
-	    xbt_ex_free(&ex);
+	    xbt_ex_free(ex);
         }
 	n++;
         TRY {
@@ -327,7 +327,7 @@ XBT_TEST_UNIT("controlflow",test_controlflow, "basic nested control flow") {
         if (n != 7)
             xbt_test_fail1("M4: n=%d (!= 7)", n);
         n++;
-        xbt_ex_free(&ex);
+        xbt_ex_free(ex);
     }
     if (n != 8)
         xbt_test_fail1("M5: n=%d (!= 8)", n);
@@ -346,7 +346,7 @@ XBT_TEST_UNIT("value",test_value,"exception value passing") {
             xbt_test_fail1("value=%d (!= 2)", ex.value);
         if (strcmp(ex.msg,"toto"))
             xbt_test_fail1("message=%s (!= toto)", ex.msg);
-        xbt_ex_free(&ex);
+        xbt_ex_free(ex);
     }
 }
 
@@ -369,7 +369,7 @@ XBT_TEST_UNIT("variables",test_variables,"variable value preservation") {
         /* r2 is allowed to be destroyed because not volatile */
         if (v2 != 5678)
             xbt_test_fail1("v2=%d (!= 5678)", v2);
-        xbt_ex_free(&ex);
+        xbt_ex_free(ex);
     }
 }
 
@@ -394,7 +394,7 @@ XBT_TEST_UNIT("cleanup",test_cleanup,"cleanup handling") {
             xbt_test_fail1("v1 = %d (!= 5678)", v1);
         if (!(ex.category == 1 && ex.value == 2 && !strcmp(ex.msg,"blah")))
             xbt_test_fail0("unexpected exception contents");
-        xbt_ex_free(&ex);
+        xbt_ex_free(ex);
     }
     if (!c)
         xbt_test_fail0("xbt_ex_free not executed");

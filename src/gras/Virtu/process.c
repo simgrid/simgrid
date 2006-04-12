@@ -112,7 +112,7 @@ gras_procdata_init() {
       data = xbt_set_get_by_name(pd->libdata, fab.name);
       found = 1;
     } CATCH(e) {
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
       found = 0;
     }
     if (found)

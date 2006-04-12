@@ -169,7 +169,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 	saturate_further=1;
 	memset(&msg_got,0,sizeof(msg_got)); /* may be overprotectiv here */
       }
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     }
 
     /* Check whether the experiment has to be terminated by now */
@@ -228,7 +228,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
     } CATCH(e) {
       measMaster = NULL;
       if (port < 10000)
-	xbt_ex_free(&e);
+	xbt_ex_free(e);
       else
 	RETHROW0("Error encountered while opening a measurement server socket: %s");
     }
@@ -255,7 +255,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
       gras_socket_meas_recv(meas,120,request->msg_size,request->msg_size);
     } CATCH(e) {
       saturate_further = 0;
-      xbt_ex_free(&e);
+      xbt_ex_free(e);
     }
   }
   INFO1("Saturation stopped on %s",gras_os_myname());

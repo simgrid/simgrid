@@ -79,7 +79,7 @@ void xbt_set_add    (xbt_set_t      set,
     xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
     xbt_dynar_set(set->dynar, elm->ID, &elm);
     DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
   
   if (found) {
@@ -315,7 +315,7 @@ static void search_not_found(xbt_set_t set, const char *data) {
   } CATCH(e) {
     if (e.category != not_found_error) 
       xbt_test_exception(e);
-    xbt_ex_free(&e);  
+    xbt_ex_free(e);  
   }
 }
 
