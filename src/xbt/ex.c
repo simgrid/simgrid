@@ -173,6 +173,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       fgets(line_pos,1024,subpipe);
       line_pos[strlen(line_pos)-1]='\0';
       pclose(subpipe);
+      free(subcmd);
 
       /* check whether the trick worked */
       if (strcmp("??",line_func)) {
