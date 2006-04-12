@@ -120,8 +120,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     line_pos[strlen(line_pos)-1]='\0';
 
     if (strcmp("??",line_func)) {
-      e->bt_strings[i] = bprintf("**   At %s: %s (%s)", 
-				 addrs[i], line_func,line_pos);
+      e->bt_strings[i] = bprintf("**   In %s() at %s (static symbol)", line_func,line_pos);
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
       char *maps_name;
@@ -206,12 +205,10 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
       /* check whether the trick worked */
       if (strcmp("??",line_func)) {
-	e->bt_strings[i] = bprintf("**   At %s: %s (%s)", 
-				   addrs[i], line_func,line_pos);
+	e->bt_strings[i] = bprintf("**   In %s() in %s (dynamic symbol)", line_func,line_pos);
       } else {
 	/* damn, nothing to do here. Let's print the raw address */
-	e->bt_strings[i] = bprintf("**   At %s: ?? (%s)", 
-				   addrs[i], backtrace[i]);
+	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
       }
     }
     free(addrs[i]);
