@@ -12,7 +12,7 @@ SimGrid (3.0.2) unstable; urgency=low
   * New module: sparse graph structure with basic algorithms. [AL]
   * Display more information on backtraces: source line & function names are
     now displayed just like valgrind does (rely on addr2line tool) [MQ]
-  * New function: xbt_display_backtrace(). Sweet while debuging [MQ]
+  * New function: xbt_backtrace_display(). Sweet while debuging [MQ]
 
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an

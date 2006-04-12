@@ -48,7 +48,7 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
 
 
 /** \brief show the backtrace of the current point (lovely while debuging) */
-void xbt_display_backtrace(void) {
+void xbt_backtrace_display(void) {
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
   xbt_ex_t e;
   int i;
