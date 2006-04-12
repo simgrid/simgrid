@@ -51,7 +51,7 @@ int sensor (int argc,char *argv[]) {
   gras_cb_register(gras_msgtype_by_name("kill"),&sensor_cb_kill);
 
   while (!g->done) {
-    gras_msg_handle(60.0);
+    gras_msg_handle(120.0);
   }
 
   gras_socket_close(g->sock);
@@ -133,7 +133,7 @@ static void simple_saturation(int argc, char*argv[]) {
   TRY {
     amok_bw_saturate_stop(argv[1],atoi(argv[2]),NULL,NULL);
   } CATCH(e) {
-    xbt_ex_free(&e);
+    xbt_ex_free(e);
   }
 
  
