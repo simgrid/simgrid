@@ -39,6 +39,9 @@
 
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex,xbt,"Exception mecanism");
+
+
 /* default __ex_ctx callback function */
 ex_ctx_t *__xbt_ex_ctx_default(void) {
     static ex_ctx_t ctx = XBT_CTX_INITIALIZER;
@@ -106,7 +109,10 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   e->bt_strings = xbt_new(char*,e->used);
   
   pipe = popen(cmd, "r");
-  //     xbt_assert(pipe);//,"Cannot fork addr2line to display the backtrace");
+  if (!pipe) {
+    CRITICAL0("Cannot fork addr2line to display the backtrace");
+    abort();
+  }
   for (i=0; i<e->used; i++) {
     fgets(line_func,1024,pipe);
     line_func[strlen(line_func)-1]='\0';
@@ -122,7 +128,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       FILE *maps;
       char maps_buff[512];
 
-      long int addr,offset,offset_save;
+      long int addr,offset;
       char *p,*p2;
 
       char *subcmd;
@@ -133,28 +139,46 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       maps_name=bprintf("/proc/%d/maps",(int)getpid());
       maps=fopen(maps_name,"r");
 
-      addr=strtol(addrs[i]+2, NULL,16);
+      sscanf(addrs[i],"%lx",&addr);
+      sprintf(maps_buff,"%#lx",addr);
+      
+      if (strcmp(addrs[i],maps_buff)) {
+	CRITICAL2("Cannot parse backtrace address '%s' (addr=%#lx)",
+		  addrs[i], addr);
+      }
+      DEBUG2("addr=%s (as string) =%#lx (as number)",addrs[i],addr);
 
       while (!found) {
+	long int first, last;
 	if (fgets(maps_buff,512,maps) == NULL) 
 	  break;
-	offset_save = offset;
-	offset=strtol(maps_buff,NULL,16);
-	if (offset > addr)
+	if (i==0) {
+	  maps_buff[strlen(maps_buff) -1]='\0';
+	  DEBUG1("map line: %s", maps_buff);
+	}
+	sscanf(maps_buff,"%lx",&first);
+	p=strchr(maps_buff,'-')+1;
+	sscanf(p,"%lx",&last);
+	if (first < addr && addr < last) {
+	  offset = first;
 	  found=1;
+	}
+	DEBUG4("%#lx %s [%#lx-%#lx]",
+	       addr, found? "in":"out of",first,last);
       }
+      if (!found) 
+	CRITICAL0("Problem while reading the maps file");
 
       fclose(maps);
       free(maps_name);
 
-      /* Ok, the maps line we just read is beyond the searched symbol. Got it,
-	 the symbol is in previous map, which offset is in offset_save.
+      /* Ok, Found the offset of the maps line containing the searched symbol. 
 	 We now need to substract this from the address we got from backtrace.
       */
-      offset=offset_save;
       
       free(addrs[i]);
       addrs[i] = bprintf("0x%0*lx",addr_len-2,addr-offset);
+      DEBUG2("offset=%#lx new addr=%s",offset,addrs[i]);
 
       /* Got it. We have our new address. Let's get the library path and we 
 	 are set */ 
@@ -167,7 +191,12 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       /* Here we go, fire an addr2line up */
       subcmd = bprintf("%s -f -e %s %s",ADDR2LINE,p, addrs[i]);
       free(p);
+      VERB1("Fire a new command: '%s'",subcmd);
       subpipe = popen(subcmd,"r");
+      if (!subpipe) {
+	CRITICAL0("Cannot fork addr2line to display the backtrace");
+	abort();
+      }
       fgets(line_func,1024,subpipe);
       line_func[strlen(line_func)-1]='\0';
       fgets(line_pos,1024,subpipe);
@@ -181,11 +210,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 				   addrs[i], line_func,line_pos);
       } else {
 	/* damn, nothing to do here. Let's print the raw address */
-	p  = bprintf("%s",backtrace[i]);
-	p2 = strrchr(p,' ');
-	*p2= '\0';
-	e->bt_strings[i] = bprintf("**   At %s: ?? (%s)", addrs[i], p);
-	free(p);
+	e->bt_strings[i] = bprintf("**   At %s: ?? (%s)", 
+				   addrs[i], backtrace[i]);
       }
     }
     free(addrs[i]);
@@ -199,14 +225,21 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
 /** @brief shows an exception content and the associated stack if available */
 void xbt_ex_display(xbt_ex_t *e)  {
+  char *thrower=NULL;
+
+  if (e->remote)
+    bprintf(" on host %s(%ld)",e->host,e->pid);
 
   fprintf(stderr,
-	  "** SimGrid: UNCAUGHT EXCEPTION on %s: category: %s; value: %d\n"
+	  "** SimGrid: UNCAUGHT EXCEPTION received on %s(%ld): category: %s; value: %d\n"
 	  "** %s\n"
-	  "** Thrown by %s%s%s",
-	  gras_os_myname(),
+	  "** Thrown by %s()%s",
+	  gras_os_myname(),gras_os_getpid(),
 	  xbt_ex_catname(e->category), e->value, e->msg,
-	  e->procname, (e->host?"@":""),(e->host?e->host:""));
+	  e->procname,thrower?thrower:" in this process");
+
+  if (thrower)
+    free(thrower);
 
   if (!e->remote && !e->bt_strings)
     xbt_ex_setup_backtrace(e);
