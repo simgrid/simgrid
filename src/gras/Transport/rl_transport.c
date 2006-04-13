@@ -60,8 +60,10 @@ gras_socket_t gras_trp_select(double timeout) {
       now = gras_os_time();
       DEBUG2("wakeup=%f now=%f",wakeup, now);
       if (now == -1 || now >= wakeup) {
-	done = 0;	/* didn't find anything */
-	break;
+	/* didn't find anything */
+	THROW1(timeout_error,0,
+	       "Timeout (%f) elapsed with selecting for incomming connexions",
+	       timeout);
       }
     }
 
