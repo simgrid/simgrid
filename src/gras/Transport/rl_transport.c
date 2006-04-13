@@ -58,6 +58,7 @@ gras_socket_t gras_trp_select(double timeout) {
   while (done == -1) {
     if (timeout > 0) { /* did we timeout already? */
       now = gras_os_time();
+      DEBUG2("wakeup=%f now=%f",wakeup, now);
       if (now == -1 || now >= wakeup) {
 	done = 0;	/* didn't find anything */
 	break;
@@ -105,8 +106,8 @@ gras_socket_t gras_trp_select(double timeout) {
 
     if (timeout > 0) { 
       /* set the timeout */
-      tout.tv_sec = (unsigned long)((wakeup - now)/1000000);
-      tout.tv_usec = (unsigned long)(wakeup - now) % 1000000;
+      tout.tv_sec = (unsigned long)(wakeup - now);
+      tout.tv_usec = ((wakeup -now) - ((unsigned long)(wakeup - now))) * 1000000;
       p_tout = &tout;
     } else if (timeout == 0) {
       /* polling only */
@@ -120,8 +121,9 @@ gras_socket_t gras_trp_select(double timeout) {
       p_tout = NULL;
     }
      
-    DEBUG1("Selecting over %d socket(s)", max_fds-1);
+    DEBUG2("Selecting over %d socket(s); timeout=%f", max_fds-1,timeout);
     ready = select(max_fds, &FDS, NULL, NULL, p_tout);
+    DEBUG1("select returned %d", ready);
     if (ready == -1) {
       switch (errno) {
       case  EINTR: /* a signal we don't care about occured. we don't care */
