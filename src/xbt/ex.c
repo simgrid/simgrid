@@ -109,7 +109,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       FILE *maps;
       char maps_buff[512];
 
-      long int addr,offset;
+      long int addr,offset=0;
       char *p,*p2;
 
       char *subcmd;
