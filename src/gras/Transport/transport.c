@@ -472,7 +472,7 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer){
 
   if (!peer->accepting) {
     /* nothing to accept here (must be in SG) */
-    /* FIXME: this is BAD! since it makes tricky to free the accepted socket*/
+    /* BUG: FIXME: this is BAD! it makes tricky to free the accepted socket*/
     return peer;
   }
 
