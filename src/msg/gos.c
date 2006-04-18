@@ -447,6 +447,13 @@ MSG_error_t MSG_task_put(m_task_t task,
   while(!(task_simdata->comm)) {
     DEBUG0("Communication not initiated yet. Let's block!");
     __MSG_process_block(-1);
+    if(surf_workstation_resource->extension_public->
+       get_state(remote_host->simdata->host) == SURF_CPU_OFF) {
+      xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
+		      task);
+      MSG_task_destroy(task);
+      MSG_RETURN(MSG_HOST_FAILURE);
+    }
   }
   DEBUG0("Registering to this communication");
   surf_workstation_resource->common_public->action_use(task_simdata->comm);
@@ -534,8 +541,9 @@ void __MSG_task_execute(m_process_t process, m_task_t task)
   CHECK_HOST();
 
   simdata = task->simdata;
-  xbt_assert0(!simdata->compute,"This taks is executed somewhere else. Go fix your code!");
-
+  xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
+	      "This taks is executed somewhere else. Go fix your code!");
+  task->simdata->using++;
   simdata->compute = surf_workstation_resource->extension_public->
     execute(MSG_process_get_host(process)->simdata->host,
 	    simdata->computation_amount);
@@ -543,6 +551,7 @@ void __MSG_task_execute(m_process_t process, m_task_t task)
     set_priority(simdata->compute, simdata->priority);
 
   surf_workstation_resource->common_public->action_set_data(simdata->compute,task);
+  task->simdata->using--;
 }
 
 MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task)
