@@ -121,7 +121,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 			    /*out*/ double *elapsed, double *bw);
 
 void amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
-			   /*out*/ unsigned int *time, unsigned int *bw);
+			   /*out*/ double *time, double *bw);
 
 /** @} */
 
