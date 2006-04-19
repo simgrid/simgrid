@@ -9,10 +9,14 @@ SimGrid (3.0.2) unstable; urgency=low
   * XML parsing: rewrote parts of flexml to enable multiple xml parsers to
     live in the same C code. This required to change a little bit the API
     of surfxml parsing but shouldn't be an issue for end-users. [AL]
-  * New module: sparse graph structure with basic algorithms. [AL]
+  * New module: sparse graph structure with basic algorithms (this is work
+    in progress and the API is not considered to be frozen yet). [AL]
   * Display more information on backtraces: source line & function names are
     now displayed just like valgrind does (rely on addr2line tool) [MQ]
   * New function: xbt_backtrace_display(). Sweet while debuging [MQ]
+  * Reworked a little bit some #include statements to load only required
+    headers. Some user code that relied on SimGrid to include stdlib or
+    stdio may need to include it by themselves. [AL]
 
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
@@ -24,6 +28,9 @@ SimGrid (3.0.2) unstable; urgency=low
     WARNING: if your code relies on this bug, please fix it.    [AL]
   * Bug fix: Add a test in MSG_task_execute to stop whenever a task is
     being executed on two different locations.                  [AL]
+  * Bug fix: Failures are now better supported thanks to Derrick's tests
+    (there was many failure situations I hadn't thought of and that weren't
+    correctly handled). [AL]
 
   GRAS:
   * New! a real RPC mecanism, as it ought to be since too long. [MQ]
