@@ -592,6 +592,11 @@ static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t va
   dynar->size = dynar->used;
 }
 
+/** \brief Declare a new type being a dynar in which each elements are of the given type
+ * 
+ *  \param elm_t: the datadesc of the elements
+ *  \param free_func: the function to use to free the elements when the dynar gets freed
+ */
 gras_datadesc_type_t
 gras_datadesc_dynar(gras_datadesc_type_t elm_t,
 		    void_f_pvoid_t *free_func) {
