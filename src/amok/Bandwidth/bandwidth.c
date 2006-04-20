@@ -98,7 +98,7 @@ void amok_bw_bw_leave() {
  * \brief bandwidth measurement between localhost and \e peer
  * 
  * \arg peer: A (regular) socket at which the the host with which we should conduct the experiment can be contacted
- * \arg buf_size: Size of the socket buffer
+ * \arg buf_size: Size of the socket buffer. If 0, a sain default is used (32k, but may change)
  * \arg exp_size: Total size of data sent across the network
  * \arg msg_size: Size of each message sent. Ie, (\e expSize % \e msgSize) messages will be sent.
  * \arg sec: where the result (in seconds) should be stored.
@@ -281,7 +281,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
  * \arg to_port: port on which the second process is listening (for messages, do not 
  * give a measurement socket here. The needed measurement sockets will be created 
  * automatically and negociated between the peers)
- * \arg buf_size: Size of the socket buffer
+ * \arg buf_size: Size of the socket buffer. If 0, a sain default is used (32k, but may change)
  * \arg exp_size: Total size of data sent across the network
  * \arg msg_size: Size of each message sent. (\e expSize % \e msgSize) messages will be sent.
  * \arg sec: where the result (in seconds) should be stored.
