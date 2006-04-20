@@ -22,6 +22,7 @@
 
    /** @defgroup XBT_grounding   Grounding features */
    /** @defgroup XBT_adt         Usual data structures */
+   /** @defgroup XBT_misc        Misc general purposes library components */
 
 /** @} */
 
@@ -68,6 +69,22 @@
      /** @defgroup XBT_heap Heap: generic heap data structure */
 
 /** @} */ End of XBT_adt
+     
+/* 
+ * +++++++++++++++++
+ * + MISC FEATURES +
+ * +++++++++++++++++ 
+ */
+
+/** @addtogroup XBT_misc
+ *
+ * Here are several general purposes library components designed specially
+ * for you, you lucky one.
+ * @{
+ */
+     /** @defgroup XBT_graph General purpose graph library */
+
+/** @} */ End of XBT_misc
 
 /* ************************* *
  * * PORTABILITY-INTERNALS * * (not included in documentation)

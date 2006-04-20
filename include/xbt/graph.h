@@ -12,6 +12,12 @@
 #include "xbt/dynar.h"
 SG_BEGIN_DECL()
 
+  /** @addtogroup XBT_graph
+   *  @brief A graph data type with several interesting algorithms
+   * 
+   * @{
+   */
+
 typedef struct xbt_node *xbt_node_t;
 typedef struct xbt_edge  *xbt_edge_t;
 typedef struct xbt_graph  *xbt_graph_t;
@@ -60,9 +66,9 @@ xbt_node_t* xbt_graph_shortest_paths(xbt_graph_t g);
 
 
 
-/* transforms the network structure of a directed acyclic graph given as argument  into a linear structure 
-@return an array containing the nodes of the graph sorted in order reverse to the path of exploration 
-if a cycle is detected an exception is raised  
+/** @brief transforms the network structure of a directed acyclic graph given into a linear structure
+    @return: an array containing the nodes of the graph sorted in order reverse to the path of exploration 
+            if a cycle is detected an exception is raised  
   */
 
 xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g);
@@ -89,7 +95,7 @@ xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g);
 SG_END_DECL()
 
 #endif				/* _XBT_GRAPH_H */
-
+/** @} */
 
 
 

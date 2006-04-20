@@ -24,8 +24,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(graph, xbt, "Graph");
 
 
 
-/** Constructor
- * \return a new graph
+/** @brief Constructor
+ *  @return a new graph
  */
 xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data)
 {
@@ -39,6 +39,7 @@ xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data)
   return graph;
 }
 
+/** @brief add a node to the given graph */
 xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
 {
   xbt_node_t node = NULL;
@@ -54,7 +55,7 @@ xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
   return node;
 }
 
-
+/** @brief add an edge to the given graph */
 xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
 			      xbt_node_t src, xbt_node_t dst, void *data)
 {
@@ -84,8 +85,8 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
 }
 
 
-/** Destructor
- * \param l poor victim
+/** @brief Destructor
+ *  @param l: poor victim
  *
  * Free the graph structure. 
  */
@@ -127,7 +128,7 @@ void xbt_graph_free_graph(xbt_graph_t g,
 }
 
 
-
+/** @brief remove the given node from the given graph */
 void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 			 void_f_pvoid_t * node_free_function,
 			 void_f_pvoid_t * edge_free_function)
@@ -166,6 +167,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
   return;
 }
 
+/** @brief remove the given edge from the given graph */
 void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
 			 void free_function(void *ptr))
 {
@@ -212,28 +214,33 @@ int __xbt_find_in_dynar(xbt_dynar_t dynar, void *p)
   return -1;
 }
 
+/** @brief Retrieve the graph's nodes as a dynar */
 xbt_dynar_t xbt_graph_get_nodes(xbt_graph_t g)
 {
   return g->nodes;
 }
 
+/** @brief Retrieve the graph's edges as a dynar */
 xbt_dynar_t xbt_graph_get_edges(xbt_graph_t g)
 {
   return g->edges;
 }
 
+/** @brief Retrieve the node at the source of the given edge */
 xbt_node_t xbt_graph_edge_get_source(xbt_edge_t e)
 {
 
   return e->src;
 }
 
+/** @brief Retrieve the node being the target of the given edge */
 xbt_node_t xbt_graph_edge_get_target(xbt_edge_t e)
 {
   return e->dst;
 }
 
 
+/** @brief Set the weight of the given edge */
 void xbt_graph_edge_set_length(xbt_edge_t e, double length)
 {
   e->length = length;
@@ -246,8 +253,9 @@ double xbt_graph_edge_get_length(xbt_edge_t e)
 }
 
 
-/*construct the adjacency matrix corresponding to a graph,
-  the weights are the distances between nodes
+/** @brief construct the adjacency matrix corresponding to the given graph
+ * 
+ * The weights are the distances between nodes
  */
 double *xbt_graph_get_length_matrix(xbt_graph_t g)
 {
@@ -289,7 +297,18 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
   return d;
 }
 
-
+/** @brief Floyd-Warshall algorithm for shortest path finding
+ * 
+ * From wikipedia: 
+ * 
+ * The Floyd–Warshall algorithm takes as input an adjacency matrix
+ * representation of a weighted, directed graph (V, E). The weight of a
+ * path between two vertices is the sum of the weights of the edges along
+ * that path. The edges E of the graph may have negative weights, but the
+ * graph must not have any negative weight cycles. The algorithm computes,
+ * for each pair of vertices, the minimum weight among all paths between
+ * the two vertices. The running time complexity is Θ(|V|3).
+ */ 
 void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 			 xbt_node_t * p)
 {
@@ -341,7 +360,7 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 # undef D
 }
 
-/*computes all-pairs shortest paths*/
+/** @brief computes all-pairs shortest paths */
 xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 {
   xbt_node_t *p;
@@ -389,7 +408,7 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
   return r;
 }
 
-
+/** @brief Extract a spanning tree of the given graph */
 xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
 {
   int tree_size=0;
@@ -438,6 +457,17 @@ xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
   return tree;
 }
 
+/** @brief Topological sort on the given graph 
+ *
+ *  From wikipedia:
+ * 
+ * In graph theory, a topological sort of a directed acyclic graph (DAG) is
+ * a linear ordering of its nodes which is compatible with the partial
+ * order R induced on the nodes where x comes before y (xRy) if there's a
+ * directed path from x to y in the DAG. An equivalent definition is that
+ * each node comes before all nodes to which it has edges. Every DAG has at
+ * least one topological sort, and may have many.
+ */
 xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g)
 {
  
@@ -466,6 +496,7 @@ xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g)
   return sorted; 
 }
 
+/** @brief First-depth graph traversal */
 void xbt_graph_depth_visit(xbt_graph_t g,xbt_node_t n,xbt_node_t* sorted,int* idx )
 {
   int cursor;
@@ -547,6 +578,7 @@ static void __parse_edge(void)
 	 xbt_graph_edge_get_length(edge));
 }
 
+/** @brief Import a graph from a file following the GraphXML format */
 xbt_graph_t xbt_graph_read(const char *filename,
 			   void *(node_label_and_data)(xbt_node_t, const char*, const char*),
 			   void *(edge_label_and_data)(xbt_edge_t, const char*, const char*))
@@ -574,6 +606,7 @@ xbt_graph_t xbt_graph_read(const char *filename,
   return graph;
 }
 
+/** @brief Export the given graph in the GraphViz formatting for visualization */
 void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
 			       const char *(node_name) (xbt_node_t),
 			       const char *(edge_name) (xbt_edge_t))
@@ -612,6 +645,7 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
   fclose(file);
 }
 
+/** @brief Export the given graph in the GraphXML format */
 void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
 			       const char *(node_name)(xbt_node_t),
 			       const char *(edge_name)(xbt_edge_t),
