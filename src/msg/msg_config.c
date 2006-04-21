@@ -43,7 +43,7 @@ void msg_config_init(void) {
                     "surf_workstation_model", xbt_cfgelm_string, 1,1,
                     &_msg_cfg_cb__surf_workstation_model,NULL);
                     
-  xbt_cfg_set_string(_msg_cfg_set,"surf_workstation_model", "CLM03");
+  xbt_cfg_set_string(_msg_cfg_set,"surf_workstation_model", "KCCFLN05");
 }
 
 void msg_config_finalize(void) {
@@ -59,13 +59,12 @@ void msg_config_finalize(void) {
  * 
  * Currently existing configuation variable:
  *   - surf_workstation_model (string): Model of workstation to use.  
- *     Possible values (defaults to "CLM03"):
+ *     Possible values (defaults to "KCCFLN05"):
  *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03])
- *     - "KCCFLN05": simple network model (no latency) but interference 
- *       between computations and communications (UNSTABLE, DONT USE)
+ *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file.
  * 
  * Example:
- * MSG_config("surf_workstation_model","CLM03");
+ * MSG_config("surf_workstation_model","KCCFLN05");
  */
 void
 MSG_config(const char *name, ...) {
