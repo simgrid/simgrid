@@ -377,6 +377,9 @@ static void update_resource_state(void *id,
       else 
 	lmm_update_variable_bound(maxmin_system, action->variable,
 				  min(action->rate,SG_TCP_CTE_GAMMA / (2.0 * action->lat_current)));
+      if(!(action->suspended))
+	lmm_update_variable_weight(maxmin_system, action->variable, 
+				   action->lat_current);
     }
   } else if (event_type == nw_link->state_event) {
     if (value > 0)
@@ -464,7 +467,8 @@ static void action_suspend(surf_action_t action)
 static void action_resume(surf_action_t action)
 {
   lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_network_CM02_t) action)->variable, 1.0);
+			     ((surf_action_network_CM02_t) action)->variable, 
+			     action->lat_current);
   ((surf_action_network_CM02_t) action)->suspended = 0;
 }
 
