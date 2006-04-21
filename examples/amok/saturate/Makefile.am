@@ -12,8 +12,8 @@ saturate_simulator_LDADD=	$(top_builddir)/src/libsimgrid.la
 saturate_sensor_SOURCES=          _saturate_sensor.c saturate.c
 saturate_maestro_SOURCES=         _saturate_maestro.c saturate.c
 
-saturate_sensor_LDADD=            $(top_srcdir)/src/libgras.la # $(top_srcdir)/src/modules/libgras.a
-saturate_maestro_LDADD=       	  $(top_srcdir)/src/libgras.la # $(top_srcdir)/src/modules/libgras.a
+saturate_sensor_LDADD=            $(top_builddir)/src/libgras.la 
+saturate_maestro_LDADD=       	  $(top_builddir)/src/libgras.la 
 
 # Take care of generatated sources
 NAME=saturate
