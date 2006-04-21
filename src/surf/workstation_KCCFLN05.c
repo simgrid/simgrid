@@ -108,26 +108,25 @@ static int action_free(surf_action_t action)
       lmm_variable_free(maxmin_system,
 			((surf_action_workstation_KCCFLN05_t) action)->
 			variable);
-
-    if(src) {
+    if(src)
       xbt_dynar_foreach(src->outgoing_communications, cpt, act)
 	if (act == action) {
 	  xbt_dynar_remove_at(src->outgoing_communications, cpt, &act);
-	  
 	  break;
 	}    
-      if(!xbt_dynar_length(src->outgoing_communications))
-	__update_cpu_usage(src);
-    }
-    if(dst) {
+
+    if(dst)
       xbt_dynar_foreach(dst->incomming_communications, cpt, act)
 	if (act == action) {
 	  xbt_dynar_remove_at(dst->incomming_communications, cpt, &act);
 	  break;
 	}
-      if(!xbt_dynar_length(dst->incomming_communications))
-	__update_cpu_usage(dst);
-    }
+
+    if(src && (!xbt_dynar_length(src->outgoing_communications)))
+      __update_cpu_usage(src);
+    if(dst && (!xbt_dynar_length(dst->incomming_communications)))
+      __update_cpu_usage(dst);
+
     free(action);
     return 1;
   }
@@ -152,6 +151,7 @@ static void action_recycle(surf_action_t action)
 static void action_suspend(surf_action_t action)
 {
   XBT_IN1("(%p))",action);
+  ((surf_action_workstation_KCCFLN05_t) action)->suspended = 1;
   lmm_update_variable_weight(maxmin_system,
 			     ((surf_action_workstation_KCCFLN05_t)
 			      action)->variable, 0.0);
@@ -161,17 +161,22 @@ static void action_suspend(surf_action_t action)
 static void action_resume(surf_action_t action)
 {
   XBT_IN1("(%p)",action);
-  lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_workstation_KCCFLN05_t)
-			      action)->variable, 1.0);
+  if(((surf_action_workstation_KCCFLN05_t)action)->lat_current==0.0)
+    lmm_update_variable_weight(maxmin_system,
+			       ((surf_action_workstation_KCCFLN05_t)
+				action)->variable, 1.0);
+  else
+    lmm_update_variable_weight(maxmin_system,
+			       ((surf_action_workstation_KCCFLN05_t) action)->variable, 
+			       ((surf_action_workstation_KCCFLN05_t) action)->lat_current);
+
+  ((surf_action_workstation_KCCFLN05_t) action)->suspended = 0;
   XBT_OUT;
 }
 
 static int action_is_suspended(surf_action_t action)
 {
-  return (lmm_get_variable_weight
-	  (((surf_action_workstation_KCCFLN05_t) action)->variable) ==
-	  0.0);
+  return (((surf_action_workstation_KCCFLN05_t) action)->suspended);
 }
 
 static void action_set_max_duration(surf_action_t action, double duration)
@@ -324,6 +329,9 @@ static void update_resource_state(void *id,
 	else 
 	  lmm_update_variable_bound(maxmin_system, action->variable,
 				    min(action->rate,SG_TCP_CTE_GAMMA / (2.0 * action->lat_current)));
+	if(!(action->suspended))
+	  lmm_update_variable_weight(maxmin_system, action->variable, 
+				     action->lat_current);
       }
     } else if (event_type == nw_link->state_event) {
       if (value > 0)
@@ -411,6 +419,7 @@ static surf_action_t execute(void *cpu, double size)
   action->generic_action.finish = -1.0;
   action->generic_action.resource_type =
       (surf_resource_t) surf_workstation_resource;
+  action->suspended = 0;
 
   if (CPU->state_current == SURF_CPU_ON)
     action->generic_action.state_set =
