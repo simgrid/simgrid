@@ -60,7 +60,7 @@ void msg_config_finalize(void) {
  * Currently existing configuation variable:
  *   - surf_workstation_model (string): Model of workstation to use.  
  *     Possible values (defaults to "KCCFLN05"):
- *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03])
+ *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + support for parallel tasks
  *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file.
  * 
  * Example:
