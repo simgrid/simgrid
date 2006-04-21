@@ -48,7 +48,7 @@ void xbt_backtrace_display(void) {
   e.remote=0;
   xbt_ex_free(e);
 #else 
-  fprintf(stderr,"No backtrace on this arch");
+  ERROR0("No backtrace on this arch");
 #endif
 }
 
