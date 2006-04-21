@@ -468,7 +468,7 @@ static void action_resume(surf_action_t action)
 {
   lmm_update_variable_weight(maxmin_system,
 			     ((surf_action_network_CM02_t) action)->variable, 
-			     action->lat_current);
+			     ((surf_action_network_CM02_t) action)->lat_current);
   ((surf_action_network_CM02_t) action)->suspended = 0;
 }
 
