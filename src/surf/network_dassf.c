@@ -7,8 +7,6 @@
 
 #include "network_dassf_private.h"
 
-#define SG_TCP_CTE_GAMMA 20000.0
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(network_dassf, surf,
 				"Logging specific to the SURF network module");
 
