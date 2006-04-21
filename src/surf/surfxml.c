@@ -9,7 +9,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 33
+#define YY_FLEX_SUBMINOR_VERSION 31
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -31,15 +31,7 @@
 
 /* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
 
-#if __STDC_VERSION__ >= 199901L
-
-/* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
- * if you want the limit (max/min) macros for int types. 
- */
-#ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS 1
-#endif
-
+#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #include <inttypes.h>
 typedef int8_t flex_int8_t;
 typedef uint8_t flex_uint8_t;
@@ -142,10 +134,6 @@ typedef unsigned int flex_uint32_t;
 #ifndef YY_BUF_SIZE
 #define YY_BUF_SIZE 16384
 #endif
-
-/* The state buf must be large enough to hold one state per character in the main buffer.
- */
-#define YY_STATE_BUF_SIZE   ((YY_BUF_SIZE + 2) * sizeof(yy_state_type))
 
 #ifndef YY_TYPEDEF_YY_BUFFER_STATE
 #define YY_TYPEDEF_YY_BUFFER_STATE
@@ -293,7 +281,7 @@ int surf_parse_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
-static int yy_init = 0;		/* whether we need to initialize */
+static int yy_init = 1;		/* whether we need to initialize */
 static int yy_start = 0;	/* start state number */
 
 /* Flag which is used to allow surf_parse_wrap()'s to do buffer switches
@@ -349,7 +337,7 @@ void surf_parse_free (void *  );
 
 /* Begin user sect3 */
 
-#define surf_parse_wrap() 1
+#define surf_parse_wrap(n) 1
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -1750,11 +1738,11 @@ int surf_parse__flex_debug = 0;
 char *surf_parse_text;
 #line 1 "surf/surfxml.l"
 /* Validating XML processor for surfxml.dtd.
- * Generated 2006/03/21 12:59:32.
+ * Generated 2006/04/22 01:36:54.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp).
+ * (Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1798,9 +1786,9 @@ char *surf_parse_text;
 
 /* Version strings. */
 const char rcs_surfxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.27 2006/03/21 08:24:12 legranda Exp $";
+ "$" "Id: skel,v 1.28 2006/03/21 12:04:13 legranda Exp $";
 const char rcs_surfxml_flexml[] =
- "$" "Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp $";
+ "$" "Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -1816,7 +1804,7 @@ const char rcs_surfxml_flexml[] =
 
 /* XML processor api. */
 /* FleXML-provided data. */
-const char* pcdata;
+const char* surfxml_pcdata;
 AT_surfxml_network_link_bandwidth A_surfxml_network_link_bandwidth;
 AT_surfxml_cpu_name A_surfxml_cpu_name;
 AT_surfxml_process_kill_time A_surfxml_process_kill_time;
@@ -1876,7 +1864,7 @@ static void cleanup(void);
 #define CLEANUP  cleanup()
 
 /* Text buffer stack handling. */
-char bufferstack[FLEXML_BUFFERSTACKSIZE];
+static char bufferstack[FLEXML_BUFFERSTACKSIZE];
 static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
   struct BufferLast_s *old; char* saved; char new1[1];
@@ -1962,7 +1950,7 @@ static char* popbuffer(void)
 #line 239 "surf/surfxml.l"
 /* State names. */
 const char* *surfxml_statenames=NULL;
-#line 1966 "surf/surfxml.c"
+#line 1954 "surf/surfxml.c"
 
 #define INITIAL 0
 #define PROLOG 1
@@ -2023,8 +2011,6 @@ const char* *surfxml_statenames=NULL;
 #define YY_EXTRA_TYPE void *
 #endif
 
-static int yy_init_globals (void );
-
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -2057,7 +2043,7 @@ static int input (void );
 
         static int yy_start_stack_ptr = 0;
         static int yy_start_stack_depth = 0;
-        static int *yy_start_stack = NULL;
+        static int *yy_start_stack = 0;
     
     static void yy_push_state (int new_state );
     
@@ -2222,11 +2208,11 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-#line 2226 "surf/surfxml.c"
+#line 2212 "surf/surfxml.c"
 
-	if ( !(yy_init) )
+	if ( (yy_init) )
 		{
-		(yy_init) = 1;
+		(yy_init) = 0;
 
 #ifdef YY_USER_INIT
 		YY_USER_INIT;
@@ -2469,14 +2455,14 @@ case 24:
 YY_RULE_SETUP
 #line 350 "surf/surfxml.l"
 {
-  LEAVE; STag_surfxml_platform_description();pcdata = NULL; ENTER(S_surfxml_platform_description);
+  LEAVE; STag_surfxml_platform_description();surfxml_pcdata = NULL; ENTER(S_surfxml_platform_description);
  }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 353 "surf/surfxml.l"
 {
-  LEAVE; STag_surfxml_platform_description(); pcdata = NULL; ETag_surfxml_platform_description();
+  LEAVE; STag_surfxml_platform_description(); surfxml_pcdata = NULL; ETag_surfxml_platform_description();
   switch (YY_START) {
    case ROOT_surfxml_platform_description: SET(EPILOG); break;
   }
@@ -2555,7 +2541,7 @@ YY_RULE_SETUP
 #line 386 "surf/surfxml.l"
 {
   if (!A_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
-  LEAVE; STag_surfxml_include();pcdata = NULL; ENTER(S_surfxml_include);
+  LEAVE; STag_surfxml_include();surfxml_pcdata = NULL; ENTER(S_surfxml_include);
  }
 	YY_BREAK
 case 35:
@@ -2563,7 +2549,7 @@ YY_RULE_SETUP
 #line 390 "surf/surfxml.l"
 {
   if (!A_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
-  LEAVE; STag_surfxml_include(); pcdata = NULL; ETag_surfxml_include();
+  LEAVE; STag_surfxml_include(); surfxml_pcdata = NULL; ETag_surfxml_include();
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_include: SET(EPILOG); break;
@@ -2770,7 +2756,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
   if (!A_surfxml_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
-  LEAVE; STag_surfxml_cpu();pcdata = NULL; ENTER(E_surfxml_cpu);
+  LEAVE; STag_surfxml_cpu();surfxml_pcdata = NULL; ENTER(E_surfxml_cpu);
  }
 	YY_BREAK
 case 65:
@@ -2779,7 +2765,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
   if (!A_surfxml_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
-  LEAVE; STag_surfxml_cpu(); pcdata = NULL; ETag_surfxml_cpu();
+  LEAVE; STag_surfxml_cpu(); surfxml_pcdata = NULL; ETag_surfxml_cpu();
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_cpu: SET(EPILOG); break;
@@ -2964,7 +2950,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
   if (!A_surfxml_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
-  LEAVE; STag_surfxml_network_link();pcdata = NULL; ENTER(E_surfxml_network_link);
+  LEAVE; STag_surfxml_network_link();surfxml_pcdata = NULL; ENTER(E_surfxml_network_link);
  }
 	YY_BREAK
 case 93:
@@ -2973,7 +2959,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
   if (!A_surfxml_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
-  LEAVE; STag_surfxml_network_link(); pcdata = NULL; ETag_surfxml_network_link();
+  LEAVE; STag_surfxml_network_link(); surfxml_pcdata = NULL; ETag_surfxml_network_link();
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_network_link: SET(EPILOG); break;
@@ -3120,7 +3106,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_route_src) FAIL("Required attribute `src' not set for `route' element.");
   if (!A_surfxml_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
-  LEAVE; STag_surfxml_route();pcdata = NULL; ENTER(S_surfxml_route);
+  LEAVE; STag_surfxml_route();surfxml_pcdata = NULL; ENTER(S_surfxml_route);
  }
 	YY_BREAK
 case 113:
@@ -3129,7 +3115,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_route_src) FAIL("Required attribute `src' not set for `route' element.");
   if (!A_surfxml_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
-  LEAVE; STag_surfxml_route(); pcdata = NULL; ETag_surfxml_route();
+  LEAVE; STag_surfxml_route(); surfxml_pcdata = NULL; ETag_surfxml_route();
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_route: SET(EPILOG); break;
@@ -3212,7 +3198,7 @@ YY_RULE_SETUP
 #line 650 "surf/surfxml.l"
 {
   if (!A_surfxml_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
-  LEAVE; STag_surfxml_route_element();pcdata = NULL; ENTER(E_surfxml_route_element);
+  LEAVE; STag_surfxml_route_element();surfxml_pcdata = NULL; ENTER(E_surfxml_route_element);
  }
 	YY_BREAK
 case 123:
@@ -3220,7 +3206,7 @@ YY_RULE_SETUP
 #line 654 "surf/surfxml.l"
 {
   if (!A_surfxml_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
-  LEAVE; STag_surfxml_route_element(); pcdata = NULL; ETag_surfxml_route_element();
+  LEAVE; STag_surfxml_route_element(); surfxml_pcdata = NULL; ETag_surfxml_route_element();
   switch (YY_START) {
    case S_surfxml_route_1: case S_surfxml_route: case S_surfxml_route_2: SET(S_surfxml_route_2); break;
    case ROOT_surfxml_route_element: SET(EPILOG); break;
@@ -3339,7 +3325,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_process_host) FAIL("Required attribute `host' not set for `process' element.");
   if (!A_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
-  LEAVE; STag_surfxml_process();pcdata = NULL; ENTER(S_surfxml_process);
+  LEAVE; STag_surfxml_process();surfxml_pcdata = NULL; ENTER(S_surfxml_process);
  }
 	YY_BREAK
 case 139:
@@ -3348,7 +3334,7 @@ YY_RULE_SETUP
 {
   if (!A_surfxml_process_host) FAIL("Required attribute `host' not set for `process' element.");
   if (!A_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
-  LEAVE; STag_surfxml_process(); pcdata = NULL; ETag_surfxml_process();
+  LEAVE; STag_surfxml_process(); surfxml_pcdata = NULL; ETag_surfxml_process();
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_process: SET(EPILOG); break;
@@ -3431,7 +3417,7 @@ YY_RULE_SETUP
 #line 746 "surf/surfxml.l"
 {
   if (!A_surfxml_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
-  LEAVE; STag_surfxml_argument();pcdata = NULL; ENTER(E_surfxml_argument);
+  LEAVE; STag_surfxml_argument();surfxml_pcdata = NULL; ENTER(E_surfxml_argument);
  }
 	YY_BREAK
 case 149:
@@ -3439,7 +3425,7 @@ YY_RULE_SETUP
 #line 750 "surf/surfxml.l"
 {
   if (!A_surfxml_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
-  LEAVE; STag_surfxml_argument(); pcdata = NULL; ETag_surfxml_argument();
+  LEAVE; STag_surfxml_argument(); surfxml_pcdata = NULL; ETag_surfxml_argument();
   switch (YY_START) {
    case S_surfxml_process_1: case S_surfxml_process: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
    case ROOT_surfxml_argument: SET(EPILOG); break;
@@ -3640,7 +3626,7 @@ YY_RULE_SETUP
 #line 840 "surf/surfxml.l"
 ECHO;
 	YY_BREAK
-#line 3644 "surf/surfxml.c"
+#line 3630 "surf/surfxml.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ROOT_surfxml_platform_description):
 case YY_STATE_EOF(S_surfxml_platform_description_1):
@@ -3839,7 +3825,7 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			int num_to_read =
+			size_t num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -4353,16 +4339,16 @@ YY_BUFFER_STATE surf_parse__scan_buffer  (char * base, yy_size_t  size )
 
 /** Setup the input buffer state to scan a string. The next call to surf_parse_lex() will
  * scan from a @e copy of @a str.
- * @param yystr a NUL-terminated string to scan
+ * @param str a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
  *       surf_parse__scan_bytes() instead.
  */
-YY_BUFFER_STATE surf_parse__scan_string (yyconst char * yystr )
+YY_BUFFER_STATE surf_parse__scan_string (yyconst char * yy_str )
 {
     
-	return surf_parse__scan_bytes(yystr,strlen(yystr) );
+	return surf_parse__scan_bytes(yy_str,strlen(yy_str) );
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to surf_parse_lex() will
@@ -4372,7 +4358,7 @@ YY_BUFFER_STATE surf_parse__scan_string (yyconst char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE surf_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
+YY_BUFFER_STATE surf_parse__scan_bytes  (yyconst char * bytes, int  len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
@@ -4380,15 +4366,15 @@ YY_BUFFER_STATE surf_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_l
 	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = _yybytes_len + 2;
+	n = len + 2;
 	buf = (char *) surf_parse_alloc(n  );
 	if ( ! buf )
 		YY_FATAL_ERROR( "out of dynamic memory in surf_parse__scan_bytes()" );
 
-	for ( i = 0; i < _yybytes_len; ++i )
-		buf[i] = yybytes[i];
+	for ( i = 0; i < len; ++i )
+		buf[i] = bytes[i];
 
-	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
+	buf[len] = buf[len+1] = YY_END_OF_BUFFER_CHAR;
 
 	b = surf_parse__scan_buffer(buf,n );
 	if ( ! b )
@@ -4542,41 +4528,6 @@ void surf_parse_set_debug (int  bdebug )
         surf_parse__flex_debug = bdebug ;
 }
 
-static int yy_init_globals (void)
-{
-        /* Initialization is the same as for the non-reentrant scanner.
-     * This function is called from surf_parse_lex_destroy(), so don't allocate here.
-     */
-
-    /* We do not touch surf_parse_lineno unless the option is enabled. */
-    surf_parse_lineno =  1;
-    
-    (yy_buffer_stack) = 0;
-    (yy_buffer_stack_top) = 0;
-    (yy_buffer_stack_max) = 0;
-    (yy_c_buf_p) = (char *) 0;
-    (yy_init) = 0;
-    (yy_start) = 0;
-
-    (yy_start_stack_ptr) = 0;
-    (yy_start_stack_depth) = 0;
-    (yy_start_stack) =  NULL;
-
-/* Defined in main.c */
-#ifdef YY_STDINIT
-    surf_parse_in = stdin;
-    surf_parse_out = stdout;
-#else
-    surf_parse_in = (FILE *) 0;
-    surf_parse_out = (FILE *) 0;
-#endif
-
-    /* For future reference: Set errno on error, since we are called by
-     * surf_parse_lex_init()
-     */
-    return 0;
-}
-
 /* surf_parse_lex_destroy is for both reentrant and non-reentrant scanners. */
 int surf_parse_lex_destroy  (void)
 {
@@ -4596,10 +4547,6 @@ int surf_parse_lex_destroy  (void)
         surf_parse_free((yy_start_stack)  );
         (yy_start_stack) = NULL;
 
-    /* Reset the globals. This is important in a non-reentrant scanner so the next time
-     * surf_parse_lex() is called, initialization will occur. */
-    yy_init_globals( );
-
     return 0;
 }
 
@@ -4611,7 +4558,7 @@ int surf_parse_lex_destroy  (void)
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
 	register int i;
-	for ( i = 0; i < n; ++i )
+    	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
@@ -4620,7 +4567,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 static int yy_flex_strlen (yyconst char * s )
 {
 	register int n;
-	for ( n = 0; s[n]; ++n )
+    	for ( n = 0; s[n]; ++n )
 		;
 
 	return n;
@@ -4651,6 +4598,18 @@ void surf_parse_free (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
+#undef YY_NEW_FILE
+#undef YY_FLUSH_BUFFER
+#undef yy_set_bol
+#undef yy_new_buffer
+#undef yy_set_interactive
+#undef yytext_ptr
+#undef YY_DO_BEFORE_ACTION
+
+#ifdef YY_DECL_IS_OURS
+#undef YY_DECL_IS_OURS
+#undef YY_DECL
+#endif
 #line 840 "surf/surfxml.l"
 
 

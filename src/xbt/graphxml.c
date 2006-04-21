@@ -9,7 +9,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 33
+#define YY_FLEX_SUBMINOR_VERSION 31
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -31,15 +31,7 @@
 
 /* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
 
-#if __STDC_VERSION__ >= 199901L
-
-/* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
- * if you want the limit (max/min) macros for int types. 
- */
-#ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS 1
-#endif
-
+#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #include <inttypes.h>
 typedef int8_t flex_int8_t;
 typedef uint8_t flex_uint8_t;
@@ -142,10 +134,6 @@ typedef unsigned int flex_uint32_t;
 #ifndef YY_BUF_SIZE
 #define YY_BUF_SIZE 16384
 #endif
-
-/* The state buf must be large enough to hold one state per character in the main buffer.
- */
-#define YY_STATE_BUF_SIZE   ((YY_BUF_SIZE + 2) * sizeof(yy_state_type))
 
 #ifndef YY_TYPEDEF_YY_BUFFER_STATE
 #define YY_TYPEDEF_YY_BUFFER_STATE
@@ -293,7 +281,7 @@ int xbt_graph_parse_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
-static int yy_init = 0;		/* whether we need to initialize */
+static int yy_init = 1;		/* whether we need to initialize */
 static int yy_start = 0;	/* start state number */
 
 /* Flag which is used to allow xbt_graph_parse_wrap()'s to do buffer switches
@@ -349,7 +337,7 @@ void xbt_graph_parse_free (void *  );
 
 /* Begin user sect3 */
 
-#define xbt_graph_parse_wrap() 1
+#define xbt_graph_parse_wrap(n) 1
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -1014,11 +1002,11 @@ int xbt_graph_parse__flex_debug = 0;
 char *xbt_graph_parse_text;
 #line 1 "xbt/graphxml.l"
 /* Validating XML processor for graphxml.dtd.
- * Generated 2006/03/28 12:29:32.
+ * Generated 2006/04/22 01:36:55.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.47 2006/03/21 11:12:57 legranda Exp).
+ * (Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1064,7 +1052,7 @@ char *xbt_graph_parse_text;
 const char rcs_graphxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.28 2006/03/21 12:04:13 legranda Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.47 2006/03/21 11:12:57 legranda Exp $";
+ "$" "Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -1080,7 +1068,7 @@ const char rcs_graphxml_flexml[] =
 
 /* XML processor api. */
 /* FleXML-provided data. */
-const char* pcdata;
+const char* graphxml_pcdata;
 AT_graphxml_node_name A_graphxml_node_name;
 AT_graphxml_edge_source A_graphxml_edge_source;
 AT_graphxml_node_position_y A_graphxml_node_position_y;
@@ -1121,7 +1109,7 @@ static void cleanup(void);
 #define CLEANUP  cleanup()
 
 /* Text buffer stack handling. */
-char bufferstack[FLEXML_BUFFERSTACKSIZE];
+static char bufferstack[FLEXML_BUFFERSTACKSIZE];
 static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
   struct BufferLast_s *old; char* saved; char new1[1];
@@ -1202,7 +1190,7 @@ static char* popbuffer(void)
 #line 215 "xbt/graphxml.l"
 /* State names. */
 const char* *graphxml_statenames=NULL;
-#line 1206 "xbt/graphxml.c"
+#line 1194 "xbt/graphxml.c"
 
 #define INITIAL 0
 #define PROLOG 1
@@ -1242,8 +1230,6 @@ const char* *graphxml_statenames=NULL;
 #define YY_EXTRA_TYPE void *
 #endif
 
-static int yy_init_globals (void );
-
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -1276,7 +1262,7 @@ static int input (void );
 
         static int yy_start_stack_ptr = 0;
         static int yy_start_stack_depth = 0;
-        static int *yy_start_stack = NULL;
+        static int *yy_start_stack = 0;
     
     static void yy_push_state (int new_state );
     
@@ -1420,11 +1406,11 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-#line 1424 "xbt/graphxml.c"
+#line 1410 "xbt/graphxml.c"
 
-	if ( !(yy_init) )
+	if ( (yy_init) )
 		{
-		(yy_init) = 1;
+		(yy_init) = 0;
 
 #ifdef YY_USER_INIT
 		YY_USER_INIT;
@@ -1658,14 +1644,14 @@ case 23:
 YY_RULE_SETUP
 #line 309 "xbt/graphxml.l"
 {
-  LEAVE; STag_graphxml_graph();pcdata = NULL; ENTER(S_graphxml_graph);
+  LEAVE; STag_graphxml_graph();graphxml_pcdata = NULL; ENTER(S_graphxml_graph);
  }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 312 "xbt/graphxml.l"
 {
-  LEAVE; STag_graphxml_graph(); pcdata = NULL; ETag_graphxml_graph();
+  LEAVE; STag_graphxml_graph(); graphxml_pcdata = NULL; ETag_graphxml_graph();
   switch (YY_START) {
    case ROOT_graphxml_graph: SET(EPILOG); break;
   }
@@ -1804,7 +1790,7 @@ YY_RULE_SETUP
 #line 368 "xbt/graphxml.l"
 {
   if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node();pcdata = NULL; ENTER(E_graphxml_node);
+  LEAVE; STag_graphxml_node();graphxml_pcdata = NULL; ENTER(E_graphxml_node);
  }
 	YY_BREAK
 case 42:
@@ -1812,7 +1798,7 @@ YY_RULE_SETUP
 #line 372 "xbt/graphxml.l"
 {
   if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node(); pcdata = NULL; ETag_graphxml_node();
+  LEAVE; STag_graphxml_node(); graphxml_pcdata = NULL; ETag_graphxml_node();
   switch (YY_START) {
    case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
@@ -1964,7 +1950,7 @@ YY_RULE_SETUP
 {
   if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
   if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge();pcdata = NULL; ENTER(E_graphxml_edge);
+  LEAVE; STag_graphxml_edge();graphxml_pcdata = NULL; ENTER(E_graphxml_edge);
  }
 	YY_BREAK
 case 62:
@@ -1973,7 +1959,7 @@ YY_RULE_SETUP
 {
   if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
   if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge(); pcdata = NULL; ETag_graphxml_edge();
+  LEAVE; STag_graphxml_edge(); graphxml_pcdata = NULL; ETag_graphxml_edge();
   switch (YY_START) {
    case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
@@ -2174,7 +2160,7 @@ YY_RULE_SETUP
 #line 532 "xbt/graphxml.l"
 ECHO;
 	YY_BREAK
-#line 2178 "xbt/graphxml.c"
+#line 2164 "xbt/graphxml.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ROOT_graphxml_graph):
 case YY_STATE_EOF(S_graphxml_graph_2):
@@ -2366,7 +2352,7 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			int num_to_read =
+			size_t num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -2880,16 +2866,16 @@ YY_BUFFER_STATE xbt_graph_parse__scan_buffer  (char * base, yy_size_t  size )
 
 /** Setup the input buffer state to scan a string. The next call to xbt_graph_parse_lex() will
  * scan from a @e copy of @a str.
- * @param yystr a NUL-terminated string to scan
+ * @param str a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
  *       xbt_graph_parse__scan_bytes() instead.
  */
-YY_BUFFER_STATE xbt_graph_parse__scan_string (yyconst char * yystr )
+YY_BUFFER_STATE xbt_graph_parse__scan_string (yyconst char * yy_str )
 {
     
-	return xbt_graph_parse__scan_bytes(yystr,strlen(yystr) );
+	return xbt_graph_parse__scan_bytes(yy_str,strlen(yy_str) );
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to xbt_graph_parse_lex() will
@@ -2899,7 +2885,7 @@ YY_BUFFER_STATE xbt_graph_parse__scan_string (yyconst char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE xbt_graph_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
+YY_BUFFER_STATE xbt_graph_parse__scan_bytes  (yyconst char * bytes, int  len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
@@ -2907,15 +2893,15 @@ YY_BUFFER_STATE xbt_graph_parse__scan_bytes  (yyconst char * yybytes, int  _yyby
 	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = _yybytes_len + 2;
+	n = len + 2;
 	buf = (char *) xbt_graph_parse_alloc(n  );
 	if ( ! buf )
 		YY_FATAL_ERROR( "out of dynamic memory in xbt_graph_parse__scan_bytes()" );
 
-	for ( i = 0; i < _yybytes_len; ++i )
-		buf[i] = yybytes[i];
+	for ( i = 0; i < len; ++i )
+		buf[i] = bytes[i];
 
-	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
+	buf[len] = buf[len+1] = YY_END_OF_BUFFER_CHAR;
 
 	b = xbt_graph_parse__scan_buffer(buf,n );
 	if ( ! b )
@@ -3069,41 +3055,6 @@ void xbt_graph_parse_set_debug (int  bdebug )
         xbt_graph_parse__flex_debug = bdebug ;
 }
 
-static int yy_init_globals (void)
-{
-        /* Initialization is the same as for the non-reentrant scanner.
-     * This function is called from xbt_graph_parse_lex_destroy(), so don't allocate here.
-     */
-
-    /* We do not touch xbt_graph_parse_lineno unless the option is enabled. */
-    xbt_graph_parse_lineno =  1;
-    
-    (yy_buffer_stack) = 0;
-    (yy_buffer_stack_top) = 0;
-    (yy_buffer_stack_max) = 0;
-    (yy_c_buf_p) = (char *) 0;
-    (yy_init) = 0;
-    (yy_start) = 0;
-
-    (yy_start_stack_ptr) = 0;
-    (yy_start_stack_depth) = 0;
-    (yy_start_stack) =  NULL;
-
-/* Defined in main.c */
-#ifdef YY_STDINIT
-    xbt_graph_parse_in = stdin;
-    xbt_graph_parse_out = stdout;
-#else
-    xbt_graph_parse_in = (FILE *) 0;
-    xbt_graph_parse_out = (FILE *) 0;
-#endif
-
-    /* For future reference: Set errno on error, since we are called by
-     * xbt_graph_parse_lex_init()
-     */
-    return 0;
-}
-
 /* xbt_graph_parse_lex_destroy is for both reentrant and non-reentrant scanners. */
 int xbt_graph_parse_lex_destroy  (void)
 {
@@ -3123,10 +3074,6 @@ int xbt_graph_parse_lex_destroy  (void)
         xbt_graph_parse_free((yy_start_stack)  );
         (yy_start_stack) = NULL;
 
-    /* Reset the globals. This is important in a non-reentrant scanner so the next time
-     * xbt_graph_parse_lex() is called, initialization will occur. */
-    yy_init_globals( );
-
     return 0;
 }
 
@@ -3138,7 +3085,7 @@ int xbt_graph_parse_lex_destroy  (void)
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
 	register int i;
-	for ( i = 0; i < n; ++i )
+    	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
@@ -3147,7 +3094,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 static int yy_flex_strlen (yyconst char * s )
 {
 	register int n;
-	for ( n = 0; s[n]; ++n )
+    	for ( n = 0; s[n]; ++n )
 		;
 
 	return n;
@@ -3178,6 +3125,18 @@ void xbt_graph_parse_free (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
+#undef YY_NEW_FILE
+#undef YY_FLUSH_BUFFER
+#undef yy_set_bol
+#undef yy_new_buffer
+#undef yy_set_interactive
+#undef yytext_ptr
+#undef YY_DO_BEFORE_ACTION
+
+#ifdef YY_DECL_IS_OURS
+#undef YY_DECL_IS_OURS
+#undef YY_DECL
+#endif
 #line 532 "xbt/graphxml.l"
 
 

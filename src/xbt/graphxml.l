@@ -1,9 +1,9 @@
 /* Validating XML processor for graphxml.dtd.
- * Generated 2006/03/28 12:29:32.
+ * Generated 2006/04/22 01:36:55.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.47 2006/03/21 11:12:57 legranda Exp).
+ * (Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -50,7 +50,7 @@
 const char rcs_graphxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.28 2006/03/21 12:04:13 legranda Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.47 2006/03/21 11:12:57 legranda Exp $";
+ "$" "Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -66,7 +66,7 @@ const char rcs_graphxml_flexml[] =
 
 /* XML processor api. */
 /* FleXML-provided data. */
-const char* pcdata;
+const char* graphxml_pcdata;
 AT_graphxml_node_name A_graphxml_node_name;
 AT_graphxml_edge_source A_graphxml_edge_source;
 AT_graphxml_node_position_y A_graphxml_node_position_y;
@@ -107,7 +107,7 @@ static void cleanup(void);
 #define CLEANUP  cleanup()
 
 /* Text buffer stack handling. */
-char bufferstack[FLEXML_BUFFERSTACKSIZE];
+static char bufferstack[FLEXML_BUFFERSTACKSIZE];
 static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
   struct BufferLast_s *old; char* saved; char new1[1];
@@ -307,10 +307,10 @@ const char* *graphxml_statenames=NULL;
  "isDirected"{Eq}"\"false\"" A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_false;
 
  ">" {
-  LEAVE; STag_graphxml_graph();pcdata = NULL; ENTER(S_graphxml_graph);
+  LEAVE; STag_graphxml_graph();graphxml_pcdata = NULL; ENTER(S_graphxml_graph);
  }
  "/>" {
-  LEAVE; STag_graphxml_graph(); pcdata = NULL; ETag_graphxml_graph();
+  LEAVE; STag_graphxml_graph(); graphxml_pcdata = NULL; ETag_graphxml_graph();
   switch (YY_START) {
    case ROOT_graphxml_graph: SET(EPILOG); break;
   }
@@ -367,11 +367,11 @@ const char* *graphxml_statenames=NULL;
 
  ">" {
   if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node();pcdata = NULL; ENTER(E_graphxml_node);
+  LEAVE; STag_graphxml_node();graphxml_pcdata = NULL; ENTER(E_graphxml_node);
  }
  "/>" {
   if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node(); pcdata = NULL; ETag_graphxml_node();
+  LEAVE; STag_graphxml_node(); graphxml_pcdata = NULL; ETag_graphxml_node();
   switch (YY_START) {
    case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
@@ -436,12 +436,12 @@ const char* *graphxml_statenames=NULL;
  ">" {
   if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
   if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge();pcdata = NULL; ENTER(E_graphxml_edge);
+  LEAVE; STag_graphxml_edge();graphxml_pcdata = NULL; ENTER(E_graphxml_edge);
  }
  "/>" {
   if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
   if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge(); pcdata = NULL; ETag_graphxml_edge();
+  LEAVE; STag_graphxml_edge(); graphxml_pcdata = NULL; ETag_graphxml_edge();
   switch (YY_START) {
    case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
