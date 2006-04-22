@@ -63,11 +63,11 @@ static void exception_catching(void) {
 
 
 int client(int argc,char *argv[]) {
-  xbt_ex_t e; 
+  xbt_ex_t e;
   gras_socket_t toserver=NULL; /* peer */
   gras_socket_t toforwarder=NULL; /* peer */
 
-  
+  memset(&e,0,sizeof(xbt_ex_t));
 
   int ping, pong, i;
   volatile int gotit=0;
