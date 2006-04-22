@@ -448,7 +448,7 @@ MSG_error_t MSG_task_put(m_task_t task,
     DEBUG0("Communication not initiated yet. Let's block!");
     __MSG_process_block(-1);
     if(surf_workstation_resource->extension_public->
-       get_state(remote_host->simdata->host) == SURF_CPU_OFF) {
+       get_state(local_host->simdata->host) == SURF_CPU_OFF) {
       xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
 		      task);
       MSG_task_destroy(task);
