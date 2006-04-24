@@ -423,8 +423,8 @@ void lmm_solve(lmm_system_t sys)
          bound and update min_usage accordingly. */
       DEBUG5("var=%p, var->bound=%f, var->weight=%f, min_usage=%f, var->bound*var->weight=%f",
 	     var, var->bound, var->weight, min_usage,var->bound * var->weight);
-      if ((var->bound > 0) && (var->bound / var->weight < min_usage)) {
-	min_usage = var->bound / var->weight;
+      if ((var->bound > 0) && (var->bound * var->weight < min_usage)) {
+	min_usage = var->bound * var->weight;
 	DEBUG1("Updated min_usage=%f",min_usage);
       }
     }
