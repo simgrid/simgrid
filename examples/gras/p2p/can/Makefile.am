@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 #TESTS= test_rl test_sg
-EXTRA_DIST=can_tests.c can_deployment.xml $(TESTS)
+EXTRA_DIST=can_tests.c types.h can_deployment.xml $(TESTS)
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=can_node can_start_war can_simulator 
