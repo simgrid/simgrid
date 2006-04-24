@@ -20,8 +20,7 @@ Grids.
   - The Frequently Asked Questions are <a href="faq.html">here</a>. 
   - The development webpage is <a href="https://gforge.inria.fr/projects/simgrid//">gforge.inria.fr/projects/simgrid</a>. 
   - The user mailing list is <simgrid-user@lists.gforge.inria.fr>
-  - The SimGrid software package can be downloaded from <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>. 
-
+  - The SimGrid software package can be downloaded from <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.
 <br>
 
 <hr>
@@ -40,6 +39,7 @@ three-layered (click on the picture to jump to a specific component).
 <br><b>Relationships between the SimGrid components (click to jump to API)</b>
 </center>
 \endhtmlonly
+\htmlonly <!-- ______BODY_END______ --!> \endhtmlonly
 
 \subsection overview_envs Programmation environments layer
 
@@ -109,6 +109,11 @@ XBT_dict, \ref XBT_heap, \ref XBT_set and \ref XBT_swag.
 
 See the \ref XBT_API section for more details.
 
+
+\htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
+<br>
+The SimGrid software package can be downloaded from 
+<a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.<br>
 
 Any question, remark or suggestion are welcome on the 
 <a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user>SimGrid users
