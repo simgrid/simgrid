@@ -257,8 +257,13 @@ static void update_actions_state(double now, double delta)
 	surf_double_update(&(deltap), action->latency);
 	action->latency = 0.0;
       }
-      if ((action->latency == 0.0) && !(action->suspended))
-	lmm_update_variable_weight(maxmin_system, action->variable, 1.0);
+      if ((action->latency == 0.0) && !(action->suspended)) {
+	if((action)->lat_current==0.0)
+	  lmm_update_variable_weight(maxmin_system,action->variable, 1.0);
+	else
+	  lmm_update_variable_weight(maxmin_system, action->variable, 
+				     action->lat_current);
+      }
     }
     surf_double_update(&(action->generic_action.remains),
 		       lmm_variable_getvalue(action->variable) * deltap);
