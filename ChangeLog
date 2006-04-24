@@ -21,7 +21,11 @@ SimGrid (3.0.2) unstable; urgency=low
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
     extension of the classical CLM03 model that gracefully handles
-    failures. This is now the standard model for MSG and GRAS. [AL]
+    failures. This is now the standard model for MSG and GRAS. It doesn't
+    handle parallel tasks yet however. [AL]
+  * Bug fix: Weights were not correctly set in the network part. This may
+    have resulted in incorrect results with simulations where there are
+    more than one flow on a given link. [AL]
 
   MSG,GRAS:
   * Bug fix: Processes were started in reverse order, wrt deployment file.
