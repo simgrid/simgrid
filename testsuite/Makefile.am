@@ -35,7 +35,7 @@ SG_tests =                                              \
 	surf/maxmin_usage surf/maxmin_bench \
 	surf/trace_usage surf/surf_usage surf/surf_usage2
 
-noinst_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
+check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
 TESTS=run_tests
 
@@ -45,8 +45,8 @@ valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests valgrind
 
 # LDADD_UTILS is still a separate var to distinguish core tester from RL tester
-LDADD_SG=$(top_builddir)/src/libsimgrid.la 
-LDADD_RL=$(top_builddir)/src/libgras.la   
+LDADD_SG=$(abs_top_builddir)/src/libsimgrid.la 
+LDADD_RL=$(abs_top_builddir)/src/libgras.la   
 
 xbt_log_usage_LDADD=          $(LDADD_RL)
 

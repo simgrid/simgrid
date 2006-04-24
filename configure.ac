@@ -203,6 +203,10 @@ SG_COMPILE_FLAGS
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
+AC_SUBST([abs_builddir])
+AC_SUBST([abs_srcdir])
+AC_SUBST([abs_top_builddir])
+AC_SUBST([abs_top_srcdir])
 
 #####################
 ## Check for programs
