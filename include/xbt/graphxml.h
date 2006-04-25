@@ -1,9 +1,9 @@
 /* XML processor/application API for ../../src/xbt/graphxml.dtd.
- * Generated 2006/03/28 12:29:32.
+ * Generated 2006/04/22 01:36:54.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.47 2006/03/21 11:12:57 legranda Exp).
+ * (Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -81,7 +81,7 @@ typedef const char* AT_graphxml_edge_name;
 #define AU_graphxml_edge_name NULL
 
 /* FleXML-provided data. */
-extern const char* pcdata;
+extern const char* graphxml_pcdata;
 extern AT_graphxml_node_name A_graphxml_node_name;
 extern AT_graphxml_edge_source A_graphxml_edge_source;
 extern AT_graphxml_node_position_y A_graphxml_node_position_y;

@@ -1,9 +1,9 @@
 /* XML processor/application API for ../../src/surf/surfxml.dtd.
- * Generated 2006/03/21 12:59:32.
+ * Generated 2006/04/22 01:36:54.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.46 2006/03/21 08:24:12 legranda Exp).
+ * (Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -127,7 +127,7 @@ typedef const char* AT_surfxml_network_link_bandwidth_file;
 #define AU_surfxml_network_link_bandwidth_file NULL
 
 /* FleXML-provided data. */
-extern const char* pcdata;
+extern const char* surfxml_pcdata;
 extern AT_surfxml_network_link_bandwidth A_surfxml_network_link_bandwidth;
 extern AT_surfxml_cpu_name A_surfxml_cpu_name;
 extern AT_surfxml_process_kill_time A_surfxml_process_kill_time;
