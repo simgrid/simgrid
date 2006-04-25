@@ -21,12 +21,14 @@
 # define _XBT_GNUC_FORMAT( arg_idx )                \
 		   __attribute__((__format_arg__ (arg_idx)))
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
+# define _XBT_GNUC_UNUSED  __attribute__((unused))
 
 #else   /* !__GNUC__ */
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )
 # define _XBT_GNUC_FORMAT( arg_idx )
 # define _XBT_GNUC_NORETURN
+# define _XBT_GNUC_UNUSED
 
 #endif  /* !__GNUC__ */
 
