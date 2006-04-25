@@ -104,26 +104,78 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  * It specifies that the structure s_array contains five fields, that the \a father field is a simple reference,
  * that the size of the array pointed by \a data is the \a length field, and that the \a matrix field is an array
  * which size is the result of \a rows times \a cols.
- * 
- *  \warning The mecanism for multidimensional arrays is known to be fragile and cumbersome. If you want to use it, 
- *  you have to understand how it is implemented: the multiplication is performed using the sizes stack. In previous example,
- *  a \ref gras_datadesc_cb_push_int callback is added to the \a rows field and a \ref gras_datadesc_cb_push_int_mult one is 
- *  added to \a cols. So, when the structure is sent, the rows field push its value onto the stack, then the \a cols field 
- *  retrieve this value from the stack, compute (and push) the multiplication value. The \a matrix field can then retrive this
- *  value by poping the array. There is several ways for this to go wrong:
- *   - if the matrix field is placed before the sizes, the right value won't get pushed into the stack soon enough. Reorder your structure fields if needed.
- *   - if you write GRAS_ANNOTE(size,cols*rows); in previous example (inverting rows and cols in annotation),
- *     \a rows will be given a \ref gras_datadesc_cb_push_int_mult. This cannot work since it will try to 
- *     pop the value which will be pushed by \a cols <i>afterward</i>.
- *   - if you have more than one matrix in your structure, don't interleave the size. They are pushed/poped in the structure order.
- *   - if some of the sizes are used in more than one matrix, you cannot use this mecanism -- sorry.
- *
- * If you cannot express your datadescs with this mechanism, you'll have to use the more advanced 
- * (and somehow complex) one described below.
  *
  *  \warning Since GRAS_DEFINE_TYPE is a macro, you shouldn't put any comma in your type definition 
  *  (comma separates macro args). For example, change \verbatim int a, b;\endverbatim to \verbatim int a;
  int b;\endverbatim
+ * 
+ * <h3>Defining multidimentional arrays</h3>
+ * 
+ *  The mecanism for multidimensional arrays is known to be fragile and cumbersome. If you want to use it, 
+ *  you have to understand how it is implemented: the multiplication is performed using the sizes stack. In previous example,
+ *  a \ref gras_datadesc_cb_push_int callback is added to the \a rows field and a \ref gras_datadesc_cb_push_int_mult one is 
+ *  added to \a cols. So, when the structure is sent, the \a rows field push its value onto the stack, then the \a cols field 
+ *  retrieve this value from the stack, compute (and push) the multiplication value. The \a matrix field can then retrive this
+ *  value by poping the array. There is several ways for this to go wrong:
+ *   - if the matrix field is placed before the sizes, the right value won't get pushed into the stack soon enough. 
+ *     Reorder your structure fields if needed.
+ *   - if you write GRAS_ANNOTE(size,cols*rows); in previous example (inverting rows and cols in annotation),
+ *     \a rows will be given a \ref gras_datadesc_cb_push_int_mult. This cannot work since it will try to 
+ *     pop the value which will be pushed by \a cols <i>afterward</i>.
+ *   - if you have more than one matrix in your structure, don't interleave the size. They are pushed/poped in the structure order.
+ *   - if some of the sizes are used in more than one matrix, you cannot use this mecanism -- sorry. 
+ *
+ * If you cannot express your datadescs with this mechanism, you'll have to use the more advanced 
+ * (and somehow complex) one described in the \ref GRAS_dd_cb_full.
+ *
+ * <h3>Projects spanning over multiple files</h3>
+ * 
+ * GRAS_DEFINE_TYPE declares some symbols to work, it needs some special
+ * care when used in several files. In such case, you want the regular type
+ * definition in all files, but the gras specific symbol defined in only
+ * one file. For example, consider the following gras project sketch.
+ * 
+\verbatim #include <gras.h>
+
+GRAS_DEFINE_TYPE(my_type,struct my_type {
+  int a;
+  int b;
+  double c;
+});
+
+int client(int argc, char *argv[]) {
+ ...
+}
+
+int server(int argc, char *argv[]) {
+ ...
+}\endverbatim
+ * 
+ * If you want to split this in two files (one for each kind of processes),
+ * you need to put the GRAS_DEFINE_TYPE block in a separate header. But
+ * then you cannot include this right away in all files because the extra
+ * symbols would be defined in dupplicate.
+ * 
+ * You thus have to decide in which file the symbols will live. In that
+ * file, include the header without restriction:
+ * 
+\verbatim #include "my_header.h"
+
+int client(int argc, char *argv[]) {
+  ...
+}\endverbatim
+
+ * And in the other files needing the C definitions without the extra GRAS
+ * symbols, declare the symbol GRAS_DEFINE_TYPE_EXTERN before:
+ * 
+\verbatim #define GRAS_DEFINE_TYPE_EXTERN
+#include "my_header.h"
+
+int server(int argc, char *argv[]) {
+  ...
+}\endverbatim
+
+ * 
  */
 /** @{ */
 
@@ -132,8 +184,23 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  *    @hideinitializer
  */
 #define GRAS_DEFINE_TYPE(name,def) \
-  static const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
- 
+  const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
+
+#ifndef DOXYGEN_SKIP /* doxygen don't like macro fun too much */
+#  ifdef GRAS_DEFINE_TYPE_EXTERN
+#    undef  GRAS_DEFINE_TYPE
+#    define GRAS_DEFINE_TYPE(name,def)  def
+#    undef GRAS_DEFINE_TYPE_EXTERN
+#  endif
+#endif
+
+/**   @brief if this symbol is defined, the \a GRAS_DEFINE_TYPE symbols live in another file.
+ *    @hideinitializer
+ */
+#define GRAS_DEFINE_TYPE_EXTERN 1
+
+
+
 /** @brief Retrieve a datadesc which was previously parsed 
  *  @hideinitializer
  */
