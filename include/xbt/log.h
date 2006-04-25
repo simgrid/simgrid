@@ -138,7 +138,7 @@ typedef enum {
 # define XBT_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define XBT_LOG_DEFAULT_CATEGORY(cname) \
-	 static xbt_log_category_t _XBT_LOGV(default) = &_XBT_LOGV(cname)
+	 static xbt_log_category_t _XBT_LOGV(default) _XBT_GNUC_UNUSED = &_XBT_LOGV(cname) 
 #endif
 
 /**
@@ -179,6 +179,18 @@ typedef enum {
 
 #define XBT_LOG_EXTERNAL_CATEGORY(cname) \
    extern s_xbt_log_category_t _XBT_LOGV(cname)
+
+/**
+ * \ingroup XBT_log
+ * \param cname name of the cat
+ * \hideinitializer
+ *
+ * Indicates that the default category of this file was declared in another file.
+ */
+
+#define XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(cname) \
+   XBT_LOG_EXTERNAL_CATEGORY(cname);\
+   XBT_LOG_DEFAULT_CATEGORY(cname)
 
 /* Functions you may call */
 
