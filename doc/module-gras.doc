@@ -339,17 +339,24 @@
 	
     <hr>
 
-    \dontinclude gras/ping/ping.c
+    \dontinclude gras/ping/ping_common.c
     
     \section GRAS_ex_ping_common 1) Common code to the client and the server 
     
     \subsection GRAS_ex_ping_initial 1.a) Initial settings
     
-    Let's first load the gras header and declare a logging category (see
+    Let's first load the module header and declare a logging category (see
     \ref XBT_log for more info on logging).
     
     \skip include
     \until XBT_LOG
+    
+    The module header <tt>ping.h</tt> reads:
+    
+    \dontinclude gras/ping/ping.h
+    \skip include
+    \until argv
+    \until argv
 
     \subsection GRAS_ex_ping_register 1.b) Register the messages
     
@@ -358,7 +365,8 @@
     involve any newly created types but only int, this is quite easy. 
     (to exchange more complicated types, see \ref GRAS_dd or 
     \ref GRAS_ex_mmrpc for an example).
-    
+
+    \dontinclude gras/ping/ping_common.c
     \skip register_messages
     \until }
 
@@ -373,6 +381,7 @@
     struct definition so that they can be handled properly in GRAS (see the
     \ref GRAS_globals for more info).
 
+    \dontinclude gras/ping/ping_server.c
     \skip typedef struct
     \until }
     
@@ -403,6 +412,7 @@
     This function is quite straightforward, and the inlined comments should
     be enough to understand it.
 
+    \dontinclude gras/ping/ping_client.c
     \skip client
     \until end_of_client
 
@@ -436,30 +446,36 @@
 
     \section GRAS_ex_mmrpc_toc Table of contents of the mmrpc example
       - \ref GRAS_ex_mmrpc_common
-        - \ref GRAS_ex_mmrpc_initial
+        - \ref GRAS_ex_mmrpc_header
         - \ref GRAS_ex_mmrpc_dataregister
+        - \ref GRAS_ex_mmrpc_logdef
         - \ref GRAS_ex_mmrpc_msgregister
+        - \ref GRAS_ex_mmrpc_matdump
       - \ref GRAS_ex_mmrpc_server
+	- \ref GRAS_ex_mmrpc_serinc
 	- \ref GRAS_ex_mmrpc_sercb
 	- \ref GRAS_ex_mmrpc_sermain
       - \ref GRAS_ex_mmrpc_client
+	- \ref GRAS_ex_mmrpc_cliinc
 	- \ref GRAS_ex_mmrpc_climain
 	
     <hr>
 
-    \dontinclude gras/mmrpc/mmrpc.c
     
-    \section GRAS_ex_mmrpc_common 1) Common code to the client and the server 
+    \section GRAS_ex_mmrpc_common 1) Common code to the client and the server (mmrpc_common.c and mmrpc.h)
     
-    \subsection GRAS_ex_mmrpc_initial 1.a) Initial settings
     
-    Let's first load the gras header, specify the matrix size and declare a 
-    logging category (see \ref XBT_log for more info on logging).
-    
-    \skip include
-    \until XBT_LOG
+    \subsection GRAS_ex_mmrpc_header 1.a) Module header (mmrpc.h)
 
-    \subsection GRAS_ex_mmrpc_dataregister 1.b) Register the data types
+    This loads the gras header and declare the function's prototypes as well
+    as the matrix size.
+
+    \dontinclude gras/mmrpc/mmrpc.h
+    \skip include
+    \until argv
+    \until argv
+
+    \subsection GRAS_ex_mmrpc_dataregister 1.b) Register the data types (mmrpc.h)
 
     The messages involved in this example do use structures as payload, 
     so we have to declare it to GRAS. Hopefully, this can be done easily by enclosing 
@@ -483,7 +499,20 @@
     \skip GRAS_DEFINE_TYPE
     \until matrix_t
 
-    \subsection GRAS_ex_mmrpc_msgregister 1.c) Register the messages
+    \subsection GRAS_ex_mmrpc_logdef 1.c) Logging category definition (mmrpc_common.c)
+    
+    Let's first load the module header and declare a logging category (see
+    \ref XBT_log for more info on logging). This logging category does live
+    in this file (ie the required symbols are defined here and declared as
+    "extern" in any other file using them). That is why we use 
+    \ref XBT_LOG_NEW_DEFAULT_CATEGORY here and 
+    \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY in mmrpc_client.c and mmrpc_server.c.
+    
+    \dontinclude gras/mmrpc/mmrpc_common.c
+    \skip include
+    \until XBT_LOG
+
+    \subsection GRAS_ex_mmrpc_msgregister 1.d) Register the messages (mmrpc_common.c)
     
     This function, called by both the client and the server is in charge of
     declaring the existing messages to GRAS. Note the use of the \ref gras_datadesc_by_symbol 
@@ -496,11 +525,30 @@
     \skip register_messages
     \until }
 
+    \subsection GRAS_ex_mmrpc_matdump 1.e) Helper debugging function (mmrpc_common.c)
+
+    This function dumps a matrix to screen for debugging.
+    
+    \skip mat_dump
+    \until end_of_matrix
+    \until }
+
     [Back to \ref GRAS_ex_mmrpc_toc]
 
-    \section GRAS_ex_mmrpc_server 2) Server's code
+    \section GRAS_ex_mmrpc_server 2) Server's code (mmrpc_server.c)
     
-    \subsection GRAS_ex_mmrpc_sercb 2.a) The callback to the mmrpc message
+    \subsection GRAS_ex_mmrpc_serinc 2.a) Server intial settings
+    
+    All module symbols live in the mmrpc_common.c file. We thus have to
+    define \ref GRAS_DEFINE_TYPE_EXTERN to the preprocessor so that the
+    \ref GRAS_DEFINE_TYPE symbols don't get included here. Likewise, we use 
+    \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY to get the log category in here.
+    
+    \dontinclude gras/mmrpc/mmrpc_server.c
+    \skip define
+    \until XBT_LOG
+
+    \subsection GRAS_ex_mmrpc_sercb 2.b) The callback to the mmrpc message
 
     Here is the callback run when the server receives any mmrpc message (this
     will be registered later by the server). Note the way we get the message 
@@ -511,7 +559,7 @@
     \skip server_cb_request_handler
     \until end_of_server_cb_request_handler
 
-    \subsection GRAS_ex_mmrpc_sermain 2.b) The "main" of the server
+    \subsection GRAS_ex_mmrpc_sermain 2.c) The "main" of the server
     
     This is the "main" of the server. As explained in the \ref
     GRAS_main_generation, you must not write any main()
@@ -523,14 +571,25 @@
     
     [Back to \ref GRAS_ex_mmrpc_toc]
 
-    \section GRAS_ex_mmrpc_client 3) Client's code
+    \section GRAS_ex_mmrpc_client 3) Client's code (mmrpc_client.c)
     
-    \subsection GRAS_ex_mmrpc_climain 3.a) Client's "main" function
+    \subsection GRAS_ex_mmrpc_cliinc 2.a) Server intial settings
+    
+    As for the server, some extra love is needed to make sure that automatic
+    datatype parsing and log categories do work even if we are using several
+    files.  
+    
+    \dontinclude gras/mmrpc/mmrpc_client.c
+    \skip define
+    \until XBT_LOG
+
+    \subsection GRAS_ex_mmrpc_climain 3.b) Client's "main" function
     
     This function is quite straightforward, and the inlined comments should
     be enough to understand it.
 
-    \skip client
+    \dontinclude gras/mmrpc/mmrpc_client.c
+    \skip argv
     \until end_of_client
 
     [Back to \ref GRAS_ex_mmrpc_toc]
