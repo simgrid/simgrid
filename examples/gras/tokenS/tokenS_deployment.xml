@@ -1,36 +1,30 @@
-<?xml version='1.0'?>
-<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<?xml version='1.0'?><!DOCTYPE platform_description SYSTEM "surfxml.dtd">
 <platform_description>
 
  <process host="Tremblay" function="node">
-    <argument value="4000"/>     <!-- port on which I am listening -->
-    <argument value="Fafard"/>   <!-- peer (successor) host -->
-    <argument value="4000"/>     <!-- port on which peer is listening -->
-    <argument value="--create-token"/>   <!-- I'm first client, ie I have to create the token -->
+  <argument value="4000"/>                           <!-- port on which I am listening -->
+  <argument value="Fafard"/><argument value="4000"/> <!-- peer (successor) host name and port-->
+  <argument value="--create-token"/>                 <!-- I'm first client, ie I have to create the token -->
  </process>
  
  <process host="Fafard" function="node">
-    <argument value="4000"/>      <!-- port on which I am listening -->
-    <argument value="Jupiter"/>   <!-- peer (successor) host -->
-    <argument value="4000"/>      <!-- port on which peer is listening -->
+  <argument value="4000"/>                           <!-- port on which I am listening -->
+  <argument value="Jupiter"/><argument value="4000"/><!-- peer (successor) host name and port-->
  </process>
  
  <process host="Jupiter" function="node">
-    <argument value="4000"/>      <!-- port on which I am listening -->
-    <argument value="Ginette"/>   <!-- peer (successor) host -->
-    <argument value="4000"/>      <!-- port on which peer is listening -->
+  <argument value="4000"/>                            <!-- port on which I am listening -->
+  <argument value="Ginette"/><argument value="4000"/> <!-- peer (successor) host name and port-->
  </process>
  
  <process host="Ginette" function="node">
-    <argument value="4000"/>      <!-- port on which I am listening -->
-    <argument value="Bourassa"/>  <!-- peer (successor) host -->
-    <argument value="4000"/>      <!-- port on which peer is listening -->
+  <argument value="4000"/>                            <!-- port on which I am listening -->
+  <argument value="Bourassa"/><argument value="4000"/><!-- peer (successor) host name and port-->
  </process>
  
  <process host="Bourassa" function="node">
-    <argument value="4000"/>      <!-- port on which I am listening -->
-    <argument value="Tremblay"/>  <!-- peer (successor) host -->
-    <argument value="4000"/>      <!-- port on which peer is listening -->
+  <argument value="4000"/>                            <!-- port on which I am listening -->
+  <argument value="Tremblay"/><argument value="4000"/><!-- peer (successor) host name and port-->
  </process>
  
 </platform_description>

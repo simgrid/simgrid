@@ -51,6 +51,7 @@
     
        - \ref GRAS_ex_ping
        - \ref GRAS_ex_mmrpc
+       - \ref GRAS_ex_token
        - \ref GRAS_ex_timer
 
     @{ */
@@ -117,11 +118,13 @@
 
        - \ref GRAS_ex_ping
        - \ref GRAS_ex_mmrpc
+       - \ref GRAS_ex_token
        - \ref GRAS_ex_timer
 
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_CHILD "Ping-Pong"=GRAS_ex_ping.html
       DOXYGEN_NAVBAR_CHILD "RPC"=GRAS_ex_mmrpc.html
+      DOXYGEN_NAVBAR_CHILD "Token Ring"=GRAS_ex_token.html
       DOXYGEN_NAVBAR_CHILD "Timers"=GRAS_ex_timer.html
     --> \endhtmlonly
 
@@ -418,6 +421,73 @@
 
     [Back to \ref GRAS_ex_ping_toc]
  */
+
+---------------------------------------------------------------------
+--------------------- Simple Token Ring -----------------------------
+---------------------------------------------------------------------
+
+/** \page GRAS_ex_token Token Ring example
+
+   This example implements the token ring algorithm. It involves several
+   nodes arranged in a ring (each of them have a left and a right neighbour)
+   and exchanging a "token". This algorithm is one of the solution to ensure
+   the mutual exclusion between distributed processes. There is only one
+   token at any time, so the process in its possession is ensured to be the
+   only one having it. So, if there is an action you want all processes to
+   do alternativly, but you cannot afford to have two processes doing it at
+   the same time, let the process having the token doing it.
+   
+   Actually, there is a lot of different token ring algorithms in the
+   litterature, so this example implements one of them: the simplest one.
+   The ring is static (no new node can join it, and you'll get trouble if
+   one node dies or leaves), and nothing is done for the case in which the
+   token is lost. 
+
+   - \ref GRAS_ex_stoken_deploy
+   - \ref GRAS_ex_stoken_global
+   - \ref GRAS_ex_stoken_callback
+   - \ref GRAS_ex_stoken_main
+
+   \section GRAS_ex_stoken_deploy 1) Deployment file
+
+   Here is the deployment file:
+   \include examples/gras/tokenS/tokenS_deployment.xml
+   
+   The neighbour of each node is given at startup as command line argument.
+   Moreover, one of the nodes is instructed by a specific argument (the one
+   on Tremblay here) to create the token at the begining of the algorithm.
+   
+   \section GRAS_ex_stoken_global 2) Global definition
+   
+   The token is incarned by a specific message, which circulates from node
+   to node (the payload is an integer incremented at each hop). So, the most
+   important part of the code is the message callback, which forwards the
+   message to the next node. That is why we have to store all variable in a
+   global, as explained in the \ref GRAS_globals section. 
+
+   \dontinclude examples/gras/tokenS/tokenS.c
+   \skip typedef
+   \until }
+   
+   \section GRAS_ex_stoken_callback 3) The callback
+   
+   Even if this is the core of this algorithm, this function is quite
+   straightforward.
+   
+   \skip node_cb_stoken_handler
+   \until end_of_node_cb_stoken_handler
+
+   \section GRAS_ex_stoken_main 4) The main function
+   
+   This function is splited in two parts: The first one performs all the
+   needed initialisations (points 1-7) while the end (point 8. below) calls 
+   gras_msg_handle() as long as the planned amount of ring loops are not
+   performed.
+   
+   \skip node
+   \until end_of_node
+
+*/
 
 ---------------------------------------------------------------------
 -------------------------- MM RPC -----------------------------------
