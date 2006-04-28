@@ -14,6 +14,14 @@
 
 #define MATSIZE 128
 
+GRAS_DEFINE_TYPE(s_matrix,
+struct s_matrix {
+  int rows;
+  int cols;
+  double *ctn GRAS_ANNOTE(size, rows*cols);
+};)
+typedef struct s_matrix matrix_t;
+
 void mat_dump(matrix_t *mat, const char* name);
 
 /* register messages which may be sent and their payload
@@ -23,13 +31,5 @@ void mmrpc_register_messages(void);
 /* Function prototypes */
 int server (int argc,char *argv[]);
 int client (int argc,char *argv[]);
-
-GRAS_DEFINE_TYPE(s_matrix,
-struct s_matrix {
-  int rows;
-  int cols;
-  double *ctn GRAS_ANNOTE(size, rows*cols);
-};)
-typedef struct s_matrix matrix_t;
 
 #endif /* MMRPC_H */
