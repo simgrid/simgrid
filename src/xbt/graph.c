@@ -84,6 +84,15 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
   return edge;
 }
 
+void *xbt_graph_node_get_data(xbt_node_t node)
+{
+  return node->data;
+}
+
+void *xbt_graph_edge_get_data(xbt_edge_t edge)
+{
+  return edge->data;
+}
 
 /** @brief Destructor
  *  @param l: poor victim
