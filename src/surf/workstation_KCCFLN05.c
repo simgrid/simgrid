@@ -901,6 +901,7 @@ static void resource_init_internal(void)
   surf_workstation_resource->extension_public->execute = execute;
   surf_workstation_resource->extension_public->sleep = action_sleep;
   surf_workstation_resource->extension_public->get_state = resource_get_state;
+  surf_workstation_resource->extension_public->get_speed = get_speed;
   surf_workstation_resource->extension_public->communicate = communicate;
   surf_workstation_resource->extension_public->execute_parallel_task = execute_parallel_task;
 
