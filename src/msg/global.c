@@ -330,9 +330,9 @@ MSG_error_t MSG_main(void)
       }
       
       if(!state_modifications) {
-	DEBUG1("%g : Calling surf_solve",MSG_get_clock());
+	DEBUG1("%f : Calling surf_solve",MSG_get_clock());
 	elapsed_time = surf_solve();
-	DEBUG1("Elapsed_time %g",elapsed_time);
+	DEBUG1("Elapsed_time %f",elapsed_time);
 	
 	if (elapsed_time<0.0) {
 	  /*       fprintf(stderr, "We're done %g\n",elapsed_time); */

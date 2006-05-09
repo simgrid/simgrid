@@ -65,10 +65,11 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 	MSG_RETURN(MSG_OK);
       }
     }
-    xbt_assert2(!(h_simdata->sleeping[channel]),
-		"A process (%s(%d)) is already blocked on this channel",
+    xbt_assert3(!(h_simdata->sleeping[channel]),
+		"A process (%s(%d)) is already blocked on channel %d",
 		h_simdata->sleeping[channel]->name,
-		h_simdata->sleeping[channel]->simdata->PID);
+		h_simdata->sleeping[channel]->simdata->PID,
+		channel);
     h_simdata->sleeping[channel] = process; /* I'm waiting. Wake me up when you're ready */
     if(max_duration>0) {
       __MSG_process_block(max_duration);
