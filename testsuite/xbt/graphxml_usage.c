@@ -45,7 +45,8 @@ void test(char *graph_file)
 
   double *adj = xbt_graph_get_length_matrix(graph);
 
-  xbt_graph_export_graphxml(graph, "testgraph.xml", NULL, NULL, NULL, NULL);
+  xbt_graph_export_graphxml(graph, "testgraph.xml", NULL, NULL, NULL,
+			    NULL);
   xbt_graph_export_graphviz(graph, "graph.dot", node_name, NULL);
 
   for (i = 0; i < n; i++) {
@@ -59,21 +60,21 @@ void test(char *graph_file)
   route = xbt_graph_shortest_paths(graph);
 
   /*  for(i=0;i<n;i++) */
-/*     { */
-/*       for(j=0;j<n;j++) */
-/* 	{ */
-/* 	  if( route[i*n+j]) */
-/* 	  fprintf(stderr,"%s\t",(char*)(route[i*n+j])->data) ); */
-/* 	} */
-/*       fprintf(stderr,"\n" ); */
-/*     } */
+  /*     { */
+  /*       for(j=0;j<n;j++) */
+  /* 	{ */
+  /* 	  if( route[i*n+j]) */
+  /* 	  fprintf(stderr,"%s\t",(char*)(route[i*n+j])->data) ); */
+  /* 	} */
+  /*       fprintf(stderr,"\n" ); */
+  /*     } */
 
 
   sorted = xbt_graph_topo_sort(graph);
 
   for (i = 0; i < n; i++) {
     if (sorted[i]) {
-/* fprintf(stderr,"sorted[%d] =%p\n",i,sorted[i] ); */
+      /* fprintf(stderr,"sorted[%d] =%p\n",i,sorted[i] ); */
       fprintf(stderr, "%s\t", (char *) ((sorted[i])->data)
 	  );
 
@@ -82,7 +83,7 @@ void test(char *graph_file)
   }
 
   /*  while(xbt_dynar_length(dynar)) */
-/*     xbt_graph_free_node(graph,*((xbt_node_t*)xbt_dynar_get_ptr(dynar,0)),NULL,NULL); */
+  /*     xbt_graph_free_node(graph,*((xbt_node_t*)xbt_dynar_get_ptr(dynar,0)),NULL,NULL); */
 
   dynar = xbt_graph_get_edges(graph);
   while (xbt_dynar_length(dynar))
