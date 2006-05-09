@@ -15,12 +15,14 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to graphxml test");
 
+
 static void *node_label_and_data(xbt_node_t node, const char *label,
 				 const char *data)
 {
   char *lbl = xbt_strdup(label);
   return lbl;
 }
+#define free_label free
 
 static const char *node_name(xbt_node_t n)
 {
@@ -30,8 +32,8 @@ static const char *node_name(xbt_node_t n)
 void test(char *graph_file);
 void test(char *graph_file)
 {
-  int test_node_deletion = 1;
-  int test_edge_deletion = 1;
+  int test_node_deletion = 0;
+  int test_edge_deletion = 0;
   int test_export_xml = 1;
   int test_export_dot = 1;
   int test_export_length = 1;
@@ -121,7 +123,7 @@ void test(char *graph_file)
     while (xbt_dynar_length(nodes))
       xbt_graph_free_node(graph,
 			  *((xbt_node_t *) xbt_dynar_get_ptr(nodes, 0)),
-			  free, NULL);
+			  free_label, NULL);
     INFO2("After Node deletion:  %lu nodes, %lu edges",
 	  xbt_dynar_length(nodes), xbt_dynar_length(edges));
   }
@@ -142,7 +144,7 @@ void test(char *graph_file)
 	  xbt_dynar_length(nodes), xbt_dynar_length(edges));
   }
 
-  xbt_graph_free_graph(graph, NULL, NULL, NULL);
+  xbt_graph_free_graph(graph, free_label, NULL, NULL);
 }
 
 int main(int argc, char **argv) {
