@@ -1,0 +1,9 @@
+#! /bin/sh
+if [ x = x ] ; then 
+  exenv=$SG_TEST_EXENV
+else
+  exenv=wine
+fi
+
+exec $exenv ./alltoall_simulator ./small_platform.xml ./alltoall_deployment.xml $@
+

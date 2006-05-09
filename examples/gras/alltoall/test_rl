@@ -1,0 +1,11 @@
+#! /bin/sh -e
+if [ x = x ] ; then 
+#  exenv="libtool --mode=execute valgrind --show-reachable=yes --run-libc-freeres=no "
+  exenv=$SG_TEST_EXENV
+else
+  exenv=wine
+fi
+    
+$exenv ./ping_server 4002 $@ &
+sleep 1
+$exenv ./ping_client 127.0.0.1 4002 $@

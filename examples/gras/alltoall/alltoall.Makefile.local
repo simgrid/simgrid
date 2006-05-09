@@ -1,0 +1,90 @@
+############ PROJECT COMPILING AND ARCHIVING #########
+PROJECT_NAME=alltoall
+DISTDIR=gras-$(PROJECT_NAME)
+
+GRAS_ROOT?= $(shell echo "\"<<<< GRAS_ROOT undefined !!! >>>>\"")
+CFLAGS = -O3 -w -g
+INCLUDES = -I$(GRAS_ROOT)/include
+LIBS_SIM = -lm  -L$(GRAS_ROOT)/lib/ -lsimgrid
+LIBS_RL = -lm  -L$(GRAS_ROOT)/lib/ -lgras
+LIBS = 
+
+C_FILES = _alltoall_simulator.c _alltoall_node.c alltoall.c
+OBJ_FILES = 
+BIN_FILES = alltoall_simulator alltoall_node 
+
+all: $(BIN_FILES)
+
+alltoall_simulator: _alltoall_simulator.o alltoall.o
+	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_SIM) $(LIBS) $(LDADD) -o $@ 
+alltoall_node : _alltoall_node.o alltoall.o
+	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_RL) $(LIBS) $(LDADD) -o $@ 
+
+%: %.o
+	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) $(LDADD) -o $@ 
+
+%.o: %.c
+	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<
+
+DIST_FILES= $(C_FILES) alltoall.Makefile.local alltoall.Makefile.remote
+distdir: $(DIST_FILES)
+	rm -rf $(DISTDIR)
+	mkdir -p $(DISTDIR)
+	cp $^ $(DISTDIR)
+
+dist: clean distdir
+	tar c $(DISTDIR) | gzip -c > $(DISTDIR).tar.gz
+
+clean:
+	rm -f $(BIN_FILES) $(OBJ_FILES) *~ alltoall.o _alltoall_simulator.o _alltoall_node.o
+	rm -rf $(DISTDIR)
+
+.SUFFIXES:
+.PHONY : clean
+
+############ REMOTE COMPILING #########
+MACHINES ?= Bourassa Fafard Ginette Jupiter Tremblay 
+INSTALL_PATH ?='$$HOME/tmp/src' ### Has to be an absolute path !!! 
+GRAS_ROOT ?='$(INSTALL_PATH)' ### Has to be an absolute path !!! 
+SRCDIR ?= ./
+SIMGRID_URL ?=http://gcl.ucsd.edu/simgrid/dl/
+SIMGRID_VERSION ?=2.92
+GRAS_PROJECT ?= alltoall
+GRAS_PROJECT_URL ?= http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/gras_test/
+
+remote:
+	@echo;echo "----[ Compile the package on remote hosts ]----"
+	@test -e $(SRCDIR)/buildlogs/ || mkdir -p $(SRCDIR)/buildlogs/
+	 for site in $(MACHINES) ; do \
+	   machine=`echo $$site |sed 's/^\([^%]*\)%.*$$/\1/'`;\
+	   machine2=`echo $$site |sed 's/^\([^%]*\)%\(.*\)$$/\2/'`;\
+	   cmd_mkdir="\"sh -c 'env INSTALL_PATH=$(INSTALL_PATH) GRAS_ROOT=$(GRAS_ROOT) \
+	                        SIMGRID_URL=$(SIMGRID_URL) SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \
+	                        GRAS_PROJECT_URL=$(GRAS_PROJECT_URL)  mkdir -p $(INSTALL_PATH) 2>&1'\"";\
+	   cmd_make="\"sh -c 'env INSTALL_PATH=$(INSTALL_PATH) GRAS_ROOT=$(GRAS_ROOT) \
+	                        SIMGRID_URL=$(SIMGRID_URL) SIMGRID_VERSION=$(SIMGRID_VERSION) GRAS_PROJECT=$(GRAS_PROJECT) \
+	                        GRAS_PROJECT_URL=$(GRAS_PROJECT_URL)  make -C $(INSTALL_PATH) -f alltoall.Makefile.remote $(ACTION) 2>&1'\"";\
+	   if echo $$site | grep  '%' >/dev/null ; then \
+	     echo "----[ Compile on $$machine2 (behind $$machine) ]----";\
+	   else \
+	     machine=$$site;\
+	     echo "----[ Compile on $$machine ]----";\
+	   fi;\
+	   if echo $$site | grep  '%' >/dev/null ; then \
+	     if ssh $$machine "ssh -A $$machine2 $$cmd_mkdir" 2>&1 > $(SRCDIR)/buildlogs/$$site.log;\
+	     then true; else failed=1;echo "Failed (check $(SRCDIR)/buildlogs/$$site.log)"; fi;\
+	   else \
+	     if ssh $$machine "eval $$cmd_mkdir" 2>&1 > $(SRCDIR)/buildlogs/$$site.log ;\
+	     then true; else failed=1;echo "Failed (check $(SRCDIR)/buildlogs/$$site.log)"; fi; \
+	   fi;\
+	   echo "-- Copy the data over"; \
+	   scp alltoall.Makefile.remote $$site:$(INSTALL_PATH) ;\
+	   echo "-- Compiling... (the output gets into $(SRCDIR)/buildlogs/$$site.log)"; \
+	   if echo $$site | grep  '%' >/dev/null ; then \
+	     if ssh $$machine "ssh -A $$machine2 $$cmd_make" 2>&1 >> $(SRCDIR)/buildlogs/$$site.log;\
+	     then echo "Sucessful"; else failed=1;echo "Failed (check $(SRCDIR)/buildlogs/$$site.log)"; fi;echo; \
+	   else \
+	     if ssh $$machine "eval $$cmd_make" 2>&1 >> $(SRCDIR)/buildlogs/$$site.log ;\
+	     then echo "Sucessful"; else failed=1;echo "Failed (check $(SRCDIR)/buildlogs/$$site.log)"; fi;echo; \
+	   fi;\
+	 done;
