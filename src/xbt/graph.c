@@ -161,17 +161,18 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
       else xbt_dynar_cursor_step( g->edges, &cursor);   
     }
 
-
- if ((node_free_function) && (n->data))
+  if ((node_free_function) && (n->data))
     node_free_function(n->data);
 
   cursor = 0;
   xbt_dynar_foreach(g->nodes, cursor, node)
-    {
-      if (node == n)
-	xbt_dynar_cursor_rm(g->nodes, &cursor);
+    if (node == n)
+      xbt_dynar_cursor_rm(g->nodes, &cursor);
+  
+  xbt_dynar_free(&(n->in));
+  xbt_dynar_free(&(n->out));
 
-    }
+  free(n);
 
   return;
 }
@@ -489,19 +490,18 @@ xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g)
  idx=n-1;
 
   sorted=xbt_malloc(n*sizeof(xbt_node_t));
+
   xbt_dynar_foreach(g->nodes,cursor , node)
-    {
-      node->xbtdata=xbt_new0(int,1);
-    }
+    node->xbtdata=xbt_new0(int,1);
 
   xbt_dynar_foreach(g->nodes,cursor , node) 
-    { 
       xbt_graph_depth_visit(g,node,sorted,&idx);   
-    }
-  xbt_dynar_foreach(g->nodes, cursor, node) 
-   {
+
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    free(node->xbtdata);
     node->xbtdata = NULL;
-   }	  
+  }
+
   return sorted; 
 }
 
