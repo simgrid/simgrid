@@ -43,12 +43,9 @@ void test(char *graph_file)
 
   xbt_dynar_t edges = NULL;
   xbt_dynar_t nodes = NULL;
-  xbt_node_t *sorted = NULL;
-  xbt_node_t *route = NULL;
 
   xbt_graph_t graph =
       xbt_graph_read(graph_file, &node_label_and_data, NULL);
-  double *adj = NULL;
 
   n = xbt_dynar_length(xbt_graph_get_nodes(graph));
 
@@ -64,6 +61,8 @@ void test(char *graph_file)
 
   if (test_export_length) {
     char *buf = NULL;
+    double *adj = NULL;
+
     INFO0("---- Dumping Edge lengths ----");
     adj = xbt_graph_get_length_matrix(graph);
     buf = calloc(n * 20, sizeof(char));
@@ -80,6 +79,8 @@ void test(char *graph_file)
 
   if (test_shortest_paths) {
     char *buf = NULL;
+    xbt_node_t *route = NULL;
+  
     INFO0("---- Testing Shortest Paths ----");
     route = xbt_graph_shortest_paths(graph);
     buf = calloc(n * 40, sizeof(char));
@@ -97,6 +98,8 @@ void test(char *graph_file)
   }
 
   if (test_topo_sort) {
+    xbt_node_t *sorted = NULL;
+
     INFO0("---- Testing Topological Sort ----");
     sorted = xbt_graph_topo_sort(graph);
     for (i = 0; i < n; i++) {
@@ -118,7 +121,7 @@ void test(char *graph_file)
     while (xbt_dynar_length(nodes))
       xbt_graph_free_node(graph,
 			  *((xbt_node_t *) xbt_dynar_get_ptr(nodes, 0)),
-			  NULL, NULL);
+			  free, NULL);
     INFO2("After Node deletion:  %lu nodes, %lu edges",
 	  xbt_dynar_length(nodes), xbt_dynar_length(edges));
   }

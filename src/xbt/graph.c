@@ -60,23 +60,22 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
 			      xbt_node_t src, xbt_node_t dst, void *data)
 {
   xbt_edge_t edge = NULL;
- 
+
 
   edge = xbt_new0(struct xbt_edge, 1);
   xbt_dynar_push(src->out, &edge);
-  if (g->directed) 
+  if (g->directed)
     xbt_dynar_push(dst->in, &edge);
-  else /* only the "out" field is used */
+  else				/* only the "out" field is used */
     xbt_dynar_push(dst->out, &edge);
 
   edge->data = data;
   edge->src = src;
   edge->dst = dst;
-  if (!g->directed) 
-    {
-      xbt_dynar_push(src->in, &edge);
-      xbt_dynar_push(dst->out, &edge);
-    }
+  if (!g->directed) {
+    xbt_dynar_push(src->in, &edge);
+    xbt_dynar_push(dst->out, &edge);
+  }
 
 
   xbt_dynar_push(g->edges, &edge);
@@ -109,26 +108,24 @@ void xbt_graph_free_graph(xbt_graph_t g,
   xbt_edge_t edge = NULL;
 
 
-  xbt_dynar_foreach(g->nodes, cursor, node)
-    {
-      xbt_dynar_free(&(node->out));
-      xbt_dynar_free(&(node->in));
-      if(node_free_function)
-	node_free_function(node->data);
-    }
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    xbt_dynar_free(&(node->out));
+    xbt_dynar_free(&(node->in));
+    if (node_free_function)
+      node_free_function(node->data);
+  }
 
-  xbt_dynar_foreach(g->edges, cursor, edge) 
-    {
-      if(edge_free_function)
-	edge_free_function(edge->data);
-    }
+  xbt_dynar_foreach(g->edges, cursor, edge) {
+    if (edge_free_function)
+      edge_free_function(edge->data);
+  }
 
   xbt_dynar_foreach(g->nodes, cursor, node)
-    free(node);
+      free(node);
   xbt_dynar_free(&(g->nodes));
 
   xbt_dynar_foreach(g->edges, cursor, edge)
-    free(edge);
+      free(edge);
   xbt_dynar_free(&(g->edges));
 
   free(g);
@@ -149,17 +146,15 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
   xbt_edge_t edge = NULL;
 
   nbr = xbt_dynar_length(g->edges);
-  cursor=0;
-  for (i = 0; i < nbr; i++)
-    {
-      xbt_dynar_cursor_get(g->edges, &cursor, &edge);
-        
-      if ((edge->dst == n) || (edge->src == n))
-	{
-	  xbt_graph_free_edge(g, edge, edge_free_function);
-	} 
-      else xbt_dynar_cursor_step( g->edges, &cursor);   
-    }
+  cursor = 0;
+  for (i = 0; i < nbr; i++) {
+    xbt_dynar_cursor_get(g->edges, &cursor, &edge);
+
+    if ((edge->dst == n) || (edge->src == n)) {
+      xbt_graph_free_edge(g, edge, edge_free_function);
+    } else
+      xbt_dynar_cursor_step(g->edges, &cursor);
+  }
 
   if ((node_free_function) && (n->data))
     node_free_function(n->data);
@@ -168,7 +163,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
   xbt_dynar_foreach(g->nodes, cursor, node)
     if (node == n)
       xbt_dynar_cursor_rm(g->nodes, &cursor);
-  
+
   xbt_dynar_free(&(n->in));
   xbt_dynar_free(&(n->out));
 
@@ -183,44 +178,41 @@ void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
 {
   int idx;
   int cursor = 0;
-  xbt_edge_t edge = NULL; 
+  xbt_edge_t edge = NULL;
 
   if ((free_function) && (e->data))
     free_function(e->data);
 
-  xbt_dynar_foreach(g->edges, cursor, edge) 
-    {
-    if (edge == e)
-      {
-	if (g->directed) {
-	  idx = __xbt_find_in_dynar(edge->dst->in,edge); 
-	  xbt_dynar_remove_at(edge->dst->in, idx,NULL);
-	} else { /* only the out field is used */
-	  idx = __xbt_find_in_dynar(edge->dst->out,edge); 
-	  xbt_dynar_remove_at(edge->dst->out, idx,NULL);
-	}
-
-	idx = __xbt_find_in_dynar(edge->src->out,edge);
-	xbt_dynar_remove_at(edge->src->out,idx,NULL);	
-
-        xbt_dynar_cursor_rm(g->edges, &cursor); 
-	free(edge);
-	break;
+  xbt_dynar_foreach(g->edges, cursor, edge) {
+    if (edge == e) {
+      if (g->directed) {
+	idx = __xbt_find_in_dynar(edge->dst->in, edge);
+	xbt_dynar_remove_at(edge->dst->in, idx, NULL);
+      } else {			/* only the out field is used */
+	idx = __xbt_find_in_dynar(edge->dst->out, edge);
+	xbt_dynar_remove_at(edge->dst->out, idx, NULL);
       }
+
+      idx = __xbt_find_in_dynar(edge->src->out, edge);
+      xbt_dynar_remove_at(edge->src->out, idx, NULL);
+
+      xbt_dynar_cursor_rm(g->edges, &cursor);
+      free(edge);
+      break;
     }
+  }
 }
 
 int __xbt_find_in_dynar(xbt_dynar_t dynar, void *p)
 {
 
   int cursor = 0;
-  void *tmp=NULL;
+  void *tmp = NULL;
 
-  xbt_dynar_foreach(dynar, cursor, tmp)
-    {
-      if (tmp == p)
-	return cursor;
-    }
+  xbt_dynar_foreach(dynar, cursor, tmp) {
+    if (tmp == p)
+      return cursor;
+  }
   return -1;
 }
 
@@ -271,36 +263,33 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
 {
   int cursor = 0;
   int in_cursor = 0;
-  int  idx,i;
+  int idx, i;
   unsigned long n;
   xbt_edge_t edge = NULL;
-  xbt_node_t node=NULL;
+  xbt_node_t node = NULL;
   double *d = NULL;
 
 # define D(u,v) d[(u)*n+(v)]
   n = xbt_dynar_length(g->nodes);
 
-  d = (double *) xbt_new0(double, n*n);
+  d = (double *) xbt_new0(double, n * n);
 
-  for (i = 0; i < n * n; i++)
-    {
-      d[i] = -1.0;
+  for (i = 0; i < n * n; i++) {
+    d[i] = -1.0;
+  }
+
+  xbt_dynar_foreach(g->nodes, cursor, node) {
+    in_cursor = 0;
+    D(cursor, cursor) = 0;
+
+    xbt_dynar_foreach(node->out, in_cursor, edge) {
+      if (edge->dst == node)
+	idx = __xbt_find_in_dynar(g->nodes, edge->src);
+      else			/*case of  undirected graphs */
+	idx = __xbt_find_in_dynar(g->nodes, edge->dst);
+      D(cursor, idx) = edge->length;
     }
- 
-  xbt_dynar_foreach(g->nodes, cursor, node) 
-    {
-      in_cursor = 0;
-      D(cursor, cursor) = 0;
-    
-      xbt_dynar_foreach(node->out, in_cursor, edge)
-	{
-	  if (edge->dst==node) 
-	    idx= __xbt_find_in_dynar(g->nodes, edge->src);
-	  else /*case of  undirected graphs*/ 
-	     idx = __xbt_find_in_dynar(g->nodes, edge->dst);
-	  D( cursor,idx) = edge->length;
-	}
-    }
+  }
 
 # undef D
 
@@ -318,7 +307,7 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
  * graph must not have any negative weight cycles. The algorithm computes,
  * for each pair of vertices, the minimum weight among all paths between
  * the two vertices. The running time complexity is Θ(|V|3).
- */ 
+ */
 void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 			 xbt_node_t * p)
 {
@@ -329,40 +318,31 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 # define D(u,v) d[(u)*n+(v)]
 # define P(u,v) p[(u)*n+(v)]
 
-  for (i = 0; i < n * n; i++)
-    {
-      d[i] = adj[i];
-    }
+  for (i = 0; i < n * n; i++) {
+    d[i] = adj[i];
+  }
 
 
-  for (i = 0; i < n; i++)
-    {
-      for (j = 0; j < n; j++)
-	{
-	  if (D(i, j) != -1)
-	    {
-	      P(i,j) =*((xbt_node_t*) xbt_dynar_get_ptr(g->nodes, i));	     
-	    }
-	}
+  for (i = 0; i < n; i++) {
+    for (j = 0; j < n; j++) {
+      if (D(i, j) != -1) {
+	P(i, j) = *((xbt_node_t *) xbt_dynar_get_ptr(g->nodes, i));
+      }
     }
- 
-  for (k = 0; k < n; k++)
-    {
-      for (i = 0; i < n; i++)
-	{
-	  for (j = 0; j < n; j++)
-	    {
-	      if ((D(i, k) != -1) && (D(k, j) != -1))
-		{
-		  if ((D(i, j) == -1) || (D(i, j) > D(i, k) + D(k, j)))
-		    {
-		      D(i, j) = D(i, k) + D(k, j);
-		      P(i, j) = P(k, j);
-		    }
-		}
-	    }
+  }
+
+  for (k = 0; k < n; k++) {
+    for (i = 0; i < n; i++) {
+      for (j = 0; j < n; j++) {
+	if ((D(i, k) != -1) && (D(k, j) != -1)) {
+	  if ((D(i, j) == -1) || (D(i, j) > D(i, k) + D(k, j))) {
+	    D(i, j) = D(i, k) + D(k, j);
+	    P(i, j) = P(k, j);
+	  }
 	}
+      }
     }
+  }
 
 
 
@@ -386,29 +366,25 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 
   n = xbt_dynar_length(g->nodes);
   adj = xbt_graph_get_length_matrix(g);
-  d = xbt_new0(double,n*n);
-  p = xbt_new0(xbt_node_t,n*n);
-  r = xbt_new0(xbt_node_t,n*n);
- 
+  d = xbt_new0(double, n * n);
+  p = xbt_new0(xbt_node_t, n * n);
+  r = xbt_new0(xbt_node_t, n * n);
+
   xbt_floyd_algorithm(g, adj, d, p);
- 
-  for (i = 0; i < n; i++)
-    {
-      for (j = 0; j < n; j++)
-	{
-	  k = j;
 
-	  while ((P(i, k)) && (__xbt_find_in_dynar(g->nodes, P(i, k)) != i))
-	    {
-	      k = __xbt_find_in_dynar(g->nodes, P(i, k));
-	    }
+  for (i = 0; i < n; i++) {
+    for (j = 0; j < n; j++) {
+      k = j;
 
-	  if (P(i, j))
-	    {
-	      R(i, j) = *((xbt_node_t*) xbt_dynar_get_ptr(g->nodes, k));
-	    }
-	}
+      while ((P(i, k)) && (__xbt_find_in_dynar(g->nodes, P(i, k)) != i)) {
+	k = __xbt_find_in_dynar(g->nodes, P(i, k));
+      }
+
+      if (P(i, j)) {
+	R(i, j) = *((xbt_node_t *) xbt_dynar_get_ptr(g->nodes, k));
+      }
     }
+  }
 # undef R
 # undef P
 
@@ -419,15 +395,15 @@ xbt_node_t *xbt_graph_shortest_paths(xbt_graph_t g)
 }
 
 /** @brief Extract a spanning tree of the given graph */
-xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
+xbt_edge_t *xbt_graph_spanning_tree_prim(xbt_graph_t g)
 {
-  int tree_size=0;
-  int tree_size_max=xbt_dynar_length(g->nodes)-1;
-  xbt_edge_t *tree = xbt_new0(xbt_edge_t,tree_size_max);
-  xbt_edge_t e,edge;
+  int tree_size = 0;
+  int tree_size_max = xbt_dynar_length(g->nodes) - 1;
+  xbt_edge_t *tree = xbt_new0(xbt_edge_t, tree_size_max);
+  xbt_edge_t e, edge;
   xbt_node_t node = NULL;
   xbt_dynar_t edge_list = NULL;
-  xbt_heap_t heap = xbt_heap_new(10,NULL);
+  xbt_heap_t heap = xbt_heap_new(10, NULL);
   int cursor;
 
   xbt_assert0(!(g->directed),
@@ -437,31 +413,33 @@ xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
     node->xbtdata = NULL;
   }
 
-  node = xbt_dynar_getfirst_as(g->nodes,xbt_node_t);
-  node->xbtdata = (void*) 1;
+  node = xbt_dynar_getfirst_as(g->nodes, xbt_node_t);
+  node->xbtdata = (void *) 1;
   edge_list = node->out;
   xbt_dynar_foreach(edge_list, cursor, e)
-    xbt_heap_push(heap,e, -(e->length));
-  
-  while((edge=xbt_heap_pop(heap))) {
-    if((edge->src->xbtdata) && (edge->dst->xbtdata)) continue;
-    tree[tree_size++]=edge;
-    if(!(edge->src->xbtdata)) {
-      edge->src->xbtdata = (void*) 1;
+      xbt_heap_push(heap, e, -(e->length));
+
+  while ((edge = xbt_heap_pop(heap))) {
+    if ((edge->src->xbtdata) && (edge->dst->xbtdata))
+      continue;
+    tree[tree_size++] = edge;
+    if (!(edge->src->xbtdata)) {
+      edge->src->xbtdata = (void *) 1;
       edge_list = edge->src->out;
       xbt_dynar_foreach(edge_list, cursor, e) {
-	xbt_heap_push(heap,e, -(e->length));
+	xbt_heap_push(heap, e, -(e->length));
       }
     } else {
-      edge->dst->xbtdata = (void*) 1;
+      edge->dst->xbtdata = (void *) 1;
       edge_list = edge->dst->out;
       xbt_dynar_foreach(edge_list, cursor, e) {
-	xbt_heap_push(heap,e, -(e->length));
+	xbt_heap_push(heap, e, -(e->length));
       }
     }
-    if(tree_size==tree_size_max) break;
+    if (tree_size == tree_size_max)
+      break;
   }
-  
+
   xbt_heap_free(heap);
 
   return tree;
@@ -478,70 +456,72 @@ xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g)
  * each node comes before all nodes to which it has edges. Every DAG has at
  * least one topological sort, and may have many.
  */
-xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g)
+xbt_node_t *xbt_graph_topo_sort(xbt_graph_t g)
 {
- 
-  xbt_node_t* sorted;
-  int cursor,idx;
+
+  xbt_node_t *sorted;
+  int cursor, idx;
   xbt_node_t node;
- unsigned long n;
+  unsigned long n;
 
- n= xbt_dynar_length(g->nodes); 
- idx=n-1;
+  n = xbt_dynar_length(g->nodes);
+  idx = n - 1;
 
-  sorted=xbt_malloc(n*sizeof(xbt_node_t));
+  sorted = xbt_malloc(n * sizeof(xbt_node_t));
 
-  xbt_dynar_foreach(g->nodes,cursor , node)
-    node->xbtdata=xbt_new0(int,1);
+  xbt_dynar_foreach(g->nodes, cursor, node)
+    node->xbtdata = xbt_new0(int, 1);
 
-  xbt_dynar_foreach(g->nodes,cursor , node) 
-      xbt_graph_depth_visit(g,node,sorted,&idx);   
+  xbt_dynar_foreach(g->nodes, cursor, node)
+    xbt_graph_depth_visit(g, node, sorted, &idx);
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
     free(node->xbtdata);
     node->xbtdata = NULL;
   }
 
-  return sorted; 
+  return sorted;
 }
 
 /** @brief First-depth graph traversal */
-void xbt_graph_depth_visit(xbt_graph_t g,xbt_node_t n,xbt_node_t* sorted,int* idx )
+void xbt_graph_depth_visit(xbt_graph_t g, xbt_node_t n,
+			   xbt_node_t * sorted, int *idx)
 {
   int cursor;
   xbt_edge_t edge;
- 
-  if (*((int*)(n->xbtdata))==ALREADY_EXPLORED)
-    return;
-  else if (*((int*)(n->xbtdata))==CURRENTLY_EXPLORING)
-    THROW0(0,0,"There is a cycle");
-  else
-    {
-      *((int*)(n->xbtdata))=CURRENTLY_EXPLORING;
 
-      xbt_dynar_foreach(n->out,cursor, edge)
-	{
-	  xbt_graph_depth_visit(g,edge->dst,sorted,idx);
-	}
- 
-      *((int*)(n->xbtdata))=ALREADY_EXPLORED;
-      sorted[(*idx)--]=n;
-    }	     
+  if (*((int *) (n->xbtdata)) == ALREADY_EXPLORED)
+    return;
+  else if (*((int *) (n->xbtdata)) == CURRENTLY_EXPLORING)
+    THROW0(0, 0, "There is a cycle");
+  else {
+    *((int *) (n->xbtdata)) = CURRENTLY_EXPLORING;
+
+    xbt_dynar_foreach(n->out, cursor, edge) {
+      xbt_graph_depth_visit(g, edge->dst, sorted, idx);
+    }
+
+    *((int *) (n->xbtdata)) = ALREADY_EXPLORED;
+    sorted[(*idx)--] = n;
+  }
 }
 
 /********************* Import and Export ******************/
 static xbt_graph_t parsed_graph = NULL;
 static xbt_dict_t parsed_nodes = NULL;
 
-static void *(*__parse_node_label_and_data)(xbt_node_t, const char*, const char*) = NULL;
-static void *(*__parse_edge_label_and_data)(xbt_edge_t, const char*, const char*) = NULL;
+static void *(*__parse_node_label_and_data) (xbt_node_t, const char *,
+					     const char *) = NULL;
+static void *(*__parse_edge_label_and_data) (xbt_edge_t, const char *,
+					     const char *) = NULL;
 
 static void __parse_graph_begin(void)
 {
   DEBUG0("<graph>");
-  if(A_graphxml_graph_isDirected == A_graphxml_graph_isDirected_true)
+  if (A_graphxml_graph_isDirected == A_graphxml_graph_isDirected_true)
     parsed_graph = xbt_graph_new_graph(1, NULL);
-  else parsed_graph = xbt_graph_new_graph(0, NULL);
+  else
+    parsed_graph = xbt_graph_new_graph(0, NULL);
 
   parsed_nodes = xbt_dict_new();
 }
@@ -554,43 +534,48 @@ static void __parse_graph_end(void)
 
 static void __parse_node(void)
 {
-  xbt_node_t node =
-      xbt_graph_new_node(parsed_graph, NULL);
+  xbt_node_t node = xbt_graph_new_node(parsed_graph, NULL);
 
   DEBUG1("<node name=\"%s\"/>", A_graphxml_node_name);
-  if(__parse_node_label_and_data)
-    node->data = __parse_node_label_and_data(node,A_graphxml_node_label,
+  if (__parse_node_label_and_data)
+    node->data = __parse_node_label_and_data(node, A_graphxml_node_label,
 					     A_graphxml_node_data);
-  xbt_graph_parse_get_double(&(node->position_x),A_graphxml_node_position_x);
-  xbt_graph_parse_get_double(&(node->position_y),A_graphxml_node_position_y);
+  xbt_graph_parse_get_double(&(node->position_x),
+			     A_graphxml_node_position_x);
+  xbt_graph_parse_get_double(&(node->position_y),
+			     A_graphxml_node_position_y);
 
   xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 }
 
 static void __parse_edge(void)
 {
-  xbt_edge_t edge =
-    xbt_graph_new_edge(parsed_graph,
-		       xbt_dict_get(parsed_nodes,A_graphxml_edge_source),
-		       xbt_dict_get(parsed_nodes,A_graphxml_edge_target),
-		       NULL);
+  xbt_edge_t edge = xbt_graph_new_edge(parsed_graph,
+				       xbt_dict_get(parsed_nodes,
+						    A_graphxml_edge_source),
+				       xbt_dict_get(parsed_nodes,
+						    A_graphxml_edge_target),
+				       NULL);
 
-  if(__parse_edge_label_and_data)
-    edge->data = __parse_edge_label_and_data(edge,A_graphxml_edge_label,
+  if (__parse_edge_label_and_data)
+    edge->data = __parse_edge_label_and_data(edge, A_graphxml_edge_label,
 					     A_graphxml_edge_data);
 
-  xbt_graph_parse_get_double(&(edge->length),A_graphxml_edge_length);
+  xbt_graph_parse_get_double(&(edge->length), A_graphxml_edge_length);
 
   DEBUG3("<edge  source=\"%s\" target=\"%s\" length=\"%f\"/>",
 	 (char *) (edge->src)->data,
-	 (char *) (edge->dst)->data,
-	 xbt_graph_edge_get_length(edge));
+	 (char *) (edge->dst)->data, xbt_graph_edge_get_length(edge));
 }
 
 /** @brief Import a graph from a file following the GraphXML format */
 xbt_graph_t xbt_graph_read(const char *filename,
-			   void *(node_label_and_data)(xbt_node_t, const char*, const char*),
-			   void *(edge_label_and_data)(xbt_edge_t, const char*, const char*))
+			   void *(node_label_and_data) (xbt_node_t,
+							const char *,
+							const char *),
+			   void *(edge_label_and_data) (xbt_edge_t,
+							const char *,
+							const char *))
 {
 
   xbt_graph_t graph = NULL;
@@ -624,42 +609,47 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
   xbt_node_t node = NULL;
   xbt_edge_t edge = NULL;
   FILE *file = NULL;
-  const char *name=NULL;
+  const char *name = NULL;
 
-  file=fopen(filename,"w");
-  xbt_assert1(file, "Failed to open %s \n",filename);
+  file = fopen(filename, "w");
+  xbt_assert1(file, "Failed to open %s \n", filename);
 
-  if(g->directed) fprintf(file,"digraph test {\n");
-  else fprintf(file,"graph test {\n");
+  if (g->directed)
+    fprintf(file, "digraph test {\n");
+  else
+    fprintf(file, "graph test {\n");
 
-  fprintf(file,"  graph [overlap=scale]\n");
+  fprintf(file, "  graph [overlap=scale]\n");
 
-  fprintf(file,"  node [shape=box, style=filled]\n");
-  fprintf(file,"  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
-  
+  fprintf(file, "  node [shape=box, style=filled]\n");
+  fprintf(file,
+	  "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
+
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(file,"  \"%p\" ", node);
-    if((node_name)&&((name=node_name(node)))) fprintf(file,"[label=\"%s\"]",name);
-    fprintf(file,";\n");
+    fprintf(file, "  \"%p\" ", node);
+    if ((node_name) && ((name = node_name(node))))
+      fprintf(file, "[label=\"%s\"]", name);
+    fprintf(file, ";\n");
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
-    if(g->directed)
-      fprintf(file,"  \"%p\" -> \"%p\"",edge->src, edge->dst);
+    if (g->directed)
+      fprintf(file, "  \"%p\" -> \"%p\"", edge->src, edge->dst);
     else
-      fprintf(file,"  \"%p\" -- \"%p\"",edge->src, edge->dst);
-    if((edge_name)&&((name=edge_name(edge)))) fprintf(file,"[label=\"%s\"]",name);
-    fprintf(file,";\n");
+      fprintf(file, "  \"%p\" -- \"%p\"", edge->src, edge->dst);
+    if ((edge_name) && ((name = edge_name(edge))))
+      fprintf(file, "[label=\"%s\"]", name);
+    fprintf(file, ";\n");
   }
-  fprintf(file,"}\n");
+  fprintf(file, "}\n");
   fclose(file);
 }
 
 /** @brief Export the given graph in the GraphXML format */
 void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
-			       const char *(node_name)(xbt_node_t),
-			       const char *(edge_name)(xbt_edge_t),
-			       const char *(node_data_print)(void *),
-			       const char *(edge_data_print)(void *))
+			       const char *(node_name) (xbt_node_t),
+			       const char *(edge_name) (xbt_edge_t),
+			       const char *(node_data_print) (void *),
+			       const char *(edge_data_print) (void *))
 {
   int cursor = 0;
   xbt_node_t node = NULL;
@@ -667,30 +657,34 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
   FILE *file = NULL;
   const char *name = NULL;
 
-  file=fopen(filename,"w");
-  xbt_assert1(file, "Failed to open %s \n",filename);
+  file = fopen(filename, "w");
+  xbt_assert1(file, "Failed to open %s \n", filename);
 
-  fprintf(file,"<?xml version='1.0'?>\n");
-  fprintf(file,"<!DOCTYPE graph SYSTEM \"graphxml.dtd\">\n");
-  if(g->directed) fprintf(file,"<graph isDirected=\"true\">\n");
-  else fprintf(file,"<graph isDirected=\"false\">\n");
+  fprintf(file, "<?xml version='1.0'?>\n");
+  fprintf(file, "<!DOCTYPE graph SYSTEM \"graphxml.dtd\">\n");
+  if (g->directed)
+    fprintf(file, "<graph isDirected=\"true\">\n");
+  else
+    fprintf(file, "<graph isDirected=\"false\">\n");
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(file,"  <node name=\"%p\" ", node);
-    if((node_name)&&((name=node_name(node)))) fprintf(file,"label=\"%s\" ",name);
-    if((node_data_print)&&((name=node_data_print(node->data)))) 
-      fprintf(file,"data=\"%s\" ",name);
-    fprintf(file,">\n");
+    fprintf(file, "  <node name=\"%p\" ", node);
+    if ((node_name) && ((name = node_name(node))))
+      fprintf(file, "label=\"%s\" ", name);
+    if ((node_data_print) && ((name = node_data_print(node->data))))
+      fprintf(file, "data=\"%s\" ", name);
+    fprintf(file, ">\n");
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
-    fprintf(file,"  <edge source=\"%p\" target =\"%p\" ",
-	    edge->src, edge->dst );
-    if((edge_name)&&((name=edge_name(edge)))) fprintf(file,"label=\"%s\" ",name);
-    if(edge->length>=0.0) fprintf(file,"length=\"%g\" ",edge->length);
-    if((edge_data_print)&&((name=edge_data_print(edge->data)))) 
-      fprintf(file,"data=\"%s\" ",name);
-    fprintf(file,">\n");
+    fprintf(file, "  <edge source=\"%p\" target =\"%p\" ",
+	    edge->src, edge->dst);
+    if ((edge_name) && ((name = edge_name(edge))))
+      fprintf(file, "label=\"%s\" ", name);
+    if (edge->length >= 0.0)
+      fprintf(file, "length=\"%g\" ", edge->length);
+    if ((edge_data_print) && ((name = edge_data_print(edge->data))))
+      fprintf(file, "data=\"%s\" ", name);
+    fprintf(file, ">\n");
   }
-  fprintf(file,"</graph>\n");
+  fprintf(file, "</graph>\n");
   fclose(file);
 }
-
