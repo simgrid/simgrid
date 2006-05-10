@@ -37,7 +37,7 @@
 #include "xbt/misc.h"
 
 #include <stdarg.h>
-
+SG_BEGIN_DECL()
 /**\brief Log priorities
  * \ingroup XBT_log
  *
@@ -585,5 +585,6 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define XBT_IN5(fmt,a,b,c,d,e) LOG6(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d,e)
 #define XBT_OUT              LOG1(xbt_log_priority_trace, "<< end of %s",       _XBT_FUNCTION)
 #define XBT_HERE             LOG0(xbt_log_priority_trace, "-- was here")
+SG_END_DECL()
 
 #endif /* ! _XBT_LOG_H_ */
