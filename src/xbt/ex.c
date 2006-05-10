@@ -147,11 +147,14 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 	DEBUG4("%#lx %s [%#lx-%#lx]",
 	       addr, found? "in":"out of",first,last);
       }
-      if (!found) 
-	CRITICAL0("Problem while reading the maps file");
-
       fclose(maps);
       free(maps_name);
+
+      if (!found) {
+	WARN0("Problem while reading the maps file");
+	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
+	continue;
+      }
 
       /* Ok, Found the offset of the maps line containing the searched symbol. 
 	 We now need to substract this from the address we got from backtrace.
