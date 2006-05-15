@@ -312,7 +312,7 @@ gras_msg_wait_ext(double           timeout,
     xbt_dynar_push(pd->msg_queue,&msg);
     
     now=gras_os_time();
-    if (now - start + 0.001 < timeout) {
+    if (now - start + 0.001 > timeout) {
       THROW1(timeout_error,  now-start+0.001-timeout,
 	     "Timeout while waiting for msg %s",msgt_want->name);
     }
