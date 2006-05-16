@@ -1,0 +1,1 @@
+alltoall.deploy.sh alltoall.Makefile.remote alltoall.Makefile.local test_rl test_sg
