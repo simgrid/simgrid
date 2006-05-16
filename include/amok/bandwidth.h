@@ -11,9 +11,6 @@
 #define AMOK_BANDWIDTH_H
 
 #include "amok/base.h"
-
-/* module handling */
-
    
 /** \addtogroup AMOK_bw
  *  \brief Test the bandwidth between two nodes
@@ -91,6 +88,8 @@
  *
  *  @{
  */
+
+/* module handling */
 
 void amok_bw_init(void);
 void amok_bw_exit(void);
