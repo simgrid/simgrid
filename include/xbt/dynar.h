@@ -64,6 +64,7 @@ SG_BEGIN_DECL()
   xbt_dynar_t   xbt_dynar_new(unsigned long elm_size, 
 			     void_f_pvoid_t *free_func);
   void          xbt_dynar_free(xbt_dynar_t *dynar);
+  void          xbt_dynar_free_voidp(void *dynar);
   void          xbt_dynar_free_container(xbt_dynar_t *dynar);
 
   unsigned long xbt_dynar_length(const xbt_dynar_t dynar);
