@@ -448,7 +448,7 @@ MSG_error_t MSG_main(void)
       } 
     }
     if(XBT_LOG_ISENABLED(msg, xbt_log_priority_debug) ||
-       XBT_LOG_ISENABLED(global, xbt_log_priority_debug)) {
+       XBT_LOG_ISENABLED(msg_kernel, xbt_log_priority_debug)) {
       DEBUG0("Aborting!");
       xbt_abort();
     }

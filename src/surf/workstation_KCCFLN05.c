@@ -9,7 +9,7 @@
 #include "xbt/dict.h"
 #include "workstation_KCCFLN05_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(workstation_KCCFLN05, surf,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 				"Logging specific to the SURF workstation module (KCCFLN05)");
 
 static int nb_workstation = 0;

@@ -7,7 +7,7 @@
 
 #include "cpu_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu, surf,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 				"Logging specific to the SURF CPU module");
 
 surf_cpu_resource_t surf_cpu_resource = NULL;

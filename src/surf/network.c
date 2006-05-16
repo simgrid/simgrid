@@ -8,7 +8,7 @@
 #include "network_private.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(network, surf,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
 				"Logging specific to the SURF network module");
 
 surf_network_resource_t surf_network_resource = NULL;

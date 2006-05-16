@@ -7,8 +7,7 @@
 
 #include "network_dassf_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(network_dassf, surf,
-				"Logging specific to the SURF network module");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 /* surf_network_resource_t surf_network_resource = NULL; */
 static xbt_dict_t network_link_set = NULL;
