@@ -490,11 +490,11 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 /** @brief like THROW4, but adding some details to the message of an existing exception
  *  @hideinitializer
  */
-#define RETHROW4(msg,a,b,c,d)   _XBT_PRE_RETHROW msg,a,b,c,    _XBT_POST_RETHROW
+#define RETHROW4(msg,a,b,c,d)   _XBT_PRE_RETHROW msg,a,b,c,d,  _XBT_POST_RETHROW
 /** @brief like THROW5, but adding some details to the message of an existing exception
  *  @hideinitializer
  */
-#define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e _XBT_POST_RETHROW
+#define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e, _XBT_POST_RETHROW
 
 /** @brief Exception destructor */
 void xbt_ex_free(xbt_ex_t e);
