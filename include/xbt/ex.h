@@ -436,6 +436,9 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 /** @brief Builds and throws an exception with a string taking six arguments
     @hideinitializer */
 #define THROW6(c,v,m,a1,a2,a3,a4,a5,a6) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6))
+/** @brief Builds and throws an exception with a string taking seven arguments
+    @hideinitializer */
+#define THROW7(c,v,m,a1,a2,a3,a4,a5,a6,a7) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6,a7))
 
 #define THROW_IMPOSSIBLE     THROW0(unknown_error,0,"The Impossible Did Happen (yet again)")
 #define THROW_UNIMPLEMENTED  THROW1(unknown_error,0,"Function %s unimplemented",__FUNCTION__)
