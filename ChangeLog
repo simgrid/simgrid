@@ -48,6 +48,8 @@ SimGrid (3.0.2) unstable; urgency=low
         int my_handler(gras_msg_cb_ctx_t ctx  , void *payload_data) {
           gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
       and you're set.
+  * New! function: gras_msg_handleall to deal with all messages arriving
+      within a given period. 
 
   AMOK:
   * Bandwidth module: 
@@ -55,6 +57,8 @@ SimGrid (3.0.2) unstable; urgency=low
       impossible to mesure the latency this way (needs one byte-long tests)
     WARNING: this changes the amok_bw_* function semantic. [MQ]
     - Implements the link saturation stuff. [MQ]
+  * Host management module: 
+    New! module factorizing code that we wrote over and over [MQ].
       
  --
 
