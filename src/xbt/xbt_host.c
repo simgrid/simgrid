@@ -14,9 +14,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host,xbt,"Host management");
 
 /** \brief constructor */
-xbt_host_t xbt_host_new(char *name, int port)  {
+xbt_host_t xbt_host_new(const char *name, int port)  {
    xbt_host_t res=xbt_new(s_xbt_host_t, 1);
-   res->name = name;
+   res->name = xbt_strdup(name);
    res->port = port;
    return res;
 }
