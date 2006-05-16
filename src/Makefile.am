@@ -177,7 +177,8 @@ SG_SRC=  \
 
 AMOK_SRC= \
   amok/base.c \
-  amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c 
+  amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
+  amok/HostManagement/hostmanagement.c
 
 ###
 ### Testing infrastructure
