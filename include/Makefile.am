@@ -10,6 +10,7 @@ nobase_include_HEADERS = \
 	xbt/graph.h \
 	xbt/fifo.h \
 	xbt/swag.h \
+	xbt/host.h \
 	xbt/config.h \
 	xbt/cunit.h \
 	xbt/graphxml_parse.h \
