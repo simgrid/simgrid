@@ -63,7 +63,9 @@ xbt/log.h:/** \name CRITICAL
 
 [modules]
   * better formalisation of what modules are (amok deeply needs it)
-    configuration + init() + exit() + dependencies
+    configuration + init() + join() + exit() + leave() + dependencies
+    init and exit are run only once
+    join and leave are run for each process.
   * allow to load them at runtime
     check in erlang how they upgrade them without downtime
 
