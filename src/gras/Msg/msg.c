@@ -362,12 +362,39 @@ gras_msg_send(gras_socket_t   sock,
   gras_msg_send_ext(sock, e_gras_msg_kind_oneway,0, msgtype, payload);
 }
 
+/** @brief Handle all messages arriving within the given period
+ *
+ * @param timeOut: How long to wait for incoming messages (in seconds)
+ * @return the error code (or no_error).
+ *
+ * Messages are dealed with just like gras_msg_handle() would do. The
+ * difference is that gras_msg_handle() handles at most one message (or wait up
+ * to timeout second when no message arrives) while this function handles any
+ * amount of messages, and lasts the given period in any case.
+ */
+void 
+gras_msg_handleall(double period) {
+  xbt_ex_t e;
+  double begin=gras_os_time();
+  double now;
+
+  do {
+    now=gras_os_time();
+    TRY{
+      gras_msg_handle(period - now + begin);
+    } CATCH(e) {
+      if (e.category != timeout_error) 
+	RETHROW0("Error while waiting for messages: %s");
+      xbt_ex_free(e);
+    }
+  } while (now - begin < period);
+}
 /** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
  *
  * @param timeOut: How long to wait for incoming messages (in seconds)
  * @return the error code (or no_error).
  *
- * Messages are passed to the callbacks.
+ * Messages are passed to the callbacks. See also gras_msg_handleall().
  */
 void
 gras_msg_handle(double timeOut) {
@@ -424,8 +451,10 @@ gras_msg_handle(double timeOut) {
 	       e_gras_msg_kind_names[msg.kind]);
     
       } CATCH(e) {
-	RETHROW1("Error caught while receiving a message on select()ed socket %p: %s",
-	  	 msg.expe);
+	RETHROW4("Error while receiving a message on select()ed socket %p to [%s]%s:%d: %s",
+		 msg.expe,
+		 gras_socket_peer_proc(msg.expe),gras_socket_peer_name(msg.expe),
+		 gras_socket_peer_port(msg.expe));
       }
     }
   }
