@@ -10,8 +10,8 @@
 #include "amok/Bandwidth/bandwidth_private.h"
 #include "gras/Msg/msg_private.h" /* FIXME: This mucks with contextes to answer RPC directly */
 
-XBT_LOG_EXTERNAL_CATEGORY(bw);
-XBT_LOG_DEFAULT_CATEGORY(bw);
+XBT_LOG_EXTERNAL_CATEGORY(amok_bw);
+XBT_LOG_DEFAULT_CATEGORY(amok_bw);
 
 static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload);
 static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload);

@@ -13,7 +13,7 @@
 #include "amok/Bandwidth/bandwidth_private.h"
 #include "gras/messages.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(bw,amok,"Bandwidth testing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_bw,amok,"Bandwidth testing");
 
 
 /******************************
