@@ -45,7 +45,7 @@ int sensor (int argc,char *argv[]) {
   amok_bw_init();
 
   g=gras_userdata_new(sensor_data_t);  
-  g->sock = gras_socket_server(4000);
+  g->sock = gras_socket_server(atoi(argv[1]));
   g->done = 0;
   gras_msgtype_declare("kill",NULL);
   gras_cb_register(gras_msgtype_by_name("kill"),&sensor_cb_kill);
