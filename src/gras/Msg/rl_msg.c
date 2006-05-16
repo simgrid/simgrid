@@ -26,9 +26,7 @@ void gras_msg_send_ext(gras_socket_t   sock,
   static gras_datadesc_type_t ulong_type=NULL;
   char c_kind=(char)kind;
   
-  if (!msgtype)
-    THROW0(arg_error,0,
-	   "Cannot send the NULL message (did msgtype_by_name fail?)");
+  xbt_assert0(msgtype,"Cannot send the NULL message");
 
   if (!string_type) {
     string_type = gras_datadesc_by_name("string");
@@ -103,14 +101,14 @@ gras_msg_recv(gras_socket_t    sock,
     gras_trp_recv(sock, &c_kind, 1);
     msg->kind=(e_gras_msg_kind_t)c_kind;
   } CATCH(e) {
-    RETHROW1("Exception caught while trying to get the mesage header on socket %p: %s",
-    	     sock);
+    RETHROW0("Exception caught while trying to get the mesage header: %s");
   }
 
   for (cpt=0; cpt<4; cpt++)
     if (header[cpt] != _GRAS_header[cpt])
       THROW2(mismatch_error,0,
-	     "Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",header,_GRAS_header);
+	     "Incoming bytes do not look like a GRAS message (header='%.4s' not '%.4s')",
+	     header,_GRAS_header);
   if (header[4] != _GRAS_header[4]) 
     THROW2(mismatch_error,0,"GRAS protocol mismatch (got %d, use %d)",
 	   (int)header[4], (int)_GRAS_header[4]);
