@@ -196,6 +196,7 @@ int client(int argc,char *argv[]) {
   
   gras_msg_send(toserver,gras_msgtype_by_name("kill"),NULL);
   gras_msg_send(toforwarder,gras_msgtype_by_name("kill"),NULL);
+  gras_os_sleep(1); /* give peer a chance to get the message before closing the socket */
 
   /* 11. Cleanup the place before leaving */
   gras_socket_close(toserver);
