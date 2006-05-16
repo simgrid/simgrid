@@ -17,6 +17,8 @@ SimGrid (3.0.2) unstable; urgency=low
   * Reworked a little bit some #include statements to load only required
     headers. Some user code that relied on SimGrid to include stdlib or
     stdio may need to include it by themselves. [AL]
+  * Fixed xbt/log.h. A missing SG_BEGIN_DECL prevented compilation with
+    g++. [AL]
 
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
