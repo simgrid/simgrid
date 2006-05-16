@@ -15,6 +15,7 @@
 #include "xbt/ex.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "xbt/host.h"
 
 #include "xbt/config.h" /* prototypes of this module */
 
@@ -51,13 +52,6 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
 
 static void xbt_cfg_str_free(void *d){
   free(*(void**)d);
-}
-static void xbt_cfg_host_free(void *d){
-  xbt_host_t h=(xbt_host_t) *(void**)d; 
-  if (h) {
-    if (h->name) free(h->name);
-    free(h);
-  }
 }
 
 /*----[ Memory management ]-----------------------------------------------*/
@@ -248,7 +242,7 @@ xbt_cfg_register(xbt_cfg_t cfg,
    break;
 
   case xbt_cfgelm_host:
-   res->content = xbt_dynar_new(sizeof(xbt_host_t),&xbt_cfg_host_free);
+   res->content = xbt_dynar_new(sizeof(xbt_host_t),&xbt_host_free_voidp);
    break;
 
   default:
@@ -760,12 +754,9 @@ void
 xbt_cfg_set_host(xbt_cfg_t cfg,const char*name, 
 		  const char *host,int port) {
   xbt_cfgelm_t variable;
-  xbt_host_t val=xbt_new(s_xbt_host_t,1);
+  xbt_host_t val=xbt_host_new(host,port);
 
   VERB3("Configuration setting: %s=%s:%d",name,host,port);
-
-  val->name = xbt_strdup(name);
-  val->port = port;
 
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_host);
 
