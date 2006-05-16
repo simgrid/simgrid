@@ -881,6 +881,47 @@ These are changes to FleXML itself, not SimGrid. But since we kinda hijacked
 the development of FleXML, I can grant you that any patches would be really
 welcome and quickly integrated.
 
+\subsection faq_gras_transport GRAS spits networking error messages
+
+Gras, on real platforms, naturally use regular sockets to communicate. They
+are deeply hiden in the gras abstraction, but when things go wrong, you may
+get some weird error messages. Here are some example, with the probable
+reason:
+
+ - <b>Transport endpoint is not connected</b>: several processes try to open
+   a server socket on the same port number of the same machine. This is
+   naturally bad and each process should pick its own port number for this.\n
+   Maybe, you just have some processes remaining from a previous experiment 
+   on your machine.\n
+   Killing them may help, but again if you kill -KILL them, you'll have to
+   wait for a while: they didn't close there sockets properly and the system
+   needs a while to notice that this port is free again.
+
+ - <b>Socket closed by remote side</b>: if the remote process is not
+   supposed to close the socket at this point, it may be dead.
+   
+ - <b>Connection reset by peer</b>: I found this on internet about this
+   error. I think it's what's happening here, too:\n   
+   <i>This basically means that a network error occurred while the client was
+   receiving data from the server. But what is really happening is that the
+   server actually accepts the connection, processes the request, and sends
+   a reply to the client. However, when the server closes the socket, the
+   client believes that the connection has been terminated abnormally
+   because the socket implementation sends a TCP reset segment telling the
+   client to throw away the data and report an error.\n
+   Sometimes, this problem is caused by not properly closing the
+   input/output streams and the socket connection. Make sure you close the
+   input/output streams and socket connection properly. If everything is
+   closed properly, however, and the problem persists, you can work around
+   it by adding a one-second sleep before closing the streams and the
+   socket. This technique, however, is not reliable and may not work on all
+   systems.</i>\n
+   Since GRAS sockets are closed properly (repeat after me: there is no bug
+   in GRAS), it is either that you are closing your sockets on server side
+   before the client get a chance to read them (use gras_os_sleep() to delay
+   the server), or the server died awfully before the client got the data.
+
+
 \subsection faq_deadlock There is a deadlock !!!
 
 Unfortunately, we cannot debug every code written in SimGrid.  We
