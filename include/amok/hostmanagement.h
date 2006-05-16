@@ -17,8 +17,32 @@
  *  \brief Managing remote servers
  * 
  * This module provide the main loop of servers designed to answer to
- * callbacks. They can furthermore be stopped remotely.
+ * callbacks. They can furthermore be stopped remotely.  
  * 
+ * This module is especially useful to program following the centralized
+ * master/slave architecture. In this architecture, one of the processes
+ * acts as a master dispatching orders to the others, which are called
+ * slaves. 
+  
+ * The source code of the <b>slaves</b> then only consists in:
+ *   - declaring the gras datatypes (see \ref GRAS_dd)
+ *   - declaring the messages (with gras_msgtype_declare() or gras_msgtype_declare_rpc())
+ *   - attaching the right callbacks to the messages (with gras_cb_register())
+ *   - declaring the right repetitive actions (see \ref GRAS_timer)
+ *   - joining the group (with amok_hm_group_join(), so that the master now it)
+ *   - entering the endless loop (with amok_hm_mainloop()). 
+ 
+ * The <b>master</b>, on its side, should  create declare the datatypes and messages just like slaves.
+ * Afterward, there is two solutions. 
+ *   - If your master is a deamon which never stops itself (just like regular UNIX daemons), it should: 
+ *      - register the needed callbacks to messages comming from slaves
+ *      - register repetitive actions 
+ *      - entering the main loop.
+ *   - If the master is not a deamon, it should:
+ *      - wait a moment for the slaves registration (using gras_msg_handleall())
+ *      - run its algorithm. For this, it may call RPC on slaves, or explicitely wait (with gras_msg_wait()) for the answers it expects.
+
+ *
  * @{
  */
 
@@ -27,6 +51,7 @@ void amok_hm_init(void);
 void amok_hm_exit(void);
 
 void amok_hm_mainloop(double timeOut);
+
 void amok_hm_kill_hp(char *name,int port);
 void amok_hm_kill(gras_socket_t buddy);
 void amok_hm_kill_sync(gras_socket_t buddy);

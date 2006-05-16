@@ -111,6 +111,8 @@ static int amok_hm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
 
 /* Initialization stuff */
 static short amok_hm_used = 0;
+
+/** \brief Initialize the host management module. Every process must run it before use */
 void amok_hm_init() {
   /* pure INIT part */
   if (! amok_hm_used) {
@@ -159,8 +161,7 @@ void amok_hm_init() {
 		   &amok_hm_cb_shutdown);
 }
 
-
-
+/** \brief Finalize the host management module. Every process should run it after use */
 void amok_hm_exit() {
   /* pure EXIT part */
   amok_hm_used--;
@@ -183,6 +184,7 @@ void amok_hm_exit() {
 }
 
 
+/** \brief Enter the main loop of the program. It won't return until we get a kill message. */
 void amok_hm_mainloop(double timeOut) {
   amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
   
