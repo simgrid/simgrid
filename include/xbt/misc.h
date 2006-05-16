@@ -78,11 +78,6 @@
 /* End of cruft for C++ */
 
 SG_BEGIN_DECL()
-/* Dunno where to place this: needed by config and amok */
-typedef struct {  
-   char *name;
-   int port;
-} s_xbt_host_t, *xbt_host_t;
 
 const char *xbt_procname(void);
 
