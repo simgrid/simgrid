@@ -120,10 +120,11 @@ COMMON_SRC=\
   xbt/swag.c                                                                 \
   xbt/graph.c                                                                \
   xbt/set.c                                                                  \
+  xbt/xbt_host.c                                                             \
   xbt/module.c                                                               \
   xbt/config.c                                                               \
   xbt/cunit.c                                                                \
-  xbt/graphxml_parse.c                                                          \
+  xbt/graphxml_parse.c                                                       \
   \
   gras/gras.c \
   \
@@ -176,7 +177,7 @@ SG_SRC=  \
 
 AMOK_SRC= \
   amok/base.c \
-  amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c
+  amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c 
 
 ###
 ### Testing infrastructure
