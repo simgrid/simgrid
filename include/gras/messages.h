@@ -130,6 +130,7 @@ gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
 		     gras_msgtype_t  msgt_want,
 		     gras_socket_t  *expeditor,
 		     void           *payload);
+  void gras_msg_handleall(double period);   
   void gras_msg_handle(double timeOut);
 
 /** @} */
