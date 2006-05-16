@@ -8,6 +8,7 @@ my @extra_files = qw(html/index.html html/faq.html html/publis.html html/pages.h
 my %debug;
 $debug{'parse'} = 0; # show how we parse the module tree
 $debug{'input'} = 0; # display the resulting tree
+$debug{'handle'}= 0; # Be verbose on the post-processing
 $debug{'rename'}= 0; # do not overwrite the files (allows several debuging runs without rerunning doxygen)
 
 my @allfiles;
@@ -141,6 +142,8 @@ sub handle_page {
   my $current=shift;
   my $level=shift;
 
+  print "Handle $current->{'file'} at level $level\n" if $debug{'handle'};
+    
   # we generate the tabs bottom up begining from where we are in the tree
   # and display them top down, as it should in a file
   my @tabs = ();
@@ -174,9 +177,8 @@ sub handle_page {
     $newname =~ s/.html/.new.html/;
     open TO,">$newname" || die;
     while (<FROM>) {
-      # add "current" to the module API granfather page
-      s|<li><a href="modules.html"><span>Modules API</span></a></li>|<li id="current"><a href="modules.html"><span>Modules API</span></a></li>|;
-      
+      # add "current" to the module API granfather page
+      s|<li><a href="modules.html"><span>[^<]*</span></a></li>|<li id="current"><a href="modules.html"><span>Modules API</span></a></li>|;
       print TO $_;
       last if m|</ul></div>|;
     }
