@@ -8,8 +8,8 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(global, msg,
-				"Logging specific to MSG (global)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
+				"Logging specific to MSG (kernel)");
 
 int __stop_at_time = -1.0 ;
 

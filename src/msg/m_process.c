@@ -8,7 +8,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(m_process, msg,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
 				"Logging specific to MSG (process)");
 
 /** \defgroup m_process_management Management Functions of Agents

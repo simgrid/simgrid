@@ -8,7 +8,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gos, msg,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
 				"Logging specific to MSG (gos)");
 
 /** \defgroup msg_gos_functions MSG Operating System Functions

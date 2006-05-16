@@ -8,7 +8,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(environment, msg,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_environment, msg,
 				"Logging specific to MSG (environment)");
 
 /** \defgroup msg_easier_life      Platform and Application management
