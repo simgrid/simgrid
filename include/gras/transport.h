@@ -65,6 +65,8 @@ int   gras_socket_my_port  (gras_socket_t sock);
 int   gras_socket_peer_port(gras_socket_t sock);
 /** Get the host name of the remote side */
 char *gras_socket_peer_name(gras_socket_t sock);
+/** Get the process name of the remote side */
+char *gras_socket_peer_proc(gras_socket_t sock);
 /* @}*/
 
 /** \defgroup GRAS_sock_meas Using measurement sockets
