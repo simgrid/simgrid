@@ -88,6 +88,12 @@ void *xbt_graph_node_get_data(xbt_node_t node)
   return node->data;
 }
 
+void xbt_graph_node_set_data(xbt_node_t node, void *data)
+{
+  node->data = data;
+}
+
+
 void *xbt_graph_edge_get_data(xbt_edge_t edge)
 {
   return edge->data;
