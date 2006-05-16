@@ -162,6 +162,7 @@ void gras_trp_socket_new(int incoming,
   sock->port      = -1;
   sock->peer_port = -1;
   sock->peer_name = NULL;
+  sock->peer_proc = NULL;
 
   sock->data   = NULL;
   sock->bufdata = NULL;
@@ -274,7 +275,7 @@ gras_socket_client_ext(const char *host,
  */
 gras_socket_t
 gras_socket_server(unsigned short port) {
-   return gras_socket_server_ext(port,32,0);
+   return gras_socket_server_ext(port,32*1024,0);
 }
 
 /**
@@ -286,7 +287,7 @@ gras_socket_server(unsigned short port) {
 gras_socket_t
 gras_socket_client(const char *host,
 		   unsigned short port) {
-   return gras_socket_client_ext(host,port,32,0);
+   return gras_socket_client_ext(host,port,32*1024,0);
 }
 
 
@@ -363,6 +364,13 @@ int   gras_socket_peer_port(gras_socket_t sock) {
 }
 char *gras_socket_peer_name(gras_socket_t sock) {
   return sock->peer_name;
+}
+char *gras_socket_peer_proc(gras_socket_t sock) {
+  return sock->peer_proc;
+}
+
+void gras_socket_peer_proc_set(gras_socket_t sock,char*peer_proc) {
+  sock->peer_proc = peer_proc;
 }
 
 /** \brief Check if the provided socket is a measurement one (or a regular one) */

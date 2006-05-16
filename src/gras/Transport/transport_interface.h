@@ -25,6 +25,8 @@ void gras_trp_flush(gras_socket_t sd);
 /* Find which socket needs to be read next */
 gras_socket_t gras_trp_select(double timeout);
 
+/* Set the peer process name (used by messaging layer) */
+void gras_socket_peer_proc_set(gras_socket_t sock,char*peer_proc);
 
 /***
  *** Plugin mechanism 
