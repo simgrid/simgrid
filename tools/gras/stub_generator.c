@@ -560,13 +560,13 @@ int main(int argc, char *argv[])
 {
   char *project_name = NULL;
   char *deployment_file = NULL;
-
+  int i;
+   
   surf_init(&argc, argv);
 
-  xbt_assert1((argc ==3),"Usage: %s project_name deployment_file\n",argv[0]);
+  xbt_assert1((argc >= 3),"Usage: %s project_name deployment_file [deployment_file...]\n",argv[0]);
 
   project_name = argv[1];
-  deployment_file = argv[2];
 
   process_function_set = xbt_dict_new();
   process_list = xbt_dynar_new(sizeof(s_process_t),s_process_free);
@@ -575,9 +575,13 @@ int main(int argc, char *argv[])
   STag_surfxml_process_fun = parse_process_init;
   ETag_surfxml_argument_fun = parse_argument;
   ETag_surfxml_process_fun = parse_process_finalize;
-  surf_parse_open(deployment_file);
-  if(surf_parse()) xbt_assert1(0,"Parse error in %s",deployment_file);
-  surf_parse_close();
+  for(i=2; i<argc; i++) {
+     deployment_file = argv[i];
+     surf_parse_open(deployment_file);
+     if(surf_parse()) xbt_assert1(0,"Parse error in %s",deployment_file);
+     surf_parse_close();
+  }
+
 
   warning = xbt_new(char,strlen(WARN)+strlen(deployment_file)+10);
   sprintf(warning,WARN,deployment_file);
