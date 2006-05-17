@@ -1,0 +1,44 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description>
+  <!-- The Tremblay node, arguments :: all others nodes -->
+  <process host="Tremblay" function="node">
+     <argument value="4000"/>
+     <argument value="Jupiter"/>  
+     <argument value="Fafard"/> 
+     <argument value="Ginette"/> 
+     <argument value="Bourassa"/> 
+  </process>
+  <!-- The Jupiter node, arguments :: all others nodes -->
+  <process host="Jupiter" function="node">
+     <argument value="4000"/>
+     <argument value="Tremblay"/> 
+     <argument value="Fafard"/> 
+     <argument value="Ginette"/> 
+     <argument value="Bourassa"/> 
+  </process>
+  <!-- The Fafard node, arguments :: all others nodes -->
+  <process host="Fafard" function="node">
+     <argument value="4000"/>
+     <argument value="Tremblay"/> 
+     <argument value="Jupiter"/>  
+     <argument value="Ginette"/> 
+     <argument value="Bourassa"/> 
+  </process>
+  <!-- The Ginette node, arguments :: all others nodes -->
+  <process host="Ginette" function="node">
+     <argument value="4000"/>
+     <argument value="Tremblay"/> 
+     <argument value="Jupiter"/>  
+     <argument value="Fafard"/> 
+     <argument value="Bourassa"/> 
+  </process>
+  <!-- The Bourassa node, arguments :: all others nodes -->
+  <process host="Bourassa" function="node">
+     <argument value="4000"/>
+     <argument value="Tremblay"/> 
+     <argument value="Jupiter"/>  
+     <argument value="Fafard"/> 
+     <argument value="Ginette"/> 
+  </process>
+</platform_description>
