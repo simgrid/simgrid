@@ -8,8 +8,8 @@
 #include "surf_private.h"
 #include "xbt/module.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_main, surf,
-				"Logging specific to the SURF maxmin module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
+				"Logging specific to SURF (kernel)");
 
 typedef struct surf_resource_object {
   surf_resource_t resource;
@@ -249,6 +249,7 @@ double surf_solve(void)
   int i;
 
   if (first_run) {
+    DEBUG0("First Run! Let's \"purge\" events and put resources in the right state");
     while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
       if (next_event_date > NOW)
 	break;
@@ -269,20 +270,27 @@ double surf_solve(void)
 
   min = -1.0;
 
+  DEBUG0("Looking for next action end");
   xbt_dynar_foreach(resource_list, i, resource) {
     resource_next_action_end =
 	resource->common_private->share_resources(NOW);
+    DEBUG2("Resource [%s] : next action end = %f",resource->common_public->name,
+	   resource_next_action_end);
     if (((min < 0.0) || (resource_next_action_end < min))
 	&& (resource_next_action_end >= 0.0))
       min = resource_next_action_end;
   }
+  DEBUG1("Next action end : %f", min);
 
   if (min < 0.0)
     return -1.0;
 
+  DEBUG0("Looking for next event");
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
+    DEBUG1("Next event : %f",next_event_date);
     if (next_event_date > NOW + min)
       break;
+    DEBUG0("Updating resources");
     while ((event =
 	    tmgr_history_get_next_event_leq(history, next_event_date,
 					    &value,
@@ -290,6 +298,7 @@ double surf_solve(void)
       if (resource_obj->resource->common_private->
 	  resource_used(resource_obj)) {
 	min = next_event_date - NOW;
+	DEBUG1("This event will modify resource state. Next event set to %f", min);
       }
       /* update state of resource_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
@@ -298,6 +307,7 @@ double surf_solve(void)
     }
   }
 
+  DEBUG1("Duration set to %f", min);
 
   xbt_dynar_foreach(resource_list, i, resource) {
     resource->common_private->update_actions_state(NOW, min);

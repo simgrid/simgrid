@@ -10,6 +10,9 @@
 #include "xbt/log.h"
 #include "surf/surfxml_parse_private.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_deployment, msg,
+				"Logging specific to MSG (deployment)");
+
 static int parse_argc = -1 ;
 static char **parse_argv = NULL;
 static m_process_code_t parse_code = NULL;
@@ -53,10 +56,14 @@ static void parse_process_finalize(void)
     arg->argv = parse_argv;
     arg-> kill_time = kill_time;
 
+    DEBUG3("Process %s(%s) will be started at time %f", arg->name, 
+	   arg->host->name,start_time);
     surf_timer_resource->extension_public->set(start_time, (void*) &MSG_process_create_with_arguments,
 					       arg);
   }
   if((start_time<0) || (start_time==MSG_get_clock())) {
+    DEBUG2("Starting Process %s(%s) right now", parse_argv[0],
+	   parse_host->name);
     process = MSG_process_create_with_arguments(parse_argv[0], parse_code, 
 						NULL, parse_host,
 						parse_argc,parse_argv);
