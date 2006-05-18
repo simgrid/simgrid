@@ -21,7 +21,6 @@ typedef struct command {
 				   should start by this field!!! */
   void *function;
   void *args;
-  char *name;
   s_xbt_swag_hookup_t command_set_hookup;
 } s_command_t, *command_t;
 
