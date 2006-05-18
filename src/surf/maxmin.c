@@ -10,8 +10,8 @@
 #include "xbt/log.h"
 #include "maxmin_private.h"
 #include <stdlib.h>
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(maxmin, surf,
-				"Logging specific to the SURF maxmin module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf,
+				"Logging specific to SURF (maxmin)");
 
 lmm_system_t lmm_system_new(void)
 {
@@ -460,7 +460,7 @@ void lmm_solve(lmm_system_t sys)
   } while (xbt_swag_size(&(sys->saturated_variable_set)));
 
   sys->modified = 0;
-  if(XBT_LOG_ISENABLED(maxmin, xbt_log_priority_debug)) {
+  if(XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     lmm_print(sys);
   }
 }
