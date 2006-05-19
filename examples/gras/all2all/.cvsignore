@@ -1,4 +1,4 @@
-all2all_node *_simulator
+all2all_sender all2all_receiver *_simulator
 .deps .libs Makefile Makefile.in _*.c 
 test_sg test_rl
 *.Makefile.am *.Makefile.local *.Makefile.remote
