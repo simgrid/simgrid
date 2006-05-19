@@ -1,1 +1,5 @@
-alltoall.deploy.sh alltoall.Makefile.remote alltoall.Makefile.local test_rl test_sg
+alltoall_node *_simulator
+.deps .libs Makefile Makefile.in _*.c 
+test_sg test_rl
+*.Makefile.am *.Makefile.local *.Makefile.remote
+*.deploy.sh *.trace
