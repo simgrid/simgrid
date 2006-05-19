@@ -1,8 +1,8 @@
 /* $Id$ */
 
-/* ALLTOALL - alltoall of GRAS features                         */
+/* ALL2ALL - all2all of GRAS features                                       */
 
-/* Copyright (c) 2006 Ahmed Harbaoui. All rights reserved.      */
+/* Copyright (c) 2006 Ahmed Harbaoui. All rights reserved.                  */
 
  /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,7 +10,7 @@
 #include "gras.h"
 #include "xbt/ex.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(alltoall,"Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(all2all,"Messages specific to this example");
 
 /* register data which may be sent (common to client and server) */
 static void register_messages(void) {

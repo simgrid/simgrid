@@ -6,6 +6,6 @@ else
   exenv=wine
 fi
     
-$exenv ./ping_server@EXEEXT@ 4002 $@ &
+$exenv ./all2all_server@EXEEXT@ 4002 $@ &
 sleep 1
-$exenv ./ping_client@EXEEXT@ 127.0.0.1 4002 $@
+$exenv ./all2all_client@EXEEXT@ 127.0.0.1 4002 $@
