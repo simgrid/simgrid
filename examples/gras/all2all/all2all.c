@@ -92,8 +92,8 @@ int sender (int argc,char *argv[]) {
   gras_init(&argc,argv);
  
   /* Get the node location from argc/argv */
-  for (i=2; i<argc; i++){
-    xbt_host_t host = xbt_host_new(argv[i],atoi(argv[1]));
+  for (i=1; i<argc; i++){
+    xbt_host_t host = xbt_host_from_string(argv[i]);
     xbt_dynar_push(hosts,&host);
   }
 
