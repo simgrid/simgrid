@@ -1,0 +1,98 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description>
+  <!-- The Tremblay node, arguments :: all others nodes -->
+  <process host="Jacquelin" function="Maestro">
+     <argument value="4000"/>
+     <argument value="Boivin"/>
+     <argument value="1"/>
+     <argument value="1"/>
+     <argument value="Jean_Yves"/>
+     <argument value="1"/>
+     <argument value="2"/>
+     <argument value="TeX"/>
+     <argument value="1"/>
+     <argument value="3"/>
+     <argument value="Geoff"/>
+     <argument value="2"/>
+     <argument value="1"/>
+     <argument value="Disney"/>
+     <argument value="2"/>
+     <argument value="2"/>
+     <argument value="iRMX"/>
+     <argument value="2"/>
+     <argument value="3"/>
+     <argument value="McGee"/>
+     <argument value="3"/>
+     <argument value="1"/>
+     <argument value="Gatien"/>
+     <argument value="3"/>
+     <argument value="2"/>
+     <argument value="Laroche"/>
+     <argument value="3"/>
+     <argument value="3"/>
+  </process>
+  <process host="Boivin" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="Jean_Yves"/>
+	  <argument value="TeX"/>
+	  <argument value="Geoff"/>
+	  <argument value="Disney"/>
+  </process>
+  <process host="Jean_Yves" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="Boivin"/>
+	  <argument value="TeX"/>
+	  <argument value="Disney"/>
+	  <argument value="Gatien"/>
+  </process>
+  <process host="TeX" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="Boivin"/>
+	  <argument value="Jean_Yves"/>
+	  <argument value="iRMX"/>
+	  <argument value="Laroche"/>
+  </process>
+  <process host="Geoff" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="Boivin"/>
+	  <argument value="McGee"/>
+	  <argument value="Disney"/>
+	  <argument value="iRMX"/>
+  </process>
+  <process host="Disney" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="Geoff"/>
+	  <argument value="iRMX"/>
+	  <argument value="Jean_Yves"/>
+	  <argument value="Gatien"/>
+  </process>
+  <process host="iRMX" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="Geoff"/>
+	  <argument value="Disney"/>
+	  <argument value="TeX"/>
+	  <argument value="Laroche"/>
+  </process>
+  <process host="McGee" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="Gatien"/>
+	  <argument value="Laroche"/>
+	  <argument value="Boivin"/>
+	  <argument value="Geoff"/>
+  </process>
+  <process host="Gatien" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="McGee"/>
+	  <argument value="Laroche"/>
+	  <argument value="Jean_Yves"/>
+	  <argument value="Disney"/>
+  </process>
+  <process host="Laroche" function="sensor">
+	  <argument value="4000"/>
+	  <argument value="McGee"/>
+	  <argument value="Gatien"/>
+	  <argument value="TeX"/>
+	  <argument value="iRMX"/>
+  </process>
+</platform_description>
