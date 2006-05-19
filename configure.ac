@@ -333,4 +333,13 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 	Context backend: ${with_context}
 "
 
+if test -e CVS && test x$USE_MAINTAINER_MODE != xyes ; then
+  echo "WARNING:"
+  echo "WARNING: you seem to compile the CVS version without the maintainer mode."
+  echo "WARNING: This is not really supported, so you should configure SimGrid like:"
+  echo "WARNING:"
+  echo "WARNING: ./configure --enable-maintainer-mode  $ac_configure_args"
+  echo "WARNING:"
+fi
+
 exit 0;
