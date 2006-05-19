@@ -4,12 +4,15 @@ use strict;
 
 sub usage {
     print STDERR <<EOH
-Usage: all2all_make_deployment.pl platform_file.xml nb_host
+Usage: all2all_make_deployment.pl platform_file.xml nb_host (bcast source?)
   
 This script generates a deployment file for the all2all program. It takes 
 a SimGrid platform file as first argument and the number of wanted peers as 
 second argument. If the amount of peers exceeds the amount of available 
-hosts in the deployment file, several peers will be placed on the same host. 
+hosts in the deployment file, several peers will be placed on the same host.
+      
+If a third argument is passed, this is the source of the broadcast
+(given as a number between 0 and nb_host-1).
 EOH
       ;
     die "\n";
@@ -17,6 +20,7 @@ EOH
 
 my $input    = shift @ARGV || usage();
 my $nb_hosts = shift @ARGV || usage();
+my $source   = shift;
 
 my @host;
 
@@ -51,7 +55,7 @@ for (my $i=0; $i<$nb_hosts; $i++) {
 }
 
 #
-# and now, really generate the file
+# and now, really generate the file. Receiver first.
 
 print "<?xml version='1.0'?>\n";
 print "<!DOCTYPE platform_description SYSTEM \"surfxml.dtd\">\n";
@@ -62,13 +66,30 @@ $it_port=4000;
 $it_host=0;
 
 for (my $i=0; $i<$nb_hosts; $i++) {
-  print "  <process host=\"".$host[$it_host]."\" function=\"sender\">\n";
-  print $receivers;
-  print "  </process>\n";
-    
   print "  <process host=\"".$host[$it_host]."\" function=\"receiver\">\n";
-  print "    <argument value=\"$it_port\"/><argument value=\"$nb_hosts\"/>\n";
+  print "    <argument value=\"$it_port\"/><argument value=\"".(undef($source)?$nb_hosts:1)."\"/>\n";
   print "  </process>\n\n";
+    
+  $it_host ++;
+  if ($it_host == scalar @host) {
+    $it_host=0;
+    $it_port++;
+  }
+}
+
+#
+# Here come the sender(s)
+
+# reset iterators
+$it_port=4000;
+$it_host=0;
+
+for (my $i=0; $i<$nb_hosts; $i++) {
+  if (undef($source) || $source == $i) {
+      print "  <process host=\"".$host[$it_host]."\" function=\"sender\">\n";
+      print $receivers;
+      print "  </process>\n";
+  }
     
   $it_host ++;
   if ($it_host == scalar @host) {
