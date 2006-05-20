@@ -172,6 +172,8 @@ xbt_ex_t e;
 int i,ask_result,step;
 result_t result;
 matrix_t A,B,C;
+gras_socket_t from;
+result_t result;
 
   gras_socket_t socket[MATRIX_SIZE*MATRIX_SIZE]; /* sockets for brodcast to other sensor */
 	
@@ -230,15 +232,20 @@ matrix_t A,B,C;
 		RETHROW0("Unable to send the msg : %s");
 		}
 	}
-	
+	INFO0("send to sensor to begin a next step");
 	/* wait for computing and sensor messages exchange */
-	for (i=0; i< nbr_sensor; i++){
+	i=0;
+	while  ( i< nbr_sensor){
 		TRY {
-		gras_msg_wait(600,gras_msgtype_by_name(""),&from,&mydata);
+		gras_msg_wait(600,gras_msgtype_by_name("step_ack"),&from,&mydata);
 		} CATCH(e) {
 		RETHROW0("I Can't get a init Data message from Maestro : %s");
 		}
+		
+		i++;
+		INFO1("Recive step ack from %s",gras_socket_peer_name(from));
 	}
+
 	}
 	/*********************************  gather ***************************************/
 	
@@ -269,7 +276,7 @@ int sensor(int argc,char *argv[]) {
   static int myrow,mycol;
   static double mydataA,mydataB;
   int bA,bB;
-  int step,l,result=0;
+  int step,l,result_ack=0;
 
   gras_socket_t from;  /* to recive from server for steps */
 
@@ -369,18 +376,22 @@ int sensor(int argc,char *argv[]) {
 
   } while (step < MATRIX_SIZE);
     /*  wait Message from maestro to send the result */
-	    /*after finished the bC computing */
+ 
+	result.value=bC;
+	result.i=myrow;
+	result.j=mycol;
+ 
 	  TRY {
-		  gras_msg_wait(600,gras_msgtype_by_name("result"),
-				&from,&result);
+		  gras_msg_wait(600,gras_msgtype_by_name("ask_result"),
+				&from,&result_ack);
 	  } CATCH(e) {
 		  RETHROW0("I Can't get a data message from row : %s");
 	  }
-	  /* 5. send Result to the Maestro */
+	  /* 5. send Result to Maestro */
 	  TRY {
-		  gras_msg_send(from, gras_msgtype_by_name("result"),&bC);
+		  gras_msg_send(from, gras_msgtype_by_name("result"),&result);
 	  } CATCH(e) {
-		  gras_socket_close(from);
+		 // gras_socket_close(from);
 		  RETHROW0("Failed to send PING to server: %s");
 	  }
 	  INFO3(">>>>>>>> Result: %d sent to %s:%d <<<<<<<<",
