@@ -2,7 +2,7 @@
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
 <platform_description>
   <!-- The Tremblay node, arguments :: all others nodes -->
-  <process host="Jacquelin" function="Maestro">
+  <process host="Jacquelin" function="maestro">
      <argument value="4000"/>
      <argument value="Boivin"/>
      <argument value="1"/>
