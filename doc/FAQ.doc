@@ -171,7 +171,9 @@ perform some more complex compilations...
 \section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
 
 You are at the right place... Having a look to these
-<a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">slides</a>
+<a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">slides</a>
+(or to these
+<a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
 MSG_examples. There is also a mailing list: <simgrid-user@lists.gforge.inria.fr>.
