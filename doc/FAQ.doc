@@ -11,7 +11,7 @@ not familiar with compiling C files under UNIX. If you follow these
 instructions and still have some troubles, drop an e-mail to
 <simgrid-user@lists.gforge.inria.fr>.
 
-\subsection faq_compiling Compiling SimGrid
+\subsection faq_compiling Compiling SimGrid from an archive
 
 First of all, you need to download the latest version of SimGrid from 
 <a href="http://gforge.inria.fr/frs/?group_id=12">here</a>.
@@ -68,7 +68,15 @@ Thus, there is two ways to link your program with SimGrid:
 
 \subsection faq_compiling_cvs Compiling SimGrid from the CVS
 
-First of all, you need to get the "simgrid" module from
+The project development takes place in the cvs, where all changes are
+commited when they happen. Then every once in a while, we make sure that the
+code quality meets our standard and release an archive from the code in the
+CVS. We afterward go back to the development in the CVS. So, if you need a
+recently added feature and can afford some little problem with the stability
+of the lastest features, you may want to use the CVS version instead of a
+released one.
+
+For that, you first need to get the "simgrid" module from
 <a href="http://gforge.inria.fr/scm/?group_id=12">here</a>. 
 
 You won't find any <tt>configure</tt> and a few other things
@@ -88,6 +96,17 @@ autoconf and automake. Doing this step on exotic architectures/systems
 architecture/system, you should do the previous steps on a perfectly
 standard box, then do a <tt>make dist</tt> that will build you a
 perfectly portable SimGrid archive.
+
+In summary, the following commands will checkout the CVS, regenerate the
+configure script and friends, configure SimGrid and build an archive you can
+use on another machine afterward.
+
+\verbatim cvs -d :pserver:anonymous@scm.gforge.inria.fr:/cvsroot/simgrid login
+cvs -d :pserver:anonymous@scm.gforge.inria.fr:/cvsroot/simgrid checkout simgrid
+cd simgrid
+./bootstrap
+./configure --enable-maintainer-mode
+make dist \endverbatim
 
 \subsection faq_setting Setting up your own code
 
