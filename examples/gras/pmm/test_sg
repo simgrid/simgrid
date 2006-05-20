@@ -1,0 +1,9 @@
+#! /bin/sh
+if [ x = x ] ; then 
+  exenv=$SG_TEST_EXENV
+else
+  exenv=wine
+fi
+
+exec $exenv ./pmm_simulator ../../../examples/msg/msg_platform.xml ./pmm_deployment.xml $@
+
