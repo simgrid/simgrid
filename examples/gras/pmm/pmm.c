@@ -1,4 +1,5 @@
-/* pmm - paralel matrix multiplication "double diffusion"                       */
+/* $Id$ */
+/* pmm - parallel matrix multiplication "double diffusion"                       */
 
 /* Copyright (c) 2006- Ahmed Harbaoui. All rights reserved.                  */
 
@@ -6,8 +7,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras.h"
-#define MATRIX_SIZE 3
-#define SLAVE_COUNT 9
+#define PROC_MATRIX_SIZE 3
+#define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
+
+#define DATA_MATRIX_SIZE 3
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");
 
@@ -16,14 +19,14 @@ GRAS_DEFINE_TYPE(s_matrix,struct s_matrix {
   int cols;
   double *data GRAS_ANNOTE(size, rows*cols);
 };)
-     typedef struct s_matrix matrix_t;
+typedef struct s_matrix matrix_t;
 
-     /* struct for recovering results */
-     GRAS_DEFINE_TYPE(s_result,struct s_result {
-       int i;
-       int j;
-       double value;
-     });
+/* struct for recovering results */
+GRAS_DEFINE_TYPE(s_result,struct s_result {
+  int i;
+  int j;
+  double value;
+});
 typedef struct s_result result_t;
 
 /* struct to send initial data to slave */
@@ -144,17 +147,17 @@ int master (int argc,char *argv[]) {
   /*  Init the GRAS's infrastructure */
   gras_init(&argc, argv);
 
-  gras_socket_t socket[MATRIX_SIZE*MATRIX_SIZE]; /* sockets for brodcast to other slave */
+  gras_socket_t socket[SLAVE_COUNT]; /* sockets for brodcast to slaves */
 
   /*  Initialize Matrixs */
 
-  A.rows=A.cols=MATRIX_SIZE;
-  B.rows=B.cols=MATRIX_SIZE;
-  C.rows=C.cols=MATRIX_SIZE;
+  A.rows=A.cols=DATA_MATRIX_SIZE;
+  B.rows=B.cols=DATA_MATRIX_SIZE;
+  C.rows=C.cols=DATA_MATRIX_SIZE;
 	
-  A.data=xbt_malloc0(sizeof(double)*MATRIX_SIZE*MATRIX_SIZE);
-  B.data=xbt_malloc0(sizeof(double)*MATRIX_SIZE*MATRIX_SIZE);
-  C.data=xbt_malloc0(sizeof(double)*MATRIX_SIZE*MATRIX_SIZE);
+  A.data=xbt_malloc0(sizeof(double)*DATA_MATRIX_SIZE*DATA_MATRIX_SIZE);
+  B.data=xbt_malloc0(sizeof(double)*DATA_MATRIX_SIZE*DATA_MATRIX_SIZE);
+  C.data=xbt_malloc0(sizeof(double)*DATA_MATRIX_SIZE*DATA_MATRIX_SIZE);
 	
   initmatrix(&A);
   initmatrix(&B);
@@ -166,10 +169,10 @@ int master (int argc,char *argv[]) {
   //multiplication();
   //gather();
   //display(A);
-  /****************************** Init Data Send *********************************/
+  /************************* Init Data Send *********************************/
   int step_ack,j=0;
   init_data_t mydata;
-  gras_os_sleep(60);                                                // MODIFIER LES TEMPS D'ATTENTE 60 c trop normalement
+  gras_os_sleep(60);      // MODIFIER LES TEMPS D'ATTENTE 60 c trop normalement
   for( i=2;i< argc;i+=3){
     TRY {
       socket[j]=gras_socket_client(argv[i],port);
@@ -181,18 +184,19 @@ int master (int argc,char *argv[]) {
     mydata.myrow=atoi(argv[i+1]);  // My row
     mydata.mycol=atoi(argv[i+2]);  // My column
 		
-    mydata.a=A.data[(mydata.myrow-1)*MATRIX_SIZE+(mydata.mycol-1)];
-    mydata.b=B.data[(mydata.myrow-1)*MATRIX_SIZE+(mydata.mycol-1)];;
+    mydata.a=A.data[(mydata.myrow-1)*PROC_MATRIX_SIZE+(mydata.mycol-1)];
+    mydata.b=B.data[(mydata.myrow-1)*PROC_MATRIX_SIZE+(mydata.mycol-1)];;
 		
     gras_msg_send(socket[j],gras_msgtype_by_name("init_data"),&mydata);
-    INFO3("Send Init Data to %s : data A= %.3g & data B= %.3g",gras_socket_peer_name(socket[j]),mydata.a,mydata.b);
+    INFO3("Send Init Data to %s : data A= %.3g & data B= %.3g",
+	  gras_socket_peer_name(socket[j]),mydata.a,mydata.b);
     j++;
   } // end init Data Send
 
   /******************************* multiplication ********************************/
   INFO0("begin Multiplication");
 	
-  for (step=1; step <= MATRIX_SIZE; step++){
+  for (step=1; step <= PROC_MATRIX_SIZE; step++){
     gras_os_sleep(50);
     for (i=0; i< SLAVE_COUNT; i++){
       TRY {
@@ -228,7 +232,7 @@ int master (int argc,char *argv[]) {
   /* wait for results */
   for( i=1;i< argc;i++){
     gras_msg_wait(600,gras_msgtype_by_name("result"),&from,&result);
-    C.data[(result.i-1)*MATRIX_SIZE+(result.j-1)]=result.value;
+    C.data[(result.i-1)*DATA_MATRIX_SIZE+(result.j-1)]=result.value;
   }
   /*    end of gather   */
   INFO0 ("The Result of Multiplication is :");
@@ -258,7 +262,9 @@ int slave(int argc,char *argv[]) {
  
   gras_socket_t from,sock;  /* to recive from server for steps */
 
-  gras_socket_t socket_row[MATRIX_SIZE-1],socket_column[MATRIX_SIZE-1]; /* sockets for brodcast to other slave */
+  /* sockets for brodcast to other slave */
+  gras_socket_t socket_row[PROC_MATRIX_SIZE-1];
+  gras_socket_t socket_column[PROC_MATRIX_SIZE-1];
 
   /* Init the GRAS's infrastructure */
 
@@ -274,9 +280,9 @@ int slave(int argc,char *argv[]) {
   gras_os_sleep(1); //wait to start all slaves 
 
   int i;
-  for (i=1;i<MATRIX_SIZE;i++){
+  for (i=1;i<PROC_MATRIX_SIZE;i++){
     socket_row[i-1]=gras_socket_client(argv[i+1],port);
-    socket_column[i-1]=gras_socket_client(argv[i+MATRIX_SIZE],port);
+    socket_column[i-1]=gras_socket_client(argv[i+PROC_MATRIX_SIZE],port);
   }
 
   /*  Register the known messages */
@@ -299,7 +305,7 @@ int slave(int argc,char *argv[]) {
   step=1;
   
   do {  //repeat until compute Cb
-    step=MATRIX_SIZE+1;  // just intilization for loop
+    step=PROC_MATRIX_SIZE+1;  // just intilization for loop
 	
     TRY {
       gras_msg_wait(200,gras_msgtype_by_name("step"),&from,&step);
@@ -308,12 +314,12 @@ int slave(int argc,char *argv[]) {
     }
     INFO1("Recive a step message from master: step = %d ",step);
 
-    if (step < MATRIX_SIZE ){
+    if (step < PROC_MATRIX_SIZE ){
       /* a row brodcast */
       gras_os_sleep(3);  // IL FAUT EXPRIMER LE TEMPS D'ATTENTE EN FONCTION DE "SLAVE_COUNT"
       if(myrow==step){
 	INFO2("step(%d) = Myrow(%d)",step,myrow);
-	for (l=1;l < MATRIX_SIZE ;l++){
+	for (l=1;l < PROC_MATRIX_SIZE ;l++){
 	  gras_msg_send(socket_column[l-1], gras_msgtype_by_name("dataB"), &mydataB);
 	  bB=mydataB;
 	  INFO1("send my data B (%.3g) to my (vertical) neighbors",bB);  
@@ -331,7 +337,7 @@ int slave(int argc,char *argv[]) {
       }
       /* a column brodcast */
       if(mycol==step){
-	for (l=1;l < MATRIX_SIZE ;l++){
+	for (l=1;l < PROC_MATRIX_SIZE ;l++){
 	  gras_msg_send(socket_row[l-1],gras_msgtype_by_name("dataA"), &mydataA);
 	  bA=mydataA;
 	  INFO1("send my data A (%.3g) to my (horizontal) neighbors",bA);
@@ -356,9 +362,9 @@ int slave(int argc,char *argv[]) {
 	
       INFO1("Send ack to master for to end %d th step",step);
     }
-    if(step==MATRIX_SIZE-1) break;
+    if(step==PROC_MATRIX_SIZE-1) break;
 	
-  } while (step < MATRIX_SIZE);
+  } while (step < PROC_MATRIX_SIZE);
   /*  wait Message from master to send the result */
  
   result.value=bC;
