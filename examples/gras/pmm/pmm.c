@@ -48,12 +48,14 @@ static void register_messages(void) {
 	gras_msgtype_declare("ask_result", gras_datadesc_by_name("int")); // send from maestro to sensor to ask a final result	
 	gras_msgtype_declare("step", gras_datadesc_by_name("int"));// send from maestro to sensor to indicate the begining of step 
 	gras_msgtype_declare("step_ack", gras_datadesc_by_name("int"));//send from sensor to maestro to indicate the end of the current step
-	gras_msgtype_declare("data", gras_datadesc_by_name("double"));// send data between sensor
+	gras_msgtype_declare("dataA", gras_datadesc_by_name("double"));// send data between sensor
+	gras_msgtype_declare("dataB", gras_datadesc_by_name("double"));// send data between sensor
 }
 
 /* Function prototypes */
-int maestro (int argc,char *argv[]);
 int sensor (int argc,char *argv[]);
+int maestro (int argc,char *argv[]);
+
 
 /* **********************************************************************
  * Maestro code
@@ -73,7 +75,7 @@ static void initmatrix(matrix_t *X){
 int i;
 
 for(i=0 ; i<(X->rows)*(X->cols); i++)
-  X->data[i]=1.0;//1.0*rand()/(RAND_MAX+1.0);
+	X->data[i]=1.0;//*rand()/(RAND_MAX+1.0);
 } /* end_of_initmatrixs */
 
 /***  Function Scatter Sequentiel ***/
@@ -163,35 +165,39 @@ gras_socket_t from;
 	//scatter_parl();
 	//multiplication();
 	//gather();
+	//display(A);
 	/****************************** Init Data Send *********************************/
-	int j=0;
+	int step_ack,j=0;
 	init_data_t mydata;
+	gras_os_sleep(60);                                                // MODIFIER LES TEMPS D'ATTENTE 60 c trop normalement
 	for( i=2;i< argc;i+=3){
-		
 		TRY {
-			socket[j]=gras_socket_client(argv[i],port);
+		socket[j]=gras_socket_client(argv[i],port);
 		} CATCH(e) {
 			RETHROW0("Unable to connect to the server: %s");
 		}
 		INFO2("Connected to %s:%d.",argv[i],port);
 		
-		mydata.myrow=argv[i+1];  // My row
-		mydata.mycol=argv[i+2];  // My column
+		mydata.myrow=atoi(argv[i+1]);  // My row
+		mydata.mycol=atoi(argv[i+2]);  // My column
+		
 		mydata.a=A.data[(mydata.myrow-1)*MATRIX_SIZE+(mydata.mycol-1)];
 		mydata.b=B.data[(mydata.myrow-1)*MATRIX_SIZE+(mydata.mycol-1)];;
 		
 		gras_msg_send(socket[j],gras_msgtype_by_name("init_data"),&mydata);
+		INFO3("Send Init Data to %s : data A= %.3g & data B= %.3g",gras_socket_peer_name(socket[j]),mydata.a,mydata.b);
 		j++;
 	} // end init Data Send
 
 	/******************************* multiplication ********************************/
 	INFO0("begin Multiplication");
+	
 	for (step=1; step <= MATRIX_SIZE; step++){
+		gras_os_sleep(50);
 		for (i=0; i< SENSOR_NBR; i++){
 		TRY {
 		gras_msg_send(socket[i], gras_msgtype_by_name("step"), &step);  /* initialize Mycol, MyRow, mydataA,mydataB*/
-	//	myrow,mycol,mydataA,mydataB
-		    } CATCH(e) {
+		} CATCH(e) {
 		gras_socket_close(socket[i]);
 		RETHROW0("Unable to send the msg : %s");
 		}
@@ -199,18 +205,19 @@ gras_socket_t from;
 	INFO1("send to sensor to begin a %d th step",step);
 	/* wait for computing and sensor messages exchange */
 	i=0;
+	
 	while  ( i< SENSOR_NBR){
 		TRY {
-		gras_msg_wait(600,gras_msgtype_by_name("step_ack"),&from,&mydata);
+		gras_msg_wait(1300,gras_msgtype_by_name("step_ack"),&from,&step_ack);
 		} CATCH(e) {
-		RETHROW0("I Can't get a init Data message from Maestro : %s");
+		RETHROW0("I Can't get a Ack step message from sensor : %s");
 		}
 		i++;
 		INFO1("Recive Ack step ack from %s",gras_socket_peer_name(from));
 	}
 	}
 	/*********************************  gather ***************************************/
-	
+
 	ask_result=0;
 	for( i=1;i< argc;i++){
 		gras_msg_send(socket[i],gras_msgtype_by_name("ask_result"),&ask_result);
@@ -239,15 +246,17 @@ int sensor(int argc,char *argv[]) {
   int step,port,l,result_ack=0; 
   double bA,bB;
 
-  static int myrow,mycol;
-  static double mydataA,mydataB;
-  static double bC=0;
+  int myrow,mycol;
+  double mydataA,mydataB;
+  double bC=0;
+  
+  static end_step;
 
   result_t result;
  
   gras_socket_t from,sock;  /* to recive from server for steps */
 
-  gras_socket_t socket_row[2],socket_column[2]; /* sockets for brodcast to other sensor */
+  gras_socket_t socket_row[MATRIX_SIZE-1],socket_column[MATRIX_SIZE-1]; /* sockets for brodcast to other sensor */
 
   /* Init the GRAS's infrastructure */
 
@@ -256,15 +265,17 @@ int sensor(int argc,char *argv[]) {
   /* Get arguments and create sockets */
 
   port=atoi(argv[1]);
-  int i;
-  for (i=1;i<MATRIX_SIZE;i++){
-  socket_row[i]=gras_socket_client(argv[i+1],port);
-  socket_column[i]=gras_socket_client(argv[i+MATRIX_SIZE],port);
-  }
-  INFO2("Launch %s (port=%d)",argv[0],port);
-
+  
   /*  Create my master socket */
   sock = gras_socket_server(port);
+  INFO2("Launch %s (port=%d)",argv[0],port);
+  gras_os_sleep(1); //wait to start all sensor 
+
+  int i;
+  for (i=1;i<MATRIX_SIZE;i++){
+  socket_row[i-1]=gras_socket_client(argv[i+1],port);
+  socket_column[i-1]=gras_socket_client(argv[i+MATRIX_SIZE],port);
+  }
 
   /*  Register the known messages */
   register_messages();
@@ -277,72 +288,74 @@ int sensor(int argc,char *argv[]) {
   } CATCH(e) {
 	RETHROW0("I Can't get a init Data message from Maestro : %s");
   }
-
   myrow=mydata.myrow;
   mycol=mydata.mycol;
   mydataA=mydata.a;
   mydataB=mydata.b;
   INFO4("Recive MY POSITION (%d,%d) and MY INIT DATA ( A=%.3g | B=%.3g )",
 	myrow,mycol,mydataA,mydataB);
+  step=1;
+  
   do {  //repeat until compute Cb
-	step=MATRIX_SIZE+1;  // juste intilization for loop
-
+	step=MATRIX_SIZE+1;  // just intilization for loop
+	
   TRY {
-	gras_msg_wait(600,gras_msgtype_by_name("step"),&from,&step);
-  } CATCH(e) {
+	gras_msg_wait(60,gras_msgtype_by_name("step"),&from,&step);
+ } CATCH(e) {
 	  RETHROW0("I Can't get a Next Step message from Maestro : %s");
-  }
+ }
+  INFO1("Recive a step message from maestro: step = %d ",step);
 
-  /*  Wait for sensors startup */
-  gras_os_sleep(1);
-
-  if (step < MATRIX_SIZE){
+  if (step < MATRIX_SIZE ){
 	  /* a row brodcast */
+	  gras_os_sleep(3);  // IL FAUT EXPRIMER LE TEMPS D'ATTENTE EN FONCTION DE "SENSOR_NBR"
 	  if(myrow==step){
-		  for (l=1;l < MATRIX_SIZE ;l++){
-			  gras_msg_send(socket_row[l], gras_msgtype_by_name("data"), &mydataB);
-			  bB=mydataB;
-			  INFO1("send my data B (%.3f) to my (horizontal) neighbors",bB);  
-		  }
+		INFO2("step(%d) = Myrow(%d)",step,myrow);
+		for (l=1;l < MATRIX_SIZE ;l++){
+		  gras_msg_send(socket_column[l-1], gras_msgtype_by_name("dataB"), &mydataB);
+		  bB=mydataB;
+		INFO1("send my data B (%.3g) to my (vertical) neighbors",bB);  
+		}
+	}
+	if(myrow != step){ 
+		INFO2("step(%d) <> Myrow(%d)",step,myrow);
+		TRY {
+		  gras_msg_wait(600,gras_msgtype_by_name("dataB"),
+				&from,&bB);
+		} CATCH(e) {
+		  RETHROW0("I Can't get a data message from row : %s");
+		}
+		INFO2("Recive data B (%.3g) from my neighbor: %s",bB,gras_socket_peer_name(from));
 	  }
-	  else
-	  {
-		  TRY {
-			  gras_msg_wait(600,gras_msgtype_by_name("data"),
-					&from,&bB);
-		  } CATCH(e) {
-			  RETHROW0("I Can't get a data message from row : %s");
-		  }
-		  INFO1("Recive data B (%.3f) from my neighbors",bB);
-	  }
-	  /* a column brodcast */	
+	  /* a column brodcast */
 	  if(mycol==step){
-		  for (l=1;l < MATRIX_SIZE ;l++){
-			  gras_msg_send(socket_column[l],gras_msgtype_by_name("data"), &mydataA);
-			  bA=mydataA;
-			  INFO1("send my data A (%.3f) to my (vertical) neighbors",bA);
+		for (l=1;l < MATRIX_SIZE ;l++){
+			gras_msg_send(socket_row[l-1],gras_msgtype_by_name("dataA"), &mydataA);
+			bA=mydataA;
+			INFO1("send my data A (%.3g) to my (horizontal) neighbors",bA);
 		  }
 	  }
-	  else
-	  {
-		  TRY {
-			  gras_msg_wait(600,gras_msgtype_by_name("data"),
-					&from,&bA);
-		  } CATCH(e) {
-			  RETHROW0("I Can't get a data message from column : %s");
-		  }
-		  INFO1("Recive data A (%.3f) from my neighbors",bA);
-	  }
+
+	if(mycol != step){
+		TRY {
+		   gras_msg_wait(1200,gras_msgtype_by_name("dataA"),
+				&from,&bA);
+		} CATCH(e) {
+		  RETHROW0("I Can't get a data message from column : %s");
+		}
+		INFO2("Recive data A (%.3g) from my neighbor : %s ",bA,gras_socket_peer_name(from));
+	}
 	  bC+=bA*bB;
-	  }
+	  INFO1(">>>>>>>> My BC = %.3g",bC);
+
 	  /* send a ack msg to Maestro */
 	
 	  gras_msg_send(from,gras_msgtype_by_name("step_ack"),&step);
 	
 	  INFO1("Send ack to maestro for to end %d th step",step);
-	
+	}
 	  if(step==MATRIX_SIZE-1) break;
-
+	
   } while (step < MATRIX_SIZE);
     /*  wait Message from maestro to send the result */
  

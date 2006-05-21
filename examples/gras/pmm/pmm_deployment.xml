@@ -37,7 +37,7 @@
 	  <argument value="Jean_Yves"/>
 	  <argument value="TeX"/>
 	  <argument value="Geoff"/>
-	  <argument value="Disney"/>
+	  <argument value="McGee"/>
   </process>
   <process host="Jean_Yves" function="sensor">
 	  <argument value="4000"/>
