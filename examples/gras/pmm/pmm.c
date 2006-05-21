@@ -7,9 +7,9 @@
 
 #include "gras.h"
 #define MATRIX_SIZE 3
-#define SENSOR_NBR 9
+#define SLAVE_COUNT 9
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Messages specific to this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");
 
 GRAS_DEFINE_TYPE(s_matrix,struct s_matrix {
 	int rows;
@@ -26,7 +26,7 @@ GRAS_DEFINE_TYPE(s_result,struct s_result {
 });
 typedef struct s_result result_t;
 
-/* struct to send initial data to sensor */
+/* struct to send initial data to slave */
 GRAS_DEFINE_TYPE(s_init_data,struct s_init_data {
 	int myrow;
 	int mycol;
@@ -42,23 +42,23 @@ static void register_messages(void) {
 	result_type=gras_datadesc_by_symbol(s_result);
 	init_data_type=gras_datadesc_by_symbol(s_init_data);
 	
-	gras_msgtype_declare("result", result_type);  // recieve a final result from sensor
-	gras_msgtype_declare("init_data", init_data_type);  // send from maestro to sensor to initialize data bA,bB
+	gras_msgtype_declare("result", result_type);  // recieve a final result from slave
+	gras_msgtype_declare("init_data", init_data_type);  // send from master to slave to initialize data bA,bB
 
-	gras_msgtype_declare("ask_result", gras_datadesc_by_name("int")); // send from maestro to sensor to ask a final result	
-	gras_msgtype_declare("step", gras_datadesc_by_name("int"));// send from maestro to sensor to indicate the begining of step 
-	gras_msgtype_declare("step_ack", gras_datadesc_by_name("int"));//send from sensor to maestro to indicate the end of the current step
-	gras_msgtype_declare("dataA", gras_datadesc_by_name("double"));// send data between sensor
-	gras_msgtype_declare("dataB", gras_datadesc_by_name("double"));// send data between sensor
+	gras_msgtype_declare("ask_result", gras_datadesc_by_name("int")); // send from master to slave to ask a final result	
+	gras_msgtype_declare("step", gras_datadesc_by_name("int"));// send from master to slave to indicate the begining of step 
+	gras_msgtype_declare("step_ack", gras_datadesc_by_name("int"));//send from slave to master to indicate the end of the current step
+	gras_msgtype_declare("dataA", gras_datadesc_by_name("double"));// send data between slave
+	gras_msgtype_declare("dataB", gras_datadesc_by_name("double"));// send data between slave
 }
 
 /* Function prototypes */
-int sensor (int argc,char *argv[]);
-int maestro (int argc,char *argv[]);
+int slave (int argc,char *argv[]);
+int master (int argc,char *argv[]);
 
 
 /* **********************************************************************
- * Maestro code
+ * master code
  * **********************************************************************/
 
 /* Global private data */
@@ -66,7 +66,7 @@ typedef struct {
   int nbr_col,nbr_row;
   int remaining_step;
   int remaining_ack;
-} maestro_data_t;
+} master_data_t;
 
 
 /***  Function initilaze matrixs ***/
@@ -130,7 +130,7 @@ int i,j,t=0;
 
 }/* end_of_display */
 
-int maestro (int argc,char *argv[]) {
+int master (int argc,char *argv[]) {
 
 xbt_ex_t e;
 
@@ -144,7 +144,7 @@ gras_socket_t from;
 	/*  Init the GRAS's infrastructure */
 	gras_init(&argc, argv);
 
-        gras_socket_t socket[MATRIX_SIZE*MATRIX_SIZE]; /* sockets for brodcast to other sensor */
+        gras_socket_t socket[MATRIX_SIZE*MATRIX_SIZE]; /* sockets for brodcast to other slave */
 
         /*  Initialize Matrixs */
 
@@ -194,7 +194,7 @@ gras_socket_t from;
 	
 	for (step=1; step <= MATRIX_SIZE; step++){
 		gras_os_sleep(50);
-		for (i=0; i< SENSOR_NBR; i++){
+		for (i=0; i< SLAVE_COUNT; i++){
 		TRY {
 		gras_msg_send(socket[i], gras_msgtype_by_name("step"), &step);  /* initialize Mycol, MyRow, mydataA,mydataB*/
 		} CATCH(e) {
@@ -202,18 +202,20 @@ gras_socket_t from;
 		RETHROW0("Unable to send the msg : %s");
 		}
 	}
-	INFO1("send to sensor to begin a %d th step",step);
-	/* wait for computing and sensor messages exchange */
+	INFO1("send to slave to begin a %d th step",step);
+	/* wait for computing and slave messages exchange */
 	i=0;
 	
-	while  ( i< SENSOR_NBR){
+	while  ( i< SLAVE_COUNT){
 		TRY {
 		gras_msg_wait(1300,gras_msgtype_by_name("step_ack"),&from,&step_ack);
 		} CATCH(e) {
-		RETHROW0("I Can't get a Ack step message from sensor : %s");
+		RETHROW0("I Can't get a Ack step message from slave : %s");
 		}
 		i++;
-		INFO1("Recive Ack step ack from %s",gras_socket_peer_name(from));
+		INFO3("Receive Ack step ack from %s (got %d of %d)",
+		      gras_socket_peer_name(from),
+		      i, SLAVE_COUNT);
 	}
 	}
 	/*********************************  gather ***************************************/
@@ -233,13 +235,13 @@ gras_socket_t from;
 	display(C);
 
 return 0;
-} /* end_of_maestro */
+} /* end_of_master */
 
 /* **********************************************************************
- * Sensor code
+ * slave code
  * **********************************************************************/
 
-int sensor(int argc,char *argv[]) {
+int slave(int argc,char *argv[]) {
 
   xbt_ex_t e; 
 
@@ -250,13 +252,13 @@ int sensor(int argc,char *argv[]) {
   double mydataA,mydataB;
   double bC=0;
   
-  static end_step;
+//  static end_step;
 
   result_t result;
  
   gras_socket_t from,sock;  /* to recive from server for steps */
 
-  gras_socket_t socket_row[MATRIX_SIZE-1],socket_column[MATRIX_SIZE-1]; /* sockets for brodcast to other sensor */
+  gras_socket_t socket_row[MATRIX_SIZE-1],socket_column[MATRIX_SIZE-1]; /* sockets for brodcast to other slave */
 
   /* Init the GRAS's infrastructure */
 
@@ -269,12 +271,12 @@ int sensor(int argc,char *argv[]) {
   /*  Create my master socket */
   sock = gras_socket_server(port);
   INFO2("Launch %s (port=%d)",argv[0],port);
-  gras_os_sleep(1); //wait to start all sensor 
+  gras_os_sleep(1); //wait to start all slaves 
 
   int i;
   for (i=1;i<MATRIX_SIZE;i++){
-  socket_row[i-1]=gras_socket_client(argv[i+1],port);
-  socket_column[i-1]=gras_socket_client(argv[i+MATRIX_SIZE],port);
+    socket_row[i-1]=gras_socket_client(argv[i+1],port);
+    socket_column[i-1]=gras_socket_client(argv[i+MATRIX_SIZE],port);
   }
 
   /*  Register the known messages */
@@ -286,7 +288,7 @@ int sensor(int argc,char *argv[]) {
   TRY {
 	  gras_msg_wait(600,gras_msgtype_by_name("init_data"),&from,&mydata);
   } CATCH(e) {
-	RETHROW0("I Can't get a init Data message from Maestro : %s");
+	RETHROW0("I Can't get a init Data message from master : %s");
   }
   myrow=mydata.myrow;
   mycol=mydata.mycol;
@@ -300,15 +302,15 @@ int sensor(int argc,char *argv[]) {
 	step=MATRIX_SIZE+1;  // just intilization for loop
 	
   TRY {
-	gras_msg_wait(60,gras_msgtype_by_name("step"),&from,&step);
+	gras_msg_wait(200,gras_msgtype_by_name("step"),&from,&step);
  } CATCH(e) {
-	  RETHROW0("I Can't get a Next Step message from Maestro : %s");
+	  RETHROW0("I Can't get a Next Step message from master : %s");
  }
-  INFO1("Recive a step message from maestro: step = %d ",step);
+  INFO1("Recive a step message from master: step = %d ",step);
 
   if (step < MATRIX_SIZE ){
 	  /* a row brodcast */
-	  gras_os_sleep(3);  // IL FAUT EXPRIMER LE TEMPS D'ATTENTE EN FONCTION DE "SENSOR_NBR"
+	  gras_os_sleep(3);  // IL FAUT EXPRIMER LE TEMPS D'ATTENTE EN FONCTION DE "SLAVE_COUNT"
 	  if(myrow==step){
 		INFO2("step(%d) = Myrow(%d)",step,myrow);
 		for (l=1;l < MATRIX_SIZE ;l++){
@@ -348,16 +350,16 @@ int sensor(int argc,char *argv[]) {
 	  bC+=bA*bB;
 	  INFO1(">>>>>>>> My BC = %.3g",bC);
 
-	  /* send a ack msg to Maestro */
+	  /* send a ack msg to master */
 	
 	  gras_msg_send(from,gras_msgtype_by_name("step_ack"),&step);
 	
-	  INFO1("Send ack to maestro for to end %d th step",step);
+	  INFO1("Send ack to master for to end %d th step",step);
 	}
 	  if(step==MATRIX_SIZE-1) break;
 	
   } while (step < MATRIX_SIZE);
-    /*  wait Message from maestro to send the result */
+    /*  wait Message from master to send the result */
  
 	result.value=bC;
 	result.i=myrow;
@@ -369,7 +371,7 @@ int sensor(int argc,char *argv[]) {
 	  } CATCH(e) {
 		  RETHROW0("I Can't get a data message from row : %s");
 	  }
-	  /* send Result to Maestro */
+	  /* send Result to master */
 	  TRY {
 		  gras_msg_send(from, gras_msgtype_by_name("result"),&result);
 	  } CATCH(e) {
@@ -384,4 +386,4 @@ int sensor(int argc,char *argv[]) {
 	  gras_exit();
 	  INFO0("Done.");
 	  return 0;
-} /* end_of_sensor */
+} /* end_of_slave */
