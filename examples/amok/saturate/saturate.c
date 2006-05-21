@@ -40,6 +40,7 @@ static int sensor_cb_kill(gras_msg_cb_ctx_t ctx,
 }
 int sensor (int argc,char *argv[]) {
   sensor_data_t *g;
+  xbt_ex_t e;
 
   gras_init(&argc,argv);
   amok_bw_init();
@@ -52,7 +53,13 @@ int sensor (int argc,char *argv[]) {
   gras_cb_register(gras_msgtype_by_name("kill"),&sensor_cb_kill);
 
   while (!g->done) {
-    gras_msg_handle(120.0);
+    TRY {
+      gras_msg_handle(20.0);
+    } CATCH(e) {
+      if (e.category != timeout_error)
+	RETHROW;
+      xbt_ex_free(e);
+    }
   }
 
   gras_socket_close(g->sock);
@@ -70,20 +77,16 @@ int maestro (int argc,char *argv[]);
 
 /* XP setups */
 const int buf_size = 0;
-const int exp_size = 64*1024*1024; // * 1024;
-const int msg_size = 16*1024*1024;
-const int sat_size = 10*1024*1024; //1024 * 10 *
-
-/* Global private data */
-typedef struct {
-  gras_socket_t sock;
-} s_maestro_data_t,*maestro_data_t;
+const int exp_size = 100 * 1024;
+const int msg_size = 50 * 1024;
+const int sat_size = 1024 * 1024 * 10;
 
 static double XP(const char *bw1, const char *bw2,
 		 const char *sat1, const char *sat2) {
 
   double sec, bw, sec_sat,bw_sat;
 
+  gras_os_sleep(5.0); /* wait for the sensors to show up */
   /* Test BW without saturation */
   amok_bw_request(bw1,4000,bw2,4000,
 		  buf_size,exp_size,msg_size,&sec,&bw);
@@ -147,8 +150,7 @@ static void simple_saturation(int argc, char*argv[]) {
   kill_buddy(argv[3],atoi(argv[4]));
 }
 /********************************************************************************************/
-void env_hosttohost_bw(int argc, char*argv[]) {
-  xbt_ex_t e;
+static void env_hosttohost_bw(int argc, char*argv[]) {
 
   /* where are the sensors */
   xbt_dynar_t hosts = xbt_dynar_new(sizeof(xbt_host_t),&free_host);
@@ -161,10 +163,7 @@ void env_hosttohost_bw(int argc, char*argv[]) {
   int i;
   xbt_host_t h1;
 
-  /* socket to sensor */
-  gras_socket_t peer;
-  maestro_data_t g;
-  g=gras_userdata_new(s_maestro_data_t);
+  gras_socket_t peer; /* socket to sensor */
 
   /* wait to ensure that all server sockets are there before starting the experiment */	
   gras_os_sleep(0.5);
@@ -193,11 +192,9 @@ void env_hosttohost_bw(int argc, char*argv[]) {
   xbt_dynar_map(hosts,kill_buddy_dynar);
   xbt_dynar_free(&hosts);
 
-  gras_socket_close(g->sock);
-
 }
 /********************************************************************************************/
-void env_Pairwisehost_bw(int argc, char*argv[]) {
+static void env_Pairwisehost_bw(int argc, char*argv[]) {
   xbt_ex_t e;
 
   /* where are the sensors */
@@ -216,8 +213,6 @@ void env_Pairwisehost_bw(int argc, char*argv[]) {
 
   /* socket to sensor */
   gras_socket_t peer;
-  maestro_data_t g;
-  g=gras_userdata_new(s_maestro_data_t);
 
   /* wait to ensure that all server sockets are there before starting the experiment */	
   gras_os_sleep(0.5);
@@ -261,8 +256,6 @@ void env_Pairwisehost_bw(int argc, char*argv[]) {
   xbt_dynar_map(hosts,kill_buddy_dynar);
   xbt_dynar_free(&hosts);
 
-  gras_socket_close(g->sock);
-
 }
 /********************************************************************************************/
 static void full_fledged_saturation(int argc, char*argv[]) {
@@ -295,13 +288,16 @@ double time1=5.0,bw1=5.0; // 0.5 for test
   }
   nb_hosts = xbt_dynar_length(hosts);
 
+  gras_os_sleep(2); /* wait for my pals to get ready */
+  INFO0("Let's go for the bw_matrix");
+
   /* Do the test without saturation */
   begin=time(NULL);
   begin_simulated=gras_os_time();
 
   bw=amok_bw_matrix(hosts,buf_size,exp_size,msg_size);
 
-  INFO2("Did all BW tests in %d sec (%.2f simulated sec)",
+  INFO2("Did all BW tests in %ld sec (%.2f simulated sec)",
 	  time(NULL)-begin,gras_os_time()-begin_simulated);
 
   /* Do the test with saturation */
@@ -361,8 +357,10 @@ int maestro(int argc,char *argv[]) {
   gras_init(&argc,argv);
   amok_bw_init();
 
-env_Pairwisehost_bw(argc,argv);
-//env_hosttohost_bw(argc,argv);
+  gras_socket_server(3333); /* only so that messages from the transport layer in gras identify us */
+
+  env_Pairwisehost_bw(argc,argv);
+  //env_hosttohost_bw(argc,argv);
 
   //  simple_saturation(argc,argv);
   //full_fledged_saturation(argc, argv);  
