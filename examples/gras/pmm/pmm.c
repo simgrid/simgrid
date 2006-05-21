@@ -45,7 +45,7 @@ static void register_messages(void) {
   result_type=gras_datadesc_by_symbol(s_result);
   init_data_type=gras_datadesc_by_symbol(s_init_data);
 	
-  gras_msgtype_declare("result", result_type);  // recieve a final result from slave
+  gras_msgtype_declare("result", result_type);  // receive a final result from slave
   gras_msgtype_declare("init_data", init_data_type);  // send from master to slave to initialize data bA,bB
 
   gras_msgtype_declare("ask_result", gras_datadesc_by_name("int")); // send from master to slave to ask a final result	
@@ -173,7 +173,9 @@ int master (int argc,char *argv[]) {
   int step_ack,j=0;
   init_data_t mydata;
   gras_os_sleep(60);      // MODIFIER LES TEMPS D'ATTENTE 60 c trop normalement
-  for( i=2;i< argc;i+=3){
+
+  int row=1, col=1;
+  for( i=2;i< argc;i++){
     TRY {
       socket[j]=gras_socket_client(argv[i],port);
     } CATCH(e) {
@@ -181,8 +183,13 @@ int master (int argc,char *argv[]) {
     }
     INFO2("Connected to %s:%d.",argv[i],port);
 		
-    mydata.myrow=atoi(argv[i+1]);  // My row
-    mydata.mycol=atoi(argv[i+2]);  // My column
+    mydata.myrow=row;  // My row
+    mydata.mycol=col;  // My column
+    row++;
+    if (row > PROC_MATRIX_SIZE) {
+      row=1;
+      col++;
+    }
 		
     mydata.a=A.data[(mydata.myrow-1)*PROC_MATRIX_SIZE+(mydata.mycol-1)];
     mydata.b=B.data[(mydata.myrow-1)*PROC_MATRIX_SIZE+(mydata.mycol-1)];;
@@ -191,16 +198,17 @@ int master (int argc,char *argv[]) {
     INFO3("Send Init Data to %s : data A= %.3g & data B= %.3g",
 	  gras_socket_peer_name(socket[j]),mydata.a,mydata.b);
     j++;
-  } // end init Data Send
+  }
+    // end init Data Send
 
   /******************************* multiplication ********************************/
-  INFO0("begin Multiplication");
+  INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
 	
   for (step=1; step <= PROC_MATRIX_SIZE; step++){
-    gras_os_sleep(50);
+    //    gras_os_sleep(50);
     for (i=0; i< SLAVE_COUNT; i++){
       TRY {
-	gras_msg_send(socket[i], gras_msgtype_by_name("step"), &step);  /* initialize Mycol, MyRow, mydataA,mydataB*/
+	gras_msg_send(socket[i], gras_msgtype_by_name("step"), &step);
       } CATCH(e) {
 	gras_socket_close(socket[i]);
 	RETHROW0("Unable to send the msg : %s");
@@ -260,7 +268,7 @@ int slave(int argc,char *argv[]) {
 
   result_t result;
  
-  gras_socket_t from,sock;  /* to recive from server for steps */
+  gras_socket_t from,sock;  /* to receive from server for steps */
 
   /* sockets for brodcast to other slave */
   gras_socket_t socket_row[PROC_MATRIX_SIZE-1];
@@ -300,7 +308,7 @@ int slave(int argc,char *argv[]) {
   mycol=mydata.mycol;
   mydataA=mydata.a;
   mydataB=mydata.b;
-  INFO4("Recive MY POSITION (%d,%d) and MY INIT DATA ( A=%.3g | B=%.3g )",
+  INFO4("Receive MY POSITION (%d,%d) and MY INIT DATA ( A=%.3g | B=%.3g )",
 	myrow,mycol,mydataA,mydataB);
   step=1;
   
@@ -312,7 +320,7 @@ int slave(int argc,char *argv[]) {
     } CATCH(e) {
       RETHROW0("I Can't get a Next Step message from master : %s");
     }
-    INFO1("Recive a step message from master: step = %d ",step);
+    INFO1("Receive a step message from master: step = %d ",step);
 
     if (step < PROC_MATRIX_SIZE ){
       /* a row brodcast */
@@ -333,7 +341,7 @@ int slave(int argc,char *argv[]) {
 	} CATCH(e) {
 	  RETHROW0("I Can't get a data message from row : %s");
 	}
-	INFO2("Recive data B (%.3g) from my neighbor: %s",bB,gras_socket_peer_name(from));
+	INFO2("Receive data B (%.3g) from my neighbor: %s",bB,gras_socket_peer_name(from));
       }
       /* a column brodcast */
       if(mycol==step){
@@ -351,7 +359,7 @@ int slave(int argc,char *argv[]) {
 	} CATCH(e) {
 	  RETHROW0("I Can't get a data message from column : %s");
 	}
-	INFO2("Recive data A (%.3g) from my neighbor : %s ",bA,gras_socket_peer_name(from));
+	INFO2("Receive data A (%.3g) from my neighbor : %s ",bA,gras_socket_peer_name(from));
       }
       bC+=bA*bB;
       INFO1(">>>>>>>> My BC = %.3g",bC);

@@ -5,32 +5,14 @@
   <process host="Jacquelin" function="master">
      <argument value="4000"/>
      <argument value="Boivin"/>
-     <argument value="1"/>
-     <argument value="1"/>
      <argument value="Jean_Yves"/>
-     <argument value="1"/>
-     <argument value="2"/>
      <argument value="TeX"/>
-     <argument value="1"/>
-     <argument value="3"/>
      <argument value="Geoff"/>
-     <argument value="2"/>
-     <argument value="1"/>
      <argument value="Disney"/>
-     <argument value="2"/>
-     <argument value="2"/>
      <argument value="iRMX"/>
-     <argument value="2"/>
-     <argument value="3"/>
      <argument value="McGee"/>
-     <argument value="3"/>
-     <argument value="1"/>
      <argument value="Gatien"/>
-     <argument value="3"/>
-     <argument value="2"/>
      <argument value="Laroche"/>
-     <argument value="3"/>
-     <argument value="3"/>
   </process>
   <process host="Boivin" function="slave">
 	  <argument value="4000"/>
