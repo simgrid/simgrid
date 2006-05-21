@@ -1,0 +1,6 @@
+pmm_master pmm_slave *_simulator
+.deps .libs Makefile Makefile.in _*.c 
+test_sg test_rl
+*.Makefile.am *.Makefile.local *.Makefile.remote
+*.deploy.sh *.trace
+*.log
