@@ -1,7 +1,7 @@
 /* $Id$ */
-/* pmm - parallel matrix multiplication "double diffusion"                       */
+/* pmm - parallel matrix multiplication "double diffusion"                  */
 
-/* Copyright (c) 2006- Ahmed Harbaoui. All rights reserved.                  */
+/* Copyright (c) 2006- Ahmed Harbaoui. All rights reserved.                 */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,8 +31,10 @@ typedef struct s_result result_t;
 
 /* struct to send initial data to slave */
 GRAS_DEFINE_TYPE(s_init_data,struct s_init_data {
-  int myline;
-  int myrow;
+  int linepos;
+  int rowpos;
+  xbt_host_t line[PROC_MATRIX_SIZE];
+  xbt_host_t row[PROC_MATRIX_SIZE];
   double a;
   double b;
 });
@@ -42,6 +44,7 @@ typedef struct s_init_data init_data_t;
 static void register_messages(void) {
   gras_datadesc_type_t result_type;
   gras_datadesc_type_t init_data_type;
+  gras_datadesc_set_const("PROC_MATRIX_SIZE",PROC_MATRIX_SIZE);
   result_type=gras_datadesc_by_symbol(s_result);
   init_data_type=gras_datadesc_by_symbol(s_init_data);
 	
@@ -147,6 +150,7 @@ int master (int argc,char *argv[]) {
   /*  Init the GRAS's infrastructure */
   gras_init(&argc, argv);
 
+  xbt_host_t grid[SLAVE_COUNT]; /* The slaves */
   gras_socket_t socket[SLAVE_COUNT]; /* sockets for brodcast to slaves */
 
   /*  Initialize Matrixs */
@@ -170,34 +174,42 @@ int master (int argc,char *argv[]) {
   //gather();
   //display(A);
   /************************* Init Data Send *********************************/
-  int step_ack,j=0;
-  init_data_t mydata;
+  int step_ack;
   gras_os_sleep(60);      // MODIFIER LES TEMPS D'ATTENTE 60 c trop normalement
 
-  int line=1, row=1;
-  for( i=2;i< argc;i++){
-    TRY {
-      socket[j]=gras_socket_client(argv[i],port);
-    } CATCH(e) {
-      RETHROW0("Unable to connect to the server: %s");
+  for( i=1;i< argc;i++){
+    grid[i-1]=xbt_host_from_string(argv[i]);
+    socket[i-1]=gras_socket_client(grid[i-1]->name,grid[i-1]->port);
+      
+    INFO2("Connected to %s:%d.",grid[i-1]->name,grid[i-1]->port);
+  }
+
+  int row=1, line=1,j;
+  for(i=0 ; i<SLAVE_COUNT; i++){
+    init_data_t mydata;
+    mydata.linepos=line;  // My line
+    mydata.rowpos=row;  // My row
+
+
+    /* Neiborhood */
+    for (j=0; j<PROC_MATRIX_SIZE; j++) {
+      mydata.row[j] = xbt_host_copy( grid[ j*PROC_MATRIX_SIZE+(row-1) ] );
+      mydata.line[j] =  xbt_host_copy( grid[ (line-1)*PROC_MATRIX_SIZE+j ] );
     }
-    INFO2("Connected to %s:%d.",argv[i],port);
-		
-    mydata.myline=line;  // My line
-    mydata.myrow=row;  // My row
-    line++;
-    if (line > PROC_MATRIX_SIZE) {
-      line=1;
-      row++;
+
+    row++;
+    if (row > PROC_MATRIX_SIZE) {
+      row=1;
+      line++;
     }
 		
-    mydata.a=A.data[(mydata.myline-1)*PROC_MATRIX_SIZE+(mydata.myrow-1)];
-    mydata.b=B.data[(mydata.myline-1)*PROC_MATRIX_SIZE+(mydata.myrow-1)];;
+    mydata.a=A.data[(line-1)*PROC_MATRIX_SIZE+(row-1)];
+    mydata.b=B.data[(line-1)*PROC_MATRIX_SIZE+(row-1)];;
 		
-    gras_msg_send(socket[j],gras_msgtype_by_name("init_data"),&mydata);
+    gras_msg_send(socket[i],gras_msgtype_by_name("init_data"),&mydata);
     INFO3("Send Init Data to %s : data A= %.3g & data B= %.3g",
-	  gras_socket_peer_name(socket[j]),mydata.a,mydata.b);
-    j++;
+	  gras_socket_peer_name(socket[i]),mydata.a,mydata.b);
+
   }
     // end init Data Send
 
@@ -284,32 +296,45 @@ int slave(int argc,char *argv[]) {
   
   /*  Create my master socket */
   sock = gras_socket_server(port);
-  INFO2("Launch %s (port=%d)",argv[0],port);
-  gras_os_sleep(1); //wait to start all slaves 
-
   int i;
-  for (i=1;i<PROC_MATRIX_SIZE;i++){
-    socket_line[i-1]=gras_socket_client(argv[i+1],port);
-    socket_row[i-1]=gras_socket_client(argv[i+PROC_MATRIX_SIZE],port);
-  }
 
   /*  Register the known messages */
   register_messages();
 
   /* Recover my initialized Data and My Position*/
   init_data_t mydata;
-  INFO0("wait for init Data");
+  INFO2("Launch %s (port=%d); wait for my enrole message",argv[0],port);
   TRY {
     gras_msg_wait(600,gras_msgtype_by_name("init_data"),&from,&mydata);
   } CATCH(e) {
-    RETHROW0("I Can't get a init Data message from master : %s");
+    RETHROW0("Can't get a init Data message from master : %s");
   }
-  myline=mydata.myline;
-  myrow=mydata.myrow;
+  myline=mydata.linepos;
+  myrow=mydata.rowpos;
   mydataA=mydata.a;
   mydataB=mydata.b;
   INFO4("Receive MY POSITION (%d,%d) and MY INIT DATA ( A=%.3g | B=%.3g )",
 	myline,myrow,mydataA,mydataB);
+
+  /* Get my neighborhood from the enrollment message */
+  int j=0;
+  for (i=0,j=0 ; i<PROC_MATRIX_SIZE ; i++){
+    if (strcmp(gras_os_myname(),mydata.line[i]->name)) {
+      socket_line[j]=gras_socket_client(mydata.line[i]->name,mydata.line[i]->port);
+      j++;
+      //INFO3("Line neighbour %d: %s:%d",j,mydata.line[i]->name,mydata.line[i]->port);
+    }
+    xbt_host_free(mydata.line[i]);
+  }
+  for (i=0,j=0 ; i<PROC_MATRIX_SIZE ; i++){
+    if (strcmp(gras_os_myname(),mydata.row[i]->name)) {
+      socket_row[j]=gras_socket_client(mydata.row[i]->name,mydata.row[i]->port);
+      //INFO3("Row neighbour %d : %s:%d",j,mydata.row[i]->name,mydata.row[i]->port);
+      j++;
+    }
+    xbt_host_free(mydata.row[i]);    
+  }
+
   step=1;
   
   do {  //repeat until compute Cb
@@ -318,7 +343,7 @@ int slave(int argc,char *argv[]) {
     TRY {
       gras_msg_wait(200,gras_msgtype_by_name("step"),&from,&step);
     } CATCH(e) {
-      RETHROW0("I Can't get a Next Step message from master : %s");
+      RETHROW0("Can't get a Next Step message from master : %s");
     }
     INFO1("Receive a step message from master: step = %d ",step);
 
