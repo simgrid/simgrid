@@ -22,15 +22,15 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx, void *payload_data) 
   int i,j,k;
    
   /* 2. Make some room to return the result */
-  result.rows = data[0].rows;
-  result.cols = data[1].cols;
-  result.ctn = xbt_malloc0(sizeof(double) * result.rows * result.cols);
+  result.lines = data[0].lines;
+  result.rows = data[1].rows;
+  result.ctn = xbt_malloc0(sizeof(double) * result.lines * result.rows);
 
   /* 3. Do the computation */
-  for (i=0; i<result.rows; i++) 
-    for (j=0; j<result.cols; j++) 
-      for (k=0; k<data[1].rows; k++) 
-	result.ctn[i*result.cols + j] +=  data[0].ctn[i*result.cols +k] *data[1].ctn[k*result.cols +j];
+  for (i=0; i<result.lines; i++) 
+    for (j=0; j<result.rows; j++) 
+      for (k=0; k<data[1].lines; k++) 
+	result.ctn[i*result.rows + j] +=  data[0].ctn[i*result.rows +k] *data[1].ctn[k*result.rows +j];
 
   /* 4. Send it back as payload of a pong message to the expeditor */
   gras_msg_send(expeditor, gras_msgtype_by_name("answer"), &result);

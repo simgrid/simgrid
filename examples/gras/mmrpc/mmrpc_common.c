@@ -26,11 +26,11 @@ void mmrpc_register_messages(void) {
 void mat_dump(matrix_t *mat, const char* name) {
   int i,j;
 
-  printf(">>> Matrix %s dump (%d x %d)\n",name,mat->rows,mat->cols);
-  for (i=0; i<mat->rows; i++) {
+  printf(">>> Matrix %s dump (%d x %d)\n",name,mat->lines,mat->rows);
+  for (i=0; i<mat->lines; i++) {
     printf("  ");
-    for (j=0; j<mat->cols; j++)
-      printf(" %.2f",mat->ctn[i*mat->cols + j]);
+    for (j=0; j<mat->rows; j++)
+      printf(" %.2f",mat->ctn[i*mat->rows + j]);
     printf("\n");
   }
   printf("<<< end_of_matrix %s dump\n",name);

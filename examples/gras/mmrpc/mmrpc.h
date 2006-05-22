@@ -16,9 +16,9 @@
 
 GRAS_DEFINE_TYPE(s_matrix,
 struct s_matrix {
+  int lines;
   int rows;
-  int cols;
-  double *ctn GRAS_ANNOTE(size, rows*cols);
+  double *ctn GRAS_ANNOTE(size, lines*rows);
 };)
 typedef struct s_matrix matrix_t;
 

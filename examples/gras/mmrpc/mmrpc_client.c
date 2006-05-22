@@ -56,7 +56,7 @@ int client(int argc,char *argv[]) {
 
   /* 7. Prepare and send the request to the server */
 
-  request[0].rows=request[0].cols=request[1].rows=request[1].cols=MATSIZE;
+  request[0].lines=request[0].rows=request[1].lines=request[1].rows=MATSIZE;
 
   request[0].ctn=xbt_malloc0(sizeof(double)*MATSIZE*MATSIZE);
   request[1].ctn=xbt_malloc0(sizeof(double)*MATSIZE*MATSIZE);
