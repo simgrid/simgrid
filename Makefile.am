@@ -16,7 +16,7 @@ EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS Chan
 	   tools/platform_generation/graph_tbx.pm           \
 	   tools/platform_generation/graph_viz.pm           \
 	   tools/platform_generation/tiers.pm               \
-	   tools/platform_generation/msgplatform2surfxml.pl \
+	   tools/platform_generation/msgplatform2surfxml.pl
 
 SOURCE_FILES = $(shell find . -name "*.[ch]")
 TAGS: $(SOURCE_FILES)
