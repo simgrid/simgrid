@@ -185,7 +185,7 @@ int master (int argc,char *argv[]) {
   //display(A);
   /************************* Init Data Send *********************************/
   int step_ack;
-  gras_os_sleep(60);      // MODIFIER LES TEMPS D'ATTENTE 60 c trop normalement
+  gras_os_sleep(5);
 
   for( i=1;i< argc;i++){
     grid[i-1]=xbt_host_from_string(argv[i]);
@@ -229,7 +229,6 @@ int master (int argc,char *argv[]) {
   INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
 	
   for (step=1; step <= PROC_MATRIX_SIZE; step++){
-    //    gras_os_sleep(50);
     for (i=0; i< SLAVE_COUNT; i++){
       TRY {
 	gras_msg_send(socket[i], gras_msgtype_by_name("step"), &step);
@@ -239,19 +238,19 @@ int master (int argc,char *argv[]) {
       }
     }
     INFO1("send to slave to begin a %d th step",step);
+
     /* wait for computing and slave messages exchange */
-    i=0;
-	
-    while  ( i< SLAVE_COUNT){
+
+    i=0;	
+    while  ( i< SLAVE_COUNT) {
       TRY {
 	gras_msg_wait(1300,gras_msgtype_by_name("step_ack"),&from,&step_ack);
       } CATCH(e) {
-	RETHROW0("I Can't get a Ack step message from slave : %s");
+	RETHROW0("Can't get a Ack step message from slave : %s");
       }
       i++;
-      INFO3("Receive Ack step ack from %s (got %d of %d)",
-	    gras_socket_peer_name(from),
-	    i, SLAVE_COUNT);
+      DEBUG3("Got step ack from %s (got %d of %d)",
+	    gras_socket_peer_name(from), i, SLAVE_COUNT);
     }
   }
   /*********************************  gather ***************************************/
@@ -290,7 +289,8 @@ int slave(int argc,char *argv[]) {
   
   result_t result;
  
-  gras_socket_t from,sock;  /* to receive from server for steps */
+  gras_socket_t from,sock;  /* to exchange data with my neighbor */
+  gras_socket_t master;     /* for the barrier */
 
   /* sockets for brodcast to other slave */
   gras_socket_t socket_line[PROC_MATRIX_SIZE-1];
@@ -315,7 +315,7 @@ int slave(int argc,char *argv[]) {
   assignment_t assignment;
   INFO2("Launch %s (port=%d); wait for my enrole message",argv[0],port);
   TRY {
-    gras_msg_wait(600,gras_msgtype_by_name("assignment"),&from,&assignment);
+    gras_msg_wait(600,gras_msgtype_by_name("assignment"),&master,&assignment);
   } CATCH(e) {
     RETHROW0("Can't get my assignment from master : %s");
   }
@@ -353,7 +353,7 @@ int slave(int argc,char *argv[]) {
     step=PROC_MATRIX_SIZE+1;  // just intilization for loop
 	
     TRY {
-      gras_msg_wait(200,gras_msgtype_by_name("step"),&from,&step);
+      gras_msg_wait(200,gras_msgtype_by_name("step"),NULL,&step);
     } CATCH(e) {
       RETHROW0("Can't get a Next Step message from master : %s");
     }
@@ -373,10 +373,9 @@ int slave(int argc,char *argv[]) {
       if(myline != step){ 
 	INFO2("step(%d) <> Myline(%d)",step,myline);
 	TRY {
-	  gras_msg_wait(600,gras_msgtype_by_name("dataB"),
-			&from,&bB);
+	  gras_msg_wait(600,gras_msgtype_by_name("dataB"),&from,&bB);
 	} CATCH(e) {
-	  RETHROW0("I Can't get a data message from line : %s");
+	  RETHROW0("Can't get a data message from line : %s");
 	}
 	INFO2("Receive data B (%.3g) from my neighbor: %s",bB,gras_socket_peer_name(from));
       }
@@ -391,10 +390,9 @@ int slave(int argc,char *argv[]) {
 
       if(myrow != step){
 	TRY {
-	  gras_msg_wait(1200,gras_msgtype_by_name("dataA"),
-			&from,&bA);
+	  gras_msg_wait(1200,gras_msgtype_by_name("dataA"), &from,&bA);
 	} CATCH(e) {
-	  RETHROW0("I Can't get a data message from row : %s");
+	  RETHROW0("Can't get a data message from row : %s");
 	}
 	INFO2("Receive data A (%.3g) from my neighbor : %s ",bA,gras_socket_peer_name(from));
       }
@@ -403,7 +401,7 @@ int slave(int argc,char *argv[]) {
 
       /* send a ack msg to master */
 	
-      gras_msg_send(from,gras_msgtype_by_name("step_ack"),&step);
+      gras_msg_send(master,gras_msgtype_by_name("step_ack"),&step);
 	
       INFO1("Send ack to master for to end %d th step",step);
     }
@@ -418,21 +416,22 @@ int slave(int argc,char *argv[]) {
  
   TRY {
     gras_msg_wait(600,gras_msgtype_by_name("ask_result"),
-		  &from,&result_ack);
+		  &master,&result_ack);
   } CATCH(e) {
-    RETHROW0("I Can't get a data message from line : %s");
+    RETHROW0("Can't get a data message from line : %s");
   }
   /* send Result to master */
   TRY {
-    gras_msg_send(from, gras_msgtype_by_name("result"),&result);
+    gras_msg_send(master, gras_msgtype_by_name("result"),&result);
   } CATCH(e) {
     // gras_socket_close(from);
     RETHROW0("Failed to send PING to server: %s");
   }
   INFO3(">>>>>>>> Result: %.3f sent to %s:%d <<<<<<<<",
 	bC,
-	gras_socket_peer_name(from),gras_socket_peer_port(from));
+	gras_socket_peer_name(master),gras_socket_peer_port(master));
   /*  Free the allocated resources, and shut GRAS down */
+  gras_socket_close(master);
   gras_socket_close(from);
   gras_exit();
   INFO0("Done.");
