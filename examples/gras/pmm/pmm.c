@@ -15,9 +15,9 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");
 
 GRAS_DEFINE_TYPE(s_matrix,struct s_matrix {
+  int lines;
   int rows;
-  int cols;
-  double *data GRAS_ANNOTE(size, rows*cols);
+  double *data GRAS_ANNOTE(size, lines*rows);
 };)
 typedef struct s_matrix matrix_t;
 
@@ -31,8 +31,8 @@ typedef struct s_result result_t;
 
 /* struct to send initial data to slave */
 GRAS_DEFINE_TYPE(s_init_data,struct s_init_data {
+  int myline;
   int myrow;
-  int mycol;
   double a;
   double b;
 });
@@ -66,7 +66,7 @@ int master (int argc,char *argv[]);
 
 /* Global private data */
 typedef struct {
-  int nbr_col,nbr_row;
+  int nbr_row,nbr_line;
   int remaining_step;
   int remaining_ack;
 } master_data_t;
@@ -77,7 +77,7 @@ typedef struct {
 static void initmatrix(matrix_t *X){
   int i;
 
-  for(i=0 ; i<(X->rows)*(X->cols); i++)
+  for(i=0 ; i<(X->lines)*(X->rows); i++)
     X->data[i]=1.0;//*rand()/(RAND_MAX+1.0);
 } /* end_of_initmatrixs */
 
@@ -112,22 +112,22 @@ static void display(matrix_t X){
   int i,j,t=0;
 
   printf("      ");
-  for(j=0;j<X.cols;j++)
+  for(j=0;j<X.rows;j++)
     printf("%.3d ",j);
   printf("\n");
   printf("    __");
-  for(j=0;j<X.cols;j++)
+  for(j=0;j<X.rows;j++)
     printf("____");
   printf("_\n");
 
-  for(i=0;i<X.rows;i++){
+  for(i=0;i<X.lines;i++){
     printf("%.3d | ",i);
-    for(j=0;j<X.cols;j++)
+    for(j=0;j<X.rows;j++)
       printf("%.3g ",X.data[t++]);
     printf("|\n");
   }
   printf("    --");
-  for(j=0;j<X.cols;j++)
+  for(j=0;j<X.rows;j++)
     printf("----");
   printf("-\n");
 
@@ -151,9 +151,9 @@ int master (int argc,char *argv[]) {
 
   /*  Initialize Matrixs */
 
-  A.rows=A.cols=DATA_MATRIX_SIZE;
-  B.rows=B.cols=DATA_MATRIX_SIZE;
-  C.rows=C.cols=DATA_MATRIX_SIZE;
+  A.lines=A.rows=DATA_MATRIX_SIZE;
+  B.lines=B.rows=DATA_MATRIX_SIZE;
+  C.lines=C.rows=DATA_MATRIX_SIZE;
 	
   A.data=xbt_malloc0(sizeof(double)*DATA_MATRIX_SIZE*DATA_MATRIX_SIZE);
   B.data=xbt_malloc0(sizeof(double)*DATA_MATRIX_SIZE*DATA_MATRIX_SIZE);
@@ -174,7 +174,7 @@ int master (int argc,char *argv[]) {
   init_data_t mydata;
   gras_os_sleep(60);      // MODIFIER LES TEMPS D'ATTENTE 60 c trop normalement
 
-  int row=1, col=1;
+  int line=1, row=1;
   for( i=2;i< argc;i++){
     TRY {
       socket[j]=gras_socket_client(argv[i],port);
@@ -183,16 +183,16 @@ int master (int argc,char *argv[]) {
     }
     INFO2("Connected to %s:%d.",argv[i],port);
 		
+    mydata.myline=line;  // My line
     mydata.myrow=row;  // My row
-    mydata.mycol=col;  // My column
-    row++;
-    if (row > PROC_MATRIX_SIZE) {
-      row=1;
-      col++;
+    line++;
+    if (line > PROC_MATRIX_SIZE) {
+      line=1;
+      row++;
     }
 		
-    mydata.a=A.data[(mydata.myrow-1)*PROC_MATRIX_SIZE+(mydata.mycol-1)];
-    mydata.b=B.data[(mydata.myrow-1)*PROC_MATRIX_SIZE+(mydata.mycol-1)];;
+    mydata.a=A.data[(mydata.myline-1)*PROC_MATRIX_SIZE+(mydata.myrow-1)];
+    mydata.b=B.data[(mydata.myline-1)*PROC_MATRIX_SIZE+(mydata.myrow-1)];;
 		
     gras_msg_send(socket[j],gras_msgtype_by_name("init_data"),&mydata);
     INFO3("Send Init Data to %s : data A= %.3g & data B= %.3g",
@@ -260,7 +260,7 @@ int slave(int argc,char *argv[]) {
   int step,port,l,result_ack=0; 
   double bA,bB;
 
-  int myrow,mycol;
+  int myline,myrow;
   double mydataA,mydataB;
   double bC=0;
   
@@ -271,8 +271,8 @@ int slave(int argc,char *argv[]) {
   gras_socket_t from,sock;  /* to receive from server for steps */
 
   /* sockets for brodcast to other slave */
+  gras_socket_t socket_line[PROC_MATRIX_SIZE-1];
   gras_socket_t socket_row[PROC_MATRIX_SIZE-1];
-  gras_socket_t socket_column[PROC_MATRIX_SIZE-1];
 
   /* Init the GRAS's infrastructure */
 
@@ -289,8 +289,8 @@ int slave(int argc,char *argv[]) {
 
   int i;
   for (i=1;i<PROC_MATRIX_SIZE;i++){
-    socket_row[i-1]=gras_socket_client(argv[i+1],port);
-    socket_column[i-1]=gras_socket_client(argv[i+PROC_MATRIX_SIZE],port);
+    socket_line[i-1]=gras_socket_client(argv[i+1],port);
+    socket_row[i-1]=gras_socket_client(argv[i+PROC_MATRIX_SIZE],port);
   }
 
   /*  Register the known messages */
@@ -304,12 +304,12 @@ int slave(int argc,char *argv[]) {
   } CATCH(e) {
     RETHROW0("I Can't get a init Data message from master : %s");
   }
+  myline=mydata.myline;
   myrow=mydata.myrow;
-  mycol=mydata.mycol;
   mydataA=mydata.a;
   mydataB=mydata.b;
   INFO4("Receive MY POSITION (%d,%d) and MY INIT DATA ( A=%.3g | B=%.3g )",
-	myrow,mycol,mydataA,mydataB);
+	myline,myrow,mydataA,mydataB);
   step=1;
   
   do {  //repeat until compute Cb
@@ -323,41 +323,41 @@ int slave(int argc,char *argv[]) {
     INFO1("Receive a step message from master: step = %d ",step);
 
     if (step < PROC_MATRIX_SIZE ){
-      /* a row brodcast */
+      /* a line brodcast */
       gras_os_sleep(3);  // IL FAUT EXPRIMER LE TEMPS D'ATTENTE EN FONCTION DE "SLAVE_COUNT"
-      if(myrow==step){
-	INFO2("step(%d) = Myrow(%d)",step,myrow);
+      if(myline==step){
+	INFO2("step(%d) = Myline(%d)",step,myline);
 	for (l=1;l < PROC_MATRIX_SIZE ;l++){
-	  gras_msg_send(socket_column[l-1], gras_msgtype_by_name("dataB"), &mydataB);
+	  gras_msg_send(socket_row[l-1], gras_msgtype_by_name("dataB"), &mydataB);
 	  bB=mydataB;
 	  INFO1("send my data B (%.3g) to my (vertical) neighbors",bB);  
 	}
       }
-      if(myrow != step){ 
-	INFO2("step(%d) <> Myrow(%d)",step,myrow);
+      if(myline != step){ 
+	INFO2("step(%d) <> Myline(%d)",step,myline);
 	TRY {
 	  gras_msg_wait(600,gras_msgtype_by_name("dataB"),
 			&from,&bB);
 	} CATCH(e) {
-	  RETHROW0("I Can't get a data message from row : %s");
+	  RETHROW0("I Can't get a data message from line : %s");
 	}
 	INFO2("Receive data B (%.3g) from my neighbor: %s",bB,gras_socket_peer_name(from));
       }
-      /* a column brodcast */
-      if(mycol==step){
+      /* a row brodcast */
+      if(myrow==step){
 	for (l=1;l < PROC_MATRIX_SIZE ;l++){
-	  gras_msg_send(socket_row[l-1],gras_msgtype_by_name("dataA"), &mydataA);
+	  gras_msg_send(socket_line[l-1],gras_msgtype_by_name("dataA"), &mydataA);
 	  bA=mydataA;
 	  INFO1("send my data A (%.3g) to my (horizontal) neighbors",bA);
 	}
       }
 
-      if(mycol != step){
+      if(myrow != step){
 	TRY {
 	  gras_msg_wait(1200,gras_msgtype_by_name("dataA"),
 			&from,&bA);
 	} CATCH(e) {
-	  RETHROW0("I Can't get a data message from column : %s");
+	  RETHROW0("I Can't get a data message from row : %s");
 	}
 	INFO2("Receive data A (%.3g) from my neighbor : %s ",bA,gras_socket_peer_name(from));
       }
@@ -376,14 +376,14 @@ int slave(int argc,char *argv[]) {
   /*  wait Message from master to send the result */
  
   result.value=bC;
-  result.i=myrow;
-  result.j=mycol;
+  result.i=myline;
+  result.j=myrow;
  
   TRY {
     gras_msg_wait(600,gras_msgtype_by_name("ask_result"),
 		  &from,&result_ack);
   } CATCH(e) {
-    RETHROW0("I Can't get a data message from row : %s");
+    RETHROW0("I Can't get a data message from line : %s");
   }
   /* send Result to master */
   TRY {
