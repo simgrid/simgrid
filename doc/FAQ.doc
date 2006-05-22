@@ -841,7 +841,8 @@ Here are some tricks I had to use in order to run a token ring between
 
  - It was really boring to write 25,000 entries in the deployment file, so I wrote 
    a little script <tt>examples/gras/tokenS/make_deployment.pl</tt>, which you may
-   want to adapt to your case.
+   want to adapt to your case. You could also think about hijacking
+   the SURFXML parser (have look at \ref faq_flexml_bypassing).
 
  - The deployment file became quite big, so I had to do what is in the FAQ
    entry \ref faq_flexml_limit
