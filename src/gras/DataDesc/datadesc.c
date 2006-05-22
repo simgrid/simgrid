@@ -140,6 +140,9 @@ gras_datadesc_init(void) {
   gras_datadesc_struct_close(ddt);
 
   ddt = gras_datadesc_ref("xbt_host_t",ddt);
+
+  /* Dict containing the constant value (for the parsing macro) */
+  gras_dd_constants = xbt_dict_new();
   
 }
 

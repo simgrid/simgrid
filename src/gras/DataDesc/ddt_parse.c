@@ -315,8 +315,16 @@ static void parse_statement(char	 *definition,
 	  char *end;
 	  long int size=strtol(gras_ddt_parse_text, &end, 10);
 
-	  if (end == gras_ddt_parse_text || *end != '\0')
-	    PARSE_ERROR1("Unparsable size of array (found '%c', expected number)",*end);
+	  if (end == gras_ddt_parse_text || *end != '\0') {
+	    /* Not a number. Get the constant value, if any */
+	    int *storage=xbt_dict_get_or_null(gras_dd_constants,gras_ddt_parse_text);
+	    if (storage) {
+	      size = *storage;
+	    } else {
+	      PARSE_ERROR1("Unparsable size of array. Found '%s', expected number or known constant. Need to use gras_datadesc_set_const(), huh?",
+			   gras_ddt_parse_text);
+	    }
+	  }
 
 	  /* replace the previously pushed type to an array of it */
 	  change_to_fixed_array(identifiers,size);
@@ -644,4 +652,13 @@ gras_datadesc_parse(const char            *name,
   gras_ddt_parse_lex_destroy();
   XBT_OUT;
   return res;
+}
+
+xbt_dict_t gras_dd_constants;
+/** \brief Declare a constant to the parsing mecanism. See the "\#define and fixed size array" section */
+void gras_datadesc_set_const(const char*name, int value) {
+  int *stored = xbt_new(int, 1);
+  *stored=value;
+
+  xbt_dict_set(gras_dd_constants,name, stored, free); 
 }

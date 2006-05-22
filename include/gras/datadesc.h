@@ -107,9 +107,35 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  *
  *  \warning Since GRAS_DEFINE_TYPE is a macro, you shouldn't put any comma in your type definition 
  *  (comma separates macro args). For example, change \verbatim int a, b;\endverbatim to \verbatim int a;
- int b;\endverbatim
+int b;\endverbatim
  * 
- * <h3>Defining multidimentional arrays</h3>
+ * \section gras_dd_define \#define and fixed size array
+ *
+ * If you want to exchange arrays which size is given at compilation time by a
+ * \#defined constant, you need to keep GRAS informed. It would be done the
+ * following way:
+
+\verbatim #define BLOCK_SIZE 32
+GRAS_DEFINE_TYPE(s_toto,
+struct {
+  double data[BLOCK_SIZE];
+} s_toto;)
+
+void register_messages() { 
+  gras_datadesc_type_t toto_type;
+
+  gras_datadesc_set_const("BLOCK_SIZE",BLOCK_SIZE);
+  toto_type = gras_datadesc_by_symbol(s_toto); 
+}\endverbatim
+ *
+ * The form <tt>gras_datadesc_set_const("BLOCK_SIZE",BLOCK_SIZE);</tt> ensures
+ * that when you change the definition of the constant, GRAS keeps informed of
+ * the right value. Passing the numerical value of the constant as second
+ * argument would be a bad idea to that regard. Of course, the call to
+ * gras_datadesc_set_const() should come before any gras_datadesc_by_symbol()
+ * containing references to it.
+ *
+ * \section GRAS_dd_multidim Defining multidimentional arrays
  * 
  *  The mecanism for multidimensional arrays is known to be fragile and cumbersome. If you want to use it, 
  *  you have to understand how it is implemented: the multiplication is performed using the sizes stack. In previous example,
@@ -128,7 +154,7 @@ gras_datadesc_type_t gras_datadesc_by_name(const char *name);
  * If you cannot express your datadescs with this mechanism, you'll have to use the more advanced 
  * (and somehow complex) one described in the \ref GRAS_dd_cb_full.
  *
- * <h3>Projects spanning over multiple files</h3>
+ * \section GRAS_dd_multifile Projects spanning over multiple files
  * 
  * GRAS_DEFINE_TYPE declares some symbols to work, it needs some special
  * care when used in several files. In such case, you want the regular type
@@ -215,6 +241,10 @@ int server(int argc, char *argv[]) {
  *  @brief Add an annotation to a type to be automatically parsed
  */
 #define GRAS_ANNOTE(key,val)
+ 
+/** @brief Defines the value of a define to the datatype parsing infrastructure
+ */
+void gras_datadesc_set_const(const char*name, int value);
 
 /* @} */
 
