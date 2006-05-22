@@ -21,6 +21,10 @@ xbt_host_t xbt_host_new(const char *name, int port)  {
    return res;
 }
 
+xbt_host_t xbt_host_copy(xbt_host_t h) {
+   return xbt_host_new(h->name,h->port);
+}
+
 /** \brief constructor. Argument should be of form '<hostname>:<port>'. */
 xbt_host_t xbt_host_from_string(const char *hostport)  {
    xbt_host_t res=xbt_new(s_xbt_host_t, 1);

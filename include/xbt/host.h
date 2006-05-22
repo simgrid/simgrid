@@ -22,6 +22,7 @@ typedef struct {
 
 xbt_host_t xbt_host_new(const char *name, int port);
 xbt_host_t xbt_host_from_string(const char *hostport);
+xbt_host_t xbt_host_copy(xbt_host_t h);
 void xbt_host_free(xbt_host_t host);
 void xbt_host_free_voidp(void *d);
 
