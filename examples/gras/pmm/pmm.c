@@ -30,7 +30,7 @@ GRAS_DEFINE_TYPE(s_result,struct s_result {
 typedef struct s_result result_t;
 
 /* struct to send initial data to slave */
-GRAS_DEFINE_TYPE(s_init_data,struct s_init_data {
+GRAS_DEFINE_TYPE(s_assignment,struct s_assignment {
   int linepos;
   int rowpos;
   xbt_host_t line[PROC_MATRIX_SIZE];
@@ -38,24 +38,34 @@ GRAS_DEFINE_TYPE(s_init_data,struct s_init_data {
   double a;
   double b;
 });
-typedef struct s_init_data init_data_t;
+typedef struct s_assignment assignment_t;
 
 /* register messages which may be sent (common to client and server) */
 static void register_messages(void) {
   gras_datadesc_type_t result_type;
-  gras_datadesc_type_t init_data_type;
+  gras_datadesc_type_t assignment_type;
   gras_datadesc_set_const("PROC_MATRIX_SIZE",PROC_MATRIX_SIZE);
   result_type=gras_datadesc_by_symbol(s_result);
-  init_data_type=gras_datadesc_by_symbol(s_init_data);
+  assignment_type=gras_datadesc_by_symbol(s_assignment);
 	
-  gras_msgtype_declare("result", result_type);  // receive a final result from slave
-  gras_msgtype_declare("init_data", init_data_type);  // send from master to slave to initialize data bA,bB
+  /* receive a final result from slave */
+  gras_msgtype_declare("result", result_type);
 
-  gras_msgtype_declare("ask_result", gras_datadesc_by_name("int")); // send from master to slave to ask a final result	
-  gras_msgtype_declare("step", gras_datadesc_by_name("int"));// send from master to slave to indicate the begining of step 
-  gras_msgtype_declare("step_ack", gras_datadesc_by_name("int"));//send from slave to master to indicate the end of the current step
-  gras_msgtype_declare("dataA", gras_datadesc_by_name("double"));// send data between slave
-  gras_msgtype_declare("dataB", gras_datadesc_by_name("double"));// send data between slave
+  /* send from master to slave to assign a position and some data */
+  gras_msgtype_declare("assignment", assignment_type);
+
+  /* send from master to slave to ask a final result */
+  gras_msgtype_declare("ask_result", gras_datadesc_by_name("int")); 
+
+  /* send from master to slave to indicate the begining of step */
+  gras_msgtype_declare("step", gras_datadesc_by_name("int"));
+  /* send from slave to master to indicate the end of the current step */
+  gras_msgtype_declare("step_ack", gras_datadesc_by_name("int"));
+
+  /* send data between slave */
+  gras_msgtype_declare("dataA", gras_datadesc_by_name("double"));
+  /* send data between slave */
+  gras_msgtype_declare("dataB", gras_datadesc_by_name("double"));
 }
 
 /* Function prototypes */
@@ -184,17 +194,19 @@ int master (int argc,char *argv[]) {
     INFO2("Connected to %s:%d.",grid[i-1]->name,grid[i-1]->port);
   }
 
-  int row=1, line=1,j;
+  int row=1, line=1;
   for(i=0 ; i<SLAVE_COUNT; i++){
-    init_data_t mydata;
-    mydata.linepos=line;  // My line
-    mydata.rowpos=row;  // My row
+    assignment_t assignment;
+    int j;
+
+    assignment.linepos=line;  // My line
+    assignment.rowpos=row;  // My row
 
 
     /* Neiborhood */
     for (j=0; j<PROC_MATRIX_SIZE; j++) {
-      mydata.row[j] = xbt_host_copy( grid[ j*PROC_MATRIX_SIZE+(row-1) ] );
-      mydata.line[j] =  xbt_host_copy( grid[ (line-1)*PROC_MATRIX_SIZE+j ] );
+      assignment.row[j] = grid[ j*PROC_MATRIX_SIZE+(row-1) ] ;
+      assignment.line[j] =  grid[ (line-1)*PROC_MATRIX_SIZE+j ] ;
     }
 
     row++;
@@ -203,15 +215,15 @@ int master (int argc,char *argv[]) {
       line++;
     }
 		
-    mydata.a=A.data[(line-1)*PROC_MATRIX_SIZE+(row-1)];
-    mydata.b=B.data[(line-1)*PROC_MATRIX_SIZE+(row-1)];;
+    assignment.a=A.data[(line-1)*PROC_MATRIX_SIZE+(row-1)];
+    assignment.b=B.data[(line-1)*PROC_MATRIX_SIZE+(row-1)];;
 		
-    gras_msg_send(socket[i],gras_msgtype_by_name("init_data"),&mydata);
-    INFO3("Send Init Data to %s : data A= %.3g & data B= %.3g",
-	  gras_socket_peer_name(socket[i]),mydata.a,mydata.b);
+    gras_msg_send(socket[i],gras_msgtype_by_name("assignment"),&assignment);
+    //    INFO3("Send assignment to %s : data A= %.3g & data B= %.3g",
+    //	  gras_socket_peer_name(socket[i]),mydata.a,mydata.b);
 
   }
-    // end init Data Send
+  // end assignment
 
   /******************************* multiplication ********************************/
   INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
@@ -276,8 +288,6 @@ int slave(int argc,char *argv[]) {
   double mydataA,mydataB;
   double bC=0;
   
-  //  static end_step;
-
   result_t result;
  
   gras_socket_t from,sock;  /* to receive from server for steps */
@@ -302,37 +312,39 @@ int slave(int argc,char *argv[]) {
   register_messages();
 
   /* Recover my initialized Data and My Position*/
-  init_data_t mydata;
+  assignment_t assignment;
   INFO2("Launch %s (port=%d); wait for my enrole message",argv[0],port);
   TRY {
-    gras_msg_wait(600,gras_msgtype_by_name("init_data"),&from,&mydata);
+    gras_msg_wait(600,gras_msgtype_by_name("assignment"),&from,&assignment);
   } CATCH(e) {
-    RETHROW0("Can't get a init Data message from master : %s");
+    RETHROW0("Can't get my assignment from master : %s");
   }
-  myline=mydata.linepos;
-  myrow=mydata.rowpos;
-  mydataA=mydata.a;
-  mydataB=mydata.b;
-  INFO4("Receive MY POSITION (%d,%d) and MY INIT DATA ( A=%.3g | B=%.3g )",
+  myline  = assignment.linepos;
+  myrow   = assignment.rowpos;
+  mydataA = assignment.a;
+  mydataB = assignment.b;
+  INFO4("Receive my pos (%d,%d) and assignment ( A=%.3g | B=%.3g )",
 	myline,myrow,mydataA,mydataB);
 
-  /* Get my neighborhood from the enrollment message */
+  /* Get my neighborhood from the assignment message */
   int j=0;
   for (i=0,j=0 ; i<PROC_MATRIX_SIZE ; i++){
-    if (strcmp(gras_os_myname(),mydata.line[i]->name)) {
-      socket_line[j]=gras_socket_client(mydata.line[i]->name,mydata.line[i]->port);
+    if (strcmp(gras_os_myname(),assignment.line[i]->name)) {
+      socket_line[j]=gras_socket_client(assignment.line[i]->name,
+					assignment.line[i]->port);
       j++;
       //INFO3("Line neighbour %d: %s:%d",j,mydata.line[i]->name,mydata.line[i]->port);
     }
-    xbt_host_free(mydata.line[i]);
+    xbt_host_free(assignment.line[i]);
   }
   for (i=0,j=0 ; i<PROC_MATRIX_SIZE ; i++){
-    if (strcmp(gras_os_myname(),mydata.row[i]->name)) {
-      socket_row[j]=gras_socket_client(mydata.row[i]->name,mydata.row[i]->port);
+    if (strcmp(gras_os_myname(),assignment.row[i]->name)) {
+      socket_row[j]=gras_socket_client(assignment.row[i]->name,
+				       assignment.row[i]->port);
       //INFO3("Row neighbour %d : %s:%d",j,mydata.row[i]->name,mydata.row[i]->port);
       j++;
     }
-    xbt_host_free(mydata.row[i]);    
+    xbt_host_free(assignment.row[i]);    
   }
 
   step=1;
