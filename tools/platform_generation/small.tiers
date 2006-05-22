@@ -1,0 +1,172 @@
+#
+# Parameters for Network Model	ModelId: 856566616
+# ============================ 
+#
+# Value	Parameter
+# -----	---------
+#
+# 1	NW: number of WANs
+# 2	NM: number of MANs per WAN
+# 3	NL: number of LANs per MAN
+# 3	SW: number of nodes per WAN
+# 3	SM: number of nodes per MAN
+# 3	SL: number of nodes per LAN
+# 1	RW: intranetwork redundancy for WAN
+# 1	RM: intranetwork redundancy for MANs
+# 1	RL: intranetwork redundancy for LANs
+# 1	RMW: internetwork redundancy for MAN to WAN
+# 1	RLM: internetwork redundancy for LAN to MAN
+#
+# 100	 Grid size (square)
+# 40	 Grid unit for WAN
+# 8	 Grid unit for MAN
+# 2	 Grid unit for LAN
+#
+# 0	 Proximity test for WAN (0 is inactive)
+# 0	 Proximity test for MAN (0 is inactive)
+# 0	 Proximity test for LAN (0 is inactive)
+#
+# 0	 Edge list is directed (0) or undirected (1)
+# Total Number of Nodes (derived) : 27
+#
+# Edge Metrics
+# ------------
+#
+# From	To	Band-	Fixed	Delay/Unit
+# Type	Type	width	Delay	Distance
+# ------------------------------------------
+# 0	0	10	5	1	
+# 0	1	10	50	1	
+# 0	2	0	0	1	
+# 1	0	10	50	1	
+# 1	1	100	100	10	
+# 1	2	100	1000	1	
+# 2	0	0	0	1	
+# 2	1	100	1000	1	
+# 2	2	1000	150	100	
+#
+# NODES
+# =====
+#
+# Node	X	Y	Type (0 = WAN, 1 = MAN, 2 = LAN)
+# ------------------------------------
+0	920	2320	0
+1	1360	3600	0
+2	360	920	0
+3	792	1552	1
+4	592	1248	1
+5	528	1224	1
+6	488	1568	1
+7	544	1320	1
+8	992	1312	1
+9	791	1259	2
+10	777	1407	2
+11	715	1401	2
+12	963	1577	2
+13	957	1613	2
+14	879	1743	2
+15	709	1305	2
+16	607	1329	2
+17	613	1349	2
+18	663	1707	2
+19	549	1757	2
+20	611	1651	2
+21	681	1667	2
+22	613	1727	2
+23	575	1615	2
+24	689	1505	2
+25	689	1389	2
+26	687	1457	2
+#
+# EDGES
+# =====
+#
+# From	 To	Delay	Band-	From	To	State (1:active, 2:redundant
+# Node	Node	     	width	Type	Type	3:internetwork, 4:red.inter.)
+# ---------------------------------------------------
+#
+# WAN 0
+#
+0	2	1485	10	0	0	1
+0	1	1325	10	0	0	1
+1	0	1325	10	0	0	1
+2	0	1485	10	0	0	1
+2	5	51	10	0	1	3
+2	8	51	10	0	1	3
+#
+# MAN 0
+#
+3	4	3700	100	1	1	1
+3	12	1001	100	1	2	3
+4	5	740	100	1	1	1
+4	3	3700	100	1	1	1
+4	9	1001	100	1	2	3
+4	15	1001	100	1	2	3
+5	4	740	100	1	1	1
+5	2	51	10	1	0	3
+#
+# MAN 1
+#
+6	7	2580	100	1	1	1
+6	18	1001	100	1	2	3
+6	21	1001	100	1	2	3
+7	6	2580	100	1	1	1
+7	8	4580	100	1	1	1
+7	24	1001	100	1	2	3
+8	7	4580	100	1	1	1
+8	2	51	10	1	0	3
+#
+# LAN 0
+#
+9	10	14950	1000	2	2	1
+10	9	14950	1000	2	2	1
+9	11	16150	1000	2	2	1
+11	9	16150	1000	2	2	1
+9	4	1001	100	2	1	3
+4	9	1001	100	1	2	3
+#
+# LAN 1
+#
+12	13	3750	1000	2	2	1
+13	12	3750	1000	2	2	1
+12	14	18750	1000	2	2	1
+14	12	18750	1000	2	2	1
+12	3	1001	100	2	1	3
+3	12	1001	100	1	2	3
+#
+# LAN 2
+#
+15	16	10550	1000	2	2	1
+16	15	10550	1000	2	2	1
+15	17	10550	1000	2	2	1
+17	15	10550	1000	2	2	1
+15	4	1001	100	2	1	3
+4	15	1001	100	1	2	3
+#
+# LAN 3
+#
+18	19	12550	1000	2	2	1
+19	18	12550	1000	2	2	1
+18	20	7750	1000	2	2	1
+20	18	7750	1000	2	2	1
+18	6	1001	100	2	1	3
+6	18	1001	100	1	2	3
+#
+# LAN 4
+#
+21	22	9150	1000	2	2	1
+22	21	9150	1000	2	2	1
+21	23	11950	1000	2	2	1
+23	21	11950	1000	2	2	1
+21	6	1001	100	2	1	3
+6	21	1001	100	1	2	3
+#
+# LAN 5
+#
+24	25	11750	1000	2	2	1
+25	24	11750	1000	2	2	1
+24	26	4950	1000	2	2	1
+26	24	4950	1000	2	2	1
+24	7	1001	100	2	1	3
+7	24	1001	100	1	2	3
+# End of Model
