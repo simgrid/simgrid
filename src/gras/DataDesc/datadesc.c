@@ -131,8 +131,16 @@ gras_datadesc_init(void) {
   gras_datadesc_struct_append(ddt,"bt_strings", 
 			      gras_datadesc_ref_pop_arr(gras_datadesc_by_name("string")));
 
-  //  gras_datadesc_struct_append(ddt,"bt");
   gras_datadesc_struct_close(ddt);
+
+
+  ddt = gras_datadesc_struct("s_xbt_host_t");
+  gras_datadesc_struct_append(ddt,"name",gras_datadesc_by_name("string"));
+  gras_datadesc_struct_append(ddt,"port",gras_datadesc_by_name("int"));
+  gras_datadesc_struct_close(ddt);
+
+  ddt = gras_datadesc_ref("xbt_host_t",ddt);
+  
 }
 
 /**
