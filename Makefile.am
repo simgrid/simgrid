@@ -7,7 +7,16 @@ AUTOMAKE_OPTIONS = gnu
 EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog \
 	acmacro/aci.m4 \
 	tools/graspe-slave.in \
-	tools/MSG_visualization tools/platform_generation
+	tools/MSG_visualization \
+	   tools/MSG_visualization/colorize.pl              \
+	tools/platform_generation                           \
+	   tools/platform_generation/WAN_3.tiers            \
+	   tools/platform_generation/tiers_simgrid.pl       \
+	   tools/platform_generation/AlvinMisc.pm           \
+	   tools/platform_generation/graph_tbx.pm           \
+	   tools/platform_generation/graph_viz.pm           \
+	   tools/platform_generation/tiers.pm               \
+	   tools/platform_generation/msgplatform2surfxml.pl \
 
 SOURCE_FILES = $(shell find . -name "*.[ch]")
 TAGS: $(SOURCE_FILES)
