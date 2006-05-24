@@ -15,7 +15,7 @@
 #include "xbt/dict.h"
 #include "xbt/ex.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(emul,gras,"Emulation support");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_emul,gras_virtu,"Emulation support");
 
 /*** Timing macros ***/
 static xbt_os_timer_t timer;

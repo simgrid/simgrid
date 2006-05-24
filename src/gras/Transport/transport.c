@@ -11,8 +11,8 @@
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(transport,gras,"Conveying bytes over the network");
-XBT_LOG_NEW_SUBCATEGORY(trp_meas,transport,"Conveying bytes over the network without formating for perf measurements");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp,gras,"Conveying bytes over the network");
+XBT_LOG_NEW_SUBCATEGORY(gras_trp_meas,gras_trp,"Conveying bytes over the network without formating for perf measurements");
 static short int _gras_trp_started = 0;
 
 static xbt_dict_t _gras_trp_plugins;      /* All registered plugins */
@@ -408,12 +408,12 @@ void gras_socket_meas_send(gras_socket_t peer,
   xbt_assert0(peer->outgoing,"Socket not suited for data send (was created with gras_socket_server(), not gras_socket_client())");
 
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
-     CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
+     CDEBUG5(gras_trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
      (*peer->plugin->raw_send)(peer,chunk,msg_size);
   }
-  CDEBUG5(trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
+  CDEBUG5(gras_trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 	     
@@ -446,12 +446,12 @@ void gras_socket_meas_recv(gras_socket_t peer,
   xbt_assert0(peer->incoming,"Socket not suited for data receive");
 
   for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += msg_size) {
-     CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
+     CDEBUG5(gras_trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	     exp_sofar,exp_size,msg_size,
 	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
      (peer->plugin->raw_recv)(peer,chunk,msg_size);
   }
-  CDEBUG5(trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
+  CDEBUG5(gras_trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
 	  exp_sofar,exp_size,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
@@ -486,7 +486,7 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer){
 
   res = (peer->plugin->socket_accept)(peer);
   res->meas = peer->meas;
-  CDEBUG1(trp_meas,"meas_accepted onto %d",res->sd);
+  CDEBUG1(gras_trp_meas,"meas_accepted onto %d",res->sd);
 
   return res;
 } 

@@ -9,11 +9,9 @@
 
 #include "gras/Msg/msg_private.h"
                 
-//XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_rpc,gras_msg,"RPCing");
-
 xbt_set_t _gras_rpctype_set = NULL;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_rpc,gras_msg,"RPC mecanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg_rpc,gras_msg,"RPC mecanism");
 
 
 /** @brief declare a new versionned RPC type of the given name and payloads

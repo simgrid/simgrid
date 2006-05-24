@@ -18,8 +18,7 @@
 #include "transport_private.h"
 #include "gras/Virtu/virtu_sg.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(transport);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_sg,transport,"SimGrid pseudo-transport");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_sg,gras_trp,"SimGrid pseudo-transport");
 
 /***
  *** Prototypes 

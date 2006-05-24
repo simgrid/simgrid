@@ -15,7 +15,7 @@
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/DataDesc/ddt_parse.yy.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_parse,datadesc,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_parse,gras_ddt,
   "Parsing C data structures to build GRAS data description");
 
 typedef struct s_type_modifier{
@@ -181,7 +181,7 @@ static void parse_statement(char	 *definition,
     THROW0(mismatch_error,0,"End of the englobing structure or union");
   }
   
-  if (XBT_LOG_ISENABLED(ddt_parse,xbt_log_priority_debug)) {
+  if (XBT_LOG_ISENABLED(gras_ddt_parse,xbt_log_priority_debug)) {
     int colon_pos;
     for (colon_pos = gras_ddt_parse_col_pos;
 	 definition[colon_pos] != ';';

@@ -26,7 +26,7 @@
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_tcp,transport,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_tcp,gras_trp,
       "TCP buffered transport");
 
 /***
@@ -339,7 +339,7 @@ gras_trp_bufiov_flush(gras_socket_t sock) {
   
   DEBUG0("Flush");
   if (data->out == buffering_buf) {
-    if (XBT_LOG_ISENABLED(trp_tcp,xbt_log_priority_debug))
+    if (XBT_LOG_ISENABLED(gras_trp_tcp,xbt_log_priority_debug))
       hexa_print("chunk to send ",
 		 (unsigned char *) data->out_buf.data,data->out_buf.size);
     if ((data->out_buf.size - data->out_buf.pos) != 0) { 

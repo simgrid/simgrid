@@ -498,7 +498,7 @@ char *gras_ddt_parse_text;
   int gras_ddt_parse_char_pos = 0;
   int gras_ddt_parse_tok_num = 0;
   const char *definition;
-  XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lexer,ddt_parse,"The crude internals of the lexer used for type parsing");
+  XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_lexer,gras_ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,gras_ddt_parse_text)
 
 #line 505 "gras/DataDesc/ddt_parse.yy.c"

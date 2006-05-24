@@ -16,8 +16,7 @@
 #include "gras/virtu.h"
 #include "xbt/xbt_portability.h" /* private */
 
-XBT_LOG_EXTERNAL_CATEGORY(virtu);
-XBT_LOG_DEFAULT_CATEGORY(virtu);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu);
 
 double gras_os_time() {
   return xbt_os_time();

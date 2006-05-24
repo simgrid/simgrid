@@ -11,7 +11,7 @@
 #include "transport_private.h"
 #include "xbt/ex.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(trp_file,transport,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_file,gras_trp,
 	"Pseudo-transport to write to/read from a file");
 
 /***

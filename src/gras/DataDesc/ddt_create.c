@@ -13,7 +13,7 @@
 #include "xbt/ex.h"
 #include "gras/DataDesc/datadesc_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_create,datadesc,"Creating new datadescriptions");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_create,gras_ddt,"Creating new datadescriptions");
 
 /*** prototypes ***/
 static gras_dd_cat_field_t

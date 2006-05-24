@@ -12,8 +12,7 @@
 #include "msg/msg.h"
 #include "gras/Virtu/virtu_sg.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(transport);
-XBT_LOG_DEFAULT_CATEGORY(transport);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 
 /**
  * gras_trp_select:

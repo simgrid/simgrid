@@ -17,8 +17,8 @@
 
 #include "gras/Virtu/virtu_private.h"
 
-XBT_LOG_NEW_SUBCATEGORY(virtu,gras,"Virtualization code");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(process,virtu,"Process manipulation code");
+XBT_LOG_NEW_SUBCATEGORY(gras_virtu,gras,"Virtualization code");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_process,gras_virtu,"Process manipulation code");
 
 
 /* Functions to handle gras_procdata_t->libdata cells*/

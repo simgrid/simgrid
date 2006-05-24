@@ -13,7 +13,7 @@
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/Transport/transport_interface.h" /* gras_trp_send/recv */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_exchange,datadesc,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_exchange,gras_ddt,
 				 "Sending data over the network");
 const char *gras_datadesc_cat_names[9] = { 
   "undefined", 

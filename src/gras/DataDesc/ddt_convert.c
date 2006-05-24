@@ -15,7 +15,7 @@
 
 #include "gras/DataDesc/datadesc_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_convert,datadesc,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_convert,gras_ddt,
 				 "Inter-architecture convertions");
 
 /***

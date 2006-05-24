@@ -10,8 +10,7 @@
 #include "xbt/ex.h"
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
-XBT_LOG_EXTERNAL_CATEGORY(transport);
-XBT_LOG_DEFAULT_CATEGORY(transport);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 
 /**
  * gras_trp_select:

@@ -11,7 +11,7 @@
 
 #include "xbt/ex.h"
 #include "gras/DataDesc/datadesc_private.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ddt_cbps,datadesc,"callback persistant state");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_cbps,gras_ddt,"callback persistant state");
 
 typedef struct {
   gras_datadesc_type_t  type;
