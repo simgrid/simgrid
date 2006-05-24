@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include "xbt/misc.h"
+#include "xbt/function_types.h"
 #include "surf/surfxml_parse.h"
 #include "surf/trace_mgr.h"
 
