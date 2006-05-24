@@ -13,7 +13,7 @@
 #include "gras/Msg/msg_interface.h" /* For some checks at simulation end */
 #include "gras/Transport/transport_interface.h" /* For some checks at simulation end */
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_proc);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 
 void
 gras_process_init() {
