@@ -80,14 +80,13 @@ For that, you first need to get the "simgrid" module from
 <a href="http://gforge.inria.fr/scm/?group_id=12">here</a>. 
 
 You won't find any <tt>configure</tt> and a few other things
-(<tt>Makefile.in</tt>'s, documentation, ...) will be missing as
-well. The reason for that is that all these files have to be
-regenerated using the latest versions of <tt>autoconf</tt>,
-<tt>automake</tt> (1.9) and <tt>doxygen</tt>. To generate the
-<tt>configure</tt> and the <tt>Makefile.in</tt>'s, you just have to
-launch the <tt>bootstrap</tt> command that resides in the top of the
-source tree. Then just follow the instructions of Section 
-\ref faq_compiling.
+(<tt>Makefile.in</tt>'s, documentation, ...) will be missing as well. The
+reason for that is that all these files have to be regenerated using the
+latest versions of <tt>autoconf</tt>, <tt>libtool</tt>, <tt>automake</tt>
+(>1.9) and <tt>doxygen</tt> (>1.4). To generate the <tt>configure</tt> and
+the <tt>Makefile.in</tt>'s, you just have to launch the <tt>bootstrap</tt>
+command that resides in the top of the source tree. Then just follow the
+instructions of Section \ref faq_compiling.
 
 We insist on the fact that you really need the latest versions of
 autoconf and automake. Doing this step on exotic architectures/systems
