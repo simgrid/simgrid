@@ -45,7 +45,10 @@ xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
   xbt_node_t node = NULL;
   node = xbt_new0(struct xbt_node, 1);
   node->data = data;
-  node->in = xbt_dynar_new(sizeof(xbt_edge_t), NULL);
+  if (g->directed)
+    /* only the "out" field is used */
+    node->in = xbt_dynar_new(sizeof(xbt_edge_t), NULL);
+
   node->out = xbt_dynar_new(sizeof(xbt_edge_t), NULL);
   node->position_x = -1.0;
   node->position_y = -1.0;
@@ -61,7 +64,6 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
 {
   xbt_edge_t edge = NULL;
 
-
   edge = xbt_new0(struct xbt_edge, 1);
   xbt_dynar_push(src->out, &edge);
   if (g->directed)
@@ -72,15 +74,28 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
   edge->data = data;
   edge->src = src;
   edge->dst = dst;
-  if (!g->directed) {
-    xbt_dynar_push(src->in, &edge);
-    xbt_dynar_push(dst->out, &edge);
-  }
-
 
   xbt_dynar_push(g->edges, &edge);
 
   return edge;
+}
+
+xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst)
+{
+  xbt_edge_t edge;
+  int cursor;
+
+  xbt_dynar_foreach(src->out, cursor, edge) {
+    INFO3("%p = %p--%p",edge,edge->src,edge->dst);
+    if((edge->src==src) && (edge->dst==dst)) return edge;
+  }
+  if(!g->directed) {
+    xbt_dynar_foreach(src->out, cursor, edge) {
+      INFO3("%p = %p--%p",edge,edge->src,edge->dst);
+      if((edge->dst==src) && (edge->src==dst)) return edge;
+    }
+  }
+  return NULL;
 }
 
 void *xbt_graph_node_get_data(xbt_node_t node)
@@ -93,10 +108,14 @@ void xbt_graph_node_set_data(xbt_node_t node, void *data)
   node->data = data;
 }
 
-
 void *xbt_graph_edge_get_data(xbt_edge_t edge)
 {
   return edge->data;
+}
+
+void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
+{
+  edge->data = data;
 }
 
 /** @brief Destructor

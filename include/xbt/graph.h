@@ -18,9 +18,9 @@ SG_BEGIN_DECL()
    * @{
    */
 
-typedef struct xbt_node *xbt_node_t;
+typedef struct xbt_node  *xbt_node_t;
 typedef struct xbt_edge  *xbt_edge_t;
-typedef struct xbt_graph  *xbt_graph_t;
+typedef struct xbt_graph *xbt_graph_t;
 
 /* API */
 xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data);
@@ -30,6 +30,9 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst,
 void *xbt_graph_node_get_data(xbt_node_t node);
 void  xbt_graph_node_set_data(xbt_node_t node, void *data);
 void *xbt_graph_edge_get_data(xbt_edge_t edge);
+void  xbt_graph_edge_set_data(xbt_edge_t edge, void *data);
+
+xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst);
 
 void xbt_graph_edge_set_length(xbt_edge_t e, double length);
 double xbt_graph_edge_get_length(xbt_edge_t e);
