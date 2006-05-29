@@ -1,0 +1,111 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description>
+  <process host="Apple" function="maestro">
+     <argument value="Anne_Marie"/>
+     <argument value="4000"/>
+     <argument value="Audy"/>
+     <argument value="4000"/>
+     <argument value="Verville"/>
+     <argument value="4000"/>
+     <argument value="St_Jean"/>
+     <argument value="4000"/>
+     <argument value="PERL"/>
+     <argument value="4000"/>
+     <argument value="Charron"/>
+     <argument value="4000"/>
+     <argument value="April"/>
+     <argument value="4000"/>
+     <argument value="Jocelyne"/>
+     <argument value="4000"/>
+     <argument value="Gosselin"/>
+     <argument value="4000"/>
+     <argument value="Raymond"/>
+     <argument value="4000"/>
+     <argument value="Owen"/>
+     <argument value="4000"/>
+     <argument value="St_Antoine"/>
+     <argument value="4000"/>
+     <argument value="Gregory"/>
+     <argument value="4000"/>
+     <argument value="SunOS"/>
+     <argument value="4000"/>
+     <argument value="Laurendeau"/>
+     <argument value="4000"/>
+     <argument value="Nelligan"/>
+     <argument value="4000"/>
+     <argument value="Lepage"/>
+     <argument value="4000"/>
+     <argument value="Jacques_Cartier"/>
+     <argument value="4000"/>
+     <argument value="Domey"/>
+     <argument value="4000"/>
+     <argument value="Olivier"/>
+     <argument value="4000"/>
+     <argument value="Jeannine"/>
+     <argument value="4000"/>
+  </process>
+  <process host="Anne_Marie" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Audy" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Verville" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="St_Jean" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="PERL" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Charron" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="April" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Jocelyne" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Gosselin" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Raymond" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Owen" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="St_Antoine" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Gregory" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="SunOS" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Laurendeau" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Nelligan" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Lepage" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Jacques_Cartier" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Domey" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Olivier" function="sensor">
+     <argument value="4000"/>
+  </process>
+  <process host="Jeannine" function="sensor">
+     <argument value="4000"/>
+  </process>
+</platform_description>
