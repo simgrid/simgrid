@@ -265,7 +265,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
     task_data->data = NULL;
   }
 
-  task=MSG_task_create(name,0,((double)size)/(1024.0*1024.0),task_data);
+  task=MSG_task_create(name,0,((double)size),task_data);
 
   DEBUG5("send chunk %s from %s to  %s:%d (size=%ld)",
 	 name, MSG_host_get_name(MSG_host_self()),

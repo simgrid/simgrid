@@ -62,7 +62,7 @@ void gras_msg_send_ext(gras_socket_t   sock,
   msg->kind = kind;
 
   task=MSG_task_create(msgtype->name,0,
-		       ((double)whole_payload_size)/(1024.0*1024.0),msg);
+		       ((double)whole_payload_size),msg);
 
   if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) 
     THROW0(system_error,0,"Problem during the MSG_task_put");
