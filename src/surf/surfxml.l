@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2006/05/29 21:38:10.
+ * Generated 2006/05/29 23:03:05.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -344,7 +344,7 @@ const char* *surfxml_statenames=NULL;
  /* <!-- Small DTD for SURF based tools. -->  */
 
 <ROOT_surfxml_platform_description>"<platform_description"{s} {
-  A_surfxml_platform_description_version = "1.0";
+  A_surfxml_platform_description_version = "0.0";
   ENTER(AL_surfxml_platform_description);
   }
 

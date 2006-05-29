@@ -1759,7 +1759,7 @@ int surf_parse__flex_debug = 0;
 char *surf_parse_text;
 #line 1 "surf/surfxml.l"
 /* Validating XML processor for surfxml.dtd.
- * Generated 2006/05/29 21:38:10.
+ * Generated 2006/05/29 23:03:05.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -2471,7 +2471,7 @@ case 23:
 YY_RULE_SETUP
 #line 346 "surf/surfxml.l"
 {
-  A_surfxml_platform_description_version = "1.0";
+  A_surfxml_platform_description_version = "0.0";
   ENTER(AL_surfxml_platform_description);
   }
 	YY_BREAK
