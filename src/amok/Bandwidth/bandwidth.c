@@ -140,7 +140,7 @@ void amok_bw_test(gras_socket_t peer,
   request->msg_size=msg_size;
   request->host.name = NULL;
   request->host.port = gras_socket_my_port(measMasterIn);
-  VERB5("Handshaking with %s:%d to connect it back on my %d (expsize=%ld byte= %ld b)", 
+  DEBUG5("Handshaking with %s:%d to connect it back on my %d (expsize=%ld byte= %ld b)", 
 	gras_socket_peer_name(peer),gras_socket_peer_port(peer), request->host.port,
 	buf_size,request->buf_size);
 
@@ -202,7 +202,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
   xbt_ex_t e;
   int port;
   
-  VERB5("Handshaked to connect to %s:%d (sizes: buf=%lu exp=%lu msg=%lu)",
+  DEBUG5("Handshaked to connect to %s:%d (sizes: buf=%lu exp=%lu msg=%lu)",
 	gras_socket_peer_name(expeditor),request->host.port,
 	request->buf_size,request->exp_size,request->msg_size);     
 
@@ -320,7 +320,7 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   if (bw)
     *bw =result->bw;
 
-  VERB6("BW test between %s:%d and %s:%d took %f sec, achieving %f kb/s",
+  VERB6("BW test (%s:%d -> %s:%d) took %f sec (%f kb/s)",
 	from_name,from_port, to_name,to_port,
 	result->sec,((double)result->bw)/1024.0);
 
