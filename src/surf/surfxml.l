@@ -1,5 +1,5 @@
 /* Validating XML processor for surfxml.dtd.
- * Generated 2006/04/22 01:36:54.
+ * Generated 2006/05/29 21:38:10.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -68,36 +68,37 @@ const char rcs_surfxml_flexml[] =
 /* FleXML-provided data. */
 const char* surfxml_pcdata;
 AT_surfxml_network_link_bandwidth A_surfxml_network_link_bandwidth;
+AT_surfxml_process_host A_surfxml_process_host;
+AT_surfxml_network_link_latency_file A_surfxml_network_link_latency_file;
+AT_surfxml_route_impact_on_dst_with_other_send A_surfxml_route_impact_on_dst_with_other_send;
+AT_surfxml_cpu_interference_send_recv A_surfxml_cpu_interference_send_recv;
+AT_surfxml_route_impact_on_dst A_surfxml_route_impact_on_dst;
+AT_surfxml_platform_description_version A_surfxml_platform_description_version;
+AT_surfxml_route_impact_on_src_with_other_recv A_surfxml_route_impact_on_src_with_other_recv;
+AT_surfxml_route_element_name A_surfxml_route_element_name;
+AT_surfxml_process_start_time A_surfxml_process_start_time;
+AT_surfxml_process_function A_surfxml_process_function;
+AT_surfxml_cpu_state A_surfxml_cpu_state;
+AT_surfxml_cpu_interference_send A_surfxml_cpu_interference_send;
+AT_surfxml_network_link_bandwidth_file A_surfxml_network_link_bandwidth_file;
 AT_surfxml_cpu_name A_surfxml_cpu_name;
 AT_surfxml_process_kill_time A_surfxml_process_kill_time;
 AT_surfxml_network_link_state A_surfxml_network_link_state;
-AT_surfxml_argument_value A_surfxml_argument_value;
 AT_surfxml_cpu_availability_file A_surfxml_cpu_availability_file;
-AT_surfxml_process_host A_surfxml_process_host;
-AT_surfxml_route_impact_on_src A_surfxml_route_impact_on_src;
+AT_surfxml_argument_value A_surfxml_argument_value;
 AT_surfxml_route_src A_surfxml_route_src;
-AT_surfxml_network_link_latency_file A_surfxml_network_link_latency_file;
+AT_surfxml_route_impact_on_src A_surfxml_route_impact_on_src;
 AT_surfxml_cpu_max_outgoing_rate A_surfxml_cpu_max_outgoing_rate;
-AT_surfxml_route_impact_on_dst_with_other_send A_surfxml_route_impact_on_dst_with_other_send;
-AT_surfxml_cpu_interference_send_recv A_surfxml_cpu_interference_send_recv;
 AT_surfxml_cpu_availability A_surfxml_cpu_availability;
-AT_surfxml_route_impact_on_dst A_surfxml_route_impact_on_dst;
 AT_surfxml_cpu_interference_recv A_surfxml_cpu_interference_recv;
-AT_surfxml_route_impact_on_src_with_other_recv A_surfxml_route_impact_on_src_with_other_recv;
 AT_surfxml_network_link_name A_surfxml_network_link_name;
-AT_surfxml_route_element_name A_surfxml_route_element_name;
 AT_surfxml_cpu_power A_surfxml_cpu_power;
-AT_surfxml_process_start_time A_surfxml_process_start_time;
 AT_surfxml_include_file A_surfxml_include_file;
-AT_surfxml_process_function A_surfxml_process_function;
 AT_surfxml_network_link_sharing_policy A_surfxml_network_link_sharing_policy;
 AT_surfxml_route_dst A_surfxml_route_dst;
-AT_surfxml_cpu_state A_surfxml_cpu_state;
 AT_surfxml_network_link_latency A_surfxml_network_link_latency;
-AT_surfxml_network_link_state_file A_surfxml_network_link_state_file;
-AT_surfxml_cpu_interference_send A_surfxml_cpu_interference_send;
 AT_surfxml_cpu_state_file A_surfxml_cpu_state_file;
-AT_surfxml_network_link_bandwidth_file A_surfxml_network_link_bandwidth_file;
+AT_surfxml_network_link_state_file A_surfxml_network_link_state_file;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -343,10 +344,14 @@ const char* *surfxml_statenames=NULL;
  /* <!-- Small DTD for SURF based tools. -->  */
 
 <ROOT_surfxml_platform_description>"<platform_description"{s} {
+  A_surfxml_platform_description_version = "1.0";
   ENTER(AL_surfxml_platform_description);
   }
 
 <AL_surfxml_platform_description>{
+ "version"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_platform_description_version);
+ "version"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_platform_description_version);
+
  ">" {
   LEAVE; STag_surfxml_platform_description();surfxml_pcdata = NULL; ENTER(S_surfxml_platform_description);
  }
