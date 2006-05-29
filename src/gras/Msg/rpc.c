@@ -82,6 +82,16 @@ gras_msg_rpc_async_call(gras_socket_t server,
 			void *request) {
   gras_msg_cb_ctx_t ctx = xbt_new0(s_gras_msg_cb_ctx_t,1);
 
+  if (msgtype->ctn_type) {
+    xbt_assert1(request,
+		"RPC type '%s' convey a payload you must provide",
+		msgtype->name);
+  } else {
+    xbt_assert1(!request,
+		"No payload was declared for RPC type '%s'",
+		msgtype->name);
+  }
+
   ctx->ID = last_msg_ID++;
   ctx->expeditor = server;
   ctx->msgtype=msgtype;
@@ -102,6 +112,16 @@ gras_msg_rpc_async_call(gras_socket_t server,
 void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
 			     void *answer) {
   s_gras_msg_t received;
+
+  if (ctx->msgtype->answer_type) {
+    xbt_assert1(answer,
+		"Answers to RPC '%s' convey a payload you must accept",
+		ctx->msgtype->name);
+  } else {
+    xbt_assert1(!answer,
+		"No payload was declared for answers to RPC '%s'",
+		ctx->msgtype->name);
+  }
 
   gras_msg_wait_ext(ctx->timeout,
 		    ctx->msgtype, NULL, msgfilter_rpcID, &ctx->ID,

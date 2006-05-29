@@ -342,6 +342,16 @@ gras_msg_wait(double           timeout,
 		    msgt_want, NULL,      NULL, NULL,
 		    &msg);
 
+  if (msgt_want->ctn_type) {
+    xbt_assert1(payload,
+		"Message type '%s' convey a payload you must accept",
+		msgt_want->name);
+  } else {
+    xbt_assert1(!payload,
+		"No payload was declared for message type '%s'",
+		msgt_want->name);
+  }
+
   if (payload) {
     memcpy(payload,msg.payl,msg.payl_size);
     free(msg.payl);
@@ -358,6 +368,16 @@ void
 gras_msg_send(gras_socket_t   sock,
 	      gras_msgtype_t  msgtype,
 	      void           *payload) {
+
+  if (msgtype->ctn_type) {
+    xbt_assert1(payload,
+		"Message type '%s' convey a payload you must provide",
+		msgtype->name);
+  } else {
+    xbt_assert1(!payload,
+		"No payload was declared for message type '%s'",
+		msgtype->name);
+  }
 
   gras_msg_send_ext(sock, e_gras_msg_kind_oneway,0, msgtype, payload);
 }
