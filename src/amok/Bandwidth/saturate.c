@@ -18,6 +18,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload);
 
 
 void amok_bw_sat_init(void) {
+  gras_datadesc_type_t bw_res_desc=gras_datadesc_by_name("bw_res_t");
   gras_datadesc_type_t sat_request_desc;
   /* Build the saturation datatype descriptions */ 
   
@@ -31,7 +32,7 @@ void amok_bw_sat_init(void) {
   /* Register the saturation messages */
   gras_msgtype_declare_rpc("amok_bw_sat start", sat_request_desc, NULL);
   gras_msgtype_declare_rpc("amok_bw_sat begin", sat_request_desc, sat_request_desc);
-  gras_msgtype_declare_rpc("amok_bw_sat stop",  NULL,             NULL);
+  gras_msgtype_declare_rpc("amok_bw_sat stop",  NULL,             bw_res_desc);
 
 }
 void amok_bw_sat_join(void) {
