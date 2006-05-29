@@ -92,6 +92,12 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
 /* Asked to begin a saturation */
 static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
   sat_request_t request = *(sat_request_t*)payload;
+  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+
+  VERB4("Asked by %s:%d to start a saturation to %s:%d",
+	gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor),
+	request->host.name,request->host.port);
+	
   gras_msg_rpcreturn(60,ctx, NULL);
   amok_bw_saturate_begin(request->host.name,request->host.port,
 			 request->msg_size, request->duration,
@@ -179,7 +185,6 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 
   } while (saturate_further && elapsed < duration);
 
-  INFO2("Saturation from %s to %s stopped",gras_os_myname(),to_name);
   bw = ((double)(packet_sent*msg_size)) / elapsed;
 
   if (elapsed_res)
@@ -197,6 +202,8 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     bw_res_t answer = xbt_new(s_bw_res_t,1);
     s_gras_msg_cb_ctx_t ctx;
 
+    INFO3("Saturation from %s to %s stopped by %s",
+	  gras_os_myname(),to_name, gras_socket_peer_name(msg_got.expe));
     answer->timestamp=gras_os_time();
     answer->sec=elapsed;
     answer->bw=bw;
@@ -207,6 +214,9 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 
     gras_msg_rpcreturn(60,&ctx,&answer);
     free(answer);
+  } else {
+    INFO3("Saturation from %s to %s elapsed after %f sec",
+	  gras_os_myname(),to_name,duration);
   }
   
   gras_socket_close(meas);
