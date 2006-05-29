@@ -279,10 +279,8 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   xbt_host_t h1,h2,h3,h4;
 
   /* Get the sensor location from argc/argv */
-  for (i=1; i<argc-1; i+=2){
-    xbt_host_t host=xbt_new(s_xbt_host_t,1);
-    host->name=strdup(argv[i]);
-    host->port=atoi(argv[i+1]);
+  for (i=1; i<argc; i++){
+    xbt_host_t host=xbt_host_from_string(argv[i]);
     INFO2("New sensor: %s:%d",host->name,host->port);
     xbt_dynar_push(hosts,&host);
   }
@@ -324,7 +322,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 	  double ratio;
 	  if (i==l || j==l || k==l) continue;
 
-	  INFO4("TEST %s %s // %s %s",
+	  VERB4("TEST %s %s // %s %s",
 		h1->name,h2->name,h3->name,h4->name);
 	  amok_bw_request(h3->name,h3->port, h4->name,h4->port,
 			  buf_size,exp_size,msg_size,
