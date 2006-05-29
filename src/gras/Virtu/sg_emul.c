@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_emul,gras_virtu,"Emulation support");
 static xbt_os_timer_t timer;
 static int benchmarking = 0;
 static xbt_dict_t benchmark_set = NULL;
-static double reference = .00523066250047108838; /* FIXME: we should benchmark host machine to set this */
+static double reference = .00000000523066250047108838; /* FIXME: we should benchmark host machine to set this; unit=s/flop */
 static double duration = 0.0;
 
 static char* locbuf = NULL;
