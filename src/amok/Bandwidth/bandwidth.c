@@ -322,7 +322,7 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
 
   VERB6("BW test between %s:%d and %s:%d took %f sec, achieving %f kb/s",
 	from_name,from_port, to_name,to_port,
-	*sec,((double)*bw)/1024.0);
+	result->sec,((double)result->bw)/1024.0);
 
   gras_socket_close(sock);
   free(result);
@@ -335,8 +335,12 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   /* specification of the test to run, and our answer */
   bw_request_t request = *(bw_request_t*)payload;
   bw_res_t result = xbt_new0(s_bw_res_t,1);
-  gras_socket_t peer;
+  gras_socket_t peer,asker;
 
+  asker=gras_msg_cb_ctx_from(ctx);
+  VERB4("Asked by %s:%d to conduct a bw XP with %s:%d",	
+	gras_socket_peer_name(asker),gras_socket_peer_port(asker),
+	request->host.name,request->host.port);
   peer = gras_socket_client(request->host.name,request->host.port);
   amok_bw_test(peer,
 	       request->buf_size,request->exp_size,request->msg_size,
@@ -345,7 +349,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   gras_msg_rpcreturn(240,ctx,&result);
 
   gras_os_sleep(1);
-  gras_socket_close(peer);
+  gras_socket_close(peer); /* FIXME: it should be blocking in RL until everything is sent */
   free(request->host.name);
   free(request);
   free(result);
