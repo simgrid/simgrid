@@ -513,8 +513,9 @@ gras_msg_handle(double timeOut) {
     }
   }
   if (!list) {
-    INFO1("No callback for the incomming '%s' message. Discarded.", 
-	  msg.type->name);
+    INFO3("No callback for the incomming '%s' message (from %s:%d). Discarded.", 
+	  msg.type->name,
+	  gras_socket_peer_name(msg.expe),gras_socket_peer_port(msg.expe));
     WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
     return;
   }
