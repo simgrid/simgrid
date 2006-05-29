@@ -17,12 +17,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 static int surf_parse_bypass(void)
 {
 /* <platform_description> */
+  A_surfxml_platform_description_version = "1.1";
   STag_surfxml_platform_description();
 
 
-/*   <cpu name="Cpu A" power="100.00" availability_file="trace_A.txt"/> */
+/*   <cpu name="Cpu A" power="100000000.00" availability_file="trace_A.txt"/> */
   A_surfxml_cpu_name = "Cpu A";
-  A_surfxml_cpu_power= "100.00";
+  A_surfxml_cpu_power= "100000000.00";
   A_surfxml_cpu_availability = "1.0";
   A_surfxml_cpu_availability_file = "";
   A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
@@ -35,9 +36,9 @@ static int surf_parse_bypass(void)
   STag_surfxml_cpu();
   ETag_surfxml_cpu();
 
-/*   <cpu name="Cpu B" power="100.00" availability_file="trace_B.txt"/> */
+/*   <cpu name="Cpu B" power="100000000.00" availability_file="trace_B.txt"/> */
   A_surfxml_cpu_name = "Cpu B";
-  A_surfxml_cpu_power= "100.00";
+  A_surfxml_cpu_power= "100000000.00";
   A_surfxml_cpu_availability = "1.0";
   A_surfxml_cpu_availability_file = "";
   A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
@@ -50,9 +51,9 @@ static int surf_parse_bypass(void)
   STag_surfxml_cpu();
   ETag_surfxml_cpu();
 
-/*   <network_link name="LinkA" bandwidth="10.0" latency="0.2"/> */
+/*   <network_link name="LinkA" bandwidth="10000000.0" latency="0.2"/> */
   A_surfxml_network_link_name = "LinkA";
-  A_surfxml_network_link_bandwidth = "10.0";
+  A_surfxml_network_link_bandwidth = "10000000.0";
   A_surfxml_network_link_bandwidth_file = NULL;
   A_surfxml_network_link_latency = "0.2";
   A_surfxml_network_link_latency_file = NULL;
@@ -107,12 +108,12 @@ static int surf_parse_bypass(void)
   ETag_surfxml_argument();
 
 /*      <argument value="50000"/> */
-  A_surfxml_argument_value = "50000";
+  A_surfxml_argument_value = "50000000000";
   STag_surfxml_argument();
   ETag_surfxml_argument();
 
 /*      <argument value="10"/> */
-  A_surfxml_argument_value = "10";
+  A_surfxml_argument_value = "10000000";
   STag_surfxml_argument();
   ETag_surfxml_argument();
 
