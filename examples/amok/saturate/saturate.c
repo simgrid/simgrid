@@ -261,7 +261,7 @@ static void env_Pairwisehost_bw(int argc, char*argv[]) {
 static void full_fledged_saturation(int argc, char*argv[]) {
   xbt_ex_t e;
 //unsigned int time1=5,bw1=5;
-double time1=5.0,bw1=5.0; // 0.5 for test
+  double time1=5.0,bw1=5.0; // 0.5 for test
   /* timers */
   double begin_simulated; 
   int begin;
@@ -309,7 +309,7 @@ double time1=5.0,bw1=5.0; // 0.5 for test
       TRY {
 	amok_bw_saturate_start(h1->name,h1->port,
 			       h2->name,h2->port,
-			       sat_size,120);  
+			       sat_size, 0/* no timeout */);  
       } CATCH(e) {
 	RETHROW0("Cannot ask hosts to saturate the link: %s");
       }
@@ -359,11 +359,11 @@ int maestro(int argc,char *argv[]) {
 
   gras_socket_server(3333); /* only so that messages from the transport layer in gras identify us */
 
-  env_Pairwisehost_bw(argc,argv);
+  //env_Pairwisehost_bw(argc,argv);
   //env_hosttohost_bw(argc,argv);
 
   //  simple_saturation(argc,argv);
-  //full_fledged_saturation(argc, argv);  
+  full_fledged_saturation(argc, argv);  
 
   gras_exit();
   return 0;
