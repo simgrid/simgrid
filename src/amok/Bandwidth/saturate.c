@@ -186,7 +186,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     elapsed=gras_os_time()-start;
     VERB2("elapsed %f duration %f",elapsed, duration);
 
-  } while (duration==0 || (saturate_further && elapsed < duration));
+  } while (saturate_further && (duration!=0 && elapsed < duration));
 
   bw = ((double)(packet_sent*msg_size)) / elapsed;
 
