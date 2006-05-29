@@ -186,7 +186,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     elapsed=gras_os_time()-start;
     VERB2("elapsed %f duration %f",elapsed, duration);
 
-  } while (duration==0 || saturate_further && elapsed < duration);
+  } while (duration==0 || (saturate_further && elapsed < duration));
 
   bw = ((double)(packet_sent*msg_size)) / elapsed;
 
@@ -213,7 +213,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     gras_msg_rpcreturn(60,&ctx,&answer);
     free(answer);
   } else {
-    INFO3("Saturation from %s to %s elapsed after %f sec (achieving %f kb/s)",
+    INFO4("Saturation from %s to %s elapsed after %f sec (achieving %f kb/s)",
 	  gras_os_myname(),to_name,elapsed,bw/1024.0);
   }
   
