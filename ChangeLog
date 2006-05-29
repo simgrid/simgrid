@@ -16,7 +16,9 @@ SimGrid (3.0.2) unstable; urgency=low
     WARNING : This means that all previous platform files will not work as
     such with this version! A warning is issued to ask users to update
     their files. [AL]
-	
+    A conversion script can be found in the contrib module of the CVS, under
+    the name contrib/platform_generation/surfxml_update.pl [MQ]
+
   MSG,GRAS:
   * Bug fix: Processes were started in reverse order, wrt deployment file.
     WARNING: if your code relies on this bug, please fix it.    [AL]
