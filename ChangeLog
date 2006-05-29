@@ -1,34 +1,22 @@
 SimGrid (3.0.2) unstable; urgency=low
 
-  XBT:
-  * New module: cunit (my jUnit implementation in ansi C) [MQ]
-    - Test units are placed directly into the library code, they get extracted
-      automatically and placed into the src/testall binary.
-    - Convert most of the XBT tests to this system.
-  * New functions: xbt_dynar_getfirst_as() and xbt_dynar_getlast_as() [MQ]
-  * XML parsing: rewrote parts of flexml to enable multiple xml parsers to
-    live in the same C code. This required to change a little bit the API
-    of surfxml parsing but shouldn't be an issue for end-users. [AL]
-  * New module: sparse graph structure with basic algorithms (this is work
-    in progress and the API is not considered to be frozen yet). [AL]
-  * Display more information on backtraces: source line & function names are
-    now displayed just like valgrind does (rely on addr2line tool) [MQ]
-  * New function: xbt_backtrace_display(). Sweet while debuging [MQ]
-  * Reworked a little bit some #include statements to load only required
-    headers. Some user code that relied on SimGrid to include stdlib or
-    stdio may need to include it by themselves. [AL]
-  * Fixed xbt/log.h. A missing SG_BEGIN_DECL prevented compilation with
-    g++. [AL]
-
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
     extension of the classical CLM03 model that gracefully handles
     failures. This is now the standard model for MSG and GRAS. It doesn't
-    handle parallel tasks yet however. [AL]
-  * Bug fix: Weights were not correctly set in the network part. This may
-    have resulted in incorrect results with simulations where there are
-    more than one flow on a given link. [AL]
+    handle parallel tasks yet though. [AL]
+  * Bug fix: Weights were not correctly set in the network part. 
+    WARNING: This may have resulted in incorrect results with simulations
+    where there are more than one flow on a given link. [AL]
 
+  SURF, MSG, GRAS:
+  * After a (long ?) discussion on simgrid-devel, we have decided that the
+    convention we had on units was stupid. That is why it has been decided
+    to move from (MBits, MFlops, seconds) fo (Bits, Flops, seconds). 
+    WARNING : This means that all previous platform files will not work as
+    such with this version! A warning is issued to ask users to update
+    their files. [AL]
+	
   MSG,GRAS:
   * Bug fix: Processes were started in reverse order, wrt deployment file.
     WARNING: if your code relies on this bug, please fix it.    [AL]
@@ -60,6 +48,26 @@ SimGrid (3.0.2) unstable; urgency=low
   * Host management module: 
     New! module factorizing code that we wrote over and over [MQ].
       
+  XBT:
+  * New module: cunit (my jUnit implementation in ansi C) [MQ]
+    - Test units are placed directly into the library code, they get extracted
+      automatically and placed into the src/testall binary.
+    - Convert most of the XBT tests to this system.
+  * New functions: xbt_dynar_getfirst_as() and xbt_dynar_getlast_as() [MQ]
+  * XML parsing: rewrote parts of flexml to enable multiple xml parsers to
+    live in the same C code. This required to change a little bit the API
+    of surfxml parsing but shouldn't be an issue for end-users. [AL]
+  * New module: sparse graph structure with basic algorithms (this is work
+    in progress and the API is not considered to be frozen yet). [AL]
+  * Display more information on backtraces: source line & function names are
+    now displayed just like valgrind does (rely on addr2line tool) [MQ]
+  * New function: xbt_backtrace_display(). Sweet while debuging [MQ]
+  * Reworked a little bit some #include statements to load only required
+    headers. Some user code that relied on SimGrid to include stdlib or
+    stdio may need to include it by themselves. [AL]
+  * Fixed xbt/log.h. A missing SG_BEGIN_DECL prevented compilation with
+    g++. [AL]
+
  --
 
 SimGrid (3.0.1) unstable; urgency=low
