@@ -288,6 +288,8 @@ void amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
 
   gras_socket_t sock = gras_socket_client(from_name,from_port);
   bw_res_t answer;
+  VERB2("Ask %s:%d to stop the saturation",
+	from_name,from_port);
   gras_msg_rpccall(sock,60,gras_msgtype_by_name("amok_bw_sat stop"),NULL,&answer);
   gras_socket_close(sock);
   if (time) *time=answer->sec;
