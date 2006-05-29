@@ -112,6 +112,9 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
  *
  * Note that the only way to break this function before the end of the timeout
  * is to have a remote host calling amok_bw_saturate_stop to this process.
+ *
+ * If duration=0, the experiment will never timeout (you then have to manually
+ * stop it)
  */
 void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 			    unsigned int msg_size, double duration,
@@ -183,7 +186,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     elapsed=gras_os_time()-start;
     VERB2("elapsed %f duration %f",elapsed, duration);
 
-  } while (saturate_further && elapsed < duration);
+  } while (duration==0 || saturate_further && elapsed < duration);
 
   bw = ((double)(packet_sent*msg_size)) / elapsed;
 
@@ -191,11 +194,6 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     *elapsed_res = elapsed;
   if (bw_res)
     *bw_res = bw;
-
-  if (elapsed >= duration) {
-    INFO2("Saturation experiment terminated. Took %f sec (achieving %f kb/s)",
-	  elapsed, bw/1024.0);
-  }
 
   /* If someone stopped us, inform him about the achieved bandwidth */
   if (msg_got.expe) {
@@ -215,8 +213,8 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     gras_msg_rpcreturn(60,&ctx,&answer);
     free(answer);
   } else {
-    INFO3("Saturation from %s to %s elapsed after %f sec",
-	  gras_os_myname(),to_name,duration);
+    INFO3("Saturation from %s to %s elapsed after %f sec (achieving %f kb/s)",
+	  gras_os_myname(),to_name,elapsed,bw/1024.0);
   }
   
   gras_socket_close(meas);
