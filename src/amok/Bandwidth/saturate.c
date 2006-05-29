@@ -227,6 +227,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
   volatile int saturate_further = 1;
   xbt_ex_t e;
   gras_socket_t measMaster=NULL,meas=NULL;
+  gras_socket_t from=gras_msg_cb_ctx_from(ctx);
 
   int port=6000;
   while (port <= 10000 && measMaster == NULL) {
@@ -267,7 +268,10 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
       xbt_ex_free(e);
     }
   }
-  INFO1("Saturation stopped on %s",gras_os_myname());
+  INFO3("Saturation comming from %s:%d stopped on %s",
+	gras_socket_peer_name(from),gras_socket_peer_port(from),
+	gras_os_myname());
+
   gras_socket_close(meas);
   if (gras_if_RL()) /* On SG, accepted=master */
     gras_socket_close(measMaster); 
