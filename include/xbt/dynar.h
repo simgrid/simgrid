@@ -105,7 +105,7 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_ctn Direct manipulation to the dynars content
  *  @ingroup XBT_dynar
  *
- *  Those functions do not retrive the content, but only their address.
+ *  Those functions do not retrieve the content, but only their address.
  *
  *  @{
  */
@@ -119,7 +119,7 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_dynar_speed Speed optimized access to dynars of scalars
  *  @ingroup XBT_dynar
  *
- *  While the other functions use a memcpy to retrive the content into the
+ *  While the other functions use a memcpy to retrieve the content into the
  *  user provided area, those ones use a regular affectation. It only works
  *  for scalar values, but should be a little faster.
  *

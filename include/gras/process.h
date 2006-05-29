@@ -45,7 +45,7 @@ void gras_process_exit(void);
  * 
  * Use the \ref gras_userdata_new macro to create a new user data (or malloc it
  * and use \ref gras_userdata_set yourself), and \ref gras_userdata_get to
- * retrive a reference to it. 
+ * retrieve a reference to it. 
  */
 /* @{ */
 

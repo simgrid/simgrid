@@ -148,7 +148,7 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...) {
   return suite;
 }
 
-/** @brief retrive a testsuite from name, or create a new one */
+/** @brief retrieve a testsuite from name, or create a new one */
 xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...) {
   xbt_test_suite_t suite;
   int it_suite;

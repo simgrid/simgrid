@@ -46,7 +46,7 @@ SG_BEGIN_DECL()
  *  - char (both signed and unsigned)
  *  - int (short, regular, long and long long, both signed and unsigned)
  *  - float and double
- *  - string (which is indeed a reference to a dynamically sized array of char, strlen being used to retrive the size)
+ *  - string (which is indeed a reference to a dynamically sized array of char, strlen being used to retrieve the size)
  * 
  * Example:\verbatim gras_datadesc_type_t i = gras_datadesc_by_name("int");
  gras_datadesc_type_t uc = gras_datadesc_by_name("unsigned char");
@@ -141,7 +141,7 @@ void register_messages() {
  *  you have to understand how it is implemented: the multiplication is performed using the sizes stack. In previous example,
  *  a \ref gras_datadesc_cb_push_int callback is added to the \a rows field and a \ref gras_datadesc_cb_push_int_mult one is 
  *  added to \a cols. So, when the structure is sent, the \a rows field push its value onto the stack, then the \a cols field 
- *  retrieve this value from the stack, compute (and push) the multiplication value. The \a matrix field can then retrive this
+ *  retrieve this value from the stack, compute (and push) the multiplication value. The \a matrix field can then retrieve this
  *  value by poping the array. There is several ways for this to go wrong:
  *   - if the matrix field is placed before the sizes, the right value won't get pushed into the stack soon enough. 
  *     Reorder your structure fields if needed.

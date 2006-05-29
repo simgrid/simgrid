@@ -214,12 +214,12 @@ gras_msgtype_declare_v(const char           *name,
 			    e_gras_msg_kind_oneway, payload, NULL);
 }
 
-/** @brief retrive an existing message type from its name. */
+/** @brief retrieve an existing message type from its name. */
 gras_msgtype_t gras_msgtype_by_name (const char *name) {
   return gras_msgtype_by_namev(name,0);
 }
 
-/** @brief retrive an existing message type from its name and version. */
+/** @brief retrieve an existing message type from its name and version. */
 gras_msgtype_t gras_msgtype_by_namev(const char      *name,
 				     short int        version) {
   gras_msgtype_t res = NULL;
@@ -237,7 +237,7 @@ gras_msgtype_t gras_msgtype_by_namev(const char      *name,
   
   return res;
 }
-/** @brief retrive an existing message type from its name and version. */
+/** @brief retrieve an existing message type from its name and version. */
 gras_msgtype_t gras_msgtype_by_id(int id) {
   return (gras_msgtype_t)xbt_set_get_by_id(_gras_msgtype_set, id);
 }

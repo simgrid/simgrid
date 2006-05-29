@@ -218,7 +218,7 @@ xbt_dynar_length(const xbt_dynar_t dynar) {
 /** @brief Retrieve a copy of the Nth element of a dynar.
  *
  * \param dynar information dealer
- * \param idx index of the slot we want to retrive
+ * \param idx index of the slot we want to retrieve
  * \param[out] dst where to put the result to.
  */
 void

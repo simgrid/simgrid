@@ -301,7 +301,7 @@ xbt_dict_t head=NULL;
 char *data;
 
 
-XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrive, traverse"){
+XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse"){
 
   xbt_test_add0("Traversal the empty dictionnary");
   traverse(head);
@@ -333,7 +333,7 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrive, traverse"){
   xbt_test_add0("Traverse the resulting dictionnary");
   traverse(head);
   
-  /* RETRIVE */
+  /* RETRIEVE */
   xbt_test_add0("Search 123");
   data = xbt_dict_get(head,"123");
   xbt_test_assert(data);

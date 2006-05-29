@@ -79,7 +79,7 @@ void *gras_libdata_by_name(const char *name) {
   TRY {
     res = xbt_set_get_by_name(pd->libdata, name);
   } CATCH(e) {
-    RETHROW1("Cannot retrive the libdata associated to %s: %s",name);
+    RETHROW1("Cannot retrieve the libdata associated to %s: %s",name);
   }   
   return res;
 }
