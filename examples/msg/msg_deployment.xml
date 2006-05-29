@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description>
+<platform_description version="1">
   <process host="Jacquelin" function="master">
      <argument value="20"/>
      <argument value="50000"/>

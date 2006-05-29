@@ -1,288 +1,288 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description>
-  <cpu name="Jacquelin" power="137.333"/>
-  <cpu name="Boivin" power="98.094999999999999"/>
-  <cpu name="Jean_Yves" power="98.094999999999999"/>
-  <cpu name="TeX" power="68.667000000000002"/>
-  <cpu name="Geoff" power="42.917000000000002"/>
-  <cpu name="Disney" power="114.444"/>
-  <cpu name="iRMX" power="68.667000000000002"/>
-  <cpu name="McGee" power="42.917000000000002"/>
-  <cpu name="Gatien" power="114.444"/>
-  <cpu name="Laroche" power="98.094999999999999"/>
-  <cpu name="Tanguay" power="68.667000000000002"/>
-  <cpu name="Morin" power="85.832999999999998"/>
-  <cpu name="Ethernet" power="98.094999999999999"/>
-  <cpu name="Bellemarre" power="34.333"/>
-  <cpu name="Kuenning" power="85.832999999999998"/>
-  <cpu name="Gaston" power="98.094999999999999"/>
-  <cpu name="Harry" power="42.917000000000002"/>
-  <cpu name="Bousquet" power="42.917000000000002"/>
-  <cpu name="Paul" power="76.296000000000006"/>
-  <cpu name="St_Jean" power="76.296000000000006"/>
-  <cpu name="Jill" power="114.444"/>
-  <cpu name="Marcel" power="171.667"/>
-  <cpu name="Wright" power="48.492"/>
-  <cpu name="Jackson" power="48.492"/>
-  <cpu name="Fernand" power="22.151"/>
-  <cpu name="Soucy" power="137.333"/>
-  <cpu name="Ste_Julie" power="85.832999999999998"/>
-  <cpu name="Victoria" power="85.832999999999998"/>
-  <cpu name="Lessard" power="85.832999999999998"/>
-  <cpu name="Florient" power="114.444"/>
-  <cpu name="Marcoux" power="98.094999999999999"/>
-  <cpu name="Gavrel" power="85.832999999999998"/>
-  <cpu name="Bescherelle" power="137.333"/>
-  <cpu name="Pierre" power="114.444"/>
-  <cpu name="Jamie" power="76.296000000000006"/>
-  <cpu name="Rubin" power="42.917000000000002"/>
-  <cpu name="Olivier" power="114.444"/>
-  <cpu name="Boucherville" power="48.492"/>
-  <cpu name="Pointe_Claire" power="48.492"/>
-  <cpu name="Kansas" power="137.333"/>
-  <cpu name="King" power="114.444"/>
-  <cpu name="Lapointe" power="68.667000000000002"/>
-  <cpu name="Julian" power="114.444"/>
-  <cpu name="Lafontaine" power="68.667000000000002"/>
-  <cpu name="Gordon" power="76.296000000000006"/>
-  <cpu name="Drouin" power="42.917000000000002"/>
-  <cpu name="Robert" power="137.333"/>
-  <cpu name="Jocelyne" power="34.333"/>
-  <cpu name="Stephen" power="68.667000000000002"/>
-  <cpu name="Provost" power="137.333"/>
-  <cpu name="Juneau" power="22.151"/>
-  <cpu name="Casavant" power="48.492"/>
-  <cpu name="St_Antoine" power="34.333"/>
-  <cpu name="Louis" power="98.094999999999999"/>
-  <cpu name="Julien" power="22.151"/>
-  <cpu name="St_Paul" power="114.444"/>
-  <cpu name="Mathematica" power="137.333"/>
-  <cpu name="LaTeX" power="85.832999999999998"/>
-  <cpu name="Sirois" power="114.444"/>
-  <cpu name="Monique" power="114.444"/>
-  <cpu name="Audy" power="34.333"/>
-  <cpu name="Bourassa" power="85.832999999999998"/>
-  <cpu name="OHara" power="42.917000000000002"/>
-  <cpu name="Boston" power="42.917000000000002"/>
-  <cpu name="Papineau" power="85.832999999999998"/>
-  <cpu name="Fraser" power="98.094999999999999"/>
-  <cpu name="Browne" power="137.333"/>
-  <cpu name="SunOS" power="34.333"/>
-  <cpu name="Varennes" power="68.667000000000002"/>
-  <cpu name="Jacques" power="98.094999999999999"/>
-  <cpu name="Thierry" power="137.333"/>
-  <cpu name="Lachapelle" power="42.917000000000002"/>
-  <cpu name="kV" power="68.667000000000002"/>
-  <cpu name="Yolande" power="42.917000000000002"/>
-  <cpu name="Pronovost" power="114.444"/>
-  <cpu name="SPICE" power="68.667000000000002"/>
-  <cpu name="Europe" power="48.492"/>
-  <cpu name="Roy" power="34.333"/>
-  <cpu name="Amadeus" power="114.444"/>
-  <cpu name="Intel" power="137.333"/>
-  <cpu name="Cambridge" power="114.444"/>
-  <cpu name="Tremblay" power="171.667"/>
-  <cpu name="UNIX" power="76.296000000000006"/>
-  <cpu name="Domey" power="76.296000000000006"/>
-  <cpu name="St_Bruno" power="42.917000000000002"/>
-  <cpu name="Jean_Claude" power="85.832999999999998"/>
-  <cpu name="Doyon" power="68.667000000000002"/>
-  <cpu name="Fafard" power="137.333"/>
-  <cpu name="Croteau" power="42.917000000000002"/>
-  <cpu name="Dodge" power="114.444"/>
-  <network_link name="127" bandwidth="3.430125" latency="0.000536941"/>
-  <network_link name="32" bandwidth="11.618875" latency="0.00018998"/>
-  <network_link name="90" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="118" bandwidth="1.467625" latency="0.000869727"/>
-  <network_link name="71" bandwidth="8.42725" latency="0.000156056"/>
-  <network_link name="102" bandwidth="4.817" latency="0.000117352"/>
-  <network_link name="18" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="125" bandwidth="5.574625" latency="0.00022743"/>
-  <network_link name="16" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="44" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="55" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="84" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="27" bandwidth="8.015125" latency="0.035076518"/>
-  <network_link name="190" bandwidth="1.23025" latency="0.001502106"/>
-  <network_link name="161" bandwidth="1.469125" latency="0.001114548"/>
-  <network_link name="95" bandwidth="5.7585" latency="0.004760145"/>
-  <network_link name="57" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="20" bandwidth="255.228625" latency="0.007413073"/>
-  <network_link name="163" bandwidth="2.583375" latency="0.000410463"/>
-  <network_link name="109" bandwidth="1.858" latency="0.000820952"/>
-  <network_link name="151" bandwidth="1.564125" latency="0.000788956"/>
-  <network_link name="89" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="175" bandwidth="1.37675" latency="0.000449267"/>
-  <network_link name="148" bandwidth="0.578625" latency="0.005473705"/>
-  <network_link name="31" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="35" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="11" bandwidth="118.6825" latency="0.000136931"/>
-  <network_link name="78" bandwidth="27.94625" latency="0.000278066"/>
-  <network_link name="93" bandwidth="2.608" latency="0.000637001"/>
-  <network_link name="106" bandwidth="0.251625" latency="0.004455826"/>
-  <network_link name="157" bandwidth="0.274375" latency="0.004669142"/>
-  <network_link name="65" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="29" bandwidth="8.158" latency="0.000270544"/>
-  <network_link name="138" bandwidth="0.253125" latency="0.005652577"/>
-  <network_link name="114" bandwidth="0.253125" latency="0.005652577"/>
-  <network_link name="58" bandwidth="21.41475" latency="0.295890617"/>
-  <network_link name="153" bandwidth="4.817" latency="0.000117352"/>
-  <network_link name="15" bandwidth="132.977875" latency="0.000131098"/>
-  <network_link name="137" bandwidth="4.416625" latency="1.9773e-05"/>
-  <network_link name="81" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="60" bandwidth="21.41475" latency="0.295890617"/>
-  <network_link name="101" bandwidth="0.290125" latency="0.004522355"/>
-  <network_link name="73" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="86" bandwidth="8.42725" latency="0.000156056"/>
-  <network_link name="76" bandwidth="27.94625" latency="0.000278066"/>
-  <network_link name="62" bandwidth="8.015125" latency="0.035076518"/>
-  <network_link name="67" bandwidth="27.94625" latency="0.000278066"/>
-  <network_link name="165" bandwidth="0.253125" latency="0.005652577"/>
-  <network_link name="139" bandwidth="1.888875" latency="0.001081287"/>
-  <network_link name="129" bandwidth="1.467625" latency="0.000869727"/>
-  <network_link name="2" bandwidth="132.977875" latency="0.000131098"/>
-  <network_link name="17" bandwidth="118.6825" latency="0.000136931"/>
-  <network_link name="186" bandwidth="4.39725" latency="0.000677601"/>
-  <network_link name="110" bandwidth="5.574625" latency="0.00022743"/>
-  <network_link name="82" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="147" bandwidth="2.368" latency="0.009547561"/>
-  <network_link name="168" bandwidth="1.858" latency="0.000820952"/>
-  <network_link name="184" bandwidth="0.303375" latency="0.004062241"/>
-  <network_link name="135" bandwidth="1.37675" latency="0.000449267"/>
-  <network_link name="14" bandwidth="118.6825" latency="0.000136931"/>
-  <network_link name="112" bandwidth="4.133375" latency="0.009693542"/>
-  <network_link name="69" bandwidth="8.42725" latency="0.000156056"/>
-  <network_link name="191" bandwidth="1.467625" latency="0.000869727"/>
-  <network_link name="172" bandwidth="0.605" latency="0.087981858"/>
-  <network_link name="145" bandwidth="2.583375" latency="0.000410463"/>
-  <network_link name="49" bandwidth="27.94625" latency="0.000278066"/>
-  <network_link name="178" bandwidth="1.469125" latency="0.001114548"/>
-  <network_link name="24" bandwidth="10.099625" latency="0.00047978"/>
-  <network_link name="187" bandwidth="1.467625" latency="0.000869727"/>
-  <network_link name="140" bandwidth="1.4655" latency="0.000863872"/>
-  <network_link name="124" bandwidth="0.556" latency="0.003101854"/>
-  <network_link name="104" bandwidth="4.485125" latency="0.000126045"/>
-  <network_link name="131" bandwidth="0.317375" latency="0.004583831"/>
-  <network_link name="181" bandwidth="4.485125" latency="0.000126045"/>
-  <network_link name="121" bandwidth="4.817" latency="0.000117352"/>
-  <network_link name="79" bandwidth="8.42725" latency="0.000156056"/>
-  <network_link name="154" bandwidth="0.272375" latency="0.005922616"/>
-  <network_link name="0" bandwidth="255.228625" latency="0.007413073"/>
-  <network_link name="23" bandwidth="10.099625" latency="0.00047978"/>
-  <network_link name="96" bandwidth="4.97825" latency="0.007164412"/>
-  <network_link name="126" bandwidth="3.9955" latency="0.000678645"/>
-  <network_link name="159" bandwidth="4.817" latency="0.000117352"/>
-  <network_link name="160" bandwidth="0.274375" latency="0.004669142"/>
-  <network_link name="176" bandwidth="3.1755" latency="0.000472524"/>
-  <network_link name="47" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="8" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="98" bandwidth="0.556" latency="0.003101854"/>
-  <network_link name="37" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="117" bandwidth="1.51525" latency="0.000844683"/>
-  <network_link name="43" bandwidth="27.94625" latency="0.000278066"/>
-  <network_link name="5" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="170" bandwidth="4.485125" latency="0.000126045"/>
-  <network_link name="33" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="21" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="63" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="7" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="26" bandwidth="21.41475" latency="0.295890617"/>
-  <network_link name="80" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="119" bandwidth="0.317375" latency="0.004583831"/>
-  <network_link name="180" bandwidth="0.251625" latency="0.004455826"/>
-  <network_link name="99" bandwidth="0.253125" latency="0.005652577"/>
-  <network_link name="179" bandwidth="5.816375" latency="0.000164758"/>
-  <network_link name="162" bandwidth="0.556" latency="0.003101854"/>
-  <network_link name="72" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="74" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="182" bandwidth="4.416625" latency="1.9773e-05"/>
-  <network_link name="61" bandwidth="8.015125" latency="0.035076518"/>
-  <network_link name="108" bandwidth="0.9905" latency="0.001742977"/>
-  <network_link name="115" bandwidth="0.926625" latency="0.000601375"/>
-  <network_link name="92" bandwidth="1.564125" latency="0.000788956"/>
-  <network_link name="103" bandwidth="0.472125" latency="0.005161451"/>
-  <network_link name="10" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="113" bandwidth="1.858" latency="0.000820952"/>
-  <network_link name="152" bandwidth="7.20975" latency="0.001461517"/>
-  <network_link name="189" bandwidth="0.251625" latency="0.004455826"/>
-  <network_link name="142" bandwidth="1.62775" latency="0.000278175"/>
-  <network_link name="91" bandwidth="8.42725" latency="0.000156056"/>
-  <network_link name="167" bandwidth="0.76875" latency="0.00876244"/>
-  <network_link name="48" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="107" bandwidth="1.281875" latency="0.006104672"/>
-  <network_link name="87" bandwidth="8.158" latency="0.000270544"/>
-  <network_link name="174" bandwidth="0.290875" latency="0.00447727"/>
-  <network_link name="77" bandwidth="27.94625" latency="0.000278066"/>
-  <network_link name="133" bandwidth="1.469125" latency="0.001114548"/>
-  <network_link name="149" bandwidth="1.04925" latency="0.009647856"/>
-  <network_link name="123" bandwidth="3.430125" latency="0.000536941"/>
-  <network_link name="50" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="39" bandwidth="8.015125" latency="0.035076518"/>
-  <network_link name="64" bandwidth="21.41475" latency="0.295890617"/>
-  <network_link name="97" bandwidth="7.534" latency="0.000125428"/>
-  <network_link name="12" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="41" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="52" bandwidth="8.42725" latency="0.000156056"/>
-  <network_link name="173" bandwidth="7.534" latency="0.000125428"/>
-  <network_link name="56" bandwidth="21.41475" latency="0.295890617"/>
-  <network_link name="45" bandwidth="8.158" latency="0.000270544"/>
-  <network_link name="66" bandwidth="11.618875" latency="0.00018998"/>
-  <network_link name="19" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="54" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="70" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="188" bandwidth="3.1755" latency="0.000472524"/>
-  <network_link name="68" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="166" bandwidth="3.9955" latency="0.000678645"/>
-  <network_link name="1" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="136" bandwidth="0.926625" latency="0.000601375"/>
-  <network_link name="88" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="116" bandwidth="2.368" latency="0.009547561"/>
-  <network_link name="144" bandwidth="0.259125" latency="0.004460898"/>
-  <network_link name="141" bandwidth="0.472125" latency="0.005161451"/>
-  <network_link name="30" bandwidth="10.099625" latency="0.00047978"/>
-  <network_link name="100" bandwidth="0.721625" latency="6.406e-06"/>
-  <network_link name="25" bandwidth="8.015125" latency="0.035076518"/>
-  <network_link name="128" bandwidth="1.469125" latency="0.001114548"/>
-  <network_link name="28" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="120" bandwidth="4.461125" latency="0.000106949"/>
-  <network_link name="156" bandwidth="4.485125" latency="0.000126045"/>
-  <network_link name="134" bandwidth="0.259125" latency="0.004460898"/>
-  <network_link name="40" bandwidth="21.41475" latency="0.295890617"/>
-  <network_link name="75" bandwidth="11.618875" latency="0.00018998"/>
-  <network_link name="83" bandwidth="10.314625" latency="0.006932556"/>
-  <network_link name="59" bandwidth="11.845375" latency="0.000370788"/>
-  <network_link name="177" bandwidth="0.9905" latency="0.001742977"/>
-  <network_link name="150" bandwidth="4.27025" latency="0.000672289"/>
-  <network_link name="155" bandwidth="1.37675" latency="0.000449267"/>
-  <network_link name="130" bandwidth="4.485125" latency="0.000126045"/>
-  <network_link name="53" bandwidth="11.618875" latency="0.00018998"/>
-  <network_link name="122" bandwidth="1.126875" latency="0.00028784"/>
-  <network_link name="143" bandwidth="7.20975" latency="0.001461517"/>
-  <network_link name="158" bandwidth="3.028375" latency="0.000677908"/>
-  <network_link name="42" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="22" bandwidth="11.618875" latency="0.00018998"/>
-  <network_link name="46" bandwidth="8.158" latency="0.000270544"/>
-  <network_link name="13" bandwidth="255.228625" latency="0.007413073"/>
-  <network_link name="105" bandwidth="0.117125" latency="0.053930106"/>
-  <network_link name="6" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="85" bandwidth="15.376875" latency="0.035083019"/>
-  <network_link name="185" bandwidth="2.3485" latency="0.000259761"/>
-  <network_link name="36" bandwidth="11.618875" latency="0.00018998"/>
-  <network_link name="3" bandwidth="255.228625" latency="0.007413073"/>
-  <network_link name="183" bandwidth="3.9955" latency="0.000678645"/>
-  <network_link name="94" bandwidth="4.485125" latency="0.000126045"/>
-  <network_link name="146" bandwidth="3.37125" latency="0.000666676"/>
-  <network_link name="51" bandwidth="8.42725" latency="0.000156056"/>
-  <network_link name="9" bandwidth="34.285625" latency="0.000514433"/>
-  <network_link name="111" bandwidth="3.275625" latency="0.000658142"/>
-  <network_link name="38" bandwidth="41.279125" latency="5.9904e-05"/>
-  <network_link name="4" bandwidth="132.977875" latency="0.000131098"/>
-  <network_link name="34" bandwidth="11.845375" latency="0.000370788"/>
-  <network_link name="169" bandwidth="1.37675" latency="0.000449267"/>
-  <network_link name="164" bandwidth="0.76875" latency="0.00876244"/>
-  <network_link name="132" bandwidth="2.179125" latency="0.000320114"/>
-  <network_link name="171" bandwidth="3.29775" latency="0.000595883"/>
+<platform_description version="1">
+  <cpu name="Jacquelin" power="137333000"/>
+  <cpu name="Boivin" power="98095000"/>
+  <cpu name="Jean_Yves" power="98095000"/>
+  <cpu name="TeX" power="68667000"/>
+  <cpu name="Geoff" power="42917000"/>
+  <cpu name="Disney" power="114444000"/>
+  <cpu name="iRMX" power="68667000"/>
+  <cpu name="McGee" power="42917000"/>
+  <cpu name="Gatien" power="114444000"/>
+  <cpu name="Laroche" power="98095000"/>
+  <cpu name="Tanguay" power="68667000"/>
+  <cpu name="Morin" power="85833000"/>
+  <cpu name="Ethernet" power="98095000"/>
+  <cpu name="Bellemarre" power="34333000"/>
+  <cpu name="Kuenning" power="85833000"/>
+  <cpu name="Gaston" power="98095000"/>
+  <cpu name="Harry" power="42917000"/>
+  <cpu name="Bousquet" power="42917000"/>
+  <cpu name="Paul" power="76296000"/>
+  <cpu name="St_Jean" power="76296000"/>
+  <cpu name="Jill" power="114444000"/>
+  <cpu name="Marcel" power="171667000"/>
+  <cpu name="Wright" power="48492000"/>
+  <cpu name="Jackson" power="48492000"/>
+  <cpu name="Fernand" power="22151000"/>
+  <cpu name="Soucy" power="137333000"/>
+  <cpu name="Ste_Julie" power="85833000"/>
+  <cpu name="Victoria" power="85833000"/>
+  <cpu name="Lessard" power="85833000"/>
+  <cpu name="Florient" power="114444000"/>
+  <cpu name="Marcoux" power="98095000"/>
+  <cpu name="Gavrel" power="85833000"/>
+  <cpu name="Bescherelle" power="137333000"/>
+  <cpu name="Pierre" power="114444000"/>
+  <cpu name="Jamie" power="76296000"/>
+  <cpu name="Rubin" power="42917000"/>
+  <cpu name="Olivier" power="114444000"/>
+  <cpu name="Boucherville" power="48492000"/>
+  <cpu name="Pointe_Claire" power="48492000"/>
+  <cpu name="Kansas" power="137333000"/>
+  <cpu name="King" power="114444000"/>
+  <cpu name="Lapointe" power="68667000"/>
+  <cpu name="Julian" power="114444000"/>
+  <cpu name="Lafontaine" power="68667000"/>
+  <cpu name="Gordon" power="76296000"/>
+  <cpu name="Drouin" power="42917000"/>
+  <cpu name="Robert" power="137333000"/>
+  <cpu name="Jocelyne" power="34333000"/>
+  <cpu name="Stephen" power="68667000"/>
+  <cpu name="Provost" power="137333000"/>
+  <cpu name="Juneau" power="22151000"/>
+  <cpu name="Casavant" power="48492000"/>
+  <cpu name="St_Antoine" power="34333000"/>
+  <cpu name="Louis" power="98095000"/>
+  <cpu name="Julien" power="22151000"/>
+  <cpu name="St_Paul" power="114444000"/>
+  <cpu name="Mathematica" power="137333000"/>
+  <cpu name="LaTeX" power="85833000"/>
+  <cpu name="Sirois" power="114444000"/>
+  <cpu name="Monique" power="114444000"/>
+  <cpu name="Audy" power="34333000"/>
+  <cpu name="Bourassa" power="85833000"/>
+  <cpu name="OHara" power="42917000"/>
+  <cpu name="Boston" power="42917000"/>
+  <cpu name="Papineau" power="85833000"/>
+  <cpu name="Fraser" power="98095000"/>
+  <cpu name="Browne" power="137333000"/>
+  <cpu name="SunOS" power="34333000"/>
+  <cpu name="Varennes" power="68667000"/>
+  <cpu name="Jacques" power="98095000"/>
+  <cpu name="Thierry" power="137333000"/>
+  <cpu name="Lachapelle" power="42917000"/>
+  <cpu name="kV" power="68667000"/>
+  <cpu name="Yolande" power="42917000"/>
+  <cpu name="Pronovost" power="114444000"/>
+  <cpu name="SPICE" power="68667000"/>
+  <cpu name="Europe" power="48492000"/>
+  <cpu name="Roy" power="34333000"/>
+  <cpu name="Amadeus" power="114444000"/>
+  <cpu name="Intel" power="137333000"/>
+  <cpu name="Cambridge" power="114444000"/>
+  <cpu name="Tremblay" power="171667000"/>
+  <cpu name="UNIX" power="76296000"/>
+  <cpu name="Domey" power="76296000"/>
+  <cpu name="St_Bruno" power="42917000"/>
+  <cpu name="Jean_Claude" power="85833000"/>
+  <cpu name="Doyon" power="68667000"/>
+  <cpu name="Fafard" power="137333000"/>
+  <cpu name="Croteau" power="42917000"/>
+  <cpu name="Dodge" power="114444000"/>
+  <network_link name="127" bandwidth="3430125" latency="0.000536941"/>
+  <network_link name="32" bandwidth="11618875" latency="0.00018998"/>
+  <network_link name="90" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="118" bandwidth="1467625" latency="0.000869727"/>
+  <network_link name="71" bandwidth="8427250" latency="0.000156056"/>
+  <network_link name="102" bandwidth="4817000" latency="0.000117352"/>
+  <network_link name="18" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="125" bandwidth="5574625" latency="0.00022743"/>
+  <network_link name="16" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="44" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="55" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="84" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="27" bandwidth="8015125" latency="0.035076518"/>
+  <network_link name="190" bandwidth="1230250" latency="0.001502106"/>
+  <network_link name="161" bandwidth="1469125" latency="0.001114548"/>
+  <network_link name="95" bandwidth="5758500" latency="0.004760145"/>
+  <network_link name="57" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="20" bandwidth="255228625" latency="0.007413073"/>
+  <network_link name="163" bandwidth="2583375" latency="0.000410463"/>
+  <network_link name="109" bandwidth="1858000" latency="0.000820952"/>
+  <network_link name="151" bandwidth="1564125" latency="0.000788956"/>
+  <network_link name="89" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="175" bandwidth="1376750" latency="0.000449267"/>
+  <network_link name="148" bandwidth="578625" latency="0.005473705"/>
+  <network_link name="31" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="35" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="11" bandwidth="118682500" latency="0.000136931"/>
+  <network_link name="78" bandwidth="27946250" latency="0.000278066"/>
+  <network_link name="93" bandwidth="2608000" latency="0.000637001"/>
+  <network_link name="106" bandwidth="251625" latency="0.004455826"/>
+  <network_link name="157" bandwidth="274375" latency="0.004669142"/>
+  <network_link name="65" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="29" bandwidth="8158000" latency="0.000270544"/>
+  <network_link name="138" bandwidth="253125" latency="0.005652577"/>
+  <network_link name="114" bandwidth="253125" latency="0.005652577"/>
+  <network_link name="58" bandwidth="21414750" latency="0.295890617"/>
+  <network_link name="153" bandwidth="4817000" latency="0.000117352"/>
+  <network_link name="15" bandwidth="132977875" latency="0.000131098"/>
+  <network_link name="137" bandwidth="4416625" latency="1.9773e-05"/>
+  <network_link name="81" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="60" bandwidth="21414750" latency="0.295890617"/>
+  <network_link name="101" bandwidth="290125" latency="0.004522355"/>
+  <network_link name="73" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="86" bandwidth="8427250" latency="0.000156056"/>
+  <network_link name="76" bandwidth="27946250" latency="0.000278066"/>
+  <network_link name="62" bandwidth="8015125" latency="0.035076518"/>
+  <network_link name="67" bandwidth="27946250" latency="0.000278066"/>
+  <network_link name="165" bandwidth="253125" latency="0.005652577"/>
+  <network_link name="139" bandwidth="1888875" latency="0.001081287"/>
+  <network_link name="129" bandwidth="1467625" latency="0.000869727"/>
+  <network_link name="2" bandwidth="132977875" latency="0.000131098"/>
+  <network_link name="17" bandwidth="118682500" latency="0.000136931"/>
+  <network_link name="186" bandwidth="4397250" latency="0.000677601"/>
+  <network_link name="110" bandwidth="5574625" latency="0.00022743"/>
+  <network_link name="82" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="147" bandwidth="2368000" latency="0.009547561"/>
+  <network_link name="168" bandwidth="1858000" latency="0.000820952"/>
+  <network_link name="184" bandwidth="303375" latency="0.004062241"/>
+  <network_link name="135" bandwidth="1376750" latency="0.000449267"/>
+  <network_link name="14" bandwidth="118682500" latency="0.000136931"/>
+  <network_link name="112" bandwidth="4133375" latency="0.009693542"/>
+  <network_link name="69" bandwidth="8427250" latency="0.000156056"/>
+  <network_link name="191" bandwidth="1467625" latency="0.000869727"/>
+  <network_link name="172" bandwidth="605000" latency="0.087981858"/>
+  <network_link name="145" bandwidth="2583375" latency="0.000410463"/>
+  <network_link name="49" bandwidth="27946250" latency="0.000278066"/>
+  <network_link name="178" bandwidth="1469125" latency="0.001114548"/>
+  <network_link name="24" bandwidth="10099625" latency="0.00047978"/>
+  <network_link name="187" bandwidth="1467625" latency="0.000869727"/>
+  <network_link name="140" bandwidth="1465500" latency="0.000863872"/>
+  <network_link name="124" bandwidth="556000" latency="0.003101854"/>
+  <network_link name="104" bandwidth="4485125" latency="0.000126045"/>
+  <network_link name="131" bandwidth="317375" latency="0.004583831"/>
+  <network_link name="181" bandwidth="4485125" latency="0.000126045"/>
+  <network_link name="121" bandwidth="4817000" latency="0.000117352"/>
+  <network_link name="79" bandwidth="8427250" latency="0.000156056"/>
+  <network_link name="154" bandwidth="272375" latency="0.005922616"/>
+  <network_link name="0" bandwidth="255228625" latency="0.007413073"/>
+  <network_link name="23" bandwidth="10099625" latency="0.00047978"/>
+  <network_link name="96" bandwidth="4978250" latency="0.007164412"/>
+  <network_link name="126" bandwidth="3995500" latency="0.000678645"/>
+  <network_link name="159" bandwidth="4817000" latency="0.000117352"/>
+  <network_link name="160" bandwidth="274375" latency="0.004669142"/>
+  <network_link name="176" bandwidth="3175500" latency="0.000472524"/>
+  <network_link name="47" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="8" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="98" bandwidth="556000" latency="0.003101854"/>
+  <network_link name="37" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="117" bandwidth="1515250" latency="0.000844683"/>
+  <network_link name="43" bandwidth="27946250" latency="0.000278066"/>
+  <network_link name="5" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="170" bandwidth="4485125" latency="0.000126045"/>
+  <network_link name="33" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="21" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="63" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="7" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="26" bandwidth="21414750" latency="0.295890617"/>
+  <network_link name="80" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="119" bandwidth="317375" latency="0.004583831"/>
+  <network_link name="180" bandwidth="251625" latency="0.004455826"/>
+  <network_link name="99" bandwidth="253125" latency="0.005652577"/>
+  <network_link name="179" bandwidth="5816375" latency="0.000164758"/>
+  <network_link name="162" bandwidth="556000" latency="0.003101854"/>
+  <network_link name="72" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="74" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="182" bandwidth="4416625" latency="1.9773e-05"/>
+  <network_link name="61" bandwidth="8015125" latency="0.035076518"/>
+  <network_link name="108" bandwidth="990500" latency="0.001742977"/>
+  <network_link name="115" bandwidth="926625" latency="0.000601375"/>
+  <network_link name="92" bandwidth="1564125" latency="0.000788956"/>
+  <network_link name="103" bandwidth="472125" latency="0.005161451"/>
+  <network_link name="10" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="113" bandwidth="1858000" latency="0.000820952"/>
+  <network_link name="152" bandwidth="7209750" latency="0.001461517"/>
+  <network_link name="189" bandwidth="251625" latency="0.004455826"/>
+  <network_link name="142" bandwidth="1627750" latency="0.000278175"/>
+  <network_link name="91" bandwidth="8427250" latency="0.000156056"/>
+  <network_link name="167" bandwidth="768750" latency="0.00876244"/>
+  <network_link name="48" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="107" bandwidth="1281875" latency="0.006104672"/>
+  <network_link name="87" bandwidth="8158000" latency="0.000270544"/>
+  <network_link name="174" bandwidth="290875" latency="0.00447727"/>
+  <network_link name="77" bandwidth="27946250" latency="0.000278066"/>
+  <network_link name="133" bandwidth="1469125" latency="0.001114548"/>
+  <network_link name="149" bandwidth="1049250" latency="0.009647856"/>
+  <network_link name="123" bandwidth="3430125" latency="0.000536941"/>
+  <network_link name="50" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="39" bandwidth="8015125" latency="0.035076518"/>
+  <network_link name="64" bandwidth="21414750" latency="0.295890617"/>
+  <network_link name="97" bandwidth="7534000" latency="0.000125428"/>
+  <network_link name="12" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="41" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="52" bandwidth="8427250" latency="0.000156056"/>
+  <network_link name="173" bandwidth="7534000" latency="0.000125428"/>
+  <network_link name="56" bandwidth="21414750" latency="0.295890617"/>
+  <network_link name="45" bandwidth="8158000" latency="0.000270544"/>
+  <network_link name="66" bandwidth="11618875" latency="0.00018998"/>
+  <network_link name="19" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="54" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="70" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="188" bandwidth="3175500" latency="0.000472524"/>
+  <network_link name="68" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="166" bandwidth="3995500" latency="0.000678645"/>
+  <network_link name="1" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="136" bandwidth="926625" latency="0.000601375"/>
+  <network_link name="88" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="116" bandwidth="2368000" latency="0.009547561"/>
+  <network_link name="144" bandwidth="259125" latency="0.004460898"/>
+  <network_link name="141" bandwidth="472125" latency="0.005161451"/>
+  <network_link name="30" bandwidth="10099625" latency="0.00047978"/>
+  <network_link name="100" bandwidth="721625" latency="6.406e-06"/>
+  <network_link name="25" bandwidth="8015125" latency="0.035076518"/>
+  <network_link name="128" bandwidth="1469125" latency="0.001114548"/>
+  <network_link name="28" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="120" bandwidth="4461125" latency="0.000106949"/>
+  <network_link name="156" bandwidth="4485125" latency="0.000126045"/>
+  <network_link name="134" bandwidth="259125" latency="0.004460898"/>
+  <network_link name="40" bandwidth="21414750" latency="0.295890617"/>
+  <network_link name="75" bandwidth="11618875" latency="0.00018998"/>
+  <network_link name="83" bandwidth="10314625" latency="0.006932556"/>
+  <network_link name="59" bandwidth="11845375" latency="0.000370788"/>
+  <network_link name="177" bandwidth="990500" latency="0.001742977"/>
+  <network_link name="150" bandwidth="4270250" latency="0.000672289"/>
+  <network_link name="155" bandwidth="1376750" latency="0.000449267"/>
+  <network_link name="130" bandwidth="4485125" latency="0.000126045"/>
+  <network_link name="53" bandwidth="11618875" latency="0.00018998"/>
+  <network_link name="122" bandwidth="1126875" latency="0.00028784"/>
+  <network_link name="143" bandwidth="7209750" latency="0.001461517"/>
+  <network_link name="158" bandwidth="3028375" latency="0.000677908"/>
+  <network_link name="42" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="22" bandwidth="11618875" latency="0.00018998"/>
+  <network_link name="46" bandwidth="8158000" latency="0.000270544"/>
+  <network_link name="13" bandwidth="255228625" latency="0.007413073"/>
+  <network_link name="105" bandwidth="117125" latency="0.053930106"/>
+  <network_link name="6" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="85" bandwidth="15376875" latency="0.035083019"/>
+  <network_link name="185" bandwidth="2348500" latency="0.000259761"/>
+  <network_link name="36" bandwidth="11618875" latency="0.00018998"/>
+  <network_link name="3" bandwidth="255228625" latency="0.007413073"/>
+  <network_link name="183" bandwidth="3995500" latency="0.000678645"/>
+  <network_link name="94" bandwidth="4485125" latency="0.000126045"/>
+  <network_link name="146" bandwidth="3371250" latency="0.000666676"/>
+  <network_link name="51" bandwidth="8427250" latency="0.000156056"/>
+  <network_link name="9" bandwidth="34285625" latency="0.000514433"/>
+  <network_link name="111" bandwidth="3275625" latency="0.000658142"/>
+  <network_link name="38" bandwidth="41279125" latency="5.9904e-05"/>
+  <network_link name="4" bandwidth="132977875" latency="0.000131098"/>
+  <network_link name="34" bandwidth="11845375" latency="0.000370788"/>
+  <network_link name="169" bandwidth="1376750" latency="0.000449267"/>
+  <network_link name="164" bandwidth="768750" latency="0.00876244"/>
+  <network_link name="132" bandwidth="2179125" latency="0.000320114"/>
+  <network_link name="171" bandwidth="3297750" latency="0.000595883"/>
   <route src="Jacquelin" dst="Boivin"><route_element name="145"/><route_element name="59"/><route_element name="56"/><route_element name="54"/><route_element name="17"/><route_element name="16"/><route_element name="10"/><route_element name="11"/><route_element name="44"/><route_element name="47"/></route>
   <route src="Jacquelin" dst="Jean_Yves"><route_element name="145"/><route_element name="59"/><route_element name="58"/><route_element name="63"/><route_element name="138"/></route>
   <route src="Jacquelin" dst="TeX"><route_element name="145"/><route_element name="59"/><route_element name="56"/><route_element name="54"/><route_element name="17"/><route_element name="16"/><route_element name="10"/><route_element name="6"/><route_element name="7"/><route_element name="19"/><route_element name="28"/><route_element name="27"/><route_element name="30"/><route_element name="35"/><route_element name="100"/></route>

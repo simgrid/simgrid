@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 static int surf_parse_bypass(void)
 {
 /* <platform_description> */
-  A_surfxml_platform_description_version = "1.1";
+  A_surfxml_platform_description_version = "1";
   STag_surfxml_platform_description();
 
 

@@ -1,6 +1,9 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description>
+<platform_description version="1">
+
+
+
 
   <process host="Tremblay" function="start_war">
     <argument value="4000"/>           <!-- my port -->

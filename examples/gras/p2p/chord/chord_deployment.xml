@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description>
+<platform_description version="1">
 
   <process host="Gatien" function="node">
     <argument value="48"/>           <!-- my id -->
