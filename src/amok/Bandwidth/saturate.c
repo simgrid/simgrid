@@ -298,4 +298,5 @@ void amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
   gras_socket_close(sock);
   if (time) *time=answer->sec;
   if (bw)   *bw  =answer->bw;
+  free(answer);
 }
