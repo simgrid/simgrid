@@ -89,15 +89,15 @@ void STag_surfxml_platform_description(void)
 
   xbt_assert0((version>=1.0),"******* BIG FAT WARNING *********\n "
 	      "You're using an old XML file. "
-	      "Since SimGrid 3.0.2, units are Bytes, Flops, and seconds "
+	      "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
 	      "instead of MBytes, MFlops and seconds. "
-	      "A script (surfxml_update.pl )to help you convert your old "
+	      "A script (surfxml_update.pl) to help you convert your old "
 	      "platform files "
 	      "is available in the contrib/platform_generation directory "
 	      "of the simgrid repository. Please check also out the "
-	      "SURF section of the ChangeLog for the 3.0.2 version. "
+	      "SURF section of the ChangeLog for the 3.1 version. "
 	      "Last, do not forget to also update your values for "
-	      "the calls to MSG_task_create if any.");
+	      "the calls to MSG_task_create (if any).");
 
   STag_surfxml_platform_description_fun();
 }

@@ -1,4 +1,4 @@
-SimGrid (3.0.2) unstable; urgency=low
+SimGrid (3.1) unstable; urgency=low
 
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
