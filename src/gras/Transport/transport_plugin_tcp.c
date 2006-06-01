@@ -16,6 +16,7 @@
 #include "xbt/ex.h"
 #include "transport_private.h"
 
+/* FIXME maybe READV is sometime a good thing? */
 #undef HAVE_READV
 
 #ifdef HAVE_READV
@@ -29,6 +30,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_tcp,gras_trp,
       "TCP buffered transport");
 
+int _gras_master_socket_port = -1;
 /***
  *** Specific socket part
  ***/
@@ -60,6 +62,14 @@ struct gras_trp_bufdata_{
 /*****************************/
 /****[ SOCKET MANAGEMENT ]****/
 /*****************************/
+/* we exchange port number on client side on socket creation,
+   so we need to be able to talk right now. */
+static inline void gras_trp_tcp_send(gras_socket_t sock, const char *data,
+				     unsigned long int size);
+static int gras_trp_tcp_recv(gras_socket_t sock, char *data,
+			     unsigned long int size);
+
+
 static int _gras_tcp_proto_number(void);
 
 static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
@@ -69,6 +79,7 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
   struct hostent *he;
   struct in_addr *haddr;
   int size = sock->buf_size; 
+  uint32_t myport = htonl(_gras_master_socket_port);
 
   sock->incoming = 1; /* TCP sockets are duplex'ed */
 
@@ -102,6 +113,10 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
 	   "Failed to connect socket to %s:%d (%s)",
 	   sock->peer_name, sock->peer_port, sock_errstr);
   }
+
+  gras_trp_tcp_send(sock,(char*)&myport,sizeof(uint32_t));
+  DEBUG1("peerport sent to %d", sock->peer_port);
+
   VERB4("Connect to %s:%d (sd=%d, port %d here)",
 	sock->peer_name, sock->peer_port, sock->sd, sock->port);
 }
@@ -119,6 +134,7 @@ static inline void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
 
   sock->outgoing  = 1; /* TCP => duplex mode */
 
+  _gras_master_socket_port = sock->port;
   server.sin_port = htons((u_short)sock->port);
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_family = AF_INET;
@@ -161,6 +177,8 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock) {
 
   int i = 1;
   socklen_t s = sizeof(int);
+
+  uint32_t hisport;
 		
   XBT_IN;
   gras_trp_socket_new(1,&res);
@@ -191,7 +209,10 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock) {
   res->accepting = 0;
   res->sd        = sd;
   res->port      = -1;
-  res->peer_port = peer_in.sin_port;
+
+  gras_trp_tcp_recv(res,(char*)&hisport,sizeof(hisport));
+  res->peer_port = ntohl(hisport);
+  DEBUG1("peerport %d received",res->peer_port);
 
   /* FIXME: Lock to protect inet_ntoa */
   if (((struct sockaddr *)&peer_in)->sa_family != AF_INET) {
@@ -296,9 +317,11 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
     status = tcp_read(sock->sd, data+got, (size_t)bufsize);
     
     if (status < 0) {
-      THROW4(system_error,0,"read(%d,%p,%d) failed: %s",
+      THROW7(system_error,0,"read(%d,%p,%d) from %s:%d failed: %s; got %d so far",
 	     sock->sd, data+got, (int)size,
-	     sock_errstr);
+	     gras_socket_peer_name(sock),gras_socket_peer_port(sock),
+	     sock_errstr,
+	     got);
     }
     DEBUG2("Got %d more bytes (%s)",status,hexa_str((unsigned char*)data+got,status));
     
