@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_process,gras_virtu,"Process manipulat
 /* Functions to handle gras_procdata_t->libdata cells*/
 typedef struct {
    char *name;
-   pvoid_f_void_t *creator;
+   pvoid_f_void_t *constructor;
    void_f_pvoid_t *destructor;
 } s_gras_procdata_fabric_t, *gras_procdata_fabric_t;
 
@@ -39,7 +39,7 @@ static void gras_procdata_fabric_free(void *fab) {
  *  This is intended to be called from the gras_<module>_register function.
  *  This returns the module ID you can use for gras_libdata_by_id()
  */
-int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor) {
+int gras_procdata_add(const char *name, pvoid_f_void_t constructor,void_f_pvoid_t destructor) {
    
    gras_procdata_fabric_t fab;
    
@@ -51,9 +51,9 @@ int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t de
    
    fab=xbt_dynar_push_ptr(_gras_procdata_fabrics);
    
-   fab->name       = xbt_strdup(name);
-   fab->creator    = creator;
-   fab->destructor = destructor;
+   fab->name        = xbt_strdup(name);
+   fab->constructor = constructor;
+   fab->destructor  = destructor;
    return xbt_dynar_length(_gras_procdata_fabrics)-1;
 }
 
@@ -75,6 +75,12 @@ void *gras_libdata_by_name(const char *name) {
   gras_procdata_t *pd=gras_procdata_get();
   void *res=NULL;
   xbt_ex_t e;
+
+  if (xbt_set_length(pd->libdata) < xbt_dynar_length(_gras_procdata_fabrics)) {
+     /* Damn, some new modules were added since procdata_init(). Amok? */
+     /* Get 'em all */
+     gras_procdata_init();     
+  }
    
   TRY {
     res = xbt_set_get_by_name(pd->libdata, name);
@@ -86,6 +92,11 @@ void *gras_libdata_by_name(const char *name) {
 
 void *gras_libdata_by_id(int id) {
   gras_procdata_t *pd=gras_procdata_get();
+  if (xbt_set_length(pd->libdata) < xbt_dynar_length(_gras_procdata_fabrics)) {
+     /* Damn, some new modules were added since procdata_init(). Amok? */
+     /* Get 'em all */
+     gras_procdata_init();     
+  }
   return xbt_set_get_by_id(pd->libdata, id);
 }
 
@@ -98,12 +109,23 @@ gras_procdata_init() {
    
   xbt_ex_t e;
   void *data;
+  xbt_set_elm_t elem;
 
-  pd->userdata  = NULL;
-  pd->libdata   = xbt_set_new();
+  if (!pd->libdata) {
+     pd->userdata  = NULL;
+     pd->libdata   = xbt_set_new();
+  }
    
-  xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){
+  xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){ 
     volatile int found = 0;
+     
+    if (cursor+1 <= xbt_set_length(pd->libdata)) {
+       DEBUG2("Skip fabric %d: there is already %ld libdata",
+	     cursor, xbt_set_length(pd->libdata));
+       continue; /* allow to recall this function to get recently added fabrics */
+    }
+    DEBUG2("Go ahead for cursor %d, there is %ld libdata",
+	  cursor,xbt_set_length(pd->libdata));
      
     xbt_assert1(fab.name,"Name of fabric #%d is NULL!",cursor);
     DEBUG1("Create the procdata for %s",fab.name);
@@ -118,8 +140,15 @@ gras_procdata_init() {
     if (found)
       THROW1(unknown_error,0,"MayDay: two modules use '%s' as libdata name", fab.name);
     
-    /* Add the data in place */
-    xbt_set_add(pd->libdata, (fab.creator)(), fab.destructor);
+    /* Add the data in place, after some more sanity checking */
+    elem = (fab.constructor)();
+    if (elem->name_len && elem->name_len != strlen(elem->name)) {
+       elem->name_len = strlen(elem->name);
+       WARN1("Module '%s' constructor is borken: it does not set elem->name_len",
+	     fab.name);
+    }
+     
+    xbt_set_add(pd->libdata, elem, fab.destructor);
   }
 }
 

@@ -16,7 +16,7 @@ static gras_procdata_t *_gras_procdata = NULL;
 char const *_gras_procname = NULL;
 
 void gras_process_init() {
-  _gras_procdata=xbt_new(gras_procdata_t,1);
+  _gras_procdata=xbt_new0(gras_procdata_t,1);
   gras_procdata_init();
 }
 void gras_process_exit() {

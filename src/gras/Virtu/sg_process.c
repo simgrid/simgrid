@@ -18,7 +18,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 void
 gras_process_init() {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
-  gras_procdata_t *pd=xbt_new(gras_procdata_t,1);
+  gras_procdata_t *pd=xbt_new0(gras_procdata_t,1);
   gras_trp_procdata_t trp_pd;
   gras_sg_portrec_t prmeas,pr;
   int i;
