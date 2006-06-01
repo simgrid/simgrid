@@ -173,6 +173,8 @@ void gras_msg_rpccall(gras_socket_t server,
  */
 
 void gras_msg_rpcreturn(double timeOut,gras_msg_cb_ctx_t ctx,void *answer) {
+  DEBUG3("Return to RPC %s (tOut=%f, payl=%p)",
+	 ctx->msgtype->name,timeOut,answer);
   gras_msg_send_ext(ctx->expeditor, e_gras_msg_kind_rpcanswer, 
 		    ctx->ID, ctx->msgtype, answer);
 }
