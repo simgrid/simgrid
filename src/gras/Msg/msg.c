@@ -270,10 +270,9 @@ gras_msg_wait_ext(double           timeout,
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   int cpt;
 
-  xbt_assert0(msgt_want,"Cannot wait for the NULL message");
   xbt_assert0(msg_got,"msg_got is an output parameter");
 
-  VERB1("Waiting for message '%s'",msgt_want->name);
+  VERB1("Waiting for message '%s'",msgt_want?msgt_want->name:"(any)");
 
   start = now = gras_os_time();
 
@@ -314,7 +313,8 @@ gras_msg_wait_ext(double           timeout,
     now=gras_os_time();
     if (now - start + 0.001 > timeout) {
       THROW1(timeout_error,  now-start+0.001-timeout,
-	     "Timeout while waiting for msg %s",msgt_want->name);
+	     "Timeout while waiting for msg '%s'",
+	     msgt_want?msgt_want->name:"(any)");
     }
   }
 
@@ -361,6 +361,61 @@ gras_msg_wait(double           timeout,
     *expeditor = msg.expe;
 }
 
+static int gras_msg_wait_or_filter(gras_msg_t msg, void *ctx) {
+  xbt_dynar_t dyn=(xbt_dynar_t)ctx;
+  int res =  xbt_dynar_member(dyn,msg->type);
+  if (res)
+    VERB0("Got matching message");
+  else
+    VERB0("Got message not matching our expectations");
+  return res;
+}
+/** \brief Waits for a message to come in over a given socket. 
+ *
+ * @param timeout: How long should we wait for this message.
+ * @param msgt_want: a dynar containing all accepted message type
+ * @param[out] ctx: the context of received message (in case it's a RPC call we want to answer to)
+ * @param[out] msgt_got: indice in the dynar of the type of the received message 
+ * @param[out] payload: where to write the payload of the incomming message
+ * @return the error code (or no_error).
+ *
+ * Every message of a type not in the accepted list received before the one
+ * waited will be queued and used by subsequent call to this function or
+ * gras_msg_handle().
+ *
+ * If you are interested in the context, pass the address of a s_gras_msg_cb_ctx_t variable.
+ */
+void gras_msg_wait_or(double         timeout,
+                      xbt_dynar_t    msgt_want,
+		      gras_msg_cb_ctx_t *ctx,
+                      int           *msgt_got,
+                      void          *payload) {
+  s_gras_msg_t msg;
+
+  INFO1("Wait %f seconds for several message types",timeout);
+  gras_msg_wait_ext(timeout,
+		    NULL, NULL,      
+		    &gras_msg_wait_or_filter, (void*)msgt_want,
+		    &msg);
+
+  if (msg.type->ctn_type) {
+    xbt_assert1(payload,
+		"Message type '%s' convey a payload you must accept",
+		msg.type->name);
+  } /* don't check the other side since some of the types may have a payload */
+
+  if (payload && msg.type->ctn_type) {
+    memcpy(payload,msg.payl,msg.payl_size);
+    free(msg.payl);
+  }
+
+  if (ctx) 
+    *ctx=gras_msg_cb_ctx_new(msg.expe,msg.type,msg.ID,60);
+
+  if (msgt_got)
+    *msgt_got = xbt_dynar_search(msgt_want,msg.type);
+}
+
 
 /** \brief Send the data pointed by \a payload as a message of type
  * \a msgtype to the peer \a sock */
@@ -379,7 +434,11 @@ gras_msg_send(gras_socket_t   sock,
 		msgtype->name);
   }
 
+  DEBUG2("Send a oneway message of type '%s'. Payload=%p",
+	 msgtype->name,payload);
   gras_msg_send_ext(sock, e_gras_msg_kind_oneway,0, msgtype, payload);
+  VERB2("Sent a oneway message of type '%s'. Payload=%p",
+	msgtype->name,payload);
 }
 
 /** @brief Handle all messages arriving within the given period
@@ -548,8 +607,9 @@ gras_msg_handle(double timeOut) {
 	  e.host = (char*)gras_os_myname();
 	  xbt_ex_setup_backtrace(&e);
 	} 
-	VERB4("Propagate %s exception from '%s' RPC cb back to %s:%d",
+	VERB5("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
 	      (e.remote ? "remote" : "local"),
+	      e.msg,
 	      msg.type->name,
 	      gras_socket_peer_name(msg.expe),
 	      gras_socket_peer_port(msg.expe));
@@ -666,4 +726,23 @@ gras_cb_unregister(gras_msgtype_t msgtype,
 /** \brief Retrieve the expeditor of the message */
 gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx) {
   return ctx->expeditor;
+}
+/* \brief Creates a new message exchange context (user should never have to) */
+gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe, 
+				      gras_msgtype_t msgtype,
+				      unsigned long int ID,
+				      double timeout) {
+  gras_msg_cb_ctx_t res=xbt_new(s_gras_msg_cb_ctx_t,1);
+  res->expeditor = expe;
+  res->msgtype = msgtype;
+  res->ID = ID;
+  res->timeout = timeout;
+  return res;
+}
+/* \brief Frees a message exchange context 
+ *
+ * This function is mainly useful with \ref gras_msg_wait_or, ie seldom.
+ */
+void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) {
+  free(ctx);
 }
