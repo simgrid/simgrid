@@ -356,6 +356,7 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
 		     unsigned long int buf_size,
 		     unsigned long int exp_size,
 		     unsigned long int msg_size,
+		     double min_duration,
 	     /*OUT*/ double *sec, double*bw) {
   
   gras_socket_t sock;
@@ -367,6 +368,7 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   request->buf_size=buf_size;
   request->exp_size=exp_size;
   request->msg_size=msg_size;
+  request->min_duration = min_duration;
 
   request->host.name = (char*)to_name;
   request->host.port = to_port;
@@ -403,7 +405,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   peer = gras_socket_client(request->host.name,request->host.port);
   amok_bw_test(peer,
 	       request->buf_size,request->exp_size,request->msg_size,
-	       0,
+	       request->min_duration,
 	       &(result->sec),&(result->bw));
 
   gras_msg_rpcreturn(240,ctx,&result);
@@ -418,7 +420,8 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 }
 
 double * amok_bw_matrix(xbt_dynar_t hosts,
-                         int buf_size_bw, int exp_size_bw, int msg_size_bw) { 
+			int buf_size_bw, int exp_size_bw, int msg_size_bw,
+			double min_duration) { 
   double sec;
   /* construct of matrixs for bandwith and Latency */
 
@@ -433,7 +436,8 @@ double * amok_bw_matrix(xbt_dynar_t hosts,
       if (i!=j) {
         /* Mesurements of Bandwidth */
         amok_bw_request(h1->name,h1->port,h2->name,h2->port,
-                        buf_size_bw,exp_size_bw,msg_size_bw,&sec,&matrix_res[i*len + j]);
+                        buf_size_bw,exp_size_bw,msg_size_bw,min_duration,
+			&sec,&matrix_res[i*len + j]);
       } 
     }
   }
