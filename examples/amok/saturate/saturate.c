@@ -80,6 +80,7 @@ const int buf_size = 0;
 const int exp_size = 100 * 1024;
 const int msg_size = 50 * 1024;
 const int sat_size = 1024 * 1024 * 10;
+const double min_duration = 1;
 
 static double XP(const char *bw1, const char *bw2,
 		 const char *sat1, const char *sat2) {
@@ -89,7 +90,7 @@ static double XP(const char *bw1, const char *bw2,
   gras_os_sleep(5.0); /* wait for the sensors to show up */
   /* Test BW without saturation */
   amok_bw_request(bw1,4000,bw2,4000,
-		  buf_size,exp_size,msg_size,&sec,&bw);
+		  buf_size,exp_size,msg_size,min_duration,&sec,&bw);
   INFO4("BW(%s,%s) => %f sec, achieving %f Mb/s",
        bw1, bw2, sec, (bw/1024.0/1024.0));
 
@@ -99,7 +100,7 @@ static double XP(const char *bw1, const char *bw2,
   gras_os_sleep(1.0); /* let it start */
 
   amok_bw_request(bw1,4000,bw2,4000,
-		  buf_size,exp_size,msg_size,&sec_sat,&bw_sat);
+		  buf_size,exp_size,msg_size,min_duration,&sec_sat,&bw_sat);
   INFO6("BW(%s,%s//%s,%s) => %f sec, achieving %f Mb/s",
        bw1,bw2,sat1,sat2,sec,bw/1024.0/1024.0);
   
@@ -182,7 +183,7 @@ static void env_hosttohost_bw(int argc, char*argv[]) {
 
   xbt_dynar_foreach(hosts,i,h1) {
         peer = gras_socket_client(h1->name,h1->port);
-	amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw);
+	amok_bw_test(peer,buf_size,exp_size,msg_size,min_duration,&sec,&bw);
 	INFO6("Bandwidth between me and %s:%d (%d bytes in msgs of %d bytes) took %f sec, achieving %.3f kb/s",
 	h1->name,h1->port,
 	exp_size,msg_size,
@@ -244,7 +245,7 @@ static void env_Pairwisehost_bw(int argc, char*argv[]) {
         if (i==j) continue;
 
         peer = gras_socket_client(h2->name,h2->port);
-	amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw);
+	amok_bw_test(peer,buf_size,exp_size,msg_size,min_duration,&sec,&bw);
 	INFO6("Bandwidth between me and %s // measurement between me and %s (%d bytes in msgs of %d bytes) took %f sec, achieving %.3f kb/s",
 	h2->name,h1->name,
 	exp_size,msg_size,
@@ -293,7 +294,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   begin=time(NULL);
   begin_simulated=gras_os_time();
 
-  bw=amok_bw_matrix(hosts,buf_size,exp_size,msg_size);
+  bw=amok_bw_matrix(hosts,buf_size,exp_size,msg_size,min_duration);
 
   INFO2("Did all BW tests in %ld sec (%.2f simulated sec)",
 	  time(NULL)-begin,gras_os_time()-begin_simulated);
@@ -325,7 +326,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 	  VERB4("TEST %s %s // %s %s",
 		h1->name,h2->name,h3->name,h4->name);
 	  amok_bw_request(h3->name,h3->port, h4->name,h4->port,
-			  buf_size,exp_size,msg_size,
+			  buf_size,exp_size,msg_size,min_duration,
 			  NULL,&(bw_sat[k*nb_hosts + l]));
 
 	  ratio=bw_sat[k*nb_hosts + l] / bw[k*nb_hosts + l];
