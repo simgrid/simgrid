@@ -88,6 +88,8 @@ SG_BEGIN_DECL()
   void xbt_dynar_insert_at(xbt_dynar_t dynar, int  idx, const void *src);
   void xbt_dynar_remove_at(xbt_dynar_t dynar, int  idx, void * const dst);
 
+  int  xbt_dynar_search(xbt_dynar_t dynar, void *elem);
+  int  xbt_dynar_member(xbt_dynar_t dynar, void *elem);
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
  *  @ingroup XBT_dynar
