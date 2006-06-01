@@ -37,6 +37,7 @@ typedef struct {
   unsigned long int buf_size;
   unsigned long int exp_size;
   unsigned long int msg_size;
+  double min_duration;
 } s_bw_request_t,*bw_request_t;
 
 /* Result of a BW experiment (payload when answering). */
