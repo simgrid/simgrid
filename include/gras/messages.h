@@ -92,7 +92,13 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
   typedef struct s_gras_msg_cb_ctx *gras_msg_cb_ctx_t;
 
 gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
-
+gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe, 
+				      gras_msgtype_t msgtype,
+				      unsigned long int ID,
+				      double timeout);
+void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
+   
+   
   /** \brief Type of message callback functions. 
    *
    * \param expeditor: a socket to contact who sent this message
@@ -221,12 +227,18 @@ typedef struct {
 
 typedef int (*gras_msg_filter_t)(gras_msg_t msg,void *ctx);
 
-  void gras_msg_wait_ext(double           timeout,    
-			 gras_msgtype_t   msgt_want,
-			 gras_socket_t    expe_want,
-			 gras_msg_filter_t filter,
-			 void             *filter_ctx, 
-			 gras_msg_t       msg_got);
+void gras_msg_wait_ext(double           timeout,    
+		       gras_msgtype_t   msgt_want,
+		       gras_socket_t    expe_want,
+		       gras_msg_filter_t filter,
+		       void             *filter_ctx, 
+		       gras_msg_t       msg_got);
+
+void gras_msg_wait_or(double         timeout,    
+		      xbt_dynar_t    msgt_want,
+		      gras_msg_cb_ctx_t *ctx,
+		      int           *msgt_got,
+		      void          *payload);
 
 
 /* @} */
