@@ -34,7 +34,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
 			(int) (idx), (unsigned long) dynar->used)
 #define __check_sloppy_inbound_idx(dynar, idx)                                         \
            xbt_assert2(idx <= dynar->used,                                            \
-			"dynar is not that long. You asked %d, but it's only %lu long", \
+			"dynar is not that long. You asked %d, but it's only %lu long (could have been equal to it)", \
 			(int) (idx), (unsigned long) dynar->used)
 #define __check_populated_dynar(dynar)            \
            xbt_assert1(dynar->used,              \
@@ -243,8 +243,7 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
  * Make a copy before fooling with it.
  */
 void*
-xbt_dynar_get_ptr(const xbt_dynar_t dynar,
-	   const int          idx) {
+xbt_dynar_get_ptr(const xbt_dynar_t dynar, const int idx) {
 
   __sanity_check_dynar(dynar);
   __sanity_check_idx(idx);
