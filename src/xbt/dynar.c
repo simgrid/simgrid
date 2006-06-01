@@ -11,6 +11,7 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/ex.h"
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
@@ -95,9 +96,8 @@ _xbt_dynar_get_elm(void  * const       dst,
                     const xbt_dynar_t  dynar,
                     const unsigned long idx) {
   void * const elm     = _xbt_dynar_elm(dynar, idx);
-  const unsigned long elmsize = dynar->elmsize;
 
-  memcpy(dst, elm, elmsize);
+  memcpy(dst, elm, dynar->elmsize);
 }
 
 static _XBT_INLINE
@@ -388,6 +388,41 @@ xbt_dynar_remove_at(xbt_dynar_t  const dynar,
           offset);
 
   dynar->used--;
+}
+
+/** @brief Returns the position of the element in the dynar
+ *
+ * Raises not_found_error if not found.
+ */
+int
+xbt_dynar_search(xbt_dynar_t  const dynar,
+		 void        *const elem) {
+  int it;
+   
+  for (it=0; it< dynar->size; it++) 
+    if (!memcmp(_xbt_dynar_elm(dynar, it),elem,dynar->elmsize))
+      return it;
+
+  THROW2(not_found_error,0,"Element %p not part of dynar %p",elem,dynar);
+}
+
+/** @brief Returns a boolean indicating whether the element is part of the dynar */
+int
+xbt_dynar_member(xbt_dynar_t  const dynar,
+		 void        *const elem) {
+
+  xbt_ex_t e;
+   
+  TRY {
+     xbt_dynar_search(dynar,elem);
+  } CATCH(e) {
+     if (e.category == not_found_error) {
+	xbt_ex_free(e);
+	return 0;
+     }
+     RETHROW;
+  }
+  return 1;
 }
 
 /** @brief Make room at the end of the dynar for a new element, and return a pointer to it.
