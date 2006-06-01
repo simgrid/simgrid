@@ -174,10 +174,10 @@ void amok_bw_test(gras_socket_t peer,
   do {
     if (*sec>0) {
       double meas_duration=*sec;
-      request->msg_size = request->msg_size * (min_duration / meas_duration);
+      request->exp_size = request->exp_size * (min_duration / meas_duration) * 1.1;
 
-      DEBUG3("The experiment was too short (%f sec<%f sec). Redo it with msg_size=%ld",
-	     meas_duration,min_duration,request->msg_size);
+      DEBUG4("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld (got %fkb/s)",
+	     meas_duration,min_duration,request->exp_size,((double)exp_size) / *sec/1024);
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
     }
 
