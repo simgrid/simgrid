@@ -50,6 +50,7 @@ int sensor (int argc,char *argv[]) {
     gras_msg_handle(60.0);
 
   gras_socket_close(g->sock);
+  gras_exit();
   return 0;
 }
 
@@ -71,6 +72,7 @@ int maestro(int argc,char *argv[]) {
   int buf_size=32      *1024;
   int exp_size=1024*50 *1024;
   int msg_size=512     *1024;
+  double min_duration = 1;
   gras_socket_t peer;
 
   gras_init(&argc, argv);
@@ -88,7 +90,7 @@ int maestro(int argc,char *argv[]) {
   peer = gras_socket_client(argv[1],atoi(argv[2]));
 
   INFO0("Test the BW between me and one of the sensors");  
-  amok_bw_test(peer,buf_size,exp_size,msg_size,&sec,&bw);
+  amok_bw_test(peer,buf_size,exp_size,msg_size,min_duration,&sec,&bw);
   INFO6("Experience between me and %s:%d (%d bytes in msgs of %d bytes) took %f sec, achieving %f kb/s",
 	argv[1],atoi(argv[2]),
 	exp_size,msg_size,
@@ -111,5 +113,6 @@ int maestro(int argc,char *argv[]) {
   gras_socket_close(peer);
 
   gras_socket_close(g->sock);
+  gras_exit();
   return 0;
 }
