@@ -12,6 +12,7 @@
 #ifndef GRAS_VIRTU_INTERFACE_H
 #define GRAS_VIRTU_INTERFACE_H
 
+#include "xbt/function_types.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/set.h"
@@ -20,8 +21,6 @@
 
 /* declare a new process specific data 
    (used by gras_<module>_register to make sure that gras_process_init will create it) */
-
-typedef void* (pvoid_f_void_t)(void); /* FIXME: find a better place for it */
 
 int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
 void *gras_libdata_by_name(const char *name);
