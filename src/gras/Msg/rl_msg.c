@@ -59,7 +59,10 @@ void gras_msg_send_ext(gras_socket_t   sock,
   if (kind == e_gras_msg_kind_rpcerror) {
      /* error on remote host, carfull, payload is an exception */
     gras_datadesc_send(sock, gras_datadesc_by_name("ex_t"),payload);
-  } else {
+  } else if (kind == e_gras_msg_kind_rpcanswer) {
+    if (msgtype->answer_type)
+      gras_datadesc_send(sock, msgtype->answer_type, payload);
+  }else {
      /* regular message */
      if (msgtype->ctn_type)
        gras_datadesc_send(sock, msgtype->ctn_type, payload);
