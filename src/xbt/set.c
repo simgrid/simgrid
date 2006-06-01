@@ -146,6 +146,11 @@ xbt_set_elm_t xbt_set_get_by_id (xbt_set_t set, int id) {
   return res;
 }
 
+/** @brief Constructor */
+unsigned long xbt_set_length (const xbt_set_t set) {
+   return xbt_dynar_length(set->dynar);
+}
+
 /***
  *** Cursors
  ***/

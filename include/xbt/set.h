@@ -66,7 +66,10 @@ void xbt_set_add (xbt_set_t set, xbt_set_elm_t  elm, void_f_pvoid_t *free_func);
 xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t set, const char *key);
 xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t set, const char *key, int key_len);
 xbt_set_elm_t xbt_set_get_by_id      (xbt_set_t set, int         id);
-				      
+
+unsigned long xbt_set_length (const xbt_set_t set);
+   
+
 /** @} */
 /** @defgroup XBT_set_curs Sets cursors
  *  @ingroup XBT_set
