@@ -15,6 +15,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 
+
+
 void
 gras_process_init() {
   gras_hostdata_t *hd=(gras_hostdata_t *)MSG_host_get_data(MSG_host_self());
@@ -131,7 +133,17 @@ gras_procdata_t *gras_procdata_get(void) {
 
   return pd;
 }
+void *
+gras_libdata_by_name_from_remote(const char *name, m_process_t p) {
+  gras_procdata_t *pd=
+    (gras_procdata_t *)MSG_process_get_data(p);
 
+  xbt_assert2(pd,"process '%s' on '%s' didn't run gras_process_init! (ie, gras_init)", 
+	      MSG_process_get_name(p),MSG_host_get_name(MSG_process_get_host(p)));
+   
+  return gras_libdata_by_name_from_procdata(name, pd);
+}   
+  
 const char* xbt_procname(void) {
   const char *res = NULL;
   m_process_t process = MSG_process_self();

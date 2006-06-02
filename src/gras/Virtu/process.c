@@ -73,6 +73,11 @@ void gras_userdata_set(void *ud) {
 
 void *gras_libdata_by_name(const char *name) {
   gras_procdata_t *pd=gras_procdata_get();
+  return gras_libdata_by_name_from_procdata(name,pd);
+}
+
+/* this function is splitted from previous to allow SG to get libdata from remote hosts */
+void *gras_libdata_by_name_from_procdata(const char*name, gras_procdata_t* pd) {
   void *res=NULL;
   xbt_ex_t e;
 
