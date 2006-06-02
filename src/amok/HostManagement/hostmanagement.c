@@ -18,18 +18,27 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_hm,amok,"Host management");
 /* libdata management */
 static int amok_hm_libdata_id;
 typedef struct {
+  /* set headers */
+  unsigned int ID;
+  char        *name;
+  unsigned int name_len;
+
+  /* payload */
   int done;
   xbt_dict_t groups;
 } s_amok_hm_libdata_t, *amok_hm_libdata_t;
 
 static void *amok_hm_libdata_new() {
   amok_hm_libdata_t res=xbt_new(s_amok_hm_libdata_t,1);
+  res->name=xbt_strdup("amok_hm");
+  res->name_len=0;
   res->done = 0;
   res->groups = xbt_dict_new();
   return res;
 }
 static void amok_hm_libdata_free(void *d) {
   amok_hm_libdata_t data=(amok_hm_libdata_t)d;
+  free(data->name);
   xbt_dict_free(&data->groups);
   free (data);
 }
@@ -71,6 +80,7 @@ static int amok_hm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
   xbt_dynar_push(group,&dude);
 
   gras_msg_rpcreturn(30, ctx, NULL);
+  free(name);
   return 1;
 }
 static int amok_hm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
@@ -102,7 +112,7 @@ static int amok_hm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
 
 static int amok_hm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
   char *name = *(void**)payload;
-  amok_hm_group_shutdown_local(name);
+  amok_hm_group_shutdown(name);
 
   gras_msg_rpcreturn(30, ctx, NULL);
   return 1;
@@ -127,7 +137,7 @@ void amok_hm_init() {
 
     /* Datatype and message declarations */
     gras_msgtype_declare("amok_hm_kill",NULL);   
-    gras_msgtype_declare_rpc("amok_hm_kill",NULL,NULL);   
+    gras_msgtype_declare_rpc("amok_hm_killrpc",NULL,NULL);   
 
     gras_msgtype_declare_rpc("amok_hm_get",
 			     gras_datadesc_by_name("string"),
@@ -215,17 +225,18 @@ void amok_hm_kill_sync(gras_socket_t buddy) {
  *
  * The dynar elements are of type xbt_host_t
  */
-xbt_dynar_t amok_hm_group_new(char *group_name) {
+xbt_dynar_t amok_hm_group_new(const char *group_name) {
   amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
   xbt_dynar_t res = xbt_dynar_new(sizeof(xbt_host_t),
-				  &xbt_host_free_voidp);
+				  xbt_host_free_voidp);
 
-  xbt_dict_set(g->groups,group_name,res,&xbt_dynar_free_voidp);
+  xbt_dict_set(g->groups,group_name,res,NULL); /*FIXME: leaking xbt_dynar_free_voidp);*/
+  VERB1("Group %s created",group_name);
 
   return res;
 }
 /** \brief retrieve all members of the given remote group */
-xbt_dynar_t amok_hm_group_get(gras_socket_t master, char *group_name) {
+xbt_dynar_t amok_hm_group_get(gras_socket_t master, const char *group_name) {
   xbt_dynar_t res;
   
   gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_get"),
@@ -234,21 +245,25 @@ xbt_dynar_t amok_hm_group_get(gras_socket_t master, char *group_name) {
 }
 
 /** \brief add current host to the given remote group */
-void        amok_hm_group_join(gras_socket_t master, char *group_name) {
+void        amok_hm_group_join(gras_socket_t master, const char *group_name) {
   gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_join"),
 		   &group_name,NULL);
+  VERB3("Joined group '%s' on %s:%d",
+	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
 }
 /** \brief remove current host from the given remote group if found
  *
  * If not found, call is ignored 
  */
-void        amok_hm_group_leave(gras_socket_t master, char *group_name) {
+void        amok_hm_group_leave(gras_socket_t master, const char *group_name) {
   gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_leave"),
 		   &group_name,NULL);
+  VERB3("Leaved group '%s' on %s:%d",
+	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
 }
 
 /** \brief stops all members of the given local group */
-void amok_hm_group_shutdown_local(char *group_name) {
+void amok_hm_group_shutdown(const char *group_name) {
   amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
   xbt_dynar_t group = xbt_dict_get(g->groups, group_name);
   
@@ -262,7 +277,7 @@ void amok_hm_group_shutdown_local(char *group_name) {
   xbt_dict_remove(g->groups,group_name);
 }
 /** \brief stops all members of the given remote group */
-void amok_hm_group_shutdown_remote(gras_socket_t master, char *group_name){
+void amok_hm_group_shutdown_remote(gras_socket_t master, const char *group_name){
   gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_shutdown"),
 		   &group_name,NULL);
 }

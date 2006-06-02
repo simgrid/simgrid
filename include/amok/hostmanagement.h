@@ -32,7 +32,10 @@
  *   - joining the group (with amok_hm_group_join(), so that the master now it)
  *   - entering the endless loop (with amok_hm_mainloop()). 
  
- * The <b>master</b>, on its side, should  create declare the datatypes and messages just like slaves.
+ * The <b>master</b>, on its side, should create declare the datatypes and
+ * messages just like slaves. It should then create a group with
+ * amok_hm_group_new().
+ 
  * Afterward, there is two solutions. 
  *   - If your master is a deamon which never stops itself (just like regular UNIX daemons), it should: 
  *      - register the needed callbacks to messages comming from slaves
@@ -56,15 +59,15 @@ void amok_hm_kill_hp(char *name,int port);
 void amok_hm_kill(gras_socket_t buddy);
 void amok_hm_kill_sync(gras_socket_t buddy);
 
-xbt_dynar_t amok_hm_group_new(char *group_name);
-xbt_dynar_t amok_hm_group_get(gras_socket_t master,char *group_name);
+xbt_dynar_t amok_hm_group_new(const char *group_name);
+xbt_dynar_t amok_hm_group_get(gras_socket_t master, const char *group_name);
 
-void        amok_hm_group_join(gras_socket_t master, char *group_name);
-void        amok_hm_group_leave(gras_socket_t master, char *group_name);
+void        amok_hm_group_join(gras_socket_t master, const char *group_name);
+void        amok_hm_group_leave(gras_socket_t master, const char *group_name);
 
 
-void amok_hm_group_shutdown_local(char *group_name);
-void amok_hm_group_shutdown_remote(gras_socket_t master, char *group_name);
+void amok_hm_group_shutdown(const char *group_name);
+void amok_hm_group_shutdown_remote(gras_socket_t master, const char *group_name);
 
 
 /** @} */
