@@ -30,7 +30,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_tcp,gras_trp,
       "TCP buffered transport");
 
-int _gras_master_socket_port = -1;
 /***
  *** Specific socket part
  ***/
@@ -79,7 +78,7 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
   struct hostent *he;
   struct in_addr *haddr;
   int size = sock->buf_size; 
-  uint32_t myport = htonl(_gras_master_socket_port);
+  uint32_t myport = htonl(((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport);
 
   sock->incoming = 1; /* TCP sockets are duplex'ed */
 
@@ -134,7 +133,6 @@ static inline void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
 
   sock->outgoing  = 1; /* TCP => duplex mode */
 
-  _gras_master_socket_port = sock->port;
   server.sin_port = htons((u_short)sock->port);
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_family = AF_INET;
@@ -286,6 +284,13 @@ static inline void gras_trp_tcp_send(gras_socket_t sock,
     DEBUG3("write(%d, %p, %ld);", sock->sd, data, size);
     
     if (status < 0) {
+#ifdef EWOULDBLOCK
+       if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)
+#else
+       if (errno == EINTR || errno == EAGAIN)
+#endif
+	 continue;
+       
       THROW4(system_error,0,"write(%d,%p,%ld) failed: %s",
 	     sock->sd, data, size,
 	     sock_errstr);

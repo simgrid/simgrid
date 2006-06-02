@@ -81,7 +81,7 @@ gras_socket_t gras_trp_select(double timeout) {
   res->accepting = 0;
   res->sd        = -1;
   
-  res->port      = -1;
+  res->port = -1;
   
   sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
   sockdata->from_PID = MSG_process_self_PID();
@@ -89,7 +89,7 @@ gras_socket_t gras_trp_select(double timeout) {
   sockdata->to_host  = MSG_process_get_host(MSG_process_from_PID(r_pid));
   res->data = sockdata;
   gras_trp_buf_init_sock(res);
-  
+   
   res->peer_name = strdup(MSG_host_get_name(sockdata->to_host));
   
   remote_hd=(gras_hostdata_t *)MSG_host_get_data(sockdata->to_host);
@@ -127,6 +127,7 @@ gras_socket_t gras_trp_select(double timeout) {
       }
     }
   }
+  res->peer_port = ((gras_trp_procdata_t) gras_libdata_by_name_from_remote("gras_trp",MSG_process_from_PID(r_pid)))->myport;
   xbt_assert0(sockdata->to_chan != -1,
 	      "Got a message from a process without channel");
   

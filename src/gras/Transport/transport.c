@@ -8,6 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
+#include "xbt/host.h"
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 
@@ -173,8 +174,7 @@ void gras_trp_socket_new(int incoming,
 		     gras_libdata_by_id(gras_trp_libdata_id))->sockets,dst);
   XBT_OUT;
 }
-
-
+ 
 /**
  * @brief Opens a server socket and makes it ready to be listened to.
  * @param port: port on which you want to listen
@@ -225,7 +225,38 @@ gras_socket_server_ext(unsigned short port,
     RETHROW;
   }
 
+  ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport = port;
   return sock;
+}
+/**
+ * @brief Opens a server socket on any port in the given range
+ * 
+ * @param minport: first port we will try
+ * @param maxport: last port we will try
+ * @param buf_size: size of the buffer (in byte) on the socket (for TCP sockets only). If 0, a sain default is used (32k, but may change)
+ * @param measurement: whether this socket is meant to convey measurement (if you don't know, use 0 to exchange regular messages)
+ * 
+ * If none of the provided ports works, raises the exception got when trying the last possibility
+ */ 
+gras_socket_t
+gras_socket_server_range(unsigned short minport, unsigned short maxport,
+			 unsigned long int buf_size, int measurement) {
+   
+   int port;
+   gras_socket_t res=NULL;
+   xbt_ex_t e;
+   
+   for (port=minport; port<maxport;port ++) {
+      TRY {
+	 res=gras_socket_server_ext(port,buf_size,measurement);
+      } CATCH(e) {
+	 if (port==maxport)
+	   RETHROW;
+	 xbt_ex_free(e);
+      }
+      return res;
+   }
+   THROW_IMPOSSIBLE;
 }
    
 /**
@@ -285,19 +316,23 @@ gras_socket_server(unsigned short port) {
    return gras_socket_server_ext(port,32*1024,0);
 }
 
-/**
- * gras_socket_client:
- *
- * Opens a client socket to a remote host.
- * In real life, you'll get a TCP socket.
- */
+/** @brief Opens a client socket to a remote host */
 gras_socket_t
 gras_socket_client(const char *host,
 		   unsigned short port) {
-   return gras_socket_client_ext(host,port,32*1024,0);
+   return gras_socket_client_ext(host,port,0,0);
 }
 
+/** @brief Opens a client socket to a remote host specified as '<host>:<port>' */
+gras_socket_t
+gras_socket_client_from_string(const char *host) {
+   xbt_host_t h = xbt_host_from_string(host);
+   gras_socket_t res = gras_socket_client_ext(h->name,h->port,0,0);
+   xbt_host_free(h);
+   return res;
+}
 
+/** \brief Close socket */
 void gras_socket_close(gras_socket_t sock) {
   xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
   gras_socket_t sock_iter;
@@ -508,6 +543,7 @@ static void *gras_trp_procdata_new() {
    res->name = xbt_strdup("gras_trp");
    res->name_len = 0;
    res->sockets   = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
+   res->myport = 0;
    
    return (void*)res;
 }

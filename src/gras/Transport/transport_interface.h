@@ -93,6 +93,7 @@ typedef struct {
   unsigned int name_len;
 
   xbt_dynar_t sockets; /* all sockets known to this process */
+  int myport; /* Port on which I listen myself */
   fd_set *fdset;
 
   /* SG only elements. In RL, they are part of the OS ;) */
