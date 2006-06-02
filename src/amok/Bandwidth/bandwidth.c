@@ -316,6 +316,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
       tooshort = 1;
       free(request);
       request = (bw_request_t)payload;
+      VERB0("Return the reasking RPC");
       gras_msg_rpcreturn(60,ctx_reask,NULL);
     }
     gras_msg_cb_ctx_free(ctx_reask);

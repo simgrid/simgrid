@@ -365,7 +365,7 @@ static int gras_msg_wait_or_filter(gras_msg_t msg, void *ctx) {
   xbt_dynar_t dyn=(xbt_dynar_t)ctx;
   int res =  xbt_dynar_member(dyn,msg->type);
   if (res)
-    VERB0("Got matching message");
+    VERB1("Got matching message (type=%s)",msg->type->name);
   else
     VERB0("Got message not matching our expectations");
   return res;
@@ -392,7 +392,7 @@ void gras_msg_wait_or(double         timeout,
                       void          *payload) {
   s_gras_msg_t msg;
 
-  INFO1("Wait %f seconds for several message types",timeout);
+  VERB1("Wait %f seconds for several message types",timeout);
   gras_msg_wait_ext(timeout,
 		    NULL, NULL,      
 		    &gras_msg_wait_or_filter, (void*)msgt_want,
