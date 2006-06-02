@@ -2,15 +2,12 @@
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
 <platform_description version="1">
   <process host="Tremblay" function="sensor">
-     <argument value="4000"/>       <!-- port number -->
+     <argument value="Ginette:4000"/>       <!-- maestro -->
   </process>
   <process host="Jupiter" function="sensor">
-     <argument value="4000"/>       <!-- port number -->
+     <argument value="Ginette:4000"/>       <!-- maestro -->
   </process>
   <process host="Ginette" function="maestro">
-     <argument value="Tremblay"/>   <!-- server host -->
-     <argument value="4000"/>       <!-- port number -->
-     <argument value="Jupiter"/>   <!-- server host -->
-     <argument value="4000"/>       <!-- port number -->
+     <argument value="4000"/>   <!-- my port -->
   </process>
 </platform_description>

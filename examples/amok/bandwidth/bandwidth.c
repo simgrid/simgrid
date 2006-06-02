@@ -10,6 +10,7 @@
 
 #include "gras.h"
 #include "amok/bandwidth.h"
+#include "amok/hostmanagement.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,"Messages specific to this example");
 
@@ -17,39 +18,26 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,"Messages specific to this example");
  * Sensor code
  * **********************************************************************/
 
-/* Global private data */
-typedef struct {
-  gras_socket_t sock;
-  int done;
-} s_sensor_data_t,*sensor_data_t;
-
-static int sensor_cb_quit(gras_msg_cb_ctx_t ctx, void *payload) {
-  sensor_data_t globals=(sensor_data_t)gras_userdata_get();
-                          
-  globals->done = 1;                  
-  return 1;         
-}
-
 /* Function prototypes */
 int sensor (int argc,char *argv[]);
 
 int sensor (int argc,char *argv[]) {
-  sensor_data_t g;
+  gras_socket_t mysock;
+  gras_socket_t master;
 
   gras_init(&argc, argv);
-  g=gras_userdata_new(s_sensor_data_t);  
   amok_bw_init();
-   
-  g->sock=gras_socket_server(atoi(argv[1]));
-  g->done = 0;
-  
-  gras_msgtype_declare("quit",NULL);
-  gras_cb_register(gras_msgtype_by_name("quit"),&sensor_cb_quit);
-  
-  while (! g->done )
-    gras_msg_handle(60.0);
+  amok_hm_init();
 
-  gras_socket_close(g->sock);
+  mysock = gras_socket_server_range(3000,9999,0,0);
+  gras_os_sleep(1); /* let the master get ready */
+  master = gras_socket_client_from_string(argv[1]);
+					      
+  amok_hm_group_join(master,"bandwidth");
+  amok_hm_mainloop(60);
+
+  gras_socket_close(mysock);
+  gras_socket_close(master);
   gras_exit();
   return 0;
 }
@@ -58,61 +46,62 @@ int sensor (int argc,char *argv[]) {
  * Maestro code
  * **********************************************************************/
 
-/* Global private data */
-typedef struct {
-  gras_socket_t sock;
-} s_maestro_data_t,*maestro_data_t;
-
 /* Function prototypes */
 int maestro (int argc,char *argv[]);
 
 int maestro(int argc,char *argv[]) {
-  maestro_data_t g;
   double sec, bw;
-  int buf_size=32      *1024;
-  int exp_size=1024*50 *1024;
-  int msg_size=512     *1024;
+  int buf_size=32  *1024;
+  int exp_size=512 *1024;
+  int msg_size=512 *1024;
   double min_duration = 1;
+   
   gras_socket_t peer;
+  gras_socket_t mysock;
+  xbt_host_t h1,h2;
+  xbt_dynar_t group;
 
   gras_init(&argc, argv);
-  g=gras_userdata_new(s_maestro_data_t);
   amok_bw_init();
+  amok_hm_init();
 
-  if (argc != 5) {
-     ERROR0("Usage: maestro host port host port\n");
+  if (argc != 2) {
+     ERROR0("Usage: maestro port\n");
      return 1;
   }
-
-  /* wait to ensure that all server sockets are there before starting the experiment */	
-  gras_os_sleep(0.5);
-  
-  peer = gras_socket_client(argv[1],atoi(argv[2]));
+  mysock=gras_socket_server(atoi(argv[1]));
+  group=amok_hm_group_new("bandwidth");
+  gras_msg_handleall(10); /* friends, we're ready. Come and play */
+   
+  if (xbt_dynar_length(group) < 2) {
+     char *msg;
+     asprintf(&msg,"Not enough peers arrived. Expected 2 got %ld",
+	      xbt_dynar_length(group));
+     xbt_die(msg);
+  }
+  h1 = *(xbt_host_t*) xbt_dynar_get_ptr(group, 0);
+  h2 = *(xbt_host_t*)xbt_dynar_get_ptr(group, 1);
+   
+  peer = gras_socket_client(h1->name, h1->port);
 
   INFO0("Test the BW between me and one of the sensors");  
   amok_bw_test(peer,buf_size,exp_size,msg_size,min_duration,&sec,&bw);
   INFO6("Experience between me and %s:%d (%d bytes in msgs of %d bytes) took %f sec, achieving %f kb/s",
-	argv[1],atoi(argv[2]),
+	h1->name, h1->port,
 	exp_size,msg_size,
 	sec,((double)bw)/1024.0);
 
-  INFO4("Test the BW between %s:%s and %s:%s",argv[1],argv[2],argv[3],argv[4]);
-  amok_bw_request(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-		  buf_size,exp_size,msg_size,&sec,&bw);	
-  INFO6("Experience between %s:%s and %s:%s took took %f sec, achieving %f kb/s",
-	argv[1],argv[2],argv[3],argv[4],
+  INFO4("Test the BW between %s:%d and %s:%d",	h1->name, h1->port,	h2->name, h2->port);
+  amok_bw_request(h1->name, h1->port,	h2->name, h2->port,
+		  buf_size,exp_size,msg_size,min_duration,&sec,&bw);
+  INFO6("Experience between %s:%d and %s:%d took took %f sec, achieving %f kb/s",
+	h1->name, h1->port,	h2->name, h2->port,
 	sec,((double)bw)/1024.0);
 
-  /* ask sensors to quit */                    
-  gras_msgtype_declare("quit",NULL);
-  gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL);
-  gras_socket_close(peer);
+  /* Game is over, friends */
+  amok_hm_group_shutdown ("bandwidth");
 
-  peer = gras_socket_client(argv[3],atoi(argv[4]));
-  gras_msg_send(peer,gras_msgtype_by_name("quit"), NULL);
-  gras_socket_close(peer);
-
-  gras_socket_close(g->sock);
+  gras_socket_close(mysock);
   gras_exit();
   return 0;
 }

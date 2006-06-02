@@ -6,6 +6,6 @@ else
   exenv=wine
 fi
     
-$exenv ./bandwidth_sensor@EXEEXT@ 4000 $@&
-$exenv ./bandwidth_sensor@EXEEXT@ 5000 $@&
-$exenv ./bandwidth_maestro@EXEEXT@ 127.0.0.1 4000 127.0.0.1 5000 $@
+$exenv ./bandwidth_sensor@EXEEXT@ 127.0.0.1:6000 $@&
+$exenv ./bandwidth_sensor@EXEEXT@ 127.0.0.1:6000 $@&
+$exenv ./bandwidth_maestro@EXEEXT@ 6000 $@
