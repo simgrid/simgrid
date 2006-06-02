@@ -37,9 +37,9 @@ typedef struct s_gras_socket *gras_socket_t;
 
 /** \brief Simply create a client socket (to speak to a remote host) */
 gras_socket_t gras_socket_client(const char *host, unsigned short port);
+gras_socket_t gras_socket_client_from_string(const char *host);
 /** \brief Simply create a server socket (to ear from remote hosts speaking to you) */
 gras_socket_t gras_socket_server(unsigned short port);
-/** \brief Close socket */
 void          gras_socket_close(gras_socket_t sd);
 
 /** \brief Create a client socket, full interface to all relevant settings */
@@ -51,6 +51,10 @@ gras_socket_t gras_socket_client_ext(const char *host,
 gras_socket_t gras_socket_server_ext(unsigned short port,
 				     unsigned long int bufSize,
 				     int measurement);
+gras_socket_t
+gras_socket_server_range(unsigned short minport, unsigned short maxport,
+			 unsigned long int buf_size, int measurement);
+
 /* @}*/
 /** \defgroup GRAS_sock_info Retrieving data about sockets and peers 
  *  \ingroup GRAS_sock
