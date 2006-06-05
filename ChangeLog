@@ -27,6 +27,8 @@ SimGrid (3.1) unstable; urgency=low
   * Bug fix: Failures are now better supported thanks to Derrick's tests
     (there was many failure situations I hadn't thought of and that weren't
     correctly handled). [AL]
+  * New function: MSG_host_is_avail indicates you whether a given m_host_t
+    is up or down.
 
   GRAS:
   * New! a real RPC mecanism, as it ought to be since too long. [MQ]
