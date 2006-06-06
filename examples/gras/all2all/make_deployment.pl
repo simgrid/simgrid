@@ -59,7 +59,7 @@ for (my $i=0; $i<$nb_hosts; $i++) {
 
 print "<?xml version='1.0'?>\n";
 print "<!DOCTYPE platform_description SYSTEM \"surfxml.dtd\">\n";
-print "<platform_description>\n\n";
+print "<platform_description version=\"1\">\n\n";
 
 # reset iterators
 $it_port=4000;
