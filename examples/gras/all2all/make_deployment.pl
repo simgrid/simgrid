@@ -20,7 +20,7 @@ EOH
 
 my $input    = shift @ARGV || usage();
 my $nb_hosts = shift @ARGV || usage();
-my $source   = shift;
+my $source   = shift || "";
 
 my @host;
 
@@ -67,7 +67,7 @@ $it_host=0;
 
 for (my $i=0; $i<$nb_hosts; $i++) {
   print "  <process host=\"".$host[$it_host]."\" function=\"receiver\">\n";
-  print "    <argument value=\"$it_port\"/><argument value=\"".(undef($source)?$nb_hosts:1)."\"/>\n";
+  print "    <argument value=\"$it_port\"/><argument value=\"".(length($source)?1:$nb_hosts)."\"/>\n";
   print "  </process>\n\n";
     
   $it_host ++;
@@ -85,7 +85,7 @@ $it_port=4000;
 $it_host=0;
 
 for (my $i=0; $i<$nb_hosts; $i++) {
-  if (undef($source) || $source == $i) {
+  if (!length($source) || $source == $i) {
       print "  <process host=\"".$host[$it_host]."\" function=\"sender\">\n";
       print $receivers;
       print "  </process>\n";
@@ -99,3 +99,5 @@ for (my $i=0; $i<$nb_hosts; $i++) {
 }
 
 print "</platform_description>\n";
+
+# print "source='$source' nb_hosts=$nb_hosts\n";
