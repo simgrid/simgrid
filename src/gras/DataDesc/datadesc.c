@@ -43,6 +43,9 @@ gras_datadesc_init(void) {
   
   gras_datadesc_set_local = xbt_set_new();
   
+
+  /* all known datatypes */
+
   ddt = gras_datadesc_scalar("signed char", 
 			     gras_ddt_scalar_char, 
 			     e_gras_dd_scalar_encoding_sint);
@@ -112,7 +115,7 @@ gras_datadesc_init(void) {
 				_strlen_cb);
   ddt = gras_datadesc_ref("string",ddt);
 
-
+  /* specific datatype: the exception type (for RPC) */
   ddt = gras_datadesc_struct("ex_t");
   gras_datadesc_struct_append(ddt,"msg",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(ddt,"category",gras_datadesc_by_name("int"));
@@ -133,7 +136,7 @@ gras_datadesc_init(void) {
 
   gras_datadesc_struct_close(ddt);
 
-
+  /* specific datatype: xbt_host_t */
   ddt = gras_datadesc_struct("s_xbt_host_t");
   gras_datadesc_struct_append(ddt,"name",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(ddt,"port",gras_datadesc_by_name("int"));

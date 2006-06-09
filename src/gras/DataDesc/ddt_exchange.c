@@ -160,19 +160,19 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
        
        if (XBT_LOG_ISENABLED(gras_ddt_exchange,xbt_log_priority_verbose)) {
 	  if (sub_type == gras_datadesc_by_name("unsigned int")) {
-	     VERB2("Copied value for field %s: %d (type: unsigned int)",field->name, *(unsigned int*)field_dst);
+	     VERB2("Copied value for field '%s': %d (type: unsigned int)",field->name, *(unsigned int*)field_dst);
 	  } else if (sub_type == gras_datadesc_by_name("int")) {
-	     VERB2("Copied value for field %s: %d (type: int)",field->name, *(int*)field_dst);
+	     VERB2("Copied value for field '%s': %d (type: int)",field->name, *(int*)field_dst);
 	     
 	  } else if (sub_type == gras_datadesc_by_name("unsigned long int")) {
-	     VERB2("Copied value for field %s: %ld (type: unsigned long int)",field->name, *(unsigned long int*)field_dst);
+	     VERB2("Copied value for field '%s': %ld (type: unsigned long int)",field->name, *(unsigned long int*)field_dst);
 	  } else if (sub_type == gras_datadesc_by_name("long int")) {
-	     VERB2("Copied value for field %s: %ld (type: long int)",field->name, *(long int*)field_dst);
+	     VERB2("Copied value for field '%s': %ld (type: long int)",field->name, *(long int*)field_dst);
 
 	  } else if (sub_type == gras_datadesc_by_name("string")) {
-	     VERB2("Copied value for field %s: '%s' (type: string)", field->name, *(char**)field_dst);	 
+	     VERB2("Copied value for field '%s': '%s' (type: string)", field->name, *(char**)field_dst);	 
 	  } else {
-	     VERB1("Copied a value for field %s (type not scalar?)", field->name);
+	     VERB1("Copied a value for field '%s' (type not scalar?)", field->name);
 	  }
        }
       

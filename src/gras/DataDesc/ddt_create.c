@@ -572,6 +572,12 @@ gras_datadesc_type_t
   return res;
 }
 
+/*
+ *##
+ *## Constructor of container datatypes
+ *##
+ */
+
 #include "xbt/dynar_private.h"
 static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data) {
   gras_datadesc_type_t subtype;
@@ -604,34 +610,93 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t,
   char *buffname;
   gras_datadesc_type_t res;
   
-  buffname=xbt_new0(char, strlen(elm_t->name)+10);
-  sprintf(buffname,"dynar(%s)_s",elm_t->name);
+  asprintf(&buffname,"dynar(%s)_s",elm_t->name);
    
   res = gras_datadesc_struct(buffname);
   
-  gras_datadesc_struct_append(res, "size",    gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_append(res, "size",    
+			      gras_datadesc_by_name("unsigned long int"));
    
-  gras_datadesc_struct_append(res, "used",    gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_cb_field_push(res, "used");
+  gras_datadesc_struct_append(res, "used",    
+			      gras_datadesc_by_name("unsigned long int"));
    
-  gras_datadesc_struct_append(res, "elmsize", gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_append(res, "elmsize", 
+			      gras_datadesc_by_name("unsigned long int"));
    
-  gras_datadesc_struct_append(res, "data",    gras_datadesc_ref_pop_arr (elm_t));
+  gras_datadesc_struct_append(res, "data",    
+			      gras_datadesc_ref_pop_arr (elm_t));
 
-  gras_datadesc_struct_append(res, "free_f",  gras_datadesc_by_name("function pointer"));
+  gras_datadesc_struct_append(res, "free_f",  
+			      gras_datadesc_by_name("function pointer"));
   memcpy(res->extra,&free_func,sizeof(free_func));
       
   gras_datadesc_struct_close(res);
    
+  gras_datadesc_cb_field_push(res, "used");
   gras_datadesc_cb_recv(res,  &gras_datadesc_dynar_cb);
 
   /* build a ref to it */
-  sprintf(buffname,"dynar(%s)",elm_t->name);
+  free(buffname);
+  asprintf(&buffname,"dynar(%s)",elm_t->name);
   res=gras_datadesc_ref(buffname,res);
   free(buffname);
   return res;
 }
 
+#include "xbt/matrix.h"
+static void gras_datadesc_matrix_cb(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data) {
+  gras_datadesc_type_t subtype;
+  xbt_matrix_t matrix=(xbt_matrix_t)data;
+   
+  memcpy(&matrix->free_f, &typedesc->extra, sizeof(matrix->free_f));
+
+  /* search for the elemsize in what we have. If elements are "int", typedesc got is "int[]*" */
+  subtype = gras_dd_find_field(typedesc,"data")->type;
+  
+  /* this is now a ref to array of what we're looking for */
+  subtype = subtype->category.ref_data.type;
+  subtype = subtype->category.array_data.type;
+   
+  DEBUG1("subtype is %s",subtype->name);
+
+  matrix->elmsize = subtype->size[GRAS_THISARCH];
+}
+gras_datadesc_type_t
+gras_datadesc_matrix(gras_datadesc_type_t elm_t,
+		     void_f_pvoid_t * const free_f) {
+  char *buffname;
+  gras_datadesc_type_t res;
+
+  asprintf(&buffname,"s_xbt_matrix_t(%s)",elm_t->name);   
+  res = gras_datadesc_struct(buffname);
+  
+  gras_datadesc_struct_append(res, "lines",    
+			      gras_datadesc_by_name("unsigned int"));
+  gras_datadesc_struct_append(res, "rows",    
+			      gras_datadesc_by_name("unsigned int"));
+   
+  gras_datadesc_struct_append(res, "elmsize", 
+			      gras_datadesc_by_name("unsigned long int"));
+   
+  gras_datadesc_struct_append(res, "data",    
+			      gras_datadesc_ref_pop_arr (elm_t));
+  gras_datadesc_struct_append(res, "free_f",  
+			      gras_datadesc_by_name("function pointer"));      
+  gras_datadesc_struct_close(res);
+    
+  gras_datadesc_cb_field_push(res, "lines");
+  gras_datadesc_cb_field_push_multiplier(res, "rows");
+
+  gras_datadesc_cb_recv(res,  &gras_datadesc_dynar_cb);
+  memcpy(res->extra,&free_f,sizeof(free_f));
+
+  /* build a ref to it */
+  free(buffname);
+  asprintf(&buffname,"xbt_matrix_t(%s)",elm_t->name);
+  res=gras_datadesc_ref(buffname,res);
+  free(buffname);
+  return res;
+}
 
 gras_datadesc_type_t
 gras_datadesc_import_nws(const char           *name,
