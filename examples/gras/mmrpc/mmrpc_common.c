@@ -16,25 +16,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(MatMult,"Messages specific to this example");
 void mmrpc_register_messages(void) {
   gras_datadesc_type_t matrix_type, request_type;
 
-  matrix_type=gras_datadesc_by_symbol(s_matrix);
-  request_type=gras_datadesc_array_fixed("matrix_t[2]",matrix_type,2);
+  matrix_type=gras_datadesc_matrix(gras_datadesc_by_name("double"),
+				   NULL);
+  request_type=gras_datadesc_array_fixed("s_matrix_t(double)[2]",matrix_type,2);
+  //					 gras_datadesc_by_name("xbt_matrix_t(double)"),2);
+  //    request_type=gras_datadesc_ref("matrix_t(double)[2]",request_type);
   
   gras_msgtype_declare("answer", matrix_type);
   gras_msgtype_declare("request", request_type);
 }
-
-void mat_dump(matrix_t *mat, const char* name) {
-  int i,j;
-
-  printf(">>> Matrix %s dump (%d x %d)\n",name,mat->lines,mat->rows);
-  for (i=0; i<mat->lines; i++) {
-    printf("  ");
-    for (j=0; j<mat->rows; j++)
-      printf(" %.2f",mat->ctn[i*mat->rows + j]);
-    printf("\n");
-  }
-  printf("<<< end_of_matrix %s dump\n",name);
-}
-
 
 

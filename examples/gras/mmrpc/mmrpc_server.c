@@ -8,37 +8,32 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #define GRAS_DEFINE_TYPE_EXTERN
+#include "xbt/matrix.h"
 #include "mmrpc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(MatMult);
 
 
-static int server_cb_request_handler(gras_msg_cb_ctx_t ctx, void *payload_data) {
+typedef xbt_matrix_t request_t[2];
+static int server_cb_request_handler(gras_msg_cb_ctx_t ctx, 
+				     void *payload_data) {
+
   gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
 			     
   /* 1. Get the payload into the data variable */
-  matrix_t *data=(matrix_t*)payload_data;
-  matrix_t result;
-  int i,j,k;
-   
-  /* 2. Make some room to return the result */
-  result.lines = data[0].lines;
-  result.rows = data[1].rows;
-  result.ctn = xbt_malloc0(sizeof(double) * result.lines * result.rows);
+  xbt_matrix_t *request = (xbt_matrix_t*)payload_data;
+  xbt_matrix_t result;
+  
+  /* 2. Do the computation */
+  result = xbt_matrix_double_new_mult(request[0], request[1]);
 
-  /* 3. Do the computation */
-  for (i=0; i<result.lines; i++) 
-    for (j=0; j<result.rows; j++) 
-      for (k=0; k<data[1].lines; k++) 
-	result.ctn[i*result.rows + j] +=  data[0].ctn[i*result.rows +k] *data[1].ctn[k*result.rows +j];
-
-  /* 4. Send it back as payload of a pong message to the expeditor */
+  /* 3. Send it back as payload of a pong message to the expeditor */
   gras_msg_send(expeditor, gras_msgtype_by_name("answer"), &result);
 
-  /* 5. Cleanups */
-  free(data[0].ctn); 
-  free(data[1].ctn);
-  free(result.ctn);
+  /* 4. Cleanups */
+  xbt_matrix_free(request[0]);
+  xbt_matrix_free(request[1]);
+  xbt_matrix_free(result);
   gras_socket_close(expeditor);
    
   return 1;

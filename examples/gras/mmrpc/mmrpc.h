@@ -14,16 +14,6 @@
 
 #define MATSIZE 128
 
-GRAS_DEFINE_TYPE(s_matrix,
-struct s_matrix {
-  int lines;
-  int rows;
-  double *ctn GRAS_ANNOTE(size, lines*rows);
-};)
-typedef struct s_matrix matrix_t;
-
-void mat_dump(matrix_t *mat, const char* name);
-
 /* register messages which may be sent and their payload
    (common to client and server) */
 void mmrpc_register_messages(void);

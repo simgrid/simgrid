@@ -8,6 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #define GRAS_DEFINE_TYPE_EXTERN
+#include "xbt/matrix.h"
 #include "mmrpc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(MatMult);
@@ -17,7 +18,7 @@ int client(int argc,char *argv[]) {
   gras_socket_t toserver=NULL; /* peer */
 
   gras_socket_t from;
-  matrix_t request[2], answer;
+  xbt_matrix_t request[2], answer;
 
   int i,j;
 
@@ -56,23 +57,17 @@ int client(int argc,char *argv[]) {
 
   /* 7. Prepare and send the request to the server */
 
-  request[0].lines=request[0].rows=request[1].lines=request[1].rows=MATSIZE;
+  request[0] = xbt_matrix_double_new_id(MATSIZE,MATSIZE);
+  request[1] = xbt_matrix_double_new_rand(MATSIZE,MATSIZE);
 
-  request[0].ctn=xbt_malloc0(sizeof(double)*MATSIZE*MATSIZE);
-  request[1].ctn=xbt_malloc0(sizeof(double)*MATSIZE*MATSIZE);
-
-  for (i=0; i<MATSIZE; i++) {
-    request[0].ctn[i*MATSIZE+i] = 1;
-    for (j=0; j<MATSIZE; j++)
-      request[1].ctn[i*MATSIZE+j] = i*MATSIZE+j;
-  }
-  /*  mat_dump(&request[0],"C:sent0");*/
-  /*  mat_dump(&request[1],"C:sent1");*/
+  /*
+  xbt_matrix_dump(request[0],"C:sent0",0,xbt_matrix_dump_display_double);
+  xbt_matrix_dump(request[1],"C:sent1",0,xbt_matrix_dump_display_double);
+  */
 
   gras_msg_send(toserver, gras_msgtype_by_name("request"), &request);
 
-  free(request[0].ctn);
-  free(request[1].ctn);
+  xbt_matrix_free(request[0]);
 
   INFO2(">>>>>>>> Request sent to %s:%d <<<<<<<<",
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
@@ -80,16 +75,23 @@ int client(int argc,char *argv[]) {
   /* 8. Wait for the answer from the server, and deal with issues */
   gras_msg_wait(6000,gras_msgtype_by_name("answer"),&from,&answer);
 
-  /*  mat_dump(&answer,"C:answer");*/
-  for (i=0; i<MATSIZE*MATSIZE; i++) 
-    xbt_assert(answer.ctn[i]==i);
+  /*
+  xbt_matrix_dump(answer,"C:answer",0,xbt_matrix_dump_display_double);
+  */
+  for (i=0; i<MATSIZE; i++) 
+    for (j=0; i<MATSIZE; i++) 
+      xbt_assert4(xbt_matrix_get_as(answer,i,j,double)==xbt_matrix_get_as(request[1],i,j,double),
+		  "Answer does not match expectations. Found %f at cell %d,%d instead of %f",
+		  xbt_matrix_get_as(answer,i,j,double),i,j,
+		  xbt_matrix_get_as(request[1],i,j,double));
 
   /* 9. Keep the user informed of what's going on, again */
-  INFO2(">>>>>>>> Got answer from %s:%d <<<<<<<<", 
+  INFO2(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<", 
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
   /* 10. Free the allocated resources, and shut GRAS down */
-  free(answer.ctn);
+  xbt_matrix_free(request[1]);
+  xbt_matrix_free(answer);
   gras_socket_close(toserver);
   gras_exit();
   INFO0("Done.");
