@@ -375,7 +375,9 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   request->host.port = to_port;
 
   sock = gras_socket_client(from_name,from_port);
-  gras_msg_rpccall(sock,240,gras_msgtype_by_name("BW request"),&request, &result);
+  DEBUG4("Ask for a BW test between %s:%d and %s:%d",	from_name,from_port, to_name,to_port);
+
+  gras_msg_rpccall(sock,240,gras_msgtype_by_name("BW request"), &request, &result);
   
   if (sec)
     *sec=result->sec;
@@ -420,11 +422,12 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   return 1;
 }
 
+/** \brief builds a matrix of results of bandwidth measurement */
 double * amok_bw_matrix(xbt_dynar_t hosts,
 			int buf_size_bw, int exp_size_bw, int msg_size_bw,
 			double min_duration) { 
   double sec;
-  /* construct of matrixs for bandwith and Latency */
+  /* construction of matrices for bandwith and latency */
 
 
   int i,j,len=xbt_dynar_length(hosts);
