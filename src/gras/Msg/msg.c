@@ -590,8 +590,8 @@ gras_msg_handle(double timeOut) {
     TRY {
       xbt_dynar_foreach(list->cbs,cpt,cb) { 
 	if (!ran_ok) {
-	  VERB3("Use the callback #%d (@%p) for incomming msg %s",
-		cpt+1,cb,msg.type->name);
+	  DEBUG4("Use the callback #%d (@%p) for incomming msg %s (payload_size=%d)",
+		cpt+1,cb,msg.type->name,msg.payl_size);
 	  if ((*cb)(&ctx,msg.payl)) {
 	    /* cb handled the message */
 	    free(msg.payl);
