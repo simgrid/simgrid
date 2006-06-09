@@ -31,17 +31,24 @@ typedef struct {
 
   /** @brief Quick retrieval of scalar content
    *  @hideinitializer */
-#define xbt_matrix_get_as(mat,l,c,type) *(type*)xbt_matrix_getp(mat,l,c) 
+#define xbt_matrix_get_as(mat,l,c,type) *(type*)xbt_matrix_get_ptr(mat,l,c) 
 
 xbt_matrix_t xbt_matrix_new(int lines, int rows, 
 			    const unsigned long elmsize,
 			    void_f_pvoid_t * const free_f);
+
 void xbt_matrix_free(xbt_matrix_t matrix);
 void xbt_matrix_free_voidp(void *d);
 
-void xbt_matrix_dump(xbt_matrix_t matrix, const char *name,
+void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
 		     void_f_pvoid_t display_fun);
+void xbt_matrix_dump_display_double(void*d);
 
+
+xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows);
+xbt_matrix_t xbt_matrix_double_new_id(int lines, int rows);
+xbt_matrix_t xbt_matrix_double_new_rand(int lines, int rows);
+xbt_matrix_t xbt_matrix_double_new_mult(xbt_matrix_t A,xbt_matrix_t B);
 SG_END_DECL()
 
 
