@@ -120,6 +120,7 @@ COMMON_SRC=\
   xbt/swag.c                                                                 \
   xbt/graph.c                                                                \
   xbt/set.c                                                                  \
+  xbt/xbt_matrix.c                                                           \
   xbt/xbt_host.c                                                             \
   xbt/module.c                                                               \
   xbt/config.c                                                               \
