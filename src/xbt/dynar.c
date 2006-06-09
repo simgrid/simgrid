@@ -127,7 +127,7 @@ xbt_dynar_dump(xbt_dynar_t dynar) {
  * types (int, char, double, etc) or pointer of pointers (struct **).
  */
 xbt_dynar_t 
-xbt_dynar_new(const unsigned long           elmsize,
+xbt_dynar_new(const unsigned long elmsize,
                void_f_pvoid_t * const free_f) {
    
   xbt_dynar_t dynar = xbt_new0(s_xbt_dynar_t,1);
