@@ -268,12 +268,12 @@ else
 ../include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
 	@echo "ERROR: src/surf/surfxml.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
-	@echo "ERROR:   touch src/include/surf/surfxml.h src/surf/surfxml.l"
+	@echo "ERROR:   touch include/surf/surfxml.h src/surf/surfxml.l"
 	@exit 1
 ../include/xbt/graphxml.h xbt/graphxml.l: xbt/graphxml.dtd
 	@echo "ERROR: src/xbt/graphxml.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
-	@echo "ERROR:   touch src/include/xbt/graphxml.h src/xbt/graphxml.l"
+	@echo "ERROR:   touch include/xbt/graphxml.h src/xbt/graphxml.l"
 	@exit 1
 endif
 endif
