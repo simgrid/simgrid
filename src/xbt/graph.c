@@ -86,12 +86,12 @@ xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst)
   int cursor;
 
   xbt_dynar_foreach(src->out, cursor, edge) {
-    INFO3("%p = %p--%p",edge,edge->src,edge->dst);
+    DEBUG3("%p = %p--%p",edge,edge->src,edge->dst);
     if((edge->src==src) && (edge->dst==dst)) return edge;
   }
   if(!g->directed) {
     xbt_dynar_foreach(src->out, cursor, edge) {
-      INFO3("%p = %p--%p",edge,edge->src,edge->dst);
+      DEBUG3("%p = %p--%p",edge,edge->src,edge->dst);
       if((edge->dst==src) && (edge->src==dst)) return edge;
     }
   }
