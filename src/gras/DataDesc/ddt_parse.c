@@ -19,15 +19,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_parse,gras_ddt,
   "Parsing C data structures to build GRAS data description");
 
 typedef struct s_type_modifier{
-  short is_unsigned;
-  short is_short;
   short is_long;
+  int is_unsigned:1;
+  int is_short:1;
 
-  short is_struct;
-  short is_union;
-  short is_enum;
+  int is_struct:1;
+  int is_union:1;
+  int is_enum:1;
 
-  short is_ref;
+  int is_ref:1;
+   
+  int is_dynar:2;
+  int is_matrix:2;
 } s_type_modifier_t,*type_modifier_t;
 
 typedef struct s_field {
@@ -163,6 +166,49 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar) {
   XBT_OUT;
 }
 
+static void change_to_dynar_of(xbt_dynar_t dynar,gras_datadesc_type_t subtype) {
+  s_identifier_t former,ref;
+  memset(&ref,0,sizeof(ref));
+
+  XBT_IN;
+  xbt_dynar_pop(dynar,&former);
+  ref.type = gras_datadesc_dynar(subtype,NULL); /* redeclaration are ignored */
+  ref.type_name = (char*)strdup(ref.type->name);
+  ref.name = former.name;
+
+  free(former.type_name);
+
+  xbt_dynar_push(dynar,&ref);
+  XBT_OUT;
+}
+
+static void change_to_matrix_of(xbt_dynar_t dynar,gras_datadesc_type_t subtype) {
+  s_identifier_t former,ref;
+  memset(&ref,0,sizeof(ref));
+
+  XBT_IN;
+  xbt_dynar_pop(dynar,&former);
+  ref.type = gras_datadesc_matrix(subtype,NULL); /* redeclaration are ignored */
+  ref.type_name = (char*)strdup(ref.type->name);
+  ref.name = former.name;
+
+  free(former.type_name);
+
+  xbt_dynar_push(dynar,&ref);
+  XBT_OUT;
+}
+
+static void add_free_f(xbt_dynar_t dynar,void_f_pvoid_t free_f) {
+  s_identifier_t former,ref;
+  memset(&ref,0,sizeof(ref));
+
+  XBT_IN;
+  xbt_dynar_pop(dynar,&former);
+  memcpy(former.type->extra,&free_f, sizeof(free_f));
+  xbt_dynar_push(dynar,&former);
+  XBT_OUT;
+}
+
 static void parse_statement(char	 *definition,
 			    xbt_dynar_t  identifiers,
 			    xbt_dynar_t  fields_to_push) {
@@ -283,14 +329,23 @@ static void parse_statement(char	 *definition,
 
     } else { 
       DEBUG1("Base type is a constructed one (%s)",identifier.type_name);
-      identifier.type = gras_datadesc_by_name(identifier.type_name);
-      if (!identifier.type)
-	PARSE_ERROR1("Unknown base type '%s'",identifier.type_name);
+      if (!strcmp(identifier.type_name,"xbt_matrix_t")) {
+	 identifier.tm.is_matrix = 1;
+      } else if (!strcmp(identifier.type_name,"xbt_dynar_t")) {
+	 identifier.tm.is_dynar = 1;
+      } else {       
+	 identifier.type = gras_datadesc_by_name(identifier.type_name);
+	 if (!identifier.type)
+	   PARSE_ERROR1("Unknown base type '%s'",identifier.type_name);
+      }
     }
   } 
   /* Now identifier.type and identifier.name speak about the base type.
      Stars are not eaten unless 'int' was omitted.
-     We will have to enhance it if we are in fact asked for array or reference */
+     We will have to enhance it if we are in fact asked for array or reference.
+   
+     Dynars and matrices also need some extra love (prodiged as annotations)
+   */
 
   /**** look for the symbols of this type ****/
   for(expect_id_separator = 0;
@@ -402,6 +457,31 @@ static void parse_statement(char	 *definition,
 	      xbt_dynar_push(fields_to_push,&keyval);
 	    }
 	  }
+	} else if (!strcmp(keyname,"subtype")) {
+	   gras_datadesc_type_t subtype = gras_datadesc_by_name(keyval);
+	   if (identifier.tm.is_matrix) {
+	      change_to_matrix_of(identifiers,subtype);
+	      identifier.tm.is_matrix = -1;
+	   } else if (identifier.tm.is_dynar) {
+	      change_to_dynar_of(identifiers,subtype);
+	      identifier.tm.is_dynar = -1;
+	   } else {	  
+	     PARSE_ERROR1("subtype annotation only accepted for dynars and matrices, but passed to '%s'",identifier.type_name);
+	   }
+	} else if (!strcmp(keyname,"free_f")) {
+	   int *storage=xbt_dict_get_or_null(gras_dd_constants,keyval);
+	   if (!storage)
+	     PARSE_ERROR1("value for free_f annotation of field %s is not a known constant",identifier.name);
+	   if (identifier.tm.is_matrix == -1) {
+	      add_free_f(identifiers,*(void_f_pvoid_t**)storage);
+	      identifier.tm.is_matrix = 0;
+	   } else if (identifier.tm.is_dynar == -1) {
+	      add_free_f(identifiers,*(void_f_pvoid_t**)storage);
+	      identifier.tm.is_dynar = 0;
+	   } else {	  
+             PARSE_ERROR1("free_f annotation only accepted for dynars and matrices which subtype is already declared (field %s)",
+			  identifier.name);
+	   }
 	} else {
 	  PARSE_ERROR1("Unknown annotation type: '%s'",keyname);
 	}
@@ -459,6 +539,11 @@ static void parse_statement(char	 *definition,
     PARSE_ERROR0("Unparasable symbol (maybe a def struct in a def struct or a parser bug ;)");
   }
 
+  if (identifier.tm.is_matrix>0) 
+     PARSE_ERROR0("xbt_matrix_t field without 'subtype' annotation");
+  if (identifier.tm.is_dynar>0)
+     PARSE_ERROR0("xbt_dynar_t field without 'subtype' annotation");
+   
   XBT_OUT;
 }
 
