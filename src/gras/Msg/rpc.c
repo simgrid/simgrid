@@ -97,11 +97,10 @@ gras_msg_rpc_async_call(gras_socket_t server,
   ctx->msgtype=msgtype;
   ctx->timeout=timeOut;
 
-  VERB5("Send to %s:%d a RPC of type '%s' (ID=%lu) (exception%s caught)",
+  VERB4("Send to %s:%d a RPC of type '%s' (ID=%lu)",
 	gras_socket_peer_name(server),
 	gras_socket_peer_port(server),
-	msgtype->name,ctx->ID,
-	(__xbt_ex_ctx()->ctx_caught?"":" not"));
+	msgtype->name,ctx->ID);
 
   gras_msg_send_ext(server, e_gras_msg_kind_rpccall, ctx->ID, msgtype, request);
 
@@ -173,8 +172,10 @@ void gras_msg_rpccall(gras_socket_t server,
  */
 
 void gras_msg_rpcreturn(double timeOut,gras_msg_cb_ctx_t ctx,void *answer) {
-  DEBUG3("Return to RPC %s (tOut=%f, payl=%p)",
-	 ctx->msgtype->name,timeOut,answer);
+  DEBUG5("Return to RPC '%s' from %s:%d (tOut=%f, payl=%p)",
+	 ctx->msgtype->name,
+	 gras_socket_peer_name(ctx->expeditor),gras_socket_peer_port(ctx->expeditor),
+	 timeOut,answer);
   gras_msg_send_ext(ctx->expeditor, e_gras_msg_kind_rpcanswer, 
 		    ctx->ID, ctx->msgtype, answer);
 }

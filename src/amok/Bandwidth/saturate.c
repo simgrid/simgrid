@@ -10,8 +10,7 @@
 #include "amok/Bandwidth/bandwidth_private.h"
 #include "gras/Msg/msg_private.h" /* FIXME: This mucks with contextes to answer RPC directly */
 
-XBT_LOG_EXTERNAL_CATEGORY(amok_bw);
-XBT_LOG_DEFAULT_CATEGORY(amok_bw);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_bw_sat,amok_bw,"Everything concerning the SATuration part of the amok_bw module");
 
 static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload);
 static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload);
@@ -157,7 +156,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
   free(request);
 
   gras_socket_close(peer_cmd);
-  INFO2("Saturation from %s to %s started",gras_os_myname(),to_name);
+  INFO2("Saturation(%s->%s) started",gras_os_myname(),to_name);
 
   /* Start experiment */
   start=gras_os_time();
@@ -262,7 +261,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
 
   while (saturate_further) {
     TRY {
-      gras_socket_meas_recv(meas,120,request->msg_size,request->msg_size);
+      gras_socket_meas_recv(meas,5,request->msg_size,request->msg_size);
     } CATCH(e) {
       saturate_further = 0;
       xbt_ex_free(e);
@@ -289,12 +288,16 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
  */
 void amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
 			   /*out*/ double *time, double *bw) {
-
+  xbt_ex_t e;
+   
   gras_socket_t sock = gras_socket_client(from_name,from_port);
   bw_res_t answer;
-  VERB2("Ask %s:%d to stop the saturation",
-	from_name,from_port);
-  gras_msg_rpccall(sock,60,gras_msgtype_by_name("amok_bw_sat stop"),NULL,&answer);
+  VERB2("Ask %s:%d to stop the saturation",from_name,from_port);
+  TRY {	
+     gras_msg_rpccall(sock,60,gras_msgtype_by_name("amok_bw_sat stop"),NULL,&answer);
+  } CATCH(e) {
+     RETHROW2("Cannot ask %s:%d to stop saturation: %s",from_name, from_port);
+  }
   gras_socket_close(sock);
   if (time) *time=answer->sec;
   if (bw)   *bw  =answer->bw;
