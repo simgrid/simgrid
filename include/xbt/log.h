@@ -347,6 +347,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 # define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6 _XBT_LOG_POST
 # define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7 _XBT_LOG_POST
 # define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8 _XBT_LOG_POST
+# define CLOG9(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9 _XBT_LOG_POST
+# define CLOG10(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 _XBT_LOG_POST
 #endif
 
 #define CDEBUG0(c, f)                   CLOG0(c, xbt_log_priority_debug, f)
@@ -358,6 +360,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CDEBUG6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6)
 #define CDEBUG7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
 #define CDEBUG8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
+#define CDEBUG9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) CLOG9(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
+#define CDEBUG10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) CLOG10(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
 
 #define CVERB0(c, f)                   CLOG0(c, xbt_log_priority_verbose, f)
 #define CVERB1(c, f,a1)                CLOG1(c, xbt_log_priority_verbose, f,a1)
@@ -421,6 +425,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 # define LOG6(p, f,a1,a2,a3,a4,a5,a6) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6 _XBT_LOG_POST
 # define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7 _XBT_LOG_POST
 # define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8 _XBT_LOG_POST
+# define LOG9(p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9 _XBT_LOG_POST
+# define LOG10(p,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 _XBT_LOG_POST
 #endif
 
 /** \name DEBUG
@@ -448,6 +454,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define DEBUG6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6)
 #define DEBUG7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
 #define DEBUG8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
+#define DEBUG9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
+#define DEBUG10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
 /* @} */
 
 /** \name VERB
