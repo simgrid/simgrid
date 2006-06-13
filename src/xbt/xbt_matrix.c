@@ -11,7 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/matrix.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(matrix,xbt,"2D data storage");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_matrix,xbt,"2D data storage");
 
 /** \brief constructor */
 xbt_matrix_t xbt_matrix_new(int lines, int rows, 
@@ -23,6 +23,18 @@ xbt_matrix_t xbt_matrix_new(int lines, int rows,
    res->elmsize = elmsize;
    res->free_f  = free_f;
    res->data    = xbt_malloc(elmsize*lines*rows);
+   return res;
+}
+
+/** \brief Creates a matrix being a submatrix of another one */
+xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from, 
+				int lsize, int rsize,
+				int lpos, int rpos,
+				pvoid_f_pvoid_t *const cpy_f) {
+   
+   xbt_matrix_t res=xbt_matrix_new(lsize,rsize,
+				   from->elmsize, from->free_f);
+   xbt_matrix_copy_values(res,from,lsize,rsize,0,0,lpos,rpos,cpy_f);
    return res;
 }
 
@@ -70,15 +82,57 @@ void xbt_matrix_dump(xbt_matrix_t matrix, const char*name, int coords,
 void xbt_matrix_dump_display_double(void*d) {
   fprintf(stderr,"%.2f",*(double*)d);
 }
+/** \brief Copy the values from the matrix src into the matrix dst
+ * \param dest: destination
+ * \param src: source
+ * \param lsize: number of lines to copy
+ * \param rsize: number of rows to copy
+ * \param lpos_dst: line offset on destination matrix
+ * \param rpos_dst: row offset on destination matrix
+ * \param lpos_src: line offset on destination matrix
+ * \param rpos_src: row offset on destination matrix
+ */
+void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
+			    int lsize, int rsize,
+			    int lpos_dst,int rpos_dst,
+			    int lpos_src,int rpos_src,
+			    pvoid_f_pvoid_t *const cpy_f) {
+   int i,j;
+   
+   DEBUG10("Copy a %dx%d submatrix from %dx%d(of %dx%d) to %dx%d (of %dx%d)",
+	   lsize,rsize,
+	   lpos_src,rpos_src,src->lines,src->rows,
+	   lpos_dst,rpos_dst,dst->lines,dst->rows);
+   
+   /* everybody knows that issue is between the chair and the screen (particulary in my office) */
+   xbt_assert(src->elmsize == dst->elmsize);
+   /* don't check free_f since the user may play weird games with this */
+   
+   xbt_assert(lpos_src+lsize <= src->lines);
+   xbt_assert(rpos_src+rsize <= src->rows);
+
+   xbt_assert(lpos_dst+lsize <= dst->lines);
+   xbt_assert(rpos_dst+rsize <= dst->rows);
+   
+   /* Lets get serious here */
+   for (i=0;i<rsize;i++) {
+      if (cpy_f) {
+	 for (j=0;j<lsize;j++)
+	   xbt_matrix_get_as(dst,j+lpos_dst,i+rpos_dst,void*) = cpy_f(xbt_matrix_get_ptr(src,j+rpos_src,i+lpos_src));
+      } else {
+	 memcpy(xbt_matrix_get_ptr(dst,lpos_dst,i+rpos_dst),
+		xbt_matrix_get_ptr(src,lpos_src,i+rpos_src),
+		dst->elmsize*lsize);
+      }
+   }
+
+}
 
 /** \brief Creates a new matrix of double filled with zeros */
 xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows) {
   xbt_matrix_t res = xbt_matrix_new(lines, rows,sizeof(double),NULL);
-  int i,j;
    
-  for (i=0; i<lines; i++) 
-    for (j=0; j<rows; j++)
-      xbt_matrix_get_as(res,i,j,double) = 0;
+  memset(res->data,0,sizeof(res->data));
   return res;
 }
 
@@ -102,19 +156,40 @@ xbt_matrix_t xbt_matrix_double_new_rand(int lines, int rows) {
       xbt_matrix_get_as(res,i,j,double) = (double)rand();
   return res;
 }
+/** \brief Creates a new matrix of double randomly by subsequent numbers */
+xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows) {
+  xbt_matrix_t res = xbt_matrix_new(lines, rows,sizeof(double),NULL);
+  int i;
+   
+  for (i=0; i<lines*rows; i++)
+     *(double*)&res->data[i*res->elmsize] = i;
+
+  return res;
+}
 
 /** \brief Creates a new matrix being the multiplication of two others */
 xbt_matrix_t xbt_matrix_double_new_mult(xbt_matrix_t A,xbt_matrix_t B) {
   xbt_matrix_t result = xbt_matrix_double_new_zeros(A->lines, B->rows);
-  int i,j,k;
 
-  for (i=0; i<result->lines; i++) 
-    for (j=0; j<result->rows; j++) 
-       for (k=0; k<B->lines; k++) 
-	 xbt_matrix_get_as(result,i,j,double) +=
-            xbt_matrix_get_as(A,i,k,double) * xbt_matrix_get_as(B,k,j,double);
-   
+  xbt_matrix_double_addmult(A,B,result);
   return result;
 }
 
+/** \brief add to C the result of A*B */
+void xbt_matrix_double_addmult(xbt_matrix_t A,xbt_matrix_t B,
+		       /*OUT*/ xbt_matrix_t C) {
+  int i,j,k;
+
+  xbt_assert2(A->lines == C->lines,
+	      "A->lines != C->lines (%d vs %d)",A->lines,C->lines);
+  xbt_assert(B->rows == C->rows);
+   
+  for (i=0; i<C->lines; i++) 
+    for (j=0; j<C->rows; j++) 
+       for (k=0; k<B->lines; k++) 
+	 xbt_matrix_get_as(C,i,j,double) +=
+            xbt_matrix_get_as(A,i,k,double) * xbt_matrix_get_as(B,k,j,double);
+}
+
+   
 
