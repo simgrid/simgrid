@@ -8,8 +8,8 @@ SG_BEGIN_DECL()
 
 /************************** Link handling ***********************************/
 
-SG_link_t    SG_link_create(void *data, const char *name,
-			  double capacity, double bandwidth, double latency);
+SG_link_t    SG_link_create(void *data, const char *name,/* double capacity,*/
+			    double bandwidth, double latency);
 void*        SG_link_get_data(SG_link_t link);
 void         SG_link_set_data(SG_link_t link, void *data);
 const char*  SG_link_get_name(SG_link_t link);
@@ -61,7 +61,8 @@ void              SG_task_destroy(SG_task_t task);
 
 /************************** Global *******************************************/
 
-SG_task_t        *SG_simulate(double how_long); /* returns a NULL-terminated array of SG_task_t whose state has changed */
+void              SG_init(int *argc, char **argv);
+SG_task_t         *SG_simulate(double how_long); /* returns a NULL-terminated array of SG_task_t whose state has changed */
 
 SG_END_DECL()
 

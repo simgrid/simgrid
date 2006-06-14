@@ -11,8 +11,8 @@ SG_task_t SG_task_create(const char *name, void *data, double amount) {
   
   task->data = data;
   task->name = xbt_strdup(name);
-  task->amount = amount;
-  task->remaining_amount = amount;
+  /*task->amount = amount;
+    task->remaining_amount = amount;*/
   task->state = SG_SCHEDULED; /* not sure... should we add a state SG_NOT_SCHEDULED? */
   /* TODO: dependencies + watch */
 
@@ -55,14 +55,19 @@ const char* SG_task_get_name(SG_task_t task) {
  */
 double SG_task_get_amount(SG_task_t task) {
   xbt_assert0(task, "Invalid parameter");
-  return task->amount;
+
+  /* TODO */
+  return 0;
+  /*return task->amount;*/
 }
 
 /* Returns the remaining computing amount of a task.
  */
 double SG_task_get_remaining_amount(SG_task_t task) {
-  xbt_assert0(task, "Invalid parameter");
-  return task->remaining_amount;
+  xbt_assert0(task, "Invalid parameter")
+
+  /* TODO (surf encapsulation) */;
+  return 0;
 }
 
 /* Adds a dependency between two tasks.
