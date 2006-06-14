@@ -337,6 +337,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 # define CLOG6(c, p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
 # define CLOG7(c, p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
 # define CLOG8(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
+# define CLOG9(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9)
+# define CLOG10(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
 #else
 # define CLOG0(c, p, f)                   _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f _XBT_LOG_POST		   
 # define CLOG1(c, p, f,a1)                _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1 _XBT_LOG_POST		   
@@ -415,6 +417,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 # define LOG6(p, f,a1,a2,a3,a4,a5,a6) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6)
 # define LOG7(p, f,a1,a2,a3,a4,a5,a6,a7) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7)
 # define LOG8(p, f,a1,a2,a3,a4,a5,a6,a7,a8) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8)
+# define LOG9(p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9)
+# define LOG10(p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) fprintf(stderr,"%s:%d:" f "\n",__FILE__,__LINE__,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
 #else
 # define LOG0(p, f)                   _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f _XBT_LOG_POST
 # define LOG1(p, f,a1)                _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1 _XBT_LOG_POST
