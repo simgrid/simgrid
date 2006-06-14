@@ -30,8 +30,8 @@ void check_init_done() {
  */
 void SG_create_environnement(const char *platform_file) {
   check_init_done();
-  surf_timer_resource_init(file);
-  surf_workstation_resource_init_KCCFLN05(file); /* tell Surf to create the environnement */
+  surf_timer_resource_init(platform_file);
+  surf_workstation_resource_init_KCCFLN05(platform_file); /* tell Surf to create the environnement */
 }
 
 
