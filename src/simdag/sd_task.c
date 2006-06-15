@@ -119,8 +119,8 @@ void SG_task_unschedule(SG_task_t task) {
  */
 void SG_task_destroy(SG_task_t task) {
   if (task->name)
-    free(task->name);
+    xbt_free(task->name);
 
   /* TODO: dependencies + watch */
-  free(task);
+  xbt_free(task);
 }

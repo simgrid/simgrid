@@ -1,5 +1,5 @@
-#ifndef SIMDAG_H
-#define SIMDAG_H
+#ifndef SIMDAG_SIMDAG_H
+#define SIMDAG_SIMDAG_H
 
 #include "simdag/datatypes.h"
 #include "xbt/misc.h"
@@ -8,20 +8,24 @@ SG_BEGIN_DECL()
 
 /************************** Link handling ***********************************/
 
-SG_link_t    SG_link_create(void *data, const char *name,/* double capacity,*/
-			    double bandwidth, double latency);
+/* private (called by SG_environment_create)
+SG_link_t    SG_link_create(void *data, const char *name,
+double bandwidth, double latency);*/
 void*        SG_link_get_data(SG_link_t link);
 void         SG_link_set_data(SG_link_t link, void *data);
 const char*  SG_link_get_name(SG_link_t link);
 double       SG_link_get_capacity(SG_link_t link);
 double       SG_link_get_current_bandwidth(SG_link_t link);
 double       SG_link_get_current_latency(SG_link_t link);
+/* private (called by SG_clean)
 void         SG_link_destroy(SG_link_t link);
+*/
 
 /************************** Workstation handling ****************************/
 
+/* private (called by SG_environment_create)
 SG_workstation_t   SG_workstation_create(void *data, const char *name, double power,
-					 double available_power);
+  double available_power);*/
 SG_workstation_t   SG_workstation_get_by_name(const char *name);
 SG_workstation_t*  SG_workstation_get_list(void);
 int                SG_workstation_get_number(void);
@@ -32,7 +36,9 @@ SG_link_t*         SG_workstation_route_get_list(SG_workstation_t src, SG_workst
 int                SG_workstation_route_get_size(SG_workstation_t src, SG_workstation_t dst);
 double             SG_workstation_get_power(SG_workstation_t workstation);
 double             SG_workstation_get_available_power(SG_workstation_t workstation);
+/* private (called by SG_clean)
 void               SG_workstation_destroy(SG_workstation_t workstation);
+*/
 
 /************************** Task handling ************************************/
 
@@ -62,7 +68,9 @@ void              SG_task_destroy(SG_task_t task);
 /************************** Global *******************************************/
 
 void              SG_init(int *argc, char **argv);
+void              SG_create_environment(const char *platform_file);
 SG_task_t         *SG_simulate(double how_long); /* returns a NULL-terminated array of SG_task_t whose state has changed */
+void              SG_clean(); /* cleans everything */
 
 SG_END_DECL()
 

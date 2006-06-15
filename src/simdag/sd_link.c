@@ -1,15 +1,19 @@
+#include "private.h"
 #include "simdag/simdag.h"
 #include "xbt/sysdep.h" /* xbt_new0 */
 
 /* Creates a link.
  */
-SG_link_t SG_link_create(void *data, const char *name,/* double capacity,*/ double bandwidth, double latency) {
-  /*  xbt_assert0(capacity >= 0, "Invalid parameter");*/ /* or capacity > 0 ? */
+SG_link_t __SG_link_create(const char *name, void *surf_link, void *data) {
+  xbt_assert0(surf_link != NULL, "surf_link is NULL !");
+  SG_link_data_t sgdata = xbt_new0(s_SG_link_data_t, 1); /* link private data */
+  sgdata->surf_link = surf_link;
 
   SG_link_t link = xbt_new0(s_SG_link_t, 1);
-
-  link->data = data;
   link->name = xbt_strdup(name);
+  link->data = data;
+  link->sgdata = sgdata;
+
   /*link->capacity = capacity;*/
   /* link->current_bandwidth = bandwidth;
      link->current_latency = latency;*/
@@ -68,11 +72,11 @@ double SG_link_get_current_latency(SG_link_t link) {
 
 /* Destroys a link. The user data (if any) should have been destroyed first.
  */
-void SG_link_destroy(SG_link_t link) {
+void __SG_link_destroy(SG_link_t link) {
   xbt_assert0(link, "Invalid parameter");
 
   if (link->name)
-    free(link->name);
+    xbt_free(link->name);
 
-  free(link);
+  xbt_free(link);
 }

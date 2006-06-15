@@ -1,20 +1,21 @@
+#include "private.h"
 #include "simdag/simdag.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
-#include "private.h"
 
-/* Creates a workstation.
+/* Creates a workstation and registers it in SG.
  */
-SG_workstation_t SG_workstation_create(void *data, const char *name, double power,
-				      double available_power) {
-  xbt_assert0(power >= 0 && available_power >= 0, "Invalid parameter"); /* or > 0 ? */
-
-  SG_workstation_t workstation = xbt_new0(s_SG_workstation_t, 1);
+SG_workstation_t __SG_workstation_create(const char *name, void *surf_workstation, void *data) {
+  SG_workstation_data_t sgdata = xbt_new0(s_SG_workstation_data_t, 1); /* workstation private data */
+  sgdata->surf_workstation = surf_workstation;
   
-  workstation->data = data;
+  SG_workstation_t workstation = xbt_new0(s_SG_workstation_t, 1);
   workstation->name = xbt_strdup(name);
-  /*workstation->power = power;
-  workstation->available_power = power;*/
+  workstation->data = data; /* user data */
+  workstation->sgdata = sgdata; /* private data */
+  
+  xbt_dict_set(sg_global->workstations, name, workstation, free); /* add the workstation to the dictionary */
+
   /* TODO: route */
 
   return workstation;
@@ -73,7 +74,8 @@ void* SG_workstation_get_data(SG_workstation_t workstation) {
  */
 const char* SG_workstation_get_name(SG_workstation_t workstation) {
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return workstation->name;
+  return NULL;
+  /*  return workstation->name;*/
 }
 
 SG_link_t* SG_workstation_route_get_list(SG_workstation_t src, SG_workstation_t dst) {
@@ -106,13 +108,15 @@ double SG_workstation_get_available_power(SG_workstation_t workstation) {
 
 /* Destroys a workstation. The user data (if any) should have been destroyed first.
  */
-void SG_workstation_destroy(SG_workstation_t workstation) {
+void __SG_workstation_destroy(SG_workstation_t workstation) {
   xbt_assert0(workstation != NULL, "Invalid parameter");
 
-  if (workstation->name)
-    free(workstation->name);
-
+  SG_workstation_data_t sgdata = workstation->sgdata;
+  if (sgdata != NULL) {
+    xbt_free(sgdata);
+  }
+  
   /* TODO: route */
 
-  free(workstation);
+  xbt_free(workstation);
 }

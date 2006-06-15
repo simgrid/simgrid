@@ -2,21 +2,28 @@
 #define SIMDAG_DATATYPES_H
 
 /* Link */
+typedef struct SG_link_data *SG_link_data_t;
+
 typedef struct SG_link {
-  void *data;
+  SG_link_data_t sgdata; /* SG internal data */
+  void *data; /* user data */
   char *name;
+
   /*double capacity;*/
   /*double current_bandwidth;
     double current_latency;*/
 } s_SG_link_t, *SG_link_t;
 
 /* Workstation */
+typedef struct SG_workstation_data *SG_workstation_data_t;
+
 typedef struct SG_workstation {
-  void *data;
+  SG_workstation_data_t sgdata; /* SG internal data */
+  void *data; /* user data */
   char *name;
-  /*double power;
+
+  /*  double power;
     double available_power;*/
-  /* TODO: route */
 } s_SG_workstation_t, *SG_workstation_t;
 
 /* Task state */
