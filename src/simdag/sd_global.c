@@ -37,10 +37,8 @@ void SG_create_environment(const char *platform_file) {
 
   /* now let's create the SG wrappers */
   xbt_dict_foreach(workstation_set, cursor, name, workstation) {
-    
     __SG_workstation_create(name, workstation, NULL);
   }
-
 }
 
 /* Launches the simulation. Returns a NULL-terminated array of SG_task_t whose state has changed.
@@ -48,6 +46,20 @@ void SG_create_environment(const char *platform_file) {
 SG_task_t* SG_simulate(double how_long)
 {
   /* TODO */
+
+  /* temporary test to access to the surf workstation structure */
+  xbt_dict_cursor_t cursor = NULL;
+  char *name = NULL;
+  void *workstation = NULL;
+  const char *surf_name;
+  int speed;
+
+  xbt_dict_foreach(workstation_set, cursor, name, workstation) {
+    surf_name = surf_workstation_resource->common_public->get_resource_name(workstation);
+    speed = surf_workstation_resource->extension_public->get_speed(workstation, 1.0);
+    printf("Workstation name: %s, Surf name: %s, speed: %d\n", name, surf_name, speed);
+  }
+
   return NULL;
 }
 

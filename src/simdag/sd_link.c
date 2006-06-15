@@ -28,7 +28,7 @@ void* SG_link_get_data(SG_link_t link) {
   return link->data;
 }
 
-/* Sets the user data of a link. The data can be NULL.
+/* Sets the user data of a link. The new data can be NULL. The old data should have been freed first if it was not NULL.
  */
 void SG_link_set_data(SG_link_t link, void *data) {
   xbt_assert0(link, "Invalid parameter");
@@ -75,7 +75,10 @@ double SG_link_get_current_latency(SG_link_t link) {
 void __SG_link_destroy(SG_link_t link) {
   xbt_assert0(link, "Invalid parameter");
 
-  if (link->name)
+  if (link->sgdata != NULL)
+    xbt_free(link->sgdata);
+  
+  if (link->name != NULL)
     xbt_free(link->name);
 
   xbt_free(link);

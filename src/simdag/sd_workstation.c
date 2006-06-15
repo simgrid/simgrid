@@ -56,14 +56,14 @@ int SG_workstation_get_number(void) {
   return sg_global->workstation_count;
 }
 
-/* Sets the data of a workstation.
+/* Sets the data of a workstation. The new data can be NULL. The old data should have been freed first if it was not NULL.
  */
 void SG_workstation_set_data(SG_workstation_t workstation, void *data) {
   xbt_assert0(workstation != NULL, "Invalid parameter");
   workstation->data = data;
 }
 
-/* Returns the data of a workstation.
+/* Returns the data of a workstation. The user data can be NULL.
  */
 void* SG_workstation_get_data(SG_workstation_t workstation) {
   xbt_assert0(workstation != NULL, "Invalid parameter");
@@ -74,8 +74,7 @@ void* SG_workstation_get_data(SG_workstation_t workstation) {
  */
 const char* SG_workstation_get_name(SG_workstation_t workstation) {
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return NULL;
-  /*  return workstation->name;*/
+  return workstation->name;
 }
 
 SG_link_t* SG_workstation_route_get_list(SG_workstation_t src, SG_workstation_t dst) {
@@ -111,9 +110,12 @@ double SG_workstation_get_available_power(SG_workstation_t workstation) {
 void __SG_workstation_destroy(SG_workstation_t workstation) {
   xbt_assert0(workstation != NULL, "Invalid parameter");
 
-  SG_workstation_data_t sgdata = workstation->sgdata;
-  if (sgdata != NULL) {
-    xbt_free(sgdata);
+  if (workstation->sgdata != NULL) {
+    xbt_free(workstation->sgdata);
+  }
+  
+  if (workstation->name != NULL) {
+    xbt_free(workstation->name);
   }
   
   /* TODO: route */
