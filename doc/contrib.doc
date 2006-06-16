@@ -33,6 +33,16 @@ cluster. This program is maintained by Jean-Sebastien Gay
 \subsection contrib_msg_divloc Divisible load simulations
 
 \section contrib_gras Projects relying on GRAS
+<!--
+\dlsubsection contrib_gras_alnem ALNeM: Application Level Network Mapping
+
+This program is an application-level network mapper. It performs application
+level measurements and proposes a few reconstruction algorithms. This
+program is maintained by Arnaud Legrand (arnaud.legrand::imag.fr) and Martin
+Quinson (martin.quinson::loria.fr). The cvs directory is 
+<a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/ALNeM/?cvsroot=cvsroot%2Fsimgrid">here</a>.
+-->
+
 \section contrib_smpi Projects relying on SMPI
 
 \author Arnaud Legrand (arnaud.legrand::imag.fr)
