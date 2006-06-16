@@ -5,33 +5,35 @@
 #include "simdag/simdag.h"
 #include "simdag/datatypes.h"
 
+#define CHECK_INIT_DONE() xbt_assert0(sd_global != NULL, "SD_init not called yet")
+
 /* Global variables */
 
-typedef struct SG_global {
+typedef struct SD_global {
   xbt_dict_t workstations; /* workstation list */
   int workstation_count; /* number of workstations */
-} s_SG_global_t, *SG_global_t;
+} s_SD_global_t, *SD_global_t;
 
-extern SG_global_t sg_global;
+extern SD_global_t sd_global;
 
 /* Link private data */
-typedef struct SG_link_data {
+typedef struct SD_link_data {
   void* surf_link; /* surf object */
 
-} s_SG_link_data_t;
+} s_SD_link_data_t;
 
 /* Workstation private data */
-typedef struct SG_workstation_data {
+typedef struct SD_workstation_data {
   void* surf_workstation; /* surf object */
   /* TODO: route */
-} s_SG_workstation_data_t;
+} s_SD_workstation_data_t;
 
 /* Private functions */
 
-SG_link_t __SG_link_create(const char *name, void *surf_link, void *data);
-void __SG_link_destroy(SG_link_t link);
+SD_link_t __SD_link_create(const char *name, void *surf_link, void *data);
+void __SD_link_destroy(SD_link_t link);
 
-SG_workstation_t __SG_workstation_create(const char *name, void *surf_workstation, void *data);
-void __SG_workstation_destroy(SG_workstation_t workstation);
+SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data);
+void __SD_workstation_destroy(SD_workstation_t workstation);
 
 #endif

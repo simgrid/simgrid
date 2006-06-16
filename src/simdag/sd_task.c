@@ -3,17 +3,17 @@
 
 /* Creates a task.
  */
-SG_task_t SG_task_create(const char *name, void *data, double amount) {
+SD_task_t SD_task_create(const char *name, void *data, double amount) {
 
   xbt_assert0(amount >= 0, "Invalid parameter"); /* or amount > 0 ? */
 
-  SG_task_t task = xbt_new0(s_SG_task_t, 1);
+  SD_task_t task = xbt_new0(s_SD_task_t, 1);
   
   task->data = data;
   task->name = xbt_strdup(name);
   /*task->amount = amount;
     task->remaining_amount = amount;*/
-  task->state = SG_SCHEDULED; /* not sure... should we add a state SG_NOT_SCHEDULED? */
+  task->state = SD_SCHEDULED; /* not sure... should we add a state SD_NOT_SCHEDULED? */
   /* TODO: dependencies + watch */
 
   return task;
@@ -21,8 +21,8 @@ SG_task_t SG_task_create(const char *name, void *data, double amount) {
 
 /* Schedules a task.
  */
-int SG_task_schedule(SG_task_t task, int workstation_nb,
-		     SG_workstation_t **workstation_list, double *computation_amount,
+int SD_task_schedule(SD_task_t task, int workstation_nb,
+		     SD_workstation_t **workstation_list, double *computation_amount,
 		     double *communication_amount, double rate) {
   xbt_assert0(task, "Invalid parameter");
   /* TODO */
@@ -32,28 +32,28 @@ int SG_task_schedule(SG_task_t task, int workstation_nb,
 
 /* Returns the data of a task.
  */
-void* SG_task_get_data(SG_task_t task) {
+void* SD_task_get_data(SD_task_t task) {
   xbt_assert0(task, "Invalid parameter");
   return task->data;
 }
 
 /* Sets the data of a task.
  */
-void SG_task_set_data(SG_task_t task, void *data) {
+void SD_task_set_data(SD_task_t task, void *data) {
   xbt_assert0(task, "Invalid parameter");
   task->data = data;
 }
 
 /* Returns the name of a task.
  */
-const char* SG_task_get_name(SG_task_t task) {
+const char* SD_task_get_name(SD_task_t task) {
   xbt_assert0(task, "Invalid parameter");
   return task->name;
 }
 
 /* Returns the computing amount of a task.
  */
-double SG_task_get_amount(SG_task_t task) {
+double SD_task_get_amount(SD_task_t task) {
   xbt_assert0(task, "Invalid parameter");
 
   /* TODO */
@@ -63,7 +63,7 @@ double SG_task_get_amount(SG_task_t task) {
 
 /* Returns the remaining computing amount of a task.
  */
-double SG_task_get_remaining_amount(SG_task_t task) {
+double SD_task_get_remaining_amount(SD_task_t task) {
   xbt_assert0(task, "Invalid parameter")
 
   /* TODO (surf encapsulation) */;
@@ -72,37 +72,37 @@ double SG_task_get_remaining_amount(SG_task_t task) {
 
 /* Adds a dependency between two tasks.
  */
-void SG_task_dependency_add(const char *name, void *data, SG_task_t src, SG_task_t dst) {
+void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst) {
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
   /* TODO */
 }
 
 /* Removes a dependency between two tasks.
  */
-void SG_task_dependency_remove(SG_task_t src, SG_task_t dst) {
+void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
   /* TODO */
 }
 
-/* Returns the state of a task: SG_SCHEDULED, SG_RUNNING, SG_DONE or SG_FAILED.
+/* Returns the state of a task: SD_SCHEDULED, SD_RUNNING, SD_DONE or SD_FAILED.
  */
-SG_task_state_t SG_task_get_state(SG_task_t task) {
+SD_task_state_t SD_task_get_state(SD_task_t task) {
   xbt_assert0(task, "Invalid parameter");
   return task->state;
 }
 
 /* Adds a watch point to a task.
-   SG_simulate will stop as soon as the state of this task is the one given in argument.
+   SD_simulate will stop as soon as the state of this task is the one given in argument.
    Watch point is then automatically removed.
  */
-void  SG_task_watch(SG_task_t task, SG_task_state_t state) {
+void  SD_task_watch(SD_task_t task, SD_task_state_t state) {
   xbt_assert0(task, "Invalid parameter");
   /* TODO */
 }
 
 /* Removes a watch point from a task.
  */
-void SG_task_unwatch(SG_task_t task, SG_task_state_t state) {
+void SD_task_unwatch(SD_task_t task, SD_task_state_t state) {
   xbt_assert0(task, "Invalid parameter");
   /* TODO */
 }
@@ -110,14 +110,14 @@ void SG_task_unwatch(SG_task_t task, SG_task_state_t state) {
 /* Unschedules a task.
    Change state and rerun
  */
-void SG_task_unschedule(SG_task_t task) {
+void SD_task_unschedule(SD_task_t task) {
   xbt_assert0(task, "Invalid parameter");
   /* TODO */
 }
 
 /* Destroys a task. The user data (if any) should have been destroyed first.
  */
-void SG_task_destroy(SG_task_t task) {
+void SD_task_destroy(SD_task_t task) {
   if (task->name)
     xbt_free(task->name);
 
