@@ -34,6 +34,6 @@ SD_link_t __SD_link_create(const char *name, void *surf_link, void *data);
 void __SD_link_destroy(SD_link_t link);
 
 SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data);
-void __SD_workstation_destroy(SD_workstation_t workstation);
+void __SD_workstation_destroy(void *workstation);
 
 #endif

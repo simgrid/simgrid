@@ -17,7 +17,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   workstation->sd_data = sd_data; /* private data */
   
   const char *name = SD_workstation_get_name(workstation);
-  xbt_dict_set(sd_global->workstations, name, workstation, free); /* add the workstation to the dictionary */
+  xbt_dict_set(sd_global->workstations, name, workstation, __SD_workstation_destroy); /* add the workstation to the dictionary */
 
   /* TODO: route */
   return workstation;
@@ -116,12 +116,12 @@ double SD_workstation_get_available_power(SD_workstation_t workstation) {
 
 /* Destroys a workstation. The user data (if any) should have been destroyed first.
  */
-void __SD_workstation_destroy(SD_workstation_t workstation) {
+void __SD_workstation_destroy(void *workstation) {
   CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
 
-  if (workstation->sd_data != NULL) {
-    xbt_free(workstation->sd_data);
+  if (((SD_workstation_t) workstation)->sd_data != NULL) {
+    xbt_free(((SD_workstation_t) workstation)->sd_data);
   }
   
   /* TODO: route */
