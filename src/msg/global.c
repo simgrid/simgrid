@@ -8,6 +8,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/ex.h" /* ex_backtrace_display */
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
 				"Logging specific to MSG (kernel)");
 
@@ -281,15 +282,83 @@ int MSG_get_channel_number(void)
   return msg_global->max_channel;
 }
 
+void __MSG_display_process_status(void) 
+{
+   m_process_t process = NULL;
+   xbt_fifo_item_t item = NULL;
+   int i;
+   int nbprocess=xbt_fifo_size(msg_global->process_list);
+   
+   INFO1("MSG: %d processes are still running, waiting for something.",
+	 nbprocess);
+   /*  List the process and their state */
+   INFO0("MSG: <process>(<pid>) on <host>: <status>.");
+   xbt_fifo_foreach(msg_global->process_list,item,process,m_process_t) {
+      simdata_process_t p_simdata = (simdata_process_t) process->simdata;
+      simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
+      
+      
+      INFO4("MSG:  %s(%d) on %s: %s",
+	    process->name,p_simdata->PID,
+	    p_simdata->host->name,
+	    (process->simdata->blocked)?"[blocked] "
+	    :((process->simdata->suspended)?"[suspended] ":""));
+      
+      for (i=0; i<msg_global->max_channel; i++) {
+	 if (h_simdata->sleeping[i] == process) {
+	    INFO1("\tListening on channel %d.",i);
+	    break;
+	 }
+      }
+      if (i==msg_global->max_channel) {
+	 if(p_simdata->waiting_task) {
+	    if(p_simdata->waiting_task->simdata->compute) {
+	       if(p_simdata->put_host) {
+		  INFO2("\tTrying to send a task to Host %s, channel %d.",
+			p_simdata->put_host->name, p_simdata->put_channel);
+	       } else {
+		  INFO1("Waiting for %s to finish.",p_simdata->waiting_task->name);
+	       }
+	    } else if (p_simdata->waiting_task->simdata->comm) {
+	       INFO1("Waiting for %s to be finished transfered.",
+		     p_simdata->waiting_task->name);
+	    } else {
+	      INFO0("UNKNOWN STATUS. Please report this bug.");
+	    }
+/*	    The following would display the trace of where the maestro thread is, 
+            since this is the thread calling this. I'd like to get the other threads to 
+            run this to see where they were blocked, but I'm not sure of how to do this */
+/*	    xbt_backtrace_display(); */
+	 } else { /* Must be trying to put a task somewhere */
+	    INFO0("UNKNOWN STATUS. Please report this bug.");
+	 }
+      } 
+   }
+}
+
+/* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
+#include <signal.h>
+
+static void inthandler(int ignored)
+{
+   INFO0("CTRL-C pressed. Displaying status and bailing out");
+   __MSG_display_process_status();
+   exit(1);
+}
+
 /** \ingroup msg_simulation
  * \brief Launch the MSG simulation
  */
 MSG_error_t MSG_main(void)
 {
   m_process_t process = NULL;
-  int nbprocess,i;
+  int i;
   double elapsed_time = 0.0;
   int state_modifications = 1;
+   
+  /* Prepare to display some more info when dying on Ctrl-C pressing */
+  signal(SIGINT,inthandler);
+   
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
@@ -401,52 +470,12 @@ MSG_error_t MSG_main(void)
     state_modifications = 0;
   }
 
-  if ((nbprocess=xbt_fifo_size(msg_global->process_list)) == 0) {
+  if (xbt_fifo_size(msg_global->process_list) == 0) {
     INFO0("Congratulations ! Simulation terminated : all process are over");
     return MSG_OK;
   } else {
-    xbt_fifo_item_t item = NULL;
     INFO0("Oops ! Deadlock or code not perfectly clean.");
-    INFO1("MSG: %d processes are still running, waiting for something.",
-	  nbprocess);
-    /*  List the process and their state */
-    INFO0("MSG: <process>(<pid>) on <host>: <status>.");
-    xbt_fifo_foreach(msg_global->process_list,item,process,m_process_t) {
-      simdata_process_t p_simdata = (simdata_process_t) process->simdata;
-      simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
-      
-
-      INFO4("MSG:  %s(%d) on %s: %s",
-	     process->name,p_simdata->PID,
-	    p_simdata->host->name,
-	    (process->simdata->blocked)?"[blocked] "
-	    :((process->simdata->suspended)?"[suspended] ":""));
-
-      for (i=0; i<msg_global->max_channel; i++) {
-	if (h_simdata->sleeping[i] == process) {
-	  INFO1("\tListening on channel %d.",i);
-	  break;
-	}
-      }
-      if (i==msg_global->max_channel) {
-	if(p_simdata->waiting_task) {
-	  if(p_simdata->waiting_task->simdata->compute) {
-	    if(p_simdata->put_host) 
-	      INFO2("\tTrying to send a task to Host %s, channel %d.",
-		    p_simdata->put_host->name, p_simdata->put_channel);
-	    else 
-	      INFO1("Waiting for %s to finish.",p_simdata->waiting_task->name);
-	  } else if (p_simdata->waiting_task->simdata->comm)
-	    INFO1("Waiting for %s to be finished transfered.",
-		    p_simdata->waiting_task->name);
-	  else
-	    INFO0("UNKNOWN STATUS. Please report this bug.");
-	}
-	else { /* Must be trying to put a task somewhere */
-	  INFO0("UNKNOWN STATUS. Please report this bug.");
-	}
-      } 
-    }
+    __MSG_display_process_status();
     if(XBT_LOG_ISENABLED(msg, xbt_log_priority_debug) ||
        XBT_LOG_ISENABLED(msg_kernel, xbt_log_priority_debug)) {
       DEBUG0("Aborting!");
