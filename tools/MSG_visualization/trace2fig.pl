@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
-use Data::Dumper;
+#use Data::Dumper;
 use XFig;
 
 my($grid_Y_size)=225; # xfig 
@@ -48,6 +48,30 @@ sub read_event {
 	}
     }
     close INPUT;
+}
+
+sub read_link {
+    my($filename)=@_;
+    my($line);
+    my(%link);
+
+    open INPUT, $filename;
+
+    while (defined($line=<INPUT>)) {
+	chomp $line;
+	if($line =~ /^16\s/) {
+	    my($event,$date,$type,$father,$channel,$src,$key) = split(/\s+/,$line);
+	    $link{$key}{src}=$src;
+	    $link{$key}{src_date}=$date;
+	}
+	if($line =~ /^17\s/) {
+	    my($event,$date,$type,$father,$channel,$dst,$key) = split(/\s+/,$line);
+	    $link{$key}{dst}=$dst;
+	    $link{$key}{dst_date}=$date;
+	}
+    }
+    close INPUT;
+    return \%link;
 }
 
 
@@ -111,13 +135,13 @@ sub create_fig {
 }
 
 sub draw_cat {
-    my($fig,$Cat)=@_;
-    my($cat,$e);
+    my($fig,$Cat,$Link)=@_;
+    my($cat,$e,$link);
     foreach $cat (keys %$Cat) {
 	next unless (defined($$Cat{$cat}{Y_min}) && 
 		     defined($$Cat{$cat}{Y_max}));
 	my($text) = new XFig ('text');
-	$text->{'text'} = $cat;
+	$text->{'text'} = $$Cat{$cat}{name};
 	$text->{'y'} = ($$Cat{$cat}{Y_min}+$$Cat{$cat}{Y_max})/2*$grid_Y_size+68;
 	$fig->add ($text);
     }
@@ -156,12 +180,29 @@ sub draw_cat {
 	    }
 	}
     }
+
+    foreach $link (keys %$Link) {
+	my($line) = new XFig ('polyline');
+	my($src_date)=$$Link{$link}{src_date};
+	my($src)=$$Link{$link}{src};
+	my($dst_date)=$$Link{$link}{dst_date};
+	my($dst)=$$Link{$link}{dst};
+	$line->{'subtype'} = 1;  # line
+
+	$line->{'points'} = [ [$src_date*$grid_X_size, 
+			       ($$Cat{$src}{Y_min}+$$Cat{$src}{Y_max})/2*$grid_Y_size],
+			      [$dst_date*$grid_X_size, 
+			       ($$Cat{$dst}{Y_min}+$$Cat{$dst}{Y_max})/2*$grid_Y_size] ];
+	$line->{'forwardarrow'} = ['1', '1', '1.00', '60.00', '120.00'];
+	$fig->add ($line);
+    }
 }
 
 sub main {
     my($Cat) = read_cat($ARGV[0]);
     my($cat_tree)=build_cat_tree("0",$Cat);
     read_event($ARGV[0],$Cat);
+    my($Link)=read_link($ARGV[0]);
 #    print Dumper($cat_tree);
 #    print Dumper($Cat);
     my($cat_list)=[];
@@ -173,7 +214,7 @@ sub main {
     set_cat_position($Cat,$cat_list);
     
     my($fig)=create_fig("toto.fig");
-    draw_cat($fig,$Cat);
+    draw_cat($fig,$Cat,$Link);
     $fig->writefile ();
     system "fig2dev -L pdf toto.fig toto.pdf";
 }
