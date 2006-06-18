@@ -983,6 +983,18 @@ list. Just be aware that you'll be severely punished if the mistake is
 on your side... We have plenty of FAQ entries to redact and new
 features to implement for the impenitents! ;)
 
+\subsection faq_big_fat_warning A BIG FAT WARNING is reported telling me that my platform and deployment files are too old.
+
+We have decided to change the units in SimGrid. Now we use Bytes, Flops and
+seconds instead of MBytes, MFlops and seconds... Units should be updated
+accordingly and the version of platform_description should be set to a
+valuer greater than 1:
+\verbatim
+  <platform_description version="1">
+\endverbatim
+You should try to use the surfxml_update.pl script that can be found
+<a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/platform_generation/?cvsroot=cvsroot%2Fsimgrid">here</a>.
+  
 \author Arnaud Legrand (arnaud.legrand::imag.fr)
 \author Martin Quinson (martin.quinson::loria.fr)
 
