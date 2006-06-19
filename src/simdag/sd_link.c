@@ -90,11 +90,14 @@ void __SD_link_destroy(void *link) {
   CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
 
-  if (((SD_link_t) link)->sd_data != NULL)
-    xbt_free(((SD_link_t) link)->sd_data);
-
-  /* TODO: name */
+  SD_link_data_t sd_data = ((SD_link_t) link)->data;
+  if (sd_data != NULL) {
+    if (sd_data->name != NULL)
+      xbt_free(sd_data->name);
   
+    xbt_free(sd_data);
+  }
+
   xbt_free(link);
 }
 
