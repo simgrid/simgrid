@@ -290,6 +290,12 @@ static double get_speed(void *workstation, double load)
       get_speed(((workstation_CLM03_t) workstation)->cpu, load);
 }
 
+static double get_available_speed(void *workstation)
+{
+  return surf_cpu_resource->extension_public->
+      get_available_speed(((workstation_CLM03_t) workstation)->cpu);
+}
+
 static surf_action_t execute_parallel_task (int workstation_nb,
 					    void **workstation_list,
 					    double *computation_amount,
@@ -456,6 +462,7 @@ static void surf_workstation_resource_init_internal(void)
   surf_workstation_resource->extension_public->sleep = action_sleep;
   surf_workstation_resource->extension_public->get_state = get_state;
   surf_workstation_resource->extension_public->get_speed = get_speed;
+  surf_workstation_resource->extension_public->get_available_speed = get_available_speed;
   surf_workstation_resource->extension_public->communicate = communicate;
   surf_workstation_resource->extension_public->execute_parallel_task = 
     execute_parallel_task;

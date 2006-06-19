@@ -114,6 +114,7 @@ typedef struct surf_cpu_resource_extension_public {
   surf_action_t(*sleep) (void *cpu, double duration);
   e_surf_cpu_state_t(*get_state) (void *cpu);
   double (*get_speed) (void *cpu, double load);
+  double (*get_available_speed) (void *cpu);
 } s_surf_cpu_resource_extension_public_t,
     *surf_cpu_resource_extension_public_t;
 
@@ -147,6 +148,7 @@ typedef struct surf_workstation_resource_extension_public {
   surf_action_t(*sleep) (void *workstation, double duration);
   e_surf_cpu_state_t(*get_state) (void *workstation);
   double (*get_speed) (void *workstation, double load);
+  double (*get_available_speed) (void *workstation);
   surf_action_t(*communicate) (void *workstation_src,
 			       void *workstation_dst, double size,
 			       double max_rate);

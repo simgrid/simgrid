@@ -45,11 +45,14 @@ SD_task_t* SD_simulate(double how_long)
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   SD_workstation_t workstation = NULL;
-  double power;
+  double power, available_power;
 
+  surf_solve();
+  
   xbt_dict_foreach(sd_global->workstations, cursor, name, workstation) {
     power = SD_workstation_get_power(workstation);
-    printf("Workstation name: %s, power: %f Mflop/s\n", name, power);
+    available_power = SD_workstation_get_available_power(workstation);
+    printf("Workstation name: %s, power: %f Mflop/s, available power: %f%%\n", name, power, (available_power*100));
   }
   /* TODO: remove name from SD workstation structure */
 

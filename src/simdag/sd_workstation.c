@@ -109,9 +109,7 @@ double SD_workstation_get_power(SD_workstation_t workstation) {
 double SD_workstation_get_available_power(SD_workstation_t workstation) {
   CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  /* TODO */
-  return 0;
-  /*return workstation->available_power;*/
+  return surf_workstation_resource->extension_public->get_available_speed(workstation->sd_data->surf_workstation);
 }
 
 /* Destroys a workstation. The user data (if any) should have been destroyed first.

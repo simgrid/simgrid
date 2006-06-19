@@ -311,6 +311,12 @@ static double get_speed(void *cpu, double load)
   return load*(((cpu_Cas01_t) cpu)->power_scale);
 }
 
+static double get_available_speed(void *cpu)
+{
+  /* number between 0 and 1 */
+  return ((cpu_Cas01_t) cpu)->power_current;
+}
+
 static void finalize(void)
 {
   xbt_dict_free(&cpu_set);
@@ -381,6 +387,7 @@ static void surf_cpu_resource_init_internal(void)
 
   surf_cpu_resource->extension_public->get_state = get_state;
   surf_cpu_resource->extension_public->get_speed = get_speed;
+  surf_cpu_resource->extension_public->get_available_speed = get_available_speed;
 
   cpu_set = xbt_dict_new();
 

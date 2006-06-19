@@ -466,6 +466,11 @@ static double get_speed(void *cpu, double load)
   return load*(((cpu_KCCFLN05_t) cpu)->power_scale);
 }
 
+static double get_available_speed(void *cpu)
+{
+  return ((cpu_KCCFLN05_t) cpu)->power_current;
+}
+
 static surf_action_t communicate(void *src, void *dst, double size, double rate)
 {
   surf_action_workstation_KCCFLN05_t action = NULL;
@@ -902,6 +907,7 @@ static void resource_init_internal(void)
   surf_workstation_resource->extension_public->sleep = action_sleep;
   surf_workstation_resource->extension_public->get_state = resource_get_state;
   surf_workstation_resource->extension_public->get_speed = get_speed;
+  surf_workstation_resource->extension_public->get_available_speed = get_available_speed;
   surf_workstation_resource->extension_public->communicate = communicate;
   surf_workstation_resource->extension_public->execute_parallel_task = execute_parallel_task;
 
