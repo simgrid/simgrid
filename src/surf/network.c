@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
 
 surf_network_resource_t surf_network_resource = NULL;
 
-static xbt_dict_t network_link_set = NULL;
+xbt_dict_t network_link_set = NULL;
 xbt_dict_t network_card_set = NULL;
 
 int card_number = 0;
@@ -458,6 +458,12 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   return (surf_action_t) action;
 }
 
+static void** get_route(void *src, void *dst) {
+  /* TODO */
+
+  return NULL;
+}
+
 static void action_suspend(surf_action_t action)
 {
   ((surf_action_network_CM02_t) action)->suspended = 1;
@@ -565,6 +571,7 @@ static void surf_network_resource_init_internal(void)
   surf_cpu_resource->common_public->set_max_duration = action_set_max_duration;
 
   surf_network_resource->extension_public->communicate = communicate;
+  surf_network_resource->extension_public->get_route = get_route;
 
   network_link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();

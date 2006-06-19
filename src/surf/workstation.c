@@ -387,6 +387,12 @@ static surf_action_t execute_parallel_task (int workstation_nb,
   return (surf_action_t) action;
 }
 
+static void** get_route(void *src, void *dst) {
+  /* TODO */
+
+  return NULL;
+}
+
 static void finalize(void)
 {
   xbt_dict_free(&workstation_set);
@@ -466,6 +472,7 @@ static void surf_workstation_resource_init_internal(void)
   surf_workstation_resource->extension_public->communicate = communicate;
   surf_workstation_resource->extension_public->execute_parallel_task = 
     execute_parallel_task;
+  surf_workstation_resource->extension_public->get_route = get_route;
 
   workstation_set = xbt_dict_new();
 

@@ -17,7 +17,7 @@ static s_route_KCCFLN05_t *routing_table = NULL;
 #define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
 static network_link_KCCFLN05_t loopback = NULL;
 
-static xbt_dict_t network_link_set = NULL;
+/*xbt_dict_t network_link_set = NULL;*/
 
 /* convenient function */
 static void __update_cpu_usage(cpu_KCCFLN05_t cpu)
@@ -560,6 +560,11 @@ static surf_action_t execute_parallel_task(int cpu_nb,
   return NULL;
 }
 
+static void** get_route(void *src, void *dst) {
+  /* TODO: return a NULL-terminated array of network_link_KCCFLN05_t */
+
+  return NULL;
+}
 
 /**************************************/
 /*** Resource Creation & Destruction **/
@@ -910,6 +915,7 @@ static void resource_init_internal(void)
   surf_workstation_resource->extension_public->get_available_speed = get_available_speed;
   surf_workstation_resource->extension_public->communicate = communicate;
   surf_workstation_resource->extension_public->execute_parallel_task = execute_parallel_task;
+  surf_workstation_resource->extension_public->get_route = get_route;
 
   workstation_set = xbt_dict_new();
   network_link_set = xbt_dict_new();
