@@ -459,15 +459,13 @@ int MSG_process_is_suspended(m_process_t process)
   return (process->simdata->suspended);
 }
 
-static char blocked_name[512];
-
-int __MSG_process_block(double max_duration)
+int __MSG_process_block(double max_duration, const char *info)
 {
   m_process_t process = MSG_process_self();
-
   m_task_t dummy = MSG_TASK_UNINITIALIZED;
-  snprintf(blocked_name,512,"blocked (%s:%s)",process->name,
-	  process->simdata->host->name);
+  char blocked_name[512];
+  snprintf(blocked_name,512,"blocked [%s] (%s:%s)",process->name,
+	  info, process->simdata->host->name);
 
   XBT_IN1(": max_duration=%g",max_duration);
 

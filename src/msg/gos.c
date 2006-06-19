@@ -72,9 +72,9 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 		channel);
     h_simdata->sleeping[channel] = process; /* I'm waiting. Wake me up when you're ready */
     if(max_duration>0) {
-      __MSG_process_block(max_duration);
+      __MSG_process_block(max_duration,"");
     } else {
-      __MSG_process_block(-1);
+      __MSG_process_block(-1,"");
     }
     h_simdata->sleeping[channel] = NULL;
     first_time = 0;
@@ -327,9 +327,9 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
 		  h_simdata->sleeping[channel]->simdata->PID);
       h_simdata->sleeping[channel] = process; /* I'm waiting. Wake me up when you're ready */
       if(max_duration>0) {
-	__MSG_process_block(max_duration);
+	__MSG_process_block(max_duration,"");
       } else {
-	__MSG_process_block(-1);
+	__MSG_process_block(-1,"");
       }
       if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
 	 == SURF_CPU_OFF) {
@@ -447,7 +447,7 @@ MSG_error_t MSG_task_put(m_task_t task,
   process->simdata->put_channel = channel;
   while(!(task_simdata->comm)) {
     DEBUG0("Communication not initiated yet. Let's block!");
-    __MSG_process_block(-1);
+    __MSG_process_block(-1,task->name);
     if(surf_workstation_resource->extension_public->
        get_state(local_host->simdata->host) == SURF_CPU_OFF) {
       xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
