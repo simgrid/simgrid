@@ -130,7 +130,7 @@ void surf_cpu_resource_init_Cas01(const char *filename);
 typedef struct surf_network_resource_extension_public {
   surf_action_t(*communicate) (void *src, void *dst, double size,
 			       double max_rate);
-  void** (*get_route) (void *src, void *dst);
+  void* (*get_route) (void *src, void *dst);
 } s_surf_network_resource_extension_public_t,
     *surf_network_resource_extension_public_t;
 
@@ -160,7 +160,7 @@ typedef struct surf_workstation_resource_extension_public {
 					 double *communication_amount,
 					 double amount,
 					 double rate);
-  void** (*get_route) (void *src, void *dst);
+  void* (*get_route) (void *src, void *dst);
 } s_surf_workstation_resource_extension_public_t,
     *surf_workstation_resource_extension_public_t;
 
