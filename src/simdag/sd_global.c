@@ -14,24 +14,42 @@ void SD_init(int *argc, char **argv) {
   sd_global = xbt_new0(s_SD_global_t, 1);
   sd_global->workstations = xbt_dict_new();
   sd_global->workstation_count = 0;
+  /*sd_global->links = xbt_dynar_new(sizeof(s_SD_link_t), __SD_link_destroy);*/
+  sd_global->links = xbt_dict_new();
 
   surf_init(argc, argv);
 }
 
-/* Creates the environnement described in a xml file of a platform descriptions.
+/* Creates the environnement described in a xml file of a platform description.
  */
 void SD_create_environment(const char *platform_file) {
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   void *surf_workstation = NULL;
+  void *surf_link = NULL;
 
   CHECK_INIT_DONE();
-  surf_timer_resource_init(platform_file);
-  surf_workstation_resource_init_KCCFLN05(platform_file); /* tell Surf to create the environnement */
 
-  /* now let's create the SD wrappers */
+  surf_timer_resource_init(platform_file);  /* tell Surf to create the environnement */
+
+  
+  /*printf("surf_workstation_resource = %p, workstation_set = %p\n", surf_workstation_resource, workstation_set);
+    printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
+
+  surf_workstation_resource_init_KCCFLN05(platform_file);
+  /*  surf_workstation_resource_init_CLM03(platform_file);*/
+
+  /*printf("surf_workstation_resource = %p, workstation_set = %p\n", surf_workstation_resource, workstation_set);
+    printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
+
+
+  /* now let's create the SD wrappers for workstations and links */
   xbt_dict_foreach(workstation_set, cursor, name, surf_workstation) {
     __SD_workstation_create(surf_workstation, NULL);
+  }
+
+  xbt_dict_foreach(network_link_set, cursor, name, surf_link) {
+    __SD_link_create(surf_link, name, NULL);
   }
 }
 
@@ -41,11 +59,12 @@ SD_task_t* SD_simulate(double how_long)
 {
   /* TODO */
 
-  /* temporary test to explore the workstations */
+  /* temporary test to explore the workstations and the links */
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   SD_workstation_t workstation = NULL;
   double power, available_power;
+  SD_link_t link = NULL;
 
   surf_solve();
   
@@ -54,7 +73,10 @@ SD_task_t* SD_simulate(double how_long)
     available_power = SD_workstation_get_available_power(workstation);
     printf("Workstation name: %s, power: %f Mflop/s, available power: %f%%\n", name, power, (available_power*100));
   }
-  /* TODO: remove name from SD workstation structure */
+
+  xbt_dict_foreach(sd_global->links, cursor, name, link) {
+    printf("Link name: %s\n", name);
+  }
 
   return NULL;
 }
@@ -64,8 +86,9 @@ SD_task_t* SD_simulate(double how_long)
 void SD_clean() {
   if (sd_global != NULL) {
     xbt_dict_free(&sd_global->workstations);
+    xbt_dict_free(&sd_global->links);
     xbt_free(sd_global);
     surf_exit();
-    /* TODO: destroy the workstations, the links and the tasks */
+    /* TODO: destroy the tasks */
   }
 }

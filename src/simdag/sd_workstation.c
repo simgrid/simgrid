@@ -8,6 +8,7 @@
  */
 SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   CHECK_INIT_DONE();
+  xbt_assert0(surf_workstation != NULL, "surf_workstation is NULL !");
 
   SD_workstation_data_t sd_data = xbt_new0(s_SD_workstation_data_t, 1); /* workstation private data */
   sd_data->surf_workstation = surf_workstation;
