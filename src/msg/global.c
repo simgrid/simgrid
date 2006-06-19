@@ -282,7 +282,7 @@ int MSG_get_channel_number(void)
   return msg_global->max_channel;
 }
 
-void __MSG_display_process_status(void) 
+void __MSG_display_process_status(void)
 {
    m_process_t process = NULL;
    xbt_fifo_item_t item = NULL;
@@ -296,17 +296,17 @@ void __MSG_display_process_status(void)
    xbt_fifo_foreach(msg_global->process_list,item,process,m_process_t) {
       simdata_process_t p_simdata = (simdata_process_t) process->simdata;
       simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
-      
-      
-      INFO4("MSG:  %s(%d) on %s: %s",
-	    process->name,p_simdata->PID,
-	    p_simdata->host->name,
-	    (process->simdata->blocked)?"[blocked] "
-	    :((process->simdata->suspended)?"[suspended] ":""));
+      char *who;
+	
+      asprintf(&who,"MSG:  %s(%d) on %s: %s",
+	       process->name,p_simdata->PID,
+	       p_simdata->host->name,
+	       (process->simdata->blocked)?"[blocked] "
+	       :((process->simdata->suspended)?"[suspended] ":""));
       
       for (i=0; i<msg_global->max_channel; i++) {
 	 if (h_simdata->sleeping[i] == process) {
-	    INFO1("\tListening on channel %d.",i);
+	    INFO2("%s\tListening on channel %d",who,i);
 	    break;
 	 }
       }
@@ -314,25 +314,26 @@ void __MSG_display_process_status(void)
 	 if(p_simdata->waiting_task) {
 	    if(p_simdata->waiting_task->simdata->compute) {
 	       if(p_simdata->put_host) {
-		  INFO2("\tTrying to send a task to Host %s, channel %d.",
-			p_simdata->put_host->name, p_simdata->put_channel);
+		  INFO4("%s\tTrying to send the task '%s' to Host %s, channel %d.",
+			who, p_simdata->waiting_task->name,p_simdata->put_host->name, p_simdata->put_channel);
 	       } else {
-		  INFO1("Waiting for %s to finish.",p_simdata->waiting_task->name);
+		  INFO2("%s\tWaiting for %s to finish.",who,p_simdata->waiting_task->name);
 	       }
 	    } else if (p_simdata->waiting_task->simdata->comm) {
-	       INFO1("Waiting for %s to be finished transfered.",
-		     p_simdata->waiting_task->name);
+	       INFO2("%s\tWaiting for %s to be finished transfered.",
+		     who,p_simdata->waiting_task->name);
 	    } else {
-	      INFO0("UNKNOWN STATUS. Please report this bug.");
+	      INFO1("%s\tUNKNOWN STATUS. Please report this bug.",who);
 	    }
 /*	    The following would display the trace of where the maestro thread is, 
             since this is the thread calling this. I'd like to get the other threads to 
             run this to see where they were blocked, but I'm not sure of how to do this */
 /*	    xbt_backtrace_display(); */
 	 } else { /* Must be trying to put a task somewhere */
-	    INFO0("UNKNOWN STATUS. Please report this bug.");
+	    INFO1("%s\tUNKNOWN STATUS. Please report this bug.",who);
 	 }
-      } 
+      }
+      free(who);
    }
 }
 

@@ -121,6 +121,8 @@ int __MSG_process_block(double max_duration);
 MSG_error_t __MSG_process_unblock(m_process_t process);
 int __MSG_process_isBlocked(m_process_t process);
 
+void __MSG_display_process_status(void);
+
 #ifdef ALVIN_SPECIAL_LOGING
 #define PAJE_PROCESS_STATE(process,state)\
   if(msg_global->paje_output) \
