@@ -225,7 +225,8 @@ gras_socket_server_ext(unsigned short port,
     RETHROW;
   }
 
-  ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport = port;
+  if (!measurement)
+     ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport = port;
   return sock;
 }
 /**
@@ -355,7 +356,8 @@ void gras_socket_close(gras_socket_t sock) {
 	return;
       }
     }
-    WARN1("Ignoring request to free an unknown socket (%p)",sock);
+    WARN1("Ignoring request to free an unknown socket (%p). Execution stack:",sock);
+    xbt_backtrace_display();
   }
   XBT_OUT;
 }
@@ -565,5 +567,9 @@ static void gras_trp_procdata_free(void *data) {
 int gras_trp_libdata_id;
 void gras_trp_register() {
    gras_trp_libdata_id = gras_procdata_add("gras_trp",gras_trp_procdata_new, gras_trp_procdata_free);
+}
+
+int gras_os_myport(void)  {
+   return ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport;
 }
 
