@@ -67,10 +67,7 @@ double SD_link_get_capacity(SD_link_t link) {
 double SD_link_get_current_bandwidth(SD_link_t link) {
   CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-
-  /* TODO */
-  return 0;
-  /*  return link->current_bandwidth;*/
+  return surf_workstation_resource->extension_public->get_link_bandwidth(link->sd_data->surf_link);
 }
 
 /* Return the current latency of a link.
@@ -78,10 +75,7 @@ double SD_link_get_current_bandwidth(SD_link_t link) {
 double SD_link_get_current_latency(SD_link_t link) {
   CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-
-  /* TODO */
-  return 0;
-  /*  return link->current_latency;*/
+  return surf_workstation_resource->extension_public->get_link_latency(link->sd_data->surf_link);
 }
 
 /* Destroys a link. The user data (if any) should have been destroyed first.

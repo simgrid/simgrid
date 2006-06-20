@@ -387,10 +387,29 @@ static surf_action_t execute_parallel_task (int workstation_nb,
   return (surf_action_t) action;
 }
 
+/* returns an array of network_link_CM02_t */
 static const void** get_route(void *src, void *dst) {
-  /* TODO */
+  workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
+  workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
+  return surf_network_resource->extension_public->get_route(workstation_src->network_card, workstation_dst->network_card);
+}
 
-  return NULL;
+static int get_route_size(void *src, void *dst) {
+  workstation_CLM03_t workstation_src = (workstation_CLM03_t) src;
+  workstation_CLM03_t workstation_dst = (workstation_CLM03_t) dst;
+  return surf_network_resource->extension_public->get_route_size(workstation_src->network_card, workstation_dst->network_card);
+}
+
+static const char *get_link_name(const void *link) {
+  return surf_network_resource->extension_public->get_link_name(link);
+}
+
+static double get_link_bandwidth(const void *link) {
+  return surf_network_resource->extension_public->get_link_bandwidth(link);
+}
+
+static double get_link_latency(const void *link) {
+  return surf_network_resource->extension_public->get_link_latency(link); 
 }
 
 static void finalize(void)
@@ -473,7 +492,10 @@ static void surf_workstation_resource_init_internal(void)
   surf_workstation_resource->extension_public->execute_parallel_task = 
     execute_parallel_task;
   surf_workstation_resource->extension_public->get_route = get_route;
-
+  surf_workstation_resource->extension_public->get_route_size = get_route_size;
+  surf_workstation_resource->extension_public->get_link_name = get_link_name;
+  surf_workstation_resource->extension_public->get_link_bandwidth = get_link_bandwidth;
+  surf_workstation_resource->extension_public->get_link_latency = get_link_latency;
   workstation_set = xbt_dict_new();
 
   xbt_assert0(maxmin_system, "surf_init has to be called first!");

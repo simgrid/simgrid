@@ -7,8 +7,8 @@ typedef struct SD_link_data *SD_link_data_t;
 typedef struct SD_link {
   SD_link_data_t sd_data; /* SD internal data */
   void *data; /* user data */
-  char *name;
 
+  /*char *name;*/
   /*double capacity;*/
   /*double current_bandwidth;
     double current_latency;*/

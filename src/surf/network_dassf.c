@@ -410,10 +410,29 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   return (surf_action_t) action;
 }
 
+/* returns a NULL-terminated array of network_link_DASSF_t */
 static const void** get_route(void *src, void *dst) {
-  /* TODO */
+  network_card_DASSF_t card_src = src;
+  network_card_DASSF_t card_dst = dst;
+  return (const void**) ROUTE(card_src->id, card_dst->id);
+}
 
-  return NULL;
+static int get_route_size(void *src, void *dst) {
+  network_card_DASSF_t card_src = src;
+  network_card_DASSF_t card_dst = dst;
+  return ROUTE_SIZE(card_src->id, card_dst->id);
+}
+
+static const char *get_link_name(const void *link) {
+  return ((network_link_DASSF_t) link)->name;
+}
+
+static double get_link_bandwidth(const void *link) {
+  return ((network_link_DASSF_t) link)->bw_current;
+}
+
+static double get_link_latency(const void *link) {
+  return ((network_link_DASSF_t) link)->lat_current;  
 }
 
 static void action_suspend(surf_action_t action)
@@ -515,6 +534,10 @@ static void surf_network_resource_init_internal(void)
 
   surf_network_resource->extension_public->communicate = communicate;
   surf_network_resource->extension_public->get_route = get_route;
+  surf_network_resource->extension_public->get_route_size = get_route_size;
+  surf_network_resource->extension_public->get_link_name = get_link_name;
+  surf_network_resource->extension_public->get_link_bandwidth = get_link_bandwidth;
+  surf_network_resource->extension_public->get_link_latency = get_link_latency;
 
   network_link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();

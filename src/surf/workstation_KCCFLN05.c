@@ -560,18 +560,32 @@ static surf_action_t execute_parallel_task(int cpu_nb,
   return NULL;
 }
 
-/* returns a NULL-terminated array of network_link_KCCFLN05_t */
+/* returns an array of network_link_KCCFLN05_t */
 static const void** get_route(void *src, void *dst) {
   cpu_KCCFLN05_t card_src = src;
   cpu_KCCFLN05_t card_dst = dst;
   route_KCCFLN05_t route = &(ROUTE(card_src->id, card_dst->id));
-  int route_size = route->size;
-
-  /* add NULL at the end of the array if not present */
-  route->links = xbt_realloc(route->links, (route_size+1) * sizeof(route_KCCFLN05_t));
-  route->links[route_size] = NULL;
 
   return (const void**) route->links;
+}
+
+static int get_route_size(void *src, void *dst) {
+  cpu_KCCFLN05_t card_src = src;
+  cpu_KCCFLN05_t card_dst = dst;
+  route_KCCFLN05_t route = &(ROUTE(card_src->id, card_dst->id));
+  return route->size;
+}
+
+static const char *get_link_name(const void *link) {
+  return ((network_link_KCCFLN05_t) link)->name;
+}
+
+static double get_link_bandwidth(const void *link) {
+  return ((network_link_KCCFLN05_t) link)->bw_current;
+}
+
+static double get_link_latency(const void *link) {
+  return ((network_link_KCCFLN05_t) link)->lat_current;
 }
 
 /**************************************/
@@ -924,6 +938,10 @@ static void resource_init_internal(void)
   surf_workstation_resource->extension_public->communicate = communicate;
   surf_workstation_resource->extension_public->execute_parallel_task = execute_parallel_task;
   surf_workstation_resource->extension_public->get_route = get_route;
+  surf_workstation_resource->extension_public->get_route_size = get_route_size;
+  surf_workstation_resource->extension_public->get_link_name = get_link_name;
+  surf_workstation_resource->extension_public->get_link_bandwidth = get_link_bandwidth;
+  surf_workstation_resource->extension_public->get_link_latency = get_link_latency;
 
   workstation_set = xbt_dict_new();
   network_link_set = xbt_dict_new();

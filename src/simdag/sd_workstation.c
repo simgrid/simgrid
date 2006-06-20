@@ -85,16 +85,34 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
   return surf_workstation_resource->common_public->get_resource_name(workstation->sd_data->surf_workstation);
 }
 
+/* Returns an new array of links representating the route between two workstations.
+ */
 SD_link_t* SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   CHECK_INIT_DONE();
-  /* TODO */
-  return NULL;
+
+  void *surf_src = src->sd_data->surf_workstation;
+  void *surf_dst = dst->sd_data->surf_workstation;
+
+  const void **surf_route = surf_workstation_resource->extension_public->get_route(surf_src, surf_dst);
+  int route_size = surf_workstation_resource->extension_public->get_route_size(surf_src, surf_dst);
+
+  SD_link_t* route = xbt_new0(SD_link_t, route_size);
+  const char *link_name;
+  int i;
+  for (i = 0; i < route_size; i++) {
+    link_name = surf_workstation_resource->extension_public->get_link_name(surf_route[i]);
+    route[i] = xbt_dict_get(sd_global->links, link_name);
+  }
+
+  return route;
 }
 
+/* Returns the number of links on the route between two workstations.
+ */
 int SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
   CHECK_INIT_DONE();
-  /* TODO */
-  return 0;
+  return surf_workstation_resource->extension_public->
+    get_route_size(src->sd_data->surf_workstation, dst->sd_data->surf_workstation);
 }
 
 /* Returns the total power of a workstation.

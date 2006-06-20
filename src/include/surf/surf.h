@@ -131,6 +131,10 @@ typedef struct surf_network_resource_extension_public {
   surf_action_t(*communicate) (void *src, void *dst, double size,
 			       double max_rate);
   const void** (*get_route) (void *src, void *dst);
+  int (*get_route_size) (void *src, void *dst);
+  const char* (*get_link_name) (const void *link);
+  double (*get_link_bandwidth) (const void *link);
+  double (*get_link_latency) (const void *link);
 } s_surf_network_resource_extension_public_t,
     *surf_network_resource_extension_public_t;
 
@@ -161,6 +165,10 @@ typedef struct surf_workstation_resource_extension_public {
 					 double amount,
 					 double rate);
   const void** (*get_route) (void *src, void *dst);
+  int (*get_route_size) (void *src, void *dst);
+  const char* (*get_link_name) (const void *link);
+  double (*get_link_bandwidth) (const void *link);
+  double (*get_link_latency) (const void *link);
 } s_surf_workstation_resource_extension_public_t,
     *surf_workstation_resource_extension_public_t;
 

@@ -37,7 +37,7 @@ void SD_create_environment(const char *platform_file) {
     printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
 
   surf_workstation_resource_init_KCCFLN05(platform_file);
-  /*  surf_workstation_resource_init_CLM03(platform_file);*/
+  /*surf_workstation_resource_init_CLM03(platform_file);*/
 
   /*printf("surf_workstation_resource = %p, workstation_set = %p\n", surf_workstation_resource, workstation_set);
     printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
@@ -63,11 +63,11 @@ SD_task_t* SD_simulate(double how_long)
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
   SD_workstation_t workstation = NULL;
-  double power, available_power;
+  double power, available_power, bandwidth, latency;
   SD_link_t link = NULL;
 
   surf_solve();
-  
+
   xbt_dict_foreach(sd_global->workstations, cursor, name, workstation) {
     power = SD_workstation_get_power(workstation);
     available_power = SD_workstation_get_available_power(workstation);
@@ -75,8 +75,28 @@ SD_task_t* SD_simulate(double how_long)
   }
 
   xbt_dict_foreach(sd_global->links, cursor, name, link) {
-    printf("Link name: %s\n", name);
+    bandwidth = SD_link_get_current_bandwidth(link);
+    latency = SD_link_get_current_latency(link);
+    printf("Link name: %s, bandwidth: %f, latency; %f\n", name, bandwidth, latency);
   }
+
+  /* test the route between two workstations */
+  SD_workstation_t src, dst;
+  xbt_dict_cursor_first(sd_global->workstations, &cursor);
+  xbt_dict_cursor_get_or_free(&cursor, &name, (void**) &src);
+  xbt_dict_cursor_step(cursor);
+  xbt_dict_cursor_get_or_free(&cursor, &name, (void**) &dst);
+  xbt_dict_cursor_free(&cursor);
+
+  SD_link_t *route = SD_workstation_route_get_list(src, dst);
+  int route_size = SD_workstation_route_get_size(src, dst);
+
+  printf("Route between %s and %s (%d links) : ", SD_workstation_get_name(src), SD_workstation_get_name(dst), route_size);
+  int i;
+  for (i = 0; i < route_size; i++) {
+    printf("%s ", SD_link_get_name(route[i]));
+  }
+  printf("\n");
 
   return NULL;
 }
