@@ -377,7 +377,7 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   sock = gras_socket_client(from_name,from_port);
   DEBUG4("Ask for a BW test between %s:%d and %s:%d",	from_name,from_port, to_name,to_port);
 
-  gras_msg_rpccall(sock,240,gras_msgtype_by_name("BW request"), &request, &result);
+  gras_msg_rpccall(sock,20*60,gras_msgtype_by_name("BW request"), &request, &result);
   
   if (sec)
     *sec=result->sec;
