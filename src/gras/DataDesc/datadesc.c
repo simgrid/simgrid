@@ -158,6 +158,7 @@ void
 gras_datadesc_exit(void) {
   VERB0("Exiting DataDesc");
   xbt_set_free(&gras_datadesc_set_local);
+  xbt_dict_free(&gras_dd_constants);
   DEBUG0("Exited DataDesc");
 }
 
