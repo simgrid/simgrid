@@ -49,7 +49,7 @@ void SD_create_environment(const char *platform_file) {
   }
 
   xbt_dict_foreach(network_link_set, cursor, name, surf_link) {
-    __SD_link_create(surf_link, name, NULL);
+    __SD_link_create(surf_link, NULL);
   }
 }
 
@@ -77,7 +77,7 @@ SD_task_t* SD_simulate(double how_long)
   xbt_dict_foreach(sd_global->links, cursor, name, link) {
     bandwidth = SD_link_get_current_bandwidth(link);
     latency = SD_link_get_current_latency(link);
-    printf("Link name: %s, bandwidth: %f, latency; %f\n", name, bandwidth, latency);
+    printf("Link name: %s, bandwidth: %f, latency: %f\n", name, bandwidth, latency);
   }
 
   /* test the route between two workstations */
