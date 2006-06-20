@@ -458,7 +458,7 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   return (surf_action_t) action;
 }
 
-static void* get_route(void *src, void *dst) {
+static const void** get_route(void *src, void *dst) {
   /* TODO */
 
   return NULL;

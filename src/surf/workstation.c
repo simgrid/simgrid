@@ -387,7 +387,7 @@ static surf_action_t execute_parallel_task (int workstation_nb,
   return (surf_action_t) action;
 }
 
-static void* get_route(void *src, void *dst) {
+static const void** get_route(void *src, void *dst) {
   /* TODO */
 
   return NULL;

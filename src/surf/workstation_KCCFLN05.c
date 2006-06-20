@@ -560,19 +560,18 @@ static surf_action_t execute_parallel_task(int cpu_nb,
   return NULL;
 }
 
-static void* get_route(void *src, void *dst) {
-  /* TODO: return a NULL-terminated array of network_link_KCCFLN05_t */
-
+/* returns a NULL-terminated array of network_link_KCCFLN05_t */
+static const void** get_route(void *src, void *dst) {
   cpu_KCCFLN05_t card_src = src;
   cpu_KCCFLN05_t card_dst = dst;
   route_KCCFLN05_t route = &(ROUTE(card_src->id, card_dst->id));
   int route_size = route->size;
 
-  network_link_KCCFLN05_t *link_list = route->links;
-  link_list = xbt_realloc(link_list, (route_size+1) * sizeof(route_KCCFLN05_t));
-  link_list[route_size] = NULL;
+  /* add NULL at the end of the array if not present */
+  route->links = xbt_realloc(route->links, (route_size+1) * sizeof(route_KCCFLN05_t));
+  route->links[route_size] = NULL;
 
-  return link_list;
+  return (const void**) route->links;
 }
 
 /**************************************/
