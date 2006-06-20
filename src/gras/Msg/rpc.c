@@ -10,6 +10,7 @@
 #include "gras/Msg/msg_private.h"
                 
 xbt_set_t _gras_rpctype_set = NULL;
+xbt_dynar_t _gras_rpc_cancelled = NULL;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg_rpc,gras_msg,"RPC mecanism");
 
@@ -67,10 +68,26 @@ static int msgfilter_rpcID(gras_msg_t msg, void* ctx) {
   unsigned long int ID= *(unsigned long int*)ctx;
   int res = msg->ID == ID && 
     (msg->kind == e_gras_msg_kind_rpcanswer || msg->kind == e_gras_msg_kind_rpcerror);
+  int cursor;
+  gras_msg_cb_ctx_t rpc_ctx;
+     
 
   DEBUG5("Filter a message of ID %lu, type '%s' and kind '%s'. Waiting for ID=%lu. %s",
 	 msg->ID,msg->type->name,e_gras_msg_kind_names[msg->kind],ID,
 	 res?"take it": "reject");
+   
+  if (res && !_gras_rpc_cancelled)
+     return res;
+  
+  /* Check whether it is an old answer to a message we already canceled */
+  xbt_dynar_foreach(_gras_rpc_cancelled,cursor,rpc_ctx) {
+     if (msg->ID == rpc_ctx->ID && msg->kind==e_gras_msg_kind_rpcanswer) {
+	VERB1("Got an answer to the already canceled (timeouted?) RPC %ld. Ignore it (leaking the payload!).",msg->ID);
+	xbt_dynar_cursor_rm (_gras_rpc_cancelled, &cursor);
+	return 1;
+     }
+  }
+   
   return res;
 }
 
@@ -110,6 +127,7 @@ gras_msg_rpc_async_call(gras_socket_t server,
 /** @brief Wait teh answer of a RPC call previously launched asynchronously */
 void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
 			     void *answer) {
+  xbt_ex_t e;
   s_gras_msg_t received;
 
   if (ctx->msgtype->answer_type) {
@@ -122,9 +140,22 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
 		ctx->msgtype->name);
   }
 
-  gras_msg_wait_ext(ctx->timeout,
-		    ctx->msgtype, NULL, msgfilter_rpcID, &ctx->ID,
-		    &received);
+  TRY {
+     /* The filter returns 1 when we eat an old RPC answer to something canceled */
+     do {
+	gras_msg_wait_ext(ctx->timeout,
+			  ctx->msgtype, NULL, msgfilter_rpcID, &ctx->ID,
+			  &received);
+     } while (received.ID != ctx->ID);
+     
+  } CATCH(e) {
+     if (!_gras_rpc_cancelled)
+       _gras_rpc_cancelled = xbt_dynar_new(sizeof(ctx),NULL);
+     xbt_dynar_push(_gras_rpc_cancelled,&ctx);
+     INFO1("canceled RPC %ld pushed onto the stack",ctx->ID);
+     RETHROW;
+  }
+   
   free(ctx);
   if (received.kind == e_gras_msg_kind_rpcerror) {
     xbt_ex_t e;
