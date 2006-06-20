@@ -41,6 +41,9 @@ void gras_os_sleep(double sec);
 const char *
 gras_os_myname(void);
 
+/** @brief returns the number on which this process is listening for incoming messages */
+int gras_os_myport(void);
+
 /** @brief get process identification
  *
  * Returns the process ID of the current process.  (This is often used
