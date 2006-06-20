@@ -31,6 +31,7 @@ void gras_msg_send_ext(gras_socket_t   sock,
   gras_msg_t msg;
   int whole_payload_size=0; /* msg->payload_size is used to memcpy the payload. 
                                This is used to report the load onto the simulator. It also counts the size of pointed stuff */
+  char *name;
 
   xbt_assert1(!gras_socket_is_meas(sock), 
   	      "Asked to send a message on the measurement socket %p", sock);
@@ -61,8 +62,19 @@ void gras_msg_send_ext(gras_socket_t   sock,
 
   msg->kind = kind;
 
-  task=MSG_task_create(msgtype->name,0,
-		       ((double)whole_payload_size),msg);
+  if (XBT_LOG_ISENABLED(gras_msg,xbt_log_priority_verbose)) {
+     asprintf(&name,"type:'%s';kind:'%s';ID %lu from %s:%d to %s:%d",
+	      msg->type->name, e_gras_msg_kind_names[msg->kind], msg->ID,
+	      gras_os_myname(),gras_os_myport(),
+	      gras_socket_peer_name(sock), gras_socket_peer_port(sock));
+     task=MSG_task_create(name,0,
+			  ((double)whole_payload_size),msg);
+     free(name);
+  } else {
+     task=MSG_task_create(msg->type->name,0,
+			  ((double)whole_payload_size),msg);
+  }
+   
 
   DEBUG1("Prepare to send a message to %s",
 	 MSG_host_get_name (sock_data->to_host));
