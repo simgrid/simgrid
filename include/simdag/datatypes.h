@@ -7,11 +7,6 @@ typedef struct SD_link_data *SD_link_data_t;
 typedef struct SD_link {
   SD_link_data_t sd_data; /* SD internal data */
   void *data; /* user data */
-
-  /*char *name;*/
-  /*double capacity;*/
-  /*double current_bandwidth;
-    double current_latency;*/
 } s_SD_link_t, *SD_link_t;
 
 /* Workstation */
@@ -31,13 +26,11 @@ typedef enum {
 } SD_task_state_t;
 
 /* Task */
+typedef struct SD_task_data *SD_task_data_t;
+
 typedef struct SD_task {
-  void *data;
-  char *name;
-  /*double amount;
-    double remaining_amount;*/
-  SD_task_state_t state;
-  /* TODO: dependencies + watch */
+  SD_task_data_t sd_data; /* SD internal data */
+  void *data; /* user data */
 } s_SD_task_t, *SD_task_t;
 
 #endif

@@ -27,6 +27,15 @@ typedef struct SD_workstation_data {
   void *surf_workstation; /* surf object */
 } s_SD_workstation_data_t;
 
+/* Task private data */
+typedef struct SD_task_data {
+  char *name;
+  SD_task_state_t state;
+  /*double amount;
+    double remaining_amount;*/
+  /* TODO: dependencies + watch */
+} s_SD_task_data_t;
+
 /* Private functions */
 
 SD_link_t __SD_link_create(void *surf_link, void *data);
