@@ -10,10 +10,10 @@
 
 #include "gras.h"
 #include "xbt/matrix.h"
-#define PROC_MATRIX_SIZE 2
+#define PROC_MATRIX_SIZE 6
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
-#define DATA_MATRIX_SIZE 4
+#define DATA_MATRIX_SIZE 600
 const int submatrix_size = DATA_MATRIX_SIZE/PROC_MATRIX_SIZE;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");
@@ -52,18 +52,9 @@ static void register_messages(void) {
   /* send from master to slave to assign a position and some data */
   gras_msgtype_declare("assignment", assignment_type);
 
-  /* send from master to slave to ask a final result */
-  gras_msgtype_declare("ask_result", gras_datadesc_by_name("int")); 
-
-  /* send from master to slave to indicate the begining of step */
-  gras_msgtype_declare("step", gras_datadesc_by_name("int"));
-  /* send from slave to master to indicate the end of the current step */
-  gras_msgtype_declare("step_ack", gras_datadesc_by_name("int"));
-
-  /* send data between slave */
-  gras_msgtype_declare("dataA", gras_datadesc_by_name("double"));
-  /* send data between slave */
-  gras_msgtype_declare("dataB", gras_datadesc_by_name("double"));
+  /* send data between slaves */
+  gras_msgtype_declare("dataA", gras_datadesc_matrix(gras_datadesc_by_name("double"),NULL));
+  gras_msgtype_declare("dataB", gras_datadesc_matrix(gras_datadesc_by_name("double"),NULL));
 }
 
 /* Function prototypes */
@@ -109,9 +100,7 @@ static void gather(){
 
 int master (int argc,char *argv[]) {
 
-  xbt_ex_t e;
-
-  int i,port,ask_result,step;
+  int i,port;
 
   xbt_matrix_t A,B,C;
   result_t result;
@@ -130,18 +119,13 @@ int master (int argc,char *argv[]) {
   B = xbt_matrix_double_new_seq(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
   C = xbt_matrix_double_new_zeros(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
 	
-  //xbt_matrix_dump(B,"B:seq",0,xbt_matrix_dump_display_double);
-
-
   /*  Get arguments and create sockets */
   port=atoi(argv[1]);
   //scatter();
   //scatter_parl();
   //multiplication();
   //gather();
-  //display(A);
   /************************* Init Data Send *********************************/
-  int step_ack;
   gras_os_sleep(5);
 
   for( i=1;i<argc && i<=SLAVE_COUNT;i++){
@@ -150,9 +134,13 @@ int master (int argc,char *argv[]) {
       
     INFO2("Connected to %s:%d.",grid[i-1]->name,grid[i-1]->port);
   }
+  xbt_assert2(i-1==SLAVE_COUNT,
+	      "Not enough slaves for this setting (got %d of %d). Change the deployment file",
+	      i-1,SLAVE_COUNT);
   /* FIXME: let the surnumerous slave die properly */
-
+ 
   int row=0, line=0;
+  INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
   for(i=0 ; i<SLAVE_COUNT; i++){
     s_assignment_t assignment;
     int j;
@@ -174,7 +162,6 @@ int master (int argc,char *argv[]) {
 				    submatrix_size,submatrix_size,
 				    submatrix_size*line,submatrix_size*row,
 				    NULL);
-    //xbt_matrix_dump(assignment.B,"assignment.B",0,xbt_matrix_dump_display_double);
     row++;
     if (row >= PROC_MATRIX_SIZE) {
       row=0;
@@ -182,59 +169,34 @@ int master (int argc,char *argv[]) {
     }
 		
     gras_msg_send(socket[i],gras_msgtype_by_name("assignment"),&assignment);
-    //    INFO3("Send assignment to %s : data A= %.3g & data B= %.3g",
-    //	  gras_socket_peer_name(socket[i]),mydata.a,mydata.b);
-
+    xbt_matrix_free(assignment.A);
+    xbt_matrix_free(assignment.B);
   }
   // end assignment
 
   /******************************* multiplication ********************************/
-  INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
-	
-  for (step=0; step < PROC_MATRIX_SIZE; step++){
-    for (i=0; i< SLAVE_COUNT; i++){
-      TRY {
-	gras_msg_send(socket[i], gras_msgtype_by_name("step"), &step);
-      } CATCH(e) {
-	gras_socket_close(socket[i]);
-	RETHROW0("Unable to send the msg : %s");
-      }
-    }
-    INFO1("XXXXXX Next step (%d)",step);
-
-    /* wait for computing and slave messages exchange */
-
-    i=0;	
-    while  ( i< SLAVE_COUNT) {
-      TRY {
-	gras_msg_wait(1300,gras_msgtype_by_name("step_ack"),&from,&step_ack);
-      } CATCH(e) {
-	RETHROW0("Can't get a Ack step message from slave : %s");
-      }
-      i++;
-      DEBUG3("Got step ack from %s (got %d of %d)",
-	    gras_socket_peer_name(from), i, SLAVE_COUNT);
-    }
-  }
-  /*********************************  gather ***************************************/
-
-  ask_result=0;
-  for( i=1;i< argc;i++){
-    gras_msg_send(socket[i],gras_msgtype_by_name("ask_result"),&ask_result);
-    INFO1("Send (Ask Result) message to %s",gras_socket_peer_name(socket[i]));
-  }
   /* wait for results */
-  for( i=1;i< argc;i++){
-    gras_msg_wait(600,gras_msgtype_by_name("result"),&from,&result);
-    xbt_matrix_copy_values(result.C,C,   submatrix_size,submatrix_size,
+  for( i=0;i< SLAVE_COUNT;i++){
+    gras_msg_wait(6000,gras_msgtype_by_name("result"),&from,&result);
+    xbt_matrix_copy_values(C,result.C,   submatrix_size,submatrix_size,
 			   submatrix_size*result.linepos,
 			   submatrix_size*result.rowpos,
 			   0,0,NULL);
+    xbt_matrix_free(result.C);
   }
   /*    end of gather   */
   INFO0 ("The Result of Multiplication is :");
   xbt_matrix_dump(C,"C:res",0,xbt_matrix_dump_display_double);
-
+   
+  for(i=0; i<SLAVE_COUNT; i++) {
+     gras_socket_close(socket[i]);
+     xbt_host_free(grid[i]);
+  }
+   
+  xbt_matrix_free(A);
+  xbt_matrix_free(B);
+  xbt_matrix_free(C);
+  gras_exit();
   return 0;
 } /* end_of_master */
 
@@ -246,7 +208,7 @@ int slave(int argc,char *argv[]) {
 
   xbt_ex_t e; 
 
-  int step,port,l,result_ack=0; 
+  int step,l;
   xbt_matrix_t bA=xbt_matrix_new(submatrix_size,submatrix_size,
 				 sizeof(double),NULL);
   xbt_matrix_t bB=xbt_matrix_new(submatrix_size,submatrix_size,
@@ -264,17 +226,14 @@ int slave(int argc,char *argv[]) {
   /* sockets for brodcast to other slave */
   gras_socket_t socket_line[PROC_MATRIX_SIZE-1];
   gras_socket_t socket_row[PROC_MATRIX_SIZE-1];
-
+  memset(socket_line,0,sizeof(socket_line));
+  memset(socket_row,0,sizeof(socket_row));
+   
   /* Init the GRAS's infrastructure */
-
   gras_init(&argc, argv);
 
-  /* Get arguments and create sockets */
-
-  port=atoi(argv[1]);
-  
   /*  Create my master socket */
-  sock = gras_socket_server(port);
+  sock = gras_socket_server(atoi(argv[1]));
   int i;
 
   /*  Register the known messages */
@@ -282,7 +241,7 @@ int slave(int argc,char *argv[]) {
 
   /* Recover my initialized Data and My Position*/
   s_assignment_t assignment;
-  INFO2("Launch %s (port=%d); wait for my enrole message",argv[0],port);
+  INFO2("Launch %s (port=%d); wait for my enrole message",argv[0],gras_os_myport());
   TRY {
     gras_msg_wait(600,gras_msgtype_by_name("assignment"),&master,&assignment);
   } CATCH(e) {
@@ -292,11 +251,8 @@ int slave(int argc,char *argv[]) {
   myrow   = assignment.rowpos;
   mydataA = assignment.A;
   mydataB = assignment.B;
-  INFO1("mydataB=%p",mydataB);
 
   INFO2("Receive my pos (%d,%d) and assignment",myline,myrow);
-
-  //  xbt_matrix_dump(mydataB,"myB",0,xbt_matrix_dump_display_double);
 
   /* Get my neighborhood from the assignment message (skipping myself) */
   int j=0;
@@ -317,63 +273,40 @@ int slave(int argc,char *argv[]) {
     xbt_host_free(assignment.row[i]);    
   }
 
-  
-  do {  //repeat until compute Cb
+  for (step=0; step<PROC_MATRIX_SIZE;step++) {
 	
-    TRY {
-      gras_msg_wait(200,gras_msgtype_by_name("step"),NULL,&step);
-    } CATCH(e) {
-      RETHROW0("Can't get a Next Step message from master : %s");
-    }
-    INFO1("Receive a step message from master: step = %d ",step);
-
     /* a line brodcast */
-    gras_os_sleep(3);  // IL FAUT EXPRIMER LE TEMPS D'ATTENTE EN FONCTION DE "SLAVE_COUNT"
-
     if(myline==step){
-      INFO2("step(%d) = Myline(%d)",step,myline);
-      for (l=0;l < PROC_MATRIX_SIZE-1 ;l++){
-	INFO1("mydataB=%p",mydataB);
-	gras_msg_send(socket_row[l], 
-		      gras_msgtype_by_name("dataB"), 
-		      &mydataB);
-	INFO1("mydataB=%p",mydataB);
+       INFO2("LINE: step(%d) = Myline(%d). Broadcast my data.",step,myline);
+       for (l=0;l < PROC_MATRIX_SIZE-1 ;l++)
+	 gras_msg_send(socket_row[l], 
+		       gras_msgtype_by_name("dataB"), 
+		       &mydataB);
 	
-	xbt_matrix_free(bB);
-	INFO1("mydataB=%p",mydataB);
-	xbt_matrix_dump(mydataB,"myB",0,xbt_matrix_dump_display_double);
-	bB = xbt_matrix_new_sub(mydataB,
-				submatrix_size,submatrix_size,
-				0,0,NULL);
-	
-	INFO0("send my data B to my (vertical) neighbors");
-      }
+       xbt_matrix_free(bB);
+       bB = xbt_matrix_new_sub(mydataB,
+			       submatrix_size,submatrix_size,
+			       0,0,NULL);	
     } else {
-      INFO2("step(%d) <> Myline(%d)",step,myline);
       TRY {
-	INFO1("mydataB=%p",mydataB);
 	xbt_matrix_free(bB);
-	INFO1("mydataB=%p",mydataB);
 	gras_msg_wait(600,gras_msgtype_by_name("dataB"),&from,&bB);
-	INFO1("mydataB=%p",mydataB);
       } CATCH(e) {
 	RETHROW0("Can't get a data message from line : %s");
       }
-      INFO1("Receive data B from my neighbor: %s",
+      INFO3("LINE: step(%d) <> Myline(%d). Receive data from %s",step,myline,
 	    gras_socket_peer_name(from));
     }
 
     /* a row brodcast */
-    if (myrow==step) {
-      for (l=1;l < PROC_MATRIX_SIZE ;l++){
-	gras_msg_send(socket_line[l-1],gras_msgtype_by_name("dataA"), &mydataA);
-	xbt_matrix_free(bA);
-	bA = xbt_matrix_new_sub(mydataA,
-				submatrix_size,submatrix_size,
-				0,0,NULL);
-	
-	INFO0("send my data A to my (horizontal) neighbors");
-      }
+    if (myrow==step) { 
+       INFO2("ROW: step(%d)=myrow(%d). Broadcast my data",step,myrow);
+       for (l=1;l < PROC_MATRIX_SIZE ;l++)
+	 gras_msg_send(socket_line[l-1],gras_msgtype_by_name("dataA"), &mydataA);
+       xbt_matrix_free(bA);
+       bA = xbt_matrix_new_sub(mydataA,
+			       submatrix_size,submatrix_size,
+			       0,0,NULL);
     } else {
       TRY {
 	xbt_matrix_free(bA);
@@ -381,42 +314,45 @@ int slave(int argc,char *argv[]) {
       } CATCH(e) {
 	RETHROW0("Can't get a data message from row : %s");
       }
-      INFO1("Receive data A from my neighbor : %s ",
+      INFO3("ROW: step(%d)<>myrow(%d). Receive data from %s",step,myrow,
 	    gras_socket_peer_name(from));
     }
     xbt_matrix_double_addmult(bA,bB,bC);
 
-    /* send a ack msg to master */
-	
-    gras_msg_send(master,gras_msgtype_by_name("step_ack"),&step);
-    
-    INFO1("Send ack to master for to end %d th step",step);
-  	
-  } while (step < PROC_MATRIX_SIZE);
-  /*  wait Message from master to send the result */
+  };
  
+  /* send Result to master */  
   result.C=bC;
   result.linepos=myline;
   result.rowpos=myrow;
- 
-  TRY {
-    gras_msg_wait(600,gras_msgtype_by_name("ask_result"),
-		  &master,&result_ack);
-  } CATCH(e) {
-    RETHROW0("Can't get a data message from line : %s");
-  }
-  /* send Result to master */
+
   TRY {
     gras_msg_send(master, gras_msgtype_by_name("result"),&result);
   } CATCH(e) {
-    // gras_socket_close(from);
     RETHROW0("Failed to send PING to server: %s");
   }
   INFO2(">>>>>>>> Result sent to %s:%d <<<<<<<<",
 	gras_socket_peer_name(master),gras_socket_peer_port(master));
   /*  Free the allocated resources, and shut GRAS down */
+
+  xbt_matrix_free(bA);
+  xbt_matrix_free(bB);
+  xbt_matrix_free(bC);
+
+  xbt_matrix_free(mydataA);
+  xbt_matrix_free(mydataB);
+  gras_socket_close(sock);
   gras_socket_close(master);
   gras_socket_close(from);
+  /* FIXME: Some of these sockets are "not known", no idea why *
+  for (l=0; l < PROC_MATRIX_SIZE-1; l++) {
+     if (socket_line[l])
+       gras_socket_close(socket_line[l]);
+     if (socket_row[l])
+       gras_socket_close(socket_row[l]); 
+  }*/
+   
+
   gras_exit();
   INFO0("Done.");
   return 0;
