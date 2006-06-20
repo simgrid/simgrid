@@ -132,7 +132,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
 xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows) {
   xbt_matrix_t res = xbt_matrix_new(lines, rows,sizeof(double),NULL);
    
-  memset(res->data,0,sizeof(res->data));
+  memset(res->data,0, res->elmsize * res->lines * res->rows);
   return res;
 }
 
