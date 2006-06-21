@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
   /* let's launch the simulation! */
   SD_simulate(100);
 
-  SD_clean();
+  SD_task_destroy(task1);
+  SD_exit();
   return 0;
 }

@@ -43,10 +43,10 @@ void               SD_workstation_destroy(SD_workstation_t workstation);
 /************************** Task handling ************************************/
 
 SD_task_t         SD_task_create(const char *name, void *data, double amount);
-int               SD_task_schedule(SD_task_t task, int workstation_nb,
-				   SD_workstation_t **workstation_list, double *computation_amount,
+void              SD_task_schedule(SD_task_t task, int workstation_nb,
+				   const SD_workstation_t *workstation_list, double *computation_amount,
 				   double *communication_amount, double rate);
-
+void              SD_task_reset(SD_task_t task);
 void*             SD_task_get_data(SD_task_t task);
 void              SD_task_set_data(SD_task_t task, void *data);
 const char*       SD_task_get_name(SD_task_t task);
@@ -70,7 +70,7 @@ void              SD_task_destroy(SD_task_t task);
 void              SD_init(int *argc, char **argv);
 void              SD_create_environment(const char *platform_file);
 SD_task_t         *SD_simulate(double how_long); /* returns a NULL-terminated array of SD_task_t whose state has changed */
-void              SD_clean(); /* cleans everything */
+void              SD_exit(); /* cleans everything */
 
 SG_END_DECL()
 

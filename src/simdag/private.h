@@ -2,11 +2,12 @@
 #define SIMDAG_PRIVATE_H
 
 #include "xbt/dict.h"
+#include "xbt/dynar.h"
 #include "simdag/simdag.h"
 #include "simdag/datatypes.h"
 #include "surf/surf.h"
 
-#define CHECK_INIT_DONE() xbt_assert0(sd_global != NULL, "SD_init not called yet")
+#define SD_CHECK_INIT_DONE() xbt_assert0(sd_global != NULL, "Call SD_init() first")
 
 /* Global variables */
 
@@ -36,8 +37,16 @@ typedef struct SD_task_data {
   surf_action_t surf_action;
   unsigned short watch_points;
 
-  /*  double remaining_amount;*/
-  /* TODO: dependencies */
+  /* dependencies */
+  xbt_dynar_t tasks_before;
+  xbt_dynar_t tasks_after;
+
+  /* scheduling parameters (only exist in state SD_SCHEDULED) */
+  int workstation_nb;
+  void **workstation_list; /* surf workstations */
+  double *computation_amount;
+  double *communication_amount;
+  double rate;
 } s_SD_task_data_t;
 
 /* Private functions */
@@ -47,5 +56,9 @@ void __SD_link_destroy(void *link);
 
 SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data);
 void __SD_workstation_destroy(void *workstation);
+
+void __SD_task_run(SD_task_t task);
+void __SD_task_destroy(SD_task_t task);
+void __SD_task_destroy_scheduling_data(SD_task_t task);
 
 #endif

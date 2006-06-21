@@ -28,7 +28,7 @@ void SD_create_environment(const char *platform_file) {
   void *surf_workstation = NULL;
   void *surf_link = NULL;
 
-  CHECK_INIT_DONE();
+  SD_CHECK_INIT_DONE();
 
   surf_timer_resource_init(platform_file);  /* tell Surf to create the environnement */
 
@@ -101,14 +101,14 @@ SD_task_t* SD_simulate(double how_long)
   return NULL;
 }
 
-/* Destroys all SD data. This function should be called when the simulation is over.
+/* Destroys all SD internal data. This function should be called when the simulation is over.
+ * The tasks should have been destroyed first.
  */
-void SD_clean() {
+void SD_exit() {
   if (sd_global != NULL) {
     xbt_dict_free(&sd_global->workstations);
     xbt_dict_free(&sd_global->links);
     xbt_free(sd_global);
     surf_exit();
-    /* TODO: destroy the tasks */
   }
 }

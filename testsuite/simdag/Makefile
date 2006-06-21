@@ -7,7 +7,7 @@ PEDANTIC_PARANOID_FREAK =       -O0 -Wshadow -Wcast-align \
 				-Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
 				-Wmissing-noreturn -Wredundant-decls -Wnested-externs \
 				-Wpointer-arith -Wwrite-strings -finline-functions
-REASONABLY_CAREFUL_DUDE =	-Wall
+REASONABLY_CAREFUL_DUDE =	-Wall -Werror
 NO_PRAYER_FOR_THE_WICKED =	-w -O2 
 WARNINGS = 			$(REASONABLY_CAREFUL_DUDE)
 CFLAGS = -g $(WARNINGS)
