@@ -26,8 +26,15 @@ int main(int argc, char **argv) {
   SD_create_environment(platform_file);
 
   /* creation of the tasks and their dependencies */
-  
+  SD_task_t task1 = SD_task_create("Task 1", NULL, 10.0);
 
+  /* watch points */
+  SD_task_watch(task1, SD_SCHEDULED);
+  SD_task_watch(task1, SD_DONE);
+  SD_task_unwatch(task1, SD_SCHEDULED);
+  SD_task_watch(task1, SD_DONE);
+  SD_task_watch(task1, SD_SCHEDULED);
+  
   /* let's launch the simulation! */
   SD_simulate(100);
 

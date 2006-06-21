@@ -7,17 +7,20 @@
 SD_task_t SD_task_create(const char *name, void *data, double amount) {
   CHECK_INIT_DONE();
   xbt_assert0(name != NULL, "name is NULL !");
-  xbt_assert0(amount >= 0, "amount must be positive"); /* or amount > 0 ? */
+  xbt_assert0(amount > 0, "amount must be positive");
 
   SD_task_data_t sd_data = xbt_new0(s_SD_task_data_t, 1); /* task private data */
   sd_data->name = xbt_strdup(name);
-  sd_data->state = SD_SCHEDULED; /* not sure */
+  sd_data->state = SD_NOT_SCHEDULED;
+  sd_data->amount = amount;
+  sd_data->surf_action = NULL;
+  sd_data->watch_points = 0;
 
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
   task->sd_data = sd_data; /* private data */
   task->data = data; /* user data */
 
-  /* TODO: dependencies + watch */
+  /* TODO: dependencies */
 
   return task;
 }
@@ -63,20 +66,19 @@ const char* SD_task_get_name(SD_task_t task) {
 double SD_task_get_amount(SD_task_t task) {
   CHECK_INIT_DONE();
   xbt_assert0(task, "Invalid parameter");
-
-  /* TODO */
-  return 0;
-  /*return task->amount;*/
+  return task->sd_data->amount;
 }
 
 /* Returns the remaining computing amount of a task.
  */
 double SD_task_get_remaining_amount(SD_task_t task) {
   CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter")
-
-  /* TODO (surf encapsulation) */;
-  return 0;
+  xbt_assert0(task, "Invalid parameter");
+  SD_task_data_t sd_data = task->sd_data;
+  if (sd_data->surf_action == NULL)
+    return sd_data->amount;
+  else
+    return sd_data->surf_action->remains;
 }
 
 /* Adds a dependency between two tasks.
@@ -95,7 +97,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   /* TODO */
 }
 
-/* Returns the state of a task: SD_SCHEDULED, SD_RUNNING, SD_DONE or SD_FAILED.
+/* Returns the state of a task: SD_NOT_SCHEDULED, SD_SCHEDULED, SD_RUNNING, SD_DONE or SD_FAILED.
  */
 SD_task_state_t SD_task_get_state(SD_task_t task) {
   CHECK_INIT_DONE();
@@ -103,14 +105,32 @@ SD_task_state_t SD_task_get_state(SD_task_t task) {
   return task->sd_data->state;
 }
 
+/* temporary function for debugging */
+void __SD_print_watch_points(SD_task_t task) {
+  static const int state_masks[] = {SD_SCHEDULED, SD_RUNNING, SD_DONE, SD_FAILED};
+  static const char* state_names[] = {"scheduled", "running", "done", "failed"};
+
+  printf("Task '%s' watch points (%x): ", task->sd_data->name, task->sd_data->watch_points);
+
+  int i;
+  for (i = 0; i < 4; i++) {
+    if (task->sd_data->watch_points & state_masks[i])
+      printf("%s ", state_names[i]);
+      
+  }
+  printf("\n");
+}
+
 /* Adds a watch point to a task.
    SD_simulate will stop as soon as the state of this task is the one given in argument.
    Watch point is then automatically removed.
  */
-void  SD_task_watch(SD_task_t task, SD_task_state_t state) {
+void SD_task_watch(SD_task_t task, SD_task_state_t state) {
   CHECK_INIT_DONE();
   xbt_assert0(task, "Invalid parameter");
-  /* TODO */
+
+  task->sd_data->watch_points = task->sd_data->watch_points | state;
+  __SD_print_watch_points(task);
 }
 
 /* Removes a watch point from a task.
@@ -118,7 +138,9 @@ void  SD_task_watch(SD_task_t task, SD_task_state_t state) {
 void SD_task_unwatch(SD_task_t task, SD_task_state_t state) {
   CHECK_INIT_DONE();
   xbt_assert0(task, "Invalid parameter");
-  /* TODO */
+  
+  task->sd_data->watch_points = task->sd_data->watch_points & ~state;
+  __SD_print_watch_points(task);
 }
 
 /* Unschedules a task.
@@ -135,7 +157,7 @@ void SD_task_unschedule(SD_task_t task) {
 void SD_task_destroy(SD_task_t task) {
   CHECK_INIT_DONE();
   xbt_free(task->sd_data->name);
-
-  /* TODO: dependencies + watch */
+  xbt_free(task->sd_data);
+  /* TODO: dependencies */
   xbt_free(task);
 }

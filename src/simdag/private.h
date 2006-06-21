@@ -4,6 +4,7 @@
 #include "xbt/dict.h"
 #include "simdag/simdag.h"
 #include "simdag/datatypes.h"
+#include "surf/surf.h"
 
 #define CHECK_INIT_DONE() xbt_assert0(sd_global != NULL, "SD_init not called yet")
 
@@ -31,9 +32,12 @@ typedef struct SD_workstation_data {
 typedef struct SD_task_data {
   char *name;
   SD_task_state_t state;
-  /*double amount;
-    double remaining_amount;*/
-  /* TODO: dependencies + watch */
+  double amount;
+  surf_action_t surf_action;
+  unsigned short watch_points;
+
+  /*  double remaining_amount;*/
+  /* TODO: dependencies */
 } s_SD_task_data_t;
 
 /* Private functions */

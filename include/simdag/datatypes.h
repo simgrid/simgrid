@@ -19,10 +19,11 @@ typedef struct SD_workstation {
 
 /* Task state */
 typedef enum {
-  SD_SCHEDULED,
-  SD_RUNNING,
-  SD_DONE,
-  SD_FAILED
+  SD_NOT_SCHEDULED = 0, /* 0 because SD_NOT_SCHEDULED is not a valid state for SD_watch and SD_unwatch */
+  SD_SCHEDULED =     0x0001,
+  SD_RUNNING =       0x0002,
+  SD_DONE =          0x0004,
+  SD_FAILED =        0x0008 
 } SD_task_state_t;
 
 /* Task */
