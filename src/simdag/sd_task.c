@@ -138,7 +138,7 @@ void __SD_print_dependencies(SD_task_t task) {
   dynar = task->sd_data->tasks_after;
   length = xbt_dynar_length(dynar);
   for (i = 0; i < length; i++) {
-    xbt_dynar_get_ptr(dynar, i, &dependency);
+    xbt_dynar_get_cpy(dynar, i, &dependency);
     printf(" %s", SD_task_get_name(dependency->dst));
   }
   printf("\n----------------------------\n");
@@ -158,9 +158,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
   SD_dependency_t dependency;
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
-    if (dependency->src == src && dependency->dst == dst) {
-      found = 1;
-    }
+    found = (dependency->dst == dst);
   }
   xbt_assert2(!found, "A dependency already exists between task '%s' and task '%s'", src->sd_data->name, dst->sd_data->name);
 
@@ -177,7 +175,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
   xbt_dynar_push(dst->sd_data->tasks_before, &dependency);
 
   /*  __SD_print_dependencies(src);
-      __SD_print_dependencies(dst);*/
+      __SD_print_dependencies(dst); */
 }
 
 /* Removes a dependency between two tasks.
@@ -194,7 +192,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   SD_dependency_t dependency;
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
-    if (dependency->src == src && dependency->dst == dst) {
+    if (dependency->dst == dst) {
       xbt_dynar_remove_at(dynar, i, NULL);
       found = 1;
     }
@@ -208,7 +206,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
-    if (dependency->src == src && dependency->dst == dst) {
+    if (dependency->src == src) {
       xbt_dynar_remove_at(dynar, i, NULL);
       __SD_task_destroy_dependency(dependency);
       found = 1;
@@ -217,8 +215,29 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   xbt_assert4(found, "SimDag error: task '%s' is a successor of '%s' but task '%s' is not a predecessor of task '%s'",
 	      dst->sd_data->name, src->sd_data->name, src->sd_data->name, dst->sd_data->name); /* should never happen... */
 
-  /*  __SD_print_dependencies(src);
-      __SD_print_dependencies(dst);*/
+/*   __SD_print_dependencies(src); 
+     __SD_print_dependencies(dst); */
+}
+
+/* Returns the data associated to a dependency between two tasks. This data can be NULL.
+ */
+void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert1(src != dst, "Cannot have a dependency between task '%s' and itself", SD_task_get_name(src));
+
+  xbt_dynar_t dynar = src->sd_data->tasks_after;
+  int length = xbt_dynar_length(dynar);
+  int found = 0;
+  int i;
+  SD_dependency_t dependency;
+  for (i = 0; i < length && !found; i++) {
+    xbt_dynar_get_cpy(dynar, i, &dependency);
+    found = (dependency->dst == dst);
+  }
+  xbt_assert4(found, "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
+	      src->sd_data->name, dst->sd_data->name, dst->sd_data->name, src->sd_data->name);
+  return dependency->data;
 }
 
 /* Returns the state of a task: SD_NOT_SCHEDULED, SD_SCHEDULED, SD_RUNNING, SD_DONE or SD_FAILED.

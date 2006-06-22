@@ -53,7 +53,8 @@ const char*       SD_task_get_name(SD_task_t task);
 double            SD_task_get_amount(SD_task_t task);
 double            SD_task_get_remaining_amount(SD_task_t task);
 void              SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
-void              SD_task_dependency_remove(SD_task_t src, SD_task_t dst); 
+void              SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
+void*             SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
 SD_task_state_t   SD_task_get_state(SD_task_t task);
 /* SD_task_state_t can be either SD_SCHEDULED, SD_RUNNING, SD_DONE, or SD_FAILED */
 
