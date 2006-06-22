@@ -193,10 +193,11 @@ int client(int argc,char *argv[]) {
     xbt_ex_free(e);
     exception_catching();
   }
-  
-  gras_msg_send(toserver,gras_msgtype_by_name("kill"),NULL);
+
+  INFO2("Ask %s:%d to die",gras_socket_peer_name(toforwarder),gras_socket_peer_port(toforwarder));
   gras_msg_send(toforwarder,gras_msgtype_by_name("kill"),NULL);
-  gras_os_sleep(1); /* give peer a chance to get the message before closing the socket */
+  INFO2("Ask %s:%d to die",gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
+  gras_msg_send(toserver,gras_msgtype_by_name("kill"),NULL);
 
   /* 11. Cleanup the place before leaving */
   gras_socket_close(toserver);
@@ -217,6 +218,8 @@ typedef struct {
 
 static int forwarder_cb_kill(gras_msg_cb_ctx_t ctx,
 			     void             *payload_data) {
+  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  INFO2("Asked to die by %s:%d",gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor));
   forward_data_t fdata=gras_userdata_get();
   fdata->done = 1;
   return 1;
@@ -226,6 +229,7 @@ static int forwarder_cb_forward_ex(gras_msg_cb_ctx_t ctx,
 				   void             *payload_data) {
   forward_data_t fdata=gras_userdata_get();
 
+  INFO0("Forward a request");
   gras_msg_rpccall(fdata->server, 60,
 		   gras_msgtype_by_name("raise exception"),NULL,NULL);
   return 1;
@@ -278,6 +282,9 @@ typedef struct {
 
 static int server_cb_kill(gras_msg_cb_ctx_t ctx,
 			  void             *payload_data) {
+  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  INFO2("Asked to die by %s:%d",gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor));
+
   server_data_t sdata=gras_userdata_get();
   sdata->done = 1;
   return 1;
