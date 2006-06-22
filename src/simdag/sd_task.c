@@ -1,6 +1,7 @@
 #include "private.h"
 #include "simdag/simdag.h"
 #include "xbt/sysdep.h"
+#include "xbt/dynar.h"
 
 /* Creates a task.
  */
@@ -22,8 +23,8 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
   sd_data->watch_points = 0;
 
   /* dependencies */
-  sd_data->tasks_before = xbt_dynar_new(sizeof(SD_task_t), NULL);
-  sd_data->tasks_after = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  sd_data->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+  sd_data->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
 
   /* scheduling parameters */
   sd_data->workstation_nb = 0;
@@ -52,7 +53,7 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
 		     double *communication_amount, double rate) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task, "Invalid parameter");
-  xbt_assert0(SD_task_get_state(task) == SD_NOT_SCHEDULED, "This task has already been scheduled.");
+  xbt_assert1(SD_task_get_state(task) == SD_NOT_SCHEDULED, "Task '%s' has already been scheduled.", SD_task_get_name(task));
   xbt_assert0(workstation_nb > 0, "workstation_nb must be positive");
 
   SD_task_data_t sd_data = task->sd_data;
@@ -80,7 +81,7 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
  */
 void* SD_task_get_data(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   return task->data;
 }
 
@@ -88,7 +89,7 @@ void* SD_task_get_data(SD_task_t task) {
  */
 void SD_task_set_data(SD_task_t task, void *data) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   task->data = data;
 }
 
@@ -96,7 +97,7 @@ void SD_task_set_data(SD_task_t task, void *data) {
  */
 const char* SD_task_get_name(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   return task->sd_data->name;
 }
 
@@ -104,7 +105,7 @@ const char* SD_task_get_name(SD_task_t task) {
  */
 double SD_task_get_amount(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   return task->sd_data->amount;
 }
 
@@ -112,7 +113,7 @@ double SD_task_get_amount(SD_task_t task) {
  */
 double SD_task_get_remaining_amount(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   SD_task_data_t sd_data = task->sd_data;
   if (sd_data->surf_action)
     return sd_data->amount;
@@ -120,12 +121,63 @@ double SD_task_get_remaining_amount(SD_task_t task) {
     return sd_data->surf_action->remains;
 }
 
+/* temporary function for debbuging */
+void __SD_print_dependencies(SD_task_t task) {
+  printf("The following tasks must be executed before %s:", SD_task_get_name(task));
+  xbt_dynar_t dynar = task->sd_data->tasks_before;
+  int length = xbt_dynar_length(dynar);
+  int i;
+  SD_dependency_t dependency;
+  for (i = 0; i < length; i++) {
+    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    printf(" %s", SD_task_get_name(dependency->src));
+  }
+
+  printf("\nThe following tasks must be executed after %s:", SD_task_get_name(task));
+
+  dynar = task->sd_data->tasks_after;
+  length = xbt_dynar_length(dynar);
+  for (i = 0; i < length; i++) {
+    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    printf(" %s", SD_task_get_name(dependency->dst));
+  }
+  printf("\n----------------------------\n");
+}
+
 /* Adds a dependency between two tasks.
  */
 void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  /* TODO */
+  xbt_assert1(src != dst, "Cannot add a dependency between task '%s' and itself", SD_task_get_name(src));
+
+  xbt_dynar_t dynar = src->sd_data->tasks_after;
+  int length = xbt_dynar_length(dynar);
+  int found = 0;
+  int i;
+  SD_dependency_t dependency;
+  for (i = 0; i < length && !found; i++) {
+    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    if (dependency->src == src && dependency->dst == dst) {
+      found = 1;
+    }
+  }
+  xbt_assert2(!found, "A dependency already exists between task '%s' and task '%s'", src->sd_data->name, dst->sd_data->name);
+
+  dependency = xbt_new0(s_SD_dependency_t, 1);
+
+  if (name != NULL)
+    dependency->name = xbt_strdup(name);
+  dependency->data = data;
+  dependency->src = src;
+  dependency->dst = dst;
+
+  /* src must be executed before dst */
+  xbt_dynar_push(src->sd_data->tasks_after, &dependency);
+  xbt_dynar_push(dst->sd_data->tasks_before, &dependency);
+
+  /*  __SD_print_dependencies(src);
+      __SD_print_dependencies(dst);*/
 }
 
 /* Removes a dependency between two tasks.
@@ -133,14 +185,47 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
 void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  /* TODO */
+  xbt_assert1(src != dst, "Cannot remove a dependency between task '%s' and itself", SD_task_get_name(src));
+
+  xbt_dynar_t dynar = src->sd_data->tasks_after;
+  int length = xbt_dynar_length(dynar);
+  int found = 0;
+  int i;
+  SD_dependency_t dependency;
+  for (i = 0; i < length && !found; i++) {
+    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    if (dependency->src == src && dependency->dst == dst) {
+      xbt_dynar_remove_at(dynar, i, NULL);
+      found = 1;
+    }
+  }
+  xbt_assert4(found, "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
+	      src->sd_data->name, dst->sd_data->name, dst->sd_data->name, src->sd_data->name);
+
+  dynar = dst->sd_data->tasks_before;
+  length = xbt_dynar_length(dynar);
+  found = 0;
+  
+  for (i = 0; i < length && !found; i++) {
+    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    if (dependency->src == src && dependency->dst == dst) {
+      xbt_dynar_remove_at(dynar, i, NULL);
+      __SD_task_destroy_dependency(dependency);
+      found = 1;
+    }
+  }
+  xbt_assert4(found, "SimDag error: task '%s' is a successor of '%s' but task '%s' is not a predecessor of task '%s'",
+	      dst->sd_data->name, src->sd_data->name, src->sd_data->name, dst->sd_data->name); /* should never happen... */
+
+  /*  __SD_print_dependencies(src);
+      __SD_print_dependencies(dst);*/
 }
 
 /* Returns the state of a task: SD_NOT_SCHEDULED, SD_SCHEDULED, SD_RUNNING, SD_DONE or SD_FAILED.
  */
 SD_task_state_t SD_task_get_state(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   return task->sd_data->state;
 }
 
@@ -165,7 +250,7 @@ void __SD_print_watch_points(SD_task_t task) {
  */
 void SD_task_watch(SD_task_t task, SD_task_state_t state) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
 
   task->sd_data->watch_points = task->sd_data->watch_points | state;
   __SD_print_watch_points(task);
@@ -175,7 +260,7 @@ void SD_task_watch(SD_task_t task, SD_task_state_t state) {
  */
 void SD_task_unwatch(SD_task_t task, SD_task_state_t state) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   
   task->sd_data->watch_points = task->sd_data->watch_points & ~state;
   __SD_print_watch_points(task);
@@ -187,7 +272,7 @@ void SD_task_unwatch(SD_task_t task, SD_task_state_t state) {
  */
 void SD_task_unschedule(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
   xbt_assert1(task->sd_data->state == SD_SCHEDULED ||
 	      task->sd_data->state == SD_RUNNING ||
 	      task->sd_data->state == SD_FAILED,
@@ -204,7 +289,7 @@ void SD_task_unschedule(SD_task_t task) {
  */
 void __SD_task_run(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
 
   SD_task_data_t sd_data = task->sd_data;
   surf_workstation_resource->extension_public->
@@ -224,7 +309,22 @@ void __SD_task_run(SD_task_t task) {
  */
 void SD_task_destroy(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
+  xbt_assert0(task != NULL, "Invalid parameter");
+
+  /*  printf("Destroying task %s...\n", SD_task_get_name(task));*/
+
+  /* we must destroy the dependencies carefuly (with SD_dependency_remove)
+     because each one is stored twice */
+  SD_dependency_t dependency;
+  while (xbt_dynar_length(task->sd_data->tasks_before) > 0) {
+    xbt_dynar_get_cpy(task->sd_data->tasks_before, 0, &dependency);
+    SD_task_dependency_remove(dependency->src, dependency->dst);
+  }
+
+  while (xbt_dynar_length(task->sd_data->tasks_after) > 0) {
+    xbt_dynar_get_cpy(task->sd_data->tasks_after, 0, &dependency);
+    SD_task_dependency_remove(dependency->src, dependency->dst);
+  }
 
   if (task->sd_data->state == SD_SCHEDULED)
     __SD_task_destroy_scheduling_data(task);
@@ -236,6 +336,9 @@ void SD_task_destroy(SD_task_t task) {
   xbt_dynar_free(&task->sd_data->tasks_after);
   xbt_free(task->sd_data);
   xbt_free(task);
+
+  /*printf("Task destroyed.\n");*/
+
 }
 
 /* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED.
@@ -244,4 +347,14 @@ void __SD_task_destroy_scheduling_data(SD_task_t task) {
   xbt_free(task->sd_data->workstation_list);
   xbt_free(task->sd_data->computation_amount);
   xbt_free(task->sd_data->communication_amount);
+}
+
+/* Destroys a dependency between two tasks.
+ */
+void __SD_task_destroy_dependency(void *dependency) {
+  if (((SD_dependency_t) dependency)->name != NULL)
+    xbt_free(((SD_dependency_t) dependency)->name);
+  /*printf("destroying dependency between %s and %s\n", ((SD_dependency_t) dependency)->src->sd_data->name, ((SD_dependency_t) dependency)->dst->sd_data->name);*/
+  xbt_free(dependency);
+  /*printf("destroyed.\n");*/
 }

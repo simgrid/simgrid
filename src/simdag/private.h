@@ -29,6 +29,15 @@ typedef struct SD_workstation_data {
   void *surf_workstation; /* surf object */
 } s_SD_workstation_data_t;
 
+/* Task dependencies */
+typedef struct SD_dependency {
+  char *name;
+  void *data;
+  SD_task_t src;
+  SD_task_t dst;
+  /* src must be finished before dst can start */
+} s_SD_dependency_t, *SD_dependency_t;
+
 /* Task private data */
 typedef struct SD_task_data {
   char *name;
@@ -60,5 +69,6 @@ void __SD_workstation_destroy(void *workstation);
 void __SD_task_run(SD_task_t task);
 void __SD_task_destroy(SD_task_t task);
 void __SD_task_destroy_scheduling_data(SD_task_t task);
+void __SD_task_destroy_dependency(void *dependency);
 
 #endif
