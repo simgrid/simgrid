@@ -129,7 +129,7 @@ void __SD_print_dependencies(SD_task_t task) {
   int i;
   SD_dependency_t dependency;
   for (i = 0; i < length; i++) {
-    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    xbt_dynar_get_cpy(dynar, i, &dependency);
     printf(" %s", SD_task_get_name(dependency->src));
   }
 
@@ -138,7 +138,7 @@ void __SD_print_dependencies(SD_task_t task) {
   dynar = task->sd_data->tasks_after;
   length = xbt_dynar_length(dynar);
   for (i = 0; i < length; i++) {
-    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    xbt_dynar_get_ptr(dynar, i, &dependency);
     printf(" %s", SD_task_get_name(dependency->dst));
   }
   printf("\n----------------------------\n");
@@ -157,7 +157,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
   int i;
   SD_dependency_t dependency;
   for (i = 0; i < length && !found; i++) {
-    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    xbt_dynar_get_cpy(dynar, i, &dependency);
     if (dependency->src == src && dependency->dst == dst) {
       found = 1;
     }
@@ -193,7 +193,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   int i;
   SD_dependency_t dependency;
   for (i = 0; i < length && !found; i++) {
-    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    xbt_dynar_get_cpy(dynar, i, &dependency);
     if (dependency->src == src && dependency->dst == dst) {
       xbt_dynar_remove_at(dynar, i, NULL);
       found = 1;
@@ -207,7 +207,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   found = 0;
   
   for (i = 0; i < length && !found; i++) {
-    dependency = *((SD_dependency_t*) xbt_dynar_get_ptr(dynar, i));
+    xbt_dynar_get_cpy(dynar, i, &dependency);
     if (dependency->src == src && dependency->dst == dst) {
       xbt_dynar_remove_at(dynar, i, NULL);
       __SD_task_destroy_dependency(dependency);
