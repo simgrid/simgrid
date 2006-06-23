@@ -4,14 +4,16 @@ use strict;
 
 sub usage {
     print STDERR <<EOH
-Usage: all2all_make_deployment.pl platform_file.xml nb_host (bcast source?)
+Usage: all2all_make_deployment.pl platform_file.xml nb_host size_msg (bcast source?)
   
 This script generates a deployment file for the all2all program. It takes 
 a SimGrid platform file as first argument and the number of wanted peers as 
 second argument. If the amount of peers exceeds the amount of available 
 hosts in the deployment file, several peers will be placed on the same host.
-      
-If a third argument is passed, this is the source of the broadcast
+
+The third argument is a size of the message to send ( octets )  
+
+If a fourth argument is passed, this is the source of the broadcast
 (given as a number between 0 and nb_host-1).
 EOH
       ;
@@ -20,6 +22,7 @@ EOH
 
 my $input    = shift @ARGV || usage();
 my $nb_hosts = shift @ARGV || usage();
+my $size_msg = shift @ARGV || usage();
 my $source   = shift || "";
 
 my @host;
@@ -53,6 +56,7 @@ for (my $i=0; $i<$nb_hosts; $i++) {
     $it_port++;
   }
 }
+$receivers .= "    <argument value=\"$size_msg\"/>\n";
 
 #
 # and now, really generate the file. Receiver first.
