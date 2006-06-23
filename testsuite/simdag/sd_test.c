@@ -27,9 +27,10 @@ int main(int argc, char **argv) {
   SD_create_environment(platform_file);
 
   /* creation of the tasks and their dependencies */
-  SD_task_t volatile taskA = SD_task_create("Task A", NULL, 10.0);
-  SD_task_t volatile taskB = SD_task_create("Task B", NULL, 40.0);
-  SD_task_t volatile taskC = SD_task_create("Task C", NULL, 30.0);
+  SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
+  SD_task_t taskB = SD_task_create("Task B", NULL, 40.0);
+  SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
+  
 
   SD_task_dependency_add(NULL, NULL, taskA, taskB);
   SD_task_dependency_add(NULL, NULL, taskA, taskC);
@@ -68,13 +69,30 @@ int main(int argc, char **argv) {
   /* if everything is ok, no exception is forwarded or rethrown by main() */
 
   /* watch points */
-  SD_task_watch(taskA, SD_SCHEDULED);
+  /*  SD_task_watch(taskA, SD_SCHEDULED);
   SD_task_watch(taskA, SD_DONE);
   SD_task_unwatch(taskA, SD_SCHEDULED);
   SD_task_watch(taskA, SD_DONE);
-  SD_task_watch(taskA, SD_SCHEDULED);
+  SD_task_watch(taskA, SD_SCHEDULED);*/
   
   /* let's launch the simulation! */
+
+  int workstation_number = 2;
+  SD_workstation_t *workstation_list = SD_workstation_get_list();
+  double computation_amount[] = {100, 200};
+  double communication_amount[] =
+    {
+      0, 30,
+      20, 0
+    };
+  double rate = 1;
+
+  printf("Scheduling task A (state = %d)...\n", SD_task_get_state(taskA));
+  SD_task_schedule(taskA, workstation_number, workstation_list,
+      computation_amount, communication_amount, rate);
+  printf("Done. Task A state: %d\n", SD_task_get_state(taskA));
+
+  printf("Launching simulation...\n");
   SD_simulate(100);
 
   SD_task_destroy(taskA);

@@ -1,7 +1,7 @@
 #include "simdag/simdag.h"
 #include "private.h"
-#include "xbt/asserts.h"
 #include "xbt/sysdep.h"
+#include "xbt/dynar.h"
 #include "surf/surf.h"
 
 SD_global_t sd_global = NULL;
@@ -14,8 +14,15 @@ void SD_init(int *argc, char **argv) {
   sd_global = xbt_new0(s_SD_global_t, 1);
   sd_global->workstations = xbt_dict_new();
   sd_global->workstation_count = 0;
-  /*sd_global->links = xbt_dynar_new(sizeof(s_SD_link_t), __SD_link_destroy);*/
   sd_global->links = xbt_dict_new();
+  sd_global->tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
+
+  s_SD_task_t task;
+  sd_global->not_scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->running_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->done_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->failed_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
 
   surf_init(argc, argv);
 }
@@ -36,8 +43,8 @@ void SD_create_environment(const char *platform_file) {
   /*printf("surf_workstation_resource = %p, workstation_set = %p\n", surf_workstation_resource, workstation_set);
     printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
 
-  surf_workstation_resource_init_KCCFLN05(platform_file);
-  /*surf_workstation_resource_init_CLM03(platform_file);*/
+  /*surf_workstation_resource_init_KCCFLN05(platform_file);*/
+  surf_workstation_resource_init_CLM03(platform_file);
 
   /*printf("surf_workstation_resource = %p, workstation_set = %p\n", surf_workstation_resource, workstation_set);
     printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
@@ -59,6 +66,48 @@ SD_task_t* SD_simulate(double how_long)
 {
   /* TODO */
 
+  double total_time = 0.0; /* we stop the simulation when total_time >= how_long */
+  double elapsed_time = 0.0;
+  int watch_point_reached = 0;
+  int i;
+  SD_task_t task;
+  surf_action_t surf_action;
+
+  surf_solve(); /* Takes traces into account. Returns 0.0 */
+
+  /* main loop */
+  while (elapsed_time >= 0.0 && total_time < how_long && !watch_point_reached) {
+    for (i = 0 ; i < xbt_dynar_length(sd_global->tasks); i++) {
+      xbt_dynar_get_cpy(sd_global->tasks, i, &task);
+      printf("Examining task '%s'...\n", SD_task_get_name(task));
+
+      /* if the task is scheduled and the dependencies are satisfied,
+	 we can execute the task */
+      if (SD_task_get_state(task) == SD_SCHEDULED) {
+	printf("Task '%s' is scheduled.\n", SD_task_get_name(task));
+
+	if (xbt_dynar_length(task->tasks_before) == 0) {
+	  printf("The dependencies are satisfied. Executing task '%s'\n", SD_task_get_name(task));
+	  surf_action = __SD_task_run(task);
+	}
+	else {
+	  printf("Cannot execute task '%s' because some depencies are not satisfied.\n", SD_task_get_name(task));
+	}
+      }
+      else {
+	printf("Task '%s' is not scheduled. Nothing to do.\n", SD_task_get_name(task));
+      }
+    }
+    elapsed_time = surf_solve();
+    if (elapsed_time > 0.0)
+      total_time += elapsed_time;
+    printf("Total time: %f\n", total_time);
+  }
+
+  return NULL;
+}
+
+void SD_test() {
   /* temporary test to explore the workstations and the links */
   xbt_dict_cursor_t cursor = NULL;
   char *name = NULL;
@@ -97,8 +146,6 @@ SD_task_t* SD_simulate(double how_long)
     printf("%s ", SD_link_get_name(route[i]));
   }
   printf("\n");
-
-  return NULL;
 }
 
 /* Destroys all SD internal data. This function should be called when the simulation is over.
@@ -108,7 +155,15 @@ void SD_exit() {
   if (sd_global != NULL) {
     xbt_dict_free(&sd_global->workstations);
     xbt_dict_free(&sd_global->links);
+    xbt_dynar_free(&sd_global->tasks);
     xbt_free(sd_global);
+
+    xbt_swag_free(sd_global->not_scheduled_task_set);
+    xbt_swag_free(sd_global->scheduled_task_set);
+    xbt_swag_free(sd_global->running_task_set);
+    xbt_swag_free(sd_global->done_task_set);
+    xbt_swag_free(sd_global->failed_task_set);
+
     surf_exit();
   }
 }

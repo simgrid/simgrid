@@ -55,14 +55,14 @@ double            SD_task_get_remaining_amount(SD_task_t task);
 void              SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
 void              SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
 void*             SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
-SD_task_state_t   SD_task_get_state(SD_task_t task);
-/* SD_task_state_t can be either SD_SCHEDULED, SD_RUNNING, SD_DONE, or SD_FAILED */
+e_SD_task_state_t SD_task_get_state(SD_task_t task);
+/* e_SD_task_state_t can be either SD_SCHEDULED, SD_RUNNING, SD_DONE, or SD_FAILED */
 
-void              SD_task_watch(SD_task_t task, SD_task_state_t state);
+void              SD_task_watch(SD_task_t task, e_SD_task_state_t state);
 /* SD_simulate will stop as soon as the state of this task is the one given in argument.
    Watch-point is then automatically removed */
 
-void              SD_task_unwatch(SD_task_t task, SD_task_state_t state);
+void              SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
 void              SD_task_unschedule(SD_task_t task); /* change state and rerun */
 void              SD_task_destroy(SD_task_t task);
 
@@ -70,7 +70,7 @@ void              SD_task_destroy(SD_task_t task);
 
 void              SD_init(int *argc, char **argv);
 void              SD_create_environment(const char *platform_file);
-SD_task_t         *SD_simulate(double how_long); /* returns a NULL-terminated array of SD_task_t whose state has changed */
+SD_task_t*        SD_simulate(double how_long); /* returns a NULL-terminated array of SD_task_t whose state has changed */
 void              SD_exit(); /* cleans everything */
 
 SG_END_DECL()

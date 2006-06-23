@@ -19,6 +19,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   
   const char *name = SD_workstation_get_name(workstation);
   xbt_dict_set(sd_global->workstations, name, workstation, __SD_workstation_destroy); /* add the workstation to the dictionary */
+  sd_global->workstation_count++;
 
   return workstation;
 }

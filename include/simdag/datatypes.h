@@ -24,14 +24,9 @@ typedef enum {
   SD_RUNNING =       0x0002,
   SD_DONE =          0x0004,
   SD_FAILED =        0x0008 
-} SD_task_state_t;
+} e_SD_task_state_t;
 
 /* Task */
-typedef struct SD_task_data *SD_task_data_t;
-
-typedef struct SD_task {
-  SD_task_data_t sd_data; /* SD internal data */
-  void *data; /* user data */
-} s_SD_task_t, *SD_task_t;
+typedef struct SD_task *SD_task_t;
 
 #endif

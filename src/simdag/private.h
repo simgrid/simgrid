@@ -15,6 +15,14 @@ typedef struct SD_global {
   xbt_dict_t workstations; /* workstation list */
   int workstation_count; /* number of workstations */
   xbt_dict_t links; /* link list */
+  xbt_dynar_t tasks; /* task list */
+  
+  /* task state sets */
+  xbt_swag_t not_scheduled_task_set;
+  xbt_swag_t scheduled_task_set;
+  xbt_swag_t running_task_set;
+  xbt_swag_t done_task_set;
+  xbt_swag_t failed_task_set;
 } s_SD_global_t, *SD_global_t;
 
 extern SD_global_t sd_global;
@@ -38,10 +46,12 @@ typedef struct SD_dependency {
   /* src must be finished before dst can start */
 } s_SD_dependency_t, *SD_dependency_t;
 
-/* Task private data */
-typedef struct SD_task_data {
+/* Task */
+typedef struct SD_task {
+  s_xbt_swag_hookup_t state_hookup;
+  xbt_swag_t state_set;
+  void *data; /* user data */
   char *name;
-  SD_task_state_t state;
   double amount;
   surf_action_t surf_action;
   unsigned short watch_points;
@@ -56,9 +66,9 @@ typedef struct SD_task_data {
   double *computation_amount;
   double *communication_amount;
   double rate;
-} s_SD_task_data_t;
+} s_SD_task_t;
 
-/* Private functions */
+/* SimDag private functions */
 
 SD_link_t __SD_link_create(void *surf_link, void *data);
 void __SD_link_destroy(void *link);
@@ -66,9 +76,6 @@ void __SD_link_destroy(void *link);
 SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data);
 void __SD_workstation_destroy(void *workstation);
 
-void __SD_task_run(SD_task_t task);
-void __SD_task_destroy(SD_task_t task);
-void __SD_task_destroy_scheduling_data(SD_task_t task);
-void __SD_task_destroy_dependency(void *dependency);
+surf_action_t __SD_task_run(SD_task_t task);
 
 #endif
