@@ -16,6 +16,7 @@ typedef struct SD_global {
   int workstation_count; /* number of workstations */
   xbt_dict_t links; /* link list */
   xbt_dynar_t tasks; /* task list */
+  int watch_point_reached; /* has a task just reached a watch point? */
   
   /* task state sets */
   xbt_swag_t not_scheduled_task_set;
@@ -23,6 +24,7 @@ typedef struct SD_global {
   xbt_swag_t running_task_set;
   xbt_swag_t done_task_set;
   xbt_swag_t failed_task_set;
+
 } s_SD_global_t, *SD_global_t;
 
 extern SD_global_t sd_global;

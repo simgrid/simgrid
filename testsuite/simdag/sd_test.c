@@ -74,7 +74,9 @@ int main(int argc, char **argv) {
   SD_task_unwatch(taskA, SD_SCHEDULED);
   SD_task_watch(taskA, SD_DONE);
   SD_task_watch(taskA, SD_SCHEDULED);*/
-  
+
+  SD_task_watch(taskA, SD_SCHEDULED);
+
   /* let's launch the simulation! */
 
   int workstation_number = 2;
@@ -87,10 +89,10 @@ int main(int argc, char **argv) {
     };
   double rate = 1;
 
-  printf("Scheduling task A (state = %d)...\n", SD_task_get_state(taskA));
+  /*  printf("Scheduling task A (state = %d)...\n", SD_task_get_state(taskA));*/
   SD_task_schedule(taskA, workstation_number, workstation_list,
-      computation_amount, communication_amount, rate);
-  printf("Done. Task A state: %d\n", SD_task_get_state(taskA));
+		   computation_amount, communication_amount, rate);
+  /*  printf("Done. Task A state: %d\n", SD_task_get_state(taskA));*/
 
   printf("Launching simulation...\n");
   SD_simulate(100);

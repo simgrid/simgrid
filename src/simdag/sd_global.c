@@ -16,6 +16,7 @@ void SD_init(int *argc, char **argv) {
   sd_global->workstation_count = 0;
   sd_global->links = xbt_dict_new();
   sd_global->tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  sd_global->watch_point_reached = 0;
 
   s_SD_task_t task;
   sd_global->not_scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
@@ -68,7 +69,6 @@ SD_task_t* SD_simulate(double how_long)
 
   double total_time = 0.0; /* we stop the simulation when total_time >= how_long */
   double elapsed_time = 0.0;
-  int watch_point_reached = 0;
   int i;
   SD_task_t task;
   surf_action_t surf_action;
@@ -76,7 +76,7 @@ SD_task_t* SD_simulate(double how_long)
   surf_solve(); /* Takes traces into account. Returns 0.0 */
 
   /* main loop */
-  while (elapsed_time >= 0.0 && total_time < how_long && !watch_point_reached) {
+  while (elapsed_time >= 0.0 && total_time < how_long && !sd_global->watch_point_reached) {
     for (i = 0 ; i < xbt_dynar_length(sd_global->tasks); i++) {
       xbt_dynar_get_cpy(sd_global->tasks, i, &task);
       printf("Examining task '%s'...\n", SD_task_get_name(task));

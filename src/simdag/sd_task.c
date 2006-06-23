@@ -66,7 +66,7 @@ e_SD_task_state_t SD_task_get_state(SD_task_t task) {
   return SD_FAILED;
 }
 
-/* Changes the state of a task and update the swags.
+/* Changes the state of a task. Update the swags and the flag sd_global->watch_point_reached.
  */
 static void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
   xbt_swag_remove(task, task->state_set);
@@ -85,6 +85,11 @@ static void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
     break;
   default: /* SD_FAILED */
     task->state_set = sd_global->failed_task_set;
+  }
+
+  if (task->watch_points & new_state) {
+    printf("Watch point reached with task '%s' in state %d!\n", SD_task_get_name(task), new_state);
+    sd_global->watch_point_reached = 1;
   }
 }
 
