@@ -21,6 +21,8 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
     task->name = NULL;
 
   task->state_set = sd_global->not_scheduled_task_set;
+  xbt_swag_insert(task,task->state_set);
+
   task->amount = amount;
   task->surf_action = NULL;
   task->watch_points = 0;
@@ -86,6 +88,7 @@ static void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
   default: /* SD_FAILED */
     task->state_set = sd_global->failed_task_set;
   }
+  xbt_swag_insert(task,task->state_set);
 
   if (task->watch_points & new_state) {
     printf("Watch point reached with task '%s' in state %d!\n", SD_task_get_name(task), new_state);
