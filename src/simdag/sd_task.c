@@ -325,7 +325,7 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
   task->workstation_list = xbt_new0(void*, workstation_nb);
   int i;
   for (i = 0; i < workstation_nb; i++) {
-    task->workstation_list[i] = workstation_list[i]->sd_data->surf_workstation;
+    task->workstation_list[i] = workstation_list[i]->surf_workstation;
   }
 
   __SD_task_set_state(task, SD_SCHEDULED);

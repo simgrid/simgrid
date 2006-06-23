@@ -27,24 +27,17 @@ typedef struct SD_global {
 
 extern SD_global_t sd_global;
 
-/* Link private data */
-typedef struct SD_link_data {
+/* Link */
+typedef struct SD_link {
   void *surf_link; /* surf object */
-} s_SD_link_data_t;
+  void *data; /* user data */
+} s_SD_link_t;
 
-/* Workstation private data */
-typedef struct SD_workstation_data {
+/* Workstation */
+typedef struct SD_workstation {
   void *surf_workstation; /* surf object */
-} s_SD_workstation_data_t;
-
-/* Task dependencies */
-typedef struct SD_dependency {
-  char *name;
-  void *data;
-  SD_task_t src;
-  SD_task_t dst;
-  /* src must be finished before dst can start */
-} s_SD_dependency_t, *SD_dependency_t;
+  void *data; /* user data */
+} s_SD_workstation_t;
 
 /* Task */
 typedef struct SD_task {
@@ -67,6 +60,15 @@ typedef struct SD_task {
   double *communication_amount;
   double rate;
 } s_SD_task_t;
+
+/* Task dependencies */
+typedef struct SD_dependency {
+  char *name;
+  void *data;
+  SD_task_t src;
+  SD_task_t dst;
+  /* src must be finished before dst can start */
+} s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
 

@@ -10,12 +10,9 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(surf_workstation != NULL, "surf_workstation is NULL !");
 
-  SD_workstation_data_t sd_data = xbt_new0(s_SD_workstation_data_t, 1); /* workstation private data */
-  sd_data->surf_workstation = surf_workstation;
-  
   SD_workstation_t workstation = xbt_new0(s_SD_workstation_t, 1);
+  workstation->surf_workstation = surf_workstation;
   workstation->data = data; /* user data */
-  workstation->sd_data = sd_data; /* private data */
   
   const char *name = SD_workstation_get_name(workstation);
   xbt_dict_set(sd_global->workstations, name, workstation, __SD_workstation_destroy); /* add the workstation to the dictionary */
@@ -46,7 +43,7 @@ SD_workstation_t*  SD_workstation_get_list(void) {
   void *data;
   int i=0;
 
-  xbt_dict_foreach(sd_global->workstations,cursor,key,data) {
+  xbt_dict_foreach(sd_global->workstations, cursor, key, data) {
     array[i++] = (SD_workstation_t) data;
   }
   array[i] = NULL;
@@ -82,7 +79,7 @@ void* SD_workstation_get_data(SD_workstation_t workstation) {
 const char* SD_workstation_get_name(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_resource->common_public->get_resource_name(workstation->sd_data->surf_workstation);
+  return surf_workstation_resource->common_public->get_resource_name(workstation->surf_workstation);
 }
 
 /* Returns an new array of links representating the route between two workstations.
@@ -90,8 +87,8 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 SD_link_t* SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
 
-  void *surf_src = src->sd_data->surf_workstation;
-  void *surf_dst = dst->sd_data->surf_workstation;
+  void *surf_src = src->surf_workstation;
+  void *surf_dst = dst->surf_workstation;
 
   const void **surf_route = surf_workstation_resource->extension_public->get_route(surf_src, surf_dst);
   int route_size = surf_workstation_resource->extension_public->get_route_size(surf_src, surf_dst);
@@ -112,7 +109,7 @@ SD_link_t* SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t 
 int SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
   return surf_workstation_resource->extension_public->
-    get_route_size(src->sd_data->surf_workstation, dst->sd_data->surf_workstation);
+    get_route_size(src->surf_workstation, dst->surf_workstation);
 }
 
 /* Returns the total power of a workstation.
@@ -120,7 +117,7 @@ int SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
 double SD_workstation_get_power(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_speed(workstation->sd_data->surf_workstation, 1.0);
+  return surf_workstation_resource->extension_public->get_speed(workstation->surf_workstation, 1.0);
 }
 
 /* Returns the proportion of available power in a workstation (normally a number between 0 and 1).
@@ -128,7 +125,7 @@ double SD_workstation_get_power(SD_workstation_t workstation) {
 double SD_workstation_get_available_power(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_available_speed(workstation->sd_data->surf_workstation);
+  return surf_workstation_resource->extension_public->get_available_speed(workstation->surf_workstation);
 }
 
 /* Destroys a workstation. The user data (if any) should have been destroyed first.
@@ -136,10 +133,6 @@ double SD_workstation_get_available_power(SD_workstation_t workstation) {
 void __SD_workstation_destroy(void *workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-
-  if (((SD_workstation_t) workstation)->sd_data != NULL) {
-    xbt_free(((SD_workstation_t) workstation)->sd_data);
-  }
-  
+  /* workstation->surf_workstation is freed by surf_exit and workstation->data is freed by the user */
   xbt_free(workstation);
 }

@@ -10,11 +10,9 @@ SD_link_t __SD_link_create(void *surf_link, void *data) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(surf_link != NULL, "surf_link is NULL !");
 
-  SD_link_data_t sd_data = xbt_new0(s_SD_link_data_t, 1); /* link private data */
-  sd_data->surf_link = surf_link;
 
   SD_link_t link = xbt_new0(s_SD_link_t, 1);
-  link->sd_data = sd_data; /* private data */
+  link->surf_link = surf_link;
   link->data = data; /* user data */
 
   const char *name = SD_link_get_name(link);
@@ -44,7 +42,7 @@ void SD_link_set_data(SD_link_t link, void *data) {
 const char* SD_link_get_name(SD_link_t link) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_link_name(link->sd_data->surf_link);
+  return surf_workstation_resource->extension_public->get_link_name(link->surf_link);
 }
 
 /* Returns the capacity of a link.
@@ -60,7 +58,7 @@ double SD_link_get_capacity(SD_link_t link) {
 double SD_link_get_current_bandwidth(SD_link_t link) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_link_bandwidth(link->sd_data->surf_link);
+  return surf_workstation_resource->extension_public->get_link_bandwidth(link->surf_link);
 }
 
 /* Return the current latency of a link.
@@ -68,7 +66,7 @@ double SD_link_get_current_bandwidth(SD_link_t link) {
 double SD_link_get_current_latency(SD_link_t link) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_link_latency(link->sd_data->surf_link);
+  return surf_workstation_resource->extension_public->get_link_latency(link->surf_link);
 }
 
 /* Destroys a link. The user data (if any) should have been destroyed first.
@@ -76,12 +74,7 @@ double SD_link_get_current_latency(SD_link_t link) {
 void __SD_link_destroy(void *link) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-
-  SD_link_data_t sd_data = ((SD_link_t) link)->data;
-  if (sd_data != NULL) {
-    xbt_free(sd_data);
-  }
-
+  /* link->surf_link is freed by surf_exit and link->data is freed by the user */
   xbt_free(link);
 }
 
