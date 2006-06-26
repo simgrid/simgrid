@@ -160,9 +160,8 @@ gras_socket_t gras_trp_select(double timeout) {
 	 accepted = (sock_iter->plugin->socket_accept)(sock_iter);
 	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
 	 accepted->meas = sock_iter->meas;
-       } else {
-#if 0 
-       FIXME: this fails of files. quite logical
+
+       } else if (sock_iter->recv_ok) {
 	 /* Make sure the socket is still alive by reading the first byte */
 	 char lookahead;
 	 int recvd;
@@ -171,21 +170,23 @@ gras_socket_t gras_trp_select(double timeout) {
 	 if (recvd < 0) {
 	   WARN2("socket %d failed: %s", sock_iter->sd, strerror(errno));
 	   /* done with this socket */
-	   gras_socket_close(&sock_iter);
+	   gras_socket_close(sock_iter);
 	   cursor--;
 	 } else if (recvd == 0) {
 	   /* Connection reset (=closed) by peer. */
 	   DEBUG1("Connection %d reset by peer", sock_iter->sd);
-	   gras_socket_close(&sock_iter); 
+	   gras_socket_close(sock_iter); 
 	   cursor--; 
 	 } else { 
-#endif
 	   /* Got a suited socket ! */
 	   XBT_OUT;
 	   return sock_iter;
-#if 0
 	 }
-#endif
+
+       } else {
+	 /* This is a file socket. Cannot recv() on it, but it must be alive */
+	   XBT_OUT;
+	   return sock_iter;
        }
 
        

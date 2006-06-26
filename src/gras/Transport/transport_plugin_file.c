@@ -95,6 +95,7 @@ gras_socket_client_from_file(const char*path) {
     res->sd = 1; /* stdout */
   }
 
+  res->recv_ok=0;
   DEBUG5("sock_client_from_file(%s): sd=%d in=%c out=%c accept=%c",
 	 path,
 	 res->sd,
@@ -141,6 +142,7 @@ gras_socket_t gras_socket_server_from_file(const char*path) {
 	 res->outgoing?'y':'n',
 	 res->accepting?'y':'n');
 
+  res->recv_ok=0;
   return res;
 }
 

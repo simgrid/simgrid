@@ -40,6 +40,7 @@ typedef struct s_gras_socket  {
   int outgoing :1; /* true if we can write on this sock */
   int accepting :1; /* true if master incoming sock in tcp */
   int meas :1; /* true if this is an experiment socket instead of messaging */
+  int recv_ok :1; /* true if it is valid to recv() on the socket (false if it is a file) */
 
   unsigned long int buf_size; /* what to say to the OS. field here to remember it when accepting */
    
