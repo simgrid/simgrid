@@ -10,7 +10,7 @@
 
 #include "gras.h"
 #include "xbt/matrix.h"
-#define PROC_MATRIX_SIZE 6
+#define PROC_MATRIX_SIZE 3
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
 #define DATA_MATRIX_SIZE 600
@@ -185,9 +185,13 @@ int master (int argc,char *argv[]) {
     xbt_matrix_free(result.C);
   }
   /*    end of gather   */
-  INFO0 ("The Result of Multiplication is :");
-  xbt_matrix_dump(C,"C:res",0,xbt_matrix_dump_display_double);
-   
+  if (DATA_MATRIX_SIZE < 50) {
+     INFO0 ("The Result of Multiplication is :");
+     xbt_matrix_dump(C,"C:res",0,xbt_matrix_dump_display_double);
+  } else {
+     INFO1("Matrix size too big (%d>50) to be displayed here",DATA_MATRIX_SIZE);
+  }
+
   for(i=0; i<SLAVE_COUNT; i++) {
      gras_socket_close(socket[i]);
      xbt_host_free(grid[i]);
