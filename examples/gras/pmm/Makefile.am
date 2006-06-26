@@ -1,5 +1,5 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_rl test_sg
+TESTS= test_sg
 EXTRA_DIST=pmm_deployment.xml  $(TESTS)
 
 # AUTOMAKE variable definition
