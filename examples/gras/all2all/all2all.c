@@ -59,7 +59,6 @@ int receiver (int argc,char *argv[]) {
      todo--;
      
      INFO3("Got Data from %s:%d (still %d to go)",
-	  /* data,*/
 	   gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor),
 	   todo);
 
@@ -119,7 +118,7 @@ int sender (int argc,char *argv[]) {
      peer = gras_socket_client(h->name,h->port);
      gras_msg_send(peer,gras_msgtype_by_name("data"),&data);
      INFO2("  Sent Data from %s to %s",
-	   /*data,*/gras_os_myname(),h->name);
+	   gras_os_myname(),h->name);
      gras_socket_close(peer);
   }
 
