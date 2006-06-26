@@ -1,5 +1,5 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_sg
+TESTS= test_sg test_rl
 EXTRA_DIST=all2all_deployment.xml test_sg.in test_rl.in
 
 # AUTOMAKE variable definition
