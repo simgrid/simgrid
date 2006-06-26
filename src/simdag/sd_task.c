@@ -154,7 +154,7 @@ void __SD_print_dependencies(SD_task_t task) {
 
 /* Destroys a dependency between two tasks.
  */
-void __SD_task_destroy_dependency(void *dependency) {
+static void __SD_task_destroy_dependency(void *dependency) {
   if (((SD_dependency_t) dependency)->name != NULL)
     xbt_free(((SD_dependency_t) dependency)->name);
   xbt_free(dependency);

@@ -71,7 +71,7 @@ void              SD_task_destroy(SD_task_t task);
 void              SD_init(int *argc, char **argv);
 void              SD_create_environment(const char *platform_file);
 SD_task_t*        SD_simulate(double how_long); /* returns a NULL-terminated array of SD_task_t whose state has changed */
-void              SD_exit(); /* cleans everything */
+void              SD_exit(void); /* cleans everything */
 
 SG_END_DECL()
 

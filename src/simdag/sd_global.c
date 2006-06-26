@@ -1,4 +1,3 @@
-#include "simdag/simdag.h"
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
@@ -136,51 +135,10 @@ SD_task_t* SD_simulate(double how_long)
   return changed_tasks;
 }
 
-void SD_test() {
-  /* temporary test to explore the workstations and the links */
-  xbt_dict_cursor_t cursor = NULL;
-  char *name = NULL;
-  SD_workstation_t workstation = NULL;
-  double power, available_power, bandwidth, latency;
-  SD_link_t link = NULL;
-
-  surf_solve();
-
-  xbt_dict_foreach(sd_global->workstations, cursor, name, workstation) {
-    power = SD_workstation_get_power(workstation);
-    available_power = SD_workstation_get_available_power(workstation);
-    printf("Workstation name: %s, power: %f Mflop/s, available power: %f%%\n", name, power, (available_power*100));
-  }
-
-  xbt_dict_foreach(sd_global->links, cursor, name, link) {
-    bandwidth = SD_link_get_current_bandwidth(link);
-    latency = SD_link_get_current_latency(link);
-    printf("Link name: %s, bandwidth: %f, latency: %f\n", name, bandwidth, latency);
-  }
-
-  /* test the route between two workstations */
-  SD_workstation_t src, dst;
-  xbt_dict_cursor_first(sd_global->workstations, &cursor);
-  xbt_dict_cursor_get_or_free(&cursor, &name, (void**) &src);
-  xbt_dict_cursor_step(cursor);
-  xbt_dict_cursor_get_or_free(&cursor, &name, (void**) &dst);
-  xbt_dict_cursor_free(&cursor);
-
-  SD_link_t *route = SD_workstation_route_get_list(src, dst);
-  int route_size = SD_workstation_route_get_size(src, dst);
-
-  printf("Route between %s and %s (%d links) : ", SD_workstation_get_name(src), SD_workstation_get_name(dst), route_size);
-  int i;
-  for (i = 0; i < route_size; i++) {
-    printf("%s ", SD_link_get_name(route[i]));
-  }
-  printf("\n");
-}
-
 /* Destroys all SD internal data. This function should be called when the simulation is over.
  * The tasks should have been destroyed first.
  */
-void SD_exit() {
+void SD_exit(void) {
   if (sd_global != NULL) {
     xbt_dict_free(&sd_global->workstations);
     xbt_dict_free(&sd_global->links);
