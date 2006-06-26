@@ -107,14 +107,15 @@ int master (int argc,char *argv[]) {
 
   gras_socket_t from;
 
-  /*  Init the GRAS's infrastructure */
-  gras_init(&argc, argv);
 
   xbt_host_t grid[SLAVE_COUNT]; /* The slaves */
   gras_socket_t socket[SLAVE_COUNT]; /* sockets for brodcast to slaves */
 
+  /*  Init the GRAS's infrastructure */
+  gras_init(&argc, argv);
+  register_messages();
+      
   /*  Initialize Matrices */
-
   A = xbt_matrix_double_new_id(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
   B = xbt_matrix_double_new_seq(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
   C = xbt_matrix_double_new_zeros(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
@@ -126,7 +127,7 @@ int master (int argc,char *argv[]) {
   //multiplication();
   //gather();
   /************************* Init Data Send *********************************/
-  gras_os_sleep(5);
+  gras_os_sleep(2);
 
   for( i=1;i<argc && i<=SLAVE_COUNT;i++){
     grid[i-1]=xbt_host_from_string(argv[i]);
