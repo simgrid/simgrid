@@ -4,7 +4,7 @@
   <!-- For each host, we have a sender and a receiver (because we use a
        1-port model and still don't want any deadlocks neither synchronization
        delays).
-       Sender arguments = receiver peer
+       Sender arguments = receiver peer + Message size as last argument (in byte)
        Receiver arguments: amount of incoming messages expected -->
 
 
@@ -13,6 +13,7 @@
      <argument value="Fafard:4000"/> 
      <argument value="Ginette:4000"/> 
      <argument value="Bourassa:4000"/> 
+     <argument value="512"/>
   </process>
   <process host="Tremblay" function="receiver">
      <argument value="4000"/>
@@ -25,6 +26,7 @@
      <argument value="Fafard:4000"/> 
      <argument value="Ginette:4000"/> 
      <argument value="Bourassa:4000"/> 
+     <argument value="512"/>
   </process>
   <process host="Jupiter" function="receiver">
      <argument value="4000"/>
@@ -37,6 +39,7 @@
      <argument value="Jupiter:4000"/>  
      <argument value="Ginette:4000"/> 
      <argument value="Bourassa:4000"/> 
+     <argument value="512"/>
   </process>
   <process host="Fafard" function="receiver">
      <argument value="4000"/>
@@ -49,6 +52,7 @@
      <argument value="Jupiter:4000"/>  
      <argument value="Fafard:4000"/> 
      <argument value="Bourassa:4000"/> 
+     <argument value="512"/>
   </process>
   <process host="Ginette" function="receiver">
      <argument value="4000"/>
@@ -61,6 +65,7 @@
      <argument value="Jupiter:4000"/>  
      <argument value="Fafard:4000"/> 
      <argument value="Ginette:4000"/> 
+     <argument value="512"/>
   </process>
   <process host="Bourassa" function="receiver">
      <argument value="4000"/>
