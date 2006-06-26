@@ -72,12 +72,13 @@ SD_task_t* SD_simulate(double how_long)
   double elapsed_time = 0.0;
   SD_task_t task;
   surf_action_t action;
+  SD_task_t *changed_tasks = NULL;
+  int changed_task_number = 0;
+  int changed_task_capacity = 16;
 
   /* create the array that will be returned */
-  const int task_number = xbt_swag_size(sd_global->scheduled_task_set) + xbt_swag_size(sd_global->running_task_set);
-  SD_task_t *changed_tasks = xbt_new0(SD_task_t, task_number + 1);
-  changed_tasks[task_number] = NULL;
-  int changed_task_number = 0;
+  changed_tasks = xbt_new0(SD_task_t, changed_task_capacity); /* changed_task_capacity will be increased if necessary */
+  changed_tasks[0] = NULL;
 
   surf_solve(); /* Takes traces into account. Returns 0.0 */
 
@@ -95,7 +96,13 @@ SD_task_t* SD_simulate(double how_long)
 	action = __SD_task_run(task);
 	surf_workstation_resource->common_public->action_set_data(action, task);
 	task->state_changed = 1;
-	changed_tasks[changed_task_number++] = task;
+	
+	changed_tasks[changed_task_number++] = task; /* replace NULL by the task */
+	if (changed_task_number == changed_task_capacity) {
+	  changed_task_capacity *= 2;
+	  changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
+	}
+	changed_tasks[changed_task_number] = NULL;
       }
       else {
 	INFO1("Cannot execute task '%s' now because some depencies are not satisfied.", SD_task_get_name(task));

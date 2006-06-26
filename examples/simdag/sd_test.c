@@ -92,7 +92,25 @@ int main(int argc, char **argv) {
 		   computation_amount, communication_amount, rate);
 
   printf("Launching simulation...\n");
-  SD_simulate(100);
+  SD_task_t *changed_tasks = SD_simulate(100);
+  int i = 0;
+  
+  printf("Simulation results:\n");
+  while(changed_tasks[i] != NULL) {
+    switch (SD_task_get_state(changed_tasks[i])) {
+    case SD_DONE:
+      printf("%s is done.\n", SD_task_get_name(changed_tasks[i]));
+      break;
+    case SD_FAILED:
+      printf("%s is failed.\n", SD_task_get_name(changed_tasks[i]));
+      break;
+    default:
+      printf("Unknown status for %s\n", SD_task_get_name(changed_tasks[i]));
+      break;
+    }
+    i++;
+  }
+  free(changed_tasks);
 
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
