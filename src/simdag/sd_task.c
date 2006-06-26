@@ -3,8 +3,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 
-static void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
-
 /* Creates a task.
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount) {
@@ -26,6 +24,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
   task->amount = amount;
   task->surf_action = NULL;
   task->watch_points = 0;
+  task->state_changed = 0;
 
   /* dependencies */
   task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
@@ -37,8 +36,6 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
   task->computation_amount = NULL;
   task->communication_amount = NULL;
   task->rate = 0;
-
-  xbt_dynar_push(sd_global->tasks, &task);
 
   return task;
 }
@@ -70,7 +67,7 @@ e_SD_task_state_t SD_task_get_state(SD_task_t task) {
 
 /* Changes the state of a task. Update the swags and the flag sd_global->watch_point_reached.
  */
-static void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
+void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
   xbt_swag_remove(task, task->state_set);
   switch (new_state) {
   case SD_NOT_SCHEDULED:
@@ -379,19 +376,9 @@ surf_action_t __SD_task_run(SD_task_t task) {
   return surf_action;
 }
 
-
-/* Destroys a task. The user data (if any) should have been destroyed first.
+/* Remove all dependencies associated with a task. This function is called when the task is done.
  */
-void SD_task_destroy(SD_task_t task) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-
-  /*printf("Destroying task %s...\n", SD_task_get_name(task));*/
-
-  /* remove the task from SimDag task list */
-  int index = xbt_dynar_search(sd_global->tasks, &task);
-  xbt_dynar_remove_at(sd_global->tasks, index, NULL);
-
+void __SD_task_remove_dependencies(SD_task_t task) {
   /* we must destroy the dependencies carefuly (with SD_dependency_remove)
      because each one is stored twice */
   SD_dependency_t dependency;
@@ -404,6 +391,17 @@ void SD_task_destroy(SD_task_t task) {
     xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }
+}
+
+/* Destroys a task. The user data (if any) should have been destroyed first.
+ */
+void SD_task_destroy(SD_task_t task) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+
+  /*printf("Destroying task %s...\n", SD_task_get_name(task));*/
+
+  __SD_task_remove_dependencies(task);
 
   /* if the task was scheduled we have to free the scheduling parameters */
   if (SD_task_get_state(task) == SD_SCHEDULED)
@@ -417,5 +415,4 @@ void SD_task_destroy(SD_task_t task) {
   xbt_free(task);
 
   /*printf("Task destroyed.\n");*/
-
 }

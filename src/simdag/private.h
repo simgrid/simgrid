@@ -15,7 +15,6 @@ typedef struct SD_global {
   xbt_dict_t workstations; /* workstation list */
   int workstation_count; /* number of workstations */
   xbt_dict_t links; /* link list */
-  xbt_dynar_t tasks; /* task list */
   int watch_point_reached; /* has a task just reached a watch point? */
   
   /* task state sets */
@@ -50,6 +49,7 @@ typedef struct SD_task {
   double amount;
   surf_action_t surf_action;
   unsigned short watch_points;
+  int state_changed;
 
   /* dependencies */
   xbt_dynar_t tasks_before;
@@ -80,6 +80,8 @@ void __SD_link_destroy(void *link);
 SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data);
 void __SD_workstation_destroy(void *workstation);
 
+void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 surf_action_t __SD_task_run(SD_task_t task);
+void __SD_task_remove_dependencies(SD_task_t task);
 
 #endif
