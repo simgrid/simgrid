@@ -264,6 +264,7 @@ AC_CONFIG_FILES([
   src/ucontext_stack.h
   examples/Makefile 
     examples/msg/Makefile           examples/msg/run_msg_test
+    examples/simdag/Makefile
     examples/gras/Makefile 
       examples/gras/ping/Makefile   examples/gras/ping/test_sg   examples/gras/ping/test_rl
       examples/gras/rpc/Makefile    examples/gras/rpc/test_sg    examples/gras/rpc/test_rl

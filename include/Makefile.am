@@ -21,6 +21,9 @@ nobase_include_HEADERS = \
 	msg/msg.h \
 	msg/datatypes.h \
 	\
+	simdag/simdag.h \
+	simdag/datatypes.h \
+	\
 	surf/surfxml_parse.h \
 	surf/surfxml.h \
 	\

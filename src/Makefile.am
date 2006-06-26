@@ -52,6 +52,8 @@ EXTRA_DIST= \
 	\
 	msg/private.h \
 	\
+	simdag/private.h \
+	\
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h          gras/Virtu/virtu_private.h\
 	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
@@ -153,14 +155,14 @@ RL_SRC= \
   gras/Msg/rl_msg.c
 
 SG_SRC=  \
-  xbt/context.c                                                                \
+  xbt/context.c                                                              \
   \
   surf/maxmin.c                                                              \
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
-  surf/surfxml_parse.c                                                          \
+  surf/surfxml_parse.c                                                       \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
-  surf/surf_timer.c                                                               \
+  surf/surf_timer.c                                                          \
   surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c  \
   \
@@ -168,7 +170,10 @@ SG_SRC=  \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
   msg/global.c msg/environment.c msg/deployment.c  \
   \
-  gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c             \
+  simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c                       \
+  simdag/sd_workstation.c                                                    \
+  \
+  gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
   \
   gras/Virtu/sg_emul.c \
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
