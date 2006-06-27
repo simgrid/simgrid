@@ -3,7 +3,8 @@
 #include "xbt/dynar.h"
 #include "surf/surf.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, msg,
+XBT_LOG_NEW_CATEGORY(sd,"Logging specific to SimDag");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel,sd,
 				"Logging specific to SimDag (kernel)");
 
 SD_global_t sd_global = NULL;
