@@ -334,11 +334,8 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
       bufsize -= status;
       got     += status;
     } else {
-      if (got) 
-	 THROW1(system_error,0,"Socket closed by remote side (got %d bytes before this)",
-		got);
-      else
-	 return 0; /* Ok, my pal left. I can handle it. */
+      THROW1(system_error,0,"Socket closed by remote side (got %d bytes before this)",
+	     got);
     }
   }
   return got;
