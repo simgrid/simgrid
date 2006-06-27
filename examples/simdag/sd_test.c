@@ -24,14 +24,11 @@ int main(int argc, char **argv) {
   SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
   SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
   
-
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
   SD_task_dependency_add(NULL, NULL, taskC, taskA);
   SD_task_dependency_add(NULL, NULL, taskD, taskB);
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
   /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock */
-
-  /* if everything is ok, no exception is forwarded or rethrown by main() */
 
   /* watch points */
   /*  SD_task_watch(taskB, SD_DONE);*/
@@ -65,6 +62,12 @@ int main(int argc, char **argv) {
   printf("Simulation results:\n");
   while(changed_tasks[i] != NULL) {
     switch (SD_task_get_state(changed_tasks[i])) {
+    case SD_SCHEDULED:
+      printf("%s is scheduled.\n", SD_task_get_name(changed_tasks[i]));
+      break;
+    case SD_READY:
+      printf("%s is ready.\n", SD_task_get_name(changed_tasks[i]));
+      break;
     case SD_DONE:
       printf("%s is done.\n", SD_task_get_name(changed_tasks[i]));
       break;
