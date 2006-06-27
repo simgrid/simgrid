@@ -112,10 +112,10 @@
  */
 
 
-/** \defgroup SD_API      SMPI
+/** \defgroup SD_API      SimDag
     \ingroup SimGrid_API
     \brief Programming environment for DAG applications
-  
+   
     PLACEHOLDER
       
     \section SD_who Who should use this (and who shouldn't)

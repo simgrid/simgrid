@@ -1,0 +1,30 @@
+/** @addtogroup SD_API 
+
+  \section SD_func Offered functionnalities
+   - \ref SD_datatypes_management
+   - \ref SD_workstation_management
+   - \ref SD_link_management
+   - \ref SD_task_management
+   - \ref SD_dependency_management
+   - \ref SD_platform_management
+   - \ref SD_simulation
+
+*/
+
+/** @defgroup SD_datatypes_management SD Data Types 
+    @ingroup SD_API
+    @brief This section describes the different datatypes provided by SD.
+    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
+*/
+/**     \addtogroup SD_workstation_management
+        \ingroup SD_API  */
+/**     \addtogroup SD_link_management
+        \ingroup SD_API  */
+/**     \addtogroup SD_task_management
+        \ingroup SD_API  */
+/**     \addtogroup SD_dependency_functions
+        \ingroup SD_API  */
+/**     \addtogroup SD_platform_management
+        \ingroup SD_API  */
+/**     \addtogroup SD_simulation
+        \ingroup SD_API  */
