@@ -443,8 +443,7 @@ gras_msg_send(gras_socket_t   sock,
 
 /** @brief Handle all messages arriving within the given period
  *
- * @param timeOut: How long to wait for incoming messages (in seconds)
- * @return the error code (or no_error).
+ * @param period: How long to wait for incoming messages (in seconds)
  *
  * Messages are dealed with just like gras_msg_handle() would do. The
  * difference is that gras_msg_handle() handles at most one message (or wait up
