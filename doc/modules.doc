@@ -110,3 +110,16 @@
     probably want to contact us before).
   
  */
+
+
+/** \defgroup SD_API      SMPI
+    \ingroup SimGrid_API
+    \brief Programming environment for DAG applications
+  
+    PLACEHOLDER
+      
+    \section SD_who Who should use this (and who shouldn't)
+    
+    PLACEHOLDER
+*/
+
