@@ -302,7 +302,7 @@ gras_msg_wait_ext(double           timeout,
       gras_msg_recv(msg.expe, &msg);
     } CATCH(e) {
       if (e.category == system_error &&
-	  strncmp("Socket closed by remote side",e.msg,
+	  !strncmp("Socket closed by remote side",e.msg,
 		  strlen("Socket closed by remote side"))) {
 	xbt_ex_free(e);
 	need_restart=1;
