@@ -459,7 +459,8 @@ gras_msg_handleall(double period) {
   do {
     now=gras_os_time();
     TRY{
-      gras_msg_handle(period - now + begin);
+      if (period - now + begin > 0)
+	gras_msg_handle(period - now + begin);
     } CATCH(e) {
       if (e.category != timeout_error) 
 	RETHROW0("Error while waiting for messages: %s");
@@ -467,6 +468,7 @@ gras_msg_handleall(double period) {
     }
   } while (now - begin < period);
 }
+
 /** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
  *
  * @param timeOut: How long to wait for incoming messages (in seconds)
