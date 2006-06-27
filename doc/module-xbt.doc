@@ -1,89 +1,75 @@
 /** @addtogroup XBT_API
- *
- *  The XBT functionalities fall into several categories:
- *   - Portability support
- *     - \ref XBT_syscall
- *   - Grounding features
- *     - \ref XBT_ex
- *     - \ref XBT_log
- *     - \ref XBT_error
- *     - \ref XBT_config
- *   - Data structures
- *     - \ref XBT_dynar 
- *     - \ref XBT_dict
- *     - \ref XBT_set 
- *       Data are associated to both an ID (0(1) search) and a name
- *     - \ref XBT_fifo
- *     - \ref XBT_swag
- *     - \ref XBT_heap
- *
- *  @{
- */
-
+ 
+   The XBT functionalities fall into several categories:
+    - Portability support
+      - \ref XBT_syscall
+    - Grounding features
+      - \ref XBT_ex
+      - \ref XBT_log
+      - \ref XBT_error
+      - \ref XBT_config
+    - Data structures
+      - \ref XBT_dynar 
+      - \ref XBT_dict
+      - \ref XBT_set 
+        Data are associated to both an ID (0(1) search) and a name
+      - \ref XBT_fifo
+      - \ref XBT_swag
+      - \ref XBT_heap
+ 
+  @{ */
    /** @defgroup XBT_grounding   Grounding features */
    /** @defgroup XBT_adt         Usual data structures */
    /** @defgroup XBT_misc        Misc general purposes library components */
-
 /** @} */
 
-/*
- * +++++++++++++
- * + GROUNDING +
- * +++++++++++++
- */
+
+########################################################################
+
 
 /** @addtogroup XBT_grounding 
- *
- * Grounding features are the basement of SimGrid. You'll find portable (and
- * secure) wrappers to the malloc-like functions, logging support, error
- * reporting features, etc.
- *
- * @{
- */
+ 
+  Grounding features are the basement of SimGrid. You'll find portable (and
+  secure) wrappers to the malloc-like functions, logging support, error
+  reporting features, etc.
+ 
+  @{ */
+
      /** @defgroup XBT_syscall Malloc and friends */
      /** @defgroup XBT_ex     Exception support */
      /** @defgroup XBT_log    Logging support */
      /** @defgroup XBT_error  Assert macro familly */
      /** @defgroup XBT_config Configuration support */
-
 /** @} */
 
-/* 
- * ++++++++++++++++
- * + DATA STRUCTS +
- * ++++++++++++++++ 
- */
+
+########################################################################
 
 /** @addtogroup XBT_adt
- *
- * Here are the basic data containers that every C programmer rewrites one day.
- * You won't need to do so yourself, you lucky one, because we did it for you.
- *
- * @{
- */
+ 
+  Here are the basic data containers that every C programmer rewrites one day.
+  You won't need to do so yourself, you lucky one, because we did it for you.
+ 
+  @{ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */
      /** @defgroup XBT_dict   Dict: generic dictionnary */
      /** @defgroup XBT_set    Set: generic set datatype */
      /** @defgroup XBT_fifo   Fifo: generic workqueue */
      /** @defgroup XBT_swag   Swag: O(1) set datatype */
      /** @defgroup XBT_heap Heap: generic heap data structure */
+/** @} */ 
 
-/** @} */ End of XBT_adt
-     
-/* 
- * +++++++++++++++++
- * + MISC FEATURES +
- * +++++++++++++++++ 
- */
+
+########################################################################
 
 /** @addtogroup XBT_misc
- *
- * Here are several general purposes library components designed specially
- * for you, you lucky one.
- * @{
- */
-     /** @defgroup XBT_graph General purpose graph library */
+ 
+  Here are several general purposes library components designed specially
+  for you, you lucky one.
+ 
 
+  @{ */
+     /** @defgroup XBT_graph General purpose graph library */
 /** @} */ End of XBT_misc
 
 /* ************************* *
