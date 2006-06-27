@@ -244,21 +244,22 @@ gras_socket_t
 gras_socket_server_range(unsigned short minport, unsigned short maxport,
 			 unsigned long int buf_size, int measurement) {
    
-   int port;
-   gras_socket_t res=NULL;
-   xbt_ex_t e;
-   
-   for (port=minport; port<maxport;port ++) {
-      TRY {
-	 res=gras_socket_server_ext(port,buf_size,measurement);
-      } CATCH(e) {
-	 if (port==maxport)
-	   RETHROW;
-	 xbt_ex_free(e);
-      }
+  int port;
+  gras_socket_t res=NULL;
+  xbt_ex_t e;
+  
+  for (port=minport; port<maxport;port ++) {
+    TRY {
+      res=gras_socket_server_ext(port,buf_size,measurement);
+    } CATCH(e) {
+      if (port==maxport)
+	RETHROW;
+      xbt_ex_free(e);
+    }
+    if (res)
       return res;
-   }
-   THROW_IMPOSSIBLE;
+  }
+  THROW_IMPOSSIBLE;
 }
    
 /**
