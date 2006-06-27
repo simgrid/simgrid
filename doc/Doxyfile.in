@@ -404,6 +404,7 @@ INPUT                  = @srcdir@/index.doc \
                          @srcdir@/module-xbt.doc \
                          @srcdir@/module-msg.doc \
                          @srcdir@/module-gras.doc @srcdir@/module-amok.doc \
+                         @srcdir@/module-sd.doc \			 
 			 \
                          ./logcategories.doc \
 			 \
