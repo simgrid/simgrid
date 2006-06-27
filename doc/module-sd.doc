@@ -22,7 +22,7 @@
         \ingroup SD_API  */
 /**     \addtogroup SD_task_management
         \ingroup SD_API  */
-/**     \addtogroup SD_dependency_functions
+/**     \addtogroup SD_dependency_management
         \ingroup SD_API  */
 /**     \addtogroup SD_platform_management
         \ingroup SD_API  */

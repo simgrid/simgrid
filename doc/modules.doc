@@ -37,9 +37,11 @@
       \section MSG_who Who should use this (and who shouldn't)
       
       You should use this module if you want to study some heuristics for a
-      given problem you don't really want to implement. If you want to get a
-      real implementation of your solution, have a look at the \ref GRAS_API 
-      programming environment. If you want to study an existing MPI program,
+      given problem you don't really want to implement.
+      If you want to use DAGs, have a look at the \ref SD_API programming
+      environment.
+      If you want to get a real implementation of your solution, have a look
+      at the \ref GRAS_API one. If you want to study an existing MPI program,
       have a look at the \ref SMPI_API one. If none of those programming
       environments fits your needs, you may consider implementing your own 
       directly on top of \ref SURF_API (but you probably want to contact us
@@ -68,7 +70,7 @@
     may eventually be distributed. 
     If you just want to study some heuristics for a given problem you don't
     want to implement really (ie, if your result would be a theorem), have a
-    look at the \ref MSG_API one.
+    look at the \ref MSG_API one, or the \ref SD_API one if you need to use DAGs.
     If you want to study an existing MPI program, have a look at the 
     \ref SMPI_API one. 
     If none of those programming environments fits your needs, you may
@@ -104,7 +106,7 @@
     \ref GRAS_API environment. 
     If you want to study some heuristics for a given problem (and if your
     goal is to produce theorems, not code), have a look at the \ref MSG_API
-    environment.
+    environment, or the \ref SD_API one if you need to use DAGs.
     If none of those programming environments fits your needs, you may
     consider implementing your own directly on top of \ref SURF_API (but you
     probably want to contact us before).
@@ -116,10 +118,25 @@
     \ingroup SimGrid_API
     \brief Programming environment for DAG applications
    
-    PLACEHOLDER
-      
+    SimDag provides some functionnalities to simulate parallel task scheduling
+    with DAGs models (Direct Acyclic Graphs).
+    The old versions of SimGrid were based on DAGs. But the DAG part (named SG)
+    was removed in SimGrid 3 because the new kernel (SURF) was implemented. SURF
+    was much faster and more flexible than SG and did not use DAGs.
+    SimDag is a new implementation of DAGs handling and it is built on top of SURF.
+    
     \section SD_who Who should use this (and who shouldn't)
     
-    PLACEHOLDER
-*/
+    You should use this programming environment of the SimGrid suite if you want
+    to study algorithms and heuristics with DAGs of parallel tasks.
+    If you don't need to use DAGs for your simulation, have a look at the
+    \ref MSG_API programming environment.
+    If you want to implement a real distributed application, have a look at the
+    \ref GRAS_API programming environment.
+    If you want to study an existing MPI program, have a look at the 
+    \ref SMPI_API one. 
+    If none of those programming environments fits your needs, you may
+    consider implementing your own directly on top of \ref SURF_API (but you
+    probably want to contact us before).
 
+*/

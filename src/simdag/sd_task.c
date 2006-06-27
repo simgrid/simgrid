@@ -154,7 +154,7 @@ void __SD_print_dependencies(SD_task_t task) {
 
 /* Destroys a dependency between two tasks.
  */
-static void __SD_task_destroy_dependency(void *dependency) {
+static void __SD_task_dependency_destroy(void *dependency) {
   if (((SD_dependency_t) dependency)->name != NULL)
     xbt_free(((SD_dependency_t) dependency)->name);
   xbt_free(dependency);
@@ -224,7 +224,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     if (dependency->src == src) {
       xbt_dynar_remove_at(dynar, i, NULL);
-      __SD_task_destroy_dependency(dependency);
+      __SD_task_dependency_destroy(dependency);
       found = 1;
     }
   }
