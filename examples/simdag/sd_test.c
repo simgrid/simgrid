@@ -31,39 +31,6 @@ int main(int argc, char **argv) {
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
   /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock */
 
-/*   xbt_ex_t ex; */
-
-/*   TRY { */
-/*     SD_task_dependency_add(NULL, NULL, taskA, taskA); /\* shouldn't work and must raise an exception *\/ */
-/*     xbt_assert0(0, "Hey, I can add a dependency between Task A and Task A!"); */
-/*   } */
-/*   CATCH (ex) { */
-/*   } */
-  
-/*   TRY { */
-/*     SD_task_dependency_add(NULL, NULL, taskA, taskB); /\* shouldn't work and must raise an exception *\/ */
-/*     xbt_assert0(0, "Oh oh, I can add an already existing dependency!"); */
-/*   } */
-/*   CATCH (ex) { */
-/*   } */
-
-/*   SD_task_dependency_remove(taskA, taskB); */
-
-/*   TRY { */
-/*     SD_task_dependency_remove(taskC, taskA); /\* shouldn't work and must raise an exception *\/ */
-/*     xbt_assert0(0, "Dude, I can remove an unknown dependency!"); */
-/*   } */
-/*   CATCH (ex) { */
-/*   } */
-
-/*   TRY { */
-/*     SD_task_dependency_remove(taskC, taskC); /\* shouldn't work and must raise an exception *\/ */
-/*     xbt_assert0(0, "Wow, I can remove a dependency between Task C and itself!"); */
-/*   } */
-/*   CATCH (ex) { */
-/*   } */
-
-
   /* if everything is ok, no exception is forwarded or rethrown by main() */
 
   /* watch points */

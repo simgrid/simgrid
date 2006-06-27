@@ -20,6 +20,7 @@ typedef struct SD_global {
   /* task state sets */
   xbt_swag_t not_scheduled_task_set;
   xbt_swag_t scheduled_task_set;
+  xbt_swag_t ready_task_set;
   xbt_swag_t running_task_set;
   xbt_swag_t done_task_set;
   xbt_swag_t failed_task_set;
@@ -49,7 +50,8 @@ typedef struct SD_task {
   double amount;
   surf_action_t surf_action;
   unsigned short watch_points;
-  int state_changed;
+  int state_changed; /* used only by SD_simulate, to make sure we put
+			the task only once in the returning array */
 
   /* dependencies */
   xbt_dynar_t tasks_before;
@@ -83,5 +85,35 @@ void __SD_workstation_destroy(void *workstation);
 void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 surf_action_t __SD_task_run(SD_task_t task);
 void __SD_task_remove_dependencies(SD_task_t task);
+
+/* Functions to test if the task is in a given state.
+   These functions are faster than using SD_task_get_state() */
+
+/* Returns whether the given task is scheduled or ready. */
+static _XBT_INLINE int __SD_task_is_scheduled_or_ready(SD_task_t task) {
+  return task->state_set == sd_global->scheduled_task_set ||
+    task->state_set == sd_global->ready_task_set;
+}
+
+/* Returns whether the state of the given task is SD_NOT_SCHEDULED. */
+static _XBT_INLINE int __SD_task_is_not_scheduled(SD_task_t task) {
+  return task->state_set == sd_global->not_scheduled_task_set;
+}
+
+/* Returns whether the state of the given task is SD_SCHEDULED. */
+static _XBT_INLINE int __SD_task_is_scheduled(SD_task_t task) {
+  return task->state_set == sd_global->scheduled_task_set;
+}
+
+/* Returns whether the state of the given task is SD_READY. */
+static _XBT_INLINE int __SD_task_is_ready(SD_task_t task) {
+  return task->state_set == sd_global->ready_task_set;
+}
+
+/* Returns whether the state of the given task is SD_RUNNING. */
+static _XBT_INLINE int __SD_task_is_running(SD_task_t task) {
+  return task->state_set == sd_global->running_task_set;
+}
+
 
 #endif

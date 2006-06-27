@@ -23,6 +23,7 @@ void SD_init(int *argc, char **argv) {
   s_SD_task_t task;
   sd_global->not_scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->ready_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->running_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->done_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->failed_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
@@ -67,18 +68,16 @@ void SD_create_environment(const char *platform_file) {
  */
 SD_task_t* SD_simulate(double how_long)
 {
-  /* TODO */
-
   double total_time = 0.0; /* we stop the simulation when total_time >= how_long */
   double elapsed_time = 0.0;
   SD_task_t task;
   surf_action_t action;
   SD_task_t *changed_tasks = NULL;
   int changed_task_number = 0;
-  int changed_task_capacity = 16;
+  int changed_task_capacity = 16; /* will be increased if necessary */
 
   /* create the array that will be returned */
-  changed_tasks = xbt_new0(SD_task_t, changed_task_capacity); /* changed_task_capacity will be increased if necessary */
+  changed_tasks = xbt_new0(SD_task_t, changed_task_capacity);
   changed_tasks[0] = NULL;
 
   surf_solve(); /* Takes traces into account. Returns 0.0 */
@@ -88,33 +87,27 @@ SD_task_t* SD_simulate(double how_long)
   /* main loop */
   while (elapsed_time >= 0.0 && total_time < how_long && !sd_global->watch_point_reached) {
 
-    /* explore the scheduled tasks */
-    xbt_swag_foreach(task, sd_global->scheduled_task_set) {
-      INFO1("Examining task '%s'...", SD_task_get_name(task));
+    /* explore the ready tasks */
+    xbt_swag_foreach(task, sd_global->ready_task_set) {
+      INFO1("Executing task '%s'", SD_task_get_name(task));
       task->state_changed = 0;
-      if (xbt_dynar_length(task->tasks_before) == 0) {
-	INFO1("The dependencies are satisfied. Executing task '%s'", SD_task_get_name(task));
-	action = __SD_task_run(task);
-	surf_workstation_resource->common_public->action_set_data(action, task);
-	task->state_changed = 1;
-	
-	changed_tasks[changed_task_number++] = task; /* replace NULL by the task */
-	if (changed_task_number == changed_task_capacity) {
-	  changed_task_capacity *= 2;
-	  changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
-	}
-	changed_tasks[changed_task_number] = NULL;
+      action = __SD_task_run(task);
+      surf_workstation_resource->common_public->action_set_data(action, task);
+      task->state_changed = 1;
+      
+      changed_tasks[changed_task_number++] = task; /* replace NULL by the task */
+      if (changed_task_number == changed_task_capacity) {
+	changed_task_capacity *= 2;
+	changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
       }
-      else {
-	INFO1("Cannot execute task '%s' now because some depencies are not satisfied.", SD_task_get_name(task));
-      }
+      changed_tasks[changed_task_number] = NULL;
     }
 
     elapsed_time = surf_solve();
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
-    /*    INFO1("Total time: %f", total_time);*/
 
+    /* let's see which tasks are done */
     while ((action = xbt_swag_extract(surf_workstation_resource->common_public->states.done_action_set))) {
       task = action->data;
       INFO1("Task '%s' done", SD_task_get_name(task));
@@ -126,6 +119,7 @@ SD_task_t* SD_simulate(double how_long)
       }
     }
 
+    /* let's see which tasks have just failed */
     while ((action = xbt_swag_extract(surf_workstation_resource->common_public->states.failed_action_set))) {
       task = action->data;
       INFO1("Task '%s' failed", SD_task_get_name(task));
@@ -138,8 +132,8 @@ SD_task_t* SD_simulate(double how_long)
   }
 
   INFO0("Simulation finished");
-
   INFO1("Number of tasks whose state has changed: %d", changed_task_number);
+
   return changed_tasks;
 }
 
@@ -154,6 +148,7 @@ void SD_exit(void) {
 
     xbt_swag_free(sd_global->not_scheduled_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
+    xbt_swag_free(sd_global->ready_task_set);
     xbt_swag_free(sd_global->running_task_set);
     xbt_swag_free(sd_global->done_task_set);
     xbt_swag_free(sd_global->failed_task_set);
