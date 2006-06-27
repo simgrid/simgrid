@@ -325,7 +325,7 @@ gras_socket_client(const char *host,
    return gras_socket_client_ext(host,port,0,0);
 }
 
-/** @brief Opens a client socket to a remote host specified as '<host>:<port>' */
+/** @brief Opens a client socket to a remote host specified as '\a host:\a port' */
 gras_socket_t
 gras_socket_client_from_string(const char *host) {
    xbt_host_t h = xbt_host_from_string(host);
