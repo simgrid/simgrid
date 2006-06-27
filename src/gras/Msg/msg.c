@@ -272,9 +272,8 @@ gras_msg_wait_ext(double           timeout,
 
   xbt_assert0(msg_got,"msg_got is an output parameter");
 
+  start = gras_os_time();
   VERB1("Waiting for message '%s'",msgt_want?msgt_want->name:"(any)");
-
-  start = now = gras_os_time();
 
   xbt_dynar_foreach(pd->msg_queue,cpt,msg){
     if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
@@ -290,10 +289,30 @@ gras_msg_wait_ext(double           timeout,
   }
 
   while (1) {
+    int need_restart;
+    xbt_ex_t e;
+
+  restart_receive: /* Goto here when the receive of a message failed */
+    need_restart=0;
+    now=gras_os_time();
     memset(&msg,sizeof(msg),0);
 
-    msg.expe = gras_trp_select(timeout ? timeout - now + start : 0);
-    gras_msg_recv(msg.expe, &msg);
+    TRY {
+      msg.expe = gras_trp_select(timeout ? timeout - now + start : 0);
+      gras_msg_recv(msg.expe, &msg);
+    } CATCH(e) {
+      if (e.category == system_error &&
+	  strncmp("Socket closed by remote side",e.msg,
+		  strlen("Socket closed by remote side"))) {
+	xbt_ex_free(e);
+	need_restart=1;
+      }	else {
+	RETHROW;
+      }
+    }
+    if (need_restart)
+      goto restart_receive;
+
     DEBUG0("Got a message from the socket");
 
     if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
