@@ -21,13 +21,13 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   return workstation;
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns a workstation given its name
+/**
+ * \brief Returns a workstation given its name
  *
- * If there is no such workstation, the function returns NULL.
+ * If there is no such workstation, the function returns \c NULL.
  *
- * @param name workstation name
- * @return the workstation, or NULL if there is no such workstation
+ * \param name workstation name
+ * \return the workstation, or \c NULL if there is no such workstation
  */
 SD_workstation_t SD_workstation_get_by_name(const char *name) {
   SD_CHECK_INIT_DONE();
@@ -37,13 +37,13 @@ SD_workstation_t SD_workstation_get_by_name(const char *name) {
   return xbt_dict_get_or_null(sd_global->workstations, name);
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns the workstations list
+/**
+ * \brief Returns the workstations list
  *
- * Use SD_workstation_get_number to known the array size.
+ * Use SD_workstation_get_number() to know the array size.
  *
- * @return an array of SD_workstation_t containing all workstations
- * @see SD_workstation_get_number
+ * \return an array of \ref SD_workstation_t containing all workstations
+ * \see SD_workstation_get_number()
  */
 SD_workstation_t*  SD_workstation_get_list(void) {
   SD_CHECK_INIT_DONE();
@@ -63,39 +63,23 @@ SD_workstation_t*  SD_workstation_get_list(void) {
   return array;
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns the number of workstations
+/**
+ * \brief Returns the number of workstations
  *
- * @return the number of existing workstations
- * @see SD_workstation_get_list
+ * \return the number of existing workstations
+ * \see SD_workstation_get_list()
  */
 int SD_workstation_get_number(void) {
   SD_CHECK_INIT_DONE();
   return sd_global->workstation_count;
 }
 
-/** @ingroup SD_workstation_management
- * @brief Sets the user data of a workstation
+/**
+ * \brief Returns the user data of a workstation
  *
- * The new data can be NULL. The old data should have been freed first
- * if it was not NULL.
- *
- * @param workstation a workstation
- * @param data the new data you want to associate with this workstation
- * @see SD_workstation_get_data
- */
-void SD_workstation_set_data(SD_workstation_t workstation, void *data) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(workstation != NULL, "Invalid parameter");
-  workstation->data = data;
-}
-
-/** @ingroup SD_workstation_management
- * @brief Returns the user data of a workstation
- *
- * @param workstation a workstation
- * @return the user data associated with this workstation (can be NULL)
- * @see SD_workstation_set_data
+ * \param workstation a workstation
+ * \return the user data associated with this workstation (can be \c NULL)
+ * \see SD_workstation_set_data()
  */
 void* SD_workstation_get_data(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
@@ -103,11 +87,27 @@ void* SD_workstation_get_data(SD_workstation_t workstation) {
   return workstation->data;
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns the name of a workstation
+/**
+ * \brief Sets the user data of a workstation
  *
- * @param workstation a workstation
- * @return the name of this workstation (cannot be NULL)
+ * The new data can be \c NULL. The old data should have been freed first
+ * if it was not \c NULL.
+ *
+ * \param workstation a workstation
+ * \param data the new data you want to associate with this workstation
+ * \see SD_workstation_get_data()
+ */
+void SD_workstation_set_data(SD_workstation_t workstation, void *data) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(workstation != NULL, "Invalid parameter");
+  workstation->data = data;
+}
+
+/**
+ * \brief Returns the name of a workstation
+ *
+ * \param workstation a workstation
+ * \return the name of this workstation (cannot be \c NULL)
  */
 const char* SD_workstation_get_name(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
@@ -115,15 +115,15 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
   return surf_workstation_resource->common_public->get_resource_name(workstation->surf_workstation);
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns the route between two workstations
+/**
+ * \brief Returns the route between two workstations
  *
- * Use SD_workstation_route_get_size to known the array size.
+ * Use SD_workstation_route_get_size() to know the array size.
  *
- * @param src a workstation
- * @param dst another workstation
- * @return a new array of SD_link_t representating the route between these two workstations
- * @see SD_workstation_route_get_size
+ * \param src a workstation
+ * \param dst another workstation
+ * \return a new array of \ref SD_link_t representating the route between these two workstations
+ * \see SD_workstation_route_get_size(), SD_link_t
  */
 SD_link_t* SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
@@ -145,13 +145,13 @@ SD_link_t* SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t 
   return route;
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns the number of links on the route between two workstations
+/**
+ * \brief Returns the number of links on the route between two workstations
  *
- * @param src a workstation
- * @param dst another workstation
- * @return the number of links on the route between these two workstations
- * @see SD_workstation_route_get_list
+ * \param src a workstation
+ * \param dst another workstation
+ * \return the number of links on the route between these two workstations
+ * \see SD_workstation_route_get_list()
  */
 int SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
@@ -159,12 +159,12 @@ int SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
     get_route_size(src->surf_workstation, dst->surf_workstation);
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns the total power of a workstation
+/**
+ * \brief Returns the total power of a workstation
  *
- * @param workstation a workstation
- * @return the total power of this workstation
- * @see SD_workstation_get_available_power
+ * \param workstation a workstation
+ * \return the total power of this workstation
+ * \see SD_workstation_get_available_power()
  */
 double SD_workstation_get_power(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
@@ -172,12 +172,12 @@ double SD_workstation_get_power(SD_workstation_t workstation) {
   return surf_workstation_resource->extension_public->get_speed(workstation->surf_workstation, 1.0);
 }
 
-/** @ingroup SD_workstation_management
- * @brief Returns the proportion of available power in a workstation
+/**
+ * \brief Returns the proportion of available power in a workstation
  *
- * @param workstation a workstation
- * @return the proportion of power currently available in this workstation (normally a number between 0 and 1)
- * @see SD_workstation_get_power
+ * \param workstation a workstation
+ * \return the proportion of power currently available in this workstation (normally a number between 0 and 1)
+ * \see SD_workstation_get_power()
  */
 double SD_workstation_get_available_power(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();

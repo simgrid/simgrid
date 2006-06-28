@@ -27,7 +27,8 @@ typedef struct SD_link *SD_link_t;
     A task is some <em>computing amount</em> that can be executed
     in parallel on several workstations. A task may depend on other
     tasks, this means that the task cannot start until the other tasks are done.
-    Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, etc.
+    Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether 
+    the task is scheduled, running, done, etc.
 
     @see SD_task_management */
 typedef struct SD_task *SD_task_t;

@@ -115,5 +115,4 @@ static _XBT_INLINE int __SD_task_is_running(SD_task_t task) {
   return task->state_set == sd_global->running_task_set;
 }
 
-
 #endif

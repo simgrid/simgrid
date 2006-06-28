@@ -9,7 +9,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel,sd,
 
 SD_global_t sd_global = NULL;
 
-/* Initialises SD internal data. This function should be called before any other SD function.
+/**
+ * \brief Initialises SD internal data
+ *
+ * This function must be called before any other SD function. Then you
+ * should call SD_create_environment().
+ *
+ * \param argc argument number
+ * \param argv argument list
+ * \see SD_create_environment(), SD_exit()
  */
 void SD_init(int *argc, char **argv) {
   xbt_assert0(sd_global == NULL, "SD_init already called");
@@ -31,7 +39,23 @@ void SD_init(int *argc, char **argv) {
   surf_init(argc, argv);
 }
 
-/* Creates the environnement described in a xml file of a platform description.
+/**
+ * \brief Creates the environment
+ *
+ * The environment (i.e. the \ref SD_workstation_management "workstations" and the
+ * \ref SD_link_management "links") is created with the data stored in the given XML
+ * platform file.
+ *
+ * \param platform_file name of an XML file describing the environment to create
+ * \see SD_workstation_management, SD_link_management
+ *
+ * The XML file follows this DTD:
+ *
+ *     \include surfxml.dtd
+ *
+ * Here is a small example of such a platform: 
+ *
+ *     \include small_platform.xml
  */
 void SD_create_environment(const char *platform_file) {
   xbt_dict_cursor_t cursor = NULL;
@@ -64,7 +88,17 @@ void SD_create_environment(const char *platform_file) {
   }
 }
 
-/* Launches the simulation. Returns a NULL-terminated array of SD_task_t whose state has changed.
+/**
+ * \brief Launches the simulation.
+ *
+ * The function will execute the \ref SD_READY ready tasks.
+ * The simulation will be stopped when its time reaches \a how_long,
+ * when a watch point is reached, or when no more task can be executed.
+ * Then you can call SD_simulate() again.
+ * 
+ * \param how_long maximum duration of the simulation
+ * \return a NULL-terminated array of \ref SD_task_t whose state has changed.
+ * \see SD_task_schedule(), SD_task_watch()
  */
 SD_task_t* SD_simulate(double how_long)
 {
@@ -137,8 +171,13 @@ SD_task_t* SD_simulate(double how_long)
   return changed_tasks;
 }
 
-/* Destroys all SD internal data. This function should be called when the simulation is over.
- * The tasks should have been destroyed first.
+/**
+ * \brief Destroys all SD internal data.
+ *
+ * This function should be called when the simulation is over. Don't forget also to destroy
+ * the tasks.
+ *
+ * \see SD_init(), SD_task_destroy()
  */
 void SD_exit(void) {
   if (sd_global != NULL) {

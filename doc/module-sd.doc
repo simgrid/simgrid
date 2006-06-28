@@ -5,8 +5,7 @@
    - \ref SD_workstation_management
    - \ref SD_link_management
    - \ref SD_task_management
-   - \ref SD_dependency_management
-   - \ref SD_platform_management
+   - \ref SD_task_dependency_management
    - \ref SD_simulation
 
 */
@@ -22,9 +21,7 @@
         \ingroup SD_API  */
 /**     \addtogroup SD_task_management
         \ingroup SD_API  */
-/**     \addtogroup SD_dependency_management
-        \ingroup SD_API  */
-/**     \addtogroup SD_platform_management
+/**     \addtogroup SD_task_dependency_management
         \ingroup SD_API  */
 /**     \addtogroup SD_simulation
         \ingroup SD_API  */

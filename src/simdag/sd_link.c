@@ -4,7 +4,7 @@
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 
-/* Creates a link.
+/* Creates a link and registers it in SD.
  */
 SD_link_t __SD_link_create(void *surf_link, void *data) {
   SD_CHECK_INIT_DONE();
@@ -16,12 +16,17 @@ SD_link_t __SD_link_create(void *surf_link, void *data) {
   link->data = data; /* user data */
 
   const char *name = SD_link_get_name(link);
-  xbt_dict_set(sd_global->links, name, link, __SD_link_destroy); /* add the workstation to the dictionary */
+  xbt_dict_set(sd_global->links, name, link, __SD_link_destroy); /* add the link to the dictionary */
 
   return link;
 }
 
-/* Returns the user data of a link. The user data can be NULL.
+/**
+ * \brief Returns the user data of a link
+ *
+ * \param link a link
+ * \return the user data associated with this link (can be \c NULL)
+ * \see SD_link_set_data()
  */
 void* SD_link_get_data(SD_link_t link) {
   SD_CHECK_INIT_DONE();
@@ -29,7 +34,15 @@ void* SD_link_get_data(SD_link_t link) {
   return link->data;
 }
 
-/* Sets the user data of a link. The new data can be NULL. The old data should have been freed first if it was not NULL.
+/**
+ * \brief Sets the user data of a link
+ *
+ * The new data can be \c NULL. The old data should have been freed first
+ * if it was not \c NULL.
+ *
+ * \param link a link
+ * \param data the new data you want to associate with this link
+ * \see SD_link_get_data()
  */
 void SD_link_set_data(SD_link_t link, void *data) {
   SD_CHECK_INIT_DONE();
@@ -37,7 +50,11 @@ void SD_link_set_data(SD_link_t link, void *data) {
   link->data = data;
 }
 
-/* Returns the name of a link. The name cannot be NULL.
+/**
+ * \brief Returns the name of a link
+ *
+ * \param link a link
+ * \return the name of this link (cannot be \c NULL)
  */
 const char* SD_link_get_name(SD_link_t link) {
   SD_CHECK_INIT_DONE();
@@ -45,15 +62,11 @@ const char* SD_link_get_name(SD_link_t link) {
   return surf_workstation_resource->extension_public->get_link_name(link->surf_link);
 }
 
-/* Returns the capacity of a link.
- */
-/*
-double SD_link_get_capacity(SD_link_t link) {
-  xbt_assert0(link, "Invalid parameter");
-  return link->capacity;
-}*/
-
-/* Return the current bandwidth of a link.
+/**
+ * \brief Returns the current bandwidth of a link
+ *
+ * \param link a link
+ * \return the current bandwidth of this link, in Flops
  */
 double SD_link_get_current_bandwidth(SD_link_t link) {
   SD_CHECK_INIT_DONE();
@@ -61,7 +74,11 @@ double SD_link_get_current_bandwidth(SD_link_t link) {
   return surf_workstation_resource->extension_public->get_link_bandwidth(link->surf_link);
 }
 
-/* Return the current latency of a link.
+/**
+ * \brief Returns the current latency of a link
+ *
+ * \param link a link
+ * \return the current latency of this link, in seconds
  */
 double SD_link_get_current_latency(SD_link_t link) {
   SD_CHECK_INIT_DONE();
@@ -69,7 +86,7 @@ double SD_link_get_current_latency(SD_link_t link) {
   return surf_workstation_resource->extension_public->get_link_latency(link->surf_link);
 }
 
-/* Destroys a link. The user data (if any) should have been destroyed first.
+/* Destroys a link.
  */
 void __SD_link_destroy(void *link) {
   SD_CHECK_INIT_DONE();

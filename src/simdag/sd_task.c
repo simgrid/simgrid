@@ -3,7 +3,14 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 
-/* Creates a task.
+/**
+ * \brief Creates a new task.
+ *
+ * \param name the name of the task (can be \c NULL)
+ * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param amount the computing amount necessary to do this task
+ * \return the new task
+ * \see SD_task_destroy()
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount) {
   SD_CHECK_INIT_DONE();
@@ -40,7 +47,12 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
   return task;
 }
 
-/* Returns the data of a task.
+/**
+ * \brief Returns the user data of a task
+ *
+ * \param task a task
+ * \return the user data associated with this task (can be \c NULL)
+ * \see SD_task_set_data()
  */
 void* SD_task_get_data(SD_task_t task) {
   SD_CHECK_INIT_DONE();
@@ -48,7 +60,29 @@ void* SD_task_get_data(SD_task_t task) {
   return task->data;
 }
 
-/* Returns the state of a task: SD_NOT_SCHEDULED, SD_SCHEDULED, SD_READY, SD_RUNNING, SD_DONE or SD_FAILED.
+/**
+ * \brief Sets the user data of a task
+ *
+ * The new data can be \c NULL. The old data should have been freed first
+ * if it was not \c NULL.
+ *
+ * \param task a task
+ * \param data the new data you want to associate with this task
+ * \see SD_task_get_data()
+ */
+void SD_task_set_data(SD_task_t task, void *data) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+  task->data = data;
+}
+
+/**
+ * \brief Returns the state of a task
+ *
+ * \param task a task
+ * \return the current \ref e_SD_task_state_t "state" of this task:
+ * #SD_NOT_SCHEDULED, #SD_SCHEDULED, #SD_READY, #SD_RUNNING, #SD_DONE or #SD_FAILED
+ * \see e_SD_task_state_t
  */
 e_SD_task_state_t SD_task_get_state(SD_task_t task) {
   SD_CHECK_INIT_DONE();
@@ -93,23 +127,20 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
   default:
     xbt_assert0(0, "Invalid state");
   }
-  xbt_swag_insert(task,task->state_set);
+  xbt_swag_insert(task, task->state_set);
 
   if (task->watch_points & new_state) {
     printf("Watch point reached with task '%s' in state %d!\n", SD_task_get_name(task), new_state);
     sd_global->watch_point_reached = 1;
+    SD_task_unwatch(task, new_state); /* remove the watch point */
   }
 }
 
-/* Sets the data of a task.
- */
-void SD_task_set_data(SD_task_t task, void *data) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  task->data = data;
-}
-
-/* Returns the name of a task. The name can be NULL.
+/**
+ * \brief Returns the name of a task
+ *
+ * \param task a task
+ * \return the name of this task (can be \c NULL)
  */
 const char* SD_task_get_name(SD_task_t task) {
   SD_CHECK_INIT_DONE();
@@ -117,7 +148,12 @@ const char* SD_task_get_name(SD_task_t task) {
   return task->name;
 }
 
-/* Returns the computing amount of a task.
+/**
+ * \brief Returns the computing amount of a task
+ *
+ * \param task a task
+ * \return the total computing amount of this task
+ * \see SD_task_get_remaining_amount()
  */
 double SD_task_get_amount(SD_task_t task) {
   SD_CHECK_INIT_DONE();
@@ -125,7 +161,12 @@ double SD_task_get_amount(SD_task_t task) {
   return task->amount;
 }
 
-/* Returns the remaining computing amount of a task.
+/**
+ * \brief Returns the remaining computing amount of a task
+ *
+ * \param task a task
+ * \return the remaining computing amount of this task
+ * \see SD_task_get_amount()
  */
 double SD_task_get_remaining_amount(SD_task_t task) {
   SD_CHECK_INIT_DONE();
@@ -168,8 +209,17 @@ static void __SD_task_dependency_destroy(void *dependency) {
   xbt_free(dependency);
 }
 
-/* Adds a dependency between two tasks. Their state must be SD_NOT_SCHEDULED, SD_SCHEDULED
- * or SD_READY.
+/**
+ * \brief Adds a dependency between two tasks
+ *
+ * \a dst will depend on \a src, ie \a dst will not start before \a src is finished.
+ * Their \ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_READY.
+ *
+ * \param name the name of the new dependency (can be \c NULL)
+ * \param data the user data you want to associate with this dependency (can be \c NULL)
+ * \param src the task which must be executed first
+ * \param dst the task you want to make depend on \a src
+ * \see SD_task_dependency_remove()
  */
 void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst) {
   SD_CHECK_INIT_DONE();
@@ -215,7 +265,12 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
       __SD_print_dependencies(dst); */
 }
 
-/* Removes a dependency between two tasks.
+/**
+ * \brief Remove a dependency between two tasks
+ *
+ * \param src a task
+ * \param dst a task depending on \a src
+ * \see SD_task_dependency_add()
  */
 void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
   SD_CHECK_INIT_DONE();
@@ -261,7 +316,13 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
       __SD_print_dependencies(dst);*/
 }
 
-/* Returns the data associated to a dependency between two tasks. This data can be NULL.
+/**
+ * \brief Returns the user data associated with a dependency between two tasks
+ *
+ * \param src a task
+ * \param dst a task depending on \a src
+ * \return the user data associated with this dependency (can be \c NULL)
+ * \see SD_task_dependency_add()
  */
 void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst) {
   SD_CHECK_INIT_DONE();
@@ -295,10 +356,15 @@ static void __SD_print_watch_points(SD_task_t task) {
   printf("\n");
 }
 
-/* Adds a watch point to a task.
-   SD_simulate will stop as soon as the state of this task is the one given in argument.
-   Watch point is then automatically removed.
-   The given state must be SD_SCHEDULED, SD_READY, SD_RUNNING, SD_DONE or SD_FAILED.
+/**
+ * \brief Adds a watch point to a task
+ *
+ * SD_simulate() will stop as soon as the \ref e_SD_task_state_t "state" of this task becomes the one given in argument. The
+ * watch point is then automatically removed.
+ * 
+ * \param task a task
+ * \param state the \ref e_SD_task_state_t "state" you want to watch (cannot be #SD_NOT_SCHEDULED)
+ * \see SD_task_unwatch()
  */
 void SD_task_watch(SD_task_t task, e_SD_task_state_t state) {
   SD_CHECK_INIT_DONE();
@@ -306,11 +372,15 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state) {
   xbt_assert0(state != SD_NOT_SCHEDULED, "Cannot add a watch point for state SD_NOT_SCHEDULED");
 
   task->watch_points = task->watch_points | state;
-  __SD_print_watch_points(task);
+  /*  __SD_print_watch_points(task);*/
 }
 
-/* Removes a watch point from a task.
-   The given state must be SD_SCHEDULED, SD_READY, SD_RUNNING, SD_DONE or SD_FAILED.
+/**
+ * \brief Removes a watch point from a task
+ * 
+ * \param task a task
+ * \param state the \ref e_SD_task_state_t "state" you no longer want to watch
+ * \see SD_task_watch()
  */
 void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state) {
   SD_CHECK_INIT_DONE();
@@ -318,7 +388,7 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state) {
   xbt_assert0(state != SD_NOT_SCHEDULED, "Cannot have a watch point for state SD_NOT_SCHEDULED");
   
   task->watch_points = task->watch_points & ~state;
-  __SD_print_watch_points(task);
+  /*  __SD_print_watch_points(task);*/
 }
 
 /* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED or SD_READY.
@@ -332,13 +402,20 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task) {
   xbt_free(task->communication_amount);
 }
 
-/* Schedules a task.
- * task: the task to schedule
- * workstation_nb: number of workstations where the task will be executed
- * workstation_list: workstations where the task will be executed
- * computation_amount: computation amount for each workstation
- * communication_amount: communication amount between each pair of workstations
- * rate: task execution speed rate
+/**
+ * \brief Schedules a task
+ *
+ * The task state must be #SD_NOT_SCHEDULED.
+ * Once scheduled, a task will be executed as soon as possible in SD_simulate(),
+ * i.e. when its dependencies are satisfied.
+ * 
+ * \param task the task you want to schedule
+ * \param workstation_nb number of workstations on which the task will be executed
+ * \param workstation_list the workstations on which the task will be executed
+ * \param computation_amount computation amount for each workstation
+ * \param communication_amount communication amount between each pair of workstations
+ * \param rate task execution speed rate
+ * \see SD_task_unschedule()
  */
 void SD_task_schedule(SD_task_t task, int workstation_nb,
 		     const SD_workstation_t *workstation_list, double *computation_amount,
@@ -372,9 +449,15 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
     __SD_task_set_state(task, SD_SCHEDULED);
 }
 
-/* Unschedules a task. The state must be SD_SCHEDULED, SD_READY, SD_RUNNING or SD_FAILED.
- * The task is reinitialised and its state becomes SD_NOT_SCHEDULED.
- * Call SD_task_schedule to schedule it again.
+/**
+ * \brief Unschedules a task
+ *
+ * The task state must be #SD_SCHEDULED, #SD_READY, #SD_RUNNING or #SD_FAILED.
+ * If you call this function, the task state becomes #SD_NOT_SCHEDULED.
+ * Call SD_task_schedule() to schedule it again.
+ *
+ * \param task the task you want to unschedule
+ * \see SD_task_schedule()
  */
 void SD_task_unschedule(SD_task_t task) {
   SD_CHECK_INIT_DONE();
@@ -435,7 +518,13 @@ void __SD_task_remove_dependencies(SD_task_t task) {
   }
 }
 
-/* Destroys a task. The user data (if any) should have been destroyed first.
+/**
+ * \brief Destroys a task.
+ *
+ * The user data (if any) should have been destroyed first.
+ *
+ * \param task the task you want to destroy
+ * \see SD_task_create()
  */
 void SD_task_destroy(SD_task_t task) {
   SD_CHECK_INIT_DONE();
