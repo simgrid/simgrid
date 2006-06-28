@@ -23,9 +23,19 @@ void         SD_link_destroy(SD_link_t link);
 
 /************************** Workstation handling ****************************/
 
-/* private (called by SD_environment_create)
-SD_workstation_t   SD_workstation_create(void *data, const char *name, double power,
-  double available_power);*/
+/** @defgroup SD_workstation_management Workstations
+ *  @brief Functions for managing the workstations
+ * 
+ *  This section describes the functions for managing the workstations.
+ *  
+ *  A workstation is a place where a task can be executed.
+ *  A workstation is represented as a <em>physical
+ *  resource with computing capabilities</em> and has a <em>name</em>.
+ *
+ *  @see SD_workstation_t
+ *
+ *  @{
+ */
 SD_workstation_t   SD_workstation_get_by_name(const char *name);
 SD_workstation_t*  SD_workstation_get_list(void);
 int                SD_workstation_get_number(void);
@@ -36,9 +46,8 @@ SD_link_t*         SD_workstation_route_get_list(SD_workstation_t src, SD_workst
 int                SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst);
 double             SD_workstation_get_power(SD_workstation_t workstation);
 double             SD_workstation_get_available_power(SD_workstation_t workstation);
-/* private (called by SD_clean)
-void               SD_workstation_destroy(SD_workstation_t workstation);
-*/
+
+/** @} */
 
 /************************** Task handling ************************************/
 

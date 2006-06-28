@@ -121,9 +121,9 @@
     SimDag provides some functionnalities to simulate parallel task scheduling
     with DAGs models (Direct Acyclic Graphs).
     The old versions of SimGrid were based on DAGs. But the DAG part (named SG)
-    was removed in SimGrid 3 because the new kernel (\ref SURF) was implemented. \ref SURF
+    was removed in SimGrid 3 because the new kernel (\ref SURF_API) was implemented. \ref SURF_API
     was much faster and more flexible than SG and did not use DAGs.
-    SimDag is a new implementation of DAGs handling and it is built on top of \ref SURF.
+    SimDag is a new implementation of DAGs handling and it is built on top of \ref SURF_API.
     
     \section SD_who Who should use this (and who shouldn't)
     

@@ -80,6 +80,7 @@ int main(int argc, char **argv) {
     }
     i++;
   }
+
   free(changed_tasks);
 
   SD_task_destroy(taskA);
