@@ -214,7 +214,7 @@ SD_task_t* SD_simulate(double how_long)
   }
 
   INFO0("Simulation finished");
-  printf("elapsed_time = %f, total_time = %f, watch_point_reached = %d\n", elapsed_time, total_time, sd_global->watch_point_reached);
+  /*  printf("elapsed_time = %f, total_time = %f, watch_point_reached = %d\n", elapsed_time, total_time, sd_global->watch_point_reached);*/
 
   return changed_tasks;
 }
