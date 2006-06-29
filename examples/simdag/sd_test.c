@@ -55,30 +55,41 @@ int main(int argc, char **argv) {
   SD_task_schedule(taskD, workstation_number, workstation_list,
 		   computation_amount, communication_amount, rate);
 
-  printf("Launching simulation...\n");
-  SD_task_t *changed_tasks = SD_simulate(100);
-  int i = 0;
+  SD_task_watch(taskC, SD_DONE);
+
+  SD_task_t *changed_tasks;
+  int i;
+
+  changed_tasks = SD_simulate(100);
   
-  printf("Simulation results:\n");
-  while(changed_tasks[i] != NULL) {
-    switch (SD_task_get_state(changed_tasks[i])) {
-    case SD_SCHEDULED:
-      printf("%s is scheduled.\n", SD_task_get_name(changed_tasks[i]));
-      break;
-    case SD_READY:
-      printf("%s is ready.\n", SD_task_get_name(changed_tasks[i]));
-      break;
-    case SD_DONE:
-      printf("%s is done.\n", SD_task_get_name(changed_tasks[i]));
-      break;
-    case SD_FAILED:
-      printf("%s is failed.\n", SD_task_get_name(changed_tasks[i]));
-      break;
-    default:
-      printf("Unknown status for %s\n", SD_task_get_name(changed_tasks[i]));
-      break;
+  while (changed_tasks[0] != NULL) {
+    printf("Tasks whose state has changed:\n");
+    i = 0;
+    while(changed_tasks[i] != NULL) {
+      switch (SD_task_get_state(changed_tasks[i])) {
+      case SD_SCHEDULED:
+	printf("%s is scheduled.\n", SD_task_get_name(changed_tasks[i]));
+	break;
+      case SD_READY:
+	printf("%s is ready.\n", SD_task_get_name(changed_tasks[i]));
+	break;
+      case SD_RUNNING:
+	printf("%s is running.\n", SD_task_get_name(changed_tasks[i]));
+	break;
+      case SD_DONE:
+	printf("%s is done.\n", SD_task_get_name(changed_tasks[i]));
+	break;
+      case SD_FAILED:
+	printf("%s is failed.\n", SD_task_get_name(changed_tasks[i]));
+	break;
+      default:
+	printf("Unknown status for %s\n", SD_task_get_name(changed_tasks[i]));
+	break;
+      }
+      i++;
     }
-    i++;
+    free(changed_tasks);
+    changed_tasks = SD_simulate(100);
   }
 
   free(changed_tasks);

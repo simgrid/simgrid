@@ -3,6 +3,8 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 
+static void __SD_task_remove_dependencies(SD_task_t task);
+
 /**
  * \brief Creates a new task.
  *
@@ -130,7 +132,7 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
   xbt_swag_insert(task, task->state_set);
 
   if (task->watch_points & new_state) {
-    printf("Watch point reached with task '%s' in state %d!\n", SD_task_get_name(task), new_state);
+    printf("Watch point reached with task '%s'!\n", SD_task_get_name(task));
     sd_global->watch_point_reached = 1;
     SD_task_unwatch(task, new_state); /* remove the watch point */
   }
@@ -500,10 +502,9 @@ surf_action_t __SD_task_run(SD_task_t task) {
 
   return surf_action;
 }
-
-/* Remove all dependencies associated with a task. This function is called when the task is done.
+/* Remove all dependencies associated with a task. This function is called when the task is destroyed.
  */
-void __SD_task_remove_dependencies(SD_task_t task) {
+static void __SD_task_remove_dependencies(SD_task_t task) {
   /* we must destroy the dependencies carefuly (with SD_dependency_remove)
      because each one is stored twice */
   SD_dependency_t dependency;

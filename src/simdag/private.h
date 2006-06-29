@@ -84,7 +84,6 @@ void __SD_workstation_destroy(void *workstation);
 
 void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 surf_action_t __SD_task_run(SD_task_t task);
-void __SD_task_remove_dependencies(SD_task_t task);
 
 /* Functions to test if the task is in a given state.
    These functions are faster than using SD_task_get_state() */
