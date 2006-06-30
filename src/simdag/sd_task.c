@@ -13,7 +13,7 @@ static void __SD_task_remove_dependencies(SD_task_t task);
  * \return the new task
  * \see SD_task_destroy()
  */
-SD_task_t SD_task_create(const char *name, void *data) {
+SD_task_t SD_task_create(const char *name, void *data, double amount) {
   SD_CHECK_INIT_DONE();
 
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
@@ -28,6 +28,7 @@ SD_task_t SD_task_create(const char *name, void *data) {
   task->state_set = sd_global->not_scheduled_task_set;
   xbt_swag_insert(task,task->state_set);
 
+  task->amount = amount;
   task->surf_action = NULL;
   task->watch_points = 0;
   task->state_changed = 0;
@@ -157,8 +158,7 @@ const char* SD_task_get_name(SD_task_t task) {
 double SD_task_get_amount(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert1(task->surf_action != NULL, "The task '%s' is not running", SD_task_get_name(task));
-  return task->surf_action->cost;
+  return task->amount;
 }
 
 /**
@@ -171,8 +171,11 @@ double SD_task_get_amount(SD_task_t task) {
 double SD_task_get_remaining_amount(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert1(task->surf_action != NULL, "The task '%s' is not running", SD_task_get_name(task));
-  return task->surf_action->remains / task->surf_action->cost;
+
+  if (task->surf_action)
+    return task->surf_action->remains;
+  else
+    return task->amount;
 }
 
 /* temporary function for debbuging */
@@ -489,7 +492,7 @@ surf_action_t __SD_task_run(SD_task_t task) {
 			  task->workstation_list,
 			  task->computation_amount,
 			  task->communication_amount,
-			  1.0,
+			  task->amount,
 			  task->rate);
 
   __SD_task_destroy_scheduling_data(task); /* now the scheduling data are not useful anymore */

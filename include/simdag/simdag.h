@@ -62,7 +62,7 @@ double             SD_workstation_get_available_power(SD_workstation_t workstati
  * 
  *  This section describes the functions for managing the tasks.
  *  
- *  A task is some <em>computing amount</em> that can be executed
+ *  A task is some <em>working amount</em> that can be executed
  *  in parallel on several workstations. A task may depend on other
  *  tasks, this means that the task cannot start until the other tasks are done.
  *  Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether
@@ -71,7 +71,7 @@ double             SD_workstation_get_available_power(SD_workstation_t workstati
  *  @see SD_task_t, SD_task_dependency_management
  *  @{
  */
-SD_task_t         SD_task_create(const char *name, void *data);
+SD_task_t         SD_task_create(const char *name, void *data, double amount);
 void*             SD_task_get_data(SD_task_t task);
 void              SD_task_set_data(SD_task_t task, void *data);
 e_SD_task_state_t SD_task_get_state(SD_task_t task);
