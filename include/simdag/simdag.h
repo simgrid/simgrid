@@ -71,7 +71,7 @@ double             SD_workstation_get_available_power(SD_workstation_t workstati
  *  @see SD_task_t, SD_task_dependency_management
  *  @{
  */
-SD_task_t         SD_task_create(const char *name, void *data, double amount);
+SD_task_t         SD_task_create(const char *name, void *data);
 void*             SD_task_get_data(SD_task_t task);
 void              SD_task_set_data(SD_task_t task, void *data);
 e_SD_task_state_t SD_task_get_state(SD_task_t task);
@@ -81,8 +81,8 @@ double            SD_task_get_remaining_amount(SD_task_t task);
 void              SD_task_watch(SD_task_t task, e_SD_task_state_t state);
 void              SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
 void              SD_task_schedule(SD_task_t task, int workstation_nb,
-				   const SD_workstation_t *workstation_list, double *computation_amount,
-				   double *communication_amount, double rate);
+				   const SD_workstation_t *workstation_list, const double *computation_amount,
+				   const double *communication_amount, double rate);
 void              SD_task_unschedule(SD_task_t task);
 void              SD_task_destroy(SD_task_t task);
 /** @} */

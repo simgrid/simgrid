@@ -47,7 +47,6 @@ typedef struct SD_task {
   xbt_swag_t state_set;
   void *data; /* user data */
   char *name;
-  double amount;
   surf_action_t surf_action;
   unsigned short watch_points;
   int state_changed; /* used only by SD_simulate, to make sure we put

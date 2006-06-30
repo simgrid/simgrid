@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
 
   if (argc < 2) {
      printf ("Usage: %s platform_file\n", argv[0]);
-     printf ("example: %s msg_platform.xml\n", argv[0]);
+     printf ("example: %s sd_platform.xml\n", argv[0]);
      exit(1);
   }
 
@@ -19,10 +19,10 @@ int main(int argc, char **argv) {
   SD_create_environment(platform_file);
 
   /* creation of the tasks and their dependencies */
-  SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
-  SD_task_t taskB = SD_task_create("Task B", NULL, 40.0);
-  SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
-  SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
+  SD_task_t taskA = SD_task_create("Task A", NULL);
+  SD_task_t taskB = SD_task_create("Task B", NULL);
+  SD_task_t taskC = SD_task_create("Task C", NULL);
+  SD_task_t taskD = SD_task_create("Task D", NULL);
   
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
   SD_task_dependency_add(NULL, NULL, taskC, taskA);
