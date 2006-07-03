@@ -12,9 +12,16 @@
 /* Global variables */
 
 typedef struct SD_global {
-  xbt_dict_t workstations; /* workstation list */
+  xbt_dict_t workstations; /* workstation dictionary */
   int workstation_count; /* number of workstations */
-  xbt_dict_t links; /* link list */
+  SD_workstation_t *workstation_list; /* array of workstations, created only if
+					 necessary in SD_workstation_get_list */
+
+  xbt_dict_t links; /* links */
+  int link_count; /* number of links */
+  SD_link_t *link_list; /* array of links, created only if
+			   necessary in SD_link_get_list */
+
   int watch_point_reached; /* has a task just reached a watch point? */
   
   /* task state sets */

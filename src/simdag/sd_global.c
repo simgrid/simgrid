@@ -25,7 +25,10 @@ void SD_init(int *argc, char **argv) {
   sd_global = xbt_new0(s_SD_global_t, 1);
   sd_global->workstations = xbt_dict_new();
   sd_global->workstation_count = 0;
+  sd_global->workstation_list = NULL;
   sd_global->links = xbt_dict_new();
+  sd_global->link_count = 0;
+  sd_global->link_list = NULL;
   sd_global->watch_point_reached = 0;
 
   s_SD_task_t task;
@@ -227,6 +230,13 @@ void SD_exit(void) {
   if (sd_global != NULL) {
     xbt_dict_free(&sd_global->workstations);
     xbt_dict_free(&sd_global->links);
+
+    if (sd_global->workstation_list != NULL)
+      xbt_free(sd_global->workstation_list);
+
+    if (sd_global->link_list != NULL)
+      xbt_free(sd_global->link_list);
+
     xbt_free(sd_global);
 
     xbt_swag_free(sd_global->not_scheduled_task_set);

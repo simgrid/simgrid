@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
   /* let's launch the simulation! */
 
   int workstation_number = 2;
-  SD_workstation_t *workstation_list = SD_workstation_get_list();
+  const SD_workstation_t *workstation_list = SD_workstation_get_list();
   double computation_amount[] = {100, 200};
   double communication_amount[] =
     {

@@ -38,28 +38,31 @@ SD_workstation_t SD_workstation_get_by_name(const char *name) {
 }
 
 /**
- * \brief Returns the workstations list
+ * \brief Returns the workstation list
  *
  * Use SD_workstation_get_number() to know the array size.
  *
  * \return an array of \ref SD_workstation_t containing all workstations
  * \see SD_workstation_get_number()
  */
-SD_workstation_t*  SD_workstation_get_list(void) {
+const SD_workstation_t*  SD_workstation_get_list(void) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(SD_workstation_get_number() > 0, "There is no workstation!");
 
-  SD_workstation_t* array = xbt_new0(SD_workstation_t, sd_global->workstation_count);
-  
+  SD_workstation_t *array = sd_global->workstation_list;
   xbt_dict_cursor_t cursor;
   char *key;
   void *data;
-  int i=0;
+  int i;
 
-  xbt_dict_foreach(sd_global->workstations, cursor, key, data) {
-    array[i++] = (SD_workstation_t) data;
+  if (array == NULL) { /* this is the first time the function is called */
+    array = xbt_new0(SD_workstation_t, sd_global->workstation_count);
+  
+    i = 0;
+    xbt_dict_foreach(sd_global->workstations, cursor, key, data) {
+      array[i++] = (SD_workstation_t) data;
+    }
   }
-
   return array;
 }
 

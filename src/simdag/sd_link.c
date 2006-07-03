@@ -10,15 +10,54 @@ SD_link_t __SD_link_create(void *surf_link, void *data) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(surf_link != NULL, "surf_link is NULL !");
 
-
   SD_link_t link = xbt_new0(s_SD_link_t, 1);
   link->surf_link = surf_link;
   link->data = data; /* user data */
 
   const char *name = SD_link_get_name(link);
   xbt_dict_set(sd_global->links, name, link, __SD_link_destroy); /* add the link to the dictionary */
+  sd_global->link_count++;
 
   return link;
+}
+/**
+ * \brief Returns the link list
+ *
+ * Use SD_link_get_number() to know the array size.
+ *
+ * \return an array of \ref SD_link_t containing all links
+ * \see SD_link_get_number()
+ */
+const SD_link_t*  SD_link_get_list(void) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(SD_link_get_number() > 0, "There is no link!");
+
+  SD_link_t *array = sd_global->link_list;
+  xbt_dict_cursor_t cursor;
+  char *key;
+  void *data;
+  int i;
+
+  if (array == NULL) { /* this is the first time the function is called */
+    array = xbt_new0(SD_link_t, sd_global->link_count);
+  
+    i = 0;
+    xbt_dict_foreach(sd_global->links, cursor, key, data) {
+      array[i++] = (SD_link_t) data;
+    }
+  }
+  return array;
+}
+
+/**
+ * \brief Returns the number of links
+ *
+ * \return the number of existing links
+ * \see SD_link_get_list()
+ */
+int SD_link_get_number(void) {
+  SD_CHECK_INIT_DONE();
+  return sd_global->link_count;
 }
 
 /**

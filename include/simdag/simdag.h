@@ -20,11 +20,13 @@ SG_BEGIN_DECL()
  *  @see SD_link_t
  *  @{
  */
-void*        SD_link_get_data(SD_link_t link);
-void         SD_link_set_data(SD_link_t link, void *data);
-const char*  SD_link_get_name(SD_link_t link);
-double       SD_link_get_current_bandwidth(SD_link_t link);
-double       SD_link_get_current_latency(SD_link_t link);
+const SD_link_t*   SD_link_get_list(void);
+int                SD_link_get_number(void);
+void*              SD_link_get_data(SD_link_t link);
+void               SD_link_set_data(SD_link_t link, void *data);
+const char*        SD_link_get_name(SD_link_t link);
+double             SD_link_get_current_bandwidth(SD_link_t link);
+double             SD_link_get_current_latency(SD_link_t link);
 /** @} */
 
 /************************** Workstation handling ****************************/
@@ -43,16 +45,16 @@ double       SD_link_get_current_latency(SD_link_t link);
  *  @see SD_workstation_t
  *  @{
  */
-SD_workstation_t   SD_workstation_get_by_name(const char *name);
-SD_workstation_t*  SD_workstation_get_list(void);
-int                SD_workstation_get_number(void);
-void               SD_workstation_set_data(SD_workstation_t workstation, void *data);
-void*              SD_workstation_get_data(SD_workstation_t workstation);
-const char*        SD_workstation_get_name(SD_workstation_t workstation);
-SD_link_t*         SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t dst);
-int                SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst);
-double             SD_workstation_get_power(SD_workstation_t workstation);
-double             SD_workstation_get_available_power(SD_workstation_t workstation);
+SD_workstation_t        SD_workstation_get_by_name(const char *name);
+const SD_workstation_t* SD_workstation_get_list(void);
+int                     SD_workstation_get_number(void);
+void                    SD_workstation_set_data(SD_workstation_t workstation, void *data);
+void*                   SD_workstation_get_data(SD_workstation_t workstation);
+const char*             SD_workstation_get_name(SD_workstation_t workstation);
+SD_link_t*              SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t dst);
+int                     SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst);
+double                  SD_workstation_get_power(SD_workstation_t workstation);
+double                  SD_workstation_get_available_power(SD_workstation_t workstation);
 /** @} */
 
 /************************** Task handling ************************************/
