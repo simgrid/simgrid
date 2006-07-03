@@ -88,7 +88,7 @@ void SD_create_environment(const char *platform_file) {
  * when a watch point is reached, or when no more task can be executed.
  * Then you can call SD_simulate() again.
  * 
- * \param how_long maximum duration of the simulation
+ * \param how_long maximum duration of the simulation (a negative value means no time limit)
  * \return a NULL-terminated array of \ref SD_task_t whose state has changed.
  * \see SD_task_schedule(), SD_task_watch()
  */
@@ -135,7 +135,11 @@ SD_task_t* SD_simulate(double how_long)
 
   /* main loop */
   elapsed_time = 0.0;
-  while (elapsed_time >= 0.0 && total_time < how_long && !sd_global->watch_point_reached) {
+  while (elapsed_time >= 0.0 &&
+	 (how_long < 0.0 || total_time < how_long) &&
+	 !sd_global->watch_point_reached) {
+
+    DEBUG1("Total time: %f", total_time);
 
     elapsed_time = surf_solve();
     if (elapsed_time > 0.0)

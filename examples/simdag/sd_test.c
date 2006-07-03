@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "simdag/simdag.h"
 #include "xbt/ex.h"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 			     "Logging specific to this SimDag example");
@@ -10,6 +11,8 @@ int main(int argc, char **argv) {
   
   /* initialisation of SD */
   SD_init(&argc, argv);
+
+  /*  xbt_log_control_set("sd.thres=debug");*/
 
   if (argc < 2) {
      INFO1("Usage: %s platform_file", argv[0]);
@@ -32,10 +35,6 @@ int main(int argc, char **argv) {
   SD_task_dependency_add(NULL, NULL, taskD, taskB);
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
   /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock */
-
-  /* watch points */
-  /*  SD_task_watch(taskB, SD_DONE);*/
-
 
   /* let's launch the simulation! */
 
@@ -63,7 +62,7 @@ int main(int argc, char **argv) {
   SD_task_t *changed_tasks;
   int i;
 
-  changed_tasks = SD_simulate(100);
+  changed_tasks = SD_simulate(0.001);
   
   while (changed_tasks[0] != NULL) {
     INFO0("Tasks whose state has changed:");
