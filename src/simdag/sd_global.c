@@ -67,16 +67,8 @@ void SD_create_environment(const char *platform_file) {
 
   surf_timer_resource_init(platform_file);  /* tell Surf to create the environnement */
 
-  
-  /*printf("surf_workstation_resource = %p, workstation_set = %p\n", surf_workstation_resource, workstation_set);
-    printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
-
   /*surf_workstation_resource_init_KCCFLN05(platform_file);*/
   surf_workstation_resource_init_CLM03(platform_file);
-
-  /*printf("surf_workstation_resource = %p, workstation_set = %p\n", surf_workstation_resource, workstation_set);
-    printf("surf_network_resource = %p, network_link_set = %p\n", surf_network_resource, network_link_set);*/
-
 
   /* now let's create the SD wrappers for workstations and links */
   xbt_dict_foreach(workstation_set, cursor, name, surf_workstation) {
@@ -214,7 +206,7 @@ SD_task_t* SD_simulate(double how_long)
   }
 
   INFO0("Simulation finished");
-  /*  printf("elapsed_time = %f, total_time = %f, watch_point_reached = %d\n", elapsed_time, total_time, sd_global->watch_point_reached);*/
+  DEBUG3("elapsed_time = %f, total_time = %f, watch_point_reached = %d", elapsed_time, total_time, sd_global->watch_point_reached);
 
   return changed_tasks;
 }

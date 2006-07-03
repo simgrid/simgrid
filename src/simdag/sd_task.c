@@ -3,6 +3,9 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task,sd,
+				"Logging specific to SimDag (task)");
+
 static void __SD_task_remove_dependencies(SD_task_t task);
 
 /**
@@ -130,7 +133,7 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
   xbt_swag_insert(task, task->state_set);
 
   if (task->watch_points & new_state) {
-    printf("Watch point reached with task '%s'!\n", SD_task_get_name(task));
+    INFO1("Watch point reached with task '%s'!", SD_task_get_name(task));
     sd_global->watch_point_reached = 1;
     SD_task_unwatch(task, new_state); /* remove the watch point */
   }
@@ -180,25 +183,25 @@ double SD_task_get_remaining_amount(SD_task_t task) {
 
 /* temporary function for debbuging */
 static void __SD_print_dependencies(SD_task_t task) {
-  printf("The following tasks must be executed before %s:", SD_task_get_name(task));
+  INFO1("The following tasks must be executed before %s:", SD_task_get_name(task));
   xbt_dynar_t dynar = task->tasks_before;
   int length = xbt_dynar_length(dynar);
   int i;
   SD_dependency_t dependency;
   for (i = 0; i < length; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
-    printf(" %s", SD_task_get_name(dependency->src));
+    INFO1(" %s", SD_task_get_name(dependency->src));
   }
 
-  printf("\nThe following tasks must be executed after %s:", SD_task_get_name(task));
+  INFO1("The following tasks must be executed after %s:", SD_task_get_name(task));
 
   dynar = task->tasks_after;
   length = xbt_dynar_length(dynar);
   for (i = 0; i < length; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
-    printf(" %s", SD_task_get_name(dependency->dst));
+    INFO1(" %s", SD_task_get_name(dependency->dst));
   }
-  printf("\n----------------------------\n");
+  INFO0("----------------------------");
 }
 
 /* Destroys a dependency between two tasks.
@@ -257,7 +260,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
   /* if the task was ready, then dst->tasks_before is not empty anymore,
      so we must go back to state SD_SCHEDULED */
   if (__SD_task_is_ready(dst)) {
-    printf("SD_task_dependency_add: %s was ready and becomes scheduled!\n", SD_task_get_name(dst));
+    DEBUG1("SD_task_dependency_add: %s was ready and becomes scheduled!", SD_task_get_name(dst));
     __SD_task_set_state(dst, SD_SCHEDULED);
   }
 
@@ -346,14 +349,13 @@ static void __SD_print_watch_points(SD_task_t task) {
   static const int state_masks[] = {SD_SCHEDULED, SD_RUNNING, SD_READY, SD_DONE, SD_FAILED};
   static const char* state_names[] = {"scheduled", "running", "ready", "done", "failed"};
 
-  printf("Task '%s' watch points (%x): ", SD_task_get_name(task), task->watch_points);
+  INFO2("Task '%s' watch points (%x): ", SD_task_get_name(task), task->watch_points);
 
   int i;
   for (i = 0; i < 5; i++) {
     if (task->watch_points & state_masks[i])
-      printf("%s ", state_names[i]);
+      INFO1("%s ", state_names[i]);
   }
-  printf("\n");
 }
 
 /**
@@ -529,7 +531,7 @@ void SD_task_destroy(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
 
-  /*printf("Destroying task %s...\n", SD_task_get_name(task));*/
+  DEBUG1("Destroying task %s...", SD_task_get_name(task));
 
   __SD_task_remove_dependencies(task);
 
@@ -544,5 +546,5 @@ void SD_task_destroy(SD_task_t task) {
   xbt_dynar_free(&task->tasks_after);
   xbt_free(task);
 
-  /*printf("Task destroyed.\n");*/
+  DEBUG0("Task destroyed.");
 }

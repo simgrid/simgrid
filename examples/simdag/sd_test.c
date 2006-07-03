@@ -3,14 +3,17 @@
 #include "simdag/simdag.h"
 #include "xbt/ex.h"
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
+			     "Logging specific to this SimDag example");
+
 int main(int argc, char **argv) {
   
   /* initialisation of SD */
   SD_init(&argc, argv);
 
   if (argc < 2) {
-     printf ("Usage: %s platform_file\n", argv[0]);
-     printf ("example: %s sd_platform.xml\n", argv[0]);
+     INFO1("Usage: %s platform_file", argv[0]);
+     INFO1("example: %s sd_platform.xml", argv[0]);
      exit(1);
   }
 
@@ -63,27 +66,27 @@ int main(int argc, char **argv) {
   changed_tasks = SD_simulate(100);
   
   while (changed_tasks[0] != NULL) {
-    printf("Tasks whose state has changed:\n");
+    INFO0("Tasks whose state has changed:");
     i = 0;
     while(changed_tasks[i] != NULL) {
       switch (SD_task_get_state(changed_tasks[i])) {
       case SD_SCHEDULED:
-	printf("%s is scheduled.\n", SD_task_get_name(changed_tasks[i]));
+	INFO1("%s is scheduled.", SD_task_get_name(changed_tasks[i]));
 	break;
       case SD_READY:
-	printf("%s is ready.\n", SD_task_get_name(changed_tasks[i]));
+	INFO1("%s is ready.", SD_task_get_name(changed_tasks[i]));
 	break;
       case SD_RUNNING:
-	printf("%s is running.\n", SD_task_get_name(changed_tasks[i]));
+	INFO1("%s is running.", SD_task_get_name(changed_tasks[i]));
 	break;
       case SD_DONE:
-	printf("%s is done.\n", SD_task_get_name(changed_tasks[i]));
+	INFO1("%s is done.", SD_task_get_name(changed_tasks[i]));
 	break;
       case SD_FAILED:
-	printf("%s is failed.\n", SD_task_get_name(changed_tasks[i]));
+	INFO1("%s is failed.", SD_task_get_name(changed_tasks[i]));
 	break;
       default:
-	printf("Unknown status for %s\n", SD_task_get_name(changed_tasks[i]));
+	INFO1("Unknown status for %s", SD_task_get_name(changed_tasks[i]));
 	break;
       }
       i++;
