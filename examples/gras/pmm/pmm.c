@@ -10,10 +10,10 @@
 
 #include "gras.h"
 #include "xbt/matrix.h"
-#define PROC_MATRIX_SIZE 3
+#define PROC_MATRIX_SIZE 2
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
-#define DATA_MATRIX_SIZE 600
+#define DATA_MATRIX_SIZE 8
 const int submatrix_size = DATA_MATRIX_SIZE/PROC_MATRIX_SIZE;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");
@@ -282,7 +282,8 @@ int slave(int argc,char *argv[]) {
 	
     /* a line brodcast */
     if(myline==step){
-       INFO2("LINE: step(%d) = Myline(%d). Broadcast my data.",step,myline);
+       INFO3("LINE: step(%d) = Myline(%d). Broadcast my data (myport=%d).",
+	     step,myline,gras_os_myport());
        for (l=0;l < PROC_MATRIX_SIZE-1 ;l++)
 	 gras_msg_send(socket_row[l], 
 		       gras_msgtype_by_name("dataB"), 
@@ -299,8 +300,8 @@ int slave(int argc,char *argv[]) {
       } CATCH(e) {
 	RETHROW0("Can't get a data message from line : %s");
       }
-      INFO3("LINE: step(%d) <> Myline(%d). Receive data from %s",step,myline,
-	    gras_socket_peer_name(from));
+      INFO4("LINE: step(%d) <> Myline(%d). Receive data from %s:%d",step,myline,
+	    gras_socket_peer_name(from), gras_socket_peer_port(from));
     }
 
     /* a row brodcast */
