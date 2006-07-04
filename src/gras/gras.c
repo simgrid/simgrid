@@ -17,10 +17,17 @@
 #include "gras.h"
 #include "gras/process.h" /* FIXME: killme and put process_init in modinter */
 
-#include "portable.h" /* hexa_*() */
+#include "portable.h" /* hexa_*(); signalling stuff */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories (cf. section \ref GRAS_API)");
 static int gras_running_process = 0;
+
+#if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
+static void gras_sigusr_handler(int sig) {
+   INFO0("SIGUSR1 received. Display the backtrace");
+   xbt_backtrace_display();
+}
+#endif
 
 void gras_init(int *argc,char **argv) {
 
@@ -50,6 +57,9 @@ void gras_init(int *argc,char **argv) {
     gras_msg_init();
     gras_trp_init();
     gras_datadesc_init();
+#if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
+    signal(SIGUSR1,gras_sigusr_handler);
+#endif     
   }
 }
 
