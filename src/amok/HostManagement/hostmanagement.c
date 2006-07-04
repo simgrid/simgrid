@@ -77,9 +77,10 @@ static int amok_hm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
   xbt_host_t dude = xbt_host_new(gras_socket_peer_name(exp),
 				 gras_socket_peer_port(exp));
 
+  VERB2("Contacted by %s:%d",dude->name,dude->port);
   xbt_dynar_push(group,&dude);
 
-  gras_msg_rpcreturn(30, ctx, NULL);
+  gras_msg_rpcreturn(10, ctx, NULL);
   free(name);
   return 1;
 }
@@ -246,6 +247,8 @@ xbt_dynar_t amok_hm_group_get(gras_socket_t master, const char *group_name) {
 
 /** \brief add current host to the given remote group */
 void        amok_hm_group_join(gras_socket_t master, const char *group_name) {
+  VERB3("Join group '%s' on %s:%d",
+	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
   gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_join"),
 		   &group_name,NULL);
   VERB3("Joined group '%s' on %s:%d",
