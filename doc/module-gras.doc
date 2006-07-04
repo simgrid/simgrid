@@ -54,7 +54,7 @@
        - \ref GRAS_ex_token
        - \ref GRAS_ex_timer
 
-    @{ */
+    @{ */
        /** @defgroup GRAS_comm    Communication facilities */
        /** @defgroup GRAS_run     Virtualization */
        /** @defgroup GRAS_code    Project and code management */
