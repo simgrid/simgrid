@@ -36,12 +36,14 @@ AC_CHECK_HEADERS([sys/socket.h \
 		  windows.h winsock.h winsock2.h \
 		  sys/time.h \
 		  errno.h unistd.h \
-		  execinfo.h])
+		  execinfo.h\
+		  signal.h ])
 AC_CHECK_FUNCS([gettimeofday usleep \
                 getdtablesize \
                 sysconf\
                 readv\
-		popen])
+		popen\
+		signal])
                 
 # check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
 AC_FUNC_SNPRINTF
