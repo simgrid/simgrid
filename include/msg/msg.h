@@ -99,6 +99,8 @@ MSG_error_t MSG_task_put(m_task_t task, m_host_t dest,
 MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 m_host_t dest, m_channel_t channel,
 				 double max_rate);
+MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest, 
+				      m_channel_t channel, double max_duration);
 MSG_error_t MSG_task_execute(m_task_t task);
 MSG_error_t MSG_parallel_task_execute(m_task_t task);
 void MSG_task_set_priority(m_task_t task, double priority);

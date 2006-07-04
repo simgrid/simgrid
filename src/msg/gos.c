@@ -62,7 +62,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 						       
     if(max_duration>0) {
       if(!first_time) {
-	MSG_RETURN(MSG_OK);
+	MSG_RETURN(MSG_TRANSFER_FAILURE);
       }
     }
     xbt_assert3(!(h_simdata->sleeping[channel]),
@@ -190,8 +190,9 @@ MSG_error_t MSG_task_get(m_task_t * task,
    listening. This value has to be >=0 and < than the maximal
    number of channels fixed with MSG_set_channel_number().
  * \param max_duration the maximum time to wait for a task before giving
-    up. In such a case, \a task will not be modified and will still be
-    equal to \c NULL when returning.
+    up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task 
+    will not be modified and will still be
+    equal to \c NULL when returning. 
  * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
    if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
  */
@@ -384,12 +385,12 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
   return count;
 }
 
-/** \ingroup msg_gos_functions
- * \brief Put a task on a channel of an host and waits for the end of the
- * transmission.
+/** \ingroup msg_gos_functions \brief Put a task on a channel of an
+ * host (with a timeout on the waiting of the destination host) and
+ * waits for the end of the transmission.
  *
  * This function is used for describing the behavior of an agent. It
- * takes three parameter.
+ * takes four parameter.
  * \param task a #m_task_t to send on another location. This task
    will not be usable anymore when the function will return. There is
    no automatic task duplication and you have to save your parameters
@@ -404,17 +405,24 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
  * \param channel the channel on which the agent should put this
    task. This value has to be >=0 and < than the maximal number of
    channels fixed with MSG_set_channel_number().
+ * \param max_duration the maximum time to wait for a task before giving
+    up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task 
+    will not be modified 
  * \return #MSG_FATAL if \a task is not properly initialized and
- * #MSG_OK otherwise.
+   #MSG_OK otherwise. Returns #MSG_HOST_FAILURE if the host on which
+   this function was called was shut down. Returns
+   #MSG_TRANSFER_FAILURE if the transfer could not be properly done
+   (network failure, dest failure, timeout...)
  */
-MSG_error_t MSG_task_put(m_task_t task,
-			 m_host_t dest, m_channel_t channel)
+MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest, 
+				      m_channel_t channel, double max_duration)
 {
   m_process_t process = MSG_process_self();
   simdata_task_t task_simdata = NULL;
   e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
   m_host_t local_host = NULL;
   m_host_t remote_host = NULL;
+  int first_time = 1;
 
   CHECK_HOST();
 
@@ -446,8 +454,19 @@ MSG_error_t MSG_task_put(m_task_t task,
   process->simdata->put_host = dest;
   process->simdata->put_channel = channel;
   while(!(task_simdata->comm)) {
+    if(max_duration>0) {
+      if(!first_time) {
+	MSG_RETURN(MSG_TRANSFER_FAILURE);
+      }
+    }
     DEBUG0("Communication not initiated yet. Let's block!");
-    __MSG_process_block(-1,task->name);
+    if(max_duration>0)
+      __MSG_process_block(max_duration,task->name);
+    else
+      __MSG_process_block(-1,task->name);
+
+    first_time = 0;
+
     if(surf_workstation_resource->extension_public->
        get_state(local_host->simdata->host) == SURF_CPU_OFF) {
       xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
@@ -492,6 +511,37 @@ MSG_error_t MSG_task_put(m_task_t task,
     MSG_task_destroy(task);
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
+}
+/** \ingroup msg_gos_functions
+ * \brief Put a task on a channel of an host and waits for the end of the
+ * transmission.
+ *
+ * This function is used for describing the behavior of an agent. It
+ * takes three parameter.
+ * \param task a #m_task_t to send on another location. This task
+   will not be usable anymore when the function will return. There is
+   no automatic task duplication and you have to save your parameters
+   before calling this function. Tasks are unique and once it has been
+   sent to another location, you should not access it anymore. You do
+   not need to call MSG_task_destroy() but to avoid using, as an
+   effect of inattention, this task anymore, you definitely should
+   renitialize it with #MSG_TASK_UNINITIALIZED. Note that this task
+   can be transfered iff it has been correctly created with
+   MSG_task_create().
+ * \param dest the destination of the message
+ * \param channel the channel on which the agent should put this
+   task. This value has to be >=0 and < than the maximal number of
+   channels fixed with MSG_set_channel_number().
+ * \return #MSG_FATAL if \a task is not properly initialized and
+ * #MSG_OK otherwise. Returns #MSG_HOST_FAILURE if the host on which
+ * this function was called was shut down. Returns
+ * #MSG_TRANSFER_FAILURE if the transfer could not be properly done
+ * (network failure, dest failure)
+ */
+MSG_error_t MSG_task_put(m_task_t task,
+			 m_host_t dest, m_channel_t channel)
+{
+  return MSG_task_put_with_timeout(task, dest, channel, -1.0);
 }
 
 /** \ingroup msg_gos_functions
