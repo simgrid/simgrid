@@ -152,7 +152,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
      if (!_gras_rpc_cancelled)
        _gras_rpc_cancelled = xbt_dynar_new(sizeof(ctx),NULL);
      xbt_dynar_push(_gras_rpc_cancelled,&ctx);
-     INFO1("canceled RPC %ld pushed onto the stack",ctx->ID);
+     INFO2("canceled RPC %ld pushed onto the stack (%s)",ctx->ID,ctx->msgtype->name);
      RETHROW;
   }
    
