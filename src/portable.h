@@ -135,6 +135,13 @@ const char *gras_wsa_err2string(int errcode);
 #endif
 
 /****
+ **** Signals
+ ****/
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+/****
  **** string handling (parts from http://www.ijs.si/software/snprintf/)
  ****/
 
@@ -178,9 +185,9 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 #  include <execinfo.h>
 #endif
 
-/*
- * Some debugging functions. Can't we find a better place for this??
- */
+/****
+ **** Some debugging functions. Can't we find a better place for this??
+ ****/
 void hexa_print(const char*name, unsigned char *data, int size);
 const char *hexa_str(unsigned char *data, int size);
 
