@@ -55,6 +55,13 @@ SD_link_t*              SD_workstation_route_get_list(SD_workstation_t src, SD_w
 int                     SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst);
 double                  SD_workstation_get_power(SD_workstation_t workstation);
 double                  SD_workstation_get_available_power(SD_workstation_t workstation);
+
+double    SD_workstation_get_computation_time(SD_workstation_t workstation, double computation_amount);
+double    SD_workstation_route_get_latency(SD_workstation_t src, SD_workstation_t dst);
+double    SD_workstation_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst);
+double    SD_workstation_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
+						      double communication_amount);
+
 /** @} */
 
 /************************** Task handling ************************************/
@@ -78,10 +85,14 @@ void*             SD_task_get_data(SD_task_t task);
 void              SD_task_set_data(SD_task_t task, void *data);
 e_SD_task_state_t SD_task_get_state(SD_task_t task);
 const char*       SD_task_get_name(SD_task_t task);
-double            SD_task_get_amount(SD_task_t task);
-double            SD_task_get_remaining_amount(SD_task_t task);
 void              SD_task_watch(SD_task_t task, e_SD_task_state_t state);
 void              SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
+double            SD_task_get_amount(SD_task_t task);
+double            SD_task_get_remaining_amount(SD_task_t task);
+double            SD_task_get_execution_time(SD_task_t task, int workstation_nb,
+					     const SD_workstation_t *workstation_list,
+					     const double *computation_amount, const double *communication_amount,
+					     double rate);
 void              SD_task_schedule(SD_task_t task, int workstation_nb,
 				   const SD_workstation_t *workstation_list, const double *computation_amount,
 				   const double *communication_amount, double rate);

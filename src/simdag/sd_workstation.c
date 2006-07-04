@@ -121,7 +121,7 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 /**
  * \brief Returns the route between two workstations
  *
- * Use SD_workstation_route_get_size() to know the array size.
+ * Use SD_workstation_route_get_size() to know the array size. Don't forget to free the array after use.
  *
  * \param src a workstation
  * \param dst another workstation
@@ -186,6 +186,112 @@ double SD_workstation_get_available_power(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
   return surf_workstation_resource->extension_public->get_available_speed(workstation->surf_workstation);
+}
+
+/**
+ * \brief Returns an approximative estimated time for the given computation amount on a workstation
+ *
+ * \param workstation a workstation
+ * \param computation_amount the computation amount you want to evaluate (in flops)
+ * \return an approximative astimated computation time for the given computation amount on this workstation (in seconds)
+ */
+double SD_workstation_get_computation_time(SD_workstation_t workstation, double computation_amount) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(workstation != NULL, "Invalid parameter");
+  xbt_assert0(computation_amount >= 0, "computation_amount must be greater than or equal to zero");
+  return computation_amount / SD_workstation_get_power(workstation);
+}
+
+/**
+ * \brief Returns the latency of the route between two workstations, i.e. the sum of all link latencies
+ * between the workstations.
+ *
+ * \param src the first workstation
+ * \param dst the second workstation
+ * \return the latency of the route between the two workstations (in seconds)
+ */
+double SD_workstation_route_get_latency(SD_workstation_t src, SD_workstation_t dst) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  SD_link_t *links = SD_workstation_route_get_list(src, dst);
+  int nb_links = SD_workstation_route_get_size(src, dst);
+  double latency = 0.0;
+  int i;
+  
+  for (i = 0; i < nb_links; i++) {
+    latency += SD_link_get_current_latency(links[i]);
+  }
+
+  free(links);
+  return latency;
+}
+
+/**
+ * \brief Returns the bandwidth of the route between two workstations, i.e. the minimum link bandwidth of all
+ * between the workstations.
+ *
+ * \param src the first workstation
+ * \param dst the second workstation
+ * \return the bandwidth of the route between the two workstations (in bytes/second)
+ */
+double SD_workstation_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  SD_link_t *links = SD_workstation_route_get_list(src, dst);
+  int nb_links = SD_workstation_route_get_size(src, dst);
+  double bandwidth, min_bandwidth = -1.0;
+  int i;
+  
+  for (i = 0; i < nb_links; i++) {
+    bandwidth = SD_link_get_current_bandwidth(links[i]);
+    if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
+      min_bandwidth = bandwidth;
+  }
+
+  free(links);
+  return min_bandwidth;
+}
+
+/**
+ * \brief Returns an approximative estimated time for the given
+ * communication amount between two workstations
+ *
+ * \param src the first workstation
+ * \param dst the second workstation
+ * \param communication_amount the communication amount you want to evaluate (in bytes)
+ * \return an approximative astimated computation time for the given communication amount
+ * between the workstations (in seconds)
+ */
+double SD_workstation_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
+						   double communication_amount) {
+  /* total time = latency + transmission time of the slowest link
+     transmission time of a link = communication amount / link bandwidth */
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert0(communication_amount >= 0, "communication_amount must be greater than or equal to zero");
+
+  SD_link_t *links;
+  int nb_links;
+  double bandwidth, min_bandwidth;
+  double latency;
+  int i;
+  
+  if (communication_amount == 0.0)
+    return 0.0;
+
+  links = SD_workstation_route_get_list(src, dst);
+  nb_links = SD_workstation_route_get_size(src, dst);
+  min_bandwidth = -1.0;
+  latency = 0;
+
+  for (i = 0; i < nb_links; i++) {
+    latency += SD_link_get_current_latency(links[i]);
+    bandwidth = SD_link_get_current_bandwidth(links[i]);
+    if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
+      min_bandwidth = bandwidth;
+  }
+
+  return latency + (communication_amount / min_bandwidth);
 }
 
 /* Destroys a workstation.

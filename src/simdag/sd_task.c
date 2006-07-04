@@ -7,6 +7,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task,sd,
 				"Logging specific to SimDag (task)");
 
 static void __SD_task_remove_dependencies(SD_task_t task);
+static void __SD_task_destroy_scheduling_data(SD_task_t task);
 
 /**
  * \brief Creates a new task.
@@ -393,15 +394,42 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state) {
   /*  __SD_print_watch_points(task);*/
 }
 
-/* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED or SD_READY.
+/**
+ * \brief Returns an approximative estimation of the execution time of a task.
+ * 
+ * The estimation is very approximative because the value returned is the time
+ * the task would take if it was executed now and if it was the only task.
+ * 
+ * \param task the task to evaluate
+ * \param workstation_nb number of workstations on which the task would be executed
+ * \param workstation_list the workstations on which the task would be executed
+ * \param computation_amount computation amount for each workstation
+ * \param communication_amount communication amount between each pair of workstations
+ * \param rate task execution speed rate
+ * \see SD_schedule()
  */
-static void __SD_task_destroy_scheduling_data(SD_task_t task) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert1(__SD_task_is_scheduled_or_ready(task),
-	      "Task '%s' must be SD_SCHEDULED or SD_READY", SD_task_get_name(task));
-  xbt_free(task->workstation_list);
-  xbt_free(task->computation_amount);
-  xbt_free(task->communication_amount);
+double SD_task_get_execution_time(SD_task_t task,
+				  int workstation_nb,
+				  const SD_workstation_t *workstation_list,
+				  const double *computation_amount,
+				  const double *communication_amount,
+				  double rate) {
+  /* the task execution time is the maximum execution time of the parallel tasks */
+  double time, max_time = 0.0;
+  int i, j;
+  for (i = 0; i < workstation_nb; i++) {
+    time = SD_workstation_get_computation_time(workstation_list[i], computation_amount[i]);
+    
+    for (j = 0; j < workstation_nb; j++) {
+      time += SD_workstation_route_get_communication_time(workstation_list[i], workstation_list[j],
+							  communication_amount[i * workstation_nb + j]);
+    }
+
+    if (time > max_time) {
+      max_time = time;
+    }
+  }
+  return max_time * SD_task_get_amount(task);
 }
 
 /**
@@ -480,7 +508,18 @@ void SD_task_unschedule(SD_task_t task) {
     __SD_task_set_state(task, SD_NOT_SCHEDULED);
 }
 
-/* Runs a task. This function is called by SD_simulate when a scheduled task can start
+/* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED or SD_READY.
+ */
+static void __SD_task_destroy_scheduling_data(SD_task_t task) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert1(__SD_task_is_scheduled_or_ready(task),
+	      "Task '%s' must be SD_SCHEDULED or SD_READY", SD_task_get_name(task));
+  xbt_free(task->workstation_list);
+  xbt_free(task->computation_amount);
+  xbt_free(task->communication_amount);
+}
+
+/* Runs a task. This function is called by SD_simulate() when a scheduled task can start
  * (ie when its dependencies are satisfied).
  */
 surf_action_t __SD_task_run(SD_task_t task) {

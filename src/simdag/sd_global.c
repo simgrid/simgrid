@@ -214,6 +214,7 @@ SD_task_t* SD_simulate(double how_long)
 
   INFO0("Simulation finished");
   DEBUG3("elapsed_time = %f, total_time = %f, watch_point_reached = %d", elapsed_time, total_time, sd_global->watch_point_reached);
+  DEBUG1("current time = %f", surf_get_clock());
 
   return changed_tasks;
 }
@@ -228,17 +229,18 @@ SD_task_t* SD_simulate(double how_long)
  */
 void SD_exit(void) {
   if (sd_global != NULL) {
+    DEBUG0("Destroying workstation and link dictionaries...");
     xbt_dict_free(&sd_global->workstations);
     xbt_dict_free(&sd_global->links);
 
+    DEBUG0("Destroying workstation and link arrays if necessary...");
     if (sd_global->workstation_list != NULL)
       xbt_free(sd_global->workstation_list);
 
     if (sd_global->link_list != NULL)
       xbt_free(sd_global->link_list);
 
-    xbt_free(sd_global);
-
+    DEBUG0("Destroying the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);
     xbt_swag_free(sd_global->scheduled_task_set);
     xbt_swag_free(sd_global->ready_task_set);
@@ -246,6 +248,9 @@ void SD_exit(void) {
     xbt_swag_free(sd_global->done_task_set);
     xbt_swag_free(sd_global->failed_task_set);
 
+    xbt_free(sd_global);
+
+    DEBUG0("Exiting Surf...");
     surf_exit();
   }
 }
