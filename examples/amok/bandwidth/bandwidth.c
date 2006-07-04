@@ -28,9 +28,10 @@ int sensor (int argc,char *argv[]) {
   gras_init(&argc, argv);
   amok_bw_init();
   amok_hm_init();
-
+ 
   mysock = gras_socket_server_range(3000,9999,0,0);
-  gras_os_sleep(1); /* let the master get ready */
+  INFO1("Sensor starting (on port %d)",gras_os_myport());
+  gras_os_sleep(0.5); /* let the master get ready */
   master = gras_socket_client_from_string(argv[1]);
 					      
   amok_hm_group_join(master,"bandwidth");
@@ -65,12 +66,14 @@ int maestro(int argc,char *argv[]) {
   amok_bw_init();
   amok_hm_init();
 
+  INFO0("Maestro starting");
   if (argc != 2) {
      ERROR0("Usage: maestro port\n");
      return 1;
   }
   mysock=gras_socket_server(atoi(argv[1]));
   group=amok_hm_group_new("bandwidth");
+  INFO0("Wait for peers");
   gras_msg_handleall(10); /* friends, we're ready. Come and play */
    
   if (xbt_dynar_length(group) < 2) {
@@ -81,7 +84,8 @@ int maestro(int argc,char *argv[]) {
   }
   h1 = *(xbt_host_t*) xbt_dynar_get_ptr(group, 0);
   h2 = *(xbt_host_t*)xbt_dynar_get_ptr(group, 1);
-   
+
+  INFO2("Contact %s:%d",h1->name, h1->port);
   peer = gras_socket_client(h1->name, h1->port);
 
   INFO0("Test the BW between me and one of the sensors");  
