@@ -454,9 +454,10 @@ static void bad_example(void) {
   /* end_of_bad_example */
 }
 #endif
-
+typedef struct {char *first;} global_context_t;
+   
 static void good_example(void) {
-  struct {char*first;} *globalcontext;
+  global_context_t *global_context=malloc(sizeof(global_context_t));
   xbt_ex_t ex;
 
   /* GOOD_EXAMPLE */
@@ -466,7 +467,7 @@ static void good_example(void) {
     char * volatile /*03*/ cp3 = NULL /*02*/;
     TRY {
       cp1 = mallocex(SMALLAMOUNT);
-      globalcontext->first = cp1;
+      global_context->first = cp1;
       cp1 = NULL /*05 give away*/;
       cp2 = mallocex(TOOBIG);
       cp3 = mallocex(SMALLAMOUNT);
