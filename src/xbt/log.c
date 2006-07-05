@@ -674,7 +674,7 @@ void xbt_log_control_set(const char* control_string) {
     p=strrchr(cs,' ');
     if (p) {
       *p='\0';
-      *p++;
+      p++;
     } else {
       p=cs;
       done = 1;
