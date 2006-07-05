@@ -368,7 +368,7 @@ XBT_TEST_UNIT("retrieve",test_set_retrieve,"Retrieving some values") {
   xbt_test_add0("Search 123");
   elm = (my_elem_t) xbt_set_get_by_name(set,"123");
   xbt_test_assert0(elm,"elm must be there");
-  strcmp("123",elm->data);
+  xbt_assert(!strcmp("123",elm->data));
 
   search_not_found(set,"Can't be found");
   search_not_found(set,"123 Can't be found");
