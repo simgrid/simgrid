@@ -775,10 +775,23 @@ machine:
  - <b>You are using a borken compiler</b>.\n
    The symptom may be that the "make check" fails within testsuite/gras
    directory.\n
-   For example, the breezy release of Ubuntu comes with a prerelease of the
-   4.0 gcc compiler. This version happens to be completely unusable, and you
-   should install a gcc-3.4 compiler and change the /usr/bin/gcc link to let
-   it point on /usr/bin/gcc-3.4.
+   For example, we failed to use gcc 4.0 with optimization flags. The
+   workaround is either to install a gcc-3.4 compiler and change the /usr/bin/gcc 
+   link to let it point on /usr/bin/gcc-3.4 or use the
+   --disable-compiler-optimizations of the configure script.\n
+   This bug is really puzzeling: the first testcase of gras fails when
+   SimGrid is compiled with any optimization flag (-O1 and above). More
+   astonishing, it also fails when compiled with 
+   <tt>-O1 -fno-defer-pop -fno-guess-branch-probability -fno-cprop-registers -fno-loop-optimize -fno-if-conversion -fno-if-conversion2 -fno-merge-constants -fno-tree-ccp -fno-tree-dce -fno-tree-dominator-opts -fno-tree-dse -fno-tree-ter -fno-tree-lrs -fno-tree-sra -fno-tree-copyrename -no-ftree-fre -fno-tree-ch -fno-delayed-branch</tt>\n
+   That long list of options comes down to enabling -O1, and then disabling
+   all the optimizations that -O1 is supposed to enable, according to the
+   gcc documentation. So, it should give the same results than -O0... The
+   reason seems to be this little sentence in the gcc documentation: <i>Not
+   all optimizations are controlled directly by a flag.  Only optimizations
+   that have a flag are listed.</i> Under such circumstances, there is not
+   much we can do.\n
+   <b>=> Avoid gcc-4.0 when compiling SimGrid!</b>
+   
  - <b>You are using a borken libc (probably concerning the contextes)</b>.\n
    The symptom is that the "make check" fails within the examples/msg directory.\n
    By default, SimGrid uses something called ucontexts. This is part of the
@@ -796,7 +809,9 @@ machine:
    concurently, but 5000 processes is still enough for most purposes, isn't
    it?\n
    This limitation is the reason why we insist on using this piece of ...
-   software even if it's so troublesome.
+   software even if it's so troublesome.\n
+   <b>=> use --with-pthread on AMD64 architecture</b>
+   
  - <b>There is a bug in SimGrid we aren't aware of</b>.\n
    If none of the above apply, please drop us a mail on the mailing list so
    that we can check it out.
