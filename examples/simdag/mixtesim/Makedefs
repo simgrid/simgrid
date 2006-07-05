@@ -1,0 +1,21 @@
+# System-dependent values determined by the configuration script.
+
+#
+# Should not print info about cd-ing to directories
+#
+.SILENT:
+
+#
+# Variables
+#
+SIMGRID_PATH = $(HOME)
+MY_MIXTESIM_ROOT   = $(HOME)/simgrid/simgrid/examples/simdag/mixtesim
+CFLAGS        = -I$(MY_MIXTESIM_ROOT)/include \
+	      -I$(SIMGRID_PATH)/include \
+	      -finline-functions  -g  -Wall -Werror
+CC            = gcc
+LD            = gcc
+
+LIBS = -lm
+
+SIMGRIDLIB = $(HOME)/lib/libsimgrid.so
