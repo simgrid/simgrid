@@ -51,15 +51,15 @@ int                     SD_workstation_get_number(void);
 void                    SD_workstation_set_data(SD_workstation_t workstation, void *data);
 void*                   SD_workstation_get_data(SD_workstation_t workstation);
 const char*             SD_workstation_get_name(SD_workstation_t workstation);
-SD_link_t*              SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t dst);
-int                     SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst);
+SD_link_t*              SD_route_get_list(SD_workstation_t src, SD_workstation_t dst);
+int                     SD_route_get_size(SD_workstation_t src, SD_workstation_t dst);
 double                  SD_workstation_get_power(SD_workstation_t workstation);
 double                  SD_workstation_get_available_power(SD_workstation_t workstation);
 
 double    SD_workstation_get_computation_time(SD_workstation_t workstation, double computation_amount);
-double    SD_workstation_route_get_latency(SD_workstation_t src, SD_workstation_t dst);
-double    SD_workstation_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst);
-double    SD_workstation_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
+double    SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst);
+double    SD_route_get_current_bandwidth(SD_workstation_t src, SD_workstation_t dst);
+double    SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
 						      double communication_amount);
 
 /** @} */

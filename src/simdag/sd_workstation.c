@@ -121,14 +121,14 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 /**
  * \brief Returns the route between two workstations
  *
- * Use SD_workstation_route_get_size() to know the array size. Don't forget to free the array after use.
+ * Use SD_route_get_size() to know the array size. Don't forget to free the array after use.
  *
  * \param src a workstation
  * \param dst another workstation
  * \return a new array of \ref SD_link_t representating the route between these two workstations
- * \see SD_workstation_route_get_size(), SD_link_t
+ * \see SD_route_get_size(), SD_link_t
  */
-SD_link_t* SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
+SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
 
   void *surf_src = src->surf_workstation;
@@ -154,9 +154,9 @@ SD_link_t* SD_workstation_route_get_list(SD_workstation_t src, SD_workstation_t 
  * \param src a workstation
  * \param dst another workstation
  * \return the number of links on the route between these two workstations
- * \see SD_workstation_route_get_list()
+ * \see SD_route_get_list()
  */
-int SD_workstation_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
+int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
   return surf_workstation_resource->extension_public->
     get_route_size(src->surf_workstation, dst->surf_workstation);
@@ -209,12 +209,13 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation, double 
  * \param src the first workstation
  * \param dst the second workstation
  * \return the latency of the route between the two workstations (in seconds)
+ * \see SD_route_get_current_bandwidth()
  */
-double SD_workstation_route_get_latency(SD_workstation_t src, SD_workstation_t dst) {
+double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  SD_link_t *links = SD_workstation_route_get_list(src, dst);
-  int nb_links = SD_workstation_route_get_size(src, dst);
+  SD_link_t *links = SD_route_get_list(src, dst);
+  int nb_links = SD_route_get_size(src, dst);
   double latency = 0.0;
   int i;
   
@@ -233,12 +234,13 @@ double SD_workstation_route_get_latency(SD_workstation_t src, SD_workstation_t d
  * \param src the first workstation
  * \param dst the second workstation
  * \return the bandwidth of the route between the two workstations (in bytes/second)
+ * \see SD_route_get_current_latency()
  */
-double SD_workstation_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst) {
+double SD_route_get_current_bandwidth(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  SD_link_t *links = SD_workstation_route_get_list(src, dst);
-  int nb_links = SD_workstation_route_get_size(src, dst);
+  SD_link_t *links = SD_route_get_list(src, dst);
+  int nb_links = SD_route_get_size(src, dst);
   double bandwidth, min_bandwidth = -1.0;
   int i;
   
@@ -262,7 +264,7 @@ double SD_workstation_route_get_bandwidth(SD_workstation_t src, SD_workstation_t
  * \return an approximative astimated computation time for the given communication amount
  * between the workstations (in seconds)
  */
-double SD_workstation_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
+double SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
 						   double communication_amount) {
   /* total time = latency + transmission time of the slowest link
      transmission time of a link = communication amount / link bandwidth */
@@ -279,8 +281,8 @@ double SD_workstation_route_get_communication_time(SD_workstation_t src, SD_work
   if (communication_amount == 0.0)
     return 0.0;
 
-  links = SD_workstation_route_get_list(src, dst);
-  nb_links = SD_workstation_route_get_size(src, dst);
+  links = SD_route_get_list(src, dst);
+  nb_links = SD_route_get_size(src, dst);
   min_bandwidth = -1.0;
   latency = 0;
 

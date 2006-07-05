@@ -421,8 +421,8 @@ double SD_task_get_execution_time(SD_task_t task,
     time = SD_workstation_get_computation_time(workstation_list[i], computation_amount[i]);
     
     for (j = 0; j < workstation_nb; j++) {
-      time += SD_workstation_route_get_communication_time(workstation_list[i], workstation_list[j],
-							  communication_amount[i * workstation_nb + j]);
+      time += SD_route_get_communication_time(workstation_list[i], workstation_list[j],
+					      communication_amount[i * workstation_nb + j]);
     }
 
     if (time > max_time) {
@@ -535,6 +535,8 @@ surf_action_t __SD_task_run(SD_task_t task) {
 			  task->communication_amount,
 			  task->amount,
 			  task->rate);
+
+  DEBUG1("surf_action = %p", surf_action);
 
   __SD_task_destroy_scheduling_data(task); /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
