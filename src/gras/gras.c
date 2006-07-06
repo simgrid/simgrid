@@ -27,6 +27,17 @@ static void gras_sigusr_handler(int sig) {
    INFO0("SIGUSR1 received. Display the backtrace");
    xbt_backtrace_display();
 }
+
+static void gras_sigint_handler(int sig) {
+   static double lastone = 0;
+   if (lastone == 0 || gras_os_time() - lastone > 5) {
+      lastone = gras_os_time();
+      xbt_backtrace_display();
+      fprintf(stderr,"\nBacktrace displayed because Ctrl-C was pressed. Press again (within 5 sec) to abort the process.\n");
+   } else {
+      exit(1);
+   }
+}
 #endif
 
 void gras_init(int *argc,char **argv) {
@@ -59,6 +70,7 @@ void gras_init(int *argc,char **argv) {
     gras_datadesc_init();
 #if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
     signal(SIGUSR1,gras_sigusr_handler);
+    signal(SIGINT,gras_sigint_handler);
 #endif     
   }
 }
