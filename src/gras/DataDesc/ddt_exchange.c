@@ -369,21 +369,22 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
 int gras_datadesc_copy(gras_datadesc_type_t type, 
 		       void *src, void *dst) {
   xbt_ex_t e;
-  gras_cbps_t  state;
+  static gras_cbps_t  state=NULL;
   xbt_dict_t  refs; /* all references already sent */
   int size=0;
  
   xbt_assert0(type,"called with NULL type descriptor");
 
   refs = xbt_dict_new();
-  state = gras_cbps_new();
+  if (!state)
+    state = gras_cbps_new();
   
   TRY {
     size = gras_datadesc_copy_rec(state,refs,type,(char*)src,(char*)dst,0, 
 				  type->cycle);
   } CLEANUP {
     xbt_dict_free(&refs);
-    gras_cbps_free(&state);
+    gras_cbps_reset(state);
   } CATCH(e) {
     RETHROW;
   }
