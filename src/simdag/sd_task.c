@@ -14,6 +14,7 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task);
  *
  * \param name the name of the task (can be \c NULL)
  * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param amount amount of the task
  * \return the new task
  * \see SD_task_destroy()
  */
@@ -582,6 +583,9 @@ void SD_task_destroy(SD_task_t task) {
 
   if (task->name != NULL)
     xbt_free(task->name);
+
+  if (task->surf_action != NULL)
+    xbt_free(task->surf_action);
 
   xbt_dynar_free(&task->tasks_before);
   xbt_dynar_free(&task->tasks_after);

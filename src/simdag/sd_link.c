@@ -32,21 +32,20 @@ const SD_link_t*  SD_link_get_list(void) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(SD_link_get_number() > 0, "There is no link!");
 
-  SD_link_t *array = sd_global->link_list;
   xbt_dict_cursor_t cursor;
   char *key;
   void *data;
   int i;
 
-  if (array == NULL) { /* this is the first time the function is called */
-    array = xbt_new0(SD_link_t, sd_global->link_count);
+  if (sd_global->link_list == NULL) { /* this is the first time the function is called */
+    sd_global->link_list = xbt_new0(SD_link_t, sd_global->link_count);
   
     i = 0;
     xbt_dict_foreach(sd_global->links, cursor, key, data) {
-      array[i++] = (SD_link_t) data;
+      sd_global->link_list[i++] = (SD_link_t) data;
     }
   }
-  return array;
+  return sd_global->link_list;
 }
 
 /**

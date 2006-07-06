@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
 	SD_workstation_route_get_communication_time(w1, w2, communication_amount12));
   INFO4("Communication time for %f bytes between %s and %s: %f", communication_amount21, name2, name1,
 	SD_workstation_route_get_communication_time(w2, w1, communication_amount21));
+  xbt_free(route);
 
   /* creation of the tasks and their dependencies */
   SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
@@ -128,11 +129,11 @@ int main(int argc, char **argv) {
       }
       i++;
     }
-    free(changed_tasks);
+    xbt_free(changed_tasks);
     changed_tasks = SD_simulate(100);
   }
 
-  free(changed_tasks);
+  xbt_free(changed_tasks);
 
   DEBUG0("Destroying tasks...");
 

@@ -55,11 +55,11 @@ int main(int argc, char **argv) {
   createSimgridObjects();
   
   HEFT(dag);
-
-  printDAG(dag);
+  
+  /* not recommanded with big DAGs! */
+  /* printDAG(dag); */
 
   changed_tasks = SD_simulate(-1.0);
-
   INFO0("Tasks whose state has changed:");
   i = 0;
   while(changed_tasks[i] != NULL) {
@@ -82,10 +82,11 @@ int main(int argc, char **argv) {
     default:
       INFO1("Unknown status for %s", SD_task_get_name(changed_tasks[i]));
       break;
-    }
+      }
     i++;
   }
   free(changed_tasks);
+  INFO1("Total: %d", i);
 
   /* clear some memory */
   freeNodeAttributes(dag);

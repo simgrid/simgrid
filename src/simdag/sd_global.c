@@ -124,8 +124,8 @@ SD_task_t* SD_simulate(double how_long)
   /* explore the ready tasks */
   xbt_swag_foreach(task, sd_global->ready_task_set) {
     INFO1("Executing task '%s'", SD_task_get_name(task));
-    action = __SD_task_run(task);
-    surf_workstation_resource->common_public->action_set_data(action, task);
+    task->surf_action = __SD_task_run(task);
+    surf_workstation_resource->common_public->action_set_data(task->surf_action, task);
     task->state_changed = 1;
     
     changed_tasks[changed_task_number++] = task; /* replace NULL by the task */
@@ -145,6 +145,7 @@ SD_task_t* SD_simulate(double how_long)
     DEBUG1("Total time: %f", total_time);
 
     elapsed_time = surf_solve();
+    DEBUG1("surf_solve() returns %f", elapsed_time);
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
 
@@ -153,6 +154,8 @@ SD_task_t* SD_simulate(double how_long)
       task = action->data;
       INFO1("Task '%s' done", SD_task_get_name(task));
       __SD_task_set_state(task, SD_DONE);
+      xbt_free(action);
+      task->surf_action = NULL;
 
       /* the state has changed */
       if (!task->state_changed) {
@@ -174,8 +177,8 @@ SD_task_t* SD_simulate(double how_long)
 	/* is dst ready now? */
 	if (__SD_task_is_ready(dst) && !sd_global->watch_point_reached) {
 	  INFO1("Executing task '%s'", SD_task_get_name(dst));
-	  action = __SD_task_run(dst);
-	  surf_workstation_resource->common_public->action_set_data(action, dst);
+	  dst->surf_action = __SD_task_run(dst);
+	  surf_workstation_resource->common_public->action_set_data(dst->surf_action, dst);
 	  dst->state_changed = 1;
 	  
 	  changed_tasks[changed_task_number++] = dst;
@@ -193,6 +196,9 @@ SD_task_t* SD_simulate(double how_long)
       task = action->data;
       INFO1("Task '%s' failed", SD_task_get_name(task));
       __SD_task_set_state(task, SD_FAILED);
+      xbt_free(action);
+      task->surf_action = NULL;
+
       if (!task->state_changed) {
 	task->state_changed = 1;
 	changed_tasks[changed_task_number++] = task;

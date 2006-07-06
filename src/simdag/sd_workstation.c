@@ -49,21 +49,20 @@ const SD_workstation_t*  SD_workstation_get_list(void) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(SD_workstation_get_number() > 0, "There is no workstation!");
 
-  SD_workstation_t *array = sd_global->workstation_list;
   xbt_dict_cursor_t cursor;
   char *key;
   void *data;
   int i;
 
-  if (array == NULL) { /* this is the first time the function is called */
-    array = xbt_new0(SD_workstation_t, sd_global->workstation_count);
+  if (sd_global->workstation_list == NULL) { /* this is the first time the function is called */
+    sd_global->workstation_list = xbt_new0(SD_workstation_t, sd_global->workstation_count);
   
     i = 0;
     xbt_dict_foreach(sd_global->workstations, cursor, key, data) {
-      array[i++] = (SD_workstation_t) data;
+      sd_global->workstation_list[i++] = (SD_workstation_t) data;
     }
   }
-  return array;
+  return sd_global->workstation_list;
 }
 
 /**
@@ -292,6 +291,7 @@ double SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t ds
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }
+  xbt_free(links);
 
   return latency + (communication_amount / min_bandwidth);
 }
