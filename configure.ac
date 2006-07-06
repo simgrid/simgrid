@@ -336,6 +336,7 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 	Compiler:	 ${CC} (version: ${GCC_VERSION})
 	
 	CFlags:		 ${CFLAGS}
+	CPPFlags:	 ${CPPFLAGS}
 	LDFlags:	 ${LDFLAGS}
 
 	Context backend: ${with_context}
