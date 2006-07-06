@@ -1,5 +1,10 @@
 SimGrid (3.1) unstable; urgency=low
 
+  General:
+  * Port to gcc 4.x   
+    There was a stack corruption somewhere, visible only when optimizing
+    with these versions [Vince]
+
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
     extension of the classical CLM03 model that gracefully handles
@@ -41,7 +46,9 @@ SimGrid (3.1) unstable; urgency=low
           gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
       and you're set.
   * New! function: gras_msg_handleall to deal with all messages arriving
-      within a given period. 
+      within a given period.      
+  * New! gras processes display their backtrace when they get a SIGUSR1.
+      Sweet to debug RL processes [MQ]
 
   AMOK:
   * Bandwidth module: 
