@@ -374,9 +374,16 @@ xbt_dynar_remove_at(xbt_dynar_t  const dynar,
   if (object) {
     _xbt_dynar_get_elm(object, dynar, idx);
   } else if (dynar->free_f) {
-    char elm[SIZEOF_MAX];
-    _xbt_dynar_get_elm(elm, dynar, idx);
-    (*dynar->free_f)(elm);
+    if (dynar->elmsize <= SIZEOF_MAX) {
+       char elm[SIZEOF_MAX];
+       _xbt_dynar_get_elm(elm, dynar, idx);
+       (*dynar->free_f)(elm);
+    } else {
+       char *elm=malloc(dynar->elmsize);
+       _xbt_dynar_get_elm(elm, dynar, idx);
+       (*dynar->free_f)(elm);
+       free(elm);
+    }
   }
 
   nb_shift =  dynar->used-1 - idx;
