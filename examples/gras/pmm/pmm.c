@@ -11,6 +11,7 @@
 #include "gras.h"
 #include "xbt/matrix.h"
 #define PROC_MATRIX_SIZE 2
+#define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
 #define DATA_MATRIX_SIZE 8
@@ -30,8 +31,8 @@ typedef struct s_result result_t;
 GRAS_DEFINE_TYPE(s_assignment,struct s_assignment {
   int linepos;
   int rowpos;
-  xbt_host_t line[PROC_MATRIX_SIZE];
-  xbt_host_t row[PROC_MATRIX_SIZE];
+  xbt_host_t line[NEIGHBOR_COUNT];
+  xbt_host_t row[NEIGHBOR_COUNT];
   xbt_matrix_t A GRAS_ANNOTE(subtype,double);
   xbt_matrix_t B GRAS_ANNOTE(subtype,double);
 });
@@ -42,7 +43,7 @@ static void register_messages(void) {
   gras_datadesc_type_t result_type;
   gras_datadesc_type_t assignment_type;
 
-  gras_datadesc_set_const("PROC_MATRIX_SIZE",PROC_MATRIX_SIZE);
+  gras_datadesc_set_const("NEIGHBOR_COUNT",NEIGHBOR_COUNT);
   result_type=gras_datadesc_by_symbol(s_result);
   assignment_type=gras_datadesc_by_symbol(s_assignment);
 	
@@ -144,15 +145,23 @@ int master (int argc,char *argv[]) {
   INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
   for(i=0 ; i<SLAVE_COUNT; i++){
     s_assignment_t assignment;
-    int j;
+    int j,k;
 
     assignment.linepos=line; // assigned line
     assignment.rowpos=row;   // assigned row
 
     /* Neiborhood */
-    for (j=0; j<PROC_MATRIX_SIZE; j++) {
-      assignment.row[j] = grid[ j*PROC_MATRIX_SIZE+(row) ] ;
-      assignment.line[j] =  grid[ (line)*PROC_MATRIX_SIZE+j ] ;
+    for (j=0,k=0; j<PROC_MATRIX_SIZE; j++) {
+      if (i != j*PROC_MATRIX_SIZE+(row)) {	    
+	 assignment.row[k] = grid[ j*PROC_MATRIX_SIZE+(row) ] ;
+	 k++;
+      }
+    }
+    for (j=0,k=0; j<PROC_MATRIX_SIZE; j++) {
+      if (i != (line)*PROC_MATRIX_SIZE+j) {	    
+	 assignment.line[k] =  grid[ (line)*PROC_MATRIX_SIZE+j ] ;
+	 k++;
+      }
     }
 
     assignment.A=xbt_matrix_new_sub(A,
@@ -260,21 +269,14 @@ int slave(int argc,char *argv[]) {
   INFO2("Receive my pos (%d,%d) and assignment",myline,myrow);
 
   /* Get my neighborhood from the assignment message (skipping myself) */
-  int j=0;
-  for (i=0,j=0 ; i<PROC_MATRIX_SIZE ; i++){
-    if (strcmp(gras_os_myname(),assignment.line[i]->name)) {
-      socket_line[j]=gras_socket_client(assignment.line[i]->name,
-					assignment.line[i]->port);
-      j++;
-    }
+  for (i=0 ; i<PROC_MATRIX_SIZE-1 ; i++){
+    socket_line[i]=gras_socket_client(assignment.line[i]->name,
+				      assignment.line[i]->port);
     xbt_host_free(assignment.line[i]);
   }
-  for (i=0,j=0 ; i<PROC_MATRIX_SIZE ; i++){
-    if (strcmp(gras_os_myname(),assignment.row[i]->name)) {
-      socket_row[j]=gras_socket_client(assignment.row[i]->name,
-				       assignment.row[i]->port);
-      j++;
-    }
+  for (i=0 ; i<PROC_MATRIX_SIZE-1 ; i++){
+    socket_row[i]=gras_socket_client(assignment.row[i]->name,
+				     assignment.row[i]->port);
     xbt_host_free(assignment.row[i]);    
   }
 
@@ -284,10 +286,15 @@ int slave(int argc,char *argv[]) {
     if(myline==step){
        INFO3("LINE: step(%d) = Myline(%d). Broadcast my data (myport=%d).",
 	     step,myline,gras_os_myport());
-       for (l=0;l < PROC_MATRIX_SIZE-1 ;l++)
+       for (l=0;l < PROC_MATRIX_SIZE-1 ;l++) {
+	  INFO2("LINE:   Send to %s:%d",
+		gras_socket_peer_name(socket_row[l]),
+		gras_socket_peer_port(socket_row[l]));
 	 gras_msg_send(socket_row[l], 
 		       gras_msgtype_by_name("dataB"), 
 		       &mydataB);
+       }
+       
 	
        xbt_matrix_free(bB);
        bB = xbt_matrix_new_sub(mydataB,
@@ -307,8 +314,12 @@ int slave(int argc,char *argv[]) {
     /* a row brodcast */
     if (myrow==step) { 
        INFO2("ROW: step(%d)=myrow(%d). Broadcast my data",step,myrow);
-       for (l=1;l < PROC_MATRIX_SIZE ;l++)
-	 gras_msg_send(socket_line[l-1],gras_msgtype_by_name("dataA"), &mydataA);
+       for (l=1;l < PROC_MATRIX_SIZE ; l++) {
+	  INFO2("ROW:   Send to %s:%d",
+		gras_socket_peer_name(socket_line[l-1]),
+		gras_socket_peer_port(socket_line[l-1]));
+	  gras_msg_send(socket_line[l-1],gras_msgtype_by_name("dataA"), &mydataA);
+       }
        xbt_matrix_free(bA);
        bA = xbt_matrix_new_sub(mydataA,
 			       submatrix_size,submatrix_size,
