@@ -47,7 +47,8 @@ SimGrid (3.1) unstable; urgency=low
       and you're set.
   * New! function: gras_msg_handleall to deal with all messages arriving
       within a given period.      
-  * New! gras processes display their backtrace when they get a SIGUSR1.
+  * New! gras processes display their backtrace when they get a SIGUSR1
+      or when Ctrl-C is pressed. Use Ctrl-C Ctrl-C to exit.
       Sweet to debug RL processes [MQ]
 
   AMOK:
