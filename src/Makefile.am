@@ -251,31 +251,32 @@ endif
 
 
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
-	@LEX@ -o$@ -Pgras_ddt_parse_ $^
+	set -e;@LEX@ -o$@ -Pgras_ddt_parse_ $^
 
 if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
-	mkdir -p `basename $@`; @LEX@ -o$@ -Psurf_parse_ $^
+	set -e;mkdir -p `basename $@`; @LEX@ -o$@ -Psurf_parse_ $^
 xbt/graphxml.c: xbt/graphxml.l
-	mkdir -p `basename $@`; @LEX@ -o$@ -Pxbt_graph_parse_ $^
+	set -e;mkdir -p `basename $@`; @LEX@ -o$@ -Pxbt_graph_parse_ $^
 
 if HAVE_FLEXML
-surf/surfxml.l: surf/surfxml.dtd
-	set -e; cd surf; flexml -b 1000000 -P surfxml -S -L surfxml.dtd
-../include/surf/surfxml.h: surf/surfxml.dtd
-	cd ../include/surf; flexml -P surfxml -H -L ../../src/surf/surfxml.dtd
-xbt/graphxml.l: xbt/graphxml.dtd
-	set -e; cd xbt; flexml -b 1000000 -P graphxml -S -L graphxml.dtd
-../include/xbt/graphxml.h: xbt/graphxml.dtd
-	cd ../include/xbt; flexml -P graphxml -H -L ../../src/xbt/graphxml.dtd
+surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
+	set -e; mkdir -p surf; cd surf; flexml -b 1000000 -P surfxml -S -L ../$(top_srcdir)/src/surf/surfxml.dtd
+$(top_srcdir)/include/surf/surfxml.h: $(top_srcdir)/src/surf/surfxml.dtd
+	set -e;cd $(top_srcdir)/include/surf; flexml -P surfxml -H -L $(top_srcdir)/src/surf/surfxml.dtd
+	
+xbt/graphxml.l: $(top_srcdir)/src/xbt/graphxml.dtd
+	set -e; cd xbt; flexml -b 1000000 -P graphxml -S -L $(top_srcdir)/src/xbt/graphxml.dtd
+$(top_srcdir)/include/xbt/graphxml.h: $(top_srcdir)/src/xbt/graphxml.dtd
+	set -e;cd $(top_srcdir)/include/xbt; flexml -P graphxml -H -L ../$(top_srcdir)/src/xbt/graphxml.dtd
 else
 
-../include/surf/surfxml.h surf/surfxml.l: surf/surfxml.dtd
+$(top_srcdir)/include/surf/surfxml.h surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
 	@echo "ERROR: src/surf/surfxml.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch include/surf/surfxml.h src/surf/surfxml.l"
 	@exit 1
-../include/xbt/graphxml.h xbt/graphxml.l: xbt/graphxml.dtd
+$(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graphxml.dtd
 	@echo "ERROR: src/xbt/graphxml.dtd was modified, but the flexml program was not detected"
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch include/xbt/graphxml.h src/xbt/graphxml.l"
