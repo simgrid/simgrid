@@ -134,14 +134,16 @@ authors of SimGrid are:
 
 \subsection contributers Contributers and alumni project members
 
- - Loris Marchal: wrote the algorithm for simulation TCP bandwidth-sharing.
+ - Christophe Thiery: brought back the old SG to life with SimDag during a
+   two months internship (june-july 2006) in the LORIA.
+ - Loris Marchal: designed the algorithm for simulation TCP bandwidth-sharing.
  - Julien Lerouge : wrote a XML parser for ENV descriptions and helped for
-   the general design during a 4 month period (march-june 2002) 
+   the general design during a 4 months internship (march-june 2002)
    in the LIP.
- - Clément Menier and Marc Perache : wrote a first prototype of the MSG
+ - Clément Menier and Marc Perache : wrote a prototype of the MSG
    interface during a project at ENS-Lyon (jan 2002). 
  - Dmitrii Zagorodnov : wrote some parts of the first version of SimGrid
-   (1999). 
+   (1999).
 
 <hr>
 \htmlonly
