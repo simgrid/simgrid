@@ -251,6 +251,9 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
 
   if (name != NULL)
     dependency->name = xbt_strdup(name);
+  else
+    dependency->name = NULL;
+
   dependency->data = data;
   dependency->src = src;
   dependency->dst = dst;
