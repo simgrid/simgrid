@@ -154,7 +154,7 @@ SD_task_t* SD_simulate(double how_long)
       task = action->data;
       INFO1("Task '%s' done", SD_task_get_name(task));
       __SD_task_set_state(task, SD_DONE);
-      xbt_free(action);
+      surf_workstation_resource->common_public->action_free(action);
       task->surf_action = NULL;
 
       /* the state has changed */
@@ -196,7 +196,7 @@ SD_task_t* SD_simulate(double how_long)
       task = action->data;
       INFO1("Task '%s' failed", SD_task_get_name(task));
       __SD_task_set_state(task, SD_FAILED);
-      xbt_free(action);
+      surf_workstation_resource->common_public->action_free(action);
       task->surf_action = NULL;
 
       if (!task->state_changed) {

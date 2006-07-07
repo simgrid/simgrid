@@ -585,7 +585,7 @@ void SD_task_destroy(SD_task_t task) {
     xbt_free(task->name);
 
   if (task->surf_action != NULL)
-    xbt_free(task->surf_action);
+    surf_workstation_resource->common_public->action_free(task->surf_action);
 
   xbt_dynar_free(&task->tasks_before);
   xbt_dynar_free(&task->tasks_after);
