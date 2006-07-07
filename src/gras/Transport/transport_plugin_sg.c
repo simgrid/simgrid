@@ -270,8 +270,8 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   DEBUG5("send chunk %s from %s to  %s:%d (size=%ld)",
 	 name, MSG_host_get_name(MSG_host_self()),
 	 MSG_host_get_name(sock_data->to_host), sock_data->to_chan,size);
-  if (MSG_task_put(task, sock_data->to_host,sock_data->to_chan) != MSG_OK) {
-    THROW0(system_error,0,"Problem during the MSG_task_put");
+  if (MSG_task_put_with_timeout(task, sock_data->to_host,sock_data->to_chan,60.0) != MSG_OK) {
+    THROW0(system_error,0,"Problem during the MSG_task_put with timeout 60");
   }
 }
 
