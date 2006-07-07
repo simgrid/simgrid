@@ -1,0 +1,19 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+  <process host="Inmos" function="sender">
+     <!--<argument value="20"/>-->
+    <!-- <argument value="50000"/>-->
+     <!--<argument value="10"/>-->
+    <!-- <argument value="Inmos"/> -->
+     <!-- <argument value="Jean_Yves"/>-->
+      <argument value="Bellevue"/>
+    <!-- <argument value="Bellevue"/> -->
+  </process>
+<!-- <process host="Inmos" function="receiver"/> -->
+<!-- <process host="Comeau" function="receiver"/> -->
+<process host="Bellevue" function="receiver"/>
+<!-- <process host="Louise" function="receiver"/> -->
+<!-- <process host="Blais" function="receiver"/> -->
+ <!-- <process host="Jean_Yves" function="receiver"/>-->
+</platform_description>
