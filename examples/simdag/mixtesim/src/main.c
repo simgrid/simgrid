@@ -15,6 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(mixtesim,
 
 /* static int createSimgridResources(); */
 static int createSimgridTasks();
+static void freeSimgridTasks();
 
 DAG dag;
 /*extern Link local_link;*/
@@ -91,6 +92,8 @@ int main(int argc, char **argv) {
   /* clear some memory */
   freeNodeAttributes(dag);
   freeHostAttributes();
+  freeSimgridTasks();
+  freeDAG(dag);
   
   /* reset SimDag */
   SD_exit();
@@ -282,6 +285,18 @@ static int createSimgridTasks()
   return 0;
 }
 
+
+/*
+ * freeSimgridTasks()
+ *
+ */
+static void freeSimgridTasks()
+{
+  int i;
+  for (i=0;i<dag->nb_nodes;i++) {
+    SD_task_destroy(dag->nodes[i]->sd_task);
+  }
+}
 
 /*
  * parseTraceSpec()
