@@ -151,7 +151,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       free(maps_name);
 
       if (!found) {
-	WARN0("Problem while reading the maps file");
+	VERB0("Problem while reading the maps file. Following backtrace will be mangled.");
 	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
 	continue;
       }
