@@ -73,8 +73,8 @@ int maestro(int argc,char *argv[]) {
   }
   mysock=gras_socket_server(atoi(argv[1]));
   group=amok_hm_group_new("bandwidth");
-  INFO0("Wait for peers");
-  gras_msg_handleall(10); /* friends, we're ready. Come and play */
+  INFO0("Wait for peers for 5 sec");
+  gras_msg_handleall(5); /* friends, we're ready. Come and play */
    
   if (xbt_dynar_length(group) < 2) {
      char *msg;
