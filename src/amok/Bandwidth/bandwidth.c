@@ -153,7 +153,7 @@ void amok_bw_test(gras_socket_t peer,
 	buf_size,request->buf_size);
 
   TRY {
-    gras_msg_rpccall(peer,60,
+    gras_msg_rpccall(peer,15,
 		     gras_msgtype_by_name("BW handshake"),&request, &request_ack);
   } CATCH(e) {
     RETHROW0("Error encountered while sending the BW request: %s");
@@ -179,6 +179,7 @@ void amok_bw_test(gras_socket_t peer,
       DEBUG4("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld (got %fkb/s)",
 	     meas_duration,min_duration,request->exp_size,((double)exp_size) / *sec/1024);
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
+      DEBUG0("Peer is ready for another round of fun");
     }
 
     *sec=gras_os_time();
@@ -297,6 +298,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
     void *payload;
     int msggot;
     TRY {
+      DEBUG0("Recv / Send the experiment");
       gras_socket_meas_recv(measIn, 120,request->exp_size,request->msg_size);
       gras_socket_meas_send(measOut,120,1,1);
       DEBUG0("ACK sent");
