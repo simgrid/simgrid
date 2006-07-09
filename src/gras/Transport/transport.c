@@ -150,7 +150,7 @@ void gras_trp_socket_new(int incoming,
 
   gras_socket_t sock=xbt_new0(s_gras_socket_t,1);
 
-  DEBUG1("Create a new socket (%p)", (void*)sock);
+  VERB1("Create a new socket (%p)", (void*)sock);
 
   sock->plugin = NULL;
 
@@ -159,6 +159,7 @@ void gras_trp_socket_new(int incoming,
   sock->accepting = incoming ? 1:0;
   sock->meas = 0;
   sock->recv_ok = 1;
+  sock->valid = 1;
 
   sock->sd     = -1;
   sock->port      = -1;
@@ -342,6 +343,7 @@ void gras_socket_close(gras_socket_t sock) {
   int cursor;
 
   XBT_IN;
+  VERB1("Close %p",sock);
   /* FIXME: Issue an event when the socket is closed */
   if (sock) {
     xbt_dynar_foreach(sockets,cursor,sock_iter) {
@@ -556,11 +558,27 @@ static void *gras_trp_procdata_new() {
  * Freeing procdata for this module
  */
 static void gras_trp_procdata_free(void *data) {
-   gras_trp_procdata_t res = (gras_trp_procdata_t)data;
-   
-   xbt_dynar_free(&( res->sockets ));
-   free(res->name);
-   free(res);
+  gras_trp_procdata_t res = (gras_trp_procdata_t)data;
+  
+  xbt_dynar_free(&( res->sockets ));
+  free(res->name);
+  free(res);
+}
+
+void gras_trp_socketset_dump(const char *name) {
+  gras_trp_procdata_t procdata = 
+    (gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
+
+  int it;
+  gras_socket_t s;
+
+  INFO1("** Dump the socket set %s",name);
+  xbt_dynar_foreach(procdata->sockets, it, s) {
+    INFO4("  %p -> %s:%d %s",
+	  s,gras_socket_peer_name(s),gras_socket_peer_port(s),
+	  s->valid?"(valid)":"(peer dead)");
+  }
+  INFO1("** End of socket set %s",name);
 }
 
 /*

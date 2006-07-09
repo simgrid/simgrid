@@ -70,6 +70,9 @@ gras_socket_t gras_trp_select(double timeout) {
     FD_ZERO(&FDS);
     max_fds = -1;
     xbt_dynar_foreach(sockets,cursor,sock_iter) {
+      if (!sock_iter->valid)
+	 continue;
+       
       if (sock_iter->incoming) {
 	DEBUG1("Considering socket %d for select",sock_iter->sd);
 #ifndef HAVE_WINSOCK_H
@@ -144,7 +147,7 @@ gras_socket_t gras_trp_select(double timeout) {
       continue;	 /* this was a timeout */
     }
 
-    xbt_dynar_foreach(sockets,cursor,sock_iter) { 
+    xbt_dynar_foreach(sockets,cursor,sock_iter) {
        if(!FD_ISSET(sock_iter->sd, &FDS)) { /* this socket is not ready */
 	continue;
        }
@@ -175,8 +178,7 @@ gras_socket_t gras_trp_select(double timeout) {
 	 } else if (recvd == 0) {
 	   /* Connection reset (=closed) by peer. */
 	   DEBUG1("Connection %d reset by peer", sock_iter->sd);
-	   gras_socket_close(sock_iter); 
-	   cursor--; 
+	   sock_iter->valid=0; /* don't close it. User may keep references to it */
 	 } else { 
 	   /* Got a suited socket ! */
 	   XBT_OUT;
@@ -197,8 +199,9 @@ gras_socket_t gras_trp_select(double timeout) {
 
   }
 
-  XBT_OUT;
-  return NULL;
+  /* No socket found. Maybe we had timeout=0 and nothing to do */
+  DEBUG0("TIMEOUT");
+  THROW0(timeout_error,0,"Timeout");
 }
 
 void gras_trp_sg_setup(gras_trp_plugin_t plug) {

@@ -41,6 +41,7 @@ typedef struct s_gras_socket  {
   int accepting :1; /* true if master incoming sock in tcp */
   int meas :1; /* true if this is an experiment socket instead of messaging */
   int recv_ok :1; /* true if it is valid to recv() on the socket (false if it is a file) */
+  int valid :1; /* false if a select returned that the peer quitted, forcing us to "close" the socket */
 
   unsigned long int buf_size; /* what to say to the OS. field here to remember it when accepting */
    

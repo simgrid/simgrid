@@ -102,4 +102,7 @@ typedef struct {
    
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 
+/* Display the content of our socket set (debugging purpose) */
+void gras_trp_socketset_dump(const char *name);
+
 #endif /* GRAS_TRP_INTERFACE_H */
