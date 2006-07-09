@@ -149,6 +149,20 @@ gras_msg_recv(gras_socket_t    sock,
     msg->payl=xbt_malloc(msg->payl_size);
     gras_datadesc_recv(sock, gras_datadesc_by_name("ex_t"), r_arch, msg->payl);
 
+  } else if  (msg->kind == e_gras_msg_kind_rpcanswer) {
+     /* answer to RPC */
+     if (msg->type->answer_type) {
+	msg->payl_size=gras_datadesc_size(msg->type->answer_type);
+	xbt_assert2(msg->payl_size > 0,
+		    "%s %s",
+		    "Dynamic array as payload is forbided for now (FIXME?).",
+		    "Reference to dynamic array is allowed.");
+	msg->payl = xbt_malloc(msg->payl_size);
+	gras_datadesc_recv(sock, msg->type->answer_type, r_arch, msg->payl);
+     } else {
+	msg->payl = NULL;
+	msg->payl_size = 0;
+     }
   } else {
      /* regular message */
      if (msg->type->ctn_type) {
