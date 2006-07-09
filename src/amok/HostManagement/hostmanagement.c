@@ -277,6 +277,7 @@ void amok_hm_group_shutdown(const char *group_name) {
     amok_hm_kill_hp(host_it->name, host_it->port);
   }
 
+  xbt_dynar_free(&group);
   xbt_dict_remove(g->groups,group_name);
 }
 /** \brief stops all members of the given remote group */
