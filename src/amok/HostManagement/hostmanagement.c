@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_hm,amok,"Host management");
 
 
 /* libdata management */
-static int amok_hm_libdata_id;
+static int amok_hm_libdata_id=-1;
 typedef struct {
   /* set headers */
   unsigned int ID;
@@ -227,10 +227,13 @@ void amok_hm_kill_sync(gras_socket_t buddy) {
  * The dynar elements are of type xbt_host_t
  */
 xbt_dynar_t amok_hm_group_new(const char *group_name) {
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+  amok_hm_libdata_t g;
   xbt_dynar_t res = xbt_dynar_new(sizeof(xbt_host_t),
 				  xbt_host_free_voidp);
 
+  xbt_assert0(amok_hm_libdata_id != -1,"Run amok_hm_init first!");
+  g=gras_libdata_by_id(amok_hm_libdata_id);
+   
   xbt_dict_set(g->groups,group_name,res,NULL); /*FIXME: leaking xbt_dynar_free_voidp);*/
   VERB1("Group %s created",group_name);
 
