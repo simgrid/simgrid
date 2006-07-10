@@ -1,26 +1,18 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
 <platform_description version="1">
-  <!-- The Tremblay node, arguments :: all others nodes -->
+
   <process host="Jacquelin" function="master">
-     <argument value="Boivin:4000"/>
-     <argument value="Jean_Yves:4000"/>
-     <argument value="TeX:4000"/>
-     <argument value="Geoff:4000"/>
-     <argument value="Disney:4000"/>
-     <argument value="iRMX:4000"/>
-     <argument value="McGee:4000"/>
-     <argument value="Gatien:4000"/>
-     <argument value="Laroche:4000"/>
+     <argument value="4242"/>
   </process>
   
-  <process host="Boivin"    function="slave"><argument value="4000"/></process>
-  <process host="Jean_Yves" function="slave"><argument value="4000"/></process>
-  <process host="TeX"       function="slave"><argument value="4000"/></process>
-  <process host="Geoff"     function="slave"><argument value="4000"/></process>
-  <process host="Disney"    function="slave"><argument value="4000"/></process>
-  <process host="iRMX"      function="slave"><argument value="4000"/></process>
-  <process host="McGee"     function="slave"><argument value="4000"/></process>
-  <process host="Gatien"    function="slave"><argument value="4000"/></process>
-  <process host="Laroche"   function="slave"><argument value="4000"/></process>
+  <process host="Boivin"    function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Jean_Yves" function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="TeX"       function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Geoff"     function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Disney"    function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="iRMX"      function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="McGee"     function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Gatien"    function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Laroche"   function="slave"><argument value="Jacquelin:4242"/></process>
 </platform_description>

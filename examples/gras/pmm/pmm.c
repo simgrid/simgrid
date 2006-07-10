@@ -10,6 +10,8 @@
 
 #include "gras.h"
 #include "xbt/matrix.h"
+#include "amok/hostmanagement.h"
+
 #define PROC_MATRIX_SIZE 3
 #define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
@@ -28,7 +30,7 @@ GRAS_DEFINE_TYPE(s_result,struct s_result {
 typedef struct s_result result_t;
 
 /* struct to send initial data to slave */
-GRAS_DEFINE_TYPE(s_assignment,struct s_assignment {
+GRAS_DEFINE_TYPE(s_pmm_assignment,struct s_pmm_assignment {
   int linepos;
   int rowpos;
   xbt_host_t line[NEIGHBOR_COUNT];
@@ -36,22 +38,22 @@ GRAS_DEFINE_TYPE(s_assignment,struct s_assignment {
   xbt_matrix_t A GRAS_ANNOTE(subtype,double);
   xbt_matrix_t B GRAS_ANNOTE(subtype,double);
 });
-typedef struct s_assignment s_assignment_t;
+typedef struct s_pmm_assignment s_pmm_assignment_t;
 
 /* register messages which may be sent (common to client and server) */
 static void register_messages(void) {
   gras_datadesc_type_t result_type;
-  gras_datadesc_type_t assignment_type;
+  gras_datadesc_type_t pmm_assignment_type;
 
   gras_datadesc_set_const("NEIGHBOR_COUNT",NEIGHBOR_COUNT);
   result_type=gras_datadesc_by_symbol(s_result);
-  assignment_type=gras_datadesc_by_symbol(s_assignment);
+  pmm_assignment_type=gras_datadesc_by_symbol(s_pmm_assignment);
 	
   /* receive a final result from slave */
   gras_msgtype_declare("result", result_type);
 
   /* send from master to slave to assign a position and some data */
-  gras_msgtype_declare("assignment", assignment_type);
+  gras_msgtype_declare("pmm_slave", pmm_assignment_type);
 
   /* send data between slaves */
   gras_msgtype_declare("dataA", gras_datadesc_matrix(gras_datadesc_by_name("double"),NULL));
@@ -75,76 +77,63 @@ typedef struct {
 } master_data_t;
 
 
-/***  Function Scatter Sequentiel ***/
-
-static void scatter(){
-
-}/* end_of_Scatter */
-
-/***  Function: Scatter // ***/
-
-static void scatter_parl(){
-
-}/* end_of_Scatter // */
-
-/***  Function: multiplication ***/
-
-static void multiplication(){
-
-}/* end_of_multiplication */
-
-/***  Function: gather ***/
-
-static void gather(){
-
-}/* end_of_gather */
-
 int master (int argc,char *argv[]) {
 
-  int i,port;
+  int i;
 
   xbt_matrix_t A,B,C;
   result_t result;
 
   gras_socket_t from;
 
-
-  xbt_host_t grid[SLAVE_COUNT]; /* The slaves */
+  xbt_dynar_t hosts; /* group of slaves */
+  xbt_host_t grid[SLAVE_COUNT]; /* The slaves as an array */
   gras_socket_t socket[SLAVE_COUNT]; /* sockets for brodcast to slaves */
 
-  /*  Init the GRAS's infrastructure */
+  /* Init the GRAS's infrastructure */
   gras_init(&argc, argv);
+  amok_hm_init();
   register_messages();
       
-  /*  Initialize Matrices */
+  /* Initialize data matrices */
   A = xbt_matrix_double_new_id(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
   B = xbt_matrix_double_new_seq(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
   C = xbt_matrix_double_new_zeros(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
 	
-  /*  Get arguments and create sockets */
-  port=atoi(argv[1]);
-  //scatter();
-  //scatter_parl();
-  //multiplication();
-  //gather();
-  /************************* Init Data Send *********************************/
-  gras_os_sleep(2);
+  /* Create the connexions */
+  gras_socket_server(atoi(argv[1]));
+  hosts=amok_hm_group_new("pmm");
+  INFO0("Wait for peers for 10 sec");
+  gras_msg_handleall(10); /* friends, we're ready. Come and play */
+  INFO1("Got %ld pals",xbt_dynar_length(hosts));
 
-  for( i=0; i+1<argc && i<SLAVE_COUNT;i++){
-    grid[i]=xbt_host_from_string(argv[i+1]);
+  for (i=0;
+       i<xbt_dynar_length(hosts) && i<SLAVE_COUNT;
+       i++) {
+
+    xbt_dynar_get_cpy(hosts,i,&grid[i]);
     socket[i]=gras_socket_client(grid[i]->name,grid[i]->port);
-      
     INFO2("Connected to %s:%d.",grid[i]->name,grid[i]->port);
   }
   xbt_assert2(i==SLAVE_COUNT,
 	      "Not enough slaves for this setting (got %d of %d). Change the deployment file",
 	      i,SLAVE_COUNT);
-  /* FIXME: let the surnumerous slave die properly */
- 
+
+  /* Kill surnumerous slaves */
+  for (i=SLAVE_COUNT; i<xbt_dynar_length(hosts); ) {
+    xbt_host_t h;
+
+    xbt_dynar_get_cpy(hosts,i,&h);
+    amok_hm_kill_hp(h->name,h->port);
+    free(h);
+  }
+
+
+  /* Assign job to slaves */
   int row=0, line=0;
   INFO0("XXXXXXXXXXXXXXXXXXXXXX begin Multiplication");
   for(i=0 ; i<SLAVE_COUNT; i++){
-    s_assignment_t assignment;
+    s_pmm_assignment_t assignment;
     int j,k;
 
     assignment.linepos=line; // assigned line
@@ -178,14 +167,14 @@ int master (int argc,char *argv[]) {
       line++;
     }
 		
-    gras_msg_send(socket[i],gras_msgtype_by_name("assignment"),&assignment);
+    gras_msg_send(socket[i],gras_msgtype_by_name("pmm_slave"),&assignment);
     xbt_matrix_free(assignment.A);
     xbt_matrix_free(assignment.B);
   }
-  // end assignment
 
-  /******************************* multiplication ********************************/
-  /* wait for results */
+  /* (have a rest while the slave perform the multiplication) */
+
+  /* Retrieve the results */
   for( i=0;i< SLAVE_COUNT;i++){
     gras_msg_wait(6000,gras_msgtype_by_name("result"),&from,&result);
     VERB2("%d slaves are done already. Waiting for %d",i+1, SLAVE_COUNT);
@@ -196,6 +185,7 @@ int master (int argc,char *argv[]) {
     xbt_matrix_free(result.C);
   }
   /*    end of gather   */
+
   if (DATA_MATRIX_SIZE < 30) {
      INFO0 ("The Result of Multiplication is :");
      xbt_matrix_dump(C,"C:res",0,xbt_matrix_dump_display_double);
@@ -203,9 +193,10 @@ int master (int argc,char *argv[]) {
      INFO1("Matrix size too big (%d>30) to be displayed here",DATA_MATRIX_SIZE);
   }
 
+  amok_hm_group_shutdown ("pmm");   /* Ok, we're out of here */
+
   for(i=0; i<SLAVE_COUNT; i++) {
      gras_socket_close(socket[i]);
-     xbt_host_free(grid[i]);
   }
    
   xbt_matrix_free(A);
@@ -219,7 +210,10 @@ int master (int argc,char *argv[]) {
  * slave code
  * **********************************************************************/
 
-int slave(int argc,char *argv[]) {
+static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
+  /* Recover my initialized Data and My Position*/
+  s_pmm_assignment_t assignment = *(s_pmm_assignment_t*)payload;
+  gras_socket_t master = gras_msg_cb_ctx_from(ctx);
 
   xbt_ex_t e; 
 
@@ -235,8 +229,7 @@ int slave(int argc,char *argv[]) {
   
   result_t result;
  
-  gras_socket_t from,sock;  /* to exchange data with my neighbor */
-  gras_socket_t master;     /* for the barrier */
+  gras_socket_t from;  /* to exchange data with my neighbor */
 
   /* sockets for brodcast to other slave */
   gras_socket_t socket_line[PROC_MATRIX_SIZE-1];
@@ -244,24 +237,10 @@ int slave(int argc,char *argv[]) {
   memset(socket_line,0,sizeof(socket_line));
   memset(socket_row,0,sizeof(socket_row));
    
-  /* Init the GRAS's infrastructure */
-  gras_init(&argc, argv);
-
-  /*  Create my master socket */
-  sock = gras_socket_server(atoi(argv[1]));
   int i;
 
-  /*  Register the known messages */
-  register_messages();
+  gras_os_sleep(1); /* wait for my pals */
 
-  /* Recover my initialized Data and My Position*/
-  s_assignment_t assignment;
-  INFO2("Launch %s (port=%d); wait for my enrole message",argv[0],gras_os_myport());
-  TRY {
-    gras_msg_wait(600,gras_msgtype_by_name("assignment"),&master,&assignment);
-  } CATCH(e) {
-    RETHROW0("Can't get my assignment from master : %s");
-  }
   myline  = assignment.linepos;
   myrow   = assignment.rowpos;
   mydataA = assignment.A;
@@ -347,7 +326,7 @@ int slave(int argc,char *argv[]) {
   TRY {
     gras_msg_send(master, gras_msgtype_by_name("result"),&result);
   } CATCH(e) {
-    RETHROW0("Failed to send PING to server: %s");
+    RETHROW0("Failed to send answer to server: %s");
   }
   INFO2(">>>>>>>> Result sent to %s:%d <<<<<<<<",
 	gras_socket_peer_name(master),gras_socket_peer_port(master));
@@ -359,18 +338,44 @@ int slave(int argc,char *argv[]) {
 
   xbt_matrix_free(mydataA);
   xbt_matrix_free(mydataB);
-  gras_socket_close(sock);
   gras_socket_close(master);
   gras_socket_close(from);
-   /* FIXME: some are said to be unknown
+  /* FIXME: some are said to be unknown 
   for (l=0; l < PROC_MATRIX_SIZE-1; l++) {
      if (socket_line[l])
        gras_socket_close(socket_line[l]);
      if (socket_row[l])
        gras_socket_close(socket_row[l]); 
   }*/
-   
+
+  return 1;
+}
+
+int slave(int argc,char *argv[]) {
+  gras_socket_t mysock;
+  gras_socket_t master;
+
+  /* Init the GRAS's infrastructure */
+  gras_init(&argc, argv);
+  amok_hm_init();
+
+  /*  Register the known messages and my callback */
+  register_messages();
+  gras_cb_register(gras_msgtype_by_name("pmm_slave"),pmm_worker_cb);
+
+  /* Create the connexions */
+  mysock = gras_socket_server_range(3000,9999,0,0);
+  INFO1("Sensor starting (on port %d)",gras_os_myport());
+  gras_os_sleep(0.5); /* let the master get ready */
+  master = gras_socket_client_from_string(argv[1]);
+				
+  /* Join and run the group */
+  amok_hm_group_join(master,"pmm");
+  amok_hm_mainloop(600);
+
+  /* housekeeping */
+  gras_socket_close(mysock);
+  //  gras_socket_close(master); Unknown
   gras_exit();
-  INFO0("Done.");
   return 0;
 } /* end_of_slave */
