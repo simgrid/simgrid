@@ -226,7 +226,16 @@ SD_task_t* SD_simulate(double how_long)
 }
 
 /**
- * \brief Destroys all SD internal data.
+ * \brief Returns the current clock
+ *
+ * \return the current clock, in second
+ */
+double SD_get_clock(void) {
+  return surf_get_clock();
+}
+
+/**
+ * \brief Destroys all SD internal data
  *
  * This function should be called when the simulation is over. Don't forget also to destroy
  * the tasks.

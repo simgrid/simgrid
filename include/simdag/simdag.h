@@ -127,6 +127,7 @@ void*             SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
 void              SD_init(int *argc, char **argv);
 void              SD_create_environment(const char *platform_file);
 SD_task_t*        SD_simulate(double how_long);
+double            SD_get_clock(void);
 void              SD_exit(void);
 /** @} */
 
