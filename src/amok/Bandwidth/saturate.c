@@ -113,7 +113,10 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
  * is to have a remote host calling amok_bw_saturate_stop to this process.
  *
  * If duration=0, the experiment will never timeout (you then have to manually
- * stop it)
+ * stop it).
+ * 
+ * If msg_size=0, the size will be automatically computed to make sure that
+ * each of the messages occupy the connexion one second
  */
 void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 			    unsigned int msg_size, double duration,
@@ -145,6 +148,18 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
   request->host.name = NULL;
   request->host.port = 0;
 
+  /* Size autodetection on need */
+  if (!msg_size) {
+    double bw;
+    double sec;
+    amok_bw_test(peer_cmd,
+		 0,512*1024, 512*1024, /* 512k as first guess */
+		 1, /* at least one sec */
+		 &sec, &bw);
+    request->msg_size = (int)bw;
+  }
+   
+  /* Launch the saturation */
   ctx = gras_msg_rpc_async_call(peer_cmd, 60, 
 				gras_msgtype_by_name("amok_bw_sat begin"),
 						  &request);
