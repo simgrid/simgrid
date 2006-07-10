@@ -9,24 +9,21 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 
 int main(int argc, char **argv) {
   int i;
-  
+
   /* initialisation of SD */
   SD_init(&argc, argv);
 
-/*   xbt_log_control_set("sd_test.thres=debug"); */
-/*   xbt_log_control_set("sd.thres=debug"); */
-  
   if (argc < 2) {
-     INFO1("Usage: %s platform_file", argv[0]);
-     INFO1("example: %s sd_platform.xml", argv[0]);
-     exit(1);
+    INFO1("Usage: %s platform_file", argv[0]);
+    INFO1("example: %s sd_platform.xml", argv[0]);
+    exit(1);
   }
 
   /* creation of the environment */
-  char * platform_file = argv[1];
+  const char * platform_file = argv[0];
   SD_create_environment(platform_file);
 
-  /* test the estimation functions (use small_platform.xml) */
+  /* test the estimation functions */
   const SD_workstation_t *workstations = SD_workstation_get_list();
   SD_workstation_t w1 = workstations[0];
   SD_workstation_t w2 = workstations[1];
@@ -62,16 +59,57 @@ int main(int argc, char **argv) {
   SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
   SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
   
+
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
   SD_task_dependency_add(NULL, NULL, taskC, taskA);
   SD_task_dependency_add(NULL, NULL, taskD, taskB);
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
-  /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock *\/ */
+  /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock */
+
+  xbt_ex_t ex;
+
+  TRY {
+    SD_task_dependency_add(NULL, NULL, taskA, taskA); /* shouldn't work and must raise an exception */
+    xbt_assert0(0, "Hey, I can add a dependency between Task A and Task A!");
+  }
+  CATCH (ex) {
+  }
+  
+  TRY {
+    SD_task_dependency_add(NULL, NULL, taskA, taskB); /* shouldn't work and must raise an exception */
+    xbt_assert0(0, "Oh oh, I can add an already existing dependency!");
+  }
+  CATCH (ex) {
+  }
+
+  SD_task_dependency_remove(taskA, taskB);
+
+  TRY {
+    SD_task_dependency_remove(taskC, taskA); /* shouldn't work and must raise an exception */
+    xbt_assert0(0, "Dude, I can remove an unknown dependency!");
+  }
+  CATCH (ex) {
+  }
+
+  TRY {
+    SD_task_dependency_remove(taskC, taskC); /* shouldn't work and must raise an exception */
+    xbt_assert0(0, "Wow, I can remove a dependency between Task C and itself!");
+  }
+  CATCH (ex) {
+  }
+
+
+  /* if everything is ok, no exception is forwarded or rethrown by main() */
+
+  /* watch points */
+  SD_task_watch(taskD, SD_DONE);
+  SD_task_watch(taskB, SD_DONE);
+  SD_task_unwatch(taskD, SD_DONE);
+
 
   /* scheduling parameters */
 
   const int workstation_number = 2;
-  /*  const SD_workstation_t *workstation_list = SD_workstation_get_list();*/
   const SD_workstation_t workstation_list[] = {w1, w2};
   double computation_amount[] = {computation_amount1, computation_amount2};
   double communication_amount[] =
@@ -98,42 +136,15 @@ int main(int argc, char **argv) {
   SD_task_schedule(taskD, workstation_number, workstation_list,
 		   computation_amount, communication_amount, rate);
 
-  SD_task_watch(taskC, SD_DONE);
-
   SD_task_t *changed_tasks;
 
-  changed_tasks = SD_simulate(0.001);
+  changed_tasks = SD_simulate(-1.0);
+  xbt_assert0(changed_tasks[0] == taskD &&
+	      changed_tasks[1] == taskB &&
+	      changed_tasks[2] == taskC &&
+	      changed_tasks[3] == NULL,
+	      "Unexpected simulation results");
   
-  while (changed_tasks[0] != NULL) {
-    INFO0("Tasks whose state has changed:");
-    i = 0;
-    while(changed_tasks[i] != NULL) {
-      switch (SD_task_get_state(changed_tasks[i])) {
-      case SD_SCHEDULED:
-	INFO1("%s is scheduled.", SD_task_get_name(changed_tasks[i]));
-	break;
-      case SD_READY:
-	INFO1("%s is ready.", SD_task_get_name(changed_tasks[i]));
-	break;
-      case SD_RUNNING:
-	INFO1("%s is running.", SD_task_get_name(changed_tasks[i]));
-	break;
-      case SD_DONE:
-	INFO1("%s is done.", SD_task_get_name(changed_tasks[i]));
-	break;
-      case SD_FAILED:
-	INFO1("%s is failed.", SD_task_get_name(changed_tasks[i]));
-	break;
-      default:
-	INFO1("Unknown status for %s", SD_task_get_name(changed_tasks[i]));
-	break;
-      }
-      i++;
-    }
-    xbt_free(changed_tasks);
-    changed_tasks = SD_simulate(100);
-  }
-
   xbt_free(changed_tasks);
 
   DEBUG0("Destroying tasks...");
@@ -148,3 +159,4 @@ int main(int argc, char **argv) {
   SD_exit();
   return 0;
 }
+
