@@ -266,7 +266,7 @@ AC_CONFIG_FILES([
   src/ucontext_stack.h
   examples/Makefile 
     examples/msg/Makefile           examples/msg/run_msg_test
-    examples/simdag/Makefile
+    examples/simdag/Makefile	    examples/simdag/test_simdag
     examples/gras/Makefile 
       examples/gras/ping/Makefile   examples/gras/ping/test_sg   examples/gras/ping/test_rl
       examples/gras/rpc/Makefile    examples/gras/rpc/test_sg    examples/gras/rpc/test_rl
@@ -311,6 +311,7 @@ AC_CONFIG_FILES([
      examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl  \
      examples/gras/p2p/can/test_sg   examples/gras/p2p/can/test_rl  \
      examples/msg/run_msg_test                                  \
+     examples/simdag/test_simdag				\
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
