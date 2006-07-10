@@ -27,8 +27,9 @@ int main(int argc, char **argv) {
   SD_create_environment(platform_file);
 
   /* test the estimation functions (use small_platform.xml) */
-  SD_workstation_t w1 = SD_workstation_get_by_name("Jupiter");
-  SD_workstation_t w2 = SD_workstation_get_by_name("Ginette");
+  const SD_workstation_t *workstations = SD_workstation_get_list();
+  SD_workstation_t w1 = workstations[0];
+  SD_workstation_t w2 = workstations[1];
   const char *name1 = SD_workstation_get_name(w1);
   const char *name2 = SD_workstation_get_name(w2);
   const double computation_amount1 = 2000000;
@@ -41,18 +42,18 @@ int main(int argc, char **argv) {
 	SD_workstation_get_computation_time(w2, computation_amount2));
 
   INFO2("Route between %s and %s:", name1, name2);
-  SD_link_t *route = SD_workstation_route_get_list(w1, w2);
-  int route_size = SD_workstation_route_get_size(w1, w2);
+  SD_link_t *route = SD_route_get_list(w1, w2);
+  int route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
     INFO3("\tLink %s: latency = %f, bandwidth = %f", SD_link_get_name(route[i]),
 	  SD_link_get_current_latency(route[i]), SD_link_get_current_bandwidth(route[i]));
   }
-  INFO2("Route latency = %f, route bandwidth = %f", SD_workstation_route_get_latency(w1, w2),
-	SD_workstation_route_get_bandwidth(w1, w2));
+  INFO2("Route latency = %f, route bandwidth = %f", SD_route_get_current_latency(w1, w2),
+	SD_route_get_current_bandwidth(w1, w2));
   INFO4("Communication time for %f bytes between %s and %s: %f", communication_amount12, name1, name2,
-	SD_workstation_route_get_communication_time(w1, w2, communication_amount12));
+	SD_route_get_communication_time(w1, w2, communication_amount12));
   INFO4("Communication time for %f bytes between %s and %s: %f", communication_amount21, name2, name1,
-	SD_workstation_route_get_communication_time(w2, w1, communication_amount21));
+	SD_route_get_communication_time(w2, w1, communication_amount21));
   xbt_free(route);
 
   /* creation of the tasks and their dependencies */
