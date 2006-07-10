@@ -1,0 +1,8 @@
+#! @BASH@ -e
+if [ x@EXEEXT@ = x ] ; then 
+  exenv=$SG_TEST_EXENV
+else
+  exenv=wine
+fi
+    
+$exenv ./sd_test@EXEEXT@ @srcdir@/small_platform.xml $@
