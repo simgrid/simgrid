@@ -1,4 +1,4 @@
 .deps .libs .dirstamp Makefile Makefile.in
-msg_test msg_test_surfxml_bypassed msg_test_suspend
+msg_test msg_test_surfxml_bypassed msg_test_suspend ping_pong
 run_msg_test
 msg_test.trace
