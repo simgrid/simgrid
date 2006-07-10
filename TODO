@@ -1,6 +1,11 @@
 ###
 ### Ongoing stuff
 ###
+
+Document the fact that gras processes display the backtrace on sigusr and sigint
+Document XBT_LOG_EXTERNAL_DEFAULT_CATEGORY
+Document host module
+
 /* FIXME: better place? */
 int vasprintf  (char **ptr, const char *fmt, va_list ap);
 char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
