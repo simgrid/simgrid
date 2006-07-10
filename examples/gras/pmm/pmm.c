@@ -366,7 +366,7 @@ int slave(int argc,char *argv[]) {
   /* Create the connexions */
   mysock = gras_socket_server_range(3000,9999,0,0);
   INFO1("Sensor starting (on port %d)",gras_os_myport());
-  gras_os_sleep(0.5); /* let the master get ready */
+  gras_os_sleep(2); /* let the master get ready */
   master = gras_socket_client_from_string(argv[1]);
 				
   /* Join and run the group */
