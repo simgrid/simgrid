@@ -2,9 +2,8 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/inclu
 AM_CFLAGS=-g 
 
 CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out\
-  testgraph.xml graph.dot
-DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/* 
-MAINTAINERCLEANFILES=Makefile.in
+  testgraph.xml testgraph.dot
+
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little32_4 \
   gras/datadesc.little64\
