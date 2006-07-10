@@ -3,6 +3,7 @@ AM_CFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out\
   testgraph.xml testgraph.dot
+DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/* 
 
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little32_4 \
