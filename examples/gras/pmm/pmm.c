@@ -10,11 +10,11 @@
 
 #include "gras.h"
 #include "xbt/matrix.h"
-#define PROC_MATRIX_SIZE 2
+#define PROC_MATRIX_SIZE 3
 #define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
-#define DATA_MATRIX_SIZE 8
+#define DATA_MATRIX_SIZE 9
 const int submatrix_size = DATA_MATRIX_SIZE/PROC_MATRIX_SIZE;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");
@@ -130,15 +130,15 @@ int master (int argc,char *argv[]) {
   /************************* Init Data Send *********************************/
   gras_os_sleep(2);
 
-  for( i=1;i<argc && i<=SLAVE_COUNT;i++){
-    grid[i-1]=xbt_host_from_string(argv[i]);
-    socket[i-1]=gras_socket_client(grid[i-1]->name,grid[i-1]->port);
+  for( i=0; i+1<argc && i<SLAVE_COUNT;i++){
+    grid[i]=xbt_host_from_string(argv[i+1]);
+    socket[i]=gras_socket_client(grid[i]->name,grid[i]->port);
       
-    INFO2("Connected to %s:%d.",grid[i-1]->name,grid[i-1]->port);
+    INFO2("Connected to %s:%d.",grid[i]->name,grid[i]->port);
   }
-  xbt_assert2(i-1==SLAVE_COUNT,
+  xbt_assert2(i==SLAVE_COUNT,
 	      "Not enough slaves for this setting (got %d of %d). Change the deployment file",
-	      i-1,SLAVE_COUNT);
+	      i,SLAVE_COUNT);
   /* FIXME: let the surnumerous slave die properly */
  
   int row=0, line=0;
@@ -188,6 +188,7 @@ int master (int argc,char *argv[]) {
   /* wait for results */
   for( i=0;i< SLAVE_COUNT;i++){
     gras_msg_wait(6000,gras_msgtype_by_name("result"),&from,&result);
+    VERB2("%d slaves are done already. Waiting for %d",i+1, SLAVE_COUNT);
     xbt_matrix_copy_values(C,result.C,   submatrix_size,submatrix_size,
 			   submatrix_size*result.linepos,
 			   submatrix_size*result.rowpos,
@@ -195,11 +196,11 @@ int master (int argc,char *argv[]) {
     xbt_matrix_free(result.C);
   }
   /*    end of gather   */
-  if (DATA_MATRIX_SIZE < 50) {
+  if (DATA_MATRIX_SIZE < 30) {
      INFO0 ("The Result of Multiplication is :");
      xbt_matrix_dump(C,"C:res",0,xbt_matrix_dump_display_double);
   } else {
-     INFO1("Matrix size too big (%d>50) to be displayed here",DATA_MATRIX_SIZE);
+     INFO1("Matrix size too big (%d>30) to be displayed here",DATA_MATRIX_SIZE);
   }
 
   for(i=0; i<SLAVE_COUNT; i++) {
@@ -361,7 +362,7 @@ int slave(int argc,char *argv[]) {
   gras_socket_close(sock);
   gras_socket_close(master);
   gras_socket_close(from);
-  /* FIXME: Some of these sockets are "not known", no idea why *
+   /* FIXME: some are said to be unknown
   for (l=0; l < PROC_MATRIX_SIZE-1; l++) {
      if (socket_line[l])
        gras_socket_close(socket_line[l]);
@@ -369,7 +370,6 @@ int slave(int argc,char *argv[]) {
        gras_socket_close(socket_row[l]); 
   }*/
    
-
   gras_exit();
   INFO0("Done.");
   return 0;
