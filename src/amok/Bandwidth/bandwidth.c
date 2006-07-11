@@ -175,9 +175,11 @@ void amok_bw_test(gras_socket_t peer,
     if (*sec>0) {
       double meas_duration=*sec;
       request->exp_size = request->exp_size * (min_duration / meas_duration) * 1.1;
+      request->msg_size = request->msg_size * (min_duration / meas_duration) * 1.1;
 
-      DEBUG4("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld (got %fkb/s)",
-	     meas_duration,min_duration,request->exp_size,((double)exp_size) / *sec/1024);
+
+      DEBUG5("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld msg_size=%ld (got %fkb/s)",
+	     meas_duration,min_duration,request->exp_size,request->msg_size,((double)exp_size) / *sec/1024);
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
       DEBUG0("Peer is ready for another round of fun");
     }
@@ -196,10 +198,11 @@ void amok_bw_test(gras_socket_t peer,
     DEBUG0("Experiment done");
 
     *sec = gras_os_time() - *sec;
-    *bw = ((double)exp_size) / *sec;
+    *bw = ((double)request->exp_size) / *sec;
   } while (*sec < min_duration);
 
-  DEBUG0("This measurement was long enough. Stop peer");
+  DEBUG2("This measurement was long enough (%f sec; found %f b/s). Stop peer",
+	 *sec,*bw);
   gras_msg_send(peer, gras_msgtype_by_name("BW stop"), NULL);      
 
   free(request_ack);
