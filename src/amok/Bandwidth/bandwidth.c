@@ -108,7 +108,7 @@ void amok_bw_bw_leave() {
  * \arg exp_size: Total size of data sent across the network
  * \arg msg_size: Size of each message sent. Ie, (\e expSize % \e msgSize) messages will be sent.
  * \arg min_duration: The minimum wanted duration. When the test message is too little, you tend to measure the latency. This argument allows you to force the test to take at least, say one second.
- * \arg sec: where the result (in seconds) should be stored.
+ * \arg sec: where the result (in seconds) should be stored. If the experiment was done several times because the first one was too short, this is the timing of the last run only.
  * \arg bw: observed Bandwidth (in byte/s) 
  *
  * Conduct a bandwidth test from the local process to the given peer.
