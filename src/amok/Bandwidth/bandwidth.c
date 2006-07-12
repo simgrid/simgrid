@@ -118,7 +118,7 @@ void amok_bw_bw_leave() {
  * launched. Sizes (both \a exp_size and \a msg_size) will be multiplicated by
  * (\a min_duration / measured_duration) (plus 10% to be sure to eventually
  * reach the \a min_duration). In that case, the reported bandwidth and
- * duration are the ones of the last run. \a msg_size cannot go over 128Mb
+ * duration are the ones of the last run. \a msg_size cannot go over 64Mb
  * because we need to malloc a block of this size in RL to conduct the
  * experiment, and we still don't want to visit the swap.
  *
@@ -184,8 +184,8 @@ void amok_bw_test(gras_socket_t peer,
       double meas_duration=*sec;
       request->exp_size = request->exp_size * (min_duration / meas_duration) * 1.1;
       request->msg_size = request->msg_size * (min_duration / meas_duration) * 1.1;
-      if (request->msg_size > 128*1024*1024)
-	request->msg_size = 128*1024*1024;
+      if (request->msg_size > 64*1024*1024)
+	request->msg_size = 64*1024*1024;
 
       VERB5("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld msg_size=%ld (got %fkb/s)",
 	     meas_duration,min_duration,request->exp_size,request->msg_size,((double)exp_size) / *sec/1024);
