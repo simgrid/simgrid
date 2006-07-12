@@ -97,6 +97,14 @@ e_surf_action_state_t surf_action_get_state(surf_action_t action)
   return SURF_ACTION_NOT_IN_THE_SYSTEM;
 }
 
+double surf_action_get_start_time(surf_action_t action) {
+  return action->start;
+}
+
+double surf_action_get_finish_time(surf_action_t action) {
+  return action->finish;
+}
+
 void surf_action_free(surf_action_t * action)
 {
   (*action)->resource_type->common_public->action_cancel(*action);

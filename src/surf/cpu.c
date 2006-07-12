@@ -360,6 +360,10 @@ static void surf_cpu_resource_init_internal(void)
   surf_cpu_resource->common_public->get_resource_name = get_resource_name;
   surf_cpu_resource->common_public->action_get_state =
       surf_action_get_state;
+  surf_cpu_resource->common_public->action_get_start_time =
+      surf_action_get_start_time;
+  surf_cpu_resource->common_public->action_get_finish_time =
+      surf_action_get_finish_time;
   surf_cpu_resource->common_public->action_free = action_free;
   surf_cpu_resource->common_public->action_use = action_use;
   surf_cpu_resource->common_public->action_cancel = action_cancel;

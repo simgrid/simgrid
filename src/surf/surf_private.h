@@ -52,6 +52,8 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 
 /* Generic functions common to all ressources */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
+double surf_action_get_start_time(surf_action_t action);
+double surf_action_get_finish_time(surf_action_t action);
 void surf_action_free(surf_action_t * action);
 void surf_action_change_state(surf_action_t action,
 			      e_surf_action_state_t state);

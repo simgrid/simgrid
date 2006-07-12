@@ -65,6 +65,8 @@ typedef struct surf_resource_public {
   const char *(*get_resource_name) (void *resource_id);
 
   e_surf_action_state_t(*action_get_state) (surf_action_t action);
+  double (*action_get_start_time) (surf_action_t action);
+  double (*action_get_finish_time) (surf_action_t action);
   void (*action_use) (surf_action_t action);
   int  (*action_free) (surf_action_t action);
   void (*action_cancel) (surf_action_t action);

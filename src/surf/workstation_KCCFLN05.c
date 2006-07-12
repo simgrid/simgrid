@@ -911,6 +911,10 @@ static void resource_init_internal(void)
   surf_workstation_resource->common_public->name_service = name_service;
   surf_workstation_resource->common_public->get_resource_name = get_resource_name;
   surf_workstation_resource->common_public->action_get_state = surf_action_get_state;
+  surf_workstation_resource->common_public->action_get_start_time =
+      surf_action_get_start_time;
+  surf_workstation_resource->common_public->action_get_finish_time =
+      surf_action_get_finish_time;
   surf_workstation_resource->common_public->action_use = action_use;
   surf_workstation_resource->common_public->action_free = action_free;
   surf_workstation_resource->common_public->action_cancel = action_cancel;

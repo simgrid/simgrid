@@ -567,6 +567,10 @@ static void surf_network_resource_init_internal(void)
       get_resource_name;
   surf_network_resource->common_public->action_get_state =
       surf_action_get_state;
+  surf_network_resource->common_public->action_get_start_time =
+      surf_action_get_start_time;
+  surf_network_resource->common_public->action_get_finish_time =
+      surf_action_get_finish_time;
   surf_network_resource->common_public->action_free = action_free;
   surf_network_resource->common_public->action_use = action_use;
   surf_network_resource->common_public->action_cancel = action_cancel;
