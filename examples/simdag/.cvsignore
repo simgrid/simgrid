@@ -1,0 +1,3 @@
+.deps .libs .dirstamp Makefile Makefile.in
+test_simdag sd_test
+*.trace
