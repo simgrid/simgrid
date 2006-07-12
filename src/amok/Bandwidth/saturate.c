@@ -142,7 +142,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
  
   xbt_ex_t e;
 
-  gras_socket_t peer_cmd; //= gras_socket_client(to_name, to_port);
+  gras_socket_t peer_cmd = gras_socket_client(to_name, to_port);
   gras_msg_cb_ctx_t ctx;
 
   gras_socket_t meas;
