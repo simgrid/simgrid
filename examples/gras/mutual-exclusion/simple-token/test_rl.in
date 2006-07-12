@@ -1,0 +1,17 @@
+#! @BASH@ -e
+if [ x@EXEEXT@ = x ] ; then 
+#  exenv="libtool --mode=execute valgrind --db-attach=yes --run-libc-freeres=no "
+#  exenv="libtool --mode=execute valgrind --run-libc-freeres=no "
+  exenv=$SG_TEST_EXENV
+else
+  exenv=wine
+fi
+    
+$exenv ./tokenS_node@EXEEXT@ 4000 127.0.0.1 4010 --create-token $@ &
+# $exenv ./tokenS_node@EXEEXT@ 4010 127.0.0.1 4000 $@ &
+# exit 0
+$exenv ./tokenS_node@EXEEXT@ 4010 127.0.0.1 4020 $@ &
+$exenv ./tokenS_node@EXEEXT@ 4020 127.0.0.1 4030 $@ &
+$exenv ./tokenS_node@EXEEXT@ 4030 127.0.0.1 4040 $@ &
+$exenv ./tokenS_node@EXEEXT@ 4040 127.0.0.1 4050 $@ &
+$exenv ./tokenS_node@EXEEXT@ 4050 127.0.0.1 4000 $@ 
