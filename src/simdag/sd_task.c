@@ -34,6 +34,9 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
   xbt_swag_insert(task,task->state_set);
 
   task->amount = amount;
+  task->remains = amount;
+  task->start_time = -1.0;
+  task->finish_time = -1.0;
   task->surf_action = NULL;
   task->watch_points = 0;
   task->state_changed = 0;
@@ -122,9 +125,14 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
     break;
   case SD_RUNNING:
     task->state_set = sd_global->running_task_set;
+    task->start_time = surf_workstation_resource->common_public->
+      action_get_start_time(task->surf_action);
     break;
   case SD_DONE:
     task->state_set = sd_global->done_task_set;
+    task->finish_time = surf_workstation_resource->common_public->
+      action_get_finish_time(task->surf_action);
+    task->remains = 0;
     break;
   case SD_FAILED:
     task->state_set = sd_global->failed_task_set;
@@ -180,7 +188,7 @@ double SD_task_get_remaining_amount(SD_task_t task) {
   if (task->surf_action)
     return task->surf_action->remains;
   else
-    return task->amount;
+    return task->remains;
 }
 
 /* temporary function for debbuging */
@@ -510,6 +518,8 @@ void SD_task_unschedule(SD_task_t task) {
     surf_workstation_resource->common_public->action_cancel(task->surf_action);
   else
     __SD_task_set_state(task, SD_NOT_SCHEDULED);
+  task->remains = task->amount;
+  task->start_time = -1.0;
 }
 
 /* Destroys the data memorised by SD_task_schedule. Task state must be SD_SCHEDULED or SD_READY.
@@ -532,7 +542,7 @@ surf_action_t __SD_task_run(SD_task_t task) {
   xbt_assert2(__SD_task_is_ready(task), "Task '%s' is not ready! Task state: %d",
 	      SD_task_get_name(task), SD_task_get_state(task));
 
-  surf_action_t surf_action = surf_workstation_resource->extension_public->
+  task->surf_action = surf_workstation_resource->extension_public->
     execute_parallel_task(task->workstation_nb,
 			  task->workstation_list,
 			  task->computation_amount,
@@ -540,12 +550,12 @@ surf_action_t __SD_task_run(SD_task_t task) {
 			  task->amount,
 			  task->rate);
 
-  DEBUG1("surf_action = %p", surf_action);
+  DEBUG1("surf_action = %p",  task->surf_action);
 
   __SD_task_destroy_scheduling_data(task); /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
 
-  return surf_action;
+  return task->surf_action;
 }
 /* Remove all dependencies associated with a task. This function is called when the task is destroyed.
  */
@@ -575,9 +585,10 @@ static void __SD_task_remove_dependencies(SD_task_t task) {
 double SD_task_get_start_time(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert1(task->surf_action != NULL, "Task '%s' is not started yet!", SD_task_get_name(task));
-
-  return surf_workstation_resource->common_public->action_get_start_time(task->surf_action);
+  if(task->surf_action)
+    return surf_workstation_resource->common_public->action_get_start_time(task->surf_action);
+  else 
+    return task->start_time;
 }
 
 /**
@@ -594,9 +605,11 @@ double SD_task_get_start_time(SD_task_t task) {
 double SD_task_get_finish_time(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert1(task->surf_action != NULL, "Task '%s' is not started yet!", SD_task_get_name(task));
 
-  return surf_workstation_resource->common_public->action_get_finish_time(task->surf_action);  
+  if(task->surf_action)
+    return surf_workstation_resource->common_public->action_get_finish_time(task->surf_action); /* should never happen as actions are destroyed right after their completion */
+  else 
+    return task->finish_time;
 }
 
 /**

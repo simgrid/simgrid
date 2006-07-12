@@ -124,7 +124,7 @@ SD_task_t* SD_simulate(double how_long)
   /* explore the ready tasks */
   xbt_swag_foreach(task, sd_global->ready_task_set) {
     INFO1("Executing task '%s'", SD_task_get_name(task));
-    task->surf_action = __SD_task_run(task);
+    __SD_task_run(task);
     surf_workstation_resource->common_public->action_set_data(task->surf_action, task);
     task->state_changed = 1;
     

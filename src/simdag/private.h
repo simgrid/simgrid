@@ -55,6 +55,9 @@ typedef struct SD_task {
   void *data; /* user data */
   char *name;
   double amount;
+  double remains;
+  double start_time;
+  double finish_time;
   surf_action_t surf_action;
   unsigned short watch_points;
   int state_changed; /* used only by SD_simulate, to make sure we put
