@@ -35,7 +35,7 @@ int sensor (int argc,char *argv[]) {
  
   mysock = gras_socket_server_range(3000,9999,0,0);
   INFO1("Sensor starting (on port %d)",gras_os_myport());
-  gras_os_sleep(0.5); /* let the master get ready */
+  gras_os_sleep(2); /* let the master get ready */
   master = gras_socket_client_from_string(argv[1]);
 					      
   amok_hm_group_join(master,"saturate");
@@ -152,8 +152,11 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 
   /* Init the group */
   hosts=amok_hm_group_new("saturate");
-  INFO0("Wait for peers for 5 sec");
-  gras_msg_handleall(5); /* friends, we're ready. Come and play */
+  /* wait 4 dudes */
+  gras_msg_handle(60);
+  gras_msg_handle(60);
+  gras_msg_handle(60);
+  gras_msg_handle(60);
   nb_hosts = xbt_dynar_length(hosts);
 
   INFO0("Let's go for the bw_matrix");
@@ -176,11 +179,12 @@ static void full_fledged_saturation(int argc, char*argv[]) {
       TRY {
 	amok_bw_saturate_start(h1->name,h1->port,
 			       h2->name,h2->port,
-			       sat_size, 0/* no timeout */);  
+			       0, /* Be nice, compute msg_size yourself */
+			       0  /* no timeout */);  
       } CATCH(e) {
 	RETHROW0("Cannot ask hosts to saturate the link: %s");
       }
-      gras_os_sleep(1.0);
+      gras_os_sleep(5);
 
       begin=time(NULL);
       begin_simulated=gras_os_time();
