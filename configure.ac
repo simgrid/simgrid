@@ -272,7 +272,7 @@ AC_CONFIG_FILES([
       examples/gras/rpc/Makefile    examples/gras/rpc/test_sg    examples/gras/rpc/test_rl
       examples/gras/timer/Makefile  examples/gras/timer/test_sg  examples/gras/timer/test_rl
       examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
-      examples/gras/tokenS/Makefile examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl
+      examples/gras/mutual_exclusion/simple_token/Makefile examples/gras/mutual_exclusion/simple_token/test_sg examples/gras/mutual_exclusion/simple_token/test_rl
       examples/gras/mmrpc/Makefile  examples/gras/mmrpc/test_sg  examples/gras/mmrpc/test_rl
       examples/gras/pmm/Makefile    examples/gras/pmm/test_sg    examples/gras/pmm/test_rl
       examples/gras/all2all/Makefile examples/gras/all2all/test_sg examples/gras/all2all/test_rl
@@ -304,7 +304,7 @@ AC_CONFIG_FILES([
      examples/gras/rpc/test_sg    examples/gras/rpc/test_rl     \
      examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
      examples/gras/chrono/test_sg examples/gras/chrono/test_rl  \
-     examples/gras/tokenS/test_sg examples/gras/tokenS/test_rl  \
+     examples/gras/mutual_exclusion/simple_token/test_sg examples/gras/mutual_exclusion/simple_token/test_rl  \
      examples/gras/mmrpc/test_sg  examples/gras/mmrpc/test_rl   \
      examples/gras/pmm/test_sg    examples/gras/pmm/test_rl     \
      examples/gras/all2all/test_sg  examples/gras/all2all/test_rl   \
