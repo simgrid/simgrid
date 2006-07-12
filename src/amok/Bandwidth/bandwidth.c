@@ -434,7 +434,7 @@ TRY{
 	       &(result->sec),&(result->bw));
  
   gras_msg_rpcreturn(240,ctx,&result);
- }CATCH(e){THROW1(0,1,"%s",request->host.name);
+ }CATCH(e){THROW1(0,1,"%s",request->peer.name);
   }
   gras_os_sleep(1);
   gras_socket_close(peer); /* FIXME: it should be blocking in RL until everything is sent */
