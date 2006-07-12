@@ -14,7 +14,7 @@
 
 #include "gras.h"
 #include "amok/bandwidth.h"
-#include "amok/hostmanagement.h"
+#include "amok/peermanagement.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(saturate,"Messages specific to this example");
 
@@ -100,12 +100,12 @@ static void kill_buddy(char *name,int port){
   gras_socket_close(sock);
 }
 static void kill_buddy_dynar(void *b) {
-  xbt_host_t buddy=*(xbt_host_t*)b;
+  xbt_peer_t buddy=*(xbt_peer_t*)b;
   kill_buddy(buddy->name,buddy->port);
 }
 
-static void free_host(void *d){
-  xbt_host_t h=*(xbt_host_t*)d;
+static void free_peer(void *d){
+  xbt_peer_t h=*(xbt_peer_t*)d;
   free(h->name);
   free(h);
 }
@@ -139,8 +139,8 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   int begin;
 
   /* where are the sensors */
-  xbt_dynar_t hosts;
-  int nb_hosts;
+  xbt_dynar_t peers;
+  int nb_peers;
 
   /* results */
   double *bw;
@@ -148,16 +148,16 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 
   /* iterators */
   int i,j,k,l;
-  xbt_host_t h1,h2,h3,h4;
+  xbt_peer_t h1,h2,h3,h4;
 
   /* Init the group */
-  hosts=amok_hm_group_new("saturate");
+  peers=amok_hm_group_new("saturate");
   /* wait 4 dudes */
   gras_msg_handle(60);
   gras_msg_handle(60);
   gras_msg_handle(60);
   gras_msg_handle(60);
-  nb_hosts = xbt_dynar_length(hosts);
+  nb_peers = xbt_dynar_length(peers);
 
   INFO0("Let's go for the bw_matrix");
 
@@ -165,15 +165,15 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   begin=time(NULL);
   begin_simulated=gras_os_time();
 
-  bw=amok_bw_matrix(hosts,buf_size,exp_size,msg_size,min_duration);
+  bw=amok_bw_matrix(peers,buf_size,exp_size,msg_size,min_duration);
 
   INFO2("Did all BW tests in %ld sec (%.2f simulated(?) sec)",
 	  time(NULL)-begin,gras_os_time()-begin_simulated);
 
   /* Do the test with saturation */
-  bw_sat=xbt_new(double,nb_hosts*nb_hosts);
-  xbt_dynar_foreach(hosts,i,h1) {
-    xbt_dynar_foreach(hosts,j,h2) {
+  bw_sat=xbt_new(double,nb_peers*nb_peers);
+  xbt_dynar_foreach(peers,i,h1) {
+    xbt_dynar_foreach(peers,j,h2) {
       if (i==j) continue;
 
       TRY {
@@ -182,16 +182,16 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 			       0, /* Be nice, compute msg_size yourself */
 			       0  /* no timeout */);  
       } CATCH(e) {
-	RETHROW0("Cannot ask hosts to saturate the link: %s");
+	RETHROW0("Cannot ask peers to saturate the link: %s");
       }
       gras_os_sleep(5);
 
       begin=time(NULL);
       begin_simulated=gras_os_time();
-      xbt_dynar_foreach(hosts,k,h3) {
+      xbt_dynar_foreach(peers,k,h3) {
 	if (i==k || j==k) continue;
 
-	xbt_dynar_foreach(hosts,l,h4) {
+	xbt_dynar_foreach(peers,l,h4) {
 	  double ratio;
 	  if (i==l || j==l || k==l) continue;
 
@@ -199,13 +199,13 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 		h1->name,h2->name,h3->name,h4->name);
 	  amok_bw_request(h3->name,h3->port, h4->name,h4->port,
 			  buf_size,exp_size,msg_size,min_duration,
-			  NULL,&(bw_sat[k*nb_hosts + l]));
+			  NULL,&(bw_sat[k*nb_peers + l]));
 
-	  ratio=bw_sat[k*nb_hosts + l] / bw[k*nb_hosts + l];
+	  ratio=bw_sat[k*nb_peers + l] / bw[k*nb_peers + l];
 	  INFO8("SATURATED BW XP(%s %s // %s %s) => %f (%f vs %f)%s",
 		h1->name,h2->name,h3->name,h4->name,
 		ratio,
-		bw[k*nb_hosts + l] , bw_sat[k*nb_hosts + l],
+		bw[k*nb_peers + l] , bw_sat[k*nb_peers + l],
 		ratio < 0.7 ? " THERE IS SOME INTERFERENCE !!!": "");
 	}
       }

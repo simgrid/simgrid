@@ -10,7 +10,7 @@
 
 #include "gras.h"
 #include "xbt/matrix.h"
-#include "amok/hostmanagement.h"
+#include "amok/peermanagement.h"
 
 #define PROC_MATRIX_SIZE 3
 #define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
@@ -33,8 +33,8 @@ typedef struct s_result result_t;
 GRAS_DEFINE_TYPE(s_pmm_assignment,struct s_pmm_assignment {
   int linepos;
   int rowpos;
-  xbt_host_t line[NEIGHBOR_COUNT];
-  xbt_host_t row[NEIGHBOR_COUNT];
+  xbt_peer_t line[NEIGHBOR_COUNT];
+  xbt_peer_t row[NEIGHBOR_COUNT];
   xbt_matrix_t A GRAS_ANNOTE(subtype,double);
   xbt_matrix_t B GRAS_ANNOTE(subtype,double);
 });
@@ -86,8 +86,8 @@ int master (int argc,char *argv[]) {
 
   gras_socket_t from;
 
-  xbt_dynar_t hosts; /* group of slaves */
-  xbt_host_t grid[SLAVE_COUNT]; /* The slaves as an array */
+  xbt_dynar_t peers; /* group of slaves */
+  xbt_peer_t grid[SLAVE_COUNT]; /* The slaves as an array */
   gras_socket_t socket[SLAVE_COUNT]; /* sockets for brodcast to slaves */
 
   /* Init the GRAS's infrastructure */
@@ -102,16 +102,16 @@ int master (int argc,char *argv[]) {
 	
   /* Create the connexions */
   gras_socket_server(atoi(argv[1]));
-  hosts=amok_hm_group_new("pmm");
+  peers=amok_hm_group_new("pmm");
   INFO0("Wait for peers for 10 sec");
   gras_msg_handleall(10); /* friends, we're ready. Come and play */
-  INFO1("Got %ld pals",xbt_dynar_length(hosts));
+  INFO1("Got %ld pals",xbt_dynar_length(peers));
 
   for (i=0;
-       i<xbt_dynar_length(hosts) && i<SLAVE_COUNT;
+       i<xbt_dynar_length(peers) && i<SLAVE_COUNT;
        i++) {
 
-    xbt_dynar_get_cpy(hosts,i,&grid[i]);
+    xbt_dynar_get_cpy(peers,i,&grid[i]);
     socket[i]=gras_socket_client(grid[i]->name,grid[i]->port);
     INFO2("Connected to %s:%d.",grid[i]->name,grid[i]->port);
   }
@@ -120,10 +120,10 @@ int master (int argc,char *argv[]) {
 	      i,SLAVE_COUNT);
 
   /* Kill surnumerous slaves */
-  for (i=SLAVE_COUNT; i<xbt_dynar_length(hosts); ) {
-    xbt_host_t h;
+  for (i=SLAVE_COUNT; i<xbt_dynar_length(peers); ) {
+    xbt_peer_t h;
 
-    xbt_dynar_get_cpy(hosts,i,&h);
+    xbt_dynar_get_cpy(peers,i,&h);
     amok_hm_kill_hp(h->name,h->port);
     free(h);
   }
@@ -252,12 +252,12 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   for (i=0 ; i<PROC_MATRIX_SIZE-1 ; i++){
     socket_line[i]=gras_socket_client(assignment.line[i]->name,
 				      assignment.line[i]->port);
-    xbt_host_free(assignment.line[i]);
+    xbt_peer_free(assignment.line[i]);
   }
   for (i=0 ; i<PROC_MATRIX_SIZE-1 ; i++){
     socket_row[i]=gras_socket_client(assignment.row[i]->name,
 				     assignment.row[i]->port);
-    xbt_host_free(assignment.row[i]);    
+    xbt_peer_free(assignment.row[i]);    
   }
 
   for (step=0; step<PROC_MATRIX_SIZE;step++) {

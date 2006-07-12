@@ -1,14 +1,14 @@
 /* $Id$ */
 
-/* amok host management - servers main loop and remote host stopping        */
+/* amok peer management - servers main loop and remote peer stopping        */
 
 /* Copyright (c) 2006 Martin Quinson. All rights reserved.                  */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef AMOK_HOST_MANAGEMENT_H
-#define AMOK_HOST_MANAGEMENT_H
+#ifndef AMOK_PEER_MANAGEMENT_H
+#define AMOK_PEER_MANAGEMENT_H
 
 #include <gras.h>
 #include <amok/base.h>
@@ -71,4 +71,4 @@ void amok_hm_group_shutdown_remote(gras_socket_t master, const char *group_name)
 
 
 /** @} */
-#endif /* AMOK_HOST_MANAGEMENT_H */
+#endif /* AMOK_peer_MANAGEMENT_H */

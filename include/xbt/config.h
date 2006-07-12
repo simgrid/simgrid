@@ -107,8 +107,8 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name,
 			double val);
 void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, 
 			const char *val);
-void xbt_cfg_set_host  (xbt_cfg_t cfg, const char *name, 
-			const char *host,int port);
+void xbt_cfg_set_peer  (xbt_cfg_t cfg, const char *name, 
+			const char *peer,int port);
 
 /*
  Remove the provided value from the cell @name in @cfg.
@@ -119,8 +119,8 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name,
 		       double val);
 void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, 
 		       const char *val);
-void xbt_cfg_rm_host  (xbt_cfg_t cfg, const char *name, 
-		       const char *host,int port);
+void xbt_cfg_rm_peer  (xbt_cfg_t cfg, const char *name, 
+		       const char *peer,int port);
 			  	  
 /*
  Remove the value at position \e pos from the config \e cfg
@@ -143,7 +143,7 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
     xbt_cfgelm_int=0,  /**< int */
     xbt_cfgelm_double, /**< double */
     xbt_cfgelm_string, /**< char* */
-    xbt_cfgelm_host,   /**< both a char* (representing the hostname) and an integer (representing the port) */
+    xbt_cfgelm_peer,   /**< both a char* (representing the peername) and an integer (representing the port) */
     
     xbt_cfgelm_any,    /* not shown to users to prevent errors */
     xbt_cfgelm_type_count 
@@ -193,13 +193,13 @@ void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
   int         xbt_cfg_get_int   (xbt_cfg_t cfg, const char *name);
   double      xbt_cfg_get_double(xbt_cfg_t cfg, const char *name);
   char*       xbt_cfg_get_string(xbt_cfg_t cfg, const char *name);
-  void        xbt_cfg_get_host  (xbt_cfg_t cfg, const char *name, char  **host, int *port);
+  void        xbt_cfg_get_peer  (xbt_cfg_t cfg, const char *name, char  **peer, int *port);
   xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t cfg, const char *name);
 
   int    xbt_cfg_get_int_at   (xbt_cfg_t cfg, const char *name, int pos);
   double xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos);
   char*  xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos);
-  void   xbt_cfg_get_host_at  (xbt_cfg_t cfg, const char *name, int pos, char  **host, int *port);
+  void   xbt_cfg_get_peer_at  (xbt_cfg_t cfg, const char *name, int pos, char  **peer, int *port);
 
 /** @} */
 

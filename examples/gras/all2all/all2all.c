@@ -80,21 +80,21 @@ int sender (int argc,char *argv[]) {
   int i; /* iterator */
   char *data; /* data exchanged */
   int datasize; /* size of message */
-  xbt_host_t h; /* iterator */
+  xbt_peer_t h; /* iterator */
   
   gras_socket_t peer;  /* socket to node */
   
  
-  /* xbt_dynar for hosts */
-  xbt_dynar_t hosts = xbt_dynar_new(sizeof(xbt_host_t),&xbt_host_free_voidp);
+  /* xbt_dynar for peers */
+  xbt_dynar_t peers = xbt_dynar_new(sizeof(xbt_peer_t),&xbt_peer_free_voidp);
  
   /* Init the GRAS infrastructure and declare my globals */
   gras_init(&argc,argv);
  
   /* Get the node location from argc/argv */
   for (i=1; i<argc-1; i++){
-    xbt_host_t host = xbt_host_from_string(argv[i]);
-    xbt_dynar_push(hosts,&host);
+    xbt_peer_t peer = xbt_peer_from_string(argv[i]);
+    xbt_dynar_push(peers,&peer);
   }
   
   datasize=atoi(argv[argc-1]);
@@ -113,7 +113,7 @@ int sender (int argc,char *argv[]) {
   gras_os_sleep(1);
 
   /* write 'em */
-  xbt_dynar_foreach(hosts,i,h) {
+  xbt_dynar_foreach(peers,i,h) {
      
      peer = gras_socket_client(h->name,h->port);
      gras_msg_send(peer,gras_msgtype_by_name("data"),&data);
@@ -123,7 +123,7 @@ int sender (int argc,char *argv[]) {
   }
 
   /* Free the allocated resources, and shut GRAS down */
-  xbt_dynar_free(&hosts);
+  xbt_dynar_free(&peers);
      
   gras_exit();
   return 0;

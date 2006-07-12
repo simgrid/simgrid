@@ -25,7 +25,7 @@
 #include <xbt/swag.h>
 #include <xbt/heap.h>
 
-#include <xbt/host.h>
+#include <xbt/peer.h>
 #include <xbt/config.h>
 #include <xbt/cunit.h>
 

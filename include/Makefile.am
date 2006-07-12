@@ -12,7 +12,7 @@ nobase_include_HEADERS = \
 	xbt/fifo.h \
 	xbt/swag.h \
 	xbt/matrix.h \
-	xbt/host.h \
+	xbt/peer.h \
 	xbt/config.h \
 	xbt/cunit.h \
 	xbt/graphxml_parse.h \
@@ -33,7 +33,7 @@ nobase_include_HEADERS = \
 	gras/messages.h gras/timer.h \
 	\
 	amok/base.h \
-	amok/hostmanagement.h \
+	amok/peermanagement.h \
 	amok/bandwidth.h
 
 surf/surfxml.h:

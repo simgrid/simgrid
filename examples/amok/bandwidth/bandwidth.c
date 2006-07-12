@@ -10,7 +10,7 @@
 
 #include "gras.h"
 #include "amok/bandwidth.h"
-#include "amok/hostmanagement.h"
+#include "amok/peermanagement.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,"Messages specific to this example");
 
@@ -59,7 +59,7 @@ int maestro(int argc,char *argv[]) {
    
   gras_socket_t peer;
   gras_socket_t mysock;
-  xbt_host_t h1,h2;
+  xbt_peer_t h1,h2;
   xbt_dynar_t group;
 
   gras_init(&argc, argv);
@@ -82,8 +82,8 @@ int maestro(int argc,char *argv[]) {
 	      xbt_dynar_length(group));
      xbt_die(msg);
   }
-  h1 = *(xbt_host_t*) xbt_dynar_get_ptr(group, 0);
-  h2 = *(xbt_host_t*)xbt_dynar_get_ptr(group, 1);
+  h1 = *(xbt_peer_t*) xbt_dynar_get_ptr(group, 0);
+  h2 = *(xbt_peer_t*)xbt_dynar_get_ptr(group, 1);
 
   INFO2("Contact %s:%d",h1->name, h1->port);
   peer = gras_socket_client(h1->name, h1->port);
