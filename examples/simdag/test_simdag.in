@@ -5,4 +5,4 @@ else
   exenv=wine
 fi
     
-$exenv ./sd_test@EXEEXT@ @srcdir@/small_platform.xml $@
+$exenv ./sd_test@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml
