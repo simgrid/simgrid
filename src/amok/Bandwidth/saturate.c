@@ -9,6 +9,7 @@
 
 #include "amok/Bandwidth/bandwidth_private.h"
 #include "gras/Msg/msg_private.h" /* FIXME: This mucks with contextes to answer RPC directly */
+#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_bw_sat,amok_bw,"Everything concerning the SATuration part of the amok_bw module");
 
@@ -70,9 +71,10 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
 			    const char* to_name,unsigned int to_port,
 			    unsigned int msg_size, double duration) {
   gras_socket_t sock;
-
+  xbt_ex_t e;
   sat_request_t request = xbt_new(s_sat_request_t,1);
 
+  INFO2("from_name %s // to_name %s \n",from_name,to_name); 
   sock = gras_socket_client(from_name,from_port);
 
   request->peer.name = (char*)to_name;
@@ -81,9 +83,14 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
   request->duration=duration;
   request->msg_size=msg_size;
 
-
+ TRY{
   gras_msg_rpccall(sock,60,gras_msgtype_by_name("amok_bw_sat start"),&request, NULL);
 
+  }CATCH(e){
+    if (e.value==1)
+      THROW1(0,1,"%s",to_name);
+    THROW1(0,0,"%s",from_name);
+  }
   free(request);
   gras_socket_close(sock);
 }
@@ -92,16 +99,27 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
 static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
   sat_request_t request = *(sat_request_t*)payload;
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+ 
+  xbt_ex_t e;
 
   VERB4("Asked by %s:%d to start a saturation to %s:%d",
 	gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor),
 	request->peer.name,request->peer.port);
 	
   gras_msg_rpcreturn(60,ctx, NULL);
+
+TRY{
   amok_bw_saturate_begin(request->peer.name,request->peer.port,
+
 			 request->msg_size, request->duration,
 			 NULL,NULL);
+
+  }CATCH(e){
+     THROW1(0,1," can not connect %s ",((request)->peer.name));
+  }
+ 
   free(request->peer.name);
+
   free(request);
   return 1;
 }
@@ -124,7 +142,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
  
   xbt_ex_t e;
 
-  gras_socket_t peer_cmd = gras_socket_client(to_name, to_port);
+  gras_socket_t peer_cmd; //= gras_socket_client(to_name, to_port);
   gras_msg_cb_ctx_t ctx;
 
   gras_socket_t meas;
@@ -148,6 +166,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
   request->peer.name = NULL;
   request->peer.port = 0;
 
+
   /* Size autodetection on need */
   if (!msg_size) {
     double bw;
@@ -161,6 +180,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
   }
    
   /* Launch the saturation */
+
   ctx = gras_msg_rpc_async_call(peer_cmd, 60, 
 				gras_msgtype_by_name("amok_bw_sat begin"),
 						  &request);
@@ -169,6 +189,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
   meas=gras_socket_client_ext( to_name, request->peer.port,
 			       0 /*bufsize: auto*/,
 			       1 /*meas: true*/);
+
   free(request);
 
   gras_socket_close(peer_cmd);
