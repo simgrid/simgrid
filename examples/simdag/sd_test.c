@@ -144,6 +144,13 @@ int main(int argc, char **argv) {
 	      changed_tasks[2] == taskC &&
 	      changed_tasks[3] == NULL,
 	      "Unexpected simulation results");
+
+  for (i = 0; changed_tasks[i] != NULL; i++) {
+    INFO3("Task '%s' start time: %f, finish time: %f",
+	  SD_task_get_name(changed_tasks[i]),
+	  SD_task_get_start_time(changed_tasks[i]),
+	  SD_task_get_finish_time(changed_tasks[i]));
+  }
   
   xbt_free(changed_tasks);
 
