@@ -565,6 +565,41 @@ static void __SD_task_remove_dependencies(SD_task_t task) {
 }
 
 /**
+ * \brief Returns the start time of a task
+ *
+ * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
+ *
+ * \task a task
+ * \return the start time of this task
+ */
+double SD_task_get_start_time(SD_task_t task) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert1(task->surf_action != NULL, "Task '%s' is not started yet!", SD_task_get_name(task));
+
+  return surf_workstation_resource->common_public->action_get_start_time(task->surf_action);
+}
+
+/**
+ * \brief Returns the finish time of a task
+ *
+ * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
+ * If the state is not completed yet, the returned value is an
+ * estimation of the task finish time. This value can fluctuate 
+ * until the task is completed.
+ *
+ * \task a task
+ * \return the start time of this task
+ */
+double SD_task_get_finish_time(SD_task_t task) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert1(task->surf_action != NULL, "Task '%s' is not started yet!", SD_task_get_name(task));
+
+  return surf_workstation_resource->common_public->action_get_finish_time(task->surf_action);  
+}
+
+/**
  * \brief Destroys a task.
  *
  * The user data (if any) should have been destroyed first.

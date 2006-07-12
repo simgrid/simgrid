@@ -97,6 +97,8 @@ void              SD_task_schedule(SD_task_t task, int workstation_nb,
 				   const SD_workstation_t *workstation_list, const double *computation_amount,
 				   const double *communication_amount, double rate);
 void              SD_task_unschedule(SD_task_t task);
+double            SD_task_get_start_time(SD_task_t task);
+double            SD_task_get_finish_time(SD_task_t task);
 void              SD_task_destroy(SD_task_t task);
 /** @} */
 
