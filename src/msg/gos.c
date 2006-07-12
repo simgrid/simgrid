@@ -438,8 +438,8 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
   local_host = ((simdata_process_t) process->simdata)->host;
   remote_host = dest;
 
-  DEBUG4("Trying to send a task (%g Mb) from %s to %s on channel %d", 
-	 task->simdata->message_size,local_host->name, remote_host->name, channel);
+  DEBUG4("Trying to send a task (%g kB) from %s to %s on channel %d", 
+	 task->simdata->message_size/1000,local_host->name, remote_host->name, channel);
 
   xbt_fifo_push(((simdata_host_t) remote_host->simdata)->
 		mbox[channel], task);
