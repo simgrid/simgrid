@@ -114,6 +114,14 @@ void amok_bw_bw_leave() {
  * Conduct a bandwidth test from the local process to the given peer.
  * This call is blocking until the end of the experiment.
  *
+ * If the asked experiment lasts less than \a min_duration, another one will be
+ * launched. Sizes (both \a exp_size and \a msg_size) will be multiplicated by
+ * (\a min_duration / measured_duration) (plus 10% to be sure to eventually
+ * reach the \a min_duration). In that case, the reported bandwidth and
+ * duration are the ones of the last run. \a msg_size cannot go over 128Mb
+ * because we need to malloc a block of this size in RL to conduct the
+ * experiment, and we still don't want to visit the swap.
+ *
  * Results are reported in last args, and sizes are in byte.
  */
 void amok_bw_test(gras_socket_t peer,
@@ -176,12 +184,12 @@ void amok_bw_test(gras_socket_t peer,
       double meas_duration=*sec;
       request->exp_size = request->exp_size * (min_duration / meas_duration) * 1.1;
       request->msg_size = request->msg_size * (min_duration / meas_duration) * 1.1;
+      if (request->msg_size > 128*1024*1024)
+	request->msg_size = 128*1024*1024;
 
-
-      DEBUG5("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld msg_size=%ld (got %fkb/s)",
+      VERB5("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld msg_size=%ld (got %fkb/s)",
 	     meas_duration,min_duration,request->exp_size,request->msg_size,((double)exp_size) / *sec/1024);
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
-      DEBUG0("Peer is ready for another round of fun");
     }
 
     *sec=gras_os_time();
@@ -301,10 +309,8 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
     void *payload;
     int msggot;
     TRY {
-      DEBUG0("Recv / Send the experiment");
       gras_socket_meas_recv(measIn, 120,request->exp_size,request->msg_size);
       gras_socket_meas_send(measOut,120,1,1);
-      DEBUG0("ACK sent");
     } CATCH(e) {
       gras_socket_close(measMasterIn);
       gras_socket_close(measIn);
