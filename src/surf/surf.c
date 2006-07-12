@@ -317,11 +317,11 @@ double surf_solve(void)
 
   DEBUG1("Duration set to %f", min);
 
+  NOW = NOW + min;
+
   xbt_dynar_foreach(resource_list, i, resource) {
     resource->common_private->update_actions_state(NOW, min);
   }
-
-  NOW = NOW + min;
 
   return min;
 }
