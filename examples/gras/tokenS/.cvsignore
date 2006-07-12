@@ -1,8 +1,0 @@
-.deps .libs Makefile Makefile.in _*.c tokenS_node tokenS_simulator
-test_sg
-test_rl
-tokenS.Makefile.am
-tokenS.Makefile.local
-tokenS.Makefile.remote
-tokenS.deploy.sh
-tokenS.trace
