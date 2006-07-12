@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   }
 
   /* creation of the environment */
-  const char * platform_file = argv[0];
+  const char * platform_file = argv[1];
   SD_create_environment(platform_file);
 
   /* test the estimation functions */
