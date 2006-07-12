@@ -156,7 +156,8 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 		 0,512*1024, 512*1024, /* 512k as first guess */
 		 1, /* at least one sec */
 		 &sec, &bw);
-    request->msg_size = (int)bw;
+    msg_size = request->msg_size = (int)bw;
+    DEBUG1("Saturate with packets of %d bytes",request->msg_size);
   }
    
   /* Launch the saturation */
@@ -198,7 +199,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 
     /* Check whether the experiment has to be terminated by now */
     elapsed=gras_os_time()-start;
-    DEBUG2("elapsed %f duration %f",elapsed, duration);
+    DEBUG3("elapsed %f duration %f (msg_size=%d)",elapsed, duration,msg_size);
 
   } while (saturate_further && (duration==0 || elapsed < duration));
 
