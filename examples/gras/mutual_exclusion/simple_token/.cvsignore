@@ -1,8 +1,8 @@
-.deps .libs Makefile Makefile.in _*.c tokenS_node tokenS_simulator
+.deps .libs Makefile Makefile.in _*.c simple_token_node simple_token_simulator
 test_sg
 test_rl
-tokenS.Makefile.am
-tokenS.Makefile.local
-tokenS.Makefile.remote
-tokenS.deploy.sh
-tokenS.trace
+simple_token.Makefile.am
+simple_token.Makefile.local
+simple_token.Makefile.remote
+simple_token.deploy.sh
+simple_token.trace
