@@ -344,7 +344,7 @@ static surf_action_t execute_parallel_task (int workstation_nb,
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
   action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = -1.0;
+  action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
   action->generic_action.resource_type =
       (surf_resource_t) surf_workstation_resource;

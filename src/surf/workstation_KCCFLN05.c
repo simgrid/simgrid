@@ -489,7 +489,7 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   action->generic_action.cost = size;
   action->generic_action.remains = size;
   action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = -1.0;
+  action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
   action->src = src;
   action->dst = dst;
