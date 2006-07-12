@@ -5,7 +5,7 @@ EXTRA_DIST= small_platform.xml
 CLEANFILES=sd_test.trace
 
 TESTS=test_simdag
-check_PROGRAMS=sd_test small_platform.xml
+check_PROGRAMS=sd_test
 
 sd_test_SOURCES= sd_test.c
 sd_test_LDADD=	$(top_builddir)/src/libsimgrid.la
