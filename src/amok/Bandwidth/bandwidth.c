@@ -375,7 +375,6 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   /* The request */
   bw_request_t request;
   bw_res_t result;
-xbt_ex_t e;
   request=xbt_new0(s_bw_request_t,1);
   request->buf_size=buf_size;
   request->exp_size=exp_size;
@@ -392,12 +391,8 @@ xbt_ex_t e;
     
  
   DEBUG4("Ask for a BW test between %s:%d and %s:%d",	from_name,from_port, to_name,to_port);
- TRY{
   gras_msg_rpccall(sock,20*60,gras_msgtype_by_name("BW request"), &request, &result);
-   }CATCH(e){
-     if (e.value==1)  THROW1(0,1,"%s",to_name);
-    THROW1(0,0,"%s",from_name);
-  }
+
   if (sec)
     *sec=result->sec;
   if (bw)
@@ -419,7 +414,6 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   bw_request_t request = *(bw_request_t*)payload;
   bw_res_t result = xbt_new0(s_bw_res_t,1);
   gras_socket_t peer,asker;
-  xbt_ex_t e;
 
   asker=gras_msg_cb_ctx_from(ctx);
   VERB4("Asked by %s:%d to conduct a bw XP with %s:%d",	
@@ -427,15 +421,13 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 
 	request->peer.name,request->peer.port);
   peer = gras_socket_client(request->peer.name,request->peer.port);
-TRY{
   amok_bw_test(peer,
 	       request->buf_size,request->exp_size,request->msg_size,
 	       request->min_duration,
 	       &(result->sec),&(result->bw));
  
   gras_msg_rpcreturn(240,ctx,&result);
- }CATCH(e){THROW1(0,1,"%s",request->peer.name);
-  }
+
   gras_os_sleep(1);
   gras_socket_close(peer); /* FIXME: it should be blocking in RL until everything is sent */
   free(request->peer.name);
