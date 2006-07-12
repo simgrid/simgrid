@@ -22,7 +22,7 @@ void amok_bw_sat_init(void) {
   /* Build the saturation datatype descriptions */ 
   
   sat_request_desc = gras_datadesc_struct("s_sat_request_desc_t");
-  gras_datadesc_struct_append(sat_request_desc,"host",gras_datadesc_by_name("s_xbt_host_t"));
+  gras_datadesc_struct_append(sat_request_desc,"peer",gras_datadesc_by_name("s_xbt_peer_t"));
   gras_datadesc_struct_append(sat_request_desc,"msg_size",gras_datadesc_by_name("unsigned int"));
   gras_datadesc_struct_append(sat_request_desc,"duration",gras_datadesc_by_name("unsigned int"));
   gras_datadesc_struct_close(sat_request_desc);
@@ -54,11 +54,11 @@ void amok_bw_sat_leave(void) {
 /**
  * @brief Ask 'from_name:from_port' to stop saturating going to to_name:to_name.
  *
- * @param from_name: Name of the host we are asking to do a experiment with (to_name:to_port)
+ * @param from_name: Name of the peer we are asking to do a experiment with (to_name:to_port)
  * @param from_port: port on which the process we are asking for an experiment is listening
  * (for message, do not give a raw socket here. The needed raw socket will be negociated 
  * between the peers)
- * @param to_name: Name of the host with which we should conduct the experiment
+ * @param to_name: Name of the peer with which we should conduct the experiment
  * @param to_port: port on which the peer process is listening for message
  * @param msg_size: Size of each message sent.
  * @param duration: How long in maximum should be the saturation.
@@ -75,8 +75,8 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
 
   sock = gras_socket_client(from_name,from_port);
 
-  request->host.name = (char*)to_name;
-  request->host.port = to_port;
+  request->peer.name = (char*)to_name;
+  request->peer.port = to_port;
   
   request->duration=duration;
   request->msg_size=msg_size;
@@ -95,13 +95,13 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
 
   VERB4("Asked by %s:%d to start a saturation to %s:%d",
 	gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor),
-	request->host.name,request->host.port);
+	request->peer.name,request->peer.port);
 	
   gras_msg_rpcreturn(60,ctx, NULL);
-  amok_bw_saturate_begin(request->host.name,request->host.port,
+  amok_bw_saturate_begin(request->peer.name,request->peer.port,
 			 request->msg_size, request->duration,
 			 NULL,NULL);
-  free(request->host.name);
+  free(request->peer.name);
   free(request);
   return 1;
 }
@@ -110,7 +110,7 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
  * @brief Start saturating between the current process and the designated peer
  *
  * Note that the only way to break this function before the end of the timeout
- * is to have a remote host calling amok_bw_saturate_stop to this process.
+ * is to have a remote peer calling amok_bw_saturate_stop to this process.
  *
  * If duration=0, the experiment will never timeout (you then have to manually
  * stop it).
@@ -145,8 +145,8 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 
   request->msg_size = msg_size;
   request->duration = duration;
-  request->host.name = NULL;
-  request->host.port = 0;
+  request->peer.name = NULL;
+  request->peer.port = 0;
 
   /* Size autodetection on need */
   if (!msg_size) {
@@ -166,7 +166,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 						  &request);
   free(request);
   gras_msg_rpc_async_wait(ctx,&request);
-  meas=gras_socket_client_ext( to_name, request->host.port,
+  meas=gras_socket_client_ext( to_name, request->peer.port,
 			       0 /*bufsize: auto*/,
 			       1 /*meas: true*/);
   free(request);
@@ -260,7 +260,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
     if (measMaster == NULL) 
       port++; /* prepare for a new loop */
   }
-  answer->host.port=port;
+  answer->peer.port=port;
 
   gras_msg_rpcreturn(60, ctx, &answer);
   free(answer);
@@ -296,7 +296,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
 
 /**
  * @brief Ask 'from_name:from_port' to stop any saturation experiments
- * @param from_name: Name of the host we are asking to do a experiment with (to_name:to_port)
+ * @param from_name: Name of the peer we are asking to do a experiment with (to_name:to_port)
  * @param from_port: port on which the process we are asking for an experiment is listening
  * @param time: the duration of the experiment
  * @param bw: the achieved bandwidth

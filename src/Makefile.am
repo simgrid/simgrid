@@ -123,7 +123,7 @@ COMMON_SRC=\
   xbt/graph.c                                                                \
   xbt/set.c                                                                  \
   xbt/xbt_matrix.c                                                           \
-  xbt/xbt_host.c                                                             \
+  xbt/xbt_peer.c                                                             \
   xbt/module.c                                                               \
   xbt/config.c                                                               \
   xbt/cunit.c                                                                \
@@ -184,7 +184,7 @@ SG_SRC=  \
 AMOK_SRC= \
   amok/base.c \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
-  amok/HostManagement/hostmanagement.c
+  amok/PeerManagement/peermanagement.c
 
 ###
 ### Testing infrastructure

@@ -57,7 +57,7 @@ SimGrid (3.1) unstable; urgency=low
       impossible to mesure the latency this way (needs one byte-long tests)
     WARNING: this changes the amok_bw_* function semantic. [MQ]
     - Implements the link saturation stuff. [MQ]
-  * Host management module: 
+  * Peer management module: 
     New! module factorizing code that we wrote over and over [MQ].
       
   XBT:
@@ -79,6 +79,9 @@ SimGrid (3.1) unstable; urgency=low
     stdio may need to include it by themselves. [AL]
   * Fixed xbt/log.h. A missing SG_BEGIN_DECL prevented compilation with
     g++. [AL]
+  * Renamed xbt_host_t into xbt_peer_t since it betterly describes what I
+    meant. This breaks the API of AMOK and of xbt/config. Sorry about this,
+    but I guess that almost nobody used those parts.
 
  --
 

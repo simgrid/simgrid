@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* amok host management - servers main loop and remote host stopping        */
+/* amok peer management - servers main loop and remote peer stopping        */
 
 /* Copyright (c) 2006 Martin Quinson. All rights reserved.                  */
 
@@ -8,11 +8,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
-#include "xbt/host.h"
-#include "amok/hostmanagement.h"
+#include "xbt/peer.h"
+#include "amok/peermanagement.h"
 #include "gras/Virtu/virtu_interface.h" /* libdata */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_hm,amok,"Host management");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_hm,amok,"peer management");
 
 
 /* libdata management */
@@ -74,7 +74,7 @@ static int amok_hm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
   xbt_dynar_t group = xbt_dict_get(g->groups, name);
   
   gras_socket_t exp = gras_msg_cb_ctx_from(ctx);
-  xbt_host_t dude = xbt_host_new(gras_socket_peer_name(exp),
+  xbt_peer_t dude = xbt_peer_new(gras_socket_peer_name(exp),
 				 gras_socket_peer_port(exp));
 
   VERB2("Contacted by %s:%d",dude->name,dude->port);
@@ -90,15 +90,15 @@ static int amok_hm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
   xbt_dynar_t group = xbt_dict_get(g->groups, name);
   
   gras_socket_t exp = gras_msg_cb_ctx_from(ctx);
-  xbt_host_t dude = xbt_host_new(gras_socket_peer_name(exp),
+  xbt_peer_t dude = xbt_peer_new(gras_socket_peer_name(exp),
 				 gras_socket_peer_port(exp));
 
   int cpt;
-  xbt_host_t host_it;
+  xbt_peer_t peer_it;
 
-  xbt_dynar_foreach(group, cpt, host_it) {
-    if (!strcmp(host_it->name, dude->name) && 
-	host_it->port == dude->port) {
+  xbt_dynar_foreach(group, cpt, peer_it) {
+    if (!strcmp(peer_it->name, dude->name) && 
+	peer_it->port == dude->port) {
       xbt_dynar_cursor_rm (group,&cpt);
       goto end;
     }
@@ -123,7 +123,7 @@ static int amok_hm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
 /* Initialization stuff */
 static short amok_hm_used = 0;
 
-/** \brief Initialize the host management module. Every process must run it before use */
+/** \brief Initialize the peer management module. Every process must run it before use */
 void amok_hm_init() {
   /* pure INIT part */
   if (! amok_hm_used) {
@@ -172,7 +172,7 @@ void amok_hm_init() {
 		   &amok_hm_cb_shutdown);
 }
 
-/** \brief Finalize the host management module. Every process should run it after use */
+/** \brief Finalize the peer management module. Every process should run it after use */
 void amok_hm_exit() {
   /* pure EXIT part */
   amok_hm_used--;
@@ -204,7 +204,7 @@ void amok_hm_mainloop(double timeOut) {
   }
 }
 
-/** \brief kill a buddy identified by its hostname and port */
+/** \brief kill a buddy identified by its peername and port */
 void amok_hm_kill_hp(char *name,int port) {
   gras_socket_t sock=gras_socket_client(name,port);
   amok_hm_kill(sock);
@@ -222,14 +222,14 @@ void amok_hm_kill_sync(gras_socket_t buddy) {
 }
 
 
-/** \brief create a new hostmanagement group located on local host 
+/** \brief create a new peermanagement group located on local peer 
  *
- * The dynar elements are of type xbt_host_t
+ * The dynar elements are of type xbt_peer_t
  */
 xbt_dynar_t amok_hm_group_new(const char *group_name) {
   amok_hm_libdata_t g;
-  xbt_dynar_t res = xbt_dynar_new(sizeof(xbt_host_t),
-				  xbt_host_free_voidp);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(xbt_peer_t),
+				  xbt_peer_free_voidp);
 
   xbt_assert0(amok_hm_libdata_id != -1,"Run amok_hm_init first!");
   g=gras_libdata_by_id(amok_hm_libdata_id);
@@ -248,7 +248,7 @@ xbt_dynar_t amok_hm_group_get(gras_socket_t master, const char *group_name) {
   return res;
 }
 
-/** \brief add current host to the given remote group */
+/** \brief add current peer to the given remote group */
 void        amok_hm_group_join(gras_socket_t master, const char *group_name) {
   VERB3("Join group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
@@ -257,7 +257,7 @@ void        amok_hm_group_join(gras_socket_t master, const char *group_name) {
   VERB3("Joined group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
 }
-/** \brief remove current host from the given remote group if found
+/** \brief remove current peer from the given remote group if found
  *
  * If not found, call is ignored 
  */
@@ -274,10 +274,10 @@ void amok_hm_group_shutdown(const char *group_name) {
   xbt_dynar_t group = xbt_dict_get(g->groups, group_name);
   
   int cpt;
-  xbt_host_t host_it;
+  xbt_peer_t peer_it;
 
-  xbt_dynar_foreach(group, cpt, host_it) {
-    amok_hm_kill_hp(host_it->name, host_it->port);
+  xbt_dynar_foreach(group, cpt, peer_it) {
+    amok_hm_kill_hp(peer_it->name, peer_it->port);
   }
 
   xbt_dynar_free(&group);

@@ -136,13 +136,13 @@ gras_datadesc_init(void) {
 
   gras_datadesc_struct_close(ddt);
 
-  /* specific datatype: xbt_host_t */
-  ddt = gras_datadesc_struct("s_xbt_host_t");
+  /* specific datatype: xbt_peer_t */
+  ddt = gras_datadesc_struct("s_xbt_peer_t");
   gras_datadesc_struct_append(ddt,"name",gras_datadesc_by_name("string"));
   gras_datadesc_struct_append(ddt,"port",gras_datadesc_by_name("int"));
   gras_datadesc_struct_close(ddt);
 
-  ddt = gras_datadesc_ref("xbt_host_t",ddt);
+  ddt = gras_datadesc_ref("xbt_peer_t",ddt);
 
   /* Dict containing the constant value (for the parsing macro) */
   gras_dd_constants = xbt_dict_new();

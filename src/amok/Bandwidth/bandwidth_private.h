@@ -29,11 +29,11 @@ void amok_bw_sat_leave(void);/* Each process must run it */
  ***/
 
 /* Request for a BW experiment.
- * If host==NULL, it should be between the sender and the receiver.
- * If not, it should be between between the receiver and host (3-tiers).
+ * If peer==NULL, it should be between the sender and the receiver.
+ * If not, it should be between between the receiver and peer (3-tiers).
  */
 typedef struct {
-  s_xbt_host_t host; /* host+raw socket to use */
+  s_xbt_peer_t peer; /* peer+raw socket to use */
   unsigned long int buf_size;
   unsigned long int exp_size;
   unsigned long int msg_size;
@@ -52,10 +52,10 @@ typedef struct {
  * Saturation stuff
  ***/
 
-/* Description of a saturation experiment (payload asking some host to collaborate for that)
+/* Description of a saturation experiment (payload asking some peer to collaborate for that)
  */
 typedef struct {
-  s_xbt_host_t host; /* host+raw socket to use */
+  s_xbt_peer_t peer; /* peer+raw socket to use */
   unsigned int msg_size;
   unsigned int duration;
 } s_sat_request_t,*sat_request_t;

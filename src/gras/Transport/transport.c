@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
-#include "xbt/host.h"
+#include "xbt/peer.h"
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 
@@ -330,9 +330,9 @@ gras_socket_client(const char *host,
 /** @brief Opens a client socket to a remote host specified as '\a host:\a port' */
 gras_socket_t
 gras_socket_client_from_string(const char *host) {
-   xbt_host_t h = xbt_host_from_string(host);
-   gras_socket_t res = gras_socket_client_ext(h->name,h->port,0,0);
-   xbt_host_free(h);
+   xbt_peer_t p = xbt_peer_from_string(host);
+   gras_socket_t res = gras_socket_client_ext(p->name,p->port,0,0);
+   xbt_peer_free(p);
    return res;
 }
 
