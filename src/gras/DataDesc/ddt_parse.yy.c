@@ -324,7 +324,7 @@ void gras_ddt_parse_free (void *  );
 
 /* Begin user sect3 */
 
-#define gras_ddt_parse_wrap(n) 1
+#define gras_ddt_parse_wrap() 1
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -1168,7 +1168,7 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
