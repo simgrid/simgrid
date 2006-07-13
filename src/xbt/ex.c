@@ -72,7 +72,11 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
   /* size (in char) of pointers on this arch */
   int addr_len=0;
-  
+
+  /* Some arches only have stubs of backtrace, no implementation (hppa comes to mind) */
+  if (!e->used)
+     return;
+   
   /* build the commandline */
   curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,xbt_binary_name);
   for (i=0; i<e->used;i++) {
