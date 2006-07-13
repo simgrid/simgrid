@@ -579,7 +579,7 @@ static void __SD_task_remove_dependencies(SD_task_t task) {
  *
  * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
  *
- * \task a task
+ * \param task: a task
  * \return the start time of this task
  */
 double SD_task_get_start_time(SD_task_t task) {
@@ -599,7 +599,7 @@ double SD_task_get_start_time(SD_task_t task) {
  * estimation of the task finish time. This value can fluctuate 
  * until the task is completed.
  *
- * \task a task
+ * \param task: a task
  * \return the start time of this task
  */
 double SD_task_get_finish_time(SD_task_t task) {
