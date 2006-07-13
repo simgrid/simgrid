@@ -46,7 +46,9 @@ SimGrid (3.1) unstable; urgency=low
           gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
       and you're set.
   * New! function: gras_msg_handleall to deal with all messages arriving
-      within a given period.      
+      within a given period.
+  * New! function: gras_socket_server_range to get a server socket in a
+    range of port numbers (ease to avoid port number conflicts) [MQ]
   * New! gras processes display their backtrace when they get a SIGUSR1
       or when Ctrl-C is pressed. Use Ctrl-C Ctrl-C to exit.
       Sweet to debug RL processes [MQ]
