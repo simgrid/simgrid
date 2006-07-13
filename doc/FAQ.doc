@@ -492,8 +492,9 @@ speed provided by SURF.
 Those two things are working, but we want to make everything as clean as
 possible before releasing SimGrid v.3.
 
-So what about those nice DAGs we used to have in SimGrid v.1.? They're not
-anymore in SimGrid v.3. Let me recall you the way SimGrid 3 is organized:
+So what about those nice DAGs we used to have in SimGrid v.1.? They're
+not anymore in SimGrid v.3. At least not in their original form... Let
+me recall you the way SimGrid 3 is organized:
 
 \verbatim
 ________________
@@ -507,15 +508,17 @@ ________________
 ----------------
 \endverbatim
 
-XBT is our tool box and now, you should have an idea of what the other ones
-are. As you can see, the primitive SG is not here anymore. However it could
-still be brought back if people really need it. Here is how it would fit.
+XBT is our tool box and now, you should have an idea of what the other
+ones are. As you can see, the primitive SG is not here
+anymore. However we have written a brand new and cleaner API for this
+purpose: \ref SD_API. It is built directly on top of SURF and provides
+an API rather close to the old SG:
 
 \verbatim
 ______________________
 |    User code       |
 |____________________|
-| | MSG | GRAS | SG  |
+| | MSG | GRAS | SD  |
 | -------------------|
 | |      SURF        |
 | -------------------|
@@ -523,15 +526,10 @@ ______________________
 ----------------------
 \endverbatim
 
-Re-implementing SG on top of SURF is really straightforward (it only
-requires a little bit of time that I really don't have right now)
-since the only thing that lacks to SURF is the DAG part. But adding it
-to SURF would slow it down and therefore slow MSG and GRAS which is
-not a good thing.  However it is really not on the top of our TODO
-list because we have to work on GRAS, and its MPI counterpart, and a
-parallel task model, and ... Anyway, we finally have migrated our CVS
-to gforge so people that are interested by helping on this part will
-have the possibility to do it.
+The nice thing is that, as it is writen on top of SURF, it seamlessly
+support DAG of parallel tasks as well as complex communications
+patterns. Some old codes using SG are currently under rewrite using
+\ref SD_API to check that all needful functions are provided.
 
 \subsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
 
@@ -568,52 +566,6 @@ prevents you from having "realistic" platform modeling), then you should
 keep using the 2.18.5 versions until somebody has ported SG on top of SURF.
 Note however that SURF will be slower than the old SG to handle traces with
 a lots of variations (there is no trace integration anymore).
-
-\subsection faq_SG_future Will SG come back in the maintained branch one day?
-
-Sure. In fact, we already have thought about a new and cleaner API:
-\verbatim
-void*       SG_link_get_data(SG_link_t link);
-void        SG_link_set_data(SG_link_t link, void *data);
-const char* SG_link_get_name(SG_link_t link);
-double      SG_link_get_capacity(SG_link_t link);
-double      SG_link_get_current_bandwidth(SG_link_t link);
-double      SG_link_get_current_latency(SG_link_t link);
-
-SG_workstation_t  SG_workstation_get_by_name(const char *name);
-SG_workstation_t* SG_workstation_get_list(void);
-int               SG_workstation_get_number(void);
-void              SG_workstation_set_data(SG_workstation_t workstation, void *data);
-void *            SG_workstation_get_data(SG_workstation_t workstation);
-const char*       SG_workstation_get_name(SG_workstation_t workstation);
-SG_link_t*        SG_workstation_route_get_list(SG_workstation_t src, SG_workstation_t dst);
-int               SG_workstation_route_get_size(SG_workstation_t src, SG_workstation_t dst);
-double            SG_workstation_get_power(SG_workstation_t workstation);
-double            SG_workstation_get_available_power(SG_workstation_t workstation);
-
-SG_task_t         SG_task_create(const char *name, void *data, double amount);
-int               SG_task_schedule(SG_task_t task, int workstation_nb,
-                                    SG_workstation_t **workstation_list, double *computation_amount,
-                                    double *communication_amount, double rate);
-
-void*             SG_task_get_data(SG_task_t task);
-void              SG_task_set_data(SG_task_t task, void *data);
-const char*       SG_task_get_name(SG_task_t task);
-double            SG_task_get_amount(SG_task_t task);
-double            SG_task_get_remaining_amount(SG_task_t task);
-void              SG_task_dependency_add(const char *name, void *data, SG_task_t src, SG_task_t dst);
-void              SG_task_dependency_remove(SG_task_t src, SG_task_t dst); 
-e_SG_task_state_t SG_task_state_get(SG_task_t task); /* e_SG_task_state_t can be either SG_SCHEDULED, SG_RUNNING, SG_DONE, or SG_FAILED */
-void              SG_task_watch(SG_task_t task, e_SG_task_state_t state); /* SG_simulate will stop as soon as the state of this task is the one given in argument. 
-                                                                             Watch-point is then automatically removed */
-void              SG_task_unwatch(SG_task_t task, e_SG_task_state_t state);
-
-void              SG_task_unschedule(SG_task_t task); /* change state and rerun.. */
-
-SG_task_t        *SG_simulate(double how_long); /* returns a NULL-terminated array of SG_task_t whose state has changed */
-\endverbatim
-
-We're just looking for somebody to implement it... :)
 
 \section faq_dynamic Dynamic resources and platform building
 
@@ -790,7 +742,8 @@ machine:
    it?\n
    This limitation is the reason why we insist on using this piece of ...
    software even if it's so troublesome.\n
-   <b>=> use --with-pthread on AMD64 architecture</b>
+   <b>=> use --with-pthread on AMD64 architecture that do not have an 
+   ultra-recent libc.</b>
    
  - <b>There is a bug in SimGrid we aren't aware of</b>.\n
    If none of the above apply, please drop us a mail on the mailing list so
