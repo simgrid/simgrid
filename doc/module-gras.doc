@@ -451,7 +451,7 @@
    \section GRAS_ex_stoken_deploy 1) Deployment file
 
    Here is the deployment file:
-   \include examples/gras/tokenS/tokenS_deployment.xml
+   \include examples/gras/mutual_exclusion/simple_token/simple_token.xml
    
    The neighbour of each node is given at startup as command line argument.
    Moreover, one of the nodes is instructed by a specific argument (the one
@@ -465,7 +465,7 @@
    message to the next node. That is why we have to store all variable in a
    global, as explained in the \ref GRAS_globals section. 
 
-   \dontinclude examples/gras/tokenS/tokenS.c
+   \dontinclude examples/gras/mutual_exclusion/simple_token/simple_token.c
    \skip typedef
    \until }
    
