@@ -534,12 +534,11 @@ patterns. Some old codes using SG are currently under rewrite using
 \subsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
 
 Distributed is somehow "contagious". If you start making distributed
-decisions, there is no way to handle DAGs directly anymore (unless I am
-missing something). You have to encode your DAGs in term of communicating
-process to make the whole scheduling process distributed. Believe me, it is
-worth the effort since you'll then be able to try your algorithms in a very
-wide variety of conditions. Here is an example of how you could do that.
-Assume T1 has to be done before T2.
+decisions, there is no way to handle DAGs directly anymore (unless I
+am missing something). You have to encode your DAGs in term of
+communicating process to make the whole scheduling process
+distributed. Here is an example of how you could do that. Assume T1
+has to be done before T2.
 
 \verbatim
  int your_agent(int argc, char *argv[] {
@@ -561,11 +560,8 @@ Assume T1 has to be done before T2.
 \endverbatim
  
 If you decide that the distributed part is not that much important and that
-DAG is really the level of abstraction you want to work with (but it
-prevents you from having "realistic" platform modeling), then you should
-keep using the 2.18.5 versions until somebody has ported SG on top of SURF.
-Note however that SURF will be slower than the old SG to handle traces with
-a lots of variations (there is no trace integration anymore).
+DAG is really the level of abstraction you want to work with, then you should
+give a try to \ref SD_API.
 
 \section faq_dynamic Dynamic resources and platform building
 
