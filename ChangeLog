@@ -92,7 +92,7 @@ SimGrid (3.1) unstable; urgency=low
     meant. This breaks the API of AMOK and of xbt/config. Sorry about this,
     but I guess that almost nobody used those parts. [MQ]
 
- --
+ -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Fri, 14 Jul 2006 01:32:27 +0200
 
 SimGrid (3.0.1) unstable; urgency=low
 
