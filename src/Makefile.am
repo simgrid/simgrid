@@ -260,15 +260,15 @@ xbt/graphxml.c: xbt/graphxml.l
 	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pxbt_graph_parse_ $^
 
 if HAVE_FLEXML
-surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
-	set -e; mkdir -p surf; cd surf; flexml -b 1000000 -P surfxml -S -L ../$(top_srcdir)/src/surf/surfxml.dtd
-$(top_srcdir)/include/surf/surfxml.h: $(top_srcdir)/src/surf/surfxml.dtd
-	set -e;cd $(top_srcdir)/include/surf; flexml -P surfxml -H -L $(top_srcdir)/src/surf/surfxml.dtd
+surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
+	set -e; mkdir -p surf; flexml -b 1000000 -P surfxml -S $@ -L $^
+$(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
+	set -e;                flexml            -P surfxml -H $@ -L $^
 	
-xbt/graphxml.l: $(top_srcdir)/src/xbt/graphxml.dtd
-	set -e; cd xbt; flexml -b 1000000 -P graphxml -S -L $(top_srcdir)/src/xbt/graphxml.dtd
-$(top_srcdir)/include/xbt/graphxml.h: $(top_srcdir)/src/xbt/graphxml.dtd
-	set -e;cd $(top_srcdir)/include/xbt; flexml -P graphxml -H -L ../$(top_srcdir)/src/xbt/graphxml.dtd
+xbt/graphxml.l: $(srcdir)/xbt/graphxml.dtd
+	set -e; flexml -b 1000000 -P graphxml -S $@ -L $^
+$(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
+	set -e; flexml -P graphxml -H $@ -L $^
 else
 
 $(top_srcdir)/include/surf/surfxml.h surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
