@@ -1,5 +1,5 @@
 /* XML processor/application API for ../../src/xbt/graphxml.dtd.
- * Generated 2006/04/22 01:36:54.
+ * Generated 2006/07/13 17:15:43.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
