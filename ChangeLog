@@ -5,6 +5,13 @@ SimGrid (3.1) unstable; urgency=low
     There was a stack corruption somewhere, visible only when optimizing
     with these versions [Vince]
 
+  SIMDAG:
+  * This is a NEW module! SimDAG (SD for short) is a revival of the old SG
+    module that enabled to play with Directed Acyclic Graphs. It is built
+    directly on top of SURF and provides an API rather close to the old
+    SG. Some old codes using SG are currently under rewrite to check that
+    all needful functions are provided.   [Christophe Thiery]  
+	
   SURF:
   * complete rewrote of the KCCFLN05 workstation model. It is now an
     extension of the classical CLM03 model that gracefully handles
@@ -83,7 +90,7 @@ SimGrid (3.1) unstable; urgency=low
     g++. [AL]
   * Renamed xbt_host_t into xbt_peer_t since it betterly describes what I
     meant. This breaks the API of AMOK and of xbt/config. Sorry about this,
-    but I guess that almost nobody used those parts.
+    but I guess that almost nobody used those parts. [MQ]
 
  --
 
