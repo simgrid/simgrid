@@ -3,7 +3,7 @@ SimGrid (3.1) unstable; urgency=low
   General:
   * Port to gcc 4.x   
     There was a stack corruption somewhere, visible only when optimizing
-    with these versions [Vince]
+    with these versions. [Vince]
 
   SIMDAG:
   * This is a NEW module! SimDAG (SD for short) is a revival of the old SG
@@ -13,9 +13,9 @@ SimGrid (3.1) unstable; urgency=low
     all needful functions are provided.   [Christophe Thiery]  
 	
   SURF:
-  * complete rewrote of the KCCFLN05 workstation model. It is now an
+  * Complete rewrite of the KCCFLN05 workstation model. It is now an
     extension of the classical CLM03 model that gracefully handles
-    failures. This is now the standard model for MSG and GRAS. It doesn't
+    failures. This is now the default model for MSG and GRAS. It doesn't
     handle parallel tasks yet though. [AL]
   * Bug fix: Weights were not correctly set in the network part. 
     WARNING: This may have resulted in incorrect results with simulations
@@ -24,7 +24,7 @@ SimGrid (3.1) unstable; urgency=low
   SURF, MSG, GRAS:
   * After a (long ?) discussion on simgrid-devel, we have decided that the
     convention we had on units was stupid. That is why it has been decided
-    to move from (MBits, MFlops, seconds) fo (Bits, Flops, seconds). 
+    to move from (MBits, MFlops, seconds) to (Bits, Flops, seconds). 
     WARNING : This means that all previous platform files will not work as
     such with this version! A warning is issued to ask users to update
     their files. [AL]
@@ -40,11 +40,11 @@ SimGrid (3.1) unstable; urgency=low
     (there was many failure situations I hadn't thought of and that weren't
     correctly handled). [AL]
   * New function: MSG_host_is_avail indicates you whether a given m_host_t
-    is up or down.
+    is up or down. [AL]
 
   GRAS:
   * New! a real RPC mecanism, as it ought to be since too long. [MQ]
-      Exception occuring on server-side are propagated back to client (!).
+      Exception occurring on server-side are propagated back to client (!).
       
     API CHANGE: the callback changed their prototype. Change:
         int my_handler(gras_socket_t expeditor, void *payload_data) {
@@ -63,7 +63,7 @@ SimGrid (3.1) unstable; urgency=low
   AMOK:
   * Bandwidth module: 
     - Do not force experiment sizes to be expressed in kb, or it becomes
-      impossible to mesure the latency this way (needs one byte-long tests)
+      impossible to measure the latency this way (needs one byte-long tests)
     WARNING: this changes the amok_bw_* function semantic. [MQ]
     - Implements the link saturation stuff. [MQ]
   * Peer management module: 
