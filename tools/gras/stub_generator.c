@@ -28,7 +28,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 #define RL_SOURCENAME_LDADD  "%s_%s_LDADD"
 #define RL_SOURCENAME_SOURCES  "%s_%s_SOURCES"
 #define MAKEFILE_FILENAME_AM  "%s.Makefile.am"
-#define MAKEFILE_FILENAME_LOCAL  "%s.Makefile.local"
+#define MAKEFILE_FILENAME_LOCAL  "%s.mk"
 #define MAKEFILE_FILENAME_REMOTE  "%s.Makefile.remote"
 #define DEPLOYMENT  "%s.deploy.sh"
 
@@ -289,7 +289,7 @@ static void generate_makefile_am(char *project, char *deployment)
   }
   fprintf(OUT, SIM_SOURCENAME, project);
   fprintf(OUT, ": %s\n", deployment);
-  fprintf(OUT, "\tstub_generator %s %s >/dev/null\n", project, deployment);
+  fprintf(OUT, "\tgras_stub_generator %s %s >/dev/null\n", project, deployment);
   fclose(OUT);
 }
 
@@ -308,11 +308,17 @@ static void generate_makefile_local(char *project, char *deployment)
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
   free(filename);
    
-  fprintf(OUT, "############ PROJECT COMPILING AND ARCHIVING #########\n");
-  fprintf(OUT, "PROJECT_NAME=%s\n",project);
-  fprintf(OUT, 
-	  "DISTDIR=gras-$(PROJECT_NAME)\n\n"
-	  "GRAS_ROOT?= $(shell echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\")\n"
+//  fprintf(OUT, "############ PROJECT COMPILING AND ARCHIVING #########\n");
+  fprintf(OUT,"## Variable declarations\n"
+              "PROJECT_NAME=%s\n"
+	      "DISTDIR=gras-$(PROJECT_NAME)\n\n"
+	  ,project);
+   
+  fprintf(OUT,
+	  "# Set the GRAS_ROOT environment variable to the path under which you installed SimGrid\n"
+	  "# Compilation will fail if you don't do so\n" 
+	  "GRAS_ROOT?= $(shell echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\")\n\n"
+	  "# You can fiddle the following to make it fit your taste\n"
 	  "CFLAGS = -O3 -w -g\n"
 	  "INCLUDES = -I$(GRAS_ROOT)/include\n"
 	  "LIBS_SIM = -lm  -L$(GRAS_ROOT)/lib/ -lsimgrid\n"
@@ -339,14 +345,26 @@ static void generate_makefile_local(char *project, char *deployment)
 
   fprintf(OUT,
 	  "\n"
+	  "## By default, build all the binaries\n"
 	  "all: $(BIN_FILES)\n"
 	  "\n");
+   
+  fprintf(OUT, "\n## generate temps: regenerate the source file each time the deployment file changes\n");
+  xbt_dict_foreach(process_function_set,cursor,key,data) {
+    fprintf(OUT, RL_SOURCENAME, project,key);
+    fprintf(OUT, " ");
+  }
+  fprintf(OUT, SIM_SOURCENAME, project);
+  fprintf(OUT, ": %s\n", deployment);
+  fprintf(OUT, "\tgras_stub_generator %s %s >/dev/null\n", project, deployment);
+
+  fprintf(OUT, "\n## Generate the binaries\n");
   fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " %s.o\n",project, project, project);
   fprintf(OUT, "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_SIM) $(LIBS) $(LDADD) -o $@ \n");
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " %s.o\n", project, key, project, key, project);
     fprintf(OUT, "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_RL) $(LIBS) $(LDADD) -o $@ \n");
-  }
+  }  
   fprintf(OUT, 
 	  "\n"
 	  "%%: %%.o\n"
@@ -354,16 +372,19 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "\n"
 	  "%%.o: %%.c\n"
 	  "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<\n"
-	  "\n"
-	  "DIST_FILES= $(C_FILES) "MAKEFILE_FILENAME_LOCAL" "MAKEFILE_FILENAME_REMOTE"\n"
+	  "\n");
+   
+  fprintf(OUT,
+	  "## Rules for tarballs and cleaning\n"
+	  "DIST_FILES= $(C_FILES) "MAKEFILE_FILENAME_LOCAL" " /*MAKEFILE_FILENAME_REMOTE*/"\n"
 	  "distdir: $(DIST_FILES)\n"
 	  "\trm -rf $(DISTDIR)\n"
 	  "\tmkdir -p $(DISTDIR)\n"
 	  "\tcp $^ $(DISTDIR)\n"
 	  "\n"
 	  "dist: clean distdir\n"
-	  "\ttar c $(DISTDIR) | gzip -c > $(DISTDIR).tar.gz\n"
-	  "\n", project, project);
+	  "\ttar c $(DISTDIR) | gzip -c9 > $(DISTDIR).tar.gz\n"
+	  "\n", project /*, project*/);
 
   fprintf(OUT,
 	  "clean:\n"
@@ -378,7 +399,7 @@ static void generate_makefile_local(char *project, char *deployment)
 	  ".SUFFIXES:\n"
 	  ".PHONY : clean\n"
 	  "\n");
-   
+  /* 
   fprintf(OUT, "############ REMOTE COMPILING #########\n");
   fprintf(OUT, 
 	  "MACHINES ?= ");
@@ -432,7 +453,7 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "\t     then echo \"Sucessful\"; else failed=1;echo \"Failed (check $(SRCDIR)/buildlogs/$$site.log)\"; fi;echo; \\\n"
 	  "\t   fi;\\\n"
 	  "\t done;\n",project,project,project);
-
+*/
   fclose(OUT);
 }
 
@@ -604,8 +625,8 @@ int main(int argc, char *argv[])
   generate_sim(project_name);
   generate_rl(project_name);
   generate_makefile_local(project_name, deployment_file);
-  generate_makefile_remote(project_name, deployment_file);
-  generate_deployment(project_name, deployment_file);
+//  generate_makefile_remote(project_name, deployment_file);
+//  generate_deployment(project_name, deployment_file);
 
   free(warning);
   surf_exit();
