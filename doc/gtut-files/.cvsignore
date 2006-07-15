@@ -15,7 +15,6 @@ _2-simple_simulator.c
 2-simple_server
 2-simple_simulator
 3-args.mk
-3-args.output
 3-args.trace
 3-args_client
 3-args_server
