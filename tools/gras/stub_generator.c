@@ -308,7 +308,12 @@ static void generate_makefile_local(char *project, char *deployment)
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
   free(filename);
    
-//  fprintf(OUT, "############ PROJECT COMPILING AND ARCHIVING #########\n");
+  fprintf(OUT,
+	  "\n"
+	  "####\n"
+	  "#### THIS FILE WAS GENERATED, DO NOT EDIT BEFORE RENAMING IT\n"
+	  "####\n\n\n");
+
   fprintf(OUT,"## Variable declarations\n"
               "PROJECT_NAME=%s\n"
 	      "DISTDIR=gras-$(PROJECT_NAME)\n\n"
