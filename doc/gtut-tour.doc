@@ -1,0 +1,359 @@
+
+/** 
+@page GRAS_tut_tour GRAS initiatic tour
+
+
+\section GRAS_tut_tour_what What will you find here
+
+On this page, you will learn all you need to write your own GRAS
+applications, from the installation of the framework to the use of all
+features available in GRAS.
+
+ - \ref GRAS_tut_tour_install
+ - \ref GRAS_tut_tour_setup\n It explains the code layout you should setup to
+   build a GRAS application as well as the role and content of the several
+   files needed.
+   - \ref GRAS_tut_tour_setup_C
+   - \ref GRAS_tut_tour_setup_plat
+   - \ref GRAS_tut_tour_setup_deploy
+   - \ref GRAS_tut_tour_setup_glue
+   - \ref GRAS_tut_tour_setup_make
+   - \ref GRAS_tut_tour_setup_start
+ - \ref GRAS_tut_tour_simpleexchange
+   - \ref GRAS_tut_tour_simpleexchange_msgtype
+   - \ref GRAS_tut_tour_simpleexchange_socks
+   - \ref GRAS_tut_tour_simpleexchange_exchange
+   - \ref GRAS_tut_tour_simpleexchange_recaping
+ - \ref GRAS_tut_tour_args
+   
+<hr>
+\section GRAS_tut_tour_install Lesson 0: Installing GRAS
+
+Since GRAS is technically part of the SimGrid project, you have to install
+SimGrid to install GRAS. Doing so is explained in the relevant FAQ section
+(\ref faq_installation). 
+
+Newcommers should install the stable release from the tarball, since the cvs
+snapshots may suffer from (additionnal;) stability issues. Only go for the CVS if you
+really need features not present in the stable releases yet.
+
+<hr>
+\section GRAS_tut_tour_setup Lesson 1: Setting up your own project
+
+Any GRAS project should be constituted of at least 3 files, and possibly
+much more.
+
+  - <tt>&lt;project&gt;.c</tt>: A source file providing the source code of your
+    processes.
+    
+  - <tt>&lt;platform&gt;.xml</tt>: A platform description file. It describes
+    the virtual platform you want to run your application onto following the
+    SurfXML formatting so that the simulator can parse it. This file is only
+    needed in SG, and you don't need any to run on real platforms (of
+    course). The simplest is to use one of the pre-existing one.
+    
+  - <tt>&lt;project&gt;.xml</tt>: A deployment file. It describes which of
+    your processes to start, on which machine and with which arguments.
+    
+  - A makefile is often needed, too, even if it's not mandatory.
+
+If we start a project called <tt>test</tt>, we have to write 3 files:
+<tt>test.c</tt>, <tt>platform.xml</tt> and <tt>test.xml</tt>
+
+\subsection GRAS_tut_tour_setup_C The C source file
+
+Let's look at the C source file first. It should contain one main function
+for each type of processes in your overlay. Let's assume that you want to
+code a simple client/server communication. For this, the source file should
+read as:
+
+\verbatim #include <gras.h>
+
+int client(int argc, char *argv[]) {
+  ...
+}
+
+int server(int argc, char *argv[]) {
+  ...
+}
+\endverbatim
+
+Note that each of the processes's main function have the exact same
+prototype of the classical <tt>main()</tt> function in C. 
+
+This is on purpose, each of them can assume this role when running in RL.
+But you shouldn't write a main() function yourself since all processes will
+run as threads within the same regular process in simulation mode. That is
+why the real <tt>main</tt> function of GRAS programs are generated
+automatically. This will be detailled in time (section \ref
+GRAS_tut_tour_setup_glue), but for now just note the similarity between the
+"main" functions you have to write for each processes and a "real main"
+function.
+
+Then, each process must initialize the GRAS framework at the beginning (with
+\ref gras_init) and should finalize it at the end (with \ref gras_exit). 
+
+You should pass to \ref gras_init the <tt>argc</tt> and <tt>argv</tt> you
+received in your "main" function so that the users of your application can
+pass some configuration flags to the framework.
+
+It is not enough to have one of the processes initializing the framework
+since in RL, each of them will run on a different host. If you use some AMOK
+modules, you have to initialize them in each process too.
+
+The source file then reads: \include 1-bones.c
+
+That's it. You have a working GRAS application with two processes. They
+don't do anything useful, but that's a beginning. Let's see how to bring
+them to life.
+
+\subsection GRAS_tut_tour_setup_plat The platform file
+
+The platform file is used by the simulator to know about the existing hosts
+and their interactions. Its exact syntax is at the same time very simple and
+a bit beyond the topic of this document. Here is a very simple example
+describin two hosts named <i>Jacquelin</i> and <i>Boivin</i> and how they
+are interconnected.
+
+\include gtut-platform.xml
+
+At this point, you should not try to write your own platform file, but use
+one of the existing ones. There is a few of them in the examples/msg
+directory of the project. The only information we need from those files are
+the names of the existing hosts. It will be mandatory to write the
+deployment file.
+
+\subsection GRAS_tut_tour_setup_deploy The deployment file
+
+This file explains which of your processes should be started on the
+different hosts. It is mainly used in simulation. In real life, you will
+have to start your processes manually (see below). We we dream of a system
+able to apply a deployment file in real life and TakTuk may be the right
+tool for this, but this is still to be done.
+
+Here is an example of such file, describing that a <tt>server</tt> process
+must be started onto the <tt>Jacquelin</tt> host and a <tt>client</tt>
+process must be started on the <tt>Boivin</tt> host.
+
+\include test.xml
+
+Actually, you should write such a file also if you only plan to use GRAS in
+RL since this file is also used to glue your code to GRAS, as explained in
+the next section.
+
+\subsection GRAS_tut_tour_setup_glue Glueing things together
+
+As explained above, you shouldn't write any real <tt>main</tt> function
+since its content depends on whether you run in RL ou in SG. Instead, you
+use a tool <tt>gras_stub_generator</tt> to get the proper glue around your
+code generated. If you installed SimGrid in a regular place, this program is
+now in your path. Its source resides in the tools/gras/ directory of the
+archive, if you wonder.
+
+Here is the calling syntax: 	
+\verbatim gras_stub_generator <project_name> <deployment_file.xml>\endverbatim
+
+It parses the deployment file (called <tt>test.xml</tt> in our example),
+searching for all the kind of processes you have in your project. It
+then generates the following C files:
+
+ - a <tt>_&lt;project_name&gt;_&lt;process_kind&gt;.c</tt> file for each process kind you
+   have.\n
+   They are used to launch your project in real life. They
+   contain a main() in charge of initializing the GRAS infrastructure and
+   launching your code afterward.
+ - a <tt>_&lt;project_name&gt;_simulator.c</tt> file.\n
+   This file is suited to the simulation mode. It contains a main()
+   function initializing the simulator and launching your project within.
+ - a <tt>&lt;project_name&gt;.mk</tt> file.\n
+   This is a makefile to regenerate any files on need. See next section.
+
+In our example, we will thus obtain <tt>_test_server.c</tt>,
+<tt>_test_client.c</tt>, <tt>_test_simulator.c</tt> and <tt>test.mk</tt>.
+
+There is a pitfall: no verification is made on your actual source code, so
+if you have a typo on the process name in the deployment file, the generated
+code will be wrong, and the linker will spit error messages at you. Also
+remember that those names are in fact C function names, so they are
+case-sensitive.
+
+\subsection GRAS_tut_tour_setup_make A typical Makefile
+
+Now, we want to compile all the source files to build the actual binaries.
+It can be done manually, but it is much more convenient to use a makefile.
+Fortunately, gras_stub_generator generates a makefile for you under the name
+<tt>&lt;project&gt;.mk</tt>. This file is sufficient for now. To compile our test
+application, just type:
+\verbatim make -f test.mk \endverbatim
+
+You may want to rename this file to Makefile so that typing <tt>make</tt>
+without argument becomes sufficient. In any case, do not edit this file
+without renaming it, or your changes will get overwritten at the next glue
+generation.
+
+If you already have a Makefile (or a Makefile.am for automake users), you
+can also add the following chunk at the end of your file:
+\verbatim NAME=your_project_name
+ PROCESSES=list of processes type in your project
+
+ $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(NAME).c $(NAME)_deployment.xml
+        path/to/gras_stub_generator $(NAME) $(NAME)_deployment.xml >/dev/null
+\endverbatim
+
+A simpler solution in our example would be to add:
+\verbatim _test_client.c _test_server.c _test_simulator.c: test.c test.xml
+        path/to/gras_stub_generator test test.xml >/dev/null
+\endverbatim
+
+
+
+\subsection GRAS_tut_tour_setup_start Actually running the processes
+
+There is nothing to know to start your processes in RL. Simply call the
+generated binaries, and that's it. To start the simulation, simply call:
+\verbatim ./<project>_simulator platform.xml deployment.xml\endverbatim
+
+Here is an example of execution: \include 1-bones.output
+
+That's it. You are done with this lesson and can now write, build and
+execute GRAS applications as long as they don't do anything ;) Simply read on
+to add some flesh on these bones.
+
+(back to the top of the \ref GRAS_tut_tour)
+<hr>
+
+\section GRAS_tut_tour_simpleexchange Lesson 2: Exchanging simple messages
+
+\subsection GRAS_tut_tour_simpleexchange_msgtype Declaring the messages to be exchanged
+
+We will now see how to exchange messages between hosts. As explained in
+section \ref GRAS_tut_intro_model, every GRAS message is (strongly) typed. A
+message type is described by its name and the datatype of the data it can
+convey. Each process which may exchange a given type of message should
+declare it before sending or receiving it. If the description used by the
+sender doesn't match the one used by the receiver, you'll get into trouble.
+Fortunately, such discrepency will be detected in SG.
+
+We won't convey any payload in this lesson, so we just have to give the name
+of message to declare them:
+\dontinclude 2-simple.c
+\skip gras_msgtype_declare
+\until gras_msgtype_declare
+
+Remember that all processes should declare the message types they use.
+
+\subsection GRAS_tut_tour_simpleexchange_socks Identifying peers you want to communicate with
+
+Then, you need to specify with who you want to communicate. This is done
+by opening sockets. GRAS sockets are loosely inspirated by the regular BSD
+sockets, but with several simplifications.
+
+If you want to eventually receive messages, you have to open a so-called
+<i>server socket</i>. Actually, any GRAS process should open a server socket
+since it will allows to identify it uniquely in the system. A socket is
+defined by an host name and a port number (just like with BSD sockets).
+
+Since server socket are on the current host, opening a socket to receive
+messages on the port 12345 is as easy as:
+\skip gras_socket_server
+\until gras_socket_server
+
+Hardcoding port numbers that way may lead to difficulties on RL (at least)
+since at most one process can listen on a given port. So, if you can, prefer
+the \ref gras_socket_server_range, which picks a working port from a range
+of value. Of course, if you want your processes to find each others, at
+least one port must be hardcoded in the system. Then, any other processes
+contact the one listening on that port, which acts as a coordinator.
+
+Our client should also open a server socket, but the picked port don't
+matter, so we use:
+\skip gras_socket_server
+\until gras_socket_server
+
+It will select a port between 1024 (ports below 1024 are reserved under
+UNIX) and 10000. You can safely ignore the two last arguments for now and
+pass 0.
+
+So, you now know how to create sockets allowing to receive messages. To send
+messages, you have to create a so-called <i>client socket</i>. For this, use
+\ref gras_socket_client with the hostname and the port of the process you
+want to contact as arguments. Our client should simply do:
+
+\dontinclude 2-simple.c
+\skip socket_client
+\until socket_client
+
+The corresponding server socket must be opened before any client socket can
+connect to it. It is thus safe to add a little delay before creating the
+client socket. But you cannot use the classical sleep() function for this,
+or you will delay the simulator in SG, not your processes. Use \ref
+gras_os_sleep instead.
+
+\subsection GRAS_tut_tour_simpleexchange_exchange Actually exchanging messages
+
+GRAS offers a plenty of ways to communicate. The simple one is to use \ref
+gras_msg_send on the sender side, and \ref gras_msg_wait on the receiver side.
+
+\ref gras_msg_send expects 3 arguments: the socket on which to send the
+message, the message type, and a pointer to the actual content of the
+message. The simplest way to retrive a message type from its name is to use
+\ref gras_msgtype_by_name. Since we don't have any payload, this becomes:
+
+\dontinclude 2-simple.c
+\skip msg_send
+\until msg_send
+
+\ref gras_msg_wait accepts 4 arguments. The first one is the delay you are
+disposed to wait for messages, while the the type of message you are
+expecting. Then come output arguments. The third argument should be the
+address of a gras_socket_t variable which will indicate who wrote the
+message you received while the last argument is where to put the payload.
+
+Since our server is willing to wait up to 60 seconds for a message, the
+following will do it:
+\dontinclude 2-simple.c
+\skip msg_wait
+\until msg_wait
+
+\subsection GRAS_tut_tour_simpleexchange_recaping Recaping everything together
+
+Here is the complete code of this example. Note the use of the functions
+\ref gras_socket_my_port, \ref gras_socket_peer_name and \ref
+gras_socket_peer_port to retrieve information about who you are connected to.
+
+\include 2-simple.c
+
+Here is the output of the simulator. Note that \ref gras_socket_peer_port
+actually returns the port number of the <i>server</i> of the peer. This may
+sound a bit strange to BSD experts, but it is actually really useful: you
+can store this value, and contact your peer afterward passing this number to
+\ref gras_socket_client .
+\include 2-simple.output
+
+Here we are, you now know how to exchange messages between peers. There is
+still a large room for improvement, such as adding payload to messages.
+Moreover the most problematic issue is that this code does not work in RL
+since we hardcoded the server hostname in the client code. Next lesson will
+learn you how to pass arguments to your processes to overcome this situation.
+
+<hr>
+\section GRAS_tut_tour_args Lesson 3: Passing arguments to the processes (in SG)
+
+\section GRAS_tut_tour_todo TODO
+
+- Lesson 4: Passing arguments to processes in the deployment file
+- Lesson 5: Callback ("I got a message from %s")
+- Lesson 6: Globals (for a kill message)
+- Lesson  : Timers
+- Lesson 7: Using logs
+
+- Lesson 8: Exchanging simple data through ping-pong
+- Lesson 9: More complex data description (automatic parsing, manual description) and example
+
+- Lesson 10: Splitting in several files
+
+- Lesson 11: RPC mecanism and dealing with exceptions
+
+- Lesson 12: Debuging GRAS programs
+
+*/

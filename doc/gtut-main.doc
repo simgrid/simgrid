@@ -1,0 +1,26 @@
+/**
+@addtogroup GRAS_tut 
+
+This section constitutes a tutorial to the GRAS programming environment.
+
+ - \ref GRAS_tut_intro :\n
+   This section details what GRAS is, and what are the target application
+   class. It also formalize somehow the communication model used in GRAS.\n
+   If you are new to the system and want to start using the tool as quickly
+   as possible and learn by trying things out instead of reading a lenghty
+   manual, you might want to start from next section directly.
+
+ - \ref GRAS_tut_tour :\n
+   This section aims at turning new-comers into GRAS power user. It briefly
+   explains how to install the framework and setup your own projects. Then,
+   an example distributed application is builded incrementaly to show the
+   several aspects of the framework.
+
+    \htmlonly <!-- 
+      DOXYGEN_NAVBAR_LABEL="Tutorial"
+      DOXYGEN_NAVBAR_CHILD "What is GRAS"=GRAS_tut_intro.html
+      DOXYGEN_NAVBAR_CHILD "Initiatic tour"=GRAS_tut_tour.html
+    --> \endhtmlonly
+
+*/
+

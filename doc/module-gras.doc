@@ -59,6 +59,7 @@
        /** @defgroup GRAS_run     Virtualization */
        /** @defgroup GRAS_code    Project and code management */
        /** @defgroup GRAS_ex      Examples */
+       /** @defgroup GRAS_tut     GRAS Tutorial */
 /** @} */
 #####################################################################
 /** @addtogroup GRAS_comm

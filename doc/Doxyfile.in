@@ -404,7 +404,11 @@ INPUT                  = @srcdir@/index.doc \
                          @srcdir@/module-xbt.doc \
                          @srcdir@/module-msg.doc \
                          @srcdir@/module-gras.doc @srcdir@/module-amok.doc \
-                         @srcdir@/module-sd.doc \			 
+                         @srcdir@/module-sd.doc \
+			 \
+			 @srcdir@/gtut-main.doc \
+				@srcdir@/gtut-introduction.doc \
+				@srcdir@/gtut-tour.doc \
 			 \
                          ./logcategories.doc \
 			 \
@@ -464,6 +468,7 @@ EXCLUDE_PATTERNS       =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
+                         @top_srcdir@/doc/gtut-files \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/examples \

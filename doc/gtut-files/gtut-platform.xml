@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+  <cpu name="Jacquelin" power="137333000"/>
+  <cpu name="Boivin" power="98095000"/>
+  <network_link name="1" bandwidth="3430125" latency="0.000536941"/>
+  <route src="Jacquelin" dst="Boivin"><route_element name="1"/></route>
+  <route src="Boivin" dst="Jacquelin"><route_element name="1"/></route>
+</platform_description>
+
