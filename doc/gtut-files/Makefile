@@ -1,7 +1,7 @@
 # This works mainly on my box for now
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
-all: 1-bones.output 2-simple.output 3-args.output
+all: 1-bones.output 2-simple.output 3-args.output 4-callback.output
 
 veryclean: clean
 	rm *.output
@@ -61,10 +61,32 @@ clean::
 3-args_client 3-args_server 3-args_simulator: _3-args_client.c _3-args_server.c _3-args_simulator.c
 	make -f 3-args.mk
 
-_3-args_client.c _3-args_server.c _3-args_simulator.c: 3-args.c test.xml
-	../../tools/gras/gras_stub_generator 3-args test.xml >/dev/null
+_3-args_client.c _3-args_server.c _3-args_simulator.c: 3-args.c 3-args.xml
+	../../tools/gras/gras_stub_generator 3-args 3-args.xml >/dev/null
 
 clean::
 	if [ -e 3-args.mk ] ; then make -f 3-args.mk clean; fi
 	rm -f _3-args_client.c _3-args_server.c _3-args_simulator.c 3-args.trace 3-args.mk
+
+# Lesson 4: callbacks
+########################################
+
+4-callback.output: 4-callback_client 4-callback_server 4-callback_simulator
+	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
+	./4-callback_server 12345                                     >> $@ 2>&1&
+	./4-callback_client 127.0.0.1 12345                           >> $@ 2>&1
+	sleep 1
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./4-callback_simulator gtut-platform.xml 3-args.xml           >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+
+4-callback_client 4-callback_server 4-callback_simulator: _4-callback_client.c _4-callback_server.c _4-callback_simulator.c
+	make -f 4-callback.mk
+
+_4-callback_client.c _4-callback_server.c _4-callback_simulator.c: 4-callback.c 3-args.xml
+	../../tools/gras/gras_stub_generator 4-callback 3-args.xml >/dev/null
+
+clean::
+	if [ -e 4-callback.mk ] ; then make -f 4-callback.mk clean; fi
+	rm -f _4-callback_client.c _4-callback_server.c _4-callback_simulator.c 4-callback.trace 4-callback.mk
 
