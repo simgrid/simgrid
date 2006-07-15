@@ -2,29 +2,11 @@
 /** 
 @page GRAS_tut_tour GRAS initiatic tour
 
-
-\section GRAS_tut_tour_what What will you find here
-
 On this page, you will learn all you need to write your own GRAS
 applications, from the installation of the framework to the use of all
 features available in GRAS.
 
- - \ref GRAS_tut_tour_install
- - \ref GRAS_tut_tour_setup\n It explains the code layout you should setup to
-   build a GRAS application as well as the role and content of the several
-   files needed.
-   - \ref GRAS_tut_tour_setup_C
-   - \ref GRAS_tut_tour_setup_plat
-   - \ref GRAS_tut_tour_setup_deploy
-   - \ref GRAS_tut_tour_setup_glue
-   - \ref GRAS_tut_tour_setup_make
-   - \ref GRAS_tut_tour_setup_start
- - \ref GRAS_tut_tour_simpleexchange
-   - \ref GRAS_tut_tour_simpleexchange_msgtype
-   - \ref GRAS_tut_tour_simpleexchange_socks
-   - \ref GRAS_tut_tour_simpleexchange_exchange
-   - \ref GRAS_tut_tour_simpleexchange_recaping
- - \ref GRAS_tut_tour_args
+\htmlinclude .gtut-tour.doc.toc
    
 <hr>
 \section GRAS_tut_tour_install Lesson 0: Installing GRAS
@@ -332,19 +314,124 @@ can store this value, and contact your peer afterward passing this number to
 
 Here we are, you now know how to exchange messages between peers. There is
 still a large room for improvement, such as adding payload to messages.
-Moreover the most problematic issue is that this code does not work in RL
-since we hardcoded the server hostname in the client code. Next lesson will
-learn you how to pass arguments to your processes to overcome this situation.
 
+
+(back to the top of the \ref GRAS_tut_tour)
 <hr>
 \section GRAS_tut_tour_args Lesson 3: Passing arguments to the processes (in SG)
 
+The most problematic issue with the code of previous lesson is that it does
+not work in RL since we hardcoded the server hostname in the client code. We
+will thus learn you how to pass arguments to your processes to overcome this
+situation.
+
+\subsection GRAS_tut_tour_args_use Using command line arguments from user code
+
+In RL, the situation is quite simple: we just have to use the command line
+arguments as we would do in a usual C program. In the server, only change
+concern the opennong of the master socket:
+\dontinclude 3-args.c
+\skip gras_socket_server
+\until gras_socket_server
+
+In the client, we only need to change the way we open the client socket:
+\skip gras_socket_client
+\until gras_socket_client
+
+The rest of the program remains inchanged. 
+
+\subsection GRAS_tut_tour_args_sg Passing command line arguments in deployment files
+
+At this point, the problem is to pass arguments to the processes in SG.
+Fortunately, it is quite simple. You just have to edit your deployment file
+so that it reads: \include 3-args.xml
+The syntax should be self-explanatory at this point.
+
+\subsection GRAS_tut_tour_args_recap Recaping everything together
+
+The whole program now reads:
+\include 3-args.c
+
+And here is the output:
+\include 3-args.output
+
+(back to the top of the \ref GRAS_tut_tour)
+<hr>
+
+\section GRAS_tut_tour_callbacks Lesson 4: Attaching callbacks to messages
+
+Our program is well and good, but if we had to write a longer message,
+explicitely waiting for messages of a given type would not be really
+practical. To add some more dynamism, what we want to do is to attach
+callbacks to the several messages types, and tell GRAS that we are ready to
+deal with new messages. That's what we will do now.
+
+\subsection GRAS_tut_tour_callbacks_declare Declaring callbacks
+
+First of all, we define the callback we want to attach to the arrival of the
+"hello" message on the server. Its signature is fixed: it accepts two
+arguments of relative types <tt>gras_msg_cb_ctx_t ctx</tt> and <tt>void
+*</tt>. The first one is a working context we should pass to GRAS when
+speaking about the message we are handling while the second is the payload.
+The callbackreturns an integer indicating whether we managed to deal with
+the message. I admit that this semantic is a bit troublesome, it should be 0
+if we managed to deal properly with the message to mimic "main()" semantic.
+That's historical, but I may change this in the future (no worry, I'll add
+backward compatibility solutions). Here is the actual code of our callback:
+
+\dontinclude 4-callback.c
+\skip gras_msg_cb_ctx_t 
+\until end_of_callback
+
+\subsection GRAS_tut_tour_callbacks_attach Attaching callbacks
+
+Then, we have to change the server code to use this callback instead of
+gras_msg_wait. This simply done by a construct like the following:
+
+\skip cb_register
+\until cb_register
+
+\subsection GRAS_tut_tour_callbacks_handle Handling incoming messages
+
+Once the callback is declared and attached, the server simply has to call
+\ref gras_msg_handle to tell GRAS it's ready to handle for incoming
+messages. The only argument is the maximum delay we are disposed to wait for
+a message. If the delay is negative, the process will block until a message
+arrives. With delay=0, the process just polls for already arrived messages,
+but do not wait at all if none arrived yet. If the delay is greater than 0,
+the process will wait for at most that amount of seconds. If a message
+arrives in the meanwhile, it won't even wait that long. 
+
+Sometimes, you want to handle all messages arriving in a given period
+without really knowing how much messages will come (this is often the case
+during the initialization phase of an algorithm). In that case, use \ref
+gras_msg_handleall . It has the same prototype than \ref gras_msg_handle,
+but waits exactly the passed delay, dealing with all the messages arriving
+in the meanwhile.
+
+We have no such needs in our example, so the code simply reads:
+\skip handle
+\until handle
+
+\subsection GRAS_tut_tour_callback_recap Recaping everything together
+
+The whole program now reads:
+\include 4-callback.c
+
+And here is the output (unchanged wrt previous version):
+\include 4-callback.output
+
+Our little example turns slowly to a quite advanced GRAS program. It entails
+most of the mecanism most program will use.
+
+(back to the top of the \ref GRAS_tut_tour)
+<hr>
+
+
 \section GRAS_tut_tour_todo TODO
 
-- Lesson 4: Passing arguments to processes in the deployment file
-- Lesson 5: Callback ("I got a message from %s")
-- Lesson 6: Globals (for a kill message)
-- Lesson  : Timers
+- Lesson 5: Globals (for a kill message)
+- Lesson 6: Timers
 - Lesson 7: Using logs
 
 - Lesson 8: Exchanging simple data through ping-pong
@@ -355,5 +442,7 @@ learn you how to pass arguments to your processes to overcome this situation.
 - Lesson 11: RPC mecanism and dealing with exceptions
 
 - Lesson 12: Debuging GRAS programs
+
+- Lesson   : Doing proper modules
 
 */
