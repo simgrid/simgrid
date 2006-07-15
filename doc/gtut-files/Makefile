@@ -1,7 +1,7 @@
 # This works mainly on my box for now
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
-all: 1-bones 2-simple
+all: 1-bones.output 2-simple.output 3-args.output
 
 veryclean: clean
 	rm *.output
@@ -9,7 +9,6 @@ veryclean: clean
 # Lesson 1: simple bones of project
 ########################################
 
-1-bones: 1-bones.output
 1-bones.output: 1-bones_client 1-bones_server 1-bones_simulator
 	echo '$$ ./test_client'                           > $@ 
 	./1-bones_client                                 >> $@ 2>&1
@@ -32,7 +31,6 @@ clean::
 # Lesson 2: simple message exchange
 ########################################
 
-2-simple: 2-simple.output
 2-simple.output: 2-simple_client 2-simple_server 2-simple_simulator
 	echo '$$ ./test_simulator platform.xml test.xml'  > $@
 	./2-simple_simulator gtut-platform.xml test.xml  >> $@ 2>&1
@@ -48,4 +46,25 @@ clean::
 	if [ -e 2-simple.mk ] ; then make -f 2-simple.mk clean; fi
 	rm -f _2-simple_client.c _2-simple_server.c _2-simple_simulator.c 2-simple.trace 2-simple.mk
 
-.PHONY: 1-bones 2-simple
+# Lesson 3: passing args to processes
+########################################
+
+3-args.output: 3-args_client 3-args_server 3-args_simulator
+	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
+	./3-args_server 12345                                         >> $@ 2>&1&
+	./3-args_client 127.0.0.1 12345                               >> $@ 2>&1
+	sleep 1
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./3-args_simulator gtut-platform.xml 3-args.xml               >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+
+3-args_client 3-args_server 3-args_simulator: _3-args_client.c _3-args_server.c _3-args_simulator.c
+	make -f 3-args.mk
+
+_3-args_client.c _3-args_server.c _3-args_simulator.c: 3-args.c test.xml
+	../../tools/gras/gras_stub_generator 3-args test.xml >/dev/null
+
+clean::
+	if [ -e 3-args.mk ] ; then make -f 3-args.mk clean; fi
+	rm -f _3-args_client.c _3-args_server.c _3-args_simulator.c 3-args.trace 3-args.mk
+
