@@ -168,7 +168,7 @@ static void generate_sim(char *project)
 	             "  /*  Simulation setup */\n" 
                      "  MSG_global_init(&argc,argv);\n" 
                      "  if (argc != 3) {\n" 
-                     "    fprintf(stderr, \"Usage: %s platform_file application_description.txt [--gras-log=...]\\n\",argv[0]);\n" 
+                     "    fprintf(stderr, \"Usage: %s platform.xml deployment.xml [--gras-log=...]\\n\",argv[0]);\n" 
                      "    exit(1);\n" 
                      "  }\n"
                      "\n");
