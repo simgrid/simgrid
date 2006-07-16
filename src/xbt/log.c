@@ -204,16 +204,27 @@ First of all, each module should register its own category into the categories
 tree using \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY.
 
 Then, logging should be done with the DEBUG<n>, VERB<n>, INFO<n>, WARN<n>,
-ERROR<n> or CRITICAL<n> macro families. For each group, there is 6 different
-macros (like DEBUG0, DEBUG1, DEBUG2, DEBUG3, DEBUG4 and DEBUG5), only differing
-in the number of arguments passed along the format. This is because we want
-SimGrid itself to keep compilable on ancient compiler not supporting variable
-number of arguments to macros. But we should provide a macro simpler to use for
-the users not interested in SP3 machines (FIXME).
-
+ERROR<n> or CRITICAL<n> macro families (such as #DEBUG10, #VERB6,
+#INFO8, #WARN6, #ERROR6 and #CRITICAL6). For each group, there is at
+least 6 different macros (like DEBUG0, DEBUG1, DEBUG2, DEBUG3, DEBUG4 and
+DEBUG5), only differing in the number of arguments passed along the format.
+This is because we want SimGrid itself to keep compilable on ancient
+compiler not supporting variable number of arguments to macros. But we
+should provide a macro simpler to use for the users not interested in SP3
+machines (FIXME).
+  
 Under GCC, these macro check there arguments the same way than printf does. So,
 if you compile with -Wall, the folliwing code will issue a warning:
 <code>DEBUG2("Found %s (id %f)", some_string, a_double)</code>
+
+If you want to specify the category to log onto (for example because you
+have more than one category per file, add a C before the name of the log
+producing macro (ie, use #CDEBUG10, #CVERB6, #CINFO8, #CWARN6, #CERROR6 and
+#CCRITICAL6 and friends), and pass the category name as first argument.
+  
+The TRACE priority is not used the same way than the other. You should use
+the #XBT_IN, XBT_IN<n> (up to #XBT_IN5), #XBT_OUT and #XBT_HERE macros
+instead.
 
 \section log_API_example 2.5 Example of use
 
