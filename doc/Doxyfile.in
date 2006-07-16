@@ -416,6 +416,8 @@ INPUT                  = @srcdir@/index.doc \
 				@srcdir@/gtut-tour-5-globals.doc \
 				@srcdir@/gtut-tour-6-logs.doc \
 				@srcdir@/gtut-tour-7-timers.doc \
+				@srcdir@/gtut-tour-8-exceptions.doc \
+				@srcdir@/gtut-tour-9-rpc.doc \
 			 \
                          ./logcategories.doc \
 			 \

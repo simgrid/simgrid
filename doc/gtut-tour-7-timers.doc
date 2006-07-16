@@ -1,6 +1,13 @@
 /**
 @page GRAS_tut_tour_timers Lesson 7: Using internal timers
 
+\section GRAS_tut_tour_timers_toc Table of Contents
+ - \ref GRAS_tut_tour_timers_intro
+ - \ref GRAS_tut_tour_timers_use
+ - \ref GRAS_tut_tour_timers_recap
+   
+<hr>
+
 \section GRAS_tut_tour_timers_intro Introduction
 
 The messaging primitives we saw until now allow the processes to react to
@@ -87,6 +94,6 @@ The program now reads:
 Which produces the expected output:
 \include 7-timers.output
 
-\ref GRAS_tut_tour_exceptions
+Go to \ref GRAS_tut_tour_exceptions
 
 */

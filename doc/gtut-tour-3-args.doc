@@ -2,6 +2,13 @@
 /** 
 @page GRAS_tut_tour_args Lesson 3: Passing arguments to the processes (in SG)
 
+\section GRAS_tut_tour_args_toc Table of Contents
+ - \ref GRAS_tut_tour_args_use
+ - \ref GRAS_tut_tour_args_sg
+ - \ref GRAS_tut_tour_args_recap
+   
+<hr>
+
 The most problematic issue with the code of previous lesson is that it does
 not work in RL since we hardcoded the server hostname in the client code. We
 will thus learn you how to pass arguments to your processes to overcome this
@@ -37,6 +44,6 @@ The whole program now reads:
 And here is the output:
 \include 3-args.output
 
-\ref GRAS_tut_tour_callbacks
+Go to \ref GRAS_tut_tour_callbacks
 
 */

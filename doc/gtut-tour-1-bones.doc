@@ -2,6 +2,16 @@
 /** 
 @page GRAS_tut_tour_setup Lesson 1: Setting up your own project
 
+\section GRAS_tut_tour_setup_toc Table of Contents
+ - \ref GRAS_tut_tour_setup_C
+ - \ref GRAS_tut_tour_setup_plat
+ - \ref GRAS_tut_tour_setup_deploy
+ - \ref GRAS_tut_tour_setup_glue
+ - \ref GRAS_tut_tour_setup_make
+ - \ref GRAS_tut_tour_setup_start
+
+<hr>      
+
 Any GRAS project should be constituted of at least 3 files, and possibly
 much more.
 
@@ -179,6 +189,6 @@ That's it. You are done with this lesson and can now write, build and
 execute GRAS applications as long as they don't do anything ;) Move
 to the next lessons to add some flesh on these bones.
 
-\ref GRAS_tut_tour_simpleexchange
+Go to \ref GRAS_tut_tour_simpleexchange
 
 */

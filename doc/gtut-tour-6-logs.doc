@@ -1,6 +1,14 @@
 /**
 @page GRAS_tut_tour_logs Lesson 6: Logging informations properly
 
+\section GRAS_tut_tour_logs_toc Table of Contents
+ - \ref GRAS_tut_tour_logs_intro
+ - \ref GRAS_tut_tour_logs_practice
+ - \ref GRAS_tut_tour_logs_recap
+ - \ref GRAS_tut_tour_logs_config
+    
+<hr>
+
 \section GRAS_tut_tour_logs_intro Introduction
 
 Let's have another look at the output of the program we came up with in
@@ -50,7 +58,7 @@ That is all you really need to know about the logs before diving into
 practice. If you want more information on that topic, refer to the \ref
 XBT_log section, which contains much more information than this page.
 
-\section GRAS_tut_tour_logs_practice Putting logs in practice in a program
+\section GRAS_tut_tour_logs_practice Putting logs into action
 
 Enough with theory, let's change our example so that it uses proper
 loggings. The first thing to do is to add a new channel in the existing
@@ -106,5 +114,5 @@ Again, you should refer to the \ref XBT_log section for more information on
 how to configure the logs. Or you can proceed with the next lesson, of
 course.
 
-\ref GRAS_tut_tour_timers
+Go to \ref GRAS_tut_tour_timers
 */

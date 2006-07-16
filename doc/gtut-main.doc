@@ -24,6 +24,7 @@ This section constitutes a tutorial to the GRAS programming environment.
    - \ref GRAS_tut_tour_logs
    - \ref GRAS_tut_tour_timers
    - \ref GRAS_tut_tour_exceptions
+   - \ref GRAS_tut_tour_rpc
 
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_LABEL="Tutorial"

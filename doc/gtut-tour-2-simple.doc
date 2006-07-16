@@ -2,6 +2,14 @@
 /** 
 @page GRAS_tut_tour_simpleexchange Lesson 2: Exchanging simple messages
 
+\section GRAS_tut_tour_simpleexchange_toc Table of Contents
+ - \ref GRAS_tut_tour_simpleexchange_msgtype
+ - \ref GRAS_tut_tour_simpleexchange_socks
+ - \ref GRAS_tut_tour_simpleexchange_exchange
+ - \ref GRAS_tut_tour_simpleexchange_recaping
+    
+<hr>      
+
 \section GRAS_tut_tour_simpleexchange_msgtype Declaring the messages to be exchanged
 
 We will now see how to exchange messages between hosts. As explained in
@@ -112,6 +120,6 @@ Here we are, you now know how to exchange messages between peers. There is
 still a large room for improvement, such as adding payload to messages. But
 there some little things you should know before we speak of payloads.
 
-\ref GRAS_tut_tour_args
+Go to \ref GRAS_tut_tour_args
 
 */

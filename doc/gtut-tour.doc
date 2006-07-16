@@ -15,16 +15,61 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "5: Globals"=GRAS_tut_tour_globals.html
       DOXYGEN_NAVBAR_CHILD "6: Logs"=GRAS_tut_tour_logs.html
       DOXYGEN_NAVBAR_CHILD "7: Timers"=GRAS_tut_tour_timers.html
+      DOXYGEN_NAVBAR_CHILD "8: Exceptions"=GRAS_tut_tour_exceptions.html
+      DOXYGEN_NAVBAR_CHILD "9: RPC"=GRAS_tut_tour_rpc.html
     --> \endhtmlonly
 
- - \ref GRAS_tut_tour_install
  - \ref GRAS_tut_tour_setup
+    - \ref GRAS_tut_tour_setup_C
+    - \ref GRAS_tut_tour_setup_plat
+    - \ref GRAS_tut_tour_setup_deploy
+    - \ref GRAS_tut_tour_setup_glue
+    - \ref GRAS_tut_tour_setup_make
+    - \ref GRAS_tut_tour_setup_start
+    
  - \ref GRAS_tut_tour_simpleexchange
+    - \ref GRAS_tut_tour_simpleexchange_msgtype
+    - \ref GRAS_tut_tour_simpleexchange_socks
+    - \ref GRAS_tut_tour_simpleexchange_exchange
+    - \ref GRAS_tut_tour_simpleexchange_recaping
+    
  - \ref GRAS_tut_tour_args
+    - \ref GRAS_tut_tour_args_use
+    - \ref GRAS_tut_tour_args_sg
+    - \ref GRAS_tut_tour_args_recap
+    
  - \ref GRAS_tut_tour_callbacks
+    - \ref GRAS_tut_tour_callbacks_declare
+    - \ref GRAS_tut_tour_callbacks_attach
+    - \ref GRAS_tut_tour_callbacks_handle
+    - \ref GRAS_tut_tour_callback_recap
+    
  - \ref GRAS_tut_tour_globals
+    - \ref GRAS_tut_tour_globals_intro
+    - \ref GRAS_tut_tour_globals_use
+    - \ref GRAS_tut_tour_callback_pitfall
+    - \ref GRAS_tut_tour_callback_recap
+    
  - \ref GRAS_tut_tour_logs
+    - \ref GRAS_tut_tour_logs_intro
+    - \ref GRAS_tut_tour_logs_practice
+    - \ref GRAS_tut_tour_logs_recap
+    - \ref GRAS_tut_tour_logs_config
+    
  - \ref GRAS_tut_tour_timers
+    - \ref GRAS_tut_tour_timers_intro
+    - \ref GRAS_tut_tour_timers_use
+    - \ref GRAS_tut_tour_timers_recap
+    
+ - \ref GRAS_tut_tour_exceptions
+    - \ref GRAS_tut_tour_exceptions_intro
+    - \ref GRAS_tut_tour_exceptions_use
+    - \ref GRAS_tut_tour_exceptions_recap
+    
+ - \ref GRAS_tut_tour_rpc
+    - \ref GRAS_tut_tour_rpc_intro
+    - \ref GRAS_tut_tour_rpc_use
+    - \ref GRAS_tut_tour_rpc_recap
  
 <hr>
 
@@ -34,19 +79,15 @@ all features available in GRAS.
 Unfortunately, the tour is not terminated yet, and here are some ideas of
 missing missi^W lessons:
 
-- Lesson 8: Timers
-- Lesson 7: Exceptions
+- Lesson 10: Exchanging simple data through ping-pong
+- Lesson 11: More complex data description (automatic parsing, manual
+   description) and example. May need more than one lesson.
 
-- Lesson 8: Exchanging simple data through ping-pong
-- Lesson 9: More complex data description (automatic parsing, manual description) and example
+- Lesson 12: Splitting in several files
 
-- Lesson 10: Splitting in several files
+- Lesson 13: Debuging GRAS programs
 
-- Lesson 11: RPC mecanism and dealing with exceptions
-
-- Lesson 12: Debuging GRAS programs
-
-- Lesson   : Doing proper modules
+- Lesson 14: Doing proper modules
 
 */
 

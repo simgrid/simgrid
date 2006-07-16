@@ -1,0 +1,26 @@
+/**
+@page GRAS_tut_tour_exceptions Lesson 8: Handling errors through exceptions (TODO)
+
+\section GRAS_tut_tour_exceptions_toc Table of Contents
+ - \ref GRAS_tut_tour_exceptions_intro
+ - \ref GRAS_tut_tour_exceptions_use
+ - \ref GRAS_tut_tour_exceptions_recap
+   
+<hr>
+
+\section GRAS_tut_tour_exceptions_intro Introduction
+
+\section GRAS_tut_tour_exceptions_use Putting exceptions into action
+
+
+\section GRAS_tut_tour_exceptions_recap Recapping everything together
+
+The program now reads:
+\include 8-exceptions.c
+
+Which produces the expected output:
+\include 8-exceptions.output
+
+Go to \ref GRAS_tut_tour_rpc
+
+*/

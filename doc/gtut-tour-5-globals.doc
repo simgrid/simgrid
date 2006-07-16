@@ -1,6 +1,16 @@
 /**
 @page GRAS_tut_tour_globals Lesson 5: Using globals in processes
 
+\section GRAS_tut_tour_globals_toc Table of Contents
+ - \ref GRAS_tut_tour_globals_intro
+ - \ref GRAS_tut_tour_globals_use
+ - \ref GRAS_tut_tour_callback_pitfall
+ - \ref GRAS_tut_tour_callback_recap
+    
+<hr>
+
+\section GRAS_tut_tour_globals_intro Introduction
+
 Callbacks are great to express your processes as state machines, but they
 pose another problem: callbacks don't have acces to the variable declared
 within the scope of the process' main function (of course). You should
@@ -12,6 +22,8 @@ the several instances of your process, leading to bad problems.
 
 Instead, you you have to put all globals in a structure, and let GRAS handle
 it with the gras_userdata_* functions (there is only 3 of them ;). 
+
+\section GRAS_tut_tour_globals_use Putting globals into action
 
 We will now modify the example to add a "kill" message, and let the server
 loop on incoming messages until it gets such a message. We only need a
@@ -77,6 +89,6 @@ That's it, we're done. We have a server able to handle any number of
 messages, which the client can stop remotely properly. That's already
 something, hu?
 
-\ref GRAS_tut_tour_logs
+Go to \ref GRAS_tut_tour_logs
 
 */
