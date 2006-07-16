@@ -1,8 +1,5 @@
 .deps .libs Makefile Makefile.in _*.c chrono_multiplier chrono_simulator
 test_sg
 test_rl
-chrono.Makefile.am
-chrono.Makefile.local
-chrono.Makefile.remote
-chrono.deploy.sh
+chrono.mk
 chrono.trace

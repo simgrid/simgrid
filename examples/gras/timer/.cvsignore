@@ -1,8 +1,5 @@
 .deps .libs Makefile Makefile.in _*.c timer_client timer_simulator
 test_sg
 test_rl
-timer.Makefile.am
-timer.Makefile.local
-timer.Makefile.remote
-timer.deploy.sh
+timer.mk
 timer.trace
