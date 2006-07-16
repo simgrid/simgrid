@@ -19,75 +19,84 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "9: RPC"=GRAS_tut_tour_rpc.html
     --> \endhtmlonly
 
- - \ref GRAS_tut_tour_setup
-    - \ref GRAS_tut_tour_setup_C
-    - \ref GRAS_tut_tour_setup_plat
-    - \ref GRAS_tut_tour_setup_deploy
-    - \ref GRAS_tut_tour_setup_glue
-    - \ref GRAS_tut_tour_setup_make
-    - \ref GRAS_tut_tour_setup_start
+<b>Part 1: Bases</b>
+
+   - \ref GRAS_tut_tour_install
+
+   - \ref GRAS_tut_tour_setup
+      - \ref GRAS_tut_tour_setup_C
+      - \ref GRAS_tut_tour_setup_plat
+      - \ref GRAS_tut_tour_setup_deploy
+      - \ref GRAS_tut_tour_setup_glue
+      - \ref GRAS_tut_tour_setup_make
+      - \ref GRAS_tut_tour_setup_start
+  
+<b>Part 2: Message passing</b>
+  
+   - \ref GRAS_tut_tour_simpleexchange
+      - \ref GRAS_tut_tour_simpleexchange_msgtype
+      - \ref GRAS_tut_tour_simpleexchange_socks
+      - \ref GRAS_tut_tour_simpleexchange_exchange
+      - \ref GRAS_tut_tour_simpleexchange_recaping
     
- - \ref GRAS_tut_tour_simpleexchange
-    - \ref GRAS_tut_tour_simpleexchange_msgtype
-    - \ref GRAS_tut_tour_simpleexchange_socks
-    - \ref GRAS_tut_tour_simpleexchange_exchange
-    - \ref GRAS_tut_tour_simpleexchange_recaping
+   - \ref GRAS_tut_tour_args
+      - \ref GRAS_tut_tour_args_use
+      - \ref GRAS_tut_tour_args_sg
+      - \ref GRAS_tut_tour_args_recap
     
- - \ref GRAS_tut_tour_args
-    - \ref GRAS_tut_tour_args_use
-    - \ref GRAS_tut_tour_args_sg
-    - \ref GRAS_tut_tour_args_recap
+   - \ref GRAS_tut_tour_callbacks
+      - \ref GRAS_tut_tour_callbacks_declare
+      - \ref GRAS_tut_tour_callbacks_attach
+      - \ref GRAS_tut_tour_callbacks_handle
+      - \ref GRAS_tut_tour_callback_recap
+     
+   - \ref GRAS_tut_tour_globals
+      - \ref GRAS_tut_tour_globals_intro
+      - \ref GRAS_tut_tour_globals_use
+      - \ref GRAS_tut_tour_callback_pitfall
+      - \ref GRAS_tut_tour_callback_recap
+      
+   - \ref GRAS_tut_tour_logs
+      - \ref GRAS_tut_tour_logs_intro
+      - \ref GRAS_tut_tour_logs_practice
+      - \ref GRAS_tut_tour_logs_recap
+      - \ref GRAS_tut_tour_logs_config
     
- - \ref GRAS_tut_tour_callbacks
-    - \ref GRAS_tut_tour_callbacks_declare
-    - \ref GRAS_tut_tour_callbacks_attach
-    - \ref GRAS_tut_tour_callbacks_handle
-    - \ref GRAS_tut_tour_callback_recap
+   - \ref GRAS_tut_tour_timers
+      - \ref GRAS_tut_tour_timers_intro
+      - \ref GRAS_tut_tour_timers_use
+      - \ref GRAS_tut_tour_timers_recap
     
- - \ref GRAS_tut_tour_globals
-    - \ref GRAS_tut_tour_globals_intro
-    - \ref GRAS_tut_tour_globals_use
-    - \ref GRAS_tut_tour_callback_pitfall
-    - \ref GRAS_tut_tour_callback_recap
-    
- - \ref GRAS_tut_tour_logs
-    - \ref GRAS_tut_tour_logs_intro
-    - \ref GRAS_tut_tour_logs_practice
-    - \ref GRAS_tut_tour_logs_recap
-    - \ref GRAS_tut_tour_logs_config
-    
- - \ref GRAS_tut_tour_timers
-    - \ref GRAS_tut_tour_timers_intro
-    - \ref GRAS_tut_tour_timers_use
-    - \ref GRAS_tut_tour_timers_recap
-    
- - \ref GRAS_tut_tour_exceptions
-    - \ref GRAS_tut_tour_exceptions_intro
-    - \ref GRAS_tut_tour_exceptions_use
-    - \ref GRAS_tut_tour_exceptions_recap
-    
- - \ref GRAS_tut_tour_rpc
-    - \ref GRAS_tut_tour_rpc_intro
-    - \ref GRAS_tut_tour_rpc_use
-    - \ref GRAS_tut_tour_rpc_recap
- 
+   - \ref GRAS_tut_tour_exceptions
+      - \ref GRAS_tut_tour_exceptions_intro
+      - \ref GRAS_tut_tour_exceptions_use
+      - \ref GRAS_tut_tour_exceptions_recap
+     
+   - \ref GRAS_tut_tour_rpc
+      - \ref GRAS_tut_tour_rpc_intro
+      - \ref GRAS_tut_tour_rpc_use
+      - \ref GRAS_tut_tour_rpc_recap
+  
+Unfortunately, the tour is not terminated yet, but I already know the kind
+of missi^W lessons I want to add:
+
+<b>Part 3: Data description</b>
+   - Exchanging simple data through ping-pong
+   - Automatic parsing of static data types
+   - Automatic parsing of datatypes containing pointers
+   - Exchanging dynars (and matrices)
+   - Manual data description: the full power
+   - Exchange callbacks: yes you can
+     
+<b>Part 4: Advanced topics</b>
+   - Computation virtualization
+   - Splitting in several files (logs, datadesc)
+   - Debugging GRAS programs
+   - Doing proper GRAS modules
+  
 <hr>
 
 
-\section GRAS_tut_tour_todo TODO
-
-Unfortunately, the tour is not terminated yet, and here are some ideas of
-missing missi^W lessons:
-
-- Lesson 10: Exchanging simple data through ping-pong
-- Lesson 11: More complex data description (automatic parsing, manual
-   description) and example. May need more than one lesson.
-
-- Lesson 12: Splitting in several files
-
-- Lesson 13: Debuging GRAS programs
-
-- Lesson 14: Doing proper modules
 
 */
 

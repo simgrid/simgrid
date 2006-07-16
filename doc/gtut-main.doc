@@ -9,6 +9,8 @@ This section constitutes a tutorial to the GRAS programming environment.
    If you are new to the system and want to start using the tool as quickly
    as possible and learn by trying things out instead of reading a lenghty
    manual, you might want to start from next section directly.
+   - \ref GRAS_tut_intro_what
+   - \ref GRAS_tut_intro_model
 
  - \ref GRAS_tut_tour :\n
    This section aims at turning new-comers into GRAS power user. It briefly
