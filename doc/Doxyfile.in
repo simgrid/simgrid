@@ -415,6 +415,7 @@ INPUT                  = @srcdir@/index.doc \
 				@srcdir@/gtut-tour-4-callback.doc \
 				@srcdir@/gtut-tour-5-globals.doc \
 				@srcdir@/gtut-tour-6-logs.doc \
+				@srcdir@/gtut-tour-7-timers.doc \
 			 \
                          ./logcategories.doc \
 			 \

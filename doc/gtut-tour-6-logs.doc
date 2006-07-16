@@ -79,6 +79,9 @@ the others are not documented for sake of clarity in the relevant document).
 Ie, VERB10 does not exist, but VERB0 does exist. I may add more if someone
 wants more, but that should be enough for most purposes.
 
+Note also that there is no need to add a '\n' at the end of your format
+line, it gets automatically added.
+
 \section GRAS_tut_tour_logs_recap Recapping everything together
 
 Once we changed any fprintf of our code to some of these macros, the program
@@ -103,5 +106,5 @@ Again, you should refer to the \ref XBT_log section for more information on
 how to configure the logs. Or you can proceed with the next lesson, of
 course.
 
-\ref GRAS_tut_tour_timer
+\ref GRAS_tut_tour_timers
 */

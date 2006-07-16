@@ -12,8 +12,9 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "2: Simple messaging"=GRAS_tut_tour_simpleexchange.html
       DOXYGEN_NAVBAR_CHILD "3: Process args"=GRAS_tut_tour_args.html
       DOXYGEN_NAVBAR_CHILD "4: Callbacks"=GRAS_tut_tour_callbacks.html
-      DOXYGEN_NAVBAR_CHILD "5: Callbacks"=GRAS_tut_tour_globals.html
+      DOXYGEN_NAVBAR_CHILD "5: Globals"=GRAS_tut_tour_globals.html
       DOXYGEN_NAVBAR_CHILD "6: Logs"=GRAS_tut_tour_logs.html
+      DOXYGEN_NAVBAR_CHILD "7: Timers"=GRAS_tut_tour_timers.html
     --> \endhtmlonly
 
  - \ref GRAS_tut_tour_install
@@ -23,6 +24,7 @@ all features available in GRAS.
  - \ref GRAS_tut_tour_callbacks
  - \ref GRAS_tut_tour_globals
  - \ref GRAS_tut_tour_logs
+ - \ref GRAS_tut_tour_timers
  
 <hr>
 
@@ -32,9 +34,8 @@ all features available in GRAS.
 Unfortunately, the tour is not terminated yet, and here are some ideas of
 missing missi^W lessons:
 
-- Lesson 5: Globals (for a kill message)
-- Lesson 6: Timers
-- Lesson 7: Using logs
+- Lesson 8: Timers
+- Lesson 7: Exceptions
 
 - Lesson 8: Exchanging simple data through ping-pong
 - Lesson 9: More complex data description (automatic parsing, manual description) and example

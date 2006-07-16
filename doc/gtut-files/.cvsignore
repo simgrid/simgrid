@@ -51,3 +51,12 @@ _5-globals_simulator.c
 _6-logs_client.c
 _6-logs_server.c
 _6-logs_simulator.c
+
+7-timers.mk
+7-timers.trace
+7-timers_client
+7-timers_server
+7-timers_simulator
+_7-timers_client.c
+_7-timers_server.c
+_7-timers_simulator.c

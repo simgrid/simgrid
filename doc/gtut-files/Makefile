@@ -2,7 +2,7 @@
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
 all: 1-bones.output 2-simple.output 3-args.output 4-callback.output \
-     5-globals.output 6-logs.output
+     5-globals.output 6-logs.output 7-timers.output
 
 veryclean: clean
 	rm *.output*
@@ -166,4 +166,29 @@ _6-logs_client.c _6-logs_server.c _6-logs_simulator.c: 6-logs.c 3-args.xml
 clean::
 	if [ -e 6-logs.mk ] ; then make -f 6-logs.mk clean; fi
 	rm -f _6-logs_client.c _6-logs_server.c _6-logs_simulator.c 6-logs.trace 6-logs.mk
+
+
+# Lesson 7: timers
+########################################
+
+7-timers.output: 7-timers_client 7-timers_server 7-timers_simulator
+	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
+	./7-timers_server 12345                             2>&1 |sed s/7-timers/test/  >> $@ 2>&1&
+	./7-timers_client 127.0.0.1 12345                   2>&1 |sed s/7-timers/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./7-timers_simulator gtut-platform.xml 3-args.xml   2>&1 |sed s/7-timers/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+	killall 7-timers_server 7-timers_client 2>/dev/null || true
+
+7-timers_client 7-timers_server 7-timers_simulator: _7-timers_client.c _7-timers_server.c _7-timers_simulator.c
+	make -f 7-timers.mk
+
+_7-timers_client.c _7-timers_server.c _7-timers_simulator.c: 7-timers.c 3-args.xml
+	../../tools/gras/gras_stub_generator 7-timers 3-args.xml >/dev/null
+
+clean::
+	if [ -e 7-timers.mk ] ; then make -f 7-timers.mk clean; fi
+	rm -f _7-timers_client.c _7-timers_server.c _7-timers_simulator.c 7-timers.trace 7-timers.mk
 
