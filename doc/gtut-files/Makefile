@@ -2,7 +2,8 @@
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
 all: 1-bones.output 2-simple.output 3-args.output 4-callback.output \
-     5-globals.output 6-logs.output 7-timers.output
+     5-globals.output 6-logs.output 7-timers.output 8-exceptions.output \
+     
 
 veryclean: clean
 	rm *.output*
@@ -191,4 +192,34 @@ _7-timers_client.c _7-timers_server.c _7-timers_simulator.c: 7-timers.c 3-args.x
 clean::
 	if [ -e 7-timers.mk ] ; then make -f 7-timers.mk clean; fi
 	rm -f _7-timers_client.c _7-timers_server.c _7-timers_simulator.c 7-timers.trace 7-timers.mk
+
+# Lesson 8: exceptions
+########################################
+
+8-exceptions.output: 8-exceptions_client 8-exceptions_server 8-exceptions_simulator
+	echo '$$ ./test_server & ./test_client 127.0.0.1 '             > $@
+	./8-exceptions_server                                   2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1&
+	./8-exceptions_client 127.0.0.1                         2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_server --cheat & ./test_client 127.0.0.1 '    >> $@
+	./8-exceptions_server --cheat                           2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1&
+	./8-exceptions_client 127.0.0.1                         2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$ killall test_server'                                 >> $@
+	killall 8-exceptions_server 8-exceptions_client 2>/dev/null || true
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./8-exceptions_simulator gtut-platform.xml 3-args.xml   2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+
+8-exceptions_client 8-exceptions_server 8-exceptions_simulator: _8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c
+	make -f 8-exceptions.mk
+
+_8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c: 8-exceptions.c 3-args.xml
+	../../tools/gras/gras_stub_generator 8-exceptions 3-args.xml >/dev/null
+
+clean::
+	if [ -e 8-exceptions.mk ] ; then make -f 8-exceptions.mk clean; fi
+	rm -f _8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c 8-exceptions.trace 8-exceptions.mk
 

@@ -60,3 +60,12 @@ _6-logs_simulator.c
 _7-timers_client.c
 _7-timers_server.c
 _7-timers_simulator.c
+
+8-exceptions.mk
+8-exceptions.trace
+8-exceptions_client
+8-exceptions_server
+8-exceptions_simulator
+_8-exceptions_client.c
+_8-exceptions_server.c
+_8-exceptions_simulator.c
