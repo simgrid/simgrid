@@ -70,6 +70,35 @@ uninstall-local:
 	   rm -f $(prefix)/doc/simgrid/$$file ;\
 	done
 
+
+check-gtut-tocs:
+	@echo Check individual TOCs
+	@for n in gtut-tour-*.doc ; do \
+	  sed -n '/Table of Contents/,/hr/p' $$n|grep ref > tmp.curtoc; \
+	  \
+	  grep '\\section' $$n | grep -v _toc| \
+	     sed -e 's/\\section //' -e 's/ .*//' |sed  's/^/ - \\ref /' > tmp.realtoc; \
+	  \
+	  if ! diff -q tmp.curtoc tmp.realtoc >/dev/null; then \
+	    echo Wrong toc for $$n. Should be ; \
+	    cat tmp.realtoc; \
+	  fi ; \
+	done
+	@rm tmp.realtoc tmp.curtoc
+	@echo "Check main TOC"
+	@for n in gtut-tour-*doc; do \
+	  grep @page $$n |sed -e 's/@page //' -e 's/ .*//' -e 's/^/ - \\ref /' >>tmp.realtoc;\
+	  sed -n -e '/Table of Contents/,/hr/p' $$n|sed -e 's/^/   /'|\
+	     grep -v toc|grep -v '<hr>'|grep [^[:blank:]] >>tmp.realtoc;\
+	done
+	@grep ' *- \\ref' gtut-tour.doc > tmp.curtoc
+	@if ! diff -b -q tmp.curtoc tmp.realtoc >/dev/null; then \
+	  echo Wrong toc for gtut-tour.doc. Should be ; \
+	  cat tmp.realtoc; \
+	fi ;
+	@rm tmp.realtoc tmp.curtoc
+	
+
 .PHONY: html
 
 include $(top_srcdir)/acmacro/dist-files.mk
