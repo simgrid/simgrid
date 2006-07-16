@@ -150,22 +150,23 @@ double gras_msg_timer_handle(void) {
      DEBUG2("Action %p expires in %f", timer->action, untilthis);
      
      if (untilthis <= 0.0) {
+       void_f_void_t action = timer->action;
 	
-	DEBUG5("[%.0f] Serve %s action %p (%f<%f)",gras_os_time(),
+       DEBUG5("[%.0f] Serve %s action %p (%f<%f)",gras_os_time(),
 	      timer->repeat ? "repetitive" : "delayed", timer->action,
 	      timer->expiry, now);
-	timer->action();
 	
-	if (timer->repeat) {	
-	   timer->expiry = now + timer->period;
-	   DEBUG4("[%.0f] Re-arm repetitive action %p for %f (period=%f)",
-		 gras_os_time(),
-		 timer->action, timer->expiry, timer->period);
-	} else {
-	   DEBUG2("[%.0f] Remove %p now that it's done", gras_os_time(), timer->action);
-	   xbt_dynar_cursor_rm(pd->timers, &cursor);
-	}
-	return 0.0;
+       if (timer->repeat) {	
+	 timer->expiry = now + timer->period;
+	 DEBUG4("[%.0f] Re-arm repetitive action %p for %f (period=%f)",
+		gras_os_time(),
+		timer->action, timer->expiry, timer->period);
+       } else {
+	 DEBUG2("[%.0f] Remove %p now that it's done", gras_os_time(), timer->action);
+	 xbt_dynar_cursor_rm(pd->timers, &cursor);
+       }
+       action();
+       return 0.0;
      } else if (untilthis < untilnext || untilnext == -1) {
 	untilnext = untilthis;
      }
