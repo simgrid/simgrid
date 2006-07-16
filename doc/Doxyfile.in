@@ -414,6 +414,7 @@ INPUT                  = @srcdir@/index.doc \
 				@srcdir@/gtut-tour-3-args.doc \
 				@srcdir@/gtut-tour-4-callback.doc \
 				@srcdir@/gtut-tour-5-globals.doc \
+				@srcdir@/gtut-tour-6-logs.doc \
 			 \
                          ./logcategories.doc \
 			 \

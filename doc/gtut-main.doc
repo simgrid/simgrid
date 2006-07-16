@@ -15,6 +15,13 @@ This section constitutes a tutorial to the GRAS programming environment.
    explains how to install the framework and setup your own projects. Then,
    an example distributed application is builded incrementaly to show the
    several aspects of the framework.
+   - \ref GRAS_tut_tour_install
+   - \ref GRAS_tut_tour_setup
+   - \ref GRAS_tut_tour_simpleexchange
+   - \ref GRAS_tut_tour_args
+   - \ref GRAS_tut_tour_callbacks
+   - \ref GRAS_tut_tour_globals
+   - \ref GRAS_tut_tour_logs
 
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_LABEL="Tutorial"

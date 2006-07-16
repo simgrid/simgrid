@@ -42,3 +42,12 @@ _4-callback_simulator.c
 _5-globals_client.c
 _5-globals_server.c
 _5-globals_simulator.c
+
+6-logs.mk
+6-logs.trace
+6-logs_client
+6-logs_server
+6-logs_simulator
+_6-logs_client.c
+_6-logs_server.c
+_6-logs_simulator.c

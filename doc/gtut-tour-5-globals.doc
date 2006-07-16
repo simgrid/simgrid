@@ -77,6 +77,6 @@ That's it, we're done. We have a server able to handle any number of
 messages, which the client can stop remotely properly. That's already
 something, hu?
 
-\ref GRAS_tut_tour_timer
+\ref GRAS_tut_tour_logs
 
 */

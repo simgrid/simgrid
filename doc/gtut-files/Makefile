@@ -2,10 +2,10 @@
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
 all: 1-bones.output 2-simple.output 3-args.output 4-callback.output \
-     5-globals.output
+     5-globals.output 6-logs.output
 
 veryclean: clean
-	rm *.output
+	rm *.output*
 
 # Lesson 1: simple bones of project
 ########################################
@@ -15,6 +15,7 @@ veryclean: clean
 	./1-bones_client                                 >> $@ 2>&1
 	echo '$$ ./test_server'                          >> $@
 	./1-bones_server                                 >> $@ 2>&1
+	echo '$$'                                        >> $@ 
 	echo '$$ ./test_simulator platform.xml test.xml' >> $@ 
 	./1-bones_simulator gtut-platform.xml test.xml   >> $@ 2>&1
 	echo '$$'                                        >> $@ 
@@ -55,9 +56,11 @@ clean::
 	./3-args_server 12345                                         >> $@ 2>&1&
 	./3-args_client 127.0.0.1 12345                               >> $@ 2>&1
 	sleep 1
+	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
 	./3-args_simulator gtut-platform.xml 3-args.xml               >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
+	killall 3-args_server 3-args_client 2>/dev/null || true
 
 3-args_client 3-args_server 3-args_simulator: _3-args_client.c _3-args_server.c _3-args_simulator.c
 	make -f 3-args.mk
@@ -73,13 +76,15 @@ clean::
 ########################################
 
 4-callback.output: 4-callback_client 4-callback_server 4-callback_simulator
-	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
-	./4-callback_server 12345                                     >> $@ 2>&1&
-	./4-callback_client 127.0.0.1 12345                           >> $@ 2>&1
+	echo '$$ ./test_server 23451 & ./test_client 127.0.0.1 23451'  > $@ 
+	./4-callback_server 23451                                     >> $@ 2>&1&
+	./4-callback_client 127.0.0.1 23451                           >> $@ 2>&1
 	sleep 1
+	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
 	./4-callback_simulator gtut-platform.xml 3-args.xml           >> $@ 2>&1
-	echo '$$'                                                     >> $@ 
+	echo '$$'                                                     >> $@
+	killall 4-callback_server 4-callback_client 2>/dev/null || true
 
 4-callback_client 4-callback_server 4-callback_simulator: _4-callback_client.c _4-callback_server.c _4-callback_simulator.c
 	make -f 4-callback.mk
@@ -99,9 +104,11 @@ clean::
 	./5-globals_server 12345                                      >> $@ 2>&1&
 	./5-globals_client 127.0.0.1 12345                            >> $@ 2>&1
 	sleep 1
+	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
 	./5-globals_simulator gtut-platform.xml 3-args.xml            >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
+	killall 5-globals_server 5-globals_client 2>/dev/null || true
 
 5-globals_client 5-globals_server 5-globals_simulator: _5-globals_client.c _5-globals_server.c _5-globals_simulator.c
 	make -f 5-globals.mk
@@ -112,4 +119,51 @@ _5-globals_client.c _5-globals_server.c _5-globals_simulator.c: 5-globals.c 3-ar
 clean::
 	if [ -e 5-globals.mk ] ; then make -f 5-globals.mk clean; fi
 	rm -f _5-globals_client.c _5-globals_server.c _5-globals_simulator.c 5-globals.trace 5-globals.mk
+
+# Lesson 6: logs
+########################################
+
+6-logs.output: 6-logs_client 6-logs_server 6-logs_simulator 6-logs.output.verbose 6-logs.output.error
+	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
+	./6-logs_server 12345                             2>&1 |sed s/6-logs/test/  >> $@ 2>&1&
+	./6-logs_client 127.0.0.1 12345                   2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./6-logs_simulator gtut-platform.xml 3-args.xml   2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+	killall 6-logs_server 6-logs_client 2>/dev/null || true
+
+6-logs.output.verbose: 6-logs_client 6-logs_server 6-logs_simulator
+	echo '$$ ./test_server 12345 --gras-log=test.thres=verbose & ./test_client 127.0.0.1 12345 --gras-log=test.thres=verbose'  > $@
+	./6-logs_server 12345 --gras-log=test.thres=verbose                            2>&1 |sed s/6-logs/test/  >> $@ 2>&1&
+	./6-logs_client 127.0.0.1 12345 --gras-log=test.thres=verbose                  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml --gras-log=test.thres=verbose'              >> $@
+	./6-logs_simulator gtut-platform.xml 3-args.xml --gras-log=test.thres=verbose  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+	killall 6-logs_server 6-logs_client 2>/dev/null || true
+
+6-logs.output.error: 6-logs_client 6-logs_server 6-logs_simulator
+	echo '$$ ./test_server 12345 --gras-log=root.thres=error & ./test_client 127.0.0.1 12345 --gras-log=root.thres=error'  > $@
+	./6-logs_server 12345 --gras-log=root.thres=error                            2>&1 |sed s/6-logs/test/  >> $@ 2>&1&
+	./6-logs_client 127.0.0.1 12345 --gras-log=root.thres=error                  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml --gras-log=root.thres=error'              >> $@
+	./6-logs_simulator gtut-platform.xml 3-args.xml --gras-log=root.thres=error  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+	killall 6-logs_server 6-logs_client 2>/dev/null || true
+
+
+6-logs_client 6-logs_server 6-logs_simulator: _6-logs_client.c _6-logs_server.c _6-logs_simulator.c
+	make -f 6-logs.mk
+
+_6-logs_client.c _6-logs_server.c _6-logs_simulator.c: 6-logs.c 3-args.xml
+	../../tools/gras/gras_stub_generator 6-logs 3-args.xml >/dev/null
+
+clean::
+	if [ -e 6-logs.mk ] ; then make -f 6-logs.mk clean; fi
+	rm -f _6-logs_client.c _6-logs_server.c _6-logs_simulator.c 6-logs.trace 6-logs.mk
 

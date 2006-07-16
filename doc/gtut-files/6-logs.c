@@ -1,5 +1,7 @@
 #include <gras.h>
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(test,"My little example");
+
 typedef struct {
    int killed;
 } server_data_t;
@@ -9,8 +11,8 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   gras_socket_t client = gras_msg_cb_ctx_from(ctx);
   server_data_t *globals=(server_data_t*)gras_userdata_get();
    
-  fprintf(stderr,"Argh, killed by %s:%d! Bye folks...\n",
-   	  gras_socket_peer_name(client), gras_socket_peer_port(client));
+  CRITICAL2("Argh, killed by %s:%d! Bye folks...",
+	gras_socket_peer_name(client), gras_socket_peer_port(client));
   
   globals->killed = 1;
    
@@ -20,8 +22,8 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   gras_socket_t client = gras_msg_cb_ctx_from(ctx);
 
-  fprintf(stderr,"Cool, we received the message from %s:%d.\n",
-   	  gras_socket_peer_name(client), gras_socket_peer_port(client));
+  INFO2("Cool, we received the message from %s:%d.",
+	gras_socket_peer_name(client), gras_socket_peer_port(client));
   
   return 1;
 } /* end_of_hello_callback */
@@ -60,16 +62,16 @@ int client(int argc, char *argv[]) {
   gras_msgtype_declare("kill", NULL);
   mysock = gras_socket_server_range(1024, 10000, 0, 0);
   
-  fprintf(stderr,"Client ready; listening on %d\n", gras_socket_my_port(mysock));
+  VERB1("Client ready; listening on %d", gras_socket_my_port(mysock));
   
   gras_os_sleep(1.5); /* sleep 1 second and half */
   toserver = gras_socket_client(argv[1], atoi(argv[2]));
   
   gras_msg_send(toserver,gras_msgtype_by_name("hello"), NULL);
-  fprintf(stderr,"we sent the data to the server on %s. Let's do it again for fun\n", gras_socket_peer_name(toserver));
+  INFO1("we sent the data to the server on %s. Let's do it again for fun", gras_socket_peer_name(toserver));
   gras_msg_send(toserver,gras_msgtype_by_name("hello"), NULL);
    
-  fprintf(stderr,"Ok. Enough. Have a rest, and then kill the server\n");
+  INFO0("Ok. Enough. Have a rest, and then kill the server");
   gras_os_sleep(5); /* sleep 1 second and half */
   gras_msg_send(toserver,gras_msgtype_by_name("kill"), NULL);
 
