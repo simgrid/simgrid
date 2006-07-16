@@ -244,18 +244,18 @@ const char * xbt_ex_catname(xbt_errcat_t cat);
 
 /** @brief Structure describing an exception */
 typedef struct {
-  char        *msg;      /**< human readable message; to be freed */
+  char        *msg;      /**< human readable message */
   xbt_errcat_t category; /**< category like HTTP (what went wrong) */
   int          value;    /**< like errno (why did it went wrong) */
   /* throw point */
-  short int remote; /* whether it was raised remotely */
-  char *host;     /* NULL for localhost; hostname if remote */
+  short int remote; /**< whether it was raised remotely */
+  char *host;     /**< NULL locally thrown exceptions; full hostname if remote ones */
   /* FIXME: host should be hostname:port[#thread] */
-  char *procname; 
-  long int pid;
-  char *file;     /**< to be freed only for remote exceptions */
-  int   line;     
-  char *func;     /**< to be freed only for remote exceptions */
+  char *procname; /**< Name of the process who thrown this */
+  long int pid;   /**< PID of the process who thrown this */
+  char *file;     /**< Thrown point */
+  int   line;     /**< Thrown point */
+  char *func;     /**< Thrown point */
   /* Backtrace */
   int   used;
   char **bt_strings; /* only filed on display (or before the network propagation) */
