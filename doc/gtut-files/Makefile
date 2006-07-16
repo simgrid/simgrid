@@ -1,7 +1,8 @@
 # This works mainly on my box for now
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
-all: 1-bones.output 2-simple.output 3-args.output 4-callback.output
+all: 1-bones.output 2-simple.output 3-args.output 4-callback.output \
+     5-globals.output
 
 veryclean: clean
 	rm *.output
@@ -89,4 +90,26 @@ _4-callback_client.c _4-callback_server.c _4-callback_simulator.c: 4-callback.c 
 clean::
 	if [ -e 4-callback.mk ] ; then make -f 4-callback.mk clean; fi
 	rm -f _4-callback_client.c _4-callback_server.c _4-callback_simulator.c 4-callback.trace 4-callback.mk
+
+# Lesson 5: globals
+########################################
+
+5-globals.output: 5-globals_client 5-globals_server 5-globals_simulator
+	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
+	./5-globals_server 12345                                      >> $@ 2>&1&
+	./5-globals_client 127.0.0.1 12345                            >> $@ 2>&1
+	sleep 1
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./5-globals_simulator gtut-platform.xml 3-args.xml            >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+
+5-globals_client 5-globals_server 5-globals_simulator: _5-globals_client.c _5-globals_server.c _5-globals_simulator.c
+	make -f 5-globals.mk
+
+_5-globals_client.c _5-globals_server.c _5-globals_simulator.c: 5-globals.c 3-args.xml
+	../../tools/gras/gras_stub_generator 5-globals 3-args.xml >/dev/null
+
+clean::
+	if [ -e 5-globals.mk ] ; then make -f 5-globals.mk clean; fi
+	rm -f _5-globals_client.c _5-globals_server.c _5-globals_simulator.c 5-globals.trace 5-globals.mk
 

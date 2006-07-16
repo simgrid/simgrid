@@ -1,9 +1,9 @@
 $ ./test_server 12345 & ./test_client 127.0.0.1 12345
 Client ready; listening on 1024
 That's it, we sent the data to the server on 127.0.0.1
-[blaise:client:(23315) 0.000005] gras/gras.c:79: [gras/INFO] Exiting GRAS
+[blaise:client:(6454) 0.000005] gras/gras.c:79: [gras/INFO] Exiting GRAS
 Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(23313) 0.000004] gras/gras.c:79: [gras/INFO] Exiting GRAS
+[blaise:server:(6452) 0.000004] gras/gras.c:79: [gras/INFO] Exiting GRAS
 $ ./test_simulator platform.xml test.xml
 Client ready; listening on 1024
 That's it, we sent the data to the server on Jacquelin

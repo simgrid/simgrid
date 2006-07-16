@@ -407,8 +407,13 @@ INPUT                  = @srcdir@/index.doc \
                          @srcdir@/module-sd.doc \
 			 \
 			 @srcdir@/gtut-main.doc \
-				@srcdir@/gtut-introduction.doc \
-				@srcdir@/gtut-tour.doc \
+			    @srcdir@/gtut-introduction.doc \
+			    @srcdir@/gtut-tour.doc \
+				@srcdir@/gtut-tour-1-bones.doc \
+				@srcdir@/gtut-tour-2-simple.doc \
+				@srcdir@/gtut-tour-3-args.doc \
+				@srcdir@/gtut-tour-4-callback.doc \
+				@srcdir@/gtut-tour-5-globals.doc \
 			 \
                          ./logcategories.doc \
 			 \

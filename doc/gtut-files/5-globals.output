@@ -1,0 +1,22 @@
+$ ./test_server 12345 & ./test_client 127.0.0.1 12345
+Client ready; listening on 1024
+we sent the data to the server on 127.0.0.1. Let's do it again for fun
+Ok. Enough. Have a rest, and then kill the server
+Cool, we received the message from 127.0.0.1:1024.
+[blaise:client:(18581) 0.000005] gras/gras.c:79: [gras/INFO] Exiting GRAS
+Cool, we received the message from 127.0.0.1:1024.
+Argh, killed by 127.0.0.1:1024! Bye folks...
+$ ./test_simulator platform.xml test.xml
+Client ready; listening on 1024
+we sent the data to the server on Jacquelin. Let's do it again for fun
+Cool, we received the message from Boivin:1024.
+Ok. Enough. Have a rest, and then kill the server
+Cool, we received the message from Boivin:1024.
+[Boivin:client:(2) 0.000000] gras/gras.c:79: [gras/INFO] Exiting GRAS
+Argh, killed by Boivin:1024! Bye folks...
+[0.000000] msg/global.c:478: [msg_kernel/INFO] Oops ! Deadlock or code not perfectly clean.
+[0.000000] msg/global.c:293: [msg_kernel/INFO] MSG: 1 processes are still running, waiting for something.
+[0.000000] msg/global.c:295: [msg_kernel/INFO] MSG: <process>(<pid>) on <host>: <status>.
+[0.000000] msg/global.c:309: [msg_kernel/INFO] MSG:  server(1) on Jacquelin: [blocked] 	Listening on channel 0
+[0.000000] msg/global.c:486: [msg_kernel/INFO] Return a Warning.
+$

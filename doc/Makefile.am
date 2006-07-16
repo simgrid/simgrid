@@ -34,7 +34,7 @@ html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES)
 	@top_srcdir@/tools/doxygen/index_create.pl simgrid.tag index-API.doc
 	@top_srcdir@/tools/doxygen/toc_create.pl \
 	   @srcdir@/FAQ.doc @srcdir@/index.doc @srcdir@/contrib.doc \
-	   @srcdir@/gtut-introduction.doc @srcdir@/gtut-tour.doc
+	   @srcdir@/gtut-introduction.doc
 	: # Second pass
 	doxygen Doxyfile >/dev/null
 	: # Post-processing
