@@ -352,7 +352,6 @@ extern xbt_log_appender_t xbt_log_default_appender;
 # define CLOG9(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9 _XBT_LOG_POST
 # define CLOG10(c, p, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) _XBT_LOG_PRE(_XBT_LOGV(c),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 _XBT_LOG_POST
 #endif
-
 #define CDEBUG0(c, f)                   CLOG0(c, xbt_log_priority_debug, f)
 #define CDEBUG1(c, f,a1)                CLOG1(c, xbt_log_priority_debug, f,a1)
 #define CDEBUG2(c, f,a1,a2)             CLOG2(c, xbt_log_priority_debug, f,a1,a2)
@@ -363,6 +362,22 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CDEBUG7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
 #define CDEBUG8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
 #define CDEBUG9(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9) CLOG9(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ * \param c the category on which to log
+ * \param f the format string
+ * \param a1 first argument of the format
+ * \param a2 second argument of the format
+ * \param a3 third argument of the format
+ * \param a4 fourth argument of the format
+ * \param a5 fifth argument of the format
+ * \param a6 sixth argument of the format
+ * \param a7 seventh argument of the format
+ * \param a8 eighth argument of the format
+ * \param a9 ninth argument of the format
+ * \param a10 tenth argument of the format
+ *  @brief Log an event at the DEBUG priority on the specified category with these args (CDEBUGn exists for any n<10).
+ */
 #define CDEBUG10(c, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) CLOG10(c, xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
 
 #define CVERB0(c, f)                   CLOG0(c, xbt_log_priority_verbose, f)
@@ -371,6 +386,10 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CVERB3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_verbose, f,a1,a2,a3)
 #define CVERB4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_verbose, f,a1,a2,a3,a4)
 #define CVERB5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the VERB priority on the specified category with these args (CVERBn exists for any n<6).
+ */
 #define CVERB6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6)
 
 #define CINFO0(c, f)                   CLOG0(c, xbt_log_priority_info, f)
@@ -381,6 +400,10 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CINFO5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5)
 #define CINFO6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6)
 #define CINFO7(c, f,a1,a2,a3,a4,a5,a6,a7) CLOG7(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the INFO priority on the specified category with these args (CINFOn exists for any n<8).
+ */
 #define CINFO8(c, f,a1,a2,a3,a4,a5,a6,a7,a8) CLOG8(c, xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8)
 
 #define CWARN0(c, f)                   CLOG0(c, xbt_log_priority_warning, f)
@@ -389,6 +412,10 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CWARN3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_warning, f,a1,a2,a3)
 #define CWARN4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_warning, f,a1,a2,a3,a4)
 #define CWARN5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the WARN priority on the specified category with these args (CWARNn exists for any n<6).
+ */
 #define CWARN6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
 
 #define CERROR0(c, f)                   CLOG0(c, xbt_log_priority_error, f)
@@ -397,6 +424,10 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CERROR3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_error, f,a1,a2,a3)
 #define CERROR4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_error, f,a1,a2,a3,a4)
 #define CERROR5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the ERROR priority on the specified category with these args (CERRORn exists for any n<6).
+ */
 #define CERROR6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6)
 
 #define CCRITICAL0(c, f)                   CLOG0(c, xbt_log_priority_critical, f)
@@ -405,6 +436,10 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define CCRITICAL3(c, f,a1,a2,a3)          CLOG3(c, xbt_log_priority_critical, f,a1,a2,a3)
 #define CCRITICAL4(c, f,a1,a2,a3,a4)       CLOG4(c, xbt_log_priority_critical, f,a1,a2,a3,a4)
 #define CCRITICAL5(c, f,a1,a2,a3,a4,a5)    CLOG5(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the CRITICAL priority on the specified category with these args (CCRITICALn exists for any n<6).
+ */
 #define CCRITICAL6(c, f,a1,a2,a3,a4,a5,a6) CLOG6(c, xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
 
 #ifdef XBT_LOG_MAYDAY
@@ -433,22 +468,6 @@ extern xbt_log_appender_t xbt_log_default_appender;
 # define LOG10(p,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) _XBT_LOG_PRE((*_XBT_LOGV(default)),p) ,f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 _XBT_LOG_POST
 #endif
 
-/** \name DEBUG
- * \ingroup XBT_log
- * Log something to the current default category under the debug priority.
- * \param f the format string
- * \param a1 first argument of the format
- * \param a2 second argument of the format
- * \param a3 third argument of the format
- * \param a4 fourth argument of the format
- * \param a5 fifth argument of the format
- * \param a6 sixth argument of the format
- *
- * The macros DEBUG0 ... DEBUG5 naturally also exist, but are not listed here 
- * for sake of clarity. They just differ in the number of arguments passed
- * along with the format string.
- */
-/* @{ */
 #define DEBUG0(f)                   LOG0(xbt_log_priority_debug, f)
 #define DEBUG1(f,a1)                LOG1(xbt_log_priority_debug, f,a1)
 #define DEBUG2(f,a1,a2)             LOG2(xbt_log_priority_debug, f,a1,a2)
@@ -459,12 +478,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define DEBUG7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7)
 #define DEBUG8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8)
 #define DEBUG9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9) LOG9(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
-#define DEBUG10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-/* @} */
-
-/** \name VERB
- * \ingroup XBT_log
- * Log something to the current default category under the verbose priority.
+/** @ingroup XBT_log
+ *  @hideinitializer
  * \param f the format string
  * \param a1 first argument of the format
  * \param a2 second argument of the format
@@ -472,37 +487,26 @@ extern xbt_log_appender_t xbt_log_default_appender;
  * \param a4 fourth argument of the format
  * \param a5 fifth argument of the format
  * \param a6 sixth argument of the format
- *
- * The macros VERB0 ... VERB5 naturally also exist, but are not listed here 
- * for sake of clarity. They just differ in the number of arguments passed
- * along with the format string.
+ * \param a7 seventh argument of the format
+ * \param a8 eighth argument of the format
+ * \param a9 ninth argument of the format
+ * \param a10 tenth argument of the format
+ *  @brief Log an event at the DEBUG priority on the default category with these args (DEBUGn exists for any n<10)
  */
-/* @{ */
+#define DEBUG10(f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) LOG10(xbt_log_priority_debug, f,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+
 #define VERB0(f)                   LOG0(xbt_log_priority_verbose, f)
 #define VERB1(f,a1)                LOG1(xbt_log_priority_verbose, f,a1)
 #define VERB2(f,a1,a2)             LOG2(xbt_log_priority_verbose, f,a1,a2)
 #define VERB3(f,a1,a2,a3)          LOG3(xbt_log_priority_verbose, f,a1,a2,a3)
 #define VERB4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_verbose, f,a1,a2,a3,a4)
 #define VERB5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5)
-#define VERB6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6)
-/* @} */
-
-/** \name INFO
- * \ingroup XBT_log
- * Log something to the current default category under the info priority.
- * \param f the format string
- * \param a1 first argument of the format
- * \param a2 second argument of the format
- * \param a3 third argument of the format
- * \param a4 fourth argument of the format
- * \param a5 fifth argument of the format
- * \param a6 sixth argument of the format
- *
- * The macros INFO0 ... INFO5 naturally also exist, but are not listed here 
- * for sake of clarity. They just differ in the number of arguments passed
- * along with the format string.
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the VERB priority on the default category with these args (VERBn exists for any n<6).
  */
-/* @{ */
+#define VERB6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_verbose, f,a1,a2,a3,a4,a5,a6)
+
 #define INFO0(f)                   LOG0(xbt_log_priority_info, f)
 #define INFO1(f,a1)                LOG1(xbt_log_priority_info, f,a1)
 #define INFO2(f,a1,a2)             LOG2(xbt_log_priority_info, f,a1,a2)
@@ -511,91 +515,71 @@ extern xbt_log_appender_t xbt_log_default_appender;
 #define INFO5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_info, f,a1,a2,a3,a4,a5)
 #define INFO6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6)
 #define INFO7(f,a1,a2,a3,a4,a5,a6,a7) LOG7(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7)
-#define INFO8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8)
-/* @} */
-
-/** \name WARN
- * \ingroup XBT_log
- * Log something to the current default category under the warning priority.
- * \param f the format string
- * \param a1 first argument of the format
- * \param a2 second argument of the format
- * \param a3 third argument of the format
- * \param a4 fourth argument of the format
- * \param a5 fifth argument of the format
- * \param a6 sixth argument of the format
- *
- * The macros WARN0 ... WARN5 naturally also exist, but are not listed here 
- * for sake of clarity. They just differ in the number of arguments passed
- * along with the format string.
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the INFO priority on the default category with these args (INFOn exists for any n<8).
  */
-/* @{ */
+#define INFO8(f,a1,a2,a3,a4,a5,a6,a7,a8) LOG8(xbt_log_priority_info, f,a1,a2,a3,a4,a5,a6,a7,a8)
+
 #define WARN0(f)                   LOG0(xbt_log_priority_warning, f)
 #define WARN1(f,a1)                LOG1(xbt_log_priority_warning, f,a1)
 #define WARN2(f,a1,a2)             LOG2(xbt_log_priority_warning, f,a1,a2)
 #define WARN3(f,a1,a2,a3)          LOG3(xbt_log_priority_warning, f,a1,a2,a3)
 #define WARN4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_warning, f,a1,a2,a3,a4)
 #define WARN5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_warning, f,a1,a2,a3,a4,a5)
-#define WARN6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
-/* @} */
-
-/** \name ERROR
- * \ingroup XBT_log
- * Log something to the current default category under the error priority.
- * \param f the format string
- * \param a1 first argument of the format
- * \param a2 second argument of the format
- * \param a3 third argument of the format
- * \param a4 fourth argument of the format
- * \param a5 fifth argument of the format
- * \param a6 sixth argument of the format
- *
- * The macros ERROR0 ... ERROR5 naturally also exist, but are not listed here 
- * for sake of clarity. They just differ in the number of arguments passed
- * along with the format string.
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the WARN priority on the default category with these args (WARNn exists for any n<6).
  */
-/* @{ */
+#define WARN6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_warning, f,a1,a2,a3,a4,a5,a6)
+
 #define ERROR0(f)                   LOG0(xbt_log_priority_error, f)
 #define ERROR1(f,a1)                LOG1(xbt_log_priority_error, f,a1)
 #define ERROR2(f,a1,a2)             LOG2(xbt_log_priority_error, f,a1,a2)
 #define ERROR3(f,a1,a2,a3)          LOG3(xbt_log_priority_error, f,a1,a2,a3)
 #define ERROR4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_error, f,a1,a2,a3,a4)
 #define ERROR5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_error, f,a1,a2,a3,a4,a5)
-#define ERROR6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6)
-/* @} */
-
-/** \name CRITICAL
- * \ingroup XBT_log
- * Log something to the current default category under the critical priority.
- * \param f the format string
- * \param a1 first argument of the format
- * \param a2 second argument of the format
- * \param a3 third argument of the format
- * \param a4 fourth argument of the format
- * \param a5 fifth argument of the format
- * \param a6 sixth argument of the format
- *
- * The macros CRITICAL0 ... CRITICAL5 naturally also exist, but are not listed here 
- * for sake of clarity. They just differ in the number of arguments passed
- * along with the format string.
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the ERROR priority on the default category with these args (ERRORn exists for any n<6).
  */
-/* @{ */
+#define ERROR6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_error, f,a1,a2,a3,a4,a5,a6)
+
 #define CRITICAL0(f)                   LOG0(xbt_log_priority_critical, f)
 #define CRITICAL1(f,a1)                LOG1(xbt_log_priority_critical, f,a1)
 #define CRITICAL2(f,a1,a2)             LOG2(xbt_log_priority_critical, f,a1,a2)
 #define CRITICAL3(f,a1,a2,a3)          LOG3(xbt_log_priority_critical, f,a1,a2,a3)
 #define CRITICAL4(f,a1,a2,a3,a4)       LOG4(xbt_log_priority_critical, f,a1,a2,a3,a4)
 #define CRITICAL5(f,a1,a2,a3,a4,a5)    LOG5(xbt_log_priority_critical, f,a1,a2,a3,a4,a5)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log an event at the CRITICAL priority on the default category with these args (CRITICALn exists for any n<6).
+ */
 #define CRITICAL6(f,a1,a2,a3,a4,a5,a6) LOG6(xbt_log_priority_critical, f,a1,a2,a3,a4,a5,a6)
-/* @} */
 
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log at TRACE priority that we entered in current function.
+ */
 #define XBT_IN               LOG1(xbt_log_priority_trace, ">> begin of %s",     _XBT_FUNCTION)
 #define XBT_IN1(fmt,a)       LOG2(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a)
 #define XBT_IN2(fmt,a,b)     LOG3(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b)
 #define XBT_IN3(fmt,a,b,c)   LOG4(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c)
 #define XBT_IN4(fmt,a,b,c,d) LOG5(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log at TRACE priority that we entered in current function, appending a user specified format taking 5 args (XBT_INn exists for all n in [1,6])
+ */
 #define XBT_IN5(fmt,a,b,c,d,e) LOG6(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, a,b,c,d,e)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log at TRACE priority that we exited the current function.
+ */
 #define XBT_OUT              LOG1(xbt_log_priority_trace, "<< end of %s",       _XBT_FUNCTION)
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log at TRACE priority a message indicating that we reached that point.
+ */
 #define XBT_HERE             LOG0(xbt_log_priority_trace, "-- was here")
 SG_END_DECL()
 
