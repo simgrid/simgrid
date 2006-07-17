@@ -70,8 +70,8 @@ void SD_create_environment(const char *platform_file) {
 
   surf_timer_resource_init(platform_file);  /* tell Surf to create the environnement */
 
-  /*surf_workstation_resource_init_KCCFLN05(platform_file);*/
-  surf_workstation_resource_init_CLM03(platform_file);
+  surf_workstation_resource_init_KCCFLN05(platform_file);
+/*   surf_workstation_resource_init_CLM03(platform_file); */
 
   /* now let's create the SD wrappers for workstations and links */
   xbt_dict_foreach(workstation_set, cursor, name, surf_workstation) {
