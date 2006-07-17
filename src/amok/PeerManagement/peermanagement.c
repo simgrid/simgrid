@@ -12,11 +12,11 @@
 #include "amok/peermanagement.h"
 #include "gras/Virtu/virtu_interface.h" /* libdata */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_hm,amok,"peer management");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(amok_pm,amok,"peer management");
 
 
 /* libdata management */
-static int amok_hm_libdata_id=-1;
+static int amok_pm_libdata_id=-1;
 typedef struct {
   /* set headers */
   unsigned int ID;
@@ -26,50 +26,50 @@ typedef struct {
   /* payload */
   int done;
   xbt_dict_t groups;
-} s_amok_hm_libdata_t, *amok_hm_libdata_t;
+} s_amok_pm_libdata_t, *amok_pm_libdata_t;
 
-static void *amok_hm_libdata_new() {
-  amok_hm_libdata_t res=xbt_new(s_amok_hm_libdata_t,1);
-  res->name=xbt_strdup("amok_hm");
+static void *amok_pm_libdata_new() {
+  amok_pm_libdata_t res=xbt_new(s_amok_pm_libdata_t,1);
+  res->name=xbt_strdup("amok_pm");
   res->name_len=0;
   res->done = 0;
   res->groups = xbt_dict_new();
   return res;
 }
-static void amok_hm_libdata_free(void *d) {
-  amok_hm_libdata_t data=(amok_hm_libdata_t)d;
+static void amok_pm_libdata_free(void *d) {
+  amok_pm_libdata_t data=(amok_pm_libdata_t)d;
   free(data->name);
   xbt_dict_free(&data->groups);
   free (data);
 }
 
 /* Message callbacks */
-static int amok_hm_cb_kill(gras_msg_cb_ctx_t ctx,
+static int amok_pm_cb_kill(gras_msg_cb_ctx_t ctx,
 			   void             *payload_data) {
 
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+  amok_pm_libdata_t g=gras_libdata_by_id(amok_pm_libdata_id);
   g->done = 1;
   return 1;
 }
-static int amok_hm_cb_killrpc(gras_msg_cb_ctx_t ctx,
+static int amok_pm_cb_killrpc(gras_msg_cb_ctx_t ctx,
 			      void             *payload_data) {
 
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+  amok_pm_libdata_t g=gras_libdata_by_id(amok_pm_libdata_id);
   g->done = 1;
   gras_msg_rpcreturn(30,ctx,NULL);
   return 1;
 }
 
-static int amok_hm_cb_get(gras_msg_cb_ctx_t ctx, void *payload) {
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+static int amok_pm_cb_get(gras_msg_cb_ctx_t ctx, void *payload) {
+  amok_pm_libdata_t g=gras_libdata_by_id(amok_pm_libdata_id);
   char *name = *(void**)payload;
   xbt_dynar_t res = xbt_dict_get(g->groups, name);
 
   gras_msg_rpcreturn(30, ctx, &res);
   return 1;
 }
-static int amok_hm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+static int amok_pm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
+  amok_pm_libdata_t g=gras_libdata_by_id(amok_pm_libdata_id);
   char *name = *(void**)payload;
   xbt_dynar_t group = xbt_dict_get(g->groups, name);
   
@@ -84,8 +84,8 @@ static int amok_hm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
   free(name);
   return 1;
 }
-static int amok_hm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+static int amok_pm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
+  amok_pm_libdata_t g=gras_libdata_by_id(amok_pm_libdata_id);
   char *name = *(void**)payload;
   xbt_dynar_t group = xbt_dict_get(g->groups, name);
   
@@ -111,9 +111,9 @@ static int amok_hm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
   return 1;
 }
 
-static int amok_hm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
+static int amok_pm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
   char *name = *(void**)payload;
-  amok_hm_group_shutdown(name);
+  amok_pm_group_shutdown(name);
 
   gras_msg_rpcreturn(30, ctx, NULL);
   return 1;
@@ -121,83 +121,83 @@ static int amok_hm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
 
 
 /* Initialization stuff */
-static short amok_hm_used = 0;
+static short amok_pm_used = 0;
 
 /** \brief Initialize the peer management module. Every process must run it before use */
-void amok_hm_init() {
+void amok_pm_init() {
   /* pure INIT part */
-  if (! amok_hm_used) {
+  if (! amok_pm_used) {
 
     /* dependencies */
     amok_base_init();
 
     /* module data on each process */
-    amok_hm_libdata_id = gras_procdata_add("amok_hm",
-					   amok_hm_libdata_new,
-					   amok_hm_libdata_free);
+    amok_pm_libdata_id = gras_procdata_add("amok_pm",
+					   amok_pm_libdata_new,
+					   amok_pm_libdata_free);
 
     /* Datatype and message declarations */
-    gras_msgtype_declare("amok_hm_kill",NULL);   
-    gras_msgtype_declare_rpc("amok_hm_killrpc",NULL,NULL);   
+    gras_msgtype_declare("amok_pm_kill",NULL);   
+    gras_msgtype_declare_rpc("amok_pm_killrpc",NULL,NULL);   
 
-    gras_msgtype_declare_rpc("amok_hm_get",
+    gras_msgtype_declare_rpc("amok_pm_get",
 			     gras_datadesc_by_name("string"),
 			     gras_datadesc_by_name("xbt_dynar_t"));
-    gras_msgtype_declare_rpc("amok_hm_join",
+    gras_msgtype_declare_rpc("amok_pm_join",
 			     gras_datadesc_by_name("string"),
 			     NULL);
-    gras_msgtype_declare_rpc("amok_hm_leave",
+    gras_msgtype_declare_rpc("amok_pm_leave",
 			     gras_datadesc_by_name("string"),
 			     NULL);
 
-    gras_msgtype_declare_rpc("amok_hm_shutdown",
+    gras_msgtype_declare_rpc("amok_pm_shutdown",
 			     gras_datadesc_by_name("string"),
 			     NULL);
   }
-  amok_hm_used++;
+  amok_pm_used++;
 
   /* JOIN part */
-  gras_cb_register(gras_msgtype_by_name("amok_hm_kill"),
-		   &amok_hm_cb_kill);
-  gras_cb_register(gras_msgtype_by_name("amok_hm_killrpc"),
-		   &amok_hm_cb_killrpc);
+  gras_cb_register(gras_msgtype_by_name("amok_pm_kill"),
+		   &amok_pm_cb_kill);
+  gras_cb_register(gras_msgtype_by_name("amok_pm_killrpc"),
+		   &amok_pm_cb_killrpc);
 
-  gras_cb_register(gras_msgtype_by_name("amok_hm_get"),
-		   &amok_hm_cb_get);
-  gras_cb_register(gras_msgtype_by_name("amok_hm_join"),
-		   &amok_hm_cb_join);
-  gras_cb_register(gras_msgtype_by_name("amok_hm_leave"),
-		   &amok_hm_cb_leave);
-  gras_cb_register(gras_msgtype_by_name("amok_hm_shutdown"),
-		   &amok_hm_cb_shutdown);
+  gras_cb_register(gras_msgtype_by_name("amok_pm_get"),
+		   &amok_pm_cb_get);
+  gras_cb_register(gras_msgtype_by_name("amok_pm_join"),
+		   &amok_pm_cb_join);
+  gras_cb_register(gras_msgtype_by_name("amok_pm_leave"),
+		   &amok_pm_cb_leave);
+  gras_cb_register(gras_msgtype_by_name("amok_pm_shutdown"),
+		   &amok_pm_cb_shutdown);
 }
 
 /** \brief Finalize the peer management module. Every process should run it after use */
-void amok_hm_exit() {
+void amok_pm_exit() {
   /* pure EXIT part */
-  amok_hm_used--;
+  amok_pm_used--;
 
   /* LEAVE part */
-  gras_cb_unregister(gras_msgtype_by_name("amok_hm_kill"),
-		     &amok_hm_cb_kill);
-  gras_cb_unregister(gras_msgtype_by_name("amok_hm_killrpc"),
-		     &amok_hm_cb_killrpc);
+  gras_cb_unregister(gras_msgtype_by_name("amok_pm_kill"),
+		     &amok_pm_cb_kill);
+  gras_cb_unregister(gras_msgtype_by_name("amok_pm_killrpc"),
+		     &amok_pm_cb_killrpc);
 
-  gras_cb_unregister(gras_msgtype_by_name("amok_hm_get"),
-		     &amok_hm_cb_get);
-  gras_cb_unregister(gras_msgtype_by_name("amok_hm_join"),
-		     &amok_hm_cb_join);
-  gras_cb_unregister(gras_msgtype_by_name("amok_hm_leave"),
-		     &amok_hm_cb_leave);
+  gras_cb_unregister(gras_msgtype_by_name("amok_pm_get"),
+		     &amok_pm_cb_get);
+  gras_cb_unregister(gras_msgtype_by_name("amok_pm_join"),
+		     &amok_pm_cb_join);
+  gras_cb_unregister(gras_msgtype_by_name("amok_pm_leave"),
+		     &amok_pm_cb_leave);
 
-  gras_cb_unregister(gras_msgtype_by_name("amok_hm_shutdown"),
-		     &amok_hm_cb_shutdown);
+  gras_cb_unregister(gras_msgtype_by_name("amok_pm_shutdown"),
+		     &amok_pm_cb_shutdown);
 }
 
 
 /** \brief Enter the main loop of the program. It won't return until we get a kill message. */
-void amok_hm_mainloop(double timeOut) {
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+void amok_pm_mainloop(double timeOut) {
+  amok_pm_libdata_t g=gras_libdata_by_id(amok_pm_libdata_id);
   
   while (!g->done) {
     gras_msg_handle(timeOut);
@@ -205,20 +205,20 @@ void amok_hm_mainloop(double timeOut) {
 }
 
 /** \brief kill a buddy identified by its peername and port */
-void amok_hm_kill_hp(char *name,int port) {
+void amok_pm_kill_hp(char *name,int port) {
   gras_socket_t sock=gras_socket_client(name,port);
-  amok_hm_kill(sock);
+  amok_pm_kill(sock);
   gras_socket_close(sock);
 }
 
 /** \brief kill a buddy to which we have a socket already */
-void amok_hm_kill(gras_socket_t buddy) {
-  gras_msg_send(buddy,gras_msgtype_by_name("amok_hm_kill"),NULL);
+void amok_pm_kill(gras_socket_t buddy) {
+  gras_msg_send(buddy,gras_msgtype_by_name("amok_pm_kill"),NULL);
 }
 
 /** \brief kill syncronously a buddy (do not return before its death) */
-void amok_hm_kill_sync(gras_socket_t buddy) {
-  gras_msg_rpccall(buddy,30,gras_msgtype_by_name("amok_hm_killrpc"),NULL,NULL);
+void amok_pm_kill_sync(gras_socket_t buddy) {
+  gras_msg_rpccall(buddy,30,gras_msgtype_by_name("amok_pm_killrpc"),NULL,NULL);
 }
 
 
@@ -226,13 +226,13 @@ void amok_hm_kill_sync(gras_socket_t buddy) {
  *
  * The dynar elements are of type xbt_peer_t
  */
-xbt_dynar_t amok_hm_group_new(const char *group_name) {
-  amok_hm_libdata_t g;
+xbt_dynar_t amok_pm_group_new(const char *group_name) {
+  amok_pm_libdata_t g;
   xbt_dynar_t res = xbt_dynar_new(sizeof(xbt_peer_t),
 				  xbt_peer_free_voidp);
 
-  xbt_assert0(amok_hm_libdata_id != -1,"Run amok_hm_init first!");
-  g=gras_libdata_by_id(amok_hm_libdata_id);
+  xbt_assert0(amok_pm_libdata_id != -1,"Run amok_pm_init first!");
+  g=gras_libdata_by_id(amok_pm_libdata_id);
    
   xbt_dict_set(g->groups,group_name,res,NULL); /*FIXME: leaking xbt_dynar_free_voidp);*/
   VERB1("Group %s created",group_name);
@@ -240,19 +240,19 @@ xbt_dynar_t amok_hm_group_new(const char *group_name) {
   return res;
 }
 /** \brief retrieve all members of the given remote group */
-xbt_dynar_t amok_hm_group_get(gras_socket_t master, const char *group_name) {
+xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name) {
   xbt_dynar_t res;
   
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_get"),
+  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_get"),
 		   &group_name,&res);
   return res;
 }
 
 /** \brief add current peer to the given remote group */
-void        amok_hm_group_join(gras_socket_t master, const char *group_name) {
+void        amok_pm_group_join(gras_socket_t master, const char *group_name) {
   VERB3("Join group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_join"),
+  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_join"),
 		   &group_name,NULL);
   VERB3("Joined group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
@@ -261,30 +261,30 @@ void        amok_hm_group_join(gras_socket_t master, const char *group_name) {
  *
  * If not found, call is ignored 
  */
-void        amok_hm_group_leave(gras_socket_t master, const char *group_name) {
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_leave"),
+void        amok_pm_group_leave(gras_socket_t master, const char *group_name) {
+  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_leave"),
 		   &group_name,NULL);
   VERB3("Leaved group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
 }
 
 /** \brief stops all members of the given local group */
-void amok_hm_group_shutdown(const char *group_name) {
-  amok_hm_libdata_t g=gras_libdata_by_id(amok_hm_libdata_id);
+void amok_pm_group_shutdown(const char *group_name) {
+  amok_pm_libdata_t g=gras_libdata_by_id(amok_pm_libdata_id);
   xbt_dynar_t group = xbt_dict_get(g->groups, group_name);
   
   int cpt;
   xbt_peer_t peer_it;
 
   xbt_dynar_foreach(group, cpt, peer_it) {
-    amok_hm_kill_hp(peer_it->name, peer_it->port);
+    amok_pm_kill_hp(peer_it->name, peer_it->port);
   }
 
   xbt_dynar_free(&group);
   xbt_dict_remove(g->groups,group_name);
 }
 /** \brief stops all members of the given remote group */
-void amok_hm_group_shutdown_remote(gras_socket_t master, const char *group_name){
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_hm_shutdown"),
+void amok_pm_group_shutdown_remote(gras_socket_t master, const char *group_name){
+  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_shutdown"),
 		   &group_name,NULL);
 }
