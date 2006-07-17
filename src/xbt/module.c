@@ -7,6 +7,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "time.h" /* to seed the random generator */
+
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
@@ -38,6 +40,7 @@ xbt_init(int *argc, char **argv) {
     return;
 
   xbt_binary_name = strdup(argv[0]);
+  srand((unsigned int)time(NULL));
   VERB0("Initialize XBT");
   
   xbt_log_init(argc,argv);
