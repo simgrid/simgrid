@@ -92,7 +92,7 @@ int master (int argc,char *argv[]) {
 
   /* Init the GRAS's infrastructure */
   gras_init(&argc, argv);
-  amok_hm_init();
+  amok_pm_init();
   register_messages();
       
   /* Initialize data matrices */
@@ -102,7 +102,7 @@ int master (int argc,char *argv[]) {
 	
   /* Create the connexions */
   gras_socket_server(atoi(argv[1]));
-  peers=amok_hm_group_new("pmm");
+  peers=amok_pm_group_new("pmm");
   INFO0("Wait for peers for 10 sec");
   gras_msg_handleall(10); /* friends, we're ready. Come and play */
   INFO1("Got %ld pals",xbt_dynar_length(peers));
@@ -124,7 +124,7 @@ int master (int argc,char *argv[]) {
     xbt_peer_t h;
 
     xbt_dynar_get_cpy(peers,i,&h);
-    amok_hm_kill_hp(h->name,h->port);
+    amok_pm_kill_hp(h->name,h->port);
     free(h);
   }
 
@@ -193,7 +193,7 @@ int master (int argc,char *argv[]) {
      INFO1("Matrix size too big (%d>30) to be displayed here",DATA_MATRIX_SIZE);
   }
 
-  amok_hm_group_shutdown ("pmm");   /* Ok, we're out of here */
+  amok_pm_group_shutdown ("pmm");   /* Ok, we're out of here */
 
   for(i=0; i<SLAVE_COUNT; i++) {
      gras_socket_close(socket[i]);
@@ -357,7 +357,7 @@ int slave(int argc,char *argv[]) {
 
   /* Init the GRAS's infrastructure */
   gras_init(&argc, argv);
-  amok_hm_init();
+  amok_pm_init();
 
   /*  Register the known messages and my callback */
   register_messages();
@@ -370,8 +370,8 @@ int slave(int argc,char *argv[]) {
   master = gras_socket_client_from_string(argv[1]);
 				
   /* Join and run the group */
-  amok_hm_group_join(master,"pmm");
-  amok_hm_mainloop(600);
+  amok_pm_group_join(master,"pmm");
+  amok_pm_mainloop(600);
 
   /* housekeeping */
   gras_socket_close(mysock);

@@ -7,7 +7,7 @@
  *  @{ */     
 
        /** \defgroup AMOK_bw      Bandwidth        */       
-       /** \defgroup AMOK_hm      Host Management  */       
+       /** \defgroup AMOK_pm      Peer Management  */       
 
 /** @} */
 

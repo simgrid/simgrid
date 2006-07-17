@@ -31,15 +31,15 @@ int sensor (int argc,char *argv[]) {
 
   gras_init(&argc, argv);
   amok_bw_init();
-  amok_hm_init();
+  amok_pm_init();
  
   mysock = gras_socket_server_range(3000,9999,0,0);
   INFO1("Sensor starting (on port %d)",gras_os_myport());
   gras_os_sleep(2); /* let the master get ready */
   master = gras_socket_client_from_string(argv[1]);
 					      
-  amok_hm_group_join(master,"saturate");
-  amok_hm_mainloop(600);
+  amok_pm_group_join(master,"saturate");
+  amok_pm_mainloop(600);
 
   gras_socket_close(mysock);
   gras_socket_close(master);
@@ -151,7 +151,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   xbt_peer_t h1,h2,h3,h4;
 
   /* Init the group */
-  peers=amok_hm_group_new("saturate");
+  peers=amok_pm_group_new("saturate");
   /* wait 4 dudes */
   gras_msg_handle(60);
   gras_msg_handle(60);
@@ -219,7 +219,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   free(bw_sat);
   free(bw);
   /* Game is over, friends */
-  amok_hm_group_shutdown ("saturate");
+  amok_pm_group_shutdown ("saturate");
 }
 
 
@@ -227,7 +227,7 @@ int maestro(int argc,char *argv[]) {
 
   gras_init(&argc,argv);
   amok_bw_init();
-  amok_hm_init();
+  amok_pm_init();
 
   gras_socket_server(atoi(argv[1]));
 
