@@ -549,15 +549,95 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
 }
 
 /* FIXME: execute_parallel_task */
-static surf_action_t execute_parallel_task(int cpu_nb,
-					   void **cpu_list, 
+static surf_action_t execute_parallel_task(int workstation_nb,
+					   void **workstation_list, 
 					   double *computation_amount, 
 					   double *communication_amount,
 					   double amount,
 					   double rate)
 {
-  DIE_IMPOSSIBLE;
-  return NULL;
+  surf_action_workstation_KCCFLN05_t action = NULL;
+  int i, j, k;
+  xbt_dict_t network_link_set = xbt_dict_new();
+  xbt_dict_cursor_t cursor = NULL;
+  char *name = NULL;
+  int nb_link = 0;
+  int nb_host = 0;
+  network_link_KCCFLN05_t link;
+
+  /* Compute the number of affected resources... */
+  for(i=0; i< workstation_nb; i++) {
+    for(j=0; j< workstation_nb; j++) {
+      cpu_KCCFLN05_t card_src = workstation_list[i];
+      cpu_KCCFLN05_t card_dst = workstation_list[j];
+      int route_size = ROUTE(card_src->id, card_dst->id).size;
+      network_link_KCCFLN05_t *route = ROUTE(card_src->id, card_dst->id).links;
+      
+      if(communication_amount[i*workstation_nb+j]>0)
+	for(k=0; k< route_size; k++) {
+	  xbt_dict_set(network_link_set, route[k]->name, route[k], NULL);
+	}
+    }
+  }
+
+  xbt_dict_foreach(network_link_set, cursor, name, link) {
+    nb_link++;
+  }
+
+  xbt_dict_free(&network_link_set);
+
+  for (i = 0; i<workstation_nb; i++)
+    if(computation_amount[i]>0) nb_host++;
+ 
+  if(nb_link + workstation_nb == 0)
+    return NULL;
+
+  action = xbt_new0(s_surf_action_workstation_KCCFLN05_t, 1);
+  action->generic_action.using = 1;
+  action->generic_action.cost = amount;
+  action->generic_action.remains = amount;
+  action->generic_action.max_duration = NO_MAX_DURATION;
+  action->generic_action.start = -1.0;
+  action->generic_action.finish = -1.0;
+  action->generic_action.resource_type =
+      (surf_resource_t) surf_workstation_resource;
+  action->suspended = 0;  /* Should be useless because of the
+			     calloc but it seems to help valgrind... */
+  action->generic_action.state_set =
+      surf_workstation_resource->common_public->states.running_action_set;
+
+  xbt_swag_insert(action, action->generic_action.state_set);
+  action->rate = rate;
+
+  if(action->rate>0)
+    action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
+					nb_host + nb_link);
+  else   
+    action->variable = lmm_variable_new(maxmin_system, action, 1.0, action->rate,
+					nb_host + nb_link);
+
+  for (i = 0; i<workstation_nb; i++)
+    if(computation_amount[i]>0)
+      lmm_expand(maxmin_system, ((cpu_KCCFLN05_t) workstation_list[i])->constraint, 
+		 action->variable, computation_amount[i]);
+
+  for (i=0; i<workstation_nb; i++) {
+    for(j=0; j< workstation_nb; j++) {
+      cpu_KCCFLN05_t card_src = workstation_list[i];
+      cpu_KCCFLN05_t card_dst = workstation_list[j];
+      int route_size = ROUTE(card_src->id, card_dst->id).size;
+      network_link_KCCFLN05_t *route = ROUTE(card_src->id, card_dst->id).links;
+      
+      for(k=0; k< route_size; k++) {
+	if(communication_amount[i*workstation_nb+j]>0) {
+	  lmm_expand_add(maxmin_system, route[k]->constraint, 
+		       action->variable, communication_amount[i*workstation_nb+j]);
+	}
+      }
+    }
+  }
+  
+  return (surf_action_t) action;
 }
 
 /* returns an array of network_link_KCCFLN05_t */
