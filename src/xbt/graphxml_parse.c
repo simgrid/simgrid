@@ -26,12 +26,12 @@ static void nil_function(void)
   return;
 }
 
-void_f_void_t STag_graphxml_graph_fun = nil_function;
-void_f_void_t ETag_graphxml_graph_fun = nil_function;
-void_f_void_t STag_graphxml_node_fun = nil_function;
-void_f_void_t ETag_graphxml_node_fun = nil_function;
-void_f_void_t STag_graphxml_edge_fun = nil_function;
-void_f_void_t ETag_graphxml_edge_fun = nil_function;
+void_pf_void_t STag_graphxml_graph_fun = nil_function;
+void_pf_void_t ETag_graphxml_graph_fun = nil_function;
+void_pf_void_t STag_graphxml_node_fun = nil_function;
+void_pf_void_t ETag_graphxml_node_fun = nil_function;
+void_pf_void_t STag_graphxml_edge_fun = nil_function;
+void_pf_void_t ETag_graphxml_edge_fun = nil_function;
 
 YY_BUFFER_STATE xbt_graph_input_buffer;
 FILE *xbt_graph_file_to_parse;
@@ -115,7 +115,7 @@ static int _xbt_graph_parse(void)
   return xbt_graph_parse_lex();
 }
 
-int_f_void_t xbt_graph_parse = _xbt_graph_parse;
+int_pf_void_t xbt_graph_parse = _xbt_graph_parse;
 
 void xbt_graph_parse_get_double(double *value,const char *string)
 { 
