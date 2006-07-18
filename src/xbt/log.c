@@ -699,7 +699,6 @@ void xbt_log_control_set(const char* control_string) {
       if (e.category != not_found_error)
 	RETHROW;
       xbt_ex_free(e);
-      free(set->catname);
       found = 0;
 
       DEBUG0("Store for further application");
