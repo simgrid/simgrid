@@ -13,6 +13,8 @@ int main(int argc, char **argv) {
   /* initialisation of SD */
   SD_init(&argc, argv);
 
+  xbt_log_control_set("sd.thres=debug");
+
   if (argc < 2) {
     INFO1("Usage: %s platform_file", argv[0]);
     INFO1("example: %s sd_platform.xml", argv[0]);
@@ -70,35 +72,41 @@ int main(int argc, char **argv) {
 
   TRY {
     SD_task_dependency_add(NULL, NULL, taskA, taskA); /* shouldn't work and must raise an exception */
-    xbt_assert0(0, "Hey, I can add a dependency between Task A and Task A!");
+    xbt_die("Hey, I can add a dependency between Task A and Task A!");
   }
   CATCH (ex) {
+    if (ex.category != arg_error)
+      RETHROW; /* this is a serious error */
     xbt_ex_free(ex);
   }
   
   TRY {
-    SD_task_dependency_add(NULL, NULL, taskA, taskB); /* shouldn't work and must raise an exception */
-    xbt_assert0(0, "Oh oh, I can add an already existing dependency!");
+    SD_task_dependency_add(NULL, NULL, taskB, taskA); /* shouldn't work and must raise an exception */
+    xbt_die("Oh oh, I can add an already existing dependency!");
   }
   CATCH (ex) {
+    if (ex.category != arg_error)
+      RETHROW;
     xbt_ex_free(ex);
   }
 
-  SD_task_dependency_remove(taskA, taskB);
-
   TRY {
-    SD_task_dependency_remove(taskC, taskA); /* shouldn't work and must raise an exception */
-    xbt_assert0(0, "Dude, I can remove an unknown dependency!");
+    SD_task_dependency_remove(taskA, taskC); /* shouldn't work and must raise an exception */
+    xbt_die("Dude, I can remove an unknown dependency!");
   }
   CATCH (ex) {
+    if (ex.category != arg_error)
+      RETHROW;
     xbt_ex_free(ex);
   }
 
   TRY {
     SD_task_dependency_remove(taskC, taskC); /* shouldn't work and must raise an exception */
-    xbt_assert0(0, "Wow, I can remove a dependency between Task C and itself!");
+    xbt_die("Wow, I can remove a dependency between Task C and itself!");
   }
   CATCH (ex) {
+    if (ex.category != arg_error)
+      RETHROW;
     xbt_ex_free(ex);
   }
 

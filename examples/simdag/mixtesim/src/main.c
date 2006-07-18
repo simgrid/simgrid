@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
 /*   xbt_log_control_set("sd.thres=debug"); */
 /*   xbt_log_control_set("sd_kernel.thres=debug"); */
-/*   xbt_log_control_set("surf_kernel.thres=debug"); */
+/*   xbt_log_control_set("surf.thres=debug"); */
 /*   xbt_log_control_set("mixtesim.thres=debug"); */
 
   
