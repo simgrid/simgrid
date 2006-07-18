@@ -10,7 +10,7 @@
 #include "xbt/ex.h"
 #include "dict_private.h"
 
-XBT_LOG_NEW_SUBCATEGORY(dict,xbt,
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
 /*####[ Private prototypes ]#################################################*/
 
@@ -213,8 +213,8 @@ xbt_dict_dump(xbt_dict_t     dict,
 #include "xbt/ex.h"
 #include "portable.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(dict);
-XBT_LOG_DEFAULT_CATEGORY(dict);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
+XBT_LOG_DEFAULT_CATEGORY(xbt_dict);
 
 XBT_TEST_SUITE("dict","Dict data container");
 
@@ -229,7 +229,7 @@ static void debuged_add(xbt_dict_t head,const char*key)
   xbt_test_log1("Add %s",PRINTF_STR(key));
 
   xbt_dict_set(head,key,data,&free);
-  if (XBT_LOG_ISENABLED(dict,xbt_log_priority_debug)) {
+  if (XBT_LOG_ISENABLED(xbt_dict,xbt_log_priority_debug)) {
     xbt_dict_dump(head,(void (*)(void*))&printf);
     fflush(stdout);
   }

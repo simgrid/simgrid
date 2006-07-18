@@ -9,7 +9,7 @@
 #include "xbt/log.h"
 #include "fifo_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(fifo,xbt,"FIFO");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_fifo,xbt,"FIFO");
 
 /** Constructor
  * \return a new fifo

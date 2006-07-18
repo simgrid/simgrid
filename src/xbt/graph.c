@@ -20,7 +20,7 @@
 
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(graph, xbt, "Graph");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_graph, xbt, "Graph");
 
 
 

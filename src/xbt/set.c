@@ -16,7 +16,7 @@
 
 #include "xbt/set.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(set,xbt,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_set,xbt,
 	     "set: data container consisting in dict+dynar");
 
 /*####[ Type definition ]####################################################*/
@@ -64,6 +64,8 @@ void xbt_set_add    (xbt_set_t      set,
   xbt_set_elm_t found_in_dict = NULL;
   xbt_ex_t e;
 
+  DEBUG1("add %s to the set",elm->name);
+   
   if (elm->name_len <= 0) {
     elm->name_len = strlen(elm->name);
   }

@@ -13,8 +13,8 @@
 
 #include <string.h> /* strlen() */
 
-XBT_LOG_EXTERNAL_CATEGORY(dict);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict_cursor,dict,"To traverse dictionaries");
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor,xbt_dict,"To traverse dictionaries");
 
 
 /*####[ Dict cursor functions ]#############################################*/
@@ -92,7 +92,7 @@ _cursor_push_keys(xbt_dict_cursor_t cursor,
   int                  i       = 0;
   static volatile int  count   = 0; /* ??? */
 
-  CDEBUG3(dict_cursor, "Push childs of %p (%.*s) in the cursor", (void*)elm, elm->key_len, elm->key);
+  CDEBUG3(xbt_dict_cursor, "Push childs of %p (%.*s) in the cursor", (void*)elm, elm->key_len, elm->key);
 
   if (!elm->internal) {
     xbt_dynar_push(cursor->keys,     &elm->key    );
@@ -105,14 +105,14 @@ _cursor_push_keys(xbt_dict_cursor_t cursor,
       _cursor_push_keys(cursor, child);
   }
 
-  CDEBUG1(dict_cursor, "Count = %d", count);
+  CDEBUG1(xbt_dict_cursor, "Count = %d", count);
 }
 
 /** @brief Reinitialize the cursor. Mandatory after removal or add in dict. */
 void
 xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
 
-  CDEBUG0(dict_cursor, "xbt_dict_cursor_rewind");
+  CDEBUG0(xbt_dict_cursor, "xbt_dict_cursor_rewind");
   xbt_assert(cursor);
 
   xbt_dynar_reset(cursor->keys);

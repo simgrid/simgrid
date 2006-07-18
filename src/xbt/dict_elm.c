@@ -11,13 +11,13 @@
 #include "portable.h" /* PRINTF_STR */
 #include "dict_private.h"  /* prototypes of this module */
 
-XBT_LOG_EXTERNAL_CATEGORY(dict);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict_elm,dict,"Dictionaries internals");
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm,xbt_dict,"Dictionaries internals");
 
-XBT_LOG_NEW_SUBCATEGORY(dict_add,dict,"Dictionaries internals: elements addition");
-XBT_LOG_NEW_SUBCATEGORY(dict_search,dict,"Dictionaries internals: searching");
-XBT_LOG_NEW_SUBCATEGORY(dict_remove,dict,"Dictionaries internals: elements removal");
-XBT_LOG_NEW_SUBCATEGORY(dict_collapse,dict,"Dictionaries internals: post-removal cleanup");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_add,xbt_dict,"Dictionaries internals: elements addition");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_search,xbt_dict,"Dictionaries internals: searching");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_remove,xbt_dict,"Dictionaries internals: elements removal");
+XBT_LOG_NEW_SUBCATEGORY(xbt_dict_collapse,xbt_dict,"Dictionaries internals: post-removal cleanup");
 
 /*####[ Private prototypes ]#################################################*/
 
@@ -281,7 +281,7 @@ _dict_child_cmp(s_xbt_dictelm_t *p_dict,
     cmp =  1;
   }
 
-  CDEBUG6(dict_search, "Cmp '%.*s' and '%.*s' (offset=%d) => %d", 
+  CDEBUG6(xbt_dict_search, "Cmp '%.*s' and '%.*s' (offset=%d) => %d", 
 	  p_child->key_len - *p_offset, p_child->key + *p_offset,
 	  key_len - *p_offset, key + *p_offset,
 	  *p_offset,cmp);
@@ -329,7 +329,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   int          len     = 0;
 
   
-  CDEBUG6(dict_search, "search child [%.*s] under [%.*s]=%p (len=%lu)",
+  CDEBUG6(xbt_dict_search, "search child [%.*s] under [%.*s]=%p (len=%lu)",
 	  key_len, key,
           p_elm ? (p_elm->key_len?p_elm->key_len:6) : 6, 
 	  p_elm ? PRINTF_STR(p_elm->key) : "(head)",
@@ -385,7 +385,7 @@ _xbt_dictelm_child_search(s_xbt_dictelm_t *p_elm,
   *p_offset = o;
   *p_pos    = p;
   *p_match  = m;
-  CDEBUG6(dict_search, "search [%.*s] in [%.*s]=%p => %s",
+  CDEBUG6(xbt_dict_search, "search [%.*s] in [%.*s]=%p => %s",
 	  key_len, key,
           p_elm?(p_elm->key_len?p_elm->key_len:6):6, p_elm?PRINTF_STR(p_elm->key):"(head)",
 	  p_elm,
@@ -443,7 +443,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
   int          pos        = 0;
   const int    old_offset = offset;
 
-  CDEBUG6(dict_add, "--> Insert '%.*s' after '%.*s' (offset=%d) in tree %p",
+  CDEBUG6(xbt_dict_add, "--> Insert '%.*s' after '%.*s' (offset=%d) in tree %p",
 	  key_len, key, 
 	  ((p_head && p_head->key) ? p_head->key_len : 6),
 	  ((p_head && p_head->key) ? p_head->key : "(head)"), 
@@ -454,7 +454,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
   /* there is no key (we did enough recursion), change the value of head */
   if (offset >= key_len) {
 
-    CDEBUG0(dict_add, "--> Change the value of head");
+    CDEBUG0(xbt_dict_add, "--> Change the value of head");
 
     _xbt_dictelm_change_value(p_head, data, free_f);
     free(key); /* Keep the key used in the tree */
@@ -465,7 +465,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
   /*** Search where to add this child, and how ***/
   _xbt_dictelm_child_search(p_head, key, key_len, &pos, &offset, &match);
 
-  CDEBUG3(dict_add, "child_search => pos=%d, offset=%d, match=%d",
+  CDEBUG3(xbt_dict_add, "child_search => pos=%d, offset=%d, match=%d",
 	  pos, offset, match);
 
   switch (match) {
@@ -475,7 +475,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       s_xbt_dictelm_t *p_child = NULL;
 
       _xbt_dictelm_alloc(key, key_len, offset, FALSE, data, free_f, &p_child);
-      CDEBUG1(dict_add, "-> Add a child %p", (void*)p_child);
+      CDEBUG1(xbt_dict_add, "-> Add a child %p", (void*)p_child);
       xbt_dynar_insert_at(p_head->sub, pos, &p_child);
 
       return;
@@ -486,7 +486,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       s_xbt_dictelm_t *p_child = NULL;
 
       p_child = xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
-      CDEBUG1(dict_add, "-> Change the value of the child %p", (void*)p_child);
+      CDEBUG1(xbt_dict_add, "-> Change the value of the child %p", (void*)p_child);
       _xbt_dictelm_change_value(p_child, data, free_f);
 
       free(key);
@@ -499,7 +499,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       s_xbt_dictelm_t *p_child = NULL;
 
       p_child=xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
-      CDEBUG2(dict_add,"-> Recurse on %p (offset=%d)", (void*)p_child, offset);
+      CDEBUG2(xbt_dict_add,"-> Recurse on %p (offset=%d)", (void*)p_child, offset);
 
       _xbt_dictelm_set_rec(p_child, key, key_len, 
 			    offset, data, free_f);
@@ -514,7 +514,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
       p_child=xbt_dynar_get_as(p_head->sub, pos, s_xbt_dictelm_t*);
       _xbt_dictelm_alloc(key, key_len, old_offset, FALSE, data, free_f, &p_new);
 
-      CDEBUG2(dict_add, "-> The child %p become child of new dict (%p)",
+      CDEBUG2(xbt_dict_add, "-> The child %p become child of new dict (%p)",
               (void*)p_child, (void*)p_new);
 
       xbt_dynar_push(p_new->sub, &p_child);
@@ -543,7 +543,7 @@ _xbt_dictelm_set_rec(s_xbt_dictelm_t     *p_head,
 
       _xbt_dictelm_alloc(anc_key, anc_key_len, old_offset, TRUE, NULL, NULL, &p_anc);
 
-      CDEBUG3(dict_add, "-> Make a common ancestor %p (%.*s)",
+      CDEBUG3(xbt_dict_add, "-> Make a common ancestor %p (%.*s)",
 	      (void*)p_anc, anc_key_len, anc_key);
 
       if (key[offset] < p_child->key[offset]) {
@@ -594,12 +594,12 @@ xbt_dictelm_set_ext(s_xbt_dictelm_t **pp_head,
   if (!p_head) {
     s_xbt_dictelm_t *p_child = NULL;
 
-    CDEBUG0(dict_add, "Create an head");
+    CDEBUG0(xbt_dict_add, "Create an head");
 
     /* The head is priviledged by being the only one with a NULL key */
     _xbt_dictelm_alloc(NULL, 0, 0, TRUE, NULL, NULL, &p_head);
 
-    CDEBUG2(dict_add, "Push %.*s as child of this head",key_len,key);
+    CDEBUG2(xbt_dict_add, "Push %.*s as child of this head",key_len,key);
     _xbt_dictelm_alloc(key, key_len, 0, FALSE, data, free_f, &p_child);
     xbt_dynar_insert_at(p_head->sub, 0, &p_child);
 
@@ -647,7 +647,7 @@ _xbt_dictelm_get_rec(s_xbt_dictelm_t *p_head,
 		      int             key_len,
 		      int             offset) {
 
-  CDEBUG3(dict_search, "Search %.*s in %p", key_len, key, (void*)p_head); 
+  CDEBUG3(xbt_dict_search, "Search %.*s in %p", key_len, key, (void*)p_head); 
 
   /*** The trivial case first ***/
 
@@ -740,7 +740,7 @@ _collapse_if_need(xbt_dictelm_t head,
 		  int            offset) {
   xbt_dictelm_t child = NULL;
 
-  CDEBUG2(dict_collapse, "Collapse %d of %p... ", pos, (void*)head);
+  CDEBUG2(xbt_dict_collapse, "Collapse %d of %p... ", pos, (void*)head);
 
   if (pos >= 0) {
     /* Remove the child if |it's key| == 0 (meaning it's dead) */
@@ -751,27 +751,27 @@ _collapse_if_need(xbt_dictelm_t head,
       xbt_assert0(xbt_dynar_length(child->sub) == 0,
 		   "Found a dead child with grand childs. Internal error");
 
-      CDEBUG1(dict_collapse, "Remove dead child %p.... ", (void*)child);
+      CDEBUG1(xbt_dict_collapse, "Remove dead child %p.... ", (void*)child);
       xbt_dynar_remove_at(head->sub, pos, &child);
       xbt_dictelm_free(&child);
     }
   }
 
   if (!head->key) {
-    CDEBUG0(dict_collapse, "Do not collapse the head, you stupid programm");
+    CDEBUG0(xbt_dict_collapse, "Do not collapse the head, you stupid programm");
     return;
   }
 
   if (head->content || head->free_f ||
       xbt_dynar_length(head->sub) != 1) {
-    CDEBUG0(dict_collapse, "Cannot collapse");
+    CDEBUG0(xbt_dict_collapse, "Cannot collapse");
     return; /* cannot collapse */
   }
 
   child = xbt_dynar_get_as(head->sub, 0, xbt_dictelm_t);
 
   /* Get the child's key as new key */
-  CDEBUG2(dict_collapse,
+  CDEBUG2(xbt_dict_collapse,
 	  "Do collapse with only child %.*s", child->key_len, child->key);
 
   head->content  = child->content;

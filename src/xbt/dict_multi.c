@@ -9,7 +9,7 @@
 
 #include "dict_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dict_multi,dict, "Dictionaries of multiple keys");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_multi,xbt_dict, "Dictionaries of multiple keys");
 
 static void _free_dict(void*d) {
   VERB1("free dict %p",d);

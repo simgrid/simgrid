@@ -15,7 +15,7 @@
 #include "xbt/dynar.h"
 #include "gras_config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(context, xbt, "Context");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ctx, xbt, "Context");
 
 #define VOIRP(expr) DEBUG1("  {" #expr " = %p }", expr)
 

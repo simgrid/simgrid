@@ -18,7 +18,7 @@
 #include "xbt/dynar_private.h" /* type definition, which we share with the 
 	 		 	  code in charge of sending this across the net */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(dynar,xbt,"Dynamic arrays");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
 
 
 #define __sanity_check_dynar(dynar)       \
@@ -596,8 +596,8 @@ void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 #define NB_ELEM 5000
 
 XBT_TEST_SUITE("dynar","Dynar data container");
-XBT_LOG_EXTERNAL_CATEGORY(dynar);
-XBT_LOG_DEFAULT_CATEGORY(dynar);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
+XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
 
 XBT_TEST_UNIT("int",test_dynar_int,"Dyars of integers") {
    /* Vars_decl [doxygen cruft] */

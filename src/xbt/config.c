@@ -19,7 +19,7 @@
 
 #include "xbt/config.h" /* prototypes of this module */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(config,xbt,"configuration support");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg,xbt,"configuration support");
 
 /* xbt_cfgelm_t: the typedef corresponding to a config variable. 
 
