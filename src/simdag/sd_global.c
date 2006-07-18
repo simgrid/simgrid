@@ -70,6 +70,8 @@ void SD_create_environment(const char *platform_file) {
 
   SD_CHECK_INIT_DONE();
 
+  DEBUG0("SD_create_environment");
+
   surf_timer_resource_init(platform_file);  /* tell Surf to create the environnement */
 
   surf_workstation_resource_init_KCCFLN05(platform_file);
@@ -277,6 +279,6 @@ void SD_exit(void) {
   }
   else {
     fprintf(stderr, "Warning: SD_exit() called while SimDag was not running\n");
-    /* we cannot use assertions here because xbt is not running! */
+    /* we cannot use exceptions here because xbt is not running! */
   }
 }

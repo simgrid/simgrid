@@ -237,23 +237,33 @@ static void __SD_task_dependency_destroy(void *dependency) {
 void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  xbt_assert1(src != dst, "Cannot add a dependency between task '%s' and itself", SD_task_get_name(src));
-  xbt_assert1(__SD_task_is_not_scheduled(src) || __SD_task_is_scheduled_or_ready(src),
-	      "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_READY", SD_task_get_name(src));
-  xbt_assert1(__SD_task_is_not_scheduled(dst) || __SD_task_is_scheduled_or_ready(dst),
-	      "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_READY", SD_task_get_name(dst));
 
   xbt_dynar_t dynar = src->tasks_after;
   int length = xbt_dynar_length(dynar);
   int found = 0;
   int i;
   SD_dependency_t dependency;
+
+  if (src == dst) 
+    THROW1(arg_error, 0, "Cannot add a dependency between task '%s' and itself",
+	   SD_task_get_name(src));
+
+  if (!__SD_task_is_not_scheduled(src) && !__SD_task_is_scheduled_or_ready(src))
+    THROW1(arg_error, 0, "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_READY", SD_task_get_name(src));
+
+  if (!__SD_task_is_not_scheduled(dst) && !__SD_task_is_scheduled_or_ready(dst))
+    THROW1(arg_error, 0, "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULED or SD_READY", SD_task_get_name(dst));
+
+  DEBUG2("SD_task_dependency_add: src = %s, dst = %s", SD_task_get_name(src), SD_task_get_name(dst));
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     found = (dependency->dst == dst);
+    DEBUG2("Dependency %d: dependency->dst = %s", i, SD_task_get_name(dependency->dst));
   }
-  xbt_assert2(!found, "A dependency already exists between task '%s' and task '%s'",
-	      SD_task_get_name(src), SD_task_get_name(dst));
+
+  if (found)
+    THROW2(arg_error, 0, "A dependency already exists between task '%s' and task '%s'",
+	   SD_task_get_name(src), SD_task_get_name(dst));
 
   dependency = xbt_new0(s_SD_dependency_t, 1);
 
@@ -305,8 +315,10 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
       found = 1;
     }
   }
-  xbt_assert4(found, "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
-	      SD_task_get_name(src), SD_task_get_name(dst), SD_task_get_name(dst), SD_task_get_name(src));
+  if (!found)
+    THROW4(arg_error, 0,
+	   "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
+	   SD_task_get_name(src), SD_task_get_name(dst), SD_task_get_name(dst), SD_task_get_name(src));
 
   /* remove the dependency from dst->tasks_before */
   dynar = dst->tasks_before;
@@ -321,8 +333,9 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
       found = 1;
     }
   }
+  /* should never happen... */
   xbt_assert4(found, "SimDag error: task '%s' is a successor of '%s' but task '%s' is not a predecessor of task '%s'",
-	      SD_task_get_name(dst), SD_task_get_name(src), SD_task_get_name(src), SD_task_get_name(dst)); /* should never happen... */
+	      SD_task_get_name(dst), SD_task_get_name(src), SD_task_get_name(src), SD_task_get_name(dst));
 
   /* if the task was scheduled and dst->tasks_before is empty now, we can make it ready */
   if (xbt_dynar_length(dst->tasks_before) == 0 && __SD_task_is_scheduled(dst))
@@ -353,7 +366,8 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     found = (dependency->dst == dst);
   }
-  xbt_assert2(found, "No dependency found between task '%s' and '%s'", SD_task_get_name(src), SD_task_get_name(dst));
+  if (!found)
+    THROW2(arg_error, 0, "No dependency found between task '%s' and '%s'", SD_task_get_name(src), SD_task_get_name(dst));
   return dependency->data;
 }
 
@@ -374,17 +388,21 @@ static void __SD_print_watch_points(SD_task_t task) {
 /**
  * \brief Adds a watch point to a task
  *
- * SD_simulate() will stop as soon as the \ref e_SD_task_state_t "state" of this task becomes the one given in argument. The
+ * SD_simulate() will stop as soon as the \ref e_SD_task_state_t "state" of this
+ * task becomes the one given in argument. The
  * watch point is then automatically removed.
  * 
  * \param task a task
- * \param state the \ref e_SD_task_state_t "state" you want to watch (cannot be #SD_NOT_SCHEDULED)
+ * \param state the \ref e_SD_task_state_t "state" you want to watch
+ * (cannot be #SD_NOT_SCHEDULED)
  * \see SD_task_unwatch()
  */
 void SD_task_watch(SD_task_t task, e_SD_task_state_t state) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert0(state != SD_NOT_SCHEDULED, "Cannot add a watch point for state SD_NOT_SCHEDULED");
+
+  if (state & SD_NOT_SCHEDULED)
+    THROW0(arg_error, 0, "Cannot add a watch point for state SD_NOT_SCHEDULED");
 
   task->watch_points = task->watch_points | state;
   /*  __SD_print_watch_points(task);*/
@@ -400,7 +418,8 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state) {
 void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert0(state != SD_NOT_SCHEDULED, "Cannot have a watch point for state SD_NOT_SCHEDULED");
+  xbt_assert0(state != SD_NOT_SCHEDULED,
+	      "SimDag error: Cannot have a watch point for state SD_NOT_SCHEDULED");
   
   task->watch_points = task->watch_points & ~state;
   /*  __SD_print_watch_points(task);*/
@@ -426,6 +445,11 @@ double SD_task_get_execution_time(SD_task_t task,
 				  const double *computation_amount,
 				  const double *communication_amount,
 				  double rate) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL && workstation_nb > 0 && workstation_list != NULL &&
+	      computation_amount != NULL && communication_amount != NULL,
+	      "Invalid parameter");
+
   /* the task execution time is the maximum execution time of the parallel tasks */
   double time, max_time = 0.0;
   int i, j;
@@ -463,9 +487,11 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
 		     const SD_workstation_t *workstation_list, const double *computation_amount,
 		     const double *communication_amount, double rate) {
   SD_CHECK_INIT_DONE();
-  xbt_assert0(task, "Invalid parameter");
-  xbt_assert1(__SD_task_is_not_scheduled(task), "Task '%s' has already been scheduled.", SD_task_get_name(task));
+  xbt_assert0(task != NULL, "Invalid parameter");
   xbt_assert0(workstation_nb > 0, "workstation_nb must be positive");
+
+  if (!__SD_task_is_not_scheduled(task))
+    THROW1(arg_error, 0, "Task '%s' has already been scheduled", SD_task_get_name(task));
 
   task->workstation_nb = workstation_nb;
   task->rate = rate;
@@ -504,12 +530,13 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
 void SD_task_unschedule(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert1(task->state_set == sd_global->scheduled_task_set ||
-	      task->state_set == sd_global->ready_task_set ||
-	      task->state_set == sd_global->running_task_set ||
-	      task->state_set == sd_global->failed_task_set,
-	      "Task %s: the state must be SD_SCHEDULED, SD_READY, SD_RUNNING or SD_FAILED",
-	      SD_task_get_name(task));
+
+  if (task->state_set != sd_global->scheduled_task_set &&
+      task->state_set != sd_global->ready_task_set &&
+      task->state_set != sd_global->running_task_set &&
+      task->state_set != sd_global->failed_task_set)
+    THROW1(arg_error, 0, "Task %s: the state must be SD_SCHEDULED, SD_READY, SD_RUNNING or SD_FAILED",
+	   SD_task_get_name(task));
 
   if (__SD_task_is_scheduled_or_ready(task)) /* if the task is scheduled or ready */
     __SD_task_destroy_scheduling_data(task);
@@ -526,8 +553,9 @@ void SD_task_unschedule(SD_task_t task) {
  */
 static void __SD_task_destroy_scheduling_data(SD_task_t task) {
   SD_CHECK_INIT_DONE();
-  xbt_assert1(__SD_task_is_scheduled_or_ready(task),
-	      "Task '%s' must be SD_SCHEDULED or SD_READY", SD_task_get_name(task));
+  if (!__SD_task_is_scheduled_or_ready(task))
+    THROW1(arg_error, 0, "Task '%s' must be SD_SCHEDULED or SD_READY", SD_task_get_name(task));
+
   xbt_free(task->workstation_list);
   xbt_free(task->computation_amount);
   xbt_free(task->communication_amount);
@@ -539,8 +567,10 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task) {
 surf_action_t __SD_task_run(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert2(__SD_task_is_ready(task), "Task '%s' is not ready! Task state: %d",
-	      SD_task_get_name(task), SD_task_get_state(task));
+
+  if (!__SD_task_is_ready(task))
+    THROW2(arg_error, 0, "Task '%s' is not ready! Task state: %d",
+	   SD_task_get_name(task), SD_task_get_state(task));
 
   task->surf_action = surf_workstation_resource->extension_public->
     execute_parallel_task(task->workstation_nb,
@@ -606,8 +636,8 @@ double SD_task_get_finish_time(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
 
-  if(task->surf_action)
-    return surf_workstation_resource->common_public->action_get_finish_time(task->surf_action); /* should never happen as actions are destroyed right after their completion */
+  if(task->surf_action) /* should never happen as actions are destroyed right after their completion */
+    return surf_workstation_resource->common_public->action_get_finish_time(task->surf_action);
   else 
     return task->finish_time;
 }
