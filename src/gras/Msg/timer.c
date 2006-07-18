@@ -150,7 +150,7 @@ double gras_msg_timer_handle(void) {
      DEBUG2("Action %p expires in %f", timer->action, untilthis);
      
      if (untilthis <= 0.0) {
-       void_f_void_t action = timer->action;
+       void_f_void_t *action = timer->action;
 	
        DEBUG5("[%.0f] Serve %s action %p (%f<%f)",gras_os_time(),
 	      timer->repeat ? "repetitive" : "delayed", timer->action,

@@ -23,20 +23,20 @@ void nil_function(void)
   return;
 }
 
-void_f_void_t STag_surfxml_platform_description_fun = nil_function;
-void_f_void_t ETag_surfxml_platform_description_fun = nil_function;
-void_f_void_t STag_surfxml_cpu_fun = nil_function;
-void_f_void_t ETag_surfxml_cpu_fun = nil_function;
-void_f_void_t STag_surfxml_network_link_fun = nil_function;
-void_f_void_t ETag_surfxml_network_link_fun = nil_function;
-void_f_void_t STag_surfxml_route_fun = nil_function;
-void_f_void_t ETag_surfxml_route_fun = nil_function;
-void_f_void_t STag_surfxml_route_element_fun = nil_function;
-void_f_void_t ETag_surfxml_route_element_fun = nil_function;
-void_f_void_t STag_surfxml_process_fun = nil_function;
-void_f_void_t ETag_surfxml_process_fun = nil_function;
-void_f_void_t STag_surfxml_argument_fun = nil_function;
-void_f_void_t ETag_surfxml_argument_fun = nil_function;
+void_f_void_t *STag_surfxml_platform_description_fun = nil_function;
+void_f_void_t *ETag_surfxml_platform_description_fun = nil_function;
+void_f_void_t *STag_surfxml_cpu_fun = nil_function;
+void_f_void_t *ETag_surfxml_cpu_fun = nil_function;
+void_f_void_t *STag_surfxml_network_link_fun = nil_function;
+void_f_void_t *ETag_surfxml_network_link_fun = nil_function;
+void_f_void_t *STag_surfxml_route_fun = nil_function;
+void_f_void_t *ETag_surfxml_route_fun = nil_function;
+void_f_void_t *STag_surfxml_route_element_fun = nil_function;
+void_f_void_t *ETag_surfxml_route_element_fun = nil_function;
+void_f_void_t *STag_surfxml_process_fun = nil_function;
+void_f_void_t *ETag_surfxml_process_fun = nil_function;
+void_f_void_t *STag_surfxml_argument_fun = nil_function;
+void_f_void_t *ETag_surfxml_argument_fun = nil_function;
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse;
@@ -202,7 +202,7 @@ static int _surf_parse(void)
   return surf_parse_lex();
 }
 
-int_f_void_t surf_parse = _surf_parse;
+int_f_void_t *surf_parse = _surf_parse;
 
 void surf_parse_get_double(double *value,const char *string)
 { 

@@ -106,7 +106,7 @@ typedef struct s_gras_msg_cb_ctx s_gras_msg_cb_ctx_t;
 typedef struct {
   double expiry;
   double period;
-  void_f_void_t action;
+  void_f_void_t *action;
   int repeat;
 } s_gras_timer_t, *gras_timer_t;
 
