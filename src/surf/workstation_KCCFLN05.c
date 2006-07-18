@@ -548,7 +548,6 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   return (surf_action_t) action;
 }
 
-/* FIXME: execute_parallel_task */
 static surf_action_t execute_parallel_task(int workstation_nb,
 					   void **workstation_list, 
 					   double *computation_amount, 
