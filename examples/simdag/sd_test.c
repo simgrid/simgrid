@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
   /* initialisation of SD */
   SD_init(&argc, argv);
 
-  xbt_log_control_set("sd.thres=debug");
+  /* xbt_log_control_set("sd.thres=debug"); */
 
   if (argc < 2) {
     INFO1("Usage: %s platform_file", argv[0]);
