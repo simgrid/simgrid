@@ -20,7 +20,9 @@ SD_global_t sd_global = NULL;
  * \see SD_create_environment(), SD_exit()
  */
 void SD_init(int *argc, char **argv) {
-  xbt_assert0(sd_global == NULL, "SD_init already called");
+  if (SD_INITIALISED()) {
+    xbt_assert0(0, "SD_init() already called");
+  }
 
   sd_global = xbt_new0(s_SD_global_t, 1);
   sd_global->workstations = xbt_dict_new();
@@ -107,6 +109,8 @@ SD_task_t* SD_simulate(double how_long)
   int changed_task_capacity = 16; /* will be increased if necessary */
   int i;
   static int first_time = 1;
+
+  SD_CHECK_INIT_DONE();
 
   INFO0("Starting simulation...");
 
@@ -231,6 +235,8 @@ SD_task_t* SD_simulate(double how_long)
  * \return the current clock, in second
  */
 double SD_get_clock(void) {
+  SD_CHECK_INIT_DONE();
+
   return surf_get_clock();
 }
 
@@ -243,7 +249,7 @@ double SD_get_clock(void) {
  * \see SD_init(), SD_task_destroy()
  */
 void SD_exit(void) {
-  if (sd_global != NULL) {
+  if (SD_INITIALISED()) {
     DEBUG0("Destroying workstation and link dictionaries...");
     xbt_dict_free(&sd_global->workstations);
     xbt_dict_free(&sd_global->links);
@@ -264,8 +270,13 @@ void SD_exit(void) {
     xbt_swag_free(sd_global->failed_task_set);
 
     xbt_free(sd_global);
+    sd_global = NULL;
 
     DEBUG0("Exiting Surf...");
     surf_exit();
+  }
+  else {
+    fprintf(stderr, "Warning: SD_exit() called while SimDag was not running\n");
+    /* we cannot use assertions here because xbt is not running! */
   }
 }

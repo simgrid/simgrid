@@ -7,7 +7,8 @@
 #include "simdag/datatypes.h"
 #include "surf/surf.h"
 
-#define SD_CHECK_INIT_DONE() xbt_assert0(sd_global != NULL, "Call SD_init() first")
+#define SD_INITIALISED() (sd_global != NULL)
+#define SD_CHECK_INIT_DONE() xbt_assert0(SD_INITIALISED(), "Call SD_init() first")
 
 /* Global variables */
 
