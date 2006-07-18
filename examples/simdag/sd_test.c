@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
     xbt_assert0(0, "Hey, I can add a dependency between Task A and Task A!");
   }
   CATCH (ex) {
+    xbt_ex_free(ex);
   }
   
   TRY {
@@ -80,6 +81,7 @@ int main(int argc, char **argv) {
     xbt_assert0(0, "Oh oh, I can add an already existing dependency!");
   }
   CATCH (ex) {
+    xbt_ex_free(ex);
   }
 
   SD_task_dependency_remove(taskA, taskB);
@@ -89,6 +91,7 @@ int main(int argc, char **argv) {
     xbt_assert0(0, "Dude, I can remove an unknown dependency!");
   }
   CATCH (ex) {
+    xbt_ex_free(ex);
   }
 
   TRY {
@@ -96,6 +99,7 @@ int main(int argc, char **argv) {
     xbt_assert0(0, "Wow, I can remove a dependency between Task C and itself!");
   }
   CATCH (ex) {
+    xbt_ex_free(ex);
   }
 
 
