@@ -45,7 +45,14 @@
  *      - wait a moment for the slaves registration (using gras_msg_handleall())
  *      - run its algoritpm. For this, it may call RPC on slaves, or explicitely wait (with gras_msg_wait()) for the answers it expects.
 
- *
+ * \section AMOK_pm_compat Compatibility issues
+ * 
+ * The API described here is as of SimGrid 3.2 and higher. In version 3.1
+ * (where this module were introduced), all functions were named amok_hm_*
+ * This was because the module used to be named HostManagement, but it was
+ * renamed before being released to betterly express its purpose.
+ * Unfortunately, the rename was not done properly before version 3.2.
+ * 
  * @{
  */
 
