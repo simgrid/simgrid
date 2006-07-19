@@ -83,7 +83,13 @@ misusing the exceptions.
 So, as you can see, you don't want to include large sections of your program
 in TRY blocks. If you do so, it's quite sure that one day, you'll do a break
 or a return within this block. And believe me, finding such typos is a real
-pain.
+pain. 
+
+If you are suspecting this kind of error, I made a little script for you:
+check <tt>tools/xbt_exception_checker</tt> from the CVS. Given a set of C
+files, it extracts the TRY blocks and display them on the standard output so
+that you can grep for <tt>return</tt>, <tt>break</tt> and such forbidden
+words.
 
 \section GRAS_tut_tour_exceptions_use Putting exceptions into action
 
