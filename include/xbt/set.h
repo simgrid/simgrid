@@ -25,7 +25,7 @@ SG_BEGIN_DECL()
  unsigned int ID;
  char        *name;
  unsigned int name_len;
- /* my other fields, constituting the payload */
+ // my other fields, constituting the payload 
 } my_element_type_t; \endverbatim
  * 
  *  Since we are casting elements around, no protection is ensured by the 
@@ -34,7 +34,7 @@ SG_BEGIN_DECL()
  *  \verbatim struct {
  XBT_SET_HEADERS;
 
- /* my other fields, constituting the payload */
+ // my other fields, constituting the payload 
 } my_element_type_t; \endverbatim
  *
  *  It is impossible to remove an element from such a data structure.
