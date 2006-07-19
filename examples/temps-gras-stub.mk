@@ -9,7 +9,7 @@ $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@:
 
 ##
 ## Cleanups
-CLEANFILES = _$(NAME)_simulator.c  $(NAME).Makefile.local $(NAME).Makefile.remote $(NAME).deploy.sh \
+CLEANFILES = _$(NAME)_simulator.c $(NAME).mk $(NAME).Makefile.local $(NAME).Makefile.remote $(NAME).deploy.sh \
              $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c)
 
 MOSTLYCLEANFILES = $(NAME).trace
