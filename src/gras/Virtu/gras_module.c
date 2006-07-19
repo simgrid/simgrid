@@ -177,7 +177,7 @@ void gras_module_join(const char *name) {
 
     (*mod->init_f)();
   } else {
-    INFO3("Module %s already inited. Refcount=%d ID=%d",
+    DEBUG3("Module %s already inited. Refcount=%d ID=%d",
 	  mod->name, mod->refcount,*(mod->p_id));
   }
   mod->refcount++;
@@ -195,7 +195,7 @@ void gras_module_join(const char *name) {
 
   (*mod->join_f)(moddata);
 
-  INFO2("Module %s joined successfully (ID=%d)", name,*(mod->p_id));
+  DEBUG2("Module %s joined successfully (ID=%d)", name,*(mod->p_id));
 }
 void gras_module_leave(const char *name) {
   gras_module_t mod = (gras_module_t)xbt_set_get_by_name(_gras_modules, name);
