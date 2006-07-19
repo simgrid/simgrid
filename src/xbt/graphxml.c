@@ -1001,12 +1001,13 @@ int xbt_graph_parse__flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *xbt_graph_parse_text;
 #line 1 "xbt/graphxml.l"
-/* Validating XML processor for graphxml.dtd.
- * Generated 2006/04/22 01:36:55.
+/* Validating XML processor for xbt/graphxml.dtd.
+ * Generated 2006/07/18 21:02:16.
  *
  * This program was generated with the FleXML XML processor generator.
- * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp).
+ * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
+ * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1014,8 +1015,8 @@ char *xbt_graph_parse_text;
  * ------
  * 
  * Some parts, here collectively called "Part A", are found in the 
- * FleXML package.  They are Copyright © 1999-2005 Kristoffer Rose. 
- * All rights reserved.
+ * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
+ * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -1046,13 +1047,13 @@ char *xbt_graph_parse_text;
  * by the author of or contributors to FleXML.
  * 
  */
-#line 48 "xbt/graphxml.l"
+#line 49 "xbt/graphxml.l"
 
 /* Version strings. */
 const char rcs_graphxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.28 2006/03/21 12:04:13 legranda Exp $";
+ "$" "Id: skel,v 1.31 2006/07/18 18:21:13 mquinson Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -1112,7 +1113,7 @@ static void cleanup(void);
 static char bufferstack[FLEXML_BUFFERSTACKSIZE];
 static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
-  struct BufferLast_s *old; char* saved; char new1[1];
+  struct BufferLast_s *old; const char* saved; char new1[1];
 } BufferLast;
 #ifdef FLEXML_HasMixed
 static BufferLast* last = (BufferLast*)0;
@@ -1136,7 +1137,7 @@ static void bufferliteral(char c, const char** pp, char* text)
 }
 
 #ifdef FLEXML_HasMixed
-static void pushbuffer(char* p)
+static void pushbuffer(const char* p)
 {
   BufferLast* l = (BufferLast*)next;
   assert(next < limit);
@@ -1146,7 +1147,7 @@ static void pushbuffer(char* p)
   last = l;
 }
 
-static char* popbuffer(void)
+static const char* popbuffer(void)
 {
   BufferLast* l = last;
   assert(last != (BufferLast*)0);
@@ -1187,10 +1188,10 @@ static char* popbuffer(void)
 
 
 
-#line 215 "xbt/graphxml.l"
+#line 216 "xbt/graphxml.l"
 /* State names. */
 const char* *graphxml_statenames=NULL;
-#line 1194 "xbt/graphxml.c"
+#line 1195 "xbt/graphxml.c"
 
 #define INITIAL 0
 #define PROLOG 1
@@ -1371,7 +1372,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 219 "xbt/graphxml.l"
+#line 220 "xbt/graphxml.l"
 
 
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
@@ -1406,7 +1407,7 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-#line 1410 "xbt/graphxml.c"
+#line 1411 "xbt/graphxml.c"
 
 	if ( (yy_init) )
 		{
@@ -1501,52 +1502,52 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 254 "xbt/graphxml.l"
+#line 255 "xbt/graphxml.l"
 ENTER(INCOMMENT);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 255 "xbt/graphxml.l"
+#line 256 "xbt/graphxml.l"
 ENTER(INPI);
 	YY_BREAK
 
 
 case 3:
 YY_RULE_SETUP
-#line 258 "xbt/graphxml.l"
+#line 259 "xbt/graphxml.l"
 LEAVE;
 	YY_BREAK
 case 4:
-#line 260 "xbt/graphxml.l"
-case 5:
 #line 261 "xbt/graphxml.l"
+case 5:
+#line 262 "xbt/graphxml.l"
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 261 "xbt/graphxml.l"
+#line 262 "xbt/graphxml.l"
 SKIP;
 	YY_BREAK
 case YY_STATE_EOF(INCOMMENT):
-#line 262 "xbt/graphxml.l"
+#line 263 "xbt/graphxml.l"
 FAIL("EOF in comment.");
 	YY_BREAK
 
 
 case 7:
 YY_RULE_SETUP
-#line 265 "xbt/graphxml.l"
+#line 266 "xbt/graphxml.l"
 LEAVE;
 	YY_BREAK
 case 8:
-#line 267 "xbt/graphxml.l"
+#line 268 "xbt/graphxml.l"
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 267 "xbt/graphxml.l"
+#line 268 "xbt/graphxml.l"
 SKIP;
 	YY_BREAK
 case YY_STATE_EOF(INPI):
-#line 268 "xbt/graphxml.l"
+#line 269 "xbt/graphxml.l"
 FAIL("EOF in PI (processing instruction).");
 	YY_BREAK
 
@@ -1554,7 +1555,7 @@ FAIL("EOF in PI (processing instruction).");
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 273 "xbt/graphxml.l"
+#line 274 "xbt/graphxml.l"
 SKIP;
 	YY_BREAK
 /* PROLOG: determine root element and process it. */
@@ -1562,13 +1563,13 @@ SKIP;
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 278 "xbt/graphxml.l"
+#line 279 "xbt/graphxml.l"
 SET(DOCTYPE); 
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 279 "xbt/graphxml.l"
+#line 280 "xbt/graphxml.l"
 FAIL("Bad declaration %s.",xbt_graph_parse_text);
 	YY_BREAK
 
@@ -1576,35 +1577,35 @@ FAIL("Bad declaration %s.",xbt_graph_parse_text);
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 283 "xbt/graphxml.l"
+#line 284 "xbt/graphxml.l"
 SET(ROOT_graphxml_edge);
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 284 "xbt/graphxml.l"
+#line 285 "xbt/graphxml.l"
 SET(ROOT_graphxml_node);
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 285 "xbt/graphxml.l"
+#line 286 "xbt/graphxml.l"
 SET(ROOT_graphxml_graph);
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 286 "xbt/graphxml.l"
+#line 287 "xbt/graphxml.l"
 FAIL("Bad declaration %s.",xbt_graph_parse_text);
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 287 "xbt/graphxml.l"
+#line 288 "xbt/graphxml.l"
 FAIL("Unexpected character `%c' in prolog.", xbt_graph_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(PROLOG):
 case YY_STATE_EOF(DOCTYPE):
-#line 288 "xbt/graphxml.l"
+#line 289 "xbt/graphxml.l"
 FAIL("EOF in prolog.");
 	YY_BREAK
 
@@ -1615,7 +1616,7 @@ FAIL("EOF in prolog.");
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 298 "xbt/graphxml.l"
+#line 299 "xbt/graphxml.l"
 {
   A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
   ENTER(AL_graphxml_graph);
@@ -1624,32 +1625,32 @@ YY_RULE_SETUP
 
 case 19:
 /* rule 19 can match eol */
-#line 305 "xbt/graphxml.l"
+#line 306 "xbt/graphxml.l"
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 305 "xbt/graphxml.l"
+#line 306 "xbt/graphxml.l"
 A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
-#line 307 "xbt/graphxml.l"
+#line 308 "xbt/graphxml.l"
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 307 "xbt/graphxml.l"
+#line 308 "xbt/graphxml.l"
 A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_false;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 309 "xbt/graphxml.l"
+#line 310 "xbt/graphxml.l"
 {
   LEAVE; STag_graphxml_graph();graphxml_pcdata = NULL; ENTER(S_graphxml_graph);
  }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 312 "xbt/graphxml.l"
+#line 313 "xbt/graphxml.l"
 {
   LEAVE; STag_graphxml_graph(); graphxml_pcdata = NULL; ETag_graphxml_graph();
   switch (YY_START) {
@@ -1659,16 +1660,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 318 "xbt/graphxml.l"
+#line 319 "xbt/graphxml.l"
 FAIL("Unexpected character `%c' in attribute list of graph element.", xbt_graph_parse_text[0]);
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 319 "xbt/graphxml.l"
+#line 320 "xbt/graphxml.l"
 FAIL("Bad attribute `%s' in `graph' element start tag.",xbt_graph_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_graphxml_graph):
-#line 320 "xbt/graphxml.l"
+#line 321 "xbt/graphxml.l"
 FAIL("EOF in attribute list of `graph' element.");
 	YY_BREAK
 
@@ -1676,7 +1677,7 @@ FAIL("EOF in attribute list of `graph' element.");
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 324 "xbt/graphxml.l"
+#line 325 "xbt/graphxml.l"
 {
   LEAVE;
   ETag_graphxml_graph();
@@ -1688,12 +1689,12 @@ YY_RULE_SETUP
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 331 "xbt/graphxml.l"
+#line 332 "xbt/graphxml.l"
 FAIL("Unexpected end-tag `%s': `</graph>' expected.",xbt_graph_parse_text);
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 332 "xbt/graphxml.l"
+#line 333 "xbt/graphxml.l"
 FAIL("Unexpected character `%c': `</graph>' expected.",xbt_graph_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_graphxml_graph_1):
@@ -1701,7 +1702,7 @@ case YY_STATE_EOF(E_graphxml_graph):
 case YY_STATE_EOF(S_graphxml_graph_3):
 case YY_STATE_EOF(S_graphxml_graph_5):
 case YY_STATE_EOF(S_graphxml_graph):
-#line 333 "xbt/graphxml.l"
+#line 334 "xbt/graphxml.l"
 FAIL("Premature EOF: `</graph>' expected.");
 	YY_BREAK
 
@@ -1714,7 +1715,7 @@ FAIL("Premature EOF: `</graph>' expected.");
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 343 "xbt/graphxml.l"
+#line 344 "xbt/graphxml.l"
 {
   A_graphxml_node_label = NULL;
   A_graphxml_node_name = NULL;
@@ -1728,66 +1729,66 @@ YY_RULE_SETUP
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 353 "xbt/graphxml.l"
+#line 354 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_node_label);
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-#line 354 "xbt/graphxml.l"
+#line 355 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_node_label);
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 356 "xbt/graphxml.l"
+#line 357 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_node_name);
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 357 "xbt/graphxml.l"
+#line 358 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_node_name);
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-#line 359 "xbt/graphxml.l"
+#line 360 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_node_data);
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 360 "xbt/graphxml.l"
+#line 361 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_node_data);
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-#line 362 "xbt/graphxml.l"
+#line 363 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_x);
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 363 "xbt/graphxml.l"
+#line 364 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_x);
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 365 "xbt/graphxml.l"
+#line 366 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_y);
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 366 "xbt/graphxml.l"
+#line 367 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_y);
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 368 "xbt/graphxml.l"
+#line 369 "xbt/graphxml.l"
 {
   if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
   LEAVE; STag_graphxml_node();graphxml_pcdata = NULL; ENTER(E_graphxml_node);
@@ -1795,7 +1796,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 372 "xbt/graphxml.l"
+#line 373 "xbt/graphxml.l"
 {
   if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
   LEAVE; STag_graphxml_node(); graphxml_pcdata = NULL; ETag_graphxml_node();
@@ -1807,16 +1808,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 380 "xbt/graphxml.l"
+#line 381 "xbt/graphxml.l"
 FAIL("Unexpected character `%c' in attribute list of node element.", xbt_graph_parse_text[0]);
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 381 "xbt/graphxml.l"
+#line 382 "xbt/graphxml.l"
 FAIL("Bad attribute `%s' in `node' element start tag.",xbt_graph_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_graphxml_node):
-#line 382 "xbt/graphxml.l"
+#line 383 "xbt/graphxml.l"
 FAIL("EOF in attribute list of `node' element.");
 	YY_BREAK
 
@@ -1824,7 +1825,7 @@ FAIL("EOF in attribute list of `node' element.");
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 386 "xbt/graphxml.l"
+#line 387 "xbt/graphxml.l"
 {
   LEAVE;
   ETag_graphxml_node();
@@ -1837,16 +1838,16 @@ YY_RULE_SETUP
 case 46:
 /* rule 46 can match eol */
 YY_RULE_SETUP
-#line 394 "xbt/graphxml.l"
+#line 395 "xbt/graphxml.l"
 FAIL("Unexpected end-tag `%s': `</node>' expected.",xbt_graph_parse_text);
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 395 "xbt/graphxml.l"
+#line 396 "xbt/graphxml.l"
 FAIL("Unexpected character `%c': `</node>' expected.",xbt_graph_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_graphxml_node):
-#line 396 "xbt/graphxml.l"
+#line 397 "xbt/graphxml.l"
 FAIL("Premature EOF: `</node>' expected.");
 	YY_BREAK
 
@@ -1860,7 +1861,7 @@ FAIL("Premature EOF: `</node>' expected.");
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
-#line 407 "xbt/graphxml.l"
+#line 408 "xbt/graphxml.l"
 {
   A_graphxml_edge_label = NULL;
   A_graphxml_edge_name = NULL;
@@ -1875,78 +1876,78 @@ YY_RULE_SETUP
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 418 "xbt/graphxml.l"
+#line 419 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_edge_label);
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-#line 419 "xbt/graphxml.l"
+#line 420 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_edge_label);
 	YY_BREAK
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-#line 421 "xbt/graphxml.l"
+#line 422 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_edge_name);
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 422 "xbt/graphxml.l"
+#line 423 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_edge_name);
 	YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-#line 424 "xbt/graphxml.l"
+#line 425 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_edge_source);
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-#line 425 "xbt/graphxml.l"
+#line 426 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_edge_source);
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-#line 427 "xbt/graphxml.l"
+#line 428 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_edge_target);
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-#line 428 "xbt/graphxml.l"
+#line 429 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_edge_target);
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-#line 430 "xbt/graphxml.l"
+#line 431 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_edge_length);
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-#line 431 "xbt/graphxml.l"
+#line 432 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_edge_length);
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-#line 433 "xbt/graphxml.l"
+#line 434 "xbt/graphxml.l"
 ENTER(VALUE1); BUFFERSET(A_graphxml_edge_data);
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 434 "xbt/graphxml.l"
+#line 435 "xbt/graphxml.l"
 ENTER(VALUE2); BUFFERSET(A_graphxml_edge_data);
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 436 "xbt/graphxml.l"
+#line 437 "xbt/graphxml.l"
 {
   if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
   if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
@@ -1955,7 +1956,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 441 "xbt/graphxml.l"
+#line 442 "xbt/graphxml.l"
 {
   if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
   if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
@@ -1968,16 +1969,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 450 "xbt/graphxml.l"
+#line 451 "xbt/graphxml.l"
 FAIL("Unexpected character `%c' in attribute list of edge element.", xbt_graph_parse_text[0]);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 451 "xbt/graphxml.l"
+#line 452 "xbt/graphxml.l"
 FAIL("Bad attribute `%s' in `edge' element start tag.",xbt_graph_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(AL_graphxml_edge):
-#line 452 "xbt/graphxml.l"
+#line 453 "xbt/graphxml.l"
 FAIL("EOF in attribute list of `edge' element.");
 	YY_BREAK
 
@@ -1985,7 +1986,7 @@ FAIL("EOF in attribute list of `edge' element.");
 case 65:
 /* rule 65 can match eol */
 YY_RULE_SETUP
-#line 456 "xbt/graphxml.l"
+#line 457 "xbt/graphxml.l"
 {
   LEAVE;
   ETag_graphxml_edge();
@@ -1998,16 +1999,16 @@ YY_RULE_SETUP
 case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
-#line 464 "xbt/graphxml.l"
+#line 465 "xbt/graphxml.l"
 FAIL("Unexpected end-tag `%s': `</edge>' expected.",xbt_graph_parse_text);
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 465 "xbt/graphxml.l"
+#line 466 "xbt/graphxml.l"
 FAIL("Unexpected character `%c': `</edge>' expected.",xbt_graph_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_graphxml_edge):
-#line 466 "xbt/graphxml.l"
+#line 467 "xbt/graphxml.l"
 FAIL("Premature EOF: `</edge>' expected.");
 	YY_BREAK
 
@@ -2015,11 +2016,11 @@ FAIL("Premature EOF: `</edge>' expected.");
 
 case 68:
 YY_RULE_SETUP
-#line 472 "xbt/graphxml.l"
+#line 473 "xbt/graphxml.l"
 {SET(PROLOG); yyless(0); CLEANUP; return -1;}
 	YY_BREAK
 case YY_STATE_EOF(EPILOG):
-#line 473 "xbt/graphxml.l"
+#line 474 "xbt/graphxml.l"
 SUCCEED;
 	YY_BREAK
 
@@ -2028,89 +2029,89 @@ SUCCEED;
 /* Non-defined standard entities... */
 case 69:
 YY_RULE_SETUP
-#line 480 "xbt/graphxml.l"
+#line 481 "xbt/graphxml.l"
 BUFFERPUTC('&');
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 481 "xbt/graphxml.l"
+#line 482 "xbt/graphxml.l"
 BUFFERPUTC('<');
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 482 "xbt/graphxml.l"
+#line 483 "xbt/graphxml.l"
 BUFFERPUTC('>');
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 483 "xbt/graphxml.l"
+#line 484 "xbt/graphxml.l"
 BUFFERPUTC('\'');
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 484 "xbt/graphxml.l"
+#line 485 "xbt/graphxml.l"
 BUFFERPUTC('"');
 	YY_BREAK
 /* Character entities. */
 case 74:
 YY_RULE_SETUP
-#line 487 "xbt/graphxml.l"
+#line 488 "xbt/graphxml.l"
 BUFFERPUTC((unsigned char)atoi(xbt_graph_parse_text+2));
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 488 "xbt/graphxml.l"
+#line 489 "xbt/graphxml.l"
 BUFFERPUTC((unsigned char)strtol(xbt_graph_parse_text+3,NULL,16));
 	YY_BREAK
 
 
 case 76:
 /* rule 76 can match eol */
-#line 493 "xbt/graphxml.l"
+#line 494 "xbt/graphxml.l"
 case 77:
 /* rule 77 can match eol */
-#line 494 "xbt/graphxml.l"
+#line 495 "xbt/graphxml.l"
 case 78:
 /* rule 78 can match eol */
-#line 495 "xbt/graphxml.l"
+#line 496 "xbt/graphxml.l"
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
-#line 495 "xbt/graphxml.l"
+#line 496 "xbt/graphxml.l"
 BUFFERPUTC('\n');
 	YY_BREAK
 
 
 case 80:
 YY_RULE_SETUP
-#line 499 "xbt/graphxml.l"
+#line 500 "xbt/graphxml.l"
 ENTER(CDATA);
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 500 "xbt/graphxml.l"
+#line 501 "xbt/graphxml.l"
 FAIL("Unexpected `]""]>' in character data.");
 	YY_BREAK
 
 
 case 82:
 YY_RULE_SETUP
-#line 504 "xbt/graphxml.l"
+#line 505 "xbt/graphxml.l"
 BUFFERDONE; LEAVE;
 	YY_BREAK
 case YY_STATE_EOF(VALUE1):
-#line 505 "xbt/graphxml.l"
+#line 506 "xbt/graphxml.l"
 FAIL("EOF in literal (\"'\" expected).");
 	YY_BREAK
 
 
 case 83:
 YY_RULE_SETUP
-#line 509 "xbt/graphxml.l"
+#line 510 "xbt/graphxml.l"
 BUFFERDONE; LEAVE;
 	YY_BREAK
 case YY_STATE_EOF(VALUE2):
-#line 510 "xbt/graphxml.l"
+#line 511 "xbt/graphxml.l"
 FAIL("EOF in literal (`\"' expected).");
 	YY_BREAK
 
@@ -2118,29 +2119,29 @@ FAIL("EOF in literal (`\"' expected).");
 case 84:
 /* rule 84 can match eol */
 YY_RULE_SETUP
-#line 514 "xbt/graphxml.l"
+#line 515 "xbt/graphxml.l"
 BUFFERPUTC(xbt_graph_parse_text[0]);
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 515 "xbt/graphxml.l"
+#line 516 "xbt/graphxml.l"
 FAIL("Spurious `%c' in character data.",xbt_graph_parse_text[0]);
 	YY_BREAK
 
 
 case 86:
 YY_RULE_SETUP
-#line 519 "xbt/graphxml.l"
+#line 520 "xbt/graphxml.l"
 LEAVE;
 	YY_BREAK
 /* "]""]"		BUFFERPUTC(xbt_graph_parse_text[0]); BUFFERPUTC(xbt_graph_parse_text[1]); */
 case 87:
 YY_RULE_SETUP
-#line 521 "xbt/graphxml.l"
+#line 522 "xbt/graphxml.l"
 BUFFERPUTC(xbt_graph_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(CDATA):
-#line 522 "xbt/graphxml.l"
+#line 523 "xbt/graphxml.l"
 FAIL("EOF in CDATA section.");
 	YY_BREAK
 
@@ -2151,16 +2152,16 @@ FAIL("EOF in CDATA section.");
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
-#line 529 "xbt/graphxml.l"
+#line 530 "xbt/graphxml.l"
 FAIL("Syntax error on character `%c'.", xbt_graph_parse_text[0]);
 	YY_BREAK
 
 case 89:
 YY_RULE_SETUP
-#line 532 "xbt/graphxml.l"
+#line 533 "xbt/graphxml.l"
 ECHO;
 	YY_BREAK
-#line 2164 "xbt/graphxml.c"
+#line 2165 "xbt/graphxml.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ROOT_graphxml_graph):
 case YY_STATE_EOF(S_graphxml_graph_2):
@@ -3137,7 +3138,7 @@ void xbt_graph_parse_free (void * ptr )
 #undef YY_DECL_IS_OURS
 #undef YY_DECL
 #endif
-#line 532 "xbt/graphxml.l"
+#line 533 "xbt/graphxml.l"
 
 
 

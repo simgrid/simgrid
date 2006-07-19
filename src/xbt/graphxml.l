@@ -1,9 +1,10 @@
-/* Validating XML processor for graphxml.dtd.
- * Generated 2006/04/22 01:36:55.
+/* Validating XML processor for xbt/graphxml.dtd.
+ * Generated 2006/07/18 21:02:16.
  *
  * This program was generated with the FleXML XML processor generator.
- * FleXML is Copyright © 1999-2005 Kristoffer Rose.  All rights reserved.
- * (Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp).
+ * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
+ * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -11,8 +12,8 @@
  * ------
  * 
  * Some parts, here collectively called "Part A", are found in the 
- * FleXML package.  They are Copyright © 1999-2005 Kristoffer Rose. 
- * All rights reserved.
+ * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
+ * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -48,9 +49,9 @@
 
 /* Version strings. */
 const char rcs_graphxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.28 2006/03/21 12:04:13 legranda Exp $";
+ "$" "Id: skel,v 1.31 2006/07/18 18:21:13 mquinson Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.48 2006/03/21 13:09:12 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -110,7 +111,7 @@ static void cleanup(void);
 static char bufferstack[FLEXML_BUFFERSTACKSIZE];
 static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
 typedef struct BufferLast_s {
-  struct BufferLast_s *old; char* saved; char new1[1];
+  struct BufferLast_s *old; const char* saved; char new1[1];
 } BufferLast;
 #ifdef FLEXML_HasMixed
 static BufferLast* last = (BufferLast*)0;
@@ -134,7 +135,7 @@ static void bufferliteral(char c, const char** pp, char* text)
 }
 
 #ifdef FLEXML_HasMixed
-static void pushbuffer(char* p)
+static void pushbuffer(const char* p)
 {
   BufferLast* l = (BufferLast*)next;
   assert(next < limit);
@@ -144,7 +145,7 @@ static void pushbuffer(char* p)
   last = l;
 }
 
-static char* popbuffer(void)
+static const char* popbuffer(void)
 {
   BufferLast* l = last;
   assert(last != (BufferLast*)0);
