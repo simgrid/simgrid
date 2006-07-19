@@ -25,8 +25,6 @@ static short _amok_bw_initialized = 0;
 /** @brief module initialization; all participating nodes must run this */
 void amok_bw_init(void) {
 
-  amok_base_init();
-
   if (! _amok_bw_initialized) {
     amok_bw_bw_init();
     amok_bw_sat_init();

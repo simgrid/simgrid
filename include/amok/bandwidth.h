@@ -10,8 +10,6 @@
 #ifndef AMOK_BANDWIDTH_H
 #define AMOK_BANDWIDTH_H
 
-#include "amok/base.h"
-   
 /** \addtogroup AMOK_bw
  *  \brief Test the bandwidth between two nodes
  *

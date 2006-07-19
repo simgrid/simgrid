@@ -11,7 +11,6 @@
 #define AMOK_PEER_MANAGEMENT_H
 
 #include <gras.h>
-#include <amok/base.h>
 
 /** \addtogroup AMOK_pm
  *  \brief Managing remote servers

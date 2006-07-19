@@ -32,7 +32,6 @@ nobase_include_HEADERS = \
 	\
 	gras/messages.h gras/timer.h \
 	\
-	amok/base.h \
 	amok/peermanagement.h \
 	amok/bandwidth.h
 

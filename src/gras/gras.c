@@ -12,6 +12,7 @@
 #include "xbt/module.h" /* xbt_init/exit */
 
 #include "gras_modinter.h"   /* module init/exit */
+#include "amok/amok_modinter.h"   /* module init/exit */
 #include "xbt_modinter.h"   /* module init/exit */
 
 #include "gras.h"
@@ -73,6 +74,9 @@ void gras_init(int *argc,char **argv) {
     signal(SIGINT,gras_sigint_handler);
 #endif     
   }
+   
+  /* and then init amok */
+  amok_init();
 }
 
 void gras_exit(void) {
