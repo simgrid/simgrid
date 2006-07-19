@@ -59,7 +59,7 @@ EXTRA_DIST= \
 	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
 	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c \
 	\
-	amok/Bandwidth/bandwidth_private.h
+	amok/Bandwidth/bandwidth_private.h \
 	amok/amok_modinter.h
 
 #        gras_private.h
