@@ -28,7 +28,7 @@ nobase_include_HEADERS = \
 	surf/surfxml.h \
 	\
 	gras/datadesc.h gras/transport.h \
-	gras/virtu.h gras/emul.h gras/process.h gras/modules.h \
+	gras/virtu.h gras/emul.h gras/process.h gras/module.h \
 	\
 	gras/messages.h gras/timer.h \
 	\
