@@ -101,6 +101,7 @@ int master (int argc,char *argv[]) {
   C = xbt_matrix_double_new_zeros(DATA_MATRIX_SIZE,DATA_MATRIX_SIZE);
 	
   /* Create the connexions */
+  xbt_assert0(argc>1, "Usage: master <port>");
   gras_socket_server(atoi(argv[1]));
   peers=amok_pm_group_new("pmm");
   INFO0("Wait for peers for 10 sec");
