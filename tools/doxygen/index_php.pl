@@ -38,11 +38,14 @@ while(defined($line=<FILE>)) {
 }
 close FILE;
 
-$onglets =~ s/href=\"/href=\"doc\//gi;
-$onglets =~ s/src=\"/src=\"doc\//gi;
+# (?!http) : A zero-width negative look-ahead assertion. 
+# For example "/foo(?!bar)/" matches any occurrence of "foo" that isn’t followed by "bar".
 
-$body =~ s/href=\"/href=\"doc\//gi;
-$body =~ s/src=\"/src=\"doc\//gi;
+$onglets =~ s/href=\"(?!http)/href=\"doc\//gi;
+$onglets =~ s/src=\"(?!http)/src=\"doc\//gi;
+
+$body =~ s/href=\"(?!http)/href=\"doc\//gi;
+$body =~ s/src=\"(?!http)/src=\"doc\//gi;
 
 open FILE,$inputphp;
 open OUTPUT,"> $output";
