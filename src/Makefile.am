@@ -262,14 +262,14 @@ xbt/graphxml.c: xbt/graphxml.l
 
 if HAVE_FLEXML
 surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
-	set -e; mkdir -p surf; flexml -b 1000000 -P surfxml -S $@ -L $^
+	set -e; mkdir -p surf; flexml -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^
 $(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
-	set -e;                flexml            -P surfxml -H $@ -L $^
+	set -e;                flexml            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
 	
 xbt/graphxml.l: $(srcdir)/xbt/graphxml.dtd
-	set -e; flexml -b 1000000 -P graphxml -S $@ -L $^
+	set -e; flexml -b 1000000 -P graphxml --sysid=graphxml.dtd -S $@ -L $^
 $(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
-	set -e; flexml -P graphxml -H $@ -L $^
+	set -e; flexml            -P graphxml --sysid=graphxml.dtd -H $@ -L $^
 else
 
 $(top_srcdir)/include/surf/surfxml.h surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
