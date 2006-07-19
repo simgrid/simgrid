@@ -20,10 +20,22 @@ SG_BEGIN_DECL()
  * 
  *  The elements stored in such a data structure can be retrieve both by
  *  name and by ID. For this to work, the first fields of the structures
- *  stored must begin with:
- *  \verbatim unsigned int ID;
+ *  stored must begin with the following fields:
+ *  \verbatim struct {
+ unsigned int ID;
  char        *name;
- unsigned int name_len;\endverbatim
+ unsigned int name_len;
+ /* my other fields, constituting the payload */
+} my_element_type_t; \endverbatim
+ * 
+ *  Since we are casting elements around, no protection is ensured by the 
+ * compiler. It is thus safer to define the headers using the macro 
+ * defined to that extend:
+ *  \verbatim struct {
+ XBT_SET_HEADERS;
+
+ /* my other fields, constituting the payload */
+} my_element_type_t; \endverbatim
  *
  *  It is impossible to remove an element from such a data structure.
  *
@@ -40,21 +52,25 @@ SG_BEGIN_DECL()
  *  @{
  */
 /** \brief Opaque type representing a set */
-typedef struct xbt_set_ *xbt_set_t; 
+typedef struct xbt_set_ *xbt_set_t;
+
+#define XBT_SET_HEADERS \
+  unsigned int ID;      \
+  char        *name;    \
+  unsigned int name_len
+
 /** \brief It must be possible to cast set elements to this type */
-struct xbt_set_elm_ {
+typedef struct xbt_set_elm_ {
   unsigned int ID;      /**< Identificator (system assigned) */
   char        *name;    /**< Name (user assigned) */
   unsigned int name_len;/**< Length of the name */
-};
+} s_xbt_set_elm_t,*xbt_set_elm_t;
 
 /*####[ Functions ]##########################################################*/
 xbt_set_t xbt_set_new (void);
 void xbt_set_free(xbt_set_t *set);
 
 /** @} */
-typedef struct xbt_set_elm_  s_xbt_set_elm_t;
-typedef struct xbt_set_elm_ *  xbt_set_elm_t;
 /** @defgroup XBT_set_basic Sets basic usage
  *  @ingroup XBT_set
  *
