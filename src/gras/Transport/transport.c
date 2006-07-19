@@ -173,7 +173,7 @@ void gras_trp_socket_new(int incoming,
   *dst = sock;
 
   xbt_dynar_push(((gras_trp_procdata_t) 
-		     gras_libdata_by_id(gras_trp_libdata_id))->sockets,dst);
+		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,dst);
   XBT_OUT;
 }
  
