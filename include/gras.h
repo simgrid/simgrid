@@ -14,6 +14,7 @@
 #include <xbt/ex.h> /* There's a whole bunch of exception handling in GRAS */
 
 #include <gras/process.h>
+#include <gras/module.h>
 #include <gras/virtu.h>
 #include <gras/emul.h>
 
