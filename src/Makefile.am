@@ -60,6 +60,7 @@ EXTRA_DIST= \
 	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c \
 	\
 	amok/Bandwidth/bandwidth_private.h
+	amok/amok_modinter.h
 
 #        gras_private.h
 
@@ -142,7 +143,7 @@ COMMON_SRC=\
   gras/Msg/msg.c                      gras/Msg/rpc.c                       gras/Msg/timer.c                 \
   gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
   \
-  gras/Virtu/process.c
+  gras/Virtu/process.c gras/Virtu/gras_module.c
 
 RL_SRC= \
   gras/Transport/rl_transport.c          \
@@ -182,7 +183,7 @@ SG_SRC=  \
   gras/Msg/sg_msg.c
 
 AMOK_SRC= \
-  amok/base.c \
+  amok/amok_base.c \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
   amok/PeerManagement/peermanagement.c
 
