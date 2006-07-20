@@ -62,6 +62,8 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 						       
     if(max_duration>0) {
       if(!first_time) {
+	PAJE_PROCESS_POP_STATE(process);
+	PAJE_COMM_STOP(process,t,channel);
 	MSG_RETURN(MSG_TRANSFER_FAILURE);
       }
     }
