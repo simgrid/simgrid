@@ -82,6 +82,8 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
     first_time = 0;
     if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
        == SURF_CPU_OFF)
+      PAJE_PROCESS_POP_STATE(process);
+      PAJE_COMM_STOP(process,t,channel);
       MSG_RETURN(MSG_HOST_FAILURE);
     /* OK, we should both be ready now. Are you there ? */
   }
@@ -458,6 +460,8 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
   while(!(task_simdata->comm)) {
     if(max_duration>0) {
       if(!first_time) {
+	PAJE_PROCESS_POP_STATE(process);
+	PAJE_COMM_STOP(process,task,channel);
 	MSG_RETURN(MSG_TRANSFER_FAILURE);
       }
     }
@@ -473,6 +477,8 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
        get_state(local_host->simdata->host) == SURF_CPU_OFF) {
       xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
 		      task);
+      PAJE_PROCESS_POP_STATE(process);
+      PAJE_COMM_STOP(process,task,channel);
       MSG_task_destroy(task);
       MSG_RETURN(MSG_HOST_FAILURE);
     }
