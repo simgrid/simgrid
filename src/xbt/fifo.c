@@ -36,7 +36,7 @@ void xbt_fifo_free(xbt_fifo_t l)
   return;
 }
 
-/* Push
+/** Push
  * \param l list
  * \param t element
  * \return the bucket that was just added
