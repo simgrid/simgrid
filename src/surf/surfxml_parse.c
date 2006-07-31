@@ -168,8 +168,12 @@ void ETag_surfxml_argument(void)
 }
 
 void  surf_parse_open(const char *file) {
+  static int warned = 0;
   if(!file) {
-    WARN0("I hope you know what you're doing... you just gave me a NULL pointer!");
+    if (!warned) {
+      WARN0("Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.");
+      warned = 1;
+    }
     return;
   }
   if(!surf_input_buffer_stack) 
