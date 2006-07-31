@@ -912,6 +912,51 @@ reason:
    before the client get a chance to read them (use gras_os_sleep() to delay
    the server), or the server died awfully before the client got the data.
 
+\subsection faq_valgrind Valgrind spits tons of errors!
+
+It may happen that valgrind, the memory debugger beloved by any decent C
+programmer, spits tons of warnings like the following :
+\verbatim ==8414== Conditional jump or move depends on uninitialised value(s)
+==8414==    at 0x400882D: (within /lib/ld-2.3.6.so)
+==8414==    by 0x414EDE9: (within /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
+==8414==    by 0x414F937: _dl_open (in /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x4150F4C: (within /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
+==8414==    by 0x415102D: __libc_dlopen_mode (in /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x412D6B9: backtrace (in /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x8076446: xbt_dictelm_get_ext (dict_elm.c:714)
+==8414==    by 0x80764C1: xbt_dictelm_get (dict_elm.c:732)
+==8414==    by 0x8079010: xbt_cfg_register (config.c:208)
+==8414==    by 0x806821B: MSG_config (msg_config.c:42)
+\endverbatim
+
+This problem is somewhere in the libc when using the backtraces and there is
+very few things we can do ourselves to fix it. Instead, here is how to tell
+valgrind to ignore the error. Add the following to your ~/.valgrind.supp (or
+create this file on need). Make sure to change the obj line according to
+your personnal mileage (change 2.3.6 to the actual version you are using,
+which you can retrieve with a simple "ls /lib/ld*.so").
+
+\verbatim {
+   name: Backtrace madness
+   Memcheck:Cond
+   obj:/lib/ld-2.3.6.so
+   fun:dl_open_worker
+   fun:_dl_open
+   fun:do_dlopen
+   fun:dlerror_run
+   fun:__libc_dlopen_mode
+}\endverbatim
+
+Then, you have to specify valgrind to use this suppression file by passing
+the <tt>--suppressions=$HOME/.valgrind.supp</tt> option on the command line.
+You can also add the following to your ~/.bashrc so that it gets passed
+automatically. Actually, it passes a bit more options to valgrind, and this
+happen to be my personnal settings. Check the valgrind documentation for
+more information.
+
+\verbatim export VALGRIND_OPTS="--leak-check=yes --leak-resolution=high --num-callers=40 --tool=memcheck --suppressions=$HOME/.valgrind.supp" \endverbatim
 
 \subsection faq_deadlock There is a deadlock !!!
 
