@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
   /* initialisation of SD */
   SD_init(&argc, argv);
 
-  /* xbt_log_control_set("sd.thres=debug"); */
+  /*  xbt_log_control_set("sd.thres=debug");*/
 
   if (argc < 2) {
     INFO1("Usage: %s platform_file", argv[0]);
@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
   const SD_workstation_t *workstations = SD_workstation_get_list();
   SD_workstation_t w1 = workstations[0];
   SD_workstation_t w2 = workstations[1];
+  SD_workstation_set_access_mode(w2, SD_WORKSTATION_SEQUENTIAL_ACCESS);
   const char *name1 = SD_workstation_get_name(w1);
   const char *name2 = SD_workstation_get_name(w2);
   const double computation_amount1 = 2000000;
@@ -151,12 +152,6 @@ int main(int argc, char **argv) {
   SD_task_t *changed_tasks;
 
   changed_tasks = SD_simulate(-1.0);
-  xbt_assert0(changed_tasks[0] == taskD &&
-	      changed_tasks[1] == taskB &&
-	      changed_tasks[2] == taskC &&
-	      changed_tasks[3] == NULL,
-	      "Unexpected simulation results");
-
   for (i = 0; changed_tasks[i] != NULL; i++) {
     INFO3("Task '%s' start time: %f, finish time: %f",
 	  SD_task_get_name(changed_tasks[i]),
@@ -164,6 +159,11 @@ int main(int argc, char **argv) {
 	  SD_task_get_finish_time(changed_tasks[i]));
   }
   
+  xbt_assert0(changed_tasks[0] == taskD &&
+	      changed_tasks[1] == taskB &&
+	      changed_tasks[2] == NULL,
+	      "Unexpected simulation results");
+
   xbt_free(changed_tasks);
 
   DEBUG0("Destroying tasks...");

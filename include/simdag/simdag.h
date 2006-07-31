@@ -55,6 +55,9 @@ SD_link_t*              SD_route_get_list(SD_workstation_t src, SD_workstation_t
 int                     SD_route_get_size(SD_workstation_t src, SD_workstation_t dst);
 double                  SD_workstation_get_power(SD_workstation_t workstation);
 double                  SD_workstation_get_available_power(SD_workstation_t workstation);
+e_SD_workstation_access_mode_t SD_workstation_get_access_mode(SD_workstation_t workstation);
+void                    SD_workstation_set_access_mode(SD_workstation_t workstation,
+						       e_SD_workstation_access_mode_t access_mode);
 
 double    SD_workstation_get_computation_time(SD_workstation_t workstation, double computation_amount);
 double    SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst);

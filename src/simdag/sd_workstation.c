@@ -13,6 +13,8 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   SD_workstation_t workstation = xbt_new0(s_SD_workstation_t, 1);
   workstation->surf_workstation = surf_workstation;
   workstation->data = data; /* user data */
+  SD_workstation_set_access_mode(workstation, SD_WORKSTATION_SHARED_ACCESS); /* default mode is shared */
+  workstation->task_fifo = NULL;
   
   const char *name = SD_workstation_get_name(workstation);
   xbt_dict_set(sd_global->workstations, name, workstation, __SD_workstation_destroy); /* add the workstation to the dictionary */
@@ -45,7 +47,7 @@ SD_workstation_t SD_workstation_get_by_name(const char *name) {
  * \return an array of \ref SD_workstation_t containing all workstations
  * \see SD_workstation_get_number()
  */
-const SD_workstation_t*  SD_workstation_get_list(void) {
+const SD_workstation_t* SD_workstation_get_list(void) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(SD_workstation_get_number() > 0, "There is no workstation!");
 
@@ -296,11 +298,88 @@ double SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t ds
   return latency + (communication_amount / min_bandwidth);
 }
 
+/**
+ * \brief Returns the access mode of this workstation.
+ *
+ * \param workstation a workstation
+ * \return the access mode for the tasks running on this workstation:
+ * SD_WORKSTATION_SHARED_ACCESS or SD_WORKSTATION_SEQUENTIAL_ACCESS
+ *
+ * \see SD_workstation_set_access_mode(), e_SD_workstation_access_mode_t
+ */
+ e_SD_workstation_access_mode_t SD_workstation_get_access_mode(SD_workstation_t workstation) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(workstation != NULL, "Invalid parameter");
+  return workstation->access_mode;
+}
+
+/**
+ * \brief Sets the access mode for the tasks that will be executed on a workstation
+ *
+ * By default, a workstation resource is shared, i.e. several tasks
+ * can be executed at the same time on a workstation. The CPU power of
+ * the workstation is shared between the running tasks on the workstation.
+ * In sequential mode, only one task can use the workstation, and the other
+ * tasks wait in a FIFO.
+ *
+ * \param workstation a workstation
+ * \param access_mode the access mode you want to set to this workstation:
+ * SD_WORKSTATION_SHARED_ACCESS or SD_WORKSTATION_SEQUENTIAL_ACCESS
+ *
+ * \see SD_workstation_get_access_mode(), e_SD_workstation_access_mode_t
+ */
+void SD_workstation_set_access_mode(SD_workstation_t workstation, e_SD_workstation_access_mode_t access_mode) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(workstation != NULL, "Invalid parameter");
+
+  if (access_mode == workstation->access_mode) {
+    return; // nothing is changed
+  }
+
+  workstation->access_mode = access_mode;
+
+  if (access_mode == SD_WORKSTATION_SHARED_ACCESS) {
+    xbt_fifo_free(workstation->task_fifo);
+    workstation->task_fifo = NULL;
+  }
+  else {
+    workstation->task_fifo = xbt_fifo_new();
+  }
+}
+
+/* Returns whether a task can start now on a workstation.
+ *//*
+int __SD_workstation_can_start(SD_workstation_t workstation, SD_task_t task) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(workstation != NULL && task != NULL, "Invalid parameter");
+
+  return !__SD_workstation_is_busy(workstation) &&
+    (xbt_fifo_size(workstation->task_fifo) == 0) || xbt_fifo_get_first_item(workstation->task_fifo) == task);
+}
+*/
+
+/* Returns whether a workstation is busy. A workstation is busy is it is
+ * in sequential mode and a task is running on it or the fifo is not empty.
+ */
+int __SD_workstation_is_busy(SD_workstation_t workstation) {
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(workstation != NULL, "Invalid parameter");
+  
+  return workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS &&
+    (workstation->current_task != NULL || xbt_fifo_size(workstation->task_fifo) > 0);
+}
+
 /* Destroys a workstation.
  */
 void __SD_workstation_destroy(void *workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
   /* workstation->surf_workstation is freed by surf_exit and workstation->data is freed by the user */
-  xbt_free(workstation);
+
+  SD_workstation_t w = (SD_workstation_t) workstation;
+
+  if (w->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
+    xbt_fifo_free(w->task_fifo);
+  }
+  xbt_free(w);
 }
