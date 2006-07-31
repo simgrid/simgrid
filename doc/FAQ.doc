@@ -700,50 +700,7 @@ Then, tell SimGrid that you want to use your own "parser" instead of the stock o
 
 An example of this trick is distributed in the file examples/msg/msg_test_surfxml_bypassed.c
 
-\section faq_troubleshooting Troubleshooting
-
-\subsection faq_compil_trouble ./configure fails!
-
-We now only one reason for the configure to fail:
-
- - <b>You are using a borken build environment</b>\n
-   If symptom is that configure complains about gcc not being able to build
-   executables, you are probably missing the libc6-dev package. Damn Ubuntu.
-
-If you experience other kind of issue, please get in touch with us. We are
-always interested in improving our portability to new systems.
-
-\subsection faq_distcheck_fails Dude! "make check" fails on my machine!
-
-Don't assume we never run this target, because we do. Really. Promise!
-
-There is several reasons which may cause the make check to fail on your
-machine:
-
- - <b>You are using a borken libc (probably concerning the contextes)</b>.\n
-   The symptom is that the "make check" fails within the examples/msg directory.\n
-   By default, SimGrid uses something called ucontexts. This is part of the
-   libc, but it's quite undertested. For example, some (old) versions of the
-   glibc on alpha do not implement these functions, but provide the stubs
-   (which return ENOSYS: not implemented). It fools our detection mecanism
-   and leads to segfaults.\n
-   On some x86_64, the pointer to function is stored into a integer, but int
-   are 32bits only on this arch while pointers are 64bits. Our detection
-   mecanism also fails to detect the problem, which leads to segfaults.\n
-   In both cases, there is not much we can do to fix the bug. We are working
-   on a workaround for x86_64 machines, but in the meanwhile, you can
-   compile with --with-context=pthread to avoid ucontext completely. You'll
-   be a bit more limitated in the number of simulated processes you can start
-   concurently, but 5000 processes is still enough for most purposes, isn't
-   it?\n
-   This limitation is the reason why we insist on using this piece of ...
-   software even if it's so troublesome.\n
-   <b>=> use --with-pthread on AMD64 architecture that do not have an 
-   ultra-recent libc.</b>
-   
- - <b>There is a bug in SimGrid we aren't aware of</b>.\n
-   If none of the above apply, please drop us a mail on the mailing list so
-   that we can check it out.
+\section faq_limits Pushing the limits
 
 \subsection faq_context_1000 I want thousands of simulated processes
 
@@ -798,6 +755,51 @@ Here are some tricks I had to use in order to run a token ring between
    Reduce this as much as you can, but be warned that if this value is too 
    low, you'll get a segfault. The token ring example, which is quite simple, 
    runs with 40kb stacks.
+
+\section faq_troubleshooting Troubleshooting
+
+\subsection faq_compil_trouble ./configure fails!
+
+We now only one reason for the configure to fail:
+
+ - <b>You are using a borken build environment</b>\n
+   If symptom is that configure complains about gcc not being able to build
+   executables, you are probably missing the libc6-dev package. Damn Ubuntu.
+
+If you experience other kind of issue, please get in touch with us. We are
+always interested in improving our portability to new systems.
+
+\subsection faq_distcheck_fails Dude! "make check" fails on my machine!
+
+Don't assume we never run this target, because we do. Really. Promise!
+
+There is several reasons which may cause the make check to fail on your
+machine:
+
+ - <b>You are using a borken libc (probably concerning the contextes)</b>.\n
+   The symptom is that the "make check" fails within the examples/msg directory.\n
+   By default, SimGrid uses something called ucontexts. This is part of the
+   libc, but it's quite undertested. For example, some (old) versions of the
+   glibc on alpha do not implement these functions, but provide the stubs
+   (which return ENOSYS: not implemented). It fools our detection mecanism
+   and leads to segfaults.\n
+   On some x86_64, the pointer to function is stored into a integer, but int
+   are 32bits only on this arch while pointers are 64bits. Our detection
+   mecanism also fails to detect the problem, which leads to segfaults.\n
+   In both cases, there is not much we can do to fix the bug. We are working
+   on a workaround for x86_64 machines, but in the meanwhile, you can
+   compile with --with-context=pthread to avoid ucontext completely. You'll
+   be a bit more limitated in the number of simulated processes you can start
+   concurently, but 5000 processes is still enough for most purposes, isn't
+   it?\n
+   This limitation is the reason why we insist on using this piece of ...
+   software even if it's so troublesome.\n
+   <b>=> use --with-pthread on AMD64 architecture that do not have an 
+   ultra-recent libc.</b>
+   
+ - <b>There is a bug in SimGrid we aren't aware of</b>.\n
+   If none of the above apply, please drop us a mail on the mailing list so
+   that we can check it out.
 
 \subsection faq_longjmp longjmp madness
 
