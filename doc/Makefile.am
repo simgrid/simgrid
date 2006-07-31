@@ -92,7 +92,7 @@ check-gtut-tocs:
 	     grep -v toc|grep -v '<hr>'|grep [^[:blank:]] >>tmp.realtoc;\
 	done
 	@grep ' *- \\ref' gtut-tour.doc > tmp.curtoc
-	@if ! diff -b -q tmp.curtoc tmp.realtoc >/dev/null; then \
+	@if ! diff -b -u tmp.curtoc tmp.realtoc ; then \
 	  echo Wrong toc for gtut-tour.doc. Should be ; \
 	  cat tmp.realtoc; \
 	fi ;
