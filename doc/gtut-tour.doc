@@ -16,7 +16,8 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "6: Logs"=GRAS_tut_tour_logs.html
       DOXYGEN_NAVBAR_CHILD "7: Timers"=GRAS_tut_tour_timers.html
       DOXYGEN_NAVBAR_CHILD "8: Exceptions"=GRAS_tut_tour_exceptions.html
-      DOXYGEN_NAVBAR_CHILD "9: RPC"=GRAS_tut_tour_rpc.html
+      DOXYGEN_NAVBAR_CHILD "9: Simple data"=GRAS_tut_tour_simpledata.html
+      DOXYGEN_NAVBAR_CHILD "10: RPC"=GRAS_tut_tour_rpc.html
     --> \endhtmlonly
 
 <b>Part 1: Bases</b>
@@ -72,6 +73,11 @@ all features available in GRAS.
       - \ref GRAS_tut_tour_exceptions_use
       - \ref GRAS_tut_tour_exceptions_recap
      
+   - \ref GRAS_tut_tour_simpledata
+      - \ref GRAS_tut_tour_simpledata_intro
+      - \ref GRAS_tut_tour_simpledata_use
+      - \ref GRAS_tut_tour_simpledata_recap
+      
    - \ref GRAS_tut_tour_rpc
       - \ref GRAS_tut_tour_rpc_intro
       - \ref GRAS_tut_tour_rpc_use

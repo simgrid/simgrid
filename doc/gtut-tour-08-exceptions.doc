@@ -146,6 +146,6 @@ The complete program reads:
 \include 08-exceptions.c
 
 
-Go to \ref GRAS_tut_tour_rpc
+Go to \ref GRAS_tut_tour_simpledata
 
 */
