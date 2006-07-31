@@ -723,8 +723,14 @@ xbt_cfg_set_string(xbt_cfg_t cfg,const char*name, const char*val) {
   variable = xbt_cfgelm_get(cfg,name,xbt_cfgelm_string);
 
   if (variable->max == 1) {
-    if (variable->cb_rm && xbt_dynar_length(variable->content))
-      (*variable->cb_rm)(name, 0);
+    if (xbt_dynar_length(variable->content)) {
+       if (variable->cb_rm)
+	 (*variable->cb_rm)(name, 0);
+       else if (variable->type == xbt_cfgelm_string) {
+	 char * sval=xbt_dynar_get_as(variable->content,0,char*);
+	 free(sval);
+       }
+    }
           
     xbt_dynar_set(variable->content,0,&newval);
   } else {
