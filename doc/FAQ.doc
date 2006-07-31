@@ -328,7 +328,7 @@ MSG_task_get_name(), MSG_task_get_compute_duration(),
 MSG_task_get_remaining_computation(), MSG_task_get_data_size(),
 and MSG_task_get_data().
 
-You could use a dictionnary (#xbt_dict_t) of dynars (#xbt_dict_t). If
+You could use a dictionnary (#xbt_dict_t) of dynars (#xbt_dynar_t). If
 you still don't see how to do it, please come back to us...
 
 \subsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
