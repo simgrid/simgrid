@@ -82,8 +82,6 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
     first_time = 0;
     if(surf_workstation_resource->extension_public->get_state(h_simdata->host) 
        == SURF_CPU_OFF)
-      PAJE_PROCESS_POP_STATE(process);
-      PAJE_COMM_STOP(process,t,channel);
       MSG_RETURN(MSG_HOST_FAILURE);
     /* OK, we should both be ready now. Are you there ? */
   }
