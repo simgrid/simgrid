@@ -107,7 +107,7 @@ cd simgrid
 ./configure --enable-maintainer-mode
 make dist \endverbatim
 
-\subsection faq_setting Setting up your own code for MSG
+\subsection faq_setting_MSG Setting up your own MSG code
 
 Do not build your simulator by modifying the SimGrid examples.  Go
 outside the SimGrid source tree and create your own working directory
@@ -186,7 +186,7 @@ in a terminal : <tt>info make</tt> and read the introduction. The
 previous example should be enough for a first try but you may want to
 perform some more complex compilations...
 
-\subsection faq_setting Setting up your own code for GRAS
+\subsection faq_setting_GRAS Setting up your own GRAS code
 
 If you use the GRAS interface instead of the MSG one, then previous section
 is not the better source of information. Instead, you should check the GRAS
