@@ -1,6 +1,22 @@
 SimGrid (3.1.1) unstable; urgency=low
 
-  * 
+  * Documentation update:
+    - New FAQ: "Valgrind spits tons of errors!"
+    - GRAS tutorial containing an introduction both to the GRAS framework
+      and to the used communication model as well as an initiatic tour
+      introducing the most proheminent features. Current tour TOC:
+      # Lesson 0: Installing GRAS
+      # Lesson 1: Setting up your own project
+      # Lesson 2: Exchanging simple messages
+      # Lesson 3: Passing arguments to the processes (in SG)
+      # Lesson 4: Attaching callbacks to messages
+      # Lesson 5: Using globals in processes
+      # Lesson 6: Logging informations properly
+      # Lesson 7: Using internal timers
+      # Lesson 8: Handling errors through exceptions
+      More a due, of course. At least the one explaining how to add data
+       into messages. In the meanwhile, you can check the examples which are
+       still here.
 
  --
 
