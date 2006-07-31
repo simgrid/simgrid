@@ -18,6 +18,14 @@ SimGrid (3.1.1) unstable; urgency=low
        into messages. In the meanwhile, you can check the examples which are
        still here.
 
+  SIMDAG:
+  * A sequential mode has been added to the workstations. When a workstation
+    is in sequential mode, it can execute only one task, and the other tasks
+    are waiting in a FIFO. [Christophe Thiery]
+
+  SURF:
+  * The KCCFLN05 workstation model now handles parallel tasks. It is the
+    model for SIMDAG. [Christophe Thiery]
  --
 
 SimGrid (3.1) unstable; urgency=low
@@ -32,7 +40,7 @@ SimGrid (3.1) unstable; urgency=low
     module that enabled to play with Directed Acyclic Graphs. It is built
     directly on top of SURF and provides an API rather close to the old
     SG. Some old codes using SG are currently under rewrite to check that
-    all needful functions are provided.   [Christophe Thiery]  
+    all needful functions are provided. [Christophe Thiery]
 	
   SURF:
   * Complete rewrite of the KCCFLN05 workstation model. It is now an
