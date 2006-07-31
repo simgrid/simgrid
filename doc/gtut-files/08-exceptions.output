@@ -1,0 +1,49 @@
+$ ./test_server & ./test_client 127.0.0.1 
+[blaise:client:(13428) 0.000005] test.c:76: [test/INFO] Damn, the server is not on 3000
+[blaise:client:(13428) 0.000236] test.c:76: [test/INFO] Damn, the server is not on 3001
+[blaise:client:(13428) 0.000346] test.c:76: [test/INFO] Damn, the server is not on 3002
+[blaise:client:(13428) 0.000450] test.c:76: [test/INFO] Damn, the server is not on 3003
+[blaise:client:(13428) 0.000553] test.c:76: [test/INFO] Damn, the server is not on 3004
+[blaise:client:(13428) 0.000657] test.c:76: [test/INFO] Damn, the server is not on 3005
+[blaise:client:(13428) 0.000928] test.c:71: [test/INFO] Yeah! I found the server on 3006! It's eradicated by now.
+[blaise:client:(13428) 0.000958] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[blaise:server:(13425) 0.000005] test.c:39: [test/INFO] Ok, I'm hidden on port 3006. Hope for the best.
+[blaise:server:(13425) 1.666161] test.c:15: [test/CRITICAL] Argh, killed by 127.0.0.1:1024! Bye folks, I'm out of here...
+[blaise:server:(13425) 1.666197] gras/gras.c:83: [gras/INFO] Exiting GRAS
+$
+$ ./test_server --cheat & ./test_client 127.0.0.1 
+[blaise:client:(13440) 0.000006] test.c:76: [test/INFO] Damn, the server is not on 3000
+[blaise:client:(13440) 0.000219] test.c:76: [test/INFO] Damn, the server is not on 3001
+[blaise:client:(13440) 0.000327] test.c:76: [test/INFO] Damn, the server is not on 3002
+[blaise:client:(13440) 0.000431] test.c:76: [test/INFO] Damn, the server is not on 3003
+[blaise:client:(13440) 0.000533] test.c:76: [test/INFO] Damn, the server is not on 3004
+[blaise:client:(13440) 0.000647] test.c:76: [test/INFO] Damn, the server is not on 3005
+[blaise:client:(13440) 0.000749] test.c:76: [test/INFO] Damn, the server is not on 3006
+[blaise:client:(13440) 0.000851] test.c:76: [test/INFO] Damn, the server is not on 3007
+[blaise:client:(13440) 0.000952] test.c:76: [test/INFO] Damn, the server is not on 3008
+[blaise:client:(13440) 0.001054] test.c:76: [test/INFO] Damn, the server is not on 3009
+[blaise:client:(13440) 0.001101] xbt/ex.c:219: [xbt_ex/CRITICAL] Damn, I failed to find the server! I cannot survive this humilliation.
+** SimGrid: UNCAUGHT EXCEPTION received on blaise(13440): category: not found; value: 0
+** Damn, I failed to find the server! I cannot survive this humilliation.
+** Thrown by client() in this process
+
+**   In client() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/test.c:80 (static symbol)
+**   In main() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/_test_client.c:21 (static symbol)
+**   In __libc_start_main() at ??:0 (dynamic symbol)
+**   In _start() at ../sysdeps/i386/elf/start.S:122 (static symbol)
+$ killall test_server
+$
+$ ./test_simulator platform.xml test.xml
+[blaise:server:(13437) 0.000005] test.c:36: [test/INFO] Hi! hi! I'm not in the search range, but in 9999...
+[Jacquelin:server:(1) 0.000000] test.c:39: [test/INFO] Ok, I'm hidden on port 3005. Hope for the best.
+[Boivin:client:(2) 1.500000] test.c:76: [test/INFO] Damn, the server is not on 3000
+[Boivin:client:(2) 1.500000] test.c:76: [test/INFO] Damn, the server is not on 3001
+[Boivin:client:(2) 1.500000] test.c:76: [test/INFO] Damn, the server is not on 3002
+[Boivin:client:(2) 1.500000] test.c:76: [test/INFO] Damn, the server is not on 3003
+[Boivin:client:(2) 1.500000] test.c:76: [test/INFO] Damn, the server is not on 3004
+[Boivin:client:(2) 1.500537] test.c:71: [test/INFO] Yeah! I found the server on 3005! It's eradicated by now.
+[Boivin:client:(2) 1.500537] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[Jacquelin:server:(1) 1.500537] test.c:15: [test/CRITICAL] Argh, killed by Boivin:1024! Bye folks, I'm out of here...
+[Jacquelin:server:(1) 1.500537] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[1.500537] msg/global.c:475: [msg_kernel/INFO] Congratulations ! Simulation terminated : all processes are over
+$

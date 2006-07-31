@@ -1,0 +1,10 @@
+$ ./test_client
+[blaise:client:(12985) 0.000005] gras/gras.c:83: [gras/INFO] Exiting GRAS
+$ ./test_server
+[blaise:server:(12988) 0.000005] gras/gras.c:83: [gras/INFO] Exiting GRAS
+$
+$ ./test_simulator platform.xml test.xml
+[Jacquelin:server:(1) 0.000000] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[Boivin:client:(2) 0.000000] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[0.000000] msg/global.c:475: [msg_kernel/INFO] Congratulations ! Simulation terminated : all processes are over
+$

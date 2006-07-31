@@ -1,223 +1,223 @@
 # This works mainly on my box for now
 export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
-all: 1-bones.output 2-simple.output 3-args.output 4-callback.output \
-     5-globals.output 6-logs.output 7-timers.output 8-exceptions.output \
+all: 01-bones.output 02-simple.output 03-args.output 04-callback.output \
+     05-globals.output 06-logs.output 07-timers.output 08-exceptions.output \
      
 
 veryclean: clean
 	rm *.output*
 
-# Lesson 1: simple bones of project
+# Lesson 01: simple bones of project
 ########################################
 
-1-bones.output: 1-bones_client 1-bones_server 1-bones_simulator
+01-bones.output: 01-bones_client 01-bones_server 01-bones_simulator
 	echo '$$ ./test_client'                           > $@ 
-	./1-bones_client                                 >> $@ 2>&1
+	./01-bones_client                                 >> $@ 2>&1
 	echo '$$ ./test_server'                          >> $@
-	./1-bones_server                                 >> $@ 2>&1
+	./01-bones_server                                 >> $@ 2>&1
 	echo '$$'                                        >> $@ 
 	echo '$$ ./test_simulator platform.xml test.xml' >> $@ 
-	./1-bones_simulator gtut-platform.xml test.xml   >> $@ 2>&1
+	./01-bones_simulator gtut-platform.xml test.xml   >> $@ 2>&1
 	echo '$$'                                        >> $@ 
 
-1-bones_client 1-bones_server 1-bones_simulator: _1-bones_client.c _1-bones_server.c _1-bones_simulator.c
-	make -f 1-bones.mk
+01-bones_client 01-bones_server 01-bones_simulator: _01-bones_client.c _01-bones_server.c _01-bones_simulator.c
+	make -f 01-bones.mk
 
-_1-bones_client.c _1-bones_server.c _1-bones_simulator.c: 1-bones.c test.xml
-	../../tools/gras/gras_stub_generator 1-bones test.xml >/dev/null
+_01-bones_client.c _01-bones_server.c _01-bones_simulator.c: 01-bones.c test.xml
+	../../tools/gras/gras_stub_generator 01-bones test.xml >/dev/null
 
 clean::
-	if [ -e 1-bones.mk ] ; then make -f 1-bones.mk clean; fi
-	rm -f _1-bones_client.c _1-bones_server.c _1-bones_simulator.c 1-bones.trace 1-bones.mk
+	if [ -e 01-bones.mk ] ; then make -f 01-bones.mk clean; fi
+	rm -f _01-bones_client.c _01-bones_server.c _01-bones_simulator.c 01-bones.trace 01-bones.mk
 
-# Lesson 2: simple message exchange
+# Lesson 02: simple message exchange
 ########################################
 
-2-simple.output: 2-simple_client 2-simple_server 2-simple_simulator
+02-simple.output: 02-simple_client 02-simple_server 02-simple_simulator
 	echo '$$ ./test_simulator platform.xml test.xml'  > $@
-	./2-simple_simulator gtut-platform.xml test.xml  >> $@ 2>&1
+	./02-simple_simulator gtut-platform.xml test.xml  >> $@ 2>&1
 	echo '$$'                                        >> $@ 
 
-2-simple_client 2-simple_server 2-simple_simulator: _2-simple_client.c _2-simple_server.c _2-simple_simulator.c
-	make -f 2-simple.mk
+02-simple_client 02-simple_server 02-simple_simulator: _02-simple_client.c _02-simple_server.c _02-simple_simulator.c
+	make -f 02-simple.mk
 
-_2-simple_client.c _2-simple_server.c _2-simple_simulator.c: 2-simple.c test.xml
-	../../tools/gras/gras_stub_generator 2-simple test.xml >/dev/null
+_02-simple_client.c _02-simple_server.c _02-simple_simulator.c: 02-simple.c test.xml
+	../../tools/gras/gras_stub_generator 02-simple test.xml >/dev/null
 
 clean::
-	if [ -e 2-simple.mk ] ; then make -f 2-simple.mk clean; fi
-	rm -f _2-simple_client.c _2-simple_server.c _2-simple_simulator.c 2-simple.trace 2-simple.mk
+	if [ -e 02-simple.mk ] ; then make -f 02-simple.mk clean; fi
+	rm -f _02-simple_client.c _02-simple_server.c _02-simple_simulator.c 02-simple.trace 02-simple.mk
 
-# Lesson 3: passing args to processes
+# Lesson 03: passing args to processes
 ########################################
 
-3-args.output: 3-args_client 3-args_server 3-args_simulator
+03-args.output: 03-args_client 03-args_server 03-args_simulator
 	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
-	./3-args_server 12345                                         >> $@ 2>&1&
-	./3-args_client 127.0.0.1 12345                               >> $@ 2>&1
+	./03-args_server 12345                                         >> $@ 2>&1&
+	./03-args_client 127.0.0.1 12345                               >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
-	./3-args_simulator gtut-platform.xml 3-args.xml               >> $@ 2>&1
+	./03-args_simulator gtut-platform.xml 03-args.xml               >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
-	killall 3-args_server 3-args_client 2>/dev/null || true
+	killall 03-args_server 03-args_client 2>/dev/null || true
 
-3-args_client 3-args_server 3-args_simulator: _3-args_client.c _3-args_server.c _3-args_simulator.c
-	make -f 3-args.mk
+03-args_client 03-args_server 03-args_simulator: _03-args_client.c _03-args_server.c _03-args_simulator.c
+	make -f 03-args.mk
 
-_3-args_client.c _3-args_server.c _3-args_simulator.c: 3-args.c 3-args.xml
-	../../tools/gras/gras_stub_generator 3-args 3-args.xml >/dev/null
+_03-args_client.c _03-args_server.c _03-args_simulator.c: 03-args.c 03-args.xml
+	../../tools/gras/gras_stub_generator 03-args 03-args.xml >/dev/null
 
 clean::
-	if [ -e 3-args.mk ] ; then make -f 3-args.mk clean; fi
-	rm -f _3-args_client.c _3-args_server.c _3-args_simulator.c 3-args.trace 3-args.mk
+	if [ -e 03-args.mk ] ; then make -f 03-args.mk clean; fi
+	rm -f _03-args_client.c _03-args_server.c _03-args_simulator.c 03-args.trace 03-args.mk
 
 # Lesson 4: callbacks
 ########################################
 
-4-callback.output: 4-callback_client 4-callback_server 4-callback_simulator
+04-callback.output: 04-callback_client 04-callback_server 04-callback_simulator
 	echo '$$ ./test_server 23451 & ./test_client 127.0.0.1 23451'  > $@ 
-	./4-callback_server 23451                                     >> $@ 2>&1&
-	./4-callback_client 127.0.0.1 23451                           >> $@ 2>&1
+	./04-callback_server 23451                                     >> $@ 2>&1&
+	./04-callback_client 127.0.0.1 23451                           >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
-	./4-callback_simulator gtut-platform.xml 3-args.xml           >> $@ 2>&1
+	./04-callback_simulator gtut-platform.xml 03-args.xml           >> $@ 2>&1
 	echo '$$'                                                     >> $@
-	killall 4-callback_server 4-callback_client 2>/dev/null || true
+	killall 04-callback_server 04-callback_client 2>/dev/null || true
 
-4-callback_client 4-callback_server 4-callback_simulator: _4-callback_client.c _4-callback_server.c _4-callback_simulator.c
-	make -f 4-callback.mk
+04-callback_client 04-callback_server 04-callback_simulator: _04-callback_client.c _04-callback_server.c _04-callback_simulator.c
+	make -f 04-callback.mk
 
-_4-callback_client.c _4-callback_server.c _4-callback_simulator.c: 4-callback.c 3-args.xml
-	../../tools/gras/gras_stub_generator 4-callback 3-args.xml >/dev/null
+_04-callback_client.c _04-callback_server.c _04-callback_simulator.c: 04-callback.c 03-args.xml
+	../../tools/gras/gras_stub_generator 04-callback 03-args.xml >/dev/null
 
 clean::
-	if [ -e 4-callback.mk ] ; then make -f 4-callback.mk clean; fi
-	rm -f _4-callback_client.c _4-callback_server.c _4-callback_simulator.c 4-callback.trace 4-callback.mk
+	if [ -e 04-callback.mk ] ; then make -f 04-callback.mk clean; fi
+	rm -f _04-callback_client.c _04-callback_server.c _04-callback_simulator.c 04-callback.trace 04-callback.mk
 
 # Lesson 5: globals
 ########################################
 
-5-globals.output: 5-globals_client 5-globals_server 5-globals_simulator
+05-globals.output: 05-globals_client 05-globals_server 05-globals_simulator
 	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
-	./5-globals_server 12345                                      >> $@ 2>&1&
-	./5-globals_client 127.0.0.1 12345                            >> $@ 2>&1
+	./05-globals_server 12345                                      >> $@ 2>&1&
+	./05-globals_client 127.0.0.1 12345                            >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
-	./5-globals_simulator gtut-platform.xml 3-args.xml            >> $@ 2>&1
+	./05-globals_simulator gtut-platform.xml 03-args.xml            >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
-	killall 5-globals_server 5-globals_client 2>/dev/null || true
+	killall 05-globals_server 05-globals_client 2>/dev/null || true
 
-5-globals_client 5-globals_server 5-globals_simulator: _5-globals_client.c _5-globals_server.c _5-globals_simulator.c
-	make -f 5-globals.mk
+05-globals_client 05-globals_server 05-globals_simulator: _05-globals_client.c _05-globals_server.c _05-globals_simulator.c
+	make -f 05-globals.mk
 
-_5-globals_client.c _5-globals_server.c _5-globals_simulator.c: 5-globals.c 3-args.xml
-	../../tools/gras/gras_stub_generator 5-globals 3-args.xml >/dev/null
+_05-globals_client.c _05-globals_server.c _05-globals_simulator.c: 05-globals.c 03-args.xml
+	../../tools/gras/gras_stub_generator 05-globals 03-args.xml >/dev/null
 
 clean::
-	if [ -e 5-globals.mk ] ; then make -f 5-globals.mk clean; fi
-	rm -f _5-globals_client.c _5-globals_server.c _5-globals_simulator.c 5-globals.trace 5-globals.mk
+	if [ -e 05-globals.mk ] ; then make -f 05-globals.mk clean; fi
+	rm -f _05-globals_client.c _05-globals_server.c _05-globals_simulator.c 05-globals.trace 05-globals.mk
 
 # Lesson 6: logs
 ########################################
 
-6-logs.output: 6-logs_client 6-logs_server 6-logs_simulator 6-logs.output.verbose 6-logs.output.error
+06-logs.output: 06-logs_client 06-logs_server 06-logs_simulator 06-logs.output.verbose 06-logs.output.error
 	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
-	./6-logs_server 12345                             2>&1 |sed s/6-logs/test/  >> $@ 2>&1&
-	./6-logs_client 127.0.0.1 12345                   2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	./06-logs_server 12345                             2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345                   2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
-	./6-logs_simulator gtut-platform.xml 3-args.xml   2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	./06-logs_simulator gtut-platform.xml 03-args.xml   2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
-	killall 6-logs_server 6-logs_client 2>/dev/null || true
+	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
-6-logs.output.verbose: 6-logs_client 6-logs_server 6-logs_simulator
+06-logs.output.verbose: 06-logs_client 06-logs_server 06-logs_simulator
 	echo '$$ ./test_server 12345 --gras-log=test.thres=verbose & ./test_client 127.0.0.1 12345 --gras-log=test.thres=verbose'  > $@
-	./6-logs_server 12345 --gras-log=test.thres=verbose                            2>&1 |sed s/6-logs/test/  >> $@ 2>&1&
-	./6-logs_client 127.0.0.1 12345 --gras-log=test.thres=verbose                  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	./06-logs_server 12345 --gras-log=test.thres=verbose                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --gras-log=test.thres=verbose                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml --gras-log=test.thres=verbose'              >> $@
-	./6-logs_simulator gtut-platform.xml 3-args.xml --gras-log=test.thres=verbose  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=test.thres=verbose  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
-	killall 6-logs_server 6-logs_client 2>/dev/null || true
+	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
-6-logs.output.error: 6-logs_client 6-logs_server 6-logs_simulator
+06-logs.output.error: 06-logs_client 06-logs_server 06-logs_simulator
 	echo '$$ ./test_server 12345 --gras-log=root.thres=error & ./test_client 127.0.0.1 12345 --gras-log=root.thres=error'  > $@
-	./6-logs_server 12345 --gras-log=root.thres=error                            2>&1 |sed s/6-logs/test/  >> $@ 2>&1&
-	./6-logs_client 127.0.0.1 12345 --gras-log=root.thres=error                  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	./06-logs_server 12345 --gras-log=root.thres=error                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --gras-log=root.thres=error                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml --gras-log=root.thres=error'              >> $@
-	./6-logs_simulator gtut-platform.xml 3-args.xml --gras-log=root.thres=error  2>&1 |sed s/6-logs/test/  >> $@ 2>&1
+	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=root.thres=error  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
-	killall 6-logs_server 6-logs_client 2>/dev/null || true
+	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
 
-6-logs_client 6-logs_server 6-logs_simulator: _6-logs_client.c _6-logs_server.c _6-logs_simulator.c
-	make -f 6-logs.mk
+06-logs_client 06-logs_server 06-logs_simulator: _06-logs_client.c _06-logs_server.c _06-logs_simulator.c
+	make -f 06-logs.mk
 
-_6-logs_client.c _6-logs_server.c _6-logs_simulator.c: 6-logs.c 3-args.xml
-	../../tools/gras/gras_stub_generator 6-logs 3-args.xml >/dev/null
+_06-logs_client.c _06-logs_server.c _06-logs_simulator.c: 06-logs.c 03-args.xml
+	../../tools/gras/gras_stub_generator 06-logs 03-args.xml >/dev/null
 
 clean::
-	if [ -e 6-logs.mk ] ; then make -f 6-logs.mk clean; fi
-	rm -f _6-logs_client.c _6-logs_server.c _6-logs_simulator.c 6-logs.trace 6-logs.mk
+	if [ -e 06-logs.mk ] ; then make -f 06-logs.mk clean; fi
+	rm -f _06-logs_client.c _06-logs_server.c _06-logs_simulator.c 06-logs.trace 06-logs.mk
 
 
 # Lesson 7: timers
 ########################################
 
-7-timers.output: 7-timers_client 7-timers_server 7-timers_simulator
+07-timers.output: 07-timers_client 07-timers_server 07-timers_simulator
 	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
-	./7-timers_server 12345                             2>&1 |sed s/7-timers/test/  >> $@ 2>&1&
-	./7-timers_client 127.0.0.1 12345                   2>&1 |sed s/7-timers/test/  >> $@ 2>&1
+	./07-timers_server 12345                             2>&1 |sed s/07-timers/test/  >> $@ 2>&1&
+	./07-timers_client 127.0.0.1 12345                   2>&1 |sed s/07-timers/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
-	./7-timers_simulator gtut-platform.xml 3-args.xml   2>&1 |sed s/7-timers/test/  >> $@ 2>&1
+	./07-timers_simulator gtut-platform.xml 03-args.xml   2>&1 |sed s/07-timers/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
-	killall 7-timers_server 7-timers_client 2>/dev/null || true
+	killall 07-timers_server 07-timers_client 2>/dev/null || true
 
-7-timers_client 7-timers_server 7-timers_simulator: _7-timers_client.c _7-timers_server.c _7-timers_simulator.c
-	make -f 7-timers.mk
+07-timers_client 07-timers_server 07-timers_simulator: _07-timers_client.c _07-timers_server.c _07-timers_simulator.c
+	make -f 07-timers.mk
 
-_7-timers_client.c _7-timers_server.c _7-timers_simulator.c: 7-timers.c 3-args.xml
-	../../tools/gras/gras_stub_generator 7-timers 3-args.xml >/dev/null
+_07-timers_client.c _07-timers_server.c _07-timers_simulator.c: 07-timers.c 03-args.xml
+	../../tools/gras/gras_stub_generator 07-timers 03-args.xml >/dev/null
 
 clean::
-	if [ -e 7-timers.mk ] ; then make -f 7-timers.mk clean; fi
-	rm -f _7-timers_client.c _7-timers_server.c _7-timers_simulator.c 7-timers.trace 7-timers.mk
+	if [ -e 07-timers.mk ] ; then make -f 07-timers.mk clean; fi
+	rm -f _07-timers_client.c _07-timers_server.c _07-timers_simulator.c 07-timers.trace 07-timers.mk
 
 # Lesson 8: exceptions
 ########################################
 
-8-exceptions.output: 8-exceptions_client 8-exceptions_server 8-exceptions_simulator
+08-exceptions.output: 08-exceptions_client 08-exceptions_server 08-exceptions_simulator
 	echo '$$ ./test_server & ./test_client 127.0.0.1 '             > $@
-	./8-exceptions_server                                   2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1&
-	./8-exceptions_client 127.0.0.1                         2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1
+	./08-exceptions_server                                   2>&1 |sed s/08-exceptions/test/  >> $@ 2>&1&
+	./08-exceptions_client 127.0.0.1                         2>&1 |sed s/08-exceptions/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_server --cheat & ./test_client 127.0.0.1 '    >> $@
-	./8-exceptions_server --cheat                           2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1&
-	./8-exceptions_client 127.0.0.1                         2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1
+	./08-exceptions_server --cheat                           2>&1 |sed s/08-exceptions/test/  >> $@ 2>&1&
+	./08-exceptions_client 127.0.0.1                         2>&1 |sed s/08-exceptions/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$ killall test_server'                                 >> $@
-	killall 8-exceptions_server 8-exceptions_client 2>/dev/null || true
+	killall 08-exceptions_server 08-exceptions_client 2>/dev/null || true
 	echo '$$'                                                     >> $@
 	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
-	./8-exceptions_simulator gtut-platform.xml 3-args.xml   2>&1 |sed s/8-exceptions/test/  >> $@ 2>&1
+	./08-exceptions_simulator gtut-platform.xml 03-args.xml   2>&1 |sed s/08-exceptions/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
 
-8-exceptions_client 8-exceptions_server 8-exceptions_simulator: _8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c
-	make -f 8-exceptions.mk
+08-exceptions_client 08-exceptions_server 08-exceptions_simulator: _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c
+	make -f 08-exceptions.mk
 
-_8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c: 8-exceptions.c 3-args.xml
-	../../tools/gras/gras_stub_generator 8-exceptions 3-args.xml >/dev/null
+_08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c: 08-exceptions.c 03-args.xml
+	../../tools/gras/gras_stub_generator 08-exceptions 03-args.xml >/dev/null
 
 # Lesson 9: simple data exchange
 ########################################
@@ -226,6 +226,6 @@ _8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c: 8-excep
 
 
 clean::
-	if [ -e 8-exceptions.mk ] ; then make -f 8-exceptions.mk clean; fi
-	rm -f _8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c 8-exceptions.trace 8-exceptions.mk
+	if [ -e 08-exceptions.mk ] ; then make -f 08-exceptions.mk clean; fi
+	rm -f _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c 08-exceptions.trace 08-exceptions.mk
 

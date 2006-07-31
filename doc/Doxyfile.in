@@ -409,15 +409,16 @@ INPUT                  = @srcdir@/index.doc \
 			 @srcdir@/gtut-main.doc \
 			    @srcdir@/gtut-introduction.doc \
 			    @srcdir@/gtut-tour.doc \
-				@srcdir@/gtut-tour-1-bones.doc \
-				@srcdir@/gtut-tour-2-simple.doc \
-				@srcdir@/gtut-tour-3-args.doc \
-				@srcdir@/gtut-tour-4-callback.doc \
-				@srcdir@/gtut-tour-5-globals.doc \
-				@srcdir@/gtut-tour-6-logs.doc \
-				@srcdir@/gtut-tour-7-timers.doc \
-				@srcdir@/gtut-tour-8-exceptions.doc \
-				@srcdir@/gtut-tour-9-rpc.doc \
+				@srcdir@/gtut-tour-01-bones.doc \
+				@srcdir@/gtut-tour-02-simple.doc \
+				@srcdir@/gtut-tour-03-args.doc \
+				@srcdir@/gtut-tour-04-callback.doc \
+				@srcdir@/gtut-tour-05-globals.doc \
+				@srcdir@/gtut-tour-06-logs.doc \
+				@srcdir@/gtut-tour-07-timers.doc \
+				@srcdir@/gtut-tour-08-exceptions.doc \
+				@srcdir@/gtut-tour-09-simpledata.doc \
+				@srcdir@/gtut-tour-10-rpc.doc \
 			 \
                          ./logcategories.doc \
 			 \

@@ -1,29 +1,29 @@
 $ ./test_server 12345 & ./test_client 127.0.0.1 12345
-[blaise:client:(1059) 0.000005] test.c:100: [test/INFO] Programming the repetitive action with a frequency of 0.5 sec
-[blaise:client:(1059) 0.000059] test.c:103: [test/INFO] Programming the delayed action in 5 secs
-[blaise:client:(1059) 0.503528] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 1.007421] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 1.518254] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 2.021273] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 2.523439] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 3.027624] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 3.531462] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 4.054546] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 4.555526] test.c:67: [test/INFO] Hello sent to server
-[blaise:client:(1059) 5.003581] test.c:74: [test/INFO] Kill sent to server
-[blaise:client:(1059) 5.003608] test.c:79: [test/INFO] Break the client's while loop
-[blaise:client:(1059) 5.003625] gras/gras.c:79: [gras/INFO] Exiting GRAS
-[blaise:server:(1056) 0.000005] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 0.504171] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 1.015021] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 1.517557] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 2.019864] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 2.524203] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 3.027500] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 3.551340] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 4.051570] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(1056) 4.499931] test.c:15: [test/CRITICAL] Argh, killed by 127.0.0.1:1024! Bye folks...
-[blaise:server:(1056) 4.499955] gras/gras.c:79: [gras/INFO] Exiting GRAS
+[blaise:server:(13359) 0.000005] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 0.506497] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 1.053796] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 1.607965] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 2.106832] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 2.647340] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 3.141538] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 3.742058] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 4.251319] test.c:26: [test/INFO] Cool, we received the message from 127.0.0.1:1024.
+[blaise:server:(13359) 4.643138] test.c:15: [test/CRITICAL] Argh, killed by 127.0.0.1:1024! Bye folks...
+[blaise:server:(13359) 4.643181] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[blaise:client:(13363) 0.000006] test.c:100: [test/INFO] Programming the repetitive action with a frequency of 0.5 sec
+[blaise:client:(13363) 0.000096] test.c:103: [test/INFO] Programming the delayed action in 5 secs
+[blaise:client:(13363) 0.531170] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 1.037941] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 1.585175] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 2.138196] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 2.638939] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 3.171944] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 3.673863] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 4.272187] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 4.782861] test.c:67: [test/INFO] Hello sent to server
+[blaise:client:(13363) 5.169044] test.c:74: [test/INFO] Kill sent to server
+[blaise:client:(13363) 5.169084] test.c:79: [test/INFO] Break the client's while loop
+[blaise:client:(13363) 5.169109] gras/gras.c:83: [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml
 [Boivin:client:(2) 0.000000] test.c:100: [test/INFO] Programming the repetitive action with a frequency of 0.5 sec
@@ -50,8 +50,8 @@ $ ./test_simulator platform.xml test.xml
 [Jacquelin:server:(1) 5.000537] test.c:26: [test/INFO] Cool, we received the message from Boivin:1024.
 [Boivin:client:(2) 5.001074] test.c:74: [test/INFO] Kill sent to server
 [Boivin:client:(2) 5.001074] test.c:79: [test/INFO] Break the client's while loop
-[Boivin:client:(2) 5.001074] gras/gras.c:79: [gras/INFO] Exiting GRAS
+[Boivin:client:(2) 5.001074] gras/gras.c:83: [gras/INFO] Exiting GRAS
 [Jacquelin:server:(1) 5.001074] test.c:15: [test/CRITICAL] Argh, killed by Boivin:1024! Bye folks...
-[Jacquelin:server:(1) 5.001074] gras/gras.c:79: [gras/INFO] Exiting GRAS
+[Jacquelin:server:(1) 5.001074] gras/gras.c:83: [gras/INFO] Exiting GRAS
 [5.001074] msg/global.c:475: [msg_kernel/INFO] Congratulations ! Simulation terminated : all processes are over
 $
