@@ -14,7 +14,9 @@ SimGrid (3.1.1) unstable; urgency=low
     documentation (poor excuse, I admit)
 
   Documentation update:
-  * New FAQ: "Valgrind spits tons of errors!" [Mt]
+  * New FAQs:
+    - "Valgrind spits tons of errors!" [Mt]
+    - "How to repport bugs" [Mt]
   * GRAS tutorial [Mt]
     It contains:
      - an introduction to the framework and to the used communication model
