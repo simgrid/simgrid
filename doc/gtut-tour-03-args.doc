@@ -19,7 +19,7 @@ situation.
 In RL, the situation is quite simple: we just have to use the command line
 arguments as we would do in a usual C program. In the server, only change
 concern the opennong of the master socket:
-\dontinclude 3-args.c
+\dontinclude 03-args.c
 \skip gras_socket_server
 \until gras_socket_server
 
@@ -33,16 +33,16 @@ The rest of the program remains inchanged.
 
 At this point, the problem is to pass arguments to the processes in SG.
 Fortunately, it is quite simple. You just have to edit your deployment file
-so that it reads: \include 3-args.xml
+so that it reads: \include 03-args.xml
 The syntax should be self-explanatory at this point.
 
 \section GRAS_tut_tour_args_recap Recaping everything together
 
 The whole program now reads:
-\include 3-args.c
+\include 03-args.c
 
 And here is the output:
-\include 3-args.output
+\include 03-args.output
 
 Go to \ref GRAS_tut_tour_callbacks
 

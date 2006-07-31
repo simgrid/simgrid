@@ -29,7 +29,7 @@ if we managed to deal properly with the message to mimic "main()" semantic.
 That's historical, but I may change this in the future (no worry, I'll add
 backward compatibility solutions). Here is the actual code of our callback:
 
-\dontinclude 4-callback.c
+\dontinclude 04-callback.c
 \skip gras_msg_cb_ctx_t 
 \until end_of_callback
 
@@ -66,10 +66,10 @@ We have no such needs in our example, so the code simply reads:
 \section GRAS_tut_tour_callback_recap Recaping everything together
 
 The whole program now reads:
-\include 4-callback.c
+\include 04-callback.c
 
 And here is the output (unchanged wrt previous version):
-\include 4-callback.output
+\include 04-callback.output
 
 Our little example turns slowly to a quite advanced GRAS program. It entails
 most of the mecanism most program will use. 

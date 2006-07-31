@@ -1,0 +1,26 @@
+/**
+@page GRAS_tut_tour_simpledata Lesson 9: Exchanging simple data (TODO)
+
+\section GRAS_tut_tour_simpledata_toc Table of Contents
+ - \ref GRAS_tut_tour_simpledata_intro
+ - \ref GRAS_tut_tour_simpledata_use
+ - \ref GRAS_tut_tour_simpledata_recap
+   
+<hr>
+
+\section GRAS_tut_tour_simpledata_intro Introduction
+
+
+\section GRAS_tut_tour_simpledata_use Actually exchanging simple data in messages
+
+
+\section GRAS_tut_tour_simpledata_recap Recapping everything together
+
+The program now reads:
+\include 09-simpledata.c
+
+Which produces the expected output:
+\include 09-simpledata.output
+
+
+*/

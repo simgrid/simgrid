@@ -219,6 +219,12 @@ clean::
 _8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c: 8-exceptions.c 3-args.xml
 	../../tools/gras/gras_stub_generator 8-exceptions 3-args.xml >/dev/null
 
+# Lesson 9: simple data exchange
+########################################
+9-simpledata: 9-simpledata.c
+	gcc -I$(GRAS_ROOT)/include -lgras -L$(GRAS_ROOT)/lib $^ -o $@ 
+
+
 clean::
 	if [ -e 8-exceptions.mk ] ; then make -f 8-exceptions.mk clean; fi
 	rm -f _8-exceptions_client.c _8-exceptions_server.c _8-exceptions_simulator.c 8-exceptions.trace 8-exceptions.mk

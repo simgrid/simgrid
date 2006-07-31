@@ -73,7 +73,7 @@ It is not enough to have one of the processes initializing the framework
 since in RL, each of them will run on a different host. If you use some AMOK
 modules, you have to initialize them in each process too.
 
-The source file then reads: \include 1-bones.c
+The source file then reads: \include 01-bones.c
 
 That's it. You have a working GRAS application with two processes. They
 don't do anything useful, but that's a beginning. Let's see how to bring
@@ -183,7 +183,7 @@ There is nothing to know to start your processes in RL. Simply call the
 generated binaries, and that's it. To start the simulation, simply call:
 \verbatim ./<project>_simulator platform.xml deployment.xml\endverbatim
 
-Here is an example of execution: \include 1-bones.output
+Here is an example of execution: \include 01-bones.output
 
 That's it. You are done with this lesson and can now write, build and
 execute GRAS applications as long as they don't do anything ;) Move

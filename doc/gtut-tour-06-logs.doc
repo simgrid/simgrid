@@ -13,7 +13,7 @@
 
 Let's have another look at the output of the program we came up with in
 lesson 5:
-\include 5-globals.output
+\include 05-globals.output
 
 It is a bit difficult to read, isn't it? Indeed, it is hard to identify
 which process printed which line. It would be possible to add [server] in
@@ -72,7 +72,7 @@ of channel we want:
 What we want here is a root category (it does not belong to any existing
 channel, for sure), and we want it to be the default one in our file (of
 course, it's the only one).
-\dontinclude 6-logs.c
+\dontinclude 06-logs.c
 \skip XBT_LOG
 \until XBT_LOG
 
@@ -94,10 +94,10 @@ line, it gets automatically added.
 
 Once we changed any fprintf of our code to some of these macros, the program
 may read:  
-\include 6-logs.c
+\include 06-logs.c
 
 And the output now looks better:
-\include 6-logs.output
+\include 06-logs.output
 
 \section GRAS_tut_tour_logs_config The user side: configuring logs at run time
 
@@ -105,10 +105,10 @@ Once we changed our program to use proper logging, it is naturally possible
 to choose at run time what we want to see. For example, if we want more
 details about our code, we should do (note that a VERBOSE line appears on
 client side):
-\include 6-logs.output.verbose
+\include 06-logs.output.verbose
 
 On the contrary, if we want to reduce the amount of logging, we may want to
-do: \include 6-logs.output.error
+do: \include 06-logs.output.error
 
 Again, you should refer to the \ref XBT_log section for more information on
 how to configure the logs. Or you can proceed with the next lesson, of

@@ -1,5 +1,5 @@
 /**
-@page GRAS_tut_tour_rpc Lesson 9: Remote Procedure Calling (RPCing) (TODO)
+@page GRAS_tut_tour_rpc Lesson 10: Remote Procedure Calling (RPCing) (TODO)
 
 \section GRAS_tut_tour_rpc_toc Table of Contents
  - \ref GRAS_tut_tour_rpc_intro
@@ -17,10 +17,10 @@
 \section GRAS_tut_tour_rpc_recap Recapping everything together
 
 The program now reads:
-\include 9-rpc.c
+\include 10-rpc.c
 
 Which produces the expected output:
-\include 9-rpc.output
+\include 10-rpc.output
 
 
 */
