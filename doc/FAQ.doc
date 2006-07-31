@@ -991,7 +991,26 @@ valuer greater than 1:
 \endverbatim
 You should try to use the surfxml_update.pl script that can be found
 <a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/platform_generation/?cvsroot=cvsroot%2Fsimgrid">here</a>.
-  
+
+\subsection faq_bugrepport So I've found a bug in SimGrid. How to repport it?
+
+We do our best to make sure to hammer away any bugs of SimGrid, but this is
+still an academic project so please be patient if/when you find bugs in it.
+If you do, the best solution is to drop an email either on the simgrid-user
+or the simgrid-devel mailing list and explain us about the issue.  You can
+also decide to open a formal bug report using the
+<a href="https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse">relevant
+interface</a>. You need to login on the server to get the ability to submit
+bugs. 
+
+We will do our best to solve any problem repported, but you need to help us
+finding the issue. Just telling "it segfault" isn't enough. Telling "It
+segfaults when running the attached simulator" doesn't really help either.
+You may find the following article interesting to see how to repport
+informative bug repports:
+http://www.chiark.greenend.org.uk/~sgtatham/bugs.html (it is not SimGrid
+specific at all, but it's full of good advices).
+
 \author Arnaud Legrand (arnaud.legrand::imag.fr)
 \author Martin Quinson (martin.quinson::loria.fr)
 
