@@ -338,6 +338,8 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
 	     got);
     }
   }
+  /* indicate to the gras_select function that there is more to read on this socket so that it does not actually select */
+  sock->moredata = (bufsize != 0);
   return got;
 }
 

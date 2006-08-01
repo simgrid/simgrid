@@ -160,6 +160,7 @@ void gras_trp_socket_new(int incoming,
   sock->meas = 0;
   sock->recv_ok = 1;
   sock->valid = 1;
+  sock->moredata = 0;
 
   sock->sd     = -1;
   sock->port      = -1;
