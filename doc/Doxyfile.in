@@ -419,7 +419,12 @@ INPUT                  = @srcdir@/index.doc \
 				@srcdir@/gtut-tour-08-exceptions.doc \
 				@srcdir@/gtut-tour-09-simpledata.doc \
 				@srcdir@/gtut-tour-10-rpc.doc \
-			 \
+				@srcdir@/gtut-tour-11-staticstruct.doc \
+				@srcdir@/gtut-tour-12-pointers.doc \
+				@srcdir@/gtut-tour-13-dynar.doc \
+				@srcdir@/gtut-tour-14-manualdatadef.doc \
+				@srcdir@/gtut-tour-15-exchangecb.doc \
+                         \
                          ./logcategories.doc \
 			 \
                          @top_srcdir@/include/ \

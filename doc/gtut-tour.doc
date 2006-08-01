@@ -18,6 +18,11 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "8: Exceptions"=GRAS_tut_tour_exceptions.html
       DOXYGEN_NAVBAR_CHILD "9: Simple data"=GRAS_tut_tour_simpledata.html
       DOXYGEN_NAVBAR_CHILD "10: RPC"=GRAS_tut_tour_rpc.html
+      DOXYGEN_NAVBAR_CHILD "11: Static data"=GRAS_tut_tour_staticstruct.html
+      DOXYGEN_NAVBAR_CHILD "12: Pointers"=GRAS_tut_tour_pointers.html
+      DOXYGEN_NAVBAR_CHILD "13: Dynars"=GRAS_tut_tour_dynars.html
+      DOXYGEN_NAVBAR_CHILD "14: Manual data definition"=GRAS_tut_tour_manualdatadef.html
+      DOXYGEN_NAVBAR_CHILD "15: Advanced data definition"=GRAS_tut_tour_exchangecb.html
     --> \endhtmlonly
 
 <b>Part 1: Bases</b>
@@ -75,6 +80,9 @@ all features available in GRAS.
      
    - \ref GRAS_tut_tour_simpledata
       - \ref GRAS_tut_tour_simpledata_intro
+         - \ref GRAS_tut_tour_simpledata_intro_conv
+         - \ref GRAS_tut_tour_simpledata_intro_gras
+         - \ref GRAS_tut_tour_simpledata_use
       - \ref GRAS_tut_tour_simpledata_example
       - \ref GRAS_tut_tour_simpledata_recap
       
@@ -83,18 +91,38 @@ all features available in GRAS.
       - \ref GRAS_tut_tour_rpc_use
       - \ref GRAS_tut_tour_rpc_recap
   
+<b>Part 3: Data description</b>
+
+   - \ref GRAS_tut_tour_staticstruct Automatic parsing of static data types
+      - \ref GRAS_tut_tour_staticstruct_intro
+      - \ref GRAS_tut_tour_staticstruct_use
+      - \ref GRAS_tut_tour_staticstruct_recap
+      
+   - \ref GRAS_tut_tour_pointers Automatic parsing of datatypes containing pointers
+      - \ref GRAS_tut_tour_pointers_intro
+      - \ref GRAS_tut_tour_pointers_use
+      - \ref GRAS_tut_tour_pointers_recap
+      
+   - \ref GRAS_tut_tour_dynar Exchanging dynars (and matrices)
+      - \ref GRAS_tut_tour_dynar_intro
+      - \ref GRAS_tut_tour_dynar_use
+      - \ref GRAS_tut_tour_dynar_recap
+      
+   - \ref GRAS_tut_tour_manualdatadef Manual data description: the full power
+      - \ref GRAS_tut_tour_manualdatadef_intro
+      - \ref GRAS_tut_tour_manualdatadef_use
+      - \ref GRAS_tut_tour_manualdatadef_recap
+      
+   - \ref GRAS_tut_tour_exchangecb Exchange callbacks: yes you can
+      - \ref GRAS_tut_tour_exchangecb_intro
+      - \ref GRAS_tut_tour_exchangecb_use
+      - \ref GRAS_tut_tour_exchangecb_recap
+
+<b>Part 4: Advanced topics</b>
+
 Unfortunately, the tour is not terminated yet, but I already know the kind
 of missi^W lessons I want to add:
 
-<b>Part 3: Data description</b>
-   - Exchanging simple data through ping-pong
-   - Automatic parsing of static data types
-   - Automatic parsing of datatypes containing pointers
-   - Exchanging dynars (and matrices)
-   - Manual data description: the full power
-   - Exchange callbacks: yes you can
-     
-<b>Part 4: Advanced topics</b>
    - Computation virtualization
    - Splitting in several files (logs, datadesc)
    - Debugging GRAS programs

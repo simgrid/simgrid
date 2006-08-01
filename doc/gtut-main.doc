@@ -17,16 +17,26 @@ This section constitutes a tutorial to the GRAS programming environment.
    explains how to install the framework and setup your own projects. Then,
    an example distributed application is builded incrementaly to show the
    several aspects of the framework.
-   - \ref GRAS_tut_tour_install
-   - \ref GRAS_tut_tour_setup
-   - \ref GRAS_tut_tour_simpleexchange
-   - \ref GRAS_tut_tour_args
-   - \ref GRAS_tut_tour_callbacks
-   - \ref GRAS_tut_tour_globals
-   - \ref GRAS_tut_tour_logs
-   - \ref GRAS_tut_tour_timers
-   - \ref GRAS_tut_tour_exceptions
-   - \ref GRAS_tut_tour_rpc
+   - Part 1: Bases
+     - \ref GRAS_tut_tour_install
+     - \ref GRAS_tut_tour_setup
+   - Part 2: Message passing
+     - \ref GRAS_tut_tour_simpleexchange
+     - \ref GRAS_tut_tour_args
+     - \ref GRAS_tut_tour_callbacks
+     - \ref GRAS_tut_tour_globals
+     - \ref GRAS_tut_tour_logs
+     - \ref GRAS_tut_tour_timers
+     - \ref GRAS_tut_tour_exceptions
+     - \ref GRAS_tut_tour_simpledata
+     - \ref GRAS_tut_tour_rpc
+   - Part 3: Data description
+     - \ref GRAS_tut_tour_staticstruct
+     - \ref GRAS_tut_tour_pointers
+     - \ref GRAS_tut_tour_dynar
+     - \ref GRAS_tut_tour_manualdatadef
+     - \ref GRAS_tut_tour_exchangecb
+   - Part 4: Advanced topics (TODO)
 
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_LABEL="Tutorial"
