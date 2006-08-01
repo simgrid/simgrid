@@ -69,3 +69,13 @@ _07-timers_simulator.c
 _08-exceptions_client.c
 _08-exceptions_server.c
 _08-exceptions_simulator.c
+
+09-datatype-dump
+09-simpledata.mk
+09-simpledata.trace
+09-simpledata_client
+09-simpledata_server
+09-simpledata_simulator
+_09-simpledata_client.c
+_09-simpledata_server.c
+_09-simpledata_simulator.c

@@ -75,7 +75,7 @@ all features available in GRAS.
      
    - \ref GRAS_tut_tour_simpledata
       - \ref GRAS_tut_tour_simpledata_intro
-      - \ref GRAS_tut_tour_simpledata_use
+      - \ref GRAS_tut_tour_simpledata_example
       - \ref GRAS_tut_tour_simpledata_recap
       
    - \ref GRAS_tut_tour_rpc

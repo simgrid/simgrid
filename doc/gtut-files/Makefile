@@ -3,7 +3,7 @@ export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
 all: 01-bones.output 02-simple.output 03-args.output 04-callback.output \
      05-globals.output 06-logs.output 07-timers.output 08-exceptions.output \
-     
+     09-simpledata.output
 
 veryclean: clean
 	rm *.output*
@@ -221,8 +221,35 @@ _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c: 08-e
 
 # Lesson 9: simple data exchange
 ########################################
-9-simpledata: 9-simpledata.c
+09-datatype-dump: 09-datatype-dump.c
 	gcc -I$(GRAS_ROOT)/include -lgras -L$(GRAS_ROOT)/lib $^ -o $@ 
+
+clean::
+	rm -f 09-datatype-dump.o 09-datatype-dump
+
+# Lesson 6: logs
+########################################
+
+09-simpledata.output: 09-simpledata_client 09-simpledata_server 09-simpledata_simulator
+	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
+	./09-simpledata_server 12345                             2>&1 |sed s/09-simpledata/test/  >> $@ 2>&1&
+	./09-simpledata_client 127.0.0.1 12345                   2>&1 |sed s/09-simpledata/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./09-simpledata_simulator gtut-platform.xml 03-args.xml   2>&1 |sed s/09-simpledata/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+	killall 09-simpledata_server 09-simpledata_client 2>/dev/null || true
+
+09-simpledata_client 09-simpledata_server 09-simpledata_simulator: _09-simpledata_client.c _09-simpledata_server.c _09-simpledata_simulator.c
+	make -f 09-simpledata.mk
+
+_09-simpledata_client.c _09-simpledata_server.c _09-simpledata_simulator.c: 09-simpledata.c 03-args.xml
+	../../tools/gras/gras_stub_generator 09-simpledata 03-args.xml >/dev/null
+
+clean::
+	if [ -e 09-simpledata.mk ] ; then make -f 09-simpledata.mk clean; fi
+	rm -f _09-simpledata_client.c _09-simpledata_server.c _09-simpledata_simulator.c 09-simpledata.trace 09-simpledata.mk
 
 
 clean::

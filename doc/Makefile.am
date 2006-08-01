@@ -76,8 +76,9 @@ check-gtut-tocs:
 	@for n in gtut-tour-*.doc ; do \
 	  sed -n '/Table of Contents/,/hr/p' $$n|grep ref > tmp.curtoc; \
 	  \
-	  grep '\\section' $$n | grep -v _toc| \
-	     sed -e 's/\\section //' -e 's/ .*//' |sed  's/^/ - \\ref /' > tmp.realtoc; \
+	  grep -E '\\s?u?b?section' $$n | grep -v _toc| \
+	     sed -e 's/\\section //' -e 's/\\subsection /subsection/' -e 's/ .*//' |\
+	     sed -e 's/^/ - \\ref /' -e 's/- \\ref subsection/   - \\ref /' > tmp.realtoc; \
 	  \
 	  if ! diff -q tmp.curtoc tmp.realtoc >/dev/null; then \
 	    echo Wrong toc for $$n. Should be ; \
@@ -93,10 +94,11 @@ check-gtut-tocs:
 	done
 	@grep ' *- \\ref' gtut-tour.doc > tmp.curtoc
 	@if ! diff -b -u tmp.curtoc tmp.realtoc ; then \
-	  echo Wrong toc for gtut-tour.doc. Should be ; \
-	  cat tmp.realtoc; \
+	  echo "Wrong toc for gtut-tour.doc Right one is in tmp.realtoc"; \
+	else \
+	  rm tmp.realtoc; \
 	fi ;
-	@rm tmp.realtoc tmp.curtoc
+	@rm tmp.curtoc
 	
 
 .PHONY: html
