@@ -6,33 +6,38 @@ SimGrid (3.1.1) unstable; urgency=low
       factorize some code developped over and over in the examples and AMOK.
     It has still to be documented and used (only amok/peermanagement is
       converted for now).
+  * Fix a vicious bug in the TCP buffering mecanism which leaded to message
+    loss when they were small enough to fit into the buffer and sent quickly
+    enough so that they can all get received in one shoot.
 	
   AMOK:
   * Do really rename the hostmanagement module to peermanagement. [Mt]
     Ie, rename functions from amok_hm_* to amok_pm_*. This breaks the API,
     but this is rather new and this was documented in the module
-    documentation (poor excuse, I admit)
+    documentation (poor excuses, I admit)
 
   Documentation update:
-  * New FAQs:
+  * FAQ reworking + New FAQs:
     - "Valgrind spits tons of errors!" [Mt]
     - "How to repport bugs" [Mt]
   * GRAS tutorial [Mt]
     It contains:
      - an introduction to the framework and to the used communication model
      - an initiatic tour introducing the most proheminent features:
-       # Lesson 0: Installing GRAS
-       # Lesson 1: Setting up your own project
-       # Lesson 2: Exchanging simple messages
-       # Lesson 3: Passing arguments to the processes (in SG)
-       # Lesson 4: Attaching callbacks to messages
-       # Lesson 5: Using globals in processes
-       # Lesson 6: Logging informations properly
-       # Lesson 7: Using internal timers
-       # Lesson 8: Handling errors through exceptions
-       More a due, of course. At least the one explaining how to add data
-       into messages. In the meanwhile, you can check the examples which are
-       still here.
+       # Part 1: Bases
+         . Lesson 0: Installing GRAS
+         . Lesson 1: Setting up your own project
+       # Part 2: Message passing
+         . Lesson 2: Exchanging simple messages
+         . Lesson 3: Passing arguments to the processes (in SG)
+         . Lesson 4: Attaching callbacks to messages
+         . Lesson 5: Using globals in processes
+         . Lesson 6: Logging informations properly
+         . Lesson 7: Using internal timers
+         . Lesson 8: Handling errors through exceptions
+         . Lesson 9: Exchanging simple data
+       More a due, of course. They will come latter. In the meanwhile, you can 
+       check the examples which are still here.
 
   SIMDAG:
   * A sequential mode has been added to the workstations. When a workstation
