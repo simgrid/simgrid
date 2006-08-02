@@ -15,6 +15,20 @@ SimGrid (3.1.1) unstable; urgency=low
     Ie, rename functions from amok_hm_* to amok_pm_*. This breaks the API,
     but this is rather new and this was documented in the module
     documentation (poor excuses, I admit)
+    
+  SIMDAG:
+  * A sequential mode has been added to the workstations. When a workstation
+    is in sequential mode, it can execute only one task, and the other tasks
+    are waiting in a FIFO. [Christophe Thiery]
+
+  SURF:
+  * The KCCFLN05 workstation model now handles parallel tasks. It is the
+    model for SIMDAG. [Christophe Thiery]
+
+  XBT:
+  * When running manually src/testall, you select specific units [Mt]
+    testall is the result of our cunit mecanism, and should replace all
+    the scripty thingy around since bash don't run easily on billware.
 
   Documentation update:
   * FAQ reworking + New FAQs:
@@ -36,17 +50,9 @@ SimGrid (3.1.1) unstable; urgency=low
          . Lesson 7: Using internal timers
          . Lesson 8: Handling errors through exceptions
          . Lesson 9: Exchanging simple data
-       More a due, of course. They will come latter. In the meanwhile, you can 
+       More are due, of course. They will come latter. In the meanwhile, you can 
        check the examples which are still here.
 
-  SIMDAG:
-  * A sequential mode has been added to the workstations. When a workstation
-    is in sequential mode, it can execute only one task, and the other tasks
-    are waiting in a FIFO. [Christophe Thiery]
-
-  SURF:
-  * The KCCFLN05 workstation model now handles parallel tasks. It is the
-    model for SIMDAG. [Christophe Thiery]
  --
 
 SimGrid (3.1) unstable; urgency=low
