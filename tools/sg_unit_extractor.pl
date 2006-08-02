@@ -44,7 +44,7 @@ while (<IN>) {
   } 
   
   if (m/XBT_TEST_UNIT\(\w*"([^"]*)"\w*,([^,]*),(.*?)\)/) { #"
-    die "$progname: multiply defined test in file $infile: $1\n"
+    die "$progname: multiply defined unit in file $infile: $1\n"
       if (defined($tests{$1}));
       
     my @t=($1,$2,$3);
@@ -90,12 +90,61 @@ if (! -e "simgrid_units_main.c") {
   print OUT "/* SGU: BEGIN PROTOTYPES */\n";
   print OUT "/* SGU: END PROTOTYPES */\n\n";
   print OUT $GENERATED;
-  print OUT "int main(int argc, char *argv[]) {\n";
-  print OUT "  xbt_test_suite_t suite;\n\n";
-  print OUT "  /* SGU: BEGIN SUITES DECLARATION */\n";
-  print OUT "  /* SGU: END SUITES DECLARATION */\n\n";  
-  print OUT "  return xbt_test_run();\n";
-  print OUT "}\n";
+#  print OUT "# 93 \"sg_unit_extractor.pl\"\n";
+  print OUT <<EOF;
+int main(int argc, char *argv[]) {
+  xbt_test_suite_t suite; 
+  char selection[1024];
+  int i;\n
+  /* SGU: BEGIN SUITES DECLARATION */
+  /* SGU: END SUITES DECLARATION */
+      
+  /* Search for the tests to do */
+    selection[0]='\\0';
+    for (i=1;i<argc;i++) {
+      if (!strncmp(argv[i],\"--tests=\",strlen(\"--tests=\"))) {
+        char *p=strchr(argv[i],'=')+1;
+        if (selection[0] == '\\0') {
+          strcpy(selection, p);
+        } else {
+          strcat(selection, \",\");
+          strcat(selection, p);
+        }
+      } else if (!strncmp(argv[i],\"--dump-only\",strlen(\"--dump-only\"))||
+ 	         !strncmp(argv[i],\"--dump\",     strlen(\"--dump\"))) {
+        xbt_test_dump(selection);
+        return 0;
+      } else if (!strncmp(argv[i],\"--help\",strlen(\"--help\"))) {
+	  printf(
+	      "Usage: testall [--help] [--tests=selection] [--dump-only]\\n\\n"
+	      "--help: display this help\\n"
+	      "--dump-only: don't run the tests, but display some debuging info about the tests\\n"
+	      "--tests=selection: Use argument to select which suites/units/tests to run\\n"
+	      "                   --tests can be used more than once, and selection may be a comma\\n"
+	      "                   separated list of directives.\\n\\n"
+	      "Directives are of the form:\\n"
+	      "   [-]suitename[:unitname]\\n\\n"
+	      "If the first char is a '-', the directive disables its argument instead of enabling it\\n"
+	      "suitename/unitname is the set of tests to en/disable. If a unitname is not specified,\\n"
+	      "it applies on any unit.\\n\\n"
+	      "By default, everything is enabled.\\n\\n"
+	      "'all' as suite name apply to all suites.\\n\\n"
+	      "Example 1: \\"-toto,+toto:tutu\\"\\n"
+	      "  disables the whole toto testsuite (any unit in it),\\n"
+	      "  then reenables the tutu unit of the toto test suite.\\n\\n"
+	      "Example 2: \\"-all,+toto\\"\\n"
+	      "  Run nothing but the toto suite.\\n");
+	  return 0;
+      } else {
+        printf("testall: Unknown option: %s\\n",argv[i]);
+        return 1;
+      }
+    }
+  /* Got all my tests to do */
+      
+  return xbt_test_run(selection);
+}
+EOF
   print OUT $GENERATED;
   close OUT || die "$progname: Cannot close main file 'simgrid_units_main.c': $!\n";
 }
@@ -103,7 +152,7 @@ if (! -e "simgrid_units_main.c") {
 print "  Suite $suite_name: $suite_title (".(scalar @tests)." tests)\n";
 map {
   my ($name,$func,$title) = @{$_};
-  print "    test $name: func=$func; title=$title\n";
+  print "    unit $name: func=$func; title=$title\n";
 } @tests;
 
 #while (my $t = shift @tests) {
@@ -172,7 +221,7 @@ open IN,"simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid
   $newmain .= "      suite = xbt_test_suite_by_name(\"$suite_name\",$suite_title);\n";
   map {
     my ($name,$func,$title) = @{$_};
-    $newmain .=  "      xbt_test_suite_push(suite, $func, $title);\n";
+    $newmain .=  "      xbt_test_suite_push(suite, \"$name\", $func, $title);\n";
   } @tests;
 
   $newmain .= "    /* SGU: END FILE */\n\n";

@@ -28,11 +28,28 @@ typedef void (*ts_test_cb_t)(void);
 xbt_test_suite_t xbt_test_suite_new  (const char *name,const char *fmt, ...);
 xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...);
 void             xbt_test_suite_dump (xbt_test_suite_t suite);
-void             xbt_test_suite_push (xbt_test_suite_t suite, 
+void             xbt_test_suite_push (xbt_test_suite_t suite, const char *name,
 				      ts_test_cb_t func, const char *fmt, ...);
 
+/* Run all the specified tests. what_to_do allows to disable some tests.
+ * It is a coma (,) separated list of directives. They are applied from left to right.
+ *
+ * Each of them of form:
+ * 
+ * [-|+]suitename[:unitname[:testname]]
+ * 
+ * * First char: 
+ *   if it's a '-', the directive disables something
+ *   if it's a '+', the directive enables something
+ *   By default, everything is enabled, but you can disable a suite and reenable some parts
+ * * Suitename: the suite on which the directive acts
+ * * unitname: if given, the unit on which the directive acts. If not, acts on any units.
+ * * testname: if given, the test on which the directive acts. If not, acts on any tests.
+ */
 
-int xbt_test_run  (void);
+int xbt_test_run(char *selection);
+/* Show information about the selection of tests */
+void xbt_test_dump(char *selection);
 
 /* test operations */
 void    _xbt_test_add(const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
