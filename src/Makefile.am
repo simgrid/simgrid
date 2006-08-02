@@ -196,7 +196,7 @@ AMOK_SRC= \
 # are generated. Sorry about that.
 
 # If you add a test unit, you should regenerate simgrid_units_main.c from scratch:
-# rm -f simgrid_units_main.c *_unit.c ; make testall
+# make clean-units ; make testall
 
 # Suites and tests run in the given order.
 
@@ -235,10 +235,14 @@ config_unit.c: xbt/config.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
 simgrid_units_main.c: $(TEST_UNITS)
+	@top_srcdir@/tools/sg_unit_extractor.pl xbt/cunit.c
+
+clean-units:
+	rm -f simgrid_units_main.c *_unit.c
 
 else
 
-$(TEST_UNITS) simgrid_units_main.c: 
+$(TEST_UNITS) simgrid_units_main.c clean-units: 
 	@echo "ERROR: Test units not generated."
 	@echo "ERROR: If you are using a CVS checkout, configure with the --enable-maintainer-mode flag"
 	@echo "ERROR: If not, please report the bug to the simgrid-devel mailing list."
