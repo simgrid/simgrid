@@ -286,6 +286,9 @@ XBT_TEST_UNIT("basic",test_swag_basic,"Basic usage") {
 
   xbt_test_assert(xbt_swag_size(setA) == 2);
   xbt_test_assert(xbt_swag_size(setB) == 1);
+   
+  xbt_swag_free(setA);
+  xbt_swag_free(setB);
 }
 
 #endif /* SIMGRID_TEST */

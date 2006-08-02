@@ -1201,8 +1201,6 @@ XBT_TEST_UNIT("validation",test_config_validation,"Validation tests") {
 }
 
 XBT_TEST_UNIT("use",test_config_use,"Data retrieving tests") {
-  xbt_cfg_t set = set=make_set();
- 
 
   xbt_test_add0("Get a single value");
   {	
