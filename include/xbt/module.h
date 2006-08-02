@@ -12,11 +12,6 @@
 
 extern char *xbt_binary_name;
 
-typedef struct xbt_module_ xbt_module_t;
-
-typedef xbt_module_t (*xbt_module_new_fct_t)(int argc, char **argv);
-typedef int (*xbt_module_finalize_fct_t)(void);
-
 void xbt_init(int *argc,char **argv);
 void xbt_exit(void);
 #endif /* _XBT_MODULE_H */
