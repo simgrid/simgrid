@@ -108,7 +108,7 @@ static void gras_module_freep(void *p) {
 void gras_module_add(const char *name, unsigned int datasize, int *ID,
 		     void_f_void_t  *init_f, void_f_void_t  *exit_f,
 		     void_f_pvoid_t *join_f, void_f_pvoid_t *leave_f) {
-  gras_module_t mod;
+  gras_module_t mod=NULL;
   xbt_ex_t e;
   int found = 0;
 
@@ -125,12 +125,12 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
   }
 
   if (found) {
-    xbt_assert(mod->init_f == init_f);
-    xbt_assert(mod->exit_f == exit_f);
-    xbt_assert(mod->join_f == join_f);
-    xbt_assert(mod->leave_f == leave_f);
-    xbt_assert(mod->datasize == datasize);
-    xbt_assert(mod->p_id == ID);
+    xbt_assert1(mod->init_f == init_f, "Module %s reregistered with a different init_f!", name);
+    xbt_assert1(mod->exit_f == exit_f, "Module %s reregistered with a different exit_f!", name);
+    xbt_assert1(mod->join_f == join_f, "Module %s reregistered with a different join_f!", name);
+    xbt_assert1(mod->leave_f == leave_f, "Module %s reregistered with a different leave_f!", name);
+    xbt_assert1(mod->datasize == datasize, "Module %s reregistered with a different datasize!", name);
+    xbt_assert1(mod->p_id == ID, "Module %s reregistered with a different p_id field!", name);
     
     DEBUG1("Module %s already registered. Ignoring re-registration",name);
     return;
