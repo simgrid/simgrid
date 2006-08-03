@@ -41,14 +41,14 @@ void *xbt_mallocator_get(xbt_mallocator_t m) {
   void *object;
   if (m->current_size > 0) {
     /* there is at least an available object */
-    return m->objects[--m->current_size];
+    object = m->objects[--m->current_size];
   }
   else {
     /* otherwise we must allocate a new object */
     object = m->new_f();
-    m->reset_f(object);
-    return object;
   }
+  m->reset_f(object);
+  return object;
 }
 
 /* Release an object (use this function instead of free) */
@@ -57,7 +57,6 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object) {
 
   if (m->current_size < m->max_size) {
     /* there is enough place to push the object */
-    m->reset_f(object);
     m->objects[m->current_size++] = object;
   }
   else {
