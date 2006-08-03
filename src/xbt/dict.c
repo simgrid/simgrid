@@ -7,43 +7,113 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <string.h>
 #include "xbt/ex.h"
+#include "xbt/log.h"
 #include "dict_private.h"
 
-XBT_LOG_NEW_SUBCATEGORY(xbt_dict,xbt,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
 /*####[ Private prototypes ]#################################################*/
 
 /*####[ Code ]###############################################################*/
 
 /**
- * @brief Constructor
- * @return pointer to the destination
+ * \brief Constructor
+ * \return pointer to the destination
+ * \see xbt_dict_new_ext(), xbt_dict_free()
  *
- * Creates and initialize a new dictionnary
+ * Creates and initialize a new dictionnary with a default hashtable size.
  */
-xbt_dict_t 
-xbt_dict_new(void) {
-  xbt_dict_t res= xbt_new(s_xbt_dict_t,1);
-  res->head=NULL;
-  return res;
+xbt_dict_t xbt_dict_new(void) {
+  return xbt_dict_new_ext(256);
 }
+
 /**
- * @brief Destructor
- * @param dict the dictionnary to be freed
- *
- * Frees a cache structure with all its childs.
+ * \brief Create a new dictionary with the specified hashtable size
+ * \param hashsize the hashtable size
+ * \return a pointer to the created object
+ * \see xbt_dict_new(), xbt_dict_free()
  */
-void
-xbt_dict_free(xbt_dict_t *dict)  {
-  if (dict && *dict) {
-    if ((*dict)->head) {
-      xbt_dictelm_free( &( (*dict)->head ) );
-      (*dict)->head = NULL;
-    }
-    free(*dict);
-    *dict=NULL;
+xbt_dict_t xbt_dict_new_ext(int hashsize) {
+  int i;
+  xbt_dict_t dict = xbt_new0(s_xbt_dict_t, 1);
+  dict->table_size = hashsize;
+  dict->table = xbt_new0(xbt_dictelm_t, dict->table_size);
+
+  for (i = 0; i < hashsize; i++) {
+    dict->table[i] = NULL;
   }
+
+  return dict;
+}
+
+/**
+ * \brief Destructor
+ * \param dict the dictionnary to be freed
+ *
+ * Frees a dictionary with all the data
+ */
+void xbt_dict_free(xbt_dict_t *dict) {
+  int i;
+  xbt_dictelm_t current, previous;
+  if (dict != NULL && *dict != NULL) {
+    for (i = 0; i < (*dict)->table_size; i++) {
+      current = (*dict)->table[i];
+      while (current != NULL) {
+	previous = current;
+	current = current->next;
+	xbt_dictelm_free(previous);
+      }
+    }
+    xbt_free((*dict)->table);
+    xbt_free(*dict);
+    *dict = NULL;
+  }
+}
+
+/**
+ * \brief Change the hashtable size
+ * \param dict a dictionary
+ * \param hashsize the new hashtable size
+ *
+ * Change the hashtable size is a long operation, so it's better
+ * to use xbt_dict_new_ext or to call xbt_dict_hashsize_set when
+ * the dictionary is empty. 
+ */
+void xbt_dict_hashsize_set(xbt_dict_t dict, int hashsize) {
+  xbt_dict_t new_dict = xbt_dict_new_ext(hashsize);
+  xbt_dictelm_t element, next;
+  int i;
+
+  for (i = 0; i < dict->table_size; i++) {
+    element = dict->table[i];
+    while (element != NULL) {
+      next = element->next; /* save the next because it will be lost */
+      xbt_dict_add_element(new_dict, element); /* no new xbt_dictelm_t is mallocated */
+      element = next;
+    }
+  }
+
+  xbt_free(dict->table);
+  dict->table = new_dict->table;
+  dict->table_size = hashsize;
+  xbt_free(new_dict);
+}
+
+/**
+ * Returns the hash code of a string.
+ */
+unsigned int xbt_dict_hash(const char *str) {
+  /* fast implementation of djb2 algorithm */
+  unsigned int hash = 5381;
+  int c;
+  
+  while ((c = *str++)) {
+    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+  }
+  
+  return hash;
 }
 
 /**
@@ -55,20 +125,44 @@ xbt_dict_free(xbt_dict_t *dict)  {
  * \param free_ctn function to call with (\a key as argument) when 
  *        \a key is removed from the dictionnary
  *
- * set the \a data in the structure under the \a key, which can be any kind 
+ * Set the \a data in the structure under the \a key, which can be any kind 
  * of data, as long as its length is provided in \a key_len.
  */
-void
-xbt_dict_set_ext(xbt_dict_t      dict,
-		  const char      *key,
-		  int              key_len,
-		  void            *data,
-		  void_f_pvoid_t  *free_ctn) {
-
+void xbt_dict_set_ext(xbt_dict_t      dict,
+		      const char      *key,
+		      int              key_len,
+		      void            *data,
+		      void_f_pvoid_t  *free_ctn) {
   xbt_assert(dict);
 
-  xbt_dictelm_set_ext(&(dict->head),
-		       key, key_len, data, free_ctn);
+  unsigned int hash_code = xbt_dict_hash(key) % dict->table_size;
+  xbt_dictelm_t current, previous = NULL;
+
+  current = dict->table[hash_code];
+  while (current != NULL &&
+	 (key_len != current->key_len || strncmp(key, current->key, key_len))) {
+    previous = current;
+    current = current->next;
+  }
+
+  if (current == NULL) {
+    /* this key doesn't exist yet */
+    current = xbt_dictelm_new(key, key_len, data, free_ctn, NULL);
+    if (previous == NULL) {
+      dict->table[hash_code] = current;
+    }
+    else {
+      previous->next = current;
+    }
+  }
+  else {
+    /* there is already an element with the same key: we overwrite it */
+    if (current->content != NULL && current->free_f != NULL) {
+      current->free_f(current->content);
+    }
+    current->content = data;
+    current->free_f = free_ctn;
+  }
 }
 
 /**
@@ -83,15 +177,14 @@ xbt_dict_set_ext(xbt_dict_t      dict,
  * set the \a data in the structure under the \a key, which is a 
  * null terminated string.
  */
-void
-xbt_dict_set(xbt_dict_t     dict,
-	      const char     *key,
-	      void           *data,
-	      void_f_pvoid_t *free_ctn) {
+void xbt_dict_set(xbt_dict_t     dict,
+		  const char     *key,
+		  void           *data,
+		  void_f_pvoid_t *free_ctn) {
 
   xbt_assert(dict);
   
-  xbt_dictelm_set(&(dict->head), key, data, free_ctn);
+  xbt_dict_set_ext(dict, key, strlen(key), data, free_ctn);
 }
 
 /**
@@ -100,18 +193,29 @@ xbt_dict_set(xbt_dict_t     dict,
  * \param dict the dealer of data
  * \param key the key to find data
  * \param key_len the size of the \a key
- * \returns the data that we are looking for
+ * \return the data that we are looking for
  *
- * Search the given \a key. throws not_found_error when not found.
+ * Search the given \a key. Throws not_found_error when not found.
  */
-void *
-xbt_dict_get_ext(xbt_dict_t      dict,
-                 const char     *key,
-                 int             key_len) {
-
+void *xbt_dict_get_ext(xbt_dict_t      dict,
+		       const char     *key,
+		       int             key_len) {
   xbt_assert(dict);
 
-  return xbt_dictelm_get_ext(dict->head, key, key_len);
+  unsigned int hash_code = xbt_dict_hash(key) % dict->table_size;
+  xbt_dictelm_t current;
+
+  current = dict->table[hash_code];
+  while (current != NULL &&
+	 (key_len != current->key_len || strncmp(key, current->key, key_len))) {
+    current = current->next;
+  }
+
+  if (current == NULL) {
+    THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
+  }
+
+  return current->content;
 }
 
 /**
@@ -119,37 +223,35 @@ xbt_dict_get_ext(xbt_dict_t      dict,
  *
  * \param dict the dealer of data
  * \param key the key to find data
- * \returns the data that we are looking for
+ * \return the data that we are looking for
  *
- * Search the given \a key. THROWs mismatch_error when not found. 
+ * Search the given \a key. Throws not_found_error when not found. 
  * Check xbt_dict_get_or_null() for a version returning NULL without exception when 
  * not found.
  */
-void *
-xbt_dict_get(xbt_dict_t     dict,
-             const char     *key) {
+void *xbt_dict_get(xbt_dict_t dict,
+		   const char *key) {
   xbt_assert(dict);
 
-  return xbt_dictelm_get(dict->head, key);
+  return xbt_dict_get_ext(dict, key, strlen(key));
 }
 
 /**
  * \brief like xbt_dict_get(), but returning NULL when not found
  */
-void *
-xbt_dict_get_or_null(xbt_dict_t     dict,
+void *xbt_dict_get_or_null(xbt_dict_t     dict,
 		     const char     *key) {
   xbt_ex_t e;
-  void *res=NULL;
+  void *result = NULL;
   TRY {
-    res = xbt_dictelm_get(dict->head, key);
+    result = xbt_dict_get(dict, key);
   } CATCH(e) {
     if (e.category != not_found_error) 
       RETHROW;
     xbt_ex_free(e);
-    res=NULL;
+    result = NULL;
   }
-  return res;
+  return result;
 }
 
 
@@ -159,17 +261,37 @@ xbt_dict_get_or_null(xbt_dict_t     dict,
  * \param dict the trash can
  * \param key the key of the data to be removed
  * \param key_len the size of the \a key
- * 
  *
  * Remove the entry associated with the given \a key (throws not_found)
  */
-void
-xbt_dict_remove_ext(xbt_dict_t  dict,
-                     const char  *key,
-                     int          key_len) {
+void xbt_dict_remove_ext(xbt_dict_t  dict,
+			 const char  *key,
+			 int          key_len) {
   xbt_assert(dict);
-  
-  xbt_dictelm_remove_ext(dict->head, key, key_len);
+
+  unsigned int hash_code = xbt_dict_hash(key) % dict->table_size;
+  xbt_dictelm_t current, previous = NULL;
+
+  current = dict->table[hash_code];
+  while (current != NULL &&
+	 (key_len != current->key_len || strncmp(key, current->key, key_len))) {
+    previous = current; /* save the previous node */
+    current = current->next;
+  }
+
+  if (current == NULL) {
+    THROW2(not_found_error, 0, "key %.*s not found", key_len, key);
+  }
+
+  if (previous != NULL) {
+    xbt_assert0(previous->next == current, "previous-next != current");
+    previous->next = current->next;
+  }
+  else {
+    dict->table[hash_code] = current->next;
+  }
+
+  xbt_dictelm_free(current);
 }
 
 /**
@@ -180,15 +302,24 @@ xbt_dict_remove_ext(xbt_dict_t  dict,
  *
  * Remove the entry associated with the given \a key
  */
-void
-xbt_dict_remove(xbt_dict_t  dict,
-		 const char  *key) {
+void xbt_dict_remove(xbt_dict_t  dict,
+		     const char  *key) {
   if (!dict)
-    THROW1(arg_error,0,"Asked to remove key %s from NULL dict",key);
+    THROW1(arg_error, 0, "Asked to remove key %s from NULL dict", key);
 
-  xbt_dictelm_remove(dict->head, key);
+  xbt_dict_remove_ext(dict, key, strlen(key));
 }
 
+/*
+ * Add an already mallocated element to a dictionary.
+ */
+void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element) {
+  xbt_assert(dict);
+
+  int hashcode = xbt_dict_hash(element->key) % dict->table_size;
+  element->next = dict->table[hashcode];
+  dict->table[hashcode] = element;
+}
 
 /**
  * \brief Outputs the content of the structure (debuging purpose) 
@@ -197,15 +328,27 @@ xbt_dict_remove(xbt_dict_t  dict,
  * \param output a function to dump each data in the tree
  *
  * Ouputs the content of the structure. (for debuging purpose). \a ouput is a
- * function to output the data. If NULL, data won't be displayed, just the tree structure.
+ * function to output the data. If NULL, data won't be displayed.
  */
 
-void
-xbt_dict_dump(xbt_dict_t     dict,
-               void_f_pvoid_t *output) {
-
-  printf("Dict %p:\n", (void*)dict);
-  xbt_dictelm_dump(dict ? dict->head: NULL, output);
+void xbt_dict_dump(xbt_dict_t     dict,
+		   void_f_pvoid_t *output) {
+  int i;
+  xbt_dictelm_t element;
+  printf("Dict %p:\n", dict);
+  if (dict != NULL) {
+    for (i = 0; i < dict->table_size; i++) {
+      element = dict->table[i];
+      while (element != NULL) {
+	printf("%s -> ", element->key);
+	if (output != NULL) {
+	  output(element->content);
+	}
+	printf("\n");
+	element = element->next;
+      }
+    }
+  }
 }
 
 #ifdef SIMGRID_TEST
@@ -248,7 +391,6 @@ static void fill(xbt_dict_t *head) {
   debuged_add(*head,"1234");
   /* Need of common ancestor */
   debuged_add(*head,"123457");
-
 }
 
 static void search(xbt_dict_t head,const char*key) {
@@ -302,7 +444,6 @@ char *data;
 
 
 XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse"){
-
   xbt_test_add0("Traversal the empty dictionnary");
   traverse(head);
 
@@ -428,7 +569,7 @@ XBT_TEST_UNIT("nulldata",test_dict_nulldata,"NULL data management"){
     xbt_dict_cursor_t cursor=NULL;
     char *key;
     int found=0;
-    
+
     xbt_dict_foreach(head,cursor,key,data) {
       xbt_test_log2("Seen:  %s->%s",PRINTF_STR(key),PRINTF_STR(data));
       if (!strcmp(key,"null"))

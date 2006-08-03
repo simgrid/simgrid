@@ -20,9 +20,8 @@ SG_BEGIN_DECL()
  *  @brief The dictionnary data structure (comparable to hash tables)
  * 
  *  This section describes the API to a dictionnary structure that
- *  associates as string to a void* key. Even if it provides the same
- *  functionnality than an hash table, the implementation differs and the
- *  internal data-structure rather looks like a tree.
+ *  associates as string to a void* key. It provides the same
+ *  functionnality than an hash table.
  * 
  *  Here is a little example of use:
  *  \verbatim xbt_dict_t mydict = xbt_dict_new();
@@ -46,7 +45,9 @@ SG_BEGIN_DECL()
   /** \brief Dictionnary data type (opaque structure) */
   typedef struct xbt_dict_ *xbt_dict_t;
   xbt_dict_t xbt_dict_new(void);
+  xbt_dict_t xbt_dict_new_ext(int hashsize);
   void xbt_dict_free(xbt_dict_t *dict);
+  void xbt_dict_hashsize_set(xbt_dict_t dict, int hashsize);
 
 /** @} */
 /** @defgroup XBT_dict_basic Dictionnaries basic usage

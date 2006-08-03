@@ -22,34 +22,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor,xbt_dict,"To traverse dictionari
 /* Don't add or remove entries to the dict while traversing !!!             */
 /*###########################################################################*/
 struct xbt_dict_cursor_ {
-  /* we store all level encountered until here, to backtrack on next() */
-  xbt_dynar_t   keys;
-  xbt_dynar_t   key_lens;
-  int            pos;
-  int            pos_len;
-  xbt_dictelm_t head;
+  xbt_dictelm_t current;
+  int line;
+  xbt_dict_t dict;
 };
-
-static _XBT_INLINE void
-_cursor_push_keys(xbt_dict_cursor_t p_cursor,
-                  xbt_dictelm_t     p_elm);
 
 #undef xbt_dict_CURSOR_DEBUG
 /*#define xbt_dict_CURSOR_DEBUG 1*/
 
 /** @brief Creator 
- *  @param head   the dict
+ *  @param dict the dict
  */
-xbt_dict_cursor_t 
-xbt_dict_cursor_new(const xbt_dict_t head) {
+xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict) {
   xbt_dict_cursor_t res = NULL;
 
-  res = xbt_new(s_xbt_dict_cursor_t,1);
-  res->keys     = xbt_dynar_new(sizeof(char **), NULL);
-  res->key_lens = xbt_dynar_new(sizeof(int  *),  NULL);
-  res->pos      = 0;
-  res->pos_len  = 0;
-  res->head     = head ? head->head : NULL;
+  res = xbt_new(s_xbt_dict_cursor_t, 1);
+  res->dict = dict;
 
   xbt_dict_cursor_rewind(res);
 
@@ -60,12 +48,9 @@ xbt_dict_cursor_new(const xbt_dict_t head) {
  * @brief Destructor
  * @param cursor poor victim
  */
-void
-xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
+void xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
   if (*cursor) {
-    xbt_dynar_free(&((*cursor)->keys));
-    xbt_dynar_free(&((*cursor)->key_lens));
-    free(*cursor);
+    xbt_free(*cursor);
     *cursor = NULL;
   }
 }
@@ -73,59 +58,23 @@ xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
 /*
  * Sanity check to see if the head contains something
  */
-static _XBT_INLINE
-void
-__cursor_not_null(xbt_dict_cursor_t cursor) {
-
+static _XBT_INLINE void __cursor_not_null(xbt_dict_cursor_t cursor) {
   xbt_assert0(cursor, "Null cursor");
-
-  if (!cursor->head)
-    THROW0(arg_error,0,"Null headed cursor");
 }
 
-
-static _XBT_INLINE
-void
-_cursor_push_keys(xbt_dict_cursor_t cursor,
-                  xbt_dictelm_t     elm) {
-  xbt_dictelm_t       child = NULL;
-  int                  i       = 0;
-  static volatile int  count   = 0; /* ??? */
-
-  CDEBUG3(xbt_dict_cursor, "Push childs of %p (%.*s) in the cursor", (void*)elm, elm->key_len, elm->key);
-
-  if (!elm->internal) {
-    xbt_dynar_push(cursor->keys,     &elm->key    );
-    xbt_dynar_push(cursor->key_lens, &elm->key_len);
-    count++;
-  }
-
-  xbt_dynar_foreach(elm->sub, i, child) {
-    if (child)
-      _cursor_push_keys(cursor, child);
-  }
-
-  CDEBUG1(xbt_dict_cursor, "Count = %d", count);
-}
 
 /** @brief Reinitialize the cursor. Mandatory after removal or add in dict. */
-void
-xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
-
+void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
   CDEBUG0(xbt_dict_cursor, "xbt_dict_cursor_rewind");
   xbt_assert(cursor);
 
-  xbt_dynar_reset(cursor->keys);
-  xbt_dynar_reset(cursor->key_lens);
-
-  if (!cursor->head)
-    return ;
-
-  _cursor_push_keys(cursor, cursor->head);
-
-  xbt_dynar_cursor_first(cursor->keys,     &cursor->pos    );
-  xbt_dynar_cursor_first(cursor->key_lens, &cursor->pos_len);
-
+  cursor->line = 0;
+  if (cursor->dict != NULL) {
+    cursor->current = cursor->dict->table[0];
+  }
+  else {
+    cursor->current = NULL;
+  }
 }
 
 /**
@@ -134,30 +83,50 @@ xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor) {
  * @param      dict   on what to let the cursor iterate
  * @param[out] cursor dest address
  */
-void xbt_dict_cursor_first (const xbt_dict_t   dict,
-			     xbt_dict_cursor_t *cursor){
-
+void xbt_dict_cursor_first(const xbt_dict_t   dict,
+			   xbt_dict_cursor_t *cursor){
+  DEBUG0("xbt_dict_cursor_first");
   if (!*cursor) {
     DEBUG0("Create the cursor on first use");
-    *cursor=xbt_dict_cursor_new(dict);
+    *cursor = xbt_dict_cursor_new(dict);
   }
-
-  xbt_dict_cursor_rewind(*cursor);
+  else {
+    xbt_dict_cursor_rewind(*cursor);
+  }
+  if (dict != NULL && (*cursor)->current == NULL) {
+    xbt_dict_cursor_step(*cursor); /* find the first element */
+  }
 }
 
 
 /**
  * \brief Move to the next element. 
  */
-void
-xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
+void xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
+  DEBUG0("xbt_dict_cursor_step");
   xbt_assert(cursor);
 
-  DEBUG2("step cursor. Current=%.*s",
-	 xbt_dynar_get_as(cursor->key_lens,cursor->pos_len,int),
-	 xbt_dynar_get_as(cursor->keys,cursor->pos,char *));
-  xbt_dynar_cursor_step(cursor->keys,     &cursor->pos);
-  xbt_dynar_cursor_step(cursor->key_lens, &cursor->pos_len);
+  xbt_dictelm_t current = cursor->current;
+  int line = cursor->line;
+
+  if (cursor->dict != NULL) {
+
+    if (current != NULL) {
+      DEBUG0("current is not null, take the next element");
+      current = current->next;
+      DEBUG1("next element: %p", current);
+    }
+    
+    while (current == NULL && ++line < cursor->dict->table_size) {
+      DEBUG0("current is NULL, take the next line");
+      current = cursor->dict->table[line];
+      DEBUG1("element in the next line: %p", current);
+    }
+    DEBUG2("search finished, current = %p, line = %d", current, line);
+    
+    cursor->current = current;
+    cursor->line = line;
+  }
 }
 
 /**
@@ -165,34 +134,24 @@ xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
  *
  * @returns true if it's ok, false if there is no more data
  */
-int
-xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
-			    char               **key,
-			    void               **data) {
-  int      key_len = 0;
-  xbt_ex_t e;
-  
+int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
+				char               **key,
+				void               **data) {
+  DEBUG0("xbt_dict_get_or_free");
+
+  xbt_dictelm_t current;
+
   if (!cursor || !(*cursor))
     return FALSE;
 
-  if (xbt_dynar_length((*cursor)->keys) <= (*cursor)->pos) {
+  current = (*cursor)->current;
+  if (current == NULL) { /* no data left */
     xbt_dict_cursor_free(cursor);
     return FALSE;
   }
-    
-  *key    = xbt_dynar_get_as((*cursor)->keys,     (*cursor)->pos,     char*);
-  key_len = xbt_dynar_get_as((*cursor)->key_lens, (*cursor)->pos_len, int);
-
-  TRY {
-    *data = xbt_dictelm_get_ext((*cursor)->head, *key, key_len);
-  } CATCH(e) {
-    if (e.category == mismatch_error) {
-      xbt_dict_cursor_free(cursor);
-      xbt_ex_free(e);
-      return FALSE;
-    }
-    RETHROW;
-  }
+  
+  *key = current->key;
+  *data = current->content;
   return TRUE;
 }
 
@@ -201,11 +160,10 @@ xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
  * @param cursor: the cursor
  * @returns the current key
  */
-char *
-xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor) {
+char *xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor) {
   __cursor_not_null(cursor);
 
-  return xbt_dynar_get_as(cursor->keys, cursor->pos - 1, char*);
+  return cursor->current->key;
 }
 
 /**
@@ -213,17 +171,10 @@ xbt_dict_cursor_get_key(xbt_dict_cursor_t   cursor) {
  * @param cursor the cursor
  * @returns the current data
  */
-void *
-xbt_dict_cursor_get_data(xbt_dict_cursor_t   cursor) {
-  char         *key     = NULL;
-  int           key_len = 0;
-
+void *xbt_dict_cursor_get_data(xbt_dict_cursor_t   cursor) {
   __cursor_not_null(cursor);
 
-  key     = xbt_dynar_get_as(cursor->keys,     cursor->pos-1,  char *);
-  key_len = xbt_dynar_get_as(cursor->key_lens, cursor->pos_len-1, int);
-
-  return xbt_dictelm_get_ext(cursor->head, key, key_len);
+  return cursor->current->content;
 }
 
 
