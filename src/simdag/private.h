@@ -63,6 +63,7 @@ typedef struct SD_workstation {
 typedef struct SD_task {
   s_xbt_swag_hookup_t state_hookup;
   xbt_swag_t state_set;
+  e_SD_task_state_t state;
   void *data; /* user data */
   char *name;
   double amount;
@@ -112,8 +113,7 @@ void __SD_task_really_run(SD_task_t task);
 int __SD_task_try_to_run(SD_task_t task);
 void __SD_task_just_done(SD_task_t task);
 
-/* Functions to test if the task is in a given state.
-   These functions are faster than using SD_task_get_state() */
+/* Functions to test if the task is in a given state. */
 
 /* Returns whether the given task is scheduled or ready. */
 static _XBT_INLINE int __SD_task_is_scheduled_or_ready(SD_task_t task) {

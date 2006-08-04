@@ -31,6 +31,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
     task->name = NULL;
 
   task->state_set = sd_global->not_scheduled_task_set;
+  task->state = SD_NOT_SCHEDULED;
   xbt_swag_insert(task,task->state_set);
 
   task->amount = amount;
@@ -97,20 +98,7 @@ void SD_task_set_data(SD_task_t task, void *data) {
 e_SD_task_state_t SD_task_get_state(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
-
-  if (task->state_set == sd_global->scheduled_task_set)
-    return SD_SCHEDULED;
-  if (task->state_set == sd_global->done_task_set)
-    return SD_DONE;
-  if (task->state_set == sd_global->running_task_set)
-    return SD_RUNNING;
-  if (task->state_set == sd_global->ready_task_set)
-    return SD_READY;
-  if (task->state_set == sd_global->in_fifo_task_set)
-    return SD_IN_FIFO;
-  if (task->state_set == sd_global->not_scheduled_task_set)
-    return SD_NOT_SCHEDULED;
-  return SD_FAILED;
+  return task->state;
 }
 
 /* Changes the state of a task. Updates the swags and the flag sd_global->watch_point_reached.
@@ -148,6 +136,7 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
     xbt_assert0(0, "Invalid state");
   }
   xbt_swag_insert(task, task->state_set);
+  task->state = new_state;
 
   if (task->watch_points & new_state) {
     INFO1("Watch point reached with task '%s'!", SD_task_get_name(task));
