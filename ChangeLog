@@ -30,6 +30,10 @@ SimGrid (3.1.1) unstable; urgency=low
     testall is the result of our cunit mecanism, and should replace all
     the scripty thingy around since bash don't run easily on billware.
 
+  * A mallocator system has been added. [Christophe Thiery]
+    Mallocators allow you to recycle your unused objects instead of freeing them
+    and allocating new ones.
+
   Documentation update:
   * FAQ reworking + New FAQs:
     - "Valgrind spits tons of errors!" [Mt]
