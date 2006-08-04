@@ -8,6 +8,7 @@
       - \ref XBT_log
       - \ref XBT_error
       - \ref XBT_config
+      - \ref XBT_mallocator
     - Data structures
       - \ref XBT_dynar 
       - \ref XBT_dict
@@ -40,6 +41,7 @@
      /** @defgroup XBT_log    Logging support */
      /** @defgroup XBT_error  Assert macro familly */
      /** @defgroup XBT_config Configuration support */
+     /** @defgroup XBT_mallocator Mallocators */
 /** @} */
 
 

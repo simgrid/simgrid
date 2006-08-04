@@ -1,8 +1,32 @@
+/* dict - a generic dictionnary, variation over the B-tree concept          */
+
+/* Copyright (c) 2006 Christophe Thiery. All rights reserved.             */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "xbt/mallocator.h"
 #include "xbt/asserts.h"
 #include "xbt/sysdep.h"
 #include "mallocator_private.h"
 
+/**
+ * \brief Constructor
+ * \param size size of the internal stack: number of objects the mallocator
+ * will be able to store
+ * \param new_f function to allocate a new object of your datatype, called
+ * in \a xbt_mallocator_get() when the mallocator is empty
+ * \param free_f function to free an object of your datatype, called
+ * in \a xbt_mallocator_release() when the stack is full, and when
+ * the mallocator is freed.
+ * \param reset_f function to reinitialise an object of your datatype, called
+ * when you extract an object from the mallocator 
+ *
+ * Create and initialize a new mallocator for a given datatype.
+ *
+ * \return pointer to the created mallocator
+ * \see xbt_mallocator_free()
+ */
 xbt_mallocator_t xbt_mallocator_new(int size,
 				    pvoid_f_void_t new_f,
 				    void_f_pvoid_t free_f,
@@ -22,7 +46,14 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   return m;
 }
 
-/* Destroy the mallocator and all its data */
+/** \brief Destructor
+ * \param m the mallocator you want to destroy
+ *
+ * Destroy the mallocator and all its data. The function
+ * free_f is called on each object in the mallocator.
+ *
+ * \see xbt_mallocator_new()
+ */
 void xbt_mallocator_free(xbt_mallocator_t m) {
   xbt_assert0(m != NULL, "Invalid parameter");
 
@@ -34,7 +65,22 @@ void xbt_mallocator_free(xbt_mallocator_t m) {
   xbt_free(m);
 }
 
-/* Return an object (use this function instead of malloc) */
+/**
+ * \brief Extract an object from a mallocator
+ * \param m a mallocator
+ *
+ * Remove an object from the mallocator and return it.
+ * This function is designed to be used instead of malloc().
+ * If the mallocator is not empty, an object is
+ * extracted from the mallocator and no malloc is done.
+ * 
+ * If the mallocator is empty, a new object is created,
+ * by calling the function new_f().
+ * 
+ * In both cases, the function reset_f() is called on the object.
+ *
+ * \see xbt_mallocator_release()
+ */
 void *xbt_mallocator_get(xbt_mallocator_t m) {
   xbt_assert0(m != NULL, "Invalid parameter");
 
@@ -51,7 +97,19 @@ void *xbt_mallocator_get(xbt_mallocator_t m) {
   return object;
 }
 
-/* Release an object (use this function instead of free) */
+/** \brief Push an object into a mallocator
+ * \param m a mallocator
+ * \param object an object you don't need anymore
+ *
+ * Push into the mallocator an object you don't need anymore.
+ * This function is designed to be used instead of free().
+ * If the mallocator is not full, your object if stored into
+ * the mallocator and no free is done.
+ * If the mallocator is full, the object is freed by calling
+ * the function free_f().
+ *
+ * \see xbt_mallocator_get()
+ */
 void xbt_mallocator_release(xbt_mallocator_t m, void *object) {
   xbt_assert0(m != NULL && object != NULL, "Invalid parameter");
 
