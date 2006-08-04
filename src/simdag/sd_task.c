@@ -52,6 +52,8 @@ SD_task_t SD_task_create(const char *name, void *data, double amount) {
   task->communication_amount = NULL;
   task->rate = 0;
 
+  sd_global->task_number++;
+
   return task;
 }
 
@@ -870,6 +872,8 @@ void SD_task_destroy(SD_task_t task) {
   xbt_dynar_free(&task->tasks_before);
   xbt_dynar_free(&task->tasks_after);
   xbt_free(task);
+
+  sd_global->task_number--;
 
   DEBUG0("Task destroyed.");
 }

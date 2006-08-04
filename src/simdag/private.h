@@ -37,6 +37,8 @@ typedef struct SD_global {
   xbt_swag_t done_task_set;
   xbt_swag_t failed_task_set;
 
+  int task_number;
+
 } s_SD_global_t, *SD_global_t;
 
 extern SD_global_t sd_global;

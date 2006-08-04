@@ -42,6 +42,7 @@ void SD_init(int *argc, char **argv) {
   sd_global->running_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->done_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->failed_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->task_number = 0;
 
   surf_init(argc, argv);
 }
@@ -89,6 +90,8 @@ void SD_create_environment(const char *platform_file) {
   xbt_dict_foreach(network_link_set, cursor, name, surf_link) {
     __SD_link_create(surf_link, NULL);
   }
+
+  DEBUG2("Workstation number: %d, link number: %d", SD_workstation_get_number(), SD_link_get_number());
 }
 
 /**
@@ -112,7 +115,7 @@ SD_task_t* SD_simulate(double how_long)
   surf_action_t action;
   SD_task_t *changed_tasks = NULL;
   int changed_task_number = 0;
-  int changed_task_capacity = 16; /* will be increased if necessary */
+  int changed_task_capacity = sd_global->task_number + 1;
   int i;
   static int first_time = 1;
 
@@ -136,10 +139,12 @@ SD_task_t* SD_simulate(double how_long)
     INFO1("Executing task '%s'", SD_task_get_name(task));
     if ((task->state_changed = __SD_task_try_to_run(task))) {
       changed_tasks[changed_task_number++] = task; /* replace NULL by the task */
+      /*
       if (changed_task_number == changed_task_capacity) {
 	changed_task_capacity *= 2;
 	changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
       }
+      */
       changed_tasks[changed_task_number] = NULL;
     }
   }
@@ -169,10 +174,12 @@ SD_task_t* SD_simulate(double how_long)
       if (!task->state_changed) {
 	task->state_changed = 1;
 	changed_tasks[changed_task_number++] = task;
+	/*
 	if (changed_task_number == changed_task_capacity) {
 	  changed_task_capacity *= 2;
 	  changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
 	}
+	*/
 	changed_tasks[changed_task_number] = NULL;
       }
 
@@ -187,10 +194,12 @@ SD_task_t* SD_simulate(double how_long)
 	  INFO1("Executing task '%s'", SD_task_get_name(dst));
 	  if (__SD_task_try_to_run(dst)) {
 	    changed_tasks[changed_task_number++] = dst;
+	    /*
 	    if (changed_task_number == changed_task_capacity) {
 	      changed_task_capacity *= 2;
 	      changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
 	    }
+	    */
 	    changed_tasks[changed_task_number] = NULL;
 	  }
 	}
@@ -208,10 +217,12 @@ SD_task_t* SD_simulate(double how_long)
       if (!task->state_changed) {
 	task->state_changed = 1;
 	changed_tasks[changed_task_number++] = task;
+	/*
 	if (changed_task_number == changed_task_capacity) {
 	  changed_task_capacity *= 2;
 	  changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
 	}
+	*/
 	changed_tasks[changed_task_number] = NULL;
       }
     }
