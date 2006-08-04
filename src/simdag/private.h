@@ -23,6 +23,8 @@ typedef struct SD_global {
   int link_count; /* number of links */
   SD_link_t *link_list; /* array of links, created only if
 			   necessary in SD_link_get_list */
+  SD_link_t *recyclable_route; /* array returned by SD_route_get_list
+				  and mallocated only once */
 
   int watch_point_reached; /* has a task just reached a watch point? */
   

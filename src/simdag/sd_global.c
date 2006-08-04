@@ -31,6 +31,7 @@ void SD_init(int *argc, char **argv) {
   sd_global->links = xbt_dict_new();
   sd_global->link_count = 0;
   sd_global->link_list = NULL;
+  sd_global->recyclable_route = NULL;
   sd_global->watch_point_reached = 0;
 
   s_SD_task_t task;
@@ -162,7 +163,7 @@ SD_task_t* SD_simulate(double how_long)
       INFO1("Task '%s' done", SD_task_get_name(task));
       DEBUG0("Calling __SD_task_just_done");
       __SD_task_just_done(task);
-      INFO1("__SD_task_just_done called on task '%s'", SD_task_get_name(task));
+      DEBUG1("__SD_task_just_done called on task '%s'", SD_task_get_name(task));
 
       /* the state has changed */
       if (!task->state_changed) {
@@ -261,6 +262,9 @@ void SD_exit(void) {
 
     if (sd_global->link_list != NULL)
       xbt_free(sd_global->link_list);
+
+    if (sd_global->recyclable_route != NULL)
+      xbt_free(sd_global->recyclable_route);
 
     DEBUG0("Destroying the swags...");
     xbt_swag_free(sd_global->not_scheduled_task_set);

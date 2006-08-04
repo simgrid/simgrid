@@ -122,15 +122,22 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 /**
  * \brief Returns the route between two workstations
  *
- * Use SD_route_get_size() to know the array size. Don't forget to free the array after use.
+ * Use SD_route_get_size() to know the array size.
  *
  * \param src a workstation
  * \param dst another workstation
  * \return a new array of \ref SD_link_t representating the route between these two workstations
  * \see SD_route_get_size(), SD_link_t
  */
-SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
+const SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
+
+  static int first_run = 1;
+
+  if (first_run) {
+    sd_global->recyclable_route = xbt_new0(SD_link_t, SD_link_get_number());
+    first_run = 0;
+  }
 
   void *surf_src = src->surf_workstation;
   void *surf_dst = dst->surf_workstation;
@@ -138,15 +145,14 @@ SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   const void **surf_route = surf_workstation_resource->extension_public->get_route(surf_src, surf_dst);
   int route_size = surf_workstation_resource->extension_public->get_route_size(surf_src, surf_dst);
 
-  SD_link_t* route = xbt_new0(SD_link_t, route_size);
   const char *link_name;
   int i;
   for (i = 0; i < route_size; i++) {
     link_name = surf_workstation_resource->extension_public->get_link_name(surf_route[i]);
-    route[i] = xbt_dict_get(sd_global->links, link_name);
+    sd_global->recyclable_route[i] = xbt_dict_get(sd_global->links, link_name);
   }
 
-  return route;
+  return sd_global->recyclable_route;
 }
 
 /**
@@ -215,7 +221,7 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation, double 
 double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  SD_link_t *links = SD_route_get_list(src, dst);
+  const SD_link_t *links = SD_route_get_list(src, dst);
   int nb_links = SD_route_get_size(src, dst);
   double latency = 0.0;
   int i;
@@ -224,7 +230,6 @@ double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst) 
     latency += SD_link_get_current_latency(links[i]);
   }
 
-  free(links);
   return latency;
 }
 
@@ -240,7 +245,7 @@ double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst) 
 double SD_route_get_current_bandwidth(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  SD_link_t *links = SD_route_get_list(src, dst);
+  const SD_link_t *links = SD_route_get_list(src, dst);
   int nb_links = SD_route_get_size(src, dst);
   double bandwidth, min_bandwidth = -1.0;
   int i;
@@ -251,7 +256,6 @@ double SD_route_get_current_bandwidth(SD_workstation_t src, SD_workstation_t dst
       min_bandwidth = bandwidth;
   }
 
-  free(links);
   return min_bandwidth;
 }
 
@@ -273,7 +277,7 @@ double SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t ds
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
   xbt_assert0(communication_amount >= 0, "communication_amount must be greater than or equal to zero");
 
-  SD_link_t *links;
+  const SD_link_t *links;
   int nb_links;
   double bandwidth, min_bandwidth;
   double latency;
@@ -293,7 +297,6 @@ double SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t ds
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }
-  xbt_free(links);
 
   return latency + (communication_amount / min_bandwidth);
 }
