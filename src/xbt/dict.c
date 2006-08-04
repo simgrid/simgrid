@@ -304,8 +304,7 @@ void xbt_dict_remove_ext(xbt_dict_t  dict,
  */
 void xbt_dict_remove(xbt_dict_t  dict,
 		     const char  *key) {
-  if (!dict)
-    THROW1(arg_error, 0, "Asked to remove key %s from NULL dict", key);
+  xbt_assert(dict);
 
   xbt_dict_remove_ext(dict, key, strlen(key));
 }
@@ -517,15 +516,6 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   traverse(head);
 
   xbt_dict_free(&head);
-
-  xbt_test_add0("Remove data from the NULL dict");
-  TRY {
-    debuged_remove(head,"12345");
-  } CATCH(e) {
-    if (e.category != arg_error) 
-      xbt_test_exception(e);
-    xbt_ex_free(e);
-  } 
 
   xbt_test_add0("Remove each data manually (traversing the resulting dictionnary each time)");
   fill(&head);
