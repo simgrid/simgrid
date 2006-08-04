@@ -600,6 +600,10 @@ static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t va
 
 /** \brief Declare a new type being a dynar in which each elements are of the given type
  * 
+ *  The type gets registered under the name "dynar(%s)_s", where %s is the name of the subtype.
+ *  For example, a dynar of doubles will be called "dynar(double)_s" and a dynar of dynar of 
+ *  strings will be called "dynar(dynar(string)_s)_s".
+ * 
  *  \param elm_t: the datadesc of the elements
  *  \param free_func: the function to use to free the elements when the dynar gets freed
  */
