@@ -44,6 +44,7 @@ xbt_dict_t xbt_dict_new_ext(int hashsize) {
   for (i = 0; i < hashsize; i++) {
     dict->table[i] = NULL;
   }
+  dict->count = 0;
 
   return dict;
 }
@@ -154,6 +155,7 @@ void xbt_dict_set_ext(xbt_dict_t      dict,
     else {
       previous->next = current;
     }
+    dict->count++;
   }
   else {
     /* there is already an element with the same key: we overwrite it */
@@ -168,7 +170,7 @@ void xbt_dict_set_ext(xbt_dict_t      dict,
 /**
  * \brief Add data to the dict (null-terminated key)
  *
- * \param dict the head of the dict
+ * \param dict the dict
  * \param key the key to set the new data
  * \param data the data to add in the dict
  * \param free_ctn function to call with (\a key as argument) when 
@@ -233,7 +235,19 @@ void *xbt_dict_get(xbt_dict_t dict,
 		   const char *key) {
   xbt_assert(dict);
 
-  return xbt_dict_get_ext(dict, key, strlen(key));
+  unsigned int hash_code = xbt_dict_hash(key) % dict->table_size;
+  xbt_dictelm_t current;
+
+  current = dict->table[hash_code];
+  while (current != NULL && (strcmp(key, current->key))) {
+    current = current->next;
+  }
+
+  if (current == NULL) {
+    THROW1(not_found_error, 0, "key %s not found", key);
+  }
+
+  return current->content;
 }
 
 /**
@@ -292,12 +306,13 @@ void xbt_dict_remove_ext(xbt_dict_t  dict,
   }
 
   xbt_dictelm_free(current);
+  dict->count--;
 }
 
 /**
  * \brief Remove data from the dict (null-terminated key)
  *
- * \param dict the head of the dict
+ * \param dict the dict
  * \param key the key of the data to be removed
  *
  * Remove the entry associated with the given \a key
@@ -307,6 +322,38 @@ void xbt_dict_remove(xbt_dict_t  dict,
   xbt_assert(dict);
 
   xbt_dict_remove_ext(dict, key, strlen(key));
+}
+
+/**
+ * \brief Remove all data from the dict
+ * \param dict the dict
+ */
+void xbt_dict_reset(xbt_dict_t dict) {
+  xbt_assert(dict);
+
+  int i;
+  xbt_dictelm_t current, previous = NULL;
+  for (i = 0; i < dict->table_size; i++) {
+    current = dict->table[i];
+    while (current != NULL) {
+      previous = current;
+      current = current->next;
+      xbt_dictelm_free(previous);
+    }
+    dict->table[i] = NULL;
+  }
+
+  dict->count = 0;
+}
+
+/**
+ * \brief Return the number of elements in the dict.
+ * \param dict a dictionary
+ */
+int xbt_dict_length(xbt_dict_t dict) {
+  xbt_assert(dict);
+
+  return dict->count;
 }
 
 /*
@@ -437,6 +484,11 @@ static void search_not_found(xbt_dict_t head, const char *data) {
   }
 }
 
+static void count(xbt_dict_t dict, int length) {
+  xbt_test_add1("Count elements (expecting %d)", length);
+  xbt_test_assert2(xbt_dict_length(dict) == length, "Length(%d) != %d.", xbt_dict_length(dict), length);
+}
+
 xbt_ex_t e;
 xbt_dict_t head=NULL;
 char *data;
@@ -448,6 +500,7 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
 
   xbt_test_add0("Traverse the full dictionnary");
   fill(&head);
+  count(head, 7);
 
   search(head,"12a");
   traverse(head);
@@ -458,17 +511,22 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
 
   /* CHANGING */
   fill(&head);
+  count(head, 7);
   xbt_test_add0("Change 123 to 'Changed 123'");
   xbt_dict_set(head,"123",strdup("Changed 123"),&free);
+  count(head, 7);
 
   xbt_test_add0("Change 123 back to '123'");
   xbt_dict_set(head,"123",strdup("123"),&free);
+  count(head, 7);
 
   xbt_test_add0("Change 12a to 'Dummy 12a'");
   xbt_dict_set(head,"12a",strdup("Dummy 12a"),&free);
+  count(head, 7);
 
   xbt_test_add0("Change 12a to '12a'");
   xbt_dict_set(head,"12a",strdup("12a"),&free);
+  count(head, 7);
 
   xbt_test_add0("Traverse the resulting dictionnary");
   traverse(head);
@@ -505,6 +563,7 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
 
 XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   fill(&head);
+  count(head, 7);
   xbt_test_add0("Remove non existing data");
   TRY {
     debuged_remove(head,"Does not exist");
@@ -520,9 +579,13 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
   xbt_test_add0("Remove each data manually (traversing the resulting dictionnary each time)");
   fill(&head);
   debuged_remove(head,"12a");    traverse(head);
+  count(head, 6);
   debuged_remove(head,"12b");    traverse(head);
+  count(head, 5);
   debuged_remove(head,"12");     traverse(head);
+  count(head, 4);
   debuged_remove(head,"123456"); traverse(head);
+  count(head, 3);
   TRY {
     debuged_remove(head,"12346");
   } CATCH(e) {
@@ -542,6 +605,13 @@ XBT_TEST_UNIT("remove",test_dict_remove,"Removing some values"){
     xbt_ex_free(e);
   }                              traverse(head);
   
+  xbt_test_add0("Remove all values");
+  xbt_dict_free(&head);
+  fill(&head);
+  xbt_dict_reset(head);
+  count(head, 0);
+  traverse(head);
+
   xbt_test_add0("Free the dictionnary twice");
   xbt_dict_free(&head);
   xbt_dict_free(&head);      

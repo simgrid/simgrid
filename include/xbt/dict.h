@@ -58,12 +58,14 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  void  xbt_dict_set(xbt_dict_t head, const char *key, void *data, void_f_pvoid_t *free_ctn);
-  void *xbt_dict_get(xbt_dict_t head,const char *key);
+  void  xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t *free_ctn);
+  void *xbt_dict_get(xbt_dict_t dict,const char *key);
   void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
 
-  void xbt_dict_remove(xbt_dict_t head, const char *key);
-  void xbt_dict_dump(xbt_dict_t head,void (*output)(void*));
+  void xbt_dict_remove(xbt_dict_t dict, const char *key);
+  void xbt_dict_reset(xbt_dict_t dict);
+  int xbt_dict_length(xbt_dict_t dict);
+  void xbt_dict_dump(xbt_dict_t dict, void (*output)(void*));
   
 /** @} */
 /** @defgroup XBT_dict_nnul Dictionnaries with non-nul terminated keys
@@ -73,12 +75,12 @@ SG_BEGIN_DECL()
  *
  *  @{
  */
-  void  xbt_dict_set_ext(xbt_dict_t     head,
+  void  xbt_dict_set_ext(xbt_dict_t     dict,
 	 	         const char     *key, int  key_len,
 		         void           *data,
 		         void_f_pvoid_t *free_ctn);
-  void *xbt_dict_get_ext(xbt_dict_t head,const char *key, int key_len);
-  void xbt_dict_remove_ext(xbt_dict_t head, const char *key, int key_len);
+  void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len);
+  void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len);
 
 
 /** @} */
@@ -94,7 +96,7 @@ SG_BEGIN_DECL()
 \verbatim xbt_dict_cursor_t cursor=NULL;
  char *key,*data;
 
- xbt_dict_foreach(head,cursor,key,data) {
+ xbt_dict_foreach(dict,cursor,key,data) {
     printf("   - Seen:  %s->%s\n",key,data);
  }\endverbatim
 
@@ -105,7 +107,7 @@ SG_BEGIN_DECL()
 
   /** @brief Cursor on dictionnaries (opaque type) */
   typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
-  xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t head);
+  xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict);
   void               xbt_dict_cursor_free(xbt_dict_cursor_t *cursor);
 
   void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);

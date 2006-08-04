@@ -30,6 +30,7 @@ typedef struct xbt_dictelm_ {
 typedef struct xbt_dict_ {
   xbt_dictelm_t *table;
   int table_size;
+  int count;
 } s_xbt_dict_t;
 
 typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
