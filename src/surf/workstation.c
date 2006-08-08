@@ -305,12 +305,18 @@ static surf_action_t execute_parallel_task (int workstation_nb,
 {
   surf_action_parallel_task_CSL05_t action = NULL;
   int i, j, k;
-  xbt_dict_t network_link_set = xbt_dict_new();
-  xbt_dict_cursor_t cursor = NULL;
-  char *name = NULL;
+  static xbt_dict_t network_link_set;
+  static int first_run = 1;
   int nb_link = 0;
   int nb_host = 0;
-  network_link_CM02_t link;
+
+  if (first_run) {
+    network_link_set = xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
+    first_run = 0;
+  }
+  else {
+    xbt_dict_reset(network_link_set);
+  }
 
   /* Compute the number of affected resources... */
   for(i=0; i< workstation_nb; i++) {
@@ -327,11 +333,7 @@ static surf_action_t execute_parallel_task (int workstation_nb,
     }
   }
 
-  xbt_dict_foreach(network_link_set, cursor, name, link) {
-    nb_link++;
-  }
-
-  xbt_dict_free(&network_link_set);
+  nb_link = xbt_dict_length(network_link_set);
 
   for (i = 0; i<workstation_nb; i++)
     if(computation_amount[i]>0) nb_host++;
