@@ -24,7 +24,7 @@ void SD_init(int *argc, char **argv) {
     xbt_assert0(0, "SD_init() already called");
   }
 
-  sd_global = xbt_new0(s_SD_global_t, 1);
+  sd_global = xbt_new(s_SD_global_t, 1);
   sd_global->workstations = xbt_dict_new();
   sd_global->workstation_count = 0;
   sd_global->workstation_list = NULL;
@@ -124,7 +124,7 @@ SD_task_t* SD_simulate(double how_long)
   INFO0("Starting simulation...");
 
   /* create the array that will be returned */
-  changed_tasks = xbt_new0(SD_task_t, changed_task_capacity);
+  changed_tasks = xbt_new(SD_task_t, changed_task_capacity);
   changed_tasks[0] = NULL;
 
   if (first_time) {

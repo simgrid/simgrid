@@ -10,7 +10,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(surf_workstation != NULL, "surf_workstation is NULL !");
 
-  SD_workstation_t workstation = xbt_new0(s_SD_workstation_t, 1);
+  SD_workstation_t workstation = xbt_new(s_SD_workstation_t, 1);
   workstation->surf_workstation = surf_workstation;
   workstation->data = data; /* user data */
   SD_workstation_set_access_mode(workstation, SD_WORKSTATION_SHARED_ACCESS); /* default mode is shared */
@@ -57,7 +57,7 @@ const SD_workstation_t* SD_workstation_get_list(void) {
   int i;
 
   if (sd_global->workstation_list == NULL) { /* this is the first time the function is called */
-    sd_global->workstation_list = xbt_new0(SD_workstation_t, sd_global->workstation_count);
+    sd_global->workstation_list = xbt_new(SD_workstation_t, sd_global->workstation_count);
   
     i = 0;
     xbt_dict_foreach(sd_global->workstations, cursor, key, data) {
@@ -132,11 +132,9 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
 const SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
 
-  static int first_run = 1;
-
-  if (first_run) {
-    sd_global->recyclable_route = xbt_new0(SD_link_t, SD_link_get_number());
-    first_run = 0;
+  if (sd_global->recyclable_route == NULL) {
+    /* first run */
+    sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_number());
   }
 
   void *surf_src = src->surf_workstation;

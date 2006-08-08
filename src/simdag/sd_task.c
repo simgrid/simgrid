@@ -21,7 +21,7 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task);
 SD_task_t SD_task_create(const char *name, void *data, double amount) {
   SD_CHECK_INIT_DONE();
 
-  SD_task_t task = xbt_new0(s_SD_task_t, 1);
+  SD_task_t task = xbt_new(s_SD_task_t, 1);
 
   /* general information */
   task->data = data; /* user data */
@@ -261,7 +261,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
     THROW2(arg_error, 0, "A dependency already exists between task '%s' and task '%s'",
 	   SD_task_get_name(src), SD_task_get_name(dst));
 
-  dependency = xbt_new0(s_SD_dependency_t, 1);
+  dependency = xbt_new(s_SD_dependency_t, 1);
 
   if (name != NULL)
     dependency->name = xbt_strdup(name);
@@ -492,14 +492,14 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
   task->workstation_nb = workstation_nb;
   task->rate = rate;
 
-  task->computation_amount = xbt_new0(double, workstation_nb);
+  task->computation_amount = xbt_new(double, workstation_nb);
   memcpy(task->computation_amount, computation_amount, sizeof(double) * workstation_nb);
 
   int communication_nb = workstation_nb * workstation_nb;
-  task->communication_amount = xbt_new0(double, communication_nb);
+  task->communication_amount = xbt_new(double, communication_nb);
   memcpy(task->communication_amount, communication_amount, sizeof(double) * communication_nb);
 
-  task->workstation_list = xbt_new0(SD_workstation_t, workstation_nb);
+  task->workstation_list = xbt_new(SD_workstation_t, workstation_nb);
   memcpy(task->workstation_list, workstation_list, sizeof(SD_workstation_t) * workstation_nb);
 
   /* update the task state */
@@ -581,7 +581,7 @@ void __SD_task_really_run(SD_task_t task) {
   /* start the task */
 
   /* we have to create a Surf workstation array instead of the SimDag workstation array */
-  surf_workstations = xbt_new0(void*, task->workstation_nb);
+  surf_workstations = xbt_new(void*, task->workstation_nb);
 
   for (i = 0; i < task->workstation_nb; i++) {
     surf_workstations[i] = task->workstation_list[i]->surf_workstation;
@@ -666,7 +666,7 @@ void __SD_task_just_done(SD_task_t task) {
   SD_task_t candidate;
   int candidate_nb = 0;
   int candidate_capacity = 8;
-  SD_task_t *candidates = xbt_new0(SD_task_t, 8);
+  SD_task_t *candidates = xbt_new(SD_task_t, 8);
   int can_start = 1;
 
   __SD_task_set_state(task, SD_DONE);

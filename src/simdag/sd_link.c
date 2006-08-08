@@ -10,7 +10,7 @@ SD_link_t __SD_link_create(void *surf_link, void *data) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(surf_link != NULL, "surf_link is NULL !");
 
-  SD_link_t link = xbt_new0(s_SD_link_t, 1);
+  SD_link_t link = xbt_new(s_SD_link_t, 1);
   link->surf_link = surf_link;
   link->data = data; /* user data */
 
@@ -38,7 +38,7 @@ const SD_link_t*  SD_link_get_list(void) {
   int i;
 
   if (sd_global->link_list == NULL) { /* this is the first time the function is called */
-    sd_global->link_list = xbt_new0(SD_link_t, sd_global->link_count);
+    sd_global->link_list = xbt_new(SD_link_t, sd_global->link_count);
   
     i = 0;
     xbt_dict_foreach(sd_global->links, cursor, key, data) {
