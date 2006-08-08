@@ -16,6 +16,7 @@ EXTRA_DIST= \
         \
 	portable.h \
 	\
+        xbt/mallocator_private.h \
 	xbt/dynar_private.h \
         xbt/dict_private.h \
         xbt/heap_private.h \
@@ -115,6 +116,7 @@ COMMON_SRC=\
   xbt/sysdep.c                                                               \
   xbt/asserts.c                                                              \
   xbt/log.c         xbt/log_default_appender.c                               \
+  xbt/mallocator.c                                                           \
   xbt/dynar.c                                                                \
   xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \
   xbt/dict_multi.c                                                           \
@@ -269,7 +271,7 @@ surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
 	set -e; mkdir -p surf; flexml -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^
 $(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
 	set -e;                flexml            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
-	
+
 xbt/graphxml.l: $(srcdir)/xbt/graphxml.dtd
 	set -e; flexml -b 1000000 -P graphxml --sysid=graphxml.dtd -S $@ -L $^
 $(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
