@@ -13,7 +13,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   SD_workstation_t workstation = xbt_new(s_SD_workstation_t, 1);
   workstation->surf_workstation = surf_workstation;
   workstation->data = data; /* user data */
-  SD_workstation_set_access_mode(workstation, SD_WORKSTATION_SHARED_ACCESS); /* default mode is shared */
+  workstation->access_mode = SD_WORKSTATION_SHARED_ACCESS; /* default mode is shared */
   workstation->task_fifo = NULL;
   
   const char *name = SD_workstation_get_name(workstation);
