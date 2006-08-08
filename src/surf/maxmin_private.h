@@ -10,6 +10,7 @@
 
 #include "surf/maxmin.h"
 #include "xbt/swag.h"
+#include "xbt/mallocator.h"
 
 typedef struct lmm_element {
   /* hookup to constraint */
@@ -61,6 +62,8 @@ typedef struct lmm_system {
 
   s_xbt_swag_t saturated_variable_set;	/* a list of lmm_variable_t */
   s_xbt_swag_t saturated_constraint_set;	/* a list of lmm_constraint_t_t */
+
+  xbt_mallocator_t variable_mallocator;
 } s_lmm_system_t;
 
 #define extract_variable(sys) xbt_swag_remove(xbt_swag_getFirst(&(sys->variable_set)),&(sys->variable_set))

@@ -8,10 +8,15 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/mallocator.h"
 #include "maxmin_private.h"
 #include <stdlib.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf,
 				"Logging specific to SURF (maxmin)");
+
+static void* lmm_variable_mallocator_new_f(void);
+static void lmm_variable_mallocator_free_f(void *var);
+static void lmm_variable_mallocator_reset_f(void *var);
 
 lmm_system_t lmm_system_new(void)
 {
@@ -35,6 +40,11 @@ lmm_system_t lmm_system_new(void)
   xbt_swag_init(&(l->saturated_constraint_set),
 		xbt_swag_offset(cnst, saturated_constraint_set_hookup));
 
+  l->variable_mallocator = xbt_mallocator_new(64,
+					      lmm_variable_mallocator_new_f,
+					      lmm_variable_mallocator_free_f,
+					      lmm_variable_mallocator_reset_f);
+
   return l;
 }
 
@@ -49,6 +59,7 @@ void lmm_system_free(lmm_system_t sys)
   while ((cnst = extract_constraint(sys)))
     lmm_cnst_free(sys, cnst);
 
+  xbt_mallocator_free(sys->variable_mallocator);
   free(sys);
 }
 
@@ -77,7 +88,7 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
   lmm_variable_disable(sys, var);
   memset(var->cnsts,0,var->cnsts_size*sizeof(s_lmm_element_t));
   free(var->cnsts);
-  free(var);
+  xbt_mallocator_release(sys->variable_mallocator, var);
 }
 
 static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
@@ -120,6 +131,19 @@ void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst)
   lmm_cnst_free(sys, cnst);
 }
 
+static void* lmm_variable_mallocator_new_f(void) {
+  return xbt_new0(s_lmm_variable_t, 1);
+}
+
+static void lmm_variable_mallocator_free_f(void *var) {
+  xbt_free(var);
+}
+
+static void lmm_variable_mallocator_reset_f(void *var) {
+  /* memset to zero like calloc */
+  memset(var, 0, sizeof(s_lmm_variable_t));
+}
+
 lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
 				double weight,
 				double bound, int number_of_constraints)
@@ -130,7 +154,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   XBT_IN5("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)",
 	  sys,id,weight,bound,number_of_constraints);
 
-  var = xbt_new0(s_lmm_variable_t, 1);
+  var = xbt_mallocator_get(sys->variable_mallocator);
   var->id = id;
   var->cnsts = xbt_new0(s_lmm_element_t, number_of_constraints);
   for(i=0; i<number_of_constraints; i++) {
