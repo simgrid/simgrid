@@ -45,5 +45,6 @@ xbt_exit(){
   if (xbt_initialized == 0)
      free(xbt_binary_name);
   xbt_log_exit();
+  xbt_fifo_exit();
 }
 

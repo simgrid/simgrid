@@ -7,9 +7,17 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/mallocator.h"
 #include "fifo_private.h"
+#include "xbt_modinter.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_fifo,xbt,"FIFO");
+
+static void* fifo_item_mallocator_new_f(void);
+static void fifo_item_mallocator_free_f(void* item);
+static void fifo_item_mallocator_reset_f(void* item);
+
+static xbt_mallocator_t item_mallocator = NULL;
 
 /** Constructor
  * \return a new fifo
@@ -18,6 +26,13 @@ xbt_fifo_t xbt_fifo_new(void)
 {
   xbt_fifo_t fifo;
   fifo = xbt_new0(struct xbt_fifo,1);
+
+  if (item_mallocator == NULL) {
+    item_mallocator = xbt_mallocator_new(256,
+					 fifo_item_mallocator_new_f,
+					 fifo_item_mallocator_free_f,
+					 fifo_item_mallocator_reset_f);
+  }
   return fifo;
 }
 
@@ -32,7 +47,7 @@ void xbt_fifo_free(xbt_fifo_t l)
 
   for (b = xbt_fifo_get_first_item(l); b;
        tmp = b, b = b->next, xbt_fifo_free_item(tmp));
-  free(l);
+  xbt_free(l);
   return;
 }
 
@@ -319,12 +334,26 @@ xbt_fifo_t xbt_fifo_copy(xbt_fifo_t f)
   return copy;
 }
 
+/* Functions passed to the mallocator constructor */
+static void* fifo_item_mallocator_new_f(void) {
+  return xbt_new(s_xbt_fifo_item_t, 1);
+}
+
+static void fifo_item_mallocator_free_f(void* item) {
+  xbt_free(item);
+}
+
+static void fifo_item_mallocator_reset_f(void* item) {
+  /* memset to zero like calloc */
+  memset(item, 0, sizeof(s_xbt_fifo_item_t));
+}
+
 /** Constructor
  * \return a new bucket
  */
 xbt_fifo_item_t xbt_fifo_new_item(void)
 {
-  return xbt_new0(struct xbt_fifo_item,1);
+  return xbt_mallocator_get(item_mallocator);
 }
 
 /** \deprecated Use #xbt_fifo_new_item instead.
@@ -362,7 +391,7 @@ void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
  */
 void xbt_fifo_free_item(xbt_fifo_item_t b)
 {
-  free(b);
+  xbt_mallocator_release(item_mallocator, b);
   return;
 }
 
@@ -372,7 +401,7 @@ void xbt_fifo_free_item(xbt_fifo_item_t b)
 void xbt_fifo_freeitem(xbt_fifo_item_t b)
 {
   WARN0("This function is deprecated. Use xbt_fifo_free_item.");
-  free(b);
+  xbt_fifo_free_item(b);
   return;
 }
 
@@ -436,6 +465,16 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
 {
   WARN0("This function is deprecated. Use xbt_fifo_get_prev_item.");
   return xbt_fifo_get_prev_item(i);
+}
+
+/**
+ * Destroy the fifo item mallocator.
+ * This is an internal XBT function called by xbt_exit().
+ */
+void xbt_fifo_exit(void) {
+  if (item_mallocator != NULL) {
+    xbt_mallocator_free(item_mallocator);
+  }
 }
 
 /* @} */
