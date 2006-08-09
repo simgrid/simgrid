@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
   /* initialisation of SD */
   SD_init(&argc, argv);
 
-  /*  xbt_log_control_set("sd.thres=debug");*/
+  /*  xbt_log_control_set("sd.thres=debug"); */
 
   if (argc < 2) {
     INFO1("Usage: %s platform_file", argv[0]);
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 	SD_workstation_get_computation_time(w2, computation_amount2));
 
   INFO2("Route between %s and %s:", name1, name2);
-  SD_link_t *route = SD_route_get_list(w1, w2);
+  const SD_link_t *route = SD_route_get_list(w1, w2);
   int route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
     INFO3("\tLink %s: latency = %f, bandwidth = %f", SD_link_get_name(route[i]),
@@ -54,7 +54,6 @@ int main(int argc, char **argv) {
 	SD_route_get_communication_time(w1, w2, communication_amount12));
   INFO4("Communication time for %f bytes between %s and %s: %f", communication_amount21, name2, name1,
 	SD_route_get_communication_time(w2, w1, communication_amount21));
-  xbt_free(route);
 
   /* creation of the tasks and their dependencies */
   SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
@@ -118,7 +117,7 @@ int main(int argc, char **argv) {
   SD_task_watch(taskD, SD_DONE);
   SD_task_watch(taskB, SD_DONE);
   SD_task_unwatch(taskD, SD_DONE);
-
+  
 
   /* scheduling parameters */
 
