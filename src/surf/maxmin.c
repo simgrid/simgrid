@@ -132,7 +132,7 @@ void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst)
 }
 
 static void* lmm_variable_mallocator_new_f(void) {
-  return xbt_new0(s_lmm_variable_t, 1);
+  return xbt_new(s_lmm_variable_t, 1);
 }
 
 static void lmm_variable_mallocator_free_f(void *var) {
