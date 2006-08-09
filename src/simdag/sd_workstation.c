@@ -4,6 +4,9 @@
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
+				"Logging specific to SimDag (workstation)");
+
 /* Creates a workstation and registers it in SD.
  */
 SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
@@ -15,6 +18,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
   workstation->data = data; /* user data */
   workstation->access_mode = SD_WORKSTATION_SHARED_ACCESS; /* default mode is shared */
   workstation->task_fifo = NULL;
+  workstation->current_task = NULL;
   
   const char *name = SD_workstation_get_name(workstation);
   xbt_dict_set(sd_global->workstations, name, workstation, __SD_workstation_destroy); /* add the workstation to the dictionary */
@@ -366,6 +370,12 @@ int __SD_workstation_is_busy(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
   
+  DEBUG4("Workstation '%s' access mode: %d, current task: %s, fifo size: %d",
+	 SD_workstation_get_name(workstation),
+	 workstation->access_mode,
+	 (workstation->current_task ? SD_task_get_name(workstation->current_task) : "none"),
+	 (workstation->task_fifo ? xbt_fifo_size(workstation->task_fifo) : 0));
+
   return workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS &&
     (workstation->current_task != NULL || xbt_fifo_size(workstation->task_fifo) > 0);
 }
