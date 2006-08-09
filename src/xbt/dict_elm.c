@@ -22,10 +22,11 @@ xbt_dictelm_t xbt_dictelm_new(const char *key,
 			      void *content,
 			      void_f_pvoid_t free_f,
 			      xbt_dictelm_t next) {
-  xbt_dictelm_t element = xbt_new0(s_xbt_dictelm_t, 1);
+  xbt_dictelm_t element = xbt_new(s_xbt_dictelm_t, 1);
   
-  element->key = xbt_new0(char, key_len + 1);
+  element->key = xbt_new(char, key_len + 1);
   strncpy(element->key, key, key_len);
+  element->key[key_len] = '\0';
 
   element->key_len = key_len;
   element->content = content;
