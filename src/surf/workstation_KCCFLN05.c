@@ -881,7 +881,8 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link,
   route->impact_on_dst_with_other_send = impact_on_dst_with_other_send;
 }
 
-static int nb_link = 0;
+static int nb_link;
+static int link_name_capacity;
 static char **link_name = NULL;
 static int src_id = -1;
 static int dst_id = -1;
@@ -902,14 +903,17 @@ static void parse_route_set_endpoints(void)
 			A_surfxml_route_impact_on_dst_with_other_send);
 
   nb_link = 0;
-  link_name = NULL;
+  link_name_capacity = 16;
+  link_name = xbt_new(char*, link_name_capacity);
 }
 
 static void parse_route_elem(void)
 {
-  nb_link++;
-  link_name = xbt_realloc(link_name, (nb_link) * sizeof(char *));
-  link_name[(nb_link) - 1] = xbt_strdup(A_surfxml_route_element_name);
+  if (nb_link == link_name_capacity) {
+    link_name_capacity *= 2;
+    link_name = xbt_realloc(link_name, (link_name_capacity) * sizeof(char *));
+  }
+  link_name[nb_link++] = xbt_strdup(A_surfxml_route_element_name);
 }
 
 static void parse_route_set_route(void)
