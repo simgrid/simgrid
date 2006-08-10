@@ -859,22 +859,15 @@ static void parse_network_link(void)
 		   policy_initial);
 }
 
-static void route_new(int src_id, int dst_id, char **links, int nb_link,
+static void route_new(int src_id, int dst_id, network_link_KCCFLN05_t *link_list, int nb_link,
 		      double impact_on_src, double impact_on_dst,
 		      double impact_on_src_with_other_recv,
 		      double impact_on_dst_with_other_send)
 {
-  network_link_KCCFLN05_t *link_list = NULL;
-  int i;
   route_KCCFLN05_t route = &(ROUTE(src_id, dst_id));
 
   route->size = nb_link;
-  link_list = route->links = xbt_new0(network_link_KCCFLN05_t, nb_link);
-  for (i = 0; i < nb_link; i++) {
-    link_list[i] = xbt_dict_get_or_null(network_link_set, links[i]);
-    free(links[i]);
-  }
-  free(links);
+  route->links = link_list = xbt_realloc(link_list, sizeof(network_link_KCCFLN05_t) * nb_link);
   route->impact_on_src = impact_on_src;
   route->impact_on_dst = impact_on_src;
   route->impact_on_src_with_other_recv = impact_on_src_with_other_recv;
@@ -882,8 +875,8 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link,
 }
 
 static int nb_link;
-static int link_name_capacity;
-static char **link_name = NULL;
+static int link_list_capacity;
+static network_link_KCCFLN05_t *link_list = NULL;
 static int src_id = -1;
 static int dst_id = -1;
 static double impact_on_src;
@@ -903,22 +896,22 @@ static void parse_route_set_endpoints(void)
 			A_surfxml_route_impact_on_dst_with_other_send);
 
   nb_link = 0;
-  link_name_capacity = 16;
-  link_name = xbt_new(char*, link_name_capacity);
+  link_list_capacity = 20;
+  link_list = xbt_new(network_link_KCCFLN05_t, link_list_capacity);
 }
 
 static void parse_route_elem(void)
 {
-  if (nb_link == link_name_capacity) {
-    link_name_capacity *= 2;
-    link_name = xbt_realloc(link_name, (link_name_capacity) * sizeof(char *));
+  if (nb_link == link_list_capacity) {
+    link_list_capacity *= 2;
+    link_list = xbt_realloc(link_list, (link_list_capacity) * sizeof(network_link_KCCFLN05_t));
   }
-  link_name[nb_link++] = xbt_strdup(A_surfxml_route_element_name);
+  link_list[nb_link++] = xbt_dict_get_or_null(network_link_set, A_surfxml_route_element_name);
 }
 
 static void parse_route_set_route(void)
 {
-  route_new(src_id, dst_id, link_name, nb_link, impact_on_src,
+  route_new(src_id, dst_id, link_list, nb_link, impact_on_src,
 	    impact_on_dst, impact_on_src_with_other_recv,
 	    impact_on_dst_with_other_send);
 }
