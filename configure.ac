@@ -128,10 +128,12 @@ case $with_context in
  *) AC_MSG_ERROR("--with-context must be either ucontext or pthread") ;;
 esac
 
+USE_CONTEXT=no
 if test "x$with_context" = "xucontext" ; then
   if test ".$mcsc" = .yes; then
     AC_MSG_RESULT(found working ucontext. Great!)
     AC_DEFINE([USE_UCONTEXT],1,[Define if we use ucontext or not])
+    USE_CONTEXT=yes
   else
     if test ".$windows_context" = .yes ; then
       AC_MSG_RESULT(use windows context portability layer.)
@@ -142,6 +144,7 @@ if test "x$with_context" = "xucontext" ; then
     fi
   fi
 fi
+AC_SUBST(USE_CONTEXT)
 
 if test "x$with_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
