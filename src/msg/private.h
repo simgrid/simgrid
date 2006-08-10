@@ -16,6 +16,7 @@
 #include "xbt/dict.h"
 #include "xbt/context.h"
 #include "xbt/config.h"
+#include "xbt/mallocator.h"
 
 /**************** datatypes **********************************/
 
@@ -87,6 +88,8 @@ typedef struct MSG_Global {
   int paje_maxPID;
   int PID;
   int session;
+  xbt_mallocator_t task_mallocator;
+  xbt_mallocator_t task_simdata_mallocator;
 } s_MSG_Global_t, *MSG_Global_t;
 
 extern MSG_Global_t msg_global;
@@ -122,6 +125,10 @@ MSG_error_t __MSG_process_unblock(m_process_t process);
 int __MSG_process_isBlocked(m_process_t process);
 
 void __MSG_display_process_status(void);
+
+m_task_t task_mallocator_new_f(void);
+void task_mallocator_free_f(m_task_t task);
+void task_mallocator_reset_f(m_task_t task);
 
 #ifdef ALVIN_SPECIAL_LOGING
 #define PAJE_PROCESS_STATE(process,state)\

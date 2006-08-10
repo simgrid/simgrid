@@ -45,12 +45,11 @@
 m_task_t MSG_task_create(const char *name, double compute_duration,
 			 double message_size, void *data)
 {
-  simdata_task_t simdata = xbt_new0(s_simdata_task_t,1);
-  m_task_t task = xbt_new0(s_m_task_t,1);
+  m_task_t task = xbt_mallocator_get(msg_global->task_mallocator);
+  simdata_task_t simdata = task->simdata;
   
   /* Task structure */
   task->name = xbt_strdup(name);
-  task->simdata = simdata;
   task->data = data;
 
   /* Simulator Data */
@@ -121,7 +120,6 @@ const char *MSG_task_get_name(m_task_t task)
 MSG_error_t MSG_task_destroy(m_task_t task)
 {
   surf_action_t action = NULL;
-
   xbt_assert0((task != NULL), "Invalid parameter");
 
   task->simdata->using--;
@@ -140,9 +138,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   if(action) action->resource_type->common_public->action_free(action);
   if(task->simdata->host_list) xbt_free(task->simdata->host_list);
 
-  free(task->simdata);
-  free(task);
-
+  xbt_mallocator_release(msg_global->task_mallocator, task);
   return MSG_OK;
 }
 
@@ -237,4 +233,25 @@ void MSG_task_set_priority(m_task_t task, double priority) {
   if(task->simdata->compute)
     surf_workstation_resource->common_public->
       set_priority(task->simdata->compute, task->simdata->priority);
+}
+
+/* Mallocator functions */
+m_task_t task_mallocator_new_f(void) {
+  m_task_t task = xbt_new(s_m_task_t, 1);
+  simdata_task_t simdata = xbt_new0(s_simdata_task_t, 1);
+  task->simdata = simdata;
+  return task;
+}
+
+void task_mallocator_free_f(m_task_t task) {
+  xbt_assert0((task != NULL), "Invalid parameter");
+
+  xbt_free(task->simdata);
+  xbt_free(task);
+
+  return;
+}
+
+void task_mallocator_reset_f(m_task_t task) {
+  memset(task->simdata, 0, sizeof(s_simdata_task_t));  
 }

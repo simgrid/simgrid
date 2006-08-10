@@ -54,6 +54,10 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->current_process = NULL;
     msg_global->registered_functions = xbt_dict_new();
     msg_global->PID = 1;
+    msg_global->task_mallocator = xbt_mallocator_new(256,
+						     (pvoid_f_void_t*) task_mallocator_new_f,
+						     (void_f_pvoid_t*) task_mallocator_free_f,
+						     (void_f_pvoid_t*) task_mallocator_reset_f);
   }
 }
 
@@ -540,6 +544,7 @@ MSG_error_t MSG_clean(void)
   xbt_fifo_free(msg_global->process_to_run);
   xbt_fifo_free(msg_global->process_list);
   xbt_dict_free(&(msg_global->registered_functions));
+  xbt_mallocator_free(msg_global->task_mallocator);
 
   if(msg_global->paje_output) {
     fclose(msg_global->paje_output);
