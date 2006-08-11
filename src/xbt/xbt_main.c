@@ -42,9 +42,10 @@ xbt_init(int *argc, char **argv) {
 void 
 xbt_exit(){
   xbt_initialized--;
-  if (xbt_initialized == 0)
-     free(xbt_binary_name);
+  if (xbt_initialized == 0) {
+    free(xbt_binary_name);
+    xbt_fifo_exit();
+  }
   xbt_log_exit();
-  xbt_fifo_exit();
 }
 
