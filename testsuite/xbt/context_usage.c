@@ -13,7 +13,7 @@ void print_args(int argc, char** argv)
 {
   int i ; 
 
-  printf("<");
+  printf("args=<");
   for(i=0; i<argc; i++) 
     printf("%s ",argv[i]);
   printf(">\n");
@@ -22,14 +22,18 @@ void print_args(int argc, char** argv)
 int fA(int argc, char** argv);
 int fA(int argc, char** argv)
 {
-  printf("fA: ");
+  printf("Here is fA: ");
   print_args(argc,argv);
 
-  printf("\tA: Yield\n");
+  printf("\tContext A: Yield\n");
   xbt_context_yield();
-  printf("\tA: Yield\n");
+   
+  xbt_fifo_push(fifo,cB);
+  printf("\tPush context B from context A\n");
+
+   printf("\tContext A: Yield\n");
   xbt_context_yield();
-  printf("\tA : bye\n");
+  printf("\tContext A : bye\n");
 
   return 0;
 }
@@ -37,16 +41,16 @@ int fA(int argc, char** argv)
 int fB(int argc, char** argv);
 int fB(int argc, char** argv)
 {
-  printf("fB: ");
+  printf("Here is fB: ");
   print_args(argc,argv);
 
-  printf("\tB: Yield\n");
-  xbt_context_yield();
+//  printf("\tContext B: Yield\n");
+//  xbt_context_yield();
   xbt_fifo_push(fifo,cA);
-  printf("\tB->A\n");
-  printf("\tB: Yield\n");
+  printf("\tPush context A from context B\n");
+  printf("\tContext B: Yield\n");
   xbt_context_yield();
-  printf("\tB : bye\n");
+  printf("\tContext B : bye\n");
 
   return 0;
 }
@@ -54,11 +58,11 @@ int fB(int argc, char** argv)
 int fC(int argc, char** argv);
 int fC(int argc, char** argv)
 {
-  printf("fC: ");
+  printf("Here is fC: ");
   print_args(argc,argv);
 
 
-  printf("\tC: Yield\n");
+  printf("\tContext C: Yield (and exit)\n");
   xbt_context_yield();
 
 
@@ -69,6 +73,9 @@ int main(int argc, char** argv)
 {
   xbt_context_t context = NULL;
 
+  printf("XXX Test the simgrid context API\n");
+  printf("    If it fails, try another context backend.\n    For example, to force the pthread backend, use:\n       ./configure --with-context=pthread\n\n");
+   
   xbt_context_init();
 
   cA = xbt_context_new(fA, NULL, NULL, NULL, NULL, 0, NULL);
@@ -77,15 +84,16 @@ int main(int argc, char** argv)
 
   fifo = xbt_fifo_new();
 
+  printf("Here is context 'main'\n");
   xbt_context_start(cA);
-  printf("\tO->A\n");xbt_fifo_push(fifo,cA);
+  printf("\tPush context 'A' from context 'main'\n");xbt_fifo_push(fifo,cA);
   xbt_context_start(cB);
-  printf("\tO->B\n");xbt_fifo_push(fifo,cB);
+  printf("\tPush context 'B' from context 'main'\n");xbt_fifo_push(fifo,cB);
   xbt_context_start(cC);xbt_fifo_push(fifo,cC);
-  printf("\tO->C\n");xbt_fifo_push(fifo,cC);
+  printf("\tPush context 'C' from context 'main'\n");xbt_fifo_push(fifo,cC);
 
   while((context=xbt_fifo_shift(fifo))) {
-    printf("\tO:Yield\n");
+    printf("Context main: Yield\n");
     xbt_context_schedule(context);
   }
 
