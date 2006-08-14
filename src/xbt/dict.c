@@ -10,11 +10,19 @@
 #include <string.h>
 #include "xbt/ex.h"
 #include "xbt/log.h"
+#include "xbt/mallocator.h"
+#include "xbt_modinter.h"
 #include "dict_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict,xbt,
    "Dictionaries provide the same functionnalities than hash tables");
 /*####[ Private prototypes ]#################################################*/
+
+static xbt_mallocator_t dict_mallocator = NULL;
+static void* dict_mallocator_new_f(void);
+static void dict_mallocator_free_f(void* dict);
+static void dict_mallocator_reset_f(void* dict);
+
 
 /*####[ Code ]###############################################################*/
 
@@ -36,14 +44,23 @@ xbt_dict_t xbt_dict_new(void) {
  * \see xbt_dict_new(), xbt_dict_free()
  */
 xbt_dict_t xbt_dict_new_ext(int hashsize) {
-  int i;
-  xbt_dict_t dict = xbt_new0(s_xbt_dict_t, 1);
+  xbt_dict_t dict;
+
+  if (dict_mallocator == NULL) {
+    /* first run */
+    dict_mallocator = xbt_mallocator_new(256,
+					 dict_mallocator_new_f,
+					 dict_mallocator_free_f,
+					 dict_mallocator_reset_f);
+    dict_elm_mallocator = xbt_mallocator_new(256,
+					     dict_elm_mallocator_new_f,
+					     dict_elm_mallocator_free_f,
+					     dict_elm_mallocator_reset_f);
+  }
+
+  dict = xbt_mallocator_get(dict_mallocator);
   dict->table_size = hashsize;
   dict->table = xbt_new0(xbt_dictelm_t, dict->table_size);
-
-  for (i = 0; i < hashsize; i++) {
-    dict->table[i] = NULL;
-  }
   dict->count = 0;
 
   return dict;
@@ -58,17 +75,22 @@ xbt_dict_t xbt_dict_new_ext(int hashsize) {
 void xbt_dict_free(xbt_dict_t *dict) {
   int i;
   xbt_dictelm_t current, previous;
+  int table_size;
+  xbt_dictelm_t *table;
+
   if (dict != NULL && *dict != NULL) {
-    for (i = 0; i < (*dict)->table_size; i++) {
-      current = (*dict)->table[i];
+    table_size = (*dict)->table_size;
+    table = (*dict)->table;
+    for (i = 0; i < table_size; i++) {
+      current = table[i];
       while (current != NULL) {
 	previous = current;
 	current = current->next;
 	xbt_dictelm_free(previous);
       }
     }
-    xbt_free((*dict)->table);
-    xbt_free(*dict);
+    xbt_free(table);
+    xbt_mallocator_release(dict_mallocator, *dict);
     *dict = NULL;
   }
 }
@@ -395,6 +417,31 @@ void xbt_dict_dump(xbt_dict_t     dict,
       }
     }
   }
+}
+
+/**
+ * Destroy the dict mallocators.
+ * This is an internal XBT function called by xbt_exit().
+ */
+void xbt_dict_exit(void) {
+  if (dict_mallocator != NULL) {
+    xbt_mallocator_free(dict_mallocator);
+    xbt_mallocator_free(dict_elm_mallocator);
+  }
+}
+
+static void* dict_mallocator_new_f(void) {
+  return xbt_new(s_xbt_dict_t, 1);
+}
+
+static void dict_mallocator_free_f(void* dict) {
+  xbt_free(dict);
+}
+
+static void dict_mallocator_reset_f(void* dict) {
+  /* nothing to do because all fields are
+   * initialized in xbt_dict_new
+   */
 }
 
 #ifdef SIMGRID_TEST

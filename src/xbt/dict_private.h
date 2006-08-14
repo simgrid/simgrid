@@ -16,6 +16,7 @@
 #include "xbt/ex.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "xbt/mallocator.h"
 
 typedef struct xbt_dictelm_ *xbt_dictelm_t;
 
@@ -36,6 +37,11 @@ typedef struct xbt_dict_ {
 typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
 
 unsigned int xbt_dict_hash(const char *str);
+
+extern xbt_mallocator_t dict_elm_mallocator;
+extern void* dict_elm_mallocator_new_f(void);
+extern void dict_elm_mallocator_free_f(void* elem);
+extern void dict_elm_mallocator_reset_f(void* elem);
 
 /*####[ Function prototypes ]################################################*/
 xbt_dictelm_t xbt_dictelm_new(const char *key,
