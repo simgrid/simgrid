@@ -16,6 +16,7 @@ static int nb_workstation = 0;
 static s_route_KCCFLN05_t *routing_table = NULL;
 #define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
 static network_link_KCCFLN05_t loopback = NULL;
+static xbt_dict_t parallel_task_network_link_set = NULL;
 
 /*xbt_dict_t network_link_set = NULL;*/
 
@@ -374,6 +375,9 @@ static void finalize(void)
 
   xbt_dict_free(&network_link_set);
   xbt_dict_free(&workstation_set);
+  if (parallel_task_network_link_set != NULL) {
+    xbt_dict_free(&parallel_task_network_link_set);
+  }
   xbt_swag_free(surf_workstation_resource->common_public->states.
 		ready_action_set);
   xbt_swag_free(surf_workstation_resource->common_public->states.
@@ -557,17 +561,11 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 {
   surf_action_workstation_KCCFLN05_t action = NULL;
   int i, j, k;
-  static xbt_dict_t network_link_set;
-  static int first_run = 1;
   int nb_link = 0;
   int nb_host = 0;
 
-  if (first_run) {
-    network_link_set = xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
-    first_run = 0;
-  }
-  else {
-    xbt_dict_reset(network_link_set);
+  if (parallel_task_network_link_set == NULL) {
+    parallel_task_network_link_set = xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
   }
 
   /* Compute the number of affected resources... */
@@ -580,12 +578,13 @@ static surf_action_t execute_parallel_task(int workstation_nb,
       
       if(communication_amount[i*workstation_nb+j]>0)
 	for(k=0; k< route_size; k++) {
-	  xbt_dict_set(network_link_set, route[k]->name, route[k], NULL);
+	  xbt_dict_set(parallel_task_network_link_set, route[k]->name, route[k], NULL);
 	}
     }
   }
 
-  nb_link = xbt_dict_length(network_link_set);
+  nb_link = xbt_dict_length(parallel_task_network_link_set);
+  xbt_dict_reset(parallel_task_network_link_set);
 
   for (i = 0; i<workstation_nb; i++)
     if(computation_amount[i]>0) nb_host++;
