@@ -187,6 +187,29 @@ xbt_dynar_reset(xbt_dynar_t const dynar) {
 /*  dynar->data = NULL;*/
 }
 
+/**
+ * \brief Shrink the dynar by removing empty slots at the end of the internal array
+ * \param dynar a dynar
+ * \param empty_slots_wanted number of empty slots you want to keep at the end of the
+ * internal array for further insertions
+ * 
+ * Reduces the internal array size of the dynar to the number of elements plus
+ * \a empty_slots_wanted.
+ * After removing elements from the dynar, you can call this function to make
+ * the dynar use less memory.
+ * Set \a empty_slots_wanted to zero to reduce the dynar internal array as much
+ * as possible.
+ * Note that if \a empty_slots_wanted is greater than the array size, the internal
+ * array is not expanded and nothing is done.
+ */
+void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted) {
+  int size_wanted = dynar->used + empty_slots_wanted;
+  if (size_wanted < dynar->size) {
+    dynar->size = size_wanted;
+    dynar->data = xbt_realloc(dynar->data, sizeof(void*) * dynar->size);
+  }
+}
+
 /** @brief Destructor
  * 
  * \param dynar poor victim
