@@ -23,15 +23,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_set,xbt,
 typedef struct xbt_set_ {
   xbt_dict_t  dict;  /* data stored by name */
   xbt_dynar_t dynar; /* data stored by ID   */
+  xbt_dynar_t available_ids; /* free places in the dynar */
 } s_xbt_set_t;
 
 /*####[ Memory  ]############################################################*/
-/** @brief Constructor */
-xbt_set_t xbt_set_new (void) {
-  xbt_set_t res=xbt_new(s_xbt_set_t,1);
 
-  res->dict=xbt_dict_new ();
-  res->dynar=xbt_dynar_new(sizeof(void*),NULL);
+static int _xbt_set_get_id(xbt_set_t set);
+
+/** @brief Constructor */
+xbt_set_t xbt_set_new(void) {
+  xbt_set_t res = xbt_new(s_xbt_set_t, 1);
+
+  res->dict = xbt_dict_new();
+  res->dynar = xbt_dynar_new(sizeof(void*), NULL);
+  res->available_ids = xbt_dynar_new(sizeof(int), NULL);
 
   return res;
 }
@@ -41,9 +46,24 @@ void  xbt_set_free(xbt_set_t *set) {
   if (*set) {
     xbt_dict_free ( &( (*set)->dict  ) );
     xbt_dynar_free( &( (*set)->dynar ) );
+    xbt_dynar_free( &( (*set)->available_ids ) );
     free(*set);
     *set = NULL;
   }
+}
+
+/* Compute an ID in order to add an element into the set. */
+static int _xbt_set_get_id(xbt_set_t set) {
+  int id;
+  if (xbt_dynar_length(set->available_ids) > 0) {
+    /* if there are some available ids */
+    xbt_dynar_pop(set->available_ids, &id);
+  }
+  else {
+    /* otherwise we will add the element at the dynar end */
+    id = xbt_dynar_length(set->dynar);
+  }
+  return id;
 }
 
 /** @brief Add an element to a set. 
@@ -77,7 +97,7 @@ void xbt_set_add    (xbt_set_t      set,
     if (e.category != not_found_error) 
       RETHROW;
     found = 0;
-    elm->ID = xbt_dynar_length( set->dynar );
+    elm->ID = _xbt_set_get_id(set);
     xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
     xbt_dynar_set(set->dynar, elm->ID, &elm);
     DEBUG2("Insertion of key '%s' (id %d)", elm->name, elm->ID);
@@ -99,7 +119,52 @@ void xbt_set_add    (xbt_set_t      set,
   }
 }
 
-/** @brief Retrive data by providing its name.
+/** @brief Remove an element from a set. 
+ *
+ * \param set a set
+ * \param elm element to remove
+ */
+void xbt_set_remove (xbt_set_t set, xbt_set_elm_t elm) {
+  int id = elm->ID;
+  xbt_dynar_push_as(set->available_ids, int, id); /* this id becomes available now */
+  xbt_dict_remove_ext(set->dict, elm->name, elm->name_len);
+  elm = NULL;
+  xbt_dynar_set(set->dynar, id, &elm);
+}
+
+/** @brief Remove an element from a set providing its name. 
+ *
+ * \param set a set
+ * \param key name of the element to remove
+ */
+void xbt_set_remove_by_name (xbt_set_t set, const char *key) {
+  xbt_set_elm_t elm = xbt_set_get_by_name(set, key);
+  xbt_set_remove(set, elm);
+}
+
+/** @brief Remove an element from a set providing its name
+ * and the length of the name. 
+ *
+ * \param set a set
+ * \param key name of the element to remove
+ * \param key_len length of \a name
+ */
+void xbt_set_remove_by_name_ext (xbt_set_t set, const char *key, int key_len) {
+  xbt_set_elm_t elm = xbt_set_get_by_name_ext(set, key, key_len);
+  xbt_set_remove(set, elm);
+}
+
+/** @brief Remove an element from a set providing its id. 
+ *
+ * \param set a set
+ * \param id id of the element to remove
+ */
+void xbt_set_remove_by_id (xbt_set_t set, int id) {
+  xbt_set_elm_t elm = xbt_set_get_by_id(set, id);
+  xbt_set_remove(set, elm);
+}
+
+/** @brief Retrieve data by providing its name.
  * 
  * \param set
  * \param name Name of the searched cell
@@ -108,10 +173,10 @@ void xbt_set_add    (xbt_set_t      set,
 xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t     set,
 				      const char     *name) {
   DEBUG1("Lookup key %s",name);
-  return xbt_dict_get_ext(set->dict, name, strlen(name));
+  return xbt_dict_get(set->dict, name);
 }
 
-/** @brief Retrive data by providing its name and the length of the name
+/** @brief Retrieve data by providing its name and the length of the name
  *
  * \param set
  * \param name Name of the searched cell
@@ -128,7 +193,7 @@ xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t      set,
   return xbt_dict_get_ext (set->dict, name, name_len);
 }
 
-/** @brief Retrive data by providing its ID
+/** @brief Retrieve data by providing its ID
  *
  * \param set
  * \param id what you're looking for
@@ -141,14 +206,21 @@ xbt_set_elm_t xbt_set_get_by_id (xbt_set_t set, int id) {
   
   /* Don't bother checking the bounds, the dynar does so */
 
-  res = xbt_dynar_get_as(set->dynar,id,xbt_set_elm_t);
+  res = xbt_dynar_get_as(set->dynar,id, xbt_set_elm_t);
+  if (res == NULL) {
+    THROW1(not_found_error, 0, "Invalid id: %d", id);
+  }
   DEBUG3("Lookup type of id %d (of %lu): %s", 
 	 id, xbt_dynar_length(set->dynar), res->name);
   
   return res;
 }
 
-/** @brief Constructor */
+/** 
+ * \brief Returns the number of elements in the set
+ * \param set a set
+ * \return the number of elements in the set
+ */
 unsigned long xbt_set_length (const xbt_set_t set) {
    return xbt_dynar_length(set->dynar);
 }
@@ -164,6 +236,7 @@ typedef struct xbt_set_cursor_ {
 /** @brief Create the cursor if it does not exists, rewind it in any case. */
 void         xbt_set_cursor_first       (xbt_set_t         set,
 					  xbt_set_cursor_t *cursor) {
+  xbt_dynar_t dynar;
 
   if (set != NULL) {
     if (!*cursor) {
@@ -173,7 +246,14 @@ void         xbt_set_cursor_first       (xbt_set_t         set,
 		   "Malloc error during the creation of the cursor");
     }
     (*cursor)->set = set;
-    xbt_dynar_cursor_first(set->dynar, &( (*cursor)->val) );
+
+    /* place the cursor on the first element */
+    dynar = set->dynar;
+    (*cursor)->val = 0;
+    while (xbt_dynar_get_ptr(dynar, (*cursor)->val) == NULL) {
+      (*cursor)->val++;
+    }
+
   } else {
     *cursor = NULL;
   }
@@ -181,7 +261,12 @@ void         xbt_set_cursor_first       (xbt_set_t         set,
 
 /** @brief Move to the next element.  */
 void         xbt_set_cursor_step        (xbt_set_cursor_t cursor) {
-  xbt_dynar_cursor_step(cursor->set->dynar, &( cursor->val ) );
+  xbt_dynar_t dynar = cursor->set->dynar;
+  do {
+    cursor->val++;
+  }
+  while (cursor->val < xbt_dynar_length(dynar) &&
+	 xbt_dynar_get_ptr(dynar, cursor->val) == NULL);
 }
 
 /** @brief Get current data
@@ -197,11 +282,13 @@ int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *curs,
 
   cursor=*curs;
 
-  if (! xbt_dynar_cursor_get( cursor->set->dynar,&(cursor->val),elm) ) {
+  if (cursor->val >= xbt_dynar_length(cursor->set->dynar)) {
     free(cursor);
     *curs=NULL;
     return FALSE;    
-  } 
+  }
+
+  xbt_dynar_get_cpy(cursor->set->dynar, cursor->val, elm);
   return TRUE;
 }
 
@@ -404,4 +491,33 @@ XBT_TEST_UNIT("retrieve",test_set_retrieve,"Retrieving some values") {
   xbt_test_add0("Traverse the resulting data set");
   traverse(set);
 }
+
+XBT_TEST_UNIT("remove",test_set_remove,"Removing some values") {
+  my_elem_t elm;
+
+  xbt_set_free(&set);
+  fill(&set);
+
+  xbt_set_remove_by_name(set, "12a");
+  search_not_found(set, "12a");
+
+  search_name(set,"12");
+  search_name(set,"12b");
+  search_name(set,"123");
+  search_name(set,"123456");
+  search_name(set,"1234");
+  search_name(set,"123457");
+
+  search_id(set,0,"12");
+  search_id(set,2,"12b");
+  search_id(set,3,"123");
+  search_id(set,4,"123456");
+  search_id(set,5,"1234");
+  search_id(set,6,"123457");
+
+  debuged_add(set, "12anew", "12anew");
+  elm = (my_elem_t) xbt_set_get_by_id(set, 1);
+  xbt_test_assert1(elm->ID == 1, "elm->ID is %d but should be 1", elm->ID);
+}
+
 #endif /* SIMGRID_TEST */

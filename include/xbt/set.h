@@ -37,7 +37,7 @@ SG_BEGIN_DECL()
  // my other fields, constituting the payload 
 } my_element_type_t; \endverbatim
  *
- *  It is impossible to remove an element from such a data structure.
+ *  It is now possible to remove an element from such a data structure.
  *
  *  @todo
  *  Such a datastructure was necessary/useful to store the GRAS type 
@@ -78,6 +78,10 @@ void xbt_set_free(xbt_set_t *set);
  */
 
 void xbt_set_add (xbt_set_t set, xbt_set_elm_t  elm, void_f_pvoid_t *free_func);
+void xbt_set_remove (xbt_set_t set, xbt_set_elm_t elm);
+void xbt_set_remove_by_name (xbt_set_t set, const char *key);
+void xbt_set_remove_by_name_ext (xbt_set_t set, const char *key, int key_len);
+void xbt_set_remove_by_id (xbt_set_t set, int id);
 
 xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t set, const char *key);
 xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t set, const char *key, int key_len);
