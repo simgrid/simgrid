@@ -16,8 +16,7 @@
       platform. It is very low-level and is not intended to be used as
       such but rather to serve as a basis for higher-level simulators.
       We're still working on it and the structure is a little bit
-      complex. So we'll document it only when we'll be completely satisfied of 
-      the way it is organized.
+      complex.
 
       It is where platform models are encoded. If you need a model that is not 
       encoded yet, please tell me (<arnaud.legrand@imag.fr>) and we'll

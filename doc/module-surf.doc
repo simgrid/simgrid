@@ -1,0 +1,91 @@
+/** \addtogroup SURF_API 
+
+  \section SURF_doc Surf documentation
+   - \ref SURF_simulation
+   - \ref SURF_actions
+   - \ref SURF_resources
+   - \ref SURF_build_api
+
+*/
+
+/**     \addtogroup SURF_simulation
+        \ingroup SURF_API  */
+/**     \addtogroup SURF_actions
+        \ingroup SURF_API  */
+/**     \addtogroup SURF_resources
+        \ingroup SURF_API  */
+/**     \addtogroup SURF_build_api
+        \ingroup SURF_API  */
+
+/** \defgroup SURF_simulation Simulation
+    \ingroup SURF_API
+    \brief Functions for creating the environment and launching the simulation
+	
+    This section describes the functions for initialising SURF, performing
+    the simulation and exiting SURF.
+*/
+
+/** \defgroup SURF_actions SURF actions
+    \ingroup SURF_API
+    \brief This section describes the different datatypes and operations related to the actions in SURF.
+    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Actions" --> \endhtmlonly
+*/
+
+/** \defgroup SURF_resources SURF resources
+    \ingroup SURF_API
+    \brief This section describes the different datatypes and operations related to the resources in SURF.
+    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Resources" --> \endhtmlonly
+*/
+
+/** \defgroup SURF_build_api Create a new API
+    \ingroup SURF_API
+    \brief How to build a new API on top of SURF
+
+    SURF provides the functionnalities to simulate the platform. There are two main datatypes in SURF:
+    the actions and the resources. Several types of resources exist:
+	- the workstation resource,
+	- the network resource,
+	- the CPU resource,
+	- the timer resource.
+
+    The implentation of these resources depends on the platform model you choose. There are several
+    platform models. You can select your model by calling surf_workstation_resource_init_CLM03()
+    or surf_workstation_resource_init_KCCFLN05(). See the documentation of these functions to have
+    more details about the models. Remember that the model KCCFLN05 is an implementation of both the
+    workstation resource and the network.
+
+    Typically, your functions should call the SURF functions provided by the structures
+    \a surf_workstation_resource->common_public and \a surf_workstation_resource->extension_public.
+    See surf_resource_public and surf_workstation_resource_extension_public to know the available functions.
+
+    To initialize SURF, call surf_init(). Then call surf_timer_resource_init() and
+    surf_workstation_resource_init_CLM03() or surf_workstation_resource_init_KCCFLN05()
+    to create the platform.
+
+    Then you can access the workstations and the network links with the global variables \ref workstation_set
+    and \ref network_link_set. Some functions in \a surf_workstation_resource->extension_public can give
+    you some information about:
+	- a workstation: get_speed(), get_available_speed();
+	- a network link: get_link_name(), get_link_latency(), get_link_bandwith();
+	- a route: get_route(), get_route_size().
+
+    During the simulation, call \a surf_workstation_resource->extension_public->execute() to schedule a
+    computation task on a workstation, or \a surf_workstation_resource->extension_public->communicate()
+    to schedule a communication task between two workstations. You can also create parallel task
+    with \a surf_workstation_resource->extension_public->execute_parallel_task(). These functions return
+    a new action that represents the task you have just created.
+
+    To execute the actions created with \a execute(), \a communicate() or \a execute_parallel_task(), call
+    surf_solve(). The function surf_solve() is where the simulation takes place. It returns the
+    time elapsed to execute the actions. You can know what actions have changed their state thanks
+    to the states sets. For example, if your want to know what actions are finished,
+    extract them from \a surf_workstation_resource->common_public->states.done_action_set.
+    Depending on these results, you can schedule other tasks and call surf_solve() again. 
+
+    When the simulation is over, just call surf_exit() to clean the memory.
+
+    Have a look at the implementation of \ref MSG_API "MSG" and \ref SD_API "Simdag" to see how these module
+    interact with SURF. But if you want to create a new API on top of SURF,
+    we strongly recommand you to contact us before anyway.
+
+*/

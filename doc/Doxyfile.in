@@ -405,6 +405,7 @@ INPUT                  = @srcdir@/index.doc \
                          @srcdir@/module-msg.doc \
                          @srcdir@/module-gras.doc @srcdir@/module-amok.doc \
                          @srcdir@/module-sd.doc \
+                         @srcdir@/module-surf.doc \
 			 \
 			 @srcdir@/gtut-main.doc \
 			    @srcdir@/gtut-introduction.doc \
@@ -433,6 +434,7 @@ INPUT                  = @srcdir@/index.doc \
                          @top_srcdir@/include/amok \
                          @top_srcdir@/include/xbt \
                          @top_srcdir@/include/simdag \
+                         @top_srcdir@/src/include/surf \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
