@@ -24,6 +24,14 @@
  */
 typedef struct surf_action *surf_action_t;
 
+/** \brief Resource datatype
+ *  \ingroup SURF_resources
+ *  
+ *  Generic data structure for a resource. The workstations,
+ *  the CPUs and the network links are examples of resources.
+ */
+typedef struct surf_resource *surf_resource_t;
+
 /** \brief Action structure
  * \ingroup SURF_actions
  *
@@ -84,25 +92,6 @@ typedef struct surf_action_state {
 /* Generic resource object */
 /***************************/
 
-/** \brief Resource datatype
- *  \ingroup SURF_resources
- *  
- *  Generic data structure for a resource. The workstations,
- *  the CPUs and the network links are examples of resources.
- */
-typedef struct surf_resource *surf_resource_t;
-
-/** \brief Resource datatype
- *  \ingroup SURF_resources
- *  
- *  Generic data structure for a resource. The workstations,
- *  the CPUs and the network links are examples of resources.
- */
-typedef struct surf_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-} s_surf_resource_t;
-
 /** \brief Public data available on all resources
  *  \ingroup SURF_resources
  *
@@ -136,18 +125,20 @@ typedef struct surf_resource_public {
  */
 typedef struct surf_resource_private *surf_resource_private_t;
 
+/** \brief Resource datatype
+ *  \ingroup SURF_resources
+ *  
+ *  Generic data structure for a resource. The workstations,
+ *  the CPUs and the network links are examples of resources.
+ */
+typedef struct surf_resource {
+  surf_resource_private_t common_private;
+  surf_resource_public_t common_public;
+} s_surf_resource_t;
+
 /**************************************/
 /* Implementations of resource object */
 /**************************************/
-
-/** \brief Timer resource
- *  \ingroup SURF_resources
- */
-typedef struct surf_timer_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_timer_resource_extension_public_t extension_public;
-} s_surf_timer_resource_t, *surf_timer_resource_t;
 
 /** \brief Timer resource extension public
  * \ingroup SURF_resource
@@ -159,6 +150,15 @@ typedef struct surf_timer_resource_extension_public {
   int (*get)  (void **function, void **arg);
 } s_surf_timer_resource_extension_public_t,
   *surf_timer_resource_extension_public_t;
+
+/** \brief Timer resource
+ *  \ingroup SURF_resources
+ */
+typedef struct surf_timer_resource {
+  surf_resource_private_t common_private;
+  surf_resource_public_t common_public;
+  surf_timer_resource_extension_public_t extension_public;
+} s_surf_timer_resource_t, *surf_timer_resource_t;
 
 /** \brief The timer resource
  *  \ingroup SURF_resources
@@ -180,15 +180,6 @@ typedef enum {
   SURF_CPU_OFF = 0		/**< Running      */
 } e_surf_cpu_state_t;
 
-/** \brief CPU resource datatype
- *  \ingroup SURF_resources
- */
-typedef struct surf_cpu_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_cpu_resource_extension_public_t extension_public;
-} s_surf_cpu_resource_t, *surf_cpu_resource_t;
-
 /** \brief CPU resource extension public
  *  \ingroup SURF_resources
  *  
@@ -202,6 +193,15 @@ typedef struct surf_cpu_resource_extension_public {
   double (*get_available_speed) (void *cpu);
 } s_surf_cpu_resource_extension_public_t,
     *surf_cpu_resource_extension_public_t;
+
+/** \brief CPU resource datatype
+ *  \ingroup SURF_resources
+ */
+typedef struct surf_cpu_resource {
+  surf_resource_private_t common_private;
+  surf_resource_public_t common_public;
+  surf_cpu_resource_extension_public_t extension_public;
+} s_surf_cpu_resource_t, *surf_cpu_resource_t;
 
 /** \brief The CPU resource
  *  \ingroup SURF_resources
@@ -220,15 +220,6 @@ void surf_cpu_resource_init_Cas01(const char *filename);
 
 /* Network resource */
 
-/** \brief Network resource datatype
- *  \ingroup SURF_resources
- */
-typedef struct surf_network_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_network_resource_extension_public_t extension_public;
-} s_surf_network_resource_t, *surf_network_resource_t;
-
 /** \brief Network resource extension public
  *  \ingroup SURF_resources
  *
@@ -244,6 +235,15 @@ typedef struct surf_network_resource_extension_public {
   double (*get_link_latency) (const void *link);
 } s_surf_network_resource_extension_public_t,
     *surf_network_resource_extension_public_t;
+
+/** \brief Network resource datatype
+ *  \ingroup SURF_resources
+ */
+typedef struct surf_network_resource {
+  surf_resource_private_t common_private;
+  surf_resource_public_t common_public;
+  surf_network_resource_extension_public_t extension_public;
+} s_surf_network_resource_t, *surf_network_resource_t;
 
 /** \brief The network resource
  *  \ingroup SURF_resources
@@ -265,16 +265,6 @@ extern surf_network_resource_t surf_network_resource;
  *  \see surf_workstation_resource_init_CLM03()
  */
 void surf_network_resource_init_CM02(const char *filename);
-
-/** \brief Workstation resource datatype.
- *  \ingroup SURF_resources
- *
- */
-typedef struct surf_workstation_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_workstation_resource_extension_public_t extension_public;
-} s_surf_workstation_resource_t, *surf_workstation_resource_t;
 
 /** \brief Workstation resource extension public
  *  \ingroup SURF_resources
@@ -304,6 +294,16 @@ typedef struct surf_workstation_resource_extension_public {
   double (*get_link_latency) (const void *link);                       /**< Return the current latency of a network link */
 } s_surf_workstation_resource_extension_public_t,
     *surf_workstation_resource_extension_public_t;
+
+/** \brief Workstation resource datatype.
+ *  \ingroup SURF_resources
+ *
+ */
+typedef struct surf_workstation_resource {
+  surf_resource_private_t common_private;
+  surf_resource_public_t common_public;
+  surf_workstation_resource_extension_public_t extension_public;
+} s_surf_workstation_resource_t, *surf_workstation_resource_t;
 
 /** \brief The workstation resource
  *  \ingroup SURF_resources
