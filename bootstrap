@@ -23,7 +23,7 @@ echo "----------------------------------"
 
 echo 
 echo "Most common flags:"
-echo "  --enable-maintainer-mode         mandatory if you are a maintainer"
+echo "  --enable-maintainer-mode         mandatory if you use the CVS version"
 echo "  --disable-compile-optimizations  useful if your gdb gets fooled"
 echo
 
