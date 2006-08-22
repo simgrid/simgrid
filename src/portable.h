@@ -189,6 +189,6 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
  **** Some debugging functions. Can't we find a better place for this??
  ****/
 void hexa_print(const char*name, unsigned char *data, int size);
-const char *hexa_str(unsigned char *data, int size);
+const char *hexa_str(unsigned char *data, int size, int downside);
 
 #endif /* GRAS_PORTABLE_H */
