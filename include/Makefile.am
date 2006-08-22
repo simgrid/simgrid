@@ -6,6 +6,7 @@ nobase_include_HEADERS = \
 	xbt/asserts.h xbt/ex.h \
 	xbt/log.h \
 	xbt/module.h \
+	xbt/mallocator.h \
 	xbt/dynar.h xbt/dict.h xbt/set.h \
 	xbt/heap.h \
 	xbt/graph.h \
