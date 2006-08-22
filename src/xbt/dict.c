@@ -458,17 +458,19 @@ static void print_str(void *str) {
   printf("%s",(char*)PRINTF_STR(str));
 }
 
-static void debuged_add(xbt_dict_t head,const char*key)
-{
-  char *data=xbt_strdup(key);
+static void debuged_add_ext(xbt_dict_t head,const char*key,const char*data_to_fill) {
+  char *data=xbt_strdup(data_to_fill);
 
-  xbt_test_log1("Add %s",PRINTF_STR(key));
+  xbt_test_log2("Add %s under %s",PRINTF_STR(data_to_fill),PRINTF_STR(key));
 
   xbt_dict_set(head,key,data,&free);
   if (XBT_LOG_ISENABLED(xbt_dict,xbt_log_priority_debug)) {
     xbt_dict_dump(head,(void (*)(void*))&printf);
     fflush(stdout);
   }
+}
+static void debuged_add(xbt_dict_t head,const char*key) {
+   debuged_add_ext(head,key,key);
 }
 
 static void fill(xbt_dict_t *head) {
@@ -486,14 +488,21 @@ static void fill(xbt_dict_t *head) {
   debuged_add(*head,"123457");
 }
 
-static void search(xbt_dict_t head,const char*key) {
-  void *data;
+
+static void search_ext(xbt_dict_t head,const char*key, const char *data) {
+  void *found;
   
   xbt_test_add1("Search %s",key);
-  data=xbt_dict_get(head,key);
-  xbt_test_log1("Found %s",(char *)data);
+  found=xbt_dict_get(head,key);
+  xbt_test_log1("Found %s",(char *)found);
   if (data)
-    xbt_test_assert0(!strcmp((char*)data,key),"Key and data do not match");
+    xbt_test_assert1(found,"data do not match expectations: found NULL while searching for %s",data);
+  if (found)
+    xbt_test_assert2(!strcmp((char*)data,found),"data do not match expectations: found %s while searching for %s", (char*)found, data);
+}
+
+static void search(xbt_dict_t head,const char*key) {
+  search_ext(head,key,key);
 }
 
 static void debuged_remove(xbt_dict_t head,const char*key) {
@@ -551,6 +560,10 @@ XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse")
   xbt_test_add0("Traverse the full dictionnary");
   fill(&head);
   count(head, 7);
+   
+  debuged_add_ext(head,"toto","tutu");
+  search_ext(head,"toto","tutu");
+  debuged_remove(head,"toto");
 
   search(head,"12a");
   traverse(head);
@@ -672,7 +685,7 @@ XBT_TEST_UNIT("nulldata",test_dict_nulldata,"NULL data management"){
 
   xbt_test_add0("Store NULL under 'null'");
   xbt_dict_set(head,"null",NULL,NULL);
-  search(head,"null");
+  search_ext(head,"null",NULL);
 
   xbt_test_add0("Check whether I see it while traversing...");
   {
