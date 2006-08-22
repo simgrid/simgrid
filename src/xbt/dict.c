@@ -368,6 +368,10 @@ void xbt_dict_reset(xbt_dict_t dict) {
 
   int i;
   xbt_dictelm_t current, previous = NULL;
+   
+  if (dict->count == 0)
+    return;
+   
   for (i = 0; i < dict->table_size; i++) {
     current = dict->table[i];
     while (current != NULL) {
