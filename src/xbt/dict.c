@@ -127,13 +127,25 @@ void xbt_dict_hashsize_set(xbt_dict_t dict, int hashsize) {
 /**
  * Returns the hash code of a string.
  */
-static unsigned int xbt_dict_hash(const char *str, int str_len) {
+static unsigned int xbt_dict_hash_ext(const char *str, int str_len) {
   /* fast implementation of djb2 algorithm */
   unsigned int hash = 5381;
   int c;
   
   while (str_len--) {
     c = *str++;
+    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+  }
+  
+  return hash;
+}
+
+static unsigned int xbt_dict_hash(const char *str) {
+  /* fast implementation of djb2 algorithm */
+  unsigned int hash = 5381;
+  int c;
+  
+  while ( (c = *str++) ) {
     hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
   }
   
@@ -159,7 +171,7 @@ void xbt_dict_set_ext(xbt_dict_t      dict,
 		      void_f_pvoid_t  *free_ctn) {
   xbt_assert(dict);
 
-  unsigned int hash_code = xbt_dict_hash(key,key_len) % dict->table_size;
+  unsigned int hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
   xbt_dictelm_t current, previous = NULL;
 
   current = dict->table[hash_code];
@@ -227,7 +239,7 @@ void *xbt_dict_get_ext(xbt_dict_t      dict,
 		       int             key_len) {
   xbt_assert(dict);
 
-  unsigned int hash_code = xbt_dict_hash(key,key_len) % dict->table_size;
+  unsigned int hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
   xbt_dictelm_t current;
 
   current = dict->table[hash_code];
@@ -306,7 +318,7 @@ void xbt_dict_remove_ext(xbt_dict_t  dict,
 			 int          key_len) {
   xbt_assert(dict);
 
-  unsigned int hash_code = xbt_dict_hash(key,key_len) % dict->table_size;
+  unsigned int hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
   xbt_dictelm_t current, previous = NULL;
 
   current = dict->table[hash_code];
@@ -385,7 +397,7 @@ int xbt_dict_length(xbt_dict_t dict) {
 void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element) {
   xbt_assert(dict);
 
-  int hashcode = xbt_dict_hash(element->key,element->key_len) % dict->table_size;
+  int hashcode = xbt_dict_hash_ext(element->key,element->key_len) % dict->table_size;
   element->next = dict->table[hashcode];
   dict->table[hashcode] = element;
 }
