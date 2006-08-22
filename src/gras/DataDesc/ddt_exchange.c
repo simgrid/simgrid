@@ -95,11 +95,10 @@ gras_dd_alloc_ref(xbt_dict_t  refs,
   if (detect_cycle && r_ref && !gras_dd_is_r_null( r_ref, r_len)) {
     void *ptr = xbt_malloc(sizeof(void *));
 
-    CRITICAL0("Check for cycles");
     memcpy(ptr,l_ref, sizeof(void *));
 
     DEBUG2("Insert l_ref=%p under r_ref=%p",*(void**)ptr, *(void**)r_ref);
-
+     
     if (detect_cycle)
        xbt_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, free);
   }
@@ -240,11 +239,12 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
 
     reference_is_to_cpy = 0;
     TRY {
-      if (detect_cycle)
+      if (detect_cycle) {
 	/* return ignored. Just checking whether it's known or not */
 	n_ref=xbt_dict_get_ext(refs,(char*)o_ref, sizeof(char*));
-      else 
+      } else {
 	reference_is_to_cpy = 1;
+      }
     } CATCH(e) {
       if (e.category != not_found_error)
 	RETHROW;
@@ -778,16 +778,18 @@ gras_datadesc_recv_rec(gras_socket_t         sock,
          
     reference_is_to_recv = 0;
     TRY {
-      if (detect_cycle)
+      if (detect_cycle) {
 	l_ref = xbt_dict_get_ext(refs, (char*)r_ref, pointer_type->size[r_arch]);
-      else 
+      } else {
 	reference_is_to_recv = 1;
+      }
     } CATCH(e) {
       if (e.category != not_found_error)
         RETHROW;
       reference_is_to_recv = 1;
       xbt_ex_free(e);
     }
+
     if (reference_is_to_recv) {
       int subsubcount = 0;
       void *l_referenced=NULL;
