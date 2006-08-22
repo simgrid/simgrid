@@ -91,7 +91,7 @@ void gras_exit(void) {
   xbt_exit();
 }
 
-const char *hexa_str(unsigned char *data, int size) {
+const char *hexa_str(unsigned char *data, int size, int downside) {
   static char*buff=NULL;
   static int buffsize=0;
   int i,pos=0;	
@@ -102,17 +102,35 @@ const char *hexa_str(unsigned char *data, int size) {
     buffsize=5*(size+1);
     buff=xbt_malloc(buffsize);
   }
-  for (i=0;i<size;i++)  {
+   
+  int begin,increment;   
+  if (downside) {
+     begin=size-1;
+     increment=-1;
+  } else {
+     begin=0;
+     increment=1;
+  }
+   
+  for (i=begin; 0<=i && i<size ; i+=increment)  {
     if (data[i]<32 || data[i]>126)
-      sprintf(buff+pos,".(%02x)",data[i]);
+      sprintf(buff+pos,".");
     else
-      sprintf(buff+pos,"%c(%02x)",data[i],data[i]);
+      sprintf(buff+pos,"%c",data[i]);
     while (buff[++pos]);
    }
+  sprintf(buff+pos,"(");
+  while (buff[++pos]);
+  for (i=begin; 0<=i && i<size ; i+=increment)  {
+    sprintf(buff+pos,"%02x",data[i]);
+    while (buff[++pos]);
+   }
+  sprintf(buff+pos,")");
+  while (buff[++pos]);
   buff[pos]='\0';  
   return buff;
 }
 void hexa_print(const char*name, unsigned char *data, int size) {
-   printf("%s: %s\n", name,hexa_str(data,size));
+   printf("%s: %s\n", name,hexa_str(data,size,0));
 }
 
