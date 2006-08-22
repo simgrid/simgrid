@@ -517,18 +517,21 @@ static void traverse(xbt_dict_t head) {
 }
 
 static void search_not_found(xbt_dict_t head, const char *data) {
+  int ok=0;
   xbt_ex_t e;
 
   xbt_test_add1("Search %s (expected not to be found)",data);
 
   TRY {    
-    data = xbt_dict_get(head,"Can't be found");
+    data = xbt_dict_get(head, data);
     THROW1(unknown_error,0,"Found something which shouldn't be there (%s)",data);
   } CATCH(e) {
     if (e.category != not_found_error) 
       xbt_test_exception(e);
     xbt_ex_free(e);
+    ok=1;
   }
+  xbt_test_assert0(ok,"Exception not raised");
 }
 
 static void count(xbt_dict_t dict, int length) {
