@@ -36,8 +36,6 @@ typedef struct xbt_dict_ {
 
 typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
 
-unsigned int xbt_dict_hash(const char *str);
-
 extern xbt_mallocator_t dict_elm_mallocator;
 extern void* dict_elm_mallocator_new_f(void);
 extern void dict_elm_mallocator_free_f(void* elem);
