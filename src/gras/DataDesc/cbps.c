@@ -64,8 +64,7 @@ void gras_cbps_reset(gras_cbps_t state) {
 
   xbt_dynar_reset(state->lints);
 
-  xbt_dict_free ( &(state->space) );
-  state->space = xbt_dict_new();
+  xbt_dict_reset (state->space);
 
   xbt_dynar_reset(state->frames);
   xbt_dynar_reset(state->globals);
