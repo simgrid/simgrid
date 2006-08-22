@@ -44,6 +44,7 @@ surf_TESTS="surf/maxmin_usage@EXEEXT@;                                        \
 
 gras_TESTS="gras/trp_tcp_usage;      gras/trp_file_usage;                        \
 	    gras/datadesc_usage@EXEEXT@;                                         \
+	    gras/datadesc_usage@EXEEXT@ --copy;                                  \
             gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32;  \
 	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32_4;\
 	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little64;  \
