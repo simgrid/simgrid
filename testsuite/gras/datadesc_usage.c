@@ -390,7 +390,7 @@ void test_chain_list(gras_socket_t sock, int direction) {
 void test_graph(gras_socket_t sock, int direction) {
   chained_list_t *i, *j; 
 
-  INFO0("---- Test on graph (cyclique chained list) ----");
+  INFO0("---- Test on graph (cyclique chained list of 3 items) ----");
   /* init a value, exchange it and check its validity*/
   i = cons( 1151515, cons( -232362 , cons( 222552, NULL)));
   i->l->l->l = i;
