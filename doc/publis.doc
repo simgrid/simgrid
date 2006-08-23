@@ -117,7 +117,7 @@ a bit old now. We are actively working on improving this.
     functionalities.\n
     http://grail.sdsc.edu/papers/simgrid_ccgrid01.ps.gz
 
-\section pub_ext Papers that use SimGrid-generated results 
+\section pub_ext Papers that use SimGrid-generated results (not counting our owns)
 
 This list is a selection of articles. We list only papers written by people
 external to the development group, but we also use our tool ourselves (see
@@ -125,12 +125,21 @@ next section).
 
 - 2006
   - <b>Hierarchical Scheduling of Independent Tasks with Shared Files</b>\n 
-    by <em>H. Senger, F. Silva, W. Nascimento</em>\n
+    by <em>H. Senger, F. Silva, W. Nascimento</em>.\n
     Proceedings of the Sixth IEEE International Symposium on Cluster Computing and the Grid Workshop (CCGRIDW'06), 2006.\n
     http://www.unisantos.br/mestrado/informatica/hermes/File/senger-HierarchicalScheduling-Workshop-TB120.pdf
   - <b>Critical Path and Area Based Scheduling of Parallel Task Graphs on Heterogeneous Platforms</b>\n
     by <em>Tchimou N'Takp&eacute; and Fr&eacute;d&eacute;ric Suter</em>\n
     Proceedings of the Twelfth International Conference on Parallel and Distributed Systems (ICPADS), 2006.
+  - <b>Evaluation of Knapsack-based Scheduling using the NPACI JOBLOG</b>\n
+    by <em>D. Vanderster, N. Dimopoulos, R. Parra-Hernandez and R. Sobie</em>.\n
+    20th International Symposium on High-Performance Computing in an
+      Advanced Collaborative Environment (HPCS'06)\n
+    http://doi.ieeecomputersociety.org/10.1109/HPCS.2006.23
+  - <b>Metascheduling Multiple Resource Types using the MMKP</b>\n
+    by <em>D. Vanderster, N. Dimopoulos, R. Sobie</em>\n
+    To Appear: 7th IEEE/ACM International Conference on Grid Computing,
+      Barcelona, September 28th-29th 2006
 - 2005
   - <b>On Dynamic Resource Management Mechanism using Control
     Theoretic Approach for Wide-Area Grid Computing</b>\n
@@ -159,6 +168,10 @@ next section).
     by <em> E. Santos-Neto, W. Cirne, F. Brasileiro, A. Lima.</em>\n
     Proceedings of 10th Job Scheduling Strategies for Parallel Processing, June 2004.\n
     http://www.lsd.ufcg.edu.br/~elizeu/articles/jsspp.v6.pdf
+  - <b>Resource Management and Knapsack Formulations on the Grid</b>\n
+    by <em>R. Parra-Hernandez, D. Vanderster and N. J. Dimopoulos</em>\n
+    Fifth IEEE/ACM International Workshop on Grid Computing (GRID'04)\n
+    http://doi.ieeecomputersociety.org/10.1109/GRID.2004.54
 - 2003
   - <b>Link-Contention-Aware Genetic Scheduling Using Task Duplication in Grid Environments</b>\n
     by <em>Wensheng Yao, Xiao Xie and Jinyuan You</em>\n
