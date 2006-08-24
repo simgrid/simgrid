@@ -70,7 +70,9 @@ void gras_init(int *argc,char **argv) {
     gras_trp_init();
     gras_datadesc_init();
 #if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
+# ifdef SIGUSR1
     signal(SIGUSR1,gras_sigusr_handler);
+# endif
     signal(SIGINT,gras_sigint_handler);
 #endif     
   }
