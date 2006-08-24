@@ -48,7 +48,7 @@ received by the other side (implemented with an ACK mechanism).
     (errors, logs ; dynars, dicts, hooks, pools; config, rrdb)
 
 [portability layer]
-  * Mallocators and/or memory pool so that we can cleanly kill an actor
+  * maybe a memory pool so that we can cleanly kill an actor
 
 [errors/exception]
   * Better split casual errors from programing errors.
@@ -65,14 +65,8 @@ received by the other side (implemented with an ACK mechanism).
   * Several appenders; fix the setting stuff to change the appender
   * more logging appenders (take those from Ralf in l2)
 
-[dict]
-  * speed up the cursors, for example using the contexts when available
-
 [modules]
-  * better formalisation of what modules are (amok deeply needs it)
-    configuration + init() + join() + exit() + leave() + dependencies
-    init and exit are run only once
-    join and leave are run for each process.
+  * Add configuration and dependencies to our module definition
   * allow to load them at runtime
     check in erlang how they upgrade them without downtime
 
@@ -139,13 +133,6 @@ received by the other side (implemented with an ACK mechanism).
     Depends on the previous item; difficult to achieve with firewalls
 
 [datadesc]
-  * Implement gras_datadesc_cpy to speedup things in the simulator
-    (and allow to have several "actors" within the same unix process).
-    For now, we mimick closely the RL even in SG. It was easier to do
-      since the datadesc layer is unchanged, but it is not needed and
-      hinders performance.
-    gras_datadesc_cpy needs to provide the size of the corresponding messages, so
-     that we can report it into the simulator.
   * Add a XML wire protocol alongside to the binary one (for SOAP/HTTP)
   * cbps:
     - Error handling
@@ -210,7 +197,6 @@ received by the other side (implemented with an ACK mechanism).
 ******
 
 [bandwidth]
-  * finish this module (still missing the saturate part)
   * add a version guessing the appropriate datasizes automatically
 [other modules]
   * provide a way to retrieve the host load as in NWS
