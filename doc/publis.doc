@@ -37,6 +37,16 @@ a bit old now. We are actively working on improving this.
     study by which we demonstrate the usefulness of SimGrid for
     conducting scheduling research.
 
+Previous publication do not cover the GRAS part of the framework. So, if you
+want to cite GRAS, please use this publication instead:
+
+\li <b>Gras: A Research &amp; Development Framework for Grid and P2P
+      Infrastructures</b>\n
+    by <em>Martin Quinson</em>\n
+    To appear: The 18th IASTED International Conference on
+      Parallel and Distributed Computing and Systems (PDCS 2006)\n
+    http://www.loria.fr/~quinson/articles/gras-iasted06.pdf 
+
 \section pub_simulation Other publications about the SimGrid framework
 
 \li <b>The SimGrid Project - Simulation and Deployment of Distributed Applications</b>\n
