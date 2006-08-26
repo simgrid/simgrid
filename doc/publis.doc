@@ -42,6 +42,9 @@ a bit old now. We are actively working on improving this.
 \li <b>The SimGrid Project - Simulation and Deployment of Distributed Applications</b>\n
     by <em>A. Legrand, M. Quinson, K. Fujiwara, H. Casanova</em>\n
     <b>POSTER</b> in Proceedings of the IEEE International Symposium on High Performance Distributed Computing (HPDC-15), Paris, France, May 2006.\n    
+    \htmlonly
+     <a href="http://navet.ics.hawaii.edu/~casanova/homepage/papers/simgrid_hpdc06.pdf"><img src="poster_thumbnail.png" /></a>
+    \endhtmlonly
     http://navet.ics.hawaii.edu/~casanova/homepage/papers/simgrid_hpdc06.pdf
 
 \li <b>A Network Model for Simulation of Grid Application</b>\n
