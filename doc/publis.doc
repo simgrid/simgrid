@@ -37,7 +37,7 @@ a bit old now. We are actively working on improving this.
     study by which we demonstrate the usefulness of SimGrid for
     conducting scheduling research.
 
-\section pub_simulation Other publications about simulation
+\section pub_simulation Other publications about the SimGrid framework
 
 \li <b>A Network Model for Simulation of Grid Application</b>\n
     by <em>Henri Casanova and Loris Marchal</em>\n
@@ -172,6 +172,12 @@ next section).
     by <em>R. Parra-Hernandez, D. Vanderster and N. J. Dimopoulos</em>\n
     Fifth IEEE/ACM International Workshop on Grid Computing (GRID'04)\n
     http://doi.ieeecomputersociety.org/10.1109/GRID.2004.54
+  - <b>Scheduling BoT Applications in Grids using a Slave Oriented Adaptive
+    Algorithm.</b>\n
+    by <em>T. Ferreto, C. A. F. De Rose and C. Northfleet.</em>\n
+    Second International Symposium on Parallel and Distributed Processing
+    and Applications (ISPA), 2004, Hong Kong. Published in Lecture Notes in
+    Computer Science (LNCS), Volume 3358, by Springer-Verlag. p. 392-398.
 - 2003
   - <b>Link-Contention-Aware Genetic Scheduling Using Task Duplication in Grid Environments</b>\n
     by <em>Wensheng Yao, Xiao Xie and Jinyuan You</em>\n
