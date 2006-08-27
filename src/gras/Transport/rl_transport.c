@@ -45,8 +45,10 @@ gras_socket_t gras_trp_select(double timeout) {
   /* Check whether there is more data to read from the socket we selected last time.
      This can happen with tcp buffered sockets since we try to get as much data as we can for them */
   static gras_socket_t _lastly_selected_socket = NULL;
-  if (_lastly_selected_socket && _lastly_selected_socket->moredata) 
+  if (_lastly_selected_socket && _lastly_selected_socket->moredata) {
+     VERB0("Returning _lastly_selected_socket since there is more data on it");
      return _lastly_selected_socket;
+  }
   
   /* Compute FD_SETSIZE */
 #ifdef HAVE_SYSCONF
