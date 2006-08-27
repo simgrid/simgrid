@@ -140,7 +140,7 @@ xbt_dynar_t amok_pm_group_new(const char *group_name) {
   xbt_assert0(amok_pm_moddata_id != -1,"Run amok_pm_init first!");
   g=gras_moddata_by_id(amok_pm_moddata_id);
 
-  INFO1("retrieved groups=%p",g->groups);
+  DEBUG1("retrieved groups=%p",g->groups);
    
   xbt_dict_set(g->groups,group_name,res,NULL); /*FIXME: leaking xbt_dynar_free_voidp);*/
   VERB1("Group %s created",group_name);
@@ -233,7 +233,6 @@ static void _amok_pm_join(void *p) {
    
    mod->done = 0;
    mod->groups = xbt_dict_new();
-   INFO1("groups=%p",mod->groups);
    
    /* callbacks */
   gras_cb_register(gras_msgtype_by_name("amok_pm_kill"),
