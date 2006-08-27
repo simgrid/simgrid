@@ -103,36 +103,30 @@ static void s_process_free(void *process)
   free(((s_process_t*)process)->host);
 }
 
-static int parse_argc = -1 ;
-static char **parse_argv = NULL;
+static s_process_t process;
 
 static void parse_process_init(void)
 {
-  parse_argc = 0 ;
-  parse_argv = NULL;
-  parse_argc++;
-  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
+  xbt_dict_set(process_function_set, A_surfxml_process_function, NULL, NULL);
+  xbt_dict_set(machine_set, A_surfxml_process_host, NULL, NULL);
+  process.argc = 1 ;
+  process.argv = xbt_new(char*,1);
+  process.argv[0] = xbt_strdup(A_surfxml_process_function);
+  process.host=strdup(A_surfxml_process_host);
+  VERB1("Function: %s",A_surfxml_process_function);
 }
 
 static void parse_argument(void)
 {
-  parse_argc++;
-  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_argument_value);
+  process.argc++;
+  process.argv = xbt_realloc(process.argv, (process.argc) * sizeof(char *));
+  process.argv[(process.argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
 
 static void parse_process_finalize(void)
 {
-  s_process_t process;
-  void *p = (void *) 1234;
-
-  xbt_dict_set(process_function_set, A_surfxml_process_function, p, NULL);
-  xbt_dict_set(machine_set, A_surfxml_process_host, p, NULL);
-  process.argc=parse_argc;
-  process.argv=parse_argv;
-  process.host=strdup(A_surfxml_process_host);
   xbt_dynar_push(process_list,&process);
+  VERB1("Function: %s",process.argv[0]);
 }
 
 static void generate_sim(char *project)
