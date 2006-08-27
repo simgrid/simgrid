@@ -369,21 +369,22 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
 int gras_datadesc_copy(gras_datadesc_type_t type, 
 		       void *src, void *dst) {
   xbt_ex_t e;
-  static gras_cbps_t  state=NULL;
-  xbt_dict_t  refs; /* all references already sent */
+  static gras_cbps_t state=NULL;
+  static xbt_dict_t  refs=NULL; /* all references already sent */
   int size=0;
  
   xbt_assert0(type,"called with NULL type descriptor");
 
-  refs = xbt_dict_new();
-  if (!state)
+  if (!state) {
     state = gras_cbps_new();
+    refs = xbt_dict_new();
+  }
   
   TRY {
     size = gras_datadesc_copy_rec(state,refs,type,(char*)src,(char*)dst,0, 
 				  type->cycle);
   } CLEANUP {
-    xbt_dict_free(&refs);
+    xbt_dict_reset(refs);
     gras_cbps_reset(state);
   } CATCH(e) {
     RETHROW;
@@ -610,18 +611,19 @@ void gras_datadesc_send(gras_socket_t        sock,
 
   xbt_ex_t e;
   static gras_cbps_t state=NULL;
-  xbt_dict_t  refs; /* all references already sent */
+  static xbt_dict_t  refs=NULL; /* all references already sent */
  
   xbt_assert0(type,"called with NULL type descriptor");
 
-  refs = xbt_dict_new();
-  if (!state)
+  if (!state) {
     state = gras_cbps_new();
-  
+    refs = xbt_dict_new();
+  }
+   
   TRY {
     gras_datadesc_send_rec(sock,state,refs,type,(char*)src, type->cycle);
   } CLEANUP {
-    xbt_dict_free(&refs);
+    xbt_dict_reset(refs);
     gras_cbps_reset(state);
   } CATCH(e) {
     RETHROW;
@@ -947,12 +949,13 @@ gras_datadesc_recv(gras_socket_t         sock,
 
   xbt_ex_t e;
   static gras_cbps_t state=NULL; /* callback persistent state */
-  xbt_dict_t  refs;  /* all references already sent */
+  static xbt_dict_t  refs=NULL;  /* all references already sent */
 
-  refs = xbt_dict_new();
-  if (!state)
+  if (!state) {
     state = gras_cbps_new();
-
+    refs = xbt_dict_new();
+  }
+   
   xbt_assert0(type,"called with NULL type descriptor");
   TRY {
     gras_datadesc_recv_rec(sock, state, refs, type, 
@@ -960,7 +963,7 @@ gras_datadesc_recv(gras_socket_t         sock,
 			   (char *) dst,-1, 
 			   type->cycle);
   } CLEANUP {
-    xbt_dict_free(&refs);
+    xbt_dict_reset(refs);
     gras_cbps_reset(state);
   } CATCH(e) {
     RETHROW;
