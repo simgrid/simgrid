@@ -338,8 +338,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
 	     got);
     }
   }
-  /* indicate to the gras_select function that there is more to read on this socket so that it does not actually select */
-  sock->moredata = (bufsize != 0);
+
   return got;
 }
 
@@ -475,7 +474,10 @@ gras_trp_buf_recv(gras_socket_t sock,
     DEBUG4("New pos = %d; Still to receive = %ld of %ld. Ctn so far=(%s)",
 	   data->in_buf.pos,size - chunk_pos,size,hexa_str((unsigned char*)chunk,chunk_pos,0));
   }
-
+  /* indicate on need to the gras_select function that there is more to read on this socket so that it does not actually select */
+  sock->moredata = (data->in_buf.size > data->in_buf.pos);
+  DEBUG1("There is %smore data",(sock->moredata?"":"no "));
+   
   XBT_OUT;
   return chunk_pos;
 }
