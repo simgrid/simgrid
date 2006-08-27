@@ -83,6 +83,7 @@ void gras_init(int *argc,char **argv) {
 
 void gras_exit(void) {
   INFO0("Exiting GRAS");
+  amok_exit();
   if (--gras_running_process == 0) {
     gras_msg_exit();
     gras_trp_exit();
