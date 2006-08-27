@@ -6,4 +6,4 @@ else
   exenv=wine
 fi
 
-exec $exenv ./saturate_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/saturate_deployment.xml $@
+exec $exenv ./saturate_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/saturate.xml $@

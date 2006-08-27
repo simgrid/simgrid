@@ -5,4 +5,4 @@ if [ x@EXEEXT@ = x ] ; then
 else
   exenv=wine
 fi
-exec $exenv ./bandwidth_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/bandwidth_deployment.xml $@
+exec $exenv ./bandwidth_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/bandwidth.xml $@
