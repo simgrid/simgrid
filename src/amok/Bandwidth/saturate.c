@@ -74,7 +74,7 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
   xbt_ex_t e;
   sat_request_t request = xbt_new(s_sat_request_t,1);
 
-  INFO2("from_name %s // to_name %s \n",from_name,to_name); 
+  INFO4("Start from_name %s:%d -> to_name %s:%d",from_name,from_port,to_name,to_port);
   sock = gras_socket_client(from_name,from_port);
 
   request->peer.name = (char*)to_name;
@@ -193,7 +193,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
   free(request);
 
   gras_socket_close(peer_cmd);
-  INFO2("Saturation(%s->%s) started",gras_os_myname(),to_name);
+  INFO4("Saturation(%s:%d->%s:%d) started",gras_os_myname(),gras_os_myport(),to_name,to_port);
 
   /* Start experiment */
   start=gras_os_time();
@@ -236,8 +236,8 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     bw_res_t answer = xbt_new(s_bw_res_t,1);
     s_gras_msg_cb_ctx_t ctx;
 
-    INFO3("Saturation from %s to %s stopped by %s",
-	  gras_os_myname(),to_name, gras_socket_peer_name(msg_got.expe));
+    INFO6("Saturation from %s:%d to %s:%d stopped by %s:%d",
+	  gras_os_myname(),gras_os_myport(),to_name,to_port, gras_socket_peer_name(msg_got.expe),gras_socket_peer_port(msg_got.expe));
     answer->timestamp=gras_os_time();
     answer->sec=elapsed;
     answer->bw=bw;
@@ -249,8 +249,8 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     gras_msg_rpcreturn(60,&ctx,&answer);
     free(answer);
   } else {
-    INFO4("Saturation from %s to %s elapsed after %f sec (achieving %f kb/s)",
-	  gras_os_myname(),to_name,elapsed,bw/1024.0);
+    INFO6("Saturation from %s:%d to %s:%d elapsed after %f sec (achieving %f kb/s)",
+	  gras_os_myname(),gras_os_myport(),to_name,to_port,elapsed,bw/1024.0);
   }
   
   gras_socket_close(meas);
@@ -304,9 +304,9 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
       xbt_ex_free(e);
     }
   }
-  INFO3("Saturation comming from %s:%d stopped on %s",
+  INFO4("Saturation comming from %s:%d stopped on %s:%d",
 	gras_socket_peer_name(from),gras_socket_peer_port(from),
-	gras_os_myname());
+	gras_os_myname(),gras_os_myport());
 
   gras_socket_close(meas);
   if (gras_if_RL()) /* On SG, accepted=master */
