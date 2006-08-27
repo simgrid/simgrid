@@ -113,26 +113,42 @@ static void free_peer(void *d){
 static void simple_saturation(int argc, char*argv[]) {
   xbt_ex_t e;
 
-  kill_buddy(argv[5],atoi(argv[6]));
-  kill_buddy(argv[7],atoi(argv[8]));
+  /* where are the sensors */
+  xbt_dynar_t peers;
+  xbt_peer_t h1,h2;
+  /* results */
+  double duration,bw;
 
-  amok_bw_saturate_start(argv[1],atoi(argv[2]),argv[3],atoi(argv[4]),
-			 sat_size,5);
-  gras_os_sleep(3);
+  /* Init the group */
+  peers=amok_pm_group_new("saturate");
+  /* wait for dudes */
+  gras_msg_handleall(5);
+
+  /* get 2 friends */
+  xbt_dynar_get_cpy(peers,0,&h1);
+  xbt_dynar_get_cpy(peers,1,&h2);
+   
+  /* Start saturation */
+  amok_bw_saturate_start(h1->name,h1->port,
+			 h2->name,h2->port,
+			 0, /* Be a nice boy, compute msg_size yourself */
+			 30  /* 5 sec timeout */);  
+
+  /* Stop it after a while */
+  gras_os_sleep(1);
   TRY {
-    amok_bw_saturate_stop(argv[1],atoi(argv[2]),NULL,NULL);
+    amok_bw_saturate_stop(h1->name,h1->port, &duration,&bw);
   } CATCH(e) {
     xbt_ex_free(e);
   }
-
- 
-  kill_buddy(argv[1],atoi(argv[2]));
-  kill_buddy(argv[3],atoi(argv[4]));
+  INFO2("Saturation took %.2fsec, achieving %fb/s",duration,bw);
+   
+  /* Game is over, friends */
+  amok_pm_group_shutdown ("saturate");
 }
 /********************************************************************************************/
 static void full_fledged_saturation(int argc, char*argv[]) {
   xbt_ex_t e;
-//unsigned int time1=5,bw1=5;
   double time1=5.0,bw1=5.0; // 0.5 for test
   /* timers */
   double begin_simulated; 
@@ -209,7 +225,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 		ratio < 0.7 ? " THERE IS SOME INTERFERENCE !!!": "");
 	}
       }
-      amok_bw_saturate_stop(h1->name,h1->port,&time1,&bw1);// NULL,NULL);
+      amok_bw_saturate_stop(h1->name,h1->port,&time1,&bw1);
 
       INFO2("Did an iteration on saturation pair in %ld sec (%.2f simulated sec)",
 	      time(NULL)-begin, gras_os_time()-begin_simulated);
@@ -231,8 +247,8 @@ int maestro(int argc,char *argv[]) {
 
   gras_socket_server(atoi(argv[1]));
 
-  //  simple_saturation(argc,argv);
-  full_fledged_saturation(argc, argv);  
+  simple_saturation(argc,argv);
+  //full_fledged_saturation(argc, argv);  
 
   gras_exit();
   return 0;
