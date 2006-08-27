@@ -1,7 +1,7 @@
 INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
 TESTS= test_rl test_sg
-EXTRA_DIST=chrono_deployment.xml
+EXTRA_DIST=chrono.xml
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=chrono_simulator chrono_multiplier

@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 TESTS= test_rl test_sg
-EXTRA_DIST=rpc_deployment.xml $(TESTS)
+EXTRA_DIST=rpc.xml $(TESTS)
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=rpc_client rpc_forwarder rpc_server rpc_simulator

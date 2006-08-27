@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 TESTS= test_rl test_sg
-EXTRA_DIST=ping_deployment.xml ping.h $(TESTS)
+EXTRA_DIST=ping.xml ping.h $(TESTS)
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=ping_client ping_server ping_simulator

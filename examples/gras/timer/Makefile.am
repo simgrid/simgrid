@@ -2,7 +2,7 @@ INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
 
 TESTS= test_rl test_sg
-EXTRA_DIST=$(NAME)_deployment.xml $(TESTS)
+EXTRA_DIST=$(NAME).xml $(TESTS)
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=timer_client timer_simulator

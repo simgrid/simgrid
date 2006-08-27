@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 #TESTS= test_rl test_sg
-EXTRA_DIST=chord_deployment.xml $(TESTS)
+EXTRA_DIST=chord.xml $(TESTS)
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=chord_node chord_simulator

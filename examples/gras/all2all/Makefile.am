@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 TESTS= test_sg test_rl
-EXTRA_DIST=all2all_deployment.xml test_sg.in test_rl.in
+EXTRA_DIST=all2all.xml test_sg.in test_rl.in
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=all2all_sender all2all_receiver all2all_simulator

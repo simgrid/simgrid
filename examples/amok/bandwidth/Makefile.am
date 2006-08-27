@@ -1,7 +1,7 @@
 INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
 TESTS=test_rl test_sg
-EXTRA_DIST=bandwidth_deployment.xml $(TESTS)
+EXTRA_DIST=bandwidth.xml $(TESTS)
 
 noinst_PROGRAMS=bandwidth_maestro bandwidth_sensor bandwidth_simulator
   

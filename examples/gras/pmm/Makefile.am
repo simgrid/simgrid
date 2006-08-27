@@ -1,6 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
 TESTS= test_sg test_rl
-EXTRA_DIST=pmm_deployment.xml  test_sg.in test_rl.in $(TESTS)
+EXTRA_DIST=pmm.xml  test_sg.in test_rl.in $(TESTS)
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=pmm_slave pmm_master pmm_simulator

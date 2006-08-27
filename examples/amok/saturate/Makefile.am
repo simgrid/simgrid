@@ -2,7 +2,7 @@ INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
 
 TESTS=test_rl test_sg
-EXTRA_DIST=saturate_deployment.xml $(TESTS)
+EXTRA_DIST=saturate.xml $(TESTS)
 
 noinst_PROGRAMS=saturate_simulator saturate_sensor saturate_maestro
 
