@@ -86,7 +86,6 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 {
 
   lmm_variable_disable(sys, var);
-  memset(var->cnsts,0,var->cnsts_size*sizeof(s_lmm_element_t));
   free(var->cnsts);
   xbt_mallocator_release(sys->variable_mallocator, var);
 }
