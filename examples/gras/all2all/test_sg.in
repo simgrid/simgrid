@@ -5,5 +5,5 @@ else
   exenv=wine
 fi
 
-exec $exenv ./all2all_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/all2all_deployment.xml $@
+exec $exenv ./all2all_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/all2all.xml $@
 

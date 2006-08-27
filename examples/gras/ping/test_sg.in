@@ -5,5 +5,5 @@ else
   exenv=wine
 fi
 
-exec $exenv ./ping_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/ping_deployment.xml $@
+exec $exenv ./ping_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/ping.xml $@
 

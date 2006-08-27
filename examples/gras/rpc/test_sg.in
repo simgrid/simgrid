@@ -5,5 +5,5 @@ else
   exenv=wine
 fi
 
-exec $exenv ./rpc_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/rpc_deployment.xml $@
+exec $exenv ./rpc_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/rpc.xml $@
 

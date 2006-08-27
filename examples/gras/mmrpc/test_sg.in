@@ -5,5 +5,5 @@ else
   exenv=wine
 fi
 
-exec $exenv ./mmrpc_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/mmrpc_deployment.xml $@
+exec $exenv ./mmrpc_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/mmrpc.xml $@
 

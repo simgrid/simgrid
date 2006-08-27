@@ -5,4 +5,4 @@ else
   exenv=wine
 fi
 
-exec $exenv ./timer_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/timer_deployment.xml $@
+exec $exenv ./timer_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/timer.xml $@
