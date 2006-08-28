@@ -296,10 +296,10 @@ endif
 ###
 
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC) $(AMOK_SRC)
-libgras_la_LDFLAGS = $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
+libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
 libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)
-libsimgrid_la_LDFLAGS = $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
 
 
