@@ -45,6 +45,17 @@
 # define _XBT_INLINE 
 #endif
 
+/* The cruft needed to export data in DLLs */
+#ifdef _WIN32
+# ifdef DLL_EXPORT 
+#  define XBT_EXPORT __declspec(dllexport) /* building the DLL */
+# else
+#  define XBT_EXPORT extern __declspec(dllimport) /* using the DLL */
+# endif
+#else
+# define XBT_EXPORT
+#endif
+
 
 
 #ifndef max
