@@ -98,7 +98,7 @@ typedef enum {
  * to avoid an extra declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
-    s_xbt_log_category_t _XBT_LOGV(catName) = {       \
+    XBT_EXPORT s_xbt_log_category_t _XBT_LOGV(catName) = {       \
         &_XBT_LOGV(parent), 0, 0,                    \
         #catName, xbt_log_priority_uninitialized, 1, \
         0, 1                                          \
