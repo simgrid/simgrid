@@ -78,7 +78,7 @@ EXTRA_DIST= \
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-VERSION_INFO= -release 20050627 -version-info 0:0:0
+VERSION_INFO= -version-info 0:0:0
 # from `info libtool "Updating version info"` 
 # and  `info libtool "Release numbers"` 
 #
