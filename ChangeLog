@@ -38,6 +38,7 @@ SimGrid (3.1.1) unstable; urgency=low
   * FAQ reworking + New FAQs:
     - "Valgrind spits tons of errors!" [Mt]
     - "How to repport bugs" [Mt]
+    - "Cross-compiling a Windows DLL of SimGrid from Linux" [Mt]
   * GRAS tutorial [Mt]
     It contains:
      - an introduction to the framework and to the used communication model
