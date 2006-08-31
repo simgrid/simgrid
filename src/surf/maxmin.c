@@ -465,8 +465,8 @@ void lmm_solve(lmm_system_t sys)
 	elem = &var->cnsts[i];
 	cnst = elem->constraint;
 	if(cnst->shared) {
-	  cnst->remaining -= elem->value * var->value;
-	  cnst->usage -= elem->value / var->weight;
+	  double_update(&(cnst->remaining), elem->value * var->value);
+	  double_update(&(cnst->usage), elem->value / var->weight);
 	}
 	make_elem_inactive(elem);
       }
