@@ -24,6 +24,10 @@ SimGrid (3.1.1) unstable; urgency=low
   SURF:
   * The KCCFLN05 workstation model now handles parallel tasks. It is the
     model for SIMDAG. [Christophe Thiery]
+  * Bug fix in the maxmin solver: Some values were close to 0 instead of
+    equal to 0, which caused some bad behaviors in
+    saturated_constraint_set_update. I now use a threshold mechanism like in
+    surf. [AL]
 
   XBT:
   * When running manually src/testall, you select specific units [Mt]
