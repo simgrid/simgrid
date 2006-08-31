@@ -61,11 +61,6 @@ void surf_action_set_data(surf_action_t action,
 			  void *data);
 FILE *surf_fopen(const char *name, const char *mode);
 
-static _XBT_INLINE void surf_double_update(double *variable, double value) 
-{
-  *variable -= value;
-  if(*variable< 0.00001) *variable = 0.0;
-}
 extern lmm_system_t maxmin_system;
 extern tmgr_history_t history;
 extern xbt_dynar_t surf_path;

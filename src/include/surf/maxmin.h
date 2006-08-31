@@ -9,6 +9,13 @@
 #define _SURF_MAXMIN_H
 
 #include "xbt/misc.h"
+
+static _XBT_INLINE void double_update(double *variable, double value) 
+{
+  *variable -= value;
+  if(*variable< 0.00001) *variable = 0.0;
+}
+
 typedef struct lmm_variable *lmm_variable_t;
 typedef struct lmm_constraint *lmm_constraint_t;
 typedef struct lmm_system *lmm_system_t;
