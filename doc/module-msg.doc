@@ -104,6 +104,8 @@
 
       This function keeps waiting for tasks and dispathes them to its slaves.
 
+      \until end_of_forwarder
+
    \subsection MSG_ext_ms_core Simulation core
 
       This function is the core of the simulation and is divided only into 3 parts
