@@ -116,7 +116,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
 
   xbt_fifo_unshift(host->simdata->process_list, process);
 
-  /* /////////////// FIX du current_process !!! ////////////// */
+  /* *************** FIX du current_process !!! *************** */
   self = msg_global->current_process;
   xbt_context_start(process->simdata->context);
   msg_global->current_process = self;

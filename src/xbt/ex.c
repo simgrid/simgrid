@@ -276,7 +276,7 @@ void xbt_ex_free(xbt_ex_t e) {
        free((char*)e.bt_strings[i]);
      free((char **)e.bt_strings);
   }
-//  memset(e,0,sizeof(xbt_ex_t));
+  /* memset(e,0,sizeof(xbt_ex_t)); */
 }
 
 /** \brief returns a short name for the given exception category */

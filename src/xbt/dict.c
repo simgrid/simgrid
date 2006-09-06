@@ -748,7 +748,7 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
 
   for (i=0;i<10;i++) {
     head=xbt_dict_new();
-    //    if (i%10) printf("."); else printf("%d",i/10); fflush(stdout);
+    /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     nb=0;
     for (j=0;j<1000;j++) {
       key=xbt_malloc(SIZEOFKEY);
@@ -771,7 +771,7 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   head=xbt_dict_new();
   xbt_test_add1("Fill %d elements, with keys being the number of element",NB_ELM);
   for (j=0;j<NB_ELM;j++) {
-    //    if (!(j%1000)) { printf("."); fflush(stdout); }
+    /* if (!(j%1000)) { printf("."); fflush(stdout); } */
 
     key = xbt_malloc(10);
     
@@ -786,7 +786,7 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   xbt_test_add1("Search my %d elements 20 times",NB_ELM);
   key=xbt_malloc(10);
   for (i=0;i<20;i++) {
-    //    if (i%10) printf("."); else printf("%d",i/10); fflush(stdout);
+    /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j=0;j<NB_ELM;j++) {
       
       sprintf(key,"%d",j);
@@ -800,7 +800,7 @@ XBT_TEST_UNIT("crash",test_dict_crash,"Crash test"){
   xbt_test_add1("Remove my %d elements",NB_ELM);
   key=xbt_malloc(10);
   for (j=0;j<NB_ELM;j++) {
-    //if (!(j%10000)) printf("."); fflush(stdout);
+    /* if (!(j%10000)) printf("."); fflush(stdout); */
     
     sprintf(key,"%d",j);
     xbt_dict_remove(head,key);
