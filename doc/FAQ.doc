@@ -481,6 +481,42 @@ Of course, it may not match your personal definition of "host load". In this
 case, please detail what you mean on the mailing list, and we will extend
 this FAQ section to fit your taste if possible.
 
+\subsection faq_MIA_communication_time How can I get the *real* communication time ?  
+
+Communications are synchronous and thus if you simply get the time
+before and after a communication, you'll only get the transmission
+time and the time spent to really communicate (it will also take into
+account the time spent waiting for the other party to be
+ready). However, getting the *real* communication time is not really
+hard either. The following solution is a good starting point.
+
+\verbatim
+int sender()
+{
+  m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, 
+                                  calloc(1,sizeof(double)));
+  *((double*) task->data) = MSG_get_clock();
+  MSG_task_put(task, slaves[i % slaves_count], PORT_22);
+  INFO0("Send completed");
+  return 0;
+}
+int receiver()
+{
+  m_task_t task = NULL;
+  double time1,time2;
+
+  time1 = MSG_get_clock();
+  a = MSG_task_get(&(task), PORT_22);
+  time2 = MSG_get_clock();
+  if(time1<*((double *)task->data))
+     time1 = *((double *) task->data);
+  INFO1("Communication time :  \"%f\" ", time2-time1);
+  free(task->data);
+  MSG_task_destroy(task);
+  return 0;
+}
+\endverbatim
+
 \subsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid ?
 
 No, there is no native support for batch schedulers and none is
