@@ -85,6 +85,7 @@ int master(int argc, char *argv[])
     if(MSG_host_self()==slaves[i % slaves_count]) {
       INFO0("Hey ! It's me ! :)");
     }
+
     MSG_task_put(todo[i], slaves[i % slaves_count],
                  PORT_22);
     INFO0("Send completed");
@@ -127,7 +128,7 @@ int slave(int argc, char *argv[])
   return 0;
 } /* end_of_slave */
 
-/** Receiver function */
+/** Forwarder function */
 int forwarder(int argc, char *argv[])
 {
   int i;
@@ -177,7 +178,6 @@ int forwarder(int argc, char *argv[])
   INFO0("I'm done. See you!");
   return 0;
 } /* end_of_forwarder */
-
 
 /** Test function */
 MSG_error_t test_all(const char *platform_file,
