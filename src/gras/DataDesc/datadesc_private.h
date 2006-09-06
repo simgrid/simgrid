@@ -30,11 +30,11 @@
 #include "gras/DataDesc/datadesc_interface.h" /* semi-public API */
 
 /**
- * aligned:
+ * ddt_aligned:
  * 
  * Align the data v on the boundary a.
  */
-#define aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
+#define ddt_aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
 /*@null@*/extern xbt_set_t gras_datadesc_set_local;
 void gras_ddt_freev(void *ddt);

@@ -110,7 +110,7 @@ gras_datadesc_type_t
   for (arch = 0; arch < gras_arch_count; arch ++) {
     res->size[arch]         = gras_arches[arch].sizeofs[type];
     res->alignment[arch]    = gras_arches[arch].boundaries[type];
-    res->aligned_size[arch] = aligned(res->size[arch], res->alignment[arch]);
+    res->aligned_size[arch] = ddt_aligned(res->size[arch], res->alignment[arch]);
   }
 
   res->category_code                 = e_gras_datadesc_type_cat_scalar;
@@ -200,14 +200,14 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
      
      
   for (arch=0; arch<gras_arch_count; arch ++) {
-    field->offset[arch] = aligned(struct_type->size[arch],
-				  field_type->alignment[arch]);
+    field->offset[arch] = ddt_aligned(struct_type->size[arch],
+				      field_type->alignment[arch]);
 
     struct_type->size[arch] = field->offset[arch] + field_type->size[arch];
     struct_type->alignment[arch] = max(struct_type->alignment[arch],
 				       field_type->alignment[arch]);
-    struct_type->aligned_size[arch] = aligned(struct_type->size[arch],
-					      struct_type->alignment[arch]);
+    struct_type->aligned_size[arch] = ddt_aligned(struct_type->size[arch],
+						  struct_type->alignment[arch]);
   }
   field->type   = field_type;
   field->send   = NULL;
@@ -341,8 +341,8 @@ void gras_datadesc_union_append(gras_datadesc_type_t  union_type,
 				 field_type->size[arch]);
     union_type->alignment[arch] = max(union_type->alignment[arch],
 				      field_type->alignment[arch]);
-    union_type->aligned_size[arch] = aligned(union_type->size[arch],
-					     union_type->alignment[arch]);
+    union_type->aligned_size[arch] = ddt_aligned(union_type->size[arch],
+						 union_type->alignment[arch]);
   }
 }
 
