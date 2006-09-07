@@ -71,7 +71,6 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
 			    const char* to_name,unsigned int to_port,
 			    unsigned int msg_size, double duration) {
   gras_socket_t sock;
-  xbt_ex_t e;
   sat_request_t request = xbt_new(s_sat_request_t,1);
 
   INFO4("Start from_name %s:%d -> to_name %s:%d",from_name,from_port,to_name,to_port);
@@ -94,8 +93,6 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
   sat_request_t request = *(sat_request_t*)payload;
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
  
-  xbt_ex_t e;
-
   VERB4("Asked by %s:%d to start a saturation to %s:%d",
 	gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor),
 	request->peer.name,request->peer.port);
