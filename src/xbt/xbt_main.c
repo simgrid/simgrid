@@ -31,7 +31,7 @@ xbt_init(int *argc, char **argv) {
   if (xbt_initialized!=1)
     return;
 
-  xbt_binary_name = strdup(argv[0]);
+  xbt_binary_name = xbt_strdup(argv[0]);
   srand((unsigned int)time(NULL));
   VERB0("Initialize XBT");
   
