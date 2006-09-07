@@ -44,7 +44,8 @@ typedef struct s_gras_socket  {
   int valid :1; /* false if a select returned that the peer quitted, forcing us to "close" the socket */
   int moredata :1; /* TCP socket use a buffer and read operation get as much data as possible. 
 		      It is possible that several messages are received in one shoot, and select won't catch them afterward again.
-		      This boolean indicates that this is the case, so that we don't call select in that case. */
+		      This boolean indicates that this is the case, so that we don't call select in that case. 
+		      Note that measurement sockets are not concerned since they use the TCP interface directly, with no buffer. */
 
   unsigned long int buf_size; /* what to say to the OS. field here to remember it when accepting */
    
