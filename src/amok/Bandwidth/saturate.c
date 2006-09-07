@@ -83,14 +83,8 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
   request->duration=duration;
   request->msg_size=msg_size;
 
- TRY{
   gras_msg_rpccall(sock,60,gras_msgtype_by_name("amok_bw_sat start"),&request, NULL);
 
-  }CATCH(e){
-    if (e.value==1)
-      THROW1(0,1,"%s",to_name);
-    THROW1(0,0,"%s",from_name);
-  }
   free(request);
   gras_socket_close(sock);
 }
@@ -108,15 +102,10 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
 	
   gras_msg_rpcreturn(60,ctx, NULL);
 
-TRY{
   amok_bw_saturate_begin(request->peer.name,request->peer.port,
 
 			 request->msg_size, request->duration,
 			 NULL,NULL);
-
-  }CATCH(e){
-     THROW1(0,1," can not connect %s ",((request)->peer.name));
-  }
  
   free(request->peer.name);
 
