@@ -12,6 +12,9 @@
 #include "gras/Transport/transport_private.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 
+/* check transport_private.h for an explanation of this variable */
+gras_socket_t _gras_lastly_selected_socket = NULL;
+
 /**
  * gras_trp_select:
  *
@@ -44,10 +47,9 @@ gras_socket_t gras_trp_select(double timeout) {
 
   /* Check whether there is more data to read from the socket we selected last time.
      This can happen with tcp buffered sockets since we try to get as much data as we can for them */
-  static gras_socket_t _lastly_selected_socket = NULL;
-  if (_lastly_selected_socket && _lastly_selected_socket->moredata) {
-     VERB0("Returning _lastly_selected_socket since there is more data on it");
-     return _lastly_selected_socket;
+  if (_gras_lastly_selected_socket && _gras_lastly_selected_socket->moredata) {
+     VERB0("Returning _gras_lastly_selected_socket since there is more data on it");
+     return _gras_lastly_selected_socket;
   }
   
   /* Compute FD_SETSIZE */
@@ -66,7 +68,7 @@ gras_socket_t gras_trp_select(double timeout) {
       now = gras_os_time();
       DEBUG2("wakeup=%f now=%f",wakeup, now);
       if (now == -1 || now >= wakeup) {
-	/* didn't find anything; no need to update _lastly_selected_socket since its moredata is 0 (or we would have returned it directly) */
+	/* didn't find anything; no need to update _gras_lastly_selected_socket since its moredata is 0 (or we would have returned it directly) */
 	THROW1(timeout_error,0,
 	       "Timeout (%f) elapsed with selecting for incomming connexions",
 	       timeout);
@@ -189,14 +191,14 @@ gras_socket_t gras_trp_select(double timeout) {
 	 } else { 
 	   /* Got a suited socket ! */
 	   XBT_OUT;
-	   _lastly_selected_socket = sock_iter;
+	   _gras_lastly_selected_socket = sock_iter;
 	   return sock_iter;
 	 }
 
        } else {
 	 /* This is a file socket. Cannot recv() on it, but it must be alive */
 	   XBT_OUT;
-	   _lastly_selected_socket = sock_iter;
+	   _gras_lastly_selected_socket = sock_iter;
 	   return sock_iter;
        }
 

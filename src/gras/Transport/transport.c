@@ -345,6 +345,12 @@ void gras_socket_close(gras_socket_t sock) {
 
   XBT_IN;
   VERB1("Close %p",sock);
+  if (sock == _gras_lastly_selected_socket) {
+     if (sock->moredata) 
+       CRITICAL0("Closing a socket which had another message buffered after the one being handled now. Go fix your code.");
+     _gras_lastly_selected_socket=NULL;
+  }
+   
   /* FIXME: Issue an event when the socket is closed */
   if (sock) {
     xbt_dynar_foreach(sockets,cursor,sock_iter) {
