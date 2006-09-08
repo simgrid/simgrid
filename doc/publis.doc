@@ -142,6 +142,10 @@ external to the development group, but we also use our tool ourselves (see
 next section).
 
 - 2006
+  - <b>Master-Slave Tasking on Asymmetric Networks</b>\n
+    by <em>Cyril Banino-Rokkones, Olivier Beaumont and Lasse Natvig</em>.\n
+    In Proceedings of 12th International Euro-Par Conference, Euro-Par 2006.
+    August 29 - September 1, Pages 167--176, Dresden, Germany.
   - <b>Hierarchical Scheduling of Independent Tasks with Shared Files</b>\n 
     by <em>H. Senger, F. Silva, W. Nascimento</em>.\n
     Proceedings of the Sixth IEEE International Symposium on Cluster Computing and the Grid Workshop (CCGRIDW'06), 2006.\n
