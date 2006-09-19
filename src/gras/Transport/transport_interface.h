@@ -15,6 +15,11 @@
 #include "portable.h" /* sometimes needed for fd_set */
 
 /***
+ *** Options
+ ***/
+extern int gras_opt_trp_nomoredata_on_close;
+
+/***
  *** Main user functions
  ***/
 /* stable if we know the storage will keep as is until the next trp_flush */

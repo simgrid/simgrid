@@ -7,6 +7,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/***
+ *** Options
+ ***/
+int gras_opt_trp_nomoredata_on_close=0;
+
 #include "xbt/ex.h"
 #include "xbt/peer.h"
 #include "portable.h"
@@ -346,8 +351,11 @@ void gras_socket_close(gras_socket_t sock) {
   XBT_IN;
   VERB1("Close %p",sock);
   if (sock == _gras_lastly_selected_socket) {
+     xbt_assert0(!gras_opt_trp_nomoredata_on_close || !sock->moredata,
+		 "Closing a socket having more data in buffer while the nomoredata_on_close option is activated");
+		 
      if (sock->moredata) 
-       CRITICAL0("Closing a socket which had another message buffered after the one being handled now. Go fix your code.");
+       CRITICAL0("Closing a socket having more data in buffer. Option nomoredata_on_close disabled, so continuing.");
      _gras_lastly_selected_socket=NULL;
   }
    
