@@ -156,7 +156,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t *data;
-  int found;
+  volatile int found;
   
   const char *host=MSG_host_get_name(MSG_host_self());
 
