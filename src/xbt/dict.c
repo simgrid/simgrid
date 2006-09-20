@@ -571,8 +571,20 @@ char *data;
 
 
 XBT_TEST_UNIT("basic",test_dict_basic,"Basic usage: change, retrieve, traverse"){
-  xbt_test_add0("Traversal the empty dictionnary");
+  xbt_test_add0("Traversal the null dictionnary");
   traverse(head);
+
+  xbt_test_add0("Traversal and search the empty dictionnary");
+  head = xbt_dict_new();
+  traverse(head);
+  TRY {
+    debuged_remove(head,"12346");
+  } CATCH(e) {
+    if (e.category != not_found_error) 
+      xbt_test_exception(e);
+    xbt_ex_free(e);
+  }
+  xbt_dict_free(&head);
 
   xbt_test_add0("Traverse the full dictionnary");
   fill(&head);
