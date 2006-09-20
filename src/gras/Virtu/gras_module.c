@@ -110,7 +110,7 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
 		     void_f_pvoid_t *join_f, void_f_pvoid_t *leave_f) {
   gras_module_t mod=NULL;
   xbt_ex_t e;
-  int found = 0;
+  volatile int found = 0;
 
   if (!_gras_modules)
     _gras_modules = xbt_set_new();
@@ -148,7 +148,6 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
   mod->join_f = join_f;
   mod->leave_f = leave_f;
   mod->refcount = 0;
-  
   
   *mod->p_id = xbt_set_length(_gras_modules);
   
