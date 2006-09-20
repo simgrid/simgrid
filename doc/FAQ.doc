@@ -253,14 +253,16 @@ generate the def files, run (under linux):
 \verbatim echo "LIBRARY libsimgrid-0.dll" > simgrid.def
 echo EXPORTS >> simgrid.def
 nm libsimgrid-0.dll | grep ' T _' | sed 's/.* T _//' >> simgrid.def
+nm libsimgrid-0.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> simgrid.def
 
 echo "LIBRARY mingwm10.dll" > mingwm10.def
 echo EXPORTS >> mingwm10.def
 nm mingwm10.dll | grep ' T _' | sed 's/.* T _//' >> mingwm10.def
+nm mingwm10.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> mingwm10.def
 \endverbatim
 
-To create the import .lib files, use the <tt>lib</tt> windows tool the
-following way to produce simgrid.lib and mingwm10.lib
+To create the import .lib files, use the <tt>lib</tt> windows tool (from
+MSVC) the following way to produce simgrid.lib and mingwm10.lib
 \verbatim lib /def:simgrid.def
 lib /def:mingwm10.def
 \endverbatim
