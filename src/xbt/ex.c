@@ -52,6 +52,7 @@ void xbt_backtrace_display(void) {
 #endif
 }
 
+
 void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
   int i;
@@ -59,7 +60,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   char **backtrace = backtrace_symbols (e->bt, e->used);
   
   /* To build the commandline of addr2line */
-  char *cmd = xbt_new(char,strlen(ADDR2LINE)+strlen(xbt_binary_name)+20*e->used);
+  char *cmd = xbt_new(char,strlen(ADDR2LINE)+25+strlen(xbt_binary_name)+32*e->used);
   char *curr=cmd;
   
   /* to extract the addresses from the backtrace */
@@ -81,11 +82,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,xbt_binary_name);
   for (i=0; i<e->used;i++) {
     /* retrieve this address */
+    DEBUG2("Retrieving address number %d from '%s'", i, backtrace[i]);
     snprintf(buff,256,"%s",strchr(backtrace[i],'[')+1);
     p=strchr(buff,']');
     *p='\0';
-    addrs[i]=bprintf("%s",buff);
-    
+    addrs[i]=bprintf("%s", buff);
+    DEBUG3("Set up a new address: %d, '%s'(%p)", i, addrs[i], addrs[i]);
+     
     /* Add it to the command line args */
     curr+=sprintf(curr,"%s ",addrs[i]);
   }	 
@@ -94,18 +97,22 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   /* parse the output and build a new backtrace */
   e->bt_strings = xbt_new(char*,e->used);
   
+  VERB1("Fire a first command: '%s'", cmd);
   pipe = popen(cmd, "r");
   if (!pipe) {
     CRITICAL0("Cannot fork addr2line to display the backtrace");
     abort();
   }
+
   for (i=0; i<e->used; i++) {
+    DEBUG2("Looking for symbol %d, addr = '%s'", i, addrs[i]); 
     fgets(line_func,1024,pipe);
     line_func[strlen(line_func)-1]='\0';
     fgets(line_pos,1024,pipe);
     line_pos[strlen(line_pos)-1]='\0';
 
     if (strcmp("??",line_func)) {
+       DEBUG2("Found static symbol %s() at %s", line_func, line_pos);
       e->bt_strings[i] = bprintf("**   In %s() at %s (static symbol)", line_func,line_pos);
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
@@ -156,6 +163,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
       if (!found) {
 	VERB0("Problem while reading the maps file. Following backtrace will be mangled.");
+	DEBUG1("No dynamic. Static symbol: %s", backtrace[i]);
 	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
 	continue;
       }
@@ -172,9 +180,18 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 	 are set */ 
       p  = xbt_strdup(backtrace[i]);
       p2 = strrchr(p,'(');
-      if (p2) *p2= '\0';
-      p2 = strrchr(p,' ');
-      if (p2) *p2= '\0';
+      if (p2) { 
+	 *p2= '\0';
+      } else { 
+	 p2 = strrchr(p,' ');
+	 if(p2 == NULL) 
+	   {
+	     ERROR1("Couldn't parse %s to get the library path", backtrace[i]);
+	     xbt_abort();
+	   }
+	 
+	 *p2= '\0';
+      }
       
       /* Here we go, fire an addr2line up */
       subcmd = bprintf("%s -f -e %s %s",ADDR2LINE,p, addrs[i]);
@@ -194,9 +211,11 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 
       /* check whether the trick worked */
       if (strcmp("??",line_func)) {
+	DEBUG2("Found dynamic symbol %s() at %s", line_func, line_pos);
 	e->bt_strings[i] = bprintf("**   In %s() at %s (dynamic symbol)", line_func,line_pos);
       } else {
 	/* damn, nothing to do here. Let's print the raw address */
+	DEBUG1("Dynamic symbol not found. Raw address = %s", backtrace[i]);
 	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
       }
     }
