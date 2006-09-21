@@ -500,7 +500,8 @@ gras_msg_handle(double timeOut) {
   
   double          untiltimer;
    
-  int             cpt, ran_ok;
+  int             cpt;
+  int volatile ran_ok;
 
   s_gras_msg_t    msg;
 
