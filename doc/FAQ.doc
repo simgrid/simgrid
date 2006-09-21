@@ -267,6 +267,12 @@ MSVC) the following way to produce simgrid.lib and mingwm10.lib
 lib /def:mingwm10.def
 \endverbatim
 
+If you happen to use Borland C Builder, the right command line is the
+following (note that you don't need any file.def to get this working).
+\verbatim implib simgrid.lib libsimgrid-0.dll
+implib mingwm10.lib mingwm10.dll
+\endverbatim
+
 Then, set the following parameters in Visual C++ 2005:
 Linker -> Input -> Additional dependencies = simgrid.lib mingwm10.lib
 
