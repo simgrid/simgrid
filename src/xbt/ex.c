@@ -180,18 +180,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 	 are set */ 
       p  = xbt_strdup(backtrace[i]);
       p2 = strrchr(p,'(');
-      if (p2) { 
-	 *p2= '\0';
-      } else { 
-	 p2 = strrchr(p,' ');
-	 if(p2 == NULL) 
-	   {
-	     ERROR1("Couldn't parse %s to get the library path", backtrace[i]);
-	     xbt_abort();
-	   }
-	 
-	 *p2= '\0';
-      }
+      if (p2) *p2= '\0';
+      p2 = strrchr(p,' ');
+      if(p2) *p2= '\0';
       
       /* Here we go, fire an addr2line up */
       subcmd = bprintf("%s -f -e %s %s",ADDR2LINE,p, addrs[i]);
