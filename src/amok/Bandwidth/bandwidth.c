@@ -134,6 +134,7 @@ void amok_bw_test(gras_socket_t peer,
   int port;
   bw_request_t request,request_ack;
   xbt_ex_t e;
+  int first_pass; 
   
   for (port = 5000; port < 10000 && measMasterIn == NULL; port++) {
     TRY {
@@ -154,7 +155,7 @@ void amok_bw_test(gras_socket_t peer,
   request->msg_size=msg_size;
   request->peer.name = NULL;
   request->peer.port = gras_socket_my_port(measMasterIn);
-  DEBUG5("Handshaking with %s:%d to connect it back on my %d (expsize=%ld byte= %ld b)", 
+  DEBUG5("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld byte= %ld b)", 
 	gras_socket_peer_name(peer),gras_socket_peer_port(peer), request->peer.port,
 	buf_size,request->buf_size);
 
@@ -174,14 +175,22 @@ void amok_bw_test(gras_socket_t peer,
     RETHROW2("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
 	     gras_socket_peer_name(peer),request_ack->peer.port);
   }
-  DEBUG1("Got ACK; conduct the experiment (msg_size=%ld)",request->msg_size);
+  DEBUG2("Got ACK; conduct the experiment (exp_size = %ld, msg_size=%ld)",
+	 request->exp_size, request->msg_size);
 
   *sec = 0;
+  first_pass = 1;
   do {
-    if (*sec>0) {
+    if (first_pass == 0) {
       double meas_duration=*sec;
-      request->exp_size = request->exp_size * (min_duration / meas_duration) * 1.1;
-      request->msg_size = request->msg_size * (min_duration / meas_duration) * 1.1;
+      if (*sec != 0.0 ) { 
+	request->exp_size = request->exp_size * (min_duration / meas_duration) * 1.1;
+	request->msg_size = request->msg_size * (min_duration / meas_duration) * 1.1;
+      } else {
+	request->exp_size = request->exp_size * 4; 
+	request->msg_size = request->msg_size * 4; 
+      }
+	     
       if (request->msg_size > 64*1024*1024)
 	request->msg_size = 64*1024*1024;
 
@@ -190,6 +199,7 @@ void amok_bw_test(gras_socket_t peer,
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
     }
 
+    first_pass = 0;
     *sec=gras_os_time();
     TRY {
       gras_socket_meas_send(measOut,120,request->exp_size,request->msg_size);
@@ -201,10 +211,13 @@ void amok_bw_test(gras_socket_t peer,
       gras_socket_close(measIn);
       RETHROW0("Unable to conduct the experiment: %s");
     }
-    DEBUG0("Experiment done");
-
     *sec = gras_os_time() - *sec;
-    *bw = ((double)request->exp_size) / *sec;
+    if (*sec != 0.0) { *bw = ((double)request->exp_size) / *sec; }
+    DEBUG1("Experiment done ; it took %f sec", *sec);
+    if (*sec <= 0) {
+      CRITICAL1("Nonpositive value (%f) found for BW test time.", *sec);
+    }
+
   } while (*sec < min_duration);
 
   DEBUG2("This measurement was long enough (%f sec; found %f b/s). Stop peer",
