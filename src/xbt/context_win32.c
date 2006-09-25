@@ -17,7 +17,7 @@
    under the LGPL licence, what I here do. */
 
 /*#include "context_win32.h" Not needed since this file is to be included*/
-
+#include "context_win32.h"
 int getcontext(ucontext_t *ucp)
 {
 	int ret;
@@ -67,7 +67,7 @@ int makecontext(ucontext_t *ucp, void (*func)(), int argc, ...)
 	va_start (ap, argc);
 	for (i=0; i<argc; i++) {
 		memcpy(sp, ap, 8);
-		ap +=8;
+		(char*)ap +=8;
 		sp += 8;
 	}
 	va_end(ap);
