@@ -97,13 +97,37 @@ xbt_multidict_set(xbt_dict_t  mdict,
     xbt_dynar_push(lens,&thislen);
   }
 
-  TRY {
-    xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
-  } CLEANUP {
-    xbt_dynar_free(&lens);         
-  } CATCH(e) {
+  /*TRY
+  {
+        xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
+  }
+  CLEANUP
+  {
+    xbt_dynar_free(&lens);
+  }
+  CATCH(e)
+  {
+    RETHROW;
+  }*/
+
+  TRY
+  {
+        xbt_multidict_set_ext(mdict, keys, lens, data, free_ctn);
+  }
+  CLEANUP
+  {
+    xbt_dynar_free(&lens);
+  }
+  CATCH(e)
+  {
     RETHROW;
   }
+
+
+
+
+
+
 }
 
 /** \brief Insert \e data under all the keys contained in \e keys, providing their sizes in \e lens.

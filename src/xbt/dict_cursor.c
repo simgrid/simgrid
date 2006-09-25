@@ -103,11 +103,16 @@ void xbt_dict_cursor_first(const xbt_dict_t   dict,
  * \brief Move to the next element. 
  */
 void xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
+
+
+  xbt_dictelm_t current ;
+  int line;
+
   DEBUG0("xbt_dict_cursor_step");
   xbt_assert(cursor);
 
-  xbt_dictelm_t current = cursor->current;
-  int line = cursor->line;
+  current = cursor->current;
+  line = cursor->line;
 
   if (cursor->dict != NULL) {
 
@@ -137,9 +142,11 @@ void xbt_dict_cursor_step(xbt_dict_cursor_t cursor) {
 int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t  *cursor,
 				char               **key,
 				void               **data) {
-  DEBUG0("xbt_dict_get_or_free");
 
   xbt_dictelm_t current;
+
+  DEBUG0("xbt_dict_get_or_free");
+
 
   if (!cursor || !(*cursor))
     return FALSE;

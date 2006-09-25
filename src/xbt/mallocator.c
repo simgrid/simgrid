@@ -31,10 +31,14 @@ xbt_mallocator_t xbt_mallocator_new(int size,
 				    pvoid_f_void_t new_f,
 				    void_f_pvoid_t free_f,
 				    void_f_pvoid_t reset_f) {
+
+
+  xbt_mallocator_t m;
+
   xbt_assert0(size > 0, "size must be positive");
-  xbt_assert0(new_f != NULL && free_f != NULL && reset_f != NULL,
-	      "invalid parameter");
-  xbt_mallocator_t m = xbt_new0(s_xbt_mallocator_t, 1);
+  xbt_assert0(new_f != NULL && free_f != NULL && reset_f != NULL,"invalid parameter");
+
+  m = xbt_new0(s_xbt_mallocator_t, 1);
 
   m->objects = xbt_new0(void*, size);
   m->max_size = size;
@@ -55,9 +59,11 @@ xbt_mallocator_t xbt_mallocator_new(int size,
  * \see xbt_mallocator_new()
  */
 void xbt_mallocator_free(xbt_mallocator_t m) {
-  xbt_assert0(m != NULL, "Invalid parameter");
 
   int i;
+  xbt_assert0(m != NULL, "Invalid parameter");
+
+
   for (i = 0; i < m->current_size; i++) {
     m->free_f(m->objects[i]);
   }
@@ -82,9 +88,11 @@ void xbt_mallocator_free(xbt_mallocator_t m) {
  * \see xbt_mallocator_release()
  */
 void *xbt_mallocator_get(xbt_mallocator_t m) {
+
+void *object;
   xbt_assert0(m != NULL, "Invalid parameter");
 
-  void *object;
+
   if (m->current_size > 0) {
     /* there is at least an available object */
     object = m->objects[--m->current_size];

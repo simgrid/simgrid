@@ -662,7 +662,7 @@ xbt_cfg_set_int(xbt_cfg_t cfg,const char*name, int val) {
           
     xbt_dynar_set(variable->content,0,&val);
   } else {
-    if (variable->max && xbt_dynar_length(variable->content) == variable->max)
+    if (variable->max && xbt_dynar_length(variable->content) == (unsigned long)variable->max)
       THROW3(mismatch_error,0,
              "Cannot add value %d to the config element %s since it's already full (size=%d)",
              val,name,variable->max); 

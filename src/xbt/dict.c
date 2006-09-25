@@ -169,10 +169,12 @@ void xbt_dict_set_ext(xbt_dict_t      dict,
 		      int              key_len,
 		      void            *data,
 		      void_f_pvoid_t  *free_ctn) {
-  xbt_assert(dict);
 
-  unsigned int hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
+  unsigned int hash_code;
   xbt_dictelm_t current, previous = NULL;
+  xbt_assert(dict);
+  
+  hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
 
   current = dict->table[hash_code];
   while (current != NULL &&
@@ -237,10 +239,14 @@ void xbt_dict_set(xbt_dict_t     dict,
 void *xbt_dict_get_ext(xbt_dict_t      dict,
 		       const char     *key,
 		       int             key_len) {
-  xbt_assert(dict);
 
-  unsigned int hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
+
+  unsigned int hash_code;
   xbt_dictelm_t current;
+
+  xbt_assert(dict);
+  
+  hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
 
   current = dict->table[hash_code];
   while (current != NULL &&
@@ -268,10 +274,14 @@ void *xbt_dict_get_ext(xbt_dict_t      dict,
  */
 void *xbt_dict_get(xbt_dict_t dict,
 		   const char *key) {
+
+
+  unsigned int hash_code ;
+  xbt_dictelm_t current;
+
   xbt_assert(dict);
 
-  unsigned int hash_code = xbt_dict_hash(key) % dict->table_size;
-  xbt_dictelm_t current;
+  hash_code = xbt_dict_hash(key) % dict->table_size;
 
   current = dict->table[hash_code];
   while (current != NULL && (strcmp(key, current->key))) {
@@ -316,10 +326,14 @@ void *xbt_dict_get_or_null(xbt_dict_t     dict,
 void xbt_dict_remove_ext(xbt_dict_t  dict,
 			 const char  *key,
 			 int          key_len) {
+
+
+  unsigned int hash_code ;
+  xbt_dictelm_t current, previous = NULL;
+
   xbt_assert(dict);
 
-  unsigned int hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
-  xbt_dictelm_t current, previous = NULL;
+  hash_code = xbt_dict_hash_ext(key,key_len) % dict->table_size;
 
   current = dict->table[hash_code];
   while (current != NULL &&
@@ -364,10 +378,12 @@ void xbt_dict_remove(xbt_dict_t  dict,
  * \param dict the dict
  */
 void xbt_dict_reset(xbt_dict_t dict) {
-  xbt_assert(dict);
+
 
   int i;
   xbt_dictelm_t current, previous = NULL;
+
+   xbt_assert(dict);
    
   if (dict->count == 0)
     return;
@@ -399,9 +415,13 @@ int xbt_dict_length(xbt_dict_t dict) {
  * Add an already mallocated element to a dictionary.
  */
 void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element) {
-  xbt_assert(dict);
 
-  int hashcode = xbt_dict_hash_ext(element->key,element->key_len) % dict->table_size;
+
+  int hashcode;
+
+  xbt_assert(dict);
+  
+  hashcode = xbt_dict_hash_ext(element->key,element->key_len) % dict->table_size;
   element->next = dict->table[hashcode];
   dict->table[hashcode] = element;
 }
