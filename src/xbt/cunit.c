@@ -9,7 +9,7 @@
 
 /* This is partially inspirated from the OSSP ts (Test Suite Library)       */
 
-#include "gras_config.h"
+#include "portable.h"
 
 #include "xbt/sysdep.h"    /* vasprintf */
 #include "xbt/cunit.h"
@@ -435,6 +435,9 @@ static void apply_selection(char *selection) {
   xbt_test_unit_t unit;
   int it_unit;
 
+  char suitename[512];
+  char unitname[512];
+
   if (!selection || selection[0] == '\0')
     return;
 
@@ -459,8 +462,6 @@ static void apply_selection(char *selection) {
       memmove(dir,dir+1,strlen(dir));
     }
 
-
-    char suitename[512],unitname[512];
     p =strchr(dir,':');
     if (p) {
       strcpy(unitname,p+1); 
