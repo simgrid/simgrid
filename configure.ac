@@ -260,11 +260,34 @@ fi
 #  src/amok/Makefile
 
 SG_CONFIGURE_PART(Generating files...)
+
+# Core of the libraries
+
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
   src/Makefile
   src/ucontext_stack.h
+])
+
+# Testsuite
+
+AC_CONFIG_FILES([  
+  testsuite/Makefile
+  testsuite/run_tests    
+  testsuite/gras/trp_tcp_usage  testsuite/gras/trp_file_usage
+],[
+    for file in                                                 \
+     testsuite/run_tests                                        \
+     testsuite/gras/trp_tcp_usage testsuite/gras/trp_file_usage \
+    ; do                                                        \
+      test -e $file && chmod +x $file;                          \
+    done
+])
+
+# Examples, documentation and tools
+
+AC_CONFIG_FILES([
   examples/Makefile 
     examples/msg/Makefile           examples/msg/run_msg_test
     examples/simdag/Makefile	    examples/simdag/test_simdag
@@ -289,13 +312,8 @@ AC_CONFIG_FILES([
     doc/Doxyfile
   tools/graspe-slave            tools/Makefile
     tools/gras/Makefile
-  testsuite/Makefile
-  testsuite/run_tests    
-  testsuite/gras/trp_tcp_usage  testsuite/gras/trp_file_usage
 ],[
     for file in                                                 \
-     testsuite/run_tests                                        \
-     testsuite/gras/trp_tcp_usage testsuite/gras/trp_file_usage \
      tools/graspe-slave           tools/graspe-master           \
      \
      examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
