@@ -322,10 +322,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-/* to get a working stdarg.h */
 
-
-#include "portable.h"
+#include "portable.h" /* to get a working stdarg.h */
 
 #include <assert.h>
 #include <errno.h>
