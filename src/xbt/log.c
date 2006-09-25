@@ -429,10 +429,7 @@ static void _apply_control(xbt_log_category_t cat) {
       xbt_log_threshold_set(cat, setting->thresh);
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
 
-      if (cat->threshold <= xbt_log_priority_debug)
-      {
-	/*s_xbt_log_event_t _log_ev ={cat, xbt_log_priority_debug,__FILE__,_XBT_FUNCTION,__LINE__};*/
-
+      if (cat->threshold <= xbt_log_priority_debug) {
         _log_ev.cat = cat;
         _log_ev.priority = xbt_log_priority_debug;
         _log_ev.fileName = __FILE__ ;
@@ -447,12 +444,11 @@ static void _apply_control(xbt_log_category_t cat) {
     }
   }
   if (!found && cat->threshold <= xbt_log_priority_verbose) {
-    /* s_xbt_log_event_t _log_ev ={cat,xbt_log_priority_verbose,__FILE__,_XBT_FUNCTION,__LINE__}; */
     _log_ev.cat = cat;
-        _log_ev.priority = xbt_log_priority_verbose;
-        _log_ev.fileName = __FILE__ ;
-        _log_ev.functionName = _XBT_FUNCTION ;
-        _log_ev.lineNum = __LINE__ ;
+    _log_ev.priority = xbt_log_priority_verbose;
+    _log_ev.fileName = __FILE__ ;
+    _log_ev.functionName = _XBT_FUNCTION ;
+    _log_ev.lineNum = __LINE__ ;
 
     _xbt_log_event_log(&_log_ev,
 			"Category '%s': inherited threshold = %s (=%d)",

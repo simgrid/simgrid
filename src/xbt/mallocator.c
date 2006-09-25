@@ -88,8 +88,7 @@ void xbt_mallocator_free(xbt_mallocator_t m) {
  * \see xbt_mallocator_release()
  */
 void *xbt_mallocator_get(xbt_mallocator_t m) {
-
-void *object;
+  void *object;
   xbt_assert0(m != NULL, "Invalid parameter");
 
 
