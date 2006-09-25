@@ -1,4 +1,3 @@
-#include "gras_config.h"
 
 /*
  * snprintf.c - a portable implementation of snprintf
@@ -323,7 +322,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include "gras_config.h" /* to get a working stdarg.h */
+/* to get a working stdarg.h */
+
+
+#include "portable.h"
+
 #include <assert.h>
 #include <errno.h>
 
