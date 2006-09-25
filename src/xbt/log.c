@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include <stdio.h> /* snprintf */
 #include <stdlib.h> /* snprintf */
-#include "gras_config.h" /* to get a working stdarg.h */
+
 #include "portable.h" /* to get a working stdarg.h */
 
 #include "xbt_modinter.h"
@@ -411,6 +411,7 @@ static void _apply_control(xbt_log_category_t cat) {
   int cursor;
   xbt_log_setting_t setting=NULL;
   int found = 0;
+  s_xbt_log_event_t _log_ev;
 
   if (!xbt_log_settings)
     return;
@@ -428,19 +429,31 @@ static void _apply_control(xbt_log_category_t cat) {
       xbt_log_threshold_set(cat, setting->thresh);
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
 
-      if (cat->threshold <= xbt_log_priority_debug) {
-	s_xbt_log_event_t _log_ev = 
-	  {cat,xbt_log_priority_debug,__FILE__,_XBT_FUNCTION,__LINE__};
+      if (cat->threshold <= xbt_log_priority_debug)
+      {
+	/*s_xbt_log_event_t _log_ev ={cat, xbt_log_priority_debug,__FILE__,_XBT_FUNCTION,__LINE__};*/
+
+        _log_ev.cat = cat;
+        _log_ev.priority = xbt_log_priority_debug;
+        _log_ev.fileName = __FILE__ ;
+        _log_ev.functionName = _XBT_FUNCTION ;
+        _log_ev.lineNum = __LINE__ ;
+
 	_xbt_log_event_log(&_log_ev,
 	         "Apply settings for category '%s': set threshold to %s (=%d)",
-		 cat->name, 
+		 cat->name,
 	         xbt_log_priority_names[cat->threshold], cat->threshold);
       }
     }
   }
   if (!found && cat->threshold <= xbt_log_priority_verbose) {
-    s_xbt_log_event_t _log_ev = 
-      {cat,xbt_log_priority_verbose,__FILE__,_XBT_FUNCTION,__LINE__};
+    /* s_xbt_log_event_t _log_ev ={cat,xbt_log_priority_verbose,__FILE__,_XBT_FUNCTION,__LINE__}; */
+    _log_ev.cat = cat;
+        _log_ev.priority = xbt_log_priority_verbose;
+        _log_ev.fileName = __FILE__ ;
+        _log_ev.functionName = _XBT_FUNCTION ;
+        _log_ev.lineNum = __LINE__ ;
+
     _xbt_log_event_log(&_log_ev,
 			"Category '%s': inherited threshold = %s (=%d)",
 			cat->name,
