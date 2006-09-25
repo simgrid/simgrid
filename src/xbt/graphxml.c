@@ -1,4 +1,4 @@
-#include "graphxml.h"
+#include "xbt/graphxml.h"
 
 
 #line 2 "xbt/graphxml.c"
