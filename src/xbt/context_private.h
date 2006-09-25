@@ -13,7 +13,10 @@
 #include "xbt/swag.h"
 #include "xbt/dynar.h" /* void_f_pvoid_t */
 #include "portable.h"  /* loads context system definitions */
+
+#if !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32) && !defined(__TOS_WIN__)
 #include "ucontext_stack.h"  /* loads context system definitions */
+#endif
 
 #include "xbt/context.h"
 #include "xbt/ex.h"
