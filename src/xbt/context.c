@@ -13,7 +13,6 @@
 #include "context_private.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
-#include "gras_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ctx, xbt, "Context");
 
