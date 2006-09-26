@@ -165,6 +165,8 @@ static void moddata_freep(void *p) {
 }
 
 void gras_module_join(const char *name) {
+  gras_procdata_t *pd;
+  void *moddata;
   gras_module_t mod = (gras_module_t)xbt_set_get_by_name(_gras_modules, name);
   
   VERB2("Join to module %s (%p)",name,mod);
@@ -182,8 +184,8 @@ void gras_module_join(const char *name) {
   mod->refcount++;
 
   /* JOIN */
-  gras_procdata_t *pd=gras_procdata_get();
-  void *moddata;
+  pd=gras_procdata_get();
+
 
   if (!pd->moddata) /* Damn. I must be the first module on this process. Scary ;) */
     pd->moddata   = xbt_dynar_new(sizeof(gras_module_t),&moddata_freep);
@@ -197,12 +199,13 @@ void gras_module_join(const char *name) {
   DEBUG2("Module %s joined successfully (ID=%d)", name,*(mod->p_id));
 }
 void gras_module_leave(const char *name) {
+  void *moddata;
   gras_module_t mod = (gras_module_t)xbt_set_get_by_name(_gras_modules, name);
 
   VERB1("Leave module %s",name);
 
   /* LEAVE */
-  void *moddata = gras_moddata_by_id( *(mod->p_id) );
+  moddata = gras_moddata_by_id( *(mod->p_id) );
   (*mod->leave_f)(moddata);
 
   /* EXIT */
