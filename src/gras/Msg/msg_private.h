@@ -12,7 +12,7 @@
 #ifndef GRAS_MESSAGE_PRIVATE_H
 #define GRAS_MESSAGE_PRIVATE_H
 
-#include "gras_config.h"
+#include "portable.h"
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
