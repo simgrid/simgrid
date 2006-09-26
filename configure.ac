@@ -198,6 +198,16 @@ AC_SUBST([GRAS_DEP])
 ## (must be placed after any compilation tests since our overprotective flags
 ##  let some tests fail)
 
+# Check whether we are doing a regular build or a GRAMINE (minimal) one
+# Next line is modified by sed when building gramine source tree
+gramine_mode=no
+if test x$gramine_mode = xyes
+then
+  USE_MAINTAINER_MODE=no
+fi
+AM_CONDITIONAL(GRAMINE_MODE,test x$gramine_mode != xno)
+
+
 AM_MAINTAINER_MODE
 if test x$USE_MAINTAINER_MODE = xyes 
 then
@@ -222,6 +232,7 @@ SG_CONFIGURE_PART(Check for programs...)
 AC_CHECK_PROG(BASH, bash, `which bash`, /bin/sh)
 WARNING="This file is generated, do not edit"
 AC_SUBST(WARNING)
+
 
 # Can we rebuild the parsers?
 # We really want flex and refuse other lex. So, the parser is portable and
@@ -269,6 +280,8 @@ AC_CONFIG_FILES([
   src/Makefile
   src/ucontext_stack.h
 ])
+
+# GRAMINE_CUT_BEGIN
 
 # Testsuite
 
@@ -346,6 +359,7 @@ AC_CONFIG_FILES([
 #    examples/gras/alnem/Makefile     examples/gras/alnem/test_sg
 
 
+# GRAMINE_CUT_END
 
 AC_OUTPUT
 

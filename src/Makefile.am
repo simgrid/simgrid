@@ -104,7 +104,6 @@ VERSION_INFO= -version-info 0:0:0
 #   using this trick is ready for a "stable" release (say, in Debian).
 
 lib_LTLIBRARIES= libsimgrid.la libgras.la
-noinst_PROGRAMS=testall
 
 COMMON_SRC=\
   \
@@ -189,6 +188,8 @@ AMOK_SRC= \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
   amok/PeerManagement/peermanagement.c
 
+if GRAMINE_MODE
+else 
 ###
 ### Testing infrastructure
 ###
@@ -202,6 +203,7 @@ AMOK_SRC= \
 
 # Suites and tests run in the given order.
 
+noinst_PROGRAMS=testall
 TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
             xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
             xbt/config.c
@@ -218,7 +220,7 @@ testall_SOURCES= $(TEST_UNITS) simgrid_units_main.c
 testall_LDADD=libgras.la
 TESTS=testall
 
-EXTRA_DIST+=$(testall_SOURCES)
+EXTRA_DIST+=$t(estall_SOURCES)
 
 if MAINTAINER_MODE
 cunit_unit.c: xbt/cunit.c
@@ -288,6 +290,7 @@ $(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graph
 	@echo "ERROR: Please install it, or if you didn't modify this file, try this:"
 	@echo "ERROR:   touch include/xbt/graphxml.h src/xbt/graphxml.l"
 	@exit 1
+endif
 endif
 endif
 
