@@ -429,6 +429,7 @@ static void _apply_control(xbt_log_category_t cat) {
       xbt_log_threshold_set(cat, setting->thresh);
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
 
+
       if (cat->threshold <= xbt_log_priority_debug) {
         _log_ev.cat = cat;
         _log_ev.priority = xbt_log_priority_debug;
