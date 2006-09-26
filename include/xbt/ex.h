@@ -448,7 +448,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 #define THROW7(c,v,m,a1,a2,a3,a4,a5,a6,a7) _THROW(c,v,bprintf(m,a1,a2,a3,a4,a5,a6,a7))
 
 #define THROW_IMPOSSIBLE     THROW0(unknown_error,0,"The Impossible Did Happen (yet again)")
-#define THROW_UNIMPLEMENTED  THROW1(unknown_error,0,"Function %s unimplemented",__FUNCTION__)
+#define THROW_UNIMPLEMENTED  THROW1(unknown_error,0,"Function %s unimplemented",_XBT_FUNCTION)
 
 #ifndef NDEBUG
 #  define DIE_IMPOSSIBLE       xbt_assert0(0,"The Impossible Did Happen (yet again)")
