@@ -220,7 +220,7 @@ testall_SOURCES= $(TEST_UNITS) simgrid_units_main.c
 testall_LDADD=libgras.la
 TESTS=testall
 
-EXTRA_DIST+=$t(estall_SOURCES)
+EXTRA_DIST+=$(testall_SOURCES)
 
 if MAINTAINER_MODE
 cunit_unit.c: xbt/cunit.c
