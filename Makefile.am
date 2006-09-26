@@ -23,9 +23,9 @@ TAGS: $(SOURCE_FILES)
 tags: TAGS
 
 gramine:
-	rm -rf gramine-@VERSION@
+	rm -rf gramine-@VERSION@ gramine-@VERSION@.tar*
 	@echo "# Setup sources..."
-	for n in `find include src -name '*.[chl]'`; do \
+	for n in `find include src -name '*.[ch]'`; do \
 	  mkdir -p gramine-@VERSION@/`dirname $$n`; \
 	   perl -e '$$/ = undef; $$l=<>; while ($$l=~ m,(/\*.*?\*/),s) { $$rep=$$1; $$rep=~s/\S//sg; $$l=~s,/\*.*?\*/,$$rep,s; } print $$l;' < $$n > gramine-@VERSION@/$$n; \
 	done
@@ -39,8 +39,8 @@ gramine:
 	  sed  -e '/^# GRAMINE_CUT_BEGIN/,/^# GRAMINE_CUT_END/d' \
 	       -e 's/gramine_mode=no/gramine_mode=yes/' $$n > gramine-@VERSION@/$$n; \
 	done
-	cp install[-.]sh config.sub config.guess depcomp missing ltmain.sh gramine-@VERSION@/
 	chmod +x gramine-@VERSION@/configure
+	cp install[-.]sh config.sub config.guess depcomp missing ltmain.sh gramine-@VERSION@/$$n
 	tar cf gramine-@VERSION@.tar gramine-@VERSION@ ; bzip2 -9 gramine-@VERSION@.tar
 	tar cf gramine-@VERSION@.tar gramine-@VERSION@ ; gzip -9 gramine-@VERSION@.tar
 
