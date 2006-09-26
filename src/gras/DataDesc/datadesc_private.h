@@ -20,7 +20,7 @@
 #include "xbt/dict.h"
 #include "xbt/set.h"
 
-#include "gras_config.h" /* GRAS_THISARCH */
+#include "portable.h" /* GRAS_THISARCH */
 
 #include "gras/transport.h"  /* socket handling */
 
