@@ -195,9 +195,10 @@ double MSG_get_host_speed(m_host_t h)
  */
 int MSG_host_is_avail (m_host_t h)
 {
+  e_surf_cpu_state_t cpustate;
   xbt_assert0((h!= NULL), "Invalid parameters");
 
-  e_surf_cpu_state_t cpustate =
+  cpustate =
     surf_workstation_resource->extension_public->get_state(h->simdata->host);
 
   xbt_assert0((cpustate == SURF_CPU_ON || cpustate == SURF_CPU_OFF),

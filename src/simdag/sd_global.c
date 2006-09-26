@@ -20,6 +20,9 @@ SD_global_t sd_global = NULL;
  * \see SD_create_environment(), SD_exit()
  */
 void SD_init(int *argc, char **argv) {
+
+  s_SD_task_t task;
+  
   if (SD_INITIALISED()) {
     xbt_assert0(0, "SD_init() already called");
   }
@@ -34,7 +37,6 @@ void SD_init(int *argc, char **argv) {
   sd_global->recyclable_route = NULL;
   sd_global->watch_point_reached = 0;
 
-  s_SD_task_t task;
   sd_global->not_scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->ready_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));

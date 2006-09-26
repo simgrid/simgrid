@@ -19,9 +19,11 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task);
  * \see SD_task_destroy()
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount) {
+
+  SD_task_t task;
   SD_CHECK_INIT_DONE();
 
-  SD_task_t task = xbt_new(s_SD_task_t, 1);
+  task = xbt_new(s_SD_task_t, 1);
 
   /* general information */
   task->data = data; /* user data */
@@ -191,11 +193,16 @@ double SD_task_get_remaining_amount(SD_task_t task) {
 
 /* temporary function for debbuging */
 static void __SD_print_dependencies(SD_task_t task) {
-  INFO1("The following tasks must be executed before %s:", SD_task_get_name(task));
-  xbt_dynar_t dynar = task->tasks_before;
-  int length = xbt_dynar_length(dynar);
+  xbt_dynar_t dynar;
+  int length;
   int i;
   SD_dependency_t dependency;
+
+  INFO1("The following tasks must be executed before %s:", SD_task_get_name(task));
+  dynar = task->tasks_before;
+  length = xbt_dynar_length(dynar);
+
+
   for (i = 0; i < length; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     INFO1(" %s", SD_task_get_name(dependency->src));
@@ -233,14 +240,19 @@ static void __SD_task_dependency_destroy(void *dependency) {
  * \see SD_task_dependency_remove()
  */
 void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-
-  xbt_dynar_t dynar = src->tasks_after;
-  int length = xbt_dynar_length(dynar);
+  xbt_dynar_t dynar;
+  int length;
   int found = 0;
   int i;
   SD_dependency_t dependency;
+
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+
+  dynar = src->tasks_after;
+  length = xbt_dynar_length(dynar);
+
+
 
   if (src == dst) 
     THROW1(arg_error, 0, "Cannot add a dependency between task '%s' and itself",
@@ -297,15 +309,20 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
  * \see SD_task_dependency_add()
  */
 void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
+
+  xbt_dynar_t dynar;
+  int length;
+  int found = 0;
+  int i;
+  SD_dependency_t dependency;
+
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
 
   /* remove the dependency from src->tasks_after */
-  xbt_dynar_t dynar = src->tasks_after;
-  int length = xbt_dynar_length(dynar);
-  int found = 0;
-  int i;
-  SD_dependency_t dependency;
+  dynar = src->tasks_after;
+  length = xbt_dynar_length(dynar);
+
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     if (dependency->dst == dst) {
@@ -352,14 +369,20 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst) {
  * \see SD_task_dependency_add()
  */
 void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
 
-  xbt_dynar_t dynar = src->tasks_after;
-  int length = xbt_dynar_length(dynar);
+  xbt_dynar_t dynar;
+  int length;
   int found = 0;
   int i;
   SD_dependency_t dependency;
+
+
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+
+  dynar = src->tasks_after;
+  length = xbt_dynar_length(dynar);
+
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     found = (dependency->dst == dst);
@@ -373,10 +396,11 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst) {
 static void __SD_print_watch_points(SD_task_t task) {
   static const int state_masks[] = {SD_SCHEDULED, SD_RUNNING, SD_READY, SD_DONE, SD_FAILED};
   static const char* state_names[] = {"scheduled", "running", "ready", "done", "failed"};
+  int i;
 
   INFO2("Task '%s' watch points (%x): ", SD_task_get_name(task), task->watch_points);
 
-  int i;
+
   for (i = 0; i < 5; i++) {
     if (task->watch_points & state_masks[i])
       INFO1("%s ", state_names[i]);
@@ -443,14 +467,15 @@ double SD_task_get_execution_time(SD_task_t task,
 				  const double *computation_amount,
 				  const double *communication_amount,
 				  double rate) {
+  double time, max_time = 0.0;
+  int i, j;
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL && workstation_nb > 0 && workstation_list != NULL &&
 	      computation_amount != NULL && communication_amount != NULL,
 	      "Invalid parameter");
 
   /* the task execution time is the maximum execution time of the parallel tasks */
-  double time, max_time = 0.0;
-  int i, j;
+
   for (i = 0; i < workstation_nb; i++) {
     time = SD_workstation_get_computation_time(workstation_list[i], computation_amount[i]);
     
@@ -484,6 +509,9 @@ double SD_task_get_execution_time(SD_task_t task,
 void SD_task_schedule(SD_task_t task, int workstation_nb,
 		     const SD_workstation_t *workstation_list, const double *computation_amount,
 		     const double *communication_amount, double rate) {
+
+  int communication_nb;
+  
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
   xbt_assert0(workstation_nb > 0, "workstation_nb must be positive");
@@ -497,7 +525,7 @@ void SD_task_schedule(SD_task_t task, int workstation_nb,
   task->computation_amount = xbt_new(double, workstation_nb);
   memcpy(task->computation_amount, computation_amount, sizeof(double) * workstation_nb);
 
-  int communication_nb = workstation_nb * workstation_nb;
+  communication_nb = workstation_nb * workstation_nb;
   task->communication_amount = xbt_new(double, communication_nb);
   memcpy(task->communication_amount, communication_amount, sizeof(double) * communication_nb);
 
@@ -559,14 +587,17 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task) {
  * the task gets out of its fifos.
  */
 void __SD_task_really_run(SD_task_t task) {
+
+  int i;
+  void **surf_workstations;
+
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
   xbt_assert2(__SD_task_is_ready_or_in_fifo(task), "Task '%s' is not ready or in a fifo! Task state: %d",
 	   SD_task_get_name(task), SD_task_get_state(task));
   xbt_assert1(task->workstation_list != NULL, "Task '%s': workstation_list is NULL!", SD_task_get_name(task));
 
-  int i;
-  void **surf_workstations;
+
 
   DEBUG1("Really running task '%s'", SD_task_get_name(task));
 
@@ -616,14 +647,16 @@ void __SD_task_really_run(SD_task_t task) {
  * Returns whether the task has started.
  */
 int __SD_task_try_to_run(SD_task_t task) {
+
+  int can_start = 1;
+  int i;
+  SD_workstation_t workstation;
+
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
   xbt_assert2(__SD_task_is_ready(task), "Task '%s' is not ready! Task state: %d",
 	   SD_task_get_name(task), SD_task_get_state(task));
 
-  int can_start = 1;
-  int i;
-  SD_workstation_t workstation;
 
   for (i = 0; i < task->workstation_nb; i++) {
     can_start = !__SD_workstation_is_busy(task->workstation_list[i]);
@@ -657,19 +690,22 @@ int __SD_task_try_to_run(SD_task_t task) {
  * which were waiting in fifos for the end of `task'
  */
 void __SD_task_just_done(SD_task_t task) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(task != NULL, "Invalid parameter");
-  xbt_assert1(__SD_task_is_running(task), "The task must be running! Task state: %d", SD_task_get_state(task));
-  xbt_assert1(task->workstation_list != NULL, "Task '%s': workstation_list is NULL!", SD_task_get_name(task));
-
-  int i, j;
+   int i, j;
   SD_workstation_t workstation;
 
   SD_task_t candidate;
   int candidate_nb = 0;
   int candidate_capacity = 8;
-  SD_task_t *candidates = xbt_new(SD_task_t, 8);
+  SD_task_t *candidates;
   int can_start = 1;
+
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(task != NULL, "Invalid parameter");
+  xbt_assert1(__SD_task_is_running(task), "The task must be running! Task state: %d", SD_task_get_state(task));
+  xbt_assert1(task->workstation_list != NULL, "Task '%s': workstation_list is NULL!", SD_task_get_name(task));
+
+
+  candidates = xbt_new(SD_task_t, 8);
 
   __SD_task_set_state(task, SD_DONE);
   surf_workstation_resource->common_public->action_free(task->surf_action);

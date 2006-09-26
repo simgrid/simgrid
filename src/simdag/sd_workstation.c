@@ -10,17 +10,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
 /* Creates a workstation and registers it in SD.
  */
 SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data) {
+
+  SD_workstation_t workstation;
+  const char *name;
   SD_CHECK_INIT_DONE();
   xbt_assert0(surf_workstation != NULL, "surf_workstation is NULL !");
 
-  SD_workstation_t workstation = xbt_new(s_SD_workstation_t, 1);
+  workstation = xbt_new(s_SD_workstation_t, 1);
   workstation->surf_workstation = surf_workstation;
   workstation->data = data; /* user data */
   workstation->access_mode = SD_WORKSTATION_SHARED_ACCESS; /* default mode is shared */
   workstation->task_fifo = NULL;
   workstation->current_task = NULL;
   
-  const char *name = SD_workstation_get_name(workstation);
+  name = SD_workstation_get_name(workstation);
   xbt_dict_set(sd_global->workstations, name, workstation, __SD_workstation_destroy); /* add the workstation to the dictionary */
   sd_global->workstation_count++;
 
@@ -52,13 +55,16 @@ SD_workstation_t SD_workstation_get_by_name(const char *name) {
  * \see SD_workstation_get_number()
  */
 const SD_workstation_t* SD_workstation_get_list(void) {
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(SD_workstation_get_number() > 0, "There is no workstation!");
 
   xbt_dict_cursor_t cursor;
   char *key;
   void *data;
   int i;
+
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(SD_workstation_get_number() > 0, "There is no workstation!");
+
+
 
   if (sd_global->workstation_list == NULL) { /* this is the first time the function is called */
     sd_global->workstation_list = xbt_new(SD_workstation_t, sd_global->workstation_count);
@@ -134,6 +140,13 @@ const char* SD_workstation_get_name(SD_workstation_t workstation) {
  * \see SD_route_get_size(), SD_link_t
  */
 const SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
+  void *surf_src;
+  void *surf_dst;
+  const void **surf_route;
+  int route_size;
+  const char *link_name;
+  int i;
+  
   SD_CHECK_INIT_DONE();
 
   if (sd_global->recyclable_route == NULL) {
@@ -141,14 +154,13 @@ const SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
     sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_number());
   }
 
-  void *surf_src = src->surf_workstation;
-  void *surf_dst = dst->surf_workstation;
+  surf_src = src->surf_workstation;
+  surf_dst = dst->surf_workstation;
 
-  const void **surf_route = surf_workstation_resource->extension_public->get_route(surf_src, surf_dst);
-  int route_size = surf_workstation_resource->extension_public->get_route_size(surf_src, surf_dst);
+  surf_route = surf_workstation_resource->extension_public->get_route(surf_src, surf_dst);
+  route_size = surf_workstation_resource->extension_public->get_route_size(surf_src, surf_dst);
 
-  const char *link_name;
-  int i;
+
   for (i = 0; i < route_size; i++) {
     link_name = surf_workstation_resource->extension_public->get_link_name(surf_route[i]);
     sd_global->recyclable_route[i] = xbt_dict_get(sd_global->links, link_name);
@@ -221,12 +233,17 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation, double 
  * \see SD_route_get_current_bandwidth()
  */
 double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst) {
+
+  const SD_link_t *links;
+  int nb_links;
+  double latency ;
+  int i;
+
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  const SD_link_t *links = SD_route_get_list(src, dst);
-  int nb_links = SD_route_get_size(src, dst);
-  double latency = 0.0;
-  int i;
+  links = SD_route_get_list(src, dst);
+  nb_links = SD_route_get_size(src, dst);
+  latency = 0.0;
   
   for (i = 0; i < nb_links; i++) {
     latency += SD_link_get_current_latency(links[i]);
@@ -245,12 +262,20 @@ double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst) 
  * \see SD_route_get_current_latency()
  */
 double SD_route_get_current_bandwidth(SD_workstation_t src, SD_workstation_t dst) {
+
+  const SD_link_t *links;
+  int nb_links;
+  double bandwidth;
+  double min_bandwidth;
+  int i;
+
   SD_CHECK_INIT_DONE();
   xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  const SD_link_t *links = SD_route_get_list(src, dst);
-  int nb_links = SD_route_get_size(src, dst);
-  double bandwidth, min_bandwidth = -1.0;
-  int i;
+
+  links = SD_route_get_list(src, dst);
+  nb_links = SD_route_get_size(src, dst);
+  bandwidth = min_bandwidth = -1.0;
+
   
   for (i = 0; i < nb_links; i++) {
     bandwidth = SD_link_get_current_bandwidth(links[i]);
@@ -273,17 +298,22 @@ double SD_route_get_current_bandwidth(SD_workstation_t src, SD_workstation_t dst
  */
 double SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t dst,
 						   double communication_amount) {
+
+
   /* total time = latency + transmission time of the slowest link
      transmission time of a link = communication amount / link bandwidth */
-  SD_CHECK_INIT_DONE();
-  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
-  xbt_assert0(communication_amount >= 0, "communication_amount must be greater than or equal to zero");
 
   const SD_link_t *links;
   int nb_links;
   double bandwidth, min_bandwidth;
   double latency;
   int i;
+
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+  xbt_assert0(communication_amount >= 0, "communication_amount must be greater than or equal to zero");
+
+
   
   if (communication_amount == 0.0)
     return 0.0;
@@ -383,11 +413,14 @@ int __SD_workstation_is_busy(SD_workstation_t workstation) {
 /* Destroys a workstation.
  */
 void __SD_workstation_destroy(void *workstation) {
+
+  SD_workstation_t w;
+
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
   /* workstation->surf_workstation is freed by surf_exit and workstation->data is freed by the user */
 
-  SD_workstation_t w = (SD_workstation_t) workstation;
+  w = (SD_workstation_t) workstation;
 
   if (w->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
     xbt_fifo_free(w->task_fifo);

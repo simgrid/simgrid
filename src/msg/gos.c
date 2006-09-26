@@ -24,6 +24,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   m_process_t process = MSG_process_self();
   m_task_t t = NULL;
   m_host_t h = NULL;
+  m_task_t task_to_wait_for;
   simdata_task_t t_simdata = NULL;
   simdata_host_t h_simdata = NULL;
   int first_time = 1;
@@ -97,7 +98,8 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   while(MSG_process_is_suspended(t_simdata->sender)) {
     DEBUG1("Oooups, the sender (%s) has been suspended in the meantime. Let's wait for him", 
 	   t_simdata->sender->name);
-    m_task_t task_to_wait_for = t_simdata->sender->simdata->waiting_task;
+    /*m_task_t task_to_wait_for = t_simdata->sender->simdata->waiting_task;*/
+    task_to_wait_for = t_simdata->sender->simdata->waiting_task;
     if(__MSG_process_isBlocked(t_simdata->sender)) {
       DEBUG0("He's blocked. Let's wait for him to go in the suspended state");
       __MSG_process_unblock(t_simdata->sender);
