@@ -16,11 +16,10 @@ DISTCLEANFILES =  *~
 ACLOCAL = aclocal-1.9 -I acmacro
 AUTOMAKE_OPTIONS = gnu
 
-SOURCE_FILES = $(shell find . -name "*.[ch]")
-TAGS: $(SOURCE_FILES)
-	@etags $(SOURCE_FILES)
-
-tags: TAGS
+check-local:
+	echo @build_id@ > stamp.check
+all-local:
+	echo @build_id@ > stamp.build
 
 gramine:
 	rm -rf gramine-@VERSION@ gramine-@VERSION@.tar*

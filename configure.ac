@@ -19,8 +19,6 @@ ACLOCAL="$ACLOCAL -I acmacro"
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
-
-AC_SUBST(ac_configure_args)
 ###############
 ## System checks
 ##
@@ -263,6 +261,18 @@ if test x$ADDR2LINE != x ; then
   AC_DEFINE_UNQUOTED(ADDR2LINE,"$ADDR2LINE",[Path to the addr2line tool])
 fi
 
+AC_SUBST(ac_configure_args)
+# Can we make status line about the compilation result?
+AC_CHECK_PROG(MD5SUM,md5sum,`which md5sum`)
+if test x$MD5SUM != xno ; then
+  build_version=`find -name '*.[ch]' |grep -v src/ucontext_stack.h | grep -v src/gras_config.h |\ 
+                 xargs cat| $MD5SUM | sed 's/ .*$//'`
+else 
+  build_version="no_md5sum_binary"
+fi
+build_id="$PACKAGE ver=$VERSION build=$build_version args=\"$ac_configure_args\""
+AC_SUBST(build_id)
+
 ###################
 ## Makes the output
 ##
@@ -386,5 +396,6 @@ if test -e CVS && test x$USE_MAINTAINER_MODE != xyes ; then
   echo "WARNING: ./configure --enable-maintainer-mode  $ac_configure_args"
   echo "WARNING:"
 fi
+echo $build_id > stamp.configure
 
 exit 0;
