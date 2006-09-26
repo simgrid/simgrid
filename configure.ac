@@ -19,6 +19,8 @@ ACLOCAL="$ACLOCAL -I acmacro"
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
+
+AC_SUBST(ac_configure_args)
 ###############
 ## System checks
 ##
