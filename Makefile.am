@@ -39,8 +39,9 @@ gramine:
 	  sed  -e '/^# GRAMINE_CUT_BEGIN/,/^# GRAMINE_CUT_END/d' \
 	       -e 's/gramine_mode=no/gramine_mode=yes/' $$n > gramine-@VERSION@/$$n; \
 	done
+	cp install[-.]sh config.sub config.guess depcomp missing ltmain.sh gramine-@VERSION@/
 	chmod +x gramine-@VERSION@/configure
-	  
+	tar cfz gramine-@VERSION@.tar.gz gramine-@VERSION@/
 
 if MAINTAINER_MODE
 ##
