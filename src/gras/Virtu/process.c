@@ -113,7 +113,6 @@ gras_procdata_init() {
   int cursor;
    
   xbt_ex_t e;
-  void *data;
   xbt_set_elm_t elem;
 
   if (!pd->libdata) {
@@ -136,7 +135,7 @@ gras_procdata_init() {
     DEBUG1("Create the procdata for %s",fab.name);
     /* Check for our own errors */
     TRY {
-      data = xbt_set_get_by_name(pd->libdata, fab.name);
+      xbt_set_get_by_name(pd->libdata, fab.name);
       found = 1;
     } CATCH(e) {
       xbt_ex_free(e);
