@@ -66,8 +66,8 @@
 
 #       undef  sock_errno
 #       undef  sock_errstr
-#       define sock_errno      WSAGetLastError()
-#       define sock_errstr     gras_wsa_err2string(WSAGetLastError())
+#       define sock_errno         WSAGetLastError()
+#       define sock_errstr(err)   gras_wsa_err2string(err)
 
 const char *gras_wsa_err2string(int errcode);
 
@@ -77,8 +77,8 @@ const char *gras_wsa_err2string(int errcode);
 #else
 #       define tcp_read( s, buf, len)   read( s, buf, len )
 #       define tcp_write( s, buf, len)  write( s, buf, len )
-#       define sock_errno      errno
-#       define sock_errstr     strerror(errno)
+#       define sock_errno        errno
+#       define sock_errstr(err)  strerror(err)
 
 #       ifdef SHUT_RDWR
 #               define tcp_close( s )   (shutdown( s, SHUT_RDWR ), close( s ))
