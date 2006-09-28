@@ -63,7 +63,7 @@ gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i) {
  *       of 'length' bytes set to 0.
  * FIXME: Check in configure?
  */
-static _XBT_INLINE int 
+static XBT_INLINE int 
 gras_dd_is_r_null(char **r_ptr, long int length) {
   int i;
 
@@ -76,7 +76,7 @@ gras_dd_is_r_null(char **r_ptr, long int length) {
   return 1;
 }
 
-static _XBT_INLINE void
+static XBT_INLINE void
 gras_dd_alloc_ref(xbt_dict_t  refs,
 		  long int     size,
 		  char       **r_ref,

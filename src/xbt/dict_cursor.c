@@ -58,7 +58,7 @@ void xbt_dict_cursor_free(xbt_dict_cursor_t *cursor) {
 /*
  * Sanity check to see if the head contains something
  */
-static _XBT_INLINE void __cursor_not_null(xbt_dict_cursor_t cursor) {
+static XBT_INLINE void __cursor_not_null(xbt_dict_cursor_t cursor) {
   xbt_assert0(cursor, "Null cursor");
 }
 

@@ -97,7 +97,7 @@ void *xbt_swag_extract(xbt_swag_t swag);
 int xbt_swag_size(xbt_swag_t swag);
 int xbt_swag_belongs(void *obj, xbt_swag_t swag);
 
-static _XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
+static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 {
   return (swag->head);
 }

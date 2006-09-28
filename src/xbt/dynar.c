@@ -40,13 +40,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
            xbt_assert1(dynar->used,              \
 			"dynar %p contains nothing",(void*)dynar)
 
-static _XBT_INLINE 
+static XBT_INLINE 
 void _xbt_clear_mem(void * const ptr,
 		     const unsigned long length) {
   memset(ptr, 0, length);
 }
 
-static _XBT_INLINE
+static XBT_INLINE
 void
 _xbt_dynar_expand(xbt_dynar_t const dynar,
                    const int          nb) {
@@ -80,7 +80,7 @@ _xbt_dynar_expand(xbt_dynar_t const dynar,
   }
 }
 
-static _XBT_INLINE
+static XBT_INLINE
 void *
 _xbt_dynar_elm(const xbt_dynar_t  dynar,
 		const unsigned long idx) {
@@ -90,7 +90,7 @@ _xbt_dynar_elm(const xbt_dynar_t  dynar,
   return data + idx*elmsize;
 }
 
-static _XBT_INLINE
+static XBT_INLINE
 void
 _xbt_dynar_get_elm(void  * const       dst,
                     const xbt_dynar_t  dynar,
@@ -100,7 +100,7 @@ _xbt_dynar_get_elm(void  * const       dst,
   memcpy(dst, elm, dynar->elmsize);
 }
 
-static _XBT_INLINE
+static XBT_INLINE
 void
 _xbt_dynar_put_elm(const xbt_dynar_t  dynar,
                     const unsigned long idx,

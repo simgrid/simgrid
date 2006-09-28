@@ -10,7 +10,7 @@
 
 #include "xbt/misc.h"
 
-static _XBT_INLINE void double_update(double *variable, double value) 
+static XBT_INLINE void double_update(double *variable, double value) 
 {
   *variable -= value;
   if(*variable< 0.00001) *variable = 0.0;
