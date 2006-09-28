@@ -73,7 +73,8 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
   gras_socket_t sock;
   sat_request_t request = xbt_new(s_sat_request_t,1);
 
-  INFO4("Start from_name %s:%d -> to_name %s:%d",from_name,from_port,to_name,to_port);
+  VERB4("Start from_name %s:%d -> to_name %s:%d",
+	from_name, from_port, to_name, to_port);
   sock = gras_socket_client(from_name,from_port);
 
   request->peer.name = (char*)to_name;
