@@ -23,7 +23,7 @@ const char *gras_datadesc_cat_names[9] = {
 static gras_datadesc_type_t int_type = NULL;
 static gras_datadesc_type_t pointer_type = NULL;    
 
-static _XBT_INLINE void
+static XBT_INLINE void
 gras_dd_send_int(gras_socket_t sock,int *i, int stable) {
 
   if (!int_type) {
@@ -35,7 +35,7 @@ gras_dd_send_int(gras_socket_t sock,int *i, int stable) {
   gras_trp_send(sock, (char*)i, int_type->size[GRAS_THISARCH], stable);
 }
 
-static _XBT_INLINE void
+static XBT_INLINE void
 gras_dd_recv_int(gras_socket_t sock, int r_arch, int *i) {
 
   if (!int_type) {
