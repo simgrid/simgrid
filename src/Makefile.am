@@ -264,9 +264,9 @@ gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 
 if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
-	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Psurf_parse_ $^
+	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Psurf_parse_ --noline $^
 xbt/graphxml.c: xbt/graphxml.l
-	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pxbt_graph_parse_ $^
+	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pxbt_graph_parse_ --noline $^
 
 if HAVE_FLEXML
 surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
