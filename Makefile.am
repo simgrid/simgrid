@@ -11,7 +11,7 @@ SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS C
 SUBDIRS= include src $(SG_SUBDIRS)
 EXTRA_DIST=$(SG_EXTRA_DIST)
 
-DISTCLEANFILES =  *~  
+DISTCLEANFILES= stamp.configure stamp.build stamp.check *~  
 
 ACLOCAL = aclocal-1.9 -I acmacro
 AUTOMAKE_OPTIONS = gnu
