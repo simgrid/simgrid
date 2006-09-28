@@ -238,14 +238,12 @@ MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel,
 int MSG_task_Iprobe(m_channel_t channel)
 {
   m_host_t h = NULL;
-  simdata_host_t h_simdata = NULL;
 
   xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   DEBUG2("Probing on channel %d (%s)", channel,h->name);
   CHECK_HOST();
   h = MSG_host_self();
-  h_simdata = h->simdata;
-  return(xbt_fifo_get_first_item(h_simdata->mbox[channel])!=NULL);
+  return(xbt_fifo_get_first_item(h->simdata->mbox[channel])!=NULL);
 }
 
 /** \ingroup msg_gos_functions
@@ -260,14 +258,12 @@ int MSG_task_Iprobe(m_channel_t channel)
 int MSG_task_probe_from(m_channel_t channel)
 {
   m_host_t h = NULL;
-  simdata_host_t h_simdata = NULL;
   xbt_fifo_item_t item;
   m_task_t t;
 
   xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   CHECK_HOST();
   h = MSG_host_self();
-  h_simdata = h->simdata;
 
   DEBUG2("Probing on channel %d (%s)", channel,h->name);
    
@@ -367,7 +363,6 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
  */
 int MSG_task_probe_from_host(int channel, m_host_t host)
 {
-  simdata_host_t h_simdata = NULL;
   xbt_fifo_item_t item;
   m_task_t t;
   int count = 0;
@@ -376,7 +371,6 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
   xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
   CHECK_HOST();
   h = MSG_host_self();
-  h_simdata = h->simdata;
 
   DEBUG2("Probing on channel %d (%s)", channel,h->name);
    
