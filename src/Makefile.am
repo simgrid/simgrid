@@ -260,7 +260,7 @@ endif
 
 
 gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
-	set -e;@LEX@ -o$@ -Pgras_ddt_parse_ $^
+	set -e;@LEX@ -o$@ -Pgras_ddt_parse_ --noline $^
 
 if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l

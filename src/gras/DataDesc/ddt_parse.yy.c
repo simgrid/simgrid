@@ -1,6 +1,5 @@
-#line 2 "gras/DataDesc/ddt_parse.yy.c"
 
-#line 4 "gras/DataDesc/ddt_parse.yy.c"
+#line 3 "gras/DataDesc/ddt_parse.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -480,13 +479,11 @@ int gras_ddt_parse__flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *gras_ddt_parse_text;
-#line 1 "gras/DataDesc/ddt_parse.yy.l"
 /* $Id$ */
 /* DataDesc/ddt_parse -- automatic parsing of data structures */
 /* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#line 12 "gras/DataDesc/ddt_parse.yy.l"
 #include "gras/DataDesc/datadesc_private.h"
 #include "gras/DataDesc/ddt_parse.yy.h"
 #include <string.h>
@@ -500,8 +497,6 @@ char *gras_ddt_parse_text;
   const char *definition;
   XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_lexer,gras_ddt_parse,"The crude internals of the lexer used for type parsing");
 #define SHOW_WHERE DEBUG4("%d:%d (char #%d): seen '%s'", gras_ddt_parse_line_pos,gras_ddt_parse_col_pos,gras_ddt_parse_char_pos,gras_ddt_parse_text)
-
-#line 505 "gras/DataDesc/ddt_parse.yy.c"
 
 #define INITIAL 0
 #define annotate 1
@@ -655,12 +650,8 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 32 "gras/DataDesc/ddt_parse.yy.l"
-
    int comment_caller=0;
    int annotate_caller=0;
-
-#line 664 "gras/DataDesc/ddt_parse.yy.c"
 
 	if ( (yy_init) )
 		{
@@ -745,12 +736,10 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 36 "gras/DataDesc/ddt_parse.yy.l"
 
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 38 "gras/DataDesc/ddt_parse.yy.l"
 { /****************** ANNOTATION ************************/
   DEBUG0("Begin annotation");
   annotate_caller = INITIAL;
@@ -761,7 +750,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 45 "gras/DataDesc/ddt_parse.yy.l"
 { /* trim annotation */
   DEBUG0("Begin annotation");
   annotate_caller = foo;
@@ -772,7 +760,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 53 "gras/DataDesc/ddt_parse.yy.l"
 {
   DEBUG0("End annotation");
   gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
@@ -782,7 +769,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 60 "gras/DataDesc/ddt_parse.yy.l"
 {
   PARSE_ERROR0("``/*g'' construct closed by a regular ``*/''");
 }
@@ -790,14 +776,12 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 63 "gras/DataDesc/ddt_parse.yy.l"
 {
   PARSE_ERROR0("Type annotation cannot spread over several lines");
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 67 "gras/DataDesc/ddt_parse.yy.l"
 { /* eat the rest */
   gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
   gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
@@ -806,7 +790,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 73 "gras/DataDesc/ddt_parse.yy.l"
 { /****************** COMMENTS ************************/
   /* constructs like : */
     /*g [string] g*/ 
@@ -817,7 +800,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 81 "gras/DataDesc/ddt_parse.yy.l"
 {
   comment_caller = foo;
   BEGIN(comment);
@@ -825,20 +807,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 86 "gras/DataDesc/ddt_parse.yy.l"
 { /* eat anything that's not a '*' */
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 88 "gras/DataDesc/ddt_parse.yy.l"
 { /* eat up '*'s not followed by '/'s */
 }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 90 "gras/DataDesc/ddt_parse.yy.l"
 {
   ++gras_ddt_parse_line_pos;
   gras_ddt_parse_col_pos=0;
@@ -847,7 +826,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 95 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos+= strlen(gras_ddt_parse_text);
   gras_ddt_parse_col_pos+= strlen(gras_ddt_parse_text);
@@ -856,7 +834,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 101 "gras/DataDesc/ddt_parse.yy.l"
 {  /****************** STATEMENTS ************************/
   gras_ddt_parse_char_pos += strlen(gras_ddt_parse_text);
   gras_ddt_parse_col_pos += strlen(gras_ddt_parse_text);
@@ -866,7 +843,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 107 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
@@ -876,7 +852,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 113 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -886,7 +861,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 119 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
@@ -896,7 +870,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 125 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -906,7 +879,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 131 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++; 
   gras_ddt_parse_col_pos++; 
@@ -916,7 +888,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 137 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -926,7 +897,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 143 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -936,7 +906,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 149 "gras/DataDesc/ddt_parse.yy.l"
 {
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -946,7 +915,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 155 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -957,7 +925,6 @@ YY_RULE_SETUP
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 161 "gras/DataDesc/ddt_parse.yy.l"
 {
  gras_ddt_parse_line_pos++; 
  gras_ddt_parse_char_pos++;
@@ -967,7 +934,6 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 167 "gras/DataDesc/ddt_parse.yy.l"
 { 
   gras_ddt_parse_char_pos++;
   gras_ddt_parse_col_pos++;
@@ -976,10 +942,8 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 172 "gras/DataDesc/ddt_parse.yy.l"
 ECHO;
 	YY_BREAK
-#line 983 "gras/DataDesc/ddt_parse.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(annotate):
 case YY_STATE_EOF(comment):
@@ -1948,8 +1912,6 @@ void gras_ddt_parse_free (void * ptr )
 #undef YY_DECL_IS_OURS
 #undef YY_DECL
 #endif
-#line 172 "gras/DataDesc/ddt_parse.yy.l"
-
 
 /* {space}+                { return(TOKEN_SPACE);} */
 
@@ -1993,7 +1955,6 @@ void  gras_ddt_parse_pointer_close(void) {
   gras_ddt_parse_char_pos = 0;
   gras_ddt_parse_tok_num = 0;
 }
-
 
 void  gras_ddt_parse_pointer_string_init(const char *string_to_parse) {
   gras_ddt_input_buffer = gras_ddt_parse__scan_string (string_to_parse);
