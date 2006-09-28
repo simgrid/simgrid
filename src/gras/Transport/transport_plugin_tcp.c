@@ -63,7 +63,7 @@ struct gras_trp_bufdata_{
 /*****************************/
 /* we exchange port number on client side on socket creation,
    so we need to be able to talk right now. */
-static inline void gras_trp_tcp_send(gras_socket_t sock, const char *data,
+static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock, const char *data,
 				     unsigned long int size);
 static int gras_trp_tcp_recv(gras_socket_t sock, char *data,
 			     unsigned long int size);
@@ -71,7 +71,7 @@ static int gras_trp_tcp_recv(gras_socket_t sock, char *data,
 
 static int _gras_tcp_proto_number(void);
 
-static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
+static XBT_INLINE void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
 					       gras_socket_t sock){
   
   struct sockaddr_in addr;
@@ -125,7 +125,7 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
  *
  * Open a socket used to receive messages.
  */
-static inline void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
+static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
 					       gras_socket_t sock){
   int size = sock->buf_size; 
   int on = 1;
@@ -273,7 +273,7 @@ static void gras_trp_sock_socket_close(gras_socket_t sock){
 /************************************/
 /* Temptation to merge this with file data exchange is great, 
    but doesn't work on BillWare (see tcp_write() in portable.h) */
-static inline void gras_trp_tcp_send(gras_socket_t sock,
+static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
 				     const char *data,
 				     unsigned long int size) {
   
@@ -305,7 +305,7 @@ static inline void gras_trp_tcp_send(gras_socket_t sock,
     }
   }
 }
-static inline int 
+static XBT_INLINE int 
 gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
 				   char *data,
 				   unsigned long int size,
