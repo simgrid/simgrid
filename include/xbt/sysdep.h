@@ -35,7 +35,7 @@ void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 #if defined(__GNUC__) || defined(DOXYGEN)
 /** @brief Like strdup, but xbt_die() on error */
-static _XBT_INLINE char *xbt_strdup(const char *s) {
+static XBT_INLINE char *xbt_strdup(const char *s) {
   char *res = NULL;
   if (s) {
     res=strdup(s);
@@ -46,7 +46,7 @@ static _XBT_INLINE char *xbt_strdup(const char *s) {
 }
 /** @brief Like malloc, but xbt_die() on error 
     @hideinitializer */
-static _XBT_INLINE void *xbt_malloc(int n){
+static XBT_INLINE void *xbt_malloc(int n){
   void *res=malloc(n);
   if (!res)
      xbt_die("Memory allocation failed");
@@ -55,7 +55,7 @@ static _XBT_INLINE void *xbt_malloc(int n){
 
 /** @brief like malloc, but xbt_die() on error and memset data to 0
     @hideinitializer */
-static _XBT_INLINE void *xbt_malloc0(int n) {
+static XBT_INLINE void *xbt_malloc0(int n) {
   void *res=calloc(n,1);
   if (!res)
      xbt_die("Memory callocation failed");
@@ -64,7 +64,7 @@ static _XBT_INLINE void *xbt_malloc0(int n) {
   
 /** @brief like realloc, but xbt_die() on error 
     @hideinitializer */
-static _XBT_INLINE void *xbt_realloc(void*p,int s){
+static XBT_INLINE void *xbt_realloc(void*p,int s){
   void *res=res;
   if (s) {
     if (p) {
