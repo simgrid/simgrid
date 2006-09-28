@@ -85,18 +85,18 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
   sock->sd = socket (AF_INET, SOCK_STREAM, 0);
   
   if (sock->sd < 0) {
-    THROW1(system_error,0, "Failed to create socket: %s", sock_errstr);
+    THROW1(system_error,0, "Failed to create socket: %s", sock_errstr(sock_errno));
   }
 
   if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
       setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
-     WARN1("setsockopt failed, cannot set buffer size: %s",sock_errstr);
+     WARN1("setsockopt failed, cannot set buffer size: %s",sock_errstr(sock_errno));
   }
   
   he = gethostbyname (sock->peer_name);
   if (he == NULL) {
     THROW2(system_error,0, "Failed to lookup hostname %s: %s",
-	   sock->peer_name, sock_errstr);
+	   sock->peer_name, sock_errstr(sock_errno));
   }
   
   haddr = ((struct in_addr *) (he->h_addr_list)[0]);
@@ -110,7 +110,7 @@ static inline void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
     tcp_close(sock->sd);
     THROW3(system_error,0,
 	   "Failed to connect socket to %s:%d (%s)",
-	   sock->peer_name, sock->peer_port, sock_errstr);
+	   sock->peer_name, sock->peer_port, sock_errstr(sock_errno));
   }
 
   gras_trp_tcp_send(sock,(char*)&myport,sizeof(uint32_t));
@@ -137,27 +137,27 @@ static inline void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_family = AF_INET;
   if((sock->sd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    THROW1(system_error,0,"Socket allocation failed: %s", sock_errstr);
+    THROW1(system_error,0,"Socket allocation failed: %s", sock_errstr(sock_errno));
 
   if (setsockopt(sock->sd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)))
      THROW1(system_error,0,"setsockopt failed, cannot condition the socket: %s",
-	    sock_errstr);
+	    sock_errstr(sock_errno));
    
   if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
       setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
      WARN1("setsockopt failed, cannot set buffer size: %s",
-	   sock_errstr);
+	   sock_errstr(sock_errno));
   }
 	
   if (bind(sock->sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
     tcp_close(sock->sd);
-    THROW2(system_error,0,"Cannot bind to port %d: %s",sock->port, sock_errstr);
+    THROW2(system_error,0,"Cannot bind to port %d: %s",sock->port, sock_errstr(sock_errno));
   }
 
   DEBUG2("Listen on port %d (sd=%d)",sock->port, sock->sd);
   if (listen(sock->sd, 5) < 0) {
     tcp_close(sock->sd);
-    THROW2(system_error,0,"Cannot listen on port %d: %s",sock->port,sock_errstr);
+    THROW2(system_error,0,"Cannot listen on port %d: %s",sock->port,sock_errstr(sock_errno));
   }
 
   VERB2("Openned a server socket on port %d (sd=%d)",sock->port,sock->sd);
@@ -182,24 +182,24 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock) {
   gras_trp_socket_new(1,&res);
 
   sd = accept(sock->sd, (struct sockaddr *)&peer_in, &peer_in_len);
-  tmp_errno = errno;
+  tmp_errno = sock_errno;
 
   if (sd == -1) {
     gras_socket_close(sock);
     THROW1(system_error,0,
-	   "Accept failed (%s). Droping server socket.", sock_errstr);
+	   "Accept failed (%s). Droping server socket.", sock_errstr(tmp_errno));
   }
   
   if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *)&i, s) 
       || setsockopt(sd, _gras_tcp_proto_number(), TCP_NODELAY, (char *)&i, s))
     THROW1(system_error,0,"setsockopt failed, cannot condition the socket: %s",
-	   sock_errstr);
+	   sock_errstr(tmp_errno));
 
   res->buf_size = sock->buf_size;
   size = sock->buf_size;
   if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size))
       || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size)))
-    WARN1("setsockopt failed, cannot set buffer size: %s", sock_errstr);
+    WARN1("setsockopt failed, cannot set buffer size: %s", sock_errstr(tmp_errno));
      
   res->plugin    = sock->plugin;
   res->incoming  = sock->incoming;
@@ -259,7 +259,7 @@ static void gras_trp_sock_socket_close(gras_socket_t sock){
   /* close the socket */
   if(tcp_close(sock->sd) < 0) {
     WARN3("error while closing tcp socket %d: %d (%s)\n", 
-	     sock->sd, sock_errno, sock_errstr);
+	     sock->sd, sock_errno, sock_errstr(sock_errno));
   }
 
 }
@@ -293,7 +293,7 @@ static inline void gras_trp_tcp_send(gras_socket_t sock,
        
       THROW4(system_error,0,"write(%d,%p,%ld) failed: %s",
 	     sock->sd, data, size,
-	     sock_errstr);
+	     sock_errstr(sock_errno));
     }
     
     if (status) {
@@ -301,7 +301,7 @@ static inline void gras_trp_tcp_send(gras_socket_t sock,
       data  += status;
     } else {
       THROW1(system_error,0,"file descriptor closed (%s)",
-             sock_errstr);
+             sock_errstr(sock_errno));
     }
   }
 }
@@ -325,7 +325,7 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
       THROW7(system_error,0,"read(%d,%p,%d) from %s:%d failed: %s; got %d so far",
 	     sock->sd, data+got, (int)size,
 	     gras_socket_peer_name(sock),gras_socket_peer_port(sock),
-	     sock_errstr,
+	     sock_errstr(sock_errno),
 	     got);
     }
     DEBUG2("Got %d more bytes (%s)",status,hexa_str((unsigned char*)data+got,status,0));
