@@ -36,13 +36,22 @@
 
 #if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
 # define _XBT_FUNCTION __FUNCTION__
-# define XBT_INLINE inline
 #elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 # define _XBT_FUNC__ __func__      /* ISO-C99 compliant */
-# define XBT_INLINE inline
 #else
 # define _XBT_FUNCTION "function"
-# define XBT_INLINE 
+#endif
+
+#ifndef __cplusplus
+#    if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
+#        define XBT_INLINE inline
+#    elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#        define XBT_INLINE inline
+#    elif defined(__BORLANDC__) && !defined(__STRICT_ANSI__)
+#        define XBT_INLINE __inline
+#    else
+#        define XBT_INLINE
+#    endif
 #endif
 
 
