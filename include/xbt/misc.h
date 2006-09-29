@@ -52,6 +52,8 @@
 #    else
 #        define XBT_INLINE
 #    endif
+# else
+#    define XBT_INLINE  inline
 #endif
 
 
