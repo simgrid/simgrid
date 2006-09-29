@@ -11,7 +11,15 @@
 #ifndef GRAS_PORTABLE_H
 #define GRAS_PORTABLE_H
 
-#include "gras_config.h"
+/* 
+ * win32 or win64 (__WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).	
+*/ 
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+# include "win32/config.h"
+#  include <windows.h>
+#else
+#  include "gras_config.h"
+#endif
 
 #include <stdarg.h>
 
@@ -37,44 +45,8 @@
 #  include <sys/types.h>    /* sometimes required for fd_set */
 # endif
 
-#ifdef HAVE_WINSOCK2_H
-#  include <winsock2.h>
-#  include <ws2tcpip.h>  /* socklen_t, but doubtful */
-#  ifndef HAVE_WINSOCK_H
-#    define HAVE_WINSOCK_H
-#  endif
-#elif HAVE_WINSOCK_H
-#  include <winsock.h>
-#endif
 
-#ifdef HAVE_WINSOCK_H
-#       define tcp_read( s, buf, len )  recv( s, buf, len, 0 )
-#       define tcp_write( s, buf, len ) send( s, buf, len, 0 )
-#       define ioctl( s, c, a )         ioctlsocket( (s), (c), (a) )
-#       define ioctl_t                          u_long
-#       define AC_SOCKET_INVALID        ((unsigned int) ~0)
-
-#       ifdef SD_BOTH
-#               define tcp_close( s )   (shutdown( s, SD_BOTH ), closesocket( s ))
-#       else
-#               define tcp_close( s )           closesocket( s )
-#       endif
-
-#       define EWOULDBLOCK WSAEWOULDBLOCK
-#       define EINPROGRESS WSAEINPROGRESS
-#       define ETIMEDOUT   WSAETIMEDOUT
-
-#       undef  sock_errno
-#       undef  sock_errstr
-#       define sock_errno         WSAGetLastError()
-#       define sock_errstr(err)   gras_wsa_err2string(err)
-
-const char *gras_wsa_err2string(int errcode);
-
-#       define S_IRGRP 0
-#       define S_IWGRP 0
-
-#else
+#ifndef HAVE_WINSOCK_H
 #       define tcp_read( s, buf, len)   read( s, buf, len )
 #       define tcp_write( s, buf, len)  write( s, buf, len )
 #       define sock_errno        errno
@@ -190,5 +162,32 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
  ****/
 void hexa_print(const char*name, unsigned char *data, int size);
 const char *hexa_str(unsigned char *data, int size, int downside);
+
+/* Windows __declspec(). */
+#if defined (_XBT_USE_DECLSPEC) /* using export/import technique */
+
+#    ifndef _XBT_EXPORT_DECLSPEC
+#        define _XBT_EXPORT_DECLSPEC
+#    endif
+
+#    ifndef _XBT_IMPORT_DECLSPEC
+#        define _XBT_IMPORT_DECLSPEC
+#    endif
+
+#    if defined (_XBT_DESIGNATED_DLL) /* this is a lib which will contain xbt exports */
+#        define  _XBT_DECLSPEC        _XBT_EXPORT_DECLSPEC 
+#    else
+#        define  _XBT_DECLSPEC        _XBT_IMPORT_DECLSPEC   /* other modules, importing xbt exports */
+#    endif
+
+#else /* not using DLL export/import specifications */
+
+#    define _XBT_DECLSPEC
+
+#endif /* #if defined (_XBT_USE_DECLSPEC) */
+
+#if !defined (_XBT_CALL)
+#define _XBT_CALL
+#endif
 
 #endif /* GRAS_PORTABLE_H */
