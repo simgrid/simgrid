@@ -406,54 +406,5 @@ the double. For now, GRAS requires the structures to be compacted. */
 typedef unsigned int uint32_t;
 typedef int socklen_t;
 
-#define tcp_read( s, buf, len )  	recv( s, buf, len, 0 )
-#define tcp_write( s, buf, len )	send( s, buf, len, 0 )
-#define ioctl( s, c, a )        	ioctlsocket( (s), (c), (a) )
-#define ioctl_t						u_long
-#define AC_SOCKET_INVALID        	((unsigned int) ~0)
-
-#ifdef SD_BOTH
-	#define tcp_close(s)	(shutdown( s, SD_BOTH ), closesocket(s))
-#else
-	#define tcp_close( s )	closesocket( s )
-#endif
-
-#ifndef EWOULDBLOCK
-	#define EWOULDBLOCK WSAEWOULDBLOCK
-#endif
-
-#ifndef EINPROGRESS
-	#define EINPROGRESS WSAEINPROGRESS
-#endif
-
-#ifndef ETIMEDOUT
-	#define ETIMEDOUT   WSAETIMEDOUT
-#endif
-
-#ifdef sock_errno
-	#undef  sock_errno
-#endif
-
-#define sock_errno         WSAGetLastError()
-
-#ifdef sock_errstr
-	#undef  sock_errstr
-#endif
-
-#define sock_errstr(err)   gras_wsa_err2string(err)
-
-const char *gras_wsa_err2string(int errcode);
-
-#ifdef S_IRGRP
-	#undef S_IRGRP
-#endif
-
-#define S_IRGRP 0
-
-#ifdef S_IWGRP
-	#undef S_IWGRP
-#endif
-
-#define S_IWGRP 0
 
 #endif /* #ifndef __XBT_BORLAND_COMPILER_CONFIG_H__ */
