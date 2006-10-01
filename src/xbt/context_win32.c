@@ -16,8 +16,9 @@
 /* The original author granted me (Martin Quinson) to redistribute this work 
    under the LGPL licence, what I here do. */
 
-/*#include "context_win32.h" Not needed since this file is to be included*/
-#include "context_win32.h"
+#include "context_win32.h" /* Current file is to be included when cross-compiling, 
+			      but not during native builds. So this include is needed */
+
 int getcontext(ucontext_t *ucp)
 {
 	int ret;
