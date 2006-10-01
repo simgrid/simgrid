@@ -1,5 +1,5 @@
 # GRAMINE_CUT_BEGIN
-SG_SUBDIRS= tools testsuite examples doc
+SG_SUBDIRS= testsuite examples doc
 
 SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog \
 	acmacro/aci.m4 \
@@ -8,7 +8,7 @@ SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS C
 	   tools/MSG_visualization/colorize.pl
 # GRAMINE_CUT_END
 
-SUBDIRS= include src $(SG_SUBDIRS)
+SUBDIRS= include src tools $(SG_SUBDIRS)
 EXTRA_DIST=$(SG_EXTRA_DIST)
 
 DISTCLEANFILES= stamp.configure stamp.build stamp.check *~  
@@ -24,7 +24,7 @@ all-local:
 gramine:
 	rm -rf gramine-@VERSION@ gramine-@VERSION@.tar*
 	@echo "# Setup sources..."
-	for n in `find include src -name '*.[ch]'`; do \
+	for n in `find include src tools/gras -name '*.[ch]'`; do \
 	  mkdir -p gramine-@VERSION@/`dirname $$n`; \
 	   perl -e '$$/ = undef; $$l=<>; while ($$l=~ m,(/\*.*?\*/),s) { $$rep=$$1; $$rep=~s/\S//sg; $$l=~s,/\*.*?\*/,$$rep,s; } print $$l;' < $$n > gramine-@VERSION@/$$n; \
 	done
@@ -34,7 +34,8 @@ gramine:
 	rm gramine-@VERSION@/src/*_unit.c
 	@echo "# Adapt the configury mechanism to the gramine context"
 	mkdir gramine-@VERSION@/acmacro
-	for n in configure Makefile.in src/Makefile.in include/Makefile.in ; do \
+	for n in configure Makefile.in src/Makefile.in include/Makefile.in \
+	         tools/Makefile.in tools/gras/Makefile.in; do \
 	  sed  -e '/^# GRAMINE_CUT_BEGIN/,/^# GRAMINE_CUT_END/d' \
 	       -e 's/gramine_mode=no/gramine_mode=yes/' $$n > gramine-@VERSION@/$$n; \
 	done

@@ -293,7 +293,24 @@ AC_CONFIG_FILES([
   src/ucontext_stack.h
 ])
 
+# Tools being embeeded in gramine (stub generator)
+AC_CONFIG_FILES([
+  tools/Makefile
+    tools/gras/Makefile
+])
+
 # GRAMINE_CUT_BEGIN
+
+# Tools NOT being embeeded in gramine
+AC_CONFIG_FILES([
+  tools/graspe-slave
+],[
+    for file in                                                 \
+     tools/graspe-slave           tools/graspe-master           \
+    ; do                                                        \
+      test -e $file && chmod +x $file;                          \
+    done
+])
 
 # Testsuite
 
@@ -310,7 +327,13 @@ AC_CONFIG_FILES([
     done
 ])
 
-# Examples, documentation and tools
+# Documentation
+AC_CONFIG_FILES([
+  doc/Makefile
+  doc/Doxyfile
+])
+
+# Examples
 
 AC_CONFIG_FILES([
   examples/Makefile 
@@ -333,13 +356,8 @@ AC_CONFIG_FILES([
     examples/amok/Makefile       
       examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
       examples/amok/saturate/Makefile  examples/amok/saturate/test_sg  examples/amok/saturate/test_rl
-  doc/Makefile
-    doc/Doxyfile
-  tools/graspe-slave            tools/Makefile
-    tools/gras/Makefile
 ],[
     for file in                                                 \
-     tools/graspe-slave           tools/graspe-master           \
      \
      examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
      examples/amok/saturate/test_sg  examples/amok/saturate/test_rl \
@@ -360,7 +378,6 @@ AC_CONFIG_FILES([
       test -e $file && chmod +x $file;                          \
     done
 ])
-
 
 #     examples/gras/chord/test_sg  examples/gras/chord/test_rl   \
 #    examples/gras/pastry/test_sg   
