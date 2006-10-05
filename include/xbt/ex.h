@@ -54,6 +54,11 @@ int gras_os_getpid(void);
 
 /* the machine context */
 #if defined(__EX_MCTX_MCSC__)
+#if !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32) && !defined(__TOS_WIN__)
+#include <ucontext.h>            /* POSIX.1 ucontext(3) */
+#else
+#include "xbt/win32_context.h"
+#endif
 #include <ucontext.h>            /* POSIX.1 ucontext(3) */
 #define __ex_mctx_struct         ucontext_t uc;
 #define __ex_mctx_save(mctx)     (getcontext(&(mctx)->uc) == 0)
