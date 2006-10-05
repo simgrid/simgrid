@@ -581,13 +581,13 @@ static void _xbt_log_parse_setting(const char*        control_string,
     }
     
     DEBUG1("New priority name = %s",neweq);
-    for (i=0; i<xbt_log_priority_infinite-1; i++) {
+    for (i=0; i<xbt_log_priority_infinite; i++) {
       if (!strncmp(xbt_log_priority_names[i],neweq,p-eq)) {
 	DEBUG1("This is priority %d",i);
 	break;
       }
     }
-    if (i<xbt_log_priority_infinite-1) {
+    if (i<xbt_log_priority_infinite) {
       set->thresh= (e_xbt_log_priority_t) i;
     } else {
       xbt_assert1(FALSE,"Unknown priority name: %s",eq+1);
