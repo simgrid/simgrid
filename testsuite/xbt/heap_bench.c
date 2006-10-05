@@ -14,6 +14,7 @@
 #include "gras/virtu.h"		/* time manipulation in bench */
 
 #define MAX_TEST 1000000
+#define MAX_VAL  6.01238343545777E+307
 
 int compare_double(const void *a, const void *b);
 void test_heap_validity(int size);
@@ -76,7 +77,7 @@ void test_heap_mean_operation(int size)
   for (j = 0; j < MAX_TEST; j++) {
     val = xbt_heap_maxkey(heap);
     xbt_heap_pop(heap);
-    xbt_heap_push(heap, NULL, 3.0 * val);
+    xbt_heap_push(heap, NULL, (val > (MAX_VAL/3.0)) ? (10.0 * rand() / (RAND_MAX + 1.0)) :(3.0 * val));
   }
   date = gras_os_time() * 1000000 - date;
   printf("Mean access time for a %d size heap : %g\n", size,
