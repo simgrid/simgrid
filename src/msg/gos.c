@@ -745,6 +745,8 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   m_process_t process = MSG_process_self();
   m_task_t dummy = NULL;
   simdata_task_t simdata = NULL;
+  
+  xbt_assert1(nb_sec>=0,"Invalid duration %g",nb_sec);
 
   CHECK_HOST();
   dummy = MSG_task_create("MSG_sleep", nb_sec, 0.0, NULL);
