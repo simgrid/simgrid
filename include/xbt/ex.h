@@ -51,11 +51,6 @@ int gras_os_getpid(void);
 
 /*-*-* end of debugging stuff *-*-*/
 
-
-/* the machine context */
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
-#include "xbt/win32_context.h"
-
 #elif defined(__EX_MCTX_MCSC__)
 #include <ucontext.h>            /* POSIX.1 ucontext(3) */
 #define __ex_mctx_struct         ucontext_t uc;
