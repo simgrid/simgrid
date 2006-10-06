@@ -67,6 +67,12 @@
 	#error "Unknown platform - please configure (simgrid.gforge.inria.fr/xbt/libs/config/config.htm#configuring) and report the results to the main simgrid mailing list (simgrid.gforge.inra.fr/more/mailing_lists.htm#main)"
 #endif
 
+#if defined(_XBT_WIN32_PLATFORM) || defined(_XBT_WIN64_PLATFORM) || defined(_XBT_WIN16_PLATFORM) || defined(_XBT_WINCE_PLATFORM)
+#ifndef _WIN32
+	#define _WIN32
+#endif
+#endif
+
 
 /* Returns true if the platform is resolved, false in the other case. */
 #define _xbt_is_platform_resolved()	(_XBT_PLATFORM_ID != 0)
