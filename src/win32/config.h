@@ -12,11 +12,11 @@
 /* 
  * config selection. 
 */
-#include <compiler/select_compiler_features.h>
+#include <win32/compiler/select_compiler_features.h>
 
 
 #if defined(_XBT_BORLAND_COMPILER)
-# include <compiler/borland.h>
+# include <win32/compiler/borland.h>
 # else
 # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
 #endif
