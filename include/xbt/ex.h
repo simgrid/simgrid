@@ -30,7 +30,7 @@ extern int backtrace (void **__array, int __size);
 #undef __EX_MAYDAY
 
 #ifdef __EX_MAYDAY
-int gras_os_getpid(void);
+XBT_PUBLIC int gras_os_getpid(void);
 #  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
                                    gras_os_getpid(),__FILE__,__LINE__,  \
                                    (m)->jb                              \
@@ -230,7 +230,7 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  */
 
 /* we need this symbol here, even if it breaks a bit the module separation */
-long int gras_os_getpid(void);
+XBT_PUBLIC long int gras_os_getpid(void);
 
 /** @brief different kind of errors */
 typedef enum {
@@ -245,7 +245,7 @@ typedef enum {
   thread_error    /**< error while [un]locking */
 } xbt_errcat_t;
 
-const char * xbt_ex_catname(xbt_errcat_t cat);
+XBT_PUBLIC const char * xbt_ex_catname(xbt_errcat_t cat);
 
 /** @brief Structure describing an exception */
 typedef struct {
@@ -505,10 +505,10 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 #define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e, _XBT_POST_RETHROW
 
 /** @brief Exception destructor */
-void xbt_ex_free(xbt_ex_t e);
+XBT_PUBLIC void xbt_ex_free(xbt_ex_t e);
 
-void xbt_ex_display(xbt_ex_t *e);
-void xbt_backtrace_display(void);
+XBT_PUBLIC void xbt_ex_display(xbt_ex_t *e);
+XBT_PUBLIC void xbt_backtrace_display(void);
 
 /** @} */
 #endif /* __XBT_EX_H__ */
