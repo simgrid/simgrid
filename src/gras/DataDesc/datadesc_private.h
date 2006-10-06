@@ -37,7 +37,7 @@
 #define ddt_aligned(v, a) (((v) + (a - 1)) & ~(a - 1))
 
 /*@null@*/extern xbt_set_t gras_datadesc_set_local;
-void gras_ddt_freev(void *ddt);
+XBT_PUBLIC void gras_ddt_freev(void *ddt);
 /*******************************************
  * Descriptions of all known architectures *
  *******************************************/
@@ -114,7 +114,7 @@ typedef struct s_gras_dd_cat_field {
 
 } s_gras_dd_cat_field_t,*gras_dd_cat_field_t;
 
-void gras_dd_cat_field_free(void *f);
+XBT_PUBLIC void gras_dd_cat_field_free(void *f);
 
 /**
  * gras_dd_cat_scalar_t:
@@ -236,9 +236,9 @@ typedef struct s_gras_datadesc_type {
 /***************************
  * constructor/desctructor *
  ***************************/
-void gras_datadesc_free(gras_datadesc_type_t *type);
+XBT_PUBLIC void gras_datadesc_free(gras_datadesc_type_t *type);
 
-gras_datadesc_type_t 
+XBT_PUBLIC gras_datadesc_type_t 
   gras_datadesc_scalar(const char                       *name,
 		       gras_ddt_scalar_type_t           type,
 		       enum e_gras_dd_scalar_encoding   encoding);
@@ -246,14 +246,14 @@ gras_datadesc_type_t
 /****************************************************
  * Callback persistant state constructor/destructor *
  ****************************************************/
-gras_cbps_t gras_cbps_new(void);
-void gras_cbps_free(gras_cbps_t *state);
-void gras_cbps_reset(gras_cbps_t state);
+XBT_PUBLIC gras_cbps_t gras_cbps_new(void);
+XBT_PUBLIC void gras_cbps_free(gras_cbps_t *state);
+XBT_PUBLIC void gras_cbps_reset(gras_cbps_t state);
 
 /***************
  * Convertions *
  ***************/
-void
+XBT_PUBLIC void
 gras_dd_convert_elm(gras_datadesc_type_t type, int count,
 		    int r_arch, 
 		    void *src, void *dst);

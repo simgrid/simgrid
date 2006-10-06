@@ -34,8 +34,8 @@ typedef struct {
   xbt_dynar_t moddata;
 } gras_procdata_t;
 
-gras_procdata_t *gras_procdata_get(void);
-void *gras_libdata_by_name_from_procdata(const char *name, gras_procdata_t* pd);
+XBT_PUBLIC gras_procdata_t *gras_procdata_get(void);
+XBT_PUBLIC void *gras_libdata_by_name_from_procdata(const char *name, gras_procdata_t* pd);
    
    
 #endif  /* GRAS_VIRTU_PRIVATE_H */

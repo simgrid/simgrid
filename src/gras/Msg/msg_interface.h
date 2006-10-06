@@ -37,7 +37,7 @@ typedef struct {
 } s_gras_msg_procdata_t,*gras_msg_procdata_t;
 
 
-void gras_msg_send_namev(gras_socket_t  sock, 
+XBT_PUBLIC void gras_msg_send_namev(gras_socket_t  sock, 
 			 const char    *namev, 
 			 void          *payload);
 

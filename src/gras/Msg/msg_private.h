@@ -35,7 +35,7 @@ extern int gras_msg_libdata_id; /* The identifier of our libdata */
 extern const char *e_gras_msg_kind_names[e_gras_msg_kind_count];
 
 /* declare either regular messages or RPC or whatever */
-void 
+XBT_PUBLIC void 
 gras_msgtype_declare_ext(const char           *name,
 			 short int             version,
 			 e_gras_msg_kind_t     kind, 
@@ -65,9 +65,9 @@ void gras_msgtype_free(void *msgtype);
 
 
 /* functions to extract msg from socket or put it on wire (depend RL vs SG) */
-void gras_msg_recv(gras_socket_t   sock,
+XBT_PUBLIC void gras_msg_recv(gras_socket_t   sock,
 		   gras_msg_t      msg/*OUT*/);
-void gras_msg_send_ext(gras_socket_t   sock,
+XBT_PUBLIC void gras_msg_send_ext(gras_socket_t   sock,
 		     e_gras_msg_kind_t kind,
 		       unsigned long int ID,
 		       gras_msgtype_t  msgtype,
@@ -84,8 +84,8 @@ struct s_gras_cblist {
 };
 
 typedef struct s_gras_cblist gras_cblist_t;
-void gras_cbl_free(void *); /* used to free the memory at the end */
-void gras_cblist_free(void *cbl);
+XBT_PUBLIC void gras_cbl_free(void *); /* used to free the memory at the end */
+XBT_PUBLIC void gras_cblist_free(void *cbl);
 
 /**
  * gras_msg_cb_ctx_t:
@@ -111,7 +111,7 @@ typedef struct {
 } s_gras_timer_t, *gras_timer_t;
 
 /* returns 0 if it handled a timer, or the delay until next timer, or -1 if no armed timer */
-double gras_msg_timer_handle(void);
+XBT_PUBLIC double gras_msg_timer_handle(void);
 
 
 

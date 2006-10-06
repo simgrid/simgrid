@@ -22,8 +22,8 @@
 /* declare a new process specific data 
    (used by gras_<module>_register to make sure that gras_process_init will create it) */
 
-int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
-void *gras_libdata_by_name(const char *name);
-void *gras_libdata_by_id(int id);
+XBT_PUBLIC int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
+XBT_PUBLIC void *gras_libdata_by_name(const char *name);
+XBT_PUBLIC void *gras_libdata_by_id(int id);
 
 #endif  /* GRAS_VIRTU_INTERFACE_H */
