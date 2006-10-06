@@ -97,9 +97,7 @@
  ****/
 
 #ifdef USE_UCONTEXT
-# ifndef S_SPLINT_S /* This header drives splint into the wall */
-#   include <ucontext.h>
-# endif 
+# include <ucontext.h>
 #endif
 
 #ifdef _WIN32

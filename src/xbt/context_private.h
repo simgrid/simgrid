@@ -21,17 +21,6 @@
 #include "xbt/context.h"
 #include "xbt/ex.h"
 
-#ifdef S_SPLINT_S
-/* Dummy definition for splint since it chokes on ucontext.h */
-typedef struct ucontext {
-   struct ucontext *uc_link;
-   sigset_t uc_sigmask;
-   int uc_stack;
-   int uc_mcontext;
-} ucontext_t;
-typedef int CONTEXT;
-#endif 
-
 #ifdef USE_PTHREADS
 #  include <pthread.h>
 #else
