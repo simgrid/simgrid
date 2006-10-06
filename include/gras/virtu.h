@@ -25,12 +25,12 @@ SG_BEGIN_DECL()
  *  @return number of second since the Epoch.
  *  (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
  */
-double gras_os_time(void);
+XBT_PUBLIC double gras_os_time(void);
 
 /** @brief sleeps for the given amount of time.
  *  @param sec: number of seconds to sleep
  */
-void gras_os_sleep(double sec);
+XBT_PUBLIC void gras_os_sleep(double sec);
 
 /** @brief get the fully-qualified name of the current host
  *
@@ -38,18 +38,18 @@ void gras_os_sleep(double sec);
  * cannot be determined.  Always returns the same value, so multiple calls
  * cause no problems.
  */
-const char *
+XBT_PUBLIC const char *
 gras_os_myname(void);
 
 /** @brief returns the number on which this process is listening for incoming messages */
-int gras_os_myport(void);
+XBT_PUBLIC int gras_os_myport(void);
 
 /** @brief get process identification
  *
  * Returns the process ID of the current process.  (This is often used
    by routines that generate unique temporary file names.)
  */
-long int gras_os_getpid(void);
+XBT_PUBLIC long int gras_os_getpid(void);
 
 /** @} */
 SG_END_DECL()

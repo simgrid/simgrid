@@ -36,22 +36,22 @@
 typedef struct s_gras_socket *gras_socket_t;
 
 /** \brief Simply create a client socket (to speak to a remote host) */
-gras_socket_t gras_socket_client(const char *host, unsigned short port);
-gras_socket_t gras_socket_client_from_string(const char *host);
+XBT_PUBLIC gras_socket_t gras_socket_client(const char *host, unsigned short port);
+XBT_PUBLIC gras_socket_t gras_socket_client_from_string(const char *host);
 /** \brief Simply create a server socket (to ear from remote hosts speaking to you) */
-gras_socket_t gras_socket_server(unsigned short port);
-void          gras_socket_close(gras_socket_t sd);
+XBT_PUBLIC gras_socket_t gras_socket_server(unsigned short port);
+XBT_PUBLIC void          gras_socket_close(gras_socket_t sd);
 
 /** \brief Create a client socket, full interface to all relevant settings */
-gras_socket_t gras_socket_client_ext(const char *host,
+XBT_PUBLIC gras_socket_t gras_socket_client_ext(const char *host,
 				     unsigned short port,
 				     unsigned long int bufSize,
 				     int measurement);
 /** \brief Create a server socket, full interface to all relevant settings */
-gras_socket_t gras_socket_server_ext(unsigned short port,
+XBT_PUBLIC gras_socket_t gras_socket_server_ext(unsigned short port,
 				     unsigned long int bufSize,
 				     int measurement);
-gras_socket_t
+XBT_PUBLIC gras_socket_t
 gras_socket_server_range(unsigned short minport, unsigned short maxport,
 			 unsigned long int buf_size, int measurement);
 
@@ -64,13 +64,13 @@ gras_socket_server_range(unsigned short minport, unsigned short maxport,
 /* @{*/
 
 /** Get the port number on which this socket is connected on my side */
-int   gras_socket_my_port  (gras_socket_t sock);
+XBT_PUBLIC int   gras_socket_my_port  (gras_socket_t sock);
 /** Get the port number on which this socket is connected on remote side */
-int   gras_socket_peer_port(gras_socket_t sock);
+XBT_PUBLIC int   gras_socket_peer_port(gras_socket_t sock);
 /** Get the host name of the remote side */
-char *gras_socket_peer_name(gras_socket_t sock);
+XBT_PUBLIC char *gras_socket_peer_name(gras_socket_t sock);
 /** Get the process name of the remote side */
-char *gras_socket_peer_proc(gras_socket_t sock);
+XBT_PUBLIC char *gras_socket_peer_proc(gras_socket_t sock);
 /* @}*/
 
 /** \defgroup GRAS_sock_meas Using measurement sockets
@@ -86,16 +86,16 @@ char *gras_socket_peer_proc(gras_socket_t sock);
 
 
 
-int gras_socket_is_meas(gras_socket_t sock);
-void gras_socket_meas_send(gras_socket_t peer, 
+XBT_PUBLIC int gras_socket_is_meas(gras_socket_t sock);
+XBT_PUBLIC void gras_socket_meas_send(gras_socket_t peer, 
 			   unsigned int timeout,
 			   unsigned long int expSize, 
 			   unsigned long int msgSize);
-void gras_socket_meas_recv(gras_socket_t peer, 
+XBT_PUBLIC void gras_socket_meas_recv(gras_socket_t peer, 
 			   unsigned int timeout,
 			   unsigned long int expSize, 
 			   unsigned long int msgSize);
-gras_socket_t gras_socket_meas_accept(gras_socket_t peer);
+XBT_PUBLIC gras_socket_t gras_socket_meas_accept(gras_socket_t peer);
             
 /* @}*/
 
@@ -111,8 +111,8 @@ gras_socket_t gras_socket_meas_accept(gras_socket_t peer);
  */
 /* @{*/
 /* debuging functions */
-gras_socket_t gras_socket_client_from_file(const char*path);
-gras_socket_t gras_socket_server_from_file(const char*path);
+XBT_PUBLIC gras_socket_t gras_socket_client_from_file(const char*path);
+XBT_PUBLIC gras_socket_t gras_socket_server_from_file(const char*path);
 					  
 /* @} */
    

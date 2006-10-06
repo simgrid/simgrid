@@ -56,24 +56,24 @@
  */
 
 /* module handling */
-void amok_pm_init(void);
-void amok_pm_exit(void);
+XBT_PUBLIC void amok_pm_init(void);
+XBT_PUBLIC void amok_pm_exit(void);
 
-void amok_pm_mainloop(double timeOut);
+XBT_PUBLIC void amok_pm_mainloop(double timeOut);
 
-void amok_pm_kill_hp(char *name,int port);
-void amok_pm_kill(gras_socket_t buddy);
-void amok_pm_kill_sync(gras_socket_t buddy);
+XBT_PUBLIC void amok_pm_kill_hp(char *name,int port);
+XBT_PUBLIC void amok_pm_kill(gras_socket_t buddy);
+XBT_PUBLIC void amok_pm_kill_sync(gras_socket_t buddy);
 
-xbt_dynar_t amok_pm_group_new(const char *group_name);
-xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name);
+XBT_PUBLIC xbt_dynar_t amok_pm_group_new(const char *group_name);
+XBT_PUBLIC xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name);
 
-void        amok_pm_group_join(gras_socket_t master, const char *group_name);
-void        amok_pm_group_leave(gras_socket_t master, const char *group_name);
+XBT_PUBLIC void        amok_pm_group_join(gras_socket_t master, const char *group_name);
+XBT_PUBLIC void        amok_pm_group_leave(gras_socket_t master, const char *group_name);
 
 
-void amok_pm_group_shutdown(const char *group_name);
-void amok_pm_group_shutdown_remote(gras_socket_t master, const char *group_name);
+XBT_PUBLIC void amok_pm_group_shutdown(const char *group_name);
+XBT_PUBLIC void amok_pm_group_shutdown_remote(gras_socket_t master, const char *group_name);
 
 
 /** @} */

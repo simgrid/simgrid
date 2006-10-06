@@ -86,16 +86,16 @@ typedef struct xbt_swag {
  *  @{
  */
 
-xbt_swag_t xbt_swag_new(size_t offset);
-void xbt_swag_free(xbt_swag_t swag);
-void xbt_swag_init(xbt_swag_t swag, size_t offset);
-void xbt_swag_insert(void *obj, xbt_swag_t swag);
-void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag);
-void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag);
-void *xbt_swag_remove(void *obj, xbt_swag_t swag);
-void *xbt_swag_extract(xbt_swag_t swag);
-int xbt_swag_size(xbt_swag_t swag);
-int xbt_swag_belongs(void *obj, xbt_swag_t swag);
+XBT_PUBLIC xbt_swag_t xbt_swag_new(size_t offset);
+XBT_PUBLIC void xbt_swag_free(xbt_swag_t swag);
+XBT_PUBLIC void xbt_swag_init(xbt_swag_t swag, size_t offset);
+XBT_PUBLIC void xbt_swag_insert(void *obj, xbt_swag_t swag);
+XBT_PUBLIC void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag);
+XBT_PUBLIC void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag);
+XBT_PUBLIC void *xbt_swag_remove(void *obj, xbt_swag_t swag);
+XBT_PUBLIC void *xbt_swag_extract(xbt_swag_t swag);
+XBT_PUBLIC int xbt_swag_size(xbt_swag_t swag);
+XBT_PUBLIC int xbt_swag_belongs(void *obj, xbt_swag_t swag);
 
 static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 {

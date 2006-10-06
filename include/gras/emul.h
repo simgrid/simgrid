@@ -46,17 +46,17 @@ SG_BEGIN_DECL()
  */
   
 /** \brief Returns true only if the program runs on real life */
-int gras_if_RL(void);
+XBT_PUBLIC int gras_if_RL(void);
 
 /** \brief Returns true only if the program runs within the simulator */
-int gras_if_SG(void);
+XBT_PUBLIC int gras_if_SG(void);
 
 /** @} */
 
-int gras_bench_always_begin(const char *location, int line);
-int gras_bench_always_end(void);
-int gras_bench_once_begin(const char *location, int line);
-int gras_bench_once_end(void);
+XBT_PUBLIC int gras_bench_always_begin(const char *location, int line);
+XBT_PUBLIC int gras_bench_always_end(void);
+XBT_PUBLIC int gras_bench_once_begin(const char *location, int line);
+XBT_PUBLIC int gras_bench_once_end(void);
 
 /** @addtogroup GRAS_emul
  *  \section GRAS_emul_timing Emulation

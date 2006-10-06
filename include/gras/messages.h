@@ -61,15 +61,15 @@ SG_BEGIN_DECL()
 /** \brief Opaque type */
 typedef struct s_gras_msgtype *gras_msgtype_t;
 
-  void gras_msgtype_declare  (const char           *name,
+  XBT_PUBLIC void gras_msgtype_declare  (const char           *name,
 			      gras_datadesc_type_t  payload);
-  void gras_msgtype_declare_v(const char           *name,
+  XBT_PUBLIC void gras_msgtype_declare_v(const char           *name,
 			      short int             version,
 			      gras_datadesc_type_t  payload);
 
-  gras_msgtype_t gras_msgtype_by_name (const char *name);
-  gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version);
-  gras_msgtype_t gras_msgtype_by_id(int id);
+  XBT_PUBLIC gras_msgtype_t gras_msgtype_by_name (const char *name);
+  XBT_PUBLIC gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version);
+  XBT_PUBLIC gras_msgtype_t gras_msgtype_by_id(int id);
 
 /** @} */  
 /** @defgroup GRAS_msg_cb Callback declaration and use
@@ -91,12 +91,12 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
   /** \brief Context of callbacks (opaque structure) */
   typedef struct s_gras_msg_cb_ctx *gras_msg_cb_ctx_t;
 
-gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
-gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe, 
+XBT_PUBLIC gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
+XBT_PUBLIC gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe, 
 				      gras_msgtype_t msgtype,
 				      unsigned long int ID,
 				      double timeout);
-void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
+XBT_PUBLIC void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
    
    
   /** \brief Type of message callback functions. 
@@ -117,8 +117,8 @@ void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
   typedef int (*gras_msg_cb_t)(gras_msg_cb_ctx_t  ctx,
 			       void             *payload);
 
-  void gras_cb_register  (gras_msgtype_t msgtype, gras_msg_cb_t cb);
-  void gras_cb_unregister(gras_msgtype_t msgtype, gras_msg_cb_t cb);
+  XBT_PUBLIC void gras_cb_register  (gras_msgtype_t msgtype, gras_msg_cb_t cb);
+  XBT_PUBLIC void gras_cb_unregister(gras_msgtype_t msgtype, gras_msg_cb_t cb);
 
 /** @} */  
 
@@ -129,15 +129,15 @@ void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
 /** @{ */
 
 
-  void gras_msg_send(gras_socket_t   sock,
+  XBT_PUBLIC void gras_msg_send(gras_socket_t   sock,
 		     gras_msgtype_t  msgtype,
 		     void           *payload);
-  void gras_msg_wait(double          timeout,    
+  XBT_PUBLIC void gras_msg_wait(double          timeout,    
 		     gras_msgtype_t  msgt_want,
 		     gras_socket_t  *expeditor,
 		     void           *payload);
-  void gras_msg_handleall(double period);   
-  void gras_msg_handle(double timeOut);
+  XBT_PUBLIC void gras_msg_handleall(double period);   
+  XBT_PUBLIC void gras_msg_handle(double timeOut);
 
 /** @} */
 
@@ -158,30 +158,30 @@ void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
 /** @{ */
 
 /* declaration */
-void gras_msgtype_declare_rpc(const char           *name,
+XBT_PUBLIC void gras_msgtype_declare_rpc(const char           *name,
 			      gras_datadesc_type_t  payload_request,
 			      gras_datadesc_type_t  payload_answer);
 
-void gras_msgtype_declare_rpc_v(const char           *name,
+XBT_PUBLIC void gras_msgtype_declare_rpc_v(const char           *name,
 				short int             version,
 				gras_datadesc_type_t  payload_request,
 				gras_datadesc_type_t  payload_answer);
 
 /* client side */
-void gras_msg_rpccall(gras_socket_t server,
+XBT_PUBLIC void gras_msg_rpccall(gras_socket_t server,
 		      double timeOut,
 		      gras_msgtype_t msgtype,
 		      void *request, void *answer);
-gras_msg_cb_ctx_t
+XBT_PUBLIC gras_msg_cb_ctx_t
 gras_msg_rpc_async_call(gras_socket_t server,
 			double timeOut,
 			gras_msgtype_t msgtype,
 			void *request);
-void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
+XBT_PUBLIC void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
 			     void *answer);
 
 /* server side */
-void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,void *answer);
+XBT_PUBLIC void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,void *answer);
 
 
 /** @} */
@@ -227,14 +227,14 @@ typedef struct {
 
 typedef int (*gras_msg_filter_t)(gras_msg_t msg,void *ctx);
 
-void gras_msg_wait_ext(double           timeout,    
+XBT_PUBLIC void gras_msg_wait_ext(double           timeout,    
 		       gras_msgtype_t   msgt_want,
 		       gras_socket_t    expe_want,
 		       gras_msg_filter_t filter,
 		       void             *filter_ctx, 
 		       gras_msg_t       msg_got);
 
-void gras_msg_wait_or(double         timeout,    
+XBT_PUBLIC void gras_msg_wait_or(double         timeout,    
 		      xbt_dynar_t    msgt_want,
 		      gras_msg_cb_ctx_t *ctx,
 		      int           *msgt_got,

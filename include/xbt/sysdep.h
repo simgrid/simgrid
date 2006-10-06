@@ -24,13 +24,13 @@ SG_BEGIN_DECL()
 /* FIXME: better place? */
 int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
 int   vasprintf (char **ptr, const char *fmt, va_list ap);
-char *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+XBT_PUBLIC char *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
   
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
 
-void xbt_abort(void) _XBT_GNUC_NORETURN;
-void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
+XBT_PUBLIC void xbt_abort(void) _XBT_GNUC_NORETURN;
+XBT_PUBLIC void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 
 /** @addtogroup XBT_syscall

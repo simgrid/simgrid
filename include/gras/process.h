@@ -22,14 +22,14 @@ SG_BEGIN_DECL()
  * 
  * Perform the various intialisations needed by gras. Each process must run it
  */
-void gras_process_init(void);
+XBT_PUBLIC void gras_process_init(void);
 
 /**
  * gras_process_exit:
  * 
  * Frees the memory allocated by gras. Processes should run it
  */
-void gras_process_exit(void);
+XBT_PUBLIC void gras_process_exit(void);
 
 /****************************************************************************/
 /* Manipulating User Data                                                   */
@@ -53,13 +53,13 @@ void gras_process_exit(void);
  * \brief Get the data associated with the current process.
  * \ingroup GRAS_globals
  */
-void *gras_userdata_get(void);
+XBT_PUBLIC void *gras_userdata_get(void);
 
 /**
  * \brief Set the data associated with the current process.
  * \ingroup GRAS_globals
  */
-void gras_userdata_set(void *ud);
+XBT_PUBLIC void gras_userdata_set(void *ud);
 
 /** \brief Malloc and set the data associated with the current process. */
 #define gras_userdata_new(type) (gras_userdata_set(xbt_new0(type,1)),gras_userdata_get())

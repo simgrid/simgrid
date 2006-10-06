@@ -27,8 +27,8 @@ typedef struct {
   double value;
 } amok_result_t;
 
-void amok_base_init(void);
-void amok_base_exit(void);
+XBT_PUBLIC void amok_base_init(void);
+XBT_PUBLIC void amok_base_exit(void);
 
 
 #endif /* AMOK_BASE_H */

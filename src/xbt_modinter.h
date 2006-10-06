@@ -11,9 +11,9 @@
 #define XBT_MODINTER_H
 
 /* Modules definitions */
-void xbt_log_init(int *argc,char **argv);
-void xbt_log_exit(void);
-void xbt_fifo_exit(void);
-void xbt_dict_exit(void);
+XBT_PUBLIC void xbt_log_init(int *argc,char **argv);
+XBT_PUBLIC void xbt_log_exit(void);
+XBT_PUBLIC void xbt_fifo_exit(void);
+XBT_PUBLIC void xbt_dict_exit(void);
 
 #endif /* XBT_MODINTER_H */
