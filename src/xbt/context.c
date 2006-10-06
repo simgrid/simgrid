@@ -101,10 +101,10 @@ static void xbt_context_destroy(xbt_context_t context)
 #endif
   if(context->exception) free(context->exception);
   	
-  	#ifdef USE_WIN_CONTEXT    	
-	if(context->uc.uc_stack.ss_sp)
-		free (context->uc.uc_stack.ss_sp);
-	#endif
+#ifdef USE_WIN_CONTEXT    	
+  if(context->uc.uc_stack.ss_sp)
+    free (context->uc.uc_stack.ss_sp);
+#endif
 	
   free(context);
   return;
@@ -284,12 +284,12 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
   /* WARNING : when this context is over, the current_context (i.e. the 
      father), is awaken... Theorically, the wrapper should prevent using 
      this feature. */
-# ifndef USE_WIN_CONTEXT    
-  res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack,STACK_SIZE);
-  res->uc.uc_stack.ss_size = pth_sksize_makecontext(res->stack,STACK_SIZE);
-#else
+# ifdef USE_WIN_CONTEXT    
   res->uc.uc_stack.ss_sp = xbt_malloc(STACK_SIZE);
   res->uc.uc_stack.ss_size = STACK_SIZE ;
+#else
+  res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack,STACK_SIZE);
+  res->uc.uc_stack.ss_size = pth_sksize_makecontext(res->stack,STACK_SIZE);
 # endif /* USE_WIN_CONTEXT */
 #endif /* USE_PTHREADS or not */
   res->argc = argc;
