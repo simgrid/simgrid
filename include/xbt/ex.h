@@ -53,7 +53,7 @@ int gras_os_getpid(void);
 
 
 /* the machine context */
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) | defined(__TOS_WIN__)
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
 #include "xbt/win32_context.h"
 
 #elif defined(__EX_MCTX_MCSC__)
