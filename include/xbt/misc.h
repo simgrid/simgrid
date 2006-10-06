@@ -89,7 +89,7 @@
 
 SG_BEGIN_DECL()
 
-const char *xbt_procname(void);
+XBT_PUBLIC const char *xbt_procname(void);
 
 #define XBT_BACKTRACE_SIZE 10 /* FIXME: better place? Do document */
    
