@@ -20,6 +20,12 @@
 #include "xbt/asserts.h"
   
 SG_BEGIN_DECL()
+
+/* FIXME: better place? */
+int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
+int   vasprintf (char **ptr, const char *fmt, va_list ap);
+char *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+  
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
 
@@ -40,7 +46,7 @@ static XBT_INLINE char *xbt_strdup(const char *s) {
   if (s) {
     res=strdup(s);
     if (!res) 
-      xbt_die("memory allocation error");
+      xbt_die("memory allocation error (strdup returned NULL)");
   } 
   return res;
 }
@@ -49,7 +55,7 @@ static XBT_INLINE char *xbt_strdup(const char *s) {
 static XBT_INLINE void *xbt_malloc(int n){
   void *res=malloc(n);
   if (!res)
-     xbt_die("Memory allocation failed");
+     xbt_die(bprintf("Memory allocation of %d bytes failed",n));
   return res;
 }
 
@@ -58,7 +64,7 @@ static XBT_INLINE void *xbt_malloc(int n){
 static XBT_INLINE void *xbt_malloc0(int n) {
   void *res=calloc(n,1);
   if (!res)
-     xbt_die("Memory callocation failed");
+     xbt_die(bprintf("Memory callocation of %d bytes failed",n));
   return res;
 }
   
@@ -70,7 +76,7 @@ static XBT_INLINE void *xbt_realloc(void*p,int s){
     if (p) {
       res=realloc(p,s);
       if (!res) 
-	xbt_die("memory allocation error");
+	xbt_die(bprintf("memory (re)allocation of %d bytes failed",s));
     } else {
       res=xbt_malloc(s);
     }
@@ -102,10 +108,6 @@ static XBT_INLINE void *xbt_realloc(void*p,int s){
 
 /** @} */  
 
-/* FIXME: better place? */
-int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
-int   vasprintf (char **ptr, const char *fmt, va_list ap);
-char *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
   
 SG_END_DECL()
 
