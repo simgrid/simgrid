@@ -49,12 +49,12 @@
 #define _FLEXML_graphxml_H
 
 /* XML application entry points. */
-extern void STag_graphxml_graph(void);
-extern void ETag_graphxml_graph(void);
-extern void STag_graphxml_node(void);
-extern void ETag_graphxml_node(void);
-extern void STag_graphxml_edge(void);
-extern void ETag_graphxml_edge(void);
+XBT_PUBLIC extern void STag_graphxml_graph(void);
+XBT_PUBLIC extern void ETag_graphxml_graph(void);
+XBT_PUBLIC extern void STag_graphxml_node(void);
+XBT_PUBLIC extern void ETag_graphxml_node(void);
+XBT_PUBLIC extern void STag_graphxml_edge(void);
+XBT_PUBLIC extern void ETag_graphxml_edge(void);
 
 /* XML application data. */
 typedef const char* AT_graphxml_node_name;
@@ -97,11 +97,11 @@ extern AT_graphxml_edge_length A_graphxml_edge_length;
 extern AT_graphxml_edge_name A_graphxml_edge_name;
 
 /* XML application utilities. */
-extern int graphxml_element_context(int);
+XBT_PUBLIC extern int graphxml_element_context(int);
 
 /* XML processor entry point. */
-extern int yylex(void);
+XBT_PUBLIC extern int yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
-const char * graphxml_parse_err_msg(void);
+XBT_PUBLIC const char * graphxml_parse_err_msg(void);
 #endif
