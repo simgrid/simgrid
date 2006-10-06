@@ -12,7 +12,7 @@
  *  Borland C++ compiler configuration
  */
 
-#include <platform/select_platform_features.h>
+#include <win32/platform/select_platform_features.h>
 
 /* 
  * include files. 
@@ -200,8 +200,15 @@
 #endif
 
 /* "disable the snprintf replacement ( this function is broken on system v only" */
+
+/* FIXEME TO ANALYZE
 #if defined(PREFER_PORTABLE_SNPRINTF)
 	#undef PREFER_PORTABLE_SNPRINTF	
+#endif
+*/
+
+#if !defined(PREFER_PORTABLE_SNPRINTF)
+	#define PREFER_PORTABLE_SNPRINTF	
 #endif
 
 /* The maximal size of any scalar on this arch */
@@ -336,6 +343,10 @@ the double. For now, GRAS requires the structures to be compacted. */
 #define va_copy(d, s) __VA_COPY_USE(d, s)
 #endif
 
+#ifdef USE_UCONTEXT
+#undef USE_UCONTEXT
+#endif
+
 
 /* Define to id of used va_copy() implementation */
 #define __VA_COPY_USE __VA_COPY_USE_C99
@@ -406,5 +417,9 @@ the double. For now, GRAS requires the structures to be compacted. */
 typedef unsigned int uint32_t;
 typedef int socklen_t;
 
+/* Choose setjmp as exception implementation */
+#ifndef __EX_MCTX_SJLJ__
+#define __EX_MCTX_SJLJ__
+#endif 
 
 #endif /* #ifndef __XBT_BORLAND_COMPILER_CONFIG_H__ */
