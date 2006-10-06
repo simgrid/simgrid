@@ -51,7 +51,7 @@ int gras_os_getpid(void);
 
 /*-*-* end of debugging stuff *-*-*/
 
-#elif defined(__EX_MCTX_MCSC__)
+#if defined(__EX_MCTX_MCSC__)
 #include <ucontext.h>            /* POSIX.1 ucontext(3) */
 #define __ex_mctx_struct         ucontext_t uc;
 #define __ex_mctx_save(mctx)     (getcontext(&(mctx)->uc) == 0)
