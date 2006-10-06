@@ -14,7 +14,7 @@
 /* 
  * win32 or win64 (__WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).	
 */ 
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+#ifdef _WIN32
 # include "win32/config.h"
 #  include <windows.h>
 #else
@@ -183,6 +183,8 @@ const char *hexa_str(unsigned char *data, int size, int downside);
 #    define _XBT_DECLSPEC
 
 #endif /* #if defined (_XBT_USE_DECLSPEC) */
+
+#define XBT_PUBLIC _XBT_DECLSPEC
 
 #if !defined (_XBT_CALL)
 #define _XBT_CALL
