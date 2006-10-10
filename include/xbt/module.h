@@ -10,6 +10,8 @@
 #ifndef _XBT_MODULE_H
 #define _XBT_MODULE_H
 
+#include <xbt/misc.h> /* XBT_PUBLIC */
+
 extern char *xbt_binary_name;
 
 XBT_PUBLIC void xbt_init(int *argc,char **argv);

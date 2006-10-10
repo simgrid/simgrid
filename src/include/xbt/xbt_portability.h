@@ -10,6 +10,8 @@
 #ifndef _XBT_PORTABILITY_H
 #define _XBT_PORTABILITY_H
 
+#include <xbt/misc.h> /* XBT_PUBLIC */
+
 /** @brief get time in seconds 
 
   * gives  the  number  of  seconds since the Epoch (00:00:00 UTC, January 1, 1970).
