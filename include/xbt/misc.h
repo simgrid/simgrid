@@ -56,6 +56,49 @@
 #    define XBT_INLINE  inline
 #endif
 
+/* Windows __declspec(). */
+#if defined(_WIN32) && defined(__BORLANDC__)
+#  if(__BORLANDC__ < 0x540)
+#    if (defined (__DLL) || defined (_DLL) || defined (_WINDLL) || defined (_RTLDLL) || defined (_XBT_USE_DYNAMIC_LIB) ) && ! defined (_XBT_USE_STAT
+#      undef  _XBT_USE_DECLSPEC
+#      define _XBT_USE_DECLSPEC
+#    endif
+#  else
+#  if ( defined (__DLL) || defined (_DLL) || defined (_WINDLL) || defined (_RTLDLL) || defined(_AFXDLL) || defined (_XBT_USE_DYNAMIC_LIB) )
+#    undef  _XBT_USE_DECLSPEC
+#    define _XBT_USE_DECLSPEC 1
+#  endif
+#  endif
+#endif
+
+#if defined (_XBT_USE_DECLSPEC) /* using export/import technique */
+
+#    ifndef _XBT_EXPORT_DECLSPEC
+#        define _XBT_EXPORT_DECLSPEC
+#    endif
+
+#    ifndef _XBT_IMPORT_DECLSPEC
+#        define _XBT_IMPORT_DECLSPEC
+#    endif
+
+#    if defined (_XBT_DESIGNATED_DLL) /* this is a lib which will contain xbt exports */
+#        define  XBT_PUBLIC        _XBT_EXPORT_DECLSPEC
+#    else
+#        define  XBT_PUBLIC        _XBT_IMPORT_DECLSPEC   /* other modules, importing xbt exports */
+#    endif
+
+#else /* not using DLL export/import specifications */
+
+#    define XBT_PUBLIC
+
+#endif /* #if defined (_XBT_USE_DECLSPEC) */
+
+/* Function calling convention (not used for now) */
+#if !defined (_XBT_CALL)
+#define _XBT_CALL
+#endif
+
+
 
 #ifndef max
 #  define max(a, b) (((a) > (b))?(a):(b))

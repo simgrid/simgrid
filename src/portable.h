@@ -161,33 +161,4 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 void hexa_print(const char*name, unsigned char *data, int size);
 const char *hexa_str(unsigned char *data, int size, int downside);
 
-/* Windows __declspec(). */
-#if defined (_XBT_USE_DECLSPEC) /* using export/import technique */
-
-#    ifndef _XBT_EXPORT_DECLSPEC
-#        define _XBT_EXPORT_DECLSPEC
-#    endif
-
-#    ifndef _XBT_IMPORT_DECLSPEC
-#        define _XBT_IMPORT_DECLSPEC
-#    endif
-
-#    if defined (_XBT_DESIGNATED_DLL) /* this is a lib which will contain xbt exports */
-#        define  _XBT_DECLSPEC        _XBT_EXPORT_DECLSPEC 
-#    else
-#        define  _XBT_DECLSPEC        _XBT_IMPORT_DECLSPEC   /* other modules, importing xbt exports */
-#    endif
-
-#else /* not using DLL export/import specifications */
-
-#    define _XBT_DECLSPEC
-
-#endif /* #if defined (_XBT_USE_DECLSPEC) */
-
-#define XBT_PUBLIC _XBT_DECLSPEC
-
-#if !defined (_XBT_CALL)
-#define _XBT_CALL
-#endif
-
 #endif /* GRAS_PORTABLE_H */
