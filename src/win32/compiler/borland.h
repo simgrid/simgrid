@@ -385,21 +385,6 @@ the double. For now, GRAS requires the structures to be compacted. */
     #endif
 
 
-#if(__BORLANDC__ < 0x540)
-
-	#if (defined (__DLL) || defined (_DLL) || defined (_WINDLL) || defined (_RTLDLL) || defined (_XBT_USE_DYNAMIC_LIB) ) && ! defined (_XBT_USE_STATIC_LIB)
-		#undef  _XBT_USE_DECLSPEC
-		#define _XBT_USE_DECLSPEC
-	#endif
-	
-#else
-		
-	#if ( defined (__DLL) || defined (_DLL) || defined (_WINDLL) || defined (_RTLDLL) || defined(_AFXDLL) || defined (_XBT_USE_DYNAMIC_LIB) )
-		#undef  _XBT_USE_DECLSPEC
-		#define _XBT_USE_DECLSPEC 1
-	#endif
-#endif
-
 /* For open, read etc. file operations. */
 #include <io.h>
 #include <fcntl.h>
