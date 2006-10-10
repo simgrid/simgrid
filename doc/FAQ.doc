@@ -107,6 +107,12 @@ cd simgrid
 ./configure --enable-maintainer-mode
 make dist \endverbatim
 
+Moreover, you should never call the autotools manually since you must run
+them in a specific order with specific arguments. Most of the times, the
+makefiles will automatically call the tools for you. When it's not possible
+(such as the first time you checkout the CVS), use the ./bootstrap command
+to call them explicitely.
+
 \subsection faq_setting_MSG Setting up your own MSG code
 
 Do not build your simulator by modifying the SimGrid examples.  Go
