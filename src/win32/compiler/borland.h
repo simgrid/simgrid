@@ -351,12 +351,14 @@ the double. For now, GRAS requires the structures to be compacted. */
 /* Define to id of used va_copy() implementation */
 #define __VA_COPY_USE __VA_COPY_USE_C99
 
-#if defined(_XBT_DESIGNATED_DLL)
-	#define _XBT_CALL __cdecl __export
-#elif defined(_RTLDLL)
-	#define  _XBT_CALL __cdecl __import
-#else
-	#define  _XBT_CALL __cdecl
+#ifndef _XBT_CALL
+	#if defined(_XBT_DESIGNATED_DLL)
+		#define _XBT_CALL __cdecl __export
+	#elif defined(_RTLDLL)
+		#define  _XBT_CALL __cdecl __import
+	#else
+		#define  _XBT_CALL __cdecl
+	#endif
 #endif
 
 /* auto enable thread safety and exceptions: */
@@ -374,15 +376,26 @@ the double. For now, GRAS requires the structures to be compacted. */
 
 #define _XBT_LIB_BASENAME "xbt"
 
+#ifndef _XBT_EXPORT_DECLSPEC
 #define _XBT_EXPORT_DECLSPEC __declspec(dllexport)
-#define _XBT_IMPORT_DECLSPEC __declspec(dllimport)
-	
-#define _XBT_CLASS_EXPORT_DECLSPEC __declspec(dllexport)
-#define _XBT_CLASS_IMPORT_DECLSPEC __declspec(dllimport)
+#endif
 
-    #if(__BORLANDC__>= 0x500)
-            #define _XBT_HAS_NAMESPACES
-    #endif
+#ifndef _XBT_IMPORT_DECLSPEC
+#define _XBT_IMPORT_DECLSPEC __declspec(dllimport)
+#endif
+
+#ifndef _XBT_CLASS_EXPORT_DECLSPEC
+#define _XBT_CLASS_EXPORT_DECLSPEC __declspec(dllexport)
+#endif
+
+#ifndef _XBT_CLASS_IMPORT_DECLSPEC
+#define _XBT_CLASS_IMPORT_DECLSPEC __declspec(dllimport)
+#endif
+
+
+#if(__BORLANDC__>= 0x500)
+	#define _XBT_HAS_NAMESPACES
+#endif
 
 
 /* For open, read etc. file operations. */
