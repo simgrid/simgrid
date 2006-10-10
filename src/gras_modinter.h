@@ -9,6 +9,7 @@
 
 #ifndef GRAS_MODINTER_H
 #define GRAS_MODINTER_H
+#include <xbt/misc.h> /* XBT_PUBLIC */
 
 /* modules initialization functions */
 XBT_PUBLIC void gras_emul_init(void);

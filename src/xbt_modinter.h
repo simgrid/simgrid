@@ -9,6 +9,7 @@
 
 #ifndef XBT_MODINTER_H
 #define XBT_MODINTER_H
+#include "xbt/misc.h"
 
 /* Modules definitions */
 XBT_PUBLIC void xbt_log_init(int *argc,char **argv);
