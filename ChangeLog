@@ -43,6 +43,8 @@ SimGrid (3.1.1) unstable; urgency=low
     - "Valgrind spits tons of errors!" [Mt]
     - "How to repport bugs" [Mt]
     - "Cross-compiling a Windows DLL of SimGrid from Linux" [Mt]
+    - Communication time measurement within MSG [AL]
+    - I experience weird communication times when I change the latency [AL]
   * GRAS tutorial [Mt]
     It contains:
      - an introduction to the framework and to the used communication model
