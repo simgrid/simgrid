@@ -3,6 +3,26 @@
 
 amver=1.9
 
+
+lt=`which libtoolize`
+if [ "x$lt" = "x" ] ; then
+  echo "Libtool not found. Please install the libtool package to proceed with a CVS checkout"
+  exit 1
+fi
+
+am=`which automake-$amver`
+if [ "x$am" = "x" ] ; then
+  echo "automake version $amver not found. Please install the relevant package to proceed with a CVS checkout"
+  exit 1
+fi
+
+ac=`which autoconf`
+if [ "x$ac" = "x" ] ; then
+  echo "autoconf not found. Please install the relevant package to proceed with a CVS checkout"
+  exit 1
+fi
+
+
 # AUTOCONF=
 # AUTOHEADER=
 # AUTOPOINT=
