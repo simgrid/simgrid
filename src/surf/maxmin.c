@@ -362,7 +362,7 @@ static void lmm_print(lmm_system_t sys)
     strcat(trace_buf, print_buf);
     xbt_swag_foreach(elem, elem_list) {
       sprintf(print_buf,"%f.'%p'(%f) + ",elem->value, 
-	      elem->variable,elem->variable->weight);
+	      elem->variable,elem->variable->value);
       trace_buf = xbt_realloc(trace_buf,strlen(trace_buf)+strlen(print_buf)+1);
       strcat(trace_buf, print_buf);
       sum += elem->value * elem->variable->value;
