@@ -35,7 +35,9 @@ SG_tests =                                              \
 	surf/maxmin_usage surf/maxmin_bench \
 	surf/trace_usage surf/surf_usage surf/surf_usage2
 
-check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests)
+simdag_tests = simdag/sd_test
+
+check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests) $(simdag_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
 TESTS=run_tests
 
