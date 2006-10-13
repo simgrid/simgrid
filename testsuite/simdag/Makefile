@@ -5,11 +5,11 @@ CC = gcc
 PEDANTIC_PARANOID_FREAK =       -O0 -Wshadow -Wcast-align \
 				-Waggregate-return -Wmissing-prototypes -Wmissing-declarations \
 				-Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
-				-Wmissing-noreturn -Wredundant-decls -Wnested-externs \
+				-Wmissing-noreturn -Wnested-externs \
 				-Wpointer-arith -Wwrite-strings -finline-functions
 REASONABLY_CAREFUL_DUDE =	-Wall -Werror
 NO_PRAYER_FOR_THE_WICKED =	-w -O2 
-WARNINGS = 			$(REASONABLY_CAREFUL_DUDE)
+WARNINGS = 			$(PEDANTIC_PARANOID_FREAK)
 CFLAGS = -g $(WARNINGS)
 
 INCLUDES = -I$(INSTALL_PATH)/include
