@@ -2,7 +2,7 @@
 <!DOCTYPE platform_description SYSTEM "surfxml.dtd">
 <platform_description version="1">
   <!-- ljlkj -->
-  <cpu name="Tremblay" power="98095000" availability_file="availability_tremblay.txt"/>
+  <cpu name="Tremblay" power="98095000" availability_file="simdag/availability_tremblay.txt"/>
   <cpu name="Jupiter" power="76296000"/>
   <cpu name="Fafard" power="76296000"/>
   <cpu name="Ginette" power="48492000"/>

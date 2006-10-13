@@ -75,4 +75,6 @@ gras_datadesc_usage_LDADD=     $(LDADD_RL)
 gras/datadesc_structs.c: gras/mk_datadesc_structs.pl
 	cd gras ; perl ../$(top_srcdir)/testsuite/gras/mk_datadesc_structs.pl > datadesc_structs.c
 
+simdag_sd_test_LDADD=       $(LDADD_SG)
+
 include $(top_srcdir)/acmacro/dist-files.mk
