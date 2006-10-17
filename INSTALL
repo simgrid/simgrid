@@ -1,3 +1,10 @@
+This is the basic INSTALL file provided by autotools. Some more information
+about installing SimGrid can be found in the FAQ, in the doc/ directory (or
+online at http://simgrid.gforge.inria.fr/doc/faq.html )
+
+
+
+
 Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002 Free Software
 Foundation, Inc.
 
