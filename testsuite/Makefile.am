@@ -3,7 +3,7 @@ AM_CFLAGS=-g
 
 CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out\
   testgraph.xml testgraph.dot
-DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/* 
+DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/* simdag/.libs/* 
 
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little32_4 \
@@ -11,8 +11,9 @@ EXTRA_DIST=run_tests.in \
   gras/datadesc.big32 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
   gras/mk_datadesc_structs.pl \
   xbt/graph.xml \
-  surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml
-
+  surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml\
+  simdag/availability_tremblay.txt simdag/small_platform_variable.xml
+  
 # Data sets still to regenerate:
 # gras/datadesc.big64 
 # gras/datadesc.big32_4 
