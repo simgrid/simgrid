@@ -14,7 +14,7 @@
 XBT_LOG_NEW_CATEGORY(test,"Logging for this test");
 
 int main(int argc,char *argv[]) {
-  gras_socket_t sock, conn;
+  gras_socket_t sock;
   char data_recv[256];
 
   gras_init(&argc,argv);
@@ -22,11 +22,8 @@ int main(int argc,char *argv[]) {
   fprintf(stderr,"===[SERVER]=== Create the socket\n");
   sock = gras_socket_server_from_file("-");
 
-  fprintf(stderr,"===[SERVER]=== Waiting for incomming connexions\n");
-  conn = gras_trp_select(60);
-
-  fprintf(stderr,"===[SERVER]=== Contacted ! Waiting for the data\n");
-  gras_trp_recv(conn,data_recv, sizeof(data_recv));
+  fprintf(stderr,"===[SERVER]=== Waiting for the data\n");
+  gras_trp_recv(sock,data_recv, sizeof(data_recv));
   fprintf(stderr,"===[SERVER]=== Got '%s'.\n", data_recv);
 
   fprintf(stderr,"===[SERVER]=== Exiting successfully\n");
