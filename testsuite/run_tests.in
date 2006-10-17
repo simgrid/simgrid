@@ -52,7 +52,7 @@ gras_TESTS="gras/trp_tcp_usage;      gras/trp_file_usage;                       
 	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_8_4; \
 	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_2;"     
 
-simdag_TESTS="simdag/sd_test @srcdir@/simdag/small_platform_variable.xml; \
+simdag_TESTS="simdag/sd_test --surf-path=@srcdir@/simdag @srcdir@/simdag/small_platform_variable.xml; \
               simdag/sd_test @top_srcdir@/examples/msg/small_platform.xml; \
               simdag/sd_test @top_srcdir@/examples/msg/msg_platform.xml; "
 
