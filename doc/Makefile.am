@@ -22,7 +22,8 @@ simgrid_modules.map: fig/simgrid_modules.fig
 %.png: fig/%.fig
 	fig2dev -Lpng $^ > $@
 
-html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES)
+html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES) \
+      html/gras.html html/amok.html html/msg.html html/simdag.html
 	: # Setting up
 	touch index-API.doc .FAQ.doc.toc .index.doc.toc .contrib.doc.toc
 	test -e html || mkdir html
@@ -41,6 +42,19 @@ html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES)
 	rm -f html/dir* 
 	@top_srcdir@/tools/doxygen/index_php.pl @srcdir@/index.php.in html/index.html index.php
 	@top_srcdir@/tools/doxygen/doxygen_postprocesser.pl
+
+html/gras.html:
+	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>" >$@
+	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>Grid Reality And Simulation.</a></h2></center></html>" >>$@
+html/amok.html:
+	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>" >$@
+	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>Advanced Metacomputing Overlay Kit.</a></h2></center></html>" >>$@
+html/msg.html:
+	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>" >$@
+	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>Meta SimGrid.</a></h2></center></html>" >>$@
+html/simdag.html:
+	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>" >$@
+	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>DAG Simulator.</a></h2></center></html>" >>$@
 
 publish:
 	$(MAKE) -C .. sync-gforge
