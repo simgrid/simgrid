@@ -11,6 +11,96 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 				"Logging specific to SURF (kernel)");
 
+
+/* Additional declarations for Windows potability. */
+
+#ifndef MAX_DRIVE
+#define MAX_DRIVE 26
+#endif 
+
+static const char* disk_drives_letter_table[MAX_DRIVE] =
+{
+        "A:\\",
+        "B:\\",
+        "C:\\",
+        "D:\\",
+        "E:\\",
+        "F:\\",
+        "G:\\",
+        "H:\\",
+        "I:\\",
+        "J:\\",
+        "K:\\",
+        "L:\\",
+        "M:\\",
+        "N:\\",
+        "O:\\",
+        "P:\\",
+        "Q:\\",
+        "R:\\",
+        "S:\\",
+        "T:\\",
+        "U:\\",
+        "V:\\",
+        "W:\\",
+        "X:\\",
+        "Y:\\",
+        "Z:\\"
+};
+
+/*
+ * Returns the initial path. On Windows the initial path is
+ * the current directory for the current process in the other
+ * case the function returns "./" that represents the current
+ * directory on Unix/Linux platforms.
+ */
+
+const char* __surf_get_initial_path()
+{
+
+	#ifdef _WIN32
+	unsigned i;
+	char current_directory[MAX_PATH + 1] = {0};
+	unsigned int len = GetCurrentDirectory(MAX_PATH + 1,current_directory);
+	char root[4] = {0};
+
+	if(!len)
+		return NULL;
+
+	strncpy(root,current_directory,3);
+
+	for(i = 0; i<MAX_DRIVE;i++)
+	{
+		if(root[0] == disk_drives_letter_table[i][0])
+			return disk_drives_letter_table[i];
+	}
+
+	return NULL;
+	#else
+	return "./";
+	#endif
+}
+
+/* The __surf_is_absolute_file_path() returns 1 if
+ * file_path is a absolute file path, in the other
+ * case the function returns 0.
+ */
+int __surf_is_absolute_file_path(const char* file_path)
+{
+        #ifdef _WIN32
+        WIN32_FIND_DATA wfd ={0};
+        HANDLE hFile = FindFirstFile(file_path,&wfd);
+
+        if(INVALID_HANDLE_VALUE == hFile)
+                return 0;
+
+        FindClose(hFile);
+        return 1;
+        #else
+        return (file_path[0] == '/');
+        #endif
+}
+
 typedef struct surf_resource_object {
   surf_resource_t resource;
 } s_surf_resource_object_t, *surf_resource_object_t;
@@ -146,10 +236,17 @@ void surf_init(int *argc, char **argv)
 {
   int i,j;
   char *opt;
+  
+  const char* initial_path;
 
   xbt_init(argc, argv);
   if (!surf_path) {
-    const char *initial_path = "./";
+    
+    /* retrieves the current directory of the current process*/
+    initial_path = __surf_get_initial_path();
+		
+	xbt_assert0((initial_path), "__surf_get_initial_path() failed! Can't resolves current Windows directory");
+    
     surf_path = xbt_dynar_new(sizeof(char*), NULL);
     xbt_dynar_push(surf_path,&initial_path);
 
@@ -188,7 +285,7 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   xbt_assert0(surf_path,"surf_init has to be called before using surf_fopen");
    
-  if (name[0] == '/') { /* don't mess with absolute file names */
+  if (__surf_is_absolute_file_path(name)) { /* don't mess with absolute file names */
     return fopen(name,mode);
      
   } else { /* search relative files in the path */
