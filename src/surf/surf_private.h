@@ -65,4 +65,19 @@ extern lmm_system_t maxmin_system;
 extern tmgr_history_t history;
 extern xbt_dynar_t surf_path;
 
+
+/*
+ * Returns the initial path. On Windows the initial path is
+ * the current directory for the current process in the other
+ * case the function returns "./" that represents the current
+ * directory on Unix/Linux platforms.
+ */
+const char* __surf_get_initial_path();
+
+/* The __surf_is_absolute_file_path() returns 1 if
+ * file_path is a absolute file path, in the other
+ * case the function returns 0.
+ */
+int __surf_is_absolute_file_path(const char* file_path);
+
 #endif				/* _SURF_SURF_PRIVATE_H */
