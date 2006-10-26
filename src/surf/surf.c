@@ -18,6 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 #define MAX_DRIVE 26
 #endif 
 
+#ifdef _WIN32
 static const char* disk_drives_letter_table[MAX_DRIVE] =
 {
         "A:\\",
@@ -47,6 +48,7 @@ static const char* disk_drives_letter_table[MAX_DRIVE] =
         "Y:\\",
         "Z:\\"
 };
+#endif /* #ifdef _WIN32 */
 
 /*
  * Returns the initial path. On Windows the initial path is
@@ -54,8 +56,8 @@ static const char* disk_drives_letter_table[MAX_DRIVE] =
  * case the function returns "./" that represents the current
  * directory on Unix/Linux platforms.
  */
-
-const char* __surf_get_initial_path()
+			
+const char* __surf_get_initial_path(void)
 {
 
 	#ifdef _WIN32
