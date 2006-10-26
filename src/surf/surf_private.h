@@ -72,7 +72,7 @@ extern xbt_dynar_t surf_path;
  * case the function returns "./" that represents the current
  * directory on Unix/Linux platforms.
  */
-const char* __surf_get_initial_path();
+const char* __surf_get_initial_path(void);
 
 /* The __surf_is_absolute_file_path() returns 1 if
  * file_path is a absolute file path, in the other
