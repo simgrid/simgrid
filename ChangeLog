@@ -8,7 +8,9 @@ SimGrid (3.1.1) unstable; urgency=low
       converted for now).
   * Fix a vicious bug in the TCP buffering mecanism which leaded to message
     loss when they were small enough to fit into the buffer and sent quickly
-    enough so that they can all get received in one shoot.
+    enough so that they can all get received in one shoot.   
+  * gras_datadesc_by_name and gras_msgtype_by_name: now raise an exception
+    if not found. Use the *_or_null() variant for the old semantic.
 	
   AMOK:
   * Do really rename the hostmanagement module to peermanagement. [Mt]
