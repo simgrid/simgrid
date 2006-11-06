@@ -1,0 +1,58 @@
+$ ./test_server & ./test_client 127.0.0.1 
+[blaise:client:(2223) 0.000005] test.c:95: [test/INFO] Ask to convert 4321
+[blaise:client:(2223) 0.001210] test.c:97: [test/INFO] The server says that 4321 is equal to "4321".
+[blaise:client:(2223) 0.001227] test.c:102: [test/INFO] Ask to convert 1234
+[blaise:client:(2223) 0.001327] test.c:104: [test/INFO] The server says that "1234" is equal to 1234.
+[blaise:client:(2223) 0.040861] test.c:111: [test/INFO] The server refuses to convert azerty. Here is the received exception:
+[blaise:client:(2223) 0.040895] xbt/ex.c:229: [xbt_ex/CRITICAL] Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
+** SimGrid: UNCAUGHT EXCEPTION received on blaise(2223): category: invalid_arg; value: 0
+** Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
+** Thrown by server() in this process
+
+**   In server_convert_a2i_cb() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/test.c:48 (static symbol)
+**   In gras_msg_handle() at gras/Msg/msg.c:634 (dynamic symbol)
+**   In server() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/test.c:72 (static symbol)
+**   In main() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/_test_server.c:21 (static symbol)
+**   In __libc_start_main() at ??:0 (dynamic symbol)
+**   In _start() at ../sysdeps/i386/elf/start.S:122 (static symbol)
+[blaise:client:(2223) 0.040933] test.c:113: [test/INFO] Again, previous exception was excepted
+[blaise:client:(2223) 0.040957] test.c:117: [test/INFO] Stopped the server
+[blaise:client:(2223) 0.040972] gras/gras.c:85: [gras/INFO] Exiting GRAS
+[blaise:server:(2220) 0.000005] test.c:30: [test/INFO] Convert 4321 to string
+[blaise:server:(2220) 0.000045] test.c:32: [test/INFO] 4321 converted to string: 4321
+[blaise:server:(2220) 0.000197] test.c:44: [test/INFO] Convert 1234 to long
+[blaise:server:(2220) 0.000294] test.c:44: [test/INFO] Convert azerty to long
+[blaise:server:(2220) 0.040123] test.c:12: [test/INFO] Server done
+[blaise:server:(2220) 0.040144] gras/gras.c:85: [gras/INFO] Exiting GRAS
+$
+$ killall test_server
+$
+$ ./test_simulator platform.xml test.xml
+[Boivin:client:(2) 0.000000] test.c:95: [test/INFO] Ask to convert 4321
+[Jacquelin:server:(1) 0.000538] test.c:30: [test/INFO] Convert 4321 to string
+[Jacquelin:server:(1) 0.000538] test.c:32: [test/INFO] 4321 converted to string: 4321
+[Boivin:client:(2) 0.001077] test.c:97: [test/INFO] The server says that 4321 is equal to "4321".
+[Boivin:client:(2) 0.001077] test.c:102: [test/INFO] Ask to convert 1234
+[Jacquelin:server:(1) 0.001615] test.c:44: [test/INFO] Convert 1234 to long
+[Boivin:client:(2) 0.002153] test.c:104: [test/INFO] The server says that "1234" is equal to 1234.
+[Jacquelin:server:(1) 0.002692] test.c:44: [test/INFO] Convert azerty to long
+[Boivin:client:(2) 0.003435] test.c:111: [test/INFO] The server refuses to convert azerty. Here is the received exception:
+[Boivin:client:(2) 0.003435] xbt/ex.c:229: [xbt_ex/CRITICAL] Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
+** SimGrid: UNCAUGHT EXCEPTION received on Boivin(2): category: invalid_arg; value: 0
+** Error while converting azerty: this does not seem to be a valid number (problem at 'azerty')
+** Thrown by server() in this process
+
+**   In server_convert_a2i_cb() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/test.c:48 (static symbol)
+**   In gras_msg_handle() at gras/Msg/msg.c:634 (dynamic symbol)
+**   In server() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/test.c:72 (static symbol)
+**   In launch_server() at /home/mquinson/CVSIMPORT/gras/gras/doc/gtut-files/_test_simulator.c:51 (static symbol)
+**   In __context_exit() at xbt/context.c:116 (dynamic symbol)
+**   In start_thread() at ??:0 (dynamic symbol)
+**   In clone() at ??:0 (dynamic symbol)
+[Boivin:client:(2) 0.003435] test.c:113: [test/INFO] Again, previous exception was excepted
+[Boivin:client:(2) 0.003972] test.c:117: [test/INFO] Stopped the server
+[Boivin:client:(2) 0.003972] gras/gras.c:85: [gras/INFO] Exiting GRAS
+[Jacquelin:server:(1) 0.003972] test.c:12: [test/INFO] Server done
+[Jacquelin:server:(1) 0.003972] gras/gras.c:85: [gras/INFO] Exiting GRAS
+[0.003972] msg/global.c:479: [msg_kernel/INFO] Congratulations ! Simulation terminated : all processes are over
+$
