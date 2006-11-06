@@ -97,6 +97,7 @@ struct s_gras_msg_cb_ctx {
   gras_msgtype_t msgtype;
   unsigned long int ID;
   double timeout;
+  int answer_due; /* Whether the callback is expected to return a result (for sanity checks) */
 };
 typedef struct s_gras_msg_cb_ctx s_gras_msg_cb_ctx_t;
 

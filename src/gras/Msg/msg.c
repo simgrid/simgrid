@@ -100,6 +100,23 @@ void gras_msgtype_free(void *t) {
     free(msgtype);
   }
 }
+/**
+ * Dump all declared message types (debugging purpose)
+ */
+void gras_msgtype_dumpall(void) {   
+  xbt_set_cursor_t cursor;
+  gras_msgtype_t msgtype=NULL;
+   
+  INFO0("Dump of all registered messages:");
+  xbt_set_foreach(_gras_msgtype_set, cursor, msgtype) {
+    INFO6("  Message name: %s (v%d) %s; %s%s%s", 
+	  msgtype->name, msgtype->version, e_gras_msg_kind_names[msgtype->kind],
+	  gras_datadesc_get_name(msgtype->ctn_type),
+	  (msgtype->kind==e_gras_msg_kind_rpccall ? " -> ":""),
+	  (msgtype->kind==e_gras_msg_kind_rpccall ? gras_datadesc_get_name(msgtype->answer_type) : ""));
+  }   
+}
+
 
 /**
  * make_namev:
@@ -214,24 +231,41 @@ gras_msgtype_declare_v(const char           *name,
 			    e_gras_msg_kind_oneway, payload, NULL);
 }
 
-/** @brief retrieve an existing message type from its name. */
+/** @brief retrieve an existing message type from its name (raises an exception if it does not exist). */
 gras_msgtype_t gras_msgtype_by_name (const char *name) {
   return gras_msgtype_by_namev(name,0);
+}
+/** @brief retrieve an existing message type from its name (or NULL if it does not exist). */
+gras_msgtype_t gras_msgtype_by_name_or_null (const char *name) {
+  xbt_ex_t e;
+  gras_msgtype_t res = NULL;
+   
+  TRY {
+     res = gras_msgtype_by_namev(name,0);
+  } CATCH(e) {
+     res = NULL;
+     xbt_ex_free(e);
+  }
+  return res;
 }
 
 /** @brief retrieve an existing message type from its name and version. */
 gras_msgtype_t gras_msgtype_by_namev(const char      *name,
 				     short int        version) {
   gras_msgtype_t res = NULL;
-  char *namev = make_namev(name,version); 
+  char *namev = make_namev(name,version);
+  volatile int found=0;
   xbt_ex_t e;
 
   TRY {
     res = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set, namev);
+    found=1;
   } CATCH(e) {
     xbt_ex_free(e);
-    THROW1(not_found_error,0,"No registred message of that name: %s",name);
   }
+  if (!found)
+    THROW1(not_found_error,0,"No registred message of that name: %s",name);
+
   if (name != namev) 
     free(namev);
   
@@ -603,6 +637,7 @@ gras_msg_handle(double timeOut) {
   ctx.expeditor = msg.expe;
   ctx.ID = msg.ID;
   ctx.msgtype = msg.type;
+  ctx.answer_due = (msg.kind == e_gras_msg_kind_rpccall);
 
   switch (msg.kind) {
   case e_gras_msg_kind_oneway:
@@ -637,11 +672,15 @@ gras_msg_handle(double timeOut) {
 	gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
 			  msg.ID, msg.type, &e);
 	xbt_ex_free(e);
+	ctx.answer_due = 0;
 	ran_ok=1;
       } else {
 	RETHROW0("Callback raised an exception: %s");
       }
     }
+    xbt_assert0(!(ctx.answer_due),
+		"RPC callback didn't call gras_msg_rpcreturn");
+
     if (!ran_ok)
       THROW1(mismatch_error,0,
 	     "Message '%s' refused by all registered callbacks", msg.type->name);

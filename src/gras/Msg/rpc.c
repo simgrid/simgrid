@@ -206,6 +206,9 @@ void gras_msg_rpccall(gras_socket_t server,
  */
 
 void gras_msg_rpcreturn(double timeOut,gras_msg_cb_ctx_t ctx,void *answer) {
+  xbt_assert0(ctx->answer_due,
+	      "RPC return not allowed here. Either not a RPC message or already returned a result");
+  ctx->answer_due = 0;
   DEBUG5("Return to RPC '%s' from %s:%d (tOut=%f, payl=%p)",
 	 ctx->msgtype->name,
 	 gras_socket_peer_name(ctx->expeditor),gras_socket_peer_port(ctx->expeditor),

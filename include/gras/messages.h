@@ -68,8 +68,12 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
 			      gras_datadesc_type_t  payload);
 
   XBT_PUBLIC gras_msgtype_t gras_msgtype_by_name (const char *name);
+  XBT_PUBLIC gras_msgtype_t gras_msgtype_by_name_or_null (const char *name);
   XBT_PUBLIC gras_msgtype_t gras_msgtype_by_namev(const char *name, short int version);
   XBT_PUBLIC gras_msgtype_t gras_msgtype_by_id(int id);
+
+  XBT_PUBLIC void gras_msgtype_dumpall(void);
+   
 
 /** @} */  
 /** @defgroup GRAS_msg_cb Callback declaration and use
