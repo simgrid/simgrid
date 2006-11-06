@@ -30,6 +30,8 @@ This section constitutes a tutorial to the GRAS programming environment.
      - \ref GRAS_tut_tour_exceptions
      - \ref GRAS_tut_tour_simpledata
      - \ref GRAS_tut_tour_rpc
+     - \ref GRAS_tut_tour_explicitwait
+     - \ref GRAS_tut_tour_message_recaping
    - Part 3: Data description
      - \ref GRAS_tut_tour_staticstruct
      - \ref GRAS_tut_tour_pointers

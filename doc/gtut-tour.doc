@@ -18,11 +18,12 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "8: Exceptions"=GRAS_tut_tour_exceptions.html
       DOXYGEN_NAVBAR_CHILD "9: Data exchange"=GRAS_tut_tour_simpledata.html
       DOXYGEN_NAVBAR_CHILD "10: RPC"=GRAS_tut_tour_rpc.html
-      DOXYGEN_NAVBAR_CHILD "11: Static data definition"=GRAS_tut_tour_staticstruct.html
-      DOXYGEN_NAVBAR_CHILD "12: Pointers definition"=GRAS_tut_tour_pointers.html
-      DOXYGEN_NAVBAR_CHILD "13: Dynars definition"=GRAS_tut_tour_dynars.html
-      DOXYGEN_NAVBAR_CHILD "14: Manual data definition"=GRAS_tut_tour_manualdatadef.html
-      DOXYGEN_NAVBAR_CHILD "15: Advanced data definition"=GRAS_tut_tour_exchangecb.html
+      DOXYGEN_NAVBAR_CHILD "Recapping part 1"=GRAS_tut_tour_message_recaping.html
+      DOXYGEN_NAVBAR_CHILD "12: Static data definition"=GRAS_tut_tour_staticstruct.html
+      DOXYGEN_NAVBAR_CHILD "13: Pointers definition"=GRAS_tut_tour_pointers.html
+      DOXYGEN_NAVBAR_CHILD "14: Dynars definition"=GRAS_tut_tour_dynars.html
+      DOXYGEN_NAVBAR_CHILD "15: Manual data definition"=GRAS_tut_tour_manualdatadef.html
+      DOXYGEN_NAVBAR_CHILD "16: Advanced data definition"=GRAS_tut_tour_exchangecb.html
     --> \endhtmlonly
 
 <b>Part 1: Bases</b>
@@ -89,6 +90,10 @@ all features available in GRAS.
    - \ref GRAS_tut_tour_rpc
       - \ref GRAS_tut_tour_rpc_intro
       - \ref GRAS_tut_tour_rpc_use
+         - \ref GRAS_tut_tour_rpc_use_declare
+         - \ref GRAS_tut_tour_rpc_use_i2a_cb
+         - \ref GRAS_tut_tour_rpc_use_a2i_cb
+         - \ref GRAS_tut_tour_rpc_use_rest
       - \ref GRAS_tut_tour_rpc_recap
   
 <b>Part 3: Data description</b>

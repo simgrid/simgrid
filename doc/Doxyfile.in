@@ -420,11 +420,13 @@ INPUT                  = @srcdir@/index.doc \
 				@srcdir@/gtut-tour-08-exceptions.doc \
 				@srcdir@/gtut-tour-09-simpledata.doc \
 				@srcdir@/gtut-tour-10-rpc.doc \
-				@srcdir@/gtut-tour-11-staticstruct.doc \
-				@srcdir@/gtut-tour-12-pointers.doc \
-				@srcdir@/gtut-tour-13-dynar.doc \
-				@srcdir@/gtut-tour-14-manualdatadef.doc \
-				@srcdir@/gtut-tour-15-exchangecb.doc \
+				@srcdir@/gtut-tour-11-explicitwait.doc \
+				@srcdir@/gtut-tour-recap-messages.doc \
+				@srcdir@/gtut-tour-12-staticstruct.doc \
+				@srcdir@/gtut-tour-13-pointers.doc \
+				@srcdir@/gtut-tour-14-dynar.doc \
+				@srcdir@/gtut-tour-15-manualdatadef.doc \
+				@srcdir@/gtut-tour-16-exchangecb.doc \
                          \
                          ./logcategories.doc \
 			 \
@@ -974,7 +976,7 @@ INCLUDE_FILE_PATTERNS  =
 # or name=definition (no spaces). If the definition and the = are 
 # omitted =1 is assumed.
 
-PREDEFINED             =  DOXYGEN DOXYGEN_SKIP_IT
+PREDEFINED             =  DOXYGEN DOXYGEN_SKIP_IT XBT_PUBLIC=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then 
 # this tag can be used to specify a list of macro names that should be expanded. 

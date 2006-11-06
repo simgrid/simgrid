@@ -79,3 +79,12 @@ _08-exceptions_simulator.c
 _09-simpledata_client.c
 _09-simpledata_server.c
 _09-simpledata_simulator.c
+
+10-rpc.mk
+10-rpc.trace
+10-rpc_client
+10-rpc_server
+10-rpc_simulator
+_10-rpc_client.c
+_10-rpc_server.c
+_10-rpc_simulator.c

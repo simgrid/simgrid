@@ -3,7 +3,7 @@ export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
 all: 01-bones.output 02-simple.output 03-args.output 04-callback.output \
      05-globals.output 06-logs.output 07-timers.output 08-exceptions.output \
-     09-simpledata.output
+     09-simpledata.output 10-rpc.output
 
 veryclean: clean
 	rm *.output*
@@ -227,9 +227,6 @@ _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c: 08-e
 clean::
 	rm -f 09-datatype-dump.o 09-datatype-dump
 
-# Lesson 6: logs
-########################################
-
 09-simpledata.output: 09-simpledata_client 09-simpledata_server 09-simpledata_simulator
 	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
 	./09-simpledata_server 12345                             2>&1 |sed s/09-simpledata/test/  >> $@ 2>&1&
@@ -251,8 +248,29 @@ clean::
 	if [ -e 09-simpledata.mk ] ; then make -f 09-simpledata.mk clean; fi
 	rm -f _09-simpledata_client.c _09-simpledata_server.c _09-simpledata_simulator.c 09-simpledata.trace 09-simpledata.mk
 
+# Lesson 10: RPC
+########################################
+10-rpc.output: 10-rpc_client 10-rpc_server 10-rpc_simulator
+	echo '$$ ./test_server & ./test_client 127.0.0.1 '             > $@
+	./10-rpc_server 12345                             2>&1 |sed s/10-rpc/test/  >> $@ 2>&1&
+	./10-rpc_client 127.0.0.1 12345                   2>&1 |sed s/10-rpc/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ killall test_server'                                 >> $@
+	killall 10-rpc_server 10-rpc_client 2>/dev/null || true
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml'              >> $@
+	./10-rpc_simulator gtut-platform.xml 03-args.xml   2>&1 |sed s/10-rpc/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+
+10-rpc_client 10-rpc_server 10-rpc_simulator: _10-rpc_client.c _10-rpc_server.c _10-rpc_simulator.c
+	make -f 10-rpc.mk
+
+_10-rpc_client.c _10-rpc_server.c _10-rpc_simulator.c: 10-rpc.c 03-args.xml
+	../../tools/gras/gras_stub_generator 10-rpc 03-args.xml >/dev/null
 
 clean::
-	if [ -e 08-exceptions.mk ] ; then make -f 08-exceptions.mk clean; fi
-	rm -f _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c 08-exceptions.trace 08-exceptions.mk
+	if [ -e 10-rpc.mk ] ; then make -f 10-rpc.mk clean; fi
+	rm -f _10-rpc_client.c _10-rpc_server.c _10-rpc_simulator.c 10-rpc.trace 10-rpc.mk
+
 

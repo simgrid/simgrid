@@ -1,0 +1,26 @@
+/**
+@page GRAS_tut_tour_explicitwait Lesson 11: Explicitely waiting for messages (TODO)
+
+\section GRAS_tut_tour_explicitwait_toc Table of Contents
+ - \ref GRAS_tut_tour_explicitwait_intro
+ - \ref GRAS_tut_tour_explicitwait_use
+ - \ref GRAS_tut_tour_explicitwait_recap
+   
+<hr>
+
+\section GRAS_tut_tour_explicitwait_intro Introduction
+
+
+\section GRAS_tut_tour_explicitwait_use Defining structure containing explicitwait
+
+
+\section GRAS_tut_tour_explicitwait_recap Recapping everything together
+
+The program now reads:
+\include 11-explicitwait.c
+
+Which produces the expected output:
+\include 11-explicitwait.output
+
+
+*/
