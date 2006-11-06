@@ -62,6 +62,9 @@ gras_datadesc_init(void) {
   ddt = gras_datadesc_scalar("short int", 
 			     gras_ddt_scalar_short, 
 			     e_gras_dd_scalar_encoding_sint);
+  ddt = gras_datadesc_scalar("short",
+			     gras_ddt_scalar_short, 
+			     e_gras_dd_scalar_encoding_sint);
   ddt = gras_datadesc_scalar("unsigned short int", 
 			     gras_ddt_scalar_short, 
 			     e_gras_dd_scalar_encoding_uint);
@@ -80,6 +83,9 @@ gras_datadesc_init(void) {
 			     gras_ddt_scalar_long, 
 			     e_gras_dd_scalar_encoding_sint);
   ddt = gras_datadesc_scalar("long int", 
+			     gras_ddt_scalar_long, 
+			     e_gras_dd_scalar_encoding_sint);
+  ddt = gras_datadesc_scalar("long",
 			     gras_ddt_scalar_long, 
 			     e_gras_dd_scalar_encoding_sint);
   ddt = gras_datadesc_scalar("unsigned long int", 
