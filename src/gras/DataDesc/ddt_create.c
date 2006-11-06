@@ -48,20 +48,37 @@ static gras_datadesc_type_t gras_ddt_new(const char *name) {
   return res;
 }
 
+/** @brief retrieve an existing message type from its name (or NULL if it does not exist). */
+gras_datadesc_type_t gras_datadesc_by_name_or_null (const char *name) {
+  xbt_ex_t e;
+  gras_datadesc_type_t res = NULL;
+   
+  TRY {
+     res = gras_datadesc_by_name(name);
+  } CATCH(e) {
+     res = NULL;
+     xbt_ex_free(e);
+  }
+  return res;
+}
 /**
- * This returns NULL no type of this name can be found instead of throwing exceptions which would complicate the GRAS_DEFINE_TYPE macro
+ * Search the given datadesc (or raises an exception if it can't be found)
  */
 gras_datadesc_type_t gras_datadesc_by_name(const char *name) {
   xbt_ex_t e;
   gras_datadesc_type_t res = NULL;
+  volatile int found = 0;
   TRY {
     res = (gras_datadesc_type_t)xbt_set_get_by_name(gras_datadesc_set_local,name);
+    found = 1;
   } CATCH(e) {
     if (e.category != not_found_error)
       RETHROW;
     xbt_ex_free(e);
-    res = NULL;
   }
+  if (!found)
+    THROW1(not_found_error,0,"No registred datatype of that name: %s",name);     
+   
   return res;
 }
 
@@ -94,7 +111,7 @@ gras_datadesc_type_t
   long int arch;
 
   XBT_IN;
-  res = gras_datadesc_by_name(name);
+  res = gras_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_scalar,
 		 "Redefinition of type %s does not match", name);
@@ -142,7 +159,7 @@ gras_datadesc_type_t
   long int arch;
   
   XBT_IN1("(%s)",name);
-  res = gras_datadesc_by_name(name);
+  res = gras_datadesc_by_name_or_null(name);
   if (res) {
     /* FIXME: Check that field redefinition matches */
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_struct,
@@ -176,7 +193,7 @@ gras_datadesc_struct_append(gras_datadesc_type_t struct_type,
   int arch;
 
   xbt_assert2(field_type,
-	       "Cannot add the field '%s' into struct '%s': its type is NULL. Typo in get_by_name?",
+	       "Cannot add the field '%s' into struct '%s': its type is NULL",
 	       name,struct_type->name);
   XBT_IN3("(%s %s.%s;)",field_type->name,struct_type->name,name);
   if (struct_type->category.struct_data.closed) {
@@ -281,7 +298,7 @@ gras_datadesc_type_t
   xbt_assert0(selector,
 	       "Attempt to creat an union without field_count function");
 
-  res = gras_datadesc_by_name(name);
+  res = gras_datadesc_by_name_or_null(name);
   if (res) {
     /* FIXME: Check that field redefinition matches */
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_union,
@@ -366,7 +383,7 @@ gras_datadesc_type_t
   int arch;
 
   XBT_IN1("(%s)",name);
-  res = gras_datadesc_by_name(name);
+  res = gras_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_ref,
 		 "Redefinition of %s does not match",name);
@@ -409,7 +426,7 @@ gras_datadesc_type_t
   int arch;
 
   XBT_IN1("(%s)",name);
-  res = gras_datadesc_by_name(name);
+  res = gras_datadesc_by_name_or_null(name);
 
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_ref,
@@ -449,7 +466,7 @@ gras_datadesc_type_t
   int arch;
 
   XBT_IN1("(%s)",name);
-  res = gras_datadesc_by_name(name);
+  res = gras_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_array,
 		 "Redefinition of type %s does not match", name);
@@ -499,7 +516,7 @@ gras_datadesc_type_t gras_datadesc_array_dyn(const char                 *name,
 	       "'%s' is a dynamic array without size discriminant",
 	       name);
 
-  res = gras_datadesc_by_name(name);
+  res = gras_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert1(res->category_code == e_gras_datadesc_type_cat_array,
 		 "Redefinition of type %s does not match", name);

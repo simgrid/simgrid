@@ -60,6 +60,7 @@ typedef struct s_gras_datadesc_type *gras_datadesc_type_t;
 
 /** \brief Search a type description from its name */
 XBT_PUBLIC gras_datadesc_type_t gras_datadesc_by_name(const char *name);
+XBT_PUBLIC gras_datadesc_type_t gras_datadesc_by_name_or_null(const char *name);
 
 /* @} */
     
@@ -231,8 +232,8 @@ int server(int argc, char *argv[]) {
  *  @hideinitializer
  */
 #define gras_datadesc_by_symbol(name)  \
-  (gras_datadesc_by_name(#name) ?      \
-   gras_datadesc_by_name(#name) :      \
+  (gras_datadesc_by_name_or_null(#name) ?      \
+   gras_datadesc_by_name_or_null(#name) :      \
      gras_datadesc_parse(#name,        \
 			 _gras_this_type_symbol_does_not_exist__##name) \
   )
