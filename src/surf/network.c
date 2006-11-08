@@ -198,7 +198,7 @@ static void parse_file(const char *file)
     if(!ROUTE_SIZE(i,i)) {
       if(!loopback)
 	loopback = network_link_new(xbt_strdup("__MSG_loopback__"), 
-				   498.00, NULL, 0.000015, NULL, 
+				   498000000, NULL, 0.000015, NULL, 
 				   SURF_NETWORK_LINK_ON, NULL,
 				   SURF_NETWORK_LINK_FATPIPE);
       ROUTE_SIZE(i,i)=1;
