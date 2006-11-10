@@ -135,6 +135,8 @@ void amok_bw_test(gras_socket_t peer,
   bw_request_t request,request_ack;
   xbt_ex_t e;
   int first_pass; 
+  int nb_messages = (exp_size % msg_size == 0) ? 
+    (exp_size / msg_size) : (exp_size / msg_size + 1); 
   
   for (port = 5000; port < 10000 && measMasterIn == NULL; port++) {
     TRY {
@@ -151,7 +153,7 @@ void amok_bw_test(gras_socket_t peer,
   
   request=xbt_new0(s_bw_request_t,1);
   request->buf_size=buf_size;
-  request->exp_size=exp_size;
+  request->exp_size=msg_size * nb_messages;
   request->msg_size=msg_size;
   request->peer.name = NULL;
   request->peer.port = gras_socket_my_port(measMasterIn);
@@ -184,15 +186,15 @@ void amok_bw_test(gras_socket_t peer,
     if (first_pass == 0) {
       double meas_duration=*sec;
       if (*sec != 0.0 ) { 
-	request->exp_size = request->exp_size * (min_duration / meas_duration) * 1.1;
 	request->msg_size = request->msg_size * (min_duration / meas_duration) * 1.1;
       } else {
-	request->exp_size = request->exp_size * 4; 
 	request->msg_size = request->msg_size * 4; 
       }
 	     
       if (request->msg_size > 64*1024*1024)
 	request->msg_size = 64*1024*1024;
+
+      request->exp_size = request->msg_size * nb_messages; 
 
       VERB5("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld msg_size=%ld (got %fkb/s)",
 	     meas_duration,min_duration,request->exp_size,request->msg_size,((double)exp_size) / *sec/1024);
