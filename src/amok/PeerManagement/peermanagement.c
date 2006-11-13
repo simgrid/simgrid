@@ -209,12 +209,14 @@ void amok_pm_group_shutdown_remote(gras_socket_t master, const char *group_name)
 static void _amok_pm_init(void) {
    /* no world-wide globals */
    /* Datatype and message declarations */
+   gras_datadesc_type_t pm_group_type = gras_datadesc_dynar(gras_datadesc_by_name("xbt_peer_t"), xbt_peer_free_voidp);
+   
    gras_msgtype_declare("amok_pm_kill",NULL);   
    gras_msgtype_declare_rpc("amok_pm_killrpc",NULL,NULL);   
    
    gras_msgtype_declare_rpc("amok_pm_get",
 			    gras_datadesc_by_name("string"),
-			    gras_datadesc_by_name("xbt_dynar_t"));
+			    pm_group_type);
    gras_msgtype_declare_rpc("amok_pm_join",
 			    gras_datadesc_by_name("string"),
 			    NULL);
