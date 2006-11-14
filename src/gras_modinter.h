@@ -13,7 +13,7 @@
 
 /* modules initialization functions */
 XBT_PUBLIC void gras_emul_init(void);
-XBT_PUBLIC void XBT_PUBLIC gras_emul_exit(void); 
+XBT_PUBLIC void gras_emul_exit(void); 
 
 XBT_PUBLIC void gras_msg_register(void);
 XBT_PUBLIC void gras_msg_init(void);
