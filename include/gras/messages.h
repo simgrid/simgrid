@@ -92,17 +92,11 @@ typedef struct s_gras_msgtype *gras_msgtype_t;
  * @{
  */
  
-  /** \brief Context of callbacks (opaque structure) */
+  /** \brief Context of callbacks (opaque structure, created by the middleware only, never by user) */
   typedef struct s_gras_msg_cb_ctx *gras_msg_cb_ctx_t;
 
-XBT_PUBLIC gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
-XBT_PUBLIC gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe, 
-				      gras_msgtype_t msgtype,
-				      unsigned long int ID,
-				      int answer_due,
-				      double timeout);
 XBT_PUBLIC void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
-   
+XBT_PUBLIC gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);   
    
   /** \brief Type of message callback functions. 
    *

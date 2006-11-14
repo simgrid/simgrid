@@ -114,6 +114,11 @@ typedef struct {
 /* returns 0 if it handled a timer, or the delay until next timer, or -1 if no armed timer */
 XBT_PUBLIC double gras_msg_timer_handle(void);
 
+XBT_PUBLIC gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe,
+						 gras_msgtype_t msgtype,
+						 unsigned long int ID,
+						 int answer_due,
+						 double timeout);
 
 
 #endif  /* GRAS_MESSAGE_PRIVATE_H */
