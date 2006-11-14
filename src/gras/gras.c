@@ -11,13 +11,14 @@
 #include "xbt/log.h"
 #include "xbt/module.h" /* xbt_init/exit */
 
+#include "Virtu/virtu_interface.h" /* Module mechanism FIXME: deplace&rename */
 #include "gras_modinter.h"   /* module init/exit */
 #include "amok/amok_modinter.h"   /* module init/exit */
 #include "xbt_modinter.h"   /* module init/exit */
 
 #include "gras.h"
 #include "gras/process.h" /* FIXME: killme and put process_init in modinter */
-
+  
 #include "portable.h" /* hexa_*(); signalling stuff */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories (cf. section \ref GRAS_API)");
@@ -84,11 +85,13 @@ void gras_init(int *argc,char **argv) {
 void gras_exit(void) {
   INFO0("Exiting GRAS");
   amok_exit();
+  gras_moddata_leave();
   if (--gras_running_process == 0) {
     gras_msg_exit();
     gras_trp_exit();
     gras_datadesc_exit();
     gras_emul_exit();
+    gras_moddata_exit();
   }
   gras_process_exit();
   xbt_exit();

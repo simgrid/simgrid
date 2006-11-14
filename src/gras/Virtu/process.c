@@ -54,6 +54,7 @@ int gras_procdata_add(const char *name, pvoid_f_void_t constructor,void_f_pvoid_
    fab->name        = xbt_strdup(name);
    fab->constructor = constructor;
    fab->destructor  = destructor;
+   
    return xbt_dynar_length(_gras_procdata_fabrics)-1;
 }
 

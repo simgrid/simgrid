@@ -125,12 +125,18 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
   }
 
   if (found) {
-    xbt_assert1(mod->init_f == init_f, "Module %s reregistered with a different init_f!", name);
-    xbt_assert1(mod->exit_f == exit_f, "Module %s reregistered with a different exit_f!", name);
-    xbt_assert1(mod->join_f == join_f, "Module %s reregistered with a different join_f!", name);
-    xbt_assert1(mod->leave_f == leave_f, "Module %s reregistered with a different leave_f!", name);
-    xbt_assert1(mod->datasize == datasize, "Module %s reregistered with a different datasize!", name);
-    xbt_assert1(mod->p_id == ID, "Module %s reregistered with a different p_id field!", name);
+    xbt_assert1(mod->init_f == init_f, 
+		"Module %s reregistered with a different init_f!", name);
+    xbt_assert1(mod->exit_f == exit_f,
+		"Module %s reregistered with a different exit_f!", name);
+    xbt_assert1(mod->join_f == join_f,
+		"Module %s reregistered with a different join_f!", name);
+    xbt_assert1(mod->leave_f == leave_f,
+		"Module %s reregistered with a different leave_f!", name);
+    xbt_assert1(mod->datasize == datasize, 
+		"Module %s reregistered with a different datasize!", name);
+    xbt_assert1(mod->p_id == ID,
+		"Module %s reregistered with a different p_id field!", name);
     
     DEBUG1("Module %s already registered. Ignoring re-registration",name);
     return;
@@ -154,14 +160,25 @@ void gras_module_add(const char *name, unsigned int datasize, int *ID,
   xbt_set_add(_gras_modules,(void*)mod,gras_module_freep);
 }
 
-/* Removes & frees a moddata */
+/* shutdown the module mechanism (world-wide cleanups) */
+void gras_moddata_exit(void) {
+  xbt_set_free(&_gras_modules);
+}
+
+/* frees the moddata on this host (process-wide cleanups) */
+void gras_moddata_leave(void) {
+  gras_procdata_t *pd=gras_procdata_get();
+
+  xbt_dynar_free(&pd->moddata);
+}
+
+/* Removes & frees a given moddata from the current host */
 static void moddata_freep(void *p) {
   gras_procdata_t *pd=gras_procdata_get();
   int id = xbt_dynar_search (pd->moddata, p);
   gras_module_t mod = (gras_module_t)xbt_set_get_by_id(_gras_modules, id);
 
-  (*mod->leave_f)(p);
-  free(p);
+  (*mod->leave_f)(gras_moddata_by_id(id));
 }
 
 void gras_module_join(const char *name) {
@@ -186,8 +203,7 @@ void gras_module_join(const char *name) {
   /* JOIN */
   pd=gras_procdata_get();
 
-
-  if (!pd->moddata) /* Damn. I must be the first module on this process. Scary ;) */
+  if (!pd->moddata) /* Damn. I must be the first module on this process. Scary ;)*/
     pd->moddata   = xbt_dynar_new(sizeof(gras_module_t),&moddata_freep);
 
   moddata = xbt_malloc(mod->datasize);
