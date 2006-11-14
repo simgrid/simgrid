@@ -99,6 +99,7 @@ XBT_PUBLIC gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
 XBT_PUBLIC gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe, 
 				      gras_msgtype_t msgtype,
 				      unsigned long int ID,
+				      int answer_due,
 				      double timeout);
 XBT_PUBLIC void gras_msg_cb_ctx_free(gras_msg_cb_ctx_t ctx) ;
    

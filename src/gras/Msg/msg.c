@@ -463,7 +463,8 @@ void gras_msg_wait_or(double         timeout,
   }
 
   if (ctx) 
-    *ctx=gras_msg_cb_ctx_new(msg.expe,msg.type,msg.ID,60);
+    *ctx=gras_msg_cb_ctx_new(msg.expe, msg.type, msg.ID,
+			     (msg.kind == e_gras_msg_kind_rpccall), 60);
 
   if (msgt_got)
     *msgt_got = xbt_dynar_search(msgt_want,msg.type);
@@ -791,12 +792,15 @@ gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx) {
 gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe, 
 				      gras_msgtype_t msgtype,
 				      unsigned long int ID,
+				      int answer_due,
 				      double timeout) {
   gras_msg_cb_ctx_t res=xbt_new(s_gras_msg_cb_ctx_t,1);
   res->expeditor = expe;
   res->msgtype = msgtype;
   res->ID = ID;
   res->timeout = timeout;
+  res->answer_due = answer_due;
+
   return res;
 }
 /* \brief Frees a message exchange context 
