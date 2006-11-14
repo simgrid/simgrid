@@ -232,6 +232,8 @@ static void _amok_pm_init(void) {
 static void _amok_pm_join(void *p) {
    /* moddata management */
    amok_pm_moddata_t mod = (amok_pm_moddata_t)p;
+
+   mod->groups = NULL;
    
    mod->done = 0;
    mod->groups = xbt_dict_new();
@@ -252,13 +254,14 @@ static void _amok_pm_join(void *p) {
 		   &amok_pm_cb_shutdown);   
 }
 static void _amok_pm_exit(void) {
-   /* no world-wide globals */
+  /* no world-wide globals */
 }
 static void _amok_pm_leave(void *p) {
    /* moddata */
    amok_pm_moddata_t mod = (amok_pm_moddata_t)p;
    
-   xbt_dict_free(&mod->groups);
+   if (mod->groups)
+     xbt_dict_free(&mod->groups);
    
    /* callbacks */
    gras_cb_unregister(gras_msgtype_by_name("amok_pm_kill"),
