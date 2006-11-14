@@ -468,6 +468,7 @@ static void parse_statement(char	 *definition,
 	   } else {	  
 	     PARSE_ERROR1("subtype annotation only accepted for dynars and matrices, but passed to '%s'",identifier.type_name);
 	   }
+	   free(keyval);
 	} else if (!strcmp(keyname,"free_f")) {
 	   int *storage=xbt_dict_get_or_null(gras_dd_constants,keyval);
 	   if (!storage)
@@ -482,7 +483,9 @@ static void parse_statement(char	 *definition,
              PARSE_ERROR1("free_f annotation only accepted for dynars and matrices which subtype is already declared (field %s)",
 			  identifier.name);
 	   }
+	   free(keyval);
 	} else {
+	  free(keyval);
 	  PARSE_ERROR1("Unknown annotation type: '%s'",keyname);
 	}
 
