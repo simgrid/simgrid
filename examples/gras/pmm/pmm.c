@@ -113,6 +113,7 @@ int master (int argc,char *argv[]) {
        i++) {
 
     xbt_dynar_get_cpy(peers,i,&grid[i]);
+    INFO2("Connecting to %s:%d.",grid[i]->name,grid[i]->port);
     socket[i]=gras_socket_client(grid[i]->name,grid[i]->port);
     INFO2("Connected to %s:%d.",grid[i]->name,grid[i]->port);
   }
@@ -125,6 +126,7 @@ int master (int argc,char *argv[]) {
     xbt_peer_t h;
 
     xbt_dynar_get_cpy(peers,i,&h);
+    INFO2("Killing %s:%d", h->name, h->port);
     amok_pm_kill_hp(h->name,h->port);
     free(h);
   }
