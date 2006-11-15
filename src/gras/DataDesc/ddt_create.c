@@ -766,7 +766,7 @@ static gras_dd_cat_field_t
 	 return field;
       }
    }
-   ERROR2("No field nammed %s in %s",field_name,type->name);
+   ERROR2("No field named '%s' in '%s'",field_name,type->name);
    xbt_abort();
 
 }
