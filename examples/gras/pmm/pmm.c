@@ -104,8 +104,8 @@ int master (int argc,char *argv[]) {
   xbt_assert0(argc>1, "Usage: master <port>");
   gras_socket_server(atoi(argv[1]));
   peers=amok_pm_group_new("pmm");
-  INFO0("Wait for peers for 10 sec");
-  gras_msg_handleall(10); /* friends, we're ready. Come and play */
+  INFO0("Wait for peers for 5 sec");
+  gras_msg_handleall(5); /* friends, we're ready. Come and play */
   INFO1("Got %ld pals",xbt_dynar_length(peers));
 
   for (i=0;
