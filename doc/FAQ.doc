@@ -113,6 +113,11 @@ makefiles will automatically call the tools for you. When it's not possible
 (such as the first time you checkout the CVS), use the ./bootstrap command
 to call them explicitely.
 
+If you need to compile the CVS version on a machine where all these
+dependencies are not met, the easiest is to do <tt>make dist</tt> in the CVS
+dir, on another machine where all dependencies are met. It will create an
+archive you may deploy on other sites just as a regular stable release.
+
 \subsection faq_setting_MSG Setting up your own MSG code
 
 Do not build your simulator by modifying the SimGrid examples.  Go
