@@ -40,7 +40,7 @@ gras_socket_t gras_trp_select(double timeout) {
      with this tiny optimisation on BillWare */
   fd_set FDS;
   int ready; /* return of select: number of socket ready to be serviced */
-  int fd_setsize; /* FD_SETSIZE not always defined. Get this portably */
+  static int fd_setsize=-1; /* FD_SETSIZE not always defined. Get this portably */
 
   gras_socket_t sock_iter; /* iterating over all sockets */
   int cursor;              /* iterating over all sockets */
@@ -52,16 +52,18 @@ gras_socket_t gras_trp_select(double timeout) {
      return _gras_lastly_selected_socket;
   }
   
-  /* Compute FD_SETSIZE */
+  /* Compute FD_SETSIZE on need */
+  if (fd_setsize < 0) {	
 #ifdef HAVE_SYSCONF
-   fd_setsize = sysconf( _SC_OPEN_MAX );
+     fd_setsize = sysconf( _SC_OPEN_MAX );
 #else
 #  ifdef HAVE_GETDTABLESIZE 
-   fd_setsize = getdtablesize();
+     fd_setsize = getdtablesize();
 #  else
-   fd_setsize = FD_SETSIZE;
+     fd_setsize = FD_SETSIZE;
 #  endif /* !USE_SYSCONF */
 #endif
+  }
 
   while (done == -1) {
     if (timeout > 0) { /* did we timeout already? */
