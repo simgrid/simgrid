@@ -18,6 +18,7 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "8: Exceptions"=GRAS_tut_tour_exceptions.html
       DOXYGEN_NAVBAR_CHILD "9: Data exchange"=GRAS_tut_tour_simpledata.html
       DOXYGEN_NAVBAR_CHILD "10: RPC"=GRAS_tut_tour_rpc.html
+      DOXYGEN_NAVBAR_CHILD "11: Explicit wait"=GRAS_tut_tour_explicitwait.html
       DOXYGEN_NAVBAR_CHILD "Recapping part 1"=GRAS_tut_tour_message_recaping.html
       DOXYGEN_NAVBAR_CHILD "12: Static data definition"=GRAS_tut_tour_staticstruct.html
       DOXYGEN_NAVBAR_CHILD "13: Pointers definition"=GRAS_tut_tour_pointers.html
@@ -95,7 +96,25 @@ all features available in GRAS.
          - \ref GRAS_tut_tour_rpc_use_a2i_cb
          - \ref GRAS_tut_tour_rpc_use_rest
       - \ref GRAS_tut_tour_rpc_recap
-  
+ 
+   - \ref GRAS_tut_tour_explicitwait
+     - GRAS_tut_tour_explicitwait_intro
+     - GRAS_tut_tour_explicitwait_use
+     - GRAS_tut_tour_explicitwait_recap
+     
+   - \ref GRAS_tut_tour_message_recaping
+      - \ref GRAS_tut_tour_message_recaping_intro
+      - \ref GRAS_tut_tour_message_recaping_rpc
+         - \ref GRAS_tut_tour_message_recaping_rpc1
+	 - \ref GRAS_tut_tour_message_recaping_rpc2
+         - \ref GRAS_tut_tour_message_recaping_rpc3
+	 - \ref GRAS_tut_tour_message_recaping_rpc4
+         - \ref GRAS_tut_tour_message_recaping_rpc5
+         - \ref GRAS_tut_tour_message_recaping_rpc_aside1
+	 - \ref GRAS_tut_tour_message_recaping_rpc_aside2
+	 - \ref GRAS_tut_tour_message_recaping_rpc_aside3
+      - \ref GRAS_tut_tour_message_recaping_sync
+		       
 <b>Part 3: Data description</b>
 
    - \ref GRAS_tut_tour_staticstruct Automatic parsing of static data types
