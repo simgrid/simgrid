@@ -79,6 +79,12 @@ void gras_msg_init(void) {
   memcpy(_GRAS_header,"GRAS", 4);
   _GRAS_header[4]=GRAS_PROTOCOL_VERSION;
   _GRAS_header[5]=(char)GRAS_THISARCH;
+   
+  gras_msg_ctx_mallocator = 
+     xbt_mallocator_new(1000,
+			gras_msg_ctx_mallocator_new_f,
+			gras_msg_ctx_mallocator_free_f,
+			gras_msg_ctx_mallocator_reset_f);
 }
 
 /*
@@ -88,6 +94,8 @@ void
 gras_msg_exit(void) {
   VERB0("Exiting Msg");
   xbt_set_free(&_gras_msgtype_set);
+
+  xbt_mallocator_free(gras_msg_ctx_mallocator);
 }
 
 /*

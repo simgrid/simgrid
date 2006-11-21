@@ -121,4 +121,12 @@ XBT_PUBLIC gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe,
 						 double timeout);
 
 
+/* We deploy a mallocator on the RPC contextes */
+#include "xbt/mallocator.h"
+extern xbt_mallocator_t gras_msg_ctx_mallocator;
+XBT_PUBLIC void* gras_msg_ctx_mallocator_new_f(void);
+XBT_PUBLIC void gras_msg_ctx_mallocator_free_f(void* dict);
+XBT_PUBLIC void gras_msg_ctx_mallocator_reset_f(void* dict);
+
+
 #endif  /* GRAS_MESSAGE_PRIVATE_H */

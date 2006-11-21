@@ -91,13 +91,25 @@ static int msgfilter_rpcID(gras_msg_t msg, void* ctx) {
   return res;
 }
 
+/* Mallocator cruft */
+xbt_mallocator_t gras_msg_ctx_mallocator = NULL;
+void* gras_msg_ctx_mallocator_new_f(void) {
+   return xbt_new0(s_gras_msg_cb_ctx_t,1);
+}
+void gras_msg_ctx_mallocator_free_f(void* ctx) {
+   xbt_free(ctx);
+}
+void gras_msg_ctx_mallocator_reset_f(void* ctx) {
+   memset(ctx, sizeof(s_gras_msg_cb_ctx_t),0);
+}
+
 /** @brief Launch a RPC call, but do not block for the answer */
 gras_msg_cb_ctx_t 
 gras_msg_rpc_async_call(gras_socket_t server,
 			double timeOut,
 			gras_msgtype_t msgtype,
 			void *request) {
-  gras_msg_cb_ctx_t ctx = xbt_new0(s_gras_msg_cb_ctx_t,1);
+  gras_msg_cb_ctx_t ctx = xbt_mallocator_get(gras_msg_ctx_mallocator);
 
   if (msgtype->ctn_type) {
     xbt_assert1(request,
@@ -159,7 +171,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
      RETHROW;
   }
    
-  free(ctx);
+  xbt_mallocator_release(gras_msg_ctx_mallocator, ctx);
   if (received.kind == e_gras_msg_kind_rpcerror) {
     xbt_ex_t e;
     memcpy(&e,received.payl,received.payl_size);
