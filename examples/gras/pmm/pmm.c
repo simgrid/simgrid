@@ -104,8 +104,8 @@ int master (int argc,char *argv[]) {
   xbt_assert0(argc>1, "Usage: master <port>");
   gras_socket_server(atoi(argv[1]));
   peers=amok_pm_group_new("pmm");
-  INFO0("Wait for peers for 5 sec");
-  gras_msg_handleall(5); /* friends, we're ready. Come and play */
+  INFO0("Wait for peers for 7 sec");
+  gras_msg_handleall(7); /* friends, we're ready. Come and play */
   INFO1("Got %ld pals",xbt_dynar_length(peers));
 
   for (i=0;
@@ -368,8 +368,8 @@ int slave(int argc,char *argv[]) {
 
   /* Create the connexions */
   mysock = gras_socket_server_range(3000,9999,0,0);
+  gras_os_sleep(1); /* let the master get ready */
   INFO1("Sensor starting (on port %d)",gras_os_myport());
-  gras_os_sleep(2); /* let the master get ready */
   master = gras_socket_client_from_string(argv[1]);
 				
   /* Join and run the group */
