@@ -80,6 +80,7 @@ typedef struct {
 int master (int argc,char *argv[]) {
 
   int i;
+  double init_delay;
 
   xbt_matrix_t A,B,C;
   result_t result;
@@ -104,8 +105,15 @@ int master (int argc,char *argv[]) {
   xbt_assert0(argc>1, "Usage: master <port>");
   gras_socket_server(atoi(argv[1]));
   peers=amok_pm_group_new("pmm");
-  INFO0("Wait for peers for 7 sec");
-  gras_msg_handleall(7); /* friends, we're ready. Come and play */
+   
+  /* friends, we're ready. Come and play */
+  if (gras_if_RL()) {
+     init_delay = 5;
+  } else {
+     init_delay = 15; /* no idea why I have to wait that long in simulation */
+  }
+  INFO1("Wait for peers for %.0f sec",init_delay);
+  gras_msg_handleall(init_delay);
   INFO1("Got %ld pals",xbt_dynar_length(peers));
 
   for (i=0;
@@ -125,8 +133,8 @@ int master (int argc,char *argv[]) {
   for (i=SLAVE_COUNT; i<xbt_dynar_length(peers); ) {
     xbt_peer_t h;
 
-    xbt_dynar_get_cpy(peers,i,&h);
-    INFO2("Killing %s:%d", h->name, h->port);
+    xbt_dynar_remove_at(peers,i,&h);
+    INFO2("Too much slaves. Killing %s:%d", h->name, h->port);
     amok_pm_kill_hp(h->name,h->port);
     free(h);
   }
