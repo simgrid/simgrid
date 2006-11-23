@@ -15,4 +15,15 @@
   <process host="McGee"     function="slave"><argument value="Jacquelin:4242"/></process>
   <process host="Gatien"    function="slave"><argument value="Jacquelin:4242"/></process>
   <process host="Laroche"   function="slave"><argument value="Jacquelin:4242"/></process>
+
+  <process host="Tanguay"    function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Morin"      function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Ethernet"   function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Bellemarre" function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Kuenning"   function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Gaston"     function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Bousquet"   function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Paul"       function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="St_Jean"    function="slave"><argument value="Jacquelin:4242"/></process>
+  <process host="Jill"       function="slave"><argument value="Jacquelin:4242"/></process>
 </platform_description>
