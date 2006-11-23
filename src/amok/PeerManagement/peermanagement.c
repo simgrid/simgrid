@@ -110,19 +110,19 @@ void amok_pm_mainloop(double timeOut) {
   }
 }
 
-/** \brief kill a buddy identified by its peername and port */
+/** \brief kill a buddy identified by its peername and port. Note that it is not removed from any group it may belong to. */
 void amok_pm_kill_hp(char *name,int port) {
   gras_socket_t sock=gras_socket_client(name,port);
   amok_pm_kill(sock);
   gras_socket_close(sock);
 }
 
-/** \brief kill a buddy to which we have a socket already */
+/** \brief kill a buddy to which we have a socket already. Note that it is not removed from any group it may belong to. */
 void amok_pm_kill(gras_socket_t buddy) {
   gras_msg_send(buddy,gras_msgtype_by_name("amok_pm_kill"),NULL);
 }
 
-/** \brief kill syncronously a buddy (do not return before its death) */
+/** \brief kill syncronously a buddy (do not return before its death). Note that it is not removed from any group it may belong to. */
 void amok_pm_kill_sync(gras_socket_t buddy) {
   gras_msg_rpccall(buddy,30,gras_msgtype_by_name("amok_pm_killrpc"),NULL,NULL);
 }
