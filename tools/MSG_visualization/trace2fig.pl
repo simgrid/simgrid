@@ -4,7 +4,7 @@ use strict;
 use XFig;
 
 my($grid_Y_size)=225; # xfig 
-my($grid_X_size)=225; # xfig 
+my($grid_X_size)=550; # xfig 
 
 sub read_cat {
     my(%Cat);
@@ -109,9 +109,11 @@ sub set_cat_position {
     my($i)=0;
     my($cat);
     foreach $cat (@$cat_list) {
-	$$Cat{$cat}{Y_min} = $i;
-	$$Cat{$cat}{Y_max} = $i+1;
-	$i++;
+	if(defined($$Cat{$cat}{state})) {
+	    $$Cat{$cat}{Y_min} = $i;
+	    $$Cat{$cat}{Y_max} = $i+1;
+	    $i++;
+	}
     }
 }
 
