@@ -11,6 +11,10 @@ SimGrid (3.1.1) unstable; urgency=low
     enough so that they can all get received in one shoot.   
   * gras_datadesc_by_name and gras_msgtype_by_name: now raise an exception
     if not found. Use the *_or_null() variant for the old semantic.
+  * In gras_msg_handle, do not discard messages without callback.
+    They are probably messages to be explicitly awaited later (ie, proofs of
+    mis-synchronization in userland since they are sent before being awaited)
+    No big deal usually
 	
   AMOK:
   * Do really rename the hostmanagement module to peermanagement. [Mt]

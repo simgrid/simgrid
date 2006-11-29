@@ -35,9 +35,10 @@ static void *gras_msg_procdata_new() {
    
    res->name = xbt_strdup("gras_msg");
    res->name_len = 0;
-   res->msg_queue = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
-   res->cbl_list  = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
-   res->timers    = xbt_dynar_new(sizeof(s_gras_timer_t), NULL);
+   res->msg_queue     = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
+   res->msg_waitqueue = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
+   res->cbl_list      = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
+   res->timers        = xbt_dynar_new(sizeof(s_gras_timer_t), NULL);
    
    return (void*)res;
 }
@@ -49,6 +50,7 @@ static void gras_msg_procdata_free(void *data) {
    gras_msg_procdata_t res = (gras_msg_procdata_t)data;
    
    xbt_dynar_free(&( res->msg_queue ));
+   xbt_dynar_free(&( res->msg_waitqueue ));
    xbt_dynar_free(&( res->cbl_list ));
    xbt_dynar_free(&( res->timers ));
 
@@ -316,6 +318,19 @@ gras_msg_wait_ext(double           timeout,
 
   start = gras_os_time();
   VERB1("Waiting for message '%s'",msgt_want?msgt_want->name:"(any)");
+
+  xbt_dynar_foreach(pd->msg_waitqueue,cpt,msg){
+    if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
+	 && (!expe_want || (!strcmp( gras_socket_peer_name(msg.expe),
+				     gras_socket_peer_name(expe_want))))
+	 && (!filter || filter(&msg,filter_ctx))) {
+
+      memcpy(msg_got,&msg,sizeof(s_gras_msg_t));
+      xbt_dynar_cursor_rm(pd->msg_waitqueue, &cpt);
+      VERB0("The waited message was queued");
+      return;
+    }
+  }
 
   xbt_dynar_foreach(pd->msg_queue,cpt,msg){
     if ( (   !msgt_want || (msg.type->code == msgt_want->code)) 
@@ -636,11 +651,11 @@ gras_msg_handle(double timeOut) {
     }
   }
   if (!list) {
-    INFO3("No callback for the incomming '%s' message (from %s:%d). Discarded.", 
+    INFO3("No callback for message '%s' from %s:%d. Queue it for later gras_msg_wait() use.",
 	  msg.type->name,
 	  gras_socket_peer_name(msg.expe),gras_socket_peer_port(msg.expe));
-    WARN0("FIXME: gras_datadesc_free not implemented => leaking the payload");
-    return;
+    xbt_dynar_push(pd->msg_waitqueue,&msg);
+    return; /* FIXME: maybe we should call ourselves again until the end of the timer or a proper msg is got */
   }
   
   ctx.expeditor = msg.expe;
