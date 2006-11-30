@@ -62,9 +62,9 @@ void amok_bw_bw_init() {
 			      gras_datadesc_by_name("s_xbt_peer_t"));
   gras_datadesc_struct_append(bw_request_desc,"buf_size",
 			      gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_append(bw_request_desc,"exp_size",
-			      gras_datadesc_by_name("unsigned long int"));
   gras_datadesc_struct_append(bw_request_desc,"msg_size",
+			      gras_datadesc_by_name("unsigned long int"));
+  gras_datadesc_struct_append(bw_request_desc,"msg_amount",
 			      gras_datadesc_by_name("unsigned long int"));
   gras_datadesc_struct_append(bw_request_desc,"min_duration",
 			      gras_datadesc_by_name("double"));
@@ -103,8 +103,8 @@ void amok_bw_bw_leave() {
  * 
  * \arg peer: A (regular) socket at which the the host with which we should conduct the experiment can be contacted
  * \arg buf_size: Size of the socket buffer. If 0, a sain default is used (32k, but may change)
- * \arg exp_size: Total size of data sent across the network
- * \arg msg_size: Size of each message sent. Ie, (\e expSize % \e msgSize) messages will be sent.
+ * \arg msg_size: Size of each message sent. 
+ * \arg msg_amount: Amount of such messages to exchange 
  * \arg min_duration: The minimum wanted duration. When the test message is too little, you tend to measure the latency. This argument allows you to force the test to take at least, say one second.
  * \arg sec: where the result (in seconds) should be stored. If the experiment was done several times because the first one was too short, this is the timing of the last run only.
  * \arg bw: observed Bandwidth (in byte/s) 
@@ -113,19 +113,26 @@ void amok_bw_bw_leave() {
  * This call is blocking until the end of the experiment.
  *
  * If the asked experiment lasts less than \a min_duration, another one will be
- * launched. Sizes (both \a exp_size and \a msg_size) will be multiplicated by
- * (\a min_duration / measured_duration) (plus 10% to be sure to eventually
+ * launched (and others, if needed). msg_size will be multiplicated by
+ * MIN(20, (\a min_duration / measured_duration) *1.1) (plus 10% to be sure to eventually
  * reach the \a min_duration). In that case, the reported bandwidth and
  * duration are the ones of the last run. \a msg_size cannot go over 64Mb
  * because we need to malloc a block of this size in RL to conduct the
- * experiment, and we still don't want to visit the swap.
+ * experiment, and we still don't want to visit the swap. In such case, the 
+ * number of messages is increased instead of their size.
  *
  * Results are reported in last args, and sizes are in byte.
+ * 
+ * @warning: in SimGrid version 3.1 and previous, the experiment size were specified
+ *           as the total amount of data to send and the msg_size. This
+ *           was changed for the fool wanting to send more than MAXINT
+ *           bytes in a fat pipe.
+ * 
  */
 void amok_bw_test(gras_socket_t peer,
 		  unsigned long int buf_size,
-		  unsigned long int exp_size,
 		  unsigned long int msg_size,
+		  unsigned long int msg_amount,
 		  double min_duration,
 	  /*OUT*/ double *sec, double *bw) {
 
@@ -135,8 +142,6 @@ void amok_bw_test(gras_socket_t peer,
   bw_request_t request,request_ack;
   xbt_ex_t e;
   int first_pass; 
-  int nb_messages = (exp_size % msg_size == 0) ? 
-    (exp_size / msg_size) : (exp_size / msg_size + 1); 
   
   for (port = 5000; port < 10000 && measMasterIn == NULL; port++) {
     TRY {
@@ -153,8 +158,8 @@ void amok_bw_test(gras_socket_t peer,
   
   request=xbt_new0(s_bw_request_t,1);
   request->buf_size=buf_size;
-  request->exp_size=msg_size * nb_messages;
   request->msg_size=msg_size;
+  request->msg_amount=msg_amount;
   request->peer.name = NULL;
   request->peer.port = gras_socket_my_port(measMasterIn);
   DEBUG5("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld byte= %ld b)", 
@@ -177,8 +182,8 @@ void amok_bw_test(gras_socket_t peer,
     RETHROW2("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
 	     gras_socket_peer_name(peer),request_ack->peer.port);
   }
-  DEBUG2("Got ACK; conduct the experiment (exp_size = %ld, msg_size=%ld)",
-	 request->exp_size, request->msg_size);
+  DEBUG2("Got ACK; conduct the experiment (msg_size = %ld, msg_amount=%ld)",
+	 request->msg_size, request->msg_amount);
 
   *sec = 0;
   first_pass = 1;
@@ -199,22 +204,22 @@ void amok_bw_test(gras_socket_t peer,
 
       /* Do not do too large experiments messages or the sensors 
 	 will start to swap to store one of them.
-	 And then increase the number of messages to compensate */
+	 And then increase the number of messages to compensate (check for overflow there, too) */
       if (request->msg_size > 64*1024*1024) {
-	nb_messages = ( (request->msg_size / ((double)64*1024*1024)) 
-		        * nb_messages ) + 1; 
-	request->msg_size = 64*1024*1024;
+	 unsigned long int new_amount = ( (request->msg_size / ((double)64*1024*1024)) 
+					  * request->msg_amount ) + 1;
+	
+	 xbt_assert0(new_amount > request->msg_amount,
+		     "Overflow on the number of messages! You must have a *really* fat pipe. Please fix your platform");
+	 request->msg_amount = new_amount;
+	 
+	 request->msg_size = 64*1024*1024;
       }
 
-      VERB6("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%lu msg_size=%lu (nb_messages=%d) (got %fkb/s)",
+      VERB5("The experiment was too short (%f sec<%f sec). Redo it with msg_size=%lu (nb_messages=%lu) (got %fMb/s)",
 	    meas_duration, min_duration, 
-	    request->exp_size, request->msg_size, nb_messages, 
-	    ((double)request->exp_size) / *sec/1024);
-
-      xbt_assert0(request->exp_size > request->msg_size * nb_messages,
-		  "Overflow on the experiment size! You must have a *really* fat pipe. Please fix your platform");
-      request->exp_size = request->msg_size * nb_messages;
-
+	    request->msg_size, request->msg_amount,
+	    ((double)request->msg_size) * ((double)request->msg_amount / (*sec) /1024.0/1024.0));
 
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
     }
@@ -222,7 +227,7 @@ void amok_bw_test(gras_socket_t peer,
     first_pass = 0;
     *sec=gras_os_time();
     TRY {
-      gras_socket_meas_send(measOut,120,request->exp_size,request->msg_size);
+      gras_socket_meas_send(measOut,120,request->msg_size,request->msg_amount);
       DEBUG0("Data sent. Wait ACK");
       gras_socket_meas_recv(measIn,120,1,1);
     } CATCH(e) {
@@ -232,7 +237,9 @@ void amok_bw_test(gras_socket_t peer,
       RETHROW0("Unable to conduct the experiment: %s");
     }
     *sec = gras_os_time() - *sec;
-    if (*sec != 0.0) { *bw = ((double)request->exp_size) / *sec; }
+    if (*sec != 0.0) { 
+       *bw = ((double)request->msg_size) * ((double)request->msg_amount) / (*sec);
+    }
     DEBUG1("Experiment done ; it took %f sec", *sec);
     if (*sec <= 0) {
       CRITICAL1("Nonpositive value (%f) found for BW test time.", *sec);
@@ -257,7 +264,7 @@ void amok_bw_test(gras_socket_t peer,
    opens a server measurement socket,
    indicate its port in an "BW handshaked" message,
    receive the corresponding data on the measurement socket, 
-   close the measurment socket
+   close the measurement socket
 
    sizes are in byte
 */
@@ -273,9 +280,9 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
   gras_msg_cb_ctx_t ctx_reask;
   static xbt_dynar_t msgtwaited=NULL;
   
-  DEBUG5("Handshaked to connect to %s:%d (sizes: buf=%lu exp=%lu msg=%lu)",
+  DEBUG5("Handshaked to connect to %s:%d (sizes: buf=%lu msg=%lu msg_amount=%lu)",
 	gras_socket_peer_name(expeditor),request->peer.port,
-	request->buf_size,request->exp_size,request->msg_size);     
+	request->buf_size,request->msg_size, request->msg_amount);     
 
   /* Build our answer */
   answer = xbt_new0(s_bw_request_t,1);
@@ -294,8 +301,8 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
   }
    
   answer->buf_size=request->buf_size;
-  answer->exp_size=request->exp_size;
   answer->msg_size=request->msg_size;
+  answer->msg_amount=request->msg_amount;
   answer->peer.port=gras_socket_my_port(measMasterIn);
 
   TRY {
@@ -320,8 +327,8 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
 
   TRY {
     measIn = gras_socket_meas_accept(measMasterIn);
-    DEBUG4("BW handshake answered. buf_size=%lu exp_size=%lu msg_size=%lu port=%d",
-	   answer->buf_size,answer->exp_size,answer->msg_size,answer->peer.port);
+    DEBUG4("BW handshake answered. buf_size=%lu msg_size=%lu msg_amount=%lu port=%d",
+	   answer->buf_size,answer->msg_size,answer->msg_amount, answer->peer.port);
   } CATCH(e) {
     gras_socket_close(measMasterIn);
     gras_socket_close(measIn);
@@ -340,7 +347,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
     void *payload;
     int msggot;
     TRY {
-      gras_socket_meas_recv(measIn, 120,request->exp_size,request->msg_size);
+      gras_socket_meas_recv(measIn, 120,request->msg_size,request->msg_amount);
       gras_socket_meas_send(measOut,120,1,1);
     } CATCH(e) {
       gras_socket_close(measMasterIn);
@@ -384,21 +391,26 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
  * give a measurement socket here. The needed measurement sockets will be created 
  * automatically and negociated between the peers)
  * \arg buf_size: Size of the socket buffer. If 0, a sain default is used (32k, but may change)
- * \arg exp_size: Total size of data sent across the network
- * \arg msg_size: Size of each message sent. (\e expSize % \e msgSize) messages will be sent.
+ * \arg msg_size: Size of each message sent. 
+ * \arg msg_amount: Amount of such data to exchange
  * \arg sec: where the result (in seconds) should be stored.
  * \arg bw: observed Bandwidth (in byte/s)
  *
  * Conduct a bandwidth test from the process from_peer:from_port to to_peer:to_port.
  * This call is blocking until the end of the experiment.
  *
+ * @warning: in SimGrid version 3.1 and previous, the experiment size were specified
+ *           as the total amount of data to send and the msg_size. This
+ *           was changed for the fool wanting to send more than MAXINT
+ *           bytes in a fat pipe.
+ * 
  * Results are reported in last args, and sizes are in bytes.
  */
 void amok_bw_request(const char* from_name,unsigned int from_port,
 		     const char* to_name,unsigned int to_port,
 		     unsigned long int buf_size,
-		     unsigned long int exp_size,
 		     unsigned long int msg_size,
+		     unsigned long int msg_amount,
 		     double min_duration,
 	     /*OUT*/ double *sec, double*bw) {
   
@@ -408,8 +420,8 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
   bw_res_t result;
   request=xbt_new0(s_bw_request_t,1);
   request->buf_size=buf_size;
-  request->exp_size=exp_size;
   request->msg_size=msg_size;
+  request->msg_amount=msg_amount;
   request->min_duration = min_duration;
 
 
@@ -453,7 +465,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
 	request->peer.name,request->peer.port);
   peer = gras_socket_client(request->peer.name,request->peer.port);
   amok_bw_test(peer,
-	       request->buf_size,request->exp_size,request->msg_size,
+	       request->buf_size,request->msg_size,request->msg_amount,
 	       request->min_duration,
 	       &(result->sec),&(result->bw));
  
@@ -468,9 +480,15 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   return 1;
 }
 
-/** \brief builds a matrix of results of bandwidth measurement */
+/** \brief builds a matrix of results of bandwidth measurement
+ * 
+ * @warning: in SimGrid version 3.1 and previous, the experiment size were specified
+ *           as the total amount of data to send and the msg_size. This
+ *           was changed for the fool wanting to send more than MAXINT
+ *           bytes in a fat pipe.
+ */
 double * amok_bw_matrix(xbt_dynar_t peers,
-			int buf_size_bw, int exp_size_bw, int msg_size_bw,
+			int buf_size_bw, int msg_size_bw, int msg_amount_bw,
 			double min_duration) { 
   double sec;
   /* construction of matrices for bandwith and latency */
@@ -486,7 +504,7 @@ double * amok_bw_matrix(xbt_dynar_t peers,
       if (i!=j) {
         /* Mesurements of Bandwidth */
         amok_bw_request(p1->name,p1->port,p2->name,p2->port,
-                        buf_size_bw,exp_size_bw,msg_size_bw,min_duration,
+                        buf_size_bw,msg_size_bw,msg_amount_bw,min_duration,
 			&sec,&matrix_res[i*len + j]);
       } 
     }

@@ -35,8 +35,8 @@ XBT_PUBLIC void amok_bw_sat_leave(void);/* Each process must run it */
 typedef struct {
   s_xbt_peer_t peer; /* peer+raw socket to use */
   unsigned long int buf_size;
-  unsigned long int exp_size;
   unsigned long int msg_size;
+  unsigned long int msg_amount;
   double min_duration;
 } s_bw_request_t,*bw_request_t;
 

@@ -104,7 +104,7 @@ XBT_PUBLIC void amok_bw_request(const char* from_name,unsigned int from_port,
 	     /*OUT*/ double *sec, double*bw);
 
 XBT_PUBLIC double * amok_bw_matrix(xbt_dynar_t hosts, /* dynar of xbt_host_t */
-                        int buf_size_bw, int exp_size_bw, int msg_size_bw, double min_duration);
+				   int buf_size_bw, int msg_size_bw, int msg_amount_bw, double min_duration);
 
 /* ***************************************************************************
  * Link saturation

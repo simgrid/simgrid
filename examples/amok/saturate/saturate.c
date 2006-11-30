@@ -56,8 +56,8 @@ int maestro (int argc,char *argv[]);
 
 /* XP setups */
 const int buf_size = 0;
-const int exp_size = 100 * 1024;
 const int msg_size = 50 * 1024;
+const int msg_amount = 2;
 const int sat_size = 1024 * 1024 * 10;
 const double min_duration = 1;
 
@@ -69,7 +69,7 @@ static double XP(const char *bw1, const char *bw2,
   gras_os_sleep(5.0); /* wait for the sensors to show up */
   /* Test BW without saturation */
   amok_bw_request(bw1,4000,bw2,4000,
-		  buf_size,exp_size,msg_size,min_duration,&sec,&bw);
+		  buf_size,msg_size,msg_amount,min_duration,&sec,&bw);
   INFO4("BW(%s,%s) => %f sec, achieving %f Mb/s",
        bw1, bw2, sec, (bw/1024.0/1024.0));
 
@@ -79,7 +79,7 @@ static double XP(const char *bw1, const char *bw2,
   gras_os_sleep(1.0); /* let it start */
 
   amok_bw_request(bw1,4000,bw2,4000,
-		  buf_size,exp_size,msg_size,min_duration,&sec_sat,&bw_sat);
+		  buf_size,msg_size,msg_amount,min_duration,&sec_sat,&bw_sat);
   INFO6("BW(%s,%s//%s,%s) => %f sec, achieving %f Mb/s",
        bw1,bw2,sat1,sat2,sec,bw/1024.0/1024.0);
   
@@ -181,7 +181,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
   begin=time(NULL);
   begin_simulated=gras_os_time();
 
-  bw=amok_bw_matrix(peers,buf_size,exp_size,msg_size,min_duration);
+  bw=amok_bw_matrix(peers,buf_size,msg_size,msg_amount,min_duration);
 
   INFO2("Did all BW tests in %ld sec (%.2f simulated(?) sec)",
 	  time(NULL)-begin,gras_os_time()-begin_simulated);
@@ -214,7 +214,7 @@ static void full_fledged_saturation(int argc, char*argv[]) {
 	  VERB4("TEST %s %s // %s %s",
 		h1->name,h2->name,h3->name,h4->name);
 	  amok_bw_request(h3->name,h3->port, h4->name,h4->port,
-			  buf_size,exp_size,msg_size,min_duration,
+			  buf_size,msg_size,msg_amount,min_duration,
 			  NULL,&(bw_sat[k*nb_peers + l]));
 
 	  ratio=bw_sat[k*nb_peers + l] / bw[k*nb_peers + l];

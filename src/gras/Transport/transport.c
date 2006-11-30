@@ -445,8 +445,8 @@ int gras_socket_is_meas(gras_socket_t sock) {
  *
  * @param peer measurement socket to use for the experiment
  * @param timeout timeout (in seconds)
- * @param exp_size total amount of data to send (in bytes).
  * @param msg_size size of each chunk sent over the socket (in bytes).
+ * @param msg_amount how many of these packets you want to send. 
  *
  * Calls to gras_socket_meas_send() and gras_socket_meas_recv() on 
  * each side of the socket should be paired. 
@@ -454,14 +454,18 @@ int gras_socket_is_meas(gras_socket_t sock) {
  * The exchanged data is zeroed to make sure it's initialized, but
  * there is no way to control what is sent (ie, you cannot use these 
  * functions to exchange data out of band).
+ * 
+ * @warning: in SimGrid version 3.1 and previous, the numerical arguments 
+ *           were the total amount of data to send and the msg_size. This 
+ *           was changed for the fool wanting to send more than MAXINT 
+ *           bytes in a fat pipe. 
  */
 void gras_socket_meas_send(gras_socket_t peer, 
 			   unsigned int timeout,
-			   unsigned long int exp_size, 
-			   unsigned long int msg_size) {
+			   unsigned long int msg_size, 
+			   unsigned long int msg_amount) {
   char *chunk=NULL;
-  unsigned long int exp_sofar;
-  unsigned long int chunk_size = 0;
+  unsigned long int sent_sofar;
   
   XBT_IN;
 
@@ -471,17 +475,14 @@ void gras_socket_meas_send(gras_socket_t peer,
   xbt_assert0(peer->meas,"Asked to send measurement data on a regular socket");
   xbt_assert0(peer->outgoing,"Socket not suited for data send (was created with gras_socket_server(), not gras_socket_client())");
 
-  for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += chunk_size) {
-     chunk_size = exp_sofar + msg_size > exp_size ? 
-       exp_size - exp_sofar : msg_size;
-     CDEBUG6(gras_trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d, sending %lu",
-	     exp_sofar,exp_size,msg_size,
-	     gras_socket_peer_name(peer), gras_socket_peer_port(peer), 
-	     chunk_size);
-     (*peer->plugin->raw_send)(peer,chunk,chunk_size);
+  for (sent_sofar=0; sent_sofar < msg_amount; sent_sofar++) {
+     CDEBUG5(gras_trp_meas,"Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
+	     sent_sofar,msg_amount,msg_size,
+	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
+     (*peer->plugin->raw_send)(peer,chunk,msg_size);
   }
-  CDEBUG5(gras_trp_meas,"Sent %lu of %lu (msg_size=%ld) to %s:%d",
-	  exp_sofar,exp_size,msg_size,
+  CDEBUG5(gras_trp_meas,"Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
+	  sent_sofar,msg_amount,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 	     
   if (gras_if_RL()) 
@@ -494,15 +495,19 @@ void gras_socket_meas_send(gras_socket_t peer,
  *
  * Calls to gras_socket_meas_send() and gras_socket_meas_recv() on 
  * each side of the socket should be paired. 
+ *
+ * @warning: in SimGrid version 3.1 and previous, the numerical arguments 
+ *           were the total amount of data to send and the msg_size. This 
+ *           was changed for the fool wanting to send more than MAXINT 
+ *           bytes in a fat pipe. 
  */
 void gras_socket_meas_recv(gras_socket_t peer, 
 			   unsigned int timeout,
-			   unsigned long int exp_size, 
-			   unsigned long int msg_size){
+			   unsigned long int msg_size, 
+			   unsigned long int msg_amount){
   
   char *chunk=NULL;
-  unsigned long int exp_sofar;
-  unsigned long int chunk_size = 0;
+  unsigned long int got_sofar;
 
   XBT_IN;
 
@@ -513,17 +518,14 @@ void gras_socket_meas_recv(gras_socket_t peer,
 	      "Asked to receive measurement data on a regular socket");
   xbt_assert0(peer->incoming,"Socket not suited for data receive");
 
-  for (exp_sofar=0; exp_sofar < exp_size; exp_sofar += chunk_size) {
-     chunk_size = exp_sofar + msg_size > exp_size ? 
-       exp_size - exp_sofar : msg_size;
-     CDEBUG6(gras_trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d, receiving %lu",
-	     exp_sofar,exp_size,msg_size,
-	     gras_socket_peer_name(peer), gras_socket_peer_port(peer), 
-	     chunk_size);
-     (peer->plugin->raw_recv)(peer,chunk,chunk_size);
+  for (got_sofar=0; got_sofar < msg_amount; got_sofar ++) {
+     CDEBUG5(gras_trp_meas,"Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
+	     got_sofar,msg_amount,msg_size,
+	     gras_socket_peer_name(peer), gras_socket_peer_port(peer));
+     (peer->plugin->raw_recv)(peer,chunk,msg_size);
   }
-  CDEBUG5(gras_trp_meas,"Recvd %ld of %lu (msg_size=%ld) from %s:%d",
-	  exp_sofar,exp_size,msg_size,
+  CDEBUG5(gras_trp_meas,"Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
+	  got_sofar,msg_amount,msg_size,
 	  gras_socket_peer_name(peer), gras_socket_peer_port(peer));
 
   if (gras_if_RL()) 

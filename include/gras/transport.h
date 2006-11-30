@@ -88,13 +88,13 @@ XBT_PUBLIC char *gras_socket_peer_proc(gras_socket_t sock);
 
 XBT_PUBLIC int gras_socket_is_meas(gras_socket_t sock);
 XBT_PUBLIC void gras_socket_meas_send(gras_socket_t peer, 
-			   unsigned int timeout,
-			   unsigned long int expSize, 
-			   unsigned long int msgSize);
+				      unsigned int timeout,
+				      unsigned long int msgSize, 
+				      unsigned long int msgAmount);
 XBT_PUBLIC void gras_socket_meas_recv(gras_socket_t peer, 
-			   unsigned int timeout,
-			   unsigned long int expSize, 
-			   unsigned long int msgSize);
+				      unsigned int timeout,
+				      unsigned long int msgSize, 
+				      unsigned long int msgAmount);
 XBT_PUBLIC gras_socket_t gras_socket_meas_accept(gras_socket_t peer);
             
 /* @}*/
