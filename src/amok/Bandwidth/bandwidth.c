@@ -185,18 +185,28 @@ void amok_bw_test(gras_socket_t peer,
   do {
     if (first_pass == 0) {
       double meas_duration=*sec;
-      if (*sec != 0.0 ) { 
-	request->msg_size = request->msg_size * (min_duration / meas_duration) * 1.1;
+      double increase;
+      if (*sec != 0.0 ) {
+	 increase = (min_duration / meas_duration) * 1.1;
       } else {
-	request->msg_size = request->msg_size * 4; 
+	 increase = 4; 
       }
-	     
+      /* Do not increase the exp size too fast since our decision would be based on wrong measurements*/
+      if (increase > 20)
+	 increase = 20; 
+	    
+      request->msg_size = request->msg_size * increase;
+
+      /* Do not do too large experiments messages or the sensors will start to swap to store one of them */
       if (request->msg_size > 64*1024*1024)
 	request->msg_size = 64*1024*1024;
 
-      request->exp_size = request->msg_size * nb_messages; 
+      if (request->exp_size > request->msg_size * nb_messages) 
+	 CRITICAL0("overflow on the experiment size! You must have a *really* fat pipe. Please fix your platform");
+      else
+	 request->exp_size = request->msg_size * nb_messages;
 
-      VERB5("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%ld msg_size=%ld (got %fkb/s)",
+      VERB5("The experiment was too short (%f sec<%f sec). Redo it with exp_size=%lu msg_size=%lu (got %fkb/s)",
 	     meas_duration,min_duration,request->exp_size,request->msg_size,((double)exp_size) / *sec/1024);
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
     }
