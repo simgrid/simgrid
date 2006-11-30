@@ -25,8 +25,11 @@ typedef struct {
   char        *name;
   unsigned int name_len;
 
-  /*queue of msgs storing the ones got while msg_wait'ing for something else */
+  /* queue storing the msgs got while msg_wait'ing for something else. Reuse them ASAP. */
   xbt_dynar_t msg_queue; /* elm type: s_gras_msg_t */
+
+  /* queue storing the msgs without callback got when handling. Feed them to wait() */
+  xbt_dynar_t msg_waitqueue; /* elm type: s_gras_msg_t */
 
   /* registered callbacks for each message */
   xbt_dynar_t cbl_list; /* elm type: gras_cblist_t */
