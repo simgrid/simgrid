@@ -16,7 +16,7 @@
 #define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
-#define DATA_MATRIX_SIZE 9
+#define DATA_MATRIX_SIZE 18
 const int submatrix_size = DATA_MATRIX_SIZE/PROC_MATRIX_SIZE;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");
@@ -80,7 +80,6 @@ typedef struct {
 int master (int argc,char *argv[]) {
 
   int i;
-  double init_delay;
 
   xbt_matrix_t A,B,C;
   result_t result;
@@ -107,13 +106,8 @@ int master (int argc,char *argv[]) {
   peers=amok_pm_group_new("pmm");
    
   /* friends, we're ready. Come and play */
-  if (gras_if_RL()) {
-     init_delay = 5;
-  } else {
-     init_delay = 15; /* no idea why I have to wait that long in simulation */
-  }
-  INFO1("Wait for peers for %.0f sec",init_delay);
-  gras_msg_handleall(init_delay);
+  INFO0("Wait for peers for 5 sec");
+  gras_msg_handleall(5);
   INFO1("Got %ld pals",xbt_dynar_length(peers));
 
   for (i=0;
