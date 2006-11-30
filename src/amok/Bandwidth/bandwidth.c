@@ -211,10 +211,9 @@ void amok_bw_test(gras_socket_t peer,
 	    request->exp_size, request->msg_size, nb_messages, 
 	    ((double)request->exp_size) / *sec/1024);
 
-      if (request->exp_size > request->msg_size * nb_messages) 
-	 CRITICAL0("overflow on the experiment size! You must have a *really* fat pipe. Please fix your platform");
-      else
-	 request->exp_size = request->msg_size * nb_messages;
+      xbt_assert0(request->exp_size > request->msg_size * nb_messages,
+		  "Overflow on the experiment size! You must have a *really* fat pipe. Please fix your platform");
+      request->exp_size = request->msg_size * nb_messages;
 
 
       gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
