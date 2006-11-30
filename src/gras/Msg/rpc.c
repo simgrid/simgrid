@@ -206,7 +206,7 @@ void gras_msg_rpccall(gras_socket_t server,
 
   gras_msg_cb_ctx_t ctx;
 
-  ctx= gras_msg_rpc_async_call(server, timeout,msgtype,request);
+  ctx = gras_msg_rpc_async_call(server, timeout,msgtype,request);
   gras_msg_rpc_async_wait(ctx, answer);
 }
 
