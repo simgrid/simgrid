@@ -25,7 +25,7 @@ typedef enum
     MAX_CHANNEL
   } channel_t;
 
-double task_comm_size_lat = 0;
+double task_comm_size_lat = 1;
 double task_comm_size_bw = 100000000;
 
 /** Emitter function  */
@@ -55,15 +55,15 @@ int sender(int argc,char *argv[] )
 
   for (i = 0; i < nbr; i++) 
     { 
-      /* Latency */
-      /* time=MSG_get_clock(); */
-/*       task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size_lat, NULL); */
-/* INFO1("task = %p",task); */
-/*       task->data=xbt_new0(double,1); */
-/*       *(double*)(task->data)=time; */
-/* INFO1("task->data = %le", *(double*)(task->data)); */
-/* INFO2("host [%d]=%s ",i, argv[i+1]); */
-/*       MSG_task_put(task, hosts[i],PORT_22);    */
+/* Latency */
+ time=MSG_get_clock(); 
+       task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size_lat, NULL); 
+ INFO1("task = %p",task); 
+       task->data=xbt_new0(double,1); 
+       *(double*)(task->data)=time; 
+ INFO1("task->data = %le", *(double*)(task->data)); 
+ INFO2("host [%d]=%s ",i, argv[i+1]); 
+       MSG_task_put(task, hosts[i],PORT_22);    
 
       /* Bandwidth */
       time=MSG_get_clock();
@@ -97,10 +97,10 @@ int receiver(int argc, char *argv[])
       time1=MSG_get_clock();
       sender_time=(*(double*)(task->data));
      
-      if (sender_time > time) 
+/*      if (sender_time > time) */
 	time=sender_time;
       communication_time=time1-time;
-      INFO1("Communic. time %le",communication_time);
+      INFO1("Communic. time %.35f",communication_time);
       MSG_task_destroy(task);
       INFO1("Communic. time %le",communication_time);
 
