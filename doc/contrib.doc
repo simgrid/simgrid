@@ -22,13 +22,13 @@ here.
 GarSim is a simulator of a scheduling meta-system or just of a batch
 system. This code is written in C++ and has many dependencies (with
 python, sqlite, some parts of condor, ...). It is maintained by
-Vincent Garonne (garonne::lal.in2p3.fr). The cvs directory is <a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/garSim/?cvsroot=cvsroot%2Fsimgrid">here</a>.
+Vincent Garonne (garonne::lal.in2p3.fr). The cvs directory is <a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/garSim/?cvsroot=simgrid">here</a>.
 
-\subsection contrib_msg_simbatch SimBatch
+\subsection contrib_msg_simbatch Simbatch
 
 This program simulates the behavior of a batch scheduler managing a
 cluster. This program is maintained by Jean-Sebastien Gay
-(Jean-Sebastien.Gay::ens-lyon.fr). The cvs directory is <a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/simBatch/?cvsroot=cvsroot%2Fsimgrid">here</a>.
+(Jean-Sebastien.Gay::ens-lyon.fr). The cvs directory is <a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/Simbatch/?cvsroot=simgrid">here</a> and the main page is <a href="http://graal.ens-lyon.fr/simbatch/">here</a>.
 
 \subsection contrib_msg_divloc Divisible load simulations
 

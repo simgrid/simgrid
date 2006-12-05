@@ -35,7 +35,8 @@ a bit old now. We are actively working on improving this.
     critical for current scheduling research in large-scale platforms.
     After describing and validating these features, we present a case
     study by which we demonstrate the usefulness of SimGrid for
-    conducting scheduling research.
+    conducting scheduling research.\n
+    http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/articles/simgrid2_CCgrid03.pdf
 
 Previous publication do not cover the GRAS part of the framework. So, if you
 want to cite GRAS, please use this publication instead:
