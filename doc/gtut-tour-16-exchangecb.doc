@@ -17,10 +17,10 @@
 \section GRAS_tut_tour_exchangecb_recap Recapping everything together
 
 The program now reads:
-\include 15-exchangecb.c
+include 15-exchangecb.c
 
 Which produces the expected output:
-\include 15-exchangecb.output
+include 15-exchangecb.output
 
 
 */

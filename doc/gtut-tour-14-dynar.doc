@@ -17,10 +17,10 @@
 \section GRAS_tut_tour_dynar_recap Recapping everything together
 
 The program now reads:
-\include 13-dynar.c
+include 13-dynar.c
 
 Which produces the expected output:
-\include 13-dynar.output
+include 13-dynar.output
 
 
 */

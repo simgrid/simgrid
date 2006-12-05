@@ -17,10 +17,10 @@
 \section GRAS_tut_tour_explicitwait_recap Recapping everything together
 
 The program now reads:
-\include 11-explicitwait.c
+include 11-explicitwait.c
 
 Which produces the expected output:
-\include 11-explicitwait.output
+include 11-explicitwait.output
 
 
 */

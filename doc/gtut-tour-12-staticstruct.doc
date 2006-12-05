@@ -17,10 +17,10 @@
 \section GRAS_tut_tour_staticstruct_recap Recapping everything together
 
 The program now reads:
-\include 11-staticstruct.c
+include 11-staticstruct.c
 
 Which produces the expected output:
-\include 11-staticstruct.output
+include 11-staticstruct.output
 
 
 */

@@ -17,10 +17,10 @@
 \section GRAS_tut_tour_manualdatadef_recap Recapping everything together
 
 The program now reads:
-\include 14-manualdatadef.c
+include 14-manualdatadef.c
 
 Which produces the expected output:
-\include 14-manualdatadef.output
+include 14-manualdatadef.output
 
 
 */
