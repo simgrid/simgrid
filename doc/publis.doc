@@ -143,6 +143,12 @@ external to the development group, but we also use our tool ourselves (see
 next section).
 
 - 2006
+  - <b>Simbatch : une API pour la simulation et la prédiction de performances de systèmes batch</b>\n
+    by <em>Jean-Sébastien Gay and Yves Caniou</em>.\n
+    In 17ème Rencontres Francophones du Parallélisme, des Architectures et des Systèmes, RenPar'17.\n
+  - <b>Simbatch: an API for simulating and predicting the performance of parallel resources and batch systems.</b>\n
+    INRIA Research Report 6040, November 2006.\n
+    https://hal.inria.fr/inria-00115880
   - <b>Master-Slave Tasking on Asymmetric Networks</b>\n
     by <em>Cyril Banino-Rokkones, Olivier Beaumont and Lasse Natvig</em>.\n
     In Proceedings of 12th International Euro-Par Conference, Euro-Par 2006.

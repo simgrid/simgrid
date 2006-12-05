@@ -249,11 +249,12 @@ in the meanwhile, simply don't build the examples in cross-compilation
 Program (cross-)compiled with mingw32 do request an extra DLL at run-time to be
 usable. For example, if you want to test your build with wine, you should do
 the following to put this library where wine looks for DLLs.
-\verbatim  cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
+\verbatim 
+cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
 gunzip ~/.wine/c/windows/system/mingwm10.dll.gz
 \endverbatim
 
-The DLL is builded in src/.libs, and installed in the <prefix>/bin directory
+The DLL is builded in src/.libs, and installed in the <i>prefix</i>/bin directory
 when you run make install. 
 
 If you want to use it in a native project on windows, you need to use 
