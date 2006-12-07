@@ -24,3 +24,38 @@ include 12-pointers.output
 
 
 */
+
+#define COLS 16
+#define MAX_ROUTESET 10
+#define MAX_LEAFSET COLS
+
+GRAS_DEFINE_TYPE(gras_row_t,
+struct gras_row_t {         
+  int which_row;            
+  int row[COLS][MAX_ROUTESET];
+};)
+    
+typedef struct gras_row_t gras_row_t;
+    
+GRAS_DEFINE_TYPE(gras_welcome_msg_t, 
+struct gras_welcome_msg_t {
+  int id;
+  double time_sent;
+    
+  int row_count;
+  gras_row_t *rows GRAS_ANNOTE(size,row_count);
+	
+  int leaves[MAX_LEAFSET];
+};)              
+
+void declare_ddt(void) {
+  gras_datadesc_type_t ddt;
+  
+  gras_datadesc_set_const("COLS",COLS);
+  gras_datadesc_set_const("MAX_ROUTESET",MAX_ROUTESET);
+  gras_datadesc_set_const("MAX_LEAFSET",MAX_LEAFSET);
+  
+  gras_datadesc_by_symbol(gras_row_t); /* Parse it before */
+  ddt=gras_datadesc_ref("welcome_msg_t*",gras_datadesc_by_symbol(gras_welcome_msg_t));
+  gras_msgtype_declare("welcome",ddt);  
+}				      
