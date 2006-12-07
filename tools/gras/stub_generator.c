@@ -319,20 +319,22 @@ static void generate_makefile_local(char *project, char *deployment)
 	  "GRAS_ROOT?= $(shell echo \"\\\"<<<< GRAS_ROOT undefined !!! >>>>\\\"\")\n\n"
 	  "# You can fiddle the following to make it fit your taste\n"
 	  "INCLUDES = -I$(GRAS_ROOT)/include\n"
-	  "CFLAGS = -O3 -w -g $(INCLUDES)\n"
+	  "CFLAGS ?= -O3 -w -g\n"
 	  "LIBS_SIM = -lm  -L$(GRAS_ROOT)/lib/ -lsimgrid\n"
 	  "LIBS_RL = -lm  -L$(GRAS_ROOT)/lib/ -lgras\n"
 	  "LIBS = \n"
 	  "\n");
 
-  fprintf(OUT, "C_FILES = ");
+  fprintf(OUT, "PRECIOUS_C_FILES ?= %s.c\n", project);
+
+  fprintf(OUT, "GENERATED_C_FILES = ");
   fprintf(OUT, SIM_SOURCENAME" ",project);
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     fprintf(OUT, RL_SOURCENAME " ",project, key);
   }
-  fprintf(OUT, "%s.c\n", project);
+  fprintf(OUT, "\n");
 
-  fprintf(OUT,"OBJ_FILES = \n");
+  fprintf(OUT,"OBJ_FILES = $(patsubst %%.c,%%.o,$(PRECIOUS_C_FILES))\n");
 
   fprintf(OUT, "BIN_FILES = ");
 
@@ -358,10 +360,10 @@ static void generate_makefile_local(char *project, char *deployment)
   fprintf(OUT, "\tgras_stub_generator %s %s >/dev/null\n", project, deployment);
 
   fprintf(OUT, "\n## Generate the binaries\n");
-  fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " %s.o\n",project, project, project);
+  fprintf(OUT, SIM_BINARYNAME ": " SIM_OBJNAME " $(OBJ_FILES)\n",project, project);
   fprintf(OUT, "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_SIM) $(LIBS) $(LDADD) -o $@ \n");
   xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " %s.o\n", project, key, project, key, project);
+    fprintf(OUT, RL_BINARYNAME " : " RL_OBJNAME " $(OBJ_FILES)\n", project, key, project, key);
     fprintf(OUT, "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS_RL) $(LIBS) $(LDADD) -o $@ \n");
   }  
   fprintf(OUT, 
@@ -375,7 +377,7 @@ static void generate_makefile_local(char *project, char *deployment)
    
   fprintf(OUT,
 	  "## Rules for tarballs and cleaning\n"
-	  "DIST_FILES= $(C_FILES) "MAKEFILE_FILENAME_LOCAL" " /*MAKEFILE_FILENAME_REMOTE*/"\n"
+	  "DIST_FILES= $(EXTRA_DIST) $(GENERATED_C_FILES) $(PRECIOUS_C_FILES) "MAKEFILE_FILENAME_LOCAL" " /*MAKEFILE_FILENAME_REMOTE*/"\n"
 	  "distdir: $(DIST_FILES)\n"
 	  "\trm -rf $(DISTDIR)\n"
 	  "\tmkdir -p $(DISTDIR)\n"
