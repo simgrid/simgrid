@@ -249,7 +249,7 @@ static void parse_statement(char	 *definition,
 
   /*  FIXME: This does not detect recursive definitions at all? */
   if (identifier.tm.is_union || identifier.tm.is_enum || identifier.tm.is_struct)
-    PARSE_ERROR0("Cannot handle recursive type definition yet");
+    PARSE_ERROR0("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle recursive type definition yet");
 
   /**** get the base type, giving "short a" the needed love ****/
   if (!identifier.tm.is_union &&
@@ -274,10 +274,10 @@ static void parse_statement(char	 *definition,
 
   /**** build the base type for latter use ****/
   if (identifier.tm.is_union) {
-    PARSE_ERROR0("Cannot handle union yet (get callback from annotation?)");
+    PARSE_ERROR0("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle union yet (get callback from annotation?)");
 
   } else if (identifier.tm.is_enum) {
-    PARSE_ERROR0("Cannot handle enum yet");
+    PARSE_ERROR0("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle enum yet");
 
   } else if (identifier.tm.is_struct) {
     sprintf(buffname,"struct %s",identifier.type_name);
@@ -364,7 +364,7 @@ static void parse_statement(char	 *definition,
 	/* Handle fixed size arrays */
 	gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
 	if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RB) {
-	  PARSE_ERROR0("Cannot deal with [] constructs (yet)");
+	  PARSE_ERROR0("Unimplemented feature: GRAS_DEFINE_TYPE cannot deal with [] constructs (yet)");
 
 	} else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
 	  char *end;
@@ -665,7 +665,7 @@ static gras_datadesc_type_t parse_typedef(char *definition) {
   parse_type_modifier(&tm);
 
   if (tm.is_ref) 
-    PARSE_ERROR0("Cannot handle reference without annotation");
+    PARSE_ERROR0("GRAS_DEFINE_TYPE cannot handle reference without annotation");
 
   /* get the aliasing name */
   if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
@@ -673,7 +673,7 @@ static gras_datadesc_type_t parse_typedef(char *definition) {
 		 gras_ddt_parse_text);
   
   /* (FIXME: should) build the alias */
-  PARSE_ERROR0("Cannot handle typedef yet");
+  PARSE_ERROR0("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle typedef yet");
 
   XBT_OUT;
   return typedef_desc;
