@@ -144,8 +144,8 @@ void MSG_process_kill(m_process_t process)
   int _cursor;
   m_process_t proc = NULL;
 
-/*   fprintf(stderr,"Killing %s(%d) on %s.\n",process->name, */
-/* 	  p_simdata->PID,p_simdata->host->name); */
+  DEBUG3("Killing %s(%d) on %s",process->name, p_simdata->PID,
+	 p_simdata->host->name);
   
   for (i=0; i<msg_global->max_channel; i++) {
     if (h_simdata->sleeping[i] == process) {
@@ -153,34 +153,38 @@ void MSG_process_kill(m_process_t process)
       break;
     }
   }
-  if (i==msg_global->max_channel) {
-    if(p_simdata->waiting_task) {
-      xbt_dynar_foreach(p_simdata->waiting_task->simdata->sleeping,_cursor,proc) {
-	if(proc==process) 
-	  xbt_dynar_remove_at(p_simdata->waiting_task->simdata->sleeping,_cursor,&proc);
-      }
-      if(p_simdata->waiting_task->simdata->compute)
-	surf_workstation_resource->common_public->
-	  action_free(p_simdata->waiting_task->simdata->compute);
-      else if (p_simdata->waiting_task->simdata->comm) {
-	surf_workstation_resource->common_public->
-	  action_change_state(p_simdata->waiting_task->simdata->comm,SURF_ACTION_FAILED);
-	surf_workstation_resource->common_public->
-	  action_free(p_simdata->waiting_task->simdata->comm);
-      } else 
-	CRITICAL0("UNKNOWN STATUS. Please report this bug.");
-    } else { /* Must be trying to put a task somewhere */
-      if(process==MSG_process_self()) {
-	return;
-      } else {
-	CRITICAL0("UNKNOWN STATUS. Please report this bug.");
-      }
+  
+  if(p_simdata->waiting_task) {
+    xbt_dynar_foreach(p_simdata->waiting_task->simdata->sleeping,_cursor,proc) {
+      if(proc==process) 
+	xbt_dynar_remove_at(p_simdata->waiting_task->simdata->sleeping,_cursor,&proc);
     }
+    if(p_simdata->waiting_task->simdata->compute)
+      surf_workstation_resource->common_public->
+	action_free(p_simdata->waiting_task->simdata->compute);
+    else if (p_simdata->waiting_task->simdata->comm) {
+      surf_workstation_resource->common_public->
+	action_change_state(p_simdata->waiting_task->simdata->comm,SURF_ACTION_FAILED);
+      surf_workstation_resource->common_public->
+	action_free(p_simdata->waiting_task->simdata->comm);
+    } else {
+      xbt_die("UNKNOWN STATUS. Please report this bug.");
+    }
+  }
+
+  if ((i==msg_global->max_channel) && (process!=MSG_process_self()) && 
+      (!p_simdata->waiting_task)) {
+    xbt_die("UNKNOWN STATUS. Please report this bug.");
   }
 
   xbt_fifo_remove(msg_global->process_to_run,process);
   xbt_fifo_remove(msg_global->process_list,process);
   xbt_context_free(process->simdata->context);
+
+  if(process==MSG_process_self()) {
+    /* I just killed myself */
+    xbt_context_yield();
+  }
 }
 
 /** \ingroup m_process_management
