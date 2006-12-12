@@ -24,7 +24,7 @@ all-local:
 gramine:
 	rm -rf gramine-@VERSION@ gramine-@VERSION@.tar*
 	@echo "# Setup sources..."
-	for n in `find include src tools/gras -name '*.[ch]'`; do \
+	for n in `find include src tools/gras -name '*.[ch]' | grep -v -e gras_config.h -e ucontext_stack.h`; do \
 	  mkdir -p gramine-@VERSION@/`dirname $$n`; \
 	   perl -e '$$/ = undef; $$l=<>; while ($$l=~ m,(/\*.*?\*/),s) { $$rep=$$1; $$rep=~s/\S//sg; $$l=~s,/\*.*?\*/,$$rep,s; } print $$l;' < $$n > gramine-@VERSION@/$$n; \
 	done
