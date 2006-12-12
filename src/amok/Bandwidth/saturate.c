@@ -187,7 +187,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
 
   do {
     /* do send it */
-    gras_socket_meas_send(meas,120,msg_size,msg_size);
+    gras_socket_meas_send(meas, 120, msg_size, 1);
     packet_sent++;
 
     /* Check whether someone asked us to stop saturation */
@@ -285,7 +285,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
 
   while (saturate_further) {
     TRY {
-      gras_socket_meas_recv(meas,5,request->msg_size,request->msg_size);
+      gras_socket_meas_recv(meas, 5, request->msg_size, 1);
     } CATCH(e) {
       saturate_further = 0;
       xbt_ex_free(e);
