@@ -1,0 +1,72 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = datadesc_usage.exe trp_file_client.exe trp_file_server.exe \
+  context_usage.exe graphxml_usage.exe heap_bench.exe log_usage.exe \
+  maxim_bench.exe maxim_usage.exe surf_usage.exe surf_usage2.exe trace_usage.exe \
+  sd_test.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+datadesc_usage.exe: ..\realistic\gras\datadesc_usage\datadesc_usage.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+trp_file_client.exe: ..\realistic\gras\datadesc_trp_file_client_server\trp_file_client.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+trp_file_server.exe: ..\realistic\gras\datadesc_trp_file_client_server\trp_file_server.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+context_usage.exe: ..\simulation\xbt\context_usage\context_usage.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+graphxml_usage.exe: ..\simulation\xbt\graphxml_usage\graphxml_usage.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+heap_bench.exe: ..\simulation\xbt\heap_bench\heap_bench.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+log_usage.exe: ..\simulation\xbt\log_usage\log_usage.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+maxim_bench.exe: ..\simulation\surf\maxim_bench\maxim_bench.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+maxim_usage.exe: ..\simulation\surf\maxim_usage\maxim_usage.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+surf_usage.exe: ..\simulation\surf\surf_usage\surf_usage.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+surf_usage2.exe: ..\simulation\surf\surf_usage2\surf_usage2.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+trace_usage.exe: ..\simulation\surf\trace_usage\trace_usage.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+sd_test.exe: ..\simulation\simdag\sd_test\sd_test.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+
