@@ -1,0 +1,8 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+  <cpu name="Cpu A" power="100000000" availability_file="trace_A.txt" state_file="trace_A_failure.txt"/>
+  <cpu name="Cpu B" power="100000000" availability_file="trace_B.txt"/>
+  <network_link name="LinkA" bandwidth="10000000" latency="0.2"/>
+  <route src="Cpu A" dst="Cpu B"><route_element name="LinkA"/></route>
+</platform_description>
