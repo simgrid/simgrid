@@ -6,6 +6,10 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+ 
+#ifdef __BORLANDC__
+#pragma hdrstop
+#endif
 
 #include <stdio.h>
 #include "gras.h"
@@ -597,6 +601,10 @@ void test_clause(gras_socket_t sock, int direction) {
   free(i->literals);
   free(i);
 }
+
+#ifdef __BORLANDC__
+#pragma argsused
+#endif
 
 int main(int argc,char *argv[]) {
   gras_socket_t sock=NULL;

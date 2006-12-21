@@ -7,6 +7,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifdef __BORLANDC__
+#pragma hdrstop
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "surf/maxmin.h"
@@ -113,7 +117,11 @@ void test2(void)
   DEBUG0("\n");
 
   lmm_system_free(Sys);
-} 
+}
+
+#ifdef __BORLANDC__
+#pragma argsused
+#endif
 
 int main(int argc, char **argv)
 {

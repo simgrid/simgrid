@@ -6,6 +6,10 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+ 
+#ifdef __BORLANDC__
+#pragma hdrstop
+#endif
 
 #include <stdio.h>
 #include "gras.h"

@@ -1,3 +1,7 @@
+#ifdef __BORLANDC__
+#pragma hdrstop
+#endif
+
 #include "xbt/context.h"
 #include "xbt/fifo.h"
 #include "stdlib.h"
@@ -68,6 +72,10 @@ int fC(int argc, char** argv)
 
   return 0;
 }
+
+#ifdef __BORLANDC__
+#pragma argsused
+#endif
 
 int main(int argc, char** argv)
 {
