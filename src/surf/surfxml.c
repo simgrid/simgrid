@@ -1,4 +1,8 @@
 
+
+#include "portable.h"
+#include "surf/surfxml.h"
+
 #line 3 "surf/surfxml.c"
 
 #define  YY_INT_ALIGNED short int
@@ -1798,7 +1802,17 @@ const char rcs_surfxml_flexml[] =
  "$" "Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp $";
 
 /* ANSI headers. */
-#include <unistd.h>
+
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+#    ifndef _STRICT_ANSI_ 
+#        include <io.h>
+#        include <process.h>
+#        include <stdio.h>
+#    endif
+#else
+#    include <unistd.h> 
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>

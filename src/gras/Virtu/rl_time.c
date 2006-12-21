@@ -27,6 +27,12 @@ void gras_os_sleep(double sec) {
   DEBUG1("Do sleep %f sec", sec);
   sleep(sec);
   (void)usleep( (sec - floor(sec)) * 1000000);
+
+#elif _WIN32
+     DEBUG1("Do sleep %f sec", sec);
+
+     Sleep((floor(sec) * 1000) +((sec - floor(sec)) * 1000));
+
         
 #else /* don't have usleep. Use select to sleep less than one second */
   struct timeval timeout;
@@ -39,4 +45,6 @@ void gras_os_sleep(double sec) {
   select(0, NULL, NULL, NULL, &timeout);
 #endif
 }
+
+
 

@@ -100,7 +100,8 @@ void gras_exit(void) {
 const char *hexa_str(unsigned char *data, int size, int downside) {
   static char*buff=NULL;
   static int buffsize=0;
-  int i,pos=0;	
+  int i,pos=0;
+  int begin,increment;	
   
   if (buffsize<5*(size+1)) {
     if (buff)
@@ -109,7 +110,7 @@ const char *hexa_str(unsigned char *data, int size, int downside) {
     buff=xbt_malloc(buffsize);
   }
    
-  int begin,increment;   
+
   if (downside) {
      begin=size-1;
      increment=-1;

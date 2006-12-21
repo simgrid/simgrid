@@ -89,6 +89,9 @@ gras_socket_t gras_trp_select(double timeout) {
 #ifndef HAVE_WINSOCK_H
 	if (max_fds < sock_iter->sd)
 	  max_fds = sock_iter->sd;
+#else
+      max_fds = 0;
+
 #endif
 	FD_SET(sock_iter->sd, &FDS);
       } else {

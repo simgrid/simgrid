@@ -19,6 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 #endif 
 
 #ifdef _WIN32
+#include <windows.h>
 static const char* disk_drives_letter_table[MAX_DRIVE] =
 {
         "A:\\",

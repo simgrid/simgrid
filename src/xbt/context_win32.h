@@ -41,9 +41,9 @@ typedef struct __ucontext {
 } ucontext_t;
 
 
-XBT_PUBLIC int getcontext(ucontext_t *ucp);
-XBT_PUBLIC int setcontext(const ucontext_t *ucp);
-XBT_PUBLIC int makecontext(ucontext_t *, void (*)(), int, ...);
-XBT_PUBLIC int swapcontext(ucontext_t *, const ucontext_t *);
+int getcontext(ucontext_t *ucp);
+int setcontext(const ucontext_t *ucp);
+int makecontext(ucontext_t *, void (*)(), int, ...);
+int swapcontext(ucontext_t *, const ucontext_t *);
 
 #endif /* UCONTEXT_H */
