@@ -84,9 +84,7 @@ dnl #
 
 dnl #  check for MCSC method
 AC_MSG_CHECKING(on top of what can we build the contexts)
-AC_CHECK_HEADER(ucontext.h,,, [#include <sys/types.h>])
-AC_CHECK_FUNCS(makecontext swapcontext getcontext setcontext)
-AC_CHECK_MCSC(mcsc=yes, mcsc=no)
+AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
 
 dnl #  check for pthread method
 AC_CHECK_HEADERS([pthread.h])
@@ -121,12 +119,17 @@ AC_ARG_WITH(pthread, [  --with-pthread   Use pthread instead of ucontext.],with_
 AC_ARG_WITH(context,
   [  --with-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=auto]].],,
   with_context=auto)
+
+if test "x$with_context$mcsc" = "xucontextno" ; then 
+  AC_MSG_ERROR([--with-context=ucontext specified but ucontext unusable. Relaunch configure without this argument.], 77)
+fi
+
 case $with_context in
  ucontext) ;;
  pthread) ;;
  windows) ;;
  auto) with_context=ucontext;;
- *) AC_MSG_ERROR("--with-context must be either ucontext or pthread") ;;
+ *) AC_MSG_ERROR([--with-context must be either ucontext or pthread]) ;;
 esac
 
 if test "x$with_context" = "xucontext" ; then
