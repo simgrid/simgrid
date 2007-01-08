@@ -66,9 +66,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_gras_stub_generator_OBJECTS = stub_generator.$(OBJEXT)
 gras_stub_generator_OBJECTS = $(am_gras_stub_generator_OBJECTS)
 gras_stub_generator_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
-am_skel_rewriter_OBJECTS = skel_rewriter.$(OBJEXT)
-skel_rewriter_OBJECTS = $(am_skel_rewriter_OBJECTS)
-skel_rewriter_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
+skel_rewriter_SOURCES = skel_rewriter.c
+skel_rewriter_OBJECTS = skel_rewriter.$(OBJEXT)
+skel_rewriter_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -80,8 +80,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(gras_stub_generator_SOURCES) $(skel_rewriter_SOURCES)
-DIST_SOURCES = $(gras_stub_generator_SOURCES) $(skel_rewriter_SOURCES)
+SOURCES = $(gras_stub_generator_SOURCES) skel_rewriter.c
+DIST_SOURCES = $(gras_stub_generator_SOURCES) skel_rewriter.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -223,8 +223,6 @@ AM_CFLAGS = -g
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include
 gras_stub_generator_SOURCES = stub_generator.c
 gras_stub_generator_LDADD = $(top_builddir)/src/libsimgrid.la 
-skel_rewriter_SOURCES = skel_rewriter.c
-skel_rewriter_LDADD = $(top_builddir)/src/libsimgrid.la 
 all: all-am
 
 .SUFFIXES:
@@ -502,6 +500,9 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
 	uninstall-binPROGRAMS uninstall-info-am
 
+
+# skel_rewriter_SOURCES = skel_rewriter.c
+# skel_rewriter_LDADD   = $(top_builddir)/src/libsimgrid.la 
 
 $(top_builddir)/src/libsimgrid.la: 
 	make -C $(top_builddir)/src libsimgrid.la
