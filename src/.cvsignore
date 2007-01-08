@@ -1,8 +1,7 @@
-.deps .libs Makefile Makefile.in
+.deps .libs Makefile
 cscope.files cscope.out
 *.lo *.la
-gras_config.h.in gras_config.h
+gras_config.h ucontext_stack.h
 stamp-h.in stamp-h stamp-h1
 *.loT
-ucontext_stack.h
-*_unit.c simgrid_units_main.c testall*
+testall*

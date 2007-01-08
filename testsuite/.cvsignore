@@ -1,3 +1,2 @@
-.deps .libs Makefile Makefile.in run_tests
-
+.deps .libs Makefile run_tests
 testgraph.xml testgraph.dot

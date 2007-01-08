@@ -1,4 +1,4 @@
-.deps .libs Makefile Makefile.in run_tests
+.deps .libs Makefile run_tests
 dynar_int dynar_double dynar_string
 dict_usage dict_crash multidict_crash
 log_usage

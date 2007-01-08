@@ -1,4 +1,4 @@
-.deps .libs Makefile Makefile.in _*.c mmrpc_server mmrpc_client mmrpc_simulator
+.deps .libs Makefile  _*.c mmrpc_server mmrpc_client mmrpc_simulator
 test_sg
 test_rl
 mmrpc.mk

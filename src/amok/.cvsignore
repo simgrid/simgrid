@@ -1,2 +1,2 @@
-.deps Makefile Makefile.in
+.deps Makefile 
 *.lo *.la .libs .deps

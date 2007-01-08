@@ -1,4 +1,4 @@
-.deps .libs Makefile Makefile.in _*.c ping_server ping_client ping_simulator
+.deps .libs Makefile  _*.c ping_server ping_client ping_simulator
 test_sg
 test_rl
 ping.mk
