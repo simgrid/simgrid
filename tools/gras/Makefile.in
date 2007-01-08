@@ -42,7 +42,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = gras_stub_generator$(EXEEXT) skel_rewriter$(EXEEXT)
+bin_PROGRAMS = gras_stub_generator$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = tools/gras
@@ -66,9 +66,6 @@ PROGRAMS = $(bin_PROGRAMS)
 am_gras_stub_generator_OBJECTS = stub_generator.$(OBJEXT)
 gras_stub_generator_OBJECTS = $(am_gras_stub_generator_OBJECTS)
 gras_stub_generator_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
-skel_rewriter_SOURCES = skel_rewriter.c
-skel_rewriter_OBJECTS = skel_rewriter.$(OBJEXT)
-skel_rewriter_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -80,8 +77,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(gras_stub_generator_SOURCES) skel_rewriter.c
-DIST_SOURCES = $(gras_stub_generator_SOURCES) skel_rewriter.c
+SOURCES = $(gras_stub_generator_SOURCES)
+DIST_SOURCES = $(gras_stub_generator_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -221,6 +218,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 AM_CFLAGS = -g
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include
+# skel_rewriter
 gras_stub_generator_SOURCES = stub_generator.c
 gras_stub_generator_LDADD = $(top_builddir)/src/libsimgrid.la 
 all: all-am
@@ -287,9 +285,6 @@ clean-binPROGRAMS:
 gras_stub_generator$(EXEEXT): $(gras_stub_generator_OBJECTS) $(gras_stub_generator_DEPENDENCIES) 
 	@rm -f gras_stub_generator$(EXEEXT)
 	$(LINK) $(gras_stub_generator_LDFLAGS) $(gras_stub_generator_OBJECTS) $(gras_stub_generator_LDADD) $(LIBS)
-skel_rewriter$(EXEEXT): $(skel_rewriter_OBJECTS) $(skel_rewriter_DEPENDENCIES) 
-	@rm -f skel_rewriter$(EXEEXT)
-	$(LINK) $(skel_rewriter_LDFLAGS) $(skel_rewriter_OBJECTS) $(skel_rewriter_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -297,7 +292,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skel_rewriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stub_generator.Po@am__quote@
 
 .c.o:
