@@ -83,7 +83,6 @@ dnl #  1. determine possibilities
 dnl #
 
 dnl #  check for MCSC method
-AC_MSG_CHECKING(on top of what can we build the contexts)
 AC_CHECK_MCSC(mcsc=yes, mcsc=no) 
 
 dnl #  check for pthread method
@@ -411,7 +410,7 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 if test -e CVS && test x$USE_MAINTAINER_MODE != xyes ; then
   echo "WARNING:"
   echo "WARNING: you seem to compile the CVS version without the maintainer mode."
-  echo "WARNING: This is not really supported, so you should configure SimGrid like:"
+  echo "WARNING: You may want to enable this by specifying:"
   echo "WARNING:"
   echo "WARNING: ./configure --enable-maintainer-mode  $ac_configure_args"
   echo "WARNING:"

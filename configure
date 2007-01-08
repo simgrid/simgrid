@@ -23597,8 +23597,6 @@ echo "${ECHO_T}${T_MD}Checking for threads, contexts or assimilated...${T_ME}" >
 
 
 
-echo "$as_me:$LINENO: checking on top of what can we build the contexts" >&5
-echo $ECHO_N "checking on top of what can we build the contexts... $ECHO_C" >&6
 
 echo "$as_me:$LINENO: checking for usable SVR4/SUSv2 makecontext(2)/swapcontext(2)" >&5
 echo $ECHO_N "checking for usable SVR4/SUSv2 makecontext(2)/swapcontext(2)... $ECHO_C" >&6
