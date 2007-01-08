@@ -1,0 +1,218 @@
+/* src/gras_config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Path to the addr2line tool */
+#undef ADDR2LINE
+
+/* Predefined possible va_copy() implementation (id: ASP) */
+#define __VA_COPY_USE_ASP(d, s) do { *(d) = *(s); } while (0)
+
+/* Predefined possible va_copy() implementation (id: ASS) */
+#define __VA_COPY_USE_ASS(d, s) do { (d) = (s); } while (0)
+
+/* Predefined possible va_copy() implementation (id: C99) */
+#define __VA_COPY_USE_C99(d, s) va_copy((d), (s))
+
+/* Predefined possible va_copy() implementation (id: CPP) */
+#define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s)), sizeof(*(s))
+
+/* Predefined possible va_copy() implementation (id: CPS) */
+#define __VA_COPY_USE_CPS(d, s) memcpy((void *)&(d), (void *)&(s)), sizeof((s))
+
+/* Predefined possible va_copy() implementation (id: GCB) */
+#define __VA_COPY_USE_GCB(d, s) __builtin_va_copy((d), (s))
+
+/* Predefined possible va_copy() implementation (id: GCH) */
+#define __VA_COPY_USE_GCH(d, s) __va_copy((d), (s))
+
+/* Predefined possible va_copy() implementation (id: GCM) */
+#define __VA_COPY_USE_GCM(d, s) VA_COPY((d), (s))
+
+/* Defined if arrays in struct can straddle struct alignment boundaries. This
+   is like than the structure compaction above, but this time, the argument to
+   be compacted is an array whom each element would be normally compacted.
+   Exemple: struct s { double d; int i; char c[6]; }; Arrays can straddle if c
+   is allowed to come just after i. Note that GRAS only support architecture
+   presenting this caracteristic so far. */
+#undef GRAS_ARRAY_STRADDLE_STRUCT
+
+/* define if big endian */
+#undef GRAS_BIGENDIAN
+
+/* Defined if structures are compacted when possible. Consider this structure:
+   struct s {double d; int i; char c;}; If it is allowed, the char is placed
+   just after the int. If not, it has to be on the 8 bytes boundary imposed by
+   the double. For now, GRAS requires the structures to be compacted. */
+#undef GRAS_STRUCT_COMPACT
+
+/* defines the GRAS architecture signature of this machine */
+#undef GRAS_THISARCH
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define to 1 if you have the <errno.h> header file. */
+#undef HAVE_ERRNO_H
+
+/* Define to 1 if you have the <execinfo.h> header file. */
+#undef HAVE_EXECINFO_H
+
+/* Define to 1 if you have the `getdtablesize' function. */
+#undef HAVE_GETDTABLESIZE
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `pthread' library (-lpthread). */
+#undef HAVE_LIBPTHREAD
+
+/* Define to 1 if you have the `makecontext' function. */
+#undef HAVE_MAKECONTEXT
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `popen' function. */
+#undef HAVE_POPEN
+
+/* Define to 1 if you have the <pthread.h> header file. */
+#undef HAVE_PTHREAD_H
+
+/* Define to 1 if you have the `readv' function. */
+#undef HAVE_READV
+
+/* Define to 1 if you have the `signal' function. */
+#undef HAVE_SIGNAL
+
+/* Define to 1 if you have the <signal.h> header file. */
+#undef HAVE_SIGNAL_H
+
+/* Define to 1 if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the `sysconf' function. */
+#undef HAVE_SYSCONF
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `usleep' function. */
+#undef HAVE_USLEEP
+
+/* Define if va_copy() macro exists (and no fallback implementation is
+   required) */
+#undef HAVE_VA_COPY
+
+/* Define to 1 if you have the `vsnprintf' function. */
+#undef HAVE_VSNPRINTF
+
+/* Define to 1 if you have the <windows.h> header file. */
+#undef HAVE_WINDOWS_H
+
+/* Define to 1 if you have the <winsock2.h> header file. */
+#undef HAVE_WINSOCK2_H
+
+/* Define to 1 if you have the <winsock.h> header file. */
+#undef HAVE_WINSOCK_H
+
+/* enable the asprintf replacement */
+#undef NEED_ASPRINTF
+
+/* enable the vasprintf replacement */
+#undef NEED_VASPRINTF
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* "enable replacement (v)snprintf if system (v)snprintf is broken" */
+#undef PREFER_PORTABLE_SNPRINTF
+
+/* Indicates whether printf("%s",NULL) works */
+#undef PRINTF_NULL_WORKING
+
+/* define for stack growth */
+#undef PTH_STACKGROWTH
+
+/* The maximal size of any scalar on this arch */
+#undef SIZEOF_MAX
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if we use pthreads or not */
+#undef USE_PTHREADS
+
+/* Define if we use ucontext or not */
+#undef USE_UCONTEXT
+
+/* Version number of package */
+#undef VERSION
+
+/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
+   `char[]'. */
+#undef YYTEXT_POINTER
+
+/* Optional va_copy() implementation activation */
+#ifndef HAVE_VA_COPY
+#define va_copy(d, s) __VA_COPY_USE(d, s)
+#endif
+
+
+/* Define to id of used va_copy() implementation */
+#undef __VA_COPY_USE
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#undef inline
+#endif
+
+/* Define to `unsigned' if <sys/types.h> does not define. */
+#undef size_t

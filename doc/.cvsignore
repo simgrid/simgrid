@@ -1,4 +1,4 @@
-Makefile Makefile.in
+Makefile
 html sgml xml
 Doxyfile
 index-API.doc logcategories.doc index.php
