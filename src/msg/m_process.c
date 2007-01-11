@@ -493,6 +493,8 @@ int __MSG_process_block(double max_duration, const char *info)
     DEBUG0("I've been resumed, let's keep going");    
   }
 
+  PAJE_PROCESS_POP_STATE(process);
+
   XBT_OUT;
   return 1;
 }
@@ -518,8 +520,6 @@ MSG_error_t __MSG_process_unblock(m_process_t process)
   xbt_assert0(simdata->blocked,"Process not blocked");
 
   surf_workstation_resource->common_public->resume(simdata_task->compute);
-
-  PAJE_PROCESS_POP_STATE(process);
 
   XBT_OUT;
 
