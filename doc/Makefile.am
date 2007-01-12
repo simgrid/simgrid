@@ -1,6 +1,6 @@
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
  $(shell find @srcdir@ -name "*.doc")
-FIGS=simgrid_modules.fig amok_bw_test.fig amok_bw_sat.fig
+FIGS=simgrid_modules.fig simgrid_modules2.fig amok_bw_test.fig amok_bw_sat.fig
 PNGS=$(patsubst %.fig,%.png,$(FIGS)) simgrid_logo.png simgrid_logo_small.png poster_thumbnail.png
 
 EXTRA_DIST = html Doxyfile \

@@ -724,7 +724,7 @@ gramine:
 @MAINTAINER_MODE_TRUE@	    --recursive --links --perms --times --omit-dir-times  \
 @MAINTAINER_MODE_TRUE@	    doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/ || true
 @MAINTAINER_MODE_TRUE@	scp doc/index.php scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
-@MAINTAINER_MODE_TRUE@	scp doc/simgrid_modules.png doc/simgrid_logo.png doc/simgrid_logo_small.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
+@MAINTAINER_MODE_TRUE@	scp doc/simgrid_modules2.png doc/simgrid_modules.png doc/simgrid_logo.png doc/simgrid_logo_small.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 @MAINTAINER_MODE_TRUE@	ssh scm.gforge.inria.fr "chgrp -R simgrid /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
 @MAINTAINER_MODE_TRUE@	ssh scm.gforge.inria.fr "chmod g+rw -R /var/lib/gforge/chroot/home/groups/simgrid/htdocs/* || true"
 
