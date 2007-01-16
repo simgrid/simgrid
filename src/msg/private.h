@@ -139,7 +139,7 @@ XBT_PUBLIC void task_mallocator_reset_f(m_task_t task);
 #define PAJE_PROCESS_PUSH_STATE(process,state,task)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,"11 %f S_t %p %s \"%s\"\n",\
-            surf_get_clock(), (process),(state),(task)?((m_task_t)(task))->name:"")
+            surf_get_clock(), (process),(state),(task)?((m_task_t)(task))->name:" ")
 #define PAJE_PROCESS_POP_STATE(process)\
   if(msg_global->paje_output) \
     fprintf(msg_global->paje_output,"12 %f S_t %p\n",\
