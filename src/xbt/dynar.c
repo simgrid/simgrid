@@ -380,8 +380,11 @@ xbt_dynar_insert_at(xbt_dynar_t  const dynar,
 /** @brief Remove the Nth dynar's element, sliding the previous values to the left
  *
  * Get the Nth element of a dynar, removing it from the dynar and moving
- * all subsequent values to one position left in the dynar. Note that the free 
- * function is called only if object == NULL.
+ * all subsequent values to one position left in the dynar.
+ * 
+ * If the object argument of this function is a non-null pointer, the removed 
+ * element is copied to this address. If not, the element is freed using the 
+ * free_f function passed at dynar creation.
  */
 void
 xbt_dynar_remove_at(xbt_dynar_t  const dynar,
