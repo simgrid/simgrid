@@ -1,7 +1,7 @@
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
  $(shell find @srcdir@ -name "*.doc")
 FIGS=simgrid_modules.fig simgrid_modules2.fig amok_bw_test.fig amok_bw_sat.fig
-PNGS=$(patsubst %.fig,%.png,$(FIGS)) simgrid_logo.png simgrid_logo_small.png poster_thumbnail.png
+PNGS=$(patsubst %.fig,%.png,$(FIGS)) webcruft/simgrid_logo.png webcruft/simgrid_logo_small.png webcruft/poster_thumbnail.png
 
 EXTRA_DIST = html Doxyfile \
  modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html \
@@ -28,7 +28,7 @@ html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES) \
 	touch index-API.doc .FAQ.doc.toc .index.doc.toc .contrib.doc.toc
 	test -e html || mkdir html
 	cp $(foreach file,$(PNGS),@srcdir@/$(file)) html/
-	cp @srcdir@/Paje_MSG_screenshot_thn.jpg @srcdir@/Paje_MSG_screenshot.jpg html/
+	cp @srcdir@/webcruft/Paje_MSG_screenshot_thn.jpg @srcdir@/webcruft/Paje_MSG_screenshot.jpg html/
 	cp @srcdir@/simgrid.css html/
 	: # First pass
 	doxygen Doxyfile >/dev/null

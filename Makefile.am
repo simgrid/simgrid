@@ -85,8 +85,8 @@ sync-gforge:
 	rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times \
 	    --recursive --links --perms --times --omit-dir-times  \
 	    doc/html/ scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/doc/ || true
-	scp doc/index.php doc/robots.txt scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
-	scp doc/simgrid_modules2.png doc/simgrid_modules.png doc/simgrid_logo.png doc/simgrid_logo_small.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
+	scp doc/index.php doc/webcruft/robots.txt scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
+	scp doc/webcruft/simgrid_modules2.png doc/webcruft/simgrid_modules.png doc/webcruft/simgrid_logo.png doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/var/lib/gforge/chroot/home/groups/simgrid/htdocs/
 	ssh scm.gforge.inria.fr "chgrp -R simgrid /var/lib/gforge/chroot/home/groups/simgrid/htdocs/"
 	ssh scm.gforge.inria.fr "chmod g+rw -R /var/lib/gforge/chroot/home/groups/simgrid/htdocs/* || true"
 
