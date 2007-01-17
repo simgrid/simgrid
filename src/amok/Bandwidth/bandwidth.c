@@ -162,9 +162,9 @@ void amok_bw_test(gras_socket_t peer,
   request->msg_amount=msg_amount;
   request->peer.name = NULL;
   request->peer.port = gras_socket_my_port(measMasterIn);
-  DEBUG5("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld byte= %ld b)", 
+  DEBUG6("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld, msg_size=%ld, msg_amount=%ld)", 
 	gras_socket_peer_name(peer),gras_socket_peer_port(peer), request->peer.port,
-	buf_size,request->buf_size);
+	request->buf_size,request->msg_size,request->msg_amount);
 
   TRY {
     gras_msg_rpccall(peer,15,
@@ -459,10 +459,11 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   gras_socket_t peer,asker;
 
   asker=gras_msg_cb_ctx_from(ctx);
-  VERB4("Asked by %s:%d to conduct a bw XP with %s:%d",	
+  VERB6("Asked by %s:%d to conduct a bw XP with %s:%d (request: %ld %ld)",
 	gras_socket_peer_name(asker),gras_socket_peer_port(asker),
 
-	request->peer.name,request->peer.port);
+	request->peer.name,request->peer.port,
+	request->msg_size,request->msg_amount);
   peer = gras_socket_client(request->peer.name,request->peer.port);
   amok_bw_test(peer,
 	       request->buf_size,request->msg_size,request->msg_amount,
