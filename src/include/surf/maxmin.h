@@ -71,4 +71,5 @@ XBT_PUBLIC void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t c
 XBT_PUBLIC int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
 
 XBT_PUBLIC void lmm_solve(lmm_system_t sys);
+XBT_PUBLIC void sdp_solve(lmm_system_t sys);
 #endif				/* _SURF_MAXMIN_H */

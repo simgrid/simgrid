@@ -160,6 +160,7 @@ SG_SRC=  \
   xbt/context.c                                                              \
   \
   surf/maxmin.c                                                              \
+  surf/sdp.c                                                                 \
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
