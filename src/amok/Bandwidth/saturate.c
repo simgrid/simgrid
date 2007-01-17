@@ -159,7 +159,9 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     double bw;
     double sec;
     amok_bw_test(peer_cmd,
-		 0,512*1024, 512*1024, /* 512k as first guess */
+		 0, /* check buffsize yourself */
+		 512*1024,  /* 512k as first guess */
+		 1, /* One packet only */
 		 1, /* at least one sec */
 		 &sec, &bw);
     msg_size = request->msg_size = (int)bw;
