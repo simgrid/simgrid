@@ -432,7 +432,7 @@ xbt_dynar_search(xbt_dynar_t  const dynar,
 		 void        *const elem) {
   int it;
    
-  for (it=0; it< dynar->size; it++) 
+  for (it=0; it< dynar->used; it++) 
     if (!memcmp(_xbt_dynar_elm(dynar, it),elem,dynar->elmsize))
       return it;
 
