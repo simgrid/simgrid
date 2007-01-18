@@ -160,7 +160,6 @@ SG_SRC=  \
   xbt/context.c                                                              \
   \
   surf/maxmin.c                                                              \
-  surf/sdp.c                                                                 \
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
@@ -183,6 +182,10 @@ SG_SRC=  \
   gras/Virtu/sg_dns.c\
   \
   gras/Msg/sg_msg.c
+
+if HAVE_SDP
+  SG_SRC+= surf/sdp.c  
+endif
 
 AMOK_SRC= \
   amok/amok_base.c \

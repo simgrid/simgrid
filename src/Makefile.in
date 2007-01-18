@@ -43,8 +43,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@HAVE_SDP_TRUE@am__append_1 = surf/sdp.c  
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
-@GRAMINE_MODE_FALSE@am__append_1 = $(testall_SOURCES)
+@GRAMINE_MODE_FALSE@am__append_2 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/gras_config.h.in $(srcdir)/ucontext_stack.h.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -90,26 +91,56 @@ am_libgras_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3)
 libgras_la_OBJECTS = $(am_libgras_la_OBJECTS)
 libsimgrid_la_LIBADD =
-am__objects_4 = context.lo maxmin.lo sdp.lo trace_mgr.lo surf.lo \
+am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/ex.c \
+	xbt_modinter.h gras_modinter.h xbt/sysdep.c xbt/asserts.c \
+	xbt/log.c xbt/log_default_appender.c xbt/mallocator.c \
+	xbt/dynar.c xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c \
+	xbt/dict_multi.c xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c \
+	xbt/set.c xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c \
+	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c gras/gras.c \
+	gras/Transport/transport.c gras/Transport/transport_private.h \
+	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
+	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
+	gras/DataDesc/datadesc.c gras/DataDesc/datadesc_interface.h \
+	gras/DataDesc/datadesc_private.h gras/DataDesc/ddt_parse.c \
+	gras/DataDesc/ddt_parse.yy.c gras/DataDesc/ddt_parse.yy.h \
+	gras/Msg/msg.c gras/Msg/rpc.c gras/Msg/timer.c \
+	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
+	gras/Virtu/process.c gras/Virtu/gras_module.c xbt/context.c \
+	surf/maxmin.c surf/trace_mgr.c surf/surf.c \
+	surf/surfxml_parse.c surf/cpu.c surf/network.c \
+	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
+	surf/workstation_KCCFLN05.c msg/msg_config.c msg/task.c \
+	msg/host.c msg/m_process.c msg/gos.c msg/global.c \
+	msg/environment.c msg/deployment.c simdag/sd_global.c \
+	simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
+	gras/Transport/sg_transport.c \
+	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
+	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
+	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c surf/sdp.c \
+	amok/amok_base.c amok/Bandwidth/bandwidth.c \
+	amok/Bandwidth/saturate.c amok/PeerManagement/peermanagement.c
+@HAVE_SDP_TRUE@am__objects_4 = sdp.lo
+am__objects_5 = context.lo maxmin.lo trace_mgr.lo surf.lo \
 	surfxml_parse.lo cpu.lo network.lo workstation.lo \
 	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
 	msg_config.lo task.lo host.lo m_process.lo gos.lo global.lo \
 	environment.lo deployment.lo sd_global.lo sd_link.lo \
 	sd_task.lo sd_workstation.lo sg_transport.lo \
 	transport_plugin_sg.lo sg_emul.lo sg_process.lo sg_time.lo \
-	sg_dns.lo sg_msg.lo
-am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_4) \
+	sg_dns.lo sg_msg.lo $(am__objects_4)
+am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_5) \
 	$(am__objects_3)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = cunit_unit.c ex_unit.c dynar_unit.c \
 	dict_unit.c set_unit.c swag_unit.c config_unit.c \
 	simgrid_units_main.c
-@GRAMINE_MODE_FALSE@am__objects_5 = cunit_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@am__objects_6 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) config_unit.$(OBJEXT)
-@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_5) \
+@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_6) \
 @GRAMINE_MODE_FALSE@	simgrid_units_main.$(OBJEXT)
 testall_OBJECTS = $(am_testall_OBJECTS)
 @GRAMINE_MODE_FALSE@testall_DEPENDENCIES = libgras.la
@@ -126,7 +157,7 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libgras_la_SOURCES) $(libsimgrid_la_SOURCES) \
 	$(testall_SOURCES)
-DIST_SOURCES = $(libgras_la_SOURCES) $(libsimgrid_la_SOURCES) \
+DIST_SOURCES = $(libgras_la_SOURCES) $(am__libsimgrid_la_SOURCES_DIST) \
 	$(am__testall_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
@@ -172,6 +203,8 @@ GRAS_DEP = @GRAS_DEP@
 GREP = @GREP@
 HAVE_FLEXML_FALSE = @HAVE_FLEXML_FALSE@
 HAVE_FLEXML_TRUE = @HAVE_FLEXML_TRUE@
+HAVE_SDP_FALSE = @HAVE_SDP_FALSE@
+HAVE_SDP_TRUE = @HAVE_SDP_TRUE@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -300,7 +333,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \
 	gras/DataDesc/ddt_parse.yy.l gras/DataDesc/ddt_parse.yy.c \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_1)
+	$(am__append_2)
 
 #        gras_private.h
 
@@ -392,34 +425,17 @@ RL_SRC = \
   \
   gras/Msg/rl_msg.c
 
-SG_SRC = \
-  xbt/context.c                                                              \
-  \
-  surf/maxmin.c                                                              \
-  surf/sdp.c                                                                 \
-  surf/trace_mgr.c                                                           \
-  surf/surf.c                                                                \
-  surf/surfxml_parse.c                                                       \
-  surf/cpu.c   surf/network.c   surf/workstation.c                           \
-  surf/surf_timer.c                                                          \
-  surf/network_dassf.c                                                       \
-  surf/workstation_KCCFLN05.c  \
-  \
-  msg/msg_config.c \
-  msg/task.c msg/host.c msg/m_process.c msg/gos.c \
-  msg/global.c msg/environment.c msg/deployment.c  \
-  \
-  simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c                       \
-  simdag/sd_workstation.c                                                    \
-  \
-  gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
-  \
-  gras/Virtu/sg_emul.c \
-  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
-  gras/Virtu/sg_dns.c\
-  \
-  gras/Msg/sg_msg.c
-
+SG_SRC = xbt/context.c surf/maxmin.c surf/trace_mgr.c surf/surf.c \
+	surf/surfxml_parse.c surf/cpu.c surf/network.c \
+	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
+	surf/workstation_KCCFLN05.c msg/msg_config.c msg/task.c \
+	msg/host.c msg/m_process.c msg/gos.c msg/global.c \
+	msg/environment.c msg/deployment.c simdag/sd_global.c \
+	simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
+	gras/Transport/sg_transport.c \
+	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
+	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
+	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c $(am__append_1)
 AMOK_SRC = \
   amok/amok_base.c \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
@@ -1017,13 +1033,6 @@ maxmin.lo: surf/maxmin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o maxmin.lo `test -f 'surf/maxmin.c' || echo '$(srcdir)/'`surf/maxmin.c
 
-sdp.lo: surf/sdp.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sdp.lo -MD -MP -MF "$(DEPDIR)/sdp.Tpo" -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sdp.Tpo" "$(DEPDIR)/sdp.Plo"; else rm -f "$(DEPDIR)/sdp.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/sdp.c' object='sdp.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c
-
 trace_mgr.lo: surf/trace_mgr.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trace_mgr.lo -MD -MP -MF "$(DEPDIR)/trace_mgr.Tpo" -c -o trace_mgr.lo `test -f 'surf/trace_mgr.c' || echo '$(srcdir)/'`surf/trace_mgr.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/trace_mgr.Tpo" "$(DEPDIR)/trace_mgr.Plo"; else rm -f "$(DEPDIR)/trace_mgr.Tpo"; exit 1; fi
@@ -1219,6 +1228,13 @@ sg_msg.lo: gras/Msg/sg_msg.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/Msg/sg_msg.c' object='sg_msg.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sg_msg.lo `test -f 'gras/Msg/sg_msg.c' || echo '$(srcdir)/'`gras/Msg/sg_msg.c
+
+sdp.lo: surf/sdp.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sdp.lo -MD -MP -MF "$(DEPDIR)/sdp.Tpo" -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sdp.Tpo" "$(DEPDIR)/sdp.Plo"; else rm -f "$(DEPDIR)/sdp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/sdp.c' object='sdp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

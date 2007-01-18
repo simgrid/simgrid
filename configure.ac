@@ -176,7 +176,19 @@ fi
 ##
 
 SG_CONFIGURE_PART(Checking extra libraries dependencies...)
+
+AC_MSG_CHECKING(for csdp)
 SIMGRID_DEP=""
+sdp=no
+AC_CHECK_LIB(sdp,sdp,csdp=yes, csdp=no,-llapack -lblas -lm)
+if test "x$csdp" = xyes; then 
+  SIMGRID_DEP="$SIMGRID_DEP -lsdp -llapack -lblas -lm"
+  AC_MSG_RESULT(Found working sdp library.)
+else
+  AC_MSG_RESULT(Could not find any working sdp library.)
+fi;
+AM_CONDITIONAL(HAVE_SDP,test x$csdp != xno)
+
 AC_SUBST([SIMGRID_DEP])
 
 GRAS_DEP=""
