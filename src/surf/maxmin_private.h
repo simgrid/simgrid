@@ -51,6 +51,7 @@ typedef struct lmm_variable {
   double bound;
   double value;
   void *id;
+  int index;
 } s_lmm_variable_t;
 
 typedef struct lmm_system {
@@ -79,5 +80,7 @@ typedef struct lmm_system {
 
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
 static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst);
+
+void lmm_print(lmm_system_t sys);
 
 #endif				/* _SURF_MAXMIN_PRIVATE_H */

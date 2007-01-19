@@ -324,7 +324,7 @@ static void saturated_variable_set_update(lmm_system_t sys)
   }
 }
 
-static void lmm_print(lmm_system_t sys)
+void lmm_print(lmm_system_t sys)
 {
   lmm_constraint_t cnst = NULL;
   lmm_element_t elem = NULL;
@@ -409,9 +409,9 @@ void lmm_solve(lmm_system_t sys)
     var->value = 0.0;
   }
 
-
-  /* Compute Usage and store the variables that reach the maximum */
-
+  /* 
+   * Compute Usage and store the variables that reach the maximum.
+   */
   cnst_list = &(sys->active_constraint_set);
   DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
   xbt_swag_foreach(cnst, cnst_list) {
