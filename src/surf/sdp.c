@@ -6,24 +6,30 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 
-#include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/sysdep.h"
+#include "xbt/mallocator.h"
 #include "maxmin_private.h"
+
 #include <stdlib.h>
-
-#include <declarations.h>
-
 #ifndef MATH
 #include <math.h>
 #endif
 
+/*
+ * SDP specific variables.
+ */
+#include <declarations.h>
+
+
+static void create_cross_link(struct constraintmatrix *myconstraints, int k);
+
+static void addentry(struct constraintmatrix *constraints, 
+	      struct blockmatrix *, int matno, int blkno, int indexi, int indexj, double ent, int blocksize);
+
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_sdp, surf,
 				"Logging specific to SURF (sdp)");
-
-
-
-
-
 /*
 ########################################################################
 ######################## Simple Proportionnal fairness #################
@@ -84,9 +90,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_sdp, surf,
 #  Minimize -y(0,1)
 */
 
-
-
-
 //typedef struct lmm_system {
 //  int modified;
 //  s_xbt_swag_t variable_set;	/* a list of lmm_variable_t */
@@ -118,6 +121,8 @@ void sdp_solve(lmm_system_t sys)
   int block_size;  
   int *isdiag=NULL;
   FILE *sdpout = fopen("SDPA-printf.tmp","w");
+  int blocksz = 0;
+  double *tempdiag = NULL;
   int matno=0;
   int i=0;
   int j=0;
@@ -134,21 +139,36 @@ void sdp_solve(lmm_system_t sys)
   struct constraintmatrix *constraints;  
  
   /*
+   * Classic maxmin variables.
+   */
   lmm_constraint_t cnst = NULL;
   lmm_element_t elem = NULL;
   xbt_swag_t cnst_list = NULL;
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
-  double min_usage = -1;
-  */
 
   if ( !(sys->modified))
     return;
 
+
+  DEBUG0("HI!!!!");
+  /* 
+   * Initialize the var list variable with only the active variables. 
+   * Associate an index in the swag variables.
+   */
+  i = 1;
+  var_list = &(sys->variable_set);
+  DEBUG1("Variable set : %d", xbt_swag_size(var_list));
+  xbt_swag_foreach(var, var_list) {
+    var->value = 0.0;
+    if(var->weight) var->index = i++;
+  }
+  cnst_list=&(sys->saturated_constraint_set);  
+
   /*
    * Those fields are the top level description of the platform furnished in the xml file.
    */
-  flows = xbt_swag_size(&(sys->variable_set));
+  flows = i-1;
   links = xbt_swag_size(&(sys->active_constraint_set));
 
   /* 
@@ -247,7 +267,7 @@ void sdp_solve(lmm_system_t sys)
    * Structure contraint blocks.
    */
   block_num = 1;
-  matno = 1;  
+  matno = 1;
   for(k = 1; k <= K; k++){
     for(i = 1; i <= pow(2,k-1); i++){
       matno=get_y(k,2*i-1);
@@ -270,8 +290,314 @@ void sdp_solve(lmm_system_t sys)
       block_num++;
     }
   }
-  
+
+ 
+  /*
+   * Capacity constraint block.
+   */
+  xbt_swag_foreach(cnst, cnst_list) {
+
+    fprintf(sdpout,"0 %d 1 1 %d\n", block_num,  (int) - (cnst->bound));    
+    addentry(constraints, &C, 0, block_num, 1, 1, - (cnst->bound) , C.blocks[block_num].blocksize);    
+
+    elem_list = &(cnst->element_set);
+    xbt_swag_foreach(elem, elem_list) {
+      if(elem->variable->weight <=0) break;
+      fprintf(sdpout,"%d %d 1 1 %d\n", elem->variable->index, block_num, (int) - (elem->variable->value)); 
+      addentry(constraints, &C, elem->variable->index, block_num, 1, 1, - (elem->value), C.blocks[block_num].blocksize);
+    }
+  }
 
   
+  //Positivy constraint blocks
+  for(i = 1; i <= pow(2,K); i++){
+    matno=get_y(K, i);
+    fprintf(sdpout,"%d %d 1 1 1\n", matno, block_num);
+    addentry(constraints, &C, matno, block_num, 1, 1, 1.0, C.blocks[block_num].blocksize);
+    block_num++;
+  }
 
+
+  /*
+   * At this point, we'll stop to recognize whether any of the blocks
+   * are "hidden LP blocks"  and correct the block type if needed.
+   */
+  for (i=1; i<=nb_cnsts; i++){
+    if ((C.blocks[i].blockcategory != DIAG) && 
+	(isdiag[i]==1) && (C.blocks[i].blocksize > 1)){
+      /*
+       * We have a hidden diagonal block!
+       */
+      
+      printf("Block %d is actually diagonal.\n",i);
+      
+      blocksz=C.blocks[i].blocksize;
+      tempdiag=(double *)calloc((blocksz+1), sizeof(double));
+      for (j=1; j<=blocksz; j++)
+	tempdiag[j]=C.blocks[i].data.mat[ijtok(j,j,blocksz)];
+      free(C.blocks[i].data.mat);
+      C.blocks[i].data.vec=tempdiag;
+      C.blocks[i].blockcategory=DIAG;
+    };
+  };
+  
+  
+  /*
+   * Next, setup issparse and NULL out all nextbyblock pointers.
+   */
+  struct sparseblock *p=NULL;
+  for (i=1; i<=k; i++) {
+    p=constraints[i].blocks;
+    while (p != NULL){
+	  /*
+	   * First, set issparse.
+	   */
+	  if (((p->numentries) > 0.25*(p->blocksize)) && ((p->numentries) > 15)){
+	    p->issparse=0;
+	  }else{
+	    p->issparse=1;
+	  };
+	  
+	  if (C.blocks[p->blocknum].blockcategory == DIAG)
+	    p->issparse=1;
+	  
+	  /*
+	   * Setup the cross links.
+	   */
+	  
+	  p->nextbyblock=NULL;
+	  p=p->next;
+    };
+  };
+
+
+  /*
+   * Create cross link reference.
+   */
+  create_cross_link(constraints, nb_var);
+  
+ 
+  /*
+   * Debuging print problem in SDPA format.
+   */
+  printf("Printing SDPA...\n");
+  if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
+    char *tmp=strdup("SDPA.tmp");
+    write_prob(tmp, nb_cnsts, nb_var, C, a, constraints);  
+    //int write_prob(char *fname, int n, int k, struct blockmatrix C, double *a, struct constraintmatrix *constraints);
+    free(tmp);
+  }
+
+  /*
+   * Initialize parameters.
+   */
+  printf("Initializing solution...\n");
+  initsoln(nb_cnsts, nb_var, C, a, constraints, &X, &y, &Z);  
+  
+
+
+  /*
+   * Call the solver.
+   */
+  printf("Calling the solver...\n");
+  int ret = easy_sdp(nb_cnsts, nb_var, C, a, constraints, 0.0, &X, &y, &Z, &pobj, &dobj);
+
+  switch(ret){
+  case 0:
+  case 1: printf("SUCCESS The problem is primal infeasible\n");
+          break;
+
+  case 2: printf("SUCCESS The problem is dual infeasible\n");
+          break;
+ 
+  case 3: printf("Partial SUCCESS A solution has been found, but full accuracy was not achieved. One or more of primal infeasibility, dual infeasibility, or relative duality gap are larger than their tolerances, but by a factor of less than 1000.\n");
+          break;
+
+  case 4: printf("Failure. Maximum number of iterations reached.");
+          break;
+
+  case 5: printf("Failure. Stuck at edge of primal feasibility.");
+          break;
+
+  }
+
+  /*
+   * Write out the solution if necessary.
+   */
+  //printf("Writting simple dsp...\n");
+  //write_sol("output.sol", n, k, X, y, Z);
+
+  /*
+   * Free up memory.
+   */
+  //free_prob(n, k, C, a, constraints, X, y, Z);
+  
+  fclose(sdpout);
+  free(isdiag);
+  sys->modified = 0;
+
+  if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
+    lmm_print(sys);
+  }
+
+}
+
+
+/*
+ * Create the cross_link reference in order to have a byblock list.
+ */
+void create_cross_link(struct constraintmatrix *myconstraints, int k){
+
+  int i, j;
+  int blk;
+  struct sparseblock *p;
+  struct sparseblock *q;
+
+  struct sparseblock *prev;
+
+  /*
+   * Now, cross link.
+   */
+  prev=NULL;
+  for (i=1; i<=k; i++){
+    p=myconstraints[i].blocks;
+    while (p != NULL){
+      if (p->nextbyblock == NULL){
+	blk=p->blocknum;
+	
+	/*
+	 * link in the remaining blocks.
+	 */
+	for (j=i+1; j<=k; j++){
+	  q=myconstraints[j].blocks;
+		  
+	  while (q != NULL){
+	    if (q->blocknum == p->blocknum){
+	      if (p->nextbyblock == NULL){
+		p->nextbyblock=q;
+		q->nextbyblock=NULL;
+		prev=q;
+	      }
+	      else{
+		prev->nextbyblock=q;
+		q->nextbyblock=NULL;
+		prev=q;
+	      }
+	      break;
+	    }
+	    q=q->next;
+	  }
+	}
+      }
+      p=p->next;
+    }
+  }
+}
+
+
+
+ 
+void addentry(struct constraintmatrix *constraints, 
+	      struct blockmatrix *C, 
+	      int matno,
+	      int blkno,
+	      int indexi,
+	      int indexj,
+	      double ent, 
+	      int blocksize)
+{
+  struct sparseblock *p;
+  struct sparseblock *p_sav;
+
+  p=constraints[matno].blocks;
+  
+  if (matno != 0.0) {
+    if (p == NULL){
+      /*
+       * We haven't yet allocated any blocks.
+       */
+      p=(struct sparseblock *)calloc(1, sizeof(struct sparseblock));
+      
+      //two entries because this library ignores indices starting in zerox
+      p->constraintnum=matno;
+      p->blocknum=blkno;
+      p->numentries=1;
+      p->next=NULL;
+
+      p->entries=calloc(p->numentries+1, sizeof(double));
+      p->iindices=calloc(p->numentries+1, sizeof(int));
+      p->jindices=calloc(p->numentries+1, sizeof(int));
+   
+      p->entries[p->numentries]=ent;
+      p->iindices[p->numentries]=indexi;
+      p->jindices[p->numentries]=indexj;
+
+      p->blocksize=blocksize;
+
+      constraints[matno].blocks=p;
+    } else {
+      /*
+       * We have some existing blocks.  See whether this block is already
+       * in the chain.
+       */
+      while (p != NULL){
+	if (p->blocknum == blkno){
+	  /*
+	   * Found the right block.
+	   */
+	  p->constraintnum=matno;
+	  p->blocknum=blkno;
+	  p->numentries=p->numentries+1;
+
+	  p->entries = realloc(p->entries,  (p->numentries+1) * sizeof(double) );
+	  p->iindices = realloc(p->iindices, (p->numentries+1) * sizeof(int) );
+	  p->jindices = realloc(p->jindices, (p->numentries+1) * sizeof(int) );
+   
+	  p->entries[p->numentries]=ent;
+	  p->iindices[p->numentries]=indexi;
+	  p->jindices[p->numentries]=indexj;
+	
+	  return;
+	}
+	p_sav=p;
+	p=p->next;
+      }
+
+      /*
+       * If we get here, we have a non-empty structure but not the right block
+       * inside hence create a new structure.
+       */
+      
+      p=(struct sparseblock *)calloc(1, sizeof(struct sparseblock));
+        
+      //two entries because this library ignores indices starting in zerox
+      p->constraintnum=matno;
+      p->blocknum=blkno;
+      p->numentries=1;
+      p->next=NULL;
+
+      p->entries=calloc(p->numentries+1, sizeof(double));
+      p->iindices=calloc(p->numentries+1, sizeof(int));
+      p->jindices=calloc(p->numentries+1, sizeof(int));
+   
+      p->entries[p->numentries]=ent;
+      p->iindices[p->numentries]=indexi;
+      p->jindices[p->numentries]=indexj;
+
+      p->blocksize=blocksize;
+    
+      p_sav->next=p;
+    }
+  } else {
+    if (ent != 0.0){
+	int blksz=C->blocks[blkno].blocksize;
+	if (C->blocks[blkno].blockcategory == DIAG){
+	    C->blocks[blkno].data.vec[indexi]=ent;
+	}else{
+	  C->blocks[blkno].data.mat[ijtok(indexi,indexj,blksz)]=ent;
+	  C->blocks[blkno].data.mat[ijtok(indexj,indexi,blksz)]=ent;
+	};
+    };
+    
+  }
 }
