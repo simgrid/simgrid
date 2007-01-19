@@ -708,7 +708,7 @@ gras_datadesc_matrix(gras_datadesc_type_t elm_t,
   gras_datadesc_cb_field_push(res, "lines");
   gras_datadesc_cb_field_push_multiplier(res, "rows");
 
-  gras_datadesc_cb_recv(res,  &gras_datadesc_dynar_cb);
+  gras_datadesc_cb_recv(res,  &gras_datadesc_matrix_cb);
   memcpy(res->extra,&free_f,sizeof(free_f));
 
   /* build a ref to it */
