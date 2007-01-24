@@ -419,21 +419,22 @@ void lmm_solve(lmm_system_t sys)
     cnst->remaining = cnst->bound;
     cnst->usage = 0;
     elem_list = &(cnst->element_set);
+    cnst->usage = 0.0;
     xbt_swag_foreach(elem, elem_list) {
       if(elem->variable->weight <=0) break;
       if ((elem->value > 0)) {
 	if(cnst->shared)
 	  cnst->usage += elem->value / elem->variable->weight;
 	else 
-	  cnst->usage = 1;
+	  if(cnst->usage<elem->value / elem->variable->weight)
+	    cnst->usage = elem->value / elem->variable->weight;
+	DEBUG2("Constraint Usage %p : %f",cnst,cnst->usage);
 	make_elem_active(elem);
       }
     }
-
     /* Saturated constraints update */
     saturated_constraint_set_update(sys, cnst, &min_usage);
   }
-
   saturated_variable_set_update(sys);
 
   /* Saturated variables update */
@@ -458,6 +459,8 @@ void lmm_solve(lmm_system_t sys)
       int i;
 
       var->value = min_usage / var->weight;
+      DEBUG5("Min usage: %f, Var(%p)->weight: %f, Var(%p)->value: %f ",min_usage,var,var->weight,var,var->value);
+
 
       /* Update usage */
 
