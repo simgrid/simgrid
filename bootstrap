@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 
 amver=1.9
@@ -7,13 +7,6 @@ amver=1.9
 lt=`which libtoolize`
 if [ "x$lt" = "x" ] ; then
   echo "Libtool not found. Please install the libtool package to proceed with a CVS checkout"
-  exit 1
-fi
-
-if [ "x$lt" = "x./libtool" ] ; then
-  echo "The found libtool is the one in the current directory."
-  echo "Either your path is broken ('.' is before '/usr/bin') or the libtool package is not installed."
-  echo "Please fix the situation to proceed with a CVS checkout"
   exit 1
 fi
 
@@ -29,7 +22,7 @@ if [ "x$ac" = "x" ] ; then
   exit 1
 fi
 
-
+set -e
 # AUTOCONF=
 # AUTOHEADER=
 # AUTOPOINT=
