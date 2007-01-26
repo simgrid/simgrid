@@ -89,23 +89,29 @@ command that resides in the top of the source tree. Then just follow the
 instructions of Section \ref faq_compiling.
 
 We insist on the fact that you really need the latest versions of
-autoconf and automake. Doing this step on exotic architectures/systems
+autoconf, automake and libtool. Doing this step on exotic architectures/systems
 (i.e. anything different from a recent linux distribution) may be
-... uncertain. If you want to use the CVS version on another
-architecture/system, you should do the previous steps on a perfectly
-standard box, then do a <tt>make dist</tt> that will build you a
-perfectly portable SimGrid archive.
+... uncertain. If you need to compile the CVS version on a machine where all these
+dependencies are not met, the easiest is to do <tt>make dist</tt> in the CVS
+dir of another machine where all dependencies are met. It will create an
+archive you may deploy on other sites just as a regular stable release.
 
 In summary, the following commands will checkout the CVS, regenerate the
-configure script and friends, configure SimGrid and build an archive you can
-use on another machine afterward.
+configure script and friends, configure SimGrid and build it.
 
 \verbatim cvs -d :pserver:anonymous@scm.gforge.inria.fr:/cvsroot/simgrid login
 cvs -d :pserver:anonymous@scm.gforge.inria.fr:/cvsroot/simgrid checkout simgrid
 cd simgrid
 ./bootstrap
-./configure --enable-maintainer-mode
-make dist \endverbatim
+./configure --enable-maintainer-mode --prefix=<where to install SimGrid>
+make \endverbatim
+
+Then, if you want to install SimGrid on the current box, just do:
+\verbatim make install \endverbatim
+
+If you want to build an snapshot of the CVS to deploy it on another box (for
+example because the other machine don't have the autotools), do:
+\verbatim make dist \endverbatim
 
 Moreover, you should never call the autotools manually since you must run
 them in a specific order with specific arguments. Most of the times, the
@@ -113,10 +119,6 @@ makefiles will automatically call the tools for you. When it's not possible
 (such as the first time you checkout the CVS), use the ./bootstrap command
 to call them explicitely.
 
-If you need to compile the CVS version on a machine where all these
-dependencies are not met, the easiest is to do <tt>make dist</tt> in the CVS
-dir, on another machine where all dependencies are met. It will create an
-archive you may deploy on other sites just as a regular stable release.
 
 \subsection faq_setting_MSG Setting up your own MSG code
 
