@@ -66,14 +66,13 @@ void test(void)
   PRINT_VAR(R_3);
 
   DEBUG0("\n");
-  lmm_solve(Sys);
+  sdp_solve(Sys);
 
   PRINT_VAR(R_1_2_3);
   PRINT_VAR(R_1);
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
   DEBUG0("\n");
-
 
   lmm_update_variable_weight(Sys,R_1_2_3,.5);
   sdp_solve(Sys);

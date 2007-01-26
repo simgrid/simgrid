@@ -16,6 +16,7 @@
 #include "surf/maxmin.h"
 
 #include "xbt/log.h"
+#include "xbt/module.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
 
 #define PRINT_VAR(var) DEBUG1(#var " = %g\n",lmm_variable_getvalue(var));
@@ -125,6 +126,8 @@ void test2(void)
 
 int main(int argc, char **argv)
 {
+  xbt_init(&argc,argv);
+
   DEBUG0("***** Test 1 ***** \n");
   test();
   DEBUG0("***** Test 2 ***** \n");
