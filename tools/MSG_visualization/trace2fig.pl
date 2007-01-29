@@ -60,12 +60,12 @@ sub read_link {
     while (defined($line=<INPUT>)) {
 	chomp $line;
 	if($line =~ /^16\s/) {
-	    my($event,$date,$type,$father,$channel,$src,$key) = split(/\s+/,$line);
+	    my($event,$date,$type,$father,$channel,$src,$key) = split(/\t+/,$line);
 	    $link{$key}{src}=$src;
 	    $link{$key}{src_date}=$date;
 	}
 	if($line =~ /^17\s/) {
-	    my($event,$date,$type,$father,$channel,$dst,$key) = split(/\s+/,$line);
+	    my($event,$date,$type,$father,$channel,$dst,$key) = split(/\t+/,$line);
 	    $link{$key}{dst}=$dst;
 	    $link{$key}{dst_date}=$date;
 	}
@@ -143,7 +143,7 @@ sub draw_cat {
 	next unless (defined($$Cat{$cat}{Y_min}) && 
 		     defined($$Cat{$cat}{Y_max}));
 	my($text) = new XFig ('text');
-	$text->{'text'} = $$Cat{$cat}{name};
+	$text->{'text'} = "$$Cat{$$Cat{$cat}{father}}{name}"."$$Cat{$cat}{name}";
 	$text->{'y'} = ($$Cat{$cat}{Y_min}+$$Cat{$cat}{Y_max})/2*$grid_Y_size+68;
 	$fig->add ($text);
     }
@@ -163,6 +163,7 @@ sub draw_cat {
 		
 		my($line) = new XFig ('polyline');
 
+		$line->{'depth'} = 50;  # line
 		$line->{'subtype'} = 1;  # line
 		$line->{'points'} = [ [$old_date*$grid_X_size, $$Cat{$cat}{Y_min}*$grid_Y_size],
 				      [$new_date*$grid_X_size, $$Cat{$cat}{Y_min}*$grid_Y_size],
@@ -191,6 +192,9 @@ sub draw_cat {
 	my($dst)=$$Link{$link}{dst};
 	$line->{'subtype'} = 1;  # line
 
+	print STDERR "$src -> $dst\n";
+
+	print STDERR "$$Cat{$src}{name} -> $$Cat{$dst}{name}\n";
 	$line->{'points'} = [ [$src_date*$grid_X_size, 
 			       ($$Cat{$src}{Y_min}+$$Cat{$src}{Y_max})/2*$grid_Y_size],
 			      [$dst_date*$grid_X_size, 
