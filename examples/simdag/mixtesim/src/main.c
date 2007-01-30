@@ -32,9 +32,9 @@ int main(int argc, char **argv) {
 /*   xbt_log_control_set("mixtesim.thres=debug"); */
 
   
-  if (argc < 1) {
-     printf("Usage: %s xml_platform_file dagfile ", argv[0]);
-     printf("example: %s gridfile.xml dagfile", argv[0]);
+  if (argc < 3) {
+     printf("Usage: %s xml_platform_file dagfile \n", argv[0]);
+     printf("example: %s gridfile.xml dagfile\n", argv[0]);
      exit(1);
   }
 
