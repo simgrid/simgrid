@@ -229,6 +229,10 @@ static void action_change_state(surf_action_t action,
   return;
 }
 
+/* I nothing more happens, return the date at which the first action that will terminate does terminate */
+/* This returns the time for the first NETWORK action to complete */
+/* It would be nice to store this minimum somewhere so that the next function can
+   figure out whether the min comes from the network or from something else */
 static double share_resources(double now)
 {
   s_surf_action_network_DASSF_t s_action;
@@ -246,6 +250,13 @@ static double share_resources(double now)
 
   return min;
 }
+
+/* delta: by how many time units the simulation must advance */
+/* In this function: change the state of actions that terminate */
+/* The delta may not come from the network, and thus may be different (smaller) 
+   than the one returned by the function above */
+/* If the delta is a network-caused min, then do not emulate any timer in the
+   network simulation, otherwise fake a timer somehow to advance the simulation of min seconds */
 
 static void update_actions_state(double now, double delta)
 {
@@ -287,6 +298,7 @@ static void update_actions_state(double now, double delta)
       action->generic_action.finish = surf_get_clock();
       action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else {			/* Need to check that none of the resource has failed */
+      /* to ignore for now */
       lmm_constraint_t cnst = NULL;
       int i = 0;
       network_link_DASSF_t nw_link = NULL;
@@ -307,6 +319,7 @@ static void update_actions_state(double now, double delta)
   return;
 }
 
+/* Called only when there is a change in trace: Useless in packet-level simulation */
 static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
