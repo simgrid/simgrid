@@ -24,18 +24,13 @@ static int *routing_table_size = NULL;
 #endif
 
 /** QUESTIONS for GTNetS integration
- **   1. What's the deal with name_service and get_resource_name
- **      Right now our local dictionaries contain only integers
- **      and not structures, but it seems that surf_network_resource->common_public
- **      needs something in it, for the above.
+ **   1. Check that we did the right thing with name_service and get_resource_name
  **   2. Right now there is no "kill flow" in our GTNetS implementation. Do we
  **      need to do something about this?
- **   3. We didn't reall do anything with the "action" stuff, which we assume
- **      is fine.
- **   4. We ignore the fact there is some max_duration on flows (see #2 above)
- **   5. share_resources() returns a duration, not a date, right?
- **   6. How do we tell the user that "rates" are not supported?
- **   7. We don't update "remaining" for ongoing flows. Is it bad?
+ **   3. We ignore the fact there is some max_duration on flows (see #2 above)
+ **   4. share_resources() returns a duration, not a date, right?
+ **   5. We don't suppoer "rates"
+ **   6. We don't update "remaining" for ongoing flows. Is it bad?
  **/
 
 /* Free memory for a network link: REMOVED BY KF */
