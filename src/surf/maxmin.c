@@ -370,6 +370,12 @@ void lmm_print(lmm_system_t sys)
     sprintf(print_buf,"0 <= %f ('%p')",cnst->bound,cnst);
     trace_buf = xbt_realloc(trace_buf,strlen(trace_buf)+strlen(print_buf)+1);
     strcat(trace_buf, print_buf);
+
+    if(!cnst->shared) {
+      sprintf(print_buf," [MAX-Constraint]");
+      trace_buf = xbt_realloc(trace_buf,strlen(trace_buf)+strlen(print_buf)+1);
+      strcat(trace_buf, print_buf);
+    }
     DEBUG1("%s",trace_buf);
     trace_buf[0]='\000';
     xbt_assert2((sum<=cnst->bound), "Incorrect value (%f is not smaller than %f)",
@@ -470,8 +476,21 @@ void lmm_solve(lmm_system_t sys)
 	if(cnst->shared) {
 	  double_update(&(cnst->remaining), elem->value * var->value);
 	  double_update(&(cnst->usage), elem->value / var->weight);
+	  make_elem_inactive(elem);
+	} else { /* FIXME one day: We recompute usage.... :( */
+	  cnst->usage = 0.0;
+	  make_elem_inactive(elem);
+	  xbt_swag_foreach(elem, elem_list) {
+	    if(elem->variable->weight <=0) break;
+	    if(elem->variable->value > 0) break;
+	    if ((elem->value > 0)) {
+	      if(cnst->usage<elem->value / elem->variable->weight)
+		cnst->usage = elem->value / elem->variable->weight;
+	      DEBUG2("Constraint Usage %p : %f",cnst,cnst->usage);
+	      make_elem_active(elem);
+	    }
+	  } 
 	}
-	make_elem_inactive(elem);
       }
       xbt_swag_remove(var, var_list);
     }
