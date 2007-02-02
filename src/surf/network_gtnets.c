@@ -33,21 +33,17 @@ static int *routing_table_size = NULL;
  **   6. We don't update "remaining" for ongoing flows. Is it bad?
  **/
 
-/* Free memory for a network link: REMOVED BY KF */
+/* Free memory for a network link */
 static void network_link_free(void *nw_link)
 {
   free(((network_link_GTNETS_t)nw_link)->name);
   free(nw_link);
 }
 
-/* Instantiate a new network link: UNMODIFIED BY HC */
+/* Instantiate a new network link */
 /* name: some name for the link, from the XML */
-/* bw_initial: The bandwidth value            */
-/* bw_trace: unused here                      */
-/* lat_initial: The latency value             */
-/* lat_trace: not used here                   */
-/* state_initial: SURF_NETWORK_LINK_ON        */
-/* state_trace: not used here                 */
+/* bw: The bandwidth value            */
+/* lat: The latency value             */
 static void network_link_new(char *name,
 	                     double bw,
 	                     double lat)
@@ -96,7 +92,7 @@ static void network_link_new(char *name,
   return;
 }
 
-/* free the network card: REMOVED by KF */
+/* free the network card */
 static void network_card_free(void *nw_card)
 {
   free(((network_card_GTNETS_t)nw_card)->name);
@@ -279,11 +275,13 @@ static void action_use(surf_action_t action)
 
 static void action_cancel(surf_action_t action)
 {
+  xbt_assert0(0,"Cannot cancel GTNetS flow");
   return;
 }
 
 static void action_recycle(surf_action_t action)
 {
+  xbt_assert0(0,"Cannot recycle GTNetS flow");
   return;
 }
 
@@ -329,21 +327,31 @@ static void update_actions_state(double now, double delta)
 
   double time_to_next_flow_completion =  GTNetS_get_time_to_next_flow_completion();
   
-  if (time_to_next_flow_completion < delta) {
-    void *metadata; 
-    surf_action_t action;
+  /* If there are no renning flows, just return */
+  if (time_to_next_flow_completion < 0.0) {
+    return;
+  }
+  
+  if (time_to_next_flow_completion < delta) { /* run until the first flow completes */
+    void **metadata; 
+    int i,num_flows;
 
-    if (GTNetS_run_until_next_flow_completion(&metadata)) {
+    if (GTNetS_run_until_next_flow_completion(&metadata, &num_flows)) {
       xbt_assert0(0,"Cannot run GTNetS simulation until next flow completion");
     }
+    if (num_flows < 1) {
+      xbt_assert0(0,"GTNetS simulation couldn't find a flow that would complete");
+    }
 
-    action = (surf_action_t)metadata;
+    for (i=0; i<num_flows; i++) {
+      surf_action_t action = (surf_action_t)(metadata[i]);
 
-    action->generic_action.remains = 0;
-    action->generic_action.finish =  now + time_to_next_flow_completion;
-    action->generic_action.finish =  SURF_ACTION_DONE;
-    /* TODO: Anything else here? */
-  } else {
+      action->generic_action.remains = 0;
+      action->generic_action.finish =  now + time_to_next_flow_completion;
+      action->generic_action.finish =  SURF_ACTION_DONE;
+      /* TODO: Anything else here? */
+    }
+  } else { /* run for a given number of seconds */
     if (GTNetS_run(delta)) {
       xbt_assert0(0,"Cannot run GTNetS simulation");
     }
@@ -357,6 +365,7 @@ static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
+  xbt_assert0(0,"Cannot update resource state for GTNetS simulation");
   return;
 }
 
@@ -366,17 +375,22 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   surf_action_network_GTNETS_t action = NULL;
   network_card_GTNETS_t card_src = src;
   network_card_GTNETS_t card_dst = dst;
+/*
   int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
   network_link_GTNETS_t *route = ROUTE(card_src->id, card_dst->id);
+*/
   int i;
 
+/*
   xbt_assert2(route_size,"You're trying to send data from %s to %s but there is no connexion between these two cards.", card_src->name, card_dst->name);
+*/
 
   action = xbt_new0(s_surf_action_network_GTNETS_t, 1);
 
   action->generic_action.using = 1; 
   action->generic_action.cost = size;
   action->generic_action.remains = size;
+  /* Max durations are not supported */
   action->generic_action.max_duration = NO_MAX_DURATION;
   action->generic_action.start = surf_get_clock(); 
   action->generic_action.finish = -1.0; 
@@ -389,7 +403,9 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   xbt_swag_insert(action, action->generic_action.state_set);
 
   /* KF: Add a flow to the GTNets Simulation, associated to this action */
-  GTNetS_create_flow(src->id, dst->id, size, (void *)action);
+  if (GTNetS_create_flow(src->id, dst->id, size, (void *)action) < 0) {
+    xbt_assert2(0,"Not route between host %s and host %s", card_src->name, card_dst->name);
+  }
 
   return (surf_action_t) action;
 }
