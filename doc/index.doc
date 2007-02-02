@@ -79,7 +79,7 @@ your work.
    See the \ref GRAS_API section for more details.
 
 If your favorite programming environment/model is not there (BSP,
-components, DAG, etc.) is not represented in the SimGrid toolkit yet, you may
+components, OpenMP, etc.) is not represented in the SimGrid toolkit yet, you may
 consider adding it. You should contact us first on the 
 <a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel>SimGrid 
 developers mailing list</a>, though.
