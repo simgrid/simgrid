@@ -24,13 +24,13 @@ SG_BEGIN_DECL()
 /* FIXME: better place? */
 int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
 int   vasprintf (char **ptr, const char *fmt, va_list ap);
-XBT_PUBLIC char *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+XBT_PUBLIC(char) *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
   
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
 
-XBT_PUBLIC void xbt_abort(void) _XBT_GNUC_NORETURN;
-XBT_PUBLIC void xbt_die(const char *msg) _XBT_GNUC_NORETURN;
+XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
+XBT_PUBLIC(void) xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 
 /** @addtogroup XBT_syscall
@@ -98,6 +98,13 @@ static XBT_INLINE void *xbt_realloc(void*p,int s){
     @hideinitializer */
 #define xbt_free free /*nothing specific to do here. A poor valgrind replacement?*/
 /*#define xbt_free_fct free * replacement with the guareenty of being a function  FIXME:KILLME*/
+
+/** @brief like free 
+    @hideinitializer */
+XBT_PUBLIC(void) xbt_free_f(void* p)
+{
+	free(p);
+}
    
 /** @brief like calloc, but xbt_die() on error and don't memset to 0
     @hideinitializer */
