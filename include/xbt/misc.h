@@ -82,6 +82,7 @@
 #  	 else
 #      define XBT_PUBLIC(type)		extern type
 #    endif
+#  endif
 #endif    
 
 
@@ -125,3 +126,7 @@ XBT_PUBLIC(const char *)xbt_procname(void);
 SG_END_DECL()
 
 #endif /* XBT_MISC_H */
+
+
+
+
