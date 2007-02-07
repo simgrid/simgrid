@@ -16,13 +16,13 @@
 #include "gras.h"
 #include "amok/bandwidth.h"
 
-XBT_PUBLIC(void) amok_bw_bw_init(void); /* Must be called only once per node */
-XBT_PUBLIC(void) amok_bw_bw_join(void); /* Each process must run it */
-XBT_PUBLIC(void) amok_bw_bw_leave(void);/* Each process must run it */
+void amok_bw_bw_init(void); /* Must be called only once per node */
+void amok_bw_bw_join(void); /* Each process must run it */
+void amok_bw_bw_leave(void);/* Each process must run it */
 
-XBT_PUBLIC(void) amok_bw_sat_init(void); /* Must be called only once per node */
-XBT_PUBLIC(void) amok_bw_sat_join(void); /* Each process must run it */
-XBT_PUBLIC(void) amok_bw_sat_leave(void);/* Each process must run it */
+void amok_bw_sat_init(void); /* Must be called only once per node */
+void amok_bw_sat_join(void); /* Each process must run it */
+void amok_bw_sat_leave(void);/* Each process must run it */
 
 /***
  * Plain bandwidth measurement stuff
@@ -60,7 +60,7 @@ typedef struct {
   unsigned int duration;
 } s_sat_request_t,*sat_request_t;
 
-XBT_PUBLIC(void) amok_bw_sat_start(const char* from_name,unsigned int from_port,
+void amok_bw_sat_start(const char* from_name,unsigned int from_port,
 		                   const char* to_name,unsigned int to_port,
 				   unsigned int msg_size, unsigned int duration);
 

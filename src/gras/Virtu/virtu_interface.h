@@ -20,18 +20,18 @@
 #include "gras/process.h"
 
 /* shutdown the module mechanism (world-wide cleanups) */
-XBT_PUBLIC(void) gras_moddata_exit(void);
+void gras_moddata_exit(void);
 /* shutdown this process wrt module mecanism (process-wide cleanups) */
-XBT_PUBLIC(void) gras_moddata_leave(void);
+void gras_moddata_leave(void);
 
 /* This is the old interface (deprecated) */
 
 
 /* declare a new process specific data 
    (used by gras_<module>_register to make sure that gras_process_init will create it) */
-XBT_PUBLIC(int) gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
+int gras_procdata_add(const char *name, pvoid_f_void_t creator,void_f_pvoid_t destructor);
 
-XBT_PUBLIC(void*) gras_libdata_by_name(const char *name);
-XBT_PUBLIC(void*) gras_libdata_by_id(int id);
+void* gras_libdata_by_name(const char *name);
+void* gras_libdata_by_id(int id);
 
 #endif  /* GRAS_VIRTU_INTERFACE_H */

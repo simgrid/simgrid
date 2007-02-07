@@ -168,7 +168,7 @@ extern surf_timer_resource_t surf_timer_resource;
 /** \brief Initializes the timer resource
  *  \ingroup SURF_resources
  */
-XBT_PUBLIC(void) surf_timer_resource_init(const char *filename);
+void surf_timer_resource_init(const char *filename);
 
 /* Cpu resource */
 
@@ -216,7 +216,7 @@ extern surf_cpu_resource_t surf_cpu_resource;
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_resource_init_Cas01(const char *filename);
+void surf_cpu_resource_init_Cas01(const char *filename);
 
 /* Network resource */
 
@@ -264,7 +264,7 @@ extern surf_network_resource_t surf_network_resource;
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
-XBT_PUBLIC(void) surf_network_resource_init_CM02(const char *filename);
+void surf_network_resource_init_CM02(const char *filename);
 
 /** \brief Workstation resource extension public
  *  \ingroup SURF_resources
@@ -327,7 +327,7 @@ extern surf_workstation_resource_t surf_workstation_resource;
  *
  *  \see surf_workstation_resource_init_KCCFLN05()
  */
-XBT_PUBLIC(void) surf_workstation_resource_init_CLM03(const char *filename);
+void surf_workstation_resource_init_CLM03(const char *filename);
 
 /** \brief Initializes the platform with the model KCCFLN05
  *  \ingroup SURF_resources

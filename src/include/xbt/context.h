@@ -31,16 +31,16 @@
 
 /* @}*/
 
-XBT_PUBLIC(void) xbt_context_init(void);
-XBT_PUBLIC(void) xbt_context_exit(void);
-XBT_PUBLIC(void) xbt_context_empty_trash(void);
-XBT_PUBLIC(xbt_context_t) xbt_context_new(xbt_context_function_t code, 
+void xbt_context_init(void);
+void xbt_context_exit(void);
+void xbt_context_empty_trash(void);
+xbt_context_t xbt_context_new(xbt_context_function_t code, 
 			                  void_f_pvoid_t startup_func, void *startup_arg,
 			                  void_f_pvoid_t cleanup_func, void *cleanup_arg,
 			                  int argc, char *argv[]);
-XBT_PUBLIC(void) xbt_context_free(xbt_context_t context);
-XBT_PUBLIC(void) xbt_context_start(xbt_context_t context);
-XBT_PUBLIC(void) xbt_context_yield(void);
-XBT_PUBLIC(void) xbt_context_schedule(xbt_context_t context);
+void xbt_context_free(xbt_context_t context);
+void xbt_context_start(xbt_context_t context);
+void xbt_context_yield(void);
+void xbt_context_schedule(xbt_context_t context);
 /* @} */
 #endif				/* _XBT_CONTEXT_H */
