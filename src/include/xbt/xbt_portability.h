@@ -20,7 +20,7 @@
 XBT_PUBLIC(double) xbt_os_time(void);
 
 typedef struct s_xbt_os_timer *xbt_os_timer_t;
-XBT_PUBLIC xbt_os_timer_t xbt_os_timer_new(void);
+XBT_PUBLIC(xbt_os_timer_t) xbt_os_timer_new(void);
 XBT_PUBLIC(void) xbt_os_timer_free(xbt_os_timer_t timer);
 XBT_PUBLIC(void) xbt_os_timer_start(xbt_os_timer_t timer);
 XBT_PUBLIC(void) xbt_os_timer_stop(xbt_os_timer_t timer);

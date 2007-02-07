@@ -152,7 +152,7 @@ XBT_PUBLIC(void) xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
   /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
   typedef void (*xbt_cfg_cb_t)(const char*, int);
 
-  XBT_PUBLIC xbt_cfg_t xbt_cfg_new (void);
+  XBT_PUBLIC(xbt_cfg_t) xbt_cfg_new (void);
   XBT_PUBLIC(void) xbt_cfg_cpy(xbt_cfg_t tocopy, /* OUT */ xbt_cfg_t *whereto);
   XBT_PUBLIC(void) xbt_cfg_free(xbt_cfg_t *cfg);
   XBT_PUBLIC(void) xbt_cfg_dump(const char *name,const char*indent,xbt_cfg_t cfg);
@@ -174,7 +174,7 @@ XBT_PUBLIC(void) xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
   XBT_PUBLIC(void) xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
   XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
   XBT_PUBLIC(void) xbt_cfg_check(xbt_cfg_t cfg);
-  XBT_PUBLIC e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
+  XBT_PUBLIC(e_xbt_cfgelm_type_t) xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
  *  @ingroup XBT_config

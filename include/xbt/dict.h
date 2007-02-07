@@ -107,7 +107,7 @@ SG_BEGIN_DECL()
 
   /** @brief Cursor on dictionnaries (opaque type) */
   typedef struct xbt_dict_cursor_ *xbt_dict_cursor_t;
-  XBT_PUBLIC xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict);
+  XBT_PUBLIC(xbt_dict_cursor_t) xbt_dict_cursor_new(const xbt_dict_t dict);
   XBT_PUBLIC(void)               xbt_dict_cursor_free(xbt_dict_cursor_t *cursor);
 
   XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);

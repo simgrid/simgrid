@@ -230,7 +230,7 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  */
 
 /* we need this symbol here, even if it breaks a bit the module separation */
-XBT_PUBLIC long int gras_os_getpid(void);
+XBT_PUBLIC(long) int gras_os_getpid(void);
 
 /** @brief different kind of errors */
 typedef enum {
@@ -245,7 +245,7 @@ typedef enum {
   thread_error    /**< error while [un]locking */
 } xbt_errcat_t;
 
-XBT_PUBLIC const char * xbt_ex_catname(xbt_errcat_t cat);
+XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
 
 /** @brief Structure describing an exception */
 typedef struct {
