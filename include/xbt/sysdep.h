@@ -22,9 +22,9 @@
 SG_BEGIN_DECL()
 
 /* FIXME: better place? */
-int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
-int   vasprintf (char **ptr, const char *fmt, va_list ap);
-XBT_PUBLIC(char) *bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+XBT_PUBLIC(int)   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
+XBT_PUBLIC(int)   vasprintf (char **ptr, const char *fmt, va_list ap);
+XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
   
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
