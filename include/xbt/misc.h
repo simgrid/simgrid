@@ -59,8 +59,13 @@
 /* 
  * Function calling convention (not used for now) 
  */
-#if !defined (_XBT_CALL)
-#define _XBT_CALL
+ 
+#ifdef _WIN32
+#  ifndef _XBT_CALL
+#    define _XBT_CALL __cdecl
+#   endif
+#else 
+#  define _XBT_CALL
 #endif
 
 /* Handle import/export stuff
@@ -83,7 +88,8 @@
 #      define XBT_PUBLIC(type)		extern type
 #    endif
 #  endif
-#endif    
+#endif 
+   
 
 
 
