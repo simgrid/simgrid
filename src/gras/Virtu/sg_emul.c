@@ -49,7 +49,7 @@ static void store_in_dict(xbt_dict_t dict, const char *key, double value)
   ir = xbt_dict_get_or_null(dict, key);
   if (!ir) {
     ir = xbt_new0(double,1);
-    xbt_dict_set(dict, key, ir, free);
+    xbt_dict_set(dict, key, ir, xbt_free_f);
   }
   *ir = value;
 }
