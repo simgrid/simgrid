@@ -56,42 +56,20 @@
 #    define XBT_INLINE  inline
 #endif
 
-/* Windows __declspec(). */
-#if defined(_WIN32) && defined(__BORLANDC__)
-#  if(__BORLANDC__ < 0x540)
-#    if (defined (__DLL) || defined (_DLL) || defined (_WINDLL) || defined (_RTLDLL) || defined (_XBT_USE_DYNAMIC_LIB) ) && ! defined (_XBT_USE_STAT
-#      undef  _XBT_USE_DECLSPEC
-#      define _XBT_USE_DECLSPEC
-#    endif
-#  else
-#  if ( defined (__DLL) || defined (_DLL) || defined (_WINDLL) || defined (_RTLDLL) || defined(_AFXDLL) || defined (_XBT_USE_DYNAMIC_LIB) )
-#    undef  _XBT_USE_DECLSPEC
-#    define _XBT_USE_DECLSPEC 1
-#  endif
-#  endif
-#endif
-
-#if defined (_XBT_USE_DECLSPEC) /* using export/import technique */
-
-#    ifndef _XBT_EXPORT_DECLSPEC
-#        define _XBT_EXPORT_DECLSPEC
-#    endif
-
-#    ifndef _XBT_IMPORT_DECLSPEC
-#        define _XBT_IMPORT_DECLSPEC
-#    endif
-
-#    if defined (_XBT_DESIGNATED_DLL) /* this is a lib which will contain xbt exports */
-#        define  XBT_PUBLIC        _XBT_EXPORT_DECLSPEC
-#    else
-#        define  XBT_PUBLIC        _XBT_IMPORT_DECLSPEC   /* other modules, importing xbt exports */
-#    endif
-
-#else /* not using DLL export/import specifications */
-
-#    define XBT_PUBLIC
-
-#endif /* #if defined (_XBT_USE_DECLSPEC) */
+/* Handle import/export stuff
+ * Rational: 
+ *   * If you compile the DLL you must pass the right value of XBT_PUBLIC in the project: -DXBT_PUBLIC=__dllspec(ddlexport)
+ *   * If you do a static compilation, you must define this macro to empty: -DXBT_PUBLIC=
+ *   * If you link your code against the DLL, this file defines the macro to '__declspec(dllimport)' for you
+ *   * If you compile under unix, this file defines the macro to 'extern', even if it's not mandatory with modern compilers
+ */
+#ifndef XBT_PUBLIC
+#  ifdef _WIN32
+#   define XBT_PUBLIC __declspec(dllimport)
+#  else 
+#   define XBT_PUBLIC extern
+#  endif /* _WIN32 */
+#endif /* !XBT_PUBLIC */
 
 /* Function calling convention (not used for now) */
 #if !defined (_XBT_CALL)

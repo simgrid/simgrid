@@ -201,7 +201,7 @@
 
 /* "disable the snprintf replacement ( this function is broken on system v only" */
 
-/* FIXEME TO ANALYZE
+/* FIXME TO ANALYZE
 #if defined(PREFER_PORTABLE_SNPRINTF)
 	#undef PREFER_PORTABLE_SNPRINTF	
 #endif
@@ -369,29 +369,6 @@ the double. For now, GRAS requires the structures to be compacted. */
 #if defined ( __MT__ ) && !defined (_NOTHREADS) && !defined (_REENTRANT)
 	#define _REENTRANT 1
 #endif
-
-#if defined ( __DEBUG ) && ( __DEBUG > 1 )
-	#define _XBT_DEBUG
-#endif
-
-#define _XBT_LIB_BASENAME "xbt"
-
-#ifndef _XBT_EXPORT_DECLSPEC
-#define _XBT_EXPORT_DECLSPEC __declspec(dllexport)
-#endif
-
-#ifndef _XBT_IMPORT_DECLSPEC
-#define _XBT_IMPORT_DECLSPEC __declspec(dllimport)
-#endif
-
-#ifndef _XBT_CLASS_EXPORT_DECLSPEC
-#define _XBT_CLASS_EXPORT_DECLSPEC __declspec(dllexport)
-#endif
-
-#ifndef _XBT_CLASS_IMPORT_DECLSPEC
-#define _XBT_CLASS_IMPORT_DECLSPEC __declspec(dllimport)
-#endif
-
 
 #if(__BORLANDC__>= 0x500)
 	#define _XBT_HAS_NAMESPACES
