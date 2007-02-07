@@ -194,7 +194,7 @@ typedef enum {
 
 /* Functions you may call */
 
-XBT_PUBLIC  extern void xbt_log_control_set(const char* cs);
+XBT_PUBLIC(extern void) xbt_log_control_set(const char* cs);
 
 /* Forward declarations */
 typedef struct xbt_log_appender_s s_xbt_log_appender_t,*xbt_log_appender_t;
@@ -238,7 +238,7 @@ struct xbt_log_event_s {
  *
  * Programatically alters a category's threshold priority (don't use).
  */
-XBT_PUBLIC extern void xbt_log_threshold_set(xbt_log_category_t cat,
+XBT_PUBLIC(extern void) xbt_log_threshold_set(xbt_log_category_t cat,
 				   e_xbt_log_priority_t thresholdPriority);
 
 /**
@@ -248,7 +248,7 @@ XBT_PUBLIC extern void xbt_log_threshold_set(xbt_log_category_t cat,
  *
  * Programatically alter a category's parent (don't use).
  */
-XBT_PUBLIC extern void xbt_log_parent_set(xbt_log_category_t cat,
+XBT_PUBLIC(extern void) xbt_log_parent_set(xbt_log_category_t cat,
 				xbt_log_category_t parent);
 
 /**
@@ -258,15 +258,15 @@ XBT_PUBLIC extern void xbt_log_parent_set(xbt_log_category_t cat,
  *
  * Programatically sets the category's appender (don't use).
  */
-XBT_PUBLIC extern void xbt_log_appender_set(xbt_log_category_t cat,
+XBT_PUBLIC(extern void) xbt_log_appender_set(xbt_log_category_t cat,
 				  xbt_log_appender_t app);
 
 /* Functions that you shouldn't call. */
-XBT_PUBLIC extern void _xbt_log_event_log(xbt_log_event_t ev,
+XBT_PUBLIC(extern void) _xbt_log_event_log(xbt_log_event_t ev,
 				const char *fmt,
 				...) _XBT_GNUC_PRINTF(2,3);
 
-XBT_PUBLIC extern int _xbt_log_cat_init(e_xbt_log_priority_t priority, 
+XBT_PUBLIC(extern int) _xbt_log_cat_init(e_xbt_log_priority_t priority, 
 			      xbt_log_category_t   category);
 
 

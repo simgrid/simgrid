@@ -95,8 +95,8 @@ typedef struct MSG_Global {
 extern MSG_Global_t msg_global;
       
 /************************** Configuration support ********************************/
-XBT_PUBLIC void msg_config_init(void); /* create the config set, call this before use! */
-XBT_PUBLIC void msg_config_finalize(void); /* destroy the config set, call this at cleanup. */
+XBT_PUBLIC(void) msg_config_init(void); /* create the config set, call this before use! */
+XBT_PUBLIC(void) msg_config_finalize(void); /* destroy the config set, call this at cleanup. */
 extern int _msg_init_status; /* 0: beginning of time; 
                                 1: pre-inited (cfg_set created); 
                                 2: inited (running) */
@@ -113,22 +113,22 @@ extern xbt_cfg_t _msg_cfg_set;
 				  get_state(MSG_host_self()->simdata->host)==SURF_CPU_ON,\
                                   "Host failed, you cannot call this function.")
 
-XBT_PUBLIC m_host_t __MSG_host_create(const char *name, void *workstation,
+XBT_PUBLIC(m_host_t) __MSG_host_create(const char *name, void *workstation,
 			   void *data);
-XBT_PUBLIC void __MSG_host_destroy(m_host_t host);
-XBT_PUBLIC void __MSG_task_execute(m_process_t process, m_task_t task);
-XBT_PUBLIC MSG_error_t __MSG_wait_for_computation(m_process_t process, m_task_t task);
-XBT_PUBLIC MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task);
+XBT_PUBLIC(void) __MSG_host_destroy(m_host_t host);
+XBT_PUBLIC(void) __MSG_task_execute(m_process_t process, m_task_t task);
+XBT_PUBLIC(MSG_error_t) __MSG_wait_for_computation(m_process_t process, m_task_t task);
+XBT_PUBLIC(MSG_error_t) __MSG_task_wait_event(m_process_t process, m_task_t task);
 
-XBT_PUBLIC int __MSG_process_block(double max_duration, const char *info);
-XBT_PUBLIC MSG_error_t __MSG_process_unblock(m_process_t process);
-XBT_PUBLIC int __MSG_process_isBlocked(m_process_t process);
+XBT_PUBLIC(int) __MSG_process_block(double max_duration, const char *info);
+XBT_PUBLIC(MSG_error_t) __MSG_process_unblock(m_process_t process);
+XBT_PUBLIC(int) __MSG_process_isBlocked(m_process_t process);
 
-XBT_PUBLIC void __MSG_display_process_status(void);
+XBT_PUBLIC(void) __MSG_display_process_status(void);
 
-XBT_PUBLIC m_task_t task_mallocator_new_f(void);
-XBT_PUBLIC void task_mallocator_free_f(m_task_t task);
-XBT_PUBLIC void task_mallocator_reset_f(m_task_t task);
+XBT_PUBLIC(m_task_t) task_mallocator_new_f(void);
+XBT_PUBLIC(void) task_mallocator_free_f(m_task_t task);
+XBT_PUBLIC(void) task_mallocator_reset_f(m_task_t task);
 
 
 

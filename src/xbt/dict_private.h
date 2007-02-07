@@ -37,17 +37,17 @@ typedef struct xbt_dict_ {
 typedef struct xbt_dict_cursor_ s_xbt_dict_cursor_t;
 
 extern xbt_mallocator_t dict_elm_mallocator;
-XBT_PUBLIC extern void* dict_elm_mallocator_new_f(void);
-XBT_PUBLIC extern void dict_elm_mallocator_free_f(void* elem);
-XBT_PUBLIC extern void dict_elm_mallocator_reset_f(void* elem);
+XBT_PUBLIC(extern void*) dict_elm_mallocator_new_f(void);
+XBT_PUBLIC(extern void) dict_elm_mallocator_free_f(void* elem);
+XBT_PUBLIC(extern void) dict_elm_mallocator_reset_f(void* elem);
 
 /*####[ Function prototypes ]################################################*/
-XBT_PUBLIC xbt_dictelm_t xbt_dictelm_new(const char *key,
+XBT_PUBLIC(xbt_dictelm_t) xbt_dictelm_new(const char *key,
 			      int key_len,
 			      void *content,
 			      void_f_pvoid_t free_f,
 			      xbt_dictelm_t next);
-XBT_PUBLIC void xbt_dictelm_free(xbt_dictelm_t element);
-XBT_PUBLIC void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element);
+XBT_PUBLIC(void) xbt_dictelm_free(xbt_dictelm_t element);
+XBT_PUBLIC(void) xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element);
 
 #endif  /* _XBT_DICT_PRIVATE_H_ */

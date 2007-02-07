@@ -93,42 +93,42 @@ SG_BEGIN_DECL()
   /** @brief Configuration set are only special dynars. But don't rely on it, it may change. */
   typedef xbt_dynar_t xbt_cfg_t;
 
-  XBT_PUBLIC void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
-  XBT_PUBLIC void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
-  XBT_PUBLIC void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
+  XBT_PUBLIC(void) xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
+  XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
+  XBT_PUBLIC(void) xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
 
 
 /*
   Set the value of the cell \a name in \a cfg with the provided value.
  */
-XBT_PUBLIC void xbt_cfg_set_int   (xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_set_int   (xbt_cfg_t cfg, const char *name, 
 			int val);
-XBT_PUBLIC void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, 
 			double val);
-XBT_PUBLIC void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, 
 			const char *val);
-XBT_PUBLIC void xbt_cfg_set_peer  (xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_set_peer  (xbt_cfg_t cfg, const char *name, 
 			const char *peer,int port);
 
 /*
  Remove the provided value from the cell @name in @cfg.
  */
-XBT_PUBLIC void xbt_cfg_rm_int   (xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_rm_int   (xbt_cfg_t cfg, const char *name, 
 		       int val);
-XBT_PUBLIC void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, 
 		       double val);
-XBT_PUBLIC void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, 
 		       const char *val);
-XBT_PUBLIC void xbt_cfg_rm_peer  (xbt_cfg_t cfg, const char *name, 
+XBT_PUBLIC(void) xbt_cfg_rm_peer  (xbt_cfg_t cfg, const char *name, 
 		       const char *peer,int port);
 			  	  
 /*
  Remove the value at position \e pos from the config \e cfg
  */
-XBT_PUBLIC void xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos);
+XBT_PUBLIC(void) xbt_cfg_rm_at   (xbt_cfg_t cfg, const char *name, int pos);
 
 /* rm every values */
-XBT_PUBLIC void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);	
+XBT_PUBLIC(void) xbt_cfg_empty(xbt_cfg_t cfg, const char *name);	
 
 /* @} */
 
@@ -153,9 +153,9 @@ XBT_PUBLIC void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
   typedef void (*xbt_cfg_cb_t)(const char*, int);
 
   XBT_PUBLIC xbt_cfg_t xbt_cfg_new (void);
-  XBT_PUBLIC void xbt_cfg_cpy(xbt_cfg_t tocopy, /* OUT */ xbt_cfg_t *whereto);
-  XBT_PUBLIC void xbt_cfg_free(xbt_cfg_t *cfg);
-  XBT_PUBLIC void xbt_cfg_dump(const char *name,const char*indent,xbt_cfg_t cfg);
+  XBT_PUBLIC(void) xbt_cfg_cpy(xbt_cfg_t tocopy, /* OUT */ xbt_cfg_t *whereto);
+  XBT_PUBLIC(void) xbt_cfg_free(xbt_cfg_t *cfg);
+  XBT_PUBLIC(void) xbt_cfg_dump(const char *name,const char*indent,xbt_cfg_t cfg);
 
  /** @} */
 
@@ -167,13 +167,13 @@ XBT_PUBLIC void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
  *
  *  @{
  */
-  XBT_PUBLIC void xbt_cfg_register(xbt_cfg_t cfg,
+  XBT_PUBLIC(void) xbt_cfg_register(xbt_cfg_t cfg,
 		        const char *name, e_xbt_cfgelm_type_t type,
 		        int min, int max,
                         xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm);
-  XBT_PUBLIC void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
-  XBT_PUBLIC void xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
-  XBT_PUBLIC void xbt_cfg_check(xbt_cfg_t cfg);
+  XBT_PUBLIC(void) xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
+  XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t cfg, const char *entry);
+  XBT_PUBLIC(void) xbt_cfg_check(xbt_cfg_t cfg);
   XBT_PUBLIC e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
@@ -190,16 +190,16 @@ XBT_PUBLIC void xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
  *  @{
  */
 
-  XBT_PUBLIC int         xbt_cfg_get_int   (xbt_cfg_t cfg, const char *name);
-  XBT_PUBLIC double      xbt_cfg_get_double(xbt_cfg_t cfg, const char *name);
-  XBT_PUBLIC char*       xbt_cfg_get_string(xbt_cfg_t cfg, const char *name);
-  XBT_PUBLIC void        xbt_cfg_get_peer  (xbt_cfg_t cfg, const char *name, char  **peer, int *port);
-  XBT_PUBLIC xbt_dynar_t xbt_cfg_get_dynar (xbt_cfg_t cfg, const char *name);
+  XBT_PUBLIC(int)         xbt_cfg_get_int   (xbt_cfg_t cfg, const char *name);
+  XBT_PUBLIC(double)      xbt_cfg_get_double(xbt_cfg_t cfg, const char *name);
+  XBT_PUBLIC(char*)       xbt_cfg_get_string(xbt_cfg_t cfg, const char *name);
+  XBT_PUBLIC(void)        xbt_cfg_get_peer  (xbt_cfg_t cfg, const char *name, char  **peer, int *port);
+  XBT_PUBLIC(xbt_dynar_t) xbt_cfg_get_dynar (xbt_cfg_t cfg, const char *name);
 
-  XBT_PUBLIC int    xbt_cfg_get_int_at   (xbt_cfg_t cfg, const char *name, int pos);
-  XBT_PUBLIC double xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos);
-  XBT_PUBLIC char*  xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos);
-  XBT_PUBLIC void   xbt_cfg_get_peer_at  (xbt_cfg_t cfg, const char *name, int pos, char  **peer, int *port);
+  XBT_PUBLIC(int)    xbt_cfg_get_int_at   (xbt_cfg_t cfg, const char *name, int pos);
+  XBT_PUBLIC(double) xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos);
+  XBT_PUBLIC(char*)  xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos);
+  XBT_PUBLIC(void)   xbt_cfg_get_peer_at  (xbt_cfg_t cfg, const char *name, int pos, char  **peer, int *port);
 
 /** @} */
 

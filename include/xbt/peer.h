@@ -21,11 +21,11 @@ typedef struct {
    int port;
 } s_xbt_peer_t, *xbt_peer_t;
 
-XBT_PUBLIC xbt_peer_t xbt_peer_new(const char *name, int port);
-XBT_PUBLIC xbt_peer_t xbt_peer_from_string(const char *peerport);
-XBT_PUBLIC xbt_peer_t xbt_peer_copy(xbt_peer_t h);
-XBT_PUBLIC void xbt_peer_free(xbt_peer_t peer);
-XBT_PUBLIC void xbt_peer_free_voidp(void *d);
+XBT_PUBLIC(xbt_peer_t) xbt_peer_new(const char *name, int port);
+XBT_PUBLIC(xbt_peer_t) xbt_peer_from_string(const char *peerport);
+XBT_PUBLIC(xbt_peer_t) xbt_peer_copy(xbt_peer_t h);
+XBT_PUBLIC(void) xbt_peer_free(xbt_peer_t peer);
+XBT_PUBLIC(void) xbt_peer_free_voidp(void *d);
 
 SG_END_DECL()
 

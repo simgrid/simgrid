@@ -101,17 +101,17 @@ typedef struct SD_dependency {
 
 /* SimDag private functions */
 
-XBT_PUBLIC SD_link_t __SD_link_create(void *surf_link, void *data);
-XBT_PUBLIC void __SD_link_destroy(void *link);
+XBT_PUBLIC(SD_link_t) __SD_link_create(void *surf_link, void *data);
+XBT_PUBLIC(void) __SD_link_destroy(void *link);
 
-XBT_PUBLIC SD_workstation_t __SD_workstation_create(void *surf_workstation, void *data);
-XBT_PUBLIC void __SD_workstation_destroy(void *workstation);
-XBT_PUBLIC int __SD_workstation_is_busy(SD_workstation_t workstation);
+XBT_PUBLIC(SD_workstation_t) __SD_workstation_create(void *surf_workstation, void *data);
+XBT_PUBLIC(void) __SD_workstation_destroy(void *workstation);
+XBT_PUBLIC(int) __SD_workstation_is_busy(SD_workstation_t workstation);
 
-XBT_PUBLIC void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
-XBT_PUBLIC void __SD_task_really_run(SD_task_t task);
-XBT_PUBLIC int __SD_task_try_to_run(SD_task_t task);
-XBT_PUBLIC void __SD_task_just_done(SD_task_t task);
+XBT_PUBLIC(void) __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
+XBT_PUBLIC(void) __SD_task_really_run(SD_task_t task);
+XBT_PUBLIC(int) __SD_task_try_to_run(SD_task_t task);
+XBT_PUBLIC(void) __SD_task_just_done(SD_task_t task);
 
 /* Functions to test if the task is in a given state. */
 

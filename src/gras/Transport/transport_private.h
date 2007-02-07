@@ -75,16 +75,16 @@ typedef struct s_gras_socket  {
   gras_trp_bufdata_t *bufdata; 
 }s_gras_socket_t;
 	
-XBT_PUBLIC void gras_trp_socket_new(int incomming,
+XBT_PUBLIC(void) gras_trp_socket_new(int incomming,
 			 gras_socket_t *dst);
 
 /* The drivers */
 typedef void (*gras_trp_setup_t)(gras_trp_plugin_t dst);
 
-XBT_PUBLIC void gras_trp_tcp_setup(gras_trp_plugin_t plug);
-XBT_PUBLIC void gras_trp_iov_setup(gras_trp_plugin_t plug);
-XBT_PUBLIC void gras_trp_file_setup(gras_trp_plugin_t plug);
-XBT_PUBLIC void gras_trp_sg_setup(gras_trp_plugin_t plug);
+XBT_PUBLIC(void) gras_trp_tcp_setup(gras_trp_plugin_t plug);
+XBT_PUBLIC(void) gras_trp_iov_setup(gras_trp_plugin_t plug);
+XBT_PUBLIC(void) gras_trp_file_setup(gras_trp_plugin_t plug);
+XBT_PUBLIC(void) gras_trp_sg_setup(gras_trp_plugin_t plug);
 
 /*
 
@@ -104,6 +104,6 @@ XBT_PUBLIC void gras_trp_sg_setup(gras_trp_plugin_t plug);
 
 */
 
-XBT_PUBLIC gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock);
+XBT_PUBLIC(gras_socket_t) gras_trp_buf_init_sock(gras_socket_t sock);
 
 #endif /* GRAS_TRP_PRIVATE_H */

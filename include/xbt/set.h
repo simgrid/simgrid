@@ -67,8 +67,8 @@ typedef struct xbt_set_elm_ {
 } s_xbt_set_elm_t,*xbt_set_elm_t;
 
 /*####[ Functions ]##########################################################*/
-XBT_PUBLIC xbt_set_t xbt_set_new (void);
-XBT_PUBLIC void xbt_set_free(xbt_set_t *set);
+XBT_PUBLIC(xbt_set_t) xbt_set_new (void);
+XBT_PUBLIC(void) xbt_set_free(xbt_set_t *set);
 
 /** @} */
 /** @defgroup XBT_set_basic Sets basic usage
@@ -77,17 +77,17 @@ XBT_PUBLIC void xbt_set_free(xbt_set_t *set);
  *  @{
  */
 
-XBT_PUBLIC void xbt_set_add (xbt_set_t set, xbt_set_elm_t  elm, void_f_pvoid_t *free_func);
-XBT_PUBLIC void xbt_set_remove (xbt_set_t set, xbt_set_elm_t elm);
-XBT_PUBLIC void xbt_set_remove_by_name (xbt_set_t set, const char *key);
-XBT_PUBLIC void xbt_set_remove_by_name_ext (xbt_set_t set, const char *key, int key_len);
-XBT_PUBLIC void xbt_set_remove_by_id (xbt_set_t set, int id);
+XBT_PUBLIC(void) xbt_set_add (xbt_set_t set, xbt_set_elm_t  elm, void_f_pvoid_t *free_func);
+XBT_PUBLIC(void) xbt_set_remove (xbt_set_t set, xbt_set_elm_t elm);
+XBT_PUBLIC(void) xbt_set_remove_by_name (xbt_set_t set, const char *key);
+XBT_PUBLIC(void) xbt_set_remove_by_name_ext (xbt_set_t set, const char *key, int key_len);
+XBT_PUBLIC(void) xbt_set_remove_by_id (xbt_set_t set, int id);
 
-XBT_PUBLIC xbt_set_elm_t xbt_set_get_by_name    (xbt_set_t set, const char *key);
-XBT_PUBLIC xbt_set_elm_t xbt_set_get_by_name_ext(xbt_set_t set, const char *key, int key_len);
-XBT_PUBLIC xbt_set_elm_t xbt_set_get_by_id      (xbt_set_t set, int         id);
+XBT_PUBLIC(xbt_set_elm_t) xbt_set_get_by_name    (xbt_set_t set, const char *key);
+XBT_PUBLIC(xbt_set_elm_t) xbt_set_get_by_name_ext(xbt_set_t set, const char *key, int key_len);
+XBT_PUBLIC(xbt_set_elm_t) xbt_set_get_by_id      (xbt_set_t set, int         id);
 
-XBT_PUBLIC unsigned long xbt_set_length (const xbt_set_t set);
+XBT_PUBLIC(unsigned long) xbt_set_length (const xbt_set_t set);
    
 
 /** @} */
@@ -102,10 +102,10 @@ XBT_PUBLIC unsigned long xbt_set_length (const xbt_set_t set);
 /** @brief Cursor type */
 typedef struct xbt_set_cursor_ *xbt_set_cursor_t;
 
-XBT_PUBLIC void         xbt_set_cursor_first       (xbt_set_t         set,
+XBT_PUBLIC(void)         xbt_set_cursor_first       (xbt_set_t         set,
 					  xbt_set_cursor_t *cursor);
-XBT_PUBLIC void         xbt_set_cursor_step        (xbt_set_cursor_t  cursor);
-XBT_PUBLIC int          xbt_set_cursor_get_or_free (xbt_set_cursor_t *cursor,
+XBT_PUBLIC(void)         xbt_set_cursor_step        (xbt_set_cursor_t  cursor);
+XBT_PUBLIC(int)          xbt_set_cursor_get_or_free (xbt_set_cursor_t *cursor,
 					  xbt_set_elm_t    *elm);
 
 /** @brief Iterates over the whole set

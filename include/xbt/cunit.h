@@ -27,10 +27,10 @@ typedef struct s_xbt_test_unit *xbt_test_unit_t;
 typedef void (*ts_test_cb_t)(void);
 
 /* test suite operations */
-XBT_PUBLIC xbt_test_suite_t xbt_test_suite_new  (const char *name,const char *fmt, ...);
-XBT_PUBLIC xbt_test_suite_t xbt_test_suite_by_name(const char *name,const char *fmt, ...);
-XBT_PUBLIC void             xbt_test_suite_dump (xbt_test_suite_t suite);
-XBT_PUBLIC void             xbt_test_suite_push (xbt_test_suite_t suite, const char *name,
+XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new  (const char *name,const char *fmt, ...);
+XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_by_name(const char *name,const char *fmt, ...);
+XBT_PUBLIC(void)             xbt_test_suite_dump (xbt_test_suite_t suite);
+XBT_PUBLIC(void)             xbt_test_suite_push (xbt_test_suite_t suite, const char *name,
 				      ts_test_cb_t func, const char *fmt, ...);
 
 /* Run all the specified tests. what_to_do allows to disable some tests.
@@ -49,12 +49,12 @@ XBT_PUBLIC void             xbt_test_suite_push (xbt_test_suite_t suite, const c
  * * testname: if given, the test on which the directive acts. If not, acts on any tests.
  */
 
-XBT_PUBLIC int xbt_test_run(char *selection);
+XBT_PUBLIC(int) xbt_test_run(char *selection);
 /* Show information about the selection of tests */
-XBT_PUBLIC void xbt_test_dump(char *selection);
+XBT_PUBLIC(void) xbt_test_dump(char *selection);
 
 /* test operations */
-XBT_PUBLIC void    _xbt_test_add(const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
+XBT_PUBLIC(void)    _xbt_test_add(const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
 #define xbt_test_add0(fmt)           _xbt_test_add(__FILE__,__LINE__,fmt)
 #define xbt_test_add1(fmt,a)         _xbt_test_add(__FILE__,__LINE__,fmt,a)
 #define xbt_test_add2(fmt,a,b)       _xbt_test_add(__FILE__,__LINE__,fmt,a,b)
@@ -62,7 +62,7 @@ XBT_PUBLIC void    _xbt_test_add(const char*file,int line, const char *fmt, ...)
 #define xbt_test_add4(fmt,a,b,c,d)   _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d)
 #define xbt_test_add5(fmt,a,b,c,d,e) _xbt_test_add(__FILE__,__LINE__,fmt,a,b,c,d,e)
 
-XBT_PUBLIC void    _xbt_test_fail(const char*file,int line, const char *fmt, ...) _XBT_GNUC_PRINTF(3,4);
+XBT_PUBLIC(void)    _xbt_test_fail(const char*file,int line, const char *fmt, ...) _XBT_GNUC_PRINTF(3,4);
 #define xbt_test_fail0(fmt)           _xbt_test_fail(__FILE__, __LINE__, fmt)
 #define xbt_test_fail1(fmt,a)         _xbt_test_fail(__FILE__, __LINE__, fmt,a)
 #define xbt_test_fail2(fmt,a,b)       _xbt_test_fail(__FILE__, __LINE__, fmt,a,b)
@@ -78,7 +78,7 @@ XBT_PUBLIC void    _xbt_test_fail(const char*file,int line, const char *fmt, ...
 #define xbt_test_assert5(cond,fmt,a,b,c,d,e) if(!(cond)) xbt_test_fail5(fmt,a,b,c,d,e)
 #define xbt_test_assert(cond)                xbt_test_assert0(cond,#cond)
 
-XBT_PUBLIC void    _xbt_test_log (const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
+XBT_PUBLIC(void)    _xbt_test_log (const char*file,int line, const char *fmt, ...)_XBT_GNUC_PRINTF(3,4);
 #define xbt_test_log0(fmt)           _xbt_test_log(__FILE__, __LINE__, fmt)
 #define xbt_test_log1(fmt,a)         _xbt_test_log(__FILE__, __LINE__, fmt,a)
 #define xbt_test_log2(fmt,a,b)       _xbt_test_log(__FILE__, __LINE__, fmt,a,b)
@@ -86,10 +86,10 @@ XBT_PUBLIC void    _xbt_test_log (const char*file,int line, const char *fmt, ...
 #define xbt_test_log4(fmt,a,b,c,d)   _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c,d)
 #define xbt_test_log5(fmt,a,b,c,d,e) _xbt_test_log(__FILE__, __LINE__, fmt,a,b,c,d,e)
 
-XBT_PUBLIC void xbt_test_exception(xbt_ex_t e);
+XBT_PUBLIC(void) xbt_test_exception(xbt_ex_t e);
 
-XBT_PUBLIC void xbt_test_expect_failure(void);
-XBT_PUBLIC void xbt_test_skip(void);
+XBT_PUBLIC(void) xbt_test_expect_failure(void);
+XBT_PUBLIC(void) xbt_test_skip(void);
 
 /* test suite short-cut macros */
 #define XBT_TEST_UNIT(name,func,title)    \

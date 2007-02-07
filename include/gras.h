@@ -23,7 +23,7 @@
 #include <gras/messages.h>
 #include <gras/timer.h>
 
-XBT_PUBLIC void gras_init(int *argc, char **argv);
-XBT_PUBLIC void gras_exit(void);
+XBT_PUBLIC(void) gras_init(int *argc, char **argv);
+XBT_PUBLIC(void) gras_exit(void);
 
 #endif /* GRAS_H */

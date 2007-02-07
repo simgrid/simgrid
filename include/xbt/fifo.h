@@ -32,8 +32,8 @@ typedef struct xbt_fifo_item *xbt_fifo_item_t;
 */
 typedef struct xbt_fifo *xbt_fifo_t;
 
-XBT_PUBLIC xbt_fifo_t xbt_fifo_new(void);
-XBT_PUBLIC void xbt_fifo_free(xbt_fifo_t);
+XBT_PUBLIC(xbt_fifo_t) xbt_fifo_new(void);
+XBT_PUBLIC(void) xbt_fifo_free(xbt_fifo_t);
 /** @} */
 
 /** @defgroup XBT_fifo_perl Fifo perl-like functions
@@ -41,12 +41,12 @@ XBT_PUBLIC void xbt_fifo_free(xbt_fifo_t);
  *
  *  @{
  */
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t, void *);
-XBT_PUBLIC void *xbt_fifo_pop(xbt_fifo_t);
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t, void *);
-XBT_PUBLIC void *xbt_fifo_shift(xbt_fifo_t);
-XBT_PUBLIC int xbt_fifo_size(xbt_fifo_t);
-XBT_PUBLIC int xbt_fifo_is_in(xbt_fifo_t, void *);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_push(xbt_fifo_t, void *);
+XBT_PUBLIC(void*) xbt_fifo_pop(xbt_fifo_t);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_unshift(xbt_fifo_t, void *);
+XBT_PUBLIC(void*) xbt_fifo_shift(xbt_fifo_t);
+XBT_PUBLIC(int) xbt_fifo_size(xbt_fifo_t);
+XBT_PUBLIC(int) xbt_fifo_is_in(xbt_fifo_t, void *);
 /** @} */
 
 /** @defgroup XBT_fifo_direct Direct access to fifo elements
@@ -56,21 +56,21 @@ XBT_PUBLIC int xbt_fifo_is_in(xbt_fifo_t, void *);
  */
 
 XBT_PUBLIC xbt_fifo_item_t xbt_fifo_new_item(void);
-XBT_PUBLIC void xbt_fifo_set_item_content(xbt_fifo_item_t, void *);
-XBT_PUBLIC void *xbt_fifo_get_item_content(xbt_fifo_item_t);
-XBT_PUBLIC void xbt_fifo_free_item(xbt_fifo_item_t);
+XBT_PUBLIC(void) xbt_fifo_set_item_content(xbt_fifo_item_t, void *);
+XBT_PUBLIC(void*) xbt_fifo_get_item_content(xbt_fifo_item_t);
+XBT_PUBLIC(void) xbt_fifo_free_item(xbt_fifo_item_t);
 
-XBT_PUBLIC void xbt_fifo_push_item(xbt_fifo_t, xbt_fifo_item_t);
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_pop_item(xbt_fifo_t);
-XBT_PUBLIC void xbt_fifo_unshift_item(xbt_fifo_t, xbt_fifo_item_t);
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t);
+XBT_PUBLIC(void) xbt_fifo_push_item(xbt_fifo_t, xbt_fifo_item_t);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_pop_item(xbt_fifo_t);
+XBT_PUBLIC(void) xbt_fifo_unshift_item(xbt_fifo_t, xbt_fifo_item_t);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_shift_item(xbt_fifo_t);
 
-XBT_PUBLIC void xbt_fifo_remove(xbt_fifo_t, void *);
-XBT_PUBLIC void xbt_fifo_remove_item(xbt_fifo_t, xbt_fifo_item_t);
+XBT_PUBLIC(void) xbt_fifo_remove(xbt_fifo_t, void *);
+XBT_PUBLIC(void) xbt_fifo_remove_item(xbt_fifo_t, xbt_fifo_item_t);
 
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l);
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i);
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_first_item(xbt_fifo_t l);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_next_item(xbt_fifo_item_t i);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_prev_item(xbt_fifo_item_t i);
 
 /** 
  * \brief List iterator
@@ -95,17 +95,17 @@ XBT_PUBLIC xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i);
  *
  *  @{
  */
-XBT_PUBLIC void **xbt_fifo_to_array(xbt_fifo_t);
-XBT_PUBLIC xbt_fifo_t xbt_fifo_copy(xbt_fifo_t);
+XBT_PUBLIC(void**) xbt_fifo_to_array(xbt_fifo_t);
+XBT_PUBLIC(xbt_fifo_t) xbt_fifo_copy(xbt_fifo_t);
 /** @} */
 
 /* Deprecated functions: don't use! */
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_newitem(void);
-XBT_PUBLIC void xbt_fifo_freeitem(xbt_fifo_item_t);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_newitem(void);
+XBT_PUBLIC(void) xbt_fifo_freeitem(xbt_fifo_item_t);
 
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l);
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i);
-XBT_PUBLIC xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_getFirstItem(xbt_fifo_t l);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_getNextItem(xbt_fifo_item_t i);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_getPrevItem(xbt_fifo_item_t i);
 
 
 SG_END_DECL()

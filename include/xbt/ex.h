@@ -30,7 +30,7 @@ extern int backtrace (void **__array, int __size);
 #undef __EX_MAYDAY
 
 #ifdef __EX_MAYDAY
-XBT_PUBLIC int gras_os_getpid(void);
+XBT_PUBLIC(int) gras_os_getpid(void);
 #  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
                                    gras_os_getpid(),__FILE__,__LINE__,  \
                                    (m)->jb                              \
@@ -505,10 +505,10 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 #define RETHROW5(msg,a,b,c,d,e) _XBT_PRE_RETHROW msg,a,b,c,d,e, _XBT_POST_RETHROW
 
 /** @brief Exception destructor */
-XBT_PUBLIC void xbt_ex_free(xbt_ex_t e);
+XBT_PUBLIC(void) xbt_ex_free(xbt_ex_t e);
 
-XBT_PUBLIC void xbt_ex_display(xbt_ex_t *e);
-XBT_PUBLIC void xbt_backtrace_display(void);
+XBT_PUBLIC(void) xbt_ex_display(xbt_ex_t *e);
+XBT_PUBLIC(void) xbt_backtrace_display(void);
 
 /** @} */
 #endif /* __XBT_EX_H__ */

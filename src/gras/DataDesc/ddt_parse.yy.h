@@ -36,26 +36,26 @@ extern int gras_ddt_parse_col_pos;
 extern int gras_ddt_parse_char_pos;
 extern int gras_ddt_parse_tok_num;
 
-XBT_PUBLIC void gras_ddt_parse_dump(void);
-XBT_PUBLIC int gras_ddt_parse_lex_n_dump(void);
-XBT_PUBLIC void  gras_ddt_parse_pointer_init(const char *file);
-XBT_PUBLIC void  gras_ddt_parse_pointer_close(void);
-XBT_PUBLIC void  gras_ddt_parse_pointer_string_init(const char *string_to_parse);
-XBT_PUBLIC void  gras_ddt_parse_pointer_string_close(void);
+XBT_PUBLIC(void) gras_ddt_parse_dump(void);
+XBT_PUBLIC(int) gras_ddt_parse_lex_n_dump(void);
+XBT_PUBLIC(void)  gras_ddt_parse_pointer_init(const char *file);
+XBT_PUBLIC(void)  gras_ddt_parse_pointer_close(void);
+XBT_PUBLIC(void)  gras_ddt_parse_pointer_string_init(const char *string_to_parse);
+XBT_PUBLIC(void)  gras_ddt_parse_pointer_string_close(void);
 
 /* prototypes of the functions offered by flex */
-XBT_PUBLIC int gras_ddt_parse_lex(void);
-XBT_PUBLIC int gras_ddt_parse_get_lineno  (void);
-XBT_PUBLIC FILE *gras_ddt_parse_get_in  (void);
-XBT_PUBLIC FILE *gras_ddt_parse_get_out  (void);
-XBT_PUBLIC int gras_ddt_parse_get_leng  (void);
-XBT_PUBLIC char *gras_ddt_parse_get_text  (void);
-XBT_PUBLIC void gras_ddt_parse_set_lineno (int  line_number );
-XBT_PUBLIC void gras_ddt_parse_set_in (FILE *  in_str );
-XBT_PUBLIC void gras_ddt_parse_set_out (FILE *  out_str );
-XBT_PUBLIC int gras_ddt_parse_get_debug  (void);
-XBT_PUBLIC void gras_ddt_parse_set_debug (int  bdebug );
-XBT_PUBLIC int gras_ddt_parse_lex_destroy  (void);
+XBT_PUBLIC(int) gras_ddt_parse_lex(void);
+XBT_PUBLIC(int) gras_ddt_parse_get_lineno  (void);
+XBT_PUBLIC(FILE *)gras_ddt_parse_get_in  (void);
+XBT_PUBLIC(FILE *)gras_ddt_parse_get_out  (void);
+XBT_PUBLIC(int) gras_ddt_parse_get_leng  (void);
+XBT_PUBLIC(char *)gras_ddt_parse_get_text  (void);
+XBT_PUBLIC(void) gras_ddt_parse_set_lineno (int  line_number );
+XBT_PUBLIC(void) gras_ddt_parse_set_in (FILE *  in_str );
+XBT_PUBLIC(void) gras_ddt_parse_set_out (FILE *  out_str );
+XBT_PUBLIC(int) gras_ddt_parse_get_debug  (void);
+XBT_PUBLIC(void) gras_ddt_parse_set_debug (int  bdebug );
+XBT_PUBLIC(int) gras_ddt_parse_lex_destroy  (void);
 
 #define PARSE_ERROR_PRE do {
 #define PARSE_ERROR_POST xbt_abort();} while (0)

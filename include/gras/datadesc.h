@@ -59,8 +59,8 @@ SG_BEGIN_DECL()
 typedef struct s_gras_datadesc_type *gras_datadesc_type_t;
 
 /** \brief Search a type description from its name */
-XBT_PUBLIC gras_datadesc_type_t gras_datadesc_by_name(const char *name);
-XBT_PUBLIC gras_datadesc_type_t gras_datadesc_by_name_or_null(const char *name);
+XBT_PUBLIC(gras_datadesc_type_t) gras_datadesc_by_name(const char *name);
+XBT_PUBLIC(gras_datadesc_type_t) gras_datadesc_by_name_or_null(const char *name);
 
 /* @} */
     
@@ -245,11 +245,11 @@ int server(int argc, char *argv[]) {
  
 /** @brief Defines the value of a define to the datatype parsing infrastructure
  */
-XBT_PUBLIC void gras_datadesc_set_const(const char*name, int value);
+XBT_PUBLIC(void) gras_datadesc_set_const(const char*name, int value);
 
 /* @} */
 
-XBT_PUBLIC gras_datadesc_type_t 
+XBT_PUBLIC(gras_datadesc_type_t) 
 gras_datadesc_parse(const char *name, const char *C_statement);
 
 /** @defgroup GRAS_dd_manual Simple manual data description
@@ -306,43 +306,43 @@ typedef gras_datadesc_type_t (*gras_datadesc_selector_t)(gras_datadesc_type_t ty
  **** Declare datadescription yourself ****
  ******************************************/
 
-XBT_PUBLIC gras_datadesc_type_t gras_datadesc_struct(const char *name);
-XBT_PUBLIC void gras_datadesc_struct_append(gras_datadesc_type_t  struct_type,
+XBT_PUBLIC(gras_datadesc_type_t) gras_datadesc_struct(const char *name);
+XBT_PUBLIC(void) gras_datadesc_struct_append(gras_datadesc_type_t  struct_type,
 				 const char           *name,
 				 gras_datadesc_type_t  field_type);
-XBT_PUBLIC void gras_datadesc_struct_close(gras_datadesc_type_t   struct_type);
+XBT_PUBLIC(void) gras_datadesc_struct_close(gras_datadesc_type_t   struct_type);
 
 
-XBT_PUBLIC gras_datadesc_type_t gras_datadesc_union(const char                 *name,
+XBT_PUBLIC(gras_datadesc_type_t) gras_datadesc_union(const char                 *name,
 					 gras_datadesc_type_cb_int_t selector);
-XBT_PUBLIC void gras_datadesc_union_append(gras_datadesc_type_t   union_type,
+XBT_PUBLIC(void) gras_datadesc_union_append(gras_datadesc_type_t   union_type,
 				const char            *name,
 				gras_datadesc_type_t   field_type);
-XBT_PUBLIC void gras_datadesc_union_close(gras_datadesc_type_t    union_type);
+XBT_PUBLIC(void) gras_datadesc_union_close(gras_datadesc_type_t    union_type);
 
 
-XBT_PUBLIC gras_datadesc_type_t 
+XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_ref(const char          *name,
 		    gras_datadesc_type_t referenced_type);
-XBT_PUBLIC gras_datadesc_type_t 
+XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_ref_generic(const char              *name,
 			    gras_datadesc_selector_t selector);
 
-XBT_PUBLIC gras_datadesc_type_t 
+XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_array_fixed(const char          *name,
 			    gras_datadesc_type_t element_type,
 			    long int             fixed_size);
-XBT_PUBLIC gras_datadesc_type_t 
+XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_array_dyn(const char                 *name,
 			  gras_datadesc_type_t        element_type,
 			  gras_datadesc_type_cb_int_t dynamic_size);
-XBT_PUBLIC gras_datadesc_type_t 
+XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_ref_pop_arr(gras_datadesc_type_t  element_type);
 
-XBT_PUBLIC gras_datadesc_type_t 
+XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_dynar(gras_datadesc_type_t elm_t,
 		      void_f_pvoid_t *free_func);
-XBT_PUBLIC gras_datadesc_type_t
+XBT_PUBLIC(gras_datadesc_type_t)
   gras_datadesc_matrix(gras_datadesc_type_t elm_t,
 		       void_f_pvoid_t * const free_f);
 
@@ -351,37 +351,37 @@ XBT_PUBLIC gras_datadesc_type_t
  *********************************/
 
 /** \brief Specify that this type may contain cycles */
-XBT_PUBLIC void gras_datadesc_cycle_set(gras_datadesc_type_t type);
+XBT_PUBLIC(void) gras_datadesc_cycle_set(gras_datadesc_type_t type);
 /** \brief Specify that this type do not contain any cycles (default) */
-XBT_PUBLIC void gras_datadesc_cycle_unset(gras_datadesc_type_t type);
+XBT_PUBLIC(void) gras_datadesc_cycle_unset(gras_datadesc_type_t type);
 /** \brief Add a pre-send callback to this datadesc. */
-XBT_PUBLIC void gras_datadesc_cb_send (gras_datadesc_type_t         type,
+XBT_PUBLIC(void) gras_datadesc_cb_send (gras_datadesc_type_t         type,
 			    gras_datadesc_type_cb_void_t pre);
 /** \brief Add a post-receive callback to this datadesc.*/
-XBT_PUBLIC void gras_datadesc_cb_recv(gras_datadesc_type_t          type,
+XBT_PUBLIC(void) gras_datadesc_cb_recv(gras_datadesc_type_t          type,
 			   gras_datadesc_type_cb_void_t  post);
 /** \brief Add a pre-send callback to the given field of the datadesc */
-XBT_PUBLIC void gras_datadesc_cb_field_send (gras_datadesc_type_t   type,
+XBT_PUBLIC(void) gras_datadesc_cb_field_send (gras_datadesc_type_t   type,
 				  const char            *field_name,
 				  gras_datadesc_type_cb_void_t  pre);
 /** \brief Add a post-receive callback to the given field of the datadesc */
-XBT_PUBLIC void gras_datadesc_cb_field_recv(gras_datadesc_type_t    type,
+XBT_PUBLIC(void) gras_datadesc_cb_field_recv(gras_datadesc_type_t    type,
 				 const char             *field_name,
 				 gras_datadesc_type_cb_void_t  post);
 /** \brief Add a pre-send callback to the given field resulting in its value to be pushed */
-XBT_PUBLIC void gras_datadesc_cb_field_push (gras_datadesc_type_t   type,
+XBT_PUBLIC(void) gras_datadesc_cb_field_push (gras_datadesc_type_t   type,
 				  const char            *field_name);
 /** \brief Add a pre-send callback to the given field resulting in its value multiplied to any previously pushed value and then pushed back */
-XBT_PUBLIC void gras_datadesc_cb_field_push_multiplier (gras_datadesc_type_t type,
+XBT_PUBLIC(void) gras_datadesc_cb_field_push_multiplier (gras_datadesc_type_t type,
 					     const char          *field_name);
 
 /******************************
  * Get stuff within datadescs *
  ******************************/
 /** \brief Returns the name of a datadescription */
-XBT_PUBLIC const char * gras_datadesc_get_name(gras_datadesc_type_t ddt);
+XBT_PUBLIC(const char *) gras_datadesc_get_name(gras_datadesc_type_t ddt);
 /** \brief Returns the identifier of a datadescription */
-XBT_PUBLIC int gras_datadesc_get_id(gras_datadesc_type_t ddt);
+XBT_PUBLIC(int) gras_datadesc_get_id(gras_datadesc_type_t ddt);
 
 /* @} */
 
@@ -432,22 +432,22 @@ gras_datadesc_struct_close(my_type);
  */
 /* @{ */
 
-XBT_PUBLIC void
+XBT_PUBLIC(void)
 gras_cbps_i_push(gras_cbps_t ps, int val);
-XBT_PUBLIC int 
+XBT_PUBLIC(int) 
 gras_cbps_i_pop(gras_cbps_t ps);
 
-XBT_PUBLIC int gras_datadesc_cb_pop(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(int) gras_datadesc_cb_pop(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 
-XBT_PUBLIC void gras_datadesc_cb_push_int(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
-XBT_PUBLIC void gras_datadesc_cb_push_uint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
-XBT_PUBLIC void gras_datadesc_cb_push_lint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
-XBT_PUBLIC void gras_datadesc_cb_push_ulint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_int(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_uint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_lint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_ulint(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 
-XBT_PUBLIC void gras_datadesc_cb_push_int_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
-XBT_PUBLIC void gras_datadesc_cb_push_uint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
-XBT_PUBLIC void gras_datadesc_cb_push_lint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
-XBT_PUBLIC void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_int_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_uint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_lint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
+XBT_PUBLIC(void) gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t typedesc, gras_cbps_t vars, void *data);
 
 
 /* @} */
@@ -466,25 +466,25 @@ XBT_PUBLIC void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t typedesc, 
 
 /* @{ */
 
-XBT_PUBLIC void   gras_cbps_v_pop (gras_cbps_t            ps, 
+XBT_PUBLIC(void)   gras_cbps_v_pop (gras_cbps_t            ps, 
 			const char            *name,
 	      /* OUT */ gras_datadesc_type_t  *ddt,
 	      /* OUT */ void                 **res);
-XBT_PUBLIC void   gras_cbps_v_push(gras_cbps_t            ps,
+XBT_PUBLIC(void)   gras_cbps_v_push(gras_cbps_t            ps,
 			const char            *name,
 			void                  *data,
 			gras_datadesc_type_t   ddt);
-XBT_PUBLIC void   gras_cbps_v_set (gras_cbps_t            ps,
+XBT_PUBLIC(void)   gras_cbps_v_set (gras_cbps_t            ps,
 			const char            *name,
 			void                  *data,
 			gras_datadesc_type_t   ddt);
 
-XBT_PUBLIC void * gras_cbps_v_get (gras_cbps_t            ps, 
+XBT_PUBLIC(void*) gras_cbps_v_get (gras_cbps_t            ps, 
 			const char            *name,
 	      /* OUT */ gras_datadesc_type_t  *ddt);
 
-XBT_PUBLIC void gras_cbps_block_begin(gras_cbps_t ps);
-XBT_PUBLIC void gras_cbps_block_end(gras_cbps_t ps);
+XBT_PUBLIC(void) gras_cbps_block_begin(gras_cbps_t ps);
+XBT_PUBLIC(void) gras_cbps_block_end(gras_cbps_t ps);
 
 /* @} */
 /* @} */
@@ -493,7 +493,7 @@ XBT_PUBLIC void gras_cbps_block_end(gras_cbps_t ps);
 /*******************************
  **** About data convertion ****
  *******************************/
-XBT_PUBLIC int gras_arch_selfid(void); /* ID of this arch */
+XBT_PUBLIC(int) gras_arch_selfid(void); /* ID of this arch */
 
 
 /*****************************
@@ -540,7 +540,7 @@ typedef struct DataDescriptorStruct {
   sizeof(structType) - offsetof(structType, lastMember) - \
   sizeof(memberType) * repetitions
 
-XBT_PUBLIC gras_datadesc_type_t
+XBT_PUBLIC(gras_datadesc_type_t)
 gras_datadesc_import_nws(const char           *name,
 			 const DataDescriptor *desc,
 			 unsigned long         howmany);

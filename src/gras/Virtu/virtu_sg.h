@@ -40,7 +40,7 @@ typedef struct {
 } gras_trp_sg_sock_data_t;
 
 
-XBT_PUBLIC void *gras_libdata_by_name_from_remote(const char *name, m_process_t p);
+XBT_PUBLIC(void) *gras_libdata_by_name_from_remote(const char *name, m_process_t p);
 /* The same function by id would be really dangerous.
  * 
  * Indeed, it would rely on the fact that all process register libdatas in
