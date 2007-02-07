@@ -291,7 +291,7 @@ void __MSG_display_process_status(void)
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
-static void inthandler(int ignored)
+static void _XBT_CALL inthandler(int ignored)
 {
    INFO0("CTRL-C pressed. Displaying status and bailing out");
    __MSG_display_process_status();
