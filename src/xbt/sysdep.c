@@ -15,6 +15,14 @@
 #include "portable.h"
 
 
+/** @brief like free 
+    @hideinitializer */
+XBT_PUBLIC(void) xbt_free_f(void* p)
+{
+	free(p);
+}
+
+
 /* TSC (tick-level) timers are said to be unreliable on SMP hosts and thus 
    disabled in SDL source code */ 
 
