@@ -23,15 +23,15 @@ extern int gras_opt_trp_nomoredata_on_close;
  *** Main user functions
  ***/
 /* stable if we know the storage will keep as is until the next trp_flush */
-XBT_PUBLIC(void) gras_trp_send(gras_socket_t sd, char *data, long int size, int stable);
-XBT_PUBLIC(void) gras_trp_recv(gras_socket_t sd, char *data, long int size);
-XBT_PUBLIC(void) gras_trp_flush(gras_socket_t sd);
+void gras_trp_send(gras_socket_t sd, char *data, long int size, int stable);
+void gras_trp_recv(gras_socket_t sd, char *data, long int size);
+void gras_trp_flush(gras_socket_t sd);
 
 /* Find which socket needs to be read next */
-XBT_PUBLIC(gras_socket_t) gras_trp_select(double timeout);
+gras_socket_t gras_trp_select(double timeout);
 
 /* Set the peer process name (used by messaging layer) */
-XBT_PUBLIC(void) gras_socket_peer_proc_set(gras_socket_t sock,char*peer_proc);
+void gras_socket_peer_proc_set(gras_socket_t sock,char*peer_proc);
 
 /***
  *** Plugin mechanism 
@@ -85,7 +85,7 @@ struct gras_trp_plugin_ {
   void (*exit)(gras_trp_plugin_t);
 };
 
-XBT_PUBLIC(gras_trp_plugin_t)
+gras_trp_plugin_t
 gras_trp_plugin_get_by_name(const char *name);
 
 /* Data of this module specific to each process
@@ -108,6 +108,6 @@ typedef struct {
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 
 /* Display the content of our socket set (debugging purpose) */
-XBT_PUBLIC(void) gras_trp_socketset_dump(const char *name);
+void gras_trp_socketset_dump(const char *name);
 
 #endif /* GRAS_TRP_INTERFACE_H */

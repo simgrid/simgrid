@@ -44,22 +44,22 @@ typedef struct surf_resource_private {
 /* #define pub2priv(r) ((surf_resource_private_t) ((char *)(r) -(sizeof(struct surf_resource_private_part)))) */
 /* #define priv2pub(r) ((void *) ((char *)(r) +(sizeof(struct surf_resource_private_part)))) */
 
-XBT_PUBLIC(double) generic_maxmin_share_resources(xbt_swag_t running_actions,
+double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				      size_t offset);
-XBT_PUBLIC(double) generic_maxmin_share_resources2(xbt_swag_t running_actions,
+double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 				       size_t offset,
 				       lmm_system_t sys);
 
 /* Generic functions common to all ressources */
-XBT_PUBLIC(e_surf_action_state_t) surf_action_get_state(surf_action_t action);
-XBT_PUBLIC(double) surf_action_get_start_time(surf_action_t action);
-XBT_PUBLIC(double) surf_action_get_finish_time(surf_action_t action);
-XBT_PUBLIC(void) surf_action_free(surf_action_t * action);
-XBT_PUBLIC(void) surf_action_change_state(surf_action_t action,
+e_surf_action_state_t surf_action_get_state(surf_action_t action);
+double surf_action_get_start_time(surf_action_t action);
+double surf_action_get_finish_time(surf_action_t action);
+void surf_action_free(surf_action_t * action);
+void surf_action_change_state(surf_action_t action,
 			      e_surf_action_state_t state);
-XBT_PUBLIC(void) surf_action_set_data(surf_action_t action,
+void surf_action_set_data(surf_action_t action,
 			  void *data);
-XBT_PUBLIC(FILE *) surf_fopen(const char *name, const char *mode);
+FILE * surf_fopen(const char *name, const char *mode);
 
 extern lmm_system_t maxmin_system;
 extern tmgr_history_t history;

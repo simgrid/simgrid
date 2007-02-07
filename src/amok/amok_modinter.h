@@ -10,10 +10,10 @@
 #ifndef AMOK_BASE_H
 #define AMOK_BASE_H
 
-XBT_PUBLIC(void) amok_init(void);
-XBT_PUBLIC(void) amok_exit(void);
+void amok_init(void);
+void amok_exit(void);
 
 /* module creation functions */
-XBT_PUBLIC(void) amok_pm_modulecreate(void);
+void amok_pm_modulecreate(void);
 
 #endif /* AMOK_BASE_H */
