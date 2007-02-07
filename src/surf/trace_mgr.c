@@ -23,7 +23,7 @@ tmgr_history_t tmgr_history_new(void)
 
   h = xbt_new0(s_tmgr_history_t, 1);
 
-  h->heap = xbt_heap_new(8, free);	/* Why 8 ? Well, why not... */
+  h->heap = xbt_heap_new(8, xbt_free_f);	/* Why 8 ? Well, why not... */
 
   return h;
 }

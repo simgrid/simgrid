@@ -11,7 +11,7 @@
 #ifndef _XBT_EX_INTERFACE_H_
 #define _XBT_EX_INTERFACE_H_
 
-XBT_PUBLIC(void) xbt_ex_setup_backtrace(xbt_ex_t *e);
+void xbt_ex_setup_backtrace(xbt_ex_t *e);
 
 #endif  /* _XBT_EX_INTERFACE_H_ */
 
