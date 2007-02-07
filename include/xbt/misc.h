@@ -56,25 +56,33 @@
 #    define XBT_INLINE  inline
 #endif
 
-/* Handle import/export stuff
- * Rational: 
- *   * If you compile the DLL you must pass the right value of XBT_PUBLIC in the project: -DXBT_PUBLIC=__dllspec(ddlexport)
- *   * If you do a static compilation, you must define this macro to empty: -DXBT_PUBLIC=
- *   * If you link your code against the DLL, this file defines the macro to '__declspec(dllimport)' for you
- *   * If you compile under unix, this file defines the macro to 'extern', even if it's not mandatory with modern compilers
+/* 
+ * Function calling convention (not used for now) 
  */
-#ifndef XBT_PUBLIC
-#  ifdef _WIN32
-#   define XBT_PUBLIC __declspec(dllimport)
-#  else 
-#   define XBT_PUBLIC extern
-#  endif /* _WIN32 */
-#endif /* !XBT_PUBLIC */
-
-/* Function calling convention (not used for now) */
 #if !defined (_XBT_CALL)
 #define _XBT_CALL
 #endif
+
+/* Handle import/export stuff
+ * Rational: 
+ *   * If you build the DLL you must pass the right value of XBT_PUBLIC in the project : to do this you must define the DLL_EXPORT macro
+ *   * If you do a static compilation, you must define the macro DLL_STATIC
+ *   * If you link your code against the DLL, this file defines the macro to '__declspec(dllimport)' for you
+ *   * If you compile under unix, this file defines the macro to 'extern', even if it's not mandatory with modern compilers
+ */
+
+#ifdef DLL_EXPORT
+#  define XBT_PUBLIC(type)			__declspec(dllexport) type
+#else
+#  ifdef DLL_STATIC
+#    define XBT_PUBLIC(type)		type
+#  else
+#    ifdef _WIN32
+#      define XBT_PUBLIC(type)		__declspec(dllimport) type 
+#  	 else
+#      define XBT_PUBLIC(type)		extern type
+#    endif
+#endif    
 
 
 
@@ -110,7 +118,7 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC const char *xbt_procname(void);
+XBT_PUBLIC(const char *)xbt_procname(void);
 
 #define XBT_BACKTRACE_SIZE 10 /* FIXME: better place? Do document */
    
