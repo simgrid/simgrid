@@ -100,7 +100,7 @@ gras_dd_alloc_ref(xbt_dict_t  refs,
     DEBUG2("Insert l_ref=%p under r_ref=%p",*(void**)ptr, *(void**)r_ref);
      
     if (detect_cycle)
-       xbt_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, free);
+       xbt_dict_set_ext(refs,(const char *) r_ref, r_len, ptr, xbt_free_f);
   }
 }
 

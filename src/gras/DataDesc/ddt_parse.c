@@ -748,5 +748,5 @@ void gras_datadesc_set_const(const char*name, int value) {
   int *stored = xbt_new(int, 1);
   *stored=value;
 
-  xbt_dict_set(gras_dd_constants,name, stored, free); 
+  xbt_dict_set(gras_dd_constants,name, stored, xbt_free_f); 
 }
