@@ -101,11 +101,8 @@ static XBT_INLINE void *xbt_realloc(void*p,int s){
 
 /** @brief like free 
     @hideinitializer */
-XBT_PUBLIC(void) xbt_free_f(void* p)
-{
-	free(p);
-}
-   
+XBT_PUBLIC(void) xbt_free_f(void* p);
+
 /** @brief like calloc, but xbt_die() on error and don't memset to 0
     @hideinitializer */
 #define xbt_new(type, count)  ((type*)xbt_malloc (sizeof (type) * (count)))
