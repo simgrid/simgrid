@@ -2564,7 +2564,9 @@ static void xbt_graph_parse__load_buffer_state  (void)
 }
 
 #ifndef __cplusplus
+#ifndef _WIN32
 extern int isatty (int );
+#endif
 #endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.
