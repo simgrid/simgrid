@@ -40,10 +40,10 @@ XBT_PUBLIC(void) surf_parse_get_double(double *value,const char *string);
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);
 XBT_PUBLIC(int) surf_parse_get_lineno(void);
-XBT_PUBLIC(FILE) *surf_parse_get_in(void);
-XBT_PUBLIC(FILE) *surf_parse_get_out(void);
+XBT_PUBLIC(FILE*) surf_parse_get_in(void);
+XBT_PUBLIC(FILE*) surf_parse_get_out(void);
 XBT_PUBLIC(int) surf_parse_get_leng(void);
-XBT_PUBLIC(char) *surf_parse_get_text(void);
+XBT_PUBLIC(char*) surf_parse_get_text(void);
 XBT_PUBLIC(void) surf_parse_set_lineno(int line_number);
 XBT_PUBLIC(void) surf_parse_set_in(FILE * in_str);
 XBT_PUBLIC(void) surf_parse_set_out(FILE * out_str);

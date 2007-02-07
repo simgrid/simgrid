@@ -36,7 +36,7 @@ XBT_PUBLIC(xbt_edge_t) xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_nod
 
 XBT_PUBLIC(void) xbt_graph_edge_set_length(xbt_edge_t e, double length);
 XBT_PUBLIC(double) xbt_graph_edge_get_length(xbt_edge_t e);
-XBT_PUBLIC(double)* xbt_graph_get_length_matrix(xbt_graph_t g);
+XBT_PUBLIC(double*) xbt_graph_get_length_matrix(xbt_graph_t g);
 
 XBT_PUBLIC(void) xbt_graph_free_node(xbt_graph_t g, xbt_node_t n, 
 			   void_f_pvoid_t *node_free_function , void_f_pvoid_t *edge_free_function);

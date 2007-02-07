@@ -31,7 +31,7 @@ XBT_PUBLIC(double) MSG_get_clock(void);
 
 /************************** Host handling ***********************************/
 XBT_PUBLIC(MSG_error_t) MSG_host_set_data(m_host_t host, void *data);
-XBT_PUBLIC(void) *MSG_host_get_data(m_host_t host);
+XBT_PUBLIC(void*) MSG_host_get_data(m_host_t host);
 XBT_PUBLIC(const char *) MSG_host_get_name(m_host_t host);
 XBT_PUBLIC(m_host_t) MSG_host_self(void);
 XBT_PUBLIC(int) MSG_get_host_msgload(m_host_t host);
@@ -57,7 +57,7 @@ XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
 
 XBT_PUBLIC(MSG_error_t) MSG_process_change_host(m_process_t process, m_host_t host);
 
-XBT_PUBLIC(void) *MSG_process_get_data(m_process_t process);
+XBT_PUBLIC(void*) MSG_process_get_data(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_set_data(m_process_t process, void *data);
 XBT_PUBLIC(m_host_t) MSG_process_get_host(m_process_t process);
 XBT_PUBLIC(m_process_t) MSG_process_from_PID(int PID);
