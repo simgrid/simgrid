@@ -103,5 +103,5 @@ XBT_PUBLIC(int) graphxml_element_context(int);
 XBT_PUBLIC(int) yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
-XBT_PUBLIC(char *) graphxml_parse_err_msg(void);
+const char *graphxml_parse_err_msg(void);
 #endif
