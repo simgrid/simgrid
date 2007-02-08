@@ -76,16 +76,21 @@
  *   * If you compile under unix, this file defines the macro to 'extern', even if it's not mandatory with modern compilers
  */
 
+
 #ifdef DLL_EXPORT
-#  define XBT_PUBLIC(type)			__declspec(dllexport) type
+#  define XBT_PUBLIC(type)			  __declspec(dllexport) type
+#  define XBT_PUBLIC_NO_IMPORT(type)  __declspec(dllexport) type
 #else
 #  ifdef DLL_STATIC
-#    define XBT_PUBLIC(type)		type
+#    define XBT_PUBLIC(type)		   type
+#    define XBT_PUBLIC_NO_IMPORT(type) type
 #  else
 #    ifdef _WIN32
-#      define XBT_PUBLIC(type)		__declspec(dllimport) type 
+#      define XBT_PUBLIC(type)		     __declspec(dllimport) type 
+#      define XBT_PUBLIC_NO_IMPORT(type) type
 #  	 else
-#      define XBT_PUBLIC(type)		extern type
+#      define XBT_PUBLIC(type)		     extern type
+#      define XBT_PUBLIC_NO_IMPORT(type) type
 #    endif
 #  endif
 #endif 
