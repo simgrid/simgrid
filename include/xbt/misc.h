@@ -69,27 +69,35 @@
 #endif
 
 /* Handle import/export stuff
- * Rational: 
+ * 
+ * Rational of XBT_PUBLIC: 
  *   * If you build the DLL you must pass the right value of XBT_PUBLIC in the project : to do this you must define the DLL_EXPORT macro
  *   * If you do a static compilation, you must define the macro DLL_STATIC
  *   * If you link your code against the DLL, this file defines the macro to '__declspec(dllimport)' for you
  *   * If you compile under unix, this file defines the macro to 'extern', even if it's not mandatory with modern compilers
+ * 
+ * Rational of XBT_PUBLIC_NO_IMPORT:
+ *   * This is for symbols which must be exported in the DLL, but not imported from it. 
+ *     This is obviously useful for initialized globals (which cannot be extern or similar).
+ *     This is also used in the log mecanism where a macro creates the variable automatically.
+ *      When the macro is called from within SimGrid, the symbol must be exported, but when called 
+ *      from within the client code, it must not try to retrieve the symbol from the DLL since it's not in there.
  */
 
 
 #ifdef DLL_EXPORT
-#  define XBT_PUBLIC(type)			  __declspec(dllexport) type
+#  define XBT_PUBLIC(type)     	      __declspec(dllexport) type
 #  define XBT_PUBLIC_NO_IMPORT(type)  __declspec(dllexport) type
 #else
 #  ifdef DLL_STATIC
-#    define XBT_PUBLIC(type)		   type
+#    define XBT_PUBLIC(type)	       type
 #    define XBT_PUBLIC_NO_IMPORT(type) type
 #  else
 #    ifdef _WIN32
-#      define XBT_PUBLIC(type)		     __declspec(dllimport) type 
+#      define XBT_PUBLIC(type)	         __declspec(dllimport) type 
 #      define XBT_PUBLIC_NO_IMPORT(type) type
-#  	 else
-#      define XBT_PUBLIC(type)		     extern type
+#    else
+#      define XBT_PUBLIC(type)           extern type
 #      define XBT_PUBLIC_NO_IMPORT(type) type
 #    endif
 #  endif
