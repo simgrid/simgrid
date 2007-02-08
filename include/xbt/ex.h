@@ -19,7 +19,7 @@
 
 /* do not include execinfo.h directly since it's not always available. 
    Instead, copy the parts we need (and fake when it's not there) */
-extern int backtrace (void **__array, int __size);
+XBT_PUBLIC(int) backtrace (void **__array, int __size);
 
 /* required ISO-C standard facilities */
 #include <errno.h>
