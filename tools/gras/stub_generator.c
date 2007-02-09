@@ -1,3 +1,10 @@
+//---------------------------------------------------------------------------
+
+/* specific to Borland Compiler */
+#ifdef __BORLANDDC__
+#pragma hdrstop
+#endif
+
 /* 	$Id$	 */
 
 /* gras_stub_generator - creates the main() to use a GRAS program           */
@@ -8,13 +15,174 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
+
 #include "xbt/sysdep.h"
 #include "xbt/function_types.h"
 #include "xbt/log.h"
 #include "surf/surfxml_parse.h"
 #include "surf/surf.h"
 
+
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
+
+#ifdef _WIN32
+
+/* tabulation level (used to indent the lines of the borland project file */
+static unsigned int level = 0;
+
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
+
+/*
+ * A structure which represents a borland project file.
+ */
+typedef struct s_borland_project
+{
+    const char* xml_version;/* the xml version used to write the borland project file                   */
+    const char* encoding;   /* the encoding used to write the borland project file                      */
+    const char* comment;    /* the xml comment to write at the begining of the borland project file     */
+	char* name;		        /* the name of the borland project file 									*/
+	FILE* stream;			/* the stream to the borland project file									*/
+	const char* version;	/* the builder version of the borland project file							*/
+	char* bin_dir;          /* the directory used to store the generated program						*/
+	char* obj_dir;	        /* the directory used to store the generated object files					*/
+	char* lib_dir;	        /* the directory used to store the librairies used in the borland project	*/
+	char* src_dir;	        /* the directory use to store the source files of the project				*/
+}s_borland_project_t,* borland_project_t;
+
+/*
+ * Write tabs in a borland project file.
+ * @param project The project concerned by the operation.
+ * @param count The count tab to write
+ */
+void
+borland_project_write_tabs(borland_project_t project,unsigned int count);
+
+/*
+ * Write the begin of an xml node in the borland project file.
+ * @param project The borland project concerned by this operation.
+ * @param name The name of the node.
+ */
+void
+borland_project_begin_xml_node(borland_project_t project, const char* name);
+
+
+/*
+ * Write the end of an xml node in the borland project file.
+ * @param project The borland project concerned by this operation.
+ * @param name The name of the node.
+ */
+void
+borland_project_end_xml_node(borland_project_t project, const char* name);
+
+/*
+ * Write an xml element in a borland project file.
+ * @param project The borland project concerned by this operation.
+ * @param name The name of the element to write
+ * @param value The value of the element  
+ */
+void
+borland_project_write_xml_element(borland_project_t project,const char* name,const char* value);
+
+/*
+ * Write a FILE xml element in the borland project file.
+ * @param project The borland project concerned by this operation.
+ * @param file_name The value of the attribute FILENAME.
+ * @param form_name The value of the attribute FORMNAME.
+ * @param unit_name The value of the attribute UNITNAME.
+ * @param container_id The value of the attribute CONTAINERID.
+ * @param design_claas The value of the attribute DESIGNCLASS.
+ * @param local_command The value of the attribute LOCALCOMMAND.
+ */
+void
+borland_project_write_file_element(	borland_project_t project,
+									const char* file_name,
+									const char* form_name,
+									const char* unit_name,
+									const char* container_id,
+									const char* design_class,
+									const char* local_command);
+/*
+ * Write all options of the IDE of the Borland Builder C++ compiler.
+ * @ param project The project concerned by this operation.
+ */
+
+void
+borland_project_write_ide_options(borland_project_t project);
+
+/*
+ * Write the xml header of the xml document.
+ * @param project The project concerned by the operation.
+ */
+void
+borland_project_write_xml_header(borland_project_t project);
+
+/*
+ * Write an xml comment in a borland project file
+ * @param project The project concerned by this operation.
+ */
+void
+borland_project_write_xml_comment(borland_project_t project);
+
+/*
+ * Create a bpf file used by a borland project file.
+ * @param name The name of the bpf file to create.
+ */
+void
+borland_project_create_main_file(const char* name);
+
+/*
+ * Create a borland project file.
+ * @param project The project concerned by this operation.
+ */
+void
+borland_project_create(borland_project_t project);
+
+/*
+ * Close a borland project file.
+ * @param project the borland project file to close.
+ */
+void
+borland_project_close(borland_project_t project);
+
+
+/*
+ * Generate a borland simulation poject file.
+ * @param name The name of the simulation project
+ */
+void
+generate_borland_simulation_project(const char* name);
+
+/*
+ * Generate a borland project file for real life.
+ * @param name The name of the project to create.
+ */
+void
+generate_borland_real_life_project(const char* name);
+
+/*
+ * Generate a borland project file.
+ * @param project The borland project to generate.
+ */
+void
+generate_borland_project(borland_project_t project);
+
+/*
+ * Find the path of a file.
+ * @param file_name The file name to find.
+ * @path path If founded this parameter will contain the path of file.
+ * @return If successful the function returns 1. Otherwise the function
+ *  retruns 0;
+ */
+int
+FindFilePath(const char* root_dir,const char* file_name,char* path);
+
+#endif
+
+
 
 #define WARN "/***********\n * DO NOT EDIT! THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM %s BY gras_stub_generator\n ***********/\n"
 #define SIM_SOURCENAME  "_%s_simulator.c"
@@ -39,6 +207,10 @@ char *warning = NULL;
 /**********************************************/
 
 const char *SIM_PREEMBULE =
+"/* specific to Borland Compiler */\n"
+"#ifdef __BORLANDC__\n"
+"#pragma hdrstop\n"
+"#endif\n\n"
 "#include <stdlib.h>\n"
 "#include <stdio.h>\n"
 "#include \"msg/msg.h\"\n"
@@ -105,6 +277,9 @@ static void s_process_free(void *process)
 
 static s_process_t process;
 
+/*
+ * Création de deux dictionnaires
+ */
 static void parse_process_init(void)
 {
   xbt_dict_set(process_function_set, A_surfxml_process_function, NULL, NULL);
@@ -113,7 +288,7 @@ static void parse_process_init(void)
   process.argv = xbt_new(char*,1);
   process.argv[0] = xbt_strdup(A_surfxml_process_function);
   process.host=strdup(A_surfxml_process_host);
-  VERB1("Function: %s",A_surfxml_process_function);
+  /*VERB1("Function: %s",A_surfxml_process_function);*/
 }
 
 static void parse_argument(void)
@@ -126,59 +301,91 @@ static void parse_argument(void)
 static void parse_process_finalize(void)
 {
   xbt_dynar_push(process_list,&process);
-  VERB1("Function: %s",process.argv[0]);
+  /*VERB1("Function: %s",process.argv[0]);*/
 }
 
 static void generate_sim(char *project)
 {
-  xbt_dict_cursor_t cursor=NULL;
-  char *key = NULL;
-  void *data = NULL;
-  char *filename = NULL;
-  FILE *OUT = NULL;
-  filename = xbt_new(char,strlen(project) + strlen(SIM_SOURCENAME));
-  sprintf(filename,SIM_SOURCENAME,project);
-  
-  OUT=fopen(filename,"w");
-  xbt_assert1(OUT, "Unable to open %s for writing",filename);
+	xbt_dict_cursor_t cursor=NULL;
+	char *key = NULL;
+	void *data = NULL;
+	char *filename = NULL;
+	FILE *OUT = NULL;
+	
+	/* 
+	 * Creation d'un fichier nommé : <projet>_simulator.c 
+	 */
+	filename = xbt_new(char,strlen(project) + strlen(SIM_SOURCENAME));
+	sprintf(filename,SIM_SOURCENAME,project);
+	
+	OUT=fopen(filename,"w");
+	
+	
+	xbt_assert1(OUT, "Unable to open %s for writing",filename);
+	
+	/*
+	 * Ecriture du message d'avertissement.
+	 */
+	fprintf(OUT, "%s\n",warning);
+	
+	/*
+	 * Ecriture du préambule (inclusion de certains fichiers d'en-tête
+	 */
+	fprintf(OUT, "%s", SIM_PREEMBULE);
+	
+	/*
+	 * Déclaration des fonction int <process>(int argc,char *argv[]);
+	 */
+	xbt_dict_foreach(process_function_set,cursor,key,data) {
+		fprintf(OUT,"int %s(int argc,char *argv[]);\n",key);
+	}
+	
+	fprintf(OUT,"\n");
+	
+	/*
+	 * Déclaration des fonction int launch_<process>(int argc,char *argv[]);
+	 */
+	xbt_dict_foreach(process_function_set,cursor,key,data) {
+	fprintf(OUT,"int launch_%s(int argc,char *argv[]);\n",key);
+	}
+	
+	/*
+	 * Ecriture du message d'avertissement.
+	 */
+	fprintf(OUT, "\n%s\n",warning);
 
-  fprintf(OUT, "%s\n",warning);
-  fprintf(OUT, "%s", SIM_PREEMBULE);
-  xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT,"int %s(int argc,char *argv[]);\n",key);
-  }
-  fprintf(OUT,"\n");
-  xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT,"int launch_%s(int argc,char *argv[]);\n",key);
-  }
-  fprintf(OUT, "\n%s\n",warning);
-  xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT,SIM_LAUNCH_FUNC,key,key);
-  }
-  fprintf(OUT, "\n%s\n",warning);
+	xbt_dict_foreach(process_function_set,cursor,key,data) {
+		fprintf(OUT,SIM_LAUNCH_FUNC,key,key);
+	}
+	fprintf(OUT, "\n%s\n",warning);
 
-  fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n" 
-                     "\n" 
-	             "  /*  Simulation setup */\n" 
-                     "  MSG_global_init(&argc,argv);\n" 
-                     "  if (argc != 3) {\n" 
-                     "    fprintf(stderr, \"Usage: %s platform.xml deployment.xml [--gras-log=...]\\n\",argv[0]);\n" 
-                     "    exit(1);\n" 
-                     "  }\n"
-                     "\n");
-   fprintf(OUT, 
-	   "  MSG_paje_output(\"%s.trace\");\n" 
-	   "  MSG_set_channel_number(XBT_MAX_CHANNEL); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" 
-	   "  MSG_create_environment(argv[1]);\n" 
-	   "\n" 
-	   "  /*  Application deployment */\n",
-	   project);
-  xbt_dict_foreach(process_function_set,cursor,key,data) {
-    fprintf(OUT,"  MSG_function_register(\"%s\", launch_%s);\n",key,key);
-  }
-  fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
-  fclose(OUT);
-  free(filename);
+    fprintf(OUT,"%s", "/* specific to Borland Compiler */\n"
+    "#ifdef __BORLANDDC__\n"
+    "#pragma argsused\n"
+    "#endif\n\n");
+	
+	fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n"
+	"\n" 
+	"  /*  Simulation setup */\n" 
+	"  MSG_global_init(&argc,argv);\n" 
+	"  if (argc != 3) {\n" 
+	"    fprintf(stderr, \"Usage: %s platform.xml deployment.xml [--gras-log=...]\\n\",argv[0]);\n" 
+	"    exit(1);\n" 
+	"  }\n"
+	"\n");
+	fprintf(OUT, 
+	"  MSG_paje_output(\"%s.trace\");\n" 
+	"  MSG_set_channel_number(XBT_MAX_CHANNEL); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" 
+	"  MSG_create_environment(argv[1]);\n" 
+	"\n" 
+	"  /*  Application deployment */\n",
+	project);
+	xbt_dict_foreach(process_function_set,cursor,key,data) {
+		fprintf(OUT,"  MSG_function_register(\"%s\", launch_%s);\n",key,key);
+	}
+	fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
+	fclose(OUT);
+	free(filename);
 }
 
 /**********************************************/
@@ -195,12 +402,16 @@ static void generate_rl(char *project)
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     filename = xbt_new(char,strlen(project) + strlen(RL_SOURCENAME) + strlen(key));
     sprintf(filename,RL_SOURCENAME,project,key);
-  
+
     OUT=fopen(filename,"w");
     xbt_assert1(OUT, "Unable to open %s for writing",filename);
 
     fprintf(OUT, "\n%s\n",warning);
-    fprintf(OUT, "#include <stdio.h>\n" \
+    fprintf(OUT, "/* specific to Borland Compiler */\n" \
+                 "#ifdef __BORLANDC__\n" \
+                 "#pragma hdrstop\n" \
+                 "#endif\n\n" \
+                 "#include <stdio.h>\n" \
                  "#include <signal.h>\n" \
                  "#include <gras.h>\n" \
                  "\n" \
@@ -208,6 +419,10 @@ static void generate_rl(char *project)
                  "/* user code */\n" \
                  "int %s(int argc, char *argv[]);\n" \
                  "\n" \
+                 "/* specific to Borland Compiler */\n" \
+                "#ifdef __BORLANDC__\n" \
+                "#pragma argsused\n" \
+                "#endif\n\n" \
                  "int main(int argc, char *argv[]){\n" \
                  "  int errcode;\n" \
                  "\n" \
@@ -233,7 +448,7 @@ static void generate_makefile_am(char *project, char *deployment)
 
   filename = xbt_new(char,strlen(project) + strlen(MAKEFILE_FILENAME_AM));
   sprintf(filename,MAKEFILE_FILENAME_AM, project);
-  
+
   OUT=fopen(filename,"w");
   xbt_assert1(OUT, "Unable to open %s for writing",filename);
 
@@ -579,6 +794,16 @@ static void print(void *p)
   printf("%p",p);
 }
 
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+/* specific to Borland Compiler */
+#ifdef __BORLANDDC__
+#pragma argsused
+#endif
+
 int main(int argc, char *argv[])
 {
   char *project_name = NULL;
@@ -598,10 +823,13 @@ int main(int argc, char *argv[])
   STag_surfxml_process_fun = parse_process_init;
   ETag_surfxml_argument_fun = parse_argument;
   ETag_surfxml_process_fun = parse_process_finalize;
+  
   for(i=2; i<argc; i++) {
      deployment_file = argv[i];
      surf_parse_open(deployment_file);
-     if(surf_parse()) xbt_assert1(0,"Parse error in %s",deployment_file);
+     if(surf_parse()) 
+     	xbt_assert1(0,"Parse error in %s",deployment_file);
+     
      surf_parse_close();
   }
 
@@ -609,7 +837,7 @@ int main(int argc, char *argv[])
   warning = xbt_new(char,strlen(WARN)+strlen(deployment_file)+10);
   sprintf(warning,WARN,deployment_file);
 
-  if(XBT_LOG_ISENABLED(stubgen, xbt_log_priority_debug)) {
+  /*if(XBT_LOG_ISENABLED(stubgen, xbt_log_priority_debug)) {
     xbt_dict_cursor_t cursor=NULL;
     char *key = NULL;
     void *data = NULL;
@@ -621,11 +849,15 @@ int main(int argc, char *argv[])
     }
     
     xbt_dict_dump(process_function_set,print);
-  }
+  }*/
 
   generate_sim(project_name);
   generate_rl(project_name);
   generate_makefile_local(project_name, deployment_file);
+  #ifdef _WIN32
+  generate_borland_simulation_project(project_name);
+  generate_borland_real_life_project(project_name);
+  #endif
 //  generate_makefile_remote(project_name, deployment_file);
 //  generate_deployment(project_name, deployment_file);
 
@@ -633,3 +865,532 @@ int main(int argc, char *argv[])
   surf_exit();
   return 0;
 }
+#ifdef _WIN32
+void
+generate_borland_project(borland_project_t project)
+{
+	char* binary_path;	/* the path of the generated binary file				*/
+	char* obj_path;		/* the path of the generated object file 				*/
+	char* lib_files;	/* a list of the libraries used in the borland project	*/
+	char* main_source;	/* the name of the bpf file used by the borland project */
+	char* file_name;	/* the file name of the main source file				*/
+
+
+    /* create the borland project file */
+    borland_project_create(project);
+
+    /* write the xml document header */
+    borland_project_write_xml_header(project);
+
+    /* write the xml comment to identify a borland project file */
+    borland_project_write_xml_comment(project);
+	
+	/* write the begin of the node PROJECT */
+	borland_project_begin_xml_node(project,"PROJECT");
+	
+	/* write the begin of node MACRO */
+	borland_project_begin_xml_node(project,"MACRO");
+	
+	/* write the borland project version */
+	borland_project_write_xml_element(project,"VERSION",project->version);
+	
+	/* construct and write the borland project binary path */
+	binary_path = xbt_new0(char,strlen(project->name) + strlen(project->bin_dir) + 6);
+	sprintf(binary_path,"%s\\%s.exe",project->bin_dir,project->name);
+	borland_project_write_xml_element(project,"PROJECT",binary_path);
+	xbt_free(binary_path);
+	
+	/* construct an write the object generated file path */
+	obj_path = xbt_new0(char,strlen(project->name) + strlen(project->obj_dir) + 6);
+	sprintf(binary_path,"%s\\%s.obj",project->obj_dir,project->name);
+	borland_project_write_xml_element(project,"OBJFILES",obj_path);
+	xbt_free(obj_path);
+	
+	/* write the RESFILES element (not used) */
+	borland_project_write_xml_element(project,"RESFILES","");
+	
+	/* write the IDLFILES element (not used) */
+	borland_project_write_xml_element(project,"IDLFILES","");
+	
+	/* write the IDLGENFILES element (not used) */
+	borland_project_write_xml_element(project,"IDLGENFILES","");
+	
+	/* write the DEFFILE element (not used) */
+	borland_project_write_xml_element(project,"DEFFILE","");
+	
+	/* write the RESDEPEN element (not used) */
+	borland_project_write_xml_element(project,"RESDEPEN","$(RESFILES)");
+	
+	/* construct and write the LIBFILES element */
+	lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") + strlen("libgras.lib") + 2);
+	sprintf(lib_files,"%s\\simgrid.lib %s\\libgras.lib",project->lib_dir,project->lib_dir);
+	borland_project_write_xml_element(project,"LIBFILES",lib_files);
+	xbt_free(lib_files);
+	
+	/* write the SPARELIBS element (not used) */
+	borland_project_write_xml_element(project,"SPARELIBS","");
+	
+	/* write the PACKAGES element (not used) */
+	borland_project_write_xml_element(project,"PACKAGES","");
+	
+	/* write the PATHCPP element */
+	borland_project_write_xml_element(project,"PATHCPP",".;");
+	
+	/* write the PATHPAS element (not used) */
+	borland_project_write_xml_element(project,"PATHPAS","");
+	
+	/* write the PATHRC element (not used) */
+	borland_project_write_xml_element(project,"PATHRC","");
+	
+	/* write the PATHASM element (not used) */
+	borland_project_write_xml_element(project,"PATHASM","");
+	
+	/* write the DEBUGLIBPATH element */
+	borland_project_write_xml_element(project,"DEBUGLIBPATH","$(BCB)\\lib\\debug");
+	
+	/* write the RELEASELIBPATH element */
+	borland_project_write_xml_element(project,"RELEASELIBPATH","$(BCB)\\lib\\release");
+	
+	/* write the LINKER element*/
+	borland_project_write_xml_element(project,"LINKER","ilink32");
+	
+	/* write the USERDEFINES element */
+	borland_project_write_xml_element(project,"USERDEFINES","_DEBUG");
+	
+	/* write the SYSDEFINES element */
+	borland_project_write_xml_element(project,"SYSDEFINES","NO_STRICT;_NO_VCL");
+	
+	/* construct and write the MAINSOURCE element */
+	
+	main_source = xbt_new0(char,strlen(project->name) + 5);
+	sprintf(main_source,"%s.bpf",project->name);
+
+	borland_project_write_xml_element(project,"MAINSOURCE",main_source);
+
+	/* create the bpf file used by the borland project */
+	borland_project_create_main_file(main_source);
+
+	/* FIXME resolve the include path */
+	/* write the INCLUDEPATH element  */
+	borland_project_write_xml_element(project,"INCLUDEPATH","");
+
+	/* FIXME check the lib path */
+	/* write the LIBPATH element */
+	borland_project_write_xml_element(project,"LIBPATH","");
+
+	/* write the WARNINGS element */
+	borland_project_write_xml_element(project,"WARNINGS","-w-sus -w-rvl -w-rch -w-pia -w-pch -w-par -w-csu -w-ccc -w-aus");
+
+	/* write the OTHERFILES element (not used) */
+	borland_project_write_xml_element(project,"OTHERFILES","");
+
+	/* write the end of the node MACRO */
+	borland_project_end_xml_node(project,"MACRO");
+
+	/* write the begin of the node OPTIONS */
+	borland_project_begin_xml_node(project,"OPTIONS");
+
+	/* FIXME check the idlcflags
+	/* write the IDLCFLAGS element */
+	borland_project_write_xml_element(project,"IDLCFLAGS","");
+
+	/* write the CFLAG1 element */
+	borland_project_write_xml_element(project,"CFLAG1","-Od -H=$(BCB)\\lib\\vcl60.csm -Hc -Vx -Ve -X- -r- -a1 -b- -k -y -v -vi- -tWC -tWM- -c");
+
+	/* write the PFLAGS element */
+	borland_project_write_xml_element(project,"PFLAGS","-N2obj -N0obj -$YD -$W -$O- -$A8 -v -JPHNE -M");
+
+	/* write the RFLAGS element */
+	borland_project_write_xml_element(project,"RFLAGS","");
+
+	/* write the AFLAGS element (not used)*/
+	borland_project_write_xml_element(project,"AFLAGS","/mx /w2 /zd");
+
+	/* write the LFLAGS element */
+	borland_project_write_xml_element(project,"LFLAGS","-Iobj -D&quot;&quot; -ap -Tpe -x -Gn -v");
+
+	/* write the OTHERFILES element (not used)*/
+	borland_project_write_xml_element(project,"OTHERFILES","");
+
+	/* write the end of the node OPTIONS */
+	borland_project_end_xml_node(project,"OPTIONS");
+
+	/* write the begin of the node LINKER */
+	borland_project_begin_xml_node(project,"LINKER");
+
+	/* write the ALLOBJ element */
+	borland_project_write_xml_element(project,"ALLOBJ","c0x32.obj $(OBJFILES)");
+
+	/* write the ALLRES element (not used) */
+	borland_project_write_xml_element(project,"ALLRES","");
+
+	/* write the ALLLIB element */
+	borland_project_write_xml_element(project,"ALLLIB","$(LIBFILES) $(LIBRARIES) import32.lib cw32.lib");
+
+	/* write the OTHERFILES element (not used) */
+	borland_project_write_xml_element(project,"OTHERFILES","");
+
+	/* write the end of the node LINKER */
+	borland_project_end_xml_node(project,"LINKER");
+
+	/* write the begin of the node FILELIST */
+	borland_project_begin_xml_node(project,"FILELIST");
+	
+	/* construct and write the list of file elements */
+	
+	/* add the bpf file to the list */
+	borland_project_write_file_element(project,main_source,"",project->name,"BPF","","");
+	xbt_free(main_source);
+	
+	/* FIXME : check the source file directory */
+	/* add the generated source file to the list */
+	file_name = xbt_new0(char,strlen(project->src_dir) + strlen(project->name) + 4);
+	sprintf(file_name,"%s\\%s.c",project->src_dir,project->name);
+	borland_project_write_file_element(project,file_name,"",project->name,"CCompiler","","");
+	xbt_free(file_name);
+
+	/* FIXME : check the libraries directory */
+	/* add the simgrid library to the list */
+	file_name = xbt_new0(char,strlen(project->lib_dir) + strlen("simgrid.lib") + 2);
+	sprintf(file_name,"%s\\simgrid.lib",project->lib_dir);
+	borland_project_write_file_element(project,file_name,"","simgrid.lib","LibTool","","");
+	xbt_free(file_name);
+
+	/* add the libgras library to the list */
+	file_name = xbt_new0(char,strlen(project->lib_dir) + strlen("libgras.lib") + 2);
+	sprintf(file_name,"%s\\libgras.lib",project->lib_dir);
+	borland_project_write_file_element(project,file_name,"","libgras.lib","LibTool","","");
+	xbt_free(file_name);
+	
+	/* write the end of the node FILELIST */
+	borland_project_end_xml_node(project,"FILELIST");
+	
+	/* write the begin of the node BUILDTOOLS (not used)*/
+	borland_project_begin_xml_node(project,"BUILDTOOLS");
+	
+	/* write the end of the node BUILDTOOLS (not used)*/
+	borland_project_end_xml_node(project,"BUILDTOOLS");
+	
+	/* write the begin of the node IDEOPTIONS */
+	borland_project_begin_xml_node(project,"IDEOPTIONS");
+	
+	/* write all of the option of the IDE of Borland C++ Builder */
+	borland_project_write_ide_options(project);
+	
+	/* write the end of the node IDEOPTIONS */
+	borland_project_end_xml_node(project,"IDEOPTIONS");
+
+    /* write the end of the node PROJECT */
+	borland_project_end_xml_node(project,"PROJECT");
+
+    /* close the borland project file */
+    borland_project_close(project);
+}
+
+void
+borland_project_write_tabs(borland_project_t project,unsigned int count)
+{
+	unsigned int pos;
+	
+	for(pos = 0; pos < count; pos++)
+		fprintf(project->stream,"\t");		
+}
+
+void
+borland_project_begin_xml_node(borland_project_t project, const char* name)
+{
+	if(level)
+		borland_project_write_tabs(project,level);
+		
+	fprintf(project->stream,"<%s>\n",name);
+	
+	level++;
+}
+
+void
+borland_project_end_xml_node(borland_project_t project, const char* name)
+{
+	level--;
+	
+	if(level)
+		borland_project_write_tabs(project,level);
+	
+	fprintf(project->stream,"</%s>\n",name);	
+}
+
+
+void
+borland_project_write_xml_element(borland_project_t project,const char* name,const char* value)
+{
+	borland_project_write_tabs(project,level);
+
+	fprintf(project->stream,"<%s value=\"%s\"/>\n",name,value);
+}
+
+void
+borland_project_write_xml_header(borland_project_t project)
+{
+    fprintf(project->stream,"<?xml version='%s' encoding='%s' ?>\n",project->xml_version, project->encoding);
+}
+
+void
+borland_project_create_main_file(const char* name)
+{
+	FILE* stream = fopen(name,"w+");
+
+	fprintf(stream,"Ce fichier est uniquement utilisé par le gestionnaire de projets et doit être traité comme le fichier projet\n\n\nmain\n");
+
+	fclose(stream);
+}
+
+void
+borland_project_create(borland_project_t project)
+{
+    char* file_name = xbt_new0(char,strlen(project->name) + 5);
+    sprintf(file_name,"%s.bpr",project->name);
+    project->stream = fopen(file_name,"w+");
+    xbt_free(file_name);
+}
+
+void
+borland_project_write_xml_comment(borland_project_t project)
+{
+    fprintf(project->stream,"<!-- %s -->\n",project->comment);
+}
+void
+borland_project_write_file_element(	borland_project_t project,
+									const char* file_name,
+									const char* form_name,
+									const char* unit_name,
+									const char* container_id,
+									const char* design_class,
+									const char* local_command)
+{
+	borland_project_write_tabs(project,level);
+
+	fprintf(project->stream,"<FILE FILENAME=\"%s\" FORMNAME=\"%s\" UNITNAME=\"%s\" CONTAINERID=\"%s\" DESIGNCLASS=\"%s\" LOCALCOMMAND=\"%s\"/>\n",file_name,form_name,unit_name,container_id,design_class,local_command);
+}
+
+void
+borland_project_write_ide_options(borland_project_t project)
+{
+
+	const char* ide_options =
+        "[Version Info]\nIncludeVerInfo=0\nAutoIncBuild=0\nMajorVer=1\nMinorVer=0\nRelease=0\nBuild=0\nDebug=0\nPreRelease=0\nSpecial=0\nPrivate=0\nDLL=0\nLocale=1036\nCodePage=1252\n\n"  \
+        "[Version Info Keys]\nCompanyName=\nFileDescription=\nFileVersion=1.0.0.0\nInternalName=\nLegalCopyright=\nLegalTrademarks=\nOriginalFilename=\nProductName=\nProductVersion=1.0.0.0\nComments=\n\n" \
+        "[Excluded Packages]\n$(BCB)\\dclclxdb60.bpl=Composants BD CLX Borland\n$(BCB)\\Bin\\dclclxstd60.bpl=Composants Standard CLX Borland\n\n" \
+        "[HistoryLists\\hlIncludePath]\nCount=1\nItem0=$(BCB)\\include;$(BCB)\\include\\vcl;\n\n" \
+        "[HistoryLists\\hlLibraryPath]\nCount=1\nItem0=$(BCB)\\lib\\obj;$(BCB)\\lib\n\n" \
+        "[HistoryLists\\hlDebugSourcePath]\nCount=1\nItem0=$(BCB)\\source\\vcl\\\n\n" \
+        "[HistoryLists\\hlConditionals]\nCount=1\nItem0=_DEBUG\n\n" \
+        "[HistoryLists\\hlIntOutputDir]\nCount=0\n\n" \
+        "[HistoryLists\\hlFinalOutputDir]\nCount=0\n\n" \
+        "[HistoryLists\\hIBPIOutputDir]\nCount=0\n\n" \
+        "[Debugging]\nDebugSourceDirs=$(BCB)\\source\\vcl\n\n" \
+        "[Parameters]\nRunParams=\nLauncher=\nUseLauncher=0\nDebugCWD=\nHostApplication=\nRemoteHost=\nRemotePath=\nRemoteLauncher=\nRemoteCWD=\nRemoteDebug=0\n\n" \
+        "[Compiler]\nShowInfoMsgs=0\nLinkDebugVcl=0\nLinkCGLIB=0\n\n" \
+        "[CORBA]\nAddServerUnit=1\nAddClientUnit=1\nPrecompiledHeaders=1\n\n" \
+        "[Language]\nActiveLang=\nProjectLang=\nRootDir=\n";
+
+	fprintf(project->stream,ide_options);
+}
+
+void
+borland_project_close(borland_project_t project)
+{
+    fclose(project->stream);
+}
+
+void
+generate_borland_simulation_project(const char* name)
+{
+    char buffer[MAX_PATH] = {0};
+
+    HANDLE hDir;
+    WIN32_FIND_DATA wfd = {0};
+
+    s_borland_project_t borland_project = {0};
+    borland_project.xml_version = "1.0";
+    borland_project.encoding ="utf-8";
+    borland_project.comment ="C++Builder XML Project";
+    borland_project.version = "BCB.06.00";
+
+    borland_project.lib_dir = xbt_new0(char,MAX_PATH);
+
+    FindFilePath("C:\\","simgrid.lib",borland_project.lib_dir);
+
+
+    GetCurrentDirectory(MAX_PATH,buffer);
+
+    borland_project.src_dir = xbt_new0(char,strlen(buffer) + 1);
+
+    strcpy(borland_project.src_dir,buffer);
+
+    borland_project.lib_dir = " ";
+
+    borland_project.name = xbt_new0(char,strlen(name) + strlen("_simulator") + 2);
+    sprintf(borland_project.name,"_%s_simulator",name);
+
+    borland_project.bin_dir = xbt_new0(char,strlen(buffer) + strlen("\\bin") + 1);
+    sprintf(borland_project.bin_dir,"%s\\bin",buffer);
+
+    hDir = FindFirstFile(borland_project.bin_dir,&wfd);
+
+    if(!hDir)
+        CreateDirectory(borland_project.bin_dir,NULL);
+
+    borland_project.obj_dir = xbt_new0(char,strlen(buffer) + strlen("\\obj") + 1);
+    sprintf(borland_project.obj_dir,"%s\\obj",buffer);
+
+    hDir = FindFirstFile(borland_project.obj_dir,&wfd);
+
+    if(INVALID_HANDLE_VALUE == hDir)
+        CreateDirectory(borland_project.obj_dir,NULL);
+
+    generate_borland_project(&borland_project);
+
+    xbt_free(borland_project.name);
+    xbt_free(borland_project.src_dir);
+    xbt_free(borland_project.bin_dir);
+    xbt_free(borland_project.obj_dir);
+    xbt_free(borland_project.lib_dir);
+}
+
+void
+generate_borland_real_life_project(const char* name)
+{
+    HANDLE hDir;
+    WIN32_FIND_DATA wfd = {0};
+    char buffer[MAX_PATH] = {0};
+    xbt_dict_cursor_t cursor = NULL;
+    char *key = NULL;
+    void *data = NULL;
+	s_borland_project_t borland_project = {0};
+
+	borland_project.xml_version = "1.0";
+    borland_project.encoding ="utf-8";
+    borland_project.comment ="C++Builder XML Project";
+    borland_project.version = "BCB.06.00";
+    borland_project.lib_dir = " ";
+
+    borland_project.lib_dir = xbt_new0(char,MAX_PATH);
+
+    FindFilePath("C:\\","simgrid.lib",borland_project.lib_dir);
+
+    GetCurrentDirectory(MAX_PATH,buffer);
+
+    borland_project.src_dir = xbt_new0(char,strlen(buffer) + 1);
+
+    strcpy(borland_project.src_dir,buffer);
+
+    borland_project.bin_dir = xbt_new0(char,strlen(buffer) + strlen("\\bin") + 1);
+    sprintf(borland_project.bin_dir,"%s\\bin",buffer);
+
+    hDir = FindFirstFile(borland_project.bin_dir,&wfd);
+
+    if(INVALID_HANDLE_VALUE == hDir)
+        CreateDirectory(borland_project.bin_dir,NULL);
+
+    borland_project.obj_dir = xbt_new0(char,strlen(buffer) + strlen("\\obj") + 1);
+    sprintf(borland_project.obj_dir,"%s\\obj",buffer);
+
+    hDir = FindFirstFile(borland_project.obj_dir,&wfd);
+
+    if(!hDir)
+        CreateDirectory(borland_project.obj_dir,NULL);
+
+
+	xbt_dict_foreach(process_function_set,cursor,key,data) {
+        borland_project.name = xbt_new0(char,strlen(name) + strlen(key) + 3);
+
+        sprintf(borland_project.name,"_%s_%s",name,key);
+
+        generate_borland_project(&borland_project);
+        xbt_free(borland_project.name);
+    }
+
+    xbt_free(borland_project.src_dir);
+    xbt_free(borland_project.bin_dir);
+    xbt_free(borland_project.obj_dir);
+    xbt_free(borland_project.lib_dir);
+}
+int
+FindFilePath(const char* root_dir,const char* file_name,char* path)
+{ 
+	HANDLE hFind;
+	WIN32_FIND_DATA wfd;
+    char* prev_dir = (char*)calloc(MAX_PATH,sizeof(char));
+    GetCurrentDirectory(MAX_PATH,prev_dir);
+    SetCurrentDirectory(root_dir);
+
+	// begining of the scan
+	hFind=FindFirstFile ("*.*", &wfd);
+	
+	if(hFind!=INVALID_HANDLE_VALUE){
+		
+		/* it's a file */
+		if (!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			
+			if(!strcmp(file_name,wfd.cFileName)){
+                GetCurrentDirectory(MAX_PATH,path);
+                SetCurrentDirectory(prev_dir);
+                free(prev_dir);
+				FindClose(hFind);
+				return 1;
+			}
+			
+		}
+		/* it's a directory, scan it*/
+		else {
+
+            if(strcmp(wfd.cFileName,".") && strcmp(wfd.cFileName,"..")){
+			    if(FindFilePath(wfd.cFileName,file_name,path)){
+				    FindClose(hFind);
+                    SetCurrentDirectory(prev_dir);
+				    return 1;
+			    }
+            }
+		}
+		 
+		/* next file or directory */
+		while(FindNextFile (hFind,&wfd)) 
+		{ 
+			/* it's a file */
+			if(!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) 
+			{ 
+				if(!strcmp(file_name,wfd.cFileName)){
+                    GetCurrentDirectory(MAX_PATH,path);
+                    SetCurrentDirectory(prev_dir);
+                    free(prev_dir);
+					FindClose(hFind);
+					return 1;
+				}
+			}
+			/* it's a file scan it */
+			else {
+				
+			 if(strcmp(wfd.cFileName,".") && strcmp(wfd.cFileName,"..")){
+
+			    if(FindFilePath(wfd.cFileName,file_name,path)){
+                    SetCurrentDirectory(prev_dir);
+				    FindClose(hFind);
+				    return 1;
+			    }
+
+            }
+				
+			} 
+		} 
+	}
+
+	SetCurrentDirectory(prev_dir);
+    free(prev_dir);
+	FindClose (hFind);
+	return 0; 
+}
+#endif
+
+
+
+
+
