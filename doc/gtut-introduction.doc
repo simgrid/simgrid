@@ -10,6 +10,13 @@
  - The section \ref GRAS_tut_intro_model presents somehow formaly the programmation
    model used in GRAS.
 
+\section GRAS_tut_intro_further Further readings
+
+After this page, you may find these one interesting: 
+\ref GRAS_howto_design. If you're new to GRAS, you may want to read the
+initiatic tour first, begining with \ref GRAS_tut_tour_install or
+\ref GRAS_tut_tour_setup.
+
 <hr>
 
 \section GRAS_tut_intro_what What is GRAS

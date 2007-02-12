@@ -44,6 +44,7 @@ This section constitutes a tutorial to the GRAS programming environment.
       DOXYGEN_NAVBAR_LABEL="Tutorial"
       DOXYGEN_NAVBAR_CHILD "What is GRAS"=GRAS_tut_intro.html
       DOXYGEN_NAVBAR_CHILD "Initiatic tour"=GRAS_tut_tour.html
+      DOXYGEN_NAVBAR_CHILD "GRAS HOWTOs"=GRAS_howto.html
     --> \endhtmlonly
 
 */
