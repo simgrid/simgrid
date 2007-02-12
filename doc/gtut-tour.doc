@@ -98,9 +98,11 @@ all features available in GRAS.
       - \ref GRAS_tut_tour_rpc_recap
  
    - \ref GRAS_tut_tour_explicitwait
-     - GRAS_tut_tour_explicitwait_intro
-     - GRAS_tut_tour_explicitwait_use
-     - GRAS_tut_tour_explicitwait_recap
+      - \ref GRAS_tut_tour_explicitwait_intro
+      - \ref GRAS_tut_tour_explicitwait_use
+        - \ref GRAS_tut_tour_explicitwait_algo
+        - \ref GRAS_tut_tour_explicitwait_code
+      - \ref GRAS_tut_tour_explicitwait_recap				 
      
    - \ref GRAS_tut_tour_message_recaping
       - \ref GRAS_tut_tour_message_recaping_intro
@@ -169,5 +171,7 @@ Newcommers should install the stable release from the tarball, since the cvs
 snapshots may suffer from (additionnal;) stability issues. Only go for the
 CVS if you really need features not present in the stable releases yet (or
 if you plan to help us improving the tool, what is always welcomed).
+
+Proceed to \ref GRAS_tut_tour_setup.
 
 */
