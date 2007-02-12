@@ -194,6 +194,11 @@
 	#define NEED_ASPRINTF	1
 #endif
 
+/*#ifdef NEED_ASPRINTF
+#undef NEED_ASPRINTF
+#endif*/
+
+
 /* enable the vasprintf replacement */
 #if  !defined(NEED_VASPRINTF)
 	#define NEED_VASPRINTF	1
@@ -201,11 +206,10 @@
 
 /* "disable the snprintf replacement ( this function is broken on system v only" */
 
-/* FIXME TO ANALYZE
+/* FIXME TO ANALYZE */
 #if defined(PREFER_PORTABLE_SNPRINTF)
 	#undef PREFER_PORTABLE_SNPRINTF	
 #endif
-*/
 
 #if !defined(PREFER_PORTABLE_SNPRINTF)
 	#define PREFER_PORTABLE_SNPRINTF	
