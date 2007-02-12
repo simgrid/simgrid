@@ -32,6 +32,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 /* tabulation level (used to indent the lines of the borland project file */
 static unsigned int level = 0;
 
+/* the library path for simgrid.lib and libras.lib. */
+static char* __lib_dir = NULL;
+
+/* the gras.h header directory */
+static char* __gras_path = NULL;
+
+
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif
@@ -178,7 +185,7 @@ generate_borland_project(borland_project_t project);
  *  retruns 0;
  */
 int
-FindFilePath(const char* root_dir,const char* file_name,char* path);
+find_file_path(const char* root_dir,const char* file_name,char* path);
 
 #endif
 
@@ -857,6 +864,14 @@ int main(int argc, char *argv[])
   #ifdef _WIN32
   generate_borland_simulation_project(project_name);
   generate_borland_real_life_project(project_name);
+
+  if(__lib_dir)
+    xbt_free(__lib_dir);
+
+  if(__gras_path)
+    xbt_free(__gras_path);
+  
+
   #endif
 //  generate_makefile_remote(project_name, deployment_file);
 //  generate_deployment(project_name, deployment_file);
@@ -874,6 +889,7 @@ generate_borland_project(borland_project_t project)
 	char* lib_files;	/* a list of the libraries used in the borland project	*/
 	char* main_source;	/* the name of the bpf file used by the borland project */
 	char* file_name;	/* the file name of the main source file				*/
+    char* include_path; /* the include path                                     */
 
 
     /* create the borland project file */
@@ -888,8 +904,8 @@ generate_borland_project(borland_project_t project)
 	/* write the begin of the node PROJECT */
 	borland_project_begin_xml_node(project,"PROJECT");
 	
-	/* write the begin of node MACRO */
-	borland_project_begin_xml_node(project,"MACRO");
+	/* write the begin of node MACROS */
+	borland_project_begin_xml_node(project,"MACROS");
 	
 	/* write the borland project version */
 	borland_project_write_xml_element(project,"VERSION",project->version);
@@ -900,16 +916,16 @@ generate_borland_project(borland_project_t project)
 	borland_project_write_xml_element(project,"PROJECT",binary_path);
 	xbt_free(binary_path);
 	
-	/* construct an write the object generated file path */
+	/* construct an write the object files to generate by the compiler */
 	obj_path = xbt_new0(char,strlen(project->name) + strlen(project->obj_dir) + 6);
 	sprintf(binary_path,"%s\\%s.obj",project->obj_dir,project->name);
 	borland_project_write_xml_element(project,"OBJFILES",obj_path);
 	xbt_free(obj_path);
 	
-	/* write the RESFILES element (not used) */
+	/* write the resource files used by the compiler (no resource file used) */
 	borland_project_write_xml_element(project,"RESFILES","");
 	
-	/* write the IDLFILES element (not used) */
+	/* write the IDL files of the project (no IDL files used) */
 	borland_project_write_xml_element(project,"IDLFILES","");
 	
 	/* write the IDLGENFILES element (not used) */
@@ -918,22 +934,28 @@ generate_borland_project(borland_project_t project)
 	/* write the DEFFILE element (not used) */
 	borland_project_write_xml_element(project,"DEFFILE","");
 	
-	/* write the RESDEPEN element (not used) */
+	/* write the RESDEPEN element (not used, no resource file used) */
 	borland_project_write_xml_element(project,"RESDEPEN","$(RESFILES)");
-	
-	/* construct and write the LIBFILES element */
-	lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") + strlen("libgras.lib") + 2);
+
+	/* construct and write the list of libraries used by the project */
+	/*
+    lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") + strlen("libgras.lib") + 3);
 	sprintf(lib_files,"%s\\simgrid.lib %s\\libgras.lib",project->lib_dir,project->lib_dir);
+    */
+
+    lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") + 2);
+	sprintf(lib_files,"%s\\simgrid.lib",project->lib_dir);
+
 	borland_project_write_xml_element(project,"LIBFILES",lib_files);
 	xbt_free(lib_files);
 	
 	/* write the SPARELIBS element (not used) */
 	borland_project_write_xml_element(project,"SPARELIBS","");
 	
-	/* write the PACKAGES element (not used) */
+	/* write the PACKAGES element (no package used) */
 	borland_project_write_xml_element(project,"PACKAGES","");
 	
-	/* write the PATHCPP element */
+	/* write the PATHCPP element (the path of the source files of the project)*/
 	borland_project_write_xml_element(project,"PATHCPP",".;");
 	
 	/* write the PATHPAS element (not used) */
@@ -945,26 +967,25 @@ generate_borland_project(borland_project_t project)
 	/* write the PATHASM element (not used) */
 	borland_project_write_xml_element(project,"PATHASM","");
 	
-	/* write the DEBUGLIBPATH element */
+	/* write the DEBUGLIBPATH element (the path for debug) */
 	borland_project_write_xml_element(project,"DEBUGLIBPATH","$(BCB)\\lib\\debug");
 	
-	/* write the RELEASELIBPATH element */
+	/* write the RELEASELIBPATH element (the path for release) */
 	borland_project_write_xml_element(project,"RELEASELIBPATH","$(BCB)\\lib\\release");
 	
-	/* write the LINKER element*/
+	/* specify the linker to use */
 	borland_project_write_xml_element(project,"LINKER","ilink32");
 	
-	/* write the USERDEFINES element */
+	/* write the USERDEFINES element (user definitions (#define _DEBUG))*/
 	borland_project_write_xml_element(project,"USERDEFINES","_DEBUG");
 	
-	/* write the SYSDEFINES element */
+	/* write the SYSDEFINES element (use the system definitions, not used strict ANSI and no use the VCL)*/
 	borland_project_write_xml_element(project,"SYSDEFINES","NO_STRICT;_NO_VCL");
-	
+
 	/* construct and write the MAINSOURCE element */
-	
 	main_source = xbt_new0(char,strlen(project->name) + 5);
 	sprintf(main_source,"%s.bpf",project->name);
-
+    /* write the main source file to use in the borland project file */
 	borland_project_write_xml_element(project,"MAINSOURCE",main_source);
 
 	/* create the bpf file used by the borland project */
@@ -972,20 +993,41 @@ generate_borland_project(borland_project_t project)
 
 	/* FIXME resolve the include path */
 	/* write the INCLUDEPATH element  */
-	borland_project_write_xml_element(project,"INCLUDEPATH","");
 
-	/* FIXME check the lib path */
-	/* write the LIBPATH element */
-	borland_project_write_xml_element(project,"LIBPATH","");
+    if(!__gras_path){
+        __gras_path = xbt_new0(char,MAX_PATH);
+        find_file_path("C:\\","gras.h",__gras_path);
+    }
 
-	/* write the WARNINGS element */
+    include_path = xbt_new0(char,strlen("$(BCB)\\include") + strlen(__gras_path) + 2);
+    sprintf(include_path,"$(BCB)\\include;%s",__gras_path);
+
+	borland_project_write_xml_element(project,"INCLUDEPATH",include_path);
+
+    xbt_free(include_path);
+
+	/* write the LIBPATH element (no librarie paths specified)*/
+	borland_project_write_xml_element(project,"LIBPATH","$(BCB)\\lib;$(BCB)\\lib\\obj");
+
+	/*
+     * write the WARNINGS element :
+     *  -w-sus (-w-8075) disabled the suspect conversion pointer warning
+     *  -w-rvl (-w-8070) disabled the function must return warning
+     *  -w-rch (-w-8066) disabled the warning which specify that we can't attain the code
+     *  -w-pia (-w-8060) disabled the warning that detect a possible bad assignement
+     *  -w-pch (-w-8058) disabled the warning throw when the compiler can't precompile a header file
+     *  -w-par (-w-8057) disabled the warning that detect an unused variable
+     *  -w-csu (-w-8012) disabled the warning that detect a comparison between a signed number and an unsigned number
+     *  -w-ccc (-w-8008) disabled the warning that detect une conditon which is always true
+     *  -w-aus (-w-8008) disabled the warning that detect an affected value which is never used
+     */
 	borland_project_write_xml_element(project,"WARNINGS","-w-sus -w-rvl -w-rch -w-pia -w-pch -w-par -w-csu -w-ccc -w-aus");
 
-	/* write the OTHERFILES element (not used) */
+	/* write the OTHERFILES element (no other files used used) */
 	borland_project_write_xml_element(project,"OTHERFILES","");
 
-	/* write the end of the node MACRO */
-	borland_project_end_xml_node(project,"MACRO");
+	/* write the end of the node MACROS */
+	borland_project_end_xml_node(project,"MACROS");
 
 	/* write the begin of the node OPTIONS */
 	borland_project_begin_xml_node(project,"OPTIONS");
@@ -994,7 +1036,26 @@ generate_borland_project(borland_project_t project)
 	/* write the IDLCFLAGS element */
 	borland_project_write_xml_element(project,"IDLCFLAGS","");
 
-	/* write the CFLAG1 element */
+	/*
+     * write the CFLAG1 element (compiler options ) :
+     *
+     *  -Od     this flag disable all compiler optimisation
+     *  -H      this flag specify the name of the file which will contain the precompiled header
+     *  -Hc     this flag specify to the compiler to cach the precompiled header
+     *  -Vx     this flag specify to the compiler to allow the empty structures
+     *  -Ve     this flag specify to the compiler to allow the empty base classes
+     *  -X-     this flag activate the auto-depend informations of the compiler
+     *  -r-     this flag disabled the use of the processor register
+     *  -a1     this flag specify that the data must be aligned on one byte
+     *  -b-     this flag specify that the enums are the smallest size of the integer
+     *  -k      (used during debug)
+     *  -y      this flag generate the line number for debug
+     *  -v      this flag enabled the debugging of the source files
+     *  -vi     check the expansion of the inline functions
+     *  -tWC    specify that it's a console application
+     *  -tWM-   specify that the application is not multithread
+     *  -c      generate the object file, no link
+     */
 	borland_project_write_xml_element(project,"CFLAG1","-Od -H=$(BCB)\\lib\\vcl60.csm -Hc -Vx -Ve -X- -r- -a1 -b- -k -y -v -vi- -tWC -tWM- -c");
 
 	/* write the PFLAGS element */
@@ -1003,10 +1064,25 @@ generate_borland_project(borland_project_t project)
 	/* write the RFLAGS element */
 	borland_project_write_xml_element(project,"RFLAGS","");
 
-	/* write the AFLAGS element (not used)*/
+	/* write the AFLAGS element (assembler flags) :
+     *
+     *  /mx (not documented)
+     *  /w2 (not documented)
+     *  /zd (not documented)
+     *
+     */
 	borland_project_write_xml_element(project,"AFLAGS","/mx /w2 /zd");
 
-	/* write the LFLAGS element */
+	/* write the LFLAGS element (linker flags) :
+     *
+     *  -I      specify the output directory for object files
+     *  -D      register the specified description (no description "")
+     *  -ap     build a win32 console application
+     *  -Tpe    generate a exe file
+     *  -x      do not create the map file
+     *  -Gn     do not generate the state file
+     *  -v      include the complete debug informations  
+     */
 	borland_project_write_xml_element(project,"LFLAGS","-Iobj -D&quot;&quot; -ap -Tpe -x -Gn -v");
 
 	/* write the OTHERFILES element (not used)*/
@@ -1056,11 +1132,15 @@ generate_borland_project(borland_project_t project)
 	borland_project_write_file_element(project,file_name,"","simgrid.lib","LibTool","","");
 	xbt_free(file_name);
 
-	/* add the libgras library to the list */
+	/*
+    add the libgras library to the list
+
 	file_name = xbt_new0(char,strlen(project->lib_dir) + strlen("libgras.lib") + 2);
 	sprintf(file_name,"%s\\libgras.lib",project->lib_dir);
+
 	borland_project_write_file_element(project,file_name,"","libgras.lib","LibTool","","");
 	xbt_free(file_name);
+    */
 	
 	/* write the end of the node FILELIST */
 	borland_project_end_xml_node(project,"FILELIST");
@@ -1217,16 +1297,18 @@ generate_borland_simulation_project(const char* name)
 
     borland_project.lib_dir = xbt_new0(char,MAX_PATH);
 
-    FindFilePath("C:\\","simgrid.lib",borland_project.lib_dir);
-
+    if(!__lib_dir){
+        find_file_path("C:\\","simgrid.lib",borland_project.lib_dir);
+        __lib_dir = strdup(borland_project.lib_dir);
+        }
+    else
+        borland_project.lib_dir = strdup(__lib_dir);
 
     GetCurrentDirectory(MAX_PATH,buffer);
 
     borland_project.src_dir = xbt_new0(char,strlen(buffer) + 1);
 
     strcpy(borland_project.src_dir,buffer);
-
-    borland_project.lib_dir = " ";
 
     borland_project.name = xbt_new0(char,strlen(name) + strlen("_simulator") + 2);
     sprintf(borland_project.name,"_%s_simulator",name);
@@ -1275,7 +1357,12 @@ generate_borland_real_life_project(const char* name)
 
     borland_project.lib_dir = xbt_new0(char,MAX_PATH);
 
-    FindFilePath("C:\\","simgrid.lib",borland_project.lib_dir);
+    if(!__lib_dir){
+        find_file_path("C:\\","simgrid.lib",borland_project.lib_dir);
+        __lib_dir = strdup(borland_project.lib_dir);
+    }
+    else
+        borland_project.lib_dir = strdup(__lib_dir);
 
     GetCurrentDirectory(MAX_PATH,buffer);
 
@@ -1315,78 +1402,78 @@ generate_borland_real_life_project(const char* name)
     xbt_free(borland_project.lib_dir);
 }
 int
-FindFilePath(const char* root_dir,const char* file_name,char* path)
-{ 
+find_file_path(const char* root_dir,const char* file_name,char* path)
+{
 	HANDLE hFind;
 	WIN32_FIND_DATA wfd;
-    char* prev_dir = (char*)calloc(MAX_PATH,sizeof(char));
-    GetCurrentDirectory(MAX_PATH,prev_dir);
-    SetCurrentDirectory(root_dir);
-
+	char* prev_dir = xbt_new(char,MAX_PATH);
+	GetCurrentDirectory(MAX_PATH,prev_dir);
+	SetCurrentDirectory(root_dir);
+	
 	// begining of the scan
 	hFind=FindFirstFile ("*.*", &wfd);
 	
 	if(hFind!=INVALID_HANDLE_VALUE){
-		
+	
 		/* it's a file */
 		if (!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-			
+		
 			if(!strcmp(file_name,wfd.cFileName)){
-                GetCurrentDirectory(MAX_PATH,path);
-                SetCurrentDirectory(prev_dir);
-                free(prev_dir);
+				GetCurrentDirectory(MAX_PATH,path);
+				SetCurrentDirectory(prev_dir);
+				xbt_free(prev_dir);
 				FindClose(hFind);
 				return 1;
 			}
-			
+		
 		}
 		/* it's a directory, scan it*/
 		else {
-
-            if(strcmp(wfd.cFileName,".") && strcmp(wfd.cFileName,"..")){
-			    if(FindFilePath(wfd.cFileName,file_name,path)){
-				    FindClose(hFind);
-                    SetCurrentDirectory(prev_dir);
-				    return 1;
-			    }
-            }
+		
+			if(strcmp(wfd.cFileName,".") && strcmp(wfd.cFileName,"..")){
+				if(find_file_path(wfd.cFileName,file_name,path)){
+					FindClose(hFind);
+					SetCurrentDirectory(prev_dir);
+					return 1;
+				}
+			}
 		}
-		 
+		
 		/* next file or directory */
-		while(FindNextFile (hFind,&wfd)) 
-		{ 
+		while(FindNextFile(hFind,&wfd))
+		{
 			/* it's a file */
-			if(!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) 
-			{ 
+			if(!(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
 				if(!strcmp(file_name,wfd.cFileName)){
-                    GetCurrentDirectory(MAX_PATH,path);
-                    SetCurrentDirectory(prev_dir);
-                    free(prev_dir);
+					GetCurrentDirectory(MAX_PATH,path);
+					SetCurrentDirectory(prev_dir);
+					xbt_free(prev_dir);
 					FindClose(hFind);
 					return 1;
 				}
 			}
 			/* it's a file scan it */
 			else {
-				
-			 if(strcmp(wfd.cFileName,".") && strcmp(wfd.cFileName,"..")){
-
-			    if(FindFilePath(wfd.cFileName,file_name,path)){
-                    SetCurrentDirectory(prev_dir);
-				    FindClose(hFind);
-				    return 1;
-			    }
-
-            }
-				
-			} 
-		} 
+		
+				if(strcmp(wfd.cFileName,".") && strcmp(wfd.cFileName,"..")){
+		
+					if(find_file_path(wfd.cFileName,file_name,path)){
+						SetCurrentDirectory(prev_dir);
+						FindClose(hFind);
+						return 1;
+					}
+		
+				}
+		
+			}
+		}
 	}
-
+	
 	SetCurrentDirectory(prev_dir);
-    free(prev_dir);
+	xbt_free(prev_dir);
 	FindClose (hFind);
-	return 0; 
+	return 0;
 }
 #endif
 
