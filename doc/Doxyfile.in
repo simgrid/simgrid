@@ -427,6 +427,8 @@ INPUT                  = @srcdir@/index.doc \
 				@srcdir@/gtut-tour-14-dynar.doc \
 				@srcdir@/gtut-tour-15-manualdatadef.doc \
 				@srcdir@/gtut-tour-16-exchangecb.doc \
+			    @srcdir@/gtut-howto.doc \
+			        @srcdir@/gtut-howto-design.doc \
                          \
                          ./logcategories.doc \
 			 \
