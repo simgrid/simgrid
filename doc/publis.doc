@@ -44,7 +44,7 @@ want to cite GRAS, please use this publication instead:
 \li <b>Gras: A Research &amp; Development Framework for Grid and P2P
       Infrastructures</b>\n
     by <em>Martin Quinson</em>\n
-    To appear: The 18th IASTED International Conference on
+    <b>Best paper</b> of the 18th IASTED International Conference on
       Parallel and Distributed Computing and Systems (PDCS 2006)\n
     http://www.loria.fr/~quinson/articles/gras-iasted06.pdf 
 
@@ -143,32 +143,43 @@ external to the development group, but we also use our tool ourselves (see
 next section).
 
 - 2006
+  - <b>Simbatch: an API for simulating and predicting the performance of parallel resources and batch systems.</b>\n
+    INRIA Research Report 6040, November 2006.\n
+    https://hal.inria.fr/inria-00115880    
   - <b>Simbatch : une API pour la simulation et la prédiction de performances de systèmes batch</b>\n
     by <em>Jean-Sébastien Gay and Yves Caniou</em>.\n
     In 17ème Rencontres Francophones du Parallélisme, des Architectures et des Systèmes, RenPar'17.\n
-  - <b>Simbatch: an API for simulating and predicting the performance of parallel resources and batch systems.</b>\n
-    INRIA Research Report 6040, November 2006.\n
-    https://hal.inria.fr/inria-00115880
+    October 4-6, Perpignan, France    
+  - <b>Metascheduling Multiple Resource Types using the MMKP</b>\n
+    by <em>D. Vanderster, N. Dimopoulos, R. Sobie</em>\n
+    7th IEEE/ACM International Conference on Grid Computing\n
+    Barcelona, September 28th-29th 2006    
   - <b>Master-Slave Tasking on Asymmetric Networks</b>\n
     by <em>Cyril Banino-Rokkones, Olivier Beaumont and Lasse Natvig</em>.\n
-    In Proceedings of 12th International Euro-Par Conference, Euro-Par 2006.
+    In Proceedings of 12th International Euro-Par Conference, Euro-Par 2006.\n
     August 29 - September 1, Pages 167--176, Dresden, Germany.
-  - <b>Hierarchical Scheduling of Independent Tasks with Shared Files</b>\n 
-    by <em>H. Senger, F. Silva, W. Nascimento</em>.\n
-    Proceedings of the Sixth IEEE International Symposium on Cluster Computing and the Grid Workshop (CCGRIDW'06), 2006.\n
-    http://www.unisantos.br/mestrado/informatica/hermes/File/senger-HierarchicalScheduling-Workshop-TB120.pdf
   - <b>Critical Path and Area Based Scheduling of Parallel Task Graphs on Heterogeneous Platforms</b>\n
     by <em>Tchimou N'Takp&eacute; and Fr&eacute;d&eacute;ric Suter</em>\n
-    Proceedings of the Twelfth International Conference on Parallel and Distributed Systems (ICPADS), 2006.
+    Proceedings of the Twelfth International Conference on Parallel and Distributed Systems (ICPADS)\n
+    Minneapolis, MN, July 12-15, 2006.    
+  - <b>Sensitivity Analysis of Knapsack-based Task Scheduling on the Grid</b>\n
+    by <em>*D.C. Vanderster and N.J. Dimopoulos</em>.\n
+    In Proceedings of The 20th ACM International Conference on Supercomputing\n
+    Cairns, Australia, June 28-July 1, 2006.\n
+    http://portal.acm.org/citation.cfm?id=1183401.1183446&coll=GUIDE&dl=%23url.coll
+  - <b>Hierarchical Scheduling of Independent Tasks with Shared Files</b>\n 
+    by <em>H. Senger, F. Silva, W. Nascimento</em>.\n
+    Proceedings of the Sixth IEEE International Symposium on Cluster
+    Computing and the Grid Workshop (CCGRIDW'06)\n
+    Singapore, 16-19 May 2006.\n
+    http://www.unisantos.br/mestrado/informatica/hermes/File/senger-HierarchicalScheduling-Workshop-TB120.pdf    
   - <b>Evaluation of Knapsack-based Scheduling using the NPACI JOBLOG</b>\n
     by <em>D. Vanderster, N. Dimopoulos, R. Parra-Hernandez and R. Sobie</em>.\n
     20th International Symposium on High-Performance Computing in an
       Advanced Collaborative Environment (HPCS'06)\n
+    St. John's, Newfoundland, Canada, 14-17 May 2006\n
     http://doi.ieeecomputersociety.org/10.1109/HPCS.2006.23
-  - <b>Metascheduling Multiple Resource Types using the MMKP</b>\n
-    by <em>D. Vanderster, N. Dimopoulos, R. Sobie</em>\n
-    To Appear: 7th IEEE/ACM International Conference on Grid Computing,
-      Barcelona, September 28th-29th 2006
+    
 - 2005
   - <b>On Dynamic Resource Management Mechanism using Control
     Theoretic Approach for Wide-Area Grid Computing</b>\n
