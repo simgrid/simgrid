@@ -21,8 +21,9 @@ computation. This design is often refered to as "Remote Procedure Call" or
 RPC for short.
 
 It is naturally possible to build RPC exchanges using only one-way messages,
-as the ones we used in GRAS so far, but it's a bit awkward. That is why GRAS
-provide a support for RPC, as we will now detail.
+as the ones we used in GRAS so far, but it's a bit awkward (specially when
+the server wants to return a value to the client in a remote function call).
+That is why GRAS provide a support for RPC, as we will now detail.
 
 \section GRAS_tut_tour_rpc_use Putting rpc into action
 
@@ -96,5 +97,8 @@ The program now reads:
 Which produces the expected output:
 \include 10-rpc.output
 
+Now, you know how to send messages, attach callbacks and do RPCs. The next
+lesson will learn you the last missing part of the messaging library: 
+\ref GRAS_tut_tour_explicitwait
 
 */
