@@ -1,26 +1,35 @@
 /**
 @page GRAS_tut_tour_pointers Lesson 13: Defining structure containing pointers (TODO)
 
+This lesson is a bit different from the other ones. It aims at explaining
+several features of the automatic datadesc parsing. Since it would be a bit
+long otherwise, the lesson is organized as a FAQ, with little examples of
+how to do things.
+
 \section GRAS_tut_tour_pointers_toc Table of Contents
- - \ref GRAS_tut_tour_pointers_intro
- - \ref GRAS_tut_tour_pointers_use
- - \ref GRAS_tut_tour_pointers_recap
+ - \ref GRAS_tut_tour_pointers_cste
    
 <hr>
 
-\section GRAS_tut_tour_pointers_intro Introduction
 
+\section GRAS_tut_tour_pointers_cste How to have constants in parsed structures?
 
-\section GRAS_tut_tour_pointers_use Defining structure containing pointers
+You can use gras_datadesc_set_const() to explain GRAS about the value of
+your \#define'd constants.
 
+\verbatim
+#define SIZE 12
+GRAS_DEFINE_TYPE(array,struct array {
+  int data[SIZE];
+};);
 
-\section GRAS_tut_tour_pointers_recap Recapping everything together
-
-The program now reads:
-include 12-pointers.c
-
-Which produces the expected output:
-include 12-pointers.output
+void declare_ddt() {
+  gras_datadesc_type_t ddt;
+  
+  gras_datadesc_set_const("SIZE",SIZE); /* Set it before */
+  gras_datadesc_by_symbol(array); 
+}
+\endverbatim
 
 
 */
