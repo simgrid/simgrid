@@ -3,8 +3,20 @@
 #####################################################################
 
 /** \addtogroup GRAS_API
-  
-    \section GRAS_funct Offered functionnalities
+
+\htmlonly
+<div class="toc">
+<div class="tocTitle">Table of content</div>
+<ol type="1">
+<li> <a href="#GRAS_funct">API documentation</a>
+<li> <a href="#GRAS_example">Examples</a>
+<li> <a href="#GRAS_tut_presentation">Tutorial</a>
+<li> <a href="#GRAS_howto_presentation">HOWTOs</a>
+</div>
+\endhtmlonly
+
+    \section GRAS_funct API documentation
+     GRAS offers the following functionnalities
      - <b>\ref GRAS_comm</b>: Exchanging messages between peers
        - \ref GRAS_dd : any data which may transit on the network must be
          described beforehand so that GRAS can handle the platform
@@ -44,8 +56,12 @@
        
     \section GRAS_tut_presentation Tutorial
     
-    We even have a tutorial for the GRAS framework. Here is the table of
+    We even have a tutorial for the GRAS framework. It details in a
+    hopefully pedagogic order all the points of the API, along with example
+    of use for each of them. Unfortunately, it is not finished yet (the main
+    part missing is the one on how to describe data). Here is the table of
     content:
+    
        - \ref GRAS_tut_intro
          - \ref GRAS_tut_intro_what
          - \ref GRAS_tut_intro_model
@@ -60,6 +76,19 @@
 	 - \ref GRAS_tut_tour_timers
 	 - \ref GRAS_tut_tour_exceptions
 	 - \ref GRAS_tut_tour_rpc
+	 - \ref GRAS_tut_tour_explicitwait
+	 - \ref GRAS_tut_tour_message_recaping
+
+    \section GRAS_howto_presentation HOWTOs
+    
+    The tutorial and the API documentation present the framework little
+    piece by little piece and provide a lot of information on each of them.
+    Quite orthogonally to this, the HOWTOs try to present transversal
+    aspects of the framework to give you some broader point of view on it.
+    How infortunate it is that only one such HOWTO exist for now...
+
+       - \ref GRAS_howto
+         - \ref GRAS_howto_design
 
     @{ */
        /** @defgroup GRAS_comm    Communication facilities */
