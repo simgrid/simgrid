@@ -88,3 +88,12 @@ _09-simpledata_simulator.c
 _10-rpc_client.c
 _10-rpc_server.c
 _10-rpc_simulator.c
+
+11-explicitwait.mk
+11-explicitwait.trace
+11-explicitwait_client
+11-explicitwait_server
+11-explicitwait_simulator
+_11-explicitwait_client.c
+_11-explicitwait_server.c
+_11-explicitwait_simulator.c

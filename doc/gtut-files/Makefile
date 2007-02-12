@@ -3,7 +3,7 @@ export LD_LIBRARY_PATH=$(GRAS_ROOT)/lib
 
 all: 01-bones.output 02-simple.output 03-args.output 04-callback.output \
      05-globals.output 06-logs.output 07-timers.output 08-exceptions.output \
-     09-simpledata.output 10-rpc.output
+     09-simpledata.output 10-rpc.output 11-explicitwait.output
 
 veryclean: clean
 	rm *.output*
@@ -272,5 +272,32 @@ _10-rpc_client.c _10-rpc_server.c _10-rpc_simulator.c: 10-rpc.c 03-args.xml
 clean::
 	if [ -e 10-rpc.mk ] ; then make -f 10-rpc.mk clean; fi
 	rm -f _10-rpc_client.c _10-rpc_server.c _10-rpc_simulator.c 10-rpc.trace 10-rpc.mk
+
+
+# Lesson 11: Explicit wait
+########################################
+11-explicitwait.output: 11-explicitwait_client 11-explicitwait_server 11-explicitwait_simulator
+	(echo '$$ ./test_server & ./test_client 127.0.0.1 12345 & ./test_client 127.0.0.1 12345 '; \
+	 ./11-explicitwait_client 127.0.0.1 12345            & \
+	 ./11-explicitwait_client 127.0.0.1 12345            & \
+	 ./11-explicitwait_server 12345                        \
+	) 2>&1 | sed s/11-explicitwait/test/ > $@
+	sleep 1
+	echo '$$'                                                     >> $@
+	killall 11-explicitwait_server 11-explicitwait_client 2>/dev/null || true
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform-3nodes.xml test.xml'              >> $@
+	./11-explicitwait_simulator gtut-platform-3nodes.xml 11-explicitwait.xml   2>&1 |sed s/11-explicitwait/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+
+11-explicitwait_client 11-explicitwait_server 11-explicitwait_simulator: _11-explicitwait_client.c _11-explicitwait_server.c _11-explicitwait_simulator.c
+	make -f 11-explicitwait.mk
+
+_11-explicitwait_client.c _11-explicitwait_server.c _11-explicitwait_simulator.c: 11-explicitwait.c 03-args.xml
+	../../tools/gras/gras_stub_generator 11-explicitwait 03-args.xml >/dev/null
+
+clean::
+	if [ -e 11-explicitwait.mk ] ; then make -f 11-explicitwait.mk clean; fi
+	rm -f _11-explicitwait_client.c _11-explicitwait_server.c _11-explicitwait_simulator.c 11-explicitwait.trace 11-explicitwait.mk
 
 
