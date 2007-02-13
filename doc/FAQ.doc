@@ -1073,6 +1073,17 @@ These are changes to FleXML itself, not SimGrid. But since we kinda hijacked
 the development of FleXML, I can grant you that any patches would be really
 welcome and quickly integrated.
 
+<b>Update:</b> A new version of FleXML (1.7) was released. Most of the work
+was done by William Dowling, who use it in his own work. The good point is
+that it now use a dynamic buffer, and that the memory usage was greatly
+improved. The downside is that William also changed some things internally,
+and it breaks the hack we devised to bypass the parser, as explained in 
+\ref faq_flexml_bypassing. Indeed, this is not a classical usage of the
+parser, and Will didn't imagine that we may have used (and even documented)
+such a crude usage of FleXML. So, we now have to repare the bypassing
+functionnality to use the lastest FleXML version and fix the memory usage in
+SimGrid.
+
 \subsection faq_gras_transport GRAS spits networking error messages
 
 Gras, on real platforms, naturally use regular sockets to communicate. They
