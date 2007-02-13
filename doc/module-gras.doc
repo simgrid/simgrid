@@ -53,6 +53,11 @@
        - \ref GRAS_ex_mmrpc
        - \ref GRAS_ex_token
        - \ref GRAS_ex_timer
+      
+     The initiatic tour of the tutorial also contains several examples. The
+     most proeminent one is:
+      
+       - \ref GRAS_tut_tour_explicitwait_use
        
     \section GRAS_tut_presentation Tutorial
     
@@ -141,6 +146,11 @@
        - \ref GRAS_ex_token
        - \ref GRAS_ex_timer
 
+     The initiatic tour of the tutorial also contains several examples. The
+     most proeminent one is:
+      
+       - \ref GRAS_tut_tour_explicitwait_use
+       
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_CHILD "Ping-Pong"=GRAS_ex_ping.html
       DOXYGEN_NAVBAR_CHILD "RPC"=GRAS_ex_mmrpc.html
