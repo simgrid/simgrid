@@ -118,7 +118,8 @@ void sdp_solve(lmm_system_t sys)
   int nb_cnsts_struct=0;
   int nb_cnsts_positivy=0;
   int block_num=0;
-  int block_size;  
+  int block_size; 
+  int total_block_size=0;
   int *isdiag=NULL;
   FILE *sdpout = fopen("SDPA-printf.tmp","w");
   int blocksz = 0;
@@ -150,8 +151,6 @@ void sdp_solve(lmm_system_t sys)
   if ( !(sys->modified))
     return;
 
-
-  DEBUG0("HI!!!!");
   /* 
    * Initialize the var list variable with only the active variables. 
    * Associate an index in the swag variables.
@@ -159,11 +158,14 @@ void sdp_solve(lmm_system_t sys)
   i = 1;
   var_list = &(sys->variable_set);
   DEBUG1("Variable set : %d", xbt_swag_size(var_list));
+
   xbt_swag_foreach(var, var_list) {
     var->value = 0.0;
     if(var->weight) var->index = i++;
   }
+
   cnst_list=&(sys->saturated_constraint_set);  
+  DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
 
   /*
    * Those fields are the top level description of the platform furnished in the xml file.
@@ -174,13 +176,18 @@ void sdp_solve(lmm_system_t sys)
   /* 
    * This  number is found based on the tree structure explained on top.
    */
-  K = (int)log((double)flows)/log(2.0);
-  
+  double tmp_k;
+
+  tmp_k = (double) log((double)flows)/log(2.0);
+  K = (int) ceil(tmp_k);
+
+
   /* 
-   * The number of variables in the SDP style.
+   * The number of variables in the SDP program. 
    */
   nb_var = get_y(K, pow(2,K));
-  
+  fprintf(sdpout,"%d\n", nb_var);
+ 
   /*
    * Find the size of each group of constraints.
    */
@@ -192,7 +199,7 @@ void sdp_solve(lmm_system_t sys)
    * The total number of constraints.
    */
   nb_cnsts = nb_cnsts_capacity + nb_cnsts_struct + nb_cnsts_positivy;
-
+  fprintf(sdpout,"%d\n", nb_cnsts);
 
   /*
    * Keep track of which blocks have off diagonal entries. 
@@ -226,10 +233,10 @@ void sdp_solve(lmm_system_t sys)
      * Structured blocks are size 2 and all others are size 1.
      */
     if(i <= nb_cnsts_struct){
-      block_size = 2;
+      total_block_size += block_size = 2;
       fprintf(sdpout,"2 ");
     }else{
-      block_size = 1;
+      total_block_size += block_size = 1;
       fprintf(sdpout,"1 ");
     }
     
@@ -300,16 +307,21 @@ void sdp_solve(lmm_system_t sys)
     fprintf(sdpout,"0 %d 1 1 %d\n", block_num,  (int) - (cnst->bound));    
     addentry(constraints, &C, 0, block_num, 1, 1, - (cnst->bound) , C.blocks[block_num].blocksize);    
 
+
     elem_list = &(cnst->element_set);
     xbt_swag_foreach(elem, elem_list) {
       if(elem->variable->weight <=0) break;
       fprintf(sdpout,"%d %d 1 1 %d\n", elem->variable->index, block_num, (int) - (elem->variable->value)); 
       addentry(constraints, &C, elem->variable->index, block_num, 1, 1, - (elem->value), C.blocks[block_num].blocksize);
+ 
     }
+    block_num++;
   }
 
   
-  //Positivy constraint blocks
+  /*
+   * Positivy constraint blocks.
+   */
   for(i = 1; i <= pow(2,K); i++){
     matno=get_y(K, i);
     fprintf(sdpout,"%d %d 1 1 1\n", matno, block_num);
@@ -392,7 +404,7 @@ void sdp_solve(lmm_system_t sys)
    * Initialize parameters.
    */
   printf("Initializing solution...\n");
-  initsoln(nb_cnsts, nb_var, C, a, constraints, &X, &y, &Z);  
+  initsoln(total_block_size, nb_var, C, a, constraints, &X, &y, &Z);  
   
 
 
@@ -400,7 +412,7 @@ void sdp_solve(lmm_system_t sys)
    * Call the solver.
    */
   printf("Calling the solver...\n");
-  int ret = easy_sdp(nb_cnsts, nb_var, C, a, constraints, 0.0, &X, &y, &Z, &pobj, &dobj);
+  int ret = easy_sdp(total_block_size, nb_var, C, a, constraints, 0.0, &X, &y, &Z, &pobj, &dobj);
 
   switch(ret){
   case 0:
@@ -421,17 +433,28 @@ void sdp_solve(lmm_system_t sys)
 
   }
 
+
   /*
    * Write out the solution if necessary.
    */
-  //printf("Writting simple dsp...\n");
-  //write_sol("output.sol", n, k, X, y, Z);
+  xbt_swag_foreach(cnst, cnst_list) {
+
+    elem_list = &(cnst->element_set);
+    xbt_swag_foreach(elem, elem_list) {
+      if(elem->variable->weight <=0) break;
+      
+      i = (int)get_y(K, elem->variable->index);
+      elem->variable->value = y[i]; 
+      
+    }
+  }
+
 
   /*
    * Free up memory.
    */
-  //free_prob(n, k, C, a, constraints, X, y, Z);
-  
+  free_prob(total_block_size, nb_var, C, a, constraints, X, y, Z);
+
   fclose(sdpout);
   free(isdiag);
   sys->modified = 0;
@@ -601,3 +624,4 @@ void addentry(struct constraintmatrix *constraints,
     
   }
 }
+
