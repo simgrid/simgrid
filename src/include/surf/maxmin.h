@@ -9,7 +9,7 @@
 #define _SURF_MAXMIN_H
 
 #include "xbt/misc.h"
-
+#include "portable.h" 
 static XBT_INLINE void double_update(double *variable, double value) 
 {
   *variable -= value;
@@ -71,5 +71,8 @@ void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
 int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
 
 void lmm_solve(lmm_system_t sys);
+#ifdef HAVE_SDP
 void sdp_solve(lmm_system_t sys);
+#endif /* HAVE_SDP */
+
 #endif				/* _SURF_MAXMIN_H */
