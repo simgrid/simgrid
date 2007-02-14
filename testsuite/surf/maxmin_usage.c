@@ -11,15 +11,14 @@
 #pragma hdrstop
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "xbt/sysdep.h"
 #include "surf/maxmin.h"
 
 #include "xbt/log.h"
 #include "xbt/module.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
 
-#define PRINT_VAR(var) DEBUG1(#var " = %g\n",lmm_variable_getvalue(var));
+#define PRINT_VAR(var) DEBUG1(#var " = %g",lmm_variable_getvalue(var));
 
 /*                               */
 /*        ______                 */
@@ -27,8 +26,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
 /*        ------                 */
 /*                               */
 
-void test(void);
-void test(void)
+typedef enum {
+  MAXMIN,
+  SDP 
+} method_t;
+
+void test1(method_t method);
+void test1(method_t method)
 {
   lmm_system_t Sys = NULL ;
   lmm_constraint_t L1 = NULL;
@@ -66,28 +70,34 @@ void test(void)
   PRINT_VAR(R_3);
 
   DEBUG0("\n");
-  lmm_solve(Sys);
+  if(method==MAXMIN)
+    lmm_solve(Sys);
+#ifdef HAVE_SDP
+  else if(method==SDP)
+    sdp_solve(Sys);    
+#endif
+  else 
+    xbt_assert0(0,"Invalid method");
 
   PRINT_VAR(R_1_2_3);
   PRINT_VAR(R_1);
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
-  DEBUG0("\n");
+/*   DEBUG0("\n"); */
 
+/*   lmm_update_variable_weight(Sys,R_1_2_3,.5); */
+/*   lmm_solve(Sys); */
 
-  lmm_update_variable_weight(Sys,R_1_2_3,.5);
-  lmm_solve(Sys);
-
-  PRINT_VAR(R_1_2_3);
-  PRINT_VAR(R_1);
-  PRINT_VAR(R_2);
-  PRINT_VAR(R_3);
+/*   PRINT_VAR(R_1_2_3); */
+/*   PRINT_VAR(R_1); */
+/*   PRINT_VAR(R_2); */
+/*   PRINT_VAR(R_3); */
 
   lmm_system_free(Sys);
 } 
 
-void test2(void);
-void test2(void)
+void test2(method_t method);
+void test2(method_t method)
 {
   lmm_system_t Sys = NULL ;
   lmm_constraint_t CPU1 = NULL;
@@ -110,13 +120,180 @@ void test2(void)
   PRINT_VAR(T2);
 
   DEBUG0("\n");
-  lmm_solve(Sys);
+  if(method==MAXMIN)
+    lmm_solve(Sys);
+#ifdef HAVE_SDP
+  else if(method==SDP)
+    sdp_solve(Sys);    
+#endif
+  else 
+    xbt_assert0(0,"Invalid method");
 
   PRINT_VAR(T1);
   PRINT_VAR(T2);
 
   DEBUG0("\n");
 
+  lmm_system_free(Sys);
+}
+
+void test3(method_t method);
+void test3(method_t method)
+{
+  int flows=11;  //flows and conexions are synonnims ?
+  int links=10;  //topology info
+  
+  //just to be carefull
+  int i = 0;
+  int j = 0;
+
+  double **A;
+  A = (double **)calloc(links+5, sizeof(double));
+ 
+  for(i=0 ; i< links+5; i++){
+    A[i] = (double *)calloc(flows+5, sizeof(double));
+
+    for(j=0 ; j< flows+5; j++){
+      A[i][j] = 0.0;
+
+      if(i >= links || j >= flows){
+	  A[i][j] = 0.0;
+      }
+    }
+  }
+
+  //matrix that store the constraints/topollogy
+  /*double A[15][16]=
+    {{0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0,    0, 0, 0, 0, 0},
+     {0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0,    0, 0, 0, 0, 0},
+     {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,    0, 0, 0, 0, 0},
+     {1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0,    0, 0, 0, 0, 0},
+     {1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0,    0, 0, 0, 0, 0},
+     {1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1,    0, 0, 0, 0, 0},
+     {0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1,    0, 0, 0, 0, 0},
+     {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,    0, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0,    0, 0, 0, 0, 0},
+     
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    1, 0, 0, 0, 0},
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 1, 0, 0, 0},
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 1, 0, 0},
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 1, 0},
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 1}
+     }; */
+
+  A[0][1]  = 1.0;
+  A[0][7]  = 1.0;
+  
+  A[1][1]  = 1.0;
+  A[1][7]  = 1.0;
+  A[1][8]  = 1.0;
+
+  A[2][1]  = 1.0;
+  A[2][8]  = 1.0;
+
+  A[2][1]  = 1.0;
+  A[2][8]  = 1.0;
+
+  A[3][8]  = 1.0;
+
+  A[4][0]  = 1.0;
+  A[4][3]  = 1.0;
+  A[4][9]  = 1.0;
+
+  A[5][0]  = 1.0;
+  A[5][3]  = 1.0;
+  A[5][4]  = 1.0;
+  A[5][9]  = 1.0;
+
+  A[6][0]  = 1.0;
+  A[6][4]  = 1.0;
+  A[6][9]  = 1.0;
+  A[6][10] = 1.0;
+
+  A[7][2]  = 1.0;
+  A[7][4]  = 1.0;
+  A[7][6]  = 1.0;
+  A[7][9]  = 1.0;
+  A[7][10] = 1.0;
+
+  A[8][2]  = 1.0;
+  A[8][10] = 1.0;
+
+  A[9][5]  = 1.0;
+  A[9][6]  = 1.0;
+  A[9][9]  = 1.0;
+
+  
+  A[10][11] = 1.0;
+  A[11][12] = 1.0;
+  A[12][13] = 1.0;
+  A[13][14] = 1.0;
+  A[14][15] = 1.0;
+
+  //array to add the the constraints of fictiv variables
+  double B[15] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+	    1, 1, 1, 1, 1};
+
+
+  lmm_system_t Sys = NULL ;
+  lmm_constraint_t *tmp_cnst = NULL;
+  lmm_variable_t   *tmp_var  = NULL;
+  char tmp_name[13];
+
+
+  Sys = lmm_system_new();
+  
+  
+  /*
+   * Creates the constraints
+   */
+  tmp_cnst = calloc(15, sizeof(lmm_constraint_t));
+  for(i=0; i<15; i++){
+    sprintf(tmp_name, "C_%03d", i); 
+    tmp_cnst[i] = lmm_constraint_new(Sys, (void *) tmp_name, B[i]);
+  }
+
+
+  /*
+   * Creates the variables
+   */
+  tmp_var = calloc(16, sizeof(lmm_variable_t));
+  for(j=0; j<16; j++){
+    sprintf(tmp_name, "X_%03d", j); 
+    tmp_var[j] = lmm_variable_new(Sys, (void *) tmp_name, 1.0, -1.0 , 15);
+  }
+
+  /*
+   * Link constraints and variables
+   */
+  for(i=0;i<15;i++) { 
+    for(j=0; j<16; j++){
+      if(A[i][j]){
+	lmm_expand(Sys, tmp_cnst[i], tmp_var[j], 1.0); 
+      }
+    }
+  }
+
+  for(j=0; j<16; j++){
+    PRINT_VAR(tmp_var[j]);
+  }
+
+  if(method==MAXMIN)
+    lmm_solve(Sys);
+#ifdef HAVE_SDP
+  else if(method==SDP)
+    sdp_solve(Sys);    
+#endif
+  else 
+    xbt_assert0(0,"Invalid method");
+
+  for(j=0; j<16; j++){
+    PRINT_VAR(tmp_var[j]);
+  }
+
+  free(tmp_var);
+  free(tmp_cnst);
   lmm_system_free(Sys);
 }
 
@@ -128,10 +305,24 @@ int main(int argc, char **argv)
 {
   xbt_init(&argc,argv);
 
-  DEBUG0("***** Test 1 ***** \n");
-  test();
-  DEBUG0("***** Test 2 ***** \n");
-  test2();
+  DEBUG0("***** Test 1 (Max-Min) ***** \n");
+  test1(MAXMIN);
+#ifdef HAVE_SDP
+  DEBUG0("***** Test 1 (SDP) ***** \n");
+  test1(SDP);
+#endif
+  DEBUG0("***** Test 2 (Max-Min) ***** \n");
+  test2(MAXMIN);
+#ifdef HAVE_SDP
+  DEBUG0("***** Test 2 (SDP) ***** \n");
+  test2(SDP);
+#endif
+  DEBUG0("***** Test 3 (Max-Min) ***** \n");
+  test3(MAXMIN);
+#ifdef HAVE_SDP
+  DEBUG0("***** Test 3 (SDP) ***** \n");
+  test3(SDP);
+#endif
 
   return 0;
 }

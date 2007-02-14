@@ -36,7 +36,6 @@ const char *string_action(e_surf_action_state_t state)
   }
 }
 
-
 void test(char *platform);
 void test(char *platform)
 {
