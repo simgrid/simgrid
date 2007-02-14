@@ -30,6 +30,8 @@ static void addentry(struct constraintmatrix *constraints,
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_sdp, surf,
 				"Logging specific to SURF (sdp)");
+XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf,
+				"Logging specific to SURF (sdp)");
 /*
 ########################################################################
 ######################## Simple Proportionnal fairness #################
@@ -189,7 +191,7 @@ void sdp_solve(lmm_system_t sys)
    */
   nb_var = get_y(K, pow(2,K));
   DEBUG1("Number of variables in the SDP program : %d", nb_var);
-  //fprintf(sdpout,"%d\n", nb_var);
+  CDEBUG1(surf_sdp_out,"%d", nb_var);
  
   /*
    * Find the size of each group of constraints.
@@ -345,7 +347,7 @@ void sdp_solve(lmm_system_t sys)
        * We have a hidden diagonal block!
        */
       
-      printf("Block %d is actually diagonal.\n",i);
+      //printf("Block %d is actually diagonal.\n",i);
       
       blocksz=C.blocks[i].blocksize;
       tempdiag=(double *)calloc((blocksz+1), sizeof(double));
@@ -396,8 +398,8 @@ void sdp_solve(lmm_system_t sys)
   /*
    * Debuging print problem in SDPA format.
    */
-  printf("Printing SDPA...\n");
   if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
+    DEBUG0("Printing SDPA...\n");
     char *tmp=strdup("SURF-PROPORTIONNAL.sdpa");
     write_prob(tmp,total_block_size,nb_var,C,a,constraints);
     free(tmp);
@@ -406,7 +408,7 @@ void sdp_solve(lmm_system_t sys)
   /*
    * Initialize parameters.
    */
-  printf("Initializing solution...\n");
+  DEBUG0("Initializing solution...\n");
   initsoln(total_block_size, nb_var, C, a, constraints, &X, &y, &Z);  
   
 
@@ -414,24 +416,28 @@ void sdp_solve(lmm_system_t sys)
   /*
    * Call the solver.
    */
-  printf("Calling the solver...\n");
+  DEBUG0("Calling the solver...\n");
+  FILE *stdout_sav=stdout;
+  stdout=fopen("/dev/null","w");
   int ret = easy_sdp(total_block_size, nb_var, C, a, constraints, 0.0, &X, &y, &Z, &pobj, &dobj);
+  fclose(stdout);
+  stdout=stdout_sav;
 
   switch(ret){
   case 0:
-  case 1: printf("SUCCESS The problem is primal infeasible\n");
+  case 1: DEBUG0("SUCCESS The problem is primal infeasible\n");
           break;
 
-  case 2: printf("SUCCESS The problem is dual infeasible\n");
+  case 2: DEBUG0("SUCCESS The problem is dual infeasible\n");
           break;
  
-  case 3: printf("Partial SUCCESS A solution has been found, but full accuracy was not achieved. One or more of primal infeasibility, dual infeasibility, or relative duality gap are larger than their tolerances, but by a factor of less than 1000.\n");
+  case 3: DEBUG0("Partial SUCCESS A solution has been found, but full accuracy was not achieved. One or more of primal infeasibility, dual infeasibility, or relative duality gap are larger than their tolerances, but by a factor of less than 1000.\n");
           break;
 
-  case 4: printf("Failure. Maximum number of iterations reached.");
+  case 4: DEBUG0("Failure. Maximum number of iterations reached.");
           break;
 
-  case 5: printf("Failure. Stuck at edge of primal feasibility.");
+  case 5: DEBUG0("Failure. Stuck at edge of primal feasibility.");
           break;
 
   }
