@@ -44,6 +44,8 @@ typedef struct surf_resource_private {
 /* #define pub2priv(r) ((surf_resource_private_t) ((char *)(r) -(sizeof(struct surf_resource_private_part)))) */
 /* #define priv2pub(r) ((void *) ((char *)(r) +(sizeof(struct surf_resource_private_part)))) */
 
+extern int use_sdp_solver;
+
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				      size_t offset);
 double generic_maxmin_share_resources2(xbt_swag_t running_actions,

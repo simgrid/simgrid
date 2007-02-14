@@ -1042,3 +1042,15 @@ void surf_workstation_resource_init_KCCFLN05(const char *filename)
 
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 }
+
+void surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename)
+{
+  xbt_assert0(!surf_cpu_resource, "CPU resource type already defined");
+  xbt_assert0(!surf_network_resource, "network resource type already defined");
+  resource_init_internal();
+  parse_file(filename);
+
+  surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (proportionnal)";
+  use_sdp_solver=1;
+  xbt_dynar_push(resource_list, &surf_workstation_resource);
+}

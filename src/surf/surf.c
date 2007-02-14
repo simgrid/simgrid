@@ -11,6 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 				"Logging specific to SURF (kernel)");
 
+int use_sdp_solver=0;
 
 /* Additional declarations for Windows potability. */
 
@@ -139,7 +140,15 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
   double value = -1;
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
-  lmm_solve(sys);
+  if(!use_sdp_solver)
+    lmm_solve(sys);
+  else {
+#ifdef HAVE_SDP
+    sdp_solve(sys);
+#else
+    xbt_assert0(0, "No CSDP found! You cannot use this model!");
+#endif
+  }
 
   xbt_swag_foreach(action, running_actions) {
     value = lmm_variable_getvalue(VARIABLE(action));

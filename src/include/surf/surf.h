@@ -340,6 +340,7 @@ void surf_workstation_resource_init_CLM03(const char *filename);
  *  \see surf_workstation_resource_init_CLM03()
  */
 void surf_workstation_resource_init_KCCFLN05(const char *filename);
+void surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename);
 
 /** \brief The network links
  *  \ingroup SURF_resources
