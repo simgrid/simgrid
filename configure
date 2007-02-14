@@ -25368,6 +25368,11 @@ if test "x$csdp" = xyes; then
   SIMGRID_DEP="$SIMGRID_DEP -lsdp -llapack -lblas -lm"
   { echo "$as_me:$LINENO: result: Found working sdp library." >&5
 echo "${ECHO_T}Found working sdp library." >&6; }
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_SDP 1
+_ACEOF
+
 else
   { echo "$as_me:$LINENO: result: Could not find any working sdp library." >&5
 echo "${ECHO_T}Could not find any working sdp library." >&6; }

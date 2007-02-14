@@ -184,6 +184,7 @@ AC_CHECK_LIB(sdp,sdp,csdp=yes, csdp=no,-llapack -lblas -lm)
 if test "x$csdp" = xyes; then 
   SIMGRID_DEP="$SIMGRID_DEP -lsdp -llapack -lblas -lm"
   AC_MSG_RESULT(Found working sdp library.)
+  AC_DEFINE(HAVE_SDP, 1, [Indicates whether printf("%s",NULL) works])
 else
   AC_MSG_RESULT(Could not find any working sdp library.)
 fi;
