@@ -378,8 +378,8 @@ void lmm_print(lmm_system_t sys)
     }
     DEBUG1("%s",trace_buf);
     trace_buf[0]='\000';
-    xbt_assert2((sum<=cnst->bound), "Incorrect value (%f is not smaller than %f)",
-		sum,cnst->bound);
+    xbt_assert3((sum<=cnst->bound), "Incorrect value (%f is not smaller than %f): %g",
+		sum,cnst->bound,sum-cnst->bound);
   }
 
   /* Printing Result */
