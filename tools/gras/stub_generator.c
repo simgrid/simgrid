@@ -1032,7 +1032,7 @@ generate_borland_project(borland_project_t project)
 	/* write the begin of the node OPTIONS */
 	borland_project_begin_xml_node(project,"OPTIONS");
 
-	/* FIXME check the idlcflags
+	/* FIXME check the idlcflags */
 	/* write the IDLCFLAGS element */
 	borland_project_write_xml_element(project,"IDLCFLAGS","");
 
