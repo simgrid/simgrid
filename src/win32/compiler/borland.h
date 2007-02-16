@@ -401,4 +401,9 @@ typedef int socklen_t;
 #define __EX_MCTX_SJLJ__
 #endif 
 
+/* this is used in context managment. */
+#ifndef USE_WIN_THREADS
+#define USE_WIN_THREADS
+#endif
+
 #endif /* #ifndef __XBT_BORLAND_COMPILER_CONFIG_H__ */
