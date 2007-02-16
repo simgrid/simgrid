@@ -272,11 +272,6 @@ void xbt_context_init(void)
 	if(!current_context){
 		current_context = init_context = xbt_new0(s_xbt_context_t,1);
 
-        /*#ifdef USE_WIN_THREADS
-        win_thread_mutex_init(&(current_context->mutex));
-	    win_thread_cond_init(&(current_context->cond));
-        #endif*/
-
 		init_context->exception = xbt_new(ex_ctx_t,1);
 		XBT_CTX_INITIALIZE(init_context->exception);
 		__xbt_ex_ctx       = __context_ex_ctx;
@@ -427,10 +422,7 @@ void xbt_context_schedule(xbt_context_t context)
 void xbt_context_exit(void) {
 	xbt_context_t context=NULL;
 
-    /*#ifdef USE_WIN_THREADS
-    win_thread_mutex_destroy(&(current_context->mutex));
-	win_thread_cond_destroy(&(current_context->cond));
-    #endif*/
+    
 
 	xbt_context_empty_trash();
 	xbt_swag_free(context_to_destroy);
