@@ -20,24 +20,24 @@ typedef struct lmm_variable *lmm_variable_t;
 typedef struct lmm_constraint *lmm_constraint_t;
 typedef struct lmm_system *lmm_system_t;
 
-lmm_system_t lmm_system_new(void);
-void lmm_system_free(lmm_system_t sys);
+XBT_PUBLIC(lmm_system_t) lmm_system_new(void);
+XBT_PUBLIC(void) lmm_system_free(lmm_system_t sys);
 void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var);
 
-lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
+XBT_PUBLIC(lmm_constraint_t) lmm_constraint_new(lmm_system_t sys, void *id,
 				    double bound_value);
 void lmm_constraint_shared(lmm_constraint_t cnst);
 
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
 
-lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
+XBT_PUBLIC(lmm_variable_t) lmm_variable_new(lmm_system_t sys, void *id,
 				double weight_value,
 				double bound, int number_of_constraints);
 void lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
-double lmm_variable_getvalue(lmm_variable_t var);
+XBT_PUBLIC(double) lmm_variable_getvalue(lmm_variable_t var);
 
 
-void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
+XBT_PUBLIC(void) lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, double value);
 void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
 		    lmm_variable_t var, double value);
@@ -61,7 +61,7 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, double value);
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 			       double bound);
-void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
+XBT_PUBLIC(void) lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 				double weight);
 double lmm_get_variable_weight(lmm_variable_t var);
 
@@ -70,7 +70,9 @@ void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
 
 int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
 
-void lmm_solve(lmm_system_t sys);
+
+XBT_PUBLIC(void) lmm_solve(lmm_system_t sys);
+
 #ifdef HAVE_SDP
 void sdp_solve(lmm_system_t sys);
 #endif /* HAVE_SDP */
