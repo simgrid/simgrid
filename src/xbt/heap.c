@@ -11,6 +11,8 @@
 #include "xbt/log.h"
 #include "heap_private.h"
 
+#include <stdio.h>
+
 
 /** @addtogroup XBT_heap 
  *  \brief This section describes the API to generic heap with O(log(n)) access.
@@ -69,20 +71,21 @@ int xbt_heap_size(xbt_heap_t H)
  */
 void xbt_heap_push(xbt_heap_t H, void *content, double key)
 {
-  int count = ++(H->count);
-  int size = H->size;
-  xbt_heapItem_t item;
-  if (count > size) {
-    H->size = 2 * size + 1;
-    H->items =
-	(void *) realloc(H->items,
-			 (H->size) * sizeof(struct xbt_heapItem));
-  }
-  item = &(H->items[count - 1]);
-  item->key = key;
-  item->content = content;
-  xbt_heap_increaseKey(H, count - 1);
-  return;
+	int count = ++(H->count);
+
+	int size = H->size;
+	xbt_heapItem_t item;
+	
+	if (count > size) {
+		H->size = 2 * size + 1;
+		H->items =(void *) realloc(H->items,(H->size) * sizeof(struct xbt_heapItem));
+	}
+	
+	item = &(H->items[count - 1]);
+	item->key = key;
+	item->content = content;
+	xbt_heap_increaseKey(H, count - 1);
+	return;
 }
 
 /**

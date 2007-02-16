@@ -23,30 +23,38 @@
 
 #ifdef USE_PTHREADS
 #  include <pthread.h>
+#elif defined(USE_WIN_THREADS)
+#  include "win_thread.h"
 #else
 #  define STACK_SIZE 128*1024 /* Lower this if you want to reduce the memory consumption */
 #endif     /* USE_PTHREADS */
 
-typedef struct s_xbt_context {
-  s_xbt_swag_hookup_t hookup;
-#ifdef USE_PTHREADS
-  pthread_cond_t cond;
-  pthread_mutex_t mutex;
-  pthread_t *thread;		/* the thread that execute the code   */
-#else
-  ucontext_t uc;                /* the thread that execute the code   */
-  char stack[STACK_SIZE];
-  struct s_xbt_context *save;
-#endif     /* USE_PTHREADS */
-  xbt_context_function_t code;	        /* the scheduler fonction   */
-  int argc;
-  char **argv;
-  void_f_pvoid_t *startup_func;
-  void *startup_arg;
-  void_f_pvoid_t *cleanup_func;
-  void *cleanup_arg;
-  ex_ctx_t *exception;	        /* exception */
-} s_xbt_context_t;
-#else
 
-#endif              /* _XBT_CONTEXT_PRIVATE_H */
+typedef struct s_xbt_context 
+{
+	s_xbt_swag_hookup_t hookup;
+	#ifdef USE_PTHREADS
+	pthread_cond_t cond;
+	pthread_mutex_t mutex;
+	pthread_t *thread;				/* the thread that execute the code	*/
+	#elif defined(USE_WIN_THREADS)
+	win_thread_cond_t cond;
+	win_thread_mutex_t mutex;
+	win_thread_t thread;			/* the thread that execute the code	*/ 
+	#else
+	ucontext_t uc;					/* the thread that execute the code	*/
+	char stack[STACK_SIZE];
+	struct s_xbt_context *save;
+	#endif /* USE_PTHREADS || USE_WIN_THREADS */
+	xbt_context_function_t code;	/* the scheduler fonction			*/
+	int argc;
+	char **argv;
+	void_f_pvoid_t *startup_func;
+	void *startup_arg;
+	void_f_pvoid_t *cleanup_func;
+	void *cleanup_arg;
+	ex_ctx_t *exception;			/* exception 						*/
+} s_xbt_context_t;
+
+
+#endif	/* !_XBT_CONTEXT_PRIVATE_H */
