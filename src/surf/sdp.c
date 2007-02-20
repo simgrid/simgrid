@@ -150,6 +150,13 @@ void sdp_solve(lmm_system_t sys)
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
 
+  double tmp_k;
+  struct sparseblock *p;
+  char *tmp;
+  FILE *stdout_sav;
+  int ret;
+
+
   if ( !(sys->modified))
     return;
 
@@ -180,8 +187,6 @@ void sdp_solve(lmm_system_t sys)
   /* 
    * This  number is found based on the tree structure explained on top.
    */
-  double tmp_k;
-
   tmp_k = (double) log((double)flows)/log(2.0);
   K = (int) ceil(tmp_k);
 
@@ -191,7 +196,7 @@ void sdp_solve(lmm_system_t sys)
    */
   nb_var = get_y(K, pow(2,K));
   DEBUG1("Number of variables in the SDP program : %d", nb_var);
-  CDEBUG1(surf_sdp_out,"%d", nb_var);
+  
  
   /*
    * Find the size of each group of constraints.
@@ -204,7 +209,7 @@ void sdp_solve(lmm_system_t sys)
    * The total number of constraints.
    */
   nb_cnsts = nb_cnsts_capacity + nb_cnsts_struct + nb_cnsts_positivy;
-  //fprintf(sdpout,"%d\n", nb_cnsts);
+  CDEBUG1(surf_sdp_out,"Number of constraints = %d", nb_cnsts);
 
   /*
    * Keep track of which blocks have off diagonal entries. 
@@ -239,10 +244,10 @@ void sdp_solve(lmm_system_t sys)
      */
     if(i <= nb_cnsts_struct){
       total_block_size += block_size = 2;
-      //fprintf(sdpout,"2 ");
+      DEBUG0("2 ");
     }else{
       total_block_size += block_size = 1;
-      //fprintf(sdpout,"1 ");
+      CDEBUG0(surf_sdp_out,"1 ");
     }
     
     /*
@@ -255,7 +260,7 @@ void sdp_solve(lmm_system_t sys)
     block_num++;
   }
 
-  //fprintf(sdpout,"\n");
+  CDEBUG0(surf_sdp_out," ");
 
 
   /*
@@ -265,14 +270,14 @@ void sdp_solve(lmm_system_t sys)
   
   for(i = 1; i <= nb_var; i++){
     if(get_y(0,1)==i){
-      //fprintf(sdpout,"-1 ");
+      CDEBUG0(surf_sdp_out,"-1 ");
       a[i]=-1;
     }else{
-      //fprintf(sdpout,"0 ");
+      CDEBUG0(surf_sdp_out,"0 ");
       a[i]=0;
     }
   }
-  //fprintf(sdpout,"\n");
+  CDEBUG0(surf_sdp_out,"\n");
 
 
   /*
@@ -283,19 +288,19 @@ void sdp_solve(lmm_system_t sys)
   for(k = 1; k <= K; k++){
     for(i = 1; i <= pow(2,k-1); i++){
       matno=get_y(k,2*i-1);
-      //fprintf(sdpout,"%d %d 1 1 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 1 1 1\n", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 1, 1, 1.0, C.blocks[block_num].blocksize);
 
       matno=get_y(k,2*i);
-      //fprintf(sdpout,"%d %d 2 2 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 2 2 1\n", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 2, 2, 1.0, C.blocks[block_num].blocksize);
 
       matno=get_y(k-1,i);
-      //fprintf(sdpout,"%d %d 1 2 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 1 2 1\n", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 1, 2, 1.0, C.blocks[block_num].blocksize);      
       
       matno=get_y(k-1,i);
-      //fprintf(sdpout,"%d %d 2 1 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 2 1 1\n", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 2, 1, 1.0, C.blocks[block_num].blocksize);
       
       isdiag[block_num] = 0;
@@ -309,15 +314,14 @@ void sdp_solve(lmm_system_t sys)
    */
   xbt_swag_foreach(cnst, cnst_list) {
 
-    //fprintf(sdpout,"0 %d 1 1 %f\n", block_num,  - (cnst->bound));    
-    addentry(constraints, &C, 0, block_num, 1, 1, - (cnst->bound) , C.blocks[block_num].blocksize);    
-
+    CDEBUG2(surf_sdp_out,"0 %d 1 1 %f\n", block_num,  - (cnst->bound));    
+    addentry(constraints, &C, 0, block_num, 1, 1, - (cnst->bound) , C.blocks[block_num].blocksize);
 
     elem_list = &(cnst->element_set);
-    xbt_swag_foreach(elem, elem_list) {
+    xbt_swag_foreach(elem, elem_list){
       if(elem->variable->weight <=0) break;
       matno=get_y(K,elem->variable->index);
-      //fprintf(sdpout,"%d %d 1 1 %f\n", elem->variable->index, block_num, - (elem->value)); 
+      CDEBUG3(surf_sdp_out,"%d %d 1 1 %f\n", elem->variable->index, block_num, - (elem->value)); 
       addentry(constraints, &C, matno, block_num, 1, 1, - (elem->value), C.blocks[block_num].blocksize);
  
     }
@@ -330,7 +334,7 @@ void sdp_solve(lmm_system_t sys)
    */
   for(i = 1; i <= pow(2,K); i++){
     matno=get_y(K, i);
-    //fprintf(sdpout,"%d %d 1 1 1\n", matno, block_num);
+    CDEBUG2(surf_sdp_out,"%d %d 1 1 1\n", matno, block_num);
     addentry(constraints, &C, matno, block_num, 1, 1, 1.0, C.blocks[block_num].blocksize);
     block_num++;
   }
@@ -363,7 +367,7 @@ void sdp_solve(lmm_system_t sys)
   /*
    * Next, setup issparse and NULL out all nextbyblock pointers.
    */
-  struct sparseblock *p=NULL;
+  p=NULL;
   for (i=1; i<=k; i++) {
     p=constraints[i].blocks;
     while (p != NULL){
@@ -399,8 +403,8 @@ void sdp_solve(lmm_system_t sys)
    * Debuging print problem in SDPA format.
    */
   if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
-    DEBUG0("Printing SDPA...\n");
-    char *tmp=strdup("SURF-PROPORTIONNAL.sdpa");
+    DEBUG0("Printing SDPA...");
+    tmp=strdup("SURF-PROPORTIONNAL.sdpa");
     write_prob(tmp,total_block_size,nb_var,C,a,constraints);
     free(tmp);
   }
@@ -408,7 +412,7 @@ void sdp_solve(lmm_system_t sys)
   /*
    * Initialize parameters.
    */
-  DEBUG0("Initializing solution...\n");
+  DEBUG0("Initializing solution...");
   initsoln(total_block_size, nb_var, C, a, constraints, &X, &y, &Z);  
   
 
@@ -416,22 +420,22 @@ void sdp_solve(lmm_system_t sys)
   /*
    * Call the solver.
    */
-  DEBUG0("Calling the solver...\n");
-  FILE *stdout_sav=stdout;
+  DEBUG0("Calling the solver...");
+  stdout_sav=stdout;
   stdout=fopen("/dev/null","w");
-  int ret = easy_sdp(total_block_size, nb_var, C, a, constraints, 0.0, &X, &y, &Z, &pobj, &dobj);
+  ret = easy_sdp(total_block_size, nb_var, C, a, constraints, 0.0, &X, &y, &Z, &pobj, &dobj);
   fclose(stdout);
   stdout=stdout_sav;
 
   switch(ret){
   case 0:
-  case 1: DEBUG0("SUCCESS The problem is primal infeasible\n");
+  case 1: DEBUG0("SUCCESS The problem is primal infeasible");
           break;
 
-  case 2: DEBUG0("SUCCESS The problem is dual infeasible\n");
+  case 2: DEBUG0("SUCCESS The problem is dual infeasible");
           break;
  
-  case 3: DEBUG0("Partial SUCCESS A solution has been found, but full accuracy was not achieved. One or more of primal infeasibility, dual infeasibility, or relative duality gap are larger than their tolerances, but by a factor of less than 1000.\n");
+  case 3: DEBUG0("Partial SUCCESS A solution has been found, but full accuracy was not achieved. One or more of primal infeasibility, dual infeasibility, or relative duality gap are larger than their tolerances, but by a factor of less than 1000.");
           break;
 
   case 4: DEBUG0("Failure. Maximum number of iterations reached.");
@@ -443,7 +447,7 @@ void sdp_solve(lmm_system_t sys)
   }
 
   if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
-    char *tmp=strdup("SURF-PROPORTIONNAL.sol");
+    tmp=strdup("SURF-PROPORTIONNAL.sol");
     write_sol(tmp,total_block_size, nb_var, X, y, Z);
     free(tmp);
   }
@@ -468,15 +472,22 @@ void sdp_solve(lmm_system_t sys)
    * Free up memory.
    */
   free_prob(total_block_size, nb_var, C, a, constraints, X, y, Z);
+  
+  
+ free(isdiag);
+ free(tempdiag);
+ free(tmp);
+ free(a);
+ free(y);
 
-  //  fclose(sdpout);
-  free(isdiag);
-  sys->modified = 0;
-
-  if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
-    lmm_print(sys);
-  }
-
+ //  fclose(sdpout);
+ free(isdiag);
+ sys->modified = 0;
+ 
+ if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
+   lmm_print(sys);
+ }
+ 
 }
 
 
