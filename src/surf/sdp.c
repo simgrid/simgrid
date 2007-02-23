@@ -19,7 +19,7 @@
 /*
  * SDP specific variables.
  */
-#include <declarations.h>
+#include <csdp/declarations.h>
 
 
 static void create_cross_link(struct constraintmatrix *myconstraints, int k);
@@ -152,7 +152,7 @@ void sdp_solve(lmm_system_t sys)
 
   double tmp_k;
   struct sparseblock *p;
-  char *tmp;
+  char *tmp = NULL;
   FILE *stdout_sav;
   int ret;
 
@@ -167,10 +167,16 @@ void sdp_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   i=0;
   xbt_swag_foreach(var, var_list) {
-    if(var->weight) i++;
+    if(var->weight != 0.0) i++;
   }
   flows=i;
   DEBUG1("Variable set : %d", xbt_swag_size(var_list));
+  DEBUG1("Flows : %d", flows);
+
+  if(flows == 0)
+    return;
+
+
   xbt_swag_foreach(var, var_list) {
     var->value = 0.0;
     if(var->weight) var->index = i--;
@@ -178,6 +184,7 @@ void sdp_solve(lmm_system_t sys)
 
   cnst_list=&(sys->active_constraint_set); 
   DEBUG1("Active constraints : %d", xbt_swag_size(cnst_list));
+  DEBUG1("Links : %d", links);
 
   /*
    * Those fields are the top level description of the platform furnished in the xml file.
@@ -189,7 +196,8 @@ void sdp_solve(lmm_system_t sys)
    */
   tmp_k = (double) log((double)flows)/log(2.0);
   K = (int) ceil(tmp_k);
-
+  if(K == 0) K = 1;
+  DEBUG1("Value of K = %d", K); 
 
   /* 
    * The number of variables in the SDP program. 
@@ -210,6 +218,7 @@ void sdp_solve(lmm_system_t sys)
    */
   nb_cnsts = nb_cnsts_capacity + nb_cnsts_struct + nb_cnsts_positivy;
   CDEBUG1(surf_sdp_out,"Number of constraints = %d", nb_cnsts);
+  DEBUG1("Number of constraints in the SDP program : %d", nb_cnsts);
 
   /*
    * Keep track of which blocks have off diagonal entries. 
@@ -406,7 +415,7 @@ void sdp_solve(lmm_system_t sys)
     DEBUG0("Printing SDPA...");
     tmp=strdup("SURF-PROPORTIONNAL.sdpa");
     write_prob(tmp,total_block_size,nb_var,C,a,constraints);
-    free(tmp);
+    //free(tmp);
   }
 
   /*
@@ -449,7 +458,7 @@ void sdp_solve(lmm_system_t sys)
   if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
     tmp=strdup("SURF-PROPORTIONNAL.sol");
     write_sol(tmp,total_block_size, nb_var, X, y, Z);
-    free(tmp);
+    //free(tmp);
   }
 
   /*
@@ -473,20 +482,15 @@ void sdp_solve(lmm_system_t sys)
    */
   free_prob(total_block_size, nb_var, C, a, constraints, X, y, Z);
   
+  free(isdiag);
+  free(tempdiag);
+  free(tmp);
   
- free(isdiag);
- free(tempdiag);
- free(tmp);
- free(a);
- free(y);
-
- //  fclose(sdpout);
- free(isdiag);
- sys->modified = 0;
+  sys->modified = 0;
  
- if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
-   lmm_print(sys);
- }
+  if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
+    lmm_print(sys);
+  }
  
 }
 
