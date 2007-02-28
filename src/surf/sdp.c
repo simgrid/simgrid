@@ -498,7 +498,7 @@ void sdp_solve(lmm_system_t sys)
 /*
  * Create the cross_link reference in order to have a byblock list.
  */
-void create_cross_link(struct constraintmatrix *myconstraints, int k){
+static void create_cross_link(struct constraintmatrix *myconstraints, int k){
 
   int i, j;
   int blk;
@@ -549,7 +549,7 @@ void create_cross_link(struct constraintmatrix *myconstraints, int k){
 
 
  
-void addentry(struct constraintmatrix *constraints, 
+static void addentry(struct constraintmatrix *constraints, 
 	      struct blockmatrix *C, 
 	      int matno,
 	      int blkno,
