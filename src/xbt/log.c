@@ -346,6 +346,7 @@ typedef struct {
 } s_xbt_log_setting_t,*xbt_log_setting_t;
 
 static xbt_dynar_t xbt_log_settings=NULL;
+
 static void _free_setting(void *s) {
   xbt_log_setting_t set=(xbt_log_setting_t)s;
   if (set) {
@@ -377,28 +378,31 @@ XBT_LOG_NEW_CATEGORY(msg,"All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mechanism itself");
 
 void xbt_log_init(int *argc,char **argv) {
-  int i,j;
-  char *opt;
-
-  /* Set logs and init log submodule */
-  for (i=1; i<*argc; i++) {
-    if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
-	!strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
-	!strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
-	!strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))) {
-      opt=strchr(argv[i],'=');
-      opt++;
-      xbt_log_control_set(opt);
-      DEBUG1("Did apply '%s' as log setting",opt);
-      /*remove this from argv*/
-      for (j=i+1; j<*argc; j++) {
-	argv[j-1] = argv[j];
-      } 
-      argv[j-1] = NULL;
-      (*argc)--;
-      i--; /* compensate effect of next loop incrementation */
-    }
-  }
+	int i,j;
+	char *opt;
+	
+	/* Set logs and init log submodule */
+	for (i=1; i<*argc; i++){
+		if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
+			!strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
+			!strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
+			!strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))){
+				
+				opt=strchr(argv[i],'=');
+				opt++;
+				xbt_log_control_set(opt);
+				DEBUG1("Did apply '%s' as log setting",opt);
+				/*remove this from argv*/
+				
+				for (j=i+1; j<*argc; j++){
+					argv[j-1] = argv[j];
+				} 
+				
+				argv[j-1] = NULL;
+				(*argc)--;
+				i--; /* compensate effect of next loop incrementation */
+		}
+	}
 }
 
 void xbt_log_exit(void) {
@@ -412,7 +416,8 @@ static void _apply_control(xbt_log_category_t cat) {
   xbt_log_setting_t setting=NULL;
   int found = 0;
   s_xbt_log_event_t _log_ev;
-
+  
+  
   if (!xbt_log_settings)
     return;
 
@@ -424,6 +429,8 @@ static void _apply_control(xbt_log_category_t cat) {
     xbt_assert1(setting->catname,"NULL setting(=%p)->catname",(void*)setting);
 
     if (!strcmp(setting->catname,cat->name)) {
+    	
+    
       found = 1;
 
       xbt_log_threshold_set(cat, setting->thresh);
@@ -443,8 +450,11 @@ static void _apply_control(xbt_log_category_t cat) {
 	         xbt_log_priority_names[cat->threshold], cat->threshold);
       }
     }
+   
   }
+  
   if (!found && cat->threshold <= xbt_log_priority_verbose) {
+  	
     _log_ev.cat = cat;
     _log_ev.priority = xbt_log_priority_verbose;
     _log_ev.fileName = __FILE__ ;
@@ -456,6 +466,8 @@ static void _apply_control(xbt_log_category_t cat) {
 			cat->name,
 			xbt_log_priority_names[cat->threshold], cat->threshold);
   }
+  
+ 
 
 }
 
@@ -475,14 +487,25 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   va_end(ev->ap);
 }
 
-static void _cat_init(xbt_log_category_t category) {
-  if (category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)) {
-    category->threshold = xbt_log_priority_info;
-    category->appender = xbt_log_default_appender;
-  } else {
-    xbt_log_parent_set(category, category->parent);
-  }
+static void _cat_init(xbt_log_category_t category) 
+{
+	
+	if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
+    	category->threshold = xbt_log_priority_info;
+    	category->appender = xbt_log_default_appender;
+  	} 
+  	else 
+  	{
+  		#if (defined(_WIN32) && !defined(DLL_STATIC))
+  		if(!category->parent)
+  			category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
+  		#endif
+    	
+    	xbt_log_parent_set(category, category->parent);
+  	}
+  
   _apply_control(category);
+ 
 }
 
 /*
@@ -490,43 +513,49 @@ static void _cat_init(xbt_log_category_t category) {
  * initialization. 
  * Also resets threshold to inherited!
  */
-int _xbt_log_cat_init(e_xbt_log_priority_t priority,
-		       xbt_log_category_t   category) {
+int _xbt_log_cat_init(e_xbt_log_priority_t priority,xbt_log_category_t category) 
+{
     
-  _cat_init(category);
-        
-  return priority >= category->threshold;
+	_cat_init(category);
+	
+	return priority >= category->threshold;
 }
 
-void xbt_log_parent_set(xbt_log_category_t cat,
-			 xbt_log_category_t parent) {
+void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent) 
+{
+	xbt_assert0(cat,"NULL category to be given a parent");
+	xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
+	
+	/* 
+	 * if the threshold is initialized 
+	 * unlink from current parent 
+	 */
+	if(cat->threshold != xbt_log_priority_uninitialized){
 
-  xbt_assert0(cat,"NULL category to be given a parent");
-  xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
-
-  /* unlink from current parent */
-  if (cat->threshold != xbt_log_priority_uninitialized) {
-    xbt_log_category_t* cpp = &parent->firstChild;
-    while(*cpp != cat && *cpp != NULL) {
-      cpp = &(*cpp)->nextSibling;
-    }
-    xbt_assert(*cpp == cat);
-    *cpp = cat->nextSibling;
-  }
-
-  /* Set new parent */
-  cat->parent = parent;
-  cat->nextSibling = parent->firstChild;
-  parent->firstChild = cat;
-
-  /* Make sure parent is initialized */
-  if (parent->threshold == xbt_log_priority_uninitialized) {
-    _cat_init(parent);
-  }
-    
-  /* Reset priority */
-  cat->threshold = parent->threshold;
-  cat->isThreshInherited = 1;
+		xbt_log_category_t* cpp = &parent->firstChild;
+	
+		while(*cpp != cat && *cpp != NULL) {
+			cpp = &(*cpp)->nextSibling;
+		}
+		
+		xbt_assert(*cpp == cat);
+		*cpp = cat->nextSibling;
+	}
+	
+	cat->parent = parent;
+	cat->nextSibling = parent->firstChild;
+	
+	parent->firstChild = cat;
+	
+	if (parent->threshold == xbt_log_priority_uninitialized){
+		
+		_cat_init(parent);
+	}
+	
+	cat->threshold = parent->threshold;
+	
+	cat->isThreshInherited = 1;
+	
 } /* log_setParent */
 
 static void _set_inherited_thresholds(xbt_log_category_t cat) {

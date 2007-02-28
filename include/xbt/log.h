@@ -113,7 +113,7 @@ typedef enum {
  * Defines a new subcategory of the parent. 
  */
 #define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
-    extern s_xbt_log_category_t _XBT_LOGV(parent);        \
+    extern s_xbt_log_category_t _XBT_LOGV(parent); \
     XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
 
 /**
@@ -150,9 +150,26 @@ typedef enum {
  * Creates a new subcategory of the root category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
-#define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
+
+#if (defined(_WIN32) && !defined(DLL_STATIC))
+# define XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc) \
+	XBT_PUBLIC_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
+        0, 0, 0,                    \
+		#cname, xbt_log_priority_uninitialized, 1, \
+        0, 1                                          \
+    }
+    
+# define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
+	XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc); \
+	XBT_LOG_DEFAULT_CATEGORY(cname)
+    
+#else
+# define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
     XBT_LOG_NEW_CATEGORY(cname,desc);                   \
-    XBT_LOG_DEFAULT_CATEGORY(cname)
+    XBT_LOG_DEFAULT_CATEGORY(cname)	
+#endif
+
+
 
 /**
  * \ingroup XBT_log  
@@ -212,7 +229,7 @@ struct xbt_log_category_s {
             int threshold;
             int isThreshInherited;
 /*@null@*/  xbt_log_appender_t appender;
-            int willLogToParent;
+			int willLogToParent;
   /* TODO: Formats? */
 };
 
@@ -270,8 +287,10 @@ XBT_PUBLIC(int) _xbt_log_cat_init(e_xbt_log_priority_t priority,
 			      xbt_log_category_t   category);
 
 
-extern s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT);
+extern XBT_IMPORT_NO_PUBLIC(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
+
 XBT_LOG_EXTERNAL_CATEGORY(GRAS);
+
 extern xbt_log_appender_t xbt_log_default_appender;
 
 /**
@@ -583,6 +602,8 @@ extern xbt_log_appender_t xbt_log_default_appender;
  *  @brief Log at TRACE priority a message indicating that we reached that point.
  */
 #define XBT_HERE             LOG0(xbt_log_priority_trace, "-- was here")
+
+
 SG_END_DECL()
 
 #endif /* ! _XBT_LOG_H_ */
