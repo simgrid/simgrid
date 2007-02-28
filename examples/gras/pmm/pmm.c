@@ -12,11 +12,11 @@
 #include "xbt/matrix.h"
 #include "amok/peermanagement.h"
 
-#define PROC_MATRIX_SIZE 3
+#define PROC_MATRIX_SIZE 4
 #define NEIGHBOR_COUNT PROC_MATRIX_SIZE - 1
 #define SLAVE_COUNT (PROC_MATRIX_SIZE*PROC_MATRIX_SIZE)
 
-#define DATA_MATRIX_SIZE 18
+#define DATA_MATRIX_SIZE 2048
 const int submatrix_size = DATA_MATRIX_SIZE/PROC_MATRIX_SIZE;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm,"Parallel Matrix Multiplication");

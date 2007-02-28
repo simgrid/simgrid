@@ -3,13 +3,13 @@
 #
 # Should not print info about cd-ing to directories
 #
-.SILENT:
+#.SILENT:
 
 #
 # Variables
 #
 SIMGRID_PATH = $(HOME)
-MY_MIXTESIM_ROOT   = $(HOME)/simgrid/simgrid/examples/simdag/mixtesim
+MY_MIXTESIM_ROOT = /home/alegrand/simgrid3/examples/simdag/mixtesim
 CFLAGS        = -I$(MY_MIXTESIM_ROOT)/include \
 	      -I$(SIMGRID_PATH)/include \
 	      -finline-functions  -g  -Wall -Werror
@@ -18,4 +18,4 @@ LD            = gcc
 
 LIBS = -lm
 
-SIMGRIDLIB = $(HOME)/lib/libsimgrid.so
+SIMGRIDLIB = $(SIMGRID_PATH)/lib/libsimgrid.so

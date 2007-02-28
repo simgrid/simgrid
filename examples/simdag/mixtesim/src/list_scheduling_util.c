@@ -128,33 +128,50 @@ void implementSimgridSchedule(DAG dag, Node *list)
           grand_parent=node->parents[k]->parents[0];
           grand_parent_host=NODE_ATTR(grand_parent)->host;
 	  host=NODE_ATTR(node)->host;
+	  
+	  if (host != grand_parent_host) {
+	    host_list[0] = grand_parent_host;
+	    host_list[1] = host;
+	    communication_amount[1] = node->parents[k]->cost;
+	    DEBUG1("Scheduling transfer task '%s'",
+		   SD_task_get_name(node->parents[k]->sd_task));
+	    SD_task_schedule(node->parents[k]->sd_task, 2, host_list,
+			     no_cost, communication_amount, -1.0);
+	    DEBUG2("Task '%s' state: %d",
+		   SD_task_get_name(node->parents[k]->sd_task),
+		   SD_task_get_state(node->parents[k]->sd_task));
+	  } else {
+	    SD_task_schedule(node->parents[k]->sd_task, 1, host_list,
+			     no_cost, communication_amount, -1.0);
+/* 	    SD_task_schedule(node->parents[k]->sd_task, 1, &host, */
+/* 			     no_cost, &(node->parents[k]->cost), -1.0); */
+	  }
+/* 	  host_list[0] = grand_parent_host; */
+/* 	  host_list[1] = host; */
+/* 	  communication_amount[1] = node->parents[k]->cost; */
+/* 	  DEBUG1("Scheduling transfer task '%s'", SD_task_get_name(node->parents[k]->sd_task)); */
+/* 	  SD_task_schedule(node->parents[k]->sd_task, 2, host_list, */
+/* 			   no_cost, communication_amount, -1.0); */
+/* 	  DEBUG2("Task '%s' state: %d", SD_task_get_name(node->parents[k]->sd_task), */
+/* 		 SD_task_get_state(node->parents[k]->sd_task)); */
 
-	  host_list[0] = grand_parent_host;
-	  host_list[1] = host;
-	  communication_amount[1] = node->parents[k]->cost;
-	  DEBUG1("Scheduling transfer task '%s'", SD_task_get_name(node->parents[k]->sd_task));
-	  SD_task_schedule(node->parents[k]->sd_task, 2, host_list,
-			   no_cost, communication_amount, -1.0);
-	  DEBUG2("Task '%s' state: %d", SD_task_get_name(node->parents[k]->sd_task),
-		 SD_task_get_state(node->parents[k]->sd_task));
-
-/*           if (!route) { */
-/*             if (SG_scheduleTaskOnResource(node->parents[k]->sg_task, */
-/*  					  local_link->sg_link) */
-/* 		== -1) { */
-/* 	      fprintf(stderr,"Task '%s' already in state %d\n", */
-/* 		      node->parents[k]->sg_task->name, */
-/* 		      node->parents[k]->sg_task->state); */
-/* 	    } */
-/* 	  } else { */
-/*             if (SG_scheduleTaskOnResource(node->parents[k]->sg_task, */
-/* 					  route)  */
-/* 		== -1) { */
-/* 	     fprintf(stderr,"Task '%s' already in state %d\n", */
-/* 		      node->parents[k]->sg_task->name, */
-/* 		      node->parents[k]->sg_task->state); */
-/* 	    }  */
-/* 	  } */
+/* /\*           if (!route) { *\/ */
+/* /\*             if (SG_scheduleTaskOnResource(node->parents[k]->sg_task, *\/ */
+/* /\*  					  local_link->sg_link) *\/ */
+/* /\* 		== -1) { *\/ */
+/* /\* 	      fprintf(stderr,"Task '%s' already in state %d\n", *\/ */
+/* /\* 		      node->parents[k]->sg_task->name, *\/ */
+/* /\* 		      node->parents[k]->sg_task->state); *\/ */
+/* /\* 	    } *\/ */
+/* /\* 	  } else { *\/ */
+/* /\*             if (SG_scheduleTaskOnResource(node->parents[k]->sg_task, *\/ */
+/* /\* 					  route)  *\/ */
+/* /\* 		== -1) { *\/ */
+/* /\* 	     fprintf(stderr,"Task '%s' already in state %d\n", *\/ */
+/* /\* 		      node->parents[k]->sg_task->name, *\/ */
+/* /\* 		      node->parents[k]->sg_task->state); *\/ */
+/* /\* 	    }  *\/ */
+/* /\* 	  } *\/ */
 	}
       }
     }

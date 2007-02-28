@@ -44,7 +44,7 @@ available_tags=" CXX F77"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host neutres:
+# Libtool was configured on host kanza:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -97,13 +97,13 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/bin/X11//ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/usr/bin/nm -B"
+NM="/usr/bin/X11//nm -B"
 
 # A symbol stripping program
 STRIP="strip"
@@ -325,10 +325,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /home/velho/usr/lib/i486-linux-gnu/4.1.2/ /home/velho/usr/lib/ ./i486-linux-gnu/4.1.2/ ./ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../ /lib/i486-linux-gnu/4.1.2/ /lib/ /usr/lib/i486-linux-gnu/4.1.2/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../ /lib/i486-linux-gnu/4.1.2/ /lib/ /usr/lib/i486-linux-gnu/4.1.2/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/X11R6/lib /usr/lib/atlas "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/X11R6/lib /lib64 /usr/lib64 /usr/X11R6/lib64 /usr/lib/atlas/sse2 /usr/lib/sse2 /usr/lib/atlas "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7223,7 +7223,7 @@ disable_libs=static
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host neutres:
+# Libtool was configured on host kanza:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -7276,13 +7276,13 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/bin/X11//ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/usr/bin/nm -B"
+NM="/usr/bin/X11//nm -B"
 
 # A symbol stripping program
 STRIP="strip"
@@ -7421,7 +7421,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/home/velho/usr/lib/../lib -L. -L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib"
+compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib"
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7501,10 +7501,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /home/velho/usr/lib/i486-linux-gnu/4.1.2/ /home/velho/usr/lib/ ./i486-linux-gnu/4.1.2/ ./ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../ /lib/i486-linux-gnu/4.1.2/ /lib/ /usr/lib/i486-linux-gnu/4.1.2/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../ /lib/i486-linux-gnu/4.1.2/ /lib/ /usr/lib/i486-linux-gnu/4.1.2/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/X11R6/lib /usr/lib/atlas "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/X11R6/lib /lib64 /usr/lib64 /usr/X11R6/lib64 /usr/lib/atlas/sse2 /usr/lib/sse2 /usr/lib/atlas "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7528,7 +7528,7 @@ include_expsyms=""
 
 # ### BEGIN LIBTOOL TAG CONFIG: F77
 
-# Libtool was configured on host neutres:
+# Libtool was configured on host kanza:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -7581,13 +7581,13 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/bin/X11//ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/usr/bin/nm -B"
+NM="/usr/bin/X11//nm -B"
 
 # A symbol stripping program
 STRIP="strip"
@@ -7809,10 +7809,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /home/velho/usr/lib/i486-linux-gnu/3.4.6/ /home/velho/usr/lib/ ./i486-linux-gnu/3.4.6/ ./ /usr/lib/gcc/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../../i486-linux-gnu/lib/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../ /lib/i486-linux-gnu/3.4.6/ /lib/ /usr/lib/i486-linux-gnu/3.4.6/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../../i486-linux-gnu/lib/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../ /lib/i486-linux-gnu/3.4.6/ /lib/ /usr/lib/i486-linux-gnu/3.4.6/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/X11R6/lib /usr/lib/atlas "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/X11R6/lib /lib64 /usr/lib64 /usr/X11R6/lib64 /usr/lib/atlas/sse2 /usr/lib/sse2 /usr/lib/atlas "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""

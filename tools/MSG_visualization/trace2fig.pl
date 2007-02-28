@@ -4,7 +4,7 @@ use strict;
 use XFig;
 
 my($grid_Y_size)=225; # xfig 
-my($grid_X_size)=550; # xfig 
+my($grid_X_size)=100550; # xfig
 
 sub read_cat {
     my(%Cat);
@@ -192,7 +192,7 @@ sub draw_cat {
 	my($dst)=$$Link{$link}{dst};
 	$line->{'subtype'} = 1;  # line
 
-	print STDERR "$src -> $dst\n";
+	print STDERR "$link: $src ($src_date) -> $dst ($dst_date)\n";
 
 	print STDERR "$$Cat{$src}{name} -> $$Cat{$dst}{name}\n";
 	$line->{'points'} = [ [$src_date*$grid_X_size, 

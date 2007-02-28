@@ -43,9 +43,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@HAVE_SDP_TRUE@am__append_1 = surf/sdp.c  
+@USE_SIMIX_TRUE@am__append_1 = include/simix/simix.h
+@HAVE_SDP_TRUE@am__append_2 = surf/sdp.c  
+@USE_SIMIX_TRUE@am__append_3 = simix/smx_global.c
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
-@GRAMINE_MODE_FALSE@am__append_2 = $(testall_SOURCES)
+@GRAMINE_MODE_FALSE@am__append_4 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/gras_config.h.in $(srcdir)/ucontext_stack.h.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -118,29 +120,30 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/ex.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
 	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
 	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c surf/sdp.c \
-	amok/amok_base.c amok/Bandwidth/bandwidth.c \
+	simix/smx_global.c amok/amok_base.c amok/Bandwidth/bandwidth.c \
 	amok/Bandwidth/saturate.c amok/PeerManagement/peermanagement.c
 @HAVE_SDP_TRUE@am__objects_4 = sdp.lo
-am__objects_5 = context.lo maxmin.lo trace_mgr.lo surf.lo \
+@USE_SIMIX_TRUE@am__objects_5 = smx_global.lo
+am__objects_6 = context.lo maxmin.lo trace_mgr.lo surf.lo \
 	surfxml_parse.lo cpu.lo network.lo workstation.lo \
 	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
 	msg_config.lo task.lo host.lo m_process.lo gos.lo global.lo \
 	environment.lo deployment.lo sd_global.lo sd_link.lo \
 	sd_task.lo sd_workstation.lo sg_transport.lo \
 	transport_plugin_sg.lo sg_emul.lo sg_process.lo sg_time.lo \
-	sg_dns.lo sg_msg.lo $(am__objects_4)
-am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_5) \
+	sg_dns.lo sg_msg.lo $(am__objects_4) $(am__objects_5)
+am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_6) \
 	$(am__objects_3)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = cunit_unit.c ex_unit.c dynar_unit.c \
 	dict_unit.c set_unit.c swag_unit.c config_unit.c \
 	simgrid_units_main.c
-@GRAMINE_MODE_FALSE@am__objects_6 = cunit_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@am__objects_7 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) config_unit.$(OBJEXT)
-@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_6) \
+@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_7) \
 @GRAMINE_MODE_FALSE@	simgrid_units_main.$(OBJEXT)
 testall_OBJECTS = $(am_testall_OBJECTS)
 @GRAMINE_MODE_FALSE@testall_DEPENDENCIES = libgras.la
@@ -239,6 +242,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
 STRIP = @STRIP@
+USE_SIMIX_FALSE = @USE_SIMIX_FALSE@
+USE_SIMIX_TRUE = @USE_SIMIX_TRUE@
 VERSION = @VERSION@
 WARNING = @WARNING@
 abs_builddir = @abs_builddir@
@@ -333,7 +338,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \
 	gras/DataDesc/ddt_parse.yy.l gras/DataDesc/ddt_parse.yy.c \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_2)
+	$(am__append_1) $(am__append_4)
 
 #        gras_private.h
 
@@ -435,7 +440,8 @@ SG_SRC = xbt/context.c surf/maxmin.c surf/trace_mgr.c surf/surf.c \
 	gras/Transport/sg_transport.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
 	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
-	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c $(am__append_1)
+	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c $(am__append_2) \
+	$(am__append_3)
 AMOK_SRC = \
   amok/amok_base.c \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
@@ -635,6 +641,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simgrid_units_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_global.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/snprintf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf_timer.Plo@am__quote@
@@ -1236,6 +1243,13 @@ sdp.lo: surf/sdp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c
 
+smx_global.lo: simix/smx_global.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_global.lo -MD -MP -MF "$(DEPDIR)/smx_global.Tpo" -c -o smx_global.lo `test -f 'simix/smx_global.c' || echo '$(srcdir)/'`simix/smx_global.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_global.Tpo" "$(DEPDIR)/smx_global.Plo"; else rm -f "$(DEPDIR)/smx_global.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_global.c' object='smx_global.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_global.lo `test -f 'simix/smx_global.c' || echo '$(srcdir)/'`simix/smx_global.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -1368,7 +1382,7 @@ check-TESTS: $(TESTS)
 	else :; fi
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../acmacro $(distdir)/amok $(distdir)/amok/Bandwidth $(distdir)/gras/DataDesc $(distdir)/gras/Transport $(distdir)/gras/Virtu $(distdir)/include/surf $(distdir)/include/xbt $(distdir)/msg $(distdir)/simdag $(distdir)/surf $(distdir)/xbt
+	$(mkdir_p) $(distdir)/../acmacro $(distdir)/amok $(distdir)/amok/Bandwidth $(distdir)/gras/DataDesc $(distdir)/gras/Transport $(distdir)/gras/Virtu $(distdir)/include/simix $(distdir)/include/surf $(distdir)/include/xbt $(distdir)/msg $(distdir)/simdag $(distdir)/surf $(distdir)/xbt
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

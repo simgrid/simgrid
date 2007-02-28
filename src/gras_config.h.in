@@ -83,6 +83,9 @@
 /* Define to 1 if you have the `readv' function. */
 #undef HAVE_READV
 
+/* Indicates whether we have the CSDP library or not */
+#undef HAVE_SDP
+
 /* Define to 1 if you have the `signal' function. */
 #undef HAVE_SIGNAL
 
@@ -185,6 +188,9 @@
 
 /* Define if we use pthreads or not */
 #undef USE_PTHREADS
+
+/* Indicates whether we should use SimIX or not */
+#undef USE_SIMIX
 
 /* Define if we use ucontext or not */
 #undef USE_UCONTEXT
