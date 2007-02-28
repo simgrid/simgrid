@@ -183,9 +183,9 @@ if test "x$enable_simix" = "xyes" ; then
   AC_MSG_RESULT("***** You have decided to use the experimental SimIX. We hope you know what you're doing.. ****")
   AC_DEFINE(USE_SIMIX, 1, [Indicates whether we should use SimIX or not])
 else 
-  AC_MSG_RESULT(Eventually you willl come to SimIX: x$enable_simix)
+  AC_MSG_RESULT(Eventually you will come to SimIX: x$enable_simix)
 fi
-AM_CONDITIONAL(USE_SIMIX,test x$csdp != xno)
+AM_CONDITIONAL(USE_SIMIX,test x$enable_simix != xno)
 
 #########################################
 ## Check for libraries extra-dependencies
