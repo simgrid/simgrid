@@ -63,6 +63,10 @@ EXTRA_DIST= \
 	amok/Bandwidth/bandwidth_private.h \
 	amok/amok_modinter.h
 
+if USE_SIMIX
+  EXTRA_DIST+=include/simix/simix.h
+endif
+
 #        gras_private.h
 
 #LIBRARY_VERSION= 0:0:0
@@ -185,6 +189,10 @@ SG_SRC=  \
 
 if HAVE_SDP
   SG_SRC+= surf/sdp.c  
+endif
+
+if USE_SIMIX
+  SG_SRC+=simix/smx_global.c
 endif
 
 AMOK_SRC= \

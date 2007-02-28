@@ -171,6 +171,22 @@ dnl #  direction of stack grow
   AC_CHECK_STACKSETUP(makecontext, pth_skaddr_makecontext, pth_sksize_makecontext)
 fi
 
+
+#########################################
+## Build optional modules (simix)
+##
+SG_CONFIGURE_PART(Optional modules)
+AC_ARG_ENABLE(use-simix,
+  AS_HELP_STRING([--enable-simix], [Use the new SimIX module (default=no)]),
+  enable_simix=$enableval,enable_simix=no)
+if test "x$enable_simix" = "xyes" ; then
+  AC_MSG_RESULT("***** You have decided to use the experimental SimIX. We hope you know what you're doing.. ****")
+  AC_DEFINE(USE_SIMIX, 1, [Indicates whether we should use SimIX or not])
+else 
+  AC_MSG_RESULT(Eventually you willl come to SimIX: x$enable_simix)
+fi
+AM_CONDITIONAL(USE_SIMIX,test x$csdp != xno)
+
 #########################################
 ## Check for libraries extra-dependencies
 ##
@@ -184,7 +200,7 @@ AC_CHECK_LIB(sdp,sdp,csdp=yes, csdp=no,-llapack -lblas -lm)
 if test "x$csdp" = xyes; then 
   SIMGRID_DEP="$SIMGRID_DEP -lsdp -llapack -lblas -lm"
   AC_MSG_RESULT(Found working sdp library.)
-  AC_DEFINE(HAVE_SDP, 1, [Indicates whether printf("%s",NULL) works])
+  AC_DEFINE(HAVE_SDP, 1, [Indicates whether we have the CSDP library or not])
 else
   AC_MSG_RESULT(Could not find any working sdp library.)
 fi;
@@ -207,6 +223,7 @@ else
    AC_MSG_RESULT($GRAS_DEP)
 fi
 AC_SUBST([GRAS_DEP])
+
 
 ##############################################
 ## Enhance maintainer mode and SUBST variables
