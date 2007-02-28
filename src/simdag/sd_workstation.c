@@ -400,9 +400,9 @@ int __SD_workstation_is_busy(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
   
-  DEBUG4("Workstation '%s' access mode: %d, current task: %s, fifo size: %d",
+  DEBUG4("Workstation '%s' access mode: '%s', current task: %s, fifo size: %d",
 	 SD_workstation_get_name(workstation),
-	 workstation->access_mode,
+	 (workstation->access_mode==SD_WORKSTATION_SHARED_ACCESS)?"SHARED":"FIFO",
 	 (workstation->current_task ? SD_task_get_name(workstation->current_task) : "none"),
 	 (workstation->task_fifo ? xbt_fifo_size(workstation->task_fifo) : 0));
 
