@@ -176,7 +176,7 @@ fi
 ## Build optional modules (simix)
 ##
 SG_CONFIGURE_PART(Optional modules)
-AC_ARG_ENABLE(use-simix,
+AC_ARG_ENABLE(simix,
   AS_HELP_STRING([--enable-simix], [Use the new SimIX module (default=no)]),
   enable_simix=$enableval,enable_simix=no)
 if test "x$enable_simix" = "xyes" ; then

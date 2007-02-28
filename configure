@@ -25295,9 +25295,9 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Optional modules${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Optional modules${T_ME}" >&6; }
 
-# Check whether --enable-use-simix was given.
-if test "${enable_use_simix+set}" = set; then
-  enableval=$enable_use_simix; enable_simix=$enableval
+# Check whether --enable-simix was given.
+if test "${enable_simix+set}" = set; then
+  enableval=$enable_simix; enable_simix=$enableval
 else
   enable_simix=no
 fi
