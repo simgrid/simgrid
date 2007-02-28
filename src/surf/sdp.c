@@ -19,7 +19,7 @@
 /*
  * SDP specific variables.
  */
-#include <csdp/declarations.h>
+#include <declarations.h>
 
 
 static void create_cross_link(struct constraintmatrix *myconstraints, int k);
