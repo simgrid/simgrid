@@ -192,7 +192,7 @@ if HAVE_SDP
 endif
 
 if USE_SIMIX
-  SG_SRC+=simix/smx_global.c \ 
+  SG_SRC+=simix/smx_global.c \
   simix/smx_deployment.c \
   simix/smx_config.c \
   simix/smx_environment.c \
