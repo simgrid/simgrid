@@ -30,7 +30,11 @@ const char *xbt_procname(void) {
 }
 
 long int gras_os_getpid(void) {
-  return (long int) getpid();
+	#ifdef _WIN32
+	return (long int) GetCurrentProcess();
+	#else
+	return (long int) getpid();
+	#endif
 }
 
 /* **************************************************************************
