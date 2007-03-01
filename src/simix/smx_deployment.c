@@ -1,0 +1,137 @@
+/* 	$Id$	 */
+
+/* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
+   All rights reserved.                                          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+
+#include "private.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "surf/surfxml_parse_private.h"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
+				"Logging specific to SIMIX (deployment)");
+static int parse_argc = -1 ;
+static char **parse_argv = NULL;
+static smx_process_code_t parse_code = NULL;
+static smx_host_t parse_host = NULL;
+static double start_time = 0.0;
+static double kill_time = -1.0;
+  
+static void parse_process_init(void)
+{
+  parse_host = SIMIX_get_host_by_name(A_surfxml_process_host);
+  xbt_assert1(parse_host, "Unknown host %s",A_surfxml_process_host);
+  parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
+  xbt_assert1(parse_code, "Unknown function %s",A_surfxml_process_function);
+  parse_argc = 0 ;
+  parse_argv = NULL;
+  parse_argc++;
+  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
+  surf_parse_get_double(&start_time,A_surfxml_process_start_time);
+  surf_parse_get_double(&kill_time,A_surfxml_process_kill_time);
+}
+
+static void parse_argument(void)
+{
+  parse_argc++;
+  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
+  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_argument_value);
+}
+
+static void parse_process_finalize(void)
+{
+  process_arg_t arg = NULL;
+  smx_process_t process = NULL;
+  if(start_time>SIMIX_get_clock()) {
+    arg = xbt_new0(s_process_arg_t,1);
+    arg->name = parse_argv[0];
+    arg->code = parse_code;
+    arg->data = NULL;
+    arg->host = parse_host;
+    arg->argc = parse_argc;
+    arg->argv = parse_argv;
+    arg-> kill_time = kill_time;
+
+    DEBUG3("Process %s(%s) will be started at time %f", arg->name, 
+	   arg->host->name,start_time);
+    surf_timer_resource->extension_public->set(start_time, (void*) &SIMIX_process_create_with_arguments,
+					       arg);
+  }
+  if((start_time<0) || (start_time==SIMIX_get_clock())) {
+    DEBUG2("Starting Process %s(%s) right now", parse_argv[0],
+	   parse_host->name);
+    process = SIMIX_process_create_with_arguments(parse_argv[0], parse_code, 
+						NULL, parse_host,
+						parse_argc,parse_argv);
+    if(kill_time > SIMIX_get_clock()) {
+      surf_timer_resource->extension_public->set(kill_time, 
+						 (void*) &SIMIX_process_kill,
+						 (void*) process);
+    }
+  }
+}
+
+/** \ingroup msg_easier_life
+ * \brief An application deployer.
+ *
+ * Creates the process described in \a file.
+ * \param file a filename of a xml description of the application. This file 
+ * follows this DTD :
+ *
+ *     \include surfxml.dtd
+ *
+ * Here is a small example of such a platform 
+ *
+ *     \include small_deployment.xml
+ *
+ * Have a look in the directory examples/msg/ to have a bigger example.
+ */
+void SIMIX_launch_application(const char *file) 
+{
+  xbt_assert0(simix_global,"SIMIX_global_init_args has to be called before SIMIX_launch_application.");
+  STag_surfxml_process_fun = parse_process_init;
+  ETag_surfxml_argument_fun = parse_argument;
+  ETag_surfxml_process_fun = parse_process_finalize;
+  surf_parse_open(file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  surf_parse_close();
+}
+
+/** \ingroup msg_easier_life
+ * \brief Registers a #m_process_code_t code in a global table.
+ *
+ * Registers a code function in a global table. 
+ * This table is then used by #MSG_launch_application. 
+ * \param name the reference name of the function.
+ * \param code the function
+ */
+void SIMIX_function_register(const char *name,smx_process_code_t code)
+{
+  xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_function_register.");
+
+  xbt_dict_set(simix_global->registered_functions,name,code,NULL);
+}
+
+/** \ingroup msg_easier_life
+ * \brief Registers a #m_process_t code in a global table.
+ *
+ * Registers a code function in a global table. 
+ * This table is then used by #MSG_launch_application. 
+ * \param name the reference name of the function.
+ */
+smx_process_code_t SIMIX_get_registered_function(const char *name)
+{
+  smx_process_code_t code = NULL;
+
+  xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_get_registered_function.");
+
+  code = xbt_dict_get_or_null(simix_global->registered_functions,name);
+
+  return code;
+}
+
