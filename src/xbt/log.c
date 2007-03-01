@@ -375,6 +375,7 @@ XBT_PUBLIC_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
 XBT_LOG_NEW_CATEGORY(xbt,"All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_CATEGORY(surf,"All SURF categories");
 XBT_LOG_NEW_CATEGORY(msg,"All MSG categories");
+XBT_LOG_NEW_CATEGORY(simix,"All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mechanism itself");
 
 void xbt_log_init(int *argc,char **argv) {
@@ -386,6 +387,7 @@ void xbt_log_init(int *argc,char **argv) {
 		if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
 			!strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
 			!strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
+			!strncmp(argv[i],"--simix-log=",strlen("--simix-log=")) ||
 			!strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))){
 				
 				opt=strchr(argv[i],'=');
