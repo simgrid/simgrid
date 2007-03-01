@@ -163,12 +163,12 @@ typedef struct surf_timer_resource {
 /** \brief The timer resource
  *  \ingroup SURF_resources
  */
-extern surf_timer_resource_t surf_timer_resource;
+extern XBT_PUBLIC(surf_timer_resource_t) surf_timer_resource;
 
 /** \brief Initializes the timer resource
  *  \ingroup SURF_resources
  */
-void surf_timer_resource_init(const char *filename);
+XBT_PUBLIC(void) surf_timer_resource_init(const char *filename);
 
 /* Cpu resource */
 
@@ -206,7 +206,7 @@ typedef struct surf_cpu_resource {
 /** \brief The CPU resource
  *  \ingroup SURF_resources
  */
-extern surf_cpu_resource_t surf_cpu_resource;
+extern XBT_PUBLIC(surf_cpu_resource_t) surf_cpu_resource;
 
 /** \brief Initializes the CPU resource with the model Cas01
  *  \ingroup SURF_resources
@@ -216,7 +216,7 @@ extern surf_cpu_resource_t surf_cpu_resource;
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
-void surf_cpu_resource_init_Cas01(const char *filename);
+XBT_PUBLIC(void) surf_cpu_resource_init_Cas01(const char *filename);
 
 /* Network resource */
 
@@ -253,7 +253,7 @@ typedef struct surf_network_resource {
  *  resource should be accessed because depending on the platform model,
  *  the network resource can be NULL.
  */
-extern surf_network_resource_t surf_network_resource;
+extern XBT_PUBLIC(surf_network_resource_t) surf_network_resource;
 
 /** \brief Initializes the platform with the network model CM02
  *  \ingroup SURF_resources
@@ -264,7 +264,7 @@ extern surf_network_resource_t surf_network_resource;
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
-void surf_network_resource_init_CM02(const char *filename);
+XBT_PUBLIC(void) surf_network_resource_init_CM02(const char *filename);
 
 /** \brief Workstation resource extension public
  *  \ingroup SURF_resources
@@ -313,7 +313,7 @@ typedef struct surf_workstation_resource {
  *  because depending on the platform model, the network resource and the CPU resource
  *  may not exist.
  */
-extern surf_workstation_resource_t surf_workstation_resource;
+extern XBT_PUBLIC(surf_workstation_resource_t) surf_workstation_resource;
 
 /** \brief Initializes the platform with the workstation model CLM03
  *  \ingroup SURF_resources
@@ -327,7 +327,7 @@ extern surf_workstation_resource_t surf_workstation_resource;
  *
  *  \see surf_workstation_resource_init_KCCFLN05()
  */
-void surf_workstation_resource_init_CLM03(const char *filename);
+XBT_PUBLIC(void) surf_workstation_resource_init_CLM03(const char *filename);
 
 /** \brief Initializes the platform with the model KCCFLN05
  *  \ingroup SURF_resources
@@ -339,8 +339,12 @@ void surf_workstation_resource_init_CLM03(const char *filename);
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
-void surf_workstation_resource_init_KCCFLN05(const char *filename);
-void surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename);
+
+XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05(const char *filename);
+
+
+XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename);
+
 
 /** \brief The network links
  *  \ingroup SURF_resources
@@ -349,7 +353,7 @@ void surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename)
  *
  *  \see workstation_set
  */
-extern xbt_dict_t network_link_set;
+extern XBT_PUBLIC(xbt_dict_t) network_link_set;
 
 /** \brief The workstations
  *  \ingroup SURF_resources
@@ -358,12 +362,12 @@ extern xbt_dict_t network_link_set;
  *
  *  \see network_link_set
  */
-extern xbt_dict_t workstation_set;
+extern XBT_PUBLIC(xbt_dict_t) workstation_set;
 
 /** \brief List of initialized resources
  *  \ingroup SURF_resources
  */
-extern xbt_dynar_t resource_list;
+extern XBT_PUBLIC(xbt_dynar_t) resource_list;
 
 /*******************************************/
 /*** SURF Globals **************************/
@@ -381,7 +385,7 @@ extern xbt_dynar_t resource_list;
  *  \see surf_timer_resource_init(), surf_workstation_resource_init_CLM03(),
  *  surf_workstation_resource_init_KCCFLN05(), surf_exit()
  */
-void surf_init(int *argc, char **argv);	/* initialize common structures */
+XBT_PUBLIC(void) surf_init(int *argc, char **argv);	/* initialize common structures */
 
 /** \brief Performs a part of the simulation
  *  \ingroup SURF_simulation
@@ -393,14 +397,14 @@ void surf_init(int *argc, char **argv);	/* initialize common structures */
  *  are not executed immediately but only when you call surf_solve.
  *  Note that the returned elapsed time can be zero.
  */
-double surf_solve(void);
+XBT_PUBLIC(double) surf_solve(void);
 
 /** \brief Return the current time
  *  \ingroup SURF_simulation
  *
  *  Return the current time in millisecond.
  */
-double surf_get_clock(void);
+XBT_PUBLIC(double) surf_get_clock(void);
 
 /** \brief Exit SURF
  *  \ingroup SURF_simulation
@@ -409,6 +413,6 @@ double surf_get_clock(void);
  *
  *  \see surf_init()
  */
-void surf_exit(void);
+XBT_PUBLIC(void) surf_exit(void);
 
 #endif				/* _SURF_SURF_H */
