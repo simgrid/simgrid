@@ -64,7 +64,7 @@ EXTRA_DIST= \
 	amok/amok_modinter.h
 
 if USE_SIMIX
-  EXTRA_DIST+=include/simix/simix.h
+  EXTRA_DIST+=include/simix/simix.h include/simix/datatypes.h simix/private.h
 endif
 
 #        gras_private.h
@@ -192,7 +192,14 @@ if HAVE_SDP
 endif
 
 if USE_SIMIX
-  SG_SRC+=simix/smx_global.c
+  SG_SRC+=simix/smx_global.c \ 
+  simix/smx_deployment.c \
+  simix/smx_config.c \
+  simix/smx_environment.c \
+  simix/smx_host.c \
+  simix/smx_process.c \
+  simix/smx_action.c \
+  simix/smx_synchro.c
 endif
 
 AMOK_SRC= \
