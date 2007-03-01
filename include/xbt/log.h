@@ -98,7 +98,7 @@ typedef enum {
  * to avoid an extra declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
-    XBT_PUBLIC_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
+    XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
         &_XBT_LOGV(parent), 0, 0,                    \
         #catName, xbt_log_priority_uninitialized, 1, \
         0, 1                                          \
@@ -153,7 +153,7 @@ typedef enum {
 
 #if (defined(_WIN32) && !defined(DLL_STATIC))
 # define XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc) \
-	XBT_PUBLIC_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
+	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
         0, 0, 0,                    \
 		#cname, xbt_log_priority_uninitialized, 1, \
         0, 1                                          \
@@ -287,7 +287,7 @@ XBT_PUBLIC(int) _xbt_log_cat_init(e_xbt_log_priority_t priority,
 			      xbt_log_category_t   category);
 
 
-extern XBT_IMPORT_NO_PUBLIC(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
+extern XBT_IMPORT_NO_EXPORT(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 
 XBT_LOG_EXTERNAL_CATEGORY(GRAS);
 

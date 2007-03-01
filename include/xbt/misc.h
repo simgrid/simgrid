@@ -71,40 +71,68 @@
 /* Handle import/export stuff
  * 
  * Rational of XBT_PUBLIC: 
- *   * If you build the DLL you must pass the right value of XBT_PUBLIC in the project : to do this you must define the DLL_EXPORT macro
- *   * If you do a static compilation, you must define the macro DLL_STATIC
- *   * If you link your code against the DLL, this file defines the macro to '__declspec(dllimport)' for you
- *   * If you compile under unix, this file defines the macro to 'extern', even if it's not mandatory with modern compilers
+ *   * This is for library symbols visible from the application-land.
+ *     Basically, any symbols defined in the include/directory must be 
+ *     like this (plus some other globals). 
+ *
+ *     UNIX coders should just think of it as a special way to say "extern".
+ *
+ *   * If you build the DLL, define the DLL_EXPORT symbol so that all symbols
+ *     actually get exported by this file.
+
+ *   * If you do a static windows compilation, define DLL_STATIC, both when
+ *     compiling the application files and when compiling the library.
+ *
+ *   * If you link your application against the DLL or if you do a UNIX build,
+ *     don't do anything special. This file will do the right thing for you 
+ *     by default.
+ *
  * 
- * Rational of XBT_PUBLIC_NO_IMPORT:
- *   * This is for symbols which must be exported in the DLL, but not imported from it. 
- *     This is obviously useful for initialized globals (which cannot be extern or similar).
- *     This is also used in the log mecanism where a macro creates the variable automatically.
- *      When the macro is called from within SimGrid, the symbol must be exported, but when called 
- *      from within the client code, it must not try to retrieve the symbol from the DLL since it's not in there.
+ * Rational of XBT_EXPORT_NO_IMPORT: (windows-only cruft)
+ *   * Symbols which must be exported in the DLL, but not imported from it.
+ * 
+ *   * This is obviously useful for initialized globals (which cannot be 
+ *     extern or similar).
+ *   * This is also used in the log mecanism where a macro creates the 
+ *     variable automatically. When the macro is called from within SimGrid,
+ *     the symbol must be exported, but when called  from within the client
+ *     code, it must not try to retrieve the symbol from the DLL since it's
+ *      not in there.
+ * 
+ * Rational of XBT_IMPORT_NO_EXPORT: (windows-only cruft)
+ *   * Symbols which must be imported from the DLL, but not explicitely 
+ *     exported from it.
+ * 
+ *   * The root log category is already exported, but not imported explicitely 
+ *     when creating a subcategory since we cannot import the parent category 
+ *     to deal with the fact that the parent may be in application space, not 
+ *     DLL space.
  */
 
 
-#ifdef DLL_EXPORT
-#  define XBT_PUBLIC(type)			  __declspec(dllexport) type
-#  define XBT_PUBLIC_NO_IMPORT(type)  __declspec(dllexport) type
-#  define XBT_IMPORT_NO_PUBLIC(type)  type 
-#else
-#  ifdef DLL_STATIC
-#    define XBT_PUBLIC(type)		   type
-#    define XBT_PUBLIC_NO_IMPORT(type) type
-#   define XBT_IMPORT_NO_PUBLIC(type)  type 
-#  else
-#    ifdef _WIN32
-#      define XBT_PUBLIC(type)		     __declspec(dllimport) type
-#      define XBT_PUBLIC_NO_IMPORT(type) type
-#      define XBT_IMPORT_NO_PUBLIC(type) __declspec(dllimport) type
-#  	 else
-#      define XBT_PUBLIC(type)		     extern type
-#      define XBT_PUBLIC_NO_IMPORT(type) type
-#      define XBT_IMPORT_NO_PUBLIC(type) type
-#    endif
-#  endif
+/* Build the DLL */
+#if defined(DLL_EXPORT) 
+#  define XBT_PUBLIC(type)            __declspec(dllexport) type
+#  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
+#  define XBT_IMPORT_NO_EXPORT(type)  type 
+
+/* Pack everything up statically */
+#elif defined(DLL_STATIC) 
+#  define XBT_PUBLIC(type)            type
+#  define XBT_EXPORT_NO_IMPORT(type)  type
+#  define XBT_IMPORT_NO_EXPORT(type)  type 
+
+/* Link against the DLL */
+#elif defined(_WIN32) 
+#  define XBT_PUBLIC(type)            __declspec(dllimport) type
+#  define XBT_EXPORT_NO_IMPORT(type)  type
+#  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
+
+/* Non-UNIX build. Let's keep sain here ;) */
+#else 
+#  define XBT_PUBLIC(type)            extern type
+#  define XBT_EXPORT_NO_IMPORT(type)  type
+#  define XBT_IMPORT_NO_EXPORT(type)  type
 #endif
    
 
