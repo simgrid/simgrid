@@ -1,9 +1,7 @@
 /* $Id$ */
 
-/* simix_config.c - support for SIMIX user configuration                      */
-
-/* Copyright (c) 2005 Martin Quinson.                                       */
-/* All rights reserved.                                                     */
+/* Copyright (c) 2007 Arnaud Legrand, Bruno Donassolo.
+   All rights reserved.                                          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

@@ -1,6 +1,6 @@
 /* 	$Id$	 */
 
-/* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
+/* Copyright (c) 2007 Arnaud Legrand, Bruno Donassolo.
    All rights reserved.                                          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -55,7 +55,7 @@ static void parse_process_finalize(void)
     arg->host = parse_host;
     arg->argc = parse_argc;
     arg->argv = parse_argv;
-    arg-> kill_time = kill_time;
+    arg->kill_time = kill_time;
 
     DEBUG3("Process %s(%s) will be started at time %f", arg->name, 
 	   arg->host->name,start_time);

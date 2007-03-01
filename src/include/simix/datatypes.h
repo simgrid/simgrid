@@ -1,6 +1,7 @@
 /* 	$Id$	 */
 
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
+   All rights reserved.                                          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -51,7 +52,7 @@ typedef struct s_simdata_action *simdata_action_t;
 /** @brief Action datatype 
     @ingroup m_datatypes_management_details */
 typedef struct s_smx_action {
-  int number;			/**< @brief action name if any */
+  char *name;			/**< @brief action name if any */
   simdata_action_t simdata;	/**< @brief simulator data */
   void *data;			/**< @brief user data */
 } s_smx_action_t;
@@ -67,6 +68,8 @@ typedef struct s_smx_process {
   char *name;			/**< @brief process name if any */
   simdata_process_t simdata;	/**< @brief simulator data */
   s_xbt_swag_hookup_t process_hookup;
+  s_xbt_swag_hookup_t synchro_hookup;
+  s_xbt_swag_hookup_t host_proc_hookup;
   void *data;			/**< @brief user data */
 } s_smx_process_t;
 /** @} */

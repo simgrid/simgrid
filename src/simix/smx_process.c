@@ -91,11 +91,6 @@ smx_process_t SIMIX_process_create_with_arguments(const char *name,
 				     SIMIX_process_cleanup, process, 
 				     simdata->argc, simdata->argv);
 
-  if((self=simix_global->current_process)) {
-    //simdata->PPID = MSG_process_get_PID(self);
-  } else {
-   // simdata->PPID = -1;
-  }
   simdata->last_errno=SIMIX_OK;
 
 
@@ -236,56 +231,6 @@ smx_host_t SIMIX_process_get_host(smx_process_t process)
 }
 
 /** \ingroup m_process_management
- *
- * \brief Return a #m_process_t given its PID.
- *
- * This functions search in the list of all the created m_process_t for a m_process_t 
-   whose PID is equal to \a PID. If no host is found, \c NULL is returned. 
-   Note that the PID are uniq in the whole simulation, not only on a given host.
- */
-/*
-m_process_t MSG_process_from_PID(int PID)
-{
-  xbt_fifo_item_t i = NULL;
-  m_process_t process = NULL;
-
-  xbt_fifo_foreach(msg_global->process_list,i,process,m_process_t) {
-    if(MSG_process_get_PID(process) == PID) return process;
-  }
-  return NULL;
-}
-*/
-
-/** \ingroup m_process_management
- * \brief Returns the process ID of \a process.
- *
- * This functions checks whether \a process is a valid pointer or not 
-   and return its PID.
- */
-/*
-int MSG_process_get_PID(m_process_t process)
-{
-  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
-
-  return (((simdata_process_t) process->simdata)->PID);
-}
-*/
-/** \ingroup m_process_management
- * \brief Returns the process ID of the parent of \a process.
- *
- * This functions checks whether \a process is a valid pointer or not 
-   and return its PID. Returns -1 if the agent has not been created by 
-   another agent.
- */
-/*
-int MSG_process_get_PPID(m_process_t process)
-{
-  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
-
-  return (((simdata_process_t) process->simdata)->PPID);
-}
-*/
-/** \ingroup m_process_management
  * \brief Return the name of an agent.
  *
  * This functions checks whether \a process is a valid pointer or not 
@@ -298,29 +243,6 @@ const char *SIMIX_process_get_name(smx_process_t process)
   return (process->name);
 }
 
-/** \ingroup m_process_management
- * \brief Return the PID of the current agent.
- *
- * This functions returns the PID of the currently running #m_process_t.
- */
-/*
-int MSG_process_self_PID(void)
-{
-  return (MSG_process_get_PID(MSG_process_self()));
-}
-*/
-/** \ingroup m_process_management
- * \brief Return the PPID of the current agent.
- *
- * This functions returns the PID of the parent of the currently
- * running #m_process_t.
- */
-/*
-int MSG_process_self_PPID(void)
-{
-  return (MSG_process_get_PPID(MSG_process_self()));
-}
-*/
 /** \ingroup m_process_management
  * \brief Return the current agent.
  *

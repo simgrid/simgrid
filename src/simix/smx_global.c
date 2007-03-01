@@ -1,6 +1,6 @@
 /* 	$Id$	 */
 
-/* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
+/* Copyright (c) 2007 Arnaud Legrand, Bruno Donassolo.
    All rights reserved.                                          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,14 +13,12 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 				"Logging specific to SIMIX (kernel)");
 
-//int __stop_at_time = -1.0 ;
+int __stop_time = -1.0 ;
 
 SIMIX_Global_t simix_global = NULL;
 
-/* static void MarkAsFailed(m_task_t t, TBX_HashTable_t failedProcessList); */
-/* static xbt_fifo_t SIMIX_buildFailedHostList(double a, double b); */
 
-/** \defgroup msg_simulation   SIMIX simulation Functions
+/** \defgroup simix_simulation   SIMIX simulation Functions
  *  \brief This section describes the functions you need to know to
  *  set up a simulation. You should have a look at \ref SIMIX_examples 
  *  to have an overview of their usage.
@@ -29,7 +27,7 @@ SIMIX_Global_t simix_global = NULL;
 
 /********************************* SIMIX **************************************/
 
-/** \ingroup msg_simulation
+/** \ingroup simix_simulation
  * \brief Initialize some SIMIX internal data.
  */
 void SIMIX_global_init_args(int *argc, char **argv)
@@ -37,27 +35,28 @@ void SIMIX_global_init_args(int *argc, char **argv)
   SIMIX_global_init(argc,argv);
 }
 
-/** \ingroup msg_simulation
+/** \ingroup simix_simulation
  * \brief Initialize some SIMIX internal data.
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
 	s_smx_process_t proc;
 
-  if (!simix_global) {
-    surf_init(argc, argv);	/* Initialize some common structures. Warning, it sets msg_global=NULL */
-     
-    simix_global = xbt_new0(s_SIMIX_Global_t,1);
+	if (!simix_global) {
+		surf_init(argc, argv);	/* Initialize some common structures. Warning, it sets msg_global=NULL */
 
-    xbt_context_init();
-    simix_global->host = xbt_fifo_new();
-    simix_global->process_to_run = xbt_swag_new(xbt_swag_offset(proc,process_hookup));
-    simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc,process_hookup));
-    simix_global->current_process = NULL;
-    simix_global->registered_functions = xbt_dict_new();
-  }
+		simix_global = xbt_new0(s_SIMIX_Global_t,1);
+
+		xbt_context_init();
+		simix_global->host = xbt_fifo_new();
+		simix_global->process_to_run = xbt_swag_new(xbt_swag_offset(proc,process_hookup));
+		simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc,process_hookup));
+		simix_global->current_process = NULL;
+		simix_global->registered_functions = xbt_dict_new();
+	}
 }
 
+/* Debug purpose, incomplete */
 void __SIMIX_display_process_status(void)
 {
    smx_process_t process = NULL;
@@ -68,7 +67,7 @@ void __SIMIX_display_process_status(void)
    INFO1("SIMIX: %d processes are still running, waiting for something.",
 	 nbprocess);
    /*  List the process and their state */
-   INFO0("SIMIX: <process>(<pid>) on <host>: <status>.");
+   INFO0("SIMIX: <process> on <host>: <status>.");
    xbt_swag_foreach(process, simix_global->process_list) {
       simdata_process_t p_simdata = (simdata_process_t) process->simdata;
      // simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
@@ -99,143 +98,148 @@ static void _XBT_CALL inthandler(int ignored)
  */
 SIMIX_error_t SIMIX_main(void)
 {
-  smx_process_t process = NULL;
-  int i;
-  double elapsed_time = 0.0;
-  int state_modifications = 1;
-   
-  /* Prepare to display some more info when dying on Ctrl-C pressing */
-  signal(SIGINT,inthandler);
-   
-  /* Clean IO before the run */
-  fflush(stdout);
-  fflush(stderr);
+	smx_process_t process = NULL;
+	smx_cond_t cond = NULL;
+	int i;
+	double elapsed_time = 0.0;
+	int state_modifications = 1;
 
-  surf_solve(); /* Takes traces into account. Returns 0.0 */
-/* xbt_fifo_size(msg_global->process_to_run) */
-  while (1) {
-    xbt_context_empty_trash();
-    if(xbt_swag_size(simix_global->process_to_run) && (elapsed_time>0)) {
-      DEBUG0("**************************************************");
-    }
-    /*
-    if((__stop_at_time>0) && (SIMIX_get_clock() >= __stop_at_time)) {
-      DEBUG0("Let's stop here!");
-    }*/
+	/* Prepare to display some more info when dying on Ctrl-C pressing */
+	signal(SIGINT,inthandler);
 
-    while ((process = xbt_swag_extract(simix_global->process_to_run))) {
-      DEBUG2("Scheduling %s on %s",	     
-	     process->name,
-	     process->simdata->host->name);
-      simix_global->current_process = process;
-/*       fflush(NULL); */
-      xbt_context_schedule(process->simdata->context);
-      simix_global->current_process = NULL;
-    }
-    
-    {
-      surf_action_t action = NULL;
-      surf_resource_t resource = NULL;
-      //m_task_t task = NULL;
+	/* Clean IO before the run */
+	fflush(stdout);
+	fflush(stderr);
 
-      void *fun = NULL;
-      void *arg = NULL;
+	surf_solve(); /* Takes traces into account. Returns 0.0 */
+	/* xbt_fifo_size(msg_global->process_to_run) */
+	while (1) {
+		xbt_context_empty_trash();
+		if(xbt_swag_size(simix_global->process_to_run) && (elapsed_time>0)) {
+			DEBUG0("**************************************************");
+		}
 
-      xbt_dynar_foreach(resource_list, i, resource) {
-	if(xbt_swag_size(resource->common_public->states.failed_action_set) ||
-	   xbt_swag_size(resource->common_public->states.done_action_set))
-	  state_modifications = 1;
-      }
-      
-      if(!state_modifications) {
-	DEBUG1("%f : Calling surf_solve",SIMIX_get_clock());
-	elapsed_time = surf_solve();
-	DEBUG1("Elapsed_time %f",elapsed_time);
-	
-	if (elapsed_time<0.0) {
-	  /*       fprintf(stderr, "We're done %g\n",elapsed_time); */
-	  break;
+		if((__stop_time>0) && (SIMIX_get_clock() >= __stop_time)) {
+			DEBUG0("Let's stop here!");
+		}
+
+		while ((process = xbt_swag_extract(simix_global->process_to_run))) {
+			DEBUG2("Scheduling %s on %s",	     
+					process->name,
+					process->simdata->host->name);
+			simix_global->current_process = process;
+			/*       fflush(NULL); */
+			xbt_context_schedule(process->simdata->context);
+			simix_global->current_process = NULL;
+		}
+
+		{
+			surf_action_t action = NULL;
+			surf_resource_t resource = NULL;
+			smx_action_t smx_action = NULL;
+
+			void *fun = NULL;
+			void *arg = NULL;
+
+			xbt_dynar_foreach(resource_list, i, resource) {
+				if(xbt_swag_size(resource->common_public->states.failed_action_set) ||
+						xbt_swag_size(resource->common_public->states.done_action_set))
+					state_modifications = 1;
+			}
+
+			if(!state_modifications) {
+				DEBUG1("%f : Calling surf_solve",SIMIX_get_clock());
+				elapsed_time = surf_solve();
+				DEBUG1("Elapsed_time %f",elapsed_time);
+
+				if (elapsed_time<0.0) {
+					/*       fprintf(stderr, "We're done %g\n",elapsed_time); */
+					break;
+				}
+			}
+
+			while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
+				DEBUG2("got %p %p", fun, arg);
+				if(fun==SIMIX_process_create_with_arguments) {
+					process_arg_t args = arg;
+					DEBUG2("Launching %s on %s", args->name, args->host->name);
+					process = SIMIX_process_create_with_arguments(args->name, args->code, 
+							args->data, args->host,
+							args->argc,args->argv);
+					if(args->kill_time > SIMIX_get_clock()) {
+						surf_timer_resource->extension_public->set(args->kill_time, 
+								(void*) &SIMIX_process_kill,
+								(void*) process);
+					}
+					xbt_free(args);
+				}
+				if(fun==SIMIX_process_kill) {
+					process = arg;
+					DEBUG2("Killing %s on %s", process->name, 
+							process->simdata->host->name);
+					SIMIX_process_kill(process);
+				}
+			}
+
+			/* Wake up all process waiting for the action finish */
+			xbt_dynar_foreach(resource_list, i, resource) {
+				while ((action =
+							xbt_swag_extract(resource->common_public->states.
+								failed_action_set))) {
+					smx_action = action->data;
+					if (smx_action) {
+						xbt_fifo_item_t _cursor;
+
+						DEBUG1("** %s failed **",smx_action->name);
+						xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
+							SIMIX_cond_broadcast(cond);
+							xbt_swag_foreach(process,cond->sleeping) {
+								DEBUG2("\t preparing to wake up %s on %s",	     
+										process->name,	process->simdata->host->name);
+							}
+						}
+						process=NULL;						
+					}
+				}
+				while ((action =
+							xbt_swag_extract(resource->common_public->states.
+								done_action_set))) {
+					smx_action = action->data;
+					if (smx_action) {
+						xbt_fifo_item_t _cursor;
+
+						DEBUG1("** %s done **",smx_action->name);
+						xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
+							SIMIX_cond_broadcast(cond);
+							xbt_swag_foreach(process,cond->sleeping) {
+								DEBUG2("\t preparing to wake up %s on %s",	     
+										process->name,	process->simdata->host->name);
+							}
+						}
+						process=NULL;						
+					}
+
+				}
+			}
+		}
+		state_modifications = 0;
 	}
-      }
 
-      while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
-	DEBUG2("got %p %p", fun, arg);
-	if(fun==SIMIX_process_create_with_arguments) {
-	  process_arg_t args = arg;
-	  DEBUG2("Launching %s on %s", args->name, args->host->name);
-	  process = SIMIX_process_create_with_arguments(args->name, args->code, 
-						      args->data, args->host,
-						      args->argc,args->argv);
-	  if(args->kill_time > SIMIX_get_clock()) {
-	    surf_timer_resource->extension_public->set(args->kill_time, 
-						       (void*) &SIMIX_process_kill,
-						       (void*) process);
-	  }
-	  xbt_free(args);
-	}
-	if(fun==SIMIX_process_kill) {
-	  process = arg;
-	  DEBUG2("Killing %s on %s", process->name, 
-		 process->simdata->host->name);
-	  SIMIX_process_kill(process);
-	}
-      }
-      
-      xbt_dynar_foreach(resource_list, i, resource) {
-	while ((action =
-		xbt_swag_extract(resource->common_public->states.
-				 failed_action_set))) {
-				 /*
-	  task = action->data;
-	  if(task) {
-	    int _cursor;
-	    DEBUG1("** %s failed **",task->name);
-	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
-	      DEBUG3("\t preparing to wake up %s(%d) on %s",	     
-		     process->name,process->simdata->PID,
-		     process->simdata->host->name);
-	      xbt_fifo_unshift(msg_global->process_to_run, process);
-	    }
-	    process=NULL;
-	  }*/
-	}
-	while ((action =
-		xbt_swag_extract(resource->common_public->states.
-				 done_action_set))) {
-	  /*
-		task = action->data;
-	  if(task) {
-	    int _cursor;
-	    DEBUG1("** %s done **",task->name);
-	    xbt_dynar_foreach(task->simdata->sleeping,_cursor,process) {
-	      DEBUG3("\t preparing to wake up %s(%d) on %s",	     
-		     process->name,process->simdata->PID,
-		     process->simdata->host->name);
-	      xbt_fifo_unshift(msg_global->process_to_run, process);
-	    }
-	    process=NULL;
-	  }*/
-	}
-      }
-    }
-    state_modifications = 0;
-  }
+	if (xbt_swag_size(simix_global->process_list) == 0) {
+		INFO0("Congratulations ! Simulation terminated : all processes are over");
+		return SIMIX_OK;
+	} else {
+		INFO0("Oops ! Deadlock or code not perfectly clean.");
+		__SIMIX_display_process_status();
+		if(XBT_LOG_ISENABLED(simix, xbt_log_priority_debug) ||
+				XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
+			DEBUG0("Aborting!");
+			xbt_abort();
+		}
 
-  if (xbt_swag_size(simix_global->process_list) == 0) {
-    INFO0("Congratulations ! Simulation terminated : all processes are over");
-    return SIMIX_OK;
-  } else {
-    INFO0("Oops ! Deadlock or code not perfectly clean.");
-    __SIMIX_display_process_status();
-    if(XBT_LOG_ISENABLED(simix, xbt_log_priority_debug) ||
-       XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
-      DEBUG0("Aborting!");
-      xbt_abort();
-    }
-
-    INFO0("Return a Warning.");
-    return SIMIX_WARNING;
-  }
+		INFO0("Return a Warning.");
+		return SIMIX_WARNING;
+	}
 }
 
 /** \ingroup msg_simulation

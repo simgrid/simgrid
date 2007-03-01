@@ -1,6 +1,7 @@
 /* 	$Id$	 */
 
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/* Copyright (c) 2007 Arnaud Legrand, Bruno Donassolo.
+   All rights reserved.                                          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -151,20 +152,6 @@ smx_host_t *SIMIX_get_host_table(void)
   return ((smx_host_t *)xbt_fifo_to_array(simix_global->host));
 }
 
-/** \ingroup m_host_management
- * \brief Return the number of MSG tasks currently running on a
- * #m_host_t. The external load is not taken in account.
- */
-/*
-int MSG_get_host_msgload(m_host_t h)
-{
-  xbt_assert0((h!= NULL), "Invalid parameters");
-  xbt_assert0(0, "Not implemented yet");
-
-  return(0);
-//   return(surf_workstation_resource->extension_public->get_load(h->simdata->host));
-}
-*/
 
 /** \ingroup m_host_management
  * \brief Return the speed of the processor (in Mflop/s), regardless of 
