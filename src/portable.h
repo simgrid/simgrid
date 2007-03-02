@@ -88,9 +88,6 @@
 # endif
 #endif
 
-#ifdef _WIN32
-#define sleep _sleep /* else defined in stdlib.h */
-#endif
 
 /****
  **** Contexts
