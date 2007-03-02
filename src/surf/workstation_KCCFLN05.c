@@ -266,8 +266,12 @@ static void update_actions_state(double now, double delta)
 				     action->lat_current);
       }
     }
+    DEBUG3("Action (%p) : remains (%g) updated by %g.",
+	   action, action->generic_action.remains,
+	   lmm_variable_getvalue(action->variable) * deltap);
     double_update(&(action->generic_action.remains),
 		       lmm_variable_getvalue(action->variable) * deltap);
+
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
@@ -567,7 +571,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   if (parallel_task_network_link_set == NULL) {
     parallel_task_network_link_set = xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
   }
-
+  
   /* Compute the number of affected resources... */
   for(i=0; i< workstation_nb; i++) {
     for(j=0; j< workstation_nb; j++) {
@@ -582,17 +586,20 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 	}
     }
   }
-
   nb_link = xbt_dict_length(parallel_task_network_link_set);
   xbt_dict_reset(parallel_task_network_link_set);
+
 
   for (i = 0; i<workstation_nb; i++)
     if(computation_amount[i]>0) nb_host++;
  
-  if(nb_link + workstation_nb == 0)
+
+  if(nb_link + nb_host == 0) /* was workstation_nb... */
     return NULL;
 
   action = xbt_new0(s_surf_action_workstation_KCCFLN05_t, 1);
+  DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
+	 action, nb_host,  nb_link);
   action->generic_action.using = 1;
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
