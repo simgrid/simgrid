@@ -19,27 +19,74 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
 /*********************************** Mutex ************************************/
 smx_mutex_t SIMIX_mutex_init()
 {
-	return xbt_new0(s_smx_mutex_t,1);
+	smx_mutex_t m = xbt_new0(s_smx_mutex_t,1);
+	s_smx_process_t p; /* useful to initialize sleeping swag */
+	/* structures initialization */
+	m->using = 0;
+	m->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
+	return m;
 }
 
 void SIMIX_mutex_lock(smx_mutex_t mutex)
 {
+	smx_process_t self = SIMIX_process_self();
+
+	xbt_assert0((mutex != NULL), "Invalid parameters");
+	
+	if (mutex->using) {
+		/* somebody using the mutex, block */
+		xbt_swag_insert(self, mutex->sleeping);
+		self->simdata->mutex = mutex;
+		__SIMIX_process_block(-1,"");
+		self->simdata->mutex = NULL;
+		mutex->using = 1;
+	}
+	else {
+		/* mutex free */
+		mutex->using = 1;
+	}
 	return;
 }
-
-void SIMIX_mutex_trylock(smx_mutex_t mutex)
+/* return 1 if the process got the mutex, else 0. */
+int SIMIX_mutex_trylock(smx_mutex_t mutex)
 {
-	return;
+	xbt_assert0((mutex != NULL), "Invalid parameters");
+	
+	if (mutex->using) 
+		return 0;
+	else {
+		mutex->using = 1;
+		return 1;
+	}
 }
 
 void SIMIX_mutex_unlock(smx_mutex_t mutex)
 {
+	smx_process_t p;	/*process to wake up */
+	
+	xbt_assert0((mutex != NULL), "Invalid parameters");
+	
+	if (xbt_swag_size(mutex->sleeping) > 0) {
+		p = xbt_swag_extract(mutex->sleeping);
+		mutex->using = 0;
+		__SIMIX_process_unblock(p);
+	}
+	else {
+		/* nobody to wape up */
+		mutex->using = 0;
+	}
 	return;
 }
 
-void SIMIX_mutex_destroy(smx_mutex_t mutex)
+SIMIX_error_t SIMIX_mutex_destroy(smx_mutex_t mutex)
 {
-	return;
+	if ( mutex == NULL )
+		return SIMIX_WARNING;
+	else {
+		xbt_swag_free(mutex->sleeping);
+		xbt_free(mutex);
+		return SIMIX_OK;
+	}
 }
 
 /******************************** Conditional *********************************/

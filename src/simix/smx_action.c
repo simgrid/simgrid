@@ -39,3 +39,41 @@ SIMIX_error_t SIMIX_action_destroy(smx_action_t action)
 {
 	return SIMIX_OK;
 }
+
+void SIMIX_create_link(smx_action_t action, smx_cond_t cond)
+{
+
+}
+
+SIMIX_error_t __SIMIX_wait_for_action(smx_process_t process, smx_action_t action)
+{
+	e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
+	simdata_action_t simdata = action->simdata;
+
+	xbt_assert0(((process != NULL) && (action != NULL) && (action->simdata != NULL)), "Invalid parameters");
+	
+	/* change context while the action is running  */
+	do {
+		xbt_context_yield();
+		state=surf_workstation_resource->common_public->action_get_state(simdata->surf_action);
+	} while (state==SURF_ACTION_RUNNING);
+	
+	/* action finished, we can continue */
+
+	if(state == SURF_ACTION_DONE) {
+		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
+			simdata->surf_action = NULL;
+		SIMIX_RETURN(SIMIX_OK);
+	} else if(surf_workstation_resource->extension_public->
+			get_state(SIMIX_process_get_host(process)->simdata->host) 
+			== SURF_CPU_OFF) {
+		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
+			simdata->surf_action = NULL;
+		SIMIX_RETURN(SIMIX_HOST_FAILURE);
+	} else {
+		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
+			simdata->surf_action = NULL;
+		SIMIX_RETURN(SIMIX_ACTION_CANCELLED);
+	}
+
+}

@@ -76,9 +76,9 @@ XBT_PUBLIC(SIMIX_error_t) SIMIX_get_errno(void);
 /******Mutex******/
 XBT_PUBLIC(smx_mutex_t) SIMIX_mutex_init(void);
 XBT_PUBLIC(void) SIMIX_mutex_lock(smx_mutex_t mutex);
-XBT_PUBLIC(void) SIMIX_mutex_trylock(smx_mutex_t mutex);
+XBT_PUBLIC(int) SIMIX_mutex_trylock(smx_mutex_t mutex);
 XBT_PUBLIC(void) SIMIX_mutex_unlock(smx_mutex_t mutex);
-XBT_PUBLIC(void) SIMIX_mutex_destroy(smx_mutex_t mutex);
+XBT_PUBLIC(SIMIX_error_t) SIMIX_mutex_destroy(smx_mutex_t mutex);
 
 /*****Conditional*****/
 XBT_PUBLIC(smx_cond_t) SIMIX_cond_init(void);
@@ -95,6 +95,7 @@ XBT_PUBLIC(smx_action_t) SIMIX_execute(smx_host_t host,double amount);
 XBT_PUBLIC(SIMIX_error_t) SIMIX_action_cancel(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_action_set_priority(smx_action_t action, double priority);
 XBT_PUBLIC(SIMIX_error_t) SIMIX_action_destroy(smx_action_t action);
+XBT_PUBLIC(void) SIMIX_create_link(smx_action_t action, smx_cond_t cond);
 
 //SIMIX_action_wait_for_computation(smx_process_t process, smx_action_t action);
 

@@ -18,7 +18,10 @@
 #include "xbt/context.h"
 #include "xbt/config.h"
 
-/**************** datatypes **********************************/
+/******************************* Datatypes **********************************/
+
+
+/********************************** Host ************************************/
 
 typedef struct s_simdata_host {
   void *host;			/* SURF modeling */
@@ -48,7 +51,10 @@ typedef struct s_simdata_process {
   xbt_context_t context;	        /* the context that executes the scheduler fonction */
   int blocked;
   int suspended;
+  smx_mutex_t mutex;		/* mutex on which the process is blocked  */
+  smx_cond_t cond;		/* cond on which the process is blocked  */
   smx_host_t put_host;		/* used for debugging purposes */
+  smx_action_t block_action;	/* action that block the process when it does a mutex_lock or cond_wait */
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
   SIMIX_error_t last_errno;       /* the last value returned by a MSG_function */
@@ -68,14 +74,16 @@ typedef struct process_arg {
 /********************************* Mutex and Conditional ****************************/
 
 typedef struct s_smx_mutex {
-	xbt_swag_t sleeping;
+	xbt_swag_t sleeping;			/* list of sleeping process */
 	int using;
 
 } s_smx_mutex_t;
 
 typedef struct s_smx_cond {
+	xbt_swag_t sleeping; 			/* list of sleeping process */
 	s_smx_mutex_t * mutex;
-	xbt_swag_t sleeping; //process
+	xbt_fifo_t actions;			/* list of actions */
+
 } s_smx_cond_t;
 
 /********************************* Action **************************************/
@@ -123,7 +131,7 @@ extern xbt_cfg_t _simix_cfg_set;
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
 #define CHECK_HOST()  xbt_assert0(surf_workstation_resource->extension_public-> \
-				  get_state(MSG_host_self()->simdata->host)==SURF_CPU_ON,\
+				  get_state(SIMIX_host_self()->simdata->host)==SURF_CPU_ON,\
                                   "Host failed, you cannot call this function.")
 
 smx_host_t __SIMIX_host_create(const char *name, void *workstation, void *data);
@@ -135,9 +143,11 @@ int __SIMIX_process_isBlocked(smx_process_t process);
 
 void __SIMIX_display_process_status(void);
 
+SIMIX_error_t __SIMIX_wait_for_action(smx_process_t process, smx_action_t action);
+
+
 /*
 void __MSG_task_execute(smx_process_t process, m_task_t task);
-MSG_error_t __MSG_wait_for_computation(smx_process_t process, m_task_t task);
 MSG_error_t __MSG_task_wait_event(smx_process_t process, m_task_t task);
 */
 

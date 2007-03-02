@@ -261,52 +261,51 @@ smx_process_t SIMIX_process_self(void)
  */
 SIMIX_error_t SIMIX_process_suspend(smx_process_t process)
 {
-/*
   simdata_process_t simdata = NULL;
-  simdata_task_t simdata_task = NULL;
-
-  XBT_IN2("(%p(%s))", process, process->name);
-
+	smx_action_t dummy;
+	
   xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
-
-  PAJE_PROCESS_PUSH_STATE(process,"S",NULL);
 
   if(process!=SIMIX_process_self()) {
     simdata = process->simdata;
     
-    xbt_assert0(simdata->waiting_task,"Process not waiting for anything else. Weird !");
+		if ( (simdata->mutex == NULL) && (simdata->cond == NULL) ) {
+			/* Ops, I don't know what to do yet. */
 
-    simdata_task = simdata->waiting_task->simdata;
+		}
+		else if (simdata->mutex) {
+			/* process blocked on a mutex, only set suspend=1 */
+			simdata->suspended = 1;
+		}
+		else if (simdata->cond){
+			/* process blocked cond, suspend all actions */
+			
+			/* temporaries variables */ 
+			smx_cond_t c;
+			xbt_fifo_item_t i;
+			smx_action_t act;
 
-    simdata->suspended = 1;
-    if(simdata->blocked) {
-      XBT_OUT;
-      return SIMIX_OK;
-    }
+			simdata->suspended = 1;
+			c = simdata->cond;
+			xbt_fifo_foreach(c->actions,i,act, smx_action_t) {
+				 surf_workstation_resource->common_public->suspend(act->simdata->surf_action);
+			}
+		}
+		else xbt_assert0(0, "Unknown process status");
 
-    xbt_assert0(((simdata_task->compute)||(simdata_task->comm))&&
-		!((simdata_task->compute)&&(simdata_task->comm)),
-		"Got a problem in deciding which action to choose !");
-    simdata->suspended = 1;
-    if(simdata_task->compute) 
-      surf_workstation_resource->common_public->suspend(simdata_task->compute);
-    else
-      surf_workstation_resource->common_public->suspend(simdata_task->comm);
-  } else {
-    m_task_t dummy = MSG_TASK_UNINITIALIZED;
-    dummy = MSG_task_create("suspended", 0.0, 0, NULL);
-
-    simdata = process->simdata;
-    simdata->suspended = 1;
-    __MSG_task_execute(process,dummy);
-    surf_workstation_resource->common_public->suspend(dummy->simdata->compute);
-    __MSG_wait_for_computation(process,dummy);
-    simdata->suspended = 0;
-
-    MSG_task_destroy(dummy);
   }
-  XBT_OUT;
-  */
+	else {
+		/* process executing, I can create an action and suspend it */
+		dummy = SIMIX_execute(SIMIX_process_get_host(process)->simdata->host, 0);
+		process->simdata->block_action = dummy;
+
+		process->simdata->suspended = 1;
+		surf_workstation_resource->common_public->suspend(dummy->simdata->surf_action);
+		__SIMIX_wait_for_action(process,dummy);
+		SIMIX_action_destroy(dummy);
+		process->simdata->suspended = 0;
+
+	}
   return SIMIX_OK;
 }
 
@@ -318,50 +317,41 @@ SIMIX_error_t SIMIX_process_suspend(smx_process_t process)
  */
 SIMIX_error_t SIMIX_process_resume(smx_process_t process)
 {
-/*
   simdata_process_t simdata = NULL;
-  simdata_task_t simdata_task = NULL;
 
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
-  XBT_IN2("(%p(%s))", process, process->name);
-
   if(process == SIMIX_process_self()) {
-    XBT_OUT;
     SIMIX_RETURN(SIMIX_OK);
   }
 
   simdata = process->simdata;
 
-  if(simdata->blocked) {
-    PAJE_PROCESS_POP_STATE(process);
-
-    simdata->suspended = 0; *//* He'll wake up by itself */
-    /*XBT_OUT;
+  if(simdata->mutex) {
+    simdata->suspended = 0; /* He'll wake up by itself */
     SIMIX_RETURN(SIMIX_OK);
   }
+	else if (simdata->cond) {
+		/* temporaries variables */ 
+		smx_cond_t c;
+		xbt_fifo_item_t i;
+		smx_action_t act;
 
-  if(!(simdata->waiting_task)) {
-    xbt_assert0(0,"Process not waiting for anything else. Weird !");
-    XBT_OUT;
-    return SIMIX_WARNING;
-  }
-  simdata_task = simdata->waiting_task->simdata;
+		simdata->suspended = 0;
+		c = simdata->cond;
+		xbt_fifo_foreach(c->actions,i,act, smx_action_t) {
+			surf_workstation_resource->common_public->resume(act->simdata->surf_action);
+		}
+    SIMIX_RETURN(SIMIX_OK);
+	}
+	else if (simdata->block_action){
+		simdata->suspended = 0;
+		surf_workstation_resource->common_public->resume(simdata->block_action->simdata->surf_action);
+    SIMIX_RETURN(SIMIX_OK);
+	}
+	else xbt_assert0(0, "Unknown process status");
 
-
-  if(simdata_task->compute) {
-    surf_workstation_resource->common_public->resume(simdata_task->compute);
-    PAJE_PROCESS_POP_STATE(process);
-  }
-  else {
-    PAJE_PROCESS_POP_STATE(process);
-    surf_workstation_resource->common_public->resume(simdata_task->comm);
-  }
-
-  XBT_OUT;
-  */
-  SIMIX_RETURN(SIMIX_OK);
 }
 
 /** \ingroup m_process_management
@@ -379,8 +369,30 @@ int SIMIX_process_is_suspended(smx_process_t process)
 
 int __SIMIX_process_block(double max_duration, const char *info)
 {
-/*
+
   smx_process_t process = SIMIX_process_self();
+  smx_action_t dummy = NULL;
+
+  dummy = SIMIX_execute(SIMIX_process_get_host(process)->simdata->host, 0);
+	process->simdata->block_action = dummy;
+
+  process->simdata->blocked=1;
+
+  surf_workstation_resource->common_public->suspend(dummy->simdata->surf_action);
+  if(max_duration>=0)
+    surf_workstation_resource->common_public->set_max_duration(dummy->simdata->surf_action, 
+							       max_duration);
+	__SIMIX_wait_for_action(process,dummy);
+	SIMIX_action_destroy(dummy);
+	process->simdata->blocked=0;
+
+  if(process->simdata->suspended) {
+    DEBUG0("I've been suspended in the meantime");    
+    SIMIX_process_suspend(process);
+    DEBUG0("I've been resumed, let's keep going");    
+  }
+
+/*
   m_task_t dummy = SIMIX_TASK_UNINITIALIZED;
   char blocked_name[512];
   snprintf(blocked_name,512,"blocked [%s] (%s:%s)",
@@ -417,6 +429,22 @@ int __SIMIX_process_block(double max_duration, const char *info)
 
 SIMIX_error_t __SIMIX_process_unblock(smx_process_t process)
 {
+  simdata_process_t simdata = NULL;
+  simdata_action_t simdata_action = NULL;
+
+  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+  CHECK_HOST();
+
+	simdata = process->simdata;
+  if(!(simdata->block_action)) {
+    xbt_assert0(0,"Process is not blocked !");
+    return SIMIX_WARNING;
+  }
+	simdata_action = simdata->block_action->simdata;
+  xbt_assert0(simdata->blocked,"Process not blocked");
+  surf_workstation_resource->common_public->resume(simdata_action->surf_action);
+  SIMIX_RETURN(SIMIX_OK);
+
 /*
   simdata_process_t simdata = NULL;
   simdata_task_t simdata_task = NULL;
@@ -440,7 +468,6 @@ SIMIX_error_t __SIMIX_process_unblock(smx_process_t process)
 
   XBT_OUT;
 */
-  SIMIX_RETURN(SIMIX_OK);
 }
 
 int __SIMIX_process_isBlocked(smx_process_t process)
