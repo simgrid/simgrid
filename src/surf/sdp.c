@@ -43,6 +43,10 @@ XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf,
 #    (A.x)_2 <= b_2
 #     ...
 #    (A.x)_m <= b_m
+#        x_1 <= c_1
+#        x_2 <= c_2
+#         ...
+#        x_m <= c_m
 #    x>=0
 #
 #  We assume in the following that n=2^K
@@ -89,6 +93,13 @@ XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf,
 #    forall k in [0,K], and i in [1,2^k]
 #        y(k,i) >= 0
 #
+#  Latency Constraints:
+#    forall i in [1,2^k] and v in [0,m-1]
+#        if(i <= m-1){
+#            y(k-1, i) <= bound
+#        }else{
+#            y(k-1, i) <= 1
+#        }
 #  Minimize -y(0,1)
 */
 
@@ -106,7 +117,6 @@ XBT_LOG_NEW_SUBCATEGORY(surf_sdp_out, surf,
 
 void sdp_solve(lmm_system_t sys)
 {
-  lmm_variable_t var = NULL;
 
   /*
    * SDP mapping variables.
@@ -119,6 +129,7 @@ void sdp_solve(lmm_system_t sys)
   int nb_cnsts_capacity=0;
   int nb_cnsts_struct=0;
   int nb_cnsts_positivy=0;
+  int nb_cnsts_latency=0;
   int block_num=0;
   int block_size; 
   int total_block_size=0;
@@ -149,12 +160,14 @@ void sdp_solve(lmm_system_t sys)
   xbt_swag_t cnst_list = NULL;
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
+  lmm_variable_t var = NULL;
 
   double tmp_k;
   struct sparseblock *p;
   char *tmp = NULL;
   FILE *stdout_sav;
   int ret;
+  
 
 
   if ( !(sys->modified))
@@ -169,17 +182,23 @@ void sdp_solve(lmm_system_t sys)
   xbt_swag_foreach(var, var_list) {
     if(var->weight != 0.0) i++;
   }
+
+
+
   flows=i;
   DEBUG1("Variable set : %d", xbt_swag_size(var_list));
   DEBUG1("Flows : %d", flows);
 
-  if(flows == 0)
+  if(flows == 0){
     return;
+  }
 
 
   xbt_swag_foreach(var, var_list) {
     var->value = 0.0;
-    if(var->weight) var->index = i--;
+    if(var->weight) {
+      var->index = i--;
+    }
   }
 
   cnst_list=&(sys->active_constraint_set); 
@@ -196,8 +215,8 @@ void sdp_solve(lmm_system_t sys)
    */
   tmp_k = (double) log((double)flows)/log(2.0);
   K = (int) ceil(tmp_k);
-  if(K == 0) K = 1;
-  DEBUG1("Value of K = %d", K); 
+  //xbt_assert1(K!=0, "Invalide value of K (=%d) aborting.", K);
+ 
 
   /* 
    * The number of variables in the SDP program. 
@@ -212,11 +231,13 @@ void sdp_solve(lmm_system_t sys)
   nb_cnsts_capacity = links + ((int)pow(2,K)) - flows;
   nb_cnsts_struct = (int)pow(2,K) - 1;
   nb_cnsts_positivy = (int)pow(2,K);
+  nb_cnsts_latency  = nb_var;
+
 
   /*
    * The total number of constraints.
    */
-  nb_cnsts = nb_cnsts_capacity + nb_cnsts_struct + nb_cnsts_positivy;
+  nb_cnsts = nb_cnsts_capacity + nb_cnsts_struct + nb_cnsts_positivy + nb_cnsts_latency;
   CDEBUG1(surf_sdp_out,"Number of constraints = %d", nb_cnsts);
   DEBUG1("Number of constraints in the SDP program : %d", nb_cnsts);
 
@@ -279,14 +300,13 @@ void sdp_solve(lmm_system_t sys)
   
   for(i = 1; i <= nb_var; i++){
     if(get_y(0,1)==i){
-      CDEBUG0(surf_sdp_out,"-1 ");
+      //CDEBUG0(surf_sdp_out,"-1 ");
       a[i]=-1;
     }else{
-      CDEBUG0(surf_sdp_out,"0 ");
+      //CDEBUG0(surf_sdp_out,"0 ");
       a[i]=0;
     }
   }
-  CDEBUG0(surf_sdp_out,"\n");
 
 
   /*
@@ -297,19 +317,19 @@ void sdp_solve(lmm_system_t sys)
   for(k = 1; k <= K; k++){
     for(i = 1; i <= pow(2,k-1); i++){
       matno=get_y(k,2*i-1);
-      CDEBUG2(surf_sdp_out,"%d %d 1 1 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 1 1 1", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 1, 1, 1.0, C.blocks[block_num].blocksize);
 
       matno=get_y(k,2*i);
-      CDEBUG2(surf_sdp_out,"%d %d 2 2 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 2 2 1", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 2, 2, 1.0, C.blocks[block_num].blocksize);
 
       matno=get_y(k-1,i);
-      CDEBUG2(surf_sdp_out,"%d %d 1 2 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 1 2 1", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 1, 2, 1.0, C.blocks[block_num].blocksize);      
       
       matno=get_y(k-1,i);
-      CDEBUG2(surf_sdp_out,"%d %d 2 1 1\n", matno  , block_num);
+      CDEBUG2(surf_sdp_out,"%d %d 2 1 1", matno  , block_num);
       addentry(constraints, &C, matno, block_num, 2, 1, 1.0, C.blocks[block_num].blocksize);
       
       isdiag[block_num] = 0;
@@ -323,14 +343,14 @@ void sdp_solve(lmm_system_t sys)
    */
   xbt_swag_foreach(cnst, cnst_list) {
 
-    CDEBUG2(surf_sdp_out,"0 %d 1 1 %f\n", block_num,  - (cnst->bound));    
+    CDEBUG2(surf_sdp_out,"0 %d 1 1 %f", block_num,  - (cnst->bound));    
     addentry(constraints, &C, 0, block_num, 1, 1, - (cnst->bound) , C.blocks[block_num].blocksize);
 
     elem_list = &(cnst->element_set);
     xbt_swag_foreach(elem, elem_list){
       if(elem->variable->weight <=0) break;
       matno=get_y(K,elem->variable->index);
-      CDEBUG3(surf_sdp_out,"%d %d 1 1 %f\n", elem->variable->index, block_num, - (elem->value)); 
+      CDEBUG3(surf_sdp_out,"%d %d 1 1 %f", matno, block_num, - (elem->value)); 
       addentry(constraints, &C, matno, block_num, 1, 1, - (elem->value), C.blocks[block_num].blocksize);
  
     }
@@ -343,11 +363,21 @@ void sdp_solve(lmm_system_t sys)
    */
   for(i = 1; i <= pow(2,K); i++){
     matno=get_y(K, i);
-    CDEBUG2(surf_sdp_out,"%d %d 1 1 1\n", matno, block_num);
+    CDEBUG2(surf_sdp_out,"%d %d 1 1 1", matno, block_num);
     addentry(constraints, &C, matno, block_num, 1, 1, 1.0, C.blocks[block_num].blocksize);
     block_num++;
   }
-
+  /*
+   * Latency constraint blocks.
+   */
+  xbt_swag_foreach(var, var_list) {
+    var->value = 0.0;
+    if(var->weight  && var->bound > 0) {
+      matno = get_y(K,var->index);
+      CDEBUG3(surf_sdp_out,"%d %d 1 1 %f", matno, block_num, var->bound);
+      addentry(constraints, &C, matno, block_num, 1, 1, var->bound, C.blocks[block_num].blocksize);  
+    }
+  }
 
   /*
    * At this point, we'll stop to recognize whether any of the blocks
@@ -359,8 +389,6 @@ void sdp_solve(lmm_system_t sys)
       /*
        * We have a hidden diagonal block!
        */
-      
-      //printf("Block %d is actually diagonal.\n",i);
       
       blocksz=C.blocks[i].blocksize;
       tempdiag=(double *)calloc((blocksz+1), sizeof(double));
@@ -415,7 +443,6 @@ void sdp_solve(lmm_system_t sys)
     DEBUG0("Printing SDPA...");
     tmp=strdup("SURF-PROPORTIONNAL.sdpa");
     write_prob(tmp,total_block_size,nb_var,C,a,constraints);
-    //free(tmp);
   }
 
   /*
@@ -458,7 +485,6 @@ void sdp_solve(lmm_system_t sys)
   if(XBT_LOG_ISENABLED(surf_sdp, xbt_log_priority_debug)) {
     tmp=strdup("SURF-PROPORTIONNAL.sol");
     write_sol(tmp,total_block_size, nb_var, X, y, Z);
-    //free(tmp);
   }
 
   /*
@@ -498,7 +524,7 @@ void sdp_solve(lmm_system_t sys)
 /*
  * Create the cross_link reference in order to have a byblock list.
  */
-static void create_cross_link(struct constraintmatrix *myconstraints, int k){
+void create_cross_link(struct constraintmatrix *myconstraints, int k){
 
   int i, j;
   int blk;
@@ -549,7 +575,7 @@ static void create_cross_link(struct constraintmatrix *myconstraints, int k){
 
 
  
-static void addentry(struct constraintmatrix *constraints, 
+void addentry(struct constraintmatrix *constraints, 
 	      struct blockmatrix *C, 
 	      int matno,
 	      int blkno,
