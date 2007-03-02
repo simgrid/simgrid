@@ -163,7 +163,7 @@ typedef struct surf_timer_resource {
 /** \brief The timer resource
  *  \ingroup SURF_resources
  */
-extern XBT_PUBLIC(surf_timer_resource_t) surf_timer_resource;
+XBT_PUBLIC(surf_timer_resource_t) surf_timer_resource;
 
 /** \brief Initializes the timer resource
  *  \ingroup SURF_resources
