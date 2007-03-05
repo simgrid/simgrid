@@ -302,6 +302,31 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
 }
 
 /**
+ * \brief Indacates whether there is a dependency between two tasks.
+ *
+ * \param src a task
+ * \param dst a task depending on \a src
+ */
+int SD_task_dependency_exists(SD_task_t src, SD_task_t dst) {
+  xbt_dynar_t dynar;
+  int length;
+  int i;
+  SD_dependency_t dependency;
+
+  SD_CHECK_INIT_DONE();
+  xbt_assert0(src != NULL && dst != NULL, "Invalid parameter");
+
+  dynar = src->tasks_after;
+  length = xbt_dynar_length(dynar);
+
+  for (i = 0; i < length; i++) {
+    xbt_dynar_get_cpy(dynar, i, &dependency);
+    if (dependency->dst == dst) return 1;
+  }
+  return 0;
+}
+
+/**
  * \brief Remove a dependency between two tasks
  *
  * \param src a task
