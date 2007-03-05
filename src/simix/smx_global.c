@@ -75,7 +75,7 @@ void __SIMIX_display_process_status(void)
 	
       asprintf(&who,"SIMIX:  %s on %s: %s",
 	       process->name,
-				 p_simdata->host->name,
+				p_simdata->host->name,
 	       (process->simdata->blocked)?"[blocked] "
 	       :((process->simdata->suspended)?"[suspended] ":""));
       
@@ -128,8 +128,8 @@ SIMIX_error_t SIMIX_main(void)
 					process->name,
 					process->simdata->host->name);
 			simix_global->current_process = process;
-			/*       fflush(NULL); */
 			xbt_context_schedule(process->simdata->context);
+			/*       fflush(NULL); */
 			simix_global->current_process = NULL;
 		}
 
@@ -289,7 +289,6 @@ SIMIX_error_t SIMIX_clean(void)
   xbt_swag_free(simix_global->process_to_run);
   xbt_swag_free(simix_global->process_list);
   xbt_dict_free(&(simix_global->registered_functions));
-
   simix_config_finalize();
   free(simix_global);
   surf_exit();

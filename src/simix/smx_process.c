@@ -99,17 +99,17 @@ smx_process_t SIMIX_process_create_with_arguments(const char *name,
   process->simdata = simdata;
   process->data = data;
 
-  xbt_swag_insert_at_head(process, host->simdata->process_list);
+  xbt_swag_insert(process, host->simdata->process_list);
 
   /* *************** FIX du current_process !!! *************** */
   self = simix_global->current_process;
   xbt_context_start(process->simdata->context);
   simix_global->current_process = self;
 
-  xbt_swag_insert_at_head(process,simix_global->process_list);
+ // xbt_swag_insert(process,simix_global->process_list);
   DEBUG2("Inserting %s(%s) in the to_run list",process->name,
 	 host->name);
-  xbt_swag_insert_at_head(process,simix_global->process_to_run);
+  xbt_swag_insert(process,simix_global->process_to_run);
 
   return process;
 }
@@ -182,7 +182,7 @@ SIMIX_error_t SIMIX_process_change_host(smx_process_t process, smx_host_t host)
 
   xbt_swag_remove(process,simdata->host->simdata->process_list);
   simdata->host = host;
-  xbt_swag_insert_at_head(process,host->simdata->process_list);
+  xbt_swag_insert(process,host->simdata->process_list);
 
   return SIMIX_OK;
 }
@@ -263,6 +263,7 @@ SIMIX_error_t SIMIX_process_suspend(smx_process_t process)
 {
   simdata_process_t simdata = NULL;
 	smx_action_t dummy;
+	char name[] = "dummy";
 	
   xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
 
@@ -296,7 +297,7 @@ SIMIX_error_t SIMIX_process_suspend(smx_process_t process)
   }
 	else {
 		/* process executing, I can create an action and suspend it */
-		dummy = SIMIX_execute(SIMIX_process_get_host(process)->simdata->host, 0);
+		dummy = SIMIX_execute(SIMIX_process_get_host(process)->simdata->host, name, 0);
 		process->simdata->block_action = dummy;
 
 		process->simdata->suspended = 1;
@@ -367,13 +368,14 @@ int SIMIX_process_is_suspended(smx_process_t process)
   return (process->simdata->suspended);
 }
 
-int __SIMIX_process_block(double max_duration, const char *info)
+int __SIMIX_process_block(double max_duration)
 {
 
   smx_process_t process = SIMIX_process_self();
   smx_action_t dummy = NULL;
+  char name[] = "dummy";
 
-  dummy = SIMIX_execute(SIMIX_process_get_host(process)->simdata->host, 0);
+  dummy = SIMIX_execute(SIMIX_process_get_host(process)->simdata->host, name, 0);
 	process->simdata->block_action = dummy;
 
   process->simdata->blocked=1;

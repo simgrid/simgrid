@@ -41,7 +41,7 @@ smx_host_t __SIMIX_host_create(const char *name,
 
   simdata->host = workstation;
 
-  simdata->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
+  simdata->process_list = xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
   /* Update global variables */
 
   xbt_fifo_unshift(simix_global->host, host);
@@ -121,7 +121,7 @@ void __SIMIX_host_destroy(smx_host_t host)
 
  
   /* Clean Simulator data */
-  simdata = (host)->simdata;
+  simdata = host->simdata;
 
   xbt_assert0((xbt_swag_size(simdata->process_list)==0),
 	      "Some process are still running on this host");

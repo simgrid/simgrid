@@ -81,7 +81,7 @@ typedef struct s_smx_mutex {
 
 typedef struct s_smx_cond {
 	xbt_swag_t sleeping; 			/* list of sleeping process */
-	s_smx_mutex_t * mutex;
+	smx_mutex_t  mutex;
 	xbt_fifo_t actions;			/* list of actions */
 
 } s_smx_cond_t;
@@ -93,10 +93,10 @@ typedef struct s_simdata_action {
   
   xbt_fifo_t cond_list;		/* conditional variables that must be signaled when the action finish. */
   smx_host_t source;
-
+/*
   double priority;
   double rate;
-  
+*/  
   /*int using;*/
 
   /*******  Parallel Tasks Only !!!! *******/
@@ -137,7 +137,7 @@ extern xbt_cfg_t _simix_cfg_set;
 smx_host_t __SIMIX_host_create(const char *name, void *workstation, void *data);
 void __SIMIX_host_destroy(smx_host_t host);
 
-int __SIMIX_process_block(double max_duration, const char *info);
+int __SIMIX_process_block(double max_duration);
 SIMIX_error_t __SIMIX_process_unblock(smx_process_t process);
 int __SIMIX_process_isBlocked(smx_process_t process);
 
