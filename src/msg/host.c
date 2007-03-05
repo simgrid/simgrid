@@ -177,7 +177,7 @@ int MSG_get_host_msgload(m_host_t h)
 }
 
 /** \ingroup m_host_management
- * \brief Return the speed of the processor (in Mflop/s), regardless of 
+ * \brief Return the speed of the processor (in flop/s), regardless of 
     the current load on the machine.
  */
 double MSG_get_host_speed(m_host_t h)

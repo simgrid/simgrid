@@ -30,10 +30,10 @@
    corresponding object.
  * \param name a name for the object. It is for user-level information
    and can be NULL.
- * \param compute_duration a value of the processing amount (in Mflop)
+ * \param compute_duration a value of the processing amount (in flop)
    needed to process this new task. If 0, then it cannot be executed with
    MSG_task_execute(). This value has to be >=0.
- * \param message_size a value of the amount of data (in Mb) needed to
+ * \param message_size a value of the amount of data (in bytes) needed to
    transfer this new task. If 0, then it cannot be transfered with
    MSG_task_get() and MSG_task_put(). This value has to be >=0.
  * \param data a pointer to any data may want to attach to the new
