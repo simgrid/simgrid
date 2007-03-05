@@ -2,7 +2,7 @@
 
 <center>
 \htmlonly
-<img align=center src="simgrid_logo.png" alt="SimGrid"><br>
+<a href="http://simgrid.gforge.inria.fr" border="0"><img align=center src="simgrid_logo.png" alt="SimGrid"></a><br>
 \endhtmlonly
 </center>
 
