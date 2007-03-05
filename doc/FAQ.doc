@@ -762,10 +762,10 @@ PERIODICITY 1.0
 20.0 0.9
 \endverbatim
 
-At time 0, our CPU will deliver 100 Mflop/s. At time 11.0, it will
-deliver only 50 Mflop/s until time 20.0 where it will will start
-delivering 90 Mflop/s. Last at time 21.0 (20.0 plus the periodicity
-1.0), we'll be back to the beginning and it will deliver 100Mflop/s.
+At time 0, our CPU will deliver 100 flop/s. At time 11.0, it will
+deliver only 50 flop/s until time 20.0 where it will will start
+delivering 90 flop/s. Last at time 21.0 (20.0 plus the periodicity
+1.0), we'll be back to the beginning and it will deliver 100 flop/s.
 
 Now let's look at the state file:
 \verbatim
@@ -789,7 +789,7 @@ links. A usual declaration looks like:
 You have at your disposal the following options: bandwidth_file,
 latency_file and state_file. The only difference with CPUs is that
 bandwidth_file and latency_file do not express fraction of available
-power but are expressed directly in Mb/s and seconds.
+power but are expressed directly in bytes per seconds and seconds.
 
 \subsection faq_flexml_bypassing How can I have some C functions do what the platform file does?
 

@@ -411,17 +411,18 @@ uninstall-am: uninstall-info-am uninstall-local
 @MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/doxygen/doxygen_postprocesser.pl
 
 @MAINTAINER_MODE_TRUE@html/gras.html:
-@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>" >$@
-@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>Grid Reality And Simulation.</a></h2></center></html>" >>$@
+@MAINTAINER_MODE_TRUE@	mkdir -p html
+@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>" > $@
+@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>Grid Reality And Simulation.</a></h2></center></html>" >> $@
 @MAINTAINER_MODE_TRUE@html/amok.html:
-@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>" >$@
-@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>Advanced Metacomputing Overlay Kit.</a></h2></center></html>" >>$@
+@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>" > $@
+@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>Advanced Metacomputing Overlay Kit.</a></h2></center></html>" >> $@
 @MAINTAINER_MODE_TRUE@html/msg.html:
-@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>" >$@
-@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>Meta SimGrid.</a></h2></center></html>" >>$@
+@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>" >$ @
+@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>Meta SimGrid.</a></h2></center></html>" >> $@
 @MAINTAINER_MODE_TRUE@html/simdag.html:
-@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>" >$@
-@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>DAG Simulator.</a></h2></center></html>" >>$@
+@MAINTAINER_MODE_TRUE@	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>" > $@
+@MAINTAINER_MODE_TRUE@	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>DAG Simulator.</a></h2></center></html>" >> $@
 
 @MAINTAINER_MODE_TRUE@publish:
 @MAINTAINER_MODE_TRUE@	$(MAKE) -C .. sync-gforge
