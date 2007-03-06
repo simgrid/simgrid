@@ -23,9 +23,7 @@ void SD_init(int *argc, char **argv) {
 
   s_SD_task_t task;
   
-  if (SD_INITIALISED()) {
-    xbt_assert0(0, "SD_init() already called");
-  }
+  xbt_assert0( !SD_INITIALISED() , "SD_init() already called");
 
   sd_global = xbt_new(s_SD_global_t, 1);
   sd_global->workstations = xbt_dict_new();
@@ -48,6 +46,49 @@ void SD_init(int *argc, char **argv) {
 
   surf_init(argc, argv);
 }
+
+/**
+ * \brief Reinits the application part of the simulation (experimental feature)
+ * 
+ * This function allows you to run several simulations on the same platform 
+ * by resetting the part describing the application. 
+ * 
+ * @warning: this function is still experimental and not perfect. For example,
+ * the simulation clock (and traces usage) is not reset. So, do not use it if
+ * you use traces in your simulation, and do not use absolute timing after using it.
+ * That being said, this function is still precious if you want to compare a bunch of
+ * heuristics on the same platforms.
+ */
+void SD_application_reinit(void) {
+   
+  s_SD_task_t task;
+   
+  if (SD_INITIALISED()) {
+    DEBUG0("Recreating the swags...");
+    xbt_swag_free(sd_global->not_scheduled_task_set);
+    xbt_swag_free(sd_global->scheduled_task_set);
+    xbt_swag_free(sd_global->ready_task_set);
+    xbt_swag_free(sd_global->in_fifo_task_set);
+    xbt_swag_free(sd_global->running_task_set);
+    xbt_swag_free(sd_global->done_task_set);
+    xbt_swag_free(sd_global->failed_task_set);
+
+    sd_global->not_scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->scheduled_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->ready_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->in_fifo_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->running_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->done_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->failed_task_set = xbt_swag_new(xbt_swag_offset(task, state_hookup));
+    sd_global->task_number = 0;
+  } else {
+    WARN0("SD_application_reinit called before initialization of SimDag");
+    /* we cannot use exceptions here because xbt is not running! */
+  }
+
+}
+
+
 
 /**
  * \brief Creates the environment
@@ -295,7 +336,7 @@ void SD_exit(void) {
     surf_exit();
   }
   else {
-    fprintf(stderr, "Warning: SD_exit() called while SimDag was not running\n");
+    WARN0("SD_exit() called, but SimDag is not running");
     /* we cannot use exceptions here because xbt is not running! */
   }
 }
