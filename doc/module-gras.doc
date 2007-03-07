@@ -378,7 +378,6 @@
         - \ref GRAS_ex_mmrpc_dataregister
         - \ref GRAS_ex_mmrpc_logdef
         - \ref GRAS_ex_mmrpc_msgregister
-        - \ref GRAS_ex_mmrpc_matdump
       - \ref GRAS_ex_mmrpc_server
 	- \ref GRAS_ex_mmrpc_serinc
 	- \ref GRAS_ex_mmrpc_sercb
@@ -405,27 +404,9 @@
 
     \subsection GRAS_ex_mmrpc_dataregister 1.b) Register the data types (mmrpc.h)
 
-    The messages involved in this example do use structures as payload, 
-    so we have to declare it to GRAS. Hopefully, this can be done easily by enclosing 
-    the structure declaration within a \ref GRAS_DEFINE_TYPE macro call. It will then copy this 
-    declaration into an hidden string variable, which can be automatically parsed at 
-    run time. Of course, the declaration is also copied unmodified by this macro, so that it
-    gets parsed by the compiler also. 
-
-    There is some semantic that GRAS cannot guess alone and you need to  <i>annotate</i>
-    your declaration to add some. For example, the ctn pointer can be a reference to an 
-    object or a whole array (in which case you also has to specify its size). This is done 
-    with the GRAS_ANNOTE call. It is removed from the text passed to the compiler, but it helps
-    GRAS getting some information about the semantic of your data. Here, it says that \a ctn is an 
-    array, which size is the result of the operation \a rows * \a cols (with \a rows and \a cols 
-    being the other fields of the structure). 
-
-    Please note that this annotation mechanism is not as robust and cool as this example seems to 
-    imply. If you want to use it yourself, you'd better use the exact right syntax, which is 
-    detailed in the \ref GRAS_dd section.
-
-    \skip GRAS_DEFINE_TYPE
-    \until matrix_t
+    The messages involved in a matrix of double. This type is automatically
+    known by the GRAS mecanism, using the gras_datadesc_matrix() function of the
+    xbt/matrix module.
 
     \subsection GRAS_ex_mmrpc_logdef 1.c) Logging category definition (mmrpc_common.c)
     
@@ -443,22 +424,12 @@
     \subsection GRAS_ex_mmrpc_msgregister 1.d) Register the messages (mmrpc_common.c)
     
     This function, called by both the client and the server is in charge of
-    declaring the existing messages to GRAS. Note the use of the \ref gras_datadesc_by_symbol 
-    function to parse and retrieve the structure declaration which were passed to \ref GRAS_DEFINE_TYPE 
-    above. 
+    declaring the existing messages to GRAS.
 
     The datatype description builded that way can then be used to build an array datatype or 
     to declare messages.
     
     \skip register_messages
-    \until }
-
-    \subsection GRAS_ex_mmrpc_matdump 1.e) Helper debugging function (mmrpc_common.c)
-
-    This function dumps a matrix to screen for debugging.
-    
-    \skip mat_dump
-    \until end_of_matrix
     \until }
 
     [Back to \ref GRAS_ex_mmrpc_toc]
