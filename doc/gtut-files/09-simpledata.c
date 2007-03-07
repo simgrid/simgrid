@@ -20,7 +20,7 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload) {
    
   globals->killed = 1;
    
-  return 1;
+  return 0;
 } /* end_of_kill_callback */
 
 int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload) {
@@ -31,7 +31,7 @@ int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 	gras_socket_peer_name(client), gras_socket_peer_port(client),
 	msg);
   
-  return 1;
+  return 0;
 } /* end_of_hello_callback */
 
 void message_declaration(void) {
@@ -52,8 +52,8 @@ int server(int argc, char *argv[]) {
   message_declaration();
   mysock = gras_socket_server(atoi(argv[1]));
    
-  gras_cb_register(gras_msgtype_by_name("hello"),&server_hello_cb);   
-  gras_cb_register(gras_msgtype_by_name("kill"),&server_kill_cb);
+  gras_cb_register("hello",&server_hello_cb);   
+  gras_cb_register("kill",&server_kill_cb);
 
   while (!globals->killed) {
      gras_msg_handle(-1); /* blocking */
@@ -78,11 +78,11 @@ int client(int argc, char *argv[]) {
   toserver = gras_socket_client(argv[1], atoi(argv[2]));
   
   char *hello_payload="Nice to meet you";
-  gras_msg_send(toserver,gras_msgtype_by_name("hello"), &hello_payload);
+  gras_msg_send(toserver,"hello", &hello_payload);
   INFO1("we sent the hello to the server on %s.", gras_socket_peer_name(toserver));
    
   double kill_payload=0.5;
-  gras_msg_send(toserver,gras_msgtype_by_name("kill"), &kill_payload);
+  gras_msg_send(toserver,"kill", &kill_payload);
   INFO0("Gave the server more 0.5 second to live");
    
   gras_exit();

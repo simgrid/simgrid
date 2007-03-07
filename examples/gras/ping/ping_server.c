@@ -39,7 +39,7 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload) {
   msg = 4321;
   /* 5. Send it back as payload of a pong message to the expeditor */
   TRY {
-    gras_msg_send(expeditor, gras_msgtype_by_name("pong"), &msg);
+    gras_msg_send(expeditor, "pong", &msg);
 
   /* 6. Deal with errors: add some details to the exception */
   } CATCH(e) {
@@ -56,7 +56,7 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload) {
   gras_socket_close(expeditor);
    
   /* 9. Tell GRAS that we consummed this message */
-  return 1;
+  return 0;
 } /* end_of_server_cb_ping_handler */
 
 int server (int argc,char *argv[]) {

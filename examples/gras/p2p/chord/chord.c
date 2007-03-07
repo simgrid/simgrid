@@ -144,24 +144,23 @@ static int node_cb_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
         RETHROW0("Unable to connect!: %s");
       }
       TRY{
-        gras_msg_send(temp_sock,gras_msgtype_by_name("chord_get_suc"),&asking);
+        gras_msg_send(temp_sock,"chord_get_suc",&asking);
       }CATCH(e){
         RETHROW0("Unable to ask!: %s");
       }
-      gras_msg_wait(10.,gras_msgtype_by_name("chord_rep_suc"),&temp_sock,
-                    &outgoing);
+      gras_msg_wait(10.,"chord_rep_suc",&temp_sock, &outgoing);
     }
   }
   
   TRY{
-    gras_msg_send(expeditor,gras_msgtype_by_name("chord_rep_suc"),&outgoing);
+    gras_msg_send(expeditor,"chord_rep_suc",&outgoing);
     INFO0("Successor information sent!");
   }CATCH(e){
     RETHROW2("%s:Timeout sending successor information to %s: %s",
              globals->host,gras_socket_peer_name(expeditor));
   }
   gras_socket_close(expeditor);
-  return(1);
+  return 0;
 }
 
 static int closest_preceding_node(int id){
@@ -190,7 +189,7 @@ static int node_cb_notify_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
     globals->pre_port=incoming.port;
     INFO0("Set as my new predecessor!");
   }
-  return(1);
+  return 0;
 }
 
 static void fix_fingers(){
@@ -206,7 +205,7 @@ static void fix_fingers(){
   }
   get_suc_t get_suc_msg;get_suc_msg.id=globals->id;
   TRY{
-    gras_msg_send(temp_sock,gras_msgtype_by_name("chord_get_suc"),&get_suc_msg);
+    gras_msg_send(temp_sock,"chord_get_suc",&get_suc_msg);
   }CATCH(e){
     gras_socket_close(temp_sock);
     RETHROW0("Unable to contact known host to get successor!: %s");
@@ -214,8 +213,7 @@ static void fix_fingers(){
   rep_suc_t rep_suc_msg;
   TRY{
     INFO0("Waiting for reply!");
-    gras_msg_wait(6000,gras_msgtype_by_name("chord_rep_suc"),&temp_sock2,
-                  &rep_suc_msg);
+    gras_msg_wait(6000,"chord_rep_suc",&temp_sock2, &rep_suc_msg);
   }CATCH(e){
     RETHROW1("%s: Error waiting for successor:%s",globals->host);
   }
@@ -247,14 +245,14 @@ static void check_predecessor(){
   pong_t pong;
   ping.id = 0;
   TRY{
-    gras_msg_send( temp_sock, gras_msgtype_by_name("chord_ping"),&ping);
+    gras_msg_send( temp_sock, "chord_ping",&ping);
   }CATCH(e){
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
     globals->pre_port = 0;
   }
   TRY{
-    gras_msg_wait( 60, gras_msgtype_by_name("chord_pong"), &temp_sock, &pong);
+    gras_msg_wait( 60, "chord_pong", &temp_sock, &pong);
   }CATCH(e){
     globals->pre_id = -1;
     globals->pre_host[0] = 0;
@@ -320,8 +318,7 @@ int node(int argc,char **argv){
     }
     get_suc_t get_suc_msg;get_suc_msg.id=globals->id;
     TRY{
-      gras_msg_send(temp_sock,gras_msgtype_by_name("chord_get_suc"),
-                    &get_suc_msg);
+      gras_msg_send(temp_sock,"chord_get_suc", &get_suc_msg);
     }CATCH(e){
       gras_socket_close(temp_sock);
       RETHROW0("Unable to contact known host to get successor!: %s");
@@ -329,8 +326,7 @@ int node(int argc,char **argv){
     rep_suc_t rep_suc_msg;
     TRY{
       INFO0("Waiting for reply!");
-      gras_msg_wait(10.,gras_msgtype_by_name("chord_rep_suc"),&temp_sock2,
-                    &rep_suc_msg);
+      gras_msg_wait(10.,"chord_rep_suc",&temp_sock2, &rep_suc_msg);
     }CATCH(e){
       RETHROW1("%s: Error waiting for successor:%s",globals->host);
     }
@@ -351,7 +347,7 @@ int node(int argc,char **argv){
     snprintf(notify_msg.host,1024,globals->host);
     notify_msg.port=globals->port;
     TRY{
-      gras_msg_send(temp_sock,gras_msgtype_by_name("chord_notify"),&notify_msg);
+      gras_msg_send(temp_sock,"chord_notify",&notify_msg);
     }CATCH(e){
       RETHROW0("Unable to notify successor! %s");
     }
@@ -359,7 +355,7 @@ int node(int argc,char **argv){
   
   gras_cb_register("chord_get_suc", &node_cb_get_suc_handler);
   gras_cb_register("chord_notify",  &node_cb_notify_handler);
-  /*gras_cb_register(gras_msgtype_by_name("chord_ping"),&node_cb_ping_handler);*/
+  /*gras_cb_register("chord_ping",&node_cb_ping_handler);*/
  /* gras_timer_repeat(600.,fix_fingers);*/
   /*while(1){*/
   int l;

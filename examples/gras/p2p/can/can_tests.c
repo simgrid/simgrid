@@ -44,7 +44,7 @@ int start_war(int argc,char **argv){
   nuke_msg.port=atoi(argv[1]);
 
   TRY{
-    gras_msg_send(temp_sock,gras_msgtype_by_name("can_nuke"),&nuke_msg);
+    gras_msg_send(temp_sock,"can_nuke",&nuke_msg);
   }CATCH(e){
     gras_socket_close(temp_sock);
     RETHROW0("Unable to contact known host so as to declare WAR!!!!!!!!!!!!!!!!!!!!!: %s");
@@ -91,7 +91,7 @@ static int send_nuke(nuke_t *msg, int xId, int yId){
     }
     //INFO4("%s ON %s %d %d <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",globals->host,host,xId,yId);
     TRY{
-      gras_msg_send(temp_sock,gras_msgtype_by_name("can_nuke"),msg);
+      gras_msg_send(temp_sock,"can_nuke",msg);
     }CATCH(e){
       RETHROW0("Unable to send the nuke!: %s");
     }
@@ -177,7 +177,7 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
       RETHROW0("Unable to connect the nuke!: %s");
     }
     TRY{
-      gras_msg_send(temp_sock,gras_msgtype_by_name("can_nuke"),incoming);
+      gras_msg_send(temp_sock,"can_nuke",incoming);
     }CATCH(e){
       RETHROW0("Unable to send the nuke!: %s");
     }
@@ -192,7 +192,7 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
     INFO4("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
     //INFO0("Closing node, all has been done!");
     }
-   return 1;
+   return 0;
 }
 
 // END

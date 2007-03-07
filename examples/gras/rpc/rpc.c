@@ -115,8 +115,7 @@ int client(int argc,char *argv[]) {
   ping = 1234;
   TRY {
     exception_catching();
-    gras_msg_rpccall(toserver, 6000.0,
-		     gras_msgtype_by_name("plain ping"), &ping, &pong);
+    gras_msg_rpccall(toserver, 6000.0, "plain ping", &ping, &pong);
   } CATCH(e) {
     gras_socket_close(toserver);
     RETHROW0("Failed to execute a PING rpc on the server: %s");
@@ -132,8 +131,7 @@ int client(int argc,char *argv[]) {
   /* 9. Call a RPC which raises an exception (to test exception propagation) */
   INFO0("Call the exception raising RPC");
   TRY {
-    gras_msg_rpccall(toserver, 6000.0,
-		     gras_msgtype_by_name("raise exception"), NULL, NULL);
+    gras_msg_rpccall(toserver, 6000.0, "raise exception", NULL, NULL);
   } CATCH(e) {
     gotit = 1; 
     xbt_assert2(e.category == unknown_error, 
@@ -158,8 +156,7 @@ int client(int argc,char *argv[]) {
 	
      INFO1("Call the exception raising RPC (i=%d)",i);
      TRY {
-	gras_msg_rpccall(toserver, 6000.0,
-			 gras_msgtype_by_name("raise exception"), NULL, NULL);
+	gras_msg_rpccall(toserver, 6000.0, "raise exception", NULL, NULL);
      } CATCH(e) {
 	gotit = 1;
 	xbt_ex_free(e);
@@ -174,8 +171,7 @@ int client(int argc,char *argv[]) {
   for (i=0;i<5;i++) {
     INFO1("Call the exception raising RPC on the forwarder (i=%d)",i);
     TRY {
-      gras_msg_rpccall(toforwarder, 6000.0,
-		       gras_msgtype_by_name("forward exception"), NULL, NULL);
+      gras_msg_rpccall(toforwarder, 6000.0, "forward exception", NULL, NULL);
     } CATCH(e) {
       gotit = 1;
     }
@@ -195,9 +191,9 @@ int client(int argc,char *argv[]) {
   }
 
   INFO2("Ask %s:%d to die",gras_socket_peer_name(toforwarder),gras_socket_peer_port(toforwarder));
-  gras_msg_send(toforwarder,gras_msgtype_by_name("kill"),NULL);
+  gras_msg_send(toforwarder,"kill",NULL);
   INFO2("Ask %s:%d to die",gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
-  gras_msg_send(toserver,gras_msgtype_by_name("kill"),NULL);
+  gras_msg_send(toserver,"kill",NULL);
 
   /* 11. Cleanup the place before leaving */
   gras_socket_close(toserver);
@@ -222,7 +218,7 @@ static int forwarder_cb_kill(gras_msg_cb_ctx_t ctx,
   INFO2("Asked to die by %s:%d",gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor));
   forward_data_t fdata=gras_userdata_get();
   fdata->done = 1;
-  return 1;
+  return 0;
 }
 
 static int forwarder_cb_forward_ex(gras_msg_cb_ctx_t ctx,
@@ -230,9 +226,8 @@ static int forwarder_cb_forward_ex(gras_msg_cb_ctx_t ctx,
   forward_data_t fdata=gras_userdata_get();
 
   INFO0("Forward a request");
-  gras_msg_rpccall(fdata->server, 60,
-		   gras_msgtype_by_name("raise exception"),NULL,NULL);
-  return 1;
+  gras_msg_rpccall(fdata->server, 60, "raise exception",NULL,NULL);
+  return 0;
 }
 
 int forwarder (int argc,char *argv[]) {
@@ -285,13 +280,13 @@ static int server_cb_kill(gras_msg_cb_ctx_t ctx,
 
   server_data_t sdata=gras_userdata_get();
   sdata->done = 1;
-  return 1;
+  return 0;
 }
 
 static int server_cb_raise_ex(gras_msg_cb_ctx_t ctx,
 			      void             *payload_data) {
   exception_raising();
-  return 1;
+  return 0;
 }
 
 static int server_cb_ping(gras_msg_cb_ctx_t ctx,
@@ -316,7 +311,7 @@ static int server_cb_ping(gras_msg_cb_ctx_t ctx,
   /* 6. Cleanups, if any */
 
   /* 7. Tell GRAS that we consummed this message */
-  return 1;
+  return 0;
 } /* end_of_server_cb_ping */
 
 

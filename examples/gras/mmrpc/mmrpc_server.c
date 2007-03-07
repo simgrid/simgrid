@@ -28,7 +28,7 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
   result = xbt_matrix_double_new_mult(request[0], request[1]);
 
   /* 3. Send it back as payload of a pong message to the expeditor */
-  gras_msg_send(expeditor, gras_msgtype_by_name("answer"), &result);
+  gras_msg_send(expeditor, "answer", &result);
 
   /* 4. Cleanups */
   xbt_matrix_free(request[0]);
@@ -36,7 +36,7 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
   xbt_matrix_free(result);
   gras_socket_close(expeditor);
    
-  return 1;
+  return 0;
 } /* end_of_server_cb_request_handler */
 
 int server (int argc,char *argv[]) {

@@ -16,7 +16,7 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   
   globals->killed = 1;
    
-  return 1;
+  return 0;
 } /* end_of_kill_callback */
 
 int server(int argc, char *argv[]) {
@@ -29,7 +29,7 @@ int server(int argc, char *argv[]) {
   globals->killed=0;
 
   gras_msgtype_declare("kill", NULL);
-  gras_cb_register(gras_msgtype_by_name("kill"),&server_kill_cb);
+  gras_cb_register("kill",&server_kill_cb);
    
   if (argc>1 && !strcmp(argv[1],"--cheat")) {
      mysock = gras_socket_server(9999);
@@ -65,7 +65,7 @@ int client(int argc, char *argv[]) {
   for (port=3000, found=0; port<3010 && !found; port++) {
      TRY {
 	toserver = gras_socket_client(argv[1], port);
-	gras_msg_send(toserver,gras_msgtype_by_name("kill"), NULL);
+	gras_msg_send(toserver,"kill", NULL);
 	gras_socket_close(toserver);
 	found = 1;
 	INFO1("Yeah! I found the server on %d! It's eradicated by now.",port);

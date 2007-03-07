@@ -163,8 +163,7 @@ void amok_bw_test(gras_socket_t peer,
 	request->buf_size,request->msg_size,request->msg_amount);
 
   TRY {
-    gras_msg_rpccall(peer,15,
-		     gras_msgtype_by_name("BW handshake"),&request, &request_ack);
+    gras_msg_rpccall(peer,15,"BW handshake",&request, &request_ack);
   } CATCH(e) {
     RETHROW0("Error encountered while sending the BW request: %s");
   }
@@ -217,7 +216,7 @@ void amok_bw_test(gras_socket_t peer,
 	    request->msg_size, request->msg_amount,
 	    ((double)request->msg_size) * ((double)request->msg_amount / (*sec) /1024.0/1024.0));
 
-      gras_msg_rpccall(peer, 60, gras_msgtype_by_name("BW reask"),&request, NULL);      
+      gras_msg_rpccall(peer, 60, "BW reask",&request, NULL);      
     }
 
     first_pass = 0;
@@ -245,7 +244,7 @@ void amok_bw_test(gras_socket_t peer,
 
   DEBUG2("This measurement was long enough (%f sec; found %f b/s). Stop peer",
 	 *sec,*bw);
-  gras_msg_send(peer, gras_msgtype_by_name("BW stop"), NULL);      
+  gras_msg_send(peer, "BW stop", NULL);      
 
   free(request_ack);
   free(request);
@@ -374,7 +373,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t  ctx,
   free(answer);
   free(request);
   VERB0("BW experiment done.");
-  return 1;
+  return 0;
 }
 
 /**
@@ -430,7 +429,7 @@ void amok_bw_request(const char* from_name,unsigned int from_port,
     
  
   DEBUG4("Ask for a BW test between %s:%d and %s:%d",	from_name,from_port, to_name,to_port);
-  gras_msg_rpccall(sock,20*60,gras_msgtype_by_name("BW request"), &request, &result);
+  gras_msg_rpccall(sock,20*60,"BW request", &request, &result);
 
   if (sec)
     *sec=result->sec;
@@ -474,7 +473,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx,
   free(request);
   free(result);
   
-  return 1;
+  return 0;
 }
 
 /** \brief builds a matrix of results of bandwidth measurement

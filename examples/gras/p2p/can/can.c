@@ -66,7 +66,7 @@ static void forward_get_suc(get_suc_t msg, char host[1024], int port){
 		RETHROW0("Unable to connect!: %s");
 	}
 	TRY{
-		gras_msg_send(temp_sock,gras_msgtype_by_name("can_get_suc"),&msg);
+		gras_msg_send(temp_sock,"can_get_suc",&msg);
 	}CATCH(e){
 		RETHROW0("Unable to send!: %s");
 	}
@@ -185,7 +185,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
 				RETHROW0("Unable to connect to the node wich has requested for an area!: %s");
 			}
 			TRY{
-				gras_msg_send(temp_sock,gras_msgtype_by_name("can_rep_suc"),&outgoing);
+				gras_msg_send(temp_sock,"can_rep_suc",&outgoing);
 				INFO0("Environment informations sent!");
 			}CATCH(e){
 				RETHROW2("%s:Timeout sending environment informations to %s: %s",globals->host,gras_socket_peer_name(expeditor));
@@ -203,7 +203,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
 	INFO4("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
 	  //INFO0("Closing node, all has been done!");
 	}
-   return 1;
+   return 0;
 }
 
 
@@ -251,7 +251,7 @@ int node(int argc,char **argv){
 		strcpy(get_suc_msg.host,globals->host);
 		get_suc_msg.port=globals->port;
 		TRY{ // asking.
-			gras_msg_send(temp_sock,gras_msgtype_by_name("can_get_suc"),&get_suc_msg);
+			gras_msg_send(temp_sock,"can_get_suc",&get_suc_msg);
 		}CATCH(e){
 			gras_socket_close(temp_sock);
 			RETHROW0("Unable to contact known host to get an area!: %s");
@@ -262,7 +262,7 @@ int node(int argc,char **argv){
 		gras_socket_t temp_sock2=NULL;
 		TRY{ // waiting for a reply.
 			INFO0("Waiting for reply!");
-			gras_msg_wait(6000,gras_msgtype_by_name("can_rep_suc"),&temp_sock2,&rep_suc_msg);
+			gras_msg_wait(6000,"can_rep_suc",&temp_sock2,&rep_suc_msg);
 		}CATCH(e){
 			RETHROW1("%s: Error waiting for an area:%s",globals->host);
 		}

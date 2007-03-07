@@ -81,9 +81,8 @@ GRAS offers a plenty of ways to communicate. The simple one is to use \ref
 gras_msg_send on the sender side, and \ref gras_msg_wait on the receiver side.
 
 \ref gras_msg_send expects 3 arguments: the socket on which to send the
-message, the message type, and a pointer to the actual content of the
-message. The simplest way to retrive a message type from its name is to use
-\ref gras_msgtype_by_name. Since we don't have any payload, this becomes:
+message, the message type (described by its name), and a pointer to the actual content of the
+message. Since we don't have any payload, this becomes:
 
 \dontinclude 02-simple.c
 \skip msg_send

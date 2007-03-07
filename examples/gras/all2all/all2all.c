@@ -53,7 +53,7 @@ int receiver (int argc,char *argv[]) {
 	todo);
   while (todo>0) {
      gras_msg_wait(60 /* wait up to one minute */,
-		   gras_msgtype_by_name("data"),
+		   "data",
 		   &expeditor,
 		   &data);
      todo--;
@@ -116,7 +116,7 @@ int sender (int argc,char *argv[]) {
   xbt_dynar_foreach(peers,i,h) {
      
      peer = gras_socket_client(h->name,h->port);
-     gras_msg_send(peer,gras_msgtype_by_name("data"),&data);
+     gras_msg_send(peer,"data",&data);
      INFO2("  Sent Data from %s to %s",
 	   gras_os_myname(),h->name);
      gras_socket_close(peer);

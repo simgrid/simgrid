@@ -16,7 +16,7 @@ int server_kill_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   
   globals->killed = 1;
    
-  return 1;
+  return 0;
 } /* end_of_kill_callback */
 
 int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload) {
@@ -25,7 +25,7 @@ int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   INFO2("Cool, we received the message from %s:%d.",
 	gras_socket_peer_name(client), gras_socket_peer_port(client));
   
-  return 1;
+  return 0;
 } /* end_of_hello_callback */
 
 int server(int argc, char *argv[]) {
@@ -41,8 +41,8 @@ int server(int argc, char *argv[]) {
   gras_msgtype_declare("kill", NULL);
   mysock = gras_socket_server(atoi(argv[1]));
    
-  gras_cb_register(gras_msgtype_by_name("hello"),&server_hello_cb);   
-  gras_cb_register(gras_msgtype_by_name("kill"),&server_kill_cb);
+  gras_cb_register("hello",&server_hello_cb);   
+  gras_cb_register("kill",&server_kill_cb);
 
   while (!globals->killed) {
      gras_msg_handle(60);
@@ -63,14 +63,14 @@ typedef struct {
 void client_do_hello(void) {
   client_data_t *globals=(client_data_t*)gras_userdata_get();
    
-  gras_msg_send(globals->toserver,gras_msgtype_by_name("hello"), NULL);
+  gras_msg_send(globals->toserver,"hello", NULL);
   INFO0("Hello sent to server");
 } /* end_of_client_do_hello */
 
 void client_do_stop(void) {
   client_data_t *globals=(client_data_t*)gras_userdata_get();
    
-  gras_msg_send(globals->toserver,gras_msgtype_by_name("kill"), NULL);
+  gras_msg_send(globals->toserver,"kill", NULL);
   INFO0("Kill sent to server");
    
   gras_timer_cancel_repeat(0.5,client_do_hello);

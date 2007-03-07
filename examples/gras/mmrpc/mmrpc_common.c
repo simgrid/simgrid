@@ -19,8 +19,6 @@ void mmrpc_register_messages(void) {
   matrix_type=gras_datadesc_matrix(gras_datadesc_by_name("double"),
 				   NULL);
   request_type=gras_datadesc_array_fixed("s_matrix_t(double)[2]",matrix_type,2);
-  //					 gras_datadesc_by_name("xbt_matrix_t(double)"),2);
-  //    request_type=gras_datadesc_ref("matrix_t(double)[2]",request_type);
   
   gras_msgtype_declare("answer", matrix_type);
   gras_msgtype_declare("request", request_type);

@@ -54,7 +54,7 @@ int client(int argc,char *argv[]) {
   /* 7. Prepare and send the ping message to the server */
   ping = 1234;
   TRY {
-    gras_msg_send(toserver, gras_msgtype_by_name("ping"), &ping);
+    gras_msg_send(toserver, "ping", &ping);
   } CATCH(e) {
     gras_socket_close(toserver);
     RETHROW0("Failed to send PING to server: %s");
@@ -65,8 +65,7 @@ int client(int argc,char *argv[]) {
 
   /* 8. Wait for the answer from the server, and deal with issues */
   TRY {
-    gras_msg_wait(6000,gras_msgtype_by_name("pong"),
-		  &from,&pong);
+    gras_msg_wait(6000,"pong", &from,&pong);
   } CATCH(e) {
     gras_socket_close(toserver);
     RETHROW0("Why can't I get my PONG message like everyone else: %s");

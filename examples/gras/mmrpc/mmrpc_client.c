@@ -65,7 +65,7 @@ int client(int argc,char *argv[]) {
   xbt_matrix_dump(request[1],"C:sent1",0,xbt_matrix_dump_display_double);
   */
 
-  gras_msg_send(toserver, gras_msgtype_by_name("request"), &request);
+  gras_msg_send(toserver, "request", &request);
 
   xbt_matrix_free(request[0]);
 
@@ -73,7 +73,7 @@ int client(int argc,char *argv[]) {
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
   /* 8. Wait for the answer from the server, and deal with issues */
-  gras_msg_wait(6000,gras_msgtype_by_name("answer"),&from,&answer);
+  gras_msg_wait(6000,"answer",&from,&answer);
 
   /*
   xbt_matrix_dump(answer,"C:answer",0,xbt_matrix_dump_display_double);

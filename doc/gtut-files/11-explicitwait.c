@@ -24,9 +24,9 @@ int server_request_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   } else {     
      globals->process_in_CS = 1;
      INFO2("grant %s:%d since nobody wanted it",gras_socket_peer_name(s),gras_socket_peer_port(s));
-     gras_msg_send(s, gras_msgtype_by_name("grant"), NULL);     
+     gras_msg_send(s, "grant", NULL);     
   }
-  return 1;
+  return 0;
 } /* end_of_request_callback */
 
 int server_release_cb(gras_msg_cb_ctx_t ctx, void *payload) {
@@ -37,12 +37,12 @@ int server_release_cb(gras_msg_cb_ctx_t ctx, void *payload) {
      xbt_dynar_pop(globals->waiting_queue, &s);
      
      INFO2("grant %s:%d since token released",gras_socket_peer_name(s),gras_socket_peer_port(s));
-     gras_msg_send(s, gras_msgtype_by_name("grant"), NULL);
+     gras_msg_send(s, "grant", NULL);
   } else {
      globals->process_in_CS = 0;
   }
    
-  return 1;
+  return 0;
 } /* end_of_release_callback */
 
 int server(int argc, char *argv[]) { 
@@ -58,8 +58,8 @@ int server(int argc, char *argv[]) {
   globals->waiting_queue=xbt_dynar_new( sizeof(gras_socket_t), NULL /* not closing sockets */);
 
   message_declaration();   
-  gras_cb_register(gras_msgtype_by_name("request"),&server_request_cb);
-  gras_cb_register(gras_msgtype_by_name("release"),&server_release_cb);
+  gras_cb_register("request",&server_request_cb);
+  gras_cb_register("release",&server_release_cb);
 
   for (i=0; i<20; i++)  /* 5 requests of each process, 2 processes, 2 messages per request */
     gras_msg_handle(-1); 
@@ -69,14 +69,14 @@ int server(int argc, char *argv[]) {
 } /* end_of_server */
 
 void lock(gras_socket_t toserver) {
-   gras_msg_send(toserver,gras_msgtype_by_name("request"),NULL);
-   gras_msg_wait(-1, gras_msgtype_by_name("grant"),NULL,NULL);
+   gras_msg_send(toserver,"request",NULL);
+   gras_msg_wait(-1, "grant",NULL,NULL);
    INFO0("Granted by server");
 } /* end_of_lock */
 
 void unlock(gras_socket_t toserver) {
    INFO0("Release the token");
-   gras_msg_send(toserver,gras_msgtype_by_name("release"),NULL);
+   gras_msg_send(toserver,"release",NULL);
 } /* end_of_unlock */
 
 int client(int argc, char *argv[]) {

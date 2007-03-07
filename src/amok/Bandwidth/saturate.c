@@ -79,7 +79,7 @@ void amok_bw_saturate_start(const char* from_name,unsigned int from_port,
   request->duration=duration;
   request->msg_size=msg_size;
 
-  gras_msg_rpccall(sock,60,gras_msgtype_by_name("amok_bw_sat start"),&request, NULL);
+  gras_msg_rpccall(sock,60,"amok_bw_sat start",&request, NULL);
 
   free(request);
   gras_socket_close(sock);
@@ -104,7 +104,7 @@ static int amok_bw_cb_sat_start(gras_msg_cb_ctx_t ctx, void *payload){
   free(request->peer.name);
 
   free(request);
-  return 1;
+  return 0;
 }
 
 /**
@@ -166,9 +166,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
    
   /* Launch the saturation */
 
-  ctx = gras_msg_rpc_async_call(peer_cmd, 60, 
-				gras_msgtype_by_name("amok_bw_sat begin"),
-						  &request);
+  ctx = gras_msg_rpc_async_call(peer_cmd, 60, "amok_bw_sat begin", &request);
   free(request);
   gras_msg_rpc_async_wait(ctx,&request);
   meas=gras_socket_client_ext( to_name, request->peer.port,
@@ -191,7 +189,7 @@ void amok_bw_saturate_begin(const char* to_name,unsigned int to_port,
     /* Check whether someone asked us to stop saturation */
     saturate_further = 0;
     TRY {
-      gras_msg_wait_ext(0/*no wait*/,gras_msgtype_by_name("amok_bw_sat stop"),
+      gras_msg_wait_ext(0/*no wait*/,"amok_bw_sat stop",
 			NULL /* accept any sender */,
 			NULL, NULL, /* No specific filter */
 			&msg_got);
@@ -297,7 +295,7 @@ static int amok_bw_cb_sat_begin(gras_msg_cb_ctx_t ctx, void *payload){
   if (gras_if_RL()) /* On SG, accepted=master */
     gras_socket_close(measMaster); 
   free(request);
-  return 1;
+  return 0;
 }
 
 /**
@@ -316,7 +314,7 @@ void amok_bw_saturate_stop(const char* from_name,unsigned int from_port,
   bw_res_t answer;
   VERB2("Ask %s:%d to stop the saturation",from_name,from_port);
   TRY {	
-     gras_msg_rpccall(sock,60,gras_msgtype_by_name("amok_bw_sat stop"),NULL,&answer);
+     gras_msg_rpccall(sock,60,"amok_bw_sat stop",NULL,&answer);
   } CATCH(e) {
      RETHROW2("Cannot ask %s:%d to stop saturation: %s",from_name, from_port);
   }

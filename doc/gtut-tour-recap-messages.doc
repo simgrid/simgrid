@@ -136,7 +136,7 @@ After it returned the result this way, you should free any data you
 mallocated in your callback (including the data you returned to the caller:
 GRAS made a copy of it during the call to gras_msg_rpcreturn()).
 
-The callback is expected to return 1 if ok, as detailed in 
+The callback is expected to return 0 if ok, as detailed in 
 \ref GRAS_tut_tour_message_recaping_rpc_aside1.
 
 \subsection GRAS_tut_tour_message_recaping_rpc4 4. Attaching callbacks to the messages
@@ -158,19 +158,18 @@ wait for the answer of your RPC (using gras_msg_rpc_async_wait()).
 
 \subsection GRAS_tut_tour_message_recaping_rpc_aside1 Aside: stacking callbacks
 
-The callback is expected to return 1 if it consumed the message properly.
-This semantic may be troublesome since it really differs from the one used
-in the main() function, but this allows to build callback stacks. It is
-perfectly valid to register several callbacks to a given message. When a
-message arrives, it is passed to the firstly-registered callback. If the
-callback returns 1 (or any other "true" value), it means that it consumed
-the message, which is discarded. If the callback returns 0, the message is
-passed to the next callback of the stack, and so on. At the end, if no
-callback returned 1, an error message is generated.
+The callback is expected to return 0 if everything went well, which is the
+same semantic than the "main()" function. You can also build stacks of
+callbacks. It is perfectly valid to register several callbacks to a given
+message. When a message arrives, it is passed to the firstly-registered
+callback. If the callback returns 0, it means that it consumed the message,
+which is discarded. If the callback returns 1 (or any other "true" value),
+the message is passed to the next callback of the stack, and so on. At the
+end, if no callback returned 0, an exception is raised.
 
 This mecanism can for example be used to introduce dupplication and replay.
 You add a callback simply in charge of storing the message in a database,
-and since it returns 0, the message is then passed to the "real" callback.
+and since it returns 1, the message is then passed to the "real" callback.
 To be perfectly honest, I never had use of this functionnality myself, but I
 feel it could be useful in some cases...
 

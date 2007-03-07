@@ -172,7 +172,7 @@ int master (int argc,char *argv[]) {
       line++;
     }
 		
-    gras_msg_send(socket[i],gras_msgtype_by_name("pmm_slave"),&assignment);
+    gras_msg_send(socket[i],"pmm_slave",&assignment);
     xbt_matrix_free(assignment.A);
     xbt_matrix_free(assignment.B);
   }
@@ -181,7 +181,7 @@ int master (int argc,char *argv[]) {
 
   /* Retrieve the results */
   for( i=0;i< SLAVE_COUNT;i++){
-    gras_msg_wait(6000,gras_msgtype_by_name("result"),&from,&result);
+    gras_msg_wait(6000,"result",&from,&result);
     VERB2("%d slaves are done already. Waiting for %d",i+1, SLAVE_COUNT);
     xbt_matrix_copy_values(C,result.C,   submatrix_size,submatrix_size,
 			   submatrix_size*result.linepos,
@@ -275,9 +275,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 	  INFO2("LINE:   Send to %s:%d",
 		gras_socket_peer_name(socket_row[l]),
 		gras_socket_peer_port(socket_row[l]));
-	 gras_msg_send(socket_row[l], 
-		       gras_msgtype_by_name("dataB"), 
-		       &mydataB);
+	 gras_msg_send(socket_row[l], "dataB", &mydataB);
        }
        
 	
@@ -288,7 +286,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
     } else {
       TRY {
 	xbt_matrix_free(bB);
-	gras_msg_wait(600,gras_msgtype_by_name("dataB"),&from,&bB);
+	gras_msg_wait(600,"dataB",&from,&bB);
       } CATCH(e) {
 	RETHROW0("Can't get a data message from line : %s");
       }
@@ -303,7 +301,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 	  INFO2("ROW:   Send to %s:%d",
 		gras_socket_peer_name(socket_line[l-1]),
 		gras_socket_peer_port(socket_line[l-1]));
-	  gras_msg_send(socket_line[l-1],gras_msgtype_by_name("dataA"), &mydataA);
+	  gras_msg_send(socket_line[l-1],"dataA", &mydataA);
        }
        xbt_matrix_free(bA);
        bA = xbt_matrix_new_sub(mydataA,
@@ -312,7 +310,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
     } else {
       TRY {
 	xbt_matrix_free(bA);
-	gras_msg_wait(1200,gras_msgtype_by_name("dataA"), &from,&bA);
+	gras_msg_wait(1200,"dataA", &from,&bA);
       } CATCH(e) {
 	RETHROW0("Can't get a data message from row : %s");
       }
@@ -329,7 +327,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
   result.rowpos=myrow;
 
   TRY {
-    gras_msg_send(master, gras_msgtype_by_name("result"),&result);
+    gras_msg_send(master, "result",&result);
   } CATCH(e) {
     RETHROW0("Failed to send answer to server: %s");
   }
@@ -353,7 +351,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
        gras_socket_close(socket_row[l]); 
   }*/
 
-  return 1;
+  return 0;
 }
 
 int slave(int argc,char *argv[]) {

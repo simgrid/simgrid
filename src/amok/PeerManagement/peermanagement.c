@@ -31,7 +31,7 @@ static int amok_pm_cb_kill(gras_msg_cb_ctx_t ctx,
 
   amok_pm_moddata_t g=gras_moddata_by_id(amok_pm_moddata_id);
   g->done = 1;
-  return 1;
+  return 0;
 }
 static int amok_pm_cb_killrpc(gras_msg_cb_ctx_t ctx,
 			      void             *payload_data) {
@@ -39,7 +39,7 @@ static int amok_pm_cb_killrpc(gras_msg_cb_ctx_t ctx,
   amok_pm_moddata_t g=gras_moddata_by_id(amok_pm_moddata_id);
   g->done = 1;
   gras_msg_rpcreturn(30,ctx,NULL);
-  return 1;
+  return 0;
 }
 
 static int amok_pm_cb_get(gras_msg_cb_ctx_t ctx, void *payload) {
@@ -48,7 +48,7 @@ static int amok_pm_cb_get(gras_msg_cb_ctx_t ctx, void *payload) {
   xbt_dynar_t res = xbt_dict_get(g->groups, name);
 
   gras_msg_rpcreturn(30, ctx, &res);
-  return 1;
+  return 0;
 }
 static int amok_pm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
   amok_pm_moddata_t g=gras_moddata_by_id(amok_pm_moddata_id);
@@ -64,7 +64,7 @@ static int amok_pm_cb_join(gras_msg_cb_ctx_t ctx, void *payload) {
 
   gras_msg_rpcreturn(10, ctx, NULL);
   free(name);
-  return 1;
+  return 0;
 }
 static int amok_pm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
   amok_pm_moddata_t g=gras_moddata_by_id(amok_pm_moddata_id);
@@ -90,7 +90,7 @@ static int amok_pm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload) {
 
  end:
   gras_msg_rpcreturn(30, ctx, NULL);
-  return 1;
+  return 0;
 }
 
 static int amok_pm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
@@ -98,7 +98,7 @@ static int amok_pm_cb_shutdown(gras_msg_cb_ctx_t ctx, void *payload) {
   amok_pm_group_shutdown(name);
 
   gras_msg_rpcreturn(30, ctx, NULL);
-  return 1;
+  return 0;
 }
 
 /** \brief Enter the main loop of the program. It won't return until we get a kill message. */
@@ -119,12 +119,12 @@ void amok_pm_kill_hp(char *name,int port) {
 
 /** \brief kill a buddy to which we have a socket already. Note that it is not removed from any group it may belong to. */
 void amok_pm_kill(gras_socket_t buddy) {
-  gras_msg_send(buddy,gras_msgtype_by_name("amok_pm_kill"),NULL);
+  gras_msg_send(buddy,"amok_pm_kill",NULL);
 }
 
 /** \brief kill syncronously a buddy (do not return before its death). Note that it is not removed from any group it may belong to. */
 void amok_pm_kill_sync(gras_socket_t buddy) {
-  gras_msg_rpccall(buddy,30,gras_msgtype_by_name("amok_pm_killrpc"),NULL,NULL);
+  gras_msg_rpccall(buddy,30,"amok_pm_killrpc",NULL,NULL);
 }
 
 
@@ -151,8 +151,7 @@ xbt_dynar_t amok_pm_group_new(const char *group_name) {
 xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name) {
   xbt_dynar_t res;
   
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_get"),
-		   &group_name,&res);
+  gras_msg_rpccall(master,30,"amok_pm_get", &group_name,&res);
   return res;
 }
 
@@ -160,8 +159,7 @@ xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name) {
 void        amok_pm_group_join(gras_socket_t master, const char *group_name) {
   VERB3("Join group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_join"),
-		   &group_name,NULL);
+  gras_msg_rpccall(master,30,"amok_pm_join", &group_name,NULL);
   VERB3("Joined group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
 }
@@ -170,8 +168,7 @@ void        amok_pm_group_join(gras_socket_t master, const char *group_name) {
  * If not found, call is ignored 
  */
 void        amok_pm_group_leave(gras_socket_t master, const char *group_name) {
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_leave"),
-		   &group_name,NULL);
+  gras_msg_rpccall(master,30,"amok_pm_leave", &group_name,NULL);
   VERB3("Leaved group '%s' on %s:%d",
 	group_name,gras_socket_peer_name(master),gras_socket_peer_port(master));
 }
@@ -193,8 +190,7 @@ void amok_pm_group_shutdown(const char *group_name) {
 }
 /** \brief stops all members of the given remote group */
 void amok_pm_group_shutdown_remote(gras_socket_t master, const char *group_name){
-  gras_msg_rpccall(master,30,gras_msgtype_by_name("amok_pm_shutdown"),
-		   &group_name,NULL);
+  gras_msg_rpccall(master,30,"amok_pm_shutdown", &group_name,NULL);
 }
 
 

@@ -96,7 +96,7 @@ static double XP(const char *bw1, const char *bw2,
 
 static void kill_buddy(char *name,int port){
   gras_socket_t sock=gras_socket_client(name,port);
-  gras_msg_send(sock,gras_msgtype_by_name("kill"),NULL);
+  gras_msg_send(sock,"kill",NULL);
   gras_socket_close(sock);
 }
 static void kill_buddy_dynar(void *b) {

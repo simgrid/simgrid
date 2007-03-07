@@ -72,8 +72,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload) {
      
     /* 5. Send the token as payload of a stoken message to the successor */
     TRY {
-      gras_msg_send(globals->tosuccessor, 
-		    gras_msgtype_by_name("stoken"), &msg);
+      gras_msg_send(globals->tosuccessor, "stoken", &msg);
      
     /* 6. Deal with errors */
     } CATCH(e) {
@@ -96,7 +95,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload) {
   }
 
   /* 9. Tell GRAS that we consummed this message */
-  return 1;
+  return 0;
 } /* end_of_node_cb_stoken_handler */
 
 int node (int argc,char *argv[]) {
@@ -162,8 +161,7 @@ int node (int argc,char *argv[]) {
 	  token, host, peerport);
 
     TRY {	  
-      gras_msg_send(globals->tosuccessor,
-  		  gras_msgtype_by_name("stoken"), &token);
+      gras_msg_send(globals->tosuccessor, "stoken", &token);
     } CATCH(e) {
       RETHROW0("Unable to send the freshly created token: %s");
     }

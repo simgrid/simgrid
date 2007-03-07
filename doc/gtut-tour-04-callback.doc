@@ -23,11 +23,8 @@ First of all, we define the callback we want to attach to the arrival of the
 arguments of relative types <tt>gras_msg_cb_ctx_t ctx</tt> and <tt>void
 *</tt>. The first one is a working context we should pass to GRAS when
 speaking about the message we are handling while the second is the payload.
-The callbackreturns an integer indicating whether we managed to deal with
-the message. I admit that this semantic is a bit troublesome, it should be 0
-if we managed to deal properly with the message to mimic "main()" semantic.
-That's historical, but I may change this in the future (no worry, I'll add
-backward compatibility solutions). Here is the actual code of our callback:
+The callback returns an integer being its error code, just like the "main()"
+function. Here is the actual code of our callback:
 
 \dontinclude 04-callback.c
 \skip gras_msg_cb_ctx_t 
@@ -76,9 +73,9 @@ most of the mecanism most program will use.
 
 There is one last thing you should know about callbacks: you can stack them,
 ie attach several callbacks to the same message. GRAS will pass it to the
-lastly attached first, and if the return value is 0, it will pass it also to
-the next one, and so on. I'm not sure there is any sensible use of this
-feature, but it's possible ;)
+lastly attached first, and if the returned error code is not 0, it will pass
+it also to the next one, and so on. I'm not sure there is any sensible use
+of this feature, but it's possible ;)
 
 Go to \ref GRAS_tut_tour_globals
 */
