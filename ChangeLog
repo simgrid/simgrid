@@ -1,6 +1,24 @@
-SimGrid (3.1.1) unstable; urgency=low
+SimGrid (3.2) unstable; urgency=low
 
-  GRAS:
+  OVERALL CHANGES:
+   * Port to windows.
+     We still experience issues on this platform, but we belive that at
+     least MSG is usable.
+
+  GRAS API BREAKAGE (for simplification purpose, sorry):
+   * the gras_msgtype_by_name is not used anymore. Instead of 
+       gras_msg_send(toserver, gras_msgtype_by_name("request"), &request);
+     you can write (and must)
+       gras_msg_send(toserver, "request", &request);
+   - If you still want to pass a gras_msgtype_t to the function (to cache
+     the type and avoid the lookup time), use the gras_msg_send_() variant.
+   - Impacted functions:
+     gras_cb_register, gras_cb_unregister, gras_msg_send, gras_msg_wait,
+     gras_msg_rpccall, gras_msg_rpc_async_call, gras_msg_wait_ext
+   * The callbacks are now expected to return 0 when everything went well
+     (just like the main() function)
+
+  GRAS new features and improvements:
   * New module mecanism where user code can use per process globals [Mt]
     This is similar to gras_userdata_*() functions, but for libraries. It
       factorize some code developped over and over in the examples and AMOK.
@@ -19,8 +37,7 @@ SimGrid (3.1.1) unstable; urgency=low
     The numerical arguments used to be (1) the total amount of data to send
     and (2) msg_size. This was changed to (1) msg_size and (2) amount of
     messages. This was need for the fool willing to send more than MAXINT
-    bytes on quite fat pipes.
-       
+    bytes on quite fat pipes.       
 	
   AMOK:
   * Do really rename the hostmanagement module to peermanagement. [Mt]
@@ -57,16 +74,17 @@ SimGrid (3.1.1) unstable; urgency=low
     - "Valgrind spits tons of errors!" [Mt]
     - "How to repport bugs" [Mt]
     - "Cross-compiling a Windows DLL of SimGrid from Linux" [Mt]
+    - "What is the difference between MSG, SimDag, and GRAS?" [Mt]
     - Communication time measurement within MSG [AL]
     - I experience weird communication times when I change the latency [AL]
   * GRAS tutorial [Mt]
     It contains:
      - an introduction to the framework and to the used communication model
      - an initiatic tour introducing the most proheminent features:
-       # Part 1: Bases
+       o Part 1: Bases
          . Lesson 0: Installing GRAS
          . Lesson 1: Setting up your own project
-       # Part 2: Message passing
+       o Part 2: Message passing
          . Lesson 2: Exchanging simple messages
          . Lesson 3: Passing arguments to the processes (in SG)
          . Lesson 4: Attaching callbacks to messages
@@ -75,6 +93,11 @@ SimGrid (3.1.1) unstable; urgency=low
          . Lesson 7: Using internal timers
          . Lesson 8: Handling errors through exceptions
          . Lesson 9: Exchanging simple data
+	 . Lesson 10: Remote Procedure Calling (RPC)
+	 . Lesson 11: Explicitely waiting for messages
+	 . Recapping of message passing features in GRAS
+     - A HOWTO section containing:
+       o HOWTO design a GRAS application
        More are due, of course. They will come latter. In the meanwhile, you can 
        check the examples which are still here.
 
