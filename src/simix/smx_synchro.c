@@ -78,14 +78,14 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex)
 	return;
 }
 
-SIMIX_error_t SIMIX_mutex_destroy(smx_mutex_t mutex)
+void SIMIX_mutex_destroy(smx_mutex_t mutex)
 {
 	if ( mutex == NULL )
-		return SIMIX_WARNING;
+		return ;
 	else {
 		xbt_swag_free(mutex->sleeping);
 		xbt_free(mutex);
-		return SIMIX_OK;
+		return ;
 	}
 }
 
@@ -131,11 +131,11 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_durat
 	/* process status */	
 	self->simdata->cond = cond;
 
-	xbt_swag_insert(self, cond->sleeping);
 	cond->mutex = mutex;
 
 	SIMIX_mutex_unlock(mutex);
-	/* if the max_duration < 0, blocks forever */
+	xbt_swag_insert(self, cond->sleeping);
+	/* creates a new action to be the timeout */
 	if (max_duration >=0) {
 		__SIMIX_process_block(max_duration);
 		self->simdata->cond = NULL;
@@ -146,6 +146,7 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_durat
 	}
 	/* get the mutex again */
 	SIMIX_mutex_lock(cond->mutex);
+
 	return;
 }
 
@@ -164,19 +165,18 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
 	return;
 }
 
-SIMIX_error_t SIMIX_cond_destroy(smx_cond_t cond)
+void SIMIX_cond_destroy(smx_cond_t cond)
 {
 	
 	if ( cond == NULL )
-		return SIMIX_WARNING;
+		return ;
 	else {
-		xbt_assert0( (xbt_swag_size(cond->sleeping) > 0)  &&
-				(xbt_fifo_size(cond->actions) > 0), "Cannot destroy conditional");
+		xbt_assert0( xbt_swag_size(cond->sleeping) == 0 , "Cannot destroy conditional");
 
 		xbt_swag_free(cond->sleeping);
 		xbt_fifo_free(cond->actions);
 		xbt_free(cond);
-		return SIMIX_OK;
+		return;
 	}
 }
 

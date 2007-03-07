@@ -56,7 +56,7 @@ smx_host_t __SIMIX_host_create(const char *name,
  * This functions checks whether some data has already been associated to \a host 
    or not and attach \a data to \a host if it is possible.
  */
-SIMIX_error_t SIMIX_host_set_data(smx_host_t host, void *data)
+void SIMIX_host_set_data(smx_host_t host, void *data)
 {
   xbt_assert0((host!=NULL), "Invalid parameters");
   xbt_assert0((host->data == NULL), "Data already set");
@@ -64,7 +64,7 @@ SIMIX_error_t SIMIX_host_set_data(smx_host_t host, void *data)
   /* Assign data */
   host->data = data;
 
-  return SIMIX_OK;
+  return ;
 }
 
 /** \ingroup m_host_management

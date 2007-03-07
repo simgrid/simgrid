@@ -92,27 +92,5 @@ typedef struct s_smx_process *smx_process_t;
 typedef int(*smx_process_code_t)(int argc,char *argv[]) ;
 /** @} */
 
-
-/* ***************************** Error handling ***************************** */
-/** @brief Error handling 
-    @ingroup m_datatypes_management 
-    @{
-*/
-typedef enum {
-  SIMIX_OK = 0,  /**< @brief Everything is right. Keep on going this way ! */
-  SIMIX_WARNING, /**< @brief Mmmh! Something must be not perfectly clean. But I
-      may be a paranoid freak... ! */
-  SIMIX_TRANSFER_FAILURE, /**< @brief There has been a problem during you action
-      transfer. Either the network is down or the remote host has been
-      shutdown. */
-  SIMIX_HOST_FAILURE, /**< @brief System shutdown. The host on which you are
-      running has just been rebooted. Free your datastructures and
-      return now !*/
-  SIMIX_ACTION_CANCELLED, /**< @brief Cancelled action. This action has been cancelled 
-			by somebody!*/
-  SIMIX_FATAL /**< @brief You've done something wrong. You'd better look at it... */
-} SIMIX_error_t;
-/** @} */
-
 SG_END_DECL()
 #endif

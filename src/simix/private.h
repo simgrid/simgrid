@@ -12,7 +12,6 @@
 #include "simix/simix.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
-#include "xbt/dynar.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
 #include "xbt/context.h"
@@ -57,7 +56,7 @@ typedef struct s_simdata_process {
   smx_action_t block_action;	/* action that block the process when it does a mutex_lock or cond_wait */
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
-  SIMIX_error_t last_errno;       /* the last value returned by a MSG_function */
+//  SIMIX_error_t last_errno;       /* the last value returned by a MSG_function */
 // int paje_state;               /* the number of states stacked with Paje */
 } s_simdata_process_t;
 
@@ -92,21 +91,13 @@ typedef struct s_simdata_action {
   surf_action_t surf_action;	/* SURF modeling of computation  */
   
   xbt_fifo_t cond_list;		/* conditional variables that must be signaled when the action finish. */
-  smx_host_t source;
-/*
-  double priority;
-  double rate;
-*/  
-  /*int using;*/
+  smx_host_t source; 
 
-  /*******  Parallel Tasks Only !!!! *******/
-  /*
-  int host_nb;
-  void * *host_list;            *//* SURF modeling */
-  /*
-  double *comp_amount;
-  double *comm_amount;
-  */
+/* control needed when the action blocks a process(__SIMIX_process_block). For each process that is blocked a new action is created, the process is stocked in cond_process variable and the "boolean" action_block is marked to 1 */
+  int action_block;		/* simix control variable, system action or not */
+  smx_process_t cond_process;	/* system process will wake up */		
+  smx_cond_t timeout_cond;	/* useful to remove the process from the sleeping list when a timeout occurs */
+
 } s_simdata_action_t;
 
 
@@ -125,9 +116,9 @@ extern xbt_cfg_t _simix_cfg_set;
 
 
 
-#define PROCESS_SET_ERRNO(val) (SIMIX_process_self()->simdata->last_errno=val)
-#define PROCESS_GET_ERRNO() (SIMIX_process_self()->simdata->last_errno)
-#define SIMIX_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
+//#define PROCESS_SET_ERRNO(val) (SIMIX_process_self()->simdata->last_errno=val)
+//#define PROCESS_GET_ERRNO() (SIMIX_process_self()->simdata->last_errno)
+//#define SIMIX_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
 #define CHECK_HOST()  xbt_assert0(surf_workstation_resource->extension_public-> \
@@ -138,12 +129,12 @@ smx_host_t __SIMIX_host_create(const char *name, void *workstation, void *data);
 void __SIMIX_host_destroy(smx_host_t host);
 
 int __SIMIX_process_block(double max_duration);
-SIMIX_error_t __SIMIX_process_unblock(smx_process_t process);
+void __SIMIX_process_unblock(smx_process_t process);
 int __SIMIX_process_isBlocked(smx_process_t process);
 
 void __SIMIX_display_process_status(void);
 
-SIMIX_error_t __SIMIX_wait_for_action(smx_process_t process, smx_action_t action);
+void __SIMIX_wait_for_action(smx_process_t process, smx_action_t action);
 
 
 /*

@@ -24,8 +24,10 @@ smx_action_t SIMIX_communicate(smx_host_t sender,smx_host_t receiver,char * name
 	simdata->cond_list = xbt_fifo_new();
 	
 	/* initialize them */
-	act-> name = xbt_strdup(name);
-
+	act->name = xbt_strdup(name);
+	simdata->action_block=0;
+	simdata->cond_process=NULL;
+	simdata->timeout_cond = NULL;
 
 
 	simdata->surf_action = surf_workstation_resource->extension_public->
@@ -48,6 +50,9 @@ smx_action_t SIMIX_execute(smx_host_t host, char * name, double amount)
 	/* initialize them */
 	simdata->source = host;
 	act-> name = xbt_strdup(name);
+	simdata->action_block=0;
+	simdata->cond_process=NULL;
+	simdata->timeout_cond = NULL;
 
 	/* set communication */
 	simdata->surf_action = surf_workstation_resource->extension_public->
@@ -58,15 +63,14 @@ smx_action_t SIMIX_execute(smx_host_t host, char * name, double amount)
 	return act;
 }
 
-SIMIX_error_t SIMIX_action_cancel(smx_action_t action)
+void SIMIX_action_cancel(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
 
   if(action->simdata->surf_action) {
     surf_workstation_resource->common_public->action_cancel(action->simdata->surf_action);
-    return SIMIX_OK;
   }
-  return SIMIX_FATAL;
+  return;
 }
 
 void SIMIX_action_set_priority(smx_action_t action, double priority)
@@ -78,13 +82,13 @@ void SIMIX_action_set_priority(smx_action_t action, double priority)
 	return;
 }
 
-SIMIX_error_t SIMIX_action_destroy(smx_action_t action)
+void SIMIX_action_destroy(smx_action_t action)
 {
 
 	xbt_assert0((action != NULL), "Invalid parameter");
 
-	xbt_assert0((xbt_fifo_size(action->simdata->cond_list)==0), 
-			"Conditional list not empty. There is a problem. Cannot destroy it now!");
+	xbt_assert1((xbt_fifo_size(action->simdata->cond_list)==0), 
+			"Conditional list not empty %d. There is a problem. Cannot destroy it now!", xbt_fifo_size(action->simdata->cond_list));
 
 	if(action->name) free(action->name);
 
@@ -93,7 +97,7 @@ SIMIX_error_t SIMIX_action_destroy(smx_action_t action)
 	if(action->simdata->surf_action) 
 		action->simdata->surf_action->resource_type->common_public->action_free(action->simdata->surf_action);
 
-	return SIMIX_OK;
+	return;
 }
 
 void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
@@ -103,7 +107,7 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 	xbt_fifo_push(cond->actions,action);
 }
 
-SIMIX_error_t __SIMIX_wait_for_action(smx_process_t process, smx_action_t action)
+void __SIMIX_wait_for_action(smx_process_t process, smx_action_t action)
 {
 	e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
 	simdata_action_t simdata = action->simdata;
@@ -121,17 +125,15 @@ SIMIX_error_t __SIMIX_wait_for_action(smx_process_t process, smx_action_t action
 	if(state == SURF_ACTION_DONE) {
 		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
 			simdata->surf_action = NULL;
-		SIMIX_RETURN(SIMIX_OK);
 	} else if(surf_workstation_resource->extension_public->
 			get_state(SIMIX_process_get_host(process)->simdata->host) 
 			== SURF_CPU_OFF) {
 		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
 			simdata->surf_action = NULL;
-		SIMIX_RETURN(SIMIX_HOST_FAILURE);
 	} else {
 		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
 			simdata->surf_action = NULL;
-		SIMIX_RETURN(SIMIX_ACTION_CANCELLED);
 	}
+	return;
 
 }

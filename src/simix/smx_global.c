@@ -49,7 +49,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
 		xbt_context_init();
 		simix_global->host = xbt_fifo_new();
-		simix_global->process_to_run = xbt_swag_new(xbt_swag_offset(proc,process_hookup));
+		simix_global->process_to_run = xbt_swag_new(xbt_swag_offset(proc,synchro_hookup));
 		simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc,process_hookup));
 		simix_global->current_process = NULL;
 		simix_global->registered_functions = xbt_dict_new();
@@ -96,7 +96,7 @@ static void _XBT_CALL inthandler(int ignored)
 /** \ingroup msg_simulation
  * \brief Launch the SIMIX simulation
  */
-SIMIX_error_t SIMIX_main(void)
+void SIMIX_main(void)
 {
 	smx_process_t process = NULL;
 	smx_cond_t cond = NULL;
@@ -191,11 +191,20 @@ SIMIX_error_t SIMIX_main(void)
 						xbt_fifo_item_t _cursor;
 
 						DEBUG1("** %s failed **",smx_action->name);
-						xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
-							SIMIX_cond_broadcast(cond);
-							xbt_swag_foreach(process,cond->sleeping) {
-								DEBUG2("\t preparing to wake up %s on %s",	     
-										process->name,	process->simdata->host->name);
+						/* put all the process that are waiting in a conditional (dummy action) on the process_to_run list */
+						if ( smx_action->simdata->action_block) {
+									xbt_swag_insert(smx_action->simdata->cond_process,simix_global->process_to_run);
+						}
+						/* else, do the dummy action finish, call the signal broadcast */
+						else {
+							xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
+								xbt_swag_foreach(process,cond->sleeping) {
+									DEBUG2("\t preparing to wake up %s on %s",	     
+											process->name,	process->simdata->host->name);
+								}
+								SIMIX_cond_broadcast(cond);
+								/* remove conditional from action */
+								xbt_fifo_remove(smx_action->simdata->cond_list,cond);
 							}
 						}
 						process=NULL;						
@@ -209,6 +218,35 @@ SIMIX_error_t SIMIX_main(void)
 						xbt_fifo_item_t _cursor;
 
 						DEBUG1("** %s done **",smx_action->name);
+						/* put all the process that are waiting in a conditional (dummy action) on the process_to_run list */
+						if ( smx_action->simdata->action_block) {
+							if (smx_action->simdata->timeout_cond) {
+								xbt_swag_remove(smx_action->simdata->cond_process,smx_action->simdata->timeout_cond->sleeping);
+							}
+							process = smx_action->simdata->cond_process;
+							xbt_swag_insert(smx_action->simdata->cond_process,simix_global->process_to_run);
+							DEBUG2("\t preparing to wake up %s on %s",	     
+									process->name,	process->simdata->host->name);
+						}
+						/* else, do the dummy action finish, call the signal broadcast */
+						else {
+							xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
+								xbt_swag_foreach(process,cond->sleeping) {
+									DEBUG2("\t preparing to wake up %s on %s",	     
+											process->name,	process->simdata->host->name);
+								}
+								SIMIX_cond_broadcast(cond);
+								/* remove conditional from action */
+								xbt_fifo_remove(smx_action->simdata->cond_list,cond);
+							}
+						}
+						process=NULL;						
+					}
+/*
+					if (smx_action) {
+						xbt_fifo_item_t _cursor;
+
+						DEBUG1("** %s done **",smx_action->name);
 						xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
 							SIMIX_cond_broadcast(cond);
 							xbt_swag_foreach(process,cond->sleeping) {
@@ -217,7 +255,7 @@ SIMIX_error_t SIMIX_main(void)
 							}
 						}
 						process=NULL;						
-					}
+					}*/
 
 				}
 			}
@@ -227,7 +265,7 @@ SIMIX_error_t SIMIX_main(void)
 
 	if (xbt_swag_size(simix_global->process_list) == 0) {
 		INFO0("Congratulations ! Simulation terminated : all processes are over");
-		return SIMIX_OK;
+		return;
 	} else {
 		INFO0("Oops ! Deadlock or code not perfectly clean.");
 		__SIMIX_display_process_status();
@@ -238,7 +276,7 @@ SIMIX_error_t SIMIX_main(void)
 		}
 
 		INFO0("Return a Warning.");
-		return SIMIX_WARNING;
+		return;
 	}
 }
 
@@ -270,7 +308,7 @@ void SIMIX_process_killall()
 /** \ingroup msg_simulation
  * \brief Clean the SIMIX simulation
  */
-SIMIX_error_t SIMIX_clean(void)
+void SIMIX_clean(void)
 {
   xbt_fifo_item_t i = NULL;
   smx_host_t h = NULL;
@@ -293,7 +331,7 @@ SIMIX_error_t SIMIX_clean(void)
   free(simix_global);
   surf_exit();
 
-  return SIMIX_OK;
+  return ;
 }
 
 
