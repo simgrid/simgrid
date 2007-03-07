@@ -741,12 +741,12 @@ gras_cbl_free(void *data){
 /** \brief Bind the given callback to the given message type 
  *
  * Several callbacks can be attached to a given message type. The lastly added one will get the message first, and 
- * if it returns false, the message will be passed to the second one. 
+ * if it returns a non-null value, the message will be passed to the second one. 
  * And so on until one of the callbacks accepts the message.
  */
 void
-gras_cb_register(gras_msgtype_t msgtype,
-		 gras_msg_cb_t cb) {
+gras_cb_register_(gras_msgtype_t msgtype,
+		  gras_msg_cb_t cb) {
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list=NULL;
   int cpt;
@@ -775,8 +775,8 @@ gras_cb_register(gras_msgtype_t msgtype,
 
 /** \brief Unbind the given callback from the given message type */
 void
-gras_cb_unregister(gras_msgtype_t msgtype,
-		   gras_msg_cb_t cb) {
+gras_cb_unregister_(gras_msgtype_t msgtype,
+		    gras_msg_cb_t cb) {
 
   gras_msg_procdata_t pd=(gras_msg_procdata_t)gras_libdata_by_id(gras_msg_libdata_id);
   gras_cblist_t *list;

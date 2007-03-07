@@ -64,7 +64,7 @@ int server (int argc,char *argv[]) {
   mmrpc_register_messages();
    
   /* 5. Register my callback */
-  gras_cb_register(gras_msgtype_by_name("request"),&server_cb_request_handler);
+  gras_cb_register("request",&server_cb_request_handler);
 
   /* 6. Wait up to 10 minutes for an incomming message to handle */
   gras_msg_handle(600.0);

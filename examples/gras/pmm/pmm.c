@@ -366,7 +366,7 @@ int slave(int argc,char *argv[]) {
 
   /*  Register the known messages and my callback */
   register_messages();
-  gras_cb_register(gras_msgtype_by_name("pmm_slave"),pmm_worker_cb);
+  gras_cb_register("pmm_slave",pmm_worker_cb);
 
   /* Create the connexions */
   mysock = gras_socket_server_range(3000,9999,0,0);

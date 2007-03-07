@@ -86,16 +86,12 @@ void amok_bw_bw_init() {
   gras_msgtype_declare_rpc("BW request",  bw_request_desc,bw_res_desc);
 }
 void amok_bw_bw_join() {
-  gras_cb_register(gras_msgtype_by_name("BW request"),
-		   &amok_bw_cb_bw_request);
-  gras_cb_register(gras_msgtype_by_name("BW handshake"),
-		   &amok_bw_cb_bw_handshake);
+  gras_cb_register("BW request",  &amok_bw_cb_bw_request);
+  gras_cb_register("BW handshake",&amok_bw_cb_bw_handshake);
 }
 void amok_bw_bw_leave() {
-  gras_cb_unregister(gras_msgtype_by_name("BW request"),
-		     &amok_bw_cb_bw_request);
-  gras_cb_unregister(gras_msgtype_by_name("BW handshake"),
-		     &amok_bw_cb_bw_handshake);
+  gras_cb_unregister("BW request",  &amok_bw_cb_bw_request);
+  gras_cb_unregister("BW handshake",&amok_bw_cb_bw_handshake);
 }
 
 /**

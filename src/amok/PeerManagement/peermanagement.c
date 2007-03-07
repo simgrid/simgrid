@@ -239,19 +239,13 @@ static void _amok_pm_join(void *p) {
    mod->groups = xbt_dict_new();
    
    /* callbacks */
-  gras_cb_register(gras_msgtype_by_name("amok_pm_kill"),
-		   &amok_pm_cb_kill);
-  gras_cb_register(gras_msgtype_by_name("amok_pm_killrpc"),
-		   &amok_pm_cb_killrpc);
+  gras_cb_register("amok_pm_kill",   &amok_pm_cb_kill);
+  gras_cb_register("amok_pm_killrpc",&amok_pm_cb_killrpc);
 
-  gras_cb_register(gras_msgtype_by_name("amok_pm_get"),
-		   &amok_pm_cb_get);
-  gras_cb_register(gras_msgtype_by_name("amok_pm_join"),
-		   &amok_pm_cb_join);
-  gras_cb_register(gras_msgtype_by_name("amok_pm_leave"),
-		   &amok_pm_cb_leave);
-  gras_cb_register(gras_msgtype_by_name("amok_pm_shutdown"),
-		   &amok_pm_cb_shutdown);   
+  gras_cb_register("amok_pm_get",      &amok_pm_cb_get);
+  gras_cb_register("amok_pm_join",     &amok_pm_cb_join);
+  gras_cb_register("amok_pm_leave",    &amok_pm_cb_leave);
+  gras_cb_register("amok_pm_shutdown", &amok_pm_cb_shutdown);   
 }
 static void _amok_pm_exit(void) {
   /* no world-wide globals */
@@ -264,20 +258,13 @@ static void _amok_pm_leave(void *p) {
      xbt_dict_free(&mod->groups);
    
    /* callbacks */
-   gras_cb_unregister(gras_msgtype_by_name("amok_pm_kill"),
-		      &amok_pm_cb_kill);
-   gras_cb_unregister(gras_msgtype_by_name("amok_pm_killrpc"),
-		      &amok_pm_cb_killrpc);
+   gras_cb_unregister("amok_pm_kill",   &amok_pm_cb_kill);
+   gras_cb_unregister("amok_pm_killrpc",&amok_pm_cb_killrpc);
 
-   gras_cb_unregister(gras_msgtype_by_name("amok_pm_get"),
-		      &amok_pm_cb_get);
-   gras_cb_unregister(gras_msgtype_by_name("amok_pm_join"),
-		      &amok_pm_cb_join);
-   gras_cb_unregister(gras_msgtype_by_name("amok_pm_leave"),
-		      &amok_pm_cb_leave);
-
-   gras_cb_unregister(gras_msgtype_by_name("amok_pm_shutdown"),
-		      &amok_pm_cb_shutdown);
+   gras_cb_unregister("amok_pm_get",      &amok_pm_cb_get);
+   gras_cb_unregister("amok_pm_join",     &amok_pm_cb_join);
+   gras_cb_unregister("amok_pm_leave",    &amok_pm_cb_leave);
+   gras_cb_unregister("amok_pm_shutdown", &amok_pm_cb_shutdown);   
 }
 
 void amok_pm_modulecreate() {

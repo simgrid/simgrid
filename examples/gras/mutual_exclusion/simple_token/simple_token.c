@@ -146,7 +146,7 @@ int node (int argc,char *argv[]) {
   gras_msgtype_declare("stoken", gras_datadesc_by_name("int"));
    
   /* 7. Register my callback */
-  gras_cb_register(gras_msgtype_by_name("stoken"),&node_cb_stoken_handler);  
+  gras_cb_register("stoken",&node_cb_stoken_handler);  
 
   /* 8. One node has to create the token at startup. 
         It's specified by a command line argument */

@@ -84,7 +84,7 @@ int server (int argc,char *argv[]) {
   ping_register_messages(); /* just to make sure it works ;) */
    
   /* 5. Register my callback */
-  gras_cb_register(gras_msgtype_by_name("ping"),&server_cb_ping_handler);
+  gras_cb_register("ping",&server_cb_ping_handler);
 
   INFO1(">>>>>>>> Listening on port %d <<<<<<<<", gras_socket_my_port(globals->sock));
   globals->endcondition=0;

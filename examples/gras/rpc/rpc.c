@@ -255,10 +255,8 @@ int forwarder (int argc,char *argv[]) {
   fdata->server=gras_socket_client(argv[2],atoi(argv[3]));
 
   register_messages();
-  gras_cb_register(gras_msgtype_by_name("forward exception"),
-		   &forwarder_cb_forward_ex);
-  gras_cb_register(gras_msgtype_by_name("kill"),
-		   &forwarder_cb_kill);
+  gras_cb_register("forward exception", &forwarder_cb_forward_ex);
+  gras_cb_register("kill",              &forwarder_cb_kill);
 
   while (!fdata->done) {
     gras_msg_handle(600.0);
@@ -345,9 +343,9 @@ int server (int argc,char *argv[]) {
 
   /* 4. Register the known messages and register my callback */
   register_messages();
-  gras_cb_register(gras_msgtype_by_name("plain ping"),&server_cb_ping);
-  gras_cb_register(gras_msgtype_by_name("raise exception"),&server_cb_raise_ex);
-  gras_cb_register(gras_msgtype_by_name("kill"),&server_cb_kill);
+  gras_cb_register("plain ping",&server_cb_ping);
+  gras_cb_register("raise exception",&server_cb_raise_ex);
+  gras_cb_register("kill",&server_cb_kill);
 
   INFO1("Listening on port %d ", gras_socket_my_port(mysock));
 

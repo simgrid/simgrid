@@ -302,7 +302,6 @@ int node(int argc,char **argv){
   gras_os_sleep(1.0);
 
   register_messages();
-  register_messages();
 
   globals->finger=(finger_elem*)calloc(1,sizeof(finger_elem));
   INFO2("Launching node %s:%d",globals->host,globals->port);
@@ -358,10 +357,8 @@ int node(int argc,char **argv){
     }
   }
   
-  gras_cb_register(gras_msgtype_by_name("chord_get_suc"),
-                   &node_cb_get_suc_handler);
-  gras_cb_register(gras_msgtype_by_name("chord_notify"),
-                   &node_cb_notify_handler);
+  gras_cb_register("chord_get_suc", &node_cb_get_suc_handler);
+  gras_cb_register("chord_notify",  &node_cb_notify_handler);
   /*gras_cb_register(gras_msgtype_by_name("chord_ping"),&node_cb_ping_handler);*/
  /* gras_timer_repeat(600.,fix_fingers);*/
   /*while(1){*/

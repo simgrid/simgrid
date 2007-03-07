@@ -36,16 +36,12 @@ void amok_bw_sat_init(void) {
 
 }
 void amok_bw_sat_join(void) {
-  gras_cb_register(gras_msgtype_by_name("amok_bw_sat start"),
-		   &amok_bw_cb_sat_start);
-  gras_cb_register(gras_msgtype_by_name("amok_bw_sat begin"),
-		   &amok_bw_cb_sat_begin);
+  gras_cb_register("amok_bw_sat start", &amok_bw_cb_sat_start);
+  gras_cb_register("amok_bw_sat begin", &amok_bw_cb_sat_begin);
 }
 void amok_bw_sat_leave(void) {
-  gras_cb_unregister(gras_msgtype_by_name("amok_bw_sat start"),
-		     &amok_bw_cb_sat_start);
-  gras_cb_unregister(gras_msgtype_by_name("amok_bw_sat begin"),
-		     &amok_bw_cb_sat_begin);
+  gras_cb_unregister("amok_bw_sat start", &amok_bw_cb_sat_start);
+  gras_cb_unregister("amok_bw_sat begin", &amok_bw_cb_sat_begin);
 }
 
 /* ***************************************************************************

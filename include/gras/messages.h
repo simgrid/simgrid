@@ -116,8 +116,30 @@ XBT_PUBLIC(gras_socket_t) gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
   typedef int (*gras_msg_cb_t)(gras_msg_cb_ctx_t  ctx,
 			       void             *payload);
 
-  XBT_PUBLIC(void) gras_cb_register  (gras_msgtype_t msgtype, gras_msg_cb_t cb);
-  XBT_PUBLIC(void) gras_cb_unregister(gras_msgtype_t msgtype, gras_msg_cb_t cb);
+ /**
+  * @brief Bind the given callback to the given message type (described by its name)
+  * @hideinitializer
+  * 
+  * Several callbacks can be attached to a given message type. The lastly added one will get the message first, and
+  * if it returns a non-null value, the message will be passed to the second one.
+  * And so on until one of the callbacks accepts the message.
+  * 
+  * Using gras_cb_register is a bit slower than using gras_cb_register_ since GRAS
+  * has to search for the given msgtype in the hash table, but you don't care in most case.
+  */
+#define gras_cb_register(msgtype_name, cb)   gras_cb_register_(gras_msgtype_by_name(msgtype_name),cb)
+
+ /**
+  * @brief Unbind the given callback to the given message type (described by its name)
+  * @hideinitializer
+  * 
+  * Using gras_cb_unregister is a bit slower than using gras_cb_unregister_ since GRAS
+  * has to search for the given msgtype in the hash table, but you don't care in most case.
+  */
+#define gras_cb_unregister(msgtype_name, cb) gras_cb_unregister_(gras_msgtype_by_name(msgtype_name),cb)
+
+  XBT_PUBLIC(void) gras_cb_register_  (gras_msgtype_t msgtype, gras_msg_cb_t cb);
+  XBT_PUBLIC(void) gras_cb_unregister_(gras_msgtype_t msgtype, gras_msg_cb_t cb);
 
 /** @} */  
 

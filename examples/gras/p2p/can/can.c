@@ -287,8 +287,8 @@ int node(int argc,char **argv){
 
 	// associating messages to handlers.
 	register_messages();
-	gras_cb_register(gras_msgtype_by_name("can_get_suc"),&node_get_suc_handler);
-	gras_cb_register(gras_msgtype_by_name("can_nuke"),&node_nuke_handler);// can_test.c handler // include can_tests.c must be ON.
+	gras_cb_register("can_get_suc",&node_get_suc_handler);
+	gras_cb_register("can_nuke",&node_nuke_handler);// can_test.c handler // include can_tests.c must be ON.
 	
 	TRY{
 	  gras_msg_handle(10000.0); // waiting.. in case of someone has something to say.
