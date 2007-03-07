@@ -3,7 +3,7 @@
 /* messaging - high level communication (send/receive messages)             */
 /* module's public interface exported to end user.                          */
 
-/* Copyright (c) 2003, 2004 Martin Quinson. All rights reserved.            */
+/* Copyright (c) 2003-2007 Martin Quinson. All rights reserved.             */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -149,15 +149,38 @@ XBT_PUBLIC(gras_socket_t) gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx);
  */
 /** @{ */
 
-
-  XBT_PUBLIC(void) gras_msg_send(gras_socket_t   sock,
-		     gras_msgtype_t  msgtype,
-		     void           *payload);
-  XBT_PUBLIC(void) gras_msg_wait(double          timeout,    
-		     gras_msgtype_t  msgt_want,
-		     gras_socket_t  *expeditor,
-		     void           *payload);
-  XBT_PUBLIC(void) gras_msg_handleall(double period);   
+/** \brief Send the data pointed by \a payload as a message \a msgname on the \a sock
+ *  @hideinitializer
+ *
+ * Using gras_msg_wait() is a bit slower than using gras_msg_wait_() since GRAS
+ * has to search for the given msgtype in the hash table.
+ */
+#define gras_msg_send(sock,name,payload) gras_msg_send_(sock,gras_msgtype_by_name(name),payload)
+  XBT_PUBLIC(void) gras_msg_send_(gras_socket_t   sock,
+		                  gras_msgtype_t  msgtype,
+		                  void           *payload);
+		                  
+/** \brief Waits for a message to come in over a given socket
+ *  @hideinitializer
+ * @param timeout: How long should we wait for this message.
+ * @param msgt_want: type of awaited msg
+ * @param[out] expeditor: where to create a socket to answer the incomming message
+ * @param[out] payload: where to write the payload of the incomming message
+ * @return the error code (or no_error).
+ *
+ * Every message of another type received before the one waited will be queued
+ * and used by subsequent call to this function or gras_msg_handle().
+ *
+ * Using gras_msg_wait() is a bit slower than using gras_msg_wait_() since GRAS
+ * has to search for the given msgtype in the hash table.
+ */
+		                  
+#define gras_msg_wait(timeout,msgt_want,expeditor,payload) gras_msg_wait_(timeout,gras_msgtype_by_name(msgt_want),expeditor,payload)
+  XBT_PUBLIC(void) gras_msg_wait_(double          timeout,
+		                  gras_msgtype_t  msgt_want,
+		                  gras_socket_t  *expeditor,
+		                  void           *payload);
+  XBT_PUBLIC(void) gras_msg_handleall(double period);
   XBT_PUBLIC(void) gras_msg_handle(double timeOut);
 
 /** @} */
@@ -189,17 +212,28 @@ XBT_PUBLIC(void) gras_msgtype_declare_rpc_v(const char           *name,
 				gras_datadesc_type_t  payload_answer);
 
 /* client side */
-XBT_PUBLIC(void) gras_msg_rpccall(gras_socket_t server,
-		      double timeOut,
-		      gras_msgtype_t msgtype,
-		      void *request, void *answer);
+
+/** @brief Conduct a RPC call
+ *  @hideinitializer
+ */
+#define gras_msg_rpccall(server,timeout,msg,req,ans) gras_msg_rpccall_(server,timeout,gras_msgtype_by_name(msg),req,ans)
+XBT_PUBLIC(void) gras_msg_rpccall_(gras_socket_t server,
+				   double timeOut,
+				   gras_msgtype_t msgtype,
+				   void *request, void *answer);
 XBT_PUBLIC(gras_msg_cb_ctx_t)
-gras_msg_rpc_async_call(gras_socket_t server,
+  
+/** @brief Launch a RPC call, but do not block for the answer
+ *  @hideinitializer
+ */
+  
+#define gras_msg_rpc_async_call(server,timeout,msg,req) gras_msg_rpc_async_call_(server,timeout,gras_msgtype_by_name(msg),req)
+gras_msg_rpc_async_call_(gras_socket_t server,
 			double timeOut,
 			gras_msgtype_t msgtype,
 			void *request);
 XBT_PUBLIC(void) gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
-			     void *answer);
+					 void *answer);
 
 /* server side */
 XBT_PUBLIC(void) gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,void *answer);
@@ -248,18 +282,19 @@ typedef struct {
 
 typedef int (*gras_msg_filter_t)(gras_msg_t msg,void *ctx);
 
-XBT_PUBLIC(void) gras_msg_wait_ext(double           timeout,    
-		       gras_msgtype_t   msgt_want,
-		       gras_socket_t    expe_want,
-		       gras_msg_filter_t filter,
-		       void             *filter_ctx, 
-		       gras_msg_t       msg_got);
+#define gras_msg_wait_ext(timeout, msg, expe, filter, fctx,got) gras_msg_wait_ext_(timeout, gras_msgtype_by_name(msg), expe, filter, fctx,got) 
+XBT_PUBLIC(void) gras_msg_wait_ext_(double           timeout,    
+				    gras_msgtype_t   msgt_want,
+				    gras_socket_t    expe_want,
+				    gras_msg_filter_t filter,
+				    void             *filter_ctx, 
+				    gras_msg_t       msg_got);
 
 XBT_PUBLIC(void) gras_msg_wait_or(double         timeout,    
-		      xbt_dynar_t    msgt_want,
-		      gras_msg_cb_ctx_t *ctx,
-		      int           *msgt_got,
-		      void          *payload);
+				  xbt_dynar_t    msgt_want,
+				  gras_msg_cb_ctx_t *ctx,
+				  int           *msgt_got,
+				  void          *payload);
 
 
 /* @} */

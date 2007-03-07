@@ -105,10 +105,10 @@ void gras_msg_ctx_mallocator_reset_f(void* ctx) {
 
 /** @brief Launch a RPC call, but do not block for the answer */
 gras_msg_cb_ctx_t 
-gras_msg_rpc_async_call(gras_socket_t server,
-			double timeOut,
-			gras_msgtype_t msgtype,
-			void *request) {
+gras_msg_rpc_async_call_(gras_socket_t server,
+			 double timeOut,
+			 gras_msgtype_t msgtype,
+			 void *request) {
   gras_msg_cb_ctx_t ctx = xbt_mallocator_get(gras_msg_ctx_mallocator);
 
   if (msgtype->ctn_type) {
@@ -136,7 +136,7 @@ gras_msg_rpc_async_call(gras_socket_t server,
   return ctx;
 }
 
-/** @brief Wait teh answer of a RPC call previously launched asynchronously */
+/** @brief Wait the answer of a RPC call previously launched asynchronously */
 void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
 			     void *answer) {
   xbt_ex_t e;
@@ -155,9 +155,9 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
   TRY {
      /* The filter returns 1 when we eat an old RPC answer to something canceled */
      do {
-	gras_msg_wait_ext(ctx->timeout,
-			  ctx->msgtype, NULL, msgfilter_rpcID, &ctx->ID,
-			  &received);
+	gras_msg_wait_ext_(ctx->timeout,
+			   ctx->msgtype, NULL, msgfilter_rpcID, &ctx->ID,
+			   &received);
      } while (received.ID != ctx->ID);
      
   } CATCH(e) {
@@ -199,14 +199,14 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx,
 }
 
 /** @brief Conduct a RPC call */
-void gras_msg_rpccall(gras_socket_t server,
-		      double timeout,
-		      gras_msgtype_t msgtype,
-		      void *request, void *answer) {
+void gras_msg_rpccall_(gras_socket_t server,
+		       double timeout,
+		       gras_msgtype_t msgtype,
+		       void *request, void *answer) {
 
   gras_msg_cb_ctx_t ctx;
 
-  ctx = gras_msg_rpc_async_call(server, timeout,msgtype,request);
+  ctx = gras_msg_rpc_async_call_(server, timeout,msgtype,request);
   gras_msg_rpc_async_wait(ctx, answer);
 }
 

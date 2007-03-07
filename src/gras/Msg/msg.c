@@ -300,7 +300,7 @@ gras_msgtype_t gras_msgtype_by_id(int id) {
  */
 
 void
-gras_msg_wait_ext(double           timeout,    
+gras_msg_wait_ext_(double           timeout,    
 
 		  gras_msgtype_t   msgt_want,
 		  gras_socket_t    expe_want,
@@ -408,15 +408,15 @@ gras_msg_wait_ext(double           timeout,
  * and used by subsequent call to this function or gras_msg_handle().
  */
 void
-gras_msg_wait(double           timeout,    
-	      gras_msgtype_t   msgt_want,
-	      gras_socket_t   *expeditor,
-	      void            *payload) {
+gras_msg_wait_(double           timeout,    
+	       gras_msgtype_t   msgt_want,
+	       gras_socket_t   *expeditor,
+	       void            *payload) {
   s_gras_msg_t msg;
 
-  gras_msg_wait_ext(timeout,
-		    msgt_want, NULL,      NULL, NULL,
-		    &msg);
+  gras_msg_wait_ext_(timeout,
+		     msgt_want, NULL,      NULL, NULL,
+		     &msg);
 
   if (msgt_want->ctn_type) {
     xbt_assert1(payload,
@@ -469,10 +469,10 @@ void gras_msg_wait_or(double         timeout,
   s_gras_msg_t msg;
 
   VERB1("Wait %f seconds for several message types",timeout);
-  gras_msg_wait_ext(timeout,
-		    NULL, NULL,      
-		    &gras_msg_wait_or_filter, (void*)msgt_want,
-		    &msg);
+  gras_msg_wait_ext_(timeout,
+		     NULL, NULL,      
+		     &gras_msg_wait_or_filter, (void*)msgt_want,
+		     &msg);
 
   if (msg.type->ctn_type) {
     xbt_assert1(payload,
@@ -497,7 +497,7 @@ void gras_msg_wait_or(double         timeout,
 /** \brief Send the data pointed by \a payload as a message of type
  * \a msgtype to the peer \a sock */
 void
-gras_msg_send(gras_socket_t   sock,
+gras_msg_send_(gras_socket_t   sock,
 	      gras_msgtype_t  msgtype,
 	      void           *payload) {
 
@@ -672,7 +672,7 @@ gras_msg_handle(double timeOut) {
 	if (!ran_ok) {
 	  DEBUG4("Use the callback #%d (@%p) for incomming msg %s (payload_size=%d)",
 		cpt+1,cb,msg.type->name,msg.payl_size);
-	  if ((*cb)(&ctx,msg.payl)) {
+	  if (!(*cb)(&ctx,msg.payl)) {
 	    /* cb handled the message */
 	    free(msg.payl);
 	    ran_ok = 1;
