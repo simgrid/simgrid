@@ -313,6 +313,30 @@ may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
 MSG_examples. There is also a mailing list: <simgrid-user@lists.gforge.inria.fr>.
 
+\subsection faq_interfaces What is the difference between MSG, SimDag, and GRAS? Do they serve the same purpose?
+
+It depend on how you define "purpose", I guess ;)
+
+They all allow you to build a prototype of application which you can run
+within the simulator afterward. They all share the same simulation kernel,
+which is the core of the SimGrid project. They differ by the way you express
+your application.
+
+With SimDag, you express your code as a collection of interdependent
+parallel tasks. So, in this model, applications can be seen as a DAG of
+tasks. 
+
+With both GRAS and MSG, your application is seen as a set of communicating
+processes, exchanging data by the way of messages and performing computation
+on their own.
+
+The difference between both is that MSG is somehow easier to use, but GRAS
+is not limitated to the simulator. Once you're done writing your GRAS code,
+you can run your code both in the simulator or on a real platform. For this,
+there is two implementations of the GRAS interface, one for simulation, one
+for real execution. So, you just have to relink your code to chose one of
+both world.
+
 \subsection faq_generic Building a generic simulator
 
 Please read carefully the \ref MSG_examples. You'll find in \ref
