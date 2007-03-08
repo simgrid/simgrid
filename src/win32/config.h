@@ -17,7 +17,9 @@
 
 #if defined(_XBT_BORLAND_COMPILER)
 # include <win32/compiler/borland.h>
-# else
+#elif defined(__GNUC__)
+  /* data comes from autoconf when using gnuc (cross-compiling?) */
+#else
 # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
 #endif
 
