@@ -25,7 +25,7 @@ typedef struct xbt_thread_ {
 } s_xbt_thread_t ;
 
 /* thread-specific data containing the xbt_thread_t structure */
-pthread_key_t xbt_self_thread_key;
+static pthread_key_t xbt_self_thread_key;
 
 /* frees the xbt_thread_t corresponding to the current thread */
 static void xbt_thread_free_thread_data(void*d){
@@ -35,14 +35,14 @@ static void xbt_thread_free_thread_data(void*d){
 void xbt_thread_mod_init(void) {
    int errcode;
    
-   if ((errcode=pthread_key_create(&thread_data, &xbt_thread_free_thread_data)))
-     THROW0(system_error,errcode,"pthread_key_create failed for thread_data");
+   if ((errcode=pthread_key_create(&xbt_self_thread_key, &xbt_thread_free_thread_data)))
+     THROW0(system_error,errcode,"pthread_key_create failed for xbt_self_thread_key");
 }
 void xbt_thread_mod_exit(void) {
    int errcode;
    
-   if ((errcode=pthread_key_delete(thread_data)))
-     THROW0(system_error,errcode,"pthread_key_delete failed for thread_data");
+   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
+     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
 }
 
 
@@ -51,8 +51,8 @@ xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
    xbt_thread_t res = xbt_new(s_xbt_thread_t,1);
    int errcode;
 
-   if ((errcode=pthread_setspecific(thread_data,res)))
-     THROW0(system_error,errcode,"pthread_setspecific failed for thread_data");
+   if ((errcode=pthread_setspecific(xbt_self_thread_key,res)))
+     THROW0(system_error,errcode,"pthread_setspecific failed for xbt_self_thread_key");
       
    if ((errcode = pthread_create(&(res->t), NULL, start_routine, param)))
      THROW0(system_error,errcode, "pthread_create failed");
@@ -63,7 +63,7 @@ void xbt_thread_exit(int *retval) {
    pthread_exit(retval);
 }
 xbt_thread_t xbt_thread_self(void) {
-   return pthread_getspecific(thread_data);
+   return pthread_getspecific(xbt_self_thread_key);
 }
 
 #include <sched.h>
@@ -155,7 +155,7 @@ typedef struct xbt_thread_ {
 } s_xbt_thread_t ;
 
 /* key to the TLS containing the xbt_thread_t structure */
-unsigned long xbt_self_thread_key;
+static unsigned long xbt_self_thread_key;
 
 void xbt_thread_mod_init(void) {
    xbt_self_thread_key = TlsAlloc();
