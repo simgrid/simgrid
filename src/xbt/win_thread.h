@@ -177,6 +177,12 @@ win_thread_cond_broadcast(win_thread_cond_t* cond);
 int
 win_thread_cond_destroy(win_thread_cond_t* cond);
 
+/*
+ * Forces the current thread to relinquish use of its processor.
+ */
+void
+win_thread_yield(void);
+
 #ifdef __cplusplus
 extern }
 #endif

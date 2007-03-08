@@ -1,6 +1,7 @@
 #include "win_thread.h"
 
 #include <string.h>
+#include <stdio.h>
 
 int                       
 win_thread_create(win_thread_t* thread,pfn_start_routine_t start_routine,void* param){
@@ -24,11 +25,15 @@ win_thread_create(win_thread_t* thread,pfn_start_routine_t start_routine,void* p
 int
 win_thread_exit(win_thread_t* thread,unsigned long exit_code)
 {
-	
-    ExitThread(exit_code);
-    
-    free(*thread);
-    *thread = NULL;
+    win_thread_t ___thread = *thread;
+
+	CloseHandle(___thread->handle);
+    free(___thread);
+	___thread = NULL;
+
+	ExitThread(exit_code);
+
+
     
     return 0;
 }
@@ -41,6 +46,7 @@ win_thread_self(void){
 int
 win_thread_mutex_init(win_thread_mutex_t* mutex)
 {
+
 	*mutex = xbt_new0(s_win_thread_mutex_t,1);
 	
 	if(!*mutex)
@@ -48,14 +54,14 @@ win_thread_mutex_init(win_thread_mutex_t* mutex)
 		
 	/* initialize the critical section object */
 	InitializeCriticalSection(&((*mutex)->lock));
-		
 	return 0;
 }
 
 int
 win_thread_mutex_lock(win_thread_mutex_t* mutex){
 
-   	EnterCriticalSection (&((*mutex)->lock));
+   	EnterCriticalSection(&((*mutex)->lock));
+   	
 	return 0;
 }
 
@@ -68,7 +74,7 @@ win_thread_mutex_unlock(win_thread_mutex_t* mutex){
 
 int
 win_thread_mutex_destroy(win_thread_mutex_t* mutex){
-	
+
 	DeleteCriticalSection(&((*mutex)->lock));	
 		
 	free(*mutex);
@@ -79,12 +85,12 @@ win_thread_mutex_destroy(win_thread_mutex_t* mutex){
 
 int
 win_thread_cond_init(win_thread_cond_t* cond){
-	
+
 	*cond = xbt_new0(s_win_thread_cond_t,1);
 	
 	if(!*cond)
 		return 1;
-		
+
 	memset(&((*cond)->waiters_count_lock),0,sizeof(CRITICAL_SECTION));
 	
 	/* initialize the critical section object */
@@ -115,7 +121,6 @@ win_thread_cond_init(win_thread_cond_t* cond){
 		return 1;
 	}
 
-	
 	return 0;	
 }
 
@@ -124,7 +129,7 @@ win_thread_cond_wait(win_thread_cond_t* cond,win_thread_mutex_t* mutex){
 	
 	unsigned long wait_result;
 	int is_last_waiter;
-	
+
 	 /* lock the threads counter and increment it */
 	EnterCriticalSection (&((*cond)->waiters_count_lock));
 	(*cond)->waiters_count++;
@@ -162,7 +167,6 @@ win_thread_cond_wait(win_thread_cond_t* cond,win_thread_mutex_t* mutex){
 	/* relock the mutex associated with the condition in accordance with the posix thread specification */
 	EnterCriticalSection (&(*mutex)->lock);
 
-	
 	return 0;
 }
 
@@ -170,7 +174,7 @@ int
 win_thread_cond_signal(win_thread_cond_t* cond)
 {
 	int have_waiters;
-	
+
 	EnterCriticalSection (&((*cond)->waiters_count_lock));
 	have_waiters = (*cond)->waiters_count > 0;
 	LeaveCriticalSection (&((*cond)->waiters_count_lock));
@@ -179,6 +183,7 @@ win_thread_cond_signal(win_thread_cond_t* cond)
 		
 		if(!SetEvent((*cond)->events[SIGNAL]))
 			return 1;
+			
 	}
 	
 	return 0;
@@ -188,13 +193,13 @@ int
 win_thread_cond_broadcast(win_thread_cond_t* cond)
 {
 	int have_waiters;
-	
+
 	EnterCriticalSection (&((*cond)->waiters_count_lock));
 	have_waiters = (*cond)->waiters_count > 0;
 	LeaveCriticalSection (&((*cond)->waiters_count_lock));
 	
 	if (have_waiters)
-	SetEvent((*cond)->events[BROADCAST]);
+		SetEvent((*cond)->events[BROADCAST]);
 	
 	return 0;
 }
@@ -205,7 +210,7 @@ int
 win_thread_cond_destroy(win_thread_cond_t* cond)
 {
 	int result = 0;
-	
+
 	if(!CloseHandle((*cond)->events[SIGNAL]))
 		result= 1;
 	
@@ -218,6 +223,12 @@ win_thread_cond_destroy(win_thread_cond_t* cond)
 	*cond = NULL;
 	
 	return result;
+}
+
+void
+win_thread_yield(void)
+{
+    Sleep(0);
 }
 
 
