@@ -44,7 +44,8 @@ AC_CHECK_FUNCS([gettimeofday usleep \
                 sysconf\
                 readv\
 		popen\
-		signal])
+		signal\
+		getline])
                 
 # check for a working snprintf (or use xbt/snprintf.c, which comes from http://www.ijs.si/software/snprintf/)
 AC_FUNC_SNPRINTF
@@ -329,6 +330,8 @@ AC_CONFIG_FILES([
   tools/Makefile
     tools/gras/Makefile
 ])
+dnl tools/tesh/Makefile
+
 
 # GRAMINE_CUT_BEGIN
 
