@@ -24,8 +24,6 @@ SG_BEGIN_DECL()
  *
  * @{
  */
-XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
-XBT_PUBLIC(void) xbt_die(const char *msg) _XBT_GNUC_NORETURN;
 
 #ifdef NDEBUG
 #define xbt_assert(cond)
