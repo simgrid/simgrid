@@ -25,13 +25,21 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(int)   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
 XBT_PUBLIC(int)   vasprintf (char **ptr, const char *fmt, va_list ap);
 XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
-  
+
+/* FIXME: ssize_t must be 'long' on windows, no idea whether we should define this explicitly */
+XBT_PUBLIC(ssize_t) getline(char **lineptr, size_t *n, FILE *stream);
+
+
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
-
+/**
+ * @addtogroup XBT_error
+ * 
+ * @{
+ */
 XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
 XBT_PUBLIC(void) xbt_die(const char *msg) _XBT_GNUC_NORETURN;
-
+/** @} */
 
 /** @addtogroup XBT_syscall
  *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)
