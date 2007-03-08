@@ -1,4 +1,4 @@
-AM_CFLAGS= -g
+AM_CFLAGS+= -g 
 #AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.
@@ -111,7 +111,7 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la
 
 COMMON_SRC=\
   \
-  xbt/snprintf.c                                                             \
+  xbt/snprintf.c    xbt/getline.c                                            \
   xbt/ex.c          xbt/xbt_thread.c                                         \
   \
   xbt_modinter.h    gras_modinter.h                                          \
