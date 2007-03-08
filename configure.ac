@@ -51,10 +51,6 @@ AC_FUNC_SNPRINTF
 # check for asprintf function familly (or request the replacements from xbt/snprintf.c)
 AC_CHECK_FUNC(  asprintf, :,   AC_DEFINE(NEED_ASPRINTF,  1,  enable the asprintf   replacement))
 AC_CHECK_FUNC( vasprintf, :,   AC_DEFINE(NEED_VASPRINTF, 1,  enable the vasprintf  replacement))
-# we don't use those:
-# A C_CHECK_FUNC( asnprintf, :,   A C_DEFINE(NEED_ASNPRINTF,  1, enable the asnprintf  replacement))
-# A C_CHECK_FUNC(vasnprintf, :,   A C_DEFINE(NEED_VASNPRINTF, 1, enable the vansprintf replacement))
-
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -149,7 +145,7 @@ fi
 if test "x$with_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
   AC_CHECK_LIB(pthread,pthread_create,,
-    [AC_MSG_ERROR([[Cannot find pthreads, no way (try --with-context=ucontext if you haven't already tried).]])])
+    [AC_MSG_ERROR([[Cannot find pthreads (try --with-context=ucontext if you haven't already tried).]])])
   AC_DEFINE([USE_PTHREADS],1,[Define if we use pthreads or not])
   AC_MSG_RESULT(You have pthreads. Let's use them.)
 fi
@@ -193,8 +189,11 @@ AM_CONDITIONAL(USE_SIMIX,test x$enable_simix != xno)
 
 SG_CONFIGURE_PART(Checking extra libraries dependencies...)
 
-AC_MSG_CHECKING(for csdp)
 SIMGRID_DEP=""
+GRAS_DEP=""
+AC_CHECK_LIB(pthread,pthread_create,SIMGRID_DEP="-lpthread"; GRAS_DEP="-lpthread")
+
+AC_MSG_CHECKING(for csdp)
 sdp=no
 AC_CHECK_LIB(sdp,sdp,csdp=yes, csdp=no,-llapack -lblas -lm)
 if test "x$csdp" = xyes; then 
@@ -208,13 +207,13 @@ AM_CONDITIONAL(HAVE_SDP,test x$csdp != xno)
 
 AC_SUBST([SIMGRID_DEP])
 
-GRAS_DEP=""
 AC_CHECK_LIB(nsl, gethostbyname, [GRAS_DEP="$GRAS_DEP -lnsl"])
 AC_CHECK_LIB(socket, connect,    [GRAS_DEP="$GRAS_DEP -lsocket"])
 
 AC_MSG_CHECKING(for extra dependencies of libgras)
 case $host_os in
-  *mingw* ) GRAS_DEP="$GRAS_DEP -lws2_32" ; SIMGRID_DEP="$SIMGRID_DEP -lws2_32" ;;
+  *mingw* ) GRAS_DEP="$GRAS_DEP -lws2_32" ; SIMGRID_DEP="$SIMGRID_DEP -lws2_32";
+            AC_SUBST(AM_CFLAGS,-DDLL_EXPORT);;
 esac
 	   
 if test "x$GRAS_DEP" = x; then 
