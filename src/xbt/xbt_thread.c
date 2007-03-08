@@ -14,6 +14,9 @@
 #include "xbt/xbt_thread.h" /* This module */
 #include "xbt_modinter.h" /* Initialization/finalization of this module */
 
+
+
+/* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 
@@ -21,12 +24,14 @@ typedef struct xbt_thread_ {
    pthread_t t;
 } s_xbt_thread_t ;
 
+/* thread-specific data containing the xbt_thread_t structure */
+pthread_key_t xbt_self_thread_key;
+
 /* frees the xbt_thread_t corresponding to the current thread */
 static void xbt_thread_free_thread_data(void*d){
    free(d);
 }
 
-pthread_key_t thread_data; /* thread-specific data containing the xbt_thread_t structure */
 void xbt_thread_mod_init(void) {
    int errcode;
    
@@ -140,28 +145,44 @@ void xbt_thcond_destroy(xbt_thcond_t cond){
    free(cond);
 }
 
+/* ********************************* WINDOWS IMPLEMENTATION ************************************ */
 
 #elif defined(WIN32)
+
 typedef struct xbt_thread_ {
    HANDLE handle;                  /* the win thread handle        */
    unsigned long id;               /* the win thread id            */
 } s_xbt_thread_t ;
 
-void xbt_thread_mod_init(void) {}
-void xbt_thread_mod_exit(void) {}
+/* key to the TLS containing the xbt_thread_t structure */
+unsigned long xbt_self_thread_key;
+
+void xbt_thread_mod_init(void) {
+   xbt_self_thread_key = TlsAlloc();
+}
+void xbt_thread_mod_exit(void) {
+   int errcode;
+   if (!(errcode = TlsFree(xbt_self_thread_key))) 
+     THROW0(system_error,errcode,"TlsFree() failed to cleanup the thread submodule");
+}
 
 xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
 			       void* param)  {
    
    xbt_thread_t res = xbt_new(s_xbt_thread_t,1);
    
-   res->handle = CreateThread(NULL,NULL,start_routine,param,0,&((*thread)->id));
+   res->handle = CreateThread(NULL,0, 
+			      (LPTHREAD_START_ROUTINE)start_routine,
+			      param,0,& res->id);
 	
    if(!res->handle) {
      xbt_free(res);
-     THROW0(system_error,errcode,"CreateThread failed");
+     THROW0(system_error,0,"CreateThread failed");
    }
    
+   if(!TlsSetValue(xbt_self_thread_key,res))
+     THROW0(system_error,0,"TlsSetValue of data describing the created thread failed");
+     
    return res;
 }
 
@@ -175,7 +196,7 @@ void xbt_thread_exit(int *retval) {
 }
 
 xbt_thread_t xbt_thread_self(void) {
-   return GetCurrentThreadId();
+   return TlsGetValue(xbt_self_thread_key);
 }
 
 void xbt_thread_yield(void) {
@@ -215,6 +236,12 @@ void xbt_mutex_destroy(xbt_mutex_t mutex) {
 }
 
 /***** condition related functions *****/
+ enum {
+    SIGNAL = 0,
+    BROADCAST = 1,
+    MAX_EVENTS = 2
+ };
+
 typedef struct xbt_thcond_ {
    HANDLE events[MAX_EVENTS];
    
@@ -237,7 +264,7 @@ xbt_thcond_t xbt_thcond_init(void) {
    res->events[SIGNAL] = CreateEvent (NULL, FALSE, FALSE, NULL); 
 	
    if(!res->events[SIGNAL]){
-      DeleteCriticalSection(&((*cond)->waiters_count_lock));
+      DeleteCriticalSection(& res->waiters_count_lock);
       free(res);
       THROW0(system_error,0,"CreateEvent failed for the signals");
    }
