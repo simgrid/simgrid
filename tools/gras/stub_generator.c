@@ -1,21 +1,17 @@
-//---------------------------------------------------------------------------
+/* 	$Id$	 */
+
+/* gras_stub_generator - creates the main() to use a GRAS program           */
+
+/* Copyright (c) 2003-2007 Martin Quinson, Arnaud Legrand, Malek Cherier.   */
+/* All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* specific to Borland Compiler */
 #ifdef __BORLANDDC__
 #pragma hdrstop
 #endif
-
-/* 	$Id$	 */
-
-/* gras_stub_generator - creates the main() to use a GRAS program           */
-
-/* Copyright (c) 2003,2004,2005 Martin Quinson, Arnaud Legrand. 
-   All rights reserved.                  */
-
-/* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
-
-
 
 #include "xbt/sysdep.h"
 #include "xbt/function_types.h"
