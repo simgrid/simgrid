@@ -347,10 +347,6 @@ the double. For now, GRAS requires the structures to be compacted. */
 #define va_copy(d, s) __VA_COPY_USE(d, s)
 #endif
 
-#ifdef USE_UCONTEXT
-#undef USE_UCONTEXT
-#endif
-
 
 /* Define to id of used va_copy() implementation */
 #define __VA_COPY_USE __VA_COPY_USE_C99
@@ -402,8 +398,12 @@ typedef int socklen_t;
 #endif 
 
 /* this is used in context managment. */
-#ifndef USE_WIN_THREADS
-#define USE_WIN_THREADS
+#ifdef CONTEXT_UCONTEXT
+#undef CONTEXT_UCONTEXT
+#endif
+
+#ifndef CONTEXT_THREADS
+#define CONTEXT_THREADS
 #endif
 
 #endif /* #ifndef __XBT_BORLAND_COMPILER_CONFIG_H__ */
