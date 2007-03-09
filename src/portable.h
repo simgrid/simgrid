@@ -16,7 +16,7 @@
 */ 
 #ifdef _WIN32
 # include "win32/config.h"
-#  include <windows.h>
+# include <windows.h>
 #else
 #  include "gras_config.h"
 #endif
@@ -71,6 +71,11 @@
 
 #ifndef O_BINARY
 #  define O_BINARY 0
+#endif
+
+#ifdef HAVE_GETLINE
+#  define _GNU_SOURCE
+#  include <stdio.h>
 #endif
 
 /****
