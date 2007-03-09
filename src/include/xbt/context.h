@@ -9,7 +9,8 @@
 #define _XBT_CONTEXT_H
 
 #include "xbt/misc.h"
-#include "xbt/dynar.h" /* void_f_pvoid_t */
+#include "xbt/function_types.h"
+#include "xbt_modinter.h" /* init/exit of this module */
 
 /** @addtogroup XBT_context
  *  
@@ -31,8 +32,6 @@
 
 /* @}*/
 
-XBT_PUBLIC(void) xbt_context_init(void);
-XBT_PUBLIC(void) xbt_context_exit(void);
 void xbt_context_empty_trash(void);
 XBT_PUBLIC(xbt_context_t) xbt_context_new(xbt_context_function_t code, 
 			                  void_f_pvoid_t startup_func, void *startup_arg,
