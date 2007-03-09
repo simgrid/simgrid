@@ -13,6 +13,7 @@
 #include "context_private.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
+#include "xbt/xbt_thread.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ctx, xbt, "Context");
 
@@ -23,55 +24,29 @@ static xbt_context_t init_context = NULL;
 static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
 
-#if (!defined(USE_PTHREADS) && !defined(USE_WIN_THREADS)) /* USE_PTHREADS and USE_CONTEXT are exclusive */
-# ifndef USE_UCONTEXT
-/* don't want to play with conditional compilation in automake tonight, sorry.
-   include directly the c file from here when needed. */
-#  include "context_win32.c" 
-#  define USE_WIN_CONTEXT
-# endif
-#endif
-
 static void __xbt_context_yield(xbt_context_t context)
 {
 	xbt_assert0(current_context,"You have to call context_init() first.");
-	
+
 	DEBUG2("--------- current_context (%p) is yielding to context(%p) ---------",current_context,context);
-	
-	#ifdef USE_PTHREADS
+   
+	#ifdef CONTEXT_THREADS
 	if (context){
 		xbt_context_t self = current_context;
 		DEBUG0("**** Locking ****");
-		pthread_mutex_lock(&(context->mutex));
+		xbt_mutex_lock(context->mutex);
 		DEBUG0("**** Updating current_context ****");
 		current_context = context;
 		DEBUG0("**** Releasing the prisonner ****");
-		pthread_cond_signal(&(context->cond));
+		xbt_thcond_signal(context->cond);
 		DEBUG0("**** Going to jail ****");
-		pthread_cond_wait(&(context->cond), &(context->mutex));
+		xbt_thcond_wait(context->cond, context->mutex);
 		DEBUG0("**** Unlocking ****");
-		pthread_mutex_unlock(&(context->mutex));
+		xbt_mutex_unlock(context->mutex);
 		DEBUG0("**** Updating current_context ****");
 		current_context = self;
 	}
-	#elif defined(USE_WIN_THREADS)
-	if (context){
-		xbt_context_t self = current_context;
-		DEBUG0("**** Locking ****");
-        win_thread_mutex_lock(&(context->mutex));
-        DEBUG0("**** Updating current_context ****");
-        current_context = context;
-        DEBUG0("**** Releasing the prisonner ****");
-        win_thread_cond_signal(&(context->cond));
-        DEBUG0("**** Going to jail ****");
-        win_thread_cond_wait(&(context->cond), &(context->mutex));
-        DEBUG0("**** Unlocking ****");
-        win_thread_mutex_unlock(&(context->mutex));
-        DEBUG0("**** Updating current_context ****");
-        current_context = self;
-
-	}
-	#else
+	#else /* use SUSv2 contexts */
 	if(current_context)
 		VOIRP(current_context->save);
 	
@@ -115,31 +90,20 @@ static void __xbt_context_yield(xbt_context_t context)
 
 static void xbt_context_destroy(xbt_context_t context)
 {
-	#ifdef USE_PTHREADS
+	if (!context) return;
+#ifdef CONTEXT_THREADS
 	xbt_free(context->thread);
-	pthread_mutex_destroy(&(context->mutex));
-	pthread_cond_destroy(&(context->cond));
-	#elif defined(USE_WIN_THREADS)
-	/*xbt_free(context->thread);*/
+	xbt_mutex_destroy(context->mutex);
+	xbt_thcond_destroy(context->cond);
 
-    if(context->mutex)
-        win_thread_mutex_destroy(&(context->mutex));
-
-
-    if(context->cond)
-	    win_thread_cond_destroy(&(context->cond));
-
-
-	#endif
+	context->thread = NULL;
+	context->mutex = NULL;
+   	context->cond = NULL;
+#endif
 	
 	if(context->exception) 
 		free(context->exception);
-	
-	#ifdef USE_WIN_CONTEXT    	
-	if(context->uc.uc_stack.ss_sp)
-		free (context->uc.uc_stack.ss_sp);
-	#endif
-	
+		
 	free(context);
 	return;
 }
@@ -166,69 +130,42 @@ static void __context_exit(xbt_context_t context ,int value)
 	DEBUG0("Context put in the to_destroy set");
 	DEBUG0("Yielding");
 	
-	#ifdef USE_PTHREADS
+	#ifdef CONTEXT_THREADS
 	DEBUG0("**** Locking ****");
-	pthread_mutex_lock(&(context->mutex));
+	xbt_mutex_lock(context->mutex);
 	DEBUG0("**** Updating current_context ****");
 	current_context = context;
 	DEBUG0("**** Releasing the prisonner ****");
-	pthread_cond_signal(&(context->cond));  
+	xbt_thcond_signal(context->cond);
 	DEBUG0("**** Unlocking ****");
-	pthread_mutex_unlock(&(context->mutex));
+	xbt_mutex_unlock(context->mutex);
 	DEBUG0("**** Exiting ****");
-	pthread_exit(0);
-	#elif defined(USE_WIN_THREADS)
-	DEBUG0("**** Locking ****");
-	win_thread_mutex_lock(&(context->mutex));
-	DEBUG0("**** Updating current_context ****");
-	current_context = context;
-	DEBUG0("**** Releasing the prisonner ****");
-	win_thread_cond_signal(&(context->cond));  
-	DEBUG0("**** Unlocking ****");
-	win_thread_mutex_unlock(&(context->mutex));
-	DEBUG0("**** Exiting ****");
-	win_thread_exit(context->thread,0);
+	xbt_thread_exit(0);
 	#else
 	__xbt_context_yield(context);
 	#endif
 	xbt_assert0(0,"You can't be here!");
 }
 
-#ifdef USE_WIN_THREADS 
-static DWORD WINAPI	/* special thread proc signature */
-#else
 static void *
-#endif 
-__context_wrapper(void* c)
-{
+__context_wrapper(void* c) {
 	xbt_context_t context = (xbt_context_t)c;
 	
-	#ifdef USE_PTHREADS
-	DEBUG2("**[%p:%p]** Lock ****",context,(void*)pthread_self());
-	pthread_mutex_lock(&(context->mutex));
+	#ifdef CONTEXT_THREADS
+	context->thread = xbt_thread_self();
+        
+	DEBUG2("**[%p:%p]** Lock ****",context,(void*)xbt_thread_self());
+	xbt_mutex_lock(context->mutex);
 	
-	DEBUG2("**[%p:%p]** Releasing the prisonner ****",context,(void*)pthread_self());
-	pthread_cond_signal(&(context->cond));
+	DEBUG2("**[%p:%p]** Releasing the prisonner ****",context,(void*)xbt_thread_self());
+	xbt_thcond_signal(context->cond);
 	
-	DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)pthread_self());
-	pthread_cond_wait(&(context->cond), &(context->mutex));
+	DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)xbt_thread_self());
+	xbt_thcond_wait(context->cond, context->mutex);
 	
-	DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)pthread_self());
-	pthread_mutex_unlock(&(context->mutex));
+	DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)xbt_thread_self());
+	xbt_mutex_unlock(context->mutex);
 	
-	#elif defined(USE_WIN_THREADS)
-	DEBUG2("**[%p:%p]** Lock ****",context,(void*)win_thread_self());
-	win_thread_mutex_lock(&(context->mutex));
-
-	DEBUG2("**[%p:%p]** Releasing the prisonner ****",context,(void*)win_thread_self());
-	win_thread_cond_signal(&(context->cond));
-
-	DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)win_thread_self());
-	win_thread_cond_wait(&(context->cond), &(context->mutex));
-
-	DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)win_thread_self());
-	win_thread_mutex_unlock(&(context->mutex));
-
 	#endif
 	
 	if(context->startup_func)
@@ -303,28 +240,19 @@ void xbt_context_empty_trash(void)
  */
 void xbt_context_start(xbt_context_t context) 
 {
-	#ifdef USE_PTHREADS
+	#ifdef CONTEXT_THREADS
 	/* Launch the thread */
 	DEBUG1("**[%p]** Locking ****",context);
-	pthread_mutex_lock(&(context->mutex));
-	DEBUG1("**[%p]** Pthread create ****",context);
-	xbt_assert0(!pthread_create(context->thread, NULL, __context_wrapper, context),"Unable to create a thread.");
-	DEBUG2("**[%p]** Pthread created : %p ****",context,(void*)(*(context->thread)));
+	xbt_mutex_lock(context->mutex);
+   
+	DEBUG1("**[%p]** Thread create ****",context);
+        context->thread = xbt_thread_create(__context_wrapper, context);   
+	DEBUG2("**[%p]** Thread created : %p ****",context,context->thread);
+   
 	DEBUG1("**[%p]** Going to jail ****",context);
-	pthread_cond_wait(&(context->cond), &(context->mutex));
+	xbt_thcond_wait(context->cond, context->mutex);
 	DEBUG1("**[%p]** Unlocking ****",context);
-	pthread_mutex_unlock(&(context->mutex)); 
-	#elif defined(USE_WIN_THREADS) 
-	/* Launch the thread */
-	DEBUG1("**[%p]** Locking ****",context);
-	win_thread_mutex_lock(&(context->mutex));
-	DEBUG1("**[%p]** Windows thread create ****",context);
-	xbt_assert0(!win_thread_create(&(context->thread), __context_wrapper, context),"Unable to create a thread.");
-	DEBUG2("**[%p]** Windows created : %p ****",context,(void*)(context->thread));
-	DEBUG1("**[%p]** Going to jail ****",context);
-	win_thread_cond_wait(&(context->cond), &(context->mutex));
-	DEBUG1("**[%p]** Unlocking ****",context);
-	win_thread_mutex_unlock(&(context->mutex)); 
+	xbt_mutex_unlock(context->mutex);
 	#else
 	makecontext (&(context->uc), (void (*) (void)) __context_wrapper,1, context);
 	#endif
@@ -352,14 +280,9 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 	res = xbt_new0(s_xbt_context_t,1);
 	
 	res->code = code;
-	#ifdef USE_PTHREADS
-	res->thread = xbt_new0(pthread_t,1);
-	xbt_assert0(!pthread_mutex_init(&(res->mutex), NULL), "Mutex initialization error");
-	xbt_assert0(!pthread_cond_init(&(res->cond), NULL), "Condition initialization error");
-	#elif defined(USE_WIN_THREADS)
-	/*res->thread = xbt_new0(pthread_t,1);*/
-	xbt_assert0(!win_thread_mutex_init(&(res->mutex)), "Mutex initialization error");
-	xbt_assert0(!win_thread_cond_init(&(res->cond)), "Condition initialization error");
+	#ifdef CONTEXT_THREADS
+	res->mutex = xbt_mutex_init();
+        res->cond = xbt_thcond_init();
 	#else 
 	/* FIXME: strerror is not thread safe */
 	xbt_assert2(getcontext(&(res->uc))==0,"Error in context saving: %d (%s)", errno, strerror(errno));
@@ -368,14 +291,9 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 	/* WARNING : when this context is over, the current_context (i.e. the 
 	father), is awaken... Theorically, the wrapper should prevent using 
 	this feature. */
-	# ifdef USE_WIN_CONTEXT    
-	res->uc.uc_stack.ss_sp = xbt_malloc(STACK_SIZE);
-	res->uc.uc_stack.ss_size = STACK_SIZE ;
-	#else
 	res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack,STACK_SIZE);
 	res->uc.uc_stack.ss_size = pth_sksize_makecontext(res->stack,STACK_SIZE);
-	# endif /* USE_WIN_CONTEXT */
-	#endif /* USE_PTHREADS or not */
+	#endif /* CONTEXT_THREADS or not */
 	
 	res->argc = argc;
 	res->argv = argv;
@@ -422,13 +340,12 @@ void xbt_context_schedule(xbt_context_t context)
 void xbt_context_exit(void) {
 	xbt_context_t context=NULL;
 
-    
-
 	xbt_context_empty_trash();
 	xbt_swag_free(context_to_destroy);
 	
-	while((context=xbt_swag_extract(context_living)))
+	while((context=xbt_swag_extract(context_living))) {
 		xbt_context_free(context);
+	}
 	
 	xbt_swag_free(context_living);
 	
@@ -444,6 +361,7 @@ void xbt_context_free(xbt_context_t context)
 {
 	int i ;
 	
+   
 	xbt_swag_remove(context, context_living);  
 	
 	for(i=0;i<context->argc; i++) 

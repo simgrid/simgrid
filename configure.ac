@@ -131,7 +131,7 @@ esac
 if test "x$with_context" = "xucontext" ; then
   if test ".$mcsc" = .yes; then
     AC_MSG_RESULT(found working ucontext. Great!)
-    AC_DEFINE([USE_UCONTEXT],1,[Define if we use ucontext or not])
+    AC_DEFINE([CONTEXT_UCONTEXT],1,[Define if xbt contexts are based on ucontext or not])
   else
     if test ".$windows_context" = .yes ; then
       AC_MSG_RESULT(use windows context portability layer.)
@@ -147,7 +147,7 @@ if test "x$with_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
   AC_CHECK_LIB(pthread,pthread_create,,
     [AC_MSG_ERROR([[Cannot find pthreads (try --with-context=ucontext if you haven't already tried).]])])
-  AC_DEFINE([USE_PTHREADS],1,[Define if we use pthreads or not])
+  AC_DEFINE([CONTEXT_THREADS],1,[Define if xbt contexts are based on our threads implementation or not])
   AC_MSG_RESULT(You have pthreads. Let's use them.)
 fi
 
@@ -214,7 +214,8 @@ AC_CHECK_LIB(socket, connect,    [GRAS_DEP="$GRAS_DEP -lsocket"])
 AC_MSG_CHECKING(for extra dependencies of libgras)
 case $host_os in
   *mingw* ) GRAS_DEP="$GRAS_DEP -lws2_32" ; SIMGRID_DEP="$SIMGRID_DEP -lws2_32";
-            AC_SUBST(AM_CFLAGS,-DDLL_EXPORT);;
+            AC_SUBST(AM_CFLAGS,-DDLL_EXPORT)
+            AC_DEFINE(CONTEXT_THREADS,1);;
 esac
 	   
 if test "x$GRAS_DEP" = x; then 
