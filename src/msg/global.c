@@ -46,7 +46,6 @@ void MSG_global_init(int *argc, char **argv)
      
     msg_global = xbt_new0(s_MSG_Global_t,1);
 
-    xbt_context_init();
     msg_global->host = xbt_fifo_new();
     msg_global->process_to_run = xbt_fifo_new();
     msg_global->process_list = xbt_fifo_new();
@@ -482,7 +481,6 @@ MSG_error_t MSG_clean(void)
   while((p=xbt_fifo_pop(msg_global->process_list))) {
     MSG_process_kill(p);
   }
-  xbt_context_exit();
 
   xbt_fifo_foreach(msg_global->host,i,h,m_host_t) {
     __MSG_host_destroy(h);
