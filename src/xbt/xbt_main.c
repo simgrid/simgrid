@@ -37,6 +37,7 @@ xbt_init(int *argc, char **argv) {
   
   xbt_log_init(argc,argv);
   xbt_thread_mod_init();
+  xbt_context_init();
 }
 
 /** @brief Finalize the xbt mechanisms. */
@@ -44,11 +45,14 @@ void
 xbt_exit(){
   xbt_initialized--;
   if (xbt_initialized == 0) {
-    free(xbt_binary_name);
     xbt_fifo_exit();
     xbt_dict_exit();
+    xbt_context_exit();
     xbt_thread_mod_exit();
   }
   xbt_log_exit();
+   
+  if (xbt_initialized == 0)
+    free(xbt_binary_name);
 }
 
