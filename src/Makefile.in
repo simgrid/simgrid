@@ -93,7 +93,7 @@ am__objects_1 = snprintf.lo getline.lo ex.lo xbt_thread.lo sysdep.lo \
 	ddt_exchange.lo cbps.lo datadesc.lo ddt_parse.lo \
 	ddt_parse.yy.lo msg.lo rpc.lo timer.lo process.lo \
 	gras_module.lo
-am__objects_2 = rl_transport.lo transport_plugin_file.lo \
+am__objects_2 = rl_gras.lo rl_transport.lo transport_plugin_file.lo \
 	transport_plugin_tcp.lo rl_emul.lo rl_process.lo rl_time.lo \
 	rl_dns.lo rl_msg.lo
 am__objects_3 = amok_base.lo bandwidth.lo saturate.lo \
@@ -344,7 +344,8 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/workstation_KCCFLN05_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
 	include/surf/surfxml_parse_private.h \
-	include/xbt/xbt_portability.h include/xbt/context.h \
+	include/xbt/xbt_portability.h \
+	include/xbt/xbt_internal_thread.h include/xbt/context.h \
 	msg/private.h simdag/private.h \
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h gras/Virtu/virtu_private.h \
@@ -434,6 +435,7 @@ COMMON_SRC = \
   gras/Virtu/process.c gras/Virtu/gras_module.c
 
 RL_SRC = \
+  gras/rl_gras.c                         \
   gras/Transport/rl_transport.c          \
   gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
   \
@@ -635,6 +637,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_dns.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_emul.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_gras.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_msg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_process.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_time.Plo@am__quote@
@@ -977,6 +980,13 @@ gras_module.lo: gras/Virtu/gras_module.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/Virtu/gras_module.c' object='gras_module.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gras_module.lo `test -f 'gras/Virtu/gras_module.c' || echo '$(srcdir)/'`gras/Virtu/gras_module.c
+
+rl_gras.lo: gras/rl_gras.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT rl_gras.lo -MD -MP -MF "$(DEPDIR)/rl_gras.Tpo" -c -o rl_gras.lo `test -f 'gras/rl_gras.c' || echo '$(srcdir)/'`gras/rl_gras.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/rl_gras.Tpo" "$(DEPDIR)/rl_gras.Plo"; else rm -f "$(DEPDIR)/rl_gras.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/rl_gras.c' object='rl_gras.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o rl_gras.lo `test -f 'gras/rl_gras.c' || echo '$(srcdir)/'`gras/rl_gras.c
 
 rl_transport.lo: gras/Transport/rl_transport.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT rl_transport.lo -MD -MP -MF "$(DEPDIR)/rl_transport.Tpo" -c -o rl_transport.lo `test -f 'gras/Transport/rl_transport.c' || echo '$(srcdir)/'`gras/Transport/rl_transport.c; \

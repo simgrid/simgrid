@@ -12,6 +12,12 @@
 /* Predefined possible va_copy() implementation (id: C99) */
 #define __VA_COPY_USE_C99(d, s) va_copy((d), (s))
 
+/* Define if xbt contexts are based on our threads implementation or not */
+#undef CONTEXT_THREADS
+
+/* Define if xbt contexts are based on ucontext or not */
+#undef CONTEXT_UCONTEXT
+
 /* Predefined possible va_copy() implementation (id: CPP) */
 #define __VA_COPY_USE_CPP(d, s) memcpy((void *)(d), (void *)(s)), sizeof(*(s))
 
@@ -189,14 +195,8 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
-/* Define if we use pthreads or not */
-#undef USE_PTHREADS
-
 /* Indicates whether we should use SimIX or not */
 #undef USE_SIMIX
-
-/* Define if we use ucontext or not */
-#undef USE_UCONTEXT
 
 /* Version number of package */
 #undef VERSION
