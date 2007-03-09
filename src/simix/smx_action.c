@@ -14,8 +14,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_action, simix,
 
 /************************************* Actions *********************************/
 
-smx_action_t SIMIX_communicate(smx_host_t sender,smx_host_t receiver,char * name, double size, double rate)
+smx_action_t SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver,char * name, double size, double rate)
 {
+	/* check if the host is active */
+ 	if ( surf_workstation_resource->extension_public->get_state(sender->simdata->host)!=SURF_CPU_ON) {
+		THROW1(1,1,"Host %s failed, you cannot call this function",sender->name);
+	}
+	if ( surf_workstation_resource->extension_public->get_state(receiver->simdata->host)!=SURF_CPU_ON) {
+		THROW1(1,1,"Host %s failed, you cannot call this function",receiver->name);
+	}
 
 	/* alloc structures */
 	smx_action_t act = xbt_new0(s_smx_action_t,1);
@@ -25,9 +32,6 @@ smx_action_t SIMIX_communicate(smx_host_t sender,smx_host_t receiver,char * name
 	
 	/* initialize them */
 	act->name = xbt_strdup(name);
-	simdata->action_block=0;
-	simdata->cond_process=NULL;
-	simdata->timeout_cond = NULL;
 
 
 	simdata->surf_action = surf_workstation_resource->extension_public->
@@ -38,9 +42,13 @@ smx_action_t SIMIX_communicate(smx_host_t sender,smx_host_t receiver,char * name
 	return act;
 }
 
-smx_action_t SIMIX_execute(smx_host_t host, char * name, double amount)
+smx_action_t SIMIX_action_execute(smx_host_t host, char * name, double amount)
 {
-	CHECK_HOST();
+	/* check if the host is active */
+ 	if ( surf_workstation_resource->extension_public->get_state(host->simdata->host)!=SURF_CPU_ON) {
+		THROW1(1,1,"Host %s failed, you cannot call this function",host->name);
+	}
+
 	/* alloc structures */
 	smx_action_t act = xbt_new0(s_smx_action_t,1);
 	act->simdata = xbt_new0(s_simdata_action_t,1);
@@ -50,9 +58,6 @@ smx_action_t SIMIX_execute(smx_host_t host, char * name, double amount)
 	/* initialize them */
 	simdata->source = host;
 	act-> name = xbt_strdup(name);
-	simdata->action_block=0;
-	simdata->cond_process=NULL;
-	simdata->timeout_cond = NULL;
 
 	/* set communication */
 	simdata->surf_action = surf_workstation_resource->extension_public->
@@ -62,6 +67,29 @@ smx_action_t SIMIX_execute(smx_host_t host, char * name, double amount)
 
 	return act;
 }
+
+
+smx_action_t SIMIX_action_sleep(smx_host_t host,  double duration)
+{
+	char name[] = "sleep";
+	/* alloc structures */
+	smx_action_t act = xbt_new0(s_smx_action_t,1);
+	act->simdata = xbt_new0(s_simdata_action_t,1);
+	simdata_action_t simdata = act->simdata;
+	simdata->cond_list = xbt_fifo_new();
+	
+	/* initialize them */
+	simdata->source = host;
+	act->name = xbt_strdup(name);
+
+	simdata->surf_action = surf_workstation_resource->extension_public->
+		sleep(host->simdata->host, duration);
+
+	surf_workstation_resource->common_public->action_set_data(simdata->surf_action,act);
+
+	return act;
+}
+
 
 void SIMIX_action_cancel(smx_action_t action)
 {
@@ -107,33 +135,3 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 	xbt_fifo_push(cond->actions,action);
 }
 
-void __SIMIX_wait_for_action(smx_process_t process, smx_action_t action)
-{
-	e_surf_action_state_t state = SURF_ACTION_NOT_IN_THE_SYSTEM;
-	simdata_action_t simdata = action->simdata;
-
-	xbt_assert0(((process != NULL) && (action != NULL) && (action->simdata != NULL)), "Invalid parameters");
-	
-	/* change context while the action is running  */
-	do {
-		xbt_context_yield();
-		state=surf_workstation_resource->common_public->action_get_state(simdata->surf_action);
-	} while (state==SURF_ACTION_RUNNING);
-	
-	/* action finished, we can continue */
-
-	if(state == SURF_ACTION_DONE) {
-		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
-			simdata->surf_action = NULL;
-	} else if(surf_workstation_resource->extension_public->
-			get_state(SIMIX_process_get_host(process)->simdata->host) 
-			== SURF_CPU_OFF) {
-		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
-			simdata->surf_action = NULL;
-	} else {
-		if(surf_workstation_resource->common_public->action_free(simdata->surf_action)) 
-			simdata->surf_action = NULL;
-	}
-	return;
-
-}

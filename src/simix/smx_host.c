@@ -139,7 +139,7 @@ void __SIMIX_host_destroy(smx_host_t host)
 /** \ingroup m_host_management
  * \brief Return the current number of #m_host_t.
  */
-int SIMIX_get_host_number(void)
+int SIMIX_host_get_number(void)
 {
   return (xbt_fifo_size(simix_global->host));
 }
@@ -147,7 +147,7 @@ int SIMIX_get_host_number(void)
 /** \ingroup m_host_management
  * \brief Return a array of all the #m_host_t.
  */
-smx_host_t *SIMIX_get_host_table(void)
+smx_host_t *SIMIX_host_get_table(void)
 {
   return ((smx_host_t *)xbt_fifo_to_array(simix_global->host));
 }
@@ -157,12 +157,20 @@ smx_host_t *SIMIX_get_host_table(void)
  * \brief Return the speed of the processor (in Mflop/s), regardless of 
     the current load on the machine.
  */
-double SIMIX_get_host_speed(smx_host_t h)
+double SIMIX_host_get_speed(smx_host_t host)
 {
-  xbt_assert0((h!= NULL), "Invalid parameters");
+  xbt_assert0((host!= NULL), "Invalid parameters");
 
   return(surf_workstation_resource->
-	 extension_public->get_speed(h->simdata->host,1.0));
+	 extension_public->get_speed(host->simdata->host,1.0));
+}
+
+double SIMIX_host_get_available_speed(smx_host_t host)
+{
+  xbt_assert0((host!= NULL), "Invalid parameters");
+
+  return(surf_workstation_resource->
+	 extension_public->get_available_speed(host->simdata->host));
 }
 
 /** \ingroup msg_gos_functions
@@ -170,16 +178,36 @@ double SIMIX_get_host_speed(smx_host_t h)
  *
  * \param h host to test
  */
-int SIMIX_host_is_avail (smx_host_t h)
+
+/** \ingroup msg_easier_life
+ * \brief A name directory service...
+ *
+ * Finds a m_host_t using its name.
+ * \param name the name of an host.
+ * \return the corresponding host
+ */
+
+smx_host_t SIMIX_host_get_by_name(const char *name)
 {
-  e_surf_cpu_state_t cpustate;
-  xbt_assert0((h!= NULL), "Invalid parameters");
+  xbt_fifo_item_t i = NULL;
+  smx_host_t host = NULL;
 
-  cpustate =
-    surf_workstation_resource->extension_public->get_state(h->simdata->host);
+  xbt_assert0(((simix_global != NULL)
+	  && (simix_global->host != NULL)), "Environment not set yet");
 
-  xbt_assert0((cpustate == SURF_CPU_ON || cpustate == SURF_CPU_OFF),
-	      "Invalid cpu state");
-
-  return (cpustate==SURF_CPU_ON);
+  xbt_fifo_foreach(simix_global->host,i,host,smx_host_t) {
+    if(strcmp(host->name, name) == 0) return host;
+  }
+  return NULL;
 }
+
+int SIMIX_host_get_state(smx_host_t host)
+{
+  xbt_assert0((host!= NULL), "Invalid parameters");
+
+  return(surf_workstation_resource->
+	 extension_public->get_state(host->simdata->host));
+
+}
+
+

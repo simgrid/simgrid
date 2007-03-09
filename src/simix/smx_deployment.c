@@ -23,7 +23,7 @@ static double kill_time = -1.0;
   
 static void parse_process_init(void)
 {
-  parse_host = SIMIX_get_host_by_name(A_surfxml_process_host);
+  parse_host = SIMIX_host_get_by_name(A_surfxml_process_host);
   xbt_assert1(parse_host, "Unknown host %s",A_surfxml_process_host);
   parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
   xbt_assert1(parse_code, "Unknown function %s",A_surfxml_process_function);

@@ -37,7 +37,13 @@ void SIMIX_mutex_lock(smx_mutex_t mutex)
 		/* somebody using the mutex, block */
 		xbt_swag_insert(self, mutex->sleeping);
 		self->simdata->mutex = mutex;
-		__SIMIX_process_block(-1);
+		/* wait for some process make the unlock and wake up me from mutex->sleeping */
+		xbt_context_yield();
+		/* verify if the process was suspended */
+		while (self->simdata->suspended) {
+			xbt_context_yield();
+		}
+
 		self->simdata->mutex = NULL;
 		mutex->using = 1;
 	}
@@ -47,6 +53,7 @@ void SIMIX_mutex_lock(smx_mutex_t mutex)
 	}
 	return;
 }
+
 /* return 1 if the process got the mutex, else 0. */
 int SIMIX_mutex_trylock(smx_mutex_t mutex)
 {
@@ -69,10 +76,10 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex)
 	if (xbt_swag_size(mutex->sleeping) > 0) {
 		p = xbt_swag_extract(mutex->sleeping);
 		mutex->using = 0;
-		__SIMIX_process_unblock(p);
+		xbt_swag_insert(p, simix_global->process_to_run);
 	}
 	else {
-		/* nobody to wape up */
+		/* nobody to wake up */
 		mutex->using = 0;
 	}
 	return;
@@ -108,7 +115,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
 
 	if (xbt_swag_size(cond->sleeping) >= 1) {
 		proc = xbt_swag_extract(cond->sleeping);
-		__SIMIX_process_unblock(proc);
+		xbt_swag_insert(proc, simix_global->process_to_run);
 	}
 
 	return;
@@ -116,40 +123,61 @@ void SIMIX_cond_signal(smx_cond_t cond)
 
 void SIMIX_cond_wait(smx_cond_t cond,smx_mutex_t mutex)
 {
-	/* call the function with timeout, with max_duration > 0   
-	 * the process is blocked forever */
-	SIMIX_cond_wait_timeout(cond, mutex, -1);
-	return;
-}
-
-void SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_duration)
-{
 	smx_process_t self = SIMIX_process_self();
-
 	xbt_assert0((mutex != NULL), "Invalid parameters");
 	
-	/* process status */	
-	self->simdata->cond = cond;
-
 	cond->mutex = mutex;
 
 	SIMIX_mutex_unlock(mutex);
-	xbt_swag_insert(self, cond->sleeping);
-	/* creates a new action to be the timeout */
-	if (max_duration >=0) {
-		__SIMIX_process_block(max_duration);
-		self->simdata->cond = NULL;
-	}
-	else {
-		__SIMIX_process_block(-1);
-		self->simdata->cond = NULL;
-	}
+	__SIMIX_cond_wait(cond);
 	/* get the mutex again */
+	self->simdata->mutex = cond->mutex;
 	SIMIX_mutex_lock(cond->mutex);
 
 	return;
 }
 
+void __SIMIX_cond_wait(smx_cond_t cond)
+{
+	smx_process_t self = SIMIX_process_self();
+	xbt_assert0((cond != NULL), "Invalid parameters");
+	
+	/* process status */	
+	self->simdata->cond = cond;
+
+	xbt_swag_insert(self, cond->sleeping);
+	
+	xbt_context_yield();
+	self->simdata->cond = NULL;
+	while (self->simdata->suspended) {
+		xbt_context_yield();
+	}
+	return;
+
+}
+
+void SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_duration)
+{
+	smx_process_t self = SIMIX_process_self();
+	xbt_assert0((mutex != NULL), "Invalid parameters");
+	smx_action_t act_sleep;
+
+	cond->mutex = mutex;
+
+	SIMIX_mutex_unlock(mutex);
+	if (max_duration >=0) {
+		act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
+		SIMIX_register_action_to_condition(act_sleep,cond);
+		SIMIX_register_condition_to_action(act_sleep,cond);
+	}
+	__SIMIX_cond_wait(cond);
+
+	/* get the mutex again */
+	self->simdata->mutex = cond->mutex;
+	SIMIX_mutex_lock(cond->mutex);
+
+	return;
+}
 
 void SIMIX_cond_broadcast(smx_cond_t cond)
 {
@@ -158,8 +186,8 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
 	smx_process_t proc_next = NULL;
 
 	xbt_swag_foreach_safe(proc,proc_next,cond->sleeping) {
-		__SIMIX_process_unblock(proc);
 		xbt_swag_remove(proc,cond->sleeping);
+		xbt_swag_insert(proc, simix_global->process_to_run);
 	}
 
 	return;

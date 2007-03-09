@@ -21,26 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
 
 /********************************* SIMIX **************************************/
 
-/** \ingroup msg_easier_life
- * \brief A name directory service...
- *
- * Finds a m_host_t using its name.
- * \param name the name of an host.
- * \return the corresponding host
- */
-smx_host_t SIMIX_get_host_by_name(const char *name)
-{
-  xbt_fifo_item_t i = NULL;
-  smx_host_t host = NULL;
 
-  xbt_assert0(((simix_global != NULL)
-	  && (simix_global->host != NULL)), "Environment not set yet");
-
-  xbt_fifo_foreach(simix_global->host,i,host,smx_host_t) {
-    if(strcmp(host->name, name) == 0) return host;
-  }
-  return NULL;
-}
 
 /** \ingroup msg_easier_life
  * \brief A platform constructor.
