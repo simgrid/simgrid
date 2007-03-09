@@ -19,6 +19,7 @@
 # include <win32/compiler/borland.h>
 #elif defined(__GNUC__)
   /* data comes from autoconf when using gnuc (cross-compiling?) */
+# include "gras_config.h"  
 #else
 # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
 #endif
