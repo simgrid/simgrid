@@ -151,6 +151,7 @@ COMMON_SRC=\
   gras/Virtu/process.c gras/Virtu/gras_module.c
 
 RL_SRC= \
+  gras/rl_gras.c                         \
   gras/Transport/rl_transport.c          \
   gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
   \
