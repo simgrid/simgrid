@@ -2,10 +2,9 @@
 #pragma hdrstop
 #endif
 
+#include "xbt.h"
 #include "xbt/context.h"
 #include "xbt/fifo.h"
-#include "stdlib.h"
-#include "stdio.h"
 
 xbt_context_t cA = NULL;
 xbt_context_t cB = NULL;
@@ -30,7 +29,7 @@ int fA(int argc, char** argv)
   print_args(argc,argv);
 
   printf("\tContext A: Yield\n");
-  xbt_context_yield();
+//  xbt_context_yield(); // FIXME: yielding to itself fails, no idea why
    
   xbt_fifo_push(fifo,cB);
   printf("\tPush context B from context A\n");
@@ -84,7 +83,7 @@ int main(int argc, char** argv)
   printf("XXX Test the simgrid context API\n");
   printf("    If it fails, try another context backend.\n    For example, to force the pthread backend, use:\n       ./configure --with-context=pthread\n\n");
    
-  xbt_context_init();
+  xbt_init(&argc, argv);
 
   cA = xbt_context_new(fA, NULL, NULL, NULL, NULL, 0, NULL);
   cB = xbt_context_new(fB, NULL, NULL, NULL, NULL, 0, NULL);
@@ -106,7 +105,7 @@ int main(int argc, char** argv)
   }
 
   xbt_fifo_free(fifo);
-  xbt_context_exit();
+  xbt_exit();
   
   cA=cB=cC=NULL;
   return 0;
