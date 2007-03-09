@@ -39,10 +39,11 @@ void xbt_thread_mod_init(void) {
      THROW0(system_error,errcode,"pthread_key_create failed for xbt_self_thread_key");
 }
 void xbt_thread_mod_exit(void) {
-   int errcode;
+   /* FIXME: don't try to free our key on shutdown. Valgrind detects no leak if we don't, and whine if we try to */
+//   int errcode;
    
-   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
-     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
+//   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
+//     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
 }
 
 
@@ -102,6 +103,8 @@ void xbt_mutex_unlock(xbt_mutex_t mutex) {
 void xbt_mutex_destroy(xbt_mutex_t mutex) {
    int errcode;
    
+   if (!mutex) return;
+   
    if ((errcode=pthread_mutex_destroy(&(mutex->m))))
      THROW1(system_error,errcode,"pthread_mutex_destroy(%p) failed",mutex);
    free(mutex);
@@ -140,6 +143,9 @@ void xbt_thcond_broadcast(xbt_thcond_t cond){
 }
 void xbt_thcond_destroy(xbt_thcond_t cond){
    int errcode;
+
+   if (!cond) return;
+
    if ((errcode=pthread_cond_destroy(&(cond->c))))
      THROW1(system_error,errcode,"pthread_cond_destroy(%p) failed",cond);
    free(cond);
@@ -230,8 +236,9 @@ void xbt_mutex_unlock(xbt_mutex_t mutex) {
 
 void xbt_mutex_destroy(xbt_mutex_t mutex) {
 
-   DeleteCriticalSection(& mutex->lock);
-		
+   if (!mutex) return;
+   
+   DeleteCriticalSection(& mutex->lock);		
    free(mutex);
 }
 
@@ -348,6 +355,8 @@ void xbt_thcond_broadcast(xbt_thcond_t cond){
 
 void xbt_thcond_destroy(xbt_thcond_t cond){
    int error = 0;
+   
+   if (!cond) return;
    
    if(!CloseHandle(cond->events[SIGNAL]))
      error = 1;
