@@ -23971,6 +23971,7 @@ fi
 case $with_context in
  ucontext) ;;
  pthread) ;;
+ pthreads) ;;
  windows) ;;
  auto) with_context=ucontext;;
  *) { { echo "$as_me:$LINENO: error: --with-context must be either ucontext or pthread" >&5
@@ -24000,6 +24001,9 @@ echo "${ECHO_T}no working ucontext found. Try pthreads as a fallback" >&6
   fi
 fi
 
+if test "x$with_context" = "xpthreads"; then
+  with_context=pthread
+fi
 if test "x$with_context" = "xpthread"; then
 
 for ac_header in pthread.h
@@ -24690,73 +24694,15 @@ echo "${ECHO_T}${T_MD}Checking extra libraries dependencies...${T_ME}" >&6
 
 SIMGRID_DEP=""
 GRAS_DEP=""
-echo "$as_me:$LINENO: checking for pthread_create in -lpthread" >&5
-echo $ECHO_N "checking for pthread_create in -lpthread... $ECHO_C" >&6
-if test "${ac_cv_lib_pthread_pthread_create+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpthread  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char pthread_create ();
-int
-main ()
-{
-pthread_create ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_pthread_pthread_create=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_pthread_pthread_create=no
+if test xpthread=xyes ; then
+  # if the pthreads are usable
+  if test "x$with_context" = "xpthread" ; then
+    # if we use them to implement the xbt_context
+    SIMGRID_DEP="-lpthread"
+  fi
+  # we need them in any case for the gras lib (which is multithreaded)
+  GRAS_DEP="-lpthread"
 fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_pthread_pthread_create" >&5
-echo "${ECHO_T}$ac_cv_lib_pthread_pthread_create" >&6
-if test $ac_cv_lib_pthread_pthread_create = yes; then
-  SIMGRID_DEP="-lpthread"; GRAS_DEP="-lpthread"
-fi
-
 
 echo "$as_me:$LINENO: checking for csdp" >&5
 echo $ECHO_N "checking for csdp... $ECHO_C" >&6

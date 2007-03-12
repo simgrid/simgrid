@@ -124,6 +124,7 @@ fi
 case $with_context in
  ucontext) ;;
  pthread) ;;
+ pthreads) ;;
  windows) ;;
  auto) with_context=ucontext;;
  *) AC_MSG_ERROR([--with-context must be either ucontext or pthread]) ;;
@@ -144,6 +145,9 @@ if test "x$with_context" = "xucontext" ; then
   fi
 fi
 
+if test "x$with_context" = "xpthreads"; then
+  with_context=pthread
+fi
 if test "x$with_context" = "xpthread"; then
   AC_CHECK_HEADERS([pthread.h])
   AC_CHECK_LIB(pthread,pthread_create,,
@@ -193,7 +197,15 @@ SG_CONFIGURE_PART(Checking extra libraries dependencies...)
 
 SIMGRID_DEP=""
 GRAS_DEP=""
-AC_CHECK_LIB(pthread,pthread_create,SIMGRID_DEP="-lpthread"; GRAS_DEP="-lpthread")
+if test xpthread=xyes ; then 
+  # if the pthreads are usable
+  if test "x$with_context" = "xpthread" ; then
+    # if we use them to implement the xbt_context
+    SIMGRID_DEP="-lpthread"
+  fi
+  # we need them in any case for the gras lib (which is multithreaded)
+  GRAS_DEP="-lpthread"
+fi
 
 AC_MSG_CHECKING(for csdp)
 sdp=no

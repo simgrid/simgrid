@@ -112,7 +112,7 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la
 COMMON_SRC=\
   \
   xbt/snprintf.c    xbt/getline.c                                            \
-  xbt/ex.c          xbt/xbt_thread.c                                         \
+  xbt/ex.c                                                                   \
   \
   xbt_modinter.h    gras_modinter.h                                          \
   \
@@ -151,7 +151,8 @@ COMMON_SRC=\
   gras/Virtu/process.c gras/Virtu/gras_module.c
 
 RL_SRC= \
-  gras/rl_gras.c                         \
+  gras/rl_stubs.c                     xbt/xbt_thread.c                    \
+  \
   gras/Transport/rl_transport.c          \
   gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
   \
@@ -162,6 +163,7 @@ RL_SRC= \
   gras/Msg/rl_msg.c
 
 SG_SRC=  \
+  gras/sg_stubs.c                         \
   xbt/context.c                                                              \
   \
   surf/maxmin.c                                                              \

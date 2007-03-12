@@ -15,6 +15,15 @@
 #include "xbt/dynar.h"
 #include "xbt/xbt_thread.h"
 
+#ifdef CONTEXT_THREADS
+ /* This file (context.c) is only loaded in libsimgrid, not libgras.
+  * xbt_thread is only loaded in libgras explicitly, and we need it in 
+  *    libsimgrid, but only when it is the backend used to implement the 
+  *    xbt_context. So, do load it on need.
+  */
+#include "xbt/xbt_thread.c"
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ctx, xbt, "Context");
 
 #define VOIRP(expr) DEBUG1("  {" #expr " = %p }", expr)
