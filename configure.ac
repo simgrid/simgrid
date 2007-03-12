@@ -111,6 +111,7 @@ dnl #
 AC_MSG_CHECKING(what kind of backend should we use)
 
 AC_ARG_WITH(pthread, [  --with-pthread   Use pthread instead of ucontext.],with_context=pthread)
+AC_ARG_WITH(pthread, [  --with-pthreads   Use pthread instead of ucontext.],with_context=pthread)
 
 AC_ARG_WITH(context,
   [  --with-context=[ucontext/pthread]   Use either (System V) swapcontext or pthread [[default=auto]].],,
