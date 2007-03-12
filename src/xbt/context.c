@@ -88,9 +88,10 @@ static void __xbt_context_yield(xbt_context_t context)
 	return;
 }
 
-static void xbt_context_destroy(xbt_context_t context)
+static void xbt_context_free(xbt_context_t context)
 {
 	if (!context) return;
+	DEBUG1("Freeing %p",context);
 #ifdef CONTEXT_THREADS
 	xbt_free(context->thread);
 	xbt_mutex_destroy(context->mutex);
@@ -208,7 +209,8 @@ void xbt_context_init(void)
 {
 	if(!current_context){
 		current_context = init_context = xbt_new0(s_xbt_context_t,1);
-
+		DEBUG1("Init Context (%p)",init_context);
+		
 		init_context->exception = xbt_new(ex_ctx_t,1);
 		XBT_CTX_INITIALIZE(init_context->exception);
 		__xbt_ex_ctx       = __context_ex_ctx;
@@ -227,9 +229,9 @@ void xbt_context_init(void)
 void xbt_context_empty_trash(void)
 {
 	xbt_context_t context=NULL;
-	
+	DEBUG0("Emptying trashbin");
 	while((context=xbt_swag_extract(context_to_destroy)))
-		xbt_context_destroy(context);
+		xbt_context_free(context);
 }
 
 /** 
@@ -344,9 +346,9 @@ void xbt_context_exit(void) {
 	xbt_swag_free(context_to_destroy);
 	
 	while((context=xbt_swag_extract(context_living))) {
-		xbt_context_free(context);
+	  if(context!=init_context) xbt_context_kill(context);
 	}
-	
+	xbt_context_kill(init_context);
 	xbt_swag_free(context_living);
 	
 	init_context = current_context = NULL ;
@@ -357,13 +359,20 @@ void xbt_context_exit(void) {
  *
  * This function simply kills \a context... scarry isn't it ?
  */
-void xbt_context_free(xbt_context_t context)
+void xbt_context_kill(xbt_context_t context)
 {
 	int i ;
 	
+	DEBUG1("Killing %p", context);
    
 	xbt_swag_remove(context, context_living);  
 	
+       	if(context->cleanup_func) {
+	  DEBUG1("Calling cleanup function %p", context->cleanup_func);
+	  context->cleanup_func(context->cleanup_arg);
+	}
+
+	DEBUG0("Freeing arguments");
 	for(i=0;i<context->argc; i++) 
 		if(context->argv[i]) 
 			free(context->argv[i]);
@@ -371,10 +380,7 @@ void xbt_context_free(xbt_context_t context)
 	if(context->argv) 
 		free(context->argv);
 	
-	if(context->cleanup_func)
-		context->cleanup_func(context->cleanup_arg);
-	
-	xbt_context_destroy(context);
+	xbt_context_free(context);
 	
 	return;
 }
