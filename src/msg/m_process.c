@@ -179,7 +179,7 @@ void MSG_process_kill(m_process_t process)
 
   xbt_fifo_remove(msg_global->process_to_run,process);
   xbt_fifo_remove(msg_global->process_list,process);
-  xbt_context_free(process->simdata->context);
+  xbt_context_kill(process->simdata->context);
 
   if(process==MSG_process_self()) {
     /* I just killed myself */
