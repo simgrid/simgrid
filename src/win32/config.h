@@ -17,6 +17,9 @@
 
 #if defined(_XBT_BORLAND_COMPILER)
 # include <win32/compiler/borland.h>
+#elif defined(__GNUC__)
+  /* data comes from autoconf when using gnuc (cross-compiling?) */
+# include "gras_config.h"
 #elif defined(_XBT_VISUALC_COMPILER)
 # include <win32/compiler/visualc.h>
 # else
@@ -74,6 +77,6 @@ const char *gras_wsa_err2string(int errcode);
 
 #define S_IWGRP 0
 
-	
+
 
 #endif /* #ifndef __XBT_WIN32_CONFIG_H__ */
