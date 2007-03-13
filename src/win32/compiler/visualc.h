@@ -350,7 +350,7 @@ the double. For now, GRAS requires the structures to be compacted. */
 
 /* xbt contexts are based on our threads implementation */
 #ifndef CONTEXT_THREADS
-#define CONTEXT_THREADS
+#define CONTEXT_THREADS 1
 #endif
 
 /* xbt contexts are not based on ucontext */

@@ -403,7 +403,7 @@ typedef int socklen_t;
 #endif
 
 #ifndef CONTEXT_THREADS
-#define CONTEXT_THREADS
+#define CONTEXT_THREADS 1
 #endif
 
 #endif /* #ifndef __XBT_BORLAND_COMPILER_CONFIG_H__ */
