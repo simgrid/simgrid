@@ -121,8 +121,17 @@
 #ifdef HAVE_SNPRINTF
 #include <stdio.h>
 #else
+#  if (defined(_MSC_VER) && defined(DLL_EXPORT))
+    __declspec(dllexport) int snprintf(char *, size_t, const char *, /*args*/ ...);
+    __declspec(dllexport)  int vsnprintf(char *, size_t, const char *, va_list);
+#  elif (defined(_MSC_VER) && !defined(DLL_EXPORT) && !defined(DLL_STATIC) )
+    __declspec(dllimport) int snprintf(char *, size_t, const char *, /*args*/ ...);
+    __declspec(dllimport)  int vsnprintf(char *, size_t, const char *, va_list);
+#else
 extern int snprintf(char *, size_t, const char *, /*args*/ ...);
 extern int vsnprintf(char *, size_t, const char *, va_list);
+#endif
+
 #endif
 
 /* use internal functions when OS provided ones are borken */
