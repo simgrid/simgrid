@@ -48,23 +48,25 @@
 #ifndef _FLEXML_surfxml_H
 #define _FLEXML_surfxml_H
 
+#include "xbt/misc.h"
+
 /* XML application entry points. */
-extern void STag_surfxml_platform_description(void);
-extern void ETag_surfxml_platform_description(void);
-extern void STag_surfxml_include(void);
-extern void ETag_surfxml_include(void);
-extern void STag_surfxml_cpu(void);
-extern void ETag_surfxml_cpu(void);
-extern void STag_surfxml_network_link(void);
-extern void ETag_surfxml_network_link(void);
-extern void STag_surfxml_route(void);
-extern void ETag_surfxml_route(void);
-extern void STag_surfxml_route_element(void);
-extern void ETag_surfxml_route_element(void);
-extern void STag_surfxml_process(void);
-extern void ETag_surfxml_process(void);
-extern void STag_surfxml_argument(void);
-extern void ETag_surfxml_argument(void);
+XBT_PUBLIC(void) STag_surfxml_platform_description(void);
+XBT_PUBLIC(void) ETag_surfxml_platform_description(void);
+XBT_PUBLIC(void) STag_surfxml_include(void);
+XBT_PUBLIC(void) ETag_surfxml_include(void);
+XBT_PUBLIC(void) STag_surfxml_cpu(void);
+XBT_PUBLIC(void) ETag_surfxml_cpu(void);
+XBT_PUBLIC(void) STag_surfxml_network_link(void);
+XBT_PUBLIC(void) ETag_surfxml_network_link(void);
+XBT_PUBLIC(void) STag_surfxml_route(void);
+XBT_PUBLIC(void) ETag_surfxml_route(void);
+XBT_PUBLIC(void) STag_surfxml_route_element(void);
+XBT_PUBLIC(void) ETag_surfxml_route_element(void);
+XBT_PUBLIC(void) STag_surfxml_process(void);
+XBT_PUBLIC(void) ETag_surfxml_process(void);
+XBT_PUBLIC(void) STag_surfxml_argument(void);
+XBT_PUBLIC(void) ETag_surfxml_argument(void);
 
 /* XML application data. */
 typedef const char* AT_surfxml_network_link_bandwidth;
