@@ -13,6 +13,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "xbt/heap.h"
 #include "gras/virtu.h"		/* time manipulation in bench */
@@ -47,12 +48,13 @@ int compare_double(const void *a, const void *b)
 void test_heap_validity(int size)
 {
   xbt_heap_t heap = xbt_heap_new(size, NULL);
-  double *tab = calloc(size, sizeof(double));
+  double *tab = (double*)calloc(size,sizeof(double));
+
   int i;
 
   for (i = 0; i < size; i++) {
-    tab[i] = (10.0 * rand() / (RAND_MAX + 1.0));
-    xbt_heap_push(heap, NULL, tab[i]);
+    tab[i] = (double)(10.0 * rand() / (RAND_MAX + 1.0));
+    xbt_heap_push(heap, NULL, (double)tab[i]);
   }
 
   qsort(tab, size, sizeof(double), compare_double);
@@ -80,6 +82,7 @@ void test_heap_mean_operation(int size)
   date = gras_os_time() * 1000000;
   for (i = 0; i < size; i++)
     xbt_heap_push(heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
+
   date = gras_os_time() * 1000000 - date;
   printf("Creation time  %d size heap : %g\n", size, date);
 
