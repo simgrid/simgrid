@@ -78,9 +78,9 @@ XBT_PUBLIC(xbt_node_t*) xbt_graph_shortest_paths(xbt_graph_t g);
             if a cycle is detected an exception is raised  
   */
 
-xbt_node_t* xbt_graph_topo_sort(xbt_graph_t g);
+XBT_PUBLIC(xbt_node_t*) xbt_graph_topo_sort(xbt_graph_t g);
 
-xbt_edge_t* xbt_graph_spanning_tree_prim(xbt_graph_t g);
+XBT_PUBLIC(xbt_edge_t*) xbt_graph_spanning_tree_prim(xbt_graph_t g);
 
 
 
