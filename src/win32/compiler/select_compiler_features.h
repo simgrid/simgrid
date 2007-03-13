@@ -26,6 +26,12 @@
         #define _XBT_COMPILER_RESOLVED 1
 #endif
 
+/* Microsoft Visual C++ compiler */
+#if defined(_MSC_VER)
+#define _XBT_VISUALC_COMPILER
+#endif
+
+
 /* GGG compilers */
 
 #if defined(__GNUC__)
