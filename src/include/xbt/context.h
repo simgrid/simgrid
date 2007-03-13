@@ -37,7 +37,7 @@ XBT_PUBLIC(xbt_context_t) xbt_context_new(xbt_context_function_t code,
 			                  void_f_pvoid_t startup_func, void *startup_arg,
 			                  void_f_pvoid_t cleanup_func, void *cleanup_arg,
 			                  int argc, char *argv[]);
-void xbt_context_kill(xbt_context_t context);
+XBT_PUBLIC(void) xbt_context_kill(xbt_context_t context);
 XBT_PUBLIC(void) xbt_context_start(xbt_context_t context);
 XBT_PUBLIC(void) xbt_context_yield(void);
 XBT_PUBLIC(void) xbt_context_schedule(xbt_context_t context);
