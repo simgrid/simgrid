@@ -309,12 +309,12 @@ typedef struct {
 
 /* the exception context */
 typedef ex_ctx_t *(*ex_ctx_cb_t)(void);
-XBT_PUBLIC_DATA(ex_ctx_cb_t) __xbt_ex_ctx;
+extern ex_ctx_cb_t XBT_PUBLIC_DATA __xbt_ex_ctx;
 extern ex_ctx_t *__xbt_ex_ctx_default(void);
 
 /* the termination handler */
 typedef void (*ex_term_cb_t)(xbt_ex_t *);
-XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate;
+extern ex_term_cb_t XBT_PUBLIC_DATA __xbt_ex_terminate;
 extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 
 /** @brief Introduce a block where exception may be dealed with 
