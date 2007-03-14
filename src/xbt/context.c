@@ -14,7 +14,7 @@
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 #include "xbt/xbt_thread.h"
-#include <pthread.h> // I need pthread_join that is not yet available in xbt_thread.
+/*#include <pthread.h>*/ /* I need pthread_join that is not yet available in xbt_thread.*/
 
 #ifdef CONTEXT_THREADS
  /* This file (context.c) is only loaded in libsimgrid, not libgras.
@@ -107,8 +107,10 @@ static void xbt_context_free(xbt_context_t context)
 	if (!context) return;
 	DEBUG1("Freeing %p",context);
 #ifdef CONTEXT_THREADS
-	DEBUG1("\t joining %p",(void *)context->thread->t);
-	pthread_join(context->thread->t,NULL);
+	/*DEBUG1("\t joining %p",(void *)context->thread->t);*/
+	DEBUG1("\t joining %p",(void *)context->thread);
+	/*pthread_join(context->thread->t,NULL);*/
+	xbt_thread_join(context->thread,NULL);
 	DEBUG1("\t xbt_free %p",(void *)context->thread);
 	xbt_free(context->thread);
 	DEBUG1("\t mutex_destroy %p",(void *)context->mutex);
