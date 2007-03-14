@@ -111,7 +111,7 @@ typedef struct surf_resource_object {
 
 static double NOW = 0;
 
-xbt_dynar_t XBT_DECLARE_DATA  resource_list = NULL;
+xbt_dynar_t resource_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
