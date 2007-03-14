@@ -194,8 +194,8 @@ if HAVE_SDP
   SG_SRC+= surf/sdp.c  
 endif
 
-if USE_SIMIX
-  SG_SRC+=simix/smx_global.c \
+SIMIX_SRC= \
+  simix/smx_global.c \
   simix/smx_deployment.c \
   simix/smx_config.c \
   simix/smx_environment.c \
@@ -203,7 +203,12 @@ if USE_SIMIX
   simix/smx_process.c \
   simix/smx_action.c \
   simix/smx_synchro.c
+if USE_SIMIX
+  SG_SRC+=SIMIX_SRC
+else  
+  EXTRA_DIST+=SIMIX_SRC
 endif
+
 
 AMOK_SRC= \
   amok/amok_base.c \
