@@ -267,8 +267,8 @@ void __xbt_ex_terminate_default(xbt_ex_t *e)  {
 }
 
 /* the externally visible API */
-XBT_PUBLIC_DATA(ex_ctx_cb_t)  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
-XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate = &__xbt_ex_terminate_default;
+ex_ctx_cb_t  __xbt_ex_ctx       = &__xbt_ex_ctx_default;
+ex_term_cb_t __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
 
 void xbt_ex_free(xbt_ex_t e) {
