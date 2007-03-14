@@ -49,8 +49,8 @@ int fB(int argc, char** argv)
   printf("Here is fB: ");
   print_args(argc,argv);
 
-/*   printf("\tContext B: Yield\n"); */
-/*   xbt_context_yield(); */
+  printf("\tContext B: Yield\n");
+  xbt_context_yield();
 
   printf("\tContext B: Push context A\n");
   xbt_fifo_push(fifo,cA);
@@ -125,5 +125,6 @@ int main(int argc, char** argv)
   xbt_exit();
   
   cA=cB=cC=NULL;
+  printf("Context main: Bye\n");
   return 0;
 }
