@@ -4,15 +4,7 @@
 
 #include "xbt.h"
 #include "xbt/context.h"
-
-/* To know whether we're using threads or context */
-
-#ifdef _WIN32
-# include "win32/config.h"
-#else
-#  include "gras_config.h"
-#endif
-
+#include "portable.h" /* To know whether we're using threads or context */
 #include "xbt/fifo.h"
 
 xbt_context_t cA = NULL;
