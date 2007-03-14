@@ -49,6 +49,7 @@ typedef struct s_xbt_context
 	void_f_pvoid_t *cleanup_func;
 	void *cleanup_arg;
 	ex_ctx_t *exception;		/* exception 			    */
+	int iwannadie;
 } s_xbt_context_t;
 
 

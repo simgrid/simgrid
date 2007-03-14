@@ -14,6 +14,7 @@
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 #include "xbt/xbt_thread.h"
+#include <pthread.h> // I need pthread_join that is not yet available in xbt_thread.
 
 #ifdef CONTEXT_THREADS
  /* This file (context.c) is only loaded in libsimgrid, not libgras.
@@ -33,6 +34,7 @@ static xbt_context_t init_context = NULL;
 static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
 
+static void __context_exit(xbt_context_t context ,int value);
 static void __xbt_context_yield(xbt_context_t context)
 {
 	xbt_assert0(current_context,"You have to call context_init() first.");
@@ -42,17 +44,17 @@ static void __xbt_context_yield(xbt_context_t context)
 	#ifdef CONTEXT_THREADS
 	if (context){
 		xbt_context_t self = current_context;
-		DEBUG0("**** Locking ****");
+		DEBUG1("[%p] **** Locking ****", self);
 		xbt_mutex_lock(context->mutex);
-		DEBUG0("**** Updating current_context ****");
+		DEBUG1("[%p] **** Updating current_context ****", self);
 		current_context = context;
-		DEBUG0("**** Releasing the prisonner ****");
+		DEBUG1("[%p] **** Releasing the prisonner ****", self);
 		xbt_thcond_signal(context->cond);
-		DEBUG0("**** Going to jail ****");
+		DEBUG1("[%p] **** Going to jail ****", self);
 		xbt_thcond_wait(context->cond, context->mutex);
-		DEBUG0("**** Unlocking ****");
+		DEBUG1("[%p] **** Unlocking ****", self);
 		xbt_mutex_unlock(context->mutex);
-		DEBUG0("**** Updating current_context ****");
+		DEBUG1("[%p] **** Updating current_context ****", self);
 		current_context = self;
 	}
 	#else /* use SUSv2 contexts */
@@ -70,7 +72,7 @@ static void __xbt_context_yield(xbt_context_t context)
 		
 		if(context->save==NULL){
 		
-			DEBUG0("**** Yielding to somebody else ****");
+		  DEBUG1("[%p] **** Yielding to somebody else ****", current_context);
 			DEBUG2("Saving current_context value (%p) to context(%p)->save",current_context,context);
 			context->save = current_context ;
 			DEBUG1("current_context becomes  context(%p) ",context);
@@ -81,7 +83,7 @@ static void __xbt_context_yield(xbt_context_t context)
 			DEBUG1("I am (%p). Coming back\n",context);
 		} else {
 			xbt_context_t old_context = context->save ;
-			DEBUG0("**** Back ! ****");
+			DEBUG1("[%p] **** Back ! ****", context);
 			DEBUG2("Setting current_context (%p) to context(%p)->save",current_context,context);
 			current_context = context->save ;
 			DEBUG1("Setting context(%p)->save to NULL",context);
@@ -94,6 +96,9 @@ static void __xbt_context_yield(xbt_context_t context)
 		}
 	}
 	#endif
+	if(current_context->iwannadie)
+	  __context_exit(current_context, 1);
+
 	return;
 }
 
@@ -102,8 +107,13 @@ static void xbt_context_free(xbt_context_t context)
 	if (!context) return;
 	DEBUG1("Freeing %p",context);
 #ifdef CONTEXT_THREADS
+	DEBUG1("\t joining %p",(void *)context->thread->t);
+	pthread_join(context->thread->t,NULL);
+	DEBUG1("\t xbt_free %p",(void *)context->thread);
 	xbt_free(context->thread);
+	DEBUG1("\t mutex_destroy %p",(void *)context->mutex);
 	xbt_mutex_destroy(context->mutex);
+	DEBUG1("\t cond_destroy %p",(void *)context->cond);
 	xbt_thcond_destroy(context->cond);
 
 	context->thread = NULL;
@@ -121,6 +131,15 @@ static void xbt_context_free(xbt_context_t context)
 static void __context_exit(xbt_context_t context ,int value)
 {
 	int i;
+
+	DEBUG1("--------- %p is exiting ---------",context);
+
+	DEBUG0("Calling cleanup functions");
+	if(context->cleanup_func){
+		DEBUG0("Calling cleanup function");
+		context->cleanup_func(context->cleanup_arg);
+	}
+
 	DEBUG0("Freeing arguments");
 	for(i=0;i<context->argc; i++) 
 		if(context->argv[i]) 
@@ -128,29 +147,25 @@ static void __context_exit(xbt_context_t context ,int value)
 	
 	if(context->argv) 
 		free(context->argv);
-	
-	if(context->cleanup_func){
-		DEBUG0("Calling cleanup function");
-		context->cleanup_func(context->cleanup_arg);
-	}
-	
+		
 	DEBUG0("Putting context in the to_destroy set");
 	xbt_swag_remove(context, context_living);
 	xbt_swag_insert(context, context_to_destroy);
 	DEBUG0("Context put in the to_destroy set");
+
 	DEBUG0("Yielding");
 	
 	#ifdef CONTEXT_THREADS
-	DEBUG0("**** Locking ****");
+	DEBUG1("[%p] **** Locking ****", context);
 	xbt_mutex_lock(context->mutex);
-	DEBUG0("**** Updating current_context ****");
-	current_context = context;
-	DEBUG0("**** Releasing the prisonner ****");
+/* 	DEBUG1("[%p] **** Updating current_context ****"); */
+/* 	current_context = context; */
+	DEBUG1("[%p] **** Releasing the prisonner ****", context);
 	xbt_thcond_signal(context->cond);
-	DEBUG0("**** Unlocking ****");
+	DEBUG1("[%p] **** Unlocking ****", context);
 	xbt_mutex_unlock(context->mutex);
-	DEBUG0("**** Exiting ****");
-	xbt_thread_exit(0);
+	DEBUG1("[%p] **** Exiting ****", context);
+	xbt_thread_exit(NULL); // We should provide return value in case other wants it
 	#else
 	__xbt_context_yield(context);
 	#endif
@@ -238,7 +253,8 @@ void xbt_context_init(void)
 void xbt_context_empty_trash(void)
 {
 	xbt_context_t context=NULL;
-	DEBUG0("Emptying trashbin");
+	DEBUG1("Emptying trashbin (%d contexts to free)",
+	       xbt_swag_size(context_to_destroy));
 	while((context=xbt_swag_extract(context_to_destroy)))
 		xbt_context_free(context);
 }
@@ -350,14 +366,17 @@ void xbt_context_schedule(xbt_context_t context)
  */
 void xbt_context_exit(void) {
 	xbt_context_t context=NULL;
+	
+	xbt_context_empty_trash();
+	while((context=xbt_swag_extract(context_living))) {
+	  if(context!=init_context) {
+	    xbt_context_kill(context);
+	  }
+	}
+	//	xbt_context_kill(init_context);
 
 	xbt_context_empty_trash();
 	xbt_swag_free(context_to_destroy);
-	
-	while((context=xbt_swag_extract(context_living))) {
-	  if(context!=init_context) xbt_context_kill(context);
-	}
-	xbt_context_kill(init_context);
 	xbt_swag_free(context_living);
 	
 	init_context = current_context = NULL ;
@@ -370,26 +389,12 @@ void xbt_context_exit(void) {
  */
 void xbt_context_kill(xbt_context_t context)
 {
-	int i ;
-	
 	DEBUG1("Killing %p", context);
-   
-	xbt_swag_remove(context, context_living);  
-	
-       	if(context->cleanup_func) {
-	  DEBUG1("Calling cleanup function %p", context->cleanup_func);
-	  context->cleanup_func(context->cleanup_arg);
-	}
 
-	DEBUG0("Freeing arguments");
-	for(i=0;i<context->argc; i++) 
-		if(context->argv[i]) 
-			free(context->argv[i]);
-	
-	if(context->argv) 
-		free(context->argv);
-	
-	xbt_context_free(context);
+	context->iwannadie=1;
+	DEBUG1("Scheduling %p",context);
+	__xbt_context_yield(context);
+	DEBUG1("End of Scheduling %p",context);
 	
 	return;
 }
