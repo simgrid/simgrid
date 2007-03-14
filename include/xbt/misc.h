@@ -115,28 +115,29 @@
 #  define XBT_PUBLIC(type)            __declspec(dllexport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
 #  define XBT_IMPORT_NO_EXPORT(type)  type 
-#  define XBT_PUBLIC_DATA(type)       type __declspec(dllexport)				
+#  define XBT_PUBLIC_DATA			 __declspec(dllexport)
 
 /* Pack everything up statically */
 #elif defined(DLL_STATIC)
 #  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
-#  define XBT_PUBLIC_DATA(type)       type
+#  define XBT_PUBLIC_DATA		  
+     
 
 /* Link against the DLL */
 #elif (defined(_WIN32) && !defined(DLL_EXPORT))
-#  define XBT_PUBLIC(type)            __declspec(dllimport) type
-#  define XBT_EXPORT_NO_IMPORT(type)  type
-#  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
-#  define XBT_PUBLIC_DATA(type)       type __declspec(dllimport)	
+#  define XBT_PUBLIC(type)            	__declspec(dllimport) type
+#  define XBT_EXPORT_NO_IMPORT(type)  	type
+#  define XBT_IMPORT_NO_EXPORT(type)  	__declspec(dllimport) type
+#  define XBT_PUBLIC_DATA				__declspec(dllimport)		
 
 /* Non-UNIX build. Let's keep sain here ;) */
 #else
 #  define XBT_PUBLIC(type)            extern type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
-#  define XBT_PUBLIC_DATA(type)       extern type
+#  define XBT_PUBLIC_DATA       
 #endif
    
 
