@@ -93,19 +93,6 @@
 # endif
 #endif
 
-
-/****
- **** Contexts
- ****/
-
-#ifdef USE_UCONTEXT
-# include <ucontext.h>
-#endif
-
-#ifdef _WIN32
-#  include "xbt/context_win32.h" /* Manual reimplementation for prehistoric platforms */
-#endif
-
 /****
  **** Signals
  ****/
