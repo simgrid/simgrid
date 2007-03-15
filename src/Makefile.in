@@ -330,8 +330,8 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/workstation_KCCFLN05_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
 	include/surf/surfxml_parse_private.h \
-	include/xbt/xbt_portability.h include/xbt/context.h \
-	msg/private.h simdag/private.h \
+	include/xbt/xbt_portability.h include/xbt/xbt_thread.h \
+	include/xbt/context.h msg/private.h simdag/private.h \
 	gras/Transport/transport_interface.h \
 	gras/Virtu/virtu_interface.h gras/Virtu/virtu_private.h \
 	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \

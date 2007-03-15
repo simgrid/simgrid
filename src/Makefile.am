@@ -49,6 +49,7 @@ EXTRA_DIST= \
 	include/surf/surfxml_parse_private.h \
 	\
 	include/xbt/xbt_portability.h \
+	include/xbt/xbt_thread.h \
 	include/xbt/context.h \
 	\
 	msg/private.h \
