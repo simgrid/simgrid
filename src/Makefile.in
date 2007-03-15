@@ -45,8 +45,8 @@ host_triplet = @host@
 target_triplet = @target@
 @USE_SIMIX_TRUE@am__append_1 = include/simix/simix.h include/simix/datatypes.h simix/private.h
 @HAVE_SDP_TRUE@am__append_2 = surf/sdp.c  
-@USE_SIMIX_TRUE@am__append_3 = SIMIX_SRC
-@USE_SIMIX_FALSE@am__append_4 = SIMIX_SRC
+@USE_SIMIX_TRUE@am__append_3 = $(SIMIX_SRC)
+@USE_SIMIX_FALSE@am__append_4 = $(SIMIX_SRC)
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
 @GRAMINE_MODE_FALSE@am__append_5 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -120,31 +120,37 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/getline.c xbt/ex.c \
 	gras/Transport/sg_transport.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
 	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
-	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c surf/sdp.c SIMIX_SRC \
-	amok/amok_base.c amok/Bandwidth/bandwidth.c \
-	amok/Bandwidth/saturate.c amok/PeerManagement/peermanagement.c
+	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c surf/sdp.c \
+	simix/smx_global.c simix/smx_deployment.c simix/smx_config.c \
+	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
+	simix/smx_action.c simix/smx_synchro.c amok/amok_base.c \
+	amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
+	amok/PeerManagement/peermanagement.c
 @HAVE_SDP_TRUE@am__objects_4 = sdp.lo
-am__objects_5 =
-am__objects_6 = sg_stubs.lo context.lo maxmin.lo trace_mgr.lo surf.lo \
+am__objects_5 = smx_global.lo smx_deployment.lo smx_config.lo \
+	smx_environment.lo smx_host.lo smx_process.lo smx_action.lo \
+	smx_synchro.lo
+@USE_SIMIX_TRUE@am__objects_6 = $(am__objects_5)
+am__objects_7 = sg_stubs.lo context.lo maxmin.lo trace_mgr.lo surf.lo \
 	surfxml_parse.lo cpu.lo network.lo workstation.lo \
 	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
 	msg_config.lo task.lo host.lo m_process.lo gos.lo global.lo \
 	environment.lo deployment.lo sd_global.lo sd_link.lo \
 	sd_task.lo sd_workstation.lo sg_transport.lo \
 	transport_plugin_sg.lo sg_emul.lo sg_process.lo sg_time.lo \
-	sg_dns.lo sg_msg.lo $(am__objects_4) $(am__objects_5)
-am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_6) \
+	sg_dns.lo sg_msg.lo $(am__objects_4) $(am__objects_6)
+am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_7) \
 	$(am__objects_3)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = ./cunit_unit.c ./ex_unit.c ./dynar_unit.c \
 	./dict_unit.c ./set_unit.c ./swag_unit.c ./config_unit.c \
 	simgrid_units_main.c
-@GRAMINE_MODE_FALSE@am__objects_7 = cunit_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@am__objects_8 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) config_unit.$(OBJEXT)
-@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_7) \
+@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_8) \
 @GRAMINE_MODE_FALSE@	simgrid_units_main.$(OBJEXT)
 testall_OBJECTS = $(am_testall_OBJECTS)
 @GRAMINE_MODE_FALSE@testall_DEPENDENCIES = libgras.la
@@ -654,6 +660,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simgrid_units_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_action.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_config.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_deployment.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_environment.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_global.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_host.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_process.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_synchro.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/snprintf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf_timer.Plo@am__quote@
@@ -1283,6 +1297,62 @@ sdp.lo: surf/sdp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/sdp.c' object='sdp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c
+
+smx_global.lo: simix/smx_global.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_global.lo -MD -MP -MF "$(DEPDIR)/smx_global.Tpo" -c -o smx_global.lo `test -f 'simix/smx_global.c' || echo '$(srcdir)/'`simix/smx_global.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_global.Tpo" "$(DEPDIR)/smx_global.Plo"; else rm -f "$(DEPDIR)/smx_global.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_global.c' object='smx_global.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_global.lo `test -f 'simix/smx_global.c' || echo '$(srcdir)/'`simix/smx_global.c
+
+smx_deployment.lo: simix/smx_deployment.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_deployment.lo -MD -MP -MF "$(DEPDIR)/smx_deployment.Tpo" -c -o smx_deployment.lo `test -f 'simix/smx_deployment.c' || echo '$(srcdir)/'`simix/smx_deployment.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_deployment.Tpo" "$(DEPDIR)/smx_deployment.Plo"; else rm -f "$(DEPDIR)/smx_deployment.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_deployment.c' object='smx_deployment.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_deployment.lo `test -f 'simix/smx_deployment.c' || echo '$(srcdir)/'`simix/smx_deployment.c
+
+smx_config.lo: simix/smx_config.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_config.lo -MD -MP -MF "$(DEPDIR)/smx_config.Tpo" -c -o smx_config.lo `test -f 'simix/smx_config.c' || echo '$(srcdir)/'`simix/smx_config.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_config.Tpo" "$(DEPDIR)/smx_config.Plo"; else rm -f "$(DEPDIR)/smx_config.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_config.c' object='smx_config.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_config.lo `test -f 'simix/smx_config.c' || echo '$(srcdir)/'`simix/smx_config.c
+
+smx_environment.lo: simix/smx_environment.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_environment.lo -MD -MP -MF "$(DEPDIR)/smx_environment.Tpo" -c -o smx_environment.lo `test -f 'simix/smx_environment.c' || echo '$(srcdir)/'`simix/smx_environment.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_environment.Tpo" "$(DEPDIR)/smx_environment.Plo"; else rm -f "$(DEPDIR)/smx_environment.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_environment.c' object='smx_environment.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_environment.lo `test -f 'simix/smx_environment.c' || echo '$(srcdir)/'`simix/smx_environment.c
+
+smx_host.lo: simix/smx_host.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_host.lo -MD -MP -MF "$(DEPDIR)/smx_host.Tpo" -c -o smx_host.lo `test -f 'simix/smx_host.c' || echo '$(srcdir)/'`simix/smx_host.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_host.Tpo" "$(DEPDIR)/smx_host.Plo"; else rm -f "$(DEPDIR)/smx_host.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_host.c' object='smx_host.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_host.lo `test -f 'simix/smx_host.c' || echo '$(srcdir)/'`simix/smx_host.c
+
+smx_process.lo: simix/smx_process.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_process.lo -MD -MP -MF "$(DEPDIR)/smx_process.Tpo" -c -o smx_process.lo `test -f 'simix/smx_process.c' || echo '$(srcdir)/'`simix/smx_process.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_process.Tpo" "$(DEPDIR)/smx_process.Plo"; else rm -f "$(DEPDIR)/smx_process.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_process.c' object='smx_process.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_process.lo `test -f 'simix/smx_process.c' || echo '$(srcdir)/'`simix/smx_process.c
+
+smx_action.lo: simix/smx_action.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_action.lo -MD -MP -MF "$(DEPDIR)/smx_action.Tpo" -c -o smx_action.lo `test -f 'simix/smx_action.c' || echo '$(srcdir)/'`simix/smx_action.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_action.Tpo" "$(DEPDIR)/smx_action.Plo"; else rm -f "$(DEPDIR)/smx_action.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_action.c' object='smx_action.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_action.lo `test -f 'simix/smx_action.c' || echo '$(srcdir)/'`simix/smx_action.c
+
+smx_synchro.lo: simix/smx_synchro.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smx_synchro.lo -MD -MP -MF "$(DEPDIR)/smx_synchro.Tpo" -c -o smx_synchro.lo `test -f 'simix/smx_synchro.c' || echo '$(srcdir)/'`simix/smx_synchro.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/smx_synchro.Tpo" "$(DEPDIR)/smx_synchro.Plo"; else rm -f "$(DEPDIR)/smx_synchro.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_synchro.c' object='smx_synchro.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_synchro.lo `test -f 'simix/smx_synchro.c' || echo '$(srcdir)/'`simix/smx_synchro.c
 
 cunit_unit.o: ./cunit_unit.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cunit_unit.o -MD -MP -MF "$(DEPDIR)/cunit_unit.Tpo" -c -o cunit_unit.o `test -f './cunit_unit.c' || echo '$(srcdir)/'`./cunit_unit.c; \

@@ -205,9 +205,9 @@ SIMIX_SRC= \
   simix/smx_action.c \
   simix/smx_synchro.c
 if USE_SIMIX
-  SG_SRC+=SIMIX_SRC
+  SG_SRC+=$(SIMIX_SRC)
 else  
-  EXTRA_DIST+=SIMIX_SRC
+  EXTRA_DIST+=$(SIMIX_SRC)
 endif
 
 
