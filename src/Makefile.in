@@ -137,8 +137,8 @@ am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_6) \
 	$(am__objects_3)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
-am__testall_SOURCES_DIST = cunit_unit.c ex_unit.c dynar_unit.c \
-	dict_unit.c set_unit.c swag_unit.c config_unit.c \
+am__testall_SOURCES_DIST = ./cunit_unit.c ./ex_unit.c ./dynar_unit.c \
+	./dict_unit.c ./set_unit.c ./swag_unit.c ./config_unit.c \
 	simgrid_units_main.c
 @GRAMINE_MODE_FALSE@am__objects_7 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
@@ -320,12 +320,11 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	xbt/dict_private.h xbt/heap_private.h xbt/fifo_private.h \
 	xbt/graph_private.h xbt/graphxml_parse.c xbt/graphxml.l \
 	xbt/graphxml.c xbt/graphxml.dtd xbt/context_private.h \
-	xbt/context_win32.h xbt/context_win32.c xbt/ex_interface.h \
-	surf/maxmin_private.h surf/trace_mgr_private.h \
-	surf/surf_private.h surf/cpu_private.h \
-	surf/workstation_private.h surf/surf_timer_private.h \
-	surf/surfxml_parse.c surf/surfxml.l surf/surfxml.c \
-	surf/surfxml.dtd surf/network_private.h \
+	xbt/ex_interface.h surf/maxmin_private.h \
+	surf/trace_mgr_private.h surf/surf_private.h \
+	surf/cpu_private.h surf/workstation_private.h \
+	surf/surf_timer_private.h surf/surfxml_parse.c surf/surfxml.l \
+	surf/surfxml.c surf/surfxml.dtd surf/network_private.h \
 	surf/network_dassf_private.h \
 	surf/workstation_KCCFLN05_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
@@ -462,9 +461,9 @@ AMOK_SRC = \
 @GRAMINE_MODE_FALSE@            xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
 @GRAMINE_MODE_FALSE@            xbt/config.c
 
-@GRAMINE_MODE_FALSE@TEST_UNITS = cunit_unit.c ex_unit.c         \
-@GRAMINE_MODE_FALSE@            dynar_unit.c dict_unit.c set_unit.c swag_unit.c \
-@GRAMINE_MODE_FALSE@            config_unit.c
+@GRAMINE_MODE_FALSE@TEST_UNITS = ./cunit_unit.c ./ex_unit.c         \
+@GRAMINE_MODE_FALSE@            ./dynar_unit.c ./dict_unit.c ./set_unit.c ./swag_unit.c \
+@GRAMINE_MODE_FALSE@            ./config_unit.c
 
 @GRAMINE_MODE_FALSE@BUILT_SOURCES = ../include/surf/surfxml.h surf/surfxml.c \
 @GRAMINE_MODE_FALSE@              ../include/xbt/graphxml.h xbt/graphxml.c \
@@ -1285,6 +1284,104 @@ sdp.lo: surf/sdp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c
 
+cunit_unit.o: ./cunit_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cunit_unit.o -MD -MP -MF "$(DEPDIR)/cunit_unit.Tpo" -c -o cunit_unit.o `test -f './cunit_unit.c' || echo '$(srcdir)/'`./cunit_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cunit_unit.Tpo" "$(DEPDIR)/cunit_unit.Po"; else rm -f "$(DEPDIR)/cunit_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./cunit_unit.c' object='cunit_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cunit_unit.o `test -f './cunit_unit.c' || echo '$(srcdir)/'`./cunit_unit.c
+
+cunit_unit.obj: ./cunit_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cunit_unit.obj -MD -MP -MF "$(DEPDIR)/cunit_unit.Tpo" -c -o cunit_unit.obj `if test -f './cunit_unit.c'; then $(CYGPATH_W) './cunit_unit.c'; else $(CYGPATH_W) '$(srcdir)/./cunit_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cunit_unit.Tpo" "$(DEPDIR)/cunit_unit.Po"; else rm -f "$(DEPDIR)/cunit_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./cunit_unit.c' object='cunit_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cunit_unit.obj `if test -f './cunit_unit.c'; then $(CYGPATH_W) './cunit_unit.c'; else $(CYGPATH_W) '$(srcdir)/./cunit_unit.c'; fi`
+
+ex_unit.o: ./ex_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ex_unit.o -MD -MP -MF "$(DEPDIR)/ex_unit.Tpo" -c -o ex_unit.o `test -f './ex_unit.c' || echo '$(srcdir)/'`./ex_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/ex_unit.Tpo" "$(DEPDIR)/ex_unit.Po"; else rm -f "$(DEPDIR)/ex_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./ex_unit.c' object='ex_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ex_unit.o `test -f './ex_unit.c' || echo '$(srcdir)/'`./ex_unit.c
+
+ex_unit.obj: ./ex_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ex_unit.obj -MD -MP -MF "$(DEPDIR)/ex_unit.Tpo" -c -o ex_unit.obj `if test -f './ex_unit.c'; then $(CYGPATH_W) './ex_unit.c'; else $(CYGPATH_W) '$(srcdir)/./ex_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/ex_unit.Tpo" "$(DEPDIR)/ex_unit.Po"; else rm -f "$(DEPDIR)/ex_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./ex_unit.c' object='ex_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ex_unit.obj `if test -f './ex_unit.c'; then $(CYGPATH_W) './ex_unit.c'; else $(CYGPATH_W) '$(srcdir)/./ex_unit.c'; fi`
+
+dynar_unit.o: ./dynar_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dynar_unit.o -MD -MP -MF "$(DEPDIR)/dynar_unit.Tpo" -c -o dynar_unit.o `test -f './dynar_unit.c' || echo '$(srcdir)/'`./dynar_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dynar_unit.Tpo" "$(DEPDIR)/dynar_unit.Po"; else rm -f "$(DEPDIR)/dynar_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./dynar_unit.c' object='dynar_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dynar_unit.o `test -f './dynar_unit.c' || echo '$(srcdir)/'`./dynar_unit.c
+
+dynar_unit.obj: ./dynar_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dynar_unit.obj -MD -MP -MF "$(DEPDIR)/dynar_unit.Tpo" -c -o dynar_unit.obj `if test -f './dynar_unit.c'; then $(CYGPATH_W) './dynar_unit.c'; else $(CYGPATH_W) '$(srcdir)/./dynar_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dynar_unit.Tpo" "$(DEPDIR)/dynar_unit.Po"; else rm -f "$(DEPDIR)/dynar_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./dynar_unit.c' object='dynar_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dynar_unit.obj `if test -f './dynar_unit.c'; then $(CYGPATH_W) './dynar_unit.c'; else $(CYGPATH_W) '$(srcdir)/./dynar_unit.c'; fi`
+
+dict_unit.o: ./dict_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dict_unit.o -MD -MP -MF "$(DEPDIR)/dict_unit.Tpo" -c -o dict_unit.o `test -f './dict_unit.c' || echo '$(srcdir)/'`./dict_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dict_unit.Tpo" "$(DEPDIR)/dict_unit.Po"; else rm -f "$(DEPDIR)/dict_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./dict_unit.c' object='dict_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dict_unit.o `test -f './dict_unit.c' || echo '$(srcdir)/'`./dict_unit.c
+
+dict_unit.obj: ./dict_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dict_unit.obj -MD -MP -MF "$(DEPDIR)/dict_unit.Tpo" -c -o dict_unit.obj `if test -f './dict_unit.c'; then $(CYGPATH_W) './dict_unit.c'; else $(CYGPATH_W) '$(srcdir)/./dict_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dict_unit.Tpo" "$(DEPDIR)/dict_unit.Po"; else rm -f "$(DEPDIR)/dict_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./dict_unit.c' object='dict_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dict_unit.obj `if test -f './dict_unit.c'; then $(CYGPATH_W) './dict_unit.c'; else $(CYGPATH_W) '$(srcdir)/./dict_unit.c'; fi`
+
+set_unit.o: ./set_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT set_unit.o -MD -MP -MF "$(DEPDIR)/set_unit.Tpo" -c -o set_unit.o `test -f './set_unit.c' || echo '$(srcdir)/'`./set_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/set_unit.Tpo" "$(DEPDIR)/set_unit.Po"; else rm -f "$(DEPDIR)/set_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./set_unit.c' object='set_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o set_unit.o `test -f './set_unit.c' || echo '$(srcdir)/'`./set_unit.c
+
+set_unit.obj: ./set_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT set_unit.obj -MD -MP -MF "$(DEPDIR)/set_unit.Tpo" -c -o set_unit.obj `if test -f './set_unit.c'; then $(CYGPATH_W) './set_unit.c'; else $(CYGPATH_W) '$(srcdir)/./set_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/set_unit.Tpo" "$(DEPDIR)/set_unit.Po"; else rm -f "$(DEPDIR)/set_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./set_unit.c' object='set_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o set_unit.obj `if test -f './set_unit.c'; then $(CYGPATH_W) './set_unit.c'; else $(CYGPATH_W) '$(srcdir)/./set_unit.c'; fi`
+
+swag_unit.o: ./swag_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT swag_unit.o -MD -MP -MF "$(DEPDIR)/swag_unit.Tpo" -c -o swag_unit.o `test -f './swag_unit.c' || echo '$(srcdir)/'`./swag_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/swag_unit.Tpo" "$(DEPDIR)/swag_unit.Po"; else rm -f "$(DEPDIR)/swag_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./swag_unit.c' object='swag_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o swag_unit.o `test -f './swag_unit.c' || echo '$(srcdir)/'`./swag_unit.c
+
+swag_unit.obj: ./swag_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT swag_unit.obj -MD -MP -MF "$(DEPDIR)/swag_unit.Tpo" -c -o swag_unit.obj `if test -f './swag_unit.c'; then $(CYGPATH_W) './swag_unit.c'; else $(CYGPATH_W) '$(srcdir)/./swag_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/swag_unit.Tpo" "$(DEPDIR)/swag_unit.Po"; else rm -f "$(DEPDIR)/swag_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./swag_unit.c' object='swag_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o swag_unit.obj `if test -f './swag_unit.c'; then $(CYGPATH_W) './swag_unit.c'; else $(CYGPATH_W) '$(srcdir)/./swag_unit.c'; fi`
+
+config_unit.o: ./config_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT config_unit.o -MD -MP -MF "$(DEPDIR)/config_unit.Tpo" -c -o config_unit.o `test -f './config_unit.c' || echo '$(srcdir)/'`./config_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/config_unit.Tpo" "$(DEPDIR)/config_unit.Po"; else rm -f "$(DEPDIR)/config_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./config_unit.c' object='config_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o config_unit.o `test -f './config_unit.c' || echo '$(srcdir)/'`./config_unit.c
+
+config_unit.obj: ./config_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT config_unit.obj -MD -MP -MF "$(DEPDIR)/config_unit.Tpo" -c -o config_unit.obj `if test -f './config_unit.c'; then $(CYGPATH_W) './config_unit.c'; else $(CYGPATH_W) '$(srcdir)/./config_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/config_unit.Tpo" "$(DEPDIR)/config_unit.Po"; else rm -f "$(DEPDIR)/config_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./config_unit.c' object='config_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o config_unit.obj `if test -f './config_unit.c'; then $(CYGPATH_W) './config_unit.c'; else $(CYGPATH_W) '$(srcdir)/./config_unit.c'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -1546,19 +1643,19 @@ uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES
 	uninstall-libLTLIBRARIES
 
 
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@cunit_unit.c: xbt/cunit.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./cunit_unit.c: xbt/cunit.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@ex_unit.c: xbt/ex.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./ex_unit.c: xbt/ex.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@dynar_unit.c: xbt/dynar.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./dynar_unit.c: xbt/dynar.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@dict_unit.c: xbt/dict.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./dict_unit.c: xbt/dict.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@set_unit.c: xbt/set.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./set_unit.c: xbt/set.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@swag_unit.c: xbt/swag.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./swag_unit.c: xbt/swag.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@config_unit.c: xbt/config.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./config_unit.c: xbt/config.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@simgrid_units_main.c: $(TEST_UNITS)

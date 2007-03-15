@@ -26,7 +26,7 @@ EXTRA_DIST= \
 	xbt/graphxml.l \
 	xbt/graphxml.c \
 	xbt/graphxml.dtd \
-        xbt/context_private.h xbt/context_win32.h xbt/context_win32.c\
+        xbt/context_private.h \
 	xbt/ex_interface.h \
         \
 	surf/maxmin_private.h \
@@ -235,9 +235,9 @@ noinst_PROGRAMS=testall
 TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
             xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
             xbt/config.c
-TEST_UNITS= cunit_unit.c ex_unit.c         \
-            dynar_unit.c dict_unit.c set_unit.c swag_unit.c \
-            config_unit.c
+TEST_UNITS= ./cunit_unit.c ./ex_unit.c         \
+            ./dynar_unit.c ./dict_unit.c ./set_unit.c ./swag_unit.c \
+            ./config_unit.c
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
@@ -251,19 +251,19 @@ TESTS=testall
 EXTRA_DIST+=$(testall_SOURCES)
 
 if MAINTAINER_MODE
-cunit_unit.c: xbt/cunit.c
+./cunit_unit.c: xbt/cunit.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-ex_unit.c: xbt/ex.c
+./ex_unit.c: xbt/ex.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-dynar_unit.c: xbt/dynar.c
+./dynar_unit.c: xbt/dynar.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-dict_unit.c: xbt/dict.c
+./dict_unit.c: xbt/dict.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-set_unit.c: xbt/set.c
+./set_unit.c: xbt/set.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-swag_unit.c: xbt/swag.c
+./swag_unit.c: xbt/swag.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-config_unit.c: xbt/config.c
+./config_unit.c: xbt/config.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
 simgrid_units_main.c: $(TEST_UNITS)
