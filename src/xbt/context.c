@@ -33,8 +33,10 @@ static xbt_context_t current_context = NULL;
 static xbt_context_t init_context = NULL;
 static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
+#ifdef CONTEXT_THREADS
 static xbt_mutex_t creation_mutex;
 static xbt_thcond_t creation_cond;
+#endif
 
 static void __context_exit(xbt_context_t context ,int value);
 static void __xbt_context_yield(xbt_context_t context)
