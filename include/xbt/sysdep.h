@@ -22,9 +22,15 @@
 SG_BEGIN_DECL()
 
 /* FIXME: better place? */
-XBT_PUBLIC(int)   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
-XBT_PUBLIC(int)   vasprintf (char **ptr, const char *fmt, va_list ap);
+extern int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
+extern int vasprintf (char **ptr, const char *fmt, va_list ap);
 XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+
+
+#if ((defined (_MSC_VER) || defined(__BORLANDC__)) && !defined(SSIZE_T_DEFINED))
+typedef int ssize_t;
+#define SSIZE_T_DEFINED
+#endif
 
 /* FIXME: ssize_t must be 'long' on windows, no idea whether we should define this explicitly */
 XBT_PUBLIC(ssize_t) getline(char **lineptr, size_t *n, FILE *stream);
