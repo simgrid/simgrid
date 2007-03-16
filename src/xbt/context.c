@@ -248,8 +248,10 @@ void xbt_context_init(void)
 		context_to_destroy = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
 		context_living = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
 		xbt_swag_insert(init_context, context_living);
+#ifdef CONTEXT_THREADS	   
 	        creation_mutex = xbt_mutex_init();
 	        creation_cond = xbt_thcond_init();
+#endif	   
 	}
 }
 
@@ -388,8 +390,10 @@ void xbt_context_exit(void) {
 	xbt_swag_free(context_living);
 	
 	init_context = current_context = NULL ;
+#ifdef CONTEXT_THREADS	   
 	xbt_mutex_destroy(creation_mutex);
-	xbt_thcond_destroy(creation_cond);   
+	xbt_thcond_destroy(creation_cond);
+#endif   
 }
 
 /** 
