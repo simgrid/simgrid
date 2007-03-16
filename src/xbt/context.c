@@ -187,13 +187,13 @@ __context_wrapper(void* c) {
         
 	DEBUG2("**[%p:%p]** Lock ****",context,(void*)xbt_thread_self());
 	xbt_mutex_lock(creation_mutex);
+	xbt_mutex_lock(context->mutex);
 	
 	DEBUG2("**[%p:%p]** Releasing the creator ****",context,(void*)xbt_thread_self());
 	xbt_thcond_signal(creation_cond);
 	xbt_mutex_unlock(creation_mutex);
 	
 	DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)xbt_thread_self());
-	xbt_mutex_lock(context->mutex);
 	xbt_thcond_wait(context->cond, context->mutex);
 	
 	DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)xbt_thread_self());
