@@ -388,7 +388,7 @@ void xbt_thcond_signal(xbt_thcond_t cond) {
      if(!SetEvent(cond->events[SIGNAL]))
        THROW0(system_error,0,"SetEvent failed");
        
-   Sleep(0);
+   xbt_thread_yield();
 }
 
 void xbt_thcond_broadcast(xbt_thcond_t cond){
