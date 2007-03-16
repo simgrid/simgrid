@@ -11,6 +11,11 @@
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "xbt/misc.h"
+
+SG_BEGIN_DECL()
+
+
 
 /* Actions and resources are higly connected structures... */
 
@@ -404,7 +409,7 @@ XBT_PUBLIC(double) surf_solve(void);
  *
  *  Return the current time in millisecond.
  */
-XBT_PUBLIC(double) surf_get_clock(void);
+XBT_PUBLIC(double)surf_get_clock(void);
 
 /** \brief Exit SURF
  *  \ingroup SURF_simulation
@@ -414,5 +419,7 @@ XBT_PUBLIC(double) surf_get_clock(void);
  *  \see surf_init()
  */
 XBT_PUBLIC(void) surf_exit(void);
+
+SG_END_DECL()
 
 #endif				/* _SURF_SURF_H */
