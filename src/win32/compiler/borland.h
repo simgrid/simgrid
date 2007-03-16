@@ -407,7 +407,6 @@ typedef int socklen_t;
 #endif
 
 
-/*#pragma option push -a8 -pc -b
-#pragma warn -8062*/
+
 
 #endif /* #ifndef __XBT_BORLAND_COMPILER_CONFIG_H__ */
