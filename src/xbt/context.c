@@ -33,6 +33,8 @@ static xbt_context_t current_context = NULL;
 static xbt_context_t init_context = NULL;
 static xbt_swag_t context_to_destroy = NULL;
 static xbt_swag_t context_living = NULL;
+static xbt_mutex_t creation_mutex;
+static xbt_thcond_t creation_cond;
 
 static void __context_exit(xbt_context_t context ,int value);
 static void __xbt_context_yield(xbt_context_t context)
@@ -182,12 +184,14 @@ __context_wrapper(void* c) {
 	context->thread = xbt_thread_self();
         
 	DEBUG2("**[%p:%p]** Lock ****",context,(void*)xbt_thread_self());
-	xbt_mutex_lock(context->mutex);
+	xbt_mutex_lock(creation_mutex);
 	
-	DEBUG2("**[%p:%p]** Releasing the prisonner ****",context,(void*)xbt_thread_self());
-	xbt_thcond_signal(context->cond);
+	DEBUG2("**[%p:%p]** Releasing the creator ****",context,(void*)xbt_thread_self());
+	xbt_thcond_signal(creation_cond);
+	xbt_mutex_unlock(creation_mutex);
 	
 	DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)xbt_thread_self());
+	xbt_mutex_lock(context->mutex);
 	xbt_thcond_wait(context->cond, context->mutex);
 	
 	DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)xbt_thread_self());
@@ -244,6 +248,8 @@ void xbt_context_init(void)
 		context_to_destroy = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
 		context_living = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
 		xbt_swag_insert(init_context, context_living);
+	        creation_mutex = xbt_mutex_init();
+	        creation_cond = xbt_thcond_init();
 	}
 }
 
@@ -272,16 +278,16 @@ void xbt_context_start(xbt_context_t context)
 	#ifdef CONTEXT_THREADS
 	/* Launch the thread */
 	DEBUG1("**[%p]** Locking ****",context);
-	xbt_mutex_lock(context->mutex);
+	xbt_mutex_lock(creation_mutex);
    
 	DEBUG1("**[%p]** Thread create ****",context);
         context->thread = xbt_thread_create(__context_wrapper, context);   
 	DEBUG2("**[%p]** Thread created : %p ****",context,context->thread);
    
 	DEBUG1("**[%p]** Going to jail ****",context);
-	xbt_thcond_wait(context->cond, context->mutex);
+	xbt_thcond_wait(creation_cond, creation_mutex);
 	DEBUG1("**[%p]** Unlocking ****",context);
-	xbt_mutex_unlock(context->mutex);
+	xbt_mutex_unlock(creation_mutex);
 	#else
 	makecontext (&(context->uc), (void (*) (void)) __context_wrapper,1, context);
 	#endif
@@ -313,7 +319,7 @@ xbt_context_t xbt_context_new(xbt_context_function_t code,
 	res->mutex = xbt_mutex_init();
         res->cond = xbt_thcond_init();
 	#else 
-	/* FIXME: strerror is not thread safe */
+
 	xbt_assert2(getcontext(&(res->uc))==0,"Error in context saving: %d (%s)", errno, strerror(errno));
 	res->uc.uc_link = NULL;
 	/*   res->uc.uc_link = &(current_context->uc); */
@@ -382,6 +388,8 @@ void xbt_context_exit(void) {
 	xbt_swag_free(context_living);
 	
 	init_context = current_context = NULL ;
+	xbt_mutex_destroy(creation_mutex);
+	xbt_thcond_destroy(creation_cond);   
 }
 
 /** 
