@@ -366,7 +366,11 @@ const char *xbt_log_priority_names[8] = {
   "CRITICAL"
 };
 
-s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
+s_xbt_log_category_t
+#ifndef _MSC_VER
+XBT_PUBLIC_DATA
+#endif
+ _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   0, 0, 0,
   "root", xbt_log_priority_uninitialized, 0,
   NULL, 0
@@ -419,10 +423,11 @@ static void _apply_control(xbt_log_category_t cat) {
   int found = 0;
   s_xbt_log_event_t _log_ev;
   
+ 
   
   if (!xbt_log_settings)
     return;
-
+  
   xbt_assert0(cat,"NULL category");
   xbt_assert(cat->name);
 
@@ -474,11 +479,18 @@ static void _apply_control(xbt_log_category_t cat) {
 }
 
 void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
+  
+
   xbt_log_category_t cat = ev->cat;
+  
+  
+
+
   va_start(ev->ap, fmt);
   while(1) {
     xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
+    	
       appender->do_append(appender, ev, fmt);
     }
     if (!cat->willLogToParent)
@@ -492,21 +504,25 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
 static void _cat_init(xbt_log_category_t category) 
 {
 	
+	
 	if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
-    	category->threshold = xbt_log_priority_info;
+    	category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
     	category->appender = xbt_log_default_appender;
   	} 
   	else 
   	{
+
   		#if (defined(_WIN32) && !defined(DLL_STATIC))
-  		if(!category->parent)
+  		if(!category->parent){
   			category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
+  		}
   		#endif
     	
     	xbt_log_parent_set(category, category->parent);
   	}
   
   _apply_control(category);
+  
  
 }
 
@@ -520,11 +536,16 @@ int _xbt_log_cat_init(e_xbt_log_priority_t priority,xbt_log_category_t category)
     
 	_cat_init(category);
 	
+	
+	
+		
 	return priority >= category->threshold;
 }
 
 void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent) 
 {
+	
+	
 	xbt_assert0(cat,"NULL category to be given a parent");
 	xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
 	
@@ -558,10 +579,15 @@ void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent)
 	
 	cat->isThreshInherited = 1;
 	
+	
+	
 } /* log_setParent */
 
 static void _set_inherited_thresholds(xbt_log_category_t cat) {
+	
+	
   xbt_log_category_t child = cat->firstChild;
+  
   for( ; child != NULL; child = child->nextSibling) {
     if (child->isThreshInherited) {
       if (cat != &_XBT_LOGV(log))
@@ -571,18 +597,24 @@ static void _set_inherited_thresholds(xbt_log_category_t cat) {
       _set_inherited_thresholds(child);
     }
   }
+  
+ 
 }
 
 void xbt_log_threshold_set(xbt_log_category_t   cat,
 			    e_xbt_log_priority_t threshold) {
   cat->threshold = threshold;
   cat->isThreshInherited = 0;
+ 
   _set_inherited_thresholds(cat);
+ 
 }
 
 static void _xbt_log_parse_setting(const char*        control_string,
 				    xbt_log_setting_t set) {
   const char *name, *dot, *eq;
+  
+  
   
   set->catname=NULL;
   if (!*control_string) 
@@ -634,10 +666,12 @@ static void _xbt_log_parse_setting(const char*        control_string,
   strncpy(set->catname,name,dot-name);
   set->catname[dot-name]='\0'; /* Just in case */
   DEBUG1("This is for cat '%s'", set->catname);
+  
 }
 
 static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name) {
   xbt_log_category_t child;
+  
   
   if (!strcmp(cat->name,name)) {
     return cat;
@@ -645,6 +679,7 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *na
   for(child=cat->firstChild ; child != NULL; child = child->nextSibling) {
     return _xbt_log_cat_searchsub(child,name);
   }
+  
   THROW0(not_found_error,0,"No such category");
 }
 
@@ -706,6 +741,8 @@ void xbt_log_control_set(const char* control_string) {
   char *p;
   int done = 0;
   
+  
+  
   DEBUG1("Parse log settings '%s'",control_string);
   if (control_string == NULL)
     return;
@@ -757,9 +794,13 @@ void xbt_log_control_set(const char* control_string) {
   }
   free(set);
   free(cs);
+  
+  
 } 
 
 void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
+	
   cat->appender = app;
+  
 }
 
