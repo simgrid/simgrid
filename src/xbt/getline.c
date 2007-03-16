@@ -22,6 +22,7 @@
 #include "xbt/sysdep.h" /* headers of this function */
 #include "portable.h"
 
+#ifndef HAVE_GETLINE
 ssize_t getline(char **buf, size_t *n, FILE *stream) {
    
    int i, ch;
@@ -56,4 +57,4 @@ ssize_t getline(char **buf, size_t *n, FILE *stream) {
    return (ssize_t)i;
 }
 
-
+#endif /* HAVE_GETLINE */
