@@ -178,15 +178,11 @@ void xbt_thcond_destroy(xbt_thcond_t cond){
 #elif defined(WIN32)
 
 typedef struct xbt_thread_ {
-   HANDLE handle;                  /* the win thread handle        */
-   unsigned long id;               /* the win thread id            */
-} s_xbt_thread_t ;
-
-typedef struct s_xbt_thread_wrapper_for_restart__ {
+  HANDLE handle;                  /* the win thread handle        */
+  unsigned long id;               /* the win thread id            */
   pvoid_f_pvoid_t *start_routine;
   void* param;
-  xbt_thread_t res;
-} s_xbt_thread_wrapper_for_restart_t, *xbt_thread_wrapper_for_restart_t;
+} s_xbt_thread_t ;
 
 /* key to the TLS containing the xbt_thread_t structure */
 static unsigned long xbt_self_thread_key;
@@ -200,35 +196,34 @@ void xbt_thread_mod_exit(void) {
      THROW0(system_error,(int)GetLastError(),"TlsFree() failed to cleanup the thread submodule");
 }
 
-DWORD WINAPI  wrapper_start_routine(void *s) {
-  xbt_thread_wrapper_for_restart_t stub = (xbt_thread_wrapper_for_restart_t)s;
+static DWORD WINAPI  wrapper_start_routine(void *s) {
+  xbt_thread_t t = (xbt_thread_t)s;
  
-    if(!TlsSetValue(xbt_self_thread_key,stub->res))
+    if(!TlsSetValue(xbt_self_thread_key,t))
      THROW0(system_error,(int)GetLastError(),"TlsSetValue of data describing the created thread failed");
    
-   return (DWORD)stub->start_routine(stub->param);
+   return (DWORD)t->start_routine(t->param);
 }
 
 
 xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
 			       void* param)  {
    
-   xbt_thread_wrapper_for_restart_t stub = xbt_new0(s_xbt_thread_wrapper_for_restart_t,1);
+   xbt_thread_t t = xbt_new(s_xbt_thread_t,1);
 
-   stub->start_routine = start_routine ;
-   stub->param = param;
-   stub->res = xbt_new(s_xbt_thread_t,1);
+   t->start_routine = start_routine ;
+   t->param = param;
    
-   stub->res->handle = CreateThread(NULL,0,
-			      (LPTHREAD_START_ROUTINE)wrapper_start_routine,
-			      stub,0,&(stub->res->id));
+   t->handle = CreateThread(NULL,0,
+			    (LPTHREAD_START_ROUTINE)wrapper_start_routine,
+			    t,0,&(t->id));
 	
-   if(!stub->res->handle) {
-     xbt_free(stub->res);
+   if(!t->handle) {
+     xbt_free(t);
      THROW0(system_error,(int)GetLastError(),"CreateThread failed");
    }
    
-   return stub->res;
+   return t;
 }
 
 void 
@@ -247,9 +242,6 @@ xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
 }
 
 void xbt_thread_exit(int *retval) {
-   
-   xbt_thread_t self = xbt_thread_self();
-   
    if(retval)
    	ExitThread(*retval);
    else
