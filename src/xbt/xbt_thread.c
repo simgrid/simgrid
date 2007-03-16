@@ -22,6 +22,8 @@
 
 typedef struct xbt_thread_ {
    pthread_t t;
+   void *param;
+   pvoid_f_pvoid_t *start_routine;
 } s_xbt_thread_t ;
 
 /* thread-specific data containing the xbt_thread_t structure */
@@ -46,35 +48,28 @@ void xbt_thread_mod_exit(void) {
 //     THROW0(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
 }
 
-typedef struct s_xbt_thread_wrapper_for_restart__ {
-  pvoid_f_pvoid_t *start_routine;
-  void* param;
-  xbt_thread_t res;
-} s_xbt_thread_wrapper_for_restart_t, *xbt_thread_wrapper_for_restart_t;
-
 static void * wrapper_start_routine(void *s) {
-  xbt_thread_wrapper_for_restart_t stub = s;
+  xbt_thread_t t = s;   
   int errcode;
 
-   if ((errcode=pthread_setspecific(xbt_self_thread_key,stub->res)))
-     THROW0(system_error,errcode,"pthread_setspecific failed for xbt_self_thread_key");
-   return stub->start_routine(stub->param);
+  if ((errcode=pthread_setspecific(xbt_self_thread_key,t)))
+    THROW0(system_error,errcode,"pthread_setspecific failed for xbt_self_thread_key");   
+  return t->start_routine(t->param);
 }
 
 xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
 			       void* param)  {
    int errcode;
-   xbt_thread_wrapper_for_restart_t stub = xbt_new0(s_xbt_thread_wrapper_for_restart_t,1);
 
-   stub->start_routine = start_routine ;
-   stub->param = param;
-   stub->res = xbt_new(s_xbt_thread_t,1);
+   xbt_thread_t res_thread=xbt_new(s_xbt_thread_t,1);
+   res_thread->start_routine = start_routine;
+   res_thread->param = param;
 
    
-   if ((errcode = pthread_create(&(stub->res->t), NULL, wrapper_start_routine, stub)))
+   if ((errcode = pthread_create(&(res_thread->t), NULL, wrapper_start_routine, res_thread)))
      THROW0(system_error,errcode, "pthread_create failed");
-   
-   return stub->res;
+
+   return res_thread;
 }
 
 void 
