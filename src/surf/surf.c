@@ -75,7 +75,7 @@ const char* __surf_get_initial_path(void)
 
 	for(i = 0; i<MAX_DRIVE;i++)
 	{
-		if(root[0] == disk_drives_letter_table[i][0])
+		if(toupper(root[0]) == disk_drives_letter_table[i][0])
 			return disk_drives_letter_table[i];
 	}
 
