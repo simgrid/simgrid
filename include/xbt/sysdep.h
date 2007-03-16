@@ -26,15 +26,9 @@ extern int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRI
 extern int vasprintf (char **ptr, const char *fmt, va_list ap);
 XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
-
-#if ((defined (_MSC_VER) || defined(__BORLANDC__)) && !defined(SSIZE_T_DEFINED))
-typedef int ssize_t;
-#define SSIZE_T_DEFINED
+#if defined(_WIN32) || !defined(__GNUC__)
+XBT_PUBLIC(long) getline(char **lineptr, size_t *n, FILE *stream);
 #endif
-
-/* FIXME: ssize_t must be 'long' on windows, no idea whether we should define this explicitly */
-XBT_PUBLIC(ssize_t) getline(char **lineptr, size_t *n, FILE *stream);
-
 
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
