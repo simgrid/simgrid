@@ -366,11 +366,7 @@ const char *xbt_log_priority_names[8] = {
   "CRITICAL"
 };
 
-s_xbt_log_category_t
-#ifndef _MSC_VER
-XBT_PUBLIC_DATA
-#endif
- _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
+s_xbt_log_category_t XBT_PUBLIC_DATA  _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   0, 0, 0,
   "root", xbt_log_priority_uninitialized, 0,
   NULL, 0
