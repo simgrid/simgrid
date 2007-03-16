@@ -406,4 +406,8 @@ typedef int socklen_t;
 #define CONTEXT_THREADS 1
 #endif
 
+
+/*#pragma option push -a8 -pc -b
+#pragma warn -8062*/
+
 #endif /* #ifndef __XBT_BORLAND_COMPILER_CONFIG_H__ */
