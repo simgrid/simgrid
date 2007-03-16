@@ -385,13 +385,14 @@ void xbt_context_exit(void) {
 	    xbt_context_kill(context);
 	  }
 	}
-	//	xbt_context_kill(init_context);
+	free(init_context->exception);   
+	free(init_context);   
+	init_context = current_context = NULL ;
 
 	xbt_context_empty_trash();
 	xbt_swag_free(context_to_destroy);
 	xbt_swag_free(context_living);
 	
-	init_context = current_context = NULL ;
 #ifdef CONTEXT_THREADS	   
 	xbt_mutex_destroy(creation_mutex);
 	xbt_thcond_destroy(creation_cond);
