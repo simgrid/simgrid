@@ -48,15 +48,15 @@ static void __xbt_context_yield(xbt_context_t context)
 	#ifdef CONTEXT_THREADS
 	if (context){
 		xbt_context_t self = current_context;
-		DEBUG1("[%p] **** Locking ****", self);
+		DEBUG2("[%p] **** Locking ctx %p ****", self, context);
 		xbt_mutex_lock(context->mutex);
 		DEBUG1("[%p] **** Updating current_context ****", self);
 		current_context = context;
 		DEBUG1("[%p] **** Releasing the prisonner ****", self);
 		xbt_thcond_signal(context->cond);
-		DEBUG1("[%p] **** Going to jail ****", self);
+		DEBUG3("[%p] **** Going to jail on individual %p/%p ****", self,context->cond, context->mutex);
 		xbt_thcond_wait(context->cond, context->mutex);
-		DEBUG1("[%p] **** Unlocking ****", self);
+		DEBUG2("[%p] **** Unlocking individual %p ****", self,context->mutex);
 		xbt_mutex_unlock(context->mutex);
 		DEBUG1("[%p] **** Updating current_context ****", self);
 		current_context = self;
@@ -162,13 +162,13 @@ static void __context_exit(xbt_context_t context ,int value)
 	DEBUG0("Yielding");
 	
 	#ifdef CONTEXT_THREADS
-	DEBUG1("[%p] **** Locking ****", context);
+	DEBUG2("[%p] **** Locking %p ****", context, context->mutex);
 	xbt_mutex_lock(context->mutex);
 /* 	DEBUG1("[%p] **** Updating current_context ****"); */
 /* 	current_context = context; */
 	DEBUG1("[%p] **** Releasing the prisonner ****", context);
 	xbt_thcond_signal(context->cond);
-	DEBUG1("[%p] **** Unlocking ****", context);
+	DEBUG2("[%p] **** Unlocking individual %p ****", context, context->mutex);
 	xbt_mutex_unlock(context->mutex);
 	DEBUG1("[%p] **** Exiting ****", context);
 	xbt_thread_exit(NULL); // We should provide return value in case other wants it
@@ -185,18 +185,21 @@ __context_wrapper(void* c) {
 	#ifdef CONTEXT_THREADS
 	context->thread = xbt_thread_self();
         
-	DEBUG2("**[%p:%p]** Lock ****",context,(void*)xbt_thread_self());
+	DEBUG3("**[ctx:%p;self:%p]** Lock creation_mutex %p ****",context,(void*)xbt_thread_self(), creation_mutex);
 	xbt_mutex_lock(creation_mutex);
 	xbt_mutex_lock(context->mutex);
 	
-	DEBUG2("**[%p:%p]** Releasing the creator ****",context,(void*)xbt_thread_self());
+	DEBUG4("**[ctx:%p;self:%p]** Releasing the creator (creation_cond %p,%p) ****",
+	       context,(void*)xbt_thread_self(),creation_cond,creation_mutex);
 	xbt_thcond_signal(creation_cond);
 	xbt_mutex_unlock(creation_mutex);
 	
-	DEBUG2("**[%p:%p]** Going to Jail ****",context,(void*)xbt_thread_self());
+	DEBUG4("**[ctx:%p;self:%p]** Going to Jail on lock %p and cond %p ****",
+	       context,(void*)xbt_thread_self(),context->mutex,context->cond);
 	xbt_thcond_wait(context->cond, context->mutex);
 	
-	DEBUG2("**[%p:%p]** Unlocking ****",context,(void*)xbt_thread_self());
+	DEBUG3("**[ctx:%p;self:%p]** Unlocking individual %p ****",
+	       context,(void*)xbt_thread_self(),context->mutex);
 	xbt_mutex_unlock(context->mutex);
 	
 	#endif
@@ -281,16 +284,17 @@ void xbt_context_start(xbt_context_t context)
 {
 	#ifdef CONTEXT_THREADS
 	/* Launch the thread */
-	DEBUG1("**[%p]** Locking ****",context);
+	DEBUG3("**[ctx:%p;self:%p]** Locking creation_mutex %p ****",context,xbt_thread_self(),creation_mutex);
 	xbt_mutex_lock(creation_mutex);
    
-	DEBUG1("**[%p]** Thread create ****",context);
+	DEBUG2("**[ctx:%p;self:%p]** Thread create ****",context,xbt_thread_self());
         context->thread = xbt_thread_create(__context_wrapper, context);   
-	DEBUG2("**[%p]** Thread created : %p ****",context,context->thread);
+	DEBUG3("**[ctx:%p;self:%p]** Thread created : %p ****",context,xbt_thread_self(),context->thread);
    
-	DEBUG1("**[%p]** Going to jail ****",context);
+	DEBUG4("**[ctx:%p;self:%p]** Going to jail on creation_cond/mutex (%p,%p) ****",
+	       context,xbt_thread_self(),creation_cond, creation_mutex);
 	xbt_thcond_wait(creation_cond, creation_mutex);
-	DEBUG1("**[%p]** Unlocking ****",context);
+	DEBUG3("**[ctx:%p;self:%p]** Unlocking creation %p ****",context, xbt_thread_self(),creation_mutex);
 	xbt_mutex_unlock(creation_mutex);
 	#else
 	makecontext (&(context->uc), (void (*) (void)) __context_wrapper,1, context);
