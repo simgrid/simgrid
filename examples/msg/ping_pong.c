@@ -30,7 +30,7 @@ double task_comm_size_bw = 100000000;
 
 /** Emitter function  */
 int sender(int argc,char *argv[] )
-{INFO0("sender");
+{
   int nbr = 0;
   m_host_t *hosts = NULL; 
   int i;
@@ -38,6 +38,8 @@ int sender(int argc,char *argv[] )
   double task_comp_size = 0;
   m_task_t task=NULL;
   char sprintf_buffer[64];
+
+  INFO0("sender");
  
   nbr = argc - 1;
  hosts = calloc(nbr, sizeof(m_host_t));
@@ -81,8 +83,10 @@ int sender(int argc,char *argv[] )
 /** Receiver function  */
 int receiver(int argc, char *argv[])
 {
- INFO0("receiver");
+
   double communication_time=0;
+
+  INFO0("receiver");
   while(1) 
     {
       double time, time1, sender_time;
@@ -119,8 +123,10 @@ int receiver(int argc, char *argv[])
 MSG_error_t test_all(const char *platform_file,
 			    const char *application_file)
 {
-  INFO0("test_all");
-  MSG_error_t res = MSG_OK; 
+
+  MSG_error_t res = MSG_OK;
+
+  INFO0("test_all"); 
  				/*  Simulation setting */
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_paje_output("msg_test.trace");
