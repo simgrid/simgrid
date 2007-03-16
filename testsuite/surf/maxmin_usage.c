@@ -148,6 +148,17 @@ void test3(method_t method)
   int j = 0;
 
   double **A;
+
+  lmm_system_t Sys = NULL ;
+  lmm_constraint_t *tmp_cnst = NULL;
+  lmm_variable_t   *tmp_var  = NULL;
+  char tmp_name[13];
+
+
+  /*array to add the the constraints of fictiv variables */
+  double B[15] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+		1, 1, 1, 1, 1};
+
   A = (double **)calloc(links+5, sizeof(double));
  
   for(i=0 ; i< links+5; i++){
@@ -162,7 +173,7 @@ void test3(method_t method)
     }
   }
 
-  //matrix that store the constraints/topollogy
+  /*matrix that store the constraints/topollogy*/
   /*double A[15][16]=
     {{0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0,    0, 0, 0, 0, 0},
      {0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0,    0, 0, 0, 0, 0},
@@ -231,15 +242,9 @@ void test3(method_t method)
   A[13][14] = 1.0;
   A[14][15] = 1.0;
 
-  //array to add the the constraints of fictiv variables
-  double B[15] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-	    1, 1, 1, 1, 1};
 
 
-  lmm_system_t Sys = NULL ;
-  lmm_constraint_t *tmp_cnst = NULL;
-  lmm_variable_t   *tmp_var  = NULL;
-  char tmp_name[13];
+
 
 
   Sys = lmm_system_new();
