@@ -33,7 +33,7 @@ RL_tests =                                              \
 	gras/datadesc_usage                             
 
 SG_tests =                                              \
-	surf/maxmin_usage surf/maxmin_bench \
+	surf/maxmin_usage surf/maxmin_bench surf/simeng_usage \
 	surf/trace_usage surf/surf_usage surf/surf_usage2
 #if HAVE_SDP
 #  SG_tests+=surf/sdp_usage
