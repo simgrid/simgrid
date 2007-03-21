@@ -24,6 +24,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf,
 				"Logging specific to SURF (lagrange)");
 
+void lagrange_solve(lmm_system_t sys);
+
 void lagrange_solve(lmm_system_t sys)
 {
 
@@ -33,21 +35,22 @@ void lagrange_solve(lmm_system_t sys)
   double epsilon_min_error = 1e-6;
   double overall_error = 1;
   double sigma_step = 0.5e-3;
-  double capacity_error, bound_error;
-  double sum_capacity = 0;
-  double sum_bound = 0;
+  double capacity_error=0, bound_error=0;
   
 
   /*
    * Variables to manipulate the data structure proposed to model the maxmin
    * fairness. See docummentation for more details.
    */
-  lmm_element_t elem = NULL;
+  xbt_swag_t elem_list = NULL;
+  lmm_element_t elem1 = NULL;
+  lmm_element_t elem2 = NULL;
+
   xbt_swag_t cnst_list = NULL;
   lmm_constraint_t cnst1 = NULL;
   lmm_constraint_t cnst2 = NULL;
+
   xbt_swag_t var_list = NULL;
-  xbt_swag_t elem_list = NULL;
   lmm_variable_t var1 = NULL;
   lmm_variable_t var2 = NULL;
 
@@ -59,6 +62,8 @@ void lagrange_solve(lmm_system_t sys)
   int max_iterations=100000;
   double mu_partial=0;
   double lambda_partial=0;
+  double tmp=0;
+  int i;
 
 
   if ( !(sys->modified))
@@ -66,26 +71,24 @@ void lagrange_solve(lmm_system_t sys)
   
   /* 
    * Initialize the var list variable with only the active variables. 
-   * Associate an index in the swag variables and compute the sum
-   * of all round trip time constraints. May change depending on the 
-   * function f(x).
+   * Associate an index in the swag variables. Saves the initial value
+   * of bound associated with.
    */
-  var_list = &(sys->active_variable_set);
+  var_list = &(sys->variable_set);
   i=0;
   xbt_swag_foreach(var1, var_list) {
     if(var1->weight != 0.0){
       i++;
-      sum_bound += var1->bound;
+      var1->initial_bound = var1->bound;
     }
   }
 
   /* 
-   * Compute the sum of all capacities constraints. May change depending
-   * on the function f(x).
+   * Saves the initial bound of each constraint.
    */
   cnst_list=&(sys->active_constraint_set); 
   xbt_swag_foreach(cnst1, cnst_list) {
-     sum_capacity += cnst1->value;
+    cnst1->initial_bound = cnst1->bound;
   }
 
   
@@ -95,25 +98,57 @@ void lagrange_solve(lmm_system_t sys)
   while(overall_error > epsilon_min_error && iteration < max_iterations){
 
     iteration++;
-
-    
+  
     
     /*                        d Dual
      * Compute the value of ----------- (\lambda^k, \mu^k) this portion
      *                       d \mu_i^k
      * of code depends on function f(x).
      */
-    bound_error = 0;
+    var_list = &(sys->variable_set);
     xbt_swag_foreach(var1, var_list) {
       
       mu_partial = 0;
       
-      //for each link elem1 that uses flow of variable var1 do
-      //mu_partial += elem1->weight + var1->bound; 
+      //for each link with capacity cnsts[i] that uses flow of variable var1 do
+      for(i=0; i<var1->cnsts_number; i++){
+	elem1 = &(var1->cnsts[i]);
+	mu_partial += (elem1->constraint)->bound + var1->initial_bound;
+      }
 
-      mu_partial = - (1 / mu_partial) + sum_bound;
-
+      mu_partial = -1 / mu_partial + var1->initial_bound;
       var1->bound = var1->bound + sigma_step * mu_partial;
+    }
+
+
+    /*                         d Dual
+     * Compute the value of ------------- (\lambda^k, \mu^k) this portion
+     *                      d \lambda_i^k
+     * of code depends on function f(x).
+     */
+    cnst_list=&(sys->active_constraint_set);
+    xbt_swag_foreach(cnst1, cnst_list) {
+      
+      lambda_partial = 0;
+      
+      elem_list = &(cnst1->active_element_set);
+
+      xbt_swag_foreach(elem1, elem_list) {
+	lambda_partial = 0;
+   
+	var2 = elem1->variable;
+
+	//for each link with capacity cnsts[i] that uses flow of variable var1 do
+	for(i=0; i<var2->cnsts_number; i++){
+	  elem2 = &(var2->cnsts[i]);
+	  tmp += (elem2->constraint)->bound + var2->bound;
+	}
+	
+	lambda_partial += -1 / tmp;
+      }
+      
+      lambda_partial += cnst1->initial_bound;
+      cnst1->bound = cnst1->bound + sigma_step * lambda_partial;
     }
 
     
@@ -121,10 +156,11 @@ void lagrange_solve(lmm_system_t sys)
     /*
      * Verify for each capacity constraint (lambda) the error associated. 
      */
+    cnst_list=&(sys->active_constraint_set); 
     xbt_swag_foreach(cnst1, cnst_list) {
       cnst2 = xbt_swag_getNext(cnst1,(var_list)->offset);
       if(cnst2 != NULL){
-	 capacity_error += fabs(cnst1->value - cnsts2->value);
+	capacity_error += fabs( cnst1->bound - cnst2->bound );
       }
     }
 
@@ -132,14 +168,37 @@ void lagrange_solve(lmm_system_t sys)
      * Verify for each variable the error of round trip time constraint (mu).
      */
     bound_error = 0;
+    var_list = &(sys->variable_set);
     xbt_swag_foreach(var1, var_list) {
       var2 = xbt_swag_getNext(var1,(var_list)->offset);
       if(var2 != NULL){
-	bound_error += fabs( var2->weight - var1->weight);
+	bound_error += fabs( var2->bound - var1->bound);
       }
     }
 
     overall_error = capacity_error + bound_error;
   }
+
+
+  if(overall_error > epsilon_min_error){
+    DEBUG1("The method converge in %d iterations.", iteration);
+  }
+
+  /*
+   * Now computes the values of each variable (\rho) based on
+   * the values of \lambda and \mu.
+   */
+  var_list = &(sys->variable_set);
+  xbt_swag_foreach(var1, var_list) {
+    tmp = 0;
+    for(i=0; i<var1->cnsts_number; i++){
+      elem1 = &(var1->cnsts[i]);
+      tmp += (elem1->constraint)->bound + var1->bound;
+    }
+    var1->weight = 1 / tmp;
+  }
+
+
+ 
 
 }
