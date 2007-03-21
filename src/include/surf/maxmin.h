@@ -77,4 +77,6 @@ XBT_PUBLIC(void) lmm_solve(lmm_system_t sys);
 void sdp_solve(lmm_system_t sys);
 #endif /* HAVE_SDP */
 
+void lagrange_solve(lmm_system_t sys);
+
 #endif				/* _SURF_MAXMIN_H */
