@@ -68,16 +68,10 @@ void simix_config_finalize(void)
  * Example:
  * MSG_config("surf_workstation_model","KCCFLN05");
  */
-void SIMIX_config(const char *name, ...) 
+void SIMIX_config(const char *name, va_list pa) 
 {
-  va_list pa;
-    
   if (!_simix_init_status) {
     simix_config_init();
   }
-
-  va_start(pa,name);
   xbt_cfg_set_vargs(_simix_cfg_set,name,pa);
-  va_end(pa);
-
 }

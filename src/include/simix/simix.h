@@ -17,7 +17,7 @@ SG_BEGIN_DECL()
 
 
 /************************** Global ******************************************/
-XBT_PUBLIC(void) SIMIX_config(const char *name, ...);
+XBT_PUBLIC(void) SIMIX_config(const char *name, va_list pa);
 XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
 XBT_PUBLIC(void) SIMIX_global_init_args(int *argc, char **argv);
 XBT_PUBLIC(void) SIMIX_clean(void);

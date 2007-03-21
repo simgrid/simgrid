@@ -8,6 +8,7 @@
 
 #include "private.h"
 #include "xbt/log.h"
+#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_action, simix,
 				"Logging specific to SIMIX (action)");
@@ -18,10 +19,10 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver,char
 {
 	/* check if the host is active */
  	if ( surf_workstation_resource->extension_public->get_state(sender->simdata->host)!=SURF_CPU_ON) {
-		THROW1(1,1,"Host %s failed, you cannot call this function",sender->name);
+		THROW1(network_error,0,"Host %s failed, you cannot call this function",sender->name);
 	}
 	if ( surf_workstation_resource->extension_public->get_state(receiver->simdata->host)!=SURF_CPU_ON) {
-		THROW1(1,1,"Host %s failed, you cannot call this function",receiver->name);
+		THROW1(network_error,0,"Host %s failed, you cannot call this function",receiver->name);
 	}
 
 	/* alloc structures */
@@ -46,7 +47,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, char * name, double amount)
 {
 	/* check if the host is active */
  	if ( surf_workstation_resource->extension_public->get_state(host->simdata->host)!=SURF_CPU_ON) {
-		THROW1(1,1,"Host %s failed, you cannot call this function",host->name);
+		THROW1(host_error,0,"Host %s failed, you cannot call this function",host->name);
 	}
 
 	/* alloc structures */
@@ -70,8 +71,14 @@ smx_action_t SIMIX_action_execute(smx_host_t host, char * name, double amount)
 
 
 smx_action_t SIMIX_action_sleep(smx_host_t host,  double duration)
-{
+{		
 	char name[] = "sleep";
+
+	/* check if the host is active */
+ 	if ( surf_workstation_resource->extension_public->get_state(host->simdata->host)!=SURF_CPU_ON) {
+		THROW1(host_error,0,"Host %s failed, you cannot call this function",host->name);
+	}
+
 	/* alloc structures */
 	smx_action_t act = xbt_new0(s_smx_action_t,1);
 	act->simdata = xbt_new0(s_simdata_action_t,1);
