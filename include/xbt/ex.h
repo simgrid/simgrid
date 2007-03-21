@@ -242,7 +242,8 @@ typedef enum {
   system_error,   /**< a syscall did fail */
   network_error,  /**< error while sending/receiving data */
   timeout_error,  /**< not quick enough, dude */
-  thread_error    /**< error while [un]locking */
+  thread_error,    /**< error while [un]locking */
+	host_error			/**< host failed */
 } xbt_errcat_t;
 
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
