@@ -33,6 +33,7 @@ typedef struct lmm_constraint {
   s_xbt_swag_t element_set;	/* a list of lmm_mat_element_t */
   s_xbt_swag_t active_element_set;	/* a list of lmm_mat_element_t */
   double bound;
+  double initial_bound;
   double remaining;
   int shared;
   double usage;
@@ -49,6 +50,7 @@ typedef struct lmm_variable {
   int cnsts_number;
   double weight;
   double bound;
+  double initial_bound;
   double value;
   void *id;
   int index;
