@@ -390,7 +390,6 @@ the double. For now, GRAS requires the structures to be compacted. */
 
 /* types */
 typedef unsigned int uint32_t;
-typedef int socklen_t;
 
 /* Choose setjmp as exception implementation */
 #ifndef __EX_MCTX_SJLJ__

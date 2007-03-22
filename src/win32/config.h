@@ -26,7 +26,7 @@
 # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
 #endif
 
-
+typedef int socklen_t;
 #define tcp_read( s, buf, len )  	recv( s, buf, len, 0 )
 #define tcp_write( s, buf, len )	send( s, buf, len, 0 )
 #define ioctl( s, c, a )        	ioctlsocket( (s), (c), (a) )
