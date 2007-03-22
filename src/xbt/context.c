@@ -180,7 +180,7 @@ static void __context_exit(xbt_context_t context ,int value)
 
 static void *
 __context_wrapper(void* c) {
-	xbt_context_t context = (xbt_context_t)c;
+	xbt_context_t context = (xbt_context_t) current_context;
 	
 	#ifdef CONTEXT_THREADS
 	context->thread = xbt_thread_self();
