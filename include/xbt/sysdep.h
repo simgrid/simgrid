@@ -18,17 +18,9 @@
    
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
+#include "xbt/str.h"
   
 SG_BEGIN_DECL()
-
-/* FIXME: better place? */
-extern int   asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
-extern int vasprintf (char **ptr, const char *fmt, va_list ap);
-XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
-
-#if defined(_WIN32) || !defined(__GNUC__)
-XBT_PUBLIC(long) getline(char **lineptr, size_t *n, FILE *stream);
-#endif
 
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
