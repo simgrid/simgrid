@@ -180,9 +180,10 @@ static void __context_exit(xbt_context_t context ,int value)
 
 static void *
 __context_wrapper(void* c) {
-	xbt_context_t context = (xbt_context_t) current_context;
+	xbt_context_t context = current_context;
 	
 	#ifdef CONTEXT_THREADS
+	context = (xbt_context_t)c;
 	context->thread = xbt_thread_self();
         
 	DEBUG3("**[ctx:%p;self:%p]** Lock creation_mutex %p ****",context,(void*)xbt_thread_self(), creation_mutex);
