@@ -110,8 +110,8 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/getline.c xbt/ex.c \
 	gras/Msg/msg.c gras/Msg/rpc.c gras/Msg/timer.c \
 	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
 	gras/Virtu/process.c gras/Virtu/gras_module.c gras/sg_stubs.c \
-	xbt/context.c surf/maxmin.c surf/trace_mgr.c surf/surf.c \
-	surf/surfxml_parse.c surf/cpu.c surf/network.c \
+	xbt/context.c surf/maxmin.c surf/lagrange.c surf/trace_mgr.c \
+	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
 	surf/workstation_KCCFLN05.c msg/msg_config.c msg/task.c \
 	msg/host.c msg/m_process.c msg/gos.c msg/global.c \
@@ -131,14 +131,15 @@ am__objects_5 = smx_global.lo smx_deployment.lo smx_config.lo \
 	smx_environment.lo smx_host.lo smx_process.lo smx_action.lo \
 	smx_synchro.lo
 @USE_SIMIX_TRUE@am__objects_6 = $(am__objects_5)
-am__objects_7 = sg_stubs.lo context.lo maxmin.lo trace_mgr.lo surf.lo \
-	surfxml_parse.lo cpu.lo network.lo workstation.lo \
-	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
-	msg_config.lo task.lo host.lo m_process.lo gos.lo global.lo \
-	environment.lo deployment.lo sd_global.lo sd_link.lo \
-	sd_task.lo sd_workstation.lo sg_transport.lo \
-	transport_plugin_sg.lo sg_emul.lo sg_process.lo sg_time.lo \
-	sg_dns.lo sg_msg.lo $(am__objects_4) $(am__objects_6)
+am__objects_7 = sg_stubs.lo context.lo maxmin.lo lagrange.lo \
+	trace_mgr.lo surf.lo surfxml_parse.lo cpu.lo network.lo \
+	workstation.lo surf_timer.lo network_dassf.lo \
+	workstation_KCCFLN05.lo msg_config.lo task.lo host.lo \
+	m_process.lo gos.lo global.lo environment.lo deployment.lo \
+	sd_global.lo sd_link.lo sd_task.lo sd_workstation.lo \
+	sg_transport.lo transport_plugin_sg.lo sg_emul.lo \
+	sg_process.lo sg_time.lo sg_dns.lo sg_msg.lo $(am__objects_4) \
+	$(am__objects_6)
 am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_7) \
 	$(am__objects_3)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
@@ -358,7 +359,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 #          |        +- Increment if source code has changed
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
-VERSION_INFO = -version-info 0:0:0
+VERSION_INFO = -version-info 1:0:0
 # from `info libtool "Updating version info"` 
 # and  `info libtool "Release numbers"` 
 #
@@ -436,14 +437,14 @@ RL_SRC = \
   \
   gras/Msg/rl_msg.c
 
-SG_SRC = gras/sg_stubs.c xbt/context.c surf/maxmin.c surf/trace_mgr.c \
-	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
-	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
-	surf/workstation_KCCFLN05.c msg/msg_config.c msg/task.c \
-	msg/host.c msg/m_process.c msg/gos.c msg/global.c \
-	msg/environment.c msg/deployment.c simdag/sd_global.c \
-	simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
-	gras/Transport/sg_transport.c \
+SG_SRC = gras/sg_stubs.c xbt/context.c surf/maxmin.c surf/lagrange.c \
+	surf/trace_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
+	surf/network.c surf/workstation.c surf/surf_timer.c \
+	surf/network_dassf.c surf/workstation_KCCFLN05.c \
+	msg/msg_config.c msg/task.c msg/host.c msg/m_process.c \
+	msg/gos.c msg/global.c msg/environment.c msg/deployment.c \
+	simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c \
+	simdag/sd_workstation.c gras/Transport/sg_transport.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
 	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
 	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c $(am__append_2) \
@@ -625,6 +626,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gras_module.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/host.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lagrange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_default_appender.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_process.Plo@am__quote@
@@ -1094,6 +1096,13 @@ maxmin.lo: surf/maxmin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/maxmin.c' object='maxmin.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o maxmin.lo `test -f 'surf/maxmin.c' || echo '$(srcdir)/'`surf/maxmin.c
+
+lagrange.lo: surf/lagrange.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lagrange.lo -MD -MP -MF "$(DEPDIR)/lagrange.Tpo" -c -o lagrange.lo `test -f 'surf/lagrange.c' || echo '$(srcdir)/'`surf/lagrange.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lagrange.Tpo" "$(DEPDIR)/lagrange.Plo"; else rm -f "$(DEPDIR)/lagrange.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/lagrange.c' object='lagrange.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lagrange.lo `test -f 'surf/lagrange.c' || echo '$(srcdir)/'`surf/lagrange.c
 
 trace_mgr.lo: surf/trace_mgr.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trace_mgr.lo -MD -MP -MF "$(DEPDIR)/trace_mgr.Tpo" -c -o trace_mgr.lo `test -f 'surf/trace_mgr.c' || echo '$(srcdir)/'`surf/trace_mgr.c; \
