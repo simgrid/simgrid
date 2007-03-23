@@ -77,7 +77,7 @@ smx_process_t SIMIX_process_create_with_arguments(const char *name,
 					      smx_process_code_t code, void *data,
 					      smx_host_t host, int argc, char **argv)
 {
-  simdata_process_t simdata = xbt_new0(s_simdata_process_t,1);
+  smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t,1);
   smx_process_t process = xbt_new0(s_smx_process_t,1);
   smx_process_t self = NULL;
 
@@ -122,7 +122,7 @@ smx_process_t SIMIX_process_create_with_arguments(const char *name,
 void SIMIX_process_kill(smx_process_t process)
 {
   //int i;
-  simdata_process_t p_simdata = process->simdata;
+  smx_simdata_process_t p_simdata = process->simdata;
   //simdata_host_t h_simdata= p_simdata->host->simdata;
   //int _cursor;
   //smx_process_t proc = NULL;
@@ -244,7 +244,7 @@ smx_process_t SIMIX_process_self(void)
  */
 void SIMIX_process_suspend(smx_process_t process)
 {
-  simdata_process_t simdata = NULL;
+  smx_simdata_process_t simdata = NULL;
 	
   xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
 
@@ -300,7 +300,7 @@ void SIMIX_process_suspend(smx_process_t process)
  */
 void SIMIX_process_resume(smx_process_t process)
 {
-  simdata_process_t simdata = NULL;
+  smx_simdata_process_t simdata = NULL;
 
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();

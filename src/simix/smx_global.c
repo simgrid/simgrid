@@ -67,7 +67,7 @@ void __SIMIX_display_process_status(void)
    /*  List the process and their state */
    INFO0("SIMIX: <process> on <host>: <status>.");
    xbt_swag_foreach(process, simix_global->process_list) {
-      simdata_process_t p_simdata = (simdata_process_t) process->simdata;
+      smx_simdata_process_t p_simdata = (smx_simdata_process_t) process->simdata;
      // simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
       char *who;
 	
@@ -129,14 +129,14 @@ void __SIMIX_main(void)
 			xbt_fifo_item_t _cursor;
 
 			DEBUG1("** %s failed **",smx_action->name);
-			xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
+			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
 				xbt_swag_foreach(process,cond->sleeping) {
 					DEBUG2("\t preparing to wake up %s on %s",	     
 							process->name,	process->simdata->host->name);
 				}
 				SIMIX_cond_broadcast(cond);
 				/* remove conditional from action */
-				xbt_fifo_remove(smx_action->simdata->cond_list,cond);
+				xbt_fifo_remove(smx_action->cond_list,cond);
 			}
 		}
 
@@ -144,14 +144,14 @@ void __SIMIX_main(void)
 			xbt_fifo_item_t _cursor;
 
 			DEBUG1("** %s done **",smx_action->name);
-			xbt_fifo_foreach(smx_action->simdata->cond_list,_cursor,cond,smx_cond_t) {
+			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
 				xbt_swag_foreach(process,cond->sleeping) {
 					DEBUG2("\t preparing to wake up %s on %s",	     
 							process->name,	process->simdata->host->name);
 				}
 				SIMIX_cond_broadcast(cond);
 				/* remove conditional from action */
-				xbt_fifo_remove(smx_action->simdata->cond_list,cond);
+				xbt_fifo_remove(smx_action->cond_list,cond);
 			}
 		}
 	}

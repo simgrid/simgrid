@@ -30,7 +30,7 @@ smx_host_t __SIMIX_host_create(const char *name,
 			 void *workstation,
 			 void *data)
 {
-  simdata_host_t simdata = xbt_new0(s_simdata_host_t,1);
+  smx_simdata_host_t simdata = xbt_new0(s_smx_simdata_host_t,1);
   smx_host_t host = xbt_new0(s_smx_host_t,1);
   s_smx_process_t proc;
 
@@ -115,7 +115,7 @@ smx_host_t SIMIX_host_self(void)
  */
 void __SIMIX_host_destroy(smx_host_t host)
 {
-  simdata_host_t simdata = NULL;
+  smx_simdata_host_t simdata = NULL;
 
   xbt_assert0((host != NULL), "Invalid parameters");
 

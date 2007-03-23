@@ -212,7 +212,7 @@ void SIMIX_register_condition_to_action(smx_action_t action, smx_cond_t cond)
 {
 	xbt_assert0( (action != NULL) && (cond != NULL), "Invalid parameters");
 
-	xbt_fifo_push(action->simdata->cond_list,cond);
+	xbt_fifo_push(action->cond_list,cond);
 }
 
 

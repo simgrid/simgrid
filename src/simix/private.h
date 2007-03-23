@@ -22,10 +22,10 @@
 
 /********************************** Host ************************************/
 
-typedef struct s_simdata_host {
+typedef struct s_smx_simdata_host {
   void *host;			/* SURF modeling */
   xbt_swag_t process_list;
-} s_simdata_host_t;
+} s_smx_simdata_host_t;
 
 /********************************* Simix Global ******************************/
 
@@ -42,7 +42,7 @@ extern SIMIX_Global_t simix_global;
 
 /******************************* Process *************************************/
 
-typedef struct s_simdata_process {
+typedef struct s_smx_simdata_process {
   smx_host_t host;                /* the host on which the process is running */
   xbt_context_t context;	        /* the context that executes the scheduler fonction */
   int blocked;
@@ -51,7 +51,7 @@ typedef struct s_simdata_process {
   smx_cond_t cond;		/* cond on which the process is blocked  */
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
-} s_simdata_process_t;
+} s_smx_simdata_process_t;
 
 typedef struct process_arg {
   const char *name;
@@ -80,13 +80,12 @@ typedef struct s_smx_cond {
 
 /********************************* Action **************************************/
 
-typedef struct s_simdata_action {
+typedef struct s_smx_simdata_action {
   surf_action_t surf_action;	/* SURF modeling of computation  */
   
-  xbt_fifo_t cond_list;		/* conditional variables that must be signaled when the action finish. */
   smx_host_t source; 
 
-} s_simdata_action_t;
+} s_smx_simdata_action_t;
 
 
 

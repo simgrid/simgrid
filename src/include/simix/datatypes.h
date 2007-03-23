@@ -17,12 +17,12 @@ SG_BEGIN_DECL()
 /** @defgroup m_datatypes_management_details Details on SIMIX datatypes
     @ingroup  m_datatypes_management*/
 
-typedef struct s_simdata_host *simdata_host_t;
+typedef struct s_smx_simdata_host *smx_simdata_host_t;
 /** @brief Host datatype 
     @ingroup m_datatypes_management_details */
 typedef struct s_smx_host {
   char *name;			/**< @brief host name if any */
-  simdata_host_t simdata;	/**< @brief simulator data */
+  smx_simdata_host_t simdata;	/**< @brief simulator data */
   void *data;			/**< @brief user data */
 } s_smx_host_t;
 /** @brief Host datatype  
@@ -48,12 +48,14 @@ typedef struct s_smx_cond *smx_cond_t;
 
 
 /********************************** Action *************************************/
-typedef struct s_simdata_action *simdata_action_t;
+typedef struct s_smx_simdata_action *smx_simdata_action_t;
 /** @brief Action datatype 
     @ingroup m_datatypes_management_details */
 typedef struct s_smx_action {
   char *name;			/**< @brief action name if any */
-  simdata_action_t simdata;	/**< @brief simulator data */
+  smx_simdata_action_t simdata;	/**< @brief simulator data */
+	xbt_fifo_t cond_list;   /*< conditional variables that must be signaled when the action finish. */
+
   void *data;			/**< @brief user data */
 } s_smx_action_t;
 
@@ -61,12 +63,12 @@ typedef struct s_smx_action *smx_action_t;
 
 
 /* ****************************** Process *********************************** */
-typedef struct s_simdata_process *simdata_process_t;
+typedef struct s_smx_simdata_process *smx_simdata_process_t;
 /** @brief Process datatype 
     @ingroup m_datatypes_management_details @{ */
 typedef struct s_smx_process {
   char *name;			/**< @brief process name if any */
-  simdata_process_t simdata;	/**< @brief simulator data */
+  smx_simdata_process_t simdata;	/**< @brief simulator data */
   s_xbt_swag_hookup_t process_hookup;
   s_xbt_swag_hookup_t synchro_hookup;
   s_xbt_swag_hookup_t host_proc_hookup;

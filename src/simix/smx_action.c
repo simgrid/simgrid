@@ -27,9 +27,9 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver,char
 
 	/* alloc structures */
 	smx_action_t act = xbt_new0(s_smx_action_t,1);
-	act->simdata = xbt_new0(s_simdata_action_t,1);
-	simdata_action_t simdata = act->simdata;
-	simdata->cond_list = xbt_fifo_new();
+	act->simdata = xbt_new0(s_smx_simdata_action_t,1);
+	smx_simdata_action_t simdata = act->simdata;
+	act->cond_list = xbt_fifo_new();
 	
 	/* initialize them */
 	act->name = xbt_strdup(name);
@@ -52,9 +52,9 @@ smx_action_t SIMIX_action_execute(smx_host_t host, char * name, double amount)
 
 	/* alloc structures */
 	smx_action_t act = xbt_new0(s_smx_action_t,1);
-	act->simdata = xbt_new0(s_simdata_action_t,1);
-	simdata_action_t simdata = act->simdata;
-	simdata->cond_list = xbt_fifo_new();
+	act->simdata = xbt_new0(s_smx_simdata_action_t,1);
+	smx_simdata_action_t simdata = act->simdata;
+	act->cond_list = xbt_fifo_new();
 	
 	/* initialize them */
 	simdata->source = host;
@@ -81,9 +81,9 @@ smx_action_t SIMIX_action_sleep(smx_host_t host,  double duration)
 
 	/* alloc structures */
 	smx_action_t act = xbt_new0(s_smx_action_t,1);
-	act->simdata = xbt_new0(s_simdata_action_t,1);
-	simdata_action_t simdata = act->simdata;
-	simdata->cond_list = xbt_fifo_new();
+	act->simdata = xbt_new0(s_smx_simdata_action_t,1);
+	smx_simdata_action_t simdata = act->simdata;
+	act->cond_list = xbt_fifo_new();
 	
 	/* initialize them */
 	simdata->source = host;
@@ -122,12 +122,12 @@ void SIMIX_action_destroy(smx_action_t action)
 
 	xbt_assert0((action != NULL), "Invalid parameter");
 
-	xbt_assert1((xbt_fifo_size(action->simdata->cond_list)==0), 
-			"Conditional list not empty %d. There is a problem. Cannot destroy it now!", xbt_fifo_size(action->simdata->cond_list));
+	xbt_assert1((xbt_fifo_size(action->cond_list)==0), 
+			"Conditional list not empty %d. There is a problem. Cannot destroy it now!", xbt_fifo_size(action->cond_list));
 
 	if(action->name) free(action->name);
 
-	xbt_fifo_free(action->simdata->cond_list);
+	xbt_fifo_free(action->cond_list);
 
 	if(action->simdata->surf_action) 
 		action->simdata->surf_action->resource_type->common_public->action_free(action->simdata->surf_action);
@@ -142,3 +142,8 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 	xbt_fifo_push(cond->actions,action);
 }
 
+double SIMIX_action_get_remains(smx_action_t action) 
+{
+  xbt_assert0((action != NULL), "Invalid parameter");
+	return action->simdata->surf_action->remains;
+}
