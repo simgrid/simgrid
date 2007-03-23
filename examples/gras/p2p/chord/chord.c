@@ -2,6 +2,7 @@
  * vim:ts=2:sw=2:expandtab
  */
 
+#include <stdio.h>
 #include "xbt/sysdep.h"
 #include "gras.h"
 

@@ -2,7 +2,7 @@
 // Peer-To-Peer CAN simulator 050406 by Dytto ESIAL //
 //////////////////////////////////////////////////////
 
-
+#include <stdio.h>
 #include "xbt/sysdep.h"
 #include "gras.h"
 

@@ -6,7 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg/msg.h" /* Yeah! If you want to use msg, you need to include msg/msg.h */
-#include "xbt/sysdep.h" /* calloc, printf */
+#include "xbt/sysdep.h" /* calloc */
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
 
   MSG_global_init(&argc,argv);
   if (argc < 3) {
-     printf ("Usage: %s platform_file deployment_file\n",argv[0]);
-     printf ("example: %s msg_platform.xml msg_deployment_suspend.xml\n",argv[0]);
+     CRITICAL1 ("Usage: %s platform_file deployment_file\n",argv[0]);
+     CRITICAL1 ("example: %s msg_platform.xml msg_deployment_suspend.xml\n",argv[0]);
      exit(1);
   }
   test_all(argv[1],argv[2]);
