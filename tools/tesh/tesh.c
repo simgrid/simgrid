@@ -418,7 +418,7 @@ int main(int argc,char *argv[]) {
 	  exit(1);
        }
        handle_suite(IN);
-       fclose(IN);
+//       fclose(IN); ->leads to segfault on amd64...
        fprintf(stderr,"Test suite `%s' OK\n",argv[i]);
     }
   }
