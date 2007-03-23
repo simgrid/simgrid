@@ -65,7 +65,7 @@ EXTRA_DIST= \
 	amok/amok_modinter.h
 
 if USE_SIMIX
-  EXTRA_DIST+=include/simix/simix.h include/simix/datatypes.h simix/private.h
+  EXTRA_DIST+=include/simix/simix.h include/simix/datatypes.h simix/msg_simix_private.h
 endif
 
 #        gras_private.h
@@ -177,10 +177,6 @@ SG_SRC=  \
   surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c  \
   \
-  msg/msg_config.c \
-  msg/task.c msg/host.c msg/m_process.c msg/gos.c \
-  msg/global.c msg/environment.c msg/deployment.c  \
-  \
   simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c                       \
   simdag/sd_workstation.c                                                    \
   \
@@ -205,12 +201,29 @@ SIMIX_SRC= \
   simix/smx_process.c \
   simix/smx_action.c \
   simix/smx_synchro.c
+
+MSG_SRC=  msg/msg_config.c \
+  msg/task.c msg/host.c msg/m_process.c msg/gos.c \
+  msg/global.c msg/environment.c msg/deployment.c 
+
+MSG_SIMIX_SRC=  msg_simix/msg_simix_config.c \
+  msg_simix/msg_simix_task.c \
+  msg_simix/msg_simix_host.c \
+  msg_simix/msg_simix_process.c \
+  msg_simix/msg_simix_gos.c \
+  msg_simix/msg_simix_global.c \
+  msg_simix/msg_simix_environment.c \
+  msg_simix/msg_simix_deployment.c 
+
 if USE_SIMIX
   SG_SRC+=$(SIMIX_SRC)
+  SG_SRC+=$(MSG_SIMIX_SRC)
+  EXTRA_DIST+=$(MSG_SRC)
 else  
   EXTRA_DIST+=$(SIMIX_SRC)
+  EXTRA_DIST+=$(MSG_SIMIX_SRC)
+  SG_SRC+=$(MSG_SRC)
 endif
-
 
 AMOK_SRC= \
   amok/amok_base.c \

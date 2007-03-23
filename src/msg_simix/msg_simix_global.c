@@ -1,4 +1,4 @@
-#include "private.h"
+#include "msg_simix_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/ex.h" /* ex_backtrace_display */
