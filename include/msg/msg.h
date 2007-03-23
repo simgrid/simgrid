@@ -8,7 +8,7 @@
 #ifndef MSG_H
 #define MSG_H
 
-#include "xbt/misc.h"
+#include "xbt.h"
 
 #include "msg/datatypes.h"
 SG_BEGIN_DECL()
