@@ -2,12 +2,14 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
+#include <stdio.h>
 #include "xbt.h"
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
 # 318 "xbt/ex.c" 
+#include <stdio.h>
 #include "xbt/ex.h"
 
 

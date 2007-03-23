@@ -2,12 +2,13 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
+#include <stdio.h>
 #include "xbt.h"
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 486 "xbt/dict.c" 
+# 487 "xbt/dict.c" 
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "portable.h"

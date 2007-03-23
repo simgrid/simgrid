@@ -2,6 +2,7 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
+#include <stdio.h>
 #include "xbt.h"
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */
