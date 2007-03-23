@@ -21,6 +21,12 @@
 #  include "gras_config.h"
 #endif
 
+/* Load this asap to make sure that GNU_SOURCE is defined on need when stdio gets loaded by some random system header */
+#ifdef HAVE_GETLINE
+#  define _GNU_SOURCE
+#  include <stdio.h>
+#endif
+
 #include <stdarg.h>
 
 #ifdef HAVE_ERRNO_H
@@ -71,11 +77,6 @@
 
 #ifndef O_BINARY
 #  define O_BINARY 0
-#endif
-
-#ifdef HAVE_GETLINE
-#  define _GNU_SOURCE
-#  include <stdio.h>
 #endif
 
 /****
