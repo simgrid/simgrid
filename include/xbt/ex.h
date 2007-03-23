@@ -21,15 +21,14 @@
    Instead, copy the parts we need (and fake when it's not there) */
 XBT_PUBLIC(int) backtrace (void **__array, int __size);
 
-/* required ISO-C standard facilities */
-#include <errno.h>
-#include <stdio.h>
-
 
 /*-*-* Emergency debuging: define this when the exceptions get crazy *-*-*/
 #undef __EX_MAYDAY
 
 #ifdef __EX_MAYDAY
+# include <stdio.h>
+#include <errno.h>
+
 XBT_PUBLIC(int) gras_os_getpid(void);
 #  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
                                    gras_os_getpid(),__FILE__,__LINE__,  \

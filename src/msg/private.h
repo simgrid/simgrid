@@ -8,6 +8,7 @@
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
+#include <stdio.h>
 #include "msg/msg.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"

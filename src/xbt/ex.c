@@ -314,6 +314,7 @@ int backtrace (void **__array, int __size) {
 #endif
 
 #ifdef SIMGRID_TEST
+#include <stdio.h>
 #include "xbt/ex.h"
 
 XBT_TEST_SUITE("xbt_ex","Exception Handling");

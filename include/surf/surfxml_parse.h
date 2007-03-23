@@ -8,8 +8,8 @@
 #ifndef _SURF_SURFXML_PARSE_H
 #define _SURF_SURFXML_PARSE_H
 
+#include <stdio.h> /* to have FILE */
 #include "surf/surfxml.h"
-#include "xbt/sysdep.h" /* to have FILE */
 #include "xbt/function_types.h"
 /* Entry-point of the surfxml parser. */
 extern int_f_void_t *surf_parse;

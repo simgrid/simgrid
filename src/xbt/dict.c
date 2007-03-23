@@ -8,6 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <string.h>
+#include <stdio.h>
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"

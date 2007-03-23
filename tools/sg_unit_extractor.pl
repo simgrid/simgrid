@@ -74,6 +74,7 @@ my ($GENERATED)=("/*******************************/\n".
 $beginline+=2;
 open OUT,">$outfile" || die "$progname: Cannot open output file '$outfile': $!\n";
 print OUT $GENERATED;
+print OUT "#include <stdio.h>\n";
 print OUT "#include \"xbt.h\"\n";
 print OUT $GENERATED;
 print OUT "# $beginline \"$infile\" \n";
@@ -85,6 +86,7 @@ close OUT || die "$progname: Cannot close output file '$outfile': $!\n";
 if (! -e "simgrid_units_main.c") {
   open OUT,">simgrid_units_main.c" || die "$progname: Cannot open main file 'simgrid_units_main.c': $!\n";
   print OUT $GENERATED;
+  print OUT "#include <stdio.h>\n\n";
   print OUT "#include \"xbt.h\"\n\n";
   print OUT "extern xbt_test_unit_t _xbt_current_unit;\n\n";
   print OUT "/* SGU: BEGIN PROTOTYPES */\n";
