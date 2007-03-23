@@ -43,12 +43,15 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@USE_SIMIX_TRUE@am__append_1 = include/simix/simix.h include/simix/datatypes.h simix/private.h
+@USE_SIMIX_TRUE@am__append_1 = include/simix/simix.h \
+@USE_SIMIX_TRUE@	include/simix/datatypes.h \
+@USE_SIMIX_TRUE@	simix/msg_simix_private.h $(MSG_SRC)
 @HAVE_SDP_TRUE@am__append_2 = surf/sdp.c  
-@USE_SIMIX_TRUE@am__append_3 = $(SIMIX_SRC)
-@USE_SIMIX_FALSE@am__append_4 = $(SIMIX_SRC)
+@USE_SIMIX_TRUE@am__append_3 = $(SIMIX_SRC) $(MSG_SIMIX_SRC)
+@USE_SIMIX_FALSE@am__append_4 = $(SIMIX_SRC) $(MSG_SIMIX_SRC)
+@USE_SIMIX_FALSE@am__append_5 = $(MSG_SRC)
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
-@GRAMINE_MODE_FALSE@am__append_5 = $(testall_SOURCES)
+@GRAMINE_MODE_FALSE@am__append_6 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/gras_config.h.in $(srcdir)/ucontext_stack.h.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -113,9 +116,7 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/getline.c xbt/ex.c \
 	xbt/context.c surf/maxmin.c surf/lagrange.c surf/trace_mgr.c \
 	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
-	surf/workstation_KCCFLN05.c msg/msg_config.c msg/task.c \
-	msg/host.c msg/m_process.c msg/gos.c msg/global.c \
-	msg/environment.c msg/deployment.c simdag/sd_global.c \
+	surf/workstation_KCCFLN05.c simdag/sd_global.c \
 	simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
 	gras/Transport/sg_transport.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
@@ -123,35 +124,47 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/getline.c xbt/ex.c \
 	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c surf/sdp.c \
 	simix/smx_global.c simix/smx_deployment.c simix/smx_config.c \
 	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
-	simix/smx_action.c simix/smx_synchro.c amok/amok_base.c \
+	simix/smx_action.c simix/smx_synchro.c \
+	msg_simix/msg_simix_config.c msg_simix/msg_simix_task.c \
+	msg_simix/msg_simix_host.c msg_simix/msg_simix_process.c \
+	msg_simix/msg_simix_gos.c msg_simix/msg_simix_global.c \
+	msg_simix/msg_simix_environment.c \
+	msg_simix/msg_simix_deployment.c msg/msg_config.c msg/task.c \
+	msg/host.c msg/m_process.c msg/gos.c msg/global.c \
+	msg/environment.c msg/deployment.c amok/amok_base.c \
 	amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
 	amok/PeerManagement/peermanagement.c
 @HAVE_SDP_TRUE@am__objects_4 = sdp.lo
 am__objects_5 = smx_global.lo smx_deployment.lo smx_config.lo \
 	smx_environment.lo smx_host.lo smx_process.lo smx_action.lo \
 	smx_synchro.lo
-@USE_SIMIX_TRUE@am__objects_6 = $(am__objects_5)
-am__objects_7 = sg_stubs.lo context.lo maxmin.lo lagrange.lo \
+am__objects_6 = msg_simix_config.lo msg_simix_task.lo \
+	msg_simix_host.lo msg_simix_process.lo msg_simix_gos.lo \
+	msg_simix_global.lo msg_simix_environment.lo \
+	msg_simix_deployment.lo
+@USE_SIMIX_TRUE@am__objects_7 = $(am__objects_5) $(am__objects_6)
+am__objects_8 = msg_config.lo task.lo host.lo m_process.lo gos.lo \
+	global.lo environment.lo deployment.lo
+@USE_SIMIX_FALSE@am__objects_9 = $(am__objects_8)
+am__objects_10 = sg_stubs.lo context.lo maxmin.lo lagrange.lo \
 	trace_mgr.lo surf.lo surfxml_parse.lo cpu.lo network.lo \
 	workstation.lo surf_timer.lo network_dassf.lo \
-	workstation_KCCFLN05.lo msg_config.lo task.lo host.lo \
-	m_process.lo gos.lo global.lo environment.lo deployment.lo \
-	sd_global.lo sd_link.lo sd_task.lo sd_workstation.lo \
-	sg_transport.lo transport_plugin_sg.lo sg_emul.lo \
-	sg_process.lo sg_time.lo sg_dns.lo sg_msg.lo $(am__objects_4) \
-	$(am__objects_6)
-am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_7) \
+	workstation_KCCFLN05.lo sd_global.lo sd_link.lo sd_task.lo \
+	sd_workstation.lo sg_transport.lo transport_plugin_sg.lo \
+	sg_emul.lo sg_process.lo sg_time.lo sg_dns.lo sg_msg.lo \
+	$(am__objects_4) $(am__objects_7) $(am__objects_9)
+am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_10) \
 	$(am__objects_3)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = ./cunit_unit.c ./ex_unit.c ./dynar_unit.c \
 	./dict_unit.c ./set_unit.c ./swag_unit.c ./config_unit.c \
 	simgrid_units_main.c
-@GRAMINE_MODE_FALSE@am__objects_8 = cunit_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@am__objects_11 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) config_unit.$(OBJEXT)
-@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_8) \
+@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_11) \
 @GRAMINE_MODE_FALSE@	simgrid_units_main.$(OBJEXT)
 testall_OBJECTS = $(am_testall_OBJECTS)
 @GRAMINE_MODE_FALSE@testall_DEPENDENCIES = libgras.la
@@ -212,6 +225,7 @@ FLEXML = @FLEXML@
 GRAMINE_MODE_FALSE = @GRAMINE_MODE_FALSE@
 GRAMINE_MODE_TRUE = @GRAMINE_MODE_TRUE@
 GRAS_DEP = @GRAS_DEP@
+GREP = @GREP@
 HAVE_FLEXML_FALSE = @HAVE_FLEXML_FALSE@
 HAVE_FLEXML_TRUE = @HAVE_FLEXML_TRUE@
 HAVE_SDP_FALSE = @HAVE_SDP_FALSE@
@@ -259,15 +273,9 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_configure_args = @ac_configure_args@
-ac_ct_AR = @ac_ct_AR@
-ac_ct_AS = @ac_ct_AS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -285,23 +293,30 @@ build_id = @build_id@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 pth_skaddr_makecontext = @pth_skaddr_makecontext@
 pth_sksize_makecontext = @pth_sksize_makecontext@
 sbindir = @sbindir@
@@ -343,7 +358,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \
 	gras/DataDesc/ddt_parse.yy.l gras/DataDesc/ddt_parse.yy.c \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_1) $(am__append_4) $(am__append_5)
+	$(am__append_1) $(am__append_4) $(am__append_6)
 
 #        gras_private.h
 
@@ -441,14 +456,12 @@ SG_SRC = gras/sg_stubs.c xbt/context.c surf/maxmin.c surf/lagrange.c \
 	surf/trace_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
 	surf/network.c surf/workstation.c surf/surf_timer.c \
 	surf/network_dassf.c surf/workstation_KCCFLN05.c \
-	msg/msg_config.c msg/task.c msg/host.c msg/m_process.c \
-	msg/gos.c msg/global.c msg/environment.c msg/deployment.c \
 	simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c \
 	simdag/sd_workstation.c gras/Transport/sg_transport.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
 	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
 	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c $(am__append_2) \
-	$(am__append_3)
+	$(am__append_3) $(am__append_5)
 SIMIX_SRC = \
   simix/smx_global.c \
   simix/smx_deployment.c \
@@ -458,6 +471,19 @@ SIMIX_SRC = \
   simix/smx_process.c \
   simix/smx_action.c \
   simix/smx_synchro.c
+
+MSG_SRC = msg/msg_config.c \
+  msg/task.c msg/host.c msg/m_process.c msg/gos.c \
+  msg/global.c msg/environment.c msg/deployment.c 
+
+MSG_SIMIX_SRC = msg_simix/msg_simix_config.c \
+  msg_simix/msg_simix_task.c \
+  msg_simix/msg_simix_host.c \
+  msg_simix/msg_simix_process.c \
+  msg_simix/msg_simix_gos.c \
+  msg_simix/msg_simix_global.c \
+  msg_simix/msg_simix_environment.c \
+  msg_simix/msg_simix_deployment.c 
 
 AMOK_SRC = \
   amok/amok_base.c \
@@ -634,6 +660,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maxmin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_config.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_config.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_deployment.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_environment.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_global.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_gos.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_host.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_process.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_task.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_dassf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/peermanagement.Plo@am__quote@
@@ -1167,62 +1201,6 @@ workstation_KCCFLN05.lo: surf/workstation_KCCFLN05.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o workstation_KCCFLN05.lo `test -f 'surf/workstation_KCCFLN05.c' || echo '$(srcdir)/'`surf/workstation_KCCFLN05.c
 
-msg_config.lo: msg/msg_config.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_config.lo -MD -MP -MF "$(DEPDIR)/msg_config.Tpo" -c -o msg_config.lo `test -f 'msg/msg_config.c' || echo '$(srcdir)/'`msg/msg_config.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_config.Tpo" "$(DEPDIR)/msg_config.Plo"; else rm -f "$(DEPDIR)/msg_config.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/msg_config.c' object='msg_config.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_config.lo `test -f 'msg/msg_config.c' || echo '$(srcdir)/'`msg/msg_config.c
-
-task.lo: msg/task.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT task.lo -MD -MP -MF "$(DEPDIR)/task.Tpo" -c -o task.lo `test -f 'msg/task.c' || echo '$(srcdir)/'`msg/task.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/task.Tpo" "$(DEPDIR)/task.Plo"; else rm -f "$(DEPDIR)/task.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/task.c' object='task.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o task.lo `test -f 'msg/task.c' || echo '$(srcdir)/'`msg/task.c
-
-host.lo: msg/host.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT host.lo -MD -MP -MF "$(DEPDIR)/host.Tpo" -c -o host.lo `test -f 'msg/host.c' || echo '$(srcdir)/'`msg/host.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/host.Tpo" "$(DEPDIR)/host.Plo"; else rm -f "$(DEPDIR)/host.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/host.c' object='host.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o host.lo `test -f 'msg/host.c' || echo '$(srcdir)/'`msg/host.c
-
-m_process.lo: msg/m_process.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT m_process.lo -MD -MP -MF "$(DEPDIR)/m_process.Tpo" -c -o m_process.lo `test -f 'msg/m_process.c' || echo '$(srcdir)/'`msg/m_process.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/m_process.Tpo" "$(DEPDIR)/m_process.Plo"; else rm -f "$(DEPDIR)/m_process.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/m_process.c' object='m_process.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o m_process.lo `test -f 'msg/m_process.c' || echo '$(srcdir)/'`msg/m_process.c
-
-gos.lo: msg/gos.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gos.lo -MD -MP -MF "$(DEPDIR)/gos.Tpo" -c -o gos.lo `test -f 'msg/gos.c' || echo '$(srcdir)/'`msg/gos.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gos.Tpo" "$(DEPDIR)/gos.Plo"; else rm -f "$(DEPDIR)/gos.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/gos.c' object='gos.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gos.lo `test -f 'msg/gos.c' || echo '$(srcdir)/'`msg/gos.c
-
-global.lo: msg/global.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT global.lo -MD -MP -MF "$(DEPDIR)/global.Tpo" -c -o global.lo `test -f 'msg/global.c' || echo '$(srcdir)/'`msg/global.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/global.Tpo" "$(DEPDIR)/global.Plo"; else rm -f "$(DEPDIR)/global.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/global.c' object='global.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o global.lo `test -f 'msg/global.c' || echo '$(srcdir)/'`msg/global.c
-
-environment.lo: msg/environment.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT environment.lo -MD -MP -MF "$(DEPDIR)/environment.Tpo" -c -o environment.lo `test -f 'msg/environment.c' || echo '$(srcdir)/'`msg/environment.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/environment.Tpo" "$(DEPDIR)/environment.Plo"; else rm -f "$(DEPDIR)/environment.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/environment.c' object='environment.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o environment.lo `test -f 'msg/environment.c' || echo '$(srcdir)/'`msg/environment.c
-
-deployment.lo: msg/deployment.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT deployment.lo -MD -MP -MF "$(DEPDIR)/deployment.Tpo" -c -o deployment.lo `test -f 'msg/deployment.c' || echo '$(srcdir)/'`msg/deployment.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/deployment.Tpo" "$(DEPDIR)/deployment.Plo"; else rm -f "$(DEPDIR)/deployment.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/deployment.c' object='deployment.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o deployment.lo `test -f 'msg/deployment.c' || echo '$(srcdir)/'`msg/deployment.c
-
 sd_global.lo: simdag/sd_global.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_global.lo -MD -MP -MF "$(DEPDIR)/sd_global.Tpo" -c -o sd_global.lo `test -f 'simdag/sd_global.c' || echo '$(srcdir)/'`simdag/sd_global.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sd_global.Tpo" "$(DEPDIR)/sd_global.Plo"; else rm -f "$(DEPDIR)/sd_global.Tpo"; exit 1; fi
@@ -1362,6 +1340,118 @@ smx_synchro.lo: simix/smx_synchro.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simix/smx_synchro.c' object='smx_synchro.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smx_synchro.lo `test -f 'simix/smx_synchro.c' || echo '$(srcdir)/'`simix/smx_synchro.c
+
+msg_simix_config.lo: msg_simix/msg_simix_config.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_config.lo -MD -MP -MF "$(DEPDIR)/msg_simix_config.Tpo" -c -o msg_simix_config.lo `test -f 'msg_simix/msg_simix_config.c' || echo '$(srcdir)/'`msg_simix/msg_simix_config.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_config.Tpo" "$(DEPDIR)/msg_simix_config.Plo"; else rm -f "$(DEPDIR)/msg_simix_config.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_config.c' object='msg_simix_config.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_config.lo `test -f 'msg_simix/msg_simix_config.c' || echo '$(srcdir)/'`msg_simix/msg_simix_config.c
+
+msg_simix_task.lo: msg_simix/msg_simix_task.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_task.lo -MD -MP -MF "$(DEPDIR)/msg_simix_task.Tpo" -c -o msg_simix_task.lo `test -f 'msg_simix/msg_simix_task.c' || echo '$(srcdir)/'`msg_simix/msg_simix_task.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_task.Tpo" "$(DEPDIR)/msg_simix_task.Plo"; else rm -f "$(DEPDIR)/msg_simix_task.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_task.c' object='msg_simix_task.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_task.lo `test -f 'msg_simix/msg_simix_task.c' || echo '$(srcdir)/'`msg_simix/msg_simix_task.c
+
+msg_simix_host.lo: msg_simix/msg_simix_host.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_host.lo -MD -MP -MF "$(DEPDIR)/msg_simix_host.Tpo" -c -o msg_simix_host.lo `test -f 'msg_simix/msg_simix_host.c' || echo '$(srcdir)/'`msg_simix/msg_simix_host.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_host.Tpo" "$(DEPDIR)/msg_simix_host.Plo"; else rm -f "$(DEPDIR)/msg_simix_host.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_host.c' object='msg_simix_host.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_host.lo `test -f 'msg_simix/msg_simix_host.c' || echo '$(srcdir)/'`msg_simix/msg_simix_host.c
+
+msg_simix_process.lo: msg_simix/msg_simix_process.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_process.lo -MD -MP -MF "$(DEPDIR)/msg_simix_process.Tpo" -c -o msg_simix_process.lo `test -f 'msg_simix/msg_simix_process.c' || echo '$(srcdir)/'`msg_simix/msg_simix_process.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_process.Tpo" "$(DEPDIR)/msg_simix_process.Plo"; else rm -f "$(DEPDIR)/msg_simix_process.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_process.c' object='msg_simix_process.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_process.lo `test -f 'msg_simix/msg_simix_process.c' || echo '$(srcdir)/'`msg_simix/msg_simix_process.c
+
+msg_simix_gos.lo: msg_simix/msg_simix_gos.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_gos.lo -MD -MP -MF "$(DEPDIR)/msg_simix_gos.Tpo" -c -o msg_simix_gos.lo `test -f 'msg_simix/msg_simix_gos.c' || echo '$(srcdir)/'`msg_simix/msg_simix_gos.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_gos.Tpo" "$(DEPDIR)/msg_simix_gos.Plo"; else rm -f "$(DEPDIR)/msg_simix_gos.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_gos.c' object='msg_simix_gos.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_gos.lo `test -f 'msg_simix/msg_simix_gos.c' || echo '$(srcdir)/'`msg_simix/msg_simix_gos.c
+
+msg_simix_global.lo: msg_simix/msg_simix_global.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_global.lo -MD -MP -MF "$(DEPDIR)/msg_simix_global.Tpo" -c -o msg_simix_global.lo `test -f 'msg_simix/msg_simix_global.c' || echo '$(srcdir)/'`msg_simix/msg_simix_global.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_global.Tpo" "$(DEPDIR)/msg_simix_global.Plo"; else rm -f "$(DEPDIR)/msg_simix_global.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_global.c' object='msg_simix_global.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_global.lo `test -f 'msg_simix/msg_simix_global.c' || echo '$(srcdir)/'`msg_simix/msg_simix_global.c
+
+msg_simix_environment.lo: msg_simix/msg_simix_environment.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_environment.lo -MD -MP -MF "$(DEPDIR)/msg_simix_environment.Tpo" -c -o msg_simix_environment.lo `test -f 'msg_simix/msg_simix_environment.c' || echo '$(srcdir)/'`msg_simix/msg_simix_environment.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_environment.Tpo" "$(DEPDIR)/msg_simix_environment.Plo"; else rm -f "$(DEPDIR)/msg_simix_environment.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_environment.c' object='msg_simix_environment.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_environment.lo `test -f 'msg_simix/msg_simix_environment.c' || echo '$(srcdir)/'`msg_simix/msg_simix_environment.c
+
+msg_simix_deployment.lo: msg_simix/msg_simix_deployment.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_simix_deployment.lo -MD -MP -MF "$(DEPDIR)/msg_simix_deployment.Tpo" -c -o msg_simix_deployment.lo `test -f 'msg_simix/msg_simix_deployment.c' || echo '$(srcdir)/'`msg_simix/msg_simix_deployment.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_simix_deployment.Tpo" "$(DEPDIR)/msg_simix_deployment.Plo"; else rm -f "$(DEPDIR)/msg_simix_deployment.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg_simix/msg_simix_deployment.c' object='msg_simix_deployment.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_simix_deployment.lo `test -f 'msg_simix/msg_simix_deployment.c' || echo '$(srcdir)/'`msg_simix/msg_simix_deployment.c
+
+msg_config.lo: msg/msg_config.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_config.lo -MD -MP -MF "$(DEPDIR)/msg_config.Tpo" -c -o msg_config.lo `test -f 'msg/msg_config.c' || echo '$(srcdir)/'`msg/msg_config.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/msg_config.Tpo" "$(DEPDIR)/msg_config.Plo"; else rm -f "$(DEPDIR)/msg_config.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/msg_config.c' object='msg_config.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_config.lo `test -f 'msg/msg_config.c' || echo '$(srcdir)/'`msg/msg_config.c
+
+task.lo: msg/task.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT task.lo -MD -MP -MF "$(DEPDIR)/task.Tpo" -c -o task.lo `test -f 'msg/task.c' || echo '$(srcdir)/'`msg/task.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/task.Tpo" "$(DEPDIR)/task.Plo"; else rm -f "$(DEPDIR)/task.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/task.c' object='task.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o task.lo `test -f 'msg/task.c' || echo '$(srcdir)/'`msg/task.c
+
+host.lo: msg/host.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT host.lo -MD -MP -MF "$(DEPDIR)/host.Tpo" -c -o host.lo `test -f 'msg/host.c' || echo '$(srcdir)/'`msg/host.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/host.Tpo" "$(DEPDIR)/host.Plo"; else rm -f "$(DEPDIR)/host.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/host.c' object='host.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o host.lo `test -f 'msg/host.c' || echo '$(srcdir)/'`msg/host.c
+
+m_process.lo: msg/m_process.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT m_process.lo -MD -MP -MF "$(DEPDIR)/m_process.Tpo" -c -o m_process.lo `test -f 'msg/m_process.c' || echo '$(srcdir)/'`msg/m_process.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/m_process.Tpo" "$(DEPDIR)/m_process.Plo"; else rm -f "$(DEPDIR)/m_process.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/m_process.c' object='m_process.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o m_process.lo `test -f 'msg/m_process.c' || echo '$(srcdir)/'`msg/m_process.c
+
+gos.lo: msg/gos.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gos.lo -MD -MP -MF "$(DEPDIR)/gos.Tpo" -c -o gos.lo `test -f 'msg/gos.c' || echo '$(srcdir)/'`msg/gos.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gos.Tpo" "$(DEPDIR)/gos.Plo"; else rm -f "$(DEPDIR)/gos.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/gos.c' object='gos.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gos.lo `test -f 'msg/gos.c' || echo '$(srcdir)/'`msg/gos.c
+
+global.lo: msg/global.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT global.lo -MD -MP -MF "$(DEPDIR)/global.Tpo" -c -o global.lo `test -f 'msg/global.c' || echo '$(srcdir)/'`msg/global.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/global.Tpo" "$(DEPDIR)/global.Plo"; else rm -f "$(DEPDIR)/global.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/global.c' object='global.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o global.lo `test -f 'msg/global.c' || echo '$(srcdir)/'`msg/global.c
+
+environment.lo: msg/environment.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT environment.lo -MD -MP -MF "$(DEPDIR)/environment.Tpo" -c -o environment.lo `test -f 'msg/environment.c' || echo '$(srcdir)/'`msg/environment.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/environment.Tpo" "$(DEPDIR)/environment.Plo"; else rm -f "$(DEPDIR)/environment.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/environment.c' object='environment.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o environment.lo `test -f 'msg/environment.c' || echo '$(srcdir)/'`msg/environment.c
+
+deployment.lo: msg/deployment.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT deployment.lo -MD -MP -MF "$(DEPDIR)/deployment.Tpo" -c -o deployment.lo `test -f 'msg/deployment.c' || echo '$(srcdir)/'`msg/deployment.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/deployment.Tpo" "$(DEPDIR)/deployment.Plo"; else rm -f "$(DEPDIR)/deployment.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='msg/deployment.c' object='deployment.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o deployment.lo `test -f 'msg/deployment.c' || echo '$(srcdir)/'`msg/deployment.c
 
 cunit_unit.o: ./cunit_unit.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cunit_unit.o -MD -MP -MF "$(DEPDIR)/cunit_unit.Tpo" -c -o cunit_unit.o `test -f './cunit_unit.c' || echo '$(srcdir)/'`./cunit_unit.c; \
@@ -1593,7 +1683,7 @@ check-TESTS: $(TESTS)
 	else :; fi
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../acmacro $(distdir)/amok $(distdir)/amok/Bandwidth $(distdir)/gras/DataDesc $(distdir)/gras/Transport $(distdir)/gras/Virtu $(distdir)/include/simix $(distdir)/include/surf $(distdir)/include/xbt $(distdir)/msg $(distdir)/simdag $(distdir)/simix $(distdir)/surf $(distdir)/xbt
+	$(mkdir_p) $(distdir)/../acmacro $(distdir)/amok $(distdir)/amok/Bandwidth $(distdir)/gras/DataDesc $(distdir)/gras/Transport $(distdir)/gras/Virtu $(distdir)/include/simix $(distdir)/include/surf $(distdir)/include/xbt $(distdir)/msg $(distdir)/msg_simix $(distdir)/simdag $(distdir)/simix $(distdir)/surf $(distdir)/xbt
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
