@@ -32,6 +32,7 @@ m_process_t MSG_process_create(const char *name,
 
 static void MSG_process_cleanup(void *arg)
 {
+	xbt_die("not implemented yet");
 	return;
 }
 
@@ -63,8 +64,32 @@ m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,
 					      m_host_t host, int argc, char **argv)
 {
+  simdata_process_t simdata = xbt_new0(s_simdata_process_t,1);
   m_process_t process = xbt_new0(s_m_process_t,1);
-   return process;
+
+  xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
+
+  /* Simulator Data */
+  simdata->PID = msg_global->PID++;
+  simdata->host = host;
+  simdata->argc = argc;
+  simdata->argv = argv;
+	simdata->smx_process = SIMIX_process_create_with_arguments(name, (smx_process_code_t)code,
+																															(void*)process, host->simdata->host, argc, argv );
+
+	if (SIMIX_process_self()) {
+		simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
+	}
+	else simdata->PPID = -1;
+  simdata->last_errno=MSG_OK;
+
+
+  /* Process structure */
+  process->name = xbt_strdup(name);
+  process->simdata = simdata;
+  process->data = data;
+
+  return process;
 }
 
 /** \ingroup m_process_management
@@ -74,6 +99,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
  */
 void MSG_process_kill(m_process_t process)
 {
+	xbt_die("not implemented yet");
 	return;
 }
 
@@ -85,6 +111,7 @@ void MSG_process_kill(m_process_t process)
  */
 MSG_error_t MSG_process_change_host(m_process_t process, m_host_t host)
 {
+	xbt_die("not implemented yet");
   return MSG_OK;
 }
 
@@ -213,7 +240,7 @@ int MSG_process_self_PPID(void)
  */
 m_process_t MSG_process_self(void)
 {
-	return NULL;
+	return (m_process_t)SIMIX_process_self()->data;
 }
 
 /** \ingroup m_process_management
@@ -224,7 +251,8 @@ m_process_t MSG_process_self(void)
  */
 MSG_error_t MSG_process_suspend(m_process_t process)
 {
-   return MSG_OK;
+	xbt_die("not implemented yet");
+	return MSG_OK;
 }
 
 /** \ingroup m_process_management
@@ -235,6 +263,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
  */
 MSG_error_t MSG_process_resume(m_process_t process)
 {
+	xbt_die("not implemented yet");
 	MSG_RETURN(MSG_OK);
 }
 
@@ -246,7 +275,8 @@ MSG_error_t MSG_process_resume(m_process_t process)
  */
 int MSG_process_is_suspended(m_process_t process)
 {
- return 0;
+	xbt_die("not implemented yet");
+	return 0;
 }
 
 int __MSG_process_block(double max_duration, const char *info)

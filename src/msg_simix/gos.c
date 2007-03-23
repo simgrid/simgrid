@@ -13,6 +13,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 							m_host_t host)
 {
 
+	xbt_die("not implemented yet");
 	MSG_RETURN(MSG_OK);
 }
 
@@ -93,6 +94,7 @@ MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel,
  */
 int MSG_task_Iprobe(m_channel_t channel)
 {
+	xbt_die("not implemented yet");
 	return 0;
 }
 
@@ -107,6 +109,7 @@ int MSG_task_Iprobe(m_channel_t channel)
  */
 int MSG_task_probe_from(m_channel_t channel)
 {
+	xbt_die("not implemented yet");
 	return 0;
 }
 
@@ -129,6 +132,7 @@ int MSG_task_probe_from(m_channel_t channel)
 MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
 				    int *PID)
 {
+	xbt_die("not implemented yet");
 	MSG_RETURN(MSG_OK);
 }
 
@@ -148,6 +152,7 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
  */
 int MSG_task_probe_from_host(int channel, m_host_t host)
 {
+	xbt_die("not implemented yet");
 	return 0;
 }
 
@@ -183,6 +188,7 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
 MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest, 
 				      m_channel_t channel, double max_duration)
 {
+	xbt_die("not implemented yet");
 	MSG_RETURN(MSG_OK);
 }
 /** \ingroup msg_gos_functions
@@ -284,6 +290,7 @@ m_task_t MSG_parallel_task_create(const char *name,
 				  void *data)
 {
   m_task_t task = xbt_new0(s_m_task_t,1);
+	xbt_die("not implemented yet");
   return task;
 }
 
@@ -295,19 +302,9 @@ static void __MSG_parallel_task_execute(m_process_t process, m_task_t task)
 
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
-  m_process_t process = MSG_process_self();
-  MSG_error_t res;
 
-  DEBUG0("Computing on a tons of guys");
-  
-  __MSG_parallel_task_execute(process, task);
-
-  if(task->simdata->compute)
-    res = __MSG_wait_for_computation(process,task);
-  else 
-    res = MSG_OK;
-
-  return res;  
+	xbt_die("not implemented yet");
+  return MSG_OK;  
 }
 
 
@@ -320,6 +317,28 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
  */
 MSG_error_t MSG_process_sleep(double nb_sec)
 {
+	smx_action_t act_sleep;
+	m_process_t proc = MSG_process_self();
+	smx_mutex_t mutex;
+	smx_cond_t cond;
+	/* create action to sleep */
+	act_sleep = SIMIX_action_sleep(SIMIX_process_get_host(proc->simdata->smx_process),nb_sec);
+	
+	mutex = SIMIX_mutex_init();
+	SIMIX_mutex_lock(mutex);
+	/* create conditional and register action to it */
+	cond = SIMIX_cond_init();
+
+	SIMIX_register_condition_to_action(act_sleep, cond);
+	SIMIX_register_action_to_condition(act_sleep, cond);
+	SIMIX_cond_wait(cond,mutex);
+	SIMIX_mutex_unlock(mutex);
+
+	/* remove variables */
+	SIMIX_action_destroy(act_sleep);
+	SIMIX_cond_destroy(cond);
+	SIMIX_mutex_destroy(mutex);
+
 	MSG_RETURN(MSG_OK);
 }
 
@@ -329,6 +348,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  */
 static int MSG_get_msgload(void) 
 {
+	xbt_die("not implemented yet");
 	return 0;
 }
 

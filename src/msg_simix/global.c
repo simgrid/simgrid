@@ -3,10 +3,10 @@
 #include "xbt/log.h"
 #include "xbt/ex.h" /* ex_backtrace_display */
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,        "Logging specific to MSG (kernel)");    
+
 MSG_Global_t msg_global = NULL;
 
-/* static void MarkAsFailed(m_task_t t, TBX_HashTable_t failedProcessList); */
-/* static xbt_fifo_t MSG_buildFailedHostList(double a, double b); */
 
 /** \defgroup msg_simulation   MSG simulation Functions
  *  \brief This section describes the functions you need to know to
@@ -30,6 +30,16 @@ void MSG_global_init_args(int *argc, char **argv)
  */
 void MSG_global_init(int *argc, char **argv)
 {
+  if (!msg_global) {
+    SIMIX_global_init(argc, argv);
+     
+    msg_global = xbt_new0(s_MSG_Global_t,1);
+
+    msg_global->host = xbt_fifo_new();
+    msg_global->process_list = xbt_fifo_new();
+    msg_global->max_channel = 0;
+    msg_global->PID = 1;
+  }
 	return;
 
 }
@@ -37,9 +47,9 @@ void MSG_global_init(int *argc, char **argv)
 /** \ingroup msg_easier_life
  * \brief Traces MSG events in the Paje format.
  */
+
 void MSG_paje_output(const char *filename)
 {
-	return;
 }
 
 /** \defgroup m_channel_management    Understanding channels
@@ -67,6 +77,9 @@ void MSG_paje_output(const char *filename)
  */
 MSG_error_t MSG_set_channel_number(int number)
 {
+  xbt_assert0((msg_global) && (msg_global->max_channel == 0), "Channel number already set!");
+
+  msg_global->max_channel = number;
 
   return MSG_OK;
 }
@@ -80,12 +93,15 @@ MSG_error_t MSG_set_channel_number(int number)
  */
 int MSG_get_channel_number(void)
 {
-	return 0;
+  xbt_assert0((msg_global)&&(msg_global->max_channel != 0), "Channel number not set yet!");
+
+  return msg_global->max_channel;
 }
 
 void __MSG_display_process_status(void)
 {
 }
+
 
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
@@ -102,6 +118,46 @@ static void _XBT_CALL inthandler(int ignored)
  */
 MSG_error_t MSG_main(void)
 {
+	smx_cond_t cond = NULL;
+	smx_action_t smx_action;
+	xbt_fifo_t actions_done = xbt_fifo_new();
+	xbt_fifo_t actions_failed = xbt_fifo_new();
+
+	/* Prepare to display some more info when dying on Ctrl-C pressing */
+	signal(SIGINT,inthandler);
+
+	/* Clean IO before the run */
+	fflush(stdout);
+	fflush(stderr);
+
+	//surf_solve(); /* Takes traces into account. Returns 0.0 */
+	/* xbt_fifo_size(msg_global->process_to_run) */
+
+	while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
+
+		while ( (smx_action = xbt_fifo_pop(actions_failed)) ) {
+
+			xbt_fifo_item_t _cursor;
+
+			DEBUG1("** %s failed **",smx_action->name);
+			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
+				SIMIX_cond_broadcast(cond);
+				/* remove conditional from action */
+				xbt_fifo_remove(smx_action->cond_list,cond);
+			}
+		}
+
+		while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
+			xbt_fifo_item_t _cursor;
+
+			DEBUG1("** %s done **",smx_action->name);
+			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
+				SIMIX_cond_broadcast(cond);
+				/* remove conditional from action */
+				xbt_fifo_remove(smx_action->cond_list,cond);
+			}
+		}
+	}
   return MSG_OK;
 }
 
@@ -114,6 +170,7 @@ MSG_error_t MSG_main(void)
  */
 int MSG_process_killall(int reset_PIDs)
 {
+	xbt_die("not implemented yet");
   return 0;
 }
 
@@ -122,6 +179,24 @@ int MSG_process_killall(int reset_PIDs)
  */
 MSG_error_t MSG_clean(void)
 {
+  xbt_fifo_item_t i = NULL;
+  m_host_t h = NULL;
+  m_process_t p = NULL;
+
+
+  while((p=xbt_fifo_pop(msg_global->process_list))) {
+    MSG_process_kill(p);
+  }
+
+  xbt_fifo_foreach(msg_global->host,i,h,m_host_t) {
+    __MSG_host_destroy(h);
+  }
+  xbt_fifo_free(msg_global->host);
+  xbt_fifo_free(msg_global->process_list);
+
+  free(msg_global);
+	SIMIX_clean();
+
   return MSG_OK;
 }
 
@@ -131,6 +206,6 @@ MSG_error_t MSG_clean(void)
  */
 double MSG_get_clock(void) 
 {
-	return 0.0;
+	return SIMIX_get_clock();
 }
 

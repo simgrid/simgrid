@@ -22,7 +22,13 @@
  */
 m_host_t MSG_get_host_by_name(const char *name)
 {
-	return NULL;
+	smx_host_t simix_h = NULL;
+
+	simix_h = SIMIX_host_get_by_name(name);
+	if (simix_h == NULL) {
+		return NULL;
+	}
+	else return (m_host_t)simix_h->data;
 }
 
 /** \ingroup msg_easier_life
@@ -43,6 +49,16 @@ m_host_t MSG_get_host_by_name(const char *name)
  */
 void MSG_create_environment(const char *file) 
 {
+  smx_host_t *workstation = NULL;
+	int i;
+
+	SIMIX_create_environment(file);
+
+	/* Initialize MSG hosts */
+	workstation = SIMIX_host_get_table();
+	for (i=0; i< SIMIX_host_get_number();i++) {
+		__MSG_host_create(workstation[i], NULL);
+	}
   return;
 }
 

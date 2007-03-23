@@ -21,6 +21,8 @@
  */
 void MSG_launch_application(const char *file) 
 {
+  xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_launch_application.");
+	SIMIX_launch_application(file);
 
 	return;
 }
@@ -35,6 +37,7 @@ void MSG_launch_application(const char *file)
  */
 void MSG_function_register(const char *name,m_process_code_t code)
 {
+	SIMIX_function_register(name, code);
 	return;
 }
 
@@ -49,6 +52,7 @@ m_process_code_t MSG_get_registered_function(const char *name)
 {
   m_process_code_t code = NULL;
 
+	code = (m_process_code_t)SIMIX_get_registered_function(name);
 
   return code;
 }

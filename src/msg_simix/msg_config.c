@@ -16,5 +16,10 @@
  */
 void MSG_config(const char *name, ...) 
 {
+  va_list pa;
+  /*  xbt_cfg_dump("msg_cfg_set","",_msg_cfg_set);*/
+  va_start(pa,name);
+	SIMIX_config(name,pa);
+  va_end(pa);
 	return;
 }
