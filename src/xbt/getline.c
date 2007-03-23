@@ -23,7 +23,7 @@
 #include "portable.h"
 
 #ifndef HAVE_GETLINE
-ssize_t getline(char **buf, size_t *n, FILE *stream) {
+long getline(char **buf, size_t *n, FILE *stream) {
    
    int i, ch;
    
