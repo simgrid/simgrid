@@ -487,10 +487,12 @@ static void action_suspend(surf_action_t action)
 
 static void action_resume(surf_action_t action)
 {
-  lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_network_CM02_t) action)->variable, 
-			     ((surf_action_network_CM02_t) action)->lat_current);
-  ((surf_action_network_CM02_t) action)->suspended = 0;
+  if(((surf_action_network_CM02_t) action)->suspended) {
+    lmm_update_variable_weight(maxmin_system,
+			       ((surf_action_network_CM02_t) action)->variable, 
+			       ((surf_action_network_CM02_t) action)->lat_current);
+    ((surf_action_network_CM02_t) action)->suspended = 0;
+  }
 }
 
 static int action_is_suspended(surf_action_t action)

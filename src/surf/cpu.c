@@ -236,6 +236,8 @@ static surf_action_t execute(void *cpu, double size)
   action->generic_action.finish = -1.0;
   action->generic_action.resource_type =
       (surf_resource_t) surf_cpu_resource;
+  action->suspended = 0;  /* Should be useless because of the 
+			     calloc but it seems to help valgrind... */
 
   if (CPU->state_current == SURF_CPU_ON)
     action->generic_action.state_set =
@@ -260,6 +262,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
   XBT_IN2("(%s,%g)",((cpu_Cas01_t)cpu)->name,duration);
   action = (surf_action_cpu_Cas01_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
+  action->suspended = 2;
   lmm_update_variable_weight(maxmin_system, action->variable, 0.0);
   XBT_OUT;
   return (surf_action_t) action;
@@ -268,23 +271,29 @@ static surf_action_t action_sleep(void *cpu, double duration)
 static void action_suspend(surf_action_t action)
 {
   XBT_IN1("(%p)",action);
-  lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_cpu_Cas01_t) action)->variable, 0.0);
+  if(((surf_action_cpu_Cas01_t) action)->suspended != 2) {
+    lmm_update_variable_weight(maxmin_system,
+			       ((surf_action_cpu_Cas01_t) action)->variable, 0.0);
+    ((surf_action_cpu_Cas01_t) action)->suspended = 1;
+  }
   XBT_OUT;
 }
 
 static void action_resume(surf_action_t action)
 {
   XBT_IN1("(%p)",action);
-  lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_cpu_Cas01_t) action)->variable, 
-			     action->priority);
+  if(((surf_action_cpu_Cas01_t) action)->suspended != 2) {
+    lmm_update_variable_weight(maxmin_system,
+			       ((surf_action_cpu_Cas01_t) action)->variable, 
+			       action->priority);
+    ((surf_action_cpu_Cas01_t) action)->suspended=0;
+  }
   XBT_OUT;
 }
 
 static int action_is_suspended(surf_action_t action)
 {
-  return (lmm_get_variable_weight(((surf_action_cpu_Cas01_t) action)->variable) == 0.0);
+  return (((surf_action_cpu_Cas01_t) action)->suspended==1);
 }
 
 static void action_set_max_duration(surf_action_t action, double duration)

@@ -152,32 +152,36 @@ static void action_recycle(surf_action_t action)
 static void action_suspend(surf_action_t action)
 {
   XBT_IN1("(%p))",action);
-  ((surf_action_workstation_KCCFLN05_t) action)->suspended = 1;
-  lmm_update_variable_weight(maxmin_system,
-			     ((surf_action_workstation_KCCFLN05_t)
-			      action)->variable, 0.0);
+  if(((surf_action_workstation_KCCFLN05_t) action)->suspended != 2) {
+    ((surf_action_workstation_KCCFLN05_t) action)->suspended = 1;
+    lmm_update_variable_weight(maxmin_system,
+			       ((surf_action_workstation_KCCFLN05_t)
+				action)->variable, 0.0);
+  }
   XBT_OUT;
 }
 
 static void action_resume(surf_action_t action)
 {
   XBT_IN1("(%p)",action);
-  if(((surf_action_workstation_KCCFLN05_t)action)->lat_current==0.0)
-    lmm_update_variable_weight(maxmin_system,
-			       ((surf_action_workstation_KCCFLN05_t)
-				action)->variable, 1.0);
-  else
-    lmm_update_variable_weight(maxmin_system,
-			       ((surf_action_workstation_KCCFLN05_t) action)->variable, 
-			       ((surf_action_workstation_KCCFLN05_t) action)->lat_current);
-
-  ((surf_action_workstation_KCCFLN05_t) action)->suspended = 0;
+  if(((surf_action_workstation_KCCFLN05_t) action)->suspended !=2) {
+    if(((surf_action_workstation_KCCFLN05_t)action)->lat_current==0.0)
+      lmm_update_variable_weight(maxmin_system,
+				 ((surf_action_workstation_KCCFLN05_t)
+				  action)->variable, 1.0);
+    else
+      lmm_update_variable_weight(maxmin_system,
+				 ((surf_action_workstation_KCCFLN05_t) action)->variable, 
+				 ((surf_action_workstation_KCCFLN05_t) action)->lat_current);
+    
+    ((surf_action_workstation_KCCFLN05_t) action)->suspended = 0;
+  }
   XBT_OUT;
 }
 
 static int action_is_suspended(surf_action_t action)
 {
-  return (((surf_action_workstation_KCCFLN05_t) action)->suspended);
+  return (((surf_action_workstation_KCCFLN05_t) action)->suspended==1);
 }
 
 static void action_set_max_duration(surf_action_t action, double duration)
@@ -258,7 +262,7 @@ static void update_actions_state(double now, double delta)
 	double_update(&(deltap), action->latency);
 	action->latency = 0.0;
       }
-      if ((action->latency == 0.0) && !(action->suspended)) {
+      if ((action->latency == 0.0) && (action->suspended==0)) {
 	if((action)->lat_current==0.0)
 	  lmm_update_variable_weight(maxmin_system,action->variable, 1.0);
 	else
@@ -339,7 +343,7 @@ static void update_resource_state(void *id,
 	else 
 	  lmm_update_variable_bound(maxmin_system, action->variable,
 				    min(action->rate,SG_TCP_CTE_GAMMA / (2.0 * action->lat_current)));
-	if(!(action->suspended))
+	if(action->suspended==0)
 	  lmm_update_variable_weight(maxmin_system, action->variable, 
 				     action->lat_current);
       }
@@ -458,6 +462,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
 
   action = (surf_action_workstation_KCCFLN05_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
+  action->suspended = 2;
   lmm_update_variable_weight(maxmin_system, action->variable, 0.0);
 
   XBT_OUT;

@@ -14,6 +14,7 @@
 typedef struct surf_action_cpu_Cas01 {
   s_surf_action_t generic_action;
   lmm_variable_t variable;
+  int suspended;  
 } s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 typedef struct cpu_Cas01 {
