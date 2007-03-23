@@ -1,0 +1,7 @@
+#! ./tesh
+
+# This suite must be functional because we changed the timeout value to 10
+# before sleeping 6 secs.
+
+! set timeout 10
+$ sleep 6

@@ -25701,7 +25701,7 @@ echo "${ECHO_T}${T_MD}Generating files...${T_ME}" >&6
 
 
 # Tools being embeeded in gramine (stub generator)
-                    ac_config_files="$ac_config_files tools/Makefile tools/gras/Makefile"
+                              ac_config_files="$ac_config_files tools/Makefile tools/gras/Makefile tools/tesh/Makefile"
 
 
 
@@ -26340,6 +26340,7 @@ do
   "src/ucontext_stack.h" ) CONFIG_FILES="$CONFIG_FILES src/ucontext_stack.h" ;;
   "tools/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;
   "tools/gras/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/gras/Makefile" ;;
+  "tools/tesh/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/tesh/Makefile" ;;
   "tools/graspe-slave" ) CONFIG_FILES="$CONFIG_FILES tools/graspe-slave" ;;
   "testsuite/Makefile" ) CONFIG_FILES="$CONFIG_FILES testsuite/Makefile" ;;
   "testsuite/run_tests" ) CONFIG_FILES="$CONFIG_FILES testsuite/run_tests" ;;

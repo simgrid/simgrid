@@ -343,8 +343,8 @@ AC_CONFIG_FILES([
 AC_CONFIG_FILES([
   tools/Makefile
     tools/gras/Makefile
+    tools/tesh/Makefile
 ])
-dnl tools/tesh/Makefile
 
 
 # GRAMINE_CUT_BEGIN

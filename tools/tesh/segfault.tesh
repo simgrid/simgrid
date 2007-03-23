@@ -1,0 +1,20 @@
+#! ./tesh
+# This suite builds and uses a program raising a segfault, ie a program dying
+# of SIGSEV. tesh must detect this condition and report the issue.
+
+$ rm -rf temp_testdir
+$ mkdir temp_testdir
+
+$ cd temp_testdir
+< #include <stdlib.h>
+< int main(void) {
+<   char *A=NULL;
+<   *A = 1;
+< }
+$ cat > segfault.c
+
+$ gcc -o segfault segfault.c
+! expect signal 11
+$ ./segfault
+$ cd ..
+$ rm -rf temp_testdir

@@ -1,0 +1,4 @@
+Makefile
+_*.c
+.deps .libs
+tesh
