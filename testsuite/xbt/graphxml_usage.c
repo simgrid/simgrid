@@ -10,6 +10,7 @@
  #pragma hdrstop
  #endif
  
+#include <stdio.h>
 #include "xbt/module.h"
 #include "xbt/sysdep.h"
 #include "xbt/graph.h"
