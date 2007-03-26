@@ -10,8 +10,14 @@
 
 #include "xbt/misc.h"
 
+
+
 #ifndef XBT_STR_H
 #define XBT_STR_H
+
+#if defined(_WIN32)
+#include <stdio.h>
+#endif
 
 SG_BEGIN_DECL()
 
