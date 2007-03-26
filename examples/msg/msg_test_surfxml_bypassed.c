@@ -108,13 +108,13 @@ static int surf_parse_bypass(void)
   STag_surfxml_argument();
   ETag_surfxml_argument();
 
-/*      <argument value="50000"/> */
-  A_surfxml_argument_value = "50000000000";
+/*      <argument value="5000000"/> */
+  A_surfxml_argument_value = "5000000";
   STag_surfxml_argument();
   ETag_surfxml_argument();
 
-/*      <argument value="10"/> */
-  A_surfxml_argument_value = "10000000";
+/*      <argument value="100000"/> */
+  A_surfxml_argument_value = "100000";
   STag_surfxml_argument();
   ETag_surfxml_argument();
 
