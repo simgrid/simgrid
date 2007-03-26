@@ -110,15 +110,15 @@
 #include <stdio.h>
 #else
 #  if (defined(_MSC_VER) && defined(DLL_EXPORT))
-    __declspec(dllexport) int snprintf(char *, size_t, const char *, /*args*/ ...);
-    __declspec(dllexport)  int vsnprintf(char *, size_t, const char *, va_list);
+     __declspec(dllexport) int snprintf(char *, size_t, const char *, /*args*/ ...);
+     __declspec(dllexport)  int vsnprintf(char *, size_t, const char *, va_list);
 #  elif (defined(_MSC_VER) && !defined(DLL_EXPORT) && !defined(DLL_STATIC) )
-    __declspec(dllimport) int snprintf(char *, size_t, const char *, /*args*/ ...);
-    __declspec(dllimport)  int vsnprintf(char *, size_t, const char *, va_list);
-#else
-extern int snprintf(char *, size_t, const char *, /*args*/ ...);
-extern int vsnprintf(char *, size_t, const char *, va_list);
-#endif
+     __declspec(dllimport) int snprintf(char *, size_t, const char *, /*args*/ ...);
+     __declspec(dllimport)  int vsnprintf(char *, size_t, const char *, va_list);
+#  else
+     extern int snprintf(char *, size_t, const char *, /*args*/ ...);
+     extern int vsnprintf(char *, size_t, const char *, va_list);
+#  endif
 
 #endif
 
@@ -131,8 +131,10 @@ extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list 
 #endif
 
 /* prototype of GNU functions  */
+#ifndef __BORLANDC__
 extern int asprintf  (char **ptr, const char *fmt, /*args*/ ...);
 extern int vasprintf (char **ptr, const char *fmt, va_list ap);
+#endif
 extern int asnprintf (char **ptr, size_t str_m, const char *fmt, /*args*/ ...);
 extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 
