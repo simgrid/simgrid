@@ -4,7 +4,8 @@ EXTRA_DIST= msg_deployment.xml msg_platform.xml small_platform.xml small_deploym
 
 CLEANFILES=msg_test.trace
 
-TESTS=run_msg_test
+TESTS_ENVIRONMENT=$(top_builddir)/tools/tesh/tesh
+TESTS=msg_test.tesh
 check_PROGRAMS=msg_test msg_test_surfxml_bypassed msg_test_suspend ping_pong
 
 msg_test_SOURCES= msg_test.c
