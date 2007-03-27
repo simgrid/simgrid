@@ -32,7 +32,17 @@ m_process_t MSG_process_create(const char *name,
 
 static void MSG_process_cleanup(void *arg)
 {
-	xbt_die("not implemented yet");
+	/* arg is a pointer to a simix process, we can get the msg process with the field data */
+	m_process_t proc = ((smx_process_t)arg)->data;
+	printf("remove MSG process %s\n", proc->name);
+  xbt_fifo_remove(msg_global->process_list, proc);
+	SIMIX_process_cleanup(arg);
+  free(proc->name);
+  proc->name = NULL;
+  free(proc->simdata);
+  proc->simdata = NULL;
+  free(proc);
+
 	return;
 }
 
@@ -60,13 +70,23 @@ static void MSG_process_cleanup(void *arg)
  * \see m_process_t
  * \return The new corresponding object.
  */
+
+
+
+m_process_t __MSG_process_create_with_arguments(const char *name,
+					      m_process_code_t code, void *data,
+					      char * hostname, int argc, char **argv)
+{
+	m_host_t host = MSG_get_host_by_name(hostname);
+	return MSG_process_create_with_arguments(name,code,data,host,argc,argv);
+}
+
 m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,
 					      m_host_t host, int argc, char **argv)
 {
   simdata_process_t simdata = xbt_new0(s_simdata_process_t,1);
   m_process_t process = xbt_new0(s_m_process_t,1);
-
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
 
   /* Simulator Data */
@@ -75,7 +95,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   simdata->argc = argc;
   simdata->argv = argv;
 	simdata->smx_process = SIMIX_process_create_with_arguments(name, (smx_process_code_t)code,
-																															(void*)process, host->simdata->host, argc, argv );
+																															(void*)process, host->name, argc, argv, MSG_process_cleanup );
 
 	if (SIMIX_process_self()) {
 		simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
@@ -89,6 +109,8 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   process->simdata = simdata;
   process->data = data;
 
+	xbt_fifo_unshift(msg_global->process_list, process); 
+
   return process;
 }
 
@@ -99,7 +121,49 @@ m_process_t MSG_process_create_with_arguments(const char *name,
  */
 void MSG_process_kill(m_process_t process)
 {
-	xbt_die("not implemented yet");
+
+	/*
+  int i;
+  simdata_process_t p_simdata = process->simdata;
+  simdata_host_t h_simdata= p_simdata->host->simdata;
+  int _cursor;
+  m_process_t proc = NULL;
+
+  DEBUG3("Killing %s(%d) on %s",process->name, p_simdata->PID, p_simdata->host->name);
+
+  for (i=0; i<msg_global->max_channel; i++) {
+    if (h_simdata->sleeping[i] == process) {
+      h_simdata->sleeping[i] = NULL; 
+      break;
+    }
+  }
+
+	if(p_simdata->waiting_task) {    
+    xbt_dynar_foreach(p_simdata->waiting_task->simdata->sleeping,_cursor,proc) {                                                                             
+      if(proc==process)
+  xbt_dynar_remove_at(p_simdata->waiting_task->simdata->sleeping,_cursor,&proc);                                                                             
+    }  
+    if(p_simdata->waiting_task->simdata->compute)
+      surf_workstation_resource->common_public->
+  action_free(p_simdata->waiting_task->simdata->compute);
+    else if (p_simdata->waiting_task->simdata->comm) {
+      surf_workstation_resource->common_public->
+  action_change_state(p_simdata->waiting_task->simdata->comm,SURF_ACTION_FAILED);                                                                            
+      surf_workstation_resource->common_public->
+  action_free(p_simdata->waiting_task->simdata->comm);                                                                                                       
+    } else {
+      xbt_die("UNKNOWN STATUS. Please report this bug.");                                                                                                    
+    }  
+  }    
+
+  if ((i==msg_global->max_channel) && (process!=MSG_process_self()) &&                                                                                       
+      (!p_simdata->waiting_task)) {
+    xbt_die("UNKNOWN STATUS. Please report this bug.");                                                                                                      
+  }
+*/
+  xbt_fifo_remove(msg_global->process_list,process);
+	SIMIX_process_kill(process->simdata->smx_process);
+
 	return;
 }
 
@@ -111,7 +175,7 @@ void MSG_process_kill(m_process_t process)
  */
 MSG_error_t MSG_process_change_host(m_process_t process, m_host_t host)
 {
-	xbt_die("not implemented yet");
+	xbt_die("MSG_process_change_host - not implemented yet - maybe useless function");
   return MSG_OK;
 }
 
@@ -168,7 +232,12 @@ m_host_t MSG_process_get_host(m_process_t process)
  */
 m_process_t MSG_process_from_PID(int PID)
 {
+  xbt_fifo_item_t i = NULL;
+  m_process_t process = NULL;
 
+  xbt_fifo_foreach(msg_global->process_list,i,process,m_process_t) {
+    if(MSG_process_get_PID(process) == PID) return process;
+  }
   return NULL;
 }
 
@@ -240,7 +309,14 @@ int MSG_process_self_PPID(void)
  */
 m_process_t MSG_process_self(void)
 {
-	return (m_process_t)SIMIX_process_self()->data;
+	smx_process_t proc = SIMIX_process_self();
+	if (proc != NULL) {
+		return (m_process_t)proc->data;
+		}
+	else { 
+		return NULL;
+	}
+
 }
 
 /** \ingroup m_process_management

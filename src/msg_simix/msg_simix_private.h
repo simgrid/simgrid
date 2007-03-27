@@ -8,6 +8,7 @@
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
+#include <stdio.h>
 #include "msg/msg.h"
 #include "simix/simix.h"
 #include "xbt/fifo.h"
@@ -90,11 +91,11 @@ extern MSG_Global_t msg_global;
 
 #define PROCESS_SET_ERRNO(val) (MSG_process_self()->simdata->last_errno=val)
 #define PROCESS_GET_ERRNO() (MSG_process_self()->simdata->last_errno)
-#define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
+//#define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
+#define MSG_RETURN(val) do {return(val);} while(0)
 /* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
 
-#define CHECK_HOST()  xbt_assert0(surf_workstation_resource->extension_public-> \
-				  get_state(MSG_host_self()->simdata->host)==SURF_CPU_ON,\
+#define CHECK_HOST()  xbt_assert0(SIMIX_host_get_state(SIMIX_host_self())==1,\
                                   "Host failed, you cannot call this function.")
 
 m_host_t __MSG_host_create(smx_host_t workstation, void *data);
@@ -109,6 +110,9 @@ int __MSG_process_isBlocked(m_process_t process);
 
 void __MSG_display_process_status(void);
 
+m_process_t __MSG_process_create_with_arguments(const char *name,
+					      m_process_code_t code, void *data,
+													      char * hostname, int argc, char **argv);
 
 
 #endif

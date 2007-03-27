@@ -21,7 +21,10 @@
  */
 void MSG_launch_application(const char *file) 
 {
+
   xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_launch_application.");
+	SIMIX_function_register_process_create(&__MSG_process_create_with_arguments);
+	SIMIX_function_register_process_kill(&MSG_process_kill);
 	SIMIX_launch_application(file);
 
 	return;

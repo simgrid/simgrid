@@ -39,7 +39,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
 			 double message_size, void *data)
 {
 	m_task_t task = xbt_new(s_m_task_t,1);
-  simdata_task_t simdata = task->simdata;
+  simdata_task_t simdata = xbt_new(s_simdata_task_t,1);
   task->simdata = simdata;
   /* Task structure */
   task->name = xbt_strdup(name);
@@ -54,6 +54,8 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->sender = NULL;
 	simdata->cond = SIMIX_cond_init();
 	simdata->mutex = SIMIX_mutex_init();
+	simdata->compute = NULL;
+	simdata->comm = NULL;
 
   return task;
 }

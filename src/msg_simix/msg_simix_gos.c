@@ -251,7 +251,28 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
  */
 MSG_error_t MSG_task_execute(m_task_t task)
 {
-	MSG_RETURN(MSG_OK);
+	simdata_task_t simdata = NULL;
+
+  CHECK_HOST();
+
+  simdata = task->simdata;
+  xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
+	      "This taks is executed somewhere else. Go fix your code!");
+  simdata->using++;
+	SIMIX_mutex_lock(simdata->mutex);
+  simdata->compute = SIMIX_action_execute(SIMIX_host_self(), task->name, simdata->computation_amount);
+	SIMIX_action_set_priority(simdata->compute, simdata->priority);
+
+	SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
+	SIMIX_register_condition_to_action(simdata->compute, simdata->cond);
+	
+	SIMIX_cond_wait(simdata->cond, simdata->mutex);
+
+	SIMIX_mutex_unlock(simdata->mutex);
+  simdata->using--;
+
+//	MSG_RETURN(MSG_OK);
+	return MSG_OK;
 }
 
 void __MSG_task_execute(m_process_t process, m_task_t task)
