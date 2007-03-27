@@ -32,12 +32,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
  */
 smx_process_t SIMIX_process_create(const char *name,
 			       smx_process_code_t code, void *data,
-			       smx_host_t host)
+			       const char * hostname, void * clean_process_function)
 {
-  return SIMIX_process_create_with_arguments(name, code, data, host, -1, NULL);
+  return SIMIX_process_create_with_arguments(name, code, data, hostname, -1, NULL, clean_process_function);
 }
 
-static void SIMIX_process_cleanup(void *arg)
+void SIMIX_process_cleanup(void *arg)
 {
   xbt_swag_remove(arg, simix_global->process_list);
   xbt_swag_remove(arg, simix_global->process_to_run);
@@ -75,11 +75,12 @@ static void SIMIX_process_cleanup(void *arg)
  */
 smx_process_t SIMIX_process_create_with_arguments(const char *name,
 					      smx_process_code_t code, void *data,
-					      smx_host_t host, int argc, char **argv)
+					      const char * hostname, int argc, char **argv, void * clean_process_function)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t,1);
   smx_process_t process = xbt_new0(s_smx_process_t,1);
   smx_process_t self = NULL;
+	smx_host_t host = SIMIX_host_get_by_name(hostname);
 
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
   /* Simulator Data */
@@ -87,10 +88,16 @@ smx_process_t SIMIX_process_create_with_arguments(const char *name,
   simdata->host = host;
   simdata->argc = argc;
   simdata->argv = argv;
-  simdata->context = xbt_context_new(code, NULL, NULL, 
-				     SIMIX_process_cleanup, process, 
-				     simdata->argc, simdata->argv);
-
+	if (clean_process_function) {
+  	simdata->context = xbt_context_new(code, NULL, NULL, 
+					     clean_process_function, process, 
+					     simdata->argc, simdata->argv);
+	}
+	else {
+  	simdata->context = xbt_context_new(code, NULL, NULL, 
+					     SIMIX_process_cleanup, process, 
+					     simdata->argc, simdata->argv);
+	}
   //simdata->last_errno=SIMIX_OK;
 
 
@@ -113,6 +120,9 @@ smx_process_t SIMIX_process_create_with_arguments(const char *name,
 
   return process;
 }
+
+
+
 
 /** \ingroup m_process_management
  * \param process poor victim

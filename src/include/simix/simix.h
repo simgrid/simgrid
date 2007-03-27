@@ -35,6 +35,18 @@ XBT_PUBLIC(int) SIMIX_timer_get(void **function, void **arg);
 
 /* only for tests */
 XBT_PUBLIC(void) __SIMIX_main(void);
+
+/* User create and kill process, the function must accept the folling parameters:
+ * const char *name: a name for the object. It is for user-level information and can be NULL
+ * smx_process_code_t code: is a function describing the behavior of the agent
+ * void *data: data a pointer to any data one may want to attach to the new object.
+ * smx_host_t host: the location where the new agent is executed
+ * int argc, char **argv: parameters passed to code
+ *
+ * */
+XBT_PUBLIC(void) SIMIX_function_register_process_create(void * function);
+XBT_PUBLIC(void) SIMIX_function_register_process_kill(void * function);
+
 /************************** Host handling ***********************************/
 
 XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
@@ -57,11 +69,12 @@ XBT_PUBLIC(int) SIMIX_host_get_state(smx_host_t host);
 /************************** Process handling *********************************/
 XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
 			       smx_process_code_t code, void *data,
-			       smx_host_t host);
+			       const char * hostname, void * clean_process_function);
 XBT_PUBLIC(smx_process_t) SIMIX_process_create_with_arguments(const char *name,
 					      smx_process_code_t code, void *data,
-					      smx_host_t host, int argc, char **argv);
+					      const char * hostname, int argc, char **argv, void * clean_process_function);
 XBT_PUBLIC(void) SIMIX_process_kill(smx_process_t process);
+XBT_PUBLIC(void) SIMIX_process_cleanup(void *arg);
 XBT_PUBLIC(void) SIMIX_process_killall(void);
 
 //above layer

@@ -270,10 +270,10 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 			DEBUG2("got %p %p", fun, arg);
 			if(fun==SIMIX_process_create_with_arguments) {
 				process_arg_t args = arg;
-				DEBUG2("Launching %s on %s", args->name, args->host->name);
+				DEBUG2("Launching %s on %s", args->name, args->hostname);
 				process = SIMIX_process_create_with_arguments(args->name, args->code, 
-						args->data, args->host,
-						args->argc,args->argv);
+						args->data, args->hostname,
+						args->argc,args->argv,NULL);
 				if(args->kill_time > SIMIX_get_clock()) {
 					surf_timer_resource->extension_public->set(args->kill_time, 
 							(void*) &SIMIX_process_kill,
@@ -332,4 +332,24 @@ void SIMIX_timer_set (double date, void *function, void *arg)
 int SIMIX_timer_get(void **function, void **arg)
 {
 	return surf_timer_resource->extension_public->get(function, arg);
+}
+
+
+void SIMIX_function_register_process_create(void * function)
+{
+  xbt_assert0((simix_global->create_process_function == NULL), "Data already set");
+
+  /* Assign create process */
+  simix_global->create_process_function = function;
+
+  return ;
+}
+void SIMIX_function_register_process_kill(void * function)
+{
+  xbt_assert0((simix_global->kill_process_function == NULL), "Data already set");
+
+  /* Assign kill process */
+  simix_global->kill_process_function = function;
+
+  return ;
 }

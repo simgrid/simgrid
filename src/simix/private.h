@@ -9,6 +9,7 @@
 #ifndef SIMIX_PRIVATE_H
 #define SIMIX_PRIVATE_H
 
+#include <stdio.h>
 #include "simix/simix.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
@@ -36,6 +37,8 @@ typedef struct SIMIX_Global {
 
   smx_process_t current_process;
   xbt_dict_t registered_functions;
+	void* (*create_process_function) ();
+	void* (*kill_process_function)();
 } s_SIMIX_Global_t, *SIMIX_Global_t;
 
 extern SIMIX_Global_t simix_global;
@@ -57,7 +60,7 @@ typedef struct process_arg {
   const char *name;
   smx_process_code_t code;
   void *data;
-  smx_host_t host;
+  char *hostname;
   int argc;
   char **argv;
   double kill_time;
@@ -109,6 +112,7 @@ void __SIMIX_host_destroy(smx_host_t host);
 void __SIMIX_cond_wait(smx_cond_t cond);
 
 void __SIMIX_display_process_status(void);
+
 
 
 #endif
