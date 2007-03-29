@@ -34,7 +34,6 @@ static void MSG_process_cleanup(void *arg)
 {
 	/* arg is a pointer to a simix process, we can get the msg process with the field data */
 	m_process_t proc = ((smx_process_t)arg)->data;
-	printf("remove MSG process %s\n", proc->name);
   xbt_fifo_remove(msg_global->process_list, proc);
 	SIMIX_process_cleanup(arg);
   free(proc->name);
@@ -94,8 +93,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   simdata->host = host;
   simdata->argc = argc;
   simdata->argv = argv;
-	simdata->smx_process = SIMIX_process_create_with_arguments(name, (smx_process_code_t)code,
-																															(void*)process, host->name, argc, argv, MSG_process_cleanup );
+	simdata->smx_process = SIMIX_process_create_with_arguments(name, (smx_process_code_t)code, (void*)process, host->name, argc, argv, MSG_process_cleanup );
 
 	if (SIMIX_process_self()) {
 		simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);

@@ -124,11 +124,18 @@ void SIMIX_cond_signal(smx_cond_t cond)
 void SIMIX_cond_wait(smx_cond_t cond,smx_mutex_t mutex)
 {
 	smx_process_t self = SIMIX_process_self();
+	smx_action_t act_sleep;
 	xbt_assert0((mutex != NULL), "Invalid parameters");
 	
 	cond->mutex = mutex;
 
 	SIMIX_mutex_unlock(mutex);
+	/* create an action null only if there are no actions already on the condition, usefull if the host crashs */
+	if (xbt_fifo_size(cond->actions) ==0 ) {
+		act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
+		SIMIX_register_action_to_condition(act_sleep,cond);
+		SIMIX_register_condition_to_action(act_sleep,cond);
+	}
 	__SIMIX_cond_wait(cond);
 	/* get the mutex again */
 	self->simdata->mutex = cond->mutex;
@@ -146,7 +153,6 @@ void __SIMIX_cond_wait(smx_cond_t cond)
 	self->simdata->cond = cond;
 
 	xbt_swag_insert(self, cond->sleeping);
-	
 	xbt_context_yield();
 	self->simdata->cond = NULL;
 	while (self->simdata->suspended) {

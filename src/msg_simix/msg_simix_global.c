@@ -145,6 +145,7 @@ MSG_error_t MSG_main(void)
 				/* remove conditional from action */
 				xbt_fifo_remove(smx_action->cond_list,cond);
 			}
+			SIMIX_action_destroy(smx_action);
 		}
 
 		while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
@@ -156,6 +157,7 @@ MSG_error_t MSG_main(void)
 				/* remove conditional from action */
 				xbt_fifo_remove(smx_action->cond_list,cond);
 			}
+			SIMIX_action_destroy(smx_action);
 		}
 	}
   return MSG_OK;

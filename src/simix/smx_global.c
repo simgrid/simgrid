@@ -51,6 +51,9 @@ void SIMIX_global_init(int *argc, char **argv)
 		simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc,process_hookup));
 		simix_global->current_process = NULL;
 		simix_global->registered_functions = xbt_dict_new();
+
+		simix_global->create_process_function = NULL;
+		simix_global->kill_process_function = NULL;
 	}
 }
 
@@ -226,16 +229,17 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 	smx_process_t process = NULL;
 	int i;
 	double elapsed_time = 0.0;
-	int state_modifications = 0;
-
-
-	//surf_solve(); /* Takes traces into account. Returns 0.0  I don't know what to do with this*/
+	static int state_modifications = 1;
+	static int first = 1;
 
 	xbt_context_empty_trash();
 	if(xbt_swag_size(simix_global->process_to_run) && (elapsed_time>0)) {
 		DEBUG0("**************************************************");
 	}
-
+	if (first) {
+		surf_solve();/* Takes traces into account. Returns 0.0 */
+		first=0;
+	}
 	while ((process = xbt_swag_extract(simix_global->process_to_run))) {
 		DEBUG2("Scheduling %s on %s",	     
 				process->name,
@@ -256,8 +260,12 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
 		xbt_dynar_foreach(resource_list, i, resource) {
 			if(xbt_swag_size(resource->common_public->states.failed_action_set) ||
-					xbt_swag_size(resource->common_public->states.done_action_set))
+					xbt_swag_size(resource->common_public->states.done_action_set)) {
+					DEBUG2("SWAG SIZES %d %d\n",xbt_swag_size(resource->common_public->states.failed_action_set),
+					xbt_swag_size(resource->common_public->states.done_action_set));
+
 				state_modifications = 1;
+				}
 		}
 
 		if(!state_modifications) {
@@ -305,6 +313,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 			}
 		}
 	}
+	state_modifications = 0;
 
 	if (elapsed_time == -1) {
 		if (xbt_swag_size(simix_global->process_list) == 0) {

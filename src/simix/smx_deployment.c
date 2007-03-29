@@ -66,19 +66,19 @@ static void parse_process_finalize(void)
 
   }
   if((start_time<0) || (start_time==SIMIX_get_clock())) {
-    DEBUG2("Starting Process %s(%s) right now", parse_argv[0],
-	   parse_host);
-		 if (simix_global->create_process_function)
-			 process = simix_global->create_process_function(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv);
-		 else
-			 process = SIMIX_process_create_with_arguments(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv, NULL);
+    DEBUG2("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
-    if(kill_time > SIMIX_get_clock()) {
-		 if (simix_global->kill_process_function)
-			 surf_timer_resource->extension_public->set(start_time, (void*) simix_global->kill_process_function, arg);
-		 else
-      surf_timer_resource->extension_public->set(kill_time, (void*) &SIMIX_process_kill, (void*) process);
-    }
+		if (simix_global->create_process_function)
+			process = simix_global->create_process_function(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv);
+		else
+			process = SIMIX_process_create_with_arguments(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv, NULL);
+
+		if(kill_time > SIMIX_get_clock()) {
+			if (simix_global->kill_process_function)
+				surf_timer_resource->extension_public->set(start_time, (void*) simix_global->kill_process_function, arg);
+			else
+				surf_timer_resource->extension_public->set(kill_time, (void*) &SIMIX_process_kill, (void*) process);
+		}
   }
 }
 

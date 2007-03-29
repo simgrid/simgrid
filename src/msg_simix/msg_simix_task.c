@@ -57,6 +57,10 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
 	simdata->compute = NULL;
 	simdata->comm = NULL;
 
+	simdata->host_list = NULL;
+	simdata->comp_amount = NULL;
+	simdata->comm_amount = NULL;
+
   return task;
 }
 
@@ -118,7 +122,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   smx_action_t action = NULL;
   xbt_assert0((task != NULL), "Invalid parameter");
 
-	/* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed, isn't the code wrong? */
+	/* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
   task->simdata->using--;
   if(task->simdata->using>0) return MSG_OK;
 
