@@ -44,6 +44,7 @@ void SIMIX_process_cleanup(void *arg)
   xbt_swag_remove(arg, ((smx_process_t) arg)->simdata->host->simdata->process_list);
   free(((smx_process_t) arg)->name);
   ((smx_process_t) arg)->name = NULL;
+
   free(((smx_process_t) arg)->simdata);
   ((smx_process_t) arg)->simdata = NULL;
   free(arg);

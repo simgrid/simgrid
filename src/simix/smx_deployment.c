@@ -79,6 +79,7 @@ static void parse_process_finalize(void)
 			else
 				surf_timer_resource->extension_public->set(kill_time, (void*) &SIMIX_process_kill, (void*) process);
 		}
+		xbt_free(parse_host);
   }
 }
 

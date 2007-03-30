@@ -67,7 +67,7 @@ typedef struct s_smx_simdata_process *smx_simdata_process_t;
 /** @brief Process datatype 
     @ingroup m_datatypes_management_details @{ */
 typedef struct s_smx_process {
-  char *name;			/**< @brief process name if any */
+ char *name;			/**< @brief process name if any */
   smx_simdata_process_t simdata;	/**< @brief simulator data */
   s_xbt_swag_hookup_t process_hookup;
   s_xbt_swag_hookup_t synchro_hookup;

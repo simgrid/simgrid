@@ -59,6 +59,7 @@ void MSG_create_environment(const char *file)
 	for (i=0; i< SIMIX_host_get_number();i++) {
 		__MSG_host_create(workstation[i], NULL);
 	}
+	xbt_free(workstation);
   return;
 }
 

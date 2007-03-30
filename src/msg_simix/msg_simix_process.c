@@ -325,8 +325,11 @@ m_process_t MSG_process_self(void)
  */
 MSG_error_t MSG_process_suspend(m_process_t process)
 {
-	xbt_die("not implemented yet");
-	return MSG_OK;
+  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+  CHECK_HOST();
+
+	SIMIX_process_suspend(process->simdata->smx_process);
+  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup m_process_management
@@ -337,8 +340,12 @@ MSG_error_t MSG_process_suspend(m_process_t process)
  */
 MSG_error_t MSG_process_resume(m_process_t process)
 {
-	xbt_die("not implemented yet");
-	MSG_RETURN(MSG_OK);
+
+  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+  CHECK_HOST();
+
+	SIMIX_process_resume(process->simdata->smx_process);
+  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup m_process_management
@@ -349,21 +356,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
  */
 int MSG_process_is_suspended(m_process_t process)
 {
-	xbt_die("not implemented yet");
-	return 0;
+  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+	return SIMIX_process_is_suspended(process->simdata->smx_process);
 }
 
-int __MSG_process_block(double max_duration, const char *info)
-{
-    return 1;
-}
-
-MSG_error_t __MSG_process_unblock(m_process_t process)
-{
-    MSG_RETURN(MSG_OK);
-}
-
-int __MSG_process_isBlocked(m_process_t process)
-{
-	return 0;
-}

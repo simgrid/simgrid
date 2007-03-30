@@ -125,13 +125,15 @@ void SIMIX_action_destroy(smx_action_t action)
 	xbt_assert1((xbt_fifo_size(action->cond_list)==0), 
 			"Conditional list not empty %d. There is a problem. Cannot destroy it now!", xbt_fifo_size(action->cond_list));
 
-	if(action->name) free(action->name);
+	if(action->name) xbt_free(action->name);
 
 	xbt_fifo_free(action->cond_list);
 
 	if(action->simdata->surf_action) 
 		action->simdata->surf_action->resource_type->common_public->action_free(action->simdata->surf_action);
 
+	xbt_free(action->simdata);
+	xbt_free(action);
 	return;
 }
 

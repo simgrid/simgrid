@@ -261,9 +261,6 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 		xbt_dynar_foreach(resource_list, i, resource) {
 			if(xbt_swag_size(resource->common_public->states.failed_action_set) ||
 					xbt_swag_size(resource->common_public->states.done_action_set)) {
-					DEBUG2("SWAG SIZES %d %d\n",xbt_swag_size(resource->common_public->states.failed_action_set),
-					xbt_swag_size(resource->common_public->states.done_action_set));
-
 				state_modifications = 1;
 				}
 		}

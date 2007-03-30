@@ -135,8 +135,13 @@ void SIMIX_cond_wait(smx_cond_t cond,smx_mutex_t mutex)
 		act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
 		SIMIX_register_action_to_condition(act_sleep,cond);
 		SIMIX_register_condition_to_action(act_sleep,cond);
+		__SIMIX_cond_wait(cond);
+		xbt_fifo_pop(act_sleep->cond_list);
+		SIMIX_action_destroy(act_sleep);
 	}
-	__SIMIX_cond_wait(cond);
+	else {
+		__SIMIX_cond_wait(cond);
+	}
 	/* get the mutex again */
 	self->simdata->mutex = cond->mutex;
 	SIMIX_mutex_lock(cond->mutex);
@@ -201,12 +206,10 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
 
 void SIMIX_cond_destroy(smx_cond_t cond)
 {
-	
 	if ( cond == NULL )
 		return ;
 	else {
 		xbt_assert0( xbt_swag_size(cond->sleeping) == 0 , "Cannot destroy conditional");
-
 		xbt_swag_free(cond->sleeping);
 		xbt_fifo_free(cond->actions);
 		xbt_free(cond);

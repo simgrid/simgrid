@@ -3,7 +3,7 @@
 #include "xbt/log.h"
 #include "xbt/ex.h" /* ex_backtrace_display */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,        "Logging specific to MSG (kernel)");    
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");    
 
 MSG_Global_t msg_global = NULL;
 
@@ -137,29 +137,27 @@ MSG_error_t MSG_main(void)
 
 		while ( (smx_action = xbt_fifo_pop(actions_failed)) ) {
 
-			xbt_fifo_item_t _cursor;
 
 			DEBUG1("** %s failed **",smx_action->name);
-			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
+			while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
 				SIMIX_cond_broadcast(cond);
-				/* remove conditional from action */
-				xbt_fifo_remove(smx_action->cond_list,cond);
 			}
+			/* action finished, destroy it */
 			SIMIX_action_destroy(smx_action);
 		}
 
 		while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
-			xbt_fifo_item_t _cursor;
 
 			DEBUG1("** %s done **",smx_action->name);
-			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
+			while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
 				SIMIX_cond_broadcast(cond);
-				/* remove conditional from action */
-				xbt_fifo_remove(smx_action->cond_list,cond);
 			}
+			/* action finished, destroy it */
 			SIMIX_action_destroy(smx_action);
 		}
 	}
+	xbt_fifo_free(actions_failed);
+	xbt_fifo_free(actions_done);
   return MSG_OK;
 }
 
