@@ -37,6 +37,7 @@ typedef struct simdata_task {
 	smx_cond_t cond;					
 	smx_mutex_t mutex; 				/* Task mutex */
   m_process_t sender;
+  m_process_t receiver;
   m_host_t source;
   double priority;
   double rate;
@@ -57,6 +58,7 @@ typedef struct simdata_process {
   int PPID;			/* The parent PID */
   m_host_t put_host;		/* used for debugging purposes */
   m_channel_t put_channel;	/* used for debugging purposes */
+	m_task_t waiting_task;
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */

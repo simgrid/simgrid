@@ -82,7 +82,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 	}
 
   t_simdata = t->simdata;
-  /*   *task = __MSG_task_copy(t); */
+	t_simdata->receiver = process;
   *task=t;
 
 	SIMIX_mutex_lock(t_simdata->mutex);
@@ -91,26 +91,29 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   t_simdata->using++;
 	/* create SIMIX action to the communication */
 	t_simdata->comm = SIMIX_action_communicate(t_simdata->sender->simdata->host->simdata->host,
-																						process->simdata->host->simdata->host,t->name, t_simdata->message_size, t_simdata->rate); 
-																						/*
+																						process->simdata->host->simdata->host,t->name, t_simdata->message_size, 
+																						t_simdata->rate); 
+	/* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
 	if (MSG_process_is_suspended(t_simdata->sender)) {
-		SIMIX_set_priority(t_simdata->comm,0);
-		t_simdata->comm = SIMIX_action_communicate(t_simdata->sender->simdata->host->simdata->host,
-																							process->simdata->host->simdata->host,t->name, t_simdata->message_size, t_simdata->rate); 
+		DEBUG1("Process sender (%s) suspended", t_simdata->sender->name);
+		SIMIX_action_set_priority(t_simdata->comm,0);
 	}
-																							*/
-		/* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
+	process->simdata->waiting_task = t;
 	SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
 	SIMIX_register_condition_to_action(t_simdata->comm, t_simdata->cond);
 	SIMIX_cond_wait(t_simdata->cond,t_simdata->mutex);
+	process->simdata->waiting_task = NULL;
 
-	/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-	t->simdata->comm = NULL;
-	t->simdata->compute = NULL;
+	/* the task has already finished and the pointer must be null*/
+	if (t->simdata->sender) {
+		t->simdata->sender->simdata->waiting_task = NULL;
+		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+		t->simdata->comm = NULL;
+		t->simdata->compute = NULL;
+	}
+	/* for this process, don't need to change in get function*/
+	t->simdata->receiver = NULL;
 	SIMIX_mutex_unlock(t_simdata->mutex);
-
-	//MSG_task_destroy(t);
-
 	MSG_RETURN(MSG_OK);
 }
 	
@@ -321,8 +324,22 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
  */
 int MSG_task_probe_from_host(int channel, m_host_t host)
 {
-	xbt_die("not implemented yet");
-	return 0;
+  xbt_fifo_item_t item;
+  m_task_t t;
+  int count = 0;
+  m_host_t h = NULL;
+  
+  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
+  CHECK_HOST();
+  h = MSG_host_self();
+
+  DEBUG2("Probing on channel %d (%s)", channel,h->name);
+   
+  xbt_fifo_foreach(h->simdata->mbox[channel],item,t,m_task_t) {
+    if(t->simdata->source==host) count++;
+  }
+   
+  return count;
 }
 
 /** \ingroup msg_gos_functions \brief Put a task on a channel of an
@@ -395,7 +412,8 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
   process->simdata->put_channel = channel;
 	SIMIX_mutex_lock(task->simdata->mutex);
  // DEBUG4("Task sent (%g kB) from %s to %s on channel %d, waiting...", task->simdata->message_size/1000,local_host->name, remote_host->name, channel);
-	DEBUG0("Waiting action finish!");
+
+	process->simdata->waiting_task = task;
 	if (max_duration >0) {
 		SIMIX_cond_wait_timeout(task->simdata->cond,task->simdata->mutex,max_duration);
 	}
@@ -404,11 +422,22 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 	}
 	DEBUG1("Action terminated %s",task->name);    
 	task->simdata->using--;
+	process->simdata->waiting_task = NULL;
+	/* the task has already finished and the pointer must be null*/
+	if (task->simdata->receiver) {
+		task->simdata->receiver->simdata->waiting_task = NULL;
+		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+		task->simdata->comm = NULL;
+		task->simdata->compute = NULL;
+	}
+	/* for this process, don't need to change in get function*/
+	task->simdata->sender = NULL;
 	SIMIX_mutex_unlock(task->simdata->mutex);
 
 
 	MSG_RETURN(MSG_OK);
 }
+
 /** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
@@ -470,7 +499,7 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 MSG_error_t MSG_task_execute(m_task_t task)
 {
 	simdata_task_t simdata = NULL;
-
+	m_process_t self = MSG_process_self();
   CHECK_HOST();
 
   simdata = task->simdata;
@@ -483,10 +512,11 @@ MSG_error_t MSG_task_execute(m_task_t task)
   simdata->compute = SIMIX_action_execute(SIMIX_host_self(), task->name, simdata->computation_amount);
 	SIMIX_action_set_priority(simdata->compute, simdata->priority);
 
+	self->simdata->waiting_task = task;
 	SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
 	SIMIX_register_condition_to_action(simdata->compute, simdata->cond);
-	
 	SIMIX_cond_wait(simdata->cond, simdata->mutex);
+	self->simdata->waiting_task = NULL;
 
 	/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
 	simdata->comm = NULL;

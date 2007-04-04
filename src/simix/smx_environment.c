@@ -11,19 +11,10 @@
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
 				"Logging specific to SIMIX (environment)");
-/** \defgroup msg_easier_life      Platform and Application management
- *  \brief This section describes functions to manage the platform creation
- *  and the application deployment. You should also have a look at 
- *  \ref MSG_examples  to have an overview of their usage.
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Platforms and Applications" --> \endhtmlonly
- * 
- */
 
 /********************************* SIMIX **************************************/
 
-
-
-/** \ingroup msg_easier_life
+/** 
  * \brief A platform constructor.
  *
  * Creates a new platform, including hosts, links and the
@@ -37,7 +28,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
  *
  *     \include small_platform.xml
  *
- * Have a look in the directory examples/msg/ to have a big example.
  */
 void SIMIX_create_environment(const char *file) 
 {

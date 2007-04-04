@@ -14,7 +14,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_action, simix,
 				"Logging specific to SIMIX (action)");
 
 /************************************* Actions *********************************/
-
+/** \brief Creates a new SIMIX action to communicate two hosts.
+ *
+ * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a network_error exception if the host is unavailable. 
+ *	\param sender SIMIX host sender
+ * 	\param receiver SIMIX host receiver
+ * 	\param name Action name
+ * 	\param size Communication size (in bytes)
+ * 	\param rate Communication rate between hosts.
+ * 	\return A new SIMIX action
+ * */
 smx_action_t SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver,char * name, double size, double rate)
 {
 	/* check if the host is active */
@@ -33,6 +42,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver,char
 	
 	/* initialize them */
 	act->name = xbt_strdup(name);
+	simdata->source = sender;
 
 
 	simdata->surf_action = surf_workstation_resource->extension_public->
@@ -43,6 +53,14 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver,char
 	return act;
 }
 
+/** \brief Creates a new SIMIX action to execute an action.
+ *
+ * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a host_error exception if the host crashed. 
+ *	\param host SIMIX host where the action will be executed
+ * 	\param name Action name
+ * 	\param amount Task amount (in bytes)
+ * 	\return A new SIMIX action
+ * */
 smx_action_t SIMIX_action_execute(smx_host_t host, char * name, double amount)
 {
 	/* check if the host is active */
@@ -69,9 +87,15 @@ smx_action_t SIMIX_action_execute(smx_host_t host, char * name, double amount)
 	return act;
 }
 
-
+/** \brief Creates a new sleep SIMIX action.
+ *
+ * 	This function creates a SURF action and allocates the data necessary to create the SIMIX action. It can raise a host_error exception if the host crashed. The default SIMIX name of the action is "sleep".  
+ *	\param host SIMIX host where the sleep will run.
+ * 	\param duration Time duration of the sleep.
+ * 	\return A new SIMIX action
+ * */
 smx_action_t SIMIX_action_sleep(smx_host_t host,  double duration)
-{		
+{	
 	char name[] = "sleep";
 
 	/* check if the host is active */
@@ -97,7 +121,12 @@ smx_action_t SIMIX_action_sleep(smx_host_t host,  double duration)
 	return act;
 }
 
-
+/**
+ * 	\brief Cancels an action.
+ *
+ *	This functions stops the execution of an action. It calls a surf functions.
+ *	\param action The SIMIX action
+ */
 void SIMIX_action_cancel(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
@@ -108,6 +137,13 @@ void SIMIX_action_cancel(smx_action_t action)
   return;
 }
 
+/**
+ * 	\brief Changes the action's priority
+ *
+ *	This functions changes the priority only. It calls a surf functions.
+ *	\param action The SIMIX action
+ *	\param priority The new priority
+ */
 void SIMIX_action_set_priority(smx_action_t action, double priority)
 {
 	xbt_assert0( (action != NULL) && (action->simdata != NULL), "Invalid parameter" );
@@ -117,6 +153,12 @@ void SIMIX_action_set_priority(smx_action_t action, double priority)
 	return;
 }
 
+/**
+ * 	\brief Destroys an action
+ *
+ *	Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it. 
+ *	\param action The SIMIX action
+ */
 void SIMIX_action_destroy(smx_action_t action)
 {
 
@@ -137,6 +179,13 @@ void SIMIX_action_destroy(smx_action_t action)
 	return;
 }
 
+/**
+ * 	\brief Set an action to a condition
+ *
+ * 	Creates the "link" between an action and a condition. You have to call this function when you create an action and want to wait its ending. 
+ *	\param action SIMIX action
+ *	\param cond SIMIX cond
+ */
 void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 {
 	xbt_assert0( (action != NULL) && (cond != NULL), "Invalid parameters");
@@ -144,6 +193,12 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 	xbt_fifo_push(cond->actions,action);
 }
 
+/**
+ * 	\brief Return how much remais to be done in the action.
+ *
+ * 	\param action The SIMIX action
+ *	\return Remains cost
+ */
 double SIMIX_action_get_remains(smx_action_t action) 
 {
   xbt_assert0((action != NULL), "Invalid parameter");

@@ -10,20 +10,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-/** \defgroup m_host_management Management functions of Hosts
- *  \brief This section describes the host structure of MSG
- * 
- *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
- * (#m_host_t) and the functions for managing it.
- *  
- *  A <em>location</em> (or <em>host</em>) is any possible place where
- *  a process may run. Thus it may be represented as a
- *  <em>physical resource with computing capabilities</em>, some
- *  <em>mailboxes</em> to enable running process to communicate with
- *  remote ones, and some <em>private data</em> that can be only
- *  accessed by local process.
- *  \see m_host_t
- */
 
 /********************************* Host **************************************/
 smx_host_t __SIMIX_host_create(const char *name,
@@ -49,12 +35,13 @@ smx_host_t __SIMIX_host_create(const char *name,
   return host;
 }
 
-/** \ingroup m_host_management
+/** 
+ * \brief Set the user data of a #smx_host_t.
  *
- * \brief Set the user data of a #m_host_t.
+ * This functions checks whether some data has already been associated to \a host or not and attach \a data to \a host if it is possible.
+ *	\param host SIMIX host
+ *	\param data User data
  *
- * This functions checks whether some data has already been associated to \a host 
-   or not and attach \a data to \a host if it is possible.
  */
 void SIMIX_host_set_data(smx_host_t host, void *data)
 {
@@ -67,28 +54,25 @@ void SIMIX_host_set_data(smx_host_t host, void *data)
   return ;
 }
 
-/** \ingroup m_host_management
+/**
+ * \brief Return the user data of a #smx_host_t.
  *
- * \brief Return the user data of a #m_host_t.
- *
- * This functions checks whether \a host is a valid pointer or not and return
-   the user data associated to \a host if it is possible.
+ * This functions checks whether \a host is a valid pointer or not and return the user data associated to \a host if it is possible.
+ * \param host SIMIX host
  */
 void *SIMIX_host_get_data(smx_host_t host)
 {
-
   xbt_assert0((host != NULL), "Invalid parameters");
 
   /* Return data */
   return (host->data);
 }
 
-/** \ingroup m_host_management
+/** 
+ * \brief Return the name of the #smx_host_t.
  *
- * \brief Return the name of the #m_host_t.
- *
- * This functions checks whether \a host is a valid pointer or not and return
-   its name.
+ * This functions checks whether \a host is a valid pointer or not and return its name.
+ * \param host SIMIX host
  */
 const char *SIMIX_host_get_name(smx_host_t host)
 {
@@ -99,9 +83,11 @@ const char *SIMIX_host_get_name(smx_host_t host)
   return (host->name);
 }
 
-/** \ingroup m_host_management
- *
+/** 
  * \brief Return the location on which the current process is executed.
+ *
+ * Return the host,  more details in #SIMIX_process_get_host
+ * \return SIMIX host
  */
 smx_host_t SIMIX_host_self(void)
 {
@@ -136,16 +122,20 @@ void __SIMIX_host_destroy(smx_host_t host)
   return;
 }
 
-/** \ingroup m_host_management
- * \brief Return the current number of #m_host_t.
+/**
+ * \brief Return the current number of #smx_host_t.
+ *
+ * \return Number of hosts
  */
 int SIMIX_host_get_number(void)
 {
   return (xbt_fifo_size(simix_global->host));
 }
 
-/** \ingroup m_host_management
- * \brief Return a array of all the #m_host_t.
+/**
+ * \brief Return a array of all the #smx_host_t.
+ *
+ * \return List of all hosts
  */
 smx_host_t *SIMIX_host_get_table(void)
 {
@@ -153,9 +143,12 @@ smx_host_t *SIMIX_host_get_table(void)
 }
 
 
-/** \ingroup m_host_management
- * \brief Return the speed of the processor (in Mflop/s), regardless of 
-    the current load on the machine.
+/**
+ * \brief Return the speed of the processor.
+ *
+ * Return the speed (in Mflop/s), regardless of the current load on the machine.
+ * \param host SIMIX host
+ * \return Speed
  */
 double SIMIX_host_get_speed(smx_host_t host)
 {
@@ -165,6 +158,12 @@ double SIMIX_host_get_speed(smx_host_t host)
 	 extension_public->get_speed(host->simdata->host,1.0));
 }
 
+/**
+ * \brief Return the available speed of the processor.
+ *
+ * Return the available speed (in Mflop/s).
+ * \return Speed
+ */
 double SIMIX_host_get_available_speed(smx_host_t host)
 {
   xbt_assert0((host!= NULL), "Invalid parameters");
@@ -173,20 +172,13 @@ double SIMIX_host_get_available_speed(smx_host_t host)
 	 extension_public->get_available_speed(host->simdata->host));
 }
 
-/** \ingroup msg_gos_functions
- * \brief Determine if a host is available.
+/**
+ * \brief Return the host by its name
  *
- * \param h host to test
+ * Finds a smx_host_t using its name.
+ * \param name The name of an host.
+ * \return The corresponding host
  */
-
-/** \ingroup msg_easier_life
- * \brief A name directory service...
- *
- * Finds a m_host_t using its name.
- * \param name the name of an host.
- * \return the corresponding host
- */
-
 smx_host_t SIMIX_host_get_by_name(const char *name)
 {
   xbt_fifo_item_t i = NULL;
@@ -201,6 +193,13 @@ smx_host_t SIMIX_host_get_by_name(const char *name)
   return NULL;
 }
 
+/**
+ * \brief Return the state of a workstation
+ *
+ * Return the state of a workstation. Two states are possible, 1 if the host is active or 0 if it has crashed.
+ * \param host The SIMIX host
+ * \return 1 if host is available or 0 if not.
+ */
 int SIMIX_host_get_state(smx_host_t host)
 {
   xbt_assert0((host!= NULL), "Invalid parameters");

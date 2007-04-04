@@ -83,7 +83,7 @@ static void parse_process_finalize(void)
   }
 }
 
-/** \ingroup msg_easier_life
+/** 
  * \brief An application deployer.
  *
  * Creates the process described in \a file.
@@ -96,7 +96,6 @@ static void parse_process_finalize(void)
  *
  *     \include small_deployment.xml
  *
- * Have a look in the directory examples/msg/ to have a bigger example.
  */
 void SIMIX_launch_application(const char *file) 
 {
@@ -109,11 +108,11 @@ void SIMIX_launch_application(const char *file)
   surf_parse_close();
 }
 
-/** \ingroup msg_easier_life
- * \brief Registers a #m_process_code_t code in a global table.
+/**
+ * \brief Registers a #smx_process_code_t code in a global table.
  *
  * Registers a code function in a global table. 
- * This table is then used by #MSG_launch_application. 
+ * This table is then used by #SIMIX_launch_application. 
  * \param name the reference name of the function.
  * \param code the function
  */
@@ -124,12 +123,13 @@ void SIMIX_function_register(const char *name,smx_process_code_t code)
   xbt_dict_set(simix_global->registered_functions,name,code,NULL);
 }
 
-/** \ingroup msg_easier_life
- * \brief Registers a #m_process_t code in a global table.
+/**
+ * \brief Gets a #smx_process_t code from the global table.
  *
- * Registers a code function in a global table. 
- * This table is then used by #MSG_launch_application. 
+ * Gets a code function from the global table. Returns NULL if there are no function registered with the name.
+ * This table is then used by #SIMIX_launch_application. 
  * \param name the reference name of the function.
+ * \return The #smx_process_t or NULL.
  */
 smx_process_code_t SIMIX_get_registered_function(const char *name)
 {

@@ -57,16 +57,16 @@ void simix_config_finalize(void)
   _simix_init_status = 0;
 }
 
-/** \brief set a configuration variable
+/** \brief Set a configuration variable
  * 
- * Currently existing configuation variable:
+ * Currently existing configuration variable:
  *   - surf_workstation_model (string): Model of workstation to use.  
  *     Possible values (defaults to "KCCFLN05"):
  *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + support for parallel tasks
  *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file.
  * 
- * Example:
- * MSG_config("surf_workstation_model","KCCFLN05");
+ * 	\param name Configuration variable name that will change.
+ *	\param pa A va_list with the others parameters
  */
 void SIMIX_config(const char *name, va_list pa) 
 {

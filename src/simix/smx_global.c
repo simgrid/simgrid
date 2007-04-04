@@ -13,29 +13,26 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 				"Logging specific to SIMIX (kernel)");
 
-
 SIMIX_Global_t simix_global = NULL;
-
-
-/** \defgroup simix_simulation   SIMIX simulation Functions
- *  \brief This section describes the functions you need to know to
- *  set up a simulation. You should have a look at \ref SIMIX_examples 
- *  to have an overview of their usage.
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> \endhtmlonly
- */
 
 /********************************* SIMIX **************************************/
 
-/** \ingroup simix_simulation
+/** 
  * \brief Initialize some SIMIX internal data.
+ *
+ * \param argc Argc
+ * \param argv Argv
  */
 void SIMIX_global_init_args(int *argc, char **argv)
 {
   SIMIX_global_init(argc,argv);
 }
 
-/** \ingroup simix_simulation
+/**
  * \brief Initialize some SIMIX internal data.
+ *
+ * \param argc Argc
+ * \param argv Argv
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
@@ -104,8 +101,8 @@ static void _XBT_CALL inthandler(int ignored)
    exit(1);
 }
 
-/** \ingroup msg_simulation
- * \brief Launch the SIMIX simulation
+/**
+ * \brief Launch the SIMIX simulation, debug purpose
  */
 void __SIMIX_main(void)
 {
@@ -161,12 +158,9 @@ void __SIMIX_main(void)
 	return;
 }
 
-/** \ingroup msg_simulation
+/**
  * \brief Kill all running process
-
- * \param reset_PIDs should we reset the PID numbers. A negative
- *   number means no reset and a positive number will be used to set the PID
- *   of the next newly created process.
+ *
  */
 void SIMIX_process_killall()
 {
@@ -186,8 +180,10 @@ void SIMIX_process_killall()
   return;
 }
 
-/** \ingroup msg_simulation
+/** 
  * \brief Clean the SIMIX simulation
+ *
+ * This functions remove all memories needed to the SIMIX execution
  */
 void SIMIX_clean(void)
 {
@@ -215,14 +211,24 @@ void SIMIX_clean(void)
 }
 
 
-/** \ingroup msg_easier_life
+/**
  * \brief A clock (in second).
+ *
+ * \return Return the clock.
  */
 double SIMIX_get_clock(void)
 {
   return surf_get_clock();
 }
 
+/**
+ * 	\brief Does a turn of the simulation
+ *
+ *	Executes a step in the surf simulation, adding to the two lists all the actions that finished on this turn. Schedules all processus in the process_to_run list. 	
+ * 	\param actions_done List of actions done
+ * 	\param actions_failed List of actions failed
+ * 	\return The time spent to execute the simulation or -1 if the simulation ended
+ */
 double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed) 
 {
 
@@ -329,7 +335,15 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 	return elapsed_time;
 }
 
-
+/**
+ * 	\brief Set the date to execute a function
+ *
+ * Set the date to execute the function on the surf.
+ * 	\param date Date to execute function
+ * 	\param function Function to be executed
+ * 	\param arg Parameters of the function
+ *
+ */
 void SIMIX_timer_set (double date, void *function, void *arg)
 {
 	surf_timer_resource->extension_public->set(date, function, arg);
@@ -340,7 +354,13 @@ int SIMIX_timer_get(void **function, void **arg)
 	return surf_timer_resource->extension_public->get(function, arg);
 }
 
-
+/**
+ *	\brief Registers a function to create a process.
+ *
+ *	This function registers an user function to be called when a new process is created. The user function have to call the SIMIX_create_process function.
+ *	\param function Create process function
+ *
+ */
 void SIMIX_function_register_process_create(void * function)
 {
   xbt_assert0((simix_global->create_process_function == NULL), "Data already set");
@@ -350,6 +370,14 @@ void SIMIX_function_register_process_create(void * function)
 
   return ;
 }
+
+/**
+ *	\brief Registers a function to kill a process.
+ *
+ *	This function registers an user function to be called when a new process is killed. The user function have to call the SIMIX_kill_process function.
+ *	\param function Kill process function
+ *
+ */
 void SIMIX_function_register_process_kill(void * function)
 {
   xbt_assert0((simix_global->kill_process_function == NULL), "Data already set");
