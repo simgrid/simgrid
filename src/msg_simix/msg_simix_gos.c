@@ -554,9 +554,38 @@ m_task_t MSG_parallel_task_create(const char *name,
 				  double *communication_amount,
 				  void *data)
 {
+  int i;
+  simdata_task_t simdata = xbt_new0(s_simdata_task_t,1);
   m_task_t task = xbt_new0(s_m_task_t,1);
-	xbt_die("not implemented yet");
+  task->simdata = simdata;
+
+  /* Task structure */
+  task->name = xbt_strdup(name);
+  task->data = data;
+
+  /* Simulator Data */
+  simdata->computation_amount = 0;
+  simdata->message_size = 0;
+	simdata->cond = SIMIX_cond_init();
+	simdata->mutex = SIMIX_mutex_init();
+	simdata->compute = NULL;
+	simdata->comm = NULL;
+  simdata->rate = -1.0;
+  simdata->using = 1;
+  simdata->sender = NULL;
+  simdata->receiver = NULL;
+  simdata->source = NULL;
+
+  simdata->host_nb = host_nb;
+  simdata->host_list = xbt_new0(void *, host_nb);
+  simdata->comp_amount = computation_amount;
+  simdata->comm_amount = communication_amount;
+
+  for(i=0;i<host_nb;i++)
+    simdata->host_list[i] = host_list[i]->simdata->host;
+
   return task;
+
 }
 
 
@@ -567,7 +596,34 @@ static void __MSG_parallel_task_execute(m_process_t process, m_task_t task)
 
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
+	simdata_task_t simdata = NULL;
+	m_process_t self = MSG_process_self();
+  CHECK_HOST();
 
+  simdata = task->simdata;
+  xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
+	      "This taks is executed somewhere else. Go fix your code!");
+
+  xbt_assert0(simdata->host_nb,"This is not a parallel task. Go to hell.");
+	
+	DEBUG1("Computing on %s", MSG_process_self()->simdata->host->name);
+  simdata->using++;
+	SIMIX_mutex_lock(simdata->mutex);
+  simdata->compute = SIMIX_action_parallel_execute(task->name, simdata->host_nb, simdata->host_list, simdata->comp_amount, simdata->comm_amount, 1.0, -1.0);
+
+	self->simdata->waiting_task = task;
+	SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
+	SIMIX_register_condition_to_action(simdata->compute, simdata->cond);
+	SIMIX_cond_wait(simdata->cond, simdata->mutex);
+	self->simdata->waiting_task = NULL;
+
+	/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+	simdata->comm = NULL;
+	simdata->compute = NULL;
+
+	SIMIX_mutex_unlock(simdata->mutex);
+  simdata->using--;
+	MSG_RETURN(MSG_OK);
 	xbt_die("not implemented yet");
   return MSG_OK;  
 }

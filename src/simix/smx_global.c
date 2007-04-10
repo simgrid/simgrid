@@ -17,17 +17,6 @@ SIMIX_Global_t simix_global = NULL;
 
 /********************************* SIMIX **************************************/
 
-/** 
- * \brief Initialize some SIMIX internal data.
- *
- * \param argc Argc
- * \param argv Argv
- */
-void SIMIX_global_init_args(int *argc, char **argv)
-{
-  SIMIX_global_init(argc,argv);
-}
-
 /**
  * \brief Initialize some SIMIX internal data.
  *
@@ -279,10 +268,10 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
 		while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
 			DEBUG2("got %p %p", fun, arg);
-			if(fun==SIMIX_process_create_with_arguments) {
+			if(fun==SIMIX_process_create) {
 				process_arg_t args = arg;
 				DEBUG2("Launching %s on %s", args->name, args->hostname);
-				process = SIMIX_process_create_with_arguments(args->name, args->code, 
+				process = SIMIX_process_create(args->name, args->code, 
 						args->data, args->hostname,
 						args->argc,args->argv,NULL);
 				if(args->kill_time > SIMIX_get_clock()) {

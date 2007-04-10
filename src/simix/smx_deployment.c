@@ -62,7 +62,7 @@ static void parse_process_finalize(void)
 		 if (simix_global->create_process_function)
 			 surf_timer_resource->extension_public->set(start_time, (void*) simix_global->create_process_function, arg);
 		 else
-			 surf_timer_resource->extension_public->set(start_time, (void*) &SIMIX_process_create_with_arguments, arg);
+			 surf_timer_resource->extension_public->set(start_time, (void*) &SIMIX_process_create, arg);
 
   }
   if((start_time<0) || (start_time==SIMIX_get_clock())) {
@@ -71,7 +71,7 @@ static void parse_process_finalize(void)
 		if (simix_global->create_process_function)
 			process = simix_global->create_process_function(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv);
 		else
-			process = SIMIX_process_create_with_arguments(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv, NULL);
+			process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv, NULL);
 
 		if(kill_time > SIMIX_get_clock()) {
 			if (simix_global->kill_process_function)
@@ -99,7 +99,7 @@ static void parse_process_finalize(void)
  */
 void SIMIX_launch_application(const char *file) 
 {
-  xbt_assert0(simix_global,"SIMIX_global_init_args has to be called before SIMIX_launch_application.");
+  xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_launch_application.");
   STag_surfxml_process_fun = parse_process_init;
   ETag_surfxml_argument_fun = parse_argument;
   ETag_surfxml_process_fun = parse_process_finalize;

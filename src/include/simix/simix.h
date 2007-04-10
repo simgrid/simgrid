@@ -19,7 +19,6 @@ SG_BEGIN_DECL()
 /************************** Global ******************************************/
 XBT_PUBLIC(void) SIMIX_config(const char *name, va_list pa);
 XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
-XBT_PUBLIC(void) SIMIX_global_init_args(int *argc, char **argv);
 XBT_PUBLIC(void) SIMIX_clean(void);
 XBT_PUBLIC(void) SIMIX_function_register(const char *name, smx_process_code_t code);
 XBT_PUBLIC(smx_process_code_t) SIMIX_get_registered_function(const char *name);
@@ -68,9 +67,6 @@ XBT_PUBLIC(int) SIMIX_host_get_state(smx_host_t host);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
-			       smx_process_code_t code, void *data,
-			       const char * hostname, void * clean_process_function);
-XBT_PUBLIC(smx_process_t) SIMIX_process_create_with_arguments(const char *name,
 					      smx_process_code_t code, void *data,
 					      const char * hostname, int argc, char **argv, void * clean_process_function);
 XBT_PUBLIC(void) SIMIX_process_kill(smx_process_t process);
@@ -121,7 +117,8 @@ XBT_PUBLIC(void) SIMIX_register_action_to_condition(smx_action_t action, smx_con
 XBT_PUBLIC(double) SIMIX_action_get_remains(smx_action_t action);
 
 /*Not implemented yet */
-XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(int workstation_nb,      
+XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char * name, 
+																											int workstation_nb,      
 												 															void **workstation_list,
 																											double *computation_amount,
 																											double *communication_amount,

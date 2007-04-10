@@ -96,7 +96,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   simdata->host = host;
   simdata->argc = argc;
   simdata->argv = argv;
-	simdata->smx_process = SIMIX_process_create_with_arguments(name, (smx_process_code_t)code, (void*)process, host->name, argc, argv, MSG_process_cleanup );
+	simdata->smx_process = SIMIX_process_create(name, (smx_process_code_t)code, (void*)process, host->name, argc, argv, MSG_process_cleanup );
 
 	if (SIMIX_process_self()) {
 		simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);

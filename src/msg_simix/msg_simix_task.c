@@ -52,6 +52,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->priority = 1.0;
   simdata->using = 1;
   simdata->sender = NULL;
+  simdata->receiver = NULL;
 	simdata->cond = SIMIX_cond_init();
 	simdata->mutex = SIMIX_mutex_init();
 	simdata->compute = NULL;

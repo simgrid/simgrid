@@ -204,3 +204,24 @@ double SIMIX_action_get_remains(smx_action_t action)
   xbt_assert0((action != NULL), "Invalid parameter");
 	return action->simdata->surf_action->remains;
 }
+
+smx_action_t SIMIX_action_parallel_execute(char *name, int workstation_nb, void **workstation_list, double *computation_amount, double *communication_amount, double amount, double rate)
+{
+
+	/* alloc structures */
+	smx_action_t act = xbt_new0(s_smx_action_t,1);
+	act->simdata = xbt_new0(s_smx_simdata_action_t,1);
+	smx_simdata_action_t simdata = act->simdata;
+	act->cond_list = xbt_fifo_new();
+	
+	/* initialize them */
+	act-> name = xbt_strdup(name);
+
+	/* set communication */
+  simdata->surf_action = surf_workstation_resource->extension_public->execute_parallel_task(workstation_nb, workstation_list, computation_amount, communication_amount, amount, rate);
+
+	surf_workstation_resource->common_public->action_set_data(simdata->surf_action,act);
+
+	return act;
+}
+

@@ -20,12 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
    providing standard arguments (\a argc, \a argv).
  * \see SIMIX_process_create_with_arguments
  */
-smx_process_t SIMIX_process_create(const char *name,
-			       smx_process_code_t code, void *data,
-			       const char * hostname, void * clean_process_function)
-{
-  return SIMIX_process_create_with_arguments(name, code, data, hostname, -1, NULL, clean_process_function);
-}
+
 
 void SIMIX_process_cleanup(void *arg)
 {
@@ -54,7 +49,7 @@ void SIMIX_process_cleanup(void *arg)
  * \see smx_process_t
  * \return The new corresponding object.
  */
-smx_process_t SIMIX_process_create_with_arguments(const char *name,
+smx_process_t SIMIX_process_create(const char *name,
 					      smx_process_code_t code, void *data,
 					      const char * hostname, int argc, char **argv, void * clean_process_function)
 {
