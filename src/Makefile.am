@@ -50,7 +50,6 @@ EXTRA_DIST= \
 	\
 	include/xbt/xbt_portability.h \
 	include/xbt/xbt_thread.h \
-	include/xbt/trim.h \
 	include/xbt/context.h \
 	\
 	msg/private.h \
