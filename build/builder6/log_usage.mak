@@ -5,18 +5,18 @@
 BCB = $(MAKEDIR)\..
 !endif
 
-PROJECT = bin\log_usage.exe
+PROJECT = simgrid\tests\log_usage.exe
 OBJFILES = log_usage.obj
-LIBFILES = lib\debug\simgrid.lib
+LIBFILES = simgrid\lib\debug\simgrid.lib
 
 USERDEFINES = _DEBUG
 SYSDEFINES = NO_STRICT;_NO_VCL;_RTLDLL
 INCLUDEPATH = $(BCB)\include;$(BCB)\include\vcl;..\..\include;..\..\src\include;..\..\src
-LIBPATH = $(BCB)\lib\obj;$(BCB)\lib;lib\debug;obj
+LIBPATH = $(BCB)\lib\obj;$(BCB)\lib;simgrid\lib\debug;simgrid\tests\obj
 WARNINGS= -w-sus -w-rvl -w-rch -w-pia -w-pch -w-par -w-csu -w-ccc -w-aus
 SRCDIR = .;..\..\testsuite\xbt
 
-CFLAGS = -Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWC -tWM- -c -p- -nobj
+CFLAGS = -Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWC -tWM- -c -p- -nsimgrid\tests\obj
 
 LFLAGS = -Iobj -ap -Tpe -x -Gn -v
 

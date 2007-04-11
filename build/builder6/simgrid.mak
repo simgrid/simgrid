@@ -18,7 +18,7 @@ LINKER = ilink32
 !endif
 
 # Le nom du projet de compilation (ici la DLL)
-PROJECT=C:\buildslave\projects\simgrid\builddir\build\build\builder6\bin\simgrid.dll
+PROJECT=C:\dev\cvs\simgrid\build\builder6\simgrid\dll\debug\simgrid.dll
 
 # Les options du compilateur BCC32
 # -tWD		Génèrer une DLL
@@ -37,7 +37,7 @@ PROJECT=C:\buildslave\projects\simgrid\builddir\build\build\builder6\bin\simgrid
 	
  
 #CFLAGS=-tWD -Vmp -X- -tWM- -c -nobj -Od -Vx -Ve -r- -b- -k -y -v -vi- 
-CFLAGS=-tWD -X- -tWM -c -nobj -Od -r- -b- -k -y -v -vi- -a8 -p-
+CFLAGS=-tWD -X- -tWM -c -nsimgrid\obj -Od -r- -b- -k -y -v -vi- -a8 -p-
 
 # Les options du linker
 # -l		Répertoire de sortie intermédiaire
@@ -52,7 +52,7 @@ CFLAGS=-tWD -X- -tWM -c -nobj -Od -r- -b- -k -y -v -vi- -a8 -p-
 # -v		Inclure les informations de débogage complètes
 
 #LFLAGS = -l lib\debug -Iobj -D"" -c- -aa -Tpd -x -Gn -Gi -w -v
-LFLAGS = -llib\debug -Iobj -c- -aa -Tpd -x -Gn -Gi -w -v
+LFLAGS = -lsimgrid\lib\debug -Isimgrid\obj -c- -aa -Tpd -x -Gn -Gi -w -v
 
 # Liste des avertissements désactivés
 # -w-aus	Une valeur est affectée mais n'est jamais utilisée
@@ -68,7 +68,7 @@ LFLAGS = -llib\debug -Iobj -c- -aa -Tpd -x -Gn -Gi -w -v
 # -w-sus	Conversion de pointeur suspecte
 
 # Chemins des répertoires contenant des librairies (importation ou de code objet)
-LIBPATH = $(BCB)\Lib;$(BCB)\Lib\obj;obj
+LIBPATH = $(BCB)\Lib;$(BCB)\Lib\obj;simgrid\obj
 
 WARNINGS=-w-aus -w-ccc -w-csu -w-dup -w-inl -w-par -w-pch -w-pia -w-rch -w-rvl -w-sus 
 

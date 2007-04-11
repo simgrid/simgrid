@@ -13,7 +13,7 @@ BCB = $(MAKEDIR)\..
 
 VERSION = BCB.06.00
 # ---------------------------------------------------------------------------
-PROJECT = bin\datadesc_usage.exe
+PROJECT = simgrid\tests\datadesc_usage.exe
 OBJFILES = ..\..\win32_testsuite\borland\builder6\realistic\obj\datadesc_usage.obj \
     ..\..\win32_testsuite\borland\builder6\realistic\obj\graphxml_parse.obj \
     ..\..\win32_testsuite\borland\builder6\realistic\obj\heap.obj \
@@ -79,7 +79,7 @@ SPARELIBS =
 DEFFILE = 
 OTHERFILES = 
 # ---------------------------------------------------------------------------
-DEBUGLIBPATH = $(BCB)\lib\debug
+DEBUGLIBPATH = $(BCB)\simgrid\lib\debug
 RELEASELIBPATH = $(BCB)\lib\release
 USERDEFINES = _DEBUG
 SYSDEFINES = NO_STRICT;_NO_VCL
