@@ -17,6 +17,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/function_types.h"
 #include "xbt/log.h"
+#include "xbt/trim.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -66,11 +67,66 @@ static void buff_chomp(buff_t *b) {
       b->used--;
   }
 }
+
+static void buff_trim(buff_t* b)
+{
+	trim(b->data," ");
+	b->used = strlen(b->data);
+}
+
+typedef struct s_signal_entry
+{
+	const char* name;
+	int number;
+}s_signal_entry_t,* signal_entry_t;
+
+static const s_signal_entry_t signals[] = 
+{
+	{"SIGHUP"	,1},
+	{"SIGINT"	,2},
+	{"SIGQUIT"	,3},
+	{"SIGILL"	,4},
+	{"SIGTRAP"	,5},
+	{"SIGABRT"	,6},
+	{"SIGEMT"	,7},
+	{"SIGFPE"	,8},
+	{"SIGKILL"	,9},
+	{"SIGBUS"	,10},
+	{"SIGSEGV"	,11},
+	{"SIGSYS"	,12},
+	{"SIGPIPE"	,13},
+	{"SIGALRM"	,14},
+	{"SIGTERM"	,15},
+	{"SIGURG"	,16},
+	{"SIGSTOP"	,17},
+	{"SIGTSTP"	,18},
+	{"SIGCONT"	,19},
+	{"SIGCHLD"	,20},
+	{"SIGTTIN"	,21},
+	{"SIGTTOU"	,22},
+	{"SIGIO"	,23},
+	{"SIGXCPU"	,24},
+	{"SIGXFSZ"	,25},
+	{"SIGVTALRM",26},
+	{"SIGPROF"	,27},
+	{"SIGWINCH"	,28},
+	{"SIGINFO"	,29},
+	{"SIGUSR1"	,30},
+	{"SIGUSR2"	,31}
+};
+
+#define SIGMAX 		31
+#define SIGUNKNW	SIGMAX + 1
+
+/* returns the name of the signal from it number */
+const char* 
+signal_name(unsigned int number);
+
 /**
  ** Options
  **/
 int timeout_value = 5; /* child timeout value */
-int expected_signal=0; /* !=0 if the following command should raise a signal */
+char* expected_signal=NULL; /* !=NULL if the following command should raise a signal */
 int expected_return=0; /* the exepeted return code of following command */
 int verbose=0; /* wheather we should wine on problems */
 
@@ -102,6 +158,8 @@ static void check_output() {
     return;
   buff_chomp(output_got);
   buff_chomp(output_wanted);
+   buff_trim(output_got);
+buff_trim(output_wanted);
 
   if (   output_got->used != output_wanted->used
       || strcmp(output_got->data, output_wanted->data)) {
@@ -204,13 +262,13 @@ static void exec_cmd(char *cmd) {
     /* Wait for child, and check why it terminated */
     wait(&status);
 
-    if (WIFSIGNALED(status) && WTERMSIG(status) != expected_signal) {
-      fprintf(stderr,"Child got signal %d instead of signal %d\n",
-	      WTERMSIG(status), expected_signal);
-      exit(WTERMSIG(status)+4);
-    }
-    if (!WIFSIGNALED(status) && expected_signal != 0) {
-      fprintf(stderr,"Child didn't got expected signal %d\n",
+    if (WIFSIGNALED(status) && strcmp(signal_name(WTERMSIG(status)),expected_signal)) {
+		fprintf(stderr,"Child got signal %s instead of signal %s\n",signal_name(WTERMSIG(status)), expected_signal);
+		exit(WTERMSIG(status)+4);	
+	}
+	
+    if (!WIFSIGNALED(status) && expected_signal) {
+      fprintf(stderr,"Child didn't got expected signal %s\n",
 	      expected_signal);
       exit(5);
     }
@@ -223,7 +281,12 @@ static void exec_cmd(char *cmd) {
 	fprintf(stderr,"Child returned code %d\n", WEXITSTATUS(status));
       exit(40+WEXITSTATUS(status));
     }
-    expected_return = expected_signal = 0;
+    expected_return = 0;
+    
+    if(expected_signal){
+    	free(expected_signal);
+    	expected_signal = NULL;
+    }
 
   } else { /* child */
 
@@ -289,9 +352,9 @@ static void handle_line(int nl, char *line) {
 	     nl,timeout_value);
 
     } else if (!strncmp(line+2,"expect signal ",strlen("expect signal "))) {
-      expected_signal = atoi(line+2+strlen("expect signal "));
-      printf("[%d] (next command must raise signal %d)\n", 
-	     nl, expected_signal);
+      expected_signal = strdup(line+2 + strlen("expect signal "));
+      trim(expected_signal," \n");
+	   printf("[%d] (next command must raise signal %s)\n", nl, expected_signal);
 
     } else if (!strncmp(line+2,"expect return ",strlen("expect return "))) {
       expected_return = atoi(line+2+strlen("expect return "));
@@ -427,4 +490,17 @@ int main(int argc,char *argv[]) {
   buff_free(output_wanted);
   buff_free(output_got);
   return 0;  
+}
+
+const char* 
+signal_name(unsigned int number)
+{
+	if(number > SIGMAX)
+		return "SIGUNKNW";
+		
+	/* special case of SIGSEGV and SIGBUS (be conditional of the implementation)*/
+	if((number == SIGBUS) && strcmp("SIGBUS",expected_signal))
+		number = SIGSEGV;
+		
+	return (signals[number - 1].name);
 }
