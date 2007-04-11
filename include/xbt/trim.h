@@ -84,4 +84,6 @@ trim(char* s, const char* char_list);
 }
 #endif
 
-#endif /* !XBT_TRIM_H */ 
+#endif /* !XBT_TRIM_H */
+
+ 
