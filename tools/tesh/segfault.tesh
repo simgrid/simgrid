@@ -14,7 +14,7 @@ $ cd temp_testdir
 $ cat > segfault.c
 
 $ gcc -o segfault segfault.c
-! expect signal 11
+! expect signal SIGSEGV
 $ ./segfault
 $ cd ..
 $ rm -rf temp_testdir
