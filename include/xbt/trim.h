@@ -33,8 +33,8 @@ extern "C" {
  * @return If the specified is NULL the function returns NULL. Otherwise the
  * function returns the string with whitespace stripped from the end.
  */
-char*
-XBT_PUBLIC(rtrim)(char* s, const char* char_list);
+XBT_PUBLIC(char*)
+rtrim(char* s, const char* char_list);
 
 /**  @brief Strip whitespace (or other characters) from the beginning of a string.
  *
@@ -54,8 +54,8 @@ XBT_PUBLIC(rtrim)(char* s, const char* char_list);
  * @return If the specified is NULL the function returns NULL. Otherwise the
  * function returns the string with whitespace stripped from the beginning.
  */
-char*
-XBT_PUBLIC(ltrim)( char* s, const char* char_list);
+XBT_PUBLIC(char*)
+ltrim( char* s, const char* char_list);
 
 
 /**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
@@ -76,8 +76,8 @@ XBT_PUBLIC(ltrim)( char* s, const char* char_list);
  * @return If the specified is NULL the function returns NULL. Otherwise the
  * function returns the string with whitespace stripped from the end and the begining.
  */
-char* 
-XBT_PUBLIC(trim)(char* s, const char* char_list);
+XBT_PUBLIC(char*) 
+trim(char* s, const char* char_list);
 
 
 #ifdef __cplusplus
