@@ -18,7 +18,7 @@ LINKER = ilink32
 !endif
 
 # Le nom du projet de compilation (ici la DLL)
-PROJECT=C:\dev\cvs\simgrid\build\builder6\simgrid\dll\debug\simgrid.dll
+PROJECT=C:\buildslave\projects\simgrid\builddir\build\build\builder6\simgrid\dll\debug\simgrid.dll
 
 # Les options du compilateur BCC32
 # -tWD		Génèrer une DLL
