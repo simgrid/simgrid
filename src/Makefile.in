@@ -80,14 +80,15 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgras_la_LIBADD =
-am__objects_1 = snprintf.lo getline.lo ex.lo sysdep.lo asserts.lo \
-	log.lo log_default_appender.lo mallocator.lo dynar.lo dict.lo \
-	dict_elm.lo dict_cursor.lo dict_multi.lo heap.lo fifo.lo \
-	swag.lo graph.lo set.lo xbt_matrix.lo xbt_peer.lo xbt_main.lo \
-	config.lo cunit.lo graphxml_parse.lo gras.lo transport.lo \
-	ddt_create.lo ddt_convert.lo ddt_exchange.lo cbps.lo \
-	datadesc.lo ddt_parse.lo ddt_parse.yy.lo msg.lo rpc.lo \
-	timer.lo process.lo gras_module.lo
+am__objects_1 = snprintf.lo getline.lo trim.lo ex.lo sysdep.lo \
+	asserts.lo log.lo log_default_appender.lo mallocator.lo \
+	dynar.lo dict.lo dict_elm.lo dict_cursor.lo dict_multi.lo \
+	heap.lo fifo.lo swag.lo graph.lo set.lo xbt_matrix.lo \
+	xbt_peer.lo xbt_main.lo config.lo cunit.lo graphxml_parse.lo \
+	gras.lo transport.lo ddt_create.lo ddt_convert.lo \
+	ddt_exchange.lo cbps.lo datadesc.lo ddt_parse.lo \
+	ddt_parse.yy.lo msg.lo rpc.lo timer.lo process.lo \
+	gras_module.lo
 am__objects_2 = rl_stubs.lo xbt_thread.lo rl_transport.lo \
 	transport_plugin_file.lo transport_plugin_tcp.lo rl_emul.lo \
 	rl_process.lo rl_time.lo rl_dns.lo rl_msg.lo
@@ -97,13 +98,14 @@ am_libgras_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3)
 libgras_la_OBJECTS = $(am_libgras_la_OBJECTS)
 libsimgrid_la_LIBADD =
-am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/getline.c xbt/ex.c \
-	xbt_modinter.h gras_modinter.h xbt/sysdep.c xbt/asserts.c \
-	xbt/log.c xbt/log_default_appender.c xbt/mallocator.c \
-	xbt/dynar.c xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c \
-	xbt/dict_multi.c xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c \
-	xbt/set.c xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c \
-	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c gras/gras.c \
+am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/getline.c \
+	xbt/trim.c xbt/ex.c xbt_modinter.h gras_modinter.h \
+	xbt/sysdep.c xbt/asserts.c xbt/log.c \
+	xbt/log_default_appender.c xbt/mallocator.c xbt/dynar.c \
+	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
+	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
+	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
+	xbt/cunit.c xbt/graphxml_parse.c gras/gras.c \
 	gras/Transport/transport.c gras/Transport/transport_private.h \
 	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
 	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
@@ -401,7 +403,7 @@ VERSION_INFO = -version-info 1:0:0
 lib_LTLIBRARIES = libsimgrid.la libgras.la
 COMMON_SRC = \
   \
-  xbt/snprintf.c    xbt/getline.c                                            \
+  xbt/snprintf.c    xbt/getline.c	xbt/trim.c                           \
   xbt/ex.c                                                                   \
   \
   xbt_modinter.h    gras_modinter.h                                          \
@@ -718,6 +720,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transport_plugin_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transport_plugin_sg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transport_plugin_tcp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trim.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation_KCCFLN05.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_main.Plo@am__quote@
@@ -759,6 +762,13 @@ getline.lo: xbt/getline.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/getline.c' object='getline.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o getline.lo `test -f 'xbt/getline.c' || echo '$(srcdir)/'`xbt/getline.c
+
+trim.lo: xbt/trim.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trim.lo -MD -MP -MF "$(DEPDIR)/trim.Tpo" -c -o trim.lo `test -f 'xbt/trim.c' || echo '$(srcdir)/'`xbt/trim.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/trim.Tpo" "$(DEPDIR)/trim.Plo"; else rm -f "$(DEPDIR)/trim.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/trim.c' object='trim.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trim.lo `test -f 'xbt/trim.c' || echo '$(srcdir)/'`xbt/trim.c
 
 ex.lo: xbt/ex.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ex.lo -MD -MP -MF "$(DEPDIR)/ex.Tpo" -c -o ex.lo `test -f 'xbt/ex.c' || echo '$(srcdir)/'`xbt/ex.c; \
