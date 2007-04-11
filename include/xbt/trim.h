@@ -9,6 +9,8 @@
 #ifndef XBT_TRIM_H
 #define XBT_TRIM_H
 
+#include "xbt/misc.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,7 +34,7 @@ extern "C" {
  * function returns the string with whitespace stripped from the end.
  */
 char*
-rtrim(char* s, const char* char_list);
+XBT_PUBLIC(rtrim)(char* s, const char* char_list);
 
 /**  @brief Strip whitespace (or other characters) from the beginning of a string.
  *
@@ -53,7 +55,7 @@ rtrim(char* s, const char* char_list);
  * function returns the string with whitespace stripped from the beginning.
  */
 char*
-ltrim( char* s, const char* char_list);
+XBT_PUBLIC(ltrim)( char* s, const char* char_list);
 
 
 /**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
@@ -75,7 +77,7 @@ ltrim( char* s, const char* char_list);
  * function returns the string with whitespace stripped from the end and the begining.
  */
 char* 
-trim(char* s, const char* char_list);
+XBT_PUBLIC(trim)(char* s, const char* char_list);
 
 
 #ifdef __cplusplus
