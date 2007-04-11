@@ -50,6 +50,7 @@ EXTRA_DIST= \
 	\
 	include/xbt/xbt_portability.h \
 	include/xbt/xbt_thread.h \
+	include/xbt/trim.h \
 	include/xbt/context.h \
 	\
 	msg/private.h \
@@ -112,7 +113,7 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la
 
 COMMON_SRC=\
   \
-  xbt/snprintf.c    xbt/getline.c                                            \
+  xbt/snprintf.c    xbt/getline.c	xbt/trim.c                               \
   xbt/ex.c                                                                   \
   \
   xbt_modinter.h    gras_modinter.h                                          \
