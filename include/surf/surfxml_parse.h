@@ -12,7 +12,7 @@
 #include "surf/surfxml.h"
 #include "xbt/function_types.h"
 /* Entry-point of the surfxml parser. */
-extern int_f_void_t *surf_parse;
+extern int_f_void_t * XBT_PUBLIC_DATA surf_parse;
 
 /* Hook for the different tags. They can be redefined at will whereas
    the versions without the _fun can't. */
@@ -27,10 +27,10 @@ extern void_f_void_t *STag_surfxml_route_fun;
 extern void_f_void_t *ETag_surfxml_route_fun;
 extern void_f_void_t *STag_surfxml_route_element_fun;
 extern void_f_void_t *ETag_surfxml_route_element_fun;
-extern void_f_void_t *STag_surfxml_process_fun;
-extern void_f_void_t *ETag_surfxml_process_fun;
+extern void_f_void_t * XBT_PUBLIC_DATA STag_surfxml_process_fun;
+extern void_f_void_t * XBT_PUBLIC_DATA ETag_surfxml_process_fun;
 extern void_f_void_t *STag_surfxml_argument_fun;
-extern void_f_void_t *ETag_surfxml_argument_fun;
+extern void_f_void_t * XBT_PUBLIC_DATA ETag_surfxml_argument_fun;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
