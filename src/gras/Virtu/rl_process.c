@@ -13,7 +13,7 @@
 
 /* globals */
 static gras_procdata_t *_gras_procdata = NULL;
-char const *_gras_procname = NULL;
+char const * XBT_PUBLIC_DATA _gras_procname = NULL;
 
 void gras_process_init() {
   _gras_procdata=xbt_new0(gras_procdata_t,1);
