@@ -225,3 +225,9 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int workstation_nb, void 
 	return act;
 }
 
+e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
+{
+  xbt_assert0((action != NULL), "Invalid parameter");
+	return surf_workstation_resource->common_public->action_get_state(action->simdata->surf_action);
+
+}

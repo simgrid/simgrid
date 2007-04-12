@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "msg/msg.h"
 #include "simix/simix.h"
+#include "surf/surf.h"
 #include "xbt/fifo.h"
 #include "xbt/dynar.h"
 #include "xbt/swag.h"

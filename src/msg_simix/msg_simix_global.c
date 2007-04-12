@@ -143,7 +143,7 @@ MSG_error_t MSG_main(void)
 				SIMIX_cond_broadcast(cond);
 			}
 			/* action finished, destroy it */
-			SIMIX_action_destroy(smx_action);
+		//	SIMIX_action_destroy(smx_action);
 		}
 
 		while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
@@ -153,7 +153,7 @@ MSG_error_t MSG_main(void)
 				SIMIX_cond_broadcast(cond);
 			}
 			/* action finished, destroy it */
-			SIMIX_action_destroy(smx_action);
+			//SIMIX_action_destroy(smx_action);
 		}
 	}
 	xbt_fifo_free(actions_failed);

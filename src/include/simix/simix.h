@@ -12,6 +12,7 @@
 #include "xbt/misc.h"
 #include "xbt/fifo.h"
 #include "simix/datatypes.h"
+#include "surf/surf.h"
 
 SG_BEGIN_DECL()
 
@@ -103,6 +104,7 @@ XBT_PUBLIC(void) SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, doub
 XBT_PUBLIC(void) SIMIX_cond_broadcast(smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_cond_destroy(smx_cond_t cond);
 XBT_PUBLIC(void) SIMIX_register_condition_to_action(smx_action_t action, smx_cond_t cond);
+XBT_PUBLIC(xbt_fifo_t) SIMIX_cond_get_actions(smx_cond_t cond);
 
 
 /************************** Action handling ************************************/
@@ -115,6 +117,8 @@ XBT_PUBLIC(void) SIMIX_action_set_priority(smx_action_t action, double priority)
 XBT_PUBLIC(void) SIMIX_action_destroy(smx_action_t action);
 XBT_PUBLIC(void) SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond);
 XBT_PUBLIC(double) SIMIX_action_get_remains(smx_action_t action);
+
+XBT_PUBLIC(e_surf_action_state_t) SIMIX_action_get_state(smx_action_t action);
 
 /*Not implemented yet */
 XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char * name, 

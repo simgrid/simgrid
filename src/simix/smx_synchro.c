@@ -199,6 +199,11 @@ void SIMIX_cond_wait(smx_cond_t cond,smx_mutex_t mutex)
 	return;
 }
 
+xbt_fifo_t SIMIX_cond_get_actions(smx_cond_t cond)
+{
+	xbt_assert0((cond != NULL), "Invalid parameters");
+	return cond->actions;
+}
 
 void __SIMIX_cond_wait(smx_cond_t cond)
 {
@@ -238,8 +243,12 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_durat
 		act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
 		SIMIX_register_action_to_condition(act_sleep,cond);
 		SIMIX_register_condition_to_action(act_sleep,cond);
+		__SIMIX_cond_wait(cond);
+		xbt_fifo_remove(act_sleep->cond_list,cond);
+		SIMIX_action_destroy(act_sleep);
 	}
-	__SIMIX_cond_wait(cond);
+	else
+		__SIMIX_cond_wait(cond);
 
 	/* get the mutex again */
 	SIMIX_mutex_lock(cond->mutex);
