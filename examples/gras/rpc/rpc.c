@@ -31,7 +31,7 @@ int forwarder (int argc,char *argv[]);
 int client (int argc,char *argv[]);
 
 static void exception_raising(void) {
-  THROW1(unknown_error,42,"Some error we will catch on client side %d",err++);
+  /*THROW1(unknown_error,42,"Some error we will catch on client side %d",err++);*/
 }
 static void exception_catching(void) {
   int gotit = 0,i;
@@ -67,13 +67,14 @@ int client(int argc,char *argv[]) {
   gras_socket_t toserver=NULL; /* peer */
   gras_socket_t toforwarder=NULL; /* peer */
 
-  memset(&e,0,sizeof(xbt_ex_t));
-
   int ping, pong, i;
   volatile int gotit=0;
 
+
   const char *host = "127.0.0.1";
-        int   port = 4000;
+		int   port = 4000;
+
+  memset(&e,0,sizeof(xbt_ex_t));
 
   /* 1. Init the GRAS's infrastructure */
   gras_init(&argc, argv);
@@ -213,10 +214,11 @@ typedef struct {
 } s_forward_data_t, *forward_data_t;
 
 static int forwarder_cb_kill(gras_msg_cb_ctx_t ctx,
-			     void             *payload_data) {
+				 void             *payload_data) {
+  forward_data_t fdata;
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
   INFO2("Asked to die by %s:%d",gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor));
-  forward_data_t fdata=gras_userdata_get();
+  fdata=gras_userdata_get();
   fdata->done = 1;
   return 0;
 }
@@ -276,9 +278,11 @@ typedef struct {
 static int server_cb_kill(gras_msg_cb_ctx_t ctx,
 			  void             *payload_data) {
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  server_data_t sdata;
+
   INFO2("Asked to die by %s:%d",gras_socket_peer_name(expeditor),gras_socket_peer_port(expeditor));
 
-  server_data_t sdata=gras_userdata_get();
+  sdata=gras_userdata_get();
   sdata->done = 1;
   return 0;
 }
