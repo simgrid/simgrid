@@ -80,7 +80,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
 	get_suc_t *incoming=(get_suc_t*)payload_data;
 	xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
 	node_data_t *globals=(node_data_t*)gras_userdata_get();
-
+    	gras_socket_t temp_sock=NULL;
 	INFO3("Received a get_successor message from %s for (%d;%d)",gras_socket_peer_name(expeditor),incoming->xId,incoming->yId);
 	//INFO4("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
 	if(incoming->xId<globals->x1) // test if the message must be forwarded to a neighbour.
@@ -178,7 +178,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
 		}
 		if(validate==1){ // the area for the new node has been defined, then send theses informations to the new node.
 		        INFO2("Sending environment informations to node %s:%d",incoming->host,incoming->port);
-			gras_socket_t temp_sock=NULL;	
+
 			TRY{
 				temp_sock=gras_socket_client(incoming->host,incoming->port);
 			}CATCH(e){
@@ -213,6 +213,12 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
 int node(int argc,char **argv){
 	node_data_t *globals=NULL;
 	xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
+	gras_socket_t temp_sock=NULL;
+
+	rep_suc_t rep_suc_msg;
+
+	get_suc_t get_suc_msg; // building the "get_suc" message.
+	gras_socket_t temp_sock2=NULL;
 
 	INFO0("Starting");
 
@@ -238,14 +244,14 @@ int node(int argc,char **argv){
 		globals->y2=1000;
 	}else{ // asking for an area.
 		INFO1("Contacting %s so as to request for an area",argv[4]);
-		gras_socket_t temp_sock=NULL;
+
 		TRY{
 			temp_sock=gras_socket_client(argv[4],atoi(argv[5]));
 		}CATCH(e){
 			RETHROW0("Unable to connect known host to request for an area!: %s");
 		}
 
-		get_suc_t get_suc_msg; // building the "get_suc" message.
+
 		get_suc_msg.xId=globals->xId;
 		get_suc_msg.yId=globals->yId;
 		strcpy(get_suc_msg.host,globals->host);
@@ -258,8 +264,8 @@ int node(int argc,char **argv){
 		}
 		gras_socket_close(temp_sock);
 
-		rep_suc_t rep_suc_msg;
-		gras_socket_t temp_sock2=NULL;
+
+
 		TRY{ // waiting for a reply.
 			INFO0("Waiting for reply!");
 			gras_msg_wait(6000,"can_rep_suc",&temp_sock2,&rep_suc_msg);

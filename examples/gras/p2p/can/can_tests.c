@@ -24,11 +24,13 @@ typedef struct s_nuke nuke_t;
 // the function that start the **** War of the Nodes ****
 int start_war(int argc,char **argv);
 int start_war(int argc,char **argv){
+	gras_socket_t temp_sock=NULL;
+	nuke_t nuke_msg;
+  xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
   //return 0; // in order to inhibit the War of the Nodes 
   gras_init(&argc,argv);
   gras_os_sleep((15-gras_os_getpid())*20+200); // wait a bit.
-  gras_socket_t temp_sock=NULL;
-  xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
+
 	
   TRY{ // contacting the bad guy that will launch the War.
     temp_sock=gras_socket_client(gras_os_myname(),atoi(argv[1]));
@@ -36,7 +38,7 @@ int start_war(int argc,char **argv){
     RETHROW0("Unable to connect known host so as to declare WAR!: %s");
   }
   
-  nuke_t nuke_msg;
+
   nuke_msg.xId=-1;
   nuke_msg.yId=-1;
   nuke_msg.version=atoi(argv[2]); 
@@ -57,6 +59,8 @@ int start_war(int argc,char **argv){
 // the function thaht send the nuke "msg" on (xId;yId), if it's not on me :p.
 static int send_nuke(nuke_t *msg, int xId, int yId){
   node_data_t *globals=(node_data_t*)gras_userdata_get();
+  gras_socket_t temp_sock=NULL;
+   xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
 
   if(xId>=globals->x1 && xId<=globals->x2 && yId>=globals->y1 && yId<=globals->y2){
     INFO0("Nuclear launch missed");
@@ -82,8 +86,8 @@ static int send_nuke(nuke_t *msg, int xId, int yId){
     msg->xId=xId;
     msg->yId=yId;
 
-    gras_socket_t temp_sock=NULL;
-    xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
+
+
     TRY{ // sending the nuke.
       temp_sock=gras_socket_client(host,port);
     }CATCH(e){
@@ -106,13 +110,18 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
   gras_socket_t expeditor=gras_msg_cb_ctx_from(ctx);
   nuke_t *incoming=(nuke_t*)payload_data;
   node_data_t *globals=(node_data_t*)gras_userdata_get();
+  
+	int x;
+	int y;
+	nuke_t nuke_msg; // writing my name one the nuke.
+	 gras_socket_t temp_sock=NULL;
+	 xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
+	
 
   if(incoming->xId==-1){ // i must start the War
     INFO2("%s:%d declare the WAR!!!!!!!!!!!!!!!!!",globals->host,globals->port);
     srand((unsigned int)time((time_t *)NULL));
 
-    int x;
-    int y;
     do{
       x=(int)(1000.0*rand()/(RAND_MAX+1.0));
       y=(int)(1000.0*rand()/(RAND_MAX+1.0));
@@ -138,13 +147,12 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
       int x4=(int)(1000.0*rand()/(RAND_MAX+1.0));
       int y4=(int)(1000.0*rand()/(RAND_MAX+1.0));*/
       
-      nuke_t nuke_msg; // writing my name one the nuke.
-      nuke_msg.version=incoming->version; 
+
+	  nuke_msg.version=incoming->version;
       strcpy(nuke_msg.host,globals->host);
       nuke_msg.port=globals->port;
       
-      int x;
-      int y;
+	  
       do{
 	x=(int)(1000.0*rand()/(RAND_MAX+1.0));
 	y=(int)(1000.0*rand()/(RAND_MAX+1.0));
@@ -169,9 +177,9 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
       strcpy(host,globals->north_host);
       port=globals->north_port;}
     
-    gras_socket_t temp_sock=NULL;
-    xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
-    TRY{
+
+
+	TRY{
       temp_sock=gras_socket_client(host,port);
     }CATCH(e){
       RETHROW0("Unable to connect the nuke!: %s");
@@ -185,7 +193,7 @@ static int node_nuke_handler(gras_msg_cb_ctx_t ctx,void *payload_data){
     gras_socket_close(temp_sock);
   }
   gras_socket_close(expeditor); // spare.
-  xbt_ex_t e; // the error variable used in TRY.. CATCH tokens.
+
   TRY{
     gras_msg_handle(10000.0); // wait a bit, in case of..
   }CATCH(e){
