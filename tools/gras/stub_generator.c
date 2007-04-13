@@ -20,6 +20,8 @@
 #include "surf/surfxml_parse.h"
 #include "surf/surf.h"
 
+#include <stdarg.h>
+
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
@@ -29,8 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen,gras,"Stub generator");
 /* tabulation level (used to indent the lines of the borland project file */
 static unsigned int level = 0;
 
-/* the library path for simgrid.lib and libras.lib. */
-static char* __lib_dir = NULL;
+
 
 /* the gras.h header directory */
 static char* __gras_path = NULL;
@@ -172,7 +173,7 @@ generate_borland_real_life_project(const char* name);
  * @param project The borland project to generate.
  */
 void
-generate_borland_project(borland_project_t project);
+generate_borland_project(borland_project_t project,int is_rl,const char* name);
 
 /*
  * Find the path of a file.
@@ -319,6 +320,8 @@ static void generate_sim(char *project)
 	/* 
 	 * Creation d'un fichier nommé : <projet>_simulator.c 
 	 */
+ 
+
 	filename = xbt_new(char,strlen(project) + strlen(SIM_SOURCENAME));
 	sprintf(filename,SIM_SOURCENAME,project);
 	
@@ -405,7 +408,8 @@ static void generate_rl(char *project)
 
   xbt_dict_foreach(process_function_set,cursor,key,data) {
     filename = xbt_new(char,strlen(project) + strlen(RL_SOURCENAME) + strlen(key));
-    sprintf(filename,RL_SOURCENAME,project,key);
+
+	sprintf(filename,RL_SOURCENAME,project,key);
 
     OUT=fopen(filename,"w");
     xbt_assert1(OUT, "Unable to open %s for writing",filename);
@@ -419,7 +423,7 @@ static void generate_rl(char *project)
                  "#include <signal.h>\n" \
                  "#include <gras.h>\n" \
                  "\n" \
-                 "extern const char *_gras_procname;\n" \
+                 "extern const char * XBT_PUBLIC_DATA _gras_procname;\n" \
                  "/* user code */\n" \
                  "int %s(int argc, char *argv[]);\n" \
                  "\n" \
@@ -862,9 +866,6 @@ int main(int argc, char *argv[])
   generate_borland_simulation_project(project_name);
   generate_borland_real_life_project(project_name);
 
-  if(__lib_dir)
-    xbt_free(__lib_dir);
-
   if(__gras_path)
     xbt_free(__gras_path);
   
@@ -879,7 +880,7 @@ int main(int argc, char *argv[])
 }
 #ifdef _WIN32
 void
-generate_borland_project(borland_project_t project)
+generate_borland_project(borland_project_t project,int is_rl,const char* name)
 {
 	char* binary_path;	/* the path of the generated binary file				*/
 	char* obj_path;		/* the path of the generated object file 				*/
@@ -887,7 +888,7 @@ generate_borland_project(borland_project_t project)
 	char* main_source;	/* the name of the bpf file used by the borland project */
 	char* file_name;	/* the file name of the main source file				*/
     char* include_path; /* the include path                                     */
-
+	char* buffer;
 
     /* create the borland project file */
     borland_project_create(project);
@@ -914,8 +915,8 @@ generate_borland_project(borland_project_t project)
 	xbt_free(binary_path);
 	
 	/* construct an write the object files to generate by the compiler */
-	obj_path = xbt_new0(char,strlen(project->name) + strlen(project->obj_dir) + 6);
-	sprintf(binary_path,"%s\\%s.obj",project->obj_dir,project->name);
+	obj_path = xbt_new0(char,strlen(project->name) + strlen(name) + (2*strlen(project->obj_dir)) + 11);
+	sprintf(binary_path,"%s\\%s.obj\n%s\\%s.obj",project->obj_dir,project->name,project->obj_dir,name);
 	borland_project_write_xml_element(project,"OBJFILES",obj_path);
 	xbt_free(obj_path);
 	
@@ -939,9 +940,14 @@ generate_borland_project(borland_project_t project)
     lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") + strlen("libgras.lib") + 3);
 	sprintf(lib_files,"%s\\simgrid.lib %s\\libgras.lib",project->lib_dir,project->lib_dir);
     */
-
-    lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") + 2);
-	sprintf(lib_files,"%s\\simgrid.lib",project->lib_dir);
+	
+	if(is_rl){
+		lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("libgras.lib") + 2);
+		sprintf(lib_files,"%s\\libgras.lib",project->lib_dir);	
+	}else{
+    	lib_files = xbt_new0(char,(2 * (strlen(project->lib_dir) + 1)) + strlen("simgrid.lib") + 2);
+		sprintf(lib_files,"%s\\simgrid.lib",project->lib_dir);
+	}
 
 	borland_project_write_xml_element(project,"LIBFILES",lib_files);
 	xbt_free(lib_files);
@@ -992,8 +998,14 @@ generate_borland_project(borland_project_t project)
 	/* write the INCLUDEPATH element  */
 
     if(!__gras_path){
-        __gras_path = xbt_new0(char,MAX_PATH);
-        find_file_path("C:\\","gras.h",__gras_path);
+    	buffer =xbt_new0(char,MAX_PATH);
+    	GetEnvironmentVariable("SG_INSTALL_DIR",buffer,MAX_PATH);
+    	
+		__gras_path = xbt_new0(char,MAX_PATH);
+		sprintf(__gras_path,"%s\\simgrid\\include",buffer);
+		free(buffer);
+
+        /*find_file_path("C:\\","gras.h",__gras_path);*/
     }
 
     include_path = xbt_new0(char,strlen("$(BCB)\\include") + strlen(__gras_path) + 2);
@@ -1053,10 +1065,10 @@ generate_borland_project(borland_project_t project)
      *  -tWM-   specify that the application is not multithread
      *  -c      generate the object file, no link
      */
-	borland_project_write_xml_element(project,"CFLAG1","-Od -H=$(BCB)\\lib\\vcl60.csm -Hc -Vx -Ve -X- -r- -a1 -b- -k -y -v -vi- -tWC -tWM- -c");
+	borland_project_write_xml_element(project,"CFLAG1","-Od -H=$(BCB)\\lib\\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWC -tWM- -c");
 
 	/* write the PFLAGS element */
-	borland_project_write_xml_element(project,"PFLAGS","-N2obj -N0obj -$YD -$W -$O- -$A8 -v -JPHNE -M");
+	borland_project_write_xml_element(project,"PFLAGS","-N2obj -N0obj -$YD -$W -$O- -$A8 -v -JPHNE ");
 
 	/* write the RFLAGS element */
 	borland_project_write_xml_element(project,"RFLAGS","");
@@ -1117,28 +1129,34 @@ generate_borland_project(borland_project_t project)
 	
 	/* FIXME : check the source file directory */
 	/* add the generated source file to the list */
-	file_name = xbt_new0(char,strlen(project->src_dir) + strlen(project->name) + 4);
-	sprintf(file_name,"%s\\%s.c",project->src_dir,project->name);
+	
+	file_name = xbt_new0(char,strlen(project->src_dir) + strlen(project->name) + 5);
+	sprintf(file_name,"%s\\_%s.c",project->src_dir,project->name);
 	borland_project_write_file_element(project,file_name,"",project->name,"CCompiler","","");
+
+	memset(file_name,0,strlen(project->src_dir) + strlen(project->name) + 4);
+	sprintf(file_name,"%s\\%s.c",project->src_dir,name);
+	borland_project_write_file_element(project,file_name,"",name,"CCompiler","","");
+
 	xbt_free(file_name);
 
 	/* FIXME : check the libraries directory */
 	/* add the simgrid library to the list */
-	file_name = xbt_new0(char,strlen(project->lib_dir) + strlen("simgrid.lib") + 2);
-	sprintf(file_name,"%s\\simgrid.lib",project->lib_dir);
-	borland_project_write_file_element(project,file_name,"","simgrid.lib","LibTool","","");
-	xbt_free(file_name);
-
-	/*
-    add the libgras library to the list
-
-	file_name = xbt_new0(char,strlen(project->lib_dir) + strlen("libgras.lib") + 2);
-	sprintf(file_name,"%s\\libgras.lib",project->lib_dir);
-
-	borland_project_write_file_element(project,file_name,"","libgras.lib","LibTool","","");
-	xbt_free(file_name);
-    */
 	
+	if(is_rl){
+		file_name = xbt_new0(char,strlen(project->lib_dir) + strlen("libgras.lib") + 2);
+		sprintf(file_name,"%s\\libgras.lib",project->lib_dir);
+		borland_project_write_file_element(project,file_name,"","libgras.lib","LibTool","","");
+	}else
+	{
+		file_name = xbt_new0(char,strlen(project->lib_dir) + strlen("simgrid.lib") + 2);
+		sprintf(file_name,"%s\\simgrid.lib",project->lib_dir);
+		borland_project_write_file_element(project,file_name,"","simgrid.lib","LibTool","","");
+	}
+	
+	
+	xbt_free(file_name);
+
 	/* write the end of the node FILELIST */
 	borland_project_end_xml_node(project,"FILELIST");
 	
@@ -1200,7 +1218,6 @@ void
 borland_project_write_xml_element(borland_project_t project,const char* name,const char* value)
 {
 	borland_project_write_tabs(project,level);
-
 	fprintf(project->stream,"<%s value=\"%s\"/>\n",name,value);
 }
 
@@ -1223,7 +1240,7 @@ borland_project_create_main_file(const char* name)
 void
 borland_project_create(borland_project_t project)
 {
-    char* file_name = xbt_new0(char,strlen(project->name) + 5);
+    char* file_name = xbt_new0(char,strlen(project->name ) + 5);
     sprintf(file_name,"%s.bpr",project->name);
     project->stream = fopen(file_name,"w+");
     xbt_free(file_name);
@@ -1294,12 +1311,9 @@ generate_borland_simulation_project(const char* name)
 
     borland_project.lib_dir = xbt_new0(char,MAX_PATH);
 
-    if(!__lib_dir){
-        find_file_path("C:\\","simgrid.lib",borland_project.lib_dir);
-        __lib_dir = strdup(borland_project.lib_dir);
-        }
-    else
-        borland_project.lib_dir = strdup(__lib_dir);
+    
+    GetEnvironmentVariable("LIB_SIMGRID_PATH",borland_project.lib_dir,MAX_PATH);
+		
 
     GetCurrentDirectory(MAX_PATH,buffer);
 
@@ -1307,8 +1321,8 @@ generate_borland_simulation_project(const char* name)
 
     strcpy(borland_project.src_dir,buffer);
 
-    borland_project.name = xbt_new0(char,strlen(name) + strlen("_simulator") + 2);
-    sprintf(borland_project.name,"_%s_simulator",name);
+    borland_project.name = xbt_new0(char,strlen(name) + strlen("simulator") + 2);
+    sprintf(borland_project.name,"%s_simulator",name);
 
     borland_project.bin_dir = xbt_new0(char,strlen(buffer) + strlen("\\bin") + 1);
     sprintf(borland_project.bin_dir,"%s\\bin",buffer);
@@ -1326,7 +1340,7 @@ generate_borland_simulation_project(const char* name)
     if(INVALID_HANDLE_VALUE == hDir)
         CreateDirectory(borland_project.obj_dir,NULL);
 
-    generate_borland_project(&borland_project);
+    generate_borland_project(&borland_project,0,name);
 
     xbt_free(borland_project.name);
     xbt_free(borland_project.src_dir);
@@ -1354,13 +1368,8 @@ generate_borland_real_life_project(const char* name)
 
     borland_project.lib_dir = xbt_new0(char,MAX_PATH);
 
-    if(!__lib_dir){
-        find_file_path("C:\\","simgrid.lib",borland_project.lib_dir);
-        __lib_dir = strdup(borland_project.lib_dir);
-    }
-    else
-        borland_project.lib_dir = strdup(__lib_dir);
-
+    GetEnvironmentVariable("LIB_GRAS_PATH",borland_project.lib_dir,MAX_PATH);
+       
     GetCurrentDirectory(MAX_PATH,buffer);
 
     borland_project.src_dir = xbt_new0(char,strlen(buffer) + 1);
@@ -1385,11 +1394,11 @@ generate_borland_real_life_project(const char* name)
 
 
 	xbt_dict_foreach(process_function_set,cursor,key,data) {
-        borland_project.name = xbt_new0(char,strlen(name) + strlen(key) + 3);
+        borland_project.name = xbt_new0(char,strlen(name) + strlen(key) + 2);
 
-        sprintf(borland_project.name,"_%s_%s",name,key);
+        sprintf(borland_project.name,"%s_%s",name,key);
 
-        generate_borland_project(&borland_project);
+        generate_borland_project(&borland_project,1,name);
         xbt_free(borland_project.name);
     }
 
