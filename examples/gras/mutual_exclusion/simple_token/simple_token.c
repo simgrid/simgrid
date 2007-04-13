@@ -149,7 +149,7 @@ int node (int argc,char *argv[]) {
 
   /* 8. One node has to create the token at startup. 
         It's specified by a command line argument */
-  if (argc >= 5 && !strncmp("--create-token", argv[4],strlen(argv[4])))
+  if (argc >= 5 && !strncmp("--create-token", argv[4],strlen("--create-token")))
     globals->create=1;
 
   if (globals->create) {
