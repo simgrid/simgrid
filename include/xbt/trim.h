@@ -11,9 +11,7 @@
 
 #include "xbt/misc.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SG_BEGIN_DECL()
 
 /**  @brief Strip whitespace (or other characters) from the end of a string.
  *
@@ -79,11 +77,6 @@ ltrim( char* s, const char* char_list);
 XBT_PUBLIC(char*) 
 trim(char* s, const char* char_list);
 
-
-#ifdef __cplusplus
-}
-#endif
+SG_END_DECL()
 
 #endif /* !XBT_TRIM_H */
-
- 
