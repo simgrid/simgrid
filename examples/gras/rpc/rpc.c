@@ -31,7 +31,7 @@ int forwarder (int argc,char *argv[]);
 int client (int argc,char *argv[]);
 
 static void exception_raising(void) {
-  /*THROW1(unknown_error,42,"Some error we will catch on client side %d",err++);*/
+  THROW1(unknown_error,42,"Some error we will catch on client side %d",err++);
 }
 static void exception_catching(void) {
   int gotit = 0,i;
