@@ -17,7 +17,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/function_types.h"
 #include "xbt/log.h"
-#include "xbt/trim.h"
+#include "xbt/str.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>

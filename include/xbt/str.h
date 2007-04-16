@@ -2,7 +2,7 @@
 
 /* str.h - XBT string related functions.                                    */
 
-/* Copyright (c) 2004-7, Martin Quinson and Arnaud Legrand.                 */
+/* Copyright (c) 2004-7, Martin Quinson, Arnaud Legrand and  Cherier Malek. */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -28,6 +28,11 @@ XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 #if defined(_WIN32) || !defined(__GNUC__)
 XBT_PUBLIC(long) getline(char **lineptr, size_t *n, FILE *stream);
 #endif
+
+/* Trim related functions */
+XBT_PUBLIC(char*) rtrim(char* s, const char* char_list);
+XBT_PUBLIC(char*) ltrim( char* s, const char* char_list);
+XBT_PUBLIC(char*) trim(char* s, const char* char_list);
 
 SG_END_DECL()
 
