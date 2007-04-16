@@ -86,7 +86,10 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     snprintf(buff,256,"%s",strchr(backtrace[i],'[')+1);
     p=strchr(buff,']');
     *p='\0';
-    addrs[i]=bprintf("%s", buff);
+    if (strcmp(buff,"(nil)"))
+       addrs[i]=bprintf("%s", buff);
+    else
+       addrs[i]=bprintf("0x0");
     DEBUG3("Set up a new address: %d, '%s'(%p)", i, addrs[i], addrs[i]);
      
     /* Add it to the command line args */
@@ -112,8 +115,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
     line_pos[strlen(line_pos)-1]='\0';
 
     if (strcmp("??",line_func)) {
-       DEBUG2("Found static symbol %s() at %s", line_func, line_pos);
-      e->bt_strings[i] = bprintf("**   In %s() at %s (static symbol)", line_func,line_pos);
+      DEBUG2("Found static symbol %s() at %s", line_func, line_pos);
+      e->bt_strings[i] = bprintf("**   In %s() at %s", line_func,line_pos);
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
       char *maps_name;
@@ -203,14 +206,32 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       /* check whether the trick worked */
       if (strcmp("??",line_func)) {
 	DEBUG2("Found dynamic symbol %s() at %s", line_func, line_pos);
-	e->bt_strings[i] = bprintf("**   In %s() at %s (dynamic symbol)", line_func,line_pos);
+	e->bt_strings[i] = bprintf("**   In %s() at %s", line_func,line_pos);
       } else {
 	/* damn, nothing to do here. Let's print the raw address */
 	DEBUG1("Dynamic symbol not found. Raw address = %s", backtrace[i]);
 	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
       }
+      
     }
     free(addrs[i]);
+     
+    /* Mask the bottom of the stack */    
+    if (!strncmp("main",line_func,strlen("main"))) {
+       int j;
+       for (j=i+1; j<e->used; j++)
+	 free(addrs[j]);
+       e->used = i+1;
+    }
+     
+    if (!strncmp("__context_wrapper",line_func,strlen("__context_wrapper"))) {
+       int j;
+       for (j=i+1; j<e->used; j++)
+	 free(addrs[j]);
+       e->used = i;
+    }
+   
+    
   }
   pclose(pipe);
   free(addrs);
