@@ -50,6 +50,11 @@ want to cite GRAS, please use this publication instead:
 
 \section pub_simulation Other publications about the SimGrid framework
 
+\li <b>Cost and Accuracy of Packet-Level vs. Analytical Network Simulations: And Empirical Study</b>\n
+    by <em>K. Fujiwara</em>\n
+    <b>M.S. Thesis</b>, Dept. of Information and Computer Sciences, University of Hawai`i at Manoa, April 2007.\n
+    http://navet.ics.hawaii.edu/~casanova/homepage/theses/kayo_fujiwara_MS.pdf
+
 \li <b>The SimGrid Project - Simulation and Deployment of Distributed Applications</b>\n
     by <em>A. Legrand, M. Quinson, K. Fujiwara, H. Casanova</em>\n
     <b>POSTER</b> in Proceedings of the IEEE International Symposium on High Performance Distributed Computing (HPDC-15), Paris, France, May 2006.\n    
