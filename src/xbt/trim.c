@@ -10,7 +10,8 @@
  */
   
 #include "xbt/misc.h"
-#include "xbt/sysdep.h" /* headers of these functions */
+#include "xbt/sysdep.h"
+#include "xbt/trim.h" /* headers of these functions */
 #include "portable.h"
 
 /**  @brief Strip whitespace (or other characters) from the end of a string.
