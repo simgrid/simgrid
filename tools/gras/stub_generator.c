@@ -58,6 +58,18 @@ typedef struct s_borland_project
 	char* src_dir;	        /* the directory use to store the source files of the project				*/
 }s_borland_project_t,* borland_project_t;
 
+
+/*
+ * A structure which represents a visual C++ project file.
+ */
+typedef struct s_dsp
+{
+	FILE* stream;
+	char* lib_dir;
+	char* src_dir;
+	char* name;
+}s_dsp_t,* dsp_t;
+
 /*
  * Write tabs in a borland project file.
  * @param project The project concerned by the operation.
@@ -184,6 +196,28 @@ generate_borland_project(borland_project_t project,int is_rl,const char* name);
  */
 int
 find_file_path(const char* root_dir,const char* file_name,char* path);
+
+
+/*
+ * Functions used to create a Microsoft Visual C++ project file (*.dsp).
+ */
+
+/*
+ * Create the Microsoft visual C++ file project for the simulation.
+ */
+int
+generate_simulation_dsp_file(const char* project_name);
+
+/*
+ * Create the Microsoft visual C++ real life project file.
+ */
+int
+generate_real_live_dsp_file(const char* project_name);
+
+/*
+ * generate a Microsoft Visual project file*/
+void
+generate_dsp_project(dsp_t project,int is_rl,const char* name);
 
 #endif
 
@@ -865,6 +899,8 @@ int main(int argc, char *argv[])
   #ifdef _WIN32
   generate_borland_simulation_project(project_name);
   generate_borland_real_life_project(project_name);
+  generate_simulation_dsp_file(project_name);
+  generate_real_live_dsp_file(project_name);
 
   if(__gras_path)
     xbt_free(__gras_path);
@@ -1481,6 +1517,216 @@ find_file_path(const char* root_dir,const char* file_name,char* path)
 	FindClose (hFind);
 	return 0;
 }
+
+/* Implementation of the functions used to create a Visual C++ project.*/
+
+int
+generate_simulation_dsp_file(const char* name)
+{
+	char buffer[MAX_PATH] = {0};
+    s_dsp_t dsp = {0};
+    dsp.lib_dir = xbt_new0(char,MAX_PATH);
+
+    GetEnvironmentVariable("LIB_SIMGRID_PATH",dsp.lib_dir,MAX_PATH);
+    GetCurrentDirectory(MAX_PATH,buffer);
+
+    dsp.src_dir = xbt_new0(char,strlen(buffer) + 1);
+    strcpy(dsp.src_dir,buffer);
+	dsp.name = xbt_new0(char,strlen(name) + strlen("simulator") + 2);
+	sprintf(dsp.name,"%s_simulator",name);
+
+    generate_dsp_project(&dsp,0,name);
+
+    xbt_free(dsp.name);
+    xbt_free(dsp.src_dir);
+	xbt_free(dsp.lib_dir);
+    
+    return 0;		
+}
+
+/*
+ * Create the Microsoft visual C++ real life project file.
+ */
+int
+generate_real_live_dsp_file(const char* name)
+{
+	
+    char buffer[MAX_PATH] = {0};
+    xbt_dict_cursor_t cursor = NULL;
+    char *key = NULL;
+    void *data = NULL;
+	s_dsp_t dsp = {0};
+
+	
+    dsp.lib_dir = xbt_new0(char,MAX_PATH);
+
+    GetEnvironmentVariable("LIB_GRAS_PATH",dsp.lib_dir,MAX_PATH);
+       
+    GetCurrentDirectory(MAX_PATH,buffer);
+
+    dsp.src_dir = xbt_new0(char,strlen(buffer) + 1);
+
+    strcpy(dsp.src_dir,buffer);
+
+
+	xbt_dict_foreach(process_function_set,cursor,key,data) {
+        dsp.name = xbt_new0(char,strlen(name) + strlen(key) + 2);
+
+        sprintf(dsp.name,"%s_%s",name,key);
+
+        generate_dsp_project(&dsp,1,name);
+        xbt_free(dsp.name);
+    }
+
+    xbt_free(dsp.src_dir);
+    xbt_free(dsp.lib_dir);
+	return 0;
+}
+
+void
+generate_dsp_project(dsp_t project,int is_rl,const char* name)
+{
+	/* create the visual C++ project file */
+	char* buffer;
+	char* file_name = xbt_new0(char,strlen(project->name) + 5);
+    sprintf(file_name,"%s.dsp",project->name);
+    project->stream = fopen(file_name,"w+");
+    xbt_free(file_name);
+    
+    if(!__gras_path)
+	{
+    	buffer =xbt_new0(char,MAX_PATH);
+    	GetEnvironmentVariable("SG_INSTALL_DIR",buffer,MAX_PATH);
+    	
+		__gras_path = xbt_new0(char,MAX_PATH);
+		sprintf(__gras_path,"%s\\simgrid\\include",buffer);
+		free(buffer);
+    }
+    
+    /* dsp file header */
+    fprintf(project->stream,"# Microsoft Developer Studio Project File - Name=\"%s\" - Package Owner=<4>\n",project->name);
+   	fprintf(project->stream,"# Microsoft Developer Studio Generated Build File, Format Version 6.00\n");
+   	fprintf(project->stream,"# ** DO NOT EDIT **\n\n");
+   	
+   	/* target type is a win32 x86 console application */
+   	fprintf(project->stream,"# TARGTYPE \"Win32 (x86) Console Application\" 0x0103\n\n");
+   	
+   	/* the current config is win32-debug */
+   	fprintf(project->stream,"CFG=%s - Win32 Debug\n",project->name);
+   	
+   	/* warning */
+   	fprintf(project->stream,"!MESSAGE This is not a valid makefile. To build this project using NMAKE,\n");
+   	
+   	/* NMAKE usage */
+   	fprintf(project->stream,"!MESSAGE use the Export Makefile command and run\n");
+   	fprintf(project->stream,"!MESSAGE\n");
+   	fprintf(project->stream,"!MESSAGE NMAKE /f \"%s.mak\".\n",project->name);
+   	fprintf(project->stream,"!MESSAGE\n");
+   	fprintf(project->stream,"!MESSAGE You can specify a configuration when running NMAKE\n");
+	fprintf(project->stream,"!MESSAGE by defining the macro CFG on the command line. For example:\n");
+	fprintf(project->stream,"!MESSAGE\n"); 
+	fprintf(project->stream,"!MESSAGE NMAKE /f \"%s.mak\" CFG=\"%s - Win32 Debug\"\n",project->name,project->name);
+	fprintf(project->stream,"!MESSAGE\n");
+	fprintf(project->stream,"!MESSAGE Possible choices for configuration are:\n");
+	fprintf(project->stream,"!MESSAGE\n"); 
+	fprintf(project->stream,"!MESSAGE \"%s - Win32 Release\" (based on \"Win32 (x86) Console Application\")\n",project->name);
+	fprintf(project->stream,"!MESSAGE \"%s - Win32 Debug\" (based on \"Win32 (x86) Console Application\")\n",project->name);
+	fprintf(project->stream,"!MESSAGE\n\n"); 
+   	
+	fprintf(project->stream,"# Begin Project\n\n");
+	fprintf(project->stream,"# PROP AllowPerConfigDependencies 0\n");
+	fprintf(project->stream,"# PROP Scc_ProjName\n");
+	fprintf(project->stream,"# PROP Scc_LocalPath\n");
+	fprintf(project->stream,"CPP=cl.exe\n");
+	fprintf(project->stream,"RSC=rc.exe\n\n");
+   	
+   	fprintf(project->stream,"!IF  \"$(CFG)\" == \"%s - Win32 Release\"\n\n",project->name);
+   	
+	fprintf(project->stream,"# PROP BASE Use_MFC 0\n");
+	fprintf(project->stream,"# PROP BASE Use_Debug_Libraries 0\n");
+	fprintf(project->stream,"# PROP BASE Output_Dir \"Release\"\n");
+	fprintf(project->stream,"# PROP BASE Intermediate_Dir \"Release\"\n");
+	fprintf(project->stream,"# PROP BASE Target_Dir \"\"\n");
+	fprintf(project->stream,"# PROP Use_MFC 0\n");
+	fprintf(project->stream,"# PROP Use_Debug_Libraries 0\n");
+	fprintf(project->stream,"# PROP Output_Dir \"Release\"\n");
+	fprintf(project->stream,"# PROP Intermediate_Dir \"Release\"\n");
+	fprintf(project->stream,"# PROP Target_Dir \"\"\n");
+	/* TODO : the include directory */
+	/*fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /GX /O2 /I \"./%s\" /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n",__gras_path);*/
+	fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /GX /O2 /I \"%s\" /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n",__gras_path);
+	fprintf(project->stream,"# ADD CPP /nologo /W3 /GX /O2 /D \"WIN32\" /D \"NDEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /c\n");
+	fprintf(project->stream,"# ADD BASE RSC /l 0x40c /d \"NDEBUG\"\n");
+	fprintf(project->stream,"# ADD RSC /l 0x40c /d \"NDEBUG\n");
+	fprintf(project->stream,"BSC32=bscmake.exe\n");
+	fprintf(project->stream,"# ADD BASE BSC32 /nologo\n");
+	fprintf(project->stream,"# ADD BSC32 /nologo\n");
+	fprintf(project->stream,"LINK32=link.exe\n");
+	fprintf(project->stream,"# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386\n");
+	
+	if(is_rl)
+		fprintf(project->stream,"# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libgras.lib /nologo /subsystem:console /machine:I386\n\n");
+	else
+		fprintf(project->stream,"# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib simgrid.lib /nologo /subsystem:console /machine:I386\n\n");
+			
+	fprintf(project->stream,"!ELSEIF  \"$(CFG)\" == \"%s - Win32 Debug\"\n",project->name);
+
+	fprintf(project->stream,"# PROP BASE Use_MFC 0\n");
+	fprintf(project->stream,"# PROP BASE Use_Debug_Libraries 1\n");
+	fprintf(project->stream,"# PROP BASE Output_Dir \"Debug\"\n");
+	fprintf(project->stream,"# PROP BASE Intermediate_Dir \"Debug\"\n");
+	fprintf(project->stream,"# PROP BASE Target_Dir \"\"\n");
+	fprintf(project->stream,"# PROP Use_MFC 0\n");
+	fprintf(project->stream,"# PROP Use_Debug_Libraries 1\n");
+	fprintf(project->stream,"# PROP Output_Dir \"Debug\"\n");
+	fprintf(project->stream,"# PROP Intermediate_Dir \"Debug\"\n");
+	fprintf(project->stream,"# PROP Ignore_Export_Lib 0\n");
+	fprintf(project->stream,"# PROP Target_Dir \"\"\n");
+	/* TODO : the include directory */
+	/*fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od  /I \"./%s\" /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n",__gras_path);*/
+	fprintf(project->stream,"# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od  /I \"%s\" /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n",__gras_path);
+	fprintf(project->stream,"# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D \"WIN32\" /D \"_DEBUG\" /D \"_CONSOLE\" /D \"_MBCS\" /YX /FD /GZ  /c\n");
+	fprintf(project->stream,"# ADD BASE RSC /l 0x40c /d \"_DEBUG\"\n");
+	fprintf(project->stream,"# ADD RSC /l 0x40c /d \"_DEBUG\"\n");
+	fprintf(project->stream,"BSC32=bscmake.exe\n");
+	fprintf(project->stream,"# ADD BASE BSC32 /nologo\n");
+	fprintf(project->stream,"# ADD BSC32 /nologo\n");
+	fprintf(project->stream,"LINK32=link.exe\n");
+	fprintf(project->stream,"# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept\n");
+	
+	if(is_rl)
+		fprintf(project->stream,"# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib simgrid.lib  libgras.lib  /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept\n\n");
+	else
+		fprintf(project->stream,"# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib simgrid.lib  simgrid.lib  /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept\n\n");
+			
+	fprintf(project->stream,"!ENDIF\n\n");
+	
+	fprintf(project->stream,"# Begin Target\n\n");
+	fprintf(project->stream,"# Name \"%s - Win32 Release\"\n",project->name);
+	fprintf(project->stream,"# Name \"%s - Win32 Debug\"\n",project->name);
+	fprintf(project->stream,"# Begin Group \"Source Files\"\n\n");
+	fprintf(project->stream,"# PROP Default_Filter \"cpp;c;cxx;rc;def;r;odl;idl;hpj;bat\"\n\n");
+	
+	fprintf(project->stream,"# Begin Source File\n");
+	fprintf(project->stream,"SOURCE=%s\\_%s.c\n",project->src_dir,project->name);
+	fprintf(project->stream,"# End Source File\n\n");
+	
+	fprintf(project->stream,"# Begin Source File\n");
+	fprintf(project->stream,"SOURCE=%s\\%s.c\n",project->src_dir,name);
+	fprintf(project->stream,"# End Source File\n\n");
+	
+	fprintf(project->stream,"# End Group\n");
+	fprintf(project->stream,"# Begin Group \"Header Files\"\n\n");
+	fprintf(project->stream,"# PROP Default_Filter \"h;hpp;hxx;hm;inl\"\n");
+	fprintf(project->stream,"# End Group\n");
+	fprintf(project->stream,"# Begin Group \"Resource Files\"\n\n");
+	fprintf(project->stream,"# PROP Default_Filter \"ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe\"\n");
+	fprintf(project->stream,"# End Group\n");
+	fprintf(project->stream,"# End Target\n");
+	fprintf(project->stream,"# End Project\n");
+   	
+}
+
 #endif
 
 
