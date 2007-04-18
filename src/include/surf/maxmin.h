@@ -79,4 +79,6 @@ void sdp_solve(lmm_system_t sys);
 
 void lagrange_solve(lmm_system_t sys);
 
+void lagrange_dicotomi_solve(lmm_system_t sys);
+
 #endif				/* _SURF_MAXMIN_H */
