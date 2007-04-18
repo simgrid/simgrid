@@ -59,7 +59,6 @@ void lagrange_solve(lmm_system_t sys)
 
 
   xbt_swag_t var_list = NULL;
-  //lmm_variable_t var = NULL;
   lmm_variable_t var1 = NULL;
   lmm_variable_t var2 = NULL;
 
@@ -93,7 +92,7 @@ void lagrange_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   i=0;
   xbt_swag_foreach(var1, var_list) {
-    if((var1->bound > 0.0) || (var1->weight <= 0.0)){
+    if((var1->bound < 0.0) || (var1->weight <= 0.0)){
       DEBUG1("#### NOTE var1(%d) is a boundless variable", i);
       var1->mu = -1.0;
     } else{ 
@@ -126,6 +125,7 @@ void lagrange_solve(lmm_system_t sys)
    */
   while(overall_error > epsilon_min_error && iteration < max_iterations){
     iteration++;
+
     /*                        d Dual
      * Compute the value of ----------- (\lambda^k, \mu^k) this portion
      *                       d \mu_i^k
@@ -134,10 +134,10 @@ void lagrange_solve(lmm_system_t sys)
     var_list = &(sys->variable_set);
     xbt_swag_foreach(var1, var_list) {
       mu_partial = 0;
-      if((var1->bound > 0) || (var1->weight <=0) ){
+      if((var1->bound >= 0) && (var1->weight > 0) ){
 	//for each link with capacity cnsts[i] that uses flow of variable var1 do
 	for(i=0; i<var1->cnsts_number; i++)
-	  mu_partial += (var1->cnsts[i].constraint)->lambda;
+	  mu_partial += (var1->cnsts[i].constraint)->lambda + var1->mu;
        
         mu_partial = -1.0 / mu_partial + var1->bound;
 	var1->new_mu = var1->mu - sigma_step * mu_partial; 
