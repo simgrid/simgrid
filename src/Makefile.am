@@ -169,6 +169,7 @@ SG_SRC=  \
   \
   surf/maxmin.c                                                              \
   surf/lagrange.c                                                            \
+  surf/lagrangedico.c                                                            \
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
   surf/surfxml_parse.c                                                       \
