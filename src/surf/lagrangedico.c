@@ -62,8 +62,7 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
   int iteration=0;
   double tmp=0;
   int i;
-  FILE *gnuplot_file=NULL;
-  
+   
 
   DEBUG0("Iterative method configuration snapshot =====>");
   DEBUG1("#### Maximum number of iterations : %d", max_iterations);
@@ -205,14 +204,11 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
 	  WARN0("The impossible happened, partial_diff(min) >0 && partial_diff(max) < 0");
 	}
       }
-
-      var1->new_mu = max;
-      
       cnst1->new_lambda = cnst1->lambda;
-	
+      
       if(cnst1->new_lambda < 0){
 	cnst1->new_lambda = 0;
-	}
+      }
     }
 
 
@@ -294,10 +290,6 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
   }
 
 
-  if(XBT_LOG_ISENABLED(surf_writelambda, xbt_log_priority_debug)) {
-    fclose(gnuplot_file);
-  }
-
 
 }
 
@@ -341,8 +333,12 @@ double partial_diff_lambda(double lambda, lmm_constraint_t cnst1){
     if(var1->bound > 0)
       tmp += var1->mu;
     
+    tmp = tmp - cnst1->lambda + lambda;
+    
+    //un peux du bricolage pour evite la catastrophe
     if(tmp==0) lambda_partial = 10e-8;
-    lambda_partial += (-1.0 / (tmp - 3*cnst1->lambda + 3*cnst1->lambda));
+    
+    lambda_partial += (-1.0 /tmp);
   }
 
   return lambda_partial;
