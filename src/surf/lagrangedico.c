@@ -21,11 +21,9 @@
 #endif
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrangedico, surf,
 				"Logging specific to SURF (lagrange)");
 
-XBT_LOG_NEW_SUBCATEGORY(surf_writelambda, surf,
-				"Generates the lambda.in file. WARNING: the size of this file might be a few GBs.");
 
 void lagrange_dicotomi_solve(lmm_system_t sys);
 
