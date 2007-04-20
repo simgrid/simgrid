@@ -35,8 +35,8 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
   /*
    * Lagrange Variables.
    */
-  int max_iterations= 1000000;
-  double epsilon_min_error = 0.00001;
+  int max_iterations= 10;
+  double epsilon_min_error = 1e-10;
   double overall_error = 1;
   double min, max, middle;
 
@@ -53,7 +53,7 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
   lmm_constraint_t cnst1 = NULL;
   
   xbt_swag_t var_list = NULL;
-  lmm_variable_t var1 = NULL;
+_variable_t var1 = NULL;
 
 
   /*
@@ -122,7 +122,7 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
       if((var1->bound >= 0) && (var1->weight > 0) ){
 	//for each link with capacity cnsts[i] that uses flow of variable var1 do
 	//begin dicotomi
-	min = max = 1.0;
+	min = max = var1->mu;
 	overall_error = 1;
 	while(overall_error < epsilon_min_error){
 	  if( partial_diff_mu(min, var1)>0 && partial_diff_mu(max, var1)>0 ){
@@ -135,7 +135,7 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
 	    if(min == max){
 	      max = max * 2;
 	    }else{
-	    max = min;
+	      max = min;
 	    }
 	  }else if( partial_diff_mu(min,var1)<0 && partial_diff_mu(max,var1) > 0 ){
 	    if(min == max){
@@ -155,10 +155,10 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
 	  }
 	}
 
-	var1->new_mu = max;
+	var1->mu = max;
 
-	if(var1->new_mu < 0){
-	  var1->new_mu = 0;
+	if(var1->mu < 0){
+	  var1->mu = 0;
 	}
       }
     }
@@ -171,43 +171,57 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
      */
     xbt_swag_foreach(cnst1, cnst_list) {
       
+
+      DEBUG2("cnst1 (id=%s) (%p)", (char *)cnst1->id, cnst1);
+
       //begin dicotomi
+      i=0;
       overall_error = 1;
-      min = max = 1.0;
-      while(overall_error < epsilon_min_error){
+      min = max = cnst1->lambda;
+      while(overall_error > epsilon_min_error){
+	i++;
+ 
+
+	//	DEBUG4("====> Dicotomi debug. [%e, %e], D(min,max) = [%e, %e]", min, max, partial_diff_lambda(min, cnst1), partial_diff_lambda(max, cnst1));
+	
 	if( partial_diff_lambda(min, cnst1) > 0 && partial_diff_lambda(max, cnst1) > 0 ){
 	  if(min == max){
-	    min = min / 2;
+	    min = min / 2.0;
 	  }else{
 	    max = min;
 	  }
 	}else if( partial_diff_lambda(min, cnst1) < 0 && partial_diff_lambda(max, cnst1) < 0 ){
 	  if(min == max){
-	    max = max * 2;
+	    max = max * 2.0;
 	  }else{
-	    max = min;
+	    min = max;
 	  }
 	}else if( partial_diff_lambda(min,cnst1) < 0 && partial_diff_lambda(max,cnst1) > 0 ){
-	  if(min == max){
-	    middle = partial_diff_lambda((fabs(min - max)/2), cnst1);
-	    if(  middle > 0 ){
-	      max = (fabs(min - max)/2);
-	    }else if( middle < 0 ){
-	      min = (fabs(min - max)/2);
-	    }else{
-	      WARN0("Found an optimal solution with 0 error!");
-	      overall_error = 0;
-	    }
-	    overall_error = fabs(min - max);
+	  middle = (max + min)/2.0;
+
+
+	  //DEBUG2("Ideal state reached middle = %e, D(fabs(min-max)/2.0) = %e", middle, partial_diff_lambda(middle, cnst1));
+	  if( partial_diff_lambda(middle, cnst1) < 0 ){
+	    min = middle;
+	  }else if( partial_diff_lambda(middle, cnst1) > 0 ){
+	    max = middle;
+	  }else{
+	    WARN0("Found an optimal solution with 0 error!");
+	    overall_error = 0;
 	  }
+	  overall_error = fabs(min - max);
 	}else{
 	  WARN0("The impossible happened, partial_diff(min) >0 && partial_diff(max) < 0");
 	}
       }
-      cnst1->new_lambda = cnst1->lambda;
       
-      if(cnst1->new_lambda < 0){
-	cnst1->new_lambda = 0;
+
+      DEBUG1("Number of iteration in the dicotomi %d", i);
+      
+      cnst1->lambda = min;
+    
+      if(cnst1->lambda < 0){
+	cnst1->lambda = 0;
       }
     }
 
@@ -217,6 +231,7 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
      * the values of \lambda and \mu.
      */
     overall_error=0;
+    DEBUG1("Iteration %d ", iteration);
     xbt_swag_foreach(var1, var_list) {
       if(var1->weight <=0) 
 	var1->value = 0.0;
@@ -235,19 +250,14 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
 
 	var1->value = 1.0 / tmp;
       }
-      
+
+
+      DEBUG2("======> value of var1 (%p)  = %e", var1, var1->value);      
     }
-
-
-    /* Updating lambda's and mu's */  
-    xbt_swag_foreach(var1, var_list)
-      if(!((var1->bound > 0.0) || (var1->weight <= 0.0)))
-	var1->mu = var1->new_mu;
-    
-    
-    xbt_swag_foreach(cnst1, cnst_list)
-      cnst1->lambda = cnst1->new_lambda;
   }
+
+
+
 
 
   //verify the KKT property
@@ -294,6 +304,43 @@ void lagrange_dicotomi_solve(lmm_system_t sys)
 }
 
 
+double dicotomi(double init, void *diff(double, void*), void *var_cnst){
+  double min, max;
+  double overall_error;
+
+  min = max = init;
+  overall_error = 1;
+
+  while(overall_error > epsilon_min_error){
+    if( diff(min, var_cnst) > 0 && diff(max, var_cnst) > 0 ){
+      if(min == max){
+	min = min / 2.0;
+      }else{
+	max = min;
+      }
+    }else if( diff(min, var_cnst) < 0 && diff(max, var_cnst) < 0 ){
+      if(min == max){
+	max = max * 2.0;
+      }else{
+	min = max;
+      }
+    }else if( diff(min, var_cnst) < 0 && diff(max, var_cnst) > 0 ){
+      middle = (max + min)/2.0;
+      
+      if( diff(middle, var_cnst) < 0 ){
+	min = middle;
+      }else if( diff(middle, var_cnst) > 0 ){
+	max = middle;
+      }else{
+	WARN0("Found an optimal solution with 0 error!");
+	overall_error = 0;
+      }
+      overall_error = fabs(min - max);
+    }else{
+      WARN0("The impossible happened, partial_diff(min) >0 && partial_diff(max) < 0");
+    }
+  }
+}
 
 double partial_diff_mu(double mu, lmm_variable_t var1){
   double mu_partial=0.0;
@@ -341,6 +388,10 @@ double partial_diff_lambda(double lambda, lmm_constraint_t cnst1){
     lambda_partial += (-1.0 /tmp);
   }
 
+
+  lambda_partial += cnst1->bound;
+
+  //DEBUG3("Partial diff lambda result cnst1 %s (%p) : %e", (char *)cnst1->id, cnst1, lambda_partial);
   return lambda_partial;
 }
   
