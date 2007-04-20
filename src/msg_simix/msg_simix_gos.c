@@ -122,7 +122,6 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 	SIMIX_mutex_unlock(t_simdata->mutex);
 
 
-	DEBUG0("GET FREE ACTION");
 	if(SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
 		//t_simdata->comm = NULL;
 		SIMIX_action_destroy(t_simdata->comm);
