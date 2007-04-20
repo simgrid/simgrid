@@ -56,16 +56,20 @@ EXTRA_DIST= \
 	\
 	simdag/private.h \
 	\
-	gras/Transport/transport_interface.h \
-	gras/Virtu/virtu_interface.h          gras/Virtu/virtu_private.h\
-	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
-	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c \
-	\
 	amok/Bandwidth/bandwidth_private.h \
 	amok/amok_modinter.h
 
 if USE_SIMIX
-  EXTRA_DIST+=include/simix/simix.h include/simix/datatypes.h simix/msg_simix_private.h
+  EXTRA_DIST+=include/simix/simix.h include/simix/datatypes.h simix/msg_simix_private.h \
+	gras_simix/Transport/gras_simix_transport_interface.h \
+	gras_simix/Virtu/gras_simix_virtu_interface.h          gras_simix/Virtu/gras_simix_virtu_private.h\
+	gras_simix/Virtu/gras_simix_virtu_rl.h                 gras_simix/Virtu/gras_simix_virtu_sg.h \
+	gras_simix/DataDesc/gras_simix_ddt_parse.yy.l          gras_simix/DataDesc/gras_simix_ddt_parse.yy.c
+else
+  EXTRA_DIST+=gras/Transport/transport_interface.h \
+	gras/Virtu/virtu_interface.h          gras/Virtu/virtu_private.h\
+	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
+	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c
 endif
 
 #        gras_private.h
@@ -135,7 +139,6 @@ COMMON_SRC=\
   xbt/config.c                                                               \
   xbt/cunit.c                                                                \
   xbt/graphxml_parse.c                                                       \
-  \
   gras/gras.c \
   \
   gras/Transport/transport.c          gras/Transport/transport_private.h  \
@@ -150,7 +153,6 @@ COMMON_SRC=\
   gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
   \
   gras/Virtu/process.c gras/Virtu/gras_module.c
-
 RL_SRC= \
   gras/rl_stubs.c                     xbt/xbt_thread.c                    \
   \
@@ -179,15 +181,7 @@ SG_SRC=  \
   surf/workstation_KCCFLN05.c  \
   \
   simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c                       \
-  simdag/sd_workstation.c                                                    \
-  \
-  gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
-  \
-  gras/Virtu/sg_emul.c \
-  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
-  gras/Virtu/sg_dns.c\
-  \
-  gras/Msg/sg_msg.c
+  simdag/sd_workstation.c
 
 if HAVE_SDP
   SG_SRC+= surf/sdp.c  
@@ -216,14 +210,33 @@ MSG_SIMIX_SRC=  msg_simix/msg_simix_config.c \
   msg_simix/msg_simix_environment.c \
   msg_simix/msg_simix_deployment.c 
 
+GRAS_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
+  \
+  gras/Virtu/sg_emul.c \
+  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
+  gras/Virtu/sg_dns.c\
+  \
+  gras/Msg/sg_msg.c
+
+GRAS_SIMIX_SRC= gras_simix/Transport/gras_simix_sg_transport.c  gras_simix/Transport/gras_simix_transport_plugin_sg.c        \
+  \
+  gras_simix/Virtu/gras_simix_sg_emul.c \
+  gras_simix/Virtu/gras_simix_sg_process.c        gras_simix/Virtu/gras_simix_sg_time.c     \
+  gras_simix/Virtu/gras_simix_sg_dns.c\
+  \
+  gras_simix/Msg/gras_simix_sg_msg.c
+
 if USE_SIMIX
   SG_SRC+=$(SIMIX_SRC)
   SG_SRC+=$(MSG_SIMIX_SRC)
+  SG_SRC+=$(GRAS_SIMIX_SRC)
   EXTRA_DIST+=$(MSG_SRC)
 else  
   EXTRA_DIST+=$(SIMIX_SRC)
   EXTRA_DIST+=$(MSG_SIMIX_SRC)
+  EXTRA_DIST+=$(GRAS_SIMIX_SRC)
   SG_SRC+=$(MSG_SRC)
+  SG_SRC+=$(GRAS_SRC)
 endif
 
 AMOK_SRC= \
