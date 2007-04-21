@@ -43,8 +43,9 @@ void lagrange_solve(lmm_system_t sys)
   /*
    * Lagrange Variables.
    */
-  int max_iterations= 10;
-  double epsilon_min_error = 1e-10;
+  int max_iterations= 100;
+  double epsilon_min_error = 1e-4;
+  double dicotomi_min_error = 1e-8;
   double overall_error = 1;
 
 
@@ -72,8 +73,9 @@ void lagrange_solve(lmm_system_t sys)
    
 
   DEBUG0("Iterative method configuration snapshot =====>");
-  DEBUG1("#### Maximum number of iterations : %d", max_iterations);
-  DEBUG1("#### Minimum error tolerated      : %e", epsilon_min_error);
+  DEBUG1("#### Maximum number of iterations       : %d", max_iterations);
+  DEBUG1("#### Minimum error tolerated            : %e", epsilon_min_error);  
+  DEBUG1("#### Minimum error tolerated (dicotomi) : %e", dicotomi_min_error);
 
 
   if ( !(sys->modified))
@@ -85,17 +87,16 @@ void lagrange_solve(lmm_system_t sys)
    */
   var_list = &(sys->variable_set);
   i=0;
-  xbt_swag_foreach(var, var_list) {
-    if((var->bound > 0.0) || (var->weight <= 0.0)){
-      DEBUG1("#### NOTE var(%d) is a boundless variable", i);
-      var->mu = -1.0;
-    } else{ 
-      var->mu =   1.0;
-      var->new_mu = 2.0;
-    }
-    DEBUG2("#### var(%d)->mu :  %e", i, var->mu);
-    DEBUG2("#### var(%d)->weight: %e", i, var->weight);
-    i++;
+  xbt_swag_foreach(var, var_list) {    if((var->bound > 0.0) || (var->weight <= 0.0)){
+    DEBUG1("#### NOTE var(%d) is a boundless variable", i);
+    var->mu = -1.0;
+  } else{ 
+    var->mu =   1.0;
+    var->new_mu = 2.0;
+  }
+  DEBUG2("#### var(%d)->mu :  %e", i, var->mu);
+  DEBUG2("#### var(%d)->weight: %e", i, var->weight);
+  i++;
   }
 
   /* 
@@ -114,27 +115,41 @@ void lagrange_solve(lmm_system_t sys)
   while(overall_error > epsilon_min_error && iteration < max_iterations){
    
     iteration++;
-    
+    DEBUG1("************** ITERATION %d **************", iteration);    
+
+
     /*                       
      * Compute the value of mu_i
      */
-    var_list = &(sys->variable_set);
     //forall mu_i in mu_1, mu_2, ..., mu_n
     xbt_swag_foreach(var, var_list) {
       if((var->bound >= 0) && (var->weight > 0) ){
-	var->mu = dicotomi(var->mu, partial_diff_mu, var, epsilon_min_error);
-	if(var->mu < 0) var->mu = 0;
+	var->new_mu = dicotomi(var->mu, partial_diff_mu, var, dicotomi_min_error);
+	if(var->new_mu < 0) var->new_mu = 0;
       }
     }
-    
 
     /*
      * Compute the value of lambda_i
      */
     //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
     xbt_swag_foreach(cnst, cnst_list) {
-      cnst->lambda = dicotomi(cnst->lambda, partial_diff_lambda, cnst, epsilon_min_error);
-      if(cnst->lambda < 0) cnst->lambda = 0;
+      cnst->new_lambda = dicotomi(cnst->lambda, partial_diff_lambda, cnst, dicotomi_min_error);
+      if(cnst->new_lambda < 0) cnst->new_lambda = 0;
+    }
+
+
+    /*                       
+     * Update values of mu and lambda
+     */
+    //forall mu_i in mu_1, mu_2, ..., mu_n
+    xbt_swag_foreach(var, var_list) {
+      var->mu = var->new_mu ;
+    }
+  
+    //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
+    xbt_swag_foreach(cnst, cnst_list) {
+      cnst->lambda = cnst->new_lambda;
     }
 
 
@@ -142,8 +157,7 @@ void lagrange_solve(lmm_system_t sys)
      * Now computes the values of each variable (\rho) based on
      * the values of \lambda and \mu.
      */
-    overall_error=0;
-    DEBUG1("Iteration %d ", iteration);
+    overall_error=0;   
     xbt_swag_foreach(var, var_list) {
       if(var->weight <=0) 
 	var->value = 0.0;
@@ -154,17 +168,13 @@ void lagrange_solve(lmm_system_t sys)
 	  if(var->bound > 0) 
 	    tmp+=var->mu;
 	}
-	
 	//computes de overall_error
 	if(overall_error < fabs(var->value - 1.0/tmp)){
 	  overall_error = fabs(var->value - 1.0/tmp);
 	}
-
 	var->value = 1.0 / tmp;
       }
-
-
-      DEBUG2("======> value of var (%p)  = %e", var, var->value);      
+      DEBUG4("======> value of var %s (%p)  = %e, overall_error = %e", (char *)var->id, var, var->value, overall_error);       
     }
   }
 
@@ -180,10 +190,9 @@ void lagrange_solve(lmm_system_t sys)
     }
   
     tmp = tmp - cnst->bound;
-  
-  
-    if(tmp != 0 ||  cnst->lambda != 0){
-      WARN4("The link %s(%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", (char *)cnst->id, cnst, cnst->lambda, tmp);
+
+    if(tmp > epsilon_min_error){
+      WARN4("The link %s(%p) doesn't match the KKT property, expected less than %e and got %e", (char *)cnst->id, cnst, epsilon_min_error, tmp);
     }
   
   }
@@ -208,9 +217,6 @@ void lagrange_solve(lmm_system_t sys)
   }else{
     WARN1("Method reach %d iterations, which is the maxmimun number of iterations allowed.", iteration);
   }
-
-
-
 }
 
 /*
@@ -233,10 +239,10 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
   min = max = init;
   overall_error = 1;
 
-  DEBUG0("STARTING DICOTOMI... Debuggin, format used [min, max], [D(min),D(max)]");
+  //DEBUG0("STARTING DICOTOMI... Debugging, format used [min, max], [D(min),D(max)]");
 
   while(overall_error > min_error){
-    DEBUG4("====> [%e, %e] , [%e,%e]", min, max, diff(min, var_cnst), diff(max, var_cnst));
+    //DEBUG4("====> [%e, %e] , [%e,%e]", min, max, diff(min, var_cnst), diff(max, var_cnst));
 
     if( diff(min, var_cnst) > 0 && diff(max, var_cnst) > 0 ){
       if(min == max){
