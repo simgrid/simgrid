@@ -20,66 +20,60 @@
 #include <math.h>
 #endif
 
-#define LAMBDA_STEP 0.01
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf, "Logging specific to SURF (lagrange)");
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf,
-				"Logging specific to SURF (lagrange)");
+/*
+ * Local prototypes to implement the lagrangian optimization with optimal step, also called dicotomi.
+ */
+//solves the proportional fairness using a lagrange optimizition with dicotomi step
+void   lagrange_solve       (lmm_system_t sys);
+//computes the value of the dicotomi using a initial values, init, with a specific variable or constraint
+double dicotomi(double init, double diff(double, void*), void *var_cnst, double min_error);
+//computes the value of the differential of variable param_var applied to mu  
+double partial_diff_mu      (double mu, void * param_var);
+//computes the value of the differential of constraint param_cnst applied to lambda  
+double partial_diff_lambda  (double lambda, void * param_cnst);
 
-XBT_LOG_NEW_SUBCATEGORY(surf_writelambda, surf,
-				"Generates the lambda.in file. WARNING: the size of this file might be a few GBs.");
 
-void lagrange_solve(lmm_system_t sys);
 
 void lagrange_solve(lmm_system_t sys)
 {
   /*
    * Lagrange Variables.
    */
-  int max_iterations= 1000000;
-  double epsilon_min_error = 0.00001;
+  int max_iterations= 10;
+  double epsilon_min_error = 1e-10;
   double overall_error = 1;
-  double sigma_step = LAMBDA_STEP;
-  //double capacity_error=0, bound_error=0;
-  int watch_out = 0;
+
 
   /*
    * Variables to manipulate the data structure proposed to model the maxmin
    * fairness. See docummentation for more details.
    */
-  xbt_swag_t elem_list = NULL;
-  //lmm_element_t elem = NULL;
-  lmm_element_t elem1 = NULL;
+  xbt_swag_t elem_list  = NULL;
+  lmm_element_t elem    = NULL;
 
 
-  xbt_swag_t cnst_list = NULL;
-  //lmm_constraint_t cnst = NULL;
-  lmm_constraint_t cnst1 = NULL;
-  //lmm_constraint_t cnst2 = NULL;
+  xbt_swag_t cnst_list  = NULL;
+  lmm_constraint_t cnst = NULL;
+  
+  xbt_swag_t var_list   = NULL;
+  lmm_variable_t var    = NULL;
 
-
-  xbt_swag_t var_list = NULL;
-  lmm_variable_t var1 = NULL;
-  lmm_variable_t var2 = NULL;
 
   /*
    * Auxiliar variables.
    */
   int iteration=0;
-  double mu_partial=0;
-  double lambda_partial=0;
   double tmp=0;
-  int i,j;
-  FILE *gnuplot_file=NULL;
-  //char print_buf[1024];
-  //char *trace_buf=xbt_malloc0(sizeof(char));
-  //double sum;
-
+  int i;
+   
 
   DEBUG0("Iterative method configuration snapshot =====>");
   DEBUG1("#### Maximum number of iterations : %d", max_iterations);
   DEBUG1("#### Minimum error tolerated      : %e", epsilon_min_error);
-  DEBUG1("#### Step                         : %e", sigma_step);
 
 
   if ( !(sys->modified))
@@ -91,16 +85,16 @@ void lagrange_solve(lmm_system_t sys)
    */
   var_list = &(sys->variable_set);
   i=0;
-  xbt_swag_foreach(var1, var_list) {
-    if((var1->bound < 0.0) || (var1->weight <= 0.0)){
-      DEBUG1("#### NOTE var1(%d) is a boundless variable", i);
-      var1->mu = -1.0;
+  xbt_swag_foreach(var, var_list) {
+    if((var->bound > 0.0) || (var->weight <= 0.0)){
+      DEBUG1("#### NOTE var(%d) is a boundless variable", i);
+      var->mu = -1.0;
     } else{ 
-      var1->mu = 1.0;
-      var1->new_mu = 2.0;
+      var->mu =   1.0;
+      var->new_mu = 2.0;
     }
-    DEBUG2("#### var1(%d)->mu:  %e", i, var1->mu);
-    DEBUG2("#### var1(%d)->weight: %e", i, var1->weight);
+    DEBUG2("#### var(%d)->mu :  %e", i, var->mu);
+    DEBUG2("#### var(%d)->weight: %e", i, var->weight);
     i++;
   }
 
@@ -108,112 +102,39 @@ void lagrange_solve(lmm_system_t sys)
    * Initialize lambda.
    */
   cnst_list=&(sys->active_constraint_set); 
-  xbt_swag_foreach(cnst1, cnst_list) {
-    cnst1->lambda = 1.0;
-    cnst1->new_lambda = 2.0;
-    DEBUG2("#### cnst1(%p)->lambda:  %e", cnst1, cnst1->lambda);
+  xbt_swag_foreach(cnst, cnst_list) {
+    cnst->lambda = 1.0;
+    cnst->new_lambda = 2.0;
+    DEBUG2("#### cnst(%p)->lambda :  %e", cnst, cnst->lambda);
   }
-
-  if(XBT_LOG_ISENABLED(surf_writelambda, xbt_log_priority_debug)) {
-    gnuplot_file = fopen("lambda.in", "w");
-    fprintf(gnuplot_file, "# iteration    lambda1  lambda2 lambda3 ... lambdaP\n");
-  }
-
   
   /*
    * While doesn't reach a minimun error or a number maximum of iterations.
    */
   while(overall_error > epsilon_min_error && iteration < max_iterations){
+   
     iteration++;
-
-    /*                        d Dual
-     * Compute the value of ----------- (\lambda^k, \mu^k) this portion
-     *                       d \mu_i^k
-     * of code depends on function f(x).
+    
+    /*                       
+     * Compute the value of mu_i
      */
     var_list = &(sys->variable_set);
-    xbt_swag_foreach(var1, var_list) {
-      mu_partial = 0;
-      if((var1->bound >= 0) && (var1->weight > 0) ){
-	//for each link with capacity cnsts[i] that uses flow of variable var1 do
-	for(i=0; i<var1->cnsts_number; i++)
-	  mu_partial += (var1->cnsts[i].constraint)->lambda + var1->mu;
-       
-        mu_partial = -1.0 / mu_partial + var1->bound;
-	var1->new_mu = var1->mu - sigma_step * mu_partial; 
-
-	if(var1->new_mu < 0){
-	  var1->new_mu = 0;
-	}
+    //forall mu_i in mu_1, mu_2, ..., mu_n
+    xbt_swag_foreach(var, var_list) {
+      if((var->bound >= 0) && (var->weight > 0) ){
+	var->mu = dicotomi(var->mu, partial_diff_mu, var, epsilon_min_error);
+	if(var->mu < 0) var->mu = 0;
       }
     }
+    
 
-
-    /*                         d Dual
-     * Compute the value of ------------- (\lambda^k, \mu^k) this portion
-     *                      d \lambda_i^k
-     * of code depends on function f(x).
+    /*
+     * Compute the value of lambda_i
      */
-    j=0;
-    if(XBT_LOG_ISENABLED(surf_writelambda, xbt_log_priority_debug)) {
-      fprintf(gnuplot_file, "\n%d",iteration);
-    }
-    xbt_swag_foreach(cnst1, cnst_list) {
-      j++;
-
-      lambda_partial = 0;
-      
-      elem_list = &(cnst1->element_set);
-      watch_out=0;
-      xbt_swag_foreach(elem1, elem_list) {
-   
-	var2 = elem1->variable;
-	
-	if(var2->weight<=0) continue;
-
-	tmp = 0;
-
-	for(i=0; i<var2->cnsts_number; i++){
-	  tmp += (var2->cnsts[i].constraint)->lambda;
-	}
-	if(var2->bound > 0)
-	  tmp += var2->mu;
-
-	
-	if(tmp==0) break;
-
-	if (tmp==cnst1->lambda)
-	  watch_out=1;
-	lambda_partial += (-1.0 / tmp);
-      }
-
-      if(tmp == 0) 
-	cnst1->new_lambda = LAMBDA_STEP;
-      else {
-	lambda_partial += cnst1->bound;
-	if(watch_out && (lambda_partial>0)) {
-	  /* INFO6("Watch Out (%d) %p! lambda_partial: %e; lambda : %e ; (%e %e) \n",iteration, cnst1,  */
-	  /* 		lambda_partial, cnst1->lambda, cnst1->lambda / 2, */
-	  /* 		cnst1->lambda - sigma_step * lambda_partial); */
-
-	  if(cnst1->lambda < 0) WARN2("Value of cnst1->lambda(%p) = %e < 0", cnst1, cnst1->lambda);
-	  if((cnst1->lambda - sigma_step * lambda_partial) < 0) WARN1("Value of lambda_new = %e < 0", (cnst1->lambda - sigma_step * lambda_partial));
-
-	  if(cnst1->lambda - sigma_step * lambda_partial < cnst1->lambda / 2)
-	    cnst1->new_lambda = cnst1->lambda / 2;
-	  else
-	    cnst1->new_lambda = cnst1->lambda - sigma_step * lambda_partial;
-	} else
-	  cnst1->new_lambda = cnst1->lambda - sigma_step * lambda_partial;
-	if(cnst1->new_lambda < 0){
-	  cnst1->new_lambda = 0;
-	}
-      }
-
-      if(XBT_LOG_ISENABLED(surf_writelambda, xbt_log_priority_debug)) {
-	fprintf(gnuplot_file, "  %e", cnst1->lambda);
-      }
-
+    //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
+    xbt_swag_foreach(cnst, cnst_list) {
+      cnst->lambda = dicotomi(cnst->lambda, partial_diff_lambda, cnst, epsilon_min_error);
+      if(cnst->lambda < 0) cnst->lambda = 0;
     }
 
 
@@ -222,74 +143,64 @@ void lagrange_solve(lmm_system_t sys)
      * the values of \lambda and \mu.
      */
     overall_error=0;
-    xbt_swag_foreach(var1, var_list) {
-      if(var1->weight <=0) 
-	var1->value = 0.0;
+    DEBUG1("Iteration %d ", iteration);
+    xbt_swag_foreach(var, var_list) {
+      if(var->weight <=0) 
+	var->value = 0.0;
       else {
 	tmp = 0;
-	for(i=0; i<var1->cnsts_number; i++){
-	  tmp += (var1->cnsts[i].constraint)->lambda;
-	  if(var1->bound > 0) 
-	    tmp+=var1->mu;
+	for(i=0; i<var->cnsts_number; i++){
+	  tmp += (var->cnsts[i].constraint)->lambda;
+	  if(var->bound > 0) 
+	    tmp+=var->mu;
 	}
 	
 	//computes de overall_error
-	if(overall_error < fabs(var1->value - 1.0/tmp)){
-	  overall_error = fabs(var1->value - 1.0/tmp);
+	if(overall_error < fabs(var->value - 1.0/tmp)){
+	  overall_error = fabs(var->value - 1.0/tmp);
 	}
 
-	var1->value = 1.0 / tmp;
+	var->value = 1.0 / tmp;
       }
-      
+
+
+      DEBUG2("======> value of var (%p)  = %e", var, var->value);      
     }
-
-
-    /* Updating lambda's and mu's */  
-    xbt_swag_foreach(var1, var_list)
-      if(!((var1->bound > 0.0) || (var1->weight <= 0.0)))
-	var1->mu = var1->new_mu;
-    
-    
-    xbt_swag_foreach(cnst1, cnst_list)
-      cnst1->lambda = cnst1->new_lambda;
   }
 
 
-
-
-  //verify the KKT property
-  xbt_swag_foreach(cnst1, cnst_list){
+  //verify the KKT property for each link
+  xbt_swag_foreach(cnst, cnst_list){
     tmp = 0;
-    elem_list = &(cnst1->element_set);
-    xbt_swag_foreach(elem1, elem_list) {
-      var1 = elem1->variable;
-      if(var1->weight<=0) continue;
-      tmp += var1->value;
+    elem_list = &(cnst->element_set);
+    xbt_swag_foreach(elem, elem_list) {
+      var = elem->variable;
+      if(var->weight<=0) continue;
+      tmp += var->value;
     }
-
-    tmp = tmp - cnst1->bound;
- 
-
-    if(tmp != 0 ||  cnst1->lambda != 0){
-      WARN4("The link %s(%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", (char *)cnst1->id, cnst1, cnst1->lambda, tmp);
+  
+    tmp = tmp - cnst->bound;
+  
+  
+    if(tmp != 0 ||  cnst->lambda != 0){
+      WARN4("The link %s(%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", (char *)cnst->id, cnst, cnst->lambda, tmp);
     }
-    
+  
   }
 
-    
-  xbt_swag_foreach(var1, var_list){
-    if(var1->bound <= 0 || var1->weight <= 0) continue;
+  
+  //verify the KKT property of each flow
+  xbt_swag_foreach(var, var_list){
+    if(var->bound <= 0 || var->weight <= 0) continue;
     tmp = 0;
-    tmp = (var1->value - var1->bound);
+    tmp = (var->value - var->bound);
 
     
-    if(tmp != 0 ||  var1->mu != 0){
-      WARN4("The flow %s(%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", (char *)var1->id, var1, var1->mu, tmp);
+    if(tmp != 0 ||  var->mu != 0){
+      WARN4("The flow %s(%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", (char *)var->id, var, var->mu, tmp);
     }
 
   }
-
-
 
 
   if(overall_error <= epsilon_min_error){
@@ -299,31 +210,116 @@ void lagrange_solve(lmm_system_t sys)
   }
 
 
-  if(XBT_LOG_ISENABLED(surf_writelambda, xbt_log_priority_debug)) {
-    fclose(gnuplot_file);
-  }
-
-
-
-
-
-/*   /\* */
-/*    * Now computes the values of each variable (\rho) based on */
-/*    * the values of \lambda and \mu. */
-/*    *\/ */
-/*   var_list = &(sys->variable_set); */
-/*   xbt_swag_foreach(var1, var_list) { */
-/*     tmp = 0; */
-/*     for(i=0; i<var1->cnsts_number; i++){ */
-/*       elem1 = &(var1->cnsts[i]); */
-/*       tmp += (elem1->constraint)->lambda + var1->mu; */
-/*     } */
-/*     var1->weight = 1 / tmp; */
-
-/*     DEBUG2("var1->weight (id=%s) : %e", (char *)var1->id, var1->weight); */
-/*   } */
-
-
-
 
 }
+
+/*
+ * Returns a double value corresponding to the result of a dicotomi proccess with
+ * respect to a given variable/constraint (\mu in the case of a variable or \lambda in
+ * case of a constraint) and a initial value init. 
+ *
+ * @param init initial value for \mu or \lambda
+ * @param diff a function that computes the differential of with respect a \mu or \lambda
+ * @param var_cnst a pointer to a variable or constraint 
+ * @param min_erro a minimun error tolerated
+ *
+ * @return a double correponding to the result of the dicotomial process
+ */
+double dicotomi(double init, double diff(double, void*), void *var_cnst, double min_error){
+  double min, max;
+  double overall_error;
+  double middle;
+
+  min = max = init;
+  overall_error = 1;
+
+  DEBUG0("STARTING DICOTOMI... Debuggin, format used [min, max], [D(min),D(max)]");
+
+  while(overall_error > min_error){
+    DEBUG4("====> [%e, %e] , [%e,%e]", min, max, diff(min, var_cnst), diff(max, var_cnst));
+
+    if( diff(min, var_cnst) > 0 && diff(max, var_cnst) > 0 ){
+      if(min == max){
+	min = min / 2.0;
+      }else{
+	max = min;
+      }
+    }else if( diff(min, var_cnst) < 0 && diff(max, var_cnst) < 0 ){
+      if(min == max){
+	max = max * 2.0;
+      }else{
+	min = max;
+      }
+    }else if( diff(min, var_cnst) < 0 && diff(max, var_cnst) > 0 ){
+      middle = (max + min)/2.0;
+      
+      if( diff(middle, var_cnst) < 0 ){
+	min = middle;
+      }else if( diff(middle, var_cnst) > 0 ){
+	max = middle;
+      }else{
+	WARN0("Found an optimal solution with 0 error!");
+	overall_error = 0;
+      }
+      overall_error = fabs(min - max);
+    }else{
+      WARN0("The impossible happened, partial_diff(min) >0 && partial_diff(max) < 0");
+    }
+  }
+
+  return ((min+max)/2.0);
+}
+
+double partial_diff_mu(double mu, void *param_var){
+  double mu_partial=0.0;
+  lmm_variable_t var = (lmm_variable_t)param_var;
+  int i;
+
+  //for each link with capacity cnsts[i] that uses flow of variable var do
+  for(i=0; i<var->cnsts_number; i++)
+    mu_partial += (var->cnsts[i].constraint)->lambda + mu;
+  
+  mu_partial = (-1.0/mu_partial) + var->bound;
+
+  return mu_partial;
+}
+
+
+double partial_diff_lambda(double lambda, void *param_cnst){
+
+  double tmp=0.0;
+  int i;
+  xbt_swag_t elem_list = NULL;
+  lmm_element_t elem = NULL;
+  lmm_variable_t var = NULL;
+  lmm_constraint_t cnst= (lmm_constraint_t) param_cnst;
+  double lambda_partial=0.0;
+
+
+  elem_list = &(cnst->element_set);
+  
+  xbt_swag_foreach(elem, elem_list) {
+    var = elem->variable;
+    if(var->weight<=0) continue;
+    
+    tmp = 0;
+    for(i=0; i<var->cnsts_number; i++){
+      tmp += (var->cnsts[i].constraint)->lambda;
+    }
+	
+    if(var->bound > 0)
+      tmp += var->mu;
+    
+    tmp = tmp - cnst->lambda + lambda;
+    
+    //avoid a disaster value of lambda
+    if(tmp==0) lambda_partial = 10e-8;
+    
+    lambda_partial += (-1.0 /tmp);
+  }
+
+  lambda_partial += cnst->bound;
+
+  return lambda_partial;
+}
+  
