@@ -31,8 +31,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
 typedef enum {
   MAXMIN,
   SDP,
-  LAGRANGE,
-  LAGRANGEDICO
+  LAGRANGE
 } method_t;
 
 void test1(method_t method);
@@ -82,8 +81,6 @@ void test1(method_t method)
 #endif
   else if(method==LAGRANGE)
     lagrange_solve(Sys);  
-  else if(method==LAGRANGEDICO)
-    lagrange_dicotomi_solve(Sys);  
   else 
     xbt_assert0(0,"Invalid method");
 
@@ -320,12 +317,12 @@ int main(int argc, char **argv)
 
 /*   DEBUG0("***** Test 1 (Max-Min) ***** \n"); */
 /*   test1(MAXMIN); */
-#ifdef HAVE_SDP
-  DEBUG0("***** Test 1 (SDP) ***** \n");
-  test1(SDP);
-#endif
-  DEBUG0("***** Test 1 (Lagrange - dicotomi) ***** \n");
-  test1(LAGRANGEDICO);
+/* #ifdef HAVE_SDP */
+/*   DEBUG0("***** Test 1 (SDP) ***** \n"); */
+/*   test1(SDP); */
+/* #endif */
+/*   DEBUG0("***** Test 1 (Lagrange - dicotomi) ***** \n"); */
+/*   test1(LAGRANGE); */
 
 
 /*   DEBUG0("***** Test 2 (Max-Min) ***** \n"); */
@@ -341,12 +338,12 @@ int main(int argc, char **argv)
 
 /*   DEBUG0("***** Test 3 (Max-Min) ***** \n"); */
 /*   test3(MAXMIN); */
-/* #ifdef HAVE_SDP */
-/*   DEBUG0("***** Test 3 (SDP) ***** \n"); */
-/*   test3(SDP); */
-/* #endif */
-/*   DEBUG0("***** Test 3 (Lagrange) ***** \n"); */
-/*   test3(LAGRANGE); */
+#ifdef HAVE_SDP
+  DEBUG0("***** Test 3 (SDP) ***** \n");
+  test3(SDP);
+#endif
+  DEBUG0("***** Test 3 (Lagrange) ***** \n");
+  test3(LAGRANGE);
 
 
   return 0;
