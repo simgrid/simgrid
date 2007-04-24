@@ -1,6 +1,7 @@
 SimGrid (3.3-cvs) unstable; urgency=low
 
- (nothing yet)
+ OVERALL CHANGES:
+  * Make the backtrace of exceptions more human readable [Mt]
 
  -- 
 
