@@ -19,6 +19,7 @@
 /*
  * SDP specific variables.
  */
+#define NOSHORTS
 #include <declarations.h>
 
 
