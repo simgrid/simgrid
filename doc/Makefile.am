@@ -51,7 +51,7 @@ html/amok.html:
 	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>" > $@
 	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>Advanced Metacomputing Overlay Kit.</a></h2></center></html>" >> $@
 html/msg.html:
-	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>" >$ @
+	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>" > $@
 	echo "<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>Meta SimGrid.</a></h2></center></html>" >> $@
 html/simdag.html:
 	echo "<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>" > $@
@@ -109,12 +109,11 @@ check-gtut-tocs:
 	done
 	@grep ' *- \\ref' gtut-tour.doc > tmp.curtoc
 	@if ! diff -b -u tmp.curtoc tmp.realtoc ; then \
-	  echo "Wrong toc for gtut-tour.doc Right one is in tmp.realtoc"; \
+	  echo "Wrong toc for gtut-tour.doc Right one is in tmp.realtoc"; \
 	else \
 	  rm tmp.realtoc; \
 	fi ;
 	@rm tmp.curtoc
-	
 
 .PHONY: html
 
