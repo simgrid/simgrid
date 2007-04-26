@@ -116,7 +116,7 @@ lib_LTLIBRARIES= libsimgrid.la libgras.la
 
 COMMON_SRC=\
   \
-  xbt/snprintf.c    xbt/getline.c	xbt/xbt_str.c                        \
+  xbt/snprintf.c    xbt/xbt_str.c                                            \
   xbt/ex.c                                                                   \
   \
   xbt_modinter.h    gras_modinter.h                                          \

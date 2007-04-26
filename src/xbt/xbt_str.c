@@ -1,5 +1,8 @@
 
-/* Copyright (C) 2007 Malek Cherier. All rights reserved.                  */
+/* xbt_str.c - various helping functions to deal with strings               */
+
+/* Copyright (C) 2005-2007 Malek Cherier, Martin Quinson.                   */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. 
@@ -133,3 +136,39 @@ trim(char* s, const char* char_list ){
     return ltrim(rtrim(s,char_list),char_list);
 }
    
+#ifndef HAVE_GETLINE
+long getline(char **buf, size_t *n, FILE *stream) {
+   
+   int i, ch;
+   
+   if (!*buf) {
+     *buf = xbt_malloc(512);
+     *n = 512;
+   }
+   
+   if (feof(stream))
+     return (ssize_t)-1;
+   
+   for (i=0; (ch = fgetc(stream)) != EOF; i++)  {
+	
+      if (i >= (*n) + 1)
+	*buf = xbt_realloc(*buf, *n += 512);
+	
+      (*buf)[i] = ch;
+	
+      if ((*buf)[i] == '\n')  {
+	 i++;
+	 (*buf)[i] = '\0';
+	 break;
+      }      
+   }
+      
+   if (i == *n) 
+     *buf = xbt_realloc(*buf, *n += 1);
+   
+   (*buf)[i] = '\0';
+
+   return (ssize_t)i;
+}
+
+#endif /* HAVE_GETLINE */
