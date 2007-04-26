@@ -22,13 +22,22 @@ XBT_LOG_NEW_CATEGORY(top,"Useless test channel");
 #pragma argsused
 #endif
 
-int main(int argc, char **argv) {
-  xbt_init(&argc,argv);
-
+static void dolog(const char *settings) {
+  INFO1("Test with the settings '%s'",settings);
+  xbt_log_control_set(settings);
   DEBUG1("val=%d", 1);
   WARN1("val=%d", 2);
   CDEBUG2(top, "val=%d%s", 3, "!");
-  CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");
+  CRITICAL6("false alarm%s%s%s%s%s%s", "","","","","","!");   
+}
+
+
+int main(int argc, char **argv) {
+  xbt_init(&argc,argv);
+
+  dolog("");
+  dolog("test.thres:debug");
+  dolog("test.thres:critical");
   
   xbt_exit();
   return 0;
