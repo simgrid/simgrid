@@ -14,7 +14,12 @@
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
 
 SG_BEGIN_DECL()
-
+XBT_PUBLIC(void) gras_global_init(int *argc, char **argv);
+XBT_PUBLIC(void) gras_create_environment(const char *file);
+XBT_PUBLIC(void) gras_function_register(const char *name, void* code);
+XBT_PUBLIC(void) gras_launch_application(const char *file);
+XBT_PUBLIC(void) gras_clean(void);
+XBT_PUBLIC(void) gras_main(void);
 /** @addtogroup GRAS_emul
  *  @brief Code execution "emulation" and "virtualization".
  * 
