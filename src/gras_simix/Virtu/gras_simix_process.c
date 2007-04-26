@@ -80,13 +80,11 @@ void *gras_libdata_by_name(const char *name) {
 void *gras_libdata_by_name_from_procdata(const char*name, gras_procdata_t* pd) {
   void *res=NULL;
   xbt_ex_t e;
-
   if (xbt_set_length(pd->libdata) < xbt_dynar_length(_gras_procdata_fabrics)) {
      /* Damn, some new modules were added since procdata_init(). Amok? */
      /* Get 'em all */
      gras_procdata_init();     
   }
-   
   TRY {
     res = xbt_set_get_by_name(pd->libdata, name);
   } CATCH(e) {
@@ -152,7 +150,6 @@ gras_procdata_init() {
        WARN1("Module '%s' constructor is borken: it does not set elem->name_len",
 	     fab.name);
     }
-     
     xbt_set_add(pd->libdata, elem, fab.destructor);
   }
 }

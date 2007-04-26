@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras_modinter.h" /* module initialization interface */
-#include "gras/Virtu/virtu_rl.h"
+#include "gras_simix/Virtu/gras_simix_virtu_rl.h"
 #include "portable.h"
 
 /* globals */

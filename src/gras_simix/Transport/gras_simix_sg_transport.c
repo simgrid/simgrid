@@ -36,28 +36,29 @@ gras_socket_t gras_trp_select(double timeout) {
 	gras_trp_plugin_t trp;
 	gras_socket_t sock_iter; /* iterating over all sockets */
 	int cursor;
+	int i;
 
-	//gras_sg_portrec_t pr;     /* iterating to find the chanel of expeditor */
-//	int r_pid;
 	gras_hostdata_t *remote_hd;
-
+	gras_hostdata_t *local_hd;
+	
+	DEBUG0("Trying to get the lock pd, trp_select");
 	SIMIX_mutex_lock(pd->mutex);
 	DEBUG3("select on %s@%s with timeout=%f",
 			SIMIX_process_get_name(SIMIX_process_self()),
 			SIMIX_host_get_name(SIMIX_host_self()),
 			timeout);
-	//MSG_channel_select_from((m_channel_t) pd->chan, timeout, &r_pid);
-	SIMIX_cond_wait_timeout(pd->cond,pd->mutex,timeout);
+
+	if (pd->active_socket == NULL) {
+	/* message doesn't arrive yet, wait */
+		SIMIX_cond_wait_timeout(pd->cond,pd->mutex,timeout);
+	}
 
 	if (pd->active_socket == NULL) {
 		DEBUG0("TIMEOUT");
+		SIMIX_mutex_unlock(pd->mutex);
 		THROW0(timeout_error,0,"Timeout");
 	}
-/*	if (r_pid < 0) {
-		DEBUG0("TIMEOUT");
-		THROW0(timeout_error,0,"Timeout");
-	}*/
-
+	
 	/* Ok, got something. Open a socket back to the expeditor */
 
 	/* Try to reuse an already openned socket to that expeditor */
@@ -66,8 +67,15 @@ gras_socket_t gras_trp_select(double timeout) {
 
 		if (sock_iter->meas || !sock_iter->outgoing)
 			continue;
-		if (sock_iter->peer_port == pd->active_socket->port)
+		DEBUG4("sock_iter %p port %d active %p port %d",((gras_trp_sg_sock_data_t*)sock_iter->data)->to_process,sock_iter->peer_port,
+							((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process, pd->active_socket->port);
+		if ((sock_iter->peer_port == pd->active_socket->port) && 
+				(((gras_trp_sg_sock_data_t*)sock_iter->data)->to_host == SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process))) {
+				DEBUG0("\n\nAproveitou socket\n\n");
+			pd->active_socket=NULL;
+			SIMIX_mutex_unlock(pd->mutex);
 			return sock_iter;
+		}
 
 	}
 
@@ -87,13 +95,12 @@ gras_socket_t gras_trp_select(double timeout) {
 	res->port = -1;
 
 	sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
-	//sockdata->from_PID = MSG_process_self_PID();
-	//sockdata->to_PID   = r_pid;
 	sockdata->from_process = SIMIX_process_self();
 	sockdata->to_process   = ((gras_trp_sg_sock_data_t*)(pd->active_socket->data))->from_process;
 	
 	/* complicated*/
 	sockdata->to_host  = SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)(pd->active_socket->data))->from_process);
+
 	res->data = sockdata;
 	gras_trp_buf_init_sock(res);
 
@@ -102,39 +109,23 @@ gras_socket_t gras_trp_select(double timeout) {
 	remote_hd=(gras_hostdata_t *)SIMIX_host_get_data(sockdata->to_host);
 	xbt_assert0(remote_hd,"Run gras_process_init!!");
 
-	//sockdata->to_chan = -1;
 	res->peer_port = pd->active_socket->port;
-	/*
-	for (cursor=0; cursor<XBT_MAX_CHANNEL; cursor++) {
-		if (remote_hd->proc[cursor] == r_pid) {
-			sockdata->to_chan = cursor;
-			DEBUG2("Chan %d on %s is for my pal",
-					cursor,res->peer_name);
 
-			xbt_dynar_foreach(remote_hd->ports, cpt, pr) {
-				if (sockdata->to_chan == pr.tochan) {
-					if (pr.meas) {
-						DEBUG0("Damn, it's for measurement");
-						continue;
-					}
-
-					res->peer_port = pr.port;
-					DEBUG1("Cool, it points to port %d", pr.port);
-					break;
-				} else {
-					DEBUG2("Wrong port (tochan=%d, looking for %d)\n",
-							pr.tochan,sockdata->to_chan);
-				}
-			}
-			if (res->peer_port == -10) {
-				sockdata->to_chan = -1;
-			} else {
-				break;
-			}
-		}
+	/* search for a free port on the host */
+	local_hd = (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
+	for (i=1;i<65536;i++) {
+		if (local_hd->cond_port[i] == NULL)
+			break;
 	}
-	*/
-	
+	if (i == 65536) {
+		SIMIX_mutex_unlock(pd->mutex);
+		THROW0(system_error,0,"No port free");
+	}
+	res->port = i;
+	/*initialize the cond and mutex */
+	local_hd->cond_port[i] = SIMIX_cond_init();
+	local_hd->mutex_port[i] = SIMIX_mutex_init();
+
 	DEBUG1("New socket: Peer port %d", res->peer_port);
 	pd->active_socket=NULL;
 	SIMIX_mutex_unlock(pd->mutex);

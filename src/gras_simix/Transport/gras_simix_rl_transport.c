@@ -9,7 +9,7 @@
 
 #include "xbt/ex.h"
 #include "portable.h"
-#include "gras/Transport/transport_private.h"
+#include "gras_simix/Transport/gras_simix_transport_private.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 
 /* check transport_private.h for an explanation of this variable */

@@ -94,16 +94,17 @@ gras_trp_sg_setup(gras_trp_plugin_t plug) {
 
 void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 			       /* OUT */ gras_socket_t sock){
-	/*
   xbt_ex_t e;
 
   smx_host_t peer;
   gras_hostdata_t *hd;
+  gras_hostdata_t *local_hd;
   gras_trp_sg_sock_data_t *data;
   gras_sg_portrec_t pr;
-*/
+	int i;
+
   /* make sure this socket will reach someone */
-  /*if (!(peer=SIMIX_get_host_by_name(sock->peer_name))) 
+  if (!(peer=SIMIX_host_get_by_name(sock->peer_name))) 
     THROW1(mismatch_error,0,"Can't connect to %s: no such host.\n",sock->peer_name);
 
   if (!(hd=(gras_hostdata_t *)SIMIX_host_get_data(peer))) 
@@ -133,32 +134,37 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 	   "can't connect to %s:%d in meas mode, the process listen "
 	   "in regular mode on this port",sock->peer_name,sock->peer_port);
   }
-*/
   /* create the socket */
-  /*data = xbt_new(gras_trp_sg_sock_data_t,1);
-  //data->from_PID     = gras_os_getpid();
+  data = xbt_new(gras_trp_sg_sock_data_t,1);
   data->from_process = SIMIX_process_self();
 	data->to_process	 = pr.process;
-	//data->to_PID       = hd->proc[ pr.tochan ];
-	data->to_port			 = pr;
   data->to_host      = peer;
-  //data->to_chan      = pr.tochan;
+
+	/* searches for a free port on this host */
+	local_hd = (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
+	for (i=1;i<65536;i++) {
+		if (local_hd->cond_port[i] == NULL)
+			break;
+	}
+	if (i == 65536) THROW0(system_error,0,"No port free");
+	sock->port = i;
+	local_hd->cond_port[i] = SIMIX_cond_init();
+	local_hd->mutex_port[i] = SIMIX_mutex_init();
 
   sock->data = data;
   sock->incoming = 1;
 
-  DEBUG6("%s (PID %d) connects in %s mode to %s:%d (to_PID=%d)",
-	  SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid,
+  DEBUG5("%s (PID %ld) connects in %s mode to %s:%d",
+	  SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
 	  sock->meas?"meas":"regular",
-	 sock->peer_name,sock->peer_port,data->to_PID);
-*/
+	 sock->peer_name,sock->peer_port);
 }
 
 void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 			       gras_socket_t sock){
-/*
+
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
-  gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
+  //gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t *data;
   volatile int found;
@@ -169,8 +175,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 
   xbt_assert0(hd,"Please run gras_process_init on each process");
 
-  sock->accepting = 0;*/ /* no such nuisance in SG */
-/*
+  sock->accepting = 0; /* no such nuisance in SG */
   found = 0;
   TRY {
     find_port(hd,sock->port,&pr);
@@ -187,31 +192,30 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 	   "can't listen on address %s:%d: port already in use.",
 	   host,sock->port);
 
-  //pr.tochan = sock->meas ? pd->measChan : pd->chan;
   pr.port   = sock->port;
   pr.meas    = sock->meas;
 	pr.process = SIMIX_process_self();
   xbt_dynar_push(hd->ports,&pr);
-  */
+
+	hd->cond_port[sock->port] = SIMIX_cond_init();
+	hd->mutex_port[sock->port] = SIMIX_mutex_init();
+  
   /* Create the socket */
-  /*data = xbt_new(gras_trp_sg_sock_data_t,1);
-  data->from_process     = NULL;
-  data->to_PID       = SIMIX_process_self();;
-  //data->to_process       = gras_os_getpid();
-  data->to_host      = SIMIX_host_self();
-	data->to_port 		 = pr;
-  //data->to_chan      = pd->chan;
+  data = xbt_new(gras_trp_sg_sock_data_t,1);
+  data->from_process     = SIMIX_process_self();
+  data->to_process       = NULL;
+	data->to_host      = SIMIX_host_self();
   
   sock->data = data;
 
-  VERB6("'%s' (%d) ears on %s:%d%s (%p)",
+  VERB6("'%s' (%ld) ears on %s:%d%s (%p)",
     SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
     host,sock->port,sock->meas? " (mode meas)":"",sock);
-*/
+
 }
 
 void gras_trp_sg_socket_close(gras_socket_t sock){
-/*
+
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   int cpt;
   
@@ -220,14 +224,20 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
   XBT_IN1(" (sock=%p)",sock);
    
   if (!sock) return;
+
   xbt_assert0(hd,"Please run gras_process_init on each process");
 
   if (sock->data)
     free(sock->data);
 
-  if (sock->incoming && sock->port >= 0) {*/
+	SIMIX_cond_destroy(hd->cond_port[sock->port]);
+	hd->cond_port[sock->port] = NULL;
+	SIMIX_mutex_destroy(hd->mutex_port[sock->port]);
+	hd->mutex_port[sock->port] = NULL;
+
+  if (sock->incoming && sock->port >= 0) {
     /* server mode socket. Unregister it from 'OS' tables */
-/*    xbt_dynar_foreach(hd->ports, cpt, pr) {
+    xbt_dynar_foreach(hd->ports, cpt, pr) {
       DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
       if (pr.port == sock->port) {
 	xbt_dynar_cursor_rm(hd->ports, &cpt);
@@ -239,7 +249,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
 	  sock,sock->port);
   }
   XBT_OUT;
-*/
+
 }
 
 typedef struct {

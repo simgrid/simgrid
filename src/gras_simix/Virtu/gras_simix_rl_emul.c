@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/emul.h"
-#include "gras/Virtu/virtu_rl.h"
+#include "gras_simix/Virtu/gras_simix_virtu_rl.h"
 #include "gras_modinter.h"
 
 XBT_LOG_NEW_SUBCATEGORY(gras_virtu_emul,gras_virtu,"Emulation support");

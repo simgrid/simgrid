@@ -10,6 +10,6 @@
 #ifndef VIRTU_RL_H
 #define VIRTU_RL_H
 
-#include "gras/Virtu/virtu_private.h"
+#include "gras_simix/Virtu/gras_simix_virtu_private.h"
 
 #endif /* VIRTU_RL_H */

@@ -8,9 +8,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
-#include "gras/Msg/msg_private.h"
+#include "gras_simix/Msg/gras_simix_msg_private.h"
 #include "gras/timer.h"
-#include "gras/Virtu/virtu_interface.h"
+#include "gras_simix/Virtu/gras_simix_virtu_interface.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_timer,gras,

@@ -9,10 +9,10 @@
 
 #include "xbt/ex.h"
 #include "xbt/ex_interface.h"
-#include "gras/Msg/msg_private.h"
-#include "gras/Virtu/virtu_interface.h"
-#include "gras/DataDesc/datadesc_interface.h"
-#include "gras/Transport/transport_interface.h" /* gras_select */
+#include "gras_simix/Msg/gras_simix_msg_private.h"
+#include "gras_simix/Virtu/gras_simix_virtu_interface.h"
+#include "gras_simix/DataDesc/gras_simix_datadesc_interface.h"
+#include "gras_simix/Transport/gras_simix_transport_interface.h" /* gras_select */
 #include "portable.h" /* execinfo when available to propagate exceptions */
 
 #ifndef MIN
@@ -39,6 +39,7 @@ static void *gras_msg_procdata_new() {
    res->msg_waitqueue = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
    res->cbl_list      = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
    res->timers        = xbt_dynar_new(sizeof(s_gras_timer_t), NULL);
+   res->msg_to_receive_queue     = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
    
    return (void*)res;
 }
@@ -53,6 +54,7 @@ static void gras_msg_procdata_free(void *data) {
    xbt_dynar_free(&( res->msg_waitqueue ));
    xbt_dynar_free(&( res->cbl_list ));
    xbt_dynar_free(&( res->timers ));
+   xbt_dynar_free(&( res->msg_to_receive_queue ));
 
    free(res->name);
    free(res);

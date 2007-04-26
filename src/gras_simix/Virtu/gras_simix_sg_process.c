@@ -19,6 +19,7 @@ static long int PID = 1;
 
 void
 gras_process_init() {
+	int i;
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   gras_procdata_t *pd=xbt_new0(gras_procdata_t,1);
   gras_trp_procdata_t trp_pd;
@@ -27,12 +28,7 @@ gras_process_init() {
   
   SIMIX_process_set_data(SIMIX_process_self(),(void*)pd);
 
-	trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
-	trp_pd->pid = PID++;
-	if (SIMIX_process_self() != NULL ) {
-		trp_pd->ppid = gras_os_getpid();
-	}
-	else trp_pd->ppid = -1; 
+
 
   gras_procdata_init();
 
@@ -43,12 +39,25 @@ gras_process_init() {
     hd->ports = xbt_dynar_new(sizeof(gras_sg_portrec_t),NULL);
 
   //  memset(hd->proc, 0, sizeof(hd->proc[0]) * XBT_MAX_CHANNEL); 
-
-	SIMIX_host_set_data(SIMIX_host_self(),(void*)hd);
+	
+		for (i=0;i<65536;i++) {
+			hd->cond_port[i] =NULL;
+			hd->mutex_port[i] =NULL;
+		}
+		SIMIX_host_set_data(SIMIX_host_self(),(void*)hd);
   } else {
     hd->refcount++;
   }
-  
+
+	trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
+	trp_pd->pid = PID++;
+	if (SIMIX_process_self() != NULL ) {
+		trp_pd->ppid = gras_os_getpid();
+	}
+	else trp_pd->ppid = -1; 
+	trp_pd->mutex = SIMIX_mutex_init();
+	trp_pd->cond = SIMIX_cond_init();
+	trp_pd->active_socket = NULL;
   /* take a free channel for this process */
   /*
 	trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");

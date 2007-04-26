@@ -15,7 +15,7 @@ int gras_opt_trp_nomoredata_on_close=0;
 #include "xbt/ex.h"
 #include "xbt/peer.h"
 #include "portable.h"
-#include "gras/Transport/transport_private.h"
+#include "gras_simix/Transport/gras_simix_transport_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp,gras,"Conveying bytes over the network");
 XBT_LOG_NEW_SUBCATEGORY(gras_trp_meas,gras_trp,"Conveying bytes over the network without formating for perf measurements");
@@ -573,7 +573,7 @@ static void *gras_trp_procdata_new() {
    
    res->name = xbt_strdup("gras_trp");
    res->name_len = 0;
-   res->sockets   = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
+   res->sockets = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
    res->myport = 0;
    
    return (void*)res;
@@ -611,6 +611,7 @@ void gras_trp_socketset_dump(const char *name) {
  */
 int gras_trp_libdata_id;
 void gras_trp_register() {
+	DEBUG0("\ntrp add\n");
    gras_trp_libdata_id = gras_procdata_add("gras_trp",gras_trp_procdata_new, gras_trp_procdata_free);
 }
 

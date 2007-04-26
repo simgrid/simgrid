@@ -26,7 +26,7 @@
 #include "gras/timer.h"
 #include "gras_modinter.h"
 
-#include "gras/Msg/msg_interface.h"
+#include "gras_simix/Msg/gras_simix_msg_interface.h"
 
 extern char _GRAS_header[6];
 

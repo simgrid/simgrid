@@ -7,7 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras/Msg/msg_private.h"
+#include "gras_simix/Msg/gras_simix_msg_private.h"
                 
 xbt_set_t _gras_rpctype_set = NULL;
 xbt_dynar_t _gras_rpc_cancelled = NULL;

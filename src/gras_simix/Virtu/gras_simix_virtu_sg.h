@@ -17,17 +17,16 @@
 
 typedef struct {
   int port;  /* list of ports used by a server socket */
-//  int tochan; /* the channel it points to */
 	int meas;   /* (boolean) the channel is for measurements or for messages */
+	smx_process_t process;
 } gras_sg_portrec_t;
 
 /* Data for each host */
 typedef struct {
   int refcount;
-//  int proc[XBT_MAX_CHANNEL]; /* PID of who's connected to each channel */
-                              /* If =0, then free */
 
 	smx_cond_t cond_port[65536];
+	smx_mutex_t mutex_port[65536];
 
   xbt_dynar_t ports;
 
@@ -41,8 +40,7 @@ typedef struct {
 	smx_process_t to_process;
 
   smx_host_t to_host;   /* Who's on other side */
-	gras_sg_portrec_t port;
-  //m_channel_t to_chan;/* Channel on which the other side is earing */
+
 } gras_trp_sg_sock_data_t;
 
 

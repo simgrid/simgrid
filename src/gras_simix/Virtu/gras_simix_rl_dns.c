@@ -7,7 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras/Virtu/virtu_rl.h"
+#include "gras_simix/Virtu/gras_simix_virtu_rl.h"
 #include "portable.h"
 
 /* A portable DNS resolver is a nightmare to do in a portable manner.

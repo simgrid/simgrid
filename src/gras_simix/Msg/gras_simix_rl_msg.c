@@ -8,10 +8,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
-#include "gras/Msg/msg_private.h"
+#include "gras_simix/Msg/gras_simix_msg_private.h"
 
-#include "gras/DataDesc/datadesc_interface.h"
-#include "gras/Transport/transport_interface.h" /* gras_trp_send/recv */
+#include "gras_simix/DataDesc/gras_simix_datadesc_interface.h"
+#include "gras_simix/Transport/gras_simix_transport_interface.h" /* gras_trp_send/recv */
 
 XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
 XBT_LOG_DEFAULT_CATEGORY(gras_msg);

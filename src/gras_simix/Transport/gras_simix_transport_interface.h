@@ -94,8 +94,6 @@ gras_trp_plugin_get_by_name(const char *name);
  */
 typedef struct {
   /* set headers */
-	long int pid;
-	long int ppid;
   unsigned int ID;
   char        *name;
   unsigned int name_len;
@@ -108,6 +106,8 @@ typedef struct {
 	smx_cond_t cond;
 	smx_mutex_t mutex;
 	gras_socket_t active_socket;
+	long int pid;
+	long int ppid;
   //int chan;    /* Formated messages channel */
   //int measChan; /* Unformated echange channel for performance measurement*/
    
