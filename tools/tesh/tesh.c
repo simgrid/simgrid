@@ -70,7 +70,7 @@ static void buff_chomp(buff_t *b) {
 
 static void buff_trim(buff_t* b)
 {
-	trim(b->data," ");
+	xbt_str_trim(b->data," ");
 	b->used = strlen(b->data);
 }
 
@@ -353,7 +353,7 @@ static void handle_line(int nl, char *line) {
 
     } else if (!strncmp(line+2,"expect signal ",strlen("expect signal "))) {
       expected_signal = strdup(line+2 + strlen("expect signal "));
-      trim(expected_signal," \n");
+      xbt_str_trim(expected_signal," \n");
 	   printf("[%d] (next command must raise signal %s)\n", nl, expected_signal);
 
     } else if (!strncmp(line+2,"expect return ",strlen("expect return "))) {
