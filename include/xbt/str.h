@@ -21,18 +21,24 @@
 
 SG_BEGIN_DECL()
 
+/* snprintf related functions */
 XBT_PUBLIC(int) asprintf  (char **ptr, const char *fmt, /*args*/ ...) _XBT_GNUC_PRINTF(2,3);
 XBT_PUBLIC(int) vasprintf (char **ptr, const char *fmt, va_list ap);
 XBT_PUBLIC(char*) bprintf   (const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
+/* the gettext function. It gets redefined here only if not yet available */
 #if defined(_WIN32) || !defined(__GNUC__)
 XBT_PUBLIC(long) getline(char **lineptr, size_t *n, FILE *stream);
 #endif
 
 /* Trim related functions */
-XBT_PUBLIC(char*) rtrim(char* s, const char* char_list);
-XBT_PUBLIC(char*) ltrim( char* s, const char* char_list);
-XBT_PUBLIC(char*) trim(char* s, const char* char_list);
+XBT_PUBLIC(char*) xbt_str_rtrim(char* s, const char* char_list);
+XBT_PUBLIC(char*) xbt_str_ltrim( char* s, const char* char_list);
+XBT_PUBLIC(char*) xbt_str_trim(char* s, const char* char_list);
+
+/* */
+XBT_PUBLIC(void) xbt_str_strip_spaces(char *);
+
 
 SG_END_DECL()
 
