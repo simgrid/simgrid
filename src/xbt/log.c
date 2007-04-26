@@ -413,75 +413,10 @@ void xbt_log_exit(void) {
   VERB0("Exited log");
 }
 
-static void _apply_control(xbt_log_category_t cat) {
-  int cursor;
-  xbt_log_setting_t setting=NULL;
-  int found = 0;
-  s_xbt_log_event_t _log_ev;
-  
- 
-  
-  if (!xbt_log_settings)
-    return;
-  
-  xbt_assert0(cat,"NULL category");
-  xbt_assert(cat->name);
-
-  xbt_dynar_foreach(xbt_log_settings,cursor,setting) {
-    xbt_assert0(setting,"Damnit, NULL cat in the list");
-    xbt_assert1(setting->catname,"NULL setting(=%p)->catname",(void*)setting);
-
-    if (!strcmp(setting->catname,cat->name)) {
-    	
-    
-      found = 1;
-
-      xbt_log_threshold_set(cat, setting->thresh);
-      xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
-
-
-      if (cat->threshold <= xbt_log_priority_debug) {
-        _log_ev.cat = cat;
-        _log_ev.priority = xbt_log_priority_debug;
-        _log_ev.fileName = __FILE__ ;
-        _log_ev.functionName = _XBT_FUNCTION ;
-        _log_ev.lineNum = __LINE__ ;
-
-	_xbt_log_event_log(&_log_ev,
-	         "Apply settings for category '%s': set threshold to %s (=%d)",
-		 cat->name,
-	         xbt_log_priority_names[cat->threshold], cat->threshold);
-      }
-    }
-   
-  }
-  
-  if (!found && cat->threshold <= xbt_log_priority_verbose) {
-  	
-    _log_ev.cat = cat;
-    _log_ev.priority = xbt_log_priority_verbose;
-    _log_ev.fileName = __FILE__ ;
-    _log_ev.functionName = _XBT_FUNCTION ;
-    _log_ev.lineNum = __LINE__ ;
-
-    _xbt_log_event_log(&_log_ev,
-			"Category '%s': inherited threshold = %s (=%d)",
-			cat->name,
-			xbt_log_priority_names[cat->threshold], cat->threshold);
-  }
-  
- 
-
-}
-
 void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   
-
   xbt_log_category_t cat = ev->cat;
   
-  
-
-
   va_start(ev->ap, fmt);
   while(1) {
     xbt_log_appender_t appender = cat->appender;
@@ -497,50 +432,84 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   va_end(ev->ap);
 }
 
-static void _cat_init(xbt_log_category_t category) 
-{
-	
-	
-	if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
-    	category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
-    	category->appender = xbt_log_default_appender;
-  	} 
-  	else 
-  	{
-
-  		#if (defined(_WIN32) && !defined(DLL_STATIC))
-  		if(!category->parent){
-  			category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
-  		}
-  		#endif
-    	
-    	xbt_log_parent_set(category, category->parent);
-  	}
-  
-  _apply_control(category);
-  
- 
-}
-
 /*
  * This gets called the first time a category is referenced and performs the
  * initialization. 
  * Also resets threshold to inherited!
  */
-int _xbt_log_cat_init(e_xbt_log_priority_t priority,xbt_log_category_t category) 
-{
+int _xbt_log_cat_init(e_xbt_log_priority_t priority,xbt_log_category_t category) {
+  int cursor;
+  xbt_log_setting_t setting=NULL;
+  int found = 0;
+  s_xbt_log_event_t _log_ev;
+	
+  if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
+    category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
+    category->appender = xbt_log_default_appender;
+  } else {
+
+#if (defined(_WIN32) && !defined(DLL_STATIC))
+    if(!category->parent){
+      category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
+    }
+#endif
     
-	_cat_init(category);
+    xbt_log_parent_set(category, category->parent);
+  }
+
+  /* Apply the control */  
+  if (!xbt_log_settings)
+    return priority >= category->threshold;
+  
+  xbt_assert0(category,"NULL category");
+  xbt_assert(category->name);
+  
+  xbt_dynar_foreach(xbt_log_settings,cursor,setting) {
+    xbt_assert0(setting,"Damnit, NULL cat in the list");
+    xbt_assert1(setting->catname,"NULL setting(=%p)->catname",(void*)setting);
+    
+    if (!strcmp(setting->catname,category->name)) {
+      
+      found = 1;
+      
+      xbt_log_threshold_set(category, setting->thresh);
+      xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
+
+
+      if (category->threshold <= xbt_log_priority_debug) {
+        _log_ev.cat = category;
+        _log_ev.priority = xbt_log_priority_debug;
+        _log_ev.fileName = __FILE__ ;
+        _log_ev.functionName = _XBT_FUNCTION ;
+        _log_ev.lineNum = __LINE__ ;
 	
-	
-	
-		
-	return priority >= category->threshold;
+	_xbt_log_event_log(&_log_ev,
+			   "Apply settings for category '%s': set threshold to %s (=%d)",
+			   category->name,
+			   xbt_log_priority_names[category->threshold], category->threshold);
+      }
+    }
+  }
+  
+  if (!found && category->threshold <= xbt_log_priority_verbose) {
+    
+    _log_ev.cat = category;
+    _log_ev.priority = xbt_log_priority_verbose;
+    _log_ev.fileName = __FILE__ ;
+    _log_ev.functionName = _XBT_FUNCTION ;
+    _log_ev.lineNum = __LINE__ ;
+    
+    _xbt_log_event_log(&_log_ev,
+		       "Category '%s': inherited threshold = %s (=%d)",
+		       category->name,
+		       xbt_log_priority_names[category->threshold], category->threshold);
+  }
+    
+  return priority >= category->threshold;
 }
 
 void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent) 
 {
-	
 	
 	xbt_assert0(cat,"NULL category to be given a parent");
 	xbt_assert1(parent,"The parent category of %s is NULL",cat->name);
@@ -568,16 +537,15 @@ void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent)
 	
 	if (parent->threshold == xbt_log_priority_uninitialized){
 		
-		_cat_init(parent);
+	  _xbt_log_cat_init(xbt_log_priority_uninitialized/* ignored*/,
+			    parent);
 	}
 	
 	cat->threshold = parent->threshold;
 	
 	cat->isThreshInherited = 1;
 	
-	
-	
-} /* log_setParent */
+}
 
 static void _set_inherited_thresholds(xbt_log_category_t cat) {
 	
