@@ -136,24 +136,24 @@ clean::
 	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
 06-logs.output.verbose: 06-logs_client 06-logs_server 06-logs_simulator
-	echo '$$ ./test_server 12345 --gras-log=test.thres=verbose & ./test_client 127.0.0.1 12345 --gras-log=test.thres=verbose'  > $@
-	./06-logs_server 12345 --gras-log=test.thres=verbose                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
-	./06-logs_client 127.0.0.1 12345 --gras-log=test.thres=verbose                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$ ./test_server 12345 --gras-log=test.thres:verbose & ./test_client 127.0.0.1 12345 --gras-log=test.thres:verbose'  > $@
+	./06-logs_server 12345 --gras-log=test.thres:verbose                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --gras-log=test.thres:verbose                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
-	echo '$$ ./test_simulator platform.xml test.xml --gras-log=test.thres=verbose'              >> $@
-	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=test.thres=verbose  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$ ./test_simulator platform.xml test.xml --gras-log=test.thres:verbose'              >> $@
+	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=test.thres:verbose  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
 	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
 06-logs.output.error: 06-logs_client 06-logs_server 06-logs_simulator
-	echo '$$ ./test_server 12345 --gras-log=root.thres=error & ./test_client 127.0.0.1 12345 --gras-log=root.thres=error'  > $@
-	./06-logs_server 12345 --gras-log=root.thres=error                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
-	./06-logs_client 127.0.0.1 12345 --gras-log=root.thres=error                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$ ./test_server 12345 --gras-log=root.thres:error & ./test_client 127.0.0.1 12345 --gras-log=root.thres:error'  > $@
+	./06-logs_server 12345 --gras-log=root.thres:error                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --gras-log=root.thres:error                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
-	echo '$$ ./test_simulator platform.xml test.xml --gras-log=root.thres=error'              >> $@
-	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=root.thres=error  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$ ./test_simulator platform.xml test.xml --gras-log=root.thres:error'              >> $@
+	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=root.thres:error  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
 	killall 06-logs_server 06-logs_client 2>/dev/null || true
 

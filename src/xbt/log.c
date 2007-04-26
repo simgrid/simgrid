@@ -239,7 +239,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(SA, VSS);
 
 int main() {
        / * Now set the parent's priority.  (the string would typcially be a runtime option) * /
-       xbt_log_control_set("SA.thresh=3");
+       xbt_log_control_set("SA.thresh:3");
 
        / * This request is enabled, because WARNING &gt;= INFO. * /
        CWARN2(VSS, "Low fuel level.");
@@ -270,13 +270,13 @@ Any SimGrid program can furthermore be configured at run time by passing a
 are synonyms provided by aestheticism). You can provide several of those
 arguments to change the setting of several categories, they will be applied
 from left to right. So, 
-\verbatim --xbt-log="root.thres=debug root.thres=critical"\endverbatim 
+\verbatim --xbt-log="root.thres:debug root.thres:critical"\endverbatim 
 should disable any logging.
 
 Note that the quotes on above line are mandatory because there is a space in
 the argument, so we are protecting ourselves from the shell, not from SimGrid.
 We could also reach the same effect with this:
-\verbatim --xbt-log=root.thres=debug --xbt-log=root.thres=critical\endverbatim 
+\verbatim --xbt-log=root.thres:debug --xbt-log=root.thres:critical\endverbatim 
 
 \section log_use_misc 3.2 Misc and Caveats
 
@@ -339,7 +339,7 @@ welcome here, too.
 
 */
 
-
+
 typedef struct {
   char *catname;
   e_xbt_log_priority_t thresh;
@@ -378,6 +378,10 @@ XBT_LOG_NEW_CATEGORY(msg,"All MSG categories");
 XBT_LOG_NEW_CATEGORY(simix,"All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log,xbt,"Loggings from the logging mechanism itself");
 
+/** @brief Get all logging settings from the command line
+ * 
+ * xbt_log_control_set() is called on each string we got from cmd line
+ */
 void xbt_log_init(int *argc,char **argv) {
 	int i,j;
 	char *opt;
@@ -589,11 +593,11 @@ static void _xbt_log_parse_setting(const char*        control_string,
   name = control_string;
   control_string += strcspn(control_string, ".= ");
   dot = control_string;
-  control_string += strcspn(control_string, "= ");
+  control_string += strcspn(control_string, ":= ");
   eq = control_string;
   control_string += strcspn(control_string, " ");
 
-  xbt_assert1(*dot == '.' && *eq == '=',
+  xbt_assert1(*dot == '.' && (*eq == '=' || *eq == ':'),
 	       "Invalid control string '%s'",control_string);
 
   if (!strncmp(dot + 1, "thresh", min((size_t)(eq - dot - 1),strlen("thresh")))) {
@@ -636,15 +640,13 @@ static void _xbt_log_parse_setting(const char*        control_string,
 static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name) {
   xbt_log_category_t child;
   
-  
-  if (!strcmp(cat->name,name)) {
+  if (!strcmp(cat->name,name)) 
     return cat;
-  }
-  for(child=cat->firstChild ; child != NULL; child = child->nextSibling) {
+
+  for(child=cat->firstChild ; child != NULL; child = child->nextSibling) 
     return _xbt_log_cat_searchsub(child,name);
-  }
   
-  THROW0(not_found_error,0,"No such category");
+  THROW1(not_found_error,0,"No such category: %s", name);
 }
 
 /**
@@ -653,7 +655,7 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *na
  *
  * Typically passed a command-line argument. The string has the syntax:
  *
- *      ( [category] "." [keyword] "=" value (" ")... )...
+ *      ( [category] "." [keyword] ":" value (" ")... )...
  *
  * where [category] is one the category names (see \ref XBT_log_cats for a complete list) 
  * and keyword is one of the following:
@@ -661,20 +663,15 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *na
  *    - thres: category's threshold priority. Possible values:
  *             TRACE,DEBUG,VERBOSE,INFO,WARNING,ERROR,CRITICAL
  *             
- *
- * \warning
- * This routine may only be called once and that must be before any other
- * logging command! Typically, this is done from main().
- * \todo the previous warning seems a bit old and need double checking
  */
 void xbt_log_control_set(const char* control_string) {
   xbt_log_setting_t set;
   char *cs;
   char *p;
   int done = 0;
-  
-  
-  
+
+  if (!control_string || control_string[0] == '\0')
+    return;
   DEBUG1("Parse log settings '%s'",control_string);
   if (control_string == NULL)
     return;
