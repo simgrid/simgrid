@@ -456,9 +456,10 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 if test -e CVS && test x$USE_MAINTAINER_MODE != xyes ; then
   echo "WARNING:"
   echo "WARNING: you seem to compile the CVS version without the maintainer mode."
-  echo "WARNING: You may want to enable this by specifying:"
+  echo "WARNING: You won't be able to build archives that way (make dist is likely to fail). "
+  echo "WARNING: If you want to enable the maintainer mode, juste specify it like this:"
   echo "WARNING:"
-  echo "WARNING: ./configure --enable-maintainer-mode  $ac_configure_args"
+  echo "WARNING: ./configure '--enable-maintainer-mode' $ac_configure_args"
   echo "WARNING:"
 fi
 echo $build_id > stamp.configure
