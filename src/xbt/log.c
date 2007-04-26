@@ -679,38 +679,6 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *na
   THROW0(not_found_error,0,"No such category");
 }
 
-static void _cleanup_double_spaces(char *s) {
-  char *p = s;
-  int   e = 0;
-  
-  while (1) {
-    if (!*p)
-      goto end;
-    
-    if (!isspace(*p))
-      break;
-    
-    p++;
-  }
-  
-  e = 1;
-  
-  do {
-    if (e)
-      *s++ = *p;
-    
-    if (!*++p)
-      goto end;
-    
-    if (e ^ !isspace(*p))
-      if ((e = !e))
-	*s++ = ' ';
-  } while (1);
-
- end:
-  *s = '\0';
-}
-
 /**
  * \ingroup XBT_log  
  * \param control_string What to parse
@@ -749,7 +717,7 @@ void xbt_log_control_set(const char* control_string) {
   set = xbt_new(s_xbt_log_setting_t,1);
   cs=xbt_strdup(control_string);
 
-  _cleanup_double_spaces(cs);
+  xbt_str_strip_spaces(cs);
 
   while (!done) {
     xbt_log_category_t cat=NULL;
