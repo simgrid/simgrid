@@ -13,114 +13,10 @@
 #pragma hdrstop
 #endif
 
-#include "portable.h"
-#include "xbt/sysdep.h"
-#include "xbt/function_types.h"
-#include "xbt/log.h"
-#include "xbt/str.h"
+#include "tesh.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
-
-/**
- ** Buffer code
- **/
-typedef struct {
-  char *data;
-  int used,size;
-} buff_t;
-
-static void buff_empty(buff_t *b) {
-  b->used=0;
-  b->data[0]='\n';
-  b->data[1]='\0';
-}
-static buff_t *buff_new(void) {
-  buff_t *res=malloc(sizeof(buff_t));
-  res->data=malloc(512);
-  res->size=512;
-  buff_empty(res);
-  return res;
-}
-static void buff_free(buff_t *b) {
-  if (b) {
-    if (b->data)
-      free(b->data);
-    free(b);
-  }
-}
-static void buff_append(buff_t *b, char *toadd) {
-  int addlen=strlen(toadd);
-  int needed_space=b->used+addlen+1;
-
-  if (needed_space > b->size) {
-    b->data = realloc(b->data, needed_space);
-    b->size = needed_space;
-  }
-  strcpy(b->data+b->used, toadd);
-  b->used += addlen;  
-}
-static void buff_chomp(buff_t *b) {
-  while (b->data[b->used] == '\n') {
-    b->data[b->used] = '\0';
-    if (b->used)
-      b->used--;
-  }
-}
-
-static void buff_trim(buff_t* b)
-{
-	xbt_str_trim(b->data," ");
-	b->used = strlen(b->data);
-}
-
-typedef struct s_signal_entry
-{
-	const char* name;
-	int number;
-}s_signal_entry_t,* signal_entry_t;
-
-static const s_signal_entry_t signals[] = 
-{
-	{"SIGHUP"	,1},
-	{"SIGINT"	,2},
-	{"SIGQUIT"	,3},
-	{"SIGILL"	,4},
-	{"SIGTRAP"	,5},
-	{"SIGABRT"	,6},
-	{"SIGEMT"	,7},
-	{"SIGFPE"	,8},
-	{"SIGKILL"	,9},
-	{"SIGBUS"	,10},
-	{"SIGSEGV"	,11},
-	{"SIGSYS"	,12},
-	{"SIGPIPE"	,13},
-	{"SIGALRM"	,14},
-	{"SIGTERM"	,15},
-	{"SIGURG"	,16},
-	{"SIGSTOP"	,17},
-	{"SIGTSTP"	,18},
-	{"SIGCONT"	,19},
-	{"SIGCHLD"	,20},
-	{"SIGTTIN"	,21},
-	{"SIGTTOU"	,22},
-	{"SIGIO"	,23},
-	{"SIGXCPU"	,24},
-	{"SIGXFSZ"	,25},
-	{"SIGVTALRM",26},
-	{"SIGPROF"	,27},
-	{"SIGWINCH"	,28},
-	{"SIGINFO"	,29},
-	{"SIGUSR1"	,30},
-	{"SIGUSR2"	,31}
-};
-
-#define SIGMAX 		31
-#define SIGUNKNW	SIGMAX + 1
-
-/* returns the name of the signal from it number */
-const char* 
-signal_name(unsigned int number);
 
 /**
  ** Options
@@ -158,8 +54,8 @@ static void check_output() {
     return;
   buff_chomp(output_got);
   buff_chomp(output_wanted);
-   buff_trim(output_got);
-buff_trim(output_wanted);
+  buff_trim(output_got);
+  buff_trim(output_wanted);
 
   if (   output_got->used != output_wanted->used
       || strcmp(output_got->data, output_wanted->data)) {
@@ -262,8 +158,12 @@ static void exec_cmd(char *cmd) {
     /* Wait for child, and check why it terminated */
     wait(&status);
 
-    if (WIFSIGNALED(status) && strcmp(signal_name(WTERMSIG(status)),expected_signal)) {
-		fprintf(stderr,"Child got signal %s instead of signal %s\n",signal_name(WTERMSIG(status)), expected_signal);
+    if (WIFSIGNALED(status) && 
+	strcmp(signal_name(WTERMSIG(status),expected_signal),
+	       expected_signal)) {
+		fprintf(stderr,"Child got signal %s instead of signal %s\n",
+			signal_name(WTERMSIG(status),expected_signal),
+			expected_signal);
 		exit(WTERMSIG(status)+4);	
 	}
 	
@@ -492,15 +392,3 @@ int main(int argc,char *argv[]) {
   return 0;  
 }
 
-const char* 
-signal_name(unsigned int number)
-{
-	if(number > SIGMAX)
-		return "SIGUNKNW";
-		
-	/* special case of SIGSEGV and SIGBUS (be conditional of the implementation)*/
-	if((number == SIGBUS) && strcmp("SIGBUS",expected_signal))
-		number = SIGSEGV;
-		
-	return (signals[number - 1].name);
-}
