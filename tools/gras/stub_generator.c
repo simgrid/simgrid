@@ -432,14 +432,17 @@ static void generate_sim(char *project)
 	fprintf(OUT,
 #ifdef USE_SIMIX		
 	"  gras_create_environment(argv[1]);\n" 
+	"\n" 
+	"  /*  Application deployment */\n"
+	);
 #else		
 	"  MSG_paje_output(\"%s.trace\");\n" 
 	"  MSG_set_channel_number(XBT_MAX_CHANNEL); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" 
 	"  MSG_create_environment(argv[1]);\n"
-#endif		
 	"\n" 
 	"  /*  Application deployment */\n",
 	project);
+#endif		
 	xbt_dict_foreach(process_function_set,cursor,key,data) {
 #ifdef USE_SIMIX	   
 		fprintf(OUT,"  gras_function_register(\"%s\", launch_%s);\n",key,key);
