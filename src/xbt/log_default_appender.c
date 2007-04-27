@@ -69,7 +69,10 @@ static void append_file(xbt_log_appender_t this_appender,
 		 "Priority %d is greater than the biggest allowed value",
 		 ev->priority);
 
-    fprintf(stderr, "[%s] %s:%d: ", procname, ev->fileName, ev->lineNum);
+    if (ev->priority != xbt_log_priority_info)
+     fprintf(stderr, "[%s] %s:%d: ", procname, ev->fileName, ev->lineNum);
+    else
+     fprintf(stderr, "[%s] ", procname);
     fprintf(stderr, "[%s/%s] ", 
 	    ev->cat->name, xbt_log_priority_names[ev->priority] );
     vfprintf(stderr, fmt, ev->ap);
