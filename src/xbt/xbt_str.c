@@ -108,7 +108,7 @@ xbt_str_ltrim( char* s, const char* char_list)
 	while(*cur && white_char[(unsigned char)*cur])
 		++cur;
 
-	return strcpy(s,cur);
+	return memmove(s,cur, strlen(cur));
 }
 
 /**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
