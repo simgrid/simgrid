@@ -351,7 +351,7 @@ static void _free_setting(void *s) {
   xbt_log_setting_t set=(xbt_log_setting_t)s;
   if (set) {
     free(set->catname);
-/*    free(set); FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
+    //free(set); /*FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
   }
 }
 
@@ -441,7 +441,8 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
  * initialization. 
  * Also resets threshold to inherited!
  */
-int _xbt_log_cat_init(e_xbt_log_priority_t priority,xbt_log_category_t category) {
+int _xbt_log_cat_init(xbt_log_category_t category,
+		      e_xbt_log_priority_t priority) {
   int cursor;
   xbt_log_setting_t setting=NULL;
   int found = 0;
@@ -452,11 +453,8 @@ int _xbt_log_cat_init(e_xbt_log_priority_t priority,xbt_log_category_t category)
     category->appender = xbt_log_default_appender;
   } else {
 
-#if (defined(_WIN32) && !defined(DLL_STATIC))
-    if(!category->parent){
+    if (!category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
-    }
-#endif
     
     xbt_log_parent_set(category, category->parent);
   }
@@ -478,7 +476,7 @@ int _xbt_log_cat_init(e_xbt_log_priority_t priority,xbt_log_category_t category)
       
       xbt_log_threshold_set(category, setting->thresh);
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
-
+      free(setting);
 
       if (category->threshold <= xbt_log_priority_debug) {
         _log_ev.cat = category;
@@ -541,8 +539,8 @@ void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent)
 	
 	if (parent->threshold == xbt_log_priority_uninitialized){
 		
-	  _xbt_log_cat_init(xbt_log_priority_uninitialized/* ignored*/,
-			    parent);
+	  _xbt_log_cat_init(parent,
+			    xbt_log_priority_uninitialized/* ignored*/);
 	}
 	
 	cat->threshold = parent->threshold;
@@ -578,15 +576,14 @@ void xbt_log_threshold_set(xbt_log_category_t   cat,
  
 }
 
-static void _xbt_log_parse_setting(const char*        control_string,
-				    xbt_log_setting_t set) {
+static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
+
+  xbt_log_setting_t set = xbt_new(s_xbt_log_setting_t,1);
   const char *name, *dot, *eq;
-  
-  
   
   set->catname=NULL;
   if (!*control_string) 
-    return;
+    return set;
   DEBUG1("Parse log setting '%s'",control_string);
 
   control_string += strspn(control_string, " ");
@@ -600,7 +597,7 @@ static void _xbt_log_parse_setting(const char*        control_string,
   xbt_assert1(*dot == '.' && (*eq == '=' || *eq == ':'),
 	       "Invalid control string '%s'",control_string);
 
-  if (!strncmp(dot + 1, "thresh", min((size_t)(eq - dot - 1),strlen("thresh")))) {
+  if (!strncmp(dot + 1, "thresh", (size_t)(eq - dot - 1))) {
     int i;
     char *neweq=xbt_strdup(eq+1);
     char *p=neweq-1;
@@ -621,13 +618,14 @@ static void _xbt_log_parse_setting(const char*        control_string,
     if (i<xbt_log_priority_infinite) {
       set->thresh= (e_xbt_log_priority_t) i;
     } else {
-      xbt_assert1(FALSE,"Unknown priority name: %s",eq+1);
+      THROW1(arg_error,0,
+	     "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)",eq+1);
     }
     free(neweq);
   } else {
     char buff[512];
     snprintf(buff,min(512,eq - dot - 1),"%s",dot+1);
-    xbt_assert1(FALSE,"Unknown setting of the log category: %s",buff);
+    THROW1(arg_error,0,"Unknown setting of the log category: %s",buff);
   }
   set->catname=(char*)xbt_malloc(dot - name+1);
     
@@ -635,6 +633,7 @@ static void _xbt_log_parse_setting(const char*        control_string,
   set->catname[dot-name]='\0'; /* Just in case */
   DEBUG1("This is for cat '%s'", set->catname);
   
+  return set;
 }
 
 static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *name) {
@@ -679,7 +678,6 @@ void xbt_log_control_set(const char* control_string) {
     xbt_log_settings = xbt_dynar_new(sizeof(xbt_log_setting_t),
 				       _free_setting);
 
-  set = xbt_new(s_xbt_log_setting_t,1);
   cs=xbt_strdup(control_string);
 
   xbt_str_strip_spaces(cs);
@@ -697,7 +695,7 @@ void xbt_log_control_set(const char* control_string) {
       p=cs;
       done = 1;
     }
-    _xbt_log_parse_setting(p,set);
+    set = _xbt_log_parse_setting(p);
 
     TRY {
       cat = _xbt_log_cat_searchsub(&_XBT_LOGV(root),set->catname);
@@ -711,20 +709,16 @@ void xbt_log_control_set(const char* control_string) {
       DEBUG0("Store for further application");
       DEBUG1("push %p to the settings",(void*)set);
       xbt_dynar_push(xbt_log_settings,&set);
-      /* malloc in advance the next slot */
-      set = xbt_new(s_xbt_log_setting_t,1);
     } 
 
     if (found) {
       DEBUG0("Apply directly");
-      free(set->catname);
       xbt_log_threshold_set(cat,set->thresh);
+      _free_setting((void*)set);
+      free(set);
     }
   }
-  free(set);
   free(cs);
-  
-  
 } 
 
 void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
