@@ -60,7 +60,7 @@ xbt_str_rtrim(char* s, const char* char_list)
 	while(*cur)
 		++cur;
 
-	while(white_char[(unsigned char)*cur] && (cur >= s))
+	while((cur >= s) && white_char[(unsigned char)*cur])
 		--cur;
 
 	*++cur = '\0';
