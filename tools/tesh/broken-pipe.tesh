@@ -29,17 +29,6 @@ $ pwd>/dev/null
 < blablablablablablablablablablablablablablablablablablablabla
 $ pwd>/dev/null
 
-! verbose on
-
-< blablablablablablablablablablablablablablablablablablablabla
-$ pwd>/dev/null
-
-< blablablablablablablablablablablablablablablablablablablabla
-$ pwd>/dev/null
-
-< blablablablablablablablablablablablablablablablablablablabla
-$ pwd>/dev/null
-
 < blablablablablablablablablablablablablablablablablablablabla
 $ pwd>/dev/null
 
