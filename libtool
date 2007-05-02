@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # libtoolT - Provide generalized library-building support services.
-# Generated automatically by  (GNU simgrid 3.2)
+# Generated automatically by  (GNU simgrid 3.3-cvs)
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001
@@ -94,7 +94,7 @@ CC="gcc"
 with_gcc=yes
 
 # An ERE matcher.
-EGREP="grep -E"
+EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
 LD="/usr/bin/ld"
@@ -325,10 +325,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../../i486-linux-gnu/lib/i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../i486-linux-gnu/3.4.6/ /usr/lib/gcc/i486-linux-gnu/3.4.6/../../../ /lib/i486-linux-gnu/3.4.6/ /lib/ /usr/lib/i486-linux-gnu/3.4.6/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../ /lib/i486-linux-gnu/4.1.2/ /lib/ /usr/lib/i486-linux-gnu/4.1.2/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/atlas "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -395,7 +395,7 @@ EXIT_FAILURE=1
 
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION="1.5.22 Debian 1.5.22-2"
+VERSION="1.5.22 Debian 1.5.22-4"
 TIMESTAMP=" (1.1220.2.365 2005/12/18 22:14:06)"
 
 # See if we are running on zsh, and set the options which allow our
@@ -7273,7 +7273,7 @@ CC="g++"
 with_gcc=yes
 
 # An ERE matcher.
-EGREP="grep -E"
+EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
 LD="/usr/bin/ld"
@@ -7405,11 +7405,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc/i486-linux-gnu/4.0.3/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.0.3/crtbeginS.o"
+predep_objects="/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc/i486-linux-gnu/4.0.3/crtendS.o /usr/lib/gcc/i486-linux-gnu/4.0.3/../../../../lib/crtn.o"
+postdep_objects="/usr/lib/gcc/i486-linux-gnu/4.1.2/crtendS.o /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7421,7 +7421,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.0.3 -L/usr/lib/gcc/i486-linux-gnu/4.0.3 -L/usr/lib/gcc/i486-linux-gnu/4.0.3/../../../../lib -L/usr/lib/gcc/i486-linux-gnu/4.0.3/../../.. -L/lib/../lib -L/usr/lib/../lib"
+compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib"
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7501,10 +7501,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.0.3/ /usr/lib/gcc/i486-linux-gnu/4.0.3/ /usr/lib/gcc/i486-linux-gnu/4.0.3/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.0.3/ /usr/lib/gcc/i486-linux-gnu/4.0.3/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.0.3/../../../i486-linux-gnu/4.0.3/ /usr/lib/gcc/i486-linux-gnu/4.0.3/../../../ /lib/i486-linux-gnu/4.0.3/ /lib/ /usr/lib/i486-linux-gnu/4.0.3/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../i486-linux-gnu/4.1.2/ /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../ /lib/i486-linux-gnu/4.1.2/ /lib/ /usr/lib/i486-linux-gnu/4.1.2/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/atlas "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""

@@ -44,7 +44,7 @@ target_triplet = @target@
 check_PROGRAMS = msg_test$(EXEEXT) msg_test_surfxml_bypassed$(EXEEXT) \
 	msg_test_suspend$(EXEEXT) ping_pong$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/run_msg_test.in $(top_srcdir)/acmacro/dist-files.mk
+	$(top_srcdir)/acmacro/dist-files.mk
 subdir = examples/msg
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acmacro/ac_func_snprintf.m4 \
@@ -59,7 +59,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/gras_config.h
-CONFIG_CLEAN_FILES = run_msg_test
+CONFIG_CLEAN_FILES =
 am_msg_test_OBJECTS = msg_test.$(OBJEXT)
 msg_test_OBJECTS = $(am_msg_test_OBJECTS)
 msg_test_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
@@ -133,6 +133,9 @@ FLEXML = @FLEXML@
 GRAMINE_MODE_FALSE = @GRAMINE_MODE_FALSE@
 GRAMINE_MODE_TRUE = @GRAMINE_MODE_TRUE@
 GRAS_DEP = @GRAS_DEP@
+GREP = @GREP@
+GTNETS_CFLAGS = @GTNETS_CFLAGS@
+GTNETS_LDFLAGS = @GTNETS_LDFLAGS@
 HAVE_FLEXML_FALSE = @HAVE_FLEXML_FALSE@
 HAVE_FLEXML_TRUE = @HAVE_FLEXML_TRUE@
 HAVE_SDP_FALSE = @HAVE_SDP_FALSE@
@@ -171,6 +174,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
 STRIP = @STRIP@
+USE_GTNETS_FALSE = @USE_GTNETS_FALSE@
+USE_GTNETS_TRUE = @USE_GTNETS_TRUE@
 USE_SIMIX_FALSE = @USE_SIMIX_FALSE@
 USE_SIMIX_TRUE = @USE_SIMIX_TRUE@
 VERSION = @VERSION@
@@ -180,15 +185,9 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_configure_args = @ac_configure_args@
-ac_ct_AR = @ac_ct_AR@
-ac_ct_AS = @ac_ct_AS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -206,23 +205,30 @@ build_id = @build_id@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 pth_skaddr_makecontext = @pth_skaddr_makecontext@
 pth_sksize_makecontext = @pth_sksize_makecontext@
 sbindir = @sbindir@
@@ -236,7 +242,8 @@ target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir)/include
 EXTRA_DIST = msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml
 CLEANFILES = msg_test.trace
-TESTS = run_msg_test
+TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
+TESTS = msg_test.tesh
 msg_test_SOURCES = msg_test.c
 msg_test_LDADD = $(top_builddir)/src/libsimgrid.la
 msg_test_surfxml_bypassed_SOURCES = msg_test_surfxml_bypassed.c
@@ -278,8 +285,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-run_msg_test: $(top_builddir)/config.status $(srcdir)/run_msg_test.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 clean-checkPROGRAMS:
 	@list='$(check_PROGRAMS)'; for p in $$list; do \

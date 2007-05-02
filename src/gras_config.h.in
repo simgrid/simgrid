@@ -195,6 +195,9 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
+/* Indicates whether we should use GTNetS or not */
+#undef USE_GTNETS
+
 /* Indicates whether we should use SimIX or not */
 #undef USE_SIMIX
 
@@ -223,5 +226,5 @@
 #undef inline
 #endif
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
+/* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
