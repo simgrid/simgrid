@@ -9,6 +9,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"
+#include "xbt/dynar.h"
 
 
 
@@ -36,9 +37,12 @@ XBT_PUBLIC(char*) xbt_str_rtrim(char* s, const char* char_list);
 XBT_PUBLIC(char*) xbt_str_ltrim( char* s, const char* char_list);
 XBT_PUBLIC(char*) xbt_str_trim(char* s, const char* char_list);
 
+XBT_PUBLIC(xbt_dynar_t) xbt_str_split(char *s, const char *sep);
+XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
+
 /* */
 XBT_PUBLIC(void) xbt_str_strip_spaces(char *);
-
+XBT_PUBLIC(char *) xbt_str_diff(char *a, char *b);
 
 SG_END_DECL()
 
