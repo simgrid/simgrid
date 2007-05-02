@@ -190,6 +190,21 @@ fi
 AM_CONDITIONAL(USE_SIMIX,test x$enable_simix != xno)
 
 #########################################
+## Build optional modules (gtnets)
+##
+SG_CONFIGURE_PART(Optional modules)
+AC_ARG_ENABLE(gtnets,
+  AS_HELP_STRING([--enable-gtnets], [Use the new GTNetS module (default=no)]),
+  enable_gtnets=$enableval,enable_gtnets=no)
+if test "x$enable_gtnets" = "xyes" ; then
+  AC_MSG_RESULT("***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****")
+  AC_DEFINE(USE_GTNETS, 1, [Indicates whether we should use GTNetS or not])
+else 
+  AC_MSG_RESULT(Eventually you will come to GTNetS: x$enable_gtnets)
+fi
+AM_CONDITIONAL(USE_GTNETS,test x$enable_gtnets != xno)
+
+#########################################
 ## Check for libraries extra-dependencies
 ##
 
