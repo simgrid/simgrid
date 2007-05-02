@@ -182,27 +182,33 @@ AC_ARG_ENABLE(simix,
   AS_HELP_STRING([--enable-simix], [Use the new SimIX module (default=no)]),
   enable_simix=$enableval,enable_simix=no)
 if test "x$enable_simix" = "xyes" ; then
-  AC_MSG_RESULT("***** You have decided to use the experimental SimIX. We hope you know what you're doing.. ****")
+  AC_MSG_RESULT(***** You have decided to use the experimental SimIX. We hope you know what you're doing.. ****)
   AC_DEFINE(USE_SIMIX, 1, [Indicates whether we should use SimIX or not])
 else 
-  AC_MSG_RESULT(Eventually you will come to SimIX: x$enable_simix)
+  AC_MSG_RESULT(Eventually you will come to SimIX.)
 fi
 AM_CONDITIONAL(USE_SIMIX,test x$enable_simix != xno)
 
 #########################################
 ## Build optional modules (gtnets)
 ##
-SG_CONFIGURE_PART(Optional modules)
-AC_ARG_ENABLE(gtnets,
-  AS_HELP_STRING([--enable-gtnets], [Use the new GTNetS module (default=no)]),
-  enable_gtnets=$enableval,enable_gtnets=no)
-if test "x$enable_gtnets" = "xyes" ; then
-  AC_MSG_RESULT("***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****")
+AC_ARG_WITH(gtnets,
+  AS_HELP_STRING([--with-gtnets], [Path to GTNetS installation (default to empty, ie not using GTNetS)]),
+  gtnets_path="$withval",gtnets_path="NO")
+if test "x$gtnets_path" = "xNO" ; then
+  AC_MSG_RESULT(Eventually you will come to GTNetS. $gtnets_path)
+else  
+  AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****)
   AC_DEFINE(USE_GTNETS, 1, [Indicates whether we should use GTNetS or not])
-else 
-  AC_MSG_RESULT(Eventually you will come to GTNetS: x$enable_gtnets)
+  if ! test -e $gtnets_path ; then
+    AC_MSG_ERROR(Provided path to GTNetS include files ($gtnets_path) do not exist!)
+  fi
+  GTNETS_CFLAGS=-I$gtnets_path/include
+  AC_SUBST([GTNETS_CFLAGS])  
+  GTNETS_LDFLAGS=-L$gtnets_path/lib
+  AC_SUBST([GTNETS_LDFLAGS])  
 fi
-AM_CONDITIONAL(USE_GTNETS,test x$enable_gtnets != xno)
+AM_CONDITIONAL(USE_GTNETS,test "x$gtnets_path" != xNO)
 
 #########################################
 ## Check for libraries extra-dependencies
