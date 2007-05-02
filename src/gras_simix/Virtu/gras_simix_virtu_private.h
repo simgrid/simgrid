@@ -22,9 +22,6 @@ typedef struct {
   /* globals of the process */
   void *userdata;
 
-	long int pid;
-	long int ppid;
-
   /* data specific to each process for each module. 
    * Registered with gras_procdata_add(), retrieved with gras_libdata_get() 
    * This is the old interface, and will disapear before 3.2

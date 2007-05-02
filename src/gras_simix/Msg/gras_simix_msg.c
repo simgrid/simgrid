@@ -39,7 +39,7 @@ static void *gras_msg_procdata_new() {
    res->msg_waitqueue = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
    res->cbl_list      = xbt_dynar_new(sizeof(gras_cblist_t *),gras_cbl_free);
    res->timers        = xbt_dynar_new(sizeof(s_gras_timer_t), NULL);
-   res->msg_to_receive_queue     = xbt_dynar_new(sizeof(s_gras_msg_t),   NULL);
+   res->msg_to_receive_queue = xbt_fifo_new();
    
    return (void*)res;
 }
@@ -54,7 +54,7 @@ static void gras_msg_procdata_free(void *data) {
    xbt_dynar_free(&( res->msg_waitqueue ));
    xbt_dynar_free(&( res->cbl_list ));
    xbt_dynar_free(&( res->timers ));
-   xbt_dynar_free(&( res->msg_to_receive_queue ));
+   xbt_fifo_free( res->msg_to_receive_queue );
 
    free(res->name);
    free(res);

@@ -361,19 +361,19 @@ void gras_socket_close(gras_socket_t sock) {
    
   /* FIXME: Issue an event when the socket is closed */
   if (sock) {
-    xbt_dynar_foreach(sockets,cursor,sock_iter) {
-      if (sock == sock_iter) {
-	xbt_dynar_cursor_rm(sockets,&cursor);
-	if (sock->plugin->socket_close) 
-	  (* sock->plugin->socket_close)(sock);
+		xbt_dynar_foreach(sockets,cursor,sock_iter) {
+			if (sock == sock_iter) {
+				xbt_dynar_cursor_rm(sockets,&cursor);
+				if (sock->plugin->socket_close) 
+					(* sock->plugin->socket_close)(sock);
 
-	/* free the memory */
-	if (sock->peer_name)
-	  free(sock->peer_name);
-	free(sock);
-	XBT_OUT;
-	return;
-      }
+				/* free the memory */
+				if (sock->peer_name)
+					free(sock->peer_name);
+				free(sock);
+				XBT_OUT;
+				return;
+			}
     }
     WARN1("Ignoring request to free an unknown socket (%p). Execution stack:",sock);
     xbt_backtrace_display();

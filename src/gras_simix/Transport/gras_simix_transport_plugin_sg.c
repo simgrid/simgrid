@@ -218,8 +218,7 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
 
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   int cpt;
-  
-  gras_sg_portrec_t pr;
+  gras_sg_portrec_t pr; 
 
   XBT_IN1(" (sock=%p)",sock);
    
@@ -229,13 +228,14 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
 
   if (sock->data)
     free(sock->data);
-
+	
+/*
 	SIMIX_cond_destroy(hd->cond_port[sock->port]);
 	hd->cond_port[sock->port] = NULL;
 	SIMIX_mutex_destroy(hd->mutex_port[sock->port]);
 	hd->mutex_port[sock->port] = NULL;
-
-  if (sock->incoming && sock->port >= 0) {
+*/
+  if (sock->incoming && !sock->outgoing && sock->port >= 0) {
     /* server mode socket. Unregister it from 'OS' tables */
     xbt_dynar_foreach(hd->ports, cpt, pr) {
       DEBUG2("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));

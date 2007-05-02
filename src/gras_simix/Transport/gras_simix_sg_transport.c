@@ -30,16 +30,16 @@ gras_socket_t _gras_lastly_selected_socket = NULL;
  */
 gras_socket_t gras_trp_select(double timeout) {
 	gras_socket_t res;
-	res = xbt_new(s_gras_socket_t,1);
 	gras_trp_procdata_t pd = (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
 	gras_trp_sg_sock_data_t *sockdata;
 	gras_trp_plugin_t trp;
+	gras_socket_t active_socket;
 	gras_socket_t sock_iter; /* iterating over all sockets */
 	int cursor;
-	int i;
+//	int i;
 
 	gras_hostdata_t *remote_hd;
-	gras_hostdata_t *local_hd;
+//	gras_hostdata_t *local_hd;
 	
 	DEBUG0("Trying to get the lock pd, trp_select");
 	SIMIX_mutex_lock(pd->mutex);
@@ -48,16 +48,17 @@ gras_socket_t gras_trp_select(double timeout) {
 			SIMIX_host_get_name(SIMIX_host_self()),
 			timeout);
 
-	if (pd->active_socket == NULL) {
-	/* message doesn't arrive yet, wait */
+	if (xbt_fifo_size(pd->active_socket) == 0) {
+	/* message didn't arrive yet, wait */
 		SIMIX_cond_wait_timeout(pd->cond,pd->mutex,timeout);
 	}
 
-	if (pd->active_socket == NULL) {
+	if (xbt_fifo_size(pd->active_socket) == 0) {
 		DEBUG0("TIMEOUT");
 		SIMIX_mutex_unlock(pd->mutex);
 		THROW0(timeout_error,0,"Timeout");
 	}
+	active_socket = xbt_fifo_shift(pd->active_socket);
 	
 	/* Ok, got something. Open a socket back to the expeditor */
 
@@ -67,12 +68,10 @@ gras_socket_t gras_trp_select(double timeout) {
 
 		if (sock_iter->meas || !sock_iter->outgoing)
 			continue;
-		DEBUG4("sock_iter %p port %d active %p port %d",((gras_trp_sg_sock_data_t*)sock_iter->data)->to_process,sock_iter->peer_port,
-							((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process, pd->active_socket->port);
-		if ((sock_iter->peer_port == pd->active_socket->port) && 
-				(((gras_trp_sg_sock_data_t*)sock_iter->data)->to_host == SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process))) {
-				DEBUG0("\n\nAproveitou socket\n\n");
-			pd->active_socket=NULL;
+		//DEBUG4("sock_iter %p port %d active %p port %d",((gras_trp_sg_sock_data_t*)sock_iter->data)->to_process,sock_iter->peer_port,((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process, pd->active_socket->port);
+		//DEBUG1("\nFrom process %p", ((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process);
+		if ((sock_iter->peer_port == active_socket->port) && 
+				(((gras_trp_sg_sock_data_t*)sock_iter->data)->to_host == SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)active_socket->data)->from_process))) {
 			SIMIX_mutex_unlock(pd->mutex);
 			return sock_iter;
 		}
@@ -96,10 +95,11 @@ gras_socket_t gras_trp_select(double timeout) {
 
 	sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
 	sockdata->from_process = SIMIX_process_self();
-	sockdata->to_process   = ((gras_trp_sg_sock_data_t*)(pd->active_socket->data))->from_process;
+	sockdata->to_process   = ((gras_trp_sg_sock_data_t*)(active_socket->data))->from_process;
 	
+	DEBUG2("Create socket to process:%s from process: %s",SIMIX_process_get_name(sockdata->from_process),SIMIX_process_get_name(sockdata->to_process));
 	/* complicated*/
-	sockdata->to_host  = SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)(pd->active_socket->data))->from_process);
+	sockdata->to_host  = SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)(active_socket->data))->from_process);
 
 	res->data = sockdata;
 	gras_trp_buf_init_sock(res);
@@ -109,9 +109,11 @@ gras_socket_t gras_trp_select(double timeout) {
 	remote_hd=(gras_hostdata_t *)SIMIX_host_get_data(sockdata->to_host);
 	xbt_assert0(remote_hd,"Run gras_process_init!!");
 
-	res->peer_port = pd->active_socket->port;
+	res->peer_port = active_socket->port;
 
+	res->port = active_socket->peer_port;
 	/* search for a free port on the host */
+	/*
 	local_hd = (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
 	for (i=1;i<65536;i++) {
 		if (local_hd->cond_port[i] == NULL)
@@ -121,13 +123,18 @@ gras_socket_t gras_trp_select(double timeout) {
 		SIMIX_mutex_unlock(pd->mutex);
 		THROW0(system_error,0,"No port free");
 	}
-	res->port = i;
+	res->port = i;*/
 	/*initialize the cond and mutex */
+	/*
 	local_hd->cond_port[i] = SIMIX_cond_init();
 	local_hd->mutex_port[i] = SIMIX_mutex_init();
+	*/
+	/* update remote peer_port to talk through the new port */
+	active_socket->peer_port = res->port;
 
-	DEBUG1("New socket: Peer port %d", res->peer_port);
-	pd->active_socket=NULL;
+
+
+	DEBUG2("New socket: Peer port %d Local port %d", res->peer_port, res->port);
 	SIMIX_mutex_unlock(pd->mutex);
 	return res;
 }

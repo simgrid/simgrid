@@ -13,6 +13,7 @@
 #define GRAS_MSG_INTERFACE_H
 
 #include "gras/transport.h"
+#include "xbt/fifo.h"
 
 /*
  * Data of this module specific to each process 
@@ -38,7 +39,7 @@ typedef struct {
   xbt_dynar_t timers; /* elm type: s_gras_timer_t */
 	
 	/* queue storing the msgs that have to received and the process synchronization made (wait the surf action done) */
-	xbt_dynar_t msg_to_receive_queue; /* elm type: s_gras_msg_t */
+	xbt_fifo_t msg_to_receive_queue; /* elm type: s_gras_msg_t */
 
 } s_gras_msg_procdata_t,*gras_msg_procdata_t;
 

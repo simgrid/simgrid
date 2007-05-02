@@ -105,7 +105,7 @@ typedef struct {
   /* SG only elements. In RL, they are part of the OS ;) */
 	smx_cond_t cond;
 	smx_mutex_t mutex;
-	gras_socket_t active_socket;
+	xbt_fifo_t active_socket;
 	long int pid;
 	long int ppid;
   //int chan;    /* Formated messages channel */

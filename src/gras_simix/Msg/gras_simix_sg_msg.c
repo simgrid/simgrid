@@ -74,11 +74,11 @@ void gras_msg_send_ext(gras_socket_t   sock,
   }
 	/* put message on msg_queue */
 	msg_remote_proc = (gras_msg_procdata_t)gras_libdata_by_name_from_remote("gras_msg",sock_data->to_process);
-	xbt_dynar_push(msg_remote_proc->msg_to_receive_queue,msg);
+	xbt_fifo_push(msg_remote_proc->msg_to_receive_queue,msg);
 	
 	/* wake-up the receiver */
 	trp_remote_proc = (gras_trp_procdata_t)gras_libdata_by_name_from_remote("gras_trp",sock_data->to_process);
-	trp_remote_proc->active_socket = sock;
+	xbt_fifo_push(trp_remote_proc->active_socket,sock);
 
 	SIMIX_cond_signal(trp_remote_proc->cond);
 
@@ -90,6 +90,9 @@ void gras_msg_send_ext(gras_socket_t   sock,
 	SIMIX_register_action_to_condition(act,hd->cond_port[sock->port]);
 	SIMIX_register_condition_to_action(act,hd->cond_port[sock->port]);
 
+  VERB5("Sending to %s(%s) a message type '%s' kind '%s' ID %lu",
+	SIMIX_host_get_name(sock_data->to_host),SIMIX_process_get_name(sock_data->to_process),
+	msg->type->name,e_gras_msg_kind_names[msg->kind],	msg->ID);
 	
 	SIMIX_cond_wait(hd->cond_port[sock->port], hd->mutex_port[sock->port]);
 	/* error treatmeant */
@@ -98,9 +101,7 @@ void gras_msg_send_ext(gras_socket_t   sock,
 	SIMIX_action_destroy(act);
 	SIMIX_mutex_unlock(hd->mutex_port[sock->port]);
 
-  VERB5("Sent to %s(%s) a message type '%s' kind '%s' ID %lu",
-	SIMIX_host_get_name(sock_data->to_host),SIMIX_process_get_name(sock_data->to_process),
-	msg->type->name,e_gras_msg_kind_names[msg->kind],	msg->ID);
+	VERB0("Message sent");
 
 /*
   if (XBT_LOG_ISENABLED(gras_msg,xbt_log_priority_verbose)) {
@@ -139,7 +140,7 @@ gras_msg_recv(gras_socket_t    sock,
 
 	gras_trp_sg_sock_data_t *sock_data; 
 	gras_hostdata_t *remote_hd;
-  s_gras_msg_t msg_got;
+  gras_msg_t msg_got;
 	gras_msg_procdata_t msg_procdata = (gras_msg_procdata_t)gras_libdata_by_name("gras_msg");
 
   xbt_assert1(!gras_socket_is_meas(sock), 
@@ -151,10 +152,11 @@ gras_msg_recv(gras_socket_t    sock,
 	DEBUG3("Remote host %s, Remote Port: %d Local port %d", SIMIX_host_get_name(sock_data->to_host), sock->peer_port, sock->port);
 	remote_hd = (gras_hostdata_t *)SIMIX_host_get_data(sock_data->to_host);
 
-	if (xbt_dynar_length(msg_procdata->msg_to_receive_queue) == 0 ) {
+	if (xbt_fifo_size(msg_procdata->msg_to_receive_queue) == 0 ) {
 		THROW_IMPOSSIBLE;
 	}
-  xbt_dynar_shift(msg_procdata->msg_to_receive_queue,&msg_got);
+	DEBUG1("Size msg_to_receive buffer: %d", xbt_fifo_size(msg_procdata->msg_to_receive_queue));
+  msg_got = xbt_fifo_shift(msg_procdata->msg_to_receive_queue);
 
 	SIMIX_mutex_lock(remote_hd->mutex_port[sock->peer_port]);
 /* ok, I'm here, you can continuate the communication */
@@ -163,9 +165,9 @@ gras_msg_recv(gras_socket_t    sock,
 /* wait for communication end */
 	SIMIX_cond_wait(remote_hd->cond_port[sock->peer_port],remote_hd->mutex_port[sock->peer_port]);
 
-	msg_got.expe= msg->expe;
-  memcpy(msg,&msg_got,sizeof(s_gras_msg_t));
-
+	msg_got->expe= msg->expe;
+  memcpy(msg,msg_got,sizeof(s_gras_msg_t));
+	xbt_free(msg_got);
 	SIMIX_mutex_unlock(remote_hd->mutex_port[sock->peer_port]);
 
 	VERB3("Received a message type '%s' kind '%s' ID %lu",// from %s",
