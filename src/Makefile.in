@@ -54,11 +54,14 @@ target_triplet = @target@
 @USE_SIMIX_FALSE@	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
 @USE_SIMIX_FALSE@	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c
 
-@HAVE_SDP_TRUE@am__append_3 = surf/sdp.c  
-@USE_SIMIX_TRUE@am__append_4 = $(SIMIX_SRC) $(MSG_SIMIX_SRC) \
+@USE_GTNETS_TRUE@am__append_3 = $(GTNETS_SRC)
+@USE_GTNETS_FALSE@am__append_4 = $(GTNETS_SRC)
+@HAVE_SDP_TRUE@am__append_5 = surf/sdp.c
+@HAVE_SDP_FALSE@am__append_6 = surf/sdp.c
+@USE_SIMIX_TRUE@am__append_7 = $(SIMIX_SRC) $(MSG_SIMIX_SRC) \
 @USE_SIMIX_TRUE@	$(GRAS_SIMIX_SRC)
-@USE_SIMIX_TRUE@am__append_5 = $(MSG_SRC)
-@USE_SIMIX_TRUE@am__append_6 = gras_simix/gras_simix_gras.c  \
+@USE_SIMIX_TRUE@am__append_8 = $(MSG_SRC)
+@USE_SIMIX_TRUE@am__append_9 = gras_simix/gras_simix_gras.c  \
 @USE_SIMIX_TRUE@  gras_simix/Transport/gras_simix_transport.c          gras_simix/Transport/gras_simix_transport_private.h \
 @USE_SIMIX_TRUE@  gras_simix/Msg/gras_simix_msg.c                      gras_simix/Msg/gras_simix_rpc.c                       gras_simix/Msg/gras_simix_timer.c                 \
 @USE_SIMIX_TRUE@  gras_simix/Msg/gras_simix_msg_interface.h            gras_simix/Msg/gras_simix_msg_private.h           \
@@ -70,10 +73,10 @@ target_triplet = @target@
 @USE_SIMIX_TRUE@  gras_simix/DataDesc/gras_simix_datadesc_interface.h  gras_simix/DataDesc/gras_simix_datadesc_private.h \
 @USE_SIMIX_TRUE@  gras_simix/DataDesc/gras_simix_ddt_parse.c           gras_simix/DataDesc/gras_simix_ddt_parse.yy.c         gras_simix/DataDesc/gras_simix_ddt_parse.yy.h
 
-@USE_SIMIX_FALSE@am__append_7 = $(SIMIX_SRC) $(MSG_SIMIX_SRC) \
+@USE_SIMIX_FALSE@am__append_10 = $(SIMIX_SRC) $(MSG_SIMIX_SRC) \
 @USE_SIMIX_FALSE@	$(GRAS_SIMIX_SRC)
-@USE_SIMIX_FALSE@am__append_8 = $(MSG_SRC) $(GRAS_SRC)
-@USE_SIMIX_FALSE@am__append_9 = gras/gras.c  \
+@USE_SIMIX_FALSE@am__append_11 = $(MSG_SRC) $(GRAS_SRC)
+@USE_SIMIX_FALSE@am__append_12 = gras/gras.c  \
 @USE_SIMIX_FALSE@  gras/Transport/transport.c          gras/Transport/transport_private.h  \
 @USE_SIMIX_FALSE@  gras/Msg/msg.c                      gras/Msg/rpc.c                       gras/Msg/timer.c                 \
 @USE_SIMIX_FALSE@  gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
@@ -87,7 +90,7 @@ target_triplet = @target@
 @USE_SIMIX_FALSE@  gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h
 
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
-@GRAMINE_MODE_FALSE@am__append_10 = $(testall_SOURCES)
+@GRAMINE_MODE_FALSE@am__append_13 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/gras_config.h.in $(srcdir)/ucontext_stack.h.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -246,6 +249,8 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
 	surf/workstation_KCCFLN05.c simdag/sd_global.c \
 	simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
+	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
+	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
 	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
 	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
 	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
@@ -270,43 +275,47 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	gras/Virtu/sg_dns.c gras/sg_stubs.c gras/Msg/sg_msg.c \
 	amok/amok_base.c amok/Bandwidth/bandwidth.c \
 	amok/Bandwidth/saturate.c amok/PeerManagement/peermanagement.c
-@HAVE_SDP_TRUE@am__objects_7 = sdp.lo
-am__objects_8 = smx_global.lo smx_deployment.lo smx_config.lo \
+am__objects_7 = gtnets_simulator.lo gtnets_topology.lo \
+	gtnets_interface.lo network_gtnets.lo
+@USE_GTNETS_TRUE@am__objects_8 = $(am__objects_7)
+@HAVE_SDP_TRUE@am__objects_9 = sdp.lo
+am__objects_10 = smx_global.lo smx_deployment.lo smx_config.lo \
 	smx_environment.lo smx_host.lo smx_process.lo smx_action.lo \
 	smx_synchro.lo
-am__objects_9 = msg_simix_config.lo msg_simix_task.lo \
+am__objects_11 = msg_simix_config.lo msg_simix_task.lo \
 	msg_simix_host.lo msg_simix_process.lo msg_simix_gos.lo \
 	msg_simix_global.lo msg_simix_environment.lo \
 	msg_simix_deployment.lo
-am__objects_10 = gras_simix_sg_transport.lo \
+am__objects_12 = gras_simix_sg_transport.lo \
 	gras_simix_transport_plugin_sg.lo gras_simix_sg_emul.lo \
 	gras_simix_sg_process.lo gras_simix_sg_time.lo \
 	gras_simix_sg_dns.lo gras_simix_sg_stubs.lo \
 	gras_simix_sg_msg.lo
-@USE_SIMIX_TRUE@am__objects_11 = $(am__objects_8) $(am__objects_9) \
-@USE_SIMIX_TRUE@	$(am__objects_10)
-am__objects_12 = msg_config.lo task.lo host.lo m_process.lo gos.lo \
+@USE_SIMIX_TRUE@am__objects_13 = $(am__objects_10) $(am__objects_11) \
+@USE_SIMIX_TRUE@	$(am__objects_12)
+am__objects_14 = msg_config.lo task.lo host.lo m_process.lo gos.lo \
 	global.lo environment.lo deployment.lo
-am__objects_13 = sg_transport.lo transport_plugin_sg.lo sg_emul.lo \
+am__objects_15 = sg_transport.lo transport_plugin_sg.lo sg_emul.lo \
 	sg_process.lo sg_time.lo sg_dns.lo sg_stubs.lo sg_msg.lo
-@USE_SIMIX_FALSE@am__objects_14 = $(am__objects_12) $(am__objects_13)
-am__objects_15 = context.lo maxmin.lo lagrange.lo trace_mgr.lo surf.lo \
+@USE_SIMIX_FALSE@am__objects_16 = $(am__objects_14) $(am__objects_15)
+am__objects_17 = context.lo maxmin.lo lagrange.lo trace_mgr.lo surf.lo \
 	surfxml_parse.lo cpu.lo network.lo workstation.lo \
 	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
 	sd_global.lo sd_link.lo sd_task.lo sd_workstation.lo \
-	$(am__objects_7) $(am__objects_11) $(am__objects_14)
-am_libsimgrid_la_OBJECTS = $(am__objects_3) $(am__objects_15) \
+	$(am__objects_8) $(am__objects_9) $(am__objects_13) \
+	$(am__objects_16)
+am_libsimgrid_la_OBJECTS = $(am__objects_3) $(am__objects_17) \
 	$(am__objects_5)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = ./cunit_unit.c ./ex_unit.c ./dynar_unit.c \
 	./dict_unit.c ./set_unit.c ./swag_unit.c ./config_unit.c \
 	simgrid_units_main.c
-@GRAMINE_MODE_FALSE@am__objects_16 = cunit_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@am__objects_18 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) config_unit.$(OBJEXT)
-@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_16) \
+@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_18) \
 @GRAMINE_MODE_FALSE@	simgrid_units_main.$(OBJEXT)
 testall_OBJECTS = $(am_testall_OBJECTS)
 @GRAMINE_MODE_FALSE@testall_DEPENDENCIES = libgras.la
@@ -321,6 +330,14 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libgras_la_SOURCES) $(libsimgrid_la_SOURCES) \
 	$(testall_SOURCES)
 DIST_SOURCES = $(am__libgras_la_SOURCES_DIST) \
@@ -333,7 +350,7 @@ ADDR2LINE = @ADDR2LINE@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
-AM_CFLAGS = @AM_CFLAGS@ -g
+AM_CFLAGS = @AM_CFLAGS@ -g @GTNETS_CFLAGS@
 AR = @AR@
 AS = @AS@
 AUTOCONF = @AUTOCONF@
@@ -367,6 +384,9 @@ FLEXML = @FLEXML@
 GRAMINE_MODE_FALSE = @GRAMINE_MODE_FALSE@
 GRAMINE_MODE_TRUE = @GRAMINE_MODE_TRUE@
 GRAS_DEP = @GRAS_DEP@
+GREP = @GREP@
+GTNETS_CFLAGS = @GTNETS_CFLAGS@
+GTNETS_LDFLAGS = @GTNETS_LDFLAGS@
 HAVE_FLEXML_FALSE = @HAVE_FLEXML_FALSE@
 HAVE_FLEXML_TRUE = @HAVE_FLEXML_TRUE@
 HAVE_SDP_FALSE = @HAVE_SDP_FALSE@
@@ -405,6 +425,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
 STRIP = @STRIP@
+USE_GTNETS_FALSE = @USE_GTNETS_FALSE@
+USE_GTNETS_TRUE = @USE_GTNETS_TRUE@
 USE_SIMIX_FALSE = @USE_SIMIX_FALSE@
 USE_SIMIX_TRUE = @USE_SIMIX_TRUE@
 VERSION = @VERSION@
@@ -414,15 +436,9 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_configure_args = @ac_configure_args@
-ac_ct_AR = @ac_ct_AR@
-ac_ct_AS = @ac_ct_AS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -440,23 +456,30 @@ build_id = @build_id@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 pth_skaddr_makecontext = @pth_skaddr_makecontext@
 pth_sksize_makecontext = @pth_sksize_makecontext@
 sbindir = @sbindir@
@@ -494,8 +517,9 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	include/xbt/xbt_portability.h include/xbt/xbt_thread.h \
 	include/xbt/context.h msg/private.h simdag/private.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_1) $(am__append_2) $(am__append_5) \
-	$(am__append_7) $(am__append_10)
+	$(am__append_1) $(am__append_2) $(am__append_4) \
+	$(am__append_6) $(am__append_8) $(am__append_10) \
+	$(am__append_13)
 
 #        gras_private.h
 
@@ -542,8 +566,8 @@ COMMON_SRC = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c xbt_modinter.h \
 	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
 	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
 	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
-	xbt/cunit.c xbt/graphxml_parse.c $(am__append_6) \
-	$(am__append_9)
+	xbt/cunit.c xbt/graphxml_parse.c $(am__append_9) \
+	$(am__append_12)
 RL_SRC = \
   gras/rl_stubs.c                     xbt/xbt_thread.c                    \
   \
@@ -573,7 +597,14 @@ SG_SRC = xbt/context.c surf/maxmin.c surf/lagrange.c surf/trace_mgr.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
 	surf/workstation_KCCFLN05.c simdag/sd_global.c \
 	simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c \
-	$(am__append_3) $(am__append_4) $(am__append_8)
+	$(am__append_3) $(am__append_5) $(am__append_7) \
+	$(am__append_11)
+GTNETS_SRC = \
+  surf/gtnets/gtnets_simulator.cc \
+  surf/gtnets/gtnets_topology.cc  \
+  surf/gtnets/gtnets_interface.cc \
+  surf/network_gtnets.c
+
 SIMIX_SRC = \
   simix/smx_global.c \
   simix/smx_deployment.c \
@@ -642,14 +673,14 @@ AMOK_SRC = \
 ### Declare the library content
 ###
 @USE_SIMIX_TRUE@libgras_la_SOURCES = $(COMMON_SRC) $(RL_SIMIX_SRC) $(AMOK_SRC)
-libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
+libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 libsimgrid_la_SOURCES = $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)
-libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 all: $(BUILT_SOURCES) gras_config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .c .cc .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/acmacro/dist-files.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -728,7 +759,7 @@ clean-libLTLIBRARIES:
 libgras.la: $(libgras_la_OBJECTS) $(libgras_la_DEPENDENCIES) 
 	$(LINK) -rpath $(libdir) $(libgras_la_LDFLAGS) $(libgras_la_OBJECTS) $(libgras_la_LIBADD) $(LIBS)
 libsimgrid.la: $(libsimgrid_la_OBJECTS) $(libsimgrid_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libsimgrid_la_LDFLAGS) $(libsimgrid_la_OBJECTS) $(libsimgrid_la_LIBADD) $(LIBS)
+	$(CXXLINK) -rpath $(libdir) $(libsimgrid_la_LDFLAGS) $(libsimgrid_la_OBJECTS) $(libsimgrid_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -811,6 +842,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gras_simix_transport_plugin_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gras_simix_transport_plugin_sg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gras_simix_transport_plugin_tcp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtnets_interface.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtnets_simulator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtnets_topology.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/host.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lagrange.Plo@am__quote@
@@ -831,6 +865,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_simix_task.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_dassf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_gtnets.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/peermanagement.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_dns.Plo@am__quote@
@@ -1545,6 +1580,13 @@ sd_workstation.lo: simdag/sd_workstation.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_workstation.lo `test -f 'simdag/sd_workstation.c' || echo '$(srcdir)/'`simdag/sd_workstation.c
 
+network_gtnets.lo: surf/network_gtnets.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT network_gtnets.lo -MD -MP -MF "$(DEPDIR)/network_gtnets.Tpo" -c -o network_gtnets.lo `test -f 'surf/network_gtnets.c' || echo '$(srcdir)/'`surf/network_gtnets.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/network_gtnets.Tpo" "$(DEPDIR)/network_gtnets.Plo"; else rm -f "$(DEPDIR)/network_gtnets.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/network_gtnets.c' object='network_gtnets.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network_gtnets.lo `test -f 'surf/network_gtnets.c' || echo '$(srcdir)/'`surf/network_gtnets.c
+
 sdp.lo: surf/sdp.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sdp.lo -MD -MP -MF "$(DEPDIR)/sdp.Tpo" -c -o sdp.lo `test -f 'surf/sdp.c' || echo '$(srcdir)/'`surf/sdp.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sdp.Tpo" "$(DEPDIR)/sdp.Plo"; else rm -f "$(DEPDIR)/sdp.Tpo"; exit 1; fi
@@ -1930,6 +1972,48 @@ config_unit.obj: ./config_unit.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o config_unit.obj `if test -f './config_unit.c'; then $(CYGPATH_W) './config_unit.c'; else $(CYGPATH_W) '$(srcdir)/./config_unit.c'; fi`
 
+.cc.o:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
+
+.cc.obj:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.cc.lo:
+@am__fastdepCXX_TRUE@	if $(LTCXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+gtnets_simulator.lo: surf/gtnets/gtnets_simulator.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gtnets_simulator.lo -MD -MP -MF "$(DEPDIR)/gtnets_simulator.Tpo" -c -o gtnets_simulator.lo `test -f 'surf/gtnets/gtnets_simulator.cc' || echo '$(srcdir)/'`surf/gtnets/gtnets_simulator.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gtnets_simulator.Tpo" "$(DEPDIR)/gtnets_simulator.Plo"; else rm -f "$(DEPDIR)/gtnets_simulator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='surf/gtnets/gtnets_simulator.cc' object='gtnets_simulator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gtnets_simulator.lo `test -f 'surf/gtnets/gtnets_simulator.cc' || echo '$(srcdir)/'`surf/gtnets/gtnets_simulator.cc
+
+gtnets_topology.lo: surf/gtnets/gtnets_topology.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gtnets_topology.lo -MD -MP -MF "$(DEPDIR)/gtnets_topology.Tpo" -c -o gtnets_topology.lo `test -f 'surf/gtnets/gtnets_topology.cc' || echo '$(srcdir)/'`surf/gtnets/gtnets_topology.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gtnets_topology.Tpo" "$(DEPDIR)/gtnets_topology.Plo"; else rm -f "$(DEPDIR)/gtnets_topology.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='surf/gtnets/gtnets_topology.cc' object='gtnets_topology.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gtnets_topology.lo `test -f 'surf/gtnets/gtnets_topology.cc' || echo '$(srcdir)/'`surf/gtnets/gtnets_topology.cc
+
+gtnets_interface.lo: surf/gtnets/gtnets_interface.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gtnets_interface.lo -MD -MP -MF "$(DEPDIR)/gtnets_interface.Tpo" -c -o gtnets_interface.lo `test -f 'surf/gtnets/gtnets_interface.cc' || echo '$(srcdir)/'`surf/gtnets/gtnets_interface.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gtnets_interface.Tpo" "$(DEPDIR)/gtnets_interface.Plo"; else rm -f "$(DEPDIR)/gtnets_interface.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='surf/gtnets/gtnets_interface.cc' object='gtnets_interface.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gtnets_interface.lo `test -f 'surf/gtnets/gtnets_interface.cc' || echo '$(srcdir)/'`surf/gtnets/gtnets_interface.cc
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -2062,7 +2146,7 @@ check-TESTS: $(TESTS)
 	else :; fi
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../acmacro $(distdir)/amok $(distdir)/amok/Bandwidth $(distdir)/gras/DataDesc $(distdir)/gras/Transport $(distdir)/gras/Virtu $(distdir)/gras_simix $(distdir)/gras_simix/DataDesc $(distdir)/gras_simix/Msg $(distdir)/gras_simix/Transport $(distdir)/gras_simix/Virtu $(distdir)/include/simix $(distdir)/include/surf $(distdir)/include/xbt $(distdir)/msg $(distdir)/msg_simix $(distdir)/simdag $(distdir)/simix $(distdir)/surf $(distdir)/xbt
+	$(mkdir_p) $(distdir)/../acmacro $(distdir)/amok $(distdir)/amok/Bandwidth $(distdir)/gras/DataDesc $(distdir)/gras/Transport $(distdir)/gras/Virtu $(distdir)/gras_simix $(distdir)/gras_simix/DataDesc $(distdir)/gras_simix/Msg $(distdir)/gras_simix/Transport $(distdir)/gras_simix/Virtu $(distdir)/include/simix $(distdir)/include/surf $(distdir)/include/xbt $(distdir)/msg $(distdir)/msg_simix $(distdir)/simdag $(distdir)/simix $(distdir)/surf $(distdir)/surf/gtnets $(distdir)/xbt
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

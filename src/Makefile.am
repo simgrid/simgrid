@@ -1,4 +1,4 @@
-AM_CFLAGS+= -g 
+AM_CFLAGS+= -g @GTNETS_CFLAGS@
 #AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.
@@ -180,8 +180,22 @@ SG_SRC=  \
   simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c                       \
   simdag/sd_workstation.c
 
+GTNETS_SRC= \
+  surf/gtnets/gtnets_simulator.cc \
+  surf/gtnets/gtnets_topology.cc  \
+  surf/gtnets/gtnets_interface.cc \
+  surf/network_gtnets.c
+
+if USE_GTNETS
+  SG_SRC+=$(GTNETS_SRC)
+else
+  EXTRA_DIST+=$(GTNETS_SRC)
+endif
+
 if HAVE_SDP
-  SG_SRC+= surf/sdp.c  
+  SG_SRC+= surf/sdp.c
+else 
+  EXTRA_DIST+=surf/sdp.c
 endif
 
 SIMIX_SRC= \
@@ -382,10 +396,10 @@ libgras_la_SOURCES= $(COMMON_SRC) $(RL_SIMIX_SRC) $(AMOK_SRC)
 else
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC) $(AMOK_SRC)
 endif
-libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
+libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
 libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)
-libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
 
 
