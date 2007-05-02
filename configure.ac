@@ -196,7 +196,7 @@ AC_ARG_WITH(gtnets,
   AS_HELP_STRING([--with-gtnets], [Path to GTNetS installation (default to empty, ie not using GTNetS)]),
   gtnets_path="$withval",gtnets_path="NO")
 if test "x$gtnets_path" = "xNO" ; then
-  AC_MSG_RESULT(Eventually you will come to GTNetS. $gtnets_path)
+  AC_MSG_RESULT(Eventually you will come to GTNetS.)
 else  
   AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****)
   AC_DEFINE(USE_GTNETS, 1, [Indicates whether we should use GTNetS or not])
