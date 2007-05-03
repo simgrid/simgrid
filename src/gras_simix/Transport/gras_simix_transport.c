@@ -97,10 +97,10 @@ void gras_trp_init(void){
 
 void
 gras_trp_exit(void){
-  xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
-  gras_socket_t sock_iter;
-  int cursor;
-
+  //xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
+  //gras_socket_t sock_iter;
+  //int cursor;
+	DEBUG1("gras_trp valor %d",_gras_trp_started);
    if (_gras_trp_started == 0) {
       return;
    }
@@ -115,13 +115,15 @@ gras_trp_exit(void){
 	}
 #endif
 
-      /* Close all the sockets */
+      /* Close all the sockets, moved to process_close */
+			/*
+			DEBUG1("sockets pointer %p",sockets);
       xbt_dynar_foreach(sockets,cursor,sock_iter) {
 	VERB1("Closing the socket %p left open on exit. Maybe a socket leak?",
 	      sock_iter);
 	gras_socket_close(sock_iter);
       }
-      
+      */
       /* Delete the plugins */
       xbt_dict_free(&_gras_trp_plugins);
    }
@@ -360,9 +362,11 @@ void gras_socket_close(gras_socket_t sock) {
   }
    
   /* FIXME: Issue an event when the socket is closed */
+	DEBUG1("sockets pointer before %p",sockets);
   if (sock) {
 		xbt_dynar_foreach(sockets,cursor,sock_iter) {
 			if (sock == sock_iter) {
+				DEBUG2("remove sock cursor %d dize %lu\n",cursor,xbt_dynar_length(sockets));
 				xbt_dynar_cursor_rm(sockets,&cursor);
 				if (sock->plugin->socket_close) 
 					(* sock->plugin->socket_close)(sock);
@@ -611,7 +615,6 @@ void gras_trp_socketset_dump(const char *name) {
  */
 int gras_trp_libdata_id;
 void gras_trp_register() {
-	DEBUG0("\ntrp add\n");
    gras_trp_libdata_id = gras_procdata_add("gras_trp",gras_trp_procdata_new, gras_trp_procdata_free);
 }
 

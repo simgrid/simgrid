@@ -23,11 +23,8 @@ gras_process_init() {
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   gras_procdata_t *pd=xbt_new0(gras_procdata_t,1);
   gras_trp_procdata_t trp_pd;
-  //gras_sg_portrec_t prmeas,pr;
-  //int i;
-  
-  SIMIX_process_set_data(SIMIX_process_self(),(void*)pd);
 
+  SIMIX_process_set_data(SIMIX_process_self(),(void*)pd);
 
 
   gras_procdata_init();
@@ -38,8 +35,6 @@ gras_process_init() {
     hd->refcount = 1;
     hd->ports = xbt_dynar_new(sizeof(gras_sg_portrec_t),NULL);
 
-  //  memset(hd->proc, 0, sizeof(hd->proc[0]) * XBT_MAX_CHANNEL); 
-	
 		for (i=0;i<65536;i++) {
 			hd->cond_port[i] =NULL;
 			hd->mutex_port[i] =NULL;
@@ -60,41 +55,6 @@ gras_process_init() {
 	trp_pd->mutex = SIMIX_mutex_init();
 	trp_pd->cond = SIMIX_cond_init();
 	trp_pd->active_socket = xbt_fifo_new();
-  /* take a free channel for this process */
-  /*
-	trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
-  for (i=0; i<XBT_MAX_CHANNEL && hd->proc[i]; i++);
-  if (i == XBT_MAX_CHANNEL) 
-    THROW2(system_error,0,
-	   "Can't add a new process on %s, because all channels are already in use. Please increase MAX CHANNEL (which is %d for now) and recompile GRAS.",
-	    MSG_host_get_name(MSG_host_self()),XBT_MAX_CHANNEL);
-
-  trp_pd->chan = i;
-  hd->proc[ i ] = MSG_process_self_PID();
-*/
-  /* regiter it to the ports structure */
- // pr.port = -1;
-  //pr.tochan = i;
-  //pr.meas = 0;
-  //xbt_dynar_push(hd->ports,&pr);
-
-  /* take a free meas channel for this process */
-  /*
-	for (i=0; i<XBT_MAX_CHANNEL && hd->proc[i]; i++);
-  if (i == XBT_MAX_CHANNEL) {
-    THROW2(system_error,0,
-	   "Can't add a new process on %s, because all channels are already in use. Please increase MAX CHANNEL (which is %d for now) and recompile GRAS.",
-	    MSG_host_get_name(MSG_host_self()),XBT_MAX_CHANNEL);
-  }
-  trp_pd->measChan = i;
-
-  hd->proc[ i ] = MSG_process_self_PID();
-*/
-  /* register it to the ports structure */
-  //prmeas.port = -1;
-  //prmeas.tochan = i;
-  //prmeas.meas = 1;
-  //xbt_dynar_push(hd->ports,&prmeas);
 
   VERB2("Creating process '%s' (%ld)",
 	   SIMIX_process_get_name(SIMIX_process_self()),
@@ -104,6 +64,9 @@ gras_process_init() {
 void
 gras_process_exit() {
 	int i;
+	xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
+  gras_socket_t sock_iter;
+  int cursor;
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   gras_procdata_t *pd=(gras_procdata_t*)SIMIX_process_get_data(SIMIX_process_self());
 
@@ -126,20 +89,12 @@ gras_process_exit() {
     WARN1("process %ld terminated, but some messages are still queued",
 	  gras_os_getpid());
 
-/*
-  for (cpt=0; cpt< XBT_MAX_CHANNEL; cpt++)
-    if (myPID == hd->proc[cpt])
-      hd->proc[cpt] = 0;
-*/
-
-/* remove ports from host, maybe i can do it on the socket destroy function */
-  /*
-	xbt_dynar_foreach(hd->ports, cpt, pr) {
-    if (pr.port == trp_pd->chan || pr.port == trp_pd->measChan) {
-      xbt_dynar_cursor_rm(hd->ports, &cpt);
-    }
-  }*/
-	
+	/* if each process has its sockets list, we need to close them when the process finish */
+	xbt_dynar_foreach(sockets,cursor,sock_iter) {
+		VERB1("Closing the socket %p left open on exit. Maybe a socket leak?",
+				sock_iter);
+		gras_socket_close(sock_iter);
+	}
   if ( ! --(hd->refcount)) {
     xbt_dynar_free(&hd->ports);
 		for (i=0; i<65536; i++) {

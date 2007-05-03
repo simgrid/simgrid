@@ -103,33 +103,6 @@ void gras_msg_send_ext(gras_socket_t   sock,
 
 	VERB0("Message sent");
 
-/*
-  if (XBT_LOG_ISENABLED(gras_msg,xbt_log_priority_verbose)) {
-     asprintf(&name,"type:'%s';kind:'%s';ID %lu from %s:%d to %s:%d",
-	      msg->type->name, e_gras_msg_kind_names[msg->kind], msg->ID,
-	      gras_os_myname(),gras_os_myport(),
-	      gras_socket_peer_name(sock), gras_socket_peer_port(sock));
-     task=MSG_task_create(name,0,
-			  ((double)whole_payload_size),msg);
-     free(name);
-  } else {
-     task=MSG_task_create(msg->type->name,0,
-			  ((double)whole_payload_size),msg);
-  }
-   
-	sock->bufdata = msg;
-	SIMIX_cond_signal(gras_libdata_by_name_from_remote("trp", sock->data->to_process)->cond);
-  DEBUG1("Prepare to send a message to %s",
-	 MSG_host_get_name (sock_data->to_host));
-  if (MSG_task_put_with_timeout(task, sock_data->to_host,sock_data->to_chan,60.0) != MSG_OK) 
-    THROW0(system_error,0,"Problem during the MSG_task_put with timeout 60");
-
-  VERB5("Sent to %s(%d) a message type '%s' kind '%s' ID %lu",
-	MSG_host_get_name(sock_data->to_host),sock_data->to_PID,
-	msg->type->name,
-	e_gras_msg_kind_names[msg->kind],
-	msg->ID);
-*/
 }
 /*
  * receive the next message on the given socket.  

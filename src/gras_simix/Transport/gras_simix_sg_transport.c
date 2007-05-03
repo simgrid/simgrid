@@ -63,19 +63,17 @@ gras_socket_t gras_trp_select(double timeout) {
 	/* Ok, got something. Open a socket back to the expeditor */
 
 	/* Try to reuse an already openned socket to that expeditor */
+	DEBUG1("Open sockets size %lu",xbt_dynar_length(pd->sockets));
 	xbt_dynar_foreach(pd->sockets,cursor,sock_iter) {
 		DEBUG1("Consider %p as outgoing socket to expeditor",sock_iter);
 
 		if (sock_iter->meas || !sock_iter->outgoing)
 			continue;
-		//DEBUG4("sock_iter %p port %d active %p port %d",((gras_trp_sg_sock_data_t*)sock_iter->data)->to_process,sock_iter->peer_port,((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process, pd->active_socket->port);
-		//DEBUG1("\nFrom process %p", ((gras_trp_sg_sock_data_t*)pd->active_socket->data)->from_process);
 		if ((sock_iter->peer_port == active_socket->port) && 
 				(((gras_trp_sg_sock_data_t*)sock_iter->data)->to_host == SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)active_socket->data)->from_process))) {
 			SIMIX_mutex_unlock(pd->mutex);
 			return sock_iter;
 		}
-
 	}
 
 	/* Socket to expeditor not created yet */
