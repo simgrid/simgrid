@@ -309,7 +309,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
 	if (elapsed_time == -1) {
 		if (xbt_swag_size(simix_global->process_list) == 0) {
-			INFO0("Congratulations ! Simulation terminated : all processes are over");
+/* 			INFO0("Congratulations ! Simulation terminated : all processes are over"); */
 		} else {
 			INFO0("Oops ! Deadlock or code not perfectly clean.");
 			__SIMIX_display_process_status();

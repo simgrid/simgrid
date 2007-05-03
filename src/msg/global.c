@@ -422,7 +422,7 @@ MSG_error_t MSG_main(void)
   }
 
   if (xbt_fifo_size(msg_global->process_list) == 0) {
-    INFO0("Congratulations ! Simulation terminated : all processes are over");
+/*     INFO0("Congratulations ! Simulation terminated : all processes are over"); */
     return MSG_OK;
   } else {
     INFO0("Oops ! Deadlock or code not perfectly clean.");
