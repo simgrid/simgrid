@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 /* check transport_private.h for an explanation of this variable; this just need to be defined to NULL in SG */
 gras_socket_t _gras_lastly_selected_socket = NULL;
 
-/**
+/**	
  * gras_trp_select:
  *
  * Returns the next socket to service having a message awaiting.
@@ -36,11 +36,7 @@ gras_socket_t gras_trp_select(double timeout) {
 	gras_socket_t active_socket;
 	gras_socket_t sock_iter; /* iterating over all sockets */
 	int cursor;
-//	int i;
 
-	gras_hostdata_t *remote_hd;
-//	gras_hostdata_t *local_hd;
-	
 	DEBUG0("Trying to get the lock pd, trp_select");
 	SIMIX_mutex_lock(pd->mutex);
 	DEBUG3("select on %s@%s with timeout=%f",
@@ -91,48 +87,24 @@ gras_socket_t gras_trp_select(double timeout) {
 
 	res->port = -1;
 
+	/* unitialize the ports */
+	res->peer_port = active_socket->port;
+	res->port = active_socket->peer_port;
+
+	/* create sockdata */
 	sockdata = xbt_new(gras_trp_sg_sock_data_t,1);
 	sockdata->from_process = SIMIX_process_self();
 	sockdata->to_process   = ((gras_trp_sg_sock_data_t*)(active_socket->data))->from_process;
 	
-	DEBUG2("Create socket to process:%s from process: %s",SIMIX_process_get_name(sockdata->from_process),SIMIX_process_get_name(sockdata->to_process));
-	/* complicated*/
 	sockdata->to_host  = SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)(active_socket->data))->from_process);
 
 	res->data = sockdata;
-	gras_trp_buf_init_sock(res);
-
 	res->peer_name = strdup(SIMIX_host_get_name(sockdata->to_host));
 
-	remote_hd=(gras_hostdata_t *)SIMIX_host_get_data(sockdata->to_host);
-	xbt_assert0(remote_hd,"Run gras_process_init!!");
+	gras_trp_buf_init_sock(res);
 
-	res->peer_port = active_socket->port;
+	DEBUG4("Create socket to process:%s(Port %d) from process: %s(Port %d)",SIMIX_process_get_name(sockdata->from_process),res->peer_port, SIMIX_process_get_name(sockdata->to_process), res->port);
 
-	res->port = active_socket->peer_port;
-	/* search for a free port on the host */
-	/*
-	local_hd = (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
-	for (i=1;i<65536;i++) {
-		if (local_hd->cond_port[i] == NULL)
-			break;
-	}
-	if (i == 65536) {
-		SIMIX_mutex_unlock(pd->mutex);
-		THROW0(system_error,0,"No port free");
-	}
-	res->port = i;*/
-	/*initialize the cond and mutex */
-	/*
-	local_hd->cond_port[i] = SIMIX_cond_init();
-	local_hd->mutex_port[i] = SIMIX_mutex_init();
-	*/
-	/* update remote peer_port to talk through the new port */
-	active_socket->peer_port = res->port;
-
-
-
-	DEBUG2("New socket: Peer port %d Local port %d", res->peer_port, res->port);
 	SIMIX_mutex_unlock(pd->mutex);
 	return res;
 }

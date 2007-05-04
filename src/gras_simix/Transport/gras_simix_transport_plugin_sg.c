@@ -401,7 +401,7 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
   msg_got = xbt_fifo_shift(msg_procdata->msg_to_receive_queue);
 
 	SIMIX_mutex_lock(local_hd->mutex_port[sock->port]);
-/* ok, I'm here, you can continuate the communication */
+/* ok, I'm here, you can continue the communication */
 	SIMIX_cond_signal(local_hd->cond_port[sock->port]);
 
 /* wait for communication end */
