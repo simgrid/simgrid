@@ -79,6 +79,7 @@ xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
 	
 	if ((errcode = pthread_join(thread->t,thread_return)))
 		THROW0(system_error,errcode, "pthread_join failed");
+	free(thread);   
 }		       
 
 void xbt_thread_exit(int *retval) {
