@@ -113,10 +113,9 @@ static void xbt_context_free(xbt_context_t context)
 #ifdef CONTEXT_THREADS
 	/*DEBUG1("\t joining %p",(void *)context->thread->t);*/
 	DEBUG1("\t joining %p",(void *)context->thread);
-	/*pthread_join(context->thread->t,NULL);*/
+
 	xbt_thread_join(context->thread,NULL);
-	DEBUG1("\t xbt_free %p",(void *)context->thread);
-	xbt_free(context->thread);
+
 	DEBUG1("\t mutex_destroy %p",(void *)context->mutex);
 	xbt_mutex_destroy(context->mutex);
 	DEBUG1("\t cond_destroy %p",(void *)context->cond);
