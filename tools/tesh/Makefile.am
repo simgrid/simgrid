@@ -5,7 +5,7 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include
 bin_PROGRAMS = tesh
 
 tesh_SOURCES = run_context.c run_context.h tesh.c tesh.h buff.h buff.c signal.c
-tesh_LDADD   = $(top_builddir)/src/libsimgrid.la 
+tesh_LDADD   = $(top_builddir)/src/libgras.la 
 
 TESTS_ENVIRONMENT=./tesh
 TESTS=basic.tesh  cd.tesh \
