@@ -372,7 +372,7 @@ static void diff_build_diff(xbt_dynar_t res,
     topush = bprintf("  %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res, &topush);
   } else if (j>=0 && 
-	     (i<0 || xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
+	     (i<=0 || xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i,j-1);
     topush = bprintf("+ %s",xbt_dynar_get_as(db,j,char*));
     xbt_dynar_push(res,&topush);
