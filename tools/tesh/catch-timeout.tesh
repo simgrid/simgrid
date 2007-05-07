@@ -1,0 +1,13 @@
+#! ./tesh
+
+# This suite must be functional because we changed the timeout value to 10
+# before sleeping 6 secs.
+
+! expect return 3
+< ! set timeout 1
+< $ sleep 6
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:2] sleep 6
+> [0.000000] [tesh/INFO] Child 'sleep 6' timeouted. Kill it
+> [0.000000] run_context.c:335: [tesh/ERROR] Child timeouted (waited 1 sec)
+$ ./tesh

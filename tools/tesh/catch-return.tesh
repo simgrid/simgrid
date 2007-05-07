@@ -1,0 +1,25 @@
+#! ./tesh
+# This suite builds and uses a program returning 1.
+# tesh must detect this condition and report the issue.
+
+$ rm -rf temp_testdir
+$ mkdir temp_testdir
+
+$ cd temp_testdir
+< #include <stdlib.h>
+< int main(void) {
+<   exit(1);
+< }
+$ cat > return1.c
+
+$ gcc -o return1 return1.c
+
+! expect return 41
+< $ ./return1
+$ ../tesh
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:1] ./return1
+> [0.000000] run_context.c:374: [tesh/ERROR] Child "./return1" returned code 1
+
+$ cd ..
+$ rm -rf temp_testdir

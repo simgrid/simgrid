@@ -1,0 +1,79 @@
+This is the TESH tool. It constitutes a testing shell, ie a sort of shell
+specialized to run tests. The list of actions to take is parsed from files
+files called testsuite. 
+
+Testsuites syntax
+-----------------
+Here is the syntax of these files:
+
+The kind of each line is given by the first char (the second char should be
+blank and is ignored):
+ 
+ `$' command to run in forground
+ `&' command to run in background
+ `<' input to pass to the command
+ `>' output expected from the command
+ `!' metacommand, which can be one of:
+     `set timeout' <integer>
+     `expect signal' <signal name>
+     `expect return' <integer>
+
+If the expected output do not match what the command spits, TESH will produce
+an error showing the diff.
+
+IO orders
+---------
+
+The < and > lines add IO to the command defined in the current block (blocks
+are separated by blank lines). It is possible to place these lines either after
+the command or before. The difference between the two following chunks is
+mainly cosmetic in your testsuites, TESH don't care. (cf IO-orders.tesh)
+
+ $ cat
+ < TOTO
+ > TOTO
+
+ > TOTO
+ $ cat
+ < TOTO
+
+Nevertheless, it is possible to have several commands in the same block, but
+none of them can have any output. It may seem a bit restrictive, as one could
+say that a command gets all the IO until the next command, but I'm afraid of
+errors such as the following:
+
+ $ cd toto
+ > TOTO
+ $ cat > file
+
+TOTO will be passed to the cd command, where the user clearly want to pass it
+to cat.
+
+RETURN CODE
+-----------
+
+TESH spits an appropriate error message when the child do not return 0 as
+return code (cf. catch-return.tesh).
+
+It is also possible to specify that a given command must return another
+value. For this, use the "expect return" metacommand, which takes an integer as
+argument. The change only apply to the next command (cf. set-return.tesh).
+
+SIGNALS
+-------
+
+TESH detects when the child is killed by a signal (like on segfaults), and
+spits an appropriate error message (cf. catch-signal.tesh).
+
+It is also possible to specify that a given command must raise a given
+signal. For this, use the "expect signal" metacommand. It takes the signal name
+as argument. The change only apply to the next command (cf. set-signal.tesh).
+ 
+TIMEOUTS
+--------
+
+By default, all commands are given 5 seconds to execute
+(cf. catch-timeout.tesh). You can change this with the "set timeout", which
+takes an integer as argument. The change only apply to the next command
+(cf. set-timeout.tesh).
+

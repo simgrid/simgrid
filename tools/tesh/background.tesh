@@ -1,0 +1,50 @@
+
+$ rm -rf temp_testdir
+$ mkdir temp_testdir
+$ cd temp_testdir
+
+< #include <unistd.h>
+< #include <stdlib.h>
+< #include <stdio.h>
+< #include <sys/types.h>
+< #include <sys/stat.h>
+< #include <fcntl.h>
+<		     
+< int main() {
+<   char buff[2048];
+<   int got;
+<   int in;
+< 
+<   sleep(1);
+<   in = open("tmp_fich",O_RDONLY|O_CREAT);
+<   if (in == -1) {
+<     perror("Cannot open tmp_fich: ");
+<     exit(1);
+<   }
+<   while ((got = read(in,&buff,2048))>0) {
+<      int w = write(1,&buff,got);
+<      if (w<0) {
+<        perror("Error while writing:");
+<        exit(1);
+<      }
+<   }
+<   if (got < 0) {
+<     perror("Error while reading:");
+<     exit(1);
+<   }
+<   return 0;
+< }
+$ cat > delayed_cat.c
+
+$ gcc -Wall -o delayed_cat delayed_cat.c
+
+& ./delayed_cat 
+> TOTO
+
+< TOTO
+$ cat > tmp_fich
+
+$ sleep 2
+$ cd ..
+$ rm -rf temp_testdir
+

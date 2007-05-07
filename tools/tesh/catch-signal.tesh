@@ -1,0 +1,26 @@
+#! ./tesh
+# This suite builds and uses a program raising a segfault, ie a program dying
+# of SIGSEV. tesh must detect this condition and report the issue.
+
+$ rm -rf temp_testdir
+$ mkdir temp_testdir
+
+$ cd temp_testdir
+< #include <stdlib.h>
+< int main(void) {
+<   char *A=NULL;
+<   *A = 1;
+< }
+$ cat > segfault.c
+
+$ gcc -o segfault segfault.c
+
+! expect return 15
+< $ ./segfault
+$ ../tesh
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:1] ./segfault
+> [0.000000] run_context.c:350: [tesh/ERROR] Child "./segfault" got signal SIGSEGV.
+
+$ cd ..
+$ rm -rf temp_testdir

@@ -4,14 +4,16 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include
 
 bin_PROGRAMS = tesh
 
-tesh_SOURCES = tesh.c tesh.h buff.h buff.c signal.c
+tesh_SOURCES = run_context.c run_context.h tesh.c tesh.h buff.h buff.c signal.c
 tesh_LDADD   = $(top_builddir)/src/libsimgrid.la 
 
 TESTS_ENVIRONMENT=./tesh
 TESTS=basic.tesh  cd.tesh \
-      broken-pipe.tesh segfault.tesh  timeout.tesh
-      
-#      non-blocking-IO.tesh -> blocks on AMD64
+      IO-broken-pipe.tesh IO-orders.tesh IO-bigsize.tesh \
+      set-return.tesh   set-signal.tesh   set-timeout.tesh   set-ignore-output.tesh\
+      catch-return.tesh catch-signal.tesh catch-timeout.tesh \
+      catch-wrong-output.tesh \
+      bg-basic.tesh bg-set-signal.tesh background.tesh
 
 $(top_builddir)/src/libsimgrid.la: 
 	make -C $(top_builddir)/src libsimgrid.la

@@ -1,0 +1,16 @@
+#! ./tesh
+
+p This tests whether TESH detects wrong outputs
+
+! expect return 2
+< > TOTO
+< < TUTU
+< $ cat
+$ ./tesh
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:3] cat
+> [0.000000] run_context.c:394: [tesh/ERROR] Output of child "cat" don't match expectations. Here is a diff between expected and got output:
+> + TUTU
+> - TOTO
+>   
+> 

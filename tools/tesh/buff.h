@@ -23,14 +23,14 @@
 typedef struct {
   char *data;
   int used,size;
-} buff_t;
+} s_buff_t, *buff_t;
 
 
-void buff_empty(buff_t *b);
-buff_t *buff_new(void);
-void buff_free(buff_t *b);
-void buff_append(buff_t *b, char *toadd);
-void buff_chomp(buff_t *b);
-void buff_trim(buff_t* b);
+void buff_empty(buff_t b);
+buff_t buff_new(void);
+void buff_free(buff_t b);
+void buff_append(buff_t b, const char *toadd);
+void buff_chomp(buff_t b);
+void buff_trim(buff_t b);
 
 #endif

@@ -63,7 +63,8 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_tesh_OBJECTS = tesh.$(OBJEXT) buff.$(OBJEXT) signal.$(OBJEXT)
+am_tesh_OBJECTS = run_context.$(OBJEXT) tesh.$(OBJEXT) buff.$(OBJEXT) \
+	signal.$(OBJEXT)
 tesh_OBJECTS = $(am_tesh_OBJECTS)
 tesh_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src
@@ -121,6 +122,9 @@ FLEXML = @FLEXML@
 GRAMINE_MODE_FALSE = @GRAMINE_MODE_FALSE@
 GRAMINE_MODE_TRUE = @GRAMINE_MODE_TRUE@
 GRAS_DEP = @GRAS_DEP@
+GREP = @GREP@
+GTNETS_CFLAGS = @GTNETS_CFLAGS@
+GTNETS_LDFLAGS = @GTNETS_LDFLAGS@
 HAVE_FLEXML_FALSE = @HAVE_FLEXML_FALSE@
 HAVE_FLEXML_TRUE = @HAVE_FLEXML_TRUE@
 HAVE_SDP_FALSE = @HAVE_SDP_FALSE@
@@ -159,6 +163,8 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
 STRIP = @STRIP@
+USE_GTNETS_FALSE = @USE_GTNETS_FALSE@
+USE_GTNETS_TRUE = @USE_GTNETS_TRUE@
 USE_SIMIX_FALSE = @USE_SIMIX_FALSE@
 USE_SIMIX_TRUE = @USE_SIMIX_TRUE@
 VERSION = @VERSION@
@@ -168,15 +174,9 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_configure_args = @ac_configure_args@
-ac_ct_AR = @ac_ct_AR@
-ac_ct_AS = @ac_ct_AS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -194,23 +194,30 @@ build_id = @build_id@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 pth_skaddr_makecontext = @pth_skaddr_makecontext@
 pth_sksize_makecontext = @pth_sksize_makecontext@
 sbindir = @sbindir@
@@ -222,11 +229,15 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include
-tesh_SOURCES = tesh.c tesh.h buff.h buff.c signal.c
+tesh_SOURCES = run_context.c run_context.h tesh.c tesh.h buff.h buff.c signal.c
 tesh_LDADD = $(top_builddir)/src/libsimgrid.la 
 TESTS_ENVIRONMENT = ./tesh
 TESTS = basic.tesh  cd.tesh \
-      broken-pipe.tesh segfault.tesh  timeout.tesh
+      IO-broken-pipe.tesh IO-orders.tesh IO-bigsize.tesh \
+      set-return.tesh   set-signal.tesh   set-timeout.tesh   set-ignore-output.tesh\
+      catch-return.tesh catch-signal.tesh catch-timeout.tesh \
+      catch-wrong-output.tesh \
+      bg-basic.tesh bg-set-signal.tesh background.tesh
 
 all: all-am
 
@@ -300,6 +311,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buff.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_context.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tesh.Po@am__quote@
 
@@ -578,8 +590,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-info-am
 
-
-#      non-blocking-IO.tesh -> blocks on AMD64
 
 $(top_builddir)/src/libsimgrid.la: 
 	make -C $(top_builddir)/src libsimgrid.la

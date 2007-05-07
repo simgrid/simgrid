@@ -14,285 +14,84 @@
 #endif
 
 #include "tesh.h"
+#include "xbt.h"
 
-#include <sys/types.h>
-#include <sys/wait.h>
+XBT_LOG_NEW_DEFAULT_CATEGORY(tesh,"TEst SHell utility");
 
-/**
- ** Options
- **/
+/*** Options ***/
 int timeout_value = 5; /* child timeout value */
-char* expected_signal=NULL; /* !=NULL if the following command should raise a signal */
-int expected_return=0; /* the exepeted return code of following command */
-int verbose=0; /* wheather we should wine on problems */
 
-/**
- ** Dealing with timeouts
- **/
-int timeouted;
-static void timeout_handler(int sig) {
-  timeouted = 1;
-}
-/**
- ** Dealing with timeouts
- **/
-int brokenpipe;
-static void pipe_handler(int sig) {
-  brokenpipe = 1;
-}
 
-/**
- ** Launching a child
- **/
-buff_t *input;
-buff_t *output_wanted;
-buff_t *output_got;
+static void handle_line(const char * filepos, char *line) {
+  int pos;
 
-static void check_output() {
-  if (output_wanted->used==0 
-      && output_got->used==0)
-    return;
-  buff_chomp(output_got);
-  buff_chomp(output_wanted);
-  buff_trim(output_got);
-  buff_trim(output_wanted);
+  /* Search end */
+  xbt_str_rtrim(line+2,"\n");
 
-  if (   output_got->used != output_wanted->used
-      || strcmp(output_got->data, output_wanted->data)) {
-    fprintf(stderr,"Output don't match expectations\n");
-    fprintf(stderr,">>>>> Expected %d chars:\n%s\n<<<<< Expected\n",
-	    output_wanted->used,output_wanted->data);
-    fprintf(stderr,">>>>> Got %d chars:\n%s\n<<<<< Got\n",
-	    output_got->used,output_got->data);
-    exit(2);
-  }
-  buff_empty(output_wanted);
-  buff_empty(output_got);
-  
-}
+  /*
+  DEBUG7("rctx={%s,in={%d,>>%10s<<},exp={%d,>>%10s<<},got={%d,>>%10s<<}}",
+	 rctx->cmd,
+	 rctx->input->used,        rctx->input->data,
+	 rctx->output_wanted->used,rctx->output_wanted->data,
+	 rctx->output_got->used,   rctx->output_got->data);
+  */
+  DEBUG2("[%s] %s",filepos,line);
 
-static void exec_cmd(char *cmd) {
-  int child_stdin[2];
-  int child_stdout[2];
-
-  if (pipe(child_stdin) || pipe(child_stdout)) {
-    perror("Cannot open the pipes");
-    exit(4);
-  }
-
-  int pid=fork();
-  if (pid<0) {
-    perror("Cannot fork the command");
-    exit(4);
-  }
-
-  if (pid) { /* father */
-    char buffout[4096];
-    int posw,posr;
-    int status;
-    close(child_stdin[0]);
-    fcntl(child_stdin[1], F_SETFL, O_NONBLOCK);
-    close(child_stdout[1]);
-    fcntl(child_stdout[0], F_SETFL, O_NONBLOCK);
-
-    brokenpipe = 0;
-    for (posw=0; posw<input->used && !brokenpipe; ) {
-      int got;
-      //      fprintf(stderr,"Still %d chars to write\n",input->used-posw);
-      got=write(child_stdin[1],input->data+posw,input->used-posw);
-      if (got>0)
-	posw+=got;
-      if (got<0 && errno!=EINTR && errno!=EAGAIN && errno!=EPIPE) {
-	perror("Error while writing input to child");
-	exit(4);
-      }
-      //      fprintf(stderr,"written %d chars so far\n",posw);
-
-      posr=read(child_stdout[0],&buffout,4096);
-      //      fprintf(stderr,"got %d chars\n",posr);
-      if (posr<0 && errno!=EINTR && errno!=EAGAIN) {
-	perror("Error while reading output of child");
-	exit(4);
-      }
-      if (posr>0) {
-	buffout[posr]='\0';      
-	buff_append(output_got,buffout);
-      }
-       
-      if (got <= 0 && posr <= 0)
-	 usleep(100);
-    }
-    input->data[0]='\0';
-    input->used=0;
-    close(child_stdin[1]);
-
-    timeouted = 0;
-    alarm(timeout_value);
-    do {
-      posr=read(child_stdout[0],&buffout,4096);
-      if (posr<0 && errno!=EINTR && errno!=EAGAIN) {
-	perror("Error while reading output of child");
-	exit(4);
-      }
-      if (posr>0) {
-	buffout[posr]='\0';
-	buff_append(output_got,buffout);
-      } else {
-	usleep(100);
-      }
-    } while (!timeouted && posr!=0);
-
-    /* Check for broken pipe */
-    if (brokenpipe && verbose) {
-      fprintf(stderr,"Warning: Child did not consume all its input (I got broken pipe)\n");
-    }
-
-    /* Check for timeouts */
-    if (timeouted) {
-      fprintf(stderr,"Child timeouted (waited %d sec)\n",timeout_value);
-      exit(3);
-    }
-    alarm(0);
-      
-
-    /* Wait for child, and check why it terminated */
-    wait(&status);
-
-    if (WIFSIGNALED(status) && 
-	strcmp(signal_name(WTERMSIG(status),expected_signal),
-	       expected_signal)) {
-		fprintf(stderr,"Child got signal %s instead of signal %s\n",
-			signal_name(WTERMSIG(status),expected_signal),
-			expected_signal);
-		exit(WTERMSIG(status)+4);	
-	}
-	
-    if (!WIFSIGNALED(status) && expected_signal) {
-      fprintf(stderr,"Child didn't got expected signal %s\n",
-	      expected_signal);
-      exit(5);
-    }
-
-    if (WIFEXITED(status) && WEXITSTATUS(status) != expected_return ) {
-      if (expected_return) 
-	fprintf(stderr,"Child returned code %d instead of %d\n",
-		WEXITSTATUS(status), expected_return);
-      else
-	fprintf(stderr,"Child returned code %d\n", WEXITSTATUS(status));
-      exit(40+WEXITSTATUS(status));
-    }
-    expected_return = 0;
-    
-    if(expected_signal){
-    	free(expected_signal);
-    	expected_signal = NULL;
-    }
-
-  } else { /* child */
-
-    close(child_stdin[1]);
-    close(child_stdout[0]);
-    dup2(child_stdin[0],0);
-    close(child_stdin[0]);
-    dup2(child_stdout[1],1);
-    dup2(child_stdout[1],2);
-    close(child_stdout[1]);
-
-    execlp ("/bin/sh", "sh", "-c", cmd, NULL);
-  }
-}
-
-static void run_cmd(char *cmd) {
-  if (cmd[0] == 'c' && cmd[1] == 'd' && cmd[2] == ' ') {
-    int pos = 2;
-    /* Search end */
-    pos = strlen(cmd)-1;
-    while (cmd[pos] == '\n' || cmd[pos] == ' ' || cmd[pos] == '\t')
-      cmd[pos--] = '\0';
-    /* search begining */
-    pos = 2;
-    while (cmd[pos++] == ' ');
-    pos--;
-    //    fprintf(stderr,"Saw cd '%s'\n",cmd+pos);
-    if (chdir(cmd+pos)) {
-      perror("Chdir failed");
-      exit(4);
-    }
-    
-  } else {
-    exec_cmd(cmd);
-  }
-}
-
-static void handle_line(int nl, char *line) {
-  
-  // printf("%d: %s",nl,line);  fflush(stdout);
   switch (line[0]) {
   case '#': break;
-  case '$': 
-    check_output(); /* Check that last command ran well */
-     
-    printf("[%d] %s",nl,line);
-    fflush(stdout);
-    run_cmd(line+2);
-    break;
-    
+
+  case '$':
+    /* further trim useless chars which are significant for in/output */
+    xbt_str_rtrim(line+2," \t");
+
+    /* Deal with CD commands here, not in rctx */
+    if (!strncmp("cd ",line+2,3)) {
+      char *dir=line+4;
+
+      if (rctx->cmd)
+	rctx_start();
+      
+      /* search begining */
+      while (*(dir++) == ' ');
+      dir--;
+      VERB1("Saw cd '%s'",dir);
+      if (chdir(dir)) {
+	char buff[256];
+	strerror_r(errno, buff, 256);
+
+	ERROR2("Chdir to %s failed: %s",dir+pos+2,buff);
+	exit(4);
+      }
+      break;
+    } /* else, pushline */
+  case '&':
   case '<':
-    buff_append(input,line+2);
-    break;
-
   case '>':
-    buff_append(output_wanted,line+2);
-    break;
-
   case '!':
-    if (!strncmp(line+2,"set timeout ",strlen("set timeout "))) {
-      timeout_value=atoi(line+2+strlen("set timeout"));
-      printf("[%d] (new timeout value: %d)\n",
-	     nl,timeout_value);
-
-    } else if (!strncmp(line+2,"expect signal ",strlen("expect signal "))) {
-      expected_signal = strdup(line+2 + strlen("expect signal "));
-      xbt_str_trim(expected_signal," \n");
-	   printf("[%d] (next command must raise signal %s)\n", nl, expected_signal);
-
-    } else if (!strncmp(line+2,"expect return ",strlen("expect return "))) {
-      expected_return = atoi(line+2+strlen("expect return "));
-      printf("[%d] (next command must return code %d)\n",
-	     nl, expected_return);
-       
-    } else if (!strncmp(line+2,"verbose on",strlen("verbose on"))) {
-      verbose = 1;
-      printf("[%d] (increase verbosity)\n", nl);
-       
-    } else if (!strncmp(line+2,"verbose off",strlen("verbose off"))) {
-      verbose = 1;
-      printf("[%d] (decrease verbosity)\n", nl);
-
-    } else {
-      fprintf(stderr,"%d: Malformed metacommand: %s",nl,line);
-      exit(1);
-    }
+    rctx_pushline(filepos, line[0], line+2 /* pass '$ ' stuff*/);    
     break;
 
   case 'p':
-    printf("[%d] %s",nl,line+2);
+    INFO2("[%s] %s",filepos,line+2);
     break;
 
   default:
-    fprintf(stderr,"Syntax error line %d: %s",nl, line);
+    ERROR2("[%s] Syntax error: %s",filepos, line);
     exit(1);
     break;
   }
 }
 
-static int handle_suite(FILE* IN) {
+static void handle_suite(const char* filename, FILE* IN) {
   int len;
   char * line = NULL;
   int line_num=0;
+  char file_pos[256];
 
-  buff_t *buff=buff_new();
+  buff_t buff=buff_new();
   int buffbegin = 0;   
+
+  rctx = rctx_new();
 
   while (getline(&line,(size_t*) &len, IN) != -1) {
     line_num++;
@@ -306,8 +105,17 @@ static int handle_suite(FILE* IN) {
       linelen++;
     }
     
-    if (blankline)
+    if (blankline) {
+      if (!rctx->cmd && !rctx->is_empty) {
+	ERROR1("[%d] Error: no command found in this chunk of lines.",
+	       buffbegin);
+	exit(1);
+      }
+      if (rctx->cmd)
+	rctx_start();
+
       continue;
+    }
 
     /* Deal with \ at the end of the line, and call handle_line on result */
     int to_be_continued = 0;
@@ -329,66 +137,79 @@ static int handle_suite(FILE* IN) {
       buff_append(buff,line);
 
       if (!to_be_continued) {
-	handle_line(buffbegin, buff->data);    
+	snprintf(file_pos,256,"%s:%d",filename,buffbegin);
+	handle_line(file_pos, buff->data);    
 	buff_empty(buff);
       }
 	
     } else {
-      handle_line(line_num,line);    
+      snprintf(file_pos,256,"%s:%d",filename,line_num);
+      handle_line(file_pos, line);    
     }
   }
-  check_output(); /* Check that last command ran well */
+  /* Check that last command of the file ran well */
+  if (rctx->cmd) 
+    rctx_start();
+
+  /* Wait all background commands */
+
+  rctx_free(rctx);
 
   /* Clear buffers */
   if (line)
     free(line);
   buff_free(buff);
-  return 1;
+
 }
 
 int main(int argc,char *argv[]) {
 
-  /* Setup the signal handlers */
-  struct sigaction newact,oldact;
-  memset(&newact,0,sizeof(newact));
-  newact.sa_handler=timeout_handler;
-  sigaction(SIGALRM,&newact,&oldact);
-
-  newact.sa_handler=pipe_handler;
-  sigaction(SIGPIPE,&newact,&oldact);
-   
-  /* Setup the input/output buffers */
-  input=buff_new();
-  output_wanted=buff_new();
-  output_got=buff_new();
-
-  /* Find the description file */
   FILE *IN;
 
+  /* Ignore pipe issues.
+     They will show up when we try to send data to dead buddies, 
+     but we will stop doing so when we're done with provided input */
+  struct sigaction newact;
+  memset(&newact,0, sizeof(newact));
+  newact.sa_handler=SIG_IGN;
+  sigaction(SIGPIPE,&newact,NULL);
+   
+  xbt_init(&argc,argv);
+  rctx_init();
+
+  /* Find the description file */
   if (argc == 1) {
-    printf("Test suite from stdin\n");fflush(stdout);
-    handle_suite(stdin);
-    fprintf(stderr,"Test suite from stdin OK\n");
+    INFO0("Test suite from stdin");
+    handle_suite("stdin",stdin);
+    INFO0("Test suite from stdin OK");
      
   } else {
     int i;
      
     for (i=1; i<argc; i++) {
-       printf("Test suite `%s'\n",argv[i]);fflush(stdout);
-       IN=fopen(argv[i], "r");
-       if (!IN) {
-	  perror(bprintf("Impossible to open the suite file `%s'",argv[i]));
-	  exit(1);
+      char *suitename=xbt_strdup(argv[i]);
+      if (!strcmp("./",suitename))
+	memmove(suitename, suitename+2, strlen(suitename+2));
+
+      if (!strcmp(".tesh",suitename+strlen(suitename)-5))
+	suitename[strlen(suitename)-5] = '\0';
+
+      INFO1("Test suite `%s'",suitename);
+      IN=fopen(argv[i], "r");
+      if (!IN) {
+	perror(bprintf("Impossible to open the suite file `%s'",argv[i]));
+	exit(1);
        }
-       handle_suite(IN);
-//       fclose(IN); ->leads to segfault on amd64...
-       fprintf(stderr,"Test suite `%s' OK\n",argv[i]);
+      handle_suite(suitename,IN);
+      rctx_wait_bg();
+      fclose(IN); //->leads to segfault on amd64...
+      INFO1("Test suite `%s' OK",suitename);
+      free(suitename);
     }
   }
-   
-  buff_free(input);
-  buff_free(output_wanted);
-  buff_free(output_got);
+
+  rctx_exit();
+  xbt_exit();
   return 0;  
 }
 

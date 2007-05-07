@@ -62,5 +62,5 @@ const char* signal_name(unsigned int got, char *expected) {
     if (signals[i].number == got)
       return (signals[i].name);
 
-  return "SIG UNKNOWN";  
+  return bprintf("SIG UNKNOWN (%d)", got);
 }

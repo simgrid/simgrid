@@ -1,0 +1,13 @@
+#! ./tesh
+
+p This tests whether TESH accepts to ignore command output
+
+< ! ignore output
+< > TOTO
+< < TUTU
+< $ cat
+$ ./tesh
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:4] cat
+> [0.000000] [tesh/INFO] (ignoring the output as requested)
+> [0.000000] [tesh/INFO] Test suite from stdin OK

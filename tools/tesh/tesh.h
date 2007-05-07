@@ -11,6 +11,7 @@
 #ifndef TESH_H
 #define TESH_H
 
+#include "xbt/xbt_thread.h"
 /*** Buffers ***/
 /***************/
 #include "buff.h"
@@ -21,6 +22,11 @@
    segfault leads to any of them depending on the system */
 const char* signal_name(unsigned int got, char *expected);
 
+#include "run_context.h"
+  
+/*** Options ***/
+int timeout_value; /* child timeout value */
 
+rctx_t rctx;
 
 #endif /* TESH_H */

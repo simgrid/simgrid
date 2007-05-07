@@ -1,0 +1,57 @@
+
+p This tests that TESH accepts any order for the input/output
+
+p Order: in, out, cmd
+< < TOTO
+< > TOTO
+< $ cat
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:3] cat
+> [0.000000] [tesh/INFO] Test suite from stdin OK
+$ ./tesh
+
+p Order: out, in, cmd
+< > TOTO
+< < TOTO
+< $ cat
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:3] cat
+> [0.000000] [tesh/INFO] Test suite from stdin OK
+$ ./tesh
+
+p Order: out, cmd, in
+< > TOTO
+< $ cat
+< < TOTO
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:2] cat
+> [0.000000] [tesh/INFO] Test suite from stdin OK
+$ ./tesh
+
+p Order: in, cmd, out
+< < TOTO
+< $ cat
+< > TOTO
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:2] cat
+> [0.000000] [tesh/INFO] Test suite from stdin OK
+$ ./tesh
+
+p Order: cmd, out, in
+< $ cat
+< > TOTO
+< < TOTO
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:1] cat
+> [0.000000] [tesh/INFO] Test suite from stdin OK
+$ ./tesh
+
+p Order: cmd, in, out
+< $ cat
+< < TOTO
+< > TOTO
+> [0.000000] [tesh/INFO] Test suite from stdin
+> [0.000000] [tesh/INFO] [stdin:1] cat
+> [0.000000] [tesh/INFO] Test suite from stdin OK
+$ ./tesh
+
