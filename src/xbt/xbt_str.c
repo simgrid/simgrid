@@ -371,20 +371,20 @@ static void diff_build_diff(xbt_dynar_t res,
     diff_build_diff(res,C,da,db,i-1,j-1);
     topush = bprintf("  %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res, &topush);
-  } else if (j>=0 && 
+  } else if (j>0 && 
 	     (i<=0 || xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i,j-1);
     topush = bprintf("+ %s",xbt_dynar_get_as(db,j,char*));
     xbt_dynar_push(res,&topush);
-  } else if (i>=0 && 
-	     (j<0 || xbt_matrix_get_as(C,i,j-1,int) < xbt_matrix_get_as(C,i-1,j,int))) {
+  } else if (i>0 && 
+	     (j<=0 || xbt_matrix_get_as(C,i,j-1,int) < xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i-1,j);
     topush = bprintf("- %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res,&topush);        
-  } else if (i<0 && j<0) {
+  } else if (i<=0 && j<=0) {
     return;
   } else {
-    THROW_IMPOSSIBLE;
+    THROW2(arg_error,0,"Invalid values: i=%d, j=%d",i,j);
   }
 }
 
