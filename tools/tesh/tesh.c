@@ -83,7 +83,7 @@ static void handle_line(const char * filepos, char *line) {
 }
 
 static void handle_suite(const char* filename, FILE* IN) {
-  int len;
+  size_t len;
   char * line = NULL;
   int line_num=0;
   char file_pos[256];
@@ -93,7 +93,7 @@ static void handle_suite(const char* filename, FILE* IN) {
 
   rctx = rctx_new();
 
-  while (getline(&line,(size_t*) &len, IN) != -1) {
+  while (getline(&line, &len, IN) != -1) {
     line_num++;
 
     /* Count the line length while checking wheather it's blank */
