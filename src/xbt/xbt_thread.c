@@ -240,6 +240,7 @@ xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
 	}
 	
 	CloseHandle(thread->handle);
+	free(thread);
 }
 
 void xbt_thread_exit(int *retval) {
