@@ -402,8 +402,11 @@ void *rctx_wait(void* r) {
     rctx_free(rctx);
   else
     rctx_empty(rctx);
-  if (errcode)
+  if (errcode) {
+    if (!rctx->check_output)
+      INFO1("Here is the child output:\n%s",rctx->output_got->data);
     exit (errcode);
+  }
 
   return NULL;
 }
