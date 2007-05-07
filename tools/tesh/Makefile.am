@@ -1,6 +1,6 @@
 AM_CFLAGS = -g
 
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include
+INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include -I$(top_srcdir)/src
 
 bin_PROGRAMS = tesh
 
