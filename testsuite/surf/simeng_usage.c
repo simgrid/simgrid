@@ -13,6 +13,7 @@
 
 #include "xbt/sysdep.h"
 #include "surf/maxmin.h"
+#include "surf/maxmin_private.h"
 
 #include "xbt/log.h"
 #include "xbt/module.h"
@@ -88,15 +89,6 @@ void test1(method_t method)
   PRINT_VAR(R_1);
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
-/*   DEBUG0("\n"); */
-
-/*   lmm_update_variable_weight(Sys,R_1_2_3,.5); */
-/*   lmm_solve(Sys); */
-
-/*   PRINT_VAR(R_1_2_3); */
-/*   PRINT_VAR(R_1); */
-/*   PRINT_VAR(R_2); */
-/*   PRINT_VAR(R_3); */
 
   lmm_system_free(Sys);
 } 
@@ -159,7 +151,7 @@ void test3(method_t method)
   lmm_system_t Sys = NULL ;
   lmm_constraint_t *tmp_cnst = NULL;
   lmm_variable_t   *tmp_var  = NULL;
-  char tmp_name[13];
+  char **tmp_name;
 
 
   /*array to add the the constraints of fictiv variables */
@@ -252,14 +244,20 @@ void test3(method_t method)
 
   Sys = lmm_system_new();
   
+
+
+  tmp_name = (char **) calloc(31, sizeof(char *));
+  for(i=0; i<31; i++){
+    tmp_name[i] = (char *) calloc(10, sizeof(char));
+  }
   
   /*
    * Creates the constraints
    */
   tmp_cnst = calloc(15, sizeof(lmm_constraint_t));
   for(i=0; i<15; i++){
-    sprintf(tmp_name, "C_%03d", i); 
-    tmp_cnst[i] = lmm_constraint_new(Sys, (void *) tmp_name, B[i]);
+    sprintf(tmp_name[i], "C_%03d", i); 
+    tmp_cnst[i] = lmm_constraint_new(Sys, (void *) tmp_name[i], B[i]);
   }
 
 
@@ -268,8 +266,8 @@ void test3(method_t method)
    */
   tmp_var = calloc(16, sizeof(lmm_variable_t));
   for(j=0; j<16; j++){
-    sprintf(tmp_name, "X_%03d", j); 
-    tmp_var[j] = lmm_variable_new(Sys, (void *) tmp_name, 1.0, -1.0 , 15);
+    sprintf(tmp_name[i+j], "X_%03d", j); 
+    tmp_var[j] = lmm_variable_new(Sys, (void *) tmp_name[i+j], 1.0, -1.0 , 15);
   }
 
   /*
@@ -282,6 +280,10 @@ void test3(method_t method)
       }
     }
   }
+
+
+  lmm_print(Sys);
+
 
   for(j=0; j<16; j++){
     PRINT_VAR(tmp_var[j]);
@@ -304,6 +306,7 @@ void test3(method_t method)
 
   free(tmp_var);
   free(tmp_cnst);
+  free(tmp_name);
   lmm_system_free(Sys);
 }
 
@@ -333,7 +336,6 @@ int main(int argc, char **argv)
 /* #endif */
 /*   DEBUG0("***** Test 2 (Lagrange) ***** \n"); */
 /*   test2(LAGRANGE); */
-
 
 
 /*   DEBUG0("***** Test 3 (Max-Min) ***** \n"); */
