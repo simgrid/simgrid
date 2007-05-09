@@ -59,13 +59,26 @@ gras_socket_server_range(unsigned short minport, unsigned short maxport,
 /** \defgroup GRAS_sock_info Retrieving data about sockets and peers 
  *  \ingroup GRAS_sock
  * 
- * Who are you talking to?
+ * Who are you talking to? 
  */
 /* @{*/
 
 /** Get the port number on which this socket is connected on my side */
 XBT_PUBLIC(int)   gras_socket_my_port  (gras_socket_t sock);
-/** Get the port number on which this socket is connected on remote side */
+/** @brief Get the port number on which this socket is connected on remote side 
+ *
+ * This is the port declared on remote side with the
+ * gras_socket_master() function (if any, or a random number being uniq on 
+ * the remote host). If remote used gras_socket_master() more than once, the 
+ * lastly declared number will be used here.
+ *
+ * Note to BSD sockets experts: With BSD sockets, the sockaddr 
+ * structure allows you to retrieve the port of the client socket on
+ * remote side, but it is of no use (from user perspective, it is
+ * some random number above 6000). That is why GRAS sockets differ
+ * from BSD ones here. 
+ */
+
 XBT_PUBLIC(int)   gras_socket_peer_port(gras_socket_t sock);
 /** Get the host name of the remote side */
 XBT_PUBLIC(char *) gras_socket_peer_name(gras_socket_t sock);
