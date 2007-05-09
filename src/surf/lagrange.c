@@ -1,10 +1,7 @@
 /* 	$Id$	 */
-
 /* Copyright (c) 2007 Arnaud Legrand, Pedro Velho. All rights reserved.     */
-
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 /*
  * Modelling the proportional fairness using the Lagrange Optimization 
  * Approach. For a detailed description see:
@@ -43,7 +40,7 @@ void lagrange_solve(lmm_system_t sys)
   /*
    * Lagrange Variables.
    */
-  int max_iterations= 100;
+  int max_iterations= 10000;
   double epsilon_min_error = 1e-4;
   double dicotomi_min_error = 1e-8;
   double overall_error = 1;
@@ -55,7 +52,6 @@ void lagrange_solve(lmm_system_t sys)
    */
   xbt_swag_t elem_list  = NULL;
   lmm_element_t elem    = NULL;
-
 
   xbt_swag_t cnst_list  = NULL;
   lmm_constraint_t cnst = NULL;
@@ -77,7 +73,6 @@ void lagrange_solve(lmm_system_t sys)
   DEBUG1("#### Minimum error tolerated            : %e", epsilon_min_error);  
   DEBUG1("#### Minimum error tolerated (dicotomi) : %e", dicotomi_min_error);
 
-
   if ( !(sys->modified))
     return;
 
@@ -87,23 +82,24 @@ void lagrange_solve(lmm_system_t sys)
    */
   var_list = &(sys->variable_set);
   i=0;
-  xbt_swag_foreach(var, var_list) {    if((var->bound > 0.0) || (var->weight <= 0.0)){
-    DEBUG1("#### NOTE var(%d) is a boundless variable", i);
-    var->mu = -1.0;
-  } else{ 
-    var->mu =   1.0;
-    var->new_mu = 2.0;
-  }
-  DEBUG2("#### var(%d)->mu :  %e", i, var->mu);
-  DEBUG2("#### var(%d)->weight: %e", i, var->weight);
-  i++;
+  xbt_swag_foreach(var, var_list) {    
+    if((var->bound > 0.0) || (var->weight <= 0.0)){
+      DEBUG1("#### NOTE var(%d) is a boundless variable", i);
+      var->mu = -1.0;
+    } else{ 
+      var->mu =   1.0;
+      var->new_mu = 2.0;
+    }
+    DEBUG2("#### var(%d)->mu :  %e", i, var->mu);
+    DEBUG2("#### var(%d)->weight: %e", i, var->weight);
+    i++;
   }
 
   /* 
    * Initialize lambda.
    */
   cnst_list=&(sys->active_constraint_set); 
-  xbt_swag_foreach(cnst, cnst_list) {
+  xbt_swag_foreach(cnst, cnst_list){
     cnst->lambda = 1.0;
     cnst->new_lambda = 2.0;
     DEBUG2("#### cnst(%p)->lambda :  %e", cnst, cnst->lambda);
@@ -116,7 +112,6 @@ void lagrange_solve(lmm_system_t sys)
    
     iteration++;
     DEBUG1("************** ITERATION %d **************", iteration);    
-
 
     /*                       
      * Compute the value of mu_i
@@ -135,9 +130,8 @@ void lagrange_solve(lmm_system_t sys)
     //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
     xbt_swag_foreach(cnst, cnst_list) {
       cnst->new_lambda = dicotomi(cnst->lambda, partial_diff_lambda, cnst, dicotomi_min_error);
-      if(cnst->new_lambda < 0) cnst->new_lambda = 0;
+      DEBUG2("====> cnst->lambda (%p) = %e", cnst, cnst->new_lambda);      
     }
-
 
     /*                       
      * Update values of mu and lambda
@@ -151,7 +145,6 @@ void lagrange_solve(lmm_system_t sys)
     xbt_swag_foreach(cnst, cnst_list) {
       cnst->lambda = cnst->new_lambda;
     }
-
 
     /*
      * Now computes the values of each variable (\rho) based on
@@ -168,6 +161,10 @@ void lagrange_solve(lmm_system_t sys)
 	  if(var->bound > 0) 
 	    tmp+=var->mu;
 	}
+
+	if(tmp == 0.0)
+	  WARN0("CAUTION: division by 0.0");
+
 	//computes de overall_error
 	if(overall_error < fabs(var->value - 1.0/tmp)){
 	  overall_error = fabs(var->value - 1.0/tmp);
@@ -235,47 +232,65 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
   double min, max;
   double overall_error;
   double middle;
-
+  double min_diff, max_diff, middle_diff;
+  
   min = max = init;
+  min_diff = max_diff = middle_diff = 0.0;
   overall_error = 1;
 
-  //DEBUG0("STARTING DICOTOMI... Debugging, format used [min, max], [D(min),D(max)]");
+  if(diff(0.0, var_cnst) > 0){
+    DEBUG1("====> returning 0.0 (diff = %e)", diff(0.0, var_cnst));
+    return 0.0;
+  }
 
   while(overall_error > min_error){
-    //DEBUG4("====> [%e, %e] , [%e,%e]", min, max, diff(min, var_cnst), diff(max, var_cnst));
+    min_diff = diff(min, var_cnst);
+    max_diff = diff(max, var_cnst);
 
-    if( diff(min, var_cnst) > 0 && diff(max, var_cnst) > 0 ){
+    if( min_diff > 0 && max_diff > 0 ){
       if(min == max){
 	min = min / 2.0;
       }else{
 	max = min;
       }
-    }else if( diff(min, var_cnst) < 0 && diff(max, var_cnst) < 0 ){
+    }else if( min_diff < 0 && max_diff < 0 ){
       if(min == max){
 	max = max * 2.0;
       }else{
 	min = max;
       }
-    }else if( diff(min, var_cnst) < 0 && diff(max, var_cnst) > 0 ){
+    }else if( min_diff < 0 && max_diff > 0 ){
       middle = (max + min)/2.0;
-      
-      if( diff(middle, var_cnst) < 0 ){
+      middle_diff = diff(middle, var_cnst);
+      overall_error = fabs(min - max);
+
+      if( middle_diff < 0 ){
 	min = middle;
-      }else if( diff(middle, var_cnst) > 0 ){
+      }else if( middle_diff > 0 ){
 	max = middle;
       }else{
 	WARN0("Found an optimal solution with 0 error!");
 	overall_error = 0;
+	return middle;
       }
-      overall_error = fabs(min - max);
-    }else{
-      WARN0("The impossible happened, partial_diff(min) >0 && partial_diff(max) < 0");
+
+    }else if(min_diff == 0){
+      return min;
+    }else if(max_diff == 0){
+      return max;
+    }else if(min_diff > 0 && max_diff < 0){
+      WARN0("The impossible happened, partial_diff(min) > 0 && partial_diff(max) < 0");
     }
   }
 
+
+  DEBUG1("====> returning %e", (min+max)/2.0);
   return ((min+max)/2.0);
 }
 
+/*
+ *
+ */
 double partial_diff_mu(double mu, void *param_var){
   double mu_partial=0.0;
   lmm_variable_t var = (lmm_variable_t)param_var;
@@ -290,7 +305,9 @@ double partial_diff_mu(double mu, void *param_var){
   return mu_partial;
 }
 
-
+/*
+ *
+ */
 double partial_diff_lambda(double lambda, void *param_cnst){
 
   double tmp=0.0;
@@ -303,29 +320,44 @@ double partial_diff_lambda(double lambda, void *param_cnst){
 
 
   elem_list = &(cnst->element_set);
+
+
+  DEBUG2("Computting diff of cnst (%p) %s", cnst, (char *)cnst->id);
   
   xbt_swag_foreach(elem, elem_list) {
     var = elem->variable;
     if(var->weight<=0) continue;
     
     tmp = 0;
+
+    DEBUG2("===> Variable (%p) %s", var, (char *)var->id);
+
     for(i=0; i<var->cnsts_number; i++){
       tmp += (var->cnsts[i].constraint)->lambda;
+      DEBUG1("======> lambda %e + ", (var->cnsts[i].constraint)->lambda);
     }
 	
     if(var->bound > 0)
       tmp += var->mu;
     
+
+    DEBUG2("======> lambda - %e + %e ", cnst->lambda, lambda);
+
     tmp = tmp - cnst->lambda + lambda;
     
     //avoid a disaster value of lambda
-    if(tmp==0) lambda_partial = 10e-8;
+    //if(tmp==0) tmp = 10e-8;
     
-    lambda_partial += (-1.0 /tmp);
+    lambda_partial += (-1.0/tmp);
+
+    DEBUG1("======> %e ", (-1.0/tmp));
   }
 
   lambda_partial += cnst->bound;
 
+  DEBUG1("===> %e ", lambda_partial);
+
   return lambda_partial;
 }
   
+ 
