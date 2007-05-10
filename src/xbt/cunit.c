@@ -461,6 +461,10 @@ static void apply_selection(char *selection) {
       enabling = 0;
       memmove(dir,dir+1,strlen(dir));
     }
+    if (dir[0] == '+') {
+      enabling = 1;
+      memmove(dir,dir+1,strlen(dir));
+    }
 
     p =strchr(dir,':');
     if (p) {
