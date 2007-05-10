@@ -335,7 +335,11 @@ is not limitated to the simulator. Once you're done writing your GRAS code,
 you can run your code both in the simulator or on a real platform. For this,
 there is two implementations of the GRAS interface, one for simulation, one
 for real execution. So, you just have to relink your code to chose one of
-both world.
+both world. 
+
+Another difference is that GRAS benefits of a much more comprehensive
+documentation than MSG, largely offsetting its allegated difficulty of
+use (IMHO). A good starting point is the \ref GRAS_tut.
 
 \subsection faq_generic Building a generic simulator
 
