@@ -597,25 +597,8 @@ xbt_dynar_cursor_get(const xbt_dynar_t dynar,
  */
 void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 			  int          * const cursor) {
-  void *dst;
-
-  if (dynar->elmsize > sizeof(void*)) {
-    DEBUG0("Elements too big to fit into a pointer");
-    if (dynar->free_f) {
-      dst=xbt_malloc(dynar->elmsize);
-      xbt_dynar_remove_at(dynar,(*cursor)--,dst);
-      (dynar->free_f)(dst);
-      free(dst);
-    } else {
-      DEBUG0("Ok, we dont care about the element without free function");
-      xbt_dynar_remove_at(dynar,(*cursor)--,NULL);
-    }
-      
-  } else {
-    xbt_dynar_remove_at(dynar,(*cursor)--,&dst);
-    if (dynar->free_f)
-      (dynar->free_f)(dst);
-  }
+  
+  xbt_dynar_remove_at(dynar,(*cursor)--,NULL);
 }
 
 #ifdef SIMGRID_TEST
