@@ -233,15 +233,20 @@ static double share_resources(double now)
 
   xbt_swag_foreach(action, running_actions) {
     if(action->latency>0) {
-      if(min<0) min = action->latency;
-      else if (action->latency<min) min = action->latency;
+      if(min<0) {
+	min = action->latency;
+	DEBUG2("Updating min (value) with %p: %f",action, min);
+      }
+      else if (action->latency<min) {
+	min = action->latency;
+	DEBUG2("Updating min (latency) with %p: %f",action, min);
+      }
     }
   }
 
+  DEBUG1("min value : %f",min);
+
   return min;
-/*   return generic_maxmin_share_resources(surf_workstation_resource->common_public-> */
-/* 					states.running_action_set, */
-/* 					xbt_swag_offset(action, variable)); */
 }
 
 static void update_actions_state(double now, double delta)
