@@ -36,10 +36,11 @@ int main(int argc, char **argv) {
   xbt_init(&argc,argv);
 
   dolog("");
-  dolog("test.thres:info root.thres:info");
-  dolog("test.thres:debug");
-  dolog("test.thres:verbose root.thres:error");
-  dolog("test.thres:critical");
+  dolog(" ");
+  dolog(" test.thres:info root.thres:info  ");
+  dolog(" test.thres:debug ");
+  dolog(" test.thres:verbose root.thres:error ");
+  dolog(" test.thres:critical ");
   
   xbt_exit();
   return 0;
