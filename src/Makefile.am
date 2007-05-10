@@ -123,7 +123,7 @@ COMMON_SRC=\
   \
   xbt/sysdep.c                                                               \
   xbt/asserts.c                                                              \
-  xbt/log.c         xbt/log_default_appender.c                               \
+  xbt/log.c         xbt/xbt_log_appender_file.c xbt/xbt_log_layout_simple.c  \
   xbt/mallocator.c                                                           \
   xbt/dynar.c                                                                \
   xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \

@@ -121,12 +121,12 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libgras_la_LIBADD =
 am__libgras_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	xbt_modinter.h gras_modinter.h xbt/sysdep.c xbt/asserts.c \
-	xbt/log.c xbt/log_default_appender.c xbt/mallocator.c \
-	xbt/dynar.c xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c \
-	xbt/dict_multi.c xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c \
-	xbt/set.c xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c \
-	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c \
-	gras_simix/gras_simix_gras.c \
+	xbt/log.c xbt/xbt_log_appender_file.c \
+	xbt/xbt_log_layout_simple.c xbt/mallocator.c xbt/dynar.c \
+	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
+	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
+	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
+	xbt/cunit.c xbt/graphxml_parse.c gras_simix/gras_simix_gras.c \
 	gras_simix/Transport/gras_simix_transport.c \
 	gras_simix/Transport/gras_simix_transport_private.h \
 	gras_simix/Msg/gras_simix_msg.c \
@@ -187,11 +187,11 @@ am__libgras_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 @USE_SIMIX_FALSE@	cbps.lo datadesc.lo ddt_parse.lo \
 @USE_SIMIX_FALSE@	ddt_parse.yy.lo
 am__objects_3 = snprintf.lo xbt_str.lo ex.lo sysdep.lo asserts.lo \
-	log.lo log_default_appender.lo mallocator.lo dynar.lo dict.lo \
-	dict_elm.lo dict_cursor.lo dict_multi.lo heap.lo fifo.lo \
-	swag.lo graph.lo set.lo xbt_matrix.lo xbt_peer.lo xbt_main.lo \
-	config.lo cunit.lo graphxml_parse.lo $(am__objects_1) \
-	$(am__objects_2)
+	log.lo xbt_log_appender_file.lo xbt_log_layout_simple.lo \
+	mallocator.lo dynar.lo dict.lo dict_elm.lo dict_cursor.lo \
+	dict_multi.lo heap.lo fifo.lo swag.lo graph.lo set.lo \
+	xbt_matrix.lo xbt_peer.lo xbt_main.lo config.lo cunit.lo \
+	graphxml_parse.lo $(am__objects_1) $(am__objects_2)
 am__objects_4 = rl_stubs.lo xbt_thread.lo rl_transport.lo \
 	transport_plugin_file.lo transport_plugin_tcp.lo rl_emul.lo \
 	rl_process.lo rl_time.lo rl_dns.lo rl_msg.lo
@@ -210,12 +210,12 @@ libgras_la_OBJECTS = $(am_libgras_la_OBJECTS)
 libsimgrid_la_LIBADD =
 am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	xbt_modinter.h gras_modinter.h xbt/sysdep.c xbt/asserts.c \
-	xbt/log.c xbt/log_default_appender.c xbt/mallocator.c \
-	xbt/dynar.c xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c \
-	xbt/dict_multi.c xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c \
-	xbt/set.c xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c \
-	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c \
-	gras_simix/gras_simix_gras.c \
+	xbt/log.c xbt/xbt_log_appender_file.c \
+	xbt/xbt_log_layout_simple.c xbt/mallocator.c xbt/dynar.c \
+	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
+	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
+	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
+	xbt/cunit.c xbt/graphxml_parse.c gras_simix/gras_simix_gras.c \
 	gras_simix/Transport/gras_simix_transport.c \
 	gras_simix/Transport/gras_simix_transport_private.h \
 	gras_simix/Msg/gras_simix_msg.c \
@@ -562,12 +562,12 @@ VERSION_INFO = -version-info 1:0:0
 lib_LTLIBRARIES = libsimgrid.la libgras.la
 COMMON_SRC = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c xbt_modinter.h \
 	gras_modinter.h xbt/sysdep.c xbt/asserts.c xbt/log.c \
-	xbt/log_default_appender.c xbt/mallocator.c xbt/dynar.c \
-	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
-	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
-	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
-	xbt/cunit.c xbt/graphxml_parse.c $(am__append_9) \
-	$(am__append_12)
+	xbt/xbt_log_appender_file.c xbt/xbt_log_layout_simple.c \
+	xbt/mallocator.c xbt/dynar.c xbt/dict.c xbt/dict_elm.c \
+	xbt/dict_cursor.c xbt/dict_multi.c xbt/heap.c xbt/fifo.c \
+	xbt/swag.c xbt/graph.c xbt/set.c xbt/xbt_matrix.c \
+	xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c xbt/cunit.c \
+	xbt/graphxml_parse.c $(am__append_9) $(am__append_12)
 RL_SRC = \
   gras/rl_stubs.c                     xbt/xbt_thread.c                    \
   \
@@ -849,7 +849,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/host.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lagrange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_default_appender.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/m_process.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mallocator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maxmin.Plo@am__quote@
@@ -916,6 +915,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transport_plugin_tcp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation_KCCFLN05.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_appender_file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_layout_simple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_matrix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_peer.Plo@am__quote@
@@ -985,12 +986,19 @@ log.lo: xbt/log.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log.lo `test -f 'xbt/log.c' || echo '$(srcdir)/'`xbt/log.c
 
-log_default_appender.lo: xbt/log_default_appender.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT log_default_appender.lo -MD -MP -MF "$(DEPDIR)/log_default_appender.Tpo" -c -o log_default_appender.lo `test -f 'xbt/log_default_appender.c' || echo '$(srcdir)/'`xbt/log_default_appender.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/log_default_appender.Tpo" "$(DEPDIR)/log_default_appender.Plo"; else rm -f "$(DEPDIR)/log_default_appender.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/log_default_appender.c' object='log_default_appender.lo' libtool=yes @AMDEPBACKSLASH@
+xbt_log_appender_file.lo: xbt/xbt_log_appender_file.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_log_appender_file.lo -MD -MP -MF "$(DEPDIR)/xbt_log_appender_file.Tpo" -c -o xbt_log_appender_file.lo `test -f 'xbt/xbt_log_appender_file.c' || echo '$(srcdir)/'`xbt/xbt_log_appender_file.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/xbt_log_appender_file.Tpo" "$(DEPDIR)/xbt_log_appender_file.Plo"; else rm -f "$(DEPDIR)/xbt_log_appender_file.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_log_appender_file.c' object='xbt_log_appender_file.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o log_default_appender.lo `test -f 'xbt/log_default_appender.c' || echo '$(srcdir)/'`xbt/log_default_appender.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_log_appender_file.lo `test -f 'xbt/xbt_log_appender_file.c' || echo '$(srcdir)/'`xbt/xbt_log_appender_file.c
+
+xbt_log_layout_simple.lo: xbt/xbt_log_layout_simple.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_log_layout_simple.lo -MD -MP -MF "$(DEPDIR)/xbt_log_layout_simple.Tpo" -c -o xbt_log_layout_simple.lo `test -f 'xbt/xbt_log_layout_simple.c' || echo '$(srcdir)/'`xbt/xbt_log_layout_simple.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/xbt_log_layout_simple.Tpo" "$(DEPDIR)/xbt_log_layout_simple.Plo"; else rm -f "$(DEPDIR)/xbt_log_layout_simple.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_log_layout_simple.c' object='xbt_log_layout_simple.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_log_layout_simple.lo `test -f 'xbt/xbt_log_layout_simple.c' || echo '$(srcdir)/'`xbt/xbt_log_layout_simple.c
 
 mallocator.lo: xbt/mallocator.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mallocator.lo -MD -MP -MF "$(DEPDIR)/mallocator.Tpo" -c -o mallocator.lo `test -f 'xbt/mallocator.c' || echo '$(srcdir)/'`xbt/mallocator.c; \

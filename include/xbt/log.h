@@ -225,6 +225,7 @@ XBT_PUBLIC(void) xbt_log_control_set(const char* cs);
 
 /* Forward declarations */
 typedef struct xbt_log_appender_s s_xbt_log_appender_t,*xbt_log_appender_t;
+typedef struct xbt_log_layout_s   s_xbt_log_layout_t,  *xbt_log_layout_t;
 typedef struct xbt_log_event_s    s_xbt_log_event_t,   *xbt_log_event_t;
 typedef struct xbt_log_category_s s_xbt_log_category_t,*xbt_log_category_t;
 
@@ -232,22 +233,30 @@ typedef struct xbt_log_category_s s_xbt_log_category_t,*xbt_log_category_t;
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
 struct xbt_log_category_s {
-            xbt_log_category_t parent;
-/*@null@*/  xbt_log_category_t firstChild; 
-/*@null@*/  xbt_log_category_t nextSibling;
-            const char *name;
-            int threshold;
-            int isThreshInherited;
-/*@null@*/  xbt_log_appender_t appender;
-			int willLogToParent;
-  /* TODO: Formats? */
+  xbt_log_category_t parent;
+  xbt_log_category_t firstChild; 
+  xbt_log_category_t nextSibling;
+  const char *name;
+  int threshold;
+  int isThreshInherited;
+  xbt_log_appender_t appender;
+  int additivity;
 };
 
 struct xbt_log_appender_s {
-  void (*do_append) (xbt_log_appender_t thisLogAppender,
-		    xbt_log_event_t event, const char *fmt);
-  void *appender_data;
+  void (*do_append) (xbt_log_appender_t this_appender,
+		     char *event);
+  void (*free_) (xbt_log_appender_t this_);
+  xbt_log_layout_t layout;
+  void *data;
 };
+
+struct xbt_log_layout_s {
+  char *(*do_layout)(xbt_log_layout_t l,
+		     xbt_log_event_t event, const char *fmt);
+  void (*free_) (xbt_log_layout_t l);
+  void *data;
+} ;
 
 struct xbt_log_event_s {
   xbt_log_category_t cat;
@@ -266,7 +275,7 @@ struct xbt_log_event_s {
  * Programatically alters a category's threshold priority (don't use).
  */
 XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat,
-				   e_xbt_log_priority_t thresholdPriority);
+				       e_xbt_log_priority_t thresholdPriority);
 
 /**
  * \ingroup XBT_log_implem  
@@ -283,12 +292,37 @@ XBT_PUBLIC(void) xbt_log_parent_set(xbt_log_category_t cat,
  * \param cat the category (not only its name, but the variable)
  * \param app the appender
  *
- * Programatically sets the category's appender (don't use).
+ * Programatically sets the category's appender.
+ * (the prefered interface is throught xbt_log_control_set())
+ *
  */
 XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat,
-				  xbt_log_appender_t app);
+				      xbt_log_appender_t app);
 
-/* Functions that you shouldn't call. */
+/**
+ * \ingroup XBT_log_implem  
+ * \param cat the category (not only its name, but the variable)
+ * \param additivity whether logging actions must be passed to parent.
+ *
+ * Programatically sets whether the logging actions must be passed to 
+ * the parent category.
+ * (the prefered interface is throught xbt_log_control_set())
+ *
+ */
+XBT_PUBLIC(void) xbt_log_additivity_set(xbt_log_category_t cat,
+					int additivity);
+
+/** @brief create a new simple layout 
+ *
+ * This layout is not as flexible as the pattern one
+ */
+XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_simple_new(void);
+XBT_PUBLIC(xbt_log_appender_t) xbt_log_appender_file_new(xbt_log_layout_t layout);
+
+
+/* ********************************** */
+/* Functions that you shouldn't call  */
+/* ********************************** */
 XBT_PUBLIC(void) _xbt_log_event_log(xbt_log_event_t ev,
 				const char *fmt,
 				...) _XBT_GNUC_PRINTF(2,3);
@@ -302,6 +336,10 @@ extern XBT_IMPORT_NO_EXPORT(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 XBT_LOG_EXTERNAL_CATEGORY(GRAS);
 
 extern xbt_log_appender_t xbt_log_default_appender;
+
+/* ********************** */
+/* Public functions again */
+/* ********************** */
 
 /**
  * \ingroup XBT_log 

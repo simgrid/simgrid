@@ -323,12 +323,13 @@ category performs the following actions:
 
   - if the category has an appender, the message is passed to the
     appender's doAppend() function,
-  - if 'willLogToParent' is true for the category, the message is passed
-    to the category's parent.
+  - if additivity is true for the category (which is the case by
+    default, and can be controlled by xbt_log_additivity_set()), the 
+    message is passed to the category's parent. 
     
-By default, only the root category have an appender, and 'willLogToParent'
-is true for any other category. This situation causes all messages to be
-logged by the root category's appender.
+By default, only the root category have an appender, and any other category has
+its additivity set to true. This causes all messages to be logged by the root
+category's appender.
 
 The default appender function currently prints to stderr, and no other one
 exist, even if more would be needed, like the one able to send the logs to a
@@ -340,6 +341,8 @@ welcome here, too.
 */
 
 
+xbt_log_appender_t xbt_log_default_appender = NULL; /* set in log_init */
+
 typedef struct {
   char *catname;
   e_xbt_log_priority_t thresh;
@@ -348,10 +351,10 @@ typedef struct {
 static xbt_dynar_t xbt_log_settings=NULL;
 
 static void _free_setting(void *s) {
-  xbt_log_setting_t set=(xbt_log_setting_t)s;
+  xbt_log_setting_t set=*(xbt_log_setting_t*)s;
   if (set) {
     free(set->catname);
-    //free(set); /*FIXME: uncommenting this leads to segfault when more than one chunk is passed as gras-log */
+    free(set);
   }
 }
 
@@ -386,34 +389,61 @@ void xbt_log_init(int *argc,char **argv) {
 	int i,j;
 	char *opt;
 	
+	/* create the default appender and install it in the root category,
+	   which were already created (damnit. Too slow little beetle)*/
+	xbt_log_default_appender = 
+	  xbt_log_appender_file_new(xbt_log_layout_simple_new());
+	_XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
+
 	/* Set logs and init log submodule */
 	for (i=1; i<*argc; i++){
-		if (!strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
-			!strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
-			!strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
-			!strncmp(argv[i],"--simix-log=",strlen("--simix-log=")) ||
-			!strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))){
+		if (!strncmp(argv[i],"--log=",strlen("--log=")) ||
+		    !strncmp(argv[i],"--gras-log=",strlen("--gras-log=")) ||
+		    !strncmp(argv[i],"--surf-log=",strlen("--surf-log=")) ||
+		    !strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
+		    !strncmp(argv[i],"--simix-log=",strlen("--simix-log=")) ||
+		    !strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))){
 				
-				opt=strchr(argv[i],'=');
-				opt++;
-				xbt_log_control_set(opt);
-				DEBUG1("Did apply '%s' as log setting",opt);
-				/*remove this from argv*/
-				
-				for (j=i+1; j<*argc; j++){
-					argv[j-1] = argv[j];
-				} 
-				
-				argv[j-1] = NULL;
-				(*argc)--;
-				i--; /* compensate effect of next loop incrementation */
+		  opt=strchr(argv[i],'=');
+		  opt++;
+		  xbt_log_control_set(opt);
+		  DEBUG1("Did apply '%s' as log setting",opt);
+		  /*remove this from argv*/
+		  
+		  for (j=i+1; j<*argc; j++){
+		    argv[j-1] = argv[j];
+		  } 
+		  
+		  argv[j-1] = NULL;
+		  (*argc)--;
+		  i--; /* compensate effect of next loop incrementation */
 		}
 	}
+}
+
+static void log_shutdown_category(xbt_log_category_t cat) {
+  xbt_log_category_t child;
+
+  if (cat->appender) {
+    if (cat->appender->layout) {
+      if (cat->appender->layout->free_)
+	cat->appender->layout->free_(cat->appender->layout);
+      free(cat->appender->layout);
+    }
+    if (cat->appender->free_)
+      cat->appender->free_(cat->appender);
+    free(cat->appender);
+  }
+    
+
+  for(child=cat->firstChild ; child != NULL; child = child->nextSibling) 
+    log_shutdown_category(child);
 }
 
 void xbt_log_exit(void) {
   VERB0("Exiting log");
   xbt_dynar_free(&xbt_log_settings);
+  log_shutdown_category(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
   VERB0("Exited log");
 }
 
@@ -425,10 +455,12 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   while(1) {
     xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
-    	
-      appender->do_append(appender, ev, fmt);
+      
+      char *str= appender->layout->do_layout(appender->layout,
+					     ev, fmt);    
+      appender->do_append(appender, str);
     }
-    if (!cat->willLogToParent)
+    if (!cat->additivity)
       break;
 
     cat = cat->parent;
@@ -476,7 +508,6 @@ int _xbt_log_cat_init(xbt_log_category_t category,
       
       xbt_log_threshold_set(category, setting->thresh);
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
-      free(setting);
 
       if (category->threshold <= xbt_log_priority_debug) {
         _log_ev.cat = category;
@@ -629,7 +660,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
   }
   set->catname=(char*)xbt_malloc(dot - name+1);
     
-  strncpy(set->catname,name,dot-name);
+  memcpy(set->catname,name,dot-name);
   set->catname[dot-name]='\0'; /* Just in case */
   DEBUG1("This is for cat '%s'", set->catname);
   
@@ -661,41 +692,51 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *na
  *
  *    - thres: category's threshold priority. Possible values:
  *             TRACE,DEBUG,VERBOSE,INFO,WARNING,ERROR,CRITICAL
+ *    - add or additivity: whether the logging actions must be passed to 
+ *      the parent category. 
+ *      Possible values: 0, 1, yes, no.
+ *      Default value: yes.
  *             
  */
 void xbt_log_control_set(const char* control_string) {
   xbt_log_setting_t set;
-  char *cs;
-  char *p;
-  int done = 0;
 
-  if (!control_string || control_string[0] == '\0')
+  /* To split the string in commands, and the cursors */
+  xbt_dynar_t set_strings;
+  char *str;
+  int cpt;
+
+  if (!control_string)
     return;
   DEBUG1("Parse log settings '%s'",control_string);
-  if (control_string == NULL)
-    return;
+
+  /* some initialization if this is the first time that this get called */
   if (xbt_log_settings == NULL)
     xbt_log_settings = xbt_dynar_new(sizeof(xbt_log_setting_t),
-				       _free_setting);
+				     _free_setting);
 
-  cs=xbt_strdup(control_string);
+  /* split the string, and remove empty entries */
+  set_strings=xbt_str_split(control_string," ");
+  xbt_dynar_foreach(set_strings,cpt,str) {
+    xbt_str_trim(str,NULL);
+    if (str[0]=='\0') {
+      xbt_dynar_cursor_rm(set_strings,&cpt);
+    }
+  }
 
-  xbt_str_strip_spaces(cs);
+  if (xbt_dynar_length(set_strings) == 0) { /* vicious user! */
+    xbt_dynar_free(&set_strings);
+    return; 
+  }
 
-  while (!done) {
+  /* Parse each entry and either use it right now (if the category was already
+     created), or store it for further use */
+  xbt_dynar_foreach(set_strings,cpt,str) {
     xbt_log_category_t cat=NULL;
     int found=0;
     xbt_ex_t e;
     
-    p=strrchr(cs,' ');
-    if (p) {
-      *p='\0';
-      p++;
-    } else {
-      p=cs;
-      done = 1;
-    }
-    set = _xbt_log_parse_setting(p);
+    set = _xbt_log_parse_setting(str);
 
     TRY {
       cat = _xbt_log_cat_searchsub(&_XBT_LOGV(root),set->catname);
@@ -705,25 +746,27 @@ void xbt_log_control_set(const char* control_string) {
 	RETHROW;
       xbt_ex_free(e);
       found = 0;
-
-      DEBUG0("Store for further application");
-      DEBUG1("push %p to the settings",(void*)set);
-      xbt_dynar_push(xbt_log_settings,&set);
     } 
 
     if (found) {
       DEBUG0("Apply directly");
       xbt_log_threshold_set(cat,set->thresh);
-      _free_setting((void*)set);
-      free(set);
+      _free_setting((void*)&set);
+    } else {
+
+      DEBUG0("Store for further application");
+      DEBUG1("push %p to the settings",(void*)set);
+      xbt_dynar_push(xbt_log_settings,&set);
     }
   }
-  free(cs);
+  xbt_dynar_free(&set_strings);
 } 
 
 void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
-	
   cat->appender = app;
-  
+}
+
+void xbt_log_additivity_set(xbt_log_category_t cat, int additivity) {
+  cat->additivity = additivity;
 }
 
