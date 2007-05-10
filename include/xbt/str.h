@@ -37,7 +37,7 @@ XBT_PUBLIC(void) xbt_str_rtrim(char* s, const char* char_list);
 XBT_PUBLIC(void) xbt_str_ltrim( char* s, const char* char_list);
 XBT_PUBLIC(void) xbt_str_trim(char* s, const char* char_list);
 
-XBT_PUBLIC(xbt_dynar_t) xbt_str_split(char *s, const char *sep);
+XBT_PUBLIC(xbt_dynar_t) xbt_str_split(const char *s, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 
 /* */

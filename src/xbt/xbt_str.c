@@ -196,10 +196,9 @@ xbt_str_strip_spaces(char *s) {
  *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab. 
  */
 
-xbt_dynar_t xbt_str_split(char *s, const char *sep) {
-  char *str=xbt_strdup(s);
+xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char*), free_string);
-  char *p, *q;
+  const char *p, *q;
   int done;
   const char* sep_dflt = " \t\n\r\x0B";
   char is_sep[256] = {1,0};
@@ -216,30 +215,27 @@ xbt_dynar_t xbt_str_split(char *s, const char *sep) {
   is_sep[0] = 1; /* End of string is also separator */
    
   /* Do the job */
-  p=q=str; 
+  p=q=s; 
   done=0;
+
+  if (s[0] == '\0')
+    return res;
+
   while (!done) {
     char *topush;
     while (!is_sep[(unsigned char)*q]) {
       q++;
     }
-    if (*q == '\0') {
-#ifdef UNDEF
-      if (p==q) {
-	/* do not push last empty line */
-	free(str);
-	return res;
-      }
-#endif
+    if (*q == '\0')
       done = 1;
-    } else {
-      *q='\0';
-    }
-    topush=xbt_strdup(p);
+
+    topush=xbt_malloc(q-p+1);
+    memcpy(topush,p,q-p);
+    topush[q - p] = '\0';
     xbt_dynar_push(res,&topush);
     p = ++q;
   }
-  free (str);
+
   return res;
 }
 
