@@ -26,8 +26,8 @@ static void free_string(void *d){
 
 /**  @brief Strip whitespace (or other characters) from the end of a string.
  *
- * This function returns a string with whitespace stripped from the end of s. 
- * By default (without the second parameter char_list), xbt_str_rtrim() will strip these characters :
+ * Strips the whitespaces from the end of s. 
+ * By default (when char_list=NULL), these characters get stripped:
  * 	
  *	- " "		(ASCII 32	(0x20))	space. 
  *	- "\t"		(ASCII 9	(0x09))	tab. 
@@ -36,13 +36,11 @@ static void free_string(void *d){
  *	- "\0"		(ASCII 0	(0x00))	NULL. 
  *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab. 
  *
- * @param s The string to strip.
+ * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
  *
- * @return If the specified is NULL the function returns NULL. Otherwise the
- * function returns the string with whitespace stripped from the end.
  */
-char*
+void
 xbt_str_rtrim(char* s, const char* char_list)
 {
 	char* cur = s;
@@ -50,7 +48,7 @@ xbt_str_rtrim(char* s, const char* char_list)
 	char white_char[256] = {1,0};
 	
 	if(!s)
-		return NULL;
+		return;
 
 	if(!char_list){
 		while(*__char_list) {
@@ -69,13 +67,12 @@ xbt_str_rtrim(char* s, const char* char_list)
 		--cur;
 
 	*++cur = '\0';
-	return s;
 }
 
 /**  @brief Strip whitespace (or other characters) from the beginning of a string.
  *
- * This function returns a string with whitespace stripped from the beginning of s. 
- * By default (without the second parameter char_list), xbt_str_ltrim() will strip these characters :
+ * Strips the whitespaces from the begining of s.
+ * By default (when char_list=NULL), these characters get stripped:
  * 	
  *	- " "		(ASCII 32	(0x20))	space. 
  *	- "\t"		(ASCII 9	(0x09))	tab. 
@@ -84,13 +81,11 @@ xbt_str_rtrim(char* s, const char* char_list)
  *	- "\0"		(ASCII 0	(0x00))	NULL. 
  *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab. 
  *
- * @param s The string to strip.
+ * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
  *
- * @return If the specified is NULL the function returns NULL. Otherwise the
- * function returns the string with whitespace stripped from the beginning.
  */
-char*
+void
 xbt_str_ltrim( char* s, const char* char_list)
 {
 	char* cur = s;
@@ -98,7 +93,7 @@ xbt_str_ltrim( char* s, const char* char_list)
 	char white_char[256] = {1,0};
 	
 	if(!s)
-		return NULL;
+		return;
 
 	if(!char_list){
 		while(*__char_list) {
@@ -113,13 +108,13 @@ xbt_str_ltrim( char* s, const char* char_list)
 	while(*cur && white_char[(unsigned char)*cur])
 		++cur;
 
-	return memmove(s,cur, strlen(cur));
+	memmove(s,cur, strlen(cur));
 }
 
 /**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
  *
- * This returns a string with whitespace stripped from the end and the begining of s. 
- * By default (without the second parameter char_list), xbt_str_trim() will strip these characters :
+ * Strips the whitespaces from both the beginning and the end of s.
+ * By default (when char_list=NULL), these characters get stripped:
  * 	
  *	- " "		(ASCII 32	(0x20))	space. 
  *	- "\t"		(ASCII 9	(0x09))	tab. 
@@ -131,16 +126,15 @@ xbt_str_ltrim( char* s, const char* char_list)
  * @param s The string to strip.
  * @param char_list A string which contains the characters you want to strip.
  *
- * @return If the specified is NULL the function returns NULL. Otherwise the
- * function returns the string with whitespace stripped from the end and the begining.
  */
-char* 
+void
 xbt_str_trim(char* s, const char* char_list ){
 	
 	if(!s)
-		return NULL;
+		return;
 		
-    return xbt_str_ltrim(xbt_str_rtrim(s,char_list),char_list);
+    xbt_str_rtrim(s,char_list);
+    xbt_str_ltrim(s,char_list);
 }
 
 /**  @brief Replace double whitespaces (but no other characters) from the string.
