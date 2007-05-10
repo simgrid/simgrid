@@ -20,7 +20,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf, "Logging specific to SURF (lagrange)");
 
-
 /*
  * Local prototypes to implement the lagrangian optimization with optimal step, also called dicotomi.
  */
@@ -34,7 +33,6 @@ double partial_diff_mu      (double mu, void * param_var);
 double partial_diff_lambda  (double lambda, void * param_cnst);
 
 
-
 void lagrange_solve(lmm_system_t sys)
 {
   /*
@@ -44,7 +42,6 @@ void lagrange_solve(lmm_system_t sys)
   double epsilon_min_error = 1e-4;
   double dicotomi_min_error = 1e-8;
   double overall_error = 1;
-
 
   /*
    * Variables to manipulate the data structure proposed to model the maxmin
@@ -58,7 +55,6 @@ void lagrange_solve(lmm_system_t sys)
   
   xbt_swag_t var_list   = NULL;
   lmm_variable_t var    = NULL;
-
 
   /*
    * Auxiliar variables.
@@ -121,6 +117,7 @@ void lagrange_solve(lmm_system_t sys)
       if((var->bound >= 0) && (var->weight > 0) ){
 	var->new_mu = dicotomi(var->mu, partial_diff_mu, var, dicotomi_min_error);
 	if(var->new_mu < 0) var->new_mu = 0;
+	var->mu = var->new_mu;
       }
     }
 
@@ -131,20 +128,22 @@ void lagrange_solve(lmm_system_t sys)
     xbt_swag_foreach(cnst, cnst_list) {
       cnst->new_lambda = dicotomi(cnst->lambda, partial_diff_lambda, cnst, dicotomi_min_error);
       DEBUG2("====> cnst->lambda (%p) = %e", cnst, cnst->new_lambda);      
-    }
-
-    /*                       
-     * Update values of mu and lambda
-     */
-    //forall mu_i in mu_1, mu_2, ..., mu_n
-    xbt_swag_foreach(var, var_list) {
-      var->mu = var->new_mu ;
-    }
-  
-    //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
-    xbt_swag_foreach(cnst, cnst_list) {
       cnst->lambda = cnst->new_lambda;
     }
+
+
+/*     /\*                        */
+/*      * Update values of mu and lambda */
+/*      *\/ */
+/*     //forall mu_i in mu_1, mu_2, ..., mu_n */
+/*     xbt_swag_foreach(var, var_list) { */
+/*       var->mu = var->new_mu ; */
+/*     } */
+  
+/*     //forall lambda_i in lambda_1, lambda_2, ..., lambda_n */
+/*     xbt_swag_foreach(cnst, cnst_list) { */
+/*       cnst->lambda = cnst->new_lambda; */
+/*     } */
 
     /*
      * Now computes the values of each variable (\rho) based on
@@ -193,7 +192,6 @@ void lagrange_solve(lmm_system_t sys)
     }
   
   }
-
   
   //verify the KKT property of each flow
   xbt_swag_foreach(var, var_list){
@@ -207,7 +205,6 @@ void lagrange_solve(lmm_system_t sys)
     }
 
   }
-
 
   if(overall_error <= epsilon_min_error){
     DEBUG1("The method converge in %d iterations.", iteration);
@@ -235,6 +232,11 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
   double min_diff, max_diff, middle_diff;
   
   min = max = init;
+
+  if(init == 0){
+    min = max = 1;
+  }
+
   min_diff = max_diff = middle_diff = 0.0;
   overall_error = 1;
 
@@ -243,9 +245,15 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
     return 0.0;
   }
 
+  DEBUG0("====> not detected positive diff in 0");
+
   while(overall_error > min_error){
+
     min_diff = diff(min, var_cnst);
     max_diff = diff(max, var_cnst);
+
+    DEBUG2("DICOTOMI ===> min = %e , max = %e", min, max);
+    DEBUG2("DICOTOMI ===> diffmin = %e , diffmax = %e", min_diff, max_diff);
 
     if( min_diff > 0 && max_diff > 0 ){
       if(min == max){
@@ -330,18 +338,18 @@ double partial_diff_lambda(double lambda, void *param_cnst){
     
     tmp = 0;
 
-    DEBUG2("===> Variable (%p) %s", var, (char *)var->id);
+    //DEBUG2("===> Variable (%p) %s", var, (char *)var->id);
 
     for(i=0; i<var->cnsts_number; i++){
       tmp += (var->cnsts[i].constraint)->lambda;
-      DEBUG1("======> lambda %e + ", (var->cnsts[i].constraint)->lambda);
+      //DEBUG1("======> lambda %e + ", (var->cnsts[i].constraint)->lambda);
     }
 	
     if(var->bound > 0)
       tmp += var->mu;
     
 
-    DEBUG2("======> lambda - %e + %e ", cnst->lambda, lambda);
+    //DEBUG2("======> lambda - %e + %e ", cnst->lambda, lambda);
 
     tmp = tmp - cnst->lambda + lambda;
     
@@ -350,12 +358,12 @@ double partial_diff_lambda(double lambda, void *param_cnst){
     
     lambda_partial += (-1.0/tmp);
 
-    DEBUG1("======> %e ", (-1.0/tmp));
+    //DEBUG1("======> %e ", (-1.0/tmp));
   }
 
   lambda_partial += cnst->bound;
 
-  DEBUG1("===> %e ", lambda_partial);
+  //DEBUG1("===> %e ", lambda_partial);
 
   return lambda_partial;
 }
