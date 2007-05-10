@@ -31,6 +31,7 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(xbt_thread_t) xbt_thread_create(pvoid_f_pvoid_t start_routine,void* param);
   XBT_PUBLIC(void) xbt_thread_exit(int *retcode);
   XBT_PUBLIC(xbt_thread_t) xbt_thread_self(void);
+  /* xbt_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
   XBT_PUBLIC(void) xbt_thread_join(xbt_thread_t thread,void ** thread_return);
   XBT_PUBLIC(void) xbt_thread_yield(void);
 
