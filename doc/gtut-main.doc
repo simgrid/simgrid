@@ -40,6 +40,12 @@ This section constitutes a tutorial to the GRAS programming environment.
      - \ref GRAS_tut_tour_exchangecb
    - Part 4: Advanced topics (TODO)
 
+ - \ref GRAS_howto :\n
+   This section contains some self-contained document explaining one
+   aspect of the framework which would be hard to integrate in the
+   suite of lessons composing the tutorial.
+    - \ref GRAS_howto_design
+
     \htmlonly <!-- 
       DOXYGEN_NAVBAR_LABEL="Tutorial"
       DOXYGEN_NAVBAR_CHILD "What is GRAS"=GRAS_tut_intro.html
