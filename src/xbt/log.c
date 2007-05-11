@@ -421,7 +421,7 @@ void xbt_log_init(int *argc,char **argv) {
 	}
 }
 
-static void log_shutdown_category(xbt_log_category_t cat) {
+static void log_cat_exit(xbt_log_category_t cat) {
   xbt_log_category_t child;
 
   if (cat->appender) {
@@ -437,13 +437,13 @@ static void log_shutdown_category(xbt_log_category_t cat) {
     
 
   for(child=cat->firstChild ; child != NULL; child = child->nextSibling) 
-    log_shutdown_category(child);
+    log_cat_exit(child);
 }
 
 void xbt_log_exit(void) {
   VERB0("Exiting log");
   xbt_dynar_free(&xbt_log_settings);
-  log_shutdown_category(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
+  log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
   VERB0("Exited log");
 }
 
@@ -455,7 +455,7 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   while(1) {
     xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
-      
+      xbt_assert1(appender->layout,"No valid layout for the appender of category %s",cat->name);
       char *str= appender->layout->do_layout(appender->layout,
 					     ev, fmt);    
       appender->do_append(appender, str);
