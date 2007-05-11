@@ -65,8 +65,11 @@ gras_socket_t gras_trp_select(double timeout) {
 
 		if (sock_iter->meas || !sock_iter->outgoing)
 			continue;
+			/*
 		if ((sock_iter->peer_port == active_socket->port) && 
 				(((gras_trp_sg_sock_data_t*)sock_iter->data)->to_host == SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)active_socket->data)->from_process))) {
+				*/
+		if ( (((gras_trp_sg_sock_data_t*)sock_iter->data)->to_socket == active_socket) && (((gras_trp_sg_sock_data_t*)sock_iter->data)->to_host == SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)active_socket->data)->from_process)) ) {
 			SIMIX_mutex_unlock(pd->mutex);
 			return sock_iter;
 		}
@@ -87,8 +90,8 @@ gras_socket_t gras_trp_select(double timeout) {
 
 	res->port = -1;
 
-	/* unitialize the ports */
-	res->peer_port = active_socket->port;
+	/* initialize the ports */
+	//res->peer_port = active_socket->port;
 	res->port = active_socket->peer_port;
 
 	/* create sockdata */
@@ -96,6 +99,13 @@ gras_socket_t gras_trp_select(double timeout) {
 	sockdata->from_process = SIMIX_process_self();
 	sockdata->to_process   = ((gras_trp_sg_sock_data_t*)(active_socket->data))->from_process;
 	
+	res->peer_port = ((gras_trp_procdata_t)gras_libdata_by_name_from_remote("gras_trp",sockdata->to_process))->myport;
+	sockdata->to_socket = active_socket;
+	/*update the peer to_socket  variable */
+	((gras_trp_sg_sock_data_t*)active_socket->data)->to_socket = res;
+	sockdata->cond = SIMIX_cond_init();
+	sockdata->mutex = SIMIX_mutex_init();
+
 	sockdata->to_host  = SIMIX_process_get_host(((gras_trp_sg_sock_data_t*)(active_socket->data))->from_process);
 
 	res->data = sockdata;

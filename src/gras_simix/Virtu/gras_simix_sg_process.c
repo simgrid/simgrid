@@ -19,7 +19,6 @@ static long int PID = 1;
 
 void
 gras_process_init() {
-	int i;
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   gras_procdata_t *pd=xbt_new0(gras_procdata_t,1);
   gras_trp_procdata_t trp_pd;
@@ -34,11 +33,6 @@ gras_process_init() {
     hd=xbt_new(gras_hostdata_t,1);
     hd->refcount = 1;
     hd->ports = xbt_dynar_new(sizeof(gras_sg_portrec_t),NULL);
-
-		for (i=0;i<65536;i++) {
-			hd->cond_port[i] =NULL;
-			hd->mutex_port[i] =NULL;
-		}
 		SIMIX_host_set_data(SIMIX_host_self(),(void*)hd);
   } else {
     hd->refcount++;
@@ -63,7 +57,6 @@ gras_process_init() {
 
 void
 gras_process_exit() {
-	int i;
 	xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
   gras_socket_t sock_iter;
   int cursor;
@@ -97,14 +90,6 @@ gras_process_exit() {
 	}
   if ( ! --(hd->refcount)) {
     xbt_dynar_free(&hd->ports);
-		for (i=0; i<65536; i++) {
-			if(hd->mutex_port[i] != NULL) {
-				SIMIX_mutex_destroy(hd->mutex_port[i]);
-				SIMIX_cond_destroy(hd->cond_port[i]);
-				hd->mutex_port[i] = NULL;
-				hd->cond_port[i] = NULL;
-			}
-		}
     free(hd);
   }
   gras_procdata_exit();

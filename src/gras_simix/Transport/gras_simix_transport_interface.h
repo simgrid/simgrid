@@ -108,8 +108,7 @@ typedef struct {
 	xbt_fifo_t active_socket;
 	long int pid;
 	long int ppid;
-  //int chan;    /* Formated messages channel */
-  //int measChan; /* Unformated echange channel for performance measurement*/
+
    
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 

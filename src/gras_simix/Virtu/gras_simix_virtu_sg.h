@@ -14,19 +14,18 @@
 #include "xbt/dynar.h"
 //#include "msg/msg.h" /* SimGrid header */
 #include "simix/simix.h" /* SimGrid header */
+#include "gras_simix/Transport/gras_simix_transport_private.h"
 
 typedef struct {
   int port;  /* list of ports used by a server socket */
 	int meas;   /* (boolean) the channel is for measurements or for messages */
 	smx_process_t process;
+	gras_socket_t socket;
 } gras_sg_portrec_t;
 
 /* Data for each host */
 typedef struct {
   int refcount;
-
-	smx_cond_t cond_port[65536];
-	smx_mutex_t mutex_port[65536];
 
   xbt_dynar_t ports;
 
@@ -41,6 +40,9 @@ typedef struct {
 
   smx_host_t to_host;   /* Who's on other side */
 
+	smx_cond_t cond;
+	smx_mutex_t mutex;
+	gras_socket_t to_socket;
 } gras_trp_sg_sock_data_t;
 
 

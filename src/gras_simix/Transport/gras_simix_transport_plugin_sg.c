@@ -97,10 +97,8 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 
   smx_host_t peer;
   gras_hostdata_t *hd;
-  gras_hostdata_t *local_hd;
   gras_trp_sg_sock_data_t *data;
   gras_sg_portrec_t pr;
-	int i;
 
   /* make sure this socket will reach someone */
   if (!(peer=SIMIX_host_get_by_name(sock->peer_name))) 
@@ -139,16 +137,10 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
 	data->to_process	 = pr.process;
   data->to_host      = peer;
 
-	/* searches for a free port on this host */
-	local_hd = (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
-	for (i=1;i<65536;i++) {
-		if (local_hd->cond_port[i] == NULL)
-			break;
-	}
-	if (i == 65536) THROW0(system_error,0,"No port free");
-	sock->port = i;
-	local_hd->cond_port[i] = SIMIX_cond_init();
-	local_hd->mutex_port[i] = SIMIX_mutex_init();
+	/* initialize mutex and condition of the socket */
+	data->mutex = SIMIX_mutex_init();
+	data->cond = SIMIX_cond_init();
+	data->to_socket = pr.socket; 
 
   sock->data = data;
   sock->incoming = 1;
@@ -163,7 +155,6 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 			       gras_socket_t sock){
 
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
-  //gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
   gras_sg_portrec_t pr;
   gras_trp_sg_sock_data_t *data;
   volatile int found;
@@ -193,11 +184,9 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 
   pr.port   = sock->port;
   pr.meas    = sock->meas;
+	pr.socket = sock;
 	pr.process = SIMIX_process_self();
   xbt_dynar_push(hd->ports,&pr);
-
-	hd->cond_port[sock->port] = SIMIX_cond_init();
-	hd->mutex_port[sock->port] = SIMIX_mutex_init();
   
   /* Create the socket */
   data = xbt_new(gras_trp_sg_sock_data_t,1);
@@ -205,6 +194,9 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
   data->to_process       = NULL;
 	data->to_host      = SIMIX_host_self();
   
+	data->cond = SIMIX_cond_init();
+	data->mutex = SIMIX_mutex_init();
+
   sock->data = data;
 
   VERB6("'%s' (%ld) ears on %s:%d%s (%p)",
@@ -214,10 +206,6 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 }
 
 void gras_trp_sg_socket_close(gras_socket_t sock){
-	xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
-	gras_socket_t sock_iter;
-	int cursor;
-	int found;
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
   int cpt;
   gras_sg_portrec_t pr; 
@@ -228,25 +216,11 @@ void gras_trp_sg_socket_close(gras_socket_t sock){
 
   xbt_assert0(hd,"Please run gras_process_init on each process");
 
-  if (sock->data)
-    free(sock->data);
-
-	/* search for a socket in the list that is using the mutex and condition. It can happen because we create 2 sockets to communicate (incomming and outgoing) */
-	found = 0;
-	xbt_dynar_foreach(sockets,cursor,sock_iter) {
-		if (sock_iter->port == sock->port) {
-			found = 1;
-			break;
-		}
+  if (sock->data) {
+  	SIMIX_cond_destroy(((gras_trp_sg_sock_data_t*)sock->data)->cond);
+		SIMIX_mutex_destroy(((gras_trp_sg_sock_data_t*)sock->data)->mutex);
+		free(sock->data);
 	}
-	/* if not found, it is the last socket opened in this port and we can free the mutex and condition */
-	if (!found) {
-		SIMIX_cond_destroy(hd->cond_port[sock->port]);
-		hd->cond_port[sock->port] = NULL;
-		SIMIX_mutex_destroy(hd->mutex_port[sock->port]);
-		hd->mutex_port[sock->port] = NULL;
-	}
-
 
   if (sock->incoming && !sock->outgoing && sock->port >= 0) {
     /* server mode socket. Unregister it from 'OS' tables */
@@ -285,6 +259,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
 
 	smx_action_t act; /* simix action */
 	gras_trp_sg_sock_data_t *sock_data; 
+	gras_trp_sg_sock_data_t *remote_sock_data; 
 	gras_hostdata_t *hd;
 	gras_hostdata_t *remote_hd;
 	gras_trp_procdata_t trp_remote_proc;
@@ -292,6 +267,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
 	gras_msg_t msg; /* message to send */
 
 	sock_data = (gras_trp_sg_sock_data_t *)sock->data;
+	remote_sock_data = ((gras_trp_sg_sock_data_t *)sock->data)->to_socket->data;
 	hd = (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
 	remote_hd = (gras_hostdata_t *)SIMIX_host_get_data(sock_data->to_host);
 
@@ -319,9 +295,11 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
 	trp_remote_proc = (gras_trp_procdata_t)gras_libdata_by_name_from_remote("gras_trp",sock_data->to_process);
 	SIMIX_cond_signal(trp_remote_proc->cond);
 
-	SIMIX_mutex_lock(remote_hd->mutex_port[sock->peer_port]);
+	SIMIX_mutex_lock(remote_sock_data->mutex);
+	//SIMIX_mutex_lock(remote_hd->mutex_port[sock->peer_port]);
 	/* wait for the receiver */
-	SIMIX_cond_wait(remote_hd->cond_port[sock->peer_port], remote_hd->mutex_port[sock->peer_port]);
+	SIMIX_cond_wait(remote_sock_data->cond,remote_sock_data->mutex);
+	//SIMIX_cond_wait(remote_hd->cond_port[sock->peer_port], remote_hd->mutex_port[sock->peer_port]);
 
 	/* creates simix action and waits its ends, waits in the sender host condition*/
   DEBUG5("send chunk %s from %s to  %s:%d (size=%ld)",
@@ -329,18 +307,26 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
 	 SIMIX_host_get_name(sock_data->to_host), sock->peer_port,size);
 
 	act = SIMIX_action_communicate(sock_data->to_host, SIMIX_host_self(),name, size, -1);
+	/*
 	SIMIX_register_action_to_condition(act,remote_hd->cond_port[sock->peer_port]);
 	SIMIX_register_condition_to_action(act,remote_hd->cond_port[sock->peer_port]);
+	*/
+	SIMIX_register_action_to_condition(act,remote_sock_data->cond);
+	SIMIX_register_condition_to_action(act,remote_sock_data->cond);
 
 	SIMIX_host_get_name(sock_data->to_host),SIMIX_process_get_name(sock_data->to_process),
 	
-	SIMIX_cond_wait(remote_hd->cond_port[sock->peer_port], remote_hd->mutex_port[sock->peer_port]);
+	SIMIX_cond_wait(remote_sock_data->cond,remote_sock_data->mutex);
+	//SIMIX_cond_wait(remote_hd->cond_port[sock->peer_port], remote_hd->mutex_port[sock->peer_port]);
 	/* error treatmeant */
 
 	/* cleanup structures */
 	SIMIX_action_destroy(act);
-	SIMIX_mutex_unlock(remote_hd->mutex_port[sock->peer_port]);
-	SIMIX_cond_signal(remote_hd->cond_port[sock->peer_port]);
+
+	SIMIX_mutex_unlock(remote_sock_data->mutex);
+	//SIMIX_mutex_unlock(remote_hd->mutex_port[sock->peer_port]);
+	SIMIX_cond_signal(remote_sock_data->cond);
+	//SIMIX_cond_signal(remote_hd->cond_port[sock->peer_port]);
 				/*
   m_task_t task=NULL;
   char name[256];
@@ -400,12 +386,15 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
 
   msg_got = xbt_fifo_shift(msg_procdata->msg_to_receive_queue);
 
-	SIMIX_mutex_lock(local_hd->mutex_port[sock->port]);
+	SIMIX_mutex_lock(sock_data->mutex);
+	//SIMIX_mutex_lock(local_hd->mutex_port[sock->port]);
 /* ok, I'm here, you can continue the communication */
-	SIMIX_cond_signal(local_hd->cond_port[sock->port]);
+	SIMIX_cond_signal(sock_data->cond);
+	//SIMIX_cond_signal(local_hd->cond_port[sock->port]);
 
 /* wait for communication end */
-	SIMIX_cond_wait(local_hd->cond_port[sock->port],local_hd->mutex_port[sock->port]);
+	SIMIX_cond_wait(sock_data->cond,sock_data->mutex);
+	//SIMIX_cond_wait(local_hd->cond_port[sock->port],local_hd->mutex_port[sock->port]);
 
 
   if (msg_got->payl_size != size)
@@ -420,9 +409,13 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
 	if (msg_got->payl)
 		xbt_free(msg_got->payl);	
 	xbt_free(msg_got);
+	SIMIX_cond_wait(sock_data->cond,sock_data->mutex);
+	SIMIX_mutex_unlock(sock_data->mutex);
+	//SIMIX_mutex_unlock(local_hd->mutex_port[sock->port]);
+	/*
 	SIMIX_cond_wait(local_hd->cond_port[sock->port],local_hd->mutex_port[sock->port]);
 	SIMIX_mutex_unlock(local_hd->mutex_port[sock->port]);
-
+	*/
 					/*
   gras_trp_procdata_t pd=(gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
 
