@@ -235,11 +235,13 @@ static double share_resources(double now)
     if(action->latency>0) {
       if(min<0) {
 	min = action->latency;
-	DEBUG2("Updating min (value) with %p: %f",action, min);
+	DEBUG3("Updating min (value) with %p (start %f): %f",action, 
+	       action->generic_action.start, min);
       }
       else if (action->latency<min) {
 	min = action->latency;
-	DEBUG2("Updating min (latency) with %p: %f",action, min);
+	DEBUG3("Updating min (latency) with %p (start %f): %f",action, 
+	       action->generic_action.start, min);
       }
     }
   }
