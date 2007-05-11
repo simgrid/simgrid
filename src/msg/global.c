@@ -497,6 +497,7 @@ MSG_error_t MSG_clean(void)
   }
   msg_config_finalize();
   free(msg_global);
+  msg_global = NULL;
   surf_exit();
 
   return MSG_OK;
