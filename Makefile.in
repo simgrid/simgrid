@@ -46,8 +46,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure \
 	$(top_srcdir)/testsuite/gras/trp_file_usage.in \
 	$(top_srcdir)/testsuite/gras/trp_tcp_usage.in AUTHORS COPYING \
-	ChangeLog INSTALL NEWS TODO compile config.guess config.sub \
-	depcomp install-sh ltmain.sh missing
+	ChangeLog INSTALL NEWS TODO config.guess config.sub depcomp \
+	install-sh ltmain.sh missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acmacro/ac_func_snprintf.m4 \
@@ -379,34 +379,34 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	tags=; \
-	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
-	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	if test -z "$(ETAGS_ARGS)$$tags$$unique"; then :; else \
-	  test -n "$$unique" || unique=$$empty_fix; \
-	  $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	    $$tags $$unique; \
-	fi
+@MAINTAINER_MODE_FALSE@TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+@MAINTAINER_MODE_FALSE@		$(TAGS_FILES) $(LISP)
+@MAINTAINER_MODE_FALSE@	tags=; \
+@MAINTAINER_MODE_FALSE@	here=`pwd`; \
+@MAINTAINER_MODE_FALSE@	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
+@MAINTAINER_MODE_FALSE@	  include_option=--etags-include; \
+@MAINTAINER_MODE_FALSE@	  empty_fix=.; \
+@MAINTAINER_MODE_FALSE@	else \
+@MAINTAINER_MODE_FALSE@	  include_option=--include; \
+@MAINTAINER_MODE_FALSE@	  empty_fix=; \
+@MAINTAINER_MODE_FALSE@	fi; \
+@MAINTAINER_MODE_FALSE@	list='$(SUBDIRS)'; for subdir in $$list; do \
+@MAINTAINER_MODE_FALSE@	  if test "$$subdir" = .; then :; else \
+@MAINTAINER_MODE_FALSE@	    test ! -f $$subdir/TAGS || \
+@MAINTAINER_MODE_FALSE@	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
+@MAINTAINER_MODE_FALSE@	  fi; \
+@MAINTAINER_MODE_FALSE@	done; \
+@MAINTAINER_MODE_FALSE@	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
+@MAINTAINER_MODE_FALSE@	unique=`for i in $$list; do \
+@MAINTAINER_MODE_FALSE@	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+@MAINTAINER_MODE_FALSE@	  done | \
+@MAINTAINER_MODE_FALSE@	  $(AWK) '    { files[$$0] = 1; } \
+@MAINTAINER_MODE_FALSE@	       END { for (i in files) print i; }'`; \
+@MAINTAINER_MODE_FALSE@	if test -z "$(ETAGS_ARGS)$$tags$$unique"; then :; else \
+@MAINTAINER_MODE_FALSE@	  test -n "$$unique" || unique=$$empty_fix; \
+@MAINTAINER_MODE_FALSE@	  $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+@MAINTAINER_MODE_FALSE@	    $$tags $$unique; \
+@MAINTAINER_MODE_FALSE@	fi
 ctags: CTAGS
 CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
@@ -754,6 +754,9 @@ gramine:
 @MAINTAINER_MODE_TRUE@	       -a "From: Arnaud.Legrand@imag.fr" \
 @MAINTAINER_MODE_TRUE@	       -s "New version of SimGrid ($$ver)" \
 @MAINTAINER_MODE_TRUE@	       simgrid-user@lists.gforge.inria.fr
+
+@MAINTAINER_MODE_TRUE@TAGS:
+@MAINTAINER_MODE_TRUE@	etags -o ./TAGS `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` 
 
 @MAINTAINER_MODE_TRUE@splint:
 @MAINTAINER_MODE_TRUE@	splint `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
