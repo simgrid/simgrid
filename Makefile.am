@@ -106,6 +106,9 @@ mail:
 	       -s "New version of SimGrid ($$ver)" \
 	       simgrid-user@lists.gforge.inria.fr
 
+TAGS:
+	etags -o ./TAGS `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` 
+
 splint:
 	splint `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
 	       +matchanyintegral -warnposix +boolint \
