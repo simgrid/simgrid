@@ -66,32 +66,52 @@ sub pidcolor {
     return $coltab[$pid{$pid}];
 }
 
+sub print_line {
+    my($host,$procname,$pid,$date,$location,$xbt_channel,$message)=@_;
+
+    print $col_norm;
+    printf "[% 10.3f]",$date;
+
+    print pidcolor($pid);
+
+    if(defined($location)) {
+	printf "[%10s:%-10s %s ]",$host,$procname,$location;
+    } else {
+	printf "[%10s:%-10s]",$host,$procname;
+    }
+    print " $message";
+    print $col_norm."\n";
+}
+
 # Read the messages and do the job
 while (<>) {
     $orgline = $thisline = $_;
 
-    if ( $thisline =~ /^\[([^:]+):([^:]+):\((\d+)\) ([\d\.]*)\] ([^\[]*) \[([^\[]*)\] (.*)$/ ) {
+    # Typical line  [Gatien:slave:(9) 11.243148] msg/gos.c:137: [msg_gos/DEBUG] Action terminated
+    if ($thisline =~ /^\[([^:]+):([^:]+):\((\d+)\) ([\d\.]*)\] ([^\[]*) \[([^\[]*)\] (.*)$/) {
 	$host=$1;
 	$procname=$2;
 	$pid=$3;
 	$date=$4;
-	$location=$5;
+	if($opt_print_location) {
+	    $location=$5;
+	    $location =~ s/:$//;
+	} else {
+	    $location = undef;
+	}
 	$xbt_channel=$6;
 	$message=$7;
 
-	$location =~ s/:$//;
-
-	print $col_norm;
-	printf "[% 10.3f]",$date;
-
-	print pidcolor($pid);
-	if($opt_print_location) {
-	    printf "[%10s:%-10s %s ]",$host,$procname,$location;
-	} else {
-	    printf "[%10s:%-10s]",$host,$procname;
-	}
-	print " $message";
-	print $col_norm."\n";
+	print_line($host,$procname,$pid,$date,$location,$xbt_channel,$message);
+    # Typical line  [Boivin:slave:(2) 9.269357] [pmm/INFO] ROW: step(2)<>myrow(0). Receive data from TeX
+    } elsif ($thisline =~ /^\[([^:]+):([^:]+):\((\d+)\) ([\d\.]*)\] \[([^\[]*)\] (.*)$/) {
+	$host=$1;
+	$procname=$2;
+	$pid=$3;
+	$date=$4;
+	$xbt_channel=$5;
+	$message=$6;
+	print_line($host,$procname,$pid,$date,undef,$xbt_channel,$message);
     } elsif ( $thisline =~ /^==(\d+)== (.*)$/) {
 	# take care of valgrind outputs
 	print pidcolor($1)."$2\n";
