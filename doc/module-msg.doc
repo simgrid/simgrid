@@ -10,7 +10,7 @@
    - \ref msg_easier_life
    - \ref msg_simulation
 
-  \section MSG_examples Examples of use
+  \section MSG_examples Examples of MSG
  
    - \ref MSG_ex_master_slave
 */
