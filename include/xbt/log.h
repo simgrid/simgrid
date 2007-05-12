@@ -87,7 +87,7 @@ typedef enum {
 #endif /* !defined(NLOG) */
 
 /* Transforms a category name to a global variable name. */
-#define _XBT_LOGV(cat)   _XBT_LOG_CONCAT(_gras_this_log_category_does_not_exist__, cat)
+#define _XBT_LOGV(cat)   _XBT_LOG_CONCAT(_simgrid_this_log_category_does_not_exist__, cat)
 #define _XBT_LOG_CONCAT(x,y) x ## y
 
 /* The root of the category hierarchy. */
