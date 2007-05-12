@@ -2,6 +2,109 @@
 
 \htmlinclude .FAQ.doc.toc
 
+\section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
+
+You are at the right place... Having a look to these
+<a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">slides</a>
+(or to these
+<a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
+may give you some insights on what SimGrid can help you to do and what
+are its limitations. Then you definitely should read the \ref
+MSG_examples. There is also a mailing list: <simgrid-user@lists.gforge.inria.fr>.
+
+\subsection faq_interfaces What is the difference between MSG, SimDag, and GRAS? Do they serve the same purpose?
+
+It depend on how you define "purpose", I guess ;)
+
+They all allow you to build a prototype of application which you can run
+within the simulator afterward. They all share the same simulation kernel,
+which is the core of the SimGrid project. They differ by the way you express
+your application.
+
+With SimDag, you express your code as a collection of interdependent
+parallel tasks. So, in this model, applications can be seen as a DAG of
+tasks. 
+
+With both GRAS and MSG, your application is seen as a set of communicating
+processes, exchanging data by the way of messages and performing computation
+on their own.
+
+The difference between both is that MSG is somehow easier to use, but GRAS
+is not limitated to the simulator. Once you're done writing your GRAS code,
+you can run your code both in the simulator or on a real platform. For this,
+there is two implementations of the GRAS interface, one for simulation, one
+for real execution. So, you just have to relink your code to chose one of
+both world. 
+
+\subsection faq_generic First steps with SimGrid
+
+If you decide to go for the MSG interface, please read carefully the
+\ref MSG_examples. You'll find in \ref MSG_ex_master_slave a very
+simple consisting of a master (that owns a bunch of tasks and
+distributes them) , some slaves (that process tasks whenever they
+receive one) and some forwarder agents (that simply pass the tasks
+they receive to some slaves).
+
+If you decide to go for the GRAS interface, you should definitively
+read the \ref GRAS_tut. The first section constitutes an introduction
+to the tool and presents the model we use. The second section
+constitutes a complete step-by-step tutorial building a distributed
+application from the begining and exemplifying most of the GRAS
+features in the process. The last section groups some HOWTOS
+highlighting a given feature of the framework in a more concise way.
+
+If you decide to go for another interface, I'm afraid your only sources
+of information will be the source code and the mailing lists...
+
+\subsection faq_visualization Visualizing and analyzing the results
+
+It is sometime convenient to "see" how the agents are behaving. If you
+like colors, you can use <tt>tools/MSG_visualization/colorize.pl </tt>
+as a filter to your MSG outputs. It works directly with INFO. Beware,
+INFO() prints on stderr. Do not forget to redirect if you want to
+filter (e.g. with bash): 
+\verbatim 
+./msg_test small_platform.xml small_deployment.xml 2>&1 | ../../tools/MSG_visualization/colorize.pl
+\endverbatim
+
+We also have a more graphical output. Have a look at MSG_paje_output(). It 
+generates an input to <a href="http://www-id.imag.fr/Logiciels/paje/">Paje</a>.
+<center>
+\htmlonly
+ <a href="Paje_MSG_screenshot.jpg"><img src="Paje_MSG_screenshot_thn.jpg"></a>
+\endhtmlonly
+</center>
+
+Vizualization with Paje can be seen as a kind of postmortem
+analysis. However, as soon as you start playing with big simulations,
+you'll realize that processing such output is kind of tricky. There is
+so much generic informations that it is hard to find the information
+you are looking for.
+
+As a matter of fact, loging really depends on simulations (e.g. what
+kind of events is important...). That is why we do not propose a big
+dump of your whole simulation (it would slow everything down) but give
+you neat tools to structure you logs. Have a look at \ref XBT_log. In
+fact, rather than a post-mortem analysis, you may want to do it on the
+fly. The process you are running can do whatever you want. Have you
+thought about adding a global structure where you directly compute the
+informations that are really important rather than writing everything
+down and then processing huge files ?
+
+\subsection faq_C Argh! Do I really have to code in C ?
+
+Up until now, there is no binding for other languages. If you use C++,
+you should be able to use the SimGrid library as a standard C library
+and everything should work fine (simply <i>link</i> against this
+library; recompiling SimGrid with a C++ compiler won't work and it
+wouldn't help if you could).
+
+In fact, we are currently working on Java bindings of MSG to allow
+all the undergrad students of the world to use this tool. This is a
+little more tricky than I would have expected, but the work is moving
+fast forward [2006/05/13]. More languages are evaluated, but for now,
+we do not feel a real demand for any other language. Please speak up!
+
 \section faq_installation Installing the SimGrid library
 
 Many people have been asking me questions on how to use SimGrid. Quite
@@ -27,7 +130,7 @@ make install
 \endverbatim
 
 If at some point, something fails, check the section "\ref
-faq_compil_trouble". If it does not help, you can report this problem to the
+faq_trouble_compil". If it does not help, you can report this problem to the
 list but, please, avoid sending a laconic mail like "There is a problem. Is it
 okay?". Send the config.log file which is automatically generated by
 configure. Try to capture both the standard output and the error output of the
@@ -303,111 +406,9 @@ Nowadays, functions get automatically exported, so we don't need to load our
 header files with tons of __declspec(dllexport) cruft. We only need to do so
 for data, but there is no public data in SimGrid so we are good.
 
-\section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
+\section faq_howto Feature related questions
 
-You are at the right place... Having a look to these
-<a href="http://graal.ens-lyon.fr/~alegrand/articles/slides_g5k_simul.pdf">slides</a>
-(or to these
-<a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
-may give you some insights on what SimGrid can help you to do and what
-are its limitations. Then you definitely should read the \ref
-MSG_examples. There is also a mailing list: <simgrid-user@lists.gforge.inria.fr>.
-
-\subsection faq_interfaces What is the difference between MSG, SimDag, and GRAS? Do they serve the same purpose?
-
-It depend on how you define "purpose", I guess ;)
-
-They all allow you to build a prototype of application which you can run
-within the simulator afterward. They all share the same simulation kernel,
-which is the core of the SimGrid project. They differ by the way you express
-your application.
-
-With SimDag, you express your code as a collection of interdependent
-parallel tasks. So, in this model, applications can be seen as a DAG of
-tasks. 
-
-With both GRAS and MSG, your application is seen as a set of communicating
-processes, exchanging data by the way of messages and performing computation
-on their own.
-
-The difference between both is that MSG is somehow easier to use, but GRAS
-is not limitated to the simulator. Once you're done writing your GRAS code,
-you can run your code both in the simulator or on a real platform. For this,
-there is two implementations of the GRAS interface, one for simulation, one
-for real execution. So, you just have to relink your code to chose one of
-both world. 
-
-Another difference is that GRAS benefits of a much more comprehensive
-documentation than MSG, largely offsetting its allegated difficulty of
-use (IMHO). A good starting point is the \ref GRAS_tut.
-
-\subsection faq_generic Building a generic simulator
-
-Please read carefully the \ref MSG_examples. You'll find in \ref
-MSG_ex_master_slave a very simple consisting of a master (that owns a bunch of
-tasks and distributes them) , some slaves (that process tasks whenever
-they receive one) and some forwarder agents (that simply pass the
-tasks they receive to some slaves).
-
-\subsection faq_visualization Visualizing the schedule
-
-It is sometime convenient to "see" how the agents are behaving. If you
-like colors, you can use <tt>tools/MSG_visualization/colorize.pl </tt>
-as a filter to your MSG outputs. It works directly with INFO. Beware,
-INFO() prints on stderr. Do not forget to redirect if you want to
-filter (e.g. with bash): 
-\verbatim 
-./msg_test small_platform.xml small_deployment.xml 2>&1 | ../../tools/MSG_visualization/colorize.pl
-\endverbatim
-
-We also have a more graphical output. Have a look at MSG_paje_output(). It 
-generates an input to <a href="http://www-id.imag.fr/Logiciels/paje/">Paje</a>.
-<center>
-\htmlonly
- <a href="Paje_MSG_screenshot.jpg"><img src="Paje_MSG_screenshot_thn.jpg"></a>
-\endhtmlonly
-</center>
-
-\subsection faq_postmortem_analysis Online/postmortem analysis
-
-Vizualization with Paje can be seen as a kind of postmortem
-analysis. However, as soon as you start playing with big simulations,
-you'll realize that processing such output is kind of tricky. There is
-so much generic informations that it is hard to find the information
-you are looking for.
-
-As a matter of fact, loging really depends on simulations (e.g. what
-kind of events is important...). That is why we do not propose a big
-dump of your whole simulation (it would slow everything down) but give
-you neat tools to structure you logs. Have a look at \ref XBT_log. In
-fact, rather than a post-mortem analysis, you may want to do it on the
-fly. The process you are running can do whatever you want. Have you
-thought about adding a global structure where you directly compute the
-informations that are really important rather than writing everything
-down and then processing huge files ?
-
-\subsection faq_C Argh! Do I really have to code in C ?
-
-Up until now, there is no binding for other languages. If you use C++,
-you should be able to use the SimGrid library as a standard C library
-and everything should work fine (simply <i>link</i> against this
-library; recompiling SimGrid with a C++ compiler won't work and it
-wouldn't help if you could).
-
-In fact, the bindings needed to allow one to use SimGrid from Perl,
-Python, Java, etc. are double-layered.  The first layer would allow
-you to call for example the MSG_task_get_name(task) function while
-what you really want is a proper object wrapping allowing you to call
-task->name(). That's the purpose of the second layer.  The first one
-is granted with C++ but can be done with tools like 
-<a href="www.swig.org/">swig</a> for other languages like Perl, Ruby,
-Python, CAML. None of us really need the second one (which is a bit
-more demanding and cannot be automatically generated) yet and there is
-no real point in doing the first one without the second. :)
-
-As usual, you're welcome to participate.
-
-\section faq_MIA How to ....? Is there a function in the API to simply ....?
+\subsection faq_MIA "Could you please add (your favorite feature here) to SimGrid?"
 
 Here is the deal. The whole SimGrid project (MSG, SURF, GRAS, ...) is
 meant to be kept as simple and generic as possible. We cannot add
@@ -428,7 +429,9 @@ You'll find in this section a few "Missing In Action" features. Many
 people have asked about it and we have given hints on how to simply do
 it with MSG. Feel free to contribute...
 
-\subsection faq_MIA_examples I want some more complex examples!
+\subsection faq_MIA_MSG MSG features
+
+\subsubsection faq_MIA_examples I want some more complex MSG examples!
 
 Many people have come to ask me a more complex example and each time,
 they have realized afterward that the basics were in the previous three
@@ -451,7 +454,7 @@ tried to document the examples so that they are understandable. Tell
 us if something is not clear and once again feel free to participate!
 :)
 
-\subsection faq_MIA_taskdup Missing in action: Task duplication/replication
+\subsubsection faq_MIA_taskdup Missing in action: MSG Task duplication/replication
 
 There is no task duplication in MSG. When you create a task, you can
 process it or send it somewhere else. As soon as a process has sent
@@ -476,7 +479,7 @@ and MSG_task_get_data().
 You could use a dictionnary (#xbt_dict_t) of dynars (#xbt_dynar_t). If
 you still don't see how to do it, please come back to us...
 
-\subsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
+\subsubsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
 
 Up until now, there is no asynchronous communications in MSG. However,
 you can create as many process as you want so you should be able to do
@@ -485,7 +488,7 @@ some asynchronous communications at low cost (creating thousands of
 process only to handle communications may be problematic in term of
 performance at some point). I'll add it in the distribution asap.
 
-\subsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
+\subsubsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
 
 You obviously cannot use pthread_mutexes of pthread_conds. The best
 thing would be to propose similar structures. Unfortunately, we
@@ -494,7 +497,7 @@ MSG_process_suspend() and MSG_process_resume(). You can even do some
 synchronization with fake communications (using MSG_task_get(),
 MSG_task_put() and MSG_task_Iprobe()).
 
-\subsection faq_MIA_host_load Where is the get_host_load function hidden in MSG?
+\subsubsection faq_MIA_host_load Where is the get_host_load function hidden in MSG?
 
 There is no such thing because its semantic wouldn't be really
 clear. Of course, it is something about the amount of host throughput,
@@ -539,7 +542,7 @@ Of course, it may not match your personal definition of "host load". In this
 case, please detail what you mean on the mailing list, and we will extend
 this FAQ section to fit your taste if possible.
 
-\subsection faq_MIA_communication_time How can I get the *real* communication time ?  
+\subsubsection faq_MIA_communication_time How can I get the *real* communication time ?  
 
 Communications are synchronous and thus if you simply get the time
 before and after a communication, you'll only get the transmission
@@ -575,47 +578,9 @@ int receiver()
 }
 \endverbatim
 
-\subsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid ?
+\subsection faq_MIA_SimDag SimDag related questions
 
-No, there is no native support for batch schedulers and none is
-planned because this is a very specific need (and doing it in a
-generic way is thus very hard). However some people have implemented
-their own batch schedulers. Vincent Garonne wrote one during his PhD
-and put his code in the contrib directory of our CVS so that other can
-keep working on it. You may find inspinring ideas in it.
-
-\subsection faq_MIA_checkpointing I need a checkpointing thing
-
-Actually, it depends on whether you want to checkpoint the simulation, or to
-simulate checkpoints. 
-
-The first one could help if your simulation is a long standing process you
-want to keep running even on hardware issues. It could also help to
-<i>rewind</i> the simulation by jumping sometimes on an old checkpoint to
-cancel recent calculations.\n 
-Unfortunately, such thing will probably never exist in SG. One would have to
-duplicate all data structures because doing a rewind at the simulator level
-is very very hard (not talking about the malloc free operations that might
-have been done in between). Instead, you may be interested in the Libckpt
-library (http://www.cs.utk.edu/~plank/plank/www/libckpt.html). This is the
-checkpointing solution used in the condor project, for example. It makes it
-easy to create checkpoints (at the OS level, creating something like core
-files), and rerunning them on need.
-
-If you want to simulate checkpoints instead, it means that you want the
-state of an executing task (in particular, the progress made towards
-completion) to be saved somewhere.  So if a host (and the task executing on
-it) fails (cf. #MSG_HOST_FAILURE), then the task can be restarted
-from the last checkpoint.\n
-
-Actually, such a thing does not exists in SimGrid either, but it's just
-because we don't think it is fundamental and it may be done in the user code
-at relatively low cost. You could for example use a watcher that
-periodically get the remaining amount of things to do (using
-MSG_task_get_remaining_computation()), or fragment the task in smaller
-subtasks.
-
-\section faq_SG Where has SG disappeared?!?
+\subsubsection faq_SG Where has SG disappeared?!?
 
 OK, it's time to explain what's happening to the SimGrid project. Let's
 start with a little bit of history.
@@ -720,7 +685,7 @@ support DAG of parallel tasks as well as complex communications
 patterns. Some old codes using SG are currently under rewrite using
 \ref SD_API to check that all needful functions are provided.
 
-\subsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
+\subsubsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
 
 Distributed is somehow "contagious". If you start making distributed
 decisions, there is no way to handle DAGs directly anymore (unless I
@@ -752,9 +717,107 @@ If you decide that the distributed part is not that much important and that
 DAG is really the level of abstraction you want to work with, then you should
 give a try to \ref SD_API.
 
-\section faq_dynamic Dynamic resources and platform building
+\subsection faq_MIA_generic Generic features
 
-\subsection faq_platform Building a realistic platform
+\subsubsection faq_more_processes Increasing the amount of simulated processes
+
+Here are a few tricks you can apply if you want to increase the amount
+of processes in your simulations.
+
+ - <b>A few thousands of simulated processes</b> (soft tricks)\n
+   SimGrid can use either pthreads library or the UNIX98 contextes. On
+   most systems, the number of pthreads is limited and then your
+   simulation may be limited for a stupid reason. This is especially
+   true with the current linux pthreads, and I cannot get more than
+   2000 simulated processes with pthreads on my box. The UNIX98
+   contexts allow me to raise the limit to 25,000 simulated processes
+   on my laptop.\n\n
+   The <tt>--with-context</tt> option of the <tt>./configure</tt>
+   script allows you to choose between UNIX98 contextes
+   (<tt>--with-context=ucontext</tt>) and the pthread version
+   (<tt>--with-context=pthread</tt>). The default value is ucontext
+   when the script detect a working UNIX98 context implementation. On
+   Windows boxes, the provided value is discarded and an adapted
+   version is picked up.\n\n
+   We experienced some issues with contextes on some rare systems
+   (solaris 8 and lower or old alpha linuxes comes to mind). The main
+   problem is that the configure script detect the contextes as being
+   functional when it's not true. If you happen to use such a system,
+   switch manually to the pthread version, and provide us with a good
+   patch for the configure script so that it is done automatically ;)
+
+ - <b>Hundred thousands of simulated processes</b> (hard-core tricks)\n 
+   As explained above, SimGrid can use UNIX98 contextes to represent
+   and handle the simulated processes. Thanks to this, the main
+   limitation to the number of simulated processes becomes the
+   available memory.\n\n
+   Here are some tricks I had to use in order to run a token ring
+   between 25,000 processes on my laptop (1Gb memory, 1.5Gb swap).\n
+   - First of all, make sure your code runs for a few hundreds
+     processes before trying to push the limit. Make sure it's
+     valgrind-clean, ie that valgrind does not report neither memory
+     error nor memory leaks. Indeed, numerous simulated processes
+     result in *fat* simulation hindering debugging.
+   - It was really boring to write 25,000 entries in the deployment
+     file, so I wrote a little script
+     <tt>examples/gras/tokenS/make_deployment.pl</tt>, which you may
+     want to adapt to your case. You could also think about hijacking
+     the SURFXML parser (have look at \ref faq_flexml_bypassing).
+   - The deployment file became quite big, so I had to do what is in
+     the FAQ entry \ref faq_flexml_limit
+   - Each UNIX98 context has its own stack entry. As debugging this is
+     quite hairly, the default value is a bit overestimated so that
+     user don't get into trouble about this. You want to tune this
+     size to increse the number of processes. This is the
+     <tt>STACK_SIZE</tt> define in 
+     <tt>src/xbt/context_private.h</tt>, which is 128kb by default.
+     Reduce this as much as you can, but be warned that if this value
+     is too low, you'll get a segfault. The token ring example, which
+     is quite simple, runs with 40kb stacks.
+
+\subsubsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid ?
+
+No, there is no native support for batch schedulers and none is
+planned because this is a very specific need (and doing it in a
+generic way is thus very hard). However some people have implemented
+their own batch schedulers. Vincent Garonne wrote one during his PhD
+and put his code in the contrib directory of our CVS so that other can
+keep working on it. You may find inspinring ideas in it.
+
+\subsubsection faq_MIA_checkpointing I need a checkpointing thing
+
+Actually, it depends on whether you want to checkpoint the simulation, or to
+simulate checkpoints. 
+
+The first one could help if your simulation is a long standing process you
+want to keep running even on hardware issues. It could also help to
+<i>rewind</i> the simulation by jumping sometimes on an old checkpoint to
+cancel recent calculations.\n 
+Unfortunately, such thing will probably never exist in SG. One would have to
+duplicate all data structures because doing a rewind at the simulator level
+is very very hard (not talking about the malloc free operations that might
+have been done in between). Instead, you may be interested in the Libckpt
+library (http://www.cs.utk.edu/~plank/plank/www/libckpt.html). This is the
+checkpointing solution used in the condor project, for example. It makes it
+easy to create checkpoints (at the OS level, creating something like core
+files), and rerunning them on need.
+
+If you want to simulate checkpoints instead, it means that you want the
+state of an executing task (in particular, the progress made towards
+completion) to be saved somewhere.  So if a host (and the task executing on
+it) fails (cf. #MSG_HOST_FAILURE), then the task can be restarted
+from the last checkpoint.\n
+
+Actually, such a thing does not exists in SimGrid either, but it's just
+because we don't think it is fundamental and it may be done in the user code
+at relatively low cost. You could for example use a watcher that
+periodically get the remaining amount of things to do (using
+MSG_task_get_remaining_computation()), or fragment the task in smaller
+subtasks.
+
+\subsection faq_platform Platform building and Dynamic resources
+
+\subsubsection faq_platform Building a realistic platform
 
 We can speak more than an hour on this subject and we still do not have
 the right answer, just some ideas. You can read the following
@@ -763,7 +826,7 @@ It may give you some hints. You can also have a look at the
 <tt>tools/platform_generation/</tt> directory. There is a perl-script
 we use to annotate a Tiers generated platform.
 
-\subsection faq_SURF_dynamic How can I have variable resource availability?
+\subsubsection faq_SURF_dynamic Building a dynamic platform, with resource availability?
 
 A nice feature of SimGrid is that it enables you to seamlessly have
 resources whose availability change over time. When you build a
@@ -819,7 +882,7 @@ latency_file and state_file. The only difference with CPUs is that
 bandwidth_file and latency_file do not express fraction of available
 power but are expressed directly in bytes per seconds and seconds.
 
-\subsection faq_flexml_bypassing How can I have some C functions do what the platform file does?
+\subsubsection faq_flexml_bypassing Bypassing the XML parser with your own C functions
 
 So you want to bypass the XML files parser, uh? Maybe doin some parameter
 sweep experiments on your simulations or so? This is possible, but it's not
@@ -889,65 +952,11 @@ Then, tell SimGrid that you want to use your own "parser" instead of the stock o
 
 An example of this trick is distributed in the file examples/msg/msg_test_surfxml_bypassed.c
 
-\section faq_limits Pushing the limits
-
-\subsection faq_context_1000 I want thousands of simulated processes
-
-SimGrid can use either pthreads library or the UNIX98 contextes. On most
-systems, the number of pthreads is limited and then your simulation may be
-limited for a stupid reason. This is especially true with the current linux
-pthreads, and I cannot get more than 2000 simulated processes with pthreads
-on my box. The UNIX98 contexts allow me to raise the limit to 25,000
-simulated processes on my laptop.
-
-The <tt>--with-context</tt> option of the <tt>./configure</tt> script allows
-you to choose between UNIX98 contextes (<tt>--with-context=ucontext</tt>)
-and the pthread version ( (<tt>--with-context=pthread</tt>). The default
-value is ucontext when the script detect a working UNIX98 context
-implementation. On Windows boxes, the provided value is discarded and an
-adapted version is picked up.
-
-We experienced some issues with contextes on some rare systems (solaris 8
-and lower or old alpha linuxes comes to mind). The main problem is that the
-configure script detect the contextes as being functional when it's not
-true. If you happen to use such a system, switch manually to the pthread
-version, and provide us with a good patch for the configure script so that
-it is done automatically ;)
-
-\subsection faq_context_10000 I want hundred thousands of simulated processes
-
-As explained above, SimGrid can use UNIX98 contextes to represent and handle
-the simulated processes. Thanks to this, the main limitation to the number
-of simulated processes becomes the available memory. 
-
-Here are some tricks I had to use in order to run a token ring between
-25,000 processes on my laptop (1Gb memory, 1.5Gb swap).
-
- - First of all, make sure your code runs for a few hundreds processes
-   before trying to push the limit. Make sure it's valgrind-clean, ie that
-   valgrind does not report neither memory error nor memory leaks. Indeed,
-   numerous simulated processes result in *fat* simulation hindering debugging.
-
- - It was really boring to write 25,000 entries in the deployment file, so I wrote 
-   a little script <tt>examples/gras/tokenS/make_deployment.pl</tt>, which you may
-   want to adapt to your case. You could also think about hijacking
-   the SURFXML parser (have look at \ref faq_flexml_bypassing).
-
- - The deployment file became quite big, so I had to do what is in the FAQ
-   entry \ref faq_flexml_limit
-
- - Each UNIX98 context has its own stack entry. As debugging this is quite 
-   hairly, the default value is a bit overestimated so that user don't get 
-   into trouble about this. You want to tune this size to increse the number 
-   of processes. This is the <tt>STACK_SIZE</tt> define in 
-   <tt>src/xbt/context_private.h</tt>, which is 128kb by default.
-   Reduce this as much as you can, but be warned that if this value is too 
-   low, you'll get a segfault. The token ring example, which is quite simple, 
-   runs with 40kb stacks.
-
 \section faq_troubleshooting Troubleshooting
 
-\subsection faq_compil_trouble ./configure fails!
+\subsection faq_trouble_compil Compilation and installation problems
+
+\subsubsection faq_trouble_config ./configure fails!
 
 We now only one reason for the configure to fail:
 
@@ -958,9 +967,10 @@ We now only one reason for the configure to fail:
 If you experience other kind of issue, please get in touch with us. We are
 always interested in improving our portability to new systems.
 
-\subsection faq_distcheck_fails Dude! "make check" fails on my machine!
+\subsubsection faq_trouble_distcheck Dude! "make check" fails on my machine!
 
-Don't assume we never run this target, because we do. Really. Promise!
+Don't assume we never run this target, because we do. Check
+http://bob.loria.fr:8010 if you don't believe us.
 
 There is several reasons which may cause the make check to fail on your
 machine:
@@ -971,16 +981,11 @@ machine:
    libc, but it's quite undertested. For example, some (old) versions of the
    glibc on alpha do not implement these functions, but provide the stubs
    (which return ENOSYS: not implemented). It fools our detection mecanism
-   and leads to segfaults.\n
-   On some x86_64, the pointer to function is stored into a integer, but int
-   are 32bits only on this arch while pointers are 64bits. Our detection
-   mecanism also fails to detect the problem, which leads to segfaults.\n
-   In both cases, there is not much we can do to fix the bug. We are working
-   on a workaround for x86_64 machines, but in the meanwhile, you can
-   compile with --with-context=pthread to avoid ucontext completely. You'll
-   be a bit more limitated in the number of simulated processes you can start
-   concurently, but 5000 processes is still enough for most purposes, isn't
-   it?\n
+   and leads to segfaults. There is not much we can do to fix the bug.
+   A workaround is to compile with --with-context=pthread to avoid
+   ucontext completely. You'll be a bit more limitated in the number
+   of simulated processes you can start concurently, but 5000
+   processes is still enough for most purposes, isn't it?\n
    This limitation is the reason why we insist on using this piece of ...
    software even if it's so troublesome.\n
    <b>=> use --with-pthread on AMD64 architecture that do not have an 
@@ -988,92 +993,19 @@ machine:
    
  - <b>There is a bug in SimGrid we aren't aware of</b>.\n
    If none of the above apply, please drop us a mail on the mailing list so
-   that we can check it out.
+   that we can check it out. Make sure to read \ref faq_bugrepport
+   before you do so.
 
-\subsection faq_longjmp longjmp madness in valgrind
+\subsection faq_trouble_errors Understanding error messages
 
-This is when valgrind starts complaining about longjmp things, just like:
+\subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
 
-\verbatim ==21434== Conditional jump or move depends on uninitialised value(s)
-==21434==    at 0x420DBE5: longjmp (longjmp.c:33)
-==21434==
-==21434== Use of uninitialised value of size 4
-==21434==    at 0x420DC3A: __longjmp (__longjmp.S:48)
-\endverbatim
+This is because you are using the log mecanism, but you didn't created
+any default category in this file. You should refer to \ref XBT_log
+for all the details, but you simply forgot to call one of
+XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
 
-or even when it reports scary things like:
-
-\verbatim ==24023== Warning: client switching stacks?  SP change: 0xBE3FF618 --> 0xBE7FF710
-x86->IR: unhandled instruction bytes: 0xF4 0xC7 0x83 0xD0
-==24023==          to suppress, use: --max-stackframe=4194552 or greater
-==24023== Your program just tried to execute an instruction that Valgrind
-==24023== did not recognise.  There are two possible reasons for this.
-==24023== 1. Your program has a bug and erroneously jumped to a non-code
-==24023==    location.  If you are running Memcheck and you just saw a
-==24023==    warning about a bad jump, it's probably your program's fault.
-==24023== 2. The instruction is legitimate but Valgrind doesn't handle it,
-==24023==    i.e. it's Valgrind's fault.  If you think this is the case or
-==24023==    you are not sure, please let us know.
-==24023== Either way, Valgrind will now raise a SIGILL signal which will
-==24023== probably kill your program.
-==24023==
-==24023== Process terminating with default action of signal 4 (SIGILL)
-==24023==  Illegal opcode at address 0x420D234
-==24023==    at 0x420D234: abort (abort.c:124)
-\endverbatim
-
-This is the sign that you didn't used the exception mecanism well. Most
-probably, you have a <tt>return;</tt> somewhere within a <tt>TRY{}</tt>
-block. This is <b>evil</b>, and you must not do this. Did you read the section
-about \ref XBT_ex??
-
-\subsection faq_valgrind Valgrind spits tons of errors!
-
-It may happen that valgrind, the memory debugger beloved by any decent C
-programmer, spits tons of warnings like the following :
-\verbatim ==8414== Conditional jump or move depends on uninitialised value(s)
-==8414==    at 0x400882D: (within /lib/ld-2.3.6.so)
-==8414==    by 0x414EDE9: (within /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
-==8414==    by 0x414F937: _dl_open (in /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x4150F4C: (within /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
-==8414==    by 0x415102D: __libc_dlopen_mode (in /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x412D6B9: backtrace (in /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x8076446: xbt_dictelm_get_ext (dict_elm.c:714)
-==8414==    by 0x80764C1: xbt_dictelm_get (dict_elm.c:732)
-==8414==    by 0x8079010: xbt_cfg_register (config.c:208)
-==8414==    by 0x806821B: MSG_config (msg_config.c:42)
-\endverbatim
-
-This problem is somewhere in the libc when using the backtraces and there is
-very few things we can do ourselves to fix it. Instead, here is how to tell
-valgrind to ignore the error. Add the following to your ~/.valgrind.supp (or
-create this file on need). Make sure to change the obj line according to
-your personnal mileage (change 2.3.6 to the actual version you are using,
-which you can retrieve with a simple "ls /lib/ld*.so").
-
-\verbatim {
-   name: Backtrace madness
-   Memcheck:Cond
-   obj:/lib/ld-2.3.6.so
-   fun:dl_open_worker
-   fun:_dl_open
-   fun:do_dlopen
-   fun:dlerror_run
-   fun:__libc_dlopen_mode
-}\endverbatim
-
-Then, you have to specify valgrind to use this suppression file by passing
-the <tt>--suppressions=$HOME/.valgrind.supp</tt> option on the command line.
-You can also add the following to your ~/.bashrc so that it gets passed
-automatically. Actually, it passes a bit more options to valgrind, and this
-happen to be my personnal settings. Check the valgrind documentation for
-more information.
-
-\verbatim export VALGRIND_OPTS="--leak-check=yes --leak-resolution=high --num-callers=40 --tool=memcheck --suppressions=$HOME/.valgrind.supp" \endverbatim
-
-\subsection faq_flexml_limit I get the message "surf_parse_lex: Assertion `next&lt;limit' failed."
+\subsubsection faq_flexml_limit "surf_parse_lex: Assertion `next limit' failed."
 
 This is because your platform file is too big for the parser. 
 
@@ -1120,7 +1052,7 @@ such a crude usage of FleXML. So, we now have to repare the bypassing
 functionnality to use the lastest FleXML version and fix the memory usage in
 SimGrid.
 
-\subsection faq_gras_transport GRAS spits networking error messages
+\subsubsection faq_trouble_gras_transport GRAS spits networking error messages
 
 Gras, on real platforms, naturally use regular sockets to communicate. They
 are deeply hiden in the gras abstraction, but when things go wrong, you may
@@ -1160,7 +1092,107 @@ reason:
    before the client get a chance to read them (use gras_os_sleep() to delay
    the server), or the server died awfully before the client got the data.
 
-\subsection faq_deadlock There is a deadlock !!!
+\subsubsection faq_trouble_errors_big_fat_warning I'm told that my XML files are too old.
+
+We have decided to change the units in SimGrid. Now we use Bytes, Flops and
+seconds instead of MBytes, MFlops and seconds... Units should be updated
+accordingly and the version of platform_description should be set to a
+valuer greater than 1:
+\verbatim
+  <platform_description version="1">
+\endverbatim
+You should try to use the surfxml_update.pl script that can be found
+<a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/platform_generation/?cvsroot=cvsroot%2Fsimgrid">here</a>.
+
+\subsection faq_trouble_valgrind Valgrind-related issues
+
+If you don't, you really should use valgrind to debug your code, it's
+almost magic.
+
+\subsubsection faq_trouble_vg_longjmp longjmp madness in valgrind
+
+This is when valgrind starts complaining about longjmp things, just like:
+
+\verbatim ==21434== Conditional jump or move depends on uninitialised value(s)
+==21434==    at 0x420DBE5: longjmp (longjmp.c:33)
+==21434==
+==21434== Use of uninitialised value of size 4
+==21434==    at 0x420DC3A: __longjmp (__longjmp.S:48)
+\endverbatim
+
+or even when it reports scary things like:
+
+\verbatim ==24023== Warning: client switching stacks?  SP change: 0xBE3FF618 --> 0xBE7FF710
+x86->IR: unhandled instruction bytes: 0xF4 0xC7 0x83 0xD0
+==24023==          to suppress, use: --max-stackframe=4194552 or greater
+==24023== Your program just tried to execute an instruction that Valgrind
+==24023== did not recognise.  There are two possible reasons for this.
+==24023== 1. Your program has a bug and erroneously jumped to a non-code
+==24023==    location.  If you are running Memcheck and you just saw a
+==24023==    warning about a bad jump, it's probably your program's fault.
+==24023== 2. The instruction is legitimate but Valgrind doesn't handle it,
+==24023==    i.e. it's Valgrind's fault.  If you think this is the case or
+==24023==    you are not sure, please let us know.
+==24023== Either way, Valgrind will now raise a SIGILL signal which will
+==24023== probably kill your program.
+==24023==
+==24023== Process terminating with default action of signal 4 (SIGILL)
+==24023==  Illegal opcode at address 0x420D234
+==24023==    at 0x420D234: abort (abort.c:124)
+\endverbatim
+
+This is the sign that you didn't used the exception mecanism well. Most
+probably, you have a <tt>return;</tt> somewhere within a <tt>TRY{}</tt>
+block. This is <b>evil</b>, and you must not do this. Did you read the section
+about \ref XBT_ex??
+
+\subsubsection faq_trouble_vg_libc Valgrind spits tons of errors about backtraces!
+
+It may happen that valgrind, the memory debugger beloved by any decent C
+programmer, spits tons of warnings like the following :
+\verbatim ==8414== Conditional jump or move depends on uninitialised value(s)
+==8414==    at 0x400882D: (within /lib/ld-2.3.6.so)
+==8414==    by 0x414EDE9: (within /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
+==8414==    by 0x414F937: _dl_open (in /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x4150F4C: (within /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
+==8414==    by 0x415102D: __libc_dlopen_mode (in /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x412D6B9: backtrace (in /lib/tls/i686/cmov/libc-2.3.6.so)
+==8414==    by 0x8076446: xbt_dictelm_get_ext (dict_elm.c:714)
+==8414==    by 0x80764C1: xbt_dictelm_get (dict_elm.c:732)
+==8414==    by 0x8079010: xbt_cfg_register (config.c:208)
+==8414==    by 0x806821B: MSG_config (msg_config.c:42)
+\endverbatim
+
+This problem is somewhere in the libc when using the backtraces and there is
+very few things we can do ourselves to fix it. Instead, here is how to tell
+valgrind to ignore the error. Add the following to your ~/.valgrind.supp (or
+create this file on need). Make sure to change the obj line according to
+your personnal mileage (change 2.3.6 to the actual version you are using,
+which you can retrieve with a simple "ls /lib/ld*.so").
+
+\verbatim {
+   name: Backtrace madness
+   Memcheck:Cond
+   obj:/lib/ld-2.3.6.so
+   fun:dl_open_worker
+   fun:_dl_open
+   fun:do_dlopen
+   fun:dlerror_run
+   fun:__libc_dlopen_mode
+}\endverbatim
+
+Then, you have to specify valgrind to use this suppression file by passing
+the <tt>--suppressions=$HOME/.valgrind.supp</tt> option on the command line.
+You can also add the following to your ~/.bashrc so that it gets passed
+automatically. Actually, it passes a bit more options to valgrind, and this
+happen to be my personnal settings. Check the valgrind documentation for
+more information.
+
+\verbatim export VALGRIND_OPTS="--leak-check=yes --leak-resolution=high --num-callers=40 --tool=memcheck --suppressions=$HOME/.valgrind.supp" \endverbatim
+
+\subsection faq_deadlock There is a deadlock in my code!!!
 
 Unfortunately, we cannot debug every code written in SimGrid.  We
 furthermore believe that the framework provides ways enough
@@ -1173,18 +1205,6 @@ you're absolutely convinced that it should not, you can ask on the
 list. Just be aware that you'll be severely punished if the mistake is
 on your side... We have plenty of FAQ entries to redact and new
 features to implement for the impenitents! ;)
-
-\subsection faq_big_fat_warning A BIG FAT WARNING is reported telling me that my platform and deployment files are too old.
-
-We have decided to change the units in SimGrid. Now we use Bytes, Flops and
-seconds instead of MBytes, MFlops and seconds... Units should be updated
-accordingly and the version of platform_description should be set to a
-valuer greater than 1:
-\verbatim
-  <platform_description version="1">
-\endverbatim
-You should try to use the surfxml_update.pl script that can be found
-<a href="http://gforge.inria.fr/plugins/scmcvs/cvsweb.php/contrib/platform_generation/?cvsroot=cvsroot%2Fsimgrid">here</a>.
 
 \subsection faq_surf_network_latency I get weird timings when I play with the latencies.
 
