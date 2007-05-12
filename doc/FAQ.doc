@@ -89,9 +89,9 @@ fact, rather than a post-mortem analysis, you may want to do it on the
 fly. The process you are running can do whatever you want. Have you
 thought about adding a global structure where you directly compute the
 informations that are really important rather than writing everything
-down and then processing huge files ?
+down and then processing huge files?
 
-\subsection faq_C Argh! Do I really have to code in C ?
+\subsection faq_C Argh! Do I really have to code in C?
 
 Up until now, there is no binding for other languages. If you use C++,
 you should be able to use the SimGrid library as a standard C library
@@ -415,8 +415,8 @@ meant to be kept as simple and generic as possible. We cannot add
 functions for everybody's need when these functions can easily be
 built from the ones already in the API. Most of the time, it is
 possible and when it was not possible we always have upgraded the API
-accordingly. When somebody asks us a question like "How to do that ?
-Is there a function in the API to simply do this ?", we're always glad
+accordingly. When somebody asks us a question like "How to do that?
+Is there a function in the API to simply do this?", we're always glad
 to answer and help. However if we don't need this code for our own
 need, there is no chance we're going to write it... it's your job! :)
 The counterpart to our answers is that once you come up with a neat
@@ -542,7 +542,7 @@ Of course, it may not match your personal definition of "host load". In this
 case, please detail what you mean on the mailing list, and we will extend
 this FAQ section to fit your taste if possible.
 
-\subsubsection faq_MIA_communication_time How can I get the *real* communication time ?  
+\subsubsection faq_MIA_communication_time How can I get the *real* communication time?  
 
 Communications are synchronous and thus if you simply get the time
 before and after a communication, you'll only get the transmission
@@ -580,7 +580,7 @@ int receiver()
 
 \subsection faq_MIA_SimDag SimDag related questions
 
-\subsubsection faq_SG Where has SG disappeared?!?
+\subsubsection faq_SG Where has SG disappeared?
 
 OK, it's time to explain what's happening to the SimGrid project. Let's
 start with a little bit of history.
@@ -775,7 +775,7 @@ of processes in your simulations.
      is too low, you'll get a segfault. The token ring example, which
      is quite simple, runs with 40kb stacks.
 
-\subsubsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid ?
+\subsubsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid?
 
 No, there is no native support for batch schedulers and none is
 planned because this is a very specific need (and doing it in a
@@ -826,7 +826,7 @@ It may give you some hints. You can also have a look at the
 <tt>tools/platform_generation/</tt> directory. There is a perl-script
 we use to annotate a Tiers generated platform.
 
-\subsubsection faq_SURF_dynamic Building a dynamic platform, with resource availability?
+\subsubsection faq_SURF_dynamic Building a dynamic platform, with resource availability
 
 A nice feature of SimGrid is that it enables you to seamlessly have
 resources whose availability change over time. When you build a
