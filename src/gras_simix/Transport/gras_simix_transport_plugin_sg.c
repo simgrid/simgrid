@@ -306,7 +306,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
 	 name, SIMIX_host_get_name(SIMIX_host_self()),
 	 SIMIX_host_get_name(sock_data->to_host), sock->peer_port,size);
 
-	act = SIMIX_action_communicate(sock_data->to_host, SIMIX_host_self(),name, size, -1);
+	act = SIMIX_action_communicate(SIMIX_host_self(), sock_data->to_host, name, size, -1);
 	/*
 	SIMIX_register_action_to_condition(act,remote_hd->cond_port[sock->peer_port]);
 	SIMIX_register_condition_to_action(act,remote_hd->cond_port[sock->peer_port]);

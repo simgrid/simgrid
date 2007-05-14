@@ -39,13 +39,13 @@ gras_process_init() {
   }
 
 	trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
-	trp_pd->pid = PID++;
+	pd->pid = PID++;
 	/*TODO*/
 	if (SIMIX_process_self() != NULL ) {
-	//	trp_pd->ppid = gras_os_getpid();
-		trp_pd->ppid = -1;
+		pd->ppid = gras_os_getpid();
 	}
-	else trp_pd->ppid = -1; 
+	else pd->ppid = -1; 
+
 	trp_pd->mutex = SIMIX_mutex_init();
 	trp_pd->cond = SIMIX_cond_init();
 	trp_pd->active_socket = xbt_fifo_new();
@@ -135,7 +135,7 @@ long int gras_os_getpid(void) {
   smx_process_t process = SIMIX_process_self();
 	
   if ((process != NULL) && (process->data))
-    return 1;
+		return ((gras_procdata_t*)process->data)->pid;
   else
     return 0;
 }

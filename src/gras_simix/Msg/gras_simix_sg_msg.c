@@ -87,7 +87,7 @@ void gras_msg_send_ext(gras_socket_t   sock,
 	SIMIX_cond_wait(sock_data->cond, sock_data->mutex);
 
 	/* creates simix action and waits its ends, waits in the sender host condition*/
-	act = SIMIX_action_communicate(sock_data->to_host, SIMIX_host_self(),msgtype->name, msg->payl_size, -1);
+	act = SIMIX_action_communicate(SIMIX_host_self(), sock_data->to_host,msgtype->name, (double)whole_payload_size, -1);
 	SIMIX_register_action_to_condition(act,sock_data->cond);
 	SIMIX_register_condition_to_action(act,sock_data->cond);
 

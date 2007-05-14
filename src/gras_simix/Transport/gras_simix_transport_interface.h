@@ -106,9 +106,6 @@ typedef struct {
 	smx_cond_t cond;
 	smx_mutex_t mutex;
 	xbt_fifo_t active_socket;
-	long int pid;
-	long int ppid;
-
    
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 
