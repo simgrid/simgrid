@@ -15,6 +15,7 @@ extern "C" {
   double gtnets_get_time_to_next_flow_completion();
   int gtnets_run_until_next_flow_completion(void*** metadata, int* number_of_flows);
   int gtnets_run(double delta);
+  int gtnets_finalize();
 
 #ifdef __cplusplus
 }
