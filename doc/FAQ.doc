@@ -882,6 +882,47 @@ latency_file and state_file. The only difference with CPUs is that
 bandwidth_file and latency_file do not express fraction of available
 power but are expressed directly in bytes per seconds and seconds.
 
+\subsubsection faq_platform_multipath Is it possible to have several paths between two given hosts?
+
+The answer is no, unfortunately. Let's consider the following platform
+file:
+
+\verbatim
+<route src="A" dst="B">
+   <route_element name="1"/>
+</route>
+<route src="B" dst="C">
+  <route_element name="2"/>
+</route>
+<route src="A" dst="C">
+  <route_element name="3"/>
+</route>
+\endverbatim
+
+Althrough it is perfectly valid, it does not mean that data traveling
+from A to C can either go directly (using link 3) or through B (using
+links 1 and 2). It simply means that the routing on the graph is not
+trivial, and that data do not following the shortest path in number of
+hops on this graph. Another way to say it is that there is no implicit
+in these routing descriptions. The system will only use the routes you
+declare (such as <route src="A" dst="C"><route_element
+name="3"/></route>), without trying to build new routes by aggregating
+the provided ones.
+  
+You are also free to declare platform where the routing is not
+symetric. For example, add the following to the previous file:
+
+\verbatim
+<route src="C" dst="A">
+  <route_element name="2"/>
+  <route_element name="1"/>
+</route>
+\endverbatim
+
+This makes sure that data from C to A go through B where data from A
+to C go directly. Do not worry about realism of such settings since
+we've seen ways more weird situation in real settings.
+
 \subsubsection faq_flexml_bypassing Bypassing the XML parser with your own C functions
 
 So you want to bypass the XML files parser, uh? Maybe doin some parameter
