@@ -452,6 +452,8 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
   while(!(task_simdata->comm)) {
     if(max_duration>0) {
       if(!first_time) {
+	xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
+			task);
 	PAJE_PROCESS_POP_STATE(process);
 	PAJE_COMM_STOP(process,task,channel);
 	MSG_RETURN(MSG_TRANSFER_FAILURE);
