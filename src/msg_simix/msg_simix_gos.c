@@ -444,6 +444,8 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 		if (task->simdata->comm==NULL) {
 			task->simdata->using--;
 			process->simdata->waiting_task = NULL;
+			xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
+			task);
 			if (task->simdata->receiver) {
 				task->simdata->receiver->simdata->waiting_task = NULL;
 			}
