@@ -21,6 +21,8 @@ extern void_f_void_t *STag_surfxml_platform_description_fun;
 extern void_f_void_t *ETag_surfxml_platform_description_fun;
 extern void_f_void_t *STag_surfxml_cpu_fun;
 extern void_f_void_t *ETag_surfxml_cpu_fun;
+extern void_f_void_t *STag_surfxml_router_fun;
+extern void_f_void_t *ETag_surfxml_router_fun;
 extern void_f_void_t *STag_surfxml_network_link_fun;
 extern void_f_void_t *ETag_surfxml_network_link_fun;
 extern void_f_void_t *STag_surfxml_route_fun;

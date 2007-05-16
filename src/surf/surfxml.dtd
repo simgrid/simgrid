@@ -1,8 +1,8 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform_description ((include|cpu|network_link|route|process)*)>
+<!ELEMENT platform_description ((include|cpu|router|network_link|route|process)*)>
 <!ATTLIST platform_description version CDATA "0.0">
 
-<!ELEMENT include ((include|cpu|network_link|route|process)*)>
+<!ELEMENT include ((include|cpu|router|network_link|route|process)*)>
 <!ATTLIST include file CDATA #REQUIRED>
 
 <!ELEMENT cpu EMPTY>
@@ -16,6 +16,9 @@
 <!ATTLIST cpu interference_recv CDATA "1.0">
 <!ATTLIST cpu interference_send_recv CDATA "1.0">
 <!ATTLIST cpu max_outgoing_rate CDATA "-1.0">
+
+<!ELEMENT router EMPTY>
+<!ATTLIST router name CDATA #REQUIRED>
 
 <!ELEMENT network_link EMPTY>
 <!ATTLIST network_link name CDATA #REQUIRED>

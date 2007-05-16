@@ -27,6 +27,8 @@ void_f_void_t *STag_surfxml_platform_description_fun = nil_function;
 void_f_void_t *ETag_surfxml_platform_description_fun = nil_function;
 void_f_void_t *STag_surfxml_cpu_fun = nil_function;
 void_f_void_t *ETag_surfxml_cpu_fun = nil_function;
+void_f_void_t *STag_surfxml_router_fun = nil_function;
+void_f_void_t *ETag_surfxml_router_fun = nil_function;
 void_f_void_t *STag_surfxml_network_link_fun = nil_function;
 void_f_void_t *ETag_surfxml_network_link_fun = nil_function;
 void_f_void_t *STag_surfxml_route_fun = nil_function;
@@ -47,6 +49,8 @@ void surf_parse_reset_parser(void)
   ETag_surfxml_platform_description_fun = nil_function;
   STag_surfxml_cpu_fun = nil_function;
   ETag_surfxml_cpu_fun = nil_function;
+  STag_surfxml_router_fun = nil_function;
+  ETag_surfxml_router_fun = nil_function;
   STag_surfxml_network_link_fun = nil_function;
   ETag_surfxml_network_link_fun = nil_function;
   STag_surfxml_route_fun = nil_function;
@@ -115,6 +119,16 @@ void STag_surfxml_cpu(void)
 void ETag_surfxml_cpu(void)
 {
   ETag_surfxml_cpu_fun();
+}
+
+void STag_surfxml_router(void)
+{
+  STag_surfxml_router_fun();
+}
+
+void ETag_surfxml_router(void)
+{
+  ETag_surfxml_router_fun();
 }
 
 void STag_surfxml_network_link(void)

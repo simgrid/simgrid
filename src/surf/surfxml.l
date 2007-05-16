@@ -1,10 +1,10 @@
 /* Validating XML processor for surf/surfxml.dtd.
- * Generated 2006/07/18 21:02:15.
+ * Generated 2007/05/16 11:14:15.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp).
+ * (Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -49,9 +49,9 @@
 
 /* Version strings. */
 const char rcs_surfxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.31 2006/07/18 18:21:13 mquinson Exp $";
+ "$" "Id: skel,v 1.38 2006/09/12 18:05:45 wdowling Exp $";
 const char rcs_surfxml_flexml[] =
- "$" "Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -61,45 +61,88 @@ const char rcs_surfxml_flexml[] =
 #include <stdarg.h>
 #include <ctype.h>
 
+#ifndef FLEXML_INDEXSTACKSIZE
+#define FLEXML_INDEXSTACKSIZE 1000
+#endif
+
 /* Generated definitions. */
 #define FLEXML_yylineno
+#ifndef FLEXML_BUFFERSTACKSIZE
 #define FLEXML_BUFFERSTACKSIZE 1000000
+#endif
+#define FLEXML_NEED_BUFFERLIT
 
 /* XML processor api. */
 /* FleXML-provided data. */
-const char* surfxml_pcdata;
-AT_surfxml_network_link_bandwidth A_surfxml_network_link_bandwidth;
-AT_surfxml_process_host A_surfxml_process_host;
-AT_surfxml_network_link_latency_file A_surfxml_network_link_latency_file;
-AT_surfxml_route_impact_on_dst_with_other_send A_surfxml_route_impact_on_dst_with_other_send;
-AT_surfxml_cpu_interference_send_recv A_surfxml_cpu_interference_send_recv;
-AT_surfxml_route_impact_on_dst A_surfxml_route_impact_on_dst;
-AT_surfxml_platform_description_version A_surfxml_platform_description_version;
-AT_surfxml_route_impact_on_src_with_other_recv A_surfxml_route_impact_on_src_with_other_recv;
-AT_surfxml_route_element_name A_surfxml_route_element_name;
-AT_surfxml_process_start_time A_surfxml_process_start_time;
-AT_surfxml_process_function A_surfxml_process_function;
-AT_surfxml_cpu_state A_surfxml_cpu_state;
-AT_surfxml_cpu_interference_send A_surfxml_cpu_interference_send;
-AT_surfxml_network_link_bandwidth_file A_surfxml_network_link_bandwidth_file;
-AT_surfxml_cpu_name A_surfxml_cpu_name;
-AT_surfxml_process_kill_time A_surfxml_process_kill_time;
-AT_surfxml_network_link_state A_surfxml_network_link_state;
-AT_surfxml_cpu_availability_file A_surfxml_cpu_availability_file;
-AT_surfxml_argument_value A_surfxml_argument_value;
-AT_surfxml_route_src A_surfxml_route_src;
-AT_surfxml_route_impact_on_src A_surfxml_route_impact_on_src;
-AT_surfxml_cpu_max_outgoing_rate A_surfxml_cpu_max_outgoing_rate;
-AT_surfxml_cpu_availability A_surfxml_cpu_availability;
-AT_surfxml_cpu_interference_recv A_surfxml_cpu_interference_recv;
-AT_surfxml_network_link_name A_surfxml_network_link_name;
-AT_surfxml_cpu_power A_surfxml_cpu_power;
-AT_surfxml_include_file A_surfxml_include_file;
-AT_surfxml_network_link_sharing_policy A_surfxml_network_link_sharing_policy;
-AT_surfxml_route_dst A_surfxml_route_dst;
-AT_surfxml_network_link_latency A_surfxml_network_link_latency;
-AT_surfxml_cpu_state_file A_surfxml_cpu_state_file;
-AT_surfxml_network_link_state_file A_surfxml_network_link_state_file;
+int surfxml_pcdata_ix;
+extern char *surfxml_bufferstack;
+#define surfxml_pcdata (surfxml_bufferstack + surfxml_pcdata_ix)
+AT_surfxml_network_link_bandwidth AX_surfxml_network_link_bandwidth;
+#define A_surfxml_network_link_bandwidth (surfxml_bufferstack + AX_surfxml_network_link_bandwidth)
+AT_surfxml_router_name AX_surfxml_router_name;
+#define A_surfxml_router_name (surfxml_bufferstack + AX_surfxml_router_name)
+AT_surfxml_process_host AX_surfxml_process_host;
+#define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
+AT_surfxml_network_link_latency_file AX_surfxml_network_link_latency_file;
+#define A_surfxml_network_link_latency_file (surfxml_bufferstack + AX_surfxml_network_link_latency_file)
+AT_surfxml_route_impact_on_dst_with_other_send AX_surfxml_route_impact_on_dst_with_other_send;
+#define A_surfxml_route_impact_on_dst_with_other_send (surfxml_bufferstack + AX_surfxml_route_impact_on_dst_with_other_send)
+AT_surfxml_cpu_interference_send_recv AX_surfxml_cpu_interference_send_recv;
+#define A_surfxml_cpu_interference_send_recv (surfxml_bufferstack + AX_surfxml_cpu_interference_send_recv)
+AT_surfxml_route_impact_on_dst AX_surfxml_route_impact_on_dst;
+#define A_surfxml_route_impact_on_dst (surfxml_bufferstack + AX_surfxml_route_impact_on_dst)
+AT_surfxml_platform_description_version AX_surfxml_platform_description_version;
+#define A_surfxml_platform_description_version (surfxml_bufferstack + AX_surfxml_platform_description_version)
+AT_surfxml_route_impact_on_src_with_other_recv AX_surfxml_route_impact_on_src_with_other_recv;
+#define A_surfxml_route_impact_on_src_with_other_recv (surfxml_bufferstack + AX_surfxml_route_impact_on_src_with_other_recv)
+AT_surfxml_route_element_name AX_surfxml_route_element_name;
+#define A_surfxml_route_element_name (surfxml_bufferstack + AX_surfxml_route_element_name)
+AT_surfxml_process_start_time AX_surfxml_process_start_time;
+#define A_surfxml_process_start_time (surfxml_bufferstack + AX_surfxml_process_start_time)
+AT_surfxml_process_function AX_surfxml_process_function;
+#define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
+AT_surfxml_cpu_state AX_surfxml_cpu_state;
+#define A_surfxml_cpu_state AX_surfxml_cpu_state
+AT_surfxml_cpu_interference_send AX_surfxml_cpu_interference_send;
+#define A_surfxml_cpu_interference_send (surfxml_bufferstack + AX_surfxml_cpu_interference_send)
+AT_surfxml_network_link_bandwidth_file AX_surfxml_network_link_bandwidth_file;
+#define A_surfxml_network_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_network_link_bandwidth_file)
+AT_surfxml_cpu_name AX_surfxml_cpu_name;
+#define A_surfxml_cpu_name (surfxml_bufferstack + AX_surfxml_cpu_name)
+AT_surfxml_process_kill_time AX_surfxml_process_kill_time;
+#define A_surfxml_process_kill_time (surfxml_bufferstack + AX_surfxml_process_kill_time)
+AT_surfxml_network_link_state AX_surfxml_network_link_state;
+#define A_surfxml_network_link_state AX_surfxml_network_link_state
+AT_surfxml_cpu_availability_file AX_surfxml_cpu_availability_file;
+#define A_surfxml_cpu_availability_file (surfxml_bufferstack + AX_surfxml_cpu_availability_file)
+AT_surfxml_argument_value AX_surfxml_argument_value;
+#define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
+AT_surfxml_route_src AX_surfxml_route_src;
+#define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
+AT_surfxml_route_impact_on_src AX_surfxml_route_impact_on_src;
+#define A_surfxml_route_impact_on_src (surfxml_bufferstack + AX_surfxml_route_impact_on_src)
+AT_surfxml_cpu_max_outgoing_rate AX_surfxml_cpu_max_outgoing_rate;
+#define A_surfxml_cpu_max_outgoing_rate (surfxml_bufferstack + AX_surfxml_cpu_max_outgoing_rate)
+AT_surfxml_cpu_availability AX_surfxml_cpu_availability;
+#define A_surfxml_cpu_availability (surfxml_bufferstack + AX_surfxml_cpu_availability)
+AT_surfxml_cpu_interference_recv AX_surfxml_cpu_interference_recv;
+#define A_surfxml_cpu_interference_recv (surfxml_bufferstack + AX_surfxml_cpu_interference_recv)
+AT_surfxml_network_link_name AX_surfxml_network_link_name;
+#define A_surfxml_network_link_name (surfxml_bufferstack + AX_surfxml_network_link_name)
+AT_surfxml_cpu_power AX_surfxml_cpu_power;
+#define A_surfxml_cpu_power (surfxml_bufferstack + AX_surfxml_cpu_power)
+AT_surfxml_include_file AX_surfxml_include_file;
+#define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
+AT_surfxml_network_link_sharing_policy AX_surfxml_network_link_sharing_policy;
+#define A_surfxml_network_link_sharing_policy AX_surfxml_network_link_sharing_policy
+AT_surfxml_route_dst AX_surfxml_route_dst;
+#define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
+AT_surfxml_network_link_latency AX_surfxml_network_link_latency;
+#define A_surfxml_network_link_latency (surfxml_bufferstack + AX_surfxml_network_link_latency)
+AT_surfxml_cpu_state_file AX_surfxml_cpu_state_file;
+#define A_surfxml_cpu_state_file (surfxml_bufferstack + AX_surfxml_cpu_state_file)
+AT_surfxml_network_link_state_file AX_surfxml_network_link_state_file;
+#define A_surfxml_network_link_state_file (surfxml_bufferstack + AX_surfxml_network_link_state_file)
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -121,64 +164,98 @@ AT_surfxml_network_link_state_file A_surfxml_network_link_state_file;
 
 #define FAIL	return fail
 static int fail(const char*, ...);
-const char * surfxml_parse_err_msg(void);
+
+enum {flexml_max_err_msg_size = 512};
+static char flexml_err_msg[flexml_max_err_msg_size];
+const char * surfxml_parse_err_msg()
+{
+    return flexml_err_msg;
+}
+static void reset_surfxml_parse_err_msg()
+{
+    flexml_err_msg[0] = '\0';
+}
 
 /* Cleanup */
 static void cleanup(void);
 #define CLEANUP  cleanup()
 
 /* Text buffer stack handling. */
-static char bufferstack[FLEXML_BUFFERSTACKSIZE];
-static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
-typedef struct BufferLast_s {
-  struct BufferLast_s *old; const char* saved; char new1[1];
-} BufferLast;
-#ifdef FLEXML_HasMixed
-static BufferLast* last = (BufferLast*)0;
-#endif
-static char* next = bufferstack;
+char *surfxml_bufferstack = NULL;
+static int blimit = FLEXML_BUFFERSTACKSIZE;
+static int bnext = 1;
 
-#define BUFFERSET(P)  (P = next)
-#define BUFFERPUTC(C) (assert(next<limit), *(next++) = (C))
+static int *indexstack = NULL;
+static int ilimit = FLEXML_INDEXSTACKSIZE;
+static int inext = 1;
+
+#define BUFFERSET(P)  (P = bnext)
+#define BUFFERPUTC(C) (ck_blimit(), surfxml_bufferstack[bnext++] = (C))
 #define BUFFERDONE    (BUFFERPUTC('\0'))
 
-#define BUFFERLITERAL(C,P) bufferliteral(C,&(P),yytext)
-static void bufferliteral(char c, const char** pp, char* text)
+#define BUFFERLITERAL(C, P) surfxml_bufferliteral(C, &(P), yytext)
+
+/* after this is called, there are at least 2 slots left in the stack */
+static int ck_blimit()
 {
-  char *s = strchr(text,c), *e = strrchr(text,c);
+     if (bnext >= blimit) {
+	 blimit += FLEXML_BUFFERSTACKSIZE + 2;
+	 {
+	     char *temp = (char *) realloc(surfxml_bufferstack, blimit);
+	     assert(temp);
+	     surfxml_bufferstack = temp;
+	 }
+     }
+     return 0;
+}
+
+/* after this is called, there are at least 2 slots left in the stack */
+static int ck_ilimit()
+{
+     if (inext >= ilimit) {
+	 ilimit += FLEXML_INDEXSTACKSIZE + 2;
+	 {
+	     int *temp = (int *) realloc(indexstack, ilimit);
+	     assert(temp);
+	     indexstack = temp;
+	 }
+     }
+     return 0;
+}
+
+#ifdef FLEXML_NEED_BUFFERLIT
+static void surfxml_bufferliteral(char c, int* pp, const char* text)
+{
+  const char *s = (c ? strchr(text,c) : text-1), *e = strrchr(text,c);
   assert(s <= e); BUFFERSET(*pp);
   while (++s<e) {
-    if (isspace(*s)) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
+    if (isspace(*s) && c) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
     else BUFFERPUTC(*s);
   }
   BUFFERDONE;
 }
-
-#ifdef FLEXML_HasMixed
-static void pushbuffer(const char* p)
-{
-  BufferLast* l = (BufferLast*)next;
-  assert(next < limit);
-  l->old = last;
-  l->saved = p;
-  next = l->new1;
-  last = l;
-}
-
-static const char* popbuffer(void)
-{
-  BufferLast* l = last;
-  assert(last != (BufferLast*)0);
-  last = l->old;
-  next = (char*)l;
-  return l->saved;
-}
 #endif
+
+static void pushbuffer(int p)
+{
+    ck_ilimit();
+    indexstack[inext++] = p;
+    indexstack[inext++] = bnext;    
+}
+
+static int popbuffer(void)
+{
+    assert(inext >= 2);
+    bnext = indexstack[--inext];
+    return indexstack[--inext];
+}
 
 /* General internal entities are `unput' back onto the input stream... */
 #define ENTITYTEXT(T) \
   { char *s = (T), *e = s+strlen(s);\
     while (--e >= s) { unput(*e); }}
+
+
 %}
 
 /* Flex standard options. */
@@ -230,6 +307,7 @@ Literal		\'[^'']*\'|\"[^""]*\"
 %x ROOT_surfxml_platform_description AL_surfxml_platform_description S_surfxml_platform_description S_surfxml_platform_description_1 S_surfxml_platform_description_2 E_surfxml_platform_description
 %x ROOT_surfxml_include AL_surfxml_include S_surfxml_include S_surfxml_include_1 S_surfxml_include_2 E_surfxml_include
 %x ROOT_surfxml_cpu AL_surfxml_cpu E_surfxml_cpu
+%x ROOT_surfxml_router AL_surfxml_router E_surfxml_router
 %x ROOT_surfxml_network_link AL_surfxml_network_link E_surfxml_network_link
 %x ROOT_surfxml_route AL_surfxml_route S_surfxml_route S_surfxml_route_1 S_surfxml_route_2 E_surfxml_route
 %x ROOT_surfxml_route_element AL_surfxml_route_element E_surfxml_route_element
@@ -246,8 +324,37 @@ const char* *surfxml_statenames=NULL;
 
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
+ reset_surfxml_parse_err_msg();
+ surfxml_bufferstack = (char *) malloc(FLEXML_BUFFERSTACKSIZE);
+ assert(surfxml_bufferstack);
+ #ifdef FLEX_DEBUG
+ {
+     int i;
+     for (i = 0; i < blimit; i++) {
+         surfxml_bufferstack[i] = '\377';
+     }
+ }
+ #endif
+ surfxml_bufferstack[0] = '\0';
+ indexstack = (int *) malloc(FLEXML_INDEXSTACKSIZE * sizeof(int));
+ assert(indexstack);
+ indexstack[0] = 0;
+
   /* FleXML_init */
-  next = bufferstack;
+  bnext = inext = 1;
+  surfxml_bufferliteral('\0', &bnext, "0.0");
+  surfxml_bufferliteral('\0', &bnext, "1.0");
+  surfxml_bufferliteral('\0', &bnext, "1.0");
+  surfxml_bufferliteral('\0', &bnext, "1.0");
+  surfxml_bufferliteral('\0', &bnext, "1.0");
+  surfxml_bufferliteral('\0', &bnext, "-1.0");
+  surfxml_bufferliteral('\0', &bnext, "0.0");
+  surfxml_bufferliteral('\0', &bnext, "0.0");
+  surfxml_bufferliteral('\0', &bnext, "0.0");
+  surfxml_bufferliteral('\0', &bnext, "0.0");
+  surfxml_bufferliteral('\0', &bnext, "0.0");
+  surfxml_bufferliteral('\0', &bnext, "-1.0");
+  surfxml_bufferliteral('\0', &bnext, "-1.0");
   if(!surfxml_statenames) {surfxml_statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
   surfxml_statenames[PROLOG] = NULL;
   surfxml_statenames[DOCTYPE] = NULL;
@@ -272,6 +379,9 @@ const char* *surfxml_statenames=NULL;
   surfxml_statenames[ROOT_surfxml_cpu] = NULL;
   surfxml_statenames[AL_surfxml_cpu] = NULL;
   surfxml_statenames[E_surfxml_cpu] = "cpu";
+  surfxml_statenames[ROOT_surfxml_router] = NULL;
+  surfxml_statenames[AL_surfxml_router] = NULL;
+  surfxml_statenames[E_surfxml_router] = "router";
   surfxml_statenames[ROOT_surfxml_network_link] = NULL;
   surfxml_statenames[AL_surfxml_network_link] = NULL;
   surfxml_statenames[E_surfxml_network_link] = "network_link";
@@ -297,7 +407,7 @@ const char* *surfxml_statenames=NULL;
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-<ROOT_surfxml_platform_description,AL_surfxml_platform_description,S_surfxml_platform_description,S_surfxml_platform_description_1,S_surfxml_platform_description_2,E_surfxml_platform_description,ROOT_surfxml_include,AL_surfxml_include,S_surfxml_include,S_surfxml_include_1,S_surfxml_include_2,E_surfxml_include,ROOT_surfxml_cpu,AL_surfxml_cpu,E_surfxml_cpu,ROOT_surfxml_network_link,AL_surfxml_network_link,E_surfxml_network_link,ROOT_surfxml_route,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,ROOT_surfxml_route_element,AL_surfxml_route_element,E_surfxml_route_element,ROOT_surfxml_process,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,ROOT_surfxml_argument,AL_surfxml_argument,E_surfxml_argument,PROLOG,DOCTYPE,EPILOG>{
+<ROOT_surfxml_platform_description,AL_surfxml_platform_description,S_surfxml_platform_description,S_surfxml_platform_description_1,S_surfxml_platform_description_2,E_surfxml_platform_description,ROOT_surfxml_include,AL_surfxml_include,S_surfxml_include,S_surfxml_include_1,S_surfxml_include_2,E_surfxml_include,ROOT_surfxml_cpu,AL_surfxml_cpu,E_surfxml_cpu,ROOT_surfxml_router,AL_surfxml_router,E_surfxml_router,ROOT_surfxml_network_link,AL_surfxml_network_link,E_surfxml_network_link,ROOT_surfxml_route,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,ROOT_surfxml_route_element,AL_surfxml_route_element,E_surfxml_route_element,ROOT_surfxml_process,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,ROOT_surfxml_argument,AL_surfxml_argument,E_surfxml_argument,PROLOG,DOCTYPE,EPILOG>{
  "<!--" ENTER(INCOMMENT);
  "<?" ENTER(INPI);
 }
@@ -317,7 +427,7 @@ const char* *surfxml_statenames=NULL;
 
  /* SPACES: skipped uniformly */
 
-<ROOT_surfxml_platform_description,AL_surfxml_platform_description,S_surfxml_platform_description,S_surfxml_platform_description_1,S_surfxml_platform_description_2,E_surfxml_platform_description,ROOT_surfxml_include,AL_surfxml_include,S_surfxml_include,S_surfxml_include_1,S_surfxml_include_2,E_surfxml_include,ROOT_surfxml_cpu,AL_surfxml_cpu,E_surfxml_cpu,ROOT_surfxml_network_link,AL_surfxml_network_link,E_surfxml_network_link,ROOT_surfxml_route,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,ROOT_surfxml_route_element,AL_surfxml_route_element,E_surfxml_route_element,ROOT_surfxml_process,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,ROOT_surfxml_argument,AL_surfxml_argument,E_surfxml_argument,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
+<ROOT_surfxml_platform_description,AL_surfxml_platform_description,S_surfxml_platform_description,S_surfxml_platform_description_1,S_surfxml_platform_description_2,E_surfxml_platform_description,ROOT_surfxml_include,AL_surfxml_include,S_surfxml_include,S_surfxml_include_1,S_surfxml_include_2,E_surfxml_include,ROOT_surfxml_cpu,AL_surfxml_cpu,E_surfxml_cpu,ROOT_surfxml_router,AL_surfxml_router,E_surfxml_router,ROOT_surfxml_network_link,AL_surfxml_network_link,E_surfxml_network_link,ROOT_surfxml_route,AL_surfxml_route,S_surfxml_route,S_surfxml_route_1,S_surfxml_route_2,E_surfxml_route,ROOT_surfxml_route_element,AL_surfxml_route_element,E_surfxml_route_element,ROOT_surfxml_process,AL_surfxml_process,S_surfxml_process,S_surfxml_process_1,S_surfxml_process_2,E_surfxml_process,ROOT_surfxml_argument,AL_surfxml_argument,E_surfxml_argument,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
 
  /* PROLOG: determine root element and process it. */
 
@@ -327,14 +437,15 @@ const char* *surfxml_statenames=NULL;
 }
 
 <PROLOG,DOCTYPE>{
- "<!DOCTYPE"{S}"argument"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_argument);
- "<!DOCTYPE"{S}"route_element"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_route_element);
  "<!DOCTYPE"{S}"cpu"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_cpu);
  "<!DOCTYPE"{S}"include"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_include);
  "<!DOCTYPE"{S}"route"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_route);
- "<!DOCTYPE"{S}"platform_description"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_platform_description);
  "<!DOCTYPE"{S}"network_link"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_network_link);
  "<!DOCTYPE"{S}"process"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_process);
+ "<!DOCTYPE"{S}"router"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_router);
+ "<!DOCTYPE"{S}"argument"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_argument);
+ "<!DOCTYPE"{S}"route_element"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_route_element);
+ "<!DOCTYPE"{S}"platform_description"{S}SYSTEM{S}("'surfxml.dtd'"|"\"surfxml.dtd\""){s}">" SET(ROOT_surfxml_platform_description);
  "<!"[^>-][^>]*">" FAIL("Bad declaration %s.",yytext);
  . 		FAIL("Unexpected character `%c' in prolog.", yytext[0]);
  <<EOF>> 	FAIL("EOF in prolog.");
@@ -345,19 +456,19 @@ const char* *surfxml_statenames=NULL;
  /* <!-- Small DTD for SURF based tools. -->  */
 
 <ROOT_surfxml_platform_description>"<platform_description"{s} {
-  A_surfxml_platform_description_version = "0.0";
-  ENTER(AL_surfxml_platform_description);
+  AX_surfxml_platform_description_version = 1;
+  ENTER(AL_surfxml_platform_description); pushbuffer(0);
   }
 
 <AL_surfxml_platform_description>{
- "version"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_platform_description_version);
- "version"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_platform_description_version);
+ "version"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_platform_description_version);
+ "version"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_platform_description_version);
 
  ">" {
-  LEAVE; STag_surfxml_platform_description();surfxml_pcdata = NULL; ENTER(S_surfxml_platform_description);
+  LEAVE; STag_surfxml_platform_description();surfxml_pcdata_ix = 0; ENTER(S_surfxml_platform_description);
  }
  "/>" {
-  LEAVE; STag_surfxml_platform_description(); surfxml_pcdata = NULL; ETag_surfxml_platform_description();
+  LEAVE; STag_surfxml_platform_description(); surfxml_pcdata_ix = 0; ETag_surfxml_platform_description(); popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_surfxml_platform_description: SET(EPILOG); break;
   }
@@ -371,6 +482,7 @@ const char* *surfxml_statenames=NULL;
  "</platform_description"{s}">" {
   LEAVE;
   ETag_surfxml_platform_description();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_surfxml_platform_description: SET(EPILOG); break;
   }
@@ -381,21 +493,21 @@ const char* *surfxml_statenames=NULL;
 }
 
 <ROOT_surfxml_include,S_surfxml_platform_description_2,S_surfxml_include,S_surfxml_include_2,S_surfxml_platform_description_1,S_surfxml_include_1,S_surfxml_platform_description>"<include"{s} {
-  A_surfxml_include_file = NULL;
-  ENTER(AL_surfxml_include);
+  AX_surfxml_include_file = 0;
+  ENTER(AL_surfxml_include); pushbuffer(0);
   }
 
 <AL_surfxml_include>{
- "file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_include_file);
- "file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_include_file);
+ "file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_include_file);
+ "file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_include_file);
 
  ">" {
-  if (!A_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
-  LEAVE; STag_surfxml_include();surfxml_pcdata = NULL; ENTER(S_surfxml_include);
+  if (!AX_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
+  LEAVE; STag_surfxml_include();surfxml_pcdata_ix = 0; ENTER(S_surfxml_include);
  }
  "/>" {
-  if (!A_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
-  LEAVE; STag_surfxml_include(); surfxml_pcdata = NULL; ETag_surfxml_include();
+  if (!AX_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
+  LEAVE; STag_surfxml_include(); surfxml_pcdata_ix = 0; ETag_surfxml_include(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_include: SET(EPILOG); break;
@@ -411,6 +523,7 @@ const char* *surfxml_statenames=NULL;
  "</include"{s}">" {
   LEAVE;
   ETag_surfxml_include();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_include: SET(EPILOG); break;
@@ -423,61 +536,61 @@ const char* *surfxml_statenames=NULL;
 }
 
 <ROOT_surfxml_cpu,S_surfxml_platform_description_2,S_surfxml_include,S_surfxml_include_2,S_surfxml_platform_description_1,S_surfxml_include_1,S_surfxml_platform_description>"<cpu"{s} {
-  A_surfxml_cpu_name = NULL;
-  A_surfxml_cpu_power = NULL;
-  A_surfxml_cpu_availability = "1.0";
-  A_surfxml_cpu_availability_file = NULL;
-  A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
-  A_surfxml_cpu_state_file = NULL;
-  A_surfxml_cpu_interference_send = "1.0";
-  A_surfxml_cpu_interference_recv = "1.0";
-  A_surfxml_cpu_interference_send_recv = "1.0";
-  A_surfxml_cpu_max_outgoing_rate = "-1.0";
-  ENTER(AL_surfxml_cpu);
+  AX_surfxml_cpu_name = 0;
+  AX_surfxml_cpu_power = 0;
+  AX_surfxml_cpu_availability = 5;
+  AX_surfxml_cpu_availability_file = 0;
+  AX_surfxml_cpu_state = A_surfxml_cpu_state_ON;
+  AX_surfxml_cpu_state_file = 0;
+  AX_surfxml_cpu_interference_send = 9;
+  AX_surfxml_cpu_interference_recv = 13;
+  AX_surfxml_cpu_interference_send_recv = 17;
+  AX_surfxml_cpu_max_outgoing_rate = 21;
+  ENTER(AL_surfxml_cpu); pushbuffer(0);
   }
 
 <AL_surfxml_cpu>{
- "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_name);
- "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_name);
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_name);
 
- "power"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_power);
- "power"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_power);
+ "power"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_power);
+ "power"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_power);
 
- "availability"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_availability);
- "availability"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_availability);
+ "availability"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_availability);
+ "availability"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_availability);
 
- "availability_file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_availability_file);
- "availability_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_availability_file);
+ "availability_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_availability_file);
+ "availability_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_availability_file);
 
  "state"{Eq}"'ON'" |
  "state"{Eq}"\"ON\"" A_surfxml_cpu_state = A_surfxml_cpu_state_ON;
  "state"{Eq}"'OFF'" |
  "state"{Eq}"\"OFF\"" A_surfxml_cpu_state = A_surfxml_cpu_state_OFF;
 
- "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_state_file);
- "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_state_file);
+ "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_state_file);
+ "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_state_file);
 
- "interference_send"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_interference_send);
- "interference_send"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_interference_send);
+ "interference_send"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_interference_send);
+ "interference_send"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_interference_send);
 
- "interference_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_interference_recv);
- "interference_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_interference_recv);
+ "interference_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_interference_recv);
+ "interference_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_interference_recv);
 
- "interference_send_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_interference_send_recv);
- "interference_send_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_interference_send_recv);
+ "interference_send_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_interference_send_recv);
+ "interference_send_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_interference_send_recv);
 
- "max_outgoing_rate"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_cpu_max_outgoing_rate);
- "max_outgoing_rate"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_cpu_max_outgoing_rate);
+ "max_outgoing_rate"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_cpu_max_outgoing_rate);
+ "max_outgoing_rate"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_cpu_max_outgoing_rate);
 
  ">" {
-  if (!A_surfxml_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
-  if (!A_surfxml_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
-  LEAVE; STag_surfxml_cpu();surfxml_pcdata = NULL; ENTER(E_surfxml_cpu);
+  if (!AX_surfxml_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
+  if (!AX_surfxml_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
+  LEAVE; STag_surfxml_cpu();surfxml_pcdata_ix = 0; ENTER(E_surfxml_cpu);
  }
  "/>" {
-  if (!A_surfxml_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
-  if (!A_surfxml_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
-  LEAVE; STag_surfxml_cpu(); surfxml_pcdata = NULL; ETag_surfxml_cpu();
+  if (!AX_surfxml_cpu_name) FAIL("Required attribute `name' not set for `cpu' element.");
+  if (!AX_surfxml_cpu_power) FAIL("Required attribute `power' not set for `cpu' element.");
+  LEAVE; STag_surfxml_cpu(); surfxml_pcdata_ix = 0; ETag_surfxml_cpu(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_cpu: SET(EPILOG); break;
@@ -493,6 +606,7 @@ const char* *surfxml_statenames=NULL;
  "</cpu"{s}">" {
   LEAVE;
   ETag_surfxml_cpu();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_cpu: SET(EPILOG); break;
@@ -504,41 +618,84 @@ const char* *surfxml_statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</cpu>' expected.");
 }
 
+<ROOT_surfxml_router,S_surfxml_platform_description_2,S_surfxml_include,S_surfxml_include_2,S_surfxml_platform_description_1,S_surfxml_include_1,S_surfxml_platform_description>"<router"{s} {
+  AX_surfxml_router_name = 0;
+  ENTER(AL_surfxml_router); pushbuffer(0);
+  }
+
+<AL_surfxml_router>{
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_router_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_router_name);
+
+ ">" {
+  if (!AX_surfxml_router_name) FAIL("Required attribute `name' not set for `router' element.");
+  LEAVE; STag_surfxml_router();surfxml_pcdata_ix = 0; ENTER(E_surfxml_router);
+ }
+ "/>" {
+  if (!AX_surfxml_router_name) FAIL("Required attribute `name' not set for `router' element.");
+  LEAVE; STag_surfxml_router(); surfxml_pcdata_ix = 0; ETag_surfxml_router(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
+   case ROOT_surfxml_router: SET(EPILOG); break;
+   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of router element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `router' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `router' element.");
+}
+
+<E_surfxml_router>{
+ "</router"{s}">" {
+  LEAVE;
+  ETag_surfxml_router();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
+   case ROOT_surfxml_router: SET(EPILOG); break;
+   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</router>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</router>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</router>' expected.");
+}
+
 <ROOT_surfxml_network_link,S_surfxml_platform_description_2,S_surfxml_include,S_surfxml_include_2,S_surfxml_platform_description_1,S_surfxml_include_1,S_surfxml_platform_description>"<network_link"{s} {
-  A_surfxml_network_link_name = NULL;
-  A_surfxml_network_link_bandwidth = NULL;
-  A_surfxml_network_link_bandwidth_file = NULL;
-  A_surfxml_network_link_latency = "0.0";
-  A_surfxml_network_link_latency_file = NULL;
-  A_surfxml_network_link_state = A_surfxml_network_link_state_ON;
-  A_surfxml_network_link_state_file = NULL;
-  A_surfxml_network_link_sharing_policy = A_surfxml_network_link_sharing_policy_SHARED;
-  ENTER(AL_surfxml_network_link);
+  AX_surfxml_network_link_name = 0;
+  AX_surfxml_network_link_bandwidth = 0;
+  AX_surfxml_network_link_bandwidth_file = 0;
+  AX_surfxml_network_link_latency = 26;
+  AX_surfxml_network_link_latency_file = 0;
+  AX_surfxml_network_link_state = A_surfxml_network_link_state_ON;
+  AX_surfxml_network_link_state_file = 0;
+  AX_surfxml_network_link_sharing_policy = A_surfxml_network_link_sharing_policy_SHARED;
+  ENTER(AL_surfxml_network_link); pushbuffer(0);
   }
 
 <AL_surfxml_network_link>{
- "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_network_link_name);
- "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_network_link_name);
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_network_link_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_network_link_name);
 
- "bandwidth"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_network_link_bandwidth);
- "bandwidth"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_network_link_bandwidth);
+ "bandwidth"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_network_link_bandwidth);
+ "bandwidth"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_network_link_bandwidth);
 
- "bandwidth_file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_network_link_bandwidth_file);
- "bandwidth_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_network_link_bandwidth_file);
+ "bandwidth_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_network_link_bandwidth_file);
+ "bandwidth_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_network_link_bandwidth_file);
 
- "latency"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_network_link_latency);
- "latency"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_network_link_latency);
+ "latency"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_network_link_latency);
+ "latency"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_network_link_latency);
 
- "latency_file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_network_link_latency_file);
- "latency_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_network_link_latency_file);
+ "latency_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_network_link_latency_file);
+ "latency_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_network_link_latency_file);
 
  "state"{Eq}"'ON'" |
  "state"{Eq}"\"ON\"" A_surfxml_network_link_state = A_surfxml_network_link_state_ON;
  "state"{Eq}"'OFF'" |
  "state"{Eq}"\"OFF\"" A_surfxml_network_link_state = A_surfxml_network_link_state_OFF;
 
- "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_network_link_state_file);
- "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_network_link_state_file);
+ "state_file"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_network_link_state_file);
+ "state_file"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_network_link_state_file);
 
  "sharing_policy"{Eq}"'SHARED'" |
  "sharing_policy"{Eq}"\"SHARED\"" A_surfxml_network_link_sharing_policy = A_surfxml_network_link_sharing_policy_SHARED;
@@ -546,14 +703,14 @@ const char* *surfxml_statenames=NULL;
  "sharing_policy"{Eq}"\"FATPIPE\"" A_surfxml_network_link_sharing_policy = A_surfxml_network_link_sharing_policy_FATPIPE;
 
  ">" {
-  if (!A_surfxml_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
-  if (!A_surfxml_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
-  LEAVE; STag_surfxml_network_link();surfxml_pcdata = NULL; ENTER(E_surfxml_network_link);
+  if (!AX_surfxml_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
+  if (!AX_surfxml_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
+  LEAVE; STag_surfxml_network_link();surfxml_pcdata_ix = 0; ENTER(E_surfxml_network_link);
  }
  "/>" {
-  if (!A_surfxml_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
-  if (!A_surfxml_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
-  LEAVE; STag_surfxml_network_link(); surfxml_pcdata = NULL; ETag_surfxml_network_link();
+  if (!AX_surfxml_network_link_name) FAIL("Required attribute `name' not set for `network_link' element.");
+  if (!AX_surfxml_network_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `network_link' element.");
+  LEAVE; STag_surfxml_network_link(); surfxml_pcdata_ix = 0; ETag_surfxml_network_link(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_network_link: SET(EPILOG); break;
@@ -569,6 +726,7 @@ const char* *surfxml_statenames=NULL;
  "</network_link"{s}">" {
   LEAVE;
   ETag_surfxml_network_link();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_network_link: SET(EPILOG); break;
@@ -581,43 +739,43 @@ const char* *surfxml_statenames=NULL;
 }
 
 <ROOT_surfxml_route,S_surfxml_platform_description_2,S_surfxml_include,S_surfxml_include_2,S_surfxml_platform_description_1,S_surfxml_include_1,S_surfxml_platform_description>"<route"{s} {
-  A_surfxml_route_src = NULL;
-  A_surfxml_route_dst = NULL;
-  A_surfxml_route_impact_on_src = "0.0";
-  A_surfxml_route_impact_on_dst = "0.0";
-  A_surfxml_route_impact_on_src_with_other_recv = "0.0";
-  A_surfxml_route_impact_on_dst_with_other_send = "0.0";
-  ENTER(AL_surfxml_route);
+  AX_surfxml_route_src = 0;
+  AX_surfxml_route_dst = 0;
+  AX_surfxml_route_impact_on_src = 30;
+  AX_surfxml_route_impact_on_dst = 34;
+  AX_surfxml_route_impact_on_src_with_other_recv = 38;
+  AX_surfxml_route_impact_on_dst_with_other_send = 42;
+  ENTER(AL_surfxml_route); pushbuffer(0);
   }
 
 <AL_surfxml_route>{
- "src"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_route_src);
- "src"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_route_src);
+ "src"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_route_src);
+ "src"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_route_src);
 
- "dst"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_route_dst);
- "dst"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_route_dst);
+ "dst"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_route_dst);
+ "dst"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_route_dst);
 
- "impact_on_src"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_route_impact_on_src);
- "impact_on_src"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_route_impact_on_src);
+ "impact_on_src"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_route_impact_on_src);
+ "impact_on_src"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_route_impact_on_src);
 
- "impact_on_dst"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_route_impact_on_dst);
- "impact_on_dst"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_route_impact_on_dst);
+ "impact_on_dst"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_route_impact_on_dst);
+ "impact_on_dst"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_route_impact_on_dst);
 
- "impact_on_src_with_other_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_route_impact_on_src_with_other_recv);
- "impact_on_src_with_other_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_route_impact_on_src_with_other_recv);
+ "impact_on_src_with_other_recv"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_route_impact_on_src_with_other_recv);
+ "impact_on_src_with_other_recv"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_route_impact_on_src_with_other_recv);
 
- "impact_on_dst_with_other_send"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_route_impact_on_dst_with_other_send);
- "impact_on_dst_with_other_send"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_route_impact_on_dst_with_other_send);
+ "impact_on_dst_with_other_send"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_route_impact_on_dst_with_other_send);
+ "impact_on_dst_with_other_send"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_route_impact_on_dst_with_other_send);
 
  ">" {
-  if (!A_surfxml_route_src) FAIL("Required attribute `src' not set for `route' element.");
-  if (!A_surfxml_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
-  LEAVE; STag_surfxml_route();surfxml_pcdata = NULL; ENTER(S_surfxml_route);
+  if (!AX_surfxml_route_src) FAIL("Required attribute `src' not set for `route' element.");
+  if (!AX_surfxml_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
+  LEAVE; STag_surfxml_route();surfxml_pcdata_ix = 0; ENTER(S_surfxml_route);
  }
  "/>" {
-  if (!A_surfxml_route_src) FAIL("Required attribute `src' not set for `route' element.");
-  if (!A_surfxml_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
-  LEAVE; STag_surfxml_route(); surfxml_pcdata = NULL; ETag_surfxml_route();
+  if (!AX_surfxml_route_src) FAIL("Required attribute `src' not set for `route' element.");
+  if (!AX_surfxml_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
+  LEAVE; STag_surfxml_route(); surfxml_pcdata_ix = 0; ETag_surfxml_route(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_route: SET(EPILOG); break;
@@ -633,6 +791,7 @@ const char* *surfxml_statenames=NULL;
  "</route"{s}">" {
   LEAVE;
   ETag_surfxml_route();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_route: SET(EPILOG); break;
@@ -645,21 +804,21 @@ const char* *surfxml_statenames=NULL;
 }
 
 <ROOT_surfxml_route_element,S_surfxml_route_1,S_surfxml_route,S_surfxml_route_2>"<route_element"{s} {
-  A_surfxml_route_element_name = NULL;
-  ENTER(AL_surfxml_route_element);
+  AX_surfxml_route_element_name = 0;
+  ENTER(AL_surfxml_route_element); pushbuffer(0);
   }
 
 <AL_surfxml_route_element>{
- "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_route_element_name);
- "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_route_element_name);
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_route_element_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_route_element_name);
 
  ">" {
-  if (!A_surfxml_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
-  LEAVE; STag_surfxml_route_element();surfxml_pcdata = NULL; ENTER(E_surfxml_route_element);
+  if (!AX_surfxml_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
+  LEAVE; STag_surfxml_route_element();surfxml_pcdata_ix = 0; ENTER(E_surfxml_route_element);
  }
  "/>" {
-  if (!A_surfxml_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
-  LEAVE; STag_surfxml_route_element(); surfxml_pcdata = NULL; ETag_surfxml_route_element();
+  if (!AX_surfxml_route_element_name) FAIL("Required attribute `name' not set for `route_element' element.");
+  LEAVE; STag_surfxml_route_element(); surfxml_pcdata_ix = 0; ETag_surfxml_route_element(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_route_1: case S_surfxml_route: case S_surfxml_route_2: SET(S_surfxml_route_2); break;
    case ROOT_surfxml_route_element: SET(EPILOG); break;
@@ -674,6 +833,7 @@ const char* *surfxml_statenames=NULL;
  "</route_element"{s}">" {
   LEAVE;
   ETag_surfxml_route_element();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_route_1: case S_surfxml_route: case S_surfxml_route_2: SET(S_surfxml_route_2); break;
    case ROOT_surfxml_route_element: SET(EPILOG); break;
@@ -685,35 +845,35 @@ const char* *surfxml_statenames=NULL;
 }
 
 <ROOT_surfxml_process,S_surfxml_platform_description_2,S_surfxml_include,S_surfxml_include_2,S_surfxml_platform_description_1,S_surfxml_include_1,S_surfxml_platform_description>"<process"{s} {
-  A_surfxml_process_host = NULL;
-  A_surfxml_process_function = NULL;
-  A_surfxml_process_start_time = "-1.0";
-  A_surfxml_process_kill_time = "-1.0";
-  ENTER(AL_surfxml_process);
+  AX_surfxml_process_host = 0;
+  AX_surfxml_process_function = 0;
+  AX_surfxml_process_start_time = 46;
+  AX_surfxml_process_kill_time = 51;
+  ENTER(AL_surfxml_process); pushbuffer(0);
   }
 
 <AL_surfxml_process>{
- "host"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_process_host);
- "host"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_process_host);
+ "host"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_process_host);
+ "host"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_process_host);
 
- "function"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_process_function);
- "function"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_process_function);
+ "function"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_process_function);
+ "function"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_process_function);
 
- "start_time"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_process_start_time);
- "start_time"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_process_start_time);
+ "start_time"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_process_start_time);
+ "start_time"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_process_start_time);
 
- "kill_time"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_process_kill_time);
- "kill_time"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_process_kill_time);
+ "kill_time"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_process_kill_time);
+ "kill_time"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_process_kill_time);
 
  ">" {
-  if (!A_surfxml_process_host) FAIL("Required attribute `host' not set for `process' element.");
-  if (!A_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
-  LEAVE; STag_surfxml_process();surfxml_pcdata = NULL; ENTER(S_surfxml_process);
+  if (!AX_surfxml_process_host) FAIL("Required attribute `host' not set for `process' element.");
+  if (!AX_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
+  LEAVE; STag_surfxml_process();surfxml_pcdata_ix = 0; ENTER(S_surfxml_process);
  }
  "/>" {
-  if (!A_surfxml_process_host) FAIL("Required attribute `host' not set for `process' element.");
-  if (!A_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
-  LEAVE; STag_surfxml_process(); surfxml_pcdata = NULL; ETag_surfxml_process();
+  if (!AX_surfxml_process_host) FAIL("Required attribute `host' not set for `process' element.");
+  if (!AX_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
+  LEAVE; STag_surfxml_process(); surfxml_pcdata_ix = 0; ETag_surfxml_process(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_process: SET(EPILOG); break;
@@ -729,6 +889,7 @@ const char* *surfxml_statenames=NULL;
  "</process"{s}">" {
   LEAVE;
   ETag_surfxml_process();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_description_2: case S_surfxml_platform_description_1: case S_surfxml_platform_description: SET(S_surfxml_platform_description_2); break;
    case ROOT_surfxml_process: SET(EPILOG); break;
@@ -741,21 +902,21 @@ const char* *surfxml_statenames=NULL;
 }
 
 <ROOT_surfxml_argument,S_surfxml_process_1,S_surfxml_process,S_surfxml_process_2>"<argument"{s} {
-  A_surfxml_argument_value = NULL;
-  ENTER(AL_surfxml_argument);
+  AX_surfxml_argument_value = 0;
+  ENTER(AL_surfxml_argument); pushbuffer(0);
   }
 
 <AL_surfxml_argument>{
- "value"{Eq}\' ENTER(VALUE1); BUFFERSET(A_surfxml_argument_value);
- "value"{Eq}\" ENTER(VALUE2); BUFFERSET(A_surfxml_argument_value);
+ "value"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_surfxml_argument_value);
+ "value"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_surfxml_argument_value);
 
  ">" {
-  if (!A_surfxml_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
-  LEAVE; STag_surfxml_argument();surfxml_pcdata = NULL; ENTER(E_surfxml_argument);
+  if (!AX_surfxml_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
+  LEAVE; STag_surfxml_argument();surfxml_pcdata_ix = 0; ENTER(E_surfxml_argument);
  }
  "/>" {
-  if (!A_surfxml_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
-  LEAVE; STag_surfxml_argument(); surfxml_pcdata = NULL; ETag_surfxml_argument();
+  if (!AX_surfxml_argument_value) FAIL("Required attribute `value' not set for `argument' element.");
+  LEAVE; STag_surfxml_argument(); surfxml_pcdata_ix = 0; ETag_surfxml_argument(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_process_1: case S_surfxml_process: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
    case ROOT_surfxml_argument: SET(EPILOG); break;
@@ -770,6 +931,7 @@ const char* *surfxml_statenames=NULL;
  "</argument"{s}">" {
   LEAVE;
   ETag_surfxml_argument();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_process_1: case S_surfxml_process: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
    case ROOT_surfxml_argument: SET(EPILOG); break;
@@ -858,19 +1020,39 @@ void print_yy_stack(char* fmt, ...)
 {
   int i = 0; va_list ap; va_start(ap, fmt);
   vfprintf(stderr, fmt, ap);
-  for (i=1; i<yy_start_stack_ptr; i++)
-    fprintf(stderr, "%s/", surfxml_statenames[yy_start_stack[i] ]);
-  fprintf(stderr,"%s\n", surfxml_statenames[YY_START]);
+  if (surfxml_statenames) {
+      for (i=1; i<yy_start_stack_ptr; i++) {
+          fprintf(stderr, "%s/", surfxml_statenames[yy_start_stack[i] ]);
+      }
+      fprintf(stderr,"%s\n", surfxml_statenames[YY_START]);
+  }
   va_end(ap);
+}
+
+void print_surfxml_bufferstack()
+{
+    int i;
+    fputs("Buffer: ", stderr);
+    for (i = 0; i < blimit; i++) {
+       if ( surfxml_bufferstack[i] == '\377' ) break;
+         putc(surfxml_bufferstack[i], stderr);
+    }
+    putc('\n', stderr);
 }
 
 static void debug_enter(int state, const char* statename) {
   yy_push_state(state);
-  if (yy_flex_debug) print_yy_stack("--ENTER(%s) : ",statename);
+  if (yy_flex_debug) {
+       print_yy_stack("--ENTER(%s) : ",statename);
+       print_surfxml_bufferstack();
+  }
 }
 
 static void debug_leave(void) {
-  if (yy_flex_debug) print_yy_stack("--LEAVE : ");
+    if (yy_flex_debug) {
+        print_yy_stack("--LEAVE : ");
+	print_surfxml_bufferstack();
+    }
   yy_pop_state();
 }
 
@@ -880,19 +1062,6 @@ static void debug_set(int state, const char* statename) {
 }
 #endif
 
-enum {flexml_max_err_msg_size = 512};
-
-static char flexml_err_msg[flexml_max_err_msg_size];
-const char * surfxml_parse_err_msg()
-{
-    return flexml_err_msg;
-}
-
-static void reset_surfxml_parse_err_msg()
-{
-    flexml_err_msg[0] = '\0';
-}
-
 
 static void cleanup(void)
 {
@@ -900,6 +1069,11 @@ static void cleanup(void)
         free(surfxml_statenames);
 	surfxml_statenames = NULL;
     }
+    free(surfxml_bufferstack);
+    surfxml_bufferstack = NULL;
+
+    free(indexstack);
+    indexstack = NULL;
 }
 
 
