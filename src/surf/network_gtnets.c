@@ -6,11 +6,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_gtnets_private.h"
+#include "gtnets/gtnets_interface.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network_gtnets);
 
 /* surf_network_resource_t surf_network_resource = NULL; */
-static xbt_dict_t network_link_set = NULL;
+/*static xbt_dict_t network_link_set = NULL;*/
 
 /* xbt_dict_t network_card_set = NULL; */
 
@@ -77,13 +78,13 @@ static void network_link_new(char *name,
 */
 
   /* KF: Add the link to the GTNetS simulation */
-  if (GTNetS_add_link(link_count, bw, lat)) {
+  if (gtnets_add_link(link_count, bw, lat)) {
     xbt_assert0(0,"Cannot create GTNetS link");
   }
 
   /* KF: Insert entry in the dictionary */
   gtnets_link = xbt_new0(s_network_link_GTNETS_t,1);
-  gtnets_link->name = strcpy(name);
+  gtnets_link->name = name;
   gtnets_link->bw_current = bw;
   gtnets_link->lat_current = lat;
   gtnets_link->id = link_count;
@@ -105,20 +106,21 @@ static int network_card_new(const char *name)
   static int card_count=-1;
 
   /* KF: Check that we haven't seen the network card before */ 
-  if (xbt_dict_get_or_null(network_card_set, name)) 
-    return;
+  network_card_GTNETS_t card = xbt_dict_get_or_null(network_card_set, name);
 
-  /* KF: Increment the card counter for GTNetS */
-  card_count++;
+  if (!card){
+    /* KF: Increment the card counter for GTNetS */
+    card_count++;
 
-  /* KF: just use the dictionary to map link names to link indices */
-  gtnets_network_card = xbt_new0(s_network_card_GTNETS_t,1);
-  gtnets_network_card->name = strcpy(name);
-  gtnets_network_card->id = card_count;
-  xbt_dict_set(network_card_set, name, gtnets_network_card, network_card_free);
+    /* KF: just use the dictionary to map link names to link indices */
+    card = xbt_new0(s_network_card_GTNETS_t,1);
+    card->name = xbt_strdup(name);
+    card->id = card_count;
+    xbt_dict_set(network_card_set, name, card, network_card_free);
+  }
 
   /* KF: just return the GTNetS ID as the SURF ID */
-  return card_count;
+  return card->id;
 }
 
 /* Instantiate a new route: MODIFY BY KF */
@@ -142,11 +144,11 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
   /* KF: Build the list of gtnets link IDs */
   gtnets_links = (int *)calloc(nb_link, sizeof(int));
   for (i=0; i<nb_link; i++) {
-    gtnets_links[i]=(int)(xbt_dict_get(network_link_set, links[i]))
+    gtnets_links[i]=(int)(xbt_dict_get(network_link_set, links[i]));
   }
 
   /* KF: Create the GTNets route */
-  if (GTNetS_add_route(src_id, dst_id, gtnets_links, nb_link)) {
+  if (gtnets_add_route(src_id, dst_id, gtnets_links, nb_link)) {
     xbt_assert0(0,"Cannot create GTNetS route");
   }
 }
@@ -167,20 +169,24 @@ static void parse_network_link(void)
   /* Print values when no traces are specified */
   {
     tmgr_trace_t bw_trace;
-    tmgr_trace_t state;
+    tmgr_trace_t state_trace;
     tmgr_trace_t lat_trace;
 
     surf_parse_get_trace(&bw_trace, A_surfxml_network_link_bandwidth_file);
     surf_parse_get_trace(&lat_trace, A_surfxml_network_link_latency_file);
     surf_parse_get_trace(&state_trace,A_surfxml_network_link_state_file);
-  
+
+    /*TODO Where is WARNING0 defined???*/
+#if 0  
     if (bw_trace) 
       WARNING0("The GTNetS network model doesn't support bandwidth state traces");
     if (lat_trace)
       WARNING0("The GTNetS network model doesn't support latency state traces");
     if (state_trace)
       WARNING0("The GTNetS network model doesn't support link state traces");
+#endif
   }
+
 
   /* KF: remove several arguments to network_link_new */
   network_link_new(name, bw, lat);
@@ -308,7 +314,7 @@ static double share_resources(double now)
   xbt_swag_t running_actions = surf_network_resource->common_public->states.running_action_set;
 #endif
 
-  return GTNetS_get_time_to_next_flow_completion();
+  return gtnets_get_time_to_next_flow_completion();
 }
 
 /* delta: by how many time units the simulation must advance */
@@ -320,23 +326,25 @@ static double share_resources(double now)
 
 static void update_actions_state(double now, double delta)
 {
+#if 0
   surf_action_network_GTNETS_t action = NULL;
   surf_action_network_GTNETS_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_network_resource->common_public->states.running_action_set;
+#endif
 
-  double time_to_next_flow_completion =  GTNetS_get_time_to_next_flow_completion();
+  double time_to_next_flow_completion =  gtnets_get_time_to_next_flow_completion();
   
   /* If there are no renning flows, just return */
   if (time_to_next_flow_completion < 0.0) {
     return;
   }
-  
+
   if (time_to_next_flow_completion < delta) { /* run until the first flow completes */
     void **metadata; 
     int i,num_flows;
 
-    if (GTNetS_run_until_next_flow_completion(&metadata, &num_flows)) {
+    if (gtnets_run_until_next_flow_completion(&metadata, &num_flows)) {
       xbt_assert0(0,"Cannot run GTNetS simulation until next flow completion");
     }
     if (num_flows < 1) {
@@ -344,7 +352,8 @@ static void update_actions_state(double now, double delta)
     }
 
     for (i=0; i<num_flows; i++) {
-      surf_action_t action = (surf_action_t)(metadata[i]);
+      surf_action_network_GTNETS_t action = 
+	(surf_action_network_GTNETS_t)(metadata[i]);
 
       action->generic_action.remains = 0;
       action->generic_action.finish =  now + time_to_next_flow_completion;
@@ -352,7 +361,7 @@ static void update_actions_state(double now, double delta)
       /* TODO: Anything else here? */
     }
   } else { /* run for a given number of seconds */
-    if (GTNetS_run(delta)) {
+    if (gtnets_run(delta)) {
       xbt_assert0(0,"Cannot run GTNetS simulation");
     }
   }
@@ -379,7 +388,6 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
   network_link_GTNETS_t *route = ROUTE(card_src->id, card_dst->id);
 */
-  int i;
 
 /*
   xbt_assert2(route_size,"You're trying to send data from %s to %s but there is no connexion between these two cards.", card_src->name, card_dst->name);
@@ -403,7 +411,7 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   xbt_swag_insert(action, action->generic_action.state_set);
 
   /* KF: Add a flow to the GTNets Simulation, associated to this action */
-  if (GTNetS_create_flow(src->id, dst->id, size, (void *)action) < 0) {
+  if (gtnets_create_flow(card_src->id, card_dst->id, size, (void *)action) < 0) {
     xbt_assert2(0,"Not route between host %s and host %s", card_src->name, card_dst->name);
   }
 
@@ -430,8 +438,9 @@ static int action_is_suspended(surf_action_t action)
 
 static void finalize(void)
 {
+#if 0
   int i,j;
-
+#endif
   xbt_dict_free(&network_card_set);
   xbt_dict_free(&network_link_set);
   xbt_swag_free(surf_network_resource->common_public->states.
@@ -461,7 +470,7 @@ static void finalize(void)
 #endif
 
   /* ADDED BY KF */
-  GTNetS_finalize();
+  gtnets_finalize();
   /* END ADDITION */
 }
 
@@ -522,7 +531,7 @@ static void surf_network_resource_init_internal(void)
   xbt_assert0(maxmin_system, "surf_init has to be called first!");
 
   /* KF: Added the initialization for GTNetS interface */
-  if (GTNetS_initialize()) {
+  if (gtnets_initialize()) {
     xbt_assert0(0, "impossible to initialize GTNetS interface");
   }
 }
