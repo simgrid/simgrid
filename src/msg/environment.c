@@ -8,6 +8,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "gras_config.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_environment, msg,
 				"Logging specific to MSG (environment)");
 

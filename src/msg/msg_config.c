@@ -11,6 +11,7 @@
 #include "private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "gras_config.h"
 
 int _msg_init_status = 0; /* 0: beginning of time; 
                              1: pre-inited (cfg_set created); 
