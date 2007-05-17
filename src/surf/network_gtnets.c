@@ -536,9 +536,7 @@ static void surf_network_resource_init_internal(void)
   }
 }
 
-/* HC: I put this prototype here for now but it will have to go in 
-   src/include/surf.h when it is functionnal. */
-void surf_network_resource_init_GTNETS(const char *filename);
+
 
 void surf_network_resource_init_GTNETS(const char *filename)
 {
