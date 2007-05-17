@@ -350,6 +350,10 @@ XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05(const char *filename);
 
 XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename);
 
+#ifdef USE_GTNETS
+/* For GTNetS*/
+XBT_PUBLIC(void) surf_workstation_resource_init_GTNETS(const char *filename);
+#endif
 
 /** \brief The network links
  *  \ingroup SURF_resources
