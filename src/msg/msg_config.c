@@ -24,10 +24,18 @@ static void _msg_cfg_cb__surf_workstation_model(const char *name, int pos) {
   xbt_assert0(_msg_init_status<2, "Cannot change the model after the initialization");
   
   val = xbt_cfg_get_string (_msg_cfg_set, name);
-  
+
+#ifdef USE_GTNETS
+  xbt_assert1(!strcmp(val, "CLM03") ||
+              !strcmp(val, "KCCFLN05") ||
+	      !strcmp(val, "GTNETS"),
+              "Unknown workstation model: %s (either 'CLM03', 'KCCFLN05', or 'GTNETS'",val);
+#else
   xbt_assert1(!strcmp(val, "CLM03") ||
               !strcmp(val, "KCCFLN05"),
               "Unknown workstation model: %s (either 'CLM03' or 'KCCFLN05'",val);
+#endif
+
 }
 
 /* create the config set and register what should be */

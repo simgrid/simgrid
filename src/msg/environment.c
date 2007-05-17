@@ -77,6 +77,10 @@ void MSG_create_environment(const char *file) {
     surf_workstation_resource_init_KCCFLN05_proportionnal(file);
   } else if (!strcmp(workstation_model_name,"CLM03")) {
     surf_workstation_resource_init_CLM03(file);
+#ifdef USE_GTNETS
+  } else if (!strcmp(workstation_model_name,"GTNETS")) {
+    surf_workstation_resource_init_GTNETS(file);
+#endif
   } else {
     xbt_assert0(0,"The impossible happened (once again)");
   }
