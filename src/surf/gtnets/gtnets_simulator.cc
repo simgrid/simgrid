@@ -2,8 +2,15 @@
 #include "gtnets_simulator.h"
 #include "gtnets_topology.h"
 #include <map>
+#include <vector>
 
-void static tcp_sent_callback(int id, double completion_time);
+using namespace std;
+
+static vector<void*> meta_flows;
+static int* meta_nflow;
+static int meta_flg = 0;
+
+void static tcp_sent_callback(void* action, double completion_time);
 
 // Constructor.
 // TODO: check the default values.
@@ -130,7 +137,7 @@ int GTSim::create_flow(int src, int dst, long datasize, void* metadata){
   gtnets_servers_[nflow_]->BindAndListen(80);
 
   gtnets_clients_[nflow_] = (TCPSend*)gtnets_nodes_[gtnets_hosts_[src]]->
-    AddApplication(TCPSend(nflow_, gtnets_nodes_[gtnets_hosts_[dst]]->GetIPAddr(), 
+    AddApplication(TCPSend(metadata, gtnets_nodes_[gtnets_hosts_[dst]]->GetIPAddr(), 
 			   80, Constant(datasize), TCPReno()));
   gtnets_clients_[nflow_]->SetSendCallBack(tcp_sent_callback);
   gtnets_clients_[nflow_]->Start(0);
@@ -143,6 +150,7 @@ Time_t GTSim::get_time_to_next_flow_completion(){
   int status;
   Time_t t1;
   int pfds[2];
+  meta_flg=0;
   
   pipe(pfds);
   
@@ -160,13 +168,18 @@ Time_t GTSim::get_time_to_next_flow_completion(){
 }
 
 int GTSim::run_until_next_flow_completion(void ***metadata, int *number_of_flows){
+  meta_flows.clear();
+  meta_nflow = number_of_flows;
+  meta_flg = 1;
+
   Time_t t1 = sim_->RunUntilNextCompletion();
-  sim_->Run(t1);
-  //TODO set metadata and number of flows.
+
+  *metadata = (meta_flows.empty() ? NULL : &meta_flows[0]);
   return 0;
 }
 
 int GTSim::run(double delta){
+  meta_flg=0;
   sim_->Run(delta);
   return 0;
 }
@@ -180,13 +193,15 @@ int GTSim::finalize(){
   return 0;
 }
 
-void static tcp_sent_callback(int id, double completion_time){
+void static tcp_sent_callback(void* action, double completion_time){
   // Schedule the flow complete event.
   SimulatorEvent* e =
     new SimulatorEvent(SimulatorEvent::FLOW_COMPLETE);
   Simulator::instance->Schedule(e, 0, Simulator::instance);
 
-  //TODO: set metadata
-  printf("In tcp_sent_callback: flow id: %d, time: %f\n", id, completion_time);
+  if (meta_flg){
+    meta_flows.push_back(action);
+    (*meta_nflow)++;
+  }
 }
 

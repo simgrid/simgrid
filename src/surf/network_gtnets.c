@@ -270,8 +270,9 @@ static int action_free(surf_action_t action)
     xbt_swag_remove(action, action->state_set);
     /* KF: No explicit freeing needed for GTNeTS here */
     free(action);
+    return 1;
   }
-  return 1;
+  return 0;
 }
 
 static void action_use(surf_action_t action)
@@ -334,15 +335,18 @@ static void update_actions_state(double now, double delta)
 #endif
 
   double time_to_next_flow_completion =  gtnets_get_time_to_next_flow_completion();
-  
+
   /* If there are no renning flows, just return */
   if (time_to_next_flow_completion < 0.0) {
     return;
   }
 
-  if (time_to_next_flow_completion < delta) { /* run until the first flow completes */
-    void **metadata; 
+  /*KF: if delta == time_to_next_flow_completion, too.*/
+  if (time_to_next_flow_completion <= delta) { /* run until the first flow completes */
+    void **metadata;
     int i,num_flows;
+
+    num_flows = 0;
 
     if (gtnets_run_until_next_flow_completion(&metadata, &num_flows)) {
       xbt_assert0(0,"Cannot run GTNetS simulation until next flow completion");
@@ -357,7 +361,7 @@ static void update_actions_state(double now, double delta)
 
       action->generic_action.remains = 0;
       action->generic_action.finish =  now + time_to_next_flow_completion;
-      action->generic_action.finish =  SURF_ACTION_DONE;
+      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
       /* TODO: Anything else here? */
     }
   } else { /* run for a given number of seconds */
