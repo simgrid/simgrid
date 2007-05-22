@@ -140,13 +140,10 @@
 #  define XBT_PUBLIC_DATA       
 #endif
    
-
-
-
-#ifndef max
+#if !defined (max) && !defined(__cplusplus)
 #  define max(a,b)	(((a) > (b)) ? (a) : (b))
 #endif
-#ifndef min
+#if !defined (min) && !defined(__cplusplus)
 #  define min(a,b)	(((a) < (b)) ? (a) : (b))
 #endif
 
@@ -163,7 +160,6 @@
 # endif
 #endif
 
-/*! C++ users need love */
 #ifndef SG_END_DECL
 # ifdef __cplusplus
 #  define SG_END_DECL() }
