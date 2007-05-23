@@ -1,8 +1,34 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 
-amver=1.9
+amversions="${amver:-1.10 1.9}"
 
+check_version()
+{
+    eval $2 --version 2>/dev/null | grep -i "$1.*$3" >/dev/null
+}
+
+find_version()
+{
+    tool=$1
+    found="NOT_FOUND"
+    shift
+    versions="$*"
+
+    for version in $versions; do
+	if check_version $tool ${tool}${variant} $version; then
+	    found="${version}"
+	    echo ${version} >&2
+	    break
+	fi
+    done
+    if [ "x$found" = "xNOT_FOUND" ]; then
+	found="-" 
+    fi
+    echo $found
+}
+
+amver=`find_version automake ${amversions}`
 
 lt=`which libtoolize`
 if [ "x$lt" = "x" ] ; then
@@ -12,7 +38,7 @@ fi
 
 am=`which automake-$amver`
 if [ "x$am" = "x" ] ; then
-  echo "automake version $amver not found. Please install the relevant package to proceed with a CVS checkout"
+  echo "automake versions $amversions not found. Please install the relevant package to proceed with a CVS checkout"
   exit 1
 fi
 
