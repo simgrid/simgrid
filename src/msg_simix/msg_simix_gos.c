@@ -412,7 +412,7 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
   task_simdata->sender = process;
   task_simdata->source = MSG_process_get_host(process);
   xbt_assert0(task_simdata->using==1,
-	      "This taks is still being used somewhere else. You cannot send it now. Go fix your code!");
+	      "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
   task_simdata->comm = NULL;
   
   local_host = ((simdata_process_t) process->simdata)->host;
@@ -546,7 +546,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 
   simdata = task->simdata;
   xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
-	      "This taks is executed somewhere else. Go fix your code!");
+	      "This task is executed somewhere else. Go fix your code!");
 	
 	DEBUG1("Computing on %s", MSG_process_self()->simdata->host->name);
   simdata->using++;
@@ -655,7 +655,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 
   simdata = task->simdata;
   xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
-	      "This taks is executed somewhere else. Go fix your code!");
+	      "This task is executed somewhere else. Go fix your code!");
 
   xbt_assert0(simdata->host_nb,"This is not a parallel task. Go to hell.");
 	
