@@ -361,12 +361,12 @@ static void diff_build_diff(xbt_dynar_t res,
     diff_build_diff(res,C,da,db,i-1,j-1);
     topush = bprintf("  %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res, &topush);
-  } else if (j>0 && 
+  } else if (j>=0 && 
 	     (i<=0 || xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i,j-1);
     topush = bprintf("+ %s",xbt_dynar_get_as(db,j,char*));
     xbt_dynar_push(res,&topush);
-  } else if (i>0 && 
+  } else if (i>=0 && 
 	     (j<=0 || xbt_matrix_get_as(C,i,j-1,int) < xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i-1,j);
     topush = bprintf("- %s",xbt_dynar_get_as(da,i,char*));
@@ -376,6 +376,7 @@ static void diff_build_diff(xbt_dynar_t res,
   } else {
     THROW2(arg_error,0,"Invalid values: i=%d, j=%d",i,j);
   }
+   
 }
 
 /** @brief Compute the unified diff of two strings */
@@ -388,6 +389,17 @@ char *xbt_str_diff(char *a, char *b) {
   char *res=NULL;
   
   diff_build_diff(diff, C, da,db, xbt_dynar_length(da)-1, xbt_dynar_length(db)-1);
+  /* Clean empty lines at the end */
+  while (xbt_dynar_length(diff) > 0) {
+     char *str;
+     xbt_dynar_pop(diff,&str);
+     if (str[0]=='\0' || !strcmp(str,"  ")) {
+	free(str);
+     } else {
+	xbt_dynar_push(diff,&str);
+	break;
+     }     
+  }   
   res = xbt_str_join(diff, "\n");
 
   xbt_dynar_free(&da);
