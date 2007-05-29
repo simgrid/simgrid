@@ -390,8 +390,11 @@ void *rctx_wait(void* r) {
       && (    rctx->output_got->used != rctx->output_wanted->used
 	   || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
     char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);
-    ERROR2("Output of child \"%s\" don't match expectations. Here is a diff between expected and got output:\n%s",
-	   rctx->cmd,diff);
+    if (XBT_LOG_ISENABLED(tesh,xbt_log_priority_info))
+       ERROR1("Child's output don't match expectations. Here is a diff between expected and got output:\n%s",
+	      diff);
+    else
+       ERROR0("Child's output don't match expectations");
     free(diff);
     errcode=2;
   } else if (!rctx->check_output) {
