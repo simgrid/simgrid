@@ -109,6 +109,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
 	ERROR2("[%s] More than one command in this chunk of lines (previous: %s).\n"
 	       " Dunno which input/output belongs to which command.",
 	       filepos,rctx->cmd);
+	ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
 	exit(1);
       }
       rctx_start();
@@ -167,6 +168,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
        
     } else {
       ERROR2("%s: Malformed metacommand: %s",filepos,line);
+      ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
       exit(1);
     }
     break;
@@ -194,7 +196,8 @@ static void* thread_writer(void *r) {
 	rctx->brokenpipe = 1;
       } else if (errno!=EINTR && errno!=EAGAIN && errno!=EPIPE) {
 	perror("Error while writing input to child");
-	  exit(4);
+	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);
+        exit(4);
       }
     }
     DEBUG1("written %d chars so far",posw);
@@ -217,6 +220,7 @@ static void *thread_reader(void *r) {
     posr=read(rctx->child_from,buffout,4095);
     if (posr<0 && errno!=EINTR && errno!=EAGAIN) {
       perror("Error while reading output of child");
+      ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
       exit(4);
     }
     if (posr>0) {
@@ -232,7 +236,8 @@ static void *thread_reader(void *r) {
   got_pid = waitpid(rctx->pid,&rctx->status,0);
   if (got_pid != rctx->pid) {
     perror(bprintf("Cannot wait for the child %s",rctx->cmd));
-    exit(1);
+    ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
+    exit(4);
   }
    
   rctx->reader_done = 1;
@@ -250,12 +255,14 @@ void rctx_start(void) {
   VERB2("Start %s %s",rctx->cmd,(rctx->is_background?"(background job)":""));
   if (pipe(child_in) || pipe(child_out)) {
     perror("Cannot open the pipes");
+    ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
     exit(4);
   }
 
   rctx->pid=fork();
   if (rctx->pid<0) {
     perror("Cannot fork the command");
+    ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
     exit(4);
   }
 
@@ -349,7 +356,7 @@ void *rctx_wait(void* r) {
 
   /* Check for timeouts */
   if (rctx->timeout) {
-    ERROR1("Child timeouted (waited %d sec)",timeout_value);
+    ERROR2("Test suite `%s': NOK (timeout after %d sec)", testsuite_name,timeout_value);
     exit(3);
   }
       
@@ -357,33 +364,35 @@ void *rctx_wait(void* r) {
   DEBUG3("Status(%s|%d)=%d",rctx->cmd,rctx->pid,rctx->status);
 
   if (WIFSIGNALED(rctx->status) && !rctx->expected_signal) {
-    ERROR2("Child \"%s\" got signal %s.", rctx->cmd,
-	    signal_name(WTERMSIG(rctx->status),NULL));
+    ERROR2("Test suite `%s': NOK (child got signal %s)", 
+	   testsuite_name,
+	   signal_name(WTERMSIG(rctx->status),NULL));
     errcode = WTERMSIG(rctx->status)+4;	
   }
 
   if (WIFSIGNALED(rctx->status) && rctx->expected_signal &&
       strcmp(signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
 	     rctx->expected_signal)) {
-    ERROR3("Child \"%s\" got signal %s instead of signal %s", rctx->cmd,
+    ERROR3("Test suite `%s': NOK (child got signal %s instead of %s)", testsuite_name,
 	    signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
 	    rctx->expected_signal);
     errcode = WTERMSIG(rctx->status)+4;	
   }
   
   if (!WIFSIGNALED(rctx->status) && rctx->expected_signal) {
-    ERROR2("Child \"%s\" didn't got expected signal %s",
-	   rctx->cmd, rctx->expected_signal);
+    ERROR2("Test suite `%s': NOK (child expected signal %s)", testsuite_name,
+	   rctx->expected_signal);
     errcode = 5;
   }
 
   if (WIFEXITED(rctx->status) && WEXITSTATUS(rctx->status) != rctx->expected_return ) {
     if (rctx->expected_return) 
-      ERROR3("Child \"%s\" returned code %d instead of %d", rctx->cmd,
+      ERROR3("Test suite `%s': NOK (child returned code %d instead of %d)", testsuite_name,
 	     WEXITSTATUS(rctx->status), rctx->expected_return);
     else
-      ERROR2("Child \"%s\" returned code %d", rctx->cmd, WEXITSTATUS(rctx->status));
+      ERROR2("Test suite `%s': NOK (child returned code %d)", testsuite_name, WEXITSTATUS(rctx->status));
     errcode = 40+WEXITSTATUS(rctx->status);
+    
   }
   rctx->expected_return = 0;
   
@@ -400,13 +409,14 @@ void *rctx_wait(void* r) {
   if (   rctx->output == e_output_check
       && (    rctx->output_got->used != rctx->output_wanted->used
 	   || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
-    char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);
-    if (XBT_LOG_ISENABLED(tesh,xbt_log_priority_info))
-       ERROR1("Child's output don't match expectations. Here is a diff between expected and got output:\n%s",
+    if (XBT_LOG_ISENABLED(tesh,xbt_log_priority_info)) {
+       char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);	  
+       ERROR1("Output mismatch:\n%s",
 	      diff);
-    else
-       ERROR0("Child's output don't match expectations");
-    free(diff);
+       free(diff);
+    }     
+    ERROR1("Test suite `%s': NOK (output mismatch)", testsuite_name);
+     
     errcode=2;
   } else if (rctx->output == e_output_ignore) {
     INFO0("(ignoring the output as requested)");

@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(tesh,"TEst SHell utility");
 /*** Options ***/
 int timeout_value = 5; /* child timeout value */
 
-
+char *testsuite_name;
 static void handle_line(const char * filepos, char *line) {
   int pos;
 
@@ -59,7 +59,8 @@ static void handle_line(const char * filepos, char *line) {
 	char buff[256];
 	strerror_r(errno, buff, 256);
 
-	ERROR2("Chdir to %s failed: %s",dir+pos+2,buff);
+	perror(bprintf("Chdir to %s failed: %s",dir+pos+2,buff));
+	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);	 
 	exit(4);
       }
       break;
@@ -80,6 +81,7 @@ static void handle_line(const char * filepos, char *line) {
 
   default:
     ERROR2("[%s] Syntax error: %s",filepos, line);
+    ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
     exit(1);
     break;
   }
@@ -112,6 +114,7 @@ static void handle_suite(const char* filename, FILE* IN) {
       if (!rctx->cmd && !rctx->is_empty) {
 	ERROR1("[%d] Error: no command found in this chunk of lines.",
 	       buffbegin);
+	ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
 	exit(1);
       }
       if (rctx->cmd)
@@ -198,9 +201,11 @@ int main(int argc,char *argv[]) {
 	suitename[strlen(suitename)-5] = '\0';
 
       INFO1("Test suite `%s'",suitename);
+      testsuite_name = suitename;
       IN=fopen(argv[i], "r");
       if (!IN) {
 	perror(bprintf("Impossible to open the suite file `%s'",argv[i]));
+	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);
 	exit(1);
        }
       handle_suite(suitename,IN);

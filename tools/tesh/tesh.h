@@ -28,5 +28,5 @@ const char* signal_name(unsigned int got, char *expected);
 int timeout_value; /* child timeout value */
 
 rctx_t rctx;
-
+char *testsuite_name;
 #endif /* TESH_H */
