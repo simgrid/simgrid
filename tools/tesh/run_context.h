@@ -13,6 +13,9 @@
 
 #include "tesh.h"
 
+typedef enum {e_output_check, e_output_display, e_output_ignore} e_output_handling_t;
+   
+
 typedef struct {
   /* kind of job */
   char *cmd;
@@ -20,7 +23,6 @@ typedef struct {
   int is_background:1;
   int is_empty:1;
   int is_stoppable:1;
-  int check_output:1;
   
   int brokenpipe:1;
   int timeout:1;
@@ -28,6 +30,10 @@ typedef struct {
   int reader_done:1; /* reader set this to true when he's done because
 			the child is dead. The main thread use it to detect
 			that the child is not dead before the end of timeout */
+   
+  e_output_handling_t output;
+   
+  int status;
 
   /* expected results */
   int end_time; /* begin_time + timeout, as epoch */

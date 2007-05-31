@@ -17,9 +17,12 @@ blank and is ignored):
      `set timeout' <integer>
      `expect signal' <signal name>
      `expect return' <integer>
+     `output' <ignore|display>
+ `p' a string to print
+ `P' a string to print at the CRITICAL level (ease logging grepping)
 
 If the expected output do not match what the command spits, TESH will produce
-an error showing the diff.
+an error showing the diff (see OUTPUT below).
 
 IO orders
 ---------
@@ -77,3 +80,10 @@ By default, all commands are given 5 seconds to execute
 takes an integer as argument. The change only apply to the next command
 (cf. set-timeout.tesh).
 
+OUTPUT
+------
+
+By default, the commands output is matched against the one expected,
+and an error is raised on discrepency. Metacomands to change this:
+ "output ignore"  -> output completely discarded 
+ "output display" -> output displayed (but not verified) 

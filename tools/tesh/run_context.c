@@ -52,7 +52,7 @@ void rctx_empty(rctx_t rc) {
   rc->is_empty = 1;
   rc->is_background = 0;
   rc->is_stoppable = 0;
-  rc->check_output = 1;
+  rc->output = e_output_check;
   rc->brokenpipe = 0;
   rc->timeout = 0;
   buff_empty(rc->input);
@@ -157,8 +157,12 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
       VERB2("[%s] (next command must return code %d)",
 	    filepos, rctx->expected_return);
 
-    } else if (!strncmp(line,"ignore output",strlen("ignore output"))) {
-      rctx->check_output = 0;
+    } else if (!strncmp(line,"output ignore",strlen("output ignore"))) {
+      rctx->output = e_output_ignore;
+      VERB1("[%s] (ignore output of next command)", filepos);
+       
+    } else if (!strncmp(line,"output display",strlen("output display"))) {
+      rctx->output = e_output_display;
       VERB1("[%s] (ignore output of next command)", filepos);
        
     } else {
@@ -207,7 +211,7 @@ static void* thread_writer(void *r) {
 static void *thread_reader(void *r) {
   rctx_t rctx = (rctx_t)r;
   char *buffout=malloc(4096);
-  int posr;
+  int posr, got_pid;
 
   do {
     posr=read(rctx->child_from,buffout,4095);
@@ -223,6 +227,14 @@ static void *thread_reader(void *r) {
     }
   } while (!rctx->timeout && posr!=0);
   free(buffout);
+
+  /* let this thread wait for the child so that the main thread can detect the timeout without blocking on the wait */
+  got_pid = waitpid(rctx->pid,&rctx->status,0);
+  if (got_pid != rctx->pid) {
+    perror(bprintf("Cannot wait for the child %s",rctx->cmd));
+    exit(1);
+  }
+   
   rctx->reader_done = 1;
   return NULL;
 } 
@@ -256,6 +268,7 @@ void rctx_start(void) {
 
     rctx->end_time = time(NULL) + timeout_value;
 
+    rctx->reader_done = 0;
     rctx->reader = xbt_thread_create(thread_reader,(void*)rctx);
     rctx->writer = xbt_thread_create(thread_writer,(void*)rctx);
 
@@ -301,8 +314,7 @@ void rctx_start(void) {
 void *rctx_wait(void* r) {
   rctx_t rctx = (rctx_t)r;
   int errcode = 0;
-  int res;
-  int status;
+  int now = time(NULL);
     
   rctx_dump(rctx,"wait");
 
@@ -310,16 +322,21 @@ void *rctx_wait(void* r) {
     THROW1(unknown_error,0,"Cmd '%s' not started yet. Cannot wait it",
 	   rctx->cmd);
 
-  /* Wait for the child to die or the timeout to happen */
-  while (!rctx->reader_done && rctx->end_time > time(NULL)) {
     usleep(100);
+  /* Wait for the child to die or the timeout to happen */
+  while (!rctx->reader_done && rctx->end_time >= now) {
+    usleep(100);
+    now = time(NULL);
   }
-
-  if (!rctx->reader_done) {
-    INFO1("Child '%s' timeouted. Kill it",rctx->cmd);
+   
+  if (rctx->end_time < now) {
+    INFO2("Child '%s' %d timeouted. Kill it",rctx->cmd,rctx->pid);
     rctx->timeout = 1;
-    kill(rctx->pid,SIGKILL);
+    kill(rctx->pid,SIGTERM);
+    usleep(100);
+    kill(rctx->pid,SIGKILL);    
   }
+   
   /* Make sure helper threads die.
      Cannot block since they wait for the child we just killed
      if not already dead. */
@@ -336,43 +353,37 @@ void *rctx_wait(void* r) {
     exit(3);
   }
       
-  DEBUG2("Wait for %s (%d)",rctx->cmd,rctx->pid);
-  res = waitpid(rctx->pid,&status,0);
-  if (res != rctx->pid) {
-    perror(bprintf("Cannot wait for the child %s",rctx->cmd));
-    exit(1);
-  }
   DEBUG2("RCTX=%p (pid=%d)",rctx,rctx->pid);
-  DEBUG3("Status(%s|%d)=%d",rctx->cmd,rctx->pid,status);
+  DEBUG3("Status(%s|%d)=%d",rctx->cmd,rctx->pid,rctx->status);
 
-  if (WIFSIGNALED(status) && !rctx->expected_signal) {
+  if (WIFSIGNALED(rctx->status) && !rctx->expected_signal) {
     ERROR2("Child \"%s\" got signal %s.", rctx->cmd,
-	    signal_name(WTERMSIG(status),NULL));
-    errcode = WTERMSIG(status)+4;	
+	    signal_name(WTERMSIG(rctx->status),NULL));
+    errcode = WTERMSIG(rctx->status)+4;	
   }
 
-  if (WIFSIGNALED(status) && rctx->expected_signal &&
-      strcmp(signal_name(WTERMSIG(status),rctx->expected_signal),
+  if (WIFSIGNALED(rctx->status) && rctx->expected_signal &&
+      strcmp(signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
 	     rctx->expected_signal)) {
     ERROR3("Child \"%s\" got signal %s instead of signal %s", rctx->cmd,
-	    signal_name(WTERMSIG(status),rctx->expected_signal),
+	    signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
 	    rctx->expected_signal);
-    errcode = WTERMSIG(status)+4;	
+    errcode = WTERMSIG(rctx->status)+4;	
   }
   
-  if (!WIFSIGNALED(status) && rctx->expected_signal) {
+  if (!WIFSIGNALED(rctx->status) && rctx->expected_signal) {
     ERROR2("Child \"%s\" didn't got expected signal %s",
 	   rctx->cmd, rctx->expected_signal);
     errcode = 5;
   }
 
-  if (WIFEXITED(status) && WEXITSTATUS(status) != rctx->expected_return ) {
+  if (WIFEXITED(rctx->status) && WEXITSTATUS(rctx->status) != rctx->expected_return ) {
     if (rctx->expected_return) 
       ERROR3("Child \"%s\" returned code %d instead of %d", rctx->cmd,
-	     WEXITSTATUS(status), rctx->expected_return);
+	     WEXITSTATUS(rctx->status), rctx->expected_return);
     else
-      ERROR2("Child \"%s\" returned code %d", rctx->cmd, WEXITSTATUS(status));
-    errcode = 40+WEXITSTATUS(status);
+      ERROR2("Child \"%s\" returned code %d", rctx->cmd, WEXITSTATUS(rctx->status));
+    errcode = 40+WEXITSTATUS(rctx->status);
   }
   rctx->expected_return = 0;
   
@@ -386,7 +397,7 @@ void *rctx_wait(void* r) {
   buff_trim(rctx->output_got);
   buff_trim(rctx->output_wanted);
 
-  if (   rctx->check_output 
+  if (   rctx->output == e_output_check
       && (    rctx->output_got->used != rctx->output_wanted->used
 	   || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
     char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);
@@ -397,8 +408,14 @@ void *rctx_wait(void* r) {
        ERROR0("Child's output don't match expectations");
     free(diff);
     errcode=2;
-  } else if (!rctx->check_output) {
+  } else if (rctx->output == e_output_ignore) {
     INFO0("(ignoring the output as requested)");
+  } else if (rctx->output == e_output_display) {
+    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
+    char *out = xbt_str_join(a,"\n||");
+    xbt_dynar_free(&a);
+    INFO1("Here is the (ignored) command output: \n||%s",out);
+    free(out);
   }
 
   if (rctx->is_background)
@@ -406,8 +423,8 @@ void *rctx_wait(void* r) {
   else
     rctx_empty(rctx);
   if (errcode) {
-    if (!rctx->check_output)
-      INFO1("Here is the child output:\n%s",rctx->output_got->data);
+    if (rctx->output == e_output_check)
+      INFO1("Here is the child's output:\n%s",rctx->output_got->data);
     exit (errcode);
   }
 
