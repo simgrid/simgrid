@@ -330,7 +330,7 @@ void *rctx_wait(void* r) {
   }
    
   if (rctx->end_time < now) {
-    INFO2("Child '%s' %d timeouted. Kill it",rctx->cmd,rctx->pid);
+    INFO1("Child '%s' timeouted. Kill it",rctx->cmd);
     rctx->timeout = 1;
     kill(rctx->pid,SIGTERM);
     usleep(100);
