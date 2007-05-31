@@ -250,7 +250,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
   xbt_dynar_foreach(dyn,cpt,cursor) {
     len+=strlen(cursor);
   }
-  len+=strlen(sep)*(xbt_dynar_length(dyn)-1);
+  len+=strlen(sep)*(xbt_dynar_length(dyn));
   /* Do the job */
   res = xbt_malloc(len);
   p=res;
