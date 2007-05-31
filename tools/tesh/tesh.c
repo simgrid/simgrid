@@ -74,6 +74,9 @@ static void handle_line(const char * filepos, char *line) {
   case 'p':
     INFO2("[%s] %s",filepos,line+2);
     break;
+  case 'P':
+    CRITICAL2("[%s] %s",filepos,line+2);
+    break;
 
   default:
     ERROR2("[%s] Syntax error: %s",filepos, line);
