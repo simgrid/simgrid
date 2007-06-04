@@ -3,6 +3,7 @@
    The XBT functionalities fall into several categories:
     - Portability support
       - \ref XBT_syscall
+      - \ref XBT_str
     - Grounding features
       - \ref XBT_ex
       - \ref XBT_log
@@ -37,6 +38,7 @@
   @{ */
 
      /** @defgroup XBT_syscall Malloc and friends */
+     /** @defgroup XBT_str     String related functions */
      /** @defgroup XBT_ex     Exception support */
      /** @defgroup XBT_log    Logging support */
      /** @defgroup XBT_error  Assert macro familly */

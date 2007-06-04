@@ -7,12 +7,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. 
  */
-
-/* Returns the string without leading whitespaces (xbt_str_ltrim), 
- * trailing whitespaces (xbt_str_rtrim),
- * or both leading and trailing whitespaces (xbt_str_trim). 
- * (in-place modification of the string)
- */
   
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
@@ -260,7 +254,22 @@ char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
   return res;
 }
    
-#ifndef HAVE_GETLINE
+#if !defined(HAVE_GETLINE) || defined(DOXYGEN)
+/** @brief Get a single line from the stream (reimplementation of the GNU getline)
+ * 
+ * This is a redefinition of the GNU getline function, used on platforms where it does not exists.
+ * 
+ * getline() reads an entire line from stream, storing the address of the buffer 
+ * containing the text into *buf.  The buffer is null-terminated and includes 
+ * the newline character, if one was found.
+ * 
+ * If *buf is NULL, then getline() will allocate a buffer for storing the line, 
+ * which should be freed by the user program.  Alternatively, before calling getline(), 
+ * *buf can contain a pointer to a malloc()-allocated buffer *n bytes in size.  If the buffer 
+ * is not large enough to hold the line, getline() resizes it with realloc(), updating *buf and *n 
+ * as necessary.  In either case, on a successful call, *buf and *n will be updated to 
+ * reflect the buffer address and allocated size respectively.
+ */
 long getline(char **buf, size_t *n, FILE *stream) {
    
    int i, ch;
