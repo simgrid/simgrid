@@ -140,15 +140,35 @@ static void route_new(int src_id, int dst_id, char **links, int nb_link)
 #endif
   int i;
   int *gtnets_links;
- 
+
   /* KF: Build the list of gtnets link IDs */
   gtnets_links = (int *)calloc(nb_link, sizeof(int));
   for (i=0; i<nb_link; i++) {
-    gtnets_links[i]=(int)(xbt_dict_get(network_link_set, links[i]));
+    gtnets_links[i]=
+      ((network_link_GTNETS_t)(xbt_dict_get(network_link_set, links[i])))->id;
   }
 
   /* KF: Create the GTNets route */
   if (gtnets_add_route(src_id, dst_id, gtnets_links, nb_link)) {
+    xbt_assert0(0,"Cannot create GTNetS route");
+  }
+}
+
+/* Instantiate a new route: MODIFY BY KF */
+static void route_onehop_new(int src_id, int dst_id, char **links, int nb_link)
+{
+  int linkid;
+
+  if (nb_link != 1){
+    xbt_assert0(0, "In onehop_new, nb_link should be 1");
+  }
+
+  /* KF: Build the list of gtnets link IDs */
+  linkid = 
+      ((network_link_GTNETS_t)(xbt_dict_get(network_link_set, links[0])))->id;
+
+  /* KF: Create the GTNets route */
+  if (gtnets_add_onehop_route(src_id, dst_id, linkid)) {
     xbt_assert0(0,"Cannot create GTNetS route");
   }
 }
@@ -206,6 +226,17 @@ static void parse_route_set_endpoints(void)
   link_name = NULL;
 }
 
+/* KF*/
+static void parse_route_set_routers(void)
+{
+  int id = network_card_new(A_surfxml_router_name);
+
+  /* KF: Create the GTNets router */
+  if (gtnets_add_router(id)) {
+    xbt_assert0(0,"Cannot add GTNetS router");
+  }
+}
+
 /* Parses a route element from the XML: UNMODIFIED BY HC */
 static void parse_route_elem(void)
 {
@@ -214,10 +245,18 @@ static void parse_route_elem(void)
   link_name[(nb_link) - 1] = xbt_strdup(A_surfxml_route_element_name);
 }
 
-/* Create the route: UNMODIFIED BY HC */
+/* Create the route (more than one hops): MODIFIED BY KF */
 static void parse_route_set_route(void)
 {
-  route_new(src_id, dst_id, link_name, nb_link);
+  if (nb_link > 1)
+    route_new(src_id, dst_id, link_name, nb_link);
+}
+
+/* Create the one-hope route: BY KF */
+static void parse_route_set_onehop_route(void)
+{
+  if (nb_link == 1)
+    route_onehop_new(src_id, dst_id, link_name, nb_link);
 }
 
 /* Main XML parsing */
@@ -231,8 +270,27 @@ static void parse_file(const char *file)
   surf_parse_close();
 
   /* Figuring out the network cards used */
+  /* KF
   surf_parse_reset_parser();
   STag_surfxml_route_fun=parse_route_set_endpoints;
+  surf_parse_open(file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  surf_parse_close();
+  */
+
+  /* KF: Figuring out the router (considered as part of
+     network cards) used.*/
+  surf_parse_reset_parser();
+  STag_surfxml_router_fun=parse_route_set_routers;
+  surf_parse_open(file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  surf_parse_close();  
+
+  /* Building the one-hop routes */
+  surf_parse_reset_parser();
+  STag_surfxml_route_fun=parse_route_set_endpoints;
+  ETag_surfxml_route_element_fun=parse_route_elem;
+  ETag_surfxml_route_fun=parse_route_set_onehop_route;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
