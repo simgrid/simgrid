@@ -23,8 +23,6 @@ int timeout_value = 5; /* child timeout value */
 
 char *testsuite_name;
 static void handle_line(const char * filepos, char *line) {
-  int pos;
-
   /* Search end */
   xbt_str_rtrim(line+2,"\n");
 
@@ -59,7 +57,7 @@ static void handle_line(const char * filepos, char *line) {
 	char buff[256];
 	strerror_r(errno, buff, 256);
 
-	perror(bprintf("Chdir to %s failed: %s",dir+pos+2,buff));
+	perror(bprintf("Chdir to %s failed: %s",dir,buff));
 	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);	 
 	exit(4);
       }
