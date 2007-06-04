@@ -369,7 +369,7 @@ const char *xbt_log_priority_names[8] = {
   "CRITICAL"
 };
 
-s_xbt_log_category_t XBT_PUBLIC_DATA  _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
+XBT_PUBLIC_DATA(s_xbt_log_category_t)  _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   0, 0, 0,
   "root", xbt_log_priority_uninitialized, 0,
   NULL, 0
@@ -655,8 +655,8 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
     free(neweq);
   } else {
     char buff[512];
-    snprintf(buff,min(512,eq - dot - 1),"%s",dot+1);
-    THROW1(arg_error,0,"Unknown setting of the log category: %s",buff);
+    snprintf(buff,min(512,eq - dot),"%s",dot+1);
+    THROW1(arg_error,0,"Unknown setting of the log category: '%s'",buff);
   }
   set->catname=(char*)xbt_malloc(dot - name+1);
     
