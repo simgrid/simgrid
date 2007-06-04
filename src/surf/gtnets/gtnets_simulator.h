@@ -1,4 +1,8 @@
-//Kayo Fujiwara 1/8/2007
+/* 	$Id$	 */
+/* Copyright (c) 2007 Kayo Fujiwara. All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef _GTNETS_SIM_H
 #define _GTNETS_SIM_H
@@ -22,6 +26,7 @@
 #include "tcp-newreno.h"
 #include "validation.h"
 #include "event.h"
+#include "routing-manual.h"
 
 using namespace std;
 
@@ -33,17 +38,24 @@ public:
   ~GTSim();
 public:   
   int add_link(int id, double bandwidth, double latency);
+  int add_onehop_route(int src, int dst, int link);
   int add_route(int src, int dst, int* links, int nlink);
+  int add_router(int id);
   int create_flow(int src, int dst, long datasize, void* metadata);
   double get_time_to_next_flow_completion();
   int run_until_next_flow_completion(void*** metadata, int* number_of_flows);
   int run(double deltat);
-  int finalize();
 
   void create_gtnets_topology();
 private:
+  void add_nodes();
+  void node_connect();
+
+  bool node_include(int);
+  bool link_include(int);
   Simulator* sim_;
-  SGTopology* topo_;
+  GTNETS_Topology* topo_;
+  RoutingManual* rm_;
   int nnode_;
   int is_topology_;
   int nflow_;
@@ -52,8 +64,7 @@ private:
   map<int, Node*>      gtnets_nodes_;
   map<int, TCPServer*> gtnets_servers_;
   map<int, TCPSend*>   gtnets_clients_;
-  map<int, SGLink*>    tmp_links_;
-  map<int, int>        gtnets_hosts_; //<hostid, nodeid>
+
   map<int, void*>      gtnets_metadata_;
 };
 

@@ -1,380 +1,449 @@
+/* $ID$ */
 
-//SGNode, SGTopology: tmporary classes for GTNetS topology.
+/* Copyright (c) 2007 Kayo Fujiwara. All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+//GTNETS_Link, GTNETS_Node, GTNETS_Topology: 
+//Temporary classes for generating GTNetS topology
 
 #include "gtnets_topology.h"
 
 // 
-//  SGNode
+//  GTNETS_Node
 // 
-//  TODO when merging a node, remember to add the existing "hosts".
-SGNode::SGNode(int id, int hostid){
-  ID_ = id;
-  if (hostid >= 0)
-    hosts_.push_back(hostid);
+
+// Constructor
+GTNETS_Node::GTNETS_Node(int id):ID_(id),is_router_(false){}
+// Copy constructor
+GTNETS_Node::GTNETS_Node(const GTNETS_Node& node){
+  ID_ = node.ID_;
+  is_router_ = node.is_router_;
+  hosts_ = node.hosts_;
 }
 
-SGNode::~SGNode(){
-  //TODO
+GTNETS_Node::~GTNETS_Node(){
+
 }
 
-void SGNode::add_link(SGLink* newlink){
-  links_.push_back(newlink);
-}
-
-
-SGLink* SGNode::other_link(int linkid){
-  for (int i = 0; i < links_.size(); i++){
-    if (links_[i]->id() != linkid)
-      return links_[i];
+// hostid = network_card_id
+int GTNETS_Node::add_host(int hostid){
+  if (is_router_){
+    fprintf(stderr, "Cannot add a host to a router node.\n");
+    return -1;
   }
-  return NULL;
+  hosts_.insert(hostid);
+  return 0;
 }
 
-bool SGNode::has_link(SGLink* link){
-  for (int i = 0; i < links_.size(); i++){
-    //TODO can compare by object itself?
-    if ((links_[i]->id()) == (link->id()))
-      return true;
-  }
-  return false;
-}
-
-void SGNode::print_hosts(){
-  cout << "hosts[";
-  for (int i = 0; i < hosts_.size(); i++){
-    cout << hosts_[i] << ",";
-  }
-  cout << "] ";
-}
-
-void SGNode::print_links(){
-  cout << "links[";
-  for (int i = 0; i < links_.size(); i++){
-    cout << links_[i]->id() << ",";
-  }
-  cout << "]" << endl;
-}
-
-vector<SGLink*>& SGNode::links(){
-  return links_;
-}
-vector<int>& SGNode::hosts(){
-  return hosts_;
-}
-
-//
-//  SGLink
-//
-SGLink::SGLink(int id, SGNode* left, SGNode* right)
-  :ID_(id),
-   left_node_(left),
-   right_node_(right){}
-
-
-SGLink::~SGLink(){
-
-}
-
-// add_left_linK: tow things.
-// add the link to the corresponding node.
-// add the corresponding node to the new link. 
-//  (change from the tmp node to the correct node)
-void SGLink::add_left_link(SGLink* newlink, int side){
-  if (!left_node_){
-    //if alllinks don't have a node, then copy it from
-    //tmporary link.
-    if (side == LEFTSIDE){
-      left_node_ = newlink->left_node_;
-    } else if (side == RIGHTSIDE){
-      left_node_ = newlink->right_node_;
-    } else {
-      cout << "should not come here. side: " << side << endl;
-    }
-  } else {
-    // if already exists, then add the new link to the existing node.
-    left_node_->add_link(newlink);
-  }
-
-  if (side == LEFTSIDE){
-    newlink->left_node_ = left_node_;
-    //printf("link[%d] new left node: %d\n", link.ID, @left_node.ID)
-  }else if (side == RIGHTSIDE){
-    newlink->right_node_ = left_node_;
-    //printf("link[%d] new left node: %d\n", link.ID, @left_node.ID)
-  }else{
-    cout << "should not come here. side: " << side << endl;
-  }
-
-}
-
-void SGLink::add_right_link(SGLink* newlink, int side){
-  if (!right_node_) {
-    //if alllinks doesn't have a node, then copy it from
-    //tmporary link.
-    if (side == LEFTSIDE){
-      right_node_ = newlink->left_node_;
-    }else if (side == RIGHTSIDE){
-      right_node_ = newlink->right_node_;
+// Add a router. If this node already has a router/host,
+// return -1.
+int GTNETS_Node::add_router(int routerid){
+  if (hosts_.size() > 1){
+    fprintf(stderr, "Router node should have only one router.\n");
+    return -1;
+  }else if (hosts_.size() == 1){
+    if (hosts_.find(routerid) != hosts_.end()){
+      //printf("the router already exists\n");
+      return 0;
     }else{
-      cout << "should not come here. side: " << side << endl;
+      fprintf(stderr, "Node %d is a different router.\n");
+      return -1;
     }
-  }else{
-    right_node_->add_link(newlink);
   }
+  is_router_ = true;
+  hosts_.insert(routerid);
+  return 0;
+}
 
-  if (side == LEFTSIDE){
-    newlink->left_node_ = right_node_;
-    //printf("link[%d] new left node: %d\n", link.ID, @right_node.ID)
-  }else if (side == RIGHTSIDE){
-    newlink->right_node_ = right_node_;
-    //printf("link[%d] new right node: %d\n", link.ID, @right_node.ID)
-  }else{
-    cout << "should not come here. side: " << side << endl;
+bool GTNETS_Node::is_router(){
+  return is_router_;
+}
+
+bool GTNETS_Node::include(int hostid){
+  if (hosts_.find(hostid) == hosts_.end()) return false;
+  else return true;
+}
+
+void GTNETS_Node::print_hosts(){
+  set<int>::iterator it;
+  printf("[");
+  for (it = hosts_.begin(); it != hosts_.end(); it++){
+    printf(" %d", *it);
   }
+  printf("]");
 }
 
-bool SGLink::is_inleft(SGLink* link){
-  if (!left_node_)
-    return false;
-  else
-    return left_node_->has_link(link);
+//
+//  GTNETS_Link
+//
+
+// Constructor
+GTNETS_Link::GTNETS_Link(){
+  ID_=-1;
+  src_node_ = 0;
+  dst_node_ = 0;
+}
+GTNETS_Link::GTNETS_Link(int id):ID_(id), src_node_(0), dst_node_(0){}
+
+// Copy constructor
+GTNETS_Link::GTNETS_Link(const GTNETS_Link& link){
+  ID_ = link.ID_;
+  src_node_ = link.src_node_;
+  dst_node_ = link.dst_node_;
 }
 
-bool SGLink::is_inright(SGLink* link){
-  if (!right_node_)
-    return false;
-  else
-    return right_node_->has_link(link);
-}
-
-
-//return the pointer for the left link.
-SGLink* SGLink::left_link(){
-  if (!left_node_){
-    return NULL;
-  }else{
-    return left_node_->other_link(ID_);
-  }
-}
-
-SGLink* SGLink::right_link(){
-  if (!right_node_){
-    return NULL;
-  }else{
-    return right_node_->other_link(ID_);
-  }
-
-}
-
-SGNode* SGLink::left_node(){
-  return left_node_;
-}
-
-
-SGNode* SGLink::right_node(){
-  return right_node_;
-}
-
-
-void SGLink::print(){
-  printf("link[%d]:\n", ID_);
-  if (left_node_){
-    printf("   left  node: %d ", left_node_->id());
-    left_node_->print_hosts();
-    left_node_->print_links();
-  }
+GTNETS_Link::~GTNETS_Link(){
   
-  if (right_node_){
-    printf("   right node: %d ", right_node_->id());
-    right_node_->print_hosts();
-    right_node_->print_links();
+}
+
+void GTNETS_Link::print_link_status(){
+  printf("== LINKID: %d\n", ID_);
+  if (src_node_){
+    printf("  [SRC] ID: %d, router?: %d, hosts[]: ",
+	   src_node_->id(), src_node_->is_router());
+    src_node_->print_hosts();
+    printf("\n");
+  }
+
+  if (dst_node_){
+    printf("  [DST] ID: %d, router?: %d, hosts[]: ", 
+	   dst_node_->id(), dst_node_->is_router());
+    dst_node_->print_hosts();
+    printf("\n");
   }
 }
 
+GTNETS_Node* GTNETS_Link::src_node(){
+  return src_node_;
+}
 
-SGTopology::SGTopology(){
+GTNETS_Node* GTNETS_Link::dst_node(){
+  return dst_node_;
+}
+
+bool GTNETS_Link::route_exists(){
+  if (src_node_ && dst_node_) return true;
+  else return false;
+}
+
+// return the peer node id
+int GTNETS_Link::peer_node(int cur_id){
+  if (cur_id ==  src_node_->id()) return dst_node_->id();
+  else if (cur_id == dst_node_->id()) return src_node_->id();
+  else {
+    fprintf(stderr, "node not found\n");
+    return -1;
+  }
+}
+
+int GTNETS_Link::add_src(GTNETS_Node* src){
+  src_node_ = src;
+}
+
+int GTNETS_Link::add_dst(GTNETS_Node* dst){
+  dst_node_ = dst;
+}
+
+
+//
+//  GTNETS_Topology
+//
+
+// Constructor
+GTNETS_Topology::GTNETS_Topology(){
   nodeID_ = 0;
 }
 
-SGTopology::~SGTopology(){
-
-}
-
-
-// TODO: assume that all router-route 1-hop routes are set.
-void SGTopology::add_link(int src, int dst, int* links, int nsize){
-  if (nsize == 1){
-    map<int, SGNode*>::iterator it;
-    it = nodes_.find(src);
-    //if not exists, add one.
-    if (it == nodes_.end()){    
-      nodes_[src] = new SGNode(src, src);
-    }
-    it = nodes_.find(dst);
-    //if not exists, add one.
-    if (it == nodes_.end()){    
-      nodes_[dst] = new SGNode(dst, dst);
-    }
-
-    map<int, SGLink*>::iterator itl;
-    itl = links_.find(links[0]);
-    //if not exists, add one.
-    if (itl == links_.end()){
-      links_[links[0]] = new SGLink(links[0], nodes_[src], nodes_[dst]);
-    }
+// Destructor
+GTNETS_Topology::~GTNETS_Topology(){
+  map<int, GTNETS_Link*>::iterator it1;
+  for (it1 = links_.begin(); it1 != links_.end(); it1++){
+    delete it1->second;
+  }
+  vector<GTNETS_Node*>::iterator it2;
+  for (it2 = nodes_.begin(); it2 != nodes_.end(); it2++){
+    delete *it2;
   }
 }
 
 
-//create a temporary link set. (one route)
-// not used now. should clean up...
-void SGTopology::create_tmplink(int src, int dst, int* links, int nsize){
-  map<int, SGLink*> tmplinks;
-
-  SGNode* n1;
-  SGNode* n2;
-
-  int cur = -1;
-  int nex;
-
-  for (int i = 0; i < nsize; i++){
-    if (i == 0) {
-      nodeID_++;  //new node
-      n1   = new SGNode(nodeID_, src);
-    }else 
-      n1   = n2; //current
-    
-    cur = links[i];
-    
-    if (i == (nsize-1)){
-      nodeID_++;
-      n2  = new SGNode(nodeID_, dst);
-    }else{
-      nex = links[i+1];
-      nodeID_++;  //new node
-      n2  = new SGNode(nodeID_, -1);
-    }
-
-    tmplinks[cur] = new SGLink(cur, n1, n2);
-    if (n1) n1->add_link(tmplinks[cur]);
-    if (n2) n2->add_link(tmplinks[cur]);
-  }
-
-  for (int i = 0; i < nsize; i++){
-    //tmplinks[links[i]]->print();
-    merge_link(tmplinks[links[i]]);
-  }
-  add_tmplink_to_links(tmplinks);
+int GTNETS_Topology::link_size(){
+  return links_.size();
 }
 
-void SGTopology::merge_link(SGLink* link){
-  map<int, SGLink*>::iterator iter;
-  iter = links_.find(link->id());
-  if (iter == links_.end()){
-    //if the link has not been added to the topology.links_, then
-    //printf("link %d doesn't exist in alllinks. No action.\n", link->id());
-    return;
+int GTNETS_Topology::node_size(){
+  return nodes_.size();
+}
+
+int GTNETS_Topology::add_link(int id){
+  map<int,GTNETS_Link*>::iterator iter = links_.find(id);
+
+  if(iter == links_.end()) {
+    GTNETS_Link* link= new GTNETS_Link(id);
+    //printf("link %d is added: %d\n", id, link->id());
+    //links_.insert(make_pair(id, link));
+    links_[id] = link;
+    return 0;
   }else{
-    int ncommon = 0;
-    int comleft = -1;  //if tmplink.left == @alllinks.link.left, 0, otherwise, 1.
-    int comright = -1; //if tmplink.right == @alllinks.link.left, 0, otherwise, 1.
-    //since link is from tmplinks, each link has at most two neibours.
+    fprintf(stderr, "Link %d already exists.\n", id);
+    return -1;
+  }
+}
 
-    if (link->left_link()){
-      //printf("common neibor: left_first: %d\n", link->left_link()->id());
-      if (links_[link->id()]->is_inleft(link->left_link())){
-	comleft = 0;
-	ncommon += 1;
-      }
-      if (links_[link->id()]->is_inright(link->left_link())){
-	comleft = 1;
-	ncommon += 1;
-      }
+int GTNETS_Topology::add_router(int id){
+  set<int>::iterator iter = routers_.find(id);
+
+  if(iter == routers_.end()) {
+    //printf("router %d is inserted\n", id);
+    routers_.insert(id);
+    return 0;
+  }else{
+    fprintf(stderr, "Router %d already exists.\n", id);
+    return -1;
+  }
+}
+
+bool GTNETS_Topology::is_router(int id){
+  set<int>::iterator iter = routers_.find(id);
+  if(iter == routers_.end()) return false;
+  else return true;
+}
+
+//return the node id of the peer of cur_id by linkid.
+int GTNETS_Topology::peer_node_id(int linkid, int cur_id){
+  //printf("linkid: %d, cur_id: %d\n", linkid, cur_id);
+  GTNETS_Link* link = links_[linkid];
+  if (!link) {
+    fprintf(stderr, "link %d not found\n", linkid);
+    return -1;
+  }
+  if ((cur_id < 0) || (cur_id > nodes_.size()-1)){
+    fprintf(stderr, "node %d not found\n", cur_id);
+    return -1;
+  }
+  int peer  = link->peer_node(nodes_[cur_id]->id());
+  if (peer < 0){
+    fprintf(stderr, "peer not found\n");
+    return -1;
+  }
+  return peer;
+}
+
+int GTNETS_Topology::add_onehop_route(int src, int dst, int linkid){
+  GTNETS_Link* link;
+
+  map<int, GTNETS_Link*>::iterator iter = links_.find(linkid);
+
+  if(iter == links_.end()) {
+    fprintf(stderr, "Link %d not found.\n", linkid);
+    return -1;
+  }else{
+    link = iter->second;
+  }
+
+  //  printf("add_onehop_route: src: %d, dst: %d, linkid: %d, %d\n",
+  //	 src, dst, linkid, link->id());
+
+  GTNETS_Node *src_node, *dst_node;
+  src_node = link->src_node();
+  dst_node = link->dst_node();
+
+
+  // If not exists a route, add one.
+  if (!link->route_exists()){
+    //check whether there exists a node for the src host/router.
+    int s_node_id = nodeid_from_hostid(src);
+    int node_id;
+
+    if (s_node_id < 0){//not exist, create one.
+      s_node_id = nodeID_;
+      GTNETS_Node* node1 = new GTNETS_Node(s_node_id);
+      nodes_.push_back(node1);
+      hosts_[src] = nodes_[s_node_id]->id();
+
+      nodeID_++;
     }
 
-    if (link->right_link()){
-      //printf("common neibor: right_first: %d\n", link->right_link()->id());
-      if (links_[link->id()]->is_inleft(link->right_link())){
-	comright = 0;
-	ncommon += 1;
-      }
-      if (links_[link->id()]->is_inright(link->right_link())){
-	comright = 1;
-	ncommon += 1;
-      }
+    if (is_router(src))
+      nodes_[s_node_id]->add_router(src);
+    else
+      nodes_[s_node_id]->add_host(src);
+
+    link->add_src(nodes_[s_node_id]);
+
+    //check whether there exists a node for the dst host/router.
+    int d_node_id = nodeid_from_hostid(dst);
+    if (d_node_id < 0){//not exist, create one.
+      d_node_id = nodeID_;
+      GTNETS_Node* node2 = new GTNETS_Node(d_node_id);
+      nodes_.push_back(node2);
+      hosts_[dst] = nodes_[d_node_id]->id();
+      nodeID_++;
     }
 
-    //printf("common: %d, comright: %d, comleft: %d\n",ncommon, comright, comleft);
+    if (is_router(dst))
+      nodes_[d_node_id]->add_router(dst);
+    else
+      nodes_[d_node_id]->add_host(dst);
 
-    if (ncommon == 0){
-      //merge link.n1 with @alllink.n1, link.n2 with @alllink.n2
-      if (link->left_link())
-	links_[link->id()]->add_left_link(link->left_link(), RIGHTSIDE);
+    link->add_dst(nodes_[d_node_id]);
 
-      if (link->right_link())
-	links_[link->id()]->add_right_link(link->right_link(), LEFTSIDE);
-      
-    }else if (ncommon == 1){
-      printf("ncommon %d\n", links_[link->id()]->id());
-      //left --> right
-      if ((comleft == -1) && (comright == 0)){
-	if (link->left_link())
-	  links_[link->id()]->add_right_link(link->left_link(), RIGHTSIDE);
-      }else if ((comleft == -1) && (comright == 1)){
-	//left --> left
-	if (link->left_link())
-	  links_[link->id()]->add_left_link(link->left_link(), RIGHTSIDE);
-      }else if ((comright == -1) && (comleft == 0)){
-	//right --> right
-	if (link->right_link())
-	  links_[link->id()]->add_right_link(link->right_link(), LEFTSIDE);
-      }else if ((comright == -1) && (comleft == 1)){
-	//right --> left
-	if (link->right_link())
-	  links_[link->id()]->add_left_link(link->right_link(), LEFTSIDE);
-      }else{
-	fprintf(stderr, "should not come here\n");
-      }
+  // other: has either src or dst (error)
+  }else if (!src_node || !dst_node){
+    fprintf(stderr, "Either src or dst is null\n");
+    return -1;
+  }
 
-    }else if (ncommon == 2){
-      //no change
-
+  // case 1: link has two routers
+  else if (src_node->is_router() && dst_node->is_router()){
+    int tmpsrc1 = src_node->id();
+    int tmpsrc2 = nodeid_from_hostid(src);
+    int tmpdst1 = dst_node->id();
+    int tmpdst2 = nodeid_from_hostid(dst);
+    if (((tmpsrc1 == tmpsrc2) && (tmpdst1 == tmpdst2)) ||
+	((tmpsrc1 == tmpdst2) && (tmpdst1 == tmpsrc2))){
+      fprintf(stderr, "Route already exists\n");
     }else{
-      fprintf(stderr, "error, common links are more than 2. %d\n", ncommon);
+      fprintf(stderr, "Different one hop route defined\n");
+      return -1;
     }
   }
-}
-
-void SGTopology::add_tmplink_to_links(map<int, SGLink*> tmplink){
-  map<int, SGLink*>::iterator iter;
-
-  for (iter = tmplink.begin(); iter != tmplink.end(); iter++){
-    map<int, SGLink*>::iterator alliter = links_.find(iter->first);
-    if (alliter == links_.end()){
-      // cout << "tmplink " << iter->first << " not found in links_, adding."
-      // << endl;
-      links_[iter->first] = iter->second;
+  // case 2: link has one router and one host
+  else if (src_node->is_router() && !dst_node->is_router()){
+    int newsrc, newdst;
+    if (is_router(src)){
+      newsrc = src;
+      newdst = dst;
+    }else if (is_router(dst)){
+      newsrc = dst;
+      newdst = src;
+    }else{
+      fprintf(stderr, "one of nodes should be a router\n");
+      return -1;
     }
-    //    cout << "tmplink: " << iter->second->id() << endl;
+
+    if (src_node->id() != nodeid_from_hostid(newsrc)){
+      fprintf(stderr, "The router should be identical\n");
+      return -1;
+    }
+
+    //now, to add dst to dst_node, dst should be a host.
+
+    if (is_router(newdst)){
+      fprintf(stderr, "dst %d is not an endpoint. cannot add it to dst_node\n");
+      return -1;
+    }
+
+    if (!dst_node->include(newdst)){
+      dst_node->add_host(newdst);
+      hosts_[newdst] = dst_node->id();
+    }
   }
-							       
+  else if (!src_node->is_router() && dst_node->is_router()){
+    int newsrc, newdst;
+    if (is_router(src)){
+      newsrc = dst;
+      newdst = src;
+    }else if (is_router(dst)){
+      newsrc = src;
+      newdst = dst;
+    }else{
+      fprintf(stderr, "one of nodes should be a router\n");
+      return -1;
+    }
+
+
+    if (dst_node->id() != hosts_[newdst]){
+      fprintf(stderr, "The router should be identical\n");
+      return -1;
+    }
+
+    //now, to add dst to src_node, dst should be a host.
+
+    if (is_router(newsrc)){
+      fprintf(stderr, "dst %d is not an endpoint. cannot add it to src_node\n");
+      return -1;
+    }
+
+    if (!src_node->include(newsrc)){
+      src_node->add_host(newsrc);
+      hosts_[newsrc] = src_node->id();
+    }
+  }
+
+  // case 3: link has two hosts
+  else if (!src_node->is_router() && !dst_node->is_router()){
+
+    if (is_router(src) || is_router(dst)){
+      fprintf(stderr, "Cannot add a router to host-host link\n");
+      return -1;
+    }
+
+    //if both are hosts, the order doesn't matter.
+    if (src_node->include(src)){
+      if (dst_node->include(dst)){
+	//nothing
+      }else{
+	dst_node->add_host(dst);
+	hosts_[dst] = dst_node->id();
+      }
+    }else if (src_node->include(dst)){
+      if (dst_node->include(src)){
+	//nothing
+      }else{
+	dst_node->add_host(src);
+	hosts_[src] = dst_node->id();
+      }
+    }else if (dst_node->include(src)){
+      if (src_node->include(dst)){
+	//nothing
+      }else{
+	src_node->add_host(dst);
+	hosts_[dst] = src_node->id();
+      }
+    }else if (dst_node->include(dst)){
+      if (src_node->include(src)){
+	//nothing
+      }else{
+	src_node->add_host(src);
+	hosts_[src] = src_node->id();
+      }
+    }else{
+      src_node->add_host(src);
+      dst_node->add_host(dst);
+      hosts_[src] = src_node->id();
+      hosts_[dst] = dst_node->id();
+    }   
+      
+  }
+  else{
+    fprintf(stderr, "Shouldn't be here\n");
+    return -1;
+  }
+  return 0;
 }
 
-void SGTopology::print_topology(){
-  map<int, SGLink*>::iterator iter;
-  for (iter = links_.begin(); iter != links_.end(); iter++){
-    iter->second->print();
-  }
+int GTNETS_Topology::nodeid_from_hostid(int hostid){
+  map<int,int>::iterator it = hosts_.find(hostid);
+  if (it == hosts_.end())
+    return -1;
+  else return it->second;
 }
 
-void SGTopology::create_gtnets_topology(){
-  map<int, SGLink*>::iterator it;
+void GTNETS_Topology::print_topology(){
+  map<int, GTNETS_Link*>::iterator it;
   for (it = links_.begin(); it != links_.end(); it++){
-    
+    it->second->print_link_status();
   }
 }
 
-map<int, SGLink*>& SGTopology::get_links(){
+const vector<GTNETS_Node*>& GTNETS_Topology::nodes(){
+  return nodes_;
+}
+
+const map<int, GTNETS_Link*>& GTNETS_Topology::links(){
   return links_;
 }
 

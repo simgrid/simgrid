@@ -1,3 +1,8 @@
+/* 	$Id$	 */
+/* Copyright (c) 2007 Kayo Fujiwara. All rights reserved.                  */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gtnets_simulator.h"
 #include "gtnets_interface.h"
@@ -14,29 +19,34 @@ int gtnets_initialize(){
   return 0;
 }
 
-// adds a link (argument link is just an index starting at 0... 
+// add a link (argument link is just an index starting at 0... 
 // add link 0, add link 1, etc.)
 int gtnets_add_link(int id, double bandwidth, double latency){
-  printf("gtnets_add_link: %d, %f, %f\n", id, bandwidth, latency);
   return gtnets_sim->add_link(id, bandwidth, latency);
 }
 
-// adds a route between a source and a destination as an array of link indices
+// add a route between a source and a destination as an array of link indices
 // (note that there is no gtnets_add_network_card(), as we discover them
 // on the fly via calls to gtnets_add_route()
 int gtnets_add_route(int src, int dst, int* links, int nlink){
-  int i;
-  printf("gtnets_add_route: %d, %d\n", src, dst);
-  for (i = 0; i < nlink; i++){
-    printf("%d: %d\n", i, *links++);
-  }
   return gtnets_sim->add_route(src, dst, links, nlink);
+}
+
+// add a router
+int gtnets_add_router(int id){
+  return gtnets_sim->add_router(id);
+}
+
+// add a route between a source and a destination as an array of link indices
+// (note that there is no gtnets_add_network_card(), as we discover them
+// on the fly via calls to gtnets_add_route()
+int gtnets_add_onehop_route(int src, int dst, int link){
+  return gtnets_sim->add_onehop_route(src, dst, link);
 }
 
 // create a new flow on a route
 // one can attach arbitrary metadata to a flow
 int gtnets_create_flow(int src, int dst, long datasize, void* metadata){
-  printf("gtnets_create_flow: %d, %d, %d\n", src, dst, datasize);
   return gtnets_sim->create_flow(src, dst, datasize, metadata);
 }
 
@@ -60,7 +70,6 @@ int gtnets_run(Time_t deltat){
 // clean up
 int gtnets_finalize(){
   if (!gtnets_sim) return -1;
-  gtnets_sim->finalize();
   delete gtnets_sim;
   gtnets_sim = 0;
   return 0;
