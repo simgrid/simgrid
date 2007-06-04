@@ -483,7 +483,7 @@ static void generate_rl(char *project)
                  "#include <signal.h>\n" \
                  "#include <gras.h>\n" \
                  "\n" \
-                 "extern const char * XBT_PUBLIC_DATA _gras_procname;\n" \
+                 "XBT_PUBLIC_DATA(const char *) _gras_procname;\n" \
                  "/* user code */\n" \
                  "int %s(int argc, char *argv[]);\n" \
                  "\n" \

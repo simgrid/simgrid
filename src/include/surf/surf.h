@@ -169,7 +169,7 @@ typedef struct surf_timer_resource {
 /** \brief The timer resource
  *  \ingroup SURF_resources
  */
-extern surf_timer_resource_t XBT_PUBLIC_DATA surf_timer_resource;
+XBT_PUBLIC_DATA(surf_timer_resource_t) surf_timer_resource;
 
 /** \brief Initializes the timer resource
  *  \ingroup SURF_resources
@@ -212,7 +212,7 @@ typedef struct surf_cpu_resource {
 /** \brief The CPU resource
  *  \ingroup SURF_resources
  */
-extern surf_cpu_resource_t XBT_PUBLIC_DATA surf_cpu_resource;
+XBT_PUBLIC_DATA(surf_cpu_resource_t) surf_cpu_resource;
 
 /** \brief Initializes the CPU resource with the model Cas01
  *  \ingroup SURF_resources
@@ -259,7 +259,7 @@ typedef struct surf_network_resource {
  *  resource should be accessed because depending on the platform model,
  *  the network resource can be NULL.
  */
-extern surf_network_resource_t XBT_PUBLIC_DATA surf_network_resource;
+XBT_PUBLIC_DATA(surf_network_resource_t) surf_network_resource;
 
 /** \brief Initializes the platform with the network model CM02
  *  \ingroup SURF_resources
@@ -319,7 +319,7 @@ typedef struct surf_workstation_resource {
  *  because depending on the platform model, the network resource and the CPU resource
  *  may not exist.
  */
-extern surf_workstation_resource_t XBT_PUBLIC_DATA surf_workstation_resource;
+XBT_PUBLIC_DATA(surf_workstation_resource_t) surf_workstation_resource;
 
 /** \brief Initializes the platform with the workstation model CLM03
  *  \ingroup SURF_resources
@@ -363,7 +363,7 @@ XBT_PUBLIC(void) surf_workstation_resource_init_GTNETS(const char *filename);
  *
  *  \see workstation_set
  */
-extern xbt_dict_t XBT_PUBLIC_DATA network_link_set;
+XBT_PUBLIC_DATA(xbt_dict_t) network_link_set;
 
 /** \brief The workstations
  *  \ingroup SURF_resources
@@ -372,12 +372,12 @@ extern xbt_dict_t XBT_PUBLIC_DATA network_link_set;
  *
  *  \see network_link_set
  */
-extern xbt_dict_t XBT_PUBLIC_DATA workstation_set;
+XBT_PUBLIC_DATA(xbt_dict_t)  workstation_set;
 
 /** \brief List of initialized resources
  *  \ingroup SURF_resources
  */
-extern xbt_dynar_t XBT_PUBLIC_DATA resource_list;
+XBT_PUBLIC_DATA(xbt_dynar_t)  resource_list;
 
 /*******************************************/
 /*** SURF Globals **************************/
