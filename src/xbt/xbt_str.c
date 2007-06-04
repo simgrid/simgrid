@@ -102,7 +102,7 @@ xbt_str_ltrim( char* s, const char* char_list)
 	while(*cur && white_char[(unsigned char)*cur])
 		++cur;
 
-	memmove(s,cur, strlen(cur));
+	memmove(s,cur, strlen(cur)+1);
 }
 
 /**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
@@ -233,10 +233,142 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep) {
   return res;
 }
 
+/** @brief Splits a string into a dynar of strings, taking quotes into account
+ * 
+ * It basically does the same argument separation than the shell, where white 
+ * spaces can be escaped and where arguments are never splitted within a 
+ * quote group.
+ * Several subsequent spaces are ignored (unless within quotes, of course).
+ *
+ */
+
+xbt_dynar_t xbt_str_split_quoted(const char *s) {
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char*), free_string);
+  char *str; /* we have to copy the string before, to handle backslashes */
+  char *beg, *end; /* pointers around the parsed chunk */
+  int in_simple_quote=0, in_double_quote=0;
+  int done = 0;
+  int ctn = 0; /* Got something in this block */
+
+  if (s[0] == '\0')
+    return res;
+  beg = str = xbt_strdup(s);
+   
+  /* trim leading spaces */
+  xbt_str_ltrim(beg," ");
+  end=beg;
+     
+  while (!done) {
+    
+       
+    switch (*end) {
+    case '\\':
+      ctn = 1;
+      /* Protected char; move it closer */
+      memmove(end,end+1,strlen(end)); 
+      if (*end=='\0')
+	THROW0(arg_error,0,"String ends with \\");
+      end++; /* Pass the protected char */
+      break;
+
+    case '\'':
+      ctn = 1;
+      if (!in_double_quote) { 
+	in_simple_quote = !in_simple_quote;
+	memmove(end,end+1,strlen(end));
+      } else {	       
+	/* simple quote protected by double ones */
+	end++;
+      }
+      break;
+    case '"':
+      ctn = 1;
+      if (!in_simple_quote) { 
+	in_double_quote = !in_double_quote;
+	memmove(end,end+1,strlen(end));
+      } else {	       
+	/* double quote protected by simple ones */
+	end++;
+      }	  
+      break;
+
+    case ' ':
+    case '\t':
+    case '\n':
+    case '\0':
+      if (*end == '\0' && (in_simple_quote || in_double_quote)) {
+	THROW2(arg_error,0,
+	       "End of string found while searching for %c in %s",
+	       (in_simple_quote?'\'':'"'),
+	       s);
+      }
+      if (in_simple_quote || in_double_quote) {
+	end++;
+      } else {	
+	if (ctn) {
+	  /* Found a separator. Push the string if contains something */
+	  char *topush=xbt_malloc(end-beg+1);
+	  memcpy(topush,beg,end-beg);
+	  topush[end - beg] = '\0';
+	  xbt_dynar_push(res,&topush);
+	}
+	ctn= 0;
+
+	if (*end == '\0') {
+	  done = 1;
+	  break;
+	}
+	
+	beg=++end;
+	xbt_str_ltrim(beg," ");
+	end=beg;
+      }	  
+      break;
+      
+    default:
+      ctn = 1;
+      end++;
+    }       
+  }
+  free(str);
+  return res;
+}
+
+#ifdef SIMGRID_TEST
+#define mytest(name, input, expected) \
+  xbt_test_add0(name); \
+  d=xbt_str_split_quoted(input); \
+  s=xbt_str_join(d,"XXX"); \
+  xbt_test_assert3(!strcmp(s,expected),\
+		   "Input (%s) leads to (%s) instead of (%s)", \
+		   input,s,expected);\
+  free(s); \
+  xbt_dynar_free(&d);
+
+XBT_TEST_SUITE("xbt_str","String Handling");
+XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_str_split_quoted") {
+  xbt_dynar_t d;
+  char *s;
+
+  mytest("Basic test", "toto tutu", "totoXXXtutu");
+  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u", "totoXXXtutu");
+  mytest("Protected space", "toto\\ tutu", "toto tutu");
+  mytest("Several spaces", "toto   tutu", "totoXXXtutu");
+  mytest("LTriming", "  toto tatu", "totoXXXtatu");
+  mytest("Triming", "  toto   tutu  ", "totoXXXtutu");
+  mytest("Single quotes", "'toto tutu' tata", "toto tutuXXXtata");
+  mytest("Double quotes", "\"toto tutu\" tata", "toto tutuXXXtata");
+  mytest("Mixed quotes", "\"toto' 'tutu\" tata", "toto' 'tutuXXXtata");
+  mytest("Backslashed quotes", "\\'toto tutu\\' tata", "'totoXXXtutu'XXXtata");
+  mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata", "toto 'tutuXXXtata");
+
+}
+#endif /* SIMGRID_TEST */
+   
 /** @brief Join a set of strings as a single string */
 
 char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
-  int len=2;
+  int len=1,dyn_len=xbt_dynar_length(dyn);
   int cpt;
   char *cursor;
   char *res,*p;
@@ -244,12 +376,15 @@ char *xbt_str_join(xbt_dynar_t dyn, const char*sep) {
   xbt_dynar_foreach(dyn,cpt,cursor) {
     len+=strlen(cursor);
   }
-  len+=strlen(sep)*(xbt_dynar_length(dyn));
+  len+=strlen(sep)*dyn_len;
   /* Do the job */
   res = xbt_malloc(len);
   p=res;
   xbt_dynar_foreach(dyn,cpt,cursor) {
-    p+=sprintf(p,"%s%s",cursor,sep);    
+    if (cpt<dyn_len-1)
+      p+=sprintf(p,"%s%s",cursor,sep);    
+    else
+      p+=sprintf(p,"%s",cursor);    
   }
   return res;
 }
