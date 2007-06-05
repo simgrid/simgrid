@@ -342,6 +342,7 @@ welcome here, too.
 
 
 xbt_log_appender_t xbt_log_default_appender = NULL; /* set in log_init */
+xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
 
 typedef struct {
   char *catname;
@@ -391,9 +392,10 @@ void xbt_log_init(int *argc,char **argv) {
 	
 	/* create the default appender and install it in the root category,
 	   which were already created (damnit. Too slow little beetle)*/
-	xbt_log_default_appender = 
-	  xbt_log_appender_file_new(xbt_log_layout_simple_new());
+	xbt_log_default_appender = xbt_log_appender_file_new(NULL);
+	xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
 	_XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
+	_XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
 
 	/* Set logs and init log submodule */
 	for (i=1; i<*argc; i++){
@@ -425,16 +427,15 @@ static void log_cat_exit(xbt_log_category_t cat) {
   xbt_log_category_t child;
 
   if (cat->appender) {
-    if (cat->appender->layout) {
-      if (cat->appender->layout->free_)
-	cat->appender->layout->free_(cat->appender->layout);
-      free(cat->appender->layout);
-    }
     if (cat->appender->free_)
       cat->appender->free_(cat->appender);
     free(cat->appender);
   }
-    
+  if (cat->layout) {
+    if (cat->layout->free_)
+      cat->layout->free_(cat->layout);
+    free(cat->layout);
+  }    
 
   for(child=cat->firstChild ; child != NULL; child = child->nextSibling) 
     log_cat_exit(child);
@@ -455,9 +456,8 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   while(1) {
     xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
-      xbt_assert1(appender->layout,"No valid layout for the appender of category %s",cat->name);
-      char *str= appender->layout->do_layout(appender->layout,
-					     ev, fmt);    
+      xbt_assert1(cat->layout,"No valid layout for the appender of category %s",cat->name);
+      char *str= cat->layout->do_layout(cat->layout, ev, fmt);    
       appender->do_append(appender, str);
     }
     if (!cat->additivity)
@@ -483,6 +483,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
     category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
     category->appender = xbt_log_default_appender;
+    category->layout = xbt_log_default_layout;
   } else {
 
     if (!category->parent)
@@ -716,13 +717,15 @@ void xbt_log_control_set(const char* control_string) {
 				     _free_setting);
 
   /* split the string, and remove empty entries */
-  set_strings=xbt_str_split(control_string," ");
+  set_strings=xbt_str_split_quoted(control_string);
+#ifdef FIXME
   xbt_dynar_foreach(set_strings,cpt,str) {
     xbt_str_trim(str,NULL);
     if (str[0]=='\0') {
       xbt_dynar_cursor_rm(set_strings,&cpt);
     }
   }
+#endif
 
   if (xbt_dynar_length(set_strings) == 0) { /* vicious user! */
     xbt_dynar_free(&set_strings);
@@ -763,7 +766,26 @@ void xbt_log_control_set(const char* control_string) {
 } 
 
 void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
+  if (cat->appender) {
+    if (cat->appender->free_)
+      cat->appender->free_(cat->appender);
+    free(cat->appender);
+  }
   cat->appender = app;
+}
+void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay) {
+  if (!cat->appender) {
+    WARN1("No appender to category %s. Setting the file appender as default",
+	  cat->name);
+    xbt_log_appender_set(cat,xbt_log_appender_file_new(NULL));
+  }
+  if (cat->layout) {
+    if (cat->layout->free_) {
+      cat->layout->free_(cat->layout);
+      free(cat->layout);
+    }
+  }
+  cat->layout = lay;
 }
 
 void xbt_log_additivity_set(xbt_log_category_t cat, int additivity) {

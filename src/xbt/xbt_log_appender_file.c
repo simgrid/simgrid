@@ -24,9 +24,8 @@ static void append_file(xbt_log_appender_t this_appender,
   fprintf((FILE*)(this_appender->data), str);
 }
 
-xbt_log_appender_t xbt_log_appender_file_new(xbt_log_layout_t lout){
+xbt_log_appender_t xbt_log_appender_file_new(char *arg){
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t,1);
-  res->layout = lout;
   res->do_append = append_file;
   res->free_ = NULL;
   res->data = (void*)stderr;
