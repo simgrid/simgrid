@@ -405,7 +405,11 @@ void xbt_log_init(int *argc,char **argv) {
 		    !strncmp(argv[i],"--msg-log=",strlen("--msg-log=")) ||
 		    !strncmp(argv[i],"--simix-log=",strlen("--simix-log=")) ||
 		    !strncmp(argv[i],"--xbt-log=",strlen("--xbt-log="))){
-				
+			
+		  if (strncmp(argv[i],"--log=",strlen("--log=")))
+		      WARN2("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
+			    strchr(argv[i],'=')-argv[i],argv[i]);
+
 		  opt=strchr(argv[i],'=');
 		  opt++;
 		  xbt_log_control_set(opt);
