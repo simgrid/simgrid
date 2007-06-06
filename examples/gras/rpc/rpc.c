@@ -109,7 +109,7 @@ int client(int argc,char *argv[]) {
   register_messages();
 
   /* 6. Keep the user informed of what's going on */
-  INFO2("Connected to server which is on %s:%d ", 
+  INFO2("Connected to server which is on %s:%d",
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
   /* 7. Prepare and send the ping message to the server */
@@ -124,7 +124,7 @@ int client(int argc,char *argv[]) {
   exception_catching();
 
   /* 8. Keep the user informed of what's going on, again */
-  INFO4("The answer to PING(%d) on %s:%d is PONG(%d)  ", 
+  INFO4("The answer to PING(%d) on %s:%d is PONG(%d)",
 	ping, 
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver),
 	pong);
@@ -301,7 +301,7 @@ static int server_cb_ping(gras_msg_cb_ctx_t ctx,
   gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
    
   /* 2. Log which client connected */
-  INFO3("Got message PING(%d) from %s:%d ", 
+  INFO3("Got message PING(%d) from %s:%d",
 	msg, 
  	gras_socket_peer_name(expeditor), gras_socket_peer_port(expeditor));
   
@@ -346,7 +346,7 @@ int server (int argc,char *argv[]) {
   gras_cb_register("raise exception",&server_cb_raise_ex);
   gras_cb_register("kill",&server_cb_kill);
 
-  INFO1("Listening on port %d ", gras_socket_my_port(mysock));
+  INFO1("Listening on port %d", gras_socket_my_port(mysock));
 
   /* 5. Wait for the ping incomming messages */
   

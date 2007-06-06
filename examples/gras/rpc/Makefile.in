@@ -241,6 +241,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir)/include
 TESTS = test_rl test_sg
+TESTS_ENVIRONMENT = ../../../tools/tesh/tesh
 EXTRA_DIST = rpc.xml $(TESTS)
 rpc_simulator_SOURCES = _rpc_simulator.c rpc.c
 rpc_simulator_LDADD = $(top_builddir)/src/libsimgrid.la

@@ -1,11 +1,47 @@
-#! @BASH@ -e
-if [ x@EXEEXT@ = x ] ; then 
-#  exenv="libtool --mode=execute valgrind --show-reachable=yes --run-libc-freeres=no "
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
-    
-$exenv ./rpc_server@EXEEXT@ 4002 $@ &
-$exenv ./rpc_forwarder@EXEEXT@ 4003 127.0.0.1 4002 $@ &
-$exenv ./rpc_client@EXEEXT@ 127.0.0.1 4002 127.0.0.1 4003 $@
+& $SG_TEST_EXENV ./rpc_server@EXEEXT@ 4002 --log=root.fmt:%m%n $@
+> Launch server (port=4002)
+> Listening on port 4002
+> Got message PING(1234) from 127.0.0.1:0
+> Answered with PONG(4321)
+> Asked to die by 127.0.0.1:0
+> Done.
+> Exiting GRAS
+
+& $SG_TEST_EXENV ./rpc_forwarder@EXEEXT@ 4003 127.0.0.1 4002 --log=root.fmt:%m%n $@
+> Launch forwarder (port=4003)
+> Forward a request
+> Forward a request
+> Forward a request
+> Forward a request
+> Forward a request
+> Asked to die by 127.0.0.1:0
+> Done.
+> Exiting GRAS
+
+& $SG_TEST_EXENV ./rpc_client@EXEEXT@ 127.0.0.1 4002 127.0.0.1 4003 --log=root.fmt:%m%n $@
+> Launch client (server on 127.0.0.1:4002)
+> Connected to 127.0.0.1:4002.
+> Connected to server which is on 127.0.0.1:4002
+> The answer to PING(1234) on 127.0.0.1:4002 is PONG(4321)
+> Call the exception raising RPC
+> Got the expected exception when calling the exception raising RPC
+> Called the exception raising RPC
+> Call the exception raising RPC (i=0)
+> Call the exception raising RPC (i=1)
+> Call the exception raising RPC (i=2)
+> Call the exception raising RPC (i=3)
+> Call the exception raising RPC (i=4)
+> Call the exception raising RPC on the forwarder (i=0)
+> Got the expected exception when calling the exception raising RPC
+> Call the exception raising RPC on the forwarder (i=1)
+> Got the expected exception when calling the exception raising RPC
+> Call the exception raising RPC on the forwarder (i=2)
+> Got the expected exception when calling the exception raising RPC
+> Call the exception raising RPC on the forwarder (i=3)
+> Got the expected exception when calling the exception raising RPC
+> Call the exception raising RPC on the forwarder (i=4)
+> Got the expected exception when calling the exception raising RPC
+> Ask 127.0.0.1:4003 to die
+> Ask 127.0.0.1:4002 to die
+> Done.
+> Exiting GRAS

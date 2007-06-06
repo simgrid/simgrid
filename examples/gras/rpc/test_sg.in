@@ -1,9 +1,44 @@
-#! @BASH@
-if [ x@EXEEXT@ = x ] ; then 
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
-
-exec $exenv ./rpc_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/rpc.xml $@
+$ $SG_TEST_EXENV ./rpc_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/rpc.xml $@
+> [Tremblay:server:(1) 0.000000] [Rpc/INFO] Launch server (port=4000)
+> [Tremblay:server:(1) 0.000000] [Rpc/INFO] Listening on port 4000
+> [Ginette:forwarder:(2) 0.000000] [Rpc/INFO] Launch forwarder (port=4000)
+> [Fafard:client:(3) 0.000000] [Rpc/INFO] Launch client (server on Tremblay:4000)
+> [Fafard:client:(3) 2.000000] [Rpc/INFO] Connected to Tremblay:4000.
+> [Fafard:client:(3) 2.000000] [Rpc/INFO] Connected to server which is on Tremblay:4000
+> [Tremblay:server:(1) 2.001977] [Rpc/INFO] Got message PING(1234) from Fafard:0
+> [Tremblay:server:(1) 2.003954] [Rpc/INFO] Answered with PONG(4321)
+> [Fafard:client:(3) 2.003954] [Rpc/INFO] The answer to PING(1234) on Tremblay:4000 is PONG(4321)
+> [Fafard:client:(3) 2.003954] [Rpc/INFO] Call the exception raising RPC
+> [Fafard:client:(3) 2.008017] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+> [Fafard:client:(3) 2.008017] [Rpc/INFO] Called the exception raising RPC
+> [Fafard:client:(3) 2.008017] [Rpc/INFO] Call the exception raising RPC (i=0)
+> [Fafard:client:(3) 2.012080] [Rpc/INFO] Call the exception raising RPC (i=1)
+> [Fafard:client:(3) 2.016144] [Rpc/INFO] Call the exception raising RPC (i=2)
+> [Fafard:client:(3) 2.020207] [Rpc/INFO] Call the exception raising RPC (i=3)
+> [Fafard:client:(3) 2.024270] [Rpc/INFO] Call the exception raising RPC (i=4)
+> [Fafard:client:(3) 2.028333] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=0)
+> [Ginette:forwarder:(2) 2.029593] [Rpc/INFO] Forward a request
+> [Fafard:client:(3) 2.033540] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+> [Fafard:client:(3) 2.033540] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=1)
+> [Ginette:forwarder:(2) 2.034800] [Rpc/INFO] Forward a request
+> [Fafard:client:(3) 2.038747] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+> [Fafard:client:(3) 2.038747] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=2)
+> [Ginette:forwarder:(2) 2.040007] [Rpc/INFO] Forward a request
+> [Fafard:client:(3) 2.043954] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+> [Fafard:client:(3) 2.043954] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=3)
+> [Ginette:forwarder:(2) 2.045214] [Rpc/INFO] Forward a request
+> [Fafard:client:(3) 2.049161] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+> [Fafard:client:(3) 2.049161] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=4)
+> [Ginette:forwarder:(2) 2.050421] [Rpc/INFO] Forward a request
+> [Fafard:client:(3) 2.054368] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
+> [Fafard:client:(3) 2.054368] [Rpc/INFO] Ask Ginette:4000 to die
+> [Fafard:client:(3) 2.055628] [Rpc/INFO] Ask Tremblay:4000 to die
+> [Ginette:forwarder:(2) 2.055628] [Rpc/INFO] Asked to die by Fafard:0
+> [Ginette:forwarder:(2) 2.055628] [Rpc/INFO] Done.
+> [Ginette:forwarder:(2) 2.055628] [gras/INFO] Exiting GRAS
+> [Fafard:client:(3) 2.057604] [Rpc/INFO] Done.
+> [Fafard:client:(3) 2.057604] [gras/INFO] Exiting GRAS
+> [Tremblay:server:(1) 2.057604] [Rpc/INFO] Asked to die by Fafard:0
+> [Tremblay:server:(1) 2.057604] [Rpc/INFO] Done.
+> [Tremblay:server:(1) 2.057604] [gras/INFO] Exiting GRAS
 
