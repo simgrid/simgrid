@@ -23,6 +23,7 @@ XBT_TEST_UNIT("xbt_str_split_quoted",test_split_quoted, "test the function xbt_s
   xbt_dynar_t d;
   char *s;
 
+  mytest("Empty", "", "");
   mytest("Basic test", "toto tutu", "totoXXXtutu");
   mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u", "totoXXXtutu");
   mytest("Protected space", "toto\\ tutu", "toto tutu");
