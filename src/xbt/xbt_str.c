@@ -453,6 +453,7 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
   xbt_matrix_t C = xbt_matrix_new(xbt_dynar_length(da),xbt_dynar_length(db),
 				  sizeof(int),NULL); 
   int i,j;
+
   /* Compute the LCS */
   /*
     C = array(0..m, 0..n)
@@ -471,8 +472,9 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
   for (i=0; i<xbt_dynar_length(da); i++) 
     *((int*) xbt_matrix_get_ptr(C,i,0) ) = 0;
 
-  for (j=0; j<xbt_dynar_length(db); j++) 
-    *((int*) xbt_matrix_get_ptr(C,0,j) ) = 0;
+  if (xbt_dynar_length(da) != 0)
+    for (j=0; j<xbt_dynar_length(db); j++) 
+      *((int*) xbt_matrix_get_ptr(C,0,j) ) = 0;
 
   for (i=1; i<xbt_dynar_length(da); i++) 
     for (j=1; j<xbt_dynar_length(db); j++) {
