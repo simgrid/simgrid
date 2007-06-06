@@ -1,5 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_sg test_rl
+TESTS= test_rl test_sg
+TESTS_ENVIRONMENT=../../../tools/tesh/tesh
 EXTRA_DIST=all2all.xml test_sg.in test_rl.in
 
 # AUTOMAKE variable definition

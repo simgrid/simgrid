@@ -1,22 +1,99 @@
-#! @BASH@ -e 
-set -m
-if [ x@EXEEXT@ = x ] ; then 
-#  exenv="libtool --mode=execute valgrind --show-reachable=yes --run-libc-freeres=no "
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
+# The receivers, waiting for 5 messages
+! set timeout 20
+& $SG_TEST_EXENV ./all2all_receiver 4000 5 --log=root.fmt:%m%n
+> Listening on port 4000 (expecting 5 messages)
+> Got Data from 127.0.0.1:0 (still 4 to go)
+> Got Data from 127.0.0.1:0 (still 3 to go)
+> Got Data from 127.0.0.1:0 (still 2 to go)
+> Got Data from 127.0.0.1:0 (still 1 to go)
+> Got Data from 127.0.0.1:0 (still 0 to go)
+> Exiting GRAS
 
-$exenv ./all2all_receiver 4000 5&
-$exenv ./all2all_receiver 4001 5&
-$exenv ./all2all_receiver 4002 5&
-$exenv ./all2all_receiver 4003 5&
-$exenv ./all2all_receiver 4004 5&
-sleep 1
-receivers="127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004"
-$exenv ./all2all_sender $receivers 512&
-$exenv ./all2all_sender $receivers 512&
-$exenv ./all2all_sender $receivers 512&
-$exenv ./all2all_sender $receivers 512&
-$exenv ./all2all_sender $receivers 512&
+! set timeout 20
+& $SG_TEST_EXENV ./all2all_receiver 4001 5 --log=root.fmt:%m%n
+> Listening on port 4001 (expecting 5 messages)
+> Got Data from 127.0.0.1:0 (still 4 to go)
+> Got Data from 127.0.0.1:0 (still 3 to go)
+> Got Data from 127.0.0.1:0 (still 2 to go)
+> Got Data from 127.0.0.1:0 (still 1 to go)
+> Got Data from 127.0.0.1:0 (still 0 to go)
+> Exiting GRAS
+
+! set timeout 20
+& $SG_TEST_EXENV ./all2all_receiver 4002 5 --log=root.fmt:%m%n
+> Listening on port 4002 (expecting 5 messages)
+> Got Data from 127.0.0.1:0 (still 4 to go)
+> Got Data from 127.0.0.1:0 (still 3 to go)
+> Got Data from 127.0.0.1:0 (still 2 to go)
+> Got Data from 127.0.0.1:0 (still 1 to go)
+> Got Data from 127.0.0.1:0 (still 0 to go)
+> Exiting GRAS
+
+! set timeout 20
+& $SG_TEST_EXENV ./all2all_receiver 4003 5 --log=root.fmt:%m%n
+> Listening on port 4003 (expecting 5 messages)
+> Got Data from 127.0.0.1:0 (still 4 to go)
+> Got Data from 127.0.0.1:0 (still 3 to go)
+> Got Data from 127.0.0.1:0 (still 2 to go)
+> Got Data from 127.0.0.1:0 (still 1 to go)
+> Got Data from 127.0.0.1:0 (still 0 to go)
+> Exiting GRAS
+
+! set timeout 20
+& $SG_TEST_EXENV ./all2all_receiver 4004 5 --log=root.fmt:%m%n
+> Listening on port 4004 (expecting 5 messages)
+> Got Data from 127.0.0.1:0 (still 4 to go)
+> Got Data from 127.0.0.1:0 (still 3 to go)
+> Got Data from 127.0.0.1:0 (still 2 to go)
+> Got Data from 127.0.0.1:0 (still 1 to go)
+> Got Data from 127.0.0.1:0 (still 0 to go)
+> Exiting GRAS
+
+$ sleep 1
+
+# Five time a sender
+$ $SG_TEST_EXENV ./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+> Launch current node
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+> Exiting GRAS
+
+$ $SG_TEST_EXENV ./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+> Launch current node
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+> Exiting GRAS
+
+$ $SG_TEST_EXENV ./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+> Launch current node
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+> Exiting GRAS
+
+$ $SG_TEST_EXENV ./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+> Launch current node
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+> Exiting GRAS
+
+$ $SG_TEST_EXENV ./all2all_sender 127.0.0.1:4000 127.0.0.1:4001 127.0.0.1:4002 127.0.0.1:4003 127.0.0.1:4004 512 --log=root.fmt:%m%n
+> Launch current node
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+>   Sent Data
+> Exiting GRAS
 

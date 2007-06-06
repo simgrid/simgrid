@@ -110,15 +110,19 @@ int sender (int argc,char *argv[]) {
 
 
   /* Wait for receivers to startup */
-  gras_os_sleep(1);
+  gras_os_sleep(.01);
 
   /* write 'em */
   xbt_dynar_foreach(peers,i,h) {
      
      peer = gras_socket_client(h->name,h->port);
      gras_msg_send(peer,"data",&data);
-     INFO2("  Sent Data from %s to %s",
-	   gras_os_myname(),h->name);
+     if (gras_if_SG()) {
+	INFO2("  Sent Data from %s to %s", gras_os_myname(),h->name);
+     } else {
+	INFO0("  Sent Data");
+     }     
+      
      gras_socket_close(peer);
   }
 
