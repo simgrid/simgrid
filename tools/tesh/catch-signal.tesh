@@ -17,10 +17,12 @@ $ gcc -o segfault segfault.c
 
 ! expect return 15
 < $ ./segfault
-$ ../tesh
-> [0.000000] [tesh/INFO] Test suite from stdin
-> [0.000000] [tesh/INFO] [stdin:1] ./segfault
-> [0.000000] run_context.c:350: [tesh/ERROR] Child "./segfault" got signal SIGSEGV.
+$ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test suite from stdin
+> [stdin:1] ./segfault
+> Test suite `(stdin)': NOK (<stdin:1> got signal SIGSEGV)
+> Output of <stdin:1> so far: 
+> ||
 
 $ cd ..
 $ rm -rf temp_testdir

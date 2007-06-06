@@ -16,10 +16,12 @@ $ gcc -o return1 return1.c
 
 ! expect return 41
 < $ ./return1
-$ ../tesh
-> [0.000000] [tesh/INFO] Test suite from stdin
-> [0.000000] [tesh/INFO] [stdin:1] ./return1
-> [0.000000] run_context.c:374: [tesh/ERROR] Child "./return1" returned code 1
+$ ../tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test suite from stdin
+> [stdin:1] ./return1
+> Test suite `(stdin)': NOK (<stdin:1> returned code 1)
+> Output of <stdin:1> so far: 
+> ||
 
 $ cd ..
 $ rm -rf temp_testdir

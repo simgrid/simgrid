@@ -2,12 +2,12 @@
 
 p This tests whether TESH accepts to ignore command output
 
-< ! ignore output
+< ! output ignore
 < > TOTO
 < < TUTU
 < $ cat
-$ ./tesh
-> [0.000000] [tesh/INFO] Test suite from stdin
-> [0.000000] [tesh/INFO] [stdin:4] cat
-> [0.000000] [tesh/INFO] (ignoring the output as requested)
-> [0.000000] [tesh/INFO] Test suite from stdin OK
+$ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
+> Test suite from stdin
+> [stdin:4] cat
+> (ignoring the output as requested)
+> Test suite from stdin OK
