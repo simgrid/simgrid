@@ -106,7 +106,56 @@ relevant to debugging information, not to critical error messages.
 
 One day, for sure ;)
 
-\subsection log_hist 1.4 History of this module
+\subsection log_lay 1.4 Message layouts
+
+The message layouts are the elements in charge of choosing how each message
+will look like. Their result is a string which is then passed to the appender
+attached to the category to be displayed. 
+
+For now, there is two layouts: The simple one, which is good for most cases,
+and another one allowing users to specify the format they want.
+
+Here are the existing format directives:
+
+ - %%: the % char
+ - %n: platform-dependant line separator (LOG4J compliant)
+ - %e: plain old space (SimGrid extension)
+
+ - %m: user-provided message
+
+ - %c: Category name (LOG4J compliant)
+ - %p: Priority name (LOG4J compliant)
+
+ - %h: Hostname (SimGrid extension)
+ - %t: Process name (LOG4J compliant -- thread name in LOG4J)
+ - %I: Process PID (SimGrid extension)
+
+ - %F: file name where the log event was raised (LOG4J compliant)
+ - %l: location where the log event was raised (LOG4J compliant, like '%F:%L')
+ - %L: line number where the log event was raised (LOG4J compliant)
+ - %M: function name (LOG4J compliant -- called method name here of course). 
+   Defined only when using gcc because there is no __FUNCTION__ elsewhere.
+
+ - %b: full backtrace (Called %throwable in LOG4J). 
+   Defined only when using the GNU libc because backtrace() is not defined 
+   elsewhere.
+ - %B: short backtrace (only the first line of the %b). 
+   Called %throwable{short} in LOG4J, defined where %b is.
+
+ - %d: date (UNIX epoch)
+ - %r: application age (time elapsed since the beginning of the application)
+
+
+If you want to mimick the simple layout with the format one, you would use this
+format: '[%h:%i:(%I) %r] %l: [%c/%p] %m%n'. This is not completely correct
+because the simple layout do not display the message location for messages at
+priority INFO (thus, the fmt is '[%h:%i:(%I) %r] %l: [%c/%p] %m%n' in this
+case). Moreover, if there is no process name (ie, messages comming from the
+library itself, or test programs doing strange things) do not display the
+process identity (thus, fmt is '[%r] %l: [%c/%p] %m%n' in that case, and '[%r]
+[%c/%p] %m%n' if they are at priority INFO).
+
+\subsection log_hist 1.5 History of this module
 
 Historically, this module is an adaptation of the log4c project, which is dead
 upstream, and which I was given the permission to fork under the LGPL licence
@@ -347,6 +396,8 @@ xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
 typedef struct {
   char *catname;
   e_xbt_log_priority_t thresh;
+  char *fmt;
+  int additivity;
 } s_xbt_log_setting_t,*xbt_log_setting_t;
 
 static xbt_dynar_t xbt_log_settings=NULL;
@@ -355,6 +406,8 @@ static void _free_setting(void *s) {
   xbt_log_setting_t set=*(xbt_log_setting_t*)s;
   if (set) {
     free(set->catname);
+    if (set->fmt)
+      free(set->fmt);
     free(set);
   }
 }
@@ -511,21 +564,59 @@ int _xbt_log_cat_init(xbt_log_category_t category,
       
       found = 1;
       
-      xbt_log_threshold_set(category, setting->thresh);
-      xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
+      if (setting->thresh != xbt_log_priority_uninitialized) {
+	xbt_log_threshold_set(category, setting->thresh);
 
-      if (category->threshold <= xbt_log_priority_debug) {
-        _log_ev.cat = category;
-        _log_ev.priority = xbt_log_priority_debug;
-        _log_ev.fileName = __FILE__ ;
-        _log_ev.functionName = _XBT_FUNCTION ;
-        _log_ev.lineNum = __LINE__ ;
-	
-	_xbt_log_event_log(&_log_ev,
-			   "Apply settings for category '%s': set threshold to %s (=%d)",
-			   category->name,
-			   xbt_log_priority_names[category->threshold], category->threshold);
+	if (category->threshold <= xbt_log_priority_debug) {
+	  _log_ev.cat = category;
+	  _log_ev.priority = xbt_log_priority_debug;
+	  _log_ev.fileName = __FILE__ ;
+	  _log_ev.functionName = _XBT_FUNCTION ;
+	  _log_ev.lineNum = __LINE__ ;
+	  
+	  _xbt_log_event_log(&_log_ev,
+		"Apply settings for category '%s': set threshold to %s (=%d)",
+			     category->name,
+			     xbt_log_priority_names[category->threshold],
+			     category->threshold);
+	}
       }
+
+      if (setting->fmt) {
+	xbt_log_layout_set(category,xbt_log_layout_format_new(setting->fmt));
+
+	if (category->threshold <= xbt_log_priority_debug) {
+	  _log_ev.cat = category;
+	  _log_ev.priority = xbt_log_priority_debug;
+	  _log_ev.fileName = __FILE__ ;
+	  _log_ev.functionName = _XBT_FUNCTION ;
+	  _log_ev.lineNum = __LINE__ ;
+	  
+	  _xbt_log_event_log(&_log_ev,
+		    "Apply settings for category '%s': set format to %s",
+			     category->name,
+			     setting->fmt);
+	}
+      }
+
+      if (setting->additivity != -1) {
+	xbt_log_additivity_set(category,setting->additivity);
+
+	if (category->threshold <= xbt_log_priority_debug) {
+	  _log_ev.cat = category;
+	  _log_ev.priority = xbt_log_priority_debug;
+	  _log_ev.fileName = __FILE__ ;
+	  _log_ev.functionName = _XBT_FUNCTION ;
+	  _log_ev.lineNum = __LINE__ ;
+	  
+	  _xbt_log_event_log(&_log_ev,
+		    "Apply settings for category '%s': set additivity to %s",
+			     category->name,
+			     (setting->additivity?"on":"off"));
+	}
+      }
+
+      xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
     }
   }
   
@@ -618,6 +709,10 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
   const char *name, *dot, *eq;
   
   set->catname=NULL;
+  set->thresh = xbt_log_priority_uninitialized;
+  set->fmt = NULL;
+  set->additivity = -1;
+
   if (!*control_string) 
     return set;
   DEBUG1("Parse log setting '%s'",control_string);
@@ -658,6 +753,27 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char* control_string) {
 	     "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)",eq+1);
     }
     free(neweq);
+  } else if ( !strncmp(dot + 1, "add", (size_t)(eq - dot - 1)) ||
+	      !strncmp(dot + 1, "additivity", (size_t)(eq - dot - 1)) ) {
+
+    char *neweq=xbt_strdup(eq+1);
+    char *p=neweq-1;
+    
+    while (*(++p) != '\0') {
+      if (*p >= 'a' && *p <= 'z') {
+	*p-='a'-'A';
+      }
+    }
+    if ( !strcmp(neweq,"ON") ||
+	 !strcmp(neweq,"YES") ||
+	 !strcmp(neweq,"1") ) {
+      set->additivity = 1;      
+    } else {
+      set->additivity = 0;      
+    }
+    free(neweq);
+  } else if (!strncmp(dot + 1, "fmt", (size_t)(eq - dot - 1))) {
+    set->fmt = xbt_strdup(eq+1);
   } else {
     char buff[512];
     snprintf(buff,min(512,eq - dot),"%s",dot+1);
@@ -692,16 +808,18 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat,char *na
  *
  *      ( [category] "." [keyword] ":" value (" ")... )...
  *
- * where [category] is one the category names (see \ref XBT_log_cats for a complete list) 
+ * where [category] is one the category names (see \ref XBT_log_cats for 
+ * a complete list of the ones defined in the SimGrid library)  
  * and keyword is one of the following:
  *
  *    - thres: category's threshold priority. Possible values:
  *             TRACE,DEBUG,VERBOSE,INFO,WARNING,ERROR,CRITICAL
  *    - add or additivity: whether the logging actions must be passed to 
  *      the parent category. 
- *      Possible values: 0, 1, yes, no.
+ *      Possible values: 0, 1, no, yes, on, off.
  *      Default value: yes.
- *             
+ *    - fmt: the format to use. See \ref log_lay for more information.
+ *            
  */
 void xbt_log_control_set(const char* control_string) {
   xbt_log_setting_t set;
@@ -779,7 +897,7 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app) {
 }
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay) {
   if (!cat->appender) {
-    WARN1("No appender to category %s. Setting the file appender as default",
+    VERB1("No appender to category %s. Setting the file appender as default",
 	  cat->name);
     xbt_log_appender_set(cat,xbt_log_appender_file_new(NULL));
   }
@@ -790,6 +908,7 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay) {
     }
   }
   cat->layout = lay;
+  xbt_log_additivity_set(cat,0);
 }
 
 void xbt_log_additivity_set(xbt_log_category_t cat, int additivity) {

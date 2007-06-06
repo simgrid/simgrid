@@ -101,7 +101,7 @@ typedef enum {
     XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
         &_XBT_LOGV(parent), 0, 0,                    \
         #catName, xbt_log_priority_uninitialized, 1, \
-        0, 1                                          \
+        0, 0, 1                                      \
     }
 /**
  * \ingroup XBT_log
@@ -240,6 +240,7 @@ struct xbt_log_category_s {
   int threshold;
   int isThreshInherited;
   xbt_log_appender_t appender;
+  xbt_log_layout_t layout;
   int additivity;
 };
 
@@ -247,7 +248,6 @@ struct xbt_log_appender_s {
   void (*do_append) (xbt_log_appender_t this_appender,
 		     char *event);
   void (*free_) (xbt_log_appender_t this_);
-  xbt_log_layout_t layout;
   void *data;
 };
 
@@ -298,6 +298,17 @@ XBT_PUBLIC(void) xbt_log_parent_set(xbt_log_category_t cat,
  */
 XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat,
 				      xbt_log_appender_t app);
+/**
+ * \ingroup XBT_log_implem  
+ * \param cat the category (not only its name, but the variable)
+ * \param lay the layout
+ *
+ * Programatically sets the category's layout.
+ * (the prefered interface is throught xbt_log_control_set())
+ *
+ */
+XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat, 
+				    xbt_log_layout_t lay);
 
 /**
  * \ingroup XBT_log_implem  
@@ -316,8 +327,9 @@ XBT_PUBLIC(void) xbt_log_additivity_set(xbt_log_category_t cat,
  *
  * This layout is not as flexible as the pattern one
  */
-XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_simple_new(void);
-XBT_PUBLIC(xbt_log_appender_t) xbt_log_appender_file_new(xbt_log_layout_t layout);
+XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_simple_new(char*arg);
+XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_format_new(char*arg);
+XBT_PUBLIC(xbt_log_appender_t) xbt_log_appender_file_new(char*arg);
 
 
 /* ********************************** */
@@ -336,6 +348,7 @@ extern XBT_IMPORT_NO_EXPORT(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 XBT_LOG_EXTERNAL_CATEGORY(GRAS);
 
 extern xbt_log_appender_t xbt_log_default_appender;
+extern xbt_log_layout_t xbt_log_default_layout;
 
 /* ********************** */
 /* Public functions again */
