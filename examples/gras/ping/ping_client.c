@@ -78,7 +78,7 @@ int client(int argc,char *argv[]) {
 
   /* 10. Free the allocated resources, and shut GRAS down */
   gras_socket_close(toserver);
-  gras_exit();
   INFO0("Done.");
+  gras_exit();
   return 0;
 } /* end_of_client */

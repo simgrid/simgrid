@@ -99,8 +99,8 @@ int server (int argc,char *argv[]) {
   /* 8. Free the allocated resources, and shut GRAS down */
   gras_socket_close(globals->sock);
   free(globals);
+  INFO0("Done.");
   gras_exit();
    
-  INFO0("Done.");
   return 0;
 } /* end_of_server */
