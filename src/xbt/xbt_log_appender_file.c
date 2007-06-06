@@ -21,7 +21,7 @@ extern const char *xbt_log_priority_names[7];
 static void append_file(xbt_log_appender_t this_appender,
 			char *str) {
 
-  fprintf((FILE*)(this_appender->data), str);
+  fprintf((FILE*)(this_appender->data), "%s", str);
 }
 
 xbt_log_appender_t xbt_log_appender_file_new(char *arg){
