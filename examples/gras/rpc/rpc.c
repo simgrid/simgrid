@@ -199,8 +199,8 @@ int client(int argc,char *argv[]) {
   /* 11. Cleanup the place before leaving */
   gras_socket_close(toserver);
   gras_socket_close(toforwarder);
-  gras_exit();
   INFO0("Done.");
+  gras_exit();
   return 0;
 } /* end_of_client */
 
@@ -262,8 +262,8 @@ int forwarder (int argc,char *argv[]) {
   gras_socket_close(mysock);
   gras_socket_close(fdata->server);
   free(fdata);
-  gras_exit();
   INFO0("Done.");
+  gras_exit();
   return 0;
 }
 
@@ -382,9 +382,9 @@ int server (int argc,char *argv[]) {
   /* 8. Free the allocated resources, and shut GRAS down */
   free(sdata);
   gras_socket_close(mysock);
+  INFO0("Done.");
   gras_exit();
    
-  INFO0("Done.");
   return 0;
 } /* end_of_server */
 
