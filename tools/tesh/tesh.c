@@ -54,12 +54,9 @@ static void handle_line(const char * filepos, char *line) {
       dir--;
       VERB1("Saw cd '%s'",dir);
       if (chdir(dir)) {
-	char buff[256];
-	strerror_r(errno, buff, 256);
-
-	perror(bprintf("Chdir to %s failed: %s",dir,buff));
-	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);	 
-	exit(4);
+	ERROR2("Chdir to %s failed: %s",dir,strerror(errno));
+	ERROR1("Test suite `%s': NOK (system error)", testsuite_name); 
+	rctx_armageddon(rctx,4);
       }
       break;
     } /* else, pushline */
@@ -80,7 +77,7 @@ static void handle_line(const char * filepos, char *line) {
   default:
     ERROR2("[%s] Syntax error: %s",filepos, line);
     ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
-    exit(1);
+    rctx_armageddon(rctx,1);
     break;
   }
 }
@@ -113,7 +110,7 @@ static void handle_suite(const char* filename, FILE* IN) {
 	ERROR1("[%d] Error: no command found in this chunk of lines.",
 	       buffbegin);
 	ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
-	exit(1);
+	rctx_armageddon(rctx,1);
       }
       if (rctx->cmd)
 	rctx_start();
@@ -184,6 +181,7 @@ int main(int argc,char *argv[]) {
   /* Find the description file */
   if (argc == 1) {
     INFO0("Test suite from stdin");
+    testsuite_name = xbt_strdup("(stdin)");
     handle_suite("stdin",stdin);
     INFO0("Test suite from stdin OK");
      
@@ -204,11 +202,11 @@ int main(int argc,char *argv[]) {
       if (!IN) {
 	perror(bprintf("Impossible to open the suite file `%s'",argv[i]));
 	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);
-	exit(1);
+	rctx_armageddon(rctx,1);
        }
       handle_suite(suitename,IN);
       rctx_wait_bg();
-      fclose(IN); //->leads to segfault on amd64...
+      fclose(IN); 
       INFO1("Test suite `%s' OK",suitename);
       free(suitename);
     }

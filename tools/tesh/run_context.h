@@ -19,6 +19,7 @@ typedef enum {e_output_check, e_output_display, e_output_ignore} e_output_handli
 typedef struct {
   /* kind of job */
   char *cmd;
+  char *filepos;
   int pid;
   int is_background:1;
   int is_empty:1;
@@ -31,6 +32,10 @@ typedef struct {
 			the child is dead. The main thread use it to detect
 			that the child is not dead before the end of timeout */
    
+  int interrupted:1; /* Whether we got stopped by an armageddon */
+  xbt_mutex_t interruption; /* To allow main thread to kill a runner 
+			       one only at certain points */
+
   e_output_handling_t output;
    
   int status;
@@ -47,6 +52,7 @@ typedef struct {
 
   /* Threads */
   xbt_thread_t writer, reader; /* IO handlers */
+  xbt_thread_t runner; /* Main thread, counting for timeouts */
 
   /* Pipes from/to the child */
   int child_to, child_from;
@@ -59,6 +65,12 @@ void rctx_exit(void);
    
 /* wait for all currently running background jobs */
 void rctx_wait_bg(void);
+
+/* kill forcefully all currently running background jobs */
+extern rctx_t armageddon_initiator;
+extern xbt_mutex_t armageddon_mutex;
+void rctx_armageddon(rctx_t initiator, int exitcode);
+
 
 /* create a new empty running context */
 rctx_t rctx_new(void);

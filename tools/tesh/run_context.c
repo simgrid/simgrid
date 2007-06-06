@@ -13,32 +13,81 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
 xbt_dynar_t bg_jobs = NULL;
+rctx_t armageddon_initiator = NULL;
+xbt_mutex_t armageddon_mutex = NULL;
 
 /* 
  * Module management
  */
 
-static void join_it(void*t) {  
-  xbt_thread_t th = *(xbt_thread_t*)t;
-  VERB1("Join thread %p which were running a background cmd",th);
-  xbt_thread_join(th,NULL);
+static void kill_it(void*r) {  
+  rctx_t rctx = *(rctx_t*)r;
+
+  VERB1("Join thread %p which were running a background cmd",rctx->runner);
+  xbt_thread_join(rctx->runner,NULL);
+  rctx_free(rctx);
 }
 
 void rctx_init(void) {
-  bg_jobs = xbt_dynar_new(sizeof(xbt_thread_t),join_it);
+  bg_jobs = xbt_dynar_new(sizeof(rctx_t),kill_it);
+  armageddon_mutex = xbt_mutex_init();
+  armageddon_initiator = NULL;
 }
 
 void rctx_exit(void) {
-  xbt_dynar_free(&bg_jobs);
+  if (bg_jobs)
+    xbt_dynar_free(&bg_jobs);
+  xbt_mutex_destroy(armageddon_mutex);
 }
 
 void rctx_wait_bg(void) {
   xbt_dynar_free(&bg_jobs);
-  bg_jobs = xbt_dynar_new(sizeof(xbt_thread_t),join_it);
+  bg_jobs = xbt_dynar_new(sizeof(rctx_t),kill_it);
+}
+
+void rctx_armageddon(rctx_t initiator, int exitcode) {
+  rctx_t rctx;
+  int cpt;
+
+  xbt_mutex_lock(armageddon_mutex);
+  if (armageddon_initiator != NULL) {
+    VERB0("Armageddon already started. Let it go");
+    return;
+  }
+  armageddon_initiator = initiator;
+  xbt_mutex_unlock(armageddon_mutex);
+
+
+  /* Kill any background commands */
+  xbt_dynar_foreach(bg_jobs,cpt,rctx) {
+    if (rctx != initiator) {
+      xbt_mutex_lock(rctx->interruption);
+      rctx->interrupted = 1;
+      INFO2("Kill <%s> because <%s> failed",rctx->filepos,initiator->filepos);
+      if (!rctx->reader_done) {
+	kill(rctx->pid,SIGTERM);
+	usleep(100);
+	kill(rctx->pid,SIGKILL);          
+      }
+      xbt_mutex_unlock(rctx->interruption);
+    }
+  }
+
+  /* Remove myself from the tasks */
+  if (xbt_dynar_member(bg_jobs, &initiator)) {
+    int mypos = xbt_dynar_search(bg_jobs, &initiator);
+    rctx_t myself;
+    xbt_dynar_remove_at(bg_jobs,mypos,&myself);
+    //    rctx_free(myself);
+  } 
+
+  /* Cleanup the place */
+  xbt_dynar_free(&bg_jobs);
+
+  exit(exitcode);
 }
 
 /*
@@ -49,12 +98,16 @@ void rctx_empty(rctx_t rc) {
   if (rc->cmd)
     free(rc->cmd);
   rc->cmd = NULL;
+  if (rc->filepos)
+    free(rc->filepos);
+  rc->filepos = NULL;
   rc->is_empty = 1;
   rc->is_background = 0;
   rc->is_stoppable = 0;
   rc->output = e_output_check;
   rc->brokenpipe = 0;
   rc->timeout = 0;
+  rc->interrupted = 0;
   buff_empty(rc->input);
   buff_empty(rc->output_wanted);
   buff_empty(rc->output_got);
@@ -66,6 +119,7 @@ rctx_t rctx_new() {
   res->input=buff_new();
   res->output_wanted=buff_new();
   res->output_got=buff_new();
+  res->interruption = xbt_mutex_init();
   rctx_empty(res);
   return res;
 }
@@ -78,6 +132,9 @@ void rctx_free(rctx_t rctx) {
 
   if (rctx->cmd)
     free(rctx->cmd);
+  if (rctx->filepos)
+    free(rctx->filepos);
+  xbt_mutex_destroy(rctx->interruption);
   buff_free(rctx->input);
   buff_free(rctx->output_got);
   buff_free(rctx->output_wanted);
@@ -110,7 +167,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
 	       " Dunno which input/output belongs to which command.",
 	       filepos,rctx->cmd);
 	ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
-	exit(1);
+	rctx_armageddon(rctx,1);
       }
       rctx_start();
       VERB1("[%s] More than one command in this chunk of lines",filepos);
@@ -121,7 +178,8 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
       rctx->is_background = 0;
       
     rctx->cmd = xbt_strdup(line);
-    INFO3("[%s] %s%s",filepos,line,
+    rctx->filepos = xbt_strdup(filepos);
+    INFO3("[%s] %s%s",filepos,rctx->cmd,
 	  ((rctx->is_background)?" (background command)":""));
 
     break;
@@ -169,7 +227,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
     } else {
       ERROR2("%s: Malformed metacommand: %s",filepos,line);
       ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
-      exit(1);
+      rctx_armageddon(rctx,1);
     }
     break;
   }
@@ -197,7 +255,7 @@ static void* thread_writer(void *r) {
       } else if (errno!=EINTR && errno!=EAGAIN && errno!=EPIPE) {
 	perror("Error while writing input to child");
 	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);
-        exit(4);
+	rctx_armageddon(rctx,4);
       }
     }
     DEBUG1("written %d chars so far",posw);
@@ -221,7 +279,7 @@ static void *thread_reader(void *r) {
     if (posr<0 && errno!=EINTR && errno!=EAGAIN) {
       perror("Error while reading output of child");
       ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
-      exit(4);
+      rctx_armageddon(rctx,4);
     }
     if (posr>0) {
       buffout[posr]='\0';
@@ -237,7 +295,7 @@ static void *thread_reader(void *r) {
   if (got_pid != rctx->pid) {
     perror(bprintf("Cannot wait for the child %s",rctx->cmd));
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
-    exit(4);
+    rctx_armageddon(rctx,4);
   }
    
   rctx->reader_done = 1;
@@ -256,14 +314,14 @@ void rctx_start(void) {
   if (pipe(child_in) || pipe(child_out)) {
     perror("Cannot open the pipes");
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
-    exit(4);
+    rctx_armageddon(rctx,4);
   }
 
   rctx->pid=fork();
   if (rctx->pid<0) {
     perror("Cannot fork the command");
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
-    exit(4);
+    rctx_armageddon(rctx,4);
   }
 
   if (rctx->pid) { /* father */
@@ -307,9 +365,10 @@ void rctx_start(void) {
 
     DEBUG2("Launch a thread to wait for %s %d",old->cmd,old->pid);
     runner = xbt_thread_create(rctx_wait,(void*)old);
+    old->runner = runner;
     VERB3("Launched thread %p to wait for %s %d",
 	  runner,old->cmd, old->pid);
-    xbt_dynar_push(bg_jobs,&runner);
+    xbt_dynar_push(bg_jobs,&old);
   }
 }
 
@@ -329,19 +388,21 @@ void *rctx_wait(void* r) {
     THROW1(unknown_error,0,"Cmd '%s' not started yet. Cannot wait it",
 	   rctx->cmd);
 
-    usleep(100);
-  /* Wait for the child to die or the timeout to happen */
-  while (!rctx->reader_done && rctx->end_time >= now) {
+  /* Wait for the child to die or the timeout to happen (or an armageddon to happen) */
+  while (!rctx->interrupted && !rctx->reader_done && rctx->end_time >= now) {
     usleep(100);
     now = time(NULL);
   }
    
-  if (rctx->end_time < now) {
-    INFO1("Child '%s' timeouted. Kill it",rctx->cmd);
+  xbt_mutex_lock(rctx->interruption);
+
+  if (!rctx->interrupted && rctx->end_time < now) {    
+    INFO1("<%s> timeouted. Kill the process.",rctx->filepos);
     rctx->timeout = 1;
     kill(rctx->pid,SIGTERM);
     usleep(100);
     kill(rctx->pid,SIGKILL);    
+    rctx->reader_done = 1;
   }
    
   /* Make sure helper threads die.
@@ -350,61 +411,80 @@ void *rctx_wait(void* r) {
   xbt_thread_join(rctx->writer,NULL);
   xbt_thread_join(rctx->reader,NULL);
 
+  /*  xbt_mutex_unlock(rctx->interruption);
+  if (rctx->interrupted)
+    return NULL;
+    xbt_mutex_lock(rctx->interruption);*/
+ 
+  buff_chomp(rctx->output_got);
+  buff_chomp(rctx->output_wanted);
+  buff_trim(rctx->output_got);
+  buff_trim(rctx->output_wanted);
+
   /* Check for broken pipe */
   if (rctx->brokenpipe)
     VERB0("Warning: Child did not consume all its input (I got broken pipe)");
 
   /* Check for timeouts */
   if (rctx->timeout) {
-    ERROR2("Test suite `%s': NOK (timeout after %d sec)", testsuite_name,timeout_value);
-    exit(3);
+    if (rctx->output_got->data[0])
+      INFO2("<%s> Output on timeout:\n%s",
+	    rctx->filepos,rctx->output_got->data);
+    else
+      INFO1("<%s> No output before timeout",
+	    rctx->filepos);
+    ERROR3("Test suite `%s': NOK (<%s> timeout after %d sec)", 
+	   testsuite_name,rctx->filepos,timeout_value);
+    if (!rctx->interrupted)
+      rctx_armageddon(rctx, 3);
   }
       
   DEBUG2("RCTX=%p (pid=%d)",rctx,rctx->pid);
   DEBUG3("Status(%s|%d)=%d",rctx->cmd,rctx->pid,rctx->status);
 
-  if (WIFSIGNALED(rctx->status) && !rctx->expected_signal) {
-    ERROR2("Test suite `%s': NOK (child got signal %s)", 
-	   testsuite_name,
-	   signal_name(WTERMSIG(rctx->status),NULL));
-    errcode = WTERMSIG(rctx->status)+4;	
-  }
-
-  if (WIFSIGNALED(rctx->status) && rctx->expected_signal &&
-      strcmp(signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
-	     rctx->expected_signal)) {
-    ERROR3("Test suite `%s': NOK (child got signal %s instead of %s)", testsuite_name,
-	    signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
-	    rctx->expected_signal);
-    errcode = WTERMSIG(rctx->status)+4;	
-  }
-  
-  if (!WIFSIGNALED(rctx->status) && rctx->expected_signal) {
-    ERROR2("Test suite `%s': NOK (child expected signal %s)", testsuite_name,
-	   rctx->expected_signal);
-    errcode = 5;
-  }
-
-  if (WIFEXITED(rctx->status) && WEXITSTATUS(rctx->status) != rctx->expected_return ) {
-    if (rctx->expected_return) 
-      ERROR3("Test suite `%s': NOK (child returned code %d instead of %d)", testsuite_name,
-	     WEXITSTATUS(rctx->status), rctx->expected_return);
-    else
-      ERROR2("Test suite `%s': NOK (child returned code %d)", testsuite_name, WEXITSTATUS(rctx->status));
-    errcode = 40+WEXITSTATUS(rctx->status);
+  if (!rctx->interrupted) {
+    if (WIFSIGNALED(rctx->status) && !rctx->expected_signal) {
+      ERROR3("Test suite `%s': NOK (<%s> got signal %s)", 
+	     testsuite_name, rctx->filepos,
+	     signal_name(WTERMSIG(rctx->status),NULL));
+      errcode = WTERMSIG(rctx->status)+4;	
+    }
     
-  }
-  rctx->expected_return = 0;
+    if (WIFSIGNALED(rctx->status) && rctx->expected_signal &&
+	strcmp(signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
+	       rctx->expected_signal)) {
+      ERROR4("Test suite `%s': NOK (%s got signal %s instead of %s)", 
+	     testsuite_name, rctx->filepos,
+	     signal_name(WTERMSIG(rctx->status),rctx->expected_signal),
+	     rctx->expected_signal);
+      errcode = WTERMSIG(rctx->status)+4;	
+    }
+    
+    if (!WIFSIGNALED(rctx->status) && rctx->expected_signal) {
+      ERROR3("Test suite `%s': NOK (child %s expected signal %s)", 
+	     testsuite_name, rctx->filepos,
+	     rctx->expected_signal);
+      errcode = 5;
+    }
+    
+    if (WIFEXITED(rctx->status) && WEXITSTATUS(rctx->status) != rctx->expected_return ) {
+      if (rctx->expected_return) 
+	ERROR4("Test suite `%s': NOK (<%s> returned code %d instead of %d)",
+	       testsuite_name, rctx->filepos,
+	       WEXITSTATUS(rctx->status), rctx->expected_return);
+      else
+	ERROR3("Test suite `%s': NOK (<%s> returned code %d)",
+	       testsuite_name, rctx->filepos, WEXITSTATUS(rctx->status));
+      errcode = 40+WEXITSTATUS(rctx->status);
+      
+    }
+    rctx->expected_return = 0;
   
-  if(rctx->expected_signal){
-    free(rctx->expected_signal);
-    rctx->expected_signal = NULL;
+    if(rctx->expected_signal){
+      free(rctx->expected_signal);
+      rctx->expected_signal = NULL;
+    }
   }
-
-  buff_chomp(rctx->output_got);
-  buff_chomp(rctx->output_wanted);
-  buff_trim(rctx->output_got);
-  buff_trim(rctx->output_wanted);
 
   if (   rctx->output == e_output_check
       && (    rctx->output_got->used != rctx->output_wanted->used
@@ -415,7 +495,8 @@ void *rctx_wait(void* r) {
 	      diff);
        free(diff);
     }     
-    ERROR1("Test suite `%s': NOK (output mismatch)", testsuite_name);
+    ERROR2("Test suite `%s': NOK (<%s> output mismatch)", 
+	   testsuite_name,rctx->filepos);
      
     errcode=2;
   } else if (rctx->output == e_output_ignore) {
@@ -426,17 +507,23 @@ void *rctx_wait(void* r) {
     xbt_dynar_free(&a);
     INFO1("Here is the (ignored) command output: \n||%s",out);
     free(out);
+  } else if (errcode || rctx->interrupted) {
+    /* checking output, and matching */
+    xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
+    char *out = xbt_str_join(a,"\n||");
+    xbt_dynar_free(&a);
+    INFO2("Output of <%s> so far: \n||%s",rctx->filepos,out);
+    free(out);    
   }
 
-  if (rctx->is_background)
-    rctx_free(rctx);
-  else
+  if (!rctx->is_background) {
     rctx_empty(rctx);
-  if (errcode) {
-    if (rctx->output == e_output_check)
-      INFO1("Here is the child's output:\n%s",rctx->output_got->data);
-    exit (errcode);
   }
+  if (errcode) {
+    if (!rctx->interrupted)
+      rctx_armageddon(rctx, errcode);
+  }
+  xbt_mutex_unlock(rctx->interruption);
 
   return NULL;
 }
