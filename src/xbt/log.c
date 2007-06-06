@@ -392,6 +392,7 @@ welcome here, too.
 
 xbt_log_appender_t xbt_log_default_appender = NULL; /* set in log_init */
 xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
+int _log_usable = 0;
 
 typedef struct {
   char *catname;
@@ -449,6 +450,7 @@ void xbt_log_init(int *argc,char **argv) {
 	xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
 	_XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
 	_XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
+	_log_usable = 1;   
 
 	/* Set logs and init log submodule */
 	for (i=1; i<*argc; i++){
@@ -502,13 +504,21 @@ void xbt_log_exit(void) {
   VERB0("Exiting log");
   xbt_dynar_free(&xbt_log_settings);
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
-  VERB0("Exited log");
+  _log_usable = 0;
 }
 
 void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   
   xbt_log_category_t cat = ev->cat;
-  
+  if (!_log_usable) {
+     fprintf(stderr,"XXXXXXXXXXXXXXXXXXX\nXXX Warning, logs not usable here. Either before xbt_init() or after xbt_exit().\nXXXXXXXXXXXXXXXXXXX\n");
+     va_start(ev->ap, fmt);
+     vfprintf(stderr,fmt,ev->ap);
+     va_end(ev->ap);
+     xbt_backtrace_display();
+     return;
+  }
+   
   va_start(ev->ap, fmt);
   while(1) {
     xbt_log_appender_t appender = cat->appender;
