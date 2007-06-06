@@ -40,7 +40,7 @@ gras_process_init() {
 
 	trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
 	pd->pid = PID++;
-	/*TODO*/
+
 	if (SIMIX_process_self() != NULL ) {
 		pd->ppid = gras_os_getpid();
 	}
