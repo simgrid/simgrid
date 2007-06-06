@@ -73,6 +73,5 @@ int server (int argc,char *argv[]) {
   gras_socket_close(sock);
   gras_exit();
    
-  INFO0("Done.");
   return 0;
 } /* end_of_server */

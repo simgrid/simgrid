@@ -94,6 +94,5 @@ int client(int argc,char *argv[]) {
   xbt_matrix_free(answer);
   gras_socket_close(toserver);
   gras_exit();
-  INFO0("Done.");
   return 0;
 } /* end_of_client */
