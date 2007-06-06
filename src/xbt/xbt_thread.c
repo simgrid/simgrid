@@ -67,7 +67,7 @@ xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
 
    
    if ((errcode = pthread_create(&(res_thread->t), NULL, wrapper_start_routine, res_thread)))
-     THROW0(system_error,errcode, "pthread_create failed");
+     THROW1(system_error,errcode, "pthread_create failed: %s",strerror(errcode));
 
    return res_thread;
 }
@@ -78,7 +78,8 @@ xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
 	int errcode;   
 	
 	if ((errcode = pthread_join(thread->t,thread_return)))
-		THROW0(system_error,errcode, "pthread_join failed");
+		THROW1(system_error,errcode, "pthread_join failed: %s",
+		       strerror(errcode));
 	free(thread);   
 }		       
 
@@ -104,7 +105,8 @@ xbt_mutex_t xbt_mutex_init(void) {
    int errcode;
    
    if ((errcode = pthread_mutex_init(&(res->m),NULL)))
-     THROW0(system_error,errcode,"pthread_mutex_init() failed");
+     THROW1(system_error,errcode,"pthread_mutex_init() failed: %s",
+	    strerror(errcode));
    
    return res;
 }
@@ -113,14 +115,16 @@ void xbt_mutex_lock(xbt_mutex_t mutex) {
    int errcode;
    
    if ((errcode=pthread_mutex_lock(&(mutex->m))))
-     THROW1(system_error,errcode,"pthread_mutex_lock(%p) failed",mutex);
+     THROW2(system_error,errcode,"pthread_mutex_lock(%p) failed: %s",
+	    mutex, strerror(errcode));
 }
 
 void xbt_mutex_unlock(xbt_mutex_t mutex) {
    int errcode;
    
    if ((errcode=pthread_mutex_unlock(&(mutex->m))))
-     THROW1(system_error,errcode,"pthread_mutex_unlock(%p) failed",mutex);
+     THROW2(system_error,errcode,"pthread_mutex_unlock(%p) failed: %s",
+	    mutex, strerror(errcode));
 }
 
 void xbt_mutex_destroy(xbt_mutex_t mutex) {
@@ -129,7 +133,8 @@ void xbt_mutex_destroy(xbt_mutex_t mutex) {
    if (!mutex) return;
    
    if ((errcode=pthread_mutex_destroy(&(mutex->m))))
-     THROW1(system_error,errcode,"pthread_mutex_destroy(%p) failed",mutex);
+     THROW2(system_error,errcode,"pthread_mutex_destroy(%p) failed: %s",
+	    mutex, strerror(errcode));
    free(mutex);
 }
 
@@ -142,7 +147,8 @@ xbt_thcond_t xbt_thcond_init(void) {
    xbt_thcond_t res = xbt_new(s_xbt_thcond_t,1);
    int errcode;
    if ((errcode=pthread_cond_init(&(res->c),NULL)))
-     THROW0(system_error,errcode,"pthread_cond_init() failed");
+     THROW1(system_error,errcode,"pthread_cond_init() failed: %s",
+	    strerror(errcode));
 
    return res;
 }
@@ -150,19 +156,22 @@ xbt_thcond_t xbt_thcond_init(void) {
 void xbt_thcond_wait(xbt_thcond_t cond, xbt_mutex_t mutex) {
    int errcode;
    if ((errcode=pthread_cond_wait(&(cond->c),&(mutex->m))))
-     THROW2(system_error,errcode,"pthread_cond_wait(%p,%p) failed",cond,mutex);
+     THROW3(system_error,errcode,"pthread_cond_wait(%p,%p) failed: %s",
+	    cond,mutex, strerror(errcode));
 }
 
 void xbt_thcond_signal(xbt_thcond_t cond) {
    int errcode;
    if ((errcode=pthread_cond_signal(&(cond->c))))
-     THROW1(system_error,errcode,"pthread_cond_signal(%p) failed",cond);
+     THROW2(system_error,errcode,"pthread_cond_signal(%p) failed: %s",
+	    cond, strerror(errcode));
 }
 	 
 void xbt_thcond_broadcast(xbt_thcond_t cond){
    int errcode;
    if ((errcode=pthread_cond_broadcast(&(cond->c))))
-     THROW1(system_error,errcode,"pthread_cond_broadcast(%p) failed",cond);
+     THROW2(system_error,errcode,"pthread_cond_broadcast(%p) failed: %s",
+	    cond, strerror(errcode));
 }
 void xbt_thcond_destroy(xbt_thcond_t cond){
    int errcode;
@@ -170,7 +179,8 @@ void xbt_thcond_destroy(xbt_thcond_t cond){
    if (!cond) return;
 
    if ((errcode=pthread_cond_destroy(&(cond->c))))
-     THROW1(system_error,errcode,"pthread_cond_destroy(%p) failed",cond);
+     THROW2(system_error,errcode,"pthread_cond_destroy(%p) failed: %s",
+	    cond, strerror(errcode));
    free(cond);
 }
 
