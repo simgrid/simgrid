@@ -1,10 +1,12 @@
-#! @BASH@
-if [ x@EXEEXT@ = x ] ; then 
-#  exenv="libtool --mode=execute valgrind --run-libc-freeres=no --show-reachable=yes "
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
-
-exec $exenv ./simple_token_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/simple_token.xml $@
+$ $SG_TEST_EXENV ./simple_token_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/simple_token.xml $@
+> [Tremblay:node:(1) 0.000000] [SimpleToken/INFO] Create the token (with value 0) and send it to Fafard:4000
+> [Tremblay:node:(1) 0.011346] [SimpleToken/INFO] Begin a new loop. Still to do: 2
+> [Tremblay:node:(1) 0.022693] [SimpleToken/INFO] Begin a new loop. Still to do: 1
+> [Tremblay:node:(1) 0.034039] [SimpleToken/INFO] Begin a new loop. Still to do: 0
+> [Tremblay:node:(1) 0.034039] [SimpleToken/INFO] Shut down the token-ring. There was 14 hops.
+> [Fafard:node:(2) 1.028109] [gras/INFO] Exiting GRAS
+> [Jupiter:node:(3) 1.030844] [gras/INFO] Exiting GRAS
+> [Ginette:node:(4) 1.032083] [gras/INFO] Exiting GRAS
+> [Bourassa:node:(5) 1.034039] [gras/INFO] Exiting GRAS
+> [Tremblay:node:(1) 1.034039] [gras/INFO] Exiting GRAS
 
