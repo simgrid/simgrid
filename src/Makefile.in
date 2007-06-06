@@ -122,11 +122,12 @@ libgras_la_LIBADD =
 am__libgras_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	xbt_modinter.h gras_modinter.h xbt/sysdep.c xbt/asserts.c \
 	xbt/log.c xbt/xbt_log_appender_file.c \
-	xbt/xbt_log_layout_simple.c xbt/mallocator.c xbt/dynar.c \
-	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
-	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
-	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
-	xbt/cunit.c xbt/graphxml_parse.c gras_simix/gras_simix_gras.c \
+	xbt/xbt_log_layout_simple.c xbt/xbt_log_layout_format.c \
+	xbt/mallocator.c xbt/dynar.c xbt/dict.c xbt/dict_elm.c \
+	xbt/dict_cursor.c xbt/dict_multi.c xbt/heap.c xbt/fifo.c \
+	xbt/swag.c xbt/graph.c xbt/set.c xbt/xbt_matrix.c \
+	xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c xbt/cunit.c \
+	xbt/graphxml_parse.c gras_simix/gras_simix_gras.c \
 	gras_simix/Transport/gras_simix_transport.c \
 	gras_simix/Transport/gras_simix_transport_private.h \
 	gras_simix/Msg/gras_simix_msg.c \
@@ -188,10 +189,11 @@ am__libgras_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 @USE_SIMIX_FALSE@	ddt_parse.yy.lo
 am__objects_3 = snprintf.lo xbt_str.lo ex.lo sysdep.lo asserts.lo \
 	log.lo xbt_log_appender_file.lo xbt_log_layout_simple.lo \
-	mallocator.lo dynar.lo dict.lo dict_elm.lo dict_cursor.lo \
-	dict_multi.lo heap.lo fifo.lo swag.lo graph.lo set.lo \
-	xbt_matrix.lo xbt_peer.lo xbt_main.lo config.lo cunit.lo \
-	graphxml_parse.lo $(am__objects_1) $(am__objects_2)
+	xbt_log_layout_format.lo mallocator.lo dynar.lo dict.lo \
+	dict_elm.lo dict_cursor.lo dict_multi.lo heap.lo fifo.lo \
+	swag.lo graph.lo set.lo xbt_matrix.lo xbt_peer.lo xbt_main.lo \
+	config.lo cunit.lo graphxml_parse.lo $(am__objects_1) \
+	$(am__objects_2)
 am__objects_4 = rl_stubs.lo xbt_thread.lo rl_transport.lo \
 	transport_plugin_file.lo transport_plugin_tcp.lo rl_emul.lo \
 	rl_process.lo rl_time.lo rl_dns.lo rl_msg.lo
@@ -211,11 +213,12 @@ libsimgrid_la_LIBADD =
 am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	xbt_modinter.h gras_modinter.h xbt/sysdep.c xbt/asserts.c \
 	xbt/log.c xbt/xbt_log_appender_file.c \
-	xbt/xbt_log_layout_simple.c xbt/mallocator.c xbt/dynar.c \
-	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
-	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
-	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
-	xbt/cunit.c xbt/graphxml_parse.c gras_simix/gras_simix_gras.c \
+	xbt/xbt_log_layout_simple.c xbt/xbt_log_layout_format.c \
+	xbt/mallocator.c xbt/dynar.c xbt/dict.c xbt/dict_elm.c \
+	xbt/dict_cursor.c xbt/dict_multi.c xbt/heap.c xbt/fifo.c \
+	xbt/swag.c xbt/graph.c xbt/set.c xbt/xbt_matrix.c \
+	xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c xbt/cunit.c \
+	xbt/graphxml_parse.c gras_simix/gras_simix_gras.c \
 	gras_simix/Transport/gras_simix_transport.c \
 	gras_simix/Transport/gras_simix_transport_private.h \
 	gras_simix/Msg/gras_simix_msg.c \
@@ -309,12 +312,13 @@ am_libsimgrid_la_OBJECTS = $(am__objects_3) $(am__objects_17) \
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = ./cunit_unit.c ./ex_unit.c ./dynar_unit.c \
-	./dict_unit.c ./set_unit.c ./swag_unit.c ./config_unit.c \
-	simgrid_units_main.c
+	./dict_unit.c ./set_unit.c ./swag_unit.c ./xbt_str_unit.c \
+	./config_unit.c simgrid_units_main.c
 @GRAMINE_MODE_FALSE@am__objects_18 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
-@GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) config_unit.$(OBJEXT)
+@GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) xbt_str_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@	config_unit.$(OBJEXT)
 @GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_18) \
 @GRAMINE_MODE_FALSE@	simgrid_units_main.$(OBJEXT)
 testall_OBJECTS = $(am_testall_OBJECTS)
@@ -563,11 +567,12 @@ lib_LTLIBRARIES = libsimgrid.la libgras.la
 COMMON_SRC = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c xbt_modinter.h \
 	gras_modinter.h xbt/sysdep.c xbt/asserts.c xbt/log.c \
 	xbt/xbt_log_appender_file.c xbt/xbt_log_layout_simple.c \
-	xbt/mallocator.c xbt/dynar.c xbt/dict.c xbt/dict_elm.c \
-	xbt/dict_cursor.c xbt/dict_multi.c xbt/heap.c xbt/fifo.c \
-	xbt/swag.c xbt/graph.c xbt/set.c xbt/xbt_matrix.c \
-	xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c xbt/cunit.c \
-	xbt/graphxml_parse.c $(am__append_9) $(am__append_12)
+	xbt/xbt_log_layout_format.c xbt/mallocator.c xbt/dynar.c \
+	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
+	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
+	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
+	xbt/cunit.c xbt/graphxml_parse.c $(am__append_9) \
+	$(am__append_12)
 RL_SRC = \
   gras/rl_stubs.c                     xbt/xbt_thread.c                    \
   \
@@ -653,11 +658,13 @@ AMOK_SRC = \
 
 @GRAMINE_MODE_FALSE@TEST_CFILES = xbt/cunit.c  xbt/ex.c          \
 @GRAMINE_MODE_FALSE@            xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
-@GRAMINE_MODE_FALSE@            xbt/config.c
+@GRAMINE_MODE_FALSE@	    xbt/xbt_str.c                      \
+@GRAMINE_MODE_FALSE@            xbt/config.c 
 
 @GRAMINE_MODE_FALSE@TEST_UNITS = ./cunit_unit.c ./ex_unit.c         \
 @GRAMINE_MODE_FALSE@            ./dynar_unit.c ./dict_unit.c ./set_unit.c ./swag_unit.c \
-@GRAMINE_MODE_FALSE@            ./config_unit.c
+@GRAMINE_MODE_FALSE@	    ./xbt_str_unit.c \
+@GRAMINE_MODE_FALSE@            ./config_unit.c 
 
 @GRAMINE_MODE_FALSE@BUILT_SOURCES = ../include/surf/surfxml.h surf/surfxml.c \
 @GRAMINE_MODE_FALSE@              ../include/xbt/graphxml.h xbt/graphxml.c \
@@ -916,11 +923,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation_KCCFLN05.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_appender_file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_layout_format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_layout_simple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_matrix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_peer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_thread.Plo@am__quote@
 
 .c.o:
@@ -999,6 +1008,13 @@ xbt_log_layout_simple.lo: xbt/xbt_log_layout_simple.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_log_layout_simple.c' object='xbt_log_layout_simple.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_log_layout_simple.lo `test -f 'xbt/xbt_log_layout_simple.c' || echo '$(srcdir)/'`xbt/xbt_log_layout_simple.c
+
+xbt_log_layout_format.lo: xbt/xbt_log_layout_format.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_log_layout_format.lo -MD -MP -MF "$(DEPDIR)/xbt_log_layout_format.Tpo" -c -o xbt_log_layout_format.lo `test -f 'xbt/xbt_log_layout_format.c' || echo '$(srcdir)/'`xbt/xbt_log_layout_format.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/xbt_log_layout_format.Tpo" "$(DEPDIR)/xbt_log_layout_format.Plo"; else rm -f "$(DEPDIR)/xbt_log_layout_format.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_log_layout_format.c' object='xbt_log_layout_format.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_log_layout_format.lo `test -f 'xbt/xbt_log_layout_format.c' || echo '$(srcdir)/'`xbt/xbt_log_layout_format.c
 
 mallocator.lo: xbt/mallocator.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mallocator.lo -MD -MP -MF "$(DEPDIR)/mallocator.Tpo" -c -o mallocator.lo `test -f 'xbt/mallocator.c' || echo '$(srcdir)/'`xbt/mallocator.c; \
@@ -1966,6 +1982,20 @@ swag_unit.obj: ./swag_unit.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o swag_unit.obj `if test -f './swag_unit.c'; then $(CYGPATH_W) './swag_unit.c'; else $(CYGPATH_W) '$(srcdir)/./swag_unit.c'; fi`
 
+xbt_str_unit.o: ./xbt_str_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_str_unit.o -MD -MP -MF "$(DEPDIR)/xbt_str_unit.Tpo" -c -o xbt_str_unit.o `test -f './xbt_str_unit.c' || echo '$(srcdir)/'`./xbt_str_unit.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/xbt_str_unit.Tpo" "$(DEPDIR)/xbt_str_unit.Po"; else rm -f "$(DEPDIR)/xbt_str_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./xbt_str_unit.c' object='xbt_str_unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_str_unit.o `test -f './xbt_str_unit.c' || echo '$(srcdir)/'`./xbt_str_unit.c
+
+xbt_str_unit.obj: ./xbt_str_unit.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_str_unit.obj -MD -MP -MF "$(DEPDIR)/xbt_str_unit.Tpo" -c -o xbt_str_unit.obj `if test -f './xbt_str_unit.c'; then $(CYGPATH_W) './xbt_str_unit.c'; else $(CYGPATH_W) '$(srcdir)/./xbt_str_unit.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/xbt_str_unit.Tpo" "$(DEPDIR)/xbt_str_unit.Po"; else rm -f "$(DEPDIR)/xbt_str_unit.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./xbt_str_unit.c' object='xbt_str_unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_str_unit.obj `if test -f './xbt_str_unit.c'; then $(CYGPATH_W) './xbt_str_unit.c'; else $(CYGPATH_W) '$(srcdir)/./xbt_str_unit.c'; fi`
+
 config_unit.o: ./config_unit.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT config_unit.o -MD -MP -MF "$(DEPDIR)/config_unit.Tpo" -c -o config_unit.o `test -f './config_unit.c' || echo '$(srcdir)/'`./config_unit.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/config_unit.Tpo" "$(DEPDIR)/config_unit.Po"; else rm -f "$(DEPDIR)/config_unit.Tpo"; exit 1; fi
@@ -2286,6 +2316,8 @@ uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./cunit_unit.c: xbt/cunit.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./ex_unit.c: xbt/ex.c
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./xbt_str_unit.c: xbt/xbt_str.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./dynar_unit.c: xbt/dynar.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^

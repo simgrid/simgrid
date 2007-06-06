@@ -123,7 +123,8 @@ COMMON_SRC=\
   \
   xbt/sysdep.c                                                               \
   xbt/asserts.c                                                              \
-  xbt/log.c         xbt/xbt_log_appender_file.c xbt/xbt_log_layout_simple.c  \
+  xbt/log.c                    xbt/xbt_log_appender_file.c                   \
+  xbt/xbt_log_layout_simple.c  xbt/xbt_log_layout_format.c                   \
   xbt/mallocator.c                                                           \
   xbt/dynar.c                                                                \
   xbt/dict.c        xbt/dict_elm.c               xbt/dict_cursor.c           \
@@ -299,10 +300,12 @@ else
 noinst_PROGRAMS=testall
 TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
             xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
-            xbt/config.c
+	    xbt/xbt_str.c                      \
+            xbt/config.c 
 TEST_UNITS= ./cunit_unit.c ./ex_unit.c         \
             ./dynar_unit.c ./dict_unit.c ./set_unit.c ./swag_unit.c \
-            ./config_unit.c
+	    ./xbt_str_unit.c \
+            ./config_unit.c 
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
@@ -319,6 +322,8 @@ if MAINTAINER_MODE
 ./cunit_unit.c: xbt/cunit.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 ./ex_unit.c: xbt/ex.c
+	@top_srcdir@/tools/sg_unit_extractor.pl $^
+./xbt_str_unit.c: xbt/xbt_str.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 ./dynar_unit.c: xbt/dynar.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
