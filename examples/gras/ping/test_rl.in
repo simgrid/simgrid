@@ -1,11 +1,24 @@
-#! @BASH@ -e
-if [ x@EXEEXT@ = x ] ; then 
-#  exenv="libtool --mode=execute valgrind --show-reachable=yes --run-libc-freeres=no "
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
-    
-$exenv ./ping_server@EXEEXT@ 4002 $@ &
-sleep 1
-$exenv ./ping_client@EXEEXT@ 127.0.0.1 4002 $@
+
+#! set timeout 20
+& $SG_TEST_ENV ./ping_server@EXEEXT@ 4002 --log=root.fmt=%m%n
+> Launch server (port=4002)
+> Messages registered
+> Messages registered
+> >>>>>>>> Listening on port 4002 <<<<<<<<
+> >>>>>>>> Got message PING(1234) from 127.0.0.1:0 <<<<<<<<
+> >>>>>>>> Answered with PONG(4321) <<<<<<<<
+> Done.
+> Exiting GRAS
+
+$ sleep 1
+
+#! set timeout 20
+& $SG_TEST_ENV ./ping_client@EXEEXT@ 127.0.0.1 4002 --log=root.fmt=%m%n
+> Launch client (server on 127.0.0.1:4002)
+> Connected to 127.0.0.1:4002.
+> Messages registered
+> >>>>>>>> Connected to server which is on 127.0.0.1:4002 <<<<<<<<
+> >>>>>>>> Message PING(1234) sent to 127.0.0.1:4002 <<<<<<<<
+> >>>>>>>> Got PONG(4321) from 127.0.0.1:4002 <<<<<<<<
+> Done.
+> Exiting GRAS
