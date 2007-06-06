@@ -1,8 +1,16 @@
-#! @BASH@ -e
-if [ x@EXEEXT@ = x ] ; then 
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
-    
-exec $exenv ./timer_client@EXEEXT@ 
+! set timeout 20
+$ $SG_TEST_EXENV ./timer_client@EXEEXT@ --log=root.fmt:%m%n
+> Programming the repetitive_action with a frequency of 1.000000 sec
+> Programming the delayed_action for after 2.000000 sec
+> Have a rest
+> Canceling the delayed_action.
+> Re-programming the delayed_action for after 2.000000 sec
+> Repetitive_action has nothing to do yet
+> Repetitive_action has nothing to do yet
+> delayed_action setting globals->still_to_do to 5
+> repetitive_action decrementing globals->still_to_do. New value: 4
+> repetitive_action decrementing globals->still_to_do. New value: 3
+> repetitive_action decrementing globals->still_to_do. New value: 2
+> repetitive_action decrementing globals->still_to_do. New value: 1
+> repetitive_action decrementing globals->still_to_do. New value: 0
+> Exiting GRAS

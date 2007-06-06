@@ -1,8 +1,3 @@
-#! @BASH@
-if [ x@EXEEXT@ = x ] ; then 
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
 
-exec $exenv ./chrono_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/chrono.xml
+! output display
+$ $SG_TEST_EXENV ./chrono_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/chrono.xml

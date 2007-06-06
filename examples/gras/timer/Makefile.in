@@ -233,6 +233,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir)/include
 TESTS = test_rl test_sg
+TESTS_ENVIRONMENT = ../../../tools/tesh/tesh
 EXTRA_DIST = $(NAME).xml $(TESTS)
 timer_simulator_SOURCES = _timer_simulator.c timer.c
 timer_simulator_LDADD = $(top_builddir)/src/libsimgrid.la

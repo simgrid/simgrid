@@ -235,6 +235,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir)/include
 TESTS = test_rl test_sg
+TESTS_ENVIRONMENT = ../../../tools/tesh/tesh
 EXTRA_DIST = chrono.xml
 chrono_simulator_SOURCES = _chrono_simulator.c chrono.c
 chrono_simulator_LDADD = $(top_builddir)/src/libsimgrid.la

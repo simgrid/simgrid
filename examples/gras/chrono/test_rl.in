@@ -1,8 +1,3 @@
-#! @BASH@ -e
-if [ x@EXEEXT@ = x ] ; then 
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
-    
-exec $exenv ./chrono_multiplier@EXEEXT@ $@
+
+! output display
+$ $SG_TEST_EXENV ./chrono_multiplier@EXEEXT@ --log=root.fmt:%m%n $@ 

@@ -2,6 +2,7 @@ INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
 
 TESTS= test_rl test_sg
+TESTS_ENVIRONMENT=../../../tools/tesh/tesh
 EXTRA_DIST=$(NAME).xml $(TESTS)
 
 # AUTOMAKE variable definition
