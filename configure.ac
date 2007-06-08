@@ -404,25 +404,26 @@ AC_CONFIG_FILES([
 
 # Examples
 
+#      examples/gras/p2p/Makefile
+#      examples/gras/p2p/chord/Makefile
+#      examples/gras/p2p/can/Makefile
+
 AC_CONFIG_FILES([
   examples/Makefile 
     examples/msg/Makefile
       examples/msg/basic.tesh         examples/msg/small_plat.tesh 
       examples/msg/suspend.tesh       examples/msg/flexml_bypass.tesh 
     examples/simdag/Makefile	    examples/simdag/test_simdag
-    examples/gras/Makefile 
-      examples/gras/ping/Makefile   examples/gras/ping/test_sg   examples/gras/ping/test_rl
-      examples/gras/rpc/Makefile    examples/gras/rpc/test_sg    examples/gras/rpc/test_rl
-      examples/gras/timer/Makefile  examples/gras/timer/test_sg  examples/gras/timer/test_rl
-      examples/gras/chrono/Makefile examples/gras/chrono/test_sg examples/gras/chrono/test_rl
-      examples/gras/mutual_exclusion/simple_token/Makefile examples/gras/mutual_exclusion/simple_token/test_sg examples/gras/mutual_exclusion/simple_token/test_rl
-      examples/gras/mmrpc/Makefile  examples/gras/mmrpc/test_sg  examples/gras/mmrpc/test_rl
-      examples/gras/pmm/Makefile    examples/gras/pmm/test_sg    examples/gras/pmm/test_rl
-      examples/gras/all2all/Makefile examples/gras/all2all/test_sg examples/gras/all2all/test_rl
+    examples/gras/Makefile
+      examples/gras/ping/Makefile   
+      examples/gras/rpc/Makefile
+      examples/gras/timer/Makefile
+      examples/gras/chrono/Makefile
+      examples/gras/mutual_exclusion/simple_token/Makefile
+      examples/gras/mmrpc/Makefile
+      examples/gras/pmm/Makefile
+      examples/gras/all2all/Makefile
 
-      examples/gras/p2p/Makefile
-      examples/gras/p2p/chord/Makefile examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl
-      examples/gras/p2p/can/Makefile   examples/gras/p2p/can/test_sg   examples/gras/p2p/can/test_rl
       
     examples/amok/Makefile       
       examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
@@ -430,33 +431,12 @@ AC_CONFIG_FILES([
 ],[
     for file in                                                 \
      \
-     examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
-     examples/amok/saturate/test_sg  examples/amok/saturate/test_rl \
-     \
-     examples/gras/ping/test_sg   examples/gras/ping/test_rl    \
-     examples/gras/rpc/test_sg    examples/gras/rpc/test_rl     \
-     examples/gras/timer/test_sg  examples/gras/timer/test_rl   \
-     examples/gras/chrono/test_sg examples/gras/chrono/test_rl  \
-     examples/gras/mutual_exclusion/simple_token/test_sg examples/gras/mutual_exclusion/simple_token/test_rl  \
-     examples/gras/mmrpc/test_sg  examples/gras/mmrpc/test_rl   \
-     examples/gras/pmm/test_sg    examples/gras/pmm/test_rl     \
-     examples/gras/all2all/test_sg  examples/gras/all2all/test_rl   \
-     examples/gras/p2p/chord/test_sg examples/gras/p2p/chord/test_rl  \
-     examples/gras/p2p/can/test_sg   examples/gras/p2p/can/test_rl  \
      examples/msg/run_msg_test                                  \
      examples/simdag/test_simdag				\
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
 ])
-
-#     examples/gras/chord/test_sg  examples/gras/chord/test_rl   \
-#    examples/gras/pastry/test_sg   
-
-
-
-#    examples/gras/saturate/Makefile  examples/gras/saturate/test_sg
-#    examples/gras/alnem/Makefile     examples/gras/alnem/test_sg
 
 
 # GRAMINE_CUT_END
