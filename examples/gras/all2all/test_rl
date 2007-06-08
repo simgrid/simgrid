@@ -1,5 +1,5 @@
 # The receivers, waiting for 5 messages
-! set timeout 20
+! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4000 5 --log=root.fmt:%m%n
 > Listening on port 4000 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
@@ -9,7 +9,7 @@
 > Got Data from 127.0.0.1:0 (still 0 to go)
 > Exiting GRAS
 
-! set timeout 20
+! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4001 5 --log=root.fmt:%m%n
 > Listening on port 4001 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
@@ -19,7 +19,7 @@
 > Got Data from 127.0.0.1:0 (still 0 to go)
 > Exiting GRAS
 
-! set timeout 20
+! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4002 5 --log=root.fmt:%m%n
 > Listening on port 4002 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
@@ -29,7 +29,7 @@
 > Got Data from 127.0.0.1:0 (still 0 to go)
 > Exiting GRAS
 
-! set timeout 20
+! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4003 5 --log=root.fmt:%m%n
 > Listening on port 4003 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)
@@ -39,7 +39,7 @@
 > Got Data from 127.0.0.1:0 (still 0 to go)
 > Exiting GRAS
 
-! set timeout 20
+! timeout 20
 & $SG_TEST_EXENV ./all2all_receiver$EXEEXT 4004 5 --log=root.fmt:%m%n
 > Listening on port 4004 (expecting 5 messages)
 > Got Data from 127.0.0.1:0 (still 4 to go)

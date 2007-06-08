@@ -1,42 +1,42 @@
 # Ignore the output of slaves since it depends on the order of connexion
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 ! output ignore
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 --log=root.fmt:%m%n
 
-! set timeout 20
+! timeout 20
 & $SG_TEST_EXENV ./pmm_master$EXEEXT 4242 --log=root.fmt:%m%n
 > Wait for peers for 5 sec
 > Got 9 pals
