@@ -1,4 +1,4 @@
-$ $SG_TEST_EXENV ./simple_token_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/simple_token.xml $@
+$ $SG_TEST_EXENV ./simple_token_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/simple_token.xml 
 > [Tremblay:node:(1) 0.000000] [SimpleToken/INFO] Create the token (with value 0) and send it to Fafard:4000
 > [Tremblay:node:(1) 0.011346] [SimpleToken/INFO] Begin a new loop. Still to do: 2
 > [Tremblay:node:(1) 0.022693] [SimpleToken/INFO] Begin a new loop. Still to do: 1

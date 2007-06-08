@@ -1,173 +1,173 @@
-$ $SG_TEST_EXENV ./pmm_simulator@EXEEXT@ @top_srcdir@/examples/msg/msg_platform.xml @srcdir@/pmm.xml
-> [Jacquelin:master:(1) 0.000000] [pmm/INFO] Wait for peers for 5 sec
-> [Boivin:slave:(2) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Jean_Yves:slave:(3) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [TeX:slave:(4) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Geoff:slave:(5) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Disney:slave:(6) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [iRMX:slave:(7) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [McGee:slave:(8) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Gatien:slave:(9) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Laroche:slave:(10) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Tanguay:slave:(11) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Morin:slave:(12) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Ethernet:slave:(13) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Bellemarre:slave:(14) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Kuenning:slave:(15) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Gaston:slave:(16) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Bousquet:slave:(17) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Paul:slave:(18) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [St_Jean:slave:(19) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Jill:slave:(20) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Got 19 pals
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Boivin:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Boivin:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Jean_Yves:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Jean_Yves:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to TeX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to TeX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Geoff:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Geoff:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Disney:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Disney:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to iRMX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to iRMX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to McGee:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to McGee:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Gatien:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Gatien:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Laroche:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Laroche:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Too much slaves. Killing Tanguay:3000
-> [Jacquelin:master:(1) 5.159107] [pmm/INFO] Too much slaves. Killing Morin:3000
-> [Tanguay:slave:(11) 5.159107] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.302399] [pmm/INFO] Too much slaves. Killing Ethernet:3000
-> [Morin:slave:(12) 5.302399] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.383890] [pmm/INFO] Too much slaves. Killing Bellemarre:3000
-> [Ethernet:slave:(13) 5.383890] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.523063] [pmm/INFO] Too much slaves. Killing Kuenning:3000
-> [Bellemarre:slave:(14) 5.523063] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.588959] [pmm/INFO] Too much slaves. Killing Gaston:3000
-> [Kuenning:slave:(15) 5.588959] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.662429] [pmm/INFO] Too much slaves. Killing Bousquet:3000
-> [Gaston:slave:(16) 5.662429] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.740421] [pmm/INFO] Too much slaves. Killing Paul:3000
-> [Bousquet:slave:(17) 5.740421] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.844574] [pmm/INFO] Too much slaves. Killing St_Jean:3000
-> [Paul:slave:(18) 5.844574] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 5.983872] [pmm/INFO] Too much slaves. Killing Jill:3000
-> [St_Jean:slave:(19) 5.983872] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 6.136256] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
-> [Jill:slave:(20) 6.136256] [gras/INFO] Exiting GRAS
-> [Boivin:slave:(2) 7.222182] [pmm/INFO] Receive my pos (0,0) and assignment
-> [Boivin:slave:(2) 7.222182] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data (myport=3000).
-> [Boivin:slave:(2) 7.222182] [pmm/INFO] LINE:   Send to Geoff:3000
-> [Jean_Yves:slave:(3) 7.297959] [pmm/INFO] Receive my pos (0,1) and assignment
-> [Jean_Yves:slave:(3) 7.297959] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data (myport=3000).
-> [Jean_Yves:slave:(3) 7.297959] [pmm/INFO] LINE:   Send to Disney:3000
-> [TeX:slave:(4) 7.446505] [pmm/INFO] Receive my pos (0,2) and assignment
-> [TeX:slave:(4) 7.446505] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data (myport=3000).
-> [TeX:slave:(4) 7.446505] [pmm/INFO] LINE:   Send to iRMX:3000
-> [Geoff:slave:(5) 7.447170] [pmm/INFO] Receive my pos (1,0) and assignment
-> [Boivin:slave:(2) 7.529819] [pmm/INFO] LINE:   Send to McGee:3000
-> [Geoff:slave:(5) 7.529819] [pmm/INFO] LINE: step(0) <> Myline(1). Receive data from Boivin:3000
-> [Geoff:slave:(5) 7.529819] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data
-> [Geoff:slave:(5) 7.529819] [pmm/INFO] ROW:   Send to Disney:3000
-> [Disney:slave:(6) 7.596585] [pmm/INFO] Receive my pos (1,1) and assignment
-> [Jean_Yves:slave:(3) 7.812668] [pmm/INFO] LINE:   Send to Gatien:3000
-> [Disney:slave:(6) 7.812668] [pmm/INFO] LINE: step(0) <> Myline(1). Receive data from Jean_Yves:3000
-> [iRMX:slave:(7) 7.845903] [pmm/INFO] Receive my pos (1,2) and assignment
-> [McGee:slave:(8) 7.918692] [pmm/INFO] Receive my pos (2,0) and assignment
-> [Boivin:slave:(2) 7.926992] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data
-> [Boivin:slave:(2) 7.926992] [pmm/INFO] ROW:   Send to Jean_Yves:3000
-> [McGee:slave:(8) 7.926992] [pmm/INFO] LINE: step(0) <> Myline(2). Receive data from Boivin:3000
-> [McGee:slave:(8) 7.926992] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data
-> [McGee:slave:(8) 7.926992] [pmm/INFO] ROW:   Send to Gatien:3000
-> [Geoff:slave:(5) 7.956670] [pmm/INFO] ROW:   Send to iRMX:3000
-> [Disney:slave:(6) 7.956670] [pmm/INFO] ROW: step(0)<>myrow(1). Receive data from Geoff
-> [Disney:slave:(6) 7.956670] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data (myport=3000).
-> [Disney:slave:(6) 7.956670] [pmm/INFO] LINE:   Send to Jean_Yves:3000
-> [Gatien:slave:(9) 8.023145] [pmm/INFO] Receive my pos (2,1) and assignment
-> [TeX:slave:(4) 8.098750] [pmm/INFO] LINE:   Send to Laroche:3000
-> [iRMX:slave:(7) 8.098750] [pmm/INFO] LINE: step(0) <> Myline(1). Receive data from TeX:3000
-> [Laroche:slave:(10) 8.170600] [pmm/INFO] Receive my pos (2,2) and assignment
-> [Gatien:slave:(9) 8.195738] [pmm/INFO] LINE: step(0) <> Myline(2). Receive data from Jean_Yves:3000
-> [McGee:slave:(8) 8.227377] [pmm/INFO] ROW:   Send to Laroche:3000
-> [Gatien:slave:(9) 8.227377] [pmm/INFO] ROW: step(0)<>myrow(1). Receive data from McGee
-> [Laroche:slave:(10) 8.325000] [pmm/INFO] LINE: step(0) <> Myline(2). Receive data from TeX:3000
-> [Geoff:slave:(5) 8.339386] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data (myport=3000).
-> [Geoff:slave:(5) 8.339386] [pmm/INFO] LINE:   Send to Boivin:3000
-> [iRMX:slave:(7) 8.339386] [pmm/INFO] ROW: step(0)<>myrow(2). Receive data from Geoff
-> [iRMX:slave:(7) 8.339386] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data (myport=3000).
-> [iRMX:slave:(7) 8.339386] [pmm/INFO] LINE:   Send to TeX:3000
-> [Boivin:slave:(2) 8.350468] [pmm/INFO] ROW:   Send to TeX:3000
-> [Jean_Yves:slave:(3) 8.350468] [pmm/INFO] ROW: step(0)<>myrow(1). Receive data from Boivin
-> [Laroche:slave:(10) 8.399620] [pmm/INFO] ROW: step(0)<>myrow(2). Receive data from McGee
-> [Disney:slave:(6) 8.566551] [pmm/INFO] LINE:   Send to Gatien:3000
-> [Jean_Yves:slave:(3) 8.566551] [pmm/INFO] LINE: step(1) <> Myline(0). Receive data from Disney:3000
-> [Jean_Yves:slave:(3) 8.566551] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data
-> [Jean_Yves:slave:(3) 8.566551] [pmm/INFO] ROW:   Send to Boivin:3000
-> [iRMX:slave:(7) 8.592233] [pmm/INFO] LINE:   Send to Laroche:3000
-> [Disney:slave:(6) 8.673563] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data
-> [Disney:slave:(6) 8.673563] [pmm/INFO] ROW:   Send to Geoff:3000
-> [Gatien:slave:(9) 8.673563] [pmm/INFO] LINE: step(1) <> Myline(2). Receive data from Disney:3000
-> [Gatien:slave:(9) 8.673563] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data
-> [Gatien:slave:(9) 8.673563] [pmm/INFO] ROW:   Send to McGee:3000
-> [TeX:slave:(4) 8.681575] [pmm/INFO] ROW: step(0)<>myrow(2). Receive data from Boivin
-> [TeX:slave:(4) 8.681575] [pmm/INFO] LINE: step(1) <> Myline(0). Receive data from iRMX:3000
-> [Laroche:slave:(10) 8.691003] [pmm/INFO] LINE: step(1) <> Myline(2). Receive data from iRMX:3000
-> [Gatien:slave:(9) 8.705202] [pmm/INFO] ROW:   Send to Laroche:3000
-> [Geoff:slave:(5) 8.764224] [pmm/INFO] LINE:   Send to McGee:3000
-> [Boivin:slave:(2) 8.764224] [pmm/INFO] LINE: step(1) <> Myline(0). Receive data from Geoff:3000
-> [Gatien:slave:(9) 8.810401] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data (myport=3000).
-> [Gatien:slave:(9) 8.810401] [pmm/INFO] LINE:   Send to Jean_Yves:3000
-> [Laroche:slave:(10) 8.810401] [pmm/INFO] ROW: step(1)<>myrow(2). Receive data from Gatien
-> [Laroche:slave:(10) 8.810401] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data (myport=3000).
-> [Laroche:slave:(10) 8.810401] [pmm/INFO] LINE:   Send to TeX:3000
-> [McGee:slave:(8) 8.834159] [pmm/INFO] LINE: step(1) <> Myline(2). Receive data from Geoff:3000
-> [McGee:slave:(8) 8.834159] [pmm/INFO] ROW: step(1)<>myrow(0). Receive data from Gatien
-> [McGee:slave:(8) 8.834159] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data (myport=3000).
-> [McGee:slave:(8) 8.834159] [pmm/INFO] LINE:   Send to Boivin:3000
-> [Jean_Yves:slave:(3) 8.918953] [pmm/INFO] ROW:   Send to TeX:3000
-> [Boivin:slave:(2) 8.918953] [pmm/INFO] ROW: step(1)<>myrow(0). Receive data from Jean_Yves
-> [McGee:slave:(8) 8.927254] [pmm/INFO] LINE:   Send to Geoff:3000
-> [Boivin:slave:(2) 8.927254] [pmm/INFO] LINE: step(2) <> Myline(0). Receive data from McGee:3000
-> [Laroche:slave:(10) 8.964800] [pmm/INFO] LINE:   Send to iRMX:3000
-> [Disney:slave:(6) 8.978161] [pmm/INFO] ROW:   Send to iRMX:3000
-> [Geoff:slave:(5) 8.978161] [pmm/INFO] ROW: step(1)<>myrow(0). Receive data from Disney
-> [Geoff:slave:(5) 9.048096] [pmm/INFO] LINE: step(2) <> Myline(1). Receive data from McGee:3000
-> [Laroche:slave:(10) 9.063569] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data
-> [Laroche:slave:(10) 9.063569] [pmm/INFO] ROW:   Send to McGee:3000
-> [Laroche:slave:(10) 9.138190] [pmm/INFO] ROW:   Send to Gatien:3000
-> [McGee:slave:(8) 9.138190] [pmm/INFO] ROW: step(2)<>myrow(0). Receive data from Laroche
-> [TeX:slave:(4) 9.180015] [pmm/INFO] ROW: step(1)<>myrow(2). Receive data from Jean_Yves
-> [TeX:slave:(4) 9.180015] [pmm/INFO] LINE: step(2) <> Myline(0). Receive data from Laroche:3000
-> [TeX:slave:(4) 9.180015] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data
-> [TeX:slave:(4) 9.180015] [pmm/INFO] ROW:   Send to Boivin:3000
-> [McGee:slave:(8) 9.208603] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [TeX:slave:(4) 9.269357] [pmm/INFO] ROW:   Send to Jean_Yves:3000
-> [Boivin:slave:(2) 9.269357] [pmm/INFO] ROW: step(2)<>myrow(0). Receive data from TeX
-> [iRMX:slave:(7) 9.317283] [pmm/INFO] ROW: step(1)<>myrow(2). Receive data from Disney
-> [iRMX:slave:(7) 9.317283] [pmm/INFO] LINE: step(2) <> Myline(1). Receive data from Laroche:3000
-> [iRMX:slave:(7) 9.317283] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data
-> [iRMX:slave:(7) 9.317283] [pmm/INFO] ROW:   Send to Geoff:3000
-> [Boivin:slave:(2) 9.352493] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [Gatien:slave:(9) 9.352609] [pmm/INFO] LINE:   Send to Disney:3000
-> [Jean_Yves:slave:(3) 9.352609] [pmm/INFO] LINE: step(2) <> Myline(0). Receive data from Gatien:3000
-> [Disney:slave:(6) 9.459622] [pmm/INFO] LINE: step(2) <> Myline(1). Receive data from Gatien:3000
-> [iRMX:slave:(7) 9.557920] [pmm/INFO] ROW:   Send to Disney:3000
-> [Geoff:slave:(5) 9.557920] [pmm/INFO] ROW: step(2)<>myrow(0). Receive data from iRMX
-> [Geoff:slave:(5) 9.558451] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [Gatien:slave:(9) 9.564821] [pmm/INFO] ROW: step(2)<>myrow(1). Receive data from Laroche
-> [Jean_Yves:slave:(3) 9.567824] [pmm/INFO] ROW: step(2)<>myrow(1). Receive data from TeX
-> [Laroche:slave:(10) 9.707543] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [Gatien:slave:(9) 9.808558] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [Disney:slave:(6) 9.811634] [pmm/INFO] ROW: step(2)<>myrow(1). Receive data from iRMX
-> [TeX:slave:(4) 9.952227] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [Jean_Yves:slave:(3) 10.025551] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [iRMX:slave:(7) 10.266798] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [Disney:slave:(6) 10.411336] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
-> [Jacquelin:master:(1) 10.411336] [pmm/INFO] The Result of Multiplication is :
+$ $SG_TEST_EXENV ./pmm_simulator@EXEEXT@ @top_srcdir@/examples/msg/msg_platform.xml @srcdir@/pmm.xml --log=root.fmt:"'[%h:%t:(%i) %.2r] [%c/%p] %m%n'"
+> [Jacquelin:master:(1) 0.00] [pmm/INFO] Wait for peers for 5 sec
+> [Boivin:slave:(2) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Jean_Yves:slave:(3) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [TeX:slave:(4) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Geoff:slave:(5) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Disney:slave:(6) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [iRMX:slave:(7) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [McGee:slave:(8) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Gatien:slave:(9) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Laroche:slave:(10) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Tanguay:slave:(11) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Morin:slave:(12) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Ethernet:slave:(13) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Bellemarre:slave:(14) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Kuenning:slave:(15) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Gaston:slave:(16) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Bousquet:slave:(17) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Paul:slave:(18) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [St_Jean:slave:(19) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Jill:slave:(20) 1.00] [pmm/INFO] Sensor starting (on port 3000)
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Got 19 pals
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to Boivin:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to Boivin:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to Jean_Yves:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to Jean_Yves:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to TeX:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to TeX:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to Geoff:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to Geoff:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to Disney:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to Disney:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to iRMX:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to iRMX:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to McGee:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to McGee:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to Gatien:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to Gatien:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connecting to Laroche:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Connected to Laroche:3000.
+> [Jacquelin:master:(1) 5.08] [pmm/INFO] Too much slaves. Killing Tanguay:3000
+> [Jacquelin:master:(1) 5.16] [pmm/INFO] Too much slaves. Killing Morin:3000
+> [Tanguay:slave:(11) 5.16] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.30] [pmm/INFO] Too much slaves. Killing Ethernet:3000
+> [Morin:slave:(12) 5.30] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.38] [pmm/INFO] Too much slaves. Killing Bellemarre:3000
+> [Ethernet:slave:(13) 5.38] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.52] [pmm/INFO] Too much slaves. Killing Kuenning:3000
+> [Bellemarre:slave:(14) 5.52] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.59] [pmm/INFO] Too much slaves. Killing Gaston:3000
+> [Kuenning:slave:(15) 5.59] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.66] [pmm/INFO] Too much slaves. Killing Bousquet:3000
+> [Gaston:slave:(16) 5.66] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.74] [pmm/INFO] Too much slaves. Killing Paul:3000
+> [Bousquet:slave:(17) 5.74] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.84] [pmm/INFO] Too much slaves. Killing St_Jean:3000
+> [Paul:slave:(18) 5.84] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 5.98] [pmm/INFO] Too much slaves. Killing Jill:3000
+> [St_Jean:slave:(19) 5.98] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 6.14] [pmm/INFO] XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
+> [Jill:slave:(20) 6.14] [gras/INFO] Exiting GRAS
+> [Boivin:slave:(2) 7.22] [pmm/INFO] Receive my pos (0,0) and assignment
+> [Boivin:slave:(2) 7.22] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data (myport=3000).
+> [Boivin:slave:(2) 7.22] [pmm/INFO] LINE:   Send to Geoff:3000
+> [Jean_Yves:slave:(3) 7.30] [pmm/INFO] Receive my pos (0,1) and assignment
+> [Jean_Yves:slave:(3) 7.30] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data (myport=3000).
+> [Jean_Yves:slave:(3) 7.30] [pmm/INFO] LINE:   Send to Disney:3000
+> [TeX:slave:(4) 7.45] [pmm/INFO] Receive my pos (0,2) and assignment
+> [TeX:slave:(4) 7.45] [pmm/INFO] LINE: step(0) = Myline(0). Broadcast my data (myport=3000).
+> [TeX:slave:(4) 7.45] [pmm/INFO] LINE:   Send to iRMX:3000
+> [Geoff:slave:(5) 7.45] [pmm/INFO] Receive my pos (1,0) and assignment
+> [Boivin:slave:(2) 7.53] [pmm/INFO] LINE:   Send to McGee:3000
+> [Geoff:slave:(5) 7.53] [pmm/INFO] LINE: step(0) <> Myline(1). Receive data from Boivin:3000
+> [Geoff:slave:(5) 7.53] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data
+> [Geoff:slave:(5) 7.53] [pmm/INFO] ROW:   Send to Disney:3000
+> [Disney:slave:(6) 7.60] [pmm/INFO] Receive my pos (1,1) and assignment
+> [Jean_Yves:slave:(3) 7.81] [pmm/INFO] LINE:   Send to Gatien:3000
+> [Disney:slave:(6) 7.81] [pmm/INFO] LINE: step(0) <> Myline(1). Receive data from Jean_Yves:3000
+> [iRMX:slave:(7) 7.85] [pmm/INFO] Receive my pos (1,2) and assignment
+> [McGee:slave:(8) 7.92] [pmm/INFO] Receive my pos (2,0) and assignment
+> [Boivin:slave:(2) 7.93] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data
+> [Boivin:slave:(2) 7.93] [pmm/INFO] ROW:   Send to Jean_Yves:3000
+> [McGee:slave:(8) 7.93] [pmm/INFO] LINE: step(0) <> Myline(2). Receive data from Boivin:3000
+> [McGee:slave:(8) 7.93] [pmm/INFO] ROW: step(0)=myrow(0). Broadcast my data
+> [McGee:slave:(8) 7.93] [pmm/INFO] ROW:   Send to Gatien:3000
+> [Geoff:slave:(5) 7.96] [pmm/INFO] ROW:   Send to iRMX:3000
+> [Disney:slave:(6) 7.96] [pmm/INFO] ROW: step(0)<>myrow(1). Receive data from Geoff
+> [Disney:slave:(6) 7.96] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data (myport=3000).
+> [Disney:slave:(6) 7.96] [pmm/INFO] LINE:   Send to Jean_Yves:3000
+> [Gatien:slave:(9) 8.02] [pmm/INFO] Receive my pos (2,1) and assignment
+> [TeX:slave:(4) 8.10] [pmm/INFO] LINE:   Send to Laroche:3000
+> [iRMX:slave:(7) 8.10] [pmm/INFO] LINE: step(0) <> Myline(1). Receive data from TeX:3000
+> [Laroche:slave:(10) 8.17] [pmm/INFO] Receive my pos (2,2) and assignment
+> [Gatien:slave:(9) 8.20] [pmm/INFO] LINE: step(0) <> Myline(2). Receive data from Jean_Yves:3000
+> [McGee:slave:(8) 8.23] [pmm/INFO] ROW:   Send to Laroche:3000
+> [Gatien:slave:(9) 8.23] [pmm/INFO] ROW: step(0)<>myrow(1). Receive data from McGee
+> [Laroche:slave:(10) 8.32] [pmm/INFO] LINE: step(0) <> Myline(2). Receive data from TeX:3000
+> [Geoff:slave:(5) 8.34] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data (myport=3000).
+> [Geoff:slave:(5) 8.34] [pmm/INFO] LINE:   Send to Boivin:3000
+> [iRMX:slave:(7) 8.34] [pmm/INFO] ROW: step(0)<>myrow(2). Receive data from Geoff
+> [iRMX:slave:(7) 8.34] [pmm/INFO] LINE: step(1) = Myline(1). Broadcast my data (myport=3000).
+> [iRMX:slave:(7) 8.34] [pmm/INFO] LINE:   Send to TeX:3000
+> [Boivin:slave:(2) 8.35] [pmm/INFO] ROW:   Send to TeX:3000
+> [Jean_Yves:slave:(3) 8.35] [pmm/INFO] ROW: step(0)<>myrow(1). Receive data from Boivin
+> [Laroche:slave:(10) 8.40] [pmm/INFO] ROW: step(0)<>myrow(2). Receive data from McGee
+> [Disney:slave:(6) 8.57] [pmm/INFO] LINE:   Send to Gatien:3000
+> [Jean_Yves:slave:(3) 8.57] [pmm/INFO] LINE: step(1) <> Myline(0). Receive data from Disney:3000
+> [Jean_Yves:slave:(3) 8.57] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data
+> [Jean_Yves:slave:(3) 8.57] [pmm/INFO] ROW:   Send to Boivin:3000
+> [iRMX:slave:(7) 8.59] [pmm/INFO] LINE:   Send to Laroche:3000
+> [Disney:slave:(6) 8.67] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data
+> [Disney:slave:(6) 8.67] [pmm/INFO] ROW:   Send to Geoff:3000
+> [Gatien:slave:(9) 8.67] [pmm/INFO] LINE: step(1) <> Myline(2). Receive data from Disney:3000
+> [Gatien:slave:(9) 8.67] [pmm/INFO] ROW: step(1)=myrow(1). Broadcast my data
+> [Gatien:slave:(9) 8.67] [pmm/INFO] ROW:   Send to McGee:3000
+> [TeX:slave:(4) 8.68] [pmm/INFO] ROW: step(0)<>myrow(2). Receive data from Boivin
+> [TeX:slave:(4) 8.68] [pmm/INFO] LINE: step(1) <> Myline(0). Receive data from iRMX:3000
+> [Laroche:slave:(10) 8.69] [pmm/INFO] LINE: step(1) <> Myline(2). Receive data from iRMX:3000
+> [Gatien:slave:(9) 8.71] [pmm/INFO] ROW:   Send to Laroche:3000
+> [Geoff:slave:(5) 8.76] [pmm/INFO] LINE:   Send to McGee:3000
+> [Boivin:slave:(2) 8.76] [pmm/INFO] LINE: step(1) <> Myline(0). Receive data from Geoff:3000
+> [Gatien:slave:(9) 8.81] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data (myport=3000).
+> [Gatien:slave:(9) 8.81] [pmm/INFO] LINE:   Send to Jean_Yves:3000
+> [Laroche:slave:(10) 8.81] [pmm/INFO] ROW: step(1)<>myrow(2). Receive data from Gatien
+> [Laroche:slave:(10) 8.81] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data (myport=3000).
+> [Laroche:slave:(10) 8.81] [pmm/INFO] LINE:   Send to TeX:3000
+> [McGee:slave:(8) 8.83] [pmm/INFO] LINE: step(1) <> Myline(2). Receive data from Geoff:3000
+> [McGee:slave:(8) 8.83] [pmm/INFO] ROW: step(1)<>myrow(0). Receive data from Gatien
+> [McGee:slave:(8) 8.83] [pmm/INFO] LINE: step(2) = Myline(2). Broadcast my data (myport=3000).
+> [McGee:slave:(8) 8.83] [pmm/INFO] LINE:   Send to Boivin:3000
+> [Jean_Yves:slave:(3) 8.92] [pmm/INFO] ROW:   Send to TeX:3000
+> [Boivin:slave:(2) 8.92] [pmm/INFO] ROW: step(1)<>myrow(0). Receive data from Jean_Yves
+> [McGee:slave:(8) 8.93] [pmm/INFO] LINE:   Send to Geoff:3000
+> [Boivin:slave:(2) 8.93] [pmm/INFO] LINE: step(2) <> Myline(0). Receive data from McGee:3000
+> [Laroche:slave:(10) 8.96] [pmm/INFO] LINE:   Send to iRMX:3000
+> [Disney:slave:(6) 8.98] [pmm/INFO] ROW:   Send to iRMX:3000
+> [Geoff:slave:(5) 8.98] [pmm/INFO] ROW: step(1)<>myrow(0). Receive data from Disney
+> [Geoff:slave:(5) 9.05] [pmm/INFO] LINE: step(2) <> Myline(1). Receive data from McGee:3000
+> [Laroche:slave:(10) 9.06] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data
+> [Laroche:slave:(10) 9.06] [pmm/INFO] ROW:   Send to McGee:3000
+> [Laroche:slave:(10) 9.14] [pmm/INFO] ROW:   Send to Gatien:3000
+> [McGee:slave:(8) 9.14] [pmm/INFO] ROW: step(2)<>myrow(0). Receive data from Laroche
+> [TeX:slave:(4) 9.18] [pmm/INFO] ROW: step(1)<>myrow(2). Receive data from Jean_Yves
+> [TeX:slave:(4) 9.18] [pmm/INFO] LINE: step(2) <> Myline(0). Receive data from Laroche:3000
+> [TeX:slave:(4) 9.18] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data
+> [TeX:slave:(4) 9.18] [pmm/INFO] ROW:   Send to Boivin:3000
+> [McGee:slave:(8) 9.21] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [TeX:slave:(4) 9.27] [pmm/INFO] ROW:   Send to Jean_Yves:3000
+> [Boivin:slave:(2) 9.27] [pmm/INFO] ROW: step(2)<>myrow(0). Receive data from TeX
+> [iRMX:slave:(7) 9.32] [pmm/INFO] ROW: step(1)<>myrow(2). Receive data from Disney
+> [iRMX:slave:(7) 9.32] [pmm/INFO] LINE: step(2) <> Myline(1). Receive data from Laroche:3000
+> [iRMX:slave:(7) 9.32] [pmm/INFO] ROW: step(2)=myrow(2). Broadcast my data
+> [iRMX:slave:(7) 9.32] [pmm/INFO] ROW:   Send to Geoff:3000
+> [Boivin:slave:(2) 9.35] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [Gatien:slave:(9) 9.35] [pmm/INFO] LINE:   Send to Disney:3000
+> [Jean_Yves:slave:(3) 9.35] [pmm/INFO] LINE: step(2) <> Myline(0). Receive data from Gatien:3000
+> [Disney:slave:(6) 9.46] [pmm/INFO] LINE: step(2) <> Myline(1). Receive data from Gatien:3000
+> [iRMX:slave:(7) 9.56] [pmm/INFO] ROW:   Send to Disney:3000
+> [Geoff:slave:(5) 9.56] [pmm/INFO] ROW: step(2)<>myrow(0). Receive data from iRMX
+> [Geoff:slave:(5) 9.56] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [Gatien:slave:(9) 9.56] [pmm/INFO] ROW: step(2)<>myrow(1). Receive data from Laroche
+> [Jean_Yves:slave:(3) 9.57] [pmm/INFO] ROW: step(2)<>myrow(1). Receive data from TeX
+> [Laroche:slave:(10) 9.71] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [Gatien:slave:(9) 9.81] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [Disney:slave:(6) 9.81] [pmm/INFO] ROW: step(2)<>myrow(1). Receive data from iRMX
+> [TeX:slave:(4) 9.95] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [Jean_Yves:slave:(3) 10.03] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [iRMX:slave:(7) 10.27] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [Disney:slave:(6) 10.41] [pmm/INFO] >>>>>>>> Result sent to Jacquelin:4242 <<<<<<<<
+> [Jacquelin:master:(1) 10.41] [pmm/INFO] The Result of Multiplication is :
 > >>> Matrix C:res dump (18 x 18)
 >    0.00 18.00 36.00 54.00 72.00 90.00 108.00 126.00 144.00 162.00 180.00 198.00 216.00 234.00 252.00 270.00 288.00 306.00
 >    1.00 19.00 37.00 55.00 73.00 91.00 109.00 127.00 145.00 163.00 181.00 199.00 217.00 235.00 253.00 271.00 289.00 307.00
@@ -188,14 +188,13 @@ $ $SG_TEST_EXENV ./pmm_simulator@EXEEXT@ @top_srcdir@/examples/msg/msg_platform.
 >    16.00 34.00 52.00 70.00 88.00 106.00 124.00 142.00 160.00 178.00 196.00 214.00 232.00 250.00 268.00 286.00 304.00 322.00
 >    17.00 35.00 53.00 71.00 89.00 107.00 125.00 143.00 161.00 179.00 197.00 215.00 233.00 251.00 269.00 287.00 305.00 323.00
 > <<< end_of_matrix C:res dump
-> [Boivin:slave:(2) 10.491957] [gras/INFO] Exiting GRAS
-> [Jean_Yves:slave:(3) 10.563063] [gras/INFO] Exiting GRAS
-> [TeX:slave:(4) 10.702385] [gras/INFO] Exiting GRAS
-> [Geoff:slave:(5) 10.702796] [gras/INFO] Exiting GRAS
-> [Disney:slave:(6) 10.842960] [gras/INFO] Exiting GRAS
-> [iRMX:slave:(7) 11.076908] [gras/INFO] Exiting GRAS
-> [McGee:slave:(8) 11.145190] [gras/INFO] Exiting GRAS
-> [Gatien:slave:(9) 11.243148] [gras/INFO] Exiting GRAS
-> [Jacquelin:master:(1) 11.381552] [gras/INFO] Exiting GRAS
-> [Laroche:slave:(10) 11.381552] [gras/INFO] Exiting GRAS
-
+> [Boivin:slave:(2) 10.49] [gras/INFO] Exiting GRAS
+> [Jean_Yves:slave:(3) 10.56] [gras/INFO] Exiting GRAS
+> [TeX:slave:(4) 10.70] [gras/INFO] Exiting GRAS
+> [Geoff:slave:(5) 10.70] [gras/INFO] Exiting GRAS
+> [Disney:slave:(6) 10.84] [gras/INFO] Exiting GRAS
+> [iRMX:slave:(7) 11.08] [gras/INFO] Exiting GRAS
+> [McGee:slave:(8) 11.15] [gras/INFO] Exiting GRAS
+> [Gatien:slave:(9) 11.24] [gras/INFO] Exiting GRAS
+> [Jacquelin:master:(1) 11.38] [gras/INFO] Exiting GRAS
+> [Laroche:slave:(10) 11.38] [gras/INFO] Exiting GRAS
