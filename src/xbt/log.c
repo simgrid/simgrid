@@ -468,7 +468,7 @@ void xbt_log_init(int *argc,char **argv) {
 			
 		  if (strncmp(argv[i],"--log=",strlen("--log=")))
 		      WARN2("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
-			    strchr(argv[i],'=')-argv[i],argv[i]);
+			    (int)(strchr(argv[i],'=')-argv[i]),argv[i]);
 
 		  opt=strchr(argv[i],'=');
 		  opt++;
