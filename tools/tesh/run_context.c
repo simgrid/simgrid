@@ -85,7 +85,7 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
   } 
 
   /* Cleanup the place */
-  xbt_dynar_free(&bg_jobs);
+  //  xbt_dynar_free(&bg_jobs);
 
   exit(exitcode);
 }
@@ -491,8 +491,7 @@ void *rctx_wait(void* r) {
 	   || strcmp(rctx->output_got->data, rctx->output_wanted->data))) {
     if (XBT_LOG_ISENABLED(tesh,xbt_log_priority_info)) {
        char *diff= xbt_str_diff(rctx->output_wanted->data,rctx->output_got->data);	  
-       ERROR1("Output mismatch:\n%s",
-	      diff);
+       ERROR2("Output of <%s> mismatch:\n%s",rctx->filepos,diff);
        free(diff);
     }     
     ERROR2("Test suite `%s': NOK (<%s> output mismatch)", 
@@ -500,7 +499,7 @@ void *rctx_wait(void* r) {
      
     errcode=2;
   } else if (rctx->output == e_output_ignore) {
-    INFO0("(ignoring the output as requested)");
+    INFO1("(ignoring the output of <%s> as requested)",rctx->filepos);
   } else if (rctx->output == e_output_display) {
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
     char *out = xbt_str_join(a,"\n||");

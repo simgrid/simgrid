@@ -9,7 +9,7 @@ p This tests whether TESH detects wrong outputs
 $ ./tesh --log='log.thresh:info tesh.fmt:%m%n'
 > Test suite from stdin
 > [stdin:3] cat
-> Output mismatch:
+> Output of <stdin:3> mismatch:
 > - TOTO
 > + TUTU
 > Test suite `(stdin)': NOK (<stdin:3> output mismatch)
