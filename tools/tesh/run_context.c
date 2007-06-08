@@ -200,8 +200,11 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
     if (rctx->cmd)
       rctx_start();
 
-    if (!strncmp(line,"set timeout ",strlen("set timeout "))) {
-      timeout_value=atoi(line+strlen("set timeout"));
+    if (!strncmp(line,"timeout no",strlen("timeout no"))) {
+      VERB1("[%s] (disable timeout)", filepos);
+      timeout_value = -1;
+    } else if (!strncmp(line,"timeout ",strlen("timeout "))) {
+      timeout_value=atoi(line+strlen("timeout"));
       VERB2("[%s] (new timeout value: %d)",
 	     filepos,timeout_value);
 
@@ -331,7 +334,10 @@ void rctx_start(void) {
     close(child_out[1]);
     rctx->child_from = child_out[0];
 
-    rctx->end_time = time(NULL) + timeout_value;
+    if (timeout_value > 0)
+       rctx->end_time = time(NULL) + timeout_value;
+    else 
+       rctx->end_time = -1;
 
     rctx->reader_done = 0;
     rctx->reader = xbt_thread_create(thread_reader,(void*)rctx);
@@ -389,14 +395,14 @@ void *rctx_wait(void* r) {
 	   rctx->cmd);
 
   /* Wait for the child to die or the timeout to happen (or an armageddon to happen) */
-  while (!rctx->interrupted && !rctx->reader_done && rctx->end_time >= now) {
+  while (!rctx->interrupted && !rctx->reader_done && (rctx->end_time <0 ||rctx->end_time >= now)) {
     usleep(100);
     now = time(NULL);
   }
    
   xbt_mutex_lock(rctx->interruption);
 
-  if (!rctx->interrupted && rctx->end_time < now) {    
+  if (!rctx->interrupted && rctx->end_time > 0 && rctx->end_time < now) {    
     INFO1("<%s> timeouted. Kill the process.",rctx->filepos);
     rctx->timeout = 1;
     kill(rctx->pid,SIGTERM);

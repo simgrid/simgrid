@@ -14,7 +14,7 @@ blank and is ignored):
  `<' input to pass to the command
  `>' output expected from the command
  `!' metacommand, which can be one of:
-     `set timeout' <integer>
+     `timeout' <integer>|no
      `expect signal' <signal name>
      `expect return' <integer>
      `output' <ignore|display>
@@ -76,9 +76,10 @@ TIMEOUTS
 --------
 
 By default, all commands are given 5 seconds to execute
-(cf. catch-timeout.tesh). You can change this with the "set timeout", which
+(cf. catch-timeout.tesh). You can change this with the "timeout", which
 takes an integer as argument. The change only apply to the next command
-(cf. set-timeout.tesh).
+(cf. set-timeout.tesh). If you pass "no" as argument, the command
+cannot timeout.
 
 OUTPUT
 ------
