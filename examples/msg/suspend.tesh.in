@@ -1,0 +1,13 @@
+#! ./tesh
+
+p Testing the suspend feature of MSG
+
+$ ./msg_test_suspend @srcdir@/msg_platform.xml @srcdir@/msg_deployment_suspend.xml 
+> [Jacquelin:dream_master:(1) 0.000000] [msg_test/INFO] Let's create a lazy guy.
+> [Jacquelin:dream_master:(1) 0.000000] [msg_test/INFO] Let's wait a little bit...
+> [Jacquelin:Lazy:(2) 0.000000] [msg_test/INFO] Nobody's watching me ? Let's go to sleep.
+> [Jacquelin:dream_master:(1) 10.000000] [msg_test/INFO] Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!
+> [Jacquelin:dream_master:(1) 10.000000] [msg_test/INFO] OK, goodbye now.
+> [Jacquelin:Lazy:(2) 10.000000] [msg_test/INFO] Uuuh ? Did somebody call me ?
+> [Jacquelin:Lazy:(2) 10.000000] [msg_test/INFO] Mmmh, goodbye now.
+> [10.000000] [msg_test/INFO] Simulation time 10

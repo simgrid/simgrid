@@ -2,3 +2,4 @@
 msg_test msg_test_surfxml_bypassed msg_test_suspend ping_pong
 run_msg_test
 msg_test.trace
+basic.tesh flexml_bypass.tesh small_plat.tesh suspend.tesh
