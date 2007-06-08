@@ -41,9 +41,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-check_PROGRAMS = msg_test$(EXEEXT) msg_test_surfxml_bypassed$(EXEEXT) \
-	msg_test_suspend$(EXEEXT) ping_pong$(EXEEXT)
+check_PROGRAMS = msg_test$(EXEEXT) msg_test_suspend$(EXEEXT) \
+	ping_pong$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/basic.tesh.in $(srcdir)/flexml_bypass.tesh.in \
+	$(srcdir)/small_plat.tesh.in $(srcdir)/suspend.tesh.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = examples/msg
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -59,16 +61,11 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/gras_config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = basic.tesh small_plat.tesh suspend.tesh \
+	flexml_bypass.tesh
 am_msg_test_OBJECTS = msg_test.$(OBJEXT)
 msg_test_OBJECTS = $(am_msg_test_OBJECTS)
 msg_test_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
-am_msg_test_surfxml_bypassed_OBJECTS =  \
-	msg_test_surfxml_bypassed.$(OBJEXT)
-msg_test_surfxml_bypassed_OBJECTS =  \
-	$(am_msg_test_surfxml_bypassed_OBJECTS)
-msg_test_surfxml_bypassed_DEPENDENCIES =  \
-	$(top_builddir)/src/libsimgrid.la
 am_msg_test_suspend_OBJECTS = msg_test_suspend.$(OBJEXT)
 msg_test_suspend_OBJECTS = $(am_msg_test_suspend_OBJECTS)
 msg_test_suspend_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
@@ -86,11 +83,10 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(msg_test_SOURCES) $(msg_test_surfxml_bypassed_SOURCES) \
-	$(msg_test_suspend_SOURCES) $(ping_pong_SOURCES)
-DIST_SOURCES = $(msg_test_SOURCES) \
-	$(msg_test_surfxml_bypassed_SOURCES) \
-	$(msg_test_suspend_SOURCES) $(ping_pong_SOURCES)
+SOURCES = $(msg_test_SOURCES) $(msg_test_suspend_SOURCES) \
+	$(ping_pong_SOURCES)
+DIST_SOURCES = $(msg_test_SOURCES) $(msg_test_suspend_SOURCES) \
+	$(ping_pong_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -240,14 +236,18 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir)/include
-EXTRA_DIST = msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml
+EXTRA_DIST = msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml \
+            basic.tesh.in small_plat.tesh.in suspend.tesh.in flexml_bypass.tesh.in
+
 CLEANFILES = msg_test.trace
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = msg_test.tesh
+TESTS = basic.tesh small_plat.tesh suspend.tesh
+# msg_test_surfxml_bypassed
 msg_test_SOURCES = msg_test.c
 msg_test_LDADD = $(top_builddir)/src/libsimgrid.la
-msg_test_surfxml_bypassed_SOURCES = msg_test_surfxml_bypassed.c
-msg_test_surfxml_bypassed_LDADD = $(top_builddir)/src/libsimgrid.la
+
+#msg_test_surfxml_bypassed_SOURCES = msg_test_surfxml_bypassed.c
+#msg_test_surfxml_bypassed_LDADD = $(top_builddir)/src/libsimgrid.la
 msg_test_suspend_SOURCES = msg_test_suspend.c
 msg_test_suspend_LDADD = $(top_builddir)/src/libsimgrid.la
 ping_pong_SOURCES = ping_pong.c
@@ -285,6 +285,14 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+basic.tesh: $(top_builddir)/config.status $(srcdir)/basic.tesh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+small_plat.tesh: $(top_builddir)/config.status $(srcdir)/small_plat.tesh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+suspend.tesh: $(top_builddir)/config.status $(srcdir)/suspend.tesh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+flexml_bypass.tesh: $(top_builddir)/config.status $(srcdir)/flexml_bypass.tesh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 clean-checkPROGRAMS:
 	@list='$(check_PROGRAMS)'; for p in $$list; do \
@@ -295,9 +303,6 @@ clean-checkPROGRAMS:
 msg_test$(EXEEXT): $(msg_test_OBJECTS) $(msg_test_DEPENDENCIES) 
 	@rm -f msg_test$(EXEEXT)
 	$(LINK) $(msg_test_LDFLAGS) $(msg_test_OBJECTS) $(msg_test_LDADD) $(LIBS)
-msg_test_surfxml_bypassed$(EXEEXT): $(msg_test_surfxml_bypassed_OBJECTS) $(msg_test_surfxml_bypassed_DEPENDENCIES) 
-	@rm -f msg_test_surfxml_bypassed$(EXEEXT)
-	$(LINK) $(msg_test_surfxml_bypassed_LDFLAGS) $(msg_test_surfxml_bypassed_OBJECTS) $(msg_test_surfxml_bypassed_LDADD) $(LIBS)
 msg_test_suspend$(EXEEXT): $(msg_test_suspend_OBJECTS) $(msg_test_suspend_DEPENDENCIES) 
 	@rm -f msg_test_suspend$(EXEEXT)
 	$(LINK) $(msg_test_suspend_LDFLAGS) $(msg_test_suspend_OBJECTS) $(msg_test_suspend_LDADD) $(LIBS)
@@ -312,7 +317,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_test_surfxml_bypassed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_test_suspend.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ping_pong.Po@am__quote@
 

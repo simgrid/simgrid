@@ -1,18 +1,21 @@
 INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
-EXTRA_DIST= msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml
+EXTRA_DIST= msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml \
+            basic.tesh.in small_plat.tesh.in suspend.tesh.in flexml_bypass.tesh.in
 
 CLEANFILES=msg_test.trace
 
 TESTS_ENVIRONMENT=$(top_builddir)/tools/tesh/tesh
-TESTS=msg_test.tesh
-check_PROGRAMS=msg_test msg_test_surfxml_bypassed msg_test_suspend ping_pong
+TESTS=basic.tesh small_plat.tesh suspend.tesh
+# flexml_bypass.tesh
+check_PROGRAMS=msg_test msg_test_suspend ping_pong 
+# msg_test_surfxml_bypassed
 
 msg_test_SOURCES= msg_test.c
 msg_test_LDADD=	$(top_builddir)/src/libsimgrid.la
 
-msg_test_surfxml_bypassed_SOURCES = msg_test_surfxml_bypassed.c
-msg_test_surfxml_bypassed_LDADD = $(top_builddir)/src/libsimgrid.la
+#msg_test_surfxml_bypassed_SOURCES = msg_test_surfxml_bypassed.c
+#msg_test_surfxml_bypassed_LDADD = $(top_builddir)/src/libsimgrid.la
 
 msg_test_suspend_SOURCES= msg_test_suspend.c
 msg_test_suspend_LDADD=	$(top_builddir)/src/libsimgrid.la
