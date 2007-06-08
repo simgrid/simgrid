@@ -18,7 +18,7 @@ test-sg:
 else
   TESTS= test_rl test_sg_64
 test-sg:
-	$(TESTS_ENVIRONMENT) test_sg_32
+	$(TESTS_ENVIRONMENT) test_sg_64
 endif
 
 test-rl:
