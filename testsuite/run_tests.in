@@ -103,7 +103,7 @@ do
         if echo $exenv | grep valgrind >/dev/null ; then
  	  exenv=
         fi
-        $exenv ./$test --xbt-log="root.thres=info" 2>&1
+        $exenv ./$test --log="root.thres=info" 2>&1
         retval=$?
       else 
         if [ x@EXEEXT@ != x ] && [ x$exenv = xwine ] ; then 
@@ -111,16 +111,16 @@ do
             exenv=""
           fi
         fi
-        $exenv ./$test --xbt-log="root.thres=info" 2>&1
+        $exenv ./$test --log="root.thres=info" 2>&1
         retval=$?
       fi
       exenv=$exenvsave
       if [ $retval != 0 ] ; then if [ $retval != 77 ]; then
         echo "## failed" # . Rerun $test with full details."
 #      if [ "x$test" = "xdict_crash" ] ; then
-#      $exenv ./$test --xbt-log="root.thres=debug" 2>&1
+#      $exenv ./$test --log="root.thres=debug" 2>&1
 #    else 
-#      $exenv ./$test --xbt-log="root.thres=debug" 2>&1
+#      $exenv ./$test --log="root.thres=debug" 2>&1
 #    fi
         failed_nb=`expr $failed_nb + 1`
         echo "  $test (returned $retval)" >> test.failed
