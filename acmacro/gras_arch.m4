@@ -205,7 +205,7 @@ echo "$as_me:$LINENO: GRAS trace of this machine: $trace" >&AS_MESSAGE_LOG_FD
 AC_DEFINE_UNQUOTED(GRAS_THISARCH,$gras_arch,[defines the GRAS architecture signature of this machine])
 AC_MSG_RESULT($gras_arch ($gras_arch_name))
 
-AM_CONDITIONAL(GRAS_ARCH_32_BITS,test $gras_size=32)
+AM_CONDITIONAL(GRAS_ARCH_32_BITS,[test "$gras_size" = 32])
 
 AC_MSG_CHECKING(the maximal size of scalar)
 ac_cv_sizeof_max=0
