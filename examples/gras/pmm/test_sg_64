@@ -20,24 +20,6 @@ $ $SG_TEST_EXENV ./pmm_simulator$EXEEXT $srcdir/../../msg/msg_platform.xml $srcd
 > [St_Jean:slave:(19) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
 > [Jill:slave:(20) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
 > [Jacquelin:master:(1) 5.082948] [pmm/INFO] Got 19 pals
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Boivin:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Boivin:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Jean_Yves:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Jean_Yves:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to TeX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to TeX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Geoff:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Geoff:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Disney:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Disney:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to iRMX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to iRMX:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to McGee:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to McGee:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Gatien:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Gatien:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connecting to Laroche:3000.
-> [Jacquelin:master:(1) 5.082948] [pmm/INFO] Connected to Laroche:3000.
 > [Jacquelin:master:(1) 5.082948] [pmm/INFO] Too much slaves. Killing Tanguay:3000
 > [Jacquelin:master:(1) 5.159107] [pmm/INFO] Too much slaves. Killing Morin:3000
 > [Tanguay:slave:(11) 5.159107] [gras/INFO] Exiting GRAS

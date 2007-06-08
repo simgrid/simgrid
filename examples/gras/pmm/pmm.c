@@ -115,9 +115,7 @@ int master (int argc,char *argv[]) {
        i++) {
 
     xbt_dynar_get_cpy(peers,i,&grid[i]);
-    INFO2("Connecting to %s:%d.",grid[i]->name,grid[i]->port);
     socket[i]=gras_socket_client(grid[i]->name,grid[i]->port);
-    INFO2("Connected to %s:%d.",grid[i]->name,grid[i]->port);
   }
   xbt_assert2(i==SLAVE_COUNT,
 	      "Not enough slaves for this setting (got %d of %d). Change the deployment file",

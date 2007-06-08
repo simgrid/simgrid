@@ -40,24 +40,6 @@
 & $SG_TEST_EXENV ./pmm_master$EXEEXT 4242 --log=root.fmt:%m%n
 > Wait for peers for 5 sec
 > Got 9 pals
-> Connecting to 127.0.0.1:3000.
-> Connected to 127.0.0.1:3000.
-> Connecting to 127.0.0.1:3001.
-> Connected to 127.0.0.1:3001.
-> Connecting to 127.0.0.1:3002.
-> Connected to 127.0.0.1:3002.
-> Connecting to 127.0.0.1:3003.
-> Connected to 127.0.0.1:3003.
-> Connecting to 127.0.0.1:3004.
-> Connected to 127.0.0.1:3004.
-> Connecting to 127.0.0.1:3005.
-> Connected to 127.0.0.1:3005.
-> Connecting to 127.0.0.1:3006.
-> Connected to 127.0.0.1:3006.
-> Connecting to 127.0.0.1:3007.
-> Connected to 127.0.0.1:3007.
-> Connecting to 127.0.0.1:3008.
-> Connected to 127.0.0.1:3008.
 > XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
 > The Result of Multiplication is :
 > >>> Matrix C:res dump (18 x 18)
