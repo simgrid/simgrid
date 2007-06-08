@@ -1,7 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_rl test_sg
-TESTS_ENVIRONMENT=../../../tools/tesh/tesh
-EXTRA_DIST=pmm.xml  test_sg.in test_rl.in $(TESTS)
+EXTRA_DIST=pmm.xml
+include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=pmm_slave pmm_master pmm_simulator

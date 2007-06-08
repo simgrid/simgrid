@@ -1,4 +1,4 @@
-$ $SG_TEST_EXENV ./rpc_simulator@EXEEXT@ @top_srcdir@/examples/msg/small_platform.xml @srcdir@/rpc.xml --log=root.fmt:"'[%h:%t:(%i) %.2r] [%c/%p] %m%n'"
+$ $SG_TEST_EXENV ./rpc_simulator$EXEEXT $srcdir/../../msg/small_platform.xml $srcdir/rpc.xml --log=root.fmt:"'[%h:%t:(%i) %.2r] [%c/%p] %m%n'"
 > [Tremblay:server:(1) 0.00] [Rpc/INFO] Launch server (port=4000)
 > [Tremblay:server:(1) 0.00] [Rpc/INFO] Listening on port 4000
 > [Ginette:forwarder:(2) 0.00] [Rpc/INFO] Launch forwarder (port=4000)

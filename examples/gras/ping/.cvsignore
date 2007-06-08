@@ -1,5 +1,3 @@
 .deps .libs Makefile  _*.c ping_server ping_client ping_simulator
-test_sg
-test_rl
 ping.mk
 ping.trace

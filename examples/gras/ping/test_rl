@@ -1,6 +1,6 @@
 
 #! set timeout 20
-& $SG_TEST_ENV ./ping_server@EXEEXT@ 4002 --log=root.fmt=%m%n
+& $SG_TEST_ENV ./ping_server$EXEEXT 4002 --log=root.fmt=%m%n
 > Launch server (port=4002)
 > Messages registered
 > Messages registered
@@ -13,7 +13,7 @@
 $ sleep 1
 
 #! set timeout 20
-& $SG_TEST_ENV ./ping_client@EXEEXT@ 127.0.0.1 4002 --log=root.fmt=%m%n
+& $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4002 --log=root.fmt=%m%n
 > Launch client (server on 127.0.0.1:4002)
 > Connected to 127.0.0.1:4002.
 > Messages registered

@@ -108,6 +108,8 @@ FFLAGS = @FFLAGS@
 FLEXML = @FLEXML@
 GRAMINE_MODE_FALSE = @GRAMINE_MODE_FALSE@
 GRAMINE_MODE_TRUE = @GRAMINE_MODE_TRUE@
+GRAS_ARCH_32_BITS_FALSE = @GRAS_ARCH_32_BITS_FALSE@
+GRAS_ARCH_32_BITS_TRUE = @GRAS_ARCH_32_BITS_TRUE@
 GRAS_DEP = @GRAS_DEP@
 GREP = @GREP@
 GTNETS_CFLAGS = @GTNETS_CFLAGS@
@@ -215,7 +217,7 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-SUBDIRS = ping rpc timer chrono mutual_exclusion/simple_token mmrpc p2p all2all pmm
+SUBDIRS = ping rpc timer chrono mutual_exclusion/simple_token mmrpc all2all pmm
 all: all-recursive
 
 .SUFFIXES:
@@ -530,6 +532,7 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
+# p2p
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -1,7 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_rl test_sg
-TESTS_ENVIRONMENT=../../../tools/tesh/tesh
-EXTRA_DIST=all2all.xml test_sg.in test_rl.in
+EXTRA_DIST=all2all.xml 
+include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=all2all_sender all2all_receiver all2all_simulator

@@ -1,0 +1,3 @@
+
+! output display
+$ $SG_TEST_EXENV ./chrono_simulator$EXEEXT $srcdir/../../msg/small_platform.xml $srcdir/chrono.xml

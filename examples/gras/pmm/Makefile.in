@@ -14,6 +14,19 @@
 
 @SET_MAKE@
 
+# This file factorize all the testing infrastructure for the GRAS examples
+#
+# it's made complicated by the facts that:
+#  - we use tesh, we need to find it back
+#  - we don't want to generate the test_* files with configure, so we
+#    have to declare some variables in front of the shell command
+#    running the test
+#  - we want to fully test the surf on the way. So, we have to ask for
+#    full precision timestamps in the tests. On the other hand,
+#    message size differ when we are on 32bits and when we are on
+#    64bits (obviously), so we have to maintain 2 tests per directory
+#    and pick the right one here.
+
 # Makefile chunk which allows to display the files which should be included
 # into the distribution.
 
@@ -42,12 +55,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(top_srcdir)/acmacro/dist-files.mk \
+	$(top_srcdir)/examples/gras/tests.mk \
+	$(top_srcdir)/examples/temps-gras-stub.mk
 noinst_PROGRAMS = pmm_slave$(EXEEXT) pmm_master$(EXEEXT) \
 	pmm_simulator$(EXEEXT)
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/test_rl.in $(srcdir)/test_sg.in \
-	$(top_srcdir)/acmacro/dist-files.mk \
-	$(top_srcdir)/examples/temps-gras-stub.mk
 subdir = examples/gras/pmm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acmacro/ac_func_snprintf.m4 \
@@ -62,7 +75,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/gras_config.h
-CONFIG_CLEAN_FILES = test_sg test_rl
+CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am_pmm_master_OBJECTS = _pmm_master.$(OBJEXT) pmm.$(OBJEXT)
 pmm_master_OBJECTS = $(am_pmm_master_OBJECTS)
@@ -129,6 +142,8 @@ FFLAGS = @FFLAGS@
 FLEXML = @FLEXML@
 GRAMINE_MODE_FALSE = @GRAMINE_MODE_FALSE@
 GRAMINE_MODE_TRUE = @GRAMINE_MODE_TRUE@
+GRAS_ARCH_32_BITS_FALSE = @GRAS_ARCH_32_BITS_FALSE@
+GRAS_ARCH_32_BITS_TRUE = @GRAS_ARCH_32_BITS_TRUE@
 GRAS_DEP = @GRAS_DEP@
 GREP = @GREP@
 GTNETS_CFLAGS = @GTNETS_CFLAGS@
@@ -237,9 +252,10 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir)/include
-TESTS = test_rl test_sg
-TESTS_ENVIRONMENT = ../../../tools/tesh/tesh
-EXTRA_DIST = pmm.xml  test_sg.in test_rl.in $(TESTS)
+EXTRA_DIST = pmm.xml test_rl test_sg_32 test_sg_64
+@GRAS_ARCH_32_BITS_FALSE@TESTS = test_rl test_sg_64
+@GRAS_ARCH_32_BITS_TRUE@TESTS = test_rl test_sg_32
+TESTS_ENVIRONMENT = srcdir=$(srcdir) EXEEXT=$(EXEEXT) @top_builddir@/tools/tesh/tesh
 pmm_simulator_SOURCES = _pmm_simulator.c pmm.c
 pmm_simulator_LDADD = $(top_builddir)/src/libsimgrid.la
 pmm_slave_SOURCES = _pmm_slave.c    pmm.c
@@ -258,7 +274,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/examples/temps-gras-stub.mk $(top_srcdir)/acmacro/dist-files.mk $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/examples/gras/tests.mk $(top_srcdir)/examples/temps-gras-stub.mk $(top_srcdir)/acmacro/dist-files.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -287,10 +303,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-test_sg: $(top_builddir)/config.status $(srcdir)/test_sg.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test_rl: $(top_builddir)/config.status $(srcdir)/test_rl.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -472,7 +484,7 @@ check-TESTS: $(TESTS)
 	else :; fi
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../../../acmacro $(distdir)/../../../examples
+	$(mkdir_p) $(distdir)/../../../acmacro $(distdir)/../../../examples $(distdir)/../../../examples/gras
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -593,6 +605,13 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-info-am
 
+@GRAS_ARCH_32_BITS_TRUE@test-sg:
+@GRAS_ARCH_32_BITS_TRUE@	$(TESTS_ENVIRONMENT) test_sg_32
+@GRAS_ARCH_32_BITS_FALSE@test-sg:
+@GRAS_ARCH_32_BITS_FALSE@	$(TESTS_ENVIRONMENT) test_sg_32
+
+test-rl:
+	$(TESTS_ENVIRONMENT) test_rl
 
 $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(srcdir)/$(NAME).xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
 	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ $(NAME) $(srcdir)/$(NAME).xml

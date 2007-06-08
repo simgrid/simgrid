@@ -1,8 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_rl test_sg
-TESTS_ENVIRONMENT=../../../tools/tesh/tesh
-
-EXTRA_DIST=rpc.xml $(TESTS)
+EXTRA_DIST=rpc.xml
+include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=rpc_client rpc_forwarder rpc_server rpc_simulator

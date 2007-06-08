@@ -1,7 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_rl test_sg
-TESTS_ENVIRONMENT=../../../../tools/tesh/tesh
-EXTRA_DIST=simple_token.xml $(TESTS)
+EXTRA_DIST=simple_token.xml 
+include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=simple_token_node simple_token_simulator

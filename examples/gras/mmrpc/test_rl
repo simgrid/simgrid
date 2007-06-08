@@ -1,10 +1,10 @@
-& $SG_TEST_EXENV ./mmrpc_server@EXEEXT@ 4002 --log=root.fmt:%m%n 
+& $SG_TEST_EXENV ./mmrpc_server$EXEEXT 4002 --log=root.fmt:%m%n 
 > Launch server (port=4002)
 > Exiting GRAS
 
 $ sleep 1
 
-$ $SG_TEST_EXENV ./mmrpc_client@EXEEXT@ 127.0.0.1 4002 --log=root.fmt:%m%n 
+$ $SG_TEST_EXENV ./mmrpc_client$EXEEXT 127.0.0.1 4002 --log=root.fmt:%m%n 
 > Launch client (server on 127.0.0.1:4002)
 > Connected to 127.0.0.1:4002.
 > >>>>>>>> Connected to server which is on 127.0.0.1:4002 <<<<<<<<

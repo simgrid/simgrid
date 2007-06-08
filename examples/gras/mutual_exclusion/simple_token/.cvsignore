@@ -1,5 +1,3 @@
 .deps .libs Makefile  _*.c simple_token_node simple_token_simulator
-test_sg
-test_rl
 simple_token.mk
 simple_token.trace

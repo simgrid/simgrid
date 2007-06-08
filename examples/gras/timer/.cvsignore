@@ -1,5 +1,3 @@
 .deps .libs Makefile  _*.c timer_client timer_simulator
-test_sg
-test_rl
 timer.mk
 timer.trace

@@ -1,5 +1,3 @@
 .deps .libs Makefile _*.c *_server *_client *_simulator *_forwarder
-test_sg
-test_rl
 *.mk
 *.trace

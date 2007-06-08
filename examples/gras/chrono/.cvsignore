@@ -1,5 +1,3 @@
 .deps .libs Makefile _*.c chrono_multiplier chrono_simulator
-test_sg
-test_rl
 chrono.mk
 chrono.trace

@@ -1,9 +1,8 @@
 INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
 
-TESTS= test_rl test_sg
-TESTS_ENVIRONMENT=../../../tools/tesh/tesh
 EXTRA_DIST=$(NAME).xml $(TESTS)
+include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=timer_client timer_simulator

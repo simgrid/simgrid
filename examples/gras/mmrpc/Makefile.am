@@ -1,7 +1,6 @@
 INCLUDES= -I$(top_srcdir)/include
-TESTS= test_rl test_sg
-TESTS_ENVIRONMENT=../../../tools/tesh/tesh
-EXTRA_DIST=mmrpc.xml mmrpc.h $(TESTS)
+EXTRA_DIST=mmrpc.xml mmrpc.h 
+include $(top_srcdir)/examples/gras/tests.mk
 
 # AUTOMAKE variable definition
 noinst_PROGRAMS=mmrpc_client mmrpc_server mmrpc_simulator

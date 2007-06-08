@@ -1,5 +1,3 @@
 .deps .libs Makefile  _*.c mmrpc_server mmrpc_client mmrpc_simulator
-test_sg
-test_rl
 mmrpc.mk
 mmrpc.trace
