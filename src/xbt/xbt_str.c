@@ -469,8 +469,9 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db) {
                 C[i,j] := max(C[i,j-1], C[i-1,j])
     return C[m,n]
 	  */
-  for (i=0; i<xbt_dynar_length(da); i++) 
-    *((int*) xbt_matrix_get_ptr(C,i,0) ) = 0;
+  if (xbt_dynar_length(db) != 0)
+    for (i=0; i<xbt_dynar_length(da); i++) 
+      *((int*) xbt_matrix_get_ptr(C,i,0) ) = 0;
 
   if (xbt_dynar_length(da) != 0)
     for (j=0; j<xbt_dynar_length(db); j++) 
@@ -513,7 +514,7 @@ static void diff_build_diff(xbt_dynar_t res,
     topush = bprintf("  %s",xbt_dynar_get_as(da,i,char*));
     xbt_dynar_push(res, &topush);
   } else if (j>=0 && 
-	     (i<=0 || xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
+	     (i<=0 ||j==0|| xbt_matrix_get_as(C,i,j-1,int) >= xbt_matrix_get_as(C,i-1,j,int))) {
     diff_build_diff(res,C,da,db,i,j-1);
     topush = bprintf("+ %s",xbt_dynar_get_as(db,j,char*));
     xbt_dynar_push(res,&topush);
