@@ -22,7 +22,8 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 					const char *msg_fmt) {
   static char res[2048];
   static double begin_of_time = -1;
-  char *p,*q;  
+  char *p,*q;
+  int precision=-1;
 
   if (begin_of_time<0) 
     begin_of_time=gras_os_time();
@@ -33,6 +34,7 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
   while (*q != '\0') {
     if (*q == '%') {
       q++;
+       handle_modifier:
       switch (*q) {
       case '\0':
 	THROW1(arg_error,0,"Layout format (%s) ending with %%",(char*)l->data);
@@ -42,39 +44,89 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
       case 'n': /* platform-dependant line separator (LOG4J compliant) */
 	p += sprintf(p,"\n");
 	break;
-      case ' ': /* plain space (SimGrid extension) */
+      case 'e': /* plain space (SimGrid extension) */
 	p += sprintf(p," ");
 	break;
+	 
+      case '.': /* precision specifyier */
+	q++;
+	q += sscanf(q,"%d",&precision);
+	goto handle_modifier;
 
       case 'c': /* category name; LOG4J compliant
 		   should accept a precision postfix to show the hierarchy */
-	p += sprintf(p,"%s",ev->cat->name); 
+	if (precision == -1)
+	   p += sprintf(p,"%s",ev->cat->name);
+        else {	      
+	   p += sprintf(p,"%.*s",precision,ev->cat->name);
+	   precision = -1;
+	}	 
 	break;
       case 'p': /* priority name; LOG4J compliant */	
-	p += sprintf(p, "%s", xbt_log_priority_names[ev->priority] );
+	if (precision == -1)
+	   p += sprintf(p, "%s", xbt_log_priority_names[ev->priority] );
+        else {	      
+	   p += sprintf(p, "%.*s", precision, xbt_log_priority_names[ev->priority] );
+	   precision = -1;
+	}	 
 	break;
 
       case 'h': /* host name; SimGrid extension */
-	p += sprintf(p, "%s", gras_os_myname());
+	if (precision == -1)
+	   p += sprintf(p, "%s", gras_os_myname());
+        else {	      
+	   p += sprintf(p, "%.*s", precision, gras_os_myname());
+	   precision = -1;
+	}	 
 	break;
       case 't': /* process name; LOG4J compliant (thread name) */
-	p += sprintf(p, "%s", xbt_procname());
+	if (precision == -1)
+	   p += sprintf(p, "%s", xbt_procname());
+        else {	      
+	   p += sprintf(p, "%.*s", precision,xbt_procname());
+	   precision = -1;
+	}	 
 	break;
       case 'i': /* process PID name; SimGrid extension */
-	p += sprintf(p, "%ld", gras_os_getpid());
+	if (precision == -1)
+	   p += sprintf(p, "%ld", gras_os_getpid());
+        else {	      
+	   p += sprintf(p, "%.*ld", precision, gras_os_getpid());
+	   precision = -1;
+	}	 
 	break;
 
       case 'F': /* file name; LOG4J compliant */
-	p += sprintf(p,"%s",ev->fileName);
+	if (precision == -1)
+	   p += sprintf(p,"%s",ev->fileName);
+        else {	      
+	   p += sprintf(p,"%.*s",precision, ev->fileName);
+	   precision = -1;
+	}	 
 	break;
       case 'l': /* location; LOG4J compliant */
-	p += sprintf(p, "%s:%d", ev->fileName, ev->lineNum);
+	if (precision == -1)
+	   p += sprintf(p, "%s:%d", ev->fileName, ev->lineNum);
+        else {	      
+	   p += snprintf(p, precision, "%s:%d", ev->fileName, ev->lineNum);
+	   precision = -1;
+	}	 
 	break;
       case 'L': /* line number; LOG4J compliant */
-	p += sprintf(p, "%d", ev->lineNum);
+	if (precision == -1)
+	   p += sprintf(p, "%d", ev->lineNum);
+        else {	      
+	   p += sprintf(p, "%.*d", precision, ev->lineNum);
+	   precision = -1;
+	}	 
 	break;
       case 'M': /* method (ie, function) name; LOG4J compliant */
-	p += sprintf(p, "%s", ev->functionName);
+	if (precision == -1)
+	   p += sprintf(p, "%s", ev->functionName);
+        else {	      
+	   p += sprintf(p, "%.*s", precision, ev->functionName);
+	   precision = -1;
+	}	 
 	break;
       case 'b': /* backtrace; called %throwable in LOG4J */
       case 'B': /* short backtrace; called %throwable{short} in LOG4J */
@@ -85,15 +137,26 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 	  
 	  e.used     = backtrace((void**)e.bt,XBT_BACKTRACE_SIZE);
 	  e.bt_strings = NULL;
-	  xbt_ex_setup_backtrace(&e);
-	  if (*q=='B')
-	    p += sprintf(p,"%s",e.bt_strings[2]+8);
-	  else
-	    for (i=2; i<e.used; i++)
-	      p += sprintf(p,"%s\n",e.bt_strings[i]+8);
-	  
 	  e.msg=NULL;
 	  e.remote=0;
+	  xbt_ex_setup_backtrace(&e);
+	  if (*q=='B') {
+	     if (precision == -1)
+	       p += sprintf(p,"%s",e.bt_strings[2]+8);
+	     else {	      
+		p += sprintf(p,"%.*s",precision, e.bt_strings[2]+8);
+		precision = -1;
+	     }	 
+	  } else {
+	    for (i=2; i<e.used; i++)
+	       if (precision == -1)
+		 p += sprintf(p,"%s\n",e.bt_strings[i]+8);
+	     else {	      
+		 p += sprintf(p,"%.*s\n",precision,e.bt_strings[i]+8);
+		precision = -1;
+	     }	 
+	  }
+	   
 	  xbt_ex_free(e);
 	}
 #else
@@ -102,14 +165,29 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 	break;
 
       case 'd': /* date; LOG4J compliant */
-	p += sprintf(p,"%f", gras_os_time());
+	if (precision == -1)
+	   p += sprintf(p,"%f", gras_os_time());
+        else {	      
+	   p += sprintf(p,"%.*f", precision, gras_os_time());
+	   precision = -1;
+	}	 
 	break;
       case 'r': /* application age; LOG4J compliant */
-	p += sprintf(p,"%f", gras_os_time()-begin_of_time);
+	if (precision == -1)
+	   p += sprintf(p,"%f", gras_os_time()-begin_of_time);
+        else {	      
+	   p += sprintf(p,"%.*f", precision, gras_os_time()-begin_of_time);
+	   precision = -1;
+	}	 
 	break;
 	
       case 'm': /* user-provided message; LOG4J compliant */
-	p += vsprintf(p, msg_fmt, ev->ap);
+	if (precision == -1)
+	   p += vsprintf(p, msg_fmt, ev->ap);
+        else {	      
+	   p += vsnprintf(p, precision, msg_fmt, ev->ap);
+	   precision = -1;
+	}	 
 	break;
 
       default:
