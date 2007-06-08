@@ -14,6 +14,7 @@ TESTS=basic.tesh  cd.tesh \
       catch-return.tesh catch-signal.tesh catch-timeout.tesh \
       catch-wrong-output.tesh \
       bg-basic.tesh bg-set-signal.tesh background.tesh
+EXTRA_DIST=$(TESTS)
 
 $(top_builddir)/src/libsimgrid.la: 
 	make -C $(top_builddir)/src libsimgrid.la
