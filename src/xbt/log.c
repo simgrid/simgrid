@@ -155,6 +155,9 @@ library itself, or test programs doing strange things) do not display the
 process identity (thus, fmt is '[%r] %l: [%c/%p] %m%n' in that case, and '[%r]
 [%c/%p] %m%n' if they are at priority INFO).
 
+For now, there is only one format modifyier: the precision field. You can for
+example specify %.4r to get the application age with 4 numbers after the radix.
+
 \subsection log_hist 1.5 History of this module
 
 Historically, this module is an adaptation of the log4c project, which is dead
@@ -387,7 +390,7 @@ This is on our TODO list for quite a while now, but your help would be
 welcome here, too.
 
 
-*/
+*//*'*/
 
 
 xbt_log_appender_t xbt_log_default_appender = NULL; /* set in log_init */
@@ -412,6 +415,8 @@ static void _free_setting(void *s) {
     free(set);
   }
 }
+static void _xbt_log_cat_apply_set(xbt_log_category_t category,
+				   xbt_log_setting_t setting);
 
 const char *xbt_log_priority_names[8] = {
   "NONE",
@@ -535,6 +540,63 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   va_end(ev->ap);
 }
 
+static void _xbt_log_cat_apply_set(xbt_log_category_t category,
+				   xbt_log_setting_t setting) { 
+
+  s_xbt_log_event_t _log_ev;
+
+  if (setting->thresh != xbt_log_priority_uninitialized) {
+    xbt_log_threshold_set(category, setting->thresh);
+    
+    if (category->threshold <= xbt_log_priority_debug) {
+      _log_ev.cat = category;
+      _log_ev.priority = xbt_log_priority_debug;
+      _log_ev.fileName = __FILE__ ;
+      _log_ev.functionName = _XBT_FUNCTION ;
+      _log_ev.lineNum = __LINE__ ;
+      
+      _xbt_log_event_log(&_log_ev,
+	  "Apply settings for category '%s': set threshold to %s (=%d)",
+			 category->name,
+			 xbt_log_priority_names[category->threshold],
+			 category->threshold);
+    }
+  }
+
+  if (setting->fmt) {
+    xbt_log_layout_set(category,xbt_log_layout_format_new(setting->fmt));
+    
+    if (category->threshold <= xbt_log_priority_debug) {
+      _log_ev.cat = category;
+      _log_ev.priority = xbt_log_priority_debug;
+      _log_ev.fileName = __FILE__ ;
+      _log_ev.functionName = _XBT_FUNCTION ;
+      _log_ev.lineNum = __LINE__ ;
+      
+      _xbt_log_event_log(&_log_ev,
+	      "Apply settings for category '%s': set format to %s",
+			 category->name,
+			 setting->fmt);
+    }
+  }
+
+  if (setting->additivity != -1) {
+    xbt_log_additivity_set(category,setting->additivity);
+    
+    if (category->threshold <= xbt_log_priority_debug) {
+      _log_ev.cat = category;
+      _log_ev.priority = xbt_log_priority_debug;
+      _log_ev.fileName = __FILE__ ;
+      _log_ev.functionName = _XBT_FUNCTION ;
+      _log_ev.lineNum = __LINE__ ;
+      
+      _xbt_log_event_log(&_log_ev,
+		    "Apply settings for category '%s': set additivity to %s",
+			 category->name,
+			 (setting->additivity?"on":"off"));
+    }
+  }
+}
 /*
  * This gets called the first time a category is referenced and performs the
  * initialization. 
@@ -574,57 +636,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
       
       found = 1;
       
-      if (setting->thresh != xbt_log_priority_uninitialized) {
-	xbt_log_threshold_set(category, setting->thresh);
-
-	if (category->threshold <= xbt_log_priority_debug) {
-	  _log_ev.cat = category;
-	  _log_ev.priority = xbt_log_priority_debug;
-	  _log_ev.fileName = __FILE__ ;
-	  _log_ev.functionName = _XBT_FUNCTION ;
-	  _log_ev.lineNum = __LINE__ ;
-	  
-	  _xbt_log_event_log(&_log_ev,
-		"Apply settings for category '%s': set threshold to %s (=%d)",
-			     category->name,
-			     xbt_log_priority_names[category->threshold],
-			     category->threshold);
-	}
-      }
-
-      if (setting->fmt) {
-	xbt_log_layout_set(category,xbt_log_layout_format_new(setting->fmt));
-
-	if (category->threshold <= xbt_log_priority_debug) {
-	  _log_ev.cat = category;
-	  _log_ev.priority = xbt_log_priority_debug;
-	  _log_ev.fileName = __FILE__ ;
-	  _log_ev.functionName = _XBT_FUNCTION ;
-	  _log_ev.lineNum = __LINE__ ;
-	  
-	  _xbt_log_event_log(&_log_ev,
-		    "Apply settings for category '%s': set format to %s",
-			     category->name,
-			     setting->fmt);
-	}
-      }
-
-      if (setting->additivity != -1) {
-	xbt_log_additivity_set(category,setting->additivity);
-
-	if (category->threshold <= xbt_log_priority_debug) {
-	  _log_ev.cat = category;
-	  _log_ev.priority = xbt_log_priority_debug;
-	  _log_ev.fileName = __FILE__ ;
-	  _log_ev.functionName = _XBT_FUNCTION ;
-	  _log_ev.lineNum = __LINE__ ;
-	  
-	  _xbt_log_event_log(&_log_ev,
-		    "Apply settings for category '%s': set additivity to %s",
-			     category->name,
-			     (setting->additivity?"on":"off"));
-	}
-      }
+      _xbt_log_cat_apply_set(category,setting);
 
       xbt_dynar_cursor_rm(xbt_log_settings,&cursor);
     }
@@ -641,7 +653,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     _xbt_log_event_log(&_log_ev,
 		       "Category '%s': inherited threshold = %s (=%d)",
 		       category->name,
-		       xbt_log_priority_names[category->threshold], category->threshold);
+	    xbt_log_priority_names[category->threshold], category->threshold);
   }
     
   return priority >= category->threshold;
@@ -687,7 +699,6 @@ void xbt_log_parent_set(xbt_log_category_t cat,xbt_log_category_t parent)
 }
 
 static void _set_inherited_thresholds(xbt_log_category_t cat) {
-	
 	
   xbt_log_category_t child = cat->firstChild;
   
@@ -850,14 +861,6 @@ void xbt_log_control_set(const char* control_string) {
 
   /* split the string, and remove empty entries */
   set_strings=xbt_str_split_quoted(control_string);
-#ifdef FIXME
-  xbt_dynar_foreach(set_strings,cpt,str) {
-    xbt_str_trim(str,NULL);
-    if (str[0]=='\0') {
-      xbt_dynar_cursor_rm(set_strings,&cpt);
-    }
-  }
-#endif
 
   if (xbt_dynar_length(set_strings) == 0) { /* vicious user! */
     xbt_dynar_free(&set_strings);
@@ -885,7 +888,7 @@ void xbt_log_control_set(const char* control_string) {
 
     if (found) {
       DEBUG0("Apply directly");
-      xbt_log_threshold_set(cat,set->thresh);
+      _xbt_log_cat_apply_set(cat,set);
       _free_setting((void*)&set);
     } else {
 
@@ -911,7 +914,9 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay) {
 	  cat->name);
     xbt_log_appender_set(cat,xbt_log_appender_file_new(NULL));
   }
-  if (cat->layout) {
+  if (cat->layout && cat != &_XBT_LOGV(root)) {
+    /* better leak the default layout than check every categories to 
+       change it */
     if (cat->layout->free_) {
       cat->layout->free_(cat->layout);
       free(cat->layout);
