@@ -247,7 +247,6 @@ void xbt_ex_display(xbt_ex_t *e)  {
   if (e->remote)
     bprintf(" on host %s(%ld)",e->host,e->pid);
 
-  CRITICAL1("%s",e->msg);
   fprintf(stderr,
 	  "** SimGrid: UNCAUGHT EXCEPTION received on %s(%ld): category: %s; value: %d\n"
 	  "** %s\n"
@@ -255,6 +254,7 @@ void xbt_ex_display(xbt_ex_t *e)  {
 	  gras_os_myname(),gras_os_getpid(),
 	  xbt_ex_catname(e->category), e->value, e->msg,
 	  e->procname,thrower?thrower:" in this process");
+  CRITICAL1("%s",e->msg);
 
   if (thrower)
     free(thrower);
