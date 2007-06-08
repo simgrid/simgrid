@@ -407,6 +407,8 @@ AC_CONFIG_FILES([
 AC_CONFIG_FILES([
   examples/Makefile 
     examples/msg/Makefile
+      examples/msg/basic.tesh         examples/msg/small_plat.tesh 
+      examples/msg/suspend.tesh       examples/msg/flexml_bypass.tesh 
     examples/simdag/Makefile	    examples/simdag/test_simdag
     examples/gras/Makefile 
       examples/gras/ping/Makefile   examples/gras/ping/test_sg   examples/gras/ping/test_rl
