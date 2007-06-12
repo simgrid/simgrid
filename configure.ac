@@ -190,6 +190,15 @@ fi
 AM_CONDITIONAL(USE_SIMIX,test x$enable_simix != xno)
 
 #########################################
+## Check for libraries extra-dependencies
+##
+
+SG_CONFIGURE_PART(Checking extra libraries dependencies...)
+
+SIMGRID_DEP=""
+GRAS_DEP=""
+
+#########################################
 ## Build optional modules (gtnets)
 ##
 AC_ARG_WITH(gtnets,
@@ -206,18 +215,11 @@ else
   GTNETS_CFLAGS=-I$gtnets_path/include
   AC_SUBST([GTNETS_CFLAGS])  
   GTNETS_LDFLAGS=-L$gtnets_path/lib
-  AC_SUBST([GTNETS_LDFLAGS])  
+  AC_SUBST([GTNETS_LDFLAGS])
+  SIMGRID_DEP="$SIMGRID_DEP $GTNETS_LDFLAGS -lgtnets"
 fi
 AM_CONDITIONAL(USE_GTNETS,test "x$gtnets_path" != xNO)
 
-#########################################
-## Check for libraries extra-dependencies
-##
-
-SG_CONFIGURE_PART(Checking extra libraries dependencies...)
-
-SIMGRID_DEP=""
-GRAS_DEP=""
 if test xpthread=xyes ; then 
   # if the pthreads are usable
   if test "x$with_context" = "xpthread" ; then
