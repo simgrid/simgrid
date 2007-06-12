@@ -1,0 +1,80 @@
+#!/bin/sh
+#FIXME: .. paths...
+SIMGRID_INCLUDE="${SIMGRID_HOME}/include"
+SIMGRID_LIB="${SIMGRID_HOME}/lib"
+CC="gcc"
+
+SMPI_INCLUDE="${SMPI_HOME}/include"
+SMPI_LIB="${SMPI_HOME}/lib"
+SEED="221238"
+
+TMPDIR="$(mktemp -d tmpXXXXXXX)"
+
+function modsource {
+  SOURCE="$1"
+  SOURCEFILE="$(basename ${SOURCE})"
+  SOURCEDIR="${SOURCE%${SOURCEFILE}}"
+  if [ -n "${SOURCEDIR}" ]; then
+    mkdir -p ${TMPDIR}${SOURCEDIR}
+  fi
+  TMPSOURCE="${TMPDIR}${SOURCE}"
+  cat > ${TMPSOURCE} <<HEADER
+#define SEED ${SEED}
+#include "smpi.h"
+#include "msg/msg.h"
+#include "xbt/sysdep.h"
+#include "xbt/log.h"
+#include "xbt/asserts.h"
+#define sleep(x) smpi_sleep(x)
+#define gettimeofday(x, y) smpi_gettimeofday(x, y)
+HEADER
+  # very simplistic transform, will probably want full parser for next version
+  grep -v "mpi.h" < ${SOURCE} | perl -pe 's/main/smpi_main/;' >> ${TMPSOURCE}
+  grep -q "smpi_main" ${TMPSOURCE}
+  if [ $? -eq 0 ]; then
+    cat >> ${TMPSOURCE} <<FOOTER
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_simulation, "Messages specific to this simulation");
+int main(int argc, char *argv[]) {
+  MSG_error_t result;
+  srand(SEED);
+  MSG_global_init(&argc, argv);
+  MSG_set_channel_number(MAX_CHANNEL);
+  MSG_function_register("smpi_main",     smpi_main);
+  MSG_function_register("smpi_sender",   smpi_sender);
+  MSG_function_register("smpi_receiver", smpi_receiver);
+  MSG_create_environment(argv[1]);
+  MSG_launch_application(argv[2]);
+  result = MSG_main();
+  INFO1("simulation time %g", MSG_get_clock());
+  MSG_clean();
+  return (MSG_OK != result);
+}
+FOOTER
+  fi
+}
+
+INCLUDEARGS=""
+LINKARGS="-L${SMPI_LIB} -lsmpi -L${SIMGRID_LIB} -lsimgrid"
+
+CMDLINE=""
+while [ -n "$1" ]; do
+  ARG="$1"
+  shift
+  if [ "${ARG}" = "-c" ]; then
+      LINKARGS=""
+      CMDLINE="${CMDLINE} -c "
+  elif [ "${ARG%.c}" != "${ARG}" ]; then
+    INCLUDEARGS="-I${SMPI_INCLUDE} -I${SIMGRID_INCLUDE} "
+    SRCFILE="$(realpath ${ARG})"
+    modsource ${SRCFILE}
+    CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
+  else
+    CMDLINE="${CMDLINE} ${ARG} "
+  fi
+done
+
+CMDLINE="${CC} ${INCLUDEARGS}${CMDLINE}${LINKARGS}"
+
+#echo "${CMDLINE}"
+${CMDLINE}
+rm -rf ${TMPDIR}

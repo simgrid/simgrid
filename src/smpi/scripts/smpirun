@@ -1,0 +1,98 @@
+#!/bin/sh
+DEFAULT_LOOPBACK_BANDWIDTH="498000000"
+DEFAULT_LOOPBACK_LATENCY="0.000004"
+DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))"
+DEFAULT_NETWORK_LATENCY="0.000005"
+DEFAULT_NUMPROCS="4"
+DEFAULT_POWER="100"
+
+LOOPBACK_BANDWIDTH="${DEFAULT_LOOPBACK_BANDWIDTH}"
+LOOPBACK_LATENCY="${DEFAULT_LOOPBACK_LATENCY}"
+NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
+NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
+NUMPROCS="${DEFAULT_NUMPROCS}"
+POWER="${DEFAULT_POWER}"
+
+while true; do
+  case "$1" in
+   "-np")
+      NUMPROCS="$2"
+      shift 2
+    ;;
+   "-bandwidth")
+      NETWORK_BANDWIDTH="$2"
+      shift 2
+    ;;
+   "-latency")
+      NETWORK_LATENCY="$2"
+      shift 2
+    ;;
+    *)
+      break
+    ;;
+  esac
+done
+
+EXEC="$1"
+shift
+
+PLATFORMTMP="$(mktemp tmpXXXXXX)"
+#PLATFORMTMP="pla.xml"
+
+cat > ${PLATFORMTMP} <<PLATFORMHEAD
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+PLATFORMHEAD
+
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  echo "  <cpu name=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
+  echo "  <network_link name=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
+  echo "  <network_link name=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
+done
+
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  for (( j=${NUMPROCS}; $j ; j=$j-1 )) do
+    if [ $i -eq $j ]; then
+      echo "  <route src=\"host$i\" dst=\"host$j\"><route_element name=\"loop$i\"/></route>" >> ${PLATFORMTMP}
+    else
+      echo "  <route src=\"host$i\" dst=\"host$j\"><route_element name=\"link$i\"/><route_element name=\"link$j\"/></route>" >> ${PLATFORMTMP}
+    fi
+  done
+done
+
+cat >> ${PLATFORMTMP} <<PLATFORMFOOT
+</platform_description>
+PLATFORMFOOT
+
+APPLICATIONTMP="$(mktemp tmpXXXXXX)"
+#APPLICATIONTMP="app.xml"
+
+cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+APPLICATIONHEAD
+
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  echo "  <process host=\"host$i\" function=\"smpi_main\">" >> ${APPLICATIONTMP}
+  for ARG in $*; do
+    echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
+  done
+  echo "  </process>" >> ${APPLICATIONTMP}
+done
+
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  echo "  <process host=\"host$i\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
+done
+
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  echo "  <process host=\"host$i\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
+done
+
+cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
+</platform_description>
+APPLICATIONFOOT
+
+${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
+rm ${PLATFORMTMP} ${APPLICATIONTMP}
