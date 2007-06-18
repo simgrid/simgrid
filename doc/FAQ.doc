@@ -580,6 +580,63 @@ int receiver()
 
 \subsection faq_MIA_SimDag SimDag related questions
 
+\subsubsection faq_SG_comm Implementing communication delays between tasks.
+
+A classic question of SimDag newcommers is about how to express a
+communication delay between tasks. The thing is that in SimDag, both
+computation and communication are seen as tasks.  So, if you want to
+model a data dependency between two DAG tasks t1 and t2, you have to
+create 3 SD_tasks: t1, t2 and c and add dependencies in the following
+way:
+
+\verbatim
+SD_task_dependency_add(NULL, NULL, t1, c);
+SD_task_dependency_add(NULL, NULL, c, t2);
+\endverbatim
+
+This way task t2 cannot start before the termination of communication c
+which in turn cannot start before t1 ends.
+
+When creating task c, you have to associate an amount of data (in bytes)
+corresponding to what has to be sent by t1 to t2.
+
+Finally to schedule the communication task c, you have to build a list
+comprising the workstations on which t1 and t2 are scheduled (w1 and w2
+for example) and build a communication matrix that should look like
+[0;amount ; 0; 0].
+
+\subsubsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
+
+Distributed is somehow "contagious". If you start making distributed
+decisions, there is no way to handle DAGs directly anymore (unless I
+am missing something). You have to encode your DAGs in term of
+communicating process to make the whole scheduling process
+distributed. Here is an example of how you could do that. Assume T1
+has to be done before T2.
+
+\verbatim
+ int your_agent(int argc, char *argv[] {
+   ...
+   T1 = MSG_task_create(...);
+   T2 = MSG_task_create(...);
+   ...
+   while(1) {
+     ...
+     if(cond) MSG_task_execute(T1);
+     ...
+     if((MSG_task_get_remaining_computation(T1)=0.0) && (you_re_in_a_good_mood))
+        MSG_task_execute(T2)
+     else {
+        /* do something else */
+     }
+   }
+ }
+\endverbatim
+ 
+If you decide that the distributed part is not that much important and that
+DAG is really the level of abstraction you want to work with, then you should
+give a try to \ref SD_API.
+
 \subsubsection faq_SG Where has SG disappeared?
 
 OK, it's time to explain what's happening to the SimGrid project. Let's
@@ -669,53 +726,21 @@ purpose: \ref SD_API. It is built directly on top of SURF and provides
 an API rather close to the old SG:
 
 \verbatim
-______________________
-|    User code       |
-|____________________|
-| | MSG | GRAS | SD  |
-| -------------------|
-| |      SURF        |
-| -------------------|
-|        XBT         |
-----------------------
+_________________________
+|       User code        |
+|________________________|
+| | MSG | GRAS | SimDag  |
+| -----------------------|
+| |        SURF          |
+| -----------------------|
+|          XBT           |
+--------------------------
 \endverbatim
 
 The nice thing is that, as it is writen on top of SURF, it seamlessly
 support DAG of parallel tasks as well as complex communications
 patterns. Some old codes using SG are currently under rewrite using
 \ref SD_API to check that all needful functions are provided.
-
-\subsubsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
-
-Distributed is somehow "contagious". If you start making distributed
-decisions, there is no way to handle DAGs directly anymore (unless I
-am missing something). You have to encode your DAGs in term of
-communicating process to make the whole scheduling process
-distributed. Here is an example of how you could do that. Assume T1
-has to be done before T2.
-
-\verbatim
- int your_agent(int argc, char *argv[] {
-   ...
-   T1 = MSG_task_create(...);
-   T2 = MSG_task_create(...);
-   ...
-   while(1) {
-     ...
-     if(cond) MSG_task_execute(T1);
-     ...
-     if((MSG_task_get_remaining_computation(T1)=0.0) && (you_re_in_a_good_mood))
-        MSG_task_execute(T2)
-     else {
-        /* do something else */
-     }
-   }
- }
-\endverbatim
- 
-If you decide that the distributed part is not that much important and that
-DAG is really the level of abstraction you want to work with, then you should
-give a try to \ref SD_API.
 
 \subsection faq_MIA_generic Generic features
 
