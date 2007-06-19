@@ -23,8 +23,8 @@ struct smpi_mpi_communicator_t {
   int id;
   int size;
   int barrier;
-  m_host_t *hosts;
-  m_process_t *processes;
+  smx_host_t *hosts;
+  smx_process_t *processes;
 };
 typedef struct smpi_mpi_communicator_t smpi_mpi_communicator_t;
 typedef smpi_mpi_communicator_t *MPI_Comm;
@@ -56,7 +56,7 @@ extern smpi_mpi_datatype_t smpi_mpi_double;
 #define MPI_DOUBLE (&smpi_mpi_double)
 
 struct smpi_waitlist_node_t {
-  m_process_t process;
+  smx_process_t process;
   struct smpi_waitlist_node_t *next;
 };
 typedef struct smpi_waitlist_node_t smpi_waitlist_node_t;
@@ -107,7 +107,7 @@ int smpi_sender(int argc, char *argv[]);
 int smpi_receiver(int argc, char *argv[]);
 
 // smpi functions
-int smpi_comm_rank(smpi_mpi_communicator_t *comm, m_host_t host);
+int smpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host);
 void smpi_isend(smpi_mpi_request_t*);
 void smpi_irecv(smpi_mpi_request_t*);
 void smpi_barrier(smpi_mpi_communicator_t *comm);
