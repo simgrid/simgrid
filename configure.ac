@@ -16,6 +16,12 @@ AC_LANG([C])
 AM_INIT_AUTOMAKE(gnu)
 AC_CONFIG_MACRO_DIR(acmacro) 
 ACLOCAL="$ACLOCAL -I acmacro"
+
+dnl Next few lines is a hack to prevent libtool checking for F77
+m4_undefine([AC_PROG_F77])
+m4_defun([AC_PROG_F77],[])
+
+dnl We do build a proper DLL when using win32
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
