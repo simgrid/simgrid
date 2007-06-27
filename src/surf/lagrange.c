@@ -306,9 +306,9 @@ double partial_diff_mu(double mu, void *param_var){
 
   //for each link with capacity cnsts[i] that uses flow of variable var do
   for(i=0; i<var->cnsts_number; i++)
-    mu_partial += (var->cnsts[i].constraint)->lambda + mu;
+    mu_partial += (var->cnsts[i].constraint)->lambda;
   
-  mu_partial = (-1.0/mu_partial) + var->bound;
+  mu_partial = ( -1.0 / (mu_partial + mu) ) + var->bound;
 
   return mu_partial;
 }
@@ -369,3 +369,9 @@ double partial_diff_lambda(double lambda, void *param_cnst){
 }
   
  
+
+
+
+
+
+

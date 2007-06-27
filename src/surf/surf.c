@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 				"Logging specific to SURF (kernel)");
 
 int use_sdp_solver=0;
+int use_lagrange_solver=0;
 
 /* Additional declarations for Windows potability. */
 
@@ -144,12 +145,14 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 
   if(!use_sdp_solver)
     lmm_solve(sys);
-  else {
+  else if(!use_lagrange_solver){
 #ifdef HAVE_SDP
     sdp_solve(sys);
 #else
     xbt_assert0(0, "No CSDP found! You cannot use this model!");
 #endif
+  }else{
+    lagrange_solve(sys);
   }
 
   xbt_swag_foreach(action, running_actions) {
