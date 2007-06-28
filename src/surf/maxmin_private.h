@@ -57,10 +57,10 @@ typedef struct lmm_variable {
   double df; /* Total delay of flow */
   void *id;
   int index;
-  double (* func_f)    (lmm_variable var, double x);  /* f            */
-  double (* func_fp)   (lmm_variable var, double x);  /* f'           */
-  double (* func_fpi)  (lmm_variable var, double x);  /* (f')^{-1}    */
-  double (* func_fpip) (lmm_variable var, double x);  /* ((f')^{-1})' */
+  double (* func_f)    (struct lmm_variable *, double);  /* f            */
+  double (* func_fp)   (struct lmm_variable *, double);  /* f'           */
+  double (* func_fpi)  (struct lmm_variable *, double);  /* (f')^{-1}    */
+  double (* func_fpip) (struct lmm_variable *, double);  /* ((f')^{-1})' */
   double func_fi;
 } s_lmm_variable_t;
 
