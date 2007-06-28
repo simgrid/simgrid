@@ -35,6 +35,60 @@ static xbt_os_timer_t smpi_timer;
 static int smpi_benchmarking;
 static double smpi_reference;
 
+int smpi_run_simulation(int *argc, char **argv) {
+         smx_cond_t cond = NULL;
+         smx_action_t smx_action;
+         xbt_fifo_t actions_done = xbt_fifo_new();
+         xbt_fifo_t actions_failed = xbt_fifo_new();
+
+         srand(SEED);
+         SIMIX_global_init(&argc, argv);
+         SIMIX_function_register("smpi_main",     smpi_main);
+         SIMIX_function_register("smpi_sender",   smpi_sender);
+         SIMIX_function_register("smpi_receiver", smpi_receiver);
+  SIMIX_create_environment(argv[1]);
+  SIMIX_launch_application(argv[2]);
+
+         /* Prepare to display some more info when dying on Ctrl-C pressing */
+         signal(SIGINT,inthandler);
+
+         /* Clean IO before the run */
+         fflush(stdout);
+         fflush(stderr);
+
+         //surf_solve(); /* Takes traces into account. Returns 0.0 */
+         /* xbt_fifo_size(msg_global->process_to_run) */
+
+         while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
+
+                 while ( (smx_action = xbt_fifo_pop(actions_failed)) ) {
+
+
+                         DEBUG1("** %s failed **",smx_action->name);
+                         while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
+                                 SIMIX_cond_broadcast(cond);
+                         }
+                         /* action finished, destroy it */
+                 //      SIMIX_action_destroy(smx_action);
+                 }
+
+                 while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
+
+                         DEBUG1("** %s done **",smx_action->name);
+                         while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
+                                 SIMIX_cond_broadcast(cond);
+                         }
+                         /* action finished, destroy it */
+                         //SIMIX_action_destroy(smx_action);
+                 }
+         }
+         xbt_fifo_free(actions_failed);
+         xbt_fifo_free(actions_done);
+ INFO1("simulation time %g", SIMIX_get_clock());
+  SIMIX_clean();
+  return 0;
+}
+
 void smpi_mpi_land_func(void *x, void *y, void *z) {
   *(int *)z = *(int *)x && *(int *)y;
 }

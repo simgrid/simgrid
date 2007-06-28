@@ -45,7 +45,7 @@ int MPI_Comm_rank(MPI_Comm comm, int *rank) {
   } else if (NULL == rank) {
     retval = MPI_ERR_ARG;
   } else {
-    *rank = smpi_comm_rank(comm, MSG_host_self());
+    *rank = smpi_comm_rank(comm, SIMIX_host_self());
   }
   smpi_bench_begin();
   return retval;
@@ -54,7 +54,7 @@ int MPI_Comm_rank(MPI_Comm comm, int *rank) {
 /*
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm) {
   int retval = MPI_SUCCESS;
-  m_host_t host = MSG_host_self();
+  m_host_t host = SIMIX_host_self();
   int rank = smpi_comm_rank(comm, host);
   smpi_mpi_comm_split_table_node_t *split_table; 
   split_table = xbt_malloc(sizeof(smpi_mpi_comm_split_table_node_t) * comm->size);
@@ -113,7 +113,7 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   int dst;
   smpi_mpi_request_t *recvreq;
   smpi_bench_end();
-  dst = smpi_comm_rank(comm, MSG_host_self());
+  dst = smpi_comm_rank(comm, SIMIX_host_self());
   retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &recvreq);
   if (NULL != recvreq) {
     smpi_irecv(recvreq);
@@ -130,7 +130,7 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
   int dst;
   smpi_mpi_request_t *recvreq;
   smpi_bench_end();
-  dst = smpi_comm_rank(comm, MSG_host_self());
+  dst = smpi_comm_rank(comm, SIMIX_host_self());
   retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &recvreq);
   if (NULL != recvreq) {
     smpi_irecv(recvreq);
@@ -146,7 +146,7 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
   int src;
   smpi_mpi_request_t *sendreq;
   smpi_bench_end();
-  src = smpi_comm_rank(comm, MSG_host_self());
+  src = smpi_comm_rank(comm, SIMIX_host_self());
   retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &sendreq);
   if (NULL != sendreq) {
     smpi_isend(sendreq);
@@ -163,7 +163,7 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
   int src;
   smpi_mpi_request_t *sendreq;
   smpi_bench_end();
-  src = smpi_comm_rank(comm, MSG_host_self());
+  src = smpi_comm_rank(comm, SIMIX_host_self());
   retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &sendreq);
   if (NULL != sendreq) {
     smpi_isend(sendreq);
@@ -179,7 +179,7 @@ int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm co
   smpi_mpi_request_t *request;
   smpi_bench_end();
 
-  rank = smpi_comm_rank(comm, MSG_host_self());
+  rank = smpi_comm_rank(comm, SIMIX_host_self());
 
   if (root == rank) {
     smpi_create_request(buf, count, datatype, root, (rank + 1) % comm->size, 0, comm, &request);
@@ -214,7 +214,7 @@ int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
   smpi_mpi_request_t **sendreqs, **recvreqs;
   smpi_bench_end();
 
-  rank = smpi_comm_rank(comm, MSG_host_self());
+  rank = smpi_comm_rank(comm, SIMIX_host_self());
 
   sendreqs = xbt_malloc(sizeof(smpi_mpi_request_t*) * comm->size);
   recvreqs = xbt_malloc(sizeof(smpi_mpi_request_t*) * comm->size);
@@ -258,7 +258,7 @@ int MPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, M
   void **scratchbuf;
   smpi_bench_end();
 
-  rank = smpi_comm_rank(comm, MSG_host_self());
+  rank = smpi_comm_rank(comm, SIMIX_host_self());
 
   if (root == rank) {
     requests = xbt_malloc(sizeof(smpi_mpi_request_t*) * comm->size);

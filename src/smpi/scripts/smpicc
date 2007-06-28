@@ -21,7 +21,7 @@ function modsource {
   cat > ${TMPSOURCE} <<HEADER
 #define SEED ${SEED}
 #include "smpi.h"
-#include "msg/msg.h"
+#include "simix/simix.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
@@ -33,21 +33,8 @@ HEADER
   grep -q "smpi_main" ${TMPSOURCE}
   if [ $? -eq 0 ]; then
     cat >> ${TMPSOURCE} <<FOOTER
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_simulation, "Messages specific to this simulation");
-int main(int argc, char *argv[]) {
-  MSG_error_t result;
-  srand(SEED);
-  MSG_global_init(&argc, argv);
-  MSG_set_channel_number(MAX_CHANNEL);
-  MSG_function_register("smpi_main",     smpi_main);
-  MSG_function_register("smpi_sender",   smpi_sender);
-  MSG_function_register("smpi_receiver", smpi_receiver);
-  MSG_create_environment(argv[1]);
-  MSG_launch_application(argv[2]);
-  result = MSG_main();
-  INFO1("simulation time %g", MSG_get_clock());
-  MSG_clean();
-  return (MSG_OK != result);
+int main(int argc, char **argv) {
+    return smpi_run_simulation(&argc, argv);
 }
 FOOTER
   fi
