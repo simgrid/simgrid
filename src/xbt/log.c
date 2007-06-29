@@ -256,10 +256,10 @@ First of all, each module should register its own category into the categories
 tree using \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY.
 
 Then, logging should be done with the DEBUG<n>, VERB<n>, INFO<n>, WARN<n>,
-ERROR<n> or CRITICAL<n> macro families (such as #DEBUG10, #VERB6,
-#INFO8, #WARN6, #ERROR6 and #CRITICAL6). For each group, there is at
-least 6 different macros (like DEBUG0, DEBUG1, DEBUG2, DEBUG3, DEBUG4 and
-DEBUG5), only differing in the number of arguments passed along the format.
+ERROR<n> or CRITICAL<n> macro families (such as #DEBUG10, #VERB10,
+#INFO10, #WARN10, #ERROR10 and #CRITICAL10). For each group, there is at
+least 11 different macros (like DEBUG0, DEBUG1, DEBUG2, DEBUG3, DEBUG4 and
+DEBUG5, DEBUG6, DEBUG7, DEBUG8, DEBUG9, DEBUG10), only differing in the number of arguments passed along the format.
 This is because we want SimGrid itself to keep compilable on ancient
 compiler not supporting variable number of arguments to macros. But we
 should provide a macro simpler to use for the users not interested in SP3
