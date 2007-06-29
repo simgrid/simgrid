@@ -930,8 +930,8 @@ links 1 and 2). It simply means that the routing on the graph is not
 trivial, and that data do not following the shortest path in number of
 hops on this graph. Another way to say it is that there is no implicit
 in these routing descriptions. The system will only use the routes you
-declare (such as <route src="A" dst="C"><route_element
-name="3"/></route>), without trying to build new routes by aggregating
+declare (such as &lt;route src="A" dst="C"&gt;&lt;route_element
+name="3"/&gt;&lt;/route&gt;), without trying to build new routes by aggregating
 the provided ones.
   
 You are also free to declare platform where the routing is not

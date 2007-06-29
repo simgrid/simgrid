@@ -25,7 +25,7 @@ xbt_peer_t xbt_peer_copy(xbt_peer_t h) {
    return xbt_peer_new(h->name,h->port);
 }
 
-/** \brief constructor. Argument should be of form '<peername>:<port>'. */
+/** \brief constructor. Argument should be of form '(peername):(port)'. */
 xbt_peer_t xbt_peer_from_string(const char *peerport)  {
    xbt_peer_t res=xbt_new(s_xbt_peer_t, 1);
    char *name=xbt_strdup(peerport);
