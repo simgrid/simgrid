@@ -271,8 +271,8 @@ if you compile with -Wall, the folliwing code will issue a warning:
 
 If you want to specify the category to log onto (for example because you
 have more than one category per file, add a C before the name of the log
-producing macro (ie, use #CDEBUG10, #CVERB6, #CINFO8, #CWARN6, #CERROR6 and
-#CCRITICAL6 and friends), and pass the category name as first argument.
+producing macro (ie, use #CDEBUG10, #CVERB10, #CINFO10, #CWARN10, #CERROR10 and
+#CCRITICAL10 and friends), and pass the category name as first argument.
   
 The TRACE priority is not used the same way than the other. You should use
 the #XBT_IN, XBT_IN<n> (up to #XBT_IN5), #XBT_OUT and #XBT_HERE macros
