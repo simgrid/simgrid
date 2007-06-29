@@ -38,9 +38,9 @@ my $entry;
 
 $current->{'label'}="ROOT";
 push @{$top->{'down'}},$current;
+print "Push $current as child of $top\n" if $debug{'parse'};
 $current=$top;
 
-print "Push $current as child of $top\n" if $debug{'parse'};
 
 while (<IN>) {
   if (/<ul>/) {
@@ -79,6 +79,7 @@ sub extra_info {
     while (<IN>) {
       if (/DOXYGEN_NAVBAR_LABEL/) {
         if (/DOXYGEN_NAVBAR_LABEL="([^"]*)"/) {#"
+          print "Extra info from $current->{'file'}: label=$1, not $current->{'label'}\n" if $debug{'parse'};
           $current->{'label'}=$1;
         } else {
           die "Malformated DOXYGEN_NAVBAR_LABEL line in $current->{'file'}";
@@ -92,6 +93,7 @@ sub extra_info {
           chomp($entry->{'file'});
           $entry->{'up'} = $current;
           push @{$current->{'down'}},$entry;
+          print "Extra info from $current->{'file'}: New child $entry->{'label'}=$entry->{'file'}\n"  if $debug{'parse'};
         } else {
           die "Malformated DOXYGEN_NAVBAR_CHILD line in $current->{'file'}";
         }
@@ -165,7 +167,7 @@ sub handle_page {
       my $father = $iterator->{'up'};
       $tabs[$lvl_it] = "<div class=\"tabs\">\n  <ul>\n";
       foreach my $bro (@{$father->{'down'}}) {
-        $tabs[$lvl_it] .= "  <li".($bro==$iterator?" id=\"current\"":"")."> <a href=\"$bro->{'file'}\"><span>$bro->{'label'}</span></a></li>\n";      
+        $tabs[$lvl_it] .= "  <li".($bro==$iterator?" class=\"current\"":"")."> <a href=\"$bro->{'file'}\"><span>$bro->{'label'}</span></a></li>\n";      
       }
       $tabs[$lvl_it] .= "  </ul></div>\n";
       $iterator = $father;
@@ -182,24 +184,27 @@ sub handle_page {
     # put them in place
     open FROM,"html/$current->{'file'}" || die;
     my $newname="html/$current->{'file'}";
-    $newname =~ s/.html/.new.html/;
+    $newname =~ s/.html/.handlepage.html/;
     open TO,">$newname" || die;
+#    print "XXX Deal with html/$current->{'file'}  ->  $newname\n";
     while (<FROM>) {
+#      print "--Read  $_";
       # add "current" to the module API granfather page
-      s|<li><a href="modules.html"><span>[^<]*</span></a></li>|<li id="current"><a href="modules.html"><span>Modules API</span></a></li>|;
-      print TO $_;
-      last if m|</ul></div>|;
+      s|<li><a href="modules.html"><span>[^<]*</span></a></li>|<li class="current"><a href="modules.html"><span>Modules&nbsp;API</span></a></li>|;
+#      print "++Write $_";
+      print TO "$_";
+      last if (m|</div>|);
     }
     foreach (@tabs) {
-      print TO $_;
+#      print "TAB: $_";
+      print TO "$_";
     }
     while (<FROM>) {
-      print TO $_;
+      print TO "$_";
     }    
     close FROM;
     close TO;
     rename("$newname","html/$current->{'file'}") unless $debug{'rename'};
-#    print "mv $newname html/$current->{'file'}\n";
   } 
   
   # recurse on childs
@@ -220,6 +225,8 @@ handle_page($top,-2);# skip roots (we have 2 roots) in level counting
 map {push @allfiles,$_} @extra_files;
 
 foreach my $file (@allfiles) {
+    $file =~ s/.html/.handlepage.html/ if $debug{'rename'}; # Take right name if debugging
+	
     open FROM,"$file" || die;
     my $outfile = "$file";
     $outfile =~ s/.(html|php)$/.new.$1/;
@@ -232,12 +239,12 @@ foreach my $file (@allfiles) {
 
       # Rework the navbar
       if (m,<li><a href="(doc/)?index.html"><span>Main\&nbsp;Page</span></a></li>,) {
-        print TO '<li><a href="'.$1.'index.html"><span>Overview</span></a></li>'."\n";
-        print TO '<li><a href="'.$1.'faq.html"><span>FAQ</span></a></li>'."\n";
+        print TO '    <li'.($file =~ m,(doc/)?index.html, ? " class='current'" :"").'><a href="'.$1.'index.html"><span>Overview</span></a></li>'."\n";
+        print TO '    <li'.($file =~ m,(doc/)?faq.html, ? " class='current'" :"").'><a href="'.$1.'faq.html"><span>FAQ</span></a></li>'."\n";
         next;
       }
       if (m,<li><a href="(doc/)?annotated.html"><span>Data\&nbsp;Structures</span></a></li>,) {
-        print TO '<li><a href="'.$1.'publis.html"><span>Publications</span></a></li>'."\n";
+        print TO '    <li'.($file =~ m,(doc/)?publis.html, ? " class='current'" :"").'><a href="'.$1.'publis.html"><span>Publications</span></a></li>'."\n";
         next;
       }
       s|<span>Modules</span>|<span>Modules API</span>|g;
