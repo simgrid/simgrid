@@ -62,17 +62,7 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 			       double bound);
 
-/** \brief Add the value delta to var->df the sum of latencys.
- * 
- *  \param sys the lmm_system_t
- *  \param var the lmm_variable_t
- * 
- *  Add the value delta to var->df (the sum of latencys associated to the
- *  flow). Whenever this function is called a change is  signed in the system. To
- *  avoid false system changing detection it is a good idea to test 
- *  (delta != 0) before calling it.
- *
- */
+
 void lmm_update_variable_latency(lmm_system_t sys, lmm_variable_t var,
 				 double delta);
 
@@ -97,5 +87,34 @@ void sdp_solve(lmm_system_t sys);
 void lagrange_solve(lmm_system_t sys);
 
 void lagrange_dicotomi_solve(lmm_system_t sys);
+
+
+
+/**
+ * Default functions associated to the chosen protocol. When
+ * using the lagrangian approach.
+ */
+double (* func_f_def   ) (lmm_variable_t , double);
+double (* func_fp_def  ) (lmm_variable_t , double);
+double (* func_fpi_def ) (lmm_variable_t , double);
+double (* func_fpip_def) (lmm_variable_t , double);
+
+
+
+void lmm_set_default_protocol_functions(double (* func_f)    (lmm_variable_t var, double x),
+					double (* func_fp)   (lmm_variable_t var, double x),
+					double (* func_fpi)  (lmm_variable_t var, double x),
+					double (* func_fpip) (lmm_variable_t var, double x));
+
+double func_reno_f(lmm_variable_t var, double x);
+double func_reno_fp(lmm_variable_t var, double x);
+double func_reno_fpi(lmm_variable_t var, double x);
+double func_reno_fpip(lmm_variable_t var, double x);
+
+double func_vegas_f(lmm_variable_t var, double x);
+double func_vegas_fp(lmm_variable_t var, double x);
+double func_vegas_fpi(lmm_variable_t var, double x);
+double func_vegas_fpip(lmm_variable_t var, double x);
+
 
 #endif				/* _SURF_MAXMIN_H */

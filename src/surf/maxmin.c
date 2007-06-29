@@ -11,6 +11,7 @@
 #include "xbt/mallocator.h"
 #include "maxmin_private.h"
 #include <stdlib.h>
+#include <math.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf,
 				"Logging specific to SURF (maxmin)");
 
@@ -527,6 +528,18 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
     }
 }
 
+/** \brief Attribute the value bound to var->bound.
+ * 
+ *  \param sys the lmm_system_t
+ *  \param var the lmm_variable_t
+ *  \param bound the new bound to associate with var
+ * 
+ *  Makes var->bound equal to bound. Whenever this function is called 
+ *  a change is  signed in the system. To
+ *  avoid false system changing detection it is a good idea to test 
+ *  (bound != 0) before calling it.
+ *
+ */
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 			       double bound)
 {
@@ -534,6 +547,18 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
   var->bound = bound;
 }
 
+/** \brief Add the value delta to var->df (the sum of latencies).
+ * 
+ *  \param sys the lmm_system_t associated
+ *  \param var the lmm_variable_t which need to updated
+ *  \param delta the variation of the latency
+ * 
+ *  Add the value delta to var->df (the sum of latencys associated to the
+ *  flow). Whenever this function is called a change is  signed in the system. To
+ *  avoid false system changing detection it is a good idea to test 
+ *  (delta != 0) before calling it.
+ *
+ */
 void lmm_update_variable_latency(lmm_system_t sys, lmm_variable_t var,
 			       double delta)
 {
@@ -591,3 +616,102 @@ lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint
   return xbt_swag_getNext(cnst,(sys->active_constraint_set).offset);
 }
 
+/** \brief Attribute the value bound to var->bound.
+ * 
+ *  \param func_f    default function f associated with the chosen protocol flavor
+ *  \param func_fp   partial differential of f (f prime, f')
+ *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
+ *  \param func_fpip partial differential of the inverse of the partial differential of f (f prime inverse prime, ((f')^{-1})')
+ * 
+ *  Set default functions to the ones passed as parameters.
+ *
+ */
+void lmm_set_default_protocol_functions(double (* func_f)    (lmm_variable_t var, double x),
+					double (* func_fp)   (lmm_variable_t var, double x),
+					double (* func_fpi)  (lmm_variable_t var, double x),
+					double (* func_fpip) (lmm_variable_t var, double x))
+					
+{
+  func_f_def    = func_f;
+  func_fp_def   = func_fp;
+  func_fpi_def  = func_fpi;
+  func_fpip_def = func_fpip;
+}
+
+
+/*
+ * NOTE for Reno: all functions consider the network
+ * coeficient (alpha) equal to 1.
+ */
+
+/*
+ * For Reno f: $\alpha_f d_f \log\left(x_f\right)$
+ */
+double func_reno_f(lmm_variable_t var, double x){
+  xbt_assert0(x,"Please report this bug.");
+  return var->df * log(x);
+}
+
+/*
+ * For Reno fp: $\frac{\alpha D_f}{x}$
+ */
+double func_reno_fp(lmm_variable_t var, double x){
+  xbt_assert0(x,"Please report this bug.");
+  return var->df/x;
+}
+
+/*
+ * For Reno fpi: $\frac{\alpha D_f}{x}$
+ */
+double func_reno_fpi(lmm_variable_t var, double x){
+  xbt_assert0(x,"Please report this bug.");
+  return var->df/x;
+}
+
+/*
+ * For Reno fpip: $-\frac{\alpha D_f}{x^2}$
+ */
+double func_reno_fpip(lmm_variable_t var, double x){
+  xbt_assert0(x,"Please report this bug.");
+  return -( var->df/(x*x) ) ;
+}
+
+
+/*
+ * For Vegas f: $\frac{\sqrt{\frac{3}{2}}}{D_f} \arctan\left(\sqrt{\frac{3}{2}}x_f D_f\right)$
+ */
+double func_vegas_f(lmm_variable_t var, double x){
+  xbt_assert0(x,"Please report this bug.");
+  // \sqrt{3/2} = 0.8164965808
+  return (0.8164965808 / var->df) * atan( (0.8164965808 / var->df)*x );
+}
+
+/*
+ * For Vegas fp: $\frac{3{D_f}^2}{3{D_f}^2x^2 + 2}$
+ */
+double func_vegas_fp(lmm_variable_t var, double x){
+  xbt_assert0(x,"Please report this bug.");
+  return (3*var->df*var->df) / (3*var->df*var->df*x*x + 2);
+}
+
+/*
+ * For Vegas fpi: $\sqrt{\frac{1}{x} - \frac{2}{3{D_f}^2}}$
+ */
+double func_vegas_fpi(lmm_variable_t var, double x){
+  double res_fpi; 
+  xbt_assert0( (x<0.0) ,"Please report this bug.");
+  xbt_assert0( (var->df<0.0), "Please report this bug.");
+  res_fpi = (1/x) - 2/(3*var->df*var->df);
+  return sqrt(res_fpi);
+}
+
+/*
+ * For Vegas fpip:  $-\frac{1}{2x^2\sqrt{\frac{1}{x} - \frac{2}{3{D_f}^2}}}$
+ */
+double func_vegas_fpip(lmm_variable_t var, double x){
+  double res_fpip; 
+  xbt_assert0(x,"Please report this bug.");
+  xbt_assert0( (x<0.0), "Please report this bug.");
+  res_fpip = sqrt(1/x - 2/(3*var->df*var->df));
+  return -(1/(2*x*x*res_fpip));
+}

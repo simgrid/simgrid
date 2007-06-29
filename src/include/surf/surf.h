@@ -345,11 +345,66 @@ XBT_PUBLIC(void) surf_workstation_resource_init_CLM03(const char *filename);
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
-
 XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05(const char *filename);
 
-
+/** \brief Initializes the platform with the model KCCFLN05 using the proportional
+ *  approach as described in [TAG03]. 
+ *  
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  This function implements the proportional fairness known as the maximization
+ *  of sum ( x1*x2*...*xn ).
+ *
+ *  Reference:
+ *
+ *  [TAG03]. Corinne Touati, Eitan Altman, and Jérôme Galtier.  
+ *  Semi-definite programming approach for bandwidth allocation and routing in networks.
+ *  Game Theory and Applications, 9:169-179, December 2003. Nova publisher.
+ *  With this model, the workstations and the network are handled together.
+ *  There is no network resource. This platform model is the default one for
+ *  MSG and SimDag.
+ *
+ *  \see surf_workstation_resource_init_CLM03()
+ */
 XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename);
+
+/** \brief Initializes the platform with the model KCCFLN05 using a lagrange
+ *  optimization approach to compute the effectivet bandwidth of each flow based
+ *  on the Vegas TCP flavor fairness as shown in [LOW03]. 
+ *  
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent 
+ *  to the proportional fairness.
+ *
+ *  Reference:
+ *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
+ *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
+ *
+ */
+XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_Vegas(const char *filename);
+
+/** \brief Initializes the platform with the model KCCFLN05 using a lagrange
+ *  optimization approach to compute the effectivet bandwidth of each flow based
+ *  on the Reno TCP flavor fairness as shown in [LOW03]. 
+ *  
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
+ *
+ *  Reference:
+ *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
+ *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
+ *
+ *  \see surf_workstation_resource_init_KCCFLN05_Vegas()
+ */
+XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_Reno(const char *filename);
+
+
+
 
 #ifdef USE_GTNETS
 XBT_PUBLIC(void) surf_workstation_resource_init_GTNETS(const char *filename);
@@ -423,6 +478,7 @@ XBT_PUBLIC(double)surf_get_clock(void);
  *  \see surf_init()
  */
 XBT_PUBLIC(void) surf_exit(void);
+
 
 SG_END_DECL()
 

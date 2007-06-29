@@ -79,4 +79,7 @@ typedef struct surf_action_workstation_KCCFLN05 {
 } s_surf_action_workstation_KCCFLN05_t,
   *surf_action_workstation_KCCFLN05_t;
 
+
+
+
 #endif				/* _SURF_WORKSTATION_KCCFLN05_PRIVATE_H */
