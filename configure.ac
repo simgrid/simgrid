@@ -441,6 +441,8 @@ AC_CONFIG_FILES([
      \
      examples/msg/run_msg_test                                  \
      examples/simdag/test_simdag				\
+     examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
+     examples/amok/saturate/test_sg  examples/amok/saturate/test_rl \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
