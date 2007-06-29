@@ -16,6 +16,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_environment, msg,
  *  \brief This section describes functions to manage the platform creation
  *  and the application deployment. You should also have a look at 
  *  \ref MSG_examples  to have an overview of their usage.
+ */
+/** @addtogroup msg_easier_life
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Platforms and Applications" --> \endhtmlonly
  * 
  */

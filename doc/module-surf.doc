@@ -28,12 +28,14 @@
 /** \defgroup SURF_actions SURF actions
     \ingroup SURF_API
     \brief This section describes the different datatypes and operations related to the actions in SURF.
+    
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Actions" --> \endhtmlonly
 */
 
 /** \defgroup SURF_resources SURF resources
     \ingroup SURF_API
     \brief This section describes the different datatypes and operations related to the resources in SURF.
+    
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Resources" --> \endhtmlonly
 */
 
