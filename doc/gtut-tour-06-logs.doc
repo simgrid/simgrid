@@ -81,10 +81,10 @@ plenty of them, called &lt;priority&gt;&lt;nb args&gt;, such as #DEBUG10,
 which produces a debuging log event onto the default category. You have to
 declare the name of arguments as part of the macro name for compatibility
 with old compilers not accepting variable number of arguments. Here is a
-partial list of the existing macros: #DEBUG10, #VERB6, #INFO8, #WARN6,
-#ERROR6 and #CRITICAL6. For each priority, this is the biggest macro (and
+partial list of the existing macros: #DEBUG10, #VERB10, #INFO10, #WARN10,
+#ERROR10 and #CRITICAL10. For each priority, this is the biggest macro (and
 the others are not documented for sake of clarity in the relevant document).
-Ie, VERB10 does not exist, but VERB0 does exist. I may add more if someone
+Ie, VERB20 does not exist, but VERB0 does exist. I may add more if someone
 wants more, but that should be enough for most purposes.
 
 Note also that there is no need to add a '\n' at the end of your format
