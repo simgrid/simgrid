@@ -140,8 +140,6 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
-F77 = @F77@
-FFLAGS = @FFLAGS@
 FLEXML = @FLEXML@
 GRAMINE_MODE_FALSE = @GRAMINE_MODE_FALSE@
 GRAMINE_MODE_TRUE = @GRAMINE_MODE_TRUE@
@@ -202,7 +200,6 @@ abs_top_srcdir = @abs_top_srcdir@
 ac_configure_args = @ac_configure_args@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_F77 = @ac_ct_F77@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -617,7 +614,7 @@ uninstall-am: uninstall-info-am
 @GRAS_ARCH_32_BITS_TRUE@test-sg:
 @GRAS_ARCH_32_BITS_TRUE@	$(TESTS_ENVIRONMENT) test_sg_32
 @GRAS_ARCH_32_BITS_FALSE@test-sg:
-@GRAS_ARCH_32_BITS_FALSE@	$(TESTS_ENVIRONMENT) test_sg_32
+@GRAS_ARCH_32_BITS_FALSE@	$(TESTS_ENVIRONMENT) test_sg_64
 
 test-rl:
 	$(TESTS_ENVIRONMENT) test_rl
