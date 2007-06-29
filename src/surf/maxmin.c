@@ -173,6 +173,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
+  var->df    = 0.0;
   if(weight) xbt_swag_insert_at_head(var,&(sys->variable_set));
   else xbt_swag_insert_at_tail(var,&(sys->variable_set));
   XBT_OUT;
@@ -531,6 +532,13 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 {
   sys->modified = 1;
   var->bound = bound;
+}
+
+void lmm_update_variable_latency(lmm_system_t sys, lmm_variable_t var,
+			       double delta)
+{
+  sys->modified = 1;
+  var->df += delta;
 }
 
 void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,

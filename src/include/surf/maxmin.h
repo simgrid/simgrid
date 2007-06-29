@@ -61,6 +61,23 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, double value);
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 			       double bound);
+
+/** \brief Add the value delta to var->df the sum of latencys.
+ * 
+ *  \param sys the lmm_system_t
+ *  \param var the lmm_variable_t
+ * 
+ *  Add the value delta to var->df (the sum of latencys associated to the
+ *  flow). Whenever this function is called a change is  signed in the system. To
+ *  avoid false system changing detection it is a good idea to test 
+ *  (delta != 0) before calling it.
+ *
+ */
+void lmm_update_variable_latency(lmm_system_t sys, lmm_variable_t var,
+				 double delta);
+
+
+
 XBT_PUBLIC(void) lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 				double weight);
 double lmm_get_variable_weight(lmm_variable_t var);

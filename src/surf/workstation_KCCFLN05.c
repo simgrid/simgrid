@@ -353,6 +353,9 @@ static void update_resource_state(void *id,
 	if(action->suspended==0)
 	  lmm_update_variable_weight(maxmin_system, action->variable, 
 				     action->lat_current);
+	lmm_update_variable_latency(maxmin_system, action->variable, delta);
+	
+
       }
     } else if (event_type == nw_link->state_event) {
       if (value > 0)
@@ -491,6 +494,7 @@ static double get_available_speed(void *cpu)
   return ((cpu_KCCFLN05_t) cpu)->power_current;
 }
 
+
 static surf_action_t communicate(void *src, void *dst, double size, double rate)
 {
   surf_action_workstation_KCCFLN05_t action = NULL;
@@ -555,6 +559,8 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
       lmm_update_variable_bound(maxmin_system, action->variable, action->rate);
   }
 
+  lmm_update_variable_latency(maxmin_system, action->variable, action->latency);
+  
   for (i = 0; i < route_size; i++)
     lmm_expand(maxmin_system, route->links[i]->constraint, action->variable, 1.0);
   if (card_src->bus)
