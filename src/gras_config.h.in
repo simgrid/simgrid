@@ -198,9 +198,6 @@
 /* Indicates whether we should use GTNetS or not */
 #undef USE_GTNETS
 
-/* Indicates whether we should use SimIX or not */
-#undef USE_SIMIX
-
 /* Version number of package */
 #undef VERSION
 

@@ -12,19 +12,19 @@
 
 #include "gras/Virtu/virtu_private.h"
 #include "xbt/dynar.h"
-#include "msg/msg.h" /* SimGrid header */
+#include "simix/simix.h" /* SimGrid header */
+#include "gras/Transport/transport_private.h"
 
 typedef struct {
   int port;  /* list of ports used by a server socket */
-  int tochan; /* the channel it points to */
-  int meas;   /* (boolean) the channel is for measurements or for messages */
+	int meas;   /* (boolean) the channel is for measurements or for messages */
+	smx_process_t process;
+	gras_socket_t socket;
 } gras_sg_portrec_t;
 
 /* Data for each host */
 typedef struct {
   int refcount;
-  int proc[XBT_MAX_CHANNEL]; /* PID of who's connected to each channel */
-                              /* If =0, then free */
 
   xbt_dynar_t ports;
 
@@ -32,15 +32,20 @@ typedef struct {
 
 /* data for each socket (FIXME: find a better location for that)*/
 typedef struct {
-  int from_PID;    /* process which sent this message */
-  int to_PID;      /* process to which this message is destinated */
+  //int from_PID;    /* process which sent this message */
+  //int to_PID;      /* process to which this message is destinated */
+	smx_process_t from_process;
+	smx_process_t to_process;
 
-  m_host_t to_host;   /* Who's on other side */
-  m_channel_t to_chan;/* Channel on which the other side is earing */
+  smx_host_t to_host;   /* Who's on other side */
+
+	smx_cond_t cond;
+	smx_mutex_t mutex;
+	gras_socket_t to_socket;
 } gras_trp_sg_sock_data_t;
 
 
-void *gras_libdata_by_name_from_remote(const char *name, m_process_t p);
+void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p);
 /* The same function by id would be really dangerous.
  * 
  * Indeed, it would rely on the fact that all process register libdatas in

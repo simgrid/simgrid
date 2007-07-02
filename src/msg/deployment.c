@@ -1,79 +1,16 @@
-/* 	$Id$	 */
-
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/*     $Id$      */
+  
+/* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
+/* Copyright (c) 2007 Bruno Donassolo.                                      */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "private.h"
+  
+#include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "surf/surfxml_parse_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_deployment, msg,
-				"Logging specific to MSG (deployment)");
-
-static int parse_argc = -1 ;
-static char **parse_argv = NULL;
-static m_process_code_t parse_code = NULL;
-static m_host_t parse_host = NULL;
-static double start_time = 0.0;
-static double kill_time = -1.0;
-  
-static void parse_process_init(void)
-{
-  parse_host = MSG_get_host_by_name(A_surfxml_process_host);
-  xbt_assert1(parse_host, "Unknown host %s",A_surfxml_process_host);
-  parse_code = MSG_get_registered_function(A_surfxml_process_function);
-  xbt_assert1(parse_code, "Unknown function %s",A_surfxml_process_function);
-  parse_argc = 0 ;
-  parse_argv = NULL;
-  parse_argc++;
-  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
-  surf_parse_get_double(&start_time,A_surfxml_process_start_time);
-  surf_parse_get_double(&kill_time,A_surfxml_process_kill_time);
-}
-
-static void parse_argument(void)
-{
-  parse_argc++;
-  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_argument_value);
-}
-
-static void parse_process_finalize(void)
-{
-  process_arg_t arg = NULL;
-  m_process_t process = NULL;
-  if(start_time>MSG_get_clock()) {
-    arg = xbt_new0(s_process_arg_t,1);
-    arg->name = parse_argv[0];
-    arg->code = parse_code;
-    arg->data = NULL;
-    arg->host = parse_host;
-    arg->argc = parse_argc;
-    arg->argv = parse_argv;
-    arg-> kill_time = kill_time;
-
-    DEBUG3("Process %s(%s) will be started at time %f", arg->name, 
-	   arg->host->name,start_time);
-    surf_timer_resource->extension_public->set(start_time, (void*) &MSG_process_create_with_arguments,
-					       arg);
-  }
-  if((start_time<0) || (start_time==MSG_get_clock())) {
-    DEBUG2("Starting Process %s(%s) right now", parse_argv[0],
-	   parse_host->name);
-    process = MSG_process_create_with_arguments(parse_argv[0], parse_code, 
-						NULL, parse_host,
-						parse_argc,parse_argv);
-    if(kill_time > MSG_get_clock()) {
-      surf_timer_resource->extension_public->set(kill_time, 
-						 (void*) &MSG_process_kill,
-						 (void*) process);
-    }
-  }
-}
 
 /** \ingroup msg_easier_life
  * \brief An application deployer.
@@ -92,13 +29,13 @@ static void parse_process_finalize(void)
  */
 void MSG_launch_application(const char *file) 
 {
+
   xbt_assert0(msg_global,"MSG_global_init_args has to be called before MSG_launch_application.");
-  STag_surfxml_process_fun = parse_process_init;
-  ETag_surfxml_argument_fun = parse_argument;
-  ETag_surfxml_process_fun = parse_process_finalize;
-  surf_parse_open(file);
-  xbt_assert1((!surf_parse()),"Parse error in %s",file);
-  surf_parse_close();
+	SIMIX_function_register_process_create(&__MSG_process_create_with_arguments);
+	SIMIX_function_register_process_kill(&MSG_process_kill);
+	SIMIX_launch_application(file);
+
+	return;
 }
 
 /** \ingroup msg_easier_life
@@ -111,9 +48,8 @@ void MSG_launch_application(const char *file)
  */
 void MSG_function_register(const char *name,m_process_code_t code)
 {
-  xbt_assert0(msg_global,"MSG_global_init has to be called before MSG_function_register.");
-
-  xbt_dict_set(msg_global->registered_functions,name,code,NULL);
+	SIMIX_function_register(name, code);
+	return;
 }
 
 /** \ingroup msg_easier_life
@@ -127,9 +63,7 @@ m_process_code_t MSG_get_registered_function(const char *name)
 {
   m_process_code_t code = NULL;
 
-  xbt_assert0(msg_global,"MSG_global_init has to be called before MSG_get_registered_function.");
-
-  code = xbt_dict_get_or_null(msg_global->registered_functions,name);
+	code = (m_process_code_t)SIMIX_get_registered_function(name);
 
   return code;
 }

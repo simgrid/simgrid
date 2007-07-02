@@ -8,7 +8,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "portable.h"
-#include "transport_private.h"
+#include "gras/Transport/transport_private.h"
 #include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_file,gras_trp,

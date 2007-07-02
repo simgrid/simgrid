@@ -1,19 +1,19 @@
-/* 	$Id$	 */
-
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/*     $Id$      */
+  
+/* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
+/* Copyright (c) 2007 Bruno Donassolo.                                      */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "private.h"
+  
+#include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
 /** \defgroup m_host_management Management functions of Hosts
  *  \brief This section describes the host structure of MSG
- */
-
-/** \addtogroup m_host_management
+ * 
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
  * (#m_host_t) and the functions for managing it.
  *  
@@ -27,14 +27,14 @@
  */
 
 /********************************* Host **************************************/
-m_host_t __MSG_host_create(const char *name,
-			 void *workstation,
-			 void *data)
+m_host_t __MSG_host_create(smx_host_t workstation, void *data)
 {
+	const char * name;
   simdata_host_t simdata = xbt_new0(s_simdata_host_t,1);
   m_host_t host = xbt_new0(s_m_host_t,1);
   int i;
 
+	name = SIMIX_host_get_name(workstation);
   /* Host structure */
   host->name = xbt_strdup(name);
   host->simdata = simdata;
@@ -45,14 +45,14 @@ m_host_t __MSG_host_create(const char *name,
   simdata->mbox = xbt_new0(xbt_fifo_t, msg_global->max_channel);
   for (i = 0; i < msg_global->max_channel; i++)
     simdata->mbox[i] = xbt_fifo_new();
-  simdata->sleeping = xbt_new0(m_process_t, msg_global->max_channel);
-  simdata->process_list = xbt_fifo_new();
+  
+	simdata->sleeping = xbt_new0(smx_cond_t, msg_global->max_channel);
+ 	simdata->mutex = SIMIX_mutex_init();
+	SIMIX_host_set_data(workstation, host);
+
   /* Update global variables */
-
-  xbt_fifo_unshift(msg_global->host, host);
-
-  PAJE_HOST_NEW(host);
-
+	xbt_fifo_unshift(msg_global->host, host);
+ 
   return host;
 }
 
@@ -64,7 +64,7 @@ m_host_t __MSG_host_create(const char *name,
    or not and attach \a data to \a host if it is possible.
  */
 MSG_error_t MSG_host_set_data(m_host_t host, void *data)
-{
+{	
   xbt_assert0((host!=NULL), "Invalid parameters");
   xbt_assert0((host->data == NULL), "Data already set");
 
@@ -127,19 +127,15 @@ void __MSG_host_destroy(m_host_t host)
 
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  PAJE_HOST_FREE(host);
- 
   /* Clean Simulator data */
+	/* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
   simdata = (host)->simdata;
 
   for (i = 0; i < msg_global->max_channel; i++)
     xbt_fifo_free(simdata->mbox[i]);
   free(simdata->mbox);
   free(simdata->sleeping);
-  xbt_assert0((xbt_fifo_size(simdata->process_list)==0),
-	      "Some process are still running on this host");
-  xbt_fifo_free(simdata->process_list);
-
+	SIMIX_mutex_destroy(simdata->mutex);
   free(simdata);
 
   /* Clean host structure */
@@ -175,7 +171,6 @@ int MSG_get_host_msgload(m_host_t h)
   xbt_assert0(0, "Not implemented yet");
 
   return(0);
-/*   return(surf_workstation_resource->extension_public->get_load(h->simdata->host)); */
 }
 
 /** \ingroup m_host_management
@@ -186,8 +181,7 @@ double MSG_get_host_speed(m_host_t h)
 {
   xbt_assert0((h!= NULL), "Invalid parameters");
 
-  return(surf_workstation_resource->
-	 extension_public->get_speed(h->simdata->host,1.0));
+  return(SIMIX_host_get_speed(h->simdata->host));
 }
 
 /** \ingroup msg_gos_functions
@@ -197,14 +191,6 @@ double MSG_get_host_speed(m_host_t h)
  */
 int MSG_host_is_avail (m_host_t h)
 {
-  e_surf_cpu_state_t cpustate;
   xbt_assert0((h!= NULL), "Invalid parameters");
-
-  cpustate =
-    surf_workstation_resource->extension_public->get_state(h->simdata->host);
-
-  xbt_assert0((cpustate == SURF_CPU_ON || cpustate == SURF_CPU_OFF),
-	      "Invalid cpu state");
-
-  return (cpustate==SURF_CPU_ON);
+	return (SIMIX_host_get_state(h->simdata->host));
 }

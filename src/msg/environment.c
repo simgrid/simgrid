@@ -1,23 +1,20 @@
-/* 	$Id$	 */
-
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/*     $Id$      */
+  
+/* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
+/* Copyright (c) 2007 Bruno Donassolo.                                      */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "private.h"
+  
+#include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "gras_config.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_environment, msg,
-				"Logging specific to MSG (environment)");
 
 /** \defgroup msg_easier_life      Platform and Application management
  *  \brief This section describes functions to manage the platform creation
  *  and the application deployment. You should also have a look at 
  *  \ref MSG_examples  to have an overview of their usage.
- */
-/** @addtogroup msg_easier_life
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Platforms and Applications" --> \endhtmlonly
  * 
  */
@@ -33,16 +30,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_environment, msg,
  */
 m_host_t MSG_get_host_by_name(const char *name)
 {
-  xbt_fifo_item_t i = NULL;
-  m_host_t host = NULL;
+	smx_host_t simix_h = NULL;
 
-  xbt_assert0(((msg_global != NULL)
-	  && (msg_global->host != NULL)), "Environment not set yet");
-
-  xbt_fifo_foreach(msg_global->host,i,host,m_host_t) {
-    if(strcmp(host->name, name) == 0) return host;
-  }
-  return NULL;
+	simix_h = SIMIX_host_get_by_name(name);
+	if (simix_h == NULL) {
+		return NULL;
+	}
+	else return (m_host_t)simix_h->data;
 }
 
 /** \ingroup msg_easier_life
@@ -61,38 +55,19 @@ m_host_t MSG_get_host_by_name(const char *name)
  *
  * Have a look in the directory examples/msg/ to have a big example.
  */
-void MSG_create_environment(const char *file) {
-  xbt_dict_cursor_t cursor = NULL;
-  char *name = NULL;
-  void *workstation = NULL;
-  char *workstation_model_name;
+void MSG_create_environment(const char *file) 
+{
+  smx_host_t *workstation = NULL;
+	int i;
 
-  msg_config_init(); /* make sure that our configuration set is created */
-  surf_timer_resource_init(file);
+	SIMIX_create_environment(file);
 
-  /* which model do you want today? */
-  workstation_model_name = xbt_cfg_get_string (_msg_cfg_set, "surf_workstation_model");
-
-  DEBUG1("Model : %s", workstation_model_name);
-  if (!strcmp(workstation_model_name,"KCCFLN05")) {
-    surf_workstation_resource_init_KCCFLN05(file);
-  }else if (!strcmp(workstation_model_name,"KCCFLN05_proportional")) {
-    surf_workstation_resource_init_KCCFLN05_proportionnal(file);
-  } else if (!strcmp(workstation_model_name,"CLM03")) {
-    surf_workstation_resource_init_CLM03(file);
-#ifdef USE_GTNETS
-  } else if (!strcmp(workstation_model_name,"GTNETS")) {
-    surf_workstation_resource_init_GTNETS(file);
-#endif
-  } else {
-    xbt_assert0(0,"The impossible happened (once again)");
-  }
-  _msg_init_status = 2; /* inited; don't change settings now */
-
-  xbt_dict_foreach(workstation_set, cursor, name, workstation) {
-    __MSG_host_create(name, workstation, NULL);
-  }
-
+	/* Initialize MSG hosts */
+	workstation = SIMIX_host_get_table();
+	for (i=0; i< SIMIX_host_get_number();i++) {
+		__MSG_host_create(workstation[i], NULL);
+	}
+	xbt_free(workstation);
   return;
 }
 

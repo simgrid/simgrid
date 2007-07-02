@@ -97,10 +97,7 @@ void gras_trp_init(void){
 
 void
 gras_trp_exit(void){
-  xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
-  gras_socket_t sock_iter;
-  int cursor;
-
+   DEBUG1("gras_trp value %d",_gras_trp_started);
    if (_gras_trp_started == 0) {
       return;
    }
@@ -115,13 +112,6 @@ gras_trp_exit(void){
 	}
 #endif
 
-      /* Close all the sockets */
-      xbt_dynar_foreach(sockets,cursor,sock_iter) {
-	VERB1("Closing the socket %p left open on exit. Maybe a socket leak?",
-	      sock_iter);
-	gras_socket_close(sock_iter);
-      }
-      
       /* Delete the plugins */
       xbt_dict_free(&_gras_trp_plugins);
    }
@@ -360,20 +350,22 @@ void gras_socket_close(gras_socket_t sock) {
   }
    
   /* FIXME: Issue an event when the socket is closed */
+	DEBUG1("sockets pointer before %p",sockets);
   if (sock) {
-    xbt_dynar_foreach(sockets,cursor,sock_iter) {
-      if (sock == sock_iter) {
-	xbt_dynar_cursor_rm(sockets,&cursor);
-	if (sock->plugin->socket_close) 
-	  (* sock->plugin->socket_close)(sock);
+		xbt_dynar_foreach(sockets,cursor,sock_iter) {
+			if (sock == sock_iter) {
+				DEBUG2("remove sock cursor %d dize %lu\n",cursor,xbt_dynar_length(sockets));
+				xbt_dynar_cursor_rm(sockets,&cursor);
+				if (sock->plugin->socket_close) 
+					(* sock->plugin->socket_close)(sock);
 
-	/* free the memory */
-	if (sock->peer_name)
-	  free(sock->peer_name);
-	free(sock);
-	XBT_OUT;
-	return;
-      }
+				/* free the memory */
+				if (sock->peer_name)
+					free(sock->peer_name);
+				free(sock);
+				XBT_OUT;
+				return;
+			}
     }
     WARN1("Ignoring request to free an unknown socket (%p). Execution stack:",sock);
     xbt_backtrace_display();
@@ -573,7 +565,7 @@ static void *gras_trp_procdata_new() {
    
    res->name = xbt_strdup("gras_trp");
    res->name_len = 0;
-   res->sockets   = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
+   res->sockets = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
    res->myport = 0;
    
    return (void*)res;

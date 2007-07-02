@@ -15,6 +15,7 @@
 
 #include "xbt/dynar.h"
 #include "gras/Virtu/virtu_interface.h"
+#include "simix/simix.h"
 
 /** @brief Data for each process */
 typedef struct {
@@ -32,6 +33,9 @@ typedef struct {
    * This is the new interface
    */
   xbt_dynar_t moddata;
+	
+	long int pid; /* pid of process, only for SG */
+	long int ppid; /* ppid of process, only for SG */
 } gras_procdata_t;
 
 gras_procdata_t *gras_procdata_get(void);

@@ -13,6 +13,7 @@
 #define GRAS_TRP_INTERFACE_H
 
 #include "portable.h" /* sometimes needed for fd_set */
+#include "simix/simix.h"
 
 /***
  *** Options
@@ -102,8 +103,9 @@ typedef struct {
   fd_set *fdset;
 
   /* SG only elements. In RL, they are part of the OS ;) */
-  int chan;    /* Formated messages channel */
-  int measChan; /* Unformated echange channel for performance measurement*/
+	smx_cond_t cond;
+	smx_mutex_t mutex;
+	xbt_fifo_t active_socket;
    
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 

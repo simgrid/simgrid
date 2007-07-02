@@ -1,18 +1,18 @@
-/* 	$Id$	 */
-
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/*     $Id$      */
+  
+/* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
+/* Copyright (c) 2007 Bruno Donassolo.                                      */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
 /** \defgroup m_task_management Managing functions of Tasks
  *  \brief This section describes the task structure of MSG
- */
-/** \addtogroup m_task_management
  *  (#m_task_t) and the functions for managing it.
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
  * 
@@ -47,21 +47,29 @@
 m_task_t MSG_task_create(const char *name, double compute_duration,
 			 double message_size, void *data)
 {
-  m_task_t task = xbt_mallocator_get(msg_global->task_mallocator);
-  simdata_task_t simdata = task->simdata;
-  
+	m_task_t task = xbt_new(s_m_task_t,1);
+  simdata_task_t simdata = xbt_new(s_simdata_task_t,1);
+  task->simdata = simdata;
   /* Task structure */
   task->name = xbt_strdup(name);
   task->data = data;
 
   /* Simulator Data */
-  simdata->sleeping = xbt_dynar_new(sizeof(m_process_t),NULL);
   simdata->computation_amount = compute_duration;
   simdata->message_size = message_size;
   simdata->rate = -1.0;
   simdata->priority = 1.0;
   simdata->using = 1;
   simdata->sender = NULL;
+  simdata->receiver = NULL;
+	simdata->cond = SIMIX_cond_init();
+	simdata->mutex = SIMIX_mutex_init();
+	simdata->compute = NULL;
+	simdata->comm = NULL;
+
+	simdata->host_list = NULL;
+	simdata->comp_amount = NULL;
+	simdata->comm_amount = NULL;
 
   return task;
 }
@@ -121,26 +129,29 @@ const char *MSG_task_get_name(m_task_t task)
  */
 MSG_error_t MSG_task_destroy(m_task_t task)
 {
-  surf_action_t action = NULL;
+  smx_action_t action = NULL;
   xbt_assert0((task != NULL), "Invalid parameter");
 
+	/* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
   task->simdata->using--;
   if(task->simdata->using>0) return MSG_OK;
 
-  xbt_assert0((xbt_dynar_length(task->simdata->sleeping)==0), 
-	      "Task still used. There is a problem. Cannot destroy it now!");
-
   if(task->name) free(task->name);
 
-  xbt_dynar_free(&(task->simdata->sleeping));
+	SIMIX_cond_destroy(task->simdata->cond);
+	SIMIX_mutex_destroy(task->simdata->mutex);
 
   action = task->simdata->compute;
-  if(action) action->resource_type->common_public->action_free(action);
+  if(action) SIMIX_action_destroy(action);
   action = task->simdata->comm;
-  if(action) action->resource_type->common_public->action_free(action);
+  if(action) SIMIX_action_destroy(action);
+	/* parallel tasks only */ 
   if(task->simdata->host_list) xbt_free(task->simdata->host_list);
+	
+	/* free main structures */
+	xbt_free(task->simdata);
+	xbt_free(task);
 
-  xbt_mallocator_release(msg_global->task_mallocator, task);
   return MSG_OK;
 }
 
@@ -155,11 +166,11 @@ MSG_error_t MSG_task_cancel(m_task_t task)
   xbt_assert0((task != NULL), "Invalid parameter");
 
   if(task->simdata->compute) {
-    surf_workstation_resource->common_public->action_cancel(task->simdata->compute);
+		SIMIX_action_cancel(task->simdata->compute);
     return MSG_OK;
   }
   if(task->simdata->comm) {
-    surf_workstation_resource->common_public->action_cancel(task->simdata->comm);
+		SIMIX_action_cancel(task->simdata->comm);
     return MSG_OK;
   }
 
@@ -170,7 +181,8 @@ MSG_error_t MSG_task_cancel(m_task_t task)
  * \brief Returns the computation amount needed to process a task #m_task_t.
  *        Once a task has been processed, this amount is thus set to 0...
  */
-double MSG_task_get_compute_duration(m_task_t task) {
+double MSG_task_get_compute_duration(m_task_t task) 
+{
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->computation_amount;
@@ -185,7 +197,7 @@ double MSG_task_get_remaining_computation(m_task_t task)
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   if(task->simdata->compute) {
-    return task->simdata->compute->remains;
+    return SIMIX_action_get_remains(task->simdata->compute);
   } else {
     return task->simdata->computation_amount;
   }
@@ -195,31 +207,13 @@ double MSG_task_get_remaining_computation(m_task_t task)
  * \brief Returns the size of the data attached to a task #m_task_t.
  *
  */
-double MSG_task_get_data_size(m_task_t task) {
+double MSG_task_get_data_size(m_task_t task) 
+{
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->message_size;
 }
 
-MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task)
-{
-  int _cursor;
-  m_process_t proc = NULL;
-
-  xbt_assert0(((task != NULL)
-	       && (task->simdata != NULL)), "Invalid parameters");
-
-  xbt_dynar_push(task->simdata->sleeping, &process);
-  process->simdata->waiting_task = task;
-  xbt_context_yield();
-  process->simdata->waiting_task = NULL;
-  xbt_dynar_foreach(task->simdata->sleeping,_cursor,proc) {
-    if(proc==process) 
-      xbt_dynar_remove_at(task->simdata->sleeping,_cursor,&proc);
-  }
-
-  return MSG_OK;
-}
 
 
 /** \ingroup m_task_management
@@ -228,32 +222,12 @@ MSG_error_t __MSG_task_wait_event(m_process_t process, m_task_t task)
  *        cpu power than the other ones.
  *
  */
-void MSG_task_set_priority(m_task_t task, double priority) {
+void MSG_task_set_priority(m_task_t task, double priority) 
+{
   xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
 
   task->simdata->priority = 1/priority;
   if(task->simdata->compute)
-    surf_workstation_resource->common_public->
-      set_priority(task->simdata->compute, task->simdata->priority);
+		SIMIX_action_set_priority(task->simdata->compute, task->simdata->priority);
 }
 
-/* Mallocator functions */
-m_task_t task_mallocator_new_f(void) {
-  m_task_t task = xbt_new(s_m_task_t, 1);
-  simdata_task_t simdata = xbt_new0(s_simdata_task_t, 1);
-  task->simdata = simdata;
-  return task;
-}
-
-void task_mallocator_free_f(m_task_t task) {
-  xbt_assert0((task != NULL), "Invalid parameter");
-
-  xbt_free(task->simdata);
-  xbt_free(task);
-
-  return;
-}
-
-void task_mallocator_reset_f(m_task_t task) {
-  memset(task->simdata, 0, sizeof(s_simdata_task_t));  
-}

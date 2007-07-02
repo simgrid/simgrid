@@ -1,20 +1,20 @@
-/* 	$Id$	 */
-
-/* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
+/*     $Id$      */
+  
+/* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
+/* Copyright (c) 2007 Bruno Donassolo.                                      */
+/* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "private.h"
+  
+#include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
-				"Logging specific to MSG (process)");
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
 /** \defgroup m_process_management Management Functions of Agents
  *  \brief This section describes the agent structure of MSG
- */
-/** \addtogroup m_process_management
  *  (#m_process_t) and the functions for managing it.
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Agents" --> \endhtmlonly
  * 
@@ -42,21 +42,17 @@ m_process_t MSG_process_create(const char *name,
 
 static void MSG_process_cleanup(void *arg)
 {
+	/* arg is a pointer to a simix process, we can get the msg process with the field data */
+	m_process_t proc = ((smx_process_t)arg)->data;
+  xbt_fifo_remove(msg_global->process_list, proc);
+	SIMIX_process_cleanup(arg);
+  free(proc->name);
+  proc->name = NULL;
+  free(proc->simdata);
+  proc->simdata = NULL;
+  free(proc);
 
-  while(((m_process_t)arg)->simdata->paje_state) {
-    PAJE_PROCESS_POP_STATE((m_process_t)arg);
-  }
-
-  PAJE_PROCESS_FREE(arg);
-
-  xbt_fifo_remove(msg_global->process_list, arg);
-  xbt_fifo_remove(msg_global->process_to_run, arg);
-  xbt_fifo_remove(((m_process_t) arg)->simdata->host->simdata->process_list, arg);
-  free(((m_process_t) arg)->name);
-  ((m_process_t) arg)->name = NULL;
-  free(((m_process_t) arg)->simdata);
-  ((m_process_t) arg)->simdata = NULL;
-  free(arg);
+	return;
 }
 
 /** \ingroup m_process_management
@@ -83,31 +79,37 @@ static void MSG_process_cleanup(void *arg)
  * \see m_process_t
  * \return The new corresponding object.
  */
+
+
+
+m_process_t __MSG_process_create_with_arguments(const char *name,
+					      m_process_code_t code, void *data,
+					      char * hostname, int argc, char **argv)
+{
+	m_host_t host = MSG_get_host_by_name(hostname);
+	return MSG_process_create_with_arguments(name,code,data,host,argc,argv);
+}
+
 m_process_t MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,
 					      m_host_t host, int argc, char **argv)
 {
   simdata_process_t simdata = xbt_new0(s_simdata_process_t,1);
   m_process_t process = xbt_new0(s_m_process_t,1);
-  m_process_t self = NULL;
-
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
-  /* Simulator Data */
 
+  /* Simulator Data */
   simdata->PID = msg_global->PID++;
+	simdata->waiting_task = NULL;
   simdata->host = host;
-  simdata->waiting_task = NULL;
   simdata->argc = argc;
   simdata->argv = argv;
-  simdata->context = xbt_context_new(code, NULL, NULL, 
-				     MSG_process_cleanup, process, 
-				     simdata->argc, simdata->argv);
+	simdata->smx_process = SIMIX_process_create(name, (smx_process_code_t)code, (void*)process, host->name, argc, argv, MSG_process_cleanup );
 
-  if((self=msg_global->current_process)) {
-    simdata->PPID = MSG_process_get_PID(self);
-  } else {
-    simdata->PPID = -1;
-  }
+	if (SIMIX_process_self()) {
+		simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
+	}
+	else simdata->PPID = -1;
   simdata->last_errno=MSG_OK;
 
 
@@ -116,19 +118,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   process->simdata = simdata;
   process->data = data;
 
-  xbt_fifo_unshift(host->simdata->process_list, process);
-
-  /* *************** FIX du current_process !!! *************** */
-  self = msg_global->current_process;
-  xbt_context_start(process->simdata->context);
-  msg_global->current_process = self;
-
-  xbt_fifo_unshift(msg_global->process_list, process);
-  DEBUG2("Inserting %s(%s) in the to_run list",process->name,
-	 host->name);
-  xbt_fifo_unshift(msg_global->process_to_run, process);
-
-  PAJE_PROCESS_NEW(process);
+	xbt_fifo_unshift(msg_global->process_list, process); 
 
   return process;
 }
@@ -140,53 +130,24 @@ m_process_t MSG_process_create_with_arguments(const char *name,
  */
 void MSG_process_kill(m_process_t process)
 {
-  int i;
   simdata_process_t p_simdata = process->simdata;
-  simdata_host_t h_simdata= p_simdata->host->simdata;
-  int _cursor;
-  m_process_t proc = NULL;
 
-  DEBUG3("Killing %s(%d) on %s",process->name, p_simdata->PID,
-	 p_simdata->host->name);
-  
-  for (i=0; i<msg_global->max_channel; i++) {
-    if (h_simdata->sleeping[i] == process) {
-      h_simdata->sleeping[i] = NULL;
-      break;
-    }
-  }
-  
-  if(p_simdata->waiting_task) {
-    xbt_dynar_foreach(p_simdata->waiting_task->simdata->sleeping,_cursor,proc) {
-      if(proc==process) 
-	xbt_dynar_remove_at(p_simdata->waiting_task->simdata->sleeping,_cursor,&proc);
-    }
-    if(p_simdata->waiting_task->simdata->compute)
-      surf_workstation_resource->common_public->
-	action_free(p_simdata->waiting_task->simdata->compute);
+  DEBUG3("Killing %s(%d) on %s",process->name, p_simdata->PID, p_simdata->host->name);
+
+	if(p_simdata->waiting_task) {
+		DEBUG1("Canceling waiting task %s",p_simdata->waiting_task->name);
+    if(p_simdata->waiting_task->simdata->compute) {
+			SIMIX_action_cancel(p_simdata->waiting_task->simdata->compute);
+		}
     else if (p_simdata->waiting_task->simdata->comm) {
-      surf_workstation_resource->common_public->
-	action_change_state(p_simdata->waiting_task->simdata->comm,SURF_ACTION_FAILED);
-      surf_workstation_resource->common_public->
-	action_free(p_simdata->waiting_task->simdata->comm);
-    } else {
-      xbt_die("UNKNOWN STATUS. Please report this bug.");
-    }
+			SIMIX_action_cancel(p_simdata->waiting_task->simdata->comm);
+    } 
   }
 
-  if ((i==msg_global->max_channel) && (process!=MSG_process_self()) && 
-      (!p_simdata->waiting_task)) {
-    xbt_die("UNKNOWN STATUS. Please report this bug.");
-  }
-
-  xbt_fifo_remove(msg_global->process_to_run,process);
   xbt_fifo_remove(msg_global->process_list,process);
-  xbt_context_kill(process->simdata->context);
+	SIMIX_process_kill(process->simdata->smx_process);
 
-  if(process==MSG_process_self()) {
-    /* I just killed myself */
-    xbt_context_yield();
-  }
+	return;
 }
 
 /** \ingroup m_process_management
@@ -197,18 +158,7 @@ void MSG_process_kill(m_process_t process)
  */
 MSG_error_t MSG_process_change_host(m_process_t process, m_host_t host)
 {
-  simdata_process_t simdata = NULL;
-
-  /* Sanity check */
-
-  xbt_assert0(((process) && (process->simdata)
-	  && (host)), "Invalid parameters");
-  simdata = process->simdata;
-
-  xbt_fifo_remove(simdata->host->simdata->process_list,process);
-  simdata->host = host;
-  xbt_fifo_unshift(host->simdata->process_list,process);
-
+	xbt_die("MSG_process_change_host - not implemented yet - maybe useless function");
   return MSG_OK;
 }
 
@@ -342,7 +292,14 @@ int MSG_process_self_PPID(void)
  */
 m_process_t MSG_process_self(void)
 {
-  return msg_global ? msg_global->current_process : NULL;
+	smx_process_t proc = SIMIX_process_self();
+	if (proc != NULL) {
+		return (m_process_t)proc->data;
+	}
+	else { 
+		return NULL;
+	}
+
 }
 
 /** \ingroup m_process_management
@@ -353,51 +310,11 @@ m_process_t MSG_process_self(void)
  */
 MSG_error_t MSG_process_suspend(m_process_t process)
 {
-  simdata_process_t simdata = NULL;
-  simdata_task_t simdata_task = NULL;
+  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+  CHECK_HOST();
 
-  XBT_IN2("(%p(%s))", process, process->name);
-
-  xbt_assert0(((process) && (process->simdata)), "Invalid parameters");
-
-  PAJE_PROCESS_PUSH_STATE(process,"S",NULL);
-
-  if(process!=MSG_process_self()) {
-    simdata = process->simdata;
-    
-    xbt_assert0(simdata->waiting_task,"Process not waiting for anything else. Weird !");
-
-    simdata_task = simdata->waiting_task->simdata;
-
-    simdata->suspended = 1;
-    if(simdata->blocked) {
-      XBT_OUT;
-      return MSG_OK;
-    }
-
-    xbt_assert0(((simdata_task->compute)||(simdata_task->comm))&&
-		!((simdata_task->compute)&&(simdata_task->comm)),
-		"Got a problem in deciding which action to choose !");
-    simdata->suspended = 1;
-    if(simdata_task->compute) 
-      surf_workstation_resource->common_public->suspend(simdata_task->compute);
-    else
-      surf_workstation_resource->common_public->suspend(simdata_task->comm);
-  } else {
-    m_task_t dummy = MSG_TASK_UNINITIALIZED;
-    dummy = MSG_task_create("suspended", 0.0, 0, NULL);
-
-    simdata = process->simdata;
-    simdata->suspended = 1;
-    __MSG_task_execute(process,dummy);
-    surf_workstation_resource->common_public->suspend(dummy->simdata->compute);
-    __MSG_wait_for_computation(process,dummy);
-    simdata->suspended = 0;
-
-    MSG_task_destroy(dummy);
-  }
-  XBT_OUT;
-  return MSG_OK;
+	SIMIX_process_suspend(process->simdata->smx_process);
+  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup m_process_management
@@ -408,47 +325,11 @@ MSG_error_t MSG_process_suspend(m_process_t process)
  */
 MSG_error_t MSG_process_resume(m_process_t process)
 {
-  simdata_process_t simdata = NULL;
-  simdata_task_t simdata_task = NULL;
 
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
-  XBT_IN2("(%p(%s))", process, process->name);
-
-  if(process == MSG_process_self()) {
-    XBT_OUT;
-    MSG_RETURN(MSG_OK);
-  }
-
-  simdata = process->simdata;
-
-  if(simdata->blocked) {
-    PAJE_PROCESS_POP_STATE(process);
-
-    simdata->suspended = 0; /* He'll wake up by itself */
-    XBT_OUT;
-    MSG_RETURN(MSG_OK);
-  }
-
-  if(!(simdata->waiting_task)) {
-    xbt_assert0(0,"Process not waiting for anything else. Weird !");
-    XBT_OUT;
-    return MSG_WARNING;
-  }
-  simdata_task = simdata->waiting_task->simdata;
-
-
-  if(simdata_task->compute) {
-    surf_workstation_resource->common_public->resume(simdata_task->compute);
-    PAJE_PROCESS_POP_STATE(process);
-  }
-  else {
-    PAJE_PROCESS_POP_STATE(process);
-    surf_workstation_resource->common_public->resume(simdata_task->comm);
-  }
-
-  XBT_OUT;
+	SIMIX_process_resume(process->simdata->smx_process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -461,76 +342,6 @@ MSG_error_t MSG_process_resume(m_process_t process)
 int MSG_process_is_suspended(m_process_t process)
 {
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
-
-  return (process->simdata->suspended);
+	return SIMIX_process_is_suspended(process->simdata->smx_process);
 }
 
-int __MSG_process_block(double max_duration, const char *info)
-{
-  m_process_t process = MSG_process_self();
-  m_task_t dummy = MSG_TASK_UNINITIALIZED;
-  char blocked_name[512];
-  snprintf(blocked_name,512,"blocked [%s] (%s:%s)",
-	  info, process->name, process->simdata->host->name);
-
-  XBT_IN1(": max_duration=%g",max_duration);
-
-  dummy = MSG_task_create(blocked_name, 0.0, 0, NULL);
-  
-  PAJE_PROCESS_PUSH_STATE(process,"B",NULL);
-
-  process->simdata->blocked=1;
-  __MSG_task_execute(process,dummy);
-  surf_workstation_resource->common_public->suspend(dummy->simdata->compute);
-  if(max_duration>=0)
-    surf_workstation_resource->common_public->set_max_duration(dummy->simdata->compute, 
-							       max_duration);
-  __MSG_wait_for_computation(process,dummy);
-  MSG_task_destroy(dummy);
-  process->simdata->blocked=0;
-
-  if(process->simdata->suspended) {
-    DEBUG0("I've been suspended in the meantime");    
-    MSG_process_suspend(process);
-    DEBUG0("I've been resumed, let's keep going");    
-  }
-
-  PAJE_PROCESS_POP_STATE(process);
-
-  XBT_OUT;
-  return 1;
-}
-
-MSG_error_t __MSG_process_unblock(m_process_t process)
-{
-  simdata_process_t simdata = NULL;
-  simdata_task_t simdata_task = NULL;
-
-  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
-  CHECK_HOST();
-
-  XBT_IN2(": %s unblocking %s", MSG_process_self()->name,process->name);
-
-  simdata = process->simdata;
-  if(!(simdata->waiting_task)) {
-    xbt_assert0(0,"Process not waiting for anything else. Weird !");
-    XBT_OUT;
-    return MSG_WARNING;
-  }
-  simdata_task = simdata->waiting_task->simdata;
-
-  xbt_assert0(simdata->blocked,"Process not blocked");
-
-  surf_workstation_resource->common_public->resume(simdata_task->compute);
-
-  XBT_OUT;
-
-  MSG_RETURN(MSG_OK);
-}
-
-int __MSG_process_isBlocked(m_process_t process)
-{
-  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
-
-  return (process->simdata->blocked);
-}

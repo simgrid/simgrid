@@ -58,21 +58,9 @@ EXTRA_DIST= \
 	\
 	amok/Bandwidth/bandwidth_private.h \
 	amok/amok_modinter.h
-
-if USE_SIMIX
-  EXTRA_DIST+=include/simix/simix.h include/simix/datatypes.h simix/msg_simix_private.h \
-	gras_simix/Transport/gras_simix_transport_interface.h \
-	gras_simix/Virtu/gras_simix_virtu_interface.h          gras_simix/Virtu/gras_simix_virtu_private.h\
-	gras_simix/Virtu/gras_simix_virtu_rl.h                 gras_simix/Virtu/gras_simix_virtu_sg.h \
-	gras_simix/DataDesc/gras_simix_ddt_parse.yy.l          gras_simix/DataDesc/gras_simix_ddt_parse.yy.c
-else
-  EXTRA_DIST+=gras/Transport/transport_interface.h \
-	gras/Virtu/virtu_interface.h          gras/Virtu/virtu_private.h\
-	gras/Virtu/virtu_rl.h                 gras/Virtu/virtu_sg.h \
-	gras/DataDesc/ddt_parse.yy.l          gras/DataDesc/ddt_parse.yy.c
-endif
-
-#        gras_private.h
+	\
+	include/simix/simix.h include/simix/datatypes.h \
+	simix/msg_simix_private.h
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -87,7 +75,7 @@ endif
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-VERSION_INFO= -version-info 1:0:0
+VERSION_INFO= -version-info 2:0:0
 # from `info libtool "Updating version info"` 
 # and  `info libtool "Release numbers"` 
 #
@@ -153,18 +141,6 @@ RL_SRC= \
   \
   gras/Msg/rl_msg.c
 
-RL_SIMIX_SRC= \
-  gras_simix/gras_simix_rl_stubs.c                     xbt/xbt_thread.c                    \
-  \
-  gras_simix/Transport/gras_simix_rl_transport.c          \
-  gras_simix/Transport/gras_simix_transport_plugin_file.c   gras_simix/Transport/gras_simix_transport_plugin_tcp.c  \
-  \
-  gras_simix/Virtu/gras_simix_rl_emul.c \
-  gras_simix/Virtu/gras_simix_rl_process.c        gras_simix/Virtu/gras_simix_rl_time.c \
-  gras_simix/Virtu/gras_simix_rl_dns.c\
-  \
-  gras_simix/Msg/gras_simix_rl_msg.c
-
 SG_SRC=  \
   xbt/context.c                                                              \
   \
@@ -213,16 +189,7 @@ MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
   msg/global.c msg/environment.c msg/deployment.c 
 
-MSG_SIMIX_SRC=  msg_simix/msg_simix_config.c \
-  msg_simix/msg_simix_task.c \
-  msg_simix/msg_simix_host.c \
-  msg_simix/msg_simix_process.c \
-  msg_simix/msg_simix_gos.c \
-  msg_simix/msg_simix_global.c \
-  msg_simix/msg_simix_environment.c \
-  msg_simix/msg_simix_deployment.c 
-
-GRAS_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
+GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
   \
   gras/Virtu/sg_emul.c \
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
@@ -231,39 +198,9 @@ GRAS_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c   
   gras/sg_stubs.c                         \
   gras/Msg/sg_msg.c
 
-GRAS_SIMIX_SRC= gras_simix/Transport/gras_simix_sg_transport.c  gras_simix/Transport/gras_simix_transport_plugin_sg.c        \
-  \
-  gras_simix/Virtu/gras_simix_sg_emul.c \
-  gras_simix/Virtu/gras_simix_sg_process.c        gras_simix/Virtu/gras_simix_sg_time.c     \
-  gras_simix/Virtu/gras_simix_sg_dns.c\
-  \
-  gras_simix/gras_simix_sg_stubs.c                         \
-  gras_simix/Msg/gras_simix_sg_msg.c
+SG_SRC+=$(SIMIX_SRC) $(MSG_SRC) $(GRAS_SG_SRC)
 
-if USE_SIMIX
-  SG_SRC+=$(SIMIX_SRC)
-  SG_SRC+=$(MSG_SIMIX_SRC)
-  SG_SRC+=$(GRAS_SIMIX_SRC)
-  EXTRA_DIST+=$(MSG_SRC)
-  COMMON_SRC+=gras_simix/gras_simix_gras.c  \
-  gras_simix/Transport/gras_simix_transport.c          gras_simix/Transport/gras_simix_transport_private.h \
-  gras_simix/Msg/gras_simix_msg.c                      gras_simix/Msg/gras_simix_rpc.c                       gras_simix/Msg/gras_simix_timer.c                 \
-  gras_simix/Msg/gras_simix_msg_interface.h            gras_simix/Msg/gras_simix_msg_private.h           \
-  gras_simix/Virtu/gras_simix_process.c gras_simix/Virtu/gras_simix_gras_module.c  \
-  \
-  gras_simix/DataDesc/gras_simix_ddt_create.c          \
-  gras_simix/DataDesc/gras_simix_ddt_convert.c         gras_simix/DataDesc/gras_simix_ddt_exchange.c     \
-  gras_simix/DataDesc/gras_simix_cbps.c                gras_simix/DataDesc/gras_simix_datadesc.c         \
-  gras_simix/DataDesc/gras_simix_datadesc_interface.h  gras_simix/DataDesc/gras_simix_datadesc_private.h \
-  gras_simix/DataDesc/gras_simix_ddt_parse.c           gras_simix/DataDesc/gras_simix_ddt_parse.yy.c         gras_simix/DataDesc/gras_simix_ddt_parse.yy.h
-
-else  
-  EXTRA_DIST+=$(SIMIX_SRC)
-  EXTRA_DIST+=$(MSG_SIMIX_SRC)
-  EXTRA_DIST+=$(GRAS_SIMIX_SRC)
-  SG_SRC+=$(MSG_SRC)
-  SG_SRC+=$(GRAS_SRC)
-  COMMON_SRC+=gras/gras.c  \
+COMMON_SRC+=gras/gras.c  \
   gras/Transport/transport.c          gras/Transport/transport_private.h  \
   gras/Msg/msg.c                      gras/Msg/rpc.c                       gras/Msg/timer.c                 \
   gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
@@ -275,7 +212,6 @@ else
   gras/DataDesc/cbps.c                gras/DataDesc/datadesc.c         \
   gras/DataDesc/datadesc_interface.h  gras/DataDesc/datadesc_private.h \
   gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h
-endif
 
 AMOK_SRC= \
   amok/amok_base.c \
@@ -396,11 +332,7 @@ endif
 ### Declare the library content
 ###
 
-if USE_SIMIX
-libgras_la_SOURCES= $(COMMON_SRC) $(RL_SIMIX_SRC) $(AMOK_SRC)
-else
 libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC) $(AMOK_SRC)
-endif
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
 libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)

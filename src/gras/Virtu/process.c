@@ -20,7 +20,6 @@
 XBT_LOG_NEW_SUBCATEGORY(gras_virtu,gras,"Virtualization code");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_process,gras_virtu,"Process manipulation code");
 
-
 /* Functions to handle gras_procdata_t->libdata cells*/
 typedef struct {
    char *name;
@@ -81,13 +80,11 @@ void *gras_libdata_by_name(const char *name) {
 void *gras_libdata_by_name_from_procdata(const char*name, gras_procdata_t* pd) {
   void *res=NULL;
   xbt_ex_t e;
-
   if (xbt_set_length(pd->libdata) < xbt_dynar_length(_gras_procdata_fabrics)) {
      /* Damn, some new modules were added since procdata_init(). Amok? */
      /* Get 'em all */
      gras_procdata_init();     
   }
-   
   TRY {
     res = xbt_set_get_by_name(pd->libdata, name);
   } CATCH(e) {
@@ -106,6 +103,7 @@ void *gras_libdata_by_id(int id) {
   return xbt_set_get_by_id(pd->libdata, id);
 }
 
+
 void
 gras_procdata_init() {
   gras_procdata_t *pd=gras_procdata_get();
@@ -120,7 +118,7 @@ gras_procdata_init() {
      pd->userdata  = NULL;
      pd->libdata   = xbt_set_new();
   }
-   
+  
   xbt_dynar_foreach(_gras_procdata_fabrics,cursor,fab){ 
     volatile int found = 0;
      
@@ -152,7 +150,6 @@ gras_procdata_init() {
        WARN1("Module '%s' constructor is borken: it does not set elem->name_len",
 	     fab.name);
     }
-     
     xbt_set_add(pd->libdata, elem, fab.destructor);
   }
 }
