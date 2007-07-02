@@ -21,6 +21,8 @@ MSG_Global_t msg_global = NULL;
  *  \brief This section describes the functions you need to know to
  *  set up a simulation. You should have a look at \ref MSG_examples 
  *  to have an overview of their usage.
+ */
+/** @addtogroup msg_simulation
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> \endhtmlonly
  */
 
@@ -64,6 +66,8 @@ void MSG_paje_output(const char *filename)
 /** \defgroup m_channel_management    Understanding channels
  *  \brief This section briefly describes the channel notion of MSG
  *  (#m_channel_t).
+ */
+/** @addtogroup m_channel_management
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Channels" --> \endhtmlonly
  * 
  *

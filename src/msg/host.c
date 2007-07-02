@@ -13,7 +13,8 @@
 
 /** \defgroup m_host_management Management functions of Hosts
  *  \brief This section describes the host structure of MSG
- * 
+ */
+/** @addtogroup m_host_management
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
  * (#m_host_t) and the functions for managing it.
  *  

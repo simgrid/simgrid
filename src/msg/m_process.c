@@ -16,6 +16,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (proc
 /** \defgroup m_process_management Management Functions of Agents
  *  \brief This section describes the agent structure of MSG
  *  (#m_process_t) and the functions for managing it.
+ */
+/** @addtogroup m_process_management
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Agents" --> \endhtmlonly
  * 
  *  We need to simulate many independent scheduling decisions, so
