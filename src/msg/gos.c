@@ -247,7 +247,7 @@ int MSG_task_Iprobe(m_channel_t channel)
    number of channels fixed with MSG_set_channel_number().
  * \return -1 if there is no pending communication and the PID of the process who sent it otherwise
  */
-long int MSG_task_probe_from(m_channel_t channel)
+int MSG_task_probe_from(m_channel_t channel)
 {
   m_host_t h = NULL;
   xbt_fifo_item_t item;
@@ -284,7 +284,7 @@ long int MSG_task_probe_from(m_channel_t channel)
    and #MSG_OK otherwise.
  */
 MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
-		long int *PID)
+		int *PID)
 {
 	m_host_t h = NULL;
 	simdata_host_t h_simdata = NULL;

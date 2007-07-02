@@ -57,8 +57,8 @@ typedef struct simdata_task {
 typedef struct simdata_process {
   m_host_t host;                /* the host on which the process is running */
 	smx_process_t smx_process;
-  long int PID;			/* used for debugging purposes */
-  long int PPID;		/* The parent PID */
+  int PID;			/* used for debugging purposes */
+  int PPID;			/* The parent PID */
   m_host_t put_host;		/* used for debugging purposes */
   m_channel_t put_channel;	/* used for debugging purposes */
 	m_task_t waiting_task;

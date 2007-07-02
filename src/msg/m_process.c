@@ -134,7 +134,7 @@ void MSG_process_kill(m_process_t process)
 {
   simdata_process_t p_simdata = process->simdata;
 
-  DEBUG3("Killing %s(%ld) on %s",process->name, p_simdata->PID, p_simdata->host->name);
+  DEBUG3("Killing %s(%d) on %s",process->name, p_simdata->PID, p_simdata->host->name);
 
 	if(p_simdata->waiting_task) {
 		DEBUG1("Canceling waiting task %s",p_simdata->waiting_task->name);
@@ -215,7 +215,7 @@ m_host_t MSG_process_get_host(m_process_t process)
    whose PID is equal to \a PID. If no host is found, \c NULL is returned. 
    Note that the PID are uniq in the whole simulation, not only on a given host.
  */
-m_process_t MSG_process_from_PID(long int PID)
+m_process_t MSG_process_from_PID(int PID)
 {
   xbt_fifo_item_t i = NULL;
   m_process_t process = NULL;
@@ -232,7 +232,7 @@ m_process_t MSG_process_from_PID(long int PID)
  * This functions checks whether \a process is a valid pointer or not 
    and return its PID.
  */
-long int MSG_process_get_PID(m_process_t process)
+int MSG_process_get_PID(m_process_t process)
 {
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
 
@@ -246,7 +246,7 @@ long int MSG_process_get_PID(m_process_t process)
    and return its PID. Returns -1 if the agent has not been created by 
    another agent.
  */
-long int MSG_process_get_PPID(m_process_t process)
+int MSG_process_get_PPID(m_process_t process)
 {
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
 
@@ -271,7 +271,7 @@ const char *MSG_process_get_name(m_process_t process)
  *
  * This functions returns the PID of the currently running #m_process_t.
  */
-long int MSG_process_self_PID(void)
+int MSG_process_self_PID(void)
 {
   return (MSG_process_get_PID(MSG_process_self()));
 }
@@ -282,7 +282,7 @@ long int MSG_process_self_PID(void)
  * This functions returns the PID of the parent of the currently
  * running #m_process_t.
  */
-long int MSG_process_self_PPID(void)
+int MSG_process_self_PPID(void)
 {
   return (MSG_process_get_PPID(MSG_process_self()));
 }
