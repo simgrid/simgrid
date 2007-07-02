@@ -1,18 +1,23 @@
 SimGrid (3.3-cvs) unstable; urgency=low
 
  Introduce the SIMIX module: factorize code between MSG and GRAS.
-   Until now, GRAS were using MSG as an interface to SURF. It was
+   [Bruno Donassolo]
+  Until now, GRAS were using MSG as an interface to SURF. It was
    quite difficult because both interface have several differences
    (MSG channels vs GRAS sockets were the most notable point).
-   This also opens the gate to SMPI, which should occur soon.
    
- DO NOT MIX 3.2 RESULTS WITH 3.3 ONES: Simix may changes simulations
+  This also opens the gate to SMPI (which should occur soon) and speed
+   up simulations by to 40% (even if it were not the main goal).
+  
+ ************************************** 
+ *DO NOT MIX 3.2 RESULTS WITH 3.3 ONES* Simix may changes simulations!
+ **************************************
    The point is that events occuring at the exact same timestamp are
-   not scheduled in the same order with the old and new version. This
-   may be enough to completely change the execution of simulations.
-   Sorry for the inconvenience.
+    not scheduled in the same order with the old and new version. This
+    may be enough to completely change the execution of simulations in
+    some cases. Sorry for the inconvenience.
 
- OVERALL CHANGES:
+ Overall changes:
   * Make the backtrace of exceptions more human readable [Mt]
 
  -- 
