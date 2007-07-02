@@ -12,18 +12,21 @@
 #    and pick the right one here.
 
 if GRAS_ARCH_32_BITS
-  TESTS= test_rl test_sg_32
-test-sg:
+  TESTS= test_sg_32 test_rl
+test-sg: 
 	$(TESTS_ENVIRONMENT) test_sg_32
 else
-  TESTS= test_rl test_sg_64
-test-sg:
+  TESTS= test_sg_64 test_rl
+test-sg: 
 	$(TESTS_ENVIRONMENT) test_sg_64
 endif
 
-test-rl:
+test-rl: force
 	$(TESTS_ENVIRONMENT) test_rl
 TESTS_ENVIRONMENT=srcdir=$(srcdir) EXEEXT=$(EXEEXT) @top_builddir@/tools/tesh/tesh
 
+force:
 
 EXTRA_DIST+=test_rl test_sg_32 test_sg_64
+
+.PHONY: test_sg_32 test_SG_64 test_rl 
