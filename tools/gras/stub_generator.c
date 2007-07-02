@@ -280,7 +280,6 @@ const char *SIM_PREEMBULE =
 
 const char *SIM_MAIN_POSTEMBULE = "\n"
 "\n"
-#ifdef USE_SIMIX
 "  gras_launch_application(argv[2]);\n"
 "\n"
 "  /*  Run the simulation */\n"
@@ -288,15 +287,6 @@ const char *SIM_MAIN_POSTEMBULE = "\n"
 "\n"
 "  /* cleanup the place */\n"
 "  gras_clean();\n"
-#else
-"  MSG_launch_application(argv[2]);\n"
-"\n"
-"  /*  Run the simulation */\n"
-"  MSG_main();\n"
-"\n"
-"  /* cleanup the place */\n"
-"  MSG_clean();\n"
-#endif  
 "  if (gras_log)\n"
 "    free(gras_log);\n"
 "  return 0;\n"
@@ -419,36 +409,19 @@ static void generate_sim(char *project)
 	fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n"
 	"\n" 
 	"  /*  Simulation setup */\n" 
-#ifdef USE_SIMIX		
 	"  gras_global_init(&argc,argv);\n"
-#else 		
-	"  MSG_global_init(&argc,argv);\n"
-#endif		
 	"  if (argc != 3) {\n" 
 	"    fprintf(stderr, \"Usage: %s platform.xml deployment.xml [--gras-log=...]\\n\",argv[0]);\n" 
 	"    exit(1);\n" 
 	"  }\n"
 	"\n");
 	fprintf(OUT,
-#ifdef USE_SIMIX		
 	"  gras_create_environment(argv[1]);\n" 
 	"\n" 
 	"  /*  Application deployment */\n"
 	);
-#else		
-	"  MSG_paje_output(\"%s.trace\");\n" 
-	"  MSG_set_channel_number(XBT_MAX_CHANNEL); /* Using at most 10 channel (ports) per host. Change it here if needed */\n" 
-	"  MSG_create_environment(argv[1]);\n"
-	"\n" 
-	"  /*  Application deployment */\n",
-	project);
-#endif		
 	xbt_dict_foreach(process_function_set,cursor,key,data) {
-#ifdef USE_SIMIX	   
 		fprintf(OUT,"  gras_function_register(\"%s\", launch_%s);\n",key,key);
-#else
-		fprintf(OUT,"  MSG_function_register(\"%s\", launch_%s);\n",key,key);
-#endif
 	}
 	fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
 	fclose(OUT);
