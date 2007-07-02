@@ -53,19 +53,19 @@ XBT_PUBLIC(m_process_t) MSG_process_create_with_arguments(const char *name,
 					      m_process_code_t code, void *data,
 					      m_host_t host, int argc, char **argv);
 XBT_PUBLIC(void) MSG_process_kill(m_process_t process);
-XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
+XBT_PUBLIC(int) MSG_process_killall(long int reset_PIDs);
 
 XBT_PUBLIC(MSG_error_t) MSG_process_change_host(m_process_t process, m_host_t host);
 
 XBT_PUBLIC(void*) MSG_process_get_data(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_set_data(m_process_t process, void *data);
 XBT_PUBLIC(m_host_t) MSG_process_get_host(m_process_t process);
-XBT_PUBLIC(m_process_t) MSG_process_from_PID(int PID);
-XBT_PUBLIC(int) MSG_process_get_PID(m_process_t process);
-XBT_PUBLIC(int) MSG_process_get_PPID(m_process_t process);
+XBT_PUBLIC(m_process_t) MSG_process_from_PID(long int PID);
+XBT_PUBLIC(long int) MSG_process_get_PID(m_process_t process);
+XBT_PUBLIC(long int) MSG_process_get_PPID(m_process_t process);
 XBT_PUBLIC(const char *)MSG_process_get_name(m_process_t process);
-XBT_PUBLIC(int) MSG_process_self_PID(void);
-XBT_PUBLIC(int) MSG_process_self_PPID(void);
+XBT_PUBLIC(long int) MSG_process_self_PID(void);
+XBT_PUBLIC(long int) MSG_process_self_PPID(void);
 XBT_PUBLIC(m_process_t) MSG_process_self(void);
 
 XBT_PUBLIC(MSG_error_t) MSG_process_suspend(m_process_t process);
@@ -106,10 +106,10 @@ XBT_PUBLIC(MSG_error_t) MSG_parallel_task_execute(m_task_t task);
 XBT_PUBLIC(void) MSG_task_set_priority(m_task_t task, double priority);
 
 XBT_PUBLIC(int) MSG_task_Iprobe(m_channel_t channel);
-XBT_PUBLIC(int) MSG_task_probe_from(m_channel_t channel);
+XBT_PUBLIC(long int) MSG_task_probe_from(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, m_host_t host);
 XBT_PUBLIC(MSG_error_t) MSG_channel_select_from(m_channel_t channel, double max_duration,
-				    int *PID);
+				    long int *PID);
 XBT_PUBLIC(MSG_error_t) MSG_process_sleep(double nb_sec);
 XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
 

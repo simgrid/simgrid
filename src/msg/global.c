@@ -181,7 +181,7 @@ MSG_error_t MSG_main(void)
  *   number means no reset and a positive number will be used to set the PID
  *   of the next newly created process.
  */
-int MSG_process_killall(int reset_PIDs)
+int MSG_process_killall(long int reset_PIDs)
 {
   m_process_t p = NULL;
   m_process_t self = MSG_process_self();
