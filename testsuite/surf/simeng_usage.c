@@ -32,7 +32,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
 typedef enum {
   MAXMIN,
   SDP,
-  LAGRANGE
+  LAGRANGE_RENO,
+  LAGRANGE_VEGAS,
 } method_t;
 
 void test1(method_t method);
@@ -47,6 +48,15 @@ void test1(method_t method)
   lmm_variable_t R_1 = NULL;
   lmm_variable_t R_2 = NULL;
   lmm_variable_t R_3 = NULL;
+
+  if(method==LAGRANGE_VEGAS){
+    //set default functions for TCP Vegas
+    lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
+  }else if(method==LAGRANGE_RENO){
+    //set default functions for TCP Reno
+    lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
+  }
+
 
   Sys = lmm_system_new();
   L1 = lmm_constraint_new(Sys, (void *) "L1", 1.0);
@@ -74,16 +84,32 @@ void test1(method_t method)
   PRINT_VAR(R_3);
 
   DEBUG0("\n");
-  if(method==MAXMIN)
+
+
+Added the generic method to model fairness depending on the
+transport protocol specific constraints and behavior. Protocols
+TCP Reno and Vegas already implemented. Seems to work
+with the testbed in src/testsuite/surf/simeng_usage. Still
+need to be tested using a msg application.
+
+
+
+
+  if(method==MAXMIN){
     lmm_solve(Sys);
 #ifdef HAVE_SDP
-  else if(method==SDP)
+  }else if(method==SDP){
     sdp_solve(Sys);    
 #endif
-  else if(method==LAGRANGE)
+  }else if(method==LAGRANGE_VEGAS){
+    //set default functions for TCP Vegas
     lagrange_solve(Sys);  
-  else 
+  }else if(method==LAGRANGE_RENO){
+    //set default functions for TCP Reno
+    lagrange_solve(Sys);  
+  }else{ 
     xbt_assert0(0,"Invalid method");
+  }
 
   PRINT_VAR(R_1_2_3);
   PRINT_VAR(R_1);
@@ -103,6 +129,15 @@ void test2(method_t method)
   lmm_variable_t T1 = NULL;
   lmm_variable_t T2 = NULL;
 
+
+  if(method==LAGRANGE_VEGAS){
+    //set default functions for TCP Vegas
+    lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
+  }else if(method==LAGRANGE_RENO){
+    //set default functions for TCP Reno
+    lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
+  }
+
   Sys = lmm_system_new();
   CPU1 = lmm_constraint_new(Sys, (void *) "CPU1", 200.0);
   CPU2 = lmm_constraint_new(Sys, (void *) "CPU2", 100.0);
@@ -117,16 +152,23 @@ void test2(method_t method)
   PRINT_VAR(T2);
 
   DEBUG0("\n");
-  if(method==MAXMIN)
+
+
+  if(method==MAXMIN){
     lmm_solve(Sys);
 #ifdef HAVE_SDP
-  else if(method==SDP)
+  }else if(method==SDP){
     sdp_solve(Sys);    
 #endif
-  else if(method==LAGRANGE)
+  }else if(method==LAGRANGE_VEGAS){
+    //set default functions for TCP Vegas
     lagrange_solve(Sys);  
-  else 
+  }else if(method==LAGRANGE_RENO){
+    //set default functions for TCP Reno
+    lagrange_solve(Sys);  
+  }else{ 
     xbt_assert0(0,"Invalid method");
+  }
 
   PRINT_VAR(T1);
   PRINT_VAR(T2);
@@ -156,6 +198,7 @@ void test3(method_t method)
 
   /*array to add the the constraints of fictiv variables */
   double B[15] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+
 		1, 1, 1, 1, 1};
 
   A = (double **)calloc(links+5, sizeof(double));
@@ -242,6 +285,14 @@ void test3(method_t method)
   A[14][15] = 1.0;
 
 
+  if(method==LAGRANGE_VEGAS){
+    //set default functions for TCP Vegas
+    lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
+  }else if(method==LAGRANGE_RENO){
+    //set default functions for TCP Reno
+    lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
+  }
+
   Sys = lmm_system_new();
   
 
@@ -289,16 +340,21 @@ void test3(method_t method)
     PRINT_VAR(tmp_var[j]);
   }
 
-  if(method==MAXMIN)
+  if(method==MAXMIN){
     lmm_solve(Sys);
 #ifdef HAVE_SDP
-  else if(method==SDP)
+  }else if(method==SDP){
     sdp_solve(Sys);    
 #endif
-  else if(method==LAGRANGE)
+  }else if(method==LAGRANGE_VEGAS){
+    //set default functions for TCP Vegas
     lagrange_solve(Sys);  
-  else 
+  }else if(method==LAGRANGE_RENO){
+    //set default functions for TCP Reno
+    lagrange_solve(Sys);  
+  }else{ 
     xbt_assert0(0,"Invalid method");
+  }
 
   for(j=0; j<16; j++){
     PRINT_VAR(tmp_var[j]);
@@ -318,35 +374,41 @@ int main(int argc, char **argv)
 {
   xbt_init(&argc,argv);
 
-/*   DEBUG0("***** Test 1 (Max-Min) ***** \n"); */
-/*   test1(MAXMIN); */
-/* #ifdef HAVE_SDP */
-/*   DEBUG0("***** Test 1 (SDP) ***** \n"); */
-/*   test1(SDP); */
-/* #endif */
-/*   DEBUG0("***** Test 1 (Lagrange - dicotomi) ***** \n"); */
-/*   test1(LAGRANGE); */
+  DEBUG0("***** Test 1 (Max-Min) ***** \n");
+  test1(MAXMIN);
+#ifdef HAVE_SDP
+  DEBUG0("***** Test 1 (SDP) ***** \n");
+  test1(SDP);
+#endif
+  DEBUG0("***** Test 1 (Lagrange - Vegas) ***** \n");
+  test1(LAGRANGE_VEGAS);
+  DEBUG0("***** Test 1 (Lagrange - Reno) ***** \n");
+  test1(LAGRANGE_RENO);
 
 
-/*   DEBUG0("***** Test 2 (Max-Min) ***** \n"); */
-/*   test2(MAXMIN); */
-/* #ifdef HAVE_SDP */
-/*   DEBUG0("***** Test 2 (SDP) ***** \n"); */
-/*   test2(SDP); */
-/* #endif */
-/*   DEBUG0("***** Test 2 (Lagrange) ***** \n"); */
-/*   test2(LAGRANGE); */
+
+  DEBUG0("***** Test 2 (Max-Min) ***** \n");
+  test2(MAXMIN);
+#ifdef HAVE_SDP
+  DEBUG0("***** Test 2 (SDP) ***** \n");
+  test2(SDP);
+#endif
+  DEBUG0("***** Test 2 (Lagrange - Vegas) ***** \n");
+  test2(LAGRANGE_VEGAS);
+  DEBUG0("***** Test 2 (Lagrange - Reno) ***** \n");
+  test2(LAGRANGE_RENO);
 
 
-/*   DEBUG0("***** Test 3 (Max-Min) ***** \n"); */
-/*   test3(MAXMIN); */
+  DEBUG0("***** Test 3 (Max-Min) ***** \n");
+  test3(MAXMIN);
 #ifdef HAVE_SDP
   DEBUG0("***** Test 3 (SDP) ***** \n");
   test3(SDP);
-#endif
-  DEBUG0("***** Test 3 (Lagrange) ***** \n");
-  test3(LAGRANGE);
-
+#endif 
+  DEBUG0("***** Test 3 (Lagrange - Vegas) ***** \n");
+  test3(LAGRANGE_VEGAS);
+  DEBUG0("***** Test 3 (Lagrange - Reno) ***** \n"); 
+  test3(LAGRANGE_RENO); 
 
   return 0;
 }

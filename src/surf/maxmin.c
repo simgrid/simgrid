@@ -174,7 +174,13 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
-  var->df    = 0.0;
+  var->df    = 1.0;
+
+  var->func_f    = func_f_def;
+  var->func_fp   = func_fp_def;
+  var->func_fpi  = func_fpi_def;
+  var->func_fpip = func_fpip_def;
+
   if(weight) xbt_swag_insert_at_head(var,&(sys->variable_set));
   else xbt_swag_insert_at_tail(var,&(sys->variable_set));
   XBT_OUT;
@@ -616,6 +622,8 @@ lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint
   return xbt_swag_getNext(cnst,(sys->active_constraint_set).offset);
 }
 
+
+
 /** \brief Attribute the value bound to var->bound.
  * 
  *  \param func_f    default function f associated with the chosen protocol flavor
@@ -623,7 +631,7 @@ lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint
  *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
  *  \param func_fpip partial differential of the inverse of the partial differential of f (f prime inverse prime, ((f')^{-1})')
  * 
- *  Set default functions to the ones passed as parameters.
+ *  Set default functions to the ones passed as parameters. This is a polimorfism in C pure, enjoy the roots of programming.
  *
  */
 void lmm_set_default_protocol_functions(double (* func_f)    (lmm_variable_t var, double x),
@@ -645,73 +653,93 @@ void lmm_set_default_protocol_functions(double (* func_f)    (lmm_variable_t var
  */
 
 /*
- * For Reno f: $\alpha_f d_f \log\left(x_f\right)$
+ * For Vegas f: $\alpha_f d_f \log\left(x_f\right)$
  */
-double func_reno_f(lmm_variable_t var, double x){
-  xbt_assert0(x,"Please report this bug.");
+double func_vegas_f(lmm_variable_t var, double x){
   return var->df * log(x);
 }
 
 /*
- * For Reno fp: $\frac{\alpha D_f}{x}$
+ * For Vegas fp: $\frac{\alpha D_f}{x}$
  */
-double func_reno_fp(lmm_variable_t var, double x){
-  xbt_assert0(x,"Please report this bug.");
+double func_vegas_fp(lmm_variable_t var, double x){
+  //avoid a disaster value - c'est du bricolage mais ca marche
+  if(x == 0) x = 10e-8;
   return var->df/x;
 }
 
 /*
- * For Reno fpi: $\frac{\alpha D_f}{x}$
+ * For Vegas fpi: $\frac{\alpha D_f}{x}$
  */
-double func_reno_fpi(lmm_variable_t var, double x){
-  xbt_assert0(x,"Please report this bug.");
+double func_vegas_fpi(lmm_variable_t var, double x){
+  //avoid a disaster value - c'est du bricolage mais ca marche
+  if(x == 0) x = 10e-8;
   return var->df/x;
 }
 
 /*
- * For Reno fpip: $-\frac{\alpha D_f}{x^2}$
+ * For Vegas fpip: $-\frac{\alpha D_f}{x^2}$
  */
-double func_reno_fpip(lmm_variable_t var, double x){
-  xbt_assert0(x,"Please report this bug.");
+double func_vegas_fpip(lmm_variable_t var, double x){
+  //avoid a disaster value - c'est du bricolage mais ca marche
+  if(x == 0) x = 10e-8;
   return -( var->df/(x*x) ) ;
 }
 
 
 /*
- * For Vegas f: $\frac{\sqrt{\frac{3}{2}}}{D_f} \arctan\left(\sqrt{\frac{3}{2}}x_f D_f\right)$
+ * For Reno f: $\frac{\sqrt{\frac{3}{2}}}{D_f} \arctan\left(\sqrt{\frac{3}{2}}x_f D_f\right)$
  */
-double func_vegas_f(lmm_variable_t var, double x){
-  xbt_assert0(x,"Please report this bug.");
+double func_reno_f(lmm_variable_t var, double x){
+  xbt_assert0( var->df, "Please report this bug.");
   // \sqrt{3/2} = 0.8164965808
   return (0.8164965808 / var->df) * atan( (0.8164965808 / var->df)*x );
 }
 
 /*
- * For Vegas fp: $\frac{3{D_f}^2}{3{D_f}^2x^2 + 2}$
+ * For Reno fp: $\frac{3}{3 {D_f}^2 x^2 + 2}$
  */
-double func_vegas_fp(lmm_variable_t var, double x){
-  xbt_assert0(x,"Please report this bug.");
-  return (3*var->df*var->df) / (3*var->df*var->df*x*x + 2);
+double func_reno_fp(lmm_variable_t var, double x){
+  return 3 / (3*var->df*var->df*x*x + 2);
 }
 
 /*
- * For Vegas fpi: $\sqrt{\frac{1}{x} - \frac{2}{3{D_f}^2}}$
+ * For Reno fpi: $\sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
  */
-double func_vegas_fpi(lmm_variable_t var, double x){
+double func_reno_fpi(lmm_variable_t var, double x){
   double res_fpi; 
-  xbt_assert0( (x<0.0) ,"Please report this bug.");
-  xbt_assert0( (var->df<0.0), "Please report this bug.");
-  res_fpi = (1/x) - 2/(3*var->df*var->df);
-  return sqrt(res_fpi);
+  xbt_assert0( var->df, "Please report this bug.");
+
+  //avoid a disaster value - c'est du bricolage mais ca marche
+  if(x == 0) x = 10e-8;
+ 
+  res_fpi = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
+
+  //avoid a disaster value of res_fpi
+  if(res_fpi < 0.0) return 0.0;
+  else return sqrt(res_fpi);
 }
 
 /*
- * For Vegas fpip:  $-\frac{1}{2x^2\sqrt{\frac{1}{x} - \frac{2}{3{D_f}^2}}}$
+ * For Reno fpip:  $-\frac{1}{2 {D_f}^2 x^2\sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}}$
  */
-double func_vegas_fpip(lmm_variable_t var, double x){
+double func_reno_fpip(lmm_variable_t var, double x){
   double res_fpip; 
-  xbt_assert0(x,"Please report this bug.");
-  xbt_assert0( (x<0.0), "Please report this bug.");
-  res_fpip = sqrt(1/x - 2/(3*var->df*var->df));
-  return -(1/(2*x*x*res_fpip));
+  double critical_test;
+
+  xbt_assert0(var->df,"Please report this bug.");
+
+  //avoid division by zero - c'est du bricolage mais ca marche
+  if(x == 0) x = 10e-8;
+
+  res_fpip = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
+  
+  //avoid square root of negative number
+  if(res_fpip < 0.0) return 0.0;
+
+  //avoid division by zero
+  critical_test = (2*var->df*var->df*x*x*sqrt(res_fpip));
+
+  if(critical_test == 0.0) return 0.0;
+  else return -(1/critical_test);
 }

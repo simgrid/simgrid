@@ -31,6 +31,8 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
 double partial_diff_mu      (double mu, void * param_var);
 //computes the value of the differential of constraint param_cnst applied to lambda  
 double partial_diff_lambda  (double lambda, void * param_cnst);
+//auxiliar function to compute the partial_diff
+double diff_aux(lmm_variable_t var, double x);
 
 
 void lagrange_solve(lmm_system_t sys)
@@ -131,20 +133,6 @@ void lagrange_solve(lmm_system_t sys)
       cnst->lambda = cnst->new_lambda;
     }
 
-
-/*     /\*                        */
-/*      * Update values of mu and lambda */
-/*      *\/ */
-/*     //forall mu_i in mu_1, mu_2, ..., mu_n */
-/*     xbt_swag_foreach(var, var_list) { */
-/*       var->mu = var->new_mu ; */
-/*     } */
-  
-/*     //forall lambda_i in lambda_1, lambda_2, ..., lambda_n */
-/*     xbt_swag_foreach(cnst, cnst_list) { */
-/*       cnst->lambda = cnst->new_lambda; */
-/*     } */
-
     /*
      * Now computes the values of each variable (\rho) based on
      * the values of \lambda and \mu.
@@ -154,6 +142,7 @@ void lagrange_solve(lmm_system_t sys)
       if(var->weight <=0) 
 	var->value = 0.0;
       else {
+	//compute sigma_i + mu_i
 	tmp = 0;
 	for(i=0; i<var->cnsts_number; i++){
 	  tmp += (var->cnsts[i].constraint)->lambda;
@@ -161,14 +150,15 @@ void lagrange_solve(lmm_system_t sys)
 	    tmp+=var->mu;
 	}
 
-	if(tmp == 0.0)
-	  WARN0("CAUTION: division by 0.0");
+	//uses the partial differential inverse function
+	tmp = var->func_fpi(var, tmp);
 
 	//computes de overall_error
-	if(overall_error < fabs(var->value - 1.0/tmp)){
-	  overall_error = fabs(var->value - 1.0/tmp);
+	if(overall_error < fabs(var->value - tmp)){
+	  overall_error = fabs(var->value - tmp);
 	}
-	var->value = 1.0 / tmp;
+	
+	var->value = tmp;
       }
       DEBUG4("======> value of var %s (%p)  = %e, overall_error = %e", (char *)var->id, var, var->value, overall_error);       
     }
@@ -301,14 +291,22 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
  */
 double partial_diff_mu(double mu, void *param_var){
   double mu_partial=0.0;
+  double sigma_mu=0.0;
   lmm_variable_t var = (lmm_variable_t)param_var;
   int i;
 
-  //for each link with capacity cnsts[i] that uses flow of variable var do
+  //compute sigma_i
   for(i=0; i<var->cnsts_number; i++)
-    mu_partial += (var->cnsts[i].constraint)->lambda;
+    sigma_mu += (var->cnsts[i].constraint)->lambda;
   
-  mu_partial = ( -1.0 / (mu_partial + mu) ) + var->bound;
+  //compute sigma_i + mu_i
+  sigma_mu += var->mu;
+  
+  //use auxiliar function passing (sigma_i + mu_i)
+  mu_partial = diff_aux(var, sigma_mu) ;
+ 
+  //add the RTT limit
+  mu_partial += var->bound;
 
   return mu_partial;
 }
@@ -318,17 +316,15 @@ double partial_diff_mu(double mu, void *param_var){
  */
 double partial_diff_lambda(double lambda, void *param_cnst){
 
-  double tmp=0.0;
   int i;
   xbt_swag_t elem_list = NULL;
   lmm_element_t elem = NULL;
   lmm_variable_t var = NULL;
   lmm_constraint_t cnst= (lmm_constraint_t) param_cnst;
   double lambda_partial=0.0;
-
+  double sigma_mu=0.0;
 
   elem_list = &(cnst->element_set);
-
 
   DEBUG2("Computting diff of cnst (%p) %s", cnst, (char *)cnst->id);
   
@@ -336,39 +332,49 @@ double partial_diff_lambda(double lambda, void *param_cnst){
     var = elem->variable;
     if(var->weight<=0) continue;
     
-    tmp = 0;
+    //initilize de sumation variable
+    sigma_mu = 0.0;
 
-    //DEBUG2("===> Variable (%p) %s", var, (char *)var->id);
-
+    //compute sigma_i of variable var
     for(i=0; i<var->cnsts_number; i++){
-      tmp += (var->cnsts[i].constraint)->lambda;
-      //DEBUG1("======> lambda %e + ", (var->cnsts[i].constraint)->lambda);
+      sigma_mu += (var->cnsts[i].constraint)->lambda;
     }
 	
-    if(var->bound > 0)
-      tmp += var->mu;
-    
+    //add mu_i if this flow has a RTT constraint associated
+    if(var->bound > 0) sigma_mu += var->mu;
 
-    //DEBUG2("======> lambda - %e + %e ", cnst->lambda, lambda);
-
-    tmp = tmp - cnst->lambda + lambda;
+    //replace value of cnst->lambda by the value of parameter lambda
+    sigma_mu = (sigma_mu - cnst->lambda) + lambda;
     
-    //avoid a disaster value of lambda
-    //if(tmp==0) tmp = 10e-8;
-    
-    lambda_partial += (-1.0/tmp);
-
-    //DEBUG1("======> %e ", (-1.0/tmp));
+    //use the auxiliar function passing (\sigma_i + \mu_i)
+    lambda_partial += diff_aux(var, sigma_mu);
   }
 
   lambda_partial += cnst->bound;
 
-  //DEBUG1("===> %e ", lambda_partial);
-
   return lambda_partial;
 }
+
+
+double diff_aux(lmm_variable_t var, double x){
+  double tmp_fp, tmp_fpi, tmp_fpip, result;
+
+  xbt_assert0(var->func_fp, "Initialize the protocol functions first create variables before.");
+
+  tmp_fp = var->func_fp(var, x);
+  tmp_fpi = var->func_fpi(var, x);
+  tmp_fpip = var->func_fpip(var, x);
+
+  result = tmp_fpip*(var->func_fp(var, tmp_fpi));
   
+  result = result - tmp_fpi;
+
+  result = result - (tmp_fpip * x);
+
+  return result;
+}  
  
+
 
 
 
