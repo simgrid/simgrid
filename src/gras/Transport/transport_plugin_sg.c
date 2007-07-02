@@ -145,7 +145,7 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
   sock->data = data;
   sock->incoming = 1;
 
-  DEBUG5("%s (PID %ld) connects in %s mode to %s:%d",
+  DEBUG5("%s (PID %d) connects in %s mode to %s:%d",
 	  SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
 	  sock->meas?"meas":"regular",
 	 sock->peer_name,sock->peer_port);
@@ -199,7 +199,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self,
 
   sock->data = data;
 
-  VERB6("'%s' (%ld) ears on %s:%d%s (%p)",
+  VERB6("'%s' (%d) ears on %s:%d%s (%p)",
     SIMIX_process_get_name(SIMIX_process_self()), gras_os_getpid(),
     host,sock->port,sock->meas? " (mode meas)":"",sock);
 

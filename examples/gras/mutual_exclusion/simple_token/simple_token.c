@@ -129,7 +129,7 @@ int node (int argc,char *argv[]) {
   globals->tosuccessor = NULL;
 
   if (!gras_os_getpid() % 100)
-  INFO4("Launch node %ld (successor on %s:%d; listening on %d)",
+  INFO4("Launch node %d (successor on %s:%d; listening on %d)",
 	gras_os_getpid(), host,peerport, myport);
 
   /* 4. Create my master socket for listening */

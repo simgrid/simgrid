@@ -77,15 +77,16 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgras_la_LIBADD =
-am__objects_1 = snprintf.lo xbt_str.lo ex.lo sysdep.lo asserts.lo \
-	log.lo xbt_log_appender_file.lo xbt_log_layout_simple.lo \
-	xbt_log_layout_format.lo mallocator.lo dynar.lo dict.lo \
-	dict_elm.lo dict_cursor.lo dict_multi.lo heap.lo fifo.lo \
-	swag.lo graph.lo set.lo xbt_matrix.lo xbt_peer.lo xbt_main.lo \
-	config.lo cunit.lo graphxml_parse.lo gras.lo transport.lo \
-	msg.lo rpc.lo timer.lo process.lo gras_module.lo ddt_create.lo \
-	ddt_convert.lo ddt_exchange.lo cbps.lo datadesc.lo \
-	ddt_parse.lo ddt_parse.yy.lo
+am__objects_1 = snprintf.lo xbt_str.lo ex.lo xbt_virtu.lo sysdep.lo \
+	asserts.lo log.lo xbt_log_appender_file.lo \
+	xbt_log_layout_simple.lo xbt_log_layout_format.lo \
+	mallocator.lo dynar.lo dict.lo dict_elm.lo dict_cursor.lo \
+	dict_multi.lo heap.lo fifo.lo swag.lo graph.lo set.lo \
+	xbt_matrix.lo xbt_peer.lo xbt_main.lo config.lo cunit.lo \
+	graphxml_parse.lo gras.lo transport.lo msg.lo rpc.lo timer.lo \
+	process.lo gras_module.lo ddt_create.lo ddt_convert.lo \
+	ddt_exchange.lo cbps.lo datadesc.lo ddt_parse.lo \
+	ddt_parse.yy.lo
 am__objects_2 = rl_stubs.lo xbt_thread.lo rl_transport.lo \
 	transport_plugin_file.lo transport_plugin_tcp.lo rl_emul.lo \
 	rl_process.lo rl_time.lo rl_dns.lo rl_msg.lo
@@ -96,8 +97,8 @@ am_libgras_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
 libgras_la_OBJECTS = $(am_libgras_la_OBJECTS)
 libsimgrid_la_LIBADD =
 am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
-	xbt_modinter.h gras_modinter.h xbt/sysdep.c xbt/asserts.c \
-	xbt/log.c xbt/xbt_log_appender_file.c \
+	xbt_modinter.h gras_modinter.h xbt/xbt_virtu.c xbt/sysdep.c \
+	xbt/asserts.c xbt/log.c xbt/xbt_log_appender_file.c \
 	xbt/xbt_log_layout_simple.c xbt/xbt_log_layout_format.c \
 	xbt/mallocator.c xbt/dynar.c xbt/dict.c xbt/dict_elm.c \
 	xbt/dict_cursor.c xbt/dict_multi.c xbt/heap.c xbt/fifo.c \
@@ -399,20 +400,21 @@ VERSION_INFO = -version-info 2:0:0
 #   using this trick is ready for a "stable" release (say, in Debian).
 lib_LTLIBRARIES = libsimgrid.la libgras.la
 COMMON_SRC = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c xbt_modinter.h \
-	gras_modinter.h xbt/sysdep.c xbt/asserts.c xbt/log.c \
-	xbt/xbt_log_appender_file.c xbt/xbt_log_layout_simple.c \
-	xbt/xbt_log_layout_format.c xbt/mallocator.c xbt/dynar.c \
-	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
-	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
-	xbt/xbt_matrix.c xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c \
-	xbt/cunit.c xbt/graphxml_parse.c gras/gras.c \
-	gras/Transport/transport.c gras/Transport/transport_private.h \
-	gras/Msg/msg.c gras/Msg/rpc.c gras/Msg/timer.c \
-	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
-	gras/Virtu/process.c gras/Virtu/gras_module.c \
-	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
-	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
-	gras/DataDesc/datadesc.c gras/DataDesc/datadesc_interface.h \
+	gras_modinter.h xbt/xbt_virtu.c xbt/sysdep.c xbt/asserts.c \
+	xbt/log.c xbt/xbt_log_appender_file.c \
+	xbt/xbt_log_layout_simple.c xbt/xbt_log_layout_format.c \
+	xbt/mallocator.c xbt/dynar.c xbt/dict.c xbt/dict_elm.c \
+	xbt/dict_cursor.c xbt/dict_multi.c xbt/heap.c xbt/fifo.c \
+	xbt/swag.c xbt/graph.c xbt/set.c xbt/xbt_matrix.c \
+	xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c xbt/cunit.c \
+	xbt/graphxml_parse.c gras/gras.c gras/Transport/transport.c \
+	gras/Transport/transport_private.h gras/Msg/msg.c \
+	gras/Msg/rpc.c gras/Msg/timer.c gras/Msg/msg_interface.h \
+	gras/Msg/msg_private.h gras/Virtu/process.c \
+	gras/Virtu/gras_module.c gras/DataDesc/ddt_create.c \
+	gras/DataDesc/ddt_convert.c gras/DataDesc/ddt_exchange.c \
+	gras/DataDesc/cbps.c gras/DataDesc/datadesc.c \
+	gras/DataDesc/datadesc_interface.h \
 	gras/DataDesc/datadesc_private.h gras/DataDesc/ddt_parse.c \
 	gras/DataDesc/ddt_parse.yy.c gras/DataDesc/ddt_parse.yy.h
 RL_SRC = \
@@ -486,6 +488,7 @@ AMOK_SRC = \
 @GRAMINE_MODE_FALSE@testall_SOURCES = $(TEST_UNITS) simgrid_units_main.c
 @GRAMINE_MODE_FALSE@testall_LDADD = libgras.la
 @GRAMINE_MODE_FALSE@TESTS = testall
+@GRAMINE_MODE_FALSE@TESTS_ENVIRONMENT = $(SG_TEST_EXENV)
 
 ###
 ### Declare the library content
@@ -703,6 +706,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_virtu.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -745,6 +749,13 @@ ex.lo: xbt/ex.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/ex.c' object='ex.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ex.lo `test -f 'xbt/ex.c' || echo '$(srcdir)/'`xbt/ex.c
+
+xbt_virtu.lo: xbt/xbt_virtu.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_virtu.lo -MD -MP -MF "$(DEPDIR)/xbt_virtu.Tpo" -c -o xbt_virtu.lo `test -f 'xbt/xbt_virtu.c' || echo '$(srcdir)/'`xbt/xbt_virtu.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/xbt_virtu.Tpo" "$(DEPDIR)/xbt_virtu.Plo"; else rm -f "$(DEPDIR)/xbt_virtu.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_virtu.c' object='xbt_virtu.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_virtu.lo `test -f 'xbt/xbt_virtu.c' || echo '$(srcdir)/'`xbt/xbt_virtu.c
 
 sysdep.lo: xbt/sysdep.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sysdep.lo -MD -MP -MF "$(DEPDIR)/sysdep.Tpo" -c -o sysdep.lo `test -f 'xbt/sysdep.c' || echo '$(srcdir)/'`xbt/sysdep.c; \

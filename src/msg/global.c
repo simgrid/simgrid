@@ -10,6 +10,7 @@
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/virtu.h"
 #include "xbt/ex.h" /* ex_backtrace_display */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");    
@@ -41,6 +42,7 @@ void MSG_global_init_args(int *argc, char **argv)
  */
 void MSG_global_init(int *argc, char **argv)
 {
+  xbt_getpid = & MSG_process_self_PID;
   if (!msg_global) {
     SIMIX_global_init(argc, argv);
      

@@ -20,8 +20,10 @@
 #include "xbt/misc.h"
 #include "xbt/ex.h"
 #include "xbt/sysdep.h"
-#include <xbt/log.h>
+#include "xbt/log.h"
 #include "xbt/dynar.h"
+
+XBT_PUBLIC_DATA(int) (*xbt_pid)();
 
 /** \addtogroup XBT_log
  *

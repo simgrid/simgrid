@@ -108,6 +108,7 @@ COMMON_SRC=\
   xbt/ex.c                                                                   \
   \
   xbt_modinter.h    gras_modinter.h                                          \
+  xbt/xbt_virtu.c                                                            \
   \
   xbt/sysdep.c                                                               \
   xbt/asserts.c                                                              \
@@ -251,6 +252,7 @@ BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
 testall_SOURCES= $(TEST_UNITS) simgrid_units_main.c
 testall_LDADD=libgras.la
 TESTS=testall
+TESTS_ENVIRONMENT=$(SG_TEST_EXENV)
 
 EXTRA_DIST+=$(testall_SOURCES)
 

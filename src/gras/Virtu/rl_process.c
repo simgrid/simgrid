@@ -29,7 +29,7 @@ const char *xbt_procname(void) {
   else return "";
 }
 
-long int gras_os_getpid(void) {
+int gras_os_getpid(void) {
 	#ifdef _WIN32
 	return (long int) GetCurrentProcess();
 	#else

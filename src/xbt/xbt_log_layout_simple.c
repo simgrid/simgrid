@@ -35,8 +35,8 @@ static char *xbt_log_layout_simple_doit(xbt_log_layout_t l,
   p += sprintf(res,"[");;
   /* Display the proc info if available */
   if(strlen(xbt_procname()))
-    p += sprintf(p,"%s:%s:(%ld) ", 
-		 gras_os_myname(), xbt_procname(),gras_os_getpid());
+    p += sprintf(p,"%s:%s:(%d) ", 
+		 gras_os_myname(), xbt_procname(),(*xbt_getpid)());
 
   /* Display the date */
   p += sprintf(p,"%f] ", gras_os_time()-begin_of_time);

@@ -609,9 +609,9 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-info-am
 
-@GRAS_ARCH_32_BITS_TRUE@test-sg: force
+@GRAS_ARCH_32_BITS_TRUE@test-sg: 
 @GRAS_ARCH_32_BITS_TRUE@	$(TESTS_ENVIRONMENT) test_sg_32
-@GRAS_ARCH_32_BITS_FALSE@test-sg: force
+@GRAS_ARCH_32_BITS_FALSE@test-sg: 
 @GRAS_ARCH_32_BITS_FALSE@	$(TESTS_ENVIRONMENT) test_sg_64
 
 test-rl: force
@@ -619,7 +619,7 @@ test-rl: force
 
 force:
 
-.PHONY: test_sg_32 test_SG_64 test_rl force
+.PHONY: test_sg_32 test_SG_64 test_rl 
 
 $(foreach proc, $(PROCESSES), _$(NAME)_$(proc).c) _$(NAME)_simulator.c: $(srcdir)/$(NAME).xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
 	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ $(NAME) $(srcdir)/$(NAME).xml

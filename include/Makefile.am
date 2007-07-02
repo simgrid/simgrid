@@ -2,6 +2,7 @@ include_HEADERS = gras.h xbt.h
 nobase_include_HEADERS = \
 	xbt/misc.h \
 	xbt/sysdep.h \
+	xbt/virtu.h \
 	xbt/str.h \
 	xbt/function_types.h \
 	xbt/asserts.h xbt/ex.h \

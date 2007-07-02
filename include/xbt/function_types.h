@@ -28,4 +28,4 @@ SG_BEGIN_DECL()
 
 SG_END_DECL()
 
-#endif /* XBT_MISC_H */
+#endif /* XBT_FUNCTION_TYPE_H */

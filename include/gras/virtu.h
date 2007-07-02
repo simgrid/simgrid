@@ -49,7 +49,7 @@ XBT_PUBLIC(int) gras_os_myport(void);
  * Returns the process ID of the current process.  (This is often used
    by routines that generate unique temporary file names.)
  */
-XBT_PUBLIC(long int) gras_os_getpid(void);
+XBT_PUBLIC(int) gras_os_getpid(void);
 
 /** @} */
 SG_END_DECL()

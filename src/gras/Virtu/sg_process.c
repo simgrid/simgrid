@@ -50,7 +50,7 @@ gras_process_init() {
 	trp_pd->cond = SIMIX_cond_init();
 	trp_pd->active_socket = xbt_fifo_new();
 
-  VERB2("Creating process '%s' (%ld)",
+  VERB2("Creating process '%s' (%d)",
 	   SIMIX_process_get_name(SIMIX_process_self()),
 	   gras_os_getpid());
 }
@@ -75,11 +75,11 @@ gras_process_exit() {
 
   xbt_assert0(hd,"Run gras_process_init (ie, gras_init)!!");
 
-  VERB2("GRAS: Finalizing process '%s' (%ld)",
+  VERB2("GRAS: Finalizing process '%s' (%d)",
 	SIMIX_process_get_name(SIMIX_process_self()),gras_os_getpid());
 
   if (xbt_dynar_length(msg_pd->msg_queue))
-    WARN1("process %ld terminated, but some messages are still queued",
+    WARN1("process %d terminated, but some messages are still queued",
 	  gras_os_getpid());
 
 	/* if each process has its sockets list, we need to close them when the process finish */
@@ -130,7 +130,7 @@ const char* xbt_procname(void) {
     return "";
 }
 
-long int gras_os_getpid(void) {
+int gras_os_getpid(void) {
 
   smx_process_t process = SIMIX_process_self();
 	

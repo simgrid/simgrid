@@ -14,8 +14,9 @@
 #ifndef __XBT_EX_H__
 #define __XBT_EX_H__
 
-#include <xbt/sysdep.h>
-#include <xbt/misc.h>
+#include "xbt/sysdep.h"
+#include "xbt/misc.h"
+#include "xbt/virtu.h"
 
 /* do not include execinfo.h directly since it's not always available. 
    Instead, copy the parts we need (and fake when it's not there) */
@@ -29,17 +30,16 @@ XBT_PUBLIC(int) backtrace (void **__array, int __size);
 # include <stdio.h>
 #include <errno.h>
 
-XBT_PUBLIC(int) gras_os_getpid(void);
 #  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
-                                   gras_os_getpid(),__FILE__,__LINE__,  \
+                                   (*xbt_getpid)(),__FILE__,__LINE__,  \
                                    (m)->jb                              \
                                   ),
 #  define MAYDAY_RESTORE(m) printf("%d %s:%d restore %p\n",             \
-                                   gras_os_getpid(),__FILE__,__LINE__,  \
+                                   (*xbt_getpid)(),__FILE__,__LINE__,  \
                                    (m)->jb                              \
                                   ),
 #  define MAYDAY_CATCH(e)   printf("%d %s:%d Catched '%s'\n",           \
-                                   gras_os_getpid(),__FILE__,__LINE__,  \
+                                   (*xbt_getpid)(),__FILE__,__LINE__,  \
                                    e.msg                                \
 				  ),
 #else
@@ -228,9 +228,6 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
  * @{
  */
 
-/* we need this symbol here, even if it breaks a bit the module separation */
-XBT_PUBLIC(long) int gras_os_getpid(void);
-
 /** @brief different kind of errors */
 typedef enum {
   unknown_error=0,  /**< unknown error */
@@ -257,7 +254,7 @@ typedef struct {
   char *host;     /**< NULL locally thrown exceptions; full hostname if remote ones */
   /* FIXME: host should be hostname:port[#thread] */
   char *procname; /**< Name of the process who thrown this */
-  long int pid;   /**< PID of the process who thrown this */
+  int pid;        /**< PID of the process who thrown this */
   char *file;     /**< Thrown point */
   int   line;     /**< Thrown point */
   char *func;     /**< Thrown point */
@@ -411,7 +408,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
      __xbt_ex_ctx()->ctx_ex.remote   = 0;                                     \
      __xbt_ex_ctx()->ctx_ex.host     = (char*)NULL;                           \
      __xbt_ex_ctx()->ctx_ex.procname = (char*)xbt_procname();                 \
-     __xbt_ex_ctx()->ctx_ex.pid      = gras_os_getpid();                      \
+     __xbt_ex_ctx()->ctx_ex.pid      = (*xbt_getpid)();                       \
      __xbt_ex_ctx()->ctx_ex.file     = (char*)__FILE__;                       \
      __xbt_ex_ctx()->ctx_ex.line     = __LINE__;                              \
      __xbt_ex_ctx()->ctx_ex.func     = (char*)_XBT_FUNCTION;                  \

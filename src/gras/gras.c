@@ -9,6 +9,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
+#include "xbt/virtu.h" /* set the XBT virtualization to use GRAS */
 #include "xbt/module.h" /* xbt_init/exit */
 
 #include "Virtu/virtu_interface.h" /* Module mechanism FIXME: deplace&rename */
@@ -44,7 +45,8 @@ static void gras_sigint_handler(int sig) {
 void gras_init(int *argc,char **argv) {
 
   VERB0("Initialize GRAS");
-  
+
+  xbt_getpid = &gras_os_getpid;
   /* First initialize the XBT */
   xbt_init(argc,argv);
    

@@ -89,9 +89,9 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 	break;
       case 'i': /* process PID name; SimGrid extension */
 	if (precision == -1)
-	   p += sprintf(p, "%ld", gras_os_getpid());
+	   p += sprintf(p, "%d", (*xbt_getpid)());
         else {	      
-	   p += sprintf(p, "%.*ld", precision, gras_os_getpid());
+	   p += sprintf(p, "%.*d", precision, (*xbt_getpid)());
 	   precision = -1;
 	}	 
 	break;
