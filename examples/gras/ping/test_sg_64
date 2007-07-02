@@ -1,6 +1,6 @@
 p Runs the 'ping' test within the simulator (simulation times valid for 32bits architectures)
 
-$ ./ping_simulator$EXEEXT $srcdir/../../msg/small_platform.xml $srcdir/ping.xml
+$ ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/ping.xml
 > [Tremblay:server:(1) 0.000000] [Ping/INFO] Launch server (port=4000)
 > [Tremblay:server:(1) 0.000000] [Ping/INFO] Messages registered
 > [Tremblay:server:(1) 0.000000] [Ping/INFO] Messages registered
