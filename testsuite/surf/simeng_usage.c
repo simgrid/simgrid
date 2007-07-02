@@ -86,15 +86,6 @@ void test1(method_t method)
   DEBUG0("\n");
 
 
-Added the generic method to model fairness depending on the
-transport protocol specific constraints and behavior. Protocols
-TCP Reno and Vegas already implemented. Seems to work
-with the testbed in src/testsuite/surf/simeng_usage. Still
-need to be tested using a msg application.
-
-
-
-
   if(method==MAXMIN){
     lmm_solve(Sys);
 #ifdef HAVE_SDP
