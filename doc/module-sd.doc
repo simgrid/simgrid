@@ -13,6 +13,8 @@
 /** @defgroup SD_datatypes_management SD Data Types 
     @ingroup SD_API
     @brief This section describes the different datatypes provided by SD.
+ */
+/** @addtogroup SD_datatypes_management
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
 */
 /**     \addtogroup SD_workstation_management
