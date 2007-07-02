@@ -1,5 +1,5 @@
 ! timeout 30
-$ $SG_TEST_EXENV ./pmm_simulator$EXEEXT $srcdir/../../msg/msg_platform.xml $srcdir/pmm.xml
+$ $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml ${srcdir:=.}/pmm.xml
 > [Jacquelin:master:(1) 0.000000] [pmm/INFO] Wait for peers for 5 sec
 > [Boivin:slave:(2) 1.000000] [pmm/INFO] Sensor starting (on port 3000)
 > [Jean_Yves:slave:(3) 1.000000] [pmm/INFO] Sensor starting (on port 3000)

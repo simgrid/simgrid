@@ -1,4 +1,4 @@
-$ $SG_TEST_EXENV ./all2all_simulator$EXEEXT $srcdir/../../msg/small_platform.xml $srcdir/all2all.xml
+$ $SG_TEST_EXENV ./all2all_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/all2all.xml
 > [Tremblay:sender:(1) 0.000000] [all2all/INFO] Launch current node
 > [Tremblay:receiver:(2) 0.000000] [all2all/INFO] Listening on port 4000 (expecting 4 messages)
 > [Jupiter:sender:(3) 0.000000] [all2all/INFO] Launch current node

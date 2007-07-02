@@ -1,4 +1,4 @@
-$ $SG_TEST_EXENV ./mmrpc_simulator$EXEEXT $srcdir/../../msg/small_platform.xml $srcdir/mmrpc.xml
+$ $SG_TEST_EXENV ./mmrpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/mmrpc.xml
 > [Tremblay:server:(1) 0.000000] [MatMult/INFO] Launch server (port=4000)
 > [Fafard:client:(2) 0.000000] [MatMult/INFO] Launch client (server on Tremblay:4000)
 > [Fafard:client:(2) 1.000000] [MatMult/INFO] Connected to Tremblay:4000.
