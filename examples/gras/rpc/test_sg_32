@@ -6,9 +6,9 @@ $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT $srcdir/../../msg/small_platform.xml $sr
 > [Fafard:client:(3) 2.00] [Rpc/INFO] Connected to Tremblay:4000.
 > [Fafard:client:(3) 2.00] [Rpc/INFO] Connected to server which is on Tremblay:4000
 > [Tremblay:server:(1) 2.00] [Rpc/INFO] Got message PING(1234) from Fafard:0
-> [Tremblay:server:(1) 2.00] [Rpc/INFO] Answered with PONG(4321)
 > [Fafard:client:(3) 2.00] [Rpc/INFO] The answer to PING(1234) on Tremblay:4000 is PONG(4321)
 > [Fafard:client:(3) 2.00] [Rpc/INFO] Call the exception raising RPC
+> [Tremblay:server:(1) 2.00] [Rpc/INFO] Answered with PONG(4321)
 > [Fafard:client:(3) 2.01] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3) 2.01] [Rpc/INFO] Called the exception raising RPC
 > [Fafard:client:(3) 2.01] [Rpc/INFO] Call the exception raising RPC (i=0)
@@ -32,12 +32,12 @@ $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT $srcdir/../../msg/small_platform.xml $sr
 > [Ginette:forwarder:(2) 2.05] [Rpc/INFO] Forward a request
 > [Fafard:client:(3) 2.05] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3) 2.05] [Rpc/INFO] Ask Ginette:4000 to die
-> [Fafard:client:(3) 2.06] [Rpc/INFO] Ask Tremblay:4000 to die
 > [Ginette:forwarder:(2) 2.06] [Rpc/INFO] Asked to die by Fafard:0
 > [Ginette:forwarder:(2) 2.06] [Rpc/INFO] Done.
 > [Ginette:forwarder:(2) 2.06] [gras/INFO] Exiting GRAS
-> [Fafard:client:(3) 2.06] [Rpc/INFO] Done.
-> [Fafard:client:(3) 2.06] [gras/INFO] Exiting GRAS
+> [Fafard:client:(3) 2.06] [Rpc/INFO] Ask Tremblay:4000 to die
 > [Tremblay:server:(1) 2.06] [Rpc/INFO] Asked to die by Fafard:0
 > [Tremblay:server:(1) 2.06] [Rpc/INFO] Done.
 > [Tremblay:server:(1) 2.06] [gras/INFO] Exiting GRAS
+> [Fafard:client:(3) 2.06] [Rpc/INFO] Done.
+> [Fafard:client:(3) 2.06] [gras/INFO] Exiting GRAS
