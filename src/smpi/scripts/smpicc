@@ -29,8 +29,8 @@ function modsource {
 #define gettimeofday(x, y) smpi_gettimeofday(x, y)
 HEADER
   # very simplistic transform, will probably want full parser for next version
-  grep -v "mpi.h" < ${SOURCE} | perl -pe 's/main/smpi_main/;' >> ${TMPSOURCE}
-  grep -q "smpi_main" ${TMPSOURCE}
+  grep -v "mpi.h" < ${SOURCE} | perl -pe 's/main/smpi_simulated_main/;' >> ${TMPSOURCE}
+  grep -q "smpi_simulated_main" ${TMPSOURCE}
   if [ $? -eq 0 ]; then
     cat >> ${TMPSOURCE} <<FOOTER
 int main(int argc, char **argv) {
@@ -51,7 +51,7 @@ while [ -n "$1" ]; do
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
   elif [ "${ARG%.c}" != "${ARG}" ]; then
-    INCLUDEARGS="-I${SMPI_INCLUDE} -I${SIMGRID_INCLUDE} "
+    INCLUDEARGS="-I ../include -I${SMPI_INCLUDE} -I${SIMGRID_INCLUDE} "
     SRCFILE="$(realpath ${ARG})"
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "

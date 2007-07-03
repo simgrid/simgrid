@@ -1,4 +1,6 @@
-#define DEFAULT_POWER 100
+#define SMPI_DEFAULT_SPEED 100
+
+#define SMPI_RAND_SEED 5
 
 #define MPI_ANY_SOURCE -1
 
@@ -14,13 +16,11 @@
 #define MPI_ERR_TAG     8
 
 #include <stdlib.h>
-#include <msg/msg.h>
 
-typedef enum { MPI_PORT = 0, SEND_SYNC_PORT, RECV_SYNC_PORT, MAX_CHANNEL } channel_t;
+#include <simix/simix.h>
 
 // MPI_Comm
 struct smpi_mpi_communicator_t {
-  int id;
   int size;
   int barrier;
   smx_host_t *hosts;
@@ -42,7 +42,6 @@ extern smpi_mpi_status_t smpi_mpi_status_ignore;
 
 // MPI_Datatype
 struct smpi_mpi_datatype_t {
-//  int type;
   size_t size;
 };
 typedef struct smpi_mpi_datatype_t smpi_mpi_datatype_t;
@@ -55,13 +54,6 @@ extern smpi_mpi_datatype_t smpi_mpi_int;
 extern smpi_mpi_datatype_t smpi_mpi_double;
 #define MPI_DOUBLE (&smpi_mpi_double)
 
-struct smpi_waitlist_node_t {
-  smx_process_t process;
-  struct smpi_waitlist_node_t *next;
-};
-typedef struct smpi_waitlist_node_t smpi_waitlist_node_t;
-
-// FIXME: maybe it isn't appropriate to have the next pointer inside
 // MPI_Request
 struct smpi_mpi_request_t {
   void *buf;
@@ -72,9 +64,7 @@ struct smpi_mpi_request_t {
   int tag;
   smpi_mpi_communicator_t *comm;
   short int completed;
-  smpi_waitlist_node_t *waitlist;
-  struct smpi_mpi_request_t *next;
-  int fwdthrough;
+  xbt_fifo_t waitlist;
 };
 typedef struct smpi_mpi_request_t smpi_mpi_request_t;
 typedef smpi_mpi_request_t *MPI_Request;
@@ -90,32 +80,18 @@ extern smpi_mpi_op_t smpi_mpi_land;
 extern smpi_mpi_op_t smpi_mpi_sum;
 #define MPI_SUM (&smpi_mpi_sum)
 
-// smpi_received_t
-struct smpi_received_t {
-  int commid;
-  int src;
-  int dst;
-  int tag;
-  int fwdthrough;
-  void *data;
-  struct smpi_received_t *next;
+// smpi_received_message_t
+struct smpi_received_message_t {
+	smpi_mpi_communicator_t *comm;
+	int src;
+	int dst;
+	int tag;
+	void *data;
+	int fwdthrough;
 };
-typedef struct smpi_received_t smpi_received_t;
-
-// sender/receiver (called by main routine)
-int smpi_sender(int argc, char *argv[]);
-int smpi_receiver(int argc, char *argv[]);
+typedef struct smpi_received_message_t smpi_received_message_t;
 
 // smpi functions
-int smpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host);
-void smpi_isend(smpi_mpi_request_t*);
-void smpi_irecv(smpi_mpi_request_t*);
-void smpi_barrier(smpi_mpi_communicator_t *comm);
-void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status);
-void smpi_wait_all(int count, smpi_mpi_request_t **requests, smpi_mpi_status_t *statuses);
-void smpi_wait_all_nostatus(int count, smpi_mpi_request_t **requests);
-void smpi_bench_begin();
-void smpi_bench_end();
-int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype, int src, int dst, int tag, smpi_mpi_communicator_t *comm, smpi_mpi_request_t **request);
+extern int smpi_simulated_main(int argc, char **argv);
 unsigned int smpi_sleep(unsigned int);
 void smpi_exit(int);
