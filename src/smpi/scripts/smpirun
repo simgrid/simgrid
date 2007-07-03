@@ -36,8 +36,8 @@ done
 EXEC="$1"
 shift
 
-PLATFORMTMP="$(mktemp tmpXXXXXX)"
-#PLATFORMTMP="pla.xml"
+#PLATFORMTMP="$(mktemp tmpXXXXXX)"
+PLATFORMTMP="pla.xml"
 
 cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
@@ -65,8 +65,8 @@ cat >> ${PLATFORMTMP} <<PLATFORMFOOT
 </platform_description>
 PLATFORMFOOT
 
-APPLICATIONTMP="$(mktemp tmpXXXXXX)"
-#APPLICATIONTMP="app.xml"
+#APPLICATIONTMP="$(mktemp tmpXXXXXX)"
+APPLICATIONTMP="app.xml"
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
@@ -75,24 +75,21 @@ cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 APPLICATIONHEAD
 
 for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  echo "  <process host=\"host$i\" function=\"smpi_main\">" >> ${APPLICATIONTMP}
+  echo "  <process host=\"host$i\" function=\"smpi_simulated_main\">" >> ${APPLICATIONTMP}
   for ARG in $*; do
     echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
   done
   echo "  </process>" >> ${APPLICATIONTMP}
 done
 
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  echo "  <process host=\"host$i\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
-done
-
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  echo "  <process host=\"host$i\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
-done
+#for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+#  echo "  <process host=\"host$i\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
+#  echo "  <process host=\"host$i\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
+#done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 </platform_description>
 APPLICATIONFOOT
 
 ${EXEC} ${PLATFORMTMP} ${APPLICATIONTMP}
-rm ${PLATFORMTMP} ${APPLICATIONTMP}
+#rm ${PLATFORMTMP} ${APPLICATIONTMP}

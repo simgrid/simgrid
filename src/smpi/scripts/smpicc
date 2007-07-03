@@ -51,7 +51,7 @@ while [ -n "$1" ]; do
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
   elif [ "${ARG%.c}" != "${ARG}" ]; then
-    INCLUDEARGS="-I ../include -I${SMPI_INCLUDE} -I${SIMGRID_INCLUDE} "
+    INCLUDEARGS="-I .. -I ../include -I${SMPI_INCLUDE} -I${SIMGRID_INCLUDE} "
     SRCFILE="$(realpath ${ARG})"
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "

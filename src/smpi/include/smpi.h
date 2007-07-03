@@ -23,6 +23,8 @@
 struct smpi_mpi_communicator_t {
   int size;
   int barrier;
+  smx_mutex_t barrier_mutex;
+  smx_cond_t barrier_cond;
   smx_host_t *hosts;
   smx_process_t *processes;
 };

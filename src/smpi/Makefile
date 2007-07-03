@@ -1,5 +1,5 @@
 CC=gcc #-DDEBUG
-CFLAGS=-O3
+CFLAGS=-g
 SRCDIR=./src
 BINDIR=./bin
 LIBDIR=./lib
@@ -16,10 +16,10 @@ $(LIBDIR):
 	mkdir -p $(LIBDIR)
 
 $(BUILDDIR)/smpi_base.o: src/smpi_base.c include/smpi.h Makefile $(BUILDDIR)
-	$(CC) $(CFLAGS) -c -I ../include -I $(INCLUDEDIR) -I ${SIMGRID_HOME}/include src/smpi_base.c -o $(BUILDDIR)/smpi_base.o
+	$(CC) $(CFLAGS) -c -I .. -I ../include -I $(INCLUDEDIR) -I ${SIMGRID_HOME}/include src/smpi_base.c -o $(BUILDDIR)/smpi_base.o
 
 $(BUILDDIR)/smpi_mpi.o: src/smpi_mpi.c include/smpi.h Makefile $(BUILDDIR)
-	$(CC) $(CFLAGS) -c -I ../include -I $(INCLUDEDIR) -I ${SIMGRID_HOME}/include src/smpi_mpi.c -o $(BUILDDIR)/smpi_mpi.o
+	$(CC) $(CFLAGS) -c -I .. -I ../include -I $(INCLUDEDIR) -I ${SIMGRID_HOME}/include src/smpi_mpi.c -o $(BUILDDIR)/smpi_mpi.o
 
 $(BUILDDIR):
 	mkdir -p $(BUILDDIR)

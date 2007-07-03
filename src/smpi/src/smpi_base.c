@@ -29,14 +29,17 @@ static double smpi_reference_speed;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(smpi, "SMPI");
 
-void smpi_sender()
+// mutexes
+smx_mutex_t smpi_running_hosts_mutex;
+
+int smpi_sender(int argc, char **argv)
 {
-	return;
+	return 0;
 }
 
-void smpi_receiver()
+int smpi_receiver(int argc, char **argv)
 {
-	return;
+	return 0;
 }
 
 int smpi_run_simulation(int argc, char **argv)
@@ -116,9 +119,6 @@ void smpi_mpi_init()
 	smx_host_t host;
 	double duration;
 
-	// FIXME: mutex?
-	smpi_running_hosts++;
-
 	// initialize some local variables
 	host  = SIMIX_host_self();
 	hosts = SIMIX_host_get_table();
@@ -127,26 +127,31 @@ void smpi_mpi_init()
 	// node 0 sets the globals
 	if (host == hosts[0]) {
 
+		// mutexes
+		smpi_running_hosts_mutex          = SIMIX_mutex_init();
+
 		// global communicator
-		smpi_mpi_comm_world.size         = size;
-		smpi_mpi_comm_world.barrier      = 0;
-		smpi_mpi_comm_world.hosts        = hosts;
-		smpi_mpi_comm_world.processes    = xbt_new0(smx_process_t, size);
-		smpi_mpi_comm_world.processes[0] = SIMIX_process_self();
+		smpi_mpi_comm_world.size          = size;
+		smpi_mpi_comm_world.barrier       = 0;
+		smpi_mpi_comm_world.barrier_mutex = SIMIX_mutex_init();
+		smpi_mpi_comm_world.barrier_cond  = SIMIX_cond_init();
+		smpi_mpi_comm_world.hosts         = hosts;
+		smpi_mpi_comm_world.processes     = xbt_new0(smx_process_t, size);
+		smpi_mpi_comm_world.processes[0]  = SIMIX_process_self();
 
 		// mpi datatypes
-		smpi_mpi_byte.size               = (size_t)1;
-		smpi_mpi_int.size                = sizeof(int);
-		smpi_mpi_double.size             = sizeof(double);
+		smpi_mpi_byte.size                = (size_t)1;
+		smpi_mpi_int.size                 = sizeof(int);
+		smpi_mpi_double.size              = sizeof(double);
 
 		// mpi operations
-		smpi_mpi_land.func               = &smpi_mpi_land_func;
-		smpi_mpi_sum.func                = &smpi_mpi_sum_func;
+		smpi_mpi_land.func                = &smpi_mpi_land_func;
+		smpi_mpi_sum.func                 = &smpi_mpi_sum_func;
 
 		// smpi globals
-		smpi_pending_send_requests       = xbt_new0(xbt_fifo_t, size);
-		smpi_pending_recv_requests       = xbt_new0(xbt_fifo_t, size);
-		smpi_received_messages           = xbt_new0(xbt_fifo_t, size);
+		smpi_pending_send_requests        = xbt_new0(xbt_fifo_t, size);
+		smpi_pending_recv_requests        = xbt_new0(xbt_fifo_t, size);
+		smpi_received_messages            = xbt_new0(xbt_fifo_t, size);
 
 		for(i = 0; i < size; i++) {
 			smpi_pending_send_requests[i] = xbt_fifo_new();
@@ -168,27 +173,37 @@ void smpi_mpi_init()
 		// FIXME: signal node 0
 		// FIXME: wait for node 0
 	}
+
+	SIMIX_mutex_lock(smpi_running_hosts_mutex);
+	smpi_running_hosts++;
+	SIMIX_mutex_lock(smpi_running_hosts_mutex);
 }
 
 void smpi_mpi_finalize()
 {
 	int i;
 
-	// FIXME: mutex?
-	smpi_running_hosts--;
+	SIMIX_mutex_lock(smpi_running_hosts_mutex);
+	i = --smpi_running_hosts;
+	SIMIX_mutex_unlock(smpi_running_hosts_mutex);
 
-	if (0 >= smpi_running_hosts) {
+	if (0 >= i) {
+
+		SIMIX_mutex_destroy(smpi_running_hosts_mutex);
+
 		for (i = 0 ; i < smpi_mpi_comm_world.size; i++) {
 			xbt_fifo_free(smpi_pending_send_requests[i]);
 			xbt_fifo_free(smpi_pending_recv_requests[i]);
 			xbt_fifo_free(smpi_received_messages[i]);
 		}
+
 		xbt_free(smpi_pending_send_requests);
 		xbt_free(smpi_pending_recv_requests);
 		xbt_free(smpi_received_messages);
 		xbt_free(smpi_mpi_comm_world.processes);
 		xbt_os_timer_free(smpi_timer);
 	}
+
 }
 
 void smpi_bench_begin()
@@ -212,18 +227,15 @@ void smpi_bench_end()
 
 void smpi_barrier(smpi_mpi_communicator_t *comm) {
 	int i;
-	// FIXME: mutex
+	SIMIX_mutex_lock(comm->barrier_mutex);
 	comm->barrier++;
-	if(comm->barrier < comm->size) {
-		SIMIX_process_suspend(SIMIX_process_self());
+	if(i < comm->size) {
+		SIMIX_cond_wait(comm->barrier_cond, comm->barrier_mutex);
 	} else {
 		comm->barrier = 0;
-		for(i = 0; i < comm->size; i++) {
-			if (SIMIX_process_is_suspended(comm->processes[i])) {
-				SIMIX_process_resume(comm->processes[i]);
-			}
-		}
+		SIMIX_cond_broadcast(comm->barrier_cond);
 	}
+	SIMIX_mutex_unlock(comm->barrier_mutex);
 }
 
 int smpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host)
@@ -260,6 +272,7 @@ unsigned int smpi_sleep(unsigned int seconds)
 	// FIXME: simix sleep
 	self = SIMIX_host_self();
 	sleep_action = SIMIX_action_sleep(self, seconds);
+	sleep(seconds);
 	smpi_bench_begin();
 	return 0;
 }
@@ -267,8 +280,9 @@ unsigned int smpi_sleep(unsigned int seconds)
 void smpi_exit(int status)
 {
 	smpi_bench_end();
-	// FIXME: mutex
+	SIMIX_mutex_lock(smpi_running_hosts_mutex);
 	smpi_running_hosts--;
+	SIMIX_mutex_unlock(smpi_running_hosts_mutex);
 	SIMIX_process_kill(SIMIX_process_self());
 	return;
 }

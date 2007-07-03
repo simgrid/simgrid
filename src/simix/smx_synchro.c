@@ -96,9 +96,9 @@ int SIMIX_mutex_trylock(smx_mutex_t mutex)
 void SIMIX_mutex_unlock(smx_mutex_t mutex)
 {
 	smx_process_t p;	/*process to wake up */
-	
+
 	xbt_assert0((mutex != NULL), "Invalid parameters");
-	
+
 	if (xbt_swag_size(mutex->sleeping) > 0) {
 		p = xbt_swag_extract(mutex->sleeping);
 		mutex->using = 0;
