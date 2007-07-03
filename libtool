@@ -30,10 +30,10 @@
 # the same distribution terms that you use for the rest of that program.
 
 # A sed program that does not truncate output.
-SED="/bin/sed"
+SED="/usr/bin/sed"
 
 # Sed that helps us avoid accidentally triggering echo(1) options like -n.
-Xsed="/bin/sed -e 1s/^X//"
+Xsed="/usr/bin/sed -e 1s/^X//"
 
 # The HP-UX ksh and POSIX shell print the target directory to stdout
 # if CDPATH is set.
@@ -44,7 +44,7 @@ available_tags=" CXX"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host blaise:
+# Libtool was configured on host laserbeak:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -97,7 +97,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/i686-pc-linux-gnu/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -325,10 +325,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../ /lib/i486-linux-gnu/4.1.3/ /lib/ /usr/lib/i486-linux-gnu/4.1.3/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../../i686-pc-linux-gnu/lib/i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../../i686-pc-linux-gnu/lib/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../ /lib/i686-pc-linux-gnu/4.1.2/ /lib/ /usr/lib/i686-pc-linux-gnu/4.1.2/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr//lib/opengl/xorg-x11/lib /usr/i686-pc-linux-gnu/lib /usr/lib/gcc/i686-pc-linux-gnu/4.1.1 /usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/lib/nspr /usr/lib/nss /usr/lib/lesstif-2.1 /usr/lib/openmotif-2.2 /usr/lib/qt4 /usr/kde/3.5/lib /usr/qt/3/lib /usr/games/lib /usr/lib/fltk-1.1 /usr/lib/libstdc++-v3/ "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7223,7 +7223,7 @@ disable_libs=static
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host blaise:
+# Libtool was configured on host laserbeak:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -7276,7 +7276,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/i686-pc-linux-gnu/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -7405,11 +7405,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc/i486-linux-gnu/4.1.3/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.1.3/crtbeginS.o"
+predep_objects="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../crti.o /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc/i486-linux-gnu/4.1.3/crtendS.o /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../../lib/crtn.o"
+postdep_objects="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/crtendS.o /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7421,7 +7421,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/i486-linux-gnu/4.1.3 -L/usr/lib/gcc/i486-linux-gnu/4.1.3 -L/usr/lib/gcc/i486-linux-gnu/4.1.3/../../../../lib -L/lib/../lib -L/usr/lib/../lib"
+compiler_lib_search_path="-L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2 -L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2 -L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../../i686-pc-linux-gnu/lib -L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../.."
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7501,10 +7501,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /usr/lib/gcc/i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../../i486-linux-gnu/lib/i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../../i486-linux-gnu/lib/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../i486-linux-gnu/4.1.3/ /usr/lib/gcc/i486-linux-gnu/4.1.3/../../../ /lib/i486-linux-gnu/4.1.3/ /lib/ /usr/lib/i486-linux-gnu/4.1.3/ /usr/lib/"
+sys_lib_search_path_spec=" /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../../i686-pc-linux-gnu/lib/i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../../i686-pc-linux-gnu/lib/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../i686-pc-linux-gnu/4.1.2/ /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../ /lib/i686-pc-linux-gnu/4.1.2/ /lib/ /usr/lib/i686-pc-linux-gnu/4.1.2/ /usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr//lib/opengl/xorg-x11/lib /usr/i686-pc-linux-gnu/lib /usr/lib/gcc/i686-pc-linux-gnu/4.1.1 /usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/lib/nspr /usr/lib/nss /usr/lib/lesstif-2.1 /usr/lib/openmotif-2.2 /usr/lib/qt4 /usr/kde/3.5/lib /usr/qt/3/lib /usr/games/lib /usr/lib/fltk-1.1 /usr/lib/libstdc++-v3/ "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
