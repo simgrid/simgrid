@@ -230,14 +230,14 @@ m_process_t MSG_process_from_PID(int PID)
  * \brief Returns the process ID of \a process.
  *
  * This functions checks whether \a process is a valid pointer or not 
-   and return its PID.
+   and return its PID (or 0 in case of problem).
  */
 int MSG_process_get_PID(m_process_t process)
 {
   /* Do not raise an exception here: this function is used in the logs, 
      and it will be called back by the exception handling stuff */
   if (process == NULL || process->simdata == NULL)
-     return -1;
+     return 0;
 
   return (((simdata_process_t) process->simdata)->PID);
 }
