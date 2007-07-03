@@ -234,7 +234,10 @@ m_process_t MSG_process_from_PID(int PID)
  */
 int MSG_process_get_PID(m_process_t process)
 {
-  xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
+  /* Do not raise an exception here: this function is used in the logs, 
+     and it will be called back by the exception handling stuff */
+  if (process == NULL || process->simdata == NULL)
+     return -1;
 
   return (((simdata_process_t) process->simdata)->PID);
 }
