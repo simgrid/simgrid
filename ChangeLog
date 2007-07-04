@@ -17,7 +17,11 @@ SimGrid (3.3-cvs) unstable; urgency=low
     may be enough to completely change the execution of simulations in
     some cases. Sorry for the inconvenience.
 
- Overall changes:
+ GRAS:
+  * Convert the PIDs from long int to int to match the MSG ones (and
+    linux ones too)
+
+ XBT:
   * Make the backtrace of exceptions more human readable [Mt]
 
  -- 
