@@ -684,8 +684,14 @@ gras_msg_handle(double timeOut) {
     } CATCH(e) {
       free(msg.payl);
       if (msg.type->kind == e_gras_msg_kind_rpccall) {
+	char *old_file=e.file;
 	/* The callback raised an exception, propagate it on the network */
-	if (!e.remote) { /* the exception is born on this machine */
+	if (!e.remote) { 
+	  /* Make sure we reduce the file name to its basename to avoid issues in tests */
+	  char *new_file=strrchr(e.file,'/');
+	  if (new_file)
+	     e.file = new_file;
+	  /* the exception is born on this machine */
 	  e.host = (char*)gras_os_myname();
 	  xbt_ex_setup_backtrace(&e);
 	} 
@@ -697,6 +703,7 @@ gras_msg_handle(double timeOut) {
 	      gras_socket_peer_port(msg.expe));
 	gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
 			  msg.ID, msg.type, &e);
+	e.file=old_file;
 	xbt_ex_free(e);
 	ctx.answer_due = 0;
 	ran_ok=1;
