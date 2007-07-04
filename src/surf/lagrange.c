@@ -41,7 +41,7 @@ void lagrange_solve(lmm_system_t sys)
    * Lagrange Variables.
    */
   int max_iterations= 10000;
-  double epsilon_min_error = 1e-4;
+  double epsilon_min_error  = 1e-4;
   double dicotomi_min_error = 1e-8;
   double overall_error = 1;
 
@@ -153,9 +153,9 @@ void lagrange_solve(lmm_system_t sys)
 	//uses the partial differential inverse function
 	tmp = var->func_fpi(var, tmp);
 
-	//computes de overall_error
-	if(overall_error < fabs(var->value - tmp)){
-	  overall_error = fabs(var->value - tmp);
+	//computes de overall_error using normalized value
+	if(overall_error <  (fabs(var->value - tmp)/tmp) ){
+	  overall_error = (fabs(var->value - tmp)/tmp);
 	}
 	
 	var->value = tmp;
