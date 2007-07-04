@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <time.h>
 
+#include "xbt/peer.h"
 #include "gras.h"
 #include "amok/bandwidth.h"
 #include "amok/peermanagement.h"
@@ -124,21 +125,35 @@ static void simple_saturation(int argc, char*argv[]) {
   /* wait for dudes */
   gras_msg_handleall(5);
 
+  /* Stop all sensors but two of them */
+  while (xbt_dynar_length(peers) > 2) {
+     xbt_dynar_pop(peers,&h1);
+     amok_pm_kill_hp(h1->name,h1->port);
+     xbt_peer_free(h1);
+  }
+   
   /* get 2 friends */
   xbt_dynar_get_cpy(peers,0,&h1);
   xbt_dynar_get_cpy(peers,1,&h2);
    
   /* Start saturation */
+  INFO4("Start saturation between %s:%d and %s:%d",
+	h1->name,h1->port,
+	h2->name,h2->port);
+
   amok_bw_saturate_start(h1->name,h1->port,
 			 h2->name,h2->port,
 			 0, /* Be a nice boy, compute msg_size yourself */
 			 30  /* 5 sec timeout */);  
 
   /* Stop it after a while */
+  INFO0("Have a rest");
   gras_os_sleep(1);
   TRY {
+    INFO0("Stop the saturation");
     amok_bw_saturate_stop(h1->name,h1->port, &duration,&bw);
   } CATCH(e) {
+    INFO0("Ooops, stoping the saturation raised an exception");
     xbt_ex_free(e);
   }
   INFO2("Saturation took %.2fsec, achieving %fb/s",duration,bw);
