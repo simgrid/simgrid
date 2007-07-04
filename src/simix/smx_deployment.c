@@ -45,10 +45,10 @@ static void parse_argument(void)
 
 static void parse_process_finalize(void)
 {
-  process_arg_t arg = NULL;
+  smx_process_arg_t arg = NULL;
   void * process = NULL;
   if(start_time>SIMIX_get_clock()) {
-    arg = xbt_new0(s_process_arg_t,1);
+    arg = xbt_new0(s_smx_process_arg_t,1);
     arg->name = parse_argv[0];
     arg->code = parse_code;
     arg->data = NULL;

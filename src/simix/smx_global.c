@@ -274,7 +274,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 		while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
 			DEBUG2("got %p %p", fun, arg);
 			if(fun==SIMIX_process_create) {
-				process_arg_t args = arg;
+				smx_process_arg_t args = arg;
 				DEBUG2("Launching %s on %s", args->name, args->hostname);
 				process = SIMIX_process_create(args->name, args->code, 
 						args->data, args->hostname,

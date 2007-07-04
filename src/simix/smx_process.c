@@ -263,7 +263,7 @@ void SIMIX_process_resume(smx_process_t process)
   smx_simdata_process_t simdata = NULL;
 
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
-  CHECK_HOST();
+  SIMIX_CHECK_HOST();
 
   if(process == SIMIX_process_self()) {
  		return; 

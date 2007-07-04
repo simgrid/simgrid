@@ -56,7 +56,7 @@ typedef struct s_smx_simdata_process {
   char **argv;                  /* arguments table if any */
 } s_smx_simdata_process_t;
 
-typedef struct process_arg {
+typedef struct s_smx_process_arg {
   const char *name;
   smx_process_code_t code;
   void *data;
@@ -64,7 +64,7 @@ typedef struct process_arg {
   int argc;
   char **argv;
   double kill_time;
-} s_process_arg_t, *process_arg_t;
+} s_smx_process_arg_t, *smx_process_arg_t;
 
 /********************************* Mutex and Conditional ****************************/
 
@@ -102,7 +102,7 @@ extern int _simix_init_status; /* 0: beginning of time;
 extern xbt_cfg_t _simix_cfg_set;
 
 
-#define CHECK_HOST()  xbt_assert0(surf_workstation_resource->extension_public-> \
+#define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_resource->extension_public-> \
 				  get_state(SIMIX_host_self()->simdata->host)==SURF_CPU_ON,\
                                   "Host failed, you cannot call this function.")
 
