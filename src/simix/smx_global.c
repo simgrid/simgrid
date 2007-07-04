@@ -51,31 +51,36 @@ void __SIMIX_display_process_status(void)
 	 smx_action_t act;
    int nbprocess=xbt_swag_size(simix_global->process_list);
    
-   INFO1("SIMIX: %d processes are still running, waiting for something.",
+   INFO1("%d processes are still running, waiting for something.",
 	 nbprocess);
    /*  List the process and their state */
-   INFO0("SIMIX: <process> on <host>: <status>.");
+   INFO0("Legend of the following listing: \"<process> on <host>: <status>.\"");
    xbt_swag_foreach(process, simix_global->process_list) {
       smx_simdata_process_t p_simdata = (smx_simdata_process_t) process->simdata;
      // simdata_host_t h_simdata=(simdata_host_t)p_simdata->host->simdata;
-      char *who;
+      char *who, *who2;
 	
-      asprintf(&who,"SIMIX:  %s on %s: %s",
+      asprintf(&who,"%s on %s: %s",
 	       process->name,
-				p_simdata->host->name,
+	       p_simdata->host->name,
 	       (process->simdata->blocked)?"[BLOCKED] "
 	       :((process->simdata->suspended)?"[SUSPENDED] ":""));
-			if (p_simdata->mutex) {
-				DEBUG1("Block on a mutex: %s", who);			
-			}
-			else if (p_simdata->cond) {
-				DEBUG1("Block on a condition: %s", who);
-				DEBUG0("Waiting actions:");
-				xbt_fifo_foreach(p_simdata->cond->actions,item, act, smx_action_t) {
-					DEBUG1("\t %s", act->name);
-				}
-			}
-			else DEBUG1("Unknown block status: %s", who);
+      
+      if (p_simdata->mutex) {
+	 who2=bprintf("%s Blocked on mutex %p",who,p_simdata->mutex);
+	 free(who); who=who2;
+      } else if (p_simdata->cond) {
+	 who2=bprintf("%s Blocked on condition %p; Waiting for the following actions:",who,p_simdata->cond);
+	 free(who); who=who2;
+	 xbt_fifo_foreach(p_simdata->cond->actions,item, act, smx_action_t) {
+	    who2=bprintf("%s '%s'",who,act->name);
+	    free(who); who=who2;
+	 }
+      } else {
+	 who2=bprintf("%s Blocked in an unknown status (please report this bug)",who);
+	 free(who); who=who2;
+      }
+      INFO1("%s.",who);
       free(who);
    }
 }
