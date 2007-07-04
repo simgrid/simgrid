@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
 		printf("root node believes there are %d nodes in world.\n", size);
 	}
 
+	sleep(20);
+
 	err = MPI_Finalize();          /* Terminate MPI */
 	return 0;
 }

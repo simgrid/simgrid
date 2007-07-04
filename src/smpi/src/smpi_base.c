@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include "xbt/xbt_portability.h"
 #include "simix/simix.h"
+#include "simix/private.h"
 #include "smpi.h"
 
 xbt_fifo_t *smpi_pending_send_requests      = NULL;
@@ -27,10 +28,15 @@ static xbt_os_timer_t smpi_timer;
 static int smpi_benchmarking;
 static double smpi_reference_speed;
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(smpi, "SMPI");
-
 // mutexes
-smx_mutex_t smpi_running_hosts_mutex;
+smx_mutex_t smpi_running_hosts_mutex = NULL;
+smx_mutex_t init_mutex = NULL;
+smx_cond_t init_cond  = NULL;
+
+int rootready = 0;
+int readycount = 0;
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(smpi, "SMPI");
 
 int smpi_sender(int argc, char **argv)
 {
@@ -53,6 +59,10 @@ int smpi_run_simulation(int argc, char **argv)
 	srand(SMPI_RAND_SEED);
 
 	SIMIX_global_init(&argc, argv);
+
+	init_mutex = SIMIX_mutex_init();
+	init_cond  = SIMIX_cond_init();
+
 	SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
 	SIMIX_create_environment(argv[1]);
 	SIMIX_launch_application(argv[2]);
@@ -115,6 +125,7 @@ void smpi_mpi_init()
 {
 	int i;
 	int size;
+	smx_process_t process;
 	smx_host_t *hosts;
 	smx_host_t host;
 	double duration;
@@ -127,8 +138,9 @@ void smpi_mpi_init()
 	// node 0 sets the globals
 	if (host == hosts[0]) {
 
-		// mutexes
+		// running hosts
 		smpi_running_hosts_mutex          = SIMIX_mutex_init();
+	        smpi_running_hosts                = size;
 
 		// global communicator
 		smpi_mpi_comm_world.size          = size;
@@ -163,20 +175,35 @@ void smpi_mpi_init()
 		smpi_reference_speed            = SMPI_DEFAULT_SPEED;
 		smpi_benchmarking               = 0;
 
-		// FIXME: tell other nodes to initialize, and wait for all clear
-
-		// FIXME: send everyone okay to begin
+		// signal all nodes to perform initialization
+		SIMIX_mutex_lock(init_mutex);
+		rootready = 1;
+		SIMIX_cond_broadcast(init_cond);
+		SIMIX_mutex_unlock(init_mutex);
 
 	} else {
-		// FIMXE: wait for node 0 
+
+		// make sure root is done before own initialization
+		SIMIX_mutex_lock(init_mutex);
+		if (!rootready) {
+			SIMIX_cond_wait(init_cond, init_mutex);
+		}
+		SIMIX_mutex_unlock(init_mutex);
+
     		smpi_mpi_comm_world.processes[smpi_mpi_rank_self(&smpi_mpi_comm_world)] = SIMIX_process_self();
-		// FIXME: signal node 0
-		// FIXME: wait for node 0
+
 	}
 
-	SIMIX_mutex_lock(smpi_running_hosts_mutex);
-	smpi_running_hosts++;
-	SIMIX_mutex_lock(smpi_running_hosts_mutex);
+	// wait for all nodes to signal initializatin complete
+	SIMIX_mutex_lock(init_mutex);
+	readycount++;
+	if (readycount < size) {
+		SIMIX_cond_wait(init_cond, init_mutex);
+	} else {
+		SIMIX_cond_broadcast(init_cond);
+	}
+	SIMIX_mutex_unlock(init_mutex);
+
 }
 
 void smpi_mpi_finalize()
@@ -200,7 +227,11 @@ void smpi_mpi_finalize()
 		xbt_free(smpi_pending_send_requests);
 		xbt_free(smpi_pending_recv_requests);
 		xbt_free(smpi_received_messages);
+
+		SIMIX_mutex_destroy(smpi_mpi_comm_world.barrier_mutex);
+		SIMIX_cond_destroy(smpi_mpi_comm_world.barrier_cond);
 		xbt_free(smpi_mpi_comm_world.processes);
+
 		xbt_os_timer_free(smpi_timer);
 	}
 
@@ -265,14 +296,24 @@ int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
 
 unsigned int smpi_sleep(unsigned int seconds)
 {
-	smx_host_t self;
+	smx_mutex_t mutex;
+	smx_cond_t cond;
+	smx_host_t host;
 	smx_action_t sleep_action;
 
 	smpi_bench_end();
-	// FIXME: simix sleep
-	self = SIMIX_host_self();
-	sleep_action = SIMIX_action_sleep(self, seconds);
-	sleep(seconds);
+	host         = SIMIX_host_self();
+	sleep_action = SIMIX_action_sleep(host, seconds);
+	mutex        = SIMIX_mutex_init();
+	cond         = SIMIX_cond_init();
+	SIMIX_mutex_lock(mutex);
+	SIMIX_register_condition_to_action(sleep_action, cond);
+	SIMIX_register_action_to_condition(sleep_action, cond);
+	SIMIX_cond_wait(cond, mutex);
+	SIMIX_mutex_unlock(mutex);
+	SIMIX_mutex_destroy(mutex);
+	SIMIX_cond_destroy(cond);
+	// FIXME: check for success/failure?
 	smpi_bench_begin();
 	return 0;
 }
