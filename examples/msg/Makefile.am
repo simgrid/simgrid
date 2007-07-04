@@ -1,7 +1,7 @@
 INCLUDES= -I$(top_srcdir)/include
 AM_CFLAGS=-g
 EXTRA_DIST= msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml \
-            basic.tesh.in small_plat.tesh.in suspend.tesh.in flexml_bypass.tesh.in
+            flexml_bypass.tesh
 
 CLEANFILES=msg_test.trace
 
