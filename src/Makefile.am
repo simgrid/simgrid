@@ -100,9 +100,13 @@ VERSION_INFO= -version-info 2:0:0
 #  It modifies the library name, and you thus cannot say that a library
 #   using this trick is ready for a "stable" release (say, in Debian).
 
-lib_LTLIBRARIES= libsimgrid.la libgras.la
+lib_LTLIBRARIES= libsimgrid.la  libgras.la
 
-COMMON_SRC=\
+################################################
+# Declaration of the different modules content #
+################################################
+
+XBT_SRC=\
   \
   xbt/snprintf.c    xbt/xbt_str.c                                            \
   xbt/ex.c                                                                   \
@@ -130,21 +134,7 @@ COMMON_SRC=\
   xbt/cunit.c                                                                \
   xbt/graphxml_parse.c
 
-RL_SRC= \
-  gras/rl_stubs.c                     xbt/xbt_thread.c                    \
-  \
-  gras/Transport/rl_transport.c          \
-  gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
-  \
-  gras/Virtu/rl_emul.c \
-  gras/Virtu/rl_process.c        gras/Virtu/rl_time.c \
-  gras/Virtu/rl_dns.c\
-  \
-  gras/Msg/rl_msg.c
-
-SG_SRC=  \
-  xbt/context.c                                                              \
-  \
+SURF_SRC= \
   surf/maxmin.c                                                              \
   surf/lagrange.c                                                            \
   surf/trace_mgr.c                                                           \
@@ -153,10 +143,7 @@ SG_SRC=  \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   surf/surf_timer.c                                                          \
   surf/network_dassf.c                                                       \
-  surf/workstation_KCCFLN05.c  \
-  \
-  simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c                       \
-  simdag/sd_workstation.c
+  surf/workstation_KCCFLN05.c
 
 GTNETS_SRC= \
   surf/gtnets/gtnets_simulator.cc \
@@ -164,17 +151,8 @@ GTNETS_SRC= \
   surf/gtnets/gtnets_interface.cc \
   surf/network_gtnets.c
 
-if USE_GTNETS
-  SG_SRC+=$(GTNETS_SRC)
-else
-  EXTRA_DIST+=$(GTNETS_SRC)
-endif
-
-if HAVE_SDP
-  SG_SRC+= surf/sdp.c
-else 
-  EXTRA_DIST+=surf/sdp.c
-endif
+# Separated because we don't want it in libsimgrid4java
+CTX_SRC= xbt/context.c
 
 SIMIX_SRC= \
   simix/smx_global.c \
@@ -190,18 +168,10 @@ MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
   msg/global.c msg/environment.c msg/deployment.c 
 
-GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
-  \
-  gras/Virtu/sg_emul.c \
-  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
-  gras/Virtu/sg_dns.c\
-  \
-  gras/sg_stubs.c                         \
-  gras/Msg/sg_msg.c
+SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c
 
-SG_SRC+=$(SIMIX_SRC) $(MSG_SRC) $(GRAS_SG_SRC)
-
-COMMON_SRC+=gras/gras.c  \
+GRAS_COMMON_SRC= \
+  gras/gras.c  \
   gras/Transport/transport.c          gras/Transport/transport_private.h  \
   gras/Msg/msg.c                      gras/Msg/rpc.c                       gras/Msg/timer.c                 \
   gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
@@ -214,10 +184,62 @@ COMMON_SRC+=gras/gras.c  \
   gras/DataDesc/datadesc_interface.h  gras/DataDesc/datadesc_private.h \
   gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h
 
+GRAS_RL_SRC= \
+  gras/rl_stubs.c                     xbt/xbt_thread.c                    \
+  \
+  gras/Transport/rl_transport.c          \
+  gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
+  \
+  gras/Virtu/rl_emul.c \
+  gras/Virtu/rl_process.c        gras/Virtu/rl_time.c \
+  gras/Virtu/rl_dns.c\
+  \
+  gras/Msg/rl_msg.c
+
+GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
+  \
+  gras/Virtu/sg_emul.c \
+  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
+  gras/Virtu/sg_dns.c\
+  \
+  gras/sg_stubs.c                         \
+  gras/Msg/sg_msg.c
+
 AMOK_SRC= \
   amok/amok_base.c \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
   amok/PeerManagement/peermanagement.c
+
+##############################
+# Deal with optional modules #
+##############################
+
+if USE_GTNETS
+  GTNETS_USED=$(GTNETS_SRC)
+else
+  GTNETS_USED=
+  EXTRA_DIST+=$(GTNETS_SRC)
+endif
+
+if HAVE_SDP
+  SDP_SRC= surf/sdp.c
+else 
+  SDP_SRC=
+  EXTRA_DIST+=surf/sdp.c
+endif
+
+###
+### Declare the library content
+###
+
+libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
+libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO)                     @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
+
+libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
+                        $(SIMIX_SRC) $(CTX_SRC) \
+                        $(MSG_SRC) $(SIMDAG_SRC) \
+			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
+libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
 if GRAMINE_MODE
 else 
@@ -329,17 +351,5 @@ $(top_srcdir)/include/xbt/graphxml.h xbt/graphxml.l: $(top_srcdir)/src/xbt/graph
 endif
 endif
 endif
-
-###
-### Declare the library content
-###
-
-libgras_la_SOURCES= $(COMMON_SRC) $(RL_SRC) $(AMOK_SRC)
-libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
-
-libsimgrid_la_SOURCES= $(COMMON_SRC) $(SG_SRC) $(AMOK_SRC)
-libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
-
-
 
 include $(top_srcdir)/acmacro/dist-files.mk
