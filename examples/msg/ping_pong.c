@@ -1,17 +1,17 @@
-/* 	$Id$	 */
-
+/* 	$Id$	    */
 /* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
-
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include<stdio.h>
 
 #include "msg/msg.h" /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "xbt/sysdep.h" /* calloc */
 
-
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 #include "xbt/asserts.h"
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,"Messages specific for this msg example");
 
 int sender(int argc, char *argv[]);
@@ -25,57 +25,51 @@ typedef enum
     MAX_CHANNEL
   } channel_t;
 
-double task_comm_size_lat = 1;
-double task_comm_size_bw = 100000000;
+double task_comm_size_lat = 10e0;
+double task_comm_size_bw  = 10e8;
 
 /** Emitter function  */
 int sender(int argc,char *argv[] )
 {
-  int nbr = 0;
-  m_host_t *hosts = NULL; 
-  int i;
+  m_host_t host = NULL; 
   double time;
-  double task_comp_size = 0;
-  m_task_t task=NULL;
-  char sprintf_buffer[64];
+  m_task_t task_la=NULL;
+  m_task_t task_bw=NULL;
+  char sprintf_buffer_la[64];
+  char sprintf_buffer_bw[64];
 
   INFO0("sender");
  
-  nbr = argc - 1;
- hosts = calloc(nbr, sizeof(m_host_t));
+  host = calloc(1, sizeof(m_host_t));
     
-  for (i = 1; i < argc; i++) 
-    {
- INFO2("host [%d]= %s",i-1, argv[i]);
-      hosts[i-1] = MSG_get_host_by_name(argv[i]);
-      if(hosts[i-1]==NULL) 
-	{
-	  INFO1("Unknown host %s. Stopping Now! ", argv[i]);
-	  abort();
-	}
-    }
+  INFO1("host = %s", argv[1]);
+  
+  host = MSG_get_host_by_name(argv[1]);
+  
+  if(host==NULL){
+    INFO1("Unknown host %s. Stopping Now! ", argv[1]);
+    abort();
+  }
 
-  for (i = 0; i < nbr; i++) 
-    { 
-/* Latency */
- time=MSG_get_clock(); 
-       task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size_lat, NULL); 
- INFO1("task = %p",task); 
-       task->data=xbt_new0(double,1); 
-       *(double*)(task->data)=time; 
- INFO1("task->data = %le", *(double*)(task->data)); 
- INFO2("host [%d]=%s ",i, argv[i+1]); 
-       MSG_task_put(task, hosts[i],PORT_22);    
-
-      /* Bandwidth */
-      time=MSG_get_clock();
-      task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size_bw, NULL);
-      task->data=xbt_new0(double,1);
-      *(double*)(task->data)=time;
-      MSG_task_put(task, hosts[i % nbr],PORT_22);  
-    }
-
-
+  /* Latency */
+  time= MSG_get_clock(); 
+  sprintf(sprintf_buffer_la, "latency task");
+  task_la = MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL); 
+  task_la->data = xbt_new(double, 1);
+  *(double *)task_la->data = time;
+  INFO1("task_la       = %p", task_la); 
+  INFO1("task_la->data = %le", *((double *)task_la->data)); 
+  MSG_task_put(task_la, host,PORT_22);    
+  
+  /* Bandwidth */
+  time=MSG_get_clock();
+  sprintf(sprintf_buffer_bw, "bandwidth task");
+  task_bw = MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
+  task_bw->data = xbt_new(double, 1);
+  *(double *)task_bw->data = time;
+  INFO1("task_bw       = %p", task_bw); 
+  INFO1("task_bw->data = %le", *((double *)task_bw->data) ); 
+  MSG_task_put(task_bw, host,PORT_22);  
 
   return 0;
 } /* end_of_client */
@@ -83,39 +77,49 @@ int sender(int argc,char *argv[] )
 /** Receiver function  */
 int receiver(int argc, char *argv[])
 {
-
+  double time, time1, sender_time;
+  m_task_t task_la = NULL;
+  m_task_t task_bw = NULL;
+  int a;
   double communication_time=0;
 
   INFO0("receiver");
-  while(1) 
-    {
-      double time, time1, sender_time;
-      m_task_t task = NULL;
-      int a;
 
-      time=MSG_get_clock();
-      a=MSG_task_get(&task,PORT_22);
-      if (a == MSG_OK) 
-	{
-     
-      time1=MSG_get_clock();
-      sender_time=(*(double*)(task->data));
-     
-/*      if (sender_time > time) */
-	time=sender_time;
-      communication_time=time1-time;
-      INFO1("Communic. time %.35f",communication_time);
-      MSG_task_destroy(task);
-      INFO1("Communic. time %le",communication_time);
+  time = MSG_get_clock();
+  
+  /* Get Latency */
+  a = MSG_task_get(&task_la,PORT_22);
+  if (a == MSG_OK) {
+    time1=MSG_get_clock();
+    sender_time= *((double*)(task_la->data));
+    time=sender_time;
+    communication_time=time1-time;
+    INFO1("Task received : %s", task_la->name);
+    MSG_task_destroy(task_la);
+    INFO1("Communic. time %le",communication_time);
+    INFO1("--- la %f ----",task_comm_size_bw/communication_time);
+  }else{
+    xbt_assert0(0,"Unexpected behavior");
+  }
 
-      INFO1("--- bw %f ----",task_comm_size_bw/communication_time);
-	}
-      else 
-	{
-	  xbt_assert0(0,"Unexpected behavior");
-	}
-    } 
- return 0;
+
+  /* Get Bandwidth */
+  a=MSG_task_get(&task_bw,PORT_22);
+  if (a == MSG_OK) {
+    time1=MSG_get_clock();
+    sender_time= *((double*)(task_bw->data));
+    time=sender_time;
+    communication_time=time1-time;
+    INFO1("Task received : %s", task_bw->name);
+    MSG_task_destroy(task_bw);
+    INFO1("Communic. time %le",communication_time);
+    INFO1("--- bw %f ----",task_comm_size_bw/communication_time);
+  }else{
+    xbt_assert0(0,"Unexpected behavior");
+  }
+
+  
+  return 0;
 }/* end_of_receiver */
 
 
@@ -127,16 +131,17 @@ MSG_error_t test_all(const char *platform_file,
   MSG_error_t res = MSG_OK;
 
   INFO0("test_all"); 
- 				/*  Simulation setting */
-    MSG_set_channel_number(MAX_CHANNEL);
-    MSG_paje_output("msg_test.trace");
-    MSG_create_environment(platform_file);
+ 			
+  /*  Simulation setting */
+  MSG_set_channel_number(MAX_CHANNEL);
+  MSG_paje_output("msg_test.trace");
+  MSG_create_environment(platform_file);
  
-                             /*   Application deployment */
-    MSG_function_register("sender", sender);
-    MSG_function_register("receiver", receiver);
+  /*   Application deployment */
+  MSG_function_register("sender", sender);
+  MSG_function_register("receiver", receiver);
    
-    MSG_launch_application(application_file);
+  MSG_launch_application(application_file);
   
   res = MSG_main();
   return res;
@@ -148,6 +153,8 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
+  //MSG_config("surf_workstation_model","KCCFLN05_proportional");
+  
   MSG_global_init(&argc,argv);
   if (argc < 3) 
 {
@@ -156,6 +163,10 @@ int main(int argc, char *argv[])
      exit(1);
   }
   res = test_all(argv[1],argv[2]);
+
+
+  INFO1("Total simulation time: %le", MSG_get_clock());
+
   MSG_clean();
 
   if(res==MSG_OK) return 0; 
