@@ -105,7 +105,10 @@ typedef struct {
   /* SG only elements. In RL, they are part of the OS ;) */
 	smx_cond_t cond;
 	smx_mutex_t mutex;
+	smx_cond_t cond_meas;
+	smx_mutex_t mutex_meas;
 	xbt_fifo_t active_socket;
+	xbt_fifo_t active_socket_meas;
    
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 

@@ -48,7 +48,10 @@ gras_process_init() {
 
 	trp_pd->mutex = SIMIX_mutex_init();
 	trp_pd->cond = SIMIX_cond_init();
+	trp_pd->mutex_meas = SIMIX_mutex_init();
+	trp_pd->cond_meas = SIMIX_cond_init();
 	trp_pd->active_socket = xbt_fifo_new();
+	trp_pd->active_socket_meas = xbt_fifo_new();
 
   VERB2("Creating process '%s' (%d)",
 	   SIMIX_process_get_name(SIMIX_process_self()),
@@ -69,9 +72,10 @@ gras_process_exit() {
 	SIMIX_mutex_destroy(trp_pd->mutex);
 	SIMIX_cond_destroy(trp_pd->cond);
 	xbt_fifo_free(trp_pd->active_socket);
-  //int myPID=gras_os_getpid();
-  //int cpt;
-  //gras_sg_portrec_t pr;
+	SIMIX_mutex_destroy(trp_pd->mutex_meas);
+	SIMIX_cond_destroy(trp_pd->cond_meas);
+	xbt_fifo_free(trp_pd->active_socket_meas);
+
 
   xbt_assert0(hd,"Run gras_process_init (ie, gras_init)!!");
 
