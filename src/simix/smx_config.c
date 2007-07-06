@@ -26,8 +26,10 @@ static void _simix_cfg_cb__surf_workstation_model(const char *name, int pos)
   /* New Module missing */
   xbt_assert1(!strcmp(val, "CLM03") ||
               !strcmp(val, "KCCFLN05") ||
-	      !strcmp(val, "KCCFLN05_proportionnal"),
-              "Unknown workstation model: %s (either 'CLM03' or 'KCCFLN05'",val);
+	      !strcmp(val, "KCCFLN05_proportional") ||
+	      !strcmp(val, "KCCFLN05_Vegas") ||
+	      !strcmp(val, "KCCFLN05_Reno"),
+              "Unknown workstation model: %s (choices are: 'CLM03', 'KCCFLN05', 'KCCFLN05_proportional', 'KCCFLN05_Vegas' and 'KCCFLN05_Reno'",val);
 }
 
 /* create the config set and register what should be */

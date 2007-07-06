@@ -365,6 +365,8 @@ int main(int argc, char **argv)
 {
   xbt_init(&argc,argv);
 
+
+
   DEBUG0("***** Test 1 (Max-Min) ***** \n");
   test1(MAXMIN);
 #ifdef HAVE_SDP
@@ -375,8 +377,6 @@ int main(int argc, char **argv)
   test1(LAGRANGE_VEGAS);
   DEBUG0("***** Test 1 (Lagrange - Reno) ***** \n");
   test1(LAGRANGE_RENO);
-
-
 
   DEBUG0("***** Test 2 (Max-Min) ***** \n");
   test2(MAXMIN);
@@ -389,17 +389,16 @@ int main(int argc, char **argv)
   DEBUG0("***** Test 2 (Lagrange - Reno) ***** \n");
   test2(LAGRANGE_RENO);
 
-
   DEBUG0("***** Test 3 (Max-Min) ***** \n");
   test3(MAXMIN);
 #ifdef HAVE_SDP
   DEBUG0("***** Test 3 (SDP) ***** \n");
   test3(SDP);
-#endif 
+#endif
   DEBUG0("***** Test 3 (Lagrange - Vegas) ***** \n");
   test3(LAGRANGE_VEGAS);
-  DEBUG0("***** Test 3 (Lagrange - Reno) ***** \n"); 
-  test3(LAGRANGE_RENO); 
+  DEBUG0("***** Test 3 (Lagrange - Reno) ***** \n");
+  test3(LAGRANGE_RENO);
 
   return 0;
 }

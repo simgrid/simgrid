@@ -1068,14 +1068,14 @@ void surf_workstation_resource_init_KCCFLN05(const char *filename)
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 }
 
-void surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename)
+void surf_workstation_resource_init_KCCFLN05_proportional(const char *filename)
 {
   xbt_assert0(!surf_cpu_resource, "CPU resource type already defined");
   xbt_assert0(!surf_network_resource, "network resource type already defined");
   resource_init_internal();
   parse_file(filename);
 
-  surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (proportionnal)";
+  surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (proportional)";
   use_sdp_solver=1;
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 }
@@ -1089,7 +1089,7 @@ void surf_workstation_resource_init_KCCFLN05_Vegas(const char *filename)
 
   lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
 
-  surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (proportionnal)";
+  surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (Vegas)";
   use_lagrange_solver=1;
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 }
@@ -1103,7 +1103,7 @@ void surf_workstation_resource_init_KCCFLN05_Reno(const char *filename)
 
   lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
 
-  surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (proportionnal)";
+  surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (Reno)";
   use_lagrange_solver=1;
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 }

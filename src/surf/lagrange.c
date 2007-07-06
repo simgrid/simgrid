@@ -41,8 +41,8 @@ void lagrange_solve(lmm_system_t sys)
    * Lagrange Variables.
    */
   int max_iterations= 10000;
-  double epsilon_min_error  = 1e-4;
-  double dicotomi_min_error = 1e-8;
+  double epsilon_min_error  = 1e-6;
+  double dicotomi_min_error = 1e-6;
   double overall_error = 1;
 
   /*
@@ -160,7 +160,7 @@ void lagrange_solve(lmm_system_t sys)
 	
 	var->value = tmp;
       }
-      DEBUG4("======> value of var %s (%p)  = %e, overall_error = %e", (char *)var->id, var, var->value, overall_error);       
+      DEBUG3("======> value of var (%p)  = %e, overall_error = %e", var, var->value, overall_error);       
     }
   }
 
@@ -178,7 +178,7 @@ void lagrange_solve(lmm_system_t sys)
     tmp = tmp - cnst->bound;
 
     if(tmp > epsilon_min_error){
-      WARN4("The link %s(%p) doesn't match the KKT property, expected less than %e and got %e", (char *)cnst->id, cnst, epsilon_min_error, tmp);
+      WARN3("The link (%p) doesn't match the KKT property, expected less than %e and got %e", cnst, epsilon_min_error, tmp);
     }
   
   }
@@ -190,8 +190,8 @@ void lagrange_solve(lmm_system_t sys)
     tmp = (var->value - var->bound);
 
     
-    if(tmp != 0 ||  var->mu != 0){
-      WARN4("The flow %s(%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", (char *)var->id, var, var->mu, tmp);
+    if(tmp != 0.0 ||  var->mu != 0.0){
+      WARN3("The flow (%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", var, var->mu, tmp);
     }
 
   }
@@ -260,7 +260,10 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
     }else if( min_diff < 0 && max_diff > 0 ){
       middle = (max + min)/2.0;
       middle_diff = diff(middle, var_cnst);
-      overall_error = fabs(min - max);
+
+      if(max != 0.0 && min != 0.0){
+	overall_error = fabs(min - max)/max;
+      }
 
       if( middle_diff < 0 ){
 	min = middle;
@@ -300,7 +303,7 @@ double partial_diff_mu(double mu, void *param_var){
     sigma_mu += (var->cnsts[i].constraint)->lambda;
   
   //compute sigma_i + mu_i
-  sigma_mu += var->mu;
+  sigma_mu += mu;
   
   //use auxiliar function passing (sigma_i + mu_i)
   mu_partial = diff_aux(var, sigma_mu) ;
@@ -326,7 +329,7 @@ double partial_diff_lambda(double lambda, void *param_cnst){
 
   elem_list = &(cnst->element_set);
 
-  DEBUG2("Computting diff of cnst (%p) %s", cnst, (char *)cnst->id);
+  DEBUG1("Computting diff of cnst (%p)", cnst);
   
   xbt_swag_foreach(elem, elem_list) {
     var = elem->variable;

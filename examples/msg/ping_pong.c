@@ -153,17 +153,26 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  //MSG_config("surf_workstation_model","KCCFLN05_proportional");
   
   MSG_global_init(&argc,argv);
-  if (argc < 3) 
-{
-     CRITICAL1 ("Usage: %s platform_file deployment_file\n",argv[0]);
-     CRITICAL1 ("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
+
+
+  if (argc != 4){
+     CRITICAL1 ("Usage: %s platform_file deployment_file <model>\n",argv[0]);
+     CRITICAL1 ("example: %s msg_platform.xml msg_deployment.xml KCCFLN05_Vegas\n",argv[0]);
      exit(1);
   }
-  res = test_all(argv[1],argv[2]);
 
+  /* Options for the workstation_model:
+
+     KCCFLN05              => for maxmin
+     KCCFLN05_proportional => for proportional (Vegas)
+     KCCFLN05_Vegas        => for TCP Vegas
+     KCCFLN05_Reno         => for TCP Reno
+  */
+  MSG_config("surf_workstation_model", argv[3]);
+
+  res = test_all(argv[1],argv[2]);
 
   INFO1("Total simulation time: %le", MSG_get_clock());
 

@@ -45,8 +45,12 @@ void SIMIX_create_environment(const char *file)
   DEBUG1("Model : %s", workstation_model_name);
   if (!strcmp(workstation_model_name,"KCCFLN05")) {
     surf_workstation_resource_init_KCCFLN05(file);
-  } else if (!strcmp(workstation_model_name,"KCCFLN05_proportionnal")) {
-    surf_workstation_resource_init_KCCFLN05_proportionnal(file);
+  } else if (!strcmp(workstation_model_name,"KCCFLN05_proportional")) {
+    surf_workstation_resource_init_KCCFLN05_proportional(file);
+  } else if (!strcmp(workstation_model_name,"KCCFLN05_Vegas")) {
+    surf_workstation_resource_init_KCCFLN05_Vegas(file);
+  } else if (!strcmp(workstation_model_name,"KCCFLN05_Reno")) {
+    surf_workstation_resource_init_KCCFLN05_Reno(file);
   } else if (!strcmp(workstation_model_name,"CLM03")) {
     surf_workstation_resource_init_CLM03(file);
   } else {
