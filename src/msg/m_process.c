@@ -103,15 +103,18 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   /* Simulator Data */
   simdata->PID = msg_global->PID++;
 	simdata->waiting_task = NULL;
-  simdata->host = host;
+  simdata->m_host = host;
   simdata->argc = argc;
   simdata->argv = argv;
-	simdata->smx_process = SIMIX_process_create(name, (smx_process_code_t)code, (void*)process, host->name, argc, argv, MSG_process_cleanup );
+  simdata->s_process = SIMIX_process_create(name, (smx_process_code_t)code, 
+					    (void*)process, host->name, argc, argv, 
+					    MSG_process_cleanup );
 
-	if (SIMIX_process_self()) {
-		simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
-	}
-	else simdata->PPID = -1;
+  if (SIMIX_process_self()) {
+    simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);
+  } else {
+    simdata->PPID = -1;
+  }
   simdata->last_errno=MSG_OK;
 
 
@@ -120,7 +123,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   process->simdata = simdata;
   process->data = data;
 
-	xbt_fifo_unshift(msg_global->process_list, process); 
+  xbt_fifo_unshift(msg_global->process_list, process); 
 
   return process;
 }
@@ -134,22 +137,22 @@ void MSG_process_kill(m_process_t process)
 {
   simdata_process_t p_simdata = process->simdata;
 
-  DEBUG3("Killing %s(%d) on %s",process->name, p_simdata->PID, p_simdata->host->name);
+  DEBUG3("Killing %s(%d) on %s",
+	 process->name, p_simdata->PID, p_simdata->m_host->name);
 
-	if(p_simdata->waiting_task) {
-		DEBUG1("Canceling waiting task %s",p_simdata->waiting_task->name);
+  if(p_simdata->waiting_task) {
+    DEBUG1("Canceling waiting task %s",p_simdata->waiting_task->name);
     if(p_simdata->waiting_task->simdata->compute) {
-			SIMIX_action_cancel(p_simdata->waiting_task->simdata->compute);
-		}
-    else if (p_simdata->waiting_task->simdata->comm) {
-			SIMIX_action_cancel(p_simdata->waiting_task->simdata->comm);
+      SIMIX_action_cancel(p_simdata->waiting_task->simdata->compute);
+    } else if (p_simdata->waiting_task->simdata->comm) {
+      SIMIX_action_cancel(p_simdata->waiting_task->simdata->comm);
     } 
   }
 
   xbt_fifo_remove(msg_global->process_list,process);
-	SIMIX_process_kill(process->simdata->smx_process);
+  SIMIX_process_kill(process->simdata->s_process);
 
-	return;
+  return;
 }
 
 /** \ingroup m_process_management
@@ -204,7 +207,7 @@ m_host_t MSG_process_get_host(m_process_t process)
 {
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
 
-  return (((simdata_process_t) process->simdata)->host);
+  return (((simdata_process_t) process->simdata)->m_host);
 }
 
 /** \ingroup m_process_management
@@ -318,7 +321,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
-	SIMIX_process_suspend(process->simdata->smx_process);
+	SIMIX_process_suspend(process->simdata->s_process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -334,7 +337,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
   CHECK_HOST();
 
-	SIMIX_process_resume(process->simdata->smx_process);
+	SIMIX_process_resume(process->simdata->s_process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -347,6 +350,6 @@ MSG_error_t MSG_process_resume(m_process_t process)
 int MSG_process_is_suspended(m_process_t process)
 {
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
-	return SIMIX_process_is_suspended(process->simdata->smx_process);
+	return SIMIX_process_is_suspended(process->simdata->s_process);
 }
 

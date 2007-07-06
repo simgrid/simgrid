@@ -24,7 +24,7 @@
 /**************** datatypes **********************************/
 
 typedef struct simdata_host {
-  smx_host_t host;			/* SURF modeling */
+  smx_host_t s_host;			/* SURF modeling */
   xbt_fifo_t *mbox;		/* array of FIFOs used as a mailboxes  */
   smx_cond_t *sleeping;	/* array of conditions on which the processes sleep if they are waiting for a communication on a channel */
 	smx_mutex_t mutex; /* mutex to access the host */
@@ -55,13 +55,13 @@ typedef struct simdata_task {
 /******************************* Process *************************************/
 
 typedef struct simdata_process {
-  m_host_t host;                /* the host on which the process is running */
-	smx_process_t smx_process;
+  m_host_t m_host;              /* the host on which the process is running */
+  smx_process_t s_process;
   int PID;			/* used for debugging purposes */
   int PPID;			/* The parent PID */
   m_host_t put_host;		/* used for debugging purposes */
   m_channel_t put_channel;	/* used for debugging purposes */
-	m_task_t waiting_task;
+  m_task_t waiting_task;
   int argc;                     /* arguments number if any */
   char **argv;                  /* arguments table if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
@@ -71,7 +71,7 @@ typedef struct process_arg {
   const char *name;
   m_process_code_t code;
   void *data;
-  m_host_t host;
+  m_host_t m_host;
   int argc;
   char **argv;
   double kill_time;
@@ -105,8 +105,8 @@ void __MSG_host_destroy(m_host_t host);
 void __MSG_display_process_status(void);
 
 m_process_t __MSG_process_create_with_arguments(const char *name,
-					      m_process_code_t code, void *data,
-													      char * hostname, int argc, char **argv);
+						m_process_code_t code, void *data,
+						char * hostname, int argc, char **argv);
 
 
 #endif

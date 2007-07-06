@@ -82,7 +82,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 		}
 		else SIMIX_cond_wait(h_simdata->sleeping[channel],h->simdata->mutex);
 
-		if(SIMIX_host_get_state(h_simdata->host)==0)
+		if(SIMIX_host_get_state(h_simdata->s_host)==0)
       MSG_RETURN(MSG_HOST_FAILURE);
 
 		first_time = 0;
@@ -105,9 +105,9 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   /* Transfer */
   t_simdata->using++;
 	/* create SIMIX action to the communication */
-	t_simdata->comm = SIMIX_action_communicate(t_simdata->sender->simdata->host->simdata->host,
-																						process->simdata->host->simdata->host,t->name, t_simdata->message_size, 
-																						t_simdata->rate); 
+	t_simdata->comm = SIMIX_action_communicate(t_simdata->sender->simdata->m_host->simdata->s_host,
+						   process->simdata->m_host->simdata->s_host,t->name, t_simdata->message_size, 
+						   t_simdata->rate); 
 	/* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
 	if (MSG_process_is_suspended(t_simdata->sender)) {
 		DEBUG1("Process sender (%s) suspended", t_simdata->sender->name);
@@ -136,7 +136,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 		SIMIX_action_destroy(t_simdata->comm);
 		t_simdata->comm = NULL;
     MSG_RETURN(MSG_OK);
-	} else if (SIMIX_host_get_state(h_simdata->host)==0) {
+	} else if (SIMIX_host_get_state(h_simdata->s_host)==0) {
 		//t_simdata->comm = NULL;
 		SIMIX_action_destroy(t_simdata->comm);
 		t_simdata->comm = NULL;
@@ -325,7 +325,7 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
 			}
 			SIMIX_cond_destroy(cond);
 			SIMIX_mutex_unlock(h_simdata->mutex);
-			if(SIMIX_host_get_state(h_simdata->host)==0) {
+			if(SIMIX_host_get_state(h_simdata->s_host)==0) {
 				MSG_RETURN(MSG_HOST_FAILURE);
 			}
 			h_simdata->sleeping[channel] = NULL;
@@ -424,7 +424,7 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 	      "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
   task_simdata->comm = NULL;
   
-  local_host = ((simdata_process_t) process->simdata)->host;
+  local_host = ((simdata_process_t) process->simdata)->m_host;
   remote_host = dest;
 
   DEBUG4("Trying to send a task (%g kB) from %s to %s on channel %d", 
@@ -482,7 +482,7 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 
 	if(SIMIX_action_get_state(task->simdata->comm) == SURF_ACTION_DONE) {
     MSG_RETURN(MSG_OK);
-	} else if (SIMIX_host_get_state(local_host->simdata->host)==0) {
+	} else if (SIMIX_host_get_state(local_host->simdata->s_host)==0) {
     MSG_RETURN(MSG_HOST_FAILURE);
   } else { 
     MSG_RETURN(MSG_TRANSFER_FAILURE);
@@ -557,7 +557,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
   xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
 	      "This task is executed somewhere else. Go fix your code!");
 	
-	DEBUG1("Computing on %s", MSG_process_self()->simdata->host->name);
+	DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
   simdata->using++;
 	SIMIX_mutex_lock(simdata->mutex);
   simdata->compute = SIMIX_action_execute(SIMIX_host_self(), task->name, simdata->computation_amount);
@@ -649,7 +649,7 @@ m_task_t MSG_parallel_task_create(const char *name,
   simdata->comm_amount = communication_amount;
 
   for(i=0;i<host_nb;i++)
-    simdata->host_list[i] = host_list[i]->simdata->host;
+    simdata->host_list[i] = host_list[i]->simdata->s_host;
 
   return task;
 
@@ -668,7 +668,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 
   xbt_assert0(simdata->host_nb,"This is not a parallel task. Go to hell.");
 	
-	DEBUG1("Computing on %s", MSG_process_self()->simdata->host->name);
+	DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
   simdata->using++;
 	SIMIX_mutex_lock(simdata->mutex);
   simdata->compute = SIMIX_action_parallel_execute(task->name, simdata->host_nb, simdata->host_list, simdata->comp_amount, simdata->comm_amount, 1.0, -1.0);
@@ -721,7 +721,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 	smx_mutex_t mutex;
 	smx_cond_t cond;
 	/* create action to sleep */
-	act_sleep = SIMIX_action_sleep(SIMIX_process_get_host(proc->simdata->smx_process),nb_sec);
+	act_sleep = SIMIX_action_sleep(SIMIX_process_get_host(proc->simdata->s_process),nb_sec);
 	
 	mutex = SIMIX_mutex_init();
 	SIMIX_mutex_lock(mutex);
