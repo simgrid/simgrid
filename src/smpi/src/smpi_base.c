@@ -30,6 +30,7 @@ static double smpi_reference_speed;
 
 // mutexes
 smx_mutex_t smpi_running_hosts_mutex = NULL;
+smx_mutex_t smpi_benchmarking_mutex  = NULL;
 smx_mutex_t init_mutex = NULL;
 smx_cond_t init_cond  = NULL;
 
@@ -174,6 +175,7 @@ void smpi_mpi_init()
 		smpi_timer                      = xbt_os_timer_new();
 		smpi_reference_speed            = SMPI_DEFAULT_SPEED;
 		smpi_benchmarking               = 0;
+		smpi_benchmarking_mutex         = SIMIX_mutex_init();
 
 		// signal all nodes to perform initialization
 		SIMIX_mutex_lock(init_mutex);
@@ -248,11 +250,27 @@ void smpi_bench_begin()
 void smpi_bench_end()
 {
 	double duration;
+	smx_host_t host;
+	smx_action_t compute_action;
+	smx_mutex_t mutex;
+	smx_cond_t cond;
+
 	xbt_assert0(smpi_benchmarking, "Not benchmarking yet");
 	smpi_benchmarking = 0;
 	xbt_os_timer_stop(smpi_timer);
 	duration = xbt_os_timer_elapsed(smpi_timer);
-	// FIXME: add simix call to perform computation
+	host           = SIMIX_host_self();
+	compute_action = SIMIX_action_sleep(host, "computation", duration * SMPI_DEFAULT_SPEED);
+	mutex          = SIMIX_mutex_init();
+	cond           = SIMIX_cond_init();
+	SIMIX_mutex_lock(mutex);
+	SIMIX_register_condition_to_action(compute_action, cond);
+	SIMIX_register_action_to_condition(compute_action, cond);
+	SIMIX_cond_wait(cond, mutex);
+	SIMIX_mutex_unlock(mutex);
+	SIMIX_mutex_destroy(mutex);
+	SIMIX_cond_destroy(cond);
+	// FIXME: check for success/failure?
 	return;
 }
 
