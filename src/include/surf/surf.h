@@ -367,7 +367,7 @@ XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05(const char *filename);
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
-XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_proportionnal(const char *filename);
+XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_proportional(const char *filename);
 
 /** \brief Initializes the platform with the model KCCFLN05 using a lagrange
  *  optimization approach to compute the effectivet bandwidth of each flow based
