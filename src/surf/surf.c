@@ -143,7 +143,7 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
   double value = -1;
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
-  if(!use_sdp_solver)
+  if(!use_sdp_solver && !use_lagrange_solver)
     lmm_solve(sys);
   else if(!use_lagrange_solver){
 #ifdef HAVE_SDP
