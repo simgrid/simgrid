@@ -26,7 +26,7 @@ void SIMIX_process_cleanup(void *arg)
 {
   xbt_swag_remove(arg, simix_global->process_list);
   xbt_swag_remove(arg, simix_global->process_to_run);
-  xbt_swag_remove(arg, ((smx_process_t) arg)->simdata->host->simdata->process_list);
+  xbt_swag_remove(arg, ((smx_process_t) arg)->simdata->s_host->simdata->process_list);
   free(((smx_process_t) arg)->name);
   ((smx_process_t) arg)->name = NULL;
 
@@ -50,18 +50,19 @@ void SIMIX_process_cleanup(void *arg)
  * \return The new corresponding object.
  */
 smx_process_t SIMIX_process_create(const char *name,
-					      smx_process_code_t code, void *data,
-					      const char * hostname, int argc, char **argv, void * clean_process_function)
+				   smx_process_code_t code, void *data,
+				   const char * hostname, int argc, char **argv, 
+				   void * clean_process_function)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t,1);
   smx_process_t process = xbt_new0(s_smx_process_t,1);
   smx_process_t self = NULL;
-	smx_host_t host = SIMIX_host_get_by_name(hostname);
+  smx_host_t host = SIMIX_host_get_by_name(hostname);
 
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
   /* Simulator Data */
 
-  simdata->host = host;
+  simdata->s_host = host;
 	simdata->mutex = NULL;
 	simdata->cond = NULL;
   simdata->argc = argc;
@@ -97,6 +98,55 @@ smx_process_t SIMIX_process_create(const char *name,
   return process;
 }
 
+/** 
+ * \brief Creates and runs a new #smx_process_t hosting a JAVA thread
+ *
+ * Warning: this should only be used in libsimgrid4java, since it create
+ * a context with no code, which leads to segfaults in plain libsimgrid 
+ */
+smx_process_t SIMIX_jprocess_create(const char *name, smx_host_t host,
+				    void *data,
+				    void *jprocess, void *jenv)
+{
+  smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t,1);
+  smx_process_t process = xbt_new0(s_smx_process_t,1);
+  smx_process_t self = NULL;
+
+  DEBUG5("jprocess_create(name=%s,host=%p,data=%p,jproc=%p,jenv=%p)",
+	 name,host,data,jprocess,jenv);
+  xbt_assert0(host, "Invalid parameters");
+  /* Simulator Data */
+  simdata->s_host = host;
+  simdata->mutex = NULL;
+  simdata->cond = NULL;
+  simdata->argc = 0;
+  simdata->argv = NULL;
+  
+  simdata->context = xbt_context_new(NULL, NULL, NULL, 
+				     SIMIX_process_cleanup, process, 
+				     /* argc/argv*/0,NULL);
+  /* Process structure */
+  process->name = xbt_strdup(name);
+  process->simdata = simdata; 
+  process->data = data;
+  SIMIX_process_set_jprocess(process,jprocess);
+  SIMIX_process_set_jenv(process,jenv);
+
+  xbt_swag_insert(process, host->simdata->process_list);
+
+  /* *************** FIX du current_process !!! *************** */
+  self = simix_global->current_process;
+  xbt_context_start(process->simdata->context);
+  simix_global->current_process = self;
+
+  xbt_swag_insert(process,simix_global->process_list);
+  DEBUG2("Inserting %s(%s) in the to_run list",process->name,
+	 host->name);
+  xbt_swag_insert(process,simix_global->process_to_run);
+
+  return process;
+}
+
 
 /** \brief Kill a SIMIX process
  *
@@ -108,7 +158,7 @@ void SIMIX_process_kill(smx_process_t process)
 {	
   smx_simdata_process_t p_simdata = process->simdata;
 
-  DEBUG2("Killing %s on %s",process->name, p_simdata->host->name);
+  DEBUG2("Killing %s on %s",process->name, p_simdata->s_host->name);
   
 	if (p_simdata->mutex) {
 		xbt_swag_remove(process,p_simdata->mutex->sleeping);
@@ -168,7 +218,7 @@ smx_host_t SIMIX_process_get_host(smx_process_t process)
 {
   xbt_assert0(((process != NULL) && (process->simdata)), "Invalid parameters");
 
-  return (process->simdata->host);
+  return (process->simdata->s_host);
 }
 
 /**
@@ -310,4 +360,33 @@ int SIMIX_process_is_suspended(smx_process_t process)
 }
 
 
+/* Helper functions for jMSG: manipulate the context data without breaking the module separation */
+#include "xbt/context.h" /* to pass java objects from MSG to the context */
+void SIMIX_process_set_jprocess(smx_process_t process, void *jp) {
+   xbt_context_set_jprocess(process->simdata->context,jp);
+}
+void* SIMIX_process_get_jprocess(smx_process_t process) {
+   return xbt_context_get_jprocess(process->simdata->context);
+}
+
+void SIMIX_process_set_jmutex(smx_process_t process, void *jm) {
+   xbt_context_set_jmutex(process->simdata->context,jm);
+}
+void* SIMIX_process_get_jmutex(smx_process_t process) {
+   return xbt_context_get_jmutex(process->simdata->context);
+}
+
+void SIMIX_process_set_jcond(smx_process_t process, void *jc) {
+   xbt_context_set_jcond(process->simdata->context,jc);
+}
+void* SIMIX_process_get_jcond(smx_process_t process) {
+   return xbt_context_get_jcond(process->simdata->context);
+}
+
+void SIMIX_process_set_jenv(smx_process_t process, void *je) {
+   xbt_context_set_jenv(process->simdata->context,je);
+}
+void* SIMIX_process_get_jenv(smx_process_t process) {
+   return xbt_context_get_jenv(process->simdata->context);
+}
 

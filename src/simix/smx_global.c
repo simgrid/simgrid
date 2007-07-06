@@ -62,7 +62,7 @@ void __SIMIX_display_process_status(void)
 	
       asprintf(&who,"%s on %s: %s",
 	       process->name,
-	       p_simdata->host->name,
+	       p_simdata->s_host->name,
 	       (process->simdata->blocked)?"[BLOCKED] "
 	       :((process->simdata->suspended)?"[SUSPENDED] ":""));
       
@@ -126,7 +126,7 @@ void __SIMIX_main(void)
 			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
 				xbt_swag_foreach(process,cond->sleeping) {
 					DEBUG2("\t preparing to wake up %s on %s",	     
-							process->name,	process->simdata->host->name);
+							process->name,	process->simdata->s_host->name);
 				}
 				SIMIX_cond_broadcast(cond);
 				/* remove conditional from action */
@@ -141,7 +141,7 @@ void __SIMIX_main(void)
 			xbt_fifo_foreach(smx_action->cond_list,_cursor,cond,smx_cond_t) {
 				xbt_swag_foreach(process,cond->sleeping) {
 					DEBUG2("\t preparing to wake up %s on %s",	     
-							process->name,	process->simdata->host->name);
+							process->name,	process->simdata->s_host->name);
 				}
 				SIMIX_cond_broadcast(cond);
 				/* remove conditional from action */
@@ -243,7 +243,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 	while ((process = xbt_swag_extract(simix_global->process_to_run))) {
 		DEBUG2("Scheduling %s on %s",	     
 				process->name,
-				process->simdata->host->name);
+				process->simdata->s_host->name);
 		simix_global->current_process = process;
 		xbt_context_schedule(process->simdata->context);
 		/*       fflush(NULL); */
@@ -289,7 +289,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 			if(fun==SIMIX_process_kill) {
 				process = arg;
 				DEBUG2("Killing %s on %s", process->name, 
-						process->simdata->host->name);
+						process->simdata->s_host->name);
 				SIMIX_process_kill(process);
 			}
 		}
