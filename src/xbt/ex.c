@@ -52,6 +52,7 @@ void xbt_backtrace_display(void) {
 #endif
 }
 
+extern char **environ; /* the environment, as specified by the opengroup */
 
 void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
@@ -60,8 +61,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   char **backtrace = backtrace_symbols (e->bt, e->used);
   
   /* To build the commandline of addr2line */
-  char *cmd = xbt_new(char,strlen(ADDR2LINE)+25+strlen(xbt_binary_name)+32*e->used);
-  char *curr=cmd;
+  char *cmd, *curr;
   
   /* to extract the addresses from the backtrace */
   char **addrs=xbt_new(char*,e->used);
@@ -74,12 +74,53 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
   /* size (in char) of pointers on this arch */
   int addr_len=0;
 
+  /* To search for the right executable path when not trivial */
+  struct stat stat_buf;
+  char *binary_name = NULL;
+   
   /* Some arches only have stubs of backtrace, no implementation (hppa comes to mind) */
   if (!e->used)
      return;
    
   /* build the commandline */
-  curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,xbt_binary_name);
+  if (stat(xbt_binary_name,&stat_buf)) {
+    /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
+    int i;
+    for (i=0; environ[i]; i++) {
+      if (!strncmp("PATH=",environ[i], 5)) {	
+	xbt_dynar_t path=xbt_str_split(environ[i] + 5, ":");
+	int cpt;
+	char *data;
+	xbt_dynar_foreach(path, cpt, data) {
+	  if (binary_name)
+	    free(binary_name);
+	  binary_name = bprintf("%s/%s",data,xbt_binary_name);
+	  if (!stat(binary_name,&stat_buf)) {
+	    /* Found. */
+	    DEBUG1("Looked in the PATH for the binary. Found %s",binary_name);
+	    xbt_dynar_free(&path);
+	    break;
+	  } 
+	}
+	if (stat(binary_name,&stat_buf)) {
+	  /* not found */
+	  e->used = 1;
+	  e->bt_strings = xbt_new(char*,1);
+	  e->bt_strings[0] = bprintf("(binary '%s' not found the path)",xbt_binary_name);
+	  return;
+	}
+	xbt_dynar_free(&path);
+	break;
+      }	
+    }
+  } else {
+    binary_name = xbt_strdup(xbt_binary_name);
+  }      
+  cmd = curr = xbt_new(char,strlen(ADDR2LINE)+25+strlen(binary_name)+32*e->used);
+   
+  curr += sprintf(curr,"%s -f -e %s ",ADDR2LINE,binary_name);
+  free(binary_name);
+   
   for (i=0; i<e->used;i++) {
     /* retrieve this address */
     DEBUG2("Retrieving address number %d from '%s'", i, backtrace[i]);
@@ -94,7 +135,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
      
     /* Add it to the command line args */
     curr+=sprintf(curr,"%s ",addrs[i]);
-  }	 
+  } 
   addr_len = strlen(addrs[0]);
 
   /* parse the output and build a new backtrace */
@@ -161,6 +202,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 	if (found) {	      
 	   DEBUG3("%#lx in [%#lx-%#lx]", addr, first,last);
 	   DEBUG0("Symbol found, map lines not further displayed (even if looking for next ones)");
+	}
       }
       fclose(maps);
       free(maps_name);
@@ -237,7 +279,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 	 free(addrs[j]);
        e->used = i;
     }
-   
+     
     
   }
   pclose(pipe);
