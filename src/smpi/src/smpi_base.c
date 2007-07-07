@@ -11,6 +11,9 @@ xbt_fifo_t *smpi_pending_send_requests      = NULL;
 xbt_fifo_t *smpi_pending_recv_requests      = NULL;
 xbt_fifo_t *smpi_received_messages          = NULL;
 
+smx_process_t *smpi_sender_processes        = NULL;
+smx_process_t *smpi_receiver_processes      = NULL;
+
 int smpi_running_hosts = 0;
 
 smpi_mpi_communicator_t smpi_mpi_comm_world;
@@ -34,18 +37,126 @@ smx_mutex_t smpi_benchmarking_mutex  = NULL;
 smx_mutex_t init_mutex = NULL;
 smx_cond_t init_cond  = NULL;
 
-int rootready = 0;
-int readycount = 0;
+int smpi_root_ready = 0;
+int smpi_ready_count = 0;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(smpi, "SMPI");
 
+int inline smpi_mpi_comm_size(smpi_mpi_communicator_t *comm) 
+{
+	return comm->size;
+}
+
+int smpi_mpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host)
+{
+	int i;
+
+	for(i = comm->size - 1; i > 0 && host != comm->hosts[i]; i--);
+
+	return i;
+}
+
+int inline smpi_mpi_comm_rank_self(smpi_mpi_communicator_t *comm)
+{
+	return smpi_mpi_comm_rank(comm, SIMIX_host_self());
+}
+
 int smpi_sender(int argc, char **argv)
 {
+	int rank = smpi_mpi_comm_rank_self(&smpi_mpi_comm_world);
+	int size;
+	int running_hosts = 0;
+	smpi_mpi_request_t *request;
+	smx_process_t self;
+	smx_host_t shost, dhost;
+	smx_action_t communicate_action;
+
+	self = SIMIX_process_self();
+	shost = SIMIX_host_self();
+
+	// make sure root is done before own initialization
+	SIMIX_mutex_lock(init_mutex);
+	if (!smpi_root_ready) {
+		SIMIX_cond_wait(init_cond, init_mutex);
+	}
+	SIMIX_mutex_unlock(init_mutex);
+
+	size = smpi_mpi_comm_size(&smpi_mpi_comm_world);
+	smpi_sender_processes[rank] = self;
+
+	// wait for all nodes to signal initializatin complete
+	SIMIX_mutex_lock(init_mutex);
+	smpi_ready_count++;
+	if (smpi_ready_count < 3 * size) {
+		SIMIX_cond_wait(init_cond, init_mutex);
+	} else {
+		SIMIX_cond_broadcast(init_cond);
+	}
+	SIMIX_mutex_unlock(init_mutex);
+
+	SIMIX_mutex_lock(smpi_running_hosts_mutex);
+	running_hosts = smpi_running_hosts;
+	SIMIX_mutex_unlock(smpi_running_hosts_mutex);
+
+	while (0 < running_hosts) {
+
+		request = xbt_fifo_shift(smpi_pending_send_requests[rank]);
+
+		if (NULL == request) {
+			SIMIX_process_suspend(self);
+		} else {
+			SIMIX_mutex_lock(request->mutex);
+
+			dhost = request->comm->hosts[request->dst];
+
+			// FIXME: not at all sure I can assume magic just happens here....
+			communicate_action = SIMIX_action_communicate(shost, dhost,
+				"communication", request->datatype->size * request->count * 1.0, -1.0);
+
+			SIMIX_register_condition_to_action(communicate_action, request->cond);
+			SIMIX_register_action_to_condition(communicate_action, request->cond);
+
+			SIMIX_cond_wait(request->cond, request->mutex);
+
+			// fixme, create new request, copy over to
+			// should be malloc and memcpy
+
+			SIMIX_mutex_unlock(request->mutex);
+		}
+
+		SIMIX_mutex_lock(smpi_running_hosts_mutex);
+		running_hosts = smpi_running_hosts;
+		SIMIX_mutex_unlock(smpi_running_hosts_mutex);
+	}
+
 	return 0;
 }
 
 int smpi_receiver(int argc, char **argv)
 {
+	int rank = smpi_mpi_comm_rank_self(&smpi_mpi_comm_world);
+	int size;
+
+	// make sure root is done before own initialization
+	SIMIX_mutex_lock(init_mutex);
+	if (!smpi_root_ready) {
+		SIMIX_cond_wait(init_cond, init_mutex);
+	}
+	SIMIX_mutex_unlock(init_mutex);
+
+	size = smpi_mpi_comm_size(&smpi_mpi_comm_world);
+	smpi_receiver_processes[rank] = SIMIX_process_self();
+
+	// wait for all nodes to signal initializatin complete
+	SIMIX_mutex_lock(init_mutex);
+	smpi_ready_count++;
+	if (smpi_ready_count < 3 * size) {
+		SIMIX_cond_wait(init_cond, init_mutex);
+	} else {
+		SIMIX_cond_broadcast(init_cond);
+	}
+	SIMIX_mutex_unlock(init_mutex);
+
 	return 0;
 }
 
@@ -65,6 +176,8 @@ int smpi_run_simulation(int argc, char **argv)
 	init_cond  = SIMIX_cond_init();
 
 	SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
+	SIMIX_function_register("smpi_sender", smpi_sender);
+	SIMIX_function_register("smpi_receiver", smpi_receiver);
 	SIMIX_create_environment(argv[1]);
 	SIMIX_launch_application(argv[2]);
 
@@ -108,20 +221,6 @@ void smpi_mpi_sum_func(void *x, void *y, void *z)
 	*(int *)z = *(int *)x + *(int *)y;
 }
 
-int smpi_mpi_rank(smpi_mpi_communicator_t *comm, smx_host_t host)
-{
-	int i;
-
-	for(i = comm->size - 1; i > 0 && host != comm->hosts[i]; i--);
-
-	return i;
-}
-
-int inline smpi_mpi_rank_self(smpi_mpi_communicator_t *comm)
-{
-	return smpi_mpi_rank(comm, SIMIX_host_self());
-}
-
 void smpi_mpi_init()
 {
 	int i;
@@ -138,6 +237,10 @@ void smpi_mpi_init()
 
 	// node 0 sets the globals
 	if (host == hosts[0]) {
+
+		// processes
+		smpi_sender_processes             = xbt_new0(smx_process_t, size);
+		smpi_receiver_processes           = xbt_new0(smx_process_t, size);
 
 		// running hosts
 		smpi_running_hosts_mutex          = SIMIX_mutex_init();
@@ -179,7 +282,7 @@ void smpi_mpi_init()
 
 		// signal all nodes to perform initialization
 		SIMIX_mutex_lock(init_mutex);
-		rootready = 1;
+		smpi_root_ready = 1;
 		SIMIX_cond_broadcast(init_cond);
 		SIMIX_mutex_unlock(init_mutex);
 
@@ -187,19 +290,19 @@ void smpi_mpi_init()
 
 		// make sure root is done before own initialization
 		SIMIX_mutex_lock(init_mutex);
-		if (!rootready) {
+		if (!smpi_root_ready) {
 			SIMIX_cond_wait(init_cond, init_mutex);
 		}
 		SIMIX_mutex_unlock(init_mutex);
 
-    		smpi_mpi_comm_world.processes[smpi_mpi_rank_self(&smpi_mpi_comm_world)] = SIMIX_process_self();
+    		smpi_mpi_comm_world.processes[smpi_mpi_comm_rank_self(&smpi_mpi_comm_world)] = SIMIX_process_self();
 
 	}
 
 	// wait for all nodes to signal initializatin complete
 	SIMIX_mutex_lock(init_mutex);
-	readycount++;
-	if (readycount < size) {
+	smpi_ready_count++;
+	if (smpi_ready_count < 3 * size) {
 		SIMIX_cond_wait(init_cond, init_mutex);
 	} else {
 		SIMIX_cond_broadcast(init_cond);
@@ -260,7 +363,7 @@ void smpi_bench_end()
 	xbt_os_timer_stop(smpi_timer);
 	duration = xbt_os_timer_elapsed(smpi_timer);
 	host           = SIMIX_host_self();
-	compute_action = SIMIX_action_sleep(host, "computation", duration * SMPI_DEFAULT_SPEED);
+	compute_action = SIMIX_action_execute(host, "computation", duration * SMPI_DEFAULT_SPEED);
 	mutex          = SIMIX_mutex_init();
 	cond           = SIMIX_cond_init();
 	SIMIX_mutex_lock(mutex);
@@ -293,6 +396,79 @@ int smpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host)
 	for(i = 0; i < comm->size && host != comm->hosts[i]; i++);
 	if (i >= comm->size) i = -1;
 	return i;
+}
+
+int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype,
+	int src, int dst, int tag, smpi_mpi_communicator_t *comm, smpi_mpi_request_t **request)
+{
+	int retval = MPI_SUCCESS;
+
+	*request = NULL;
+
+	if (0 > count) {
+		retval = MPI_ERR_COUNT;
+	} else if (NULL == buf) {
+		retval = MPI_ERR_INTERN;
+	} else if (NULL == datatype) {
+		retval = MPI_ERR_TYPE;
+	} else if (NULL == comm) {
+		retval = MPI_ERR_COMM;
+	} else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
+		retval = MPI_ERR_RANK;
+	} else if (0 > dst || comm->size <= dst) {
+		retval = MPI_ERR_RANK;
+	} else if (0 > tag) {
+		retval = MPI_ERR_TAG;
+	} else {
+		*request = xbt_new0(smpi_mpi_request_t, 1);
+		(*request)->buf        = buf;
+		(*request)->count      = count;
+		(*request)->datatype   = datatype;
+		(*request)->src        = src;
+		(*request)->dst        = dst;
+		(*request)->tag        = tag;
+		(*request)->comm       = comm;
+		(*request)->completed  = 0;
+		(*request)->waitlist   = NULL;
+	}
+	return retval;
+}
+
+int smpi_isend(smpi_mpi_request_t *request)
+{
+	int rank = smpi_mpi_comm_rank_self(&smpi_mpi_comm_world);
+
+	xbt_fifo_push(smpi_pending_send_requests[rank], request);
+
+	if (MSG_process_is_suspended(smpi_sender_processes[rank])) {
+		MSG_process_resume(smpi_sender_processes[rank]);
+	}
+}
+
+int smpi_irecv(smpi_mpi_request_t *request)
+{
+	int rank = smpi_mpi_comm_rank_self(&smpi_mpi_comm_world);
+
+	xbt_fifo_push(smpi_pending_recv_requests[rank], request);
+
+	if (MSG_process_is_suspended(smpi_receiver_processes[rank])) {
+		MSG_process_resume(smpi_receiver_processes[rank]);
+	}
+}
+
+void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status)
+{
+	smx_process_t self;
+
+	if (NULL != request) {
+		if (!request->completed) {
+			self = SIMIX_process_self();
+			xbt_fifo_push(request->waitlist, self);
+		}	SIMIX_suspend(self);
+		if (NULL != status && MPI_STATUS_IGNORE != status) {
+			status->MPI_SOURCE = request->src;
+		}
+	}
 }
 
 // FIXME: move into own file

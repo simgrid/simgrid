@@ -82,10 +82,10 @@ for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
   echo "  </process>" >> ${APPLICATIONTMP}
 done
 
-#for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-#  echo "  <process host=\"host$i\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
-#  echo "  <process host=\"host$i\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
-#done
+for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+  echo "  <process host=\"host$i\" function=\"smpi_sender\"/>" >> ${APPLICATIONTMP}
+  echo "  <process host=\"host$i\" function=\"smpi_receiver\"/>" >> ${APPLICATIONTMP}
+done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 </platform_description>
