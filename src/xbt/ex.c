@@ -158,8 +158,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
 	  offset = first;
 	  found=1;
 	}
-	DEBUG4("%#lx %s [%#lx-%#lx]",
-	       addr, found? "in":"out of",first,last);
+	if (found) {	      
+	   DEBUG3("%#lx in [%#lx-%#lx]", addr, first,last);
+	   DEBUG0("Symbol found, map lines not further displayed (even if looking for next ones)");
       }
       fclose(maps);
       free(maps_name);
@@ -182,26 +183,32 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       /* Got it. We have our new address. Let's get the library path and we 
 	 are set */ 
       p  = xbt_strdup(backtrace[i]);
-      p2 = strrchr(p,'(');
-      if (p2) *p2= '\0';
-      p2 = strrchr(p,' ');
-      if(p2) *p2= '\0';
+      if (p[0]=='[') {
+	 /* library path not displayed in the map file either... */
+	 free(p);
+	 sprintf(line_func,"??");
+      } else {
+	 p2 = strrchr(p,'(');
+	 if (p2) *p2= '\0';
+	 p2 = strrchr(p,' ');
+	 if(p2) *p2= '\0';
       
-      /* Here we go, fire an addr2line up */
-      subcmd = bprintf("%s -f -e %s %s",ADDR2LINE,p, addrs[i]);
-      free(p);
-      VERB1("Fire a new command: '%s'",subcmd);
-      subpipe = popen(subcmd,"r");
-      if (!subpipe) {
-	CRITICAL0("Cannot fork addr2line to display the backtrace");
-	abort();
+	 /* Here we go, fire an addr2line up */
+	 subcmd = bprintf("%s -f -e %s %s",ADDR2LINE,p, addrs[i]);
+	 free(p);
+	 VERB1("Fire a new command: '%s'",subcmd);
+	 subpipe = popen(subcmd,"r");
+	 if (!subpipe) {
+	    CRITICAL0("Cannot fork addr2line to display the backtrace");
+	    abort();
+	 }
+	 fgets(line_func,1024,subpipe);
+	 line_func[strlen(line_func)-1]='\0';
+	 fgets(line_pos,1024,subpipe);
+	 line_pos[strlen(line_pos)-1]='\0';
+	 pclose(subpipe);
+	 free(subcmd);
       }
-      fgets(line_func,1024,subpipe);
-      line_func[strlen(line_func)-1]='\0';
-      fgets(line_pos,1024,subpipe);
-      line_pos[strlen(line_pos)-1]='\0';
-      pclose(subpipe);
-      free(subcmd);
 
       /* check whether the trick worked */
       if (strcmp("??",line_func)) {
@@ -210,7 +217,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t *e)  {
       } else {
 	/* damn, nothing to do here. Let's print the raw address */
 	DEBUG1("Dynamic symbol not found. Raw address = %s", backtrace[i]);
-	e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace[i]);
+	e->bt_strings[i] = bprintf("**   In ?? at %s", backtrace[i]);
       }
       
     }
