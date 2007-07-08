@@ -68,13 +68,16 @@ XBT_PUBLIC(int) SIMIX_host_get_state(smx_host_t host);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
-					      smx_process_code_t code, void *data,
-					      const char * hostname, int argc, char **argv, void * clean_process_function);
+					       smx_process_code_t code, void *data,
+					       const char * hostname, int argc, char **argv,
+					       void * clean_process_function);
 
-XBT_PUBLIC(smx_process_t) SIMIX_jprocess_create(const char *name, 
-						smx_host_t host,
-						void *data,
-						void *jprocess, void *jenv);
+XBT_PUBLIC(void) SIMIX_jprocess_create(const char *name, 
+				       smx_host_t host,
+				       void *data,
+				       void *jprocess, void *jenv,
+				       void * clean_process_function,
+				       smx_process_t* res);
 
 XBT_PUBLIC(void) SIMIX_process_kill(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_cleanup(void *arg);
@@ -134,6 +137,8 @@ XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char * name,
 						       double *communication_amount,
 						       double amount,
 						       double rate);
+
+void SIMIX_display_process_status(void);
 
 /* Helper functions for jMSG: manipulate the context data without breaking the module separation */
 void  SIMIX_process_set_jprocess(smx_process_t process, void *jp);
