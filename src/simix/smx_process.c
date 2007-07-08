@@ -1,4 +1,4 @@
-/* 	$Id$	 */
+//* 	$Id$	 */
 
 /* Copyright (c) 2002,2003,2004 Arnaud Legrand. All rights reserved.        */
 
@@ -85,7 +85,7 @@ smx_process_t SIMIX_process_create(const char *name,
 
   xbt_swag_insert(process, host->simdata->process_list);
 
-  /* *************** FIX du current_process !!! *************** */
+  /* fix current_process, about which xbt_context_start mocks around */
   self = simix_global->current_process;
   xbt_context_start(process->simdata->context);
   simix_global->current_process = self;
@@ -104,13 +104,30 @@ smx_process_t SIMIX_process_create(const char *name,
  * Warning: this should only be used in libsimgrid4java, since it create
  * a context with no code, which leads to segfaults in plain libsimgrid 
  */
-smx_process_t SIMIX_jprocess_create(const char *name, smx_host_t host,
-				    void *data,
-				    void *jprocess, void *jenv)
+void SIMIX_jprocess_create(const char *name, smx_host_t host,
+			   void *data,
+			   void *jprocess, void *jenv,
+			   void *clean_process_function,
+			   smx_process_t *res)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t,1);
   smx_process_t process = xbt_new0(s_smx_process_t,1);
   smx_process_t self = NULL;
+
+  /* HACK: We need this trick because when we xbt_context_new() do
+     syncronization stuff, the s_process field in the m_process needs 
+     to have a valid value, and we call xbt_context_new() before 
+     returning, of course, ie, before providing a right value to the 
+     caller (Java_simgrid_msg_Msg_processCreate) have time to store it  
+     in place. This way, we initialize the m_process->simdata->s_process 
+     field ourself ASAP.
+
+     All this would be much simpler if the synchronization stuff would be done
+     in the JAVA world, I think.
+  */
+  *res= process; 
+
+
 
   DEBUG5("jprocess_create(name=%s,host=%p,data=%p,jproc=%p,jenv=%p)",
 	 name,host,data,jprocess,jenv);
@@ -122,9 +139,16 @@ smx_process_t SIMIX_jprocess_create(const char *name, smx_host_t host,
   simdata->argc = 0;
   simdata->argv = NULL;
   
-  simdata->context = xbt_context_new(NULL, NULL, NULL, 
-				     SIMIX_process_cleanup, process, 
-				     /* argc/argv*/0,NULL);
+   if (clean_process_function) {
+      simdata->context = xbt_context_new(NULL, NULL, NULL, 
+					 clean_process_function, process, 
+					 /* argc/argv*/0,NULL);
+   } else {
+      simdata->context = xbt_context_new(NULL, NULL, NULL, 
+					 SIMIX_process_cleanup, process, 
+					 /* argc/argv*/0,NULL);
+   }
+
   /* Process structure */
   process->name = xbt_strdup(name);
   process->simdata = simdata; 
@@ -134,7 +158,7 @@ smx_process_t SIMIX_jprocess_create(const char *name, smx_host_t host,
 
   xbt_swag_insert(process, host->simdata->process_list);
 
-  /* *************** FIX du current_process !!! *************** */
+  /* fix current_process, about which xbt_context_start mocks around */
   self = simix_global->current_process;
   xbt_context_start(process->simdata->context);
   simix_global->current_process = self;
@@ -144,36 +168,36 @@ smx_process_t SIMIX_jprocess_create(const char *name, smx_host_t host,
 	 host->name);
   xbt_swag_insert(process,simix_global->process_to_run);
 
-  return process;
 }
 
 
 /** \brief Kill a SIMIX process
  *
- * This function simply kills a \a process... scarry isn't it ? :). Removes it from the mutex or condition that it can be blocked.
+ * This function simply kills a \a process... scarry isn't it ? :).
  * \param process poor victim
  *
  */
 void SIMIX_process_kill(smx_process_t process)
 {	
-  smx_simdata_process_t p_simdata = process->simdata;
+   smx_simdata_process_t p_simdata = process->simdata;
 
-  DEBUG2("Killing %s on %s",process->name, p_simdata->s_host->name);
+   DEBUG2("Killing process %s on %s",process->name, p_simdata->s_host->name);
   
-	if (p_simdata->mutex) {
-		xbt_swag_remove(process,p_simdata->mutex->sleeping);
-	}
-	if (p_simdata->cond) {
-		xbt_swag_remove(process,p_simdata->cond->sleeping);
-	}
-  xbt_swag_remove(process,simix_global->process_to_run);
-  xbt_swag_remove(process,simix_global->process_list);
-  xbt_context_kill(process->simdata->context);
+   /* Cleanup if we were waiting for something */
+   if (p_simdata->mutex) 
+      xbt_swag_remove(process,p_simdata->mutex->sleeping);
+   
+   if (p_simdata->cond) 
+      xbt_swag_remove(process,p_simdata->cond->sleeping);
 
-  if(process==SIMIX_process_self()) {
-    /* I just killed myself */
-    xbt_context_yield();
-  }
+   xbt_swag_remove(process, simix_global->process_to_run);
+   xbt_swag_remove(process, simix_global->process_list);
+   xbt_context_kill(process->simdata->context);
+
+   if(process==SIMIX_process_self()) {
+      /* I just killed myself */
+      xbt_context_yield();
+   }
 }
 
 /**
@@ -362,6 +386,7 @@ int SIMIX_process_is_suspended(smx_process_t process)
 
 /* Helper functions for jMSG: manipulate the context data without breaking the module separation */
 #include "xbt/context.h" /* to pass java objects from MSG to the context */
+
 void SIMIX_process_set_jprocess(smx_process_t process, void *jp) {
    xbt_context_set_jprocess(process->simdata->context,jp);
 }
