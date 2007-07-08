@@ -10,6 +10,8 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
+				"Logging specific to SIMIX (hosts)");
 
 /********************************* Host **************************************/
 smx_host_t __SIMIX_host_create(const char *name,
@@ -109,8 +111,19 @@ void __SIMIX_host_destroy(smx_host_t host)
   /* Clean Simulator data */
   simdata = host->simdata;
 
-  xbt_assert0((xbt_swag_size(simdata->process_list)==0),
-	      "Some process are still running on this host");
+  if (xbt_swag_size(simdata->process_list) != 0) {
+     char *msg=bprintf("Shutting down host %s, but it's not empty:", host->name);
+     char *tmp;
+     smx_process_t process = NULL;
+
+     xbt_swag_foreach(process, simdata->process_list) {
+	tmp = bprintf("%s\n\t%s",msg,process->name);
+	free(msg);
+	msg=tmp;
+     }
+     THROW1(arg_error,0,"%s",msg);
+  }
+      
   xbt_swag_free(simdata->process_list);
 
   free(simdata);
