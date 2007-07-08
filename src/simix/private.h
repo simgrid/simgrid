@@ -111,8 +111,4 @@ void __SIMIX_host_destroy(smx_host_t host);
 
 void __SIMIX_cond_wait(smx_cond_t cond);
 
-void __SIMIX_display_process_status(void);
-
-
-
 #endif
