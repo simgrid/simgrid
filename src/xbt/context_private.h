@@ -29,27 +29,44 @@
 #endif     /* not CONTEXT_THREADS */
 
 
-typedef struct s_xbt_context 
-{
+typedef struct s_xbt_context {
 	s_xbt_swag_hookup_t hookup;
-#ifdef CONTEXT_THREADS
-	xbt_thcond_t cond;
-	xbt_mutex_t mutex;
-	xbt_thread_t thread;		/* the thread that execute the code */
-#else
-	ucontext_t uc;			/* the thread that execute the code */
+
+	/* Declaration of the thread running the process */
+#ifdef JAVA_SIMGRID /* come first because other ones are defined too */
+	jobject jprocess;  /* the java process instance			*/
+	JNIEnv* jenv;	   /* jni interface pointer for this thread	*/
+#else   
+# ifdef CONTEXT_THREADS
+	xbt_thread_t thread; /* a plain dumb thread (portable to posix or windows) */
+# else
+	ucontext_t uc;	     /* the thread that execute the code */
 	char stack[STACK_SIZE];
 	struct s_xbt_context *save;
-#endif /* CONTEXT_THREADS */
-	xbt_context_function_t code;	/* the scheduler fonction	    */
+# endif /* CONTEXT_THREADS */
+#endif /* JAVA_SIMGRID */
+   
+	/* What we need to synchronize the process */        
+#if defined(JAVA_SIMGRID) || defined(CONTEXT_THREADS)
+	xbt_thcond_t cond;		/* the condition used to synchronize the process	*/
+	xbt_mutex_t mutex;		/* the mutex used to synchronize the process		*/
+#endif
+
+	/* What to run */
+	xbt_context_function_t code;	/* the scheduled fonction	    */
 	int argc;
 	char **argv;
+   
+	/* Init/exit functions */   
 	void_f_pvoid_t *startup_func;
 	void *startup_arg;
 	void_f_pvoid_t *cleanup_func;
 	void *cleanup_arg;
-	ex_ctx_t *exception;		/* exception 			    */
-	int iwannadie;
+
+	ex_ctx_t *exception;		/* exception container    */
+   	int iwannadie;                  /* Set to true by the context when it wants to commit suicide */
+
+   
 } s_xbt_context_t;
 
 
