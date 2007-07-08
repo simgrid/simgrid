@@ -11,7 +11,7 @@ AM_CFLAGS+= -g @GTNETS_CFLAGS@
 
 
 MAINTAINERCLEANFILES=Makefile.in
-INCLUDES= -I$(top_srcdir)/include -I$(top_srcdir)/src/include 
+INCLUDES= -I$(top_srcdir)/include -I$(top_srcdir)/src/include
 EXTRA_DIST= \
         \
 	portable.h \
@@ -100,7 +100,6 @@ VERSION_INFO= -version-info 2:0:0
 #  It modifies the library name, and you thus cannot say that a library
 #   using this trick is ready for a "stable" release (say, in Debian).
 
-lib_LTLIBRARIES= libsimgrid.la  libgras.la
 
 ################################################
 # Declaration of the different modules content #
@@ -153,6 +152,7 @@ GTNETS_SRC= \
 
 # Separated because we don't want it in libsimgrid4java
 CTX_SRC= xbt/context.c
+JCTX_SRC= java/jxbt_context.c java/jxbt_context.h xbt/xbt_thread.c
 
 SIMIX_SRC= \
   simix/smx_global.c \
@@ -167,6 +167,30 @@ SIMIX_SRC= \
 MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
   msg/global.c msg/environment.c msg/deployment.c 
+
+JMSG_C_SRC = \
+  java/jxbt_utilities.c     java/jxbt_utilities.h      \
+  java/jmsg.c               java/jmsg.h                \
+  java/jmsg_channel.c       java/jmsg_channel.h        \
+  java/jmsg_host.c          java/jmsg_host.h           \
+  java/jmsg_parallel_task.c java/jmsg_parallel_task.h  \
+  java/jmsg_process.c       java/jmsg_process.h        \
+  java/jmsg_task.c          java/jmsg_task.h
+
+JMSG_JAVA_SRC = \
+  java/simgrid/msg/MsgException.java                 \
+  java/simgrid/msg/JniException.java                 \
+  java/simgrid/msg/NativeException.java              \
+  java/simgrid/msg/HostNotFoundException.java        \
+  java/simgrid/msg/ProcessNotFoundException.java     \
+  \
+  java/simgrid/msg/Process.java                      \
+  java/simgrid/msg/ApplicationHandler.java           \
+  java/simgrid/msg/Channel.java                      \
+  java/simgrid/msg/Host.java                         \
+  java/simgrid/msg/Msg.java                          \
+  java/simgrid/msg/Task.java                         \
+  java/simgrid/msg/ParallelTask.java                 
 
 SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c
 
@@ -232,6 +256,8 @@ endif
 ### Declare the library content
 ###
 
+lib_LTLIBRARIES= libsimgrid.la libsimgrid4java.la libgras.la
+
 libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO)                     @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
@@ -240,6 +266,24 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+
+libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
+                             $(SIMIX_SRC) $(JCTX_SRC) \
+                             $(JMSG_C_SRC) $(MSG_SRC) \
+  		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
+libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid4java_la_GCJFLAGS = -fjni
+
+clean-local:
+	-rm -rf .classes
+
+jardir = $(prefix)/jar 
+jar_DATA =  simgrid.jar
+
+simgrid.jar: $(JMSG_JAVA_SRC)
+	[ -e .classes ] || mkdir .classes
+	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC)
+	$(JAR) cvf simgrid.jar -C .classes .;
 
 if GRAMINE_MODE
 else 

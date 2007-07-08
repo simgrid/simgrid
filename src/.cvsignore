@@ -5,3 +5,4 @@ gras_config.h ucontext_stack.h
 stamp-h.in stamp-h stamp-h1
 *.loT
 testall*
+.classes simgrid.jar
