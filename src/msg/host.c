@@ -117,7 +117,7 @@ m_host_t MSG_host_self(void)
 }
 
 /*
- * Real function for destroy a host.
+ * Real function to destroy a host.
  * MSG_host_destroy is just  a front_end that also removes it from 
  * msg_global->host
  */
@@ -129,7 +129,7 @@ void __MSG_host_destroy(m_host_t host)
   xbt_assert0((host != NULL), "Invalid parameters");
 
   /* Clean Simulator data */
-	/* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
+   /* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
   simdata = (host)->simdata;
 
   for (i = 0; i < msg_global->max_channel; i++)
