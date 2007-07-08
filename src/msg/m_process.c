@@ -42,19 +42,19 @@ m_process_t MSG_process_create(const char *name,
   return MSG_process_create_with_arguments(name, code, data, host, -1, NULL);
 }
 
-static void MSG_process_cleanup(void *arg)
+void __MSG_process_cleanup(void *arg)
 {
 	/* arg is a pointer to a simix process, we can get the msg process with the field data */
-	m_process_t proc = ((smx_process_t)arg)->data;
-  xbt_fifo_remove(msg_global->process_list, proc);
-	SIMIX_process_cleanup(arg);
-  free(proc->name);
-  proc->name = NULL;
-  free(proc->simdata);
-  proc->simdata = NULL;
-  free(proc);
+   m_process_t proc = ((smx_process_t)arg)->data;
+   xbt_fifo_remove(msg_global->process_list, proc);
+   SIMIX_process_cleanup(arg);
+   free(proc->name);
+   proc->name = NULL;
+   free(proc->simdata);
+   proc->simdata = NULL;
+   free(proc);
 
-	return;
+   return;
 }
 
 /** \ingroup m_process_management
@@ -108,7 +108,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   simdata->argv = argv;
   simdata->s_process = SIMIX_process_create(name, (smx_process_code_t)code, 
 					    (void*)process, host->name, argc, argv, 
-					    MSG_process_cleanup );
+					    __MSG_process_cleanup );
 
   if (SIMIX_process_self()) {
     simdata->PPID = MSG_process_get_PID(SIMIX_process_self()->data);

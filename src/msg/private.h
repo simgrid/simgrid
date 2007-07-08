@@ -104,6 +104,7 @@ void __MSG_host_destroy(m_host_t host);
 
 void __MSG_display_process_status(void);
 
+void __MSG_process_cleanup(void *arg);
 m_process_t __MSG_process_create_with_arguments(const char *name,
 						m_process_code_t code, void *data,
 						char * hostname, int argc, char **argv);
