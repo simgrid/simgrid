@@ -12,6 +12,7 @@ AC_CONFIG_HEADERS([src/gras_config.h])
 AC_REVISION($Revision$)
 AC_CANONICAL_TARGET
 AC_LANG([C])
+AM_PROG_GCJ
 
 AM_INIT_AUTOMAKE(gnu)
 AC_CONFIG_MACRO_DIR(acmacro) 
@@ -251,7 +252,6 @@ else
 fi
 AC_SUBST([GRAS_DEP])
 
-
 ##############################################
 ## Enhance maintainer mode and SUBST variables
 ## (must be placed after any compilation tests since our overprotective flags
@@ -319,6 +319,15 @@ AC_PATH_PROG(ADDR2LINE, addr2line)
 if test x$ADDR2LINE != x ; then
   AC_DEFINE_UNQUOTED(ADDR2LINE,"$ADDR2LINE",[Path to the addr2line tool])
 fi
+
+# Java cruft
+AC_PATH_PROG([JAVAC], [javac], `which javac`)
+AC_PATH_PROG([JAVA],  [java] , `which java`)
+AC_PATH_PROG([JAR],   [jar]  , `which jar`)
+AM_CONDITIONAL(HAVE_JAVA, 
+               test -n "$JAVAC" && test -n "$JAVA" && test -n "$JAR")
+
+
 
 AC_SUBST(ac_configure_args)
 # Can we make status line about the compilation result?
@@ -400,6 +409,7 @@ AC_CONFIG_FILES([
 #      examples/gras/p2p/chord/Makefile
 #      examples/gras/p2p/can/Makefile
 
+
 AC_CONFIG_FILES([
   examples/Makefile 
     examples/msg/Makefile
@@ -415,11 +425,14 @@ AC_CONFIG_FILES([
       examples/gras/mmrpc/Makefile
       examples/gras/pmm/Makefile
       examples/gras/all2all/Makefile
-
-      
     examples/amok/Makefile       
       examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
       examples/amok/saturate/Makefile  examples/amok/saturate/test_sg  examples/amok/saturate/test_rl
+    examples/java/Makefile
+      examples/java/basic/Makefile
+      examples/java/comm_time/Makefile
+      examples/java/suspend/Makefile
+      examples/java/ping_pong/Makefile
 ],[
     for file in                                                 \
      \
