@@ -8,15 +8,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/misc.h"
-#include "xbt/dynar.h"
-
 #ifndef XBT_STR_H
 #define XBT_STR_H
 
+#include <stdarg.h> /* va_* */
+#include "xbt/misc.h"
+#include "xbt/dynar.h"
+
+/* KILLME: Malek, are you sure you need this? */
 #if defined(_WIN32)
 #include <stdio.h>
-#endif
+#endif 
 
 SG_BEGIN_DECL()
 
