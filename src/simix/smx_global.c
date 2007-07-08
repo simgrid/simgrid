@@ -44,7 +44,7 @@ void SIMIX_global_init(int *argc, char **argv)
 }
 
 /* Debug purpose, incomplete */
-void __SIMIX_display_process_status(void)
+void SIMIX_display_process_status(void)
 {
    smx_process_t process = NULL;
    xbt_fifo_item_t item = NULL;
@@ -91,7 +91,7 @@ void __SIMIX_display_process_status(void)
 static void _XBT_CALL inthandler(int ignored)
 {
    INFO0("CTRL-C pressed. Displaying status and bailing out");
-   __SIMIX_display_process_status();
+   SIMIX_display_process_status();
    exit(1);
 }
 
@@ -184,7 +184,6 @@ void SIMIX_clean(void)
   xbt_fifo_item_t i = NULL;
   smx_host_t h = NULL;
   smx_process_t p = NULL;
-
 
   while((p=xbt_swag_extract(simix_global->process_list))) {
     SIMIX_process_kill(p);
@@ -317,7 +316,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 /* 			INFO0("Congratulations ! Simulation terminated : all processes are over"); */
 		} else {
 			INFO0("Oops ! Deadlock or code not perfectly clean.");
-			__SIMIX_display_process_status();
+			SIMIX_display_process_status();
 			if(XBT_LOG_ISENABLED(simix, xbt_log_priority_debug) ||
 					XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
 				DEBUG0("Aborting!");
