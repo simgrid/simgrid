@@ -13,7 +13,7 @@ EXTRA_DIST=$(SG_EXTRA_DIST)
 
 DISTCLEANFILES= stamp.configure stamp.build stamp.check *~  
 
-ACLOCAL = aclocal-1.9 -I acmacro
+ACLOCAL = aclocal -I acmacro
 AUTOMAKE_OPTIONS = gnu
 
 check-local:
