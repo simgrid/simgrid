@@ -1020,9 +1020,9 @@ An example of this trick is distributed in the file examples/msg/msg_test_surfxm
 
 \section faq_troubleshooting Troubleshooting
 
-\subsection faq_trouble_compil Compilation and installation problems
+\subsection faq_trouble_lib_compil SimGrid compilation and installation problems
 
-\subsubsection faq_trouble_config ./configure fails!
+\subsubsection faq_trouble_lib_config ./configure fails!
 
 We now only one reason for the configure to fail:
 
@@ -1062,7 +1062,7 @@ machine:
    that we can check it out. Make sure to read \ref faq_bugrepport
    before you do so.
 
-\subsection faq_trouble_errors Understanding error messages
+\subsection faq_trouble_compil User code compilation problems
 
 \subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
 
@@ -1070,6 +1070,20 @@ This is because you are using the log mecanism, but you didn't created
 any default category in this file. You should refer to \ref XBT_log
 for all the details, but you simply forgot to call one of
 XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
+
+\subsubsection faq_trouble_pthreadstatic "gcc: undefinded reference to pthread_key_create"
+
+This indicates that one of the library SimGrid depends on (libpthread
+here) was missing on the linking command line. Dependencies of
+libsimgrid are expressed directly in the dynamic library, so it's
+quite impossible that you see this message when doing dynamic linking. 
+
+If you compile your code statically (and if you use a pthread version
+of SimGrid -- see \ref faq_more_processes), you must absolutely
+specify <tt>-lpthread</tt> on the linker command line. As usual, this should
+come after <tt>-lsimgrid</tt> on this command line.
+
+\subsection faq_trouble_errors Runtime error messages
 
 \subsubsection faq_flexml_limit "surf_parse_lex: Assertion `next limit' failed."
 
