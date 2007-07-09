@@ -23,6 +23,7 @@
 #include <pthread.h>
 
 typedef struct xbt_os_thread_ {
+  /* KEEP IT IN SYNC WITH xbt_thread.c */
    pthread_t t;
    void *param;
    pvoid_f_pvoid_t *start_routine;
@@ -99,6 +100,7 @@ void xbt_os_thread_yield(void) {
 }
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
+  /* KEEP IT IN SYNC WITH xbt_thread.c */
    pthread_mutex_t m;
 } s_xbt_os_mutex_t;
 
@@ -142,6 +144,7 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex) {
 
 /***** condition related functions *****/
 typedef struct xbt_os_cond_ {
+  /* KEEP IT IN SYNC WITH xbt_thread.c */
    pthread_cond_t c;
 } s_xbt_os_cond_t;
 
@@ -191,6 +194,7 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond){
 #elif defined(WIN32)
 
 typedef struct xbt_os_thread_ {
+  /* KEEP IT IN SYNC WITH xbt_thread */
   HANDLE handle;                  /* the win thread handle        */
   unsigned long id;               /* the win thread id            */
   pvoid_f_pvoid_t *start_routine;
@@ -272,6 +276,7 @@ void xbt_os_thread_yield(void) {
 
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
+  /* KEEP IT IN SYNC WITH xbt_thread.c */
    CRITICAL_SECTION lock;   
 } s_xbt_os_mutex_t;
 
@@ -311,6 +316,7 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex) {
  };
 
 typedef struct xbt_os_cond_ {
+  /* KEEP IT IN SYNC WITH xbt_thread.c */
    HANDLE events[MAX_EVENTS];
    
    unsigned int waiters_count;           /* the number of waiters                        */

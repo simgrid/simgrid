@@ -133,6 +133,12 @@ XBT_SRC=\
   xbt/cunit.c                                                                \
   xbt/graphxml_parse.c
 
+XBT_RL_SRC = \
+  xbt/xbt_rl_synchro.c
+
+XBT_SG_SRC = \
+  xbt/xbt_sg_synchro.c
+
 SURF_SRC= \
   surf/maxmin.c                                                              \
   surf/lagrange.c                                                            \
@@ -219,6 +225,8 @@ GRAS_RL_SRC= \
   gras/Virtu/rl_dns.c\
   \
   gras/Msg/rl_msg.c
+  
+GRAS_RL_SRC+=$(XBT_RL_SRC)
 
 GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
   \
@@ -227,6 +235,8 @@ GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c
   gras/Virtu/sg_dns.c\
   \
   gras/Msg/sg_msg.c
+
+GRAS_SG_SRC+=$(XBT_SG_SRC)
 
 AMOK_SRC= \
   amok/amok_base.c \

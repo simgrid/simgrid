@@ -69,15 +69,21 @@ typedef struct s_smx_process_arg {
 /********************************* Mutex and Conditional ****************************/
 
 typedef struct s_smx_mutex {
-	xbt_swag_t sleeping;			/* list of sleeping process */
-	int using;
+
+   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
+   xbt_swag_t sleeping;			/* list of sleeping process */
+   int using;
+   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_mutex */
 
 } s_smx_mutex_t;
 
 typedef struct s_smx_cond {
-	xbt_swag_t sleeping; 			/* list of sleeping process */
-	smx_mutex_t  mutex;
-	xbt_fifo_t actions;			/* list of actions */
+   
+   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_cond */
+   xbt_swag_t sleeping; 			/* list of sleeping process */
+   smx_mutex_t  mutex;
+   xbt_fifo_t actions;			/* list of actions */
+   /* KEEP IT IN SYNC WITH src/xbt_sg_thread.c::struct s_xbt_cond */
 
 } s_smx_cond_t;
 
