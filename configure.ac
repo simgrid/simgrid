@@ -283,6 +283,27 @@ AC_SUBST([abs_srcdir])
 AC_SUBST([abs_top_builddir])
 AC_SUBST([abs_top_srcdir])
 
+
+
+SG_CONFIGURE_PART(Check for Java bindings...)
+# Java cruft
+AC_PATH_PROG([JAVAC], [javac], `which javac`)
+AC_PATH_PROG([JAVA],  [java] , `which java`)
+AC_PATH_PROG([JAR],   [jar]  , `which jar`)
+AC_CHECK_HEADERS(jni.h)
+AC_MSG_CHECKING(whether to compile java bindings)
+if test -n "$JAVAC"   \
+   && test -n "$JAVA" \
+   && test -n "$JAR"  \
+   && test "x$ac_cv_header_jni_h"="xyes" ; then
+   
+   use_java="yes"
+else   
+   use_java="no"
+fi
+AC_MSG_RESULT($use_java)
+AM_CONDITIONAL(HAVE_JAVA,test "x$use_java"="xyes")
+
 #####################
 ## Check for programs
 ##
@@ -319,15 +340,6 @@ AC_PATH_PROG(ADDR2LINE, addr2line)
 if test x$ADDR2LINE != x ; then
   AC_DEFINE_UNQUOTED(ADDR2LINE,"$ADDR2LINE",[Path to the addr2line tool])
 fi
-
-# Java cruft
-AC_PATH_PROG([JAVAC], [javac], `which javac`)
-AC_PATH_PROG([JAVA],  [java] , `which java`)
-AC_PATH_PROG([JAR],   [jar]  , `which jar`)
-AM_CONDITIONAL(HAVE_JAVA, 
-               test -n "$JAVAC" && test -n "$JAVA" && test -n "$JAR")
-
-
 
 AC_SUBST(ac_configure_args)
 # Can we make status line about the compilation result?
