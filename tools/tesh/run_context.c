@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
 xbt_dynar_t bg_jobs = NULL;
 rctx_t armageddon_initiator = NULL;
-xbt_mutex_t armageddon_mutex = NULL;
+xbt_os_mutex_t armageddon_mutex = NULL;
 
 /* 
  * Module management
@@ -27,20 +27,20 @@ static void kill_it(void*r) {
   rctx_t rctx = *(rctx_t*)r;
 
   VERB1("Join thread %p which were running a background cmd",rctx->runner);
-  xbt_thread_join(rctx->runner,NULL);
+  xbt_os_thread_join(rctx->runner,NULL);
   rctx_free(rctx);
 }
 
 void rctx_init(void) {
   bg_jobs = xbt_dynar_new(sizeof(rctx_t),kill_it);
-  armageddon_mutex = xbt_mutex_init();
+  armageddon_mutex = xbt_os_mutex_init();
   armageddon_initiator = NULL;
 }
 
 void rctx_exit(void) {
   if (bg_jobs)
     xbt_dynar_free(&bg_jobs);
-  xbt_mutex_destroy(armageddon_mutex);
+  xbt_os_mutex_destroy(armageddon_mutex);
 }
 
 void rctx_wait_bg(void) {
@@ -52,19 +52,19 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
   rctx_t rctx;
   int cpt;
 
-  xbt_mutex_lock(armageddon_mutex);
+  xbt_os_mutex_lock(armageddon_mutex);
   if (armageddon_initiator != NULL) {
     VERB0("Armageddon already started. Let it go");
     return;
   }
   armageddon_initiator = initiator;
-  xbt_mutex_unlock(armageddon_mutex);
+  xbt_os_mutex_unlock(armageddon_mutex);
 
 
   /* Kill any background commands */
   xbt_dynar_foreach(bg_jobs,cpt,rctx) {
     if (rctx != initiator) {
-      xbt_mutex_lock(rctx->interruption);
+      xbt_os_mutex_lock(rctx->interruption);
       rctx->interrupted = 1;
       INFO2("Kill <%s> because <%s> failed",rctx->filepos,initiator->filepos);
       if (!rctx->reader_done) {
@@ -72,7 +72,7 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
 	usleep(100);
 	kill(rctx->pid,SIGKILL);          
       }
-      xbt_mutex_unlock(rctx->interruption);
+      xbt_os_mutex_unlock(rctx->interruption);
     }
   }
 
@@ -119,7 +119,7 @@ rctx_t rctx_new() {
   res->input=buff_new();
   res->output_wanted=buff_new();
   res->output_got=buff_new();
-  res->interruption = xbt_mutex_init();
+  res->interruption = xbt_os_mutex_init();
   rctx_empty(res);
   return res;
 }
@@ -134,7 +134,7 @@ void rctx_free(rctx_t rctx) {
     free(rctx->cmd);
   if (rctx->filepos)
     free(rctx->filepos);
-  xbt_mutex_destroy(rctx->interruption);
+  xbt_os_mutex_destroy(rctx->interruption);
   buff_free(rctx->input);
   buff_free(rctx->output_got);
   buff_free(rctx->output_wanted);
@@ -340,8 +340,8 @@ void rctx_start(void) {
        rctx->end_time = -1;
 
     rctx->reader_done = 0;
-    rctx->reader = xbt_thread_create(thread_reader,(void*)rctx);
-    rctx->writer = xbt_thread_create(thread_writer,(void*)rctx);
+    rctx->reader = xbt_os_thread_create(thread_reader,(void*)rctx);
+    rctx->writer = xbt_os_thread_create(thread_writer,(void*)rctx);
 
   } else { /* child */
 
@@ -364,13 +364,13 @@ void rctx_start(void) {
   } else {
     /* Damn. Copy the rctx and launch a thread to handle it */
     rctx_t old = rctx;
-    xbt_thread_t runner;
+    xbt_os_thread_t runner;
 
     rctx = rctx_new();
     DEBUG2("RCTX: new bg=%p, new fg=%p",old,rctx);
 
     DEBUG2("Launch a thread to wait for %s %d",old->cmd,old->pid);
-    runner = xbt_thread_create(rctx_wait,(void*)old);
+    runner = xbt_os_thread_create(rctx_wait,(void*)old);
     old->runner = runner;
     VERB3("Launched thread %p to wait for %s %d",
 	  runner,old->cmd, old->pid);
@@ -381,7 +381,7 @@ void rctx_start(void) {
 /* Waits for the child to end (or to timeout), and check its 
    ending conditions. This is launched from rctx_start but either in main
    thread (for foreground jobs) or in a separate one for background jobs. 
-   That explains the prototype, forced by xbt_thread_create. */
+   That explains the prototype, forced by xbt_os_thread_create. */
 
 void *rctx_wait(void* r) {
   rctx_t rctx = (rctx_t)r;
@@ -400,7 +400,7 @@ void *rctx_wait(void* r) {
     now = time(NULL);
   }
    
-  xbt_mutex_lock(rctx->interruption);
+  xbt_os_mutex_lock(rctx->interruption);
 
   if (!rctx->interrupted && rctx->end_time > 0 && rctx->end_time < now) {    
     INFO1("<%s> timeouted. Kill the process.",rctx->filepos);
@@ -414,13 +414,13 @@ void *rctx_wait(void* r) {
   /* Make sure helper threads die.
      Cannot block since they wait for the child we just killed
      if not already dead. */
-  xbt_thread_join(rctx->writer,NULL);
-  xbt_thread_join(rctx->reader,NULL);
+  xbt_os_thread_join(rctx->writer,NULL);
+  xbt_os_thread_join(rctx->reader,NULL);
 
-  /*  xbt_mutex_unlock(rctx->interruption);
+  /*  xbt_os_mutex_unlock(rctx->interruption);
   if (rctx->interrupted)
     return NULL;
-    xbt_mutex_lock(rctx->interruption);*/
+    xbt_os_mutex_lock(rctx->interruption);*/
  
   buff_chomp(rctx->output_got);
   buff_chomp(rctx->output_wanted);
@@ -528,7 +528,7 @@ void *rctx_wait(void* r) {
     if (!rctx->interrupted)
       rctx_armageddon(rctx, errcode);
   }
-  xbt_mutex_unlock(rctx->interruption);
+  xbt_os_mutex_unlock(rctx->interruption);
 
   return NULL;
 }

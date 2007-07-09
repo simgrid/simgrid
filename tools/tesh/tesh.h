@@ -11,7 +11,7 @@
 #ifndef TESH_H
 #define TESH_H
 
-#include "xbt/xbt_thread.h"
+#include "xbt/xbt_os_thread.h"
 /*** Buffers ***/
 /***************/
 #include "buff.h"

@@ -33,7 +33,7 @@ typedef struct {
 			that the child is not dead before the end of timeout */
    
   int interrupted:1; /* Whether we got stopped by an armageddon */
-  xbt_mutex_t interruption; /* To allow main thread to kill a runner 
+  xbt_os_mutex_t interruption; /* To allow main thread to kill a runner 
 			       one only at certain points */
 
   e_output_handling_t output;
@@ -51,8 +51,8 @@ typedef struct {
   buff_t output_got;
 
   /* Threads */
-  xbt_thread_t writer, reader; /* IO handlers */
-  xbt_thread_t runner; /* Main thread, counting for timeouts */
+  xbt_os_thread_t writer, reader; /* IO handlers */
+  xbt_os_thread_t runner; /* Main thread, counting for timeouts */
 
   /* Pipes from/to the child */
   int child_to, child_from;
@@ -68,7 +68,7 @@ void rctx_wait_bg(void);
 
 /* kill forcefully all currently running background jobs */
 extern rctx_t armageddon_initiator;
-extern xbt_mutex_t armageddon_mutex;
+extern xbt_os_mutex_t armageddon_mutex;
 void rctx_armageddon(rctx_t initiator, int exitcode);
 
 
