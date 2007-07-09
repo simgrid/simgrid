@@ -1,5 +1,8 @@
 SimGrid (3.3-cvs) unstable; urgency=low
 
+ JAVA BINDINGS for MSG (you dreamt of them? We made them)
+  [Malek Cherier & Mt]
+
  Introduce the SIMIX module: factorize code between MSG and GRAS.
    [Bruno Donassolo]
   Until now, GRAS were using MSG as an interface to SURF. It was
@@ -19,10 +22,17 @@ SimGrid (3.3-cvs) unstable; urgency=low
 
  GRAS:
   * Convert the PIDs from long int to int to match the MSG ones (and
-    linux ones too)
+    linux ones too) [Mt]
 
  XBT:
   * Make the backtrace of exceptions more human readable [Mt]
+  * New module: xbt/synchro [Mt]
+    synchronization tools (mutex and conditions) working the same way
+    in simulation and in real life (mainly useful for GRAS, but not
+    only).
+  * New module: xbt/str [Mt]
+    a ton of string utility functions (split, join, printf to a newly
+    allocated buffer, trim, etc)    
 
  -- 
 
