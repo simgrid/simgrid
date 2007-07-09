@@ -36,7 +36,7 @@ xbt_init(int *argc, char **argv) {
   VERB0("Initialize XBT");
   
   xbt_log_init(argc,argv);
-  xbt_thread_mod_init();
+  xbt_os_thread_mod_init();
   xbt_context_init();
 }
 
@@ -48,7 +48,7 @@ xbt_exit(){
     xbt_fifo_exit();
     xbt_dict_exit();
     xbt_context_exit();
-    xbt_thread_mod_exit();
+    xbt_os_thread_mod_exit();
     xbt_log_exit();
   }
    

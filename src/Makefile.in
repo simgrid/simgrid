@@ -85,7 +85,7 @@ am__objects_1 = snprintf.lo xbt_str.lo ex.lo xbt_virtu.lo sysdep.lo \
 am__objects_2 = gras.lo transport.lo msg.lo rpc.lo timer.lo process.lo \
 	gras_module.lo ddt_create.lo ddt_convert.lo ddt_exchange.lo \
 	cbps.lo datadesc.lo ddt_parse.lo ddt_parse.yy.lo
-am__objects_3 = rl_stubs.lo xbt_thread.lo rl_transport.lo \
+am__objects_3 = rl_stubs.lo xbt_os_thread.lo rl_transport.lo \
 	transport_plugin_file.lo transport_plugin_tcp.lo rl_emul.lo \
 	rl_process.lo rl_time.lo rl_dns.lo rl_msg.lo
 am__objects_4 = amok_base.lo bandwidth.lo saturate.lo \
@@ -130,9 +130,9 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	gras/Transport/sg_transport.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
 	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
-	gras/Virtu/sg_dns.c gras/sg_stubs.c gras/Msg/sg_msg.c \
-	amok/amok_base.c amok/Bandwidth/bandwidth.c \
-	amok/Bandwidth/saturate.c amok/PeerManagement/peermanagement.c
+	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c amok/amok_base.c \
+	amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
+	amok/PeerManagement/peermanagement.c
 am__objects_5 = maxmin.lo lagrange.lo trace_mgr.lo surf.lo \
 	surfxml_parse.lo cpu.lo network.lo workstation.lo \
 	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo
@@ -148,7 +148,7 @@ am__objects_11 = msg_config.lo task.lo host.lo m_process.lo gos.lo \
 	global.lo environment.lo deployment.lo
 am__objects_12 = sd_global.lo sd_link.lo sd_task.lo sd_workstation.lo
 am__objects_13 = sg_transport.lo transport_plugin_sg.lo sg_emul.lo \
-	sg_process.lo sg_time.lo sg_dns.lo sg_stubs.lo sg_msg.lo
+	sg_process.lo sg_time.lo sg_dns.lo sg_msg.lo
 am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_5) \
 	$(am__objects_7) $(am__objects_8) $(am__objects_9) \
 	$(am__objects_10) $(am__objects_11) $(am__objects_12) \
@@ -175,7 +175,7 @@ am__libsimgrid4java_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
 	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
 	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
-	java/jxbt_context.c java/jxbt_context.h xbt/xbt_thread.c \
+	java/jxbt_context.c java/jxbt_context.h xbt/xbt_os_thread.c \
 	java/jxbt_utilities.c java/jxbt_utilities.h java/jmsg.c \
 	java/jmsg.h java/jmsg_channel.c java/jmsg_channel.h \
 	java/jmsg_host.c java/jmsg_host.h java/jmsg_parallel_task.c \
@@ -196,10 +196,10 @@ am__libsimgrid4java_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	gras/Transport/sg_transport.c \
 	gras/Transport/transport_plugin_sg.c gras/Virtu/sg_emul.c \
 	gras/Virtu/sg_process.c gras/Virtu/sg_time.c \
-	gras/Virtu/sg_dns.c gras/sg_stubs.c gras/Msg/sg_msg.c \
-	amok/amok_base.c amok/Bandwidth/bandwidth.c \
-	amok/Bandwidth/saturate.c amok/PeerManagement/peermanagement.c
-am__objects_14 = jxbt_context.lo xbt_thread.lo
+	gras/Virtu/sg_dns.c gras/Msg/sg_msg.c amok/amok_base.c \
+	amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
+	amok/PeerManagement/peermanagement.c
+am__objects_14 = jxbt_context.lo xbt_os_thread.lo
 am__objects_15 = jxbt_utilities.lo jmsg.lo jmsg_channel.lo \
 	jmsg_host.lo jmsg_parallel_task.lo jmsg_process.lo \
 	jmsg_task.lo
@@ -418,7 +418,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/workstation_KCCFLN05_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
 	include/surf/surfxml_parse_private.h \
-	include/xbt/xbt_portability.h include/xbt/xbt_thread.h \
+	include/xbt/xbt_portability.h include/xbt/xbt_os_thread.h \
 	include/xbt/context.h msg/private.h simdag/private.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
 	$(am__append_1) $(am__append_2) $(am__append_4) \
@@ -512,7 +512,7 @@ GTNETS_SRC = \
 
 # Separated because we don't want it in libsimgrid4java
 CTX_SRC = xbt/context.c
-JCTX_SRC = java/jxbt_context.c java/jxbt_context.h xbt/xbt_thread.c
+JCTX_SRC = java/jxbt_context.c java/jxbt_context.h xbt/xbt_os_thread.c
 SIMIX_SRC = \
   simix/smx_global.c \
   simix/smx_deployment.c \
@@ -567,7 +567,7 @@ GRAS_COMMON_SRC = \
   gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h
 
 GRAS_RL_SRC = \
-  gras/rl_stubs.c                     xbt/xbt_thread.c                    \
+  gras/rl_stubs.c                     xbt/xbt_os_thread.c                    \
   \
   gras/Transport/rl_transport.c          \
   gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
@@ -584,7 +584,6 @@ GRAS_SG_SRC = gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
   gras/Virtu/sg_dns.c\
   \
-  gras/sg_stubs.c                         \
   gras/Msg/sg_msg.c
 
 AMOK_SRC = \
@@ -822,7 +821,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_emul.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_msg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_process.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_stubs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simgrid_units_main.Po@am__quote@
@@ -855,10 +853,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_layout_simple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_matrix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_os_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_peer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_str_unit.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_virtu.Plo@am__quote@
 
 .c.o:
@@ -1176,12 +1174,12 @@ rl_stubs.lo: gras/rl_stubs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o rl_stubs.lo `test -f 'gras/rl_stubs.c' || echo '$(srcdir)/'`gras/rl_stubs.c
 
-xbt_thread.lo: xbt/xbt_thread.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_thread.lo -MD -MP -MF $(DEPDIR)/xbt_thread.Tpo -c -o xbt_thread.lo `test -f 'xbt/xbt_thread.c' || echo '$(srcdir)/'`xbt/xbt_thread.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_thread.Tpo $(DEPDIR)/xbt_thread.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_thread.c' object='xbt_thread.lo' libtool=yes @AMDEPBACKSLASH@
+xbt_os_thread.lo: xbt/xbt_os_thread.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_os_thread.lo -MD -MP -MF $(DEPDIR)/xbt_os_thread.Tpo -c -o xbt_os_thread.lo `test -f 'xbt/xbt_os_thread.c' || echo '$(srcdir)/'`xbt/xbt_os_thread.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_os_thread.Tpo $(DEPDIR)/xbt_os_thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_os_thread.c' object='xbt_os_thread.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_thread.lo `test -f 'xbt/xbt_thread.c' || echo '$(srcdir)/'`xbt/xbt_thread.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_os_thread.lo `test -f 'xbt/xbt_os_thread.c' || echo '$(srcdir)/'`xbt/xbt_os_thread.c
 
 rl_transport.lo: gras/Transport/rl_transport.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT rl_transport.lo -MD -MP -MF $(DEPDIR)/rl_transport.Tpo -c -o rl_transport.lo `test -f 'gras/Transport/rl_transport.c' || echo '$(srcdir)/'`gras/Transport/rl_transport.c
@@ -1546,13 +1544,6 @@ sg_dns.lo: gras/Virtu/sg_dns.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/Virtu/sg_dns.c' object='sg_dns.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sg_dns.lo `test -f 'gras/Virtu/sg_dns.c' || echo '$(srcdir)/'`gras/Virtu/sg_dns.c
-
-sg_stubs.lo: gras/sg_stubs.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sg_stubs.lo -MD -MP -MF $(DEPDIR)/sg_stubs.Tpo -c -o sg_stubs.lo `test -f 'gras/sg_stubs.c' || echo '$(srcdir)/'`gras/sg_stubs.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sg_stubs.Tpo $(DEPDIR)/sg_stubs.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/sg_stubs.c' object='sg_stubs.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sg_stubs.lo `test -f 'gras/sg_stubs.c' || echo '$(srcdir)/'`gras/sg_stubs.c
 
 sg_msg.lo: gras/Msg/sg_msg.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sg_msg.lo -MD -MP -MF $(DEPDIR)/sg_msg.Tpo -c -o sg_msg.lo `test -f 'gras/Msg/sg_msg.c' || echo '$(srcdir)/'`gras/Msg/sg_msg.c

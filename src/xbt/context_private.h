@@ -22,7 +22,7 @@
 #include "xbt/ex.h"
 
 #ifdef CONTEXT_THREADS
-#  include "xbt/xbt_thread.h"
+#  include "xbt/xbt_os_thread.h"
 #else
 #  include <ucontext.h>
 #  define STACK_SIZE 128*1024 /* Lower this if you want to reduce the memory consumption */
@@ -38,7 +38,7 @@ typedef struct s_xbt_context {
 	JNIEnv* jenv;	   /* jni interface pointer for this thread	*/
 #else   
 # ifdef CONTEXT_THREADS
-	xbt_thread_t thread; /* a plain dumb thread (portable to posix or windows) */
+	xbt_os_thread_t thread; /* a plain dumb thread (portable to posix or windows) */
 # else
 	ucontext_t uc;	     /* the thread that execute the code */
 	char stack[STACK_SIZE];
@@ -48,8 +48,8 @@ typedef struct s_xbt_context {
    
 	/* What we need to synchronize the process */        
 #if defined(JAVA_SIMGRID) || defined(CONTEXT_THREADS)
-	xbt_thcond_t cond;		/* the condition used to synchronize the process	*/
-	xbt_mutex_t mutex;		/* the mutex used to synchronize the process		*/
+	xbt_os_cond_t cond;		/* the condition used to synchronize the process	*/
+	xbt_os_mutex_t mutex;		/* the mutex used to synchronize the process		*/
 #endif
 
 	/* What to run */

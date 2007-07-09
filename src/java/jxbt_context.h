@@ -18,7 +18,7 @@
 #include "portable.h"  /* loads context system definitions */
 #include "xbt/context.h"
 #include "xbt/ex.h"
-#include "xbt/xbt_thread.h"
+#include "xbt/xbt_os_thread.h"
 #include <jni.h>
 
 SG_BEGIN_DECL()
@@ -59,10 +59,10 @@ void __context_exit(xbt_context_t context ,int value);
 void jcontext_exit(xbt_context_t context ,int value,JNIEnv* env);
 
 /** Returns the condition used to synchronise the creation of a java process. */
-xbt_thcond_t xbt_creation_cond_get(void);
+xbt_os_cond_t xbt_creation_cond_get(void);
 
 /** Returns the mutex used to synchronise the creation of a java process */
-xbt_mutex_t xbt_creation_mutex_get(void);
+xbt_os_mutex_t xbt_creation_mutex_get(void);
 
 SG_END_DECL()
 

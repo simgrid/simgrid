@@ -1,6 +1,8 @@
 /* $Id$ */
 
-/* xbt_thread -- portability layer over the pthread API                     */
+/* xbt_os_thread -- portability layer over the pthread API                  */
+/* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
+/* in SG, when using CONTEXT_UCONTEXT, xbt_os_thread_stub is used instead   */
 
 /* Copyright 2006,2007 Malek Cherier, Martin Quinson          
  * All right reserved.                                                      */
@@ -11,7 +13,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "portable.h"
-#include "xbt/xbt_thread.h" /* This module */
+#include "xbt/xbt_os_thread.h" /* This module */
 #include "xbt_modinter.h" /* Initialization/finalization of this module */
 
 
@@ -20,27 +22,27 @@
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 
-typedef struct xbt_thread_ {
+typedef struct xbt_os_thread_ {
    pthread_t t;
    void *param;
    pvoid_f_pvoid_t *start_routine;
-} s_xbt_thread_t ;
+} s_xbt_os_thread_t ;
 
-/* thread-specific data containing the xbt_thread_t structure */
+/* thread-specific data containing the xbt_os_thread_t structure */
 static pthread_key_t xbt_self_thread_key;
 
-/* frees the xbt_thread_t corresponding to the current thread */
-static void xbt_thread_free_thread_data(void*d){
+/* frees the xbt_os_thread_t corresponding to the current thread */
+static void xbt_os_thread_free_thread_data(void*d){
    free(d);
 }
 
-void xbt_thread_mod_init(void) {
+void xbt_os_thread_mod_init(void) {
    int errcode;
    
    if ((errcode=pthread_key_create(&xbt_self_thread_key, NULL)))
      THROW0(system_error,errcode,"pthread_key_create failed for xbt_self_thread_key");
 }
-void xbt_thread_mod_exit(void) {
+void xbt_os_thread_mod_exit(void) {
    /* FIXME: don't try to free our key on shutdown. Valgrind detects no leak if we don't, and whine if we try to */
 //   int errcode;
    
@@ -49,7 +51,7 @@ void xbt_thread_mod_exit(void) {
 }
 
 static void * wrapper_start_routine(void *s) {
-  xbt_thread_t t = s;   
+  xbt_os_thread_t t = s;   
   int errcode;
 
   if ((errcode=pthread_setspecific(xbt_self_thread_key,t)))
@@ -57,11 +59,11 @@ static void * wrapper_start_routine(void *s) {
   return t->start_routine(t->param);
 }
 
-xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
-			       void* param)  {
+xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,
+				     void* param)  {
    int errcode;
 
-   xbt_thread_t res_thread=xbt_new(s_xbt_thread_t,1);
+   xbt_os_thread_t res_thread=xbt_new(s_xbt_os_thread_t,1);
    res_thread->start_routine = start_routine;
    res_thread->param = param;
 
@@ -73,7 +75,7 @@ xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
 }
 
 void 
-xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
+xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return) {
 	
 	int errcode;   
 	
@@ -83,25 +85,25 @@ xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
 	free(thread);   
 }		       
 
-void xbt_thread_exit(int *retval) {
+void xbt_os_thread_exit(int *retval) {
    pthread_exit(retval);
 }
 
-xbt_thread_t xbt_thread_self(void) {
+xbt_os_thread_t xbt_os_thread_self(void) {
    return pthread_getspecific(xbt_self_thread_key);
 }
 
 #include <sched.h>
-void xbt_thread_yield(void) {
+void xbt_os_thread_yield(void) {
    sched_yield();
 }
 /****** mutex related functions ******/
-typedef struct xbt_mutex_ {
+typedef struct xbt_os_mutex_ {
    pthread_mutex_t m;
-} s_xbt_mutex_t;
+} s_xbt_os_mutex_t;
 
-xbt_mutex_t xbt_mutex_init(void) {
-   xbt_mutex_t res = xbt_new(s_xbt_mutex_t,1);
+xbt_os_mutex_t xbt_os_mutex_init(void) {
+   xbt_os_mutex_t res = xbt_new(s_xbt_os_mutex_t,1);
    int errcode;
    
    if ((errcode = pthread_mutex_init(&(res->m),NULL)))
@@ -111,7 +113,7 @@ xbt_mutex_t xbt_mutex_init(void) {
    return res;
 }
 
-void xbt_mutex_lock(xbt_mutex_t mutex) {
+void xbt_os_mutex_lock(xbt_os_mutex_t mutex) {
    int errcode;
    
    if ((errcode=pthread_mutex_lock(&(mutex->m))))
@@ -119,7 +121,7 @@ void xbt_mutex_lock(xbt_mutex_t mutex) {
 	    mutex, strerror(errcode));
 }
 
-void xbt_mutex_unlock(xbt_mutex_t mutex) {
+void xbt_os_mutex_unlock(xbt_os_mutex_t mutex) {
    int errcode;
    
    if ((errcode=pthread_mutex_unlock(&(mutex->m))))
@@ -127,7 +129,7 @@ void xbt_mutex_unlock(xbt_mutex_t mutex) {
 	    mutex, strerror(errcode));
 }
 
-void xbt_mutex_destroy(xbt_mutex_t mutex) {
+void xbt_os_mutex_destroy(xbt_os_mutex_t mutex) {
    int errcode;
    
    if (!mutex) return;
@@ -139,12 +141,12 @@ void xbt_mutex_destroy(xbt_mutex_t mutex) {
 }
 
 /***** condition related functions *****/
-typedef struct xbt_thcond_ {
+typedef struct xbt_os_cond_ {
    pthread_cond_t c;
-} s_xbt_thcond_t;
+} s_xbt_os_cond_t;
 
-xbt_thcond_t xbt_thcond_init(void) {
-   xbt_thcond_t res = xbt_new(s_xbt_thcond_t,1);
+xbt_os_cond_t xbt_os_cond_init(void) {
+   xbt_os_cond_t res = xbt_new(s_xbt_os_cond_t,1);
    int errcode;
    if ((errcode=pthread_cond_init(&(res->c),NULL)))
      THROW1(system_error,errcode,"pthread_cond_init() failed: %s",
@@ -153,27 +155,27 @@ xbt_thcond_t xbt_thcond_init(void) {
    return res;
 }
 
-void xbt_thcond_wait(xbt_thcond_t cond, xbt_mutex_t mutex) {
+void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex) {
    int errcode;
    if ((errcode=pthread_cond_wait(&(cond->c),&(mutex->m))))
      THROW3(system_error,errcode,"pthread_cond_wait(%p,%p) failed: %s",
 	    cond,mutex, strerror(errcode));
 }
 
-void xbt_thcond_signal(xbt_thcond_t cond) {
+void xbt_os_cond_signal(xbt_os_cond_t cond) {
    int errcode;
    if ((errcode=pthread_cond_signal(&(cond->c))))
      THROW2(system_error,errcode,"pthread_cond_signal(%p) failed: %s",
 	    cond, strerror(errcode));
 }
 	 
-void xbt_thcond_broadcast(xbt_thcond_t cond){
+void xbt_os_cond_broadcast(xbt_os_cond_t cond){
    int errcode;
    if ((errcode=pthread_cond_broadcast(&(cond->c))))
      THROW2(system_error,errcode,"pthread_cond_broadcast(%p) failed: %s",
 	    cond, strerror(errcode));
 }
-void xbt_thcond_destroy(xbt_thcond_t cond){
+void xbt_os_cond_destroy(xbt_os_cond_t cond){
    int errcode;
 
    if (!cond) return;
@@ -188,27 +190,27 @@ void xbt_thcond_destroy(xbt_thcond_t cond){
 
 #elif defined(WIN32)
 
-typedef struct xbt_thread_ {
+typedef struct xbt_os_thread_ {
   HANDLE handle;                  /* the win thread handle        */
   unsigned long id;               /* the win thread id            */
   pvoid_f_pvoid_t *start_routine;
   void* param;
-} s_xbt_thread_t ;
+} s_xbt_os_thread_t ;
 
-/* key to the TLS containing the xbt_thread_t structure */
+/* key to the TLS containing the xbt_os_thread_t structure */
 static unsigned long xbt_self_thread_key;
 
-void xbt_thread_mod_init(void) {
+void xbt_os_thread_mod_init(void) {
    xbt_self_thread_key = TlsAlloc();
 }
-void xbt_thread_mod_exit(void) {
+void xbt_os_thread_mod_exit(void) {
    
    if (!TlsFree(xbt_self_thread_key)) 
      THROW0(system_error,(int)GetLastError(),"TlsFree() failed to cleanup the thread submodule");
 }
 
 static DWORD WINAPI  wrapper_start_routine(void *s) {
-  xbt_thread_t t = (xbt_thread_t)s;
+  xbt_os_thread_t t = (xbt_os_thread_t)s;
  
     if(!TlsSetValue(xbt_self_thread_key,t))
      THROW0(system_error,(int)GetLastError(),"TlsSetValue of data describing the created thread failed");
@@ -217,10 +219,10 @@ static DWORD WINAPI  wrapper_start_routine(void *s) {
 }
 
 
-xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
+xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,
 			       void* param)  {
    
-   xbt_thread_t t = xbt_new(s_xbt_thread_t,1);
+   xbt_os_thread_t t = xbt_new(s_xbt_os_thread_t,1);
 
    t->start_routine = start_routine ;
    t->param = param;
@@ -238,7 +240,7 @@ xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
 }
 
 void 
-xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
+xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return) {
 
 	if(WAIT_OBJECT_0 != WaitForSingleObject(thread->handle,INFINITE))  
 		THROW0(system_error,(int)GetLastError(), "WaitForSingleObject failed");
@@ -253,28 +255,28 @@ xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
 	free(thread);
 }
 
-void xbt_thread_exit(int *retval) {
+void xbt_os_thread_exit(int *retval) {
    if(retval)
    	ExitThread(*retval);
    else
    	ExitThread(0);
 }
 
-xbt_thread_t xbt_thread_self(void) {
+xbt_os_thread_t xbt_os_thread_self(void) {
    return TlsGetValue(xbt_self_thread_key);
 }
 
-void xbt_thread_yield(void) {
+void xbt_os_thread_yield(void) {
     Sleep(0);
 }
 
 /****** mutex related functions ******/
-typedef struct xbt_mutex_ {
+typedef struct xbt_os_mutex_ {
    CRITICAL_SECTION lock;   
-} s_xbt_mutex_t;
+} s_xbt_os_mutex_t;
 
-xbt_mutex_t xbt_mutex_init(void) {
-   xbt_mutex_t res = xbt_new(s_xbt_mutex_t,1);
+xbt_os_mutex_t xbt_os_mutex_init(void) {
+   xbt_os_mutex_t res = xbt_new(s_xbt_os_mutex_t,1);
 
    /* initialize the critical section object */
    InitializeCriticalSection(&(res->lock));
@@ -282,18 +284,18 @@ xbt_mutex_t xbt_mutex_init(void) {
    return res;
 }
 
-void xbt_mutex_lock(xbt_mutex_t mutex) {
+void xbt_os_mutex_lock(xbt_os_mutex_t mutex) {
 
    EnterCriticalSection(& mutex->lock);
 }
 
-void xbt_mutex_unlock(xbt_mutex_t mutex) {
+void xbt_os_mutex_unlock(xbt_os_mutex_t mutex) {
 
    LeaveCriticalSection (& mutex->lock);
 
 }
 
-void xbt_mutex_destroy(xbt_mutex_t mutex) {
+void xbt_os_mutex_destroy(xbt_os_mutex_t mutex) {
 
    if (!mutex) return;
    
@@ -308,16 +310,16 @@ void xbt_mutex_destroy(xbt_mutex_t mutex) {
     MAX_EVENTS = 2
  };
 
-typedef struct xbt_thcond_ {
+typedef struct xbt_os_cond_ {
    HANDLE events[MAX_EVENTS];
    
    unsigned int waiters_count;           /* the number of waiters                        */
    CRITICAL_SECTION waiters_count_lock;  /* protect access to waiters_count  */
-} s_xbt_thcond_t;
+} s_xbt_os_cond_t;
 
-xbt_thcond_t xbt_thcond_init(void) {
+xbt_os_cond_t xbt_os_cond_init(void) {
 
-   xbt_thcond_t res = xbt_new0(s_xbt_thcond_t,1);
+   xbt_os_cond_t res = xbt_new0(s_xbt_os_cond_t,1);
 	
    memset(& res->waiters_count_lock,0,sizeof(CRITICAL_SECTION));
 	
@@ -349,7 +351,7 @@ xbt_thcond_t xbt_thcond_init(void) {
    return res;
 }
 
-void xbt_thcond_wait(xbt_thcond_t cond, xbt_mutex_t mutex) {
+void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex) {
 	
    unsigned long wait_result;
    int is_last_waiter;
@@ -389,7 +391,7 @@ void xbt_thcond_wait(xbt_thcond_t cond, xbt_mutex_t mutex) {
    EnterCriticalSection (& mutex->lock);
 }
 
-void xbt_thcond_signal(xbt_thcond_t cond) {
+void xbt_os_cond_signal(xbt_os_cond_t cond) {
    int have_waiters;
 
    EnterCriticalSection (& cond->waiters_count_lock);
@@ -400,10 +402,10 @@ void xbt_thcond_signal(xbt_thcond_t cond) {
      if(!SetEvent(cond->events[SIGNAL]))
        THROW0(system_error,0,"SetEvent failed");
        
-   xbt_thread_yield();
+   xbt_os_thread_yield();
 }
 
-void xbt_thcond_broadcast(xbt_thcond_t cond){
+void xbt_os_cond_broadcast(xbt_os_cond_t cond){
    int have_waiters;
 
    EnterCriticalSection (& cond->waiters_count_lock);
@@ -414,7 +416,7 @@ void xbt_thcond_broadcast(xbt_thcond_t cond){
      SetEvent(cond->events[BROADCAST]);
 }
 
-void xbt_thcond_destroy(xbt_thcond_t cond){
+void xbt_os_cond_destroy(xbt_os_cond_t cond){
    int error = 0;
    
    if (!cond) return;

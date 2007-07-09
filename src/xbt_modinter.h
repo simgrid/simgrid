@@ -20,7 +20,7 @@ void xbt_dict_exit(void);
 void xbt_context_init(void);
 void xbt_context_exit(void);
 
-void xbt_thread_mod_init(void);
-void xbt_thread_mod_exit(void);   
+void xbt_os_thread_mod_init(void);
+void xbt_os_thread_mod_exit(void);   
    
 #endif /* XBT_MODINTER_H */

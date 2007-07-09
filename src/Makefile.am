@@ -49,7 +49,7 @@ EXTRA_DIST= \
 	include/surf/surfxml_parse_private.h \
 	\
 	include/xbt/xbt_portability.h \
-	include/xbt/xbt_thread.h \
+	include/xbt/xbt_os_thread.h \
 	include/xbt/context.h \
 	\
 	msg/private.h \
@@ -152,7 +152,7 @@ GTNETS_SRC= \
 
 # Separated because we don't want it in libsimgrid4java
 CTX_SRC= xbt/context.c
-JCTX_SRC= java/jxbt_context.c java/jxbt_context.h xbt/xbt_thread.c
+JCTX_SRC= java/jxbt_context.c java/jxbt_context.h xbt/xbt_os_thread.c
 
 SIMIX_SRC= \
   simix/smx_global.c \
@@ -209,7 +209,7 @@ GRAS_COMMON_SRC= \
   gras/DataDesc/ddt_parse.c           gras/DataDesc/ddt_parse.yy.c         gras/DataDesc/ddt_parse.yy.h
 
 GRAS_RL_SRC= \
-  gras/rl_stubs.c                     xbt/xbt_thread.c                    \
+  gras/rl_stubs.c                     xbt/xbt_os_thread.c                    \
   \
   gras/Transport/rl_transport.c          \
   gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
@@ -226,7 +226,6 @@ GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c
   gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
   gras/Virtu/sg_dns.c\
   \
-  gras/sg_stubs.c                         \
   gras/Msg/sg_msg.c
 
 AMOK_SRC= \

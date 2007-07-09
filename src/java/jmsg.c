@@ -1121,8 +1121,8 @@ Java_simgrid_msg_Msg_waitSignal(JNIEnv* env, jclass cls, jobject jprocess) {
   m_process_t m_process = jprocess_to_native_process(jprocess,env);
   smx_process_t s_process;
 
-  xbt_mutex_t ctx_mutex, creation_mutex;
-  xbt_thcond_t ctx_cond, creation_cond;
+  xbt_os_mutex_t ctx_mutex, creation_mutex;
+  xbt_os_cond_t ctx_cond, creation_cond;
 
   DEBUG3("Msg_waitSignal(m_process=%p %s/%s)",
 	 m_process,m_process->name,m_process->simdata->m_host->name);
@@ -1144,12 +1144,12 @@ Java_simgrid_msg_Msg_waitSignal(JNIEnv* env, jclass cls, jobject jprocess) {
   creation_mutex = xbt_creation_mutex_get();
   creation_cond = xbt_creation_cond_get();
 
-  xbt_mutex_lock(creation_mutex);
-  xbt_mutex_lock(ctx_mutex);
-  xbt_thcond_signal( creation_cond );
-  xbt_mutex_unlock( creation_mutex );
-  xbt_thcond_wait(ctx_cond, ctx_mutex);
-  xbt_mutex_unlock(ctx_mutex);
+  xbt_os_mutex_lock(creation_mutex);
+  xbt_os_mutex_lock(ctx_mutex);
+  xbt_os_cond_signal( creation_cond );
+  xbt_os_mutex_unlock( creation_mutex );
+  xbt_os_cond_wait(ctx_cond, ctx_mutex);
+  xbt_os_mutex_unlock(ctx_mutex);
 }
 
 JNIEXPORT void JNICALL 
