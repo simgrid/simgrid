@@ -204,6 +204,7 @@ EXTRA_DIST = msg_test_suspend_deployment.xml msg_test_suspend_platform.xml surfx
 noinst_JAVA = DreamMaster.java LazyGuy.java SuspendTest.java
 
 # Declare test class
+#if HAVE_JAVA
 TESTS = SuspendTest.class
 JAVAROOT = .
 CLASSPATH = $(top_srcdir)/src/java
@@ -483,6 +484,7 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
+#endif
 
 # Cruft
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

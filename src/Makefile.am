@@ -256,7 +256,7 @@ endif
 ### Declare the library content
 ###
 
-lib_LTLIBRARIES= libsimgrid.la libsimgrid4java.la libgras.la
+lib_LTLIBRARIES= libsimgrid.la libgras.la 
 
 libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO)                     @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
@@ -266,6 +266,12 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+
+##
+## Java cruft
+
+if HAVE_JAVA
+lib_LTLIBRARIES += libsimgrid4java.la
 
 libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                              $(SIMIX_SRC) $(JCTX_SRC) \
@@ -284,6 +290,9 @@ simgrid.jar: $(JMSG_JAVA_SRC)
 	[ -e .classes ] || mkdir .classes
 	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC)
 	$(JAR) cvf simgrid.jar -C .classes .;
+else
+EXTRA_DIST += $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
+endif
 
 if GRAMINE_MODE
 else 

@@ -4,7 +4,9 @@ EXTRA_DIST=ping_pong_deployment.xml ping_pong_platform.xml surfxml.dtd
 noinst_JAVA= Sender.java Receiver.java PingPongTask.java PingPongTest.java
 
 # Declare test class
+#if HAVE_JAVA
 TESTS=PingPongTest.class
+#endif
 
 include $(srcdir)/../java_test.mk
 

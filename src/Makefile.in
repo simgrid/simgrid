@@ -42,9 +42,11 @@ host_triplet = @host@
 target_triplet = @target@
 @USE_GTNETS_FALSE@am__append_1 = $(GTNETS_SRC)
 @HAVE_SDP_FALSE@am__append_2 = surf/sdp.c
+@HAVE_JAVA_TRUE@am__append_3 = libsimgrid4java.la
+@HAVE_JAVA_FALSE@am__append_4 = $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
 @GRAMINE_MODE_FALSE@TESTS = testall$(EXEEXT)
-@GRAMINE_MODE_FALSE@am__append_3 = $(testall_SOURCES)
+@GRAMINE_MODE_FALSE@am__append_5 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/gras_config.h.in $(srcdir)/ucontext_stack.h.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -201,14 +203,17 @@ am__objects_14 = jxbt_context.lo xbt_thread.lo
 am__objects_15 = jxbt_utilities.lo jmsg.lo jmsg_channel.lo \
 	jmsg_host.lo jmsg_parallel_task.lo jmsg_process.lo \
 	jmsg_task.lo
-am_libsimgrid4java_la_OBJECTS = $(am__objects_1) $(am__objects_5) \
-	$(am__objects_7) $(am__objects_8) $(am__objects_9) \
-	$(am__objects_14) $(am__objects_15) $(am__objects_11) \
-	$(am__objects_2) $(am__objects_13) $(am__objects_4)
+@HAVE_JAVA_TRUE@am_libsimgrid4java_la_OBJECTS = $(am__objects_1) \
+@HAVE_JAVA_TRUE@	$(am__objects_5) $(am__objects_7) \
+@HAVE_JAVA_TRUE@	$(am__objects_8) $(am__objects_9) \
+@HAVE_JAVA_TRUE@	$(am__objects_14) $(am__objects_15) \
+@HAVE_JAVA_TRUE@	$(am__objects_11) $(am__objects_2) \
+@HAVE_JAVA_TRUE@	$(am__objects_13) $(am__objects_4)
 libsimgrid4java_la_OBJECTS = $(am_libsimgrid4java_la_OBJECTS)
 libsimgrid4java_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libsimgrid4java_la_LDFLAGS) $(LDFLAGS) -o $@
+@HAVE_JAVA_TRUE@am_libsimgrid4java_la_rpath = -rpath $(libdir)
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = ./cunit_unit.c ./ex_unit.c ./dynar_unit.c \
 	./dict_unit.c ./set_unit.c ./swag_unit.c ./xbt_str_unit.c \
@@ -416,7 +421,8 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	include/xbt/xbt_portability.h include/xbt/xbt_thread.h \
 	include/xbt/context.h msg/private.h simdag/private.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_1) $(am__append_2) $(am__append_3)
+	$(am__append_1) $(am__append_2) $(am__append_4) \
+	$(am__append_5)
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -598,7 +604,7 @@ AMOK_SRC = \
 ###
 ### Declare the library content
 ###
-lib_LTLIBRARIES = libsimgrid.la libsimgrid4java.la libgras.la
+lib_LTLIBRARIES = libsimgrid.la libgras.la $(am__append_3)
 libgras_la_SOURCES = $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO)                     @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
@@ -607,15 +613,15 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
-libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
-                             $(SIMIX_SRC) $(JCTX_SRC) \
-                             $(JMSG_C_SRC) $(MSG_SRC) \
-  		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
+@HAVE_JAVA_TRUE@libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
+@HAVE_JAVA_TRUE@                             $(SIMIX_SRC) $(JCTX_SRC) \
+@HAVE_JAVA_TRUE@                             $(JMSG_C_SRC) $(MSG_SRC) \
+@HAVE_JAVA_TRUE@  		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 
-libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
-libsimgrid4java_la_GCJFLAGS = -fjni
-jardir = $(prefix)/jar 
-jar_DATA = simgrid.jar
+@HAVE_JAVA_TRUE@libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+@HAVE_JAVA_TRUE@libsimgrid4java_la_GCJFLAGS = -fjni
+@HAVE_JAVA_TRUE@jardir = $(prefix)/jar 
+@HAVE_JAVA_TRUE@jar_DATA = simgrid.jar
 @GRAMINE_MODE_FALSE@TEST_CFILES = xbt/cunit.c  xbt/ex.c          \
 @GRAMINE_MODE_FALSE@            xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
 @GRAMINE_MODE_FALSE@	    xbt/xbt_str.c                      \
@@ -719,7 +725,7 @@ libgras.la: $(libgras_la_OBJECTS) $(libgras_la_DEPENDENCIES)
 libsimgrid.la: $(libsimgrid_la_OBJECTS) $(libsimgrid_la_DEPENDENCIES) 
 	$(libsimgrid_la_LINK) -rpath $(libdir) $(libsimgrid_la_OBJECTS) $(libsimgrid_la_LIBADD) $(LIBS)
 libsimgrid4java.la: $(libsimgrid4java_la_OBJECTS) $(libsimgrid4java_la_DEPENDENCIES) 
-	$(libsimgrid4java_la_LINK) -rpath $(libdir) $(libsimgrid4java_la_OBJECTS) $(libsimgrid4java_la_LIBADD) $(LIBS)
+	$(libsimgrid4java_la_LINK) $(am_libsimgrid4java_la_rpath) $(libsimgrid4java_la_OBJECTS) $(libsimgrid4java_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -1971,6 +1977,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+@HAVE_JAVA_FALSE@clean-local:
 clean: clean-am
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool clean-local \
@@ -2052,13 +2059,13 @@ uninstall-am: uninstall-jarDATA uninstall-libLTLIBRARIES
 	include/simix/simix.h include/simix/datatypes.h \
 	simix/msg_simix_private.h
 
-clean-local:
-	-rm -rf .classes
+@HAVE_JAVA_TRUE@clean-local:
+@HAVE_JAVA_TRUE@	-rm -rf .classes
 
-simgrid.jar: $(JMSG_JAVA_SRC)
-	[ -e .classes ] || mkdir .classes
-	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC)
-	$(JAR) cvf simgrid.jar -C .classes .;
+@HAVE_JAVA_TRUE@simgrid.jar: $(JMSG_JAVA_SRC)
+@HAVE_JAVA_TRUE@	[ -e .classes ] || mkdir .classes
+@HAVE_JAVA_TRUE@	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC)
+@HAVE_JAVA_TRUE@	$(JAR) cvf simgrid.jar -C .classes .;
 
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@./cunit_unit.c: xbt/cunit.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^

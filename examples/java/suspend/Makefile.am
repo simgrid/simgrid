@@ -4,7 +4,9 @@ EXTRA_DIST=msg_test_suspend_deployment.xml msg_test_suspend_platform.xml surfxml
 noinst_JAVA= DreamMaster.java LazyGuy.java SuspendTest.java
 
 # Declare test class
+#if HAVE_JAVA
 TESTS=SuspendTest.class
+#endif
 
 include $(srcdir)/../java_test.mk
 

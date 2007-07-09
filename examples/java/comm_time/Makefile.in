@@ -202,8 +202,6 @@ EXTRA_DIST = comm_time_deployment.xml comm_time_platform.xml surfxml.dtd
 
 # Declare sources:
 noinst_JAVA = Master.java Slave.java CommTimeTest.java CommTimeTask.java
-
-# Declare test class
 TESTS = CommTimeTest.class
 JAVAROOT = .
 CLASSPATH = $(top_srcdir)/src/java
@@ -476,6 +474,9 @@ uninstall-am:
 	uninstall uninstall-am
 
 
+#if HAVE_JAVA
+ # Declare test class
+
 # declare that we must recompile everything before lauching tests
 $(TESTS): classnoinst.stamp
 
@@ -483,6 +484,7 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
+#endif
 
 # Cruft
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

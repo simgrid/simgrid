@@ -204,6 +204,7 @@ EXTRA_DIST = ping_pong_deployment.xml ping_pong_platform.xml surfxml.dtd
 noinst_JAVA = Sender.java Receiver.java PingPongTask.java PingPongTest.java
 
 # Declare test class
+#if HAVE_JAVA
 TESTS = PingPongTest.class
 JAVAROOT = .
 CLASSPATH = $(top_srcdir)/src/java
@@ -483,6 +484,7 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
+#endif
 
 # Cruft
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
