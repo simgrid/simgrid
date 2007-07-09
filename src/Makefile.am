@@ -127,8 +127,13 @@ XBT_SRC=\
   xbt/graph.c                                                                \
   xbt/set.c                                                                  \
   xbt/xbt_matrix.c                                                           \
+  \
+  xbt/queue.c                                                                \
+  \
   xbt/xbt_peer.c                                                             \
+  \
   xbt/xbt_main.c                                                             \
+  \
   xbt/config.c                                                               \
   xbt/cunit.c                                                                \
   xbt/graphxml_parse.c

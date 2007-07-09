@@ -26,13 +26,15 @@ SimGrid (3.3-cvs) unstable; urgency=low
 
  XBT:
   * Make the backtrace of exceptions more human readable [Mt]
+  * New module: xbt/str [Mt]
+    a ton of string utility functions (split, join, printf to a newly
+    allocated buffer, trim, etc)
   * New module: xbt/synchro [Mt]
     synchronization tools (mutex and conditions) working the same way
     in simulation and in real life (mainly useful for GRAS, but not
     only).
-  * New module: xbt/str [Mt]
-    a ton of string utility functions (split, join, printf to a newly
-    allocated buffer, trim, etc)    
+  * New module: xbt/queue [Mt]
+    classical producer/consumer synchronization scheme
 
  -- 
 
