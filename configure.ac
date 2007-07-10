@@ -218,7 +218,7 @@ if test xpthread=xyes ; then
     SIMGRID_DEP="-lpthread"
   fi
   # we need them in any case for the gras lib (which is multithreaded), but on windows (of course)
-  if test "x$with_context" = "xwindows" ; then
+  if test "x$with_context" != "xwindows" ; then
     GRAS_DEP="-lpthread"
   fi
 fi
@@ -297,14 +297,14 @@ AC_MSG_CHECKING(whether to compile java bindings)
 if test -n "$JAVAC"   \
    && test -n "$JAVA" \
    && test -n "$JAR"  \
-   && test "x$ac_cv_header_jni_h"="xyes" ; then
+   && test "x$ac_cv_header_jni_h" = "xyes" ; then
    
    use_java="yes"
 else   
    use_java="no"
 fi
 AC_MSG_RESULT($use_java)
-AM_CONDITIONAL(HAVE_JAVA,test "x$use_java"="xyes")
+AM_CONDITIONAL(HAVE_JAVA,test "x$use_java" = "xyes")
 
 #####################
 ## Check for programs
