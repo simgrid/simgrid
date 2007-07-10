@@ -13,6 +13,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "portable.h"
+#include "xbt/xbt_os_time.h" /* Portable time facilities */
 #include "xbt/xbt_os_thread.h" /* This module */
 #include "xbt_modinter.h" /* Initialization/finalization of this module */
 
@@ -163,6 +164,24 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex) {
    if ((errcode=pthread_cond_wait(&(cond->c),&(mutex->m))))
      THROW3(system_error,errcode,"pthread_cond_wait(%p,%p) failed: %s",
 	    cond,mutex, strerror(errcode));
+}
+
+#include <time.h>
+#include <math.h>
+void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double delay) {
+   int errcode;
+   struct timespec ts_end;
+   double end = delay + xbt_os_time();
+   ts_end.tv_sec = (time_t) floor(end);
+   ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
+   switch ( (errcode=pthread_cond_timedwait(&(cond->c),&(mutex->m), &ts_end)) ) {
+    case ETIMEDOUT:
+     THROW3(timeout_error,errcode,"condition %p (mutex %p) wasn't signaled before timeout (%f)",
+	    cond,mutex, delay);
+    default:
+     THROW4(system_error,errcode,"pthread_cond_timedwait(%p,%p,%f) failed: %s",
+	    cond,mutex, delay, strerror(errcode));
+   }   
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond) {
@@ -395,6 +414,9 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex) {
 	
    /* relock the mutex associated with the condition in accordance with the posix thread specification */
    EnterCriticalSection (& mutex->lock);
+}
+void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double delay) {
+   THROW_UNIMPLEMENTED;
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond) {

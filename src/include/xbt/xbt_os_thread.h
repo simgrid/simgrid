@@ -51,6 +51,9 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(xbt_os_cond_t) xbt_os_cond_init(void);
   XBT_PUBLIC(void)          xbt_os_cond_wait(xbt_os_cond_t cond,
 					     xbt_os_mutex_t mutex);
+  XBT_PUBLIC(void)          xbt_os_cond_timedwait(xbt_os_cond_t cond,
+						  xbt_os_mutex_t mutex,
+						  double delay);
   XBT_PUBLIC(void)          xbt_os_cond_signal(xbt_os_cond_t cond);
   XBT_PUBLIC(void)          xbt_os_cond_broadcast(xbt_os_cond_t cond);
   XBT_PUBLIC(void)          xbt_os_cond_destroy(xbt_os_cond_t cond);

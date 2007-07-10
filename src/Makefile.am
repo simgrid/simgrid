@@ -128,7 +128,7 @@ XBT_SRC=\
   xbt/set.c                                                                  \
   xbt/xbt_matrix.c                                                           \
   \
-  xbt/queue.c                                                                \
+  xbt/xbt_queue.c                                                            \
   \
   xbt/xbt_peer.c                                                             \
   \

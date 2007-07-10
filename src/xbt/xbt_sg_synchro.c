@@ -96,6 +96,10 @@ void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex) {
    SIMIX_cond_wait( (smx_cond_t)cond , (smx_mutex_t)mutex );
 }
 
+void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay) {
+   SIMIX_cond_wait_timeout( (smx_cond_t)cond , (smx_mutex_t)mutex, delay );
+}
+
 void xbt_cond_signal(xbt_cond_t cond) {
    SIMIX_cond_signal( (smx_cond_t)cond );
 }

@@ -112,6 +112,10 @@ void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex) {
    xbt_os_cond_wait( (xbt_os_cond_t)cond, (xbt_os_mutex_t)mutex );
 }
 
+void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay) {
+   xbt_os_cond_timedwait( (xbt_os_cond_t)cond, (xbt_os_mutex_t)mutex, delay );
+}
+
 void xbt_cond_signal(xbt_cond_t cond) {
    xbt_os_cond_signal( (xbt_os_cond_t)cond );
 }
