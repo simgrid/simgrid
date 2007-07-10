@@ -1,5 +1,5 @@
 
-p Testing MSG on a "large" platform
+p Testing MSG on a "large" platform 
 
 ! timeout no
 $ $SG_TEST_EXENV ./msg_test ./msg_platform.xml ./msg_deployment.xml

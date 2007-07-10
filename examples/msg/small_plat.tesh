@@ -1,5 +1,5 @@
 
-p Testing MSG on a small platform
+p Testing MSG on a small platform 
 
 $ $SG_TEST_EXENV ./msg_test ./small_platform.xml ./small_deployment.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slave(s) :

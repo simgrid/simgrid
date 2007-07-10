@@ -1,6 +1,6 @@
 #! ./tesh
 
-p Testing the suspend feature of MSG
+p Testing the suspend feature of MSG 
 
 ! timeout no
 $ $SG_TEST_EXENV ./msg_test_suspend ./msg_platform.xml ./msg_deployment_suspend.xml 
