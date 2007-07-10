@@ -83,6 +83,14 @@ void xbt_mutex_destroy(xbt_mutex_t mutex) {
    xbt_os_mutex_destroy( (xbt_os_mutex_t)mutex );
 }
 
+#ifdef WIN32
+ enum { /* KEEP IT IN SYNC WITH OS IMPLEM */
+    SIGNAL = 0,
+    BROADCAST = 1,
+    MAX_EVENTS = 2
+ };
+#endif
+
 /***** condition related functions *****/
 typedef struct xbt_cond_ {
    /* KEEP IT IN SYNC WITH OS IMPLEMENTATION (both win and lin) */

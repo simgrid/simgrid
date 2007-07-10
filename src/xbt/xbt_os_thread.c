@@ -309,7 +309,7 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex) {
 }
 
 /***** condition related functions *****/
- enum {
+ enum { /* KEEP IT IN SYNC WITH xbt_thread.c */
     SIGNAL = 0,
     BROADCAST = 1,
     MAX_EVENTS = 2
