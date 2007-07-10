@@ -56,6 +56,18 @@
 #    define XBT_INLINE  inline
 #endif
 
+/* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */
+#ifdef MIN
+# undef MIN
+#endif
+#define MIN(a,b) ((a)<(b)?(a):(b))
+
+#ifdef MAX
+# undef MAX
+#endif
+#define MAX(a,b) ((a)>(b)?(a):(b))
+
+
 /* 
  * Function calling convention (not used for now) 
  */
