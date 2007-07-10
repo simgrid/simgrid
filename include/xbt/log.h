@@ -125,16 +125,16 @@ typedef enum {
  * Creates a new subcategory of the root category.
  */
  
-#if (defined(_WIN32) && !defined(DLL_STATIC))
-# define XBT_LOG_NEW_CATEGORY(catName,desc)  \
+/*#if (defined(_WIN32) && !defined(DLL_STATIC)) KILLME?
+  # define XBT_LOG_NEW_CATEGORY(catName,desc)  \
 	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
         0, 0, 0,                    \
 		#catName, xbt_log_priority_uninitialized, 1, \
         0, 1                                          \
     }
-#else
+#else*/
 # define XBT_LOG_NEW_CATEGORY(catName,desc)  XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)  
-#endif
+//#endif
 
 /**
  * \ingroup XBT_log  
