@@ -217,8 +217,10 @@ if test xpthread=xyes ; then
     # if we use them to implement the xbt_context
     SIMGRID_DEP="-lpthread"
   fi
-  # we need them in any case for the gras lib (which is multithreaded)
-  GRAS_DEP="-lpthread"
+  # we need them in any case for the gras lib (which is multithreaded), but on windows (of course)
+  if test "x$with_context" = "xwindows" ; then
+    GRAS_DEP="-lpthread"
+  fi
 fi
 
 AC_MSG_CHECKING(for csdp)
