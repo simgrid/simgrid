@@ -26,6 +26,7 @@ SG_BEGIN_DECL()
 
    typedef int  (int_f_pvoid_pvoid_t) (void*,void*);
 
+   typedef int  (*xbt_main_func_t)(int argc, char *argv[]);
 SG_END_DECL()
 
 #endif /* XBT_FUNCTION_TYPE_H */

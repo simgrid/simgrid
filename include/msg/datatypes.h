@@ -84,15 +84,6 @@ typedef struct m_process {
 typedef struct m_process *m_process_t;
 /** @} */
 
-/** @brief Agent code
-    @ingroup m_datatypes_management 
-    The code of an agent is a m_process_code_t, i.e. a function with no arguments 
-    returning no value.
-    \see m_process_management
-  @{ */
-typedef int(*m_process_code_t)(int argc,char *argv[]) ;
-/** @} */
-
 /* ********************************* Channel ******************************** */
 /** @brief Channel datatype  
     @ingroup m_datatypes_management 

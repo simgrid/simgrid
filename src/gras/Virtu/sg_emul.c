@@ -175,8 +175,8 @@ return SIMIX_global_init(argc,argv);
 void gras_create_environment(const char *file) {
 return SIMIX_create_environment(file);
 }
-void gras_function_register(const char *name, void *code) {
-return SIMIX_function_register(name, (smx_process_code_t)code);
+void gras_function_register(const char *name, xbt_main_func_t code) {
+   return SIMIX_function_register(name, code);
 }
 void gras_main() {
 	smx_cond_t cond = NULL;

@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
 				"Logging specific to SIMIX (deployment)");
 static int parse_argc = -1 ;
 static char **parse_argv = NULL;
-static smx_process_code_t parse_code = NULL;
+static xbt_main_func_t parse_code = NULL;
 static char * parse_host = NULL;
 static double start_time = 0.0;
 static double kill_time = -1.0;
@@ -116,7 +116,7 @@ void SIMIX_launch_application(const char *file)
  * \param name the reference name of the function.
  * \param code the function
  */
-void SIMIX_function_register(const char *name,smx_process_code_t code)
+void SIMIX_function_register(const char *name,xbt_main_func_t code)
 {
   xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_function_register.");
 
@@ -131,14 +131,10 @@ void SIMIX_function_register(const char *name,smx_process_code_t code)
  * \param name the reference name of the function.
  * \return The #smx_process_t or NULL.
  */
-smx_process_code_t SIMIX_get_registered_function(const char *name)
+xbt_main_func_t SIMIX_get_registered_function(const char *name)
 {
-  smx_process_code_t code = NULL;
-
   xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
-  code = xbt_dict_get_or_null(simix_global->registered_functions,name);
-
-  return code;
+  return xbt_dict_get_or_null(simix_global->registered_functions,name);
 }
 

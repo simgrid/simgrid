@@ -90,14 +90,5 @@ typedef struct s_smx_process {
 typedef struct s_smx_process *smx_process_t;
 /** @} */
 
-/** @brief Agent code
-    @ingroup m_datatypes_management 
-    The code of an agent is a m_process_code_t, i.e. a function with no arguments 
-    returning no value.
-    \see m_process_management
-  @{ */
-typedef int(*smx_process_code_t)(int argc,char *argv[]) ;
-/** @} */
-
 SG_END_DECL()
 #endif

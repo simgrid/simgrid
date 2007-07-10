@@ -53,7 +53,7 @@ typedef struct s_xbt_context {
 #endif
 
 	/* What to run */
-	xbt_context_function_t code;	/* the scheduled fonction	    */
+	xbt_main_func_t code;	/* the scheduled fonction	    */
 	int argc;
 	char **argv;
    

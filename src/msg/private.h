@@ -69,7 +69,7 @@ typedef struct simdata_process {
 
 typedef struct process_arg {
   const char *name;
-  m_process_code_t code;
+  xbt_main_func_t code;
   void *data;
   m_host_t m_host;
   int argc;
@@ -106,7 +106,7 @@ void __MSG_display_process_status(void);
 
 void __MSG_process_cleanup(void *arg);
 m_process_t __MSG_process_create_with_arguments(const char *name,
-						m_process_code_t code, void *data,
+						xbt_main_func_t code, void *data,
 						char * hostname, int argc, char **argv);
 
 

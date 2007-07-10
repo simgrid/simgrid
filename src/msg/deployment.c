@@ -39,32 +39,28 @@ void MSG_launch_application(const char *file)
 }
 
 /** \ingroup msg_easier_life
- * \brief Registers a #m_process_code_t code in a global table.
+ * \brief Registers the main function of an agent in a global table.
  *
  * Registers a code function in a global table. 
  * This table is then used by #MSG_launch_application. 
  * \param name the reference name of the function.
- * \param code the function
+ * \param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char *argv[]))
  */
-void MSG_function_register(const char *name,m_process_code_t code)
+void MSG_function_register(const char *name,xbt_main_func_t code)
 {
 	SIMIX_function_register(name, code);
 	return;
 }
 
 /** \ingroup msg_easier_life
- * \brief Registers a #m_process_t code in a global table.
+ * \brief Retrieves a registered main function
  *
  * Registers a code function in a global table. 
  * This table is then used by #MSG_launch_application. 
  * \param name the reference name of the function.
  */
-m_process_code_t MSG_get_registered_function(const char *name)
+xbt_main_func_t MSG_get_registered_function(const char *name)
 {
-  m_process_code_t code = NULL;
-
-	code = (m_process_code_t)SIMIX_get_registered_function(name);
-
-  return code;
+  return SIMIX_get_registered_function(name);
 }
 

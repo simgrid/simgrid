@@ -50,7 +50,7 @@ void SIMIX_process_cleanup(void *arg)
  * \return The new corresponding object.
  */
 smx_process_t SIMIX_process_create(const char *name,
-				   smx_process_code_t code, void *data,
+				   xbt_main_func_t code, void *data,
 				   const char * hostname, int argc, char **argv, 
 				   void * clean_process_function)
 {

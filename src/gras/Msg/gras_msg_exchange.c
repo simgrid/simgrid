@@ -22,7 +22,6 @@ const char *e_gras_msg_kind_names[e_gras_msg_kind_count]=
   {"UNKNOWN","ONEWAY","RPC call","RPC answer","RPC error"};
 
 
-
 /** \brief Waits for a message to come in over a given socket. 
  *
  * @param timeout: How long should we wait for this message.

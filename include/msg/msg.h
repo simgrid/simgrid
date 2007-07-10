@@ -22,8 +22,8 @@ XBT_PUBLIC(MSG_error_t) MSG_set_channel_number(int number);
 XBT_PUBLIC(int) MSG_get_channel_number(void);
 XBT_PUBLIC(MSG_error_t) MSG_main(void);
 XBT_PUBLIC(MSG_error_t) MSG_clean(void);
-XBT_PUBLIC(void) MSG_function_register(const char *name, m_process_code_t code);
-XBT_PUBLIC(m_process_code_t) MSG_get_registered_function(const char *name);
+XBT_PUBLIC(void) MSG_function_register(const char *name, xbt_main_func_t code);
+XBT_PUBLIC(xbt_main_func_t) MSG_get_registered_function(const char *name);
 XBT_PUBLIC(void) MSG_launch_application(const char *file);
 XBT_PUBLIC(void) MSG_paje_output(const char *filename);
 
@@ -47,10 +47,10 @@ XBT_PUBLIC(m_host_t *)MSG_get_host_table(void);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(m_process_t) MSG_process_create(const char *name,
-			       m_process_code_t code, void *data,
+			       xbt_main_func_t code, void *data,
 			       m_host_t host);
 XBT_PUBLIC(m_process_t) MSG_process_create_with_arguments(const char *name,
-					      m_process_code_t code, void *data,
+					      xbt_main_func_t code, void *data,
 					      m_host_t host, int argc, char **argv);
 XBT_PUBLIC(void) MSG_process_kill(m_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);

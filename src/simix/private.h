@@ -17,6 +17,7 @@
 #include "xbt/dict.h"
 #include "xbt/context.h"
 #include "xbt/config.h"
+#include "xbt/function_types.h"
 
 /******************************* Datatypes **********************************/
 
@@ -58,7 +59,7 @@ typedef struct s_smx_simdata_process {
 
 typedef struct s_smx_process_arg {
   const char *name;
-  smx_process_code_t code;
+  xbt_main_func_t code;
   void *data;
   char *hostname;
   int argc;

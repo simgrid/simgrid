@@ -36,7 +36,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (proc
  * \sa MSG_process_create_with_arguments
  */
 m_process_t MSG_process_create(const char *name,
-			       m_process_code_t code, void *data,
+			       xbt_main_func_t code, void *data,
 			       m_host_t host)
 {
   return MSG_process_create_with_arguments(name, code, data, host, -1, NULL);
@@ -85,7 +85,7 @@ void __MSG_process_cleanup(void *arg)
 
 
 m_process_t __MSG_process_create_with_arguments(const char *name,
-					      m_process_code_t code, void *data,
+					      xbt_main_func_t code, void *data,
 					      char * hostname, int argc, char **argv)
 {
 	m_host_t host = MSG_get_host_by_name(hostname);
@@ -93,7 +93,7 @@ m_process_t __MSG_process_create_with_arguments(const char *name,
 }
 
 m_process_t MSG_process_create_with_arguments(const char *name,
-					      m_process_code_t code, void *data,
+					      xbt_main_func_t code, void *data,
 					      m_host_t host, int argc, char **argv)
 {
   simdata_process_t simdata = xbt_new0(s_simdata_process_t,1);
@@ -106,7 +106,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   simdata->m_host = host;
   simdata->argc = argc;
   simdata->argv = argv;
-  simdata->s_process = SIMIX_process_create(name, (smx_process_code_t)code, 
+  simdata->s_process = SIMIX_process_create(name, code, 
 					    (void*)process, host->name, argc, argv, 
 					    __MSG_process_cleanup );
 

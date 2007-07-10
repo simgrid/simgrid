@@ -315,7 +315,7 @@ void xbt_context_start(xbt_context_t context)
  * \param argc first argument of function \a code
  * \param argv seconde argument of function \a code
  */
-xbt_context_t xbt_context_new(xbt_context_function_t code, 
+xbt_context_t xbt_context_new(xbt_main_func_t code, 
 			      void_f_pvoid_t startup_func, void *startup_arg,
 			      void_f_pvoid_t cleanup_func, void *cleanup_arg,
 			      int argc, char *argv[])
