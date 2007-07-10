@@ -37,10 +37,15 @@ SG_BEGIN_DECL()
 
   XBT_PUBLIC(unsigned long) xbt_queue_length(const xbt_queue_t queue);
 
-  XBT_PUBLIC(void) xbt_queue_push    (xbt_queue_t queue, const void *src);
-  XBT_PUBLIC(void) xbt_queue_pop     (xbt_queue_t queue, void *const dst);
+  XBT_PUBLIC(void) xbt_queue_push     (xbt_queue_t queue, const void *src);
+  XBT_PUBLIC(void) xbt_queue_pop      (xbt_queue_t queue, void *const dst);
   XBT_PUBLIC(void) xbt_queue_unshift (xbt_queue_t queue, const void *src);
   XBT_PUBLIC(void) xbt_queue_shift   (xbt_queue_t queue, void *const dst);
+
+  XBT_PUBLIC(void) xbt_queue_push_timed    (xbt_queue_t queue, const void *src, double delay);
+  XBT_PUBLIC(void) xbt_queue_unshift_timed (xbt_queue_t queue, const void *src, double delay);
+  XBT_PUBLIC(void) xbt_queue_shift_timed   (xbt_queue_t queue, void *const dst, double delay);
+  XBT_PUBLIC(void) xbt_queue_pop_timed     (xbt_queue_t queue, void *const dst, double delay);
 
 SG_END_DECL()
 
