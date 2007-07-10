@@ -17,14 +17,6 @@
 #include "gras/Virtu/virtu_interface.h"
 #include "simix/simix.h"
 
-void gras_global_init(int *argc, char **argv);
-void gras_create_environment(const char *file);
-void gras_function_register(const char *name, void* code);
-void gras_launch_application(const char *file);
-void gras_clean(void);
-void gras_main(void);
-
-
 /** @brief Data for each process */
 typedef struct {
   /* globals of the process */
