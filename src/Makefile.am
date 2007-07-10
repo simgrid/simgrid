@@ -208,8 +208,10 @@ SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_works
 GRAS_COMMON_SRC= \
   gras/gras.c  \
   gras/Transport/transport.c          gras/Transport/transport_private.h  \
-  gras/Msg/msg.c                      gras/Msg/rpc.c                       gras/Msg/timer.c                 \
-  gras/Msg/msg_interface.h            gras/Msg/msg_private.h           \
+  gras/Msg/gras_msg_mod.c             gras/Msg/gras_msg_types.c           \
+  gras/Msg/gras_msg_exchange.c                                            \
+  gras/Msg/rpc.c                      gras/Msg/timer.c                    \
+  gras/Msg/msg_interface.h            gras/Msg/msg_private.h              \
   \
   gras/Virtu/process.c gras/Virtu/gras_module.c  \
   \
