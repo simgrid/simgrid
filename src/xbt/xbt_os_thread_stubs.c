@@ -45,7 +45,7 @@ xbt_os_thread_t xbt_os_thread_self(void){
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_thread_self)");
 }
 
-void xbt_os_thread_os_yield(void){
+void xbt_os_thread_yield(void){
    xbt_backtrace_display();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_thread_yield)");
 }
