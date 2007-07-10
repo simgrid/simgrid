@@ -12,7 +12,7 @@
 #include "gras/Virtu/virtu_sg.h"
 #include "gras_modinter.h"
 
-#include "xbt/xbt_portability.h" /* timers */
+#include "xbt/xbt_os_time.h" /* timers */
 #include "xbt/dict.h"
 #include "xbt/ex.h"
 

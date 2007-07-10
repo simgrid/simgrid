@@ -75,8 +75,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(jardir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgras_la_LIBADD =
-am__objects_1 = snprintf.lo xbt_str.lo ex.lo xbt_virtu.lo sysdep.lo \
-	asserts.lo log.lo xbt_log_appender_file.lo \
+am__objects_1 = snprintf.lo xbt_str.lo ex.lo xbt_virtu.lo \
+	xbt_os_time.lo asserts.lo log.lo xbt_log_appender_file.lo \
 	xbt_log_layout_simple.lo xbt_log_layout_format.lo \
 	mallocator.lo dynar.lo dict.lo dict_elm.lo dict_cursor.lo \
 	dict_multi.lo heap.lo fifo.lo swag.lo graph.lo set.lo \
@@ -100,34 +100,35 @@ libgras_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(libgras_la_LDFLAGS) $(LDFLAGS) -o $@
 libsimgrid_la_LIBADD =
 am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
-	xbt_modinter.h gras_modinter.h xbt/xbt_virtu.c xbt/sysdep.c \
-	xbt/asserts.c xbt/log.c xbt/xbt_log_appender_file.c \
-	xbt/xbt_log_layout_simple.c xbt/xbt_log_layout_format.c \
-	xbt/mallocator.c xbt/dynar.c xbt/dict.c xbt/dict_elm.c \
-	xbt/dict_cursor.c xbt/dict_multi.c xbt/heap.c xbt/fifo.c \
-	xbt/swag.c xbt/graph.c xbt/set.c xbt/xbt_matrix.c xbt/queue.c \
-	xbt/xbt_peer.c xbt/xbt_main.c xbt/config.c xbt/cunit.c \
-	xbt/graphxml_parse.c surf/maxmin.c surf/lagrange.c \
-	surf/trace_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
-	surf/network.c surf/workstation.c surf/surf_timer.c \
-	surf/network_dassf.c surf/workstation_KCCFLN05.c \
-	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
-	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
-	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
-	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
-	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
-	xbt/context.c msg/msg_config.c msg/task.c msg/host.c \
-	msg/m_process.c msg/gos.c msg/global.c msg/environment.c \
-	msg/deployment.c simdag/sd_global.c simdag/sd_link.c \
-	simdag/sd_task.c simdag/sd_workstation.c gras/gras.c \
-	gras/Transport/transport.c gras/Transport/transport_private.h \
-	gras/Msg/gras_msg_mod.c gras/Msg/gras_msg_types.c \
-	gras/Msg/gras_msg_exchange.c gras/Msg/rpc.c gras/Msg/timer.c \
-	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
-	gras/Virtu/process.c gras/Virtu/gras_module.c \
-	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
-	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
-	gras/DataDesc/datadesc.c gras/DataDesc/datadesc_interface.h \
+	xbt_modinter.h gras_modinter.h xbt/xbt_virtu.c \
+	xbt/xbt_os_time.c xbt/asserts.c xbt/log.c \
+	xbt/xbt_log_appender_file.c xbt/xbt_log_layout_simple.c \
+	xbt/xbt_log_layout_format.c xbt/mallocator.c xbt/dynar.c \
+	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
+	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
+	xbt/xbt_matrix.c xbt/queue.c xbt/xbt_peer.c xbt/xbt_main.c \
+	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c surf/maxmin.c \
+	surf/lagrange.c surf/trace_mgr.c surf/surf.c \
+	surf/surfxml_parse.c surf/cpu.c surf/network.c \
+	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
+	surf/workstation_KCCFLN05.c surf/gtnets/gtnets_simulator.cc \
+	surf/gtnets/gtnets_topology.cc surf/gtnets/gtnets_interface.cc \
+	surf/network_gtnets.c surf/sdp.c simix/smx_global.c \
+	simix/smx_deployment.c simix/smx_config.c \
+	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
+	simix/smx_action.c simix/smx_synchro.c xbt/context.c \
+	msg/msg_config.c msg/task.c msg/host.c msg/m_process.c \
+	msg/gos.c msg/global.c msg/environment.c msg/deployment.c \
+	simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c \
+	simdag/sd_workstation.c gras/gras.c gras/Transport/transport.c \
+	gras/Transport/transport_private.h gras/Msg/gras_msg_mod.c \
+	gras/Msg/gras_msg_types.c gras/Msg/gras_msg_exchange.c \
+	gras/Msg/rpc.c gras/Msg/timer.c gras/Msg/msg_interface.h \
+	gras/Msg/msg_private.h gras/Virtu/process.c \
+	gras/Virtu/gras_module.c gras/DataDesc/ddt_create.c \
+	gras/DataDesc/ddt_convert.c gras/DataDesc/ddt_exchange.c \
+	gras/DataDesc/cbps.c gras/DataDesc/datadesc.c \
+	gras/DataDesc/datadesc_interface.h \
 	gras/DataDesc/datadesc_private.h gras/DataDesc/ddt_parse.c \
 	gras/DataDesc/ddt_parse.yy.c gras/DataDesc/ddt_parse.yy.h \
 	gras/Transport/sg_transport.c \
@@ -164,7 +165,7 @@ libsimgrid_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 libsimgrid4java_la_LIBADD =
 am__libsimgrid4java_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	xbt/ex.c xbt_modinter.h gras_modinter.h xbt/xbt_virtu.c \
-	xbt/sysdep.c xbt/asserts.c xbt/log.c \
+	xbt/xbt_os_time.c xbt/asserts.c xbt/log.c \
 	xbt/xbt_log_appender_file.c xbt/xbt_log_layout_simple.c \
 	xbt/xbt_log_layout_format.c xbt/mallocator.c xbt/dynar.c \
 	xbt/dict.c xbt/dict_elm.c xbt/dict_cursor.c xbt/dict_multi.c \
@@ -423,9 +424,9 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/network_dassf_private.h \
 	surf/workstation_KCCFLN05_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
-	include/surf/surfxml_parse_private.h \
-	include/xbt/xbt_portability.h include/xbt/xbt_os_thread.h \
-	include/xbt/context.h msg/private.h simdag/private.h \
+	include/surf/surfxml_parse_private.h include/xbt/xbt_os_time.h \
+	include/xbt/xbt_os_thread.h include/xbt/context.h \
+	msg/private.h simdag/private.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
 	$(am__append_1) $(am__append_2) $(am__append_4) \
 	$(am__append_5)
@@ -478,7 +479,7 @@ XBT_SRC = \
   xbt_modinter.h    gras_modinter.h                                          \
   xbt/xbt_virtu.c                                                            \
   \
-  xbt/sysdep.c                                                               \
+  xbt/xbt_os_time.c                                                          \
   xbt/asserts.c                                                              \
   xbt/log.c                    xbt/xbt_log_appender_file.c                   \
   xbt/xbt_log_layout_simple.c  xbt/xbt_log_layout_format.c                   \
@@ -850,7 +851,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surfxml_parse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swag_unit.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sysdep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/task.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trace_mgr.Plo@am__quote@
@@ -866,6 +866,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_matrix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_os_thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_os_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_peer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_rl_synchro.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_sg_synchro.Plo@am__quote@
@@ -922,12 +923,12 @@ xbt_virtu.lo: xbt/xbt_virtu.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_virtu.lo `test -f 'xbt/xbt_virtu.c' || echo '$(srcdir)/'`xbt/xbt_virtu.c
 
-sysdep.lo: xbt/sysdep.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sysdep.lo -MD -MP -MF $(DEPDIR)/sysdep.Tpo -c -o sysdep.lo `test -f 'xbt/sysdep.c' || echo '$(srcdir)/'`xbt/sysdep.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sysdep.Tpo $(DEPDIR)/sysdep.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/sysdep.c' object='sysdep.lo' libtool=yes @AMDEPBACKSLASH@
+xbt_os_time.lo: xbt/xbt_os_time.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_os_time.lo -MD -MP -MF $(DEPDIR)/xbt_os_time.Tpo -c -o xbt_os_time.lo `test -f 'xbt/xbt_os_time.c' || echo '$(srcdir)/'`xbt/xbt_os_time.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/xbt_os_time.Tpo $(DEPDIR)/xbt_os_time.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xbt/xbt_os_time.c' object='xbt_os_time.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sysdep.lo `test -f 'xbt/sysdep.c' || echo '$(srcdir)/'`xbt/sysdep.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xbt_os_time.lo `test -f 'xbt/xbt_os_time.c' || echo '$(srcdir)/'`xbt/xbt_os_time.c
 
 asserts.lo: xbt/asserts.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT asserts.lo -MD -MP -MF $(DEPDIR)/asserts.Tpo -c -o asserts.lo `test -f 'xbt/asserts.c' || echo '$(srcdir)/'`xbt/asserts.c

@@ -14,7 +14,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "gras/virtu.h"
-#include "xbt/xbt_portability.h" /* private */
+#include "xbt/xbt_os_time.h" /* private */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu);
 

@@ -48,7 +48,7 @@ EXTRA_DIST= \
 	include/surf/surf.h \
 	include/surf/surfxml_parse_private.h \
 	\
-	include/xbt/xbt_portability.h \
+	include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h \
 	include/xbt/context.h \
 	\
@@ -113,7 +113,7 @@ XBT_SRC=\
   xbt_modinter.h    gras_modinter.h                                          \
   xbt/xbt_virtu.c                                                            \
   \
-  xbt/sysdep.c                                                               \
+  xbt/xbt_os_time.c                                                          \
   xbt/asserts.c                                                              \
   xbt/log.c                    xbt/xbt_log_appender_file.c                   \
   xbt/xbt_log_layout_simple.c  xbt/xbt_log_layout_format.c                   \
