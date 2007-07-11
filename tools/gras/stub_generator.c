@@ -309,17 +309,16 @@ typedef struct s_process_t {
 
 static void s_process_free(void *process)
 {
+  s_process_t*p = (s_process_t*)process;
   int i;
-  for(i=0;i<((s_process_t*)process)->argc; i++)
-    free(((s_process_t*)process)->argv[i]);
-  free(((s_process_t*)process)->host);
+  for (i=0; i<p->argc ; i++)
+    free(p->argv[i]);
+  free(p->argv);
+  free(p->host);
 }
 
 static s_process_t process;
 
-/*
- * Création de deux dictionnaires
- */
 static void parse_process_init(void)
 {
   xbt_dict_set(process_function_set, A_surfxml_process_function, NULL, NULL);
@@ -344,88 +343,66 @@ static void parse_process_finalize(void)
   /*VERB1("Function: %s",process.argv[0]);*/
 }
 
-static void generate_sim(char *project)
-{
-	xbt_dict_cursor_t cursor=NULL;
-	char *key = NULL;
-	void *data = NULL;
-	char *filename = NULL;
-	FILE *OUT = NULL;
-	
-	/* 
-	 * Creation d'un fichier nommé : <projet>_simulator.c 
-	 */
- 
-
-	filename = xbt_new(char,strlen(project) + strlen(SIM_SOURCENAME));
-	sprintf(filename,SIM_SOURCENAME,project);
-	
-	OUT=fopen(filename,"w");
-	
-	
-	xbt_assert1(OUT, "Unable to open %s for writing",filename);
-	
-	/*
-	 * Ecriture du message d'avertissement.
-	 */
-	fprintf(OUT, "%s\n",warning);
-	
-	/*
-	 * Ecriture du préambule (inclusion de certains fichiers d'en-tête
-	 */
-	fprintf(OUT, "%s", SIM_PREEMBULE);
-	
-	/*
-	 * Déclaration des fonction int <process>(int argc,char *argv[]);
-	 */
-	xbt_dict_foreach(process_function_set,cursor,key,data) {
-		fprintf(OUT,"int %s(int argc,char *argv[]);\n",key);
-	}
-	
-	fprintf(OUT,"\n");
-	
-	/*
-	 * Déclaration des fonction int launch_<process>(int argc,char *argv[]);
-	 */
-	xbt_dict_foreach(process_function_set,cursor,key,data) {
-	fprintf(OUT,"int launch_%s(int argc,char *argv[]);\n",key);
-	}
-	
-	/*
-	 * Ecriture du message d'avertissement.
-	 */
-	fprintf(OUT, "\n%s\n",warning);
-
-	xbt_dict_foreach(process_function_set,cursor,key,data) {
-		fprintf(OUT,SIM_LAUNCH_FUNC,key,key);
-	}
-	fprintf(OUT, "\n%s\n",warning);
-
-    fprintf(OUT,"%s", "/* specific to Borland Compiler */\n"
-    "#ifdef __BORLANDDC__\n"
-    "#pragma argsused\n"
-    "#endif\n\n");
-	
-	fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n"
-	"\n" 
-	"  /*  Simulation setup */\n" 
-	"  gras_global_init(&argc,argv);\n"
-	"  if (argc != 3) {\n" 
-	"    fprintf(stderr, \"Usage: %s platform.xml deployment.xml [--gras-log=...]\\n\",argv[0]);\n" 
-	"    exit(1);\n" 
-	"  }\n"
-	"\n");
-	fprintf(OUT,
-	"  gras_create_environment(argv[1]);\n" 
-	"\n" 
-	"  /*  Application deployment */\n"
-	);
-	xbt_dict_foreach(process_function_set,cursor,key,data) {
-		fprintf(OUT,"  gras_function_register(\"%s\", launch_%s);\n",key,key);
-	}
-	fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
-	fclose(OUT);
-	free(filename);
+static void generate_sim(char *project) {
+   xbt_dict_cursor_t cursor=NULL;
+   char *key = NULL;
+   void *data = NULL;
+   char *filename = NULL;
+   FILE *OUT = NULL;
+   
+   /* Output file: <projet>_simulator.c */
+   filename = xbt_new(char,strlen(project) + strlen(SIM_SOURCENAME));
+   sprintf(filename,SIM_SOURCENAME,project);
+   
+   OUT=fopen(filename,"w");
+   
+   xbt_assert1(OUT, "Unable to open %s for writing",filename);
+   
+   fprintf(OUT, "%s\n",warning);
+   fprintf(OUT, "%s", SIM_PREEMBULE);
+   
+   xbt_dict_foreach(process_function_set,cursor,key,data) {
+      fprintf(OUT,"int %s(int argc,char *argv[]);\n",key);
+   }
+   
+   fprintf(OUT,"\n");
+   
+   xbt_dict_foreach(process_function_set,cursor,key,data) {
+      fprintf(OUT,"int launch_%s(int argc,char *argv[]);\n",key);
+   }
+   
+   fprintf(OUT, "\n%s\n",warning);
+   
+   xbt_dict_foreach(process_function_set,cursor,key,data) {
+      fprintf(OUT,SIM_LAUNCH_FUNC,key,key);
+   }
+   fprintf(OUT, "\n%s\n",warning);
+   
+   fprintf(OUT,"%s", "/* specific to Borland Compiler */\n"
+	   "#ifdef __BORLANDDC__\n"
+	   "#pragma argsused\n"
+	   "#endif\n\n");
+   
+   fprintf(OUT, "%s", "int main (int argc,char *argv[]) {\n"
+	   "\n" 
+	   "  /*  Simulation setup */\n" 
+	   "  gras_global_init(&argc,argv);\n"
+	   "  if (argc != 3) {\n" 
+	   "    fprintf(stderr, \"Usage: %s platform.xml deployment.xml [--gras-log=...]\\n\",argv[0]);\n" 
+	   "    exit(1);\n" 
+	   "  }\n"
+	   "\n");
+   fprintf(OUT,
+	   "  gras_create_environment(argv[1]);\n" 
+	   "\n" 
+	   "  /*  Application deployment */\n"
+	   );
+   xbt_dict_foreach(process_function_set,cursor,key,data) {
+      fprintf(OUT,"  gras_function_register(\"%s\", launch_%s);\n",key,key);
+   }
+   fprintf(OUT, "%s", SIM_MAIN_POSTEMBULE);
+   fclose(OUT);
+   free(filename);
 }
 
 /**********************************************/
@@ -759,77 +736,6 @@ static void generate_makefile_remote(char *project, char *deployment)
   fclose(OUT);
 }
 
-
-static void generate_deployment(char *project, char *deployment)
-{
-  xbt_dict_cursor_t cursor=NULL;
-  char *key = NULL;
-  void *data = NULL;
-  char *filename = NULL;
-  FILE *OUT = NULL;
-
-  int cpt,i;
-  s_process_t proc;
-
-  filename = xbt_new(char,strlen(project) + strlen(DEPLOYMENT));
-  sprintf(filename,DEPLOYMENT, project);
-  
-  OUT=fopen(filename,"w");
-  xbt_assert1(OUT, "Unable to open %s for writing",filename);
-
-  fprintf(OUT, "#!/bin/sh\n");
-  fprintf(OUT, "############ DEPLOYMENT FILE #########\n");
-  fprintf(OUT,
-	  "if test \"${MACHINES+set}\" != set; then \n"
-	  "    export MACHINES='");
-  xbt_dict_foreach(machine_set,cursor,key,data) {
-    fprintf(OUT, "%s ",key);
-  }
-  fprintf(OUT,  
-	  "';\n"
-	  "fi\n"
-	  "if test \"${INSTALL_PATH+set}\" != set; then \n"
-	  "    export INSTALL_PATH='`echo $HOME`/tmp/src'\n"
-	  "fi\n"
-	  "if test \"${GRAS_ROOT+set}\" != set; then \n"
-	  "    export GRAS_ROOT='`echo $INSTALL_PATH`'\n"
-	  "fi\n"
-	  "if test \"${SRCDIR+set}\" != set; then \n"
-	  "    export SRCDIR=./\n"
-	  "fi\n"
-	  "if test \"${SIMGRID_URL+set}\" != set; then \n"
-	  "    export SIMGRID_URL=http://gcl.ucsd.edu/simgrid/dl/\n"
-	  "fi\n"
-	  "if test \"${SIMGRID_VERSION+set}\" != set; then \n"
-	  "    export SIMGRID_VERSION=2.91\n"
-	  "fi\n"
-	  "if test \"${GRAS_PROJECT+set}\" != set; then \n"
-	  "    export GRAS_PROJECT=%s\n"
-	  "fi\n"
-	  "if test \"${GRAS_PROJECT_URL+set}\" != set; then \n"
-	  "    export GRAS_PROJECT_URL=http://www-id.imag.fr/Laboratoire/Membres/Legrand_Arnaud/gras_test/\n"
-	  "fi\n"
-	  "\n"
-	  "test -e runlogs/ || mkdir -p runlogs/\n",
-	  project);
-
-  fprintf(OUT,  
-	  "cmd_prolog=\"env INSTALL_PATH=$INSTALL_PATH GRAS_ROOT=$GRAS_ROOT \\\n"
-	  "                 SIMGRID_URL=$SIMGRID_URL SIMGRID_VERSION=$SIMGRID_VERSION GRAS_PROJECT=$GRAS_PROJECT \\\n"
-	  "                 GRAS_PROJECT_URL=$GRAS_PROJECT_URL LD_LIBRARY_PATH=$GRAS_ROOT/lib/ sh -c \";\n");
-
-  xbt_dynar_foreach (process_list,cpt,proc) {
-    fprintf(OUT,"cmd=\"\\$INSTALL_PATH/gras-%s/"RL_BINARYNAME" ",project,project,proc.argv[0]);
-    for(i=1;i<proc.argc;i++) {
-      fprintf(OUT,"%s ",proc.argv[i]);
-    }
-    fprintf(OUT,"\";\n");
-    fprintf(OUT,"ssh %s \"$cmd_prolog 'export LD_LIBRARY_PATH=\\$INSTALL_PATH/lib:\\$LD_LIBRARY_PATH; echo \\\"$cmd\\\" ; $cmd 2>&1'\" > runlogs/%s_%d.log &\n",proc.host,proc.host,cpt);
-  }
-
-  fclose(OUT);
-}
-
 static void print(void *p)
 {
   printf("%p",p);
@@ -852,14 +758,32 @@ int main(int argc, char *argv[])
   int i;
    
   surf_init(&argc, argv);
-
-  xbt_assert1((argc >= 3),"Usage: %s project_name deployment_file [deployment_file...]\n",argv[0]);
-
-  project_name = argv[1];
-
   process_function_set = xbt_dict_new();
   process_list = xbt_dynar_new(sizeof(s_process_t),s_process_free);
   machine_set = xbt_dict_new();
+
+  for (i=1; i<argc; i++) {
+     int need_removal = 0;
+     if (!strncmp("--extra-process=",argv[i], strlen("--extra-process="))) {
+	xbt_dict_set(process_function_set, argv[i]+strlen("--extra-process="), NULL, NULL);
+	need_removal = 1;
+     }
+     
+     
+     if (need_removal) { /* remove the handled argument from argv */
+	int j;	
+	for (j=i+1; j<argc; j++) {
+	   argv[j-1] = argv[j];
+	}
+	argv[j-1] = NULL;
+	argc--;
+	i--; /* compensate effect of next loop incrementation */
+     }
+  }
+	
+  xbt_assert1((argc >= 3),"Usage: %s project_name deployment_file [deployment_file...]\n",argv[0]);
+
+  project_name = argv[1];
 
   STag_surfxml_process_fun = parse_process_init;
   ETag_surfxml_argument_fun = parse_argument;
