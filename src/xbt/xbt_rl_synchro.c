@@ -22,36 +22,39 @@
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
 
 
-struct xbt_thread_ {
-   /* KEEP IT IN SYNC WITH xbt_os_thread (both win and lin parts) */
-#ifdef HAVE_PTHREAD_H
-   pthread_t t;
-   void *param;
-   pvoid_f_pvoid_t *start_routine;
-#elif defined(WIN32)
-   HANDLE handle;                  /* the win thread handle        */
-   unsigned long id;               /* the win thread id            */
-   pvoid_f_pvoid_t *start_routine;
-   void* param;
-#endif
-};
+typedef struct s_xbt_thread_ {   
+   xbt_os_thread_t os_thread;
+   void_f_pvoid_t *code;
+   void *userparam;   
+}s_xbt_thread_t;
 
-xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine,
-			       void* param)  {
-   return (xbt_thread_t)xbt_os_thread_create(start_routine,param);
+static void *xbt_thread_create_wrapper(void *p)  {   
+   xbt_thread_t t = (xbt_thread_t)p;
+   (*t->code)(t->userparam);
+   return NULL;
+}
+
+
+xbt_thread_t xbt_thread_create(void_f_pvoid_t* code, void* param) {
+
+   xbt_thread_t res = xbt_new0(s_xbt_thread_t,1);
+   res->userparam = param;
+   res->code = code;
+   res->os_thread = xbt_os_thread_create(xbt_thread_create_wrapper,res);
+   return res;
 }
 
 void 
-xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
-   xbt_os_thread_join( (xbt_os_thread_t)thread, thread_return );
+xbt_thread_join(xbt_thread_t thread) {
+   xbt_os_thread_join( thread->os_thread, NULL );
 }		       
 
-void xbt_thread_exit(int *retval) {
-   xbt_os_thread_exit( retval );
+void xbt_thread_exit() {
+   xbt_os_thread_exit(NULL);
 }
 
 xbt_thread_t xbt_thread_self(void) {
-   return (xbt_thread_t)xbt_os_thread_self();
+   return (xbt_thread_t)xbt_os_thread_getparam();
 }
 
 void xbt_thread_yield(void) {

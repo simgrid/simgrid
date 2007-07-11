@@ -21,36 +21,51 @@
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
 
 typedef struct s_xbt_thread_ {
-   /* KEEP IT IN SYNC WITH s_smx_process_ from src/include/simix/datatypes.h */
-   char *name;			/**< @brief process name if any */
-   smx_simdata_process_t simdata;	/**< @brief simulator data */
-   s_xbt_swag_hookup_t process_hookup;
-   s_xbt_swag_hookup_t synchro_hookup;
-   s_xbt_swag_hookup_t host_proc_hookup;
-   void *data;			/**< @brief user data */
-   /* KEEP IT IN SYNC WITH s_smx_process_ from src/include/simix/datatypes.h */
+   smx_process_t s_process;
+   void_f_pvoid_t *code;
+   void *userparam;
 } s_xbt_thread_t;
 
-xbt_thread_t xbt_thread_create(pvoid_f_pvoid_t start_routine, void* param)  {
-   THROW_UNIMPLEMENTED; /* FIXME */
+static int xbt_thread_create_wrapper(int argc, char *argv[]) {
+   xbt_thread_t t = (xbt_thread_t)SIMIX_process_get_data(SIMIX_process_self());
+   (*t->code)(t->userparam);
+   return 0;
+}
+
+xbt_thread_t xbt_thread_create(void_f_pvoid_t* code, void* param)  {
+   xbt_thread_t res = xbt_new0(s_xbt_thread_t,1);
+   res->userparam = param;
+   res->code = code;
+   res->s_process = SIMIX_process_create(NULL, 
+					 xbt_thread_create_wrapper, res,
+					 SIMIX_host_get_name(SIMIX_host_self()),
+					 0, NULL);
+   return res;
 }
 
 void 
-xbt_thread_join(xbt_thread_t thread,void ** thread_return) {
+xbt_thread_join(xbt_thread_t thread) {
    THROW_UNIMPLEMENTED; /* FIXME */
 }		       
 
-void xbt_thread_exit(int *retval) {
-   THROW_UNIMPLEMENTED; /* FIXME */
+void 
+xbt_thread_destroy(xbt_thread_t thread) {
+   SIMIX_process_kill(thread->s_process);
+   free(thread);
+}		       
+
+void xbt_thread_exit() {
+   xbt_thread_destroy(xbt_thread_self());
 }
 
 xbt_thread_t xbt_thread_self(void) {
-   THROW_UNIMPLEMENTED; /* FIXME */   
+   return SIMIX_process_get_data(SIMIX_process_self());
 }
 
 void xbt_thread_yield(void) {
    THROW_UNIMPLEMENTED; /* FIXME */   
 }
+
 /****** mutex related functions ******/
 struct s_xbt_mutex_ {
    
