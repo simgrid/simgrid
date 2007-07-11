@@ -40,6 +40,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
 		simix_global->create_process_function = NULL;
 		simix_global->kill_process_function = NULL;
+		simix_global->cleanup_process_function = NULL;
 	}
 }
 
@@ -277,7 +278,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 				DEBUG2("Launching %s on %s", args->name, args->hostname);
 				process = SIMIX_process_create(args->name, args->code, 
 						args->data, args->hostname,
-						args->argc,args->argv,NULL);
+						args->argc,args->argv);
 				if(args->kill_time > SIMIX_get_clock()) {
 					surf_timer_resource->extension_public->set(args->kill_time, 
 							(void*) &SIMIX_process_kill,
@@ -358,10 +359,7 @@ void SIMIX_function_register_process_create(smx_creation_func_t* function)
 {
   xbt_assert0((simix_global->create_process_function == NULL), "Data already set");
 
-  /* Assign create process */
   simix_global->create_process_function = function;
-
-  return ;
 }
 
 /**
@@ -375,8 +373,19 @@ void SIMIX_function_register_process_kill(void_f_pvoid_t* function)
 {
   xbt_assert0((simix_global->kill_process_function == NULL), "Data already set");
 
-  /* Assign kill process */
   simix_global->kill_process_function = function;
+}
 
-  return ;
+/**
+ *	\brief Registers a function to cleanup a process.
+ *
+ *	This function registers an user function to be called when a new process ends properly.
+ *	\param function cleanup process function
+ *
+ */
+void SIMIX_function_register_process_cleanup(void_f_pvoid_t* function)
+{
+  xbt_assert0((simix_global->cleanup_process_function == NULL), "Data already set");
+
+  simix_global->cleanup_process_function = function;
 }

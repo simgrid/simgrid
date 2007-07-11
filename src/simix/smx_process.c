@@ -51,8 +51,7 @@ void SIMIX_process_cleanup(void *arg)
  */
 smx_process_t SIMIX_process_create(const char *name,
 				   xbt_main_func_t code, void *data,
-				   const char * hostname, int argc, char **argv, 
-				   void * clean_process_function)
+				   const char * hostname, int argc, char **argv)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t,1);
   smx_process_t process = xbt_new0(s_smx_process_t,1);
@@ -67,16 +66,9 @@ smx_process_t SIMIX_process_create(const char *name,
 	simdata->cond = NULL;
   simdata->argc = argc;
   simdata->argv = argv;
-	if (clean_process_function) {
-  	simdata->context = xbt_context_new(code, NULL, NULL, 
-					     clean_process_function, process, 
-					     simdata->argc, simdata->argv);
-	}
-	else {
-  	simdata->context = xbt_context_new(code, NULL, NULL, 
-					     SIMIX_process_cleanup, process, 
-					     simdata->argc, simdata->argv);
-	}
+  simdata->context = xbt_context_new(code, NULL, NULL, 
+				     simix_global->cleanup_process_function, process, 
+				     simdata->argc, simdata->argv);
 
   /* Process structure */
   process->name = xbt_strdup(name);
@@ -107,7 +99,6 @@ smx_process_t SIMIX_process_create(const char *name,
 void SIMIX_jprocess_create(const char *name, smx_host_t host,
 			   void *data,
 			   void *jprocess, void *jenv,
-			   void *clean_process_function,
 			   smx_process_t *res)
 {
   smx_simdata_process_t simdata = xbt_new0(s_smx_simdata_process_t,1);
@@ -139,15 +130,9 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   simdata->argc = 0;
   simdata->argv = NULL;
   
-   if (clean_process_function) {
-      simdata->context = xbt_context_new(NULL, NULL, NULL, 
-					 clean_process_function, process, 
-					 /* argc/argv*/0,NULL);
-   } else {
-      simdata->context = xbt_context_new(NULL, NULL, NULL, 
-					 SIMIX_process_cleanup, process, 
-					 /* argc/argv*/0,NULL);
-   }
+  simdata->context = xbt_context_new(NULL, NULL, NULL, 
+				     simix_global->cleanup_process_function, process, 
+				     /* argc/argv*/0,NULL);
 
   /* Process structure */
   process->name = xbt_strdup(name);

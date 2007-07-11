@@ -52,8 +52,8 @@ typedef void *(smx_creation_func_t)(/*name*/     const char *,
 				     /* argc */   int,
 				     /* argv */   char **);
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t *function);
-
 XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_f_pvoid_t *function);
+XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_f_pvoid_t *function);
 
 /************************** Host handling ***********************************/
 
@@ -77,14 +77,12 @@ XBT_PUBLIC(int) SIMIX_host_get_state(smx_host_t host);
 /************************** Process handling *********************************/
 XBT_PUBLIC(smx_process_t) SIMIX_process_create(const char *name,
 					       xbt_main_func_t code, void *data,
-					       const char * hostname, int argc, char **argv,
-					       void * clean_process_function);
+					       const char * hostname, int argc, char **argv);
 
 XBT_PUBLIC(void) SIMIX_jprocess_create(const char *name, 
 				       smx_host_t host,
 				       void *data,
 				       void *jprocess, void *jenv,
-				       void * clean_process_function,
 				       smx_process_t* res);
 
 XBT_PUBLIC(void) SIMIX_process_kill(smx_process_t process);

@@ -114,7 +114,6 @@ Java_simgrid_msg_Msg_processCreate(JNIEnv* env, jclass cls, jobject jprocess_arg
 			process->simdata->m_host->simdata->s_host, 
 			/*data*/ (void*)process,
 			jprocess_arg,env,
-			__MSG_process_cleanup,
 			&process->simdata->s_process);
   DEBUG1("context created (s_process=%p)",process->simdata->s_process);
 

@@ -40,6 +40,7 @@ typedef struct SIMIX_Global {
   xbt_dict_t registered_functions;
   smx_creation_func_t *create_process_function;
   void_f_pvoid_t* kill_process_function;
+  void_f_pvoid_t* cleanup_process_function;
 } s_SIMIX_Global_t, *SIMIX_Global_t;
 
 extern SIMIX_Global_t simix_global;

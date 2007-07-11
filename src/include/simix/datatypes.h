@@ -69,14 +69,12 @@ typedef struct s_smx_simdata_process *smx_simdata_process_t;
     @ingroup m_datatypes_management_details @{ */
 typedef struct s_smx_process {
 
-   /* KEEP IT IN SYNC WITH s_xbt_thread_ from src/xbt_sg_thread.h */
    char *name;			/**< @brief process name if any */
    smx_simdata_process_t simdata;	/**< @brief simulator data */
    s_xbt_swag_hookup_t process_hookup;
    s_xbt_swag_hookup_t synchro_hookup;
    s_xbt_swag_hookup_t host_proc_hookup;
    void *data;			/**< @brief user data */
-   /* KEEP IT IN SYNC WITH s_smx_process_ from src/xbt_sg_thread.h */
 
 } s_smx_process_t;
 /** @} */

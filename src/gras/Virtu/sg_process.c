@@ -24,8 +24,7 @@ void gras_agent_spawn(const char *name, void *data,
    SIMIX_process_create(name, code,
 			data,
 			gras_os_myname(), 
-			argc, argv,
-			/* no cleanup, thx, users will call gras_exit() */NULL);
+			argc, argv);
 }
 
 /* **************************************************************************

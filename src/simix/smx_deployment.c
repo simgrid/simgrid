@@ -71,7 +71,7 @@ static void parse_process_finalize(void)
 		if (simix_global->create_process_function)
 			process = simix_global->create_process_function(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv);
 		else
-			process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv, NULL);
+			process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv);
 
 		if(kill_time > SIMIX_get_clock()) {
 			if (simix_global->kill_process_function)
