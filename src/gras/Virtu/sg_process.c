@@ -17,6 +17,21 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu_process);
 
 static long int PID = 1;
 
+
+void gras_agent_spawn(const char *name, void *data, 
+		      xbt_main_func_t code, int argc, char *argv[]) {
+   
+   SIMIX_process_create(name, code,
+			data,
+			gras_os_myname(), 
+			argc, argv,
+			/* no cleanup, thx, users will call gras_exit() */NULL);
+}
+
+/* **************************************************************************
+ * Process constructor/destructor (semi-public interface)
+ * **************************************************************************/
+
 void
 gras_process_init() {
   gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
@@ -101,7 +116,7 @@ gras_process_exit() {
 }
 
 /* **************************************************************************
- * Process data
+ * Process data (public interface)
  * **************************************************************************/
 
 gras_procdata_t *gras_procdata_get(void) {
@@ -122,7 +137,11 @@ gras_libdata_by_name_from_remote(const char *name, smx_process_t p) {
    
   return gras_libdata_by_name_from_procdata(name, pd);
 }   
-  
+
+/* **************************************************************************
+ * OS virtualization function
+ * **************************************************************************/
+
 const char* xbt_procname(void) {
   const char *res = NULL;
   smx_process_t process = SIMIX_process_self();
@@ -139,7 +158,68 @@ int gras_os_getpid(void) {
   smx_process_t process = SIMIX_process_self();
 	
   if ((process != NULL) && (process->data))
-		return ((gras_procdata_t*)process->data)->pid;
+     return ((gras_procdata_t*)process->data)->pid;
   else
     return 0;
 }
+
+/* **************************************************************************
+ * Interface with SIMIX
+ * **************************************************************************/
+
+void gras_global_init(int *argc,char **argv) {
+   return SIMIX_global_init(argc,argv);
+}
+void gras_create_environment(const char *file) {
+   return SIMIX_create_environment(file);
+}
+void gras_function_register(const char *name, xbt_main_func_t code) {
+   return SIMIX_function_register(name, code);
+}
+void gras_main() {
+   smx_cond_t cond = NULL;
+   smx_action_t smx_action;
+   xbt_fifo_t actions_done = xbt_fifo_new();
+   xbt_fifo_t actions_failed = xbt_fifo_new();
+   
+
+   /* Clean IO before the run */
+   fflush(stdout);
+   fflush(stderr);
+   
+   
+   while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
+
+      while ( (smx_action = xbt_fifo_pop(actions_failed)) ) {
+	 
+	 
+	 DEBUG1("** %s failed **",smx_action->name);
+	 while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
+	    SIMIX_cond_broadcast(cond);
+			}
+	 /* action finished, destroy it */
+	 //	SIMIX_action_destroy(smx_action);
+      }
+      
+      while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
+	 
+	 DEBUG1("** %s done **",smx_action->name);
+	 while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
+	    SIMIX_cond_broadcast(cond);
+	 }
+	 /* action finished, destroy it */
+	 //SIMIX_action_destroy(smx_action);
+      }
+   }
+   xbt_fifo_free(actions_failed);
+   xbt_fifo_free(actions_done);
+   return;   
+}
+void gras_launch_application(const char *file) {
+   return SIMIX_launch_application(file);
+}
+void gras_clean() {
+   return SIMIX_clean();
+}
+
+

@@ -30,11 +30,11 @@ const char *xbt_procname(void) {
 }
 
 int gras_os_getpid(void) {
-	#ifdef _WIN32
-	return (long int) GetCurrentProcess();
-	#else
-	return (long int) getpid();
-	#endif
+#ifdef _WIN32
+   return (long int) GetCurrentProcess();
+#else
+   return (long int) getpid();
+#endif
 }
 
 /* **************************************************************************
@@ -45,4 +45,9 @@ gras_procdata_t *gras_procdata_get(void) {
   xbt_assert0(_gras_procdata,"Run gras_process_init (ie, gras_init)!");
 
   return _gras_procdata;
+}
+
+void gras_agent_spawn(const char *name, void *data, 
+		      xbt_main_func_t code, int argc, char *argv[]) {
+   THROW_UNIMPLEMENTED;
 }
