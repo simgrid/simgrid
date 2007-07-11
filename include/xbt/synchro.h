@@ -32,11 +32,16 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
   typedef struct s_xbt_thread_ *xbt_thread_t;
 
-  XBT_PUBLIC(xbt_thread_t) xbt_thread_create(pvoid_f_pvoid_t start_routine,void* param);
-  XBT_PUBLIC(void) xbt_thread_exit(int *retcode);
+  XBT_PUBLIC(xbt_thread_t) xbt_thread_create(void_f_pvoid_t start_routine,void* param);
+  XBT_PUBLIC(void) xbt_thread_exit();
   XBT_PUBLIC(xbt_thread_t) xbt_thread_self(void);
   /* xbt_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
-  XBT_PUBLIC(void) xbt_thread_join(xbt_thread_t thread,void ** thread_return);
+  XBT_PUBLIC(void) xbt_thread_join(xbt_thread_t thread);
+  /* Brutally ends the life of the poor victim */
+  XBT_PUBLIC(void) xbt_thread_destroy(xbt_thread_t thread);
+  /* suicide */
+  XBT_PUBLIC(void) xbt_thread_exit(void);
+  /* current thread pass control to any possible thread wanting it */
   XBT_PUBLIC(void) xbt_thread_yield(void);
 
 
