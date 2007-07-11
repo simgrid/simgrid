@@ -40,7 +40,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
 		simix_global->create_process_function = NULL;
 		simix_global->kill_process_function = NULL;
-		simix_global->cleanup_process_function = NULL;
+		simix_global->cleanup_process_function = SIMIX_process_cleanup;
 	}
 }
 
@@ -385,7 +385,5 @@ void SIMIX_function_register_process_kill(void_f_pvoid_t* function)
  */
 void SIMIX_function_register_process_cleanup(void_f_pvoid_t* function)
 {
-  xbt_assert0((simix_global->cleanup_process_function == NULL), "Data already set");
-
   simix_global->cleanup_process_function = function;
 }
