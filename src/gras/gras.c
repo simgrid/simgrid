@@ -87,6 +87,7 @@ void gras_exit(void) {
   INFO0("Exiting GRAS");
   amok_exit();
   gras_moddata_leave();
+  gras_process_exit();
   if (--gras_running_process == 0) {
     gras_msg_exit();
     gras_trp_exit();
@@ -94,7 +95,6 @@ void gras_exit(void) {
     gras_emul_exit();
     gras_moddata_exit();
   }
-  gras_process_exit();
   xbt_exit();
 }
 
