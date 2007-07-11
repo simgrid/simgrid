@@ -433,6 +433,7 @@ AC_CONFIG_FILES([
     examples/gras/Makefile
       examples/gras/ping/Makefile   
       examples/gras/rpc/Makefile
+      examples/gras/spawn/Makefile
       examples/gras/timer/Makefile
       examples/gras/chrono/Makefile
       examples/gras/mutual_exclusion/simple_token/Makefile

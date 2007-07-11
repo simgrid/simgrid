@@ -1,0 +1,3 @@
+.deps .libs Makefile  _*.c spawn_father spawn_child spawn_simulator
+spawn.mk
+spawn.trace
