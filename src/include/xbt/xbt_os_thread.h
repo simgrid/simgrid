@@ -34,6 +34,7 @@ SG_BEGIN_DECL()
   /* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
   XBT_PUBLIC(void) xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return);
   XBT_PUBLIC(void) xbt_os_thread_yield(void);
+  XBT_PUBLIC(void) xbt_os_thread_cancel(xbt_os_thread_t thread);
   XBT_PUBLIC(void*) xbt_os_thread_getparam(void);
 
 
