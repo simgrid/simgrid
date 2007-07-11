@@ -1,0 +1,4 @@
+
+! expect signal SIGABRT
+! output ignore
+$ $SG_TEST_ENV ./philosopher$EXEEXT 4002 4 --log=root.fmt=%m%n

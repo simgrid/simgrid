@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+  <process host="Tremblay" function="philosopher">
+     <argument value="5"/>          <!-- amount of pals to create -->
+  </process>
+</platform_description>

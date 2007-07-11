@@ -1,0 +1,4 @@
+p Runs the 'philosopher' test within the simulator (simulation times valid for 32bits architectures)
+
+$ $SG_TEST_EXENV ./philosopher_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/philosopher.xml
+
