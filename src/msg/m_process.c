@@ -57,6 +57,16 @@ void __MSG_process_cleanup(void *arg)
    return;
 }
 
+/* This function creates a MSG process. It has the prototype by SIMIX_function_register_process_create */
+void *_MSG_process_create_from_SIMIX(const char *name,
+				     xbt_main_func_t code, void *data,
+				     char * hostname, int argc, char **argv)
+{
+	m_host_t host = MSG_get_host_by_name(hostname);
+	return (void*)MSG_process_create_with_arguments(name,code,data,host,argc,argv);
+}
+
+
 /** \ingroup m_process_management
  * \brief Creates and runs a new #m_process_t.
 
@@ -81,16 +91,6 @@ void __MSG_process_cleanup(void *arg)
  * \see m_process_t
  * \return The new corresponding object.
  */
-
-
-
-m_process_t __MSG_process_create_with_arguments(const char *name,
-					      xbt_main_func_t code, void *data,
-					      char * hostname, int argc, char **argv)
-{
-	m_host_t host = MSG_get_host_by_name(hostname);
-	return MSG_process_create_with_arguments(name,code,data,host,argc,argv);
-}
 
 m_process_t MSG_process_create_with_arguments(const char *name,
 					      xbt_main_func_t code, void *data,
@@ -126,6 +126,11 @@ m_process_t MSG_process_create_with_arguments(const char *name,
   xbt_fifo_unshift(msg_global->process_list, process); 
 
   return process;
+}
+
+
+void _MSG_process_kill_from_SIMIX(void *p) {
+   MSG_process_kill((m_process_t)p);
 }
 
 /** \ingroup m_process_management
