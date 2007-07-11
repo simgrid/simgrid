@@ -23,6 +23,8 @@ SimGrid (3.3-cvs) unstable; urgency=low
  GRAS:
   * Convert the PIDs from long int to int to match the MSG ones (and
     linux ones too) [Mt]
+  * New function: gras_agent_spawn() to launch a new process on
+    current host. Only working in simulation for now.. [Mt]
 
  XBT:
   * Make the backtrace of exceptions more human readable [Mt]
