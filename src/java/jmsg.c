@@ -126,29 +126,9 @@ Java_simgrid_msg_Msg_processCreate(JNIEnv* env, jclass cls, jobject jprocess_arg
     
   process->simdata->last_errno = MSG_OK;
     
-
-#ifdef KILLME    
-  /* add the process in the list of the process of the host */
-  xbt_fifo_unshift(host->simdata->process_list, process);
-    
-  self = msg_global->current_process;
-    
-  process->simdata->context->env = env;
-    
-  /* start the java process */
-  xbt_context_start(process->simdata->context); 
-	
-  msg_global->current_process = self;
-#endif
-    
   /* add the process to the list of the processes of the simulation */
   xbt_fifo_unshift(msg_global->process_list, process);
   	
-  /* add the process to the list of the processes to run in the simulation */
-  //  xbt_fifo_unshift(msg_global->process_to_run, process);
-    
-  //  PAJE_PROCESS_NEW(process);
-  //#endif
 }
 
 JNIEXPORT void JNICALL 
