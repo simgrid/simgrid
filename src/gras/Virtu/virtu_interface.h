@@ -24,8 +24,15 @@ void gras_moddata_exit(void);
 /* shutdown this process wrt module mecanism (process-wide cleanups) */
 void gras_moddata_leave(void);
 
-/* This is the old interface (deprecated) */
 
+/* Perform the various intialisations needed by gras. Each process must run it */
+XBT_PUBLIC(void) gras_process_init(void);
+
+/* Frees the memory allocated by gras. Processes should run it */
+XBT_PUBLIC(void) gras_process_exit(void);
+
+
+/* This is the old interface (deprecated) */
 
 /* declare a new process specific data 
    (used by gras_<module>_register to make sure that gras_process_init will create it) */

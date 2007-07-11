@@ -14,23 +14,6 @@
 
 SG_BEGIN_DECL()
 
-/* **************************************************************************
- * Initializing the processes
- * **************************************************************************/
-/**
- * gras_process_init:
- * 
- * Perform the various intialisations needed by gras. Each process must run it
- */
-XBT_PUBLIC(void) gras_process_init(void);
-
-/**
- * gras_process_exit:
- * 
- * Frees the memory allocated by gras. Processes should run it
- */
-XBT_PUBLIC(void) gras_process_exit(void);
-
 /****************************************************************************/
 /* Manipulating User Data                                                   */
 /****************************************************************************/
