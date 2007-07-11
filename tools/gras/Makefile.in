@@ -59,7 +59,8 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_gras_stub_generator_OBJECTS = stub_generator.$(OBJEXT)
+am_gras_stub_generator_OBJECTS = stub_generator.$(OBJEXT) \
+	unix_stub_generator.$(OBJEXT) windows_stub_generator.$(OBJEXT)
 gras_stub_generator_OBJECTS = $(am_gras_stub_generator_OBJECTS)
 gras_stub_generator_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/src@am__isrc@
@@ -217,7 +218,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include -I$(top_srcdir)/src
 # skel_rewriter
-gras_stub_generator_SOURCES = stub_generator.c
+gras_stub_generator_SOURCES = stub_generator.c unix_stub_generator.c windows_stub_generator.c
 gras_stub_generator_LDADD = $(top_builddir)/src/libsimgrid.la 
 all: all-am
 
@@ -291,6 +292,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stub_generator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unix_stub_generator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windows_stub_generator.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
