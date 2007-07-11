@@ -16,9 +16,16 @@ spawn_father_SOURCES=	_spawn_father.c  spawn_father.c spawn_child.c spawn_common
 spawn_father_LDADD=	$(top_builddir)/src/libgras.la
 
 # Take care of generatated sources
-NAME=spawn
-PROCESSES= child father
-include $(top_srcdir)/examples/temps-gras-stub.mk
+# (manually since the child is not in the deployment file, so we need an extra argument to the stub generator)
+
+_spawn_father.c _spawn_child.c _spawn_simulator.c: $(srcdir)/spawn.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+	[ x@EXEEXT@ = x ] || exenv=wine; $$exenv $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ --extra-process=child spawn $(srcdir)/spawn.xml
+
+$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@:
+	make -C $(top_builddir)/tools/gras/ gras_stub_generator@EXEEXT@
+
+CLEANFILES = _spawn_simulator.c spawn.mk _spawn_father.c _spawn_child.c
+MOSTLYCLEANFILES = spawn.trace
 
 # Cruft
 include $(top_srcdir)/acmacro/dist-files.mk
