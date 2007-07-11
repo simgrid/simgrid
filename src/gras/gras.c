@@ -11,6 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/virtu.h" /* set the XBT virtualization to use GRAS */
 #include "xbt/module.h" /* xbt_init/exit */
+#include "xbt/xbt_os_time.h" /* xbt_os_time */
 
 #include "Virtu/virtu_interface.h" /* Module mechanism FIXME: deplace&rename */
 #include "gras_modinter.h"   /* module init/exit */
@@ -32,10 +33,11 @@ static void gras_sigusr_handler(int sig) {
 
 static void gras_sigint_handler(int sig) {
    static double lastone = 0;
-   if (lastone == 0 || gras_os_time() - lastone > 5) {
-      lastone = gras_os_time();
+   if (lastone == 0 || xbt_os_time() - lastone > 5) {
       xbt_backtrace_display();
-      fprintf(stderr,"\nBacktrace displayed because Ctrl-C was pressed. Press again (within 5 sec) to abort the process.\n");
+      fprintf(stderr,
+	      "\nBacktrace displayed because Ctrl-C was pressed. Press again (within 5 sec) to abort the process.\n");
+      lastone = xbt_os_time();
    } else {
       exit(1);
    }
