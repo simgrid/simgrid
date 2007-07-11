@@ -59,7 +59,6 @@ static void * wrapper_start_routine(void *s) {
     THROW0(system_error,errcode,"pthread_setspecific failed for xbt_self_thread_key");   
   return t->start_routine(t->param);
 }
-
 xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,
 				     void* param)  {
    int errcode;
@@ -97,6 +96,9 @@ xbt_os_thread_t xbt_os_thread_self(void) {
 #include <sched.h>
 void xbt_os_thread_yield(void) {
    sched_yield();
+}
+void xbt_os_thread_cancel(xbt_os_thread_t t) {
+   pthread_cancel(t->t);
 }
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
@@ -300,6 +302,9 @@ void *xbt_os_thread_getparam(void) {
 
 void xbt_os_thread_yield(void) {
     Sleep(0);
+}
+void xbt_os_thread_cancel(xbt_os_thread_t t) {
+   THROW_UNIMPLEMENTED;
 }
 
 /****** mutex related functions ******/

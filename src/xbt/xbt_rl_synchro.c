@@ -60,6 +60,9 @@ xbt_thread_t xbt_thread_self(void) {
 void xbt_thread_yield(void) {
    xbt_os_thread_yield();
 }
+void xbt_thread_cancel(xbt_thread_t t) {
+   xbt_os_thread_cancel(t->os_thread);
+}
 /****** mutex related functions ******/
 struct xbt_mutex_ {
    /* KEEP IT IN SYNC WITH OS IMPLEMENTATION (both win and lin) */

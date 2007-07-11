@@ -49,13 +49,15 @@ xbt_thread_join(xbt_thread_t thread) {
 }		       
 
 void 
-xbt_thread_destroy(xbt_thread_t thread) {
+xbt_thread_cancel(xbt_thread_t thread) {
    SIMIX_process_kill(thread->s_process);
    free(thread);
 }		       
 
 void xbt_thread_exit() {
-   xbt_thread_destroy(xbt_thread_self());
+   xbt_thread_t me=SIMIX_process_get_data(SIMIX_process_self());
+   SIMIX_process_kill(me->s_process);
+   free(me);
 }
 
 xbt_thread_t xbt_thread_self(void) {

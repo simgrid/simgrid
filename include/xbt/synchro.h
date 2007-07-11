@@ -37,8 +37,8 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(xbt_thread_t) xbt_thread_self(void);
   /* xbt_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
   XBT_PUBLIC(void) xbt_thread_join(xbt_thread_t thread);
-  /* Brutally ends the life of the poor victim */
-  XBT_PUBLIC(void) xbt_thread_destroy(xbt_thread_t thread);
+  /* Ends the life of the poor victim (not always working if it's computing, but working if it's blocked in the OS) */
+  XBT_PUBLIC(void) xbt_thread_cancel(xbt_thread_t thread);
   /* suicide */
   XBT_PUBLIC(void) xbt_thread_exit(void);
   /* current thread pass control to any possible thread wanting it */
