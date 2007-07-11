@@ -24,7 +24,6 @@
 #include <pthread.h>
 
 typedef struct xbt_os_thread_ {
-  /* KEEP IT IN SYNC WITH xbt_thread.c */
    pthread_t t;
    void *param;
    pvoid_f_pvoid_t *start_routine;
@@ -208,12 +207,16 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond){
    free(cond);
 }
 
+void *xbt_os_thread_getparam(void) {
+   xbt_os_thread_t t = xbt_os_thread_self();
+   return t->param;
+}
+
 /* ********************************* WINDOWS IMPLEMENTATION ************************************ */
 
 #elif defined(WIN32)
 
 typedef struct xbt_os_thread_ {
-  /* KEEP IT IN SYNC WITH xbt_thread */
   HANDLE handle;                  /* the win thread handle        */
   unsigned long id;               /* the win thread id            */
   pvoid_f_pvoid_t *start_routine;
@@ -288,6 +291,12 @@ void xbt_os_thread_exit(int *retval) {
 xbt_os_thread_t xbt_os_thread_self(void) {
    return TlsGetValue(xbt_self_thread_key);
 }
+
+void *xbt_os_thread_getparam(void) {
+   xbt_os_thread_t t = xbt_os_thread_self();
+   return t->param;
+}
+
 
 void xbt_os_thread_yield(void) {
     Sleep(0);
