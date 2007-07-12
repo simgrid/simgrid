@@ -101,6 +101,8 @@ int main(int argc, char *argv[]) {
   /* SGU: BEGIN SUITES DECLARATION */
   /* SGU: END SUITES DECLARATION */
       
+  xbt_init(&argc,argv);
+    
   /* Search for the tests to do */
     selection[0]='\\0';
     for (i=1;i<argc;i++) {
