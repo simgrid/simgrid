@@ -70,9 +70,9 @@ static void philo_thread(void *arg) {
    
    for (i=0; i<lunch_amount; i++) {
       pickup(id,i);
-      gras_os_sleep(id / 10); /* each philosopher sleeps and eat a time related to its ID */
+      gras_os_sleep(id / 10.0); /* each philosopher sleeps and eat a time related to its ID */
       putdown(id);
-      gras_os_sleep(id / 10);
+      gras_os_sleep(id / 10.0);
    }
    
    xbt_mutex_lock(mut_end);
