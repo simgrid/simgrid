@@ -232,6 +232,7 @@ typedef struct { __ex_mctx_struct } __ex_mctx_t;
 typedef enum {
   unknown_error=0,  /**< unknown error */
   arg_error,        /**< Invalid argument */
+  bound_error,      /**< Out of bounds argument */
   mismatch_error,   /**< The provided ID does not match */
   not_found_error,  /**< The searched element was not found */
   
