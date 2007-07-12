@@ -52,24 +52,25 @@ gras_process_init() {
     hd->refcount++;
   }
 
-	trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
-	pd->pid = PID++;
-
-	if (SIMIX_process_self() != NULL ) {
-		pd->ppid = gras_os_getpid();
-	}
-	else pd->ppid = -1; 
-
-	trp_pd->mutex = SIMIX_mutex_init();
-	trp_pd->cond = SIMIX_cond_init();
-	trp_pd->mutex_meas = SIMIX_mutex_init();
-	trp_pd->cond_meas = SIMIX_cond_init();
-	trp_pd->active_socket = xbt_fifo_new();
-	trp_pd->active_socket_meas = xbt_fifo_new();
-
+  trp_pd = (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
+  pd->pid = PID++;
+  
+  if (SIMIX_process_self() != NULL ) {
+    pd->ppid = gras_os_getpid();
+  }
+  else pd->ppid = -1; 
+  
+  trp_pd->msg_selectable_sockets = xbt_fifo_new();
+  trp_pd->msg_select_mutex = SIMIX_mutex_init();
+  trp_pd->msg_select_cond = SIMIX_cond_init();
+  
+  trp_pd->meas_selectable_sockets = xbt_fifo_new();
+  trp_pd->meas_select_mutex = SIMIX_mutex_init();
+  trp_pd->meas_select_cond = SIMIX_cond_init();
+  
   VERB2("Creating process '%s' (%d)",
-	   SIMIX_process_get_name(SIMIX_process_self()),
-	   gras_os_getpid());
+	SIMIX_process_get_name(SIMIX_process_self()),
+	gras_os_getpid());
 }
 
 void
@@ -77,18 +78,23 @@ gras_process_exit() {
 	xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
   gras_socket_t sock_iter;
   int cursor;
-  gras_hostdata_t *hd=(gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
-  gras_procdata_t *pd=(gras_procdata_t*)SIMIX_process_get_data(SIMIX_process_self());
+  gras_hostdata_t *hd=
+    (gras_hostdata_t *)SIMIX_host_get_data(SIMIX_host_self());
+  gras_procdata_t *pd=
+    (gras_procdata_t*)SIMIX_process_get_data(SIMIX_process_self());
 
-  gras_msg_procdata_t msg_pd=(gras_msg_procdata_t)gras_libdata_by_name("gras_msg");
-  gras_trp_procdata_t trp_pd=(gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
+  gras_msg_procdata_t msg_pd=
+    (gras_msg_procdata_t)gras_libdata_by_name("gras_msg");
+  gras_trp_procdata_t trp_pd=
+    (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
 
-	SIMIX_mutex_destroy(trp_pd->mutex);
-	SIMIX_cond_destroy(trp_pd->cond);
-	xbt_fifo_free(trp_pd->active_socket);
-	SIMIX_mutex_destroy(trp_pd->mutex_meas);
-	SIMIX_cond_destroy(trp_pd->cond_meas);
-	xbt_fifo_free(trp_pd->active_socket_meas);
+  SIMIX_mutex_destroy(trp_pd->msg_select_mutex);
+  SIMIX_cond_destroy(trp_pd->msg_select_cond);
+  xbt_fifo_free(trp_pd->msg_selectable_sockets);
+
+  SIMIX_mutex_destroy(trp_pd->meas_select_mutex);
+  SIMIX_cond_destroy(trp_pd->meas_select_cond);
+  xbt_fifo_free(trp_pd->meas_selectable_sockets);
 
 
   xbt_assert0(hd,"Run gras_process_init (ie, gras_init)!!");
@@ -99,13 +105,14 @@ gras_process_exit() {
   if (xbt_dynar_length(msg_pd->msg_queue))
     WARN1("process %d terminated, but some messages are still queued",
 	  gras_os_getpid());
-
-	/* if each process has its sockets list, we need to close them when the process finish */
-	xbt_dynar_foreach(sockets,cursor,sock_iter) {
-		VERB1("Closing the socket %p left open on exit. Maybe a socket leak?",
-				sock_iter);
-		gras_socket_close(sock_iter);
-	}
+  
+  /* if each process has its sockets list, we need to close them when the
+	   process finish */
+  xbt_dynar_foreach(sockets,cursor,sock_iter) {
+    VERB1("Closing the socket %p left open on exit. Maybe a socket leak?",
+	  sock_iter);
+    gras_socket_close(sock_iter);
+  }
   if ( ! --(hd->refcount)) {
     xbt_dynar_free(&hd->ports);
     free(hd);

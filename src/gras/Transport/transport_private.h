@@ -27,17 +27,21 @@
 
 extern int gras_trp_libdata_id; /* our libdata identifier */
 
-/* The function that select returned the last time we asked. We need this because the TCP read 
-   are greedy and try to get as much data in their buffer as possible (to avoid subsequent syscalls).
+/* The function that select returned the last time we asked. We need this
+   because the TCP read are greedy and try to get as much data in their 
+   buffer as possible (to avoid subsequent syscalls).
    (measurement sockets are not buffered and thus not concerned).
   
-   So, we can get more than one message in one shoot. And when this happens, we have to handle 
-   the same socket again afterward without select()ing at all. 
+   So, we can get more than one message in one shoot. And when this happens,
+   we have to handle the same socket again afterward without select()ing at
+   all. 
  
-   Then, this data is not a static of the TCP driver because we want to zero it when
-   it gets closed by the user. If not, we use an already freed pointer, which is bad.
+   Then, this data is not a static of the TCP driver because we want to
+   zero it when it gets closed by the user. If not, we use an already freed 
+   pointer, which is bad.
  
-   It gets tricky since gras_socket_close is part of the common API, not only the RL one. */
+   It gets tricky since gras_socket_close is part of the common API, not 
+   only the RL one. */
 extern gras_socket_t _gras_lastly_selected_socket;
 
 /**
@@ -56,12 +60,17 @@ typedef struct s_gras_socket  {
   int meas :1; /* true if this is an experiment socket instead of messaging */
   int recv_ok :1; /* true if it is valid to recv() on the socket (false if it is a file) */
   int valid :1; /* false if a select returned that the peer quitted, forcing us to "close" the socket */
-  int moredata :1; /* TCP socket use a buffer and read operation get as much data as possible. 
-		      It is possible that several messages are received in one shoot, and select won't catch them afterward again.
-		      This boolean indicates that this is the case, so that we don't call select in that case. 
-		      Note that measurement sockets are not concerned since they use the TCP interface directly, with no buffer. */
+  int moredata :1; /* TCP socket use a buffer and read operation get as much 
+		      data as possible. It is possible that several messages
+		      are received in one shoot, and select won't catch them 
+		      afterward again. 
+		      This boolean indicates that this is the case, so that we
+		      don't call select in that case.  Note that measurement
+		      sockets are not concerned since they use the TCP
+		      interface directly, with no buffer. */
 
-  unsigned long int buf_size; /* what to say to the OS. field here to remember it when accepting */
+  unsigned long int buf_size; /* what to say to the OS. 
+				 Field here to remember it when accepting */
    
   int  sd; 
   int  port; /* port on this side */
@@ -86,7 +95,7 @@ void gras_trp_iov_setup(gras_trp_plugin_t plug);
 void gras_trp_file_setup(gras_trp_plugin_t plug);
 void gras_trp_sg_setup(gras_trp_plugin_t plug);
 
-/*
+/* FIXME: this should be solved by SIMIX
 
   I'm tired of that shit. the select in SG has to create a socket to expeditor
   manually do deal with the weirdness of the hostdata, themselves here to deal

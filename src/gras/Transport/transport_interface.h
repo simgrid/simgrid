@@ -24,7 +24,8 @@ extern int gras_opt_trp_nomoredata_on_close;
  *** Main user functions
  ***/
 /* stable if we know the storage will keep as is until the next trp_flush */
-XBT_PUBLIC(void) gras_trp_send(gras_socket_t sd, char *data, long int size, int stable);
+XBT_PUBLIC(void) gras_trp_send(gras_socket_t sd, char *data, long int size,
+			       int stable);
 XBT_PUBLIC(void) gras_trp_recv(gras_socket_t sd, char *data, long int size);
 XBT_PUBLIC(void) gras_trp_flush(gras_socket_t sd);
 
@@ -81,8 +82,10 @@ struct gras_trp_plugin_ {
 
   void *data; /* plugin-specific data */
  
-   /* exit is responsible for freeing data and telling the OS this plugin goes */
-   /* exit=NULL, data gets freed. (ie exit function needed only when data contains pointers) */
+   /* exit is responsible for freeing data and telling to the OS that 
+      this plugin is gone */
+   /* exit=NULL, data gets brutally free()d by the generic interface. 
+      (ie exit function needed only when data contains pointers) */
   void (*exit)(gras_trp_plugin_t);
 };
 
@@ -98,17 +101,23 @@ typedef struct {
   char        *name;
   unsigned int name_len;
 
-  xbt_dynar_t sockets; /* all sockets known to this process */
   int myport; /* Port on which I listen myself */
-  fd_set *fdset;
+   
+  xbt_dynar_t sockets; /* all sockets known to this process */
+  fd_set *fdset; /* idem, in another formalism */
 
   /* SG only elements. In RL, they are part of the OS ;) */
-	smx_cond_t cond;
-	smx_mutex_t mutex;
-	smx_cond_t cond_meas;
-	smx_mutex_t mutex_meas;
-	xbt_fifo_t active_socket;
-	xbt_fifo_t active_socket_meas;
+   
+  /* List of sockets ready to be select()ed */
+  xbt_fifo_t msg_selectable_sockets; /* regular sockets  */
+  xbt_fifo_t meas_selectable_sockets;/* measurement ones */
+
+  /* Synchronisation on msg_selectable_sockets */
+  smx_cond_t msg_select_cond;
+  smx_mutex_t msg_select_mutex;
+  /* Synchronisation on meas_selectable_sockets */
+  smx_cond_t meas_select_cond;
+  smx_mutex_t meas_select_mutex;
    
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 
