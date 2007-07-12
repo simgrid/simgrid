@@ -173,12 +173,12 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
   nbr = xbt_dynar_length(g->edges);
   cursor = 0;
   for (i = 0; i < nbr; i++) {
-    xbt_dynar_cursor_get(g->edges, &cursor, &edge);
+    xbt_dynar_get_cpy(g->edges, cursor, &edge);
 
     if ((edge->dst == n) || (edge->src == n)) {
       xbt_graph_free_edge(g, edge, edge_free_function);
     } else
-      xbt_dynar_cursor_step(g->edges, &cursor);
+      cursor ++;
   }
 
   if ((node_free_function) && (n->data))
