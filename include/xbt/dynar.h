@@ -63,7 +63,9 @@ SG_BEGIN_DECL()
 
 
   XBT_PUBLIC(xbt_dynar_t)   xbt_dynar_new(unsigned long elm_size, 
-			     void_f_pvoid_t *free_func);
+					  void_f_pvoid_t *free_func);
+  XBT_PUBLIC(xbt_dynar_t)   xbt_dynar_new_sync(unsigned long elm_size, 
+					       void_f_pvoid_t *free_func);
   XBT_PUBLIC(void)          xbt_dynar_free(xbt_dynar_t *dynar);
   XBT_PUBLIC(void)          xbt_dynar_free_voidp(void *dynar);
   XBT_PUBLIC(void)          xbt_dynar_free_container(xbt_dynar_t *dynar);
@@ -160,18 +162,25 @@ SG_BEGIN_DECL()
  *
  * Cursors are used to iterate over the structure. Never add elements to the 
  * DynArr during the traversal. To remove elements, use the
- * xbt_dynar_cursor_rm() function
+ * xbt_dynar_cursor_rm() function.
+ *
+ * Do not call these functions directly, but only the xbt_dynar_foreach macro.
+ * 
+ * For synchronized dynars, the dynar will be locked during the whole
+ * loop and it will get unlocked automatically if you traverse all
+ * elements. If you want to break the loop before the end, make sure
+ * to call xbt_dynar_cursor_unlock() before the <tt>break;</tt>
  *
  *  @{
  */
 
-  XBT_PUBLIC(void) xbt_dynar_cursor_first (const xbt_dynar_t dynar, int *cursor);
-  XBT_PUBLIC(void) xbt_dynar_cursor_step  (const xbt_dynar_t dynar, int *cursor);
-  XBT_PUBLIC(int)  xbt_dynar_cursor_get   (const xbt_dynar_t dynar, int *cursor, 
-			       void *whereto);
+  XBT_PUBLIC(void) _xbt_dynar_cursor_first (const xbt_dynar_t dynar, int *cursor);
+  XBT_PUBLIC(void) _xbt_dynar_cursor_step  (const xbt_dynar_t dynar, int *cursor);
+  XBT_PUBLIC(int)  _xbt_dynar_cursor_get   (const xbt_dynar_t dynar, int *cursor, 
+					    void *whereto);
   XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
-			   int          *const cursor);
-
+				       int         *const cursor);
+  XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
 
 /** @brief Iterates over the whole dynar. 
  * 
@@ -191,9 +200,9 @@ xbt_dynar_foreach (dyn,cpt,str) {
 \endcode
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
-       for (xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \
-	    xbt_dynar_cursor_get(_dynar,&(_cursor),&_data) ; \
-            xbt_dynar_cursor_step(_dynar,&(_cursor))         )
+       for (_xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \
+	    _xbt_dynar_cursor_get(_dynar,&(_cursor),&_data) ; \
+            _xbt_dynar_cursor_step(_dynar,&(_cursor))         )
 
 /** @} */
 
