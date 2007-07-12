@@ -44,10 +44,6 @@ void gras_msg_send_ext(gras_socket_t   sock,
   xbt_assert1(!gras_socket_is_meas(sock), 
   	      "Asked to send a message on the measurement socket %p", sock);
 	
-	/* got the mutex my port */
-	DEBUG1("Sock port %d",sock->port);
-	SIMIX_mutex_lock(sock_data->mutex);
-
 	/*initialize gras message */
 	msg = xbt_new(s_gras_msg_t,1);
 	msg->expe = sock;
@@ -73,17 +69,17 @@ void gras_msg_send_ext(gras_socket_t   sock,
       whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,
 					      payload, msg->payl);
   }
-  /* put message on msg_queue */
-  msg_remote_proc = (gras_msg_procdata_t)
-    gras_libdata_by_name_from_remote("gras_msg",sock_data->to_process);
-  xbt_fifo_push(msg_remote_proc->msg_to_receive_queue,msg);
-  
-  /* wake-up the receiver */
+
+	/* put the selectable socket on the queue */
   trp_remote_proc = (gras_trp_procdata_t)
     gras_libdata_by_name_from_remote("gras_trp",sock_data->to_process);
 
-  xbt_fifo_push(trp_remote_proc->msg_selectable_sockets,sock);  
-  SIMIX_cond_signal(trp_remote_proc->msg_select_cond);
+  xbt_queue_push(trp_remote_proc->msg_selectable_sockets,&sock);  
+
+  /* put message on msg_queue */
+	msg_remote_proc = (gras_msg_procdata_t)
+		gras_libdata_by_name_from_remote("gras_msg",sock_data->to_process);
+	xbt_fifo_push(msg_remote_proc->msg_to_receive_queue,msg);
   
   /* wait for the receiver */
   SIMIX_cond_wait(sock_data->cond, sock_data->mutex);

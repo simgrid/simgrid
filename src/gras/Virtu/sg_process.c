@@ -60,13 +60,9 @@ gras_process_init() {
   }
   else pd->ppid = -1; 
   
-  trp_pd->msg_selectable_sockets = xbt_fifo_new();
-  trp_pd->msg_select_mutex = SIMIX_mutex_init();
-  trp_pd->msg_select_cond = SIMIX_cond_init();
+  trp_pd->msg_selectable_sockets = xbt_queue_new(1000,sizeof(gras_socket_t));
   
-  trp_pd->meas_selectable_sockets = xbt_fifo_new();
-  trp_pd->meas_select_mutex = SIMIX_mutex_init();
-  trp_pd->meas_select_cond = SIMIX_cond_init();
+  trp_pd->meas_selectable_sockets = xbt_queue_new(1000,sizeof(gras_socket_t));
   
   VERB2("Creating process '%s' (%d)",
 	SIMIX_process_get_name(SIMIX_process_self()),
@@ -88,13 +84,9 @@ gras_process_exit() {
   gras_trp_procdata_t trp_pd=
     (gras_trp_procdata_t)gras_libdata_by_name("gras_trp");
 
-  SIMIX_mutex_destroy(trp_pd->msg_select_mutex);
-  SIMIX_cond_destroy(trp_pd->msg_select_cond);
-  xbt_fifo_free(trp_pd->msg_selectable_sockets);
+  xbt_queue_free(&trp_pd->msg_selectable_sockets);
 
-  SIMIX_mutex_destroy(trp_pd->meas_select_mutex);
-  SIMIX_cond_destroy(trp_pd->meas_select_cond);
-  xbt_fifo_free(trp_pd->meas_selectable_sockets);
+  xbt_queue_free(&trp_pd->meas_selectable_sockets);
 
 
   xbt_assert0(hd,"Run gras_process_init (ie, gras_init)!!");

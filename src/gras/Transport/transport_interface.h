@@ -14,6 +14,7 @@
 
 #include "portable.h" /* sometimes needed for fd_set */
 #include "simix/simix.h"
+#include "xbt/queue.h"
 
 /***
  *** Options
@@ -109,16 +110,9 @@ typedef struct {
   /* SG only elements. In RL, they are part of the OS ;) */
    
   /* List of sockets ready to be select()ed */
-  xbt_fifo_t msg_selectable_sockets; /* regular sockets  */
-  xbt_fifo_t meas_selectable_sockets;/* measurement ones */
+  xbt_queue_t msg_selectable_sockets; /* regular sockets  */
+  xbt_queue_t meas_selectable_sockets;/* measurement ones */
 
-  /* Synchronisation on msg_selectable_sockets */
-  smx_cond_t msg_select_cond;
-  smx_mutex_t msg_select_mutex;
-  /* Synchronisation on meas_selectable_sockets */
-  smx_cond_t meas_select_cond;
-  smx_mutex_t meas_select_mutex;
-   
 } s_gras_trp_procdata_t,*gras_trp_procdata_t;
 
 /* Display the content of our socket set (debugging purpose) */

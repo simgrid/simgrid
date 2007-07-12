@@ -33,29 +33,27 @@ gras_socket_t gras_trp_select(double timeout) {
     (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
   gras_trp_sg_sock_data_t *sockdata;
   gras_trp_plugin_t trp;
-  gras_socket_t active_socket;
+  gras_socket_t active_socket = NULL;
   gras_trp_sg_sock_data_t *active_socket_data;
   gras_socket_t sock_iter; /* iterating over all sockets */
+	xbt_ex_t e;
   int cursor;
 
-  DEBUG0("Trying to get the lock pd, trp_select");
-  SIMIX_mutex_lock(pd->msg_select_mutex);
   DEBUG3("select on %s@%s with timeout=%f",
 	 SIMIX_process_get_name(SIMIX_process_self()),
 	 SIMIX_host_get_name(SIMIX_host_self()),
 	 timeout);
 
-  if (xbt_fifo_size(pd->msg_selectable_sockets) == 0) {
-    /* message didn't arrive yet, wait */
-    SIMIX_cond_wait_timeout(pd->msg_select_cond,pd->msg_select_mutex,timeout);
-  }
-
-  if (xbt_fifo_size(pd->msg_selectable_sockets) == 0) {
+	TRY {
+		xbt_queue_shift_timed(pd->msg_selectable_sockets,
+								&active_socket, timeout);
+	} CATCH(e) {
+		RETHROW;
+	}
+  if (active_socket == NULL) {
     DEBUG0("TIMEOUT");
-    SIMIX_mutex_unlock(pd->msg_select_mutex);
     THROW0(timeout_error,0,"Timeout");
   }
-  active_socket = xbt_fifo_shift(pd->msg_selectable_sockets);
   active_socket_data = (gras_trp_sg_sock_data_t*)active_socket->data;
   
   /* Ok, got something. Open a socket back to the expeditor */
@@ -72,7 +70,6 @@ gras_socket_t gras_trp_select(double timeout) {
 
     if ( (sock_data->to_socket == active_socket) && 
 	 (sock_data->to_host == SIMIX_process_get_host(active_socket_data->from_process)) ) {
-      SIMIX_mutex_unlock(pd->msg_select_mutex);
       return sock_iter;
     }
   }
@@ -121,7 +118,6 @@ gras_socket_t gras_trp_select(double timeout) {
 	 res->peer_port,
 	 SIMIX_process_get_name(sockdata->to_process), res->port);
 
-  SIMIX_mutex_unlock(pd->msg_select_mutex);
   return res;
 }
 

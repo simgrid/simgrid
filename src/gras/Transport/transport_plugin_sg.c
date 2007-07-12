@@ -282,20 +282,17 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
     msg->payl = NULL;
   }
   
+
+  /* put his socket on the selectable socket queue */
+  trp_remote_proc = (gras_trp_procdata_t)
+    gras_libdata_by_name_from_remote("gras_trp",sock_data->to_process);
+  xbt_queue_push(trp_remote_proc->meas_selectable_sockets,&sock);	
+
   /* put message on msg_queue */
   msg_remote_proc = (gras_msg_procdata_t)
     gras_libdata_by_name_from_remote("gras_msg", sock_data->to_process);
 
   xbt_fifo_push(msg_remote_proc->msg_to_receive_queue_meas,msg);
-
-  /* put his socket on the selectable socket list */
-  trp_remote_proc = (gras_trp_procdata_t)
-    gras_libdata_by_name_from_remote("gras_trp",sock_data->to_process);
-
-  xbt_fifo_push(trp_remote_proc->meas_selectable_sockets,sock);	
-
-  /* wake-up the receiver */
-  SIMIX_cond_signal(trp_remote_proc->meas_select_cond);
 
   /* wait for the receiver */
   SIMIX_cond_wait(sock_data->cond,sock_data->mutex);
@@ -325,29 +322,28 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
 			   unsigned long int size){
   gras_trp_sg_sock_data_t *sock_data; 
   gras_trp_sg_sock_data_t *remote_sock_data; 
-  gras_socket_t remote_socket;
+  gras_socket_t remote_socket= NULL;
   gras_msg_t msg_got;
   gras_msg_procdata_t msg_procdata = 
     (gras_msg_procdata_t)gras_libdata_by_name("gras_msg");
   gras_trp_procdata_t trp_proc =
     (gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
+	xbt_ex_t e;
 
   xbt_assert0(sock->meas, 
 	    "SG chunk exchange shouldn't be used on non-measurement sockets");
-	
-  SIMIX_mutex_lock(trp_proc->meas_select_mutex);
-  if (xbt_fifo_size(msg_procdata->msg_to_receive_queue_meas) == 0 ) {
-    SIMIX_cond_wait_timeout(trp_proc->meas_select_cond,
-			    trp_proc->meas_select_mutex,60);
-  }
-  if (xbt_fifo_size(msg_procdata->msg_to_receive_queue_meas) == 0 ) {
-    SIMIX_mutex_unlock(trp_proc->meas_select_mutex);
+	TRY {
+		xbt_queue_shift_timed(trp_proc->meas_selectable_sockets,
+	 									&remote_socket, 60);
+	} CATCH(e) {
+		RETHROW;
+	}
+
+	if (remote_socket == NULL) {
     THROW0(timeout_error,0,"Timeout");
-  }
-  SIMIX_mutex_unlock(trp_proc->meas_select_mutex);
-  
-  remote_socket = xbt_fifo_shift(trp_proc->meas_selectable_sockets);
-  remote_sock_data = (gras_trp_sg_sock_data_t *)remote_socket->data;
+	}
+
+	remote_sock_data = (gras_trp_sg_sock_data_t *)remote_socket->data;
   msg_got = xbt_fifo_shift(msg_procdata->msg_to_receive_queue_meas);
   
   sock_data = (gras_trp_sg_sock_data_t *)sock->data;
