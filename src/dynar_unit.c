@@ -8,14 +8,14 @@
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/
 
-# 606 "xbt/dynar.c" 
+# 709 "xbt/dynar.c" 
 
 #define NB_ELEM 5000
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
 XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
 
-XBT_TEST_UNIT("int",test_dynar_int,"Dyars of integers") {
+XBT_TEST_UNIT("int",test_dynar_int,"Dynars of integers") {
    /* Vars_decl [doxygen cruft] */
    xbt_dynar_t d;
    int i,cpt,cursor;
@@ -158,8 +158,10 @@ XBT_TEST_UNIT("int",test_dynar_int,"Dyars of integers") {
    xbt_dynar_free(&d);
    xbt_dynar_free(&d);
 }
-
-XBT_TEST_UNIT("double",test_dynar_double,"Dyars of doubles") {
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+XBT_TEST_UNIT("double",test_dynar_double,"Dynars of doubles") {
    xbt_dynar_t d;
    int cpt,cursor;
    double d1,d2;
@@ -276,6 +278,9 @@ static void free_string(void *d){
   free(*(void**)d);
 }
 
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
 XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
    xbt_dynar_t d;
    int cpt;
@@ -413,6 +418,54 @@ XBT_TEST_UNIT("string",test_dynar_string,"Dyars of strings") {
    }
    xbt_dynar_free(&d); /* end_of_doxygen */
 }
+
+
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+#include "xbt/synchro.h"
+static void pusher_f(void *a) {
+   xbt_dynar_t d=(xbt_dynar_t)a;
+   int i;
+   for (i=0; i<500; i++) {
+      xbt_dynar_push(d,&i);
+   }
+}
+static void poper_f(void *a) {
+   xbt_dynar_t d=(xbt_dynar_t)a;
+   int i;
+   int data;
+   xbt_ex_t e;
+   
+   for (i=0; i<500; i++) {
+      TRY {	 
+	 xbt_dynar_pop(d,&data);
+      } CATCH(e) {
+	 if (e.category == bound_error) {
+	    xbt_ex_free(e);
+	    i--;
+	 } else {
+	    RETHROW;
+	 }
+      }
+   }
+}
+
+   
+XBT_TEST_UNIT("synchronized int",test_dynar_sync_int,"Synchronized dynars of integers") {
+   /* Vars_decl [doxygen cruft] */
+   xbt_dynar_t d;
+   xbt_thread_t pusher,poper;
+   
+   xbt_test_add0("==== Have a pusher and a popper on the dynar");
+   d=xbt_dynar_new_sync(sizeof(int),NULL);
+   pusher = xbt_thread_create(pusher_f,d);
+   poper = xbt_thread_create(poper_f,d);
+   xbt_thread_join(pusher);
+   xbt_thread_join(poper);
+   xbt_dynar_free(&d);
+}
+
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */
 /*******************************/

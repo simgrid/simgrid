@@ -24,6 +24,7 @@ extern xbt_test_unit_t _xbt_current_unit;
     void test_dynar_int(void);
     void test_dynar_double(void);
     void test_dynar_string(void);
+    void test_dynar_sync_int(void);
   /* SGU: END FILE */
 
   /* SGU: BEGIN FILE xbt/dict.c */
@@ -55,6 +56,7 @@ extern xbt_test_unit_t _xbt_current_unit;
     void test_config_use(void);
   /* SGU: END FILE */
 
+/* SGU: END PROTOTYPES */
 
 /*******************************/
 /* GENERATED FILE, DO NOT EDIT */
@@ -81,9 +83,10 @@ int main(int argc, char *argv[]) {
 
     /* SGU: BEGIN FILE xbt/dynar.c */
       suite = xbt_test_suite_by_name("dynar","Dynar data container");
-      xbt_test_suite_push(suite, "int", test_dynar_int, "Dyars of integers");
-      xbt_test_suite_push(suite, "double", test_dynar_double, "Dyars of doubles");
+      xbt_test_suite_push(suite, "int", test_dynar_int, "Dynars of integers");
+      xbt_test_suite_push(suite, "double", test_dynar_double, "Dynars of doubles");
       xbt_test_suite_push(suite, "string", test_dynar_string, "Dyars of strings");
+      xbt_test_suite_push(suite, "synchronized int", test_dynar_sync_int, "Synchronized dynars of integers");
     /* SGU: END FILE */
 
     /* SGU: BEGIN FILE xbt/dict.c */
@@ -122,6 +125,8 @@ int main(int argc, char *argv[]) {
 
   /* SGU: END SUITES DECLARATION */
       
+  xbt_init(&argc,argv);
+    
   /* Search for the tests to do */
     selection[0]='\0';
     for (i=1;i<argc;i++) {
