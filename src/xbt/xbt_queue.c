@@ -79,6 +79,7 @@ void xbt_queue_push(xbt_queue_t queue, const void *src) {
    }
    xbt_dynar_push(queue->data,src);
    xbt_cond_signal(queue->not_empty);
+   xbt_mutex_unlock(queue->mutex);
 }
 
    
@@ -97,6 +98,7 @@ void xbt_queue_pop(xbt_queue_t queue, void* const dst) {
    }
    xbt_dynar_pop(queue->data,dst);
    xbt_cond_signal(queue->not_full);
+   xbt_mutex_unlock(queue->mutex);
 }
 
 /** @brief Unshift something to the message exchange queue.
@@ -113,6 +115,7 @@ void xbt_queue_unshift(xbt_queue_t queue, const void *src) {
    }
    xbt_dynar_unshift(queue->data,src);
    xbt_cond_signal(queue->not_empty);
+   xbt_mutex_unlock(queue->mutex);
 }
    
 
@@ -131,6 +134,7 @@ void xbt_queue_shift(xbt_queue_t queue, void* const dst) {
    }
    xbt_dynar_shift(queue->data,dst);
    xbt_cond_signal(queue->not_full);
+   xbt_mutex_unlock(queue->mutex);
 }
 
 
@@ -142,12 +146,20 @@ void xbt_queue_shift(xbt_queue_t queue, void* const dst) {
  */
 void xbt_queue_push_timed(xbt_queue_t queue, const void *src,double delay) {
    xbt_mutex_lock(queue->mutex);
-   while (queue->capacity != 0 && queue->capacity == xbt_dynar_length(queue->data)) {
+   if (queue->capacity != 0 && queue->capacity == xbt_dynar_length(queue->data)) {
       DEBUG2("Capacity of %p exceded (=%d). Waiting",queue,queue->capacity);
       xbt_cond_timedwait(queue->not_full,queue->mutex, delay);
-   }
-   xbt_dynar_push(queue->data,src);
-   xbt_cond_signal(queue->not_empty);
+	 }
+		/* check if a timeout occurs */
+	 if (queue->capacity != 0 && queue->capacity == xbt_dynar_length(queue->data)) {
+		 	xbt_mutex_unlock(queue->mutex);
+		 	THROW0(timeout_error,0,"Timeout");
+	 }
+	 else {
+   		xbt_dynar_push(queue->data,src);
+   		xbt_cond_signal(queue->not_empty);
+   		xbt_mutex_unlock(queue->mutex);
+	 }
 }
 
    
@@ -158,12 +170,20 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src,double delay) {
  */
 void xbt_queue_pop_timed(xbt_queue_t queue, void* const dst,double delay) {
    xbt_mutex_lock(queue->mutex);
-   while (xbt_dynar_length(queue->data) == 0) {
+   if (xbt_dynar_length(queue->data) == 0) {
       DEBUG1("Queue %p empty. Waiting",queue);
       xbt_cond_timedwait(queue->not_empty,queue->mutex,delay);
    }
-   xbt_dynar_pop(queue->data,dst);
-   xbt_cond_signal(queue->not_full);
+	 /* check if a timeout occurs */
+   if (xbt_dynar_length(queue->data) == 0) {
+		 	xbt_mutex_unlock(queue->mutex);
+		 	THROW0(timeout_error,0,"Timeout");
+	 }
+	 else {
+		 	xbt_dynar_pop(queue->data,dst);
+		 	xbt_cond_signal(queue->not_full);
+		 	xbt_mutex_unlock(queue->mutex);
+	 }
 }
 
 /** @brief Unshift something to the message exchange queue, with a timeout.
@@ -172,12 +192,22 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void* const dst,double delay) {
  */
 void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,double delay) {
    xbt_mutex_lock(queue->mutex);
-   while (queue->capacity != 0 && queue->capacity == xbt_dynar_length(queue->data)) {
+   if (queue->capacity != 0 && queue->capacity == xbt_dynar_length(queue->data)) {
       DEBUG2("Capacity of %p exceded (=%d). Waiting",queue,queue->capacity);
       xbt_cond_timedwait(queue->not_full,queue->mutex,delay);
    }
-   xbt_dynar_unshift(queue->data,src);
-   xbt_cond_signal(queue->not_empty);
+	 /* check if a timeout occurs */
+
+   if (queue->capacity != 0 && queue->capacity == xbt_dynar_length(queue->data)) {
+
+		 	xbt_mutex_unlock(queue->mutex);
+		 	THROW0(timeout_error,0,"Timeout");
+	 }
+	 else {
+   		xbt_dynar_unshift(queue->data,src);
+   		xbt_cond_signal(queue->not_empty);
+   		xbt_mutex_unlock(queue->mutex);
+	 }
 }
    
 
@@ -188,10 +218,18 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,double delay) {
  */
 void xbt_queue_shift_timed(xbt_queue_t queue, void* const dst,double delay) {
    xbt_mutex_lock(queue->mutex);
-   while (xbt_dynar_length(queue->data) == 0) {
+   if (xbt_dynar_length(queue->data) == 0) {
       DEBUG1("Queue %p empty. Waiting",queue);
       xbt_cond_timedwait(queue->not_empty,queue->mutex,delay);
    }
-   xbt_dynar_shift(queue->data,dst);
-   xbt_cond_signal(queue->not_full);
+	 /* check if a timeout occurs */
+   if (xbt_dynar_length(queue->data) == 0) {
+		 	xbt_mutex_unlock(queue->mutex);
+		 	THROW0(timeout_error,0,"Timeout");
+	 }
+	 else {
+   		xbt_dynar_shift(queue->data,dst);
+   		xbt_cond_signal(queue->not_full);
+   		xbt_mutex_unlock(queue->mutex);
+	 }
 }
