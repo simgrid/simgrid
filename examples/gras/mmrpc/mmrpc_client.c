@@ -16,6 +16,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(MatMult);
 int client(int argc,char *argv[]) {
   xbt_ex_t e; 
   gras_socket_t toserver=NULL; /* peer */
+  int connected = 0;
 
   gras_socket_t from;
   xbt_matrix_t request[2], answer;
@@ -36,26 +37,29 @@ int client(int argc,char *argv[]) {
 
   INFO2("Launch client (server on %s:%d)",host,port);
    
-  /* 3. Wait for the server startup */
-  gras_os_sleep(1);
-   
-  /* 4. Create a socket to speak to the server */
-  TRY {
-    toserver=gras_socket_client(host,port);
-  } CATCH(e) {
-    RETHROW0("Unable to connect to the server: %s");
+  /* 3. Create a socket to speak to the server */
+  while (!connected) {
+     TRY {
+	toserver=gras_socket_client(host,port);
+	connected=1;
+     } CATCH(e) {
+	if (e.category != system_error)
+	  RETHROW0("Unable to connect to the server: %s");
+	xbt_ex_free(e);
+	gras_os_sleep(0.05);
+     }
   }
   INFO2("Connected to %s:%d.",host,port);    
 
 
-  /* 5. Register the messages (before use) */
+  /* 4. Register the messages (before use) */
   mmrpc_register_messages();
 
-  /* 6. Keep the user informed of what's going on */
+  /* 5. Keep the user informed of what's going on */
   INFO2(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<", 
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
-  /* 7. Prepare and send the request to the server */
+  /* 6. Prepare and send the request to the server */
 
   request[0] = xbt_matrix_double_new_id(MATSIZE,MATSIZE);
   request[1] = xbt_matrix_double_new_rand(MATSIZE,MATSIZE);
@@ -72,7 +76,7 @@ int client(int argc,char *argv[]) {
   INFO2(">>>>>>>> Request sent to %s:%d <<<<<<<<",
 	gras_socket_peer_name(toserver),gras_socket_peer_port(toserver));
 
-  /* 8. Wait for the answer from the server, and deal with issues */
+  /* 7. Wait for the answer from the server, and deal with issues */
   gras_msg_wait(6000,"answer",&from,&answer);
 
   /*
@@ -85,11 +89,11 @@ int client(int argc,char *argv[]) {
 		  xbt_matrix_get_as(answer,i,j,double),i,j,
 		  xbt_matrix_get_as(request[1],i,j,double));
 
-  /* 9. Keep the user informed of what's going on, again */
+  /* 8. Keep the user informed of what's going on, again */
   INFO2(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<", 
 	gras_socket_peer_name(from),gras_socket_peer_port(from));
 
-  /* 10. Free the allocated resources, and shut GRAS down */
+  /* 9. Free the allocated resources, and shut GRAS down */
   xbt_matrix_free(request[1]);
   xbt_matrix_free(answer);
   gras_socket_close(toserver);
