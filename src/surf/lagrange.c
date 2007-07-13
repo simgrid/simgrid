@@ -81,15 +81,16 @@ void lagrange_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   i=0;
   xbt_swag_foreach(var, var_list) {    
-    if((var->bound > 0.0) || (var->weight <= 0.0)){
-      DEBUG1("#### NOTE var(%d) is a boundless variable", i);
+    if((var->bound < 0.0) || (var->weight <= 0.0)){
+      DEBUG1("#### NOTE var(%d) is a boundless (or inactive) variable", i);
       var->mu = -1.0;
     } else{ 
       var->mu =   1.0;
       var->new_mu = 2.0;
     }
-    DEBUG2("#### var(%d)->mu :  %e", i, var->mu);
-    DEBUG2("#### var(%d)->weight: %e", i, var->weight);
+    DEBUG3("#### var(%d) %p ->mu :  %e", i, var, var->mu);
+    DEBUG3("#### var(%d) %p ->weight: %e", i, var, var->weight);
+    DEBUG3("#### var(%d) %p ->bound: %e", i, var, var->bound);
     i++;
   }
 
@@ -119,8 +120,9 @@ void lagrange_solve(lmm_system_t sys)
       if((var->bound >= 0) && (var->weight > 0) ){
 	var->new_mu = dicotomi(var->mu, partial_diff_mu, var, dicotomi_min_error);
 	if(var->new_mu < 0) var->new_mu = 0;
+	DEBUG2("====> var->mu (%p) = %e", var, var->new_mu);      
 	var->mu = var->new_mu;
-      }
+      } 
     }
 
     /*
@@ -146,9 +148,10 @@ void lagrange_solve(lmm_system_t sys)
 	tmp = 0;
 	for(i=0; i<var->cnsts_number; i++){
 	  tmp += (var->cnsts[i].constraint)->lambda;
-	  if(var->bound > 0) 
-	    tmp+=var->mu;
 	}
+	if(var->bound > 0) 
+	  tmp+=var->mu;
+	DEBUG3("\t Working on var (%p). cost = %e; Df = %e", var, tmp, var->df);
 
 	//uses the partial differential inverse function
 	tmp = var->func_fpi(var, tmp);
@@ -175,29 +178,36 @@ void lagrange_solve(lmm_system_t sys)
       tmp += var->value;
     }
   
-    tmp = tmp - cnst->bound;
-
-    if(tmp > epsilon_min_error){
-      WARN3("The link (%p) doesn't match the KKT property, expected less than %e and got %e", cnst, epsilon_min_error, tmp);
+    if(tmp - cnst->bound > epsilon_min_error) {
+      WARN3("The link (%p) is over-used. Expected less than %e and got %e", cnst, cnst->bound, tmp);
     }
-  
+    if(!((fabs(tmp - cnst->bound)<epsilon_min_error && cnst->lambda>=epsilon_min_error) ||
+	 (fabs(tmp - cnst->bound)>=epsilon_min_error && cnst->lambda<epsilon_min_error))) {
+      WARN1("The KKT condition is not verified for cnst %p...", cnst);
+      overall_error=1.0;
+    }
   }
   
   //verify the KKT property of each flow
   xbt_swag_foreach(var, var_list){
-    if(var->bound <= 0 || var->weight <= 0) continue;
-    tmp = 0;
-    tmp = (var->value - var->bound);
+    if(var->bound < 0 || var->weight <= 0) continue;
 
-    
-    if(tmp != 0.0 ||  var->mu != 0.0){
-      WARN3("The flow (%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", var, var->mu, tmp);
+    INFO2("Checking KKT: sat = %e mu = %e",var->value - var->bound,var->mu);
+    if(!((fabs(var->value - var->bound)<epsilon_min_error && var->mu>=epsilon_min_error) ||
+	 (fabs(var->value - var->bound)>=epsilon_min_error && var->mu<epsilon_min_error))) {
+      WARN1("The KKT condition is not verified for var %p...",var);
+      overall_error=1.0;
     }
 
+/*     tmp = 0; */
+/*     tmp = (var->value - var->bound); */
+/*     if(tmp != 0.0 ||  var->mu != 0.0){ */
+/*       WARN3("The flow (%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", var, var->mu, tmp); */
+/*     } */
   }
 
   if(overall_error <= epsilon_min_error){
-    DEBUG1("The method converge in %d iterations.", iteration);
+    DEBUG1("The method converges in %d iterations.", iteration);
   }else{
     WARN1("Method reach %d iterations, which is the maxmimun number of iterations allowed.", iteration);
   }
@@ -325,7 +335,7 @@ double partial_diff_lambda(double lambda, void *param_cnst){
   lmm_variable_t var = NULL;
   lmm_constraint_t cnst= (lmm_constraint_t) param_cnst;
   double lambda_partial=0.0;
-  double sigma_mu=0.0;
+  double sigma_i=0.0;
 
   elem_list = &(cnst->element_set);
 
@@ -336,21 +346,21 @@ double partial_diff_lambda(double lambda, void *param_cnst){
     if(var->weight<=0) continue;
     
     //initilize de sumation variable
-    sigma_mu = 0.0;
+    sigma_i = 0.0;
 
     //compute sigma_i of variable var
     for(i=0; i<var->cnsts_number; i++){
-      sigma_mu += (var->cnsts[i].constraint)->lambda;
+      sigma_i += (var->cnsts[i].constraint)->lambda;
     }
 	
     //add mu_i if this flow has a RTT constraint associated
-    if(var->bound > 0) sigma_mu += var->mu;
+    if(var->bound > 0) sigma_i += var->mu;
 
     //replace value of cnst->lambda by the value of parameter lambda
-    sigma_mu = (sigma_mu - cnst->lambda) + lambda;
+    sigma_i = (sigma_i - cnst->lambda) + lambda;
     
     //use the auxiliar function passing (\sigma_i + \mu_i)
-    lambda_partial += diff_aux(var, sigma_mu);
+    lambda_partial += diff_aux(var, sigma_i);
   }
 
   lambda_partial += cnst->bound;

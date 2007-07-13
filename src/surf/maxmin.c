@@ -174,7 +174,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->weight = weight;
   var->bound = bound;
   var->value = 0.0;
-  var->df    = 1.0;
+  var->df    = 0.0;
 
   var->func_f    = func_f_def;
   var->func_fp   = func_fp_def;
@@ -710,8 +710,8 @@ double func_reno_fpi(lmm_variable_t var, double x){
   double res_fpi; 
   xbt_assert0( var->df, "Please report this bug.");
 
-  //avoid a disaster value - c'est du bricolage mais ca marche
-  if(x == 0) x = 10e-8;
+  //avoid a disaster value - c'est du bricolage mais ca marche pas ....
+  if(x == 0) x = 10e-16;
  
   res_fpi = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
 
@@ -730,7 +730,7 @@ double func_reno_fpip(lmm_variable_t var, double x){
   xbt_assert0(var->df,"Please report this bug.");
 
   //avoid division by zero - c'est du bricolage mais ca marche
-  if(x == 0) x = 10e-8;
+  if(x == 0) x = 10e-16;
 
   res_fpip = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
   
