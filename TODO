@@ -14,14 +14,6 @@ Module renamings:
  - rename SWAG to RING?
  - Rename cursor to iterator
 
-log.h still contains @name which break doxygen:
-xbt/log.h:/** \name DEBUG
-xbt/log.h:/** \name VERB
-xbt/log.h:/** \name INFO
-xbt/log.h:/** \name WARN
-xbt/log.h:/** \name ERROR
-xbt/log.h:/** \name CRITICAL
-
 gras_socket_close should be blocking until all the data sent have been
 received by the other side (implemented with an ACK mechanism).
 
