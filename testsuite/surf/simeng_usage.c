@@ -78,13 +78,6 @@ void test1(method_t method)
 
   lmm_expand(Sys, L3, R_3, 1.0);
 
-  PRINT_VAR(R_1_2_3);
-  PRINT_VAR(R_1);
-  PRINT_VAR(R_2);
-  PRINT_VAR(R_3);
-
-  DEBUG0("\n");
-
 
   if(method==MAXMIN){
     lmm_solve(Sys);
@@ -139,10 +132,6 @@ void test2(method_t method)
   lmm_expand(Sys, CPU1, T1, 1.0);
   lmm_expand(Sys, CPU2, T2, 1.0);
 
-  PRINT_VAR(T1);
-  PRINT_VAR(T2);
-
-  DEBUG0("\n");
 
 
   if(method==MAXMIN){
@@ -324,12 +313,6 @@ void test3(method_t method)
   }
 
 
-  lmm_print(Sys);
-
-
-  for(j=0; j<16; j++){
-    PRINT_VAR(tmp_var[j]);
-  }
 
   if(method==MAXMIN){
     lmm_solve(Sys);
@@ -366,6 +349,12 @@ int main(int argc, char **argv)
   xbt_init(&argc,argv);
 
 
+  DEBUG0("**************************** \n");
+  DEBUG0("*****                  ***** \n");
+  DEBUG0("*****      TEST 1      ***** \n");
+  DEBUG0("*****                  ***** \n");
+  DEBUG0("**************************** \n");
+
 
   DEBUG0("***** Test 1 (Max-Min) ***** \n");
   test1(MAXMIN);
@@ -378,6 +367,14 @@ int main(int argc, char **argv)
   DEBUG0("***** Test 1 (Lagrange - Reno) ***** \n");
   test1(LAGRANGE_RENO);
 
+
+  DEBUG0("**************************** \n");
+  DEBUG0("*****                  ***** \n");
+  DEBUG0("*****      TEST 2      ***** \n");
+  DEBUG0("*****                  ***** \n");
+  DEBUG0("**************************** \n");
+
+
   DEBUG0("***** Test 2 (Max-Min) ***** \n");
   test2(MAXMIN);
 #ifdef HAVE_SDP
@@ -388,6 +385,15 @@ int main(int argc, char **argv)
   test2(LAGRANGE_VEGAS);
   DEBUG0("***** Test 2 (Lagrange - Reno) ***** \n");
   test2(LAGRANGE_RENO);
+
+
+
+  DEBUG0("**************************** \n");
+  DEBUG0("*****                  ***** \n");
+  DEBUG0("*****      TEST 3      ***** \n");
+  DEBUG0("*****                  ***** \n");
+  DEBUG0("**************************** \n");
+
 
   DEBUG0("***** Test 3 (Max-Min) ***** \n");
   test3(MAXMIN);
