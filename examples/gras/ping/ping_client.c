@@ -13,6 +13,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(Ping);
 int client(int argc,char *argv[]) {
   xbt_ex_t e; 
   gras_socket_t toserver=NULL; /* peer */
+  int connected = 0;
 
   gras_socket_t from;
   int ping, pong;
@@ -35,13 +36,20 @@ int client(int argc,char *argv[]) {
   gras_os_sleep(1);
    
   /* 4. Create a socket to speak to the server */
-  TRY {
-    toserver=gras_socket_client(host,port);
-  } CATCH(e) {
-    RETHROW0("Unable to connect to the server: %s");
+  while (!connected) {
+     TRY {
+	toserver=gras_socket_client(host,port);
+	connected = 1;
+     } CATCH(e) {
+	if (e.category != system_error)
+	  /* dunno what happened, let the exception go through */
+	  RETHROW0("Unable to connect to the server: %s");
+	xbt_ex_free(e);
+	gras_os_sleep(0.05);
+     }
   }
-  INFO2("Connected to %s:%d.",host,port);    
 
+  INFO2("Connected to %s:%d.",host,port);    
 
   /* 5. Register the messages. 
         See, it doesn't have to be done completely at the beginning, only before use */

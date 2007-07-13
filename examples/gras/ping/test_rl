@@ -10,8 +10,6 @@
 > Done.
 > Exiting GRAS
 
-$ sleep 1
-
 #! set timeout 20
 & $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4002 --log=root.fmt=%m%n
 > Launch client (server on 127.0.0.1:4002)
