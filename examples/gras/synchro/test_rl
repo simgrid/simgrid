@@ -1,4 +1,171 @@
 
-! expect signal SIGABRT
-! output ignore
-$ $SG_TEST_ENV ./philosopher$EXEEXT 4002 4 --log=root.fmt=%m%n
+$ $SG_TEST_ENV ./synchro_philosopher${EXEEXT:=} 4 --log=root.fmt=%m%n
+> Wait 1 sec to check that gras_os_sleep do works
+> Enough waiting, spawn the threads
+> Thread 0 gets hungry (lunch #0)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #1)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #2)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #3)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #4)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #5)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #6)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #7)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #8)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 gets hungry (lunch #9)
+> Thread 0 eats
+> Thread 0 is full
+> Thread 0 thinks
+> Thread 0 tries to enter the dead-end; hopefully, the master will cancel it
+> Thread 1 gets hungry (lunch #0)
+> Thread 1 eats
+> Thread 2 gets hungry (lunch #0)
+> Thread 3 gets hungry (lunch #0)
+> Thread 3 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 1 gets hungry (lunch #1)
+> Thread 1 eats
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 2 eats
+> Thread 1 gets hungry (lunch #2)
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 1 eats
+> Thread 3 gets hungry (lunch #1)
+> Thread 3 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 2 gets hungry (lunch #1)
+> Thread 1 gets hungry (lunch #3)
+> Thread 1 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 1 gets hungry (lunch #4)
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 1 eats
+> Thread 3 gets hungry (lunch #2)
+> Thread 3 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 2 gets hungry (lunch #2)
+> Thread 1 gets hungry (lunch #5)
+> Thread 1 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 1 gets hungry (lunch #6)
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 1 eats
+> Thread 3 gets hungry (lunch #3)
+> Thread 3 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 2 gets hungry (lunch #3)
+> Thread 1 gets hungry (lunch #7)
+> Thread 1 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 1 gets hungry (lunch #8)
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 1 eats
+> Thread 3 gets hungry (lunch #4)
+> Thread 3 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 2 gets hungry (lunch #4)
+> Thread 1 gets hungry (lunch #9)
+> Thread 1 eats
+> Thread 1 is full
+> Thread 1 thinks
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 1 tries to enter the dead-end; hopefully, the master will cancel it
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 3 gets hungry (lunch #5)
+> Thread 3 eats
+> Thread 2 gets hungry (lunch #5)
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 3 gets hungry (lunch #6)
+> Thread 3 eats
+> Thread 2 gets hungry (lunch #6)
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 3 gets hungry (lunch #7)
+> Thread 3 eats
+> Thread 2 gets hungry (lunch #7)
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 3 gets hungry (lunch #8)
+> Thread 3 eats
+> Thread 2 gets hungry (lunch #8)
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 3 gets hungry (lunch #9)
+> Thread 3 eats
+> Thread 2 gets hungry (lunch #9)
+> Thread 3 is full
+> Thread 3 thinks
+> Thread 2 eats
+> Thread 2 is full
+> Thread 2 thinks
+> Thread 3 tries to enter the dead-end; hopefully, the master will cancel it
+> Thread 2 tries to enter the dead-end; hopefully, the master will cancel it
+> Cancel all childs
+> Exiting GRAS
+

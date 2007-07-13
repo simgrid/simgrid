@@ -1,4 +1,213 @@
 p Runs the 'philosopher' test within the simulator (simulation times valid for 32bits architectures)
 
-$ $SG_TEST_EXENV ./philosopher_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/philosopher.xml
+$ $SG_TEST_EXENV ./synchro_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/synchro.xml
+> [Tremblay:philosopher:(1) 0.000000] [philo/INFO] Wait 1 sec to check that gras_os_sleep do works
+> [Tremblay:philosopher:(1) 1.000000] [philo/INFO] Enough waiting, spawn the threads
+> [1.000000] [philo/INFO] Thread 0 gets hungry (lunch #0)
+> [1.000000] [philo/INFO] Thread 0 eats
+> [1.000000] [philo/INFO] Thread 1 gets hungry (lunch #0)
+> [1.000000] [philo/INFO] Thread 2 gets hungry (lunch #0)
+> [1.000000] [philo/INFO] Thread 2 eats
+> [1.000000] [philo/INFO] Thread 3 gets hungry (lunch #0)
+> [1.000000] [philo/INFO] Thread 4 gets hungry (lunch #0)
+> [1.000000] [philo/INFO] Thread 0 is full
+> [1.000000] [philo/INFO] Thread 0 thinks
+> [1.000000] [philo/INFO] Thread 4 eats
+> [1.000000] [philo/INFO] Thread 0 gets hungry (lunch #1)
+> [1.020000] [philo/INFO] Thread 2 is full
+> [1.020000] [philo/INFO] Thread 2 thinks
+> [1.020000] [philo/INFO] Thread 1 eats
+> [1.030000] [philo/INFO] Thread 1 is full
+> [1.030000] [philo/INFO] Thread 1 thinks
+> [1.040000] [philo/INFO] Thread 4 is full
+> [1.040000] [philo/INFO] Thread 4 thinks
+> [1.040000] [philo/INFO] Thread 2 gets hungry (lunch #1)
+> [1.040000] [philo/INFO] Thread 2 eats
+> [1.040000] [philo/INFO] Thread 1 gets hungry (lunch #1)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #2)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #3)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #4)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #5)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #6)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #7)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #8)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 gets hungry (lunch #9)
+> [1.040000] [philo/INFO] Thread 0 eats
+> [1.040000] [philo/INFO] Thread 0 is full
+> [1.040000] [philo/INFO] Thread 0 thinks
+> [1.040000] [philo/INFO] Thread 0 tries to enter the dead-end; hopefully, the master will cancel it
+> [1.060000] [philo/INFO] Thread 2 is full
+> [1.060000] [philo/INFO] Thread 2 thinks
+> [1.060000] [philo/INFO] Thread 1 eats
+> [1.060000] [philo/INFO] Thread 3 eats
+> [1.070000] [philo/INFO] Thread 1 is full
+> [1.070000] [philo/INFO] Thread 1 thinks
+> [1.080000] [philo/INFO] Thread 4 gets hungry (lunch #1)
+> [1.080000] [philo/INFO] Thread 2 gets hungry (lunch #2)
+> [1.080000] [philo/INFO] Thread 1 gets hungry (lunch #2)
+> [1.080000] [philo/INFO] Thread 1 eats
+> [1.090000] [philo/INFO] Thread 3 is full
+> [1.090000] [philo/INFO] Thread 3 thinks
+> [1.090000] [philo/INFO] Thread 1 is full
+> [1.090000] [philo/INFO] Thread 1 thinks
+> [1.090000] [philo/INFO] Thread 2 eats
+> [1.090000] [philo/INFO] Thread 4 eats
+> [1.100000] [philo/INFO] Thread 1 gets hungry (lunch #3)
+> [1.110000] [philo/INFO] Thread 2 is full
+> [1.110000] [philo/INFO] Thread 2 thinks
+> [1.110000] [philo/INFO] Thread 1 eats
+> [1.120000] [philo/INFO] Thread 3 gets hungry (lunch #1)
+> [1.120000] [philo/INFO] Thread 1 is full
+> [1.120000] [philo/INFO] Thread 1 thinks
+> [1.130000] [philo/INFO] Thread 4 is full
+> [1.130000] [philo/INFO] Thread 4 thinks
+> [1.130000] [philo/INFO] Thread 2 gets hungry (lunch #3)
+> [1.130000] [philo/INFO] Thread 2 eats
+> [1.130000] [philo/INFO] Thread 1 gets hungry (lunch #4)
+> [1.150000] [philo/INFO] Thread 2 is full
+> [1.150000] [philo/INFO] Thread 2 thinks
+> [1.150000] [philo/INFO] Thread 1 eats
+> [1.150000] [philo/INFO] Thread 3 eats
+> [1.160000] [philo/INFO] Thread 1 is full
+> [1.160000] [philo/INFO] Thread 1 thinks
+> [1.170000] [philo/INFO] Thread 4 gets hungry (lunch #2)
+> [1.170000] [philo/INFO] Thread 2 gets hungry (lunch #4)
+> [1.170000] [philo/INFO] Thread 1 gets hungry (lunch #5)
+> [1.170000] [philo/INFO] Thread 1 eats
+> [1.180000] [philo/INFO] Thread 3 is full
+> [1.180000] [philo/INFO] Thread 3 thinks
+> [1.180000] [philo/INFO] Thread 1 is full
+> [1.180000] [philo/INFO] Thread 1 thinks
+> [1.180000] [philo/INFO] Thread 2 eats
+> [1.180000] [philo/INFO] Thread 4 eats
+> [1.190000] [philo/INFO] Thread 1 gets hungry (lunch #6)
+> [1.200000] [philo/INFO] Thread 2 is full
+> [1.200000] [philo/INFO] Thread 2 thinks
+> [1.200000] [philo/INFO] Thread 1 eats
+> [1.210000] [philo/INFO] Thread 3 gets hungry (lunch #2)
+> [1.210000] [philo/INFO] Thread 1 is full
+> [1.210000] [philo/INFO] Thread 1 thinks
+> [1.220000] [philo/INFO] Thread 4 is full
+> [1.220000] [philo/INFO] Thread 4 thinks
+> [1.220000] [philo/INFO] Thread 2 gets hungry (lunch #5)
+> [1.220000] [philo/INFO] Thread 2 eats
+> [1.220000] [philo/INFO] Thread 1 gets hungry (lunch #7)
+> [1.240000] [philo/INFO] Thread 2 is full
+> [1.240000] [philo/INFO] Thread 2 thinks
+> [1.240000] [philo/INFO] Thread 1 eats
+> [1.240000] [philo/INFO] Thread 3 eats
+> [1.250000] [philo/INFO] Thread 1 is full
+> [1.250000] [philo/INFO] Thread 1 thinks
+> [1.260000] [philo/INFO] Thread 4 gets hungry (lunch #3)
+> [1.260000] [philo/INFO] Thread 2 gets hungry (lunch #6)
+> [1.260000] [philo/INFO] Thread 1 gets hungry (lunch #8)
+> [1.260000] [philo/INFO] Thread 1 eats
+> [1.270000] [philo/INFO] Thread 3 is full
+> [1.270000] [philo/INFO] Thread 3 thinks
+> [1.270000] [philo/INFO] Thread 1 is full
+> [1.270000] [philo/INFO] Thread 1 thinks
+> [1.270000] [philo/INFO] Thread 2 eats
+> [1.270000] [philo/INFO] Thread 4 eats
+> [1.280000] [philo/INFO] Thread 1 gets hungry (lunch #9)
+> [1.290000] [philo/INFO] Thread 2 is full
+> [1.290000] [philo/INFO] Thread 2 thinks
+> [1.290000] [philo/INFO] Thread 1 eats
+> [1.300000] [philo/INFO] Thread 3 gets hungry (lunch #3)
+> [1.300000] [philo/INFO] Thread 1 is full
+> [1.300000] [philo/INFO] Thread 1 thinks
+> [1.310000] [philo/INFO] Thread 4 is full
+> [1.310000] [philo/INFO] Thread 4 thinks
+> [1.310000] [philo/INFO] Thread 2 gets hungry (lunch #7)
+> [1.310000] [philo/INFO] Thread 2 eats
+> [1.310000] [philo/INFO] Thread 1 tries to enter the dead-end; hopefully, the master will cancel it
+> [1.330000] [philo/INFO] Thread 2 is full
+> [1.330000] [philo/INFO] Thread 2 thinks
+> [1.330000] [philo/INFO] Thread 3 eats
+> [1.350000] [philo/INFO] Thread 4 gets hungry (lunch #4)
+> [1.350000] [philo/INFO] Thread 2 gets hungry (lunch #8)
+> [1.360000] [philo/INFO] Thread 3 is full
+> [1.360000] [philo/INFO] Thread 3 thinks
+> [1.360000] [philo/INFO] Thread 2 eats
+> [1.360000] [philo/INFO] Thread 4 eats
+> [1.380000] [philo/INFO] Thread 2 is full
+> [1.380000] [philo/INFO] Thread 2 thinks
+> [1.390000] [philo/INFO] Thread 3 gets hungry (lunch #4)
+> [1.400000] [philo/INFO] Thread 4 is full
+> [1.400000] [philo/INFO] Thread 4 thinks
+> [1.400000] [philo/INFO] Thread 2 gets hungry (lunch #9)
+> [1.400000] [philo/INFO] Thread 2 eats
+> [1.420000] [philo/INFO] Thread 2 is full
+> [1.420000] [philo/INFO] Thread 2 thinks
+> [1.420000] [philo/INFO] Thread 3 eats
+> [1.440000] [philo/INFO] Thread 4 gets hungry (lunch #5)
+> [1.440000] [philo/INFO] Thread 2 tries to enter the dead-end; hopefully, the master will cancel it
+> [1.450000] [philo/INFO] Thread 3 is full
+> [1.450000] [philo/INFO] Thread 3 thinks
+> [1.450000] [philo/INFO] Thread 4 eats
+> [1.480000] [philo/INFO] Thread 3 gets hungry (lunch #5)
+> [1.490000] [philo/INFO] Thread 4 is full
+> [1.490000] [philo/INFO] Thread 4 thinks
+> [1.490000] [philo/INFO] Thread 3 eats
+> [1.520000] [philo/INFO] Thread 3 is full
+> [1.520000] [philo/INFO] Thread 3 thinks
+> [1.530000] [philo/INFO] Thread 4 gets hungry (lunch #6)
+> [1.530000] [philo/INFO] Thread 4 eats
+> [1.550000] [philo/INFO] Thread 3 gets hungry (lunch #6)
+> [1.570000] [philo/INFO] Thread 4 is full
+> [1.570000] [philo/INFO] Thread 4 thinks
+> [1.570000] [philo/INFO] Thread 3 eats
+> [1.600000] [philo/INFO] Thread 3 is full
+> [1.600000] [philo/INFO] Thread 3 thinks
+> [1.610000] [philo/INFO] Thread 4 gets hungry (lunch #7)
+> [1.610000] [philo/INFO] Thread 4 eats
+> [1.630000] [philo/INFO] Thread 3 gets hungry (lunch #7)
+> [1.650000] [philo/INFO] Thread 4 is full
+> [1.650000] [philo/INFO] Thread 4 thinks
+> [1.650000] [philo/INFO] Thread 3 eats
+> [1.680000] [philo/INFO] Thread 3 is full
+> [1.680000] [philo/INFO] Thread 3 thinks
+> [1.690000] [philo/INFO] Thread 4 gets hungry (lunch #8)
+> [1.690000] [philo/INFO] Thread 4 eats
+> [1.710000] [philo/INFO] Thread 3 gets hungry (lunch #8)
+> [1.730000] [philo/INFO] Thread 4 is full
+> [1.730000] [philo/INFO] Thread 4 thinks
+> [1.730000] [philo/INFO] Thread 3 eats
+> [1.760000] [philo/INFO] Thread 3 is full
+> [1.760000] [philo/INFO] Thread 3 thinks
+> [1.770000] [philo/INFO] Thread 4 gets hungry (lunch #9)
+> [1.770000] [philo/INFO] Thread 4 eats
+> [1.790000] [philo/INFO] Thread 3 gets hungry (lunch #9)
+> [1.810000] [philo/INFO] Thread 4 is full
+> [1.810000] [philo/INFO] Thread 4 thinks
+> [1.810000] [philo/INFO] Thread 3 eats
+> [1.840000] [philo/INFO] Thread 3 is full
+> [1.840000] [philo/INFO] Thread 3 thinks
+> [1.850000] [philo/INFO] Thread 4 tries to enter the dead-end; hopefully, the master will cancel it
+> [1.870000] [philo/INFO] Thread 3 tries to enter the dead-end; hopefully, the master will cancel it
+> [Tremblay:philosopher:(1) 1.870000] [philo/INFO] Cancel all childs
+> [Tremblay:philosopher:(1) 1.870000] [gras/INFO] Exiting GRAS
 
