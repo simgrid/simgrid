@@ -11,6 +11,7 @@
 #define GRAS_VIRTU_H
 
 #include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include "xbt/time.h"
 
 SG_BEGIN_DECL()
 
@@ -35,13 +36,11 @@ void gras_main(void);
  *  @return number of second since the Epoch.
  *  (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
  */
-XBT_PUBLIC(double) gras_os_time(void);
-
+#define gras_os_time() xbt_os_time()
 /** @brief sleeps for the given amount of time.
  *  @param sec: number of seconds to sleep
  */
-XBT_PUBLIC(void) gras_os_sleep(double sec);
-
+#define gras_os_sleep(sec) xbt_os_sleep(sec) 
 /** @brief get the fully-qualified name of the current host
  *
  * Returns the fully-qualified name of the host machine, or "localhost" if the name

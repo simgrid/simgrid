@@ -139,10 +139,11 @@ XBT_SRC=\
   xbt/graphxml_parse.c
 
 XBT_RL_SRC = \
-  xbt/xbt_rl_synchro.c
-
+  xbt/xbt_rl_synchro.c																											 \
+	xbt/xbt_rl_time.c
 XBT_SG_SRC = \
-  xbt/xbt_sg_synchro.c
+  xbt/xbt_sg_synchro.c																											 \
+	xbt/xbt_sg_time.c
 
 SURF_SRC= \
   surf/maxmin.c                                                              \

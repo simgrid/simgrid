@@ -32,6 +32,7 @@ XBT_PUBLIC(void) xbt_free_f(void* p)
  *  an OS abstraction.
  */
 
+/*
 double xbt_os_time(void) {
 #ifdef HAVE_GETTIMEOFDAY
   struct timeval tv;
@@ -39,11 +40,11 @@ double xbt_os_time(void) {
   gettimeofday(&tv, NULL);
 
   return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
-#else
+#else*/
   /* Poor resolution */
-  return (double)(time(NULL));
-#endif /* HAVE_GETTIMEOFDAY? */ 	
-}
+/*  return (double)(time(NULL));*/
+//#endif /* HAVE_GETTIMEOFDAY? */ 	
+//}
 
 /*XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sysdep, xbt, "System dependency");*/
 
