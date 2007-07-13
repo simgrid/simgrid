@@ -60,9 +60,9 @@ gras_process_init() {
   }
   else pd->ppid = -1; 
   
-  trp_pd->msg_selectable_sockets = xbt_queue_new(1000,sizeof(gras_socket_t));
+  trp_pd->msg_selectable_sockets = xbt_queue_new(0,sizeof(gras_socket_t));
   
-  trp_pd->meas_selectable_sockets = xbt_queue_new(1000,sizeof(gras_socket_t));
+  trp_pd->meas_selectable_sockets = xbt_queue_new(0,sizeof(gras_socket_t));
   
   VERB2("Creating process '%s' (%d)",
 	SIMIX_process_get_name(SIMIX_process_self()),

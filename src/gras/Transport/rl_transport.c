@@ -174,7 +174,9 @@ gras_socket_t gras_trp_select(double timeout) {
 	 /* not a socket but an ear. accept on it and serve next socket */
 	 gras_socket_t accepted=NULL;
 	 
+	 /* release mutex before accept */
 	 accepted = (sock_iter->plugin->socket_accept)(sock_iter);
+
 	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
 	 accepted->meas = sock_iter->meas;
 
@@ -197,6 +199,8 @@ gras_socket_t gras_trp_select(double timeout) {
 	   /* Got a suited socket ! */
 	   XBT_OUT;
 	   _gras_lastly_selected_socket = sock_iter;
+		 /* break sync dynar iteration */
+		 xbt_dynar_cursor_unlock(sockets);
 	   return sock_iter;
 	 }
 
@@ -204,13 +208,17 @@ gras_socket_t gras_trp_select(double timeout) {
 	 /* This is a file socket. Cannot recv() on it, but it must be alive */
 	   XBT_OUT;
 	   _gras_lastly_selected_socket = sock_iter;
+		 xbt_dynar_cursor_unlock(sockets);
 	   return sock_iter;
        }
 
        
        /* if we're here, the socket we found wasn't really ready to be served */
-       if (ready == 0) /* exausted all sockets given by select. Request new ones */
-	 break; 
+       if (ready == 0) { /* exausted all sockets given by select. Request new ones */
+
+				 xbt_dynar_cursor_unlock(sockets);
+				 break; 
+			 }
     }
 
   }

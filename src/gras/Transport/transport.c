@@ -216,8 +216,9 @@ gras_socket_server_ext(unsigned short port,
     gras_socket_t sock_iter;
     xbt_dynar_t socks = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
     xbt_dynar_foreach(socks, cursor, sock_iter) {
-       if (sock_iter==sock) 
-	 xbt_dynar_cursor_rm(socks,&cursor);
+       if (sock_iter==sock) {
+				 xbt_dynar_cursor_rm(socks,&cursor);
+			 }
     }     
     free(sock);
     RETHROW;
@@ -366,6 +367,7 @@ void gras_socket_close(gras_socket_t sock) {
 					free(sock->peer_name);
 				free(sock);
 				XBT_OUT;
+				xbt_dynar_cursor_unlock(sockets);
 				return;
 			}
     }
@@ -567,7 +569,7 @@ static void *gras_trp_procdata_new() {
    
    res->name = xbt_strdup("gras_trp");
    res->name_len = 0;
-   res->sockets = xbt_dynar_new(sizeof(gras_socket_t*), NULL);
+   res->sockets = xbt_dynar_new_sync(sizeof(gras_socket_t*), NULL);
    res->myport = 0;
    
    return (void*)res;

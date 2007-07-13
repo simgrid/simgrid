@@ -18,6 +18,9 @@ typedef struct xbt_dynar_s {
   void           *data;
   void_f_pvoid_t *free_f;
   xbt_mutex_t    mutex;
+	int synchro_process_pid;
 } s_xbt_dynar_t;
 
+void _dynar_unlock(xbt_dynar_t);
+void _dynar_lock(xbt_dynar_t dynar);
 #endif /* DYNAR_PRIVATE_H */

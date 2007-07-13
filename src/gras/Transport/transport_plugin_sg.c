@@ -328,16 +328,11 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
     (gras_msg_procdata_t)gras_libdata_by_name("gras_msg");
   gras_trp_procdata_t trp_proc =
     (gras_trp_procdata_t)gras_libdata_by_id(gras_trp_libdata_id);
-	xbt_ex_t e;
 
   xbt_assert0(sock->meas, 
 	    "SG chunk exchange shouldn't be used on non-measurement sockets");
-	TRY {
-		xbt_queue_shift_timed(trp_proc->meas_selectable_sockets,
+	xbt_queue_shift_timed(trp_proc->meas_selectable_sockets,
 	 									&remote_socket, 60);
-	} CATCH(e) {
-		RETHROW;
-	}
 
 	if (remote_socket == NULL) {
     THROW0(timeout_error,0,"Timeout");

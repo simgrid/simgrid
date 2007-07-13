@@ -25,12 +25,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
 
-#define _dynar_lock(dynar) \
-           if (dynar->mutex) \
-              xbt_mutex_lock(dynar->mutex)
-#define _dynar_unlock(dynar) \
-           if (dynar->mutex) \
-              xbt_mutex_unlock(dynar->mutex)
+
 #define _sanity_check_dynar(dynar)       \
            xbt_assert0(dynar,           \
 			"dynar is NULL")
@@ -165,6 +160,7 @@ xbt_dynar_new_sync(const unsigned long elmsize,
                void_f_pvoid_t * const free_f) {
    xbt_dynar_t res = xbt_dynar_new(elmsize,free_f);
    res->mutex = xbt_mutex_init();
+   res->synchro_process_pid = -1;
    return res;
 }
 
@@ -702,6 +698,20 @@ void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
  */
 void xbt_dynar_cursor_unlock(xbt_dynar_t dynar) {
   _dynar_unlock(dynar);
+}
+
+void _dynar_lock(xbt_dynar_t dynar) {
+	if ( (dynar->mutex) && (dynar->synchro_process_pid != xbt_getpid()) ) {
+		xbt_mutex_lock(dynar->mutex);
+		dynar->synchro_process_pid = xbt_getpid();
+	}
+
+}
+void _dynar_unlock(xbt_dynar_t dynar) {
+	if (dynar->mutex) {
+		xbt_mutex_unlock(dynar->mutex);
+		dynar->synchro_process_pid = -1;
+	}
 }
 
 #ifdef SIMGRID_TEST

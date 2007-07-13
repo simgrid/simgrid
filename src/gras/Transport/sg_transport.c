@@ -36,7 +36,6 @@ gras_socket_t gras_trp_select(double timeout) {
   gras_socket_t active_socket = NULL;
   gras_trp_sg_sock_data_t *active_socket_data;
   gras_socket_t sock_iter; /* iterating over all sockets */
-	xbt_ex_t e;
   int cursor;
 
   DEBUG3("select on %s@%s with timeout=%f",
@@ -44,12 +43,8 @@ gras_socket_t gras_trp_select(double timeout) {
 	 SIMIX_host_get_name(SIMIX_host_self()),
 	 timeout);
 
-	TRY {
-		xbt_queue_shift_timed(pd->msg_selectable_sockets,
+	xbt_queue_shift_timed(pd->msg_selectable_sockets,
 								&active_socket, timeout);
-	} CATCH(e) {
-		RETHROW;
-	}
   if (active_socket == NULL) {
     DEBUG0("TIMEOUT");
     THROW0(timeout_error,0,"Timeout");
@@ -70,6 +65,7 @@ gras_socket_t gras_trp_select(double timeout) {
 
     if ( (sock_data->to_socket == active_socket) && 
 	 (sock_data->to_host == SIMIX_process_get_host(active_socket_data->from_process)) ) {
+			xbt_dynar_cursor_unlock(pd->sockets);	
       return sock_iter;
     }
   }
