@@ -613,6 +613,7 @@ static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t va
 
   dynar->elmsize = subtype->size[GRAS_THISARCH];
   dynar->size = dynar->used;
+  dynar->mutex = NULL;
 }
 
 /** \brief Declare a new type being a dynar in which each elements are of the given type
@@ -651,6 +652,9 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t,
 			      gras_datadesc_by_name("function pointer"));
   memcpy(res->extra,&free_func,sizeof(free_func));
       
+  gras_datadesc_struct_append(res, "mutex",
+			      gras_datadesc_by_name("data pointer"));
+   
   gras_datadesc_struct_close(res);
    
   gras_datadesc_cb_field_push(res, "used");
