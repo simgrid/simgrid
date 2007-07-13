@@ -87,7 +87,7 @@ the others are not documented for sake of clarity in the relevant document).
 Ie, VERB20 does not exist, but VERB0 does exist. I may add more if someone
 wants more, but that should be enough for most purposes.
 
-Note also that there is no need to add a '\n' at the end of your format
+Note also that there is no need to add a '\\n' at the end of your format
 line, it gets automatically added.
 
 \section GRAS_tut_tour_logs_recap Recapping everything together
