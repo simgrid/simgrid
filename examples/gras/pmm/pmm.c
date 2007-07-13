@@ -355,6 +355,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 int slave(int argc,char *argv[]) {
   gras_socket_t mysock;
   gras_socket_t master;
+  int connected = 0;
 
   /* Init the GRAS's infrastructure */
   gras_init(&argc, argv);
@@ -366,9 +367,19 @@ int slave(int argc,char *argv[]) {
 
   /* Create the connexions */
   mysock = gras_socket_server_range(3000,9999,0,0);
-  gras_os_sleep(1); /* let the master get ready */
-  INFO1("Sensor starting (on port %d)",gras_os_myport());
-  master = gras_socket_client_from_string(argv[1]);
+  INFO1("Sensor starting (on port %d)",gras_os_myport());  
+  while (!connected) {	
+     xbt_ex_t e;
+     TRY {	  
+	master = gras_socket_client_from_string(argv[1]);
+	connected = 1;
+     } CATCH(e) {
+	if (e.category != system_error)
+	  RETHROW;
+	xbt_ex_free(e);
+	gras_os_sleep(0.5);
+     }
+  }
 				
   /* Join and run the group */
   amok_pm_group_join(master,"pmm");
