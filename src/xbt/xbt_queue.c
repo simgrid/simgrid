@@ -69,7 +69,7 @@ unsigned long xbt_queue_length(xbt_queue_t queue) {
  * 
  * This is blocking if the declared capacity is non-nul, and if this amount is reached.
  * 
- * @seealso #xbt_dynar_push
+ * @see #xbt_dynar_push
  */
 void xbt_queue_push(xbt_queue_t queue, const void *src) {
    xbt_mutex_lock(queue->mutex);
@@ -87,7 +87,7 @@ void xbt_queue_push(xbt_queue_t queue, const void *src) {
  * 
  * This is blocking if the queue is empty.
  * 
- * @seealso #xbt_dynar_pop
+ * @see #xbt_dynar_pop
  * 
  */
 void xbt_queue_pop(xbt_queue_t queue, void* const dst) {
@@ -105,7 +105,7 @@ void xbt_queue_pop(xbt_queue_t queue, void* const dst) {
  * 
  * This is blocking if the declared capacity is non-nul, and if this amount is reached.
  * 
- * @seealso #xbt_dynar_unshift
+ * @see #xbt_dynar_unshift
  */
 void xbt_queue_unshift(xbt_queue_t queue, const void *src) {
    xbt_mutex_lock(queue->mutex);
@@ -123,7 +123,7 @@ void xbt_queue_unshift(xbt_queue_t queue, const void *src) {
  * 
  * This is blocking if the queue is empty.
  * 
- * @seealso #xbt_dynar_shift
+ * @see #xbt_dynar_shift
  * 
  */
 void xbt_queue_shift(xbt_queue_t queue, void* const dst) {
@@ -142,7 +142,7 @@ void xbt_queue_shift(xbt_queue_t queue, void* const dst) {
 
 /** @brief Push something to the message exchange queue, with a timeout.
  * 
- * @seealso #xbt_queue_push
+ * @see #xbt_queue_push
  */
 void xbt_queue_push_timed(xbt_queue_t queue, const void *src,double delay) {
 	 double timeout = xbt_os_time() + delay;
@@ -164,7 +164,7 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src,double delay) {
    
 /** @brief Pop something from the message exchange queue, with a timeout.
  * 
- * @seealso #xbt_queue_pop
+ * @see #xbt_queue_pop
  * 
  */
 void xbt_queue_pop_timed(xbt_queue_t queue, void* const dst,double delay) {
@@ -186,7 +186,7 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void* const dst,double delay) {
 
 /** @brief Unshift something to the message exchange queue, with a timeout.
  * 
- * @seealso #xbt_queue_unshift
+ * @see #xbt_queue_unshift
  */
 void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,double delay) {
 	 double timeout = xbt_os_time() + delay;
@@ -208,7 +208,7 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,double delay) {
 
 /** @brief Shift something from the message exchange queue, with a timeout.
  * 
- * @seealso #xbt_queue_shift
+ * @see #xbt_queue_shift
  * 
  */
 void xbt_queue_shift_timed(xbt_queue_t queue, void* const dst,double delay) {
