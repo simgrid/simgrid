@@ -81,6 +81,7 @@ int sender (int argc,char *argv[]) {
   char *data; /* data exchanged */
   int datasize; /* size of message */
   xbt_peer_t h; /* iterator */
+  int connected = 0;
   
   gras_socket_t peer;  /* socket to node */
   
@@ -109,13 +110,21 @@ int sender (int argc,char *argv[]) {
   gras_msgtype_declare("data", gras_datadesc_by_name("string"));
 
 
-  /* Wait for receivers to startup */
-  gras_os_sleep(.01);
-
-  /* write 'em */
+  /* write to the receivers */
   xbt_dynar_foreach(peers,i,h) {
-     
-     peer = gras_socket_client(h->name,h->port);
+     connected = 0;
+     while (!connected) {
+	xbt_ex_t e;
+	TRY {
+	   peer = gras_socket_client(h->name,h->port);
+	   connected=1;
+	} CATCH(e) {
+	   if (e.category != system_error /*in RL*/&& e.category != mismatch_error/*in SG*/)
+	     RETHROW;
+	   xbt_ex_free(e);
+	   gras_os_sleep(0.01);
+	}
+     }
      gras_msg_send(peer,"data",&data);
      if (gras_if_SG()) {
 	INFO2("  Sent Data from %s to %s", gras_os_myname(),h->name);
