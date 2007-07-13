@@ -40,11 +40,16 @@ XBT_PUBLIC_DATA(int) (*xbt_pid)();
  - \ref log_API
    - \ref log_API_cat
    - \ref log_API_pri
+   - \ref log_API_isenabled
    - \ref log_API_subcat
    - \ref log_API_easy
    - \ref log_API_example
  - \ref log_user
    - \ref log_use_conf
+     - \ref log_use_conf_thres
+     - \ref log_use_conf_multi
+     - \ref log_use_conf_fmt
+     - \ref log_use_conf_add
    - \ref log_use_misc
  - \ref log_internals
    - \ref log_in_perf
@@ -102,10 +107,6 @@ stuff on stderr. But everything is in place internally to write new ones, such
 as the one able to send the strings to a central server in charge of
 syndicating the logs of every distributed daemons on a well known location.
 
-It should also be possible to pass configuration informations to the appenders,
-specifying for example that the message location (file and line number) is only
-relevant to debugging information, not to critical error messages.
-
 One day, for sure ;)
 
 \subsection log_lay 1.4 Message layouts
@@ -115,50 +116,8 @@ will look like. Their result is a string which is then passed to the appender
 attached to the category to be displayed. 
 
 For now, there is two layouts: The simple one, which is good for most cases,
-and another one allowing users to specify the format they want.
-
-Here are the existing format directives:
-
- - %%: the % char
- - %n: platform-dependant line separator (LOG4J compliant)
- - %e: plain old space (SimGrid extension)
-
- - %m: user-provided message
-
- - %c: Category name (LOG4J compliant)
- - %p: Priority name (LOG4J compliant)
-
- - %h: Hostname (SimGrid extension)
- - %t: Process name (LOG4J compliant -- thread name in LOG4J)
- - %I: Process PID (SimGrid extension)
-
- - %F: file name where the log event was raised (LOG4J compliant)
- - %l: location where the log event was raised (LOG4J compliant, like '%F:%L')
- - %L: line number where the log event was raised (LOG4J compliant)
- - %M: function name (LOG4J compliant -- called method name here of course). 
-   Defined only when using gcc because there is no __FUNCTION__ elsewhere.
-
- - %b: full backtrace (Called %throwable in LOG4J). 
-   Defined only when using the GNU libc because backtrace() is not defined 
-   elsewhere.
- - %B: short backtrace (only the first line of the %b). 
-   Called %throwable{short} in LOG4J, defined where %b is.
-
- - %d: date (UNIX epoch)
- - %r: application age (time elapsed since the beginning of the application)
-
-
-If you want to mimick the simple layout with the format one, you would use this
-format: '[%h:%i:(%I) %r] %l: [%c/%p] %m%n'. This is not completely correct
-because the simple layout do not display the message location for messages at
-priority INFO (thus, the fmt is '[%h:%i:(%I) %r] %l: [%c/%p] %m%n' in this
-case). Moreover, if there is no process name (ie, messages comming from the
-library itself, or test programs doing strange things) do not display the
-process identity (thus, fmt is '[%r] %l: [%c/%p] %m%n' in that case, and '[%r]
-[%c/%p] %m%n' if they are at priority INFO).
-
-For now, there is only one format modifyier: the precision field. You can for
-example specify %.4r to get the application age with 4 numbers after the radix.
+and another one allowing users to specify the format they want. 
+\ref log_use_conf provides more info on this.
 
 \subsection log_hist 1.5 History of this module
 
@@ -241,18 +200,28 @@ equivalent to the shorter:
 
 <code>CWARN4(MyCat, "Values are: %d and '%s'", 5, "oops");</code>
 
-\section log_API_subcat 2.3 Using a default category (the easy interface)
+\section log_API_isenabled 2.3 Checking if a perticular category/priority is enabled
+
+It is sometimes useful to check whether a perticular category is
+enabled at a perticular priority. One example is when you want to do
+some extra computation to prepare a nice debugging message. There is
+no use of doing so if the message won't be used afterward because
+debugging is turned off. 
+ 
+Doing so is extremely easy, thanks to the XBT_LOG_ISENABLED(category, priority).
+
+\section log_API_subcat 2.4 Using a default category (the easy interface)
   
 If \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY(MyCat, Parent) or
 \ref XBT_LOG_NEW_DEFAULT_CATEGORY(MyCat) is used to create the
 category, then the even shorter form can be used:
 
-<code>WARN3("Values are: %d and '%s'", 5, "oops");</code>
+<code>WARN3("Values are: %s and '%d'", 5, "oops");</code>
 
 Only one default category can be created per file, though multiple
 non-defaults can be created and used.
 
-\section log_API_easy 2.4 Putting all together: the easy interface
+\section log_API_easy 2.5 Putting all together: the easy interface
 
 First of all, each module should register its own category into the categories
 tree using \ref XBT_LOG_NEW_DEFAULT_SUBCATEGORY.
@@ -280,7 +249,7 @@ The TRACE priority is not used the same way than the other. You should use
 the #XBT_IN, XBT_IN<n> (up to #XBT_IN5), #XBT_OUT and #XBT_HERE macros
 instead.
 
-\section log_API_example 2.5 Example of use
+\section log_API_example 2.6 Example of use
 
 Here is a more complete example:
 
@@ -295,17 +264,17 @@ int main() {
        / * Now set the parent's priority.  (the string would typcially be a runtime option) * /
        xbt_log_control_set("SA.thresh:3");
 
-       / * This request is enabled, because WARNING &gt;= INFO. * /
+       / * This request is enabled, because WARNING >= INFO. * /
        CWARN2(VSS, "Low fuel level.");
 
-       / * This request is disabled, because DEBUG &lt; INFO. * /
+       / * This request is disabled, because DEBUG < INFO. * /
        CDEBUG2(VSS, "Starting search for nearest gas station.");
 
        / * The default category SA inherits its priority from VSS. Thus,
-          the following request is enabled because INFO &gt;= INFO.  * /
+          the following request is enabled because INFO >= INFO.  * /
        INFO1("Located nearest gas station.");
 
-       / * This request is disabled, because DEBUG &lt; INFO. * /
+       / * This request is disabled, because DEBUG < INFO. * /
        DEBUG1("Exiting gas station search"); 
 }
 \endverbatim
@@ -316,23 +285,99 @@ Another example can be found in the relevant part of the GRAS tutorial:
 \section log_user 3. User interface
 
 \section log_use_conf 3.1 Configuration
-Configuration is typically done during program initialization by invoking
-the xbt_log_control_set() method. The control string passed to it typically
-comes from the command line. Look at the documentation for that function for
-the format of the control string.
 
-Any SimGrid program can furthermore be configured at run time by passing a
---xbt-log argument on the command line (--gras-log, --msg-log and --surf-log
-are synonyms provided by aestheticism). You can provide several of those
-arguments to change the setting of several categories, they will be applied
-from left to right. So, 
-\verbatim --xbt-log="root.thres:debug root.thres:critical"\endverbatim 
-should disable any logging.
+Although rarely done, it is possible to configure the logs during
+program initialization by invoking the xbt_log_control_set() method
+manually. A more conventionnal way is to use the --log command line
+argument. xbt_init() (called by MSG_init(), gras_init() and friends)
+checks and deals properly with such arguments.
+ 
+The following command line arguments exist, but are deprecated and
+may disapear in the future: --xbt-log, --gras-log, --msg-log and
+--surf-log.
+ 
+\subsection log_use_conf_thres 3.1.1 Thresold configuration
+ 
+The most common setting is to control which logging event will get
+displayed by setting a threshold to each category through the
+<tt>thres</tt> keyword.
 
+For example, \verbatim --log=root.thres:debug\endverbatim will make
+SimGrid <b>extremely</b> verbose while \verbatim
+--log=root.thres:critical\endverbatim should shut it almost
+completely off.
+
+\subsection log_use_conf_multi 3.1.2 Passing several settings
+
+You can provide several of those arguments to change the setting of several 
+categories, they will be applied from left to right. So,
+\verbatim --log="root.thres:debug root.thres:critical"\endverbatim should
+disable almost any logging.
+ 
 Note that the quotes on above line are mandatory because there is a space in
 the argument, so we are protecting ourselves from the shell, not from SimGrid.
 We could also reach the same effect with this:
-\verbatim --xbt-log=root.thres:debug --xbt-log=root.thres:critical\endverbatim 
+\verbatim --log=root.thres:debug --log=root.thres:critical\endverbatim 
+
+\subsection log_use_conf_fmt 3.1.3 Format configuration
+
+As with SimGrid 3.3, it is possible to control the format of log
+messages. This is done through the <tt>fmt</tt> keyword. For example,
+\verbatim --log=root.fmt:%m\endverbatim reduces the output to the
+user-message only, removing any decoration such as the date, or the
+process ID, everything.
+
+Here are the existing format directives:
+
+ - %%: the % char
+ - %%n: platform-dependant line separator (LOG4J compliant)
+ - %%e: plain old space (SimGrid extension)
+
+ - %%m: user-provided message
+
+ - %%c: Category name (LOG4J compliant)
+ - %%p: Priority name (LOG4J compliant)
+
+ - %%h: Hostname (SimGrid extension)
+ - %%t: Process name (LOG4J compliant -- thread name in LOG4J)
+ - %%I: Process PID (SimGrid extension)
+
+ - %%F: file name where the log event was raised (LOG4J compliant)
+ - %%l: location where the log event was raised (LOG4J compliant, like '%%F:%%L')
+ - %%L: line number where the log event was raised (LOG4J compliant)
+ - %%M: function name (LOG4J compliant -- called method name here of course). 
+   Defined only when using gcc because there is no __FUNCTION__ elsewhere.
+
+ - %%b: full backtrace (Called %%throwable in LOG4J). 
+   Defined only when using the GNU libc because backtrace() is not defined 
+   elsewhere.
+ - %%B: short backtrace (only the first line of the %%b). 
+   Called %%throwable{short} in LOG4J; defined where %%b is.
+
+ - %%d: date (UNIX-like epoch)
+ - %%r: application age (time elapsed since the beginning of the application)
+
+
+If you want to mimick the simple layout with the format one, you would use this
+format: '[%%h:%%i:(%%I) %%r] %%l: [%%c/%%p] %%m%%n'. This is not completely correct
+because the simple layout do not display the message location for messages at
+priority INFO (thus, the fmt is '[%%h:%%i:(%%I) %%r] %%l: [%%c/%%p] %%m%%n' in this
+case). Moreover, if there is no process name (ie, messages comming from the
+library itself, or test programs doing strange things) do not display the
+process identity (thus, fmt is '[%%r] %%l: [%%c/%%p] %%m%%n' in that case, and '[%%r]
+[%%c/%%p] %%m%%n' if they are at priority INFO).
+
+For now, there is only one format modifyier: the precision field. You
+can for example specify %.4r to get the application age with 4
+numbers after the radix. Another limitation is that you cannot set
+specific layouts to the several priorities.
+
+\subsection log_use_conf_add 3.1.4 Category additivity
+
+The <tt>add</tt> keyword allows to specify the additivity of a
+category (see \ref log_in_app). This is rarely useful since you
+cannot specify an alternative appender. Anyway, '0', '1', 'no',
+'ye's, 'on' and 'off' are all valid values, with 'yes' as default.
 
 \section log_use_misc 3.2 Misc and Caveats
 
@@ -344,10 +389,12 @@ We could also reach the same effect with this:
 
 \section log_internals 4. Internal considerations
 
-This module is a mess of macro black magic, and when it goes wrong, SimGrid
-studently loose its ability to explain its problems. When messing around this
-module, I often find useful to define XBT_LOG_MAYDAY (which turns it back to
-good old printf) for the time of finding what's going wrong.
+This module is a mess of macro black magic, and when it goes wrong,
+SimGrid studently loose its ability to explain its problems. When
+messing around this module, I often find useful to define
+XBT_LOG_MAYDAY (which turns it back to good old printf) for the time
+of finding what's going wrong. But things are quite verbose when
+everything is enabled...
 
 \section log_in_perf 4.1 Performance
 
@@ -358,7 +405,7 @@ There is also compile time constant, \ref XBT_LOG_STATIC_THRESHOLD, which
 causes all logging requests with a lower priority to be optimized to 0 cost
 by the compiler. By setting it to gras_log_priority_infinite, all logging
 requests are statically disabled and cost nothing. Released executables
-might be compiled with
+<i>might</i>  be compiled with (note that it will prevent users to debug their problems)
 \verbatim-DXBT_LOG_STATIC_THRESHOLD=gras_log_priority_infinite\endverbatim
 
 Compiling with the \verbatim-DNLOG\endverbatim option disables all logging 
