@@ -47,6 +47,8 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(void) xbt_queue_shift_timed   (xbt_queue_t queue, void *const dst, double delay);
   XBT_PUBLIC(void) xbt_queue_pop_timed     (xbt_queue_t queue, void *const dst, double delay);
 
+/** @} */
+
 SG_END_DECL()
 
 #endif /* _XBT_QUEUE_H */
