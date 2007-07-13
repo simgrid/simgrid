@@ -298,7 +298,9 @@ gras_socket_client_ext(const char *host,
 	   sock->outgoing?'y':'n',
 	   sock->accepting?'y':'n');
   } CATCH(e) {
-    free(sock);
+     xbt_dynar_pop(((gras_trp_procdata_t)
+		    gras_libdata_by_id(gras_trp_libdata_id))->sockets,NULL);
+     free(sock);
     RETHROW;
   }
 
