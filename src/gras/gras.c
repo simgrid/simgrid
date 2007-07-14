@@ -28,13 +28,13 @@ static int gras_running_process = 0;
 #if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
 static void gras_sigusr_handler(int sig) {
    INFO0("SIGUSR1 received. Display the backtrace");
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
 }
 
 static void gras_sigint_handler(int sig) {
    static double lastone = 0;
    if (lastone == 0 || xbt_os_time() - lastone > 5) {
-      xbt_backtrace_display();
+      xbt_backtrace_display_current();
       fprintf(stderr,
 	      "\nBacktrace displayed because Ctrl-C was pressed. Press again (within 5 sec) to abort the process.\n");
       lastone = xbt_os_time();

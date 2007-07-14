@@ -505,8 +505,13 @@ extern void __xbt_ex_terminate_default(xbt_ex_t *e);
 /** @brief Exception destructor */
 XBT_PUBLIC(void) xbt_ex_free(xbt_ex_t e);
 
-XBT_PUBLIC(void) xbt_ex_display(xbt_ex_t *e);
-XBT_PUBLIC(void) xbt_backtrace_display(void);
+/** @brief Shows a backtrace of the current location */
+XBT_PUBLIC(void) xbt_backtrace_display_current(void);
+
+/** @brief Captures a backtrace for further use */
+XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t *e);
+/** @brief Display a previously captured backtrace */
+XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t *e);
 
 /** @} */
 #endif /* __XBT_EX_H__ */

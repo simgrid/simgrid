@@ -372,7 +372,7 @@ void gras_socket_close(gras_socket_t sock) {
 			}
     }
     WARN1("Ignoring request to free an unknown socket (%p). Execution stack:",sock);
-    xbt_backtrace_display();
+    xbt_backtrace_display_current();
   }
   XBT_OUT;
 }

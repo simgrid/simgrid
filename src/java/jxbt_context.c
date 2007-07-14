@@ -12,6 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 #include "xbt/xbt_os_thread.h"
+#include "xbt/ex_interface.h"
 #include "java/jxbt_context.h"
 #include "java/jmsg.h"
 #include "java/jmsg_process.h"
