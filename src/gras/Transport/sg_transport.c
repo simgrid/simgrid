@@ -42,9 +42,13 @@ gras_socket_t gras_trp_select(double timeout) {
 	 SIMIX_process_get_name(SIMIX_process_self()),
 	 SIMIX_host_get_name(SIMIX_host_self()),
 	 timeout);
-
-	xbt_queue_shift_timed(pd->msg_selectable_sockets,
-								&active_socket, timeout);
+   if (timeout>=0) {
+      xbt_queue_shift_timed(pd->msg_selectable_sockets,
+			    &active_socket, timeout);
+   } else {
+      xbt_queue_shift(pd->msg_selectable_sockets, &active_socket);
+   }
+   
   if (active_socket == NULL) {
     DEBUG0("TIMEOUT");
     THROW0(timeout_error,0,"Timeout");
