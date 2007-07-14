@@ -180,11 +180,11 @@ xbt_dynar_free_container(xbt_dynar_t *dynar) {
       free((*dynar)->data);
     }
 
-    _xbt_clear_mem(*dynar, sizeof(s_xbt_dynar_t));
-
     if ((*dynar)->mutex) 
        xbt_mutex_destroy((*dynar)->mutex);
      
+    _xbt_clear_mem(*dynar, sizeof(s_xbt_dynar_t));
+
     free(*dynar);
     *dynar=NULL;
   }
