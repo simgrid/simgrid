@@ -76,7 +76,14 @@ static void __update_cpu_usage(cpu_KCCFLN05_t cpu)
 
 static void *name_service(const char *name)
 {
-  return xbt_dict_get_or_null(workstation_set, name);
+  xbt_ex_t e;
+  void *res;
+  TRY {
+     res = xbt_dict_get(workstation_set, name);
+  } CATCH(e) {
+     RETHROW1("Host '%s' not found (dict raised this exception: %s)",name);
+  }
+  return res;
 }
 
 static const char *get_resource_name(void *resource_id)
@@ -926,11 +933,16 @@ static void parse_route_set_endpoints(void)
 
 static void parse_route_elem(void)
 {
+  xbt_ex_t e;
   if (nb_link == link_list_capacity) {
     link_list_capacity *= 2;
     link_list = xbt_realloc(link_list, (link_list_capacity) * sizeof(network_link_KCCFLN05_t));
   }
-  link_list[nb_link++] = xbt_dict_get_or_null(network_link_set, A_surfxml_route_element_name);
+  TRY {
+     link_list[nb_link++] = xbt_dict_get(network_link_set, A_surfxml_route_element_name);
+  } CATCH(e) {
+     RETHROW1("Link %s not found (dict raised this exception: %s)",A_surfxml_route_element_name);
+  }
 }
 
 static void parse_route_set_route(void)
