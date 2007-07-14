@@ -229,7 +229,7 @@ GRAS_RL_SRC= \
   gras/Transport/transport_plugin_file.c   gras/Transport/transport_plugin_tcp.c  \
   \
   gras/Virtu/rl_emul.c \
-  gras/Virtu/rl_process.c        gras/Virtu/rl_time.c \
+  gras/Virtu/rl_process.c \
   gras/Virtu/rl_dns.c\
   \
   gras/Msg/rl_msg.c
@@ -239,7 +239,7 @@ GRAS_RL_SRC+=$(XBT_RL_SRC)
 GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
   \
   gras/Virtu/sg_emul.c \
-  gras/Virtu/sg_process.c        gras/Virtu/sg_time.c     \
+  gras/Virtu/sg_process.c   \
   gras/Virtu/sg_dns.c\
   \
   gras/Msg/sg_msg.c
