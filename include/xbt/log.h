@@ -357,7 +357,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
 /**
  * \ingroup XBT_log 
  * \param catName name of the category
- * \param priority minimal priority to be enabled to return true
+ * \param priority minimal priority to be enabled to return true (must be #e_xbt_log_priority_t)
  * \hideinitializer
  *
  * Returns true if the given priority is enabled for the category.
