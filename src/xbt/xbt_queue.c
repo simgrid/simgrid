@@ -153,7 +153,7 @@ void xbt_queue_push_timed(xbt_queue_t queue, const void *src,double delay) {
 			/* check if a timeout occurs */
 			if (xbt_os_time() >= timeout) {
 				xbt_mutex_unlock(queue->mutex);
-				THROW0(timeout_error,0,"Timeout");
+				THROW1(timeout_error,0,"Timeout (delay was %f)",delay);
 			}
 	 }
 	 xbt_dynar_push(queue->data,src);
@@ -176,7 +176,7 @@ void xbt_queue_pop_timed(xbt_queue_t queue, void* const dst,double delay) {
 			/* check if a timeout occurs */
 			if (xbt_os_time() >= timeout) {
 				xbt_mutex_unlock(queue->mutex);
-				THROW0(timeout_error,0,"Timeout");
+				THROW1(timeout_error,0,"Timeout (delay was %f)",delay);
 			}
    }
 	 xbt_dynar_pop(queue->data,dst);
@@ -197,7 +197,7 @@ void xbt_queue_unshift_timed(xbt_queue_t queue, const void *src,double delay) {
 			/* check if a timeout occurs */
 			if (xbt_os_time() >= timeout) {
 				xbt_mutex_unlock(queue->mutex);
-				THROW0(timeout_error,0,"Timeout");
+				THROW1(timeout_error,0,"Timeout (delay was %f)",delay);
 			}
    }
 	 xbt_dynar_unshift(queue->data,src);
@@ -220,7 +220,7 @@ void xbt_queue_shift_timed(xbt_queue_t queue, void* const dst,double delay) {
 			/* check if a timeout occurs */
 			if (xbt_os_time() >= timeout) {
 				xbt_mutex_unlock(queue->mutex);
-				THROW0(timeout_error,0,"Timeout");
+				THROW1(timeout_error,0,"Timeout (delay was %f)",delay);
 			}
    }
 	 xbt_dynar_shift(queue->data,dst);
