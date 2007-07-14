@@ -571,7 +571,7 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
      va_start(ev->ap, fmt);
      vfprintf(stderr,fmt,ev->ap);
      va_end(ev->ap);
-     xbt_backtrace_display();
+     xbt_backtrace_display_current();
      return;
   }
    

@@ -14,6 +14,7 @@
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 #include "xbt/xbt_os_thread.h"
+#include "xbt/ex_interface.h"
 
 #ifdef CONTEXT_THREADS
  /* This file (context.c) is only loaded in libsimgrid, not libgras.

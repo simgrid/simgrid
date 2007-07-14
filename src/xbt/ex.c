@@ -2,7 +2,7 @@
 
 /* ex - Exception Handling (modified to fit into SimGrid from OSSP version) */
 
-/*  Copyright (c) 2005-2006 Martin Quinson                                  */
+/*  Copyright (c) 2005, 2006, 2007 Martin Quinson                           */
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
 /*  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>         */
 /*  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>           */
@@ -17,12 +17,11 @@
 #include "portable.h" /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/module.h" /* xbt_binary_name */
-#include "xbt/ex_interface.h"
 
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
+#include "xbt/ex_interface.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex,xbt,"Exception mecanism");
-
 
 /* default __ex_ctx callback function */
 ex_ctx_t *__xbt_ex_ctx_default(void) {
@@ -31,25 +30,43 @@ ex_ctx_t *__xbt_ex_ctx_default(void) {
     return &ctx;
 }
 
+/* Change raw libc symbols to file names and line numbers */
+void xbt_ex_setup_backtrace(xbt_ex_t *e);
 
-/** \brief show the backtrace of the current point (lovely while debuging) */
-void xbt_backtrace_display(void) {
+void xbt_backtrace_current(xbt_ex_t *e) {
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
-  xbt_ex_t e;
+  e->used     = backtrace((void**)e->bt,XBT_BACKTRACE_SIZE);
+  e->bt_strings = NULL;
+  xbt_ex_setup_backtrace(e);
+#endif
+}
+
+void xbt_backtrace_display(xbt_ex_t *e) {
+#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
   int i;
 
-  e.used     = backtrace((void**)e.bt,XBT_BACKTRACE_SIZE);
-  e.bt_strings = NULL;
-  xbt_ex_setup_backtrace(&e);
-  for (i=1; i<e.used; i++) /* no need to display "xbt_display_backtrace" */
-    fprintf(stderr,"%s\n",e.bt_strings[i]);
-
-  e.msg=NULL;
-  e.remote=0;
-  xbt_ex_free(e);
+  if (e->used == 0) {
+     fprintf(stderr,"(backtrace not set)\n");
+  } else {	
+     fprintf(stderr,"Backtrace:\n");
+     for (i=1; i<e->used; i++) /* no need to display "xbt_display_backtrace" */
+       fprintf(stderr,"---> %s\n",e->bt_strings[i] +4);
+  }
+   
+  /* don't fool xbt_ex_free with uninitialized msg field */
+  e->msg=NULL;
+  e->remote=0;
+  xbt_ex_free(*e);
 #else 
   ERROR0("No backtrace on this arch");
 #endif
+}
+
+/** \brief show the backtrace of the current point (lovely while debuging) */
+void xbt_backtrace_display_current(void) {
+  xbt_ex_t e;
+  xbt_backtrace_current(&e);
+  xbt_backtrace_display(&e);
 }
 
 extern char **environ; /* the environment, as specified by the opengroup */

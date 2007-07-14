@@ -12,7 +12,6 @@
 #include "xbt/log.h"
 #include "gras/virtu.h"
 #include <stdio.h>
-#include "xbt/ex_interface.h" /* backtraces */
 
 extern const char *xbt_log_priority_names[7];
 
@@ -139,7 +138,7 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 	  e.bt_strings = NULL;
 	  e.msg=NULL;
 	  e.remote=0;
-	  xbt_ex_setup_backtrace(&e);
+	  xbt_backtrace_current(&e);
 	  if (*q=='B') {
 	     if (precision == -1)
 	       p += sprintf(p,"%s",e.bt_strings[2]+8);
