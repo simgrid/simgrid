@@ -79,8 +79,10 @@ gras_msgtype_declare_ext(const char           *name,
     msgtype = (gras_msgtype_t)xbt_set_get_by_name(_gras_msgtype_set,namev);
     found = 1;
   } CATCH(e) {
-    if (e.category != not_found_error)
+    if (e.category != not_found_error) {
+      xbt_free(namev);
       RETHROW;
+    }
     xbt_ex_free(e);
   }
 
@@ -100,6 +102,7 @@ gras_msgtype_declare_ext(const char           *name,
 		 namev,gras_datadesc_get_name(payload_answer),
 		 gras_datadesc_get_name(msgtype->answer_type));
 
+    xbt_free(namev);
     return ; /* do really ignore it */
   }
 
