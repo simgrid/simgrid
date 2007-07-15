@@ -71,6 +71,12 @@ XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 XBT_PUBLIC(void) xbt_str_strip_spaces(char *);
 XBT_PUBLIC(char *) xbt_str_diff(char *a, char *b);
 
+/** @brief Classical alias to (char*) 
+ *
+ * This of almost no use, beside cosmetics and the GRAS parsing macro (see \ref GRAS_dd_auto).
+ */
+typedef char *xbt_string_t;
+
 /**@}*/
 
 SG_END_DECL()
