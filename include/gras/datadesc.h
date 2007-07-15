@@ -94,6 +94,7 @@ XBT_PUBLIC(gras_datadesc_type_t) gras_datadesc_by_name_or_null(const char *name)
  *  
  *  Here is an example:\verbatim GRAS_DEFINE_TYPE(s_clause,
   struct s_array {
+    xbt_string_t name;
     struct s_array *father GRAS_ANNOTE(size,1);
     int length;
     int *data GRAS_ANNOTE(size,length);
@@ -102,9 +103,10 @@ XBT_PUBLIC(gras_datadesc_type_t) gras_datadesc_by_name_or_null(const char *name)
     int *matrix GRAS_ANNOTE(size,rows*cols);
  }
 ;)\endverbatim
- * It specifies that the structure s_array contains five fields, that the \a father field is a simple reference,
- * that the size of the array pointed by \a data is the \a length field, and that the \a matrix field is an array
- * which size is the result of \a rows times \a cols.
+ * It specifies that the structure s_array contains six fields, that the \a name field is a classical null-terminated 
+ * char* string (#xbt_string_t is just an helper type defined exactly to help the parsing macro to specify the semantic of the pointer),
+ * that \a father field is a simple reference, that the size of the array pointed by \a data is the \a length field, and that the 
+ * \a matrix field is an arraywhich size is the result of \a rows times \a cols.
  *
  *  \warning Since GRAS_DEFINE_TYPE is a macro, you shouldn't put any comma in your type definition 
  *  (comma separates macro args). For example, change \verbatim int a, b;\endverbatim to \verbatim int a;
@@ -179,11 +181,12 @@ int server(int argc, char *argv[]) {
 }\endverbatim
  * 
  * If you want to split this in two files (one for each kind of processes),
- * you need to put the GRAS_DEFINE_TYPE block in a separate header. But
+ * you need to put the GRAS_DEFINE_TYPE block in a separate header (so that
+ * each process kind see the associated C type definition). But
  * then you cannot include this right away in all files because the extra
- * symbols would be defined in dupplicate.
+ * symbols containing the GRAS definition would be dupplicated.
  * 
- * You thus have to decide in which file the symbols will live. In that
+ * You thus have to decide in which C file the symbols will live. In that
  * file, include the header without restriction:
  * 
 \verbatim #include "my_header.h"
@@ -193,15 +196,26 @@ int client(int argc, char *argv[]) {
 }\endverbatim
 
  * And in the other files needing the C definitions without the extra GRAS
- * symbols, declare the symbol GRAS_DEFINE_TYPE_EXTERN before:
+ * symbols, declare the symbol GRAS_DEFINE_TYPE_EXTERN before loading gras.h:
  * 
 \verbatim #define GRAS_DEFINE_TYPE_EXTERN
+#include <gras.h>
 #include "my_header.h"
 
 int server(int argc, char *argv[]) {
   ...
 }\endverbatim
 
+ * 
+ * Sometimes, the situation is even more complicated: There is some shared
+ * messages that you want to see from every file, and some private messages 
+ * that you want to be defined only in one C file.
+ * In that case, use the previous trick for common messages, and use 
+ * #GRAS_DEFINE_TYPE_LOCAL for the private messages. 
+ *
+ * For now, there is no way to have semi-private symbols (for example shared 
+ * in all files of a library), sorry. Use functions as interface to your 
+ * library instead of publishing directly the messages.
  * 
  */
 /** @{ */
@@ -225,9 +239,19 @@ int server(int argc, char *argv[]) {
  *    @hideinitializer
  */
 #define GRAS_DEFINE_TYPE_EXTERN 1
+/* leave the fun of declaring this to the user */
+#undef GRAS_DEFINE_TYPE_EXTERN 
 
-
-
+/** @brief Define a symbol to be automatically parsed, disregarding #GRAS_DEFINE_TYPE_EXTERN
+ *  @hideinitializer
+ * 
+ *  Call this macro instead of #GRAS_DEFINE_TYPE if you had to define #GRAS_DEFINE_TYPE_EXTERN
+ *  to load some external symbols, but if you now want to automatically parse the content of 
+ *  your private messages.
+ */
+#define GRAS_DEFINE_TYPE_LOCAL(name, def) \
+  const char * _gras_this_type_symbol_does_not_exist__##name=#def; def
+  
 /** @brief Retrieve a datadesc which was previously parsed 
  *  @hideinitializer
  */
