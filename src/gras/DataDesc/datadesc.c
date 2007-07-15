@@ -119,7 +119,8 @@ gras_datadesc_init(void) {
   ddt = gras_datadesc_array_dyn("char[]", 
 				gras_datadesc_by_name("char"),
 				_strlen_cb);
-  ddt = gras_datadesc_ref("string",ddt);
+  gras_datadesc_ref("string",ddt);
+  gras_datadesc_ref("xbt_string_t",ddt);
 
   /* specific datatype: the exception type (for RPC) */
   ddt = gras_datadesc_struct("ex_t");
