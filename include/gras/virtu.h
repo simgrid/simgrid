@@ -53,6 +53,13 @@ gras_os_myname(void);
 /** @brief returns the number on which this process is listening for incoming messages */
 XBT_PUBLIC(int) gras_os_myport(void);
 
+/** @brief get the uri of the current process
+ *
+ * Returns the concatenation of gras_os_myname():gras_os_myport(). Please do not free the result.
+ */
+XBT_PUBLIC(const char *)
+gras_os_hostport(void);
+
 /** @brief get process identification
  *
  * Returns the process ID of the current process.  (This is often used

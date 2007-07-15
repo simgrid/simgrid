@@ -167,3 +167,12 @@ gras_procdata_exit() {
   }
   xbt_dynar_free( & _gras_procdata_fabrics );
 }
+
+
+const char *gras_os_hostport() {
+   static char *res=NULL;
+   if (res)
+     free(res); /* my port may have changed */
+   res = bprintf("%s:%d",gras_os_myname(),gras_os_myport());
+   return (const char*)res;
+}

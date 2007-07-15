@@ -25,6 +25,8 @@ SimGrid (3.3-cvs) unstable; urgency=low
     linux ones too) [Mt]
   * New function: gras_agent_spawn() to launch a new process on
     current host. Only working in simulation for now.. [Mt]
+  * New function: gras_os_hostport() returning a constant form (ie,
+    not needing to be freed) of "gras_os_hostname():gras_os_myport()"
 
  XBT:
   * Make the backtrace of exceptions more human readable [Mt]
