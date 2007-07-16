@@ -16,6 +16,80 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 SIMIX_Global_t simix_global = NULL;
 
 /********************************* SIMIX **************************************/
+static void __simix_config_helper(const char *name, ...) {
+  va_list pa;
+  va_start(pa,name);
+  
+  SIMIX_config(name,pa);
+  
+  va_end(pa);
+}
+
+static void simix_cfg_control_set(const char* control_string) {
+  /* To split the string in commands, and the cursors */
+  xbt_dynar_t set_strings;
+  char *str;
+  int cpt;
+
+  if (!control_string)
+    return;
+  DEBUG1("Parse log settings '%s'",control_string);
+
+  /* split the string, and remove empty entries */
+  set_strings=xbt_str_split_quoted(control_string);
+
+  if (xbt_dynar_length(set_strings) == 0) { /* vicious user! */
+    xbt_dynar_free(&set_strings);
+    return; 
+  }
+  /* Parse each entry and either use it right now (if the category was already
+     created), or store it for further use */
+  xbt_dynar_foreach(set_strings,cpt,str) {
+    char *control_string,*control_string_sav,*name,*value;
+
+
+    control_string = control_string_sav = strdup(str);
+    control_string += strspn(control_string, " ");
+    name = control_string;
+    control_string += strcspn(str, ":");
+    value = control_string;
+    *value=0;
+    value++;
+
+    xbt_assert1(strlen(name)!=0, "Invalid name for configuration: '%s'",name);
+    xbt_assert1(strlen(value)!=0, "Invalid value for configuration: '%s'",value);
+    INFO2("setting '%s' to '%s'",name,value);
+
+    __simix_config_helper(name,value);
+
+    free(control_string_sav);
+  }
+  xbt_dynar_free(&set_strings);
+}
+
+static void simix_cfg_init(int *argc,char **argv) {
+  int i,j;
+  char *opt;
+
+  for (i=1; i<*argc; i++){
+    if (!strncmp(argv[i],"--cfg=",strlen("--cfg="))) {
+      opt=strchr(argv[i],'=');
+      opt++;
+      
+      simix_cfg_control_set(opt);
+      DEBUG1("Did apply '%s' as config setting",opt);
+      /*remove this from argv*/
+      
+      for (j=i+1; j<*argc; j++){
+	argv[j-1] = argv[j];
+      } 
+      
+      argv[j-1] = NULL;
+      (*argc)--;
+      i--; /* compensate effect of next loop incrementation */
+    }
+  }
+}
 
 /**
  * \brief Initialize some SIMIX internal data.
@@ -29,6 +103,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
 	if (!simix_global) {
 		surf_init(argc, argv);	/* Initialize some common structures. Warning, it sets simix_global=NULL */
+		simix_cfg_init(argc,argv);
 
 		simix_global = xbt_new0(s_SIMIX_Global_t,1);
 
@@ -40,7 +115,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
 		simix_global->create_process_function = NULL;
 		simix_global->kill_process_function = NULL;
-		simix_global->cleanup_process_function = SIMIX_process_cleanup;
+		simix_global->cleanup_process_function = SIMIX_process_cleanup;		
 	}
 }
 
