@@ -432,6 +432,15 @@ AC_CONFIG_FILES([
 #      examples/gras/p2p/chord/Makefile
 #      examples/gras/p2p/can/Makefile
 
+if test "x$use_java" = "xyes" ; then
+AC_CONFIG_FILES([
+    examples/java/Makefile
+      examples/java/basic/Makefile
+      examples/java/comm_time/Makefile
+      examples/java/suspend/Makefile
+      examples/java/ping_pong/Makefile
+])
+fi
 
 AC_CONFIG_FILES([
   examples/Makefile 
@@ -453,11 +462,6 @@ AC_CONFIG_FILES([
     examples/amok/Makefile       
       examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
       examples/amok/saturate/Makefile  examples/amok/saturate/test_sg  examples/amok/saturate/test_rl
-    examples/java/Makefile
-      examples/java/basic/Makefile
-      examples/java/comm_time/Makefile
-      examples/java/suspend/Makefile
-      examples/java/ping_pong/Makefile
 ],[
     for file in                                                 \
      \
