@@ -18,6 +18,7 @@
 # into the distribution.
 
 # It is intended to be included in all Makefile.am 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -37,11 +38,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-check_PROGRAMS = msg_test$(EXEEXT) msg_test_suspend$(EXEEXT) \
-	ping_pong$(EXEEXT)
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/basic.tesh.in $(srcdir)/flexml_bypass.tesh.in \
-	$(srcdir)/small_plat.tesh.in $(srcdir)/suspend.tesh.in \
+@HAVE_SDP_TRUE@am__append_1 = sendrecv/sendrecv_KCCFLN05_proportional.tesh
+bin_PROGRAMS = sendrecv/sendrecv$(EXEEXT) suspend/suspend$(EXEEXT) \
+	masterslave/masterslave$(EXEEXT) \
+	masterslave/masterslave_forwarder$(EXEEXT)
+DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = examples/msg
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -57,17 +58,28 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/gras_config.h
-CONFIG_CLEAN_FILES = basic.tesh small_plat.tesh suspend.tesh \
-	flexml_bypass.tesh
-am_msg_test_OBJECTS = msg_test.$(OBJEXT)
-msg_test_OBJECTS = $(am_msg_test_OBJECTS)
-msg_test_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
-am_msg_test_suspend_OBJECTS = msg_test_suspend.$(OBJEXT)
-msg_test_suspend_OBJECTS = $(am_msg_test_suspend_OBJECTS)
-msg_test_suspend_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
-am_ping_pong_OBJECTS = ping_pong.$(OBJEXT)
-ping_pong_OBJECTS = $(am_ping_pong_OBJECTS)
-ping_pong_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
+CONFIG_CLEAN_FILES =
+am__installdirs = "$(DESTDIR)$(bindir)"
+binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+PROGRAMS = $(bin_PROGRAMS)
+am_masterslave_masterslave_OBJECTS = masterslave.$(OBJEXT)
+masterslave_masterslave_OBJECTS =  \
+	$(am_masterslave_masterslave_OBJECTS)
+masterslave_masterslave_DEPENDENCIES =  \
+	$(top_builddir)/src/libsimgrid.la
+am__dirstamp = $(am__leading_dot)dirstamp
+am_masterslave_masterslave_forwarder_OBJECTS =  \
+	masterslave_forwarder.$(OBJEXT)
+masterslave_masterslave_forwarder_OBJECTS =  \
+	$(am_masterslave_masterslave_forwarder_OBJECTS)
+masterslave_masterslave_forwarder_DEPENDENCIES =  \
+	$(top_builddir)/src/libsimgrid.la
+am_sendrecv_sendrecv_OBJECTS = sendrecv.$(OBJEXT)
+sendrecv_sendrecv_OBJECTS = $(am_sendrecv_sendrecv_OBJECTS)
+sendrecv_sendrecv_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
+am_suspend_suspend_OBJECTS = suspend.$(OBJEXT)
+suspend_suspend_OBJECTS = $(am_suspend_suspend_OBJECTS)
+suspend_suspend_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/src@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -80,10 +92,12 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(msg_test_SOURCES) $(msg_test_suspend_SOURCES) \
-	$(ping_pong_SOURCES)
-DIST_SOURCES = $(msg_test_SOURCES) $(msg_test_suspend_SOURCES) \
-	$(ping_pong_SOURCES)
+SOURCES = $(masterslave_masterslave_SOURCES) \
+	$(masterslave_masterslave_forwarder_SOURCES) \
+	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
+DIST_SOURCES = $(masterslave_masterslave_SOURCES) \
+	$(masterslave_masterslave_forwarder_SOURCES) \
+	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -224,22 +238,40 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
-EXTRA_DIST = msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml \
-            flexml_bypass.tesh
+EXTRA_DIST = msg_platform.xml \
+             sendrecv/platform_sendrecv.xml \
+             sendrecv/deployment_sendrecv.xml
 
-CLEANFILES = msg_test.trace
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = basic.tesh small_plat.tesh suspend.tesh
-# msg_test_surfxml_bypassed
-msg_test_SOURCES = msg_test.c
-msg_test_LDADD = $(top_builddir)/src/libsimgrid.la
+TESTS = sendrecv/sendrecv_KCCFLN05.tesh $(am__append_1) \
+	sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
+	sendrecv/sendrecv_KCCFLN05_Reno.tesh suspend/suspend.tesh \
+	masterslave/masterslave.tesh \
+	masterslave/masterslave_forwarder.tesh
+CLEANFILES = sendrecv/*~ \
+             sendrecv/sendrecv \
+             suspend/*~ \
+             suspend/suspend \
+             masterslave/*~ \
+             masterslave/masterslave \
+             masterslave/masterslave_forwarder
 
-#msg_test_surfxml_bypassed_SOURCES = msg_test_surfxml_bypassed.c
-#msg_test_surfxml_bypassed_LDADD = $(top_builddir)/src/libsimgrid.la
-msg_test_suspend_SOURCES = msg_test_suspend.c
-msg_test_suspend_LDADD = $(top_builddir)/src/libsimgrid.la
-ping_pong_SOURCES = ping_pong.c
-ping_pong_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# sendrecv simple example
+sendrecv_sendrecv_SOURCES = sendrecv/sendrecv.c
+sendrecv_sendrecv_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# suspend/resume simple example
+suspend_suspend_SOURCES = suspend/suspend.c
+suspend_suspend_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# master/slave application example using a forwarder module
+masterslave_masterslave_SOURCES = masterslave/masterslave.c
+masterslave_masterslave_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# verify the communication time of a simple simulation
+masterslave_masterslave_forwarder_SOURCES = masterslave/masterslave_forwarder.c
+masterslave_masterslave_forwarder_LDADD = $(top_builddir)/src/libsimgrid.la
 all: all-am
 
 .SUFFIXES:
@@ -273,30 +305,55 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-basic.tesh: $(top_builddir)/config.status $(srcdir)/basic.tesh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-small_plat.tesh: $(top_builddir)/config.status $(srcdir)/small_plat.tesh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-suspend.tesh: $(top_builddir)/config.status $(srcdir)/suspend.tesh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-flexml_bypass.tesh: $(top_builddir)/config.status $(srcdir)/flexml_bypass.tesh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	     || test -f $$p1 \
+	  ; then \
+	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(bindir)/$$f'"; \
+	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(bindir)/$$f" || exit 1; \
+	  else :; fi; \
+	done
 
-clean-checkPROGRAMS:
-	@list='$(check_PROGRAMS)'; for p in $$list; do \
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
+	done
+
+clean-binPROGRAMS:
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-msg_test$(EXEEXT): $(msg_test_OBJECTS) $(msg_test_DEPENDENCIES) 
-	@rm -f msg_test$(EXEEXT)
-	$(LINK) $(msg_test_OBJECTS) $(msg_test_LDADD) $(LIBS)
-msg_test_suspend$(EXEEXT): $(msg_test_suspend_OBJECTS) $(msg_test_suspend_DEPENDENCIES) 
-	@rm -f msg_test_suspend$(EXEEXT)
-	$(LINK) $(msg_test_suspend_OBJECTS) $(msg_test_suspend_LDADD) $(LIBS)
-ping_pong$(EXEEXT): $(ping_pong_OBJECTS) $(ping_pong_DEPENDENCIES) 
-	@rm -f ping_pong$(EXEEXT)
-	$(LINK) $(ping_pong_OBJECTS) $(ping_pong_LDADD) $(LIBS)
+masterslave/$(am__dirstamp):
+	@$(MKDIR_P) masterslave
+	@: > masterslave/$(am__dirstamp)
+masterslave/masterslave$(EXEEXT): $(masterslave_masterslave_OBJECTS) $(masterslave_masterslave_DEPENDENCIES) masterslave/$(am__dirstamp)
+	@rm -f masterslave/masterslave$(EXEEXT)
+	$(LINK) $(masterslave_masterslave_OBJECTS) $(masterslave_masterslave_LDADD) $(LIBS)
+masterslave/masterslave_forwarder$(EXEEXT): $(masterslave_masterslave_forwarder_OBJECTS) $(masterslave_masterslave_forwarder_DEPENDENCIES) masterslave/$(am__dirstamp)
+	@rm -f masterslave/masterslave_forwarder$(EXEEXT)
+	$(LINK) $(masterslave_masterslave_forwarder_OBJECTS) $(masterslave_masterslave_forwarder_LDADD) $(LIBS)
+sendrecv/$(am__dirstamp):
+	@$(MKDIR_P) sendrecv
+	@: > sendrecv/$(am__dirstamp)
+sendrecv/sendrecv$(EXEEXT): $(sendrecv_sendrecv_OBJECTS) $(sendrecv_sendrecv_DEPENDENCIES) sendrecv/$(am__dirstamp)
+	@rm -f sendrecv/sendrecv$(EXEEXT)
+	$(LINK) $(sendrecv_sendrecv_OBJECTS) $(sendrecv_sendrecv_LDADD) $(LIBS)
+suspend/$(am__dirstamp):
+	@$(MKDIR_P) suspend
+	@: > suspend/$(am__dirstamp)
+suspend/suspend$(EXEEXT): $(suspend_suspend_OBJECTS) $(suspend_suspend_DEPENDENCIES) suspend/$(am__dirstamp)
+	@rm -f suspend/suspend$(EXEEXT)
+	$(LINK) $(suspend_suspend_OBJECTS) $(suspend_suspend_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -304,9 +361,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_test_suspend.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ping_pong.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_forwarder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sendrecv.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/suspend.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -328,6 +386,62 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+masterslave.o: masterslave/masterslave.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT masterslave.o -MD -MP -MF $(DEPDIR)/masterslave.Tpo -c -o masterslave.o `test -f 'masterslave/masterslave.c' || echo '$(srcdir)/'`masterslave/masterslave.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/masterslave.Tpo $(DEPDIR)/masterslave.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='masterslave/masterslave.c' object='masterslave.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o masterslave.o `test -f 'masterslave/masterslave.c' || echo '$(srcdir)/'`masterslave/masterslave.c
+
+masterslave.obj: masterslave/masterslave.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT masterslave.obj -MD -MP -MF $(DEPDIR)/masterslave.Tpo -c -o masterslave.obj `if test -f 'masterslave/masterslave.c'; then $(CYGPATH_W) 'masterslave/masterslave.c'; else $(CYGPATH_W) '$(srcdir)/masterslave/masterslave.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/masterslave.Tpo $(DEPDIR)/masterslave.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='masterslave/masterslave.c' object='masterslave.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o masterslave.obj `if test -f 'masterslave/masterslave.c'; then $(CYGPATH_W) 'masterslave/masterslave.c'; else $(CYGPATH_W) '$(srcdir)/masterslave/masterslave.c'; fi`
+
+masterslave_forwarder.o: masterslave/masterslave_forwarder.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT masterslave_forwarder.o -MD -MP -MF $(DEPDIR)/masterslave_forwarder.Tpo -c -o masterslave_forwarder.o `test -f 'masterslave/masterslave_forwarder.c' || echo '$(srcdir)/'`masterslave/masterslave_forwarder.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/masterslave_forwarder.Tpo $(DEPDIR)/masterslave_forwarder.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='masterslave/masterslave_forwarder.c' object='masterslave_forwarder.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o masterslave_forwarder.o `test -f 'masterslave/masterslave_forwarder.c' || echo '$(srcdir)/'`masterslave/masterslave_forwarder.c
+
+masterslave_forwarder.obj: masterslave/masterslave_forwarder.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT masterslave_forwarder.obj -MD -MP -MF $(DEPDIR)/masterslave_forwarder.Tpo -c -o masterslave_forwarder.obj `if test -f 'masterslave/masterslave_forwarder.c'; then $(CYGPATH_W) 'masterslave/masterslave_forwarder.c'; else $(CYGPATH_W) '$(srcdir)/masterslave/masterslave_forwarder.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/masterslave_forwarder.Tpo $(DEPDIR)/masterslave_forwarder.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='masterslave/masterslave_forwarder.c' object='masterslave_forwarder.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o masterslave_forwarder.obj `if test -f 'masterslave/masterslave_forwarder.c'; then $(CYGPATH_W) 'masterslave/masterslave_forwarder.c'; else $(CYGPATH_W) '$(srcdir)/masterslave/masterslave_forwarder.c'; fi`
+
+sendrecv.o: sendrecv/sendrecv.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sendrecv.o -MD -MP -MF $(DEPDIR)/sendrecv.Tpo -c -o sendrecv.o `test -f 'sendrecv/sendrecv.c' || echo '$(srcdir)/'`sendrecv/sendrecv.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sendrecv.Tpo $(DEPDIR)/sendrecv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sendrecv/sendrecv.c' object='sendrecv.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sendrecv.o `test -f 'sendrecv/sendrecv.c' || echo '$(srcdir)/'`sendrecv/sendrecv.c
+
+sendrecv.obj: sendrecv/sendrecv.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sendrecv.obj -MD -MP -MF $(DEPDIR)/sendrecv.Tpo -c -o sendrecv.obj `if test -f 'sendrecv/sendrecv.c'; then $(CYGPATH_W) 'sendrecv/sendrecv.c'; else $(CYGPATH_W) '$(srcdir)/sendrecv/sendrecv.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sendrecv.Tpo $(DEPDIR)/sendrecv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sendrecv/sendrecv.c' object='sendrecv.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sendrecv.obj `if test -f 'sendrecv/sendrecv.c'; then $(CYGPATH_W) 'sendrecv/sendrecv.c'; else $(CYGPATH_W) '$(srcdir)/sendrecv/sendrecv.c'; fi`
+
+suspend.o: suspend/suspend.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT suspend.o -MD -MP -MF $(DEPDIR)/suspend.Tpo -c -o suspend.o `test -f 'suspend/suspend.c' || echo '$(srcdir)/'`suspend/suspend.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/suspend.Tpo $(DEPDIR)/suspend.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='suspend/suspend.c' object='suspend.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o suspend.o `test -f 'suspend/suspend.c' || echo '$(srcdir)/'`suspend/suspend.c
+
+suspend.obj: suspend/suspend.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT suspend.obj -MD -MP -MF $(DEPDIR)/suspend.Tpo -c -o suspend.obj `if test -f 'suspend/suspend.c'; then $(CYGPATH_W) 'suspend/suspend.c'; else $(CYGPATH_W) '$(srcdir)/suspend/suspend.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/suspend.Tpo $(DEPDIR)/suspend.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='suspend/suspend.c' object='suspend.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o suspend.obj `if test -f 'suspend/suspend.c'; then $(CYGPATH_W) 'suspend/suspend.c'; else $(CYGPATH_W) '$(srcdir)/suspend/suspend.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -483,11 +597,13 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile
+all-am: Makefile $(PROGRAMS)
 installdirs:
+	for dir in "$(DESTDIR)$(bindir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -509,14 +625,16 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+	-rm -f masterslave/$(am__dirstamp)
+	-rm -f sendrecv/$(am__dirstamp)
+	-rm -f suspend/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -538,7 +656,7 @@ install-data-am:
 
 install-dvi: install-dvi-am
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-am
 
@@ -570,15 +688,15 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-binPROGRAMS
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-checkPROGRAMS clean-generic clean-libtool ctags \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
+	clean-binPROGRAMS clean-generic clean-libtool ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
@@ -586,13 +704,20 @@ uninstall-am:
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am
+	tags uninstall uninstall-am uninstall-binPROGRAMS
 
+        #masterslave/masterslave_bypass.tesh
+             #masterslave/masterslave_bypass
+               #masterslave/masterslave_bypass
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
+
+# bypass the surf xml parser
+#masterslave_masterslave_bypass_SOURCES = masterslave/masterslave_bypass.c
+#masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -7,9 +7,11 @@ EXTRA_DIST = msg_platform.xml \
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
-TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
-        sendrecv/sendrecv_KCCFLN05_proportional.tesh \
-        sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
+TESTS = sendrecv/sendrecv_KCCFLN05.tesh
+if HAVE_SDP
+  TESTS += sendrecv/sendrecv_KCCFLN05_proportional.tesh
+endif
+TESTS+= sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
         sendrecv/sendrecv_KCCFLN05_Reno.tesh \
         suspend/suspend.tesh \
 	masterslave/masterslave.tesh \
