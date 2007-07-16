@@ -1,0 +1,23 @@
+#! ./tesh
+
+p Testing the surf network Vegas fairness model using lagrangian approach
+
+$ sendrecv/sendrecv @srcdir@/sendrecv/platform_sendrecv.xml @srcdir@/sendrecv/deployment_sendrecv.xml KCCFLN05_Vegas
+> [0.000000] [xbt_cfg/INFO] type in variable = 2
+> [0.000000] [msg_test/INFO] test_all
+> [Inmos:sender:(1) 0.000000] [msg_test/INFO] sender
+> [Inmos:sender:(1) 0.000000] [msg_test/INFO] host = Bellevue
+> [Inmos:sender:(1) 0.000000] [msg_test/INFO] task_la->data = 0.000000e+00
+> [Bellevue:receiver:(2) 0.000000] [msg_test/INFO] receiver
+> [0.100000] [surf_lagrange/INFO] Checking KKT: sat = 1.272565e-02 mu = 9.999999e-07
+> [Inmos:sender:(1) 0.100100] [msg_test/INFO] task_bw->data = 1.001000e-01
+> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] Task received : latency task
+> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] Communic. time 1.001000e-01
+> [Bellevue:receiver:(2) 0.100100] [msg_test/INFO] --- la 0.100100 ----
+> [0.200100] [surf_lagrange/INFO] Checking KKT: sat = 1.272565e-02 mu = 9.999999e-07
+> [Bellevue:receiver:(2) 10000.198827] [msg_test/INFO] Task received : bandwidth task
+> [Bellevue:receiver:(2) 10000.198827] [msg_test/INFO] Communic. time 1.000010e+04
+> [Bellevue:receiver:(2) 10000.198827] [msg_test/INFO] --- bw 99999.012735 ----
+> [10000.198827] [msg_test/INFO] Total simulation time: 1.000020e+04
+
+
