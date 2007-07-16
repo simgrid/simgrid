@@ -40,7 +40,7 @@ void SIMIX_create_environment(const char *file)
   surf_timer_resource_init(file);
 
   /* which model do you want today? */
-  workstation_model_name = xbt_cfg_get_string (_simix_cfg_set, "surf_workstation_model");
+  workstation_model_name = xbt_cfg_get_string (_simix_cfg_set, "workstation_model");
 
   DEBUG1("Model : %s", workstation_model_name);
   if (!strcmp(workstation_model_name,"KCCFLN05")) {

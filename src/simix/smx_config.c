@@ -15,8 +15,8 @@ int _simix_init_status = 0; /* 0: beginning of time;
                              2: inited (running) */
 xbt_cfg_t _simix_cfg_set = NULL;
 
-/* callback of the surf_workstation_model variable */
-static void _simix_cfg_cb__surf_workstation_model(const char *name, int pos) 
+/* callback of the workstation_model variable */
+static void _simix_cfg_cb__workstation_model(const char *name, int pos) 
 {
   char *val;
 
@@ -43,10 +43,10 @@ void simix_config_init(void)
   _simix_cfg_set = xbt_cfg_new();
   
   xbt_cfg_register (_simix_cfg_set, 
-                    "surf_workstation_model", xbt_cfgelm_string, 1,1,
-                    &_simix_cfg_cb__surf_workstation_model,NULL);
+                    "workstation_model", xbt_cfgelm_string, 1,1,
+                    &_simix_cfg_cb__workstation_model,NULL);
                     
-  xbt_cfg_set_string(_simix_cfg_set,"surf_workstation_model", "KCCFLN05");
+  xbt_cfg_set_string(_simix_cfg_set,"workstation_model", "KCCFLN05");
 }
 
 void simix_config_finalize(void) 
@@ -62,7 +62,7 @@ void simix_config_finalize(void)
 /** \brief Set a configuration variable
  * 
  * Currently existing configuration variable:
- *   - surf_workstation_model (string): Model of workstation to use.  
+ *   - workstation_model (string): Model of workstation to use.  
  *     Possible values (defaults to "KCCFLN05"):
  *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + support for parallel tasks
  *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file.
