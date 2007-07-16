@@ -226,7 +226,7 @@ void __SIMIX_cond_wait(smx_cond_t cond)
 /**
  * \brief Waits on a condition with timeout.
  *
- * Same behavior of #SIMIX_cond_wait, but waits a maximum time.
+ * Same behavior of #SIMIX_cond_wait, but waits a maximum time and throws an timeout_error if it happens.
  * \param cond A condition
  * \param mutex A mutex
  * \param max_duration Timeout time
@@ -245,7 +245,14 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_durat
 		SIMIX_register_condition_to_action(act_sleep,cond);
 		__SIMIX_cond_wait(cond);
 		xbt_fifo_remove(act_sleep->cond_list,cond);
-		SIMIX_action_destroy(act_sleep);
+		if ( SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
+			SIMIX_action_destroy(act_sleep);
+			THROW0(timeout_error,0,"Condition timeout"); 
+		}
+		else {
+			SIMIX_action_destroy(act_sleep);
+		}
+
 	}
 	else
 		__SIMIX_cond_wait(cond);
