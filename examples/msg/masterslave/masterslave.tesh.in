@@ -1,0 +1,125 @@
+#! ./tesh
+
+p Testing a simple master/slave example application
+
+$ ./masterslave/masterslave @srcdir@/small_platform.xml @srcdir@/masterslave/deployment_masterslave.xml 
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slave(s) :
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Jupiter
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Fafard
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Ginette
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Bourassa
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Tremblay
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 20 task to process :
+> [Tremblay:master:(1) 0.016077] [msg_test/INFO] Send completed
+> [Jupiter:slave:(3) 0.016077] [msg_test/INFO] Received "Task"
+> [Jupiter:slave:(3) 0.016077] [msg_test/INFO] Communication time : "0.016077"
+> [Jupiter:slave:(3) 0.016077] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.037813] [msg_test/INFO] Send completed
+> [Fafard:slave:(4) 0.037813] [msg_test/INFO] Received "Task"
+> [Fafard:slave:(4) 0.037813] [msg_test/INFO] Communication time : "0.021736"
+> [Fafard:slave:(4) 0.037813] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.051808] [msg_test/INFO] Send completed
+> [Ginette:slave:(5) 0.051808] [msg_test/INFO] Received "Task"
+> [Ginette:slave:(5) 0.051808] [msg_test/INFO] Communication time : "0.013995"
+> [Ginette:slave:(5) 0.051808] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.073317] [msg_test/INFO] Send completed
+> [Bourassa:slave:(6) 0.073317] [msg_test/INFO] Received "Task"
+> [Bourassa:slave:(6) 0.073317] [msg_test/INFO] Communication time : "0.021509"
+> [Bourassa:slave:(6) 0.073317] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.073533] [msg_test/INFO] Send completed
+> [Tremblay:slave:(2) 0.073533] [msg_test/INFO] Received "Task"
+> [Tremblay:slave:(2) 0.073533] [msg_test/INFO] Communication time : "0.000216"
+> [Tremblay:slave:(2) 0.073533] [msg_test/INFO] Processing "Task"
+> [Jupiter:slave:(3) 0.081611] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.097688] [msg_test/INFO] Send completed
+> [Jupiter:slave:(3) 0.097688] [msg_test/INFO] Received "Task"
+> [Jupiter:slave:(3) 0.097688] [msg_test/INFO] Communication time : "0.016077"
+> [Jupiter:slave:(3) 0.097688] [msg_test/INFO] Processing "Task"
+> [Fafard:slave:(4) 0.103347] [msg_test/INFO] "Task" done
+> [Tremblay:slave:(2) 0.124504] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.125083] [msg_test/INFO] Send completed
+> [Fafard:slave:(4) 0.125083] [msg_test/INFO] Received "Task"
+> [Fafard:slave:(4) 0.125083] [msg_test/INFO] Communication time : "0.021736"
+> [Fafard:slave:(4) 0.125083] [msg_test/INFO] Processing "Task"
+> [Ginette:slave:(5) 0.154918] [msg_test/INFO] "Task" done
+> [Jupiter:slave:(3) 0.163222] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.168913] [msg_test/INFO] Send completed
+> [Ginette:slave:(5) 0.168913] [msg_test/INFO] Received "Task"
+> [Ginette:slave:(5) 0.168913] [msg_test/INFO] Communication time : "0.013995"
+> [Ginette:slave:(5) 0.168913] [msg_test/INFO] Processing "Task"
+> [Bourassa:slave:(6) 0.176427] [msg_test/INFO] "Task" done
+> [Fafard:slave:(4) 0.190618] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.197936] [msg_test/INFO] Send completed
+> [Bourassa:slave:(6) 0.197936] [msg_test/INFO] Received "Task"
+> [Bourassa:slave:(6) 0.197936] [msg_test/INFO] Communication time : "0.021509"
+> [Bourassa:slave:(6) 0.197936] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.198152] [msg_test/INFO] Send completed
+> [Tremblay:slave:(2) 0.198152] [msg_test/INFO] Received "Task"
+> [Tremblay:slave:(2) 0.198152] [msg_test/INFO] Communication time : "0.000216"
+> [Tremblay:slave:(2) 0.198152] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.214228] [msg_test/INFO] Send completed
+> [Jupiter:slave:(3) 0.214228] [msg_test/INFO] Received "Task"
+> [Jupiter:slave:(3) 0.214228] [msg_test/INFO] Communication time : "0.016077"
+> [Jupiter:slave:(3) 0.214228] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.235965] [msg_test/INFO] Send completed
+> [Fafard:slave:(4) 0.235965] [msg_test/INFO] Received "Task"
+> [Fafard:slave:(4) 0.235965] [msg_test/INFO] Communication time : "0.021736"
+> [Fafard:slave:(4) 0.235965] [msg_test/INFO] Processing "Task"
+> [Tremblay:slave:(2) 0.249123] [msg_test/INFO] "Task" done
+> [Ginette:slave:(5) 0.272023] [msg_test/INFO] "Task" done
+> [Jupiter:slave:(3) 0.279763] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.286018] [msg_test/INFO] Send completed
+> [Ginette:slave:(5) 0.286018] [msg_test/INFO] Received "Task"
+> [Ginette:slave:(5) 0.286018] [msg_test/INFO] Communication time : "0.013995"
+> [Ginette:slave:(5) 0.286018] [msg_test/INFO] Processing "Task"
+> [Bourassa:slave:(6) 0.301046] [msg_test/INFO] "Task" done
+> [Fafard:slave:(4) 0.301499] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.322555] [msg_test/INFO] Send completed
+> [Bourassa:slave:(6) 0.322555] [msg_test/INFO] Received "Task"
+> [Bourassa:slave:(6) 0.322555] [msg_test/INFO] Communication time : "0.021509"
+> [Bourassa:slave:(6) 0.322555] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.322770] [msg_test/INFO] Send completed
+> [Tremblay:slave:(2) 0.322770] [msg_test/INFO] Received "Task"
+> [Tremblay:slave:(2) 0.322770] [msg_test/INFO] Communication time : "0.000216"
+> [Tremblay:slave:(2) 0.322770] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.338847] [msg_test/INFO] Send completed
+> [Jupiter:slave:(3) 0.338847] [msg_test/INFO] Received "Task"
+> [Jupiter:slave:(3) 0.338847] [msg_test/INFO] Communication time : "0.016077"
+> [Jupiter:slave:(3) 0.338847] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.360583] [msg_test/INFO] Send completed
+> [Fafard:slave:(4) 0.360583] [msg_test/INFO] Received "Task"
+> [Fafard:slave:(4) 0.360583] [msg_test/INFO] Communication time : "0.021736"
+> [Fafard:slave:(4) 0.360583] [msg_test/INFO] Processing "Task"
+> [Tremblay:slave:(2) 0.373741] [msg_test/INFO] "Task" done
+> [Ginette:slave:(5) 0.389128] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.403123] [msg_test/INFO] Send completed
+> [Ginette:slave:(5) 0.403123] [msg_test/INFO] Received "Task"
+> [Ginette:slave:(5) 0.403123] [msg_test/INFO] Communication time : "0.013995"
+> [Ginette:slave:(5) 0.403123] [msg_test/INFO] Processing "Task"
+> [Jupiter:slave:(3) 0.404381] [msg_test/INFO] "Task" done
+> [Bourassa:slave:(6) 0.425664] [msg_test/INFO] "Task" done
+> [Fafard:slave:(4) 0.426118] [msg_test/INFO] "Task" done
+> [Tremblay:master:(1) 0.447173] [msg_test/INFO] Send completed
+> [Bourassa:slave:(6) 0.447173] [msg_test/INFO] Received "Task"
+> [Bourassa:slave:(6) 0.447173] [msg_test/INFO] Communication time : "0.021509"
+> [Bourassa:slave:(6) 0.447173] [msg_test/INFO] Processing "Task"
+> [Tremblay:master:(1) 0.447389] [msg_test/INFO] Send completed
+> [Tremblay:master:(1) 0.447389] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Tremblay:slave:(2) 0.447389] [msg_test/INFO] Received "Task"
+> [Tremblay:slave:(2) 0.447389] [msg_test/INFO] Communication time : "0.000216"
+> [Tremblay:slave:(2) 0.447389] [msg_test/INFO] Processing "Task"
+> [Jupiter:slave:(3) 0.448851] [msg_test/INFO] Received "finalize"
+> [Jupiter:slave:(3) 0.448851] [msg_test/INFO] I'm done. See you!
+> [Fafard:slave:(4) 0.450827] [msg_test/INFO] Received "finalize"
+> [Fafard:slave:(4) 0.450827] [msg_test/INFO] I'm done. See you!
+> [Tremblay:slave:(2) 0.498360] [msg_test/INFO] "Task" done
+> [Ginette:slave:(5) 0.506232] [msg_test/INFO] "Task" done
+> [Ginette:slave:(5) 0.507505] [msg_test/INFO] Received "finalize"
+> [Ginette:slave:(5) 0.507505] [msg_test/INFO] I'm done. See you!
+> [Bourassa:slave:(6) 0.550283] [msg_test/INFO] "Task" done
+> [Bourassa:slave:(6) 0.552239] [msg_test/INFO] Received "finalize"
+> [Bourassa:slave:(6) 0.552239] [msg_test/INFO] I'm done. See you!
+> [Tremblay:master:(1) 0.552254] [msg_test/INFO] Goodbye now!
+> [Tremblay:slave:(2) 0.552254] [msg_test/INFO] Received "finalize"
+> [Tremblay:slave:(2) 0.552254] [msg_test/INFO] I'm done. See you!
+> [0.552254] [msg_test/INFO] Simulation time 0.552254

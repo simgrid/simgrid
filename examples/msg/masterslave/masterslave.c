@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdio.h>
 #include "msg/msg.h" /* Yeah! If you want to use msg, you need to include msg/msg.h */
 #include "xbt/sysdep.h" /* calloc, printf */
 
@@ -30,7 +31,6 @@ int master(int argc, char *argv[])
 {
   int slaves_count = 0;
   m_host_t *slaves = NULL;
-  m_task_t *todo = NULL;
   int number_of_tasks = 0;
   double task_comp_size = 0;
   double task_comm_size = 0;
@@ -60,7 +60,7 @@ int master(int argc, char *argv[])
 
   INFO1("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    INFO1("\t %s", slaves[i]->name);
+    INFO1("%s", slaves[i]->name);
 
   INFO1("Got %d task to process :", number_of_tasks);
 
@@ -94,17 +94,17 @@ int slave(int argc, char *argv[])
     a = MSG_task_get(&(task), PORT_22);
     time2 = MSG_get_clock();
     if (a == MSG_OK) {
-      INFO1("Received \"%s\" ", MSG_task_get_name(task));
+      INFO1("Received \"%s\"", MSG_task_get_name(task));
       if(MSG_task_get_data(task)==FINALIZE) {
 	MSG_task_destroy(task);
 	break;
       }
       if(time1<*((double *)task->data))
 	time1 = *((double *) task->data);
-      INFO1("Communication time :  \"%f\" ", time2-time1);      
-      INFO1("Processing \"%s\" ", MSG_task_get_name(task));
+      INFO1("Communication time : \"%f\"", time2-time1);
+      INFO1("Processing \"%s\"", MSG_task_get_name(task));
       MSG_task_execute(task);
-      INFO1("\"%s\" done ", MSG_task_get_name(task));
+      INFO1("\"%s\" done", MSG_task_get_name(task));
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
