@@ -36,11 +36,11 @@ void gras_main(void);
  *  @return number of second since the Epoch.
  *  (00:00:00 UTC, January 1, 1970 in Real Life, and begining of simulation in SG)
  */
-#define gras_os_time() xbt_os_time()
+#define gras_os_time() xbt_time()
 /** @brief sleeps for the given amount of time.
  *  @param sec: number of seconds to sleep
  */
-#define gras_os_sleep(sec) xbt_os_sleep(sec) 
+#define gras_os_sleep(sec) xbt_sleep(sec) 
 /** @brief get the fully-qualified name of the current host
  *
  * Returns the fully-qualified name of the host machine, or "localhost" if the name
