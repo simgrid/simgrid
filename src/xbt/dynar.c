@@ -25,7 +25,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
 
-
+#define _dynar_lock(dynar) \
+           if (dynar->mutex) \
+              xbt_mutex_lock(dynar->mutex)
+#define _dynar_unlock(dynar) \
+           if (dynar->mutex) \
+              xbt_mutex_unlock(dynar->mutex)
 #define _sanity_check_dynar(dynar)       \
            xbt_assert0(dynar,           \
 			"dynar is NULL")
@@ -47,6 +52,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
            if (dynar->used == 0)              \
              THROW1(bound_error,0,            \
                     "dynar %p is empty", dynar)
+
 
 static XBT_INLINE 
 void _xbt_clear_mem(void * const ptr,
@@ -119,6 +125,44 @@ _xbt_dynar_put_elm(const xbt_dynar_t  dynar,
   memcpy(elm, src, elmsize);
 }
 
+static XBT_INLINE 
+void
+_xbt_dynar_remove_at(xbt_dynar_t  const dynar,
+                     const int            idx,
+                     void         * const object) {
+
+  unsigned long nb_shift;
+  unsigned long offset;
+
+  _sanity_check_dynar(dynar);
+  _sanity_check_idx(idx);
+  _check_inbound_idx(dynar, idx);
+
+  if (object) {
+    _xbt_dynar_get_elm(object, dynar, idx);
+  } else if (dynar->free_f) {
+    if (dynar->elmsize <= SIZEOF_MAX) {
+       char elm[SIZEOF_MAX];
+       _xbt_dynar_get_elm(elm, dynar, idx);
+       (*dynar->free_f)(elm);
+    } else {
+       char *elm=malloc(dynar->elmsize);
+       _xbt_dynar_get_elm(elm, dynar, idx);
+       (*dynar->free_f)(elm);
+       free(elm);
+    }
+  }
+
+  nb_shift =  dynar->used-1 - idx;
+  offset   =  nb_shift * dynar->elmsize;
+
+  memmove(_xbt_dynar_elm(dynar, idx),
+          _xbt_dynar_elm(dynar, idx+1), 
+          offset);
+
+  dynar->used--;
+}
+
 void
 xbt_dynar_dump(xbt_dynar_t dynar) {
   INFO5("Dynar dump: size=%lu; used=%lu; elmsize=%lu; data=%p; free_f=%p",
@@ -160,7 +204,6 @@ xbt_dynar_new_sync(const unsigned long elmsize,
                void_f_pvoid_t * const free_f) {
    xbt_dynar_t res = xbt_dynar_new(elmsize,free_f);
    res->mutex = xbt_mutex_init();
-   res->synchro_process_pid = -1;
    return res;
 }
 
@@ -454,37 +497,8 @@ xbt_dynar_remove_at(xbt_dynar_t  const dynar,
                      const int            idx,
                      void         * const object) {
 
-  unsigned long nb_shift;
-  unsigned long offset;
-
   _dynar_lock(dynar);
-  _sanity_check_dynar(dynar);
-  _sanity_check_idx(idx);
-  _check_inbound_idx(dynar, idx);
-
-  if (object) {
-    _xbt_dynar_get_elm(object, dynar, idx);
-  } else if (dynar->free_f) {
-    if (dynar->elmsize <= SIZEOF_MAX) {
-       char elm[SIZEOF_MAX];
-       _xbt_dynar_get_elm(elm, dynar, idx);
-       (*dynar->free_f)(elm);
-    } else {
-       char *elm=malloc(dynar->elmsize);
-       _xbt_dynar_get_elm(elm, dynar, idx);
-       (*dynar->free_f)(elm);
-       free(elm);
-    }
-  }
-
-  nb_shift =  dynar->used-1 - idx;
-  offset   =  nb_shift * dynar->elmsize;
-
-  memmove(_xbt_dynar_elm(dynar, idx),
-          _xbt_dynar_elm(dynar, idx+1), 
-          offset);
-
-  dynar->used--;
+	_xbt_dynar_remove_at(dynar, idx, object);
   _dynar_unlock(dynar);
 }
 
@@ -687,7 +701,7 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 			  int          * const cursor) {
   
-  xbt_dynar_remove_at(dynar,(*cursor)--,NULL);
+  _xbt_dynar_remove_at(dynar,(*cursor)--,NULL);
 }
 
 /** @brief Unlocks a synchronized dynar when you want to break the traversal
@@ -698,20 +712,6 @@ void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
  */
 void xbt_dynar_cursor_unlock(xbt_dynar_t dynar) {
   _dynar_unlock(dynar);
-}
-
-void _dynar_lock(xbt_dynar_t dynar) {
-	if ( (dynar->mutex) && (dynar->synchro_process_pid != xbt_getpid()) ) {
-		xbt_mutex_lock(dynar->mutex);
-		dynar->synchro_process_pid = xbt_getpid();
-	}
-
-}
-void _dynar_unlock(xbt_dynar_t dynar) {
-	if (dynar->mutex) {
-		xbt_mutex_unlock(dynar->mutex);
-		dynar->synchro_process_pid = -1;
-	}
 }
 
 #ifdef SIMGRID_TEST

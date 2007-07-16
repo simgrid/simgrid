@@ -175,10 +175,12 @@ gras_socket_t gras_trp_select(double timeout) {
 	 gras_socket_t accepted=NULL;
 	 
 	 /* release mutex before accept */
+	 xbt_dynar_cursor_unlock(sockets);
 	 accepted = (sock_iter->plugin->socket_accept)(sock_iter);
 
 	 DEBUG2("accepted=%p,&accepted=%p",accepted,&accepted);
 	 accepted->meas = sock_iter->meas;
+	 break;
 
        } else if (sock_iter->recv_ok) {
 	 /* Make sure the socket is still alive by reading the first byte */

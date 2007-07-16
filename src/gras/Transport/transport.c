@@ -338,7 +338,7 @@ gras_socket_client_from_string(const char *host) {
 /** \brief Close socket */
 void gras_socket_close(gras_socket_t sock) {
   xbt_dynar_t sockets = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
-  gras_socket_t sock_iter;
+  gras_socket_t sock_iter = NULL;
   int cursor;
 
   XBT_IN;
@@ -355,7 +355,10 @@ void gras_socket_close(gras_socket_t sock) {
   /* FIXME: Issue an event when the socket is closed */
 	DEBUG1("sockets pointer before %p",sockets);
   if (sock) {
-		xbt_dynar_foreach(sockets,cursor,sock_iter) {
+	/* FIXME: Cannot get the dynar mutex, because it can be already locked */
+//		_xbt_dynar_foreach(sockets,cursor,sock_iter) {
+		for (cursor=0; cursor< xbt_dynar_length(sockets); cursor++)  {
+			_xbt_dynar_cursor_get(sockets,&cursor,&sock_iter);
 			if (sock == sock_iter) {
 				DEBUG2("remove sock cursor %d dize %lu\n",cursor,xbt_dynar_length(sockets));
 				xbt_dynar_cursor_rm(sockets,&cursor);
@@ -367,7 +370,6 @@ void gras_socket_close(gras_socket_t sock) {
 					free(sock->peer_name);
 				free(sock);
 				XBT_OUT;
-				xbt_dynar_cursor_unlock(sockets);
 				return;
 			}
     }
