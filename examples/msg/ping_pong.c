@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
      KCCFLN05_Vegas        => for TCP Vegas
      KCCFLN05_Reno         => for TCP Reno
   */
-  MSG_config("surf_workstation_model", argv[3]);
+  MSG_config("workstation_model", argv[3]);
 
   res = test_all(argv[1],argv[2]);
 

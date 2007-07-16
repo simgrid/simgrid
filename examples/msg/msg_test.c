@@ -186,7 +186,7 @@ MSG_error_t test_all(const char *platform_file,
 {
   MSG_error_t res = MSG_OK;
 
-  /* MSG_config("surf_workstation_model","KCCFLN05"); */
+  MSG_config("workstation_model","CLM03");
   {				/*  Simulation setting */
     MSG_set_channel_number(MAX_CHANNEL);
     MSG_paje_output("msg_test.trace");
