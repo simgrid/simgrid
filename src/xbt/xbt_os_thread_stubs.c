@@ -31,68 +31,68 @@ void xbt_os_thread_mod_exit(void) {}
 /* Main functions */
 
 xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,void* param) {
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_thread_create)");
 }
 
 void xbt_os_thread_exit(int *retcode){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_thread_exit)");
 }
 
 xbt_os_thread_t xbt_os_thread_self(void){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_thread_self)");
 }
 
 void xbt_os_thread_yield(void){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_thread_yield)");
 }
 
 
 xbt_os_mutex_t xbt_os_mutex_init(void){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_init)");
 }
 
 void xbt_os_mutex_lock(xbt_os_mutex_t mutex){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_lock)");
 }
 
 void xbt_os_mutex_unlock(xbt_os_mutex_t mutex){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_unlock)");
 }
 
 void xbt_os_mutex_destroy(xbt_os_mutex_t mutex){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_mutex_destroy)");
 }
 
 xbt_os_cond_t xbt_os_cond_init(void){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_cond_init)");
 }
 
 void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_cond_wait)");
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_cond_signal)");
 }
 
 void xbt_os_cond_broadcast(xbt_os_cond_t cond){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_cond_broadcast)");
 }
 
 void xbt_os_cond_destroy(xbt_os_cond_t cond){
-   xbt_backtrace_display();
+   xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_cond_destroy)");
 }
 
