@@ -1,26 +1,54 @@
-INCLUDES= -I$(top_srcdir)/include
-AM_CFLAGS=-g
-EXTRA_DIST= msg_deployment.xml msg_platform.xml small_platform.xml small_deployment.xml msg_deployment_suspend.xml \
-            flexml_bypass.tesh
+INCLUDES  = -I$(top_srcdir)/include
+AM_CFLAGS = -g
 
-CLEANFILES=msg_test.trace
+EXTRA_DIST = msg_platform.xml \
+             sendrecv/platform_sendrecv.xml \
+             sendrecv/deployment_sendrecv.xml
 
-TESTS_ENVIRONMENT=$(top_builddir)/tools/tesh/tesh
-TESTS=basic.tesh small_plat.tesh suspend.tesh
-# flexml_bypass.tesh
-check_PROGRAMS=msg_test msg_test_suspend ping_pong 
-# msg_test_surfxml_bypassed
+TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
-msg_test_SOURCES= msg_test.c
-msg_test_LDADD=	$(top_builddir)/src/libsimgrid.la
+TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
+        sendrecv/sendrecv_KCCFLN05_proportional.tesh \
+        sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
+        sendrecv/sendrecv_KCCFLN05_Reno.tesh \
+        suspend/suspend.tesh \
+	masterslave/masterslave.tesh \
+	masterslave/masterslave_forwarder.tesh
+        #masterslave/masterslave_bypass.tesh
 
-#msg_test_surfxml_bypassed_SOURCES = msg_test_surfxml_bypassed.c
-#msg_test_surfxml_bypassed_LDADD = $(top_builddir)/src/libsimgrid.la
+CLEANFILES = sendrecv/*~ \
+             sendrecv/sendrecv \
+             suspend/*~ \
+             suspend/suspend \
+             masterslave/*~ \
+             masterslave/masterslave \
+             masterslave/masterslave_forwarder
+             #masterslave/masterslave_bypass
 
-msg_test_suspend_SOURCES= msg_test_suspend.c
-msg_test_suspend_LDADD=	$(top_builddir)/src/libsimgrid.la
+bin_PROGRAMS = sendrecv/sendrecv \
+               suspend/suspend \
+               masterslave/masterslave \
+               masterslave/masterslave_forwarder
+               #masterslave/masterslave_bypass
 
-ping_pong_SOURCES= ping_pong.c
-ping_pong_LDADD= $(top_builddir)/src/libsimgrid.la
+# sendrecv simple example
+sendrecv_sendrecv_SOURCES = sendrecv/sendrecv.c
+sendrecv_sendrecv_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# suspend/resume simple example
+suspend_suspend_SOURCES = suspend/suspend.c
+suspend_suspend_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# master/slave application example using a forwarder module
+masterslave_masterslave_SOURCES = masterslave/masterslave.c
+masterslave_masterslave_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# verify the communication time of a simple simulation
+masterslave_masterslave_forwarder_SOURCES = masterslave/masterslave_forwarder.c
+masterslave_masterslave_forwarder_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# bypass the surf xml parser
+#masterslave_masterslave_bypass_SOURCES = masterslave/masterslave_bypass.c
+#masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 include $(top_srcdir)/acmacro/dist-files.mk
