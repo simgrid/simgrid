@@ -13,7 +13,41 @@
 #include "xbt/xbt_os_time.h" /* this module */
 #include "xbt/log.h"
 #include "portable.h"
+#include <math.h> /* floor */
 
+double xbt_os_time(void) {
+#ifdef HAVE_GETTIMEOFDAY
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+
+  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
+#else
+  /* Poor resolution */
+  return (double)(time(NULL));
+#endif /* HAVE_GETTIMEOFDAY? */ 	
+}
+
+void xbt_os_sleep(double sec) {
+#ifdef HAVE_USLEEP
+  sleep(sec);
+  (void)usleep( (sec - floor(sec)) * 1000000);
+
+#elif _WIN32
+
+     Sleep((floor(sec) * 1000) +((sec - floor(sec)) * 1000));
+
+        
+#else /* don't have usleep. Use select to sleep less than one second */
+  struct timeval timeout;
+
+  
+  timeout.tv_sec =  (unsigned long)(sec);
+  timeout.tv_usec = (sec - floor(sec)) * 1000000;
+              
+  select(0, NULL, NULL, NULL, &timeout);
+#endif
+}
 
 /** @brief like free 
     @hideinitializer */

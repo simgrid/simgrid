@@ -15,7 +15,7 @@ SG_BEGIN_DECL()
  * Time management functions, returns the system time or sleeps a process. They work both on the simulated and real systems(GRAS). 
  */
 
-XBT_PUBLIC(double) xbt_os_time(void);
-XBT_PUBLIC(void) xbt_os_sleep(double sec);
+XBT_PUBLIC(double) xbt_time(void);
+XBT_PUBLIC(void) xbt_sleep(double sec);
 
 SG_END_DECL()

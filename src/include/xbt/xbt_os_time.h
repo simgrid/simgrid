@@ -18,6 +18,7 @@
   * Most users should use gras_os_time and should not use this function unless 
     they really know what they are doing. */
 XBT_PUBLIC(double) xbt_os_time(void);
+XBT_PUBLIC(void) xbt_os_sleep(double sec);
 
 typedef struct s_xbt_os_timer *xbt_os_timer_t;
 xbt_os_timer_t xbt_os_timer_new(void);

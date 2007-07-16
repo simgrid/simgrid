@@ -17,38 +17,9 @@
 #include "xbt/xbt_os_time.h" /* private */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_virtu);
-double xbt_os_time(void) {
-#ifdef HAVE_GETTIMEOFDAY
-  struct timeval tv;
-
-  gettimeofday(&tv, NULL);
-
-  return (double)(tv.tv_sec + tv.tv_usec / 1000000.0);
-#else
-  /* Poor resolution */
-  return (double)(time(NULL));
-#endif /* HAVE_GETTIMEOFDAY? */ 	
+double xbt_time(void) {
+	return xbt_os_time();
 }
-void xbt_os_sleep(double sec) {
-#ifdef HAVE_USLEEP
-  DEBUG1("Do sleep %f sec", sec);
-  sleep(sec);
-  (void)usleep( (sec - floor(sec)) * 1000000);
-
-#elif _WIN32
-     DEBUG1("Do sleep %f sec", sec);
-
-     Sleep((floor(sec) * 1000) +((sec - floor(sec)) * 1000));
-
-        
-#else /* don't have usleep. Use select to sleep less than one second */
-  struct timeval timeout;
-
-  DEBUG1("Do sleep %f sec", sec);
-  
-  timeout.tv_sec =  (unsigned long)(sec);
-  timeout.tv_usec = (sec - floor(sec)) * 1000000;
-              
-  select(0, NULL, NULL, NULL, &timeout);
-#endif
+void xbt_sleep(double sec) {
+	return xbt_os_sleep(sec);
 }

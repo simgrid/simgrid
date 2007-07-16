@@ -12,14 +12,14 @@
 /* 
  * Time elapsed since the begining of the simulation.
  */
-double xbt_os_time() {
+double xbt_time() {
   return SIMIX_get_clock();
 }
 
 /*
  * Freeze the process for the specified amount of time
  */
-void xbt_os_sleep(double sec) {
+void xbt_sleep(double sec) {
 	smx_action_t act_sleep;
 	smx_process_t proc = SIMIX_process_self();
 	smx_mutex_t mutex;
