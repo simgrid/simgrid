@@ -29,7 +29,7 @@ AC_PROG_LIBTOOL
 ###############
 ## System checks
 ##
-SG_CONFIGURE_PART(System checks...)
+SG_CONFIGURE_PART([System checks...])
 AC_PROG_CC(xlC gcc cc)
 AM_SANITY_CHECK
 AC_PROG_MAKE_SET
@@ -445,8 +445,13 @@ fi
 AC_CONFIG_FILES([
   examples/Makefile 
     examples/msg/Makefile
-      examples/msg/basic.tesh         examples/msg/small_plat.tesh 
-      examples/msg/suspend.tesh       examples/msg/flexml_bypass.tesh 
+      examples/msg/sendrecv/sendrecv_KCCFLN05.tesh
+      examples/msg/sendrecv/sendrecv_KCCFLN05_proportional.tesh
+      examples/msg/sendrecv/sendrecv_KCCFLN05_Vegas.tesh
+      examples/msg/sendrecv/sendrecv_KCCFLN05_Reno.tesh
+      examples/msg/suspend/suspend.tesh
+      examples/msg/masterslave/masterslave.tesh
+      examples/msg/masterslave/masterslave_forwarder.tesh
     examples/simdag/Makefile	    examples/simdag/test_simdag
     examples/gras/Makefile
       examples/gras/ping/Makefile   
@@ -465,7 +470,6 @@ AC_CONFIG_FILES([
 ],[
     for file in                                                 \
      \
-     examples/msg/run_msg_test                                  \
      examples/simdag/test_simdag				\
      examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
      examples/amok/saturate/test_sg  examples/amok/saturate/test_rl \
