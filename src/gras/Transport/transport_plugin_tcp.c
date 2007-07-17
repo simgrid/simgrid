@@ -140,24 +140,31 @@ static XBT_INLINE void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
     THROW1(system_error,0,"Socket allocation failed: %s", sock_errstr(sock_errno));
 
   if (setsockopt(sock->sd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)))
-     THROW1(system_error,0,"setsockopt failed, cannot condition the socket: %s",
+     THROW1(system_error,0,
+	    "setsockopt failed, cannot condition the socket: %s",
 	    sock_errstr(sock_errno));
    
-  if (setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF, (char *)&size, sizeof(size)) ||
-      setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, (char *)&size, sizeof(size))) {
+  if (   setsockopt(sock->sd, SOL_SOCKET, SO_RCVBUF,
+		    (char *)&size, sizeof(size)) 
+      || setsockopt(sock->sd, SOL_SOCKET, SO_SNDBUF, 
+		    (char *)&size, sizeof(size))) {
      WARN1("setsockopt failed, cannot set buffer size: %s",
 	   sock_errstr(sock_errno));
   }
 	
   if (bind(sock->sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
     tcp_close(sock->sd);
-    THROW2(system_error,0,"Cannot bind to port %d: %s",sock->port, sock_errstr(sock_errno));
+    THROW2(system_error,0,
+	   "Cannot bind to port %d: %s",
+	   sock->port, sock_errstr(sock_errno));
   }
 
   DEBUG2("Listen on port %d (sd=%d)",sock->port, sock->sd);
   if (listen(sock->sd, 5) < 0) {
     tcp_close(sock->sd);
-    THROW2(system_error,0,"Cannot listen on port %d: %s",sock->port,sock_errstr(sock_errno));
+    THROW2(system_error,0,
+	   "Cannot listen on port %d: %s",
+	   sock->port,sock_errstr(sock_errno));
   }
 
   VERB2("Openned a server socket on port %d (sd=%d)",sock->port,sock->sd);
