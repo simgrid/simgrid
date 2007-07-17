@@ -105,7 +105,6 @@ typedef struct {
   int myport; /* Port on which I listen myself */
    
   xbt_dynar_t sockets; /* all sockets known to this process */
-  fd_set *fdset; /* idem, in another formalism */
 
   /* SG only elements. In RL, they are part of the OS ;) */
    
