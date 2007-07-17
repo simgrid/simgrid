@@ -39,6 +39,8 @@ SimGrid (3.3-cvs) unstable; urgency=low
     only).
   * New module: xbt/queue [Mt]
     classical producer/consumer synchronization scheme
+  * xbt_dynar_new_sync() creates a synchronized dynar. All access
+    (using the classical functions will get serialized) [Mt]
 
  -- 
 
