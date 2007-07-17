@@ -445,13 +445,6 @@ fi
 AC_CONFIG_FILES([
   examples/Makefile 
     examples/msg/Makefile
-      examples/msg/sendrecv/sendrecv_KCCFLN05.tesh
-      examples/msg/sendrecv/sendrecv_KCCFLN05_proportional.tesh
-      examples/msg/sendrecv/sendrecv_KCCFLN05_Vegas.tesh
-      examples/msg/sendrecv/sendrecv_KCCFLN05_Reno.tesh
-      examples/msg/suspend/suspend.tesh
-      examples/msg/masterslave/masterslave.tesh
-      examples/msg/masterslave/masterslave_forwarder.tesh
     examples/simdag/Makefile	    examples/simdag/test_simdag
     examples/gras/Makefile
       examples/gras/ping/Makefile   
