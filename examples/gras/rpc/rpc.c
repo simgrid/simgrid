@@ -27,9 +27,9 @@ int server (int argc,char *argv[]);
 int forwarder (int argc,char *argv[]);
 int client (int argc,char *argv[]);
 
-static void exception_raising(void) {
-  THROW0(unknown_error,42,"Some error we will catch on client side");
-}
+#define exception_raising() \
+  THROW0(unknown_error,42,"Some error we will catch on client side")
+
 static void exception_catching(void) {
   int gotit = 0,i;
   xbt_ex_t e;
