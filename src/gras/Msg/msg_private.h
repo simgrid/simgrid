@@ -17,6 +17,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
+#include "xbt/queue.h"
 #include "xbt/set.h"
 #include "gras/transport.h"
 #include "gras/datadesc.h"
@@ -73,6 +74,13 @@ void gras_msg_send_ext(gras_socket_t   sock,
 		       gras_msgtype_t  msgtype,
 		       void           *payload);
 
+/* The thread in charge of receiving messages and queuing them */
+typedef struct s_gras_msg_listener_ *gras_msg_listener_t;
+gras_msg_listener_t
+gras_msg_listener_launch(xbt_queue_t msg_exchange);
+/* The caller has the responsability to cleanup the queues himself */
+void gras_msg_listener_shutdown(gras_msg_listener_t);
+
 /**
  * gras_cblist_t:
  *
@@ -119,6 +127,7 @@ gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe,
 						 unsigned long int ID,
 						 int answer_due,
 						 double timeout);
+
 
 
 /* We deploy a mallocator on the RPC contextes */

@@ -210,7 +210,7 @@ GRAS_COMMON_SRC= \
   gras/gras.c  \
   gras/Transport/transport.c          gras/Transport/transport_private.h  \
   gras/Msg/gras_msg_mod.c             gras/Msg/gras_msg_types.c           \
-  gras/Msg/gras_msg_exchange.c                                            \
+  gras/Msg/gras_msg_exchange.c        gras/Msg/gras_msg_listener.c        \
   gras/Msg/rpc.c                      gras/Msg/timer.c                    \
   gras/Msg/msg_interface.h            gras/Msg/msg_private.h              \
   \
