@@ -83,7 +83,7 @@ int sender (int argc,char *argv[]) {
   xbt_peer_t h; /* iterator */
   int connected = 0;
   
-  gras_socket_t peer;  /* socket to node */
+  gras_socket_t peer=NULL;  /* socket to node */
   
  
   /* xbt_dynar for peers */

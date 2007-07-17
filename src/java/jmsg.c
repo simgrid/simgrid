@@ -777,7 +777,7 @@ Java_simgrid_msg_Msg_taskDestroy(JNIEnv* env, jclass cls, jobject jtask_arg) {
   jobject jtask;
 
   if(!task){
-    jxbt_throw_notbound(env,"task",jtask);
+    jxbt_throw_notbound(env,"task",task);
     return;
   }
   jtask = (jobject)task->data;

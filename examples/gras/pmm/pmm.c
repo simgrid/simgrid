@@ -354,7 +354,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 
 int slave(int argc,char *argv[]) {
   gras_socket_t mysock;
-  gras_socket_t master;
+  gras_socket_t master = NULL;
   int connected = 0;
 
   /* Init the GRAS's infrastructure */

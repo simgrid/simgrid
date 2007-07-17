@@ -77,7 +77,7 @@ static void __update_cpu_usage(cpu_KCCFLN05_t cpu)
 static void *name_service(const char *name)
 {
   xbt_ex_t e;
-  void *res;
+  void *res=NULL;
   TRY {
      res = xbt_dict_get(workstation_set, name);
   } CATCH(e) {
