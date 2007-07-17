@@ -6,7 +6,9 @@
  - \ref GRAS_tut_tour_logs_practice
  - \ref GRAS_tut_tour_logs_recap
  - \ref GRAS_tut_tour_logs_config
-    
+   - \ref GRAS_tut_tour_logs_config_prio
+   - \ref GRAS_tut_tour_logs_config_layout
+   
 <hr>
 
 \section GRAS_tut_tour_logs_intro Introduction
@@ -101,14 +103,35 @@ And the output now looks better:
 
 \section GRAS_tut_tour_logs_config The user side: configuring logs at run time
 
+\section GRAS_tut_tour_logs_config_prio Choosing what gets displayed
+
 Once we changed our program to use proper logging, it is naturally possible
 to choose at run time what we want to see. For example, if we want more
-details about our code, we should do (note that a VERBOSE line appears on
-client side):
+details about our code, we should pass <tt>--log=test.thres:verbose</tt>
+on the command line of our programs to change the <tt>thres</tt>old.
+Note that a VERBOSE line appears on client side:
 \include 06-logs.output.verbose
 
 On the contrary, if we want to reduce the amount of logging, we may want to
-do: \include 06-logs.output.error
+do pass <tt>--log=test.thres:error</tt>: 
+
+\section GRAS_tut_tour_logs_config_layout Choosing how things get displayed
+
+As with SimGrid 3.3, it is also possible to change how each and every
+message get displayed from the command line without even recompiling
+your code. This is done by changing the <tt>fmt</tt> field of the
+category you want to change. The value of this field is somehow
+similar to printf's format strings, with several existing specifiers.
+
+For example, if you just want the message you passed to the macro
+without any decoration about the host which raised it, its pid and
+everything, just pass <tt>--log=test.fmt:%m</tt>:
+\include 06-logs.output.fmt
+
+For debuging purpose, you can even ask to get the backtrace at each
+execution point:
+\include 06-logs.output.fmt-bt
+
 
 Again, you should refer to the \ref XBT_log section for more information on
 how to configure the logs. Or you can proceed with the next lesson, of
