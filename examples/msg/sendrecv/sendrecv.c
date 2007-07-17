@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
   MSG_global_init(&argc,argv);
 
 
-  if (argc != 4){
+  if (argc != 3){
      CRITICAL1 ("Usage: %s platform_file deployment_file <model>\n",argv[0]);
      CRITICAL1 ("example: %s msg_platform.xml msg_deployment.xml KCCFLN05_Vegas\n",argv[0]);
      exit(1);
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
      KCCFLN05_Vegas        => for TCP Vegas
      KCCFLN05_Reno         => for TCP Reno
   */
-  MSG_config("workstation_model", argv[3]);
+  //MSG_config("workstation_model", argv[3]);
 
   res = test_all(argv[1],argv[2]);
 
