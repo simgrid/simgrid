@@ -2,3 +2,4 @@ sendrecv_KCCFLN05.tesh.in
 sendrecv_KCCFLN05_Vegas.tesh.in
 sendrecv_KCCFLN05_proportional.tesh.in
 sendrecv
+.dirstamp .libs
