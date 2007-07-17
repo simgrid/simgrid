@@ -98,6 +98,7 @@ gras_socket_t gras_trp_select(double timeout) {
 	DEBUG1("Not considering socket %d for select",sock_iter->sd);
       }
     }
+     
 
     if (max_fds == -1) {
        if (timeout > 0) {
@@ -174,7 +175,7 @@ gras_socket_t gras_trp_select(double timeout) {
 	 /* not a socket but an ear. accept on it and serve next socket */
 	 gras_socket_t accepted=NULL;
 	 
-	 /* release mutex before accept */
+	 /* release mutex before accept; it will change the sockets dynar, so we have to break the foreach asap */
 	 xbt_dynar_cursor_unlock(sockets);
 	 accepted = (sock_iter->plugin->socket_accept)(sock_iter);
 
@@ -190,9 +191,10 @@ gras_socket_t gras_trp_select(double timeout) {
 	 recvd = recv(sock_iter->sd, &lookahead, 1, MSG_PEEK);
 	 if (recvd < 0) {
 	   WARN2("socket %d failed: %s", sock_iter->sd, strerror(errno));
-	   /* done with this socket */
+	   /* done with this socket; remove it and break the foreach since it will change the dynar */
+	   xbt_dynar_cursor_unlock(sockets);
 	   gras_socket_close(sock_iter);
-	   cursor--;
+	   break;
 	 } else if (recvd == 0) {
 	   /* Connection reset (=closed) by peer. */
 	   DEBUG1("Connection %d reset by peer", sock_iter->sd);
@@ -201,8 +203,8 @@ gras_socket_t gras_trp_select(double timeout) {
 	   /* Got a suited socket ! */
 	   XBT_OUT;
 	   _gras_lastly_selected_socket = sock_iter;
-		 /* break sync dynar iteration */
-		 xbt_dynar_cursor_unlock(sockets);
+	    /* break sync dynar iteration */
+	    xbt_dynar_cursor_unlock(sockets);
 	   return sock_iter;
 	 }
 
@@ -210,17 +212,16 @@ gras_socket_t gras_trp_select(double timeout) {
 	 /* This is a file socket. Cannot recv() on it, but it must be alive */
 	   XBT_OUT;
 	   _gras_lastly_selected_socket = sock_iter;
-		 xbt_dynar_cursor_unlock(sockets);
+	  xbt_dynar_cursor_unlock(sockets);
 	   return sock_iter;
        }
-
        
        /* if we're here, the socket we found wasn't really ready to be served */
        if (ready == 0) { /* exausted all sockets given by select. Request new ones */
 
-				 xbt_dynar_cursor_unlock(sockets);
-				 break; 
-			 }
+	  xbt_dynar_cursor_unlock(sockets);
+	  break; 
+       }
     }
 
   }
