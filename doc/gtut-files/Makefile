@@ -124,7 +124,8 @@ clean::
 # Lesson 6: logs
 ########################################
 
-06-logs.output: 06-logs_client 06-logs_server 06-logs_simulator 06-logs.output.verbose 06-logs.output.error
+06-logs.output: 06-logs_client 06-logs_server 06-logs_simulator \
+        06-logs.output.fmt 06-logs.output.fmt-bt 06-logs.output.verbose 06-logs.output.error
 	echo '$$ ./test_server 12345 & ./test_client 127.0.0.1 12345'  > $@ 
 	./06-logs_server 12345                             2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
 	./06-logs_client 127.0.0.1 12345                   2>&1 |sed s/06-logs/test/  >> $@ 2>&1
@@ -135,25 +136,47 @@ clean::
 	echo '$$'                                                     >> $@ 
 	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
-06-logs.output.verbose: 06-logs_client 06-logs_server 06-logs_simulator
-	echo '$$ ./test_server 12345 --gras-log=test.thres:verbose & ./test_client 127.0.0.1 12345 --gras-log=test.thres:verbose'  > $@
-	./06-logs_server 12345 --gras-log=test.thres:verbose                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
-	./06-logs_client 127.0.0.1 12345 --gras-log=test.thres:verbose                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+06-logs.output.fmt: 06-logs_client 06-logs_server 06-logs_simulator 
+	echo '$$ ./test_server 12345 --log=test.fmt:%m%n & ./test_client 127.0.0.1 12345 --log=test.fmt:%m%n'  > $@
+	./06-logs_server 12345  --log=test.fmt:%m%nn          2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --log=test.fmt:%m%n 2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
-	echo '$$ ./test_simulator platform.xml test.xml --gras-log=test.thres:verbose'              >> $@
-	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=test.thres:verbose  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$ ./test_simulator platform.xml test.xml --log=test.fmt:%m%n'              >> $@
+	./06-logs_simulator gtut-platform.xml 03-args.xml  --log=test.fmt:%m%n 2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+	killall 06-logs_server 06-logs_client 2>/dev/null || true
+
+06-logs.output.fmt-bt: 06-logs_client 06-logs_server 06-logs_simulator 
+	echo '$$ ./test_server 12345 --log=test.fmt:"[%r] %m%n%b%n%n" & ./test_client 127.0.0.1 12345 --log=test.fmt:"[%r] %m%n%b%n%n"'  > $@
+	./06-logs_server 12345  --log=test.fmt:[%r]%m%n%b%n%n          2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --log=test.fmt:[%r]%m%n%b%n%n 2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml --log=test.fmt:[%r]%m%n%b%n%n'              >> $@
+	./06-logs_simulator gtut-platform.xml 03-args.xml  --log=test.fmt:[%r]%m%n%b%n%n 2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$'                                                     >> $@ 
+	killall 06-logs_server 06-logs_client 2>/dev/null || true
+
+06-logs.output.verbose: 06-logs_client 06-logs_server 06-logs_simulator
+	echo '$$ ./test_server 12345 --log=test.thres:verbose & ./test_client 127.0.0.1 12345 --log=test.thres:verbose'  > $@
+	./06-logs_server 12345 --log=test.thres:verbose                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --log=test.thres:verbose                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	sleep 1
+	echo '$$'                                                     >> $@
+	echo '$$ ./test_simulator platform.xml test.xml --log=test.thres:verbose'              >> $@
+	./06-logs_simulator gtut-platform.xml 03-args.xml --log=test.thres:verbose  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
 	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
 06-logs.output.error: 06-logs_client 06-logs_server 06-logs_simulator
-	echo '$$ ./test_server 12345 --gras-log=root.thres:error & ./test_client 127.0.0.1 12345 --gras-log=root.thres:error'  > $@
-	./06-logs_server 12345 --gras-log=root.thres:error                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
-	./06-logs_client 127.0.0.1 12345 --gras-log=root.thres:error                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$ ./test_server 12345 --log=root.thres:error & ./test_client 127.0.0.1 12345 --log=root.thres:error'  > $@
+	./06-logs_server 12345 --log=root.thres:error                            2>&1 |sed s/06-logs/test/  >> $@ 2>&1&
+	./06-logs_client 127.0.0.1 12345 --log=root.thres:error                  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	sleep 1
 	echo '$$'                                                     >> $@
-	echo '$$ ./test_simulator platform.xml test.xml --gras-log=root.thres:error'              >> $@
-	./06-logs_simulator gtut-platform.xml 03-args.xml --gras-log=root.thres:error  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
+	echo '$$ ./test_simulator platform.xml test.xml --log=root.thres:error'              >> $@
+	./06-logs_simulator gtut-platform.xml 03-args.xml --log=root.thres:error  2>&1 |sed s/06-logs/test/  >> $@ 2>&1
 	echo '$$'                                                     >> $@ 
 	killall 06-logs_server 06-logs_client 2>/dev/null || true
 
@@ -218,6 +241,10 @@ clean::
 
 _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c: 08-exceptions.c 03-args.xml
 	../../tools/gras/gras_stub_generator 08-exceptions 03-args.xml >/dev/null
+
+clean::
+	if [ -e 08-exceptions.mk ] ; then make -f 08-exceptions.mk clean; fi
+	rm -f _08-exceptions_client.c _08-exceptions_server.c _08-exceptions_simulator.c 08-exceptions.trace 08-exceptions.mk 08-exceptions.output
 
 # Lesson 9: simple data exchange
 ########################################
