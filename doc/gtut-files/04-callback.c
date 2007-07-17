@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <gras.h>
 
 int server_hello_cb(gras_msg_cb_ctx_t ctx, void *payload) {

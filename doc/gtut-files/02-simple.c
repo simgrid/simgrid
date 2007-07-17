@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <gras.h>
 
 int server(int argc, char *argv[]) {

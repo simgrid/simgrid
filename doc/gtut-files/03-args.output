@@ -1,15 +1,14 @@
 $ ./test_server 12345 & ./test_client 127.0.0.1 12345
 Client ready; listening on 1024
 That's it, we sent the data to the server on 127.0.0.1
-[blaise:client:(13082) 0.000006] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[blaise:client:(17208) 0.000014] [gras/INFO] Exiting GRAS
 Cool, we received the message from 127.0.0.1:1024.
-[blaise:server:(13080) 0.000005] gras/gras.c:83: [gras/INFO] Exiting GRAS
+[blaise:server:(17206) 0.000007] [gras/INFO] Exiting GRAS
 $
 $ ./test_simulator platform.xml test.xml
 Client ready; listening on 1024
-That's it, we sent the data to the server on Jacquelin
-[Boivin:client:(2) 0.000000] gras/gras.c:83: [gras/INFO] Exiting GRAS
 Cool, we received the message from Boivin:1024.
-[Jacquelin:server:(1) 0.000000] gras/gras.c:83: [gras/INFO] Exiting GRAS
-[0.000000] msg/global.c:475: [msg_kernel/INFO] Congratulations ! Simulation terminated : all processes are over
+[Jacquelin:server:(1) 0.000000] [gras/INFO] Exiting GRAS
+That's it, we sent the data to the server on Jacquelin
+[Boivin:client:(2) 0.000000] [gras/INFO] Exiting GRAS
 $
