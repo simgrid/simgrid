@@ -207,9 +207,7 @@ noinst_JAVA = DreamMaster.java LazyGuy.java SuspendTest.java
 #if HAVE_JAVA
 TESTS = SuspendTest.class
 JAVAROOT = .
-CLASSPATH = $(top_srcdir)/src/simgrid.jar
-
-#AM_JAVACFLAGS=-I$(top_srcdir)/src/java
+AM_JAVACFLAGS = -cp $(top_srcdir)/src/simgrid.jar
 
 ##########################
 # What to do on make check
