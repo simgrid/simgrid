@@ -288,7 +288,9 @@ gras_msg_handleall(double period) {
  * @param timeOut: How long to wait for incoming messages (in seconds)
  * @return the error code (or no_error).
  *
- * Messages are passed to the callbacks. See also gras_msg_handleall().
+ * Any message arriving in the given interval is passed to the callbacks.
+ * 
+ * @sa gras_msg_handleall().
  */
 void
 gras_msg_handle(double timeOut) {
@@ -446,9 +448,12 @@ gras_msg_handle(double timeOut) {
 	RETHROW0("Callback raised an exception: %s");
       }
     }
-    xbt_assert0(!(ctx.answer_due),
-		"RPC callback didn't call gras_msg_rpcreturn");
 
+    xbt_assert1(! ctx.answer_due,
+		"Bug in user code: RPC callback to message '%s' didn't call gras_msg_rpcreturn",msg.type->name);
+    if (ctx.answer_due)
+       CRITICAL1("BUGS BOTH IN USER CODE (RPC callback to message '%s' didn't call gras_msg_rpcreturn) "
+		 "AND IN SIMGRID (process wasn't killed by an assert)",msg.type->name);
     if (!ran_ok)
       THROW1(mismatch_error,0,
 	     "Message '%s' refused by all registered callbacks", msg.type->name);
