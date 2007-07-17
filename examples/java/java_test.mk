@@ -3,7 +3,7 @@
 # All this to only get a dumb javac *java... Automake still have issues with java
 
 JAVAROOT=.
-CLASSPATH=$(top_srcdir)/src/java
+CLASSPATH=$(top_srcdir)/src/simgrid.jar
 
 #AM_JAVACFLAGS=-I$(top_srcdir)/src/java
 

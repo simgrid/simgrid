@@ -206,7 +206,7 @@ noinst_JAVA = Master.java Forwarder.java Slave.java BasicTest.java BasicTask.jav
 # Declare test class
 TESTS = BasicTest.class
 JAVAROOT = .
-CLASSPATH = $(top_srcdir)/src/java
+CLASSPATH = $(top_srcdir)/src/simgrid.jar
 
 #AM_JAVACFLAGS=-I$(top_srcdir)/src/java
 

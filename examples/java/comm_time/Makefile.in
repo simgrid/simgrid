@@ -204,7 +204,7 @@ EXTRA_DIST = comm_time_deployment.xml comm_time_platform.xml surfxml.dtd
 noinst_JAVA = Master.java Slave.java CommTimeTest.java CommTimeTask.java
 TESTS = CommTimeTest.class
 JAVAROOT = .
-CLASSPATH = $(top_srcdir)/src/java
+CLASSPATH = $(top_srcdir)/src/simgrid.jar
 
 #AM_JAVACFLAGS=-I$(top_srcdir)/src/java
 

@@ -207,7 +207,7 @@ noinst_JAVA = Sender.java Receiver.java PingPongTask.java PingPongTest.java
 #if HAVE_JAVA
 TESTS = PingPongTest.class
 JAVAROOT = .
-CLASSPATH = $(top_srcdir)/src/java
+CLASSPATH = $(top_srcdir)/src/simgrid.jar
 
 #AM_JAVACFLAGS=-I$(top_srcdir)/src/java
 
