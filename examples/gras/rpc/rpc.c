@@ -11,9 +11,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(Rpc,"Messages specific to this example");
 
-int err=0; /* to make the message of the raised exception more informative and
-	      even be able to follow their propagation from server to client*/
-
 /* register messages which may be sent (common to client and server) */
 static void register_messages(void) {
   gras_msgtype_declare_rpc("plain ping",
@@ -31,7 +28,7 @@ int forwarder (int argc,char *argv[]);
 int client (int argc,char *argv[]);
 
 static void exception_raising(void) {
-  THROW1(unknown_error,42,"Some error we will catch on client side %d",err++);
+  THROW0(unknown_error,42,"Some error we will catch on client side");
 }
 static void exception_catching(void) {
   int gotit = 0,i;
