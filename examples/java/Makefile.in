@@ -205,8 +205,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = basic ping_pong comm_time
-# suspend
+SUBDIRS = basic ping_pong comm_time suspend
 EXTRA_DIST = java_test.mk
 all: all-recursive
 
