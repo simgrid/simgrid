@@ -26,7 +26,7 @@ $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xm
 > [Ginette:forwarder:(2) 2.04] [Rpc/INFO] Forward a request
 > [Fafard:client:(3) 2.04] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3) 2.04] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=3)
-> [Ginette:forwarder:(2) 2.05] [Rpc/INFO] Forward a request
+> [Ginette:forwarder:(2) 2.04] [Rpc/INFO] Forward a request
 > [Fafard:client:(3) 2.05] [Rpc/INFO] Got the expected exception when calling the exception raising RPC
 > [Fafard:client:(3) 2.05] [Rpc/INFO] Call the exception raising RPC on the forwarder (i=4)
 > [Ginette:forwarder:(2) 2.05] [Rpc/INFO] Forward a request
