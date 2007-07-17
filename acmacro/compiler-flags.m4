@@ -72,9 +72,10 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
       
         GCC_VER=`gcc --version | head -n 1 | sed 's/^[^0-9]*\([^ ]*\).*$/\1/'`
         GCC_VER_MAJ=`echo $GCC_VER | sed 's/^\(.\).*$/\1/'`
-        if test "x$target_cpu" = "xpowerpc" && test "x$GCC_VER_MAJ" != "x2" ; then
-          # avoid gcc bug #12828, which is fixed in 3.4.0, but this version
-          # isn't propagated enough to desserve an extra check
+        if test "x$target_cpu" = "xpowerpc" && test "x$GCC_VER_MAJ" == "x3" ; then
+          # avoid gcc bug #12828, which apeared in 3.x branch and is fixed in 3.4.0
+          # but the check would be too complicated to get 3.4. 
+	  # Instead, rule out any 3.x compiler.
           
           # Note that the flag didn't exist before gcc 3.0
           optCFLAGS="$optCFLAGS -fno-loop-optimize"
