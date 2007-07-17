@@ -208,7 +208,8 @@ noinst_JAVA = Sender.java Receiver.java PingPongTask.java PingPongTest.java
 TESTS = PingPongTest.class
 JAVAROOT = .
 CLASSPATH = $(top_srcdir)/src/java
-AM_JAVACFLAGS = -I$(top_srcdir)/src/java
+
+#AM_JAVACFLAGS=-I$(top_srcdir)/src/java
 
 ##########################
 # What to do on make check

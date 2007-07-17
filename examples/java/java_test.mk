@@ -5,7 +5,7 @@
 JAVAROOT=.
 CLASSPATH=$(top_srcdir)/src/java
 
-AM_JAVACFLAGS=-I$(top_srcdir)/src/java
+#AM_JAVACFLAGS=-I$(top_srcdir)/src/java
 
 
 ##########################

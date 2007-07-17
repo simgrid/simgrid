@@ -205,7 +205,8 @@ noinst_JAVA = Master.java Slave.java CommTimeTest.java CommTimeTask.java
 TESTS = CommTimeTest.class
 JAVAROOT = .
 CLASSPATH = $(top_srcdir)/src/java
-AM_JAVACFLAGS = -I$(top_srcdir)/src/java
+
+#AM_JAVACFLAGS=-I$(top_srcdir)/src/java
 
 ##########################
 # What to do on make check
