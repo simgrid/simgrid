@@ -2,7 +2,7 @@
 
 p Testing the surf network maxmin fairness model
 
-$ sendrecv/sendrecv @srcdir@/sendrecv/platform_sendrecv.xml @srcdir@/sendrecv/deployment_sendrecv.xml KCCFLN05
+$ $SG_TEST_EXENV ${srcdir:=.}/sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml KCCFLN05
 > [0.000000] [xbt_cfg/INFO] type in variable = 2
 > [0.000000] [msg_test/INFO] test_all
 > [Inmos:sender:(1) 0.000000] [msg_test/INFO] sender
