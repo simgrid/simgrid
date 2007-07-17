@@ -1,5 +1,0 @@
-<?xml version='1.0'?>
-<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
-<platform_description version="1">
-  <process host="Jacquelin" function="dream_master"/>
-</platform_description>
