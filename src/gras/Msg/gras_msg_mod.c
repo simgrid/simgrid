@@ -30,6 +30,7 @@ static void *gras_msg_procdata_new() {
    res->timers        = xbt_dynar_new(sizeof(s_gras_timer_t), NULL);
    res->msg_to_receive_queue = xbt_fifo_new();
    res->msg_to_receive_queue_meas = xbt_fifo_new();
+	 res->msg_received = xbt_queue_new(0,sizeof(s_gras_msg_t));
    
    return (void*)res;
 }

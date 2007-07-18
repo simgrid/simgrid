@@ -12,15 +12,17 @@
 #include "xbt/virtu.h" /* set the XBT virtualization to use GRAS */
 #include "xbt/module.h" /* xbt_init/exit */
 #include "xbt/xbt_os_time.h" /* xbt_os_time */
+#include "xbt/synchro.h"
 
 #include "Virtu/virtu_interface.h" /* Module mechanism FIXME: deplace&rename */
+#include "Virtu/virtu_private.h"
 #include "gras_modinter.h"   /* module init/exit */
 #include "amok/amok_modinter.h"   /* module init/exit */
 #include "xbt_modinter.h"   /* module init/exit */
 
 #include "gras.h"
 #include "gras/process.h" /* FIXME: killme and put process_init in modinter */
-  
+#include "gras/Msg/msg_private.h"
 #include "portable.h" /* hexa_*(); signalling stuff */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras,XBT_LOG_ROOT_CAT,"All GRAS categories (cf. section \ref GRAS_API)");
@@ -46,6 +48,8 @@ static void gras_sigint_handler(int sig) {
 
 void gras_init(int *argc,char **argv) {
 
+	gras_procdata_t *pd;
+	gras_msg_procdata_t msg_pd;
   VERB0("Initialize GRAS");
 
   xbt_getpid = &gras_os_getpid;
@@ -83,12 +87,18 @@ void gras_init(int *argc,char **argv) {
    
   /* and then init amok */
   amok_init();
+	pd = gras_procdata_get();
+	msg_pd = gras_libdata_by_name("gras_msg");
+	pd->listener = gras_msg_listener_launch(msg_pd->msg_received);
 }
 
 void gras_exit(void) {
+	gras_procdata_t *pd;
   INFO0("Exiting GRAS");
   amok_exit();
   gras_moddata_leave();
+	pd = gras_procdata_get();
+	gras_msg_listener_shutdown(pd->listener);
   gras_process_exit();
   if (--gras_running_process == 0) {
     gras_msg_exit();

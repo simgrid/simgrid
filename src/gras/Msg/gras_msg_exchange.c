@@ -92,8 +92,11 @@ gras_msg_wait_ext_(double           timeout,
     memset(&msg,sizeof(msg),0);
 
     TRY {
+			xbt_queue_shift_timed(pd->msg_received,&msg,timeout ? timeout - now + start : 0);
+			/*
       msg.expe = gras_trp_select(timeout ? timeout - now + start : 0);
       gras_msg_recv(msg.expe, &msg);
+			*/
     } CATCH(e) {
       if (e.category == system_error &&
 	  !strncmp("Socket closed by remote side",e.msg,
@@ -332,27 +335,13 @@ gras_msg_handle(double timeOut) {
     xbt_dynar_shift(pd->msg_queue,&msg);
   } else {
     TRY {
-      msg.expe = gras_trp_select(timeOut);
+			xbt_queue_shift_timed(pd->msg_received,&msg,timeOut);
+//      msg.expe = gras_trp_select(timeOut);
     } CATCH(e) {
       if (e.category != timeout_error)
 	RETHROW;
       xbt_ex_free(e);
       timeouted = 1;
-    }
-
-    if (!timeouted) {
-      TRY {
-	/* FIXME: if not the right kind, queue it and recall ourself or goto >:-) */
-	gras_msg_recv(msg.expe, &msg);
-	DEBUG1("Received a msg from the socket kind:%s",
-	       e_gras_msg_kind_names[msg.kind]);
-    
-      } CATCH(e) {
-	RETHROW4("Error while receiving a message on select()ed socket %p to [%s]%s:%d: %s",
-		 msg.expe,
-		 gras_socket_peer_proc(msg.expe),gras_socket_peer_name(msg.expe),
-		 gras_socket_peer_port(msg.expe));
-      }
     }
   }
 

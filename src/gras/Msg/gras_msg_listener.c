@@ -30,7 +30,7 @@ static void listener_function(void *p) {
   s_gras_msg_t msg;
 
   while (1) {
-    msg.expe = gras_trp_select(-1);
+    msg.expe = gras_trp_select(1000);
     gras_msg_recv(msg.expe, &msg);
     xbt_queue_push(me->incomming_messages, &msg);
   }
@@ -42,7 +42,7 @@ gras_msg_listener_launch(xbt_queue_t msg_exchange){
 
   arg->incomming_messages = msg_exchange;
 
-  arg->listener =  xbt_thread_create(listener_function,&arg);
+  arg->listener =  xbt_thread_create(listener_function,arg);
   return arg;
 }
 

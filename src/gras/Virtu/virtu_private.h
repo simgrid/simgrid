@@ -16,6 +16,7 @@
 #include "xbt/dynar.h"
 #include "gras/Virtu/virtu_interface.h"
 #include "simix/simix.h"
+#include "gras/Msg/msg_private.h"
 
 /** @brief Data for each process */
 typedef struct {
@@ -36,6 +37,7 @@ typedef struct {
 	
   int pid; /* pid of process, only for SG */
   int ppid; /* ppid of process, only for SG */
+	gras_msg_listener_t listener;
 } gras_procdata_t;
 
 gras_procdata_t *gras_procdata_get(void);

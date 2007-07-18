@@ -24,10 +24,12 @@ typedef struct s_xbt_thread_ {
    smx_process_t s_process;
    void_f_pvoid_t *code;
    void *userparam;
+	 void *father_data;
 } s_xbt_thread_t;
 
 static int xbt_thread_create_wrapper(int argc, char *argv[]) {
    xbt_thread_t t = (xbt_thread_t)SIMIX_process_get_data(SIMIX_process_self());
+	 SIMIX_process_set_data(SIMIX_process_self(),t->father_data);
    (*t->code)(t->userparam);
    return 0;
 }
@@ -36,6 +38,7 @@ xbt_thread_t xbt_thread_create(void_f_pvoid_t* code, void* param)  {
    xbt_thread_t res = xbt_new0(s_xbt_thread_t,1);
    res->userparam = param;
    res->code = code;
+	 res->father_data = SIMIX_process_get_data(SIMIX_process_self());
    res->s_process = SIMIX_process_create(NULL, 
 					 xbt_thread_create_wrapper, res,
 					 SIMIX_host_get_name(SIMIX_host_self()),

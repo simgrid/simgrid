@@ -209,7 +209,7 @@ void *SIMIX_process_get_data(smx_process_t process)
 void SIMIX_process_set_data(smx_process_t process,void *data)
 {
   xbt_assert0((process != NULL), "Invalid parameters");
-  xbt_assert0((process->data == NULL), "Data already set");
+  //xbt_assert0((process->data == NULL), "Data already set");
   
   process->data = data;
    
