@@ -65,6 +65,12 @@ int inline smpi_mpi_comm_rank_self(smpi_mpi_communicator_t *comm)
 	return smpi_mpi_comm_rank(comm, SIMIX_host_self());
 }
 
+int inline smpi_mpi_comm_world_rank_self()
+{
+	return smpi_mpi_comm_rank(&smpi_mpi_comm_world, SIMIX_host_self())
+}
+
+// FIXME: messages are actually smaller than requests, use them instead?
 int smpi_sender(int argc, char **argv)
 {
 	smx_process_t self;
@@ -78,6 +84,7 @@ int smpi_sender(int argc, char **argv)
 	smx_action_t communicate_action;
 	smpi_mpi_request_t *scratch;
 	int drank;
+	smx_process_t waitproc;
 
 	self  = SIMIX_process_self();
 	shost = SIMIX_host_self();
@@ -110,6 +117,7 @@ int smpi_sender(int argc, char **argv)
 
 	while (0 < running_hosts) {
 
+		// FIXME: mutex?
 		request = xbt_fifo_shift(request_queue);
 
 		if (NULL == request) {
@@ -131,10 +139,16 @@ int smpi_sender(int argc, char **argv)
 			// copy request to appropriate received queue
 			scratch = xbt_mallocator_get(smpi_request_mallocator);
 			memcpy(scratch, request, sizeof smpi_mpi_request_t);
-			drank = smpi_mpi_comm_rank(MPI_COMM_WORLD, dhost);
+			drank = smpi_mpi_comm_rank(&smpi_mpi_comm_world, dhost);
 			xbt_fifo_push(smpi_received_messages[drank], scratch);
 
 			request->completed = 1;
+
+			while(waitproc = xbt_fifo_shift(request->waitlist)) {
+				if (SIMIX_process_is_suspended(waitproc)) {
+					SIMIX_process_resume(waitproc);
+				}
+			}
 
 			SIMIX_mutex_unlock(request->mutex);
 		}
@@ -157,10 +171,10 @@ int smpi_receiver(int argc, char **argv)
 	int running_hosts;
 	smpi_mpi_request_t *message;
 	smpi_mpi_request_t *request;
-	smx_process_t dproc;
+	smx_process_t waitproc;
 
 	self  = SIMIX_process_self();
-	rank  = smpi_mpi_comm_rank(&smpi_mpi_comm_world, dhost);
+	rank  = smpi_mpi_comm_world_rank_self();
 
 	// make sure root is done before own initialization
 	SIMIX_mutex_lock(init_mutex);
@@ -200,9 +214,9 @@ int smpi_receiver(int argc, char **argv)
 			request->src = message->src;
 			reqeust->completed = 1;
 
-			while (dproc = xbt_fifo_shift(request->waitlist)) {
-				if (SIMIX_process_is_suspended(dproc)) {
-					SIMIX_process_resume(dproc);
+			while (waitproc = xbt_fifo_shift(request->waitlist)) {
+				if (SIMIX_process_is_suspended(waitproc)) {
+					SIMIX_process_resume(waitproc);
 				}
 			}
 
@@ -524,14 +538,23 @@ int smpi_irecv(smpi_mpi_request_t *request)
 void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status)
 {
 	smx_process_t self;
+	int suspend = 0;
+	self = SIMIX_process_self();
 
 	if (NULL != request) {
+		SIMIX_mutex_lock(request->mutex);
 		if (!request->completed) {
-			self = SIMIX_process_self();
 			xbt_fifo_push(request->waitlist, self);
-		}	SIMIX_suspend(self);
+			suspend = 1;
+		}
+		SIMIX_mutex_unlock(request->mutex);
+		if (suspend) {
+			SIMIX_suspend(self);
+		}
 		if (NULL != status && MPI_STATUS_IGNORE != status) {
+			SIMIX_mutex_lock(request->mutex);
 			status->MPI_SOURCE = request->src;
+			SIMIX_mutex_unlock(request->mutex);
 		}
 	}
 }
