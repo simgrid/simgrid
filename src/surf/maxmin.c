@@ -692,7 +692,7 @@ double func_vegas_fpip(lmm_variable_t var, double x){
  * For Reno f: $\frac{\sqrt{\frac{3}{2}}}{D_f} \arctan\left(\sqrt{\frac{3}{2}}x_f D_f\right)$
  */
 double func_reno_f(lmm_variable_t var, double x){
-  xbt_assert0( var->df, "Please report this bug.");
+  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
   // \sqrt{3/2} = 0.8164965808
   return (0.8164965808 / var->df) * atan( (0.8164965808 / var->df)*x );
 }
@@ -709,16 +709,14 @@ double func_reno_fp(lmm_variable_t var, double x){
  */
 double func_reno_fpi(lmm_variable_t var, double x){
   double res_fpi; 
-  xbt_assert0( var->df, "Please report this bug.");
 
-  //avoid a disaster value - c'est du bricolage mais ca marche pas ....
-/*   if(x == 0) x = 10e-16; */
- 
+  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
+  xbt_assert0(x>0.0,"Don't call me with stupid values!");
+
   res_fpi = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
-
-  //avoid a disaster value of res_fpi
-  if(res_fpi < 0.0) return 0.0;
-  else return sqrt(res_fpi);
+  if(res_fpi<=0.0) return 0.0;
+  xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!");
+  return sqrt(res_fpi);
 }
 
 /*
@@ -728,19 +726,12 @@ double func_reno_fpip(lmm_variable_t var, double x){
   double res_fpip; 
   double critical_test;
 
-  xbt_assert0(var->df,"Please report this bug.");
-
-  //avoid division by zero - c'est du bricolage mais ca marche
-/*   if(x == 0) x = 10e-16; */
+  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
+  xbt_assert0(x>0.0,"Don't call me with stupid values!");
 
   res_fpip = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
-  
-  //avoid square root of negative number
-  if(res_fpip < 0.0) return 0.0;
-
-  //avoid division by zero
+  xbt_assert0(res_fpip>0.0,"Don't call me with stupid values!");
   critical_test = (2*var->df*var->df*x*x*sqrt(res_fpip));
 
-/*   if(critical_test == 0.0) return 0.0; */
-/*   else */ return -(1/critical_test);
+  return -(1.0/critical_test);
 }
