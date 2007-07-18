@@ -22,7 +22,6 @@ gras_socket_t _gras_lastly_selected_socket = NULL;
  *
  * if timeout<0, we ought to implement the adaptative timeout (FIXME)
  *
- * if timeout=0, do not wait for new message, only handle the ones already there.
  *
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */

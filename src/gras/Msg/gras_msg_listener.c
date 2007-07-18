@@ -28,11 +28,22 @@ typedef struct s_gras_msg_listener_ {
 static void listener_function(void *p) {
   gras_msg_listener_t me = (gras_msg_listener_t)p;
   s_gras_msg_t msg;
-
+	xbt_ex_t e;
+	int found =0;
   while (1) {
-    msg.expe = gras_trp_select(1000);
-    gras_msg_recv(msg.expe, &msg);
-    xbt_queue_push(me->incomming_messages, &msg);
+		TRY {
+    msg.expe = gras_trp_select(0.5);
+		found =1;
+		}
+		CATCH(e) {
+		//	gras_os_sleep(0.01);
+			
+		}
+		if (found) {
+			gras_msg_recv(msg.expe, &msg);
+			xbt_queue_push(me->incomming_messages, &msg);
+			found =0;
+		}
   }
 }
 

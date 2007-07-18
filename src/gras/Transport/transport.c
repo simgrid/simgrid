@@ -302,6 +302,7 @@ gras_socket_client_ext(const char *host,
      xbt_dynar_pop(((gras_trp_procdata_t)
 		    gras_libdata_by_id(gras_trp_libdata_id))->sockets,NULL);
      free(sock);
+		 xbt_backtrace_display(&e);
     RETHROW;
   }
 
