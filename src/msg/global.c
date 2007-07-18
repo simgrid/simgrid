@@ -53,8 +53,7 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->max_channel = 0;
     msg_global->PID = 1;
   }
-	return;
-
+  return;
 }
 
 /** \ingroup msg_easier_life

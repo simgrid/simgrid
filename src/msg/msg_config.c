@@ -42,5 +42,5 @@ void MSG_config(const char *name, ...) {
   SIMIX_config(name,pa);
   
   va_end(pa);
-	return;
+  return;
 }
