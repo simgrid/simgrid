@@ -10,10 +10,17 @@
 
 #include "xbt/misc.h"
 #include "portable.h" 
+
+#define MAXMIN_PRECISION 0.00001
 static XBT_INLINE void double_update(double *variable, double value) 
 {
   *variable -= value;
-  if(*variable< 0.00001) *variable = 0.0;
+  if(*variable< MAXMIN_PRECISION) *variable = 0.0;
+}
+
+static XBT_INLINE int double_positive(double value) 
+{
+  return (value>MAXMIN_PRECISION);
 }
 
 typedef struct lmm_variable *lmm_variable_t;

@@ -333,6 +333,7 @@ static void saturated_variable_set_update(lmm_system_t sys)
 }
 
 void lmm_print(lmm_system_t sys)
+
 {
   lmm_constraint_t cnst = NULL;
   lmm_element_t elem = NULL;
@@ -386,7 +387,7 @@ void lmm_print(lmm_system_t sys)
     }
     DEBUG1("%s",trace_buf);
     trace_buf[0]='\000';
-    xbt_assert3((sum<=cnst->bound), "Incorrect value (%f is not smaller than %f): %g",
+    xbt_assert3(!double_positive(sum-cnst->bound), "Incorrect value (%f is not smaller than %f): %g",
 		sum,cnst->bound,sum-cnst->bound);
   }
 
@@ -394,7 +395,7 @@ void lmm_print(lmm_system_t sys)
   xbt_swag_foreach(var, var_list) {
     if(var->bound>0) {
       DEBUG4("'%p'(%f) : %f (<=%f)",var,var->weight,var->value, var->bound);
-      xbt_assert0((var->value<=var->bound), "Incorrect value");
+      xbt_assert0(!double_positive(var->value-var->bound), "Incorrect value");
     }
     else 
       DEBUG3("'%p'(%f) : %f",var,var->weight,var->value);
@@ -664,7 +665,7 @@ double func_vegas_f(lmm_variable_t var, double x){
  */
 double func_vegas_fp(lmm_variable_t var, double x){
   //avoid a disaster value - c'est du bricolage mais ca marche
-  if(x == 0) x = 10e-8;
+/*   if(x == 0) x = 10e-8; */
   return var->df/x;
 }
 
@@ -673,7 +674,7 @@ double func_vegas_fp(lmm_variable_t var, double x){
  */
 double func_vegas_fpi(lmm_variable_t var, double x){
   //avoid a disaster value - c'est du bricolage mais ca marche
-  if(x == 0) x = 10e-8;
+/*   if(x == 0) x = 10e-8; */
   return var->df/x;
 }
 
@@ -682,7 +683,7 @@ double func_vegas_fpi(lmm_variable_t var, double x){
  */
 double func_vegas_fpip(lmm_variable_t var, double x){
   //avoid a disaster value - c'est du bricolage mais ca marche
-  if(x == 0) x = 10e-8;
+/*   if(x == 0) x = 10e-8; */
   return -( var->df/(x*x) ) ;
 }
 
@@ -711,7 +712,7 @@ double func_reno_fpi(lmm_variable_t var, double x){
   xbt_assert0( var->df, "Please report this bug.");
 
   //avoid a disaster value - c'est du bricolage mais ca marche pas ....
-  if(x == 0) x = 10e-16;
+/*   if(x == 0) x = 10e-16; */
  
   res_fpi = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
 
@@ -730,7 +731,7 @@ double func_reno_fpip(lmm_variable_t var, double x){
   xbt_assert0(var->df,"Please report this bug.");
 
   //avoid division by zero - c'est du bricolage mais ca marche
-  if(x == 0) x = 10e-16;
+/*   if(x == 0) x = 10e-16; */
 
   res_fpip = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
   
@@ -740,6 +741,6 @@ double func_reno_fpip(lmm_variable_t var, double x){
   //avoid division by zero
   critical_test = (2*var->df*var->df*x*x*sqrt(res_fpip));
 
-  if(critical_test == 0.0) return 0.0;
-  else return -(1/critical_test);
+/*   if(critical_test == 0.0) return 0.0; */
+/*   else */ return -(1/critical_test);
 }

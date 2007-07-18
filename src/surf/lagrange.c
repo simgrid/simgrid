@@ -19,14 +19,15 @@
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf, "Logging specific to SURF (lagrange)");
+XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf, "Logging specific to SURF (lagrange dichotomy)");
 
 /*
- * Local prototypes to implement the lagrangian optimization with optimal step, also called dicotomi.
+ * Local prototypes to implement the lagrangian optimization with optimal step, also called dichotomy.
  */
-//solves the proportional fairness using a lagrange optimizition with dicotomi step
+//solves the proportional fairness using a lagrange optimizition with dichotomy step
 void   lagrange_solve       (lmm_system_t sys);
-//computes the value of the dicotomi using a initial values, init, with a specific variable or constraint
-double dicotomi(double init, double diff(double, void*), void *var_cnst, double min_error);
+//computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
+double dichotomy(double init, double diff(double, void*), void *var_cnst, double min_error);
 //computes the value of the differential of variable param_var applied to mu  
 double partial_diff_mu      (double mu, void * param_var);
 //computes the value of the differential of constraint param_cnst applied to lambda  
@@ -35,6 +36,57 @@ double partial_diff_lambda  (double lambda, void * param_cnst);
 double diff_aux(lmm_variable_t var, double x);
 
 
+static int __check_kkt(xbt_swag_t cnst_list, xbt_swag_t var_list,int warn)
+{
+  xbt_swag_t elem_list  = NULL;
+  lmm_element_t elem    = NULL;
+  lmm_constraint_t cnst = NULL;  
+  lmm_variable_t var    = NULL;
+  
+  double tmp;
+
+  //verify the KKT property for each link
+  xbt_swag_foreach(cnst, cnst_list){
+    tmp = 0;
+    elem_list = &(cnst->element_set);
+    xbt_swag_foreach(elem, elem_list) {
+      var = elem->variable;
+      if(var->weight<=0) continue;
+      tmp += var->value;
+    }
+    
+    if(double_positive(tmp - cnst->bound)) {
+      if(warn) WARN3("The link (%p) is over-used. Expected less than %f and got %f", cnst, cnst->bound, tmp);
+      return 0;
+    }
+    DEBUG3("Checking KKT for constraint (%p): sat = %f, lambda = %f ",cnst, tmp - cnst->bound, cnst->lambda);
+      
+/*     if(!((fabs(tmp - cnst->bound)<MAXMIN_PRECISION && cnst->lambda>=MAXMIN_PRECISION) || */
+/* 	 (fabs(tmp - cnst->bound)>=MAXMIN_PRECISION && cnst->lambda<MAXMIN_PRECISION))) { */
+/*       if(warn) WARN1("The KKT condition is not verified for cnst %p...", cnst); */
+/*       return 0; */
+/*     } */
+  }
+    
+  //verify the KKT property of each flow
+  xbt_swag_foreach(var, var_list){
+    if(var->bound < 0 || var->weight <= 0) continue;
+    DEBUG3("Checking KKT for variable (%p): sat = %f mu = %f",var, var->value - var->bound,var->mu);
+    
+    if(double_positive(var->value - var->bound)) {
+      if(warn) WARN3("The variable (%p) is too large. Expected less than %f and got %f", var, var->bound, var->value);
+      return 0;
+    }
+    
+/*     if(!((fabs(var->value - var->bound)<MAXMIN_PRECISION && var->mu>=MAXMIN_PRECISION) || */
+/* 	 (fabs(var->value - var->bound)>=MAXMIN_PRECISION && var->mu<MAXMIN_PRECISION))) { */
+/*       if(warn) WARN1("The KKT condition is not verified for var %p...",var); */
+/*       return 0; */
+/*     } */
+  }
+  return 1;
+}
+
 void lagrange_solve(lmm_system_t sys)
 {
   /*
@@ -42,16 +94,13 @@ void lagrange_solve(lmm_system_t sys)
    */
   int max_iterations= 10000;
   double epsilon_min_error  = 1e-6;
-  double dicotomi_min_error = 1e-6;
+  double dichotomy_min_error = 1e-8;
   double overall_error = 1;
 
   /*
    * Variables to manipulate the data structure proposed to model the maxmin
    * fairness. See docummentation for more details.
    */
-  xbt_swag_t elem_list  = NULL;
-  lmm_element_t elem    = NULL;
-
   xbt_swag_t cnst_list  = NULL;
   lmm_constraint_t cnst = NULL;
   
@@ -69,7 +118,7 @@ void lagrange_solve(lmm_system_t sys)
   DEBUG0("Iterative method configuration snapshot =====>");
   DEBUG1("#### Maximum number of iterations       : %d", max_iterations);
   DEBUG1("#### Minimum error tolerated            : %e", epsilon_min_error);  
-  DEBUG1("#### Minimum error tolerated (dicotomi) : %e", dicotomi_min_error);
+  DEBUG1("#### Minimum error tolerated (dichotomy) : %e", dichotomy_min_error);
 
   if ( !(sys->modified))
     return;
@@ -118,9 +167,9 @@ void lagrange_solve(lmm_system_t sys)
     //forall mu_i in mu_1, mu_2, ..., mu_n
     xbt_swag_foreach(var, var_list) {
       if((var->bound >= 0) && (var->weight > 0) ){
-	var->new_mu = dicotomi(var->mu, partial_diff_mu, var, dicotomi_min_error);
+	var->new_mu = dichotomy(var->mu, partial_diff_mu, var, dichotomy_min_error);
 	if(var->new_mu < 0) var->new_mu = 0;
-	DEBUG2("====> var->mu (%p) = %e", var, var->new_mu);      
+	DEBUG3("====> var->mu (%p) : %g -> %g", var, var->mu, var->new_mu);      
 	var->mu = var->new_mu;
       } 
     }
@@ -130,7 +179,7 @@ void lagrange_solve(lmm_system_t sys)
      */
     //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
     xbt_swag_foreach(cnst, cnst_list) {
-      cnst->new_lambda = dicotomi(cnst->lambda, partial_diff_lambda, cnst, dicotomi_min_error);
+      cnst->new_lambda = dichotomy(cnst->lambda, partial_diff_lambda, cnst, dichotomy_min_error);
       DEBUG2("====> cnst->lambda (%p) = %e", cnst, cnst->new_lambda);      
       cnst->lambda = cnst->new_lambda;
     }
@@ -165,56 +214,29 @@ void lagrange_solve(lmm_system_t sys)
       }
       DEBUG3("======> value of var (%p)  = %e, overall_error = %e", var, var->value, overall_error);       
     }
+
+    if(!__check_kkt(cnst_list,var_list,0)) overall_error=1.0;
+    DEBUG2("Iteration %d: Overall_error : %f",iteration,overall_error);
   }
 
 
-  //verify the KKT property for each link
-  xbt_swag_foreach(cnst, cnst_list){
-    tmp = 0;
-    elem_list = &(cnst->element_set);
-    xbt_swag_foreach(elem, elem_list) {
-      var = elem->variable;
-      if(var->weight<=0) continue;
-      tmp += var->value;
-    }
-  
-    if(tmp - cnst->bound > epsilon_min_error) {
-      WARN3("The link (%p) is over-used. Expected less than %e and got %e", cnst, cnst->bound, tmp);
-    }
-    if(!((fabs(tmp - cnst->bound)<epsilon_min_error && cnst->lambda>=epsilon_min_error) ||
-	 (fabs(tmp - cnst->bound)>=epsilon_min_error && cnst->lambda<epsilon_min_error))) {
-      WARN1("The KKT condition is not verified for cnst %p...", cnst);
-      overall_error=1.0;
-    }
-  }
-  
-  //verify the KKT property of each flow
-  xbt_swag_foreach(var, var_list){
-    if(var->bound < 0 || var->weight <= 0) continue;
-
-    INFO2("Checking KKT: sat = %e mu = %e",var->value - var->bound,var->mu);
-    if(!((fabs(var->value - var->bound)<epsilon_min_error && var->mu>=epsilon_min_error) ||
-	 (fabs(var->value - var->bound)>=epsilon_min_error && var->mu<epsilon_min_error))) {
-      WARN1("The KKT condition is not verified for var %p...",var);
-      overall_error=1.0;
-    }
-
-/*     tmp = 0; */
-/*     tmp = (var->value - var->bound); */
-/*     if(tmp != 0.0 ||  var->mu != 0.0){ */
-/*       WARN3("The flow (%p) doesn't match the KKT property, value expected (=0) got (lambda=%e) (sum_rho=%e)", var, var->mu, tmp); */
-/*     } */
-  }
+  __check_kkt(cnst_list,var_list,1);
 
   if(overall_error <= epsilon_min_error){
     DEBUG1("The method converges in %d iterations.", iteration);
-  }else{
-    WARN1("Method reach %d iterations, which is the maxmimun number of iterations allowed.", iteration);
+  }
+  if(iteration>= max_iterations) {
+    WARN1("Method reach %d iterations, which is the maximum number of iterations allowed.", iteration);
+  }
+  INFO1("Method converged after %d iterations", iteration);
+
+  if(XBT_LOG_ISENABLED(surf_lagrange, xbt_log_priority_debug)) {
+    lmm_print(sys);
   }
 }
 
 /*
- * Returns a double value corresponding to the result of a dicotomi proccess with
+ * Returns a double value corresponding to the result of a dichotomy proccess with
  * respect to a given variable/constraint (\mu in the case of a variable or \lambda in
  * case of a constraint) and a initial value init. 
  *
@@ -223,14 +245,14 @@ void lagrange_solve(lmm_system_t sys)
  * @param var_cnst a pointer to a variable or constraint 
  * @param min_erro a minimun error tolerated
  *
- * @return a double correponding to the result of the dicotomial process
+ * @return a double correponding to the result of the dichotomyal process
  */
-double dicotomi(double init, double diff(double, void*), void *var_cnst, double min_error){
+double dichotomy(double init, double diff(double, void*), void *var_cnst, double min_error){
   double min, max;
   double overall_error;
   double middle;
   double min_diff, max_diff, middle_diff;
-  
+  double diff_0=0.0;
   min = max = init;
 
   if(init == 0){
@@ -240,31 +262,35 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
   min_diff = max_diff = middle_diff = 0.0;
   overall_error = 1;
 
-  if(diff(0.0, var_cnst) > 0){
-    DEBUG1("====> returning 0.0 (diff = %e)", diff(0.0, var_cnst));
+  if((diff_0=diff(0.0, var_cnst)) >= 0){
+    CDEBUG1(surf_lagrange_dichotomy,"====> returning 0.0 (diff = %e)", diff(0.0, var_cnst));
     return 0.0;
   }
 
-  DEBUG0("====> not detected positive diff in 0");
+  CDEBUG1(surf_lagrange_dichotomy,"====> not detected positive diff in 0 (%e)",diff_0);
 
   while(overall_error > min_error){
 
     min_diff = diff(min, var_cnst);
     max_diff = diff(max, var_cnst);
 
-    DEBUG2("DICOTOMI ===> min = %e , max = %e", min, max);
-    DEBUG2("DICOTOMI ===> diffmin = %e , diffmax = %e", min_diff, max_diff);
+    CDEBUG2(surf_lagrange_dichotomy,"DICHOTOMY ===> min = %1.20f , max = %1.20f", min, max);
+    CDEBUG2(surf_lagrange_dichotomy,"DICHOTOMY ===> diffmin = %1.20f , diffmax = %1.20f", min_diff, max_diff);
 
     if( min_diff > 0 && max_diff > 0 ){
       if(min == max){
+	CDEBUG0(surf_lagrange_dichotomy,"Decreasing min");
 	min = min / 2.0;
       }else{
+	CDEBUG0(surf_lagrange_dichotomy,"Decreasing max");
 	max = min;
       }
     }else if( min_diff < 0 && max_diff < 0 ){
       if(min == max){
+	CDEBUG0(surf_lagrange_dichotomy,"Increasing max");
 	max = max * 2.0;
       }else{
+	CDEBUG0(surf_lagrange_dichotomy,"Increasing min");
 	min = max;
       }
     }else if( min_diff < 0 && max_diff > 0 ){
@@ -280,7 +306,7 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
       }else if( middle_diff > 0 ){
 	max = middle;
       }else{
-	WARN0("Found an optimal solution with 0 error!");
+	CWARN0(surf_lagrange_dichotomy,"Found an optimal solution with 0 error!");
 	overall_error = 0;
 	return middle;
       }
@@ -290,12 +316,14 @@ double dicotomi(double init, double diff(double, void*), void *var_cnst, double 
     }else if(max_diff == 0){
       return max;
     }else if(min_diff > 0 && max_diff < 0){
-      WARN0("The impossible happened, partial_diff(min) > 0 && partial_diff(max) < 0");
+      CWARN0(surf_lagrange_dichotomy,"The impossible happened, partial_diff(min) > 0 && partial_diff(max) < 0");
+    }else {
+      CWARN0(surf_lagrange_dichotomy,"diffmin or diffmax are something I don't know, taking no action.");
     }
   }
 
 
-  DEBUG1("====> returning %e", (min+max)/2.0);
+  CDEBUG1(surf_lagrange_dichotomy,"====> returning %e", (min+max)/2.0);
   return ((min+max)/2.0);
 }
 
@@ -363,7 +391,11 @@ double partial_diff_lambda(double lambda, void *param_cnst){
     lambda_partial += diff_aux(var, sigma_i);
   }
 
+
   lambda_partial += cnst->bound;
+
+
+  CDEBUG1(surf_lagrange_dichotomy,"returnning = %1.20f", lambda_partial);
 
   return lambda_partial;
 }
@@ -384,6 +416,7 @@ double diff_aux(lmm_variable_t var, double x){
 
   result = result - (tmp_fpip * x);
 
+  CDEBUG2(surf_lagrange_dichotomy,"diff_aux(%1.20f) = %1.20f", x, result);
   return result;
 }  
  
