@@ -24,12 +24,13 @@ OLD NAME: ping_pong.c
     make sendrecv/sendrecv
 
     - Execute:
-    sendrecv/sendrecv <platformfile.xml> <deploymentfile.xml> <networkmodel>
+    sendrecv/sendrecv <platformfile.xml> <deploymentfile.xml> --cfg=workstation_model:<networkmodel>
     where networkmodel can be one of the following:
-        1) KFCCNL05              - Maxmin fairness
-        2) KFCCNL05_proportional - Vegas TCP fairness (proportional approach)
-        3) KFCCNL05_Vegas        - Vegas TCP fairness (lagrange approach)
-        4) KFCCNL05_Reno         - Reno  TCP fairness (lagrange approach)
+        1) CLM03                 - Simple fairness model
+        2) KFCCNL05              - Maxmin fairness
+        3) KFCCNL05_proportional - Vegas TCP fairness (proportional approach)
+        4) KFCCNL05_Vegas        - Vegas TCP fairness (lagrange approach)
+        5) KFCCNL05_Reno         - Reno  TCP fairness (lagrange approach)
 
     - Debug: 
     (WARNING: way may want to disable compiler optimizations)
