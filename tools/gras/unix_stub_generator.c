@@ -252,8 +252,9 @@ void generate_makefile_am(char *project, char *deployment) {
     fprintf(OUT, "=\tpath/to/libgras.a\n\n");
   }
 
-  fprintf(OUT, "\n# cleanup temps\n");
-  fprintf(OUT, "CLEANFILES= ");
+  fprintf(OUT, "\n# cleanup temps (allowing the user to add extra clean files)\n");
+  fprintf(OUT, "CLEANFILES?= \n");
+  fprintf(OUT, "CLEANFILES+= ");
   fprintf(OUT, SIM_SOURCENAME, project);
   
   xbt_dict_foreach(process_function_set,cursor,key,data) {
@@ -376,7 +377,7 @@ void generate_makefile_local(char *project, char *deployment) {
 
   fprintf(OUT,
 	  "clean:\n"
-	  "\trm -f $(BIN_FILES) $(OBJ_FILES) *~ %s.o " SIM_OBJNAME, project, project);
+	  "\trm -f $(CLEANFILES) $(BIN_FILES) $(OBJ_FILES) *~ %s.o " SIM_OBJNAME, project, project);
   xbt_dict_foreach(process_function_set,cursor,key,data) {
      fprintf(OUT, " " RL_OBJNAME, project, key);
   }
