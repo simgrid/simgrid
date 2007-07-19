@@ -10,6 +10,7 @@
 // FIXME: move globals into structure...
 
 xbt_mallocator_t smpi_request_mallocator    = NULL;
+xbt_mallocator_t smpi_message_mallocator    = NULL;
 xbt_fifo_t *smpi_pending_send_requests      = NULL;
 xbt_fifo_t *smpi_pending_recv_requests      = NULL;
 xbt_fifo_t *smpi_received_messages          = NULL;
@@ -137,8 +138,12 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_cond_wait(request->cond, request->mutex);
 
 			// copy request to appropriate received queue
-			scratch = xbt_mallocator_get(smpi_request_mallocator);
-			memcpy(scratch, request, sizeof smpi_mpi_request_t);
+			scratch = xbt_mallocator_get(smpi_message_mallocator);
+			scratch->comm = request->comm;
+			scratch->src  = request->src;
+			scratch->dst  = request->dst;
+			scratch->tag  = request->tag;
+			scratch->buf  = request->buf;
 			drank = smpi_mpi_comm_rank(&smpi_mpi_comm_world, dhost);
 			xbt_fifo_push(smpi_received_messages[drank], scratch);
 
@@ -205,6 +210,7 @@ int smpi_receiver(int argc, char **argv)
 	while (0 < running_hosts) {
 
 		// FIXME: search for received messages and requests
+		// use stupid algorithm for now
 
 		if (NULL == request) {
 			SIMIX_process_suspend(self);
@@ -221,7 +227,7 @@ int smpi_receiver(int argc, char **argv)
 			}
 
 			SIMIX_mutex_unlock(request->mutex);
-			xbt_mallocator_release(smpi_request_mallocator, message);
+			xbt_mallocator_release(smpi_message_mallocator, message);
 		}
 
 		SIMIX_mutex_lock(smpi_running_hosts_mutex);
@@ -343,6 +349,7 @@ void smpi_mpi_init()
 
 		// smpi globals
 		smpi_request_mallocator           = xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_new_request, xbt_free, NULL);
+		smpi_message_mallocator           = xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, smpi_new_message, xbt_free, NULL);
 		smpi_pending_send_requests        = xbt_new(xbt_fifo_t, size);
 		smpi_pending_recv_requests        = xbt_new(xbt_fifo_t, size);
 		smpi_received_messages            = xbt_new(xbt_fifo_t, size);
@@ -408,6 +415,7 @@ void smpi_mpi_finalize()
 		}
 
 		xbt_mallocator_free(smpi_request_mallocator);
+		xbt_mallocator_free(smpi_message_mallocator);
 		xbt_free(smpi_pending_send_requests);
 		xbt_free(smpi_pending_recv_requests);
 		xbt_free(smpi_received_messages);

@@ -84,12 +84,11 @@ extern smpi_mpi_op_t smpi_mpi_sum;
 
 // smpi_received_message_t
 struct smpi_received_message_t {
+	void *buf;
 	smpi_mpi_communicator_t *comm;
 	int src;
 	int dst;
 	int tag;
-	void *data;
-	int fwdthrough;
 };
 typedef struct smpi_received_message_t smpi_received_message_t;
 
