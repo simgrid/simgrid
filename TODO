@@ -139,7 +139,8 @@ received by the other side (implemented with an ACK mechanism).
   * Parsing macro
     - Cleanup the code (bison?)
     - Factorize code in union/struct field adding
-    - Handle typedefs (needs love from DataDesc/)
+    - Handle typedefs (gras_datatype_copy can be usefull, but only if
+      main type is already defined)
     - Handle unions with annotate
     - Handle enum
     - Handle long long and long double
