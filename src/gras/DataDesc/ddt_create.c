@@ -373,6 +373,22 @@ gras_datadesc_union_close(gras_datadesc_type_t union_type) {
    union_type->category.union_data.closed = 1;
 }
 
+/** \brief Copy a type under another name
+ * 
+ * This may reveal useful to circumvent parsing macro limitations
+ */
+gras_datadesc_type_t 
+  gras_datadesc_copy(const char           *name,
+		     gras_datadesc_type_t  copied) {
+
+     gras_datadesc_type_t res = gras_ddt_new(name);
+     char *name_cpy = res->name;
+     
+     memcpy(res,copied,sizeof(s_gras_datadesc_type_t));
+     res->name = name_cpy;
+     return res;
+  }
+
 /** \brief Declare a new type being a reference to the one passed in arg */
 gras_datadesc_type_t 
   gras_datadesc_ref(const char           *name,

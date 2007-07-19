@@ -54,20 +54,20 @@ void gras_msg_send_ext(gras_socket_t   sock,
      /* error on remote host, carfull, payload is an exception */
     msg->payl_size=gras_datadesc_size(gras_datadesc_by_name("ex_t"));
     msg->payl=xbt_malloc(msg->payl_size);
-    whole_payload_size = gras_datadesc_copy(gras_datadesc_by_name("ex_t"),
-					    payload,msg->payl);
+    whole_payload_size = gras_datadesc_memcpy(gras_datadesc_by_name("ex_t"),
+					      payload,msg->payl);
   } else if (kind == e_gras_msg_kind_rpcanswer) {
     msg->payl_size=gras_datadesc_size(msgtype->answer_type);
     msg->payl=xbt_malloc(msg->payl_size);
     if (msgtype->answer_type)
-      whole_payload_size = gras_datadesc_copy(msgtype->answer_type,
-					      payload, msg->payl);
+      whole_payload_size = gras_datadesc_memcpy(msgtype->answer_type,
+						payload, msg->payl);
   } else {
     msg->payl_size=gras_datadesc_size(msgtype->ctn_type);
     msg->payl=msg->payl_size?xbt_malloc(msg->payl_size):NULL;
     if (msgtype->ctn_type)
-      whole_payload_size = gras_datadesc_copy(msgtype->ctn_type,
-					      payload, msg->payl);
+      whole_payload_size = gras_datadesc_memcpy(msgtype->ctn_type,
+						payload, msg->payl);
   }
 
 	/* put the selectable socket on the queue */

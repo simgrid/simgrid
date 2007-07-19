@@ -349,6 +349,9 @@ XBT_PUBLIC(gras_datadesc_type_t)
   gras_datadesc_ref(const char          *name,
 		    gras_datadesc_type_t referenced_type);
 XBT_PUBLIC(gras_datadesc_type_t) 
+  gras_datadesc_copy(const char          *name,
+		     gras_datadesc_type_t copied_type);
+XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_ref_generic(const char              *name,
 			    gras_datadesc_selector_t selector);
 

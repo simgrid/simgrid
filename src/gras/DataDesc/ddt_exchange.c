@@ -105,7 +105,7 @@ gras_dd_alloc_ref(xbt_dict_t  refs,
 }
 
 static int
-gras_datadesc_copy_rec(gras_cbps_t           state,
+gras_datadesc_memcpy_rec(gras_cbps_t           state,
 		       xbt_dict_t            refs,
 		       gras_datadesc_type_t  type, 
 		       char                 *src,
@@ -154,7 +154,7 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
 	field->send(type,state,field_src);
       
       DEBUG1("Copy field %s",field->name);
-      count += gras_datadesc_copy_rec(state,refs,sub_type, field_src, field_dst, 0,
+      count += gras_datadesc_memcpy_rec(state,refs,sub_type, field_src, field_dst, 0,
 				      detect_cycle || sub_type->cycle);
        
        if (XBT_LOG_ISENABLED(gras_ddt_exchange,xbt_log_priority_verbose)) {
@@ -209,7 +209,7 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
     if (field->send)
       field->send(type,state,src);
     
-    count += gras_datadesc_copy_rec(state,refs, sub_type, src, dst,0,
+    count += gras_datadesc_memcpy_rec(state,refs, sub_type, src, dst,0,
 				    detect_cycle || sub_type->cycle);
           
     break;
@@ -285,7 +285,7 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
 			   detect_cycle);
        }
        
-       count += gras_datadesc_copy_rec(state,refs, sub_type,
+       count += gras_datadesc_memcpy_rec(state,refs, sub_type,
 				       *o_ref,(char*)l_referenced, subsubcount,
 				       detect_cycle || sub_type->cycle);
 			       
@@ -344,7 +344,7 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
       VERB1("Array of %ld stuff, copy it in one after the other",array_count);
       for (cpt=0; cpt<array_count; cpt++) {
 	VERB2("Copy the %dth stuff out of %ld",cpt,array_count);
-	count += gras_datadesc_copy_rec(state,refs, sub_type, src_ptr, dst_ptr, 0,
+	count += gras_datadesc_memcpy_rec(state,refs, sub_type, src_ptr, dst_ptr, 0,
 					detect_cycle || sub_type->cycle);
 	src_ptr += elm_size;
 	dst_ptr += elm_size;
@@ -360,13 +360,13 @@ gras_datadesc_copy_rec(gras_cbps_t           state,
   return count;
 }
 /**
- * gras_datadesc_copy:
+ * gras_datadesc_memcpy:
  *
  * Copy the data pointed by src and described by type 
  * to a new location, and store a pointer to it in dst.
  *
  */
-int gras_datadesc_copy(gras_datadesc_type_t type, 
+int gras_datadesc_memcpy(gras_datadesc_type_t type, 
 		       void *src, void *dst) {
   xbt_ex_t e;
   static gras_cbps_t state=NULL;
@@ -381,8 +381,8 @@ int gras_datadesc_copy(gras_datadesc_type_t type,
   }
   
   TRY {
-    size = gras_datadesc_copy_rec(state,refs,type,(char*)src,(char*)dst,0, 
-				  type->cycle);
+    size = gras_datadesc_memcpy_rec(state,refs,type,(char*)src,(char*)dst,0, 
+				    type->cycle);
   } CLEANUP {
     xbt_dict_reset(refs);
     gras_cbps_reset(state);
