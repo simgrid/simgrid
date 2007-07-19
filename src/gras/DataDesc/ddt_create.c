@@ -648,7 +648,7 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t,
   char *buffname;
   gras_datadesc_type_t res;
   
-  asprintf(&buffname,"dynar(%s)_s",elm_t->name);
+  asprintf(&buffname,"s_xbt_dynar_of_%s",elm_t->name);
    
   res = gras_datadesc_struct(buffname);
   
@@ -678,7 +678,7 @@ gras_datadesc_dynar(gras_datadesc_type_t elm_t,
 
   /* build a ref to it */
   free(buffname);
-  asprintf(&buffname,"dynar(%s)",elm_t->name);
+  asprintf(&buffname,"xbt_dynar_of_%s",elm_t->name);
   res=gras_datadesc_ref(buffname,res);
   free(buffname);
   return res;
