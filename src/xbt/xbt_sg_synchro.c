@@ -38,11 +38,13 @@ xbt_thread_t xbt_thread_create(void_f_pvoid_t* code, void* param)  {
    xbt_thread_t res = xbt_new0(s_xbt_thread_t,1);
    res->userparam = param;
    res->code = code;
-	 res->father_data = SIMIX_process_get_data(SIMIX_process_self());
-   res->s_process = SIMIX_process_create(NULL, 
+   res->father_data = SIMIX_process_get_data(SIMIX_process_self());
+   char*name = bprintf("%s#%p",SIMIX_process_get_name(SIMIX_process_self()), param);
+   res->s_process = SIMIX_process_create(name, 
 					 xbt_thread_create_wrapper, res,
 					 SIMIX_host_get_name(SIMIX_host_self()),
 					 0, NULL);
+   free(name);
    return res;
 }
 
