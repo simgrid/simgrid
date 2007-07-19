@@ -395,7 +395,8 @@ void lmm_print(lmm_system_t sys)
   xbt_swag_foreach(var, var_list) {
     if(var->bound>0) {
       DEBUG4("'%p'(%f) : %f (<=%f)",var,var->weight,var->value, var->bound);
-      xbt_assert0(!double_positive(var->value-var->bound), "Incorrect value");
+      xbt_assert2(!double_positive(var->value-var->bound), "Incorrect value (%f is not smaller than %f",
+		  var->value, var->bound);
     }
     else 
       DEBUG3("'%p'(%f) : %f",var,var->weight,var->value);

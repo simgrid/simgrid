@@ -105,9 +105,9 @@ void lagrange_solve(lmm_system_t sys)
   /*
    * Lagrange Variables.
    */
-  int max_iterations = 10000;
+  int max_iterations = 100;
   double epsilon_min_error = 1e-6;
-  double dichotomy_min_error = 1e-8;
+  double dichotomy_min_error = 1e-20;
   double overall_error = 1;
 
   /*
@@ -172,22 +172,23 @@ void lagrange_solve(lmm_system_t sys)
    * While doesn't reach a minimun error or a number maximum of iterations.
    */
   while (overall_error > epsilon_min_error && iteration < max_iterations) {
+    int dual_updated=0;
 
     iteration++;
     DEBUG1("************** ITERATION %d **************", iteration);
-
+    DEBUG0("-------------- Gradient Descent ----------");
     /*                       
      * Compute the value of mu_i
      */
     //forall mu_i in mu_1, mu_2, ..., mu_n
     xbt_swag_foreach(var, var_list) {
       if ((var->bound >= 0) && (var->weight > 0)) {
-	DEBUG1("====> Working on var (%p)", var);
+	DEBUG1("Working on var (%p)", var);
 	var->new_mu =
 	    dichotomy(var->mu, partial_diff_mu, var, dichotomy_min_error);
-	if (var->new_mu < 0)
-	  var->new_mu = 0;
-	DEBUG3("====> var->mu (%p) : %g -> %g", var, var->mu, var->new_mu);
+	dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error);
+	DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu));
+	DEBUG3("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var, var->mu, var->new_mu);
 	var->mu = var->new_mu;
       }
     }
@@ -197,11 +198,13 @@ void lagrange_solve(lmm_system_t sys)
      */
     //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
     xbt_swag_foreach(cnst, cnst_list) {
-      DEBUG1("====> Working on cnst (%p)", cnst);
+      DEBUG1("Working on cnst (%p)", cnst);
       cnst->new_lambda =
 	  dichotomy(cnst->lambda, partial_diff_lambda, cnst,
 		    dichotomy_min_error);
-      DEBUG2("====> cnst->lambda (%p) = %e", cnst, cnst->new_lambda);
+      dual_updated += (fabs(cnst->new_lambda-cnst->lambda)>dichotomy_min_error);
+      DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(cnst->new_lambda-cnst->lambda));
+      DEBUG3("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
       cnst->lambda = cnst->new_lambda;
     }
 
@@ -209,6 +212,7 @@ void lagrange_solve(lmm_system_t sys)
      * Now computes the values of each variable (\rho) based on
      * the values of \lambda and \mu.
      */
+    DEBUG0("-------------- Check convergence ----------");
     overall_error = 0;
     xbt_swag_foreach(var, var_list) {
       if (var->weight <= 0)
@@ -228,19 +232,23 @@ void lagrange_solve(lmm_system_t sys)
 	tmp = var->func_fpi(var, tmp);
 
 	//computes de overall_error using normalized value
-	if (overall_error < (fabs(var->value - tmp) / tmp)) {
-	  overall_error = (fabs(var->value - tmp) / tmp);
+	if (overall_error < (fabs(var->value - tmp))) {
+	  overall_error = (fabs(var->value - tmp));
 	}
 
 	var->value = tmp;
+	DEBUG3("New value of var (%p)  = %e, overall_error = %e", var,
+	       var->value, overall_error);
       }
-      DEBUG3("======> value of var (%p)  = %e, overall_error = %e", var,
-	     var->value, overall_error);
     }
 
     if (!__check_kkt(cnst_list, var_list, 0))
       overall_error = 1.0;
     DEBUG2("Iteration %d: Overall_error : %f", iteration, overall_error);
+    if(!dual_updated) {
+      WARN1("Could not improve the convergence at iteration %d. Drop it!",iteration);
+      break;
+    }
   }
 
 
@@ -293,67 +301,72 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
   overall_error = 1;
 
   if ((diff_0 = diff(1e-16, var_cnst)) >= 0) {
-    CDEBUG1(surf_lagrange_dichotomy, "====> returning 0.0 (diff = %e)",
+    CDEBUG1(surf_lagrange_dichotomy, "returning 0.0 (diff = %e)",
 	    diff_0);
+    XBT_OUT;
     return 0.0;
   }
 
-  CDEBUG1(surf_lagrange_dichotomy,
-	  "====> not detected positive diff in 0 (%e)", diff_0);
+  min_diff = diff(min, var_cnst);
+  max_diff = diff(max, var_cnst);
 
   while (overall_error > min_error) {
-
-    min_diff = diff(min, var_cnst);
-    max_diff = diff(max, var_cnst);
-
-    CDEBUG2(surf_lagrange_dichotomy,
-	    "DICHOTOMY ===> min = %1.20f , max = %1.20f", min, max);
-    CDEBUG2(surf_lagrange_dichotomy,
-	    "DICHOTOMY ===> diffmin = %1.20f , diffmax = %1.20f", min_diff,
-	    max_diff);
+    CDEBUG4(surf_lagrange_dichotomy,
+	    "min, max = %1.20f, %1.20f || diffmin, diffmax %1.20f, %1.20f", min, max,
+	    min_diff,max_diff);
 
     if (min_diff > 0 && max_diff > 0) {
       if (min == max) {
 	CDEBUG0(surf_lagrange_dichotomy, "Decreasing min");
 	min = min / 2.0;
+	min_diff = diff(min, var_cnst);
       } else {
 	CDEBUG0(surf_lagrange_dichotomy, "Decreasing max");
 	max = min;
+	max_diff = min_diff;
+
       }
     } else if (min_diff < 0 && max_diff < 0) {
       if (min == max) {
 	CDEBUG0(surf_lagrange_dichotomy, "Increasing max");
 	max = max * 2.0;
+	max_diff = diff(max, var_cnst);
       } else {
 	CDEBUG0(surf_lagrange_dichotomy, "Increasing min");
 	min = max;
+	min_diff = max_diff;
       }
     } else if (min_diff < 0 && max_diff > 0) {
       middle = (max + min) / 2.0;
+      CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f",middle);
+
+      if((min==middle) || (max==middle)) {
+	WARN0("Cannot improve the convergence!");
+	break;
+      }
       middle_diff = diff(middle, var_cnst);
 
-      if (max != 0.0 && min != 0.0) {
-	overall_error = fabs(min - max) / max;
-      }
-
       if (middle_diff < 0) {
+	CDEBUG0(surf_lagrange_dichotomy, "Increasing min");
 	min = middle;
+	min_diff = middle_diff;
       } else if (middle_diff > 0) {
+	CDEBUG0(surf_lagrange_dichotomy, "Decreasing max");
 	max = middle;
+	max_diff = middle_diff;
       } else {
-	CWARN0(surf_lagrange_dichotomy,
-	       "Found an optimal solution with 0 error!");
 	overall_error = 0;
-	return middle;
       }
-
     } else if (min_diff == 0) {
-      return min;
+      max=min;
+      overall_error = 0;
     } else if (max_diff == 0) {
-      return max;
+      min=max;
+      overall_error = 0;
     } else if (min_diff > 0 && max_diff < 0) {
       CWARN0(surf_lagrange_dichotomy,
 	     "The impossible happened, partial_diff(min) > 0 && partial_diff(max) < 0");
+      abort();
     } else {
       CWARN2(surf_lagrange_dichotomy,
 	     "diffmin (%1.20f) or diffmax (%1.20f) are something I don't know, taking no action.",
@@ -362,10 +375,8 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
     }
   }
 
+  CDEBUG1(surf_lagrange_dichotomy, "returning %e", (min + max) / 2.0);
   XBT_OUT;
-
-  CDEBUG1(surf_lagrange_dichotomy, "====> returning %e",
-	  (min + max) / 2.0);
   return ((min + max) / 2.0);
 }
 
@@ -443,7 +454,7 @@ double partial_diff_lambda(double lambda, void *param_cnst)
   lambda_partial += cnst->bound;
 
 
-  CDEBUG1(surf_lagrange_dichotomy, "returning = %1.20f", lambda_partial);
+/*   CDEBUG1(surf_lagrange_dichotomy, "returning = %1.20f", lambda_partial); */
 
   XBT_OUT;
   return lambda_partial;
@@ -461,7 +472,7 @@ double diff_aux(lmm_variable_t var, double x)
   tmp_fpi = var->func_fpi(var, x);
   result = - tmp_fpi;
 
-  CDEBUG1(surf_lagrange_dichotomy, "returning %1.20f", result);
+/*   CDEBUG1(surf_lagrange_dichotomy, "returning %1.20f", result); */
   XBT_OUT;
   return result;
 }
@@ -476,8 +487,9 @@ double diff_aux(lmm_variable_t var, double x)
 /*
  * For Vegas f: $\alpha_f d_f \log\left(x_f\right)$
  */
+#define VEGAS_SCALING 1000.0
 double func_vegas_f(lmm_variable_t var, double x){
-  return var->df * log(x);
+  return VEGAS_SCALING*var->df * log(x);
 }
 
 /*
@@ -486,7 +498,7 @@ double func_vegas_f(lmm_variable_t var, double x){
 double func_vegas_fp(lmm_variable_t var, double x){
   //avoid a disaster value - c'est du bricolage mais ca marche
 /*   if(x == 0) x = 10e-8; */
-  return var->df/x;
+  return VEGAS_SCALING*var->df/x;
 }
 
 /*
@@ -495,7 +507,7 @@ double func_vegas_fp(lmm_variable_t var, double x){
 double func_vegas_fpi(lmm_variable_t var, double x){
   //avoid a disaster value - c'est du bricolage mais ca marche
 /*   if(x == 0) x = 10e-8; */
-  return var->df/x;
+  return VEGAS_SCALING*var->df/x;
 }
 
 /*
@@ -504,7 +516,7 @@ double func_vegas_fpi(lmm_variable_t var, double x){
 double func_vegas_fpip(lmm_variable_t var, double x){
   //avoid a disaster value - c'est du bricolage mais ca marche
 /*   if(x == 0) x = 10e-8; */
-  return -( var->df/(x*x) ) ;
+  return -( VEGAS_SCALING*var->df/(x*x) ) ;
 }
 
 
