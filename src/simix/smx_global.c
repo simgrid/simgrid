@@ -51,7 +51,7 @@ static void simix_cfg_control_set(const char* control_string) {
     control_string = control_string_sav = strdup(str);
     control_string += strspn(control_string, " ");
     name = control_string;
-    control_string += strcspn(str, ":");
+    control_string += strcspn(str, ":=");
     value = control_string;
     *value=0;
     value++;
