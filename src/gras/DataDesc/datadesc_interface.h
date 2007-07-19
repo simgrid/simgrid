@@ -28,7 +28,7 @@ gras_datadesc_type_cmp(const gras_datadesc_type_t d1,
 /* Access function */
 XBT_PUBLIC(int)  gras_datadesc_size(gras_datadesc_type_t type);
 /* Described data exchanges: direct use */
-XBT_PUBLIC(int) gras_datadesc_copy(gras_datadesc_type_t type, void *src, void *dst);
+XBT_PUBLIC(int) gras_datadesc_memcpy(gras_datadesc_type_t type, void *src, void *dst);
 XBT_PUBLIC(void) gras_datadesc_send(gras_socket_t sock, gras_datadesc_type_t type, void *src);
 XBT_PUBLIC(void) gras_datadesc_recv(gras_socket_t sock, gras_datadesc_type_t type,
 				int r_arch, void *dst);
