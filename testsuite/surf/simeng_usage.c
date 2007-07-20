@@ -51,10 +51,10 @@ void test1(method_t method)
 
   if(method==LAGRANGE_VEGAS){
     //set default functions for TCP Vegas
-    lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
+    lmm_set_default_protocol_function(func_vegas_fpi);
   }else if(method==LAGRANGE_RENO){
     //set default functions for TCP Reno
-    lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
+    lmm_set_default_protocol_function(func_reno_fpi);
   }
 
 
@@ -122,10 +122,10 @@ void test2(method_t method)
 
   if(method==LAGRANGE_VEGAS){
     //set default functions for TCP Vegas
-    lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
+    lmm_set_default_protocol_function(func_vegas_fpi);
   }else if(method==LAGRANGE_RENO){
     //set default functions for TCP Reno
-    lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
+    lmm_set_default_protocol_function(func_reno_fpi);
   }
 
   Sys = lmm_system_new();
@@ -277,10 +277,10 @@ void test3(method_t method)
 
   if(method==LAGRANGE_VEGAS){
     //set default functions for TCP Vegas
-    lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
+    lmm_set_default_protocol_function(func_vegas_fpi);
   }else if(method==LAGRANGE_RENO){
     //set default functions for TCP Reno
-    lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
+    lmm_set_default_protocol_function(func_reno_fpi);
   }
 
   Sys = lmm_system_new();

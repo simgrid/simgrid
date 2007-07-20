@@ -636,15 +636,8 @@ lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint
  *  Set default functions to the ones passed as parameters. This is a polimorfism in C pure, enjoy the roots of programming.
  *
  */
-void lmm_set_default_protocol_functions(double (* func_f)    (lmm_variable_t var, double x),
-					double (* func_fp)   (lmm_variable_t var, double x),
-					double (* func_fpi)  (lmm_variable_t var, double x),
-					double (* func_fpip) (lmm_variable_t var, double x))
-					
+void lmm_set_default_protocol_functions(double (* func_fpi)  (lmm_variable_t var, double x))
 {
-  func_f_def    = func_f;
-  func_fp_def   = func_fp;
   func_fpi_def  = func_fpi;
-  func_fpip_def = func_fpip;
 }
 

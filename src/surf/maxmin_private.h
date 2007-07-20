@@ -58,10 +58,7 @@ typedef struct lmm_variable {
   double mu;
   double new_mu;
   double df; /* Total delay of flow */
-  double (* func_f)    (struct lmm_variable *var, double x);  /* f            */
-  double (* func_fp)   (struct lmm_variable *var, double x);  /* f'           */
   double (* func_fpi)  (struct lmm_variable *var, double x);  /* (f')^{-1}    */
-  double (* func_fpip) (struct lmm_variable *var, double x);  /* ((f')^{-1})' */
   /* \end{For Lagrange only} */
 } s_lmm_variable_t;
 

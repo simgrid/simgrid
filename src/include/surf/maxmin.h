@@ -101,27 +101,14 @@ void lagrange_dicotomi_solve(lmm_system_t sys);
  * Default functions associated to the chosen protocol. When
  * using the lagrangian approach.
  */
-double (* func_f_def   ) (lmm_variable_t , double);
-double (* func_fp_def  ) (lmm_variable_t , double);
 double (* func_fpi_def ) (lmm_variable_t , double);
-double (* func_fpip_def) (lmm_variable_t , double);
 
 
+void lmm_set_default_protocol_functions(double (* func_fpi)  (lmm_variable_t var, double x));
 
-void lmm_set_default_protocol_functions(double (* func_f)    (lmm_variable_t var, double x),
-					double (* func_fp)   (lmm_variable_t var, double x),
-					double (* func_fpi)  (lmm_variable_t var, double x),
-					double (* func_fpip) (lmm_variable_t var, double x));
-
-double func_reno_f(lmm_variable_t var, double x);
-double func_reno_fp(lmm_variable_t var, double x);
 double func_reno_fpi(lmm_variable_t var, double x);
-double func_reno_fpip(lmm_variable_t var, double x);
 
-double func_vegas_f(lmm_variable_t var, double x);
-double func_vegas_fp(lmm_variable_t var, double x);
 double func_vegas_fpi(lmm_variable_t var, double x);
-double func_vegas_fpip(lmm_variable_t var, double x);
 
 
 #endif				/* _SURF_MAXMIN_H */
