@@ -1,4 +1,6 @@
 #define SMPI_DEFAULT_SPEED 100
+#define SMPI_REQUEST_MALLOCATOR_SIZE 100
+#define SMPI_MESSAGE_MALLOCATOR_SIZE 100
 
 #define SMPI_RAND_SEED 5
 
@@ -16,7 +18,6 @@
 #define MPI_ERR_TAG     8
 
 #include <stdlib.h>
-
 #include <simix/simix.h>
 
 // MPI_Comm

@@ -3,8 +3,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include "xbt/xbt_os_time.h"
-#include "simix/simix.h"
-#include "simix/private.h"
+#include "xbt/mallocator.h"
 #include "smpi.h"
 
 // FIXME: move globals into structure...
@@ -74,7 +73,7 @@ int inline smpi_mpi_comm_rank_self(smpi_mpi_communicator_t *comm)
 
 int inline smpi_mpi_comm_world_rank_self()
 {
-	return smpi_mpi_comm_rank(&smpi_mpi_comm_world, SIMIX_host_self())
+	return smpi_mpi_comm_rank(&smpi_mpi_comm_world, SIMIX_host_self());
 }
 
 int smpi_sender(int argc, char **argv)
@@ -236,7 +235,7 @@ int smpi_receiver(int argc, char **argv)
 		// FIXME: not the best way to request multiple locks...
 		SIMIX_mutex_lock(request_queue_mutex);
 		SIMIX_mutex_lock(message_queue_mutex);
-search: 	for (request_item = xbt_fifo_get_first_item(request_queue);
+		for (request_item = xbt_fifo_get_first_item(request_queue);
 			NULL != request_item;
 			request_item = xbt_fifo_get_next_item(request_item)) {
 			request = xbt_fifo_get_item_content(request_item);
@@ -249,10 +248,11 @@ search: 	for (request_item = xbt_fifo_get_first_item(request_queue);
 						request->tag == message->tag) {
 					xbt_fifo_remove_item(request_queue, request_item);
 					xbt_fifo_remove_item(message_queue, message_item);
-					break search;
+					goto stopsearch;
 				}
 			}
 		}
+stopsearch:
 		SIMIX_mutex_unlock(message_queue_mutex);
 		SIMIX_mutex_unlock(request_queue_mutex);
 
@@ -298,8 +298,8 @@ int smpi_run_simulation(int argc, char **argv)
 	init_cond  = SIMIX_cond_init();
 
 	SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
-	SIMIX_function_register("smpi_sender", smpi_sender);
-	SIMIX_function_register("smpi_receiver", smpi_receiver);
+	SIMIX_function_register("smpi_sender",         smpi_sender);
+	SIMIX_function_register("smpi_receiver",       smpi_receiver);
 	SIMIX_create_environment(argv[1]);
 	SIMIX_launch_application(argv[2]);
 
@@ -343,9 +343,14 @@ void smpi_mpi_sum_func(void *x, void *y, void *z)
 	*(int *)z = *(int *)x + *(int *)y;
 }
 
-smpi_mpi_request_t *smpi_new_request()
+void *smpi_new_request()
 {
 	return xbt_new(smpi_mpi_request_t, 1);
+}
+
+void *smpi_new_message()
+{
+	return xbt_new(smpi_received_message_t, 1);
 }
 
 void smpi_mpi_init()
@@ -392,8 +397,8 @@ void smpi_mpi_init()
 		smpi_mpi_sum.func                 = &smpi_mpi_sum_func;
 
 		// smpi globals
-		smpi_request_mallocator           = xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_new_request, xbt_free, NULL);
-		smpi_message_mallocator           = xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, smpi_new_message, xbt_free, NULL);
+		smpi_request_mallocator           = xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, &smpi_new_request, &xbt_free, NULL);
+		smpi_message_mallocator           = xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, &smpi_new_message, &xbt_free, NULL);
 		smpi_pending_send_requests        = xbt_new(xbt_fifo_t,  size);
 		smpi_pending_send_requests_mutex  = xbt_new(smx_mutex_t, size);
 		smpi_pending_recv_requests        = xbt_new(xbt_fifo_t,  size);
