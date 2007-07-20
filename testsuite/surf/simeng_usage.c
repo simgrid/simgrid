@@ -13,10 +13,11 @@
 
 #include "xbt/sysdep.h"
 #include "surf/maxmin.h"
-#include "surf/maxmin_private.h"
-
 #include "xbt/log.h"
 #include "xbt/module.h"
+
+
+
 
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,"Messages specific for surf example");
@@ -72,7 +73,6 @@ void test1(method_t method)
   lmm_update_variable_latency(Sys,R_1, 1.0);
   lmm_update_variable_latency(Sys,R_2, 1.0); 
   lmm_update_variable_latency(Sys,R_3, 1.0);
-
 
   lmm_expand(Sys, L1, R_1_2_3, 1.0);
   lmm_expand(Sys, L2, R_1_2_3, 1.0);
@@ -163,10 +163,10 @@ void test2(method_t method)
   PRINT_VAR(T1);
   PRINT_VAR(T2);
 
-  DEBUG0("\n");
-
   lmm_system_free(Sys);
 }
+
+
 
 void test3(method_t method);
 void test3(method_t method)
@@ -360,61 +360,61 @@ int main(int argc, char **argv)
   xbt_init(&argc,argv);
 
 
-  DEBUG0("**************************** \n");
-  DEBUG0("*****                  ***** \n");
-  DEBUG0("*****      TEST 1      ***** \n");
-  DEBUG0("*****                  ***** \n");
-  DEBUG0("**************************** \n");
+  DEBUG0("**************************** ");
+  DEBUG0("*****                  ***** ");
+  DEBUG0("*****      TEST 1      ***** ");
+  DEBUG0("*****                  ***** ");
+  DEBUG0("**************************** ");
 
 
-  DEBUG0("***** Test 1 (Max-Min) ***** \n");
+  DEBUG0("***** Test 1 (Max-Min) ***** ");
   test1(MAXMIN);
 #ifdef HAVE_SDP
-  DEBUG0("***** Test 1 (SDP) ***** \n");
+  DEBUG0("***** Test 1 (SDP) ***** ");
   test1(SDP);
 #endif
-  DEBUG0("***** Test 1 (Lagrange - Vegas) ***** \n");
+  DEBUG0("***** Test 1 (Lagrange - Vegas) ***** ");
   test1(LAGRANGE_VEGAS);
-  DEBUG0("***** Test 1 (Lagrange - Reno) ***** \n");
+  DEBUG0("***** Test 1 (Lagrange - Reno) ***** ");
   test1(LAGRANGE_RENO);
 
 
-  DEBUG0("**************************** \n");
-  DEBUG0("*****                  ***** \n");
-  DEBUG0("*****      TEST 2      ***** \n");
-  DEBUG0("*****                  ***** \n");
-  DEBUG0("**************************** \n");
+  DEBUG0("**************************** ");
+  DEBUG0("*****                  ***** ");
+  DEBUG0("*****      TEST 2      ***** ");
+  DEBUG0("*****                  ***** ");
+  DEBUG0("**************************** ");
 
 
-  DEBUG0("***** Test 2 (Max-Min) ***** \n");
+  DEBUG0("***** Test 2 (Max-Min) ***** ");
   test2(MAXMIN);
 #ifdef HAVE_SDP
-  DEBUG0("***** Test 2 (SDP) ***** \n");
+  DEBUG0("***** Test 2 (SDP) ***** ");
   test2(SDP);
 #endif
-  DEBUG0("***** Test 2 (Lagrange - Vegas) ***** \n");
+  DEBUG0("***** Test 2 (Lagrange - Vegas) ***** ");
   test2(LAGRANGE_VEGAS);
-  DEBUG0("***** Test 2 (Lagrange - Reno) ***** \n");
+  DEBUG0("***** Test 2 (Lagrange - Reno) ***** ");
   test2(LAGRANGE_RENO);
 
 
 
-  DEBUG0("**************************** \n");
-  DEBUG0("*****                  ***** \n");
-  DEBUG0("*****      TEST 3      ***** \n");
-  DEBUG0("*****                  ***** \n");
-  DEBUG0("**************************** \n");
+  DEBUG0("**************************** ");
+  DEBUG0("*****                  ***** ");
+  DEBUG0("*****      TEST 3      ***** ");
+  DEBUG0("*****                  ***** ");
+  DEBUG0("**************************** ");
 
 
-  DEBUG0("***** Test 3 (Max-Min) ***** \n");
+  DEBUG0("***** Test 3 (Max-Min) ***** ");
   test3(MAXMIN);
 #ifdef HAVE_SDP
-  DEBUG0("***** Test 3 (SDP) ***** \n");
+  DEBUG0("***** Test 3 (SDP) ***** ");
   test3(SDP);
 #endif
-  DEBUG0("***** Test 3 (Lagrange - Vegas) ***** \n");
+  DEBUG0("***** Test 3 (Lagrange - Vegas) ***** ");
   test3(LAGRANGE_VEGAS);
-  DEBUG0("***** Test 3 (Lagrange - Reno) ***** \n");
+  DEBUG0("***** Test 3 (Lagrange - Reno) ***** ");
   test3(LAGRANGE_RENO);
 
   return 0;
