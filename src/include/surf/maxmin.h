@@ -104,7 +104,7 @@ void lagrange_dicotomi_solve(lmm_system_t sys);
 double (* func_fpi_def ) (lmm_variable_t , double);
 
 
-void lmm_set_default_protocol_functions(double (* func_fpi)  (lmm_variable_t var, double x));
+void lmm_set_default_protocol_function(double (* func_fpi)  (lmm_variable_t var, double x));
 
 double func_reno_fpi(lmm_variable_t var, double x);
 

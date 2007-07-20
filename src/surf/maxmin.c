@@ -622,19 +622,3 @@ lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint
 }
 
 
-
-/** \brief Attribute the value bound to var->bound.
- * 
- *  \param func_f    default function f associated with the chosen protocol flavor
- *  \param func_fp   partial differential of f (f prime, f')
- *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
- *  \param func_fpip partial differential of the inverse of the partial differential of f (f prime inverse prime, ((f')^{-1})')
- * 
- *  Set default functions to the ones passed as parameters. This is a polimorfism in C pure, enjoy the roots of programming.
- *
- */
-void lmm_set_default_protocol_functions(double (* func_fpi)  (lmm_variable_t var, double x))
-{
-  func_fpi_def  = func_fpi;
-}
-
