@@ -17,6 +17,8 @@
 #include <math.h>
 #endif
 
+#define VEGAS_SCALING 1000.0
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf,
 				"Logging specific to SURF (lagrange)");
@@ -68,12 +70,6 @@ static int __check_kkt(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
     }
     DEBUG3("Checking KKT for constraint (%p): sat = %f, lambda = %f ",
 	   cnst, tmp - cnst->bound, cnst->lambda);
-
-/*     if(!((fabs(tmp - cnst->bound)<MAXMIN_PRECISION && cnst->lambda>=MAXMIN_PRECISION) || */
-/* 	 (fabs(tmp - cnst->bound)>=MAXMIN_PRECISION && cnst->lambda<MAXMIN_PRECISION))) { */
-/*       if(warn) WARN1("The KKT condition is not verified for cnst %p...", cnst); */
-/*       return 0; */
-/*     } */
   }
 
   //verify the KKT property of each flow
@@ -90,12 +86,6 @@ static int __check_kkt(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 	     var, var->bound, var->value);
       return 0;
     }
-
-/*     if(!((fabs(var->value - var->bound)<MAXMIN_PRECISION && var->mu>=MAXMIN_PRECISION) || */
-/* 	 (fabs(var->value - var->bound)>=MAXMIN_PRECISION && var->mu<MAXMIN_PRECISION))) { */
-/*       if(warn) WARN1("The KKT condition is not verified for var %p...",var); */
-/*       return 0; */
-/*     } */
   }
   return 1;
 }
@@ -232,6 +222,10 @@ void lagrange_solve(lmm_system_t sys)
 	tmp = var->func_fpi(var, tmp);
 
 	//computes de overall_error using normalized value
+	if (overall_error < (fabs(var->value - tmp)/tmp)) {
+	  overall_error = (fabs(var->value - tmp)/tmp);
+	}
+
 	if (overall_error < (fabs(var->value - tmp))) {
 	  overall_error = (fabs(var->value - tmp));
 	}
@@ -246,7 +240,7 @@ void lagrange_solve(lmm_system_t sys)
       overall_error = 1.0;
     DEBUG2("Iteration %d: Overall_error : %f", iteration, overall_error);
     if(!dual_updated) {
-      WARN1("Could not improve the convergence at iteration %d. Drop it!",iteration);
+      DEBUG1("Could not improve the convergence at iteration %d. Drop it!",iteration);
       break;
     }
   }
@@ -258,7 +252,7 @@ void lagrange_solve(lmm_system_t sys)
     DEBUG1("The method converges in %d iterations.", iteration);
   }
   if (iteration >= max_iterations) {
-    WARN1
+    DEBUG1
 	("Method reach %d iterations, which is the maximum number of iterations allowed.",
 	 iteration);
   }
@@ -312,7 +306,7 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
 
   while (overall_error > min_error) {
     CDEBUG4(surf_lagrange_dichotomy,
-	    "min, max = %1.20f, %1.20f || diffmin, diffmax %1.20f, %1.20f", min, max,
+	    "[min, max] = [%1.20f, %1.20f] || diffmin, diffmax = %1.20f, %1.20f", min, max,
 	    min_diff,max_diff);
 
     if (min_diff > 0 && max_diff > 0) {
@@ -341,7 +335,7 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
       CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f",middle);
 
       if((min==middle) || (max==middle)) {
-	WARN0("Cannot improve the convergence!");
+	DEBUG0("Cannot improve the convergence!");
 	break;
       }
       middle_diff = diff(middle, var_cnst);
@@ -453,9 +447,6 @@ double partial_diff_lambda(double lambda, void *param_cnst)
 
   lambda_partial += cnst->bound;
 
-
-/*   CDEBUG1(surf_lagrange_dichotomy, "returning = %1.20f", lambda_partial); */
-
   XBT_OUT;
   return lambda_partial;
 }
@@ -472,7 +463,6 @@ double diff_aux(lmm_variable_t var, double x)
   tmp_fpi = var->func_fpi(var, x);
   result = - tmp_fpi;
 
-/*   CDEBUG1(surf_lagrange_dichotomy, "returning %1.20f", result); */
   XBT_OUT;
   return result;
 }
@@ -485,55 +475,11 @@ double diff_aux(lmm_variable_t var, double x)
  */
 
 /*
- * For Vegas f: $\alpha_f d_f \log\left(x_f\right)$
- */
-#define VEGAS_SCALING 1000.0
-double func_vegas_f(lmm_variable_t var, double x){
-  return VEGAS_SCALING*var->df * log(x);
-}
-
-/*
- * For Vegas fp: $\frac{\alpha D_f}{x}$
- */
-double func_vegas_fp(lmm_variable_t var, double x){
-  //avoid a disaster value - c'est du bricolage mais ca marche
-/*   if(x == 0) x = 10e-8; */
-  return VEGAS_SCALING*var->df/x;
-}
-
-/*
  * For Vegas fpi: $\frac{\alpha D_f}{x}$
  */
 double func_vegas_fpi(lmm_variable_t var, double x){
-  //avoid a disaster value - c'est du bricolage mais ca marche
-/*   if(x == 0) x = 10e-8; */
+  xbt_assert0(x>0.0,"Don't call me with stupid values!");
   return VEGAS_SCALING*var->df/x;
-}
-
-/*
- * For Vegas fpip: $-\frac{\alpha D_f}{x^2}$
- */
-double func_vegas_fpip(lmm_variable_t var, double x){
-  //avoid a disaster value - c'est du bricolage mais ca marche
-/*   if(x == 0) x = 10e-8; */
-  return -( VEGAS_SCALING*var->df/(x*x) ) ;
-}
-
-
-/*
- * For Reno f: $\frac{\sqrt{\frac{3}{2}}}{D_f} \arctan\left(\sqrt{\frac{3}{2}}x_f D_f\right)$
- */
-double func_reno_f(lmm_variable_t var, double x){
-  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
-  // \sqrt{3/2} = 0.8164965808
-  return (0.8164965808 / var->df) * atan( (0.8164965808 / var->df)*x );
-}
-
-/*
- * For Reno fp: $\frac{3}{3 {D_f}^2 x^2 + 2}$
- */
-double func_reno_fp(lmm_variable_t var, double x){
-  return 3 / (3*var->df*var->df*x*x + 2);
 }
 
 /*
@@ -551,19 +497,3 @@ double func_reno_fpi(lmm_variable_t var, double x){
   return sqrt(res_fpi);
 }
 
-/*
- * For Reno fpip:  $-\frac{1}{2 {D_f}^2 x^2\sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}}$
- */
-double func_reno_fpip(lmm_variable_t var, double x){
-  double res_fpip; 
-  double critical_test;
-
-  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
-  xbt_assert0(x>0.0,"Don't call me with stupid values!");
-
-  res_fpip = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
-  xbt_assert0(res_fpip>0.0,"Don't call me with stupid values!");
-  critical_test = (2*var->df*var->df*x*x*sqrt(res_fpip));
-
-  return -(1.0/critical_test);
-}
