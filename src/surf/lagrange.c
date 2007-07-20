@@ -41,7 +41,7 @@ double partial_diff_lambda(double lambda, void *param_cnst);
 double diff_aux(lmm_variable_t var, double x);
 
 
-static int __check_kkt(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
+static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 {
   xbt_swag_t elem_list = NULL;
   lmm_element_t elem = NULL;
@@ -50,7 +50,6 @@ static int __check_kkt(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 
   double tmp;
 
-  //verify the KKT property for each link
   xbt_swag_foreach(cnst, cnst_list) {
     tmp = 0;
     elem_list = &(cnst->element_set);
@@ -68,15 +67,14 @@ static int __check_kkt(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 	     cnst, cnst->bound, tmp);
       return 0;
     }
-    DEBUG3("Checking KKT for constraint (%p): sat = %f, lambda = %f ",
+    DEBUG3("Checking feasability for constraint (%p): sat = %f, lambda = %f ",
 	   cnst, tmp - cnst->bound, cnst->lambda);
   }
 
-  //verify the KKT property of each flow
   xbt_swag_foreach(var, var_list) {
     if (var->bound < 0 || var->weight <= 0)
       continue;
-    DEBUG3("Checking KKT for variable (%p): sat = %f mu = %f", var,
+    DEBUG3("Checking feasability for variable (%p): sat = %f mu = %f", var,
 	   var->value - var->bound, var->mu);
 
     if (double_positive(var->value - var->bound)) {
@@ -236,7 +234,7 @@ void lagrange_solve(lmm_system_t sys)
       }
     }
 
-    if (!__check_kkt(cnst_list, var_list, 0))
+    if (!__check_feasible(cnst_list, var_list, 0))
       overall_error = 1.0;
     DEBUG2("Iteration %d: Overall_error : %f", iteration, overall_error);
     if(!dual_updated) {
@@ -246,7 +244,7 @@ void lagrange_solve(lmm_system_t sys)
   }
 
 
-  __check_kkt(cnst_list, var_list, 1);
+  __check_feasible(cnst_list, var_list, 1);
 
   if (overall_error <= epsilon_min_error) {
     DEBUG1("The method converges in %d iterations.", iteration);
