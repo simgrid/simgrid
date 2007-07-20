@@ -1099,7 +1099,7 @@ void surf_workstation_resource_init_KCCFLN05_Vegas(const char *filename)
   resource_init_internal();
   parse_file(filename);
 
-  lmm_set_default_protocol_functions(func_vegas_f, func_vegas_fp, func_vegas_fpi, func_vegas_fpip);
+  lmm_set_default_protocol_functions(func_vegas_fpi);
 
   surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (Vegas)";
   use_lagrange_solver=1;
@@ -1113,7 +1113,7 @@ void surf_workstation_resource_init_KCCFLN05_Reno(const char *filename)
   resource_init_internal();
   parse_file(filename);
 
-  lmm_set_default_protocol_functions(func_reno_f, func_reno_fp, func_reno_fpi, func_reno_fpip);
+  lmm_set_default_protocol_functions(func_reno_fpi);
 
   surf_workstation_resource->common_public->name = "Workstation KCCFLN05 (Reno)";
   use_lagrange_solver=1;
