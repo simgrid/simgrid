@@ -17,9 +17,6 @@
 #include <math.h>
 #endif
 
-#define VEGAS_SCALING 1000.0
-
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf,
 				"Logging specific to SURF (lagrange)");
 XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf,
@@ -95,8 +92,8 @@ void lagrange_solve(lmm_system_t sys)
    */
   int max_iterations = 100;
   double epsilon_min_error = MAXMIN_PRECISION;
-  double dichotomy_min_error = 1e-20;
-  double overall_error = 1;
+  double dichotomy_min_error = 1e-18;
+  double overall_modification = 1;
 
   /*
    * Variables to manipulate the data structure proposed to model the maxmin
@@ -159,7 +156,7 @@ void lagrange_solve(lmm_system_t sys)
   /*
    * While doesn't reach a minimun error or a number maximum of iterations.
    */
-  while (overall_error > epsilon_min_error && iteration < max_iterations) {
+  while (overall_modification > epsilon_min_error && iteration < max_iterations) {
     int dual_updated=0;
 
     iteration++;
@@ -201,7 +198,7 @@ void lagrange_solve(lmm_system_t sys)
      * the values of \lambda and \mu.
      */
     DEBUG0("-------------- Check convergence ----------");
-    overall_error = 0;
+    overall_modification = 0;
     xbt_swag_foreach(var, var_list) {
       if (var->weight <= 0)
 	var->value = 0.0;
@@ -219,26 +216,21 @@ void lagrange_solve(lmm_system_t sys)
 	//uses the partial differential inverse function
 	tmp = var->func_fpi(var, tmp);
 
-	//computes de overall_error using normalized value
-	if (overall_error < (fabs(var->value - tmp)/tmp)) {
-	  overall_error = (fabs(var->value - tmp)/tmp);
-	}
-
-	if (overall_error < (fabs(var->value - tmp))) {
-	  overall_error = (fabs(var->value - tmp));
+	if (overall_modification < (fabs(var->value - tmp)/tmp)) {
+	  overall_modification = (fabs(var->value - tmp)/tmp);
 	}
 
 	var->value = tmp;
-	DEBUG3("New value of var (%p)  = %e, overall_error = %e", var,
-	       var->value, overall_error);
+	DEBUG3("New value of var (%p)  = %e, overall_modification = %e", var,
+	       var->value, overall_modification);
       }
     }
 
     if (!__check_feasible(cnst_list, var_list, 0))
-      overall_error = 1.0;
-    DEBUG2("Iteration %d: Overall_error : %f", iteration, overall_error);
+      overall_modification = 1.0;
+    DEBUG2("Iteration %d: overall_modification : %f", iteration, overall_modification);
     if(!dual_updated) {
-      DEBUG1("Could not improve the convergence at iteration %d. Drop it!",iteration);
+      WARN1("Could not improve the convergence at iteration %d. Drop it!",iteration);
       break;
     }
   }
@@ -246,7 +238,7 @@ void lagrange_solve(lmm_system_t sys)
 
   __check_feasible(cnst_list, var_list, 1);
 
-  if (overall_error <= epsilon_min_error) {
+  if (overall_modification <= epsilon_min_error) {
     DEBUG1("The method converges in %d iterations.", iteration);
   }
   if (iteration >= max_iterations) {
@@ -333,7 +325,9 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
       CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f",middle);
 
       if((min==middle) || (max==middle)) {
-	DEBUG0("Cannot improve the convergence!");
+	CWARN2(surf_lagrange_dichotomy,"Cannot improve the convergence! min=max=middle=%1.20f, diff = %1.20f."
+	       " Reaching the 'double' limits. Maybe scaling your function would help.",
+	       min, max-min);
 	break;
       }
       middle_diff = diff(middle, var_cnst);
@@ -342,10 +336,12 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
 	CDEBUG0(surf_lagrange_dichotomy, "Increasing min");
 	min = middle;
 	min_diff = middle_diff;
+	overall_error = max-middle_diff;
       } else if (middle_diff > 0) {
 	CDEBUG0(surf_lagrange_dichotomy, "Decreasing max");
 	max = middle;
 	max_diff = middle_diff;
+	overall_error = max-middle_diff;
       } else {
 	overall_error = 0;
       }
@@ -465,6 +461,18 @@ double diff_aux(lmm_variable_t var, double x)
   return result;
 }
 
+/** \brief Attribute the value bound to var->bound.
+ * 
+ *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
+ * 
+ *  Set default functions to the ones passed as parameters. This is a polimorfism in C pure, enjoy the roots of programming.
+ *
+ */
+void lmm_set_default_protocol_function(double (* func_fpi)  (lmm_variable_t var, double x))
+{
+  func_fpi_def  = func_fpi;
+}
+
 
 /**************** Vegas and Reno functions *************************/
 /*
@@ -473,16 +481,20 @@ double diff_aux(lmm_variable_t var, double x)
  */
 
 /*
- * For Vegas fpi: $\frac{\alpha D_f}{x}$
+ * For Vegas: $f(x) = \alpha D_f\ln(x)$
+ * Therefore: $fpi(x) = \frac{\alpha D_f}{x}$
  */
+#define VEGAS_SCALING 1000.0
 double func_vegas_fpi(lmm_variable_t var, double x){
   xbt_assert0(x>0.0,"Don't call me with stupid values!");
   return VEGAS_SCALING*var->df/x;
 }
 
 /*
- * For Reno fpi: $\sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
+ * For Reno:  $f(x) = \frac{\sqrt{3/2}}{D_f} atan(\sqrt{3/2}D_f x)$
+ * Therefore: $fpi(x)  = \sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
  */
+#define RENO_SCALING 1000.0
 double func_reno_fpi(lmm_variable_t var, double x){
   double res_fpi; 
 
@@ -491,7 +503,7 @@ double func_reno_fpi(lmm_variable_t var, double x){
 
   res_fpi = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
   if(res_fpi<=0.0) return 0.0;
-  xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!");
-  return sqrt(res_fpi);
+/*   xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!"); */
+  return sqrt(RENO_SCALING*res_fpi);
 }
 
