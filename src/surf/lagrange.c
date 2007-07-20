@@ -96,7 +96,7 @@ void lagrange_solve(lmm_system_t sys)
    * Lagrange Variables.
    */
   int max_iterations = 100;
-  double epsilon_min_error = 1e-6;
+  double epsilon_min_error = MAXMIN_PRECISION;
   double dichotomy_min_error = 1e-20;
   double overall_error = 1;
 
@@ -457,7 +457,7 @@ double diff_aux(lmm_variable_t var, double x)
   double tmp_fpi, result;
 
   XBT_IN2("(var (%p), x (%1.20f))", var, x);
-  xbt_assert0(var->func_fp,
+  xbt_assert0(var->func_fpi,
 	      "Initialize the protocol functions first create variables before.");
 
   tmp_fpi = var->func_fpi(var, x);
