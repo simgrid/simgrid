@@ -58,18 +58,30 @@ extern smpi_mpi_datatype_t smpi_mpi_double;
 
 // MPI_Request
 struct smpi_mpi_request_t {
-  void *buf;
-  int count;
-  smpi_mpi_datatype_t *datatype;
-  int src;
-  int dst;
-  int tag;
-  smpi_mpi_communicator_t *comm;
-  short int completed;
-  xbt_fifo_t waitlist;
+	smpi_mpi_communicator_t *comm;
+	int src;
+	int dst;
+	int tag;
+	void *buf;
+	int count;
+	smpi_mpi_datatype_t *datatype;
+	smx_mutex_t mutex;
+	smx_cond_t cond;
+	short int completed :1;
+	xbt_fifo_t waitlist;
 };
 typedef struct smpi_mpi_request_t smpi_mpi_request_t;
 typedef smpi_mpi_request_t *MPI_Request;
+
+// smpi_received_message_t
+struct smpi_received_message_t {
+	smpi_mpi_communicator_t *comm;
+	int src;
+	int dst;
+	int tag;
+	void *buf;
+};
+typedef struct smpi_received_message_t smpi_received_message_t;
 
 // MPI_Op
 struct smpi_mpi_op_t {
@@ -82,15 +94,6 @@ extern smpi_mpi_op_t smpi_mpi_land;
 extern smpi_mpi_op_t smpi_mpi_sum;
 #define MPI_SUM (&smpi_mpi_sum)
 
-// smpi_received_message_t
-struct smpi_received_message_t {
-	void *buf;
-	smpi_mpi_communicator_t *comm;
-	int src;
-	int dst;
-	int tag;
-};
-typedef struct smpi_received_message_t smpi_received_message_t;
 
 // smpi functions
 extern int smpi_simulated_main(int argc, char **argv);
