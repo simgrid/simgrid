@@ -17,7 +17,7 @@
 #define MPI_ERR_RANK    7
 #define MPI_ERR_TAG     8
 
-#include <stdlib.h>
+#include <xbt/function_types.h>
 #include <simix/simix.h>
 
 // MPI_Comm

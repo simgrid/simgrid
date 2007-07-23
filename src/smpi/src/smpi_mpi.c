@@ -87,3 +87,67 @@ int MPI_Barrier(MPI_Comm comm)
 	smpi_bench_begin();
 	return MPI_SUCCESS;
 }
+
+int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request) 
+{
+	int retval = MPI_SUCCESS;
+	int dst;
+	smpi_bench_end();
+	dst = smpi_mpi_comm_rank_self(comm);
+	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
+	if (NULL != *request) {
+		smpi_irecv(*request);
+	}
+	smpi_bench_begin();
+	return retval;
+}
+
+int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status) 
+{
+	int retval = MPI_SUCCESS;
+	int dst;
+	smpi_mpi_request_t *request;
+	smpi_bench_end();
+	dst = smpi_mpi_comm_rank_self(comm);
+	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
+	if (NULL != request) {
+		smpi_irecv(request);
+		smpi_wait(request, status);
+		// FIXME: mallocator
+		//xbt_free(request);
+	}
+	smpi_bench_begin();
+	return retval;
+}
+
+int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request)
+{
+	int retval = MPI_SUCCESS;
+	int src;
+	smpi_bench_end();
+	src = smpi_mpi_comm_rank_self(comm);
+	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
+	if (NULL != *request) {
+		smpi_isend(*request);
+	}
+	smpi_bench_begin();
+	return retval;
+}
+
+int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+{
+	int retval = MPI_SUCCESS;
+	int src;
+	smpi_mpi_request_t *request;
+	smpi_bench_end();
+	src = smpi_mpi_comm_rank_self(comm);
+	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
+	if (NULL != request) {
+		smpi_isend(request);
+		smpi_wait(request, MPI_STATUS_IGNORE);
+		// FIXME: mallocator
+		//xbt_free(request)
+	}
+	smpi_bench_begin();
+	return retval;
+}
