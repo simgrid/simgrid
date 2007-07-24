@@ -152,7 +152,8 @@ int smpi_sender(int argc, char **argv)
 			scratch->src  = request->src;
 			scratch->dst  = request->dst;
 			scratch->tag  = request->tag;
-			scratch->buf  = request->buf;
+			scratch->buf  = xbt_malloc(request->datatype->size * request->count);
+			memcpy(scratch->buf, request->buf, request->datatype->size * request->count);
 			drank = smpi_mpi_comm_rank(&smpi_mpi_comm_world, dhost);
 			SIMIX_mutex_lock(smpi_received_messages_mutex[drank]);
 			xbt_fifo_push(smpi_received_messages[drank], scratch);
@@ -365,6 +366,14 @@ void *smpi_new_request()
 	return xbt_new(smpi_mpi_request_t, 1);
 }
 
+void smpi_free_request(void *pointer) {
+	smpi_mpi_request_t *request = pointer;
+	if (NULL != request) {
+		xbt_fifo_free(request->waitlist);
+		xbt_free(request);
+	}
+}
+
 void *smpi_new_message()
 {
 	return xbt_new(smpi_received_message_t, 1);
@@ -419,7 +428,7 @@ void smpi_mpi_init()
 		smpi_mpi_sum.func                 = &smpi_mpi_sum_func;
 
 		// smpi globals
-		smpi_request_mallocator           = xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_new_request, xbt_free, smpi_do_nothing);
+		smpi_request_mallocator           = xbt_mallocator_new(SMPI_REQUEST_MALLOCATOR_SIZE, smpi_new_request, smpi_free_request, smpi_do_nothing);
 		smpi_message_mallocator           = xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE, smpi_new_message, xbt_free, smpi_do_nothing);
 		smpi_pending_send_requests        = xbt_new(xbt_fifo_t,  size);
 		smpi_pending_send_requests_mutex  = xbt_new(smx_mutex_t, size);
@@ -623,7 +632,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype,
 		(*request)->completed  = 0;
 		(*request)->mutex      = SIMIX_mutex_init();
 		(*request)->cond       = SIMIX_cond_init();
-		(*request)->waitlist   = NULL;
+		(*request)->waitlist   = xbt_fifo_new();
 	}
 	return retval;
 }
