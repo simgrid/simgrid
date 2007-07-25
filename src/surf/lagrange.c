@@ -28,14 +28,14 @@ XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf_lagrange,
 //solves the proportional fairness using a lagrange optimizition with dichotomy step
 void lagrange_solve(lmm_system_t sys);
 //computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-double dichotomy(double init, double diff(double, void *), void *var_cnst,
-		 double min_error);
+static double dichotomy(double init, double diff(double, void *), void *var_cnst,
+			double min_error);
 //computes the value of the differential of variable param_var applied to mu  
-double partial_diff_mu(double mu, void *param_var);
+static double partial_diff_mu(double mu, void *param_var);
 //computes the value of the differential of constraint param_cnst applied to lambda  
-double partial_diff_lambda(double lambda, void *param_cnst);
+static double partial_diff_lambda(double lambda, void *param_cnst);
 //auxiliar function to compute the partial_diff
-double diff_aux(lmm_variable_t var, double x);
+static double diff_aux(lmm_variable_t var, double x);
 
 
 static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
@@ -265,8 +265,8 @@ void lagrange_solve(lmm_system_t sys)
  *
  * @return a double correponding to the result of the dichotomyal process
  */
-double dichotomy(double init, double diff(double, void *), void *var_cnst,
-		 double min_error)
+static double dichotomy(double init, double diff(double, void *), void *var_cnst,
+			double min_error)
 {
   double min, max;
   double overall_error;
@@ -325,9 +325,9 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
       CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f",middle);
 
       if((min==middle) || (max==middle)) {
-	CWARN2(surf_lagrange_dichotomy,"Cannot improve the convergence! min=max=middle=%1.20f, diff = %1.20f."
-	       " Reaching the 'double' limits. Maybe scaling your function would help.",
-	       min, max-min);
+	CWARN4(surf_lagrange_dichotomy,"Cannot improve the convergence! min=max=middle=%1.20f, diff = %1.20f."
+	       " Reaching the 'double' limits. Maybe scaling your function would help ([%1.20f,%1.20f]).",
+	       min, max-min, min_diff,max_diff);
 	break;
       }
       middle_diff = diff(middle, var_cnst);
@@ -336,12 +336,12 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
 	CDEBUG0(surf_lagrange_dichotomy, "Increasing min");
 	min = middle;
 	min_diff = middle_diff;
-	overall_error = max-middle_diff;
+	overall_error = max_diff-middle_diff;
       } else if (middle_diff > 0) {
 	CDEBUG0(surf_lagrange_dichotomy, "Decreasing max");
 	max = middle;
 	max_diff = middle_diff;
-	overall_error = max-middle_diff;
+	overall_error = max_diff-middle_diff;
       } else {
 	overall_error = 0;
       }
@@ -371,7 +371,7 @@ double dichotomy(double init, double diff(double, void *), void *var_cnst,
 /*
  *
  */
-double partial_diff_mu(double mu, void *param_var)
+static double partial_diff_mu(double mu, void *param_var)
 {
   double mu_partial = 0.0;
   double sigma_mu = 0.0;
@@ -398,7 +398,7 @@ double partial_diff_mu(double mu, void *param_var)
 /*
  *
  */
-double partial_diff_lambda(double lambda, void *param_cnst)
+static double partial_diff_lambda(double lambda, void *param_cnst)
 {
 
   int i;
@@ -446,7 +446,7 @@ double partial_diff_lambda(double lambda, void *param_cnst)
 }
 
 
-double diff_aux(lmm_variable_t var, double x)
+static double diff_aux(lmm_variable_t var, double x)
 {
   double tmp_fpi, result;
 
@@ -494,7 +494,7 @@ double func_vegas_fpi(lmm_variable_t var, double x){
  * For Reno:  $f(x) = \frac{\sqrt{3/2}}{D_f} atan(\sqrt{3/2}D_f x)$
  * Therefore: $fpi(x)  = \sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
  */
-#define RENO_SCALING 1000.0
+#define RENO_SCALING 1.0
 double func_reno_fpi(lmm_variable_t var, double x){
   double res_fpi; 
 
