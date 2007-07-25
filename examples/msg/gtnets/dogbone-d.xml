@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+
+  <process host="S1" function="master">
+      <argument value="100000000"/>
+      <argument value="C1"/>
+  </process>
+
+  <process host="S2" function="master">
+      <argument value="100000000"/>
+      <argument value="C2"/>
+  </process>
+
+  <process host="C1" function="slave"/>
+  <process host="C2" function="slave"/>
+
+</platform_description>

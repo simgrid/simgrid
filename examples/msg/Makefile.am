@@ -11,6 +11,10 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh
 if HAVE_SDP
   TESTS += sendrecv/sendrecv_KCCFLN05_proportional.tesh
 endif
+if USE_GTNETS
+endif
+
+
 TESTS+= sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
         sendrecv/sendrecv_KCCFLN05_Reno.tesh \
         suspend/suspend.tesh \
@@ -24,14 +28,27 @@ CLEANFILES = sendrecv/*~ \
              suspend/suspend \
              masterslave/*~ \
              masterslave/masterslave \
-             masterslave/masterslave_forwarder
+             masterslave/masterslave_forwarder 
              #masterslave/masterslave_bypass
+
+if USE_GTNETS
+             CLEANFILES += gtnets/gtnets 
+endif
+
+
+
 
 bin_PROGRAMS = sendrecv/sendrecv \
                suspend/suspend \
                masterslave/masterslave \
                masterslave/masterslave_forwarder
                #masterslave/masterslave_bypass
+
+if USE_GTNETS
+               bin_PROGRAMS += gtnets/gtnets 
+endif
+
+
 
 # sendrecv simple example
 sendrecv_sendrecv_SOURCES = sendrecv/sendrecv.c
@@ -52,5 +69,11 @@ masterslave_masterslave_forwarder_LDADD   = $(top_builddir)/src/libsimgrid.la
 # bypass the surf xml parser
 #masterslave_masterslave_bypass_SOURCES = masterslave/masterslave_bypass.c
 #masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# verify if the GTNETS feature is working
+if USE_GTNETS
+gtnets_gtnets_SOURCES = gtnets/gtnets.c
+gtnets_gtnets_LDADD   = $(top_builddir)/src/libsimgrid.la
+endif
 
 include $(top_srcdir)/acmacro/dist-files.mk

@@ -1,0 +1,67 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<!--- 
+  dogbone
+-->
+
+<platform_description version="1">
+  <cpu name="S1" power="1000000000"/>
+  <cpu name="C1" power="1000000000"/>
+  <cpu name="S2" power="1000000000"/>
+  <cpu name="C2" power="1000000000"/>
+  <router name="R1"/>
+  <router name="R2"/>
+
+  <network_link name="1" bandwidth="100000000" latency="0.01"/>
+  <network_link name="2" bandwidth="100000" latency="0.02"/>
+  <network_link name="3" bandwidth="100000000" latency="0.01"/>
+  <network_link name="4" bandwidth="100000000" latency="0.01"/>
+  <network_link name="5" bandwidth="100000000" latency="0.05"/>
+
+
+  <route src="S1" dst="C1">
+     <route_element name="1"/>
+     <route_element name="2"/>
+     <route_element name="3"/>
+  </route>
+
+  <route src="S2" dst="C2">
+     <route_element name="4"/>
+     <route_element name="2"/>
+     <route_element name="5"/>
+  </route>
+
+  <route src="S1" dst="C2">
+     <route_element name="1"/>
+     <route_element name="2"/>
+     <route_element name="5"/>
+  </route>
+
+  <route src="S2" dst="C1">
+     <route_element name="4"/>
+     <route_element name="2"/>
+     <route_element name="3"/>
+  </route>
+
+
+  <route src="S1" dst="R1">
+     <route_element name="1"/>
+  </route>
+
+  <route src="R1" dst="R2">
+     <route_element name="2"/>
+  </route>
+
+  <route src="R2" dst="C1">
+     <route_element name="3"/>
+  </route>
+
+  <route src="S2" dst="R1">
+     <route_element name="4"/>
+  </route>
+
+  <route src="R2" dst="C2">
+     <route_element name="5"/>
+  </route>
+
+</platform_description>

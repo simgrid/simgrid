@@ -1,0 +1,19 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<!--- 
+   S1  --------- C1
+        link 1
+        100MB, 5ms
+-->
+
+<platform_description version="1">
+  <cpu name="S1" power="1000000000"/>
+  <cpu name="C1" power="1000000000"/>
+
+  <network_link name="1" bandwidth="10000" latency="0.01"/>
+
+  <route src="S1" dst="C1">
+     <route_element name="1"/>
+  </route>
+
+</platform_description>
