@@ -28,8 +28,9 @@ static void _simix_cfg_cb__workstation_model(const char *name, int pos)
               !strcmp(val, "KCCFLN05") ||
 	      !strcmp(val, "KCCFLN05_proportional") ||
 	      !strcmp(val, "KCCFLN05_Vegas") ||
-	      !strcmp(val, "KCCFLN05_Reno"),
-              "Unknown workstation model: %s (choices are: 'CLM03', 'KCCFLN05', 'KCCFLN05_proportional', 'KCCFLN05_Vegas' and 'KCCFLN05_Reno'",val);
+	      !strcmp(val, "KCCFLN05_Reno") ||
+              !strcmp(val, "GTNETS"),
+              "Unknown workstation model: %s (choices are: 'CLM03', 'KCCFLN05', 'KCCFLN05_proportional', 'KCCFLN05_Vegas', 'KCCFLN05_Reno' and 'GTNETS'",val);
 }
 
 /* create the config set and register what should be */
