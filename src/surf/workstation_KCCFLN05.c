@@ -17,8 +17,11 @@ static s_route_KCCFLN05_t *routing_table = NULL;
 #define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
 static network_link_KCCFLN05_t loopback = NULL;
 static xbt_dict_t parallel_task_network_link_set = NULL;
+//added to work with GTNETS
+static xbt_dict_t router_set = NULL;
 
 /*xbt_dict_t network_link_set = NULL;*/
+
 
 /* convenient function */
 static void __update_cpu_usage(cpu_KCCFLN05_t cpu)
@@ -78,11 +81,28 @@ static void *name_service(const char *name)
 {
   xbt_ex_t e;
   void *res=NULL;
+
+
+  
   TRY {
-     res = xbt_dict_get(workstation_set, name);
+    res = xbt_dict_get_or_null(workstation_set, name);
   } CATCH(e) {
-     RETHROW1("Host '%s' not found (dict raised this exception: %s)",name);
+    WARN1("Host '%s' not found, verifing if it is a router", name);
+    res = NULL;
   }
+
+
+  if(res == NULL){
+    TRY {
+      res = xbt_dict_get_or_null(router_set, name);
+    } CATCH(e) {
+      if (e.category != not_found_error) 
+	RETHROW;
+      xbt_ex_free(e);
+      res = NULL;
+    }
+  }
+
   return res;
 }
 
@@ -400,6 +420,7 @@ static void finalize(void)
 
   xbt_dict_free(&network_link_set);
   xbt_dict_free(&workstation_set);
+  xbt_dict_free(&router_set);
   if (parallel_task_network_link_set != NULL) {
     xbt_dict_free(&parallel_task_network_link_set);
   }
@@ -704,6 +725,32 @@ static double get_link_latency(const void *link) {
 /*** Resource Creation & Destruction **/
 /**************************************/
 
+
+static void router_free(void *router)
+{
+  free( ((router_KCCFLN05_t) router)->name );
+}
+
+static void router_new(const char *name)
+{
+  static unsigned int nb_routers = 0; 
+
+  INFO1("Creating a router %s", name);
+
+  cpu_KCCFLN05_t router;
+  router = xbt_new0(s_cpu_KCCFLN05_t, 1);
+
+  router->name = xbt_strdup(name);
+  router->id   = nb_routers++;
+  xbt_dict_set(router_set, name, router, router_free);
+}
+
+static void parse_route_set_routers(void)
+{
+  //add a dumb router just to be GTNETS compatible
+  router_new(A_surfxml_router_name);
+}
+
 static void cpu_free(void *cpu)
 {
   free(((cpu_KCCFLN05_t) cpu)->name);
@@ -954,7 +1001,7 @@ static void parse_route_set_route(void)
 
 static void parse_file(const char *file)
 {
-  int i ;
+  int i;
 
   /* Figuring out the cpus */
   surf_parse_reset_parser();
@@ -964,6 +1011,13 @@ static void parse_file(const char *file)
   surf_parse_close();
 
   create_routing_table();
+
+  /* Figuring out the router (added after GTNETS) */
+  surf_parse_reset_parser();
+  STag_surfxml_router_fun=parse_route_set_routers;
+  surf_parse_open(file);
+  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  surf_parse_close();
 
   /* Figuring out the network links */
   surf_parse_reset_parser();
@@ -1061,7 +1115,8 @@ static void resource_init_internal(void)
   surf_workstation_resource->extension_public->get_link_bandwidth = get_link_bandwidth;
   surf_workstation_resource->extension_public->get_link_latency = get_link_latency;
 
-  workstation_set = xbt_dict_new();
+  workstation_set  = xbt_dict_new();
+  router_set       = xbt_dict_new();
   network_link_set = xbt_dict_new();
 
   xbt_assert0(maxmin_system, "surf_init has to be called first!");
