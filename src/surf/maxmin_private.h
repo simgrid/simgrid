@@ -58,6 +58,8 @@ typedef struct lmm_variable {
   double mu;
   double new_mu;
   double df; /* Total delay of flow */
+  double (* func_f)  (struct lmm_variable *var, double x);  /* (f)    */
+  double (* func_fp)  (struct lmm_variable *var, double x);  /* (f')    */
   double (* func_fpi)  (struct lmm_variable *var, double x);  /* (f')^{-1}    */
   /* \end{For Lagrange only} */
 } s_lmm_variable_t;
@@ -90,5 +92,9 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
 static void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst);
 
 void lmm_print(lmm_system_t sys);
+
+extern double (* func_f_def )  (lmm_variable_t , double);
+extern double (* func_fp_def ) (lmm_variable_t , double);
+extern double (* func_fpi_def )(lmm_variable_t , double);
 
 #endif				/* _SURF_MAXMIN_PRIVATE_H */

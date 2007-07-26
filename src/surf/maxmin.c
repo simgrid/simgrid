@@ -176,6 +176,8 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   var->value = 0.0;
   var->df    = 0.0;
 
+  var->func_f  = func_f_def;
+  var->func_fp  = func_fp_def;
   var->func_fpi  = func_fpi_def;
 
   if(weight) xbt_swag_insert_at_head(var,&(sys->variable_set));
