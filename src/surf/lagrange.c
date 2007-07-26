@@ -22,6 +22,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf,
 XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf_lagrange,
 			"Logging specific to SURF (lagrange dichotomy)");
 
+#define SHOW_EXPR(expr) CDEBUG1(surf_lagrange,#expr " = %g",expr);
+
+double (* func_f_def )  (lmm_variable_t , double);
+double (* func_fp_def ) (lmm_variable_t , double);
+double (* func_fpi_def )(lmm_variable_t , double);
+
 /*
  * Local prototypes to implement the lagrangian optimization with optimal step, also called dichotomy.
  */
@@ -34,9 +40,6 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
 static double partial_diff_mu(double mu, void *param_var);
 //computes the value of the differential of constraint param_cnst applied to lambda  
 static double partial_diff_lambda(double lambda, void *param_cnst);
-//auxiliar function to compute the partial_diff
-static double diff_aux(lmm_variable_t var, double x);
-
 
 static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 {
@@ -85,6 +88,68 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
   return 1;
 }
 
+static double new_value(lmm_variable_t var)
+{
+  double tmp = 0;
+  int i;
+
+  for (i = 0; i < var->cnsts_number; i++) {
+    tmp += (var->cnsts[i].constraint)->lambda;
+  }
+  if (var->bound > 0)
+    tmp += var->mu;
+  DEBUG3("\t Working on var (%p). cost = %e; Df = %e", var, tmp,
+	 var->df);
+  //uses the partial differential inverse function
+  return var->func_fpi(var, tmp);
+}
+
+static double new_mu(lmm_variable_t var)
+{
+  double mu_i = 0.0;
+  double sigma_i = 0.0;
+  int j;
+
+  for (j = 0; j < var->cnsts_number; j++) {
+    sigma_i += (var->cnsts[j].constraint)->lambda;
+  }
+  mu_i = var->func_fp(var,var->bound)-sigma_i;
+  if(mu_i<0.0) return 0.0;
+  return mu_i;
+}
+
+static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
+{
+  lmm_constraint_t cnst = NULL;
+  lmm_variable_t var = NULL;
+  
+  double obj = 0.0;
+
+  xbt_swag_foreach(var, var_list) {
+    double sigma_i=0.0;
+    int j;
+
+    for (j = 0; j < var->cnsts_number; j++)
+      sigma_i += (var->cnsts[j].constraint)->lambda;
+
+    if (var->bound > 0)
+      sigma_i += var->mu;
+
+    DEBUG2("var %p : sigma_i = %1.20f",var,sigma_i);
+
+    obj += var->func_f(var,var->func_fpi(var,sigma_i)) - 
+      sigma_i*var->func_fpi(var,sigma_i);
+
+    if (var->bound > 0)
+      obj += var->mu*var->bound;
+  }
+
+  xbt_swag_foreach(cnst, cnst_list)
+    obj += cnst->lambda*cnst->bound;
+
+  return obj;
+}
+
 void lagrange_solve(lmm_system_t sys)
 {
   /*
@@ -92,7 +157,7 @@ void lagrange_solve(lmm_system_t sys)
    */
   int max_iterations = 100;
   double epsilon_min_error = MAXMIN_PRECISION;
-  double dichotomy_min_error = 1e-18;
+  double dichotomy_min_error = 1e-14;
   double overall_modification = 1;
 
   /*
@@ -111,7 +176,7 @@ void lagrange_solve(lmm_system_t sys)
   int iteration = 0;
   double tmp = 0;
   int i;
-
+  double obj,new_obj;
 
   DEBUG0("Iterative method configuration snapshot =====>");
   DEBUG1("#### Maximum number of iterations       : %d", max_iterations);
@@ -123,25 +188,6 @@ void lagrange_solve(lmm_system_t sys)
   if (!(sys->modified))
     return;
 
-  /* 
-   * Initialize the var list variable with only the active variables. 
-   * Associate an index in the swag variables. Initialize mu.
-   */
-  var_list = &(sys->variable_set);
-  i = 0;
-  xbt_swag_foreach(var, var_list) {
-    if ((var->bound < 0.0) || (var->weight <= 0.0)) {
-      DEBUG1("#### NOTE var(%d) is a boundless (or inactive) variable", i);
-      var->mu = -1.0;
-    } else {
-      var->mu = 1.0;
-      var->new_mu = 2.0;
-    }
-    DEBUG3("#### var(%d) %p ->mu :  %e", i, var, var->mu);
-    DEBUG3("#### var(%d) %p ->weight: %e", i, var, var->weight);
-    DEBUG3("#### var(%d) %p ->bound: %e", i, var, var->bound);
-    i++;
-  }
 
   /* 
    * Initialize lambda.
@@ -153,6 +199,36 @@ void lagrange_solve(lmm_system_t sys)
     DEBUG2("#### cnst(%p)->lambda :  %e", cnst, cnst->lambda);
   }
 
+  /* 
+   * Initialize the var list variable with only the active variables. 
+   * Associate an index in the swag variables. Initialize mu.
+   */
+  var_list = &(sys->variable_set);
+  i = 0;
+  xbt_swag_foreach(var, var_list) {
+    if ((var->bound < 0.0) || (var->weight <= 0.0)) {
+      DEBUG1("#### NOTE var(%d) is a boundless (or inactive) variable", i);
+      var->mu = -1.0;
+      if(var->weight>0.0) 
+	var->value = new_value(var);
+      else 
+	var->value = 0;
+    } else {
+      var->mu = 1.0;
+      var->new_mu = 2.0;
+      var->value = new_value(var);
+    }
+    DEBUG3("#### var(%d) %p ->mu :  %e", i, var, var->mu);
+    DEBUG3("#### var(%d) %p ->weight: %e", i, var, var->weight);
+    DEBUG3("#### var(%d) %p ->bound: %e", i, var, var->bound);
+    i++;
+  }
+
+  /* 
+   * Compute dual objective.
+   */
+  obj = dual_objective(var_list,cnst_list);
+
   /*
    * While doesn't reach a minimun error or a number maximum of iterations.
    */
@@ -162,26 +238,30 @@ void lagrange_solve(lmm_system_t sys)
     iteration++;
     DEBUG1("************** ITERATION %d **************", iteration);
     DEBUG0("-------------- Gradient Descent ----------");
+
     /*                       
-     * Compute the value of mu_i
+     * Improve the value of mu_i
      */
-    //forall mu_i in mu_1, mu_2, ..., mu_n
     xbt_swag_foreach(var, var_list) {
       if ((var->bound >= 0) && (var->weight > 0)) {
 	DEBUG1("Working on var (%p)", var);
-	var->new_mu =
-	    dichotomy(var->mu, partial_diff_mu, var, dichotomy_min_error);
+	var->new_mu = new_mu(var);
 	dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error);
 	DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu));
 	DEBUG3("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var, var->mu, var->new_mu);
 	var->mu = var->new_mu;
+
+	new_obj=dual_objective(var_list,cnst_list);
+	DEBUG3("Improvement for Objective (%g -> %g) : %g", obj, new_obj,
+	      obj-new_obj);
+	xbt_assert1(obj-new_obj>=-epsilon_min_error,"Our gradient sucks! (%1.20f)",obj-new_obj);
+	obj = new_obj;
       }
     }
 
     /*
-     * Compute the value of lambda_i
+     * Improve the value of lambda_i
      */
-    //forall lambda_i in lambda_1, lambda_2, ..., lambda_n
     xbt_swag_foreach(cnst, cnst_list) {
       DEBUG1("Working on cnst (%p)", cnst);
       cnst->new_lambda =
@@ -191,6 +271,12 @@ void lagrange_solve(lmm_system_t sys)
       DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(cnst->new_lambda-cnst->lambda));
       DEBUG3("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
       cnst->lambda = cnst->new_lambda;
+
+      new_obj=dual_objective(var_list,cnst_list);
+      DEBUG3("Improvement for Objective (%g -> %g) : %g", obj, new_obj,
+	     obj-new_obj);
+      xbt_assert1(obj-new_obj>=-epsilon_min_error,"Our gradient sucks! (%1.20f)",obj-new_obj);
+      obj = new_obj;
     }
 
     /*
@@ -203,18 +289,7 @@ void lagrange_solve(lmm_system_t sys)
       if (var->weight <= 0)
 	var->value = 0.0;
       else {
-	//compute sigma_i + mu_i
-	tmp = 0;
-	for (i = 0; i < var->cnsts_number; i++) {
-	  tmp += (var->cnsts[i].constraint)->lambda;
-	}
-	if (var->bound > 0)
-	  tmp += var->mu;
-	DEBUG3("\t Working on var (%p). cost = %e; Df = %e", var, tmp,
-	       var->df);
-
-	//uses the partial differential inverse function
-	tmp = var->func_fpi(var, tmp);
+	tmp = new_value(var);
 
 	if (overall_modification < (fabs(var->value - tmp)/tmp)) {
 	  overall_modification = (fabs(var->value - tmp)/tmp);
@@ -226,6 +301,7 @@ void lagrange_solve(lmm_system_t sys)
       }
     }
 
+    DEBUG0("-------------- Check feasability ----------");
     if (!__check_feasible(cnst_list, var_list, 0))
       overall_modification = 1.0;
     DEBUG2("Iteration %d: overall_modification : %f", iteration, overall_modification);
@@ -233,6 +309,10 @@ void lagrange_solve(lmm_system_t sys)
       WARN1("Could not improve the convergence at iteration %d. Drop it!",iteration);
       break;
     }
+
+    /* 
+     * Compute dual objective.
+     */
   }
 
 
@@ -308,7 +388,6 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
 	CDEBUG0(surf_lagrange_dichotomy, "Decreasing max");
 	max = min;
 	max_diff = min_diff;
-
       }
     } else if (min_diff < 0 && max_diff < 0) {
       if (min == max) {
@@ -335,22 +414,27 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
       if (middle_diff < 0) {
 	CDEBUG0(surf_lagrange_dichotomy, "Increasing min");
 	min = middle;
-	min_diff = middle_diff;
 	overall_error = max_diff-middle_diff;
+	min_diff = middle_diff;
+/* 	SHOW_EXPR(overall_error); */
       } else if (middle_diff > 0) {
 	CDEBUG0(surf_lagrange_dichotomy, "Decreasing max");
 	max = middle;
-	max_diff = middle_diff;
 	overall_error = max_diff-middle_diff;
+	max_diff = middle_diff;
+/* 	SHOW_EXPR(overall_error); */
       } else {
 	overall_error = 0;
+/* 	SHOW_EXPR(overall_error); */
       }
     } else if (min_diff == 0) {
       max=min;
       overall_error = 0;
+/*       SHOW_EXPR(overall_error); */
     } else if (max_diff == 0) {
       min=max;
       overall_error = 0;
+/*       SHOW_EXPR(overall_error); */
     } else if (min_diff > 0 && max_diff < 0) {
       CWARN0(surf_lagrange_dichotomy,
 	     "The impossible happened, partial_diff(min) > 0 && partial_diff(max) < 0");
@@ -368,63 +452,34 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
   return ((min + max) / 2.0);
 }
 
-/*
- *
- */
-static double partial_diff_mu(double mu, void *param_var)
-{
-  double mu_partial = 0.0;
-  double sigma_mu = 0.0;
-  lmm_variable_t var = (lmm_variable_t) param_var;
-  int i;
-  XBT_IN;
-  //compute sigma_i
-  for (i = 0; i < var->cnsts_number; i++)
-    sigma_mu += (var->cnsts[i].constraint)->lambda;
-
-  //compute sigma_i + mu_i
-  sigma_mu += mu;
-
-  //use auxiliar function passing (sigma_i + mu_i)
-  mu_partial = diff_aux(var, sigma_mu);
-
-  //add the RTT limit
-  mu_partial += var->bound;
-
-  XBT_OUT;
-  return mu_partial;
-}
-
-/*
- *
- */
 static double partial_diff_lambda(double lambda, void *param_cnst)
 {
 
-  int i;
+  int j;
   xbt_swag_t elem_list = NULL;
   lmm_element_t elem = NULL;
   lmm_variable_t var = NULL;
   lmm_constraint_t cnst = (lmm_constraint_t) param_cnst;
-  double lambda_partial = 0.0;
+  double diff = 0.0;
   double sigma_i = 0.0;
 
   XBT_IN;
   elem_list = &(cnst->element_set);
 
-  CDEBUG1(surf_lagrange_dichotomy,"Computting diff of cnst (%p)", cnst);
+  CDEBUG1(surf_lagrange_dichotomy,"Computing diff of cnst (%p)", cnst);
 
   xbt_swag_foreach(elem, elem_list) {
     var = elem->variable;
     if (var->weight <= 0)
       continue;
 
-    //initilize de sumation variable
+    CDEBUG1(surf_lagrange_dichotomy,"Computing sigma_i for var (%p)", var);
+    // Initialize the summation variable
     sigma_i = 0.0;
 
-    //compute sigma_i of variable var
-    for (i = 0; i < var->cnsts_number; i++) {
-      sigma_i += (var->cnsts[i].constraint)->lambda;
+    // Compute sigma_i 
+    for (j = 0; j < var->cnsts_number; j++) {
+      sigma_i += (var->cnsts[j].constraint)->lambda;
     }
 
     //add mu_i if this flow has a RTT constraint associated
@@ -434,31 +489,16 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
     //replace value of cnst->lambda by the value of parameter lambda
     sigma_i = (sigma_i - cnst->lambda) + lambda;
 
-    //use the auxiliar function passing (\sigma_i + \mu_i)
-    lambda_partial += diff_aux(var, sigma_i);
+    diff += -var->func_fpi(var,  sigma_i);
   }
 
 
-  lambda_partial += cnst->bound;
+  diff += cnst->bound;
 
+  CDEBUG3(surf_lagrange_dichotomy,"d D/d lambda for cnst (%p) at %1.20f = %1.20f",
+	  cnst, lambda, diff);
   XBT_OUT;
-  return lambda_partial;
-}
-
-
-static double diff_aux(lmm_variable_t var, double x)
-{
-  double tmp_fpi, result;
-
-  XBT_IN2("(var (%p), x (%1.20f))", var, x);
-  xbt_assert0(var->func_fpi,
-	      "Initialize the protocol functions first create variables before.");
-
-  tmp_fpi = var->func_fpi(var, x);
-  result = - tmp_fpi;
-
-  XBT_OUT;
-  return result;
+  return diff;
 }
 
 /** \brief Attribute the value bound to var->bound.
@@ -468,8 +508,12 @@ static double diff_aux(lmm_variable_t var, double x)
  *  Set default functions to the ones passed as parameters. This is a polimorfism in C pure, enjoy the roots of programming.
  *
  */
-void lmm_set_default_protocol_function(double (* func_fpi)  (lmm_variable_t var, double x))
+void lmm_set_default_protocol_function(double (* func_f)  (lmm_variable_t var, double x),
+				       double (* func_fp)  (lmm_variable_t var, double x),
+				       double (* func_fpi)  (lmm_variable_t var, double x))
 {
+  func_f_def  = func_f;
+  func_fp_def  = func_fp;
   func_fpi_def  = func_fpi;
 }
 
@@ -482,28 +526,52 @@ void lmm_set_default_protocol_function(double (* func_fpi)  (lmm_variable_t var,
 
 /*
  * For Vegas: $f(x) = \alpha D_f\ln(x)$
+ * Therefore: $fp(x) = \frac{\alpha D_f}{x}$
  * Therefore: $fpi(x) = \frac{\alpha D_f}{x}$
  */
 #define VEGAS_SCALING 1000.0
-double func_vegas_fpi(lmm_variable_t var, double x){
+
+double func_vegas_f(lmm_variable_t var, double x){
+  xbt_assert0(x>0.0,"Don't call me with stupid values!");
+  return VEGAS_SCALING*var->df*log(x);
+}
+
+double func_vegas_fp(lmm_variable_t var, double x){
   xbt_assert0(x>0.0,"Don't call me with stupid values!");
   return VEGAS_SCALING*var->df/x;
 }
 
+double func_vegas_fpi(lmm_variable_t var, double x){
+  xbt_assert0(x>0.0,"Don't call me with stupid values!");
+  return var->df/(x/VEGAS_SCALING);
+}
+
 /*
  * For Reno:  $f(x) = \frac{\sqrt{3/2}}{D_f} atan(\sqrt{3/2}D_f x)$
+ * Therefore: $fp(x)  = \frac{3}{3 D_f^2 x^2+2}$
  * Therefore: $fpi(x)  = \sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
  */
 #define RENO_SCALING 1.0
+double func_reno_f(lmm_variable_t var, double x){
+  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
+
+  return RENO_SCALING*sqrt(3.0/2.0)/var->df*atan(sqrt(3.0/2.0)*var->df*x);
+}
+
+double func_reno_fp(lmm_variable_t var, double x){
+  return RENO_SCALING*3.0/(3.0*var->df*var->df*x*x +2.0);
+}
+
 double func_reno_fpi(lmm_variable_t var, double x){
   double res_fpi; 
 
   xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
   xbt_assert0(x>0.0,"Don't call me with stupid values!");
 
-  res_fpi = 1/(var->df*var->df*x) - 2/(3*var->df*var->df);
+  res_fpi = 1.0/(var->df*var->df*(x/RENO_SCALING)) - 2.0/(3.0*var->df*var->df);
   if(res_fpi<=0.0) return 0.0;
 /*   xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!"); */
-  return sqrt(RENO_SCALING*res_fpi);
+  return sqrt(res_fpi);
 }
+
 
