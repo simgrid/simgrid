@@ -109,14 +109,12 @@ void test1(method_t method)
 
   double a = 1.0, b = 10.0;
 
-  if (method == LAGRANGE_VEGAS) {
-    //set default functions for TCP Vegas
-    lmm_set_default_protocol_function(func_vegas_fpi);
-  } else if (method == LAGRANGE_RENO) {
-    //set default functions for TCP Reno
-    lmm_set_default_protocol_function(func_reno_fpi);
-  }
-
+  if (method == LAGRANGE_VEGAS)
+    lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
+				      func_vegas_fpi);
+  else if (method == LAGRANGE_RENO)
+    lmm_set_default_protocol_function(func_reno_f, func_reno_fpi,
+				      func_reno_fpi);
 
   Sys = lmm_system_new();
   L1 = lmm_constraint_new(Sys, (void *) "L1", a);
@@ -151,8 +149,8 @@ void test1(method_t method)
     sdp_solve(Sys);
 #endif
   } else if (method == LAGRANGE_VEGAS) {
-    double x = 3 * a / 4 - 3 * b / 8 + 
-      sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
+    double x = 3 * a / 4 - 3 * b / 8 +
+	sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
     /* Computed with mupad and D_f=1.0 */
     double max_deviation = 0.0;
     if (x > a) {
@@ -173,17 +171,17 @@ void test1(method_t method)
     max_deviation =
 	MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
-    if (max_deviation > 1e-8) {
-      DEBUG1("Max Deviation from optimal solution : %g", max_deviation);
-      DEBUG1("Found x = %1.20f", x);
-      DEBUG1("Deviation from optimal solution (R_1): %1.20f",
-	     lmm_variable_getvalue(R_1) - x);
-      DEBUG1("Deviation from optimal solution (R_2): %1.20f",
-	     lmm_variable_getvalue(R_2) - (b - a + x));
-      DEBUG1("Deviation from optimal solution (R_3): %1.20f",
-	     lmm_variable_getvalue(R_3) - x);
-      DEBUG1("Deviation from optimal solution (R_1_2_3): %1.20f",
-	     lmm_variable_getvalue(R_1_2_3) - (a - x));
+    if (max_deviation > MAXMIN_PRECISION) {
+      WARN1("Max Deviation from optimal solution : %g", max_deviation);
+      WARN1("Found x = %1.20f", x);
+      WARN2("Deviation from optimal solution (R_1 = %g): %1.20f", x,
+	    lmm_variable_getvalue(R_1) - x);
+      WARN2("Deviation from optimal solution (R_2 = %g): %1.20f",
+	    b - a + x, lmm_variable_getvalue(R_2) - (b - a + x));
+      WARN2("Deviation from optimal solution (R_3 = %g): %1.20f", x,
+	    lmm_variable_getvalue(R_3) - x);
+      WARN2("Deviation from optimal solution (R_1_2_3 = %g): %1.20f",
+	    a - x, lmm_variable_getvalue(R_1_2_3) - (a - x));
     }
   } else if (method == LAGRANGE_RENO) {
     double x;
@@ -208,17 +206,17 @@ void test1(method_t method)
     max_deviation =
 	MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
-    if (max_deviation > 1e-8) {
-      DEBUG1("Max Deviation from optimal solution : %g", max_deviation);
-      DEBUG1("Found x = %1.20f", x);
-      DEBUG1("Deviation from optimal solution (R_1): %1.20f",
-	     lmm_variable_getvalue(R_1) - x);
-      DEBUG1("Deviation from optimal solution (R_2): %1.20f",
-	     lmm_variable_getvalue(R_2) - (b - a + x));
-      DEBUG1("Deviation from optimal solution (R_3): %1.20f",
-	     lmm_variable_getvalue(R_3) - x);
-      DEBUG1("Deviation from optimal solution (R_1_2_3): %1.20f",
-	     lmm_variable_getvalue(R_1_2_3) - (a - x));
+    if (max_deviation > MAXMIN_PRECISION) {
+      WARN1("Max Deviation from optimal solution : %g", max_deviation);
+      WARN1("Found x = %1.20f", x);
+      WARN2("Deviation from optimal solution (R_1 = %g): %1.20f", x,
+	    lmm_variable_getvalue(R_1) - x);
+      WARN2("Deviation from optimal solution (R_2 = %g): %1.20f",
+	    b - a + x, lmm_variable_getvalue(R_2) - (b - a + x));
+      WARN2("Deviation from optimal solution (R_3 = %g): %1.20f", x,
+	    lmm_variable_getvalue(R_3) - x);
+      WARN2("Deviation from optimal solution (R_1_2_3 = %g): %1.20f",
+	    a - x, lmm_variable_getvalue(R_1_2_3) - (a - x));
     }
   } else {
     xbt_assert0(0, "Invalid method");
@@ -243,13 +241,12 @@ void test2(method_t method)
   lmm_variable_t T2 = NULL;
 
 
-  if (method == LAGRANGE_VEGAS) {
-    //set default functions for TCP Vegas
-    lmm_set_default_protocol_function(func_vegas_fpi);
-  } else if (method == LAGRANGE_RENO) {
-    //set default functions for TCP Reno
-    lmm_set_default_protocol_function(func_reno_fpi);
-  }
+  if (method == LAGRANGE_VEGAS)
+    lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
+				      func_vegas_fpi);
+  else if (method == LAGRANGE_RENO)
+    lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
+				      func_reno_fpi);
 
   Sys = lmm_system_new();
   CPU1 = lmm_constraint_new(Sys, (void *) "CPU1", 200.0);
@@ -396,11 +393,12 @@ void test3(method_t method)
   A[14][15] = 1.0;
 
 
-  if (method == LAGRANGE_VEGAS) {
-    lmm_set_default_protocol_function(func_vegas_fpi);
-  } else if (method == LAGRANGE_RENO) {
-    lmm_set_default_protocol_function(func_reno_fpi);
-  }
+  if (method == LAGRANGE_VEGAS)
+    lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
+				      func_vegas_fpi);
+  else if (method == LAGRANGE_RENO)
+    lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
+				      func_reno_fpi);
 
   Sys = lmm_system_new();
 
