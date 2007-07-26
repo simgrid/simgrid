@@ -2,95 +2,95 @@
 
 p Testing the surf network maxmin fairness model
 
-$ $SG_TEST_EXENV surf/simeng_usage$EXEEXT --log=surf_test.thres:debug --log=surf_lagrange.thres:critical
+$ $SG_TEST_EXENV surf/simeng_usage$EXEEXT --log=surf_test.thres:debug
 > [0.000000] xbt/log.c:607: [surf_test/DEBUG] Apply settings for category 'surf_test': set threshold to DEBUG (=2)
-> [0.000000] surf/simeng_usage.c:363: [surf_test/DEBUG] **************************** 
-> [0.000000] surf/simeng_usage.c:364: [surf_test/DEBUG] *****                  ***** 
-> [0.000000] surf/simeng_usage.c:365: [surf_test/DEBUG] *****      TEST 1      ***** 
-> [0.000000] surf/simeng_usage.c:366: [surf_test/DEBUG] *****                  ***** 
-> [0.000000] surf/simeng_usage.c:367: [surf_test/DEBUG] **************************** 
-> [0.000000] surf/simeng_usage.c:370: [surf_test/DEBUG] ***** Test 1 (Max-Min) ***** 
-> [0.000000] surf/simeng_usage.c:104: [surf_test/DEBUG] R_1_2_3 = 0.5
-> [0.000000] surf/simeng_usage.c:105: [surf_test/DEBUG] R_1 = 0.5
-> [0.000000] surf/simeng_usage.c:106: [surf_test/DEBUG] R_2 = 9.5
-> [0.000000] surf/simeng_usage.c:107: [surf_test/DEBUG] R_3 = 0.5
-> [0.000000] surf/simeng_usage.c:376: [surf_test/DEBUG] ***** Test 1 (Lagrange - Vegas) ***** 
-> [0.000000] surf/simeng_usage.c:104: [surf_test/DEBUG] R_1_2_3 = 0.325765
-> [0.000000] surf/simeng_usage.c:105: [surf_test/DEBUG] R_1 = 0.674235
-> [0.000000] surf/simeng_usage.c:106: [surf_test/DEBUG] R_2 = 9.67423
-> [0.000000] surf/simeng_usage.c:107: [surf_test/DEBUG] R_3 = 0.674235
-> [0.000000] surf/simeng_usage.c:378: [surf_test/DEBUG] ***** Test 1 (Lagrange - Reno) ***** 
-> [0.000000] surf/simeng_usage.c:104: [surf_test/DEBUG] R_1_2_3 = 0
-> [0.000000] surf/simeng_usage.c:105: [surf_test/DEBUG] R_1 = 1
-> [0.000000] surf/simeng_usage.c:106: [surf_test/DEBUG] R_2 = 10
-> [0.000000] surf/simeng_usage.c:107: [surf_test/DEBUG] R_3 = 1
-> [0.000000] surf/simeng_usage.c:382: [surf_test/DEBUG] **************************** 
-> [0.000000] surf/simeng_usage.c:383: [surf_test/DEBUG] *****                  ***** 
-> [0.000000] surf/simeng_usage.c:384: [surf_test/DEBUG] *****      TEST 2      ***** 
-> [0.000000] surf/simeng_usage.c:385: [surf_test/DEBUG] *****                  ***** 
-> [0.000000] surf/simeng_usage.c:386: [surf_test/DEBUG] **************************** 
-> [0.000000] surf/simeng_usage.c:389: [surf_test/DEBUG] ***** Test 2 (Max-Min) ***** 
-> [0.000000] surf/simeng_usage.c:163: [surf_test/DEBUG] T1 = 200
-> [0.000000] surf/simeng_usage.c:164: [surf_test/DEBUG] T2 = 100
-> [0.000000] surf/simeng_usage.c:395: [surf_test/DEBUG] ***** Test 2 (Lagrange - Vegas) ***** 
-> [0.000000] surf/simeng_usage.c:163: [surf_test/DEBUG] T1 = 200
-> [0.000000] surf/simeng_usage.c:164: [surf_test/DEBUG] T2 = 100
-> [0.000000] surf/simeng_usage.c:397: [surf_test/DEBUG] ***** Test 2 (Lagrange - Reno) ***** 
-> [0.000000] surf/simeng_usage.c:163: [surf_test/DEBUG] T1 = 200
-> [0.000000] surf/simeng_usage.c:164: [surf_test/DEBUG] T2 = 100
-> [0.000000] surf/simeng_usage.c:402: [surf_test/DEBUG] **************************** 
-> [0.000000] surf/simeng_usage.c:403: [surf_test/DEBUG] *****                  ***** 
-> [0.000000] surf/simeng_usage.c:404: [surf_test/DEBUG] *****      TEST 3      ***** 
-> [0.000000] surf/simeng_usage.c:405: [surf_test/DEBUG] *****                  ***** 
-> [0.000000] surf/simeng_usage.c:406: [surf_test/DEBUG] **************************** 
-> [0.000000] surf/simeng_usage.c:409: [surf_test/DEBUG] ***** Test 3 (Max-Min) ***** 
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 6
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:415: [surf_test/DEBUG] ***** Test 3 (Lagrange - Vegas) ***** 
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.61019
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2.65418
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.61019
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1.52962
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 6.83798
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1.91202
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1.25
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2.65418
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:417: [surf_test/DEBUG] ***** Test 3 (Lagrange - Reno) ***** 
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.27888
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2.24092
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.27888
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1.76921
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 6.25105
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2.07592
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 3.33333
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1.67303
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 2.24092
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
-> [0.000000] surf/simeng_usage.c:345: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:473: [surf_test/DEBUG] **************************** 
+> [0.000000] surf/simeng_usage.c:474: [surf_test/DEBUG] *****                  ***** 
+> [0.000000] surf/simeng_usage.c:475: [surf_test/DEBUG] *****      TEST 1      ***** 
+> [0.000000] surf/simeng_usage.c:476: [surf_test/DEBUG] *****                  ***** 
+> [0.000000] surf/simeng_usage.c:477: [surf_test/DEBUG] **************************** 
+> [0.000000] surf/simeng_usage.c:480: [surf_test/DEBUG] ***** Test 1 (Max-Min) ***** 
+> [0.000000] surf/simeng_usage.c:223: [surf_test/DEBUG] R_1_2_3 = 0.5
+> [0.000000] surf/simeng_usage.c:224: [surf_test/DEBUG] R_1 = 0.5
+> [0.000000] surf/simeng_usage.c:225: [surf_test/DEBUG] R_2 = 9.5
+> [0.000000] surf/simeng_usage.c:226: [surf_test/DEBUG] R_3 = 0.5
+> [0.000000] surf/simeng_usage.c:486: [surf_test/DEBUG] ***** Test 1 (Lagrange - Vegas) ***** 
+> [0.000000] surf/simeng_usage.c:223: [surf_test/DEBUG] R_1_2_3 = 0.325765
+> [0.000000] surf/simeng_usage.c:224: [surf_test/DEBUG] R_1 = 0.674234
+> [0.000000] surf/simeng_usage.c:225: [surf_test/DEBUG] R_2 = 9.67423
+> [0.000000] surf/simeng_usage.c:226: [surf_test/DEBUG] R_3 = 0.674235
+> [0.000000] surf/simeng_usage.c:488: [surf_test/DEBUG] ***** Test 1 (Lagrange - Reno) ***** 
+> [0.000000] surf/simeng_usage.c:223: [surf_test/DEBUG] R_1_2_3 = 0.150452
+> [0.000000] surf/simeng_usage.c:224: [surf_test/DEBUG] R_1 = 0.849552
+> [0.000000] surf/simeng_usage.c:225: [surf_test/DEBUG] R_2 = 9.84955
+> [0.000000] surf/simeng_usage.c:226: [surf_test/DEBUG] R_3 = 0.849548
+> [0.000000] surf/simeng_usage.c:492: [surf_test/DEBUG] **************************** 
+> [0.000000] surf/simeng_usage.c:493: [surf_test/DEBUG] *****                  ***** 
+> [0.000000] surf/simeng_usage.c:494: [surf_test/DEBUG] *****      TEST 2      ***** 
+> [0.000000] surf/simeng_usage.c:495: [surf_test/DEBUG] *****                  ***** 
+> [0.000000] surf/simeng_usage.c:496: [surf_test/DEBUG] **************************** 
+> [0.000000] surf/simeng_usage.c:499: [surf_test/DEBUG] ***** Test 2 (Max-Min) ***** 
+> [0.000000] surf/simeng_usage.c:277: [surf_test/DEBUG] T1 = 200
+> [0.000000] surf/simeng_usage.c:278: [surf_test/DEBUG] T2 = 100
+> [0.000000] surf/simeng_usage.c:505: [surf_test/DEBUG] ***** Test 2 (Lagrange - Vegas) ***** 
+> [0.000000] surf/simeng_usage.c:277: [surf_test/DEBUG] T1 = 200
+> [0.000000] surf/simeng_usage.c:278: [surf_test/DEBUG] T2 = 100
+> [0.000000] surf/simeng_usage.c:507: [surf_test/DEBUG] ***** Test 2 (Lagrange - Reno) ***** 
+> [0.000000] surf/simeng_usage.c:277: [surf_test/DEBUG] T1 = 200
+> [0.000000] surf/simeng_usage.c:278: [surf_test/DEBUG] T2 = 100
+> [0.000000] surf/simeng_usage.c:512: [surf_test/DEBUG] **************************** 
+> [0.000000] surf/simeng_usage.c:513: [surf_test/DEBUG] *****                  ***** 
+> [0.000000] surf/simeng_usage.c:514: [surf_test/DEBUG] *****      TEST 3      ***** 
+> [0.000000] surf/simeng_usage.c:515: [surf_test/DEBUG] *****                  ***** 
+> [0.000000] surf/simeng_usage.c:516: [surf_test/DEBUG] **************************** 
+> [0.000000] surf/simeng_usage.c:519: [surf_test/DEBUG] ***** Test 3 (Max-Min) ***** 
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 6
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:525: [surf_test/DEBUG] ***** Test 3 (Lagrange - Vegas) ***** 
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.61019
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2.65418
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.61019
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1.52962
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 6.83798
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1.91202
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1.25
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2.65418
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:527: [surf_test/DEBUG] ***** Test 3 (Lagrange - Reno) ***** 
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.27888
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2.24092
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.27888
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1.76921
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 6.25105
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2.07592
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 3.33333
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1.67303
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 2.24092
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
+> [0.000000] surf/simeng_usage.c:455: [surf_test/DEBUG] tmp_var[j] = 1
