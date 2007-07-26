@@ -233,7 +233,7 @@ void lagrange_solve(lmm_system_t sys)
    * While doesn't reach a minimun error or a number maximum of iterations.
    */
   while (overall_modification > epsilon_min_error && iteration < max_iterations) {
-    int dual_updated=0;
+/*     int dual_updated=0; */
 
     iteration++;
     DEBUG1("************** ITERATION %d **************", iteration);
@@ -246,8 +246,8 @@ void lagrange_solve(lmm_system_t sys)
       if ((var->bound >= 0) && (var->weight > 0)) {
 	DEBUG1("Working on var (%p)", var);
 	var->new_mu = new_mu(var);
-	dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error);
-	DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu));
+/* 	dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error); */
+/* 	DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu)); */
 	DEBUG3("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var, var->mu, var->new_mu);
 	var->mu = var->new_mu;
 
@@ -267,8 +267,8 @@ void lagrange_solve(lmm_system_t sys)
       cnst->new_lambda =
 	  dichotomy(cnst->lambda, partial_diff_lambda, cnst,
 		    dichotomy_min_error);
-      dual_updated += (fabs(cnst->new_lambda-cnst->lambda)>dichotomy_min_error);
-      DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(cnst->new_lambda-cnst->lambda));
+/*       dual_updated += (fabs(cnst->new_lambda-cnst->lambda)>dichotomy_min_error); */
+/*       DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(cnst->new_lambda-cnst->lambda)); */
       DEBUG3("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
       cnst->lambda = cnst->new_lambda;
 
@@ -291,9 +291,7 @@ void lagrange_solve(lmm_system_t sys)
       else {
 	tmp = new_value(var);
 
-	if (overall_modification < (fabs(var->value - tmp)/tmp)) {
-	  overall_modification = (fabs(var->value - tmp)/tmp);
-	}
+	overall_modification = MAX(overall_modification, fabs(var->value - tmp));
 
 	var->value = tmp;
 	DEBUG3("New value of var (%p)  = %e, overall_modification = %e", var,
@@ -305,16 +303,11 @@ void lagrange_solve(lmm_system_t sys)
     if (!__check_feasible(cnst_list, var_list, 0))
       overall_modification = 1.0;
     DEBUG2("Iteration %d: overall_modification : %f", iteration, overall_modification);
-    if(!dual_updated) {
-      WARN1("Could not improve the convergence at iteration %d. Drop it!",iteration);
-      break;
-    }
-
-    /* 
-     * Compute dual objective.
-     */
+/*     if(!dual_updated) { */
+/*       WARN1("Could not improve the convergence at iteration %d. Drop it!",iteration); */
+/*       break; */
+/*     } */
   }
-
 
   __check_feasible(cnst_list, var_list, 1);
 
