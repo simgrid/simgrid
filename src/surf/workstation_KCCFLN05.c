@@ -82,25 +82,13 @@ static void *name_service(const char *name)
   xbt_ex_t e;
   void *res=NULL;
 
-
-  
   TRY {
     res = xbt_dict_get_or_null(workstation_set, name);
   } CATCH(e) {
+    if (e.category != not_found_error) 
+      RETHROW;
     WARN1("Host '%s' not found, verifing if it is a router", name);
     res = NULL;
-  }
-
-
-  if(res == NULL){
-    TRY {
-      res = xbt_dict_get_or_null(router_set, name);
-    } CATCH(e) {
-      if (e.category != not_found_error) 
-	RETHROW;
-      xbt_ex_free(e);
-      res = NULL;
-    }
   }
 
   return res;
@@ -737,15 +725,15 @@ static void router_new(const char *name)
 
   INFO1("Creating a router %s", name);
 
-  cpu_KCCFLN05_t router;
-  router = xbt_new0(s_cpu_KCCFLN05_t, 1);
+  router_KCCFLN05_t router;
+  router = xbt_new0(s_router_KCCFLN05_t, 1);
 
   router->name = xbt_strdup(name);
   router->id   = nb_routers++;
   xbt_dict_set(router_set, name, router, router_free);
 }
 
-static void parse_route_set_routers(void)
+static void parse_routers(void)
 {
   //add a dumb router just to be GTNETS compatible
   router_new(A_surfxml_router_name);
@@ -964,18 +952,41 @@ static double impact_on_dst_with_other_send;
 
 static void parse_route_set_endpoints(void)
 {
-  src_id = ((cpu_KCCFLN05_t) name_service(A_surfxml_route_src))->id;
-  dst_id = ((cpu_KCCFLN05_t) name_service(A_surfxml_route_dst))->id;
+  cpu_KCCFLN05_t cpu_tmp = NULL;
+ 
+  cpu_tmp = (cpu_KCCFLN05_t) name_service(A_surfxml_route_src);
+  if(cpu_tmp != NULL) {
+    src_id = cpu_tmp->id;
+  }else {
+    xbt_assert1(xbt_dict_get_or_null(router_set, A_surfxml_route_src),
+	       "Invalid name '%s': neither a cpu nor a router!",
+	       A_surfxml_route_src);
+    src_id=-1;
+    return;
+  }
+
+  cpu_tmp = (cpu_KCCFLN05_t) name_service(A_surfxml_route_dst);
+  if(cpu_tmp != NULL) { 
+    dst_id = cpu_tmp->id;
+  }else {
+    xbt_assert1(xbt_dict_get_or_null(router_set, A_surfxml_route_dst),
+	       "Invalid name '%s': neither a cpu nor a router!",
+	       A_surfxml_route_dst);
+    dst_id=-1;
+    return ;
+  }
+  
   surf_parse_get_double(&impact_on_src, A_surfxml_route_impact_on_src);
   surf_parse_get_double(&impact_on_dst, A_surfxml_route_impact_on_dst);
   surf_parse_get_double(&impact_on_src_with_other_recv,
 			A_surfxml_route_impact_on_src_with_other_recv);
   surf_parse_get_double(&impact_on_dst_with_other_send,
 			A_surfxml_route_impact_on_dst_with_other_send);
-
+  
   nb_link = 0;
-  link_list_capacity = 20;
+  link_list_capacity = 1; 
   link_list = xbt_new(network_link_KCCFLN05_t, link_list_capacity);
+
 }
 
 static void parse_route_elem(void)
@@ -994,6 +1005,7 @@ static void parse_route_elem(void)
 
 static void parse_route_set_route(void)
 {
+  if( src_id != -1 && dst_id != -1 )
   route_new(src_id, dst_id, link_list, nb_link, impact_on_src,
 	    impact_on_dst, impact_on_src_with_other_recv,
 	    impact_on_dst_with_other_send);
@@ -1014,7 +1026,7 @@ static void parse_file(const char *file)
 
   /* Figuring out the router (added after GTNETS) */
   surf_parse_reset_parser();
-  STag_surfxml_router_fun=parse_route_set_routers;
+  STag_surfxml_router_fun=parse_routers;
   surf_parse_open(file);
   xbt_assert1((!surf_parse()),"Parse error in %s",file);
   surf_parse_close();
