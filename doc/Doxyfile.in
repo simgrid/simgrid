@@ -469,6 +469,7 @@ INPUT                  = @srcdir@/index.doc \
                          @srcdir@/FAQ.doc \
                          @srcdir@/contrib.doc \
                          @srcdir@/publis.doc \
+                         @srcdir@/history.doc \
                          ./index-API.doc \
 			 \
                          @srcdir@/modules.doc \

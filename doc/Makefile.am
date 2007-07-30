@@ -4,7 +4,7 @@ FIGS=simgrid_modules.fig simgrid_modules2.fig amok_bw_test.fig amok_bw_sat.fig
 PNGS=$(patsubst %.fig,%.png,$(FIGS)) webcruft/simgrid_logo.png webcruft/simgrid_logo_small.png webcruft/poster_thumbnail.png
 
 EXTRA_DIST = html Doxyfile \
- modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html \
+ modules.doc FAQ.doc contrib.doc index.doc publis.doc footer.html history.doc  \
  $(foreach file,$(FIGS),fig/$(file)) $(PNGS)
 
 
@@ -25,7 +25,7 @@ simgrid_modules.map: fig/simgrid_modules.fig
 html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES) \
       html/gras.html html/amok.html html/msg.html html/simdag.html
 	: # Setting up
-	touch index-API.doc .FAQ.doc.toc .index.doc.toc .contrib.doc.toc
+	touch index-API.doc .FAQ.doc.toc .index.doc.toc .contrib.doc.toc .history.doc.toc
 	test -e html || mkdir html
 	cp $(foreach file,$(PNGS),@srcdir@/$(file)) html/
 	cp @srcdir@/webcruft/Paje_MSG_screenshot_thn.jpg @srcdir@/webcruft/Paje_MSG_screenshot.jpg html/
@@ -35,7 +35,7 @@ html: Doxyfile ./logcategories.doc simgrid_modules.map $(PNGS) $(DOCSOURCES) \
 	@top_srcdir@/tools/doxygen/index_create.pl simgrid.tag index-API.doc
 	@top_srcdir@/tools/doxygen/toc_create.pl \
 	   @srcdir@/FAQ.doc @srcdir@/index.doc @srcdir@/contrib.doc \
-	   @srcdir@/gtut-introduction.doc
+	   @srcdir@/gtut-introduction.doc @srcdir@/history.doc
 	: # Second pass
 	doxygen Doxyfile >/dev/null
 	: # Post-processing
@@ -115,6 +115,6 @@ check-gtut-tocs:
 	fi ;
 	@rm tmp.curtoc
 
-.PHONY: html
+.PHONY: html html/
 
 include $(top_srcdir)/acmacro/dist-files.mk
