@@ -8,7 +8,8 @@
 #include "network_gtnets_private.h"
 #include "gtnets/gtnets_interface.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network_gtnets);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
+				"Logging specific to the SURF network module");
 
 /* surf_network_resource_t surf_network_resource = NULL; */
 /*static xbt_dict_t network_link_set = NULL;*/
@@ -597,8 +598,6 @@ static void surf_network_resource_init_internal(void)
     xbt_assert0(0, "impossible to initialize GTNetS interface");
   }
 }
-
-
 
 void surf_network_resource_init_GTNETS(const char *filename)
 {
