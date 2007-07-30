@@ -15,6 +15,16 @@ typedef enum {
   SURF_WORKSTATION_RESOURCE_LINK,
 } e_surf_workstation_resource_type_t;
 
+
+/**************************************/
+/********* router object **************/
+/**************************************/
+typedef struct router_KCCFLN05 {
+  char *name;		
+  unsigned int id;
+} s_router_KCCFLN05_t, *router_KCCFLN05_t;
+
+
 /**************************************/
 /********* cpu object *****************/
 /**************************************/
