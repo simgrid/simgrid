@@ -87,7 +87,7 @@ developers mailing list</a>, though.
 \subsection overview_kernel Simulation kernel layer
 
 The core functionnalities to simulate a virtual platform are provided by a
-module called <b>\ref SURF_API</b> ("that's historical, my friend").  It is
+module called <b>\ref SURF_API</b>.  It is
 very low-level and is not intended to be used as such by end-users. Instead,
 it serve as a basis for the higher level layer.
 
@@ -115,9 +115,13 @@ See the \ref XBT_API section for more details.
 The SimGrid software package can be downloaded from 
 <a href="https://gforge.inria.fr/frs/?group_id=12">here</a>.<br>
 
+If you are interested in the history of SimGrid and in current and planned development,
+you can find out more <a href="history.html">here</a>.
+
 Any question, remark or suggestion are welcome on the 
 <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user">SimGrid users
 mailing list</a>.
+
 \htmlonly <!-- ______BODY_END______ --!> \endhtmlonly
 
 <hr>
