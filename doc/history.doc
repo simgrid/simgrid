@@ -173,7 +173,7 @@ applications in either simulation mode or in real-world mode (sort of GRAS
 for MPI). The development of SMPI, by Mark Stillwell who works with Henri,
 is being greatly simplified thanks to the aforementioned SIMiX layer.
 Finally, somewhat unrelated, is the development of Java bindings for the
-MSG API by Malek XXX who works with Martin.  The current software
+MSG API by Malek Cherier who works with Martin.  The current software
 architecture thus looks as follows:
 
 \verbatim
