@@ -156,7 +156,12 @@ next section).
   - <b>Scheduling &Delta;-Critical Tasks in Mixed-Parallel Applications on a National Grid</b>\n
     by <em>Frédéric Suter</em>.\n
     In 8th IEEE/ACM International Conference on Grid Computing (Grid 2007), Austin, TX, September 2007.
-    
+
+  - <b>Brokering strategies in computational grids using stochastic
+    prediction models.</b>\n by <em>Vandy Berten and Bruno
+    Gaujal</em>. In Parallel Computing, vol. 33(4-5): 238-249, 2007.\n
+    http://dev.ulb.ac.be/sched/articles/PARCO.pdf
+
 - 2006
   - <b>Simbatch: an API for simulating and predicting the performance of parallel resources and batch systems.</b>\n
     INRIA Research Report 6040, November 2006.\n
