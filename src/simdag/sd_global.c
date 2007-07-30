@@ -175,6 +175,10 @@ SD_task_t* SD_simulate(double how_long)
     first_time = 0;
   }
 
+  if(how_long>0) {
+    surf_timer_resource->extension_public->set(surf_get_clock()+how_long,
+					       NULL,NULL);
+  }
   sd_global->watch_point_reached = 0;
 
   /* explore the ready tasks */
@@ -197,6 +201,10 @@ SD_task_t* SD_simulate(double how_long)
   while (elapsed_time >= 0.0 &&
 	 (how_long < 0.0 || total_time < how_long) &&
 	 !sd_global->watch_point_reached) {
+    /* dumb variables */
+    void *fun = NULL;
+    void *arg = NULL;
+
 
     DEBUG1("Total time: %f", total_time);
 
@@ -268,6 +276,9 @@ SD_task_t* SD_simulate(double how_long)
 	*/
 	changed_tasks[changed_task_number] = NULL;
       }
+    }
+
+    while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
     }
   }
 
