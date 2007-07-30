@@ -525,17 +525,17 @@ void lmm_set_default_protocol_function(double (* func_f)  (lmm_variable_t var, d
 #define VEGAS_SCALING 1000.0
 
 double func_vegas_f(lmm_variable_t var, double x){
-  xbt_assert0(x>0.0,"Don't call me with stupid values!");
+  xbt_assert1(x>0.0,"Don't call me with stupid values! (%1.20f)",x);
   return VEGAS_SCALING*var->df*log(x);
 }
 
 double func_vegas_fp(lmm_variable_t var, double x){
-  xbt_assert0(x>0.0,"Don't call me with stupid values!");
+  xbt_assert1(x>0.0,"Don't call me with stupid values! (%1.20f)",x);
   return VEGAS_SCALING*var->df/x;
 }
 
 double func_vegas_fpi(lmm_variable_t var, double x){
-  xbt_assert0(x>0.0,"Don't call me with stupid values!");
+  xbt_assert1(x>0.0,"Don't call me with stupid values! (%1.20f)",x);
   return var->df/(x/VEGAS_SCALING);
 }
 
