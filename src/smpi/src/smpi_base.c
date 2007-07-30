@@ -1,57 +1,17 @@
 #include <stdio.h>
-
 #include <signal.h>
 #include <sys/time.h>
-#include "xbt/xbt_os_time.h"
-#include "xbt/mallocator.h"
+
+#include "private.h"
 #include "smpi.h"
 
-// FIXME: move globals into structure...
+SMPI_Global_t     smpi_global     = NULL;
 
-xbt_mallocator_t smpi_request_mallocator      = NULL;
-xbt_mallocator_t smpi_message_mallocator      = NULL;
-
-xbt_fifo_t *smpi_pending_send_requests        = NULL;
-smx_mutex_t *smpi_pending_send_requests_mutex = NULL;
-
-xbt_fifo_t *smpi_pending_recv_requests        = NULL;
-smx_mutex_t *smpi_pending_recv_requests_mutex = NULL;
-
-xbt_fifo_t *smpi_received_messages            = NULL;
-smx_mutex_t *smpi_received_messages_mutex     = NULL;
-
-smx_process_t *smpi_sender_processes        = NULL;
-smx_process_t *smpi_receiver_processes      = NULL;
-
-int smpi_running_hosts = 0;
-
-smpi_mpi_communicator_t smpi_mpi_comm_world;
-
-smpi_mpi_status_t smpi_mpi_status_ignore;
-
-smpi_mpi_datatype_t smpi_mpi_byte;
-smpi_mpi_datatype_t smpi_mpi_int;
-smpi_mpi_datatype_t smpi_mpi_double;
-
-smpi_mpi_op_t smpi_mpi_land;
-smpi_mpi_op_t smpi_mpi_sum;
-
-static xbt_os_timer_t smpi_timer;
-static int smpi_benchmarking;
-static double smpi_reference_speed;
-
-// mutexes
-smx_mutex_t smpi_running_hosts_mutex = NULL;
-smx_mutex_t smpi_benchmarking_mutex  = NULL;
-smx_mutex_t init_mutex = NULL;
-smx_cond_t  init_cond  = NULL;
-
-int smpi_root_ready  = 0;
-int smpi_ready_count = 0;
+SMPI_MPI_Global_t smpi_mpi_global = NULL;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(smpi, "SMPI");
 
-int inline smpi_mpi_comm_size(smpi_mpi_communicator_t *comm) 
+int inline smpi_mpi_comm_size(smpi_mpi_communicator_t *comm)
 {
 	return comm->size;
 }
@@ -73,7 +33,7 @@ int inline smpi_mpi_comm_rank_self(smpi_mpi_communicator_t *comm)
 
 int inline smpi_mpi_comm_world_rank_self()
 {
-	return smpi_mpi_comm_rank(&smpi_mpi_comm_world, SIMIX_host_self());
+	return smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, SIMIX_host_self());
 }
 
 int smpi_sender(int argc, char **argv)
@@ -86,7 +46,7 @@ int smpi_sender(int argc, char **argv)
 	smx_mutex_t request_queue_mutex;
 	int size;
 
-	int running_hosts = 0;
+	int running_hosts_count;
 
 	smpi_mpi_request_t *request;
 
@@ -102,36 +62,32 @@ int smpi_sender(int argc, char **argv)
 
 	self  = SIMIX_process_self();
 	shost = SIMIX_host_self();
-	rank  = smpi_mpi_comm_rank(&smpi_mpi_comm_world, shost);
+	rank  = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, shost);
 
 	// make sure root is done before own initialization
-	SIMIX_mutex_lock(init_mutex);
-	if (!smpi_root_ready) {
-		SIMIX_cond_wait(init_cond, init_mutex);
+	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
+	if (!smpi_global->root_ready) {
+		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
 	}
-	SIMIX_mutex_unlock(init_mutex);
+	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
-	request_queue       = smpi_pending_send_requests[rank];
-	request_queue_mutex = smpi_pending_send_requests_mutex[rank];
-	size                = smpi_mpi_comm_size(&smpi_mpi_comm_world);
+	request_queue       = smpi_global->pending_send_request_queues[rank];
+	request_queue_mutex = smpi_global->pending_send_request_queues_mutexes[rank];
+	size                = smpi_mpi_comm_size(smpi_mpi_global->mpi_comm_world);
 
-	smpi_sender_processes[rank] = self;
+	smpi_global->sender_processes[rank] = self;
 
 	// wait for all nodes to signal initializatin complete
-	SIMIX_mutex_lock(init_mutex);
-	smpi_ready_count++;
-	if (smpi_ready_count < 3 * size) {
-		SIMIX_cond_wait(init_cond, init_mutex);
+	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
+	smpi_global->ready_process_count++;
+	if (smpi_global->ready_process_count < 3 * size) {
+		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
 	} else {
-		SIMIX_cond_broadcast(init_cond);
+		SIMIX_cond_broadcast(smpi_global->start_stop_cond);
 	}
-	SIMIX_mutex_unlock(init_mutex);
+	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
-	SIMIX_mutex_lock(smpi_running_hosts_mutex);
-	running_hosts = smpi_running_hosts;
-	SIMIX_mutex_unlock(smpi_running_hosts_mutex);
-
-	while (0 < running_hosts) {
+	do {
 
 		SIMIX_mutex_lock(request_queue_mutex);
 		request = xbt_fifo_shift(request_queue);
@@ -144,7 +100,6 @@ int smpi_sender(int argc, char **argv)
 
 			dhost = request->comm->hosts[request->dst];
 
-			// FIXME: not at all sure I can assume magic just happens here....
 			communicate_action = SIMIX_action_communicate(shost, dhost,
 				"communication", request->datatype->size * request->count * 1.0, -1.0);
 
@@ -154,7 +109,7 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_cond_wait(request->cond, request->mutex);
 
 			// copy request to appropriate received queue
-			message = xbt_mallocator_get(smpi_message_mallocator);
+			message       = xbt_mallocator_get(smpi_global->message_mallocator);
 			message->comm = request->comm;
 			message->src  = request->src;
 			message->dst  = request->dst;
@@ -162,11 +117,11 @@ int smpi_sender(int argc, char **argv)
 			message->buf  = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);
 
-			drank = smpi_mpi_comm_rank(&smpi_mpi_comm_world, dhost);
+			drank = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, dhost);
 
-			SIMIX_mutex_lock(smpi_received_messages_mutex[drank]);
-			xbt_fifo_push(smpi_received_messages[drank], message);
-			SIMIX_mutex_unlock(smpi_received_messages_mutex[drank]);
+			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[drank]);
+			xbt_fifo_push(smpi_global->received_message_queues[drank], message);
+			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[drank]);
 
 			request->completed = 1;
 
@@ -182,17 +137,18 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_mutex_unlock(request->mutex);
 		}
 
-		SIMIX_mutex_lock(smpi_running_hosts_mutex);
-		running_hosts = smpi_running_hosts;
-		SIMIX_mutex_unlock(smpi_running_hosts_mutex);
-	}
+		SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
+		running_hosts_count = smpi_global->running_hosts_count;
+		SIMIX_mutex_unlock(smpi_global->running_hosts_count_mutex);
 
-	SIMIX_mutex_lock(init_mutex);
-	smpi_ready_count--;
-	if (smpi_ready_count <= 0) {
-		SIMIX_cond_broadcast(init_cond);
+	} while (0 < running_hosts_count);
+
+	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
+	smpi_global->ready_process_count--;
+	if (smpi_global->ready_process_count <= 0) {
+		SIMIX_cond_broadcast(smpi_global->start_stop_cond);
 	}
-	SIMIX_mutex_unlock(init_mutex);
+	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
 	return 0;
 }
@@ -386,6 +342,7 @@ void smpi_mpi_sum_func(void *x, void *y, void *z)
 	*(int *)z = *(int *)x + *(int *)y;
 }
 
+// FIXME: init conds, etc...
 void *smpi_new_request()
 {
 	return xbt_new(smpi_mpi_request_t, 1);
@@ -404,6 +361,8 @@ void smpi_free_request(void *pointer) {
 	return;
 }
 
+// FIXME: don't keep creating new mutexes...
+// flush waitlist instead of new?
 void smpi_reset_request(void *pointer) {
 	smpi_mpi_request_t *request = pointer;
 
