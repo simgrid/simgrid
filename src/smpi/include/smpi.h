@@ -57,7 +57,6 @@ struct smpi_mpi_request_t {
 	short int completed :1;
 	smx_mutex_t mutex;
 	smx_cond_t  cond;
-	xbt_fifo_t waitlist;
 };
 typedef struct smpi_mpi_request_t smpi_mpi_request_t;
 typedef smpi_mpi_request_t *MPI_Request;
@@ -72,23 +71,21 @@ typedef smpi_mpi_op_t *MPI_Op;
 // global SMPI data structure
 typedef struct SMPI_MPI_Global {
 
-	smpi_mpi_communicator_t mpi_comm_world;
+	smpi_mpi_communicator_t *mpi_comm_world;
 
-	smpi_mpi_status_t       mpi_status_ignore;
+	smpi_mpi_datatype_t     *mpi_byte;
+	smpi_mpi_datatype_t     *mpi_int;
+	smpi_mpi_datatype_t     *mpi_double;
 
-	smpi_mpi_datatype_t     mpi_byte;
-	smpi_mpi_datatype_t     mpi_int;
-	smpi_mpi_datatype_t     mpi_double;
-
-	smpi_mpi_op_t           mpi_land;
-	smpi_mpi_op_t           mpi_sum;
+	smpi_mpi_op_t           *mpi_land;
+	smpi_mpi_op_t           *mpi_sum;
 
 } s_SMPI_MPI_Global_t, *SMPI_MPI_Global_t;
-exterm SMPI_MPI_Global_t smpi_mpi_global;
+extern SMPI_MPI_Global_t smpi_mpi_global;
 
 #define MPI_COMM_WORLD    (smpi_mpi_global->mpi_comm_world)
 
-#define MPI_STATUS_IGNORE (smpi_mpi_global->mpi_status_ignore)
+#define MPI_STATUS_IGNORE NULL
 
 #define MPI_BYTE          (smpi_mpi_global->mpi_byte)
 #define MPI_DOUBLE        (smpi_mpi_global->mpi_double)

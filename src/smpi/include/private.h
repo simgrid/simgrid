@@ -1,3 +1,4 @@
+#include "smpi.h"
 #include "xbt/mallocator.h"
 #include "xbt/xbt_os_time.h"
 
@@ -37,14 +38,11 @@ typedef struct SMPI_Global {
 	xbt_os_timer_t   *timers;
 	smx_mutex_t      *timers_mutexes;
 
-	int              *benchmarking_flags;
-	smx_mutex_t      *benchmarking_flags_mutexes;
 
 } s_SMPI_Global_t, *SMPI_Global_t;
 
 extern SMPI_Global_t smpi_global;
 
-// smpi_received_message_t
 struct smpi_received_message_t {
 	smpi_mpi_communicator_t *comm;
 	int src;
@@ -52,4 +50,5 @@ struct smpi_received_message_t {
 	int tag;
 	void *buf;
 };
+
 typedef struct smpi_received_message_t smpi_received_message_t;
