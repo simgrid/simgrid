@@ -41,10 +41,6 @@ typedef struct surf_action_network_GTNETS {
 
 extern xbt_dict_t network_card_set;
 
-/* HC: I put this prototype here for now but it will have to go in 
-   src/include/surf.h when it is functionnal. */
-void surf_network_resource_init_GTNETS(const char *filename);
-
 
 #endif				/* _SURF_NETWORK_PRIVATE_H */
 

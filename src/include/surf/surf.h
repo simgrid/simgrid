@@ -266,11 +266,24 @@ XBT_PUBLIC_DATA(surf_network_resource_t) surf_network_resource;
  *  \param filename XML platform file name
  *
  *  This function is called by surf_workstation_resource_init_CLM03
- *  so you shouldn't call it by yourself.
+ *  or by yourself only if you plan using surf_workstation_resource_init_compound
  *
  *  \see surf_workstation_resource_init_CLM03()
  */
 XBT_PUBLIC(void) surf_network_resource_init_CM02(const char *filename);
+
+#ifdef USE_GTNETS
+/** \brief Initializes the platform with the network model GTNETS
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  This function is called by surf_workstation_resource_init_GTNETS
+ *  or by yourself only if you plan using surf_workstation_resource_init_compound
+ *
+ *  \see surf_workstation_resource_init_GTNETS()
+ */
+XBT_PUBLIC(void) surf_network_resource_init_GTNETS(const char *filename);
+#endif
 
 /** \brief Workstation resource extension public
  *  \ingroup SURF_resources
@@ -320,6 +333,16 @@ typedef struct surf_workstation_resource {
  *  may not exist.
  */
 XBT_PUBLIC_DATA(surf_workstation_resource_t) surf_workstation_resource;
+
+/** \brief Initializes the platform with a compound workstation model
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  This function should be called after a cpu_resource and a
+ *  network_resource have been set up.
+ *
+ */
+XBT_PUBLIC(void) surf_workstation_resource_init_compound(const char *filename);
 
 /** \brief Initializes the platform with the workstation model CLM03
  *  \ingroup SURF_resources
