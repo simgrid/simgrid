@@ -49,12 +49,13 @@ was described in "MetaSimGrid : Towards realistic scheduling simulation of
 distributed applications, by Arnaud Legrand and Julien Lerouge, LIP
 Research Report". This resulted in the following layered architecture:
 
+\verbatim
 		(user code)
 		-----------
 		| MSG |   |
 		-------   |
 		|    SG   |
-		-----------
+		-----------\endverbatim
 
 With Henri and some of his students using SG and Arnaud using MSG, the
 project started having a (tiny) user base. It was time to be more ambitious
@@ -91,6 +92,7 @@ Research & Development Framework for Grid and P2P Infrastructures, by
 Martin Quinson, in Proceedings of PDCS 2006". This led to the following
 layered software architecture:
 
+\verbatim
  	(user code for either SG, MSG or GRAS)
     	-----------------------------
     	|   |     |    GRAS API     |
@@ -100,7 +102,7 @@ layered software architecture:
     	|   |    MSG      | |sockets|
     	|   --------------| ---------
     	|        SG       |
-    	-------------------
+    	-------------------\endverbatim
 
 At this point, with more users running more complex
 simulations, it became clear that the initial SG
@@ -116,6 +118,7 @@ enough time" syndrome. Martin added a layer on top of GRAS called AMOK, to
 implement high-level services needed by many distributed applications, thus
 leading to the new overall layered architecture:
 
+\verbatim
    (user code for either MSG or GRAS -- using AMOK or not)
                           -------
                           | AMOK|
@@ -127,7 +130,7 @@ leading to the new overall layered architecture:
         |    MSG      | |sockets|
         --------------| ---------
         |   SURF      |
-        ---------------
+        ---------------\endverbatim
 
 This architecture culminated in SimGrid v3! One development worth mentioning
 is that of SimDAG, written by Christophe Thiery during an Internship with
@@ -137,6 +140,7 @@ without all the power of the MSG API. SimDAG provides an API
 especially for this purpose and was integrated in SimGrid v3.1, leading
 to the following layered architecture:
 
+\verbatim
  (user code for either SimDag, MSG or GRAS)
                              -------
                              | AMOK|
@@ -148,7 +152,7 @@ to the following layered architecture:
     |SimDag|    MSG      | |sockets|
     |--------------------| ---------
     |        SURF        |
-    ----------------------
+    ----------------------\endverbatim
 
 SimGrid 3.2, the current publicly available version as this document is
 being written, implements the above architecture and also provides a
@@ -172,6 +176,7 @@ Finally, somewhat unrelated, is the development of Java bindings for the
 MSG API by Malek XXX who works with Martin.  The current software
 architecture thus looks as follows:
 
+\verbatim
  (user code for either SimDAG, MSG, GRAS, or MPI)
     ----------------------------------
     |      |   |jMSG|    |AMOK|      |
@@ -181,7 +186,7 @@ architecture thus looks as follows:
     |      |           SIMiX         |
     ----------------------------------
     |              SURF              |
-    ----------------------------------
+    ----------------------------------\endverbatim
 
 While the above developments are about adding simulation functionality, a
 large part of the research effort in the SimGrid project relates to
@@ -196,6 +201,7 @@ simulator.
 The current architecture in the CVS tree at the time this document is
 being written is as follows:
 
+\verbatim
     ----------------------------------
     |      |   |jMSG|    |AMOK|      |
     |      |   ------    ------      |
@@ -209,7 +215,7 @@ being written is as follows:
     ----------------------------------
     |    SURF kernel   |    | GTNetS |
     | (several models) |    |        |
-    --------------------    ----------
+    --------------------    ----------\endverbatim
 
 \section history_future Future Directions
 
@@ -237,3 +243,4 @@ documentation, etc.), but is it also a scientific project in its own right
 
 
 
+*/
