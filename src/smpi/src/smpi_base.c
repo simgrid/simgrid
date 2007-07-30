@@ -251,7 +251,7 @@ stopsearch:
 			memcpy(request->buf, message->buf, request->datatype->size * request->count);
 			request->src = message->src;
 			request->completed = 1;
-			SIMIX_broadcast(request->cond);
+			SIMIX_cond_broadcast(request->cond);
 
 			SIMIX_mutex_unlock(request->mutex);
 
@@ -356,6 +356,8 @@ void smpi_global_init()
 	                                                     smpi_request_new, smpi_request_free, smpi_request_reset);
 	smpi_global->message_mallocator                  = xbt_mallocator_new(SMPI_MESSAGE_MALLOCATOR_SIZE,
 	                                                     smpi_message_new, smpi_message_free, smpi_message_reset);
+
+	//
 	smpi_global->pending_send_request_queues         = xbt_new(xbt_fifo_t,  size);
 	smpi_global->pending_send_request_queues_mutexes = xbt_new(smx_mutex_t, size);
 	smpi_global->pending_recv_request_queues         = xbt_new(xbt_fifo_t,  size);
@@ -364,7 +366,6 @@ void smpi_global_init()
 	smpi_global->received_message_queues_mutexes     = xbt_new(smx_mutex_t, size);
 	smpi_global->timers                              = xbt_new(xbt_os_timer_t, size);
 	smpi_global->timers_mutexes                      = xbt_new(smx_mutex_t, size);
-
 
 	for(i = 0; i < size; i++) {
 		smpi_global->pending_send_request_queues[i]         = xbt_fifo_new();
@@ -436,15 +437,16 @@ int smpi_run_simulation(int argc, char **argv)
 
 	SIMIX_global_init(&argc, argv);
 
-	// initialize smpi_global
-	smpi_global_init();
-
 	SIMIX_function_register("smpi_simulated_main", smpi_simulated_main);
 	SIMIX_function_register("smpi_sender",         smpi_sender);
 	SIMIX_function_register("smpi_receiver",       smpi_receiver);
 
 	// FIXME: ought to verify these files...
 	SIMIX_create_environment(argv[1]);
+
+	// must initialize globals between creating environment and launching app....
+	smpi_global_init();
+
 	SIMIX_launch_application(argv[2]);
 
 	/* Prepare to display some more info when dying on Ctrl-C pressing */
@@ -767,7 +769,9 @@ void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status)
 		if (!request->completed) {
 			SIMIX_cond_wait(request->cond, request->mutex);
 		}
-		status->MPI_SOURCE = request->src;
+		if (NULL != status) {
+			status->MPI_SOURCE = request->src;
+		}
 		SIMIX_mutex_unlock(request->mutex);
 	}
 }
