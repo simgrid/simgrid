@@ -89,6 +89,7 @@ static void *name_service(const char *name)
       RETHROW;
     WARN1("Host '%s' not found, verifing if it is a router", name);
     res = NULL;
+    xbt_ex_free(e);
   }
 
   return res;
