@@ -156,12 +156,10 @@ next section).
   - <b>Scheduling &Delta;-Critical Tasks in Mixed-Parallel Applications on a National Grid</b>\n
     by <em>Frédéric Suter</em>.\n
     In 8th IEEE/ACM International Conference on Grid Computing (Grid 2007), Austin, TX, September 2007.
-
   - <b>Brokering strategies in computational grids using stochastic
     prediction models.</b>\n by <em>Vandy Berten and Bruno
     Gaujal</em>. In Parallel Computing, vol. 33(4-5): 238-249, 2007.\n
     http://dev.ulb.ac.be/sched/articles/PARCO.pdf
-
   - <b>Managing Scheduling and Replication in the LHC Grid .</b>\n by
     <em>Thomas Ferrandiz and Vania Marangozova</em>. In CoreGrid
     Workshop on middleware, 2007.\n
