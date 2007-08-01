@@ -53,10 +53,10 @@ if MAINTAINER_MODE
 release: distcheck remote debian publish
 
 debian: dist
-	make -C ~/CVSIMPORT/pkg-grid/gras maintainerclean
+	$(MAKE) -C ~/CVSIMPORT/pkg-grid/gras maintainerclean
 	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras/
 	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras/@PACKAGE@_@VERSION@.orig.tar.gz
-	make -C ~/CVSIMPORT/pkg-grid/gras deb check
+	$(MAKE) -C ~/CVSIMPORT/pkg-grid/gras deb check
 	dput local *.changes
 
 publish-old: dist
@@ -67,7 +67,7 @@ publish-old: dist
 	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
 	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/gras/dl
 	 @echo "----[ Sync remote host ]----"
-	 make -C public_html publish
+	 $(MAKE) -C public_html publish
 
 publish: dist
 	 @echo "----[ Put the tarball @VERSION@ on gforge ]----"
@@ -79,7 +79,7 @@ publish: dist
 	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/simgrid2
 	 cp -r doc/html ~/public_html/simgrid2/doc/
 	 cp ChangeLog ~/public_html/simgrid2/
-	 make -C ~/public_html
+	 $(MAKE) -C ~/public_html
 
 sync-gforge: 
 	rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times \
@@ -108,10 +108,10 @@ mail:
 	       simgrid-user@lists.gforge.inria.fr
 
 TAGS:
-	etags -o ./TAGS `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` 
+	etags -o ./TAGS `$(MAKE) dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` 
 
 splint:
-	splint `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
+	splint `$(MAKE) dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
 	       +matchanyintegral -warnposix +boolint \
 	       +show-summary +stats\
 	       -Iinclude -Isrc/include -Isrc/base -Isrc
