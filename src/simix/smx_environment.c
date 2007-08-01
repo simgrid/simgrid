@@ -45,16 +45,48 @@ void SIMIX_create_environment(const char *file)
   DEBUG1("Model : %s", workstation_model_name);
   if (!strcmp(workstation_model_name,"KCCFLN05")) {
     surf_workstation_resource_init_KCCFLN05(file);
-  } else if (!strcmp(workstation_model_name,"KCCFLN05_proportional")) {
+#ifdef HAVE_SDP
+  } else if (!strcmp(workstation_model_name,"SDP")) {
     surf_workstation_resource_init_KCCFLN05_proportional(file);
-  } else if (!strcmp(workstation_model_name,"KCCFLN05_Vegas")) {
+#endif
+  } else if (!strcmp(workstation_model_name,"Vegas")) {
     surf_workstation_resource_init_KCCFLN05_Vegas(file);
-  } else if (!strcmp(workstation_model_name,"KCCFLN05_Reno")) {
+  } else if (!strcmp(workstation_model_name,"Reno")) {
     surf_workstation_resource_init_KCCFLN05_Reno(file);
   } else if (!strcmp(workstation_model_name,"CLM03")) {
     surf_workstation_resource_init_CLM03(file);
+#ifdef HAVE_GTNETS
+  } else if (!strcmp(workstation_model_name,"GTNets")) {
+    surf_workstation_resource_init_GTNETS(file);
+#endif
+  } else if (!strcmp(workstation_model_name,"compound")) {
+    char *network_model_name = xbt_cfg_get_string (_simix_cfg_set, "network_model");
+    char *cpu_model_name = xbt_cfg_get_string (_simix_cfg_set, "cpu_model");
+    
+    if(!strcmp(cpu_model_name,"Cas01")) {
+      surf_cpu_resource_init_Cas01(file);
+    } else DIE_IMPOSSIBLE;
+
+    if(!strcmp(network_model_name,"CM02")) {
+      surf_network_resource_init_CM02(file);
+#ifdef HAVE_GTNETS
+    } else if(!strcmp(network_model_name,"GTNets")) {
+      surf_network_resource_init_GTNETS(file);
+#endif
+    } else if(!strcmp(network_model_name,"Reno")) {
+      surf_network_resource_init_Reno(file);
+    } else if(!strcmp(network_model_name,"Vegas")) {
+      surf_network_resource_init_Vegas(file);
+#ifdef HAVE_SDP
+    } else if(!strcmp(network_model_name,"SDP")) {
+      surf_network_resource_init_SDP(file);
+#endif
+    } else
+      DIE_IMPOSSIBLE;
+    
+    surf_workstation_resource_init_compound(file);
   } else {
-    xbt_assert0(0,"The impossible happened (once again)");
+    DIE_IMPOSSIBLE;
   }
   _simix_init_status = 2; /* inited; don't change settings now */
 
