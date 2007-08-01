@@ -37,8 +37,6 @@ int inline smpi_mpi_comm_world_rank_self()
 
 int smpi_sender(int argc, char **argv)
 {
-	smx_mutex_t mutex;
-	smx_cond_t cond;
 	smx_process_t self;
 	smx_host_t shost;
 	int rank;
@@ -61,8 +59,6 @@ int smpi_sender(int argc, char **argv)
 
 	smx_process_t receiver_process;
 
-	mutex = SIMIX_mutex_init();
-	cond  = SIMIX_cond_init();
 	self  = SIMIX_process_self();
 	shost = SIMIX_host_self();
 	rank  = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, shost);
@@ -99,19 +95,8 @@ int smpi_sender(int argc, char **argv)
 		if (NULL == request) {
 			SIMIX_process_suspend(self);
 		} else {
+
 			SIMIX_mutex_lock(request->mutex);
-
-			dhost = request->comm->hosts[request->dst];
-
-			communicate_action = SIMIX_action_communicate(shost, dhost,
-				"communication", request->datatype->size * request->count * 1.0, -1.0);
-
-			SIMIX_register_condition_to_action(communicate_action, cond);
-			SIMIX_register_action_to_condition(communicate_action, cond);
-
-			SIMIX_mutex_lock(mutex);
-			SIMIX_cond_wait(cond, mutex);
-			SIMIX_mutex_unlock(mutex);
 
 			// copy request to appropriate received queue
 			message       = xbt_mallocator_get(smpi_global->message_mallocator);
@@ -122,6 +107,7 @@ int smpi_sender(int argc, char **argv)
 			message->buf  = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);
 
+			dhost = request->comm->hosts[request->dst];
 			drank = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, dhost);
 
 			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[drank]);
@@ -130,7 +116,13 @@ int smpi_sender(int argc, char **argv)
 
 			request->completed = 1;
 
-			SIMIX_cond_broadcast(request->cond);
+			communicate_action = SIMIX_action_communicate(shost, dhost,
+				"communication", request->datatype->size * request->count * 1.0, -1.0);
+
+			SIMIX_register_condition_to_action(communicate_action, request->cond);
+			SIMIX_register_action_to_condition(communicate_action, request->cond);
+
+			SIMIX_cond_wait(request->cond, request->mutex);
 
 			SIMIX_mutex_unlock(request->mutex);
 
@@ -157,9 +149,6 @@ int smpi_sender(int argc, char **argv)
 		// FIXME: can't happen! abort!
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
-
-	SIMIX_mutex_destroy(mutex);
-	SIMIX_cond_destroy(cond);
 
 	return 0;
 }
