@@ -72,7 +72,8 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
   }
 
   xbt_swag_foreach(var, var_list) {
-    if (var->bound < 0 || var->weight <= 0)
+    if(!var->weight) break;
+    if (var->bound < 0)
       continue;
     DEBUG3("Checking feasability for variable (%p): sat = %f mu = %f", var,
 	   var->value - var->bound, var->mu);
@@ -128,6 +129,8 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
   xbt_swag_foreach(var, var_list) {
     double sigma_i=0.0;
     int j;
+
+    if(!var->weight) break;
 
     for (j = 0; j < var->cnsts_number; j++)
       sigma_i += (var->cnsts[j].constraint)->lambda;
@@ -185,6 +188,10 @@ void lagrange_solve(lmm_system_t sys)
   DEBUG1("#### Minimum error tolerated (dichotomy) : %e",
 	 dichotomy_min_error);
 
+  if (XBT_LOG_ISENABLED(surf_lagrange, xbt_log_priority_debug)) {
+    lmm_print(sys);
+  }
+
   if (!(sys->modified))
     return;
 
@@ -206,22 +213,24 @@ void lagrange_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   i = 0;
   xbt_swag_foreach(var, var_list) {
-    if ((var->bound < 0.0) || (var->weight <= 0.0)) {
-      DEBUG1("#### NOTE var(%d) is a boundless (or inactive) variable", i);
-      var->mu = -1.0;
-      if(var->weight>0.0) 
+    if(!var->weight) 
+      var->value = 0.0;
+    else {
+      if (var->bound < 0.0) {
+	DEBUG1("#### NOTE var(%d) is a boundless variable", i);
+	var->mu = -1.0;
 	var->value = new_value(var);
-      else 
-	var->value = 0;
-    } else {
-      var->mu = 1.0;
-      var->new_mu = 2.0;
-      var->value = new_value(var);
+      } else {
+	var->mu = 1.0;
+	var->new_mu = 2.0;
+	var->value = new_value(var);
+      }
+      DEBUG3("#### var(%d) %p ->df :  %e", i, var, var->df);
+      DEBUG3("#### var(%d) %p ->mu :  %e", i, var, var->mu);
+      DEBUG3("#### var(%d) %p ->weight: %e", i, var, var->weight);
+      DEBUG3("#### var(%d) %p ->bound: %e", i, var, var->bound);
+      i++;
     }
-    DEBUG3("#### var(%d) %p ->mu :  %e", i, var, var->mu);
-    DEBUG3("#### var(%d) %p ->weight: %e", i, var, var->weight);
-    DEBUG3("#### var(%d) %p ->bound: %e", i, var, var->bound);
-    i++;
   }
 
   /* 
@@ -243,7 +252,8 @@ void lagrange_solve(lmm_system_t sys)
      * Improve the value of mu_i
      */
     xbt_swag_foreach(var, var_list) {
-      if ((var->bound >= 0) && (var->weight > 0)) {
+      if(!var->weight) break;
+      if (var->bound >= 0) {
 	DEBUG1("Working on var (%p)", var);
 	var->new_mu = new_mu(var);
 /* 	dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error); */
