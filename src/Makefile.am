@@ -1,4 +1,4 @@
-AM_CFLAGS+= -g @GTNETS_CFLAGS@
+AM_CFLAGS+= -g @GTNETS_CFLAGS@ @CSDP_CFLAGS@
 #AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.
@@ -233,7 +233,7 @@ GRAS_RL_SRC= \
   gras/Virtu/rl_dns.c\
   \
   gras/Msg/rl_msg.c
-  
+
 GRAS_RL_SRC+=$(XBT_RL_SRC)
 
 GRAS_SG_SRC= gras/Transport/sg_transport.c  gras/Transport/transport_plugin_sg.c        \
@@ -255,7 +255,7 @@ AMOK_SRC= \
 # Deal with optional modules #
 ##############################
 
-if USE_GTNETS
+if HAVE_GTNETS
   GTNETS_USED=$(GTNETS_SRC)
 else
   GTNETS_USED=
@@ -293,7 +293,7 @@ lib_LTLIBRARIES += libsimgrid4java.la
 libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                              $(SIMIX_SRC) $(JCTX_SRC) \
                              $(JMSG_C_SRC) $(MSG_SRC) \
-  		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
+		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 libsimgrid4java_la_GCJFLAGS = -fjni
 

@@ -189,28 +189,6 @@ SG_CONFIGURE_PART(Checking extra libraries dependencies...)
 SIMGRID_DEP=""
 GRAS_DEP=""
 
-#########################################
-## Build optional modules (gtnets)
-##
-AC_ARG_WITH(gtnets,
-  AS_HELP_STRING([--with-gtnets], [Path to GTNetS installation (default to empty, ie not using GTNetS)]),
-  gtnets_path="$withval",gtnets_path="NO")
-if test "x$gtnets_path" = "xNO" ; then
-  AC_MSG_RESULT(Eventually you will come to GTNetS.)
-else  
-  AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****)
-  AC_DEFINE(USE_GTNETS, 1, [Indicates whether we should use GTNetS or not])
-  if ! test -e $gtnets_path ; then
-    AC_MSG_ERROR(Provided path to GTNetS include files ($gtnets_path) do not exist!)
-  fi
-  GTNETS_CFLAGS=-I$gtnets_path/include
-  AC_SUBST([GTNETS_CFLAGS])  
-  GTNETS_LDFLAGS=-L$gtnets_path/lib
-  AC_SUBST([GTNETS_LDFLAGS])
-  SIMGRID_DEP="$SIMGRID_DEP $GTNETS_LDFLAGS -lgtnets"
-fi
-AM_CONDITIONAL(USE_GTNETS,test "x$gtnets_path" != xNO)
-
 if test xpthread=xyes ; then 
   # if the pthreads are usable
   if test "x$with_context" = "xpthread" ; then
@@ -223,16 +201,68 @@ if test xpthread=xyes ; then
   fi
 fi
 
-AC_MSG_CHECKING(for csdp)
-sdp=no
-AC_CHECK_LIB(sdp,sdp,csdp=yes, csdp=no,-llapack -lblas -lm)
-if test "x$csdp" = xyes; then 
-  SIMGRID_DEP="$SIMGRID_DEP -lsdp -llapack -lblas -lm"
-  AC_MSG_RESULT(Found working sdp library.)
-  AC_DEFINE(HAVE_SDP, 1, [Indicates whether we have the CSDP library or not])
-else
-  AC_MSG_RESULT(Could not find any working sdp library.)
-fi;
+
+#########################################
+## Build optional modules (gtnets)
+##
+gtnets=no
+AC_ARG_WITH(gtnets,
+  AS_HELP_STRING([--with-gtnets], [Path to GTNetS installation (default to empty, ie not using GTNetS)]),
+  gtnets_path="$withval",gtnets_path="no")
+if test "x$gtnets_path" = "xno" ; then
+  AC_MSG_RESULT(Eventually you will come to GTNetS.)
+else  
+  AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****)
+  AC_MSG_CHECKING(for gtnets)
+#  AC_CHECK_LIB(gtnets,Simulator.RunUntilNextCompletion,gtnets=yes, gtnets=no,-L$gtnets_path/lib)
+  AX_CXX_CHECK_LIB(gtnets,[Simulator::RunUntilNextCompletion],gtnets=yes, gtnets=no,-L$gtnets_path/lib)
+
+  if test "x$gtnets" = xyes ; then 
+    GTNETS_CFLAGS=-I$gtnets_path/include
+    AC_SUBST([GTNETS_CFLAGS])  
+    GTNETS_LDFLAGS=-L$gtnets_path/lib
+    AC_SUBST([GTNETS_LDFLAGS])
+    SIMGRID_DEP="$SIMGRID_DEP $GTNETS_LDFLAGS"
+    AC_MSG_RESULT(Found working gtnets library.)
+    AC_DEFINE(HAVE_GTNETS, 1, [Indicates whether we have the GTNETS library or not])
+  else
+    AC_MSG_RESULT(Could not find any working gtnets library.)
+  fi
+fi
+AM_CONDITIONAL(HAVE_GTNETS,test "x$gtnets" != xno)
+
+#########################################
+## Build optional modules (csdp)
+##
+csdp=no
+AC_ARG_WITH(csdp,
+  AS_HELP_STRING([--with-csdp], [Path to csdp installation (default to empty, ie not using csdp)]),
+  csdp_path="$withval",csdp_path="no")
+if test "x$csdp_path" = "xno" ; then
+  AC_MSG_RESULT(Eventually you will come to csdp.)
+else  
+  AC_MSG_RESULT(***** You have decided to use csdp. Let's check whether it works or not ****)
+  AC_MSG_CHECKING(for csdp)
+  AC_CHECK_LIB(sdp,easy_sdp, csdp_lib=yes, csdp_lib=no,-L$csdp_path/lib -llapack -lblas -lm)
+  AC_CHECK_HEADER(declarations.h, csdp_header=yes, csdp_header=no,-I$csdp_path/include -I$csdp_path/include/csdp)
+
+  if test "x$csdp_lib = xyes" -a "x$csdp_header = xyes" ; then
+     csdp=yes;
+  else 
+     csdp=no;
+  fi
+  if test "x$csdp" = xyes; then 
+    CSDP_CFLAGS="-I$csdp_path/include -I$csdp_path/include/csdp"
+    AC_SUBST([CSDP_CFLAGS])  
+    CSDP_LDFLAGS="-L$csdp_path/lib"
+    AC_SUBST([CSDP_LDFLAGS])
+    SIMGRID_DEP="$SIMGRID_DEP $CSDP_LDFLAGS -lsdp -llapack -lblas -lm"
+    AC_MSG_RESULT(Found working sdp library.)
+    AC_DEFINE(HAVE_SDP, 1, [Indicates whether we have the CSDP library or not])
+  else
+    AC_MSG_RESULT(Could not find any working sdp library.)
+  fi;
+fi
 AM_CONDITIONAL(HAVE_SDP,test x$csdp != xno)
 
 AC_SUBST([SIMGRID_DEP])
