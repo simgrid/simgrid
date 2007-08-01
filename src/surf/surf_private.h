@@ -51,7 +51,8 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				      size_t offset);
 double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 				       size_t offset,
-				       lmm_system_t sys);
+				       lmm_system_t sys,
+				       void (*solve)(lmm_system_t));
 
 /* Generic functions common to all ressources */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);

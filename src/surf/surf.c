@@ -131,29 +131,21 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				       size_t offset)
 {
   return  generic_maxmin_share_resources2(running_actions, offset,
-					  maxmin_system);
+					  maxmin_system, lmm_solve);
 }
 
 double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 				       size_t offset,
-				       lmm_system_t sys)
+				       lmm_system_t sys,
+				       void (*solve)(lmm_system_t))
 {
   surf_action_t action = NULL;
   double min = -1;
   double value = -1;
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
-  if(!use_sdp_solver && !use_lagrange_solver)
-    lmm_solve(sys);
-  else if(!use_lagrange_solver){
-#ifdef HAVE_SDP
-    sdp_solve(sys);
-#else
-    xbt_assert0(0, "No CSDP found! You cannot use this model!");
-#endif
-  }else{
-    lagrange_solve(sys);
-  }
+  xbt_assert0(solve,"Give me a real solver function!");
+  solve(sys);
 
   xbt_swag_foreach(action, running_actions) {
     value = lmm_variable_getvalue(VARIABLE(action));
@@ -401,6 +393,7 @@ double surf_solve(void)
 
   DEBUG0("Looking for next action end");
   xbt_dynar_foreach(resource_list, i, resource) {
+    DEBUG1("Running for Resource [%s]",resource->common_public->name);
     resource_next_action_end =
 	resource->common_private->share_resources(NOW);
     DEBUG2("Resource [%s] : next action end = %f",resource->common_public->name,

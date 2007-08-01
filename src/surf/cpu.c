@@ -11,6 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 				"Logging specific to the SURF CPU module");
 
 surf_cpu_resource_t surf_cpu_resource = NULL;
+lmm_system_t cpu_maxmin_system = NULL;
 
 xbt_dict_t cpu_set = NULL;
 
@@ -43,7 +44,7 @@ static cpu_Cas01_t cpu_new(char *name, double power_scale,
 	tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
 
   cpu->constraint =
-      lmm_constraint_new(maxmin_system, cpu,
+      lmm_constraint_new(cpu_maxmin_system, cpu,
 			 cpu->power_current * cpu->power_scale);
 
   xbt_dict_set(cpu_set, name, cpu, cpu_free);
@@ -97,7 +98,7 @@ static const char *get_resource_name(void *resource_id)
 
 static int resource_used(void *resource_id)
 {
-  return lmm_constraint_used(maxmin_system,
+  return lmm_constraint_used(cpu_maxmin_system,
 			     ((cpu_Cas01_t) resource_id)->constraint);
 }
 
@@ -107,7 +108,7 @@ static int action_free(surf_action_t action)
   if(!action->using) {
     xbt_swag_remove(action, action->state_set);
     if(((surf_action_cpu_Cas01_t)action)->variable)
-      lmm_variable_free(maxmin_system, ((surf_action_cpu_Cas01_t)action)->variable);
+      lmm_variable_free(cpu_maxmin_system, ((surf_action_cpu_Cas01_t)action)->variable);
     free(action);
     return 1;
   }
@@ -135,7 +136,7 @@ static void action_change_state(surf_action_t action,
 {
 /*   if((state==SURF_ACTION_DONE) || (state==SURF_ACTION_FAILED)) */
 /*     if(((surf_action_cpu_Cas01_t)action)->variable) { */
-/*       lmm_variable_disable(maxmin_system, ((surf_action_cpu_Cas01_t)action)->variable); */
+/*       lmm_variable_disable(cpu_maxmin_system, ((surf_action_cpu_Cas01_t)action)->variable); */
 /*       ((surf_action_cpu_Cas01_t)action)->variable = NULL; */
 /*     } */
 
@@ -146,9 +147,10 @@ static void action_change_state(surf_action_t action,
 static double share_resources(double now)
 {
   s_surf_action_cpu_Cas01_t action;
-  return generic_maxmin_share_resources(surf_cpu_resource->common_public->
-					states.running_action_set,
-					xbt_swag_offset(action, variable));
+  return generic_maxmin_share_resources2(surf_cpu_resource->common_public->
+					 states.running_action_set,
+					 xbt_swag_offset(action, variable),
+					 cpu_maxmin_system, lmm_solve);
 }
 
 static void update_actions_state(double now, double delta)
@@ -181,7 +183,7 @@ static void update_actions_state(double now, double delta)
       cpu_Cas01_t cpu = NULL;
 
       while ((cnst =
-	      lmm_get_cnst_from_var(maxmin_system, action->variable,
+	      lmm_get_cnst_from_var(cpu_maxmin_system, action->variable,
 				    i++))) {
 	cpu = lmm_constraint_id(cnst);
 	if (cpu->state_current == SURF_CPU_OFF) {
@@ -204,7 +206,7 @@ static void update_resource_state(void *id,
 
   if (event_type == cpu->power_event) {
     cpu->power_current = value;
-    lmm_update_constraint_bound(maxmin_system, cpu->constraint,
+    lmm_update_constraint_bound(cpu_maxmin_system, cpu->constraint,
 				cpu->power_current * cpu->power_scale);
   } else if (event_type == cpu->state_event) {
     if (value > 0)
@@ -247,9 +249,9 @@ static surf_action_t execute(void *cpu, double size)
 	surf_cpu_resource->common_public->states.failed_action_set;
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->variable = lmm_variable_new(maxmin_system, action, 
+  action->variable = lmm_variable_new(cpu_maxmin_system, action, 
 				      action->generic_action.priority, -1.0, 1);
-  lmm_expand(maxmin_system, CPU->constraint, action->variable,
+  lmm_expand(cpu_maxmin_system, CPU->constraint, action->variable,
 	     1.0);
   XBT_OUT;
   return (surf_action_t) action;
@@ -263,7 +265,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
   action = (surf_action_cpu_Cas01_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
-  lmm_update_variable_weight(maxmin_system, action->variable, 0.0);
+  lmm_update_variable_weight(cpu_maxmin_system, action->variable, 0.0);
   XBT_OUT;
   return (surf_action_t) action;
 }
@@ -272,7 +274,7 @@ static void action_suspend(surf_action_t action)
 {
   XBT_IN1("(%p)",action);
   if(((surf_action_cpu_Cas01_t) action)->suspended != 2) {
-    lmm_update_variable_weight(maxmin_system,
+    lmm_update_variable_weight(cpu_maxmin_system,
 			       ((surf_action_cpu_Cas01_t) action)->variable, 0.0);
     ((surf_action_cpu_Cas01_t) action)->suspended = 1;
   }
@@ -283,7 +285,7 @@ static void action_resume(surf_action_t action)
 {
   XBT_IN1("(%p)",action);
   if(((surf_action_cpu_Cas01_t) action)->suspended != 2) {
-    lmm_update_variable_weight(maxmin_system,
+    lmm_update_variable_weight(cpu_maxmin_system,
 			       ((surf_action_cpu_Cas01_t) action)->variable, 
 			       action->priority);
     ((surf_action_cpu_Cas01_t) action)->suspended=0;
@@ -404,7 +406,8 @@ static void surf_cpu_resource_init_internal(void)
 
   cpu_set = xbt_dict_new();
 
-  xbt_assert0(maxmin_system, "surf_init has to be called first!");
+  if(!cpu_maxmin_system)  
+    cpu_maxmin_system = lmm_system_new();
 }
 
 /*********************************************************************/
