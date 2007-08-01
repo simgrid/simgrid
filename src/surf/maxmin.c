@@ -386,15 +386,17 @@ void lmm_print(lmm_system_t sys)
     }
     DEBUG1("%s",trace_buf);
     trace_buf[0]='\000';
-    xbt_assert3(!double_positive(sum-cnst->bound), "Incorrect value (%f is not smaller than %f): %g",
-		sum,cnst->bound,sum-cnst->bound);
+    if(double_positive(sum-cnst->bound))
+      WARN3("Incorrect value (%f is not smaller than %f): %g",
+	       sum,cnst->bound,sum-cnst->bound);
   }
 
   /* Printing Result */
   xbt_swag_foreach(var, var_list) {
     if(var->bound>0) {
       DEBUG4("'%p'(%f) : %f (<=%f)",var,var->weight,var->value, var->bound);
-      xbt_assert2(!double_positive(var->value-var->bound), "Incorrect value (%f is not smaller than %f",
+      if(double_positive(var->value-var->bound))
+	 WARN2("Incorrect value (%f is not smaller than %f",
 		  var->value, var->bound);
     }
     else 
