@@ -43,7 +43,6 @@ XBT_PUBLIC(lmm_variable_t) lmm_variable_new(lmm_system_t sys, void *id,
 void lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
 XBT_PUBLIC(double) lmm_variable_getvalue(lmm_variable_t var);
 
-
 XBT_PUBLIC(void) lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
 		lmm_variable_t var, double value);
 void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
@@ -70,22 +69,22 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
 			       double bound);
 
 
-void lmm_update_variable_latency(lmm_system_t sys, lmm_variable_t var,
+XBT_PUBLIC(void) lmm_update_variable_latency(lmm_system_t sys, lmm_variable_t var,
 				 double delta);
 
 
 
-void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
+XBT_PUBLIC(void) lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
 				double weight);
 double lmm_get_variable_weight(lmm_variable_t var);
 
-void lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
+XBT_PUBLIC(void) lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst,
 				 double bound);
 
 int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
 
 
-void lmm_solve(lmm_system_t sys);
+XBT_PUBLIC(void) lmm_solve(lmm_system_t sys);
 
 #ifdef HAVE_SDP
 void sdp_solve(lmm_system_t sys);
@@ -102,7 +101,7 @@ void lagrange_dicotomi_solve(lmm_system_t sys);
  * using the lagrangian approach.
  */
 
-void lmm_set_default_protocol_function(double (* func_f)  (lmm_variable_t var, double x),
+XBT_PUBLIC(void) lmm_set_default_protocol_function(double (* func_f)  (lmm_variable_t var, double x),
 				       double (* func_fp) (lmm_variable_t var, double x),
 				       double (* func_fpi)(lmm_variable_t var, double x));
 
