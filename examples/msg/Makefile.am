@@ -2,8 +2,19 @@ INCLUDES  = -I$(top_srcdir)/include
 AM_CFLAGS = -g
 
 EXTRA_DIST = msg_platform.xml \
+             small_platform.xml \
              sendrecv/platform_sendrecv.xml \
-             sendrecv/deployment_sendrecv.xml
+             sendrecv/deployment_sendrecv.xml \
+             suspend/deployment_suspend.xml \
+             masterslave/deployment_masterslave_forwarder.xml \
+             masterslave/deployment_masterslave.xml \
+             gtnets/r-n200-f50-s4-2-d.xml \
+             gtnets/onelink-p.xml \
+             gtnets/onelink-d.xml \
+             gtnets/r-n200-f50-s4-2-p.xml \
+             gtnets/dogbone-d.xml \
+             gtnets/dogbone-p.xml
+
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
@@ -11,7 +22,7 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh
 if HAVE_SDP
   TESTS += sendrecv/sendrecv_KCCFLN05_proportional.tesh
 endif
-if USE_GTNETS
+if HAVE_GTNETS
 endif
 
 
@@ -31,7 +42,7 @@ CLEANFILES = sendrecv/*~ \
              masterslave/masterslave_forwarder 
              #masterslave/masterslave_bypass
 
-if USE_GTNETS
+if HAVE_GTNETS
              CLEANFILES += gtnets/gtnets 
 endif
 
@@ -44,7 +55,7 @@ bin_PROGRAMS = sendrecv/sendrecv \
                masterslave/masterslave_forwarder
                #masterslave/masterslave_bypass
 
-if USE_GTNETS
+if HAVE_GTNETS
                bin_PROGRAMS += gtnets/gtnets 
 endif
 
@@ -71,9 +82,11 @@ masterslave_masterslave_forwarder_LDADD   = $(top_builddir)/src/libsimgrid.la
 #masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # verify if the GTNETS feature is working
-if USE_GTNETS
+if HAVE_GTNETS
 gtnets_gtnets_SOURCES = gtnets/gtnets.c
 gtnets_gtnets_LDADD   = $(top_builddir)/src/libsimgrid.la
+else
+  EXTRA_DIST+= gtnets/gtnets.c
 endif
 
 include $(top_srcdir)/acmacro/dist-files.mk
