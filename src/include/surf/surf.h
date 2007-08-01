@@ -285,6 +285,34 @@ XBT_PUBLIC(void) surf_network_resource_init_CM02(const char *filename);
 XBT_PUBLIC(void) surf_network_resource_init_GTNETS(const char *filename);
 #endif
 
+/** \brief Initializes the platform with the network model Reno
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  Call this function only if you plan using surf_workstation_resource_init_compound.
+ *
+ */
+XBT_PUBLIC(void) surf_network_resource_init_Reno(const char *filename);
+
+/** \brief Initializes the platform with the network model Vegas
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  Call this function only if you plan using surf_workstation_resource_init_compound.
+ *
+ */
+XBT_PUBLIC(void) surf_network_resource_init_Vegas(const char *filename);
+
+#ifdef HAVE_SDP
+/** \brief Initializes the platform with the network model based on SDP
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  Call this function only if you plan using surf_workstation_resource_init_compound.
+ */
+XBT_PUBLIC(void) surf_network_resource_init_SDP(const char *filename);
+#endif
+
 /** \brief Workstation resource extension public
  *  \ingroup SURF_resources
  *
