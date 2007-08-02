@@ -40,7 +40,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@USE_GTNETS_FALSE@am__append_1 = $(GTNETS_SRC)
+@HAVE_GTNETS_FALSE@am__append_1 = $(GTNETS_SRC)
 @HAVE_SDP_FALSE@am__append_2 = surf/sdp.c
 @HAVE_JAVA_TRUE@am__append_3 = libsimgrid4java.la
 @HAVE_JAVA_FALSE@am__append_4 = $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
@@ -143,7 +143,7 @@ am__objects_6 = maxmin.lo lagrange.lo trace_mgr.lo surf.lo \
 	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo
 am__objects_7 = gtnets_simulator.lo gtnets_topology.lo \
 	gtnets_interface.lo network_gtnets.lo
-@USE_GTNETS_TRUE@am__objects_8 = $(am__objects_7)
+@HAVE_GTNETS_TRUE@am__objects_8 = $(am__objects_7)
 @HAVE_SDP_TRUE@am__objects_9 = sdp.lo
 am__objects_10 = smx_global.lo smx_deployment.lo smx_config.lo \
 	smx_environment.lo smx_host.lo smx_process.lo smx_action.lo \
@@ -269,7 +269,9 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ADDR2LINE = @ADDR2LINE@
 AMTAR = @AMTAR@
-AM_CFLAGS = @AM_CFLAGS@ -g @GTNETS_CFLAGS@
+
+#AM_CPPFLAGS=
+AM_CFLAGS = -g
 AR = @AR@
 AS = @AS@
 AUTOCONF = @AUTOCONF@
@@ -303,8 +305,6 @@ GCJDEPMODE = @GCJDEPMODE@
 GCJFLAGS = @GCJFLAGS@
 GRAS_DEP = @GRAS_DEP@
 GREP = @GREP@
-GTNETS_CFLAGS = @GTNETS_CFLAGS@
-GTNETS_LDFLAGS = @GTNETS_LDFLAGS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -604,12 +604,12 @@ AMOK_SRC = \
   amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
   amok/PeerManagement/peermanagement.c
 
-@USE_GTNETS_FALSE@GTNETS_USED = 
+@HAVE_GTNETS_FALSE@GTNETS_USED = 
 
 ##############################
 # Deal with optional modules #
 ##############################
-@USE_GTNETS_TRUE@GTNETS_USED = $(GTNETS_SRC)
+@HAVE_GTNETS_TRUE@GTNETS_USED = $(GTNETS_SRC)
 @HAVE_SDP_FALSE@SDP_SRC = 
 @HAVE_SDP_TRUE@SDP_SRC = surf/sdp.c
 
@@ -624,11 +624,11 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 
-libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 @HAVE_JAVA_TRUE@libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
 @HAVE_JAVA_TRUE@                             $(SIMIX_SRC) $(JCTX_SRC) \
 @HAVE_JAVA_TRUE@                             $(JMSG_C_SRC) $(MSG_SRC) \
-@HAVE_JAVA_TRUE@  		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
+@HAVE_JAVA_TRUE@		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 
 @HAVE_JAVA_TRUE@libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 @HAVE_JAVA_TRUE@libsimgrid4java_la_GCJFLAGS = -fjni

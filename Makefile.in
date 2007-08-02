@@ -124,8 +124,6 @@ GCJDEPMODE = @GCJDEPMODE@
 GCJFLAGS = @GCJFLAGS@
 GRAS_DEP = @GRAS_DEP@
 GREP = @GREP@
-GTNETS_CFLAGS = @GTNETS_CFLAGS@
-GTNETS_LDFLAGS = @GTNETS_LDFLAGS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -700,10 +698,10 @@ gramine:
 @MAINTAINER_MODE_TRUE@release: distcheck remote debian publish
 
 @MAINTAINER_MODE_TRUE@debian: dist
-@MAINTAINER_MODE_TRUE@	make -C ~/CVSIMPORT/pkg-grid/gras maintainerclean
+@MAINTAINER_MODE_TRUE@	$(MAKE) -C ~/CVSIMPORT/pkg-grid/gras maintainerclean
 @MAINTAINER_MODE_TRUE@	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras/
 @MAINTAINER_MODE_TRUE@	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras/@PACKAGE@_@VERSION@.orig.tar.gz
-@MAINTAINER_MODE_TRUE@	make -C ~/CVSIMPORT/pkg-grid/gras deb check
+@MAINTAINER_MODE_TRUE@	$(MAKE) -C ~/CVSIMPORT/pkg-grid/gras deb check
 @MAINTAINER_MODE_TRUE@	dput local *.changes
 
 @MAINTAINER_MODE_TRUE@publish-old: dist
@@ -714,7 +712,7 @@ gramine:
 @MAINTAINER_MODE_TRUE@	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
 @MAINTAINER_MODE_TRUE@	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/gras/dl
 @MAINTAINER_MODE_TRUE@	 @echo "----[ Sync remote host ]----"
-@MAINTAINER_MODE_TRUE@	 make -C public_html publish
+@MAINTAINER_MODE_TRUE@	 $(MAKE) -C public_html publish
 
 @MAINTAINER_MODE_TRUE@publish: dist
 @MAINTAINER_MODE_TRUE@	 @echo "----[ Put the tarball @VERSION@ on gforge ]----"
@@ -726,7 +724,7 @@ gramine:
 @MAINTAINER_MODE_TRUE@	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/simgrid2
 @MAINTAINER_MODE_TRUE@	 cp -r doc/html ~/public_html/simgrid2/doc/
 @MAINTAINER_MODE_TRUE@	 cp ChangeLog ~/public_html/simgrid2/
-@MAINTAINER_MODE_TRUE@	 make -C ~/public_html
+@MAINTAINER_MODE_TRUE@	 $(MAKE) -C ~/public_html
 
 @MAINTAINER_MODE_TRUE@sync-gforge: 
 @MAINTAINER_MODE_TRUE@	rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times \
@@ -755,10 +753,10 @@ gramine:
 @MAINTAINER_MODE_TRUE@	       simgrid-user@lists.gforge.inria.fr
 
 @MAINTAINER_MODE_TRUE@TAGS:
-@MAINTAINER_MODE_TRUE@	etags -o ./TAGS `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` 
+@MAINTAINER_MODE_TRUE@	etags -o ./TAGS `$(MAKE) dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` 
 
 @MAINTAINER_MODE_TRUE@splint:
-@MAINTAINER_MODE_TRUE@	splint `make dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
+@MAINTAINER_MODE_TRUE@	splint `$(MAKE) dist-files | grep -v $(PWD) | egrep '\.[ch]$$' |sort -u` \
 @MAINTAINER_MODE_TRUE@	       +matchanyintegral -warnposix +boolint \
 @MAINTAINER_MODE_TRUE@	       +show-summary +stats\
 @MAINTAINER_MODE_TRUE@	       -Iinclude -Isrc/include -Isrc/base -Isrc

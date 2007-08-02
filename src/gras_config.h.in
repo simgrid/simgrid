@@ -71,6 +71,9 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
+/* Indicates whether we have the GTNETS library or not */
+#undef HAVE_GTNETS
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -197,9 +200,6 @@
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
-
-/* Indicates whether we should use GTNetS or not */
-#undef USE_GTNETS
 
 /* Version number of package */
 #undef VERSION

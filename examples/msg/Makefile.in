@@ -39,9 +39,12 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 @HAVE_SDP_TRUE@am__append_1 = sendrecv/sendrecv_KCCFLN05_proportional.tesh
+@HAVE_GTNETS_TRUE@am__append_2 = gtnets/gtnets 
 bin_PROGRAMS = sendrecv/sendrecv$(EXEEXT) suspend/suspend$(EXEEXT) \
 	masterslave/masterslave$(EXEEXT) \
-	masterslave/masterslave_forwarder$(EXEEXT)
+	masterslave/masterslave_forwarder$(EXEEXT) $(am__EXEEXT_1)
+@HAVE_GTNETS_TRUE@am__append_3 = gtnets/gtnets 
+@HAVE_GTNETS_FALSE@am__append_4 = gtnets/gtnets.c
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = examples/msg
@@ -59,15 +62,21 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/gras_config.h
 CONFIG_CLEAN_FILES =
+@HAVE_GTNETS_TRUE@am__EXEEXT_1 = gtnets/gtnets$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
+am__gtnets_gtnets_SOURCES_DIST = gtnets/gtnets.c
+@HAVE_GTNETS_TRUE@am_gtnets_gtnets_OBJECTS = gtnets.$(OBJEXT)
+gtnets_gtnets_OBJECTS = $(am_gtnets_gtnets_OBJECTS)
+@HAVE_GTNETS_TRUE@gtnets_gtnets_DEPENDENCIES =  \
+@HAVE_GTNETS_TRUE@	$(top_builddir)/src/libsimgrid.la
+am__dirstamp = $(am__leading_dot)dirstamp
 am_masterslave_masterslave_OBJECTS = masterslave.$(OBJEXT)
 masterslave_masterslave_OBJECTS =  \
 	$(am_masterslave_masterslave_OBJECTS)
 masterslave_masterslave_DEPENDENCIES =  \
 	$(top_builddir)/src/libsimgrid.la
-am__dirstamp = $(am__leading_dot)dirstamp
 am_masterslave_masterslave_forwarder_OBJECTS =  \
 	masterslave_forwarder.$(OBJEXT)
 masterslave_masterslave_forwarder_OBJECTS =  \
@@ -92,10 +101,11 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(masterslave_masterslave_SOURCES) \
+SOURCES = $(gtnets_gtnets_SOURCES) $(masterslave_masterslave_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
 	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
-DIST_SOURCES = $(masterslave_masterslave_SOURCES) \
+DIST_SOURCES = $(am__gtnets_gtnets_SOURCES_DIST) \
+	$(masterslave_masterslave_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
 	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 ETAGS = etags
@@ -138,8 +148,6 @@ GCJDEPMODE = @GCJDEPMODE@
 GCJFLAGS = @GCJFLAGS@
 GRAS_DEP = @GRAS_DEP@
 GREP = @GREP@
-GTNETS_CFLAGS = @GTNETS_CFLAGS@
-GTNETS_LDFLAGS = @GTNETS_LDFLAGS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -238,24 +246,24 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
-EXTRA_DIST = msg_platform.xml \
-             sendrecv/platform_sendrecv.xml \
-             sendrecv/deployment_sendrecv.xml
-
+EXTRA_DIST = msg_platform.xml small_platform.xml \
+	sendrecv/platform_sendrecv.xml \
+	sendrecv/deployment_sendrecv.xml \
+	suspend/deployment_suspend.xml \
+	masterslave/deployment_masterslave_forwarder.xml \
+	masterslave/deployment_masterslave.xml \
+	gtnets/r-n200-f50-s4-2-d.xml gtnets/onelink-p.xml \
+	gtnets/onelink-d.xml gtnets/r-n200-f50-s4-2-p.xml \
+	gtnets/dogbone-d.xml gtnets/dogbone-p.xml $(am__append_4)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = sendrecv/sendrecv_KCCFLN05.tesh $(am__append_1) \
 	sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
 	sendrecv/sendrecv_KCCFLN05_Reno.tesh suspend/suspend.tesh \
 	masterslave/masterslave.tesh \
 	masterslave/masterslave_forwarder.tesh
-CLEANFILES = sendrecv/*~ \
-             sendrecv/sendrecv \
-             suspend/*~ \
-             suspend/suspend \
-             masterslave/*~ \
-             masterslave/masterslave \
-             masterslave/masterslave_forwarder
-
+CLEANFILES = sendrecv/*~ sendrecv/sendrecv suspend/*~ suspend/suspend \
+	masterslave/*~ masterslave/masterslave \
+	masterslave/masterslave_forwarder $(am__append_2)
 
 # sendrecv simple example
 sendrecv_sendrecv_SOURCES = sendrecv/sendrecv.c
@@ -272,6 +280,14 @@ masterslave_masterslave_LDADD = $(top_builddir)/src/libsimgrid.la
 # verify the communication time of a simple simulation
 masterslave_masterslave_forwarder_SOURCES = masterslave/masterslave_forwarder.c
 masterslave_masterslave_forwarder_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# bypass the surf xml parser
+#masterslave_masterslave_bypass_SOURCES = masterslave/masterslave_bypass.c
+#masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# verify if the GTNETS feature is working
+@HAVE_GTNETS_TRUE@gtnets_gtnets_SOURCES = gtnets/gtnets.c
+@HAVE_GTNETS_TRUE@gtnets_gtnets_LDADD = $(top_builddir)/src/libsimgrid.la
 all: all-am
 
 .SUFFIXES:
@@ -333,6 +349,12 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+gtnets/$(am__dirstamp):
+	@$(MKDIR_P) gtnets
+	@: > gtnets/$(am__dirstamp)
+gtnets/gtnets$(EXEEXT): $(gtnets_gtnets_OBJECTS) $(gtnets_gtnets_DEPENDENCIES) gtnets/$(am__dirstamp)
+	@rm -f gtnets/gtnets$(EXEEXT)
+	$(LINK) $(gtnets_gtnets_OBJECTS) $(gtnets_gtnets_LDADD) $(LIBS)
 masterslave/$(am__dirstamp):
 	@$(MKDIR_P) masterslave
 	@: > masterslave/$(am__dirstamp)
@@ -361,6 +383,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtnets.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_forwarder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sendrecv.Po@am__quote@
@@ -386,6 +409,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+gtnets.o: gtnets/gtnets.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gtnets.o -MD -MP -MF $(DEPDIR)/gtnets.Tpo -c -o gtnets.o `test -f 'gtnets/gtnets.c' || echo '$(srcdir)/'`gtnets/gtnets.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/gtnets.Tpo $(DEPDIR)/gtnets.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtnets/gtnets.c' object='gtnets.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gtnets.o `test -f 'gtnets/gtnets.c' || echo '$(srcdir)/'`gtnets/gtnets.c
+
+gtnets.obj: gtnets/gtnets.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gtnets.obj -MD -MP -MF $(DEPDIR)/gtnets.Tpo -c -o gtnets.obj `if test -f 'gtnets/gtnets.c'; then $(CYGPATH_W) 'gtnets/gtnets.c'; else $(CYGPATH_W) '$(srcdir)/gtnets/gtnets.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/gtnets.Tpo $(DEPDIR)/gtnets.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtnets/gtnets.c' object='gtnets.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gtnets.obj `if test -f 'gtnets/gtnets.c'; then $(CYGPATH_W) 'gtnets/gtnets.c'; else $(CYGPATH_W) '$(srcdir)/gtnets/gtnets.c'; fi`
 
 masterslave.o: masterslave/masterslave.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT masterslave.o -MD -MP -MF $(DEPDIR)/masterslave.Tpo -c -o masterslave.o `test -f 'masterslave/masterslave.c' || echo '$(srcdir)/'`masterslave/masterslave.c
@@ -625,6 +662,7 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+	-rm -f gtnets/$(am__dirstamp)
 	-rm -f masterslave/$(am__dirstamp)
 	-rm -f sendrecv/$(am__dirstamp)
 	-rm -f suspend/$(am__dirstamp)
@@ -714,10 +752,6 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
-
-# bypass the surf xml parser
-#masterslave_masterslave_bypass_SOURCES = masterslave/masterslave_bypass.c
-#masterslave_masterslave_bypass_LDADD   = $(top_builddir)/src/libsimgrid.la
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
