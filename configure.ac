@@ -212,9 +212,17 @@ AC_ARG_WITH(gtnets,
 if test "x$gtnets_path" = "xno" ; then
   AC_MSG_RESULT(Eventually you will come to GTNetS.)
 else  
-  AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****)
+  AC_MSG_RESULT(***** You have decided to use the exp˜erimental GTNetS. We hope you know what you're doing.. *****)
   AC_MSG_CHECKING(for gtnets)
-  AX_CXX_CHECK_LIB(gtnets,[Simulator::RunUntilNextCompletion],gtnets=yes, gtnets=no,-L$gtnets_path/lib)
+  AC_LANG([C++])  
+  LDFLAGS_SAV=$LDFLAGS	
+  LDFLAGS+="-lgtnets -L$gtnets_path/lib"
+  AC_TRY_LINK([ class Simulator{
+                  public:
+                  double RunUntilNextCompletion();
+                };], [Simulator s; s.RunUntilNextCompletion();], gtnets=yes, gtnets=no)
+  LDFLAGS=$LDFLAGS_SAV
+  AC_LANG(C)  
 
   if test "x$gtnets" = xyes ; then 
     GTNETS_CFLAGS=-I$gtnets_path/include
@@ -225,7 +233,7 @@ else
     AC_MSG_RESULT(Found working gtnets library.)
     AC_DEFINE(HAVE_GTNETS, 1, [Indicates whether we have the GTNETS library or not])
   else
-    AC_MSG_RESULT(Could not find any working gtnets library.)
+    AC_MSG_RESULT(Could not find any working gtnets library or not patched version, see config.log for details .)
   fi
 fi
 AM_CONDITIONAL(HAVE_GTNETS,test "x$gtnets" != xno)
@@ -235,15 +243,20 @@ AM_CONDITIONAL(HAVE_GTNETS,test "x$gtnets" != xno)
 ##
 csdp=no
 AC_ARG_WITH(csdp,
-  AS_HELP_STRING([--with-csdp], [Path to csdp installation (default to empty, ie not using csdp)]),
+  AS_HELP_STRING([--with-csdp], [Path to csdp installation (default to empty, i.e. not using csdp)]),
   csdp_path="$withval",csdp_path="no")
 if test "x$csdp_path" = "xno" ; then
   AC_MSG_RESULT(Eventually you will come to csdp.)
 else  
-  AC_MSG_RESULT(***** You have decided to use csdp. Let's check whether it works or not ****)
+  AC_MSG_RESULT(***** You have decided to use csdp. Let's check whether it works or not *****)
   AC_MSG_CHECKING(for csdp)
   AC_CHECK_LIB(sdp,easy_sdp, csdp_lib=yes, csdp_lib=no,-L$csdp_path/lib -llapack -lblas -lm)
-  AC_CHECK_HEADER(declarations.h, csdp_header=yes, csdp_header=no,-I$csdp_path/include -I$csdp_path/include/csdp)
+  
+  CPPFLAGS_SAV=$CPPFLAGS
+  CPPFLAGS+="-I$csdp_path/include -I$csdp_path/include/csdp"
+  AC_CHECK_HEADER(declarations.h, csdp_header=yes, csdp_header=no, [])
+  CPPFLAGS=$CPPFLAGS_SAV
+
 
   if test "x$csdp_lib = xyes" -a "x$csdp_header = xyes" ; then
      csdp=yes;
