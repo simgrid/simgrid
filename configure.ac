@@ -212,23 +212,24 @@ AC_ARG_WITH(gtnets,
 if test "x$gtnets_path" = "xno" ; then
   AC_MSG_RESULT(Eventually you will come to GTNetS.)
 else  
-  AC_MSG_RESULT(***** You have decided to use the exp˜erimental GTNetS. We hope you know what you're doing.. *****)
+  AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. *****)
   AC_MSG_CHECKING(for gtnets)
-  AC_LANG([C++])  
+  AC_LANG_PUSH([C++])  
+  GTNETS_LDFLAGS="-lgtnets -L$gtnets_path/lib"
+  GTNETS_CPPFLAGS="-I$gtnets_path/include -I$gtnets_path/include/gtnets"
   LDFLAGS_SAV=$LDFLAGS	
-  LDFLAGS+="-lgtnets -L$gtnets_path/lib"
-  AC_TRY_LINK([ class Simulator{
-                  public:
-                  double RunUntilNextCompletion();
-                };], [Simulator s; s.RunUntilNextCompletion();], gtnets=yes, gtnets=no)
+  CPPFLAGS_SAV=$CPPFLAGS
+  CPPFLAGS+=$GTNETS_CPPFLAGS
+  LDFLAGS+=$GTNETS_LDFLAGS
+  AC_TRY_LINK([ #include <simulator.h>
+              ], [Simulator s; s.RunUntilNextCompletion();], gtnets=yes, gtnets=no)
+  CPPFLAGS=$CPPFLAGS_SAV
   LDFLAGS=$LDFLAGS_SAV
-  AC_LANG(C)  
+  AC_LANG_POP([C++])  
 
   if test "x$gtnets" = xyes ; then 
-    GTNETS_CFLAGS=-I$gtnets_path/include
-    AC_SUBST([GTNETS_CFLAGS])  
-    GTNETS_LDFLAGS=-L$gtnets_path/lib
-    AC_SUBST([GTNETS_LDFLAGS])
+    CPPFLAGS+=$GTNETS_CPPFLAGS
+    LDFLAGS+=$GTNETS_LDFLAGS
     SIMGRID_DEP="$SIMGRID_DEP $GTNETS_LDFLAGS"
     AC_MSG_RESULT(Found working gtnets library.)
     AC_DEFINE(HAVE_GTNETS, 1, [Indicates whether we have the GTNETS library or not])
@@ -250,13 +251,17 @@ if test "x$csdp_path" = "xno" ; then
 else  
   AC_MSG_RESULT(***** You have decided to use csdp. Let's check whether it works or not *****)
   AC_MSG_CHECKING(for csdp)
-  AC_CHECK_LIB(sdp,easy_sdp, csdp_lib=yes, csdp_lib=no,-L$csdp_path/lib -llapack -lblas -lm)
+  CSDP_LDFLAGS="-L$csdp_path/lib -lsdp -llapack -lblas -lm"
+  CSDP_CPPFLAGS="-I$csdp_path/include -I$csdp_path/include/csdp"
+
+  AC_CHECK_LIB(sdp,easy_sdp, csdp_lib=yes, csdp_lib=no,$CSDP_LDFLAGS)
   
   CPPFLAGS_SAV=$CPPFLAGS
-  CPPFLAGS+="-I$csdp_path/include -I$csdp_path/include/csdp"
+  CPPFLAGS+=$CSDP_CPPFLAGS
   AC_CHECK_HEADER(declarations.h, csdp_header=yes, csdp_header=no, [])
   CPPFLAGS=$CPPFLAGS_SAV
 
+  
 
   if test "x$csdp_lib = xyes" -a "x$csdp_header = xyes" ; then
      csdp=yes;
@@ -264,11 +269,8 @@ else
      csdp=no;
   fi
   if test "x$csdp" = xyes; then 
-    CSDP_CFLAGS="-I$csdp_path/include -I$csdp_path/include/csdp"
-    AC_SUBST([CSDP_CFLAGS])  
-    CSDP_LDFLAGS="-L$csdp_path/lib"
-    AC_SUBST([CSDP_LDFLAGS])
-    SIMGRID_DEP="$SIMGRID_DEP $CSDP_LDFLAGS -lsdp -llapack -lblas -lm"
+    CPPFLAGS+=$CSDP_CPPFLAGS
+    SIMGRID_DEP="$SIMGRID_DEP $CSDP_LDFLAGS"
     AC_MSG_RESULT(Found working sdp library.)
     AC_DEFINE(HAVE_SDP, 1, [Indicates whether we have the CSDP library or not])
   else

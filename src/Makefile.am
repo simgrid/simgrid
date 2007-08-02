@@ -1,4 +1,5 @@
-AM_CFLAGS+= -g @GTNETS_CFLAGS@ @CSDP_CFLAGS@
+#AM_CPPFLAGS=
+AM_CFLAGS= -g
 #AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.
@@ -282,7 +283,7 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(SIMIX_SRC) $(CTX_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
-libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
 ##
 ## Java cruft
