@@ -367,7 +367,6 @@ void smpi_global_init()
 		smpi_global->timers_mutexes[i]                      = SIMIX_mutex_init();
 	}
 
-
 }
 
 void smpi_global_destroy()
