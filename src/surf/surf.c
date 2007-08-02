@@ -127,6 +127,71 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
+int surf_network_resource_description_size=3
+  #ifdef HAVE_GTNETS
+     +1
+  #endif
+  #ifdef HAVE_SDP
+     +1
+  #endif
+;
+s_surf_resource_description_t surf_network_resource_description[]=
+  {
+    {"CM02",NULL,surf_network_resource_init_CM02},
+#ifdef HAVE_GTNETS
+    {"GTNets",NULL,surf_network_resource_init_GTNETS},
+#endif
+#ifdef HAVE_SDP
+    {"SDP",NULL,surf_network_resource_init_SDP},
+#endif
+    {"Reno",NULL,surf_network_resource_init_Reno},
+    {"Vegas",NULL,surf_network_resource_init_Vegas}
+  };
+
+int surf_cpu_resource_description_size=1;
+s_surf_resource_description_t surf_cpu_resource_description[]=
+  {
+    {"Cas01",NULL,surf_cpu_resource_init_Cas01},
+  };
+
+int surf_workstation_resource_description_size=3;
+s_surf_resource_description_t surf_workstation_resource_description[]=
+  {
+    {"CLM03",NULL,surf_workstation_resource_init_CLM03},
+    {"KCCFLN05",NULL,surf_workstation_resource_init_KCCFLN05},
+    {"compound",NULL,surf_workstation_resource_init_compound}
+  };
+
+void update_resource_description(s_surf_resource_description_t *table,
+				 int table_size,
+				 const char* name, 
+				 surf_resource_t resource
+				 ) 
+{
+  int i = find_resource_description(table, table_size, name);
+  table[i].resource=resource;
+}
+
+int find_resource_description(s_surf_resource_description_t *table,
+			       int table_size,
+			       const char* name)
+{
+  int i;
+  char *name_list=NULL;
+
+  for(i=0;i<table_size;i++)
+    if(!strcmp(name,table[i].name)) {
+      return i;
+    }
+  name_list=strdup(table[0].name);
+  for(i=1;i<table_size;i++) {
+    name_list = xbt_realloc(name_list,strlen(name_list)+strlen(table[i].name)+2);
+    strcat(name_list,", ");
+    strcat(name_list,table[i].name);
+  }
+  xbt_assert2(0, "Model '%s' is invalid! Valid models are: %s.",name,name_list);
+}
+
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				       size_t offset)
 {

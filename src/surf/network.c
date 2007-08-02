@@ -624,12 +624,18 @@ static void surf_network_resource_init_internal(void)
 /* } */
 void surf_network_resource_init_CM02(const char *filename)
 {
+
   if (surf_network_resource)
     return;
   surf_network_resource_init_internal();
   parse_file(filename);
   xbt_dynar_push(resource_list, &surf_network_resource);
   network_solve = lmm_solve;
+
+  update_resource_description(surf_network_resource_description,
+			      surf_network_resource_description_size,
+			      "CM02",
+			      (surf_resource_t) surf_network_resource);
 }
 
 void surf_network_resource_init_Reno(const char *filename)
@@ -639,10 +645,14 @@ void surf_network_resource_init_Reno(const char *filename)
   surf_network_resource_init_internal();
   parse_file(filename);
 
+  xbt_dynar_push(resource_list, &surf_network_resource);
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
   network_solve = lagrange_solve;
 
-  xbt_dynar_push(resource_list, &surf_network_resource);
+  update_resource_description(surf_network_resource_description,
+			      surf_network_resource_description_size,
+			      "Reno",
+			      (surf_resource_t) surf_network_resource);
 }
 
 void surf_network_resource_init_Vegas(const char *filename)
@@ -652,10 +662,14 @@ void surf_network_resource_init_Vegas(const char *filename)
   surf_network_resource_init_internal();
   parse_file(filename);
 
+  xbt_dynar_push(resource_list, &surf_network_resource);
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
   network_solve = lagrange_solve;
 
-  xbt_dynar_push(resource_list, &surf_network_resource);
+  update_resource_description(surf_network_resource_description,
+			      surf_network_resource_description_size,
+			      "Vegas",
+			      (surf_resource_t) surf_network_resource);
 }
 
 #ifdef HAVE_SDP
@@ -666,8 +680,12 @@ void surf_network_resource_init_SDP(const char *filename)
   surf_network_resource_init_internal();
   parse_file(filename);
 
+  xbt_dynar_push(resource_list, &surf_network_resource);
   network_solve = sdp_solve;
 
-  xbt_dynar_push(resource_list, &surf_network_resource);
+  update_resource_description(surf_network_resource_description,
+			      surf_network_resource_description_size,
+			      "SDP",
+			      (surf_resource_t) surf_network_resource);
 }
 #endif

@@ -38,6 +38,23 @@ typedef struct surf_action *surf_action_t;
  */
 typedef struct surf_resource *surf_resource_t;
 
+/** \brief Resource model description
+ */
+typedef struct surf_resource_description {
+  const char *name;
+  surf_resource_t resource;
+  void (* resource_init) (const char *filename);
+} s_surf_resource_description_t, *surf_resource_description_t;
+
+XBT_PUBLIC(void) update_resource_description(s_surf_resource_description_t *table,
+					     int table_size,
+					     const char* name, 
+					     surf_resource_t resource
+					     );
+XBT_PUBLIC(int) find_resource_description(s_surf_resource_description_t *table,
+					  int table_size,
+					  const char* name);
+
 /** \brief Action structure
  * \ingroup SURF_actions
  *
@@ -224,6 +241,12 @@ XBT_PUBLIC_DATA(surf_cpu_resource_t) surf_cpu_resource;
  */
 XBT_PUBLIC(void) surf_cpu_resource_init_Cas01(const char *filename);
 
+extern XBT_PUBLIC_DATA(int) surf_cpu_resource_description_size;
+/** \brief The list of all available cpu resource models
+ *  \ingroup SURF_resources
+ */
+extern XBT_PUBLIC_DATA(s_surf_resource_description_t) surf_cpu_resource_description[];
+
 /* Network resource */
 
 /** \brief Network resource extension public
@@ -272,7 +295,7 @@ XBT_PUBLIC_DATA(surf_network_resource_t) surf_network_resource;
  */
 XBT_PUBLIC(void) surf_network_resource_init_CM02(const char *filename);
 
-#ifdef USE_GTNETS
+#ifdef HAVE_GTNETS
 /** \brief Initializes the platform with the network model GTNETS
  *  \ingroup SURF_resources
  *  \param filename XML platform file name
@@ -289,6 +312,12 @@ XBT_PUBLIC(void) surf_network_resource_init_GTNETS(const char *filename);
  *  \ingroup SURF_resources
  *  \param filename XML platform file name
  *
+ *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
+ *
+ *  Reference:
+ *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
+ *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
+ *
  *  Call this function only if you plan using surf_workstation_resource_init_compound.
  *
  */
@@ -297,6 +326,13 @@ XBT_PUBLIC(void) surf_network_resource_init_Reno(const char *filename);
 /** \brief Initializes the platform with the network model Vegas
  *  \ingroup SURF_resources
  *  \param filename XML platform file name
+ *
+ *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent 
+ *  to the proportional fairness.
+ *
+ *  Reference:
+ *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
+ *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
  *
  *  Call this function only if you plan using surf_workstation_resource_init_compound.
  *
@@ -308,10 +344,27 @@ XBT_PUBLIC(void) surf_network_resource_init_Vegas(const char *filename);
  *  \ingroup SURF_resources
  *  \param filename XML platform file name
  *
+ *  This function implements the proportional fairness known as the maximization
+ *  of x1*x2*...*xn .
+ *
+ *  Reference:
+ *
+ *  [TAG03]. Corinne Touati, Eitan Altman, and Jérôme Galtier.  
+ *  Semi-definite programming approach for bandwidth allocation and routing in networks.
+ *  Game Theory and Applications, 9:169-179, December 2003. Nova publisher.
+ *
  *  Call this function only if you plan using surf_workstation_resource_init_compound.
  */
 XBT_PUBLIC(void) surf_network_resource_init_SDP(const char *filename);
 #endif
+
+
+
+extern XBT_PUBLIC_DATA(int) surf_network_resource_description_size;
+/** \brief The list of all available network resource models
+ *  \ingroup SURF_resources
+ */
+extern XBT_PUBLIC_DATA(s_surf_resource_description_t) surf_network_resource_description[];
 
 /** \brief Workstation resource extension public
  *  \ingroup SURF_resources
@@ -390,76 +443,20 @@ XBT_PUBLIC(void) surf_workstation_resource_init_CLM03(const char *filename);
  *  \ingroup SURF_resources
  *  \param filename XML platform file name
  *
- *  With this model, the workstations and the network are handled together.
- *  There is no network resource. This platform model is the default one for
- *  MSG and SimDag.
+ *  With this model, the workstations and the network are handled
+ *  together. The network model is roughly the same as in CM02 but
+ *  interference between computations and communications can be taken
+ *  into account. This platform model is the default one for MSG and
+ *  SimDag.
  *
- *  \see surf_workstation_resource_init_CLM03()
  */
 XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05(const char *filename);
 
-/** \brief Initializes the platform with the model KCCFLN05 using the proportional
- *  approach as described in [TAG03]. 
- *  
+extern XBT_PUBLIC_DATA(int) surf_workstation_resource_description_size;
+/** \brief The list of all available workstation resource models
  *  \ingroup SURF_resources
- *  \param filename XML platform file name
- *
- *  This function implements the proportional fairness known as the maximization
- *  of sum ( x1*x2*...*xn ).
- *
- *  Reference:
- *
- *  [TAG03]. Corinne Touati, Eitan Altman, and Jérôme Galtier.  
- *  Semi-definite programming approach for bandwidth allocation and routing in networks.
- *  Game Theory and Applications, 9:169-179, December 2003. Nova publisher.
- *  With this model, the workstations and the network are handled together.
- *  There is no network resource. This platform model is the default one for
- *  MSG and SimDag.
- *
- *  \see surf_workstation_resource_init_CLM03()
  */
-XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_proportional(const char *filename);
-
-/** \brief Initializes the platform with the model KCCFLN05 using a lagrange
- *  optimization approach to compute the effectivet bandwidth of each flow based
- *  on the Vegas TCP flavor fairness as shown in [LOW03]. 
- *  
- *  \ingroup SURF_resources
- *  \param filename XML platform file name
- *
- *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent 
- *  to the proportional fairness.
- *
- *  Reference:
- *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- */
-XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_Vegas(const char *filename);
-
-/** \brief Initializes the platform with the model KCCFLN05 using a lagrange
- *  optimization approach to compute the effectivet bandwidth of each flow based
- *  on the Reno TCP flavor fairness as shown in [LOW03]. 
- *  
- *  \ingroup SURF_resources
- *  \param filename XML platform file name
- *
- *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
- *
- *  Reference:
- *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- *  \see surf_workstation_resource_init_KCCFLN05_Vegas()
- */
-XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05_Reno(const char *filename);
-
-
-
-
-#ifdef USE_GTNETS
-XBT_PUBLIC(void) surf_workstation_resource_init_GTNETS(const char *filename);
-#endif
+extern XBT_PUBLIC_DATA(s_surf_resource_description_t) surf_workstation_resource_description[];
 
 /** \brief The network links
  *  \ingroup SURF_resources
@@ -493,12 +490,14 @@ XBT_PUBLIC_DATA(xbt_dynar_t)  resource_list;
  *  \param argc argument number
  *  \param argv arguments
  *
- *  This function has to be called to initialize the common structures.
- *  Then you will have to create the environment by calling surf_timer_resource_init()
- *  and surf_workstation_resource_init_CLM03() or surf_workstation_resource_init_KCCFLN05().
+ *  This function has to be called to initialize the common
+ *  structures.  Then you will have to create the environment by
+ *  calling surf_timer_resource_init() and
+ *  e.g. surf_workstation_resource_init_CLM03() or
+ *  surf_workstation_resource_init_KCCFLN05().
  *
  *  \see surf_timer_resource_init(), surf_workstation_resource_init_CLM03(),
- *  surf_workstation_resource_init_KCCFLN05(), surf_exit()
+ *  surf_workstation_resource_init_KCCFLN05(), surf_workstation_resource_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);	/* initialize common structures */
 

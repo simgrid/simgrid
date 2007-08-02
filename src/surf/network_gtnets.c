@@ -606,4 +606,9 @@ void surf_network_resource_init_GTNETS(const char *filename)
   surf_network_resource_init_internal();
   parse_file(filename);
   xbt_dynar_push(resource_list, &surf_network_resource);
+
+  update_resource_description(surf_network_resource_description,
+			      surf_network_resource_description_size,
+			      "GTNets",
+			      (surf_resource_t) surf_network_resource);
 }
