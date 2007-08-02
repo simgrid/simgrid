@@ -24,14 +24,10 @@ static void _simix_cfg_cb__workstation_model(const char *name, int pos)
   
   val = xbt_cfg_get_string (_simix_cfg_set, name);
   /* New Module missing */
-  xbt_assert1(!strcmp(val, "CLM03") ||
-              !strcmp(val, "KCCFLN05") ||
-	      !strcmp(val, "SDP") ||
-	      !strcmp(val, "Vegas") ||
-	      !strcmp(val, "Reno") ||
-	      !strcmp(val, "GTNets") ||
-	      !strcmp(val, "compound"),
-              "Unknown workstation model: %s (choices are: 'CLM03', 'KCCFLN05', 'SDP', 'Vegas', 'Reno', 'GTNets' and 'Compound'",val);
+  
+  find_resource_description(surf_workstation_resource_description,
+			    surf_workstation_resource_description_size,
+			    val);
 }
 
 /* callback of the cpu_model variable */
@@ -43,8 +39,9 @@ static void _simix_cfg_cb__cpu_model(const char *name, int pos)
   
   val = xbt_cfg_get_string (_simix_cfg_set, name);
   /* New Module missing */
-  xbt_assert1(!strcmp(val, "Cas01"),
-              "Unknown CPU model: %s (choices are: 'Cas01'",val);
+  find_resource_description(surf_cpu_resource_description,
+			    surf_cpu_resource_description_size,
+			    val);
 }
 /* callback of the workstation_model variable */
 static void _simix_cfg_cb__network_model(const char *name, int pos) 
@@ -55,12 +52,9 @@ static void _simix_cfg_cb__network_model(const char *name, int pos)
   
   val = xbt_cfg_get_string (_simix_cfg_set, name);
   /* New Module missing */
-  xbt_assert1(!strcmp(val, "CM02") ||
-              !strcmp(val, "GTNets") ||
-	      !strcmp(val, "SDP") ||
-	      !strcmp(val, "Vegas") ||
-	      !strcmp(val, "Reno"),
-              "Unknown workstation model: %s (choices are: 'CM02', 'GTNets', 'SDP', 'Vegas' and 'Reno'",val);
+  find_resource_description(surf_network_resource_description,
+			    surf_network_resource_description_size,
+			    val);
 }
 
 /* create the config set and register what should be */
@@ -99,12 +93,14 @@ void simix_config_finalize(void)
 
 /** \brief Set a configuration variable
  * 
+ * FIXME
+
  * Currently existing configuration variable:
  *   - workstation_model (string): Model of workstation to use.  
  *     Possible values (defaults to "KCCFLN05"):
  *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + support for parallel tasks
  *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file.
- * 
+ *     - compound 
  * 	\param name Configuration variable name that will change.
  *	\param pa A va_list with the others parameters
  */
