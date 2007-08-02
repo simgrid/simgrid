@@ -214,7 +214,6 @@ if test "x$gtnets_path" = "xno" ; then
 else  
   AC_MSG_RESULT(***** You have decided to use the experimental GTNetS. We hope you know what you're doing.. ****)
   AC_MSG_CHECKING(for gtnets)
-#  AC_CHECK_LIB(gtnets,Simulator.RunUntilNextCompletion,gtnets=yes, gtnets=no,-L$gtnets_path/lib)
   AX_CXX_CHECK_LIB(gtnets,[Simulator::RunUntilNextCompletion],gtnets=yes, gtnets=no,-L$gtnets_path/lib)
 
   if test "x$gtnets" = xyes ; then 
