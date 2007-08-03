@@ -228,8 +228,7 @@ else
   AC_LANG_POP([C++])  
 
   if test "x$gtnets" = xyes ; then 
-    CPPFLAGS+=$GTNETS_CPPFLAGS
-    LDFLAGS+=$GTNETS_LDFLAGS
+    AM_CPPFLAGS="$AM_CPPFLAGS $GTNETS_CPPFLAGS"
     SIMGRID_DEP="$SIMGRID_DEP $GTNETS_LDFLAGS"
     AC_MSG_RESULT(Found working gtnets library.)
     AC_DEFINE(HAVE_GTNETS, 1, [Indicates whether we have the GTNETS library or not])
@@ -269,7 +268,7 @@ else
      csdp=no;
   fi
   if test "x$csdp" = xyes; then 
-    CPPFLAGS+=$CSDP_CPPFLAGS
+    AM_CPPFLAGS="$AM_CPPFLAGS $CSDP_CPPFLAGS"
     SIMGRID_DEP="$SIMGRID_DEP $CSDP_LDFLAGS"
     AC_MSG_RESULT(Found working sdp library.)
     AC_DEFINE(HAVE_SDP, 1, [Indicates whether we have the CSDP library or not])
@@ -321,9 +320,10 @@ then
 fi
 SG_COMPILE_FLAGS
 
-AC_SUBST(CFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(LDFLAGS)
+AC_SUBST([CFLAGS])
+AC_SUBST([CPPFLAGS])
+AC_SUBST([LDFLAGS])
+AC_SUBST([AM_CPPFLAGS])
 AC_SUBST([abs_builddir])
 AC_SUBST([abs_srcdir])
 AC_SUBST([abs_top_builddir])
