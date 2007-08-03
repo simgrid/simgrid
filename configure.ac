@@ -201,7 +201,6 @@ if test xpthread=xyes ; then
   fi
 fi
 
-
 #########################################
 ## Build optional modules (gtnets)
 ##
@@ -286,7 +285,7 @@ AC_CHECK_LIB(socket, connect,    [GRAS_DEP="$GRAS_DEP -lsocket"])
 AC_MSG_CHECKING(for extra dependencies of libgras)
 case $host_os in
   *mingw* ) GRAS_DEP="$GRAS_DEP -lws2_32" ; SIMGRID_DEP="$SIMGRID_DEP -lws2_32";
-            AC_SUBST(AM_CFLAGS,-DDLL_EXPORT)
+            AM_CPPFLAGS="$AM_CPPFLAGS -DDLL_EXPORT"
             AC_DEFINE(CONTEXT_THREADS,1);;
 esac
 	   
