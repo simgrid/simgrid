@@ -68,6 +68,7 @@ static void __xbt_context_yield(xbt_context_t context)
     current_context = self;
   }
 #else				/* use SUSv2 contexts */
+  VOIRP(current_context);
   if (current_context)
     VOIRP(current_context->save);
 
@@ -264,6 +265,7 @@ void xbt_context_init(void)
     current_context = init_context = xbt_new0(s_xbt_context_t, 1);
     DEBUG1("Init Context (%p)", init_context);
 
+    init_context->iwannadie = 0; /* useless but makes valgrind happy */
     init_context->exception = xbt_new(ex_ctx_t, 1);
     XBT_CTX_INITIALIZE(init_context->exception);
     __xbt_ex_ctx = __context_ex_ctx;
@@ -366,6 +368,8 @@ xbt_context_t xbt_context_new(xbt_main_func_t code,
   res->uc.uc_stack.ss_size =
       pth_sksize_makecontext(res->stack, STACK_SIZE);
 #endif				/* CONTEXT_THREADS or not */
+
+  res->iwannadie = 0; /* useless but makes valgrind happy */
 
   res->argc = argc;
   res->argv = argv;
