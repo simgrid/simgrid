@@ -57,6 +57,8 @@ EXTRA_DIST= \
 	\
 	simdag/private.h \
 	\
+	gras/DataDesc/ddt_parse.yy.l \
+	gras/Virtu/virtu_interface.h \
 	amok/Bandwidth/bandwidth_private.h \
 	amok/amok_modinter.h
 	\
@@ -295,7 +297,7 @@ libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                              $(SIMIX_SRC) $(JCTX_SRC) \
                              $(JMSG_C_SRC) $(MSG_SRC) \
 		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
-libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 libsimgrid4java_la_GCJFLAGS = -fjni
 
 clean-local:
