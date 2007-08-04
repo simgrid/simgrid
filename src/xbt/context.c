@@ -41,198 +41,213 @@ static xbt_os_mutex_t creation_mutex;
 static xbt_os_cond_t creation_cond;
 #endif
 
-static void __context_exit(xbt_context_t context ,int value);
+static void __context_exit(xbt_context_t context, int value);
 static void __xbt_context_yield(xbt_context_t context)
 {
-	xbt_assert0(current_context,"You have to call context_init() first.");
+  xbt_assert0(current_context, "You have to call context_init() first.");
 
-	DEBUG2("--------- current_context (%p) is yielding to context(%p) ---------",current_context,context);
-   
-	#ifdef CONTEXT_THREADS
-	if (context){
-		xbt_context_t self = current_context;
-		DEBUG2("[%p] **** Locking ctx %p ****", self, context);
-		xbt_os_mutex_lock(context->mutex);
-		DEBUG1("[%p] **** Updating current_context ****", self);
-		current_context = context;
-		DEBUG1("[%p] **** Releasing the prisonner ****", self);
-		xbt_os_cond_signal(context->cond);
-		DEBUG3("[%p] **** Going to jail on individual %p/%p ****", self,context->cond, context->mutex);
-		xbt_os_cond_wait(context->cond, context->mutex);
-		DEBUG2("[%p] **** Unlocking individual %p ****", self,context->mutex);
-		xbt_os_mutex_unlock(context->mutex);
-		DEBUG1("[%p] **** Updating current_context ****", self);
-		current_context = self;
-	}
-	#else /* use SUSv2 contexts */
-	if(current_context)
-		VOIRP(current_context->save);
-	
-	VOIRP(context);
-	
-	if(context) 
-		VOIRP(context->save);
-	
-	if (context){
-	
-		int return_value = 0;
-		
-		if(context->save==NULL){
-		
-		  DEBUG1("[%p] **** Yielding to somebody else ****", current_context);
-			DEBUG2("Saving current_context value (%p) to context(%p)->save",current_context,context);
-			context->save = current_context ;
-			DEBUG1("current_context becomes  context(%p) ",context);
-			current_context = context ;
-			DEBUG1("Current position memorized (context->save). Jumping to context (%p)",context);
-			return_value = swapcontext (&(context->save->uc), &(context->uc));
-			xbt_assert0((return_value==0),"Context swapping failure");
-			DEBUG1("I am (%p). Coming back\n",context);
-		} else {
-			xbt_context_t old_context = context->save ;
-			DEBUG1("[%p] **** Back ! ****", context);
-			DEBUG2("Setting current_context (%p) to context(%p)->save",current_context,context);
-			current_context = context->save ;
-			DEBUG1("Setting context(%p)->save to NULL",context);
-			context->save = NULL ;
-			DEBUG2("Current position memorized (%p). Jumping to context (%p)",context,old_context);
-			return_value = swapcontext (&(context->uc), &(old_context->uc));
-			xbt_assert0((return_value==0),"Context swapping failure");
-			DEBUG1("I am (%p). Coming back\n",context);
-		
-		}
-	}
-	#endif
-	if(current_context->iwannadie)
-	  __context_exit(current_context, 1);
+  DEBUG2
+      ("--------- current_context (%p) is yielding to context(%p) ---------",
+       current_context, context);
 
-	return;
+#ifdef CONTEXT_THREADS
+  if (context) {
+    xbt_context_t self = current_context;
+    DEBUG2("[%p] **** Locking ctx %p ****", self, context);
+    xbt_os_mutex_lock(context->mutex);
+    DEBUG1("[%p] **** Updating current_context ****", self);
+    current_context = context;
+    DEBUG1("[%p] **** Releasing the prisonner ****", self);
+    xbt_os_cond_signal(context->cond);
+    DEBUG3("[%p] **** Going to jail on individual %p/%p ****", self,
+	   context->cond, context->mutex);
+    xbt_os_cond_wait(context->cond, context->mutex);
+    DEBUG2("[%p] **** Unlocking individual %p ****", self, context->mutex);
+    xbt_os_mutex_unlock(context->mutex);
+    DEBUG1("[%p] **** Updating current_context ****", self);
+    current_context = self;
+  }
+#else				/* use SUSv2 contexts */
+  if (current_context)
+    VOIRP(current_context->save);
+
+  VOIRP(context);
+
+  if (context)
+    VOIRP(context->save);
+
+  if (context) {
+
+    int return_value = 0;
+
+    if (context->save == NULL) {
+
+      DEBUG1("[%p] **** Yielding to somebody else ****", current_context);
+      DEBUG2("Saving current_context value (%p) to context(%p)->save",
+	     current_context, context);
+      context->save = current_context;
+      DEBUG1("current_context becomes  context(%p) ", context);
+      current_context = context;
+      DEBUG1
+	  ("Current position memorized (context->save). Jumping to context (%p)",
+	   context);
+      return_value = swapcontext(&(context->save->uc), &(context->uc));
+      xbt_assert0((return_value == 0), "Context swapping failure");
+      DEBUG1("I am (%p). Coming back\n", context);
+    } else {
+      xbt_context_t old_context = context->save;
+      DEBUG1("[%p] **** Back ! ****", context);
+      DEBUG2("Setting current_context (%p) to context(%p)->save",
+	     current_context, context);
+      current_context = context->save;
+      DEBUG1("Setting context(%p)->save to NULL", context);
+      context->save = NULL;
+      DEBUG2("Current position memorized (%p). Jumping to context (%p)",
+	     context, old_context);
+      return_value = swapcontext(&(context->uc), &(old_context->uc));
+      xbt_assert0((return_value == 0), "Context swapping failure");
+      DEBUG1("I am (%p). Coming back\n", context);
+
+    }
+  }
+#endif
+  if (current_context->iwannadie)
+    __context_exit(current_context, 1);
+
+  return;
 }
 
 static void xbt_context_free(xbt_context_t context)
 {
-	if (!context) return;
-	DEBUG1("Freeing %p",context);
+  if (!context)
+    return;
+  DEBUG1("Freeing %p", context);
 #ifdef CONTEXT_THREADS
-	/*DEBUG1("\t joining %p",(void *)context->thread->t);*/
-	DEBUG1("\t joining %p",(void *)context->thread);
+  /*DEBUG1("\t joining %p",(void *)context->thread->t); */
+  DEBUG1("\t joining %p", (void *) context->thread);
 
-	xbt_os_thread_join(context->thread,NULL);
+  xbt_os_thread_join(context->thread, NULL);
 
-	DEBUG1("\t mutex_destroy %p",(void *)context->mutex);
-	xbt_os_mutex_destroy(context->mutex);
-	DEBUG1("\t cond_destroy %p",(void *)context->cond);
-	xbt_os_cond_destroy(context->cond);
+  DEBUG1("\t mutex_destroy %p", (void *) context->mutex);
+  xbt_os_mutex_destroy(context->mutex);
+  DEBUG1("\t cond_destroy %p", (void *) context->cond);
+  xbt_os_cond_destroy(context->cond);
 
-	context->thread = NULL;
-	context->mutex = NULL;
-   	context->cond = NULL;
+  context->thread = NULL;
+  context->mutex = NULL;
+  context->cond = NULL;
 #endif
-	
-	if(context->exception) 
-		free(context->exception);
-		
-	free(context);
-	return;
+
+  if (context->exception)
+    free(context->exception);
+
+  free(context);
+  return;
 }
-	
-static void __context_exit(xbt_context_t context ,int value)
+
+static void __context_exit(xbt_context_t context, int value)
 {
-	int i;
+  int i;
 
-	DEBUG1("--------- %p is exiting ---------",context);
+  DEBUG1("--------- %p is exiting ---------", context);
 
-	DEBUG0("Calling cleanup functions");
-	if(context->cleanup_func){
-		DEBUG0("Calling cleanup function");
-		context->cleanup_func(context->cleanup_arg);
-	}
+  DEBUG0("Calling cleanup functions");
+  if (context->cleanup_func) {
+    DEBUG0("Calling cleanup function");
+    context->cleanup_func(context->cleanup_arg);
+  }
 
-	DEBUG0("Freeing arguments");
-	for(i=0;i<context->argc; i++) 
-		if(context->argv[i]) 
-			free(context->argv[i]);
-	
-	if(context->argv) 
-		free(context->argv);
-		
-	DEBUG0("Putting context in the to_destroy set");
-	xbt_swag_remove(context, context_living);
-	xbt_swag_insert(context, context_to_destroy);
-	DEBUG0("Context put in the to_destroy set");
+  DEBUG0("Freeing arguments");
+  for (i = 0; i < context->argc; i++)
+    if (context->argv[i])
+      free(context->argv[i]);
 
-	DEBUG0("Yielding");
-	
-	#ifdef CONTEXT_THREADS
-	DEBUG2("[%p] **** Locking %p ****", context, context->mutex);
-	xbt_os_mutex_lock(context->mutex);
+  if (context->argv)
+    free(context->argv);
+
+  DEBUG0("Putting context in the to_destroy set");
+  xbt_swag_remove(context, context_living);
+  xbt_swag_insert(context, context_to_destroy);
+  DEBUG0("Context put in the to_destroy set");
+
+  DEBUG0("Yielding");
+
+#ifdef CONTEXT_THREADS
+  DEBUG2("[%p] **** Locking %p ****", context, context->mutex);
+  xbt_os_mutex_lock(context->mutex);
 /* 	DEBUG1("[%p] **** Updating current_context ****"); */
 /* 	current_context = context; */
-	DEBUG1("[%p] **** Releasing the prisonner ****", context);
-	xbt_os_cond_signal(context->cond);
-	DEBUG2("[%p] **** Unlocking individual %p ****", context, context->mutex);
-	xbt_os_mutex_unlock(context->mutex);
-	DEBUG1("[%p] **** Exiting ****", context);
-	xbt_os_thread_exit(NULL); // We should provide return value in case other wants it
-	#else
-	__xbt_context_yield(context);
-	#endif
-	xbt_assert0(0,"You can't be here!");
+  DEBUG1("[%p] **** Releasing the prisonner ****", context);
+  xbt_os_cond_signal(context->cond);
+  DEBUG2("[%p] **** Unlocking individual %p ****", context,
+	 context->mutex);
+  xbt_os_mutex_unlock(context->mutex);
+  DEBUG1("[%p] **** Exiting ****", context);
+  xbt_os_thread_exit(NULL);	// We should provide return value in case other wants it
+#else
+  __xbt_context_yield(context);
+#endif
+  xbt_assert0(0, "You can't be here!");
 }
 
-static void *
-__context_wrapper(void* c) {
-	xbt_context_t context = current_context;
-	
-	#ifdef CONTEXT_THREADS
-	context = (xbt_context_t)c;
-	context->thread = xbt_os_thread_self();
-        
-	DEBUG3("**[ctx:%p;self:%p]** Lock creation_mutex %p ****",context,(void*)xbt_os_thread_self(), creation_mutex);
-	xbt_os_mutex_lock(creation_mutex);
-	xbt_os_mutex_lock(context->mutex);
-	
-	DEBUG4("**[ctx:%p;self:%p]** Releasing the creator (creation_cond %p,%p) ****",
-	       context,(void*)xbt_os_thread_self(),creation_cond,creation_mutex);
-	xbt_os_cond_signal(creation_cond);
-	xbt_os_mutex_unlock(creation_mutex);
-	
-	DEBUG4("**[ctx:%p;self:%p]** Going to Jail on lock %p and cond %p ****",
-	       context,(void*)xbt_os_thread_self(),context->mutex,context->cond);
-	xbt_os_cond_wait(context->cond, context->mutex);
-	
-	DEBUG3("**[ctx:%p;self:%p]** Unlocking individual %p ****",
-	       context,(void*)xbt_os_thread_self(),context->mutex);
-	xbt_os_mutex_unlock(context->mutex);
-	
-	#endif
-	
-	if(context->startup_func)
-		context->startup_func(context->startup_arg);
-	
-	DEBUG0("Calling the main function");
-	
-	__context_exit(context, (context->code) (context->argc,context->argv));
-	return NULL;
+static void *__context_wrapper(void *c)
+{
+  xbt_context_t context = current_context;
+
+#ifdef CONTEXT_THREADS
+  context = (xbt_context_t) c;
+  context->thread = xbt_os_thread_self();
+
+  DEBUG3("**[ctx:%p;self:%p]** Lock creation_mutex %p ****", context,
+	 (void *) xbt_os_thread_self(), creation_mutex);
+  xbt_os_mutex_lock(creation_mutex);
+  xbt_os_mutex_lock(context->mutex);
+
+  DEBUG4
+      ("**[ctx:%p;self:%p]** Releasing the creator (creation_cond %p,%p) ****",
+       context, (void *) xbt_os_thread_self(), creation_cond,
+       creation_mutex);
+  xbt_os_cond_signal(creation_cond);
+  xbt_os_mutex_unlock(creation_mutex);
+
+  DEBUG4("**[ctx:%p;self:%p]** Going to Jail on lock %p and cond %p ****",
+	 context, (void *) xbt_os_thread_self(), context->mutex,
+	 context->cond);
+  xbt_os_cond_wait(context->cond, context->mutex);
+
+  DEBUG3("**[ctx:%p;self:%p]** Unlocking individual %p ****",
+	 context, (void *) xbt_os_thread_self(), context->mutex);
+  xbt_os_mutex_unlock(context->mutex);
+
+#endif
+
+  if (context->startup_func)
+    context->startup_func(context->startup_arg);
+
+  DEBUG0("Calling the main function");
+
+  __context_exit(context, (context->code) (context->argc, context->argv));
+  return NULL;
 }
 
 /* callback: context fetching */
 static ex_ctx_t *__context_ex_ctx(void)
 {
- 	return current_context->exception;
+  return current_context->exception;
 }
 
 /* callback: termination */
-static void __context_ex_terminate(xbt_ex_t *e) {
+static void __context_ex_terminate(xbt_ex_t * e)
+{
   xbt_ex_display(e);
 
   abort();
-   /* FIXME: there should be a configuration variable to choose this
-  if(current_context!=init_context) 
-    __context_exit(current_context, e->value);
-  else
-    abort();
-    */
+  /* FIXME: there should be a configuration variable to choose this
+     if(current_context!=init_context) 
+     __context_exit(current_context, e->value);
+     else
+     abort();
+   */
 }
 
 /** \name Functions 
@@ -245,22 +260,24 @@ static void __context_ex_terminate(xbt_ex_t *e) {
  */
 void xbt_context_init(void)
 {
-	if(!current_context){
-		current_context = init_context = xbt_new0(s_xbt_context_t,1);
-		DEBUG1("Init Context (%p)",init_context);
-		
-		init_context->exception = xbt_new(ex_ctx_t,1);
-		XBT_CTX_INITIALIZE(init_context->exception);
-		__xbt_ex_ctx       = __context_ex_ctx;
-		__xbt_ex_terminate = __context_ex_terminate;
-		context_to_destroy = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
-		context_living = xbt_swag_new(xbt_swag_offset(*current_context,hookup));
-		xbt_swag_insert(init_context, context_living);
-#ifdef CONTEXT_THREADS	   
-	        creation_mutex = xbt_os_mutex_init();
-	        creation_cond = xbt_os_cond_init();
-#endif	   
-	}
+  if (!current_context) {
+    current_context = init_context = xbt_new0(s_xbt_context_t, 1);
+    DEBUG1("Init Context (%p)", init_context);
+
+    init_context->exception = xbt_new(ex_ctx_t, 1);
+    XBT_CTX_INITIALIZE(init_context->exception);
+    __xbt_ex_ctx = __context_ex_ctx;
+    __xbt_ex_terminate = __context_ex_terminate;
+    context_to_destroy =
+	xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+    context_living =
+	xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+    xbt_swag_insert(init_context, context_living);
+#ifdef CONTEXT_THREADS
+    creation_mutex = xbt_os_mutex_init();
+    creation_cond = xbt_os_cond_init();
+#endif
+  }
 }
 
 /** Garbage collection
@@ -270,11 +287,11 @@ void xbt_context_init(void)
  */
 void xbt_context_empty_trash(void)
 {
-	xbt_context_t context=NULL;
-	DEBUG1("Emptying trashbin (%d contexts to free)",
-	       xbt_swag_size(context_to_destroy));
-	while((context=xbt_swag_extract(context_to_destroy)))
-		xbt_context_free(context);
+  xbt_context_t context = NULL;
+  DEBUG1("Emptying trashbin (%d contexts to free)",
+	 xbt_swag_size(context_to_destroy));
+  while ((context = xbt_swag_extract(context_to_destroy)))
+    xbt_context_free(context);
 }
 
 /** 
@@ -283,26 +300,32 @@ void xbt_context_empty_trash(void)
  * Calling this function prepares \a context to be run. It will 
    however run effectively only when calling #xbt_context_schedule
  */
-void xbt_context_start(xbt_context_t context) 
+void xbt_context_start(xbt_context_t context)
 {
-	#ifdef CONTEXT_THREADS
-	/* Launch the thread */
-	DEBUG3("**[ctx:%p;self:%p]** Locking creation_mutex %p ****",context,xbt_os_thread_self(),creation_mutex);
-	xbt_os_mutex_lock(creation_mutex);
-   
-	DEBUG2("**[ctx:%p;self:%p]** Thread create ****",context,xbt_os_thread_self());
-        context->thread = xbt_os_thread_create(__context_wrapper, context);   
-	DEBUG3("**[ctx:%p;self:%p]** Thread created : %p ****",context,xbt_os_thread_self(),context->thread);
-   
-	DEBUG4("**[ctx:%p;self:%p]** Going to jail on creation_cond/mutex (%p,%p) ****",
-	       context,xbt_os_thread_self(),creation_cond, creation_mutex);
-	xbt_os_cond_wait(creation_cond, creation_mutex);
-	DEBUG3("**[ctx:%p;self:%p]** Unlocking creation %p ****",context, xbt_os_thread_self(),creation_mutex);
-	xbt_os_mutex_unlock(creation_mutex);
-	#else
-	makecontext (&(context->uc), (void (*) (void)) __context_wrapper,1, context);
-	#endif
-	return;
+#ifdef CONTEXT_THREADS
+  /* Launch the thread */
+  DEBUG3("**[ctx:%p;self:%p]** Locking creation_mutex %p ****", context,
+	 xbt_os_thread_self(), creation_mutex);
+  xbt_os_mutex_lock(creation_mutex);
+
+  DEBUG2("**[ctx:%p;self:%p]** Thread create ****", context,
+	 xbt_os_thread_self());
+  context->thread = xbt_os_thread_create(__context_wrapper, context);
+  DEBUG3("**[ctx:%p;self:%p]** Thread created : %p ****", context,
+	 xbt_os_thread_self(), context->thread);
+
+  DEBUG4
+      ("**[ctx:%p;self:%p]** Going to jail on creation_cond/mutex (%p,%p) ****",
+       context, xbt_os_thread_self(), creation_cond, creation_mutex);
+  xbt_os_cond_wait(creation_cond, creation_mutex);
+  DEBUG3("**[ctx:%p;self:%p]** Unlocking creation %p ****", context,
+	 xbt_os_thread_self(), creation_mutex);
+  xbt_os_mutex_unlock(creation_mutex);
+#else
+  makecontext(&(context->uc), (void (*)(void)) __context_wrapper, 1,
+	      context);
+#endif
+  return;
 }
 
 /** 
@@ -316,43 +339,46 @@ void xbt_context_start(xbt_context_t context)
  * \param argc first argument of function \a code
  * \param argv seconde argument of function \a code
  */
-xbt_context_t xbt_context_new(xbt_main_func_t code, 
-			      void_f_pvoid_t startup_func, void *startup_arg,
-			      void_f_pvoid_t cleanup_func, void *cleanup_arg,
-			      int argc, char *argv[])
+xbt_context_t xbt_context_new(xbt_main_func_t code,
+			      void_f_pvoid_t startup_func,
+			      void *startup_arg,
+			      void_f_pvoid_t cleanup_func,
+			      void *cleanup_arg, int argc, char *argv[])
 {
-	xbt_context_t res = NULL;
-	
-	res = xbt_new0(s_xbt_context_t,1);
-	
-	res->code = code;
-	#ifdef CONTEXT_THREADS
-	res->mutex = xbt_os_mutex_init();
-        res->cond = xbt_os_cond_init();
-	#else 
+  xbt_context_t res = NULL;
 
-	xbt_assert2(getcontext(&(res->uc))==0,"Error in context saving: %d (%s)", errno, strerror(errno));
-	res->uc.uc_link = NULL;
-	/*   res->uc.uc_link = &(current_context->uc); */
-	/* WARNING : when this context is over, the current_context (i.e. the 
-	father), is awaken... Theorically, the wrapper should prevent using 
-	this feature. */
-	res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack,STACK_SIZE);
-	res->uc.uc_stack.ss_size = pth_sksize_makecontext(res->stack,STACK_SIZE);
-	#endif /* CONTEXT_THREADS or not */
-	
-	res->argc = argc;
-	res->argv = argv;
-	res->startup_func = startup_func;
-	res->startup_arg = startup_arg;
-	res->cleanup_func = cleanup_func;
-	res->cleanup_arg = cleanup_arg;
-	res->exception = xbt_new(ex_ctx_t,1);
-	XBT_CTX_INITIALIZE(res->exception);
-	
-	xbt_swag_insert(res, context_living);
-	
-	return res;
+  res = xbt_new0(s_xbt_context_t, 1);
+
+  res->code = code;
+#ifdef CONTEXT_THREADS
+  res->mutex = xbt_os_mutex_init();
+  res->cond = xbt_os_cond_init();
+#else
+
+  xbt_assert2(getcontext(&(res->uc)) == 0,
+	      "Error in context saving: %d (%s)", errno, strerror(errno));
+  res->uc.uc_link = NULL;
+  /*   res->uc.uc_link = &(current_context->uc); */
+  /* WARNING : when this context is over, the current_context (i.e. the 
+     father), is awaken... Theorically, the wrapper should prevent using 
+     this feature. */
+  res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack, STACK_SIZE);
+  res->uc.uc_stack.ss_size =
+      pth_sksize_makecontext(res->stack, STACK_SIZE);
+#endif				/* CONTEXT_THREADS or not */
+
+  res->argc = argc;
+  res->argv = argv;
+  res->startup_func = startup_func;
+  res->startup_arg = startup_arg;
+  res->cleanup_func = cleanup_func;
+  res->cleanup_arg = cleanup_arg;
+  res->exception = xbt_new(ex_ctx_t, 1);
+  XBT_CTX_INITIALIZE(res->exception);
+
+  xbt_swag_insert(res, context_living);
+
+  return res;
 }
 
 /** 
@@ -362,7 +388,7 @@ xbt_context_t xbt_context_new(xbt_main_func_t code,
  */
 void xbt_context_yield(void)
 {
-	__xbt_context_yield(current_context);
+  __xbt_context_yield(current_context);
 }
 
 /** 
@@ -374,36 +400,38 @@ void xbt_context_yield(void)
  */
 void xbt_context_schedule(xbt_context_t context)
 {
-	DEBUG1("Scheduling %p",context);
-	xbt_assert0((current_context==init_context),"You are not supposed to run this function here!");
-	__xbt_context_yield(context);
+  DEBUG1("Scheduling %p", context);
+  xbt_assert0((current_context == init_context),
+	      "You are not supposed to run this function here!");
+  __xbt_context_yield(context);
 }
 
 /** 
  * This function kill all existing context and free all the memory
  * that has been allocated in this module.
  */
-void xbt_context_exit(void) {
-	xbt_context_t context=NULL;
-	
-	xbt_context_empty_trash();
-	while((context=xbt_swag_extract(context_living))) {
-	  if(context!=init_context) {
-	    xbt_context_kill(context);
-	  }
-	}
-	free(init_context->exception);   
-	free(init_context);   
-	init_context = current_context = NULL ;
+void xbt_context_exit(void)
+{
+  xbt_context_t context = NULL;
 
-	xbt_context_empty_trash();
-	xbt_swag_free(context_to_destroy);
-	xbt_swag_free(context_living);
-	
-#ifdef CONTEXT_THREADS	   
-	xbt_os_mutex_destroy(creation_mutex);
-	xbt_os_cond_destroy(creation_cond);
-#endif   
+  xbt_context_empty_trash();
+  while ((context = xbt_swag_extract(context_living))) {
+    if (context != init_context) {
+      xbt_context_kill(context);
+    }
+  }
+  free(init_context->exception);
+  free(init_context);
+  init_context = current_context = NULL;
+
+  xbt_context_empty_trash();
+  xbt_swag_free(context_to_destroy);
+  xbt_swag_free(context_living);
+
+#ifdef CONTEXT_THREADS
+  xbt_os_mutex_destroy(creation_mutex);
+  xbt_os_cond_destroy(creation_cond);
+#endif
 }
 
 /** 
@@ -413,26 +441,47 @@ void xbt_context_exit(void) {
  */
 void xbt_context_kill(xbt_context_t context)
 {
-	DEBUG1("Killing %p", context);
+  DEBUG1("Killing %p", context);
 
-	context->iwannadie=1;
-	DEBUG1("Scheduling %p",context);
-	__xbt_context_yield(context);
-	DEBUG1("End of Scheduling %p",context);
-	
-	return;
+  context->iwannadie = 1;
+  DEBUG1("Scheduling %p", context);
+  __xbt_context_yield(context);
+  DEBUG1("End of Scheduling %p", context);
+
+  return;
 }
+
 /* @} */
 
 /* Stub of the stuff to interact with JAVA threads; not used in native lib */
-void  xbt_context_set_jprocess(xbt_context_t context, void *jp) {}
-void* xbt_context_get_jprocess(xbt_context_t context)           { return NULL; }
+void xbt_context_set_jprocess(xbt_context_t context, void *jp)
+{
+}
+void *xbt_context_get_jprocess(xbt_context_t context)
+{
+  return NULL;
+}
 
-void  xbt_context_set_jmutex(xbt_context_t context,void *jm)    {}
-void* xbt_context_get_jmutex(xbt_context_t context)             { return NULL; }
+void xbt_context_set_jmutex(xbt_context_t context, void *jm)
+{
+}
+void *xbt_context_get_jmutex(xbt_context_t context)
+{
+  return NULL;
+}
 
-void  xbt_context_set_jcond(xbt_context_t context,void *jc)     {}
-void* xbt_context_get_jcond(xbt_context_t context)              { return NULL; }
+void xbt_context_set_jcond(xbt_context_t context, void *jc)
+{
+}
+void *xbt_context_get_jcond(xbt_context_t context)
+{
+  return NULL;
+}
 
-void  xbt_context_set_jenv(xbt_context_t context,void* je)      {}
-void* xbt_context_get_jenv(xbt_context_t context)               { return NULL; }
+void xbt_context_set_jenv(xbt_context_t context, void *je)
+{
+}
+void *xbt_context_get_jenv(xbt_context_t context)
+{
+  return NULL;
+}
