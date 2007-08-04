@@ -229,8 +229,9 @@ xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t l)
  *
  * removes the first occurence of \a t from \a l. 
  * \warning it will not remove duplicates
+ * \return 1 if an item was removed and 0 otherwise.
  */
-void xbt_fifo_remove(xbt_fifo_t l, void *t)
+int  xbt_fifo_remove(xbt_fifo_t l, void *t)
 {
   xbt_fifo_item_t current, current_next;
 
@@ -243,9 +244,9 @@ void xbt_fifo_remove(xbt_fifo_t l, void *t)
     xbt_fifo_remove_item(l, current);
     xbt_fifo_free_item(current);
     /* WILL NOT REMOVE DUPLICATES */
-    break;
+    return 1;
   }
-  return;
+  return 0;
 }
 
 /**
