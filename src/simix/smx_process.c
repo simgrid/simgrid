@@ -169,20 +169,28 @@ void SIMIX_process_kill(smx_process_t process)
    DEBUG2("Killing process %s on %s",process->name, p_simdata->s_host->name);
   
    /* Cleanup if we were waiting for something */
+   DEBUG0("Here!");
    if (p_simdata->mutex) 
       xbt_swag_remove(process,p_simdata->mutex->sleeping);
    
+   DEBUG0("Here!");
    if (p_simdata->cond) 
       xbt_swag_remove(process,p_simdata->cond->sleeping);
 
+   DEBUG0("Here!");
    xbt_swag_remove(process, simix_global->process_to_run);
+   DEBUG0("Here!");
    xbt_swag_remove(process, simix_global->process_list);
+   DEBUG2("%p here! killing %p",simix_global->current_process,process);
    xbt_context_kill(process->simdata->context);
 
+   DEBUG0("Here!");
    if(process==SIMIX_process_self()) {
       /* I just killed myself */
+     DEBUG0("Here!");
       xbt_context_yield();
    }
+   DEBUG0("Here!");
 }
 
 /**

@@ -300,8 +300,15 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 	if ( cond == NULL )
 		return ;
 	else {
+	  xbt_fifo_item_t item = NULL;
+	  smx_action_t action = NULL;
+
 		xbt_assert0( xbt_swag_size(cond->sleeping) == 0 , "Cannot destroy conditional since someone is still using it");
 		xbt_swag_free(cond->sleeping);
+
+		xbt_fifo_foreach(cond->actions,item,action,smx_action_t) {
+		  SIMIX_unregister_condition_to_action(action, cond);
+		}
 		xbt_fifo_free(cond->actions);
 		xbt_free(cond);
 		return;
@@ -322,5 +329,20 @@ void SIMIX_register_condition_to_action(smx_action_t action, smx_cond_t cond)
    DEBUG2("Register condition %p to action %p",cond,action);
 	xbt_fifo_push(action->cond_list,cond);
 }
+
+/**
+ * 	\brief Unset a condition to an action
+ *
+ * 	Destroys the "link" between an action and a condition. 
+ *	\param action SIMIX action
+ *	\param cond SIMIX cond
+ */
+void SIMIX_unregister_condition_to_action(smx_action_t action, smx_cond_t cond)
+{
+	xbt_assert0( (action != NULL) && (cond != NULL), "Invalid parameters");
+
+	while(xbt_fifo_remove(action->cond_list,cond)) {}
+}
+
 
 
