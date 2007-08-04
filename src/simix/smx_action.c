@@ -50,6 +50,7 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,smx_host_t receiver,char
 				receiver->simdata->host, size, rate);
 	surf_workstation_resource->common_public->action_set_data(simdata->surf_action,act);
 
+  DEBUG1("Create communicate action %p",act);
 	return act;
 }
 
@@ -84,6 +85,7 @@ smx_action_t SIMIX_action_execute(smx_host_t host, char * name, double amount)
 
 	surf_workstation_resource->common_public->action_set_data(simdata->surf_action,act);
 
+  DEBUG1("Create execute action %p",act);
 	return act;
 }
 
@@ -118,6 +120,7 @@ smx_action_t SIMIX_action_sleep(smx_host_t host,  double duration)
 
 	surf_workstation_resource->common_public->action_set_data(simdata->surf_action,act);
 
+  DEBUG1("Create sleep action %p",act);
 	return act;
 }
 
@@ -131,6 +134,7 @@ void SIMIX_action_cancel(smx_action_t action)
 {
   xbt_assert0((action != NULL), "Invalid parameter");
 
+  DEBUG1("Cancel action %p",action);
   if(action->simdata->surf_action) {
     surf_workstation_resource->common_public->action_cancel(action->simdata->surf_action);
   }
@@ -167,6 +171,7 @@ void SIMIX_action_destroy(smx_action_t action)
 	xbt_assert1((xbt_fifo_size(action->cond_list)==0), 
 			"Conditional list not empty %d. There is a problem. Cannot destroy it now!", xbt_fifo_size(action->cond_list));
 
+  DEBUG1("Destroy action %p",action);
 	if(action->name) xbt_free(action->name);
 
 	xbt_fifo_free(action->cond_list);
@@ -190,6 +195,7 @@ void SIMIX_register_action_to_condition(smx_action_t action, smx_cond_t cond)
 {
 	xbt_assert0( (action != NULL) && (cond != NULL), "Invalid parameters");
 
+  DEBUG2("Register action %p to condtion %p",action,cond);
 	xbt_fifo_push(cond->actions,action);
 }
 

@@ -155,6 +155,7 @@ smx_cond_t SIMIX_cond_init()
  */
 void SIMIX_cond_signal(smx_cond_t cond)
 {
+   DEBUG1("Signal condition %p",cond);
 	xbt_assert0((cond != NULL), "Invalid parameters");
 	smx_process_t proc = NULL;
 
@@ -178,6 +179,7 @@ void SIMIX_cond_wait(smx_cond_t cond,smx_mutex_t mutex)
 	smx_action_t act_sleep;
 	xbt_assert0((mutex != NULL), "Invalid parameters");
 	
+   DEBUG1("Wait condition %p",cond);
 	cond->mutex = mutex;
 
 	SIMIX_mutex_unlock(mutex);
@@ -236,6 +238,7 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond,smx_mutex_t mutex, double max_durat
 	xbt_assert0((mutex != NULL), "Invalid parameters");
 	smx_action_t act_sleep;
 
+   DEBUG1("Timed wait condition %p",cond);
 	cond->mutex = mutex;
 
 	SIMIX_mutex_unlock(mutex);
@@ -275,6 +278,7 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
 	smx_process_t proc = NULL;
 	smx_process_t proc_next = NULL;
 
+   DEBUG1("Broadcast condition %p",cond);
 	xbt_swag_foreach_safe(proc,proc_next,cond->sleeping) {
 		xbt_swag_remove(proc,cond->sleeping);
 		xbt_swag_insert(proc, simix_global->process_to_run);
@@ -291,10 +295,12 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
  */
 void SIMIX_cond_destroy(smx_cond_t cond)
 {
+   DEBUG1("Destroy condition %p",cond);
+   xbt_backtrace_display_current();
 	if ( cond == NULL )
 		return ;
 	else {
-		xbt_assert0( xbt_swag_size(cond->sleeping) == 0 , "Cannot destroy conditional");
+		xbt_assert0( xbt_swag_size(cond->sleeping) == 0 , "Cannot destroy conditional since someone is still using it");
 		xbt_swag_free(cond->sleeping);
 		xbt_fifo_free(cond->actions);
 		xbt_free(cond);
@@ -313,6 +319,7 @@ void SIMIX_register_condition_to_action(smx_action_t action, smx_cond_t cond)
 {
 	xbt_assert0( (action != NULL) && (cond != NULL), "Invalid parameters");
 
+   DEBUG2("Register condition %p to action %p",cond,action);
 	xbt_fifo_push(action->cond_list,cond);
 }
 
