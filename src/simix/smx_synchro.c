@@ -296,7 +296,6 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
 void SIMIX_cond_destroy(smx_cond_t cond)
 {
    DEBUG1("Destroy condition %p",cond);
-   xbt_backtrace_display_current();
 	if ( cond == NULL )
 		return ;
 	else {
