@@ -339,7 +339,8 @@ Here are the existing format directives:
  - %%p: Priority name (LOG4J compliant)
 
  - %%h: Hostname (SimGrid extension)
- - %%t: Process name (LOG4J compliant -- thread name in LOG4J)
+ - %%P: Process name (SimGrid extension)
+ - %%t: Thread "name" (LOG4J compliant -- actually the address of the thread in memory)
  - %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)
 
  - %%F: file name where the log event was raised (LOG4J compliant)
