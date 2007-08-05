@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include "private.h"
+#include "../include/private.h"
 
 SMPI_Global_t     smpi_global     = NULL;
 
@@ -171,8 +171,6 @@ int smpi_receiver(int argc, char **argv)
 
 	xbt_fifo_item_t request_item;
 	xbt_fifo_item_t message_item;
-
-	smx_process_t waitproc;
 
 	self  = SIMIX_process_self();
 	rank  = smpi_mpi_comm_world_rank_self();
@@ -487,12 +485,10 @@ void smpi_mpi_sum_func(void *x, void *y, void *z)
 
 void smpi_mpi_init()
 {
-	int i;
 	smx_process_t process;
 	smx_host_t host;
 	smx_host_t *hosts;
 	int size;
-	double duration;
 
 	SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
 	smpi_global->running_hosts_count++;
@@ -749,9 +745,6 @@ int smpi_irecv(smpi_mpi_request_t *request)
 
 void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status)
 {
-	smx_process_t self = SIMIX_process_self();
-	int suspend = 0;
-
 	if (NULL != request) {
 		SIMIX_mutex_lock(request->mutex);
 		if (!request->completed) {
