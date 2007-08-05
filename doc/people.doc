@@ -12,6 +12,7 @@ authors of SimGrid are:
 
 \section contributers Contributers and alumni project members
 
+ - Mark Stilwell: wrote SMPI during his PhD. Thesis in Hawai`i (2006-???)
  - Pedro Velho: wrote the Lagrange solver to improve the network
    sharing in SURF during his PhD. Thesis in Grenoble (2006-???).
  - Bruno Donassolo: wrote SIMIX during his master internship in
