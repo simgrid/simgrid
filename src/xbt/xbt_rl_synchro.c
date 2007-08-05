@@ -20,7 +20,7 @@
 #include "xbt/xbt_os_thread.h" /* The implementation we use */
 
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
-
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_rl,xbt,"Synchronization mechanism (RL)");
 
 typedef struct s_xbt_thread_ {   
    xbt_os_thread_t os_thread;
@@ -41,15 +41,18 @@ xbt_thread_t xbt_thread_create(void_f_pvoid_t* code, void* param) {
    res->userparam = param;
    res->code = code;
    res->os_thread = xbt_os_thread_create(xbt_thread_create_wrapper,res);
+   DEBUG1("Create thread %p",res);
    return res;
 }
 
 void 
 xbt_thread_join(xbt_thread_t thread) {
+   DEBUG1("Join thread %p",thread);
    xbt_os_thread_join( thread->os_thread, NULL );
 }		       
 
 void xbt_thread_exit() {
+   DEBUG0("Thread exits");
    xbt_os_thread_exit(NULL);
 }
 
@@ -58,9 +61,11 @@ xbt_thread_t xbt_thread_self(void) {
 }
 
 void xbt_thread_yield(void) {
+   DEBUG0("Thread yields");
    xbt_os_thread_yield();
 }
 void xbt_thread_cancel(xbt_thread_t t) {
+   DEBUG1("Cancel thread %p",t);
    xbt_os_thread_cancel(t->os_thread);
 }
 /****** mutex related functions ******/
@@ -74,18 +79,23 @@ struct xbt_mutex_ {
 };
 
 xbt_mutex_t xbt_mutex_init(void) {
-   return (xbt_mutex_t)xbt_os_mutex_init();
+   xbt_mutex_t res = (xbt_mutex_t)xbt_os_mutex_init();
+   DEBUG1("Create mutex %p", res);
+   return res;
 }
 
 void xbt_mutex_lock(xbt_mutex_t mutex) {
+   DEBUG1("Lock mutex %p", mutex);
    xbt_os_mutex_lock( (xbt_os_mutex_t)mutex );
 }
 
 void xbt_mutex_unlock(xbt_mutex_t mutex) {
+   DEBUG1("Unlock mutex %p", mutex);
    xbt_os_mutex_unlock( (xbt_os_mutex_t)mutex );
 }
 
 void xbt_mutex_destroy(xbt_mutex_t mutex) {
+   DEBUG1("Destroy mutex %p", mutex);
    xbt_os_mutex_destroy( (xbt_os_mutex_t)mutex );
 }
 
@@ -111,24 +121,31 @@ typedef struct xbt_cond_ {
 } s_xbt_cond_t;
 
 xbt_cond_t xbt_cond_init(void) {
+   xbt_cond_t res = (xbt_cond_t) xbt_os_cond_init();
+   DEBUG1("Create cond %p", res);
    return (xbt_cond_t) xbt_os_cond_init();
 }
 
 void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex) {
+   DEBUG2("Wait cond %p, mutex %p", cond, mutex);
    xbt_os_cond_wait( (xbt_os_cond_t)cond, (xbt_os_mutex_t)mutex );
 }
 
 void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay) {
+   DEBUG3("Wait cond %p, mutex %p for %f sec", cond, mutex,delay);
    xbt_os_cond_timedwait( (xbt_os_cond_t)cond, (xbt_os_mutex_t)mutex, delay );
 }
 
 void xbt_cond_signal(xbt_cond_t cond) {
+   DEBUG1("Signal cond %p", cond);
    xbt_os_cond_signal( (xbt_os_cond_t)cond );
 }
 	 
 void xbt_cond_broadcast(xbt_cond_t cond){
+   DEBUG1("Broadcast cond %p", cond);
    xbt_os_cond_broadcast( (xbt_os_cond_t)cond );
 }
 void xbt_cond_destroy(xbt_cond_t cond){
+   DEBUG1("Destroy cond %p", cond);
    xbt_os_cond_destroy( (xbt_os_cond_t)cond );
 }
