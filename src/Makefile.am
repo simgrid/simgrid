@@ -144,11 +144,11 @@ XBT_SRC=\
   xbt/graphxml_parse.c
 
 XBT_RL_SRC = \
-  xbt/xbt_rl_synchro.c																											 \
-	xbt/xbt_rl_time.c
+  xbt/xbt_rl_synchro.c		\
+  xbt/xbt_rl_time.c
 XBT_SG_SRC = \
-  xbt/xbt_sg_synchro.c																											 \
-	xbt/xbt_sg_time.c
+  xbt/xbt_sg_synchro.c		\
+  xbt/xbt_sg_time.c     
 
 SURF_SRC= \
   surf/maxmin.c                                                              \
@@ -161,6 +161,10 @@ SURF_SRC= \
   surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c
 
+if CONTEXT_THREADS
+  SURF_SRC += xbt/xbt_os_thread.c
+endif
+
 GTNETS_SRC= \
   surf/gtnets/gtnets_simulator.cc \
   surf/gtnets/gtnets_topology.cc  \
@@ -169,7 +173,7 @@ GTNETS_SRC= \
 
 # Separated because we don't want it in libsimgrid4java
 CTX_SRC= xbt/context.c
-JCTX_SRC= java/jxbt_context.c java/jxbt_context.h xbt/xbt_os_thread.c
+JCTX_SRC= java/jxbt_context.c java/jxbt_context.h
 
 SIMIX_SRC= \
   simix/smx_global.c \
@@ -285,7 +289,7 @@ endif
 lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la
 
 libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
-libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO)                     @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
+libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 
 libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(SIMIX_SRC) $(CTX_SRC) \
@@ -295,7 +299,6 @@ libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_
 
 libsmpi_la_LIBADD = libsimgrid.la
 libsmpi_la_SOURCES = $(SMPI_SRC)
-#libsmpi_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 libsmpi_la_LDFLAGS = -no-undefined $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm
 
 ##

@@ -162,6 +162,7 @@ if test "x$with_context" = "xpthread"; then
   AC_DEFINE([CONTEXT_THREADS],1,[Define if xbt contexts are based on our threads implementation or not])
   AC_MSG_RESULT(You have pthreads. Let's use them.)
 fi
+AM_CONDITIONAL(CONTEXT_THREADS,test "x$with_context" = xpthread)
 
 dnl #
 dnl #  4. determine a few additional details
