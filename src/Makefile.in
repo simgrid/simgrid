@@ -40,13 +40,14 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@HAVE_GTNETS_FALSE@am__append_1 = $(GTNETS_SRC)
-@HAVE_SDP_FALSE@am__append_2 = surf/sdp.c
-@HAVE_JAVA_TRUE@am__append_3 = libsimgrid4java.la
-@HAVE_JAVA_FALSE@am__append_4 = $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
+@CONTEXT_THREADS_TRUE@am__append_1 = xbt/xbt_os_thread.c
+@HAVE_GTNETS_FALSE@am__append_2 = $(GTNETS_SRC)
+@HAVE_SDP_FALSE@am__append_3 = surf/sdp.c
+@HAVE_JAVA_TRUE@am__append_4 = libsimgrid4java.la
+@HAVE_JAVA_FALSE@am__append_5 = $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
 @GRAMINE_MODE_FALSE@TESTS = testall$(EXEEXT)
-@GRAMINE_MODE_FALSE@am__append_5 = $(testall_SOURCES)
+@GRAMINE_MODE_FALSE@am__append_6 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/gras_config.h.in $(srcdir)/ucontext_stack.h.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -112,24 +113,25 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	surf/lagrange.c surf/trace_mgr.c surf/surf.c \
 	surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
-	surf/workstation_KCCFLN05.c surf/gtnets/gtnets_simulator.cc \
-	surf/gtnets/gtnets_topology.cc surf/gtnets/gtnets_interface.cc \
-	surf/network_gtnets.c surf/sdp.c simix/smx_global.c \
-	simix/smx_deployment.c simix/smx_config.c \
-	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
-	simix/smx_action.c simix/smx_synchro.c xbt/context.c \
-	msg/msg_config.c msg/task.c msg/host.c msg/m_process.c \
-	msg/gos.c msg/global.c msg/environment.c msg/deployment.c \
-	simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c \
-	simdag/sd_workstation.c gras/gras.c gras/Transport/transport.c \
-	gras/Transport/transport_private.h gras/Msg/gras_msg_mod.c \
-	gras/Msg/gras_msg_types.c gras/Msg/gras_msg_exchange.c \
-	gras/Msg/gras_msg_listener.c gras/Msg/rpc.c gras/Msg/timer.c \
-	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
-	gras/Virtu/process.c gras/Virtu/gras_module.c \
-	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
-	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
-	gras/DataDesc/datadesc.c gras/DataDesc/datadesc_interface.h \
+	surf/workstation_KCCFLN05.c xbt/xbt_os_thread.c \
+	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
+	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
+	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
+	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
+	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
+	xbt/context.c msg/msg_config.c msg/task.c msg/host.c \
+	msg/m_process.c msg/gos.c msg/global.c msg/environment.c \
+	msg/deployment.c simdag/sd_global.c simdag/sd_link.c \
+	simdag/sd_task.c simdag/sd_workstation.c gras/gras.c \
+	gras/Transport/transport.c gras/Transport/transport_private.h \
+	gras/Msg/gras_msg_mod.c gras/Msg/gras_msg_types.c \
+	gras/Msg/gras_msg_exchange.c gras/Msg/gras_msg_listener.c \
+	gras/Msg/rpc.c gras/Msg/timer.c gras/Msg/msg_interface.h \
+	gras/Msg/msg_private.h gras/Virtu/process.c \
+	gras/Virtu/gras_module.c gras/DataDesc/ddt_create.c \
+	gras/DataDesc/ddt_convert.c gras/DataDesc/ddt_exchange.c \
+	gras/DataDesc/cbps.c gras/DataDesc/datadesc.c \
+	gras/DataDesc/datadesc_interface.h \
 	gras/DataDesc/datadesc_private.h gras/DataDesc/ddt_parse.c \
 	gras/DataDesc/ddt_parse.yy.c gras/DataDesc/ddt_parse.yy.h \
 	gras/Transport/sg_transport.c \
@@ -138,27 +140,29 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	xbt/xbt_sg_synchro.c xbt/xbt_sg_time.c amok/amok_base.c \
 	amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
 	amok/PeerManagement/peermanagement.c
-am__objects_6 = maxmin.lo lagrange.lo trace_mgr.lo surf.lo \
+@CONTEXT_THREADS_TRUE@am__objects_6 = xbt_os_thread.lo
+am__objects_7 = maxmin.lo lagrange.lo trace_mgr.lo surf.lo \
 	surfxml_parse.lo cpu.lo network.lo workstation.lo \
-	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo
-am__objects_7 = gtnets_simulator.lo gtnets_topology.lo \
+	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
+	$(am__objects_6)
+am__objects_8 = gtnets_simulator.lo gtnets_topology.lo \
 	gtnets_interface.lo network_gtnets.lo
-@HAVE_GTNETS_TRUE@am__objects_8 = $(am__objects_7)
-@HAVE_SDP_TRUE@am__objects_9 = sdp.lo
-am__objects_10 = smx_global.lo smx_deployment.lo smx_config.lo \
+@HAVE_GTNETS_TRUE@am__objects_9 = $(am__objects_8)
+@HAVE_SDP_TRUE@am__objects_10 = sdp.lo
+am__objects_11 = smx_global.lo smx_deployment.lo smx_config.lo \
 	smx_environment.lo smx_host.lo smx_process.lo smx_action.lo \
 	smx_synchro.lo
-am__objects_11 = context.lo
-am__objects_12 = msg_config.lo task.lo host.lo m_process.lo gos.lo \
+am__objects_12 = context.lo
+am__objects_13 = msg_config.lo task.lo host.lo m_process.lo gos.lo \
 	global.lo environment.lo deployment.lo
-am__objects_13 = sd_global.lo sd_link.lo sd_task.lo sd_workstation.lo
-am__objects_14 = xbt_sg_synchro.lo xbt_sg_time.lo
-am__objects_15 = sg_transport.lo transport_plugin_sg.lo sg_emul.lo \
-	sg_process.lo sg_dns.lo sg_msg.lo $(am__objects_14)
-am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_6) \
-	$(am__objects_8) $(am__objects_9) $(am__objects_10) \
-	$(am__objects_11) $(am__objects_12) $(am__objects_13) \
-	$(am__objects_2) $(am__objects_15) $(am__objects_5)
+am__objects_14 = sd_global.lo sd_link.lo sd_task.lo sd_workstation.lo
+am__objects_15 = xbt_sg_synchro.lo xbt_sg_time.lo
+am__objects_16 = sg_transport.lo transport_plugin_sg.lo sg_emul.lo \
+	sg_process.lo sg_dns.lo sg_msg.lo $(am__objects_15)
+am_libsimgrid_la_OBJECTS = $(am__objects_1) $(am__objects_7) \
+	$(am__objects_9) $(am__objects_10) $(am__objects_11) \
+	$(am__objects_12) $(am__objects_13) $(am__objects_14) \
+	$(am__objects_2) $(am__objects_16) $(am__objects_5)
 libsimgrid_la_OBJECTS = $(am_libsimgrid_la_OBJECTS)
 libsimgrid_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -176,13 +180,13 @@ am__libsimgrid4java_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	surf/lagrange.c surf/trace_mgr.c surf/surf.c \
 	surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
-	surf/workstation_KCCFLN05.c surf/gtnets/gtnets_simulator.cc \
-	surf/gtnets/gtnets_topology.cc surf/gtnets/gtnets_interface.cc \
-	surf/network_gtnets.c surf/sdp.c simix/smx_global.c \
-	simix/smx_deployment.c simix/smx_config.c \
-	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
-	simix/smx_action.c simix/smx_synchro.c java/jxbt_context.c \
-	java/jxbt_context.h xbt/xbt_os_thread.c java/jxbt_utilities.c \
+	surf/workstation_KCCFLN05.c xbt/xbt_os_thread.c \
+	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
+	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
+	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
+	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
+	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
+	java/jxbt_context.c java/jxbt_context.h java/jxbt_utilities.c \
 	java/jxbt_utilities.h java/jmsg.c java/jmsg.h \
 	java/jmsg_channel.c java/jmsg_channel.h java/jmsg_host.c \
 	java/jmsg_host.h java/jmsg_parallel_task.c \
@@ -207,31 +211,38 @@ am__libsimgrid4java_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	xbt/xbt_sg_synchro.c xbt/xbt_sg_time.c amok/amok_base.c \
 	amok/Bandwidth/bandwidth.c amok/Bandwidth/saturate.c \
 	amok/PeerManagement/peermanagement.c
-am__objects_16 = jxbt_context.lo xbt_os_thread.lo
-am__objects_17 = jxbt_utilities.lo jmsg.lo jmsg_channel.lo \
+am__objects_17 = jxbt_context.lo
+am__objects_18 = jxbt_utilities.lo jmsg.lo jmsg_channel.lo \
 	jmsg_host.lo jmsg_parallel_task.lo jmsg_process.lo \
 	jmsg_task.lo
 @HAVE_JAVA_TRUE@am_libsimgrid4java_la_OBJECTS = $(am__objects_1) \
-@HAVE_JAVA_TRUE@	$(am__objects_6) $(am__objects_8) \
-@HAVE_JAVA_TRUE@	$(am__objects_9) $(am__objects_10) \
-@HAVE_JAVA_TRUE@	$(am__objects_16) $(am__objects_17) \
-@HAVE_JAVA_TRUE@	$(am__objects_12) $(am__objects_2) \
-@HAVE_JAVA_TRUE@	$(am__objects_15) $(am__objects_5)
+@HAVE_JAVA_TRUE@	$(am__objects_7) $(am__objects_9) \
+@HAVE_JAVA_TRUE@	$(am__objects_10) $(am__objects_11) \
+@HAVE_JAVA_TRUE@	$(am__objects_17) $(am__objects_18) \
+@HAVE_JAVA_TRUE@	$(am__objects_13) $(am__objects_2) \
+@HAVE_JAVA_TRUE@	$(am__objects_16) $(am__objects_5)
 libsimgrid4java_la_OBJECTS = $(am_libsimgrid4java_la_OBJECTS)
 libsimgrid4java_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libsimgrid4java_la_LDFLAGS) $(LDFLAGS) -o $@
 @HAVE_JAVA_TRUE@am_libsimgrid4java_la_rpath = -rpath $(libdir)
+libsmpi_la_DEPENDENCIES = libsimgrid.la
+am__objects_19 = smpi_base.lo smpi_mpi.lo
+am_libsmpi_la_OBJECTS = $(am__objects_19)
+libsmpi_la_OBJECTS = $(am_libsmpi_la_OBJECTS)
+libsmpi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libsmpi_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(noinst_PROGRAMS)
 am__testall_SOURCES_DIST = ./cunit_unit.c ./ex_unit.c ./dynar_unit.c \
 	./dict_unit.c ./set_unit.c ./swag_unit.c ./xbt_str_unit.c \
 	./config_unit.c simgrid_units_main.c
-@GRAMINE_MODE_FALSE@am__objects_18 = cunit_unit.$(OBJEXT) \
+@GRAMINE_MODE_FALSE@am__objects_20 = cunit_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	ex_unit.$(OBJEXT) dynar_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	dict_unit.$(OBJEXT) set_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	swag_unit.$(OBJEXT) xbt_str_unit.$(OBJEXT) \
 @GRAMINE_MODE_FALSE@	config_unit.$(OBJEXT)
-@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_18) \
+@GRAMINE_MODE_FALSE@am_testall_OBJECTS = $(am__objects_20) \
 @GRAMINE_MODE_FALSE@	simgrid_units_main.$(OBJEXT)
 testall_OBJECTS = $(am_testall_OBJECTS)
 @GRAMINE_MODE_FALSE@testall_DEPENDENCIES = libgras.la
@@ -257,9 +268,10 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libgras_la_SOURCES) $(libsimgrid_la_SOURCES) \
-	$(libsimgrid4java_la_SOURCES) $(testall_SOURCES)
+	$(libsimgrid4java_la_SOURCES) $(libsmpi_la_SOURCES) \
+	$(testall_SOURCES)
 DIST_SOURCES = $(libgras_la_SOURCES) $(am__libsimgrid_la_SOURCES_DIST) \
-	$(am__libsimgrid4java_la_SOURCES_DIST) \
+	$(am__libsimgrid4java_la_SOURCES_DIST) $(libsmpi_la_SOURCES) \
 	$(am__testall_SOURCES_DIST)
 jarDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(jar_DATA)
@@ -269,9 +281,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ADDR2LINE = @ADDR2LINE@
 AMTAR = @AMTAR@
-
-#AM_CPPFLAGS=
-AM_CFLAGS = -g
+AM_CPPFLAGS = @AM_CPPFLAGS@
 AR = @AR@
 AS = @AS@
 AUTOCONF = @AUTOCONF@
@@ -402,6 +412,9 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+#AM_CPPFLAGS=
+AM_CFLAGS = -g
 #AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.
@@ -427,10 +440,11 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
 	include/surf/surfxml_parse_private.h include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h include/xbt/context.h \
-	msg/private.h simdag/private.h \
+	msg/private.h simdag/private.h gras/DataDesc/ddt_parse.yy.l \
+	gras/Virtu/virtu_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_1) $(am__append_2) $(am__append_4) \
-	$(am__append_5)
+	$(am__append_2) $(am__append_3) $(am__append_5) \
+	$(am__append_6)
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -506,24 +520,17 @@ XBT_SRC = \
   xbt/graphxml_parse.c
 
 XBT_RL_SRC = \
-  xbt/xbt_rl_synchro.c																											 \
-	xbt/xbt_rl_time.c
+  xbt/xbt_rl_synchro.c		\
+  xbt/xbt_rl_time.c
 
 XBT_SG_SRC = \
-  xbt/xbt_sg_synchro.c																											 \
-	xbt/xbt_sg_time.c
+  xbt/xbt_sg_synchro.c		\
+  xbt/xbt_sg_time.c     
 
-SURF_SRC = \
-  surf/maxmin.c                                                              \
-  surf/lagrange.c                                                            \
-  surf/trace_mgr.c                                                           \
-  surf/surf.c                                                                \
-  surf/surfxml_parse.c                                                       \
-  surf/cpu.c   surf/network.c   surf/workstation.c                           \
-  surf/surf_timer.c                                                          \
-  surf/network_dassf.c                                                       \
-  surf/workstation_KCCFLN05.c
-
+SURF_SRC = surf/maxmin.c surf/lagrange.c surf/trace_mgr.c surf/surf.c \
+	surf/surfxml_parse.c surf/cpu.c surf/network.c \
+	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
+	surf/workstation_KCCFLN05.c $(am__append_1)
 GTNETS_SRC = \
   surf/gtnets/gtnets_simulator.cc \
   surf/gtnets/gtnets_topology.cc  \
@@ -533,7 +540,7 @@ GTNETS_SRC = \
 
 # Separated because we don't want it in libsimgrid4java
 CTX_SRC = xbt/context.c
-JCTX_SRC = java/jxbt_context.c java/jxbt_context.h xbt/xbt_os_thread.c
+JCTX_SRC = java/jxbt_context.c java/jxbt_context.h
 SIMIX_SRC = \
   simix/smx_global.c \
   simix/smx_deployment.c \
@@ -543,6 +550,10 @@ SIMIX_SRC = \
   simix/smx_process.c \
   simix/smx_action.c \
   simix/smx_synchro.c
+
+SMPI_SRC = \
+  smpi/smpi_base.c \
+  smpi/smpi_mpi.c
 
 MSG_SRC = msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
@@ -616,21 +627,24 @@ AMOK_SRC = \
 ###
 ### Declare the library content
 ###
-lib_LTLIBRARIES = libsimgrid.la libgras.la $(am__append_3)
+lib_LTLIBRARIES = libsimgrid.la libgras.la libsmpi.la $(am__append_4)
 libgras_la_SOURCES = $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
-libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO)                     @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
+libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
 libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(SIMIX_SRC) $(CTX_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsmpi_la_LIBADD = libsimgrid.la
+libsmpi_la_SOURCES = $(SMPI_SRC)
+libsmpi_la_LDFLAGS = -no-undefined $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm
 @HAVE_JAVA_TRUE@libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
 @HAVE_JAVA_TRUE@                             $(SIMIX_SRC) $(JCTX_SRC) \
 @HAVE_JAVA_TRUE@                             $(JMSG_C_SRC) $(MSG_SRC) \
 @HAVE_JAVA_TRUE@		 	     $(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 
-@HAVE_JAVA_TRUE@libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GTNETS_LDFLAGS@ @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+@HAVE_JAVA_TRUE@libsimgrid4java_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 @HAVE_JAVA_TRUE@libsimgrid4java_la_GCJFLAGS = -fjni
 @HAVE_JAVA_TRUE@jardir = $(prefix)/jar 
 @HAVE_JAVA_TRUE@jar_DATA = simgrid.jar
@@ -738,6 +752,8 @@ libsimgrid.la: $(libsimgrid_la_OBJECTS) $(libsimgrid_la_DEPENDENCIES)
 	$(libsimgrid_la_LINK) -rpath $(libdir) $(libsimgrid_la_OBJECTS) $(libsimgrid_la_LIBADD) $(LIBS)
 libsimgrid4java.la: $(libsimgrid4java_la_OBJECTS) $(libsimgrid4java_la_DEPENDENCIES) 
 	$(libsimgrid4java_la_LINK) $(am_libsimgrid4java_la_rpath) $(libsimgrid4java_la_OBJECTS) $(libsimgrid4java_la_LIBADD) $(LIBS)
+libsmpi.la: $(libsmpi_la_OBJECTS) $(libsmpi_la_DEPENDENCIES) 
+	$(libsmpi_la_LINK) -rpath $(libdir) $(libsmpi_la_OBJECTS) $(libsmpi_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -838,6 +854,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_process.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simgrid_units_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_base.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_mpi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_action.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_deployment.Plo@am__quote@
@@ -1669,6 +1687,20 @@ jmsg_task.lo: java/jmsg_task.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o jmsg_task.lo `test -f 'java/jmsg_task.c' || echo '$(srcdir)/'`java/jmsg_task.c
 
+smpi_base.lo: smpi/smpi_base.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_base.lo -MD -MP -MF $(DEPDIR)/smpi_base.Tpo -c -o smpi_base.lo `test -f 'smpi/smpi_base.c' || echo '$(srcdir)/'`smpi/smpi_base.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_base.Tpo $(DEPDIR)/smpi_base.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_base.c' object='smpi_base.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_base.lo `test -f 'smpi/smpi_base.c' || echo '$(srcdir)/'`smpi/smpi_base.c
+
+smpi_mpi.lo: smpi/smpi_mpi.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_mpi.lo -MD -MP -MF $(DEPDIR)/smpi_mpi.Tpo -c -o smpi_mpi.lo `test -f 'smpi/smpi_mpi.c' || echo '$(srcdir)/'`smpi/smpi_mpi.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_mpi.Tpo $(DEPDIR)/smpi_mpi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_mpi.c' object='smpi_mpi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_mpi.lo `test -f 'smpi/smpi_mpi.c' || echo '$(srcdir)/'`smpi/smpi_mpi.c
+
 cunit_unit.o: ./cunit_unit.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cunit_unit.o -MD -MP -MF $(DEPDIR)/cunit_unit.Tpo -c -o cunit_unit.o `test -f './cunit_unit.c' || echo '$(srcdir)/'`./cunit_unit.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/cunit_unit.Tpo $(DEPDIR)/cunit_unit.Po
@@ -2109,7 +2141,9 @@ uninstall-am: uninstall-jarDATA uninstall-libLTLIBRARIES
 
 	\
 	include/simix/simix.h include/simix/datatypes.h \
-	simix/msg_simix_private.h
+	simix/msg_simix_private.h \
+	\
+	smpi/private.h smpi/smpi.h
 
 @HAVE_JAVA_TRUE@clean-local:
 @HAVE_JAVA_TRUE@	-rm -rf .classes
