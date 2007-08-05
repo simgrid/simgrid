@@ -340,10 +340,10 @@ Here are the existing format directives:
 
  - %%h: Hostname (SimGrid extension)
  - %%t: Process name (LOG4J compliant -- thread name in LOG4J)
- - %%I: Process PID (SimGrid extension)
+ - %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)
 
  - %%F: file name where the log event was raised (LOG4J compliant)
- - %%l: location where the log event was raised (LOG4J compliant, like '%%F:%%L')
+ - %%l: location where the log event was raised (LOG4J compliant, like '%%F:%%L' -- this is a l as in 'l'etter)
  - %%L: line number where the log event was raised (LOG4J compliant)
  - %%M: function name (LOG4J compliant -- called method name here of course). 
    Defined only when using gcc because there is no __FUNCTION__ elsewhere.
