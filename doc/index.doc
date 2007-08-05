@@ -125,31 +125,6 @@ mailing list</a>.
 \htmlonly <!-- ______BODY_END______ --!> \endhtmlonly
 
 <hr>
-
-\section people People
-
-SimGrid is a joint project between University of Hawai at Manoa, ID
-Laboratory (Grenoble, France) and University of Nancy (France). The
-authors of SimGrid are:
-
- - Henri Casanova <casanova#cs.ucsd.edu> (Information and Computer Sciences Department, University of Hawai`i at Manoa)
- - Arnaud Legrand <arnaud.legrand#imag.fr> ("Informatique et Distribution" Laboratory (Grenoble, France), MESCal project)
- - Martin Quinson <martin.quinson#loria.fr> (University of Nancy I (Nancy, France), LORIA Laboratory, Algorille project)
-
-\subsection contributers Contributers and alumni project members
-
- - Christophe Thiery: brought back the old SG to life with SimDag during a
-   two months internship (june-july 2006) in the LORIA Lorraine.
- - Loris Marchal: designed the algorithm for simulation TCP bandwidth-sharing.
- - Julien Lerouge : wrote a XML parser for ENV descriptions and helped for
-   the general design during a 4 months internship (march-june 2002)
-   in the LIP.
- - Clément Menier and Marc Perache : wrote a prototype of the MSG
-   interface during a project at ENS-Lyon (jan 2002). 
- - Dmitrii Zagorodnov : wrote some parts of the first version of SimGrid
-   (1999).
-
-<hr>
 \htmlonly
 <center>
 <a href="http://creativecommons.org/licenses/LGPL/2.1/"><img alt="CC-GNU LGPL" border="0" src="http://creativecommons.org/images/public/cc-LGPL-a.png" /></a>
