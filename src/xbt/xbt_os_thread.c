@@ -31,6 +31,7 @@ typedef struct xbt_os_thread_ {
 
 /* thread-specific data containing the xbt_os_thread_t structure */
 static pthread_key_t xbt_self_thread_key;
+static int thread_mod_inited = 0;
 
 /* frees the xbt_os_thread_t corresponding to the current thread */
 static void xbt_os_thread_free_thread_data(void*d){
@@ -40,8 +41,13 @@ static void xbt_os_thread_free_thread_data(void*d){
 void xbt_os_thread_mod_init(void) {
    int errcode;
    
+   if (thread_mod_inited)
+     return;
+   
    if ((errcode=pthread_key_create(&xbt_self_thread_key, NULL)))
      THROW0(system_error,errcode,"pthread_key_create failed for xbt_self_thread_key");
+   
+   thread_mod_inited = 1;
 }
 void xbt_os_thread_mod_exit(void) {
    /* FIXME: don't try to free our key on shutdown. Valgrind detects no leak if we don't, and whine if we try to */
@@ -90,7 +96,7 @@ void xbt_os_thread_exit(int *retval) {
 }
 
 xbt_os_thread_t xbt_os_thread_self(void) {
-   return pthread_getspecific(xbt_self_thread_key);
+   return thread_mod_inited ? pthread_getspecific(xbt_self_thread_key):NULL;
 }
 
 #include <sched.h>
@@ -211,7 +217,7 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond){
 
 void *xbt_os_thread_getparam(void) {
    xbt_os_thread_t t = xbt_os_thread_self();
-   return t->param;
+   return t?t->param:NULL;
 }
 
 /* ********************************* WINDOWS IMPLEMENTATION ************************************ */
