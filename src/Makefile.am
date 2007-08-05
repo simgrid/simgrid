@@ -63,7 +63,9 @@ EXTRA_DIST= \
 	amok/amok_modinter.h
 	\
 	include/simix/simix.h include/simix/datatypes.h \
-	simix/msg_simix_private.h
+	simix/msg_simix_private.h \
+	\
+	smpi/private.h smpi/smpi.h
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -179,6 +181,10 @@ SIMIX_SRC= \
   simix/smx_action.c \
   simix/smx_synchro.c
 
+SMPI_SRC= \
+  smpi/smpi_base.c \
+  smpi/smpi_mpi.c
+
 MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
   msg/global.c msg/environment.c msg/deployment.c 
@@ -276,7 +282,7 @@ endif
 ### Declare the library content
 ###
 
-lib_LTLIBRARIES= libsimgrid.la libgras.la 
+lib_LTLIBRARIES= libsimgrid.la libgras.la libsmpi.la
 
 libgras_la_SOURCES=  $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
 libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO)                     @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
@@ -286,6 +292,11 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+
+libsmpi_la_LIBADD = libsimgrid.la
+libsmpi_la_SOURCES = $(SMPI_SRC)
+#libsmpi_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsmpi_la_LDFLAGS = -no-undefined $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm
 
 ##
 ## Java cruft
