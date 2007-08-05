@@ -1,5 +1,7 @@
 /*! \page people People around SimGrid
 
+\section core_team Core team
+
 SimGrid is a joint project between University of Hawai at Manoa, ID
 Laboratory (Grenoble, France) and University of Nancy (France). The
 authors of SimGrid are:
@@ -10,16 +12,19 @@ authors of SimGrid are:
 
 \section contributers Contributers and alumni project members
 
+ - Malek Cherrier: ported the environment to Windows, designed the
+   Java bindings and worked on the software quality during a two year
+   engineer position in the INRIA Grand Est (2006-2008).
  - Christophe Thiery: brought back the old SG to life with SimDag during a
-   two months internship (june-july 2006) in the LORIA Lorraine.
+   two months internship (june-july 2006) in the INRIA Grand Est.
  - Loris Marchal: designed the algorithm for simulation TCP bandwidth-sharing.
  - Julien Lerouge : wrote a XML parser for ENV descriptions and helped for
    the general design during a 4 months internship (march-june 2002)
-   in the LIP.
+   in the ENS-Lyon.
  - Clément Menier and Marc Perache : wrote a prototype of the MSG
    interface during a project at ENS-Lyon (jan 2002). 
  - Dmitrii Zagorodnov : wrote some parts of the first version of SimGrid
-   (1999).
+   (1999) at University of California at San Diego.
 
 \section users Users
 
