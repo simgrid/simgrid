@@ -36,7 +36,8 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
        handle_modifier:
       switch (*q) {
       case '\0':
-	THROW1(arg_error,0,"Layout format (%s) ending with %%",(char*)l->data);
+	fprintf(stderr,"Layout format (%s) ending with %%\n",(char*)l->data);
+	abort();
       case '%':
 	*p++ = '%';
 	break;
@@ -190,8 +191,9 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 	break;
 
       default:
-	THROW2(arg_error,0,"Unknown %%%c sequence in layout format (%s)",
-	       *q,(char*)l->data);
+	fprintf(stderr,"Unknown %%%c sequence in layout format (%s)\n",
+		*q,(char*)l->data);
+	abort();
       }
       q++;
     } else {
