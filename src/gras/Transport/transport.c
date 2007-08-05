@@ -168,8 +168,6 @@ void gras_trp_socket_new(int incoming,
   
   *dst = sock;
 
-  xbt_dynar_push(((gras_trp_procdata_t) 
-		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,dst);
   XBT_OUT;
 }
  
@@ -212,20 +210,15 @@ gras_socket_server_ext(unsigned short port,
 	   sock->outgoing?'y':'n',
 	   sock->accepting?'y':'n');
   } CATCH(e) {
-    int cursor;
-    gras_socket_t sock_iter;
-    xbt_dynar_t socks = ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->sockets;
-    xbt_dynar_foreach(socks, cursor, sock_iter) {
-       if (sock_iter==sock) {
-				 xbt_dynar_cursor_rm(socks,&cursor);
-			 }
-    }     
+
     free(sock);
     RETHROW;
   }
 
   if (!measurement)
      ((gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id))->myport = port;
+  xbt_dynar_push(((gras_trp_procdata_t) 
+		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,&sock);
   return sock;
 }
 /**
@@ -299,13 +292,11 @@ gras_socket_client_ext(const char *host,
 	   sock->outgoing?'y':'n',
 	   sock->accepting?'y':'n');
   } CATCH(e) {
-     xbt_dynar_pop(((gras_trp_procdata_t)
-		    gras_libdata_by_id(gras_trp_libdata_id))->sockets,NULL);
      free(sock);
-		 xbt_backtrace_display(&e);
-    RETHROW;
+     RETHROW;
   }
-
+  xbt_dynar_push(((gras_trp_procdata_t) 
+		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,&sock);
   return sock;
 }
 
