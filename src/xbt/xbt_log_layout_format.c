@@ -11,6 +11,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "gras/virtu.h"
+#include "xbt/synchro.h" /* xbt_thread_self */
 #include <stdio.h>
 
 extern const char *xbt_log_priority_names[7];
@@ -79,7 +80,11 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   precision = -1;
 	}	 
 	break;
-      case 't': /* process name; LOG4J compliant (thread name) */
+      case 't': /* thread name; LOG4J compliant */
+	p += sprintf(p, "%p", xbt_thread_self());
+	precision = -1;
+	break;
+      case 'P': /* process name; SimGrid extension */
 	if (precision == -1)
 	   p += sprintf(p, "%s", xbt_procname());
         else {	      
