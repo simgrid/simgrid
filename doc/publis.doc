@@ -241,9 +241,9 @@ next section).
     Distributed Computing Job Scheduling Strategies for Parallel
     Processing (ISPDC'05), July 2005.\n
     http://www.ens-lyon.fr/LIP/Pub/Rapports/RR/RR2005/RR2005-27.pdf
-  - <b>Algorithmes de redistribution de données pour anneaux de processeurs hétérogènes</b>\n
-    by <em>Hélène Renard, Yves Robert and Frédéric Vivien</em>\n
-    In 16ième Rencontres Francophones du Parallélisme des Architectures et des Systèmes, Le Croisic, France, 6-8 avril 2005.\n
+  - <b>Algorithmes de redistribution de donnÃ©es pour anneaux de processeurs hÃ©tÃ©rogÃ¨nes</b>\n
+    by <em>HÃ©lÃ©ne Renard, Yves Robert and FrÃ©dÃ©ric Vivien</em>\n
+    In 16iÃ¨me Rencontres Francophones du ParallÃ©lisme des Architectures et des SystÃ¨mes, Le Croisic, France, 6-8 avril 2005.\n
     http://www.polytech.unice.fr/~hrenard/recherche/Renpar16.ps
 - 2004
   - <b>Deadline Scheduling with Priority for Client-Server Systems on the Grid</b>\n
@@ -271,7 +271,7 @@ next section).
     and Applications (ISPA), 2004, Hong Kong. Published in Lecture Notes in
     Computer Science (LNCS), Volume 3358, by Springer-Verlag. p. 392-398.
   - <b>Data redistribution algorithms for heterogeneous processor rings</b>\n
-    by <em>Hélène Renard, Yves Robert and Frédéric Vivien</em>\n
+    by <em>HÃ©lÃ©ne Renard, Yves Robert and FrÃ©dÃ©ric Vivien</em>\n
     In International Conference on High Performance Computing HiPC'2004\n
     http://www.polytech.unice.fr/~hrenard/recherche/Hipc.pdf
 - 2003
