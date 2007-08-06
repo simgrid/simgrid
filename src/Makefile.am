@@ -299,9 +299,13 @@ libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
+# Please do not add -no-undefined to libsmpi_la_LDFLAGS:
+# smpi_simulated_main is indeed defined in user code, and undef in the
+# library (no idea why it works under linux, but it fails under windows)
 libsmpi_la_LIBADD = libsimgrid.la
 libsmpi_la_SOURCES = $(SMPI_SRC)
-libsmpi_la_LDFLAGS = -no-undefined $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm
+libsmpi_la_LDFLAGS = $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm
+
 
 ##
 ## Java cruft
