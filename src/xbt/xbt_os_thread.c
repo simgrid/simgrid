@@ -12,22 +12,27 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
+#include "xbt/ex_interface.h" /* We play crude games with exceptions */
 #include "portable.h"
 #include "xbt/xbt_os_time.h" /* Portable time facilities */
 #include "xbt/xbt_os_thread.h" /* This module */
 #include "xbt_modinter.h" /* Initialization/finalization of this module */
 
-
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os,xbt,"Synchronization mechanism (OS-level)");
 
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 
+
 typedef struct xbt_os_thread_ {
    pthread_t t;
+   char *name;
    void *param;
    pvoid_f_pvoid_t *start_routine;
+   ex_ctx_t *exception;
 } s_xbt_os_thread_t ;
+static xbt_os_thread_t main_thread = NULL;
 
 /* thread-specific data containing the xbt_os_thread_t structure */
 static pthread_key_t xbt_self_thread_key;
@@ -38,6 +43,19 @@ static void xbt_os_thread_free_thread_data(void*d){
    free(d);
 }
 
+/* callback: context fetching */
+static ex_ctx_t *_os_thread_ex_ctx(void) {
+  return xbt_os_thread_self()->exception;
+}
+
+/* callback: termination */
+static void _os_thread_ex_terminate(xbt_ex_t * e) {
+  xbt_ex_display(e);
+
+  abort();
+  /* FIXME: there should be a configuration variable to choose to kill everyone or only this one */
+}
+
 void xbt_os_thread_mod_init(void) {
    int errcode;
    
@@ -46,11 +64,18 @@ void xbt_os_thread_mod_init(void) {
    
    if ((errcode=pthread_key_create(&xbt_self_thread_key, NULL)))
      THROW0(system_error,errcode,"pthread_key_create failed for xbt_self_thread_key");
-   
+
+   main_thread=xbt_new(s_xbt_os_thread_t,1);
+   main_thread->start_routine = NULL;
+   main_thread->param = NULL;
+   main_thread->exception = xbt_new(ex_ctx_t, 1);
+   XBT_CTX_INITIALIZE(main_thread->exception);
+
    thread_mod_inited = 1;
 }
 void xbt_os_thread_mod_exit(void) {
-   /* FIXME: don't try to free our key on shutdown. Valgrind detects no leak if we don't, and whine if we try to */
+   /* FIXME: don't try to free our key on shutdown. 
+      Valgrind detects no leak if we don't, and whine if we try to */
 //   int errcode;
    
 //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
@@ -62,20 +87,26 @@ static void * wrapper_start_routine(void *s) {
   int errcode;
 
   if ((errcode=pthread_setspecific(xbt_self_thread_key,t)))
-    THROW0(system_error,errcode,"pthread_setspecific failed for xbt_self_thread_key");   
+    THROW0(system_error,errcode,
+	   "pthread_setspecific failed for xbt_self_thread_key");   
   return t->start_routine(t->param);
 }
-xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,
+xbt_os_thread_t xbt_os_thread_create(const char*name,
+				     pvoid_f_pvoid_t start_routine,
 				     void* param)  {
    int errcode;
 
    xbt_os_thread_t res_thread=xbt_new(s_xbt_os_thread_t,1);
+   res_thread->name = xbt_strdup(name);
    res_thread->start_routine = start_routine;
    res_thread->param = param;
-
+   res_thread->exception = xbt_new(ex_ctx_t, 1);
+   XBT_CTX_INITIALIZE(res_thread->exception);
    
-   if ((errcode = pthread_create(&(res_thread->t), NULL, wrapper_start_routine, res_thread)))
-     THROW1(system_error,errcode, "pthread_create failed: %s",strerror(errcode));
+   if ((errcode = pthread_create(&(res_thread->t), NULL, 
+				 wrapper_start_routine, res_thread)))
+     THROW1(system_error,errcode, 
+	    "pthread_create failed: %s",strerror(errcode));
 
    return res_thread;
 }
@@ -83,12 +114,18 @@ xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,
 void 
 xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return) {
 	
-	int errcode;   
-	
-	if ((errcode = pthread_join(thread->t,thread_return)))
-		THROW1(system_error,errcode, "pthread_join failed: %s",
-		       strerror(errcode));
-	free(thread);   
+  int errcode;   
+  
+  if ((errcode = pthread_join(thread->t,thread_return)))
+    THROW1(system_error,errcode, "pthread_join failed: %s",
+	   strerror(errcode));
+   if (thread->exception)
+     free(thread->exception);
+
+   if (thread == main_thread) /* just killed main thread */
+     main_thread = NULL;
+
+   free(thread);   
 }		       
 
 void xbt_os_thread_exit(int *retval) {
@@ -96,7 +133,16 @@ void xbt_os_thread_exit(int *retval) {
 }
 
 xbt_os_thread_t xbt_os_thread_self(void) {
-   return thread_mod_inited ? pthread_getspecific(xbt_self_thread_key):NULL;
+  xbt_os_thread_t res;
+
+  if (!thread_mod_inited)
+    return NULL;
+  
+  res = pthread_getspecific(xbt_self_thread_key);
+  if (!res)
+    res = main_thread;
+
+  return res;
 }
 
 #include <sched.h>
@@ -181,6 +227,7 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double dela
    double end = delay + xbt_os_time();
    ts_end.tv_sec = (time_t) floor(end);
    ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
+   DEBUG3("pthread_cond_timedwait(%p,%p,%p)",&(cond->c),&(mutex->m), &ts_end);
    switch ( (errcode=pthread_cond_timedwait(&(cond->c),&(mutex->m), &ts_end)) ) {
     case ETIMEDOUT:
      THROW3(timeout_error,errcode,"condition %p (mutex %p) wasn't signaled before timeout (%f)",
@@ -225,6 +272,7 @@ void *xbt_os_thread_getparam(void) {
 #elif defined(WIN32)
 
 typedef struct xbt_os_thread_ {
+  char *name;
   HANDLE handle;                  /* the win thread handle        */
   unsigned long id;               /* the win thread id            */
   pvoid_f_pvoid_t *start_routine;
@@ -253,11 +301,12 @@ static DWORD WINAPI  wrapper_start_routine(void *s) {
 }
 
 
-xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,
+xbt_os_thread_t xbt_os_thread_create(const char *name,pvoid_f_pvoid_t start_routine,
 			       void* param)  {
    
    xbt_os_thread_t t = xbt_new(s_xbt_os_thread_t,1);
 
+   t->name = xbt_strdup(name);
    t->start_routine = start_routine ;
    t->param = param;
    
@@ -286,6 +335,7 @@ xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return) {
 	}
 	
 	CloseHandle(thread->handle);
+	free(thread->name);
 	free(thread);
 }
 
