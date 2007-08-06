@@ -358,7 +358,7 @@ TEST_UNITS= @builddir@/cunit_unit.c @builddir@/ex_unit.c         \
             @builddir@/dynar_unit.c @builddir@/dict_unit.c @builddir@/set_unit.c @builddir@/swag_unit.c \
 	    @builddir@/xbt_str_unit.c \
             @builddir@/config_unit.c 
-MAINTAINERCLEANFILES+=$(TEST_UNITS)
+CLEANFILES=$(TEST_UNITS)
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
