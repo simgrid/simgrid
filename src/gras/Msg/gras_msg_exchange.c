@@ -12,7 +12,6 @@
 #include "xbt/ex_interface.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/Virtu/virtu_interface.h"
-#include "gras/Transport/transport_interface.h" /* gras_select */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_msg);
 
@@ -335,11 +334,12 @@ gras_msg_handle(double timeOut) {
     xbt_dynar_shift(pd->msg_queue,&msg);
   } else {
     TRY {
-			xbt_queue_shift_timed(pd->msg_received,&msg,timeOut);
+       xbt_queue_shift_timed(pd->msg_received,&msg,timeOut);
 //      msg.expe = gras_trp_select(timeOut);
     } CATCH(e) {
       if (e.category != timeout_error)
 	RETHROW;
+      DEBUG0("Damn. Timeout while getting a message from the queue");
       xbt_ex_free(e);
       timeouted = 1;
     }
