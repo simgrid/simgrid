@@ -108,7 +108,7 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
 int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
 
 // smpi functions
-extern int smpi_simulated_main(int argc, char **argv);
+XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
 unsigned int smpi_sleep(unsigned int);
 void smpi_exit(int);
 int smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
