@@ -163,6 +163,8 @@ SURF_SRC= \
 
 if CONTEXT_THREADS
   SURF_SRC += xbt/xbt_os_thread.c
+else  
+  SURF_SRC += xbt/xbt_os_thread_stubs.c
 endif
 
 GTNETS_SRC= \
