@@ -354,17 +354,16 @@ TEST_CFILES=xbt/cunit.c  xbt/ex.c          \
             xbt/dynar.c xbt/dict.c xbt/set.c xbt/swag.c \
 	    xbt/xbt_str.c                      \
             xbt/config.c 
-TEST_UNITS= ./cunit_unit.c ./ex_unit.c         \
-            ./dynar_unit.c ./dict_unit.c ./set_unit.c ./swag_unit.c \
-	    ./xbt_str_unit.c \
-            ./config_unit.c 
+TEST_UNITS= @builddir@/cunit_unit.c @builddir@/ex_unit.c         \
+            @builddir@/dynar_unit.c @builddir@/dict_unit.c @builddir@/set_unit.c @builddir@/swag_unit.c \
+	    @builddir@/xbt_str_unit.c \
+            @builddir@/config_unit.c 
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
-              gras/DataDesc/ddt_parse.yy.c \
-              $(TEST_UNITS) simgrid_units_main.c
+              gras/DataDesc/ddt_parse.yy.c 
 
-testall_SOURCES= $(TEST_UNITS) simgrid_units_main.c
+testall_SOURCES= $(TEST_UNITS) @builddir@/simgrid_units_main.c
 testall_LDADD=libgras.la
 TESTS=testall
 TESTS_ENVIRONMENT=$(SG_TEST_EXENV)
@@ -372,25 +371,25 @@ TESTS_ENVIRONMENT=$(SG_TEST_EXENV)
 EXTRA_DIST+=$(testall_SOURCES)
 
 if MAINTAINER_MODE
-./cunit_unit.c: xbt/cunit.c
+@builddir@/cunit_unit.c: xbt/cunit.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-./ex_unit.c: xbt/ex.c
+@builddir@/ex_unit.c: xbt/ex.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-./xbt_str_unit.c: xbt/xbt_str.c
+@builddir@/xbt_str_unit.c: xbt/xbt_str.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-./dynar_unit.c: xbt/dynar.c
+@builddir@/dynar_unit.c: xbt/dynar.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-./dict_unit.c: xbt/dict.c
+@builddir@/dict_unit.c: xbt/dict.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-./set_unit.c: xbt/set.c
+@builddir@/set_unit.c: xbt/set.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-./swag_unit.c: xbt/swag.c
+@builddir@/swag_unit.c: xbt/swag.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
-./config_unit.c: xbt/config.c
+@builddir@/config_unit.c: xbt/config.c
 	@top_srcdir@/tools/sg_unit_extractor.pl $^
 
-simgrid_units_main.c: $(TEST_UNITS)
-	@top_srcdir@/tools/sg_unit_extractor.pl xbt/cunit.c
+@builddir@/simgrid_units_main.c: $(TEST_UNITS)
+	@top_srcdir@/tools/sg_unit_extractor.pl @srcdir@/xbt/cunit.c
 
 clean-units:
 	rm -f simgrid_units_main.c *_unit.c
