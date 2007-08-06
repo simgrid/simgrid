@@ -17,6 +17,7 @@
 #include "portable.h" /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/module.h" /* xbt_binary_name */
+#include "xbt/synchro.h" /* xbt_thread_self */
 
 #include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
 #include "xbt/ex_interface.h"
@@ -25,6 +26,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex,xbt,"Exception mecanism");
 
 /* default __ex_ctx callback function */
 ex_ctx_t *__xbt_ex_ctx_default(void) {
+  /* Don't scream: this is a default which is never used (so, yes, 
+     there is one setjump container by running entity).
+
+     This default gets overriden in xbt/xbt_os_thread.c so that it works in
+     real life and in simulation when using threads to implement the simulation
+     processes (ie, with pthreads and on windows).
+
+     It also gets overriden in xbt/context.c when using ucontextes (as well as
+     in Java for now, but after the java overhaul, it will get cleaned out)
+  */
     static ex_ctx_t ctx = XBT_CTX_INITIALIZER;
 
     return &ctx;
@@ -48,7 +59,8 @@ void xbt_backtrace_display(xbt_ex_t *e) {
   if (e->used == 0) {
      fprintf(stderr,"(backtrace not set)\n");
   } else {	
-     fprintf(stderr,"Backtrace:\n");
+     fprintf(stderr,"Backtrace (displayed in thread %p):\n",
+	     (void*)xbt_thread_self());
      for (i=1; i<e->used; i++) /* no need to display "xbt_display_backtrace" */
        fprintf(stderr,"---> %s\n",e->bt_strings[i] +4);
   }
