@@ -119,10 +119,9 @@ int smpi_sender(int argc, char **argv)
 			communicate_action = SIMIX_action_communicate(shost, dhost,
 				NULL, request->datatype->size * request->count * 1.0, -1.0);
 
-			SIMIX_register_condition_to_action(communicate_action, request->cond);
 			SIMIX_register_action_to_condition(communicate_action, request->cond);
-
 			SIMIX_cond_wait(request->cond, request->mutex);
+			SIMIX_unregister_action_to_condition(communicate_action, request->cond);
 
 			SIMIX_mutex_unlock(request->mutex);
 
@@ -638,10 +637,10 @@ void smpi_bench_end()
 	mutex          = SIMIX_mutex_init();
 	cond           = SIMIX_cond_init();
 
-	SIMIX_register_condition_to_action(compute_action, cond);
-	SIMIX_register_action_to_condition(compute_action, cond);
 	SIMIX_mutex_lock(mutex);
+	SIMIX_register_action_to_condition(compute_action, cond);
 	SIMIX_cond_wait(cond, mutex);
+	SIMIX_unregister_action_to_condition(compute_action, cond);
 	SIMIX_mutex_unlock(mutex);
 
 	SIMIX_mutex_destroy(mutex);
@@ -790,10 +789,10 @@ unsigned int smpi_sleep(unsigned int seconds)
 	mutex        = SIMIX_mutex_init();
 	cond         = SIMIX_cond_init();
 
-	SIMIX_register_condition_to_action(sleep_action, cond);
-	SIMIX_register_action_to_condition(sleep_action, cond);
 	SIMIX_mutex_lock(mutex);
+	SIMIX_register_action_to_condition(sleep_action, cond);
 	SIMIX_cond_wait(cond, mutex);
+	SIMIX_unregister_action_to_condition(sleep_action, cond);
 	SIMIX_mutex_unlock(mutex);
 
 	SIMIX_mutex_destroy(mutex);
