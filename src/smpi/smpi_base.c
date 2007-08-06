@@ -8,7 +8,7 @@ SMPI_Global_t     smpi_global     = NULL;
 
 SMPI_MPI_Global_t smpi_mpi_global = NULL;
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(smpi, "SMPI");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi,XBT_LOG_ROOT_CAT, "All SMPI categories (see \ref SMPI_API)");
 
 int inline smpi_mpi_comm_size(smpi_mpi_communicator_t *comm)
 {
