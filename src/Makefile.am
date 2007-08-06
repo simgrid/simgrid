@@ -362,7 +362,8 @@ CLEANFILES=$(TEST_UNITS)
 
 BUILT_SOURCES=../include/surf/surfxml.h surf/surfxml.c \
               ../include/xbt/graphxml.h xbt/graphxml.c \
-              gras/DataDesc/ddt_parse.yy.c 
+              gras/DataDesc/ddt_parse.yy.c \
+	      $(TEST_UNITS) @builddir@/simgrid_units_main.c
 
 testall_SOURCES= $(TEST_UNITS) @builddir@/simgrid_units_main.c
 testall_LDADD=libgras.la
@@ -393,8 +394,12 @@ if MAINTAINER_MODE
 	@top_srcdir@/tools/sg_unit_extractor.pl @srcdir@/xbt/cunit.c
 
 clean-units:
-	rm -f simgrid_units_main.c *_unit.c
-
+	rm -f simgrid_units_main.c *_unit.c @srcdir@/simgrid_units_main.c @srcdir@/*_unit.c
+	for n in $(TEST_UNITS) ; do \
+	  dep=`echo $$n|sed -e 's|.c$$|.Po|' -e 's|[^/]*/||' -e 's|^|.deps/|'`; \
+          echo "Removing dependency tracker of $$n ($$dep @srcdir@/$$dep)"; \
+	  rm -vf $$dep @srcdir@/$$dep; touch $$dep; \
+        done
 else
 
 $(TEST_UNITS) simgrid_units_main.c clean-units: 
