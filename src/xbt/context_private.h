@@ -31,11 +31,13 @@
 
 typedef struct s_xbt_context {
 	s_xbt_swag_hookup_t hookup;
+   	char *name;
 
 	/* Declaration of the thread running the process */
 #ifdef JAVA_SIMGRID /* come first because other ones are defined too */
 	jobject jprocess;  /* the java process instance			*/
 	JNIEnv* jenv;	   /* jni interface pointer for this thread	*/
+	ex_ctx_t *exception; /* exception container -- only in ucontext&java, os_threads deals with it for us otherwise */
 #else   
 # ifdef CONTEXT_THREADS
 	xbt_os_thread_t thread; /* a plain dumb thread (portable to posix or windows) */
@@ -43,6 +45,7 @@ typedef struct s_xbt_context {
 	ucontext_t uc;	     /* the thread that execute the code */
 	char stack[STACK_SIZE];
 	struct s_xbt_context *save;
+	ex_ctx_t *exception; /* exception container -- only in ucontext&java, os_threads deals with it for us otherwise */
 # endif /* CONTEXT_THREADS */
 #endif /* JAVA_SIMGRID */
    
@@ -63,7 +66,6 @@ typedef struct s_xbt_context {
 	void_f_pvoid_t *cleanup_func;
 	void *cleanup_arg;
 
-	ex_ctx_t *exception;		/* exception container    */
    	int iwannadie;                  /* Set to true by the context when it wants to commit suicide */
 
    

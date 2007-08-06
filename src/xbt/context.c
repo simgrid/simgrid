@@ -111,6 +111,7 @@ static void xbt_context_free(xbt_context_t context)
   if (!context)
     return;
   DEBUG1("Freeing %p", context);
+  free(context->name);
 #ifdef CONTEXT_THREADS
   /*DEBUG1("\t joining %p",(void *)context->thread->t); */
   DEBUG1("\t joining %p", (void *) context->thread);
@@ -125,11 +126,11 @@ static void xbt_context_free(xbt_context_t context)
   context->thread = NULL;
   context->mutex = NULL;
   context->cond = NULL;
-#endif
-
+#else
   if (context->exception)
     free(context->exception);
-
+#endif
+   
   free(context);
   return;
 }
@@ -219,25 +220,21 @@ static void *__context_wrapper(void *c)
   return NULL;
 }
 
-/* callback: context fetching */
-static ex_ctx_t *__context_ex_ctx(void)
-{
+#ifndef CONTEXT_THREADS
+/* callback: context fetching (used only with ucontext, os_thread deal with it for us otherwise) */
+static ex_ctx_t *_context_ex_ctx(void) {
   return current_context->exception;
 }
 
 /* callback: termination */
-static void __context_ex_terminate(xbt_ex_t * e)
-{
+static void _context_ex_terminate(xbt_ex_t * e) {
   xbt_ex_display(e);
 
   abort();
-  /* FIXME: there should be a configuration variable to choose this
-     if(current_context!=init_context) 
-     __context_exit(current_context, e->value);
-     else
-     abort();
-   */
+  /* FIXME: there should be a configuration variable to 
+     choose to kill everyone or only this one */
 }
+#endif 
 
 /** \name Functions 
  *  \ingroup XBT_context
@@ -254,10 +251,6 @@ void xbt_context_init(void)
     DEBUG1("Init Context (%p)", init_context);
 
     init_context->iwannadie = 0; /* useless but makes valgrind happy */
-    init_context->exception = xbt_new(ex_ctx_t, 1);
-    XBT_CTX_INITIALIZE(init_context->exception);
-    __xbt_ex_ctx = __context_ex_ctx;
-    __xbt_ex_terminate = __context_ex_terminate;
     context_to_destroy =
 	xbt_swag_new(xbt_swag_offset(*current_context, hookup));
     context_living =
@@ -266,6 +259,11 @@ void xbt_context_init(void)
 #ifdef CONTEXT_THREADS
     creation_mutex = xbt_os_mutex_init();
     creation_cond = xbt_os_cond_init();
+#else
+    init_context->exception = xbt_new(ex_ctx_t, 1);
+    XBT_CTX_INITIALIZE(init_context->exception);
+    __xbt_ex_ctx = _context_ex_ctx;
+    __xbt_ex_terminate = _context_ex_terminate;
 #endif
   }
 }
@@ -294,13 +292,14 @@ void xbt_context_start(xbt_context_t context)
 {
 #ifdef CONTEXT_THREADS
   /* Launch the thread */
+   
   DEBUG3("**[ctx:%p;self:%p]** Locking creation_mutex %p ****", context,
 	 xbt_os_thread_self(), creation_mutex);
   xbt_os_mutex_lock(creation_mutex);
 
   DEBUG2("**[ctx:%p;self:%p]** Thread create ****", context,
 	 xbt_os_thread_self());
-  context->thread = xbt_os_thread_create(__context_wrapper, context);
+  context->thread = xbt_os_thread_create(context->name,__context_wrapper, context);
   DEBUG3("**[ctx:%p;self:%p]** Thread created : %p ****", context,
 	 xbt_os_thread_self(), context->thread);
 
@@ -329,7 +328,7 @@ void xbt_context_start(xbt_context_t context)
  * \param argc first argument of function \a code
  * \param argv seconde argument of function \a code
  */
-xbt_context_t xbt_context_new(xbt_main_func_t code,
+xbt_context_t xbt_context_new(const char *name,xbt_main_func_t code,
 			      void_f_pvoid_t startup_func,
 			      void *startup_arg,
 			      void_f_pvoid_t cleanup_func,
@@ -340,6 +339,7 @@ xbt_context_t xbt_context_new(xbt_main_func_t code,
   res = xbt_new0(s_xbt_context_t, 1);
 
   res->code = code;
+  res->name = xbt_strdup(name);
 #ifdef CONTEXT_THREADS
   res->mutex = xbt_os_mutex_init();
   res->cond = xbt_os_cond_init();
@@ -355,6 +355,9 @@ xbt_context_t xbt_context_new(xbt_main_func_t code,
   res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack, STACK_SIZE);
   res->uc.uc_stack.ss_size =
       pth_sksize_makecontext(res->stack, STACK_SIZE);
+   
+  res->exception = xbt_new(ex_ctx_t, 1);
+  XBT_CTX_INITIALIZE(res->exception);
 #endif				/* CONTEXT_THREADS or not */
 
   res->iwannadie = 0; /* useless but makes valgrind happy */
@@ -365,8 +368,6 @@ xbt_context_t xbt_context_new(xbt_main_func_t code,
   res->startup_arg = startup_arg;
   res->cleanup_func = cleanup_func;
   res->cleanup_arg = cleanup_arg;
-  res->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(res->exception);
 
   xbt_swag_insert(res, context_living);
 
@@ -412,7 +413,12 @@ void xbt_context_exit(void)
       xbt_context_kill(context);
     }
   }
+#ifdef CONTEXT_THREADS
+  xbt_os_mutex_destroy(creation_mutex);
+  xbt_os_cond_destroy(creation_cond);
+#else   
   free(init_context->exception);
+#endif
   free(init_context);
   init_context = current_context = NULL;
 
@@ -420,10 +426,6 @@ void xbt_context_exit(void)
   xbt_swag_free(context_to_destroy);
   xbt_swag_free(context_living);
 
-#ifdef CONTEXT_THREADS
-  xbt_os_mutex_destroy(creation_mutex);
-  xbt_os_cond_destroy(creation_cond);
-#endif
 }
 
 /** 
