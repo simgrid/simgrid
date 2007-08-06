@@ -28,7 +28,7 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
   typedef struct xbt_os_thread_       *xbt_os_thread_t;
 
-  XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(pvoid_f_pvoid_t start_routine,void* param);
+  XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name,pvoid_f_pvoid_t start_routine,void* param);
   XBT_PUBLIC(void) xbt_os_thread_exit(int *retcode);
   XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_self(void);
   /* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */

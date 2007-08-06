@@ -120,8 +120,11 @@ int philosopher (int argc,char *argv[]) {
   
   INFO0("Enough waiting, spawn the threads");
   /* spawn threads */
-  for (i=0; i<philosopher_amount; i++)
-     philosophers[i] = xbt_thread_create(philo_thread,&id[i]);
+  for (i=0; i<philosopher_amount; i++) {
+     char *name = bprintf("thread %d",i);
+     philosophers[i] = xbt_thread_create(name,philo_thread,&id[i]);
+     free(name);
+  }
   
   /* wait for them */
   xbt_mutex_lock(mut_end);
