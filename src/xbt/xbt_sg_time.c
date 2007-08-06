@@ -32,7 +32,6 @@ void xbt_sleep(double sec) {
 	/* create conditional and register action to it */
 	cond = SIMIX_cond_init();
 
-	SIMIX_register_condition_to_action(act_sleep, cond);
 	SIMIX_register_action_to_condition(act_sleep, cond);
 	SIMIX_cond_wait(cond,mutex);
 	SIMIX_mutex_unlock(mutex);
