@@ -249,6 +249,31 @@ int  xbt_fifo_remove(xbt_fifo_t l, void *t)
   return 0;
 }
 
+
+/**
+ * \param l 
+ * \param t an objet
+ *
+ * removes all occurences of \a t from \a l. 
+ * \return 1 if an item was removed and 0 otherwise.
+ */
+int  xbt_fifo_remove_all(xbt_fifo_t l, void *t)
+{
+  xbt_fifo_item_t current, current_next;
+  int res=0;
+
+  for (current = l->head; current; current = current_next) {
+    current_next = current->next;
+    if (current->content != t)
+      continue;
+    /* remove the item */
+    xbt_fifo_remove_item(l, current);
+    xbt_fifo_free_item(current);
+    res=1;
+  }
+  return res;
+}
+
 /**
  * \param l a list
  * \param current a bucket
