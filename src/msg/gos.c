@@ -127,6 +127,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   process->simdata->waiting_task = t;
   SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
   SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
+  SIMIX_unregister_action_to_condition(t_simdata->comm, t_simdata->cond);
   process->simdata->waiting_task = NULL;
 
   /* the task has already finished and the pointer must be null */
@@ -591,6 +592,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
   self->simdata->waiting_task = task;
   SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
   SIMIX_cond_wait(simdata->cond, simdata->mutex);
+  SIMIX_unregister_action_to_condition(simdata->compute, simdata->cond);
   self->simdata->waiting_task = NULL;
 
   SIMIX_mutex_unlock(simdata->mutex);
@@ -704,6 +706,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   self->simdata->waiting_task = task;
   SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
   SIMIX_cond_wait(simdata->cond, simdata->mutex);
+  SIMIX_unregister_action_to_condition(simdata->compute, simdata->cond);
   self->simdata->waiting_task = NULL;
 
 
@@ -759,6 +762,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 
   SIMIX_register_action_to_condition(act_sleep, cond);
   SIMIX_cond_wait(cond, mutex);
+  SIMIX_unregister_action_to_condition(act_sleep, cond);
   SIMIX_mutex_unlock(mutex);
 
   /* remove variables */

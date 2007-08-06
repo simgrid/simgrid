@@ -90,7 +90,6 @@ void gras_msg_send_ext(gras_socket_t   sock,
 				 sock_data->to_host,msgtype->name,
 				 (double)whole_payload_size, -1);
   SIMIX_register_action_to_condition(act,sock_data->cond);
-  SIMIX_register_condition_to_action(act,sock_data->cond);
   
   VERB5("Sending to %s(%s) a message type '%s' kind '%s' ID %lu",
 	SIMIX_host_get_name(sock_data->to_host),
@@ -98,6 +97,7 @@ void gras_msg_send_ext(gras_socket_t   sock,
 	msg->type->name,e_gras_msg_kind_names[msg->kind], msg->ID);
 	
   SIMIX_cond_wait(sock_data->cond, sock_data->mutex);
+  SIMIX_unregister_action_to_condition(act,sock_data->cond);
   /* error treatmeant (FIXME)*/
 
   /* cleanup structures */

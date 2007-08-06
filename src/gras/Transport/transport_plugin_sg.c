@@ -306,9 +306,8 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   act = SIMIX_action_communicate(SIMIX_host_self(), sock_data->to_host,
 				 name, size, -1);
   SIMIX_register_action_to_condition(act,sock_data->cond);
-  SIMIX_register_condition_to_action(act,sock_data->cond);
-
   SIMIX_cond_wait(sock_data->cond,sock_data->mutex);
+  SIMIX_unregister_action_to_condition(act,sock_data->cond);
   /* error treatmeant (FIXME)*/
 
   /* cleanup structures */
