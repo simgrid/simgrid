@@ -90,7 +90,7 @@ int server (int argc,char *argv[]) {
   globals->endcondition=0;
 
   /* 6. Wait up to 10 minutes for an incomming message to handle */
-  gras_msg_handle(60.0);
+  gras_msg_handle(10.0);
    
   /* 7. Housekeeping */
   if (!globals->endcondition)

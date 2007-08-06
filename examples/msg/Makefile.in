@@ -114,7 +114,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ADDR2LINE = @ADDR2LINE@
 AMTAR = @AMTAR@
-AM_CFLAGS = -g
+AM_CPPFLAGS = @AM_CPPFLAGS@
 AR = @AR@
 AS = @AS@
 AUTOCONF = @AUTOCONF@
@@ -246,6 +246,7 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include
+AM_CFLAGS = -g
 EXTRA_DIST = msg_platform.xml small_platform.xml \
 	sendrecv/platform_sendrecv.xml \
 	sendrecv/deployment_sendrecv.xml \
