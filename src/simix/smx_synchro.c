@@ -185,9 +185,8 @@ void SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
   if (xbt_fifo_size(cond->actions) == 0) {
     act_sleep = SIMIX_action_sleep(SIMIX_host_self(), -1);
     SIMIX_register_action_to_condition(act_sleep, cond);
-    SIMIX_register_condition_to_action(act_sleep, cond);
     __SIMIX_cond_wait(cond);
-    xbt_fifo_pop(act_sleep->cond_list);
+    SIMIX_unregister_action_to_condition(act_sleep, cond);
     SIMIX_action_destroy(act_sleep);
   } else {
     __SIMIX_cond_wait(cond);
@@ -243,9 +242,8 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
   if (max_duration >= 0) {
     act_sleep = SIMIX_action_sleep(SIMIX_host_self(), max_duration);
     SIMIX_register_action_to_condition(act_sleep, cond);
-    SIMIX_register_condition_to_action(act_sleep, cond);
     __SIMIX_cond_wait(cond);
-    xbt_fifo_remove(act_sleep->cond_list, cond);
+    SIMIX_unregister_action_to_condition(act_sleep, cond);
     if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
       SIMIX_action_destroy(act_sleep);
       THROW0(timeout_error, 0, "Condition timeout");
@@ -302,43 +300,15 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 		"Cannot destroy conditional since someone is still using it");
     xbt_swag_free(cond->sleeping);
 
+    DEBUG1("%d actions registered", xbt_fifo_size(cond->actions));
+    __SIMIX_cond_display_actions(cond);
     xbt_fifo_foreach(cond->actions, item, action, smx_action_t) {
-      SIMIX_unregister_condition_to_action(action, cond);
+      SIMIX_unregister_action_to_condition(action, cond);
     }
+    __SIMIX_cond_display_actions(cond);
+
     xbt_fifo_free(cond->actions);
     xbt_free(cond);
     return;
-  }
-}
-
-/**
- * 	\brief Set a condition to an action
- *
- * 	Creates the "link" between an action and a condition. You have to call this function when you create an action and want to wait its ending. 
- *	\param action SIMIX action
- *	\param cond SIMIX cond
- */
-void SIMIX_register_condition_to_action(smx_action_t action,
-					smx_cond_t cond)
-{
-  xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
-
-  DEBUG2("Register condition %p to action %p", cond, action);
-  xbt_fifo_push(action->cond_list, cond);
-}
-
-/**
- * 	\brief Unset a condition to an action
- *
- * 	Destroys the "link" between an action and a condition. 
- *	\param action SIMIX action
- *	\param cond SIMIX cond
- */
-void SIMIX_unregister_condition_to_action(smx_action_t action,
-					  smx_cond_t cond)
-{
-  xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
-
-  while (xbt_fifo_remove(action->cond_list, cond)) {
   }
 }

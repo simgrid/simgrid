@@ -186,7 +186,6 @@ void SIMIX_action_set_priority(smx_action_t action, double priority)
  */
 void SIMIX_action_destroy(smx_action_t action)
 {
-
   xbt_assert0((action != NULL), "Invalid parameter");
 
   xbt_assert1((xbt_fifo_size(action->cond_list) == 0),
@@ -220,8 +219,34 @@ void SIMIX_register_action_to_condition(smx_action_t action,
 {
   xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
 
-  DEBUG2("Register action %p to condtion %p", action, cond);
+  DEBUG2("Register action %p to cond %p", action, cond);
+  __SIMIX_cond_display_actions(cond);
   xbt_fifo_push(cond->actions, action);
+  __SIMIX_cond_display_actions(cond);
+  DEBUG2("Register condition %p to action %p", cond, action);
+  __SIMIX_action_display_conditions(action);
+  xbt_fifo_push(action->cond_list, cond);
+  __SIMIX_action_display_conditions(action);
+}
+
+/**
+ * 	\brief Unset an action to a condition.
+ *
+ * 	Destroys the "links" from the condition to this action.
+ *	\param action SIMIX action
+ *	\param cond SIMIX cond
+ */
+void SIMIX_unregister_action_to_condition(smx_action_t action,
+					  smx_cond_t cond)
+{
+  xbt_assert0((action != NULL) && (cond != NULL), "Invalid parameters");
+
+  __SIMIX_cond_display_actions(cond);
+  xbt_fifo_remove_all(cond->actions, action);
+  __SIMIX_cond_display_actions(cond);
+  __SIMIX_action_display_conditions(action);
+  xbt_fifo_remove_all(action->cond_list, cond);
+  __SIMIX_action_display_conditions(action);
 }
 
 /**
@@ -272,4 +297,24 @@ e_surf_action_state_t SIMIX_action_get_state(smx_action_t action)
   return surf_workstation_resource->common_public->
       action_get_state(action->simdata->surf_action);
 
+}
+
+void __SIMIX_cond_display_actions(smx_cond_t cond)
+{
+  xbt_fifo_item_t item = NULL;
+  smx_action_t action = NULL;
+
+  DEBUG1("Actions for condition %p", cond);
+  xbt_fifo_foreach(cond->actions, item, action, smx_action_t)
+      DEBUG1("\t %p", action);
+}
+
+void __SIMIX_action_display_conditions(smx_action_t action)
+{
+  xbt_fifo_item_t item = NULL;
+  smx_cond_t cond = NULL;
+
+  DEBUG1("Conditions for action %p", action);
+  xbt_fifo_foreach(action->cond_list, item, cond, smx_cond_t)
+      DEBUG1("\t %p", cond);
 }

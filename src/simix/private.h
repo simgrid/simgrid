@@ -120,4 +120,7 @@ void __SIMIX_host_destroy(smx_host_t host);
 
 void __SIMIX_cond_wait(smx_cond_t cond);
 
+void __SIMIX_cond_display_actions(smx_cond_t cond);
+void __SIMIX_action_display_conditions(smx_action_t action);
+
 #endif

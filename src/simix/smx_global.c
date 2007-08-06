@@ -225,7 +225,7 @@ void __SIMIX_main(void)
 	}
 	SIMIX_cond_broadcast(cond);
 	/* remove conditional from action */
-	xbt_fifo_remove(smx_action->cond_list, cond);
+	SIMIX_unregister_action_to_condition(smx_action, cond);
       }
     }
 
@@ -240,7 +240,7 @@ void __SIMIX_main(void)
 	}
 	SIMIX_cond_broadcast(cond);
 	/* remove conditional from action */
-	xbt_fifo_remove(smx_action->cond_list, cond);
+	SIMIX_unregister_action_to_condition(smx_action, cond);
       }
     }
   }
