@@ -172,28 +172,21 @@ void SIMIX_process_kill(smx_process_t process)
 	 p_simdata->s_host->name);
 
   /* Cleanup if we were waiting for something */
-  DEBUG0("Here!");
   if (p_simdata->mutex)
     xbt_swag_remove(process, p_simdata->mutex->sleeping);
 
-  DEBUG0("Here!");
   if (p_simdata->cond)
     xbt_swag_remove(process, p_simdata->cond->sleeping);
 
-  DEBUG0("Here!");
   xbt_swag_remove(process, simix_global->process_to_run);
-  DEBUG0("Here!");
   xbt_swag_remove(process, simix_global->process_list);
   DEBUG2("%p here! killing %p", simix_global->current_process, process);
   xbt_context_kill(process->simdata->context);
 
-  DEBUG0("Here!");
   if (process == SIMIX_process_self()) {
     /* I just killed myself */
-    DEBUG0("Here!");
     xbt_context_yield();
   }
-  DEBUG0("Here!");
 }
 
 /**
@@ -271,8 +264,10 @@ smx_process_t SIMIX_process_self(void)
 /**
  * \brief Suspend the process.
  *
- * This functions suspend the process by suspending the action on which it was waiting for the completion.
- *	\param process SIMIX process
+ * This functions suspend the process by suspending the action on
+ * which it was waiting for the completion.
+ *
+ * \param process SIMIX process
  */
 void SIMIX_process_suspend(smx_process_t process)
 {
@@ -315,7 +310,6 @@ void SIMIX_process_suspend(smx_process_t process)
     surf_workstation_resource->common_public->set_priority(dummy->simdata->
 							   surf_action,
 							   0.0);
-    SIMIX_register_condition_to_action(dummy, cond);
     SIMIX_register_action_to_condition(dummy, cond);
     __SIMIX_cond_wait(cond);
     //SIMIX_action_destroy(dummy);
