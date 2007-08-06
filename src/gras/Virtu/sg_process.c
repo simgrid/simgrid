@@ -174,48 +174,45 @@ void gras_create_environment(const char *file) {
 void gras_function_register(const char *name, xbt_main_func_t code) {
    return SIMIX_function_register(name, code);
 }
+
 void gras_main() {
-   smx_cond_t cond = NULL;
-   smx_action_t smx_action;
-   xbt_fifo_t actions_done = xbt_fifo_new();
-   xbt_fifo_t actions_failed = xbt_fifo_new();
+  smx_cond_t cond = NULL;
+  smx_action_t action;
+  xbt_fifo_t actions_done = xbt_fifo_new();
+  xbt_fifo_t actions_failed = xbt_fifo_new();
    
+  /* Clean IO before the run */
+  fflush(stdout);
+  fflush(stderr);
 
-   /* Clean IO before the run */
-   fflush(stdout);
-   fflush(stderr);
-   
-   
-   while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
-
-      while ( (smx_action = xbt_fifo_pop(actions_failed)) ) {
-	 
-	 
-	 DEBUG1("** %s failed **",smx_action->name);
-	 while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
-	    SIMIX_cond_broadcast(cond);
-			}
-	 /* action finished, destroy it */
-	 //	SIMIX_action_destroy(smx_action);
+  while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
+    while ( (action = xbt_fifo_pop(actions_failed)) ) {
+      DEBUG1("** %s failed **",action->name);
+      while ( (cond = xbt_fifo_pop(action->cond_list)) ) {
+	SIMIX_cond_broadcast(cond);
       }
-      
-      while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
-	 
-	 DEBUG1("** %s done **",smx_action->name);
-	 while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
-	    SIMIX_cond_broadcast(cond);
-	 }
-	 /* action finished, destroy it */
-	 //SIMIX_action_destroy(smx_action);
+      /* action finished, destroy it */
+      //	SIMIX_action_destroy(action);
+    }
+    
+    while ( (action = xbt_fifo_pop(actions_done)) ) {
+      DEBUG1("** %s done **",action->name);
+      while ( (cond = xbt_fifo_pop(action->cond_list)) ) {
+	SIMIX_cond_broadcast(cond);
       }
-   }
-   xbt_fifo_free(actions_failed);
-   xbt_fifo_free(actions_done);
-   return;   
+      /* action finished, destroy it */
+      //SIMIX_action_destroy(action);
+    }
+  }
+  xbt_fifo_free(actions_failed);
+  xbt_fifo_free(actions_done);
+  return;   
 }
+
 void gras_launch_application(const char *file) {
    return SIMIX_launch_application(file);
 }
+
 void gras_clean() {
    return SIMIX_clean();
 }

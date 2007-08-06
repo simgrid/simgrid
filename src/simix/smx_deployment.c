@@ -67,8 +67,7 @@ static void parse_process_finalize(void)
 						 create_process_function,
 						 arg);
     else
-      surf_timer_resource->extension_public->set(start_time,
-						 (void *)
+      surf_timer_resource->extension_public->set(start_time, (void *)
 						 &SIMIX_process_create,
 						 arg);
 
@@ -93,8 +92,7 @@ static void parse_process_finalize(void)
 						   kill_process_function,
 						   arg);
       else
-	surf_timer_resource->extension_public->set(kill_time,
-						   (void *)
+	surf_timer_resource->extension_public->set(kill_time, (void *)
 						   &SIMIX_process_kill,
 						   (void *) process);
     }
