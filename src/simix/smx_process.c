@@ -69,7 +69,7 @@ smx_process_t SIMIX_process_create(const char *name,
   simdata->cond = NULL;
   simdata->argc = argc;
   simdata->argv = argv;
-  simdata->context = xbt_context_new(code, NULL, NULL,
+  simdata->context = xbt_context_new(name,code, NULL, NULL,
 				     simix_global->
 				     cleanup_process_function, process,
 				     simdata->argc, simdata->argv);
@@ -132,7 +132,7 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
   simdata->argc = 0;
   simdata->argv = NULL;
 
-  simdata->context = xbt_context_new(NULL, NULL, NULL,
+  simdata->context = xbt_context_new(name,NULL, NULL, NULL,
 				     simix_global->
 				     cleanup_process_function, process,
 				     /* argc/argv */ 0, NULL);

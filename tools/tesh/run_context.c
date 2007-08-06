@@ -340,8 +340,8 @@ void rctx_start(void) {
        rctx->end_time = -1;
 
     rctx->reader_done = 0;
-    rctx->reader = xbt_os_thread_create(thread_reader,(void*)rctx);
-    rctx->writer = xbt_os_thread_create(thread_writer,(void*)rctx);
+    rctx->reader = xbt_os_thread_create("reader",thread_reader,(void*)rctx);
+    rctx->writer = xbt_os_thread_create("writer",thread_writer,(void*)rctx);
 
   } else { /* child */
 
@@ -370,7 +370,7 @@ void rctx_start(void) {
     DEBUG2("RCTX: new bg=%p, new fg=%p",old,rctx);
 
     DEBUG2("Launch a thread to wait for %s %d",old->cmd,old->pid);
-    runner = xbt_os_thread_create(rctx_wait,(void*)old);
+    runner = xbt_os_thread_create(old->cmd,rctx_wait,(void*)old);
     old->runner = runner;
     VERB3("Launched thread %p to wait for %s %d",
 	  runner,old->cmd, old->pid);

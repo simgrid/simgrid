@@ -116,6 +116,7 @@ xbt_context_free(xbt_context_t context) {
     if(context->exception) 
       free(context->exception);
     
+    free(context->name);
     free(context);
     context = NULL;
   }
@@ -271,13 +272,14 @@ xbt_context_start(xbt_context_t context)  {
 
 
 xbt_context_t 
-xbt_context_new(xbt_main_func_t code, 
+xbt_context_new(const char *name, xbt_main_func_t code, 
 		void_f_pvoid_t startup_func, void *startup_arg,
 		void_f_pvoid_t cleanup_func, void *cleanup_arg,
 		int argc, char *argv[]) {
   xbt_context_t context = xbt_new0(s_xbt_context_t,1);
 
   context->code = code;
+  context->name = xbt_strdup(name);
 	
   context->mutex = xbt_os_mutex_init();
   context->cond = xbt_os_cond_init();
