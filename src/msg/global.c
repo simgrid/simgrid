@@ -1,19 +1,20 @@
 /*     $Id$      */
-  
+
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-  
+
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/virtu.h"
-#include "xbt/ex.h" /* ex_backtrace_display */
+#include "xbt/ex.h"		/* ex_backtrace_display */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");    
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
+				"Logging specific to MSG (kernel)");
 
 MSG_Global_t msg_global = NULL;
 
@@ -34,7 +35,7 @@ MSG_Global_t msg_global = NULL;
  */
 void MSG_global_init_args(int *argc, char **argv)
 {
-  MSG_global_init(argc,argv);
+  MSG_global_init(argc, argv);
 }
 
 /** \ingroup msg_simulation
@@ -42,11 +43,11 @@ void MSG_global_init_args(int *argc, char **argv)
  */
 void MSG_global_init(int *argc, char **argv)
 {
-  xbt_getpid = & MSG_process_self_PID;
+  xbt_getpid = &MSG_process_self_PID;
   if (!msg_global) {
     SIMIX_global_init(argc, argv);
-     
-    msg_global = xbt_new0(s_MSG_Global_t,1);
+
+    msg_global = xbt_new0(s_MSG_Global_t, 1);
 
     msg_global->host = xbt_fifo_new();
     msg_global->process_list = xbt_fifo_new();
@@ -91,7 +92,9 @@ void MSG_paje_output(const char *filename)
  */
 MSG_error_t MSG_set_channel_number(int number)
 {
-  xbt_assert0((msg_global) && (msg_global->max_channel == 0), "Channel number already set!");
+  xbt_assert0((msg_global)
+	      && (msg_global->max_channel == 0),
+	      "Channel number already set!");
 
   msg_global->max_channel = number;
 
@@ -107,7 +110,9 @@ MSG_error_t MSG_set_channel_number(int number)
  */
 int MSG_get_channel_number(void)
 {
-  xbt_assert0((msg_global)&&(msg_global->max_channel != 0), "Channel number not set yet!");
+  xbt_assert0((msg_global)
+	      && (msg_global->max_channel != 0),
+	      "Channel number not set yet!");
 
   return msg_global->max_channel;
 }
@@ -122,9 +127,9 @@ void __MSG_display_process_status(void)
 
 static void _XBT_CALL inthandler(int ignored)
 {
-   INFO0("CTRL-C pressed. Displaying status and bailing out");
-   __MSG_display_process_status();
-   exit(1);
+  INFO0("CTRL-C pressed. Displaying status and bailing out");
+  __MSG_display_process_status();
+  exit(1);
 }
 
 /** \ingroup msg_simulation
@@ -132,46 +137,46 @@ static void _XBT_CALL inthandler(int ignored)
  */
 MSG_error_t MSG_main(void)
 {
-	smx_cond_t cond = NULL;
-	smx_action_t smx_action;
-	xbt_fifo_t actions_done = xbt_fifo_new();
-	xbt_fifo_t actions_failed = xbt_fifo_new();
+  smx_cond_t cond = NULL;
+  smx_action_t smx_action;
+  xbt_fifo_t actions_done = xbt_fifo_new();
+  xbt_fifo_t actions_failed = xbt_fifo_new();
 
-	/* Prepare to display some more info when dying on Ctrl-C pressing */
-	signal(SIGINT,inthandler);
+  /* Prepare to display some more info when dying on Ctrl-C pressing */
+  signal(SIGINT, inthandler);
 
-	/* Clean IO before the run */
-	fflush(stdout);
-	fflush(stderr);
+  /* Clean IO before the run */
+  fflush(stdout);
+  fflush(stderr);
 
-	//surf_solve(); /* Takes traces into account. Returns 0.0 */
-	/* xbt_fifo_size(msg_global->process_to_run) */
+  //surf_solve(); /* Takes traces into account. Returns 0.0 */
+  /* xbt_fifo_size(msg_global->process_to_run) */
 
-	while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
+  while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
 
-		while ( (smx_action = xbt_fifo_pop(actions_failed)) ) {
+    while ((smx_action = xbt_fifo_pop(actions_failed))) {
 
 
-			DEBUG1("** %s failed **",smx_action->name);
-			while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
-				SIMIX_cond_broadcast(cond);
-			}
-			/* action finished, destroy it */
-		//	SIMIX_action_destroy(smx_action);
-		}
+      DEBUG1("** %s failed **", smx_action->name);
+      while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
+	SIMIX_cond_broadcast(cond);
+      }
+      /* action finished, destroy it */
+      //      SIMIX_action_destroy(smx_action);
+    }
 
-		while ( (smx_action = xbt_fifo_pop(actions_done)) ) {
+    while ((smx_action = xbt_fifo_pop(actions_done))) {
 
-			DEBUG1("** %s done **",smx_action->name);
-			while ( (cond = xbt_fifo_pop(smx_action->cond_list)) ) {
-				SIMIX_cond_broadcast(cond);
-			}
-			/* action finished, destroy it */
-			//SIMIX_action_destroy(smx_action);
-		}
-	}
-	xbt_fifo_free(actions_failed);
-	xbt_fifo_free(actions_done);
+      DEBUG1("** %s done **", smx_action->name);
+      while ((cond = xbt_fifo_pop(smx_action->cond_list))) {
+	SIMIX_cond_broadcast(cond);
+      }
+      /* action finished, destroy it */
+      //SIMIX_action_destroy(smx_action);
+    }
+  }
+  xbt_fifo_free(actions_failed);
+  xbt_fifo_free(actions_done);
   return MSG_OK;
 }
 
@@ -187,14 +192,15 @@ int MSG_process_killall(int reset_PIDs)
   m_process_t p = NULL;
   m_process_t self = MSG_process_self();
 
-  while((p=xbt_fifo_pop(msg_global->process_list))) {
-    if(p!=self) MSG_process_kill(p);
-  }    
+  while ((p = xbt_fifo_pop(msg_global->process_list))) {
+    if (p != self)
+      MSG_process_kill(p);
+  }
 
-  if(reset_PIDs>0) {
-    msg_global->PID = reset_PIDs;  
+  if (reset_PIDs > 0) {
+    msg_global->PID = reset_PIDs;
     msg_global->session++;
- }
+  }
 
   return msg_global->PID;
 
@@ -210,18 +216,18 @@ MSG_error_t MSG_clean(void)
   m_process_t p = NULL;
 
 
-  while((p=xbt_fifo_pop(msg_global->process_list))) {
+  while ((p = xbt_fifo_pop(msg_global->process_list))) {
     MSG_process_kill(p);
   }
 
-  xbt_fifo_foreach(msg_global->host,i,h,m_host_t) {
+  xbt_fifo_foreach(msg_global->host, i, h, m_host_t) {
     __MSG_host_destroy(h);
   }
   xbt_fifo_free(msg_global->host);
   xbt_fifo_free(msg_global->process_list);
 
   free(msg_global);
-	SIMIX_clean();
+  SIMIX_clean();
 
   return MSG_OK;
 }
@@ -230,8 +236,7 @@ MSG_error_t MSG_clean(void)
 /** \ingroup msg_easier_life
  * \brief A clock (in second).
  */
-double MSG_get_clock(void) 
+double MSG_get_clock(void)
 {
-	return SIMIX_get_clock();
+  return SIMIX_get_clock();
 }
-

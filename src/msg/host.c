@@ -1,12 +1,12 @@
 /*     $Id$      */
-  
+
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-  
+
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -30,12 +30,12 @@
 /********************************* Host **************************************/
 m_host_t __MSG_host_create(smx_host_t workstation, void *data)
 {
-	const char * name;
-  simdata_host_t simdata = xbt_new0(s_simdata_host_t,1);
-  m_host_t host = xbt_new0(s_m_host_t,1);
+  const char *name;
+  simdata_host_t simdata = xbt_new0(s_simdata_host_t, 1);
+  m_host_t host = xbt_new0(s_m_host_t, 1);
   int i;
 
-	name = SIMIX_host_get_name(workstation);
+  name = SIMIX_host_get_name(workstation);
   /* Host structure */
   host->name = xbt_strdup(name);
   host->simdata = simdata;
@@ -46,14 +46,14 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
   simdata->mbox = xbt_new0(xbt_fifo_t, msg_global->max_channel);
   for (i = 0; i < msg_global->max_channel; i++)
     simdata->mbox[i] = xbt_fifo_new();
-  
-	simdata->sleeping = xbt_new0(smx_cond_t, msg_global->max_channel);
- 	simdata->mutex = SIMIX_mutex_init();
-	SIMIX_host_set_data(workstation, host);
+
+  simdata->sleeping = xbt_new0(smx_cond_t, msg_global->max_channel);
+  simdata->mutex = SIMIX_mutex_init();
+  SIMIX_host_set_data(workstation, host);
 
   /* Update global variables */
-	xbt_fifo_unshift(msg_global->host, host);
- 
+  xbt_fifo_unshift(msg_global->host, host);
+
   return host;
 }
 
@@ -65,8 +65,8 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
    or not and attach \a data to \a host if it is possible.
  */
 MSG_error_t MSG_host_set_data(m_host_t host, void *data)
-{	
-  xbt_assert0((host!=NULL), "Invalid parameters");
+{
+  xbt_assert0((host != NULL), "Invalid parameters");
   xbt_assert0((host->data == NULL), "Data already set");
 
   /* Assign data */
@@ -101,7 +101,8 @@ void *MSG_host_get_data(m_host_t host)
 const char *MSG_host_get_name(m_host_t host)
 {
 
-  xbt_assert0((host != NULL) && (host->simdata != NULL), "Invalid parameters");
+  xbt_assert0((host != NULL)
+	      && (host->simdata != NULL), "Invalid parameters");
 
   /* Return data */
   return (host->name);
@@ -129,14 +130,14 @@ void __MSG_host_destroy(m_host_t host)
   xbt_assert0((host != NULL), "Invalid parameters");
 
   /* Clean Simulator data */
-   /* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
+  /* SIMIX host will be cleaned when MSG_clean calls SIMIX_clean */
   simdata = (host)->simdata;
 
   for (i = 0; i < msg_global->max_channel; i++)
     xbt_fifo_free(simdata->mbox[i]);
   free(simdata->mbox);
   free(simdata->sleeping);
-	SIMIX_mutex_destroy(simdata->mutex);
+  SIMIX_mutex_destroy(simdata->mutex);
   free(simdata);
 
   /* Clean host structure */
@@ -159,7 +160,7 @@ int MSG_get_host_number(void)
  */
 m_host_t *MSG_get_host_table(void)
 {
-  return ((m_host_t *)xbt_fifo_to_array(msg_global->host));
+  return ((m_host_t *) xbt_fifo_to_array(msg_global->host));
 }
 
 /** \ingroup m_host_management
@@ -168,10 +169,10 @@ m_host_t *MSG_get_host_table(void)
  */
 int MSG_get_host_msgload(m_host_t h)
 {
-  xbt_assert0((h!= NULL), "Invalid parameters");
+  xbt_assert0((h != NULL), "Invalid parameters");
   xbt_assert0(0, "Not implemented yet");
 
-  return(0);
+  return (0);
 }
 
 /** \ingroup m_host_management
@@ -180,9 +181,9 @@ int MSG_get_host_msgload(m_host_t h)
  */
 double MSG_get_host_speed(m_host_t h)
 {
-  xbt_assert0((h!= NULL), "Invalid parameters");
+  xbt_assert0((h != NULL), "Invalid parameters");
 
-  return(SIMIX_host_get_speed(h->simdata->s_host));
+  return (SIMIX_host_get_speed(h->simdata->s_host));
 }
 
 /** \ingroup msg_gos_functions
@@ -190,8 +191,8 @@ double MSG_get_host_speed(m_host_t h)
  *
  * \param h host to test
  */
-int MSG_host_is_avail (m_host_t h)
+int MSG_host_is_avail(m_host_t h)
 {
-  xbt_assert0((h!= NULL), "Invalid parameters");
-	return (SIMIX_host_get_state(h->simdata->s_host));
+  xbt_assert0((h != NULL), "Invalid parameters");
+  return (SIMIX_host_get_state(h->simdata->s_host));
 }

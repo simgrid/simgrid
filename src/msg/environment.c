@@ -1,12 +1,12 @@
 /*     $Id$      */
-  
+
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-  
+
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -32,13 +32,13 @@
  */
 m_host_t MSG_get_host_by_name(const char *name)
 {
-	smx_host_t simix_h = NULL;
+  smx_host_t simix_h = NULL;
 
-	simix_h = SIMIX_host_get_by_name(name);
-	if (simix_h == NULL) {
-		return NULL;
-	}
-	else return (m_host_t)simix_h->data;
+  simix_h = SIMIX_host_get_by_name(name);
+  if (simix_h == NULL) {
+    return NULL;
+  } else
+    return (m_host_t) simix_h->data;
 }
 
 /** \ingroup msg_easier_life
@@ -57,19 +57,18 @@ m_host_t MSG_get_host_by_name(const char *name)
  *
  * Have a look in the directory examples/msg/ to have a big example.
  */
-void MSG_create_environment(const char *file) 
+void MSG_create_environment(const char *file)
 {
   smx_host_t *workstation = NULL;
-	int i;
+  int i;
 
-	SIMIX_create_environment(file);
+  SIMIX_create_environment(file);
 
-	/* Initialize MSG hosts */
-	workstation = SIMIX_host_get_table();
-	for (i=0; i< SIMIX_host_get_number();i++) {
-		__MSG_host_create(workstation[i], NULL);
-	}
-	xbt_free(workstation);
+  /* Initialize MSG hosts */
+  workstation = SIMIX_host_get_table();
+  for (i = 0; i < SIMIX_host_get_number(); i++) {
+    __MSG_host_create(workstation[i], NULL);
+  }
+  xbt_free(workstation);
   return;
 }
-

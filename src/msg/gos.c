@@ -1,17 +1,18 @@
 /*     $Id$      */
-  
+
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
 /* All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-  
+
 #include "msg/private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
+				"Logging specific to MSG (gos)");
 
 /** \defgroup msg_gos_functions MSG Operating System Functions
  *  \brief This section describes the functions that can be used
@@ -19,9 +20,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
  */
 
 static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
-							m_channel_t channel,
-							double max_duration,
-							m_host_t host)
+							  m_channel_t
+							  channel,
+							  double
+							  max_duration,
+							  m_host_t host)
 {
 
   m_process_t process = MSG_process_self();
@@ -32,123 +35,131 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   int first_time = 1;
   xbt_fifo_item_t item = NULL;
 
-	smx_cond_t cond = NULL;			//conditional wait if the task isn't on the channel yet
+  smx_cond_t cond = NULL;	//conditional wait if the task isn't on the channel yet
 
   CHECK_HOST();
-  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
+  xbt_assert1((channel >= 0)
+	      && (channel < msg_global->max_channel), "Invalid channel %d",
+	      channel);
   /* Sanity check */
-  xbt_assert0(task,"Null pointer for the task\n");
+  xbt_assert0(task, "Null pointer for the task\n");
 
-  if (*task) 
-    CRITICAL0("MSG_task_get() was asked to write in a non empty task struct.");
+  if (*task)
+    CRITICAL0
+	("MSG_task_get() was asked to write in a non empty task struct.");
 
   /* Get the task */
   h = MSG_host_self();
   h_simdata = h->simdata;
 
-  DEBUG2("Waiting for a task on channel %d (%s)", channel,h->name);
+  DEBUG2("Waiting for a task on channel %d (%s)", channel, h->name);
 
-	SIMIX_mutex_lock(h->simdata->mutex);
+  SIMIX_mutex_lock(h->simdata->mutex);
   while (1) {
-		if(xbt_fifo_size(h_simdata->mbox[channel])>0) {
-			if(!host) {
-				t = xbt_fifo_shift(h_simdata->mbox[channel]);
-				break;
-			} else {
-				xbt_fifo_foreach(h->simdata->mbox[channel],item,t,m_task_t) {
-					if(t->simdata->source==host) break;
-				}
-				if(item) {
-					xbt_fifo_remove_item(h->simdata->mbox[channel],item);
-					break;
-				} 
-			}
-		}
-		
-		if(max_duration>0) {
-			if(!first_time) {
-				SIMIX_mutex_unlock(h->simdata->mutex);
-				h_simdata->sleeping[channel] = NULL;
-				SIMIX_cond_destroy(cond);
-				MSG_RETURN(MSG_TRANSFER_FAILURE);
-			}
-		}
-		xbt_assert1(!(h_simdata->sleeping[channel]),"A process is already blocked on channel %d", channel);
-	
-		cond = SIMIX_cond_init();
-		h_simdata->sleeping[channel] = cond;
-		if (max_duration > 0) {
-			SIMIX_cond_wait_timeout(cond, h->simdata->mutex, max_duration);
-		}
-		else SIMIX_cond_wait(h_simdata->sleeping[channel],h->simdata->mutex);
+    if (xbt_fifo_size(h_simdata->mbox[channel]) > 0) {
+      if (!host) {
+	t = xbt_fifo_shift(h_simdata->mbox[channel]);
+	break;
+      } else {
+	xbt_fifo_foreach(h->simdata->mbox[channel], item, t, m_task_t) {
+	  if (t->simdata->source == host)
+	    break;
+	}
+	if (item) {
+	  xbt_fifo_remove_item(h->simdata->mbox[channel], item);
+	  break;
+	}
+      }
+    }
 
-		if(SIMIX_host_get_state(h_simdata->s_host)==0)
+    if (max_duration > 0) {
+      if (!first_time) {
+	SIMIX_mutex_unlock(h->simdata->mutex);
+	h_simdata->sleeping[channel] = NULL;
+	SIMIX_cond_destroy(cond);
+	MSG_RETURN(MSG_TRANSFER_FAILURE);
+      }
+    }
+    xbt_assert1(!(h_simdata->sleeping[channel]),
+		"A process is already blocked on channel %d", channel);
+
+    cond = SIMIX_cond_init();
+    h_simdata->sleeping[channel] = cond;
+    if (max_duration > 0) {
+      SIMIX_cond_wait_timeout(cond, h->simdata->mutex, max_duration);
+    } else
+      SIMIX_cond_wait(h_simdata->sleeping[channel], h->simdata->mutex);
+
+    if (SIMIX_host_get_state(h_simdata->s_host) == 0)
       MSG_RETURN(MSG_HOST_FAILURE);
 
-		first_time = 0;
-	}
-	SIMIX_mutex_unlock(h->simdata->mutex);
+    first_time = 0;
+  }
+  SIMIX_mutex_unlock(h->simdata->mutex);
 
   DEBUG1("OK, got a task (%s)", t->name);
-	/* clean conditional */
-	if (cond) {
-		SIMIX_cond_destroy(cond);
-		h_simdata->sleeping[channel] = NULL;
-	}
+  /* clean conditional */
+  if (cond) {
+    SIMIX_cond_destroy(cond);
+    h_simdata->sleeping[channel] = NULL;
+  }
 
   t_simdata = t->simdata;
-	t_simdata->receiver = process;
-  *task=t;
+  t_simdata->receiver = process;
+  *task = t;
 
-	SIMIX_mutex_lock(t_simdata->mutex);
+  SIMIX_mutex_lock(t_simdata->mutex);
 
   /* Transfer */
   t_simdata->using++;
-	/* create SIMIX action to the communication */
-	t_simdata->comm = SIMIX_action_communicate(t_simdata->sender->simdata->m_host->simdata->s_host,
-						   process->simdata->m_host->simdata->s_host,t->name, t_simdata->message_size, 
-						   t_simdata->rate); 
-	/* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
-	if (MSG_process_is_suspended(t_simdata->sender)) {
-		DEBUG1("Process sender (%s) suspended", t_simdata->sender->name);
-		SIMIX_action_set_priority(t_simdata->comm,0);
-	}
-	process->simdata->waiting_task = t;
-	SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
-	SIMIX_cond_wait(t_simdata->cond,t_simdata->mutex);
-	process->simdata->waiting_task = NULL;
+  /* create SIMIX action to the communication */
+  t_simdata->comm =
+      SIMIX_action_communicate(t_simdata->sender->simdata->m_host->
+			       simdata->s_host,
+			       process->simdata->m_host->simdata->s_host,
+			       t->name, t_simdata->message_size,
+			       t_simdata->rate);
+  /* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
+  if (MSG_process_is_suspended(t_simdata->sender)) {
+    DEBUG1("Process sender (%s) suspended", t_simdata->sender->name);
+    SIMIX_action_set_priority(t_simdata->comm, 0);
+  }
+  process->simdata->waiting_task = t;
+  SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
+  SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
+  process->simdata->waiting_task = NULL;
 
-	/* the task has already finished and the pointer must be null*/
-	if (t->simdata->sender) {
-		t->simdata->sender->simdata->waiting_task = NULL;
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-		//t->simdata->comm = NULL;
-		//t->simdata->compute = NULL;
-	}
-	/* for this process, don't need to change in get function*/
-	t->simdata->receiver = NULL;
-	SIMIX_mutex_unlock(t_simdata->mutex);
+  /* the task has already finished and the pointer must be null */
+  if (t->simdata->sender) {
+    t->simdata->sender->simdata->waiting_task = NULL;
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    //t->simdata->comm = NULL;
+    //t->simdata->compute = NULL;
+  }
+  /* for this process, don't need to change in get function */
+  t->simdata->receiver = NULL;
+  SIMIX_mutex_unlock(t_simdata->mutex);
 
 
-	if(SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
-		//t_simdata->comm = NULL;
-		SIMIX_action_destroy(t_simdata->comm);
-		t_simdata->comm = NULL;
+  if (SIMIX_action_get_state(t_simdata->comm) == SURF_ACTION_DONE) {
+    //t_simdata->comm = NULL;
+    SIMIX_action_destroy(t_simdata->comm);
+    t_simdata->comm = NULL;
     MSG_RETURN(MSG_OK);
-	} else if (SIMIX_host_get_state(h_simdata->s_host)==0) {
-		//t_simdata->comm = NULL;
-		SIMIX_action_destroy(t_simdata->comm);
-		t_simdata->comm = NULL;
+  } else if (SIMIX_host_get_state(h_simdata->s_host) == 0) {
+    //t_simdata->comm = NULL;
+    SIMIX_action_destroy(t_simdata->comm);
+    t_simdata->comm = NULL;
     MSG_RETURN(MSG_HOST_FAILURE);
-  } else { 
-		//t_simdata->comm = NULL;
-		SIMIX_action_destroy(t_simdata->comm);
-		t_simdata->comm = NULL;
+  } else {
+    //t_simdata->comm = NULL;
+    SIMIX_action_destroy(t_simdata->comm);
+    t_simdata->comm = NULL;
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
 
 }
-	
+
 /** \ingroup msg_gos_functions
  * \brief Listen on a channel and wait for receiving a task.
  *
@@ -163,8 +174,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
  * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
  * if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
  */
-MSG_error_t MSG_task_get(m_task_t * task,
-			 m_channel_t channel)
+MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
 {
   return MSG_task_get_with_time_out(task, channel, -1);
 }
@@ -191,7 +201,8 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
 				       m_channel_t channel,
 				       double max_duration)
 {
-  return __MSG_task_get_with_time_out_from_host(task, channel, max_duration, NULL);
+  return __MSG_task_get_with_time_out_from_host(task, channel,
+						max_duration, NULL);
 }
 
 /** \ingroup msg_gos_functions
@@ -209,7 +220,7 @@ MSG_error_t MSG_task_get_with_time_out(m_task_t * task,
  * \return #MSG_FATAL if \a task is equal to \c NULL, #MSG_WARNING
    if \a *task is not equal to \c NULL, and #MSG_OK otherwise.
  */
-MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel, 
+MSG_error_t MSG_task_get_from_host(m_task_t * task, int channel,
 				   m_host_t host)
 {
   return __MSG_task_get_with_time_out_from_host(task, channel, -1, host);
@@ -228,13 +239,15 @@ int MSG_task_Iprobe(m_channel_t channel)
 {
   m_host_t h = NULL;
 
-  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
+  xbt_assert1((channel >= 0)
+	      && (channel < msg_global->max_channel), "Invalid channel %d",
+	      channel);
   CHECK_HOST();
 
-  DEBUG2("Probing on channel %d (%s)", channel,h->name);
+  DEBUG2("Probing on channel %d (%s)", channel, h->name);
 
   h = MSG_host_self();
-  return(xbt_fifo_get_first_item(h->simdata->mbox[channel])!=NULL);
+  return (xbt_fifo_get_first_item(h->simdata->mbox[channel]) != NULL);
 }
 
 /** \ingroup msg_gos_functions
@@ -252,17 +265,19 @@ int MSG_task_probe_from(m_channel_t channel)
   xbt_fifo_item_t item;
   m_task_t t;
 
-  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
+  xbt_assert1((channel >= 0)
+	      && (channel < msg_global->max_channel), "Invalid channel %d",
+	      channel);
   CHECK_HOST();
 
   h = MSG_host_self();
 
-  DEBUG2("Probing on channel %d (%s)", channel,h->name);
-   
+  DEBUG2("Probing on channel %d (%s)", channel, h->name);
+
   item = xbt_fifo_get_first_item(h->simdata->mbox[channel]);
-  if ( (!item) || (!(t = xbt_fifo_get_item_content(item))) )
+  if ((!item) || (!(t = xbt_fifo_get_item_content(item))))
     return -1;
-   
+
   return MSG_process_get_PID(t->simdata->sender);
 }
 
@@ -282,62 +297,65 @@ int MSG_task_probe_from(m_channel_t channel)
  * \return #MSG_HOST_FAILURE if the host is shut down in the meantime
    and #MSG_OK otherwise.
  */
-MSG_error_t MSG_channel_select_from(m_channel_t channel, double max_duration,
-		int *PID)
+MSG_error_t MSG_channel_select_from(m_channel_t channel,
+				    double max_duration, int *PID)
 {
-	m_host_t h = NULL;
-	simdata_host_t h_simdata = NULL;
-	xbt_fifo_item_t item;
-	m_task_t t;
-	int first_time = 1;
-	smx_cond_t cond;
+  m_host_t h = NULL;
+  simdata_host_t h_simdata = NULL;
+  xbt_fifo_item_t item;
+  m_task_t t;
+  int first_time = 1;
+  smx_cond_t cond;
 
-	xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
-	if(PID) {
-		*PID = -1;
+  xbt_assert1((channel >= 0)
+	      && (channel < msg_global->max_channel), "Invalid channel %d",
+	      channel);
+  if (PID) {
+    *PID = -1;
+  }
+
+  if (max_duration == 0.0) {
+    *PID = MSG_task_probe_from(channel);
+    MSG_RETURN(MSG_OK);
+  } else {
+    CHECK_HOST();
+    h = MSG_host_self();
+    h_simdata = h->simdata;
+
+    DEBUG2("Probing on channel %d (%s)", channel, h->name);
+    while (!(item = xbt_fifo_get_first_item(h->simdata->mbox[channel]))) {
+      if (max_duration > 0) {
+	if (!first_time) {
+	  MSG_RETURN(MSG_OK);
 	}
-
-	if(max_duration==0.0) {
-		*PID = MSG_task_probe_from(channel);
-		MSG_RETURN(MSG_OK);
-	} else {
-		CHECK_HOST();
-		h = MSG_host_self();
-		h_simdata = h->simdata;
-
-		DEBUG2("Probing on channel %d (%s)", channel,h->name);
-		while(!(item = xbt_fifo_get_first_item(h->simdata->mbox[channel]))) {
-			if(max_duration>0) {
-				if(!first_time) {
-					MSG_RETURN(MSG_OK);
-				}
-			}
-			SIMIX_mutex_lock(h_simdata->mutex);
-			xbt_assert1(!(h_simdata->sleeping[channel]),
-					"A process is already blocked on this channel %d", channel);
-			cond = SIMIX_cond_init();
-			h_simdata->sleeping[channel] = cond; /* I'm waiting. Wake me up when you're ready */
-			if(max_duration>0) {
-				SIMIX_cond_wait_timeout(cond,h_simdata->mutex, max_duration);
-			} else {
-				SIMIX_cond_wait(cond,h_simdata->mutex);
-			}
-			SIMIX_cond_destroy(cond);
-			SIMIX_mutex_unlock(h_simdata->mutex);
-			if(SIMIX_host_get_state(h_simdata->s_host)==0) {
-				MSG_RETURN(MSG_HOST_FAILURE);
-			}
-			h_simdata->sleeping[channel] = NULL;
-			first_time = 0;
-		}
-		if (!item || !(t = xbt_fifo_get_item_content(item))) {
-			MSG_RETURN(MSG_OK);
-		}
-		if(PID) {
-			*PID = MSG_process_get_PID(t->simdata->sender);
-		}
-		MSG_RETURN(MSG_OK);
-	}
+      }
+      SIMIX_mutex_lock(h_simdata->mutex);
+      xbt_assert1(!(h_simdata->sleeping[channel]),
+		  "A process is already blocked on this channel %d",
+		  channel);
+      cond = SIMIX_cond_init();
+      h_simdata->sleeping[channel] = cond;	/* I'm waiting. Wake me up when you're ready */
+      if (max_duration > 0) {
+	SIMIX_cond_wait_timeout(cond, h_simdata->mutex, max_duration);
+      } else {
+	SIMIX_cond_wait(cond, h_simdata->mutex);
+      }
+      SIMIX_cond_destroy(cond);
+      SIMIX_mutex_unlock(h_simdata->mutex);
+      if (SIMIX_host_get_state(h_simdata->s_host) == 0) {
+	MSG_RETURN(MSG_HOST_FAILURE);
+      }
+      h_simdata->sleeping[channel] = NULL;
+      first_time = 0;
+    }
+    if (!item || !(t = xbt_fifo_get_item_content(item))) {
+      MSG_RETURN(MSG_OK);
+    }
+    if (PID) {
+      *PID = MSG_process_get_PID(t->simdata->sender);
+    }
+    MSG_RETURN(MSG_OK);
+  }
 }
 
 
@@ -360,17 +378,20 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
   m_task_t t;
   int count = 0;
   m_host_t h = NULL;
-  
-  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
+
+  xbt_assert1((channel >= 0)
+	      && (channel < msg_global->max_channel), "Invalid channel %d",
+	      channel);
   CHECK_HOST();
   h = MSG_host_self();
 
-  DEBUG2("Probing on channel %d (%s)", channel,h->name);
-   
-  xbt_fifo_foreach(h->simdata->mbox[channel],item,t,m_task_t) {
-    if(t->simdata->source==host) count++;
+  DEBUG2("Probing on channel %d (%s)", channel, h->name);
+
+  xbt_fifo_foreach(h->simdata->mbox[channel], item, t, m_task_t) {
+    if (t->simdata->source == host)
+      count++;
   }
-   
+
   return count;
 }
 
@@ -403,8 +424,9 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
    #MSG_TRANSFER_FAILURE if the transfer could not be properly done
    (network failure, dest failure, timeout...)
  */
-MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest, 
-				      m_channel_t channel, double max_duration)
+MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
+				      m_channel_t channel,
+				      double max_duration)
 {
 
 
@@ -414,76 +436,79 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
   m_host_t remote_host = NULL;
   CHECK_HOST();
 
-  xbt_assert1((channel>=0) && (channel < msg_global->max_channel),"Invalid channel %d",channel);
+  xbt_assert1((channel >= 0)
+	      && (channel < msg_global->max_channel), "Invalid channel %d",
+	      channel);
 
   task_simdata = task->simdata;
   task_simdata->sender = process;
   task_simdata->source = MSG_process_get_host(process);
-  xbt_assert0(task_simdata->using==1,
+  xbt_assert0(task_simdata->using == 1,
 	      "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
   task_simdata->comm = NULL;
-  
+
   local_host = ((simdata_process_t) process->simdata)->m_host;
   remote_host = dest;
 
-  DEBUG4("Trying to send a task (%g kB) from %s to %s on channel %d", 
-	 task->simdata->message_size/1000,local_host->name, remote_host->name, channel);
+  DEBUG4("Trying to send a task (%g kB) from %s to %s on channel %d",
+	 task->simdata->message_size / 1000, local_host->name,
+	 remote_host->name, channel);
 
-	SIMIX_mutex_lock(remote_host->simdata->mutex);
+  SIMIX_mutex_lock(remote_host->simdata->mutex);
   xbt_fifo_push(((simdata_host_t) remote_host->simdata)->
 		mbox[channel], task);
 
-  
-  if(remote_host->simdata->sleeping[channel]) {
+
+  if (remote_host->simdata->sleeping[channel]) {
     DEBUG0("Somebody is listening. Let's wake him up!");
-		SIMIX_cond_signal(remote_host->simdata->sleeping[channel]);
+    SIMIX_cond_signal(remote_host->simdata->sleeping[channel]);
   }
-	SIMIX_mutex_unlock(remote_host->simdata->mutex);
+  SIMIX_mutex_unlock(remote_host->simdata->mutex);
 
   process->simdata->put_host = dest;
   process->simdata->put_channel = channel;
-	SIMIX_mutex_lock(task->simdata->mutex);
- // DEBUG4("Task sent (%g kB) from %s to %s on channel %d, waiting...", task->simdata->message_size/1000,local_host->name, remote_host->name, channel);
+  SIMIX_mutex_lock(task->simdata->mutex);
+  // DEBUG4("Task sent (%g kB) from %s to %s on channel %d, waiting...", task->simdata->message_size/1000,local_host->name, remote_host->name, channel);
 
-	process->simdata->waiting_task = task;
-	if (max_duration >0) {
-		SIMIX_cond_wait_timeout(task->simdata->cond,task->simdata->mutex,max_duration);
-		/* verify if the timeout happened and the communication didn't started yet */
-		if (task->simdata->comm==NULL) {
-			task->simdata->using--;
-			process->simdata->waiting_task = NULL;
-			xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->mbox[channel],
-			task);
-			if (task->simdata->receiver) {
-				task->simdata->receiver->simdata->waiting_task = NULL;
-			}
-			task->simdata->sender = NULL;
-			SIMIX_mutex_unlock(task->simdata->mutex);
-			MSG_RETURN(MSG_TRANSFER_FAILURE);
-		}
-	}
-	else {
-		SIMIX_cond_wait(task->simdata->cond,task->simdata->mutex);
-	}
+  process->simdata->waiting_task = task;
+  if (max_duration > 0) {
+    SIMIX_cond_wait_timeout(task->simdata->cond, task->simdata->mutex,
+			    max_duration);
+    /* verify if the timeout happened and the communication didn't started yet */
+    if (task->simdata->comm == NULL) {
+      task->simdata->using--;
+      process->simdata->waiting_task = NULL;
+      xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->
+		      mbox[channel], task);
+      if (task->simdata->receiver) {
+	task->simdata->receiver->simdata->waiting_task = NULL;
+      }
+      task->simdata->sender = NULL;
+      SIMIX_mutex_unlock(task->simdata->mutex);
+      MSG_RETURN(MSG_TRANSFER_FAILURE);
+    }
+  } else {
+    SIMIX_cond_wait(task->simdata->cond, task->simdata->mutex);
+  }
 
-	DEBUG1("Action terminated %s",task->name);    
-	task->simdata->using--;
-	process->simdata->waiting_task = NULL;
-	/* the task has already finished and the pointer must be null*/
-	if (task->simdata->receiver) {
-		task->simdata->receiver->simdata->waiting_task = NULL;
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-	//	task->simdata->comm = NULL;
-		//task->simdata->compute = NULL;
-	}
-	task->simdata->sender = NULL;
-	SIMIX_mutex_unlock(task->simdata->mutex);
+  DEBUG1("Action terminated %s", task->name);
+  task->simdata->using--;
+  process->simdata->waiting_task = NULL;
+  /* the task has already finished and the pointer must be null */
+  if (task->simdata->receiver) {
+    task->simdata->receiver->simdata->waiting_task = NULL;
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    //      task->simdata->comm = NULL;
+    //task->simdata->compute = NULL;
+  }
+  task->simdata->sender = NULL;
+  SIMIX_mutex_unlock(task->simdata->mutex);
 
-	if(SIMIX_action_get_state(task->simdata->comm) == SURF_ACTION_DONE) {
+  if (SIMIX_action_get_state(task->simdata->comm) == SURF_ACTION_DONE) {
     MSG_RETURN(MSG_OK);
-	} else if (SIMIX_host_get_state(local_host->simdata->s_host)==0) {
+  } else if (SIMIX_host_get_state(local_host->simdata->s_host) == 0) {
     MSG_RETURN(MSG_HOST_FAILURE);
-  } else { 
+  } else {
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
 }
@@ -514,8 +539,7 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
  * #MSG_TRANSFER_FAILURE if the transfer could not be properly done
  * (network failure, dest failure)
  */
-MSG_error_t MSG_task_put(m_task_t task,
-			 m_host_t dest, m_channel_t channel)
+MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
 {
   return MSG_task_put_with_timeout(task, dest, channel, -1.0);
 }
@@ -531,9 +555,9 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
 				 double max_rate)
 {
   MSG_error_t res = MSG_OK;
-  task->simdata->rate=max_rate;
+  task->simdata->rate = max_rate;
   res = MSG_task_put(task, dest, channel);
-  return(res);
+  return (res);
 }
 
 /** \ingroup msg_gos_functions
@@ -548,46 +572,48 @@ MSG_error_t MSG_task_put_bounded(m_task_t task,
  */
 MSG_error_t MSG_task_execute(m_task_t task)
 {
-	simdata_task_t simdata = NULL;
-	m_process_t self = MSG_process_self();
+  simdata_task_t simdata = NULL;
+  m_process_t self = MSG_process_self();
   CHECK_HOST();
 
   simdata = task->simdata;
-  xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
+  xbt_assert0((!simdata->compute) && (task->simdata->using == 1),
 	      "This task is executed somewhere else. Go fix your code!");
-	
-	DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
+
+  DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
   simdata->using++;
-	SIMIX_mutex_lock(simdata->mutex);
-  simdata->compute = SIMIX_action_execute(SIMIX_host_self(), task->name, simdata->computation_amount);
-	SIMIX_action_set_priority(simdata->compute, simdata->priority);
+  SIMIX_mutex_lock(simdata->mutex);
+  simdata->compute =
+      SIMIX_action_execute(SIMIX_host_self(), task->name,
+			   simdata->computation_amount);
+  SIMIX_action_set_priority(simdata->compute, simdata->priority);
 
-	self->simdata->waiting_task = task;
-	SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
-	SIMIX_cond_wait(simdata->cond, simdata->mutex);
-	self->simdata->waiting_task = NULL;
+  self->simdata->waiting_task = task;
+  SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
+  SIMIX_cond_wait(simdata->cond, simdata->mutex);
+  self->simdata->waiting_task = NULL;
 
-	SIMIX_mutex_unlock(simdata->mutex);
+  SIMIX_mutex_unlock(simdata->mutex);
   simdata->using--;
 
-	if(SIMIX_action_get_state(task->simdata->compute) == SURF_ACTION_DONE) {
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-		SIMIX_action_destroy(task->simdata->compute);
-		simdata->computation_amount = 0.0;
-		simdata->comm = NULL;
-		simdata->compute = NULL;
+  if (SIMIX_action_get_state(task->simdata->compute) == SURF_ACTION_DONE) {
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    SIMIX_action_destroy(task->simdata->compute);
+    simdata->computation_amount = 0.0;
+    simdata->comm = NULL;
+    simdata->compute = NULL;
     MSG_RETURN(MSG_OK);
-	} else if (SIMIX_host_get_state(SIMIX_host_self())==0) {
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-		SIMIX_action_destroy(task->simdata->compute);
-		simdata->comm = NULL;
-		simdata->compute = NULL;
+  } else if (SIMIX_host_get_state(SIMIX_host_self()) == 0) {
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    SIMIX_action_destroy(task->simdata->compute);
+    simdata->comm = NULL;
+    simdata->compute = NULL;
     MSG_RETURN(MSG_HOST_FAILURE);
-  } else { 
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-		SIMIX_action_destroy(task->simdata->compute);
-		simdata->comm = NULL;
-		simdata->compute = NULL;
+  } else {
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    SIMIX_action_destroy(task->simdata->compute);
+    simdata->comm = NULL;
+    simdata->compute = NULL;
     MSG_RETURN(MSG_TASK_CANCELLED);
   }
 }
@@ -612,16 +638,15 @@ MSG_error_t MSG_task_execute(m_task_t task)
  * \see m_task_t
  * \return The new corresponding object.
  */
-m_task_t MSG_parallel_task_create(const char *name, 
+m_task_t MSG_parallel_task_create(const char *name,
 				  int host_nb,
-				  const m_host_t *host_list,
+				  const m_host_t * host_list,
 				  double *computation_amount,
-				  double *communication_amount,
-				  void *data)
+				  double *communication_amount, void *data)
 {
   int i;
-  simdata_task_t simdata = xbt_new0(s_simdata_task_t,1);
-  m_task_t task = xbt_new0(s_m_task_t,1);
+  simdata_task_t simdata = xbt_new0(s_simdata_task_t, 1);
+  m_task_t task = xbt_new0(s_m_task_t, 1);
   task->simdata = simdata;
 
   /* Task structure */
@@ -631,10 +656,10 @@ m_task_t MSG_parallel_task_create(const char *name,
   /* Simulator Data */
   simdata->computation_amount = 0;
   simdata->message_size = 0;
-	simdata->cond = SIMIX_cond_init();
-	simdata->mutex = SIMIX_mutex_init();
-	simdata->compute = NULL;
-	simdata->comm = NULL;
+  simdata->cond = SIMIX_cond_init();
+  simdata->mutex = SIMIX_mutex_init();
+  simdata->compute = NULL;
+  simdata->comm = NULL;
   simdata->rate = -1.0;
   simdata->using = 1;
   simdata->sender = NULL;
@@ -646,7 +671,7 @@ m_task_t MSG_parallel_task_create(const char *name,
   simdata->comp_amount = computation_amount;
   simdata->comm_amount = communication_amount;
 
-  for(i=0;i<host_nb;i++)
+  for (i = 0; i < host_nb; i++)
     simdata->host_list[i] = host_list[i]->simdata->s_host;
 
   return task;
@@ -656,50 +681,55 @@ m_task_t MSG_parallel_task_create(const char *name,
 
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
-	simdata_task_t simdata = NULL;
-	m_process_t self = MSG_process_self();
+  simdata_task_t simdata = NULL;
+  m_process_t self = MSG_process_self();
   CHECK_HOST();
 
   simdata = task->simdata;
-  xbt_assert0((!simdata->compute)&&(task->simdata->using==1),
+  xbt_assert0((!simdata->compute) && (task->simdata->using == 1),
 	      "This task is executed somewhere else. Go fix your code!");
 
-  xbt_assert0(simdata->host_nb,"This is not a parallel task. Go to hell.");
-	
-	DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
+  xbt_assert0(simdata->host_nb,
+	      "This is not a parallel task. Go to hell.");
+
+  DEBUG1("Computing on %s", MSG_process_self()->simdata->m_host->name);
   simdata->using++;
-	SIMIX_mutex_lock(simdata->mutex);
-  simdata->compute = SIMIX_action_parallel_execute(task->name, simdata->host_nb, simdata->host_list, simdata->comp_amount, simdata->comm_amount, 1.0, -1.0);
+  SIMIX_mutex_lock(simdata->mutex);
+  simdata->compute =
+      SIMIX_action_parallel_execute(task->name, simdata->host_nb,
+				    simdata->host_list,
+				    simdata->comp_amount,
+				    simdata->comm_amount, 1.0, -1.0);
 
-	self->simdata->waiting_task = task;
-	SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
-	SIMIX_cond_wait(simdata->cond, simdata->mutex);
-	self->simdata->waiting_task = NULL;
+  self->simdata->waiting_task = task;
+  SIMIX_register_action_to_condition(simdata->compute, simdata->cond);
+  SIMIX_cond_wait(simdata->cond, simdata->mutex);
+  self->simdata->waiting_task = NULL;
 
 
-	SIMIX_mutex_unlock(simdata->mutex);
+  SIMIX_mutex_unlock(simdata->mutex);
   simdata->using--;
 
-	if(SIMIX_action_get_state(task->simdata->compute) == SURF_ACTION_DONE) {
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-		SIMIX_action_destroy(task->simdata->compute);
-		simdata->computation_amount = 0.0;
-		simdata->comm = NULL;
-		simdata->compute = NULL;
+  if (SIMIX_action_get_state(task->simdata->compute) == SURF_ACTION_DONE) {
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    SIMIX_action_destroy(task->simdata->compute);
+    simdata->computation_amount = 0.0;
+    simdata->comm = NULL;
+    simdata->compute = NULL;
     MSG_RETURN(MSG_OK);
-	} else if (SIMIX_host_get_state(SIMIX_host_self())==0) {
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-		SIMIX_action_destroy(task->simdata->compute);
-		simdata->comm = NULL;
-		simdata->compute = NULL;
+  } else if (SIMIX_host_get_state(SIMIX_host_self()) == 0) {
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    SIMIX_action_destroy(task->simdata->compute);
+    simdata->comm = NULL;
+    simdata->compute = NULL;
     MSG_RETURN(MSG_HOST_FAILURE);
-  } else { 
-		/* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-		SIMIX_action_destroy(task->simdata->compute);
-		simdata->comm = NULL;
-		simdata->compute = NULL;
+  } else {
+    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+    SIMIX_action_destroy(task->simdata->compute);
+    simdata->comm = NULL;
+    simdata->compute = NULL;
     MSG_RETURN(MSG_TASK_CANCELLED);
-  }	
+  }
 
 }
 
@@ -713,49 +743,50 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
  */
 MSG_error_t MSG_process_sleep(double nb_sec)
 {
-	smx_action_t act_sleep;
-	m_process_t proc = MSG_process_self();
-	smx_mutex_t mutex;
-	smx_cond_t cond;
-	/* create action to sleep */
-	act_sleep = SIMIX_action_sleep(SIMIX_process_get_host(proc->simdata->s_process),nb_sec);
-	
-	mutex = SIMIX_mutex_init();
-	SIMIX_mutex_lock(mutex);
-	/* create conditional and register action to it */
-	cond = SIMIX_cond_init();
+  smx_action_t act_sleep;
+  m_process_t proc = MSG_process_self();
+  smx_mutex_t mutex;
+  smx_cond_t cond;
+  /* create action to sleep */
+  act_sleep =
+      SIMIX_action_sleep(SIMIX_process_get_host(proc->simdata->s_process),
+			 nb_sec);
 
-	SIMIX_register_action_to_condition(act_sleep, cond);
-	SIMIX_cond_wait(cond,mutex);
-	SIMIX_mutex_unlock(mutex);
+  mutex = SIMIX_mutex_init();
+  SIMIX_mutex_lock(mutex);
+  /* create conditional and register action to it */
+  cond = SIMIX_cond_init();
 
-	/* remove variables */
-	SIMIX_cond_destroy(cond);
-	SIMIX_mutex_destroy(mutex);
+  SIMIX_register_action_to_condition(act_sleep, cond);
+  SIMIX_cond_wait(cond, mutex);
+  SIMIX_mutex_unlock(mutex);
 
-  if(SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
-    if(SIMIX_host_get_state(SIMIX_host_self()) == SURF_CPU_OFF) {
-			SIMIX_action_destroy(act_sleep);
+  /* remove variables */
+  SIMIX_cond_destroy(cond);
+  SIMIX_mutex_destroy(mutex);
+
+  if (SIMIX_action_get_state(act_sleep) == SURF_ACTION_DONE) {
+    if (SIMIX_host_get_state(SIMIX_host_self()) == SURF_CPU_OFF) {
+      SIMIX_action_destroy(act_sleep);
       MSG_RETURN(MSG_HOST_FAILURE);
     }
+  } else {
+    SIMIX_action_destroy(act_sleep);
+    MSG_RETURN(MSG_HOST_FAILURE);
   }
-	else {
-		SIMIX_action_destroy(act_sleep);
-		MSG_RETURN(MSG_HOST_FAILURE);
-	}
 
 
-	MSG_RETURN(MSG_OK);
+  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup msg_gos_functions
  * \brief Return the number of MSG tasks currently running on
  * the host of the current running process.
  */
-static int MSG_get_msgload(void) 
+static int MSG_get_msgload(void)
 {
-	xbt_die("not implemented yet");
-	return 0;
+  xbt_die("not implemented yet");
+  return 0;
 }
 
 /** \ingroup msg_gos_functions

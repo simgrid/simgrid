@@ -1,5 +1,5 @@
 /*     $Id$      */
-  
+
 /* Copyright (c) 2002-2007 Arnaud Legrand.                                  */
 /* Copyright (c) 2007 Bruno Donassolo.                                      */
 /* All rights reserved.                                                     */
@@ -49,8 +49,8 @@
 m_task_t MSG_task_create(const char *name, double compute_duration,
 			 double message_size, void *data)
 {
-	m_task_t task = xbt_new(s_m_task_t,1);
-  simdata_task_t simdata = xbt_new(s_simdata_task_t,1);
+  m_task_t task = xbt_new(s_m_task_t, 1);
+  simdata_task_t simdata = xbt_new(s_simdata_task_t, 1);
   task->simdata = simdata;
   /* Task structure */
   task->name = xbt_strdup(name);
@@ -64,14 +64,14 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->using = 1;
   simdata->sender = NULL;
   simdata->receiver = NULL;
-	simdata->cond = SIMIX_cond_init();
-	simdata->mutex = SIMIX_mutex_init();
-	simdata->compute = NULL;
-	simdata->comm = NULL;
+  simdata->cond = SIMIX_cond_init();
+  simdata->mutex = SIMIX_mutex_init();
+  simdata->compute = NULL;
+  simdata->comm = NULL;
 
-	simdata->host_list = NULL;
-	simdata->comp_amount = NULL;
-	simdata->comm_amount = NULL;
+  simdata->host_list = NULL;
+  simdata->comp_amount = NULL;
+  simdata->comm_amount = NULL;
 
   return task;
 }
@@ -96,8 +96,8 @@ void *MSG_task_get_data(m_task_t task)
  */
 m_process_t MSG_task_get_sender(m_task_t task)
 {
-   xbt_assert0(task, "Invalid parameters");
-   return ((simdata_task_t) task->simdata)->sender;
+  xbt_assert0(task, "Invalid parameters");
+  return ((simdata_task_t) task->simdata)->sender;
 }
 
 /** \ingroup m_task_management
@@ -107,8 +107,8 @@ m_process_t MSG_task_get_sender(m_task_t task)
  */
 m_host_t MSG_task_get_source(m_task_t task)
 {
-   xbt_assert0(task, "Invalid parameters");
-   return ((simdata_task_t) task->simdata)->source;
+  xbt_assert0(task, "Invalid parameters");
+  return ((simdata_task_t) task->simdata)->source;
 }
 
 /** \ingroup m_task_management
@@ -118,8 +118,8 @@ m_host_t MSG_task_get_source(m_task_t task)
  */
 const char *MSG_task_get_name(m_task_t task)
 {
-   xbt_assert0(task, "Invalid parameters");
-   return task->name;
+  xbt_assert0(task, "Invalid parameters");
+  return task->name;
 }
 
 
@@ -134,25 +134,30 @@ MSG_error_t MSG_task_destroy(m_task_t task)
   smx_action_t action = NULL;
   xbt_assert0((task != NULL), "Invalid parameter");
 
-	/* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
+  /* why? if somebody is using, then you can't free! ok... but will return MSG_OK? when this task will be destroyed? isn't the user code wrong? */
   task->simdata->using--;
-  if(task->simdata->using>0) return MSG_OK;
+  if (task->simdata->using > 0)
+    return MSG_OK;
 
-  if(task->name) free(task->name);
+  if (task->name)
+    free(task->name);
 
-	SIMIX_cond_destroy(task->simdata->cond);
-	SIMIX_mutex_destroy(task->simdata->mutex);
+  SIMIX_cond_destroy(task->simdata->cond);
+  SIMIX_mutex_destroy(task->simdata->mutex);
 
   action = task->simdata->compute;
-  if(action) SIMIX_action_destroy(action);
+  if (action)
+    SIMIX_action_destroy(action);
   action = task->simdata->comm;
-  if(action) SIMIX_action_destroy(action);
-	/* parallel tasks only */ 
-  if(task->simdata->host_list) xbt_free(task->simdata->host_list);
-	
-	/* free main structures */
-	xbt_free(task->simdata);
-	xbt_free(task);
+  if (action)
+    SIMIX_action_destroy(action);
+  /* parallel tasks only */
+  if (task->simdata->host_list)
+    xbt_free(task->simdata->host_list);
+
+  /* free main structures */
+  xbt_free(task->simdata);
+  xbt_free(task);
 
   return MSG_OK;
 }
@@ -167,12 +172,12 @@ MSG_error_t MSG_task_cancel(m_task_t task)
 {
   xbt_assert0((task != NULL), "Invalid parameter");
 
-  if(task->simdata->compute) {
-		SIMIX_action_cancel(task->simdata->compute);
+  if (task->simdata->compute) {
+    SIMIX_action_cancel(task->simdata->compute);
     return MSG_OK;
   }
-  if(task->simdata->comm) {
-		SIMIX_action_cancel(task->simdata->comm);
+  if (task->simdata->comm) {
+    SIMIX_action_cancel(task->simdata->comm);
     return MSG_OK;
   }
 
@@ -183,9 +188,10 @@ MSG_error_t MSG_task_cancel(m_task_t task)
  * \brief Returns the computation amount needed to process a task #m_task_t.
  *        Once a task has been processed, this amount is thus set to 0...
  */
-double MSG_task_get_compute_duration(m_task_t task) 
+double MSG_task_get_compute_duration(m_task_t task)
 {
-  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+  xbt_assert0((task != NULL)
+	      && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->computation_amount;
 }
@@ -196,9 +202,10 @@ double MSG_task_get_compute_duration(m_task_t task)
  */
 double MSG_task_get_remaining_computation(m_task_t task)
 {
-  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+  xbt_assert0((task != NULL)
+	      && (task->simdata != NULL), "Invalid parameter");
 
-  if(task->simdata->compute) {
+  if (task->simdata->compute) {
     return SIMIX_action_get_remains(task->simdata->compute);
   } else {
     return task->simdata->computation_amount;
@@ -209,9 +216,10 @@ double MSG_task_get_remaining_computation(m_task_t task)
  * \brief Returns the size of the data attached to a task #m_task_t.
  *
  */
-double MSG_task_get_data_size(m_task_t task) 
+double MSG_task_get_data_size(m_task_t task)
 {
-  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+  xbt_assert0((task != NULL)
+	      && (task->simdata != NULL), "Invalid parameter");
 
   return task->simdata->message_size;
 }
@@ -224,12 +232,13 @@ double MSG_task_get_data_size(m_task_t task)
  *        cpu power than the other ones.
  *
  */
-void MSG_task_set_priority(m_task_t task, double priority) 
+void MSG_task_set_priority(m_task_t task, double priority)
 {
-  xbt_assert0((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+  xbt_assert0((task != NULL)
+	      && (task->simdata != NULL), "Invalid parameter");
 
-  task->simdata->priority = 1/priority;
-  if(task->simdata->compute)
-		SIMIX_action_set_priority(task->simdata->compute, task->simdata->priority);
+  task->simdata->priority = 1 / priority;
+  if (task->simdata->compute)
+    SIMIX_action_set_priority(task->simdata->compute,
+			      task->simdata->priority);
 }
-
