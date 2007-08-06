@@ -14,26 +14,28 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
 				"Logging specific to SIMIX (deployment)");
-static int parse_argc = -1 ;
+static int parse_argc = -1;
 static char **parse_argv = NULL;
 static xbt_main_func_t parse_code = NULL;
-static char * parse_host = NULL;
+static char *parse_host = NULL;
 static double start_time = 0.0;
 static double kill_time = -1.0;
-  
+
 static void parse_process_init(void)
 {
   parse_host = xbt_strdup(A_surfxml_process_host);
-  xbt_assert1(SIMIX_host_get_by_name(A_surfxml_process_host), "Unknown host %s",A_surfxml_process_host);
+  xbt_assert1(SIMIX_host_get_by_name(A_surfxml_process_host),
+	      "Unknown host %s", A_surfxml_process_host);
   parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
-  xbt_assert1(parse_code, "Unknown function %s",A_surfxml_process_function);
-  parse_argc = 0 ;
+  xbt_assert1(parse_code, "Unknown function %s",
+	      A_surfxml_process_function);
+  parse_argc = 0;
   parse_argv = NULL;
   parse_argc++;
   parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
   parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
-  surf_parse_get_double(&start_time,A_surfxml_process_start_time);
-  surf_parse_get_double(&kill_time,A_surfxml_process_kill_time);
+  surf_parse_get_double(&start_time, A_surfxml_process_start_time);
+  surf_parse_get_double(&kill_time, A_surfxml_process_kill_time);
 }
 
 static void parse_argument(void)
@@ -46,9 +48,9 @@ static void parse_argument(void)
 static void parse_process_finalize(void)
 {
   smx_process_arg_t arg = NULL;
-  void * process = NULL;
-  if(start_time>SIMIX_get_clock()) {
-    arg = xbt_new0(s_smx_process_arg_t,1);
+  void *process = NULL;
+  if (start_time > SIMIX_get_clock()) {
+    arg = xbt_new0(s_smx_process_arg_t, 1);
     arg->name = parse_argv[0];
     arg->code = parse_code;
     arg->data = NULL;
@@ -57,29 +59,46 @@ static void parse_process_finalize(void)
     arg->argv = parse_argv;
     arg->kill_time = kill_time;
 
-    DEBUG3("Process %s(%s) will be started at time %f", arg->name, 
-	   arg->hostname,start_time);
-		 if (simix_global->create_process_function)
-			 surf_timer_resource->extension_public->set(start_time, (void*) simix_global->create_process_function, arg);
-		 else
-			 surf_timer_resource->extension_public->set(start_time, (void*) &SIMIX_process_create, arg);
+    DEBUG3("Process %s(%s) will be started at time %f", arg->name,
+	   arg->hostname, start_time);
+    if (simix_global->create_process_function)
+      surf_timer_resource->extension_public->set(start_time,
+						 (void *) simix_global->
+						 create_process_function,
+						 arg);
+    else
+      surf_timer_resource->extension_public->set(start_time,
+						 (void *)
+						 &SIMIX_process_create,
+						 arg);
 
   }
-  if((start_time<0) || (start_time==SIMIX_get_clock())) {
+  if ((start_time < 0) || (start_time == SIMIX_get_clock())) {
     DEBUG2("Starting Process %s(%s) right now", parse_argv[0], parse_host);
 
-		if (simix_global->create_process_function)
-			process = simix_global->create_process_function(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv);
-		else
-			process = SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host,	parse_argc,parse_argv);
+    if (simix_global->create_process_function)
+      process =
+	  simix_global->create_process_function(parse_argv[0], parse_code,
+						NULL, parse_host,
+						parse_argc, parse_argv);
+    else
+      process =
+	  SIMIX_process_create(parse_argv[0], parse_code, NULL, parse_host,
+			       parse_argc, parse_argv);
 
-		if(kill_time > SIMIX_get_clock()) {
-			if (simix_global->kill_process_function)
-				surf_timer_resource->extension_public->set(start_time, (void*) simix_global->kill_process_function, arg);
-			else
-				surf_timer_resource->extension_public->set(kill_time, (void*) &SIMIX_process_kill, (void*) process);
-		}
-		xbt_free(parse_host);
+    if (kill_time > SIMIX_get_clock()) {
+      if (simix_global->kill_process_function)
+	surf_timer_resource->extension_public->set(start_time,
+						   (void *) simix_global->
+						   kill_process_function,
+						   arg);
+      else
+	surf_timer_resource->extension_public->set(kill_time,
+						   (void *)
+						   &SIMIX_process_kill,
+						   (void *) process);
+    }
+    xbt_free(parse_host);
   }
 }
 
@@ -97,14 +116,15 @@ static void parse_process_finalize(void)
  *     \include small_deployment.xml
  *
  */
-void SIMIX_launch_application(const char *file) 
+void SIMIX_launch_application(const char *file)
 {
-  xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_launch_application.");
+  xbt_assert0(simix_global,
+	      "SIMIX_global_init has to be called before SIMIX_launch_application.");
   STag_surfxml_process_fun = parse_process_init;
   ETag_surfxml_argument_fun = parse_argument;
   ETag_surfxml_process_fun = parse_process_finalize;
   surf_parse_open(file);
-  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
 }
 
@@ -116,11 +136,12 @@ void SIMIX_launch_application(const char *file)
  * \param name the reference name of the function.
  * \param code the function
  */
-void SIMIX_function_register(const char *name,xbt_main_func_t code)
+void SIMIX_function_register(const char *name, xbt_main_func_t code)
 {
-  xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_function_register.");
+  xbt_assert0(simix_global,
+	      "SIMIX_global_init has to be called before SIMIX_function_register.");
 
-  xbt_dict_set(simix_global->registered_functions,name,code,NULL);
+  xbt_dict_set(simix_global->registered_functions, name, code, NULL);
 }
 
 /**
@@ -133,8 +154,8 @@ void SIMIX_function_register(const char *name,xbt_main_func_t code)
  */
 xbt_main_func_t SIMIX_get_registered_function(const char *name)
 {
-  xbt_assert0(simix_global,"SIMIX_global_init has to be called before SIMIX_get_registered_function.");
+  xbt_assert0(simix_global,
+	      "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
-  return xbt_dict_get_or_null(simix_global->registered_functions,name);
+  return xbt_dict_get_or_null(simix_global->registered_functions, name);
 }
-
