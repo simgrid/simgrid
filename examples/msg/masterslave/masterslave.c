@@ -105,6 +105,7 @@ int slave(int argc, char *argv[])
       INFO1("Processing \"%s\"", MSG_task_get_name(task));
       MSG_task_execute(task);
       INFO1("\"%s\" done", MSG_task_get_name(task));
+      free(task->data);
       MSG_task_destroy(task);
     } else {
       INFO0("Hey ?! What's up ? ");
