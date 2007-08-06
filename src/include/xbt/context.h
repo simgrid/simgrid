@@ -31,7 +31,7 @@
 /* @}*/
 
 void xbt_context_empty_trash(void);
-XBT_PUBLIC(xbt_context_t) xbt_context_new(xbt_main_func_t code,
+XBT_PUBLIC(xbt_context_t) xbt_context_new(const char*name,xbt_main_func_t code,
 			                  void_f_pvoid_t startup_func, void *startup_arg,
 			                  void_f_pvoid_t cleanup_func, void *cleanup_arg,
 			                  int argc, char *argv[]);
