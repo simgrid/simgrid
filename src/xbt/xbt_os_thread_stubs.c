@@ -30,7 +30,7 @@ void xbt_os_thread_mod_exit(void) {}
 
 /* Main functions */
 
-xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine,void* param) {
+xbt_os_thread_t xbt_os_thread_create(const char*name,pvoid_f_pvoid_t start_routine,void* param) {
    xbt_backtrace_display_current();
    xbt_die("No pthread in SG when compiled against the ucontext (xbt_os_thread_create)");
 }

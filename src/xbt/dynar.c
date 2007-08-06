@@ -1166,8 +1166,8 @@ XBT_TEST_UNIT("synchronized int",test_dynar_sync_int,"Synchronized dynars of int
    
    xbt_test_add0("==== Have a pusher and a popper on the dynar");
    d=xbt_dynar_new_sync(sizeof(int),NULL);
-   pusher = xbt_thread_create(pusher_f,d);
-   poper = xbt_thread_create(poper_f,d);
+   pusher = xbt_thread_create("pusher",pusher_f,d);
+   poper = xbt_thread_create("poper",poper_f,d);
    xbt_thread_join(pusher);
    xbt_thread_join(poper);
    xbt_dynar_free(&d);
