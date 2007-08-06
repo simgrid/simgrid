@@ -160,9 +160,9 @@ if test "x$with_context" = "xpthread"; then
   AC_CHECK_LIB(pthread,pthread_create,,
     [AC_MSG_ERROR([[Cannot find pthreads (try --with-context=ucontext if you haven't already tried).]])])
   AC_DEFINE([CONTEXT_THREADS],1,[Define if xbt contexts are based on our threads implementation or not])
-  AC_MSG_RESULT(You have pthreads. Let's use them.)
+  AC_MSG_RESULT(You have pthreads and requested for them. Fine.)
 fi
-AM_CONDITIONAL(CONTEXT_THREADS,test "x$with_context" = xpthread)
+AM_CONDITIONAL(CONTEXT_THREADS,test "x$with_context" != xucontext)
 
 dnl #
 dnl #  4. determine a few additional details
