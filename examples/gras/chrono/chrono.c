@@ -77,5 +77,6 @@ int multiplier (int argc,char *argv[])
     GRAS_BENCH_ONCE_RUN_ONCE_END();
   }
 
+  gras_exit();
   return 0;
 }
