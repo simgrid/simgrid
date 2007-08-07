@@ -1,22 +1,22 @@
 
-#! set timeout 20
-& $SG_TEST_ENV ./ping_server$EXEEXT 4002 --log=root.fmt=%m%n
-> Launch server (port=4002)
-> Messages registered
-> Messages registered
-> >>>>>>>> Listening on port 4002 <<<<<<<<
-> >>>>>>>> Got message PING(1234) from 127.0.0.1:0 <<<<<<<<
-> >>>>>>>> Answered with PONG(4321) <<<<<<<<
-> Done.
-> Exiting GRAS
+! timeout 20
+& $SG_TEST_ENV ./ping_server$EXEEXT 4002 --log=root.fmt=%P:%t%e%m%n $ARGS
+> server:main Launch server (port=4002)
+> server:main Messages registered
+> server:main Messages registered
+> server:main >>>>>>>> Listening on port 4002 <<<<<<<<
+> server:main >>>>>>>> Got message PING(1234) from 127.0.0.1:0 <<<<<<<<
+> server:main >>>>>>>> Answered with PONG(4321) <<<<<<<<
+> server:main Done.
+> server:main Exiting GRAS
 
-#! set timeout 20
-& $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4002 --log=root.fmt=%m%n
-> Launch client (server on 127.0.0.1:4002)
-> Connected to 127.0.0.1:4002.
-> Messages registered
-> >>>>>>>> Connected to server which is on 127.0.0.1:4002 <<<<<<<<
-> >>>>>>>> Message PING(1234) sent to 127.0.0.1:4002 <<<<<<<<
-> >>>>>>>> Got PONG(4321) from 127.0.0.1:4002 <<<<<<<<
-> Done.
-> Exiting GRAS
+! timeout 20
+& $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4002 --log=root.fmt=%P:%t%e%m%n $ARGS
+> client:main Launch client (server on 127.0.0.1:4002)
+> client:main Connected to 127.0.0.1:4002.
+> client:main Messages registered
+> client:main >>>>>>>> Connected to server which is on 127.0.0.1:4002 <<<<<<<<
+> client:main >>>>>>>> Message PING(1234) sent to 127.0.0.1:4002 <<<<<<<<
+> client:main >>>>>>>> Got PONG(4321) from 127.0.0.1:4002 <<<<<<<<
+> client:main Done.
+> client:main Exiting GRAS
