@@ -135,8 +135,7 @@ int philosopher (int argc,char *argv[]) {
   INFO0("Cancel all childs");
   /* nuke them threads */
   for (i=0; i<philosopher_amount; i++) {
-    INFO1("Canceling %p",philosophers[i]);
-     xbt_thread_cancel(philosophers[i]);
+    xbt_thread_cancel(philosophers[i]);
   }
 
   xbt_mutex_unlock(dead_end);
