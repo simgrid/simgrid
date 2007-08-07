@@ -132,18 +132,18 @@ int node (int argc,char *argv[]) {
   INFO4("Launch node %d (successor on %s:%d; listening on %d)",
 	gras_os_getpid(), host,peerport, myport);
 
-  /* 4. Create my master socket for listening */
+  /* 4. Register the known messages.  */
+  gras_msgtype_declare("stoken", gras_datadesc_by_name("int"));
+   
+  /* 5. Create my master socket for listening */
   globals->sock = gras_socket_server(myport);
   gras_os_sleep(1.0); /* Make sure all server sockets are created */
-
-  /* 5. Create socket to the successor on the ring */
+   
+  /* 6. Create socket to the successor on the ring */
   DEBUG2("Connect to my successor on %s:%d",host,peerport);
 
   globals->tosuccessor = gras_socket_client(host,peerport);
   
-  /* 6. Register the known messages.  */
-  gras_msgtype_declare("stoken", gras_datadesc_by_name("int"));
-   
   /* 7. Register my callback */
   gras_cb_register("stoken",&node_cb_stoken_handler);  
 
