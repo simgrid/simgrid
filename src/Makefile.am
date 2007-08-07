@@ -1,14 +1,8 @@
-#AM_CPPFLAGS=
-AM_CFLAGS= -g
 #AM_CFLAGS= -DNDEBUG 
 
 # -DNLOG   cuts absolutely all logs at compilation time.
 # -DNDEBUG cuts asserts and logs at "trace" and "debug" levels.
 
-# -g -ffast-math -funroll-loops -O3 -fno-strict-aliasing
-# Those should be added by configure when using gcc
-# fast-math is nasty when using IEEE floating point semantic
-# strict-aliasing breaks my type-punning bad habit.
 
 
 MAINTAINERCLEANFILES=Makefile.in
