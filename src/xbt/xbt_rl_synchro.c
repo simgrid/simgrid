@@ -90,7 +90,6 @@ struct xbt_mutex_ {
 xbt_mutex_t xbt_mutex_init(void) {
    xbt_mutex_t res = (xbt_mutex_t)xbt_os_mutex_init();
    DEBUG1("Create mutex %p", res);
-   xbt_backtrace_display_current();
    return res;
 }
 
@@ -102,7 +101,6 @@ void xbt_mutex_lock(xbt_mutex_t mutex) {
 void xbt_mutex_unlock(xbt_mutex_t mutex) {
    DEBUG1("Unlock mutex %p", mutex);
    xbt_os_mutex_unlock( (xbt_os_mutex_t)mutex );
-   xbt_backtrace_display_current();
 }
 
 void xbt_mutex_destroy(xbt_mutex_t mutex) {
@@ -144,7 +142,6 @@ void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex) {
 
 void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay) {
    DEBUG3("Wait cond %p, mutex %p for %f sec", cond, mutex,delay);
-   xbt_backtrace_display_current();
    xbt_os_cond_timedwait( (xbt_os_cond_t)cond, (xbt_os_mutex_t)mutex, delay );
    DEBUG3("Done waiting cond %p, mutex %p for %f sec", cond, mutex, delay);
 }
