@@ -161,6 +161,7 @@ typedef enum {
  * (used by macros that don't explicitly specify a category).
  */
 
+  /*
 #if (defined(_WIN32) && !defined(DLL_STATIC))
 # define XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc) \
 	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
@@ -168,16 +169,17 @@ typedef enum {
 		#cname, xbt_log_priority_uninitialized, 1, \
         0, 1                                          \
     }
-    
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
 	XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc); \
 	XBT_LOG_DEFAULT_CATEGORY(cname)
     
 #else
+*/
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
     XBT_LOG_NEW_CATEGORY(cname,desc);                   \
-    XBT_LOG_DEFAULT_CATEGORY(cname)	
-#endif
+    XBT_LOG_DEFAULT_CATEGORY(cname)
+   
+//#endif
 
 
 
