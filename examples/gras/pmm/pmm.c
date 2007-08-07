@@ -339,9 +339,9 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload) {
 
   xbt_matrix_free(mydataA);
   xbt_matrix_free(mydataB);
+  /* FIXME: some are said to be unknown 
   gras_socket_close(master);
   gras_socket_close(from);
-  /* FIXME: some are said to be unknown 
   for (l=0; l < PROC_MATRIX_SIZE-1; l++) {
      if (socket_line[l])
        gras_socket_close(socket_line[l]);
