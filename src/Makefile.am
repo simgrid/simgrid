@@ -304,7 +304,7 @@ libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_
 # library (no idea why it works under linux, but it fails under windows)
 libsmpi_la_LIBADD = libsimgrid.la
 libsmpi_la_SOURCES = $(SMPI_SRC)
-libsmpi_la_LDFLAGS = $(VERSION_INFO) @LD_DYNAMIC_FLAGS@ -lm
+libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
 
 ##

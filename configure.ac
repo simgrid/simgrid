@@ -188,6 +188,7 @@ fi
 SG_CONFIGURE_PART(Checking extra libraries dependencies...)
 
 SIMGRID_DEP=""
+SMPI_DEP=""
 GRAS_DEP=""
 
 if test xpthread=xyes ; then 
@@ -279,6 +280,7 @@ fi
 AM_CONDITIONAL(HAVE_SDP,test x$csdp != xno)
 
 AC_SUBST([SIMGRID_DEP])
+AC_SUBST([SMPI_DEP])
 
 AC_CHECK_LIB(nsl, gethostbyname, [GRAS_DEP="$GRAS_DEP -lnsl"])
 AC_CHECK_LIB(socket, connect,    [GRAS_DEP="$GRAS_DEP -lsocket"])
