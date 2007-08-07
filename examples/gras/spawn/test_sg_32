@@ -12,26 +12,20 @@ $ $SG_TEST_EXENV ./spawn_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platf
 > [Tremblay:father:(1) 0.000030] [Spawn/INFO] Kid Tremblay:4002 pinged me with 1234
 > [Tremblay:child:(2) 0.000030] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
 > [Tremblay:child:(2) 0.000030] [gras/INFO] Exiting GRAS
-> [Tremblay:child:(2) 0.000030] [gras/INFO] Shutdown listener 0x8057b80
 > [Tremblay:father:(1) 0.000045] [Spawn/INFO] Answered to Tremblay:4002's request
 > [Tremblay:father:(1) 0.000045] [Spawn/INFO] Kid Tremblay:4003 pinged me with 1234
 > [Tremblay:child:(3) 0.000045] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
 > [Tremblay:child:(3) 0.000045] [gras/INFO] Exiting GRAS
-> [Tremblay:child:(3) 0.000045] [gras/INFO] Shutdown listener 0x80592b8
 > [Tremblay:father:(1) 0.000060] [Spawn/INFO] Answered to Tremblay:4003's request
 > [Tremblay:father:(1) 0.000060] [Spawn/INFO] Kid Tremblay:4004 pinged me with 1234
 > [Tremblay:child:(4) 0.000060] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
 > [Tremblay:child:(4) 0.000060] [gras/INFO] Exiting GRAS
-> [Tremblay:child:(4) 0.000060] [gras/INFO] Shutdown listener 0x805a150
 > [Tremblay:father:(1) 0.000075] [Spawn/INFO] Answered to Tremblay:4004's request
 > [Tremblay:father:(1) 0.000075] [Spawn/INFO] Kid Tremblay:4005 pinged me with 1234
 > [Tremblay:child:(5) 0.000075] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
 > [Tremblay:child:(5) 0.000075] [gras/INFO] Exiting GRAS
-> [Tremblay:child:(5) 0.000075] [gras/INFO] Shutdown listener 0x805afb8
 > [Tremblay:father:(1) 0.000090] [Spawn/INFO] Answered to Tremblay:4005's request
 > [Tremblay:father:(1) 0.000090] [Spawn/INFO] All kids gone. Leave now.
 > [Tremblay:father:(1) 0.000090] [gras/INFO] Exiting GRAS
-> [Tremblay:father:(1) 0.000090] [gras/INFO] Shutdown listener 0x8055f60
 > [Tremblay:child:(6) 0.000090] [Spawn/INFO] Pinged dad with 1234, he answered with 4321; leaving now.
 > [Tremblay:child:(6) 0.000090] [gras/INFO] Exiting GRAS
-> [Tremblay:child:(6) 0.000090] [gras/INFO] Shutdown listener 0x805be08
