@@ -25,7 +25,13 @@
 #include <stdarg.h>
 
 
-
+#ifdef _WIN32
+/* stupid stubs so that it compiles on windows */
+void generate_sim(char *project) {}
+void generate_rl(char *project) {}
+void generate_makefile_local(char *project, char *deployment) {}
+#else 
+/* real implementation */
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(stubgen);
 
 
@@ -450,3 +456,4 @@ static void print(void *p)
 {
   printf("%p",p);
 }
+#endif

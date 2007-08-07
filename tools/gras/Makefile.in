@@ -216,7 +216,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CFLAGS = -g
+AM_CFLAGS = -g3
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include -I$(top_srcdir)/src
 # skel_rewriter
 gras_stub_generator_SOURCES = stub_generator.c unix_stub_generator.c windows_stub_generator.c

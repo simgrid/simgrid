@@ -1,4 +1,4 @@
-AM_CFLAGS = -g
+AM_CFLAGS = -g3
 
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include -I$(top_srcdir)/src
 

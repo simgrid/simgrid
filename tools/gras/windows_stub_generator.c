@@ -31,13 +31,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(stubgen);
 
 #ifdef _WIN32
 
+char* __gras_path = NULL;
+
 /* tabulation level (used to indent the lines of the borland project file */
 static unsigned int level = 0;
-
-
-
-/* the gras.h header directory */
-static char* __gras_path = NULL;
 
 
 #ifndef MAX_PATH
@@ -681,7 +678,6 @@ generate_borland_real_life_project(const char* name)
     borland_project.encoding ="utf-8";
     borland_project.comment ="C++Builder XML Project";
     borland_project.version = "BCB.06.00";
-    borland_project.lib_dir = " ";
 
     borland_project.lib_dir = xbt_new0(char,MAX_PATH);
 

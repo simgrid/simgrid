@@ -34,6 +34,8 @@ void generate_rl(char *project);
 void generate_makefile_am(char *project, char *deployment);
 void generate_makefile_local(char *project, char *deployment);
 
+/* the gras.h header directory (used only in windows)*/
+extern char* __gras_path;
 
 /*
  * Generate a borland simulation poject file.
