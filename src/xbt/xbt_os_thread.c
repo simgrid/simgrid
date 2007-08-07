@@ -72,6 +72,9 @@ void xbt_os_thread_mod_init(void) {
    main_thread->exception = xbt_new(ex_ctx_t, 1);
    XBT_CTX_INITIALIZE(main_thread->exception);
 
+   __xbt_ex_ctx = _os_thread_ex_ctx;
+   __xbt_ex_terminate = _os_thread_ex_terminate;
+
    thread_mod_inited = 1;
 }
 void xbt_os_thread_mod_exit(void) {
