@@ -1,0 +1,86 @@
+#! /usr/bin/perl
+
+use strict;
+$ENV{LC_ALL} = "C"; # avoid NLS nuisance
+
+my @fail;
+my @xfail;
+my @pass;
+my @xpass;
+my @skip;
+
+my $dir;
+
+open LOG,(">checkall.log") || die "Cannot open log file: $!";
+
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+print LOG "Build started on $hour:$min:$sec $mon/$mday/$year\n\n";
+open MAKE,("make |") || die "Cannot fork a make: $!";
+while (<MAKE>) {
+    print     $_;
+    print LOG $_;
+}
+if (!close MAKE) {
+    my $str = "# The source don't compile! Go fix it before running make check #";
+    my $dashes = $str;
+    $dashes =~ s/./#/g;
+    print LOG "\n$dashes\n$str\n$dashes\n\n";
+    print     "\n$dashes\n$str\n$dashes\n\n";
+    close LOG;
+    exit 1;
+}
+    
+open CHECK,("make -k check|") || die "Cannot fork a make check: $!";
+while (<CHECK>) {
+    print     $_;
+    print LOG $_;
+    chomp;
+    if (/Entering directory .([^']*)'/) { #})){
+      $dir = $1;
+      $dir =~ s|$ENV{PWD}/||;
+    }
+    push @pass, "$dir/$1"   if (/^PASS: (.*)$/);
+    push @xpass,"$dir/$1"   if (/^XPASS: (.*)$/);  
+    push @fail, "$dir/$1"   if (/^FAIL: (.*)$/);
+    push @xfail,"$dir/$1"   if (/^XFAIL: (.*)$/);   
+    push @skip, "$dir/$1"   if (/^SKIP: (.*)$/);
+}
+close CHECK;
+
+my $all = scalar @fail + scalar @xfail + scalar @pass + scalar @xpass + scalar @skip;
+my $banner;
+
+if (scalar @fail == 0) {
+    if (scalar @xfail == 0) {
+	$banner="All $all tests passed. Congratulation.";
+    } else {
+	$banner="All $all tests behaved as expected (".(scalar @xfail)." expected failures)";
+    }
+} elsif (scalar @xpass == 0) {
+    $banner=(scalar @fail)." of $all tests failed"; 
+} else {
+    $banner=(scalar @fail+scalar @xpass)." of $all tests did not behave as expected (".(scalar @xpass)." unexpected passes)"; 
+}
+$banner = "# $banner #";
+my $dashes = $banner;
+$dashes =~ s/./#/g;
+print LOG "\n$dashes\n$banner\n$dashes\n\n";
+print     "\n$dashes\n$banner (full logs in checkall.pl)\n$dashes\n\n";
+
+if (scalar @skip) {
+    print LOG "Skipped tests:\n";
+    print     "Skipped tests:\n";
+    map {print "  $_\n";print LOG "  $_\n"} @skip;
+}
+if (scalar @xpass) {
+    print LOG "Unexpected pass:\n";
+    print     "Unexpected pass:\n";
+    map {print "  $_\n";print LOG "  $_\n"} @xpass;
+}
+if (scalar @fail) {
+    print LOG "Failed tests:\n";
+    print     "Failed tests:\n";
+    map {print "  $_\n";print LOG "  $_\n"} @fail;
+}
+
+exit scalar @fail == 0;
