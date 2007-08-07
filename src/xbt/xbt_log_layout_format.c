@@ -12,7 +12,6 @@
 #include "xbt/log.h"
 #include "gras/virtu.h" /* gras_os_myname (KILLME) */
 #include "xbt/synchro.h" /* xbt_thread_self_name */
-#include "xbt/xbt_os_time.h" /* xbt_os_time */
 #include <stdio.h>
 
 extern const char *xbt_log_priority_names[7];
@@ -27,7 +26,7 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
   int precision=-1;
 
   if (begin_of_time<0) 
-    begin_of_time=xbt_os_time();
+    begin_of_time=gras_os_time();
 
   p = res;
   q = l->data;
@@ -176,17 +175,17 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
 
       case 'd': /* date; LOG4J compliant */
 	if (precision == -1)
-	   p += sprintf(p,"%f", xbt_os_time());
+	   p += sprintf(p,"%f", gras_os_time());
         else {	      
-	   p += sprintf(p,"%.*f", precision, xbt_os_time());
+	   p += sprintf(p,"%.*f", precision, gras_os_time());
 	   precision = -1;
 	}	 
 	break;
       case 'r': /* application age; LOG4J compliant */
 	if (precision == -1)
-	   p += sprintf(p,"%f", xbt_os_time()-begin_of_time);
+	   p += sprintf(p,"%f", gras_os_time()-begin_of_time);
         else {	      
-	   p += sprintf(p,"%.*f", precision, xbt_os_time()-begin_of_time);
+	   p += sprintf(p,"%.*f", precision, gras_os_time()-begin_of_time);
 	   precision = -1;
 	}	 
 	break;
