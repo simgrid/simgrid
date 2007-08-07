@@ -237,7 +237,9 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock) {
   }
   
   VERB3("Accepted from %s:%d (sd=%d)", res->peer_name,res->peer_port,sd);
-  
+  xbt_dynar_push(((gras_trp_procdata_t)
+		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,&res);
+   
   XBT_OUT;
   return res;
 }

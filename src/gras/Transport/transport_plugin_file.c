@@ -103,6 +103,8 @@ gras_socket_client_from_file(const char*path) {
 	 res->outgoing?'y':'n',
 	 res->accepting?'y':'n');
 
+  xbt_dynar_push(((gras_trp_procdata_t)
+		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,&res);
   return res;
 }
 
@@ -143,6 +145,8 @@ gras_socket_t gras_socket_server_from_file(const char*path) {
 	 res->accepting?'y':'n');
 
   res->recv_ok=0;
+  xbt_dynar_push(((gras_trp_procdata_t)
+		  gras_libdata_by_id(gras_trp_libdata_id))->sockets,&res);
   return res;
 }
 
