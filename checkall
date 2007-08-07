@@ -77,6 +77,11 @@ if (scalar @xpass) {
     print     "Unexpected pass:\n";
     map {print "  $_\n";print LOG "  $_\n"} @xpass;
 }
+if (scalar @xfail) {
+    print LOG "Expected failures:\n";
+    print     "Expected failures:\n";
+    map {print "  $_\n";print LOG "  $_\n"} @xfail;
+}
 if (scalar @fail) {
     print LOG "Failed tests:\n";
     print     "Failed tests:\n";
