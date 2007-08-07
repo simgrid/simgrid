@@ -34,7 +34,6 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
   xbt_matrix_free(request[0]);
   xbt_matrix_free(request[1]);
   xbt_matrix_free(result);
-  gras_socket_close(expeditor);
    
   return 0;
 } /* end_of_server_cb_request_handler */

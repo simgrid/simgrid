@@ -51,11 +51,8 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload) {
    
   /* 7. Set the endcondition boolean to true (and make sure the server stops after receiving it). */
   globals->endcondition = 1;
-  
-  /* 8. Make sure we don't leak sockets */
-  gras_socket_close(expeditor);
-   
-  /* 9. Tell GRAS that we consummed this message */
+     
+  /* 8. Tell GRAS that we consummed this message */
   return 0;
 } /* end_of_server_cb_ping_handler */
 
