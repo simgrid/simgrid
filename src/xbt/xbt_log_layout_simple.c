@@ -9,6 +9,7 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/synchro.h" /* xbt_thread_name */
 #include "gras/virtu.h"
 #include <stdio.h>
 
@@ -35,8 +36,8 @@ static char *xbt_log_layout_simple_doit(xbt_log_layout_t l,
   p += sprintf(res,"[");;
   /* Display the proc info if available */
   if(strlen(xbt_procname()))
-    p += sprintf(p,"%s:%s:(%d) ", 
-		 gras_os_myname(), xbt_procname(),(*xbt_getpid)());
+    p += sprintf(p,"%s:%s:(%d):%s ", 
+		 gras_os_myname(), xbt_procname(),(*xbt_getpid)(),xbt_thread_self_name());
 
   /* Display the date */
   p += sprintf(p,"%f] ", gras_os_time()-begin_of_time);
