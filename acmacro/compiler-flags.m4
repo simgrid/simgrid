@@ -13,23 +13,21 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
     AS_HELP_STRING([--disable-compile-optimizations], [use compiler optimizations (default=yes, unless if CFLAGS is explicitly set)]),
     enable_compile_optimizations=$enableval,enable_compile_optimizations=auto)
 
-  if test "x$cflags_set" != "xyes" ; then 
-    # if user didn't specify CFLAGS explicitely
-    
     # AC PROG CC tests whether -g is accepted. 
-    # Cool, but it also tries to set -O2. I don't want it with gcc
-    saveCFLAGS="$CFLAGS"
-    CFLAGS=
-    case " $saveCFLAGS " in
-    *-g*) CFLAGS="-g" ;; 
+    # Cool, but it also tries to set -O2 and -g. 
+    # I don't want it with gcc, but -O3 and -g2, and optimization only when asked by user
+    case $CC in 
+      *gcc)
+      if test "$CFLAGS" = "-g -O2" ; then
+        CFLAGS="-g3"
+      fi
+      if test "$CXXFLAGS" = "-g -O2" ; then
+        CXXFLAGS="-g3"
+      fi
+      if test "$GCJFLAGS" = "-g -O2" ; then
+        CXXFLAGS="-g3"
+      fi;;
     esac
-    case " $saveCFLAGS " in
-    *-O2*) test "x$CC" = xgcc || CFLAGS="$CFLAGS -O2" ;; 
-    esac
-    
-    # damn AC PROG CC, why did you set -O??
-    CFLAGS="-g"
-  fi
 
   if test "x$enable_compile_warnings" = "xyes" ; then
     AC_MSG_CHECKING(the warning flags for this compiler)
@@ -48,7 +46,7 @@ AC_DEFUN([SG_COMPILE_FLAGS],[
       if test "x$enable_compile_warnings" = "xyes"; then
         warnCFLAGS=`echo $warnCFLAGS  -Wmissing-prototypes -Wmissing-declarations \
         -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings \
-        -Wno-unused-function  \
+        -Wno-unused-function  -Wno-strict-aliasing  \
         -Werror \
 	| sed 's/ +/ /g'`
 	# -Wno-unused-variable  -Wno-unused-label
