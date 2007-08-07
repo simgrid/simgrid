@@ -46,6 +46,14 @@ xbt_thread_t xbt_thread_create(const char*name,void_f_pvoid_t* code, void* param
    return res;
 }
 
+const char* xbt_thread_name(xbt_thread_t t) {
+   return xbt_os_thread_name(t->os_thread);
+}
+
+const char* xbt_thread_self_name(void) {
+   return xbt_os_thread_self_name();
+}
+
 void 
 xbt_thread_join(xbt_thread_t thread) {
    DEBUG1("Join thread %p",thread);

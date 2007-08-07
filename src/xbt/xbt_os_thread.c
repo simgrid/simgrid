@@ -66,6 +66,7 @@ void xbt_os_thread_mod_init(void) {
      THROW0(system_error,errcode,"pthread_key_create failed for xbt_self_thread_key");
 
    main_thread=xbt_new(s_xbt_os_thread_t,1);
+   main_thread->name = (char*)"main";
    main_thread->start_routine = NULL;
    main_thread->param = NULL;
    main_thread->exception = xbt_new(ex_ctx_t, 1);
@@ -111,6 +112,14 @@ xbt_os_thread_t xbt_os_thread_create(const char*name,
    return res_thread;
 }
 
+const char* xbt_os_thread_name(xbt_os_thread_t t) {
+   return t->name;
+}
+
+const char* xbt_os_thread_self_name(void) {
+   xbt_os_thread_t self = xbt_os_thread_self();
+   return self?self->name:"main";
+}
 void 
 xbt_os_thread_join(xbt_os_thread_t thread,void ** thread_return) {
 	
@@ -320,6 +329,15 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,pvoid_f_pvoid_t start_rout
    }
    
    return t;
+}
+
+const char* xbt_os_thread_name(xbt_os_thread_t t) {
+   return t->name;
+}
+
+const char* xbt_os_thread_self_name(void) {
+   xbt_os_thread_t t = xbt_os_thread_self();
+   return t?t->name:"main";
 }
 
 void 

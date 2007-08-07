@@ -35,6 +35,8 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(xbt_thread_t) xbt_thread_create(const char *name, void_f_pvoid_t start_routine,void* param);
   XBT_PUBLIC(void) xbt_thread_exit();
   XBT_PUBLIC(xbt_thread_t) xbt_thread_self(void);
+  XBT_PUBLIC(const char*) xbt_thread_name(xbt_thread_t t);
+  XBT_PUBLIC(const char*) xbt_thread_self_name(void);
   /* xbt_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
   XBT_PUBLIC(void) xbt_thread_join(xbt_thread_t thread);
   /* Ends the life of the poor victim (not always working if it's computing, but working if it's blocked in the OS) */
