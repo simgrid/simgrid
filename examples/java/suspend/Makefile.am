@@ -4,7 +4,8 @@ EXTRA_DIST=suspend_deployment.xml suspend_platform.xml surfxml.dtd
 noinst_JAVA= DreamMaster.java LazyGuy.java SuspendTest.java
 
 # Declare test class 
-# TESTS=SuspendTest.class (broken test)
+TESTS=SuspendTest.class
+XFAIL_TESTS=SuspendTest.class
 
 include $(srcdir)/../java_test.mk
 
