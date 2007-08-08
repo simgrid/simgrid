@@ -49,8 +49,8 @@ int master(int argc, char *argv[])
   double start_time = MSG_get_clock();
   MSG_task_put(todo, slave, PORT_22);
   double end_time = MSG_get_clock();
-  INFO2("Send completed (to %s). Transfer time: %f\n",
-	slave->name, (end_time - start_time));
+  INFO3("Send completed (to %s). Transfer time: %f\t Agregate bandwidth: %f\n",
+	slave->name, (end_time - start_time), task_comm_size/(end_time-start_time));
   printf("Completed peer: %s time: %f\n", slave->name, (end_time-start_time));
   MSG_task_put(MSG_task_create("finalize", 0, 0, FINALIZE),
       slave, PORT_22);
