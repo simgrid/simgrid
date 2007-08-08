@@ -132,7 +132,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -204,7 +203,7 @@ EXTRA_DIST = comm_time_deployment.xml comm_time_platform.xml surfxml.dtd
 noinst_JAVA = Master.java Slave.java CommTimeTest.java CommTimeTask.java
 TESTS = CommTimeTest.class
 JAVAROOT = .
-AM_JAVACFLAGS = -cp $(top_srcdir)/src/simgrid.jar
+AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar
 
 ##########################
 # What to do on make check

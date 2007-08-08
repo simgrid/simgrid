@@ -132,7 +132,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -198,6 +197,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+CLASSPATH = ../../../src/simgrid.jar
 EXTRA_DIST = basic_deployment.xml basic_platform.xml surfxml.dtd
 
 # Declare sources:
@@ -206,7 +206,7 @@ noinst_JAVA = Master.java Forwarder.java Slave.java BasicTest.java BasicTask.jav
 # Declare test class
 TESTS = BasicTest.class
 JAVAROOT = .
-AM_JAVACFLAGS = -cp $(top_srcdir)/src/simgrid.jar
+AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar
 
 ##########################
 # What to do on make check

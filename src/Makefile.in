@@ -14,6 +14,11 @@
 
 @SET_MAKE@
 
+#AM_CFLAGS= -DNDEBUG 
+
+# -DNLOG   cuts absolutely all logs at compilation time.
+# -DNDEBUG cuts asserts and logs at "trace" and "debug" levels.
+
 # Makefile chunk which allows to display the files which should be included
 # into the distribution.
 
@@ -353,7 +358,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -419,18 +423,6 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-
-#AM_CPPFLAGS=
-AM_CFLAGS = -g
-#AM_CFLAGS= -DNDEBUG 
-
-# -DNLOG   cuts absolutely all logs at compilation time.
-# -DNDEBUG cuts asserts and logs at "trace" and "debug" levels.
-
-# -g -ffast-math -funroll-loops -O3 -fno-strict-aliasing
-# Those should be added by configure when using gcc
-# fast-math is nasty when using IEEE floating point semantic
-# strict-aliasing breaks my type-punning bad habit.
 MAINTAINERCLEANFILES = Makefile.in
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include
 EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \

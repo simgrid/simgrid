@@ -38,13 +38,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@HAVE_SDP_TRUE@am__append_1 = sendrecv/sendrecv_KCCFLN05_proportional.tesh
-@HAVE_GTNETS_TRUE@am__append_2 = gtnets/gtnets 
+@HAVE_GTNETS_TRUE@am__append_1 = gtnets/gtnets 
 bin_PROGRAMS = sendrecv/sendrecv$(EXEEXT) suspend/suspend$(EXEEXT) \
 	masterslave/masterslave$(EXEEXT) \
 	masterslave/masterslave_forwarder$(EXEEXT) $(am__EXEEXT_1)
-@HAVE_GTNETS_TRUE@am__append_3 = gtnets/gtnets 
-@HAVE_GTNETS_FALSE@am__append_4 = gtnets/gtnets.c
+@HAVE_GTNETS_TRUE@am__append_2 = gtnets/gtnets 
+@HAVE_GTNETS_FALSE@am__append_3 = gtnets/gtnets.c
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = examples/msg
@@ -181,7 +180,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -257,16 +255,19 @@ EXTRA_DIST = msg_platform.xml small_platform.xml \
 	masterslave/deployment_masterslave.xml \
 	gtnets/r-n200-f50-s4-2-d.xml gtnets/onelink-p.xml \
 	gtnets/onelink-d.xml gtnets/r-n200-f50-s4-2-p.xml \
-	gtnets/dogbone-d.xml gtnets/dogbone-p.xml $(am__append_4)
+	gtnets/dogbone-d.xml gtnets/dogbone-p.xml $(am__append_3)
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = sendrecv/sendrecv_KCCFLN05.tesh $(am__append_1) \
-	sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
-	sendrecv/sendrecv_KCCFLN05_Reno.tesh suspend/suspend.tesh \
+TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
+        sendrecv/sendrecv_Vegas.tesh \
+        sendrecv/sendrecv_Reno.tesh \
+        suspend/suspend.tesh \
 	masterslave/masterslave.tesh \
 	masterslave/masterslave_forwarder.tesh
+
+@HAVE_SDP_TRUE@BROKEN_TESTS = sendrecv/sendrecv_SDP.tesh
 CLEANFILES = sendrecv/*~ sendrecv/sendrecv suspend/*~ suspend/suspend \
 	masterslave/*~ masterslave/masterslave \
-	masterslave/masterslave_forwarder $(am__append_2)
+	masterslave/masterslave_forwarder $(am__append_1)
 
 # sendrecv simple example
 sendrecv_sendrecv_SOURCES = sendrecv/sendrecv.c

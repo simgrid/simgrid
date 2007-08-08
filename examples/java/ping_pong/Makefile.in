@@ -132,7 +132,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -207,7 +206,7 @@ noinst_JAVA = Sender.java Receiver.java PingPongTask.java PingPongTest.java
 #if HAVE_JAVA
 TESTS = PingPongTest.class
 JAVAROOT = .
-AM_JAVACFLAGS = -cp $(top_srcdir)/src/simgrid.jar
+AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar
 
 ##########################
 # What to do on make check

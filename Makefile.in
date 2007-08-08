@@ -157,7 +157,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -705,16 +704,6 @@ gramine:
 @MAINTAINER_MODE_TRUE@	cp @PACKAGE@-@VERSION@.tar.gz ~/CVSIMPORT/pkg-grid/gras/@PACKAGE@_@VERSION@.orig.tar.gz
 @MAINTAINER_MODE_TRUE@	$(MAKE) -C ~/CVSIMPORT/pkg-grid/gras deb check
 @MAINTAINER_MODE_TRUE@	dput local *.changes
-
-@MAINTAINER_MODE_TRUE@publish-old: dist
-@MAINTAINER_MODE_TRUE@	 @echo "----[ Put the documentation on the local filesystem ]----"
-@MAINTAINER_MODE_TRUE@	 rm -rf ~/public_html/gras/doc
-@MAINTAINER_MODE_TRUE@	 mkdir ~/public_html/gras/doc
-@MAINTAINER_MODE_TRUE@	 cp -r doc/html ~/public_html/gras/doc
-@MAINTAINER_MODE_TRUE@	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
-@MAINTAINER_MODE_TRUE@	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/gras/dl
-@MAINTAINER_MODE_TRUE@	 @echo "----[ Sync remote host ]----"
-@MAINTAINER_MODE_TRUE@	 $(MAKE) -C public_html publish
 
 @MAINTAINER_MODE_TRUE@publish: dist
 @MAINTAINER_MODE_TRUE@	 @echo "----[ Put the tarball @VERSION@ on gforge ]----"
