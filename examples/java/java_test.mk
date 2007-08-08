@@ -4,7 +4,7 @@
 
 JAVAROOT=.
 
-AM_JAVACFLAGS=-cp $(top_srcdir)/src/simgrid.jar
+AM_JAVACFLAGS=-classpath $(top_srcdir)/src/simgrid.jar
 
 
 ##########################
