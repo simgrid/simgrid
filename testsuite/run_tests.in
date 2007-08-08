@@ -36,7 +36,7 @@ xbt_TESTS=" \
             xbt/graphxml_usage@EXEEXT@ @srcdir@/xbt/graph.xml;    \
             xbt/heap_bench@EXEEXT@;"
 
-surf_TESTS="surf/maxmin_usage@EXEEXT@;                                        \
+surf_TESTS="surf/lmm_usage@EXEEXT@;                                        \
             surf/maxmin_bench@EXEEXT@;                                        \
 	    surf/trace_usage@EXEEXT@ --surf-path=@srcdir@/surf/;              \
 	    surf/surf_usage@EXEEXT@  --surf-path=@srcdir@/surf/ platform.xml; \
