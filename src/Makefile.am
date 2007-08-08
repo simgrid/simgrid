@@ -426,11 +426,14 @@ surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
 	set -e; mkdir -p surf; flexml -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^
 $(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
 	set -e;                flexml            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
+	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
+
 
 xbt/graphxml.l: $(srcdir)/xbt/graphxml.dtd
 	set -e; flexml -b 1000000 -P graphxml --sysid=graphxml.dtd -S $@ -L $^
 $(top_srcdir)/include/xbt/graphxml.h: $(srcdir)/xbt/graphxml.dtd
 	set -e; flexml            -P graphxml --sysid=graphxml.dtd -H $@ -L $^
+	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 else
 
 $(top_srcdir)/include/surf/surfxml.h surf/surfxml.l: $(top_srcdir)/src/surf/surfxml.dtd
