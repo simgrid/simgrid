@@ -1,7 +1,7 @@
 #!/bin/sh
 #FIXME: .. paths...
-prefix="/home/marklee/progs/pkgs/simgrid-nifty"
-exec_prefix="${prefix}"
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
 
 CC="gcc"
 
@@ -39,7 +39,7 @@ FOOTER
 }
 
 INCLUDEARGS=""
-LINKARGS="-L${exec_prefix}/lib -lsimgrid -lsmpi "
+LINKARGS="-L@libdir@ -lsimgrid -lsmpi "
 
 CMDLINE=""
 while [ -n "$1" ]; do
@@ -49,7 +49,7 @@ while [ -n "$1" ]; do
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
   elif [ "${ARG%.c}" != "${ARG}" ]; then
-    INCLUDEARGS="-I . -I .. -I ../include -I ${prefix}/include "
+    INCLUDEARGS="-I . -I .. -I ../include -I @includedir@ "
     SRCFILE="$(realpath ${ARG})"
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
