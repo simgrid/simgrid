@@ -61,9 +61,9 @@ am__EXEEXT_1 = xbt/log_usage$(EXEEXT) xbt/heap_bench$(EXEEXT) \
 am__EXEEXT_2 = gras/trp_tcp_client$(EXEEXT) \
 	gras/trp_tcp_server$(EXEEXT) gras/trp_file_client$(EXEEXT) \
 	gras/trp_file_server$(EXEEXT) gras/datadesc_usage$(EXEEXT)
-am__EXEEXT_3 = surf/maxmin_usage$(EXEEXT) surf/maxmin_bench$(EXEEXT) \
-	surf/simeng_usage$(EXEEXT) surf/trace_usage$(EXEEXT) \
-	surf/surf_usage$(EXEEXT) surf/surf_usage2$(EXEEXT)
+am__EXEEXT_3 = surf/maxmin_bench$(EXEEXT) surf/lmm_usage$(EXEEXT) \
+	surf/trace_usage$(EXEEXT) surf/surf_usage$(EXEEXT) \
+	surf/surf_usage2$(EXEEXT)
 am__EXEEXT_4 = simdag/sd_test$(EXEEXT)
 am_gras_datadesc_usage_OBJECTS = datadesc_usage.$(OBJEXT) \
 	datadesc_structs.$(OBJEXT)
@@ -85,15 +85,12 @@ gras_trp_tcp_server_DEPENDENCIES = $(LDADD_RL)
 simdag_sd_test_SOURCES = simdag/sd_test.c
 simdag_sd_test_OBJECTS = sd_test.$(OBJEXT)
 simdag_sd_test_DEPENDENCIES = $(LDADD_SG)
+surf_lmm_usage_SOURCES = surf/lmm_usage.c
+surf_lmm_usage_OBJECTS = lmm_usage.$(OBJEXT)
+surf_lmm_usage_DEPENDENCIES = $(LDADD_SG)
 surf_maxmin_bench_SOURCES = surf/maxmin_bench.c
 surf_maxmin_bench_OBJECTS = maxmin_bench.$(OBJEXT)
 surf_maxmin_bench_DEPENDENCIES = $(LDADD_SG)
-surf_maxmin_usage_SOURCES = surf/maxmin_usage.c
-surf_maxmin_usage_OBJECTS = maxmin_usage.$(OBJEXT)
-surf_maxmin_usage_DEPENDENCIES = $(LDADD_SG)
-surf_simeng_usage_SOURCES = surf/simeng_usage.c
-surf_simeng_usage_OBJECTS = simeng_usage.$(OBJEXT)
-surf_simeng_usage_DEPENDENCIES = $(LDADD_SG)
 surf_surf_usage_SOURCES = surf/surf_usage.c
 surf_surf_usage_OBJECTS = surf_usage.$(OBJEXT)
 surf_surf_usage_DEPENDENCIES = $(LDADD_SG)
@@ -129,16 +126,16 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(gras_datadesc_usage_SOURCES) gras/trp_file_client.c \
 	gras/trp_file_server.c gras/trp_tcp_client.c \
-	gras/trp_tcp_server.c simdag/sd_test.c surf/maxmin_bench.c \
-	surf/maxmin_usage.c surf/simeng_usage.c surf/surf_usage.c \
-	surf/surf_usage2.c surf/trace_usage.c xbt/context_usage.c \
-	xbt/graphxml_usage.c xbt/heap_bench.c xbt/log_usage.c
+	gras/trp_tcp_server.c simdag/sd_test.c surf/lmm_usage.c \
+	surf/maxmin_bench.c surf/surf_usage.c surf/surf_usage2.c \
+	surf/trace_usage.c xbt/context_usage.c xbt/graphxml_usage.c \
+	xbt/heap_bench.c xbt/log_usage.c
 DIST_SOURCES = $(gras_datadesc_usage_SOURCES) gras/trp_file_client.c \
 	gras/trp_file_server.c gras/trp_tcp_client.c \
-	gras/trp_tcp_server.c simdag/sd_test.c surf/maxmin_bench.c \
-	surf/maxmin_usage.c surf/simeng_usage.c surf/surf_usage.c \
-	surf/surf_usage2.c surf/trace_usage.c xbt/context_usage.c \
-	xbt/graphxml_usage.c xbt/heap_bench.c xbt/log_usage.c
+	gras/trp_tcp_server.c simdag/sd_test.c surf/lmm_usage.c \
+	surf/maxmin_bench.c surf/surf_usage.c surf/surf_usage2.c \
+	surf/trace_usage.c xbt/context_usage.c xbt/graphxml_usage.c \
+	xbt/heap_bench.c xbt/log_usage.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -310,12 +307,9 @@ RL_tests = \
 	gras/datadesc_usage                             
 
 SG_tests = \
-	surf/maxmin_usage surf/maxmin_bench surf/simeng_usage \
+	surf/maxmin_bench surf/lmm_usage \
 	surf/trace_usage surf/surf_usage surf/surf_usage2
 
-#if HAVE_SDP
-#  SG_tests+=surf/sdp_usage
-#endif
 simdag_tests = simdag/sd_test
 check_SCRIPTS = run_tests gras/trp_tcp_usage
 TESTS = run_tests
@@ -327,16 +321,11 @@ xbt_log_usage_LDADD = $(LDADD_RL)
 xbt_heap_bench_LDADD = $(LDADD_RL)
 xbt_graphxml_usage_LDADD = $(LDADD_SG)
 xbt_context_usage_LDADD = $(LDADD_SG)
-surf_maxmin_usage_LDADD = $(LDADD_SG)
 surf_maxmin_bench_LDADD = $(LDADD_SG)
-surf_simeng_usage_LDADD = $(LDADD_SG)
+surf_lmm_usage_LDADD = $(LDADD_SG)
 surf_trace_usage_LDADD = $(LDADD_SG)
 surf_surf_usage_LDADD = $(LDADD_SG)
 surf_surf_usage2_LDADD = $(LDADD_SG)
-#if HAVE_SDP
-#surf_sdp_usage_LDADD=         $(LDADD_SG)
-#surf_sdp_bench_LDADD=         $(LDADD_SG)
-#endif
 gras_trp_tcp_client_LDADD = $(LDADD_RL)
 gras_trp_tcp_server_LDADD = $(LDADD_RL)
 gras_trp_file_client_LDADD = $(LDADD_RL)
@@ -413,15 +402,12 @@ simdag/sd_test$(EXEEXT): $(simdag_sd_test_OBJECTS) $(simdag_sd_test_DEPENDENCIES
 surf/$(am__dirstamp):
 	@$(MKDIR_P) surf
 	@: > surf/$(am__dirstamp)
+surf/lmm_usage$(EXEEXT): $(surf_lmm_usage_OBJECTS) $(surf_lmm_usage_DEPENDENCIES) surf/$(am__dirstamp)
+	@rm -f surf/lmm_usage$(EXEEXT)
+	$(LINK) $(surf_lmm_usage_OBJECTS) $(surf_lmm_usage_LDADD) $(LIBS)
 surf/maxmin_bench$(EXEEXT): $(surf_maxmin_bench_OBJECTS) $(surf_maxmin_bench_DEPENDENCIES) surf/$(am__dirstamp)
 	@rm -f surf/maxmin_bench$(EXEEXT)
 	$(LINK) $(surf_maxmin_bench_OBJECTS) $(surf_maxmin_bench_LDADD) $(LIBS)
-surf/maxmin_usage$(EXEEXT): $(surf_maxmin_usage_OBJECTS) $(surf_maxmin_usage_DEPENDENCIES) surf/$(am__dirstamp)
-	@rm -f surf/maxmin_usage$(EXEEXT)
-	$(LINK) $(surf_maxmin_usage_OBJECTS) $(surf_maxmin_usage_LDADD) $(LIBS)
-surf/simeng_usage$(EXEEXT): $(surf_simeng_usage_OBJECTS) $(surf_simeng_usage_DEPENDENCIES) surf/$(am__dirstamp)
-	@rm -f surf/simeng_usage$(EXEEXT)
-	$(LINK) $(surf_simeng_usage_OBJECTS) $(surf_simeng_usage_LDADD) $(LIBS)
 surf/surf_usage$(EXEEXT): $(surf_surf_usage_OBJECTS) $(surf_surf_usage_DEPENDENCIES) surf/$(am__dirstamp)
 	@rm -f surf/surf_usage$(EXEEXT)
 	$(LINK) $(surf_surf_usage_OBJECTS) $(surf_surf_usage_LDADD) $(LIBS)
@@ -458,11 +444,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graphxml_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heap_bench.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmm_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maxmin_bench.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maxmin_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simeng_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf_usage2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trace_usage.Po@am__quote@
@@ -590,6 +575,20 @@ sd_test.obj: simdag/sd_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test.obj `if test -f 'simdag/sd_test.c'; then $(CYGPATH_W) 'simdag/sd_test.c'; else $(CYGPATH_W) '$(srcdir)/simdag/sd_test.c'; fi`
 
+lmm_usage.o: surf/lmm_usage.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lmm_usage.o -MD -MP -MF $(DEPDIR)/lmm_usage.Tpo -c -o lmm_usage.o `test -f 'surf/lmm_usage.c' || echo '$(srcdir)/'`surf/lmm_usage.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/lmm_usage.Tpo $(DEPDIR)/lmm_usage.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/lmm_usage.c' object='lmm_usage.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lmm_usage.o `test -f 'surf/lmm_usage.c' || echo '$(srcdir)/'`surf/lmm_usage.c
+
+lmm_usage.obj: surf/lmm_usage.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lmm_usage.obj -MD -MP -MF $(DEPDIR)/lmm_usage.Tpo -c -o lmm_usage.obj `if test -f 'surf/lmm_usage.c'; then $(CYGPATH_W) 'surf/lmm_usage.c'; else $(CYGPATH_W) '$(srcdir)/surf/lmm_usage.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/lmm_usage.Tpo $(DEPDIR)/lmm_usage.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/lmm_usage.c' object='lmm_usage.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lmm_usage.obj `if test -f 'surf/lmm_usage.c'; then $(CYGPATH_W) 'surf/lmm_usage.c'; else $(CYGPATH_W) '$(srcdir)/surf/lmm_usage.c'; fi`
+
 maxmin_bench.o: surf/maxmin_bench.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT maxmin_bench.o -MD -MP -MF $(DEPDIR)/maxmin_bench.Tpo -c -o maxmin_bench.o `test -f 'surf/maxmin_bench.c' || echo '$(srcdir)/'`surf/maxmin_bench.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/maxmin_bench.Tpo $(DEPDIR)/maxmin_bench.Po
@@ -603,34 +602,6 @@ maxmin_bench.obj: surf/maxmin_bench.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/maxmin_bench.c' object='maxmin_bench.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o maxmin_bench.obj `if test -f 'surf/maxmin_bench.c'; then $(CYGPATH_W) 'surf/maxmin_bench.c'; else $(CYGPATH_W) '$(srcdir)/surf/maxmin_bench.c'; fi`
-
-maxmin_usage.o: surf/maxmin_usage.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT maxmin_usage.o -MD -MP -MF $(DEPDIR)/maxmin_usage.Tpo -c -o maxmin_usage.o `test -f 'surf/maxmin_usage.c' || echo '$(srcdir)/'`surf/maxmin_usage.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/maxmin_usage.Tpo $(DEPDIR)/maxmin_usage.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/maxmin_usage.c' object='maxmin_usage.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o maxmin_usage.o `test -f 'surf/maxmin_usage.c' || echo '$(srcdir)/'`surf/maxmin_usage.c
-
-maxmin_usage.obj: surf/maxmin_usage.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT maxmin_usage.obj -MD -MP -MF $(DEPDIR)/maxmin_usage.Tpo -c -o maxmin_usage.obj `if test -f 'surf/maxmin_usage.c'; then $(CYGPATH_W) 'surf/maxmin_usage.c'; else $(CYGPATH_W) '$(srcdir)/surf/maxmin_usage.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/maxmin_usage.Tpo $(DEPDIR)/maxmin_usage.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/maxmin_usage.c' object='maxmin_usage.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o maxmin_usage.obj `if test -f 'surf/maxmin_usage.c'; then $(CYGPATH_W) 'surf/maxmin_usage.c'; else $(CYGPATH_W) '$(srcdir)/surf/maxmin_usage.c'; fi`
-
-simeng_usage.o: surf/simeng_usage.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT simeng_usage.o -MD -MP -MF $(DEPDIR)/simeng_usage.Tpo -c -o simeng_usage.o `test -f 'surf/simeng_usage.c' || echo '$(srcdir)/'`surf/simeng_usage.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/simeng_usage.Tpo $(DEPDIR)/simeng_usage.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/simeng_usage.c' object='simeng_usage.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o simeng_usage.o `test -f 'surf/simeng_usage.c' || echo '$(srcdir)/'`surf/simeng_usage.c
-
-simeng_usage.obj: surf/simeng_usage.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT simeng_usage.obj -MD -MP -MF $(DEPDIR)/simeng_usage.Tpo -c -o simeng_usage.obj `if test -f 'surf/simeng_usage.c'; then $(CYGPATH_W) 'surf/simeng_usage.c'; else $(CYGPATH_W) '$(srcdir)/surf/simeng_usage.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/simeng_usage.Tpo $(DEPDIR)/simeng_usage.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/simeng_usage.c' object='simeng_usage.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o simeng_usage.obj `if test -f 'surf/simeng_usage.c'; then $(CYGPATH_W) 'surf/simeng_usage.c'; else $(CYGPATH_W) '$(srcdir)/surf/simeng_usage.c'; fi`
 
 surf_usage.o: surf/surf_usage.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT surf_usage.o -MD -MP -MF $(DEPDIR)/surf_usage.Tpo -c -o surf_usage.o `test -f 'surf/surf_usage.c' || echo '$(srcdir)/'`surf/surf_usage.c
