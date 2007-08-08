@@ -52,7 +52,7 @@ write_read(gras_datadesc_type_t type,void *src, void *dst,
     gras_socket_close(sock);
 
   if (direction == COPY)
-    gras_datadesc_copy(type, src, dst);
+    gras_datadesc_memcpy(type, src, dst);
 }
 
 void test_int(gras_socket_t sock, int direction);
