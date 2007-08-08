@@ -7,6 +7,9 @@
 
 MAINTAINERCLEANFILES=Makefile.in
 INCLUDES= -I$(top_srcdir)/include -I$(top_srcdir)/src/include
+
+bin_SCRIPTS= smpi/smpicc smpi/smpirun
+
 EXTRA_DIST= \
         \
 	portable.h \

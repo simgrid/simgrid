@@ -517,6 +517,10 @@ AC_CONFIG_FILES([
     done
 ])
 
+AC_CONFIG_FILES([
+  src/smpi/smpicc
+  src/smpi/smpirun
+])
 
 # GRAMINE_CUT_END
 

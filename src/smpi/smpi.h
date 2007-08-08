@@ -1,3 +1,5 @@
+#include <sys/time.h>
+
 #include <xbt/function_types.h>
 #include <simix/simix.h>
 

@@ -1,11 +1,10 @@
 #!/bin/sh
 #FIXME: .. paths...
-SIMGRID_INCLUDE="${SIMGRID_HOME}/include"
-SIMGRID_LIB="${SIMGRID_HOME}/lib"
+prefix="/home/marklee/progs/pkgs/simgrid-nifty"
+exec_prefix="${prefix}"
+
 CC="gcc"
 
-SMPI_INCLUDE="${SMPI_HOME}/include"
-SMPI_LIB="${SMPI_HOME}/lib"
 SEED="221238"
 
 TMPDIR="$(mktemp -d tmpXXXXXXX)"
@@ -21,7 +20,6 @@ function modsource {
   cat > ${TMPSOURCE} <<HEADER
 #define SEED ${SEED}
 #include "smpi.h"
-#include "simix/simix.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
@@ -41,7 +39,7 @@ FOOTER
 }
 
 INCLUDEARGS=""
-LINKARGS="-L${SMPI_LIB} -lsmpi -L${SIMGRID_LIB} -lsimgrid"
+LINKARGS="-L${exec_prefix}/lib -lsimgrid -lsmpi "
 
 CMDLINE=""
 while [ -n "$1" ]; do
@@ -51,7 +49,7 @@ while [ -n "$1" ]; do
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
   elif [ "${ARG%.c}" != "${ARG}" ]; then
-    INCLUDEARGS="-I .. -I ../include -I${SMPI_INCLUDE} -I${SIMGRID_INCLUDE} "
+    INCLUDEARGS="-I . -I .. -I ../include -I ${prefix}/include "
     SRCFILE="$(realpath ${ARG})"
     modsource ${SRCFILE}
     CMDLINE="${CMDLINE} ${TMPDIR}${SRCFILE} "
@@ -60,7 +58,7 @@ while [ -n "$1" ]; do
   fi
 done
 
-CMDLINE="${CC} ${INCLUDEARGS}${CMDLINE}${LINKARGS}"
+CMDLINE="${CC} ${INCLUDEARGS} ${CMDLINE} ${LINKARGS}"
 
 #echo "${CMDLINE}"
 ${CMDLINE}
