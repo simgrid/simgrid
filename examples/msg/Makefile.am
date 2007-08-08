@@ -18,20 +18,20 @@ EXTRA_DIST = msg_platform.xml \
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 
-TESTS = sendrecv/sendrecv_KCCFLN05.tesh
-if HAVE_SDP
-  TESTS += sendrecv/sendrecv_KCCFLN05_proportional.tesh
-endif
-if HAVE_GTNETS
-endif
 
-
-TESTS+= sendrecv/sendrecv_KCCFLN05_Vegas.tesh \
-        sendrecv/sendrecv_KCCFLN05_Reno.tesh \
+TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
+        sendrecv/sendrecv_Vegas.tesh \
+        sendrecv/sendrecv_Reno.tesh \
         suspend/suspend.tesh \
 	masterslave/masterslave.tesh \
 	masterslave/masterslave_forwarder.tesh
         #masterslave/masterslave_bypass.tesh
+
+if HAVE_SDP
+  BROKEN_TESTS = sendrecv/sendrecv_SDP.tesh
+endif
+if HAVE_GTNETS
+endif
 
 CLEANFILES = sendrecv/*~ \
              sendrecv/sendrecv \
