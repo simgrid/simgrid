@@ -33,11 +33,8 @@ RL_tests =                                              \
 	gras/datadesc_usage                             
 
 SG_tests =                                              \
-	surf/maxmin_usage surf/maxmin_bench surf/simeng_usage \
+	surf/maxmin_bench surf/lmm_usage \
 	surf/trace_usage surf/surf_usage surf/surf_usage2
-#if HAVE_SDP
-#  SG_tests+=surf/sdp_usage
-#endif
 
 simdag_tests = simdag/sd_test
 
@@ -62,16 +59,11 @@ xbt_graphxml_usage_LDADD=     $(LDADD_SG)
 
 xbt_context_usage_LDADD=      $(LDADD_SG)
 
-surf_maxmin_usage_LDADD=      $(LDADD_SG)
 surf_maxmin_bench_LDADD=      $(LDADD_SG)
-surf_simeng_usage_LDADD=      $(LDADD_SG)
+surf_lmm_usage_LDADD=         $(LDADD_SG)
 surf_trace_usage_LDADD=       $(LDADD_SG)
 surf_surf_usage_LDADD=        $(LDADD_SG)
 surf_surf_usage2_LDADD=       $(LDADD_SG)
-#if HAVE_SDP
-#surf_sdp_usage_LDADD=         $(LDADD_SG)
-#surf_sdp_bench_LDADD=         $(LDADD_SG)
-#endif
 
 gras_trp_tcp_client_LDADD=     $(LDADD_RL)
 gras_trp_tcp_server_LDADD=     $(LDADD_RL)
