@@ -1,5 +1,5 @@
 /* XML processor/application API for surf/surfxml.dtd.
- * Generated 2007/05/16 11:14:15.
+ * Generated 2007/08/08 15:00:16.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -49,24 +49,24 @@
 #define _FLEXML_surfxml_H
 
 /* XML application entry points. */
-XBT_PUBLIC(void) STag_surfxml_platform_description(void);
-XBT_PUBLIC(void) ETag_surfxml_platform_description(void);
-XBT_PUBLIC(void) STag_surfxml_include(void);
-XBT_PUBLIC(void) ETag_surfxml_include(void);
-XBT_PUBLIC(void) STag_surfxml_cpu(void);
-XBT_PUBLIC(void) ETag_surfxml_cpu(void);
-XBT_PUBLIC(void) STag_surfxml_router(void);
-XBT_PUBLIC(void) ETag_surfxml_router(void);
-XBT_PUBLIC(void) STag_surfxml_network_link(void);
-XBT_PUBLIC(void) ETag_surfxml_network_link(void);
-XBT_PUBLIC(void) STag_surfxml_route(void);
-XBT_PUBLIC(void) ETag_surfxml_route(void);
-XBT_PUBLIC(void) STag_surfxml_route_element(void);
-XBT_PUBLIC(void) ETag_surfxml_route_element(void);
-XBT_PUBLIC(void) STag_surfxml_process(void);
-XBT_PUBLIC(void) ETag_surfxml_process(void);
-XBT_PUBLIC(void) STag_surfxml_argument(void);
-XBT_PUBLIC(void) ETag_surfxml_argument(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_platform_description(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_platform_description(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_include(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_include(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_cpu(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_cpu(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_router(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_router(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_network_link(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_network_link(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_route(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_route(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_route_element(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_route_element(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_process(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_process(void);
+XBT_PUBLIC_DATA(void ) STag_surfxml_argument(void);
+XBT_PUBLIC_DATA(void ) ETag_surfxml_argument(void);
 
 /* XML application data. */
 typedef int AT_surfxml_network_link_bandwidth;
@@ -134,81 +134,81 @@ typedef int AT_surfxml_network_link_state_file;
 #define AU_surfxml_network_link_state_file NULL
 
 /* FleXML-provided data. */
-XBT_PUBLIC_DATA(int) surfxml_pcdata_ix;
-XBT_PUBLIC_DATA(char *)surfxml_bufferstack;
+XBT_PUBLIC_DATA(int ) surfxml_pcdata_ix;
+XBT_PUBLIC_DATA(char *) surfxml_bufferstack;
 #define surfxml_pcdata (surfxml_bufferstack + surfxml_pcdata_ix)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_bandwidth) AX_surfxml_network_link_bandwidth;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_bandwidth ) AX_surfxml_network_link_bandwidth;
 #define A_surfxml_network_link_bandwidth (surfxml_bufferstack + AX_surfxml_network_link_bandwidth)
-XBT_PUBLIC_DATA(AT_surfxml_router_name) AX_surfxml_router_name;
+XBT_PUBLIC_DATA(AT_surfxml_router_name ) AX_surfxml_router_name;
 #define A_surfxml_router_name (surfxml_bufferstack + AX_surfxml_router_name)
-XBT_PUBLIC_DATA(AT_surfxml_process_host) AX_surfxml_process_host;
+XBT_PUBLIC_DATA(AT_surfxml_process_host ) AX_surfxml_process_host;
 #define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_latency_file) AX_surfxml_network_link_latency_file;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_latency_file ) AX_surfxml_network_link_latency_file;
 #define A_surfxml_network_link_latency_file (surfxml_bufferstack + AX_surfxml_network_link_latency_file)
-XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_dst_with_other_send) AX_surfxml_route_impact_on_dst_with_other_send;
+XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_dst_with_other_send ) AX_surfxml_route_impact_on_dst_with_other_send;
 #define A_surfxml_route_impact_on_dst_with_other_send (surfxml_bufferstack + AX_surfxml_route_impact_on_dst_with_other_send)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_interference_send_recv) AX_surfxml_cpu_interference_send_recv;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_interference_send_recv ) AX_surfxml_cpu_interference_send_recv;
 #define A_surfxml_cpu_interference_send_recv (surfxml_bufferstack + AX_surfxml_cpu_interference_send_recv)
-XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_dst) AX_surfxml_route_impact_on_dst;
+XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_dst ) AX_surfxml_route_impact_on_dst;
 #define A_surfxml_route_impact_on_dst (surfxml_bufferstack + AX_surfxml_route_impact_on_dst)
-XBT_PUBLIC_DATA(AT_surfxml_platform_description_version) AX_surfxml_platform_description_version;
+XBT_PUBLIC_DATA(AT_surfxml_platform_description_version ) AX_surfxml_platform_description_version;
 #define A_surfxml_platform_description_version (surfxml_bufferstack + AX_surfxml_platform_description_version)
-XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src_with_other_recv) AX_surfxml_route_impact_on_src_with_other_recv;
+XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src_with_other_recv ) AX_surfxml_route_impact_on_src_with_other_recv;
 #define A_surfxml_route_impact_on_src_with_other_recv (surfxml_bufferstack + AX_surfxml_route_impact_on_src_with_other_recv)
-XBT_PUBLIC_DATA(AT_surfxml_route_element_name) AX_surfxml_route_element_name;
+XBT_PUBLIC_DATA(AT_surfxml_route_element_name ) AX_surfxml_route_element_name;
 #define A_surfxml_route_element_name (surfxml_bufferstack + AX_surfxml_route_element_name)
-XBT_PUBLIC_DATA(AT_surfxml_process_start_time) AX_surfxml_process_start_time;
+XBT_PUBLIC_DATA(AT_surfxml_process_start_time ) AX_surfxml_process_start_time;
 #define A_surfxml_process_start_time (surfxml_bufferstack + AX_surfxml_process_start_time)
-XBT_PUBLIC_DATA(AT_surfxml_process_function) AX_surfxml_process_function;
+XBT_PUBLIC_DATA(AT_surfxml_process_function ) AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_state) AX_surfxml_cpu_state;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_state ) AX_surfxml_cpu_state;
 #define A_surfxml_cpu_state AX_surfxml_cpu_state
-XBT_PUBLIC_DATA(AT_surfxml_cpu_interference_send) AX_surfxml_cpu_interference_send;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_interference_send ) AX_surfxml_cpu_interference_send;
 #define A_surfxml_cpu_interference_send (surfxml_bufferstack + AX_surfxml_cpu_interference_send)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_bandwidth_file) AX_surfxml_network_link_bandwidth_file;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_bandwidth_file ) AX_surfxml_network_link_bandwidth_file;
 #define A_surfxml_network_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_network_link_bandwidth_file)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_name) AX_surfxml_cpu_name;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_name ) AX_surfxml_cpu_name;
 #define A_surfxml_cpu_name (surfxml_bufferstack + AX_surfxml_cpu_name)
-XBT_PUBLIC_DATA(AT_surfxml_process_kill_time) AX_surfxml_process_kill_time;
+XBT_PUBLIC_DATA(AT_surfxml_process_kill_time ) AX_surfxml_process_kill_time;
 #define A_surfxml_process_kill_time (surfxml_bufferstack + AX_surfxml_process_kill_time)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_state) AX_surfxml_network_link_state;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_state ) AX_surfxml_network_link_state;
 #define A_surfxml_network_link_state AX_surfxml_network_link_state
-XBT_PUBLIC_DATA(AT_surfxml_cpu_availability_file) AX_surfxml_cpu_availability_file;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_availability_file ) AX_surfxml_cpu_availability_file;
 #define A_surfxml_cpu_availability_file (surfxml_bufferstack + AX_surfxml_cpu_availability_file)
-XBT_PUBLIC_DATA(AT_surfxml_argument_value) AX_surfxml_argument_value;
+XBT_PUBLIC_DATA(AT_surfxml_argument_value ) AX_surfxml_argument_value;
 #define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
-XBT_PUBLIC_DATA(AT_surfxml_route_src) AX_surfxml_route_src;
+XBT_PUBLIC_DATA(AT_surfxml_route_src ) AX_surfxml_route_src;
 #define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
-XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src) AX_surfxml_route_impact_on_src;
+XBT_PUBLIC_DATA(AT_surfxml_route_impact_on_src ) AX_surfxml_route_impact_on_src;
 #define A_surfxml_route_impact_on_src (surfxml_bufferstack + AX_surfxml_route_impact_on_src)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_max_outgoing_rate) AX_surfxml_cpu_max_outgoing_rate;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_max_outgoing_rate ) AX_surfxml_cpu_max_outgoing_rate;
 #define A_surfxml_cpu_max_outgoing_rate (surfxml_bufferstack + AX_surfxml_cpu_max_outgoing_rate)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_availability) AX_surfxml_cpu_availability;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_availability ) AX_surfxml_cpu_availability;
 #define A_surfxml_cpu_availability (surfxml_bufferstack + AX_surfxml_cpu_availability)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_interference_recv) AX_surfxml_cpu_interference_recv;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_interference_recv ) AX_surfxml_cpu_interference_recv;
 #define A_surfxml_cpu_interference_recv (surfxml_bufferstack + AX_surfxml_cpu_interference_recv)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_name) AX_surfxml_network_link_name;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_name ) AX_surfxml_network_link_name;
 #define A_surfxml_network_link_name (surfxml_bufferstack + AX_surfxml_network_link_name)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_power) AX_surfxml_cpu_power;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_power ) AX_surfxml_cpu_power;
 #define A_surfxml_cpu_power (surfxml_bufferstack + AX_surfxml_cpu_power)
-XBT_PUBLIC_DATA(AT_surfxml_include_file) AX_surfxml_include_file;
+XBT_PUBLIC_DATA(AT_surfxml_include_file ) AX_surfxml_include_file;
 #define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_sharing_policy) AX_surfxml_network_link_sharing_policy;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_sharing_policy ) AX_surfxml_network_link_sharing_policy;
 #define A_surfxml_network_link_sharing_policy AX_surfxml_network_link_sharing_policy
-XBT_PUBLIC_DATA(AT_surfxml_route_dst) AX_surfxml_route_dst;
+XBT_PUBLIC_DATA(AT_surfxml_route_dst ) AX_surfxml_route_dst;
 #define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_latency) AX_surfxml_network_link_latency;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_latency ) AX_surfxml_network_link_latency;
 #define A_surfxml_network_link_latency (surfxml_bufferstack + AX_surfxml_network_link_latency)
-XBT_PUBLIC_DATA(AT_surfxml_cpu_state_file) AX_surfxml_cpu_state_file;
+XBT_PUBLIC_DATA(AT_surfxml_cpu_state_file ) AX_surfxml_cpu_state_file;
 #define A_surfxml_cpu_state_file (surfxml_bufferstack + AX_surfxml_cpu_state_file)
-XBT_PUBLIC_DATA(AT_surfxml_network_link_state_file) AX_surfxml_network_link_state_file;
+XBT_PUBLIC_DATA(AT_surfxml_network_link_state_file ) AX_surfxml_network_link_state_file;
 #define A_surfxml_network_link_state_file (surfxml_bufferstack + AX_surfxml_network_link_state_file)
 
 /* XML application utilities. */
-XBT_PUBLIC(int) surfxml_element_context(int);
+XBT_PUBLIC_DATA(int ) surfxml_element_context(int);
 
 /* XML processor entry point. */
-XBT_PUBLIC(int) yylex(void);
+XBT_PUBLIC_DATA(int ) yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
 const char * surfxml_parse_err_msg(void);
