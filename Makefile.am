@@ -59,16 +59,6 @@ debian: dist
 	$(MAKE) -C ~/CVSIMPORT/pkg-grid/gras deb check
 	dput local *.changes
 
-publish-old: dist
-	 @echo "----[ Put the documentation on the local filesystem ]----"
-	 rm -rf ~/public_html/gras/doc
-	 mkdir ~/public_html/gras/doc
-	 cp -r doc/html ~/public_html/gras/doc
-	 @echo "----[ Put the tarball @VERSION@ on the local filesystem ]----"
-	 cp @PACKAGE@-@VERSION@.tar.gz ~/public_html/gras/dl
-	 @echo "----[ Sync remote host ]----"
-	 $(MAKE) -C public_html publish
-
 publish: dist
 	 @echo "----[ Put the tarball @VERSION@ on gforge ]----"
 #	 scp @PACKAGE@-@VERSION@.tar.gz gcl.ucsd.edu:/home/www/simgrid/dl/
