@@ -1,5 +1,5 @@
 /* XML processor/application API for xbt/graphxml.dtd.
- * Generated 2007/08/08 15:00:17.
+ * Generated 2007/08/09 10:57:49.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -49,12 +49,12 @@
 #define _FLEXML_graphxml_H
 
 /* XML application entry points. */
-XBT_PUBLIC_DATA(void ) STag_graphxml_graph(void);
-XBT_PUBLIC_DATA(void ) ETag_graphxml_graph(void);
-XBT_PUBLIC_DATA(void ) STag_graphxml_node(void);
-XBT_PUBLIC_DATA(void ) ETag_graphxml_node(void);
-XBT_PUBLIC_DATA(void ) STag_graphxml_edge(void);
-XBT_PUBLIC_DATA(void ) ETag_graphxml_edge(void);
+XBT_PUBLIC(void ) STag_graphxml_graph(void);
+XBT_PUBLIC(void ) ETag_graphxml_graph(void);
+XBT_PUBLIC(void ) STag_graphxml_node(void);
+XBT_PUBLIC(void ) ETag_graphxml_node(void);
+XBT_PUBLIC(void ) STag_graphxml_edge(void);
+XBT_PUBLIC(void ) ETag_graphxml_edge(void);
 
 /* XML application data. */
 typedef int AT_graphxml_node_name;
@@ -111,10 +111,10 @@ XBT_PUBLIC_DATA(AT_graphxml_edge_name ) AX_graphxml_edge_name;
 #define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
 
 /* XML application utilities. */
-XBT_PUBLIC_DATA(int ) graphxml_element_context(int);
+XBT_PUBLIC(int ) graphxml_element_context(int);
 
 /* XML processor entry point. */
-XBT_PUBLIC_DATA(int ) yylex(void);
+XBT_PUBLIC(int ) yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
 const char * graphxml_parse_err_msg(void);

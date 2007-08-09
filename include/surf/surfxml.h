@@ -1,5 +1,5 @@
 /* XML processor/application API for surf/surfxml.dtd.
- * Generated 2007/08/08 15:00:16.
+ * Generated 2007/08/09 10:57:49.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -49,24 +49,24 @@
 #define _FLEXML_surfxml_H
 
 /* XML application entry points. */
-XBT_PUBLIC_DATA(void ) STag_surfxml_platform_description(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_platform_description(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_include(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_include(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_cpu(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_cpu(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_router(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_router(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_network_link(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_network_link(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_route(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_route(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_route_element(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_route_element(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_process(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_process(void);
-XBT_PUBLIC_DATA(void ) STag_surfxml_argument(void);
-XBT_PUBLIC_DATA(void ) ETag_surfxml_argument(void);
+XBT_PUBLIC(void ) STag_surfxml_platform_description(void);
+XBT_PUBLIC(void ) ETag_surfxml_platform_description(void);
+XBT_PUBLIC(void ) STag_surfxml_include(void);
+XBT_PUBLIC(void ) ETag_surfxml_include(void);
+XBT_PUBLIC(void ) STag_surfxml_cpu(void);
+XBT_PUBLIC(void ) ETag_surfxml_cpu(void);
+XBT_PUBLIC(void ) STag_surfxml_router(void);
+XBT_PUBLIC(void ) ETag_surfxml_router(void);
+XBT_PUBLIC(void ) STag_surfxml_network_link(void);
+XBT_PUBLIC(void ) ETag_surfxml_network_link(void);
+XBT_PUBLIC(void ) STag_surfxml_route(void);
+XBT_PUBLIC(void ) ETag_surfxml_route(void);
+XBT_PUBLIC(void ) STag_surfxml_route_element(void);
+XBT_PUBLIC(void ) ETag_surfxml_route_element(void);
+XBT_PUBLIC(void ) STag_surfxml_process(void);
+XBT_PUBLIC(void ) ETag_surfxml_process(void);
+XBT_PUBLIC(void ) STag_surfxml_argument(void);
+XBT_PUBLIC(void ) ETag_surfxml_argument(void);
 
 /* XML application data. */
 typedef int AT_surfxml_network_link_bandwidth;
@@ -205,10 +205,10 @@ XBT_PUBLIC_DATA(AT_surfxml_network_link_state_file ) AX_surfxml_network_link_sta
 #define A_surfxml_network_link_state_file (surfxml_bufferstack + AX_surfxml_network_link_state_file)
 
 /* XML application utilities. */
-XBT_PUBLIC_DATA(int ) surfxml_element_context(int);
+XBT_PUBLIC(int ) surfxml_element_context(int);
 
 /* XML processor entry point. */
-XBT_PUBLIC_DATA(int ) yylex(void);
+XBT_PUBLIC(int ) yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
 const char * surfxml_parse_err_msg(void);

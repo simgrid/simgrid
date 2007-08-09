@@ -1,10 +1,10 @@
 /* Validating XML processor for xbt/graphxml.dtd.
- * Generated 2006/07/18 21:02:16.
+ * Generated 2007/08/09 10:57:49.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp).
+ * (Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -49,9 +49,9 @@
 
 /* Version strings. */
 const char rcs_graphxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.31 2006/07/18 18:21:13 mquinson Exp $";
+ "$" "Id: skel,v 1.38 2006/09/12 18:05:45 wdowling Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp $";
 
 /* ANSI headers. */
 #include <unistd.h>
@@ -61,25 +61,46 @@ const char rcs_graphxml_flexml[] =
 #include <stdarg.h>
 #include <ctype.h>
 
+#ifndef FLEXML_INDEXSTACKSIZE
+#define FLEXML_INDEXSTACKSIZE 1000
+#endif
+
 /* Generated definitions. */
 #define FLEXML_yylineno
+#ifndef FLEXML_BUFFERSTACKSIZE
 #define FLEXML_BUFFERSTACKSIZE 1000000
+#endif
+#define FLEXML_NEED_BUFFERLIT
 
 /* XML processor api. */
 /* FleXML-provided data. */
-const char* graphxml_pcdata;
-AT_graphxml_node_name A_graphxml_node_name;
-AT_graphxml_edge_source A_graphxml_edge_source;
-AT_graphxml_node_position_y A_graphxml_node_position_y;
-AT_graphxml_node_position_x A_graphxml_node_position_x;
-AT_graphxml_edge_data A_graphxml_edge_data;
-AT_graphxml_edge_target A_graphxml_edge_target;
-AT_graphxml_graph_isDirected A_graphxml_graph_isDirected;
-AT_graphxml_node_label A_graphxml_node_label;
-AT_graphxml_node_data A_graphxml_node_data;
-AT_graphxml_edge_label A_graphxml_edge_label;
-AT_graphxml_edge_length A_graphxml_edge_length;
-AT_graphxml_edge_name A_graphxml_edge_name;
+int graphxml_pcdata_ix;
+extern char *graphxml_bufferstack;
+#define graphxml_pcdata (graphxml_bufferstack + graphxml_pcdata_ix)
+AT_graphxml_node_name AX_graphxml_node_name;
+#define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
+AT_graphxml_edge_source AX_graphxml_edge_source;
+#define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
+AT_graphxml_node_position_y AX_graphxml_node_position_y;
+#define A_graphxml_node_position_y (graphxml_bufferstack + AX_graphxml_node_position_y)
+AT_graphxml_node_position_x AX_graphxml_node_position_x;
+#define A_graphxml_node_position_x (graphxml_bufferstack + AX_graphxml_node_position_x)
+AT_graphxml_edge_data AX_graphxml_edge_data;
+#define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
+AT_graphxml_edge_target AX_graphxml_edge_target;
+#define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
+AT_graphxml_graph_isDirected AX_graphxml_graph_isDirected;
+#define A_graphxml_graph_isDirected AX_graphxml_graph_isDirected
+AT_graphxml_node_label AX_graphxml_node_label;
+#define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
+AT_graphxml_node_data AX_graphxml_node_data;
+#define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
+AT_graphxml_edge_label AX_graphxml_edge_label;
+#define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
+AT_graphxml_edge_length AX_graphxml_edge_length;
+#define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
+AT_graphxml_edge_name AX_graphxml_edge_name;
+#define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -101,64 +122,98 @@ AT_graphxml_edge_name A_graphxml_edge_name;
 
 #define FAIL	return fail
 static int fail(const char*, ...);
-const char * graphxml_parse_err_msg(void);
+
+enum {flexml_max_err_msg_size = 512};
+static char flexml_err_msg[flexml_max_err_msg_size];
+const char * graphxml_parse_err_msg()
+{
+    return flexml_err_msg;
+}
+static void reset_graphxml_parse_err_msg()
+{
+    flexml_err_msg[0] = '\0';
+}
 
 /* Cleanup */
 static void cleanup(void);
 #define CLEANUP  cleanup()
 
 /* Text buffer stack handling. */
-static char bufferstack[FLEXML_BUFFERSTACKSIZE];
-static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
-typedef struct BufferLast_s {
-  struct BufferLast_s *old; const char* saved; char new1[1];
-} BufferLast;
-#ifdef FLEXML_HasMixed
-static BufferLast* last = (BufferLast*)0;
-#endif
-static char* next = bufferstack;
+char *graphxml_bufferstack = NULL;
+static int blimit = FLEXML_BUFFERSTACKSIZE;
+static int bnext = 1;
 
-#define BUFFERSET(P)  (P = next)
-#define BUFFERPUTC(C) (assert(next<limit), *(next++) = (C))
+static int *indexstack = NULL;
+static int ilimit = FLEXML_INDEXSTACKSIZE;
+static int inext = 1;
+
+#define BUFFERSET(P)  (P = bnext)
+#define BUFFERPUTC(C) (ck_blimit(), graphxml_bufferstack[bnext++] = (C))
 #define BUFFERDONE    (BUFFERPUTC('\0'))
 
-#define BUFFERLITERAL(C,P) bufferliteral(C,&(P),yytext)
-static void bufferliteral(char c, const char** pp, char* text)
+#define BUFFERLITERAL(C, P) graphxml_bufferliteral(C, &(P), yytext)
+
+/* after this is called, there are at least 2 slots left in the stack */
+static int ck_blimit()
 {
-  char *s = strchr(text,c), *e = strrchr(text,c);
+     if (bnext >= blimit) {
+	 blimit += FLEXML_BUFFERSTACKSIZE + 2;
+	 {
+	     char *temp = (char *) realloc(graphxml_bufferstack, blimit);
+	     assert(temp);
+	     graphxml_bufferstack = temp;
+	 }
+     }
+     return 0;
+}
+
+/* after this is called, there are at least 2 slots left in the stack */
+static int ck_ilimit()
+{
+     if (inext >= ilimit) {
+	 ilimit += FLEXML_INDEXSTACKSIZE + 2;
+	 {
+	     int *temp = (int *) realloc(indexstack, ilimit);
+	     assert(temp);
+	     indexstack = temp;
+	 }
+     }
+     return 0;
+}
+
+#ifdef FLEXML_NEED_BUFFERLIT
+static void graphxml_bufferliteral(char c, int* pp, const char* text)
+{
+  const char *s = (c ? strchr(text,c) : text-1), *e = strrchr(text,c);
   assert(s <= e); BUFFERSET(*pp);
   while (++s<e) {
-    if (isspace(*s)) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
+    if (isspace(*s) && c) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
     else BUFFERPUTC(*s);
   }
   BUFFERDONE;
 }
-
-#ifdef FLEXML_HasMixed
-static void pushbuffer(const char* p)
-{
-  BufferLast* l = (BufferLast*)next;
-  assert(next < limit);
-  l->old = last;
-  l->saved = p;
-  next = l->new1;
-  last = l;
-}
-
-static const char* popbuffer(void)
-{
-  BufferLast* l = last;
-  assert(last != (BufferLast*)0);
-  last = l->old;
-  next = (char*)l;
-  return l->saved;
-}
 #endif
+
+static void pushbuffer(int p)
+{
+    ck_ilimit();
+    indexstack[inext++] = p;
+    indexstack[inext++] = bnext;    
+}
+
+static int popbuffer(void)
+{
+    assert(inext >= 2);
+    bnext = indexstack[--inext];
+    return indexstack[--inext];
+}
 
 /* General internal entities are `unput' back onto the input stream... */
 #define ENTITYTEXT(T) \
   { char *s = (T), *e = s+strlen(s);\
     while (--e >= s) { unput(*e); }}
+
+
 %}
 
 /* Flex standard options. */
@@ -221,8 +276,27 @@ const char* *graphxml_statenames=NULL;
 
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
+ reset_graphxml_parse_err_msg();
+ graphxml_bufferstack = (char *) malloc(FLEXML_BUFFERSTACKSIZE);
+ assert(graphxml_bufferstack);
+ #ifdef FLEX_DEBUG
+ {
+     int i;
+     for (i = 0; i < blimit; i++) {
+         graphxml_bufferstack[i] = '\377';
+     }
+ }
+ #endif
+ graphxml_bufferstack[0] = '\0';
+ indexstack = (int *) malloc(FLEXML_INDEXSTACKSIZE * sizeof(int));
+ assert(indexstack);
+ indexstack[0] = 0;
+
   /* FleXML_init */
-  next = bufferstack;
+  bnext = inext = 1;
+  graphxml_bufferliteral('\0', &bnext, "-1.0");
+  graphxml_bufferliteral('\0', &bnext, "-1.0");
+  graphxml_bufferliteral('\0', &bnext, "-1.0");
   if(!graphxml_statenames) {graphxml_statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
   graphxml_statenames[PROLOG] = NULL;
   graphxml_statenames[DOCTYPE] = NULL;
@@ -297,8 +371,8 @@ const char* *graphxml_statenames=NULL;
   * >  */
 
 <ROOT_graphxml_graph>"<graph"{s} {
-  A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
-  ENTER(AL_graphxml_graph);
+  AX_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
+  ENTER(AL_graphxml_graph); pushbuffer(0);
   }
 
 <AL_graphxml_graph>{
@@ -308,10 +382,10 @@ const char* *graphxml_statenames=NULL;
  "isDirected"{Eq}"\"false\"" A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_false;
 
  ">" {
-  LEAVE; STag_graphxml_graph();graphxml_pcdata = NULL; ENTER(S_graphxml_graph);
+  LEAVE; STag_graphxml_graph();graphxml_pcdata_ix = 0; ENTER(S_graphxml_graph);
  }
  "/>" {
-  LEAVE; STag_graphxml_graph(); graphxml_pcdata = NULL; ETag_graphxml_graph();
+  LEAVE; STag_graphxml_graph(); graphxml_pcdata_ix = 0; ETag_graphxml_graph(); popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_graphxml_graph: SET(EPILOG); break;
   }
@@ -325,6 +399,7 @@ const char* *graphxml_statenames=NULL;
  "</graph"{s}">" {
   LEAVE;
   ETag_graphxml_graph();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_graphxml_graph: SET(EPILOG); break;
   }
@@ -342,37 +417,37 @@ const char* *graphxml_statenames=NULL;
   * >  */
 
 <ROOT_graphxml_node,S_graphxml_graph_2,S_graphxml_graph_3,S_graphxml_graph>"<node"{s} {
-  A_graphxml_node_label = NULL;
-  A_graphxml_node_name = NULL;
-  A_graphxml_node_data = NULL;
-  A_graphxml_node_position_x = "-1.0";
-  A_graphxml_node_position_y = "-1.0";
-  ENTER(AL_graphxml_node);
+  AX_graphxml_node_label = 0;
+  AX_graphxml_node_name = 0;
+  AX_graphxml_node_data = 0;
+  AX_graphxml_node_position_x = 1;
+  AX_graphxml_node_position_y = 6;
+  ENTER(AL_graphxml_node); pushbuffer(0);
   }
 
 <AL_graphxml_node>{
- "label"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_label);
- "label"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_label);
+ "label"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_node_label);
+ "label"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_node_label);
 
- "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_name);
- "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_name);
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_node_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_node_name);
 
- "data"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_data);
- "data"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_data);
+ "data"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_node_data);
+ "data"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_node_data);
 
- "position_x"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_x);
- "position_x"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_x);
+ "position_x"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_x);
+ "position_x"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_x);
 
- "position_y"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_y);
- "position_y"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_y);
+ "position_y"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_y);
+ "position_y"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_y);
 
  ">" {
-  if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node();graphxml_pcdata = NULL; ENTER(E_graphxml_node);
+  if (!AX_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
+  LEAVE; STag_graphxml_node();graphxml_pcdata_ix = 0; ENTER(E_graphxml_node);
  }
  "/>" {
-  if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node(); graphxml_pcdata = NULL; ETag_graphxml_node();
+  if (!AX_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
+  LEAVE; STag_graphxml_node(); graphxml_pcdata_ix = 0; ETag_graphxml_node(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
@@ -387,6 +462,7 @@ const char* *graphxml_statenames=NULL;
  "</node"{s}">" {
   LEAVE;
   ETag_graphxml_node();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
@@ -406,43 +482,43 @@ const char* *graphxml_statenames=NULL;
   * >  */
 
 <ROOT_graphxml_edge,S_graphxml_graph_1,S_graphxml_graph_3,S_graphxml_graph_5,S_graphxml_graph_4,S_graphxml_graph>"<edge"{s} {
-  A_graphxml_edge_label = NULL;
-  A_graphxml_edge_name = NULL;
-  A_graphxml_edge_source = NULL;
-  A_graphxml_edge_target = NULL;
-  A_graphxml_edge_length = "-1.0";
-  A_graphxml_edge_data = NULL;
-  ENTER(AL_graphxml_edge);
+  AX_graphxml_edge_label = 0;
+  AX_graphxml_edge_name = 0;
+  AX_graphxml_edge_source = 0;
+  AX_graphxml_edge_target = 0;
+  AX_graphxml_edge_length = 11;
+  AX_graphxml_edge_data = 0;
+  ENTER(AL_graphxml_edge); pushbuffer(0);
   }
 
 <AL_graphxml_edge>{
- "label"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_label);
- "label"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_label);
+ "label"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_label);
+ "label"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_label);
 
- "name"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_name);
- "name"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_name);
+ "name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_name);
+ "name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_name);
 
- "source"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_source);
- "source"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_source);
+ "source"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_source);
+ "source"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_source);
 
- "target"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_target);
- "target"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_target);
+ "target"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_target);
+ "target"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_target);
 
- "length"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_length);
- "length"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_length);
+ "length"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_length);
+ "length"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_length);
 
- "data"{Eq}\' ENTER(VALUE1); BUFFERSET(A_graphxml_edge_data);
- "data"{Eq}\" ENTER(VALUE2); BUFFERSET(A_graphxml_edge_data);
+ "data"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_data);
+ "data"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_data);
 
  ">" {
-  if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
-  if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge();graphxml_pcdata = NULL; ENTER(E_graphxml_edge);
+  if (!AX_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
+  if (!AX_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
+  LEAVE; STag_graphxml_edge();graphxml_pcdata_ix = 0; ENTER(E_graphxml_edge);
  }
  "/>" {
-  if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
-  if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge(); graphxml_pcdata = NULL; ETag_graphxml_edge();
+  if (!AX_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
+  if (!AX_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
+  LEAVE; STag_graphxml_edge(); graphxml_pcdata_ix = 0; ETag_graphxml_edge(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
@@ -457,6 +533,7 @@ const char* *graphxml_statenames=NULL;
  "</edge"{s}">" {
   LEAVE;
   ETag_graphxml_edge();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
@@ -545,19 +622,39 @@ void print_yy_stack(char* fmt, ...)
 {
   int i = 0; va_list ap; va_start(ap, fmt);
   vfprintf(stderr, fmt, ap);
-  for (i=1; i<yy_start_stack_ptr; i++)
-    fprintf(stderr, "%s/", graphxml_statenames[yy_start_stack[i] ]);
-  fprintf(stderr,"%s\n", graphxml_statenames[YY_START]);
+  if (graphxml_statenames) {
+      for (i=1; i<yy_start_stack_ptr; i++) {
+          fprintf(stderr, "%s/", graphxml_statenames[yy_start_stack[i] ]);
+      }
+      fprintf(stderr,"%s\n", graphxml_statenames[YY_START]);
+  }
   va_end(ap);
+}
+
+void print_graphxml_bufferstack()
+{
+    int i;
+    fputs("Buffer: ", stderr);
+    for (i = 0; i < blimit; i++) {
+       if ( graphxml_bufferstack[i] == '\377' ) break;
+         putc(graphxml_bufferstack[i], stderr);
+    }
+    putc('\n', stderr);
 }
 
 static void debug_enter(int state, const char* statename) {
   yy_push_state(state);
-  if (yy_flex_debug) print_yy_stack("--ENTER(%s) : ",statename);
+  if (yy_flex_debug) {
+       print_yy_stack("--ENTER(%s) : ",statename);
+       print_graphxml_bufferstack();
+  }
 }
 
 static void debug_leave(void) {
-  if (yy_flex_debug) print_yy_stack("--LEAVE : ");
+    if (yy_flex_debug) {
+        print_yy_stack("--LEAVE : ");
+	print_graphxml_bufferstack();
+    }
   yy_pop_state();
 }
 
@@ -567,19 +664,6 @@ static void debug_set(int state, const char* statename) {
 }
 #endif
 
-enum {flexml_max_err_msg_size = 512};
-
-static char flexml_err_msg[flexml_max_err_msg_size];
-const char * graphxml_parse_err_msg()
-{
-    return flexml_err_msg;
-}
-
-static void reset_graphxml_parse_err_msg()
-{
-    flexml_err_msg[0] = '\0';
-}
-
 
 static void cleanup(void)
 {
@@ -587,6 +671,11 @@ static void cleanup(void)
         free(graphxml_statenames);
 	graphxml_statenames = NULL;
     }
+    free(graphxml_bufferstack);
+    graphxml_bufferstack = NULL;
+
+    free(indexstack);
+    indexstack = NULL;
 }
 
 

@@ -1,5 +1,4 @@
-#include "xbt/graphxml.h"
-  
+
 #line 3 "xbt/graphxml.c"
 
 #define  YY_INT_ALIGNED short int
@@ -9,7 +8,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 31
+#define YY_FLEX_SUBMINOR_VERSION 33
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -31,7 +30,15 @@
 
 /* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
 
-#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
+#if __STDC_VERSION__ >= 199901L
+
+/* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
+ * if you want the limit (max/min) macros for int types. 
+ */
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS 1
+#endif
+
 #include <inttypes.h>
 typedef int8_t flex_int8_t;
 typedef uint8_t flex_uint8_t;
@@ -134,6 +141,10 @@ typedef unsigned int flex_uint32_t;
 #ifndef YY_BUF_SIZE
 #define YY_BUF_SIZE 16384
 #endif
+
+/* The state buf must be large enough to hold one state per character in the main buffer.
+ */
+#define YY_STATE_BUF_SIZE   ((YY_BUF_SIZE + 2) * sizeof(yy_state_type))
 
 #ifndef YY_TYPEDEF_YY_BUFFER_STATE
 #define YY_TYPEDEF_YY_BUFFER_STATE
@@ -281,7 +292,7 @@ int xbt_graph_parse_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
-static int yy_init = 1;		/* whether we need to initialize */
+static int yy_init = 0;		/* whether we need to initialize */
 static int yy_start = 0;	/* start state number */
 
 /* Flag which is used to allow xbt_graph_parse_wrap()'s to do buffer switches
@@ -1001,12 +1012,12 @@ int xbt_graph_parse__flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *xbt_graph_parse_text;
 /* Validating XML processor for xbt/graphxml.dtd.
- * Generated 2006/09/28 14:50:43.
+ * Generated 2007/08/09 10:57:49.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp).
+ * (Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1049,44 +1060,58 @@ char *xbt_graph_parse_text;
 
 /* Version strings. */
 const char rcs_graphxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.31 2006/07/18 18:21:13 mquinson Exp $";
+ "$" "Id: skel,v 1.38 2006/09/12 18:05:45 wdowling Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.53 2006/07/18 12:12:06 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp $";
 
 /* ANSI headers. */
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
-#  ifndef __STRICT_ANSI__
-#    include <io.h>
-#    include <process.h>
-#  endif
-#else
-#  include <unistd.h>
-#endif
+#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <ctype.h>
 
+#ifndef FLEXML_INDEXSTACKSIZE
+#define FLEXML_INDEXSTACKSIZE 1000
+#endif
+
 /* Generated definitions. */
 #define FLEXML_yylineno
+#ifndef FLEXML_BUFFERSTACKSIZE
 #define FLEXML_BUFFERSTACKSIZE 1000000
+#endif
+#define FLEXML_NEED_BUFFERLIT
 
 /* XML processor api. */
 /* FleXML-provided data. */
-const char* graphxml_pcdata;
-AT_graphxml_node_name A_graphxml_node_name;
-AT_graphxml_edge_source A_graphxml_edge_source;
-AT_graphxml_node_position_y A_graphxml_node_position_y;
-AT_graphxml_node_position_x A_graphxml_node_position_x;
-AT_graphxml_edge_data A_graphxml_edge_data;
-AT_graphxml_edge_target A_graphxml_edge_target;
-AT_graphxml_graph_isDirected A_graphxml_graph_isDirected;
-AT_graphxml_node_label A_graphxml_node_label;
-AT_graphxml_node_data A_graphxml_node_data;
-AT_graphxml_edge_label A_graphxml_edge_label;
-AT_graphxml_edge_length A_graphxml_edge_length;
-AT_graphxml_edge_name A_graphxml_edge_name;
+int graphxml_pcdata_ix;
+extern char *graphxml_bufferstack;
+#define graphxml_pcdata (graphxml_bufferstack + graphxml_pcdata_ix)
+AT_graphxml_node_name AX_graphxml_node_name;
+#define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
+AT_graphxml_edge_source AX_graphxml_edge_source;
+#define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
+AT_graphxml_node_position_y AX_graphxml_node_position_y;
+#define A_graphxml_node_position_y (graphxml_bufferstack + AX_graphxml_node_position_y)
+AT_graphxml_node_position_x AX_graphxml_node_position_x;
+#define A_graphxml_node_position_x (graphxml_bufferstack + AX_graphxml_node_position_x)
+AT_graphxml_edge_data AX_graphxml_edge_data;
+#define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
+AT_graphxml_edge_target AX_graphxml_edge_target;
+#define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
+AT_graphxml_graph_isDirected AX_graphxml_graph_isDirected;
+#define A_graphxml_graph_isDirected AX_graphxml_graph_isDirected
+AT_graphxml_node_label AX_graphxml_node_label;
+#define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
+AT_graphxml_node_data AX_graphxml_node_data;
+#define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
+AT_graphxml_edge_label AX_graphxml_edge_label;
+#define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
+AT_graphxml_edge_length AX_graphxml_edge_length;
+#define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
+AT_graphxml_edge_name AX_graphxml_edge_name;
+#define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -1108,64 +1133,97 @@ AT_graphxml_edge_name A_graphxml_edge_name;
 
 #define FAIL	return fail
 static int fail(const char*, ...);
-const char * graphxml_parse_err_msg(void);
+
+enum {flexml_max_err_msg_size = 512};
+static char flexml_err_msg[flexml_max_err_msg_size];
+const char * graphxml_parse_err_msg()
+{
+    return flexml_err_msg;
+}
+static void reset_graphxml_parse_err_msg()
+{
+    flexml_err_msg[0] = '\0';
+}
 
 /* Cleanup */
 static void cleanup(void);
 #define CLEANUP  cleanup()
 
 /* Text buffer stack handling. */
-static char bufferstack[FLEXML_BUFFERSTACKSIZE];
-static char* limit = bufferstack + FLEXML_BUFFERSTACKSIZE;
-typedef struct BufferLast_s {
-  struct BufferLast_s *old; const char* saved; char new1[1];
-} BufferLast;
-#ifdef FLEXML_HasMixed
-static BufferLast* last = (BufferLast*)0;
-#endif
-static char* next = bufferstack;
+char *graphxml_bufferstack = NULL;
+static int blimit = FLEXML_BUFFERSTACKSIZE;
+static int bnext = 1;
 
-#define BUFFERSET(P)  (P = next)
-#define BUFFERPUTC(C) (assert(next<limit), *(next++) = (C))
+static int *indexstack = NULL;
+static int ilimit = FLEXML_INDEXSTACKSIZE;
+static int inext = 1;
+
+#define BUFFERSET(P)  (P = bnext)
+#define BUFFERPUTC(C) (ck_blimit(), graphxml_bufferstack[bnext++] = (C))
 #define BUFFERDONE    (BUFFERPUTC('\0'))
 
-#define BUFFERLITERAL(C,P) bufferliteral(C,&(P),xbt_graph_parse_text)
-static void bufferliteral(char c, const char** pp, char* text)
+#define BUFFERLITERAL(C, P) graphxml_bufferliteral(C, &(P), xbt_graph_parse_text)
+
+/* after this is called, there are at least 2 slots left in the stack */
+static int ck_blimit()
 {
-  char *s = strchr(text,c), *e = strrchr(text,c);
+     if (bnext >= blimit) {
+	 blimit += FLEXML_BUFFERSTACKSIZE + 2;
+	 {
+	     char *temp = (char *) realloc(graphxml_bufferstack, blimit);
+	     assert(temp);
+	     graphxml_bufferstack = temp;
+	 }
+     }
+     return 0;
+}
+
+/* after this is called, there are at least 2 slots left in the stack */
+static int ck_ilimit()
+{
+     if (inext >= ilimit) {
+	 ilimit += FLEXML_INDEXSTACKSIZE + 2;
+	 {
+	     int *temp = (int *) realloc(indexstack, ilimit);
+	     assert(temp);
+	     indexstack = temp;
+	 }
+     }
+     return 0;
+}
+
+#ifdef FLEXML_NEED_BUFFERLIT
+static void graphxml_bufferliteral(char c, int* pp, const char* text)
+{
+  const char *s = (c ? strchr(text,c) : text-1), *e = strrchr(text,c);
   assert(s <= e); BUFFERSET(*pp);
   while (++s<e) {
-    if (isspace(*s)) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
+    if (isspace(*s) && c) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
     else BUFFERPUTC(*s);
   }
   BUFFERDONE;
 }
-
-#ifdef FLEXML_HasMixed
-static void pushbuffer(const char* p)
-{
-  BufferLast* l = (BufferLast*)next;
-  assert(next < limit);
-  l->old = last;
-  l->saved = p;
-  next = l->new1;
-  last = l;
-}
-
-static const char* popbuffer(void)
-{
-  BufferLast* l = last;
-  assert(last != (BufferLast*)0);
-  last = l->old;
-  next = (char*)l;
-  return l->saved;
-}
 #endif
+
+static void pushbuffer(int p)
+{
+    ck_ilimit();
+    indexstack[inext++] = p;
+    indexstack[inext++] = bnext;    
+}
+
+static int popbuffer(void)
+{
+    assert(inext >= 2);
+    bnext = indexstack[--inext];
+    return indexstack[--inext];
+}
 
 /* General internal entities are `unput' back onto the input stream... */
 #define ENTITYTEXT(T) \
   { char *s = (T), *e = s+strlen(s);\
     while (--e >= s) { unput(*e); }}
+
 /* Flex standard options. */
 #define YY_NO_INPUT 1
 /* Flex user-requested options. */
@@ -1223,19 +1281,14 @@ const char* *graphxml_statenames=NULL;
  * down here because we want the user's section 1 to have been scanned first.
  * The user has a chance to override it with an option.
  */
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
-#  ifndef __STRICT_ANSI__
-#    include <io.h>
-#    include <process.h>
-#  endif
-#else
-#  include <unistd.h>
-#endif
+#include <unistd.h>
 #endif
 
 #ifndef YY_EXTRA_TYPE
 #define YY_EXTRA_TYPE void *
 #endif
+
+static int yy_init_globals (void );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1269,7 +1322,7 @@ static int input (void );
 
         static int yy_start_stack_ptr = 0;
         static int yy_start_stack_depth = 0;
-        static int *yy_start_stack = 0;
+        static int *yy_start_stack = NULL;
     
     static void yy_push_state (int new_state );
     
@@ -1380,8 +1433,27 @@ YY_DECL
     
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
+ reset_graphxml_parse_err_msg();
+ graphxml_bufferstack = (char *) malloc(FLEXML_BUFFERSTACKSIZE);
+ assert(graphxml_bufferstack);
+ #ifdef FLEX_DEBUG
+ {
+     int i;
+     for (i = 0; i < blimit; i++) {
+         graphxml_bufferstack[i] = '\377';
+     }
+ }
+ #endif
+ graphxml_bufferstack[0] = '\0';
+ indexstack = (int *) malloc(FLEXML_INDEXSTACKSIZE * sizeof(int));
+ assert(indexstack);
+ indexstack[0] = 0;
+
   /* FleXML_init */
-  next = bufferstack;
+  bnext = inext = 1;
+  graphxml_bufferliteral('\0', &bnext, "-1.0");
+  graphxml_bufferliteral('\0', &bnext, "-1.0");
+  graphxml_bufferliteral('\0', &bnext, "-1.0");
   if(!graphxml_statenames) {graphxml_statenames= (const char **)calloc(IMPOSSIBLE,sizeof(char*));
   graphxml_statenames[PROLOG] = NULL;
   graphxml_statenames[DOCTYPE] = NULL;
@@ -1410,9 +1482,9 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-	if ( (yy_init) )
+	if ( !(yy_init) )
 		{
-		(yy_init) = 0;
+		(yy_init) = 1;
 
 #ifdef YY_USER_INIT
 		YY_USER_INIT;
@@ -1595,8 +1667,8 @@ case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
 {
-  A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
-  ENTER(AL_graphxml_graph);
+  AX_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
+  ENTER(AL_graphxml_graph); pushbuffer(0);
   }
 	YY_BREAK
 
@@ -1617,13 +1689,13 @@ A_graphxml_graph_isDirected = A_graphxml_graph_isDirected_false;
 case 23:
 YY_RULE_SETUP
 {
-  LEAVE; STag_graphxml_graph();graphxml_pcdata = NULL; ENTER(S_graphxml_graph);
+  LEAVE; STag_graphxml_graph();graphxml_pcdata_ix = 0; ENTER(S_graphxml_graph);
  }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 {
-  LEAVE; STag_graphxml_graph(); graphxml_pcdata = NULL; ETag_graphxml_graph();
+  LEAVE; STag_graphxml_graph(); graphxml_pcdata_ix = 0; ETag_graphxml_graph(); popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_graphxml_graph: SET(EPILOG); break;
   }
@@ -1647,6 +1719,7 @@ YY_RULE_SETUP
 {
   LEAVE;
   ETag_graphxml_graph();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_graphxml_graph: SET(EPILOG); break;
   }
@@ -1679,77 +1752,77 @@ case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
 {
-  A_graphxml_node_label = NULL;
-  A_graphxml_node_name = NULL;
-  A_graphxml_node_data = NULL;
-  A_graphxml_node_position_x = "-1.0";
-  A_graphxml_node_position_y = "-1.0";
-  ENTER(AL_graphxml_node);
+  AX_graphxml_node_label = 0;
+  AX_graphxml_node_name = 0;
+  AX_graphxml_node_data = 0;
+  AX_graphxml_node_position_x = 1;
+  AX_graphxml_node_position_y = 6;
+  ENTER(AL_graphxml_node); pushbuffer(0);
   }
 	YY_BREAK
 
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_node_label);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_node_label);
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_node_label);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_node_label);
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_node_name);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_node_name);
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_node_name);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_node_name);
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_node_data);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_node_data);
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_node_data);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_node_data);
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_x);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_x);
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_x);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_x);
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_node_position_y);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_y);
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_node_position_y);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_y);
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 {
-  if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node();graphxml_pcdata = NULL; ENTER(E_graphxml_node);
+  if (!AX_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
+  LEAVE; STag_graphxml_node();graphxml_pcdata_ix = 0; ENTER(E_graphxml_node);
  }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 {
-  if (!A_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
-  LEAVE; STag_graphxml_node(); graphxml_pcdata = NULL; ETag_graphxml_node();
+  if (!AX_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
+  LEAVE; STag_graphxml_node(); graphxml_pcdata_ix = 0; ETag_graphxml_node(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
@@ -1774,6 +1847,7 @@ YY_RULE_SETUP
 {
   LEAVE;
   ETag_graphxml_node();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
@@ -1804,90 +1878,90 @@ case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
 {
-  A_graphxml_edge_label = NULL;
-  A_graphxml_edge_name = NULL;
-  A_graphxml_edge_source = NULL;
-  A_graphxml_edge_target = NULL;
-  A_graphxml_edge_length = "-1.0";
-  A_graphxml_edge_data = NULL;
-  ENTER(AL_graphxml_edge);
+  AX_graphxml_edge_label = 0;
+  AX_graphxml_edge_name = 0;
+  AX_graphxml_edge_source = 0;
+  AX_graphxml_edge_target = 0;
+  AX_graphxml_edge_length = 11;
+  AX_graphxml_edge_data = 0;
+  ENTER(AL_graphxml_edge); pushbuffer(0);
   }
 	YY_BREAK
 
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_edge_label);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_label);
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_edge_label);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_label);
 	YY_BREAK
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_edge_name);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_name);
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_edge_name);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_name);
 	YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_edge_source);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_source);
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_edge_source);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_source);
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_edge_target);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_target);
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_edge_target);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_target);
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_edge_length);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_length);
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_edge_length);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_length);
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(A_graphxml_edge_data);
+ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_data);
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(A_graphxml_edge_data);
+ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_data);
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
 {
-  if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
-  if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge();graphxml_pcdata = NULL; ENTER(E_graphxml_edge);
+  if (!AX_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
+  if (!AX_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
+  LEAVE; STag_graphxml_edge();graphxml_pcdata_ix = 0; ENTER(E_graphxml_edge);
  }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
 {
-  if (!A_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
-  if (!A_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
-  LEAVE; STag_graphxml_edge(); graphxml_pcdata = NULL; ETag_graphxml_edge();
+  if (!AX_graphxml_edge_source) FAIL("Required attribute `source' not set for `edge' element.");
+  if (!AX_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
+  LEAVE; STag_graphxml_edge(); graphxml_pcdata_ix = 0; ETag_graphxml_edge(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
@@ -1912,6 +1986,7 @@ YY_RULE_SETUP
 {
   LEAVE;
   ETag_graphxml_edge();
+  popbuffer(); /* attribute */
   switch (YY_START) {
    case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: case S_graphxml_graph: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
@@ -2284,7 +2359,7 @@ static int yy_get_next_buffer (void)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), num_to_read );
+			(yy_n_chars), (size_t) num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -2564,9 +2639,7 @@ static void xbt_graph_parse__load_buffer_state  (void)
 }
 
 #ifndef __cplusplus
-#ifndef _WIN32
 extern int isatty (int );
-#endif
 #endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.
@@ -2755,16 +2828,16 @@ YY_BUFFER_STATE xbt_graph_parse__scan_buffer  (char * base, yy_size_t  size )
 
 /** Setup the input buffer state to scan a string. The next call to xbt_graph_parse_lex() will
  * scan from a @e copy of @a str.
- * @param str a NUL-terminated string to scan
+ * @param yystr a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
  *       xbt_graph_parse__scan_bytes() instead.
  */
-YY_BUFFER_STATE xbt_graph_parse__scan_string (yyconst char * yy_str )
+YY_BUFFER_STATE xbt_graph_parse__scan_string (yyconst char * yystr )
 {
     
-	return xbt_graph_parse__scan_bytes(yy_str,strlen(yy_str) );
+	return xbt_graph_parse__scan_bytes(yystr,strlen(yystr) );
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to xbt_graph_parse_lex() will
@@ -2774,7 +2847,7 @@ YY_BUFFER_STATE xbt_graph_parse__scan_string (yyconst char * yy_str )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE xbt_graph_parse__scan_bytes  (yyconst char * bytes, int  len )
+YY_BUFFER_STATE xbt_graph_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
@@ -2782,15 +2855,15 @@ YY_BUFFER_STATE xbt_graph_parse__scan_bytes  (yyconst char * bytes, int  len )
 	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = len + 2;
+	n = _yybytes_len + 2;
 	buf = (char *) xbt_graph_parse_alloc(n  );
 	if ( ! buf )
 		YY_FATAL_ERROR( "out of dynamic memory in xbt_graph_parse__scan_bytes()" );
 
-	for ( i = 0; i < len; ++i )
-		buf[i] = bytes[i];
+	for ( i = 0; i < _yybytes_len; ++i )
+		buf[i] = yybytes[i];
 
-	buf[len] = buf[len+1] = YY_END_OF_BUFFER_CHAR;
+	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
 	b = xbt_graph_parse__scan_buffer(buf,n );
 	if ( ! b )
@@ -2944,6 +3017,41 @@ void xbt_graph_parse_set_debug (int  bdebug )
         xbt_graph_parse__flex_debug = bdebug ;
 }
 
+static int yy_init_globals (void)
+{
+        /* Initialization is the same as for the non-reentrant scanner.
+     * This function is called from xbt_graph_parse_lex_destroy(), so don't allocate here.
+     */
+
+    /* We do not touch xbt_graph_parse_lineno unless the option is enabled. */
+    xbt_graph_parse_lineno =  1;
+    
+    (yy_buffer_stack) = 0;
+    (yy_buffer_stack_top) = 0;
+    (yy_buffer_stack_max) = 0;
+    (yy_c_buf_p) = (char *) 0;
+    (yy_init) = 0;
+    (yy_start) = 0;
+
+    (yy_start_stack_ptr) = 0;
+    (yy_start_stack_depth) = 0;
+    (yy_start_stack) =  NULL;
+
+/* Defined in main.c */
+#ifdef YY_STDINIT
+    xbt_graph_parse_in = stdin;
+    xbt_graph_parse_out = stdout;
+#else
+    xbt_graph_parse_in = (FILE *) 0;
+    xbt_graph_parse_out = (FILE *) 0;
+#endif
+
+    /* For future reference: Set errno on error, since we are called by
+     * xbt_graph_parse_lex_init()
+     */
+    return 0;
+}
+
 /* xbt_graph_parse_lex_destroy is for both reentrant and non-reentrant scanners. */
 int xbt_graph_parse_lex_destroy  (void)
 {
@@ -2963,6 +3071,10 @@ int xbt_graph_parse_lex_destroy  (void)
         xbt_graph_parse_free((yy_start_stack)  );
         (yy_start_stack) = NULL;
 
+    /* Reset the globals. This is important in a non-reentrant scanner so the next time
+     * xbt_graph_parse_lex() is called, initialization will occur. */
+    yy_init_globals( );
+
     return 0;
 }
 
@@ -2974,7 +3086,7 @@ int xbt_graph_parse_lex_destroy  (void)
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
 	register int i;
-    	for ( i = 0; i < n; ++i )
+	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
@@ -2983,7 +3095,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 static int yy_flex_strlen (yyconst char * s )
 {
 	register int n;
-    	for ( n = 0; s[n]; ++n )
+	for ( n = 0; s[n]; ++n )
 		;
 
 	return n;
@@ -3014,19 +3126,6 @@ void xbt_graph_parse_free (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#undef YY_NEW_FILE
-#undef YY_FLUSH_BUFFER
-#undef yy_set_bol
-#undef yy_new_buffer
-#undef yy_set_interactive
-#undef yytext_ptr
-#undef YY_DO_BEFORE_ACTION
-
-#ifdef YY_DECL_IS_OURS
-#undef YY_DECL_IS_OURS
-#undef YY_DECL
-#endif
-
 /* Element context stack lookup. */
 int graphxml_element_context(int i)
 {
@@ -3040,19 +3139,39 @@ void print_yy_stack(char* fmt, ...)
 {
   int i = 0; va_list ap; va_start(ap, fmt);
   vfprintf(stderr, fmt, ap);
-  for (i=1; i<yy_start_stack_ptr; i++)
-    fprintf(stderr, "%s/", graphxml_statenames[yy_start_stack[i] ]);
-  fprintf(stderr,"%s\n", graphxml_statenames[YY_START]);
+  if (graphxml_statenames) {
+      for (i=1; i<yy_start_stack_ptr; i++) {
+          fprintf(stderr, "%s/", graphxml_statenames[yy_start_stack[i] ]);
+      }
+      fprintf(stderr,"%s\n", graphxml_statenames[YY_START]);
+  }
   va_end(ap);
+}
+
+void print_graphxml_bufferstack()
+{
+    int i;
+    fputs("Buffer: ", stderr);
+    for (i = 0; i < blimit; i++) {
+       if ( graphxml_bufferstack[i] == '\377' ) break;
+         putc(graphxml_bufferstack[i], stderr);
+    }
+    putc('\n', stderr);
 }
 
 static void debug_enter(int state, const char* statename) {
   yy_push_state(state);
-  if (xbt_graph_parse__flex_debug) print_yy_stack("--ENTER(%s) : ",statename);
+  if (xbt_graph_parse__flex_debug) {
+       print_yy_stack("--ENTER(%s) : ",statename);
+       print_graphxml_bufferstack();
+  }
 }
 
 static void debug_leave(void) {
-  if (xbt_graph_parse__flex_debug) print_yy_stack("--LEAVE : ");
+    if (xbt_graph_parse__flex_debug) {
+        print_yy_stack("--LEAVE : ");
+	print_graphxml_bufferstack();
+    }
   yy_pop_state();
 }
 
@@ -3062,25 +3181,17 @@ static void debug_set(int state, const char* statename) {
 }
 #endif
 
-enum {flexml_max_err_msg_size = 512};
-
-static char flexml_err_msg[flexml_max_err_msg_size];
-const char * graphxml_parse_err_msg()
-{
-    return flexml_err_msg;
-}
-
-static void reset_graphxml_parse_err_msg()
-{
-    flexml_err_msg[0] = '\0';
-}
-
 static void cleanup(void)
 {
     if (graphxml_statenames) {
         free(graphxml_statenames);
 	graphxml_statenames = NULL;
     }
+    free(graphxml_bufferstack);
+    graphxml_bufferstack = NULL;
+
+    free(indexstack);
+    indexstack = NULL;
 }
 
 static int fail(const char* fmt, ...)
