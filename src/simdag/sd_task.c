@@ -645,13 +645,38 @@ void __SD_task_really_run(SD_task_t task) {
     surf_workstations[i] = task->workstation_list[i]->surf_workstation;
   }
   
-  task->surf_action = surf_workstation_resource->extension_public->
-    execute_parallel_task(task->workstation_nb,
-			  surf_workstations,
-			  task->computation_amount,
-			  task->communication_amount,
-			  task->amount,
-			  task->rate);
+  task->surf_action = NULL;
+  if((task->workstation_nb==1) &&
+     (task->communication_amount[0]==0.0)) {
+    task->surf_action = surf_workstation_resource->extension_public->
+      execute(surf_workstations[0], task->computation_amount[0]);
+  } else if((task->workstation_nb==2) &&
+	    (task->computation_amount[0]==0.0)&&
+	    (task->computation_amount[1]==0.0)) {
+    int nb=0;
+    double value=0.0;
+    
+    for (i = 0; i < task->workstation_nb*task->workstation_nb; i++) {
+      if(task->communication_amount[i]>0.0) {
+	nb++;
+	value = task->communication_amount[i];
+      }
+    }
+    if(nb==1) {
+      task->surf_action = surf_workstation_resource->extension_public->
+	communicate(surf_workstations[0], surf_workstations[1],
+		    value, task->rate);
+    }
+  }
+  if(!task->surf_action) 
+    task->surf_action = surf_workstation_resource->extension_public->
+      execute_parallel_task(task->workstation_nb,
+			    surf_workstations,
+			    task->computation_amount,
+			    task->communication_amount,
+			    task->amount,
+			    task->rate);
+
   surf_workstation_resource->common_public->action_set_data(task->surf_action, task);
   task->state_changed = 1;
 
