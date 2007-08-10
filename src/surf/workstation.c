@@ -304,7 +304,7 @@ static surf_action_t execute_parallel_task_bogus (int workstation_nb,
 					    double amount,
 					    double rate)
 {
-  DIE_IMPOSSIBLE;
+  xbt_assert0(0,"This model does not implement parallel tasks");
 }
 
 static surf_action_t execute_parallel_task (int workstation_nb,
@@ -530,20 +530,12 @@ void surf_workstation_resource_init_CLM03(const char *filename)
   surf_cpu_resource_init_Cas01(filename);
   surf_network_resource_init_CM02(filename);
   create_workstations();
+  update_resource_description(surf_workstation_resource_description,
+			      surf_workstation_resource_description_size,
+			      "CLM03",
+			      (surf_resource_t) surf_workstation_resource);
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 }
-
-#ifdef USE_GTNETS
-/* KF. Use GTNetS for the network. */
-void surf_workstation_resource_init_GTNETS(const char *filename)
-{
-  surf_workstation_resource_init_internal();
-  surf_cpu_resource_init_Cas01(filename);
-  surf_network_resource_init_GTNETS(filename);
-  create_workstations();
-  xbt_dynar_push(resource_list, &surf_workstation_resource);
-}
-#endif
 
 void surf_workstation_resource_init_compound(const char *filename)
 {
@@ -552,5 +544,11 @@ void surf_workstation_resource_init_compound(const char *filename)
   xbt_assert0(surf_network_resource,"No network resource defined yet!");
   surf_workstation_resource_init_internal();
   create_workstations();
+
+  update_resource_description(surf_workstation_resource_description,
+			      surf_workstation_resource_description_size,
+			      "compound",
+			      (surf_resource_t) surf_workstation_resource);
+
   xbt_dynar_push(resource_list, &surf_workstation_resource);
 }
