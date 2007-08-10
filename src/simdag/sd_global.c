@@ -2,12 +2,191 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "surf/surf.h"
+#include "xbt/ex.h"
+#include "xbt/log.h"
+#include "xbt/config.h"
 
 XBT_LOG_NEW_CATEGORY(sd,"Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel,sd,
 				"Logging specific to SimDag (kernel)");
 
 SD_global_t sd_global = NULL;
+
+/* $Id$ */
+
+/* Copyright (c) 2007 Arnaud Legrand.
+   All rights reserved.                                          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+static int _sd_init_status = 0;	/* 0: beginning of time; 
+				   1: pre-inited (cfg_set created); 
+				   2: inited (running) */
+static xbt_cfg_t _sd_cfg_set = NULL;
+
+/* callback of the workstation_model variable */
+static void _sd_cfg_cb__workstation_model(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert0(_sd_init_status < 2,
+	      "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_sd_cfg_set, name);
+  find_resource_description(surf_workstation_resource_description,
+			    surf_workstation_resource_description_size,
+			    val);
+}
+
+/* callback of the cpu_model variable */
+static void _sd_cfg_cb__cpu_model(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert0(_sd_init_status < 2,
+	      "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_sd_cfg_set, name);
+  find_resource_description(surf_cpu_resource_description,
+			    surf_cpu_resource_description_size, val);
+}
+
+/* callback of the workstation_model variable */
+static void _sd_cfg_cb__network_model(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert0(_sd_init_status < 2,
+	      "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_sd_cfg_set, name);
+  find_resource_description(surf_network_resource_description,
+			    surf_network_resource_description_size, val);
+}
+
+/* create the config set and register what should be */
+static void sd_config_init(void)
+{
+
+  if (_sd_init_status)
+    return;			/* Already inited, nothing to do */
+
+  _sd_init_status = 1;
+  _sd_cfg_set = xbt_cfg_new();
+
+  xbt_cfg_register(_sd_cfg_set,
+		   "workstation_model", xbt_cfgelm_string, 1, 1,
+		   &_sd_cfg_cb__workstation_model, NULL);
+
+  xbt_cfg_register(_sd_cfg_set,
+		   "cpu_model", xbt_cfgelm_string, 1, 1,
+		   &_sd_cfg_cb__cpu_model, NULL);
+  xbt_cfg_register(_sd_cfg_set,
+		   "network_model", xbt_cfgelm_string, 1, 1,
+		   &_sd_cfg_cb__network_model, NULL);
+
+  xbt_cfg_set_string(_sd_cfg_set, "workstation_model", "ptask_L07");
+}
+
+static void sd_config_finalize(void)
+{
+
+  if (!_sd_init_status)
+    return;			/* Not initialized yet. Nothing to do */
+
+  xbt_cfg_free(&_sd_cfg_set);
+  _sd_init_status = 0;
+}
+
+static void sd_config(const char *name, va_list pa)
+{
+  if (!_sd_init_status) {
+    sd_config_init();
+  }
+  xbt_cfg_set_vargs(_sd_cfg_set, name, pa);
+}
+
+
+static void __sd_config_helper(const char *name, ...)
+{
+  va_list pa;
+  va_start(pa, name);
+
+  sd_config(name, pa);
+
+  va_end(pa);
+}
+
+static void sd_cfg_control_set(const char *control_string)
+{
+  /* To split the string in commands, and the cursors */
+  xbt_dynar_t set_strings;
+  char *str;
+  int cpt;
+
+  if (!control_string)
+    return;
+  DEBUG1("Parse log settings '%s'", control_string);
+
+  /* split the string, and remove empty entries */
+  set_strings = xbt_str_split_quoted(control_string);
+
+  if (xbt_dynar_length(set_strings) == 0) {	/* vicious user! */
+    xbt_dynar_free(&set_strings);
+    return;
+  }
+  /* Parse each entry and either use it right now (if the category was already
+     created), or store it for further use */
+  xbt_dynar_foreach(set_strings, cpt, str) {
+    char *control_string, *control_string_sav, *name, *value;
+
+
+    control_string = control_string_sav = strdup(str);
+    control_string += strspn(control_string, " ");
+    name = control_string;
+    control_string += strcspn(str, ":=");
+    value = control_string;
+    *value = 0;
+    value++;
+
+    xbt_assert1(strlen(name) != 0, "Invalid name for configuration: '%s'",
+		name);
+    xbt_assert1(strlen(value) != 0,
+		"Invalid value for configuration: '%s'", value);
+    INFO2("setting '%s' to '%s'", name, value);
+
+    __sd_config_helper(name, value);
+
+    free(control_string_sav);
+  }
+  xbt_dynar_free(&set_strings);
+}
+
+static void sd_cfg_init(int *argc, char **argv)
+{
+  int i, j;
+  char *opt;
+
+  for (i = 1; i < *argc; i++) {
+    if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
+      opt = strchr(argv[i], '=');
+      opt++;
+
+      sd_cfg_control_set(opt);
+      DEBUG1("Did apply '%s' as config setting", opt);
+      /*remove this from argv */
+
+      for (j = i + 1; j < *argc; j++) {
+	argv[j - 1] = argv[j];
+      }
+
+      argv[j - 1] = NULL;
+      (*argc)--;
+      i--;			/* compensate effect of next loop incrementation */
+    }
+  }
+}
 
 /**
  * \brief Initialises SD internal data
@@ -45,6 +224,7 @@ void SD_init(int *argc, char **argv) {
   sd_global->task_number = 0;
 
   surf_init(argc, argv);
+  sd_cfg_init(argc, argv);
 }
 
 /**
@@ -88,8 +268,6 @@ void SD_application_reinit(void) {
 
 }
 
-
-
 /**
  * \brief Creates the environment
  *
@@ -113,19 +291,77 @@ void SD_create_environment(const char *platform_file) {
   char *name = NULL;
   void *surf_workstation = NULL;
   void *surf_link = NULL;
+  char *workstation_model_name;
+  int workstation_id = -1;
 
   SD_CHECK_INIT_DONE();
 
   DEBUG0("SD_create_environment");
 
-  surf_timer_resource_init(platform_file);  /* tell Surf to create the environnement */
+  sd_config_init();
+  surf_timer_resource_init(platform_file);
 
-  DEBUG0("Calling surf_workstation_resource_init");
-  surf_workstation_resource_init_KCCFLN05(platform_file);
-  /*  surf_workstation_resource_init_CLM03(platform_file); */
+  workstation_model_name =
+      xbt_cfg_get_string(_sd_cfg_set, "workstation_model");
+
+  DEBUG1("Model : %s", workstation_model_name);
+  workstation_id =
+      find_resource_description(surf_workstation_resource_description,
+				surf_workstation_resource_description_size,
+				workstation_model_name);
+  if (!strcmp(workstation_model_name, "compound")) {
+    xbt_ex_t e;
+    char *network_model_name = NULL;
+    char *cpu_model_name = NULL;
+    int network_id = -1;
+    int cpu_id = -1;
+
+    TRY {
+      cpu_model_name = xbt_cfg_get_string(_sd_cfg_set, "cpu_model");
+    } CATCH(e) {
+      if (e.category == bound_error) {
+	xbt_assert0(0,
+		    "Set a cpu model to use with the 'compound' workstation model");
+	xbt_ex_free(e);
+      } else {
+	RETHROW;
+      }
+    }
+
+    TRY {
+      network_model_name =
+	  xbt_cfg_get_string(_sd_cfg_set, "network_model");
+    }
+    CATCH(e) {
+      if (e.category == bound_error) {
+	xbt_assert0(0,
+		    "Set a network model to use with the 'compound' workstation model");
+	xbt_ex_free(e);
+      } else {
+	RETHROW;
+      }
+    }
+
+    network_id =
+	find_resource_description(surf_network_resource_description,
+				  surf_network_resource_description_size,
+				  network_model_name);
+    cpu_id =
+	find_resource_description(surf_cpu_resource_description,
+				  surf_cpu_resource_description_size,
+				  cpu_model_name);
+
+    surf_cpu_resource_description[cpu_id].resource_init(platform_file);
+    surf_network_resource_description[network_id].resource_init(platform_file);
+  }
+
+  DEBUG0("Call workstation_resource_init");
+  surf_workstation_resource_description[workstation_id].
+      resource_init(platform_file);
+
+  _sd_init_status = 2;
 
   /* now let's create the SD wrappers for workstations and links */
-  DEBUG0("Creating SimDags hosts and links");
   xbt_dict_foreach(workstation_set, cursor, name, surf_workstation) {
     __SD_workstation_create(surf_workstation, NULL);
   }
