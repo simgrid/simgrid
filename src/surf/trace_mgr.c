@@ -108,8 +108,8 @@ tmgr_trace_t tmgr_trace_new(const char *filename)
 tmgr_trace_t tmgr_empty_trace_new(void)
 {
   tmgr_trace_t trace = NULL;
-  /*double periodicity = -1.0;	 No periodicity by default; unused variables
-  tmgr_event_t last_event = NULL;*/
+  /*double periodicity = -1.0;   No periodicity by default; unused variables
+     tmgr_event_t last_event = NULL; */
   s_tmgr_event_t event;
 
   trace = xbt_new0(s_tmgr_trace_t, 1);

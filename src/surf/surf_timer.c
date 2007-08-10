@@ -22,14 +22,14 @@ static void timer_free(void *timer)
   free(timer);
 }
 
-static command_t command_new(void *fun, void* args)
+static command_t command_new(void *fun, void *args)
 {
   command_t command = xbt_new0(s_command_t, 1);
 
   command->resource = (surf_resource_t) surf_timer_resource;
   command->function = fun;
   command->args = args;
-  xbt_swag_insert(command,command_pending);
+  xbt_swag_insert(command, command_pending);
   return command;
 }
 
@@ -37,10 +37,10 @@ static void command_free(command_t command)
 {
   free(command);
 
-  if(xbt_swag_belongs(command,command_to_run)) {
-    xbt_swag_remove(command,command_to_run);
-  } else if (xbt_swag_belongs(command,command_pending)) {
-    xbt_swag_remove(command,command_pending);
+  if (xbt_swag_belongs(command, command_to_run)) {
+    xbt_swag_remove(command, command_to_run);
+  } else if (xbt_swag_belongs(command, command_pending)) {
+    xbt_swag_remove(command, command_pending);
   }
   return;
 }
@@ -105,8 +105,8 @@ static double share_resources(double now)
 
 static void update_actions_state(double now, double delta)
 {
-  if(xbt_heap_size(timer_heap)) {
-    if(xbt_heap_maxkey(timer_heap)<=now+delta) {
+  if (xbt_heap_size(timer_heap)) {
+    if (xbt_heap_maxkey(timer_heap) <= now + delta) {
       xbt_heap_pop(timer_heap);
     }
   }
@@ -120,8 +120,8 @@ static void update_resource_state(void *id,
   command_t command = id;
 
   /* Move this command to the list of commands to execute */
-  xbt_swag_remove(command,command_pending);
-  xbt_swag_insert(command,command_to_run);
+  xbt_swag_remove(command, command_pending);
+  xbt_swag_insert(command, command_to_run);
 
   return;
 }
@@ -132,8 +132,8 @@ static void set(double date, void *function, void *arg)
 
   command = command_new(function, arg);
 
-  tmgr_history_add_trace(history, empty_trace, date, 0, command);  
-  xbt_heap_push(timer_heap, NULL , date);
+  tmgr_history_add_trace(history, empty_trace, date, 0, command);
+  xbt_heap_push(timer_heap, NULL, date);
 }
 
 
@@ -142,7 +142,7 @@ static int get(void **function, void **arg)
   command_t command = NULL;
 
   command = xbt_swag_extract(command_to_run);
-  if(command) {
+  if (command) {
     *function = command->function;
     *arg = command->args;
     return 1;
@@ -178,12 +178,14 @@ static void finalize(void)
   xbt_swag_free(command_pending);
   xbt_swag_free(command_to_run);
 
-  xbt_swag_free(surf_timer_resource->common_public->states.ready_action_set);
+  xbt_swag_free(surf_timer_resource->common_public->states.
+		ready_action_set);
   xbt_swag_free(surf_timer_resource->common_public->states.
 		running_action_set);
   xbt_swag_free(surf_timer_resource->common_public->states.
 		failed_action_set);
-  xbt_swag_free(surf_timer_resource->common_public->states.done_action_set);
+  xbt_swag_free(surf_timer_resource->common_public->states.
+		done_action_set);
   free(surf_timer_resource->common_public);
   free(surf_timer_resource->common_private);
   free(surf_timer_resource->extension_public);
@@ -200,7 +202,8 @@ static void surf_timer_resource_init_internal(void)
 
   surf_timer_resource->common_private =
       xbt_new0(s_surf_resource_private_t, 1);
-  surf_timer_resource->common_public = xbt_new0(s_surf_resource_public_t, 1);
+  surf_timer_resource->common_public =
+      xbt_new0(s_surf_resource_public_t, 1);
 
   surf_timer_resource->extension_public =
       xbt_new0(s_surf_timer_resource_extension_public_t, 1);
@@ -215,7 +218,8 @@ static void surf_timer_resource_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_timer_resource->common_public->name_service = name_service;
-  surf_timer_resource->common_public->get_resource_name = get_resource_name;
+  surf_timer_resource->common_public->get_resource_name =
+      get_resource_name;
   surf_timer_resource->common_public->action_get_state =
       surf_action_get_state;
   surf_timer_resource->common_public->action_free = action_free;
@@ -223,7 +227,8 @@ static void surf_timer_resource_init_internal(void)
   surf_timer_resource->common_public->action_recycle = action_recycle;
   surf_timer_resource->common_public->action_change_state =
       action_change_state;
-  surf_timer_resource->common_public->action_set_data = surf_action_set_data;
+  surf_timer_resource->common_public->action_set_data =
+      surf_action_set_data;
   surf_timer_resource->common_public->name = "TIMER";
 
   surf_timer_resource->common_private->resource_used = resource_used;
@@ -243,8 +248,10 @@ static void surf_timer_resource_init_internal(void)
 
   {
     s_command_t var;
-    command_pending = xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
-    command_to_run  = xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
+    command_pending =
+	xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
+    command_to_run =
+	xbt_swag_new(xbt_swag_offset(var, command_set_hookup));
   }
 
   empty_trace = tmgr_empty_trace_new();

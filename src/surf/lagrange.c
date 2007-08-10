@@ -24,9 +24,9 @@ XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf_lagrange,
 
 #define SHOW_EXPR(expr) CDEBUG1(surf_lagrange,#expr " = %g",expr);
 
-double (* func_f_def )  (lmm_variable_t , double);
-double (* func_fp_def ) (lmm_variable_t , double);
-double (* func_fpi_def )(lmm_variable_t , double);
+double (*func_f_def) (lmm_variable_t, double);
+double (*func_fp_def) (lmm_variable_t, double);
+double (*func_fpi_def) (lmm_variable_t, double);
 
 /*
  * Local prototypes to implement the lagrangian optimization with optimal step, also called dichotomy.
@@ -34,14 +34,15 @@ double (* func_fpi_def )(lmm_variable_t , double);
 //solves the proportional fairness using a lagrange optimizition with dichotomy step
 void lagrange_solve(lmm_system_t sys);
 //computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-static double dichotomy(double init, double diff(double, void *), void *var_cnst,
-			double min_error);
+static double dichotomy(double init, double diff(double, void *),
+			void *var_cnst, double min_error);
 //computes the value of the differential of variable param_var applied to mu  
 static double partial_diff_mu(double mu, void *param_var);
 //computes the value of the differential of constraint param_cnst applied to lambda  
 static double partial_diff_lambda(double lambda, void *param_cnst);
 
-static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
+static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list,
+			    int warn)
 {
   xbt_swag_t elem_list = NULL;
   lmm_element_t elem = NULL;
@@ -67,12 +68,14 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 	     cnst, cnst->bound, tmp);
       return 0;
     }
-    DEBUG3("Checking feasability for constraint (%p): sat = %f, lambda = %f ",
-	   cnst, tmp - cnst->bound, cnst->lambda);
+    DEBUG3
+	("Checking feasability for constraint (%p): sat = %f, lambda = %f ",
+	 cnst, tmp - cnst->bound, cnst->lambda);
   }
 
   xbt_swag_foreach(var, var_list) {
-    if(!var->weight) break;
+    if (!var->weight)
+      break;
     if (var->bound < 0)
       continue;
     DEBUG3("Checking feasability for variable (%p): sat = %f mu = %f", var,
@@ -99,8 +102,7 @@ static double new_value(lmm_variable_t var)
   }
   if (var->bound > 0)
     tmp += var->mu;
-  DEBUG3("\t Working on var (%p). cost = %e; Df = %e", var, tmp,
-	 var->df);
+  DEBUG3("\t Working on var (%p). cost = %e; Df = %e", var, tmp, var->df);
   //uses the partial differential inverse function
   return var->func_fpi(var, tmp);
 }
@@ -114,8 +116,9 @@ static double new_mu(lmm_variable_t var)
   for (j = 0; j < var->cnsts_number; j++) {
     sigma_i += (var->cnsts[j].constraint)->lambda;
   }
-  mu_i = var->func_fp(var,var->bound)-sigma_i;
-  if(mu_i<0.0) return 0.0;
+  mu_i = var->func_fp(var, var->bound) - sigma_i;
+  if (mu_i < 0.0)
+    return 0.0;
   return mu_i;
 }
 
@@ -123,14 +126,15 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
 {
   lmm_constraint_t cnst = NULL;
   lmm_variable_t var = NULL;
-  
+
   double obj = 0.0;
 
   xbt_swag_foreach(var, var_list) {
-    double sigma_i=0.0;
+    double sigma_i = 0.0;
     int j;
 
-    if(!var->weight) break;
+    if (!var->weight)
+      break;
 
     for (j = 0; j < var->cnsts_number; j++)
       sigma_i += (var->cnsts[j].constraint)->lambda;
@@ -138,17 +142,17 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
     if (var->bound > 0)
       sigma_i += var->mu;
 
-    DEBUG2("var %p : sigma_i = %1.20f",var,sigma_i);
+    DEBUG2("var %p : sigma_i = %1.20f", var, sigma_i);
 
-    obj += var->func_f(var,var->func_fpi(var,sigma_i)) - 
-      sigma_i*var->func_fpi(var,sigma_i);
+    obj += var->func_f(var, var->func_fpi(var, sigma_i)) -
+	sigma_i * var->func_fpi(var, sigma_i);
 
     if (var->bound > 0)
-      obj += var->mu*var->bound;
+      obj += var->mu * var->bound;
   }
 
   xbt_swag_foreach(cnst, cnst_list)
-    obj += cnst->lambda*cnst->bound;
+      obj += cnst->lambda * cnst->bound;
 
   return obj;
 }
@@ -179,7 +183,7 @@ void lagrange_solve(lmm_system_t sys)
   int iteration = 0;
   double tmp = 0;
   int i;
-  double obj,new_obj;
+  double obj, new_obj;
 
   DEBUG0("Iterative method configuration snapshot =====>");
   DEBUG1("#### Maximum number of iterations       : %d", max_iterations);
@@ -213,7 +217,7 @@ void lagrange_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   i = 0;
   xbt_swag_foreach(var, var_list) {
-    if(!var->weight) 
+    if (!var->weight)
       var->value = 0.0;
     else {
       if (var->bound < 0.0) {
@@ -236,12 +240,13 @@ void lagrange_solve(lmm_system_t sys)
   /* 
    * Compute dual objective.
    */
-  obj = dual_objective(var_list,cnst_list);
+  obj = dual_objective(var_list, cnst_list);
 
   /*
    * While doesn't reach a minimun error or a number maximum of iterations.
    */
-  while (overall_modification > epsilon_min_error && iteration < max_iterations) {
+  while (overall_modification > epsilon_min_error
+	 && iteration < max_iterations) {
 /*     int dual_updated=0; */
 
     iteration++;
@@ -252,19 +257,22 @@ void lagrange_solve(lmm_system_t sys)
      * Improve the value of mu_i
      */
     xbt_swag_foreach(var, var_list) {
-      if(!var->weight) break;
+      if (!var->weight)
+	break;
       if (var->bound >= 0) {
 	DEBUG1("Working on var (%p)", var);
 	var->new_mu = new_mu(var);
 /* 	dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error); */
 /* 	DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu)); */
-	DEBUG3("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var, var->mu, var->new_mu);
+	DEBUG3("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var,
+	       var->mu, var->new_mu);
 	var->mu = var->new_mu;
 
-	new_obj=dual_objective(var_list,cnst_list);
+	new_obj = dual_objective(var_list, cnst_list);
 	DEBUG3("Improvement for Objective (%g -> %g) : %g", obj, new_obj,
-	      obj-new_obj);
-	xbt_assert1(obj-new_obj>=-epsilon_min_error,"Our gradient sucks! (%1.20f)",obj-new_obj);
+	       obj - new_obj);
+	xbt_assert1(obj - new_obj >= -epsilon_min_error,
+		    "Our gradient sucks! (%1.20f)", obj - new_obj);
 	obj = new_obj;
       }
     }
@@ -279,13 +287,15 @@ void lagrange_solve(lmm_system_t sys)
 		    dichotomy_min_error);
 /*       dual_updated += (fabs(cnst->new_lambda-cnst->lambda)>dichotomy_min_error); */
 /*       DEBUG2("dual_updated (%d) : %1.20f",dual_updated,fabs(cnst->new_lambda-cnst->lambda)); */
-      DEBUG3("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
+      DEBUG3("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f",
+	     cnst, cnst->lambda, cnst->new_lambda);
       cnst->lambda = cnst->new_lambda;
 
-      new_obj=dual_objective(var_list,cnst_list);
+      new_obj = dual_objective(var_list, cnst_list);
       DEBUG3("Improvement for Objective (%g -> %g) : %g", obj, new_obj,
-	     obj-new_obj);
-      xbt_assert1(obj-new_obj>=-epsilon_min_error,"Our gradient sucks! (%1.20f)",obj-new_obj);
+	     obj - new_obj);
+      xbt_assert1(obj - new_obj >= -epsilon_min_error,
+		  "Our gradient sucks! (%1.20f)", obj - new_obj);
       obj = new_obj;
     }
 
@@ -301,18 +311,20 @@ void lagrange_solve(lmm_system_t sys)
       else {
 	tmp = new_value(var);
 
-	overall_modification = MAX(overall_modification, fabs(var->value - tmp));
+	overall_modification =
+	    MAX(overall_modification, fabs(var->value - tmp));
 
 	var->value = tmp;
-	DEBUG3("New value of var (%p)  = %e, overall_modification = %e", var,
-	       var->value, overall_modification);
+	DEBUG3("New value of var (%p)  = %e, overall_modification = %e",
+	       var, var->value, overall_modification);
       }
     }
 
     DEBUG0("-------------- Check feasability ----------");
     if (!__check_feasible(cnst_list, var_list, 0))
       overall_modification = 1.0;
-    DEBUG2("Iteration %d: overall_modification : %f", iteration, overall_modification);
+    DEBUG2("Iteration %d: overall_modification : %f", iteration,
+	   overall_modification);
 /*     if(!dual_updated) { */
 /*       WARN1("Could not improve the convergence at iteration %d. Drop it!",iteration); */
 /*       break; */
@@ -348,8 +360,8 @@ void lagrange_solve(lmm_system_t sys)
  *
  * @return a double correponding to the result of the dichotomyal process
  */
-static double dichotomy(double init, double diff(double, void *), void *var_cnst,
-			double min_error)
+static double dichotomy(double init, double diff(double, void *),
+			void *var_cnst, double min_error)
 {
   double min, max;
   double overall_error;
@@ -368,8 +380,7 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
   overall_error = 1;
 
   if ((diff_0 = diff(1e-16, var_cnst)) >= 0) {
-    CDEBUG1(surf_lagrange_dichotomy, "returning 0.0 (diff = %e)",
-	    diff_0);
+    CDEBUG1(surf_lagrange_dichotomy, "returning 0.0 (diff = %e)", diff_0);
     XBT_OUT;
     return 0.0;
   }
@@ -379,8 +390,8 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
 
   while (overall_error > min_error) {
     CDEBUG4(surf_lagrange_dichotomy,
-	    "[min, max] = [%1.20f, %1.20f] || diffmin, diffmax = %1.20f, %1.20f", min, max,
-	    min_diff,max_diff);
+	    "[min, max] = [%1.20f, %1.20f] || diffmin, diffmax = %1.20f, %1.20f",
+	    min, max, min_diff, max_diff);
 
     if (min_diff > 0 && max_diff > 0) {
       if (min == max) {
@@ -404,12 +415,14 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
       }
     } else if (min_diff < 0 && max_diff > 0) {
       middle = (max + min) / 2.0;
-      CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f",middle);
+      CDEBUG1(surf_lagrange_dichotomy, "Trying (max+min)/2 : %1.20f",
+	      middle);
 
-      if((min==middle) || (max==middle)) {
-	CWARN4(surf_lagrange_dichotomy,"Cannot improve the convergence! min=max=middle=%1.20f, diff = %1.20f."
+      if ((min == middle) || (max == middle)) {
+	CWARN4(surf_lagrange_dichotomy,
+	       "Cannot improve the convergence! min=max=middle=%1.20f, diff = %1.20f."
 	       " Reaching the 'double' limits. Maybe scaling your function would help ([%1.20f,%1.20f]).",
-	       min, max-min, min_diff,max_diff);
+	       min, max - min, min_diff, max_diff);
 	break;
       }
       middle_diff = diff(middle, var_cnst);
@@ -417,13 +430,13 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
       if (middle_diff < 0) {
 	CDEBUG0(surf_lagrange_dichotomy, "Increasing min");
 	min = middle;
-	overall_error = max_diff-middle_diff;
+	overall_error = max_diff - middle_diff;
 	min_diff = middle_diff;
 /* 	SHOW_EXPR(overall_error); */
       } else if (middle_diff > 0) {
 	CDEBUG0(surf_lagrange_dichotomy, "Decreasing max");
 	max = middle;
-	overall_error = max_diff-middle_diff;
+	overall_error = max_diff - middle_diff;
 	max_diff = middle_diff;
 /* 	SHOW_EXPR(overall_error); */
       } else {
@@ -431,11 +444,11 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
 /* 	SHOW_EXPR(overall_error); */
       }
     } else if (min_diff == 0) {
-      max=min;
+      max = min;
       overall_error = 0;
 /*       SHOW_EXPR(overall_error); */
     } else if (max_diff == 0) {
-      min=max;
+      min = max;
       overall_error = 0;
 /*       SHOW_EXPR(overall_error); */
     } else if (min_diff > 0 && max_diff < 0) {
@@ -469,14 +482,15 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
   XBT_IN;
   elem_list = &(cnst->element_set);
 
-  CDEBUG1(surf_lagrange_dichotomy,"Computing diff of cnst (%p)", cnst);
+  CDEBUG1(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", cnst);
 
   xbt_swag_foreach(elem, elem_list) {
     var = elem->variable;
     if (var->weight <= 0)
       continue;
 
-    CDEBUG1(surf_lagrange_dichotomy,"Computing sigma_i for var (%p)", var);
+    CDEBUG1(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)",
+	    var);
     // Initialize the summation variable
     sigma_i = 0.0;
 
@@ -492,14 +506,15 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
     //replace value of cnst->lambda by the value of parameter lambda
     sigma_i = (sigma_i - cnst->lambda) + lambda;
 
-    diff += -var->func_fpi(var,  sigma_i);
+    diff += -var->func_fpi(var, sigma_i);
   }
 
 
   diff += cnst->bound;
 
-  CDEBUG3(surf_lagrange_dichotomy,"d D/d lambda for cnst (%p) at %1.20f = %1.20f",
-	  cnst, lambda, diff);
+  CDEBUG3(surf_lagrange_dichotomy,
+	  "d D/d lambda for cnst (%p) at %1.20f = %1.20f", cnst, lambda,
+	  diff);
   XBT_OUT;
   return diff;
 }
@@ -511,13 +526,17 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
  *  Set default functions to the ones passed as parameters. This is a polimorfism in C pure, enjoy the roots of programming.
  *
  */
-void lmm_set_default_protocol_function(double (* func_f)  (lmm_variable_t var, double x),
-				       double (* func_fp)  (lmm_variable_t var, double x),
-				       double (* func_fpi)  (lmm_variable_t var, double x))
+void
+lmm_set_default_protocol_function(double (*func_f)
+				  (lmm_variable_t var, double x),
+				  double (*func_fp) (lmm_variable_t var,
+						     double x),
+				  double (*func_fpi) (lmm_variable_t var,
+						      double x))
 {
-  func_f_def  = func_f;
-  func_fp_def  = func_fp;
-  func_fpi_def  = func_fpi;
+  func_f_def = func_f;
+  func_fp_def = func_fp;
+  func_fpi_def = func_fpi;
 }
 
 
@@ -534,19 +553,22 @@ void lmm_set_default_protocol_function(double (* func_f)  (lmm_variable_t var, d
  */
 #define VEGAS_SCALING 1000.0
 
-double func_vegas_f(lmm_variable_t var, double x){
-  xbt_assert1(x>0.0,"Don't call me with stupid values! (%1.20f)",x);
-  return VEGAS_SCALING*var->df*log(x);
+double func_vegas_f(lmm_variable_t var, double x)
+{
+  xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
+  return VEGAS_SCALING * var->df * log(x);
 }
 
-double func_vegas_fp(lmm_variable_t var, double x){
-  xbt_assert1(x>0.0,"Don't call me with stupid values! (%1.20f)",x);
-  return VEGAS_SCALING*var->df/x;
+double func_vegas_fp(lmm_variable_t var, double x)
+{
+  xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
+  return VEGAS_SCALING * var->df / x;
 }
 
-double func_vegas_fpi(lmm_variable_t var, double x){
-  xbt_assert1(x>0.0,"Don't call me with stupid values! (%1.20f)",x);
-  return var->df/(x/VEGAS_SCALING);
+double func_vegas_fpi(lmm_variable_t var, double x)
+{
+  xbt_assert1(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
+  return var->df / (x / VEGAS_SCALING);
 }
 
 /*
@@ -555,26 +577,31 @@ double func_vegas_fpi(lmm_variable_t var, double x){
  * Therefore: $fpi(x)  = \sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
  */
 #define RENO_SCALING 1.0
-double func_reno_f(lmm_variable_t var, double x){
-  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
+double func_reno_f(lmm_variable_t var, double x)
+{
+  xbt_assert0(var->df > 0.0, "Don't call me with stupid values!");
 
-  return RENO_SCALING*sqrt(3.0/2.0)/var->df*atan(sqrt(3.0/2.0)*var->df*x);
+  return RENO_SCALING * sqrt(3.0 / 2.0) / var->df * atan(sqrt(3.0 / 2.0) *
+							 var->df * x);
 }
 
-double func_reno_fp(lmm_variable_t var, double x){
-  return RENO_SCALING*3.0/(3.0*var->df*var->df*x*x +2.0);
+double func_reno_fp(lmm_variable_t var, double x)
+{
+  return RENO_SCALING * 3.0 / (3.0 * var->df * var->df * x * x + 2.0);
 }
 
-double func_reno_fpi(lmm_variable_t var, double x){
-  double res_fpi; 
+double func_reno_fpi(lmm_variable_t var, double x)
+{
+  double res_fpi;
 
-  xbt_assert0(var->df>0.0,"Don't call me with stupid values!");
-  xbt_assert0(x>0.0,"Don't call me with stupid values!");
+  xbt_assert0(var->df > 0.0, "Don't call me with stupid values!");
+  xbt_assert0(x > 0.0, "Don't call me with stupid values!");
 
-  res_fpi = 1.0/(var->df*var->df*(x/RENO_SCALING)) - 2.0/(3.0*var->df*var->df);
-  if(res_fpi<=0.0) return 0.0;
+  res_fpi =
+      1.0 / (var->df * var->df * (x / RENO_SCALING)) -
+      2.0 / (3.0 * var->df * var->df);
+  if (res_fpi <= 0.0)
+    return 0.0;
 /*   xbt_assert0(res_fpi>0.0,"Don't call me with stupid values!"); */
   return sqrt(res_fpi);
 }
-
-

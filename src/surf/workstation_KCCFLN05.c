@@ -40,36 +40,42 @@ static void __update_cpu_usage(cpu_KCCFLN05_t cpu)
 				cpu->power_current * cpu->power_scale *
 				cpu->interference_send);
     xbt_dynar_foreach(cpu->outgoing_communications, cpt, action)
-      lmm_elem_set_value(maxmin_system,cpu->constraint,action->variable,
-			 cpu->power_current * cpu->power_scale * 
-			 ROUTE(action->src->id, action->dst->id).impact_on_src
-			 );
-  } else if ((xbt_dynar_length(cpu->incomming_communications)) &&
-	     (!xbt_dynar_length(cpu->outgoing_communications))) {
+	lmm_elem_set_value(maxmin_system, cpu->constraint,
+			   action->variable,
+			   cpu->power_current * cpu->power_scale *
+			   ROUTE(action->src->id,
+				 action->dst->id).impact_on_src);
+  } else if ((xbt_dynar_length(cpu->incomming_communications))
+	     && (!xbt_dynar_length(cpu->outgoing_communications))) {
     /* Reception */
     lmm_update_constraint_bound(maxmin_system, cpu->constraint,
 				cpu->power_current * cpu->power_scale *
 				cpu->interference_recv);
     xbt_dynar_foreach(cpu->incomming_communications, cpt, action)
-      lmm_elem_set_value(maxmin_system,cpu->constraint,action->variable,
-			 cpu->power_current * cpu->power_scale * 
-			 ROUTE(action->src->id, action->dst->id).impact_on_dst
-			 );
+	lmm_elem_set_value(maxmin_system, cpu->constraint,
+			   action->variable,
+			   cpu->power_current * cpu->power_scale *
+			   ROUTE(action->src->id,
+				 action->dst->id).impact_on_dst);
   } else {
     /* Emission & Reception */
     lmm_update_constraint_bound(maxmin_system, cpu->constraint,
 				cpu->power_current * cpu->power_scale *
 				cpu->interference_send_recv);
     xbt_dynar_foreach(cpu->outgoing_communications, cpt, action)
-      lmm_elem_set_value(maxmin_system,cpu->constraint,action->variable,
-			 cpu->power_current * cpu->power_scale * 
-			 ROUTE(action->src->id, action->dst->id).impact_on_src_with_other_recv
-			 );
+	lmm_elem_set_value(maxmin_system, cpu->constraint,
+			   action->variable,
+			   cpu->power_current * cpu->power_scale *
+			   ROUTE(action->src->id,
+				 action->dst->id).
+			   impact_on_src_with_other_recv);
     xbt_dynar_foreach(cpu->incomming_communications, cpt, action)
-      lmm_elem_set_value(maxmin_system,cpu->constraint,action->variable,
-			 cpu->power_current * cpu->power_scale * 
-			 ROUTE(action->src->id, action->dst->id).impact_on_dst_with_other_send
-			 );
+	lmm_elem_set_value(maxmin_system, cpu->constraint,
+			   action->variable,
+			   cpu->power_current * cpu->power_scale *
+			   ROUTE(action->src->id,
+				 action->dst->id).
+			   impact_on_dst_with_other_send);
   }
 }
 
@@ -80,12 +86,12 @@ static void __update_cpu_usage(cpu_KCCFLN05_t cpu)
 static void *name_service(const char *name)
 {
   xbt_ex_t e;
-  void *res=NULL;
+  void *res = NULL;
 
   TRY {
     res = xbt_dict_get(workstation_set, name);
   } CATCH(e) {
-    if (e.category != not_found_error) 
+    if (e.category != not_found_error)
       RETHROW;
     WARN1("Host '%s' not found, verifing if it is a router", name);
     res = NULL;
@@ -125,23 +131,23 @@ static int action_free(surf_action_t action)
       lmm_variable_free(maxmin_system,
 			((surf_action_workstation_KCCFLN05_t) action)->
 			variable);
-    if(src)
+    if (src)
       xbt_dynar_foreach(src->outgoing_communications, cpt, act)
-	if (act == action) {
-	  xbt_dynar_remove_at(src->outgoing_communications, cpt, &act);
-	  break;
-	}    
+	  if (act == action) {
+	xbt_dynar_remove_at(src->outgoing_communications, cpt, &act);
+	break;
+      }
 
-    if(dst)
+    if (dst)
       xbt_dynar_foreach(dst->incomming_communications, cpt, act)
-	if (act == action) {
-	  xbt_dynar_remove_at(dst->incomming_communications, cpt, &act);
-	  break;
-	}
+	  if (act == action) {
+	xbt_dynar_remove_at(dst->incomming_communications, cpt, &act);
+	break;
+      }
 
-    if(src && (!xbt_dynar_length(src->outgoing_communications)))
+    if (src && (!xbt_dynar_length(src->outgoing_communications)))
       __update_cpu_usage(src);
-    if(dst && (!xbt_dynar_length(dst->incomming_communications)))
+    if (dst && (!xbt_dynar_length(dst->incomming_communications)))
       __update_cpu_usage(dst);
 
     free(action);
@@ -167,8 +173,8 @@ static void action_recycle(surf_action_t action)
 
 static void action_suspend(surf_action_t action)
 {
-  XBT_IN1("(%p))",action);
-  if(((surf_action_workstation_KCCFLN05_t) action)->suspended != 2) {
+  XBT_IN1("(%p))", action);
+  if (((surf_action_workstation_KCCFLN05_t) action)->suspended != 2) {
     ((surf_action_workstation_KCCFLN05_t) action)->suspended = 1;
     lmm_update_variable_weight(maxmin_system,
 			       ((surf_action_workstation_KCCFLN05_t)
@@ -179,17 +185,19 @@ static void action_suspend(surf_action_t action)
 
 static void action_resume(surf_action_t action)
 {
-  XBT_IN1("(%p)",action);
-  if(((surf_action_workstation_KCCFLN05_t) action)->suspended !=2) {
-    if(((surf_action_workstation_KCCFLN05_t)action)->lat_current==0.0)
+  XBT_IN1("(%p)", action);
+  if (((surf_action_workstation_KCCFLN05_t) action)->suspended != 2) {
+    if (((surf_action_workstation_KCCFLN05_t) action)->lat_current == 0.0)
       lmm_update_variable_weight(maxmin_system,
 				 ((surf_action_workstation_KCCFLN05_t)
 				  action)->variable, 1.0);
     else
       lmm_update_variable_weight(maxmin_system,
-				 ((surf_action_workstation_KCCFLN05_t) action)->variable, 
-				 ((surf_action_workstation_KCCFLN05_t) action)->lat_current);
-    
+				 ((surf_action_workstation_KCCFLN05_t)
+				  action)->variable,
+				 ((surf_action_workstation_KCCFLN05_t)
+				  action)->lat_current);
+
     ((surf_action_workstation_KCCFLN05_t) action)->suspended = 0;
   }
   XBT_OUT;
@@ -197,12 +205,12 @@ static void action_resume(surf_action_t action)
 
 static int action_is_suspended(surf_action_t action)
 {
-  return (((surf_action_workstation_KCCFLN05_t) action)->suspended==1);
+  return (((surf_action_workstation_KCCFLN05_t) action)->suspended == 1);
 }
 
 static void action_set_max_duration(surf_action_t action, double duration)
 {				/* FIXME: should inherit */
-  XBT_IN2("(%p,%g)",action,duration);
+  XBT_IN2("(%p,%g)", action, duration);
   action->max_duration = duration;
   XBT_OUT;
 }
@@ -210,7 +218,7 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 static void action_set_priority(surf_action_t action, double priority)
 {				/* FIXME: should inherit */
-  XBT_IN2("(%p,%g)",action,priority);
+  XBT_IN2("(%p,%g)", action, priority);
   action->priority = priority;
   XBT_OUT;
 }
@@ -223,15 +231,15 @@ static int resource_used(void *resource_id)
 {
   /* We can freely cast as a network_link_KCCFLN05_t because it has
      the same prefix as cpu_KCCFLN05_t */
-  if(((cpu_KCCFLN05_t) resource_id)->type == SURF_WORKSTATION_RESOURCE_CPU)
-    return (lmm_constraint_used(maxmin_system,
-			       ((cpu_KCCFLN05_t) resource_id)->
-			       constraint) || 
-	    ((((cpu_KCCFLN05_t) resource_id)->bus)?
-	     lmm_constraint_used(maxmin_system,
-				((cpu_KCCFLN05_t) resource_id)->
-				bus):0));
-  else 
+  if (((cpu_KCCFLN05_t) resource_id)->type ==
+      SURF_WORKSTATION_RESOURCE_CPU)
+    return (lmm_constraint_used
+	    (maxmin_system, ((cpu_KCCFLN05_t) resource_id)->constraint)
+	    || ((((cpu_KCCFLN05_t) resource_id)->bus) ?
+		lmm_constraint_used(maxmin_system,
+				    ((cpu_KCCFLN05_t) resource_id)->
+				    bus) : 0));
+  else
     return lmm_constraint_used(maxmin_system,
 			       ((network_link_KCCFLN05_t) resource_id)->
 			       constraint);
@@ -243,26 +251,27 @@ static double share_resources(double now)
   s_surf_action_workstation_KCCFLN05_t s_action;
   surf_action_workstation_KCCFLN05_t action = NULL;
 
-  xbt_swag_t running_actions = surf_workstation_resource->common_public->states.running_action_set;
+  xbt_swag_t running_actions =
+      surf_workstation_resource->common_public->states.running_action_set;
   double min = generic_maxmin_share_resources(running_actions,
-					      xbt_swag_offset(s_action, variable));
+					      xbt_swag_offset(s_action,
+							      variable));
 
   xbt_swag_foreach(action, running_actions) {
-    if(action->latency>0) {
-      if(min<0) {
+    if (action->latency > 0) {
+      if (min < 0) {
 	min = action->latency;
-	DEBUG3("Updating min (value) with %p (start %f): %f",action, 
+	DEBUG3("Updating min (value) with %p (start %f): %f", action,
 	       action->generic_action.start, min);
-      }
-      else if (action->latency<min) {
+      } else if (action->latency < min) {
 	min = action->latency;
-	DEBUG3("Updating min (latency) with %p (start %f): %f",action, 
+	DEBUG3("Updating min (latency) with %p (start %f): %f", action,
 	       action->generic_action.start, min);
       }
     }
   }
 
-  DEBUG1("min value : %f",min);
+  DEBUG1("min value : %f", min);
 
   return min;
 }
@@ -285,11 +294,11 @@ static void update_actions_state(double now, double delta)
 	double_update(&(deltap), action->latency);
 	action->latency = 0.0;
       }
-      if ((action->latency == 0.0) && (action->suspended==0)) {
-	if((action)->lat_current==0.0)
-	  lmm_update_variable_weight(maxmin_system,action->variable, 1.0);
+      if ((action->latency == 0.0) && (action->suspended == 0)) {
+	if ((action)->lat_current == 0.0)
+	  lmm_update_variable_weight(maxmin_system, action->variable, 1.0);
 	else
-	  lmm_update_variable_weight(maxmin_system, action->variable, 
+	  lmm_update_variable_weight(maxmin_system, action->variable,
 				     action->lat_current);
       }
     }
@@ -297,13 +306,13 @@ static void update_actions_state(double now, double delta)
 	   action, action->generic_action.remains,
 	   lmm_variable_getvalue(action->variable) * deltap);
     double_update(&(action->generic_action.remains),
-		       lmm_variable_getvalue(action->variable) * deltap);
+		  lmm_variable_getvalue(action->variable) * deltap);
 
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
-    if ((action->generic_action.remains <= 0) && 
-	(lmm_get_variable_weight(action->variable)>0)) {
+    if ((action->generic_action.remains <= 0) &&
+	(lmm_get_variable_weight(action->variable) > 0)) {
       action->generic_action.finish = surf_get_clock();
       surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
@@ -335,17 +344,18 @@ static void update_actions_state(double now, double delta)
 /* 		 ((cpu_KCCFLN05_t)constraint_id)->state_current==SURF_CPU_OFF?"Off":"On"); */
 /* 	} */
 
-	if(((((network_link_KCCFLN05_t)constraint_id)->type==
-	     SURF_WORKSTATION_RESOURCE_LINK) &&
-	    (((network_link_KCCFLN05_t)constraint_id)->state_current==
-	     SURF_NETWORK_LINK_OFF)) ||
-	   ((((cpu_KCCFLN05_t)constraint_id)->type==
-	     SURF_WORKSTATION_RESOURCE_CPU) &&
-	    (((cpu_KCCFLN05_t)constraint_id)->state_current==
-	     SURF_CPU_OFF))) {
-	  DEBUG1("Action (%p) Failed!!",action);
+	if (((((network_link_KCCFLN05_t) constraint_id)->type ==
+	      SURF_WORKSTATION_RESOURCE_LINK) &&
+	     (((network_link_KCCFLN05_t) constraint_id)->state_current ==
+	      SURF_NETWORK_LINK_OFF)) ||
+	    ((((cpu_KCCFLN05_t) constraint_id)->type ==
+	      SURF_WORKSTATION_RESOURCE_CPU) &&
+	     (((cpu_KCCFLN05_t) constraint_id)->state_current ==
+	      SURF_CPU_OFF))) {
+	  DEBUG1("Action (%p) Failed!!", action);
 	  action->generic_action.finish = surf_get_clock();
-	  surf_action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
+	  surf_action_change_state((surf_action_t) action,
+				   SURF_ACTION_FAILED);
 	  break;
 	}
       }
@@ -359,10 +369,10 @@ static void update_resource_state(void *id,
 				  double value)
 {
   cpu_KCCFLN05_t cpu = id;
-  network_link_KCCFLN05_t nw_link = id ;
+  network_link_KCCFLN05_t nw_link = id;
 
-  if(nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
-    DEBUG2("Updating link %s (%p)",nw_link->name,nw_link);
+  if (nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
+    DEBUG2("Updating link %s (%p)", nw_link->name, nw_link);
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(maxmin_system, nw_link->constraint,
@@ -371,22 +381,29 @@ static void update_resource_state(void *id,
       double delta = value - nw_link->lat_current;
       lmm_variable_t var = NULL;
       surf_action_workstation_KCCFLN05_t action = NULL;
-      
+
       nw_link->lat_current = value;
-      while (lmm_get_var_from_cnst(maxmin_system, nw_link->constraint, &var)) {
+      while (lmm_get_var_from_cnst
+	     (maxmin_system, nw_link->constraint, &var)) {
 	action = lmm_variable_id(var);
 	action->lat_current += delta;
-	if(action->rate<0)
+	if (action->rate < 0)
 	  lmm_update_variable_bound(maxmin_system, action->variable,
-				    SG_TCP_CTE_GAMMA / (2.0 * action->lat_current));
-	else 
+				    SG_TCP_CTE_GAMMA / (2.0 *
+							action->
+							lat_current));
+	else
 	  lmm_update_variable_bound(maxmin_system, action->variable,
-				    min(action->rate,SG_TCP_CTE_GAMMA / (2.0 * action->lat_current)));
-	if(action->suspended==0)
-	  lmm_update_variable_weight(maxmin_system, action->variable, 
+				    min(action->rate,
+					SG_TCP_CTE_GAMMA / (2.0 *
+							    action->
+							    lat_current)));
+	if (action->suspended == 0)
+	  lmm_update_variable_weight(maxmin_system, action->variable,
 				     action->lat_current);
-	lmm_update_variable_latency(maxmin_system, action->variable, delta);
-	
+	lmm_update_variable_latency(maxmin_system, action->variable,
+				    delta);
+
 
       }
     } else if (event_type == nw_link->state_event) {
@@ -399,8 +416,8 @@ static void update_resource_state(void *id,
       xbt_abort();
     }
     return;
-  } else if(cpu->type == SURF_WORKSTATION_RESOURCE_CPU) {
-    DEBUG3("Updating cpu %s (%p) with value %g",cpu->name,cpu,value);
+  } else if (cpu->type == SURF_WORKSTATION_RESOURCE_CPU) {
+    DEBUG3("Updating cpu %s (%p) with value %g", cpu->name, cpu, value);
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
       __update_cpu_usage(cpu);
@@ -422,7 +439,7 @@ static void update_resource_state(void *id,
 
 static void finalize(void)
 {
-  int i,j;
+  int i, j;
 
   xbt_dict_free(&network_link_set);
   xbt_dict_free(&workstation_set);
@@ -468,7 +485,7 @@ static surf_action_t execute(void *cpu, double size)
   surf_action_workstation_KCCFLN05_t action = NULL;
   cpu_KCCFLN05_t CPU = cpu;
 
-  XBT_IN2("(%s,%g)",CPU->name,size);
+  XBT_IN2("(%s,%g)", CPU->name, size);
   action = xbt_new0(s_surf_action_workstation_KCCFLN05_t, 1);
 
   action->generic_action.using = 1;
@@ -484,16 +501,17 @@ static surf_action_t execute(void *cpu, double size)
 
   if (CPU->state_current == SURF_CPU_ON)
     action->generic_action.state_set =
-	surf_workstation_resource->common_public->states.running_action_set;
+	surf_workstation_resource->common_public->states.
+	running_action_set;
   else
     action->generic_action.state_set =
 	surf_workstation_resource->common_public->states.failed_action_set;
   xbt_swag_insert(action, action->generic_action.state_set);
 
-  action->variable = lmm_variable_new(maxmin_system, action, 
-				      action->generic_action.priority, -1.0, 1);
-  lmm_expand(maxmin_system, CPU->constraint, action->variable,
-	     1.0);
+  action->variable = lmm_variable_new(maxmin_system, action,
+				      action->generic_action.priority,
+				      -1.0, 1);
+  lmm_expand(maxmin_system, CPU->constraint, action->variable, 1.0);
   XBT_OUT;
   return (surf_action_t) action;
 }
@@ -502,7 +520,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
 {
   surf_action_workstation_KCCFLN05_t action = NULL;
 
-  XBT_IN2("(%s,%g)",((cpu_KCCFLN05_t)cpu)->name,duration);
+  XBT_IN2("(%s,%g)", ((cpu_KCCFLN05_t) cpu)->name, duration);
 
   action = (surf_action_workstation_KCCFLN05_t) execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
@@ -520,7 +538,7 @@ static e_surf_cpu_state_t resource_get_state(void *cpu)
 
 static double get_speed(void *cpu, double load)
 {
-  return load*(((cpu_KCCFLN05_t) cpu)->power_scale);
+  return load * (((cpu_KCCFLN05_t) cpu)->power_scale);
 }
 
 static double get_available_speed(void *cpu)
@@ -529,7 +547,8 @@ static double get_available_speed(void *cpu)
 }
 
 
-static surf_action_t communicate(void *src, void *dst, double size, double rate)
+static surf_action_t communicate(void *src, void *dst, double size,
+				 double rate)
 {
   surf_action_workstation_KCCFLN05_t action = NULL;
   cpu_KCCFLN05_t card_src = src;
@@ -538,8 +557,10 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   int route_size = route->size;
   int i;
 
-  XBT_IN4("(%s,%s,%g,%g)",card_src->name,card_dst->name,size,rate);
-  xbt_assert2(route_size,"You're trying to send data from %s to %s but there is no connexion between these two cards.", card_src->name, card_dst->name);
+  XBT_IN4("(%s,%s,%g,%g)", card_src->name, card_dst->name, size, rate);
+  xbt_assert2(route_size,
+	      "You're trying to send data from %s to %s but there is no connexion between these two cards.",
+	      card_src->name, card_dst->name);
 
   action = xbt_new0(s_surf_action_workstation_KCCFLN05_t, 1);
 
@@ -552,9 +573,9 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
   action->src = src;
   action->dst = dst;
   action->generic_action.resource_type =
-    (surf_resource_t) surf_workstation_resource;
-  action->suspended = 0;  /* Should be useless because of the 
-			     calloc but it seems to help valgrind... */
+      (surf_resource_t) surf_workstation_resource;
+  action->suspended = 0;	/* Should be useless because of the 
+				   calloc but it seems to help valgrind... */
   action->generic_action.state_set =
       surf_workstation_resource->common_public->states.running_action_set;
 
@@ -569,34 +590,40 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
     action->latency += route->links[i]->lat_current;
   action->lat_current = action->latency;
 
-  if(action->latency>0)
-    action->variable = lmm_variable_new(maxmin_system, action, 0.0, -1.0,
-					route_size+4); /* +1 for the src bus
-							  +1 for the dst bus
-							  +1 for the src cpu
-							  +1 for the dst cpu */
+  if (action->latency > 0)
+    action->variable = lmm_variable_new(maxmin_system, action, 0.0, -1.0, route_size + 4);	/* +1 for the src bus
+												   +1 for the dst bus
+												   +1 for the src cpu
+												   +1 for the dst cpu */
   else
     action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
-					route_size+4);
+					route_size + 4);
 
-  if(action->rate<0) {
-    if(action->lat_current>0)
+  if (action->rate < 0) {
+    if (action->lat_current > 0)
       lmm_update_variable_bound(maxmin_system, action->variable,
-				SG_TCP_CTE_GAMMA / (2.0 * action->lat_current));
+				SG_TCP_CTE_GAMMA / (2.0 *
+						    action->lat_current));
     else
       lmm_update_variable_bound(maxmin_system, action->variable, -1.0);
   } else {
-    if(action->lat_current>0)
+    if (action->lat_current > 0)
       lmm_update_variable_bound(maxmin_system, action->variable,
-				min(action->rate,SG_TCP_CTE_GAMMA / (2.0 * action->lat_current)));
+				min(action->rate,
+				    SG_TCP_CTE_GAMMA / (2.0 *
+							action->
+							lat_current)));
     else
-      lmm_update_variable_bound(maxmin_system, action->variable, action->rate);
+      lmm_update_variable_bound(maxmin_system, action->variable,
+				action->rate);
   }
 
-  lmm_update_variable_latency(maxmin_system, action->variable, action->latency);
-  
+  lmm_update_variable_latency(maxmin_system, action->variable,
+			      action->latency);
+
   for (i = 0; i < route_size; i++)
-    lmm_expand(maxmin_system, route->links[i]->constraint, action->variable, 1.0);
+    lmm_expand(maxmin_system, route->links[i]->constraint,
+	       action->variable, 1.0);
   if (card_src->bus)
     lmm_expand(maxmin_system, card_src->bus, action->variable, 1.0);
   if (card_dst->bus)
@@ -609,11 +636,10 @@ static surf_action_t communicate(void *src, void *dst, double size, double rate)
 }
 
 static surf_action_t execute_parallel_task(int workstation_nb,
-					   void **workstation_list, 
-					   double *computation_amount, 
+					   void **workstation_list,
+					   double *computation_amount,
 					   double *communication_amount,
-					   double amount,
-					   double rate)
+					   double amount, double rate)
 {
   surf_action_workstation_KCCFLN05_t action = NULL;
   int i, j, k;
@@ -621,20 +647,23 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   int nb_host = 0;
 
   if (parallel_task_network_link_set == NULL) {
-    parallel_task_network_link_set = xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
+    parallel_task_network_link_set =
+	xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
   }
-  
+
   /* Compute the number of affected resources... */
-  for(i=0; i< workstation_nb; i++) {
-    for(j=0; j< workstation_nb; j++) {
+  for (i = 0; i < workstation_nb; i++) {
+    for (j = 0; j < workstation_nb; j++) {
       cpu_KCCFLN05_t card_src = workstation_list[i];
       cpu_KCCFLN05_t card_dst = workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
-      network_link_KCCFLN05_t *route = ROUTE(card_src->id, card_dst->id).links;
-      
-      if(communication_amount[i*workstation_nb+j]>0)
-	for(k=0; k< route_size; k++) {
-	  xbt_dict_set(parallel_task_network_link_set, route[k]->name, route[k], NULL);
+      network_link_KCCFLN05_t *route =
+	  ROUTE(card_src->id, card_dst->id).links;
+
+      if (communication_amount[i * workstation_nb + j] > 0)
+	for (k = 0; k < route_size; k++) {
+	  xbt_dict_set(parallel_task_network_link_set, route[k]->name,
+		       route[k], NULL);
 	}
     }
   }
@@ -642,16 +671,17 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   xbt_dict_reset(parallel_task_network_link_set);
 
 
-  for (i = 0; i<workstation_nb; i++)
-    if(computation_amount[i]>0) nb_host++;
- 
+  for (i = 0; i < workstation_nb; i++)
+    if (computation_amount[i] > 0)
+      nb_host++;
 
-  if(nb_link + nb_host == 0) /* was workstation_nb... */
+
+  if (nb_link + nb_host == 0)	/* was workstation_nb... */
     return NULL;
 
   action = xbt_new0(s_surf_action_workstation_KCCFLN05_t, 1);
   DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
-	 action, nb_host,  nb_link);
+	 action, nb_host, nb_link);
   action->generic_action.using = 1;
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
@@ -660,70 +690,79 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   action->generic_action.finish = -1.0;
   action->generic_action.resource_type =
       (surf_resource_t) surf_workstation_resource;
-  action->suspended = 0;  /* Should be useless because of the
-			     calloc but it seems to help valgrind... */
+  action->suspended = 0;	/* Should be useless because of the
+				   calloc but it seems to help valgrind... */
   action->generic_action.state_set =
       surf_workstation_resource->common_public->states.running_action_set;
 
   xbt_swag_insert(action, action->generic_action.state_set);
   action->rate = rate;
 
-  if(action->rate>0)
+  if (action->rate > 0)
     action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
 					nb_host + nb_link);
-  else   
-    action->variable = lmm_variable_new(maxmin_system, action, 1.0, action->rate,
-					nb_host + nb_link);
+  else
+    action->variable =
+	lmm_variable_new(maxmin_system, action, 1.0, action->rate,
+			 nb_host + nb_link);
 
-  for (i = 0; i<workstation_nb; i++)
-    if(computation_amount[i]>0)
-      lmm_expand(maxmin_system, ((cpu_KCCFLN05_t) workstation_list[i])->constraint, 
+  for (i = 0; i < workstation_nb; i++)
+    if (computation_amount[i] > 0)
+      lmm_expand(maxmin_system,
+		 ((cpu_KCCFLN05_t) workstation_list[i])->constraint,
 		 action->variable, computation_amount[i]);
 
-  for (i=0; i<workstation_nb; i++) {
-    for(j=0; j< workstation_nb; j++) {
+  for (i = 0; i < workstation_nb; i++) {
+    for (j = 0; j < workstation_nb; j++) {
       cpu_KCCFLN05_t card_src = workstation_list[i];
       cpu_KCCFLN05_t card_dst = workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
-      network_link_KCCFLN05_t *route = ROUTE(card_src->id, card_dst->id).links;
-      
-      for(k=0; k< route_size; k++) {
-	if(communication_amount[i*workstation_nb+j]>0) {
-	  lmm_expand_add(maxmin_system, route[k]->constraint, 
-		       action->variable, communication_amount[i*workstation_nb+j]);
+      network_link_KCCFLN05_t *route =
+	  ROUTE(card_src->id, card_dst->id).links;
+
+      for (k = 0; k < route_size; k++) {
+	if (communication_amount[i * workstation_nb + j] > 0) {
+	  lmm_expand_add(maxmin_system, route[k]->constraint,
+			 action->variable,
+			 communication_amount[i * workstation_nb + j]);
 	}
       }
     }
   }
-  
+
   return (surf_action_t) action;
 }
 
 /* returns an array of network_link_KCCFLN05_t */
-static const void** get_route(void *src, void *dst) {
+static const void **get_route(void *src, void *dst)
+{
   cpu_KCCFLN05_t card_src = src;
   cpu_KCCFLN05_t card_dst = dst;
   route_KCCFLN05_t route = &(ROUTE(card_src->id, card_dst->id));
 
-  return (const void**) route->links;
+  return (const void **) route->links;
 }
 
-static int get_route_size(void *src, void *dst) {
+static int get_route_size(void *src, void *dst)
+{
   cpu_KCCFLN05_t card_src = src;
   cpu_KCCFLN05_t card_dst = dst;
   route_KCCFLN05_t route = &(ROUTE(card_src->id, card_dst->id));
   return route->size;
 }
 
-static const char *get_link_name(const void *link) {
+static const char *get_link_name(const void *link)
+{
   return ((network_link_KCCFLN05_t) link)->name;
 }
 
-static double get_link_bandwidth(const void *link) {
+static double get_link_bandwidth(const void *link)
+{
   return ((network_link_KCCFLN05_t) link)->bw_current;
 }
 
-static double get_link_latency(const void *link) {
+static double get_link_latency(const void *link)
+{
   return ((network_link_KCCFLN05_t) link)->lat_current;
 }
 
@@ -734,12 +773,12 @@ static double get_link_latency(const void *link) {
 
 static void router_free(void *router)
 {
-  free( ((router_KCCFLN05_t) router)->name );
+  free(((router_KCCFLN05_t) router)->name);
 }
 
 static void router_new(const char *name)
 {
-  static unsigned int nb_routers = 0; 
+  static unsigned int nb_routers = 0;
 
   INFO1("Creating a router %s", name);
 
@@ -747,7 +786,7 @@ static void router_new(const char *name)
   router = xbt_new0(s_router_KCCFLN05_t, 1);
 
   router->name = xbt_strdup(name);
-  router->id   = nb_routers++;
+  router->id = nb_routers++;
   xbt_dict_set(router_set, name, router, router_free);
 }
 
@@ -839,7 +878,7 @@ static void parse_cpu(void)
   if (A_surfxml_cpu_state == A_surfxml_cpu_state_OFF)
     state_initial = SURF_CPU_OFF;
   surf_parse_get_trace(&state_trace, A_surfxml_cpu_state_file);
-  
+
   surf_parse_get_double(&interference_send,
 			A_surfxml_cpu_interference_send);
   surf_parse_get_double(&interference_recv,
@@ -874,7 +913,8 @@ static network_link_KCCFLN05_t network_link_new(char *name,
 						e_surf_network_link_state_t
 						state_initial,
 						tmgr_trace_t state_trace,
-						e_surf_network_link_sharing_policy_t policy)
+						e_surf_network_link_sharing_policy_t
+						policy)
 {
   network_link_KCCFLN05_t nw_link = xbt_new0(s_network_link_KCCFLN05_t, 1);
 
@@ -898,7 +938,7 @@ static network_link_KCCFLN05_t network_link_new(char *name,
   nw_link->constraint =
       lmm_constraint_new(maxmin_system, nw_link, nw_link->bw_current);
 
-  if(policy == SURF_NETWORK_LINK_FATPIPE)
+  if (policy == SURF_NETWORK_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->constraint);
 
   xbt_dict_set(network_link_set, name, nw_link, network_link_free);
@@ -914,36 +954,42 @@ static void parse_network_link(void)
   double lat_initial;
   tmgr_trace_t lat_trace;
   e_surf_network_link_state_t state_initial = SURF_NETWORK_LINK_ON;
-  e_surf_network_link_sharing_policy_t policy_initial = SURF_NETWORK_LINK_SHARED;
+  e_surf_network_link_sharing_policy_t policy_initial =
+      SURF_NETWORK_LINK_SHARED;
   tmgr_trace_t state_trace;
 
   name = xbt_strdup(A_surfxml_network_link_name);
-  surf_parse_get_double(&bw_initial,A_surfxml_network_link_bandwidth);
+  surf_parse_get_double(&bw_initial, A_surfxml_network_link_bandwidth);
   surf_parse_get_trace(&bw_trace, A_surfxml_network_link_bandwidth_file);
-  surf_parse_get_double(&lat_initial,A_surfxml_network_link_latency);
+  surf_parse_get_double(&lat_initial, A_surfxml_network_link_latency);
   surf_parse_get_trace(&lat_trace, A_surfxml_network_link_latency_file);
 
-  xbt_assert0((A_surfxml_network_link_state==A_surfxml_network_link_state_ON)||
-	      (A_surfxml_network_link_state==A_surfxml_network_link_state_OFF),
-	      "Invalid state");
-  if (A_surfxml_network_link_state==A_surfxml_network_link_state_ON) 
+  xbt_assert0((A_surfxml_network_link_state ==
+	       A_surfxml_network_link_state_ON)
+	      || (A_surfxml_network_link_state ==
+		  A_surfxml_network_link_state_OFF), "Invalid state");
+  if (A_surfxml_network_link_state == A_surfxml_network_link_state_ON)
     state_initial = SURF_NETWORK_LINK_ON;
-  else if (A_surfxml_network_link_state==A_surfxml_network_link_state_OFF) 
+  else if (A_surfxml_network_link_state ==
+	   A_surfxml_network_link_state_OFF)
     state_initial = SURF_NETWORK_LINK_OFF;
 
-  if (A_surfxml_network_link_sharing_policy==A_surfxml_network_link_sharing_policy_SHARED) 
+  if (A_surfxml_network_link_sharing_policy ==
+      A_surfxml_network_link_sharing_policy_SHARED)
     policy_initial = SURF_NETWORK_LINK_SHARED;
-  else if (A_surfxml_network_link_sharing_policy==A_surfxml_network_link_sharing_policy_FATPIPE) 
+  else if (A_surfxml_network_link_sharing_policy ==
+	   A_surfxml_network_link_sharing_policy_FATPIPE)
     policy_initial = SURF_NETWORK_LINK_FATPIPE;
 
-  surf_parse_get_trace(&state_trace,A_surfxml_network_link_state_file);
+  surf_parse_get_trace(&state_trace, A_surfxml_network_link_state_file);
 
   network_link_new(name, bw_initial, bw_trace,
 		   lat_initial, lat_trace, state_initial, state_trace,
 		   policy_initial);
 }
 
-static void route_new(int src_id, int dst_id, network_link_KCCFLN05_t *link_list, int nb_link,
+static void route_new(int src_id, int dst_id,
+		      network_link_KCCFLN05_t * link_list, int nb_link,
 		      double impact_on_src, double impact_on_dst,
 		      double impact_on_src_with_other_recv,
 		      double impact_on_dst_with_other_send)
@@ -951,7 +997,8 @@ static void route_new(int src_id, int dst_id, network_link_KCCFLN05_t *link_list
   route_KCCFLN05_t route = &(ROUTE(src_id, dst_id));
 
   route->size = nb_link;
-  route->links = link_list = xbt_realloc(link_list, sizeof(network_link_KCCFLN05_t) * nb_link);
+  route->links = link_list =
+      xbt_realloc(link_list, sizeof(network_link_KCCFLN05_t) * nb_link);
   route->impact_on_src = impact_on_src;
   route->impact_on_dst = impact_on_src;
   route->impact_on_src_with_other_recv = impact_on_src_with_other_recv;
@@ -971,38 +1018,38 @@ static double impact_on_dst_with_other_send;
 static void parse_route_set_endpoints(void)
 {
   cpu_KCCFLN05_t cpu_tmp = NULL;
- 
+
   cpu_tmp = (cpu_KCCFLN05_t) name_service(A_surfxml_route_src);
-  if(cpu_tmp != NULL) {
+  if (cpu_tmp != NULL) {
     src_id = cpu_tmp->id;
-  }else {
+  } else {
     xbt_assert1(xbt_dict_get_or_null(router_set, A_surfxml_route_src),
-	       "Invalid name '%s': neither a cpu nor a router!",
-	       A_surfxml_route_src);
-    src_id=-1;
+		"Invalid name '%s': neither a cpu nor a router!",
+		A_surfxml_route_src);
+    src_id = -1;
     return;
   }
 
   cpu_tmp = (cpu_KCCFLN05_t) name_service(A_surfxml_route_dst);
-  if(cpu_tmp != NULL) { 
+  if (cpu_tmp != NULL) {
     dst_id = cpu_tmp->id;
-  }else {
+  } else {
     xbt_assert1(xbt_dict_get_or_null(router_set, A_surfxml_route_dst),
-	       "Invalid name '%s': neither a cpu nor a router!",
-	       A_surfxml_route_dst);
-    dst_id=-1;
-    return ;
+		"Invalid name '%s': neither a cpu nor a router!",
+		A_surfxml_route_dst);
+    dst_id = -1;
+    return;
   }
-  
+
   surf_parse_get_double(&impact_on_src, A_surfxml_route_impact_on_src);
   surf_parse_get_double(&impact_on_dst, A_surfxml_route_impact_on_dst);
   surf_parse_get_double(&impact_on_src_with_other_recv,
 			A_surfxml_route_impact_on_src_with_other_recv);
   surf_parse_get_double(&impact_on_dst_with_other_send,
 			A_surfxml_route_impact_on_dst_with_other_send);
-  
+
   nb_link = 0;
-  link_list_capacity = 1; 
+  link_list_capacity = 1;
   link_list = xbt_new(network_link_KCCFLN05_t, link_list_capacity);
 
 }
@@ -1012,21 +1059,27 @@ static void parse_route_elem(void)
   xbt_ex_t e;
   if (nb_link == link_list_capacity) {
     link_list_capacity *= 2;
-    link_list = xbt_realloc(link_list, (link_list_capacity) * sizeof(network_link_KCCFLN05_t));
+    link_list =
+	xbt_realloc(link_list,
+		    (link_list_capacity) *
+		    sizeof(network_link_KCCFLN05_t));
   }
   TRY {
-     link_list[nb_link++] = xbt_dict_get(network_link_set, A_surfxml_route_element_name);
-  } CATCH(e) {
-     RETHROW1("Link %s not found (dict raised this exception: %s)",A_surfxml_route_element_name);
+    link_list[nb_link++] =
+	xbt_dict_get(network_link_set, A_surfxml_route_element_name);
+  }
+  CATCH(e) {
+    RETHROW1("Link %s not found (dict raised this exception: %s)",
+	     A_surfxml_route_element_name);
   }
 }
 
 static void parse_route_set_route(void)
 {
-  if( src_id != -1 && dst_id != -1 )
-  route_new(src_id, dst_id, link_list, nb_link, impact_on_src,
-	    impact_on_dst, impact_on_src_with_other_recv,
-	    impact_on_dst_with_other_send);
+  if (src_id != -1 && dst_id != -1)
+    route_new(src_id, dst_id, link_list, nb_link, impact_on_src,
+	      impact_on_dst, impact_on_src_with_other_recv,
+	      impact_on_dst_with_other_send);
 }
 
 static void parse_file(const char *file)
@@ -1044,9 +1097,9 @@ static void parse_file(const char *file)
 
   /* Figuring out the router (added after GTNETS) */
   surf_parse_reset_parser();
-  STag_surfxml_router_fun=parse_routers;
+  STag_surfxml_router_fun = parse_routers;
   surf_parse_open(file);
-  xbt_assert1((!surf_parse()),"Parse error in %s",file);
+  xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
 
   /* Figuring out the network links */
@@ -1065,17 +1118,17 @@ static void parse_file(const char *file)
   xbt_assert1((!surf_parse()), "Parse error in %s", file);
   surf_parse_close();
 
-  /* Adding loopback if needed */    
-  for (i = 0; i < nb_workstation; i++) 
-    if(!ROUTE(i,i).size) {
-      if(!loopback)
-	loopback = network_link_new(xbt_strdup("__MSG_loopback__"), 
-				   498000000, NULL, 0.000015, NULL, 
-				   SURF_NETWORK_LINK_ON, NULL,
-				   SURF_NETWORK_LINK_FATPIPE);
-      ROUTE(i,i).size=1;
-      ROUTE(i,i).links = xbt_new0(network_link_KCCFLN05_t, 1);
-      ROUTE(i,i).links[0] = loopback;
+  /* Adding loopback if needed */
+  for (i = 0; i < nb_workstation; i++)
+    if (!ROUTE(i, i).size) {
+      if (!loopback)
+	loopback = network_link_new(xbt_strdup("__MSG_loopback__"),
+				    498000000, NULL, 0.000015, NULL,
+				    SURF_NETWORK_LINK_ON, NULL,
+				    SURF_NETWORK_LINK_FATPIPE);
+      ROUTE(i, i).size = 1;
+      ROUTE(i, i).links = xbt_new0(network_link_KCCFLN05_t, 1);
+      ROUTE(i, i).links[0] = loopback;
     }
 
 }
@@ -1107,8 +1160,10 @@ static void resource_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_workstation_resource->common_public->name_service = name_service;
-  surf_workstation_resource->common_public->get_resource_name = get_resource_name;
-  surf_workstation_resource->common_public->action_get_state = surf_action_get_state;
+  surf_workstation_resource->common_public->get_resource_name =
+      get_resource_name;
+  surf_workstation_resource->common_public->action_get_state =
+      surf_action_get_state;
   surf_workstation_resource->common_public->action_get_start_time =
       surf_action_get_start_time;
   surf_workstation_resource->common_public->action_get_finish_time =
@@ -1116,37 +1171,53 @@ static void resource_init_internal(void)
   surf_workstation_resource->common_public->action_use = action_use;
   surf_workstation_resource->common_public->action_free = action_free;
   surf_workstation_resource->common_public->action_cancel = action_cancel;
-  surf_workstation_resource->common_public->action_recycle = action_recycle;
-  surf_workstation_resource->common_public->action_change_state = surf_action_change_state;
-  surf_workstation_resource->common_public->action_set_data = surf_action_set_data;
+  surf_workstation_resource->common_public->action_recycle =
+      action_recycle;
+  surf_workstation_resource->common_public->action_change_state =
+      surf_action_change_state;
+  surf_workstation_resource->common_public->action_set_data =
+      surf_action_set_data;
   surf_workstation_resource->common_public->suspend = action_suspend;
   surf_workstation_resource->common_public->resume = action_resume;
-  surf_workstation_resource->common_public->is_suspended = action_is_suspended;
-  surf_workstation_resource->common_public->set_max_duration = action_set_max_duration;
-  surf_workstation_resource->common_public->set_priority = action_set_priority;
+  surf_workstation_resource->common_public->is_suspended =
+      action_is_suspended;
+  surf_workstation_resource->common_public->set_max_duration =
+      action_set_max_duration;
+  surf_workstation_resource->common_public->set_priority =
+      action_set_priority;
   surf_workstation_resource->common_public->name = "Workstation KCCFLN05";
 
   surf_workstation_resource->common_private->resource_used = resource_used;
-  surf_workstation_resource->common_private->share_resources = share_resources;
-  surf_workstation_resource->common_private->update_actions_state = update_actions_state;
-  surf_workstation_resource->common_private->update_resource_state = update_resource_state;
+  surf_workstation_resource->common_private->share_resources =
+      share_resources;
+  surf_workstation_resource->common_private->update_actions_state =
+      update_actions_state;
+  surf_workstation_resource->common_private->update_resource_state =
+      update_resource_state;
   surf_workstation_resource->common_private->finalize = finalize;
 
   surf_workstation_resource->extension_public->execute = execute;
   surf_workstation_resource->extension_public->sleep = action_sleep;
-  surf_workstation_resource->extension_public->get_state = resource_get_state;
+  surf_workstation_resource->extension_public->get_state =
+      resource_get_state;
   surf_workstation_resource->extension_public->get_speed = get_speed;
-  surf_workstation_resource->extension_public->get_available_speed = get_available_speed;
+  surf_workstation_resource->extension_public->get_available_speed =
+      get_available_speed;
   surf_workstation_resource->extension_public->communicate = communicate;
-  surf_workstation_resource->extension_public->execute_parallel_task = execute_parallel_task;
+  surf_workstation_resource->extension_public->execute_parallel_task =
+      execute_parallel_task;
   surf_workstation_resource->extension_public->get_route = get_route;
-  surf_workstation_resource->extension_public->get_route_size = get_route_size;
-  surf_workstation_resource->extension_public->get_link_name = get_link_name;
-  surf_workstation_resource->extension_public->get_link_bandwidth = get_link_bandwidth;
-  surf_workstation_resource->extension_public->get_link_latency = get_link_latency;
+  surf_workstation_resource->extension_public->get_route_size =
+      get_route_size;
+  surf_workstation_resource->extension_public->get_link_name =
+      get_link_name;
+  surf_workstation_resource->extension_public->get_link_bandwidth =
+      get_link_bandwidth;
+  surf_workstation_resource->extension_public->get_link_latency =
+      get_link_latency;
 
-  workstation_set  = xbt_dict_new();
-  router_set       = xbt_dict_new();
+  workstation_set = xbt_dict_new();
+  router_set = xbt_dict_new();
   network_link_set = xbt_dict_new();
 
   xbt_assert0(maxmin_system, "surf_init has to be called first!");
@@ -1158,7 +1229,8 @@ static void resource_init_internal(void)
 void surf_workstation_resource_init_KCCFLN05(const char *filename)
 {
   xbt_assert0(!surf_cpu_resource, "CPU resource type already defined");
-  xbt_assert0(!surf_network_resource, "network resource type already defined");
+  xbt_assert0(!surf_network_resource,
+	      "network resource type already defined");
   resource_init_internal();
   parse_file(filename);
 
