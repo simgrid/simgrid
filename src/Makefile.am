@@ -149,6 +149,7 @@ XBT_SG_SRC = \
 
 SURF_SRC= \
   surf/maxmin.c                                                              \
+  surf/fair_bottleneck.c                                                              \
   surf/lagrange.c                                                            \
   surf/trace_mgr.c                                                           \
   surf/surf.c                                                                \
