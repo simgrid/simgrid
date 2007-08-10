@@ -452,6 +452,17 @@ XBT_PUBLIC(void) surf_workstation_resource_init_CLM03(const char *filename);
  */
 XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05(const char *filename);
 
+/** \brief Initializes the platform with the model KCCFLN05
+ *  \ingroup SURF_resources
+ *  \param filename XML platform file name
+ *
+ *  With this model, only parallel tasks can be used. Resource sharing
+ *  is done by identifying bottlenecks and giving an equal share of
+ *  the resource to each action.
+ *
+ */
+XBT_PUBLIC(void) surf_workstation_resource_init_ptask_L07(const char *filename);
+
 extern XBT_PUBLIC_DATA(int) surf_workstation_resource_description_size;
 /** \brief The list of all available workstation resource models
  *  \ingroup SURF_resources

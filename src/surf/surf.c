@@ -154,12 +154,13 @@ s_surf_resource_description_t surf_cpu_resource_description[]=
     {"Cas01",NULL,surf_cpu_resource_init_Cas01},
   };
 
-int surf_workstation_resource_description_size=3;
+int surf_workstation_resource_description_size=4;
 s_surf_resource_description_t surf_workstation_resource_description[]=
   {
     {"CLM03",NULL,surf_workstation_resource_init_CLM03},
     {"KCCFLN05",NULL,surf_workstation_resource_init_KCCFLN05},
-    {"compound",NULL,surf_workstation_resource_init_compound}
+    {"compound",NULL,surf_workstation_resource_init_compound},
+    {"ptask_L07",NULL,surf_workstation_resource_init_ptask_L07}
   };
 
 void update_resource_description(s_surf_resource_description_t *table,
@@ -228,7 +229,7 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
   } else
     min = action->max_duration;
 
-  DEBUG5("Found an action (%p: duration = %f, remains = %f, value = %f) ! %f",action, action->max_duration, action->remains, value, min); 
+  DEBUG5("Found action (%p: duration = %f, remains = %f, value = %f) ! %f",action, action->max_duration, action->remains, value, min); 
 
   for (action = xbt_swag_getNext(action, running_actions->offset);
        action;

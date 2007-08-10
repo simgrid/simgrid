@@ -157,7 +157,7 @@ SURF_SRC= \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   surf/surf_timer.c                                                          \
   surf/network_dassf.c                                                       \
-  surf/workstation_KCCFLN05.c
+  surf/workstation_KCCFLN05.c   surf/workstation_ptask_L07.c
 
 if CONTEXT_THREADS
   SURF_SRC += xbt/xbt_os_thread.c
