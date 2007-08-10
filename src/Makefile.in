@@ -118,28 +118,29 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
 	xbt/xbt_matrix.c xbt/xbt_queue.c xbt/xbt_peer.c xbt/xbt_main.c \
 	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c surf/maxmin.c \
-	surf/lagrange.c surf/trace_mgr.c surf/surf.c \
-	surf/surfxml_parse.c surf/cpu.c surf/network.c \
+	surf/fair_bottleneck.c surf/lagrange.c surf/trace_mgr.c \
+	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
-	surf/workstation_KCCFLN05.c xbt/xbt_os_thread.c \
-	xbt/xbt_os_thread_stubs.c surf/gtnets/gtnets_simulator.cc \
-	surf/gtnets/gtnets_topology.cc surf/gtnets/gtnets_interface.cc \
-	surf/network_gtnets.c surf/sdp.c simix/smx_global.c \
-	simix/smx_deployment.c simix/smx_config.c \
-	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
-	simix/smx_action.c simix/smx_synchro.c xbt/context.c \
-	msg/msg_config.c msg/task.c msg/host.c msg/m_process.c \
-	msg/gos.c msg/global.c msg/environment.c msg/deployment.c \
-	simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c \
-	simdag/sd_workstation.c gras/gras.c gras/Transport/transport.c \
-	gras/Transport/transport_private.h gras/Msg/gras_msg_mod.c \
-	gras/Msg/gras_msg_types.c gras/Msg/gras_msg_exchange.c \
-	gras/Msg/gras_msg_listener.c gras/Msg/rpc.c gras/Msg/timer.c \
-	gras/Msg/msg_interface.h gras/Msg/msg_private.h \
-	gras/Virtu/process.c gras/Virtu/gras_module.c \
-	gras/DataDesc/ddt_create.c gras/DataDesc/ddt_convert.c \
-	gras/DataDesc/ddt_exchange.c gras/DataDesc/cbps.c \
-	gras/DataDesc/datadesc.c gras/DataDesc/datadesc_interface.h \
+	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
+	xbt/xbt_os_thread.c xbt/xbt_os_thread_stubs.c \
+	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
+	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
+	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
+	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
+	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
+	xbt/context.c msg/msg_config.c msg/task.c msg/host.c \
+	msg/m_process.c msg/gos.c msg/global.c msg/environment.c \
+	msg/deployment.c simdag/sd_global.c simdag/sd_link.c \
+	simdag/sd_task.c simdag/sd_workstation.c gras/gras.c \
+	gras/Transport/transport.c gras/Transport/transport_private.h \
+	gras/Msg/gras_msg_mod.c gras/Msg/gras_msg_types.c \
+	gras/Msg/gras_msg_exchange.c gras/Msg/gras_msg_listener.c \
+	gras/Msg/rpc.c gras/Msg/timer.c gras/Msg/msg_interface.h \
+	gras/Msg/msg_private.h gras/Virtu/process.c \
+	gras/Virtu/gras_module.c gras/DataDesc/ddt_create.c \
+	gras/DataDesc/ddt_convert.c gras/DataDesc/ddt_exchange.c \
+	gras/DataDesc/cbps.c gras/DataDesc/datadesc.c \
+	gras/DataDesc/datadesc_interface.h \
 	gras/DataDesc/datadesc_private.h gras/DataDesc/ddt_parse.c \
 	gras/DataDesc/ddt_parse.yy.c gras/DataDesc/ddt_parse.yy.h \
 	gras/Transport/sg_transport.c \
@@ -150,10 +151,10 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	amok/PeerManagement/peermanagement.c
 @CONTEXT_THREADS_TRUE@am__objects_6 = xbt_os_thread.lo
 @CONTEXT_THREADS_FALSE@am__objects_7 = xbt_os_thread_stubs.lo
-am__objects_8 = maxmin.lo lagrange.lo trace_mgr.lo surf.lo \
-	surfxml_parse.lo cpu.lo network.lo workstation.lo \
+am__objects_8 = maxmin.lo fair_bottleneck.lo lagrange.lo trace_mgr.lo \
+	surf.lo surfxml_parse.lo cpu.lo network.lo workstation.lo \
 	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
-	$(am__objects_6) $(am__objects_7)
+	workstation_ptask_L07.lo $(am__objects_6) $(am__objects_7)
 am__objects_9 = gtnets_simulator.lo gtnets_topology.lo \
 	gtnets_interface.lo network_gtnets.lo
 @HAVE_GTNETS_TRUE@am__objects_10 = $(am__objects_9)
@@ -186,17 +187,17 @@ am__libsimgrid4java_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	xbt/heap.c xbt/fifo.c xbt/swag.c xbt/graph.c xbt/set.c \
 	xbt/xbt_matrix.c xbt/xbt_queue.c xbt/xbt_peer.c xbt/xbt_main.c \
 	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c surf/maxmin.c \
-	surf/lagrange.c surf/trace_mgr.c surf/surf.c \
-	surf/surfxml_parse.c surf/cpu.c surf/network.c \
+	surf/fair_bottleneck.c surf/lagrange.c surf/trace_mgr.c \
+	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
 	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
-	surf/workstation_KCCFLN05.c xbt/xbt_os_thread.c \
-	xbt/xbt_os_thread_stubs.c surf/gtnets/gtnets_simulator.cc \
-	surf/gtnets/gtnets_topology.cc surf/gtnets/gtnets_interface.cc \
-	surf/network_gtnets.c surf/sdp.c simix/smx_global.c \
-	simix/smx_deployment.c simix/smx_config.c \
-	simix/smx_environment.c simix/smx_host.c simix/smx_process.c \
-	simix/smx_action.c simix/smx_synchro.c java/jxbt_context.c \
-	java/jxbt_context.h java/jxbt_utilities.c \
+	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
+	xbt/xbt_os_thread.c xbt/xbt_os_thread_stubs.c \
+	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
+	surf/gtnets/gtnets_interface.cc surf/network_gtnets.c \
+	surf/sdp.c simix/smx_global.c simix/smx_deployment.c \
+	simix/smx_config.c simix/smx_environment.c simix/smx_host.c \
+	simix/smx_process.c simix/smx_action.c simix/smx_synchro.c \
+	java/jxbt_context.c java/jxbt_context.h java/jxbt_utilities.c \
 	java/jxbt_utilities.h java/jmsg.c java/jmsg.h \
 	java/jmsg_channel.c java/jmsg_channel.h java/jmsg_host.c \
 	java/jmsg_host.h java/jmsg_parallel_task.c \
@@ -531,10 +532,11 @@ XBT_SG_SRC = \
   xbt/xbt_sg_synchro.c		\
   xbt/xbt_sg_time.c     
 
-SURF_SRC = surf/maxmin.c surf/lagrange.c surf/trace_mgr.c surf/surf.c \
-	surf/surfxml_parse.c surf/cpu.c surf/network.c \
-	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
-	surf/workstation_KCCFLN05.c $(am__append_1) $(am__append_2)
+SURF_SRC = surf/maxmin.c surf/fair_bottleneck.c surf/lagrange.c \
+	surf/trace_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
+	surf/network.c surf/workstation.c surf/surf_timer.c \
+	surf/network_dassf.c surf/workstation_KCCFLN05.c \
+	surf/workstation_ptask_L07.c $(am__append_1) $(am__append_2)
 GTNETS_SRC = \
   surf/gtnets/gtnets_simulator.cc \
   surf/gtnets/gtnets_topology.cc  \
@@ -826,6 +828,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/environment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ex_unit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fair_bottleneck.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fifo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/global.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gos.Plo@am__quote@
@@ -907,6 +910,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transport_plugin_tcp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation_KCCFLN05.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/workstation_ptask_L07.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_appender_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_layout_format.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xbt_log_layout_simple.Plo@am__quote@
@@ -1373,6 +1377,13 @@ maxmin.lo: surf/maxmin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o maxmin.lo `test -f 'surf/maxmin.c' || echo '$(srcdir)/'`surf/maxmin.c
 
+fair_bottleneck.lo: surf/fair_bottleneck.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT fair_bottleneck.lo -MD -MP -MF $(DEPDIR)/fair_bottleneck.Tpo -c -o fair_bottleneck.lo `test -f 'surf/fair_bottleneck.c' || echo '$(srcdir)/'`surf/fair_bottleneck.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/fair_bottleneck.Tpo $(DEPDIR)/fair_bottleneck.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/fair_bottleneck.c' object='fair_bottleneck.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o fair_bottleneck.lo `test -f 'surf/fair_bottleneck.c' || echo '$(srcdir)/'`surf/fair_bottleneck.c
+
 lagrange.lo: surf/lagrange.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lagrange.lo -MD -MP -MF $(DEPDIR)/lagrange.Tpo -c -o lagrange.lo `test -f 'surf/lagrange.c' || echo '$(srcdir)/'`surf/lagrange.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/lagrange.Tpo $(DEPDIR)/lagrange.Plo
@@ -1442,6 +1453,13 @@ workstation_KCCFLN05.lo: surf/workstation_KCCFLN05.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/workstation_KCCFLN05.c' object='workstation_KCCFLN05.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o workstation_KCCFLN05.lo `test -f 'surf/workstation_KCCFLN05.c' || echo '$(srcdir)/'`surf/workstation_KCCFLN05.c
+
+workstation_ptask_L07.lo: surf/workstation_ptask_L07.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT workstation_ptask_L07.lo -MD -MP -MF $(DEPDIR)/workstation_ptask_L07.Tpo -c -o workstation_ptask_L07.lo `test -f 'surf/workstation_ptask_L07.c' || echo '$(srcdir)/'`surf/workstation_ptask_L07.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/workstation_ptask_L07.Tpo $(DEPDIR)/workstation_ptask_L07.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/workstation_ptask_L07.c' object='workstation_ptask_L07.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o workstation_ptask_L07.lo `test -f 'surf/workstation_ptask_L07.c' || echo '$(srcdir)/'`surf/workstation_ptask_L07.c
 
 xbt_os_thread_stubs.lo: xbt/xbt_os_thread_stubs.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xbt_os_thread_stubs.lo -MD -MP -MF $(DEPDIR)/xbt_os_thread_stubs.Tpo -c -o xbt_os_thread_stubs.lo `test -f 'xbt/xbt_os_thread_stubs.c' || echo '$(srcdir)/'`xbt/xbt_os_thread_stubs.c
