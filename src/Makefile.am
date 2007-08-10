@@ -38,7 +38,7 @@ EXTRA_DIST= \
 	surf/surfxml.c \
 	surf/surfxml.dtd \
 	surf/network_private.h \
-	surf/network_dassf_private.h \
+	network_gtnets_private.h \
 	surf/workstation_KCCFLN05_private.h \
 	\
 	include/surf/maxmin.h \
@@ -156,7 +156,6 @@ SURF_SRC= \
   surf/surfxml_parse.c                                                       \
   surf/cpu.c   surf/network.c   surf/workstation.c                           \
   surf/surf_timer.c                                                          \
-  surf/network_dassf.c                                                       \
   surf/workstation_KCCFLN05.c   surf/workstation_ptask_L07.c
 
 if CONTEXT_THREADS
