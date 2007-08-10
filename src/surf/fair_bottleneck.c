@@ -29,7 +29,6 @@ void bottleneck_solve(lmm_system_t sys)
 
   static s_xbt_swag_t cnst_to_update;
 
-
   if (!(sys->modified))
     return;
 
@@ -63,7 +62,6 @@ void bottleneck_solve(lmm_system_t sys)
       int nb = 0;
       elem_list = &(cnst->element_set);
       cnst->usage = 0.0;
-      if(!cnst->shared) DIE_IMPOSSIBLE;
       xbt_swag_foreach(elem, elem_list) {
 	if(elem->variable->weight <=0) break;
 	if ((elem->value > 0)) {
@@ -76,6 +74,7 @@ void bottleneck_solve(lmm_system_t sys)
 	DEBUG2("Constraint Usage %p : %f",cnst,cnst->usage);
 	//	make_elem_active(elem);
       }
+      if(!cnst->shared) nb=1;
       cnst->usage = cnst->usage * nb;
       /* Saturated constraints update */
       if(min_usage<0 || min_usage > cnst->remaining / cnst->usage) {
@@ -99,6 +98,8 @@ void bottleneck_solve(lmm_system_t sys)
 	if(elem->variable->weight <=0) break;
 	if ((elem->value > 0)) nb++;
       }
+      if(!cnst->shared) nb=1;
+
       xbt_swag_foreach(elem, elem_list) {
 	var=elem->variable;
 	if(var->weight <=0) break;

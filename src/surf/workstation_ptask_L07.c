@@ -68,6 +68,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
 static int nb_workstation = 0;
 static s_route_L07_t *routing_table = NULL;
 #define ROUTE(i,j) routing_table[(i)+(j)*nb_workstation]
+static network_link_L07_t loopback = NULL;
 static xbt_dict_t parallel_task_network_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
@@ -766,12 +767,15 @@ static void parse_file(const char *file)
   /* Adding loopback if needed */    
   for (i = 0; i < nb_workstation; i++) 
     if(!ROUTE(i,i).size) {
+      if(!loopback)
+	loopback = network_link_new(xbt_strdup("__MSG_loopback__"), 
+				   498000000, NULL, 
+				   SURF_NETWORK_LINK_ON, NULL,
+				   SURF_NETWORK_LINK_FATPIPE);
+
       ROUTE(i,i).size=1;
       ROUTE(i,i).links = xbt_new0(network_link_L07_t, 1);
-      ROUTE(i,i).links[0] = network_link_new(xbt_strdup("__MSG_loopback__"), 
-				   498000000, NULL,
-				   SURF_NETWORK_LINK_ON, NULL,
-				   SURF_NETWORK_LINK_SHARED);
+      ROUTE(i,i).links[0] = loopback;
     }
 }
 
