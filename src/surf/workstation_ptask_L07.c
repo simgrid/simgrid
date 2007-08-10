@@ -357,26 +357,6 @@ static void finalize(void)
 /******* Resource Private    **********/
 /**************************************/
 
-static surf_action_t execute(void *cpu, double size)
-{
-  xbt_assert0(0,"This model does not implement plain computations");
-}
-
-static surf_action_t action_sleep(void *cpu, double duration)
-{
-  surf_action_workstation_L07_t action = NULL;
-
-  XBT_IN2("(%s,%g)",((cpu_L07_t)cpu)->name,duration);
-
-  action = (surf_action_workstation_L07_t) execute(cpu, 1.0);
-  action->generic_action.max_duration = duration;
-  action->suspended = 2;
-  lmm_update_variable_weight(ptask_maxmin_system, action->variable, 0.0);
-
-  XBT_OUT;
-  return (surf_action_t) action;
-}
-
 static e_surf_cpu_state_t resource_get_state(void *cpu)
 {
   return ((cpu_L07_t) cpu)->state_current;
@@ -390,11 +370,6 @@ static double get_speed(void *cpu, double load)
 static double get_available_speed(void *cpu)
 {
   return ((cpu_L07_t) cpu)->power_current;
-}
-
-static surf_action_t communicate(void *src, void *dst, double size, double rate)
-{
-  xbt_assert0(0,"This model does not implement plain communications");
 }
 
 static surf_action_t execute_parallel_task(int workstation_nb,
@@ -485,6 +460,50 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     }
   }
   
+  return (surf_action_t) action;
+}
+
+static surf_action_t execute(void *cpu, double size)
+{
+  double val = 0.0;
+
+  return execute_parallel_task(1, &cpu, &size, &val, 1, -1);
+}
+
+static surf_action_t communicate(void *src, void *dst, double size, double rate)
+{
+  void **workstation_list = xbt_new0(void*,2);
+  double *computation_amount = xbt_new0(double,2);
+  double *communication_amount = xbt_new0(double,4);
+  surf_action_t res = NULL;
+
+  workstation_list[0]=src;
+  workstation_list[1]=src;
+  communication_amount[1] = size;
+
+  res = execute_parallel_task(2, workstation_list, 
+			      computation_amount, communication_amount,
+			      1, rate);
+  
+  free(computation_amount);
+  free(communication_amount);
+  free(workstation_list);
+
+  return res;
+}
+
+static surf_action_t action_sleep(void *cpu, double duration)
+{
+  surf_action_workstation_L07_t action = NULL;
+
+  XBT_IN2("(%s,%g)",((cpu_L07_t)cpu)->name,duration);
+
+  action = (surf_action_workstation_L07_t) execute(cpu, 1.0);
+  action->generic_action.max_duration = duration;
+  action->suspended = 2;
+  lmm_update_variable_weight(ptask_maxmin_system, action->variable, 0.0);
+
+  XBT_OUT;
   return (surf_action_t) action;
 }
 
