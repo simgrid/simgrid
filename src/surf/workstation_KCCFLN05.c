@@ -83,7 +83,7 @@ static void *name_service(const char *name)
   void *res=NULL;
 
   TRY {
-    res = xbt_dict_get_or_null(workstation_set, name);
+    res = xbt_dict_get(workstation_set, name);
   } CATCH(e) {
     if (e.category != not_found_error) 
       RETHROW;
@@ -302,8 +302,6 @@ static void update_actions_state(double now, double delta)
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
-    /*   if(action->generic_action.remains<.00001) action->generic_action.remains=0; */
-
     if ((action->generic_action.remains <= 0) && 
 	(lmm_get_variable_weight(action->variable)>0)) {
       action->generic_action.finish = surf_get_clock();
@@ -312,7 +310,8 @@ static void update_actions_state(double now, double delta)
 	       (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
       surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else {			/* Need to check that none of the resource has failed */
+    } else {
+      /* Need to check that none of the resource has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
       void *constraint_id = NULL;
@@ -321,6 +320,21 @@ static void update_actions_state(double now, double delta)
 	      lmm_get_cnst_from_var(maxmin_system, action->variable,
 				    i++))) {
 	constraint_id = lmm_constraint_id(cnst);
+
+/* 	if(((network_link_KCCFLN05_t)constraint_id)->type== */
+/* 	   SURF_WORKSTATION_RESOURCE_LINK) { */
+/* 	  DEBUG2("Checking for link %s (%p)", */
+/* 		 ((network_link_KCCFLN05_t)constraint_id)->name, */
+/* 		 ((network_link_KCCFLN05_t)constraint_id)); */
+/* 	} */
+/* 	if(((cpu_KCCFLN05_t)constraint_id)->type== */
+/* 	   SURF_WORKSTATION_RESOURCE_CPU) { */
+/* 	  DEBUG3("Checking for cpu %s (%p) : %s", */
+/* 		 ((cpu_KCCFLN05_t)constraint_id)->name, */
+/* 		 ((cpu_KCCFLN05_t)constraint_id), */
+/* 		 ((cpu_KCCFLN05_t)constraint_id)->state_current==SURF_CPU_OFF?"Off":"On"); */
+/* 	} */
+
 	if(((((network_link_KCCFLN05_t)constraint_id)->type==
 	     SURF_WORKSTATION_RESOURCE_LINK) &&
 	    (((network_link_KCCFLN05_t)constraint_id)->state_current==
@@ -329,6 +343,7 @@ static void update_actions_state(double now, double delta)
 	     SURF_WORKSTATION_RESOURCE_CPU) &&
 	    (((cpu_KCCFLN05_t)constraint_id)->state_current==
 	     SURF_CPU_OFF))) {
+	  DEBUG1("Action (%p) Failed!!",action);
 	  action->generic_action.finish = surf_get_clock();
 	  surf_action_change_state((surf_action_t) action, SURF_ACTION_FAILED);
 	  break;
@@ -347,6 +362,7 @@ static void update_resource_state(void *id,
   network_link_KCCFLN05_t nw_link = id ;
 
   if(nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
+    DEBUG2("Updating link %s (%p)",nw_link->name,nw_link);
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(maxmin_system, nw_link->constraint,
@@ -384,6 +400,7 @@ static void update_resource_state(void *id,
     }
     return;
   } else if(cpu->type == SURF_WORKSTATION_RESOURCE_CPU) {
+    DEBUG3("Updating cpu %s (%p) with value %g",cpu->name,cpu,value);
     if (event_type == cpu->power_event) {
       cpu->power_current = value;
       __update_cpu_usage(cpu);
@@ -395,7 +412,7 @@ static void update_resource_state(void *id,
     } else {
       CRITICAL0("Unknown event ! \n");
       xbt_abort();
-    }    
+    }
     return;
   } else {
     DIE_IMPOSSIBLE;
@@ -822,7 +839,7 @@ static void parse_cpu(void)
   if (A_surfxml_cpu_state == A_surfxml_cpu_state_OFF)
     state_initial = SURF_CPU_OFF;
   surf_parse_get_trace(&state_trace, A_surfxml_cpu_state_file);
-
+  
   surf_parse_get_double(&interference_send,
 			A_surfxml_cpu_interference_send);
   surf_parse_get_double(&interference_recv,
