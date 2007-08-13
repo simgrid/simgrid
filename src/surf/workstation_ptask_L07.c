@@ -219,6 +219,8 @@ static void update_actions_state(double now, double delta)
     if (action->generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(action->generic_action.max_duration), delta);
 
+    DEBUG2("Action (%p) : remains (%g).",
+	   action, action->generic_action.remains);
     if ((action->generic_action.remains <= 0) &&
 	(lmm_get_variable_weight(action->variable) > 0)) {
       action->generic_action.finish = surf_get_clock();
@@ -408,18 +410,13 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   nb_link = xbt_dict_length(parallel_task_network_link_set);
   xbt_dict_reset(parallel_task_network_link_set);
 
-
   for (i = 0; i < workstation_nb; i++)
     if (computation_amount[i] > 0)
       nb_host++;
 
-
-  if (nb_link + nb_host == 0)	/* was workstation_nb... */
-    return NULL;
-
   action = xbt_new0(s_surf_action_workstation_L07_t, 1);
   DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
-	 action, nb_host, nb_link);
+	 action, workstation_nb, nb_link);
   action->generic_action.using = 1;
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
@@ -439,33 +436,37 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   if (action->rate > 0)
     action->variable =
 	lmm_variable_new(ptask_maxmin_system, action, 1.0, -1.0,
-			 nb_host + nb_link);
+			 workstation_nb + nb_link);
   else
     action->variable =
 	lmm_variable_new(ptask_maxmin_system, action, 1.0, action->rate,
-			 nb_host + nb_link);
+			 workstation_nb + nb_link);
 
   for (i = 0; i < workstation_nb; i++)
-    if (computation_amount[i] > 0)
-      lmm_expand(ptask_maxmin_system,
-		 ((cpu_L07_t) workstation_list[i])->constraint,
-		 action->variable, computation_amount[i]);
-
+    lmm_expand(ptask_maxmin_system,
+	       ((cpu_L07_t) workstation_list[i])->constraint,
+	       action->variable, computation_amount[i]);
+  
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
       network_link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
-
+      
+      if (communication_amount[i * workstation_nb + j] == 0.0) 
+	continue;
       for (k = 0; k < route_size; k++) {
-	if (communication_amount[i * workstation_nb + j] > 0) {
 	  lmm_expand_add(ptask_maxmin_system, route[k]->constraint,
 			 action->variable,
 			 communication_amount[i * workstation_nb + j]);
-	}
       }
     }
+  }
+
+  if (nb_link + nb_host == 0) {
+    action->generic_action.cost = 1.0;
+    action->generic_action.remains = 0.0;
   }
 
   return (surf_action_t) action;
@@ -487,7 +488,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
   surf_action_t res = NULL;
 
   workstation_list[0] = src;
-  workstation_list[1] = src;
+  workstation_list[1] = dst;
   communication_amount[1] = size;
 
   res = execute_parallel_task(2, workstation_list,
