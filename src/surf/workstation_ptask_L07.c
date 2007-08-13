@@ -553,7 +553,7 @@ static double get_link_latency(const void *link)
     WARN0("This model does not take latency into account.");
     warned = 1;
   }
-  return 0.0:
+  return 0.0;
 }
 
 /**************************************/
