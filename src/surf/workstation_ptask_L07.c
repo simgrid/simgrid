@@ -547,7 +547,13 @@ static double get_link_bandwidth(const void *link)
 
 static double get_link_latency(const void *link)
 {
-  xbt_assert0(0, "This model does not implement latencies");
+  static int warned = 0;
+
+  if(!warned) {
+    WARN0("This model does not take latency into account.");
+    warned = 1;
+  }
+  return 0.0:
 }
 
 /**************************************/
@@ -908,6 +914,7 @@ void surf_workstation_resource_init_ptask_L07(const char *filename)
 	      "network resource type already defined");
   resource_init_internal();
   parse_file(filename);
+  WARN0("This model does not take latency into account.");
 
   update_resource_description(surf_workstation_resource_description,
 			      surf_workstation_resource_description_size,
