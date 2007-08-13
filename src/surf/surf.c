@@ -219,7 +219,10 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
     return -1.0;
 
   if (value > 0) {
-    min = action->remains / value;
+    if(action->remains>0) 
+      min = action->remains / value;
+    else 
+      min = 0.0;
     if ((action->max_duration >= 0) && (action->max_duration < min))
       min = action->max_duration;
   } else
@@ -233,7 +236,10 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
        action = xbt_swag_getNext(action, running_actions->offset)) {
     value = lmm_variable_getvalue(VARIABLE(action));
     if (value > 0) {
-      value = action->remains / value;
+      if(action->remains>0) 
+	value = action->remains / value;
+      else 
+	value = 0.0;
       if (value < min) {
 	min = value;
 	DEBUG2("Updating min (value) with %p: %f", action, min);
