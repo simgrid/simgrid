@@ -26,6 +26,7 @@ void bottleneck_solve(lmm_system_t sys)
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
   double min_usage = -1;
+  int i;
 
   static s_xbt_swag_t cnst_to_update;
 
@@ -39,7 +40,13 @@ void bottleneck_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   DEBUG1("Variable set : %d", xbt_swag_size(var_list));
   xbt_swag_foreach(var, var_list) {
+    int nb=0;
     var->value = 0.0;
+    for (i = 0; i < var->cnsts_number; i++) {
+      if(var->cnsts[i].value==0.0) nb++;
+    }
+    if((nb==var->cnsts_number) && (var->weight>0.0))
+      var->value = 1.0;
   }
 
   cnst_list = &(sys->active_constraint_set);
@@ -53,13 +60,20 @@ void bottleneck_solve(lmm_system_t sys)
     cnst->usage = 0.0;
   }
 
+  if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
+    DEBUG0("Fair bottleneck Init");
+    lmm_print(sys);
+  }
+
   /* 
    * Compute Usage and store the variables that reach the maximum.
    */
   while (1) {
-    DEBUG1("Constraints to process: %d", xbt_swag_size(cnst_list));
+    DEBUG1("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
     xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
       int nb = 0;
+      double max_elem = 0.0;
+      DEBUG1("Processing cnst %p ", cnst);
       elem_list = &(cnst->element_set);
       cnst->usage = 0.0;
       xbt_swag_foreach(elem, elem_list) {
@@ -67,20 +81,28 @@ void bottleneck_solve(lmm_system_t sys)
 	  break;
 	if ((elem->value > 0)) {
 	  nb++;
-	  if (cnst->usage > 0)
-	    cnst->usage =
-		MIN(cnst->usage, elem->value / elem->variable->weight);
+	  if (max_elem > 0)
+	    max_elem =
+		MAX(max_elem, elem->value / elem->variable->weight);
 	  else
-	    cnst->usage = elem->value / elem->variable->weight;
+	    max_elem = elem->value / elem->variable->weight;
 	}
-	DEBUG2("Constraint Usage %p : %f", cnst, cnst->usage);
 	//      make_elem_active(elem);
       }
-      if (!cnst->shared)
+      DEBUG2("\tmax_elem : %g with %d variables",  max_elem,nb);
+      if(nb>0 && !cnst->shared)
 	nb = 1;
-      cnst->usage = cnst->usage * nb;
+      cnst->usage = max_elem * nb;
+      DEBUG3("\tConstraint Usage %p : %f with %d variables", cnst, cnst->usage,nb);
+      if(!nb) {
+	xbt_swag_remove(cnst, cnst_list);
+	continue;
+      }
       /* Saturated constraints update */
       if (min_usage < 0 || min_usage > cnst->remaining / cnst->usage) {
+	DEBUG3("Update min_usage (%g) with cnst %p -> %g",min_usage, cnst,
+	       cnst->remaining / cnst->usage);
+
 	min_usage = cnst->remaining / cnst->usage;
 	while ((useless_cnst = xbt_swag_extract(&(cnst_to_update)))) {
 	  xbt_swag_insert_at_head(useless_cnst, cnst_list);
@@ -88,6 +110,7 @@ void bottleneck_solve(lmm_system_t sys)
 	xbt_swag_remove(cnst, cnst_list);
 	xbt_swag_insert(cnst, &(cnst_to_update));
       } else if (min_usage == cnst->remaining / cnst->usage) {
+	DEBUG2("Keep   min_usage (%g) with cnst %p",min_usage, cnst);
 	xbt_swag_remove(cnst, cnst_list);
 	xbt_swag_insert(cnst, &(cnst_to_update));
       }
@@ -96,30 +119,34 @@ void bottleneck_solve(lmm_system_t sys)
     if (!xbt_swag_size(&cnst_to_update))
       break;
 
-    while ((cnst = xbt_swag_extract(&cnst_to_update))) {
+    while ((cnst_next = xbt_swag_extract(&cnst_to_update))) {
       int nb = 0;
+      elem_list = &(cnst_next->element_set);
       xbt_swag_foreach(elem, elem_list) {
 	if (elem->variable->weight <= 0)
 	  break;
 	if ((elem->value > 0))
 	  nb++;
       }
-      if (!cnst->shared)
+      if(nb>0 && !(cnst_next->shared))
 	nb = 1;
+
+      DEBUG1("Updating for cnst %p",cnst_next);
 
       xbt_swag_foreach(elem, elem_list) {
 	var = elem->variable;
 	if (var->weight <= 0)
 	  break;
 	if (var->value == 0.0) {
-	  int i;
-	  var->value = cnst->remaining / nb * var->weight / elem->value;
+	  var->value = var->weight * cnst_next->remaining / (nb * elem->value);
 
 	  /* Update usage */
 
+	  DEBUG1("\tUpdating var %p",var);
 	  for (i = 0; i < var->cnsts_number; i++) {
-	    lmm_element_t elm = &var->cnsts[i];
+ 	    lmm_element_t elm = &var->cnsts[i];
 	    cnst = elm->constraint;
+	    DEBUG1("\t\tUpdating cnst %p",cnst);
 	    double_update(&(cnst->remaining), elm->value * var->value);
 	    double_update(&(cnst->usage), elm->value / var->weight);
 	    //              make_elem_inactive(elm);
