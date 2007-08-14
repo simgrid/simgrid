@@ -85,9 +85,9 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
 
     cond = SIMIX_cond_init();
     h_simdata->sleeping[channel] = cond;
-    if (max_duration > 0) {
+    if (max_duration > 0)
       SIMIX_cond_wait_timeout(cond, h->simdata->mutex, max_duration);
-    } else
+    else 
       SIMIX_cond_wait(h_simdata->sleeping[channel], h->simdata->mutex);
 
     if (SIMIX_host_get_state(h_simdata->s_host) == 0)
@@ -473,20 +473,29 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 
   process->simdata->waiting_task = task;
   if (max_duration > 0) {
-    SIMIX_cond_wait_timeout(task->simdata->cond, task->simdata->mutex,
-			    max_duration);
-    /* verify if the timeout happened and the communication didn't started yet */
-    if (task->simdata->comm == NULL) {
-      task->simdata->using--;
-      process->simdata->waiting_task = NULL;
-      xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->
-		      mbox[channel], task);
-      if (task->simdata->receiver) {
-	task->simdata->receiver->simdata->waiting_task = NULL;
+    xbt_ex_t e;
+    TRY {
+      SIMIX_cond_wait_timeout(task->simdata->cond, task->simdata->mutex,
+			      max_duration);
+    } CATCH(e) {
+      if(e.category==timeout_error) {
+	xbt_ex_free(e);
+	/* verify if the timeout happened and the communication didn't started yet */
+	if (task->simdata->comm == NULL) {
+	  task->simdata->using--;
+	  process->simdata->waiting_task = NULL;
+	  xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->
+			  mbox[channel], task);
+	  if (task->simdata->receiver) {
+	    task->simdata->receiver->simdata->waiting_task = NULL;
+	  }
+	  task->simdata->sender = NULL;
+	  SIMIX_mutex_unlock(task->simdata->mutex);
+	  MSG_RETURN(MSG_TRANSFER_FAILURE);
+	}
+      } else {
+	RETHROW;
       }
-      task->simdata->sender = NULL;
-      SIMIX_mutex_unlock(task->simdata->mutex);
-      MSG_RETURN(MSG_TRANSFER_FAILURE);
     }
   } else {
     SIMIX_cond_wait(task->simdata->cond, task->simdata->mutex);
