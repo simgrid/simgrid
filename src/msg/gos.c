@@ -111,7 +111,6 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   SIMIX_mutex_lock(t_simdata->mutex);
 
   /* Transfer */
-  t_simdata->using++;
   /* create SIMIX action to the communication */
   t_simdata->comm =
       SIMIX_action_communicate(t_simdata->sender->simdata->m_host->
@@ -126,7 +125,11 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   }
   process->simdata->waiting_task = t;
   SIMIX_register_action_to_condition(t_simdata->comm, t_simdata->cond);
-  SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
+	while (1) {
+		SIMIX_cond_wait(t_simdata->cond, t_simdata->mutex);
+		if (SIMIX_action_get_state(t_simdata->comm) != SURF_ACTION_RUNNING)
+			break;
+	}
   SIMIX_unregister_action_to_condition(t_simdata->comm, t_simdata->cond);
   process->simdata->waiting_task = NULL;
 
@@ -146,16 +149,19 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
     //t_simdata->comm = NULL;
     SIMIX_action_destroy(t_simdata->comm);
     t_simdata->comm = NULL;
+		t_simdata->using--;
     MSG_RETURN(MSG_OK);
   } else if (SIMIX_host_get_state(h_simdata->s_host) == 0) {
     //t_simdata->comm = NULL;
     SIMIX_action_destroy(t_simdata->comm);
     t_simdata->comm = NULL;
+		t_simdata->using--;
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
     //t_simdata->comm = NULL;
     SIMIX_action_destroy(t_simdata->comm);
     t_simdata->comm = NULL;
+		t_simdata->using--;
     MSG_RETURN(MSG_TRANSFER_FAILURE);
   }
 
@@ -448,6 +454,7 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 	      "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
   task_simdata->comm = NULL;
 
+	task_simdata->using++;
   local_host = ((simdata_process_t) process->simdata)->m_host;
   remote_host = dest;
 
@@ -474,15 +481,24 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
   process->simdata->waiting_task = task;
   if (max_duration > 0) {
     xbt_ex_t e;
+		double time;
+		double time_elapsed;
+		time = SIMIX_get_clock();
     TRY {
-      SIMIX_cond_wait_timeout(task->simdata->cond, task->simdata->mutex,
-			      max_duration);
+		/*verify if the action that ends is the correct. Call the wait_timeout with the new time. If the timeout occurs, an exception is raised */
+			while (1) {
+			time_elapsed = SIMIX_get_clock() - time;
+				SIMIX_cond_wait_timeout(task->simdata->cond, task->simdata->mutex,
+						max_duration-time_elapsed);
+				if ((task->simdata->comm != NULL) &&
+						(SIMIX_action_get_state(task->simdata->comm) != SURF_ACTION_RUNNING))
+					break;
+			}
     } CATCH(e) {
       if(e.category==timeout_error) {
 	xbt_ex_free(e);
 	/* verify if the timeout happened and the communication didn't started yet */
 	if (task->simdata->comm == NULL) {
-	  task->simdata->using--;
 	  process->simdata->waiting_task = NULL;
 	  xbt_fifo_remove(((simdata_host_t) remote_host->simdata)->
 			  mbox[channel], task);
@@ -498,11 +514,14 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
       }
     }
   } else {
-    SIMIX_cond_wait(task->simdata->cond, task->simdata->mutex);
+		while (1) {
+			SIMIX_cond_wait(task->simdata->cond, task->simdata->mutex);
+			if (SIMIX_action_get_state(task->simdata->comm) != SURF_ACTION_RUNNING)
+				break;
+		}
   }
 
   DEBUG1("Action terminated %s", task->name);
-  task->simdata->using--;
   process->simdata->waiting_task = NULL;
   /* the task has already finished and the pointer must be null */
   if (task->simdata->receiver) {
