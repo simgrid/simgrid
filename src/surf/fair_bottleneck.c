@@ -13,6 +13,9 @@
 #include <math.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
+#define SHOW_EXPR_G(expr) DEBUG1(#expr " = %g",expr);
+#define SHOW_EXPR_D(expr) DEBUG1(#expr " = %d",expr);
+#define SHOW_EXPR_P(expr) DEBUG1(#expr " = %p",expr);
 
 void bottleneck_solve(lmm_system_t sys)
 {
@@ -60,10 +63,7 @@ void bottleneck_solve(lmm_system_t sys)
     cnst->usage = 0.0;
   }
 
-  if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
-    DEBUG0("Fair bottleneck Init");
-    lmm_print(sys);
-  }
+  DEBUG0("Fair bottleneck Initialized");
 
   /* 
    * Compute Usage and store the variables that reach the maximum.
@@ -134,15 +134,18 @@ void bottleneck_solve(lmm_system_t sys)
       DEBUG1("Updating for cnst %p",cnst_next);
 
       xbt_swag_foreach(elem, elem_list) {
+	if (elem->value <= 0) continue;
+
 	var = elem->variable;
+
 	if (var->weight <= 0)
 	  break;
 	if (var->value == 0.0) {
+	  DEBUG2("\tUpdating var %p (%g)",var,var->value);
 	  var->value = var->weight * cnst_next->remaining / (nb * elem->value);
 
 	  /* Update usage */
 
-	  DEBUG1("\tUpdating var %p",var);
 	  for (i = 0; i < var->cnsts_number; i++) {
  	    lmm_element_t elm = &var->cnsts[i];
 	    cnst = elm->constraint;
@@ -158,6 +161,7 @@ void bottleneck_solve(lmm_system_t sys)
 
   sys->modified = 0;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
+    DEBUG0("Fair bottleneck done");
     lmm_print(sys);
   }
 }
