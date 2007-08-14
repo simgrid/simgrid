@@ -650,6 +650,11 @@ void __SD_task_really_run(SD_task_t task) {
      (task->communication_amount[0]==0.0)) {
     task->surf_action = surf_workstation_resource->extension_public->
       execute(surf_workstations[0], task->computation_amount[0]);
+  } else if((task->workstation_nb==1) &&
+	    (task->computation_amount[0]==0.0)) {
+    task->surf_action = surf_workstation_resource->extension_public->
+      communicate(surf_workstations[0], surf_workstations[0],
+		  task->communication_amount[0],task->rate);
   } else if((task->workstation_nb==2) &&
 	    (task->computation_amount[0]==0.0)&&
 	    (task->computation_amount[1]==0.0)) {
