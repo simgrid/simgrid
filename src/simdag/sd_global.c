@@ -437,6 +437,7 @@ SD_task_t* SD_simulate(double how_long)
   while (elapsed_time >= 0.0 &&
 	 (how_long < 0.0 || total_time < how_long) &&
 	 !sd_global->watch_point_reached) {
+    surf_resource_t resource = NULL;
     /* dumb variables */
     void *fun = NULL;
     void *arg = NULL;
@@ -450,67 +451,70 @@ SD_task_t* SD_simulate(double how_long)
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    while ((action = xbt_swag_extract(surf_workstation_resource->common_public->states.done_action_set))) {
-      task = action->data;
-      INFO1("Task '%s' done", SD_task_get_name(task));
-      DEBUG0("Calling __SD_task_just_done");
-      __SD_task_just_done(task);
-      DEBUG1("__SD_task_just_done called on task '%s'", SD_task_get_name(task));
-
-      /* the state has changed */
-      if (!task->state_changed) {
-	task->state_changed = 1;
-	changed_tasks[changed_task_number++] = task;
-	/*
-	if (changed_task_number == changed_task_capacity) {
-	  changed_task_capacity *= 2;
-	  changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
-	}
-	*/
-	changed_tasks[changed_task_number] = NULL;
-      }
-
-      /* remove the dependencies after this task */
-      while (xbt_dynar_length(task->tasks_after) > 0) {
-	xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
-	dst = dependency->dst;
-	SD_task_dependency_remove(task, dst);
+    xbt_dynar_foreach(resource_list, i, resource) {
+      while ((action = xbt_swag_extract(resource->common_public->
+					states.done_action_set))) {
+	task = action->data;
+	INFO1("Task '%s' done", SD_task_get_name(task));
+	DEBUG0("Calling __SD_task_just_done");
+	__SD_task_just_done(task);
+	DEBUG1("__SD_task_just_done called on task '%s'", SD_task_get_name(task));
 	
-	/* is dst ready now? */
-	if (__SD_task_is_ready(dst) && !sd_global->watch_point_reached) {
-	  INFO1("Executing task '%s'", SD_task_get_name(dst));
-	  if (__SD_task_try_to_run(dst)) {
-	    changed_tasks[changed_task_number++] = dst;
-	    /*
+	/* the state has changed */
+	if (!task->state_changed) {
+	  task->state_changed = 1;
+	  changed_tasks[changed_task_number++] = task;
+	  /*
 	    if (changed_task_number == changed_task_capacity) {
-	      changed_task_capacity *= 2;
-	      changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
+	    changed_task_capacity *= 2;
+	    changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
 	    }
-	    */
-	    changed_tasks[changed_task_number] = NULL;
+	  */
+	  changed_tasks[changed_task_number] = NULL;
+	}
+
+	/* remove the dependencies after this task */
+	while (xbt_dynar_length(task->tasks_after) > 0) {
+	  xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
+	  dst = dependency->dst;
+	  SD_task_dependency_remove(task, dst);
+	  
+	  /* is dst ready now? */
+	  if (__SD_task_is_ready(dst) && !sd_global->watch_point_reached) {
+	    INFO1("Executing task '%s'", SD_task_get_name(dst));
+	    if (__SD_task_try_to_run(dst)) {
+	      changed_tasks[changed_task_number++] = dst;
+	      /*
+		if (changed_task_number == changed_task_capacity) {
+		changed_task_capacity *= 2;
+		changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
+		}
+	      */
+	      changed_tasks[changed_task_number] = NULL;
+	    }
 	  }
 	}
       }
-    }
 
-    /* let's see which tasks have just failed */
-    while ((action = xbt_swag_extract(surf_workstation_resource->common_public->states.failed_action_set))) {
-      task = action->data;
-      INFO1("Task '%s' failed", SD_task_get_name(task));
-      __SD_task_set_state(task, SD_FAILED);
-      surf_workstation_resource->common_public->action_free(action);
-      task->surf_action = NULL;
-
-      if (!task->state_changed) {
-	task->state_changed = 1;
-	changed_tasks[changed_task_number++] = task;
-	/*
-	if (changed_task_number == changed_task_capacity) {
-	  changed_task_capacity *= 2;
-	  changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
+      /* let's see which tasks have just failed */
+      while ((action = xbt_swag_extract(resource->common_public->states.failed_action_set))) {
+	task = action->data;
+	INFO1("Task '%s' failed", SD_task_get_name(task));
+	__SD_task_set_state(task, SD_FAILED);
+	surf_workstation_resource->common_public->action_free(action);
+	task->surf_action = NULL;
+	
+	if (!task->state_changed) {
+	  task->state_changed = 1;
+	  changed_tasks[changed_task_number++] = task;
+	  /*
+	    if (changed_task_number == changed_task_capacity) {
+	    changed_task_capacity *= 2;
+	    changed_tasks = xbt_realloc(changed_tasks, sizeof(SD_task_t) * changed_task_capacity);
+	    }
+	  */
+	  changed_tasks[changed_task_number] = NULL;
 	}
-	*/
-	changed_tasks[changed_task_number] = NULL;
       }
     }
 
