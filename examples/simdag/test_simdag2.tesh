@@ -1,0 +1,27 @@
+#! ./tesh
+
+p Simple test of simdag
+
+$ $SG_TEST_EXENV sd_test2 ${srcdir:=.}/2clusters.xml
+> [0.000000] surf/workstation_ptask_L07.c:917: [surf_workstation/WARNING] This model does not take latency into account.
+> [0.000000] [sd_kernel/INFO] Starting simulation...
+> [0.000000] [sd_kernel/INFO] Executing task 'Initial'
+> [0.000000] [sd_kernel/INFO] Task 'Initial' done
+> [0.000000] [sd_kernel/INFO] Executing task 'PtoP Comm 1'
+> [0.000000] [sd_kernel/INFO] Executing task 'PtoP Comm 2'
+> [0.020000] [sd_kernel/INFO] Task 'PtoP Comm 2' done
+> [0.115000] [sd_kernel/INFO] Task 'PtoP Comm 1' done
+> [0.115000] [sd_kernel/INFO] Executing task 'Par Comp without comm'
+> [1.115000] [sd_kernel/INFO] Task 'Par Comp without comm' done
+> [1.115000] [sd_kernel/INFO] Executing task 'intra redist'
+> [1.165000] [sd_kernel/INFO] Task 'intra redist' done
+> [1.165000] [sd_kernel/INFO] Executing task 'Par Comp with comm 1'
+> [2.165000] [sd_kernel/INFO] Task 'Par Comp with comm 1' done
+> [2.165000] [sd_kernel/INFO] Executing task 'inter redist'
+> [2.215000] [sd_kernel/INFO] Task 'inter redist' done
+> [2.215000] [sd_kernel/INFO] Executing task 'Par Comp with comm 2'
+> [2.315000] [sd_kernel/INFO] Task 'Par Comp with comm 2' done
+> [2.315000] [sd_kernel/INFO] Executing task 'Final'
+> [3.315000] [sd_kernel/INFO] Task 'Final' done
+> [3.315000] [sd_kernel/INFO] Simulation finished
+
