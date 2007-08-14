@@ -1,30 +1,37 @@
 SimGrid (3.3-cvs) unstable; urgency=low
 
- JAVA BINDINGS for MSG (you dreamt of them? We made them)
-  [Malek Cherier & Mt]
+ OVERALL CHANGES:
 
- Introduce the SIMIX module: factorize code between MSG and GRAS.
-   [Bruno Donassolo]
-  Until now, GRAS were using MSG as an interface to SURF. It was
-   quite difficult because both interface have several differences
-   (MSG channels vs GRAS sockets were the most notable point).
-   
-  This also opens the gate to SMPI (which should occur soon) and speed
-   up simulations by to 40% (even if it were not the main goal).
+  * JAVA BINDINGS for MSG (you dreamt of them? We made them)
+    [Malek Cherier & Mt]
+
+  * Introduce the SIMIX module: factorize code between MSG and GRAS.
+    [Bruno Donassolo]
   
- ************************************** 
- *DO NOT MIX 3.2 RESULTS WITH 3.3 ONES* Simix may changes simulations!
- **************************************
-   The point is that events occuring at the exact same timestamp are
+    Until now, GRAS were using MSG as an interface to SURF. It was
+    quite difficult because both interface have several differences
+    (MSG channels vs GRAS sockets were the most notable point).
+   
+    This also opens the gate to SMPI (which should occur soon) and speed
+    up simulations by to 40% (even if it were not the main goal).
+  
+    ************************************** 
+    *DO NOT MIX 3.2 RESULTS WITH 3.3 ONES* Simix may changes simulations!
+    **************************************
+    The point is that events occuring at the exact same timestamp are
     not scheduled in the same order with the old and new version. This
     may be enough to completely change the execution of simulations in
     some cases. Sorry for the inconvenience.
+  
+  * Improve the testing infrastructure with tesh. Now a very large part of
+    the code is tested not only by being run but also by checking that the
+    output match an expected output [Mt].
 
  GRAS:
   * Convert the PIDs from long int to int to match the MSG ones (and
     linux ones too) [Mt]
   * New function: gras_agent_spawn() to launch a new process on
-    current host. Only working in simulation for now.. [Mt]
+    current host. Only working in simulation for now. [Mt]
   * New function: gras_os_hostport() returning a constant form (ie,
     not needing to be freed) of "gras_os_hostname():gras_os_myport()"
 
@@ -42,13 +49,36 @@ SimGrid (3.3-cvs) unstable; urgency=low
   * xbt_dynar_new_sync() creates a synchronized dynar. All access
     (using the classical functions will get serialized) [Mt]
 
+ SURF:
+  * Cleaned many thing in surf and fixed a few bugs [AL].
+  * Add a nice command line configuration mechanism to compose models [AL].
+  * Add a new model for parallel tasks (ptask_L07) that is less buggy than
+    the previous one (KCCFLN05). It relies on something that looks like
+    a max-min sharing mechanism but cannot be written as such. A new solver
+    was thus designed [AL].
+  * Add a new solver to lmm. Based on Lagrange optimization and
+    gradient-based descent, it enables to efficiently maximise systems s.a
+  
+     sum f_i(x_i) s.t Ax<= b  with A_{i,j}>=0 and f_i a concave function.
+
+    This solver enables to propose two new network models for TCP Reno and
+    TCP Vegas based on Low's work. These models still need to be fully
+    tested though [Pedro Velho].
+
+ SIMDAG [AL]:
+  * Bug fix in SD_simulate. Now the time bound given as argument is
+    used.
+  * Use the new parallel task model (ptask_L07) as default.
+  * Use the SURF command line configuration mechanism.
+  * 0-size tasks (for synchronization) should now work.
+
  -- 
 
 SimGrid (3.2) unstable; urgency=low
 
   OVERALL CHANGES:
    * Port to windows.
-     We still experience issues on this platform, but we belive that at
+     We still experience issues on this platform, but we believe that at
      least MSG is usable.
 
   GRAS API BREAKAGE (for simplification purpose, sorry):
