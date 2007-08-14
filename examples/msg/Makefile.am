@@ -52,7 +52,8 @@ endif
 bin_PROGRAMS = sendrecv/sendrecv \
                suspend/suspend \
                masterslave/masterslave \
-               masterslave/masterslave_forwarder
+               masterslave/masterslave_forwarder \
+               masterslave/masterslave_failure
                #masterslave/masterslave_bypass
 
 if HAVE_GTNETS
@@ -69,13 +70,17 @@ sendrecv_sendrecv_LDADD   = $(top_builddir)/src/libsimgrid.la
 suspend_suspend_SOURCES = suspend/suspend.c
 suspend_suspend_LDADD   = $(top_builddir)/src/libsimgrid.la
 
-# master/slave application example using a forwarder module
+# master/slave application example
 masterslave_masterslave_SOURCES = masterslave/masterslave.c
 masterslave_masterslave_LDADD   = $(top_builddir)/src/libsimgrid.la
 
-# verify the communication time of a simple simulation
+# master/slave application example using a forwarder module
 masterslave_masterslave_forwarder_SOURCES = masterslave/masterslave_forwarder.c
 masterslave_masterslave_forwarder_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# master/slave application example with failures
+masterslave_masterslave_failure_SOURCES = masterslave/masterslave_failure.c
+masterslave_masterslave_failure_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # bypass the surf xml parser
 #masterslave_masterslave_bypass_SOURCES = masterslave/masterslave_bypass.c
