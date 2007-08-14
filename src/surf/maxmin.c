@@ -443,7 +443,14 @@ void lmm_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   DEBUG1("Variable set : %d", xbt_swag_size(var_list));
   xbt_swag_foreach(var, var_list) {
+    int nb=0;
+    int i;
     var->value = 0.0;
+    for (i = 0; i < var->cnsts_number; i++) {
+      if(var->cnsts[i].value==0.0) nb++;
+    }
+    if((nb==var->cnsts_number) && (var->weight>0.0))
+      var->value = 1.0;
   }
 
   /* 

@@ -675,10 +675,6 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     if (computation_amount[i] > 0)
       nb_host++;
 
-
-  if (nb_link + nb_host == 0)	/* was workstation_nb... */
-    return NULL;
-
   action = xbt_new0(s_surf_action_workstation_KCCFLN05_t, 1);
   DEBUG3("Creating a parallel task (%p) with %d cpus and %d links.",
 	 action, nb_host, nb_link);
@@ -728,6 +724,11 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 	}
       }
     }
+  }
+
+  if (nb_link + nb_host == 0) {
+    action->generic_action.cost = 1.0;
+    action->generic_action.remains = 0.0;
   }
 
   return (surf_action_t) action;
