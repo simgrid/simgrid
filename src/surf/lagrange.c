@@ -220,6 +220,7 @@ void lagrange_solve(lmm_system_t sys)
     if (!var->weight)
       var->value = 0.0;
     else {
+      int nb = 0;
       if (var->bound < 0.0) {
 	DEBUG1("#### NOTE var(%d) is a boundless variable", i);
 	var->mu = -1.0;
@@ -229,11 +230,14 @@ void lagrange_solve(lmm_system_t sys)
 	var->new_mu = 2.0;
 	var->value = new_value(var);
       }
-      DEBUG3("#### var(%d) %p ->df :  %e", i, var, var->df);
-      DEBUG3("#### var(%d) %p ->mu :  %e", i, var, var->mu);
-      DEBUG3("#### var(%d) %p ->weight: %e", i, var, var->weight);
-      DEBUG3("#### var(%d) %p ->bound: %e", i, var, var->bound);
-      i++;
+      DEBUG2("#### var(%p) ->df :  %e", var, var->df);
+      DEBUG2("#### var(%p) ->mu :  %e", var, var->mu);
+      DEBUG2("#### var(%p) ->weight: %e", var, var->weight);
+      DEBUG2("#### var(%p) ->bound: %e", var, var->bound);
+      for (i = 0; i < var->cnsts_number; i++) {
+	if(var->cnsts[i].value==0.0) nb++;
+      }
+      if(nb==var->cnsts_number) var->value = 1.0;
     }
   }
 
