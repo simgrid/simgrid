@@ -69,6 +69,10 @@ void bottleneck_solve(lmm_system_t sys)
    * Compute Usage and store the variables that reach the maximum.
    */
   while (1) {
+/*     if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) { */
+/*       DEBUG0("Fair bottleneck done"); */
+/*       lmm_print(sys); */
+/*     } */
     DEBUG1("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
     xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
       int nb = 0;
@@ -121,6 +125,7 @@ void bottleneck_solve(lmm_system_t sys)
 
     while ((cnst_next = xbt_swag_extract(&cnst_to_update))) {
       int nb = 0;
+      double remaining = cnst_next->remaining;
       elem_list = &(cnst_next->element_set);
       xbt_swag_foreach(elem, elem_list) {
 	if (elem->variable->weight <= 0)
@@ -142,7 +147,7 @@ void bottleneck_solve(lmm_system_t sys)
 	  break;
 	if (var->value == 0.0) {
 	  DEBUG2("\tUpdating var %p (%g)",var,var->value);
-	  var->value = var->weight * cnst_next->remaining / (nb * elem->value);
+	  var->value = var->weight * remaining / (nb * elem->value);
 
 	  /* Update usage */
 
