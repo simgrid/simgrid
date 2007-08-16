@@ -12,10 +12,10 @@
 #include "xbt/dict.h"
 
 typedef struct network_link_CM02 {
-  surf_resource_t resource;	/* Any such object, added in a trace
+  surf_model_t model;	/* Any such object, added in a trace
 				   should start by this field!!! */
   /* Using this object with the public part of
-     resource does not make sense */
+     model does not make sense */
   char *name;
   double bw_current;
   tmgr_trace_event_t bw_event;

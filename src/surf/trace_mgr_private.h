@@ -24,7 +24,7 @@ typedef struct tmgr_trace {
 typedef struct tmgr_trace_event {
   tmgr_trace_t trace;
   int idx;
-  void *resource;
+  void *model;
 } s_tmgr_trace_event_t;
 
 typedef struct tmgr_history {

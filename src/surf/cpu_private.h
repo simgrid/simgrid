@@ -18,7 +18,7 @@ typedef struct surf_action_cpu_Cas01 {
 } s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 typedef struct cpu_Cas01 {
-  surf_resource_t resource;	/* Any such object, added in a trace
+  surf_model_t model;	/* Any such object, added in a trace
 				   should start by this field!!! */
   char *name;
   double power_scale;

@@ -11,7 +11,7 @@
 #include "surf_private.h"
 
 typedef struct workstation_CLM03 {
-  surf_resource_t resource;	/* Any such object, added in a trace
+  surf_model_t model;	/* Any such object, added in a trace
 				   should start by this field!!! */
   char *name;
   void *cpu;

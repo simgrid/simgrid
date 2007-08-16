@@ -34,8 +34,8 @@ static void _sd_cfg_cb__workstation_model(const char *name, int pos)
 	      "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sd_cfg_set, name);
-  find_resource_description(surf_workstation_resource_description,
-			    surf_workstation_resource_description_size,
+  find_model_description(surf_workstation_model_description,
+			    surf_workstation_model_description_size,
 			    val);
 }
 
@@ -48,8 +48,8 @@ static void _sd_cfg_cb__cpu_model(const char *name, int pos)
 	      "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sd_cfg_set, name);
-  find_resource_description(surf_cpu_resource_description,
-			    surf_cpu_resource_description_size, val);
+  find_model_description(surf_cpu_model_description,
+			    surf_cpu_model_description_size, val);
 }
 
 /* callback of the workstation_model variable */
@@ -61,8 +61,8 @@ static void _sd_cfg_cb__network_model(const char *name, int pos)
 	      "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sd_cfg_set, name);
-  find_resource_description(surf_network_resource_description,
-			    surf_network_resource_description_size, val);
+  find_model_description(surf_network_model_description,
+			    surf_network_model_description_size, val);
 }
 
 /* create the config set and register what should be */
@@ -299,15 +299,15 @@ void SD_create_environment(const char *platform_file) {
   DEBUG0("SD_create_environment");
 
   sd_config_init();
-  surf_timer_resource_init(platform_file);
+  surf_timer_model_init(platform_file);
 
   workstation_model_name =
       xbt_cfg_get_string(_sd_cfg_set, "workstation_model");
 
   DEBUG1("Model : %s", workstation_model_name);
   workstation_id =
-      find_resource_description(surf_workstation_resource_description,
-				surf_workstation_resource_description_size,
+      find_model_description(surf_workstation_model_description,
+				surf_workstation_model_description_size,
 				workstation_model_name);
   if (!strcmp(workstation_model_name, "compound")) {
     xbt_ex_t e;
@@ -343,21 +343,21 @@ void SD_create_environment(const char *platform_file) {
     }
 
     network_id =
-	find_resource_description(surf_network_resource_description,
-				  surf_network_resource_description_size,
+	find_model_description(surf_network_model_description,
+				  surf_network_model_description_size,
 				  network_model_name);
     cpu_id =
-	find_resource_description(surf_cpu_resource_description,
-				  surf_cpu_resource_description_size,
+	find_model_description(surf_cpu_model_description,
+				  surf_cpu_model_description_size,
 				  cpu_model_name);
 
-    surf_cpu_resource_description[cpu_id].resource_init(platform_file);
-    surf_network_resource_description[network_id].resource_init(platform_file);
+    surf_cpu_model_description[cpu_id].model_init(platform_file);
+    surf_network_model_description[network_id].model_init(platform_file);
   }
 
-  DEBUG0("Call workstation_resource_init");
-  surf_workstation_resource_description[workstation_id].
-      resource_init(platform_file);
+  DEBUG0("Call workstation_model_init");
+  surf_workstation_model_description[workstation_id].
+      model_init(platform_file);
 
   _sd_init_status = 2;
 
@@ -412,7 +412,7 @@ SD_task_t* SD_simulate(double how_long)
   }
 
   if(how_long>0) {
-    surf_timer_resource->extension_public->set(surf_get_clock()+how_long,
+    surf_timer_model->extension_public->set(surf_get_clock()+how_long,
 					       NULL,NULL);
   }
   sd_global->watch_point_reached = 0;
@@ -437,7 +437,7 @@ SD_task_t* SD_simulate(double how_long)
   while (elapsed_time >= 0.0 &&
 	 (how_long < 0.0 || total_time < how_long) &&
 	 !sd_global->watch_point_reached) {
-    surf_resource_t resource = NULL;
+    surf_model_t model = NULL;
     /* dumb variables */
     void *fun = NULL;
     void *arg = NULL;
@@ -451,8 +451,8 @@ SD_task_t* SD_simulate(double how_long)
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    xbt_dynar_foreach(resource_list, i, resource) {
-      while ((action = xbt_swag_extract(resource->common_public->
+    xbt_dynar_foreach(model_list, i, model) {
+      while ((action = xbt_swag_extract(model->common_public->
 					states.done_action_set))) {
 	task = action->data;
 	INFO1("Task '%s' done", SD_task_get_name(task));
@@ -497,11 +497,11 @@ SD_task_t* SD_simulate(double how_long)
       }
 
       /* let's see which tasks have just failed */
-      while ((action = xbt_swag_extract(resource->common_public->states.failed_action_set))) {
+      while ((action = xbt_swag_extract(model->common_public->states.failed_action_set))) {
 	task = action->data;
 	INFO1("Task '%s' failed", SD_task_get_name(task));
 	__SD_task_set_state(task, SD_FAILED);
-	surf_workstation_resource->common_public->action_free(action);
+	surf_workstation_model->common_public->action_free(action);
 	task->surf_action = NULL;
 	
 	if (!task->state_changed) {
@@ -518,7 +518,7 @@ SD_task_t* SD_simulate(double how_long)
       }
     }
 
-    while (surf_timer_resource->extension_public->get(&fun,(void*)&arg)) {
+    while (surf_timer_model->extension_public->get(&fun,(void*)&arg)) {
     }
   }
 

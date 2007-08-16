@@ -110,7 +110,7 @@ extern int _simix_init_status;	/* 0: beginning of time;
 extern xbt_cfg_t _simix_cfg_set;
 
 
-#define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_resource->extension_public-> \
+#define SIMIX_CHECK_HOST()  xbt_assert0(surf_workstation_model->extension_public-> \
 				  get_state(SIMIX_host_self()->simdata->host)==SURF_CPU_ON,\
                                   "Host failed, you cannot call this function.")
 

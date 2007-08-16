@@ -106,13 +106,13 @@ int __surf_is_absolute_file_path(const char *file_path)
 #endif
 }
 
-typedef struct surf_resource_object {
-  surf_resource_t resource;
-} s_surf_resource_object_t, *surf_resource_object_t;
+typedef struct surf_model_object {
+  surf_model_t model;
+} s_surf_model_object_t, *surf_model_object_t;
 
 static double NOW = 0;
 
-xbt_dynar_t resource_list = NULL;
+xbt_dynar_t model_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
@@ -125,7 +125,7 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-int surf_network_resource_description_size = 3
+int surf_network_model_description_size = 3
 #ifdef HAVE_GTNETS
     + 1
 #endif
@@ -133,41 +133,41 @@ int surf_network_resource_description_size = 3
     + 1
 #endif
     ;
-s_surf_resource_description_t surf_network_resource_description[] = {
-  {"CM02", NULL, surf_network_resource_init_CM02},
+s_surf_model_description_t surf_network_model_description[] = {
+  {"CM02", NULL, surf_network_model_init_CM02},
 #ifdef HAVE_GTNETS
-  {"GTNets", NULL, surf_network_resource_init_GTNETS},
+  {"GTNets", NULL, surf_network_model_init_GTNETS},
 #endif
 #ifdef HAVE_SDP
-  {"SDP", NULL, surf_network_resource_init_SDP},
+  {"SDP", NULL, surf_network_model_init_SDP},
 #endif
-  {"Reno", NULL, surf_network_resource_init_Reno},
-  {"Vegas", NULL, surf_network_resource_init_Vegas}
+  {"Reno", NULL, surf_network_model_init_Reno},
+  {"Vegas", NULL, surf_network_model_init_Vegas}
 };
 
-int surf_cpu_resource_description_size = 1;
-s_surf_resource_description_t surf_cpu_resource_description[] = {
-  {"Cas01", NULL, surf_cpu_resource_init_Cas01},
+int surf_cpu_model_description_size = 1;
+s_surf_model_description_t surf_cpu_model_description[] = {
+  {"Cas01", NULL, surf_cpu_model_init_Cas01},
 };
 
-int surf_workstation_resource_description_size = 4;
-s_surf_resource_description_t surf_workstation_resource_description[] = {
-  {"CLM03", NULL, surf_workstation_resource_init_CLM03},
-  {"KCCFLN05", NULL, surf_workstation_resource_init_KCCFLN05},
-  {"compound", NULL, surf_workstation_resource_init_compound},
-  {"ptask_L07", NULL, surf_workstation_resource_init_ptask_L07}
+int surf_workstation_model_description_size = 4;
+s_surf_model_description_t surf_workstation_model_description[] = {
+  {"CLM03", NULL, surf_workstation_model_init_CLM03},
+  {"KCCFLN05", NULL, surf_workstation_model_init_KCCFLN05},
+  {"compound", NULL, surf_workstation_model_init_compound},
+  {"ptask_L07", NULL, surf_workstation_model_init_ptask_L07}
 };
 
-void update_resource_description(s_surf_resource_description_t * table,
+void update_model_description(s_surf_model_description_t * table,
 				 int table_size,
 				 const char *name,
-				 surf_resource_t resource)
+				 surf_model_t model)
 {
-  int i = find_resource_description(table, table_size, name);
-  table[i].resource = resource;
+  int i = find_model_description(table, table_size, name);
+  table[i].model = model;
 }
 
-int find_resource_description(s_surf_resource_description_t * table,
+int find_model_description(s_surf_model_description_t * table,
 			      int table_size, const char *name)
 {
   int i;
@@ -189,14 +189,14 @@ int find_resource_description(s_surf_resource_description_t * table,
 	      name_list);
 }
 
-double generic_maxmin_share_resources(xbt_swag_t running_actions,
+double generic_maxmin_share_models(xbt_swag_t running_actions,
 				      size_t offset)
 {
-  return generic_maxmin_share_resources2(running_actions, offset,
+  return generic_maxmin_share_models2(running_actions, offset,
 					 maxmin_system, lmm_solve);
 }
 
-double generic_maxmin_share_resources2(xbt_swag_t running_actions,
+double generic_maxmin_share_models2(xbt_swag_t running_actions,
 				       size_t offset,
 				       lmm_system_t sys,
 				       void (*solve) (lmm_system_t))
@@ -259,7 +259,7 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 e_surf_action_state_t surf_action_get_state(surf_action_t action)
 {
   surf_action_state_t action_state =
-      &(action->resource_type->common_public->states);
+      &(action->model_type->common_public->states);
 
   if (action->state_set == action_state->ready_action_set)
     return SURF_ACTION_READY;
@@ -284,7 +284,7 @@ double surf_action_get_finish_time(surf_action_t action)
 
 void surf_action_free(surf_action_t * action)
 {
-  (*action)->resource_type->common_public->action_cancel(*action);
+  (*action)->model_type->common_public->action_cancel(*action);
   free(*action);
   *action = NULL;
 }
@@ -293,7 +293,7 @@ void surf_action_change_state(surf_action_t action,
 			      e_surf_action_state_t state)
 {
   surf_action_state_t action_state =
-      &(action->resource_type->common_public->states);
+      &(action->model_type->common_public->states);
   XBT_IN2("(%p,%s)", action, surf_action_state_names[state]);
   xbt_swag_remove(action, action->state_set);
 
@@ -352,8 +352,8 @@ void surf_init(int *argc, char **argv)
       }
     }
   }
-  if (!resource_list)
-    resource_list = xbt_dynar_new(sizeof(surf_resource_private_t), NULL);
+  if (!model_list)
+    model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
   if (!history)
     history = tmgr_history_new();
   if (!maxmin_system)
@@ -400,10 +400,10 @@ FILE *surf_fopen(const char *name, const char *mode)
 void surf_exit(void)
 {
   int i;
-  surf_resource_t resource = NULL;
+  surf_model_t model = NULL;
 
-  xbt_dynar_foreach(resource_list, i, resource) {
-    resource->common_private->finalize();
+  xbt_dynar_foreach(model_list, i, model) {
+    model->common_private->finalize();
   }
 
   if (maxmin_system) {
@@ -414,8 +414,8 @@ void surf_exit(void)
     tmgr_history_free(history);
     history = NULL;
   }
-  if (resource_list)
-    xbt_dynar_free(&resource_list);
+  if (model_list)
+    xbt_dynar_free(&model_list);
 
   if (surf_path)
     xbt_dynar_free(&surf_path);
@@ -435,29 +435,29 @@ double surf_solve(void)
 
   double min = -1.0;
   double next_event_date = -1.0;
-  double resource_next_action_end = -1.0;
+  double model_next_action_end = -1.0;
   double value = -1.0;
-  surf_resource_object_t resource_obj = NULL;
-  surf_resource_t resource = NULL;
+  surf_model_object_t model_obj = NULL;
+  surf_model_t model = NULL;
   tmgr_trace_event_t event = NULL;
   int i;
 
   if (first_run) {
     DEBUG0
-	("First Run! Let's \"purge\" events and put resources in the right state");
+	("First Run! Let's \"purge\" events and put models in the right state");
     while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
       if (next_event_date > NOW)
 	break;
       while ((event =
 	      tmgr_history_get_next_event_leq(history, next_event_date,
 					      &value,
-					      (void **) &resource_obj))) {
-	resource_obj->resource->common_private->
-	    update_resource_state(resource_obj, event, value);
+					      (void **) &model_obj))) {
+	model_obj->model->common_private->
+	    update_model_state(model_obj, event, value);
       }
     }
-    xbt_dynar_foreach(resource_list, i, resource) {
-      resource->common_private->update_actions_state(NOW, 0.0);
+    xbt_dynar_foreach(model_list, i, model) {
+      model->common_private->update_actions_state(NOW, 0.0);
     }
     first_run = 0;
     return 0.0;
@@ -466,15 +466,15 @@ double surf_solve(void)
   min = -1.0;
 
   DEBUG0("Looking for next action end");
-  xbt_dynar_foreach(resource_list, i, resource) {
-    DEBUG1("Running for Resource [%s]", resource->common_public->name);
-    resource_next_action_end =
-	resource->common_private->share_resources(NOW);
+  xbt_dynar_foreach(model_list, i, model) {
+    DEBUG1("Running for Resource [%s]", model->common_public->name);
+    model_next_action_end =
+	model->common_private->share_models(NOW);
     DEBUG2("Resource [%s] : next action end = %f",
-	   resource->common_public->name, resource_next_action_end);
-    if (((min < 0.0) || (resource_next_action_end < min))
-	&& (resource_next_action_end >= 0.0))
-      min = resource_next_action_end;
+	   model->common_public->name, model_next_action_end);
+    if (((min < 0.0) || (model_next_action_end < min))
+	&& (model_next_action_end >= 0.0))
+      min = model_next_action_end;
   }
   DEBUG1("Next action end : %f", min);
 
@@ -486,22 +486,22 @@ double surf_solve(void)
     DEBUG1("Next event : %f", next_event_date);
     if (next_event_date > NOW + min)
       break;
-    DEBUG0("Updating resources");
+    DEBUG0("Updating models");
     while ((event =
 	    tmgr_history_get_next_event_leq(history, next_event_date,
 					    &value,
-					    (void **) &resource_obj))) {
-      if (resource_obj->resource->common_private->
-	  resource_used(resource_obj)) {
+					    (void **) &model_obj))) {
+      if (model_obj->model->common_private->
+	  model_used(model_obj)) {
 	min = next_event_date - NOW;
 	DEBUG1
-	    ("This event will modify resource state. Next event set to %f",
+	    ("This event will modify model state. Next event set to %f",
 	     min);
       }
-      /* update state of resource_obj according to new value. Does not touch lmm.
+      /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      resource_obj->resource->common_private->
-	  update_resource_state(resource_obj, event, value);
+      model_obj->model->common_private->
+	  update_model_state(model_obj, event, value);
     }
   }
 
@@ -509,8 +509,8 @@ double surf_solve(void)
 
   NOW = NOW + min;
 
-  xbt_dynar_foreach(resource_list, i, resource) {
-    resource->common_private->update_actions_state(NOW, min);
+  xbt_dynar_foreach(model_list, i, model) {
+    model->common_private->update_actions_state(NOW, min);
   }
 
   return min;

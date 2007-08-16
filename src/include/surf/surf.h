@@ -18,12 +18,12 @@ SG_BEGIN_DECL()
 
 
 
-/* Actions and resources are higly connected structures... */
+/* Actions and models are higly connected structures... */
 
 /** \brief Action datatype
  *  \ingroup SURF_actions
  *  
- * An action is some working amount on a resource.
+ * An action is some working amount on a model.
  * It is represented as a cost, a priority, a duration and a state.
  *
  * \see e_surf_action_state_t
@@ -31,27 +31,27 @@ SG_BEGIN_DECL()
 typedef struct surf_action *surf_action_t;
 
 /** \brief Resource datatype
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  
- *  Generic data structure for a resource. The workstations,
- *  the CPUs and the network links are examples of resources.
+ *  Generic data structure for a model. The workstations,
+ *  the CPUs and the network links are examples of models.
  */
-typedef struct surf_resource *surf_resource_t;
+typedef struct surf_model *surf_model_t;
 
 /** \brief Resource model description
  */
-typedef struct surf_resource_description {
+typedef struct surf_model_description {
   const char *name;
-  surf_resource_t resource;
-  void (* resource_init) (const char *filename);
-} s_surf_resource_description_t, *surf_resource_description_t;
+  surf_model_t model;
+  void (* model_init) (const char *filename);
+} s_surf_model_description_t, *surf_model_description_t;
 
-XBT_PUBLIC(void) update_resource_description(s_surf_resource_description_t *table,
+XBT_PUBLIC(void) update_model_description(s_surf_model_description_t *table,
 					     int table_size,
 					     const char* name, 
-					     surf_resource_t resource
+					     surf_model_t model
 					     );
-XBT_PUBLIC(int) find_resource_description(s_surf_resource_description_t *table,
+XBT_PUBLIC(int) find_model_description(s_surf_model_description_t *table,
 					  int table_size,
 					  const char* name);
 
@@ -59,7 +59,7 @@ XBT_PUBLIC(int) find_resource_description(s_surf_resource_description_t *table,
  * \ingroup SURF_actions
  *
  *  Never create s_surf_action_t by yourself ! The actions are created
- *  on the fly when you call execute or communicate on a resource.
+ *  on the fly when you call execute or communicate on a model.
  *  
  *  \see e_surf_action_state_t
  */
@@ -77,7 +77,7 @@ typedef struct surf_action {
 				 * and fluctuates until the task is completed */
   void *data;			/**< for your convenience */
   int using;
-  surf_resource_t resource_type;
+  surf_model_t model_type;
 } s_surf_action_t;
 
 /** \brief Action states
@@ -112,18 +112,18 @@ typedef struct surf_action_state {
 } s_surf_action_state_t, *surf_action_state_t;
 
 /***************************/
-/* Generic resource object */
+/* Generic model object */
 /***************************/
 
-/** \brief Public data available on all resources
- *  \ingroup SURF_resources
+/** \brief Public data available on all models
+ *  \ingroup SURF_models
  *
- *  These functions are implemented by all resources.
+ *  These functions are implemented by all models.
  */
-typedef struct surf_resource_public {
-  s_surf_action_state_t states;	/**< Any living action on this resource */
-  void *(*name_service) (const char *name); /**< Return a resource given its name */
-  const char *(*get_resource_name) (void *resource_id); /**< Return the name of a resource */
+typedef struct surf_model_public {
+  s_surf_action_state_t states;	/**< Any living action on this model */
+  void *(*name_service) (const char *name); /**< Return a model given its name */
+  const char *(*get_model_name) (void *model_id); /**< Return the name of a model */
 
   e_surf_action_state_t(*action_get_state) (surf_action_t action); /**< Return the state of an action */
   double (*action_get_start_time) (surf_action_t action); /**< Return the start time of an action */
@@ -140,121 +140,121 @@ typedef struct surf_resource_public {
   int (*is_suspended) (surf_action_t action); /**< Return whether an action is suspended */
   void (*set_max_duration) (surf_action_t action, double duration); /**< Set the max duration of an action*/
   void (*set_priority) (surf_action_t action, double priority); /**< Set the priority of an action */
-  const char *name; /**< Name of this resource */
-} s_surf_resource_public_t, *surf_resource_public_t;
+  const char *name; /**< Name of this model */
+} s_surf_model_public_t, *surf_model_public_t;
 
-/** \brief Private data available on all resources
- *  \ingroup SURF_resources
+/** \brief Private data available on all models
+ *  \ingroup SURF_models
  */
-typedef struct surf_resource_private *surf_resource_private_t;
+typedef struct surf_model_private *surf_model_private_t;
 
 /** \brief Resource datatype
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  
- *  Generic data structure for a resource. The workstations,
- *  the CPUs and the network links are examples of resources.
+ *  Generic data structure for a model. The workstations,
+ *  the CPUs and the network links are examples of models.
  */
-typedef struct surf_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-} s_surf_resource_t;
+typedef struct surf_model {
+  surf_model_private_t common_private;
+  surf_model_public_t common_public;
+} s_surf_model_t;
 
 /**************************************/
-/* Implementations of resource object */
+/* Implementations of model object */
 /**************************************/
 
-/** \brief Timer resource extension public
- * \ingroup SURF_resource
+/** \brief Timer model extension public
+ * \ingroup SURF_model
  *
- * Additionnal functions specific to the timer resource
+ * Additionnal functions specific to the timer model
  */
-typedef struct surf_timer_resource_extension_public {
+typedef struct surf_timer_model_extension_public {
   void (*set) (double date, void *function, void *arg);
   int (*get)  (void **function, void **arg);
-} s_surf_timer_resource_extension_public_t,
-  *surf_timer_resource_extension_public_t;
+} s_surf_timer_model_extension_public_t,
+  *surf_timer_model_extension_public_t;
 
-/** \brief Timer resource
- *  \ingroup SURF_resources
+/** \brief Timer model
+ *  \ingroup SURF_models
  */
-typedef struct surf_timer_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_timer_resource_extension_public_t extension_public;
-} s_surf_timer_resource_t, *surf_timer_resource_t;
+typedef struct surf_timer_model {
+  surf_model_private_t common_private;
+  surf_model_public_t common_public;
+  surf_timer_model_extension_public_t extension_public;
+} s_surf_timer_model_t, *surf_timer_model_t;
 
-/** \brief The timer resource
- *  \ingroup SURF_resources
+/** \brief The timer model
+ *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(surf_timer_resource_t) surf_timer_resource;
+XBT_PUBLIC_DATA(surf_timer_model_t) surf_timer_model;
 
-/** \brief Initializes the timer resource
- *  \ingroup SURF_resources
+/** \brief Initializes the timer model
+ *  \ingroup SURF_models
  */
-XBT_PUBLIC(void) surf_timer_resource_init(const char *filename);
+XBT_PUBLIC(void) surf_timer_model_init(const char *filename);
 
-/* Cpu resource */
+/* Cpu model */
 
 /** \brief CPU state
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  */
 typedef enum {
   SURF_CPU_ON = 1,		/**< Ready        */
   SURF_CPU_OFF = 0		/**< Running      */
 } e_surf_cpu_state_t;
 
-/** \brief CPU resource extension public
- *  \ingroup SURF_resources
+/** \brief CPU model extension public
+ *  \ingroup SURF_models
  *  
- *  Public functions specific to the CPU resource.
+ *  Public functions specific to the CPU model.
  */
-typedef struct surf_cpu_resource_extension_public {
+typedef struct surf_cpu_model_extension_public {
   surf_action_t(*execute) (void *cpu, double size);
   surf_action_t(*sleep) (void *cpu, double duration);
   e_surf_cpu_state_t(*get_state) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
-} s_surf_cpu_resource_extension_public_t,
-    *surf_cpu_resource_extension_public_t;
+} s_surf_cpu_model_extension_public_t,
+    *surf_cpu_model_extension_public_t;
 
-/** \brief CPU resource datatype
- *  \ingroup SURF_resources
+/** \brief CPU model datatype
+ *  \ingroup SURF_models
  */
-typedef struct surf_cpu_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_cpu_resource_extension_public_t extension_public;
-} s_surf_cpu_resource_t, *surf_cpu_resource_t;
+typedef struct surf_cpu_model {
+  surf_model_private_t common_private;
+  surf_model_public_t common_public;
+  surf_cpu_model_extension_public_t extension_public;
+} s_surf_cpu_model_t, *surf_cpu_model_t;
 
-/** \brief The CPU resource
- *  \ingroup SURF_resources
+/** \brief The CPU model
+ *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(surf_cpu_resource_t) surf_cpu_resource;
+XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model;
 
-/** \brief Initializes the CPU resource with the model Cas01
- *  \ingroup SURF_resources
+/** \brief Initializes the CPU model with the model Cas01
+ *  \ingroup SURF_models
  *
- *  This function is called by surf_workstation_resource_init_CLM03
+ *  This function is called by surf_workstation_model_init_CLM03
  *  so you shouldn't have to call it by yourself.
  *
- *  \see surf_workstation_resource_init_CLM03()
+ *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_resource_init_Cas01(const char *filename);
+XBT_PUBLIC(void) surf_cpu_model_init_Cas01(const char *filename);
 
-extern XBT_PUBLIC_DATA(int) surf_cpu_resource_description_size;
-/** \brief The list of all available cpu resource models
- *  \ingroup SURF_resources
+extern XBT_PUBLIC_DATA(int) surf_cpu_model_description_size;
+/** \brief The list of all available cpu model models
+ *  \ingroup SURF_models
  */
-extern XBT_PUBLIC_DATA(s_surf_resource_description_t) surf_cpu_resource_description[];
+extern XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
 
-/* Network resource */
+/* Network model */
 
-/** \brief Network resource extension public
- *  \ingroup SURF_resources
+/** \brief Network model extension public
+ *  \ingroup SURF_models
  *
- *  Public functions specific to the network resource
+ *  Public functions specific to the network model
  */
-typedef struct surf_network_resource_extension_public {
+typedef struct surf_network_model_extension_public {
   surf_action_t(*communicate) (void *src, void *dst, double size,
 			       double max_rate);
   const void** (*get_route) (void *src, void *dst);
@@ -262,54 +262,54 @@ typedef struct surf_network_resource_extension_public {
   const char* (*get_link_name) (const void *link);
   double (*get_link_bandwidth) (const void *link);
   double (*get_link_latency) (const void *link);
-} s_surf_network_resource_extension_public_t,
-    *surf_network_resource_extension_public_t;
+} s_surf_network_model_extension_public_t,
+    *surf_network_model_extension_public_t;
 
-/** \brief Network resource datatype
- *  \ingroup SURF_resources
+/** \brief Network model datatype
+ *  \ingroup SURF_models
  */
-typedef struct surf_network_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_network_resource_extension_public_t extension_public;
-} s_surf_network_resource_t, *surf_network_resource_t;
+typedef struct surf_network_model {
+  surf_model_private_t common_private;
+  surf_model_public_t common_public;
+  surf_network_model_extension_public_t extension_public;
+} s_surf_network_model_t, *surf_network_model_t;
 
-/** \brief The network resource
- *  \ingroup SURF_resources
+/** \brief The network model
+ *  \ingroup SURF_models
  *
  *  When creating a new API on top on SURF, you shouldn't use the
- *  network resource unless you know what you are doing. Only the workstation
- *  resource should be accessed because depending on the platform model,
- *  the network resource can be NULL.
+ *  network model unless you know what you are doing. Only the workstation
+ *  model should be accessed because depending on the platform model,
+ *  the network model can be NULL.
  */
-XBT_PUBLIC_DATA(surf_network_resource_t) surf_network_resource;
+XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
 
 /** \brief Initializes the platform with the network model CM02
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
- *  This function is called by surf_workstation_resource_init_CLM03
- *  or by yourself only if you plan using surf_workstation_resource_init_compound
+ *  This function is called by surf_workstation_model_init_CLM03
+ *  or by yourself only if you plan using surf_workstation_model_init_compound
  *
- *  \see surf_workstation_resource_init_CLM03()
+ *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_network_resource_init_CM02(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_CM02(const char *filename);
 
 #ifdef HAVE_GTNETS
 /** \brief Initializes the platform with the network model GTNETS
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
- *  This function is called by surf_workstation_resource_init_GTNETS
- *  or by yourself only if you plan using surf_workstation_resource_init_compound
+ *  This function is called by surf_workstation_model_init_GTNETS
+ *  or by yourself only if you plan using surf_workstation_model_init_compound
  *
- *  \see surf_workstation_resource_init_GTNETS()
+ *  \see surf_workstation_model_init_GTNETS()
  */
-XBT_PUBLIC(void) surf_network_resource_init_GTNETS(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_GTNETS(const char *filename);
 #endif
 
 /** \brief Initializes the platform with the network model Reno
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
  *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
@@ -318,13 +318,13 @@ XBT_PUBLIC(void) surf_network_resource_init_GTNETS(const char *filename);
  *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
  *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
  *
- *  Call this function only if you plan using surf_workstation_resource_init_compound.
+ *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_resource_init_Reno(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Reno(const char *filename);
 
 /** \brief Initializes the platform with the network model Vegas
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
  *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent 
@@ -334,14 +334,14 @@ XBT_PUBLIC(void) surf_network_resource_init_Reno(const char *filename);
  *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
  *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
  *
- *  Call this function only if you plan using surf_workstation_resource_init_compound.
+ *  Call this function only if you plan using surf_workstation_model_init_compound.
  *
  */
-XBT_PUBLIC(void) surf_network_resource_init_Vegas(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_Vegas(const char *filename);
 
 #ifdef HAVE_SDP
 /** \brief Initializes the platform with the network model based on SDP
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
  *  This function implements the proportional fairness known as the maximization
@@ -353,25 +353,25 @@ XBT_PUBLIC(void) surf_network_resource_init_Vegas(const char *filename);
  *  Semi-definite programming approach for bandwidth allocation and routing in networks.
  *  Game Theory and Applications, 9:169-179, December 2003. Nova publisher.
  *
- *  Call this function only if you plan using surf_workstation_resource_init_compound.
+ *  Call this function only if you plan using surf_workstation_model_init_compound.
  */
-XBT_PUBLIC(void) surf_network_resource_init_SDP(const char *filename);
+XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
 #endif
 
 
 
-extern XBT_PUBLIC_DATA(int) surf_network_resource_description_size;
-/** \brief The list of all available network resource models
- *  \ingroup SURF_resources
+extern XBT_PUBLIC_DATA(int) surf_network_model_description_size;
+/** \brief The list of all available network model models
+ *  \ingroup SURF_models
  */
-extern XBT_PUBLIC_DATA(s_surf_resource_description_t) surf_network_resource_description[];
+extern XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
 
-/** \brief Workstation resource extension public
- *  \ingroup SURF_resources
+/** \brief Workstation model extension public
+ *  \ingroup SURF_models
  *
- *  Public functions specific to the workstation resource.
+ *  Public functions specific to the workstation model.
  */
-typedef struct surf_workstation_resource_extension_public {
+typedef struct surf_workstation_model_extension_public {
   surf_action_t(*execute) (void *workstation, double size);            /**< Execute a computation amount on a workstation
 									and create the corresponding action */
   surf_action_t(*sleep) (void *workstation, double duration);          /**< Make a workstation sleep during a given duration */
@@ -392,55 +392,55 @@ typedef struct surf_workstation_resource_extension_public {
   const char* (*get_link_name) (const void *link);                     /**< Return the name of a network link */
   double (*get_link_bandwidth) (const void *link);                     /**< Return the current bandwidth of a network link */
   double (*get_link_latency) (const void *link);                       /**< Return the current latency of a network link */
-} s_surf_workstation_resource_extension_public_t,
-    *surf_workstation_resource_extension_public_t;
+} s_surf_workstation_model_extension_public_t,
+    *surf_workstation_model_extension_public_t;
 
-/** \brief Workstation resource datatype.
- *  \ingroup SURF_resources
+/** \brief Workstation model datatype.
+ *  \ingroup SURF_models
  *
  */
-typedef struct surf_workstation_resource {
-  surf_resource_private_t common_private;
-  surf_resource_public_t common_public;
-  surf_workstation_resource_extension_public_t extension_public;
-} s_surf_workstation_resource_t, *surf_workstation_resource_t;
+typedef struct surf_workstation_model {
+  surf_model_private_t common_private;
+  surf_model_public_t common_public;
+  surf_workstation_model_extension_public_t extension_public;
+} s_surf_workstation_model_t, *surf_workstation_model_t;
 
-/** \brief The workstation resource
- *  \ingroup SURF_resources
+/** \brief The workstation model
+ *  \ingroup SURF_models
  *
  *  Note that when you create an API on top of SURF,
- *  the workstation resource should be the only one you use
- *  because depending on the platform model, the network resource and the CPU resource
+ *  the workstation model should be the only one you use
+ *  because depending on the platform model, the network model and the CPU model
  *  may not exist.
  */
-XBT_PUBLIC_DATA(surf_workstation_resource_t) surf_workstation_resource;
+XBT_PUBLIC_DATA(surf_workstation_model_t) surf_workstation_model;
 
 /** \brief Initializes the platform with a compound workstation model
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
- *  This function should be called after a cpu_resource and a
- *  network_resource have been set up.
+ *  This function should be called after a cpu_model and a
+ *  network_model have been set up.
  *
  */
-XBT_PUBLIC(void) surf_workstation_resource_init_compound(const char *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_compound(const char *filename);
 
 /** \brief Initializes the platform with the workstation model CLM03
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
- *  This platform model seperates the workstation resource and the network resource.
- *  The workstation resource will be initialized with the model CLM03, the network
- *  resource with the model CM02 and the CPU resource with the model Cas01.
+ *  This platform model seperates the workstation model and the network model.
+ *  The workstation model will be initialized with the model CLM03, the network
+ *  model with the model CM02 and the CPU model with the model Cas01.
  *  In future releases, some other network models will be implemented and will be
  *  combined with the workstation model CLM03.
  *
- *  \see surf_workstation_resource_init_KCCFLN05()
+ *  \see surf_workstation_model_init_KCCFLN05()
  */
-XBT_PUBLIC(void) surf_workstation_resource_init_CLM03(const char *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_CLM03(const char *filename);
 
 /** \brief Initializes the platform with the model KCCFLN05
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
  *  With this model, the workstations and the network are handled
@@ -450,27 +450,27 @@ XBT_PUBLIC(void) surf_workstation_resource_init_CLM03(const char *filename);
  *  SimDag.
  *
  */
-XBT_PUBLIC(void) surf_workstation_resource_init_KCCFLN05(const char *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(const char *filename);
 
 /** \brief Initializes the platform with the model KCCFLN05
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *  \param filename XML platform file name
  *
  *  With this model, only parallel tasks can be used. Resource sharing
  *  is done by identifying bottlenecks and giving an equal share of
- *  the resource to each action.
+ *  the model to each action.
  *
  */
-XBT_PUBLIC(void) surf_workstation_resource_init_ptask_L07(const char *filename);
+XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(const char *filename);
 
-extern XBT_PUBLIC_DATA(int) surf_workstation_resource_description_size;
-/** \brief The list of all available workstation resource models
- *  \ingroup SURF_resources
+extern XBT_PUBLIC_DATA(int) surf_workstation_model_description_size;
+/** \brief The list of all available workstation model models
+ *  \ingroup SURF_models
  */
-extern XBT_PUBLIC_DATA(s_surf_resource_description_t) surf_workstation_resource_description[];
+extern XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[];
 
 /** \brief The network links
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *
  *  This dict contains all network links.
  *
@@ -479,7 +479,7 @@ extern XBT_PUBLIC_DATA(s_surf_resource_description_t) surf_workstation_resource_
 XBT_PUBLIC_DATA(xbt_dict_t) network_link_set;
 
 /** \brief The workstations
- *  \ingroup SURF_resources
+ *  \ingroup SURF_models
  *
  *  This dict contains all workstations.
  *
@@ -487,10 +487,10 @@ XBT_PUBLIC_DATA(xbt_dict_t) network_link_set;
  */
 XBT_PUBLIC_DATA(xbt_dict_t)  workstation_set;
 
-/** \brief List of initialized resources
- *  \ingroup SURF_resources
+/** \brief List of initialized models
+ *  \ingroup SURF_models
  */
-XBT_PUBLIC_DATA(xbt_dynar_t)  resource_list;
+XBT_PUBLIC_DATA(xbt_dynar_t)  model_list;
 
 /*******************************************/
 /*** SURF Globals **************************/
@@ -503,12 +503,12 @@ XBT_PUBLIC_DATA(xbt_dynar_t)  resource_list;
  *
  *  This function has to be called to initialize the common
  *  structures.  Then you will have to create the environment by
- *  calling surf_timer_resource_init() and
- *  e.g. surf_workstation_resource_init_CLM03() or
- *  surf_workstation_resource_init_KCCFLN05().
+ *  calling surf_timer_model_init() and
+ *  e.g. surf_workstation_model_init_CLM03() or
+ *  surf_workstation_model_init_KCCFLN05().
  *
- *  \see surf_timer_resource_init(), surf_workstation_resource_init_CLM03(),
- *  surf_workstation_resource_init_KCCFLN05(), surf_workstation_resource_init_compound(), surf_exit()
+ *  \see surf_timer_model_init(), surf_workstation_model_init_CLM03(),
+ *  surf_workstation_model_init_KCCFLN05(), surf_workstation_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);	/* initialize common structures */
 
@@ -518,7 +518,7 @@ XBT_PUBLIC(void) surf_init(int *argc, char **argv);	/* initialize common structu
  *
  *  This function execute all possible events, update the action states
  *  and returns the time elapsed.
- *  When you call execute or communicate on a resource, the corresponding actions
+ *  When you call execute or communicate on a model, the corresponding actions
  *  are not executed immediately but only when you call surf_solve.
  *  Note that the returned elapsed time can be zero.
  */

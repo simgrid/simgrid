@@ -133,14 +133,14 @@ void tmgr_trace_free(tmgr_trace_t trace)
 tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
 					  tmgr_trace_t trace,
 					  double start_time, int offset,
-					  void *resource)
+					  void *model)
 {
   tmgr_trace_event_t trace_event = NULL;
 
   trace_event = xbt_new0(s_tmgr_trace_event_t, 1);
   trace_event->trace = trace;
   trace_event->idx = offset;
-  trace_event->resource = resource;
+  trace_event->model = model;
 
   xbt_assert0((trace_event->idx < xbt_dynar_length(trace->event_list)),
 	      "You're refering to an event that does not exist!");
@@ -161,7 +161,7 @@ double tmgr_history_next_date(tmgr_history_t h)
 tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
 						   double date,
 						   double *value,
-						   void **resource)
+						   void **model)
 {
   double event_date = tmgr_history_next_date(h);
   tmgr_trace_event_t trace_event = NULL;
@@ -178,7 +178,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
   event = xbt_dynar_get_ptr(trace->event_list, trace_event->idx);
 
   *value = event->value;
-  *resource = trace_event->resource;
+  *model = trace_event->model;
 
   if (trace_event->idx < xbt_dynar_length(trace->event_list) - 1) {
     xbt_heap_push(h->heap, trace_event, event_date + event->delta);

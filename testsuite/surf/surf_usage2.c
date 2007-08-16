@@ -47,59 +47,59 @@ void test(char *platform)
   surf_action_t commAB = NULL;
   double now = -1.0;
 
-  surf_workstation_resource_init_CLM03(platform);
+  surf_workstation_model_init_CLM03(platform);
 
   /*********************** WORKSTATION ***********************************/
   workstationA =
-      surf_workstation_resource->common_public->name_service("Cpu A");
+      surf_workstation_model->common_public->name_service("Cpu A");
   workstationB =
-      surf_workstation_resource->common_public->name_service("Cpu B");
+      surf_workstation_model->common_public->name_service("Cpu B");
 
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p\n",
-	 surf_workstation_resource->common_public->
-	 get_resource_name(workstationA), workstationA);
+	 surf_workstation_model->common_public->
+	 get_model_name(workstationA), workstationA);
   DEBUG2("%s : %p\n",
-	 surf_workstation_resource->common_public->
-	 get_resource_name(workstationB), workstationB);
+	 surf_workstation_model->common_public->
+	 get_model_name(workstationB), workstationB);
 
   /* Let's do something on it */
   actionA =
-      surf_workstation_resource->extension_public->execute(workstationA,
+      surf_workstation_model->extension_public->execute(workstationA,
 							   1000.0);
   actionB =
-      surf_workstation_resource->extension_public->execute(workstationB,
+      surf_workstation_model->extension_public->execute(workstationB,
 							   1000.0);
   actionC =
-      surf_workstation_resource->extension_public->sleep(workstationB,
+      surf_workstation_model->extension_public->sleep(workstationB,
 							 7.32);
 
   commAB =
-      surf_workstation_resource->extension_public->
+      surf_workstation_model->extension_public->
       communicate(workstationA, workstationB, 150.0, -1.0);
 
   surf_solve();			/* Takes traces into account. Returns 0.0 */
   do {
     surf_action_t action = NULL;
     int i;
-    surf_resource_t resource = NULL;
+    surf_model_t model = NULL;
 
     now = surf_get_clock();
     DEBUG1("Next Event : " "%g" "\n", now);
 
-    xbt_dynar_foreach(resource_list, i, resource) {
-      DEBUG1("\t %s actions\n", resource->common_public->name);
+    xbt_dynar_foreach(model_list, i, model) {
+      DEBUG1("\t %s actions\n", model->common_public->name);
       while ((action =
-	     xbt_swag_extract(resource->common_public->states.
+	     xbt_swag_extract(model->common_public->states.
 			      failed_action_set))) {
 	DEBUG1("\t * Failed : %p\n", action);
-	resource->common_public->action_free(action);
+	model->common_public->action_free(action);
       }
       while ((action =
-	     xbt_swag_extract(resource->common_public->states.
+	     xbt_swag_extract(model->common_public->states.
 			      done_action_set))) {
 	DEBUG1("\t * Done : %p\n", action);
-	resource->common_public->action_free(action);
+	model->common_public->action_free(action);
       }
     }
   } while (surf_solve()>=0.0);

@@ -346,15 +346,15 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 
   {
     surf_action_t action = NULL;
-    surf_resource_t resource = NULL;
+    surf_model_t model = NULL;
     smx_action_t smx_action = NULL;
 
     void *fun = NULL;
     void *arg = NULL;
 
-    xbt_dynar_foreach(resource_list, i, resource) {
-      if (xbt_swag_size(resource->common_public->states.failed_action_set)
-	  || xbt_swag_size(resource->common_public->states.
+    xbt_dynar_foreach(model_list, i, model) {
+      if (xbt_swag_size(model->common_public->states.failed_action_set)
+	  || xbt_swag_size(model->common_public->states.
 			   done_action_set)) {
 	state_modifications = 1;
       }
@@ -366,7 +366,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
       DEBUG1("Elapsed_time %f", elapsed_time);
     }
 
-    while (surf_timer_resource->extension_public->get(&fun, (void *) &arg)) {
+    while (surf_timer_model->extension_public->get(&fun, (void *) &arg)) {
       DEBUG2("got %p %p", fun, arg);
       if (fun == SIMIX_process_create) {
 	smx_process_arg_t args = arg;
@@ -375,7 +375,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 				       args->data, args->hostname,
 				       args->argc, args->argv);
 	if (args->kill_time > SIMIX_get_clock()) {
-	  surf_timer_resource->extension_public->set(args->kill_time,
+	  surf_timer_model->extension_public->set(args->kill_time,
 						     (void *)
 						     &SIMIX_process_kill,
 						     (void *) process);
@@ -391,9 +391,9 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
     }
 
     /* Wake up all process waiting for the action finish */
-    xbt_dynar_foreach(resource_list, i, resource) {
+    xbt_dynar_foreach(model_list, i, model) {
       while ((action =
-	      xbt_swag_extract(resource->common_public->states.
+	      xbt_swag_extract(model->common_public->states.
 			       failed_action_set))) {
 	smx_action = action->data;
 	if (smx_action) {
@@ -401,7 +401,7 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
 	}
       }
       while ((action =
-	      xbt_swag_extract(resource->common_public->states.
+	      xbt_swag_extract(model->common_public->states.
 			       done_action_set))) {
 	smx_action = action->data;
 	if (smx_action) {
@@ -440,12 +440,12 @@ double SIMIX_solve(xbt_fifo_t actions_done, xbt_fifo_t actions_failed)
  */
 void SIMIX_timer_set(double date, void *function, void *arg)
 {
-  surf_timer_resource->extension_public->set(date, function, arg);
+  surf_timer_model->extension_public->set(date, function, arg);
 }
 
 int SIMIX_timer_get(void **function, void **arg)
 {
-  return surf_timer_resource->extension_public->get(function, arg);
+  return surf_timer_model->extension_public->get(function, arg);
 }
 
 /**

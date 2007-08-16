@@ -17,7 +17,7 @@
 /* } s_surf_action_timer_t, *surf_action_timer_t; */
 
 typedef struct command {
-  surf_resource_t resource;	/* Any such object, added in a trace
+  surf_model_t model;	/* Any such object, added in a trace
 				   should start by this field!!! */
   void *function;
   void *args;

@@ -62,12 +62,12 @@ static void parse_process_finalize(void)
     DEBUG3("Process %s(%s) will be started at time %f", arg->name,
 	   arg->hostname, start_time);
     if (simix_global->create_process_function)
-      surf_timer_resource->extension_public->set(start_time,
+      surf_timer_model->extension_public->set(start_time,
 						 (void *) simix_global->
 						 create_process_function,
 						 arg);
     else
-      surf_timer_resource->extension_public->set(start_time, (void *)
+      surf_timer_model->extension_public->set(start_time, (void *)
 						 &SIMIX_process_create,
 						 arg);
 
@@ -87,12 +87,12 @@ static void parse_process_finalize(void)
 
     if (kill_time > SIMIX_get_clock()) {
       if (simix_global->kill_process_function)
-	surf_timer_resource->extension_public->set(start_time,
+	surf_timer_model->extension_public->set(start_time,
 						   (void *) simix_global->
 						   kill_process_function,
 						   arg);
       else
-	surf_timer_resource->extension_public->set(kill_time, (void *)
+	surf_timer_model->extension_public->set(kill_time, (void *)
 						   &SIMIX_process_kill,
 						   (void *) process);
     }

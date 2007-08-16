@@ -13,7 +13,7 @@
 typedef enum {
   SURF_WORKSTATION_RESOURCE_CPU,
   SURF_WORKSTATION_RESOURCE_LINK,
-} e_surf_workstation_resource_type_t;
+} e_surf_workstation_model_type_t;
 
 
 /**************************************/
@@ -29,8 +29,8 @@ typedef struct router_KCCFLN05 {
 /********* cpu object *****************/
 /**************************************/
 typedef struct cpu_KCCFLN05 {
-  surf_resource_t resource;
-  e_surf_workstation_resource_type_t type;	/* Do not move this field */
+  surf_model_t model;
+  e_surf_workstation_model_type_t type;	/* Do not move this field */
   char *name;					/* Do not move this field */
   lmm_constraint_t constraint;
   lmm_constraint_t bus;
@@ -52,8 +52,8 @@ typedef struct cpu_KCCFLN05 {
 /**************************************/
 
 typedef struct network_link_KCCFLN05 {
-  surf_resource_t resource;
-  e_surf_workstation_resource_type_t type;	/* Do not move this field */
+  surf_model_t model;
+  e_surf_workstation_model_type_t type;	/* Do not move this field */
   char *name;					/* Do not move this field */
   lmm_constraint_t constraint;
   double lat_current;

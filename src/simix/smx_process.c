@@ -292,7 +292,7 @@ void SIMIX_process_suspend(smx_process_t process)
       simdata->suspended = 1;
       c = simdata->cond;
       xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-	surf_workstation_resource->common_public->suspend(act->simdata->
+	surf_workstation_model->common_public->suspend(act->simdata->
 							  surf_action);
       }
     } else {
@@ -307,7 +307,7 @@ void SIMIX_process_suspend(smx_process_t process)
 
     cond = SIMIX_cond_init();
     dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
-    surf_workstation_resource->common_public->set_priority(dummy->simdata->
+    surf_workstation_model->common_public->set_priority(dummy->simdata->
 							   surf_action,
 							   0.0);
     SIMIX_register_action_to_condition(dummy, cond);
@@ -350,7 +350,7 @@ void SIMIX_process_resume(smx_process_t process)
     simdata->suspended = 0;
     c = simdata->cond;
     xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-      surf_workstation_resource->common_public->resume(act->simdata->
+      surf_workstation_model->common_public->resume(act->simdata->
 						       surf_action);
     }
     return;

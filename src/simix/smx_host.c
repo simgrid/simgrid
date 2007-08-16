@@ -169,7 +169,7 @@ double SIMIX_host_get_speed(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_resource->
+  return (surf_workstation_model->
 	  extension_public->get_speed(host->simdata->host, 1.0));
 }
 
@@ -183,7 +183,7 @@ double SIMIX_host_get_available_speed(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_resource->
+  return (surf_workstation_model->
 	  extension_public->get_available_speed(host->simdata->host));
 }
 
@@ -221,7 +221,7 @@ int SIMIX_host_get_state(smx_host_t host)
 {
   xbt_assert0((host != NULL), "Invalid parameters");
 
-  return (surf_workstation_resource->
+  return (surf_workstation_model->
 	  extension_public->get_state(host->simdata->host));
 
 }

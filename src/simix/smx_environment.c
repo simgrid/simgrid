@@ -38,7 +38,7 @@ void SIMIX_create_environment(const char *file)
   int workstation_id = -1;
 
   simix_config_init();		/* make sure that our configuration set is created */
-  surf_timer_resource_init(file);
+  surf_timer_model_init(file);
 
   /* which model do you want today? */
   workstation_model_name =
@@ -46,8 +46,8 @@ void SIMIX_create_environment(const char *file)
 
   DEBUG1("Model : %s", workstation_model_name);
   workstation_id =
-      find_resource_description(surf_workstation_resource_description,
-				surf_workstation_resource_description_size,
+      find_model_description(surf_workstation_model_description,
+				surf_workstation_model_description_size,
 				workstation_model_name);
   if (!strcmp(workstation_model_name, "compound")) {
     xbt_ex_t e;
@@ -83,20 +83,20 @@ void SIMIX_create_environment(const char *file)
     }
 
     network_id =
-	find_resource_description(surf_network_resource_description,
-				  surf_network_resource_description_size,
+	find_model_description(surf_network_model_description,
+				  surf_network_model_description_size,
 				  network_model_name);
     cpu_id =
-	find_resource_description(surf_cpu_resource_description,
-				  surf_cpu_resource_description_size,
+	find_model_description(surf_cpu_model_description,
+				  surf_cpu_model_description_size,
 				  cpu_model_name);
 
-    surf_cpu_resource_description[cpu_id].resource_init(file);
-    surf_network_resource_description[network_id].resource_init(file);
+    surf_cpu_model_description[cpu_id].model_init(file);
+    surf_network_model_description[network_id].model_init(file);
   }
 
-  surf_workstation_resource_description[workstation_id].
-      resource_init(file);
+  surf_workstation_model_description[workstation_id].
+      model_init(file);
 
   _simix_init_status = 2;	/* inited; don't change settings now */
 

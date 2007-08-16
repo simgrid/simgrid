@@ -126,7 +126,7 @@ void SD_workstation_set_data(SD_workstation_t workstation, void *data) {
 const char* SD_workstation_get_name(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_resource->common_public->get_resource_name(workstation->surf_workstation);
+  return surf_workstation_model->common_public->get_model_name(workstation->surf_workstation);
 }
 
 /**
@@ -157,12 +157,12 @@ const SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
   surf_src = src->surf_workstation;
   surf_dst = dst->surf_workstation;
 
-  surf_route = surf_workstation_resource->extension_public->get_route(surf_src, surf_dst);
-  route_size = surf_workstation_resource->extension_public->get_route_size(surf_src, surf_dst);
+  surf_route = surf_workstation_model->extension_public->get_route(surf_src, surf_dst);
+  route_size = surf_workstation_model->extension_public->get_route_size(surf_src, surf_dst);
 
 
   for (i = 0; i < route_size; i++) {
-    link_name = surf_workstation_resource->extension_public->get_link_name(surf_route[i]);
+    link_name = surf_workstation_model->extension_public->get_link_name(surf_route[i]);
     sd_global->recyclable_route[i] = xbt_dict_get(sd_global->links, link_name);
   }
 
@@ -179,7 +179,7 @@ const SD_link_t* SD_route_get_list(SD_workstation_t src, SD_workstation_t dst) {
  */
 int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
   SD_CHECK_INIT_DONE();
-  return surf_workstation_resource->extension_public->
+  return surf_workstation_model->extension_public->
     get_route_size(src->surf_workstation, dst->surf_workstation);
 }
 
@@ -193,7 +193,7 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst) {
 double SD_workstation_get_power(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_speed(workstation->surf_workstation, 1.0);
+  return surf_workstation_model->extension_public->get_speed(workstation->surf_workstation, 1.0);
 }
 
 /**
@@ -206,7 +206,7 @@ double SD_workstation_get_power(SD_workstation_t workstation) {
 double SD_workstation_get_available_power(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_available_speed(workstation->surf_workstation);
+  return surf_workstation_model->extension_public->get_available_speed(workstation->surf_workstation);
 }
 
 /**
@@ -351,7 +351,7 @@ double SD_route_get_communication_time(SD_workstation_t src, SD_workstation_t ds
 /**
  * \brief Sets the access mode for the tasks that will be executed on a workstation
  *
- * By default, a workstation resource is shared, i.e. several tasks
+ * By default, a workstation model is shared, i.e. several tasks
  * can be executed at the same time on a workstation. The CPU power of
  * the workstation is shared between the running tasks on the workstation.
  * In sequential mode, only one task can use the workstation, and the other

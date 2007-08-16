@@ -124,12 +124,12 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state) {
     break;
   case SD_RUNNING:
     task->state_set = sd_global->running_task_set;
-    task->start_time = surf_workstation_resource->common_public->
+    task->start_time = surf_workstation_model->common_public->
       action_get_start_time(task->surf_action);
     break;
   case SD_DONE:
     task->state_set = sd_global->done_task_set;
-    task->finish_time = surf_workstation_resource->common_public->
+    task->finish_time = surf_workstation_model->common_public->
       action_get_finish_time(task->surf_action);
     task->remains = 0;
     break;
@@ -589,7 +589,7 @@ void SD_task_unschedule(SD_task_t task) {
     __SD_task_destroy_scheduling_data(task);
 
   if (__SD_task_is_running(task)) /* the task should become SD_FAILED */
-    surf_workstation_resource->common_public->action_cancel(task->surf_action);
+    surf_workstation_model->common_public->action_cancel(task->surf_action);
   else
     __SD_task_set_state(task, SD_NOT_SCHEDULED);
   task->remains = task->amount;
@@ -648,11 +648,11 @@ void __SD_task_really_run(SD_task_t task) {
   task->surf_action = NULL;
   if((task->workstation_nb==1) &&
      (task->communication_amount[0]==0.0)) {
-    task->surf_action = surf_workstation_resource->extension_public->
+    task->surf_action = surf_workstation_model->extension_public->
       execute(surf_workstations[0], task->computation_amount[0]);
   } else if((task->workstation_nb==1) &&
 	    (task->computation_amount[0]==0.0)) {
-    task->surf_action = surf_workstation_resource->extension_public->
+    task->surf_action = surf_workstation_model->extension_public->
       communicate(surf_workstations[0], surf_workstations[0],
 		  task->communication_amount[0],task->rate);
   } else if((task->workstation_nb==2) &&
@@ -668,13 +668,13 @@ void __SD_task_really_run(SD_task_t task) {
       }
     }
     if(nb==1) {
-      task->surf_action = surf_workstation_resource->extension_public->
+      task->surf_action = surf_workstation_model->extension_public->
 	communicate(surf_workstations[0], surf_workstations[1],
 		    value, task->rate);
     }
   }
   if(!task->surf_action) 
-    task->surf_action = surf_workstation_resource->extension_public->
+    task->surf_action = surf_workstation_model->extension_public->
       execute_parallel_task(task->workstation_nb,
 			    surf_workstations,
 			    task->computation_amount,
@@ -682,7 +682,7 @@ void __SD_task_really_run(SD_task_t task) {
 			    task->amount,
 			    task->rate);
 
-  surf_workstation_resource->common_public->action_set_data(task->surf_action, task);
+  surf_workstation_model->common_public->action_set_data(task->surf_action, task);
   task->state_changed = 1;
 
   DEBUG1("surf_action = %p",  task->surf_action);
@@ -763,7 +763,7 @@ void __SD_task_just_done(SD_task_t task) {
   candidates = xbt_new(SD_task_t, 8);
 
   __SD_task_set_state(task, SD_DONE);
-  surf_workstation_resource->common_public->action_free(task->surf_action);
+  surf_workstation_model->common_public->action_free(task->surf_action);
   task->surf_action = NULL;
 
   DEBUG0("Looking for candidates");
@@ -896,7 +896,7 @@ double SD_task_get_start_time(SD_task_t task) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(task != NULL, "Invalid parameter");
   if(task->surf_action)
-    return surf_workstation_resource->common_public->action_get_start_time(task->surf_action);
+    return surf_workstation_model->common_public->action_get_start_time(task->surf_action);
   else 
     return task->start_time;
 }
@@ -917,7 +917,7 @@ double SD_task_get_finish_time(SD_task_t task) {
   xbt_assert0(task != NULL, "Invalid parameter");
 
   if(task->surf_action) /* should never happen as actions are destroyed right after their completion */
-    return surf_workstation_resource->common_public->action_get_finish_time(task->surf_action);
+    return surf_workstation_model->common_public->action_get_finish_time(task->surf_action);
   else 
     return task->finish_time;
 }
@@ -946,7 +946,7 @@ void SD_task_destroy(SD_task_t task) {
     xbt_free(task->name);
 
   if (task->surf_action != NULL)
-    surf_workstation_resource->common_public->action_free(task->surf_action);
+    surf_workstation_model->common_public->action_free(task->surf_action);
 
   if (task->workstation_list != NULL)
     xbt_free(task->workstation_list);
