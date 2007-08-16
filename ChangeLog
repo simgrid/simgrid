@@ -27,6 +27,10 @@ SimGrid (3.3-cvs) unstable; urgency=low
     the code is tested not only by being run but also by checking that the
     output match an expected output [Mt].
 
+  * Move on to FleXML v1.7 for the embeeded XML parsers. This version
+    is really less memory-demanding, which should allow you to use
+    larger files in SimGrid [AL].
+
  GRAS:
   * Convert the PIDs from long int to int to match the MSG ones (and
     linux ones too) [Mt]
