@@ -43,7 +43,6 @@
      <route_element name="3"/>
   </route>
 
-
   <route src="S1" dst="R1">
      <route_element name="1"/>
   </route>
@@ -63,5 +62,4 @@
   <route src="R2" dst="C2">
      <route_element name="5"/>
   </route>
-
 </platform_description>
