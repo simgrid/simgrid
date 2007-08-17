@@ -102,7 +102,7 @@ void SD_link_set_data(SD_link_t link, void *data) {
 const char* SD_link_get_name(SD_link_t link) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_link_name(link->surf_link);
+  return surf_workstation_model->extension_public->get_link_name(link->surf_link);
 }
 
 /**
@@ -114,7 +114,7 @@ const char* SD_link_get_name(SD_link_t link) {
 double SD_link_get_current_bandwidth(SD_link_t link) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_link_bandwidth(link->surf_link);
+  return surf_workstation_model->extension_public->get_link_bandwidth(link->surf_link);
 }
 
 /**
@@ -126,7 +126,7 @@ double SD_link_get_current_bandwidth(SD_link_t link) {
 double SD_link_get_current_latency(SD_link_t link) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(link != NULL, "Invalid parameter");
-  return surf_workstation_resource->extension_public->get_link_latency(link->surf_link);
+  return surf_workstation_model->extension_public->get_link_latency(link->surf_link);
 }
 
 /* Destroys a link.
