@@ -414,6 +414,7 @@ void smpi_global_destroy()
 
 int smpi_run_simulation(int argc, char **argv)
 {
+	xbt_fifo_item_t cond_item   = NULL;
 	smx_cond_t   cond           = NULL;
 	smx_action_t action         = NULL;
 
@@ -447,15 +448,17 @@ int smpi_run_simulation(int argc, char **argv)
 	while (SIMIX_solve(actions_done, actions_failed) != -1.0) {
 		while ((action = xbt_fifo_pop(actions_failed))) {
 			DEBUG1("** %s failed **", action->name);
-			while ((cond = xbt_fifo_pop(action->cond_list))) {
+			xbt_fifo_foreach(action->cond_list, cond_item, cond, smx_cond_t) {
 				SIMIX_cond_broadcast(cond);
+				SIMIX_unregister_action_to_condition(action, cond);
 			}
 			SIMIX_action_destroy(action);
 		}
 		while ((action = xbt_fifo_pop(actions_done))) {
 			DEBUG1("** %s done **",action->name);
-			while ((cond = xbt_fifo_pop(action->cond_list))) {
+			xbt_fifo_foreach(action->cond_list, cond_item, cond, smx_cond_t) {
 				SIMIX_cond_broadcast(cond);
+				SIMIX_unregister_action_to_condition(action, cond);
 			}
 			SIMIX_action_destroy(action);
 		}
