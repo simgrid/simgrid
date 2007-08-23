@@ -43,7 +43,8 @@ bin_PROGRAMS = sendrecv/sendrecv$(EXEEXT) suspend/suspend$(EXEEXT) \
 	masterslave/masterslave$(EXEEXT) \
 	masterslave/masterslave_forwarder$(EXEEXT) \
 	masterslave/masterslave_failure$(EXEEXT) \
-	masterslave/masterslave_bypass$(EXEEXT) $(am__EXEEXT_1)
+	masterslave/masterslave_bypass$(EXEEXT) \
+	parallel_task/parallel_task$(EXEEXT) $(am__EXEEXT_1)
 @HAVE_GTNETS_TRUE@am__append_2 = gtnets/gtnets 
 @HAVE_GTNETS_FALSE@am__append_3 = gtnets/gtnets.c
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -96,6 +97,11 @@ masterslave_masterslave_forwarder_OBJECTS =  \
 	$(am_masterslave_masterslave_forwarder_OBJECTS)
 masterslave_masterslave_forwarder_DEPENDENCIES =  \
 	$(top_builddir)/src/libsimgrid.la
+am_parallel_task_parallel_task_OBJECTS = parallel_task.$(OBJEXT)
+parallel_task_parallel_task_OBJECTS =  \
+	$(am_parallel_task_parallel_task_OBJECTS)
+parallel_task_parallel_task_DEPENDENCIES =  \
+	$(top_builddir)/src/libsimgrid.la
 am_sendrecv_sendrecv_OBJECTS = sendrecv.$(OBJEXT)
 sendrecv_sendrecv_OBJECTS = $(am_sendrecv_sendrecv_OBJECTS)
 sendrecv_sendrecv_DEPENDENCIES = $(top_builddir)/src/libsimgrid.la
@@ -118,12 +124,14 @@ SOURCES = $(gtnets_gtnets_SOURCES) $(masterslave_masterslave_SOURCES) \
 	$(masterslave_masterslave_bypass_SOURCES) \
 	$(masterslave_masterslave_failure_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
+	$(parallel_task_parallel_task_SOURCES) \
 	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 DIST_SOURCES = $(am__gtnets_gtnets_SOURCES_DIST) \
 	$(masterslave_masterslave_SOURCES) \
 	$(masterslave_masterslave_bypass_SOURCES) \
 	$(masterslave_masterslave_failure_SOURCES) \
 	$(masterslave_masterslave_forwarder_SOURCES) \
+	$(parallel_task_parallel_task_SOURCES) \
 	$(sendrecv_sendrecv_SOURCES) $(suspend_suspend_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -281,13 +289,15 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
         suspend/suspend.tesh \
 	masterslave/masterslave.tesh \
 	masterslave/masterslave_forwarder.tesh \
-        masterslave/masterslave_bypass.tesh
+        masterslave/masterslave_bypass.tesh \
+        parallel_task/parallel_task.tesh
 
 @HAVE_SDP_TRUE@BROKEN_TESTS = sendrecv/sendrecv_SDP.tesh
 CLEANFILES = sendrecv/*~ sendrecv/sendrecv suspend/*~ suspend/suspend \
 	masterslave/*~ masterslave/masterslave \
 	masterslave/masterslave_forwarder \
-	masterslave/masterslave_bypass $(am__append_1)
+	masterslave/masterslave_bypass parallel_task/parallel_task \
+	$(am__append_1)
 
 # sendrecv simple example
 sendrecv_sendrecv_SOURCES = sendrecv/sendrecv.c
@@ -296,6 +306,10 @@ sendrecv_sendrecv_LDADD = $(top_builddir)/src/libsimgrid.la
 # suspend/resume simple example
 suspend_suspend_SOURCES = suspend/suspend.c
 suspend_suspend_LDADD = $(top_builddir)/src/libsimgrid.la
+
+# master/slave application example
+parallel_task_parallel_task_SOURCES = parallel_task/parallel_task.c
+parallel_task_parallel_task_LDADD = $(top_builddir)/src/libsimgrid.la
 
 # master/slave application example
 masterslave_masterslave_SOURCES = masterslave/masterslave.c
@@ -398,6 +412,12 @@ masterslave/masterslave_failure$(EXEEXT): $(masterslave_masterslave_failure_OBJE
 masterslave/masterslave_forwarder$(EXEEXT): $(masterslave_masterslave_forwarder_OBJECTS) $(masterslave_masterslave_forwarder_DEPENDENCIES) masterslave/$(am__dirstamp)
 	@rm -f masterslave/masterslave_forwarder$(EXEEXT)
 	$(LINK) $(masterslave_masterslave_forwarder_OBJECTS) $(masterslave_masterslave_forwarder_LDADD) $(LIBS)
+parallel_task/$(am__dirstamp):
+	@$(MKDIR_P) parallel_task
+	@: > parallel_task/$(am__dirstamp)
+parallel_task/parallel_task$(EXEEXT): $(parallel_task_parallel_task_OBJECTS) $(parallel_task_parallel_task_DEPENDENCIES) parallel_task/$(am__dirstamp)
+	@rm -f parallel_task/parallel_task$(EXEEXT)
+	$(LINK) $(parallel_task_parallel_task_OBJECTS) $(parallel_task_parallel_task_LDADD) $(LIBS)
 sendrecv/$(am__dirstamp):
 	@$(MKDIR_P) sendrecv
 	@: > sendrecv/$(am__dirstamp)
@@ -422,6 +442,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_bypass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_failure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/masterslave_forwarder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_task.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sendrecv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/suspend.Po@am__quote@
 
@@ -515,6 +536,20 @@ masterslave_forwarder.obj: masterslave/masterslave_forwarder.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='masterslave/masterslave_forwarder.c' object='masterslave_forwarder.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o masterslave_forwarder.obj `if test -f 'masterslave/masterslave_forwarder.c'; then $(CYGPATH_W) 'masterslave/masterslave_forwarder.c'; else $(CYGPATH_W) '$(srcdir)/masterslave/masterslave_forwarder.c'; fi`
+
+parallel_task.o: parallel_task/parallel_task.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT parallel_task.o -MD -MP -MF $(DEPDIR)/parallel_task.Tpo -c -o parallel_task.o `test -f 'parallel_task/parallel_task.c' || echo '$(srcdir)/'`parallel_task/parallel_task.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/parallel_task.Tpo $(DEPDIR)/parallel_task.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='parallel_task/parallel_task.c' object='parallel_task.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o parallel_task.o `test -f 'parallel_task/parallel_task.c' || echo '$(srcdir)/'`parallel_task/parallel_task.c
+
+parallel_task.obj: parallel_task/parallel_task.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT parallel_task.obj -MD -MP -MF $(DEPDIR)/parallel_task.Tpo -c -o parallel_task.obj `if test -f 'parallel_task/parallel_task.c'; then $(CYGPATH_W) 'parallel_task/parallel_task.c'; else $(CYGPATH_W) '$(srcdir)/parallel_task/parallel_task.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/parallel_task.Tpo $(DEPDIR)/parallel_task.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='parallel_task/parallel_task.c' object='parallel_task.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o parallel_task.obj `if test -f 'parallel_task/parallel_task.c'; then $(CYGPATH_W) 'parallel_task/parallel_task.c'; else $(CYGPATH_W) '$(srcdir)/parallel_task/parallel_task.c'; fi`
 
 sendrecv.o: sendrecv/sendrecv.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sendrecv.o -MD -MP -MF $(DEPDIR)/sendrecv.Tpo -c -o sendrecv.o `test -f 'sendrecv/sendrecv.c' || echo '$(srcdir)/'`sendrecv/sendrecv.c
@@ -728,6 +763,7 @@ distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-rm -f gtnets/$(am__dirstamp)
 	-rm -f masterslave/$(am__dirstamp)
+	-rm -f parallel_task/$(am__dirstamp)
 	-rm -f sendrecv/$(am__dirstamp)
 	-rm -f suspend/$(am__dirstamp)
 

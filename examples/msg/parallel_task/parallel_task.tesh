@@ -1,0 +1,5 @@
+#! ./tesh
+
+p Testing a simple master/slave example application
+
+$ $SG_TEST_EXENV parallel_task/parallel_task$EXEEXT ${srcdir:=.}/small_platform.xml
