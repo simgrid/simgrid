@@ -135,10 +135,9 @@ XBT_PUBLIC(double) SIMIX_action_get_remains(smx_action_t action);
 
 XBT_PUBLIC(e_surf_action_state_t) SIMIX_action_get_state(smx_action_t action);
 
-/*Not implemented yet */
 XBT_PUBLIC(smx_action_t) SIMIX_action_parallel_execute(char * name, 
-						       int workstation_nb,      
-						       void **workstation_list,
+						       int host_nb,      
+						       smx_host_t *host_list,
 						       double *computation_amount,
 						       double *communication_amount,
 						       double amount,

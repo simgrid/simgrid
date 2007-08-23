@@ -261,12 +261,14 @@ double SIMIX_action_get_remains(smx_action_t action)
   return action->simdata->surf_action->remains;
 }
 
-smx_action_t SIMIX_action_parallel_execute(char *name, int workstation_nb,
-					   void **workstation_list,
+smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
+					   smx_host_t *host_list,
 					   double *computation_amount,
 					   double *communication_amount,
 					   double amount, double rate)
 {
+  void **workstation_list = NULL;
+  int i;
 
   /* alloc structures */
   smx_action_t act = xbt_new0(s_smx_action_t, 1);
@@ -277,16 +279,21 @@ smx_action_t SIMIX_action_parallel_execute(char *name, int workstation_nb,
   /* initialize them */
   act->name = xbt_strdup(name);
 
-  /* set communication */
+  /* set action */
+
+  workstation_list = xbt_new0(void *,host_nb);
+  for (i = 0; i < host_nb; i++)
+    workstation_list[i] = host_list[i]->simdata->host;
+
   simdata->surf_action =
       surf_workstation_model->extension_public->
-      execute_parallel_task(workstation_nb, workstation_list,
+      execute_parallel_task(host_nb, workstation_list,
 			    computation_amount, communication_amount,
 			    amount, rate);
 
   surf_workstation_model->common_public->action_set_data(simdata->
-							    surf_action,
-							    act);
+							 surf_action,
+							 act);
 
   return act;
 }
