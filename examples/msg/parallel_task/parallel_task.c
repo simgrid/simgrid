@@ -22,8 +22,8 @@ int test(int argc, char *argv[])
 {
   int slaves_count = 0;
   m_host_t *slaves = NULL;
-  double task_comp_size = 0;
-  double task_comm_size = 0;
+  double task_comp_size = 100000;
+  double task_comm_size = 10000;
   double *computation_amount = NULL;
   double *communication_amount = NULL;
   m_task_t ptask = NULL;
