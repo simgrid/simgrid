@@ -2,13 +2,7 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV priority/priority$EXEEXT ${srcdir:=.}/small_platform.xml  ${srcdir:=.}/priority/deployment_priority.xml --cfg=workstation_model:compound --cfg=cpu_model:Cas01 --cfg=network_model:CM02
-> [0.000000] [simix_kernel/INFO] setting 'workstation_model' to 'compound'
-> [0.000000] [xbt_cfg/INFO] type in variable = 2
-> [0.000000] [simix_kernel/INFO] setting 'cpu_model' to 'Cas01'
-> [0.000000] [xbt_cfg/INFO] type in variable = 2
-> [0.000000] [simix_kernel/INFO] setting 'network_model' to 'CM02'
-> [0.000000] [xbt_cfg/INFO] type in variable = 2
+$ $SG_TEST_EXENV priority/priority$EXEEXT ${srcdir:=.}/small_platform.xml  ${srcdir:=.}/priority/deployment_priority.xml
 > [Fafard:test:(1) 0.000000] [msg_test/INFO] Hello! Running a task of size 7.6296e+07 with priority 1
 > [Fafard:test:(2) 0.000000] [msg_test/INFO] Hello! Running a task of size 7.6296e+07 with priority 2
 > [Fafard:test:(2) 1.500000] [msg_test/INFO] Goodbye now!
