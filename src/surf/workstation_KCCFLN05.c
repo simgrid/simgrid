@@ -190,7 +190,7 @@ static void action_resume(surf_action_t action)
     if (((surf_action_workstation_KCCFLN05_t) action)->lat_current == 0.0)
       lmm_update_variable_weight(maxmin_system,
 				 ((surf_action_workstation_KCCFLN05_t)
-				  action)->variable, 1.0);
+				  action)->variable, action->priority);
     else
       lmm_update_variable_weight(maxmin_system,
 				 ((surf_action_workstation_KCCFLN05_t)
@@ -217,9 +217,11 @@ static void action_set_max_duration(surf_action_t action, double duration)
 
 
 static void action_set_priority(surf_action_t action, double priority)
-{				/* FIXME: should inherit */
+{
   XBT_IN2("(%p,%g)", action, priority);
   action->priority = priority;
+  lmm_update_variable_weight(maxmin_system, ((surf_action_workstation_KCCFLN05_t) action)->variable, priority);
+
   XBT_OUT;
 }
 
