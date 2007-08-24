@@ -1,6 +1,7 @@
 #ifndef SMPI_PRIVATE_H
 #define SMPI_PRIVATE_H
 
+#include "simix/simix.h"
 #include "xbt/mallocator.h"
 #include "xbt/xbt_os_time.h"
 #include "smpi.h"

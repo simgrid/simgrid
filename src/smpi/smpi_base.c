@@ -20,7 +20,7 @@ int smpi_mpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host)
 {
 	int i;
 
-	for(i = comm->size - 1; i > 0 && host != comm->hosts[i]; i--);
+	for(i = comm->size - 1; i > 0 && host != comm->simdata->hosts[i]; i--);
 
 	return i;
 }
@@ -102,7 +102,7 @@ int smpi_sender(int argc, char **argv)
 			message->buf  = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);
 
-			dhost = request->comm->hosts[request->dst];
+			dhost = request->comm->simdata->hosts[request->dst];
 			drank = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, dhost);
 
 			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[drank]);
@@ -544,7 +544,7 @@ void smpi_mpi_init()
 		}
 		SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
-		smpi_mpi_global->mpi_comm_world->processes[smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world)] = process;
+		smpi_mpi_global->mpi_comm_world->simdata->processes[smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world)] = process;
 	}
 
 	// wait for all nodes to signal initializatin complete
@@ -591,9 +591,10 @@ void smpi_mpi_finalize()
 		}
 		SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
-		SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->barrier_mutex);
-		SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->barrier_cond);
-		xbt_free(smpi_mpi_global->mpi_comm_world->processes);
+		SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->simdata->barrier_mutex);
+		SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->simdata->barrier_cond);
+		xbt_free(smpi_mpi_global->mpi_comm_world->simdata->processes);
+		xbt_free(smpi_mpi_global->mpi_comm_world->simdata);
 		xbt_free(smpi_mpi_global->mpi_comm_world);
 
 		xbt_free(smpi_mpi_global->mpi_byte);
@@ -631,7 +632,7 @@ void smpi_bench_end()
 	duration       = xbt_os_timer_elapsed(smpi_global->timers[rank]);
 	SIMIX_mutex_unlock(smpi_global->timers_mutexes[rank]);
 
-	host           = smpi_mpi_global->mpi_comm_world->hosts[rank];
+	host           = smpi_mpi_global->mpi_comm_world->simdata->hosts[rank];
 	compute_action = SIMIX_action_execute(host, NULL, duration * SMPI_DEFAULT_SPEED);
 	mutex          = SIMIX_mutex_init();
 	cond           = SIMIX_cond_init();
@@ -669,7 +670,7 @@ void smpi_barrier(smpi_mpi_communicator_t *comm)
 int smpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host)
 {
 	int i;
-	for(i = 0; i < comm->size && host != comm->hosts[i]; i++);
+	for(i = 0; i < comm->size && host != comm->simdata->hosts[i]; i++);
 	if (i >= comm->size) i = -1;
 	return i;
 }
