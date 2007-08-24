@@ -1,7 +1,8 @@
-#include <sys/time.h>
+#ifndef SMPI_H
+#define SMPI_H
 
+#include <sys/time.h>
 #include <xbt/function_types.h>
-#include <simix/simix.h>
 
 #define SMPI_RAND_SEED 5
 
@@ -19,14 +20,10 @@
 #define MPI_ERR_TAG     8
 
 // MPI_Comm
+typedef struct smpi_mpi_communicator_simdata *smpi_mpi_communicator_simdata_t;
 struct smpi_mpi_communicator_t {
   int            size;
-  smx_host_t    *hosts;
-
-  smx_process_t *processes;
-  int            barrier_count;
-  smx_mutex_t    barrier_mutex;
-  smx_cond_t     barrier_cond;
+  smpi_mpi_communicator_simdata_t simdata;
 };
 typedef struct smpi_mpi_communicator_t smpi_mpi_communicator_t;
 typedef smpi_mpi_communicator_t *MPI_Comm;
@@ -46,6 +43,7 @@ typedef struct smpi_mpi_datatype_t smpi_mpi_datatype_t;
 typedef smpi_mpi_datatype_t *MPI_Datatype;
 
 // MPI_Request
+typedef struct smpi_mpi_request_simdata *smpi_mpi_request_simdata_t;
 struct smpi_mpi_request_t {
 	smpi_mpi_communicator_t *comm;
 	int src;
@@ -57,8 +55,8 @@ struct smpi_mpi_request_t {
 	int count;
 
 	short int completed :1;
-	smx_mutex_t mutex;
-	smx_cond_t  cond;
+
+	smpi_mpi_request_simdata_t simdata;
 };
 typedef struct smpi_mpi_request_t smpi_mpi_request_t;
 typedef smpi_mpi_request_t *MPI_Request;
@@ -114,3 +112,5 @@ XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
 unsigned int smpi_sleep(unsigned int);
 void smpi_exit(int);
 int smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
+
+#endif

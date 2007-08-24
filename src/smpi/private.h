@@ -1,10 +1,26 @@
-#include "smpi.h"
+#ifndef SMPI_PRIVATE_H
+#define SMPI_PRIVATE_H
+
 #include "xbt/mallocator.h"
 #include "xbt/xbt_os_time.h"
+#include "smpi.h"
 
 #define SMPI_DEFAULT_SPEED 100
 #define SMPI_REQUEST_MALLOCATOR_SIZE 100
 #define SMPI_MESSAGE_MALLOCATOR_SIZE 100
+
+typedef struct smpi_mpi_communicator_simdata {
+	smx_host_t    *hosts;
+	smx_process_t *processes;
+	int            barrier_count;
+	smx_mutex_t    barrier_mutex;
+	smx_cond_t     barrier_cond;
+} s_smpi_mpi_communicator_simdata_t;
+
+typedef struct smpi_mpi_request_simdata {
+	smx_mutex_t mutex;
+	smx_cond_t  cond;
+} s_smpi_mpi_request_simdata_t;
 
 typedef struct SMPI_Global {
 
@@ -38,9 +54,7 @@ typedef struct SMPI_Global {
 	xbt_os_timer_t   *timers;
 	smx_mutex_t      *timers_mutexes;
 
-
 } s_SMPI_Global_t, *SMPI_Global_t;
-
 extern SMPI_Global_t smpi_global;
 
 struct smpi_received_message_t {
@@ -50,7 +64,6 @@ struct smpi_received_message_t {
 	int tag;
 	void *buf;
 };
-
 typedef struct smpi_received_message_t smpi_received_message_t;
 
 // function prototypes
@@ -82,3 +95,5 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype,
 int smpi_isend(smpi_mpi_request_t *request);
 int smpi_irecv(smpi_mpi_request_t *request);
 void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status);
+
+#endif

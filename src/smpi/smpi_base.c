@@ -30,11 +30,6 @@ int inline smpi_mpi_comm_rank_self(smpi_mpi_communicator_t *comm)
 	return smpi_mpi_comm_rank(comm, SIMIX_host_self());
 }
 
-//int smpi_mpi_comm_world_rank_self()
-//{
-//	return smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, SIMIX_host_self());
-//}
-
 int smpi_sender(int argc, char **argv)
 {
 	smx_process_t self;
@@ -51,7 +46,7 @@ int smpi_sender(int argc, char **argv)
 
 	smx_host_t dhost;
 
-	smx_action_t communicate_action;
+	smx_action_t action;
 
 	smpi_received_message_t *message;
 
@@ -96,10 +91,10 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_process_suspend(self);
 		} else {
 
-			SIMIX_mutex_lock(request->mutex);
-
-			// copy request to appropriate received queue
 			message       = xbt_mallocator_get(smpi_global->message_mallocator);
+
+			SIMIX_mutex_lock(request->simdata->mutex);
+
 			message->comm = request->comm;
 			message->src  = request->src;
 			message->dst  = request->dst;
@@ -116,18 +111,16 @@ int smpi_sender(int argc, char **argv)
 
 			request->completed = 1;
 
-			communicate_action = SIMIX_action_communicate(shost, dhost,
-				NULL, request->datatype->size * request->count * 1.0, -1.0);
+			action = SIMIX_action_communicate(shost, dhost, NULL, request->datatype->size * request->count * 1.0, -1.0);
 
-			SIMIX_register_action_to_condition(communicate_action, request->cond);
-			SIMIX_cond_wait(request->cond, request->mutex);
-			//SIMIX_unregister_action_to_condition(communicate_action, request->cond);
+			SIMIX_register_action_to_condition(action, request->simdata->cond);
 
-			SIMIX_mutex_unlock(request->mutex);
+			SIMIX_cond_wait(request->simdata->cond, request->simdata->mutex);
+
+			SIMIX_mutex_unlock(request->simdata->mutex);
 
 			// wake up receiver if necessary
 			receiver_process = smpi_global->receiver_processes[drank];
-
 			if (SIMIX_process_is_suspended(receiver_process)) {
 				SIMIX_process_resume(receiver_process);
 			}
@@ -232,14 +225,14 @@ stopsearch:
 		if (NULL == request || NULL == message) {
 			SIMIX_process_suspend(self);
 		} else {
-			SIMIX_mutex_lock(request->mutex);
+			SIMIX_mutex_lock(request->simdata->mutex);
 
 			memcpy(request->buf, message->buf, request->datatype->size * request->count);
 			request->src = message->src;
 			request->completed = 1;
-			SIMIX_cond_broadcast(request->cond);
+			SIMIX_cond_broadcast(request->simdata->cond);
 
-			SIMIX_mutex_unlock(request->mutex);
+			SIMIX_mutex_unlock(request->simdata->mutex);
 
 			xbt_free(message->buf);
 			xbt_mallocator_release(smpi_global->message_mallocator, message);
@@ -268,8 +261,9 @@ void *smpi_request_new()
 	smpi_mpi_request_t *request = xbt_new(smpi_mpi_request_t, 1);
 
 	request->completed = 0;
-	request->mutex     = SIMIX_mutex_init();
-	request->cond      = SIMIX_cond_init();
+	request->simdata            = xbt_new(s_smpi_mpi_request_simdata_t, 1);
+	request->simdata->mutex     = SIMIX_mutex_init();
+	request->simdata->cond      = SIMIX_cond_init();
 
 	return request;
 }
@@ -280,8 +274,9 @@ void smpi_request_free(void *pointer)
 	smpi_mpi_request_t *request = pointer;
 
 	if (NULL != request) {
-		SIMIX_cond_destroy(request->cond);
-		SIMIX_mutex_destroy(request->mutex);
+		SIMIX_cond_destroy(request->simdata->cond);
+		SIMIX_mutex_destroy(request->simdata->mutex);
+		xbt_free(request->simdata);
 		xbt_free(request);
 	}
 
@@ -510,14 +505,15 @@ void smpi_mpi_init()
 		smpi_mpi_global                                = xbt_new(s_SMPI_MPI_Global_t, 1);
 
 		// global communicator
-		smpi_mpi_global->mpi_comm_world                = xbt_new(smpi_mpi_communicator_t, 1);
-		smpi_mpi_global->mpi_comm_world->size          = size;
-		smpi_mpi_global->mpi_comm_world->barrier_count = 0;
-		smpi_mpi_global->mpi_comm_world->barrier_mutex = SIMIX_mutex_init();
-		smpi_mpi_global->mpi_comm_world->barrier_cond  = SIMIX_cond_init();
-		smpi_mpi_global->mpi_comm_world->hosts         = hosts;
-		smpi_mpi_global->mpi_comm_world->processes     = xbt_new(smx_process_t, size);
-		smpi_mpi_global->mpi_comm_world->processes[0]  = process;
+		smpi_mpi_global->mpi_comm_world                         = xbt_new(smpi_mpi_communicator_t, 1);
+		smpi_mpi_global->mpi_comm_world->size                   = size;
+		smpi_mpi_global->mpi_comm_world->simdata                = xbt_new(s_smpi_mpi_communicator_simdata_t, 1);
+		smpi_mpi_global->mpi_comm_world->simdata->barrier_count = 0;
+		smpi_mpi_global->mpi_comm_world->simdata->barrier_mutex = SIMIX_mutex_init();
+		smpi_mpi_global->mpi_comm_world->simdata->barrier_cond  = SIMIX_cond_init();
+		smpi_mpi_global->mpi_comm_world->simdata->hosts         = hosts;
+		smpi_mpi_global->mpi_comm_world->simdata->processes     = xbt_new(smx_process_t, size);
+		smpi_mpi_global->mpi_comm_world->simdata->processes[0]  = process;
 
 		// mpi datatypes
 		smpi_mpi_global->mpi_byte                      = xbt_new(smpi_mpi_datatype_t, 1);
@@ -657,14 +653,14 @@ void smpi_bench_end()
 void smpi_barrier(smpi_mpi_communicator_t *comm)
 {
 
-	SIMIX_mutex_lock(comm->barrier_mutex);
-	if(++comm->barrier_count < comm->size) {
-		SIMIX_cond_wait(comm->barrier_cond, comm->barrier_mutex);
+	SIMIX_mutex_lock(comm->simdata->barrier_mutex);
+	if(++comm->simdata->barrier_count < comm->size) {
+		SIMIX_cond_wait(comm->simdata->barrier_cond, comm->simdata->barrier_mutex);
 	} else {
-		comm->barrier_count = 0;
-		SIMIX_cond_broadcast(comm->barrier_cond);
+		comm->simdata->barrier_count = 0;
+		SIMIX_cond_broadcast(comm->simdata->barrier_cond);
 	}
-	SIMIX_mutex_unlock(comm->barrier_mutex);
+	SIMIX_mutex_unlock(comm->simdata->barrier_mutex);
 
 	return;
 }
@@ -751,14 +747,14 @@ int smpi_irecv(smpi_mpi_request_t *request)
 void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status)
 {
 	if (NULL != request) {
-		SIMIX_mutex_lock(request->mutex);
+		SIMIX_mutex_lock(request->simdata->mutex);
 		if (!request->completed) {
-			SIMIX_cond_wait(request->cond, request->mutex);
+			SIMIX_cond_wait(request->simdata->cond, request->simdata->mutex);
 		}
 		if (NULL != status) {
 			status->MPI_SOURCE = request->src;
 		}
-		SIMIX_mutex_unlock(request->mutex);
+		SIMIX_mutex_unlock(request->simdata->mutex);
 	}
 }
 
