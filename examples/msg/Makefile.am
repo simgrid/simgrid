@@ -26,7 +26,9 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
 	masterslave/masterslave.tesh \
 	masterslave/masterslave_forwarder.tesh \
         masterslave/masterslave_bypass.tesh \
-        parallel_task/parallel_task.tesh
+        parallel_task/parallel_task.tesh \
+        priority/priority.tesh
+
 
 if HAVE_SDP
   BROKEN_TESTS = sendrecv/sendrecv_SDP.tesh
@@ -42,7 +44,8 @@ CLEANFILES = sendrecv/*~ \
              masterslave/masterslave \
              masterslave/masterslave_forwarder \
              masterslave/masterslave_bypass \
-             parallel_task/parallel_task
+             parallel_task/parallel_task \
+             priority/priority
 
 if HAVE_GTNETS
              CLEANFILES += gtnets/gtnets 
@@ -57,7 +60,8 @@ bin_PROGRAMS = sendrecv/sendrecv \
                masterslave/masterslave_forwarder \
                masterslave/masterslave_failure \
                masterslave/masterslave_bypass \
-               parallel_task/parallel_task
+               parallel_task/parallel_task \
+               priority/priority
 
 if HAVE_GTNETS
                bin_PROGRAMS += gtnets/gtnets 
@@ -73,9 +77,13 @@ sendrecv_sendrecv_LDADD   = $(top_builddir)/src/libsimgrid.la
 suspend_suspend_SOURCES = suspend/suspend.c
 suspend_suspend_LDADD   = $(top_builddir)/src/libsimgrid.la
 
-# master/slave application example
+# parallel task example
 parallel_task_parallel_task_SOURCES = parallel_task/parallel_task.c
 parallel_task_parallel_task_LDADD   = $(top_builddir)/src/libsimgrid.la
+
+# playing with priorities example
+priority_priority_SOURCES = priority/priority.c
+priority_priority_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # master/slave application example
 masterslave_masterslave_SOURCES = masterslave/masterslave.c
