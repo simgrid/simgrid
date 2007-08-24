@@ -31,6 +31,8 @@ nobase_include_HEADERS = \
 	simdag/simdag.h \
 	simdag/datatypes.h \
 	\
+	smpi/smpi.h \
+	\
 	surf/surfxml_parse.h \
 	surf/surfxml.h \
 	\

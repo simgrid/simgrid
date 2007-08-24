@@ -62,7 +62,7 @@ EXTRA_DIST= \
 	include/simix/simix.h include/simix/datatypes.h \
 	simix/msg_simix_private.h \
 	\
-	smpi/private.h smpi/smpi.h
+	smpi/private.h
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |

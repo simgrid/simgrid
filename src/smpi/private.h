@@ -4,7 +4,7 @@
 #include "simix/simix.h"
 #include "xbt/mallocator.h"
 #include "xbt/xbt_os_time.h"
-#include "smpi.h"
+#include "smpi/smpi.h"
 
 #define SMPI_DEFAULT_SPEED 100
 #define SMPI_REQUEST_MALLOCATOR_SIZE 100

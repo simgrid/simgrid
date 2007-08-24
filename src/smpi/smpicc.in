@@ -19,7 +19,7 @@ function modsource {
   TMPSOURCE="${TMPDIR}${SOURCE}"
   cat > ${TMPSOURCE} <<HEADER
 #define SEED ${SEED}
-#include "smpi.h"
+#include "smpi/smpi.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
