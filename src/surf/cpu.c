@@ -313,6 +313,8 @@ static void action_set_priority(surf_action_t action, double priority)
 {
   XBT_IN2("(%p,%g)", action, priority);
   action->priority = priority;
+  lmm_update_variable_weight(cpu_maxmin_system, ((surf_action_cpu_Cas01_t) action)->variable, priority);
+
   XBT_OUT;
 }
 
