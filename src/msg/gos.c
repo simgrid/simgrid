@@ -697,7 +697,7 @@ m_task_t MSG_parallel_task_create(const char *name,
   simdata->source = NULL;
 
   simdata->host_nb = host_nb;
-  simdata->host_list = xbt_new0(void *, host_nb);
+  simdata->host_list = xbt_new0(smx_host_t, host_nb);
   simdata->comp_amount = computation_amount;
   simdata->comm_amount = communication_amount;
 
