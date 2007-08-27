@@ -30,6 +30,8 @@ typedef struct {
   int remaining_loop; /* number of loops to do until done */
   int create;	      /* whether I have to create the token */
   gras_socket_t tosuccessor; /* how to connect to the successor on ring */
+  double start_time; /* to measure the elapsed time. Only used by the 
+			 node that creates the token */
 } node_data_t;
 
 
@@ -91,7 +93,9 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload) {
    
   /* 8. Repport the hop number to the user at the end */
   if (globals->remaining_loop == -1 && globals->create) {
+    double elapsed = gras_os_time() - globals->start_time; 
     INFO1("Shut down the token-ring. There was %d hops.",msg);
+    INFO1("Elapsed time: %g", elapsed);
   }
 
   /* 9. Tell GRAS that we consummed this message */
@@ -154,7 +158,9 @@ int node (int argc,char *argv[]) {
 
   if (globals->create) {
     int token = 0;
-            
+
+    globals->start_time = gras_os_time();
+
     globals->remaining_loop = NBLOOPS - 1;
       
     INFO3("Create the token (with value %d) and send it to %s:%d",
