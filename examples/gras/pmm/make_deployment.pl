@@ -18,7 +18,7 @@ EOH
 }
 
 my $input    = shift @ARGV || usage();
-my $nb_hosts = shift @ARGV || "";
+my $nb_slaves = shift @ARGV || "";
 # my $source   = shift || "";
 
 my @host;
@@ -36,8 +36,8 @@ while (<IN>) {
 die "No host found in $input. Is it really a SimGrid platform file?\nCheck that you didn't pass a deployment file, for example.\n"
   unless (scalar @host);
 
-if (! $nb_hosts) {
-    $nb_hosts = scalar @host;
+if (! $nb_slaves) {
+    $nb_slaves = (scalar @host) - 1;
 }
 
 #
@@ -58,12 +58,12 @@ print "  </process>\n";
 # reset iterators
 my $it_host=1;
 
-for (my $i=0; $i<$nb_hosts; $i++) {
+for (my $i=0; $i<$nb_slaves; $i++) {
   print "  <process host=\"".$host[$it_host]."\" function=\"slave\"><argument value=\"$master:$port_num\"/></process>\n";
     
   $it_host ++;
   if ($it_host == scalar @host) {
-    $it_host=1;
+    $it_host = 0;
   }
 }
 
