@@ -3,7 +3,7 @@
 use strict;
 
 my $input    = shift @ARGV || die "Usage: $ARGV[0] platform_file.xml nb_host\n";
-my $nb_hosts = shift @ARGV || die "Usage: $ARGV[0] platform_file.xml nb_host\n";
+my $nb_hosts = shift @ARGV || 0;
 
 my @host;
 
@@ -13,6 +13,13 @@ while (<IN>) {
   next unless /<cpu name="([^"]*)"/; # "
   
   push @host, $1;
+}
+
+die "No host found in $input. Is it really a SimGrid platform file?\nCheck that you didn't pass a deployment file, for example.\n"
+  unless (scalar @host);
+
+if (! $nb_hosts) {
+    $nb_hosts = scalar @host;
 }
 
 # map { print "$_\n" } @host;
