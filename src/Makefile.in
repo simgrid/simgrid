@@ -238,7 +238,8 @@ libsimgrid4java_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(CXXFLAGS) $(libsimgrid4java_la_LDFLAGS) $(LDFLAGS) -o $@
 @HAVE_JAVA_TRUE@am_libsimgrid4java_la_rpath = -rpath $(libdir)
 libsmpi_la_DEPENDENCIES = libsimgrid.la
-am__objects_20 = smpi_base.lo smpi_mpi.lo sender.lo receiver.lo
+am__objects_20 = smpi_base.lo smpi_bench.lo smpi_global.lo smpi_mpi.lo \
+	smpi_sender.lo smpi_receiver.lo smpi_util.lo
 am_libsmpi_la_OBJECTS = $(am__objects_20)
 libsmpi_la_OBJECTS = $(am_libsmpi_la_OBJECTS)
 libsmpi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -559,9 +560,12 @@ SIMIX_SRC = \
 
 SMPI_SRC = \
   smpi/smpi_base.c \
+  smpi/smpi_bench.c \
+  smpi/smpi_global.c \
   smpi/smpi_mpi.c \
-  smpi/sender.c \
-  smpi/receiver.c
+  smpi/smpi_sender.c \
+  smpi/smpi_receiver.c \
+  smpi/smpi_util.c
 
 MSG_SRC = msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
@@ -865,7 +869,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_gtnets.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/peermanagement.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/receiver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_dns.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_emul.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_msg.Plo@am__quote@
@@ -879,7 +882,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_task.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_workstation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sender.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/set.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/set_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_dns.Plo@am__quote@
@@ -889,7 +891,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_transport.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simgrid_units_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_base.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_bench.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_global.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_mpi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_receiver.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_sender.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smpi_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_action.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smx_deployment.Plo@am__quote@
@@ -1744,6 +1751,20 @@ smpi_base.lo: smpi/smpi_base.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_base.lo `test -f 'smpi/smpi_base.c' || echo '$(srcdir)/'`smpi/smpi_base.c
 
+smpi_bench.lo: smpi/smpi_bench.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_bench.lo -MD -MP -MF $(DEPDIR)/smpi_bench.Tpo -c -o smpi_bench.lo `test -f 'smpi/smpi_bench.c' || echo '$(srcdir)/'`smpi/smpi_bench.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_bench.Tpo $(DEPDIR)/smpi_bench.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_bench.c' object='smpi_bench.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_bench.lo `test -f 'smpi/smpi_bench.c' || echo '$(srcdir)/'`smpi/smpi_bench.c
+
+smpi_global.lo: smpi/smpi_global.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_global.lo -MD -MP -MF $(DEPDIR)/smpi_global.Tpo -c -o smpi_global.lo `test -f 'smpi/smpi_global.c' || echo '$(srcdir)/'`smpi/smpi_global.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_global.Tpo $(DEPDIR)/smpi_global.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_global.c' object='smpi_global.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_global.lo `test -f 'smpi/smpi_global.c' || echo '$(srcdir)/'`smpi/smpi_global.c
+
 smpi_mpi.lo: smpi/smpi_mpi.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_mpi.lo -MD -MP -MF $(DEPDIR)/smpi_mpi.Tpo -c -o smpi_mpi.lo `test -f 'smpi/smpi_mpi.c' || echo '$(srcdir)/'`smpi/smpi_mpi.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_mpi.Tpo $(DEPDIR)/smpi_mpi.Plo
@@ -1751,19 +1772,26 @@ smpi_mpi.lo: smpi/smpi_mpi.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_mpi.lo `test -f 'smpi/smpi_mpi.c' || echo '$(srcdir)/'`smpi/smpi_mpi.c
 
-sender.lo: smpi/sender.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sender.lo -MD -MP -MF $(DEPDIR)/sender.Tpo -c -o sender.lo `test -f 'smpi/sender.c' || echo '$(srcdir)/'`smpi/sender.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sender.Tpo $(DEPDIR)/sender.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/sender.c' object='sender.lo' libtool=yes @AMDEPBACKSLASH@
+smpi_sender.lo: smpi/smpi_sender.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_sender.lo -MD -MP -MF $(DEPDIR)/smpi_sender.Tpo -c -o smpi_sender.lo `test -f 'smpi/smpi_sender.c' || echo '$(srcdir)/'`smpi/smpi_sender.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_sender.Tpo $(DEPDIR)/smpi_sender.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_sender.c' object='smpi_sender.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sender.lo `test -f 'smpi/sender.c' || echo '$(srcdir)/'`smpi/sender.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_sender.lo `test -f 'smpi/smpi_sender.c' || echo '$(srcdir)/'`smpi/smpi_sender.c
 
-receiver.lo: smpi/receiver.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT receiver.lo -MD -MP -MF $(DEPDIR)/receiver.Tpo -c -o receiver.lo `test -f 'smpi/receiver.c' || echo '$(srcdir)/'`smpi/receiver.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/receiver.Tpo $(DEPDIR)/receiver.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/receiver.c' object='receiver.lo' libtool=yes @AMDEPBACKSLASH@
+smpi_receiver.lo: smpi/smpi_receiver.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_receiver.lo -MD -MP -MF $(DEPDIR)/smpi_receiver.Tpo -c -o smpi_receiver.lo `test -f 'smpi/smpi_receiver.c' || echo '$(srcdir)/'`smpi/smpi_receiver.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_receiver.Tpo $(DEPDIR)/smpi_receiver.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_receiver.c' object='smpi_receiver.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o receiver.lo `test -f 'smpi/receiver.c' || echo '$(srcdir)/'`smpi/receiver.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_receiver.lo `test -f 'smpi/smpi_receiver.c' || echo '$(srcdir)/'`smpi/smpi_receiver.c
+
+smpi_util.lo: smpi/smpi_util.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT smpi_util.lo -MD -MP -MF $(DEPDIR)/smpi_util.Tpo -c -o smpi_util.lo `test -f 'smpi/smpi_util.c' || echo '$(srcdir)/'`smpi/smpi_util.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/smpi_util.Tpo $(DEPDIR)/smpi_util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_util.c' object='smpi_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_util.lo `test -f 'smpi/smpi_util.c' || echo '$(srcdir)/'`smpi/smpi_util.c
 
 cunit_unit.o: @builddir@/cunit_unit.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cunit_unit.o -MD -MP -MF $(DEPDIR)/cunit_unit.Tpo -c -o cunit_unit.o `test -f '@builddir@/cunit_unit.c' || echo '$(srcdir)/'`@builddir@/cunit_unit.c

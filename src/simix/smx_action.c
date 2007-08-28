@@ -25,7 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_action, simix,
  * 	\return A new SIMIX action
  * */
 smx_action_t SIMIX_action_communicate(smx_host_t sender,
-				      smx_host_t receiver, char *name,
+				      smx_host_t receiver, const char *name,
 				      double size, double rate)
 {
   /* check if the host is active */

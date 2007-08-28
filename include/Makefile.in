@@ -141,6 +141,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -238,6 +239,8 @@ nobase_include_HEADERS = \
 	\
 	simdag/simdag.h \
 	simdag/datatypes.h \
+	\
+	smpi/smpi.h \
 	\
 	surf/surfxml_parse.h \
 	surf/surfxml.h \
