@@ -81,11 +81,11 @@ int smpi_sender(int argc, char **argv)
 
 			request->completed = 1;
 
-			action = SIMIX_action_communicate(shost, dhost, NULL, request->datatype->size * request->count * 1.0, -1.0);
+			action = SIMIX_action_communicate(shost, dhost, "communicate", request->datatype->size * request->count * 1.0, -1.0);
 
 			SIMIX_register_action_to_condition(action, request->simdata->cond);
-
 			SIMIX_cond_wait(request->simdata->cond, request->simdata->mutex);
+			SIMIX_unregister_action_to_condition(action, request->simdata->cond);
 
 			SIMIX_mutex_unlock(request->simdata->mutex);
 

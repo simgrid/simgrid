@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <sys/time.h>
 #include "private.h"
 
 int MPI_Init(int *argc, char ***argv)
