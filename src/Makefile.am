@@ -186,7 +186,9 @@ SIMIX_SRC= \
 
 SMPI_SRC= \
   smpi/smpi_base.c \
-  smpi/smpi_mpi.c
+  smpi/smpi_mpi.c \
+  smpi/sender.c \
+  smpi/receiver.c
 
 MSG_SRC=  msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \

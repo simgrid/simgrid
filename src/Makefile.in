@@ -120,7 +120,7 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c surf/maxmin.c \
 	surf/fair_bottleneck.c surf/lagrange.c surf/trace_mgr.c \
 	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
-	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
+	surf/workstation.c surf/surf_timer.c \
 	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
 	xbt/xbt_os_thread.c xbt/xbt_os_thread_stubs.c \
 	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
@@ -153,8 +153,8 @@ am__libsimgrid_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c xbt/ex.c \
 @CONTEXT_THREADS_FALSE@am__objects_7 = xbt_os_thread_stubs.lo
 am__objects_8 = maxmin.lo fair_bottleneck.lo lagrange.lo trace_mgr.lo \
 	surf.lo surfxml_parse.lo cpu.lo network.lo workstation.lo \
-	surf_timer.lo network_dassf.lo workstation_KCCFLN05.lo \
-	workstation_ptask_L07.lo $(am__objects_6) $(am__objects_7)
+	surf_timer.lo workstation_KCCFLN05.lo workstation_ptask_L07.lo \
+	$(am__objects_6) $(am__objects_7)
 am__objects_9 = gtnets_simulator.lo gtnets_topology.lo \
 	gtnets_interface.lo network_gtnets.lo
 @HAVE_GTNETS_TRUE@am__objects_10 = $(am__objects_9)
@@ -189,7 +189,7 @@ am__libsimgrid4java_la_SOURCES_DIST = xbt/snprintf.c xbt/xbt_str.c \
 	xbt/config.c xbt/cunit.c xbt/graphxml_parse.c surf/maxmin.c \
 	surf/fair_bottleneck.c surf/lagrange.c surf/trace_mgr.c \
 	surf/surf.c surf/surfxml_parse.c surf/cpu.c surf/network.c \
-	surf/workstation.c surf/surf_timer.c surf/network_dassf.c \
+	surf/workstation.c surf/surf_timer.c \
 	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
 	xbt/xbt_os_thread.c xbt/xbt_os_thread_stubs.c \
 	surf/gtnets/gtnets_simulator.cc surf/gtnets/gtnets_topology.cc \
@@ -238,7 +238,7 @@ libsimgrid4java_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(CXXFLAGS) $(libsimgrid4java_la_LDFLAGS) $(LDFLAGS) -o $@
 @HAVE_JAVA_TRUE@am_libsimgrid4java_la_rpath = -rpath $(libdir)
 libsmpi_la_DEPENDENCIES = libsimgrid.la
-am__objects_20 = smpi_base.lo smpi_mpi.lo
+am__objects_20 = smpi_base.lo smpi_mpi.lo sender.lo receiver.lo
 am_libsmpi_la_OBJECTS = $(am__objects_20)
 libsmpi_la_OBJECTS = $(am_libsmpi_la_OBJECTS)
 libsmpi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -363,6 +363,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -440,13 +441,12 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/cpu_private.h surf/workstation_private.h \
 	surf/surf_timer_private.h surf/surfxml_parse.c surf/surfxml.l \
 	surf/surfxml.c surf/surfxml.dtd surf/network_private.h \
-	surf/network_dassf_private.h \
-	surf/workstation_KCCFLN05_private.h include/surf/maxmin.h \
-	include/surf/trace_mgr.h include/surf/surf.h \
-	include/surf/surfxml_parse_private.h include/xbt/xbt_os_time.h \
-	include/xbt/xbt_os_thread.h include/xbt/context.h \
-	msg/private.h simdag/private.h gras/DataDesc/ddt_parse.yy.l \
-	gras/Virtu/virtu_interface.h \
+	network_gtnets_private.h surf/workstation_KCCFLN05_private.h \
+	include/surf/maxmin.h include/surf/trace_mgr.h \
+	include/surf/surf.h include/surf/surfxml_parse_private.h \
+	include/xbt/xbt_os_time.h include/xbt/xbt_os_thread.h \
+	include/xbt/context.h msg/private.h simdag/private.h \
+	gras/DataDesc/ddt_parse.yy.l gras/Virtu/virtu_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
 	$(am__append_3) $(am__append_4) $(am__append_6) \
 	$(am__append_7)
@@ -535,8 +535,8 @@ XBT_SG_SRC = \
 SURF_SRC = surf/maxmin.c surf/fair_bottleneck.c surf/lagrange.c \
 	surf/trace_mgr.c surf/surf.c surf/surfxml_parse.c surf/cpu.c \
 	surf/network.c surf/workstation.c surf/surf_timer.c \
-	surf/network_dassf.c surf/workstation_KCCFLN05.c \
-	surf/workstation_ptask_L07.c $(am__append_1) $(am__append_2)
+	surf/workstation_KCCFLN05.c surf/workstation_ptask_L07.c \
+	$(am__append_1) $(am__append_2)
 GTNETS_SRC = \
   surf/gtnets/gtnets_simulator.cc \
   surf/gtnets/gtnets_topology.cc  \
@@ -559,7 +559,9 @@ SIMIX_SRC = \
 
 SMPI_SRC = \
   smpi/smpi_base.c \
-  smpi/smpi_mpi.c
+  smpi/smpi_mpi.c \
+  smpi/sender.c \
+  smpi/receiver.c
 
 MSG_SRC = msg/msg_config.c \
   msg/task.c msg/host.c msg/m_process.c msg/gos.c \
@@ -860,10 +862,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maxmin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_dassf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_gtnets.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/peermanagement.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/receiver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_dns.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_emul.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rl_msg.Plo@am__quote@
@@ -877,6 +879,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_task.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_workstation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sender.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/set.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/set_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sg_dns.Plo@am__quote@
@@ -1440,13 +1443,6 @@ surf_timer.lo: surf/surf_timer.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o surf_timer.lo `test -f 'surf/surf_timer.c' || echo '$(srcdir)/'`surf/surf_timer.c
 
-network_dassf.lo: surf/network_dassf.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT network_dassf.lo -MD -MP -MF $(DEPDIR)/network_dassf.Tpo -c -o network_dassf.lo `test -f 'surf/network_dassf.c' || echo '$(srcdir)/'`surf/network_dassf.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/network_dassf.Tpo $(DEPDIR)/network_dassf.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='surf/network_dassf.c' object='network_dassf.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network_dassf.lo `test -f 'surf/network_dassf.c' || echo '$(srcdir)/'`surf/network_dassf.c
-
 workstation_KCCFLN05.lo: surf/workstation_KCCFLN05.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT workstation_KCCFLN05.lo -MD -MP -MF $(DEPDIR)/workstation_KCCFLN05.Tpo -c -o workstation_KCCFLN05.lo `test -f 'surf/workstation_KCCFLN05.c' || echo '$(srcdir)/'`surf/workstation_KCCFLN05.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/workstation_KCCFLN05.Tpo $(DEPDIR)/workstation_KCCFLN05.Plo
@@ -1754,6 +1750,20 @@ smpi_mpi.lo: smpi/smpi_mpi.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/smpi_mpi.c' object='smpi_mpi.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o smpi_mpi.lo `test -f 'smpi/smpi_mpi.c' || echo '$(srcdir)/'`smpi/smpi_mpi.c
+
+sender.lo: smpi/sender.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sender.lo -MD -MP -MF $(DEPDIR)/sender.Tpo -c -o sender.lo `test -f 'smpi/sender.c' || echo '$(srcdir)/'`smpi/sender.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sender.Tpo $(DEPDIR)/sender.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/sender.c' object='sender.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sender.lo `test -f 'smpi/sender.c' || echo '$(srcdir)/'`smpi/sender.c
+
+receiver.lo: smpi/receiver.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT receiver.lo -MD -MP -MF $(DEPDIR)/receiver.Tpo -c -o receiver.lo `test -f 'smpi/receiver.c' || echo '$(srcdir)/'`smpi/receiver.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/receiver.Tpo $(DEPDIR)/receiver.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='smpi/receiver.c' object='receiver.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o receiver.lo `test -f 'smpi/receiver.c' || echo '$(srcdir)/'`smpi/receiver.c
 
 cunit_unit.o: @builddir@/cunit_unit.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cunit_unit.o -MD -MP -MF $(DEPDIR)/cunit_unit.Tpo -c -o cunit_unit.o `test -f '@builddir@/cunit_unit.c' || echo '$(srcdir)/'`@builddir@/cunit_unit.c
@@ -2215,7 +2225,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 	include/simix/simix.h include/simix/datatypes.h \
 	simix/msg_simix_private.h \
 	\
-	smpi/private.h smpi/smpi.h
+	smpi/private.h
 
 @HAVE_JAVA_TRUE@clean-local:
 @HAVE_JAVA_TRUE@	-rm -rf .classes
