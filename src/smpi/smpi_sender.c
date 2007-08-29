@@ -12,13 +12,14 @@ int smpi_sender(int argc, char **argv)
 
 	int running_hosts_count;
 
-	smpi_mpi_request_t *request;
+	smpi_mpi_request_t request;
 
 	smx_host_t dhost;
 
+	char communicate[] = "communicate";
 	smx_action_t action;
 
-	smpi_received_message_t *message;
+	smpi_received_message_t message;
 
 	int drank;
 
@@ -26,7 +27,6 @@ int smpi_sender(int argc, char **argv)
 
 	self  = SIMIX_process_self();
 	shost = SIMIX_host_self();
-	rank  = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, shost);
 
 	// make sure root is done before own initialization
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
@@ -35,9 +35,11 @@ int smpi_sender(int argc, char **argv)
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
+	rank = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, shost);
+	size = smpi_mpi_comm_size(smpi_mpi_global->mpi_comm_world);
+
 	request_queue       = smpi_global->pending_send_request_queues[rank];
 	request_queue_mutex = smpi_global->pending_send_request_queues_mutexes[rank];
-	size                = smpi_mpi_comm_size(smpi_mpi_global->mpi_comm_world);
 
 	smpi_global->sender_processes[rank] = self;
 
@@ -63,7 +65,7 @@ int smpi_sender(int argc, char **argv)
 
 			message       = xbt_mallocator_get(smpi_global->message_mallocator);
 
-			SIMIX_mutex_lock(request->simdata->mutex);
+			SIMIX_mutex_lock(request->mutex);
 
 			message->comm = request->comm;
 			message->src  = request->src;
@@ -72,7 +74,7 @@ int smpi_sender(int argc, char **argv)
 			message->buf  = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);
 
-			dhost = request->comm->simdata->hosts[request->dst];
+			dhost = request->comm->hosts[request->dst];
 			drank = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, dhost);
 
 			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[drank]);
@@ -81,13 +83,15 @@ int smpi_sender(int argc, char **argv)
 
 			request->completed = 1;
 
-			action = SIMIX_action_communicate(shost, dhost, "communicate", request->datatype->size * request->count * 1.0, -1.0);
+			action = SIMIX_action_communicate(shost, dhost, communicate, request->datatype->size * request->count, -1.0);
 
-			SIMIX_register_action_to_condition(action, request->simdata->cond);
-			SIMIX_cond_wait(request->simdata->cond, request->simdata->mutex);
-			SIMIX_unregister_action_to_condition(action, request->simdata->cond);
+			SIMIX_register_action_to_condition(action, request->cond);
+			SIMIX_cond_wait(request->cond, request->mutex);
+			SIMIX_unregister_action_to_condition(action, request->cond);
 
-			SIMIX_mutex_unlock(request->simdata->mutex);
+			SIMIX_mutex_unlock(request->mutex);
+
+			SIMIX_action_destroy(action);
 
 			// wake up receiver if necessary
 			receiver_process = smpi_global->receiver_processes[drank];

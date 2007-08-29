@@ -12,22 +12,22 @@ void smpi_mpi_sum_func(void *x, void *y, void *z)
 	*(int *)z = *(int *)x + *(int *)y;
 }
 
-int inline smpi_mpi_comm_size(smpi_mpi_communicator_t *comm)
+int inline smpi_mpi_comm_size(smpi_mpi_communicator_t comm)
 {
 	return comm->size;
 }
 
 // FIXME: smarter algorithm?
-int smpi_mpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host)
+int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm, smx_host_t host)
 {
 	int i;
 
-	for(i = comm->size - 1; i > 0 && host != comm->simdata->hosts[i]; i--);
+	for(i = comm->size - 1; i > 0 && host != comm->hosts[i]; i--);
 
 	return i;
 }
 
-int inline smpi_mpi_comm_rank_self(smpi_mpi_communicator_t *comm)
+int inline smpi_mpi_comm_rank_self(smpi_mpi_communicator_t comm)
 {
 	return smpi_mpi_comm_rank(comm, SIMIX_host_self());
 }
@@ -55,28 +55,27 @@ void smpi_mpi_init()
 		smpi_mpi_global                                = xbt_new(s_SMPI_MPI_Global_t, 1);
 
 		// global communicator
-		smpi_mpi_global->mpi_comm_world                         = xbt_new(smpi_mpi_communicator_t, 1);
-		smpi_mpi_global->mpi_comm_world->size                   = size;
-		smpi_mpi_global->mpi_comm_world->simdata                = xbt_new(s_smpi_mpi_communicator_simdata_t, 1);
-		smpi_mpi_global->mpi_comm_world->simdata->barrier_count = 0;
-		smpi_mpi_global->mpi_comm_world->simdata->barrier_mutex = SIMIX_mutex_init();
-		smpi_mpi_global->mpi_comm_world->simdata->barrier_cond  = SIMIX_cond_init();
-		smpi_mpi_global->mpi_comm_world->simdata->hosts         = hosts;
-		smpi_mpi_global->mpi_comm_world->simdata->processes     = xbt_new(smx_process_t, size);
-		smpi_mpi_global->mpi_comm_world->simdata->processes[0]  = process;
+		smpi_mpi_global->mpi_comm_world                = xbt_new(s_smpi_mpi_communicator_t, 1);
+		smpi_mpi_global->mpi_comm_world->size          = size;
+		smpi_mpi_global->mpi_comm_world->hosts         = hosts;
+		smpi_mpi_global->mpi_comm_world->processes     = xbt_new(smx_process_t, size);
+		smpi_mpi_global->mpi_comm_world->processes[0]  = process;
+		smpi_mpi_global->mpi_comm_world->barrier_count = 0;
+		smpi_mpi_global->mpi_comm_world->barrier_mutex = SIMIX_mutex_init();
+		smpi_mpi_global->mpi_comm_world->barrier_cond  = SIMIX_cond_init();
 
 		// mpi datatypes
-		smpi_mpi_global->mpi_byte                      = xbt_new(smpi_mpi_datatype_t, 1);
+		smpi_mpi_global->mpi_byte                      = xbt_new(s_smpi_mpi_datatype_t, 1);
 		smpi_mpi_global->mpi_byte->size                = (size_t)1;
-		smpi_mpi_global->mpi_int                       = xbt_new(smpi_mpi_datatype_t, 1);
+		smpi_mpi_global->mpi_int                       = xbt_new(s_smpi_mpi_datatype_t, 1);
 		smpi_mpi_global->mpi_int->size                 = sizeof(int);
-		smpi_mpi_global->mpi_double                    = xbt_new(smpi_mpi_datatype_t, 1);
+		smpi_mpi_global->mpi_double                    = xbt_new(s_smpi_mpi_datatype_t, 1);
 		smpi_mpi_global->mpi_double->size              = sizeof(double);
 
 		// mpi operations
-		smpi_mpi_global->mpi_land                      = xbt_new(smpi_mpi_op_t, 1);
+		smpi_mpi_global->mpi_land                      = xbt_new(s_smpi_mpi_op_t, 1);
 		smpi_mpi_global->mpi_land->func                = smpi_mpi_land_func;
-		smpi_mpi_global->mpi_sum                       = xbt_new(smpi_mpi_op_t, 1);
+		smpi_mpi_global->mpi_sum                       = xbt_new(s_smpi_mpi_op_t, 1);
 		smpi_mpi_global->mpi_sum->func                 = smpi_mpi_sum_func;
 
 		// signal all nodes to perform initialization
@@ -94,7 +93,7 @@ void smpi_mpi_init()
 		}
 		SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
-		smpi_mpi_global->mpi_comm_world->simdata->processes[smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world)] = process;
+		smpi_mpi_global->mpi_comm_world->processes[smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world)] = process;
 	}
 
 	// wait for all nodes to signal initializatin complete
@@ -134,10 +133,9 @@ void smpi_mpi_finalize()
 			}
 		}
 
-		SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->simdata->barrier_mutex);
-		SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->simdata->barrier_cond);
-		xbt_free(smpi_mpi_global->mpi_comm_world->simdata->processes);
-		xbt_free(smpi_mpi_global->mpi_comm_world->simdata);
+		SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->barrier_mutex);
+		SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->barrier_cond);
+		xbt_free(smpi_mpi_global->mpi_comm_world->processes);
 		xbt_free(smpi_mpi_global->mpi_comm_world);
 
 		xbt_free(smpi_mpi_global->mpi_byte);
@@ -153,23 +151,23 @@ void smpi_mpi_finalize()
 
 }
 
-void smpi_barrier(smpi_mpi_communicator_t *comm)
+void smpi_barrier(smpi_mpi_communicator_t comm)
 {
 
-	SIMIX_mutex_lock(comm->simdata->barrier_mutex);
-	if(++comm->simdata->barrier_count < comm->size) {
-		SIMIX_cond_wait(comm->simdata->barrier_cond, comm->simdata->barrier_mutex);
+	SIMIX_mutex_lock(comm->barrier_mutex);
+	if(++comm->barrier_count < comm->size) {
+		SIMIX_cond_wait(comm->barrier_cond, comm->barrier_mutex);
 	} else {
-		comm->simdata->barrier_count = 0;
-		SIMIX_cond_broadcast(comm->simdata->barrier_cond);
+		comm->barrier_count = 0;
+		SIMIX_cond_broadcast(comm->barrier_cond);
 	}
-	SIMIX_mutex_unlock(comm->simdata->barrier_mutex);
+	SIMIX_mutex_unlock(comm->barrier_mutex);
 
 	return;
 }
 
-int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype,
-	int src, int dst, int tag, smpi_mpi_communicator_t *comm, smpi_mpi_request_t **request)
+int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
+	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *request)
 {
 	int retval = MPI_SUCCESS;
 
@@ -190,7 +188,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype,
 	} else if (0 > tag) {
 		retval = MPI_ERR_TAG;
 	} else {
-		*request = xbt_mallocator_get(smpi_global->request_mallocator);
+		*request               = xbt_mallocator_get(smpi_global->request_mallocator);
 		(*request)->comm       = comm;
 		(*request)->src        = src;
 		(*request)->dst        = dst;
@@ -202,7 +200,7 @@ int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype,
 	return retval;
 }
 
-int smpi_isend(smpi_mpi_request_t *request)
+int smpi_isend(smpi_mpi_request_t request)
 {
 	int retval = MPI_SUCCESS;
 	int rank   = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
@@ -220,7 +218,7 @@ int smpi_isend(smpi_mpi_request_t *request)
 	return retval;
 }
 
-int smpi_irecv(smpi_mpi_request_t *request)
+int smpi_irecv(smpi_mpi_request_t request)
 {
 	int retval = MPI_SUCCESS;
 	int rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
@@ -238,16 +236,18 @@ int smpi_irecv(smpi_mpi_request_t *request)
 	return retval;
 }
 
-void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status)
+int smpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status)
 {
 	if (NULL != request) {
-		SIMIX_mutex_lock(request->simdata->mutex);
+		SIMIX_mutex_lock(request->mutex);
 		if (!request->completed) {
-			// SIMIX_cond_wait(request->simdata->cond, request->simdata->mutex);
+			SIMIX_cond_wait(request->cond, request->mutex);
 		}
 		if (NULL != status) {
 			status->MPI_SOURCE = request->src;
 		}
-		SIMIX_mutex_unlock(request->simdata->mutex);
+		SIMIX_mutex_unlock(request->mutex);
 	}
+
+	return MPI_SUCCESS;
 }

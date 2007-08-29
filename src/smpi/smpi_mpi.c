@@ -80,6 +80,7 @@ int MPI_Type_size(MPI_Datatype datatype, size_t *size)
 	return retval;
 }
 
+// FIXME: check comm value and barrier success...
 int MPI_Barrier(MPI_Comm comm)
 {
 	smpi_bench_end();
@@ -95,8 +96,8 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 	smpi_bench_end();
 	dst = smpi_mpi_comm_rank_self(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
-	if (NULL != *request) {
-		smpi_irecv(*request);
+	if (NULL != *request && MPI_SUCCESS == retval) {
+		retval = smpi_irecv(*request);
 	}
 	smpi_bench_begin();
 	return retval;
@@ -106,15 +107,18 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
 {
 	int retval = MPI_SUCCESS;
 	int dst;
-	smpi_mpi_request_t *request;
+	smpi_mpi_request_t request;
+	int rank;
 	smpi_bench_end();
 	dst = smpi_mpi_comm_rank_self(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
-	if (NULL != request) {
-		smpi_irecv(request);
-		smpi_wait(request, status);
-		// FIXME: mallocator
-		//xbt_free(request);
+	if (NULL != request && MPI_SUCCESS == retval) {
+		retval = smpi_irecv(request);
+		if (MPI_SUCCESS == retval) {
+			retval = smpi_wait(request, status);
+		}
+		rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
+		xbt_mallocator_release(smpi_global->request_mallocator, request);
 	}
 	smpi_bench_begin();
 	return retval;
@@ -127,8 +131,8 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
 	smpi_bench_end();
 	src = smpi_mpi_comm_rank_self(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
-	if (NULL != *request) {
-		smpi_isend(*request);
+	if (NULL != *request && MPI_SUCCESS == retval) {
+		retval = smpi_isend(*request);
 	}
 	smpi_bench_begin();
 	return retval;
@@ -138,15 +142,18 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
 {
 	int retval = MPI_SUCCESS;
 	int src;
-	smpi_mpi_request_t *request;
+	smpi_mpi_request_t request;
+	int rank;
 	smpi_bench_end();
 	src = smpi_mpi_comm_rank_self(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
-	if (NULL != request) {
-		smpi_isend(request);
-		smpi_wait(request, MPI_STATUS_IGNORE);
-		// FIXME: mallocator
-		//xbt_free(request)
+	if (NULL != request && MPI_SUCCESS == retval) {
+		retval = smpi_isend(request);
+		if (MPI_SUCCESS == retval) {
+			smpi_wait(request, MPI_STATUS_IGNORE);
+		}
+		rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
+		xbt_mallocator_release(smpi_global->request_mallocator, request);
 	}
 	smpi_bench_begin();
 	return retval;

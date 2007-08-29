@@ -13,14 +13,13 @@ int smpi_receiver(int argc, char **argv)
 
 	int running_hosts_count;
 
-	smpi_mpi_request_t *request;
-	smpi_received_message_t *message;
+	smpi_mpi_request_t request;
+	smpi_received_message_t message;
 
 	xbt_fifo_item_t request_item;
 	xbt_fifo_item_t message_item;
 
-	self  = SIMIX_process_self();
-	rank  = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
+	self = SIMIX_process_self();
 
 	// make sure root is done before own initialization
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
@@ -29,11 +28,13 @@ int smpi_receiver(int argc, char **argv)
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
+	rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
+	size = smpi_mpi_comm_size(smpi_mpi_global->mpi_comm_world);
+
 	request_queue       = smpi_global->pending_recv_request_queues[rank];
 	request_queue_mutex = smpi_global->pending_recv_request_queues_mutexes[rank];
 	message_queue       = smpi_global->received_message_queues[rank];
 	message_queue_mutex = smpi_global->received_message_queues_mutexes[rank];
-	size                = smpi_mpi_comm_size(smpi_mpi_global->mpi_comm_world);
 
 	smpi_global->receiver_processes[rank] = self;
 
@@ -80,17 +81,19 @@ stopsearch:
 		if (NULL == request || NULL == message) {
 			SIMIX_process_suspend(self);
 		} else {
-			SIMIX_mutex_lock(request->simdata->mutex);
+
+			SIMIX_mutex_lock(request->mutex);
 
 			memcpy(request->buf, message->buf, request->datatype->size * request->count);
 			request->src = message->src;
 			request->completed = 1;
-			SIMIX_cond_broadcast(request->simdata->cond);
+			SIMIX_cond_broadcast(request->cond);
 
-			SIMIX_mutex_unlock(request->simdata->mutex);
+			SIMIX_mutex_unlock(request->mutex);
 
 			xbt_free(message->buf);
 			xbt_mallocator_release(smpi_global->message_mallocator, message);
+
 		}
 
 		SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);

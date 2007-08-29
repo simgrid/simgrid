@@ -21,22 +21,23 @@ unsigned int smpi_sleep(unsigned int seconds)
 	smx_mutex_t mutex;
 	smx_cond_t cond;
 	smx_host_t host;
-	smx_action_t sleep_action;
+	smx_action_t action;
 
 	smpi_bench_end();
-	host         = SIMIX_host_self();
-	sleep_action = SIMIX_action_sleep(host, seconds);
-	mutex        = SIMIX_mutex_init();
-	cond         = SIMIX_cond_init();
+	host   = SIMIX_host_self();
+	action = SIMIX_action_sleep(host, seconds);
+	mutex  = SIMIX_mutex_init();
+	cond   = SIMIX_cond_init();
 
 	SIMIX_mutex_lock(mutex);
-	SIMIX_register_action_to_condition(sleep_action, cond);
+	SIMIX_register_action_to_condition(action, cond);
 	SIMIX_cond_wait(cond, mutex);
-	SIMIX_unregister_action_to_condition(sleep_action, cond);
+	SIMIX_unregister_action_to_condition(action, cond);
 	SIMIX_mutex_unlock(mutex);
 
 	SIMIX_mutex_destroy(mutex);
 	SIMIX_cond_destroy(cond);
+	SIMIX_action_destroy(action);
 
 	// FIXME: check for success/failure?
 

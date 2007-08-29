@@ -1,18 +1,18 @@
 #include <stdio.h>
+
 #include "private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi,XBT_LOG_ROOT_CAT, "All SMPI categories (see \ref SMPI_API)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi,XBT_LOG_ROOT_CAT, "All SMPI categories");
 
 SMPI_Global_t     smpi_global     = NULL;
 
 void *smpi_request_new()
 {
-	smpi_mpi_request_t *request = xbt_new(smpi_mpi_request_t, 1);
+	smpi_mpi_request_t request = xbt_new(s_smpi_mpi_request_t, 1);
 
 	request->completed = 0;
-	request->simdata            = xbt_new(s_smpi_mpi_request_simdata_t, 1);
-	request->simdata->mutex     = SIMIX_mutex_init();
-	request->simdata->cond      = SIMIX_cond_init();
+	request->mutex     = SIMIX_mutex_init();
+	request->cond      = SIMIX_cond_init();
 
 	return request;
 }
@@ -20,12 +20,11 @@ void *smpi_request_new()
 void smpi_request_free(void *pointer)
 {
 
-	smpi_mpi_request_t *request = pointer;
+	smpi_mpi_request_t request = pointer;
 
 	if (NULL != request) {
-		SIMIX_cond_destroy(request->simdata->cond);
-		SIMIX_mutex_destroy(request->simdata->mutex);
-		xbt_free(request->simdata);
+		SIMIX_cond_destroy(request->cond);
+		SIMIX_mutex_destroy(request->mutex);
 		xbt_free(request);
 	}
 
@@ -40,7 +39,7 @@ void smpi_request_reset(void *pointer)
 
 void *smpi_message_new()
 {
-	return xbt_new(smpi_received_message_t, 1);
+	return xbt_new(s_smpi_received_message_t, 1);
 }
 
 void smpi_message_free(void *pointer)
@@ -63,7 +62,7 @@ void smpi_global_init()
 
 	int size = SIMIX_host_get_number();
 
-	smpi_global = xbt_new(s_SMPI_Global_t, 1);
+	smpi_global                                      = xbt_new(s_SMPI_Global_t, 1);
 
 	// config variable
 	smpi_global->reference_speed                     = SMPI_DEFAULT_SPEED;
@@ -156,6 +155,8 @@ void smpi_global_destroy()
 	xbt_free(smpi_global->timers_mutexes);
 
 	xbt_free(smpi_global);
+
+	smpi_global = NULL;
 }
 
 int smpi_run_simulation(int argc, char **argv)
