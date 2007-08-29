@@ -99,14 +99,5 @@ stopsearch:
 
 	} while (0 < running_hosts_count);
 
-	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-	smpi_global->ready_process_count--;
-	if (smpi_global->ready_process_count == 0) {
-		SIMIX_cond_broadcast(smpi_global->start_stop_cond);
-	} else if (smpi_global->ready_process_count < 0) {
-		// FIXME: can't happen, abort!
-	}
-	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
-
 	return 0;
 }

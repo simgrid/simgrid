@@ -90,7 +90,6 @@ void smpi_mpi_finalize(void);
 void smpi_bench_begin(void);
 void smpi_bench_end(void);
 void smpi_barrier(smpi_mpi_communicator_t *comm);
-int smpi_comm_rank(smpi_mpi_communicator_t *comm, smx_host_t host);
 int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t *datatype,
 	int src, int dst, int tag, smpi_mpi_communicator_t *comm, smpi_mpi_request_t **request);
 int smpi_isend(smpi_mpi_request_t *request);

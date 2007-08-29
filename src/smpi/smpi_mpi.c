@@ -53,7 +53,7 @@ int MPI_Comm_rank(MPI_Comm comm, int *rank)
 	} else if (NULL == rank) {
 		retval = MPI_ERR_ARG;
 	} else {
-		*rank = smpi_comm_rank(comm, SIMIX_host_self());
+		*rank = smpi_mpi_comm_rank(comm, SIMIX_host_self());
 	}
 
 	smpi_bench_begin();

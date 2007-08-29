@@ -134,13 +134,6 @@ void smpi_mpi_finalize()
 			}
 		}
 
-		// wait for senders/receivers to exit...
-		SIMIX_mutex_lock(smpi_global->start_stop_mutex);
-		if (smpi_global->ready_process_count > 0) {
-			SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
-		}
-		SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
-
 		SIMIX_mutex_destroy(smpi_mpi_global->mpi_comm_world->simdata->barrier_mutex);
 		SIMIX_cond_destroy(smpi_mpi_global->mpi_comm_world->simdata->barrier_cond);
 		xbt_free(smpi_mpi_global->mpi_comm_world->simdata->processes);
@@ -155,6 +148,7 @@ void smpi_mpi_finalize()
 		xbt_free(smpi_mpi_global->mpi_sum);
 
 		xbt_free(smpi_mpi_global);
+
 	}
 
 }
@@ -249,7 +243,7 @@ void smpi_wait(smpi_mpi_request_t *request, smpi_mpi_status_t *status)
 	if (NULL != request) {
 		SIMIX_mutex_lock(request->simdata->mutex);
 		if (!request->completed) {
-			SIMIX_cond_wait(request->simdata->cond, request->simdata->mutex);
+			// SIMIX_cond_wait(request->simdata->cond, request->simdata->mutex);
 		}
 		if (NULL != status) {
 			status->MPI_SOURCE = request->src;
