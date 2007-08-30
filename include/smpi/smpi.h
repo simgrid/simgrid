@@ -20,13 +20,8 @@
 #define MPI_ERR_TAG     8
 
 // MPI_Comm
-typedef struct smpi_mpi_communicator_simdata *smpi_mpi_communicator_simdata_t;
-struct smpi_mpi_communicator_t {
-  int            size;
-  smpi_mpi_communicator_simdata_t simdata;
-};
-typedef struct smpi_mpi_communicator_t smpi_mpi_communicator_t;
-typedef smpi_mpi_communicator_t *MPI_Comm;
+typedef struct smpi_mpi_communicator_t *smpi_mpi_communicator_t;
+typedef smpi_mpi_communicator_t MPI_Comm;
 
 // MPI_Status
 struct smpi_mpi_status_t {
@@ -36,49 +31,34 @@ typedef struct smpi_mpi_status_t smpi_mpi_status_t;
 typedef smpi_mpi_status_t MPI_Status;
 
 // MPI_Datatype
-struct smpi_mpi_datatype_t {
+typedef struct smpi_mpi_datatype_t {
   size_t size;
-};
-typedef struct smpi_mpi_datatype_t smpi_mpi_datatype_t;
-typedef smpi_mpi_datatype_t *MPI_Datatype;
+} s_smpi_mpi_datatype_t;
+typedef struct smpi_mpi_datatype_t *smpi_mpi_datatype_t;
+typedef smpi_mpi_datatype_t MPI_Datatype;
 
 // MPI_Request
-typedef struct smpi_mpi_request_simdata *smpi_mpi_request_simdata_t;
-struct smpi_mpi_request_t {
-	smpi_mpi_communicator_t *comm;
-	int src;
-	int dst;
-	int tag;
-
-	void *buf;
-	smpi_mpi_datatype_t *datatype;
-	int count;
-
-	short int completed :1;
-
-	smpi_mpi_request_simdata_t simdata;
-};
-typedef struct smpi_mpi_request_t smpi_mpi_request_t;
-typedef smpi_mpi_request_t *MPI_Request;
+typedef struct smpi_mpi_request_t *smpi_mpi_request_t;
+typedef smpi_mpi_request_t MPI_Request;
 
 // MPI_Op
-struct smpi_mpi_op_t {
+typedef struct smpi_mpi_op_t {
   void (*func)(void *x, void *y, void *z);
-};
-typedef struct smpi_mpi_op_t smpi_mpi_op_t;
-typedef smpi_mpi_op_t *MPI_Op;
+} s_smpi_mpi_op_t;
+typedef struct smpi_mpi_op_t *smpi_mpi_op_t;
+typedef smpi_mpi_op_t MPI_Op;
 
 // global SMPI data structure
 typedef struct SMPI_MPI_Global {
 
-	smpi_mpi_communicator_t *mpi_comm_world;
+	smpi_mpi_communicator_t mpi_comm_world;
 
-	smpi_mpi_datatype_t     *mpi_byte;
-	smpi_mpi_datatype_t     *mpi_int;
-	smpi_mpi_datatype_t     *mpi_double;
+	smpi_mpi_datatype_t     mpi_byte;
+	smpi_mpi_datatype_t     mpi_int;
+	smpi_mpi_datatype_t     mpi_double;
 
-	smpi_mpi_op_t           *mpi_land;
-	smpi_mpi_op_t           *mpi_sum;
+	smpi_mpi_op_t           mpi_land;
+	smpi_mpi_op_t           mpi_sum;
 
 } s_SMPI_MPI_Global_t, *SMPI_MPI_Global_t;
 extern SMPI_MPI_Global_t smpi_mpi_global;
