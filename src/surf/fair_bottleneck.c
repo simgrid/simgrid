@@ -74,6 +74,7 @@ void bottleneck_solve(lmm_system_t sys)
 /*       lmm_print(sys); */
 /*     } */
     DEBUG1("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
+    min_usage = -1;
     xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
       int nb = 0;
       double max_elem = 0.0;
@@ -102,6 +103,7 @@ void bottleneck_solve(lmm_system_t sys)
 	xbt_swag_remove(cnst, cnst_list);
 	continue;
       }
+
       /* Saturated constraints update */
       if (min_usage < 0 || min_usage > cnst->remaining / cnst->usage) {
 	DEBUG3("Update min_usage (%g) with cnst %p -> %g",min_usage, cnst,
@@ -117,6 +119,8 @@ void bottleneck_solve(lmm_system_t sys)
 	DEBUG2("Keep   min_usage (%g) with cnst %p",min_usage, cnst);
 	xbt_swag_remove(cnst, cnst_list);
 	xbt_swag_insert(cnst, &(cnst_to_update));
+      } else {
+	DEBUG1("\tmin_usage: %f. No update",min_usage);
       }
     }
 
