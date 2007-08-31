@@ -16,7 +16,7 @@ int smpi_sender(int argc, char **argv)
 
 	smx_host_t dhost;
 
-	char communicate[] = "communicate";
+	char communication[] = "communication";
 	smx_action_t action;
 
 	smpi_received_message_t message;
@@ -83,7 +83,7 @@ int smpi_sender(int argc, char **argv)
 
 			request->completed = 1;
 
-			action = SIMIX_action_communicate(shost, dhost, communicate, request->datatype->size * request->count, -1.0);
+			action = SIMIX_action_communicate(shost, dhost, communication, request->datatype->size * request->count, -1.0);
 
 			SIMIX_register_action_to_condition(action, request->cond);
 			SIMIX_cond_wait(request->cond, request->mutex);
@@ -91,7 +91,7 @@ int smpi_sender(int argc, char **argv)
 
 			SIMIX_mutex_unlock(request->mutex);
 
-			SIMIX_action_destroy(action);
+			//SIMIX_action_destroy(action);
 
 			// wake up receiver if necessary
 			receiver_process = smpi_global->receiver_processes[drank];

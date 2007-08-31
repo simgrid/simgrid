@@ -37,7 +37,7 @@ unsigned int smpi_sleep(unsigned int seconds)
 
 	SIMIX_mutex_destroy(mutex);
 	SIMIX_cond_destroy(cond);
-	SIMIX_action_destroy(action);
+	//SIMIX_action_destroy(action);
 
 	// FIXME: check for success/failure?
 

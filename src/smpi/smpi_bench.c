@@ -17,7 +17,7 @@ void smpi_bench_end()
 	int rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
 	double duration;
 	smx_host_t host;
-	char compute[] = "compute";
+	char computation[] = "computation";
 	smx_action_t action;
 	smx_mutex_t mutex;
 	smx_cond_t cond;
@@ -29,7 +29,7 @@ void smpi_bench_end()
 	SIMIX_mutex_unlock(smpi_global->timers_mutexes[rank]);
 
 	host   = smpi_mpi_global->mpi_comm_world->hosts[rank];
-	action = SIMIX_action_execute(host, compute, duration * SMPI_DEFAULT_SPEED);
+	action = SIMIX_action_execute(host, computation, duration * SMPI_DEFAULT_SPEED);
 	mutex  = SIMIX_mutex_init();
 	cond   = SIMIX_cond_init();
 
@@ -41,7 +41,7 @@ void smpi_bench_end()
 
 	SIMIX_mutex_destroy(mutex);
 	SIMIX_cond_destroy(cond);
-	SIMIX_action_destroy(action);
+	//SIMIX_action_destroy(action);
 
 	// FIXME: check for success/failure?
 

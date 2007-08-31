@@ -112,6 +112,7 @@ void smpi_mpi_init()
 void smpi_mpi_finalize()
 {
 	int i;
+	int rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
 
 	SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
 	i = --smpi_global->running_hosts_count;
