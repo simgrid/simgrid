@@ -350,9 +350,9 @@ void SIMIX_process_resume(smx_process_t process)
     simdata->suspended = 0;
     c = simdata->cond;
     xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
-      surf_workstation_model->common_public->resume(act->simdata->
-						       surf_action);
+      surf_workstation_model->common_public->resume(act->simdata->surf_action);
     }
+    SIMIX_cond_signal(c);
     return;
   } else {
     simdata->suspended = 0;
