@@ -33,6 +33,10 @@ void smpi_request_free(void *pointer)
 
 void smpi_request_reset(void *pointer)
 {
+	smpi_mpi_request_t request = pointer;
+
+	request->completed = 0;
+
 	return;
 }
 

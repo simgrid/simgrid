@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <mpi.h>
+
 main(int argc, char *argv[]) {
   const int tag = 42;         /* Message tag */
   int id, ntasks, source_id, dest_id, err, i;

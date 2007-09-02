@@ -83,12 +83,10 @@ stopsearch:
 		} else {
 
 			SIMIX_mutex_lock(request->mutex);
-
 			memcpy(request->buf, message->buf, request->datatype->size * request->count);
 			request->src = message->src;
 			request->completed = 1;
 			SIMIX_cond_broadcast(request->cond);
-
 			SIMIX_mutex_unlock(request->mutex);
 
 			xbt_free(message->buf);
