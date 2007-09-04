@@ -4,4 +4,5 @@ masterslave.tesh.in
 masterslave
 masterslave_bypass
 masterslave_forwarder
+masterslave_failure
 .dirstamp .libs
