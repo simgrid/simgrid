@@ -110,6 +110,8 @@ else
       AC_ERROR([no appropriate backend found])
     fi
 fi
+AM_CONDITIONAL(IS_WINDOWS,test x$windows_context = xyes)
+
 
 dnl #
 dnl #  3. allow decision to be overridden by user
@@ -291,7 +293,9 @@ case $host_os in
             AM_CPPFLAGS="$AM_CPPFLAGS -DDLL_EXPORT"
             AC_DEFINE(CONTEXT_THREADS,1);;
 esac
-	   
+
+
+
 if test "x$GRAS_DEP" = x; then 
    AC_MSG_RESULT(none)
 else

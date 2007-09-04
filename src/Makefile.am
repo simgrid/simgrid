@@ -308,6 +308,12 @@ libsmpi_la_LIBADD = libsimgrid.la
 libsmpi_la_SOURCES = $(SMPI_SRC)
 libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm
 
+# Windows users (at least, MSVC ones) need a def file.
+if IS_WINDOWS
+libgras_la_LDFLAGS    += -Wl,--output-def,libgras.def
+libsimgrid_la_LDFLAGS += -Wl,--output-def,libsimgrid.def
+libsmpi_la_LDFLAGS    += -Wl,--output-def,libsmpi.def
+endif
 
 ##
 ## Java cruft

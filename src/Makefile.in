@@ -50,11 +50,16 @@ target_triplet = @target@
 @CONTEXT_THREADS_FALSE@am__append_2 = xbt/xbt_os_thread_stubs.c
 @HAVE_GTNETS_FALSE@am__append_3 = $(GTNETS_SRC)
 @HAVE_SDP_FALSE@am__append_4 = surf/sdp.c
-@HAVE_JAVA_TRUE@am__append_5 = libsimgrid4java.la
-@HAVE_JAVA_FALSE@am__append_6 = $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
+
+# Windows users (at least, MSVC ones) need a def file.
+@IS_WINDOWS_TRUE@am__append_5 = -Wl,--output-def,libgras.def
+@IS_WINDOWS_TRUE@am__append_6 = -Wl,--output-def,libsimgrid.def
+@IS_WINDOWS_TRUE@am__append_7 = -Wl,--output-def,libsmpi.def
+@HAVE_JAVA_TRUE@am__append_8 = libsimgrid4java.la
+@HAVE_JAVA_FALSE@am__append_9 = $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
 @GRAMINE_MODE_FALSE@noinst_PROGRAMS = testall$(EXEEXT)
 @GRAMINE_MODE_FALSE@TESTS = testall$(EXEEXT)
-@GRAMINE_MODE_FALSE@am__append_7 = $(testall_SOURCES)
+@GRAMINE_MODE_FALSE@am__append_10 = $(testall_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/gras_config.h.in $(srcdir)/ucontext_stack.h.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -364,7 +369,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -449,8 +453,8 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	include/xbt/context.h msg/private.h simdag/private.h \
 	gras/DataDesc/ddt_parse.yy.l gras/Virtu/virtu_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_3) $(am__append_4) $(am__append_6) \
-	$(am__append_7)
+	$(am__append_3) $(am__append_4) $(am__append_9) \
+	$(am__append_10)
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -639,22 +643,25 @@ AMOK_SRC = \
 ###
 ### Declare the library content
 ###
-lib_LTLIBRARIES = libsimgrid.la libgras.la libsmpi.la $(am__append_5)
+lib_LTLIBRARIES = libsimgrid.la libgras.la libsmpi.la $(am__append_8)
 libgras_la_SOURCES = $(XBT_SRC) $(GRAS_COMMON_SRC) $(GRAS_RL_SRC) $(AMOK_SRC)
-libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ @LD_DYNAMIC_FLAGS@ -lm 
+libgras_la_LDFLAGS = -no-undefined $(VERSION_INFO) @GRAS_DEP@ \
+	@LD_DYNAMIC_FLAGS@ -lm $(am__append_5)
 libsimgrid_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
                         $(SIMIX_SRC) $(CTX_SRC) \
                         $(MSG_SRC) $(SIMDAG_SRC) \
 			$(GRAS_COMMON_SRC) $(GRAS_SG_SRC) $(AMOK_SRC)
 
-libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsimgrid_la_LDFLAGS = -no-undefined $(VERSION_INFO) @SIMGRID_DEP@ \
+	@LD_DYNAMIC_FLAGS@ -lm $(am__append_6)
 
 # Please do not add -no-undefined to libsmpi_la_LDFLAGS:
 # smpi_simulated_main is indeed defined in user code, and undef in the
 # library (no idea why it works under linux, but it fails under windows)
 libsmpi_la_LIBADD = libsimgrid.la
 libsmpi_la_SOURCES = $(SMPI_SRC)
-libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm
+libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm \
+	$(am__append_7)
 @HAVE_JAVA_TRUE@libsimgrid4java_la_SOURCES = $(XBT_SRC) $(SURF_SRC) $(GTNETS_USED) $(SDP_SRC) \
 @HAVE_JAVA_TRUE@                             $(SIMIX_SRC) $(JCTX_SRC) \
 @HAVE_JAVA_TRUE@                             $(JMSG_C_SRC) $(MSG_SRC) \
