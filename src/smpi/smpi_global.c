@@ -4,7 +4,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi, XBT_LOG_ROOT_CAT, "All SMPI categories");
 
-SMPI_Global_t     smpi_global     = NULL;
+smpi_global_t     smpi_global     = NULL;
+
+void *smpi_request_new(void);
 
 void *smpi_request_new()
 {
@@ -16,6 +18,8 @@ void *smpi_request_new()
 
 	return request;
 }
+
+void smpi_request_free(void *pointer);
 
 void smpi_request_free(void *pointer)
 {
@@ -31,6 +35,8 @@ void smpi_request_free(void *pointer)
 	return;
 }
 
+void smpi_request_reset(void *pointer);
+
 void smpi_request_reset(void *pointer)
 {
 	smpi_mpi_request_t request = pointer;
@@ -41,10 +47,14 @@ void smpi_request_reset(void *pointer)
 }
 
 
+void *smpi_message_new(void);
+
 void *smpi_message_new()
 {
 	return xbt_new(s_smpi_received_message_t, 1);
 }
+
+void smpi_message_free(void *pointer);
 
 void smpi_message_free(void *pointer)
 {
@@ -55,9 +65,50 @@ void smpi_message_free(void *pointer)
 	return;
 }
 
+void smpi_message_reset(void *pointer);
+
 void smpi_message_reset(void *pointer)
 {
 	return;
+}
+
+int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
+	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *requestptr)
+{
+	int retval = MPI_SUCCESS;
+
+	smpi_mpi_request_t request = NULL;
+
+	// FIXME: make sure requestptr is not null
+	if (NULL == buf) {
+		retval = MPI_ERR_INTERN;
+	} else if (0 > count) {
+		retval = MPI_ERR_COUNT;
+	} else if (NULL == datatype) {
+		retval = MPI_ERR_TYPE;
+	} else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
+		retval = MPI_ERR_RANK;
+	} else if (0 > dst || comm->size <= dst) {
+		retval = MPI_ERR_RANK;
+	} else if (MPI_ANY_TAG != tag && 0 > tag) {
+		retval = MPI_ERR_TAG;
+	} else if (NULL == comm) {
+		retval = MPI_ERR_COMM;
+	} else if (NULL == requestptr) {
+		retval = MPI_ERR_INTERN;
+	} else {
+		request           = xbt_mallocator_get(smpi_global->request_mallocator);
+		request->comm     = comm;
+		request->src      = src;
+		request->dst      = dst;
+		request->tag      = tag;
+		request->buf      = buf;
+		request->datatype = datatype;
+		request->count    = count;
+
+		*requestptr       = request;
+	}
+	return retval;
 }
 
 void smpi_global_init()
@@ -66,7 +117,7 @@ void smpi_global_init()
 
 	int size = SIMIX_host_get_number();
 
-	smpi_global                                      = xbt_new(s_SMPI_Global_t, 1);
+	smpi_global                                      = xbt_new(s_smpi_global_t, 1);
 
 	// config variable
 	smpi_global->reference_speed                     = SMPI_DEFAULT_SPEED;

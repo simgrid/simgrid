@@ -12,6 +12,7 @@
 #define SMPI_REQUEST_MALLOCATOR_SIZE 100
 #define SMPI_MESSAGE_MALLOCATOR_SIZE 100
 
+// smpi mpi communicator
 typedef struct smpi_mpi_communicator_t {
 	int            size;
 	smx_host_t    *hosts;
@@ -21,6 +22,12 @@ typedef struct smpi_mpi_communicator_t {
 	smx_cond_t     barrier_cond;
 } s_smpi_mpi_communicator_t;
 
+// smpi mpi datatype
+typedef struct smpi_mpi_datatype_t {
+  size_t size;
+} s_smpi_mpi_datatype_t;
+
+// smpi mpi request
 typedef struct smpi_mpi_request_t {
 	smpi_mpi_communicator_t comm;
 	int src;
@@ -37,7 +44,22 @@ typedef struct smpi_mpi_request_t {
 	smx_cond_t  cond;
 } s_smpi_mpi_request_t;
 
-typedef struct SMPI_Global {
+// smpi mpi op
+typedef struct smpi_mpi_op_t {
+  void (*func)(void *x, void *y, void *z);
+} s_smpi_mpi_op_t;
+
+// smpi received message
+typedef struct smpi_received_message_t {
+	smpi_mpi_communicator_t comm;
+	int src;
+	int dst;
+	int tag;
+	void *buf;
+} s_smpi_received_message_t;
+typedef struct smpi_received_message_t *smpi_received_message_t;
+
+typedef struct smpi_global_t {
 
 	// config vars
 	double            reference_speed;
@@ -69,45 +91,33 @@ typedef struct SMPI_Global {
 	xbt_os_timer_t   *timers;
 	smx_mutex_t      *timers_mutexes;
 
-} s_SMPI_Global_t, *SMPI_Global_t;
-extern SMPI_Global_t smpi_global;
-
-typedef struct smpi_received_message_t {
-	smpi_mpi_communicator_t comm;
-	int src;
-	int dst;
-	int tag;
-	void *buf;
-} s_smpi_received_message_t;
-typedef struct smpi_received_message_t *smpi_received_message_t;
+} s_smpi_global_t;
+typedef struct smpi_global_t *smpi_global_t;
+extern smpi_global_t smpi_global;
 
 // function prototypes
+void smpi_mpi_init(void);
+void smpi_mpi_finalize(void);
 int smpi_mpi_comm_size(smpi_mpi_communicator_t comm);
 int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm, smx_host_t host);
 int smpi_mpi_comm_rank_self(smpi_mpi_communicator_t comm);
 int smpi_mpi_comm_world_rank_self(void);
-int smpi_sender(int argc, char **argv);
-int smpi_receiver(int argc, char **argv);
-void *smpi_request_new(void);
-void smpi_request_free(void *pointer);
-void smpi_request_reset(void *pointer);
-void *smpi_message_new(void);
-void smpi_message_free(void *pointer);
-void smpi_message_reset(void *pointer);
+int smpi_mpi_barrier(smpi_mpi_communicator_t comm);
+int smpi_mpi_isend(smpi_mpi_request_t request);
+int smpi_mpi_irecv(smpi_mpi_request_t request);
+int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status);
+
+void smpi_bench_begin(void);
+void smpi_bench_end(void);
+
 void smpi_global_init(void);
 void smpi_global_destroy(void);
 int smpi_run_simulation(int argc, char **argv);
-void smpi_mpi_land_func(void *x, void *y, void *z);
-void smpi_mpi_sum_func(void *x, void *y, void *z);
-void smpi_mpi_init(void);
-void smpi_mpi_finalize(void);
-void smpi_bench_begin(void);
-void smpi_bench_end(void);
-void smpi_barrier(smpi_mpi_communicator_t comm);
 int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *request);
-int smpi_isend(smpi_mpi_request_t request);
-int smpi_irecv(smpi_mpi_request_t request);
-int smpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status);
+
+int smpi_sender(int argc, char **argv);
+
+int smpi_receiver(int argc, char **argv);
 
 #endif

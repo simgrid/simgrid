@@ -1,11 +1,15 @@
 #include "private.h"
 
-SMPI_MPI_Global_t smpi_mpi_global = NULL;
+smpi_mpi_global_t smpi_mpi_global = NULL;
+
+void smpi_mpi_land_func(void *x, void *y, void *z);
 
 void smpi_mpi_land_func(void *x, void *y, void *z)
 {
 	*(int *)z = *(int *)x && *(int *)y;
 }
+
+void smpi_mpi_sum_func(void *x, void *y, void *z);
 
 void smpi_mpi_sum_func(void *x, void *y, void *z)
 {
@@ -52,7 +56,7 @@ void smpi_mpi_init()
 	// node 0 sets the globals
 	if (host == hosts[0]) {
 
-		smpi_mpi_global                                = xbt_new(s_SMPI_MPI_Global_t, 1);
+		smpi_mpi_global                                = xbt_new(s_smpi_mpi_global_t, 1);
 
 		// global communicator
 		smpi_mpi_global->mpi_comm_world                = xbt_new(s_smpi_mpi_communicator_t, 1);
@@ -151,7 +155,7 @@ void smpi_mpi_finalize()
 
 }
 
-void smpi_barrier(smpi_mpi_communicator_t comm)
+int smpi_mpi_barrier(smpi_mpi_communicator_t comm)
 {
 
 	SIMIX_mutex_lock(comm->barrier_mutex);
@@ -163,91 +167,67 @@ void smpi_barrier(smpi_mpi_communicator_t comm)
 	}
 	SIMIX_mutex_unlock(comm->barrier_mutex);
 
-	return;
+	return MPI_SUCCESS;
 }
 
-int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
-	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *request)
-{
-	int retval = MPI_SUCCESS;
-
-	*request = NULL;
-
-	if (0 > count) {
-		retval = MPI_ERR_COUNT;
-	} else if (NULL == buf) {
-		retval = MPI_ERR_INTERN;
-	} else if (NULL == datatype) {
-		retval = MPI_ERR_TYPE;
-	} else if (NULL == comm) {
-		retval = MPI_ERR_COMM;
-	} else if (MPI_ANY_SOURCE != src && (0 > src || comm->size <= src)) {
-		retval = MPI_ERR_RANK;
-	} else if (0 > dst || comm->size <= dst) {
-		retval = MPI_ERR_RANK;
-	} else if (0 > tag) {
-		retval = MPI_ERR_TAG;
-	} else {
-		*request               = xbt_mallocator_get(smpi_global->request_mallocator);
-		(*request)->comm       = comm;
-		(*request)->src        = src;
-		(*request)->dst        = dst;
-		(*request)->tag        = tag;
-		(*request)->buf        = buf;
-		(*request)->count      = count;
-		(*request)->datatype   = datatype;
-	}
-	return retval;
-}
-
-int smpi_isend(smpi_mpi_request_t request)
+int smpi_mpi_isend(smpi_mpi_request_t request)
 {
 	int retval = MPI_SUCCESS;
 	int rank   = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
 
-	if (NULL != request) {
+	if (NULL == request) {
+		retval = MPI_ERR_INTERN;
+	} else {
 		SIMIX_mutex_lock(smpi_global->pending_send_request_queues_mutexes[rank]);
 		xbt_fifo_push(smpi_global->pending_send_request_queues[rank], request);
 		SIMIX_mutex_unlock(smpi_global->pending_send_request_queues_mutexes[rank]);
-	}
 
-	if (SIMIX_process_is_suspended(smpi_global->sender_processes[rank])) {
-		SIMIX_process_resume(smpi_global->sender_processes[rank]);
+		if (SIMIX_process_is_suspended(smpi_global->sender_processes[rank])) {
+			SIMIX_process_resume(smpi_global->sender_processes[rank]);
+		}
 	}
 
 	return retval;
 }
 
-int smpi_irecv(smpi_mpi_request_t request)
+int smpi_mpi_irecv(smpi_mpi_request_t request)
 {
 	int retval = MPI_SUCCESS;
 	int rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
 
-	if (NULL != request) {
+	if (NULL == request) {
+		retval = MPI_ERR_INTERN;
+	} else {
 		SIMIX_mutex_lock(smpi_global->pending_recv_request_queues_mutexes[rank]);
 		xbt_fifo_push(smpi_global->pending_recv_request_queues[rank], request);
 		SIMIX_mutex_unlock(smpi_global->pending_recv_request_queues_mutexes[rank]);
-	}
 
-	if (SIMIX_process_is_suspended(smpi_global->receiver_processes[rank])) {
-		SIMIX_process_resume(smpi_global->receiver_processes[rank]);
+		if (SIMIX_process_is_suspended(smpi_global->receiver_processes[rank])) {
+			SIMIX_process_resume(smpi_global->receiver_processes[rank]);
+		}
 	}
 
 	return retval;
 }
 
-int smpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status)
+int smpi_mpi_wait(smpi_mpi_request_t request, smpi_mpi_status_t *status)
 {
-	if (NULL != request) {
+	int retval = MPI_SUCCESS;
+
+	if (NULL == request) {
+		retval = MPI_ERR_INTERN;
+	} else {
 		SIMIX_mutex_lock(request->mutex);
 		if (!request->completed) {
 			SIMIX_cond_wait(request->cond, request->mutex);
 		}
 		if (NULL != status) {
 			status->MPI_SOURCE = request->src;
+			status->MPI_TAG    = request->tag;
+			status->MPI_ERROR  = MPI_SUCCESS;
 		}
 		SIMIX_mutex_unlock(request->mutex);
 	}
 
-	return MPI_SUCCESS;
+	return retval;
 }

@@ -1,6 +1,8 @@
 #include "private.h"
 
 // FIXME: could cause trouble with multithreaded procs on same host...
+// FIXME: add benchmarking flag?
+
 void smpi_bench_begin()
 {
 	int rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
