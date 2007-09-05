@@ -307,9 +307,7 @@ void SIMIX_process_suspend(smx_process_t process)
 
     cond = SIMIX_cond_init();
     dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
-    surf_workstation_model->common_public->set_priority(dummy->simdata->
-							   surf_action,
-							   0.0);
+    surf_workstation_model->common_public->suspend(dummy->simdata->surf_action);
     SIMIX_register_action_to_condition(dummy, cond);
     __SIMIX_cond_wait(cond);
     //SIMIX_action_destroy(dummy);
