@@ -8,6 +8,8 @@
 
 #define MPI_ANY_SOURCE -1
 
+#define MPI_ANY_TAG -1
+
 // errorcodes
 #define MPI_SUCCESS     0
 #define MPI_ERR_COMM    1
@@ -23,17 +25,7 @@
 typedef struct smpi_mpi_communicator_t *smpi_mpi_communicator_t;
 typedef smpi_mpi_communicator_t MPI_Comm;
 
-// MPI_Status
-struct smpi_mpi_status_t {
-  int MPI_SOURCE;
-};
-typedef struct smpi_mpi_status_t smpi_mpi_status_t;
-typedef smpi_mpi_status_t MPI_Status;
-
 // MPI_Datatype
-typedef struct smpi_mpi_datatype_t {
-  size_t size;
-} s_smpi_mpi_datatype_t;
 typedef struct smpi_mpi_datatype_t *smpi_mpi_datatype_t;
 typedef smpi_mpi_datatype_t MPI_Datatype;
 
@@ -42,14 +34,21 @@ typedef struct smpi_mpi_request_t *smpi_mpi_request_t;
 typedef smpi_mpi_request_t MPI_Request;
 
 // MPI_Op
-typedef struct smpi_mpi_op_t {
-  void (*func)(void *x, void *y, void *z);
-} s_smpi_mpi_op_t;
 typedef struct smpi_mpi_op_t *smpi_mpi_op_t;
 typedef smpi_mpi_op_t MPI_Op;
 
+// MPI_Status
+// FIXME: status is kind of an odd duck, is this required by the standard?
+struct smpi_mpi_status_t {
+  int MPI_SOURCE;
+  int MPI_TAG;
+  int MPI_ERROR;
+};
+typedef struct smpi_mpi_status_t smpi_mpi_status_t;
+typedef smpi_mpi_status_t MPI_Status;
+
 // global SMPI data structure
-typedef struct SMPI_MPI_Global {
+typedef struct smpi_mpi_global_t {
 
 	smpi_mpi_communicator_t mpi_comm_world;
 
@@ -60,8 +59,9 @@ typedef struct SMPI_MPI_Global {
 	smpi_mpi_op_t           mpi_land;
 	smpi_mpi_op_t           mpi_sum;
 
-} s_SMPI_MPI_Global_t, *SMPI_MPI_Global_t;
-extern SMPI_MPI_Global_t smpi_mpi_global;
+} s_smpi_mpi_global_t;
+typedef struct smpi_mpi_global_t *smpi_mpi_global_t;
+extern smpi_mpi_global_t smpi_mpi_global;
 
 #define MPI_COMM_WORLD    (smpi_mpi_global->mpi_comm_world)
 
