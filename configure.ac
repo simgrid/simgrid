@@ -495,7 +495,7 @@ fi
 AC_CONFIG_FILES([
   examples/Makefile 
     examples/msg/Makefile
-    examples/simdag/Makefile	    examples/simdag/test_simdag
+    examples/simdag/Makefile
     examples/gras/Makefile
       examples/gras/ping/Makefile   
       examples/gras/rpc/Makefile
@@ -513,7 +513,6 @@ AC_CONFIG_FILES([
 ],[
     for file in                                                 \
      \
-     examples/simdag/test_simdag				\
      examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
      examples/amok/saturate/test_sg  examples/amok/saturate/test_rl \
     ; do                                                        \
