@@ -38,7 +38,6 @@ typedef struct smpi_mpi_op_t *smpi_mpi_op_t;
 typedef smpi_mpi_op_t MPI_Op;
 
 // MPI_Status
-// FIXME: status is kind of an odd duck, is this required by the standard?
 struct smpi_mpi_status_t {
   int MPI_SOURCE;
   int MPI_TAG;
@@ -64,6 +63,7 @@ typedef struct smpi_mpi_global_t *smpi_mpi_global_t;
 extern smpi_mpi_global_t smpi_mpi_global;
 
 #define MPI_COMM_WORLD    (smpi_mpi_global->mpi_comm_world)
+#define MPI_COMM_NULL     NULL
 
 #define MPI_STATUS_IGNORE NULL
 

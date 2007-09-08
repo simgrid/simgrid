@@ -3,12 +3,13 @@
 int smpi_receiver(int argc, char **argv)
 {
 	smx_process_t self;
-	int rank;
+	int index;
 
 	xbt_fifo_t request_queue;
 	smx_mutex_t request_queue_mutex;
 	xbt_fifo_t message_queue;
 	smx_mutex_t message_queue_mutex;
+	// FIXME: remove?  also sender
 	int size;
 
 	int running_hosts_count;
@@ -28,15 +29,15 @@ int smpi_receiver(int argc, char **argv)
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
-	rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
-	size = smpi_mpi_comm_size(smpi_mpi_global->mpi_comm_world);
+	index = smpi_host_index();
+	size  = smpi_global->host_count;
 
-	request_queue       = smpi_global->pending_recv_request_queues[rank];
-	request_queue_mutex = smpi_global->pending_recv_request_queues_mutexes[rank];
-	message_queue       = smpi_global->received_message_queues[rank];
-	message_queue_mutex = smpi_global->received_message_queues_mutexes[rank];
+	request_queue       = smpi_global->pending_recv_request_queues[index];
+	request_queue_mutex = smpi_global->pending_recv_request_queues_mutexes[index];
+	message_queue       = smpi_global->received_message_queues[index];
+	message_queue_mutex = smpi_global->received_message_queues_mutexes[index];
 
-	smpi_global->receiver_processes[rank] = self;
+	smpi_global->receiver_processes[index] = self;
 
 	// wait for all nodes to signal initializatin complete
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);

@@ -15,11 +15,13 @@
 // smpi mpi communicator
 typedef struct smpi_mpi_communicator_t {
 	int            size;
-	smx_host_t    *hosts;
-	smx_process_t *processes;
 	int            barrier_count;
 	smx_mutex_t    barrier_mutex;
 	smx_cond_t     barrier_cond;
+
+	int           *rank_to_index_map;
+	int           *index_to_rank_map;
+
 } s_smpi_mpi_communicator_t;
 
 // smpi mpi datatype
@@ -35,8 +37,8 @@ typedef struct smpi_mpi_request_t {
 	int tag;
 
 	void *buf;
-	smpi_mpi_datatype_t datatype;
 	int count;
+	smpi_mpi_datatype_t datatype;
 
 	short int completed :1;
 
@@ -45,6 +47,8 @@ typedef struct smpi_mpi_request_t {
 } s_smpi_mpi_request_t;
 
 // smpi mpi op
+// FIXME: type should be (void *a, void *b, int *length, MPI_Datatype *datatype)
+//, oper is b[i] = a[i] op b[i]
 typedef struct smpi_mpi_op_t {
   void (*func)(void *x, void *y, void *z);
 } s_smpi_mpi_op_t;
@@ -53,8 +57,8 @@ typedef struct smpi_mpi_op_t {
 typedef struct smpi_received_message_t {
 	smpi_mpi_communicator_t comm;
 	int src;
-	int dst;
 	int tag;
+
 	void *buf;
 } s_smpi_received_message_t;
 typedef struct smpi_received_message_t *smpi_received_message_t;
@@ -70,6 +74,8 @@ typedef struct smpi_global_t {
 	smx_mutex_t       start_stop_mutex;
 	smx_cond_t        start_stop_cond;
 
+	smx_host_t       *hosts;
+	int               host_count;
 	xbt_mallocator_t  request_mallocator;
 	xbt_mallocator_t  message_mallocator;
 
@@ -98,10 +104,8 @@ extern smpi_global_t smpi_global;
 // function prototypes
 void smpi_mpi_init(void);
 void smpi_mpi_finalize(void);
-int smpi_mpi_comm_size(smpi_mpi_communicator_t comm);
-int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm, smx_host_t host);
-int smpi_mpi_comm_rank_self(smpi_mpi_communicator_t comm);
-int smpi_mpi_comm_world_rank_self(void);
+int smpi_mpi_comm_size(smpi_mpi_communicator_t comm, int *size);
+int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm, int *rank);
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm);
 int smpi_mpi_isend(smpi_mpi_request_t request);
 int smpi_mpi_irecv(smpi_mpi_request_t request);
@@ -112,6 +116,7 @@ void smpi_bench_end(void);
 
 void smpi_global_init(void);
 void smpi_global_destroy(void);
+int smpi_host_index(void);
 int smpi_run_simulation(int argc, char **argv);
 int smpi_create_request(void *buf, int count, smpi_mpi_datatype_t datatype,
 	int src, int dst, int tag, smpi_mpi_communicator_t comm, smpi_mpi_request_t *request);

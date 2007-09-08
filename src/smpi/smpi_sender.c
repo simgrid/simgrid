@@ -4,7 +4,7 @@ int smpi_sender(int argc, char **argv)
 {
 	smx_process_t self;
 	smx_host_t shost;
-	int rank;
+	int index;
 
 	xbt_fifo_t request_queue;
 	smx_mutex_t request_queue_mutex;
@@ -21,7 +21,7 @@ int smpi_sender(int argc, char **argv)
 
 	smpi_received_message_t message;
 
-	int drank;
+	int dindex;
 
 	smx_process_t receiver_process;
 
@@ -35,13 +35,13 @@ int smpi_sender(int argc, char **argv)
 	}
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
-	rank = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, shost);
-	size = smpi_mpi_comm_size(smpi_mpi_global->mpi_comm_world);
+	index = smpi_host_index();
+	size  = smpi_global->host_count;
 
-	request_queue       = smpi_global->pending_send_request_queues[rank];
-	request_queue_mutex = smpi_global->pending_send_request_queues_mutexes[rank];
+	request_queue       = smpi_global->pending_send_request_queues[index];
+	request_queue_mutex = smpi_global->pending_send_request_queues_mutexes[index];
 
-	smpi_global->sender_processes[rank] = self;
+	smpi_global->sender_processes[index] = self;
 
 	// wait for all nodes to signal initializatin complete
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
@@ -68,18 +68,18 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_mutex_lock(request->mutex);
 
 			message->comm = request->comm;
-			message->src  = request->src;
-			message->dst  = request->dst;
+			// FIXME: maybe we don't need this map 
+			message->src  = request->comm->index_to_rank_map[index];
 			message->tag  = request->tag;
 			message->buf  = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);
 
-			dhost = request->comm->hosts[request->dst];
-			drank = smpi_mpi_comm_rank(smpi_mpi_global->mpi_comm_world, dhost);
+			dindex = request->comm->rank_to_index_map[request->dst];
+			dhost  = smpi_global->hosts[dindex];
 
-			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[drank]);
-			xbt_fifo_push(smpi_global->received_message_queues[drank], message);
-			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[drank]);
+			SIMIX_mutex_lock(smpi_global->received_message_queues_mutexes[dindex]);
+			xbt_fifo_push(smpi_global->received_message_queues[dindex], message);
+			SIMIX_mutex_unlock(smpi_global->received_message_queues_mutexes[dindex]);
 
 			request->completed = 1;
 
@@ -94,7 +94,7 @@ int smpi_sender(int argc, char **argv)
 			//SIMIX_action_destroy(action);
 
 			// wake up receiver if necessary
-			receiver_process = smpi_global->receiver_processes[drank];
+			receiver_process = smpi_global->receiver_processes[dindex];
 			if (SIMIX_process_is_suspended(receiver_process)) {
 				SIMIX_process_resume(receiver_process);
 			}

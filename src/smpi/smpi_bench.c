@@ -5,18 +5,18 @@
 
 void smpi_bench_begin()
 {
-	int rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
+	int index = smpi_host_index();
 
-	SIMIX_mutex_lock(smpi_global->timers_mutexes[rank]);
+	SIMIX_mutex_lock(smpi_global->timers_mutexes[index]);
 
-	xbt_os_timer_start(smpi_global->timers[rank]);
+	xbt_os_timer_start(smpi_global->timers[index]);
 
 	return;
 }
 
 void smpi_bench_end()
 {
-	int rank = smpi_mpi_comm_rank_self(smpi_mpi_global->mpi_comm_world);
+	int index = smpi_host_index();
 	double duration;
 	smx_host_t host;
 	char computation[] = "computation";
@@ -24,13 +24,13 @@ void smpi_bench_end()
 	smx_mutex_t mutex;
 	smx_cond_t cond;
 
-	xbt_os_timer_stop(smpi_global->timers[rank]);
+	xbt_os_timer_stop(smpi_global->timers[index]);
 
-	duration = xbt_os_timer_elapsed(smpi_global->timers[rank]);
+	duration = xbt_os_timer_elapsed(smpi_global->timers[index]);
 
-	SIMIX_mutex_unlock(smpi_global->timers_mutexes[rank]);
+	SIMIX_mutex_unlock(smpi_global->timers_mutexes[index]);
 
-	host   = smpi_mpi_global->mpi_comm_world->hosts[rank];
+	host   = smpi_global->hosts[index];
 	action = SIMIX_action_execute(host, computation, duration * SMPI_DEFAULT_SPEED);
 	mutex  = SIMIX_mutex_init();
 	cond   = SIMIX_cond_init();

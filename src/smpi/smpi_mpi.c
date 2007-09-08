@@ -52,7 +52,7 @@ int MPI_Comm_rank(MPI_Comm comm, int *rank)
 	} else if (NULL == rank) {
 		retval = MPI_ERR_ARG;
 	} else {
-		*rank = smpi_mpi_comm_rank_self(comm);
+		retval = smpi_mpi_comm_rank(comm, rank);
 	}
 
 	smpi_bench_begin();
@@ -99,11 +99,11 @@ int MPI_Barrier(MPI_Comm comm)
 int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
-	int dst;
+	int dst = 0;
 
 	smpi_bench_end();
 
-	dst = smpi_mpi_comm_rank_self(comm);
+	//dst = smpi_mpi_comm_rank(comm);
 	if (NULL == request) {
 		retval = MPI_ERR_ARG;
 	} else {
@@ -121,12 +121,13 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status)
 {
 	int retval = MPI_SUCCESS;
-	int dst;
+	int dst = 0;
 	smpi_mpi_request_t request;
 
 	smpi_bench_end();
 
-	dst = smpi_mpi_comm_rank_self(comm);
+	// FIXME: necessary?
+	//dst = smpi_mpi_comm_rank(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
 
 	if (NULL != request && MPI_SUCCESS == retval) {
@@ -145,11 +146,11 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
 int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
-	int src;
+	int src = 0;
 
 	smpi_bench_end();
 
-	src = smpi_mpi_comm_rank_self(comm);
+	//src = smpi_mpi_comm_rank(comm);
 	if (NULL == request) {
 		retval = MPI_ERR_ARG;
 	} else {
@@ -167,12 +168,12 @@ int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
 int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
 	int retval = MPI_SUCCESS;
-	int src;
+	int src = 0;
 	smpi_mpi_request_t request;
 
 	smpi_bench_end();
 
-	src = smpi_mpi_comm_rank_self(comm);
+	//src = smpi_mpi_comm_rank(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
 	if (NULL != request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_isend(request);

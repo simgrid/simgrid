@@ -129,9 +129,10 @@ void smpi_global_init()
 	smpi_global->start_stop_mutex                    = SIMIX_mutex_init();
 	smpi_global->start_stop_cond                     = SIMIX_cond_init();
 
-	// processes
-	smpi_global->sender_processes                    = xbt_new(smx_process_t, size);
-	smpi_global->receiver_processes                  = xbt_new(smx_process_t, size);
+	// host info blank until sim starts
+	// FIXME: is this okay?
+	smpi_global->hosts                               = NULL;
+	smpi_global->host_count                          = 0;
 
 	// running hosts
 	smpi_global->running_hosts_count_mutex           = SIMIX_mutex_init();
@@ -150,6 +151,10 @@ void smpi_global_init()
 	smpi_global->pending_recv_request_queues_mutexes = xbt_new(smx_mutex_t, size);
 	smpi_global->received_message_queues             = xbt_new(xbt_fifo_t,  size);
 	smpi_global->received_message_queues_mutexes     = xbt_new(smx_mutex_t, size);
+
+	// sender/receiver processes
+	smpi_global->sender_processes                    = xbt_new(smx_process_t, size);
+	smpi_global->receiver_processes                  = xbt_new(smx_process_t, size);
 
 	// timers
 	smpi_global->timers                              = xbt_new(xbt_os_timer_t, size);
@@ -212,6 +217,17 @@ void smpi_global_destroy()
 	xbt_free(smpi_global);
 
 	smpi_global = NULL;
+}
+
+// FIXME: smarter algorithm?
+int smpi_host_index()
+{
+	int i;
+	smx_host_t host = SIMIX_host_self();
+
+	for(i = smpi_global->host_count - 1; i > 0 && host != smpi_global->hosts[i]; i--);
+
+	return i;
 }
 
 int smpi_run_simulation(int argc, char **argv)
