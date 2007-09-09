@@ -47,10 +47,8 @@ typedef struct smpi_mpi_request_t {
 } s_smpi_mpi_request_t;
 
 // smpi mpi op
-// FIXME: type should be (void *a, void *b, int *length, MPI_Datatype *datatype)
-//, oper is b[i] = a[i] op b[i]
 typedef struct smpi_mpi_op_t {
-  void (*func)(void *x, void *y, void *z);
+  void (*func)(void *a, void *b, int *length, MPI_Datatype *datatype);
 } s_smpi_mpi_op_t;
 
 // smpi received message
@@ -101,11 +99,16 @@ typedef struct smpi_global_t {
 typedef struct smpi_global_t *smpi_global_t;
 extern smpi_global_t smpi_global;
 
+typedef struct smpi_host_data_t {
+	int index;
+} s_smpi_host_data_t;
+typedef struct smpi_host_data_t *smpi_host_data_t;
+
 // function prototypes
 void smpi_mpi_init(void);
 void smpi_mpi_finalize(void);
-int smpi_mpi_comm_size(smpi_mpi_communicator_t comm, int *size);
-int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm, int *rank);
+int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm);
+
 int smpi_mpi_barrier(smpi_mpi_communicator_t comm);
 int smpi_mpi_isend(smpi_mpi_request_t request);
 int smpi_mpi_irecv(smpi_mpi_request_t request);

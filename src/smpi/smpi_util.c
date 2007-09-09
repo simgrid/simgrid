@@ -39,8 +39,6 @@ unsigned int smpi_sleep(unsigned int seconds)
 	SIMIX_cond_destroy(cond);
 	//SIMIX_action_destroy(action);
 
-	// FIXME: check for success/failure?
-
 	smpi_bench_begin();
 	return 0;
 }

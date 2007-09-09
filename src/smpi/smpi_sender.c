@@ -8,7 +8,6 @@ int smpi_sender(int argc, char **argv)
 
 	xbt_fifo_t request_queue;
 	smx_mutex_t request_queue_mutex;
-	int size;
 
 	int running_hosts_count;
 
@@ -36,7 +35,6 @@ int smpi_sender(int argc, char **argv)
 	SIMIX_mutex_unlock(smpi_global->start_stop_mutex);
 
 	index = smpi_host_index();
-	size  = smpi_global->host_count;
 
 	request_queue       = smpi_global->pending_send_request_queues[index];
 	request_queue_mutex = smpi_global->pending_send_request_queues_mutexes[index];
@@ -46,7 +44,7 @@ int smpi_sender(int argc, char **argv)
 	// wait for all nodes to signal initializatin complete
 	SIMIX_mutex_lock(smpi_global->start_stop_mutex);
 	smpi_global->ready_process_count++;
-	if (smpi_global->ready_process_count < 3 * size) {
+	if (smpi_global->ready_process_count < 3 * smpi_global->host_count) {
 		SIMIX_cond_wait(smpi_global->start_stop_cond, smpi_global->start_stop_mutex);
 	} else {
 		SIMIX_cond_broadcast(smpi_global->start_stop_cond);
@@ -68,8 +66,7 @@ int smpi_sender(int argc, char **argv)
 			SIMIX_mutex_lock(request->mutex);
 
 			message->comm = request->comm;
-			// FIXME: maybe we don't need this map 
-			message->src  = request->comm->index_to_rank_map[index];
+			message->src  = smpi_mpi_comm_rank(request->comm);
 			message->tag  = request->tag;
 			message->buf  = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);

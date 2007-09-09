@@ -45,7 +45,5 @@ void smpi_bench_end()
 	SIMIX_cond_destroy(cond);
 	//SIMIX_action_destroy(action);
 
-	// FIXME: check for success/failure?
-
 	return;
 }

@@ -2,48 +2,35 @@
 
 smpi_mpi_global_t smpi_mpi_global = NULL;
 
-void smpi_mpi_land_func(void *x, void *y, void *z);
+void smpi_mpi_land_func(void *a, void *b, int *length, MPI_Datatype *datatype);
 
-void smpi_mpi_land_func(void *x, void *y, void *z)
-{
-	*(int *)z = *(int *)x && *(int *)y;
-}
-
-void smpi_mpi_sum_func(void *x, void *y, void *z);
-
-void smpi_mpi_sum_func(void *x, void *y, void *z)
-{
-	*(int *)z = *(int *)x + *(int *)y;
-}
-
-int inline smpi_mpi_comm_size(smpi_mpi_communicator_t comm, int *size)
-{
-	int retval = MPI_SUCCESS;
-	if (NULL == size) {
-		retval = MPI_ERR_ARG;
-	} else {
-		*size = comm->size;
-	}
-	return retval;
-}
-
-// FIXME: smarter algorithm?
-int smpi_mpi_comm_rank(smpi_mpi_communicator_t comm, int *rank)
+void smpi_mpi_land_func(void *a, void *b, int *length, MPI_Datatype *datatype)
 {
 	int i;
-	int retval = MPI_SUCCESS;
-
-	if (NULL == rank) {
-		retval = MPI_ERR_ARG;
-	} else {
-		smx_host_t host = SIMIX_host_self();
-
-		for (i = 0; i < comm->size && host != smpi_global->hosts[comm->rank_to_index_map[i]]; i++);
-
-		*rank = i;
+	if (*datatype == smpi_mpi_global->mpi_int) {
+		int *x = a, *y = b;
+		for (i = 0; i < *length; i++) {
+			y[i] = x[i] && y[i];
+		}
 	}
+}
 
-	return retval;
+void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype *datatype);
+
+void smpi_mpi_sum_func(void *a, void *b, int *length, MPI_Datatype *datatype)
+{
+	int i;
+	if (*datatype == smpi_mpi_global->mpi_int) {
+		int *x = a, *y = b;
+		for (i = 0; i < *length; i++) {
+			y[i] = x[i] + y[i];
+		}
+	}
+}
+
+int inline smpi_mpi_comm_rank(smpi_mpi_communicator_t comm)
+{
+	return comm->index_to_rank_map[smpi_host_index()];
 }
 
 void smpi_mpi_init()
@@ -52,6 +39,7 @@ void smpi_mpi_init()
 	smx_host_t *hosts;
 	int host_count;
 	int i;
+	smpi_host_data_t hdata;
 
 	SIMIX_mutex_lock(smpi_global->running_hosts_count_mutex);
 	smpi_global->running_hosts_count++;
@@ -62,8 +50,16 @@ void smpi_mpi_init()
 	hosts      = SIMIX_host_get_table();
 	host_count = SIMIX_host_get_number();
 
+	hdata      = xbt_new(s_smpi_host_data_t, 1);
+
+	for (i = 0; i < host_count && host != hosts[i]; i ++);
+
+	hdata->index = i;
+
+	SIMIX_host_set_data(host, hdata);
+
 	// node 0 sets the globals
-	if (host == hosts[0]) {
+	if (0 == i) {
 
 		smpi_global->hosts                              = hosts;
 		smpi_global->host_count                         = host_count;

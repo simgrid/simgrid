@@ -52,7 +52,7 @@ int MPI_Comm_rank(MPI_Comm comm, int *rank)
 	} else if (NULL == rank) {
 		retval = MPI_ERR_ARG;
 	} else {
-		retval = smpi_mpi_comm_rank(comm, rank);
+		*rank = smpi_mpi_comm_rank(comm);
 	}
 
 	smpi_bench_begin();
@@ -99,14 +99,13 @@ int MPI_Barrier(MPI_Comm comm)
 int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
-	int dst = 0;
 
 	smpi_bench_end();
 
-	//dst = smpi_mpi_comm_rank(comm);
 	if (NULL == request) {
 		retval = MPI_ERR_ARG;
 	} else {
+		int dst = 0;
 		retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
 		if (NULL != *request && MPI_SUCCESS == retval) {
 			retval = smpi_mpi_irecv(*request);
@@ -126,10 +125,7 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
 
 	smpi_bench_end();
 
-	// FIXME: necessary?
-	//dst = smpi_mpi_comm_rank(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
-
 	if (NULL != request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_irecv(request);
 		if (MPI_SUCCESS == retval) {
@@ -146,14 +142,13 @@ int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_
 int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request)
 {
 	int retval = MPI_SUCCESS;
-	int src = 0;
 
 	smpi_bench_end();
 
-	//src = smpi_mpi_comm_rank(comm);
 	if (NULL == request) {
 		retval = MPI_ERR_ARG;
 	} else {
+		int src = 0;
 		retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, request);
 		if (NULL != *request && MPI_SUCCESS == retval) {
 			retval = smpi_mpi_isend(*request);
@@ -173,7 +168,6 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
 
 	smpi_bench_end();
 
-	//src = smpi_mpi_comm_rank(comm);
 	retval = smpi_create_request(buf, count, datatype, src, dst, tag, comm, &request);
 	if (NULL != request && MPI_SUCCESS == retval) {
 		retval = smpi_mpi_isend(request);

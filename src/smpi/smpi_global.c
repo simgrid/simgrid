@@ -219,15 +219,12 @@ void smpi_global_destroy()
 	smpi_global = NULL;
 }
 
-// FIXME: smarter algorithm?
 int smpi_host_index()
 {
-	int i;
 	smx_host_t host = SIMIX_host_self();
+	smpi_host_data_t hdata = (smpi_host_data_t)SIMIX_host_get_data(host);
 
-	for(i = smpi_global->host_count - 1; i > 0 && host != smpi_global->hosts[i]; i--);
-
-	return i;
+	return hdata->index;
 }
 
 int smpi_run_simulation(int argc, char **argv)
