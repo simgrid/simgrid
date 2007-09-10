@@ -94,9 +94,6 @@ int philosopher (int argc,char *argv[]) {
   gras_init(&argc,argv);
   xbt_assert0(argc>=2,"This program expects one argument (the amount of philosophers)");
 
-  INFO0("Wait 1 sec to check that gras_os_sleep do works");
-  gras_os_sleep(1);
-   
   /* initializations of the philosopher mecanisms */
   philosopher_amount = atoi(argv[1]);
   state = xbt_new0(int,philosopher_amount); 
@@ -118,7 +115,7 @@ int philosopher (int argc,char *argv[]) {
   dead_end = xbt_mutex_init();
   xbt_mutex_lock(dead_end);
   
-  INFO0("Enough waiting, spawn the threads");
+  INFO0("Spawn the threads");
   /* spawn threads */
   for (i=0; i<philosopher_amount; i++) {
      char *name = bprintf("thread %d",i);
