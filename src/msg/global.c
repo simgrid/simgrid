@@ -231,6 +231,7 @@ MSG_error_t MSG_clean(void)
   xbt_fifo_free(msg_global->process_list);
 
   free(msg_global);
+  msg_global = NULL;
   SIMIX_clean();
 
   return MSG_OK;

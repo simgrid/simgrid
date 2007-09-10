@@ -500,6 +500,7 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
 void xbt_fifo_exit(void) {
   if (item_mallocator != NULL) {
     xbt_mallocator_free(item_mallocator);
+    item_mallocator = NULL;
   }
 }
 

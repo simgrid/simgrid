@@ -163,7 +163,7 @@ void SIMIX_display_process_status(void)
       free(who);
       who = who2;
       xbt_fifo_foreach(p_simdata->cond->actions, item, act, smx_action_t) {
-	who2 = bprintf("%s '%s'", who, act->name);
+	who2 = bprintf("%s '%s'(%p)", who, act->name,act);
 	free(who);
 	who = who2;
       }
@@ -294,6 +294,7 @@ void SIMIX_clean(void)
   xbt_dict_free(&(simix_global->registered_functions));
   simix_config_finalize();
   free(simix_global);
+  simix_global = NULL;
   surf_exit();
 
   return;

@@ -464,7 +464,9 @@ void xbt_dict_dump(xbt_dict_t     dict,
 void xbt_dict_exit(void) {
   if (dict_mallocator != NULL) {
     xbt_mallocator_free(dict_mallocator);
+    dict_mallocator = NULL;
     xbt_mallocator_free(dict_elm_mallocator);
+    dict_elm_mallocator = NULL;
   }
 }
 
