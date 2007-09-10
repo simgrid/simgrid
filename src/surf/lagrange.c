@@ -9,7 +9,6 @@
  */
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include "xbt/mallocator.h"
 #include "maxmin_private.h"
 
 #include <stdlib.h>
