@@ -95,7 +95,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload) {
   if (globals->remaining_loop == -1 && globals->create) {
     double elapsed = gras_os_time() - globals->start_time; 
     INFO1("Shut down the token-ring. There was %d hops.",msg);
-    INFO1("Elapsed time: %g", elapsed);
+    VERB1("Elapsed time: %g", elapsed);
   }
 
   /* 9. Tell GRAS that we consummed this message */
