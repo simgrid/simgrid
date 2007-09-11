@@ -1,0 +1,144 @@
+parallel_log_crashtest.o parallel_log_crashtest.o:  \
+ xbt/parallel_log_crashtest.c ../include/gras.h ../include/xbt.h \
+  ../include/xbt/misc.h ../include/xbt/sysdep.h /usr/include/string.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+  /usr/include/gnu/stubs-32.h \
+  /usr/lib/gcc/i486-linux-gnu/4.1.3/include/stddef.h \
+  /usr/include/stdlib.h /usr/include/sys/types.h \
+  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+  /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h \
+  /usr/include/sys/select.h /usr/include/bits/select.h \
+  /usr/include/bits/sigset.h /usr/include/bits/time.h \
+  /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
+  /usr/include/alloca.h \
+  /usr/lib/gcc/i486-linux-gnu/4.1.3/include/stdarg.h \
+  ../include/xbt/asserts.h ../include/xbt/log.h ../include/xbt/ex.h \
+  ../include/xbt/virtu.h ../include/xbt/function_types.h \
+  /usr/include/setjmp.h /usr/include/bits/setjmp.h ../include/xbt/str.h \
+  ../include/xbt/dynar.h ../include/xbt/function_types.h \
+  ../include/xbt/asserts.h ../include/xbt/log.h ../include/xbt/module.h \
+  ../include/xbt/dynar.h ../include/xbt/dict.h ../include/xbt/set.h \
+  ../include/xbt/swag.h ../include/xbt/heap.h ../include/xbt/peer.h \
+  ../include/xbt/config.h ../include/xbt/cunit.h ../include/xbt/ex.h \
+  ../include/gras/process.h ../include/gras/module.h \
+  ../include/gras/virtu.h ../include/xbt/time.h ../include/gras/emul.h \
+  ../include/gras/transport.h ../include/gras/datadesc.h \
+  ../include/gras/messages.h ../include/gras/timer.h \
+  ../include/xbt/synchro.h
+
+../include/gras.h:
+
+../include/xbt.h:
+
+../include/xbt/misc.h:
+
+../include/xbt/sysdep.h:
+
+/usr/include/string.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-32.h:
+
+/usr/lib/gcc/i486-linux-gnu/4.1.3/include/stddef.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/time.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+/usr/include/alloca.h:
+
+/usr/lib/gcc/i486-linux-gnu/4.1.3/include/stdarg.h:
+
+../include/xbt/asserts.h:
+
+../include/xbt/log.h:
+
+../include/xbt/ex.h:
+
+../include/xbt/virtu.h:
+
+../include/xbt/function_types.h:
+
+/usr/include/setjmp.h:
+
+/usr/include/bits/setjmp.h:
+
+../include/xbt/str.h:
+
+../include/xbt/dynar.h:
+
+../include/xbt/function_types.h:
+
+../include/xbt/asserts.h:
+
+../include/xbt/log.h:
+
+../include/xbt/module.h:
+
+../include/xbt/dynar.h:
+
+../include/xbt/dict.h:
+
+../include/xbt/set.h:
+
+../include/xbt/swag.h:
+
+../include/xbt/heap.h:
+
+../include/xbt/peer.h:
+
+../include/xbt/config.h:
+
+../include/xbt/cunit.h:
+
+../include/xbt/ex.h:
+
+../include/gras/process.h:
+
+../include/gras/module.h:
+
+../include/gras/virtu.h:
+
+../include/xbt/time.h:
+
+../include/gras/emul.h:
+
+../include/gras/transport.h:
+
+../include/gras/datadesc.h:
+
+../include/gras/messages.h:
+
+../include/gras/timer.h:
+
+../include/xbt/synchro.h:

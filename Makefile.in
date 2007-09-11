@@ -158,7 +158,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -226,7 +225,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # GRAMINE_CUT_BEGIN
-SG_SUBDIRS = testsuite examples doc
+SG_SUBDIRS = testsuite teshsuite examples doc
 SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog \
 	acmacro/aci.m4 \
 	tools/graspe-slave.in \

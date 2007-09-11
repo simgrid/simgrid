@@ -1,5 +1,5 @@
 # GRAMINE_CUT_BEGIN
-SG_SUBDIRS= testsuite examples doc
+SG_SUBDIRS= testsuite teshsuite examples doc
 
 SG_EXTRA_DIST = bootstrap COPYING INSTALL NEWS README README.IEEE TODO AUTHORS ChangeLog \
 	acmacro/aci.m4 \

@@ -470,6 +470,11 @@ AC_CONFIG_FILES([
     done
 ])
 
+# Teshsuite (testsuite using tesh)
+AC_CONFIG_FILES([  
+  teshsuite/Makefile
+])
+
 # Documentation
 AC_CONFIG_FILES([
   doc/Makefile
