@@ -17,10 +17,9 @@
 extern const char *xbt_log_priority_names[7];
 
 
-static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
-					xbt_log_event_t ev, 
-					const char *msg_fmt) {
-  static char res[2048];
+static void xbt_log_layout_format_doit(xbt_log_layout_t l,
+				       xbt_log_event_t ev, 
+				       const char *msg_fmt) {
   static double begin_of_time = -1;
   char *p,*q;
   int precision=-1;
@@ -28,7 +27,7 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
   if (begin_of_time<0) 
     begin_of_time=gras_os_time();
 
-  p = res;
+  p = ev->buffer;
   q = l->data;
 
   while (*q != '\0') {
@@ -210,7 +209,6 @@ static char *xbt_log_layout_format_doit(xbt_log_layout_t l,
     }
   }
   *p = '\0';
-  return res;
 }
 
 static void xbt_log_layout_format_free(xbt_log_layout_t lay) {

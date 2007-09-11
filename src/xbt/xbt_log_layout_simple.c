@@ -15,11 +15,9 @@
 
 extern const char *xbt_log_priority_names[7];
 
-
-static char *xbt_log_layout_simple_doit(xbt_log_layout_t l,
-					xbt_log_event_t ev, 
-					const char *fmt) {
-  static char res[1024];
+static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
+				       xbt_log_event_t ev, 
+				       const char *fmt) {
   static double begin_of_time = -1;
   char *p;  
 
@@ -32,8 +30,8 @@ static char *xbt_log_layout_simple_doit(xbt_log_layout_t l,
   if (begin_of_time<0) 
     begin_of_time=gras_os_time();
 
-  p = res;
-  p += sprintf(res,"[");;
+  p = ev->buffer;
+  p += sprintf(p,"[");;
   /* Display the proc info if available */
   if(strlen(xbt_procname()))
     p += sprintf(p,"%s:%s:(%d) ", 
@@ -57,7 +55,6 @@ static char *xbt_log_layout_simple_doit(xbt_log_layout_t l,
   /* End it */
   p += sprintf(p, "\n");
 
-  return res;
 }
 
 xbt_log_layout_t xbt_log_layout_simple_new(char *arg) {

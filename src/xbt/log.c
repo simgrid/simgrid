@@ -581,8 +581,8 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
     xbt_log_appender_t appender = cat->appender;
     if (appender != NULL) {
       xbt_assert1(cat->layout,"No valid layout for the appender of category %s",cat->name);
-      char *str= cat->layout->do_layout(cat->layout, ev, fmt);    
-      appender->do_append(appender, str);
+      cat->layout->do_layout(cat->layout, ev, fmt);
+      appender->do_append(appender, ev->buffer);
     }
     if (!cat->additivity)
       break;
