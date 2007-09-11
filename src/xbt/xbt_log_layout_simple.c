@@ -15,6 +15,13 @@
 
 extern const char *xbt_log_priority_names[7];
 
+/* only used after the format using: we suppose that the buffer is big enough to display our data */
+#define check_overflow \
+  if (p-ev->buffer > XBT_LOG_BUFF_SIZE) { /* buffer overflow */ \
+     p=ev->buffer + XBT_LOG_BUFF_SIZE - strlen(" >> OUTPUT TRUNCATED <<\n"); \
+     p+=sprintf(p," >> OUTPUT TRUNCATED <<\n"); \
+  } 
+
 static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
 				       xbt_log_event_t ev, 
 				       const char *fmt) {
@@ -31,30 +38,31 @@ static void xbt_log_layout_simple_doit(xbt_log_layout_t l,
     begin_of_time=gras_os_time();
 
   p = ev->buffer;
-  p += sprintf(p,"[");;
+  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"[");
+
   /* Display the proc info if available */
   if(strlen(xbt_procname()))
-    p += sprintf(p,"%s:%s:(%d) ", 
+    p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s:%s:(%d) ", 
 		 gras_os_myname(), xbt_procname(),(*xbt_getpid)());
 
   /* Display the date */
-  p += sprintf(p,"%f] ", gras_os_time()-begin_of_time);
-
+  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%f] ", gras_os_time()-begin_of_time);
 
   /* Display file position if not INFO*/
   if (ev->priority != xbt_log_priority_info)
-    p += sprintf(p, "%s:%d: ", ev->fileName, ev->lineNum);
+    p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s:%d: ", ev->fileName, ev->lineNum);
 
   /* Display category name */
-  p += sprintf(p, "[%s/%s] ", 
+  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "[%s/%s] ", 
 	       ev->cat->name, xbt_log_priority_names[ev->priority] );
 
   /* Display user-provided message */
-  p += vsprintf(p, fmt, ev->ap);
-
+  p += vsnprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), fmt, ev->ap);
+  check_overflow;
+   
   /* End it */
-  p += sprintf(p, "\n");
-
+  p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "\n");
+  check_overflow;
 }
 
 xbt_log_layout_t xbt_log_layout_simple_new(char *arg) {

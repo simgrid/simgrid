@@ -234,6 +234,7 @@ typedef struct xbt_log_category_s s_xbt_log_category_t,*xbt_log_category_t;
 /*
  * Do NOT access any members of this structure directly. FIXME: move to private?
  */
+#define XBT_LOG_BUFF_SIZE 2048 /* Size of the static string in which we build the log string */
 struct xbt_log_category_s {
   xbt_log_category_t parent;
   xbt_log_category_t firstChild; 
@@ -267,7 +268,7 @@ struct xbt_log_event_s {
   const char* functionName;
   int lineNum;
   va_list ap;
-  char buffer[1024];
+  char buffer[XBT_LOG_BUFF_SIZE];
 };
 
 /**
