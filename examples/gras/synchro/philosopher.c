@@ -115,7 +115,7 @@ int philosopher (int argc,char *argv[]) {
   dead_end = xbt_mutex_init();
   xbt_mutex_lock(dead_end);
   
-  INFO0("Spawn the threads");
+  INFO2("Spawn the %d threads (%d lunches scheduled)", philosopher_amount, lunch_amount);
   /* spawn threads */
   for (i=0; i<philosopher_amount; i++) {
      char *name = bprintf("thread %d",i);
