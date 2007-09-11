@@ -2,7 +2,7 @@
 
 p Simple test of simdag
 
-$ $SG_TEST_EXENV sd_test2 ${srcdir:=.}/2clusters.xml
+$ $SG_TEST_EXENV ./sd_test2 ${srcdir:=.}/2clusters.xml
 > [0.000000] surf/workstation_ptask_L07.c:917: [surf_workstation/WARNING] This model does not take latency into account.
 > [0.000000] [sd_kernel/INFO] Starting simulation...
 > [0.000000] [sd_kernel/INFO] Executing task 'Initial'
