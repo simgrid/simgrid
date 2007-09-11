@@ -254,8 +254,8 @@ struct xbt_log_appender_s {
 };
 
 struct xbt_log_layout_s {
-  char *(*do_layout)(xbt_log_layout_t l,
-		     xbt_log_event_t event, const char *fmt);
+  void (*do_layout)(xbt_log_layout_t l,
+		    xbt_log_event_t event, const char *fmt);
   void (*free_) (xbt_log_layout_t l);
   void *data;
 } ;
@@ -266,6 +266,7 @@ struct xbt_log_event_s {
   const char* fileName;
   const char* functionName;
   int lineNum;
+  char buffer[1024];
   va_list ap;
 };
 
@@ -399,7 +400,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
 #define _XBT_LOG_PRE(catv, priority) do {			 \
      if (_XBT_LOG_ISENABLEDV(catv, priority)) {                  \
          s_xbt_log_event_t _log_ev =                             \
-             {NULL,priority,__FILE__,_XBT_FUNCTION,__LINE__};    \
+             {NULL,priority,__FILE__,_XBT_FUNCTION,__LINE__,{'\0'}}; \
                 _log_ev.cat = &(catv);                           \
               _xbt_log_event_log(&_log_ev 			 \
               
