@@ -356,8 +356,6 @@ void surf_init(int *argc, char **argv)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
   if (!history)
     history = tmgr_history_new();
-  if (!maxmin_system)
-    maxmin_system = lmm_system_new();
 }
 
 static char *path_name = NULL;
