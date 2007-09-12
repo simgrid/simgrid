@@ -182,12 +182,12 @@ static void *name_service(const char *name)
   return res;
 }
 
-static const char *get_model_name(void *model_id)
+static const char *get_resource_name(void *resource_id)
 {
   /* We can freely cast as a cpu_KCCFLN05_t because it has the same
      prefix as network_link_KCCFLN05_t. However, only cpu_KCCFLN05_t
      will theoretically be given as an argument here. */
-  return ((cpu_KCCFLN05_t) model_id)->name;
+  return ((cpu_KCCFLN05_t) resource_id)->name;
 }
 
 /* action_get_state is inherited from the surf module */
@@ -310,33 +310,33 @@ static void action_set_priority(surf_action_t action, double priority)
 /******* Resource Private    **********/
 /**************************************/
 
-static int model_used(void *model_id)
+static int resource_used(void *resource_id)
 {
   /* We can freely cast as a network_link_KCCFLN05_t because it has
      the same prefix as cpu_KCCFLN05_t */
-  if (((cpu_KCCFLN05_t) model_id)->type ==
+  if (((cpu_KCCFLN05_t) resource_id)->type ==
       SURF_WORKSTATION_RESOURCE_CPU)
     return (lmm_constraint_used
-	    (maxmin_system, ((cpu_KCCFLN05_t) model_id)->constraint)
-	    || ((((cpu_KCCFLN05_t) model_id)->bus) ?
+	    (maxmin_system, ((cpu_KCCFLN05_t) resource_id)->constraint)
+	    || ((((cpu_KCCFLN05_t) resource_id)->bus) ?
 		lmm_constraint_used(maxmin_system,
-				    ((cpu_KCCFLN05_t) model_id)->
+				    ((cpu_KCCFLN05_t) resource_id)->
 				    bus) : 0));
   else
     return lmm_constraint_used(maxmin_system,
-			       ((network_link_KCCFLN05_t) model_id)->
+			       ((network_link_KCCFLN05_t) resource_id)->
 			       constraint);
 
 }
 
-static double share_models(double now)
+static double share_resources(double now)
 {
   s_surf_action_workstation_KCCFLN05_t s_action;
   surf_action_workstation_KCCFLN05_t action = NULL;
 
   xbt_swag_t running_actions =
       surf_workstation_model->common_public->states.running_action_set;
-  double min = generic_maxmin_share_models(running_actions,
+  double min = generic_maxmin_share_resources(running_actions,
 					      xbt_swag_offset(s_action,
 							      variable));
 
@@ -403,7 +403,7 @@ static void update_actions_state(double now, double delta)
       action->generic_action.finish = surf_get_clock();
       surf_action_change_state((surf_action_t) action, SURF_ACTION_DONE);
     } else {
-      /* Need to check that none of the model has failed */
+      /* Need to check that none of the resource has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
       void *constraint_id = NULL;
@@ -447,7 +447,7 @@ static void update_actions_state(double now, double delta)
   return;
 }
 
-static void update_model_state(void *id,
+static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
@@ -614,7 +614,7 @@ static surf_action_t action_sleep(void *cpu, double duration)
   return (surf_action_t) action;
 }
 
-static e_surf_cpu_state_t model_get_state(void *cpu)
+static e_surf_cpu_state_t resource_get_state(void *cpu)
 {
   return ((cpu_KCCFLN05_t) cpu)->state_current;
 }
@@ -1244,8 +1244,8 @@ static void model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_workstation_model->common_public->name_service = name_service;
-  surf_workstation_model->common_public->get_model_name =
-      get_model_name;
+  surf_workstation_model->common_public->get_resource_name =
+      get_resource_name;
   surf_workstation_model->common_public->action_get_state =
       surf_action_get_state;
   surf_workstation_model->common_public->action_get_start_time =
@@ -1271,19 +1271,19 @@ static void model_init_internal(void)
       action_set_priority;
   surf_workstation_model->common_public->name = "Workstation KCCFLN05";
 
-  surf_workstation_model->common_private->model_used = model_used;
-  surf_workstation_model->common_private->share_models =
-      share_models;
+  surf_workstation_model->common_private->resource_used = resource_used;
+  surf_workstation_model->common_private->share_resources =
+      share_resources;
   surf_workstation_model->common_private->update_actions_state =
       update_actions_state;
-  surf_workstation_model->common_private->update_model_state =
-      update_model_state;
+  surf_workstation_model->common_private->update_resource_state =
+      update_resource_state;
   surf_workstation_model->common_private->finalize = finalize;
 
   surf_workstation_model->extension_public->execute = execute;
   surf_workstation_model->extension_public->sleep = action_sleep;
   surf_workstation_model->extension_public->get_state =
-      model_get_state;
+      resource_get_state;
   surf_workstation_model->extension_public->get_speed = get_speed;
   surf_workstation_model->extension_public->get_available_speed =
       get_available_speed;

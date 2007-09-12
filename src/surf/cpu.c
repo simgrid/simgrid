@@ -93,15 +93,15 @@ static void *name_service(const char *name)
   return xbt_dict_get_or_null(cpu_set, name);
 }
 
-static const char *get_model_name(void *model_id)
+static const char *get_resource_name(void *resource_id)
 {
-  return ((cpu_Cas01_t) model_id)->name;
+  return ((cpu_Cas01_t) resource_id)->name;
 }
 
-static int model_used(void *model_id)
+static int resource_used(void *resource_id)
 {
   return lmm_constraint_used(cpu_maxmin_system,
-			     ((cpu_Cas01_t) model_id)->constraint);
+			     ((cpu_Cas01_t) resource_id)->constraint);
 }
 
 static int action_free(surf_action_t action)
@@ -147,10 +147,10 @@ static void action_change_state(surf_action_t action,
   return;
 }
 
-static double share_models(double now)
+static double share_resources(double now)
 {
   s_surf_action_cpu_Cas01_t action;
-  return generic_maxmin_share_models2(surf_cpu_model->common_public->
+  return generic_maxmin_share_resources2(surf_cpu_model->common_public->
 					 states.running_action_set,
 					 xbt_swag_offset(action, variable),
 					 cpu_maxmin_system, lmm_solve);
@@ -201,7 +201,7 @@ static void update_actions_state(double now, double delta)
   return;
 }
 
-static void update_model_state(void *id,
+static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
@@ -374,7 +374,7 @@ static void surf_cpu_model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_cpu_model->common_public->name_service = name_service;
-  surf_cpu_model->common_public->get_model_name = get_model_name;
+  surf_cpu_model->common_public->get_resource_name = get_resource_name;
   surf_cpu_model->common_public->action_get_state =
       surf_action_get_state;
   surf_cpu_model->common_public->action_get_start_time =
@@ -390,12 +390,12 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->common_public->action_set_data = surf_action_set_data;
   surf_cpu_model->common_public->name = "CPU";
 
-  surf_cpu_model->common_private->model_used = model_used;
-  surf_cpu_model->common_private->share_models = share_models;
+  surf_cpu_model->common_private->resource_used = resource_used;
+  surf_cpu_model->common_private->share_resources = share_resources;
   surf_cpu_model->common_private->update_actions_state =
       update_actions_state;
-  surf_cpu_model->common_private->update_model_state =
-      update_model_state;
+  surf_cpu_model->common_private->update_resource_state =
+      update_resource_state;
   surf_cpu_model->common_private->finalize = finalize;
 
   surf_cpu_model->common_public->suspend = action_suspend;

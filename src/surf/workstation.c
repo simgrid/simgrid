@@ -56,12 +56,12 @@ static void *name_service(const char *name)
   return xbt_dict_get_or_null(workstation_set, name);
 }
 
-static const char *get_model_name(void *model_id)
+static const char *get_resource_name(void *resource_id)
 {
-  return ((workstation_CLM03_t) model_id)->name;
+  return ((workstation_CLM03_t) resource_id)->name;
 }
 
-static int model_used(void *model_id)
+static int resource_used(void *resource_id)
 {
   xbt_assert0(0,
 	      "Workstation is a virtual model. I should not be there!");
@@ -152,10 +152,10 @@ static void action_change_state(surf_action_t action,
   return;
 }
 
-static double share_models(double now)
+static double share_resources(double now)
 {
   s_surf_action_parallel_task_CSL05_t action;
-  return generic_maxmin_share_models(surf_workstation_model->
+  return generic_maxmin_share_resources(surf_workstation_model->
 					common_public->states.
 					running_action_set,
 					xbt_swag_offset(action, variable));
@@ -219,7 +219,7 @@ static void update_actions_state(double now, double delta)
   return;
 }
 
-static void update_model_state(void *id,
+static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
@@ -504,8 +504,8 @@ static void surf_workstation_model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_workstation_model->common_public->name_service = name_service;
-  surf_workstation_model->common_public->get_model_name =
-      get_model_name;
+  surf_workstation_model->common_public->get_resource_name =
+      get_resource_name;
   surf_workstation_model->common_public->action_get_state =
       surf_action_get_state;
   surf_workstation_model->common_public->action_get_start_time =
@@ -523,13 +523,13 @@ static void surf_workstation_model_init_internal(void)
       surf_action_set_data;
   surf_workstation_model->common_public->name = "Workstation";
 
-  surf_workstation_model->common_private->model_used = model_used;
-  surf_workstation_model->common_private->share_models =
-      share_models;
+  surf_workstation_model->common_private->resource_used = resource_used;
+  surf_workstation_model->common_private->share_resources =
+      share_resources;
   surf_workstation_model->common_private->update_actions_state =
       update_actions_state;
-  surf_workstation_model->common_private->update_model_state =
-      update_model_state;
+  surf_workstation_model->common_private->update_resource_state =
+      update_resource_state;
   surf_workstation_model->common_private->finalize = finalize;
 
   surf_workstation_model->common_public->suspend = action_suspend;

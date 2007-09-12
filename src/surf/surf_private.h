@@ -30,13 +30,13 @@ typedef enum {
 } e_surf_network_link_sharing_policy_t;
 
 typedef struct surf_model_private {
-  int (*model_used) (void *model_id);
+  int (*resource_used) (void *resource_id);
   /* Share the models to the actions and return in hom much time
      the next action may terminate */
-  double (*share_models) (double now);
+  double (*share_resources) (double now);
   /* Update the actions' state */
   void (*update_actions_state) (double now, double delta);
-  void (*update_model_state) (void *id, tmgr_trace_event_t event_type,
+  void (*update_resource_state) (void *id, tmgr_trace_event_t event_type,
 				 double value);
   void (*finalize) (void);
 } s_surf_model_private_t;
@@ -47,9 +47,9 @@ typedef struct surf_model_private {
 extern int use_sdp_solver;
 extern int use_lagrange_solver;
 
-double generic_maxmin_share_models(xbt_swag_t running_actions,
+double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				      size_t offset);
-double generic_maxmin_share_models2(xbt_swag_t running_actions,
+double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 				       size_t offset,
 				       lmm_system_t sys,
 				       void (*solve)(lmm_system_t));

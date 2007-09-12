@@ -26,11 +26,11 @@ static int *routing_table_size = NULL;
 #endif
 
 /** QUESTIONS for GTNetS integration
- **   1. Check that we did the right thing with name_service and get_model_name
+ **   1. Check that we did the right thing with name_service and get_resource_name
  **   2. Right now there is no "kill flow" in our GTNetS implementation. Do we
  **      need to do something about this?
  **   3. We ignore the fact there is some max_duration on flows (see #2 above)
- **   4. share_models() returns a duration, not a date, right?
+ **   4. share_resources() returns a duration, not a date, right?
  **   5. We don't suppoer "rates"
  **   6. We don't update "remaining" for ongoing flows. Is it bad?
  **/
@@ -317,13 +317,13 @@ static void *name_service(const char *name)
   return xbt_dict_get_or_null(network_card_set, name);
 }
 
-static const char *get_model_name(void *model_id)
+static const char *get_resource_name(void *resource_id)
 {
-  return ((network_card_GTNETS_t) model_id)->name;
+  return ((network_card_GTNETS_t) resource_id)->name;
 }
 
 /* We do not care about this: only used for traces */
-static int model_used(void *model_id)
+static int resource_used(void *resource_id)
 {
   return 0;			/* We don't care */
 }
@@ -371,8 +371,8 @@ static void action_change_state(surf_action_t action,
 }
 
 
-/* share_models() */
-static double share_models(double now)
+/* share_resources() */
+static double share_resources(double now)
 {
 #if 0
   s_surf_action_network_GTNETS_t s_action;
@@ -443,7 +443,7 @@ static void update_actions_state(double now, double delta)
 }
 
 /* UNUSED HERE: no traces */
-static void update_model_state(void *id,
+static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
@@ -575,8 +575,8 @@ static void surf_network_model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_network_model->common_public->name_service = name_service;
-  surf_network_model->common_public->get_model_name =
-      get_model_name;
+  surf_network_model->common_public->get_resource_name =
+      get_resource_name;
   surf_network_model->common_public->action_get_state =
       surf_action_get_state;
   surf_network_model->common_public->action_use = action_use;
@@ -589,12 +589,12 @@ static void surf_network_model_init_internal(void)
       surf_action_set_data;
   surf_network_model->common_public->name = "network";
 
-  surf_network_model->common_private->model_used = model_used;
-  surf_network_model->common_private->share_models = share_models;
+  surf_network_model->common_private->resource_used = resource_used;
+  surf_network_model->common_private->share_resources = share_resources;
   surf_network_model->common_private->update_actions_state =
       update_actions_state;
-  surf_network_model->common_private->update_model_state =
-      update_model_state;
+  surf_network_model->common_private->update_resource_state =
+      update_resource_state;
   surf_network_model->common_private->finalize = finalize;
 
   surf_network_model->common_public->suspend = action_suspend;

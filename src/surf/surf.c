@@ -189,14 +189,14 @@ int find_model_description(s_surf_model_description_t * table,
 	      name_list);
 }
 
-double generic_maxmin_share_models(xbt_swag_t running_actions,
+double generic_maxmin_share_resources(xbt_swag_t running_actions,
 				      size_t offset)
 {
-  return generic_maxmin_share_models2(running_actions, offset,
+  return generic_maxmin_share_resources2(running_actions, offset,
 					 maxmin_system, lmm_solve);
 }
 
-double generic_maxmin_share_models2(xbt_swag_t running_actions,
+double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 				       size_t offset,
 				       lmm_system_t sys,
 				       void (*solve) (lmm_system_t))
@@ -453,7 +453,7 @@ double surf_solve(void)
 					      &value,
 					      (void **) &model_obj))) {
 	model_obj->model->common_private->
-	    update_model_state(model_obj, event, value);
+	    update_resource_state(model_obj, event, value);
       }
     }
     xbt_dynar_foreach(model_list, i, model) {
@@ -469,7 +469,7 @@ double surf_solve(void)
   xbt_dynar_foreach(model_list, i, model) {
     DEBUG1("Running for Resource [%s]", model->common_public->name);
     model_next_action_end =
-	model->common_private->share_models(NOW);
+	model->common_private->share_resources(NOW);
     DEBUG2("Resource [%s] : next action end = %f",
 	   model->common_public->name, model_next_action_end);
     if (((min < 0.0) || (model_next_action_end < min))
@@ -492,7 +492,7 @@ double surf_solve(void)
 					    &value,
 					    (void **) &model_obj))) {
       if (model_obj->model->common_private->
-	  model_used(model_obj)) {
+	  resource_used(model_obj)) {
 	min = next_event_date - NOW;
 	DEBUG1
 	    ("This event will modify model state. Next event set to %f",
@@ -501,7 +501,7 @@ double surf_solve(void)
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       model_obj->model->common_private->
-	  update_model_state(model_obj, event, value);
+	  update_resource_state(model_obj, event, value);
     }
   }
 

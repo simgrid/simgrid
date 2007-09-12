@@ -126,7 +126,7 @@ void SD_workstation_set_data(SD_workstation_t workstation, void *data) {
 const char* SD_workstation_get_name(SD_workstation_t workstation) {
   SD_CHECK_INIT_DONE();
   xbt_assert0(workstation != NULL, "Invalid parameter");
-  return surf_workstation_model->common_public->get_model_name(workstation->surf_workstation);
+  return surf_workstation_model->common_public->get_resource_name(workstation->surf_workstation);
 }
 
 /**
