@@ -39,7 +39,6 @@ EXTRA_DIST= \
 	surf/surfxml.dtd \
 	surf/network_private.h \
 	network_gtnets_private.h \
-	surf/workstation_KCCFLN05_private.h \
 	\
 	include/surf/maxmin.h \
 	include/surf/trace_mgr.h \

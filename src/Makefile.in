@@ -446,12 +446,12 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/cpu_private.h surf/workstation_private.h \
 	surf/surf_timer_private.h surf/surfxml_parse.c surf/surfxml.l \
 	surf/surfxml.c surf/surfxml.dtd surf/network_private.h \
-	network_gtnets_private.h surf/workstation_KCCFLN05_private.h \
-	include/surf/maxmin.h include/surf/trace_mgr.h \
-	include/surf/surf.h include/surf/surfxml_parse_private.h \
-	include/xbt/xbt_os_time.h include/xbt/xbt_os_thread.h \
-	include/xbt/context.h msg/private.h simdag/private.h \
-	gras/DataDesc/ddt_parse.yy.l gras/Virtu/virtu_interface.h \
+	network_gtnets_private.h include/surf/maxmin.h \
+	include/surf/trace_mgr.h include/surf/surf.h \
+	include/surf/surfxml_parse_private.h include/xbt/xbt_os_time.h \
+	include/xbt/xbt_os_thread.h include/xbt/context.h \
+	msg/private.h simdag/private.h gras/DataDesc/ddt_parse.yy.l \
+	gras/Virtu/virtu_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
 	$(am__append_3) $(am__append_4) $(am__append_9) \
 	$(am__append_10)
