@@ -8,6 +8,7 @@
 #include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "surf_private.h"
+/* extern lmm_system_t maxmin_system; */
 
 typedef enum {
   SURF_WORKSTATION_RESOURCE_CPU,
@@ -39,6 +40,8 @@ typedef struct network_link_L07 {
   e_surf_workstation_model_type_t type;	/* Do not move this field */
   char *name;			/* Do not move this field */
   lmm_constraint_t constraint;	/* Do not move this field */
+  double lat_current;
+  tmgr_trace_event_t lat_event;
   double bw_current;
   tmgr_trace_event_t bw_event;
   e_surf_network_link_state_t state_current;
@@ -57,6 +60,7 @@ typedef struct s_route_L07 {
 typedef struct surf_action_workstation_L07 {
   s_surf_action_t generic_action;
   lmm_variable_t variable;
+  double latency;
   double rate;
   int suspended;
 } s_surf_action_workstation_L07_t, *surf_action_workstation_L07_t;
@@ -141,12 +145,13 @@ static void action_suspend(surf_action_t action)
 
 static void action_resume(surf_action_t action)
 {
-  XBT_IN1("(%p)", action);
-  if (((surf_action_workstation_L07_t) action)->suspended != 2) {
+  surf_action_workstation_L07_t act = (surf_action_workstation_L07_t) action;
+
+  XBT_IN1("(%p)", act);
+  if (act->suspended != 2) {
     lmm_update_variable_weight(ptask_maxmin_system,
-			       ((surf_action_workstation_L07_t)
-				action)->variable, 1.0);
-    ((surf_action_workstation_L07_t) action)->suspended = 0;
+			       act->variable, 1.0);
+    act->suspended = 0;
   }
   XBT_OUT;
 }
@@ -188,6 +193,7 @@ static int resource_used(void *resource_id)
 static double share_resources(double now)
 {
   s_surf_action_workstation_L07_t s_action;
+  surf_action_workstation_L07_t action = NULL;
 
   xbt_swag_t running_actions =
       surf_workstation_model->common_public->states.running_action_set;
@@ -197,6 +203,20 @@ static double share_resources(double now)
 					       ptask_maxmin_system,
 					       bottleneck_solve);
 
+  xbt_swag_foreach(action, running_actions) {
+    if (action->latency > 0) {
+      if (min < 0) {
+	min = action->latency;
+	DEBUG3("Updating min (value) with %p (start %f): %f", action,
+	       action->generic_action.start, min);
+      } else if (action->latency < min) {
+	min = action->latency;
+	DEBUG3("Updating min (latency) with %p (start %f): %f", action,
+	       action->generic_action.start, min);
+      }
+    }
+  }
+
   DEBUG1("min value : %f", min);
 
   return min;
@@ -204,12 +224,26 @@ static double share_resources(double now)
 
 static void update_actions_state(double now, double delta)
 {
+  double deltap = 0.0;
   surf_action_workstation_L07_t action = NULL;
   surf_action_workstation_L07_t next_action = NULL;
   xbt_swag_t running_actions =
       surf_workstation_model->common_public->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
+    deltap = delta;
+    if (action->latency > 0) {
+      if (action->latency > deltap) {
+	double_update(&(action->latency), deltap);
+	deltap = 0.0;
+      } else {
+	double_update(&(deltap), action->latency);
+	action->latency = 0.0;
+      }
+      if ((action->latency == 0.0) && (action->suspended == 0)) {
+	lmm_update_variable_weight(ptask_maxmin_system, action->variable, 1.0);
+      }
+    }
     DEBUG3("Action (%p) : remains (%g) updated by %g.",
 	   action, action->generic_action.remains,
 	   lmm_variable_getvalue(action->variable) * delta);
@@ -386,27 +420,32 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   int i, j, k;
   int nb_link = 0;
   int nb_host = 0;
+  double latency = 0.0;
 
   if (parallel_task_network_link_set == NULL) {
     parallel_task_network_link_set =
 	xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
   }
 
-  /* Compute the number of affected models... */
+  /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       cpu_L07_t card_src = workstation_list[i];
       cpu_L07_t card_dst = workstation_list[j];
       int route_size = ROUTE(card_src->id, card_dst->id).size;
       network_link_L07_t *route = ROUTE(card_src->id, card_dst->id).links;
+      double lat = 0.0;
 
       if (communication_amount[i * workstation_nb + j] > 0)
 	for (k = 0; k < route_size; k++) {
+	  lat += route[k]->lat_current;
 	  xbt_dict_set(parallel_task_network_link_set, route[k]->name,
 		       route[k], NULL);
 	}
+      latency=MAX(latency,lat);
     }
   }
+
   nb_link = xbt_dict_length(parallel_task_network_link_set);
   xbt_dict_reset(parallel_task_network_link_set);
 
@@ -421,12 +460,13 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
   action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = -1.0;
+  action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
   action->generic_action.model_type =
       (surf_model_t) surf_workstation_model;
   action->suspended = 0;	/* Should be useless because of the
 				   calloc but it seems to help valgrind... */
+  action->latency = latency;
   action->generic_action.state_set =
       surf_workstation_model->common_public->states.running_action_set;
 
@@ -441,6 +481,9 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     action->variable =
 	lmm_variable_new(ptask_maxmin_system, action, 1.0, action->rate,
 			 workstation_nb + nb_link);
+
+  if (action->latency > 0) 
+    lmm_update_variable_weight(ptask_maxmin_system,action->variable,0.0);
 
   for (i = 0; i < workstation_nb; i++)
     lmm_expand(ptask_maxmin_system,
@@ -547,13 +590,7 @@ static double get_link_bandwidth(const void *link)
 
 static double get_link_latency(const void *link)
 {
-  static int warned = 0;
-
-  if(!warned) {
-    WARN0("This model does not take latency into account.");
-    warned = 1;
-  }
-  return 0.0;
+  return ((network_link_L07_t) link)->lat_current;
 }
 
 /**************************************/
@@ -640,6 +677,8 @@ static void network_link_free(void *nw_link)
 static network_link_L07_t network_link_new(char *name,
 					   double bw_initial,
 					   tmgr_trace_t bw_trace,
+					   double lat_initial,
+					   tmgr_trace_t lat_trace,
 					   e_surf_network_link_state_t
 					   state_initial,
 					   tmgr_trace_t state_trace,
@@ -657,6 +696,10 @@ static network_link_L07_t network_link_new(char *name,
     nw_link->bw_event =
 	tmgr_history_add_trace(history, bw_trace, 0.0, 0, nw_link);
   nw_link->state_current = state_initial;
+  nw_link->lat_current = lat_initial;
+  if (lat_trace)
+    nw_link->lat_event =
+	tmgr_history_add_trace(history, lat_trace, 0.0, 0, nw_link);
   if (state_trace)
     nw_link->state_event =
 	tmgr_history_add_trace(history, state_trace, 0.0, 0, nw_link);
@@ -678,6 +721,8 @@ static void parse_network_link(void)
   char *name;
   double bw_initial;
   tmgr_trace_t bw_trace;
+  double lat_initial;
+  tmgr_trace_t lat_trace;
   e_surf_network_link_state_t state_initial = SURF_NETWORK_LINK_ON;
   e_surf_network_link_sharing_policy_t policy_initial =
       SURF_NETWORK_LINK_SHARED;
@@ -686,6 +731,8 @@ static void parse_network_link(void)
   name = xbt_strdup(A_surfxml_network_link_name);
   surf_parse_get_double(&bw_initial, A_surfxml_network_link_bandwidth);
   surf_parse_get_trace(&bw_trace, A_surfxml_network_link_bandwidth_file);
+  surf_parse_get_double(&lat_initial, A_surfxml_network_link_latency);
+  surf_parse_get_trace(&lat_trace, A_surfxml_network_link_latency_file);
 
   xbt_assert0((A_surfxml_network_link_state ==
 	       A_surfxml_network_link_state_ON)
@@ -706,8 +753,8 @@ static void parse_network_link(void)
 
   surf_parse_get_trace(&state_trace, A_surfxml_network_link_state_file);
 
-  network_link_new(name, bw_initial, bw_trace, state_initial, state_trace,
-		   policy_initial);
+  network_link_new(name, bw_initial, bw_trace, lat_initial, lat_trace,
+		   state_initial, state_trace, policy_initial);
 }
 
 static void route_new(int src_id, int dst_id,
@@ -804,7 +851,7 @@ static void parse_file(const char *file)
     if (!ROUTE(i, i).size) {
       if (!loopback)
 	loopback = network_link_new(xbt_strdup("__MSG_loopback__"),
-				    498000000, NULL,
+				    498000000, NULL, 0.000015, NULL,
 				    SURF_NETWORK_LINK_ON, NULL,
 				    SURF_NETWORK_LINK_FATPIPE);
 
