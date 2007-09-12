@@ -336,9 +336,11 @@ static double share_resources(double now)
 
   xbt_swag_t running_actions =
       surf_workstation_model->common_public->states.running_action_set;
-  double min = generic_maxmin_share_resources(running_actions,
-					      xbt_swag_offset(s_action,
-							      variable));
+  double min = generic_maxmin_share_resources2(running_actions,
+					       xbt_swag_offset(s_action,
+							       variable),
+					       maxmin_system,
+					       lmm_solve);
 
   xbt_swag_foreach(action, running_actions) {
     if (action->latency > 0) {
