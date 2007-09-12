@@ -490,7 +490,7 @@ static surf_action_t communicate(void *src, void *dst, double size,
       lmm_update_variable_bound(network_maxmin_system, action->variable,
 				action->rate);
   }
-  lmm_update_variable_latency(maxmin_system, action->variable,
+  lmm_update_variable_latency(network_maxmin_system, action->variable,
 			      action->latency);
 
   for (i = 0; i < route_size; i++)
