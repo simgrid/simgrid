@@ -14,7 +14,6 @@
 
 surf_workstation_model_t surf_workstation_model = NULL;
 xbt_dict_t workstation_set = NULL;
-static xbt_dict_t parallel_task_network_link_set = NULL;
 
 static workstation_CLM03_t workstation_new(const char *name,
 					   void *cpu, void *card)
@@ -70,22 +69,12 @@ static int resource_used(void *resource_id)
 
 static int parallel_action_free(surf_action_t action)
 {
-  action->using--;
-  if (!action->using) {
-    xbt_swag_remove(action, action->state_set);
-    if (((surf_action_parallel_task_CSL05_t) action)->variable)
-      lmm_variable_free(maxmin_system,
-			((surf_action_parallel_task_CSL05_t) action)->
-			variable);
-    free(action);
-    return 1;
-  }
-  return 0;
+  xbt_assert0(0, "This model does not implement parallel tasks");
 }
 
 static void parallel_action_use(surf_action_t action)
 {
-  action->using++;
+  xbt_assert0(0, "This model does not implement parallel tasks");
 }
 
 static int action_free(surf_action_t action)
@@ -154,68 +143,11 @@ static void action_change_state(surf_action_t action,
 
 static double share_resources(double now)
 {
-  s_surf_action_parallel_task_CSL05_t action;
-  return generic_maxmin_share_resources(surf_workstation_model->
-					common_public->states.
-					running_action_set,
-					xbt_swag_offset(action, variable));
+  return -1.0;
 }
 
 static void update_actions_state(double now, double delta)
 {
-  surf_action_parallel_task_CSL05_t action = NULL;
-  surf_action_parallel_task_CSL05_t next_action = NULL;
-  xbt_swag_t running_actions =
-      surf_workstation_model->common_public->states.running_action_set;
-  /* FIXME: unused
-     xbt_swag_t failed_actions =
-     surf_workstation_model->common_public->states.failed_action_set;
-   */
-
-  xbt_swag_foreach_safe(action, next_action, running_actions) {
-    double_update(&(action->generic_action.remains),
-		  lmm_variable_getvalue(action->variable) * delta);
-    if (action->generic_action.max_duration != NO_MAX_DURATION)
-      double_update(&(action->generic_action.max_duration), delta);
-    if ((action->generic_action.remains <= 0) &&
-	(lmm_get_variable_weight(action->variable) > 0)) {
-      action->generic_action.finish = surf_get_clock();
-      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
-	       (action->generic_action.max_duration <= 0)) {
-      action->generic_action.finish = surf_get_clock();
-      action_change_state((surf_action_t) action, SURF_ACTION_DONE);
-    } else {			/* Need to check that none of the model has failed */
-      lmm_constraint_t cnst = NULL;
-      int i = 0;
-      surf_model_t model = NULL;
-
-      while ((cnst =
-	      lmm_get_cnst_from_var(maxmin_system, action->variable,
-				    i++))) {
-	model = (surf_model_t) lmm_constraint_id(cnst);
-	if (model == (surf_model_t) surf_cpu_model) {
-	  cpu_Cas01_t cpu = lmm_constraint_id(cnst);
-	  if (cpu->state_current == SURF_CPU_OFF) {
-	    action->generic_action.finish = surf_get_clock();
-	    action_change_state((surf_action_t) action,
-				SURF_ACTION_FAILED);
-	    break;
-	  }
-	} else if (model == (surf_model_t) surf_network_model) {
-	  network_link_CM02_t nw_link = lmm_constraint_id(cnst);
-
-	  if (nw_link->state_current == SURF_NETWORK_LINK_OFF) {
-	    action->generic_action.finish = surf_get_clock();
-	    action_change_state((surf_action_t) action,
-				SURF_ACTION_FAILED);
-	    break;
-	  }
-	}
-      }
-    }
-  }
-
   return;
 }
 
@@ -223,6 +155,7 @@ static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
+  xbt_assert0(0, "This model does not implement parallel tasks");
   return;
 }
 
@@ -316,115 +249,16 @@ static double get_available_speed(void *workstation)
       get_available_speed(((workstation_CLM03_t) workstation)->cpu);
 }
 
-static surf_action_t execute_parallel_task_bogus(int workstation_nb,
-						 void **workstation_list,
-						 double
-						 *computation_amount,
-						 double
-						 *communication_amount,
-						 double amount,
-						 double rate)
-{
-  xbt_assert0(0, "This model does not implement parallel tasks");
-}
-
 static surf_action_t execute_parallel_task(int workstation_nb,
 					   void **workstation_list,
 					   double *computation_amount,
 					   double *communication_amount,
-					   double amount, double rate)
+					   double amount,
+					   double rate)
 {
-  surf_action_parallel_task_CSL05_t action = NULL;
-  int i, j, k;
-  int nb_link = 0;
-  int nb_host = 0;
-
-  if (parallel_task_network_link_set == NULL) {
-    parallel_task_network_link_set =
-	xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
-  }
-
-  /* Compute the number of affected models... */
-  for (i = 0; i < workstation_nb; i++) {
-    for (j = 0; j < workstation_nb; j++) {
-      network_card_CM02_t card_src =
-	  ((workstation_CLM03_t *) workstation_list)[i]->network_card;
-      network_card_CM02_t card_dst =
-	  ((workstation_CLM03_t *) workstation_list)[j]->network_card;
-      int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
-      network_link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
-
-      if (communication_amount[i * workstation_nb + j] > 0)
-	for (k = 0; k < route_size; k++) {
-	  xbt_dict_set(parallel_task_network_link_set, route[k]->name,
-		       route[k], NULL);
-	}
-    }
-  }
-
-  nb_link = xbt_dict_length(parallel_task_network_link_set);
-  xbt_dict_reset(parallel_task_network_link_set);
-
-  for (i = 0; i < workstation_nb; i++)
-    if (computation_amount[i] > 0)
-      nb_host++;
-
-  if (nb_link + workstation_nb == 0)
-    return NULL;
-
-  action = xbt_new0(s_surf_action_parallel_task_CSL05_t, 1);
-  action->generic_action.using = 1;
-  action->generic_action.cost = amount;
-  action->generic_action.remains = amount;
-  action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = surf_get_clock();
-  action->generic_action.finish = -1.0;
-  action->generic_action.model_type =
-      (surf_model_t) surf_workstation_model;
-  action->suspended = 0;	/* Should be useless because of the
-				   calloc but it seems to help valgrind... */
-  action->generic_action.state_set =
-      surf_workstation_model->common_public->states.running_action_set;
-
-  xbt_swag_insert(action, action->generic_action.state_set);
-  action->rate = rate;
-
-  if (action->rate > 0)
-    action->variable = lmm_variable_new(maxmin_system, action, 1.0, -1.0,
-					nb_host + nb_link);
-  else
-    action->variable =
-	lmm_variable_new(maxmin_system, action, 1.0, action->rate,
-			 nb_host + nb_link);
-
-  for (i = 0; i < workstation_nb; i++)
-    if (computation_amount[i] > 0)
-      lmm_expand(maxmin_system,
-		 ((cpu_Cas01_t)
-		  ((workstation_CLM03_t) workstation_list[i])->cpu)->
-		 constraint, action->variable, computation_amount[i]);
-
-  for (i = 0; i < workstation_nb; i++) {
-    for (j = 0; j < workstation_nb; j++) {
-      network_card_CM02_t card_src =
-	  ((workstation_CLM03_t *) workstation_list)[i]->network_card;
-      network_card_CM02_t card_dst =
-	  ((workstation_CLM03_t *) workstation_list)[j]->network_card;
-      int route_size = ROUTE_SIZE(card_src->id, card_dst->id);
-      network_link_CM02_t *route = ROUTE(card_src->id, card_dst->id);
-
-      for (k = 0; k < route_size; k++) {
-	if (communication_amount[i * workstation_nb + j] > 0) {
-	  lmm_expand_add(maxmin_system, route[k]->constraint,
-			 action->variable,
-			 communication_amount[i * workstation_nb + j]);
-	}
-      }
-    }
-  }
-
-  return (surf_action_t) action;
+  xbt_assert0(0, "This model does not implement parallel tasks");
 }
+
 
 /* returns an array of network_link_CM02_t */
 static const void **get_route(void *src, void *dst)
@@ -549,7 +383,7 @@ static void surf_workstation_model_init_internal(void)
       get_available_speed;
   surf_workstation_model->extension_public->communicate = communicate;
   surf_workstation_model->extension_public->execute_parallel_task =
-      execute_parallel_task_bogus;
+      execute_parallel_task;
   surf_workstation_model->extension_public->get_route = get_route;
   surf_workstation_model->extension_public->get_route_size =
       get_route_size;
@@ -560,8 +394,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension_public->get_link_latency =
       get_link_latency;
   workstation_set = xbt_dict_new();
-
-  xbt_assert0(maxmin_system, "surf_init has to be called first!");
 }
 
 /********************************************************************/
