@@ -6,7 +6,7 @@ CLEANFILES = gras/datadesc_usage.out datadesc_usage.out
 EXTRA_DIST=run_tests.in \
   gras/datadesc.little32 gras/datadesc.little32_4 \
   gras/datadesc.little64\
-  gras/datadesc.big32 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
+  gras/datadesc.big32_8 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
   gras/mk_datadesc_structs.pl
   
 
@@ -16,16 +16,20 @@ TESTS = xbt/parallel_log_crashtest.tesh     \
 	gras/trp_file_usage.tesh            \
 	gras/datadesc_mem.tesh          \
 	gras/datadesc_rw.tesh           \
-	gras/datadesc_r_little32.tesh   \
 	gras/datadesc_r_little32_4.tesh \
-	gras/datadesc_r_little64.tesh   
-	
-# Data sets still to regenerate:
-#	gras/datadesc_usage_little32_4.tesh 
-#           gras/datadesc_usage --read ./gras/datadesc.big32;     \
-#           gras/datadesc_usage --read ./gras/datadesc.big32_8_4; \
-#           gras/datadesc_usage --read ./gras/datadesc.big32_2;
+	gras/datadesc_r_little64.tesh   \
+	\
+	gras/datadesc_r_little32.tesh   \
+        gras/datadesc_r_big32_8.tesh      \
+	gras/datadesc_r_big32_8_4.tesh  \
+	gras/datadesc_r_big32_2.tesh
 
+# Data sets still to regenerate:
+XFAIL_TESTS= \
+	gras/datadesc_r_little32.tesh   \
+        gras/datadesc_r_big32_8.tesh      \
+	gras/datadesc_r_big32_8_4.tesh  \
+	gras/datadesc_r_big32_2.tesh
 
 noinst_PROGRAMS = \
        xbt/parallel_log_crashtest \
