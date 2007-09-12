@@ -606,9 +606,6 @@ static void surf_network_model_init_internal(void)
   network_link_set = xbt_dict_new();
   network_card_set = xbt_dict_new();
 
-  /* HC: I am assuming that this stays in for simulation of compute tasks */
-  xbt_assert0(maxmin_system, "surf_init has to be called first!");
-
   /* KF: Added the initialization for GTNetS interface */
   if (gtnets_initialize()) {
     xbt_assert0(0, "impossible to initialize GTNetS interface");
