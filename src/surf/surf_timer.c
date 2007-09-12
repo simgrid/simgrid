@@ -256,8 +256,6 @@ static void surf_timer_model_init_internal(void)
 
   empty_trace = tmgr_empty_trace_new();
   timer_heap = xbt_heap_new(8, NULL);
-
-  xbt_assert0(maxmin_system, "surf_init has to be called first!");
 }
 
 void surf_timer_model_init(const char *filename)
