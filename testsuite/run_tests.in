@@ -42,25 +42,10 @@ surf_TESTS="surf/lmm_usage@EXEEXT@;                                        \
 	    surf/surf_usage@EXEEXT@  --surf-path=@srcdir@/surf/ platform.xml; \
 	    surf/surf_usage2@EXEEXT@ --surf-path=@srcdir@/surf/ platform.xml;"
 
-gras_TESTS="gras/trp_tcp_usage;      gras/trp_file_usage;                        \
-	    gras/datadesc_usage@EXEEXT@;                                         \
-	    gras/datadesc_usage@EXEEXT@ --copy;                                  \
-            gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32;  \
-	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little64;"
-
-# 	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.little32_4;\
-#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32;     \
-#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_8_4; \
-#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_2;
-
 simdag_TESTS="simdag/sd_test --surf-path=@srcdir@/simdag @srcdir@/simdag/small_platform_variable.xml; \
               simdag/sd_test @top_srcdir@/examples/msg/small_platform.xml; \
               simdag/sd_test @top_srcdir@/examples/msg/msg_platform.xml; "
 
-# Data sets still to regenerate:
-#
-#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big32_4;   \
-#	    gras/datadesc_usage@EXEEXT@ --read @srcdir@/gras/datadesc.big64;"    
 
 ##
 ## Loop on all tests to run them
@@ -69,7 +54,7 @@ simdag_TESTS="simdag/sd_test --surf-path=@srcdir@/simdag @srcdir@/simdag/small_p
 # we split tests on ';' so that they can contain spaces (test=accumulator)
 test=""
 
-for testpart in $xbt_TESTS $gras_TESTS $surf_TESTS $simdag_TESTS
+for testpart in $xbt_TESTS $surf_TESTS $simdag_TESTS
 do
   test="$test $testpart"
   if echo $test | grep  ';' >/dev/null ; then

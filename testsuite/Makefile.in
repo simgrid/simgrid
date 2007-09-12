@@ -37,8 +37,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-check_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
-	$(am__EXEEXT_4)
+check_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/run_tests.in $(top_srcdir)/acmacro/dist-files.mk
 subdir = testsuite
@@ -58,33 +57,14 @@ CONFIG_HEADER = $(top_builddir)/src/gras_config.h
 CONFIG_CLEAN_FILES = run_tests
 am__EXEEXT_1 = xbt/log_usage$(EXEEXT) xbt/heap_bench$(EXEEXT) \
 	xbt/graphxml_usage$(EXEEXT) xbt/context_usage$(EXEEXT)
-am__EXEEXT_2 = gras/trp_tcp_client$(EXEEXT) \
-	gras/trp_tcp_server$(EXEEXT) gras/trp_file_client$(EXEEXT) \
-	gras/trp_file_server$(EXEEXT) gras/datadesc_usage$(EXEEXT)
-am__EXEEXT_3 = surf/maxmin_bench$(EXEEXT) surf/lmm_usage$(EXEEXT) \
+am__EXEEXT_2 = surf/maxmin_bench$(EXEEXT) surf/lmm_usage$(EXEEXT) \
 	surf/trace_usage$(EXEEXT) surf/surf_usage$(EXEEXT) \
 	surf/surf_usage2$(EXEEXT)
-am__EXEEXT_4 = simdag/sd_test$(EXEEXT)
-am_gras_datadesc_usage_OBJECTS = datadesc_usage.$(OBJEXT) \
-	datadesc_structs.$(OBJEXT)
-gras_datadesc_usage_OBJECTS = $(am_gras_datadesc_usage_OBJECTS)
-gras_datadesc_usage_DEPENDENCIES = $(LDADD_RL)
-am__dirstamp = $(am__leading_dot)dirstamp
-gras_trp_file_client_SOURCES = gras/trp_file_client.c
-gras_trp_file_client_OBJECTS = trp_file_client.$(OBJEXT)
-gras_trp_file_client_DEPENDENCIES = $(LDADD_RL)
-gras_trp_file_server_SOURCES = gras/trp_file_server.c
-gras_trp_file_server_OBJECTS = trp_file_server.$(OBJEXT)
-gras_trp_file_server_DEPENDENCIES = $(LDADD_RL)
-gras_trp_tcp_client_SOURCES = gras/trp_tcp_client.c
-gras_trp_tcp_client_OBJECTS = trp_tcp_client.$(OBJEXT)
-gras_trp_tcp_client_DEPENDENCIES = $(LDADD_RL)
-gras_trp_tcp_server_SOURCES = gras/trp_tcp_server.c
-gras_trp_tcp_server_OBJECTS = trp_tcp_server.$(OBJEXT)
-gras_trp_tcp_server_DEPENDENCIES = $(LDADD_RL)
+am__EXEEXT_3 = simdag/sd_test$(EXEEXT)
 simdag_sd_test_SOURCES = simdag/sd_test.c
 simdag_sd_test_OBJECTS = sd_test.$(OBJEXT)
 simdag_sd_test_DEPENDENCIES = $(LDADD_SG)
+am__dirstamp = $(am__leading_dot)dirstamp
 surf_lmm_usage_SOURCES = surf/lmm_usage.c
 surf_lmm_usage_OBJECTS = lmm_usage.$(OBJEXT)
 surf_lmm_usage_DEPENDENCIES = $(LDADD_SG)
@@ -124,18 +104,14 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(gras_datadesc_usage_SOURCES) gras/trp_file_client.c \
-	gras/trp_file_server.c gras/trp_tcp_client.c \
-	gras/trp_tcp_server.c simdag/sd_test.c surf/lmm_usage.c \
-	surf/maxmin_bench.c surf/surf_usage.c surf/surf_usage2.c \
-	surf/trace_usage.c xbt/context_usage.c xbt/graphxml_usage.c \
-	xbt/heap_bench.c xbt/log_usage.c
-DIST_SOURCES = $(gras_datadesc_usage_SOURCES) gras/trp_file_client.c \
-	gras/trp_file_server.c gras/trp_tcp_client.c \
-	gras/trp_tcp_server.c simdag/sd_test.c surf/lmm_usage.c \
-	surf/maxmin_bench.c surf/surf_usage.c surf/surf_usage2.c \
-	surf/trace_usage.c xbt/context_usage.c xbt/graphxml_usage.c \
-	xbt/heap_bench.c xbt/log_usage.c
+SOURCES = simdag/sd_test.c surf/lmm_usage.c surf/maxmin_bench.c \
+	surf/surf_usage.c surf/surf_usage2.c surf/trace_usage.c \
+	xbt/context_usage.c xbt/graphxml_usage.c xbt/heap_bench.c \
+	xbt/log_usage.c
+DIST_SOURCES = simdag/sd_test.c surf/lmm_usage.c surf/maxmin_bench.c \
+	surf/surf_usage.c surf/surf_usage2.c surf/trace_usage.c \
+	xbt/context_usage.c xbt/graphxml_usage.c xbt/heap_bench.c \
+	xbt/log_usage.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -209,7 +185,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PTH_STACK_GROWTH = @PTH_STACK_GROWTH@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIMGRID_DEP = @SIMGRID_DEP@
@@ -277,23 +252,13 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
 AM_CFLAGS = -g
-CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out\
-  testgraph.xml testgraph.dot
-
+CLEANFILES = *~ test a.out *.o testgraph.xml testgraph.dot
 DISTCLEANFILES = gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/* simdag/.libs/*
 EXTRA_DIST = run_tests.in \
-  gras/datadesc.little32 gras/datadesc.little32_4 \
-  gras/datadesc.little64\
-  gras/datadesc.big32 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
-  gras/mk_datadesc_structs.pl \
   xbt/graph.xml \
   surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml\
   simdag/availability_tremblay.txt simdag/small_platform_variable.xml
 
-
-# Data sets still to regenerate:
-# gras/datadesc.big64 
-# gras/datadesc.big32_4 
 
 # Test stuff
 xbt_tests = \
@@ -301,11 +266,6 @@ xbt_tests = \
 	xbt/heap_bench                                           \
 	xbt/graphxml_usage                                       \
 	xbt/context_usage                                        
-
-RL_tests = \
-	gras/trp_tcp_client   gras/trp_tcp_server       \
-	gras/trp_file_client  gras/trp_file_server      \
-	gras/datadesc_usage                             
 
 SG_tests = \
 	surf/maxmin_bench surf/lmm_usage \
@@ -320,6 +280,7 @@ LDADD_SG = $(abs_top_builddir)/src/libsimgrid.la
 LDADD_RL = $(abs_top_builddir)/src/libgras.la   
 xbt_log_usage_LDADD = $(LDADD_RL)
 xbt_heap_bench_LDADD = $(LDADD_RL)
+xbt_parallel_log_crashtest_LDADD = $(LDADD_RL)
 xbt_graphxml_usage_LDADD = $(LDADD_SG)
 xbt_context_usage_LDADD = $(LDADD_SG)
 surf_maxmin_bench_LDADD = $(LDADD_SG)
@@ -327,12 +288,6 @@ surf_lmm_usage_LDADD = $(LDADD_SG)
 surf_trace_usage_LDADD = $(LDADD_SG)
 surf_surf_usage_LDADD = $(LDADD_SG)
 surf_surf_usage2_LDADD = $(LDADD_SG)
-gras_trp_tcp_client_LDADD = $(LDADD_RL)
-gras_trp_tcp_server_LDADD = $(LDADD_RL)
-gras_trp_file_client_LDADD = $(LDADD_RL)
-gras_trp_file_server_LDADD = $(LDADD_RL)
-gras_datadesc_usage_SOURCES = gras/datadesc_usage.c gras/datadesc_structs.c
-gras_datadesc_usage_LDADD = $(LDADD_RL)
 simdag_sd_test_LDADD = $(LDADD_SG)
 all: all-am
 
@@ -376,24 +331,6 @@ clean-checkPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-gras/$(am__dirstamp):
-	@$(MKDIR_P) gras
-	@: > gras/$(am__dirstamp)
-gras/datadesc_usage$(EXEEXT): $(gras_datadesc_usage_OBJECTS) $(gras_datadesc_usage_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/datadesc_usage$(EXEEXT)
-	$(LINK) $(gras_datadesc_usage_OBJECTS) $(gras_datadesc_usage_LDADD) $(LIBS)
-gras/trp_file_client$(EXEEXT): $(gras_trp_file_client_OBJECTS) $(gras_trp_file_client_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_file_client$(EXEEXT)
-	$(LINK) $(gras_trp_file_client_OBJECTS) $(gras_trp_file_client_LDADD) $(LIBS)
-gras/trp_file_server$(EXEEXT): $(gras_trp_file_server_OBJECTS) $(gras_trp_file_server_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_file_server$(EXEEXT)
-	$(LINK) $(gras_trp_file_server_OBJECTS) $(gras_trp_file_server_LDADD) $(LIBS)
-gras/trp_tcp_client$(EXEEXT): $(gras_trp_tcp_client_OBJECTS) $(gras_trp_tcp_client_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_tcp_client$(EXEEXT)
-	$(LINK) $(gras_trp_tcp_client_OBJECTS) $(gras_trp_tcp_client_LDADD) $(LIBS)
-gras/trp_tcp_server$(EXEEXT): $(gras_trp_tcp_server_OBJECTS) $(gras_trp_tcp_server_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_tcp_server$(EXEEXT)
-	$(LINK) $(gras_trp_tcp_server_OBJECTS) $(gras_trp_tcp_server_LDADD) $(LIBS)
 simdag/$(am__dirstamp):
 	@$(MKDIR_P) simdag
 	@: > simdag/$(am__dirstamp)
@@ -441,8 +378,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/context_usage.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graphxml_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heap_bench.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmm_usage.Po@am__quote@
@@ -452,10 +387,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surf_usage2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trace_usage.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_file_client.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_file_server.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_tcp_client.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_tcp_server.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -477,90 +408,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
-
-datadesc_usage.o: gras/datadesc_usage.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT datadesc_usage.o -MD -MP -MF $(DEPDIR)/datadesc_usage.Tpo -c -o datadesc_usage.o `test -f 'gras/datadesc_usage.c' || echo '$(srcdir)/'`gras/datadesc_usage.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/datadesc_usage.Tpo $(DEPDIR)/datadesc_usage.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/datadesc_usage.c' object='datadesc_usage.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o datadesc_usage.o `test -f 'gras/datadesc_usage.c' || echo '$(srcdir)/'`gras/datadesc_usage.c
-
-datadesc_usage.obj: gras/datadesc_usage.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT datadesc_usage.obj -MD -MP -MF $(DEPDIR)/datadesc_usage.Tpo -c -o datadesc_usage.obj `if test -f 'gras/datadesc_usage.c'; then $(CYGPATH_W) 'gras/datadesc_usage.c'; else $(CYGPATH_W) '$(srcdir)/gras/datadesc_usage.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/datadesc_usage.Tpo $(DEPDIR)/datadesc_usage.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/datadesc_usage.c' object='datadesc_usage.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o datadesc_usage.obj `if test -f 'gras/datadesc_usage.c'; then $(CYGPATH_W) 'gras/datadesc_usage.c'; else $(CYGPATH_W) '$(srcdir)/gras/datadesc_usage.c'; fi`
-
-datadesc_structs.o: gras/datadesc_structs.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT datadesc_structs.o -MD -MP -MF $(DEPDIR)/datadesc_structs.Tpo -c -o datadesc_structs.o `test -f 'gras/datadesc_structs.c' || echo '$(srcdir)/'`gras/datadesc_structs.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/datadesc_structs.Tpo $(DEPDIR)/datadesc_structs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/datadesc_structs.c' object='datadesc_structs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o datadesc_structs.o `test -f 'gras/datadesc_structs.c' || echo '$(srcdir)/'`gras/datadesc_structs.c
-
-datadesc_structs.obj: gras/datadesc_structs.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT datadesc_structs.obj -MD -MP -MF $(DEPDIR)/datadesc_structs.Tpo -c -o datadesc_structs.obj `if test -f 'gras/datadesc_structs.c'; then $(CYGPATH_W) 'gras/datadesc_structs.c'; else $(CYGPATH_W) '$(srcdir)/gras/datadesc_structs.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/datadesc_structs.Tpo $(DEPDIR)/datadesc_structs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/datadesc_structs.c' object='datadesc_structs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o datadesc_structs.obj `if test -f 'gras/datadesc_structs.c'; then $(CYGPATH_W) 'gras/datadesc_structs.c'; else $(CYGPATH_W) '$(srcdir)/gras/datadesc_structs.c'; fi`
-
-trp_file_client.o: gras/trp_file_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_client.o -MD -MP -MF $(DEPDIR)/trp_file_client.Tpo -c -o trp_file_client.o `test -f 'gras/trp_file_client.c' || echo '$(srcdir)/'`gras/trp_file_client.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_client.Tpo $(DEPDIR)/trp_file_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_client.c' object='trp_file_client.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_client.o `test -f 'gras/trp_file_client.c' || echo '$(srcdir)/'`gras/trp_file_client.c
-
-trp_file_client.obj: gras/trp_file_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_client.obj -MD -MP -MF $(DEPDIR)/trp_file_client.Tpo -c -o trp_file_client.obj `if test -f 'gras/trp_file_client.c'; then $(CYGPATH_W) 'gras/trp_file_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_client.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_client.Tpo $(DEPDIR)/trp_file_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_client.c' object='trp_file_client.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_client.obj `if test -f 'gras/trp_file_client.c'; then $(CYGPATH_W) 'gras/trp_file_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_client.c'; fi`
-
-trp_file_server.o: gras/trp_file_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_server.o -MD -MP -MF $(DEPDIR)/trp_file_server.Tpo -c -o trp_file_server.o `test -f 'gras/trp_file_server.c' || echo '$(srcdir)/'`gras/trp_file_server.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_server.Tpo $(DEPDIR)/trp_file_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_server.c' object='trp_file_server.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_server.o `test -f 'gras/trp_file_server.c' || echo '$(srcdir)/'`gras/trp_file_server.c
-
-trp_file_server.obj: gras/trp_file_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_server.obj -MD -MP -MF $(DEPDIR)/trp_file_server.Tpo -c -o trp_file_server.obj `if test -f 'gras/trp_file_server.c'; then $(CYGPATH_W) 'gras/trp_file_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_server.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_server.Tpo $(DEPDIR)/trp_file_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_server.c' object='trp_file_server.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_server.obj `if test -f 'gras/trp_file_server.c'; then $(CYGPATH_W) 'gras/trp_file_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_server.c'; fi`
-
-trp_tcp_client.o: gras/trp_tcp_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_client.o -MD -MP -MF $(DEPDIR)/trp_tcp_client.Tpo -c -o trp_tcp_client.o `test -f 'gras/trp_tcp_client.c' || echo '$(srcdir)/'`gras/trp_tcp_client.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_client.Tpo $(DEPDIR)/trp_tcp_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_client.c' object='trp_tcp_client.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_client.o `test -f 'gras/trp_tcp_client.c' || echo '$(srcdir)/'`gras/trp_tcp_client.c
-
-trp_tcp_client.obj: gras/trp_tcp_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_client.obj -MD -MP -MF $(DEPDIR)/trp_tcp_client.Tpo -c -o trp_tcp_client.obj `if test -f 'gras/trp_tcp_client.c'; then $(CYGPATH_W) 'gras/trp_tcp_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_client.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_client.Tpo $(DEPDIR)/trp_tcp_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_client.c' object='trp_tcp_client.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_client.obj `if test -f 'gras/trp_tcp_client.c'; then $(CYGPATH_W) 'gras/trp_tcp_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_client.c'; fi`
-
-trp_tcp_server.o: gras/trp_tcp_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_server.o -MD -MP -MF $(DEPDIR)/trp_tcp_server.Tpo -c -o trp_tcp_server.o `test -f 'gras/trp_tcp_server.c' || echo '$(srcdir)/'`gras/trp_tcp_server.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_server.Tpo $(DEPDIR)/trp_tcp_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_server.c' object='trp_tcp_server.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_server.o `test -f 'gras/trp_tcp_server.c' || echo '$(srcdir)/'`gras/trp_tcp_server.c
-
-trp_tcp_server.obj: gras/trp_tcp_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_server.obj -MD -MP -MF $(DEPDIR)/trp_tcp_server.Tpo -c -o trp_tcp_server.obj `if test -f 'gras/trp_tcp_server.c'; then $(CYGPATH_W) 'gras/trp_tcp_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_server.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_server.Tpo $(DEPDIR)/trp_tcp_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_server.c' object='trp_tcp_server.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_server.obj `if test -f 'gras/trp_tcp_server.c'; then $(CYGPATH_W) 'gras/trp_tcp_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_server.c'; fi`
 
 sd_test.o: simdag/sd_test.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test.o -MD -MP -MF $(DEPDIR)/sd_test.Tpo -c -o sd_test.o `test -f 'simdag/sd_test.c' || echo '$(srcdir)/'`simdag/sd_test.c
@@ -882,7 +729,6 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-rm -f gras/$(am__dirstamp)
 	-rm -f simdag/$(am__dirstamp)
 	-rm -f surf/$(am__dirstamp)
 	-rm -f xbt/$(am__dirstamp)
@@ -971,9 +817,6 @@ test: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests
 valgrind: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 	./run_tests valgrind
-
-gras/datadesc_structs.c: gras/mk_datadesc_structs.pl
-	cd gras ; perl ../$(top_srcdir)/testsuite/gras/mk_datadesc_structs.pl > datadesc_structs.c
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done

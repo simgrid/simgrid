@@ -1,24 +1,14 @@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
 AM_CFLAGS=-g
 
-CLEANFILES = *~ test a.out *.o gras/datadesc_usage.out datadesc_usage.out\
-  testgraph.xml testgraph.dot
+CLEANFILES = *~ test a.out *.o testgraph.xml testgraph.dot
 DISTCLEANFILES =  gras/.libs/* xbt/.libs/* surf/.libs/* msg/.libs/* simdag/.libs/*
 
 EXTRA_DIST=run_tests.in \
-  gras/datadesc.little32 gras/datadesc.little32_4 \
-  gras/datadesc.little64\
-  gras/datadesc.big32 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
-  gras/mk_datadesc_structs.pl \
   xbt/graph.xml \
   surf/trace_A.txt surf/trace_B.txt surf/trace_A_failure.txt surf/platform.xml\
   simdag/availability_tremblay.txt simdag/small_platform_variable.xml
   
-# Data sets still to regenerate:
-# gras/datadesc.big64 
-# gras/datadesc.big32_4 
-
-
 # Test stuff
 
 xbt_tests =                                                      \
@@ -27,18 +17,13 @@ xbt_tests =                                                      \
 	xbt/graphxml_usage                                       \
 	xbt/context_usage                                        
 
-RL_tests =                                              \
-	gras/trp_tcp_client   gras/trp_tcp_server       \
-	gras/trp_file_client  gras/trp_file_server      \
-	gras/datadesc_usage                             
-
 SG_tests =                                              \
 	surf/maxmin_bench surf/lmm_usage \
 	surf/trace_usage surf/surf_usage surf/surf_usage2
 
 simdag_tests = simdag/sd_test
 
-check_PROGRAMS = $(xbt_tests) $(RL_tests) $(SG_tests) $(simdag_tests)
+check_PROGRAMS = $(xbt_tests) $(SG_tests) $(simdag_tests)
 check_SCRIPTS = run_tests gras/trp_tcp_usage
 TESTS=run_tests
 
@@ -54,6 +39,7 @@ LDADD_RL=$(abs_top_builddir)/src/libgras.la
 xbt_log_usage_LDADD=          $(LDADD_RL)
 
 xbt_heap_bench_LDADD=         $(LDADD_RL)
+xbt_parallel_log_crashtest_LDADD=  $(LDADD_RL)
 
 xbt_graphxml_usage_LDADD=     $(LDADD_SG)
 
@@ -64,17 +50,6 @@ surf_lmm_usage_LDADD=         $(LDADD_SG)
 surf_trace_usage_LDADD=       $(LDADD_SG)
 surf_surf_usage_LDADD=        $(LDADD_SG)
 surf_surf_usage2_LDADD=       $(LDADD_SG)
-
-gras_trp_tcp_client_LDADD=     $(LDADD_RL)
-gras_trp_tcp_server_LDADD=     $(LDADD_RL)
-gras_trp_file_client_LDADD=    $(LDADD_RL)
-gras_trp_file_server_LDADD=    $(LDADD_RL)
-
-gras_datadesc_usage_SOURCES=   gras/datadesc_usage.c gras/datadesc_structs.c
-gras_datadesc_usage_LDADD=     $(LDADD_RL)
-
-gras/datadesc_structs.c: gras/mk_datadesc_structs.pl
-	cd gras ; perl ../$(top_srcdir)/testsuite/gras/mk_datadesc_structs.pl > datadesc_structs.c
 
 simdag_sd_test_LDADD=       $(LDADD_SG)
 

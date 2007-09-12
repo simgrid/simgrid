@@ -1,0 +1,8 @@
+
+$ PATH=".:gras:$PATH" trp_file_server$EXEEXT
+
+$ sleep 1
+
+$ PATH=".:gras:$PATH" trp_file_client$EXEEXT
+
+
