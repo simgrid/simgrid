@@ -31,7 +31,7 @@ typedef enum {
 
 typedef struct surf_model_private {
   int (*resource_used) (void *resource_id);
-  /* Share the models to the actions and return in hom much time
+  /* Share the resources to the actions and return in hom much time
      the next action may terminate */
   double (*share_resources) (double now);
   /* Update the actions' state */
@@ -54,7 +54,7 @@ double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 				       lmm_system_t sys,
 				       void (*solve)(lmm_system_t));
 
-/* Generic functions common to all ressources */
+/* Generic functions common to all modelss */
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
 double surf_action_get_start_time(surf_action_t action);
 double surf_action_get_finish_time(surf_action_t action);

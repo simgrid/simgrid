@@ -123,7 +123,7 @@ typedef struct surf_action_state {
 typedef struct surf_model_public {
   s_surf_action_state_t states;	/**< Any living action on this model */
   void *(*name_service) (const char *name); /**< Return a model given its name */
-  const char *(*get_resource_name) (void *resource_id); /**< Return the name of a model */
+  const char *(*get_resource_name) (void *resource_id); /**< Return the name of a resource */
 
   e_surf_action_state_t(*action_get_state) (surf_action_t action); /**< Return the state of an action */
   double (*action_get_start_time) (surf_action_t action); /**< Return the start time of an action */
