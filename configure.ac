@@ -460,11 +460,9 @@ AC_CONFIG_FILES([
 AC_CONFIG_FILES([  
   testsuite/Makefile
   testsuite/run_tests    
-  testsuite/gras/trp_tcp_usage  testsuite/gras/trp_file_usage
 ],[
     for file in                                                 \
      testsuite/run_tests                                        \
-     testsuite/gras/trp_tcp_usage testsuite/gras/trp_file_usage \
     ; do                                                        \
       test -e $file && chmod +x $file;                          \
     done
