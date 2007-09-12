@@ -39,8 +39,6 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 noinst_PROGRAMS = xbt/parallel_log_crashtest$(EXEEXT) \
-	gras/trp_tcp_client$(EXEEXT) gras/trp_tcp_server$(EXEEXT) \
-	gras/trp_file_client$(EXEEXT) gras/trp_file_server$(EXEEXT) \
 	gras/datadesc_usage$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
@@ -65,18 +63,6 @@ am_gras_datadesc_usage_OBJECTS = datadesc_usage.$(OBJEXT) \
 gras_datadesc_usage_OBJECTS = $(am_gras_datadesc_usage_OBJECTS)
 gras_datadesc_usage_DEPENDENCIES = $(LDADD_RL)
 am__dirstamp = $(am__leading_dot)dirstamp
-gras_trp_file_client_SOURCES = gras/trp_file_client.c
-gras_trp_file_client_OBJECTS = trp_file_client.$(OBJEXT)
-gras_trp_file_client_DEPENDENCIES = $(LDADD_RL)
-gras_trp_file_server_SOURCES = gras/trp_file_server.c
-gras_trp_file_server_OBJECTS = trp_file_server.$(OBJEXT)
-gras_trp_file_server_DEPENDENCIES = $(LDADD_RL)
-gras_trp_tcp_client_SOURCES = gras/trp_tcp_client.c
-gras_trp_tcp_client_OBJECTS = trp_tcp_client.$(OBJEXT)
-gras_trp_tcp_client_DEPENDENCIES = $(LDADD_RL)
-gras_trp_tcp_server_SOURCES = gras/trp_tcp_server.c
-gras_trp_tcp_server_OBJECTS = trp_tcp_server.$(OBJEXT)
-gras_trp_tcp_server_DEPENDENCIES = $(LDADD_RL)
 xbt_parallel_log_crashtest_SOURCES = xbt/parallel_log_crashtest.c
 xbt_parallel_log_crashtest_OBJECTS = parallel_log_crashtest.$(OBJEXT)
 xbt_parallel_log_crashtest_DEPENDENCIES = $(LDADD_RL)
@@ -92,12 +78,9 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(gras_datadesc_usage_SOURCES) gras/trp_file_client.c \
-	gras/trp_file_server.c gras/trp_tcp_client.c \
-	gras/trp_tcp_server.c xbt/parallel_log_crashtest.c
-DIST_SOURCES = $(gras_datadesc_usage_SOURCES) gras/trp_file_client.c \
-	gras/trp_file_server.c gras/trp_tcp_client.c \
-	gras/trp_tcp_server.c xbt/parallel_log_crashtest.c
+SOURCES = $(gras_datadesc_usage_SOURCES) xbt/parallel_log_crashtest.c
+DIST_SOURCES = $(gras_datadesc_usage_SOURCES) \
+	xbt/parallel_log_crashtest.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -239,7 +222,7 @@ top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
 AM_CFLAGS = -g
 CLEANFILES = gras/datadesc_usage.out datadesc_usage.out
-EXTRA_DIST = run_tests.in \
+EXTRA_DIST = \
   gras/datadesc.little32_4 \
   gras/datadesc.little64\
   gras/datadesc.big32_8 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
@@ -247,8 +230,6 @@ EXTRA_DIST = run_tests.in \
 
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = xbt/parallel_log_crashtest.tesh     \
-	gras/trp_tcp_usage.tesh             \
-	gras/trp_file_usage.tesh            \
 	gras/datadesc_mem.tesh          \
 	gras/datadesc_rw.tesh           \
 	gras/datadesc_r_little32_4.tesh \
@@ -271,12 +252,6 @@ LDADD_RL = $(abs_top_builddir)/src/libgras.la
 
 # Try parallel logs 
 xbt_parallel_log_crashtest_LDADD = $(LDADD_RL)
-
-# Try raw communication facilities
-gras_trp_tcp_client_LDADD = $(LDADD_RL)
-gras_trp_tcp_server_LDADD = $(LDADD_RL)
-gras_trp_file_client_LDADD = $(LDADD_RL)
-gras_trp_file_server_LDADD = $(LDADD_RL)
 
 # Try structured communication facilities
 gras_datadesc_usage_SOURCES = gras/datadesc_usage.c gras/datadesc_structs.c
@@ -327,18 +302,6 @@ gras/$(am__dirstamp):
 gras/datadesc_usage$(EXEEXT): $(gras_datadesc_usage_OBJECTS) $(gras_datadesc_usage_DEPENDENCIES) gras/$(am__dirstamp)
 	@rm -f gras/datadesc_usage$(EXEEXT)
 	$(LINK) $(gras_datadesc_usage_OBJECTS) $(gras_datadesc_usage_LDADD) $(LIBS)
-gras/trp_file_client$(EXEEXT): $(gras_trp_file_client_OBJECTS) $(gras_trp_file_client_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_file_client$(EXEEXT)
-	$(LINK) $(gras_trp_file_client_OBJECTS) $(gras_trp_file_client_LDADD) $(LIBS)
-gras/trp_file_server$(EXEEXT): $(gras_trp_file_server_OBJECTS) $(gras_trp_file_server_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_file_server$(EXEEXT)
-	$(LINK) $(gras_trp_file_server_OBJECTS) $(gras_trp_file_server_LDADD) $(LIBS)
-gras/trp_tcp_client$(EXEEXT): $(gras_trp_tcp_client_OBJECTS) $(gras_trp_tcp_client_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_tcp_client$(EXEEXT)
-	$(LINK) $(gras_trp_tcp_client_OBJECTS) $(gras_trp_tcp_client_LDADD) $(LIBS)
-gras/trp_tcp_server$(EXEEXT): $(gras_trp_tcp_server_OBJECTS) $(gras_trp_tcp_server_DEPENDENCIES) gras/$(am__dirstamp)
-	@rm -f gras/trp_tcp_server$(EXEEXT)
-	$(LINK) $(gras_trp_tcp_server_OBJECTS) $(gras_trp_tcp_server_LDADD) $(LIBS)
 xbt/$(am__dirstamp):
 	@$(MKDIR_P) xbt
 	@: > xbt/$(am__dirstamp)
@@ -355,10 +318,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_file_client.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_file_server.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_tcp_client.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trp_tcp_server.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -408,62 +367,6 @@ datadesc_structs.obj: gras/datadesc_structs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/datadesc_structs.c' object='datadesc_structs.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o datadesc_structs.obj `if test -f 'gras/datadesc_structs.c'; then $(CYGPATH_W) 'gras/datadesc_structs.c'; else $(CYGPATH_W) '$(srcdir)/gras/datadesc_structs.c'; fi`
-
-trp_file_client.o: gras/trp_file_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_client.o -MD -MP -MF $(DEPDIR)/trp_file_client.Tpo -c -o trp_file_client.o `test -f 'gras/trp_file_client.c' || echo '$(srcdir)/'`gras/trp_file_client.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_client.Tpo $(DEPDIR)/trp_file_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_client.c' object='trp_file_client.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_client.o `test -f 'gras/trp_file_client.c' || echo '$(srcdir)/'`gras/trp_file_client.c
-
-trp_file_client.obj: gras/trp_file_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_client.obj -MD -MP -MF $(DEPDIR)/trp_file_client.Tpo -c -o trp_file_client.obj `if test -f 'gras/trp_file_client.c'; then $(CYGPATH_W) 'gras/trp_file_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_client.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_client.Tpo $(DEPDIR)/trp_file_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_client.c' object='trp_file_client.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_client.obj `if test -f 'gras/trp_file_client.c'; then $(CYGPATH_W) 'gras/trp_file_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_client.c'; fi`
-
-trp_file_server.o: gras/trp_file_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_server.o -MD -MP -MF $(DEPDIR)/trp_file_server.Tpo -c -o trp_file_server.o `test -f 'gras/trp_file_server.c' || echo '$(srcdir)/'`gras/trp_file_server.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_server.Tpo $(DEPDIR)/trp_file_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_server.c' object='trp_file_server.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_server.o `test -f 'gras/trp_file_server.c' || echo '$(srcdir)/'`gras/trp_file_server.c
-
-trp_file_server.obj: gras/trp_file_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_file_server.obj -MD -MP -MF $(DEPDIR)/trp_file_server.Tpo -c -o trp_file_server.obj `if test -f 'gras/trp_file_server.c'; then $(CYGPATH_W) 'gras/trp_file_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_server.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_file_server.Tpo $(DEPDIR)/trp_file_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_file_server.c' object='trp_file_server.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_file_server.obj `if test -f 'gras/trp_file_server.c'; then $(CYGPATH_W) 'gras/trp_file_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_file_server.c'; fi`
-
-trp_tcp_client.o: gras/trp_tcp_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_client.o -MD -MP -MF $(DEPDIR)/trp_tcp_client.Tpo -c -o trp_tcp_client.o `test -f 'gras/trp_tcp_client.c' || echo '$(srcdir)/'`gras/trp_tcp_client.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_client.Tpo $(DEPDIR)/trp_tcp_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_client.c' object='trp_tcp_client.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_client.o `test -f 'gras/trp_tcp_client.c' || echo '$(srcdir)/'`gras/trp_tcp_client.c
-
-trp_tcp_client.obj: gras/trp_tcp_client.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_client.obj -MD -MP -MF $(DEPDIR)/trp_tcp_client.Tpo -c -o trp_tcp_client.obj `if test -f 'gras/trp_tcp_client.c'; then $(CYGPATH_W) 'gras/trp_tcp_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_client.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_client.Tpo $(DEPDIR)/trp_tcp_client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_client.c' object='trp_tcp_client.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_client.obj `if test -f 'gras/trp_tcp_client.c'; then $(CYGPATH_W) 'gras/trp_tcp_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_client.c'; fi`
-
-trp_tcp_server.o: gras/trp_tcp_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_server.o -MD -MP -MF $(DEPDIR)/trp_tcp_server.Tpo -c -o trp_tcp_server.o `test -f 'gras/trp_tcp_server.c' || echo '$(srcdir)/'`gras/trp_tcp_server.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_server.Tpo $(DEPDIR)/trp_tcp_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_server.c' object='trp_tcp_server.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_server.o `test -f 'gras/trp_tcp_server.c' || echo '$(srcdir)/'`gras/trp_tcp_server.c
-
-trp_tcp_server.obj: gras/trp_tcp_server.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT trp_tcp_server.obj -MD -MP -MF $(DEPDIR)/trp_tcp_server.Tpo -c -o trp_tcp_server.obj `if test -f 'gras/trp_tcp_server.c'; then $(CYGPATH_W) 'gras/trp_tcp_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_server.c'; fi`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/trp_tcp_server.Tpo $(DEPDIR)/trp_tcp_server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/trp_tcp_server.c' object='trp_tcp_server.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o trp_tcp_server.obj `if test -f 'gras/trp_tcp_server.c'; then $(CYGPATH_W) 'gras/trp_tcp_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/trp_tcp_server.c'; fi`
 
 parallel_log_crashtest.o: xbt/parallel_log_crashtest.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT parallel_log_crashtest.o -MD -MP -MF $(DEPDIR)/parallel_log_crashtest.Tpo -c -o parallel_log_crashtest.o `test -f 'xbt/parallel_log_crashtest.c' || echo '$(srcdir)/'`xbt/parallel_log_crashtest.c

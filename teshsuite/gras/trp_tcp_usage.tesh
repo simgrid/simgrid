@@ -1,8 +1,0 @@
-
-& PATH=".:gras:$PATH" trp_tcp_server$EXEEXT
-
-$ sleep 1
-
-$ PATH=".:gras:$PATH" trp_tcp_client$EXEEXT
-
-
