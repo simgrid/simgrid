@@ -4,7 +4,7 @@ AM_CFLAGS = -g
 
 CLEANFILES = gras/datadesc_usage.out datadesc_usage.out
 EXTRA_DIST=run_tests.in \
-  gras/datadesc.little32 gras/datadesc.little32_4 \
+  gras/datadesc.little32_4 \
   gras/datadesc.little64\
   gras/datadesc.big32_8 gras/datadesc.big32_8_4 gras/datadesc.big32_2 \
   gras/mk_datadesc_structs.pl
@@ -19,7 +19,6 @@ TESTS = xbt/parallel_log_crashtest.tesh     \
 	gras/datadesc_r_little32_4.tesh \
 	gras/datadesc_r_little64.tesh   \
 	\
-	gras/datadesc_r_little32.tesh   \
         gras/datadesc_r_big32_8.tesh      \
 	gras/datadesc_r_big32_8_4.tesh  \
 	gras/datadesc_r_big32_2.tesh
