@@ -100,7 +100,7 @@ static network_link_KCCFLN05_t loopback = NULL;
 static xbt_dict_t parallel_task_network_link_set = NULL;
 //added to work with GTNETS
 static xbt_dict_t router_set = NULL;
-
+static lmm_system_t maxmin_system = NULL;
 /*xbt_dict_t network_link_set = NULL;*/
 
 
@@ -765,7 +765,7 @@ static surf_action_t execute_parallel_task(int workstation_nb,
   action->generic_action.cost = amount;
   action->generic_action.remains = amount;
   action->generic_action.max_duration = NO_MAX_DURATION;
-  action->generic_action.start = -1.0;
+  action->generic_action.start = surf_get_clock();
   action->generic_action.finish = -1.0;
   action->generic_action.model_type =
       (surf_model_t) surf_workstation_model;
@@ -1302,9 +1302,9 @@ static void model_init_internal(void)
 
   workstation_set = xbt_dict_new();
   router_set = xbt_dict_new();
-  network_link_set = xbt_dict_new();
-
-  xbt_assert0(maxmin_system, "surf_init has to be called first!");
+  network_link_set = xbt_dict_new(); 
+  if (!maxmin_system)
+    maxmin_system = lmm_system_new();
 }
 
 /**************************************/
