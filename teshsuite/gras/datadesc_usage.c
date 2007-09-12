@@ -164,7 +164,7 @@ void test_intref(gras_socket_t sock, int direction) {
   i=xbt_new(int,1);
   *i=12345;
 
-  INFO1("---- Test on a reference to an integer (%p) ----",i);
+  INFO0("---- Test on a reference to an integer ----");
 
   my_type = gras_datadesc_ref("int*",gras_datadesc_by_name("int"));
 
@@ -635,9 +635,11 @@ int main(int argc,char *argv[]) {
     sock = gras_socket_server_from_file(filename);
     gras_datadesc_recv(sock, gras_datadesc_by_name("char"),
 		       gras_arch_selfid(), &r_arch_char);
-    INFO3("This datafile was generated on %s (%d), I'm %s.",
-	  gras_datadesc_arch_name(r_arch_char),(int)r_arch_char,
+    INFO2("This datafile was generated on %s (%d).",
+	  gras_datadesc_arch_name(r_arch_char),(int)r_arch_char);
+    VERB1("I'm %s.",
 	  gras_datadesc_arch_name(gras_arch_selfid()));
+
   }
   r_arch = (int)r_arch_char;
 
