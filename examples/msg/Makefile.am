@@ -54,17 +54,17 @@ endif
 
 
 
-bin_PROGRAMS = sendrecv/sendrecv \
-               suspend/suspend \
-               masterslave/masterslave \
-               masterslave/masterslave_forwarder \
-               masterslave/masterslave_failure \
-               masterslave/masterslave_bypass \
-               parallel_task/parallel_task \
-               priority/priority
+noinst_PROGRAMS = sendrecv/sendrecv \
+                  suspend/suspend \
+                  masterslave/masterslave \
+                  masterslave/masterslave_forwarder \
+                  masterslave/masterslave_failure \
+                  masterslave/masterslave_bypass \
+                  parallel_task/parallel_task \
+                  priority/priority
 
 if HAVE_GTNETS
-               bin_PROGRAMS += gtnets/gtnets 
+  noinst_PROGRAMS += gtnets/gtnets 
 endif
 
 
