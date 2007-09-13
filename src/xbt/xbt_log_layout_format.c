@@ -68,7 +68,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s",ev->cat->name);
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p,"%.*s",MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision),ev->cat->name);
+	   p += sprintf(p,"%.*s",(int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision),ev->cat->name);
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -78,7 +78,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s", xbt_log_priority_names[ev->priority] );
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p, "%.*s", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), xbt_log_priority_names[ev->priority] );
+	   p += sprintf(p, "%.*s", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), xbt_log_priority_names[ev->priority] );
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -89,7 +89,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s", gras_os_myname());
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p, "%.*s", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), gras_os_myname());
+	   p += sprintf(p, "%.*s", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), gras_os_myname());
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -99,7 +99,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s", xbt_thread_self_name());
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p, "%.*s", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), xbt_thread_self_name());
+	   p += sprintf(p, "%.*s", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), xbt_thread_self_name());
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -109,7 +109,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s", xbt_procname());
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p, "%.*s", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision),xbt_procname());
+	   p += sprintf(p, "%.*s", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision),xbt_procname());
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -119,7 +119,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%d", (*xbt_getpid)());
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p, "%.*d", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), (*xbt_getpid)());
+	   p += sprintf(p, "%.*d", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), (*xbt_getpid)());
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -130,7 +130,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s",ev->fileName);
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p,"%.*s",MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), ev->fileName);
+	   p += sprintf(p,"%.*s",(int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), ev->fileName);
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -140,7 +140,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s:%d", ev->fileName, ev->lineNum);
 	   check_overflow;	   
         } else {	      
-	   p += snprintf(p, MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), "%s:%d", ev->fileName, ev->lineNum);
+	   p += snprintf(p, (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), "%s:%d", ev->fileName, ev->lineNum);
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -150,7 +150,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%d", ev->lineNum);
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p, "%.*d", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), ev->lineNum);
+	   p += sprintf(p, "%.*d", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), ev->lineNum);
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -160,7 +160,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), "%s", ev->functionName);
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p, "%.*s", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), ev->functionName);
+	   p += sprintf(p, "%.*s", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), ev->functionName);
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -182,7 +182,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	       p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s",e.bt_strings[2]+8);
   	       check_overflow;	   
 	     } else {	      
-		p += sprintf(p,"%.*s",MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), e.bt_strings[2]+8);
+		p += sprintf(p,"%.*s",(int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), e.bt_strings[2]+8);
  	        check_overflow;	   
 		precision = -1;
 	     }	 
@@ -192,7 +192,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 		 p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%s\n",e.bt_strings[i]+8);
  	         check_overflow;	   
 	       } else {	      
-		 p += sprintf(p,"%.*s\n",MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision),e.bt_strings[i]+8);
+		 p += sprintf(p,"%.*s\n",(int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision),e.bt_strings[i]+8);
 	         check_overflow;	   
 	 	 precision = -1;
 	     }	 
@@ -211,7 +211,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%f", gras_os_time());
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p,"%.*f", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), gras_os_time());
+	   p += sprintf(p,"%.*f", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), gras_os_time());
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -221,7 +221,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += snprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer),"%f", gras_os_time()-begin_of_time);
 	   check_overflow;	   
         } else {	      
-	   p += sprintf(p,"%.*f", MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), gras_os_time()-begin_of_time);
+	   p += sprintf(p,"%.*f", (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), gras_os_time()-begin_of_time);
 	   check_overflow;	   
 	   precision = -1;
 	}	 
@@ -232,7 +232,7 @@ static void xbt_log_layout_format_doit(xbt_log_layout_t l,
 	   p += vsnprintf(p,XBT_LOG_BUFF_SIZE-(p-ev->buffer), msg_fmt, ev->ap);
 	   check_overflow;	   
         } else {	      
-	   p += vsnprintf(p, MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), msg_fmt, ev->ap);
+	   p += vsnprintf(p, (int)MIN(XBT_LOG_BUFF_SIZE-(p-ev->buffer),precision), msg_fmt, ev->ap);
 	   check_overflow;	   
 	   precision = -1;
 	}	 
