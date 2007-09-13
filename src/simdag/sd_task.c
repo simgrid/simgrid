@@ -673,21 +673,32 @@ void __SD_task_really_run(SD_task_t task) {
 		    value, task->rate);
     }
   }
-  if(!task->surf_action) 
+  if(!task->surf_action) {
+    double *computation_amount = xbt_new(double, task->workstation_nb);
+    double *communication_amount = xbt_new(double, task->workstation_nb * 
+					   task->workstation_nb);
+
+    memcpy(computation_amount, task->computation_amount, sizeof(double) * 
+	   task->workstation_nb);
+    memcpy(communication_amount, task->communication_amount, 
+	   sizeof(double) * task->workstation_nb * task->workstation_nb);
+
     task->surf_action = surf_workstation_model->extension_public->
       execute_parallel_task(task->workstation_nb,
 			    surf_workstations,
-			    task->computation_amount,
-			    task->communication_amount,
+			    computation_amount,
+			    communication_amount,
 			    task->amount,
 			    task->rate);
+  } else {
+    xbt_free(surf_workstations);
+  }
 
   surf_workstation_model->common_public->action_set_data(task->surf_action, task);
   task->state_changed = 1;
 
   DEBUG1("surf_action = %p",  task->surf_action);
 
-  xbt_free(surf_workstations);
   __SD_task_destroy_scheduling_data(task); /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
   xbt_assert2(__SD_task_is_running(task), "Bad state of task '%s': %d",
