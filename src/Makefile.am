@@ -213,12 +213,16 @@ JMSG_JAVA_SRC = \
   java/simgrid/msg/ProcessNotFoundException.java     \
   \
   java/simgrid/msg/Process.java                      \
+  java/simgrid/msg/DTDResolver.java                  \
   java/simgrid/msg/ApplicationHandler.java           \
   java/simgrid/msg/Channel.java                      \
   java/simgrid/msg/Host.java                         \
   java/simgrid/msg/Msg.java                          \
   java/simgrid/msg/Task.java                         \
-  java/simgrid/msg/ParallelTask.java                 
+  java/simgrid/msg/ParallelTask.java                 \
+  \
+  java/simgrid/msg/Sem.java
+
 
 SIMDAG_SRC= simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c
 
@@ -333,10 +337,10 @@ clean-local:
 jardir = $(prefix)/jar 
 jar_DATA =  simgrid.jar
 
-simgrid.jar: $(JMSG_JAVA_SRC)
+simgrid.jar: $(JMSG_JAVA_SRC) ./surf/surfxml.dtd
 	[ -e .classes ] || mkdir .classes
-	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC)
-	$(JAR) cvf simgrid.jar -C .classes .;
+	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC) 
+	$(JAR) cvf simgrid.jar -C .classes . ./surf/surfxml.dtd;
 else
 EXTRA_DIST += $(JCTX_SRC) $(JMSG_C_SRC) $(MSG_SRC)
 endif

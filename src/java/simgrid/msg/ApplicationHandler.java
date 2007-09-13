@@ -11,9 +11,9 @@
 
 package simgrid.msg;
 
+import java.util.Vector;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
-import java.lang.reflect.*;
 
 /**
  * The handler used to parse the deployment file which contains 
@@ -30,68 +30,150 @@ import java.lang.reflect.*;
  */
 public final class ApplicationHandler extends DefaultHandler
 {
-	/* the current process. */
-    public simgrid.msg.Process process;
+	
+	/* 
+	 * This class is used to create the processes descibed in the deployment file.
+	 */
+	class ProcessFactory
+	{
+		/**
+		 * The vector which contains the arguments of the main function 
+		 * of the process object.
+		 */
+		public Vector args;
+		
+		/**
+		 * The name of the host of the process.
+		 */	
+		private String hostName;
+		
+		/**
+		 * The function of the process.
+		 */
+		private String function;
+		
+		/**
+		 * Default constructor.
+		 */
+		public ProcessFactory(){
+			this.args = new Vector();
+			this.hostName = null;
+			this.function = null;
+		}
+		
+		/**
+		 * This method is called by the start element handler.
+		 * It sets the host and the function of the process to create,
+		 * and clear the vector containing the arguments of the 
+		 * previouse process function if needed.
+		 *
+		 * @host				The host of the process to create.
+		 * @function			The function of the process to create.
+		 *
+		 */
+		public void setProcessIdentity(String hostName, String function){
+			this.hostName = hostName;
+			this.function = function;
+		
+			if(!args.isEmpty())
+				args.clear();
+		}
+		
+		/**
+		 * This method is called by the startElement() handler.
+		 * It stores the argument of the function of the next
+		 * process to create in the vector of arguments.
+		 *
+		 * @arg					The argument to add.
+		 *
+		 */
+		public void registerProcessArg(String arg){
+			this.args.add(arg);	
+		}
+	
+		public void createProcess(){
+			try {
+				
+				System.out.println("Create process " + function + " on the host " + hostName);
+	    		Class cls = Class.forName(this.function);
+	    		simgrid.msg.Process process = (simgrid.msg.Process)cls.newInstance();
+	    		process.name = process.getName(); //this.function;
+	    		process.id = simgrid.msg.Process.nextProcessId++;
+	    		Host host = Host.getByName(this.hostName);
+	    		Msg.processCreate(process,host);
+	    		
+	    		Vector args = processFactory.args;
+	    		int size = args.size();
+	    		
+	    		for(int index = 0; index < size; index++)
+	    			process.addArg((String)args.get(index)); 
+	    	
+	    	} catch(HostNotFoundException e) {
+	      		System.out.println(e.toString());
+	    		e.printStackTrace();
+	    		
+        	} catch(ClassNotFoundException e) {
+	      		System.out.println(this.function + " class not found\n The attribut function of the element process  of your deployment file\n must correspond to the name of a Msg Proces class)");
+	    		e.printStackTrace();
+
+	    	} catch(Exception e) {
+	     		 System.out.println("Unexpected exception");
+	     		 e.printStackTrace();
+		}
+
+    	}
+	}
+	
+	/* 
+	 * the ProcessFactory object used to create the processes.
+	 */
+	private ProcessFactory processFactory;
     
     public ApplicationHandler() {
         super();
     }
+    /**
+     * instanciates the process factory 
+     */
+    public void startDocument(){
+    	this.processFactory = new ProcessFactory();	
+    } 
     
-    public void startDocument() {} // NOTHING TODO
-    public void endDocument() {}   // NOTHING TODO
-    
-    public void characters(char[] chars, int beg, int lgr) {}   // NOTHING TODO
+    public void characters(char[] caracteres, int debut, int longueur) {} // NOTHING TODO
     
    /**
     * element handlers
     */
-    public void startElement(String nameSpace, String localName,String qName,Attributes attr)  {
+    public void startElement(String nameSpace, String localName,String qName,Attributes attr) {
         if(localName.equals("process"))
-            onStartProcess(attr);   
-	else if(localName.equals("argument"))
-            onArgument(attr);
+            onProcessIdentity(attr);   
+		else if(localName.equals("argument"))
+            onProcessArg(attr);
     }
+    
+     /**
+     * process attributs handler.
+     */
+    public void onProcessIdentity(Attributes attr) {
+       	processFactory.setProcessIdentity(attr.getValue(0),attr.getValue(1));
+    }
+	
+	/**
+     * process arguments handler.
+     */
+    public void onProcessArg(Attributes attr) {
+        processFactory.registerProcessArg(attr.getValue(0));      
+    }
+    
+    /**
+     * creates the process
+     */
     public void endElement(String nameSpace, String localName,String qName)  {
         if(localName.equals("process"))
-            onEndProcess();   
+{
+        	processFactory.createProcess();
+        }      
     }
-    
-    /**
-     * process element handler.
-     */
-    public void onStartProcess(Attributes attr) {
-        String hostName = attr.getValue(0);
-        String className = attr.getValue(1);
-         	
-        try {
-        	
-	    Class cls = Class.forName(className);
-      		
-	    process = (simgrid.msg.Process)cls.newInstance();
-	    process.name = className;
-	    process.id = simgrid.msg.Process.nextProcessId++;
-	    
-	    Host host = Host.getByName(hostName);
-      		
-	    Msg.processCreate(process,host);
-      		
-      	} catch(Exception e) {
-	    e.printStackTrace();
-        } 
-    }
-    
-    public void onEndProcess() {} // NOTHING TODO   
-    
-    /**
-     * function arguments handler.
-     */
-    public void onArgument(Attributes attr) {
-	//Msg.info("Add "+attr.getValue(0)+" as argument to "+process.msgName());
-        process.addArg(attr.getValue(0));      
-    }
-    
-   /**
-    * end of element handler.
-    */
-    
+     
+    public void endDocument() {} // NOTHING TODO
 }

@@ -592,12 +592,15 @@ JMSG_JAVA_SRC = \
   java/simgrid/msg/ProcessNotFoundException.java     \
   \
   java/simgrid/msg/Process.java                      \
+  java/simgrid/msg/DTDResolver.java                  \
   java/simgrid/msg/ApplicationHandler.java           \
   java/simgrid/msg/Channel.java                      \
   java/simgrid/msg/Host.java                         \
   java/simgrid/msg/Msg.java                          \
   java/simgrid/msg/Task.java                         \
-  java/simgrid/msg/ParallelTask.java                 
+  java/simgrid/msg/ParallelTask.java                 \
+  \
+  java/simgrid/msg/Sem.java
 
 SIMDAG_SRC = simdag/sd_global.c simdag/sd_link.c simdag/sd_task.c simdag/sd_workstation.c
 GRAS_COMMON_SRC = \
@@ -2041,6 +2044,7 @@ distclean-tags:
 
 check-TESTS: $(TESTS)
 	@failed=0; all=0; xfail=0; xpass=0; skip=0; ws='[	 ]'; \
+	faillist=""; xpasslist=""; xfaillist=""; skiplist=""; \
 	srcdir=$(srcdir); export srcdir; \
 	list=' $(TESTS) '; \
 	if test -n "$$list"; then \
@@ -2054,6 +2058,7 @@ check-TESTS: $(TESTS)
 	      *$$ws$$tst$$ws*) \
 		xpass=`expr $$xpass + 1`; \
 		failed=`expr $$failed + 1`; \
+		xpasslist="$$xpasslist $$tst"; \
 		echo "XPASS: $$tst"; \
 	      ;; \
 	      *) \
@@ -2065,15 +2070,18 @@ check-TESTS: $(TESTS)
 	      case " $(XFAIL_TESTS) " in \
 	      *$$ws$$tst$$ws*) \
 		xfail=`expr $$xfail + 1`; \
+		xfaillist="$$xfaillist $$tst"; \
 		echo "XFAIL: $$tst"; \
 	      ;; \
 	      *) \
 		failed=`expr $$failed + 1`; \
+		faillist="$$faillist $$tst"; \
 		echo "FAIL: $$tst"; \
 	      ;; \
 	      esac; \
 	    else \
 	      skip=`expr $$skip + 1`; \
+	      skiplist="$$skiplist $$tst"; \
 	      echo "SKIP: $$tst"; \
 	    fi; \
 	  done; \
@@ -2109,6 +2117,30 @@ check-TESTS: $(TESTS)
 	  test -z "$$skipped" || echo "$$skipped"; \
 	  test -z "$$report" || echo "$$report"; \
 	  echo "$$dashes"; \
+	  if test -n "$$faillist" ; then \
+	    echo "Failed tests:";\
+	    for tst in $$faillist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
+	  if test -n "$$xpasslist" ; then \
+	    echo "Unexpectedly passed tests:";\
+	    for tst in $$xpasslist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
+	  if test -n "$$xfaillist" ; then \
+	    echo "Expected failures:";\
+	    for tst in $$xfaillist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
+	  if test -n "$$skiplist" ; then \
+	    echo "Skipped tests:";\
+	    for tst in $$skiplist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
 	  test "$$failed" -eq 0; \
 	else :; fi
 
@@ -2265,10 +2297,10 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 @HAVE_JAVA_TRUE@clean-local:
 @HAVE_JAVA_TRUE@	-rm -rf .classes
 
-@HAVE_JAVA_TRUE@simgrid.jar: $(JMSG_JAVA_SRC)
+@HAVE_JAVA_TRUE@simgrid.jar: $(JMSG_JAVA_SRC) ./surf/surfxml.dtd
 @HAVE_JAVA_TRUE@	[ -e .classes ] || mkdir .classes
-@HAVE_JAVA_TRUE@	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC)
-@HAVE_JAVA_TRUE@	$(JAR) cvf simgrid.jar -C .classes .;
+@HAVE_JAVA_TRUE@	$(JAVAC) -sourcepath java -d .classes $(JMSG_JAVA_SRC) 
+@HAVE_JAVA_TRUE@	$(JAR) cvf simgrid.jar -C .classes . ./surf/surfxml.dtd;
 
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@@builddir@/cunit_unit.c: xbt/cunit.c
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	@top_srcdir@/tools/sg_unit_extractor.pl $^

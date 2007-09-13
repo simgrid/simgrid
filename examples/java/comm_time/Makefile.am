@@ -1,4 +1,4 @@
-EXTRA_DIST=comm_time_deployment.xml comm_time_platform.xml surfxml.dtd
+EXTRA_DIST=comm_time_deployment.xml comm_time_platform.xml
 
 # Declare sources:
 noinst_JAVA= Master.java Slave.java CommTimeTest.java CommTimeTask.java

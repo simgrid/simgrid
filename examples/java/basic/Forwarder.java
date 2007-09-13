@@ -45,8 +45,8 @@ public class Forwarder extends simgrid.msg.Process {
 	       forwardedtask.setData(221297);
 	       
 	       channel.put(forwardedtask,slaves[cpt]);
-	       break;
 	    }
+	    break;
 	    
 	 } else {
 	    

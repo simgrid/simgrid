@@ -18,6 +18,12 @@
 int
 is_main_thread(void);
 
+JavaVM *
+get_java_VM(void);
+
+JNIEnv *
+get_current_thread_env(void);
+
 /*
  * Class		simgrid_msg_Msg
  * Method		processCreate

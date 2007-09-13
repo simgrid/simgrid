@@ -11,7 +11,19 @@
 import simgrid.msg.*;
 
 public class LazyGuy extends simgrid.msg.Process {
+   	
+   	
+   	public LazyGuy() {
+    	super();
+    }
     
+     public LazyGuy(Host host,String name) 
+     throws NullPointerException, HostNotFoundException, JniException, NativeException
+     {
+		super(host,name,null);
+	}
+	
+	 
     public void main(String[] args) throws JniException, NativeException {
        Msg.info("Hello !");
         

@@ -1,5 +1,5 @@
 CLASSPATH=../../../src/simgrid.jar
-EXTRA_DIST=basic_deployment.xml basic_platform.xml surfxml.dtd
+EXTRA_DIST=basic_deployment.xml basic_platform.xml
 
 # Declare sources:
 noinst_JAVA= Master.java Forwarder.java Slave.java BasicTest.java BasicTask.java

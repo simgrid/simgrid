@@ -17,16 +17,33 @@ public class DreamMaster extends simgrid.msg.Process {
        
        Msg.info("Let's create a lazy guy.");
        
-       Host currentHost = Host.currentHost();
-       Msg.info("Current host  name : " + currentHost.getName());
-	  	
-       LazyGuy lazy = new LazyGuy();
-//       lazy.migrate(currentHost);
+       try
+       {
+       		  Host currentHost = Host.currentHost();
+       		  
+       		  Msg.info("Current host  name : " + currentHost.getName());
+
+       		LazyGuy lazy = new LazyGuy(currentHost,"LazyGuy");
+       		
+       		 Msg.info("Let's wait a little bit...");
+
+       		simgrid.msg.Process.waitFor(10.0);
+
+       		Msg.info("Let's wake the lazy guy up! >:) ");
+
+       		lazy.restart();
+
+
+    	}
+    	catch(HostNotFoundException e)
+    	{
+    		System.err.println(e.toString());
+    		System.exit(1);
+    	}
+       
+	 //lazy.migrate(currentHost);
 	 
-       Msg.info("Let's wait a little bit...");
-       simgrid.msg.Process.waitFor(10.0);
-       Msg.info("Let's wake the lazy guy up! >:) ");
-       lazy.restart();
+      
 	  	
        Msg.info("OK, goodbye now.");
     }

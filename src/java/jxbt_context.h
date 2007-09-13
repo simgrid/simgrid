@@ -23,6 +23,11 @@
 
 SG_BEGIN_DECL()
 
+
+/* pointers to schedule and unschedule functions */
+typedef void (*pfn_schedule_t)(xbt_context_t);
+typedef pfn_schedule_t pfn_unschedule_t;
+
 /**
  * This function gets the context of a java process instance.
  * 

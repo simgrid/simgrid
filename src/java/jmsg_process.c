@@ -10,9 +10,12 @@
  * process instance. 
  */
  
-#include "jmsg.h"
 #include "jmsg_process.h"
+#include "jmsg.h"
 #include "jxbt_utilities.h"
+
+#define JAVA_SIMGRID
+#include "xbt/context_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -112,7 +115,7 @@ jprocess_wait_cond(jobject jprocess,JNIEnv* env) {
 void
 jprocess_start(jobject jprocess,JNIEnv* env) {
   jmethodID id = jxbt_get_smethod(env,"simgrid/msg/Process","start", "()V");
-    
+
   if(!id)
     return;
 
@@ -174,3 +177,37 @@ jprocess_is_valid(jobject jprocess,JNIEnv* env) {
 
   return (*env)->GetLongField(env,jprocess,id) ? JNI_TRUE : JNI_FALSE; 
 }
+
+void
+jprocess_schedule(xbt_context_t context) {
+	JNIEnv * env;
+	jmethodID id;
+	
+	env = get_current_thread_env();
+
+	id = jxbt_get_smethod(env,"simgrid/msg/Process","schedule", "()V");
+	
+	if(!id)
+		return;
+	
+	(*env)->CallVoidMethod(env,context->jprocess,id);
+}
+
+
+
+void
+jprocess_unschedule(xbt_context_t context) {
+	JNIEnv * env;
+	jmethodID id;
+
+	env = get_current_thread_env();
+
+	
+	id = jxbt_get_smethod(env,"simgrid/msg/Process","unschedule", "()V");
+	
+	if(!id)
+		return;
+	
+	(*env)->CallVoidMethod(env,context->jprocess,id);
+}
+

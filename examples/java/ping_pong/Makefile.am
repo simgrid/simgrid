@@ -1,4 +1,4 @@
-EXTRA_DIST=ping_pong_deployment.xml ping_pong_platform.xml surfxml.dtd
+EXTRA_DIST=ping_pong_deployment.xml ping_pong_platform.xml
 
 # Declare sources:
 noinst_JAVA= Sender.java Receiver.java PingPongTask.java PingPongTest.java

@@ -64,11 +64,15 @@ jmethodID jxbt_get_jmethod(JNIEnv* env, jclass cls,
 
 jmethodID jxbt_get_smethod(JNIEnv* env, const char *classname, 
 			  const char *name,const char *signature) { 
-  jclass cls = jxbt_get_class(env,classname);
-  jmethodID id;
+  
+	jclass cls;
+
+	jmethodID id;
+	cls = jxbt_get_class(env,classname);
 
   if (!cls)
     return 0;
+
   id = (*env)->GetMethodID(env, cls, name,signature);
 	
   if(!id) {
@@ -79,7 +83,6 @@ jmethodID jxbt_get_smethod(JNIEnv* env, const char *classname,
     free(m);
     return 0;
   }
-
   return id;
 }
 

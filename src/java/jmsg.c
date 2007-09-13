@@ -11,6 +11,7 @@
  */
 #include "msg/msg.h"
 #include "msg/private.h"
+#include "simix/private.h"
 #include "java/jxbt_context.h"
 
 #include "jmsg_process.h"
@@ -31,6 +32,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg,"MSG for Java(TM)");
 
 #include "jmsg.h"
 
+static JavaVM * __java_vm = NULL;
+
 
 #ifdef WIN32
   static DWORD __current_thread_id = 0;
@@ -47,6 +50,20 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg,"MSG for Java(TM)");
     return (pthread_self() == __current_thread_id);
   }
 #endif
+
+JavaVM *
+get_java_VM(void) {
+	return __java_vm;
+}
+
+JNIEnv *
+get_current_thread_env(void) {
+	JNIEnv *env;
+
+    (*__java_vm)->AttachCurrentThread(__java_vm, (void **)&env, NULL);
+
+	 return env;
+}
 
 
 /*
@@ -85,7 +102,7 @@ Java_simgrid_msg_Msg_processCreate(JNIEnv* env, jclass cls, jobject jprocess_arg
     return;
   }
 	
-  /* bind the java process instance to the native host */
+  /* bind the java process instance to the native process */
   jprocess_bind(jprocess,process,env);
 	
   /* build the C name of the process */
@@ -113,7 +130,7 @@ Java_simgrid_msg_Msg_processCreate(JNIEnv* env, jclass cls, jobject jprocess_arg
   SIMIX_jprocess_create(process->name,
 			process->simdata->m_host->simdata->s_host, 
 			/*data*/ (void*)process,
-			jprocess_arg,env,
+			jprocess,env,
 			&process->simdata->s_process);
   DEBUG1("context created (s_process=%p)",process->simdata->s_process);
 
@@ -468,7 +485,7 @@ Java_simgrid_msg_Msg_taskCreate(JNIEnv* env, jclass cls, jobject jtask, jstring 
 				jdouble jcomputeDuration, jdouble jmessageSize) {
   m_task_t task;	/* the native task to create				*/
   const char* name;	/* the name of the task					*/
-	
+
   if(jcomputeDuration < 0) {
     jxbt_throw_illegal(env,bprintf("Task ComputeDuration (%f) cannot be negative",
 				    (double)jcomputeDuration));
@@ -502,6 +519,7 @@ Java_simgrid_msg_Msg_taskCreate(JNIEnv* env, jclass cls, jobject jtask, jstring 
 
   if ( ! task->data )
     jxbt_throw_jni(env,"global ref allocation failed");
+
 }
 
 JNIEXPORT void JNICALL 
@@ -925,7 +943,7 @@ Java_simgrid_msg_Msg_channelGetHostWaitingTasks(JNIEnv* env, jclass cls,
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_channelPut(JNIEnv* env, jclass cls, 
 				jobject jchannel, jobject jtask, jobject jhost) {
-
+	
   if(MSG_OK != MSG_task_put(jtask_to_native_task(jtask,env),
 			    jhost_get_native(env,jhost),
 			    (int)jchannel_get_id(jchannel,env)))
@@ -948,7 +966,7 @@ Java_simgrid_msg_Msg_channelPutWithTimeout(JNIEnv* env, jclass cls,
     jxbt_throw_notbound(env,"task",jtask);
     return;
   }
-	
+   
   if(MSG_OK != MSG_task_put_with_timeout(task,host,id,(double)jtimeout))
     jxbt_throw_native(env, xbt_strdup("MSG_task_put_with_timeout() failed"));
 }
@@ -1048,6 +1066,8 @@ Java_simgrid_msg_Msg_init(JNIEnv* env, jclass cls, jobjectArray jargs) {
 #else
   __current_thread_id = pthread_self();
 #endif
+
+(*env)->GetJavaVM(env,&__java_vm);
 	
 }
 
@@ -1059,20 +1079,19 @@ JNICALL Java_simgrid_msg_Msg_run(JNIEnv* env, jclass cls) {
 
   /* Run everything */
   if(MSG_OK != MSG_main())
-    jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
-
+	  jxbt_throw_native(env, xbt_strdup("MSG_main() failed"));
+	
   DEBUG0("MSG_main finished. Bail out before cleanup since there is a bug in this part.");
-  SIMIX_display_process_status();   
-  exit(0); /* FIXME */
-   
+  
   DEBUG0("Clean java world");
   /* Cleanup java hosts */
   xbt_fifo_foreach(msg_global->host,item,host,m_host_t) {
     jhost = (jobject)host->data;
 	
     if(jhost)
-      jhost_unref(env,jhost);	
+      jhost_unref(env,jhost);
   }
+	
   DEBUG0("Clean native world");
   /* cleanup native stuff */
   if(MSG_OK != MSG_clean())
@@ -1097,49 +1116,26 @@ Java_simgrid_msg_Msg_createEnvironment(JNIEnv* env, jclass cls,jstring jplatform
 
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_waitSignal(JNIEnv* env, jclass cls, jobject jprocess) {
-  m_process_t m_process = jprocess_to_native_process(jprocess,env);
-  smx_process_t s_process;
 
-  xbt_os_mutex_t ctx_mutex, creation_mutex;
-  xbt_os_cond_t ctx_cond, creation_cond;
-
-  DEBUG3("Msg_waitSignal(m_process=%p %s/%s)",
-	 m_process,m_process->name,m_process->simdata->m_host->name);
-  if (!m_process){
-    jxbt_throw_notbound(env,"process",jprocess);
-    return;
-  }
-
-  s_process = m_process->simdata->s_process;
-
-  if (s_process == NULL) {
-    jxbt_throw_notbound(env,"SIMIX process",jprocess);
-    return;
-  }
-
-  ctx_mutex = SIMIX_process_get_jmutex(s_process);
-  ctx_cond = SIMIX_process_get_jcond(s_process);
-
-  creation_mutex = xbt_creation_mutex_get();
-  creation_cond = xbt_creation_cond_get();
-
+  xbt_os_mutex_t creation_mutex = xbt_creation_mutex_get();
+  xbt_os_cond_t creation_cond = xbt_creation_cond_get();
   xbt_os_mutex_lock(creation_mutex);
-  xbt_os_mutex_lock(ctx_mutex);
   xbt_os_cond_signal( creation_cond );
   xbt_os_mutex_unlock( creation_mutex );
-  xbt_os_cond_wait(ctx_cond, ctx_mutex);
-  xbt_os_mutex_unlock(ctx_mutex);
+
 }
 
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_processExit(JNIEnv* env, jclass cls, jobject jprocess) {
+
   m_process_t process = jprocess_to_native_process(jprocess,env);
 
   if (!process){
     jxbt_throw_notbound(env,"process",jprocess);
     return;
   }
-  MSG_process_kill(process);
+
+  jcontext_exit(process->simdata->s_process->simdata->context,0,get_current_thread_env());
 }
 
 JNIEXPORT void JNICALL 

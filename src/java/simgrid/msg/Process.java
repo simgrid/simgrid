@@ -56,7 +56,7 @@ import java.util.*;
  * @since JDK1.5011
  */
  
-public class Process extends Thread
+public abstract class Process extends Thread
 {
     /**
      * This attribute represents a bind between a java process object and
@@ -90,6 +90,9 @@ public class Process extends Thread
      * The arguments of the method function of the process.	
      */
     public Vector args;
+    
+    /* Used to schedule the process */
+    protected Sem sem;
 	
     /**
      * Default constructor. (used in ApplicationHandler to initialize it)
@@ -100,6 +103,7 @@ public class Process extends Thread
 	this.name = null;
 	this.bind = 0;
 	this.args = new Vector();
+	sem = new Sem(0); /* suspend the thread first */
     }
 
 	
@@ -170,10 +174,17 @@ public class Process extends Thread
 
 	if (name==null)
 	    throw new NullPointerException("Process name cannot be NULL");
-
-	this.args.addAll(Arrays.asList(args));
+	
+	
+	this.args = new Vector();
+	
+	if(null != args)
+		this.args.addAll(Arrays.asList(args));
+		
 	this.name = name;
 	this.id = nextProcessId++;
+	
+	sem = new Sem(0); /* suspend the thread first */
 		
 	Msg.processCreate(this,host);
     }
@@ -359,14 +370,17 @@ public class Process extends Thread
     public synchronized void run() {
 	    	
 	try {
-	    String[] args; /* do not fill it before the signal or this.args will be empty */
+	    String[] args = null; /* do not fill it before the signal or this.args will be empty */
 	    
 	    waitSignal(); /* wait for other people to fill the process in */
+		
+		if(this.args.size() > 0)
+		{
+		
+	    	args = new String[this.args.size()];
+	   		this.args.toArray(args);
+	   	}
 
-	    args = new String[this.args.size()];
-	    this.args.toArray(args);
-
-	    Msg.info("["+this.name+"/"+this.getHost().getName()+"] Start");
 	    this.main(args);
 	    Msg.processExit(this);
 	} catch (MsgException e) {
@@ -382,17 +396,27 @@ public class Process extends Thread
      * @exception			JniException on JNI madness
      */
     private void waitSignal() throws JniException{
-        Msg.waitSignal(this);        
+        Msg.waitSignal(this);
+        unschedule();        
     }
   
     /**
-     * The main function of the process (to override).
-     */
-
-    public void main(String[] args) throws MsgException {
-    	
-    	// TODO
-    	// ALL DERIVED CLASS OF THIS CLASS MUST OVERRIDE THIS METHOD
+   	 * The main function of the process (to implement).
+   	 */
+    public abstract void main(String[] args) 
+    throws JniException, NativeException;
+    
+   
+    public void unschedule() {
+        try {        
+        		sem.acquire();
+    		} catch(InterruptedException e)
+    		{
+    			// todo
+    		}
     }
     
+     public void schedule() { 
+        sem.release(); 
+    }
 }

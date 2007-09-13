@@ -17,8 +17,15 @@
 #include "java/jmsg.h"
 #include "java/jmsg_process.h"
 
-#define JAVA_SIMGRID /* get the right definition of the xbt_ctx with all we need here */
+/* get the right definition of the xbt_ctx with all we need here */
+#ifndef JAVA_SIMGRID
+#define JAVA_SIMGRID
+#endif 
+
 #include "xbt/context_private.h"
+
+pfn_schedule_t __process_schedule= NULL;
+pfn_schedule_t __process_unschedule= NULL;
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ctx, xbt, "Context");
@@ -33,16 +40,34 @@ static xbt_os_cond_t creation_cond;              /* For syncronization during pr
 static xbt_os_mutex_t master_mutex;		/* For syncronization during process scheduling*/
 static xbt_os_cond_t master_cond;		/* For syncronization during process scheduling*/
 
+
+static void
+__xbt_process_schedule(xbt_context_t context);
+
+static void
+__xbt_process_unschedule(xbt_context_t context);
+
 static void 
 __xbt_context_yield(xbt_context_t context);
 
+static void
+__xbt_process_schedule(xbt_context_t context) {
+	(*(__process_schedule))(context);
+}
+
+static void
+__xbt_process_unschedule(xbt_context_t context) {
+	(*(__process_unschedule))(context);
+}
 
 static void 
 __xbt_context_yield(xbt_context_t context) {
+
   if(context) {
+
     /* save the current context */
     xbt_context_t self = current_context;
-    
+
     if(is_main_thread()) {
       /* the main thread has called this function
        * - update the current context
@@ -50,18 +75,15 @@ __xbt_context_yield(xbt_context_t context) {
        * - wait on its condition
        * - restore thr current contex
        */
-      
       xbt_os_mutex_lock(master_mutex);
-      xbt_os_mutex_lock(context->mutex);
-			
       /* update the current context */
       current_context = context;
-      xbt_os_cond_signal(context->cond);
-      xbt_os_mutex_unlock(context->mutex);
+	 __xbt_process_schedule(context);
       xbt_os_cond_wait(master_cond, master_mutex);
       xbt_os_mutex_unlock(master_mutex);
       /* retore the current context */
       current_context = self;
+	  
 			
     } else {
 	/* a java thread has called this function
@@ -70,55 +92,57 @@ __xbt_context_yield(xbt_context_t context) {
 	 * - wait on its condition
 	 * - restore thr current contex
 	 */
-
 	xbt_os_mutex_lock(master_mutex);
-	xbt_os_mutex_lock(context->mutex);
 	/* update the current context */
 	current_context = context;
 	xbt_os_cond_signal(master_cond);
 	xbt_os_mutex_unlock(master_mutex);
-	xbt_os_cond_wait(context->cond, context->mutex);
-	xbt_os_mutex_unlock(context->mutex);
+	__xbt_process_unschedule(context);
 	/* retore the current context */
 	current_context = self;
       }
   }
+  
 	
-  if(current_context->iwannadie) {
+  if(current_context->iwannadie)
     __context_exit(current_context, 1);
-  }
+  
 }
 
 
 
 static void 
 xbt_context_free(xbt_context_t context) {
-  if(context) {
-    if(context->jprocess) {
-      jobject jprocess = context->jprocess;
-      context->jprocess = NULL;
-			
-      /* if the java process is alive join it */
-      if(jprocess_is_alive(jprocess,context->jenv)) {
-	jprocess_join(jprocess,context->jenv);
-      }
-    }
-    	
-    /* destroy the mutex of the process */
-    xbt_os_mutex_destroy(context->mutex);
 
-    /* destroy the condition of the process */
-    xbt_os_cond_destroy(context->cond);
+	if(context) 
+	{
+		if(context->jprocess) 
+		{
+			jobject jprocess = context->jprocess;
+			context->jprocess = NULL;
 
-    context->mutex = NULL;
-    context->cond = NULL;
-    
-    if(context->exception) 
-      free(context->exception);
-    
-    free(context->name);
-    free(context);
-    context = NULL;
+			/* if the java process is alive join it */
+			if(jprocess_is_alive(jprocess,get_current_thread_env())) 
+			{
+				jprocess_join(jprocess,get_current_thread_env());
+			}
+		}
+
+		/* destroy the mutex of the process */
+		xbt_os_mutex_destroy(context->mutex);
+
+		/* destroy the condition of the process */
+		xbt_os_cond_destroy(context->cond);
+
+		context->mutex = NULL;
+		context->cond = NULL;
+
+		if(context->exception) 
+			free(context->exception);
+
+		free(context->name);
+		free(context);
+		context = NULL;
   }
 }
 /*
@@ -127,31 +151,35 @@ xbt_context_free(xbt_context_t context) {
 void 
 __context_exit(xbt_context_t context ,int value) {
   /* call the cleanup function of the context */
-  if(context->cleanup_func)
-    context->cleanup_func(context->cleanup_arg);
 	
-  /* remove the context from the list of the contexts in use. */
-  xbt_swag_remove(context, context_living);
+	if(context->cleanup_func)
+		context->cleanup_func(context->cleanup_arg);
 	
-  /* insert the context in the list of contexts to destroy. */ 
-  xbt_swag_insert(context, context_to_destroy);
+	/* remove the context from the list of the contexts in use. */
+	xbt_swag_remove(context, context_living);
 	
-  /*
-   * signal the condition of the java process 
-   */
-  xbt_os_mutex_lock(master_mutex);
-  xbt_os_mutex_lock(context->mutex);
-  xbt_os_cond_signal(context->cond);
-  xbt_os_mutex_unlock(context->mutex);
+	/* insert the context in the list of contexts to destroy. */ 
+	xbt_swag_insert(context, context_to_destroy);
 	
-  if (context->jprocess) {
-    /* if the java process is alive, stop it */
-    if (jprocess_is_alive(context->jprocess,context->jenv)) {
-      jobject jprocess = context->jprocess;
-      context->jprocess = NULL;
-      jprocess_exit(jprocess,context->jenv);
-    }
-  }
+	/*
+	* signal the condition of the java process 
+	*/
+
+	xbt_os_mutex_lock(master_mutex);
+
+	if (context->jprocess) 
+	{
+		if (jprocess_is_alive(context->jprocess,get_current_thread_env())) 
+		{
+			jobject jprocess;
+			__xbt_process_schedule(context);
+			jprocess = context->jprocess;
+			context->jprocess = NULL;
+			jprocess_exit(jprocess,get_current_thread_env());
+		}
+	}
+
+	
 }
 
 /*
@@ -175,13 +203,12 @@ jcontext_exit(xbt_context_t context ,int value,JNIEnv* env) {
    * signal the condition of the main thread.
    */
   xbt_os_mutex_lock(master_mutex);
-  xbt_os_mutex_lock(context->mutex);
   xbt_os_cond_signal(master_cond);
   xbt_os_mutex_unlock(master_mutex);
 	
 	
   /* the global reference to the java process instance is deleted */
-  jprocess_delete_global_ref(__jprocess,env);
+  jprocess_delete_global_ref(__jprocess,get_current_thread_env());
 }
 
 /* callback: context fetching */
@@ -234,6 +261,9 @@ xbt_context_init(void) {
     master_mutex = xbt_os_mutex_init();
     /* this mutex is used to synchronize the scheduling of the java process */
     master_cond = xbt_os_cond_init();
+    
+    __process_schedule = jprocess_schedule;
+	__process_unschedule = jprocess_unschedule;
   }
 }
 
@@ -253,13 +283,13 @@ void xbt_context_empty_trash(void) {
 void 
 xbt_context_start(xbt_context_t context)  {
   DEBUG3("xbt_context_start of %p (jproc=%p, jenv=%p)",
-	 context, context->jprocess, context->jenv);
+	 context, context->jprocess, get_current_thread_env());
 
   /* the main thread locks the mutex used to create all the process	*/
   xbt_os_mutex_lock(creation_mutex);
 
   /* the main thread starts the java process				*/
-  jprocess_start(context->jprocess,context->jenv);
+  jprocess_start(context->jprocess,get_current_thread_env());
 
   /* the main thread waits the startup of the java process		*/
   xbt_os_cond_wait(creation_cond, creation_mutex);
@@ -353,6 +383,7 @@ void xbt_context_exit(void)  {
  * This function simply kills \a context... scarry isn't it ?
  */
 void xbt_context_kill(xbt_context_t context) {
+
   context->iwannadie=1;
   __xbt_context_yield(context);
 }
@@ -392,8 +423,9 @@ void  xbt_context_set_jenv(xbt_context_t context,void* je)      {
    context->jenv = je;
 }
 void* xbt_context_get_jenv(xbt_context_t context)               { 
-   return context->jenv;
+   return get_current_thread_env();
 }
+
 
 
 /* @} */
