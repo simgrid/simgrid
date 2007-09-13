@@ -20,6 +20,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 void bottleneck_solve(lmm_system_t sys)
 {
   lmm_variable_t var = NULL;
+  lmm_variable_t var_to_update = NULL;
   lmm_constraint_t cnst = NULL;
   lmm_constraint_t useless_cnst = NULL;
   s_lmm_constraint_t s_cnst;
@@ -126,6 +127,33 @@ void bottleneck_solve(lmm_system_t sys)
 
     if (!xbt_swag_size(&cnst_to_update))
       break;
+
+    var_list = &(sys->variable_set);
+    var_to_update = NULL;
+    xbt_swag_foreach(var, var_list) {
+      if(!var->value  && var->bound>0 && 
+	 var->bound<min_usage) {
+	var_to_update = var;
+	min_usage = var->bound;
+      }
+    }
+    if(var_to_update) {
+      DEBUG2("\tUpdating var %p (%g)",var,var->value);
+      var->value = var->bound;
+      
+      for (i = 0; i < var->cnsts_number; i++) {
+	lmm_element_t elm = &var->cnsts[i];
+	cnst = elm->constraint;
+	DEBUG1("\t\tUpdating cnst %p",cnst);
+	double_update(&(cnst->remaining), elm->value * var->value);
+	double_update(&(cnst->usage), elm->value / var->weight);
+	//              make_elem_inactive(elm);
+      }
+      while ((cnst = xbt_swag_extract(&cnst_to_update))) {
+	xbt_swag_insert(cnst, cnst_list);
+      }
+      continue;
+    }
 
     while ((cnst_next = xbt_swag_extract(&cnst_to_update))) {
       int nb = 0;
