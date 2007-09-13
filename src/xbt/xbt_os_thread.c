@@ -237,19 +237,24 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double dela
    int errcode;
    struct timespec ts_end;
    double end = delay + xbt_os_time();
-   ts_end.tv_sec = (time_t) floor(end);
-   ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
-   DEBUG3("pthread_cond_timedwait(%p,%p,%p)",&(cond->c),&(mutex->m), &ts_end);
-   switch ( (errcode=pthread_cond_timedwait(&(cond->c),&(mutex->m), &ts_end)) ) {
-    case 0:
-      return;
-    case ETIMEDOUT:
-     THROW3(timeout_error,errcode,"condition %p (mutex %p) wasn't signaled before timeout (%f)",
-	    cond,mutex, delay);
-    default:
-     THROW4(system_error,errcode,"pthread_cond_timedwait(%p,%p,%f) failed: %s",
-	    cond,mutex, delay, strerror(errcode));
-   }   
+   
+   if (delay < 0) {
+      xbt_os_cond_wait(cond,mutex);
+   } else {
+      ts_end.tv_sec = (time_t) floor(end);
+      ts_end.tv_nsec = (long)  ( ( end - ts_end.tv_sec) * 1000000000);
+      DEBUG3("pthread_cond_timedwait(%p,%p,%p)",&(cond->c),&(mutex->m), &ts_end);
+      switch ( (errcode=pthread_cond_timedwait(&(cond->c),&(mutex->m), &ts_end)) ) {
+       case 0:
+	 return;
+       case ETIMEDOUT:
+	 THROW3(timeout_error,errcode,"condition %p (mutex %p) wasn't signaled before timeout (%f)",
+		cond,mutex, delay);
+       default:
+	 THROW4(system_error,errcode,"pthread_cond_timedwait(%p,%p,%f) failed: %s",
+		cond,mutex, delay, strerror(errcode));
+      }   
+   }
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond) {
