@@ -39,7 +39,12 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 noinst_PROGRAMS = xbt/parallel_log_crashtest$(EXEEXT) \
-	gras/datadesc/datadesc_usage$(EXEEXT)
+	gras/datadesc/datadesc_usage$(EXEEXT) \
+	gras/msg_handle/msg_handle_client$(EXEEXT) \
+	gras/msg_handle/msg_handle_server$(EXEEXT) \
+	gras/msg_handle/msg_handle_simulator$(EXEEXT)
+@GRAS_ARCH_32_BITS_TRUE@am__append_1 = gras/msg_handle/test_rl gras/msg_handle/test_sg_32
+@GRAS_ARCH_32_BITS_FALSE@am__append_2 = gras/msg_handle/test_rl gras/msg_handle/test_sg_64
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = teshsuite
@@ -64,6 +69,21 @@ gras_datadesc_datadesc_usage_OBJECTS =  \
 	$(am_gras_datadesc_datadesc_usage_OBJECTS)
 gras_datadesc_datadesc_usage_DEPENDENCIES = $(LDADD_RL)
 am__dirstamp = $(am__leading_dot)dirstamp
+am_gras_msg_handle_msg_handle_client_OBJECTS = msg_handle.$(OBJEXT) \
+	_msg_handle_client.$(OBJEXT)
+gras_msg_handle_msg_handle_client_OBJECTS =  \
+	$(am_gras_msg_handle_msg_handle_client_OBJECTS)
+gras_msg_handle_msg_handle_client_DEPENDENCIES = $(LDADD_RL)
+am_gras_msg_handle_msg_handle_server_OBJECTS = msg_handle.$(OBJEXT) \
+	_msg_handle_server.$(OBJEXT)
+gras_msg_handle_msg_handle_server_OBJECTS =  \
+	$(am_gras_msg_handle_msg_handle_server_OBJECTS)
+gras_msg_handle_msg_handle_server_DEPENDENCIES = $(LDADD_RL)
+am_gras_msg_handle_msg_handle_simulator_OBJECTS =  \
+	msg_handle.$(OBJEXT) _msg_handle_simulator.$(OBJEXT)
+gras_msg_handle_msg_handle_simulator_OBJECTS =  \
+	$(am_gras_msg_handle_msg_handle_simulator_OBJECTS)
+gras_msg_handle_msg_handle_simulator_DEPENDENCIES = $(LDADD_SG)
 xbt_parallel_log_crashtest_SOURCES = xbt/parallel_log_crashtest.c
 xbt_parallel_log_crashtest_OBJECTS = parallel_log_crashtest.$(OBJEXT)
 xbt_parallel_log_crashtest_DEPENDENCIES = $(LDADD_RL)
@@ -80,8 +100,14 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
+	$(gras_msg_handle_msg_handle_client_SOURCES) \
+	$(gras_msg_handle_msg_handle_server_SOURCES) \
+	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
 	xbt/parallel_log_crashtest.c
 DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
+	$(gras_msg_handle_msg_handle_client_SOURCES) \
+	$(gras_msg_handle_msg_handle_server_SOURCES) \
+	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
 	xbt/parallel_log_crashtest.c
 ETAGS = etags
 CTAGS = ctags
@@ -231,7 +257,8 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	gras/datadesc/datadesc.little64 gras/datadesc/datadesc.big32_8 \
 	gras/datadesc/datadesc.big32_8_4 \
 	gras/datadesc/datadesc.big32_2 \
-	gras/datadesc/mk_datadesc_structs.pl
+	gras/datadesc/mk_datadesc_structs.pl \
+	gras/msg_handle/msg_handle.xml
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_mem.tesh gras/datadesc/datadesc_rw.tesh \
@@ -239,7 +266,8 @@ TESTS = xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_r_little64.tesh \
 	gras/datadesc/datadesc_r_big32_8.tesh \
 	gras/datadesc/datadesc_r_big32_8_4.tesh \
-	gras/datadesc/datadesc_r_big32_2.tesh
+	gras/datadesc/datadesc_r_big32_2.tesh $(am__append_1) \
+	$(am__append_2)
 # Data sets still to regenerate:
 XFAIL_TESTS = gras/datadesc/datadesc_r_little32.tesh \
 	gras/datadesc/datadesc_r_big32_8.tesh \
@@ -250,6 +278,12 @@ LDADD_RL = $(abs_top_builddir)/src/libgras.la
 xbt_parallel_log_crashtest_LDADD = $(LDADD_RL)
 gras_datadesc_datadesc_usage_SOURCES = gras/datadesc/datadesc_usage.c gras/datadesc/datadesc_structs.c
 gras_datadesc_datadesc_usage_LDADD = $(LDADD_RL)
+gras_msg_handle_msg_handle_simulator_SOURCES = gras/msg_handle/msg_handle.c gras/msg_handle/_msg_handle_simulator.c
+gras_msg_handle_msg_handle_client_SOURCES = gras/msg_handle/msg_handle.c gras/msg_handle/_msg_handle_client.c
+gras_msg_handle_msg_handle_server_SOURCES = gras/msg_handle/msg_handle.c gras/msg_handle/_msg_handle_server.c
+gras_msg_handle_msg_handle_simulator_LDADD = $(LDADD_SG)
+gras_msg_handle_msg_handle_client_LDADD = $(LDADD_RL)
+gras_msg_handle_msg_handle_server_LDADD = $(LDADD_RL)
 all: all-am
 
 .SUFFIXES:
@@ -296,6 +330,18 @@ gras/datadesc/$(am__dirstamp):
 gras/datadesc/datadesc_usage$(EXEEXT): $(gras_datadesc_datadesc_usage_OBJECTS) $(gras_datadesc_datadesc_usage_DEPENDENCIES) gras/datadesc/$(am__dirstamp)
 	@rm -f gras/datadesc/datadesc_usage$(EXEEXT)
 	$(LINK) $(gras_datadesc_datadesc_usage_OBJECTS) $(gras_datadesc_datadesc_usage_LDADD) $(LIBS)
+gras/msg_handle/$(am__dirstamp):
+	@$(MKDIR_P) gras/msg_handle
+	@: > gras/msg_handle/$(am__dirstamp)
+gras/msg_handle/msg_handle_client$(EXEEXT): $(gras_msg_handle_msg_handle_client_OBJECTS) $(gras_msg_handle_msg_handle_client_DEPENDENCIES) gras/msg_handle/$(am__dirstamp)
+	@rm -f gras/msg_handle/msg_handle_client$(EXEEXT)
+	$(LINK) $(gras_msg_handle_msg_handle_client_OBJECTS) $(gras_msg_handle_msg_handle_client_LDADD) $(LIBS)
+gras/msg_handle/msg_handle_server$(EXEEXT): $(gras_msg_handle_msg_handle_server_OBJECTS) $(gras_msg_handle_msg_handle_server_DEPENDENCIES) gras/msg_handle/$(am__dirstamp)
+	@rm -f gras/msg_handle/msg_handle_server$(EXEEXT)
+	$(LINK) $(gras_msg_handle_msg_handle_server_OBJECTS) $(gras_msg_handle_msg_handle_server_LDADD) $(LIBS)
+gras/msg_handle/msg_handle_simulator$(EXEEXT): $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_DEPENDENCIES) gras/msg_handle/$(am__dirstamp)
+	@rm -f gras/msg_handle/msg_handle_simulator$(EXEEXT)
+	$(LINK) $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_LDADD) $(LIBS)
 xbt/$(am__dirstamp):
 	@$(MKDIR_P) xbt
 	@: > xbt/$(am__dirstamp)
@@ -309,8 +355,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_client.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_server.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_msg_handle_simulator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_structs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
 
 .c.o:
@@ -361,6 +411,62 @@ datadesc_structs.obj: gras/datadesc/datadesc_structs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/datadesc/datadesc_structs.c' object='datadesc_structs.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o datadesc_structs.obj `if test -f 'gras/datadesc/datadesc_structs.c'; then $(CYGPATH_W) 'gras/datadesc/datadesc_structs.c'; else $(CYGPATH_W) '$(srcdir)/gras/datadesc/datadesc_structs.c'; fi`
+
+msg_handle.o: gras/msg_handle/msg_handle.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_handle.o -MD -MP -MF $(DEPDIR)/msg_handle.Tpo -c -o msg_handle.o `test -f 'gras/msg_handle/msg_handle.c' || echo '$(srcdir)/'`gras/msg_handle/msg_handle.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/msg_handle.Tpo $(DEPDIR)/msg_handle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/msg_handle.c' object='msg_handle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_handle.o `test -f 'gras/msg_handle/msg_handle.c' || echo '$(srcdir)/'`gras/msg_handle/msg_handle.c
+
+msg_handle.obj: gras/msg_handle/msg_handle.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT msg_handle.obj -MD -MP -MF $(DEPDIR)/msg_handle.Tpo -c -o msg_handle.obj `if test -f 'gras/msg_handle/msg_handle.c'; then $(CYGPATH_W) 'gras/msg_handle/msg_handle.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/msg_handle.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/msg_handle.Tpo $(DEPDIR)/msg_handle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/msg_handle.c' object='msg_handle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o msg_handle.obj `if test -f 'gras/msg_handle/msg_handle.c'; then $(CYGPATH_W) 'gras/msg_handle/msg_handle.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/msg_handle.c'; fi`
+
+_msg_handle_client.o: gras/msg_handle/_msg_handle_client.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _msg_handle_client.o -MD -MP -MF $(DEPDIR)/_msg_handle_client.Tpo -c -o _msg_handle_client.o `test -f 'gras/msg_handle/_msg_handle_client.c' || echo '$(srcdir)/'`gras/msg_handle/_msg_handle_client.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_msg_handle_client.Tpo $(DEPDIR)/_msg_handle_client.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_client.c' object='_msg_handle_client.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_client.o `test -f 'gras/msg_handle/_msg_handle_client.c' || echo '$(srcdir)/'`gras/msg_handle/_msg_handle_client.c
+
+_msg_handle_client.obj: gras/msg_handle/_msg_handle_client.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _msg_handle_client.obj -MD -MP -MF $(DEPDIR)/_msg_handle_client.Tpo -c -o _msg_handle_client.obj `if test -f 'gras/msg_handle/_msg_handle_client.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_client.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_msg_handle_client.Tpo $(DEPDIR)/_msg_handle_client.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_client.c' object='_msg_handle_client.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_client.obj `if test -f 'gras/msg_handle/_msg_handle_client.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_client.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_client.c'; fi`
+
+_msg_handle_server.o: gras/msg_handle/_msg_handle_server.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _msg_handle_server.o -MD -MP -MF $(DEPDIR)/_msg_handle_server.Tpo -c -o _msg_handle_server.o `test -f 'gras/msg_handle/_msg_handle_server.c' || echo '$(srcdir)/'`gras/msg_handle/_msg_handle_server.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_msg_handle_server.Tpo $(DEPDIR)/_msg_handle_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_server.c' object='_msg_handle_server.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_server.o `test -f 'gras/msg_handle/_msg_handle_server.c' || echo '$(srcdir)/'`gras/msg_handle/_msg_handle_server.c
+
+_msg_handle_server.obj: gras/msg_handle/_msg_handle_server.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _msg_handle_server.obj -MD -MP -MF $(DEPDIR)/_msg_handle_server.Tpo -c -o _msg_handle_server.obj `if test -f 'gras/msg_handle/_msg_handle_server.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_server.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_msg_handle_server.Tpo $(DEPDIR)/_msg_handle_server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_server.c' object='_msg_handle_server.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_server.obj `if test -f 'gras/msg_handle/_msg_handle_server.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_server.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_server.c'; fi`
+
+_msg_handle_simulator.o: gras/msg_handle/_msg_handle_simulator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _msg_handle_simulator.o -MD -MP -MF $(DEPDIR)/_msg_handle_simulator.Tpo -c -o _msg_handle_simulator.o `test -f 'gras/msg_handle/_msg_handle_simulator.c' || echo '$(srcdir)/'`gras/msg_handle/_msg_handle_simulator.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_msg_handle_simulator.Tpo $(DEPDIR)/_msg_handle_simulator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_simulator.c' object='_msg_handle_simulator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_simulator.o `test -f 'gras/msg_handle/_msg_handle_simulator.c' || echo '$(srcdir)/'`gras/msg_handle/_msg_handle_simulator.c
+
+_msg_handle_simulator.obj: gras/msg_handle/_msg_handle_simulator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT _msg_handle_simulator.obj -MD -MP -MF $(DEPDIR)/_msg_handle_simulator.Tpo -c -o _msg_handle_simulator.obj `if test -f 'gras/msg_handle/_msg_handle_simulator.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_simulator.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/_msg_handle_simulator.Tpo $(DEPDIR)/_msg_handle_simulator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_simulator.c' object='_msg_handle_simulator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_simulator.obj `if test -f 'gras/msg_handle/_msg_handle_simulator.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_simulator.c'; fi`
 
 parallel_log_crashtest.o: xbt/parallel_log_crashtest.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT parallel_log_crashtest.o -MD -MP -MF $(DEPDIR)/parallel_log_crashtest.Tpo -c -o parallel_log_crashtest.o `test -f 'xbt/parallel_log_crashtest.c' || echo '$(srcdir)/'`xbt/parallel_log_crashtest.c
@@ -585,6 +691,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-rm -f gras/datadesc/$(am__dirstamp)
+	-rm -f gras/msg_handle/$(am__dirstamp)
 	-rm -f xbt/$(am__dirstamp)
 
 maintainer-clean-generic:
@@ -680,6 +787,11 @@ uninstall-am:
 
 gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl
 	cd gras/datadesc ; perl ../$(top_srcdir)/teshsuite/gras/datadesc/mk_datadesc_structs.pl > datadesc_structs.c
+
+  ##########################################
+
+gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
+	cd gras/msg_handle; ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle $(srcdir)/msg_handle.xml
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
