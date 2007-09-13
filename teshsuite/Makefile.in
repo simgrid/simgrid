@@ -223,39 +223,31 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_srcdir)/src/include
 AM_CFLAGS = -g
-CLEANFILES = gras/datadesc/datadesc_usage.out datadesc_usage.out
-EXTRA_DIST = \
-  gras/datadesc/datadesc.little32_4 \
-  gras/datadesc/datadesc.little64\
-  gras/datadesc/datadesc.big32_8 gras/datadesc/datadesc.big32_8_4 gras/datadesc/datadesc.big32_2 \
-  gras/datadesc/mk_datadesc_structs.pl
 
+# Declare all the variables to empty, so that each test set can add
+# their content to them
+CLEANFILES = gras/datadesc/datadesc_usage.out
+EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
+	gras/datadesc/datadesc.little64 gras/datadesc/datadesc.big32_8 \
+	gras/datadesc/datadesc.big32_8_4 \
+	gras/datadesc/datadesc.big32_2 \
+	gras/datadesc/mk_datadesc_structs.pl
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = xbt/parallel_log_crashtest.tesh     \
-	gras/datadesc/datadesc_mem.tesh          \
-	gras/datadesc/datadesc_rw.tesh           \
+TESTS = xbt/parallel_log_crashtest.tesh \
+	gras/datadesc/datadesc_mem.tesh gras/datadesc/datadesc_rw.tesh \
 	gras/datadesc/datadesc_r_little32_4.tesh \
-	gras/datadesc/datadesc_r_little64.tesh   \
-	\
-        gras/datadesc/datadesc_r_big32_8.tesh      \
-	gras/datadesc/datadesc_r_big32_8_4.tesh  \
+	gras/datadesc/datadesc_r_little64.tesh \
+	gras/datadesc/datadesc_r_big32_8.tesh \
+	gras/datadesc/datadesc_r_big32_8_4.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh
-
-
 # Data sets still to regenerate:
-XFAIL_TESTS = \
-	gras/datadesc/datadesc_r_little32.tesh   \
-        gras/datadesc/datadesc_r_big32_8.tesh      \
-	gras/datadesc/datadesc_r_big32_8_4.tesh  \
+XFAIL_TESTS = gras/datadesc/datadesc_r_little32.tesh \
+	gras/datadesc/datadesc_r_big32_8.tesh \
+	gras/datadesc/datadesc_r_big32_8_4.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh
-
 LDADD_SG = $(abs_top_builddir)/src/libsimgrid.la
 LDADD_RL = $(abs_top_builddir)/src/libgras.la
-
-# Try parallel logs 
 xbt_parallel_log_crashtest_LDADD = $(LDADD_RL)
-
-# Try structured communication facilities
 gras_datadesc_datadesc_usage_SOURCES = gras/datadesc/datadesc_usage.c gras/datadesc/datadesc_structs.c
 gras_datadesc_datadesc_usage_LDADD = $(LDADD_RL)
 all: all-am
@@ -440,6 +432,7 @@ distclean-tags:
 
 check-TESTS: $(TESTS)
 	@failed=0; all=0; xfail=0; xpass=0; skip=0; ws='[	 ]'; \
+	faillist=""; xpasslist=""; xfaillist=""; skiplist=""; \
 	srcdir=$(srcdir); export srcdir; \
 	list=' $(TESTS) '; \
 	if test -n "$$list"; then \
@@ -453,6 +446,7 @@ check-TESTS: $(TESTS)
 	      *$$ws$$tst$$ws*) \
 		xpass=`expr $$xpass + 1`; \
 		failed=`expr $$failed + 1`; \
+		xpasslist="$$xpasslist $$tst"; \
 		echo "XPASS: $$tst"; \
 	      ;; \
 	      *) \
@@ -464,15 +458,18 @@ check-TESTS: $(TESTS)
 	      case " $(XFAIL_TESTS) " in \
 	      *$$ws$$tst$$ws*) \
 		xfail=`expr $$xfail + 1`; \
+		xfaillist="$$xfaillist $$tst"; \
 		echo "XFAIL: $$tst"; \
 	      ;; \
 	      *) \
 		failed=`expr $$failed + 1`; \
+		faillist="$$faillist $$tst"; \
 		echo "FAIL: $$tst"; \
 	      ;; \
 	      esac; \
 	    else \
 	      skip=`expr $$skip + 1`; \
+	      skiplist="$$skiplist $$tst"; \
 	      echo "SKIP: $$tst"; \
 	    fi; \
 	  done; \
@@ -508,6 +505,30 @@ check-TESTS: $(TESTS)
 	  test -z "$$skipped" || echo "$$skipped"; \
 	  test -z "$$report" || echo "$$report"; \
 	  echo "$$dashes"; \
+	  if test -n "$$faillist" ; then \
+	    echo "Failed tests:";\
+	    for tst in $$faillist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
+	  if test -n "$$xpasslist" ; then \
+	    echo "Unexpectedly passed tests:";\
+	    for tst in $$xpasslist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
+	  if test -n "$$xfaillist" ; then \
+	    echo "Expected failures:";\
+	    for tst in $$xfaillist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
+	  if test -n "$$skiplist" ; then \
+	    echo "Skipped tests:";\
+	    for tst in $$skiplist ; do \
+	      echo "  "$$tst;\
+	    done;\
+	  fi;\
 	  test "$$failed" -eq 0; \
 	else :; fi
 
@@ -644,6 +665,18 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am
 
+
+#################
+### XBT tests ###
+#################
+
+  #######################
+
+##################
+### GRAS tests ###
+##################
+
+  #############################################
 
 gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl
 	cd gras/datadesc ; perl ../$(top_srcdir)/teshsuite/gras/datadesc/mk_datadesc_structs.pl > datadesc_structs.c
