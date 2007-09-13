@@ -1,4 +1,0 @@
-pmm_master pmm_slave *_simulator
-.deps .libs Makefile  _*.c
-*.mk *.trace
-*.log

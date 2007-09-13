@@ -1,5 +1,0 @@
-.deps .libs Makefile  _*.c saturate_sensor saturate_maestro saturate_simulator
-test_sg
-test_rl
-saturate.mk
-saturate.trace

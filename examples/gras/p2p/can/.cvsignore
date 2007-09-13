@@ -1,5 +1,0 @@
-.deps .libs Makefile  _*.c can_node can_simulator can_start_war
-test_sg
-test_rl
-can.mk
-can.trace

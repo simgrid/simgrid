@@ -1,5 +1,0 @@
-.deps .libs Makefile  _*.c chord_node chord_simulator
-test_sg
-test_rl
-chord.mk
-chord.trace

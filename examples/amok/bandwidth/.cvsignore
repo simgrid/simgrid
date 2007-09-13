@@ -1,4 +1,0 @@
-.deps .libs Makefile  _*.c bandwidth_maestro bandwidth_sensor bandwidth_simulator
-test_sg
-bandwidth.mk bandwidth.trace
-test_rl

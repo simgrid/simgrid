@@ -1,5 +1,0 @@
-Makefile autom4te.cache config.status config.log
-aclocal.m4 
-simgrid-*.tar.gz simgrid-*
-buildlogs
-stamp.*

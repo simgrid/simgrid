@@ -1,5 +1,0 @@
-all2all_sender all2all_receiver *_simulator
-.deps .libs Makefile  _*.c
-*.mk
-*.trace
-*.log
