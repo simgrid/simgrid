@@ -1,6 +1,7 @@
 
-p Check the marshaling facilities (trying to to do a in-memory copy)
-$ gras/datadesc_usage --copy --log=root.fmt:%m%n
+p Check the marshaling facilities (trying to read the result of linux/amd64)
+$ gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.little64 --log=root.fmt:%m%n
+> This datafile was generated on little64 (4).
 > ---- Test on integer ----
 > ---- Test on float ----
 > ---- Test on double ----

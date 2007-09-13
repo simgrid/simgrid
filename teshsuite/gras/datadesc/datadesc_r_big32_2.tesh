@@ -1,7 +1,7 @@
 
-p Check the marshaling facilities (trying to read the result of linux/x86)
-$ gras/datadesc_usage --read ${srcdir:=.}/gras/datadesc.little32_4 --log=root.fmt:%m%n
-> This datafile was generated on little32_4 (2).
+p Check the marshaling facilities (trying to read the result of linux/mips?)
+$ gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.big32_2 --log=root.fmt:%m%n
+> This datafile was generated on big32_2 (8).
 > ---- Test on integer ----
 > ---- Test on float ----
 > ---- Test on double ----
