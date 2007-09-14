@@ -194,7 +194,7 @@ static void action_resume(surf_action_t action)
 
   XBT_IN1("(%p)", act);
   if (act->suspended != 2) {
-    lmm_update_variable_weight(ptask_maxmin_system,action->variable, 1.0);
+    lmm_update_variable_weight(ptask_maxmin_system,act->variable, 1.0);
     act->suspended = 0;
   }
   XBT_OUT;
