@@ -587,7 +587,7 @@ static surf_action_t execute(void *cpu, double size)
   communication_amount[0] = 0.0;
   computation_amount[0] = size;
 
-  return execute_parallel_task(1, workstation_list, communication_amount, 
+  return execute_parallel_task(1, workstation_list, computation_amount,
 			       communication_amount, 1, -1);
 }
 
