@@ -138,15 +138,15 @@ void bottleneck_solve(lmm_system_t sys)
       }
     }
     if(var_to_update) {
-      DEBUG2("\tUpdating var %p (%g)",var,var->value);
-      var->value = var->bound;
+      DEBUG2("\tUpdating var %p (%g)",var_to_update,var_to_update->value);
+      var_to_update->value = var_to_update->bound;
       
-      for (i = 0; i < var->cnsts_number; i++) {
-	lmm_element_t elm = &var->cnsts[i];
+      for (i = 0; i < var_to_update->cnsts_number; i++) {
+	lmm_element_t elm = &var_to_update->cnsts[i];
 	cnst = elm->constraint;
 	DEBUG1("\t\tUpdating cnst %p",cnst);
-	double_update(&(cnst->remaining), elm->value * var->value);
-	double_update(&(cnst->usage), elm->value / var->weight);
+	double_update(&(cnst->remaining), elm->value * var_to_update->value);
+	double_update(&(cnst->usage), elm->value / var_to_update->weight);
 	//              make_elem_inactive(elm);
       }
       while ((cnst = xbt_swag_extract(&cnst_to_update))) {
