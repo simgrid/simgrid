@@ -10,6 +10,8 @@
 
 #define MPI_ANY_TAG -1
 
+#define MPI_UNDEFINED -1
+
 // errorcodes
 #define MPI_SUCCESS     0
 #define MPI_ERR_COMM    1
@@ -86,6 +88,7 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status);
 int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request);
 int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out);
 
 // smpi functions
 XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);

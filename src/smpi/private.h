@@ -44,6 +44,9 @@ typedef struct smpi_mpi_request_t {
 
 	smx_mutex_t mutex;
 	smx_cond_t  cond;
+
+	void *data;
+
 } s_smpi_mpi_request_t;
 
 // smpi mpi op
@@ -58,6 +61,9 @@ typedef struct smpi_received_message_t {
 	int tag;
 
 	void *buf;
+
+	void *data;
+
 } s_smpi_received_message_t;
 typedef struct smpi_received_message_t *smpi_received_message_t;
 

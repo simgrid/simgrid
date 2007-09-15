@@ -181,3 +181,107 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
 
 	return retval;
 }
+
+int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
+{
+	int retval = MPI_SUCCESS;
+
+	int index, rank;
+	smpi_mpi_request_t request;
+	int colorkey[2];
+	smpi_mpi_status_t status;
+
+	smpi_bench_end();
+
+	// FIXME: need to test parameters
+
+	index = smpi_host_index();
+	rank  = comm->index_to_rank_map[index];
+
+	if (0 == rank) {
+
+		int *colors = xbt_new(int, comm->size);
+		int *keys   = xbt_new(int, comm->size);
+		int i, j, k;
+		smpi_mpi_communicator_t tempcomm = NULL;
+		int colortmp;
+		int keycount;
+		int *keystmp  = xbt_new(int, comm->size);
+		int *rankstmp = xbt_new(int, comm->size);
+		int tmpval;
+		int indextmp;
+
+		colors[0] = color;
+		keys[0]   = key;
+
+		// FIXME: not efficient
+		for (i = 1; i < comm->size; i++) {
+			retval = smpi_create_request(colorkey, 2, MPI_INT, MPI_ANY_SOURCE, rank, MPI_ANY_TAG, comm, &request);
+			smpi_mpi_irecv(request);
+			smpi_mpi_wait(request, &status);
+			xbt_mallocator_release(smpi_global->request_mallocator, request);
+			colors[i] = colorkey[0];
+			keys[i]   = colorkey[1];
+		}
+
+		for (i = 0; i < comm->size; i++) {
+			if (-1 == colors[i]) {
+				continue;
+			}
+			colortmp = colors[i];
+			keycount = 0;
+			for (j = i; j < comm->size; j++) {
+				if(colortmp == colors[j]) {
+					colors[j] = -1;
+					keystmp[keycount] = keys[j];
+					rankstmp[keycount] = j;
+					keycount++;
+				}
+			}
+			if (0 < keycount) {
+				// FIXME: yes, mock me, bubble sort...
+				for (j = 0; j < keycount; j++) {
+					for (k = keycount - 1; k > j; k--) {
+						if (keystmp[k] < keystmp[k - 1]) {
+							tmpval          = keystmp[k];
+							keystmp[k]      = keystmp[k - 1];
+							keystmp[k - 1]  = tmpval;
+
+							tmpval          = rankstmp[k];
+							rankstmp[k]     = rankstmp[k - 1];
+							rankstmp[k - 1] = tmpval;
+						}
+					}
+				}
+				tempcomm                    = xbt_new(s_smpi_mpi_communicator_t, 1);
+				tempcomm->barrier_count     = 0;
+				tempcomm->barrier_mutex     = SIMIX_mutex_init();
+				tempcomm->barrier_cond      = SIMIX_cond_init();
+				tempcomm->rank_to_index_map = xbt_new(int, keycount);
+				tempcomm->index_to_rank_map = xbt_new(int, smpi_global->host_count);
+				for (j = 0; j < smpi_global->host_count; j++) {
+					tempcomm->index_to_rank_map[j] = -1;
+				}
+				for (j = 0; j < keycount; j++) {
+					indextmp = comm->rank_to_index_map[rankstmp[j]];
+					tempcomm->rank_to_index_map[j]        = indextmp;
+					tempcomm->index_to_rank_map[indextmp] = j;
+				}
+				// FIXME: now send new communicator to happy troops...
+			}
+		}
+
+	} else {
+
+		colorkey[0] = color;
+		colorkey[1] = key;
+		retval = smpi_create_request(colorkey, 2, MPI_INT, rank, 0, 0, comm, &request);
+		smpi_mpi_isend(request);
+		smpi_mpi_wait(request, &status);
+		xbt_mallocator_release(smpi_global->request_mallocator, request);
+	}
+
+	smpi_bench_begin();
+
+	return retval;
+}

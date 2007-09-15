@@ -70,6 +70,7 @@ int smpi_sender(int argc, char **argv)
 			message->tag  = request->tag;
 			message->buf  = xbt_malloc(request->datatype->size * request->count);
 			memcpy(message->buf, request->buf, request->datatype->size * request->count);
+			message->data = request->data;
 
 			dindex = request->comm->rank_to_index_map[request->dst];
 			dhost  = smpi_global->hosts[dindex];
