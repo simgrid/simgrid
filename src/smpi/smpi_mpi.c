@@ -182,6 +182,7 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
 	return retval;
 }
 
+// FIXME: needs to return null in event of MPI_UNDEFINED color...
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 {
 	int retval = MPI_SUCCESS;
@@ -199,7 +200,6 @@ int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 	rank  = comm->index_to_rank_map[index];
 
 	if (0 == rank) {
-
 		int *colors = xbt_new(int, comm->size);
 		int *keys   = xbt_new(int, comm->size);
 		int i, j, k;
@@ -267,18 +267,26 @@ int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 					tempcomm->rank_to_index_map[j]        = indextmp;
 					tempcomm->index_to_rank_map[indextmp] = j;
 				}
-				// FIXME: now send new communicator to happy troops...
+				for (j = 0; j < keycount; j++) {
+					retval = smpi_create_request(&j, 1, MPI_INT, 0, rankstmp[j], 0, comm, &request);
+					request->data = tempcomm;
+					smpi_mpi_isend(request);
+					smpi_mpi_wait(request, &status);
+					xbt_mallocator_release(smpi_global->request_mallocator, request);
+				}
 			}
 		}
-
 	} else {
-
 		colorkey[0] = color;
 		colorkey[1] = key;
 		retval = smpi_create_request(colorkey, 2, MPI_INT, rank, 0, 0, comm, &request);
 		smpi_mpi_isend(request);
 		smpi_mpi_wait(request, &status);
 		xbt_mallocator_release(smpi_global->request_mallocator, request);
+		retval = smpi_create_request(colorkey, 1, MPI_INT, 0, rank, 0, comm, &request);
+		smpi_mpi_irecv(request);
+		smpi_mpi_wait(request, &status);
+		comm_out = request->data;
 	}
 
 	smpi_bench_begin();
