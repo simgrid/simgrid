@@ -24,7 +24,7 @@ SG_tests =                                              \
 simdag_tests = simdag/sd_test
 
 check_PROGRAMS = $(xbt_tests) $(SG_tests) $(simdag_tests)
-check_SCRIPTS = run_tests gras/trp_tcp_usage
+check_SCRIPTS = run_tests 
 TESTS=run_tests
 
 test: $(noinst_PROGRAMS) $(noinst_SCRIPTS)
