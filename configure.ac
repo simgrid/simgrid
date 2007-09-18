@@ -343,8 +343,8 @@ AC_ARG_ENABLE(botbuild,
               botbuild=$enableval,botbuild=no)
 AM_CONDITIONAL(BOTBUILD_MODE,test x$botbuild != xno)
 
-if test -e .svn && test x$USE_MAINTAINER_MODE != xyes && test x$botbuild != yes ; then
-  echo "ERROR:"
+if test -e .svn && test x$USE_MAINTAINER_MODE != xyes && test x$botbuild != xyes ; then
+  echo "ERROR: "
   echo "ERROR: You have to enable the maintainer mode to compile the SVN."
   echo "ERROR: For this, just call configure this way:"
   echo "ERROR:"
@@ -560,9 +560,18 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 	LDFlags:	 ${LDFLAGS}
 
 	Context backend: ${with_context}
+	Compile Java:    ${use_java}
+	
+	Maintainer mode: ${USE_MAINTAINER_MODE}
+
 "
-if test -e .svn && test x$USE_MAINTAINER_MODE != xyes && test x$botbuild = yes ; then
-  echo "WARNING:"
+if test x$botbuild = xyes ; then
+  echo "        This is a bot build. Do not specify --enable-botbuild if you are not a bot."
+  echo
+fi
+
+if test -e .svn && test x$USE_MAINTAINER_MODE != xyes && test x$botbuild = xyes ; then
+  echo "WARNING: "
   echo "WARNING: You are compiling the SVN in botbuild mode. If you are not a daemon, don't do so. "
   echo "WARNING: Remove the --enable-botbuild from your configure line, and add --enable-maintainer-mode instead."
   echo "WARNING:"
