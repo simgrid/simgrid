@@ -684,7 +684,6 @@ libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm \
 @GRAMINE_MODE_FALSE@	    @builddir@/xbt_str_unit.c \
 @GRAMINE_MODE_FALSE@            @builddir@/config_unit.c 
 
-@GRAMINE_MODE_FALSE@CLEANFILES = $(TEST_UNITS)
 @GRAMINE_MODE_FALSE@BUILT_SOURCES = ../include/surf/surfxml.h surf/surfxml.c \
 @GRAMINE_MODE_FALSE@              ../include/xbt/graphxml.h xbt/graphxml.c \
 @GRAMINE_MODE_FALSE@              gras/DataDesc/ddt_parse.yy.c \
@@ -693,6 +692,7 @@ libsmpi_la_LDFLAGS = $(VERSION_INFO) @SMPI_DEP@ @LD_DYNAMIC_FLAGS@ -lm \
 @GRAMINE_MODE_FALSE@testall_SOURCES = $(TEST_UNITS) @builddir@/simgrid_units_main.c
 @GRAMINE_MODE_FALSE@testall_LDADD = libgras.la
 @GRAMINE_MODE_FALSE@TESTS_ENVIRONMENT = $(SG_TEST_EXENV)
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@CLEANFILES = $(TEST_UNITS)
 all: $(BUILT_SOURCES) gras_config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
