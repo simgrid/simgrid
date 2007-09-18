@@ -2330,11 +2330,14 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	  rm -vf $$dep @srcdir@/$$dep; touch $$dep; \
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@        done
 
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@$(TEST_UNITS) simgrid_units_main.c clean-units: 
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@echo "ERROR: Test units not generated."
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@echo "ERROR: If you are using a CVS checkout, configure with the --enable-maintainer-mode flag"
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@echo "ERROR: If not, please report the bug to the simgrid-devel mailing list."
-@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@exit 1
+@BOTBUILD_MODE_TRUE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@$(TEST_UNITS) simgrid_units_main.c clean-units: 
+@BOTBUILD_MODE_TRUE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@echo "WARNING: Test units not generated, but touched instead since this is a bot build."
+@BOTBUILD_MODE_TRUE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	touch $@
+@BOTBUILD_MODE_FALSE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@$(TEST_UNITS) simgrid_units_main.c clean-units: 
+@BOTBUILD_MODE_FALSE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@echo "ERROR: Test units not generated."
+@BOTBUILD_MODE_FALSE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@echo "ERROR: If you are using a SVN checkout, configure with the --enable-maintainer-mode flag"
+@BOTBUILD_MODE_FALSE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@echo "ERROR: If not, please report the bug to the simgrid-devel mailing list."
+@BOTBUILD_MODE_FALSE@@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_FALSE@	@exit 1
 
 ###
 ### Regenerate what needs to with flex & flexml

@@ -40,11 +40,9 @@ target_triplet = @target@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/acmacro/dist-files.mk \
 	$(top_srcdir)/configure $(top_srcdir)/src/smpi/smpicc.in \
-	$(top_srcdir)/src/smpi/smpirun.in \
-	$(top_srcdir)/testsuite/gras/trp_file_usage.in \
-	$(top_srcdir)/testsuite/gras/trp_tcp_usage.in AUTHORS COPYING \
-	ChangeLog INSTALL NEWS TODO config.guess config.sub depcomp \
-	install-sh ltmain.sh missing
+	$(top_srcdir)/src/smpi/smpirun.in AUTHORS COPYING ChangeLog \
+	INSTALL NEWS TODO config.guess config.sub depcomp install-sh \
+	ltmain.sh missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acmacro/ac_func_snprintf.m4 \
@@ -61,8 +59,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/gras_config.h
-CONFIG_CLEAN_FILES = testsuite/gras/trp_tcp_usage \
-	testsuite/gras/trp_file_usage src/smpi/smpicc src/smpi/smpirun
+CONFIG_CLEAN_FILES = src/smpi/smpicc src/smpi/smpirun
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -273,10 +270,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(srcdir) && $(AUTOCONF)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
-testsuite/gras/trp_tcp_usage: $(top_builddir)/config.status $(top_srcdir)/testsuite/gras/trp_tcp_usage.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-testsuite/gras/trp_file_usage: $(top_builddir)/config.status $(top_srcdir)/testsuite/gras/trp_file_usage.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/smpi/smpicc: $(top_builddir)/config.status $(top_srcdir)/src/smpi/smpicc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/smpi/smpirun: $(top_builddir)/config.status $(top_srcdir)/src/smpi/smpirun.in

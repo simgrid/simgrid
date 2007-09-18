@@ -413,12 +413,17 @@ clean-units:
         done
 else
 
+if BOTBUILD_MODE
+$(TEST_UNITS) simgrid_units_main.c clean-units: 
+	@echo "WARNING: Test units not generated, but touched instead since this is a bot build."
+	touch $@
+else 
 $(TEST_UNITS) simgrid_units_main.c clean-units: 
 	@echo "ERROR: Test units not generated."
-	@echo "ERROR: If you are using a CVS checkout, configure with the --enable-maintainer-mode flag"
+	@echo "ERROR: If you are using a SVN checkout, configure with the --enable-maintainer-mode flag"
 	@echo "ERROR: If not, please report the bug to the simgrid-devel mailing list."
 	@exit 1
-
+endif
 endif
 
 ###

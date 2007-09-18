@@ -335,6 +335,23 @@ AC_SUBST([abs_srcdir])
 AC_SUBST([abs_top_builddir])
 AC_SUBST([abs_top_srcdir])
 
+##############################################
+## Specific mode for build daemons.
+## (they compile the SVN without having the autotools installed)
+AC_ARG_ENABLE(botbuild,
+	      AS_HELP_STRING([--enable-botbuild], [Compilation mode for build daemons -- do not use it]),
+              botbuild=$enableval,botbuild=no)
+AM_CONDITIONAL(BOTBUILD_MODE,test x$botbuild != xno)
+
+if test -e .svn && test x$USE_MAINTAINER_MODE != xyes && test x$botbuild != yes ; then
+  echo "ERROR:"
+  echo "ERROR: You have to enable the maintainer mode to compile the SVN."
+  echo "ERROR: For this, just call configure this way:"
+  echo "ERROR:"
+  echo "ERROR: ./configure '--enable-maintainer-mode' $ac_configure_args"
+  echo "ERROR:"
+  exit 1
+fi
 
 
 SG_CONFIGURE_PART(Check for Java bindings...)
@@ -544,16 +561,15 @@ Configuration of package \`${PACKAGE}' (version ${VERSION}) on $gras_arch_name (
 
 	Context backend: ${with_context}
 "
-
-if test -e CVS && test x$USE_MAINTAINER_MODE != xyes ; then
+if test -e .svn && test x$USE_MAINTAINER_MODE != xyes && test x$botbuild = yes ; then
   echo "WARNING:"
-  echo "WARNING: you seem to compile the CVS version without the maintainer mode."
-  echo "WARNING: You won't be able to build archives that way (make dist is likely to fail). "
-  echo "WARNING: If you want to enable the maintainer mode, juste specify it like this:"
+  echo "WARNING: You are compiling the SVN in botbuild mode. If you are not a daemon, don't do so. "
+  echo "WARNING: Remove the --enable-botbuild from your configure line, and add --enable-maintainer-mode instead."
   echo "WARNING:"
-  echo "WARNING: ./configure '--enable-maintainer-mode' $ac_configure_args"
+  echo "WARNING: You won't be able to build archives until then (make dist is likely to fail). "
   echo "WARNING:"
 fi
+
 echo $build_id > stamp.configure
 
 exit 0;
