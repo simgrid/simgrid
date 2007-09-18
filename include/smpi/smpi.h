@@ -88,6 +88,7 @@ int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status *status);
 int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request *request);
 int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out);
 
 // smpi functions

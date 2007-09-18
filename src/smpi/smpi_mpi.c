@@ -1,3 +1,5 @@
+// FIXME: remove
+#include <stdio.h>
 #include "private.h"
 
 int MPI_Init(int *argc, char ***argv)
@@ -182,7 +184,43 @@ int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_
 	return retval;
 }
 
+// FIXME: overly simplistic
+int MPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm) {
+
+	int retval = MPI_SUCCESS;
+	int rank;
+
+	smpi_bench_end();
+
+	rank = smpi_mpi_comm_rank(comm);
+
+	if (rank == root) {
+		int i;
+		smpi_mpi_request_t *requests = xbt_new(smpi_mpi_request_t, comm->size - 1);
+		for (i = 1; i < comm->size; i++) {
+			retval = smpi_create_request(buf, count, datatype, root, (root + i) % comm->size, 0, comm, requests + i - 1);
+			smpi_mpi_isend(requests[i - 1]);
+		}
+		for (i = 0; i < comm->size - 1; i++) {
+			smpi_mpi_wait(requests[i], MPI_STATUS_IGNORE);
+			xbt_mallocator_release(smpi_global->request_mallocator, requests[i]);
+		}
+		xbt_free(requests);
+	} else {
+		smpi_mpi_request_t request;
+		retval = smpi_create_request(buf, count, datatype, root, rank, 0, comm, &request);
+		smpi_mpi_irecv(request);
+		smpi_mpi_wait(request, MPI_STATUS_IGNORE);
+		xbt_mallocator_release(smpi_global->request_mallocator, request);
+	}
+
+	smpi_bench_begin();
+
+	return retval;
+}
+
 // FIXME: needs to return null in event of MPI_UNDEFINED color...
+// FIXME: seriously, this isn't pretty
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 {
 	int retval = MPI_SUCCESS;
@@ -286,7 +324,7 @@ int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out)
 		retval = smpi_create_request(colorkey, 1, MPI_INT, 0, rank, 0, comm, &request);
 		smpi_mpi_irecv(request);
 		smpi_mpi_wait(request, &status);
-		comm_out = request->data;
+		*comm_out = request->data;
 	}
 
 	smpi_bench_begin();
