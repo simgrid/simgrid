@@ -62,9 +62,9 @@ void test(char *platform)
 
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p\n",
-	 surf_cpu_model->common_public->get_model_name(cpuA), cpuA);
+	 surf_cpu_model->common_public->get_resource_name(cpuA), cpuA);
   DEBUG2("%s : %p\n",
-	 surf_cpu_model->common_public->get_model_name(cpuB), cpuB);
+	 surf_cpu_model->common_public->get_resource_name(cpuB), cpuB);
 
   /* Let's do something on it */
   actionA = surf_cpu_model->extension_public->execute(cpuA, 1000.0);
@@ -88,10 +88,10 @@ void test(char *platform)
 
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p\n",
-	 surf_network_model->common_public->get_model_name(cardA),
+	 surf_network_model->common_public->get_resource_name(cardA),
 	 cardA);
   DEBUG2("%s : %p\n",
-	 surf_network_model->common_public->get_model_name(cardB),
+	 surf_network_model->common_public->get_resource_name(cardB),
 	 cardB);
 
   /* Let's do something on it */

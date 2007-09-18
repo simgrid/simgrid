@@ -58,10 +58,10 @@ void test(char *platform)
   /* Let's check that those two processors exist */
   DEBUG2("%s : %p\n",
 	 surf_workstation_model->common_public->
-	 get_model_name(workstationA), workstationA);
+	 get_resource_name(workstationA), workstationA);
   DEBUG2("%s : %p\n",
 	 surf_workstation_model->common_public->
-	 get_model_name(workstationB), workstationB);
+	 get_resource_name(workstationB), workstationB);
 
   /* Let's do something on it */
   actionA =
