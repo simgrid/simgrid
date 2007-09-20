@@ -171,20 +171,49 @@ xbt_context_t xbt_context_new(const char *name,xbt_main_func_t code,
   return res;
 }
 
+/* Scenario for the end of a context:
+ * 
+ * CASE 1: death after end of function
+ *   __context_wrapper, called by os thread, calls xbt_context_stop after user code stops
+ *   xbt_context_stop calls user cleanup_func if any (in context settings),
+ *                    add current to trashbin
+ *                    yields back to maestro (destroy os thread on need)
+ *   From time to time, maestro calls xbt_context_empty_trash, 
+ *       which maps xbt_context_free on the content
+ *   xbt_context_free frees some more memory, 
+ *                    joins os thread
+ * 
+ * CASE 2: brutal death
+ *   xbt_context_kill (from any context)
+ *                    set context->wannadie to 1
+ *                    yields to the context
+ *   the context is awaken in the middle of __yield. 
+ *   At the end of it, it checks that wannadie == 1, and call xbt_context_stop
+ *   (same than first case afterward)
+ */
+
+/* Argument must be stopped first -- runs in maestro context */
 static void xbt_context_free(xbt_context_t context) {
+  int i;
+   
   if (!context)
     return;
   DEBUG1("Freeing %p", context);
   free(context->name);
+   
+  DEBUG0("Freeing arguments");
+  for (i = 0; i < context->argc; i++)
+    if (context->argv[i])
+      free(context->argv[i]);
+  if (context->argv)
+    free(context->argv);
+
 #ifdef CONTEXT_THREADS
-  /*DEBUG1("\t joining %p",(void *)context->thread->t); */
   DEBUG1("\t joining %p", (void *) context->thread);
 
   xbt_os_thread_join(context->thread, NULL);
 
-  DEBUG1("\t mutex_destroy %p", (void *) context->mutex);
   xbt_os_mutex_destroy(context->mutex);
-  DEBUG1("\t cond_destroy %p", (void *) context->cond);
   xbt_os_cond_destroy(context->cond);
 
   context->thread = NULL;
@@ -202,7 +231,8 @@ static void xbt_context_free(xbt_context_t context) {
 /************************/
 /* Start/stop a context */
 /************************/
-static void xbt_context_stop(xbt_context_t context, int value);
+static void xbt_context_stop(int retvalue);
+static void __xbt_context_yield(xbt_context_t context);
 
 static void *__context_wrapper(void *c)
 {
@@ -240,7 +270,7 @@ static void *__context_wrapper(void *c)
 
   DEBUG0("Calling the main function");
 
-  xbt_context_stop(context, (context->code) (context->argc, context->argv));
+  xbt_context_stop((context->code) (context->argc, context->argv));
   return NULL;
 }
 /** 
@@ -278,47 +308,33 @@ void xbt_context_start(xbt_context_t context)
   return;
 }
 
-static void xbt_context_stop(xbt_context_t context, int value)
-{
-  int i;
+/* Stops current context: calls user's cleanup function, kills os thread, and yields back to maestro */
+static void xbt_context_stop(int retvalue) {
+  DEBUG1("--------- %p is exiting ---------", current_context);
 
-  DEBUG1("--------- %p is exiting ---------", context);
-
-  DEBUG0("Calling cleanup functions");
-  if (context->cleanup_func) {
+  if (current_context->cleanup_func) {
     DEBUG0("Calling cleanup function");
-    context->cleanup_func(context->cleanup_arg);
+    current_context->cleanup_func(current_context->cleanup_arg);
   }
 
-  DEBUG0("Freeing arguments");
-  for (i = 0; i < context->argc; i++)
-    if (context->argv[i])
-      free(context->argv[i]);
-
-  if (context->argv)
-    free(context->argv);
-
   DEBUG0("Putting context in the to_destroy set");
-  xbt_swag_remove(context, context_living);
-  xbt_swag_insert(context, context_to_destroy);
-  DEBUG0("Context put in the to_destroy set");
+  xbt_swag_remove(current_context, context_living);
+  xbt_swag_insert(current_context, context_to_destroy);
 
   DEBUG0("Yielding");
 
 #ifdef CONTEXT_THREADS
-  DEBUG2("[%p] **** Locking %p ****", context, context->mutex);
-  xbt_os_mutex_lock(context->mutex);
-/* 	DEBUG1("[%p] **** Updating current_context ****"); */
-/* 	current_context = context; */
-  DEBUG1("[%p] **** Releasing the prisonner ****", context);
-  xbt_os_cond_signal(context->cond);
-  DEBUG2("[%p] **** Unlocking individual %p ****", context,
-	 context->mutex);
-  xbt_os_mutex_unlock(context->mutex);
-  DEBUG1("[%p] **** Exiting ****", context);
+  DEBUG2("[%p] **** Locking %p ****", current_context, current_context->mutex);
+  xbt_os_mutex_lock(current_context->mutex);
+  DEBUG1("[%p] **** Releasing the prisonner ****", current_context);
+  xbt_os_cond_signal(current_context->cond);
+  DEBUG2("[%p] **** Unlocking individual %p ****", current_context,
+	 current_context->mutex);
+  xbt_os_mutex_unlock(current_context->mutex);
+  DEBUG1("[%p] **** Exiting ****", current_context);
   xbt_os_thread_exit(NULL);	// We should provide return value in case other wants it
 #else
-  __xbt_context_yield(context);
+  __xbt_context_yield(current_context);
 #endif
   xbt_assert0(0, "You can't be here!");
 }
@@ -346,75 +362,72 @@ void xbt_context_empty_trash(void)
 static void __xbt_context_yield(xbt_context_t context)
 {
   xbt_assert0(current_context, "You have to call context_init() first.");
+  xbt_assert0(context,"Invalid argument");
 
-  DEBUG2
-      ("--------- current_context (%p) is yielding to context(%p) ---------",
+  if (current_context == context) {
+    DEBUG1("--------- current_context (%p) is yielding back to maestro ---------",
+	   context);
+  } else {
+    DEBUG2("--------- current_context (%p) is yielding to context(%p) ---------",
        current_context, context);
+  }
 
 #ifdef CONTEXT_THREADS
-  if (context) {
-    xbt_context_t self = current_context;
-    DEBUG2("[%p] **** Locking ctx %p ****", self, context);
-    xbt_os_mutex_lock(context->mutex);
-    DEBUG1("[%p] **** Updating current_context ****", self);
-    current_context = context;
-    DEBUG1("[%p] **** Releasing the prisonner ****", self);
-    xbt_os_cond_signal(context->cond);
-    DEBUG3("[%p] **** Going to jail on individual %p/%p ****", self,
-	   context->cond, context->mutex);
-    xbt_os_cond_wait(context->cond, context->mutex);
-    DEBUG2("[%p] **** Unlocking individual %p ****", self, context->mutex);
-    xbt_os_mutex_unlock(context->mutex);
-    DEBUG1("[%p] **** Updating current_context ****", self);
-    current_context = self;
-  }
+  xbt_context_t self = current_context;
+  DEBUG2("[%p] **** Locking ctx %p ****", self, context);
+  xbt_os_mutex_lock(context->mutex);
+  DEBUG1("[%p] **** Updating current_context ****", self);
+  current_context = context;
+  DEBUG1("[%p] **** Releasing the prisonner ****", self);
+  xbt_os_cond_signal(context->cond);
+  DEBUG3("[%p] **** Going to jail on individual %p/%p ****", self,
+	 context->cond, context->mutex);
+  xbt_os_cond_wait(context->cond, context->mutex);
+  DEBUG2("[%p] **** Unlocking individual %p ****", self, context->mutex);
+  xbt_os_mutex_unlock(context->mutex);
+  DEBUG1("[%p] **** Updating current_context ****", self);
+  current_context = self;
+
 #else				/* use SUSv2 contexts */
   VOIRP(current_context);
-  if (current_context)
-    VOIRP(current_context->save);
+  VOIRP(current_context->save);
 
   VOIRP(context);
+  VOIRP(context->save);
 
-  if (context)
-    VOIRP(context->save);
+  int return_value = 0;
 
-  if (context) {
-
-    int return_value = 0;
-
-    if (context->save == NULL) {
-
-      DEBUG1("[%p] **** Yielding to somebody else ****", current_context);
-      DEBUG2("Saving current_context value (%p) to context(%p)->save",
+  if (context->save == NULL) {
+    xbt_assert(context == current_context);
+    DEBUG1("[%p] **** Yielding to somebody else ****", current_context);
+    DEBUG2("Saving current_context value (%p) to context(%p)->save",
 	     current_context, context);
-      context->save = current_context;
-      DEBUG1("current_context becomes  context(%p) ", context);
-      current_context = context;
-      DEBUG1
+    context->save = current_context;
+    DEBUG1("current_context becomes  context(%p) ", context);
+    current_context = context;
+    DEBUG1
 	  ("Current position memorized (context->save). Jumping to context (%p)",
 	   context);
-      return_value = swapcontext(&(context->save->uc), &(context->uc));
-      xbt_assert0((return_value == 0), "Context swapping failure");
-      DEBUG1("I am (%p). Coming back\n", context);
-    } else {
-      xbt_context_t old_context = context->save;
-      DEBUG1("[%p] **** Back ! ****", context);
-      DEBUG2("Setting current_context (%p) to context(%p)->save",
-	     current_context, context);
-      current_context = context->save;
-      DEBUG1("Setting context(%p)->save to NULL", context);
-      context->save = NULL;
-      DEBUG2("Current position memorized (%p). Jumping to context (%p)",
-	     context, old_context);
-      return_value = swapcontext(&(context->uc), &(old_context->uc));
-      xbt_assert0((return_value == 0), "Context swapping failure");
-      DEBUG1("I am (%p). Coming back\n", context);
-
-    }
+    return_value = swapcontext(&(context->save->uc), &(context->uc));
+    xbt_assert0((return_value == 0), "Context swapping failure");
+    DEBUG1("I am (%p). Coming back\n", context);
+  } else {
+    xbt_context_t old_context = context->save;
+    DEBUG1("[%p] **** Back ! ****", context);
+    DEBUG2("Setting current_context (%p) to context(%p)->save",
+	   current_context, context);
+    current_context = context->save;
+    DEBUG1("Setting context(%p)->save to NULL", context);
+    context->save = NULL;
+    DEBUG2("Current position memorized (%p). Jumping to context (%p)",
+	   context, old_context);
+    return_value = swapcontext(&(context->uc), &(old_context->uc));
+    xbt_assert0((return_value == 0), "Context swapping failure");
+    DEBUG1("I am (%p). Coming back\n", context);
   }
 #endif
   if (current_context->iwannadie)
-    xbt_context_stop(current_context, 1);
+    xbt_context_stop(1);
 
   return;
 }
@@ -427,6 +440,9 @@ static void __xbt_context_yield(xbt_context_t context)
  * Calling this function makes the current context yield. The context
  * that scheduled it returns from xbt_context_schedule as if nothing
  * had happened.
+ * 
+ * Only the processes can call this function, giving back the control
+ * to the maestro
  */
 void xbt_context_yield(void)
 {
@@ -439,6 +455,8 @@ void xbt_context_yield(void)
  * Calling this function blocks the current context and schedule \a context.  
  * When \a context will call xbt_context_yield, it will return
  * to this function as if nothing had happened.
+ * 
+ * Only the maestro can call this function to run a given process.
  */
 void xbt_context_schedule(xbt_context_t context)
 {
