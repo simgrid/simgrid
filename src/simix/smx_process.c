@@ -27,7 +27,7 @@ void SIMIX_process_cleanup(void *arg)
   xbt_swag_remove(arg, simix_global->process_list);
   xbt_swag_remove(arg, simix_global->process_to_run);
   xbt_swag_remove(arg,
-		  ((smx_process_t) arg)->simdata->s_host->simdata->
+		  ((smx_process_t) arg)->simdata->smx_host->simdata->
 		  process_list);
   free(((smx_process_t) arg)->name);
   ((smx_process_t) arg)->name = NULL;
@@ -64,7 +64,7 @@ smx_process_t SIMIX_process_create(const char *name,
   xbt_assert0(((code != NULL) && (host != NULL)), "Invalid parameters");
   /* Simulator Data */
 
-  simdata->s_host = host;
+  simdata->smx_host = host;
   simdata->mutex = NULL;
   simdata->cond = NULL;
   simdata->argc = argc;
@@ -126,7 +126,7 @@ void SIMIX_jprocess_create(const char *name, smx_host_t host,
 	 name, host, data, jprocess, jenv);
   xbt_assert0(host, "Invalid parameters");
   /* Simulator Data */
-  simdata->s_host = host;
+  simdata->smx_host = host;
   simdata->mutex = NULL;
   simdata->cond = NULL;
   simdata->argc = 0;
@@ -169,7 +169,7 @@ void SIMIX_process_kill(smx_process_t process)
   smx_simdata_process_t p_simdata = process->simdata;
 
   DEBUG2("Killing process %s on %s", process->name,
-	 p_simdata->s_host->name);
+	 p_simdata->smx_host->name);
 
   /* Cleanup if we were waiting for something */
   if (p_simdata->mutex)
@@ -232,7 +232,7 @@ smx_host_t SIMIX_process_get_host(smx_process_t process)
   xbt_assert0(((process != NULL)
 	       && (process->simdata)), "Invalid parameters");
 
-  return (process->simdata->s_host);
+  return (process->simdata->smx_host);
 }
 
 /**

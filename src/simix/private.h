@@ -48,7 +48,7 @@ extern SIMIX_Global_t simix_global;
 /******************************* Process *************************************/
 
 typedef struct s_smx_simdata_process {
-  smx_host_t s_host;		/* the host on which the process is running */
+  smx_host_t smx_host;		/* the host on which the process is running */
   xbt_context_t context;	/* the context that executes the scheduler fonction */
   int blocked;
   int suspended;
