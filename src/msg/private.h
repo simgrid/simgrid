@@ -24,7 +24,7 @@
 /**************** datatypes **********************************/
 
 typedef struct simdata_host {
-  smx_host_t s_host;			/* SURF modeling */
+  smx_host_t smx_host;			/* SURF modeling */
   xbt_fifo_t *mbox;		/* array of FIFOs used as a mailboxes  */
   smx_cond_t *sleeping;	/* array of conditions on which the processes sleep if they are waiting for a communication on a channel */
 	smx_mutex_t mutex; /* mutex to access the host */

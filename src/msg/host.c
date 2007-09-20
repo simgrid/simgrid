@@ -41,7 +41,7 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
   host->simdata = simdata;
   host->data = data;
 
-  simdata->s_host = workstation;
+  simdata->smx_host = workstation;
 
   simdata->mbox = xbt_new0(xbt_fifo_t, msg_global->max_channel);
   for (i = 0; i < msg_global->max_channel; i++)
@@ -183,7 +183,7 @@ double MSG_get_host_speed(m_host_t h)
 {
   xbt_assert0((h != NULL), "Invalid parameters");
 
-  return (SIMIX_host_get_speed(h->simdata->s_host));
+  return (SIMIX_host_get_speed(h->simdata->smx_host));
 }
 
 /** \ingroup msg_gos_functions
@@ -194,5 +194,5 @@ double MSG_get_host_speed(m_host_t h)
 int MSG_host_is_avail(m_host_t h)
 {
   xbt_assert0((h != NULL), "Invalid parameters");
-  return (SIMIX_host_get_state(h->simdata->s_host));
+  return (SIMIX_host_get_state(h->simdata->smx_host));
 }

@@ -90,7 +90,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
     else 
       SIMIX_cond_wait(h_simdata->sleeping[channel], h->simdata->mutex);
 
-    if (SIMIX_host_get_state(h_simdata->s_host) == 0)
+    if (SIMIX_host_get_state(h_simdata->smx_host) == 0)
       MSG_RETURN(MSG_HOST_FAILURE);
 
     first_time = 0;
@@ -114,8 +114,8 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
   /* create SIMIX action to the communication */
   t_simdata->comm =
       SIMIX_action_communicate(t_simdata->sender->simdata->m_host->
-			       simdata->s_host,
-			       process->simdata->m_host->simdata->s_host,
+			       simdata->smx_host,
+			       process->simdata->m_host->simdata->smx_host,
 			       t->name, t_simdata->message_size,
 			       t_simdata->rate);
   /* if the process is suspend, create the action but stop its execution, it will be restart when the sender process resume */
@@ -151,7 +151,7 @@ static MSG_error_t __MSG_task_get_with_time_out_from_host(m_task_t * task,
     t_simdata->comm = NULL;
 		t_simdata->using--;
     MSG_RETURN(MSG_OK);
-  } else if (SIMIX_host_get_state(h_simdata->s_host) == 0) {
+  } else if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
     //t_simdata->comm = NULL;
     SIMIX_action_destroy(t_simdata->comm);
     t_simdata->comm = NULL;
@@ -349,7 +349,7 @@ MSG_error_t MSG_channel_select_from(m_channel_t channel,
       }
       SIMIX_cond_destroy(cond);
       SIMIX_mutex_unlock(h_simdata->mutex);
-      if (SIMIX_host_get_state(h_simdata->s_host) == 0) {
+      if (SIMIX_host_get_state(h_simdata->smx_host) == 0) {
 	MSG_RETURN(MSG_HOST_FAILURE);
       }
       h_simdata->sleeping[channel] = NULL;
@@ -535,7 +535,7 @@ MSG_error_t MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
 
   if (SIMIX_action_get_state(task->simdata->comm) == SURF_ACTION_DONE) {
     MSG_RETURN(MSG_OK);
-  } else if (SIMIX_host_get_state(local_host->simdata->s_host) == 0) {
+  } else if (SIMIX_host_get_state(local_host->simdata->smx_host) == 0) {
     MSG_RETURN(MSG_HOST_FAILURE);
   } else {
     MSG_RETURN(MSG_TRANSFER_FAILURE);
@@ -702,7 +702,7 @@ m_task_t MSG_parallel_task_create(const char *name,
   simdata->comm_amount = communication_amount;
 
   for (i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i]->simdata->s_host;
+    simdata->host_list[i] = host_list[i]->simdata->smx_host;
 
   return task;
 

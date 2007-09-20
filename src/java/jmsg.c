@@ -128,7 +128,7 @@ Java_simgrid_msg_Msg_processCreate(JNIEnv* env, jclass cls, jobject jprocess_arg
 	 env);
   
   SIMIX_jprocess_create(process->name,
-			process->simdata->m_host->simdata->s_host, 
+			process->simdata->m_host->simdata->smx_host, 
 			/*data*/ (void*)process,
 			jprocess,env,
 			&process->simdata->s_process);
