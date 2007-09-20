@@ -29,7 +29,320 @@ static xbt_os_mutex_t creation_mutex;
 static xbt_os_cond_t creation_cond;
 #endif
 
-static void __context_exit(xbt_context_t context, int value);
+
+/********************/
+/* Module init/exit */
+/********************/
+#ifndef CONTEXT_THREADS
+/* callback: context fetching (used only with ucontext, os_thread deal with it
+                               for us otherwise) */
+static ex_ctx_t *_context_ex_ctx(void) {
+  return current_context->exception;
+}
+
+/* callback: termination */
+static void _context_ex_terminate(xbt_ex_t * e) {
+  xbt_ex_display(e);
+
+  abort();
+  /* FIXME: there should be a configuration variable to 
+     choose to kill everyone or only this one */
+}
+#endif 
+
+/** \name Functions 
+ *  \ingroup XBT_context
+ */
+/* @{ */
+/** Context module initialization
+ *
+ * \warning It has to be called before using any other function of this module.
+ */
+void xbt_context_init(void)
+{
+  if (!current_context) {
+    current_context = init_context = xbt_new0(s_xbt_context_t, 1);
+    DEBUG1("Init Context (%p)", init_context);
+
+    init_context->iwannadie = 0; /* useless but makes valgrind happy */
+    context_to_destroy =
+	xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+    context_living =
+	xbt_swag_new(xbt_swag_offset(*current_context, hookup));
+    xbt_swag_insert(init_context, context_living);
+#ifdef CONTEXT_THREADS
+    creation_mutex = xbt_os_mutex_init();
+    creation_cond = xbt_os_cond_init();
+#else
+    init_context->exception = xbt_new(ex_ctx_t, 1);
+    XBT_CTX_INITIALIZE(init_context->exception);
+    __xbt_ex_ctx = _context_ex_ctx;
+    __xbt_ex_terminate = _context_ex_terminate;
+#endif
+  }
+}
+
+/** 
+ * This function kill all existing context and free all the memory
+ * that has been allocated in this module.
+ */
+void xbt_context_exit(void)
+{
+  xbt_context_t context = NULL;
+
+  xbt_context_empty_trash();
+  while ((context = xbt_swag_extract(context_living))) {
+    if (context != init_context) {
+      xbt_context_kill(context);
+    }
+  }
+#ifdef CONTEXT_THREADS
+  xbt_os_mutex_destroy(creation_mutex);
+  xbt_os_cond_destroy(creation_cond);
+#else   
+  free(init_context->exception);
+#endif
+  free(init_context);
+  init_context = current_context = NULL;
+
+  xbt_context_empty_trash();
+  xbt_swag_free(context_to_destroy);
+  xbt_swag_free(context_living);
+
+}
+
+/*******************************/
+/* Object creation/destruction */
+/*******************************/
+/** 
+ * \param code a main function
+ * \param startup_func a function to call when running the context for
+ *      the first time and just before the main function \a code
+ * \param startup_arg the argument passed to the previous function (\a startup_func)
+ * \param cleanup_func a function to call when running the context, just after 
+        the termination of the main function \a code
+ * \param cleanup_arg the argument passed to the previous function (\a cleanup_func)
+ * \param argc first argument of function \a code
+ * \param argv seconde argument of function \a code
+ */
+xbt_context_t xbt_context_new(const char *name,xbt_main_func_t code,
+			      void_f_pvoid_t startup_func,
+			      void *startup_arg,
+			      void_f_pvoid_t cleanup_func,
+			      void *cleanup_arg, int argc, char *argv[])
+{
+  xbt_context_t res = NULL;
+
+  res = xbt_new0(s_xbt_context_t, 1);
+
+  res->code = code;
+  res->name = xbt_strdup(name);
+#ifdef CONTEXT_THREADS
+  res->mutex = xbt_os_mutex_init();
+  res->cond = xbt_os_cond_init();
+#else
+
+  xbt_assert2(getcontext(&(res->uc)) == 0,
+	      "Error in context saving: %d (%s)", errno, strerror(errno));
+  res->uc.uc_link = NULL;
+  /*   res->uc.uc_link = &(current_context->uc); */
+  /* WARNING : when this context is over, the current_context (i.e. the 
+     father), is awaken... Theorically, the wrapper should prevent using 
+     this feature. */
+  res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack, STACK_SIZE);
+  res->uc.uc_stack.ss_size =
+      pth_sksize_makecontext(res->stack, STACK_SIZE);
+   
+  res->exception = xbt_new(ex_ctx_t, 1);
+  XBT_CTX_INITIALIZE(res->exception);
+#endif				/* CONTEXT_THREADS or not */
+
+  res->iwannadie = 0; /* useless but makes valgrind happy */
+
+  res->argc = argc;
+  res->argv = argv;
+  res->startup_func = startup_func;
+  res->startup_arg = startup_arg;
+  res->cleanup_func = cleanup_func;
+  res->cleanup_arg = cleanup_arg;
+
+  xbt_swag_insert(res, context_living);
+
+  return res;
+}
+
+static void xbt_context_free(xbt_context_t context) {
+  if (!context)
+    return;
+  DEBUG1("Freeing %p", context);
+  free(context->name);
+#ifdef CONTEXT_THREADS
+  /*DEBUG1("\t joining %p",(void *)context->thread->t); */
+  DEBUG1("\t joining %p", (void *) context->thread);
+
+  xbt_os_thread_join(context->thread, NULL);
+
+  DEBUG1("\t mutex_destroy %p", (void *) context->mutex);
+  xbt_os_mutex_destroy(context->mutex);
+  DEBUG1("\t cond_destroy %p", (void *) context->cond);
+  xbt_os_cond_destroy(context->cond);
+
+  context->thread = NULL;
+  context->mutex = NULL;
+  context->cond = NULL;
+#else
+  if (context->exception)
+    free(context->exception);
+#endif
+   
+  free(context);
+  return;
+}
+
+/************************/
+/* Start/stop a context */
+/************************/
+static void xbt_context_stop(xbt_context_t context, int value);
+
+static void *__context_wrapper(void *c)
+{
+  xbt_context_t context = current_context;
+
+#ifdef CONTEXT_THREADS
+  context = (xbt_context_t) c;
+  context->thread = xbt_os_thread_self();
+
+  DEBUG3("**[ctx:%p;self:%p]** Lock creation_mutex %p ****", context,
+	 (void *) xbt_os_thread_self(), creation_mutex);
+  xbt_os_mutex_lock(creation_mutex);
+  xbt_os_mutex_lock(context->mutex);
+
+  DEBUG4
+      ("**[ctx:%p;self:%p]** Releasing the creator (creation_cond %p,%p) ****",
+       context, (void *) xbt_os_thread_self(), creation_cond,
+       creation_mutex);
+  xbt_os_cond_signal(creation_cond);
+  xbt_os_mutex_unlock(creation_mutex);
+
+  DEBUG4("**[ctx:%p;self:%p]** Going to Jail on lock %p and cond %p ****",
+	 context, (void *) xbt_os_thread_self(), context->mutex,
+	 context->cond);
+  xbt_os_cond_wait(context->cond, context->mutex);
+
+  DEBUG3("**[ctx:%p;self:%p]** Unlocking individual %p ****",
+	 context, (void *) xbt_os_thread_self(), context->mutex);
+  xbt_os_mutex_unlock(context->mutex);
+
+#endif
+
+  if (context->startup_func)
+    context->startup_func(context->startup_arg);
+
+  DEBUG0("Calling the main function");
+
+  xbt_context_stop(context, (context->code) (context->argc, context->argv));
+  return NULL;
+}
+/** 
+ * \param context the context to start
+ * 
+ * Calling this function prepares \a context to be run. It will 
+   however run effectively only when calling #xbt_context_schedule
+ */
+void xbt_context_start(xbt_context_t context)
+{
+#ifdef CONTEXT_THREADS
+  /* Launch the thread */
+   
+  DEBUG3("**[ctx:%p;self:%p]** Locking creation_mutex %p ****", context,
+	 xbt_os_thread_self(), creation_mutex);
+  xbt_os_mutex_lock(creation_mutex);
+
+  DEBUG2("**[ctx:%p;self:%p]** Thread create ****", context,
+	 xbt_os_thread_self());
+  context->thread = xbt_os_thread_create(context->name,__context_wrapper, context);
+  DEBUG3("**[ctx:%p;self:%p]** Thread created : %p ****", context,
+	 xbt_os_thread_self(), context->thread);
+
+  DEBUG4
+      ("**[ctx:%p;self:%p]** Going to jail on creation_cond/mutex (%p,%p) ****",
+       context, xbt_os_thread_self(), creation_cond, creation_mutex);
+  xbt_os_cond_wait(creation_cond, creation_mutex);
+  DEBUG3("**[ctx:%p;self:%p]** Unlocking creation %p ****", context,
+	 xbt_os_thread_self(), creation_mutex);
+  xbt_os_mutex_unlock(creation_mutex);
+#else
+  makecontext(&(context->uc), (void (*)(void)) __context_wrapper, 1,
+	      context);
+#endif
+  return;
+}
+
+static void xbt_context_stop(xbt_context_t context, int value)
+{
+  int i;
+
+  DEBUG1("--------- %p is exiting ---------", context);
+
+  DEBUG0("Calling cleanup functions");
+  if (context->cleanup_func) {
+    DEBUG0("Calling cleanup function");
+    context->cleanup_func(context->cleanup_arg);
+  }
+
+  DEBUG0("Freeing arguments");
+  for (i = 0; i < context->argc; i++)
+    if (context->argv[i])
+      free(context->argv[i]);
+
+  if (context->argv)
+    free(context->argv);
+
+  DEBUG0("Putting context in the to_destroy set");
+  xbt_swag_remove(context, context_living);
+  xbt_swag_insert(context, context_to_destroy);
+  DEBUG0("Context put in the to_destroy set");
+
+  DEBUG0("Yielding");
+
+#ifdef CONTEXT_THREADS
+  DEBUG2("[%p] **** Locking %p ****", context, context->mutex);
+  xbt_os_mutex_lock(context->mutex);
+/* 	DEBUG1("[%p] **** Updating current_context ****"); */
+/* 	current_context = context; */
+  DEBUG1("[%p] **** Releasing the prisonner ****", context);
+  xbt_os_cond_signal(context->cond);
+  DEBUG2("[%p] **** Unlocking individual %p ****", context,
+	 context->mutex);
+  xbt_os_mutex_unlock(context->mutex);
+  DEBUG1("[%p] **** Exiting ****", context);
+  xbt_os_thread_exit(NULL);	// We should provide return value in case other wants it
+#else
+  __xbt_context_yield(context);
+#endif
+  xbt_assert0(0, "You can't be here!");
+}
+
+
+
+/** Garbage collection
+ *
+ * Should be called some time to time to free the memory allocated for contexts
+ * that have finished executing their main functions.
+ */
+void xbt_context_empty_trash(void)
+{
+  xbt_context_t context = NULL;
+  DEBUG1("Emptying trashbin (%d contexts to free)",
+	 xbt_swag_size(context_to_destroy));
+  while ((context = xbt_swag_extract(context_to_destroy)))
+    xbt_context_free(context);
+}
+
+/*********************/
+/* context switching */
+/*********************/
+
 static void __xbt_context_yield(xbt_context_t context)
 {
   xbt_assert0(current_context, "You have to call context_init() first.");
@@ -101,278 +414,14 @@ static void __xbt_context_yield(xbt_context_t context)
   }
 #endif
   if (current_context->iwannadie)
-    __context_exit(current_context, 1);
+    xbt_context_stop(current_context, 1);
 
   return;
 }
 
-static void xbt_context_free(xbt_context_t context)
-{
-  if (!context)
-    return;
-  DEBUG1("Freeing %p", context);
-  free(context->name);
-#ifdef CONTEXT_THREADS
-  /*DEBUG1("\t joining %p",(void *)context->thread->t); */
-  DEBUG1("\t joining %p", (void *) context->thread);
 
-  xbt_os_thread_join(context->thread, NULL);
 
-  DEBUG1("\t mutex_destroy %p", (void *) context->mutex);
-  xbt_os_mutex_destroy(context->mutex);
-  DEBUG1("\t cond_destroy %p", (void *) context->cond);
-  xbt_os_cond_destroy(context->cond);
 
-  context->thread = NULL;
-  context->mutex = NULL;
-  context->cond = NULL;
-#else
-  if (context->exception)
-    free(context->exception);
-#endif
-   
-  free(context);
-  return;
-}
-
-static void __context_exit(xbt_context_t context, int value)
-{
-  int i;
-
-  DEBUG1("--------- %p is exiting ---------", context);
-
-  DEBUG0("Calling cleanup functions");
-  if (context->cleanup_func) {
-    DEBUG0("Calling cleanup function");
-    context->cleanup_func(context->cleanup_arg);
-  }
-
-  DEBUG0("Freeing arguments");
-  for (i = 0; i < context->argc; i++)
-    if (context->argv[i])
-      free(context->argv[i]);
-
-  if (context->argv)
-    free(context->argv);
-
-  DEBUG0("Putting context in the to_destroy set");
-  xbt_swag_remove(context, context_living);
-  xbt_swag_insert(context, context_to_destroy);
-  DEBUG0("Context put in the to_destroy set");
-
-  DEBUG0("Yielding");
-
-#ifdef CONTEXT_THREADS
-  DEBUG2("[%p] **** Locking %p ****", context, context->mutex);
-  xbt_os_mutex_lock(context->mutex);
-/* 	DEBUG1("[%p] **** Updating current_context ****"); */
-/* 	current_context = context; */
-  DEBUG1("[%p] **** Releasing the prisonner ****", context);
-  xbt_os_cond_signal(context->cond);
-  DEBUG2("[%p] **** Unlocking individual %p ****", context,
-	 context->mutex);
-  xbt_os_mutex_unlock(context->mutex);
-  DEBUG1("[%p] **** Exiting ****", context);
-  xbt_os_thread_exit(NULL);	// We should provide return value in case other wants it
-#else
-  __xbt_context_yield(context);
-#endif
-  xbt_assert0(0, "You can't be here!");
-}
-
-static void *__context_wrapper(void *c)
-{
-  xbt_context_t context = current_context;
-
-#ifdef CONTEXT_THREADS
-  context = (xbt_context_t) c;
-  context->thread = xbt_os_thread_self();
-
-  DEBUG3("**[ctx:%p;self:%p]** Lock creation_mutex %p ****", context,
-	 (void *) xbt_os_thread_self(), creation_mutex);
-  xbt_os_mutex_lock(creation_mutex);
-  xbt_os_mutex_lock(context->mutex);
-
-  DEBUG4
-      ("**[ctx:%p;self:%p]** Releasing the creator (creation_cond %p,%p) ****",
-       context, (void *) xbt_os_thread_self(), creation_cond,
-       creation_mutex);
-  xbt_os_cond_signal(creation_cond);
-  xbt_os_mutex_unlock(creation_mutex);
-
-  DEBUG4("**[ctx:%p;self:%p]** Going to Jail on lock %p and cond %p ****",
-	 context, (void *) xbt_os_thread_self(), context->mutex,
-	 context->cond);
-  xbt_os_cond_wait(context->cond, context->mutex);
-
-  DEBUG3("**[ctx:%p;self:%p]** Unlocking individual %p ****",
-	 context, (void *) xbt_os_thread_self(), context->mutex);
-  xbt_os_mutex_unlock(context->mutex);
-
-#endif
-
-  if (context->startup_func)
-    context->startup_func(context->startup_arg);
-
-  DEBUG0("Calling the main function");
-
-  __context_exit(context, (context->code) (context->argc, context->argv));
-  return NULL;
-}
-
-#ifndef CONTEXT_THREADS
-/* callback: context fetching (used only with ucontext, os_thread deal with it for us otherwise) */
-static ex_ctx_t *_context_ex_ctx(void) {
-  return current_context->exception;
-}
-
-/* callback: termination */
-static void _context_ex_terminate(xbt_ex_t * e) {
-  xbt_ex_display(e);
-
-  abort();
-  /* FIXME: there should be a configuration variable to 
-     choose to kill everyone or only this one */
-}
-#endif 
-
-/** \name Functions 
- *  \ingroup XBT_context
- */
-/* @{ */
-/** Context module initialization
- *
- * \warning It has to be called before using any other function of this module.
- */
-void xbt_context_init(void)
-{
-  if (!current_context) {
-    current_context = init_context = xbt_new0(s_xbt_context_t, 1);
-    DEBUG1("Init Context (%p)", init_context);
-
-    init_context->iwannadie = 0; /* useless but makes valgrind happy */
-    context_to_destroy =
-	xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-    context_living =
-	xbt_swag_new(xbt_swag_offset(*current_context, hookup));
-    xbt_swag_insert(init_context, context_living);
-#ifdef CONTEXT_THREADS
-    creation_mutex = xbt_os_mutex_init();
-    creation_cond = xbt_os_cond_init();
-#else
-    init_context->exception = xbt_new(ex_ctx_t, 1);
-    XBT_CTX_INITIALIZE(init_context->exception);
-    __xbt_ex_ctx = _context_ex_ctx;
-    __xbt_ex_terminate = _context_ex_terminate;
-#endif
-  }
-}
-
-/** Garbage collection
- *
- * Should be called some time to time to free the memory allocated for contexts
- * that have finished executing their main functions.
- */
-void xbt_context_empty_trash(void)
-{
-  xbt_context_t context = NULL;
-  DEBUG1("Emptying trashbin (%d contexts to free)",
-	 xbt_swag_size(context_to_destroy));
-  while ((context = xbt_swag_extract(context_to_destroy)))
-    xbt_context_free(context);
-}
-
-/** 
- * \param context the context to start
- * 
- * Calling this function prepares \a context to be run. It will 
-   however run effectively only when calling #xbt_context_schedule
- */
-void xbt_context_start(xbt_context_t context)
-{
-#ifdef CONTEXT_THREADS
-  /* Launch the thread */
-   
-  DEBUG3("**[ctx:%p;self:%p]** Locking creation_mutex %p ****", context,
-	 xbt_os_thread_self(), creation_mutex);
-  xbt_os_mutex_lock(creation_mutex);
-
-  DEBUG2("**[ctx:%p;self:%p]** Thread create ****", context,
-	 xbt_os_thread_self());
-  context->thread = xbt_os_thread_create(context->name,__context_wrapper, context);
-  DEBUG3("**[ctx:%p;self:%p]** Thread created : %p ****", context,
-	 xbt_os_thread_self(), context->thread);
-
-  DEBUG4
-      ("**[ctx:%p;self:%p]** Going to jail on creation_cond/mutex (%p,%p) ****",
-       context, xbt_os_thread_self(), creation_cond, creation_mutex);
-  xbt_os_cond_wait(creation_cond, creation_mutex);
-  DEBUG3("**[ctx:%p;self:%p]** Unlocking creation %p ****", context,
-	 xbt_os_thread_self(), creation_mutex);
-  xbt_os_mutex_unlock(creation_mutex);
-#else
-  makecontext(&(context->uc), (void (*)(void)) __context_wrapper, 1,
-	      context);
-#endif
-  return;
-}
-
-/** 
- * \param code a main function
- * \param startup_func a function to call when running the context for
- *      the first time and just before the main function \a code
- * \param startup_arg the argument passed to the previous function (\a startup_func)
- * \param cleanup_func a function to call when running the context, just after 
-        the termination of the main function \a code
- * \param cleanup_arg the argument passed to the previous function (\a cleanup_func)
- * \param argc first argument of function \a code
- * \param argv seconde argument of function \a code
- */
-xbt_context_t xbt_context_new(const char *name,xbt_main_func_t code,
-			      void_f_pvoid_t startup_func,
-			      void *startup_arg,
-			      void_f_pvoid_t cleanup_func,
-			      void *cleanup_arg, int argc, char *argv[])
-{
-  xbt_context_t res = NULL;
-
-  res = xbt_new0(s_xbt_context_t, 1);
-
-  res->code = code;
-  res->name = xbt_strdup(name);
-#ifdef CONTEXT_THREADS
-  res->mutex = xbt_os_mutex_init();
-  res->cond = xbt_os_cond_init();
-#else
-
-  xbt_assert2(getcontext(&(res->uc)) == 0,
-	      "Error in context saving: %d (%s)", errno, strerror(errno));
-  res->uc.uc_link = NULL;
-  /*   res->uc.uc_link = &(current_context->uc); */
-  /* WARNING : when this context is over, the current_context (i.e. the 
-     father), is awaken... Theorically, the wrapper should prevent using 
-     this feature. */
-  res->uc.uc_stack.ss_sp = pth_skaddr_makecontext(res->stack, STACK_SIZE);
-  res->uc.uc_stack.ss_size =
-      pth_sksize_makecontext(res->stack, STACK_SIZE);
-   
-  res->exception = xbt_new(ex_ctx_t, 1);
-  XBT_CTX_INITIALIZE(res->exception);
-#endif				/* CONTEXT_THREADS or not */
-
-  res->iwannadie = 0; /* useless but makes valgrind happy */
-
-  res->argc = argc;
-  res->argv = argv;
-  res->startup_func = startup_func;
-  res->startup_arg = startup_arg;
-  res->cleanup_func = cleanup_func;
-  res->cleanup_arg = cleanup_arg;
-
-  xbt_swag_insert(res, context_living);
-
-  return res;
-}
 
 /** 
  * Calling this function makes the current context yield. The context
@@ -399,34 +448,6 @@ void xbt_context_schedule(xbt_context_t context)
   __xbt_context_yield(context);
 }
 
-/** 
- * This function kill all existing context and free all the memory
- * that has been allocated in this module.
- */
-void xbt_context_exit(void)
-{
-  xbt_context_t context = NULL;
-
-  xbt_context_empty_trash();
-  while ((context = xbt_swag_extract(context_living))) {
-    if (context != init_context) {
-      xbt_context_kill(context);
-    }
-  }
-#ifdef CONTEXT_THREADS
-  xbt_os_mutex_destroy(creation_mutex);
-  xbt_os_cond_destroy(creation_cond);
-#else   
-  free(init_context->exception);
-#endif
-  free(init_context);
-  init_context = current_context = NULL;
-
-  xbt_context_empty_trash();
-  xbt_swag_free(context_to_destroy);
-  xbt_swag_free(context_living);
-
-}
 
 /** 
  * \param context poor victim
@@ -445,37 +466,14 @@ void xbt_context_kill(xbt_context_t context)
   return;
 }
 
+/* Java cruft I'm gonna kill in the next cleanup round */
+void  xbt_context_set_jprocess(xbt_context_t context, void *jp){}
+void* xbt_context_get_jprocess(xbt_context_t context){return NULL;}
+void  xbt_context_set_jmutex(xbt_context_t context,void *jm){}
+void* xbt_context_get_jmutex(xbt_context_t context){return NULL;}
+void  xbt_context_set_jcond(xbt_context_t context,void *jc){}
+void* xbt_context_get_jcond(xbt_context_t context){return NULL;}
+void  xbt_context_set_jenv(xbt_context_t context,void* je){}
+void* xbt_context_get_jenv(xbt_context_t context){return NULL;}
+
 /* @} */
-
-/* Stub of the stuff to interact with JAVA threads; not used in native lib */
-void xbt_context_set_jprocess(xbt_context_t context, void *jp)
-{
-}
-void *xbt_context_get_jprocess(xbt_context_t context)
-{
-  return NULL;
-}
-
-void xbt_context_set_jmutex(xbt_context_t context, void *jm)
-{
-}
-void *xbt_context_get_jmutex(xbt_context_t context)
-{
-  return NULL;
-}
-
-void xbt_context_set_jcond(xbt_context_t context, void *jc)
-{
-}
-void *xbt_context_get_jcond(xbt_context_t context)
-{
-  return NULL;
-}
-
-void xbt_context_set_jenv(xbt_context_t context, void *je)
-{
-}
-void *xbt_context_get_jenv(xbt_context_t context)
-{
-  return NULL;
-}
