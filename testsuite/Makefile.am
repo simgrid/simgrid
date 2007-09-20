@@ -39,7 +39,6 @@ LDADD_RL=$(abs_top_builddir)/src/libgras.la
 xbt_log_usage_LDADD=          $(LDADD_RL)
 
 xbt_heap_bench_LDADD=         $(LDADD_RL)
-xbt_parallel_log_crashtest_LDADD=  $(LDADD_RL)
 
 xbt_graphxml_usage_LDADD=     $(LDADD_SG)
 
