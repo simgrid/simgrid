@@ -7,7 +7,7 @@
 
 #include "xbt/ex.h"
 #include "xbt/dict.h"
-#include "gras_config.h"
+#include "portable.h"
 #include "workstation_private.h"
 #include "cpu_private.h"
 #include "network_private.h"
