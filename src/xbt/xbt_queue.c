@@ -57,7 +57,7 @@ void xbt_queue_free(xbt_queue_t *queue) {
 }
 
 /** @brief Get the queue size */
-unsigned long xbt_queue_length(xbt_queue_t queue) {
+unsigned long xbt_queue_length(const xbt_queue_t queue) {
    unsigned long res;
    xbt_mutex_lock(queue->mutex);
    res=xbt_dynar_length(queue->data);
