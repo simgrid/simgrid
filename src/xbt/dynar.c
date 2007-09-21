@@ -426,17 +426,20 @@ static XBT_INLINE void *
 _xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
 			const int            idx) {
    void *res;
+   unsigned long old_used;
+   unsigned long new_used;
+   unsigned long nb_shift;
    
   _sanity_check_dynar(dynar);
   _sanity_check_idx(idx);
   _check_sloppy_inbound_idx(dynar, idx);
 
-  const unsigned long old_used = dynar->used;
-  const unsigned long new_used = old_used + 1;
+  old_used = dynar->used;
+  new_used = old_used + 1;
 
   _xbt_dynar_expand(dynar, new_used);
 
-  const unsigned long nb_shift =  old_used - idx;
+  nb_shift =  old_used - idx;
 
   if (nb_shift)
      memmove(_xbt_dynar_elm(dynar, idx+1), 
@@ -520,6 +523,7 @@ xbt_dynar_search(xbt_dynar_t  const dynar,
    
   _dynar_unlock(dynar);
   THROW2(not_found_error,0,"Element %p not part of dynar %p",elem,dynar);
+  return -1;
 }
 
 /** @brief Returns a boolean indicating whether the element is part of the dynar */
