@@ -11,7 +11,9 @@
  
 package simgrid.msg;
 
+import java.lang.*;
 import org.xml.sax.*;
+import org.xml.sax.helpers.*;
 
 /** 
  * MSG was the first distributed programming environment 
@@ -84,7 +86,7 @@ public final class Msg {
      */
     static {
         try {
-            System.loadLibrary("simgrid4java");
+            System.loadLibrary("libSimgrid4java");
         } catch(UnsatisfiedLinkError e){
             System.err.println("Cannot load simgrid4java library : ");
             e.printStackTrace();
