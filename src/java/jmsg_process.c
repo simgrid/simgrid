@@ -14,7 +14,11 @@
 #include "jmsg.h"
 #include "jxbt_utilities.h"
 
+#ifndef JAVA_SIMGRID
 #define JAVA_SIMGRID
+#endif 
+
+
 #include "xbt/context_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
