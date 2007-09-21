@@ -166,13 +166,13 @@ int gras_os_getpid(void) {
  * **************************************************************************/
 
 void gras_global_init(int *argc,char **argv) {
-   return SIMIX_global_init(argc,argv);
+   SIMIX_global_init(argc,argv);
 }
 void gras_create_environment(const char *file) {
-   return SIMIX_create_environment(file);
+   SIMIX_create_environment(file);
 }
 void gras_function_register(const char *name, xbt_main_func_t code) {
-   return SIMIX_function_register(name, code);
+   SIMIX_function_register(name, code);
 }
 
 void gras_main() {
@@ -210,11 +210,11 @@ void gras_main() {
 }
 
 void gras_launch_application(const char *file) {
-   return SIMIX_launch_application(file);
+   SIMIX_launch_application(file);
 }
 
 void gras_clean() {
-   return SIMIX_clean();
+   SIMIX_clean();
 }
 
 
