@@ -1026,7 +1026,6 @@ void surf_workstation_model_init_ptask_L07(const char *filename)
 	      "network model type already defined");
   model_init_internal();
   parse_file(filename);
-  WARN0("This model does not take latency into account.");
 
   update_model_description(surf_workstation_model_description,
 			      surf_workstation_model_description_size,
