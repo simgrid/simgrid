@@ -124,9 +124,9 @@ void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
  * Free the graph structure. 
  */
 void xbt_graph_free_graph(xbt_graph_t g,
-			  void node_free_function(void *ptr),
-			  void edge_free_function(void *ptr),
-			  void graph_free_function(void *ptr))
+			  void_f_pvoid_t * node_free_function,
+			  void_f_pvoid_t * edge_free_function,
+			  void_f_pvoid_t * graph_free_function)
 {
   int cursor = 0;
   xbt_node_t node = NULL;
@@ -137,12 +137,12 @@ void xbt_graph_free_graph(xbt_graph_t g,
     xbt_dynar_free(&(node->out));
     xbt_dynar_free(&(node->in));
     if (node_free_function)
-      node_free_function(node->data);
+      (*node_free_function)(node->data);
   }
 
   xbt_dynar_foreach(g->edges, cursor, edge) {
     if (edge_free_function)
-      edge_free_function(edge->data);
+      (*edge_free_function)(edge->data);
   }
 
   xbt_dynar_foreach(g->nodes, cursor, node)
@@ -199,14 +199,14 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 
 /** @brief remove the given edge from the given graph */
 void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
-			 void free_function(void *ptr))
+			 void_f_pvoid_t *free_function)
 {
   int idx;
   int cursor = 0;
   xbt_edge_t edge = NULL;
 
   if ((free_function) && (e->data))
-    free_function(e->data);
+    (*free_function)(e->data);
 
   xbt_dynar_foreach(g->edges, cursor, edge) {
     if (edge == e) {
