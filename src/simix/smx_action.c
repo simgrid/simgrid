@@ -28,6 +28,9 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
 				      smx_host_t receiver, const char *name,
 				      double size, double rate)
 {
+	 smx_action_t act;
+	 smx_simdata_action_t simdata;
+
   /* check if the host is active */
   if (surf_workstation_model->extension_public->
       get_state(sender->simdata->host) != SURF_CPU_ON) {
@@ -42,9 +45,9 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
   }
 
   /* alloc structures */
-  smx_action_t act = xbt_new0(s_smx_action_t, 1);
+  act = xbt_new0(s_smx_action_t, 1);
   act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  smx_simdata_action_t simdata = act->simdata;
+  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
@@ -74,6 +77,9 @@ smx_action_t SIMIX_action_communicate(smx_host_t sender,
 smx_action_t SIMIX_action_execute(smx_host_t host, char *name,
 				  double amount)
 {
+	 smx_action_t act;
+	 smx_simdata_action_t simdata;
+
   /* check if the host is active */
   if (surf_workstation_model->extension_public->
       get_state(host->simdata->host) != SURF_CPU_ON) {
@@ -82,9 +88,9 @@ smx_action_t SIMIX_action_execute(smx_host_t host, char *name,
   }
 
   /* alloc structures */
-  smx_action_t act = xbt_new0(s_smx_action_t, 1);
+  act = xbt_new0(s_smx_action_t, 1);
   act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  smx_simdata_action_t simdata = act->simdata;
+  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
@@ -113,6 +119,8 @@ smx_action_t SIMIX_action_execute(smx_host_t host, char *name,
 smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
 {
   char name[] = "sleep";
+  smx_simdata_action_t simdata;
+  smx_action_t act;
 
   /* check if the host is active */
   if (surf_workstation_model->extension_public->
@@ -122,9 +130,9 @@ smx_action_t SIMIX_action_sleep(smx_host_t host, double duration)
   }
 
   /* alloc structures */
-  smx_action_t act = xbt_new0(s_smx_action_t, 1);
+  act = xbt_new0(s_smx_action_t, 1);
   act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  smx_simdata_action_t simdata = act->simdata;
+  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
@@ -268,12 +276,14 @@ smx_action_t SIMIX_action_parallel_execute(const char *name, int host_nb,
 					   double amount, double rate)
 {
   void **workstation_list = NULL;
+  smx_simdata_action_t simdata;
+  smx_action_t act;
   int i;
 
   /* alloc structures */
-  smx_action_t act = xbt_new0(s_smx_action_t, 1);
+  act = xbt_new0(s_smx_action_t, 1);
   act->simdata = xbt_new0(s_smx_simdata_action_t, 1);
-  smx_simdata_action_t simdata = act->simdata;
+  simdata = act->simdata;
   act->cond_list = xbt_fifo_new();
 
   /* initialize them */
