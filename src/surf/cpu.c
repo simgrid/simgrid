@@ -412,10 +412,8 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->extension_public->get_available_speed =
       get_available_speed;
 
-  cpu_set = xbt_dict_new();
-
-  if (!cpu_maxmin_system)
-    cpu_maxmin_system = lmm_system_new();
+  if(!cpu_set) cpu_set = xbt_dict_new();
+  if (!cpu_maxmin_system) cpu_maxmin_system = lmm_system_new();
 }
 
 /*********************************************************************/
