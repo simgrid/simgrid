@@ -1065,7 +1065,15 @@ const char rcs_graphxml_flexml[] =
  "$" "Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp $";
 
 /* ANSI headers. */
-#include <unistd.h>
+/* ANSI headers. */
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+#  ifndef __STRICT_ANSI__
+#    include <io.h>
+#    include <process.h>
+#  endif
+#else
+#  include <unistd.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -1281,7 +1289,15 @@ const char* *graphxml_statenames=NULL;
  * down here because we want the user's section 1 to have been scanned first.
  * The user has a chance to override it with an option.
  */
-#include <unistd.h>
+/* ANSI headers. */
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)
+#  ifndef __STRICT_ANSI__
+#    include <io.h>
+#    include <process.h>
+#  endif
+#else
+#  include <unistd.h>
+#endif
 #endif
 
 #ifndef YY_EXTRA_TYPE
