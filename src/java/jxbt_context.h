@@ -23,28 +23,9 @@
 
 SG_BEGIN_DECL()
 
-
 /* pointers to schedule and unschedule functions */
 typedef void (*pfn_schedule_t)(xbt_context_t);
 typedef pfn_schedule_t pfn_unschedule_t;
-
-/**
- * This function gets the context of a java process instance.
- * 
- * @param index		The id (index in the table) of the java process object.
- *
- * @return			The context of the java process object.
- */
-xbt_context_t xbt_context_get_by_id(jlong index);
-
-/*
- * This function appends a context in the table of contexts of the simulation.
- *
- * @param context	The context to append.
- *
- * @return	Returns 0 if successful the function returns 0, and -1 otherwise.
- */
-int xbt_context_append(xbt_context_t context);
 
 /*
  * This function is called by the simulator to terminate a java process instance.
@@ -62,12 +43,6 @@ void __context_exit(xbt_context_t context ,int value);
  * @param env		The jni interface pointer of the process.
  */
 void jcontext_exit(xbt_context_t context ,int value,JNIEnv* env);
-
-/** Returns the condition used to synchronise the creation of a java process. */
-xbt_os_cond_t xbt_creation_cond_get(void);
-
-/** Returns the mutex used to synchronise the creation of a java process */
-xbt_os_mutex_t xbt_creation_mutex_get(void);
 
 SG_END_DECL()
 
