@@ -150,10 +150,10 @@ static void action_change_state(surf_action_t action,
 static double share_resources(double now)
 {
   s_surf_action_cpu_Cas01_t action;
-  return generic_maxmin_share_resources2(surf_cpu_model->common_public->
-					 states.running_action_set,
-					 xbt_swag_offset(action, variable),
-					 cpu_maxmin_system, lmm_solve);
+  return generic_maxmin_share_resources(surf_cpu_model->common_public->
+					states.running_action_set,
+					xbt_swag_offset(action, variable),
+					cpu_maxmin_system, lmm_solve);
 }
 
 static void update_actions_state(double now, double delta)

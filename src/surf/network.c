@@ -291,11 +291,11 @@ static double share_resources(double now)
       surf_network_model->common_public->states.running_action_set;
   double min;
 
-  min = generic_maxmin_share_resources2(running_actions,
-					xbt_swag_offset(s_action,
-							variable),
-					network_maxmin_system,
-					network_solve);
+  min = generic_maxmin_share_resources(running_actions,
+				       xbt_swag_offset(s_action,
+						       variable),
+				       network_maxmin_system,
+				       network_solve);
 
   xbt_swag_foreach(action, running_actions) {
     if (action->latency > 0) {

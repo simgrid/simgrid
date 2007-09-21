@@ -190,16 +190,9 @@ int find_model_description(s_surf_model_description_t * table,
 }
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
-				      size_t offset)
-{
-  return generic_maxmin_share_resources2(running_actions, offset,
-					 maxmin_system, lmm_solve);
-}
-
-double generic_maxmin_share_resources2(xbt_swag_t running_actions,
-				       size_t offset,
-				       lmm_system_t sys,
-				       void (*solve) (lmm_system_t))
+				      size_t offset,
+				      lmm_system_t sys,
+				      void (*solve) (lmm_system_t))
 {
   surf_action_t action = NULL;
   double min = -1;

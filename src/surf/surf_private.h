@@ -48,8 +48,6 @@ extern int use_sdp_solver;
 extern int use_lagrange_solver;
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
-				      size_t offset);
-double generic_maxmin_share_resources2(xbt_swag_t running_actions,
 				       size_t offset,
 				       lmm_system_t sys,
 				       void (*solve)(lmm_system_t));
