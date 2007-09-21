@@ -89,10 +89,10 @@ public abstract class Process extends Thread
     /*
      * The arguments of the method function of the process.	
      */
-    public Vector args;
+    public Vector<String> args;
     
-    /* Used to schedule the process */
-    protected Sem sem;
+   /* process synchronisation tools */
+	protected Sem schedBegin, schedEnd;
 	
     /**
      * Default constructor. (used in ApplicationHandler to initialize it)
@@ -102,8 +102,9 @@ public abstract class Process extends Thread
 	this.id = 0;
 	this.name = null;
 	this.bind = 0;
-	this.args = new Vector();
-	sem = new Sem(0); /* suspend the thread first */
+	this.args = new Vector<String>();
+	schedBegin = new Sem(0);
+	schedEnd = new Sem(0);
     }
 
 	
@@ -176,7 +177,7 @@ public abstract class Process extends Thread
 	    throw new NullPointerException("Process name cannot be NULL");
 	
 	
-	this.args = new Vector();
+	this.args = new Vector<String>();
 	
 	if(null != args)
 		this.args.addAll(Arrays.asList(args));
@@ -184,7 +185,8 @@ public abstract class Process extends Thread
 	this.name = name;
 	this.id = nextProcessId++;
 	
-	sem = new Sem(0); /* suspend the thread first */
+	schedBegin = new Sem(0);
+	schedEnd = new Sem(0);
 		
 	Msg.processCreate(this,host);
     }
@@ -372,7 +374,15 @@ public abstract class Process extends Thread
 	try {
 	    String[] args = null; /* do not fill it before the signal or this.args will be empty */
 	    
-	    waitSignal(); /* wait for other people to fill the process in */
+	    //waitSignal(); /* wait for other people to fill the process in */
+	    
+	    
+	    try {
+	    schedBegin.acquire();
+	} catch(InterruptedException e) {
+	}
+	
+			
 		
 		if(this.args.size() > 0)
 		{
@@ -383,6 +393,7 @@ public abstract class Process extends Thread
 
 	    this.main(args);
 	    Msg.processExit(this);
+	    schedEnd.release();
 	} catch (MsgException e) {
 	    e.printStackTrace();
 	    Msg.info("Unexpected behavior. Stopping now");
@@ -407,16 +418,33 @@ public abstract class Process extends Thread
     throws JniException, NativeException;
     
    
-    public void unschedule() {
-        try {        
-        		sem.acquire();
-    		} catch(InterruptedException e)
-    		{
-    			// todo
-    		}
-    }
+   public void unschedule() {
+   	
+   		try {
+			schedEnd.release();
+			schedBegin.acquire();
+		} catch(InterruptedException e){
+			
+		}
+	}
     
-     public void schedule() { 
-        sem.release(); 
-    }
+     public void schedule() {
+     	
+     	try { 
+			schedBegin.release();
+			schedEnd.acquire();
+		} catch(InterruptedException e) {
+			
+		}
+	}
+	
+	public void taskSend(Channel channel,Task task, Host host)  throws NativeException, JniException {
+		Msg.channelPut(channel,task,host);
+	}
+	
+	public Task taskReceive(Channel channel)  throws NativeException, JniException {
+		return Msg.channelGet(channel);
+	} 		     
 }
+
+
