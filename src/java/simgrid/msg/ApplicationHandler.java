@@ -14,6 +14,7 @@ package simgrid.msg;
 import java.util.Vector;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
+import java.lang.reflect.*;
 
 /**
  * The handler used to parse the deployment file which contains 
@@ -40,7 +41,7 @@ public final class ApplicationHandler extends DefaultHandler
 		 * The vector which contains the arguments of the main function 
 		 * of the process object.
 		 */
-		public Vector args;
+		public Vector<String> args;
 		
 		/**
 		 * The name of the host of the process.
@@ -56,7 +57,7 @@ public final class ApplicationHandler extends DefaultHandler
 		 * Default constructor.
 		 */
 		public ProcessFactory(){
-			this.args = new Vector();
+			this.args = new Vector<String>();
 			this.hostName = null;
 			this.function = null;
 		}
@@ -102,11 +103,21 @@ public final class ApplicationHandler extends DefaultHandler
 	    		Host host = Host.getByName(this.hostName);
 	    		Msg.processCreate(process,host);
 	    		
-	    		Vector args = processFactory.args;
+	    		Vector<String> args = processFactory.args;
 	    		int size = args.size();
 	    		
 	    		for(int index = 0; index < size; index++)
-	    			process.addArg((String)args.get(index)); 
+	    			process.addArg(args.get(index));
+	    			
+	    	} catch(JniException e)
+	    	{
+	    		System.out.println(e.toString());
+	    		e.printStackTrace();	
+	    	 
+	    	} catch(NativeException e)
+	    	{
+	    		System.out.println(e.toString());
+	    		e.printStackTrace();
 	    	
 	    	} catch(HostNotFoundException e) {
 	      		System.out.println(e.toString());
@@ -116,10 +127,16 @@ public final class ApplicationHandler extends DefaultHandler
 	      		System.out.println(this.function + " class not found\n The attribut function of the element process  of your deployment file\n must correspond to the name of a Msg Proces class)");
 	    		e.printStackTrace();
 
-	    	} catch(Exception e) {
-	     		 System.out.println("Unexpected exception");
+	    	} catch(InstantiationException e) {
+	     		 System.out.println("instantiation exception");
 	     		 e.printStackTrace();
-		}
+	   		} catch (IllegalAccessException e) {
+	      		System.out.println("illegal access exception");
+	      		e.printStackTrace();
+	    	} catch (IllegalArgumentException e) {	
+	    		 System.out.println("illegal argument exception");
+	    		 e.printStackTrace();
+	    	}
 
     	}
 	}
