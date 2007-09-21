@@ -165,8 +165,8 @@
 #endif
 
 /* The compiler has `snprintf' function. */
-#if defined(HAVE_SNPRINTF)
-	#undef HAVE_SNPRINTF	1
+#ifndef HAVE_SNPRINTF
+	#define HAVE_SNPRINTF	1
 #endif
 
 /* No `swapcontext' function. */
@@ -185,32 +185,24 @@
 #endif
 
 /* The compiler has the `vsnprintf' function. */
-/*#if !defined(HAVE_VSNPRINTF)
+#ifndef HAVE_VSNPRINTF
 	#define HAVE_VSNPRINTF	1
-#endif*/
-
-
-/* enable the asprintf replacement */
-#if !defined(NEED_ASPRINTF)
-	#define NEED_ASPRINTF	1
 #endif
 
-/*#ifdef NEED_ASPRINTF
-#undef NEED_ASPRINTF
-#endif*/
+
+/* disable the asprintf replacement */
+#ifndef NEED_ASPRINTF
+	#define NEED_ASPRINTF	
+#endif
 
 
-/* enable the vasprintf replacement */
-#if  !defined(NEED_VASPRINTF)
-	#define NEED_VASPRINTF	1
+/* disable the vasprintf replacement */
+#ifndef NEED_VASPRINTF
+	#define NEED_VASPRINTF
 #endif
 
 /* "disable the snprintf replacement ( this function is broken on system v only" */
 
-/* FIXME TO ANALYZE */
-#if defined(PREFER_PORTABLE_SNPRINTF)
-	#undef PREFER_PORTABLE_SNPRINTF	
-#endif
 
 #if !defined(PREFER_PORTABLE_SNPRINTF)
 	#define PREFER_PORTABLE_SNPRINTF	
@@ -403,6 +395,6 @@ typedef unsigned int uint32_t;
 #endif 
 
 
-
+typedef int ssize_t;
 
 #endif /* #ifndef __XBT_VISUALC_COMPILER_CONFIG_H__ */
