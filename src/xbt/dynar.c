@@ -523,7 +523,6 @@ xbt_dynar_search(xbt_dynar_t  const dynar,
    
   _dynar_unlock(dynar);
   THROW2(not_found_error,0,"Element %p not part of dynar %p",elem,dynar);
-  return -1;
 }
 
 /** @brief Returns a boolean indicating whether the element is part of the dynar */
