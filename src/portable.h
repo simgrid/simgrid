@@ -106,7 +106,7 @@
  ****/
 
 /* prototype of C99 functions */
-#ifdef HAVE_SNPRINTF
+#if defined(HAVE_SNPRINTF) && defined(_MSC_VER)
 #include <stdio.h>
 #else
 #  if (defined(_MSC_VER) && defined(DLL_EXPORT))
@@ -131,10 +131,11 @@ extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list 
 #endif
 
 /* prototype of GNU functions  */
-#ifndef __BORLANDC__
+#if !defined(__BORLANDC__) && !defined(_MSC_VER)
 extern int asprintf  (char **ptr, const char *fmt, /*args*/ ...);
 extern int vasprintf (char **ptr, const char *fmt, va_list ap);
 #endif
+
 extern int asnprintf (char **ptr, size_t str_m, const char *fmt, /*args*/ ...);
 extern int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap);
 
