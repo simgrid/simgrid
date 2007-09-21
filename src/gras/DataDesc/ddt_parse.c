@@ -198,17 +198,6 @@ static void change_to_matrix_of(xbt_dynar_t dynar,gras_datadesc_type_t subtype) 
   XBT_OUT;
 }
 
-/*static void add_free_f(xbt_dynar_t dynar,void_f_pvoid_t free_f) {
-  s_identifier_t former,ref;
-  memset(&ref,0,sizeof(ref));
-
-  XBT_IN;
-  xbt_dynar_pop(dynar,&former);
-  memcpy(former.type->extra,&free_f, sizeof(free_f));
-  xbt_dynar_push(dynar,&former);
-  XBT_OUT;
-}*/
-
 static void add_free_f(xbt_dynar_t dynar,void_f_pvoid_t* free_f) {
   s_identifier_t former,ref;
   memset(&ref,0,sizeof(ref));
