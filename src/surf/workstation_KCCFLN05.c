@@ -865,10 +865,10 @@ static void router_free(void *router)
 static void router_new(const char *name)
 {
   static unsigned int nb_routers = 0;
+  router_KCCFLN05_t router;
 
   INFO1("Creating a router %s", name);
 
-  router_KCCFLN05_t router;
   router = xbt_new0(s_router_KCCFLN05_t, 1);
 
   router->name = xbt_strdup(name);
