@@ -1117,12 +1117,6 @@ Java_simgrid_msg_Msg_createEnvironment(JNIEnv* env, jclass cls,jstring jplatform
 JNIEXPORT void JNICALL 
 Java_simgrid_msg_Msg_waitSignal(JNIEnv* env, jclass cls, jobject jprocess) {
 
-  xbt_os_mutex_t creation_mutex = xbt_creation_mutex_get();
-  xbt_os_cond_t creation_cond = xbt_creation_cond_get();
-  xbt_os_mutex_lock(creation_mutex);
-  xbt_os_cond_signal( creation_cond );
-  xbt_os_mutex_unlock( creation_mutex );
-
 }
 
 JNIEXPORT void JNICALL 
