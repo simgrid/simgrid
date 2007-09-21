@@ -56,7 +56,7 @@ RETURN CODE
 -----------
 
 TESH spits an appropriate error message when the child do not return 0 as
-return code (cf. catch-return.tesh).
+return code (cf. catch-return.tesh), and returns code+40 itself.
 
 It is also possible to specify that a given command must return another
 value. For this, use the "expect return" metacommand, which takes an integer as
