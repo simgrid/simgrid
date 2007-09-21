@@ -14,6 +14,7 @@
 package simgrid.msg;
 
 import java.io.InputStream;
+import java.io.FileNotFoundException;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -32,9 +33,6 @@ public class DTDResolver implements EntityResolver {
 	/* try to get the DTD from the classpath */
 	InputStream in = getClass().getResourceAsStream("/surfxml.dtd"); 
 	
-	if(null == in)	
-		/* try to get the DTD from the surf dir in the jar */
-		in = getClass().getResourceAsStream("/surf/surfxml.dtd"); 
 	if(null == in)	
 		/* try to get the DTD from the directory Simgrid */
 		in = getClass().getResourceAsStream("/Simgrid/surfxml.dtd"); 
