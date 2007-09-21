@@ -361,7 +361,8 @@ void xbt_context_empty_trash(void)
 
 static void __xbt_context_yield(xbt_context_t context)
 {
-  xbt_assert0(current_context, "You have to call context_init() first.");
+  xbt_context_t self;
+xbt_assert0(current_context, "You have to call context_init() first.");	
   xbt_assert0(context,"Invalid argument");
 
   if (current_context == context) {
@@ -373,7 +374,7 @@ static void __xbt_context_yield(xbt_context_t context)
   }
 
 #ifdef CONTEXT_THREADS
-  xbt_context_t self = current_context;
+  self = current_context;
   DEBUG2("[%p] **** Locking ctx %p ****", self, context);
   xbt_os_mutex_lock(context->mutex);
   DEBUG1("[%p] **** Updating current_context ****", self);
