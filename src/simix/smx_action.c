@@ -269,8 +269,8 @@ double SIMIX_action_get_remains(smx_action_t action)
   return action->simdata->surf_action->remains;
 }
 
-smx_action_t SIMIX_action_parallel_execute(const char *name, int host_nb,
-					   const smx_host_t *host_list,
+smx_action_t SIMIX_action_parallel_execute(char *name, int host_nb,
+					   smx_host_t *host_list,
 					   double *computation_amount,
 					   double *communication_amount,
 					   double amount, double rate)
