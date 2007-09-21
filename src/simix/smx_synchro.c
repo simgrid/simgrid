@@ -153,9 +153,10 @@ smx_cond_t SIMIX_cond_init()
  */
 void SIMIX_cond_signal(smx_cond_t cond)
 {
+	smx_process_t proc = NULL;
   DEBUG1("Signal condition %p", cond);
   xbt_assert0((cond != NULL), "Invalid parameters");
-  smx_process_t proc = NULL;
+ 
 
   if (xbt_swag_size(cond->sleeping) >= 1) {
     proc = xbt_swag_extract(cond->sleeping);
@@ -232,8 +233,9 @@ void __SIMIX_cond_wait(smx_cond_t cond)
 void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
 			     double max_duration)
 {
-  xbt_assert0((mutex != NULL), "Invalid parameters");
+  
   smx_action_t act_sleep;
+  xbt_assert0((mutex != NULL), "Invalid parameters");
 
   DEBUG1("Timed wait condition %p", cond);
   cond->mutex = mutex;
@@ -268,9 +270,10 @@ void SIMIX_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex,
  */
 void SIMIX_cond_broadcast(smx_cond_t cond)
 {
-  xbt_assert0((cond != NULL), "Invalid parameters");
   smx_process_t proc = NULL;
   smx_process_t proc_next = NULL;
+
+   xbt_assert0((cond != NULL), "Invalid parameters");
 
   DEBUG1("Broadcast condition %p", cond);
   xbt_swag_foreach_safe(proc, proc_next, cond->sleeping) {
