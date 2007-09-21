@@ -29,6 +29,7 @@
  */
 void MSG_config(const char *name, ...)
 {
+  va_list pa;
 
   if (!msg_global) {
     fprintf(stderr,
@@ -37,7 +38,7 @@ void MSG_config(const char *name, ...)
   }
 
 
-  va_list pa;
+  
   /*  xbt_cfg_dump("msg_cfg_set","",_msg_cfg_set); */
   va_start(pa, name);
 
