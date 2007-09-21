@@ -300,10 +300,10 @@ void SIMIX_process_suspend(smx_process_t process)
     }
   } else {
     /* process executing, I can create an action and suspend it */
-    process->simdata->suspended = 1;
     smx_action_t dummy;
     smx_cond_t cond;
     char name[] = "dummy";
+    process->simdata->suspended = 1;
 
     cond = SIMIX_cond_init();
     dummy = SIMIX_action_execute(SIMIX_process_get_host(process), name, 0);
@@ -340,11 +340,11 @@ void SIMIX_process_resume(smx_process_t process)
     simdata->suspended = 0;	/* He'll wake up by itself */
     return;
   } else if (simdata->cond) {
-    DEBUG0("Resume process blocked on a conditional");
     /* temporaries variables */
     smx_cond_t c;
     xbt_fifo_item_t i;
     smx_action_t act;
+	DEBUG0("Resume process blocked on a conditional");
     simdata->suspended = 0;
     c = simdata->cond;
     xbt_fifo_foreach(c->actions, i, act, smx_action_t) {
