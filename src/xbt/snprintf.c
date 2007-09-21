@@ -280,7 +280,6 @@
  */
 
 
-
 /* ============================================= */
 /* NO USER SERVICABLE PARTS FOLLOWING THIS POINT */
 /* ============================================= */
@@ -327,6 +326,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include "xbt/str.h"
 
 #ifdef isdigit
 #undef isdigit
@@ -380,12 +380,14 @@
 
 /* prototypes */
 
+
 #if defined(NEED_ASPRINTF)
 int asprintf   (char **ptr, const char *fmt, /*args*/ ...);
 #endif
-#if defined(NEED_VASPRINTF)
+#if defined(NEED_VASPRINTF) 
 int vasprintf  (char **ptr, const char *fmt, va_list ap);
 #endif
+
 #if defined(NEED_ASNPRINTF)
 int asnprintf  (char **ptr, size_t str_m, const char *fmt, /*args*/ ...);
 #endif
@@ -1043,7 +1045,10 @@ char *bprintf(const char*fmt, ...) {
   char *res;
   
   va_start(ap, fmt);
-  vasprintf(&res,fmt,ap);
+  
+	
+	vasprintf(&res,fmt,ap);
+	
   va_end(ap);
   return res;
 }
