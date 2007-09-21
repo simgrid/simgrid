@@ -35,11 +35,6 @@ static xbt_context_t current_context = NULL;    /* the current context			*/
 static xbt_context_t init_context = NULL;       /* the initial context			*/
 static xbt_swag_t context_to_destroy = NULL;    /* the list of the contexs to destroy	*/
 static xbt_swag_t context_living = NULL;        /* the list of the contexts in use	*/
-static xbt_os_mutex_t creation_mutex;              /* For syncronization during process creation */
-static xbt_os_cond_t creation_cond;              /* For syncronization during process creation */
-static xbt_os_mutex_t master_mutex;		/* For syncronization during process scheduling*/
-static xbt_os_cond_t master_cond;		/* For syncronization during process scheduling*/
-
 
 static void
 __xbt_process_schedule(xbt_context_t context);
@@ -64,53 +59,17 @@ static void
 __xbt_context_yield(xbt_context_t context) {
 
   if(context) {
-
-    /* save the current context */
     xbt_context_t self = current_context;
-
-    if(is_main_thread()) {
-      /* the main thread has called this function
-       * - update the current context
-       * - signal the condition of the process to run
-       * - wait on its condition
-       * - restore thr current contex
-       */
-      xbt_os_mutex_lock(master_mutex);
-      /* update the current context */
-      current_context = context;
-	 __xbt_process_schedule(context);
-      xbt_os_cond_wait(master_cond, master_mutex);
-      xbt_os_mutex_unlock(master_mutex);
-      /* retore the current context */
-      current_context = self;
-	  
-			
-    } else {
-	/* a java thread has called this function
-	 * - update the current context
-	 * - signal the condition of the main thread
-	 * - wait on its condition
-	 * - restore thr current contex
-	 */
-	xbt_os_mutex_lock(master_mutex);
-	/* update the current context */
 	current_context = context;
-	xbt_os_cond_signal(master_cond);
-	xbt_os_mutex_unlock(master_mutex);
-	__xbt_process_unschedule(context);
-	/* retore the current context */
+	__xbt_process_schedule(context);
+
 	current_context = self;
-      }
   }
   
-	
   if(current_context->iwannadie)
     __context_exit(current_context, 1);
   
 }
-
-
-
 static void 
 xbt_context_free(xbt_context_t context) {
 
@@ -127,15 +86,6 @@ xbt_context_free(xbt_context_t context) {
 				jprocess_join(jprocess,get_current_thread_env());
 			}
 		}
-
-		/* destroy the mutex of the process */
-		xbt_os_mutex_destroy(context->mutex);
-
-		/* destroy the condition of the process */
-		xbt_os_cond_destroy(context->cond);
-
-		context->mutex = NULL;
-		context->cond = NULL;
 
 		if(context->exception) 
 			free(context->exception);
@@ -164,9 +114,6 @@ __context_exit(xbt_context_t context ,int value) {
 	/*
 	* signal the condition of the java process 
 	*/
-
-	xbt_os_mutex_lock(master_mutex);
-
 	if (context->jprocess) 
 	{
 		if (jprocess_is_alive(context->jprocess,get_current_thread_env())) 
@@ -178,8 +125,6 @@ __context_exit(xbt_context_t context ,int value) {
 			jprocess_exit(jprocess,get_current_thread_env());
 		}
 	}
-
-	
 }
 
 /*
@@ -187,6 +132,7 @@ __context_exit(xbt_context_t context ,int value) {
  */
 void 
 jcontext_exit(xbt_context_t context ,int value,JNIEnv* env) {
+
   jobject __jprocess = context->jprocess;
   context->jprocess = NULL;
 	
@@ -198,14 +144,6 @@ jcontext_exit(xbt_context_t context ,int value,JNIEnv* env) {
 
   /* insert the context in the list of the contexts to destroy */
   xbt_swag_insert(context, context_to_destroy);
-	
-  /*
-   * signal the condition of the main thread.
-   */
-  xbt_os_mutex_lock(master_mutex);
-  xbt_os_cond_signal(master_cond);
-  xbt_os_mutex_unlock(master_mutex);
-	
 	
   /* the global reference to the java process instance is deleted */
   jprocess_delete_global_ref(__jprocess,get_current_thread_env());
@@ -251,16 +189,6 @@ xbt_context_init(void) {
     
     /* append the current context in the list of context in use */
     xbt_swag_insert(init_context, context_living);
-	   
-    /* this mutex is used to synchronize the creation of the java process */
-    creation_mutex = xbt_os_mutex_init();
-    /* this mutex is used to synchronize the creation of the java process */
-    creation_cond = xbt_os_cond_init();
-
-    /* this mutex is used to synchronize the scheduling of the java process */
-    master_mutex = xbt_os_mutex_init();
-    /* this mutex is used to synchronize the scheduling of the java process */
-    master_cond = xbt_os_cond_init();
     
     __process_schedule = jprocess_schedule;
 	__process_unschedule = jprocess_unschedule;
@@ -285,19 +213,8 @@ xbt_context_start(xbt_context_t context)  {
   DEBUG3("xbt_context_start of %p (jproc=%p, jenv=%p)",
 	 context, context->jprocess, get_current_thread_env());
 
-  /* the main thread locks the mutex used to create all the process	*/
-  xbt_os_mutex_lock(creation_mutex);
-
   /* the main thread starts the java process				*/
   jprocess_start(context->jprocess,get_current_thread_env());
-
-  /* the main thread waits the startup of the java process		*/
-  xbt_os_cond_wait(creation_cond, creation_mutex);
-	
-  /* the java process is started, the main thread unlocks the mutex
-   * used during the creation of the java process
-   */
-  xbt_os_mutex_unlock(creation_mutex);
 }
 
 
@@ -310,10 +227,6 @@ xbt_context_new(const char *name, xbt_main_func_t code,
 
   context->code = code;
   context->name = xbt_strdup(name);
-	
-  context->mutex = xbt_os_mutex_init();
-  context->cond = xbt_os_cond_init();
-	
 	
   context->argc = argc;
   context->argv = argv;
@@ -331,7 +244,9 @@ xbt_context_new(const char *name, xbt_main_func_t code,
 
 
 void xbt_context_yield(void) {
-  __xbt_context_yield(current_context);
+  __xbt_process_unschedule(current_context);
+
+
 }
 
 /** 
@@ -370,11 +285,6 @@ void xbt_context_exit(void)  {
 
   xbt_swag_free(context_to_destroy);
   xbt_swag_free(context_living);
-	
-  xbt_os_mutex_destroy(creation_mutex);
-  xbt_os_cond_destroy(creation_cond);
-  xbt_os_mutex_destroy(master_mutex);
-  xbt_os_cond_destroy(master_cond);
 }
 
 /** 
@@ -386,16 +296,6 @@ void xbt_context_kill(xbt_context_t context) {
 
   context->iwannadie=1;
   __xbt_context_yield(context);
-}
-
-xbt_os_cond_t
-xbt_creation_cond_get(void) {
-  return creation_cond;
-}
-
-xbt_os_mutex_t
-xbt_creation_mutex_get(void) {
-  return creation_mutex;
 }
 
 void  xbt_context_set_jprocess(xbt_context_t context, void *jp) {
