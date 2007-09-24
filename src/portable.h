@@ -11,6 +11,7 @@
 #ifndef GRAS_PORTABLE_H
 #define GRAS_PORTABLE_H
 
+#include "xbt/misc.h"
 /* 
  * win32 or win64 (__WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).	
 */ 
@@ -106,21 +107,13 @@
  ****/
 
 /* prototype of C99 functions */
-#if defined(HAVE_SNPRINTF) && defined(_MSC_VER)
+#if defined(HAVE_SNPRINTF)
 #include <stdio.h>
 #else
-#  if (defined(_MSC_VER) && defined(DLL_EXPORT))
-     __declspec(dllexport) int snprintf(char *, size_t, const char *, /*args*/ ...);
-     __declspec(dllexport)  int vsnprintf(char *, size_t, const char *, va_list);
-#  elif (defined(_MSC_VER) && !defined(DLL_EXPORT) && !defined(DLL_STATIC) )
-     __declspec(dllimport) int snprintf(char *, size_t, const char *, /*args*/ ...);
-     __declspec(dllimport)  int vsnprintf(char *, size_t, const char *, va_list);
-#  else
-     extern int snprintf(char *, size_t, const char *, /*args*/ ...);
-     extern int vsnprintf(char *, size_t, const char *, va_list);
-#  endif
-
+   XBT_PUBLIC(int) snprintf(char *, size_t, const char *, /*args*/ ...);
+   XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
 #endif
+
 
 /* use internal functions when OS provided ones are borken */
 #if defined(HAVE_SNPRINTF) && defined(PREFER_PORTABLE_SNPRINTF)
@@ -131,7 +124,7 @@ extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list 
 #endif
 
 /* prototype of GNU functions  */
-#if !defined(__BORLANDC__) && !defined(_MSC_VER)
+#if defined(__GNUC__)
 extern int asprintf  (char **ptr, const char *fmt, /*args*/ ...);
 extern int vasprintf (char **ptr, const char *fmt, va_list ap);
 #endif

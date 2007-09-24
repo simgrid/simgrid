@@ -165,8 +165,14 @@
 #endif
 
 /* The compiler has `snprintf' function. */
-#ifndef HAVE_SNPRINTF
+#if _MSC_VER >= 7 /* FIXME: check version number */
+#  ifndef HAVE_SNPRINTF
 	#define HAVE_SNPRINTF	1
+#  endif
+#else 
+#  ifdef HAVE_SNPRINTF
+	#undef HAVE_SNPRINTF
+#  endif
 #endif
 
 /* No `swapcontext' function. */
