@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib WSOCK32.LIB"
-				OutputFile="C:\WINDOWS\system32\libSimgrid4java.dll"
+				OutputFile="C:\WINDOWS\system32\simgrid4java.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
