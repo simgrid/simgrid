@@ -65,7 +65,7 @@ $banner = "# $banner #";
 my $dashes = $banner;
 $dashes =~ s/./#/g;
 print LOG "\n$dashes\n$banner\n$dashes\n\n";
-print     "\n$dashes\n$banner (full logs in checkall.pl)\n$dashes\n\n";
+print     "\n$dashes\n$banner (full logs in checkall.log)\n$dashes\n\n";
 
 if (scalar @skip) {
     print LOG "Skipped tests:\n";
