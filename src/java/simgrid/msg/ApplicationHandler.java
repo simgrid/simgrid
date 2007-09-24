@@ -14,7 +14,6 @@ package simgrid.msg;
 import java.util.Vector;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
-import java.lang.reflect.*;
 
 /**
  * The handler used to parse the deployment file which contains 
@@ -41,7 +40,7 @@ public final class ApplicationHandler extends DefaultHandler
 		 * The vector which contains the arguments of the main function 
 		 * of the process object.
 		 */
-		public Vector<String> args;
+		public Vector args;
 		
 		/**
 		 * The name of the host of the process.
@@ -57,7 +56,7 @@ public final class ApplicationHandler extends DefaultHandler
 		 * Default constructor.
 		 */
 		public ProcessFactory(){
-			this.args = new Vector<String>();
+			this.args = new Vector();
 			this.hostName = null;
 			this.function = null;
 		}
@@ -103,11 +102,11 @@ public final class ApplicationHandler extends DefaultHandler
 	    		Host host = Host.getByName(this.hostName);
 	    		Msg.processCreate(process,host);
 	    		
-	    		Vector<String> args = processFactory.args;
+	    		Vector args = processFactory.args;
 	    		int size = args.size();
 	    		
 	    		for(int index = 0; index < size; index++)
-	    			process.addArg(args.get(index));
+	    			process.args.add(args.get(index));
 	    			
 	    	} catch(JniException e)
 	    	{
