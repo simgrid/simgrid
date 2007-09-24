@@ -361,7 +361,9 @@ void xbt_context_empty_trash(void)
 
 static void __xbt_context_yield(xbt_context_t context)
 {
+#ifdef CONTEXT_THREADS
   xbt_context_t self;
+#endif  
 xbt_assert0(current_context, "You have to call context_init() first.");	
   xbt_assert0(context,"Invalid argument");
 
