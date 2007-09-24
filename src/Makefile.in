@@ -2348,8 +2348,10 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@surf/surfxml.c: surf/surfxml.l
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Psurf_parse_ --noline $^
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@xbt/graphxml.c: xbt/graphxml.l
 @GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pxbt_graph_parse_ --noline $^
+@GRAMINE_MODE_FALSE@@MAINTAINER_MODE_TRUE@	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
 @GRAMINE_MODE_FALSE@@HAVE_FLEXML_TRUE@@MAINTAINER_MODE_TRUE@	set -e; mkdir -p surf; flexml -b 1000000 -P surfxml --sysid=surfxml.dtd -S $@ -L $^

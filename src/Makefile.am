@@ -438,8 +438,10 @@ gras/DataDesc/ddt_parse.yy.c: gras/DataDesc/ddt_parse.yy.l
 if MAINTAINER_MODE
 surf/surfxml.c: surf/surfxml.l
 	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Psurf_parse_ --noline $^
+	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 xbt/graphxml.c: xbt/graphxml.l
 	set -e;mkdir -p `dirname $@`; @LEX@ -o$@ -Pxbt_graph_parse_ --noline $^
+	sed 's/#include <unistd.h>/#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\n#  ifndef __STRICT_ANSI__\n#    include <io.h>\n#    include <process.h>\n#  endif\n#else\n#  include <unistd.h>\n#endif/g' -i $@
 
 if HAVE_FLEXML
 surf/surfxml.l: $(srcdir)/surf/surfxml.dtd
@@ -448,7 +450,6 @@ $(top_srcdir)/include/surf/surfxml.h: $(srcdir)/surf/surfxml.dtd
 	set -e;                flexml            -P surfxml --sysid=surfxml.dtd -H $@ -L $^
 	sed 's/extern  *\([^ ]*[ \*]*\)/XBT_PUBLIC_DATA(\1) /' -i $@
 	sed 's/XBT_PUBLIC_DATA(\([^)]*\)) *\([^(]*\)(/XBT_PUBLIC(\1) \2(/' -i $@
-
 
 xbt/graphxml.l: $(srcdir)/xbt/graphxml.dtd
 	set -e; flexml -b 1000000 -P graphxml --sysid=graphxml.dtd -S $@ -L $^
