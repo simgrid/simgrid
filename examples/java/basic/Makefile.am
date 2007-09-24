@@ -1,4 +1,3 @@
-CLASSPATH=../../../src/simgrid.jar
 EXTRA_DIST=basic_deployment.xml basic_platform.xml
 
 # Declare sources:
