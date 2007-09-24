@@ -1,5 +1,5 @@
 /*
- * simgrid.msg.Sem.java	1.00 07/05/01
+ * $Id$
  *
  * Copyright 2006,2007 Martin Quinson, Malek Cherier           
  * All right reserved. 
