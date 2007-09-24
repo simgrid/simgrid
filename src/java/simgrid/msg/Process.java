@@ -89,7 +89,7 @@ public abstract class Process extends Thread
     /*
      * The arguments of the method function of the process.	
      */
-    public Vector<String> args;
+    public Vector args;
     
    /* process synchronisation tools */
 	protected Sem schedBegin, schedEnd;
@@ -102,7 +102,7 @@ public abstract class Process extends Thread
 	this.id = 0;
 	this.name = null;
 	this.bind = 0;
-	this.args = new Vector<String>();
+	this.args = new Vector();
 	schedBegin = new Sem(0);
 	schedEnd = new Sem(0);
     }
@@ -177,7 +177,7 @@ public abstract class Process extends Thread
 	    throw new NullPointerException("Process name cannot be NULL");
 	
 	
-	this.args = new Vector<String>();
+	this.args = new Vector();
 	
 	if(null != args)
 		this.args.addAll(Arrays.asList(args));
