@@ -1189,6 +1189,32 @@ You should try to use the surfxml_update.pl script that can be found
 If you don't, you really should use valgrind to debug your code, it's
 almost magic.
 
+\subsubsection faq_trouble_vg_context Stack switching problems and truncated backtraces
+
+With the default version of simgrid, valgrind will probably spit tons
+of warnings about stack switching like the following, and produce
+truncated bactraces where only one call appears instead of the whole
+stack.
+
+\verbatim
+==14908== Warning: client switching stacks?  SP change: 0xBEA2A48C --> 0x476F350
+==14908==          to suppress, use: --max-stackframe=1171541700 or greater
+==14908== Warning: client switching stacks?  SP change: 0x476E1E4 --> 0xBEA2A48C
+==14908==          to suppress, use: --max-stackframe=1171537240 or greater
+==14908== Warning: client switching stacks?  SP change: 0xBEA2A48C --> 0x4792420
+==14908==          to suppress, use: --max-stackframe=1171685268 or greater
+==14908==          further instances of this message will not be shown.
+\endverbatim
+
+This is because valgrind don't like too much the UNIX98 contextes we
+use by default in simgrid for efficiency reasons. Simply add the
+--with-pthread flag to your configure when debugging your code. You
+may also find --disable-compiler-optimization usefull if valgrind or
+gdb get fooled by the optimization done by the compiler. But you
+should remove these flages when everything works before going in
+production (before launching your 1252135 experiments), or everything
+will run only one third of the true SimGrid potential.
+
 \subsubsection faq_trouble_vg_longjmp longjmp madness in valgrind
 
 This is when valgrind starts complaining about longjmp things, just like:
