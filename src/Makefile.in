@@ -2261,7 +2261,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 
 	\
 	include/simix/simix.h include/simix/datatypes.h \
-	simix/msg_simix_private.h \
+	simix/private.h \
 	\
 	smpi/private.h
 

@@ -59,7 +59,7 @@ EXTRA_DIST= \
 	amok/amok_modinter.h
 	\
 	include/simix/simix.h include/simix/datatypes.h \
-	simix/msg_simix_private.h \
+	simix/private.h \
 	\
 	smpi/private.h
 
