@@ -21,7 +21,7 @@
 #include "xbt/context.h"
 #include "xbt/ex.h"
 
-#ifdef CONTEXT_THREADS
+#if defined(JAVA_SIMGRID) || defined(CONTEXT_THREADS)
 #  include "xbt/xbt_os_thread.h"
 #else
 #  include <ucontext.h>
