@@ -2,6 +2,7 @@ AM_CFLAGS = -g3
 
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src/include -I$(top_srcdir)/src
 
+EXTRA_DIST = gras_stub_generator.h
 bin_PROGRAMS = gras_stub_generator 
 # skel_rewriter
 
