@@ -58,6 +58,7 @@ EXTRA_DIST= \
 	gras/Virtu/virtu_sg.h \
 	gras/Virtu/virtu_interface.h \
 	gras/Virtu/virtu_private.h \
+	gras/Transport/transport_interface.h \
 	amok/Bandwidth/bandwidth_private.h \
 	amok/amok_modinter.h \
 	\
