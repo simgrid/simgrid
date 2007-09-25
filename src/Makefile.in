@@ -446,7 +446,7 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	surf/cpu_private.h surf/workstation_private.h \
 	surf/surf_timer_private.h surf/surfxml_parse.c surf/surfxml.l \
 	surf/surfxml.c surf/surfxml.dtd surf/network_private.h \
-	network_gtnets_private.h include/surf/maxmin.h \
+	surf/network_gtnets_private.h include/surf/maxmin.h \
 	include/surf/trace_mgr.h include/surf/surf.h \
 	include/surf/surfxml_parse_private.h include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h include/xbt/context.h \
@@ -2044,7 +2044,6 @@ distclean-tags:
 
 check-TESTS: $(TESTS)
 	@failed=0; all=0; xfail=0; xpass=0; skip=0; ws='[	 ]'; \
-	faillist=""; xpasslist=""; xfaillist=""; skiplist=""; \
 	srcdir=$(srcdir); export srcdir; \
 	list=' $(TESTS) '; \
 	if test -n "$$list"; then \
@@ -2058,7 +2057,6 @@ check-TESTS: $(TESTS)
 	      *$$ws$$tst$$ws*) \
 		xpass=`expr $$xpass + 1`; \
 		failed=`expr $$failed + 1`; \
-		xpasslist="$$xpasslist $$tst"; \
 		echo "XPASS: $$tst"; \
 	      ;; \
 	      *) \
@@ -2070,18 +2068,15 @@ check-TESTS: $(TESTS)
 	      case " $(XFAIL_TESTS) " in \
 	      *$$ws$$tst$$ws*) \
 		xfail=`expr $$xfail + 1`; \
-		xfaillist="$$xfaillist $$tst"; \
 		echo "XFAIL: $$tst"; \
 	      ;; \
 	      *) \
 		failed=`expr $$failed + 1`; \
-		faillist="$$faillist $$tst"; \
 		echo "FAIL: $$tst"; \
 	      ;; \
 	      esac; \
 	    else \
 	      skip=`expr $$skip + 1`; \
-	      skiplist="$$skiplist $$tst"; \
 	      echo "SKIP: $$tst"; \
 	    fi; \
 	  done; \
@@ -2117,30 +2112,6 @@ check-TESTS: $(TESTS)
 	  test -z "$$skipped" || echo "$$skipped"; \
 	  test -z "$$report" || echo "$$report"; \
 	  echo "$$dashes"; \
-	  if test -n "$$faillist" ; then \
-	    echo "Failed tests:";\
-	    for tst in $$faillist ; do \
-	      echo "  "$$tst;\
-	    done;\
-	  fi;\
-	  if test -n "$$xpasslist" ; then \
-	    echo "Unexpectedly passed tests:";\
-	    for tst in $$xpasslist ; do \
-	      echo "  "$$tst;\
-	    done;\
-	  fi;\
-	  if test -n "$$xfaillist" ; then \
-	    echo "Expected failures:";\
-	    for tst in $$xfaillist ; do \
-	      echo "  "$$tst;\
-	    done;\
-	  fi;\
-	  if test -n "$$skiplist" ; then \
-	    echo "Skipped tests:";\
-	    for tst in $$skiplist ; do \
-	      echo "  "$$tst;\
-	    done;\
-	  fi;\
 	  test "$$failed" -eq 0; \
 	else :; fi
 
