@@ -197,13 +197,15 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = basic_deployment.xml basic_platform.xml
+EXTRA_DIST = basic_deployment.xml basic_platform.xml $(JAVA_SRC)
 
 # Declare sources:
-noinst_JAVA = Master.java Forwarder.java Slave.java BasicTest.java BasicTask.java
+JAVA_SRC = Master.java Forwarder.java Slave.java BasicTest.java BasicTask.java
+JAVA_TESTS = BasicTest.class
 
 # Declare test class
-TESTS = BasicTest.class
+@HAVE_JAVA_TRUE@noinst_JAVA = $(JAVA_SRC)
+@HAVE_JAVA_TRUE@TESTS = $(JAVA_TESTS)
 JAVAROOT = .
 AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar:.
 

@@ -8,10 +8,8 @@ EXTRA_DIST+=$(JAVA_SRC)
 
 # Declare test class
 if HAVE_JAVA
-noinst_JAVA=$(JAVA_SRC)
-TESTS=$(JAVA_TESTS)
-else
-EXTRA_DIST+=$(JAVA_TESTS)
+  noinst_JAVA=$(JAVA_SRC)
+  TESTS=$(JAVA_TESTS)
 endif
 
 include $(srcdir)/../java_test.mk

@@ -197,11 +197,16 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = comm_time_deployment.xml comm_time_platform.xml
+EXTRA_DIST = comm_time_deployment.xml comm_time_platform.xml \
+	$(JAVA_SRC)
 
 # Declare sources:
-noinst_JAVA = Master.java Slave.java CommTimeTest.java CommTimeTask.java
-TESTS = CommTimeTest.class
+JAVA_SRC = Master.java Slave.java CommTimeTest.java CommTimeTask.java
+JAVA_TESTS = CommTimeTest.class
+
+# Declare test class
+@HAVE_JAVA_TRUE@noinst_JAVA = $(JAVA_SRC)
+@HAVE_JAVA_TRUE@TESTS = $(JAVA_TESTS)
 JAVAROOT = .
 AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar:.
 
@@ -472,9 +477,6 @@ uninstall-am:
 	uninstall uninstall-am
 
 
-#if HAVE_JAVA
- # Declare test class
-
 # declare that we must recompile everything before lauching tests
 $(TESTS): classnoinst.stamp
 
@@ -482,7 +484,6 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
-#endif
 
 # Cruft
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

@@ -197,14 +197,16 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = ping_pong_deployment.xml ping_pong_platform.xml
+EXTRA_DIST = ping_pong_deployment.xml ping_pong_platform.xml \
+	$(JAVA_SRC)
 
 # Declare sources:
-noinst_JAVA = Sender.java Receiver.java PingPongTask.java PingPongTest.java
+JAVA_SRC = Sender.java Receiver.java PingPongTask.java PingPongTest.java
+JAVA_TESTS = PingPongTest.class
 
 # Declare test class
-#if HAVE_JAVA
-TESTS = PingPongTest.class
+@HAVE_JAVA_TRUE@noinst_JAVA = $(JAVA_SRC)
+@HAVE_JAVA_TRUE@TESTS = $(JAVA_TESTS)
 JAVAROOT = .
 AM_JAVACFLAGS = -classpath $(top_srcdir)/src/simgrid.jar:.
 
@@ -482,7 +484,6 @@ dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done
 	@echo
 	@for n in $(DIST_SUBDIRS) ; do if [ x$$n != x. ] ; then $(MAKE) -C $$n dist-files SRCFILE=$(SRCFILE)$$n/ ; fi; done
-#endif
 
 # Cruft
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
