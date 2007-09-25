@@ -1,10 +1,17 @@
 EXTRA_DIST=basic_deployment.xml basic_platform.xml
 
 # Declare sources:
-noinst_JAVA= Master.java Forwarder.java Slave.java BasicTest.java BasicTask.java
+JAVA_SRC=Master.java Forwarder.java Slave.java BasicTest.java BasicTask.java
+JAVA_TESTS=BasicTest.class
 
 # Declare test class
-TESTS=BasicTest.class
+if HAVE_JAVA
+noinst_JAVA=$(JAVA_SRC)
+TESTS=$(JAVA_TESTS)
+else
+EXTRA_DIST+=$(JAVA_SRC)
+EXTRA_DIST+=$(JAVA_TESTS)
+endif
 
 include $(srcdir)/../java_test.mk
 

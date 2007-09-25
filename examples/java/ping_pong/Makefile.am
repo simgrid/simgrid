@@ -1,12 +1,17 @@
 EXTRA_DIST=ping_pong_deployment.xml ping_pong_platform.xml
 
 # Declare sources:
-noinst_JAVA= Sender.java Receiver.java PingPongTask.java PingPongTest.java
+JAVA_SRC=Sender.java Receiver.java PingPongTask.java PingPongTest.java
+JAVA_TESTS=PingPongTest.class
 
 # Declare test class
-#if HAVE_JAVA
-TESTS=PingPongTest.class
-#endif
+if HAVE_JAVA
+noinst_JAVA=$(JAVA_SRC)
+TESTS=$(JAVA_TESTS)
+else
+EXTRA_DIST+=$(JAVA_SRC)
+EXTRA_DIST+=$(JAVA_TESTS)
+endif
 
 include $(srcdir)/../java_test.mk
 
