@@ -4,12 +4,13 @@ EXTRA_DIST=ping_pong_deployment.xml ping_pong_platform.xml
 JAVA_SRC=Sender.java Receiver.java PingPongTask.java PingPongTest.java
 JAVA_TESTS=PingPongTest.class
 
+EXTRA_DIST+=$(JAVA_SRC)
+
 # Declare test class
 if HAVE_JAVA
 noinst_JAVA=$(JAVA_SRC)
 TESTS=$(JAVA_TESTS)
 else
-EXTRA_DIST+=$(JAVA_SRC)
 EXTRA_DIST+=$(JAVA_TESTS)
 endif
 

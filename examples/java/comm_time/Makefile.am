@@ -4,12 +4,13 @@ EXTRA_DIST=comm_time_deployment.xml comm_time_platform.xml
 JAVA_SRC=Master.java Slave.java CommTimeTest.java CommTimeTask.java
 JAVA_TESTS=CommTimeTest.class
 
+EXTRA_DIST+=$(JAVA_SRC)
+
 # Declare test class
 if HAVE_JAVA
 noinst_JAVA=$(JAVA_SRC)
 TESTS=$(JAVA_TESTS)
 else
-EXTRA_DIST+=$(JAVA_SRC)
 EXTRA_DIST+=$(JAVA_TESTS)
 endif
 
