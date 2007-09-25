@@ -56,9 +56,9 @@ EXTRA_DIST= \
 	gras/DataDesc/ddt_parse.yy.l \
 	gras/Virtu/virtu_interface.h \
 	amok/Bandwidth/bandwidth_private.h \
-	amok/amok_modinter.h
+	amok/amok_modinter.h \
 	\
-	include/simix/simix.h include/simix/datatypes.h \
+	include/simix/simix.h include/simix/datatypes.h \
 	simix/private.h \
 	\
 	smpi/private.h
