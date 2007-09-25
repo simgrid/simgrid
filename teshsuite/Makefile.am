@@ -59,7 +59,7 @@ gras_datadesc_datadesc_usage_SOURCES=   gras/datadesc/datadesc_usage.c gras/data
 gras_datadesc_datadesc_usage_LDADD=     $(LDADD_RL)
 
 gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl
-	cd gras/datadesc ; perl ../$(top_srcdir)/teshsuite/gras/datadesc/mk_datadesc_structs.pl > datadesc_structs.c
+	perl $(top_srcdir)/teshsuite/gras/datadesc/mk_datadesc_structs.pl > $@
 
   ## Ensures the gras_msg_handle semantic ##
   ##########################################
