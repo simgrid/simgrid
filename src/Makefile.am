@@ -325,6 +325,7 @@ endif
 ##
 ## Java cruft
 
+EXTRA_DIST+=$(JMSG_JAVA_SRC)
 if HAVE_JAVA
 lib_LTLIBRARIES += libsimgrid4java.la
 
