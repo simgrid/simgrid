@@ -502,7 +502,6 @@ AC_CONFIG_FILES([
 #      examples/gras/p2p/chord/Makefile
 #      examples/gras/p2p/can/Makefile
 
-#if test "x$use_java" = "xyes" ; then
 AC_CONFIG_FILES([
     examples/java/Makefile
       examples/java/basic/Makefile
@@ -510,7 +509,6 @@ AC_CONFIG_FILES([
       examples/java/suspend/Makefile
       examples/java/ping_pong/Makefile
 ])
-#fi
 
 AC_CONFIG_FILES([
   examples/Makefile 
