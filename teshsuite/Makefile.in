@@ -762,7 +762,7 @@ gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl
   ##########################################
 
 gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
-	mkdir -p gras/msg_handle; cd gras/msg_handle; ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle $(srcdir)/msg_handle.xml
+	mkdir -p gras/msg_handle; cd gras/msg_handle; ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done

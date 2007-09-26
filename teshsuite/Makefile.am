@@ -78,7 +78,7 @@ gras_msg_handle_msg_handle_client_LDADD=      $(LDADD_RL)
 gras_msg_handle_msg_handle_server_LDADD=      $(LDADD_RL)
 
 gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
-	mkdir -p gras/msg_handle; cd gras/msg_handle; ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle $(srcdir)/msg_handle.xml
+	mkdir -p gras/msg_handle; cd gras/msg_handle; ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
 
 if GRAS_ARCH_32_BITS
   TESTS += gras/msg_handle/test_rl gras/msg_handle/test_sg_32
