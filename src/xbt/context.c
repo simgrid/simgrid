@@ -490,10 +490,6 @@ void xbt_context_kill(xbt_context_t context)
 /* Java cruft I'm gonna kill in the next cleanup round */
 void  xbt_context_set_jprocess(xbt_context_t context, void *jp){}
 void* xbt_context_get_jprocess(xbt_context_t context){return NULL;}
-void  xbt_context_set_jmutex(xbt_context_t context,void *jm){}
-void* xbt_context_get_jmutex(xbt_context_t context){return NULL;}
-void  xbt_context_set_jcond(xbt_context_t context,void *jc){}
-void* xbt_context_get_jcond(xbt_context_t context){return NULL;}
 void  xbt_context_set_jenv(xbt_context_t context,void* je){}
 void* xbt_context_get_jenv(xbt_context_t context){return NULL;}
 
