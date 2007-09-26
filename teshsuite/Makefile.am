@@ -103,6 +103,38 @@ simdag_network_test_reinit_costs_LDADD   =   $(LDADD_SG)
 TESTS += \
   simdag/network/test_reinit_costs.tesh
 
+# from L.C. Canon
+noinst_PROGRAMS += simdag/canon/sd_test0 \
+                   simdag/canon/sd_test1 \
+                   simdag/canon/sd_test2 \
+                   simdag/canon/sd_test3 \
+                   simdag/canon/sd_test4 \
+                   simdag/canon/sd_test5
+
+EXTRA_DIST      += simdag/canon/input_platform.xml
+
+simdag_canon_sd_test0_SOURCES = simdag/canon/sd_test0.c
+simdag_canon_sd_test0_LDADD = $(LDADD_SG)
+simdag_canon_sd_test1_SOURCES = simdag/canon/sd_test1.c
+simdag_canon_sd_test1_LDADD = $(LDADD_SG)
+simdag_canon_sd_test2_SOURCES = simdag/canon/sd_test2.c
+simdag_canon_sd_test2_LDADD = $(LDADD_SG)
+simdag_canon_sd_test3_SOURCES = simdag/canon/sd_test3.c
+simdag_canon_sd_test3_LDADD = $(LDADD_SG)
+simdag_canon_sd_test4_SOURCES = simdag/canon/sd_test4.c
+simdag_canon_sd_test4_LDADD = $(LDADD_SG)
+simdag_canon_sd_test5_SOURCES = simdag/canon/sd_test5.c
+simdag_canon_sd_test5_LDADD = $(LDADD_SG)
+
+TESTS += \
+  simdag/canon/sd_test0.tesh 
+# \
+#   simdag/canon/sd_test1.tesh \
+#   simdag/canon/sd_test2.tesh \
+#   simdag/canon/sd_test3.tesh \
+#   simdag/canon/sd_test4.tesh \
+#   simdag/canon/sd_test5.tesh
+
 # p2p
 
 noinst_PROGRAMS += simdag/network/p2p/test_latency1 \
