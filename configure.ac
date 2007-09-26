@@ -362,6 +362,8 @@ AC_ARG_ENABLE(java,
 AC_MSG_CHECKING(whether to compile java bindings)
 if test "x$disable_java" != "xyes" ; then
    use_java="disabled by user"
+elif test "x$with_context" = "xucontext" ; then
+   use_java="incompatibility with ucontext. Try --with-pthreads or --disable-java."
 else
   AC_PATH_PROG([JAVAC], [javac], `which javac`)
   AC_PATH_PROG([JAVA],  [java] , `which java`)
