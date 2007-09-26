@@ -78,13 +78,93 @@ gras_msg_handle_msg_handle_client_LDADD=      $(LDADD_RL)
 gras_msg_handle_msg_handle_server_LDADD=      $(LDADD_RL)
 
 gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
-	mkdir -p gras/msg_handle; cd gras/msg_handle; ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
+	mkdir -p gras/msg_handle; \
+	  cd gras/msg_handle;\
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
+
 
 if GRAS_ARCH_32_BITS
   TESTS += gras/msg_handle/test_rl gras/msg_handle/test_sg_32
 else
   TESTS += gras/msg_handle/test_rl gras/msg_handle/test_sg_64
 endif
-		    
+
+
+###################################
+# network model test via SimDag API
+###################################
+
+# misc tests
+
+noinst_PROGRAMS += simdag/network/test_reinit_costs
+EXTRA_DIST      += simdag/network/platform_2p_1sl.xml
+simdag_network_test_reinit_costs_SOURCES = simdag/network/test_reinit_costs.c
+simdag_network_test_reinit_costs_LDADD   =   $(LDADD_SG)
+TESTS += \
+  simdag/network/test_reinit_costs.tesh
+
+# p2p
+
+noinst_PROGRAMS += simdag/network/p2p/test_latency1 \
+                   simdag/network/p2p/test_latency2 \
+                   simdag/network/p2p/test_latency3 \
+                   simdag/network/p2p/test_latency_bound
+
+EXTRA_DIST      += simdag/network/p2p/platform_2p_1sl.xml \
+                   simdag/network/p2p/platform_2p_1fl.xml \
+                   simdag/network/p2p/platform_2p_1switch.xml \
+                   simdag/network/p2p/platform_2p_1bb.xml
+
+simdag_network_p2p_test_latency1_SOURCES = simdag/network/p2p/test_latency1.c
+simdag_network_p2p_test_latency1_LDADD   = $(LDADD_SG)
+simdag_network_p2p_test_latency2_SOURCES = simdag/network/p2p/test_latency2.c
+simdag_network_p2p_test_latency2_LDADD   = $(LDADD_SG)
+simdag_network_p2p_test_latency3_SOURCES = simdag/network/p2p/test_latency3.c
+simdag_network_p2p_test_latency3_LDADD   = $(LDADD_SG)
+simdag_network_p2p_test_latency_bound_SOURCES = simdag/network/p2p/test_latency_bound.c
+simdag_network_p2p_test_latency_bound_LDADD   = $(LDADD_SG)
+
+TESTS += \
+  simdag/network/p2p/test_latency1.tesh \
+  simdag/network/p2p/test_latency2.tesh \
+  simdag/network/p2p/test_latency3.tesh \
+  simdag/network/p2p/test_latency_bound.tesh
+
+# m x n tests
+
+noinst_PROGRAMS += simdag/network/mxn/test_intra_all2all \
+                   simdag/network/mxn/test_intra_independent_comm \
+                   simdag/network/mxn/test_intra_scatter
+
+EXTRA_DIST      += simdag/network/mxn/platform_4p_1switch.xml 
+
+simdag_network_mxn_test_intra_all2all_SOURCES = simdag/network/mxn/test_intra_all2all.c
+simdag_network_mxn_test_intra_all2all_LDADD   = $(LDADD_SG)
+simdag_network_mxn_test_intra_independent_comm_SOURCES = simdag/network/mxn/test_intra_independent_comm.c
+simdag_network_mxn_test_intra_independent_comm_LDADD   = $(LDADD_SG)
+simdag_network_mxn_test_intra_scatter_SOURCES = simdag/network/mxn/test_intra_scatter.c
+simdag_network_mxn_test_intra_scatter_LDADD   = $(LDADD_SG)
+
+TESTS += \
+  simdag/network/mxn/test_intra_all2all.tesh \
+  simdag/network/mxn/test_intra_independent_comm.tesh \
+  simdag/network/mxn/test_intra_scatter.tesh 
+
+# testing parallel tasks
+
+noinst_PROGRAMS += simdag/partask/test_comp_only_seq \
+                   simdag/partask/test_comp_only_par 
+
+EXTRA_DIST      += simdag/partask/platform_2p_1sl_hetero.xml \
+                   simdag/partask/platform_2p_1sl.xml
+
+simdag_partask_test_comp_only_seq_SOURCES = simdag/partask/test_comp_only_seq.c
+simdag_partask_test_comp_only_seq_LDADD   = $(LDADD_SG)
+simdag_partask_test_comp_only_par_SOURCES = simdag/partask/test_comp_only_par.c
+simdag_partask_test_comp_only_par_LDADD   = $(LDADD_SG)
+
+TESTS += \
+  simdag/partask/test_comp_only_seq.tesh \
+  simdag/partask/test_comp_only_par.tesh
 
 include $(top_srcdir)/acmacro/dist-files.mk

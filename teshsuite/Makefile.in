@@ -42,7 +42,17 @@ noinst_PROGRAMS = xbt/parallel_log_crashtest$(EXEEXT) \
 	gras/datadesc/datadesc_usage$(EXEEXT) \
 	gras/msg_handle/msg_handle_client$(EXEEXT) \
 	gras/msg_handle/msg_handle_server$(EXEEXT) \
-	gras/msg_handle/msg_handle_simulator$(EXEEXT)
+	gras/msg_handle/msg_handle_simulator$(EXEEXT) \
+	simdag/network/test_reinit_costs$(EXEEXT) \
+	simdag/network/p2p/test_latency1$(EXEEXT) \
+	simdag/network/p2p/test_latency2$(EXEEXT) \
+	simdag/network/p2p/test_latency3$(EXEEXT) \
+	simdag/network/p2p/test_latency_bound$(EXEEXT) \
+	simdag/network/mxn/test_intra_all2all$(EXEEXT) \
+	simdag/network/mxn/test_intra_independent_comm$(EXEEXT) \
+	simdag/network/mxn/test_intra_scatter$(EXEEXT) \
+	simdag/partask/test_comp_only_seq$(EXEEXT) \
+	simdag/partask/test_comp_only_par$(EXEEXT)
 @GRAS_ARCH_32_BITS_TRUE@am__append_1 = gras/msg_handle/test_rl gras/msg_handle/test_sg_32
 @GRAS_ARCH_32_BITS_FALSE@am__append_2 = gras/msg_handle/test_rl gras/msg_handle/test_sg_64
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -84,6 +94,54 @@ am_gras_msg_handle_msg_handle_simulator_OBJECTS =  \
 gras_msg_handle_msg_handle_simulator_OBJECTS =  \
 	$(am_gras_msg_handle_msg_handle_simulator_OBJECTS)
 gras_msg_handle_msg_handle_simulator_DEPENDENCIES = $(LDADD_SG)
+am_simdag_network_mxn_test_intra_all2all_OBJECTS =  \
+	test_intra_all2all.$(OBJEXT)
+simdag_network_mxn_test_intra_all2all_OBJECTS =  \
+	$(am_simdag_network_mxn_test_intra_all2all_OBJECTS)
+simdag_network_mxn_test_intra_all2all_DEPENDENCIES = $(LDADD_SG)
+am_simdag_network_mxn_test_intra_independent_comm_OBJECTS =  \
+	test_intra_independent_comm.$(OBJEXT)
+simdag_network_mxn_test_intra_independent_comm_OBJECTS =  \
+	$(am_simdag_network_mxn_test_intra_independent_comm_OBJECTS)
+simdag_network_mxn_test_intra_independent_comm_DEPENDENCIES =  \
+	$(LDADD_SG)
+am_simdag_network_mxn_test_intra_scatter_OBJECTS =  \
+	test_intra_scatter.$(OBJEXT)
+simdag_network_mxn_test_intra_scatter_OBJECTS =  \
+	$(am_simdag_network_mxn_test_intra_scatter_OBJECTS)
+simdag_network_mxn_test_intra_scatter_DEPENDENCIES = $(LDADD_SG)
+am_simdag_network_p2p_test_latency1_OBJECTS = test_latency1.$(OBJEXT)
+simdag_network_p2p_test_latency1_OBJECTS =  \
+	$(am_simdag_network_p2p_test_latency1_OBJECTS)
+simdag_network_p2p_test_latency1_DEPENDENCIES = $(LDADD_SG)
+am_simdag_network_p2p_test_latency2_OBJECTS = test_latency2.$(OBJEXT)
+simdag_network_p2p_test_latency2_OBJECTS =  \
+	$(am_simdag_network_p2p_test_latency2_OBJECTS)
+simdag_network_p2p_test_latency2_DEPENDENCIES = $(LDADD_SG)
+am_simdag_network_p2p_test_latency3_OBJECTS = test_latency3.$(OBJEXT)
+simdag_network_p2p_test_latency3_OBJECTS =  \
+	$(am_simdag_network_p2p_test_latency3_OBJECTS)
+simdag_network_p2p_test_latency3_DEPENDENCIES = $(LDADD_SG)
+am_simdag_network_p2p_test_latency_bound_OBJECTS =  \
+	test_latency_bound.$(OBJEXT)
+simdag_network_p2p_test_latency_bound_OBJECTS =  \
+	$(am_simdag_network_p2p_test_latency_bound_OBJECTS)
+simdag_network_p2p_test_latency_bound_DEPENDENCIES = $(LDADD_SG)
+am_simdag_network_test_reinit_costs_OBJECTS =  \
+	test_reinit_costs.$(OBJEXT)
+simdag_network_test_reinit_costs_OBJECTS =  \
+	$(am_simdag_network_test_reinit_costs_OBJECTS)
+simdag_network_test_reinit_costs_DEPENDENCIES = $(LDADD_SG)
+am_simdag_partask_test_comp_only_par_OBJECTS =  \
+	test_comp_only_par.$(OBJEXT)
+simdag_partask_test_comp_only_par_OBJECTS =  \
+	$(am_simdag_partask_test_comp_only_par_OBJECTS)
+simdag_partask_test_comp_only_par_DEPENDENCIES = $(LDADD_SG)
+am_simdag_partask_test_comp_only_seq_OBJECTS =  \
+	test_comp_only_seq.$(OBJEXT)
+simdag_partask_test_comp_only_seq_OBJECTS =  \
+	$(am_simdag_partask_test_comp_only_seq_OBJECTS)
+simdag_partask_test_comp_only_seq_DEPENDENCIES = $(LDADD_SG)
 xbt_parallel_log_crashtest_SOURCES = xbt/parallel_log_crashtest.c
 xbt_parallel_log_crashtest_OBJECTS = parallel_log_crashtest.$(OBJEXT)
 xbt_parallel_log_crashtest_DEPENDENCIES = $(LDADD_RL)
@@ -103,11 +161,31 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
+	$(simdag_network_mxn_test_intra_all2all_SOURCES) \
+	$(simdag_network_mxn_test_intra_independent_comm_SOURCES) \
+	$(simdag_network_mxn_test_intra_scatter_SOURCES) \
+	$(simdag_network_p2p_test_latency1_SOURCES) \
+	$(simdag_network_p2p_test_latency2_SOURCES) \
+	$(simdag_network_p2p_test_latency3_SOURCES) \
+	$(simdag_network_p2p_test_latency_bound_SOURCES) \
+	$(simdag_network_test_reinit_costs_SOURCES) \
+	$(simdag_partask_test_comp_only_par_SOURCES) \
+	$(simdag_partask_test_comp_only_seq_SOURCES) \
 	xbt/parallel_log_crashtest.c
 DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
+	$(simdag_network_mxn_test_intra_all2all_SOURCES) \
+	$(simdag_network_mxn_test_intra_independent_comm_SOURCES) \
+	$(simdag_network_mxn_test_intra_scatter_SOURCES) \
+	$(simdag_network_p2p_test_latency1_SOURCES) \
+	$(simdag_network_p2p_test_latency2_SOURCES) \
+	$(simdag_network_p2p_test_latency3_SOURCES) \
+	$(simdag_network_p2p_test_latency_bound_SOURCES) \
+	$(simdag_network_test_reinit_costs_SOURCES) \
+	$(simdag_partask_test_comp_only_par_SOURCES) \
+	$(simdag_partask_test_comp_only_seq_SOURCES) \
 	xbt/parallel_log_crashtest.c
 ETAGS = etags
 CTAGS = ctags
@@ -258,7 +336,15 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	gras/datadesc/datadesc.big32_8_4 \
 	gras/datadesc/datadesc.big32_2 \
 	gras/datadesc/mk_datadesc_structs.pl \
-	gras/msg_handle/msg_handle.xml
+	gras/msg_handle/msg_handle.xml \
+	simdag/network/platform_2p_1sl.xml \
+	simdag/network/p2p/platform_2p_1sl.xml \
+	simdag/network/p2p/platform_2p_1fl.xml \
+	simdag/network/p2p/platform_2p_1switch.xml \
+	simdag/network/p2p/platform_2p_1bb.xml \
+	simdag/network/mxn/platform_4p_1switch.xml \
+	simdag/partask/platform_2p_1sl_hetero.xml \
+	simdag/partask/platform_2p_1sl.xml
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
 TESTS = xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_mem.tesh gras/datadesc/datadesc_rw.tesh \
@@ -267,7 +353,16 @@ TESTS = xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_r_big32_8.tesh \
 	gras/datadesc/datadesc_r_big32_8_4.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh $(am__append_1) \
-	$(am__append_2)
+	$(am__append_2) simdag/network/test_reinit_costs.tesh \
+	simdag/network/p2p/test_latency1.tesh \
+	simdag/network/p2p/test_latency2.tesh \
+	simdag/network/p2p/test_latency3.tesh \
+	simdag/network/p2p/test_latency_bound.tesh \
+	simdag/network/mxn/test_intra_all2all.tesh \
+	simdag/network/mxn/test_intra_independent_comm.tesh \
+	simdag/network/mxn/test_intra_scatter.tesh \
+	simdag/partask/test_comp_only_seq.tesh \
+	simdag/partask/test_comp_only_par.tesh
 # Data sets still to regenerate:
 XFAIL_TESTS = gras/datadesc/datadesc_r_little32.tesh \
 	gras/datadesc/datadesc_r_big32_8.tesh \
@@ -284,6 +379,26 @@ gras_msg_handle_msg_handle_server_SOURCES = gras/msg_handle/msg_handle.c gras/ms
 gras_msg_handle_msg_handle_simulator_LDADD = $(LDADD_SG)
 gras_msg_handle_msg_handle_client_LDADD = $(LDADD_RL)
 gras_msg_handle_msg_handle_server_LDADD = $(LDADD_RL)
+simdag_network_test_reinit_costs_SOURCES = simdag/network/test_reinit_costs.c
+simdag_network_test_reinit_costs_LDADD = $(LDADD_SG)
+simdag_network_p2p_test_latency1_SOURCES = simdag/network/p2p/test_latency1.c
+simdag_network_p2p_test_latency1_LDADD = $(LDADD_SG)
+simdag_network_p2p_test_latency2_SOURCES = simdag/network/p2p/test_latency2.c
+simdag_network_p2p_test_latency2_LDADD = $(LDADD_SG)
+simdag_network_p2p_test_latency3_SOURCES = simdag/network/p2p/test_latency3.c
+simdag_network_p2p_test_latency3_LDADD = $(LDADD_SG)
+simdag_network_p2p_test_latency_bound_SOURCES = simdag/network/p2p/test_latency_bound.c
+simdag_network_p2p_test_latency_bound_LDADD = $(LDADD_SG)
+simdag_network_mxn_test_intra_all2all_SOURCES = simdag/network/mxn/test_intra_all2all.c
+simdag_network_mxn_test_intra_all2all_LDADD = $(LDADD_SG)
+simdag_network_mxn_test_intra_independent_comm_SOURCES = simdag/network/mxn/test_intra_independent_comm.c
+simdag_network_mxn_test_intra_independent_comm_LDADD = $(LDADD_SG)
+simdag_network_mxn_test_intra_scatter_SOURCES = simdag/network/mxn/test_intra_scatter.c
+simdag_network_mxn_test_intra_scatter_LDADD = $(LDADD_SG)
+simdag_partask_test_comp_only_seq_SOURCES = simdag/partask/test_comp_only_seq.c
+simdag_partask_test_comp_only_seq_LDADD = $(LDADD_SG)
+simdag_partask_test_comp_only_par_SOURCES = simdag/partask/test_comp_only_par.c
+simdag_partask_test_comp_only_par_LDADD = $(LDADD_SG)
 all: all-am
 
 .SUFFIXES:
@@ -342,6 +457,48 @@ gras/msg_handle/msg_handle_server$(EXEEXT): $(gras_msg_handle_msg_handle_server_
 gras/msg_handle/msg_handle_simulator$(EXEEXT): $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_DEPENDENCIES) gras/msg_handle/$(am__dirstamp)
 	@rm -f gras/msg_handle/msg_handle_simulator$(EXEEXT)
 	$(LINK) $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_LDADD) $(LIBS)
+simdag/network/mxn/$(am__dirstamp):
+	@$(MKDIR_P) simdag/network/mxn
+	@: > simdag/network/mxn/$(am__dirstamp)
+simdag/network/mxn/test_intra_all2all$(EXEEXT): $(simdag_network_mxn_test_intra_all2all_OBJECTS) $(simdag_network_mxn_test_intra_all2all_DEPENDENCIES) simdag/network/mxn/$(am__dirstamp)
+	@rm -f simdag/network/mxn/test_intra_all2all$(EXEEXT)
+	$(LINK) $(simdag_network_mxn_test_intra_all2all_OBJECTS) $(simdag_network_mxn_test_intra_all2all_LDADD) $(LIBS)
+simdag/network/mxn/test_intra_independent_comm$(EXEEXT): $(simdag_network_mxn_test_intra_independent_comm_OBJECTS) $(simdag_network_mxn_test_intra_independent_comm_DEPENDENCIES) simdag/network/mxn/$(am__dirstamp)
+	@rm -f simdag/network/mxn/test_intra_independent_comm$(EXEEXT)
+	$(LINK) $(simdag_network_mxn_test_intra_independent_comm_OBJECTS) $(simdag_network_mxn_test_intra_independent_comm_LDADD) $(LIBS)
+simdag/network/mxn/test_intra_scatter$(EXEEXT): $(simdag_network_mxn_test_intra_scatter_OBJECTS) $(simdag_network_mxn_test_intra_scatter_DEPENDENCIES) simdag/network/mxn/$(am__dirstamp)
+	@rm -f simdag/network/mxn/test_intra_scatter$(EXEEXT)
+	$(LINK) $(simdag_network_mxn_test_intra_scatter_OBJECTS) $(simdag_network_mxn_test_intra_scatter_LDADD) $(LIBS)
+simdag/network/p2p/$(am__dirstamp):
+	@$(MKDIR_P) simdag/network/p2p
+	@: > simdag/network/p2p/$(am__dirstamp)
+simdag/network/p2p/test_latency1$(EXEEXT): $(simdag_network_p2p_test_latency1_OBJECTS) $(simdag_network_p2p_test_latency1_DEPENDENCIES) simdag/network/p2p/$(am__dirstamp)
+	@rm -f simdag/network/p2p/test_latency1$(EXEEXT)
+	$(LINK) $(simdag_network_p2p_test_latency1_OBJECTS) $(simdag_network_p2p_test_latency1_LDADD) $(LIBS)
+simdag/network/p2p/test_latency2$(EXEEXT): $(simdag_network_p2p_test_latency2_OBJECTS) $(simdag_network_p2p_test_latency2_DEPENDENCIES) simdag/network/p2p/$(am__dirstamp)
+	@rm -f simdag/network/p2p/test_latency2$(EXEEXT)
+	$(LINK) $(simdag_network_p2p_test_latency2_OBJECTS) $(simdag_network_p2p_test_latency2_LDADD) $(LIBS)
+simdag/network/p2p/test_latency3$(EXEEXT): $(simdag_network_p2p_test_latency3_OBJECTS) $(simdag_network_p2p_test_latency3_DEPENDENCIES) simdag/network/p2p/$(am__dirstamp)
+	@rm -f simdag/network/p2p/test_latency3$(EXEEXT)
+	$(LINK) $(simdag_network_p2p_test_latency3_OBJECTS) $(simdag_network_p2p_test_latency3_LDADD) $(LIBS)
+simdag/network/p2p/test_latency_bound$(EXEEXT): $(simdag_network_p2p_test_latency_bound_OBJECTS) $(simdag_network_p2p_test_latency_bound_DEPENDENCIES) simdag/network/p2p/$(am__dirstamp)
+	@rm -f simdag/network/p2p/test_latency_bound$(EXEEXT)
+	$(LINK) $(simdag_network_p2p_test_latency_bound_OBJECTS) $(simdag_network_p2p_test_latency_bound_LDADD) $(LIBS)
+simdag/network/$(am__dirstamp):
+	@$(MKDIR_P) simdag/network
+	@: > simdag/network/$(am__dirstamp)
+simdag/network/test_reinit_costs$(EXEEXT): $(simdag_network_test_reinit_costs_OBJECTS) $(simdag_network_test_reinit_costs_DEPENDENCIES) simdag/network/$(am__dirstamp)
+	@rm -f simdag/network/test_reinit_costs$(EXEEXT)
+	$(LINK) $(simdag_network_test_reinit_costs_OBJECTS) $(simdag_network_test_reinit_costs_LDADD) $(LIBS)
+simdag/partask/$(am__dirstamp):
+	@$(MKDIR_P) simdag/partask
+	@: > simdag/partask/$(am__dirstamp)
+simdag/partask/test_comp_only_par$(EXEEXT): $(simdag_partask_test_comp_only_par_OBJECTS) $(simdag_partask_test_comp_only_par_DEPENDENCIES) simdag/partask/$(am__dirstamp)
+	@rm -f simdag/partask/test_comp_only_par$(EXEEXT)
+	$(LINK) $(simdag_partask_test_comp_only_par_OBJECTS) $(simdag_partask_test_comp_only_par_LDADD) $(LIBS)
+simdag/partask/test_comp_only_seq$(EXEEXT): $(simdag_partask_test_comp_only_seq_OBJECTS) $(simdag_partask_test_comp_only_seq_DEPENDENCIES) simdag/partask/$(am__dirstamp)
+	@rm -f simdag/partask/test_comp_only_seq$(EXEEXT)
+	$(LINK) $(simdag_partask_test_comp_only_seq_OBJECTS) $(simdag_partask_test_comp_only_seq_LDADD) $(LIBS)
 xbt/$(am__dirstamp):
 	@$(MKDIR_P) xbt
 	@: > xbt/$(am__dirstamp)
@@ -362,6 +519,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_comp_only_par.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_comp_only_seq.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_intra_all2all.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_intra_independent_comm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_intra_scatter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_latency1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_latency2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_latency3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_latency_bound.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_reinit_costs.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -467,6 +634,146 @@ _msg_handle_simulator.obj: gras/msg_handle/_msg_handle_simulator.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_simulator.c' object='_msg_handle_simulator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_simulator.obj `if test -f 'gras/msg_handle/_msg_handle_simulator.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_simulator.c'; fi`
+
+test_intra_all2all.o: simdag/network/mxn/test_intra_all2all.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_all2all.o -MD -MP -MF $(DEPDIR)/test_intra_all2all.Tpo -c -o test_intra_all2all.o `test -f 'simdag/network/mxn/test_intra_all2all.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_all2all.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_intra_all2all.Tpo $(DEPDIR)/test_intra_all2all.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/mxn/test_intra_all2all.c' object='test_intra_all2all.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_intra_all2all.o `test -f 'simdag/network/mxn/test_intra_all2all.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_all2all.c
+
+test_intra_all2all.obj: simdag/network/mxn/test_intra_all2all.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_all2all.obj -MD -MP -MF $(DEPDIR)/test_intra_all2all.Tpo -c -o test_intra_all2all.obj `if test -f 'simdag/network/mxn/test_intra_all2all.c'; then $(CYGPATH_W) 'simdag/network/mxn/test_intra_all2all.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/mxn/test_intra_all2all.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_intra_all2all.Tpo $(DEPDIR)/test_intra_all2all.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/mxn/test_intra_all2all.c' object='test_intra_all2all.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_intra_all2all.obj `if test -f 'simdag/network/mxn/test_intra_all2all.c'; then $(CYGPATH_W) 'simdag/network/mxn/test_intra_all2all.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/mxn/test_intra_all2all.c'; fi`
+
+test_intra_independent_comm.o: simdag/network/mxn/test_intra_independent_comm.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_independent_comm.o -MD -MP -MF $(DEPDIR)/test_intra_independent_comm.Tpo -c -o test_intra_independent_comm.o `test -f 'simdag/network/mxn/test_intra_independent_comm.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_independent_comm.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_intra_independent_comm.Tpo $(DEPDIR)/test_intra_independent_comm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/mxn/test_intra_independent_comm.c' object='test_intra_independent_comm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_intra_independent_comm.o `test -f 'simdag/network/mxn/test_intra_independent_comm.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_independent_comm.c
+
+test_intra_independent_comm.obj: simdag/network/mxn/test_intra_independent_comm.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_independent_comm.obj -MD -MP -MF $(DEPDIR)/test_intra_independent_comm.Tpo -c -o test_intra_independent_comm.obj `if test -f 'simdag/network/mxn/test_intra_independent_comm.c'; then $(CYGPATH_W) 'simdag/network/mxn/test_intra_independent_comm.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/mxn/test_intra_independent_comm.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_intra_independent_comm.Tpo $(DEPDIR)/test_intra_independent_comm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/mxn/test_intra_independent_comm.c' object='test_intra_independent_comm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_intra_independent_comm.obj `if test -f 'simdag/network/mxn/test_intra_independent_comm.c'; then $(CYGPATH_W) 'simdag/network/mxn/test_intra_independent_comm.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/mxn/test_intra_independent_comm.c'; fi`
+
+test_intra_scatter.o: simdag/network/mxn/test_intra_scatter.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_scatter.o -MD -MP -MF $(DEPDIR)/test_intra_scatter.Tpo -c -o test_intra_scatter.o `test -f 'simdag/network/mxn/test_intra_scatter.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_scatter.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_intra_scatter.Tpo $(DEPDIR)/test_intra_scatter.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/mxn/test_intra_scatter.c' object='test_intra_scatter.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_intra_scatter.o `test -f 'simdag/network/mxn/test_intra_scatter.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_scatter.c
+
+test_intra_scatter.obj: simdag/network/mxn/test_intra_scatter.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_scatter.obj -MD -MP -MF $(DEPDIR)/test_intra_scatter.Tpo -c -o test_intra_scatter.obj `if test -f 'simdag/network/mxn/test_intra_scatter.c'; then $(CYGPATH_W) 'simdag/network/mxn/test_intra_scatter.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/mxn/test_intra_scatter.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_intra_scatter.Tpo $(DEPDIR)/test_intra_scatter.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/mxn/test_intra_scatter.c' object='test_intra_scatter.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_intra_scatter.obj `if test -f 'simdag/network/mxn/test_intra_scatter.c'; then $(CYGPATH_W) 'simdag/network/mxn/test_intra_scatter.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/mxn/test_intra_scatter.c'; fi`
+
+test_latency1.o: simdag/network/p2p/test_latency1.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency1.o -MD -MP -MF $(DEPDIR)/test_latency1.Tpo -c -o test_latency1.o `test -f 'simdag/network/p2p/test_latency1.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency1.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency1.Tpo $(DEPDIR)/test_latency1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency1.c' object='test_latency1.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency1.o `test -f 'simdag/network/p2p/test_latency1.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency1.c
+
+test_latency1.obj: simdag/network/p2p/test_latency1.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency1.obj -MD -MP -MF $(DEPDIR)/test_latency1.Tpo -c -o test_latency1.obj `if test -f 'simdag/network/p2p/test_latency1.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency1.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency1.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency1.Tpo $(DEPDIR)/test_latency1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency1.c' object='test_latency1.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency1.obj `if test -f 'simdag/network/p2p/test_latency1.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency1.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency1.c'; fi`
+
+test_latency2.o: simdag/network/p2p/test_latency2.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency2.o -MD -MP -MF $(DEPDIR)/test_latency2.Tpo -c -o test_latency2.o `test -f 'simdag/network/p2p/test_latency2.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency2.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency2.Tpo $(DEPDIR)/test_latency2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency2.c' object='test_latency2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency2.o `test -f 'simdag/network/p2p/test_latency2.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency2.c
+
+test_latency2.obj: simdag/network/p2p/test_latency2.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency2.obj -MD -MP -MF $(DEPDIR)/test_latency2.Tpo -c -o test_latency2.obj `if test -f 'simdag/network/p2p/test_latency2.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency2.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency2.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency2.Tpo $(DEPDIR)/test_latency2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency2.c' object='test_latency2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency2.obj `if test -f 'simdag/network/p2p/test_latency2.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency2.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency2.c'; fi`
+
+test_latency3.o: simdag/network/p2p/test_latency3.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency3.o -MD -MP -MF $(DEPDIR)/test_latency3.Tpo -c -o test_latency3.o `test -f 'simdag/network/p2p/test_latency3.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency3.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency3.Tpo $(DEPDIR)/test_latency3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency3.c' object='test_latency3.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency3.o `test -f 'simdag/network/p2p/test_latency3.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency3.c
+
+test_latency3.obj: simdag/network/p2p/test_latency3.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency3.obj -MD -MP -MF $(DEPDIR)/test_latency3.Tpo -c -o test_latency3.obj `if test -f 'simdag/network/p2p/test_latency3.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency3.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency3.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency3.Tpo $(DEPDIR)/test_latency3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency3.c' object='test_latency3.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency3.obj `if test -f 'simdag/network/p2p/test_latency3.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency3.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency3.c'; fi`
+
+test_latency_bound.o: simdag/network/p2p/test_latency_bound.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency_bound.o -MD -MP -MF $(DEPDIR)/test_latency_bound.Tpo -c -o test_latency_bound.o `test -f 'simdag/network/p2p/test_latency_bound.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency_bound.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency_bound.Tpo $(DEPDIR)/test_latency_bound.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency_bound.c' object='test_latency_bound.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency_bound.o `test -f 'simdag/network/p2p/test_latency_bound.c' || echo '$(srcdir)/'`simdag/network/p2p/test_latency_bound.c
+
+test_latency_bound.obj: simdag/network/p2p/test_latency_bound.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_latency_bound.obj -MD -MP -MF $(DEPDIR)/test_latency_bound.Tpo -c -o test_latency_bound.obj `if test -f 'simdag/network/p2p/test_latency_bound.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency_bound.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency_bound.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_latency_bound.Tpo $(DEPDIR)/test_latency_bound.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/p2p/test_latency_bound.c' object='test_latency_bound.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_latency_bound.obj `if test -f 'simdag/network/p2p/test_latency_bound.c'; then $(CYGPATH_W) 'simdag/network/p2p/test_latency_bound.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/p2p/test_latency_bound.c'; fi`
+
+test_reinit_costs.o: simdag/network/test_reinit_costs.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_reinit_costs.o -MD -MP -MF $(DEPDIR)/test_reinit_costs.Tpo -c -o test_reinit_costs.o `test -f 'simdag/network/test_reinit_costs.c' || echo '$(srcdir)/'`simdag/network/test_reinit_costs.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_reinit_costs.Tpo $(DEPDIR)/test_reinit_costs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/test_reinit_costs.c' object='test_reinit_costs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_reinit_costs.o `test -f 'simdag/network/test_reinit_costs.c' || echo '$(srcdir)/'`simdag/network/test_reinit_costs.c
+
+test_reinit_costs.obj: simdag/network/test_reinit_costs.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_reinit_costs.obj -MD -MP -MF $(DEPDIR)/test_reinit_costs.Tpo -c -o test_reinit_costs.obj `if test -f 'simdag/network/test_reinit_costs.c'; then $(CYGPATH_W) 'simdag/network/test_reinit_costs.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/test_reinit_costs.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_reinit_costs.Tpo $(DEPDIR)/test_reinit_costs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/network/test_reinit_costs.c' object='test_reinit_costs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_reinit_costs.obj `if test -f 'simdag/network/test_reinit_costs.c'; then $(CYGPATH_W) 'simdag/network/test_reinit_costs.c'; else $(CYGPATH_W) '$(srcdir)/simdag/network/test_reinit_costs.c'; fi`
+
+test_comp_only_par.o: simdag/partask/test_comp_only_par.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_comp_only_par.o -MD -MP -MF $(DEPDIR)/test_comp_only_par.Tpo -c -o test_comp_only_par.o `test -f 'simdag/partask/test_comp_only_par.c' || echo '$(srcdir)/'`simdag/partask/test_comp_only_par.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_comp_only_par.Tpo $(DEPDIR)/test_comp_only_par.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/partask/test_comp_only_par.c' object='test_comp_only_par.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_comp_only_par.o `test -f 'simdag/partask/test_comp_only_par.c' || echo '$(srcdir)/'`simdag/partask/test_comp_only_par.c
+
+test_comp_only_par.obj: simdag/partask/test_comp_only_par.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_comp_only_par.obj -MD -MP -MF $(DEPDIR)/test_comp_only_par.Tpo -c -o test_comp_only_par.obj `if test -f 'simdag/partask/test_comp_only_par.c'; then $(CYGPATH_W) 'simdag/partask/test_comp_only_par.c'; else $(CYGPATH_W) '$(srcdir)/simdag/partask/test_comp_only_par.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_comp_only_par.Tpo $(DEPDIR)/test_comp_only_par.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/partask/test_comp_only_par.c' object='test_comp_only_par.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_comp_only_par.obj `if test -f 'simdag/partask/test_comp_only_par.c'; then $(CYGPATH_W) 'simdag/partask/test_comp_only_par.c'; else $(CYGPATH_W) '$(srcdir)/simdag/partask/test_comp_only_par.c'; fi`
+
+test_comp_only_seq.o: simdag/partask/test_comp_only_seq.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_comp_only_seq.o -MD -MP -MF $(DEPDIR)/test_comp_only_seq.Tpo -c -o test_comp_only_seq.o `test -f 'simdag/partask/test_comp_only_seq.c' || echo '$(srcdir)/'`simdag/partask/test_comp_only_seq.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_comp_only_seq.Tpo $(DEPDIR)/test_comp_only_seq.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/partask/test_comp_only_seq.c' object='test_comp_only_seq.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_comp_only_seq.o `test -f 'simdag/partask/test_comp_only_seq.c' || echo '$(srcdir)/'`simdag/partask/test_comp_only_seq.c
+
+test_comp_only_seq.obj: simdag/partask/test_comp_only_seq.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_comp_only_seq.obj -MD -MP -MF $(DEPDIR)/test_comp_only_seq.Tpo -c -o test_comp_only_seq.obj `if test -f 'simdag/partask/test_comp_only_seq.c'; then $(CYGPATH_W) 'simdag/partask/test_comp_only_seq.c'; else $(CYGPATH_W) '$(srcdir)/simdag/partask/test_comp_only_seq.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/test_comp_only_seq.Tpo $(DEPDIR)/test_comp_only_seq.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/partask/test_comp_only_seq.c' object='test_comp_only_seq.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_comp_only_seq.obj `if test -f 'simdag/partask/test_comp_only_seq.c'; then $(CYGPATH_W) 'simdag/partask/test_comp_only_seq.c'; else $(CYGPATH_W) '$(srcdir)/simdag/partask/test_comp_only_seq.c'; fi`
 
 parallel_log_crashtest.o: xbt/parallel_log_crashtest.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT parallel_log_crashtest.o -MD -MP -MF $(DEPDIR)/parallel_log_crashtest.Tpo -c -o parallel_log_crashtest.o `test -f 'xbt/parallel_log_crashtest.c' || echo '$(srcdir)/'`xbt/parallel_log_crashtest.c
@@ -663,6 +970,10 @@ distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-rm -f gras/datadesc/$(am__dirstamp)
 	-rm -f gras/msg_handle/$(am__dirstamp)
+	-rm -f simdag/network/$(am__dirstamp)
+	-rm -f simdag/network/mxn/$(am__dirstamp)
+	-rm -f simdag/network/p2p/$(am__dirstamp)
+	-rm -f simdag/partask/$(am__dirstamp)
 	-rm -f xbt/$(am__dirstamp)
 
 maintainer-clean-generic:
@@ -762,7 +1073,9 @@ gras/datadesc/datadesc_structs.c: gras/datadesc/mk_datadesc_structs.pl
   ##########################################
 
 gras/msg_handle/_msg_handle_simulator.c gras/msg_handle/_msg_handle_client.c gras/msg_handle/_msg_handle_server.c : gras/msg_handle/msg_handle.c gras/msg_handle/msg_handle.xml $(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@
-	mkdir -p gras/msg_handle; cd gras/msg_handle; ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
+	mkdir -p gras/msg_handle; \
+	  cd gras/msg_handle;\
+	  ../../$(top_builddir)/tools/gras/gras_stub_generator@EXEEXT@ msg_handle ../../$(top_srcdir)/teshsuite/gras/msg_handle/msg_handle.xml
 
 dist-files:
 	@for n in $(DISTFILES) ; do echo $(SRCFILE)$$n; done

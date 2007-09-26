@@ -1,0 +1,6 @@
+
+p Reinitialization test
+
+$ simdag/network/test_reinit_costs simdag/network/platform_2p_1sl.xml --log=sd_kernel.thres=warning
+> 0
+> 1.5

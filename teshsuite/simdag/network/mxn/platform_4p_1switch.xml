@@ -1,0 +1,87 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform_description SYSTEM "surfxml.dtd">
+<platform_description version="1">
+  <cpu name="cpu0" power="1"/>
+  <cpu name="cpu1" power="1"/>
+  <cpu name="cpu2" power="1"/>
+  <cpu name="cpu3" power="1"/>
+  
+  <network_link name="switch" bandwidth="2" latency="1" sharing_policy="FATPIPE"/>
+  <network_link name="link0" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+  <network_link name="link1" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+  <network_link name="link2" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+  <network_link name="link3" bandwidth="1" latency=".5" sharing_policy="SHARED"/>
+  
+  <route src="cpu0" dst="cpu1">
+    <route_element name="link0"/>
+    <route_element name="switch"/>
+    <route_element name="link1"/>
+  </route>
+
+  <route src="cpu0" dst="cpu2">
+    <route_element name="link0"/>
+    <route_element name="switch"/>
+    <route_element name="link2"/>
+  </route>
+
+  <route src="cpu0" dst="cpu3">
+    <route_element name="link0"/>
+    <route_element name="switch"/>
+    <route_element name="link3"/>
+  </route>
+
+  <route src="cpu1" dst="cpu0">
+    <route_element name="link1"/>
+    <route_element name="switch"/>
+    <route_element name="link0"/>
+  </route>
+
+  <route src="cpu1" dst="cpu2">
+    <route_element name="link1"/>
+    <route_element name="switch"/>
+    <route_element name="link2"/>
+  </route>
+
+  <route src="cpu1" dst="cpu3">
+    <route_element name="link1"/>
+    <route_element name="switch"/>
+    <route_element name="link3"/>
+  </route>
+  
+  <route src="cpu2" dst="cpu0">
+    <route_element name="link2"/>
+    <route_element name="switch"/>
+    <route_element name="link0"/>
+  </route>
+
+  <route src="cpu2" dst="cpu1">
+    <route_element name="link2"/>
+    <route_element name="switch"/>
+    <route_element name="link1"/>
+  </route>
+
+  <route src="cpu2" dst="cpu3">
+    <route_element name="link2"/>
+    <route_element name="switch"/>
+    <route_element name="link3"/>
+  </route>
+
+  <route src="cpu3" dst="cpu0">
+    <route_element name="link3"/>
+    <route_element name="switch"/>
+    <route_element name="link0"/>
+  </route>
+
+  <route src="cpu3" dst="cpu1">
+    <route_element name="link3"/>
+    <route_element name="switch"/>
+    <route_element name="link1"/>
+  </route>
+
+  <route src="cpu3" dst="cpu2">
+    <route_element name="link3"/>
+    <route_element name="switch"/>
+    <route_element name="link2"/>
+  </route>
+  
+</platform_description>
