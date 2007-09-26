@@ -1016,7 +1016,7 @@ Then, tell SimGrid that you want to use your own "parser" instead of the stock o
   MSG_create_environment(NULL);
 \endverbatim
 
-An example of this trick is distributed in the file examples/msg/msg_test_surfxml_bypassed.c
+An example of this trick is distributed in the file examples/msg/masterslave/masterslave_bypass.c
 
 \section faq_troubleshooting Troubleshooting
 
@@ -1046,7 +1046,7 @@ machine:
    By default, SimGrid uses something called ucontexts. This is part of the
    libc, but it's quite undertested. For example, some (old) versions of the
    glibc on alpha do not implement these functions, but provide the stubs
-   (which return ENOSYS: not implemented). It fools our detection mecanism
+   (which return ENOSYS: not implemented). It may fool our detection mecanism
    and leads to segfaults. There is not much we can do to fix the bug.
    A workaround is to compile with --with-context=pthread to avoid
    ucontext completely. You'll be a bit more limitated in the number

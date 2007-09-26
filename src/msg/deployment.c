@@ -23,7 +23,7 @@
  *
  * Here is a small example of such a platform 
  *
- *     \include small_deployment.xml
+ *     \include msg/masterslave/deployment_masterslave.xml
  *
  * Have a look in the directory examples/msg/ to have a bigger example.
  */

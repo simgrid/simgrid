@@ -58,7 +58,7 @@
      
     <hr> 
     
-    \dontinclude msg/msg_test.c
+    \dontinclude msg/masterslave/masterslave.c
     
     \section MSG_ext_ms_code Code of the application
     
@@ -133,7 +133,7 @@
 
    \subsection MSG_ext_ms_application Example of application file
 
-   \include msg/small_deployment.xml
+   \include msg/masterslave/deployment_masterslave.xml
 
    \subsection MSG_ext_ms_platform Example of platform file
    
