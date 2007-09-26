@@ -86,7 +86,6 @@ void rctx_armageddon(rctx_t initiator, int exitcode) {
       xbt_os_mutex_lock(rctx->interruption);
       rctx->interrupted = 1;
       xbt_os_mutex_unlock(rctx->interruption);
-      INFO2("Do Kill <%s> because <%s> failed",rctx->filepos,initiator->filepos);
       if (!rctx->reader_done) {
 	kill(rctx->pid,SIGTERM);
 	usleep(100);
