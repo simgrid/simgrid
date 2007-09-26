@@ -69,7 +69,7 @@ splited in 3 pages (also accessible from the navbar on top of this page):
 
 <tr><td>Year</td><td>2000</td><td>2001</td><td>2002</td><td>2003</td><td>2004</td><td>2005</td><td>2006</td><td>2007</td></tr>
   <tr><td>Amount of papers external to the core team</td>
-                 <td>-</td>   <td>-</td>   <td>-</td>   <td>3</td>   <td>6</td>   <td>3</td>   <td>8</td>   <td>4</td></tr>
+                 <td>-</td>   <td>-</td>   <td>-</td>   <td>3</td>   <td>6</td>   <td>3</td>   <td>8</td>   <td>5</td></tr>
   <tr><td>Amount of papers co-signed by one team member</td>
                  <td>1</td>   <td>1</td>   <td>1</td>   <td>2</td>   <td>2</td>   <td>-</td>   <td>4</td>   <td>4</td></tr>
 </table>
@@ -182,6 +182,9 @@ next section).
   - <b>Reactive Grid Scheduling of DAG Applications.</b>\n by
     <em>I. Hernandez and M. Cole (UK)</em>. In Parallel and Distributed Computing and Networks, 2007.\n
     http://www.actapress.com/PaperInfo.aspx?PaperID=29625
+  - <b>Dynamic Scheduling of Multi-Processor Tasks on Clusters of Clusters</b>\n
+    by <em>S. Hunold, T. Rauber and G. Rünger</em>.\n
+    In 8th IEEE/ACM International Conference on Grid Computing (Grid 2007), Austin, TX, September 2007.    
   - <b>Scheduling &Delta;-Critical Tasks in Mixed-Parallel Applications on a National Grid</b>\n
     by <em>Frédéric Suter</em>.\n
     In 8th IEEE/ACM International Conference on Grid Computing (Grid 2007), Austin, TX, September 2007.
