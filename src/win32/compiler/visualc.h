@@ -164,10 +164,21 @@
 	#undef HAVE_SIGNAL
 #endif
 
+/* "disable the snprintf replacement ( this function is broken on system v only" */
+
+
+
+#ifndef PREFER_PORTABLE_SNPRINTF
+#  define PREFER_PORTABLE_SNPRINTF	1	
+#endif
+
 /* The compiler has `snprintf' function. */
-#if _MSC_VER >= 7 /* FIXME: check version number */
-#  ifndef HAVE_SNPRINTF
-	#define HAVE_SNPRINTF	1
+#if _MSC_VER >= 1400 
+#  ifdef HAVE_SNPRINTF
+#    undef HAVE_SNPRINTF	1
+#    ifndef PREFER_PORTABLE_SNPRINTF
+#      define snprintf _snprintf
+#    endif
 #  endif
 #else 
 #  ifdef HAVE_SNPRINTF
@@ -205,13 +216,6 @@
 /* disable the vasprintf replacement */
 #ifndef NEED_VASPRINTF
 	#define NEED_VASPRINTF
-#endif
-
-/* "disable the snprintf replacement ( this function is broken on system v only" */
-
-
-#if !defined(PREFER_PORTABLE_SNPRINTF)
-	#define PREFER_PORTABLE_SNPRINTF	
 #endif
 
 /* The maximal size of any scalar on this arch */
