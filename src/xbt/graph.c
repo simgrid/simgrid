@@ -119,7 +119,10 @@ void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
 }
 
 /** @brief Destructor
- *  @param l: poor victim
+ *  @param g: poor victim
+ *  @param node_free_function: function to use to free data associated to each node
+ *  @param edge_free_function: function to use to free data associated to each edge
+ *  @param graph_free_function: function to use to free data associated to g
  *
  * Free the graph structure. 
  */
@@ -152,7 +155,7 @@ void xbt_graph_free_graph(xbt_graph_t g,
   xbt_dynar_foreach(g->edges, cursor, edge)
       free(edge);
   xbt_dynar_free(&(g->edges));
-
+  if(graph_free_function) (*graph_free_function)(g->data);
   free(g);
 
   return;
