@@ -526,16 +526,6 @@ AC_CONFIG_FILES([
       examples/gras/pmm/Makefile
       examples/gras/all2all/Makefile
     examples/amok/Makefile       
-      examples/amok/bandwidth/Makefile examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl
-      examples/amok/saturate/Makefile  examples/amok/saturate/test_sg  examples/amok/saturate/test_rl
-],[
-    for file in                                                 \
-     \
-     examples/amok/bandwidth/test_sg examples/amok/bandwidth/test_rl \
-     examples/amok/saturate/test_sg  examples/amok/saturate/test_rl \
-    ; do                                                        \
-      test -e $file && chmod +x $file;                          \
-    done
 ])
 
 AC_CONFIG_FILES([

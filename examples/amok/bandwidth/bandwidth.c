@@ -23,7 +23,9 @@ int sensor (int argc,char *argv[]);
 
 int sensor (int argc,char *argv[]) {
   gras_socket_t mysock;
-  gras_socket_t master;
+  gras_socket_t master=NULL;
+  int connection_try = 10;
+  xbt_ex_t e;
 
   gras_init(&argc, argv);
   amok_bw_init();
@@ -31,8 +33,19 @@ int sensor (int argc,char *argv[]) {
  
   mysock = gras_socket_server_range(3000,9999,0,0);
   INFO1("Sensor starting (on port %d)",gras_os_myport());
-  gras_os_sleep(0.5); /* let the master get ready */
-  master = gras_socket_client_from_string(argv[1]);
+  while (connection_try > 0 && master == NULL) {
+     int connected = 0;
+     TRY {
+	master = gras_socket_client_from_string(argv[1]);
+	connected = 1;
+     } CATCH(e) {
+	xbt_ex_free(e);
+     }
+     if (!connected) {
+	connection_try--;
+	gras_os_sleep(0.5); /* let the master get ready */
+     }
+  }
 					      
   amok_pm_group_join(master,"bandwidth");
   amok_pm_mainloop(60);
@@ -59,7 +72,7 @@ int maestro(int argc,char *argv[]) {
    
   gras_socket_t peer;
   gras_socket_t mysock;
-  xbt_peer_t h1,h2;
+  xbt_peer_t h1,h2,h_temp;
   xbt_dynar_t group;
 
   gras_init(&argc, argv);
@@ -83,8 +96,14 @@ int maestro(int argc,char *argv[]) {
      amok_pm_group_shutdown("bandwidth");
      xbt_die(msg);
   }
-  h1 = *(xbt_peer_t*) xbt_dynar_get_ptr(group, 0);
+  h1 = *(xbt_peer_t*)xbt_dynar_get_ptr(group, 0);
   h2 = *(xbt_peer_t*)xbt_dynar_get_ptr(group, 1);
+  /* sort peers in right order to keep output right */
+  if (strcmp(h1->name,h2->name) < 0 || h1->port > h2->port) {
+     h_temp = h1;
+     h1 = h2;
+     h2 = h_temp;
+  }
 
   INFO2("Contact %s:%d",h1->name, h1->port);
   peer = gras_socket_client(h1->name, h1->port);
