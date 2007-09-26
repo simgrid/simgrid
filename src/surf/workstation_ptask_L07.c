@@ -98,8 +98,6 @@ static void update_action_bound(surf_action_workstation_L07_t action)
       if (action->communication_amount[i * workstation_nb + j] > 0) {
 	for (k = 0; k < route_size; k++) {
 	  lat += route[k]->lat_current;
-	  xbt_dict_set(parallel_task_network_link_set, route[k]->name,
-		       route[k], NULL);
 	}
 	lat_current=MAX(lat_current,lat/action->communication_amount[i * workstation_nb + j]);
       }
@@ -484,6 +482,8 @@ static surf_action_t execute_parallel_task(int workstation_nb,
     parallel_task_network_link_set =
 	xbt_dict_new_ext(workstation_nb * workstation_nb * 10);
   }
+
+  xbt_dict_reset(parallel_task_network_link_set);
 
   /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
