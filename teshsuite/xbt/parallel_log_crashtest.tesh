@@ -1,4 +1,5 @@
 
+! timeout 20
 p Try to crash the log mecanism by using it in parallel with a lot of threads
 $ xbt/parallel_log_crashtest --log=root.fmt:%m%n 2>&1| sed 's/[0-9]/X/g' | grep -v 'XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)'
 > Exiting GRAS
