@@ -148,10 +148,6 @@ void SIMIX_display_process_status(void);
 /* Helper functions for jMSG: manipulate the context data without breaking the module separation */
 void  SIMIX_process_set_jprocess(smx_process_t process, void *jp);
 void* SIMIX_process_get_jprocess(smx_process_t process);
-void  SIMIX_process_set_jmutex(smx_process_t process, void *jm);
-void* SIMIX_process_get_jmutex(smx_process_t process);
-void  SIMIX_process_set_jcond(smx_process_t process, void *jc);
-void* SIMIX_process_get_jcond(smx_process_t process);
 void  SIMIX_process_set_jenv(smx_process_t process, void *je);
 void* SIMIX_process_get_jenv(smx_process_t process);
 
