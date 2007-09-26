@@ -63,7 +63,6 @@ static const char *get_resource_name(void *resource_id)
 static int resource_used(void *resource_id)
 {
   THROW_IMPOSSIBLE;  /* This model does not implement parallel tasks */
-  return 0;
 }
 
 static void parallel_action_cancel(surf_action_t action)
@@ -74,7 +73,6 @@ static void parallel_action_cancel(surf_action_t action)
 static int parallel_action_free(surf_action_t action)
 {
   THROW_UNIMPLEMENTED;  /* This model does not implement parallel tasks */
-  return 0;
 }
 
 static void parallel_action_use(surf_action_t action)
@@ -161,7 +159,6 @@ static void update_resource_state(void *id,
 				  double value)
 {
   THROW_IMPOSSIBLE; /* This model does not implement parallel tasks */
-  return;
 }
 
 static surf_action_t execute(void *workstation, double size)
@@ -262,7 +259,6 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 					   double rate)
 {
   THROW_UNIMPLEMENTED;  /* This model does not implement parallel tasks */
-  return NULL;
 }
 
 
