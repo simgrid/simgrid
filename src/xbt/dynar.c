@@ -53,6 +53,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
              THROW1(bound_error,0,            \
                     "dynar %p is empty", dynar)
 
+static void _dynar_map(const xbt_dynar_t  dynar,
+		       void_f_pvoid_t     * const op);
 
 static XBT_INLINE 
 void _xbt_clear_mem(void * const ptr,
@@ -245,7 +247,7 @@ xbt_dynar_reset(xbt_dynar_t const dynar) {
    
   DEBUG1("Reset the dynar %p",(void*)dynar);
   if (dynar->free_f) {
-    xbt_dynar_map(dynar, dynar->free_f);
+    _dynar_map(dynar, dynar->free_f);
   }
      /*
   if (dynar->data)
@@ -614,6 +616,18 @@ xbt_dynar_shift(xbt_dynar_t  const dynar,
   xbt_dynar_remove_at(dynar, 0, dst);
 }
 
+static void _dynar_map(const xbt_dynar_t  dynar,
+		       void_f_pvoid_t     * const op) {
+  char         elm[SIZEOF_MAX];
+  const unsigned long used = dynar->used;
+  unsigned long       i    = 0;
+
+  for (i = 0; i < used; i++) {
+    _xbt_dynar_get_elm(elm, dynar, i);
+    op(elm);
+  }
+}
+
 /** @brief Apply a function to each member of a dynar
  *
  * The mapped function may change the value of the element itself, 
@@ -630,16 +644,8 @@ xbt_dynar_map(const xbt_dynar_t  dynar,
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
 
-  {
-    char         elm[SIZEOF_MAX];
-    const unsigned long used = dynar->used;
-    unsigned long       i    = 0;
+  _dynar_map(dynar,op);
 
-    for (i = 0; i < used; i++) {
-      _xbt_dynar_get_elm(elm, dynar, i);
-      op(elm);
-    }
-  }
   _dynar_unlock(dynar);
 }
 
