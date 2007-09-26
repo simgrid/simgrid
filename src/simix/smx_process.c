@@ -388,26 +388,6 @@ void *SIMIX_process_get_jprocess(smx_process_t process)
   return xbt_context_get_jprocess(process->simdata->context);
 }
 
-void SIMIX_process_set_jmutex(smx_process_t process, void *jm)
-{
-  xbt_context_set_jmutex(process->simdata->context, jm);
-}
-
-void *SIMIX_process_get_jmutex(smx_process_t process)
-{
-  return xbt_context_get_jmutex(process->simdata->context);
-}
-
-void SIMIX_process_set_jcond(smx_process_t process, void *jc)
-{
-  xbt_context_set_jcond(process->simdata->context, jc);
-}
-
-void *SIMIX_process_get_jcond(smx_process_t process)
-{
-  return xbt_context_get_jcond(process->simdata->context);
-}
-
 void SIMIX_process_set_jenv(smx_process_t process, void *je)
 {
   xbt_context_set_jenv(process->simdata->context, je);
