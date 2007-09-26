@@ -15,7 +15,11 @@ LDADD_RL=$(top_builddir)/src/libgras.la
 # Bandwidth tests #
 ###################
 EXTRA_DIST+=bandwidth/bandwidth.xml
-TESTS += bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg.tesh
+if GRAS_ARCH_32_BITS
+  TESTS += bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg_32.tesh
+else
+  TESTS += bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg_64.tesh
+endif
 
 noinst_PROGRAMS += \
   bandwidth/bandwidth_maestro   \
@@ -39,8 +43,12 @@ bandwidth/_bandwidth_simulator.c bandwidth/_bandwidth_sensor.c bandwidth/_bandwi
 # saturate tests #
 ###################
 EXTRA_DIST+=saturate/saturate.xml
-TESTS += saturate/saturate_rl.tesh saturate/saturate_sg.tesh
 
+if GRAS_ARCH_32_BITS
+  TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
+else
+  TESTS += saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
+endif
 noinst_PROGRAMS += \
   saturate/saturate_maestro   \
   saturate/saturate_sensor    \

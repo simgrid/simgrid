@@ -44,6 +44,10 @@ noinst_PROGRAMS = bandwidth/bandwidth_maestro$(EXEEXT) \
 	saturate/saturate_maestro$(EXEEXT) \
 	saturate/saturate_sensor$(EXEEXT) \
 	saturate/saturate_simulator$(EXEEXT)
+@GRAS_ARCH_32_BITS_TRUE@am__append_1 = bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg_32.tesh
+@GRAS_ARCH_32_BITS_FALSE@am__append_2 = bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg_64.tesh
+@GRAS_ARCH_32_BITS_TRUE@am__append_3 = saturate/saturate_rl.tesh saturate/saturate_sg_32.tesh
+@GRAS_ARCH_32_BITS_FALSE@am__append_4 = saturate/saturate_rl.tesh saturate/saturate_sg_64.tesh
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/acmacro/dist-files.mk
 subdir = examples/amok
@@ -267,8 +271,8 @@ AM_CFLAGS = -g
 ###################
 EXTRA_DIST = bandwidth/bandwidth.xml saturate/saturate.xml
 TESTS_ENVIRONMENT = $(top_builddir)/tools/tesh/tesh
-TESTS = bandwidth/bandwidth_rl.tesh bandwidth/bandwidth_sg.tesh \
-	saturate/saturate_rl.tesh saturate/saturate_sg.tesh
+TESTS = $(am__append_1) $(am__append_2) $(am__append_3) \
+	$(am__append_4)
 XFAIL_TESTS = 
 LDADD_SG = $(top_builddir)/src/libsimgrid.la
 LDADD_RL = $(top_builddir)/src/libgras.la
