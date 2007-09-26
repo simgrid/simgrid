@@ -44,6 +44,9 @@ noinst_PROGRAMS = xbt/parallel_log_crashtest$(EXEEXT) \
 	gras/msg_handle/msg_handle_server$(EXEEXT) \
 	gras/msg_handle/msg_handle_simulator$(EXEEXT) \
 	simdag/network/test_reinit_costs$(EXEEXT) \
+	simdag/canon/sd_test0$(EXEEXT) simdag/canon/sd_test1$(EXEEXT) \
+	simdag/canon/sd_test2$(EXEEXT) simdag/canon/sd_test3$(EXEEXT) \
+	simdag/canon/sd_test4$(EXEEXT) simdag/canon/sd_test5$(EXEEXT) \
 	simdag/network/p2p/test_latency1$(EXEEXT) \
 	simdag/network/p2p/test_latency2$(EXEEXT) \
 	simdag/network/p2p/test_latency3$(EXEEXT) \
@@ -94,6 +97,24 @@ am_gras_msg_handle_msg_handle_simulator_OBJECTS =  \
 gras_msg_handle_msg_handle_simulator_OBJECTS =  \
 	$(am_gras_msg_handle_msg_handle_simulator_OBJECTS)
 gras_msg_handle_msg_handle_simulator_DEPENDENCIES = $(LDADD_SG)
+am_simdag_canon_sd_test0_OBJECTS = sd_test0.$(OBJEXT)
+simdag_canon_sd_test0_OBJECTS = $(am_simdag_canon_sd_test0_OBJECTS)
+simdag_canon_sd_test0_DEPENDENCIES = $(LDADD_SG)
+am_simdag_canon_sd_test1_OBJECTS = sd_test1.$(OBJEXT)
+simdag_canon_sd_test1_OBJECTS = $(am_simdag_canon_sd_test1_OBJECTS)
+simdag_canon_sd_test1_DEPENDENCIES = $(LDADD_SG)
+am_simdag_canon_sd_test2_OBJECTS = sd_test2.$(OBJEXT)
+simdag_canon_sd_test2_OBJECTS = $(am_simdag_canon_sd_test2_OBJECTS)
+simdag_canon_sd_test2_DEPENDENCIES = $(LDADD_SG)
+am_simdag_canon_sd_test3_OBJECTS = sd_test3.$(OBJEXT)
+simdag_canon_sd_test3_OBJECTS = $(am_simdag_canon_sd_test3_OBJECTS)
+simdag_canon_sd_test3_DEPENDENCIES = $(LDADD_SG)
+am_simdag_canon_sd_test4_OBJECTS = sd_test4.$(OBJEXT)
+simdag_canon_sd_test4_OBJECTS = $(am_simdag_canon_sd_test4_OBJECTS)
+simdag_canon_sd_test4_DEPENDENCIES = $(LDADD_SG)
+am_simdag_canon_sd_test5_OBJECTS = sd_test5.$(OBJEXT)
+simdag_canon_sd_test5_OBJECTS = $(am_simdag_canon_sd_test5_OBJECTS)
+simdag_canon_sd_test5_DEPENDENCIES = $(LDADD_SG)
 am_simdag_network_mxn_test_intra_all2all_OBJECTS =  \
 	test_intra_all2all.$(OBJEXT)
 simdag_network_mxn_test_intra_all2all_OBJECTS =  \
@@ -161,6 +182,12 @@ SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
+	$(simdag_canon_sd_test0_SOURCES) \
+	$(simdag_canon_sd_test1_SOURCES) \
+	$(simdag_canon_sd_test2_SOURCES) \
+	$(simdag_canon_sd_test3_SOURCES) \
+	$(simdag_canon_sd_test4_SOURCES) \
+	$(simdag_canon_sd_test5_SOURCES) \
 	$(simdag_network_mxn_test_intra_all2all_SOURCES) \
 	$(simdag_network_mxn_test_intra_independent_comm_SOURCES) \
 	$(simdag_network_mxn_test_intra_scatter_SOURCES) \
@@ -176,6 +203,12 @@ DIST_SOURCES = $(gras_datadesc_datadesc_usage_SOURCES) \
 	$(gras_msg_handle_msg_handle_client_SOURCES) \
 	$(gras_msg_handle_msg_handle_server_SOURCES) \
 	$(gras_msg_handle_msg_handle_simulator_SOURCES) \
+	$(simdag_canon_sd_test0_SOURCES) \
+	$(simdag_canon_sd_test1_SOURCES) \
+	$(simdag_canon_sd_test2_SOURCES) \
+	$(simdag_canon_sd_test3_SOURCES) \
+	$(simdag_canon_sd_test4_SOURCES) \
+	$(simdag_canon_sd_test5_SOURCES) \
 	$(simdag_network_mxn_test_intra_all2all_SOURCES) \
 	$(simdag_network_mxn_test_intra_independent_comm_SOURCES) \
 	$(simdag_network_mxn_test_intra_scatter_SOURCES) \
@@ -338,6 +371,7 @@ EXTRA_DIST = gras/datadesc/datadesc.little32_4 \
 	gras/datadesc/mk_datadesc_structs.pl \
 	gras/msg_handle/msg_handle.xml \
 	simdag/network/platform_2p_1sl.xml \
+	simdag/canon/input_platform.xml \
 	simdag/network/p2p/platform_2p_1sl.xml \
 	simdag/network/p2p/platform_2p_1fl.xml \
 	simdag/network/p2p/platform_2p_1switch.xml \
@@ -354,6 +388,7 @@ TESTS = xbt/parallel_log_crashtest.tesh \
 	gras/datadesc/datadesc_r_big32_8_4.tesh \
 	gras/datadesc/datadesc_r_big32_2.tesh $(am__append_1) \
 	$(am__append_2) simdag/network/test_reinit_costs.tesh \
+	simdag/canon/sd_test0.tesh \
 	simdag/network/p2p/test_latency1.tesh \
 	simdag/network/p2p/test_latency2.tesh \
 	simdag/network/p2p/test_latency3.tesh \
@@ -381,6 +416,18 @@ gras_msg_handle_msg_handle_client_LDADD = $(LDADD_RL)
 gras_msg_handle_msg_handle_server_LDADD = $(LDADD_RL)
 simdag_network_test_reinit_costs_SOURCES = simdag/network/test_reinit_costs.c
 simdag_network_test_reinit_costs_LDADD = $(LDADD_SG)
+simdag_canon_sd_test0_SOURCES = simdag/canon/sd_test0.c
+simdag_canon_sd_test0_LDADD = $(LDADD_SG)
+simdag_canon_sd_test1_SOURCES = simdag/canon/sd_test1.c
+simdag_canon_sd_test1_LDADD = $(LDADD_SG)
+simdag_canon_sd_test2_SOURCES = simdag/canon/sd_test2.c
+simdag_canon_sd_test2_LDADD = $(LDADD_SG)
+simdag_canon_sd_test3_SOURCES = simdag/canon/sd_test3.c
+simdag_canon_sd_test3_LDADD = $(LDADD_SG)
+simdag_canon_sd_test4_SOURCES = simdag/canon/sd_test4.c
+simdag_canon_sd_test4_LDADD = $(LDADD_SG)
+simdag_canon_sd_test5_SOURCES = simdag/canon/sd_test5.c
+simdag_canon_sd_test5_LDADD = $(LDADD_SG)
 simdag_network_p2p_test_latency1_SOURCES = simdag/network/p2p/test_latency1.c
 simdag_network_p2p_test_latency1_LDADD = $(LDADD_SG)
 simdag_network_p2p_test_latency2_SOURCES = simdag/network/p2p/test_latency2.c
@@ -457,6 +504,27 @@ gras/msg_handle/msg_handle_server$(EXEEXT): $(gras_msg_handle_msg_handle_server_
 gras/msg_handle/msg_handle_simulator$(EXEEXT): $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_DEPENDENCIES) gras/msg_handle/$(am__dirstamp)
 	@rm -f gras/msg_handle/msg_handle_simulator$(EXEEXT)
 	$(LINK) $(gras_msg_handle_msg_handle_simulator_OBJECTS) $(gras_msg_handle_msg_handle_simulator_LDADD) $(LIBS)
+simdag/canon/$(am__dirstamp):
+	@$(MKDIR_P) simdag/canon
+	@: > simdag/canon/$(am__dirstamp)
+simdag/canon/sd_test0$(EXEEXT): $(simdag_canon_sd_test0_OBJECTS) $(simdag_canon_sd_test0_DEPENDENCIES) simdag/canon/$(am__dirstamp)
+	@rm -f simdag/canon/sd_test0$(EXEEXT)
+	$(LINK) $(simdag_canon_sd_test0_OBJECTS) $(simdag_canon_sd_test0_LDADD) $(LIBS)
+simdag/canon/sd_test1$(EXEEXT): $(simdag_canon_sd_test1_OBJECTS) $(simdag_canon_sd_test1_DEPENDENCIES) simdag/canon/$(am__dirstamp)
+	@rm -f simdag/canon/sd_test1$(EXEEXT)
+	$(LINK) $(simdag_canon_sd_test1_OBJECTS) $(simdag_canon_sd_test1_LDADD) $(LIBS)
+simdag/canon/sd_test2$(EXEEXT): $(simdag_canon_sd_test2_OBJECTS) $(simdag_canon_sd_test2_DEPENDENCIES) simdag/canon/$(am__dirstamp)
+	@rm -f simdag/canon/sd_test2$(EXEEXT)
+	$(LINK) $(simdag_canon_sd_test2_OBJECTS) $(simdag_canon_sd_test2_LDADD) $(LIBS)
+simdag/canon/sd_test3$(EXEEXT): $(simdag_canon_sd_test3_OBJECTS) $(simdag_canon_sd_test3_DEPENDENCIES) simdag/canon/$(am__dirstamp)
+	@rm -f simdag/canon/sd_test3$(EXEEXT)
+	$(LINK) $(simdag_canon_sd_test3_OBJECTS) $(simdag_canon_sd_test3_LDADD) $(LIBS)
+simdag/canon/sd_test4$(EXEEXT): $(simdag_canon_sd_test4_OBJECTS) $(simdag_canon_sd_test4_DEPENDENCIES) simdag/canon/$(am__dirstamp)
+	@rm -f simdag/canon/sd_test4$(EXEEXT)
+	$(LINK) $(simdag_canon_sd_test4_OBJECTS) $(simdag_canon_sd_test4_LDADD) $(LIBS)
+simdag/canon/sd_test5$(EXEEXT): $(simdag_canon_sd_test5_OBJECTS) $(simdag_canon_sd_test5_DEPENDENCIES) simdag/canon/$(am__dirstamp)
+	@rm -f simdag/canon/sd_test5$(EXEEXT)
+	$(LINK) $(simdag_canon_sd_test5_OBJECTS) $(simdag_canon_sd_test5_LDADD) $(LIBS)
 simdag/network/mxn/$(am__dirstamp):
 	@$(MKDIR_P) simdag/network/mxn
 	@: > simdag/network/mxn/$(am__dirstamp)
@@ -519,6 +587,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datadesc_usage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parallel_log_crashtest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test0.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sd_test5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_comp_only_par.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_comp_only_seq.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_intra_all2all.Po@am__quote@
@@ -634,6 +708,90 @@ _msg_handle_simulator.obj: gras/msg_handle/_msg_handle_simulator.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gras/msg_handle/_msg_handle_simulator.c' object='_msg_handle_simulator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _msg_handle_simulator.obj `if test -f 'gras/msg_handle/_msg_handle_simulator.c'; then $(CYGPATH_W) 'gras/msg_handle/_msg_handle_simulator.c'; else $(CYGPATH_W) '$(srcdir)/gras/msg_handle/_msg_handle_simulator.c'; fi`
+
+sd_test0.o: simdag/canon/sd_test0.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test0.o -MD -MP -MF $(DEPDIR)/sd_test0.Tpo -c -o sd_test0.o `test -f 'simdag/canon/sd_test0.c' || echo '$(srcdir)/'`simdag/canon/sd_test0.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test0.Tpo $(DEPDIR)/sd_test0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test0.c' object='sd_test0.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test0.o `test -f 'simdag/canon/sd_test0.c' || echo '$(srcdir)/'`simdag/canon/sd_test0.c
+
+sd_test0.obj: simdag/canon/sd_test0.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test0.obj -MD -MP -MF $(DEPDIR)/sd_test0.Tpo -c -o sd_test0.obj `if test -f 'simdag/canon/sd_test0.c'; then $(CYGPATH_W) 'simdag/canon/sd_test0.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test0.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test0.Tpo $(DEPDIR)/sd_test0.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test0.c' object='sd_test0.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test0.obj `if test -f 'simdag/canon/sd_test0.c'; then $(CYGPATH_W) 'simdag/canon/sd_test0.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test0.c'; fi`
+
+sd_test1.o: simdag/canon/sd_test1.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test1.o -MD -MP -MF $(DEPDIR)/sd_test1.Tpo -c -o sd_test1.o `test -f 'simdag/canon/sd_test1.c' || echo '$(srcdir)/'`simdag/canon/sd_test1.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test1.Tpo $(DEPDIR)/sd_test1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test1.c' object='sd_test1.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test1.o `test -f 'simdag/canon/sd_test1.c' || echo '$(srcdir)/'`simdag/canon/sd_test1.c
+
+sd_test1.obj: simdag/canon/sd_test1.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test1.obj -MD -MP -MF $(DEPDIR)/sd_test1.Tpo -c -o sd_test1.obj `if test -f 'simdag/canon/sd_test1.c'; then $(CYGPATH_W) 'simdag/canon/sd_test1.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test1.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test1.Tpo $(DEPDIR)/sd_test1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test1.c' object='sd_test1.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test1.obj `if test -f 'simdag/canon/sd_test1.c'; then $(CYGPATH_W) 'simdag/canon/sd_test1.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test1.c'; fi`
+
+sd_test2.o: simdag/canon/sd_test2.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test2.o -MD -MP -MF $(DEPDIR)/sd_test2.Tpo -c -o sd_test2.o `test -f 'simdag/canon/sd_test2.c' || echo '$(srcdir)/'`simdag/canon/sd_test2.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test2.Tpo $(DEPDIR)/sd_test2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test2.c' object='sd_test2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test2.o `test -f 'simdag/canon/sd_test2.c' || echo '$(srcdir)/'`simdag/canon/sd_test2.c
+
+sd_test2.obj: simdag/canon/sd_test2.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test2.obj -MD -MP -MF $(DEPDIR)/sd_test2.Tpo -c -o sd_test2.obj `if test -f 'simdag/canon/sd_test2.c'; then $(CYGPATH_W) 'simdag/canon/sd_test2.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test2.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test2.Tpo $(DEPDIR)/sd_test2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test2.c' object='sd_test2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test2.obj `if test -f 'simdag/canon/sd_test2.c'; then $(CYGPATH_W) 'simdag/canon/sd_test2.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test2.c'; fi`
+
+sd_test3.o: simdag/canon/sd_test3.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test3.o -MD -MP -MF $(DEPDIR)/sd_test3.Tpo -c -o sd_test3.o `test -f 'simdag/canon/sd_test3.c' || echo '$(srcdir)/'`simdag/canon/sd_test3.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test3.Tpo $(DEPDIR)/sd_test3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test3.c' object='sd_test3.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test3.o `test -f 'simdag/canon/sd_test3.c' || echo '$(srcdir)/'`simdag/canon/sd_test3.c
+
+sd_test3.obj: simdag/canon/sd_test3.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test3.obj -MD -MP -MF $(DEPDIR)/sd_test3.Tpo -c -o sd_test3.obj `if test -f 'simdag/canon/sd_test3.c'; then $(CYGPATH_W) 'simdag/canon/sd_test3.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test3.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test3.Tpo $(DEPDIR)/sd_test3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test3.c' object='sd_test3.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test3.obj `if test -f 'simdag/canon/sd_test3.c'; then $(CYGPATH_W) 'simdag/canon/sd_test3.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test3.c'; fi`
+
+sd_test4.o: simdag/canon/sd_test4.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test4.o -MD -MP -MF $(DEPDIR)/sd_test4.Tpo -c -o sd_test4.o `test -f 'simdag/canon/sd_test4.c' || echo '$(srcdir)/'`simdag/canon/sd_test4.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test4.Tpo $(DEPDIR)/sd_test4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test4.c' object='sd_test4.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test4.o `test -f 'simdag/canon/sd_test4.c' || echo '$(srcdir)/'`simdag/canon/sd_test4.c
+
+sd_test4.obj: simdag/canon/sd_test4.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test4.obj -MD -MP -MF $(DEPDIR)/sd_test4.Tpo -c -o sd_test4.obj `if test -f 'simdag/canon/sd_test4.c'; then $(CYGPATH_W) 'simdag/canon/sd_test4.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test4.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test4.Tpo $(DEPDIR)/sd_test4.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test4.c' object='sd_test4.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test4.obj `if test -f 'simdag/canon/sd_test4.c'; then $(CYGPATH_W) 'simdag/canon/sd_test4.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test4.c'; fi`
+
+sd_test5.o: simdag/canon/sd_test5.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test5.o -MD -MP -MF $(DEPDIR)/sd_test5.Tpo -c -o sd_test5.o `test -f 'simdag/canon/sd_test5.c' || echo '$(srcdir)/'`simdag/canon/sd_test5.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test5.Tpo $(DEPDIR)/sd_test5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test5.c' object='sd_test5.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test5.o `test -f 'simdag/canon/sd_test5.c' || echo '$(srcdir)/'`simdag/canon/sd_test5.c
+
+sd_test5.obj: simdag/canon/sd_test5.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sd_test5.obj -MD -MP -MF $(DEPDIR)/sd_test5.Tpo -c -o sd_test5.obj `if test -f 'simdag/canon/sd_test5.c'; then $(CYGPATH_W) 'simdag/canon/sd_test5.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test5.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sd_test5.Tpo $(DEPDIR)/sd_test5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='simdag/canon/sd_test5.c' object='sd_test5.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sd_test5.obj `if test -f 'simdag/canon/sd_test5.c'; then $(CYGPATH_W) 'simdag/canon/sd_test5.c'; else $(CYGPATH_W) '$(srcdir)/simdag/canon/sd_test5.c'; fi`
 
 test_intra_all2all.o: simdag/network/mxn/test_intra_all2all.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_intra_all2all.o -MD -MP -MF $(DEPDIR)/test_intra_all2all.Tpo -c -o test_intra_all2all.o `test -f 'simdag/network/mxn/test_intra_all2all.c' || echo '$(srcdir)/'`simdag/network/mxn/test_intra_all2all.c
@@ -970,6 +1128,7 @@ distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-rm -f gras/datadesc/$(am__dirstamp)
 	-rm -f gras/msg_handle/$(am__dirstamp)
+	-rm -f simdag/canon/$(am__dirstamp)
 	-rm -f simdag/network/$(am__dirstamp)
 	-rm -f simdag/network/mxn/$(am__dirstamp)
 	-rm -f simdag/network/p2p/$(am__dirstamp)
