@@ -140,6 +140,8 @@ typedef struct surf_model_public {
   int (*is_suspended) (surf_action_t action); /**< Return whether an action is suspended */
   void (*set_max_duration) (surf_action_t action, double duration); /**< Set the max duration of an action*/
   void (*set_priority) (surf_action_t action, double priority); /**< Set the priority of an action */
+  void (*set_callback) (void *resource, void value, void *function, void *arg);
+  int (*get_callback)  (void **resource, void *value, void **function, void **arg);
   const char *name; /**< Name of this model */
 } s_surf_model_public_t, *surf_model_public_t;
 
