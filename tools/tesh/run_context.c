@@ -26,67 +26,76 @@ xbt_os_mutex_t armageddon_mutex = NULL;
 static void kill_it(void*r) {  
   rctx_t rctx = *(rctx_t*)r;
 
-  VERB1("Join thread %p which were running a background cmd",rctx->runner);
+  VERB2("Join thread %p which were running background cmd <%s>",rctx->runner,rctx->filepos);
   xbt_os_thread_join(rctx->runner,NULL);
   rctx_free(rctx);
 }
 
 void rctx_init(void) {
-  bg_jobs = xbt_dynar_new(sizeof(rctx_t),kill_it);
+  bg_jobs = xbt_dynar_new_sync(sizeof(rctx_t),kill_it);
   armageddon_mutex = xbt_os_mutex_init();
   armageddon_initiator = NULL;
 }
 
 void rctx_exit(void) {
-  if (bg_jobs)
+  if (bg_jobs) {
+    /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
+    while (xbt_dynar_length(bg_jobs)) {
+       rctx_t rctx;
+       xbt_dynar_pop(bg_jobs,&rctx);
+       kill_it(&rctx);
+    }
     xbt_dynar_free(&bg_jobs);
+  }
   xbt_os_mutex_destroy(armageddon_mutex);
 }
 
 void rctx_wait_bg(void) {
-  xbt_dynar_free(&bg_jobs);
-  bg_jobs = xbt_dynar_new(sizeof(rctx_t),kill_it);
+  if (bg_jobs) {
+    /* Do not use xbt_dynar_free or it will lock the dynar, preventing armageddon from working */
+    while (xbt_dynar_length(bg_jobs)) {
+       rctx_t rctx;
+       xbt_dynar_pop(bg_jobs,&rctx);
+       kill_it(&rctx);
+    }
+    xbt_dynar_free(&bg_jobs);
+  }
+  bg_jobs = xbt_dynar_new_sync(sizeof(rctx_t),kill_it);
 }
 
 void rctx_armageddon(rctx_t initiator, int exitcode) {
   rctx_t rctx;
-  int cpt;
 
+  DEBUG2("Armageddon request by <%s> (exit=%d)",initiator->filepos,exitcode);
   xbt_os_mutex_lock(armageddon_mutex);
   if (armageddon_initiator != NULL) {
     VERB0("Armageddon already started. Let it go");
+    xbt_os_mutex_unlock(initiator->interruption);
+    xbt_os_mutex_unlock(armageddon_mutex);
     return;
   }
+  DEBUG1("Armageddon request by <%s> got the lock. Let's go amok",initiator->filepos);
   armageddon_initiator = initiator;
   xbt_os_mutex_unlock(armageddon_mutex);
 
-
   /* Kill any background commands */
-  xbt_dynar_foreach(bg_jobs,cpt,rctx) {
+  while (xbt_dynar_length(bg_jobs)) {
+    xbt_dynar_pop(bg_jobs,&rctx);
     if (rctx != initiator) {
+      INFO2("Kill <%s> because <%s> failed",rctx->filepos,initiator->filepos);
       xbt_os_mutex_lock(rctx->interruption);
       rctx->interrupted = 1;
-      INFO2("Kill <%s> because <%s> failed",rctx->filepos,initiator->filepos);
+      xbt_os_mutex_unlock(rctx->interruption);
+      INFO2("Do Kill <%s> because <%s> failed",rctx->filepos,initiator->filepos);
       if (!rctx->reader_done) {
 	kill(rctx->pid,SIGTERM);
 	usleep(100);
 	kill(rctx->pid,SIGKILL);          
       }
-      xbt_os_mutex_unlock(rctx->interruption);
     }
   }
 
-  /* Remove myself from the tasks */
-  if (xbt_dynar_member(bg_jobs, &initiator)) {
-    int mypos = xbt_dynar_search(bg_jobs, &initiator);
-    rctx_t myself;
-    xbt_dynar_remove_at(bg_jobs,mypos,&myself);
-    //    rctx_free(myself);
-  } 
-
-  /* Cleanup the place */
-  //  xbt_dynar_free(&bg_jobs);
-
+  VERB0("Shut everything down!");
   exit(exitcode);
 }
 
@@ -168,6 +177,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
 	       filepos,rctx->cmd);
 	ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
 	rctx_armageddon(rctx,1);
+	return;
       }
       rctx_start();
       VERB1("[%s] More than one command in this chunk of lines",filepos);
@@ -231,6 +241,7 @@ void rctx_pushline(const char* filepos, char kind, char *line) {
       ERROR2("%s: Malformed metacommand: %s",filepos,line);
       ERROR1("Test suite `%s': NOK (syntax error)",testsuite_name);
       rctx_armageddon(rctx,1);
+      return;
     }
     break;
   }
@@ -259,6 +270,7 @@ static void* thread_writer(void *r) {
 	perror("Error while writing input to child");
 	ERROR1("Test suite `%s': NOK (system error)",testsuite_name);
 	rctx_armageddon(rctx,4);
+	return NULL;
       }
     }
     DEBUG1("written %d chars so far",posw);
@@ -283,6 +295,7 @@ static void *thread_reader(void *r) {
       perror("Error while reading output of child");
       ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
       rctx_armageddon(rctx,4);
+      return NULL;
     }
     if (posr>0) {
       buffout[posr]='\0';
@@ -299,6 +312,7 @@ static void *thread_reader(void *r) {
     perror(bprintf("Cannot wait for the child %s",rctx->cmd));
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
     rctx_armageddon(rctx,4);
+    return NULL;
   }
    
   rctx->reader_done = 1;
@@ -325,6 +339,7 @@ void rctx_start(void) {
     perror("Cannot fork the command");
     ERROR1("Test suite `%s': NOK (system error)", testsuite_name);
     rctx_armageddon(rctx,4);
+    return;
   }
 
   if (rctx->pid) { /* father */
@@ -401,7 +416,6 @@ void *rctx_wait(void* r) {
   }
    
   xbt_os_mutex_lock(rctx->interruption);
-
   if (!rctx->interrupted && rctx->end_time > 0 && rctx->end_time < now) {    
     INFO1("<%s> timeouted. Kill the process.",rctx->filepos);
     rctx->timeout = 1;
@@ -441,8 +455,11 @@ void *rctx_wait(void* r) {
 	    rctx->filepos);
     ERROR3("Test suite `%s': NOK (<%s> timeout after %d sec)", 
 	   testsuite_name,rctx->filepos,timeout_value);
-    if (!rctx->interrupted)
+    DEBUG2("<%s> Interrupted = %d", rctx->filepos, rctx->interrupted);
+    if (!rctx->interrupted) {
       rctx_armageddon(rctx, 3);
+      return NULL;
+    }
   }
       
   DEBUG2("RCTX=%p (pid=%d)",rctx,rctx->pid);
@@ -525,11 +542,13 @@ void *rctx_wait(void* r) {
     rctx_empty(rctx);
   }
   if (errcode) {
-    if (!rctx->interrupted)
+    if (!rctx->interrupted) {
       rctx_armageddon(rctx, errcode);
+      return NULL;
+    }
   }
-  xbt_os_mutex_unlock(rctx->interruption);
 
+  xbt_os_mutex_unlock(rctx->interruption);
   return NULL;
 }
 
