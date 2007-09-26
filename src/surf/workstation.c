@@ -62,19 +62,24 @@ static const char *get_resource_name(void *resource_id)
 
 static int resource_used(void *resource_id)
 {
-  xbt_assert0(0,
-	      "Workstation is a virtual model. I should not be there!");
+  THROW_IMPOSSIBLE;  /* This model does not implement parallel tasks */
   return 0;
+}
+
+static void parallel_action_cancel(surf_action_t action)
+{
+  THROW_UNIMPLEMENTED;  /* This model does not implement parallel tasks */
 }
 
 static int parallel_action_free(surf_action_t action)
 {
-  xbt_assert0(0, "This model does not implement parallel tasks");
+  THROW_UNIMPLEMENTED;  /* This model does not implement parallel tasks */
+  return 0;
 }
 
 static void parallel_action_use(surf_action_t action)
 {
-  xbt_assert0(0, "This model does not implement parallel tasks");
+  THROW_UNIMPLEMENTED;  /* This model does not implement parallel tasks */
 }
 
 static int action_free(surf_action_t action)
@@ -113,7 +118,7 @@ static void action_cancel(surf_action_t action)
     surf_cpu_model->common_public->action_cancel(action);
   else if (action->model_type ==
 	   (surf_model_t) surf_workstation_model)
-    parallel_action_use(action);
+    parallel_action_cancel(action);
   else
     DIE_IMPOSSIBLE;
   return;
@@ -155,7 +160,7 @@ static void update_resource_state(void *id,
 				  tmgr_trace_event_t event_type,
 				  double value)
 {
-  xbt_assert0(0, "This model does not implement parallel tasks");
+  THROW_IMPOSSIBLE; /* This model does not implement parallel tasks */
   return;
 }
 
@@ -256,7 +261,8 @@ static surf_action_t execute_parallel_task(int workstation_nb,
 					   double amount,
 					   double rate)
 {
-  xbt_assert0(0, "This model does not implement parallel tasks");
+  THROW_UNIMPLEMENTED;  /* This model does not implement parallel tasks */
+  return NULL;
 }
 
 
