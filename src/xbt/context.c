@@ -336,7 +336,7 @@ static void xbt_context_stop(int retvalue) {
 #else
   __xbt_context_yield(current_context);
 #endif
-  THROW_IMPOSSIBLE();
+  THROW_IMPOSSIBLE;
 }
 
 
