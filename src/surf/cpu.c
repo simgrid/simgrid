@@ -318,16 +318,6 @@ static void action_set_priority(surf_action_t action, double priority)
   XBT_OUT;
 }
 
-
-static void (*set_callback) (void *resource, void value, void *function, void *arg)
-{
-}
-
-static int (*get_callback)  (void **resource, void *value, void **function, void **arg)
-{
-  return 0;
-}
-
 static e_surf_cpu_state_t get_state(void *cpu)
 {
   return ((cpu_Cas01_t) cpu)->state_current;
@@ -414,11 +404,9 @@ static void surf_cpu_model_init_internal(void)
   surf_cpu_model->common_public->set_max_duration =
       action_set_max_duration;
   surf_cpu_model->common_public->set_priority = action_set_priority;
-  surf_cpu_model->common_public->set_callback = set_callback;
-  surf_cpu_model->common_public->get_callback = get_callback;
-
   surf_cpu_model->extension_public->execute = execute;
   surf_cpu_model->extension_public->sleep = action_sleep;
+
   surf_cpu_model->extension_public->get_state = get_state;
   surf_cpu_model->extension_public->get_speed = get_speed;
   surf_cpu_model->extension_public->get_available_speed =
