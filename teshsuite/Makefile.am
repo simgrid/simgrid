@@ -104,36 +104,35 @@ TESTS += \
   simdag/network/test_reinit_costs.tesh
 
 # from L.C. Canon
-noinst_PROGRAMS += simdag/canon/sd_test0 \
-                   simdag/canon/sd_test1 \
-                   simdag/canon/sd_test2 \
-                   simdag/canon/sd_test3 \
-                   simdag/canon/sd_test4 \
-                   simdag/canon/sd_test5
+noinst_PROGRAMS += simdag/basic0 \
+                   simdag/basic1 \
+                   simdag/basic2 \
+                   simdag/basic3 \
+                   simdag/basic4 \
+                   simdag/basic5
 
-EXTRA_DIST      += simdag/canon/input_platform.xml
+EXTRA_DIST      += simdag/basic_platform.xml
 
-simdag_canon_sd_test0_SOURCES = simdag/canon/sd_test0.c
-simdag_canon_sd_test0_LDADD = $(LDADD_SG)
-simdag_canon_sd_test1_SOURCES = simdag/canon/sd_test1.c
-simdag_canon_sd_test1_LDADD = $(LDADD_SG)
-simdag_canon_sd_test2_SOURCES = simdag/canon/sd_test2.c
-simdag_canon_sd_test2_LDADD = $(LDADD_SG)
-simdag_canon_sd_test3_SOURCES = simdag/canon/sd_test3.c
-simdag_canon_sd_test3_LDADD = $(LDADD_SG)
-simdag_canon_sd_test4_SOURCES = simdag/canon/sd_test4.c
-simdag_canon_sd_test4_LDADD = $(LDADD_SG)
-simdag_canon_sd_test5_SOURCES = simdag/canon/sd_test5.c
-simdag_canon_sd_test5_LDADD = $(LDADD_SG)
+simdag_basic0_SOURCES = simdag/basic0.c
+simdag_basic0_LDADD = $(LDADD_SG)
+simdag_basic1_SOURCES = simdag/basic1.c
+simdag_basic1_LDADD = $(LDADD_SG)
+simdag_basic2_SOURCES = simdag/basic2.c
+simdag_basic2_LDADD = $(LDADD_SG)
+simdag_basic3_SOURCES = simdag/basic3.c
+simdag_basic3_LDADD = $(LDADD_SG)
+simdag_basic4_SOURCES = simdag/basic4.c
+simdag_basic4_LDADD = $(LDADD_SG)
+simdag_basic5_SOURCES = simdag/basic5.c
+simdag_basic5_LDADD = $(LDADD_SG)
 
 TESTS += \
-  simdag/canon/sd_test0.tesh 
-# \
-#   simdag/canon/sd_test1.tesh \
-#   simdag/canon/sd_test2.tesh \
-#   simdag/canon/sd_test3.tesh \
-#   simdag/canon/sd_test4.tesh \
-#   simdag/canon/sd_test5.tesh
+  simdag/basic0.tesh  \
+  simdag/basic1.tesh \
+  simdag/basic2.tesh \
+  simdag/basic3.tesh \
+  simdag/basic4.tesh \
+  simdag/basic5.tesh
 
 # p2p
 
