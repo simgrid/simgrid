@@ -358,17 +358,15 @@ SG_CONFIGURE_PART(Check for Java bindings...)
 # Java cruft
 AC_ARG_ENABLE(java,
 	      AS_HELP_STRING([--disable-java], [To not compile the Java bindings even if the tools are found]),
-	      want_java=$enableval,want_java=yes)
-if test "x$want_java" != "xyes" ; then
-   AC_MSG_CHECKING(whether to compile java bindings)
-   AC_MSG_RESULT(disabled by user)
+	      disable_java=$enableval,disable_java=yes)
+AC_MSG_CHECKING(whether to compile java bindings)
+if test "x$disable_java" != "xyes" ; then
    use_java="disabled by user"
 else
   AC_PATH_PROG([JAVAC], [javac], `which javac`)
   AC_PATH_PROG([JAVA],  [java] , `which java`)
   AC_PATH_PROG([JAR],   [jar]  , `which jar`)
   AC_CHECK_HEADERS(jni.h)
-  AC_MSG_CHECKING(whether to compile java bindings)
   if test -n "$JAVAC"   \
      && test -n "$JAVA" \
      && test -n "$JAR"  \
@@ -378,8 +376,8 @@ else
   else   
      use_java="no"
   fi
-  AC_MSG_RESULT($use_java)
 fi
+AC_MSG_RESULT($use_java)
 AM_CONDITIONAL(HAVE_JAVA,test "x$use_java" = "xyes")
 
 #####################
