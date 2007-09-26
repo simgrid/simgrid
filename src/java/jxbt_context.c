@@ -305,20 +305,6 @@ void* xbt_context_get_jprocess(xbt_context_t context)           {
    return context->jprocess;
 }
 
-void  xbt_context_set_jmutex(xbt_context_t context,void *jm)    {
-   context->mutex = jm;
-}
-void* xbt_context_get_jmutex(xbt_context_t context)             { 
-   return context->mutex; 
-}
-
-void  xbt_context_set_jcond(xbt_context_t context,void *jc)     {
-   context->cond = jc;
-}
-void* xbt_context_get_jcond(xbt_context_t context)              { 
-   return context->cond;
-}
-
 void  xbt_context_set_jenv(xbt_context_t context,void* je)      {
    context->jenv = je;
 }
