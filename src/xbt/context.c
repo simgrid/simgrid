@@ -336,7 +336,7 @@ static void xbt_context_stop(int retvalue) {
 #else
   __xbt_context_yield(current_context);
 #endif
-  xbt_assert0(0, "You can't be here!");
+  THROW_IMPOSSIBLE();
 }
 
 
@@ -401,7 +401,6 @@ xbt_assert0(current_context, "You have to call context_init() first.");
   int return_value = 0;
 
   if (context->save == NULL) {
-    xbt_assert(context == current_context);
     DEBUG1("[%p] **** Yielding to somebody else ****", current_context);
     DEBUG2("Saving current_context value (%p) to context(%p)->save",
 	     current_context, context);
