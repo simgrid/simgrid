@@ -3,35 +3,33 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_test ${srcdir:=.}/../msg/msg_platform.xml
-> [0.000000] surf/workstation_ptask_L07.c:917: [surf_workstation/WARNING] This model does not take latency into account.
 > [0.000000] [sd_test/INFO] Computation time for 2000000.000000 flops on Fernand: 0.090289
 > [0.000000] [sd_test/INFO] Computation time for 1000000.000000 flops on Ethernet: 0.010194
 > [0.000000] [sd_test/INFO] Route between Fernand and Ethernet:
-> [0.000000] surf/workstation_ptask_L07.c:553: [surf_workstation/WARNING] This model does not take latency into account.
-> [0.000000] [sd_test/INFO] 	Link 109: latency = 0.000000, bandwidth = 1858000.000000
-> [0.000000] [sd_test/INFO] 	Link 33: latency = 0.000000, bandwidth = 34285625.000000
-> [0.000000] [sd_test/INFO] 	Link 32: latency = 0.000000, bandwidth = 11618875.000000
-> [0.000000] [sd_test/INFO] 	Link 30: latency = 0.000000, bandwidth = 10099625.000000
-> [0.000000] [sd_test/INFO] 	Link 27: latency = 0.000000, bandwidth = 8015125.000000
-> [0.000000] [sd_test/INFO] 	Link 28: latency = 0.000000, bandwidth = 15376875.000000
-> [0.000000] [sd_test/INFO] 	Link 19: latency = 0.000000, bandwidth = 34285625.000000
-> [0.000000] [sd_test/INFO] 	Link 7: latency = 0.000000, bandwidth = 34285625.000000
-> [0.000000] [sd_test/INFO] 	Link 6: latency = 0.000000, bandwidth = 34285625.000000
-> [0.000000] [sd_test/INFO] 	Link 11: latency = 0.000000, bandwidth = 118682500.000000
-> [0.000000] [sd_test/INFO] 	Link 44: latency = 0.000000, bandwidth = 10314625.000000
-> [0.000000] [sd_test/INFO] 	Link 47: latency = 0.000000, bandwidth = 10314625.000000
-> [0.000000] [sd_test/INFO] 	Link 118: latency = 0.000000, bandwidth = 1467625.000000
-> [0.000000] [sd_test/INFO] Route latency = 0.000000, route bandwidth = 1467625.000000
-> [0.000000] [sd_test/INFO] Communication time for 2000000.000000 bytes between Fernand and Ethernet: 1.362746
-> [0.000000] [sd_test/INFO] Communication time for 3000000.000000 bytes between Ethernet and Fernand: 2.044119
-> [0.000000] [sd_test/INFO] Estimated time for 'Task D': 123.258786
+> [0.000000] [sd_test/INFO] 	Link 109: latency = 0.000821, bandwidth = 1858000.000000
+> [0.000000] [sd_test/INFO] 	Link 33: latency = 0.000514, bandwidth = 34285625.000000
+> [0.000000] [sd_test/INFO] 	Link 32: latency = 0.000190, bandwidth = 11618875.000000
+> [0.000000] [sd_test/INFO] 	Link 30: latency = 0.000480, bandwidth = 10099625.000000
+> [0.000000] [sd_test/INFO] 	Link 27: latency = 0.035077, bandwidth = 8015125.000000
+> [0.000000] [sd_test/INFO] 	Link 28: latency = 0.035083, bandwidth = 15376875.000000
+> [0.000000] [sd_test/INFO] 	Link 19: latency = 0.000514, bandwidth = 34285625.000000
+> [0.000000] [sd_test/INFO] 	Link 7: latency = 0.000514, bandwidth = 34285625.000000
+> [0.000000] [sd_test/INFO] 	Link 6: latency = 0.000514, bandwidth = 34285625.000000
+> [0.000000] [sd_test/INFO] 	Link 11: latency = 0.000137, bandwidth = 118682500.000000
+> [0.000000] [sd_test/INFO] 	Link 44: latency = 0.006933, bandwidth = 10314625.000000
+> [0.000000] [sd_test/INFO] 	Link 47: latency = 0.006933, bandwidth = 10314625.000000
+> [0.000000] [sd_test/INFO] 	Link 118: latency = 0.000870, bandwidth = 1467625.000000
+> [0.000000] [sd_test/INFO] Route latency = 0.088580, route bandwidth = 1467625.000000
+> [0.000000] [sd_test/INFO] Communication time for 2000000.000000 bytes between Fernand and Ethernet: 1.451326
+> [0.000000] [sd_test/INFO] Communication time for 3000000.000000 bytes between Ethernet and Fernand: 2.132699
+> [0.000000] [sd_test/INFO] Estimated time for 'Task D': 128.573571
 > [0.000000] [sd_kernel/INFO] Starting simulation...
 > [0.000000] [sd_kernel/INFO] Executing task 'Task D'
-> [204.411890] [sd_kernel/INFO] Task 'Task D' done
-> [204.411890] [sd_kernel/INFO] Executing task 'Task B'
-> [204.411890] [sd_kernel/INFO] Executing task 'Task C'
-> [340.686483] [sd_kernel/INFO] Task 'Task B' done
-> [340.686483] [sd_task/INFO] Watch point reached with task 'Task B'!
-> [340.686483] [sd_kernel/INFO] Simulation finished
-> [340.686483] [sd_test/INFO] Task 'Task D' start time: -1.000000, finish time: 204.411890
-> [340.686483] [sd_test/INFO] Task 'Task B' start time: -1.000000, finish time: 340.686483
+> [204.500470] [sd_kernel/INFO] Task 'Task D' done
+> [204.500470] [sd_kernel/INFO] Executing task 'Task B'
+> [204.500470] [sd_kernel/INFO] Executing task 'Task C'
+> [340.863643] [sd_kernel/INFO] Task 'Task B' done
+> [340.863643] [sd_task/INFO] Watch point reached with task 'Task B'!
+> [340.863643] [sd_kernel/INFO] Simulation finished
+> [340.863643] [sd_test/INFO] Task 'Task D' start time: 0.000000, finish time: 204.500470
+> [340.863643] [sd_test/INFO] Task 'Task B' start time: 204.500470, finish time: 340.863643
