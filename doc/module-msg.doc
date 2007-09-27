@@ -58,7 +58,7 @@
      
     <hr> 
     
-    \dontinclude msg/masterslave/masterslave.c
+    \dontinclude msg/masterslave/masterslave_forwarder.c
     
     \section MSG_ext_ms_code Code of the application
     
