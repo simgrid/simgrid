@@ -25,6 +25,7 @@ TESTS = sendrecv/sendrecv_KCCFLN05.tesh \
         suspend/suspend.tesh \
 	masterslave/masterslave.tesh \
 	masterslave/masterslave_forwarder.tesh \
+	masterslave/masterslave_failure.tesh \
         masterslave/masterslave_bypass.tesh \
         parallel_task/parallel_task.tesh \
         priority/priority.tesh
@@ -41,8 +42,8 @@ CLEANFILES = sendrecv/*~ \
              suspend/*~ \
              suspend/suspend \
              masterslave/*~ \
-             masterslave/masterslave \
              masterslave/masterslave_forwarder \
+             masterslave/masterslave_failure \
              masterslave/masterslave_bypass \
              parallel_task/parallel_task \
              priority/priority
@@ -56,7 +57,6 @@ endif
 
 noinst_PROGRAMS = sendrecv/sendrecv \
                   suspend/suspend \
-                  masterslave/masterslave \
                   masterslave/masterslave_forwarder \
                   masterslave/masterslave_failure \
                   masterslave/masterslave_bypass \
@@ -84,10 +84,6 @@ parallel_task_parallel_task_LDADD   = $(top_builddir)/src/libsimgrid.la
 # playing with priorities example
 priority_priority_SOURCES = priority/priority.c
 priority_priority_LDADD   = $(top_builddir)/src/libsimgrid.la
-
-# master/slave application example
-masterslave_masterslave_SOURCES = masterslave/masterslave.c
-masterslave_masterslave_LDADD   = $(top_builddir)/src/libsimgrid.la
 
 # master/slave application example using a forwarder module
 masterslave_masterslave_forwarder_SOURCES = masterslave/masterslave_forwarder.c
