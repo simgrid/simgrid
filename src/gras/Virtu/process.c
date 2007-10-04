@@ -23,8 +23,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_virtu_process,gras_virtu,"Process manipulat
 /* Functions to handle gras_procdata_t->libdata cells*/
 typedef struct {
    char *name;
-   pvoid_f_void_t *constructor;
-   void_f_pvoid_t *destructor;
+   pvoid_f_void_t constructor;
+   void_f_pvoid_t destructor;
 } s_gras_procdata_fabric_t, *gras_procdata_fabric_t;
 
 static xbt_dynar_t _gras_procdata_fabrics = NULL; /* content: s_gras_procdata_fabric_t */
@@ -144,7 +144,7 @@ gras_procdata_init() {
       THROW1(unknown_error,0,"MayDay: two modules use '%s' as libdata name", fab.name);
     
     /* Add the data in place, after some more sanity checking */
-    elem = (fab.constructor)();
+    elem = (*fab.constructor)();
     if (elem->name_len && elem->name_len != strlen(elem->name)) {
        elem->name_len = strlen(elem->name);
        WARN1("Module '%s' constructor is borken: it does not set elem->name_len",

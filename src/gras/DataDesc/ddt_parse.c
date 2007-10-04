@@ -198,7 +198,7 @@ static void change_to_matrix_of(xbt_dynar_t dynar,gras_datadesc_type_t subtype) 
   XBT_OUT;
 }
 
-static void add_free_f(xbt_dynar_t dynar,void_f_pvoid_t* free_f) {
+static void add_free_f(xbt_dynar_t dynar,void_f_pvoid_t free_f) {
   s_identifier_t former,ref;
   memset(&ref,0,sizeof(ref));
 
@@ -474,10 +474,10 @@ static void parse_statement(char	 *definition,
 	   if (!storage)
 	     PARSE_ERROR1("value for free_f annotation of field %s is not a known constant",identifier.name);
 	   if (identifier.tm.is_matrix == -1) {
-	      add_free_f(identifiers,*(void_f_pvoid_t**)storage);
+	      add_free_f(identifiers,*(void_f_pvoid_t*)storage);
 	      identifier.tm.is_matrix = 0;
 	   } else if (identifier.tm.is_dynar == -1) {
-	      add_free_f(identifiers,*(void_f_pvoid_t**)storage);
+	      add_free_f(identifiers,*(void_f_pvoid_t*)storage);
 	      identifier.tm.is_dynar = 0;
 	   } else {	  
              PARSE_ERROR1("free_f annotation only accepted for dynars and matrices which subtype is already declared (field %s)",

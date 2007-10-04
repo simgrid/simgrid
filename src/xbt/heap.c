@@ -26,7 +26,7 @@
  *
  * Creates a new heap.
  */
-xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t * const free_func)
+xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func)
 {
   xbt_heap_t H = xbt_new0(struct xbt_heap, 1);
   H->size = init_size;
@@ -45,7 +45,7 @@ void xbt_heap_free(xbt_heap_t H)
   int i;
   if (H->free)
     for (i = 0; i < H->count; i++)
-      H->free(H->items[i].content);
+      (*H->free)(H->items[i].content);
   free(H->items);
   free(H);
   return;

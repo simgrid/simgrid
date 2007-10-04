@@ -12,27 +12,27 @@
 #include "surf/surfxml.h"
 #include "xbt/function_types.h"
 /* Entry-point of the surfxml parser. */
-XBT_PUBLIC_DATA(int_f_void_t *) surf_parse;
+XBT_PUBLIC_DATA(int_f_void_t) surf_parse;
 
 /* Hook for the different tags. They can be redefined at will whereas
    the versions without the _fun can't. */
 
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_platform_description_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_platform_description_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_cpu_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_cpu_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_router_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_router_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_network_link_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_network_link_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_route_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_route_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_route_element_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_route_element_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_process_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_process_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) STag_surfxml_argument_fun;
-XBT_PUBLIC_DATA(void_f_void_t *) ETag_surfxml_argument_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_platform_description_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_platform_description_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_cpu_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_cpu_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_router_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_router_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_network_link_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_network_link_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_route_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_route_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_route_element_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_route_element_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_process_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_process_fun;
+XBT_PUBLIC_DATA(void_f_void_t) STag_surfxml_argument_fun;
+XBT_PUBLIC_DATA(void_f_void_t) ETag_surfxml_argument_fun;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);

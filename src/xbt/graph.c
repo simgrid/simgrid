@@ -127,9 +127,9 @@ void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
  * Free the graph structure. 
  */
 void xbt_graph_free_graph(xbt_graph_t g,
-			  void_f_pvoid_t * node_free_function,
-			  void_f_pvoid_t * edge_free_function,
-			  void_f_pvoid_t * graph_free_function)
+			  void_f_pvoid_t node_free_function,
+			  void_f_pvoid_t edge_free_function,
+			  void_f_pvoid_t graph_free_function)
 {
   int cursor = 0;
   xbt_node_t node = NULL;
@@ -155,7 +155,8 @@ void xbt_graph_free_graph(xbt_graph_t g,
   xbt_dynar_foreach(g->edges, cursor, edge)
       free(edge);
   xbt_dynar_free(&(g->edges));
-  if(graph_free_function) (*graph_free_function)(g->data);
+  if(graph_free_function) 
+     (*graph_free_function)(g->data);
   free(g);
 
   return;
@@ -164,8 +165,8 @@ void xbt_graph_free_graph(xbt_graph_t g,
 
 /** @brief remove the given node from the given graph */
 void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
-			 void_f_pvoid_t * node_free_function,
-			 void_f_pvoid_t * edge_free_function)
+			 void_f_pvoid_t node_free_function,
+			 void_f_pvoid_t edge_free_function)
 {
   unsigned long nbr;
   int i;
@@ -185,7 +186,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
   }
 
   if ((node_free_function) && (n->data))
-    node_free_function(n->data);
+    (*node_free_function)(n->data);
 
   cursor = 0;
   xbt_dynar_foreach(g->nodes, cursor, node)
@@ -202,7 +203,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
 
 /** @brief remove the given edge from the given graph */
 void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
-			 void_f_pvoid_t *free_function)
+			 void_f_pvoid_t free_function)
 {
   int idx;
   int cursor = 0;
@@ -598,10 +599,10 @@ static void __parse_edge(void)
 
 /** @brief Import a graph from a file following the GraphXML format */
 xbt_graph_t xbt_graph_read(const char *filename,
-			   void *(node_label_and_data) (xbt_node_t,
+			   void *(*node_label_and_data) (xbt_node_t,
 							const char *,
 							const char *),
-			   void *(edge_label_and_data) (xbt_edge_t,
+			   void *(*edge_label_and_data) (xbt_edge_t,
 							const char *,
 							const char *))
 {

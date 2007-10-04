@@ -368,10 +368,10 @@ XBT_PUBLIC(gras_datadesc_type_t)
 
 XBT_PUBLIC(gras_datadesc_type_t) 
   gras_datadesc_dynar(gras_datadesc_type_t elm_t,
-		      void_f_pvoid_t *free_func);
+		      void_f_pvoid_t free_func);
 XBT_PUBLIC(gras_datadesc_type_t)
   gras_datadesc_matrix(gras_datadesc_type_t elm_t,
-		       void_f_pvoid_t * const free_f);
+		       void_f_pvoid_t const free_f);
 
 /*********************************
  * Change stuff within datadescs *

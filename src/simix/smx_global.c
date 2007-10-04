@@ -456,7 +456,7 @@ int SIMIX_timer_get(void **function, void **arg)
  *	\param function Create process function
  *
  */
-void SIMIX_function_register_process_create(smx_creation_func_t * function)
+void SIMIX_function_register_process_create(smx_creation_func_t function)
 {
   xbt_assert0((simix_global->create_process_function == NULL),
 	      "Data already set");
@@ -471,7 +471,7 @@ void SIMIX_function_register_process_create(smx_creation_func_t * function)
  *	\param function Kill process function
  *
  */
-void SIMIX_function_register_process_kill(void_f_pvoid_t * function)
+void SIMIX_function_register_process_kill(void_f_pvoid_t function)
 {
   xbt_assert0((simix_global->kill_process_function == NULL),
 	      "Data already set");
@@ -486,7 +486,7 @@ void SIMIX_function_register_process_kill(void_f_pvoid_t * function)
  *	\param function cleanup process function
  *
  */
-void SIMIX_function_register_process_cleanup(void_f_pvoid_t * function)
+void SIMIX_function_register_process_cleanup(void_f_pvoid_t function)
 {
   simix_global->cleanup_process_function = function;
 }

@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_rl,xbt,"Synchronization mechanism (RL)"
 
 typedef struct s_xbt_thread_ {   
    xbt_os_thread_t os_thread;
-   void_f_pvoid_t *code;
+   void_f_pvoid_t code;
    void *userparam;   
 }s_xbt_thread_t;
 
@@ -36,7 +36,7 @@ static void *xbt_thread_create_wrapper(void *p)  {
 }
 
 
-xbt_thread_t xbt_thread_create(const char*name,void_f_pvoid_t* code, void* param) {
+xbt_thread_t xbt_thread_create(const char*name,void_f_pvoid_t code, void* param) {
 
    xbt_thread_t res = xbt_new0(s_xbt_thread_t,1);
    res->userparam = param;

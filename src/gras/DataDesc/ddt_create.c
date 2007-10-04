@@ -643,7 +643,7 @@ static void gras_datadesc_dynar_cb(gras_datadesc_type_t typedesc, gras_cbps_t va
  */
 gras_datadesc_type_t
 gras_datadesc_dynar(gras_datadesc_type_t elm_t,
-		    void_f_pvoid_t *free_func) {
+		    void_f_pvoid_t free_func) {
    
   char *buffname;
   gras_datadesc_type_t res;
@@ -704,7 +704,7 @@ static void gras_datadesc_matrix_cb(gras_datadesc_type_t typedesc, gras_cbps_t v
 }
 gras_datadesc_type_t
 gras_datadesc_matrix(gras_datadesc_type_t elm_t,
-		     void_f_pvoid_t * const free_f) {
+		     void_f_pvoid_t const free_f) {
   char *buffname;
   gras_datadesc_type_t res;
 

@@ -78,7 +78,7 @@ static int _xbt_set_get_id(xbt_set_t set) {
  */
 void xbt_set_add    (xbt_set_t      set,
 		      xbt_set_elm_t  elm,
-		      void_f_pvoid_t *free_func) {
+		      void_f_pvoid_t free_func) {
 
   int found = 1;
   xbt_set_elm_t found_in_dict = NULL;

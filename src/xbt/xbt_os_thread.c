@@ -29,7 +29,7 @@ typedef struct xbt_os_thread_ {
    pthread_t t;
    char *name;
    void *param;
-   pvoid_f_pvoid_t *start_routine;
+   pvoid_f_pvoid_t start_routine;
    ex_ctx_t *exception;
 } s_xbt_os_thread_t ;
 static xbt_os_thread_t main_thread = NULL;
@@ -93,7 +93,7 @@ static void * wrapper_start_routine(void *s) {
   if ((errcode=pthread_setspecific(xbt_self_thread_key,t)))
     THROW0(system_error,errcode,
 	   "pthread_setspecific failed for xbt_self_thread_key");   
-  return t->start_routine(t->param);
+  return (*t->start_routine)(t->param);
 }
 xbt_os_thread_t xbt_os_thread_create(const char*name,
 				     pvoid_f_pvoid_t start_routine,
@@ -294,7 +294,7 @@ typedef struct xbt_os_thread_ {
   char *name;
   HANDLE handle;                  /* the win thread handle        */
   unsigned long id;               /* the win thread id            */
-  pvoid_f_pvoid_t *start_routine;
+  pvoid_f_pvoid_t start_routine;
   void* param;
 } s_xbt_os_thread_t ;
 

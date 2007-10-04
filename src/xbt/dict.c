@@ -165,11 +165,11 @@ static unsigned int xbt_dict_hash(const char *str) {
  * Set the \a data in the structure under the \a key, which can be any kind 
  * of data, as long as its length is provided in \a key_len.
  */
-void xbt_dict_set_ext(xbt_dict_t      dict,
+void xbt_dict_set_ext(xbt_dict_t       dict,
 		      const char      *key,
 		      int              key_len,
 		      void            *data,
-		      void_f_pvoid_t  *free_ctn) {
+		      void_f_pvoid_t   free_ctn) {
 
   unsigned int hash_code;
   xbt_dictelm_t current, previous = NULL;
@@ -217,10 +217,10 @@ void xbt_dict_set_ext(xbt_dict_t      dict,
  * set the \a data in the structure under the \a key, which is a 
  * null terminated string.
  */
-void xbt_dict_set(xbt_dict_t     dict,
+void xbt_dict_set(xbt_dict_t      dict,
 		  const char     *key,
 		  void           *data,
-		  void_f_pvoid_t *free_ctn) {
+		  void_f_pvoid_t  free_ctn) {
 
   xbt_assert(dict);
   
@@ -438,7 +438,7 @@ void xbt_dict_add_element(xbt_dict_t dict, xbt_dictelm_t element) {
  */
 
 void xbt_dict_dump(xbt_dict_t     dict,
-		   void_f_pvoid_t *output) {
+		   void_f_pvoid_t output) {
   int i;
   xbt_dictelm_t element;
   printf("Dict %p:\n", dict);
@@ -448,7 +448,7 @@ void xbt_dict_dump(xbt_dict_t     dict,
       while (element != NULL) {
 	printf("%s -> ", element->key);
 	if (output != NULL) {
-	  output(element->content);
+	  (*output)(element->content);
 	}
 	printf("\n");
 	element = element->next;

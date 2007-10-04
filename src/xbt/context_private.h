@@ -57,9 +57,9 @@ typedef struct s_xbt_context {
 	char **argv;
    
 	/* Init/exit functions */   
-	void_f_pvoid_t *startup_func;
+	void_f_pvoid_t startup_func;
 	void *startup_arg;
-	void_f_pvoid_t *cleanup_func;
+	void_f_pvoid_t cleanup_func;
 	void *cleanup_arg;
 
    	int iwannadie;                  /* Set to true by the context when it wants to commit suicide */

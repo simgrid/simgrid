@@ -39,13 +39,13 @@ XBT_PUBLIC(double) xbt_graph_edge_get_length(xbt_edge_t e);
 XBT_PUBLIC(double*) xbt_graph_get_length_matrix(xbt_graph_t g);
 
 XBT_PUBLIC(void) xbt_graph_free_node(xbt_graph_t g, xbt_node_t n, 
-			   void_f_pvoid_t *node_free_function , void_f_pvoid_t *edge_free_function);
+			   void_f_pvoid_t node_free_function , void_f_pvoid_t edge_free_function);
 XBT_PUBLIC(void) xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e, 
-			   void_f_pvoid_t *free_function);
+			   void_f_pvoid_t free_function);
 XBT_PUBLIC(void) xbt_graph_free_graph(xbt_graph_t g, 
-			  void_f_pvoid_t *node_free_function,
-			  void_f_pvoid_t *edge_free_function,
-			  void_f_pvoid_t *graph_free_function);
+			  void_f_pvoid_t node_free_function,
+			  void_f_pvoid_t edge_free_function,
+			  void_f_pvoid_t graph_free_function);
 
 XBT_PUBLIC(int) __xbt_find_in_dynar(xbt_dynar_t dynar, void *p);
 

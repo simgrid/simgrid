@@ -18,7 +18,7 @@
 SG_BEGIN_DECL()
 
      /* Get the PID of the current process */
-     XBT_PUBLIC_DATA(int_f_void_t*) xbt_getpid;
+     XBT_PUBLIC_DATA(int_f_void_t) xbt_getpid;
 
 SG_END_DECL()
 

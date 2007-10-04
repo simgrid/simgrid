@@ -63,9 +63,9 @@ SG_BEGIN_DECL()
 
 
   XBT_PUBLIC(xbt_dynar_t)   xbt_dynar_new(const unsigned long elm_size, 
-					  void_f_pvoid_t * const free_f);
+					  void_f_pvoid_t const free_f);
   XBT_PUBLIC(xbt_dynar_t)   xbt_dynar_new_sync(const unsigned long elm_size, 
-					       void_f_pvoid_t * const free_f);
+					       void_f_pvoid_t const free_f);
   XBT_PUBLIC(void)          xbt_dynar_free(xbt_dynar_t *dynar);
   XBT_PUBLIC(void)          xbt_dynar_free_voidp(void *dynar);
   XBT_PUBLIC(void)          xbt_dynar_free_container(xbt_dynar_t *dynar);
@@ -104,7 +104,7 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(void) xbt_dynar_pop     (xbt_dynar_t  const dynar, void *const dst);
   XBT_PUBLIC(void) xbt_dynar_unshift (xbt_dynar_t  const dynar, const void *src);
   XBT_PUBLIC(void) xbt_dynar_shift   (xbt_dynar_t  const dynar, void *const dst);
-  XBT_PUBLIC(void) xbt_dynar_map     (const xbt_dynar_t dynar, void_f_pvoid_t     * const op);
+  XBT_PUBLIC(void) xbt_dynar_map     (const xbt_dynar_t dynar, void_f_pvoid_t const op);
 
 /** @} */
 /** @defgroup XBT_dynar_ctn Direct manipulation to the dynars content

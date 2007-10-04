@@ -54,7 +54,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn,xbt,"Dynamic arrays");
                     "dynar %p is empty", dynar)
 
 static void _dynar_map(const xbt_dynar_t  dynar,
-		       void_f_pvoid_t     * const op);
+		       void_f_pvoid_t     const op);
 
 static XBT_INLINE 
 void _xbt_clear_mem(void * const ptr,
@@ -182,7 +182,7 @@ xbt_dynar_dump(xbt_dynar_t dynar) {
  */
 xbt_dynar_t 
 xbt_dynar_new(const unsigned long elmsize,
-               void_f_pvoid_t * const free_f) {
+               void_f_pvoid_t const free_f) {
    
   xbt_dynar_t dynar = xbt_new0(s_xbt_dynar_t,1);
 
@@ -203,7 +203,7 @@ xbt_dynar_new(const unsigned long elmsize,
  */
 xbt_dynar_t 
 xbt_dynar_new_sync(const unsigned long elmsize,
-               void_f_pvoid_t * const free_f) {
+               void_f_pvoid_t const free_f) {
    xbt_dynar_t res = xbt_dynar_new(elmsize,free_f);
    res->mutex = xbt_mutex_init();
    return res;
@@ -617,7 +617,7 @@ xbt_dynar_shift(xbt_dynar_t  const dynar,
 }
 
 static void _dynar_map(const xbt_dynar_t  dynar,
-		       void_f_pvoid_t     * const op) {
+		       void_f_pvoid_t     const op) {
   char         elm[SIZEOF_MAX];
   const unsigned long used = dynar->used;
   unsigned long       i    = 0;
@@ -639,7 +639,7 @@ static void _dynar_map(const xbt_dynar_t  dynar,
  */
 void
 xbt_dynar_map(const xbt_dynar_t  dynar,
-               void_f_pvoid_t     * const op) {
+               void_f_pvoid_t    const op) {
 
   _dynar_lock(dynar);
   _sanity_check_dynar(dynar);

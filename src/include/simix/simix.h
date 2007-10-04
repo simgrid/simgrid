@@ -45,15 +45,15 @@ XBT_PUBLIC(void) __SIMIX_main(void);
  * int argc, char **argv: parameters passed to code
  *
  * */
-typedef void *(smx_creation_func_t)(/*name*/     const char *,
+typedef void *(*smx_creation_func_t)(/*name*/     const char *,
 				     /*code*/     xbt_main_func_t, 
 				     /*userdata*/ void *,
 				     /*hostname*/ char *, 
 				     /* argc */   int,
 				     /* argv */   char **);
-XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t *function);
-XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_f_pvoid_t *function);
-XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_f_pvoid_t *function);
+XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
+XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_f_pvoid_t function);
+XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_f_pvoid_t function);
 
 /************************** Host handling ***********************************/
 

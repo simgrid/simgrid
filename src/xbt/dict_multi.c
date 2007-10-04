@@ -30,7 +30,7 @@ static void _free_dict(void*d) {
 void
 xbt_multidict_set_ext(xbt_dict_t  mdict,
                       xbt_dynar_t keys, xbt_dynar_t     lens,
-                      void       *data, void_f_pvoid_t *free_ctn) {
+                      void       *data, void_f_pvoid_t  free_ctn) {
       
   xbt_ex_t e;
   xbt_dict_t thislevel,nextlevel=NULL;
@@ -85,7 +85,7 @@ xbt_multidict_set_ext(xbt_dict_t  mdict,
 void
 xbt_multidict_set(xbt_dict_t  mdict,
                   xbt_dynar_t keys,
-                  void       *data,  void_f_pvoid_t *free_ctn) {
+                  void       *data,  void_f_pvoid_t free_ctn) {
   xbt_dynar_t lens = xbt_dynar_new(sizeof(unsigned long int),NULL);
   int i;
   xbt_ex_t e;

@@ -20,7 +20,7 @@ typedef struct xbt_heap {
   int size;
   int count;
   xbt_heapItem_t items;
-  void_f_pvoid_t *free;
+  void_f_pvoid_t free;
 } s_xbt_heap_t;
 
 #define PARENT(i)  i/2

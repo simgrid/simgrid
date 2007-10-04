@@ -20,7 +20,7 @@ typedef struct {
   unsigned long elmsize;
 
   char *data;
-  void_f_pvoid_t *free_f;
+  void_f_pvoid_t free_f;
 } s_xbt_matrix_t, *xbt_matrix_t;
 
 
@@ -35,11 +35,11 @@ typedef struct {
 
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_new(int lines, int rows, 
 			    const unsigned long elmsize,
-			    void_f_pvoid_t * const free_f);
+			    void_f_pvoid_t const free_f);
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_new_sub(xbt_matrix_t from,
 				int lsize, int rsize,
 				int lpos, int rpos,
-				pvoid_f_pvoid_t *const cpy_f);
+				pvoid_f_pvoid_t const cpy_f);
 
 XBT_PUBLIC(void) xbt_matrix_free(xbt_matrix_t matrix);
 XBT_PUBLIC(void) xbt_matrix_free_voidp(void *d);
@@ -48,7 +48,7 @@ XBT_PUBLIC(void) xbt_matrix_copy_values(xbt_matrix_t dest, xbt_matrix_t src,
 			    int lsize, int rsize,
 			    int lpos_dst,int rpos_dst,
 			    int lpos_src,int rpos_src,
-			    pvoid_f_pvoid_t *const cpy_f);
+			    pvoid_f_pvoid_t const cpy_f);
 
 XBT_PUBLIC(void) xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
 		     void_f_pvoid_t display_fun);

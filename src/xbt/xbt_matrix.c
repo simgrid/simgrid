@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_matrix,xbt,"2D data storage");
 /** \brief constructor */
 xbt_matrix_t xbt_matrix_new(int lines, int rows, 
 			    const unsigned long elmsize,
-			    void_f_pvoid_t * const free_f)  {
+			    void_f_pvoid_t const free_f)  {
    xbt_matrix_t res=xbt_new(s_xbt_matrix_t, 1);
    res->lines   = lines;
    res->rows    = rows;
@@ -31,7 +31,7 @@ xbt_matrix_t xbt_matrix_new(int lines, int rows,
 xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from, 
 				int lsize, int rsize,
 				int lpos, int rpos,
-				pvoid_f_pvoid_t *const cpy_f) {
+				pvoid_f_pvoid_t const cpy_f) {
    
    xbt_matrix_t res=xbt_matrix_new(lsize,rsize,
 				   from->elmsize, from->free_f);
@@ -73,7 +73,7 @@ void xbt_matrix_dump(xbt_matrix_t matrix, const char*name, int coords,
 	 fprintf(stderr," (%d,%d)=",i,j);
        else 
 	 fprintf(stderr," ");
-       display_fun(xbt_matrix_get_ptr(matrix,i,j));
+       (*display_fun)(xbt_matrix_get_ptr(matrix,i,j));
     }
     fprintf(stderr,"\n");
   }
@@ -97,7 +97,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
 			    int lsize, int rsize,
 			    int lpos_dst,int rpos_dst,
 			    int lpos_src,int rpos_src,
-			    pvoid_f_pvoid_t *const cpy_f) {
+			    pvoid_f_pvoid_t const cpy_f) {
    int i,j;
    
    DEBUG10("Copy a %dx%d submatrix from %dx%d(of %dx%d) to %dx%d (of %dx%d)",
@@ -119,7 +119,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
    for (i=0;i<rsize;i++) {
       if (cpy_f) {
 	 for (j=0;j<lsize;j++)
-	   xbt_matrix_get_as(dst,j+lpos_dst,i+rpos_dst,void*) = cpy_f(xbt_matrix_get_ptr(src,j+rpos_src,i+lpos_src));
+	   xbt_matrix_get_as(dst,j+lpos_dst,i+rpos_dst,void*) = (*cpy_f)(xbt_matrix_get_ptr(src,j+rpos_src,i+lpos_src));
       } else {
 	 memcpy(xbt_matrix_get_ptr(dst,lpos_dst,i+rpos_dst),
 		xbt_matrix_get_ptr(src,lpos_src,i+rpos_src),

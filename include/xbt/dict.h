@@ -58,7 +58,7 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  XBT_PUBLIC(void)  xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t *free_ctn);
+  XBT_PUBLIC(void)  xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn);
   XBT_PUBLIC(void*) xbt_dict_get(xbt_dict_t dict,const char *key);
   XBT_PUBLIC(void*) xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
 
@@ -78,7 +78,7 @@ SG_BEGIN_DECL()
   XBT_PUBLIC(void)  xbt_dict_set_ext(xbt_dict_t     dict,
 	 	         const char     *key, int  key_len,
 		         void           *data,
-		         void_f_pvoid_t *free_ctn);
+		         void_f_pvoid_t free_ctn);
   XBT_PUBLIC(void*) xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len);
   XBT_PUBLIC(void)  xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len);
 
@@ -157,7 +157,7 @@ xbt_multidict_set(xbt_dict_t mdict,
 XBT_PUBLIC(void)
 xbt_multidict_set_ext(xbt_dict_t mdict,
                       xbt_dynar_t keys, xbt_dynar_t lens,
-                      void *data,void_f_pvoid_t *free_ctn);
+                      void *data,void_f_pvoid_t free_ctn);
 
 /*----[ xbt_multidict_get ]--------------------------------------------------*/
 XBT_PUBLIC(void*) xbt_multidict_get    (xbt_dict_t mdict, xbt_dynar_t keys);

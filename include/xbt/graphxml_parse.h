@@ -13,16 +13,16 @@
 #include "xbt/graphxml.h"
 
 /* Entry-point of the graphxml parser. */
-extern int_f_void_t *xbt_graph_parse;
+extern int_f_void_t xbt_graph_parse;
 
 /* Hook for the different tags. They can be redefined at will whereas
    the versions without the _fun can't. */
-extern void_f_void_t *STag_graphxml_graph_fun;
-extern void_f_void_t *ETag_graphxml_graph_fun;
-extern void_f_void_t *STag_graphxml_node_fun;
-extern void_f_void_t *ETag_graphxml_node_fun;
-extern void_f_void_t *STag_graphxml_edge_fun;
-extern void_f_void_t *ETag_graphxml_edge_fun;
+extern void_f_void_t STag_graphxml_graph_fun;
+extern void_f_void_t ETag_graphxml_graph_fun;
+extern void_f_void_t STag_graphxml_node_fun;
+extern void_f_void_t ETag_graphxml_node_fun;
+extern void_f_void_t STag_graphxml_edge_fun;
+extern void_f_void_t ETag_graphxml_edge_fun;
 
 XBT_PUBLIC(void) xbt_graph_parse_open(const char *file);
 XBT_PUBLIC(void) xbt_graph_parse_close(void);

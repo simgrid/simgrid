@@ -75,10 +75,10 @@ typedef struct s_gras_module {
      loading/unloading */
    
   int *p_id; /* where the module stores the libdata ID (a global somewhere), to tweak it on need */
-  void_f_void_t *init_f;  /* First time the module is referenced. */
-  void_f_void_t *exit_f;  /* When last process referencing it stops doing so. */
-  void_f_pvoid_t *join_f;  /* Called by each process in initialization phase (init_f called once for all processes) */
-  void_f_pvoid_t *leave_f; /* Called by each process in finalization phase. Should free moddata passed */
+  void_f_void_t init_f;  /* First time the module is referenced. */
+  void_f_void_t exit_f;  /* When last process referencing it stops doing so. */
+  void_f_pvoid_t join_f;  /* Called by each process in initialization phase (init_f called once for all processes) */
+  void_f_pvoid_t leave_f; /* Called by each process in finalization phase. Should free moddata passed */
 } s_gras_module_t, *gras_module_t;
 
 static xbt_set_t _gras_modules = NULL; /* content: s_gras_module_t */
@@ -106,8 +106,8 @@ static void gras_module_freep(void *p) {
  */
 
 void gras_module_add(const char *name, unsigned int datasize, int *ID,
-		     void_f_void_t  *init_f, void_f_void_t  *exit_f,
-		     void_f_pvoid_t *join_f, void_f_pvoid_t *leave_f) {
+		     void_f_void_t  init_f, void_f_void_t  exit_f,
+		     void_f_pvoid_t join_f, void_f_pvoid_t leave_f) {
   gras_module_t mod=NULL;
   xbt_ex_t e;
   volatile int found = 0;

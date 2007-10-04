@@ -15,5 +15,5 @@ static int xbt_fake_pid(void) {
    return 0;
 }
 
-int_f_void_t *xbt_getpid=&xbt_fake_pid;
+int_f_void_t xbt_getpid=xbt_fake_pid;
 

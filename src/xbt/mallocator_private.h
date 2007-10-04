@@ -5,9 +5,9 @@ typedef struct s_xbt_mallocator {
   int current_size;       /* number of objects currently stored */
   void **objects;         /* objects stored by the mallocator and available for the user */
   int max_size;           /* maximum number of objects */
-  pvoid_f_void_t *new_f;   /* function to call when we are running out of objects */
-  void_f_pvoid_t *free_f;  /* function to call when we have got too many objects */
-  void_f_pvoid_t *reset_f; /* function to call when an object is released by the user */
+  pvoid_f_void_t new_f;   /* function to call when we are running out of objects */
+  void_f_pvoid_t free_f;  /* function to call when we have got too many objects */
+  void_f_pvoid_t reset_f; /* function to call when an object is released by the user */
 } s_xbt_mallocator_t;
 
 #endif

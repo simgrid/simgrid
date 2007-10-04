@@ -77,7 +77,7 @@ XBT_PUBLIC(void) xbt_set_free(xbt_set_t *set);
  *  @{
  */
 
-XBT_PUBLIC(void) xbt_set_add (xbt_set_t set, xbt_set_elm_t  elm, void_f_pvoid_t *free_func);
+XBT_PUBLIC(void) xbt_set_add (xbt_set_t set, xbt_set_elm_t  elm, void_f_pvoid_t free_func);
 XBT_PUBLIC(void) xbt_set_remove (xbt_set_t set, xbt_set_elm_t elm);
 XBT_PUBLIC(void) xbt_set_remove_by_name (xbt_set_t set, const char *key);
 XBT_PUBLIC(void) xbt_set_remove_by_name_ext (xbt_set_t set, const char *key, int key_len);

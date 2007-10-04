@@ -24,7 +24,7 @@ typedef struct xbt_dictelm_ {
   char *key;
   int key_len;
   void *content;
-  void_f_pvoid_t *free_f;
+  void_f_pvoid_t free_f;
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
 

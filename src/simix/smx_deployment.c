@@ -77,7 +77,7 @@ static void parse_process_finalize(void)
 
     if (simix_global->create_process_function)
       process =
-	  simix_global->create_process_function(parse_argv[0], parse_code,
+	 (*simix_global->create_process_function)(parse_argv[0], parse_code,
 						NULL, parse_host,
 						parse_argc, parse_argv);
     else
