@@ -451,10 +451,13 @@ EXTRA_DIST = portable.h xbt/mallocator_private.h xbt/dynar_private.h \
 	include/surf/surfxml_parse_private.h include/xbt/xbt_os_time.h \
 	include/xbt/xbt_os_thread.h include/xbt/context.h \
 	msg/private.h simdag/private.h gras/DataDesc/ddt_parse.yy.l \
-	gras/Virtu/virtu_interface.h \
+	gras/Virtu/virtu_rl.h gras/Virtu/virtu_sg.h \
+	gras/Virtu/virtu_interface.h gras/Virtu/virtu_private.h \
+	gras/Transport/transport_interface.h \
 	amok/Bandwidth/bandwidth_private.h amok/amok_modinter.h \
-	$(am__append_3) $(am__append_4) $(am__append_9) \
-	$(am__append_10)
+	include/simix/simix.h include/simix/datatypes.h \
+	simix/private.h smpi/private.h $(am__append_3) $(am__append_4) \
+	$(JMSG_JAVA_SRC) $(am__append_9) $(am__append_10)
 
 #LIBRARY_VERSION= 0:0:0
 #                 | | |
@@ -2259,11 +2262,6 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jarDATA \
 	uninstall-am uninstall-binSCRIPTS uninstall-jarDATA \
 	uninstall-libLTLIBRARIES
 
-	\
-	include/simix/simix.h include/simix/datatypes.h \
-	simix/private.h \
-	\
-	smpi/private.h
 
 @HAVE_JAVA_TRUE@clean-local:
 @HAVE_JAVA_TRUE@	-rm -rf .classes
