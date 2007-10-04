@@ -168,14 +168,15 @@
 
 
 
-#ifndef PREFER_PORTABLE_SNPRINTF
-#  define PREFER_PORTABLE_SNPRINTF	1	
+#ifdef PREFER_PORTABLE_SNPRINTF
+# undef PREFER_PORTABLE_SNPRINTF	1	
 #endif
+
 
 /* The compiler has `snprintf' function. */
 #if _MSC_VER >= 1400 
-#  ifdef HAVE_SNPRINTF
-#    undef HAVE_SNPRINTF	1
+#  ifndef HAVE_SNPRINTF
+#    define HAVE_SNPRINTF	1
 #    ifndef PREFER_PORTABLE_SNPRINTF
 #      define snprintf _snprintf
 #    endif
@@ -185,6 +186,8 @@
 	#undef HAVE_SNPRINTF
 #  endif
 #endif
+
+
 
 /* No `swapcontext' function. */
 #if defined(HAVE_SWAPCONTEXT)
