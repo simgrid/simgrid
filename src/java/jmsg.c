@@ -23,33 +23,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg,"MSG for Java(TM)");
 
-/* header for windows */
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <pthread.h>
-#endif
-
 #include "jmsg.h"
 
 static JavaVM * __java_vm = NULL;
-
-
-#ifdef WIN32
-  static DWORD __current_thread_id = 0;
-
-  int is_main_thread() {
-    return (GetCurrentThreadId() == __current_thread_id);
-  }
-
-#else /* !WIN32 */
-
-  static pthread_t __current_thread_id = 0;
-
-  int is_main_thread() {
-    return (pthread_self() == __current_thread_id);
-  }
-#endif
 
 JavaVM *
 get_java_VM(void) {
@@ -1061,13 +1037,7 @@ Java_simgrid_msg_Msg_init(JNIEnv* env, jclass cls, jobjectArray jargs) {
 	
   free(argv);
 
-#ifdef WIN32
-  __current_thread_id = GetCurrentThreadId();
-#else
-  __current_thread_id = pthread_self();
-#endif
-
-(*env)->GetJavaVM(env,&__java_vm);
+ (*env)->GetJavaVM(env,&__java_vm);
 	
 }
 

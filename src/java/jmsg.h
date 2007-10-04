@@ -15,9 +15,6 @@
 
 #include <jni.h>
 
-int
-is_main_thread(void);
-
 JavaVM *
 get_java_VM(void);
 
