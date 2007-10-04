@@ -241,11 +241,11 @@ XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model;
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01(const char *filename);
 
-extern XBT_PUBLIC_DATA(int) surf_cpu_model_description_size;
+XBT_PUBLIC_DATA(int) surf_cpu_model_description_size;
 /** \brief The list of all available cpu model models
  *  \ingroup SURF_models
  */
-extern XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
 
 /* Network model */
 
@@ -360,11 +360,11 @@ XBT_PUBLIC(void) surf_network_model_init_SDP(const char *filename);
 
 
 
-extern XBT_PUBLIC_DATA(int) surf_network_model_description_size;
+XBT_PUBLIC_DATA(int) surf_network_model_description_size;
 /** \brief The list of all available network model models
  *  \ingroup SURF_models
  */
-extern XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
 
 /** \brief Workstation model extension public
  *  \ingroup SURF_models
@@ -463,11 +463,11 @@ XBT_PUBLIC(void) surf_workstation_model_init_KCCFLN05(const char *filename);
  */
 XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(const char *filename);
 
-extern XBT_PUBLIC_DATA(int) surf_workstation_model_description_size;
+XBT_PUBLIC_DATA(int) surf_workstation_model_description_size;
 /** \brief The list of all available workstation model models
  *  \ingroup SURF_models
  */
-extern XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[];
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_workstation_model_description[];
 
 /** \brief The network links
  *  \ingroup SURF_models
