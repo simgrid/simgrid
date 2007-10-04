@@ -160,26 +160,22 @@ typedef enum {
  * Creates a new subcategory of the root category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
-
-  /*
 #if (defined(_WIN32) && !defined(DLL_STATIC))
 # define XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc) \
 	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
         0, 0, 0,                    \
 		#cname, xbt_log_priority_uninitialized, 1, \
-        0, 1                                          \
+        0, 0, 1                                          \
     }
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
 	XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc); \
 	XBT_LOG_DEFAULT_CATEGORY(cname)
     
 #else
-*/
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
     XBT_LOG_NEW_CATEGORY(cname,desc);                   \
     XBT_LOG_DEFAULT_CATEGORY(cname)
-   
-//#endif
+#endif
 
 
 
@@ -347,7 +343,7 @@ XBT_PUBLIC(int) _xbt_log_cat_init(xbt_log_category_t   category,
 				  e_xbt_log_priority_t priority);
 
 
-extern XBT_IMPORT_NO_EXPORT(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
+extern XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
 
 XBT_LOG_EXTERNAL_CATEGORY(GRAS);
 
