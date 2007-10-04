@@ -202,8 +202,7 @@ archive you may deploy on other sites just as a regular stable release.
 In summary, the following commands will checkout the SVN, regenerate the
 configure script and friends, configure SimGrid and build it.
 
-\verbatim svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk
-mv trunk simgrid
+\verbatim svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk simgrid
 cd simgrid
 ./bootstrap
 ./configure --enable-maintainer-mode --prefix=<where to install SimGrid>
