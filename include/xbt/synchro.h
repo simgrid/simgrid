@@ -32,7 +32,7 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
   typedef struct s_xbt_thread_ *xbt_thread_t;
 
-  XBT_PUBLIC(xbt_thread_t) xbt_thread_create(const char *name, void_f_pvoid_t start_routine,void* param);
+  XBT_PUBLIC(xbt_thread_t) xbt_thread_create(const char *name, void_fp_pvoid_t start_routine,void* param);
   XBT_PUBLIC(void) xbt_thread_exit();
   XBT_PUBLIC(xbt_thread_t) xbt_thread_self(void);
   XBT_PUBLIC(const char*) xbt_thread_name(xbt_thread_t t);
