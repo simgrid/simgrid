@@ -398,6 +398,12 @@ int vasnprintf (char **ptr, size_t str_m, const char *fmt, va_list ap);
 #if defined(HAVE_SNPRINTF)
 /* declare our portable snprintf  routine under name portable_snprintf  */
 /* declare our portable vsnprintf routine under name portable_vsnprintf */
+#  if defined(_MSC_VER) && (_MSC_VER >= 1400)
+#    define portable_snprintf _snprintf
+#  if !defined(NEED_SNPRINTF_ONLY)
+#    define portable_vsnprintf vsnprintf
+#  endif
+#  endif
 #else
 /* declare our portable routines under names snprintf and vsnprintf */
 #define portable_snprintf snprintf
