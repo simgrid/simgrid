@@ -21,7 +21,7 @@
 #include "xbt/context.h"
 #include "xbt/ex.h"
 
-#if defined(JAVA_SIMGRID) || defined(CONTEXT_THREADS)
+#ifdef CONTEXT_THREADS
 #  include "xbt/xbt_os_thread.h"
 #else
 #  include <ucontext.h>
@@ -41,6 +41,8 @@ typedef struct s_xbt_context {
 #else   
 # ifdef CONTEXT_THREADS
 	xbt_os_thread_t thread; /* a plain dumb thread (portable to posix or windows) */
+	xbt_os_cond_t cond;		/* the condition used to synchronize the process	*/
+	xbt_os_mutex_t mutex;		/* the mutex used to synchronize the process		*/
 # else
 	ucontext_t uc;	     /* the thread that execute the code */
 	char stack[STACK_SIZE];
@@ -48,12 +50,6 @@ typedef struct s_xbt_context {
 	ex_ctx_t *exception; /* exception container -- only in ucontext&java, os_threads deals with it for us otherwise */
 # endif /* CONTEXT_THREADS */
 #endif /* JAVA_SIMGRID */
-   
-	/* What we need to synchronize the process */        
-#if defined(JAVA_SIMGRID) || defined(CONTEXT_THREADS)
-	xbt_os_cond_t cond;		/* the condition used to synchronize the process	*/
-	xbt_os_mutex_t mutex;		/* the mutex used to synchronize the process		*/
-#endif
 
 	/* What to run */
 	xbt_main_func_t code;	/* the scheduled fonction	    */
@@ -68,7 +64,6 @@ typedef struct s_xbt_context {
 
    	int iwannadie;                  /* Set to true by the context when it wants to commit suicide */
 
-   
 } s_xbt_context_t;
 
 
