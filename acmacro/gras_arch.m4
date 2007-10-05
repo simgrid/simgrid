@@ -1,4 +1,3 @@
-# BEGIN OF GRAS ARCH CHECK
 dnl
 dnl GRAS_DO_CHECK_SIZEOF: Get the size of a datatype (even in cross-compile)
 dnl  1: type tested
@@ -6,6 +5,15 @@ dnl  2: extra include lines
 dnl  3: extra sizes to test
 dnl ("adapted" from openldap)
 dnl
+
+dnl Copyright (C) 2004, 2005, 2006, 2007. Martin Quinson. All rights reserved.
+
+dnl This file is part of the SimGrid project. This is free software:
+dnl You can redistribute and/or modify it under the terms of the
+dnl GNU LGPL (v2.1) licence.
+
+
+# BEGIN OF GRAS ARCH CHECK
 AC_DEFUN([GRAS_DO_CHECK_SIZEOF],
 [changequote(<<, >>)dnl 
  dnl The cache variable name (and of the result). 

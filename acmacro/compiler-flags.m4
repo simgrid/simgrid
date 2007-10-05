@@ -1,8 +1,14 @@
-
-
 dnl SG_COMPILE_FLAGS
 dnl Turn on many useful compiler warnings
 dnl For now, only sets extra flags on GCC
+
+
+dnl Copyright (C) 2004, 2005, 2007. Martin Quinson. All rights reserved.
+
+dnl This file is part of the SimGrid project. This is free software:
+dnl You can redistribute and/or modify it under the terms of the
+dnl GNU LGPL (v2.1) licence.
+
 
 AC_DEFUN([SG_COMPILE_FLAGS],[
   AC_ARG_ENABLE(compile-warnings,

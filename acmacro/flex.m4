@@ -3,6 +3,14 @@ dnl The first arg must be a version number with 3 parts.
 
 dnl You may want to check for version >= 2.5.31 (the one breaking posix compatibility)
 
+
+dnl Copyright (C) 2005. Martin Quinson. All rights reserved.
+
+dnl This file is part of the SimGrid project. This is free software: 
+dnl You can redistribute and/or modify it under the terms of the 
+dnl GNU LGPL (v2.1) licence.
+
+
 AC_DEFUN([_AC_PROG_FLEX_HELPER_TOO_OLD],[
   AC_MSG_NOTICE([Found flex is too old. Parsers won't get updated (Found v$FLEX_VERSION < v$1)])
   LEX="$SHELL $missing_dir/missing flex";
