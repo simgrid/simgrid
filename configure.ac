@@ -1,3 +1,8 @@
+dnl Copyright (C) 2004-2007. The SimGrid team. All rights reserved.
+
+dnl This file is part of the SimGrid project. This is free software:
+dnl You can redistribute and/or modify it under the terms of the
+dnl GNU LGPL (v2.1) licence.
 
 ######################
 ## Setup the autotools

@@ -1,3 +1,10 @@
+# Copyright (c) 2004-2007. The SimGrid team. All right reserved.
+
+# This file is part of the SimGrid project. This is free software:
+# You can redistribute and/or modify it under the terms of the
+# GNU LGPL (v2.1) licence.
+
+
 DOCSOURCES = $(shell find @top_srcdir@/tools/gras  @top_srcdir@/src @top_srcdir@/include -name "*.[chl]") \
  $(shell find @srcdir@ -name "*.doc")
 FIGS=simgrid_modules.fig simgrid_modules2.fig amok_bw_test.fig amok_bw_sat.fig
