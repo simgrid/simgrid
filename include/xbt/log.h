@@ -99,9 +99,15 @@ typedef enum {
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
     XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
-        &_XBT_LOGV(parent), 0, 0,                    \
-        #catName, xbt_log_priority_uninitialized, 1, \
-        0, 0, 1                                      \
+        &_XBT_LOGV(parent),                             \
+        NULL /* firstChild */,                          \
+	NULL /* nextSibling */,                         \
+        #catName,                                       \
+        xbt_log_priority_uninitialized /* threshold */, \
+        1 /* isThreshInherited */,                      \
+        NULL /* appender */,                            \
+	NULL /* layout */,                              \
+	1 /* additivity */                              \
     }
 /**
  * \ingroup XBT_log
@@ -113,7 +119,7 @@ typedef enum {
  * Defines a new subcategory of the parent. 
  */
 #define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
-    extern s_xbt_log_category_t _XBT_LOGV(parent); \
+    XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(parent); \
     XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
 
 /**
@@ -124,17 +130,9 @@ typedef enum {
  *
  * Creates a new subcategory of the root category.
  */
- 
-/*#if (defined(_WIN32) && !defined(DLL_STATIC)) KILLME?
-  # define XBT_LOG_NEW_CATEGORY(catName,desc)  \
-	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
-        0, 0, 0,                    \
-		#catName, xbt_log_priority_uninitialized, 1, \
-        0, 1                                          \
-    }
-#else*/
-# define XBT_LOG_NEW_CATEGORY(catName,desc)  XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)  
-//#endif
+# define XBT_LOG_NEW_CATEGORY(catName,desc)  \
+   XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)  
+
 
 /**
  * \ingroup XBT_log  
@@ -160,6 +158,10 @@ typedef enum {
  * Creates a new subcategory of the root category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
+/* Damnit Malek. There is no difference between the WINDOWS version and the regular one.
+ * Moreover, portability cruft MUST be kept out of this file. If you need another definition of EXPORT_NO_IMPORT, do so in misc, not here.
+ * Killing your crufty definition once again (I hate dupplicated code). Please do not readd them without a good justification
+
 #if (defined(_WIN32) && !defined(DLL_STATIC))
 # define XBT_LOG_NEW_ROOT_SUBCATEGORY(cname,desc) \
 	XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(cname) = {       \
@@ -172,10 +174,11 @@ typedef enum {
 	XBT_LOG_DEFAULT_CATEGORY(cname)
     
 #else
+ */
 # define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
     XBT_LOG_NEW_CATEGORY(cname,desc);                   \
     XBT_LOG_DEFAULT_CATEGORY(cname)
-#endif
+//#endif
 
 
 
