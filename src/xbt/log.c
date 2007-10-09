@@ -378,7 +378,7 @@ specific layouts to the several priorities.
 The <tt>add</tt> keyword allows to specify the additivity of a
 category (see \ref log_in_app). This is rarely useful since you
 cannot specify an alternative appender. Anyway, '0', '1', 'no',
-'ye's, 'on' and 'off' are all valid values, with 'yes' as default.
+'yes', 'on' and 'off' are all valid values, with 'yes' as default.
 
 \section log_use_misc 3.2 Misc and Caveats
 
@@ -482,9 +482,11 @@ const char *xbt_log_priority_names[8] = {
 };
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
-  0, 0, 0,
-  "root", xbt_log_priority_uninitialized, 0,
-  NULL, 0
+  NULL /*parent*/, NULL /* firstChild */, NULL /* nextSibling */,
+  "root", xbt_log_priority_uninitialized /* threshold */,
+  0 /* isThreshInherited */,
+  NULL /* appender */, NULL /* layout */, 
+  0 /* additivity */
 };
 
 XBT_LOG_NEW_CATEGORY(xbt,"All XBT categories (simgrid toolbox)");
@@ -507,7 +509,9 @@ void xbt_log_init(int *argc,char **argv) {
 	xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
 	_XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
 	_XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-	_log_usable = 1;   
+	_log_usable = 1;
+   
+//	_XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
 
 	/* Set logs and init log submodule */
 	for (i=1; i<*argc; i++){
@@ -568,12 +572,12 @@ void _xbt_log_event_log( xbt_log_event_t ev, const char *fmt, ...) {
   
   xbt_log_category_t cat = ev->cat;
   if (!_log_usable) {
-     fprintf(stderr,"XXXXXXXXXXXXXXXXXXX\nXXX Warning, logs not usable here. Either before xbt_init() or after xbt_exit().\nXXXXXXXXXXXXXXXXXXX\n");
-     va_start(ev->ap, fmt);
-     vfprintf(stderr,fmt,ev->ap);
-     va_end(ev->ap);
-     xbt_backtrace_display_current();
-     return;
+     /* Make sure that the layouts have been malloced */
+     xbt_log_default_appender = xbt_log_appender_file_new(NULL);
+     xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
+     _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
+     _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
+     _log_usable = 1;
   }
    
   va_start(ev->ap, fmt);
@@ -660,7 +664,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   xbt_log_setting_t setting=NULL;
   int found = 0;
   s_xbt_log_event_t _log_ev;
-	
+
   if(category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)){
     category->threshold = xbt_log_priority_info;/* xbt_log_priority_debug*/;
     category->appender = xbt_log_default_appender;
@@ -929,7 +933,7 @@ void xbt_log_control_set(const char* control_string) {
     set = _xbt_log_parse_setting(str);
 
     TRY {
-      cat = _xbt_log_cat_searchsub(&_XBT_LOGV(root),set->catname);
+      cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT),set->catname);
       found = 1;
     } CATCH(e) {
       if (e.category != not_found_error)
